@@ -64,6 +64,12 @@ Object::~Object ()
 {
   m_next = 0;
 }
+Object::Object (const Object &o)
+  : m_count (1),
+    m_tid (o.m_tid),
+    m_disposed (false),
+    m_next (this)
+{}
 void
 Object::Construct (const AttributeList &attributes)
 {

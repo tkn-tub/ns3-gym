@@ -102,7 +102,26 @@ protected:
    * up to their parent's implementation once they are done.
    */
   virtual void DoDispose (void);
+  /**
+   * \param o the object to copy.
+   *
+   * Allow subclasses to implement a copy constructor.
+   * While it is technically possible to implement a copy
+   * constructor in a subclass, we strongly discourage you
+   * to do so. If you really want to do it anyway, you have
+   * to understand that this copy constructor will _not_
+   * copy aggregated objects. i.e., if your object instance
+   * is already aggregated to another object and if you invoke
+   * this copy constructor, the new object instance will be
+   * a pristine standlone object instance not aggregated to
+   * any other object. It is thus _your_ responsability
+   * as a caller of this method to do what needs to be done
+   * (if it is needed) to ensure that the object stays in a
+   * valid state.
+   */
+  Object (const Object &o);
 private:
+
   template <typename T>
   friend Ptr<T> CreateObject (const AttributeList &attributes);
   template <typename T>
@@ -165,6 +184,26 @@ private:
   Object *m_next;
 };
 
+template <typename T>
+Ptr<T> CopyObject (Ptr<T> o);
+
+template <typename T>
+Ptr<T> CreateObject (const AttributeList &attributes);
+
+template <typename T>
+Ptr<T> 
+CreateObject (std::string n1 = "", Attribute v1 = Attribute (),
+              std::string n2 = "", Attribute v2 = Attribute (),
+              std::string n3 = "", Attribute v3 = Attribute (),
+              std::string n4 = "", Attribute v4 = Attribute (),
+              std::string n5 = "", Attribute v5 = Attribute (),
+              std::string n6 = "", Attribute v6 = Attribute (),
+              std::string n7 = "", Attribute v7 = Attribute (),
+              std::string n8 = "", Attribute v8 = Attribute (),
+              std::string n9 = "", Attribute v9 = Attribute ());
+  
+
+
 } // namespace ns3
 
 namespace ns3 {
@@ -221,7 +260,7 @@ template <typename T>
 Ptr<T> CopyObject (Ptr<T> o)
 {
   Ptr<T> p = Ptr<T> (new T (*PeekPointer (o)), false);
-  p->SetTypeId (T::GetTypeId ());
+  NS_ASSERT (p->m_tid == o->m_tid);
   return p;
 }
 
