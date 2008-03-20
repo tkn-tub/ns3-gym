@@ -1630,18 +1630,38 @@ std::istream &operator >> (std::istream &is, RandomVariable &var)
       return is;
     }
   std::string type = value.substr (0, tmp);
-  if (value == "Constant")
+  value = value.substr (tmp + 1, value.npos);
+  if (type == "Constant")
     {
-      // XXX parse
-      var = ConstantVariable ();
+      istringstream iss (value);
+      double constant;
+      iss >> constant;
+      var = ConstantVariable (constant);
     }
-  else if (value == "Uniform")
+  else if (type == "Uniform")
     {
-      // XXX parse
-      var = UniformVariable ();
+      if (value.size () == 0)
+        {
+          var = UniformVariable ();
+        }
+      else
+        {
+          tmp = value.find (":");
+          if (tmp == value.npos)
+            {
+              NS_FATAL_ERROR ("bad Uniform value: " << value);
+            }
+          istringstream issA (value.substr (0, tmp));
+          istringstream issB (value.substr (tmp + 1, value.npos));
+          double a, b;
+          issA >> a;
+          issB >> b;
+          var = UniformVariable (a, b);
+        }
     }
   else
     {
+      NS_FATAL_ERROR ("RandomVariable deserialization not implemented for " << type);
       // XXX: support other distributions.
     }
   return is;
@@ -1665,7 +1685,7 @@ public:
   RandomVariableTest () : Test ("RandomVariable") {}
   virtual bool RunTests (void)
   {
-    bool ok = true;
+    bool result = true;
     const double desired_mean = 1.0;
     const double desired_stddev = 1.0;
     double tmp = log (1 + (desired_stddev/desired_mean)*(desired_stddev/desired_mean));
@@ -1695,13 +1715,13 @@ public:
 
       if (not (obtained_mean/desired_mean > 0.90 and obtained_mean/desired_mean < 1.10))
         {
-          ok = false;
+          result = false;
           Failure () << "Obtained lognormal mean value " << obtained_mean << ", expected " << desired_mean << std::endl;
         }
 
       if (not (obtained_stddev/desired_stddev > 0.90 and obtained_stddev/desired_stddev < 1.10))
         {
-          ok = false;
+          result = false;
           Failure () << "Obtained lognormal stddev value " << obtained_stddev <<
             ", expected " << desired_stddev << std::endl;
         }
@@ -1729,20 +1749,28 @@ public:
 
       if (not (obtained_mean/desired_mean > 0.90 and obtained_mean/desired_mean < 1.10))
         {
-          ok = false;
+          result = false;
           Failure () << "Obtained LogNormalVariable::GetSingleValue mean value " << obtained_mean
                      << ", expected " << desired_mean << std::endl;
         }
 
       if (not (obtained_stddev/desired_stddev > 0.90 and obtained_stddev/desired_stddev < 1.10))
         {
-          ok = false;
+          result = false;
           Failure () << "Obtained LogNormalVariable::GetSingleValue stddev value " << obtained_stddev <<
             ", expected " << desired_stddev << std::endl;
         }
     }
 
-    return ok;
+    // Test attribute serialization
+    {
+      RandomVariableValue val;
+      val.DeserializeFromString ("Uniform:0.1:0.2", MakeRandomVariableChecker ());
+      RandomVariable rng = val.Get ();
+      NS_TEST_ASSERT_EQUAL (val.SerializeToString (MakeRandomVariableChecker ()), "Uniform:0.1:0.2");
+    }
+
+    return result;
   }
 };
 
