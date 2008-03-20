@@ -243,10 +243,12 @@ CommandLine::HandleArgument (std::string name, std::string value) const
 	    }
 	}
     }
-  Config::SetGlobalFailSafe (name, String (value));
-  Config::SetDefaultFailSafe (name, String (value));
-  std::cerr << "Invalid command-line arguments: --"<<name<<"="<<value<<std::endl;
-  PrintHelp ();
+  if (!Config::SetGlobalFailSafe (name, String (value))
+      && !Config::SetDefaultFailSafe (name, String (value)))
+    {
+      std::cerr << "Invalid command-line arguments: --"<<name<<"="<<value<<std::endl;
+      PrintHelp ();
+    }
 }
 
 } // namespace ns3
