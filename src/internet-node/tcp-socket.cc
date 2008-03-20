@@ -125,6 +125,7 @@ TcpSocket::TcpSocket(const TcpSocket& sock)
 TcpSocket::~TcpSocket ()
 {
   NS_LOG_FUNCTION;
+  NS_LOG_PARAMS(this);
   m_node = 0;
   if (m_endPoint != 0)
     {
@@ -204,8 +205,8 @@ TcpSocket::FinishBind (void)
     {
       return -1;
     }
-  m_endPoint->SetRxCallback (MakeCallback (&TcpSocket::ForwardUp, this));
-  m_endPoint->SetDestroyCallback (MakeCallback (&TcpSocket::Destroy, this));
+  m_endPoint->SetRxCallback (MakeCallback (&TcpSocket::ForwardUp, Ptr<TcpSocket>(this)));
+  m_endPoint->SetDestroyCallback (MakeCallback (&TcpSocket::Destroy, Ptr<TcpSocket>(this)));
   m_localAddress = m_endPoint->GetLocalAddress ();
   m_localPort = m_endPoint->GetLocalPort ();
   return 0;
@@ -777,8 +778,8 @@ void TcpSocket::CompleteFork(Ptr<Packet> p, const TcpHeader& h, const Address& f
   //the cloned socket with be in listen state, so manually change state
   m_state = SYN_RCVD;
   //equivalent to FinishBind
-  m_endPoint->SetRxCallback (MakeCallback (&TcpSocket::ForwardUp, this));
-  m_endPoint->SetDestroyCallback (MakeCallback (&TcpSocket::Destroy, this));
+  m_endPoint->SetRxCallback (MakeCallback (&TcpSocket::ForwardUp, Ptr<TcpSocket>(this)));
+  m_endPoint->SetDestroyCallback (MakeCallback (&TcpSocket::Destroy, Ptr<TcpSocket>(this)));
   ProcessPacketAction(SYN_ACK_TX, p, h, fromAddress);
  }
 
