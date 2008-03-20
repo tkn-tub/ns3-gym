@@ -673,11 +673,11 @@ bool TcpSocket::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       NS_LOG_LOGIC ("TcpSocket " << this <<" Action ACK_TX_1");
       // TCP SYN consumes one byte
       m_nextRxSequence = tcpHeader.GetSequenceNumber() + SequenceNumber(1);
+      m_nextTxSequence = tcpHeader.GetAckNumber ();
       NS_LOG_DEBUG ("TcpSocket " << this << " ACK_TX_1" <<
                     " nextRxSeq " << m_nextRxSequence);
       SendEmptyPacket (TcpHeader::ACK);
       m_rxWindowSize = tcpHeader.GetWindowSize ();
-      m_nextTxSequence = tcpHeader.GetAckNumber ();
       if (tcpHeader.GetAckNumber () > m_highestRxAck)
       {
         m_highestRxAck = tcpHeader.GetAckNumber ();
