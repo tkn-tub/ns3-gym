@@ -45,26 +45,47 @@ class TraceContainer;
 class WifiNetDevice;
 class WifiChannel;
 
+/**
+ * \brief receive notifications about phy events.
+ */
 class WifiPhyListener {
 public:
   virtual ~WifiPhyListener ();
 
-  /* we have received the first bit of a packet. We decided
+  /**
+   * \param duration the expected duration of the packet reception.
+   *
+   * we have received the first bit of a packet. We decided
    * that we could synchronize on this packet. It does not mean
    * we will be able to successfully receive completely the
    * whole packet. It means we will report a BUSY status.
-   * r.end will be invoked later to report whether or not
-   * the packet was successfully received.
+   * NotifyRxEndOk or NotifyRxEndError will be invoked later 
+   * to report whether or not the packet was successfully received.
    */
   virtual void NotifyRxStart (Time duration) = 0;
-  /* we have received the last bit of a packet for which
-   * rxStart was invoked first. 
+  /**
+   * we have received the last bit of a packet for which
+   * NotifyRxStart was invoked first and, the packet has
+   * been successfully received.
    */
-  virtual void NotifyRxEndOk (void) = 0;
+  virtual void NotifyRxEndOk (void) = 0;  
+  /**
+   * we have received the last bit of a packet for which
+   * NotifyRxStart was invoked first and, the packet has
+   * _not_ been successfully received.
+   */
   virtual void NotifyRxEndError (void) = 0;
-  /* we start the transmission of a packet.
+  /**
+   * \param duration the expected transmission duration.
+   *
+   * We are about to send the first bit of the packet.
    */
   virtual void NotifyTxStart (Time duration) = 0;
+  /**
+   * \param duration the expected busy duration.
+   *
+   * We are going to be cca-busy for a while.
+   */
   virtual void NotifyCcaBusyStart (Time duration) = 0;
 };
 
@@ -77,10 +98,11 @@ public:
  * in "Yet Another Network Simulator", 
  * (http://cutebugs.net/files/wns2-yans.pdf).
  *
+ *
  * This PHY model depends on a channel loss and delay
  * model as provided by the ns3::PropagationLossModel
- * and ns3::PropagationDelayModel classes.
- * 
+ * and ns3::PropagationDelayModel classes, both of which are
+ * members of the ns3::WifiChannel class.
  */
 class WifiPhy : public Object
 {

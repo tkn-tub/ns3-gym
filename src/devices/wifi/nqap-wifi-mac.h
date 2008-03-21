@@ -58,6 +58,7 @@ public:
   NqapWifiMac ();
   ~NqapWifiMac ();
 
+  // inherited from WifiMac.
   virtual void SetSlot (Time slotTime);
   virtual void SetSifs (Time sifs);
   virtual void SetEifsNoDifs (Time eifsNoDifs);
@@ -74,7 +75,13 @@ public:
   virtual void SetSsid (Ssid ssid);
 
 
+  /**
+   * \param interval the interval between two beacon transmissions.
+   */
   void SetBeaconInterval (Time interval);
+  /**
+   * \returns the interval between two beacon transmissions.
+   */
   Time GetBeaconInterval (void) const;
   /**
    * Start beacon transmission immediately.

@@ -52,6 +52,7 @@ public:
   AdhocWifiMac ();
   ~AdhocWifiMac ();
 
+  // all inherited from WifiMac base class.
   virtual void SetSlot (Time slotTime);
   virtual void SetSifs (Time sifs);
   virtual void SetEifsNoDifs (Time eifsNoDifs);
@@ -69,6 +70,7 @@ public:
 
 
 private:
+  // inherited from Object base class.
   virtual void DoDispose (void);
   /* invoked by the MacLows. */
   void ForwardUp (Ptr<Packet> packet, WifiMacHeader const*hdr);

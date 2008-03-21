@@ -58,6 +58,7 @@ public:
   NqstaWifiMac ();
   ~NqstaWifiMac ();
 
+  // inherited from WifiMac.
   virtual void SetSlot (Time slotTime);
   virtual void SetSifs (Time sifs);
   virtual void SetEifsNoDifs (Time eifsNoDifs);

@@ -1,3 +1,22 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2008 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as 
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
 #ifndef WIFI_MAC_H
 #define WIFI_MAC_H
 
@@ -10,43 +29,149 @@
 
 namespace ns3 {
 
+/**
+ * \brief base class for all MAC-level wifi objects.
+ *
+ * This class encapsulates all the low-level MAC functionality
+ * DCA, EDCA, etc) and all the high-level MAC functionality
+ * (association/disassociation state machines).
+ *
+ */
 class WifiMac : public Object
 {
 public:
   static TypeId GetTypeId (void);
   
+  /**
+   * \param slotTime the slot duration
+   */
   virtual void SetSlot (Time slotTime);
+  /**
+   * \param sifs the sifs duration
+   */
   virtual void SetSifs (Time sifs);
+  /**
+   * \param eifsNoDifs the duration of an EIFS minus DIFS.
+   *
+   * This value is used to calculate the EIFS depending
+   * on AIFSN.
+   */
   virtual void SetEifsNoDifs (Time eifsNoDifs);
+  /**
+   * \param pifs the pifs duration.
+   */
   void SetPifs (Time pifs);
+  /**
+   * \param ctsTimeout the duration of a CTS timeout.
+   */
   void SetCtsTimeout (Time ctsTimeout);
+  /**
+   * \param ackTimeout the duration of an ACK timeout.
+   */
   void SetAckTimeout (Time ackTimeout);
+  /**
+   * \param msduLifetime
+   *
+   * XXX: I cannot remmeber what this is used for.
+   */
   void SetMsduLifetime (Time msduLifetime);
+  /**
+   * XXX: I cannot remember what this is used for.
+   */
   void SetMaxPropagationDelay (Time delay);
 
+  /**
+   * \returns the current PIFS duration.
+   */
   Time GetPifs (void) const;
+  /**
+   * \returns the current SIFS duration.
+   */
   Time GetSifs (void) const;
+  /**
+   * \returns the current slot duration.
+   */
   Time GetSlot (void) const;
+  /**
+   * \returns the current EIFS minus DIFS duration
+   */
   Time GetEifsNoDifs (void) const;
+  /**
+   * \returns the current CTS timeout duration.
+   */
   Time GetCtsTimeout (void) const;
+  /**
+   * \returns the current ACK timeout duration.
+   */
   Time GetAckTimeout (void) const;
+  /**
+   * XXX: I cannot remember what this is used for.
+   */
   Time GetMsduLifetime (void) const;
+  /**
+   * XXX: I cannot remember what this is used for.
+   */
   Time GetMaxPropagationDelay (void) const;
+  /**
+   * \returns the maximum size of a MAC-level data payload.
+   */
   uint32_t GetMaxMsduSize (void) const;
 
+  /**
+   * \returns the MAC address associated to this MAC layer.
+   */
   virtual Mac48Address GetAddress (void) const = 0;
+  /**
+   * \returns the ssid which this MAC layer is going to try to stay in.
+   */
   virtual Ssid GetSsid (void) const = 0;
+  /**
+   * \returns the BSSID associated to the current SSID. 
+   *
+   * If we are an AP, this is the address of the AP itself.
+   * If are a STA, this is the address of the AP with which
+   * the STA is associated.
+   */
   virtual Mac48Address GetBssid (void) const = 0;
+  /**
+   * \param address the current address of this MAC layer.
+   */
   virtual void SetAddress (Mac48Address address) = 0;
+  /**
+   * \param ssid the current ssid of this MAC layer.
+   */
   virtual void SetSsid (Ssid ssid) = 0;
 
 private:
   friend class WifiNetDevice;
+  /**
+   * \param packet the packet to send.
+   * \param to the address to which the packet should be sent.
+   *
+   * The packet should be enqueued in a tx queue, and should be
+   * dequeued as soon as the DCF function determines that
+   * access it granted to this MAC.
+   */
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to) = 0;
+  /**
+   * \param phy the physical layer attached to this MAC.
+   */
   virtual void SetWifiPhy (Ptr<WifiPhy> phy) = 0;
+  /**
+   * \param stationManager the station manager attached to this MAC.
+   */
   virtual void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager) = 0;
+  /**
+   * \param upCallback the callback to invoke when a packet must be forwarded up the stack.
+   */
   virtual void SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address &> upCallback) = 0;
+  /**
+   * \param linkUp the callback to invoke when the link becomes up.
+   */
   virtual void SetLinkUpCallback (Callback<void> linkUp) = 0;
+  /**
+   * \param linkDown the callback to invoke when the link becomes down.
+   */
   virtual void SetLinkDownCallback (Callback<void> linkDown) = 0;
 
 
@@ -57,10 +182,7 @@ private:
   static Time GetDefaultCtsAckDelay (void);
   static Time GetDefaultCtsAckTimeout (void);
 
-  Time m_slot;
   Time m_pifs;
-  Time m_sifs;
-  Time m_eifsNoDifs;
   Time m_ctsTimeout;
   Time m_ackTimeout;
   Time m_maxPropagationDelay;
