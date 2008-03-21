@@ -83,12 +83,19 @@ Part 1:  Getting Started with ns-3
 * Resources::
 * Downloading and Compiling::
 * Some-Prerequisites::
+Part 2:  Reading ns-3 Programs
 * A-First-ns-3-Script::
-Part 2-:  Details
-* ns-3 Callbacks::
-* Simulation Output::
-* ns-3 routing overview::
+Part 3:  Reconfiguring Existing ns-3 Scripts
+* Logging::
+* ns-3 Attributes::
+* Tracing::
+* Statistics::
+Part 4:  Creating New or Revised Topologies
+* Helper Functions::
 * Other-network-topologies::
+Part 5:  Extending ns-3
+* ns-3 Callbacks::
+* ns-3 routing overview::
 * Nonlinear-Thinking::
 * Summary::
 * Object-Model::
@@ -100,6 +107,8 @@ Part 2-:  Details
 @end menu
 
 @include introduction.texi
+@include log.texi
+@include attributes.texi
 @include callbacks.texi
 @include output.texi
 @include routing.texi

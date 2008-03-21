@@ -1832,7 +1832,7 @@ container.  In the case of a Node, for example, it is quite natural to think
 of the Node as being the container which contains protocol stacks, internet
 routing, etc.  So, lets start thinking about a real example by calling the 
 container @code{Object Node} instead of @code{A} as we have been.  The 
-creation of this @code<Object> is found all over our example programs.  For 
+creation of this @code{Object} is found all over our example programs.  For 
 example, you will find code like the following in 
 @code{samples/simple-point-to-point.cc}:
 

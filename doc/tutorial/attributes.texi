@@ -1,0 +1,535 @@
+@node ns-3 Attributes
+@chapter ns-3 Attributes 
+@anchor{chap:Attributes}
+
+In ns-3 simulations, there are two main aspects to configuration:
+@itemize @bullet
+@item the simulation topology and how objects are connected 
+@item the values used by the models instantiated in the topology
+@end itemize
+
+This chapter focuses on the second item above: how the many values
+in use in ns-3 are organized, documented, and modifiable by ns-3 users.
+The ns-3 attribute system is also the underpinning of how traces
+and statistics are gathered in the simulator. 
+
+Before delving into details of the attribute value system,
+it will help to review some basic properties of @code{class ns3::Object}.
+
+@node Object Overview
+@section Object Overview
+
+ns-3 is fundamentally a C++ object-based system.  By this we mean that
+new C++ classes (types) can be declared, defined, and subclassed
+as usual.
+
+Many ns-3 objects inherit from the @code{ns3::Object} base class.  These
+objects have some additional properties that we exploit for 
+organizing the system and improving the memory management
+of our objects:
+
+@itemize @bullet
+@item a "metadata" system that links the class name to a lot of 
+meta-information about the object, including the base class of the subclass,
+the set of accessible constructors in the subclass, and the set of 
+"attributes" of the subclass
+@item a reference counting smart pointer implementation, for memory
+management.
+@end itemize
+
+ns-3 objects that use the attribute system derive from either
+@code{ns3::Object} or @code{ns3::ObjectBase}.  Most ns-3 objects
+we will discuss derive from @code{ns3::Object}, but a few that
+are outside the smart pointer memory management framework derive
+from @code{ns3::ObjectBase}.
+
+Let's review a couple of properties of these objects.
+
+@node Smart pointers
+@subsection Smart pointers
+
+As introduced above in @ref{Smart Pointers 101}, ns-3 objects 
+are memory managed by a 
+@uref{http://en.wikipedia.org/wiki/Smart_pointer,,reference counting smart pointer implementation}, @code{class ns3::Ptr}. 
+
+Smart pointers are used extensively in the ns-3 APIs, to avoid passing
+references to heap-allocated objects that may cause memory leaks.  
+For most basic usage (syntax), treat a smart pointer like a regular pointer:
+@verbatim
+  Ptr<WifiNetDevice> nd = ...;
+  nd->CallSomeFunction ();
+  // etc.
+@end verbatim
+
+@node CreateObject
+@subsection CreateObject
+
+As we discussed above in @ref{Object Creation}, 
+at the lowest-level API, objects of type @code{ns3::Object} are 
+not instantiated using @code{operator new} as usual but instead by
+a templated function called @code{CreateObject()}.
+
+A typical way to create such an object is as follows:
+@verbatim
+  Ptr<WifiNetDevice> nd = CreateObject<WifiNetDevice> ();
+@end verbatim
+
+You can think of this as being functionally equivalent to:
+@verbatim
+  WifiNetDevice* nd = new WifiNetDevice ();
+@end verbatim
+
+Objects that derive from @code{ns3::Object} must be allocated
+on the heap using CreateObject().  Those deriving from 
+@code{ns3::ObjectBase}, such as ns-3 helper functions and packet
+headers and trailers, can be allocated on the stack.  
+
+In some scripts, you may not see a lot of CreateObject() calls
+in the code;
+this is because there are some helper objects in effect that 
+are doing the CreateObject()s for you.
+
+@node TypeId
+@subsection TypeId
+
+ns-3 classes that derive from class ns3::Object can include
+a metadata class called @code{TypeId} that records meta-information
+about the class, for use in the object aggregation and component
+manager systems:
+@itemize @bullet
+ @item a unique string identifying the class
+ @item the base class of the subclass, within the metadata system
+ @item the set of accessible constructors in the subclass
+@end itemize
+
+@node Object Summary
+@subsection Object Summary
+
+Putting all of these concepts together, let's look at a specific
+example:  @code{class ns3::Node}.
+
+The public header file node.h has a declaration that includes
+a static GetTypeId function call:
+@verbatim
+class Node : public Object
+{
+public:
+  static TypeId GetTypeId (void);
+  ...
+@end verbatim
+
+This is defined in the node.cc file as follows:
+@verbatim
+TypeId 
+Node::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::Node")
+    .SetParent<Object> ()
+  return tid;
+}
+@end verbatim
+Finally, when users want to create Nodes, they call:
+@verbatim
+  Ptr<Node> n = CreateObject<Node> n;
+@end verbatim
+
+We next discuss how attributes (values associated with member variables
+or functions of the class) are plumbed into the above TypeId.
+
+@node Attribute Overview
+@section Attribute Overview
+
+The goal of the attribute system is to organize the access of
+internal member objects of a simulation.  This goal arises because,
+typically in simulation, users will cut and paste/modify existing
+simulation scripts, or will use higher-level simulation constructs,
+but often will be interested in studying or tracing particular 
+internal variables.  For instance, use cases such as:
+@itemize @bullet
+@item "I want to trace the packets on the wireless interface only on
+the first access point"
+@item "I want to trace the value of the TCP congestion window (every
+time it changes) on a particular TCP socket"
+@item "I want a dump of all values that were used in my simulation."
+@end itemize 
+
+Similarly, users may want fine-grained access to internal
+variables in the simulation, or may want to broadly change the
+initial value used for a particular parameter in all subsequently
+created objects.  Finally, users may wish to know what variables
+are settable and retrievable in a simulation configuration.  This
+is not just for direct simulation interaction on the command line; 
+consider also a (future) graphical user interface
+that would like to be able to provide a feature whereby a user
+might right-click on an node on the canvas and see a hierarchical,
+organized list of parameters that are settable on the node and its 
+constituent member objects, and help text and default values for
+each parameter.
+
+@node Functional overview
+@subsection Functional overview
+
+We provide a way for users to access values deep in the system, without
+having to plumb accessors (pointers) through the system and walk 
+pointer chains to get to them.  Consider a class DropTailQueue that
+has a member variable that is an unsigned integer @code{m_maxPackets};
+this member variable controls the depth of the queue.  
+
+If we look at the declaration of DropTailQueue, we see the following:
+@verbatim
+class DropTailQueue : public Queue {
+public:
+  static TypeId GetTypeId (void);
+  ...
+
+private:
+  std::queue<Ptr<Packet> > m_packets;
+  uint32_t m_maxPackets;
+};
+@end verbatim
+
+Let's consider things that a user may want to do with the value of
+m_maxPackets:
+
+@itemize @bullet
+@item Set a default value for the system, such that whenever a new
+DropTailQueue is created, this member is initialized to that default. 
+@item Set or get the value on an already instantiated queue.
+@end itemize
+
+The above things typically require providing Set() and Get() functions,
+and some type of global default value.
+
+In the ns-3 attribute system, these value definitions and accessor
+functions are moved into the TypeId class; e.g.:  
+@verbatim
+TypeId DropTailQueue::GetTypeId (void) 
+{
+  static TypeId tid = TypeId ("ns3::DropTailQueue")
+    .SetParent<Queue> ()
+    .AddConstructor<DropTailQueue> ()
+    .AddAttribute ("MaxPackets", "The maximum number of packets accepted by this DropTailQueue.",
+                   Uinteger (100),
+                   MakeUintegerAccessor (&DropTailQueue::m_maxPackets),
+                   MakeUintegerChecker<uint32_t> ())
+    ;
+  
+  return tid;
+}
+@end verbatim
+
+The AddAttribute() method is performing a number of things with this
+value:
+@itemize @bullet
+@item Binding the variable m_maxPackets to a string "MaxPackets"
+@item Providing a default value (100 packets)
+@item Providing some help text defining the value
+@item Providing a "checker" (not used in this example) that can be used to set
+bounds on the allowable range of values
+@end itemize
+
+The key point is that now the value of this variable and its default
+value are accessible in the attribute namespace, which is based on
+strings such as "MaxPackets" and TypeId strings.  In the next
+section, we will provide an example script that shows how users
+may manipulate these values.
+
+@node Basic usage
+@subsection Basic usage
+
+Let's look at how a user script might access these values.  
+This is based on the script found at @code{samples/main-attribute-value.cc},
+with some details stripped out.
+@verbatim
+//
+// This is a basic example of how to use the attribute system to
+// set and get a value in the underlying system; namely, an unsigned
+// integer of the maximum number of packets in a queue
+//
+
+int 
+main (int argc, char *argv[])
+{
+
+  // By default, the MaxPackets attribute has a value of 100 packets
+  // (this default can be observed in the function DropTailQueue::GetTypeId)
+  // 
+  // Here, we set it to 80 packets.  We could use one of two value types:
+  // a string-based value or a Uinteger value
+  Config::SetDefault ("ns3::DropTailQueue::MaxPackets", String ("80"));
+  // The below function call is redundant
+  Config::SetDefault ("ns3::DropTailQueue::MaxPackets", Uinteger(80));
+
+  // Allow the user to override any of the defaults and the above
+  // SetDefaults() at run-time, via command-line arguments
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
+@end verbatim
+
+The main thing to notice in the above are the two calls to 
+@code{Config::SetDefault}.  This is how we set the default value
+for all subsequently instantiated DropTailQueues.  We illustrate
+that two types of Value classes, a String and a Uinteger class,
+can be used to assign the value to the attribute named by
+"ns3::DropTailQueue::MaxPackets".
+
+Now, we will create a few objects using the low-level API; here,
+our newly created queues will not have a m_maxPackets initialized to
+100 packets but to 80 packets, because of what we did above with
+default values.
+@verbatim
+  Ptr<Node> n0 = CreateObject<Node> ();
+
+  Ptr<PointToPointNetDevice> net0 = CreateObject<PointToPointNetDevice> ();
+  n0->AddDevice (net0);
+
+  Ptr<Queue> q = CreateObject<DropTailQueue> ();
+  net0->AddQueue(q);
+@end verbatim
+
+At this point, we have created a single node (Node 0) and a 
+single PointToPointNetDevice (NetDevice 0) and added a 
+DropTailQueue to it.
+
+Now, we can manipulate the MaxPackets value of the already 
+instantiated DropTailQueue.  Here are various ways to do that.
+
+@subsubsection Pointer-based access
+
+We assume that a smart pointer (Ptr) to a relevant network device is 
+in hand; here, it is the net0 pointer. 
+
+One way to change the value is to access a pointer to the
+underlying queue and modify its attribute.
+ 
+First, we observe that we can get a pointer to the (base class)
+queue via the PointToPointNetDevice attributes, where it is called
+TxQueue 
+@verbatim
+  Ptr<Queue> txQueue = net0->GetAttribute ("TxQueue");
+@end verbatim
+
+Using the GetObject function, we can perform a safe downcast
+to a DropTailQueue, where MaxPackets is a member
+@verbatim
+  Ptr<DropTailQueue> dtq = txQueue->GetObject <DropTailQueue> ();
+  NS_ASSERT (dtq);
+@end verbatim
+
+Next, we can get the value of an attribute on this queue
+We have introduced wrapper "Value" classes for the underlying
+data types, similar to Java wrappers around these types, since
+the attribute system stores values and not disparate types.
+Here, the attribute value is assigned to a Uinteger, and
+the Get() method on this value produces the (unwrapped) uint32_t.
+@verbatim
+  Uinteger limit = dtq->GetAttribute ("MaxPackets");
+  NS_LOG_INFO ("1.  dtq limit: " << limit.Get () << " packets");
+@end verbatim
+  
+Note that the above downcast is not really needed; we could have
+done the same using the Ptr<Queue> even though the attribute
+is a member of the subclass
+@verbatim
+  limit = txQueue->GetAttribute ("MaxPackets");
+  NS_LOG_INFO ("2.  txQueue limit: " << limit.Get () << " packets");
+@end verbatim
+
+Now, let's set it to another value (60 packets)
+@verbatim
+  txQueue->SetAttribute("MaxPackets", Uinteger (60));
+  limit = txQueue->GetAttribute ("MaxPackets");
+  NS_LOG_INFO ("3.  txQueue limit changed: " << limit.Get () << " packets");
+@end verbatim
+
+@subsubsection Namespace-based access
+
+An alternative way to get at the attribute is to use the configuration
+namespace.  Here, this attribute resides on a known path in this
+namespace; this approach is useful if one doesn't have access to
+the underlying pointers and would like to configure a specific
+attribute with a single statement.  
+@verbatim
+  Config::Set ("/NodeList/0/DeviceList/0/TxQueue/MaxPackets", Uinteger (25));
+  limit = txQueue->GetAttribute ("MaxPackets"); 
+  NS_LOG_INFO ("4.  txQueue limit changed through namespace: " << 
+    limit.Get () << " packets");
+@end verbatim
+
+We could have also used wildcards to set this value for all nodes
+and all net devices (which in this simple example has the same
+effect as the previous Set())
+@verbatim
+  Config::Set ("/NodeList/*/DeviceList/*/TxQueue/MaxPackets", Uinteger (15));
+  limit = txQueue->GetAttribute ("MaxPackets"); 
+  NS_LOG_INFO ("5.  txQueue limit changed through wildcarded namespace: " << 
+    limit.Get () << " packets");
+@end verbatim
+
+@node Setting through constructors and helper classes
+@subsection Setting through constructors helper classes
+
+Arbitrary combinations of attributes can be set and fetched from
+the helper and low-level APIs; either from the constructors themselves:
+@verbatim
+Ptr<Object> p = CreateObject<MyNewObject> ("n1", v1, "n2", v2, ...);
+@end verbatim
+or from the higher-level helper APIs, such as:
+@verbatim
+  mobility.SetPositionAllocator ("GridPositionAllocator",
+                                 "MinX", FpValue (-100.0),
+                                 "MinY", FpValue (-100.0),
+                                 "DeltaX", FpValue (5.0),
+                                 "DeltaY", FpValue (20.0),
+                                 "GridWidth", UintValue (20),
+                                 "LayoutType", "RowFirst");
+@end verbatim
+
+@node Value classes
+@subsection Value classes
+Readers will note the new Value classes.  These can be thought of as
+an intermediate class that can be used to convert from raw types to the
+Values that are used by the system.  Recall that this database is holding
+objects of many types with a single generic type.  Conversions to this
+type can either be done using an intermediate class (IntValue, FpValue for
+"floating point") or via strings.  Direct implicit conversion of types
+to Value is not really practical.  So in the above, users have a choice
+of using strings or values: 
+@verbatim
+p->Set ("cwnd", "100"); // string-based setter
+p->Set ("cwnd", IntValue(100)); // value-based setter
+@end verbatim
+
+The system provides some macros that help users declare and define
+new Value subclasses for new types that they want to introduce into
+the attribute system.
+
+@node Extending attributes
+@section Extending attributes
+
+The ns-3 system will place a number of internal values under the
+attribute system, but undoubtedly users will want to extend this
+to pick up ones we have missed, or to add their own classes to this.
+
+@subsection Adding an existing internal variable to the metadata system 
+
+// XXX revise me
+
+Consider this variable in class TcpSocket:
+@verbatim
+ uint32_t m_cWnd;   // Congestion window
+@end verbatim
+
+Suppose that someone working with Tcp wanted to get or set the 
+value of that variable using the metadata system.  If it were not
+already provided by ns-3, the user could declare the following addition 
+in the metadata system (to the TypeId declaration for TcpSocket):
+@verbatim
+    .AddParameter ("Congestion window", 
+                   "Tcp congestion window (bytes)",
+                   MakeUIntParamSpec (&TcpSocket::m_cWnd, 1));
+
+@end verbatim
+
+Now, the user with a pointer to the TcpSocket can perform operations
+such as setting and getting the value, without having to add these
+functions explicitly.  Furthermore, access controls can be applied, such
+as allowing the parameter to be read and not written, or bounds
+checking on the permissible values can be applied.
+
+@subsection Adding a new TypeId
+
+Here, we discuss the impact on a user who wants to add a new class to
+ns-3; what additional things must be done to hook it into this system.
+
+We've already introduced what a TypeId definition looks like:
+@verbatim
+TypeId
+RandomWalk2dMobilityModel::GetTypeId (void)
+{  
+  static TypeId tid = TypeId ("RandomWalkMobilityModel")    
+    .SetParent<MobilityModel> ()    
+    .SetGroupName ("Mobility")    
+    .AddConstructor<RandomWalk2dMobilityModel> ()
+    // followed by a number of Parameters
+    .AddParameter ("bounds",                   
+                   "Bounds of the area to cruise.",                   
+                    MakeRectangleParamSpec (&RandomWalk2dMobilityModel::m_bounds,                                           Rectangle (0.0, 0.0, 100.0, 100.0)))    
+    .AddParameter ("time",                   
+                   "Change current direction and speed after moving for this delay.",              
+                   MakeTimeParamSpec (&RandomWalk2dMobilityModel::m_modeTime,
+                                      Seconds (1.0)))
+
+    // etc (more parameters).
+@end verbatim
+
+The declaration for this in the class declaration is one-line public
+member method:
+@verbatim
+ public:
+  static TypeId GetTypeId (void);
+@end verbatim
+
+@section Adding new class type to the Value system
+
+From the perspective of the user who writes a new class in the system and
+wants to hook it in to the attribute system, there is mainly the matter 
+of writing 
+the conversions to/from strings and Values.  Most of this can be
+copy/pasted with macro-ized code.  For instance, consider class
+Rectangle in the @code{src/mobility/} directory:
+
+One line is added to the class declaration:
+@verbatim
+/**
+ * \brief a 2d rectangle
+ */
+class Rectangle
+{
+...
+
+  VALUE_HELPER_HEADER_1 (Rectangle);
+};
+@end verbatim
+ 
+One templatized declaration, and two operators, are added below the 
+class declaration:
+
+@verbatim
+std::ostream &operator << (std::ostream &os, const Rectangle &rectangle);
+std::istream &operator >> (std::istream &is, Rectangle &rectangle);
+
+VALUE_HELPER_HEADER_2 (Rectangle);
+@end verbatim
+
+In the class definition, the code looks like this:
+
+@verbatim
+VALUE_HELPER_CPP (Rectangle);
+
+std::ostream &
+operator << (std::ostream &os, const Rectangle &rectangle)
+{
+  os << rectangle.xMin << "|" << rectangle.xMax << "|" << rectangle.yMin << "|" << rectangle.yMax;
+  return os;
+}
+std::istream &
+operator >> (std::istream &is, Rectangle &rectangle)
+ {
+  char c1, c2, c3;
+  is >> rectangle.xMin >> c1 >> rectangle.xMax >> c2 >> rectangle.yMin >> c3 >> rectangle.yMax;
+  if (c1 != '|' ||
+      c2 != '|' ||
+      c3 != '|')
+    {
+      is.setstate (std::ios_base::failbit);
+    }
+  return is;
+}
+@end verbatim
+
+These stream operators simply convert from a string representation of the
+Rectangle ("xMin|xMax|yMin|yMax") to the underlying Rectangle, and the
+modeler must specify these operators and the string syntactical representation 
+of an instance of the new class.
+
