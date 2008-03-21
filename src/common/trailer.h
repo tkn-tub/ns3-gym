@@ -66,8 +66,8 @@ public:
    */
   virtual void Serialize (Buffer::Iterator start) const = 0;
   /**
-   * \param start an iterator which points to where the trailer
-   *        should be read.
+   * \param end an iterator which points to the end of the buffer
+   *        where the trailer should be read from.
    * \returns the number of bytes read.
    *
    * This method is used by Packet::RemoveTrailer to

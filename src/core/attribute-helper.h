@@ -57,7 +57,7 @@ MakeSimpleAttributeChecker (std::string name)
 }
 
 /**
- * \defgroup AttributeHelper
+ * \defgroup AttributeHelper Attribute Helper
  *
  * All these macros can be used to generate automatically the code
  * for subclasses of AttributeValue, AttributeAccessor, and, AttributeChecker,

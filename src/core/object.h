@@ -188,14 +188,14 @@ private:
 };
 
 /**
- * \param o a pointer to the object to copy.
+ * \param object a pointer to the object to copy.
  * \returns a copy of the input object.
  *
  * This method invoke the copy constructor of the input object
  * and returns the new instance.
  */
 template <typename T>
-Ptr<T> CopyObject (Ptr<T> o);
+Ptr<T> CopyObject (Ptr<T> object);
 
 /**
  * \param attributes a list of attributes to set on the 
@@ -299,7 +299,7 @@ Object::GetObject (TypeId tid) const
  *************************************************************************/
 
 template <typename T>
-Ptr<T> CopyObject (Ptr<T> o)
+Ptr<T> CopyObject (Ptr<T> object)
 {
   Ptr<T> p = Ptr<T> (new T (*PeekPointer (o)), false);
   NS_ASSERT (p->m_tid == o->m_tid);

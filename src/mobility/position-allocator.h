@@ -124,11 +124,11 @@ public:
   void SetLayoutType (enum LayoutType layoutType);
 
   /**
-   * \param returns the x coordinate of the first allocated position.
+   * \returns the x coordinate of the first allocated position.
    */
   double GetMinX (void) const;
   /**
-   * \param returns the y coordinate of the first allocated position.
+   * \returns the y coordinate of the first allocated position.
    */
   double GetMinY (void) const;
   /**
