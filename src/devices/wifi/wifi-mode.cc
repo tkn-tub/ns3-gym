@@ -156,7 +156,7 @@ WifiModeFactory::CreateQam (std::string uniqueName,
 bool 
 WifiModeFactory::Search (std::string name, WifiMode *mode)
 {
-  uint32_t j = 0;
+  uint32_t j = 1;
   for (WifiModeItemList::const_iterator i = m_itemList.begin ();
        i != m_itemList.end (); i++)
     {
@@ -167,13 +167,14 @@ WifiModeFactory::Search (std::string name, WifiMode *mode)
 	}
       j++;
     }
+  *mode = WifiMode (0);
   return false;
 }
 
 uint32_t
 WifiModeFactory::AllocateUid (std::string uniqueUid)
 {
-  uint32_t j = 0;
+  uint32_t j = 1;
   for (WifiModeItemList::const_iterator i = m_itemList.begin ();
        i != m_itemList.end (); i++)
     {
