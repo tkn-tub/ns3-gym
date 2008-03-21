@@ -68,4 +68,5 @@ def build(bld):
         'nqsta-wifi-mac.h',
         'nqap-wifi-mac.h',
         'wifi-phy.h',
+        'supported-rates.h',
         ]
