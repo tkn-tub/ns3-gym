@@ -35,8 +35,10 @@ class WifiPhy;
 class WifiMac;
 
 /**
- * \brief the base class for 802.11 network interfaces
+ * \brief Hold together all Wifi-related objects.
  *
+ * This class holds together ns3::WifiChannel, ns3::WifiPhy,
+ * ns3::WifiMac, and, ns3::WifiRemoteStationManager.
  */
 class WifiNetDevice : public NetDevice 
 {
@@ -46,12 +48,33 @@ public:
   WifiNetDevice ();
   virtual ~WifiNetDevice ();
 
+  /**
+   * \param mac the mac layer to use.
+   */
   void SetMac (Ptr<WifiMac> mac);
+  /**
+   * \param phy the phy layer to use.
+   */
   void SetPhy (Ptr<WifiPhy> phy);
+  /**
+   * \param manager the manager to use.
+   */
   void SetRemoteStationManager (Ptr<WifiRemoteStationManager> manager);
+  /**
+   * \param channel the channel to connect to.
+   */
   void SetChannel (Ptr<WifiChannel> channel);
+  /**
+   * \returns the mac we are currently using.
+   */
   Ptr<WifiMac> GetMac (void) const;
+  /**
+   * \returns the phy we are currently using.
+   */
   Ptr<WifiPhy> GetPhy (void) const;
+  /**
+   * \returns the remote station manager we are currently using.
+   */
   Ptr<WifiRemoteStationManager> GetRemoteStationManager (void) const;
 
 
