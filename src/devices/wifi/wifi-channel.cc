@@ -93,7 +93,7 @@ WifiChannel::Send (Ptr<WifiPhy> sender, Ptr<const Packet> packet, double txPower
         {
           Ptr<MobilityModel> receiverMobility = i->first->GetNode ()->GetObject<MobilityModel> ();
           Time delay = m_delay->GetDelay (senderMobility, receiverMobility);
-          double rxPowerDbm = m_loss->GetRxPower (txPowerDbm, senderMobility, receiverMobility);
+          double rxPowerDbm = txPowerDbm + m_loss->GetLoss (senderMobility, receiverMobility);
           NS_LOG_DEBUG ("propagation: txPower="<<txPowerDbm<<"dbm, rxPower="<<rxPowerDbm<<"dbm, "<<
                         "distance="<<senderMobility->GetDistanceFrom (receiverMobility)<<"m, delay="<<delay);
           Ptr<Packet> copy = packet->Copy ();

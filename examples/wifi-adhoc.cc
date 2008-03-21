@@ -249,7 +249,7 @@ int main (int argc, char *argv[])
 
 
   gnuplot = Gnuplot ("rate-control.png");
-  Config::SetDefault ("WifiPhy::Standard", String ("holland"));
+  Config::SetDefault ("ns3::WifiPhy::Standard", String ("holland"));
 
 
   NS_LOG_DEBUG ("arf");
