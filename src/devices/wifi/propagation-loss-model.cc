@@ -54,13 +54,12 @@ RandomPropagationLossModel::~RandomPropagationLossModel ()
 {}
 
 double 
-RandomPropagationLossModel::GetRxPower (double txPowerDbm,
-					Ptr<MobilityModel> a,
-					Ptr<MobilityModel> b) const
+RandomPropagationLossModel::GetLoss (Ptr<MobilityModel> a,
+				     Ptr<MobilityModel> b) const
 {
-  double rxPower = txPowerDbm - m_variable.GetValue ();
-  NS_LOG_DEBUG ("tx power="<<txPowerDbm<<"dbm, rx power="<<rxPower<<"Dbm");
-  return rxPower;
+  double rxc = -m_variable.GetValue ();
+  NS_LOG_DEBUG ("attenuation coefficent="<<rxc<<"Db");
+  return rxc;
 }
 
 TypeId 
@@ -131,18 +130,17 @@ FriisPropagationLossModel::DbmFromW (double w) const
 
 
 double 
-FriisPropagationLossModel::GetRxPower (double txPowerDbm,
-				       Ptr<MobilityModel> a,
-				       Ptr<MobilityModel> b) const
+FriisPropagationLossModel::GetLoss (Ptr<MobilityModel> a,
+				    Ptr<MobilityModel> b) const
 {
   /*
    * Friis free space equation:
    * where Pt, Gr, Gr and P are in Watt units
    * L is in meter units.
    *
-   *           Gt * Gr * (lambda^2)
-   *   P = Pt ---------------------
-   *           (4 * pi * d)^2 * L
+   *    P     Gt * Gr * (lambda^2)
+   *   --- = ---------------------
+   *    Pt     (4 * pi * d)^2 * L
    *
    * Gt: tx gain (unit-less)
    * Gr: rx gain (unit-less)
@@ -167,14 +165,13 @@ FriisPropagationLossModel::GetRxPower (double txPowerDbm,
   double distance = a->GetDistanceFrom (b);
   if (distance <= m_minDistance)
     {
-      return txPowerDbm;
+      return 0.0;
     }
   double numerator = m_lambda * m_lambda;
   double denominator = 16 * PI * PI * distance * distance * m_systemLoss;
   double pr = 10 * log10 (numerator / denominator);
-  double rxPowerDbm = txPowerDbm + pr;
-  NS_LOG_DEBUG ("distance="<<distance<<"m, tx power="<<txPowerDbm<<"dbm, rx power="<<rxPowerDbm<<"dbm");
-  return rxPowerDbm;
+  NS_LOG_DEBUG ("distance="<<distance<<"m, attenuation coefficient="<<pr<<"dB");
+  return pr;
 }
 
 TypeId
@@ -228,14 +225,13 @@ LogDistancePropagationLossModel::GetPathLossExponent (void) const
 }
   
 double 
-LogDistancePropagationLossModel::GetRxPower (double txPowerDbm,
-                                             Ptr<MobilityModel> a,
-                                             Ptr<MobilityModel> b) const
+LogDistancePropagationLossModel::GetLoss (Ptr<MobilityModel> a,
+                                          Ptr<MobilityModel> b) const
 {
   double distance = a->GetDistanceFrom (b);
   if (distance <= m_referenceDistance)
     {
-      return txPowerDbm;
+      return 0.0;
     }
   /**
    * The formula is:
@@ -257,13 +253,12 @@ LogDistancePropagationLossModel::GetRxPower (double txPowerDbm,
   static Ptr<StaticMobilityModel> reference = 
     CreateObject<StaticMobilityModel> ("Position", 
                                        Vector (m_referenceDistance, 0.0, 0.0));
-  double rx0 = m_reference->GetRxPower (txPowerDbm, zero, reference);
+  double ref = m_reference->GetLoss (zero, reference);
   double pathLossDb = 10 * m_exponent * log10 (distance / m_referenceDistance);
-  double rxPowerDbm = rx0 - pathLossDb;
-  NS_LOG_DEBUG ("distance="<<distance<<"m, tx-power="<<txPowerDbm<<"dbm, "<<
-		"reference-rx-power="<<rx0<<"dbm, "<<
-		"rx-power="<<rxPowerDbm<<"dbm");
-  return rxPowerDbm;
+  double rxc = ref - pathLossDb;
+  NS_LOG_DEBUG ("distance="<<distance<<"m, reference-attenuation="<<ref<<"dB, "<<
+		"attenuation coefficient="<<rxc<<"dbm");
+  return rxc;
 }
 
 } // namespace ns3

@@ -41,7 +41,7 @@ PrintOne (double minTxpower, double maxTxpower, double stepTxpower, double min, 
       std::cout << x << " ";
       for (double txpower = minTxpower; txpower < maxTxpower; txpower += stepTxpower)
         {
-          double rxPowerDbm = model->GetRxPower (txpower, a, b);
+          double rxPowerDbm = txpower + model->GetLoss (a, b);
           std::cout << rxPowerDbm << " ";
         }
       std::cout << std::endl;

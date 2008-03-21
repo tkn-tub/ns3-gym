@@ -38,14 +38,12 @@ class PropagationLossModel : public Object
 public:
   virtual ~PropagationLossModel ();
   /**
-   * \param txPowerDbm the tx power
    * \param a the mobility model of the source
    * \param b the mobility model of the destination
-   * \returns the receive power (dbm)
+   * \returns the attenuation coefficient (dB)
    */
-  virtual double GetRxPower (double txPowerDbm,
-			     Ptr<MobilityModel> a,
-			     Ptr<MobilityModel> b) const = 0;
+  virtual double GetLoss (Ptr<MobilityModel> a,
+			  Ptr<MobilityModel> b) const = 0;
 };
 
 /**
@@ -59,9 +57,8 @@ public:
   RandomPropagationLossModel ();
   virtual ~RandomPropagationLossModel ();
 
-  virtual double GetRxPower (double txPowerDbm,
-			     Ptr<MobilityModel> a,
-			     Ptr<MobilityModel> b) const;
+  virtual double GetLoss (Ptr<MobilityModel> a,
+			  Ptr<MobilityModel> b) const;
 private:
   RandomVariable m_variable;
 };
@@ -143,9 +140,8 @@ public:
    */
   double GetSystemLoss (void) const;
 
-  virtual double GetRxPower (double txPowerDbm,
-			     Ptr<MobilityModel> a,
-			     Ptr<MobilityModel> b) const;
+  virtual double GetLoss (Ptr<MobilityModel> a,
+			  Ptr<MobilityModel> b) const;
 private:
   double DbmToW (double dbm) const;
   double DbmFromW (double w) const;
@@ -197,9 +193,8 @@ public:
 
   void SetReferenceDistance (double referenceDistance);
   
-  virtual double GetRxPower (double txPowerDbm,
-			     Ptr<MobilityModel> a,
-			     Ptr<MobilityModel> b) const;
+  virtual double GetLoss (Ptr<MobilityModel> a,
+			  Ptr<MobilityModel> b) const;
 private:
   static Ptr<PropagationLossModel> CreateDefaultReference (void);
 
