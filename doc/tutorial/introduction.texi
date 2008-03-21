@@ -932,6 +932,7 @@ Similarly to the function template case, the compiler knows that it has to
 automatically generate code to fill out the class and method declarations
 and definitions using the appropriate type specified by @code{<int>}.
 
+@node Smart Pointers 101
 @subsection Smart Pointers 101
 If you are familiar with C++ smart pointers, you may skip this section as it
 is just a cursory introduction to smart pointers and intrusive reference
@@ -1066,6 +1067,7 @@ you use smart pointers just as if they were built-in pointers:
   p->method ();
 @end verbatim
 
+@node Object Creation
 @subsection Object Creation
 @cindex CreateObject
 On the right hand side of the line of code we're examining (reproduced below

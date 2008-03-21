@@ -457,9 +457,6 @@ wrapper, so you will not see the ARP exchanges that were logged when using
 the ASCII trace wrapper.  You are encouraged to take a look at the contents
 of these pcap files using your favorite pcap software (or Wireshark).
 
-@node Logging
-@section Logging
-
 @node Statistics
 @section Statistics
 
