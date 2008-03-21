@@ -22,7 +22,6 @@
 #include "ns3/uinteger.h"
 #include "ns3/double.h"
 #include "ns3/random-variable.h"
-#include "ns3/default-value.h"
 #include "ns3/mobility-model.h"
 #include "ns3/log.h"
 #include "jakes-propagation-loss-model.h"
