@@ -425,25 +425,37 @@ UdpSocketTest::RunTests (void)
   
   // Sender Node
   Ptr<Node> txNode = CreateObject<InternetNode> ();
-  Ptr<SimpleNetDevice> txDev;
+  Ptr<SimpleNetDevice> txDev1;
   {
-    txDev = CreateObject<SimpleNetDevice> ();
-    txDev->SetAddress (Mac48Address::Allocate ());
-    txNode->AddDevice (txDev);
+    txDev1 = CreateObject<SimpleNetDevice> ();
+    txDev1->SetAddress (Mac48Address::Allocate ());
+    txNode->AddDevice (txDev1);
     Ptr<Ipv4> ipv4 = txNode->GetObject<Ipv4> ();
-    uint32_t netdev_idx = ipv4->AddInterface (txDev);
+    uint32_t netdev_idx = ipv4->AddInterface (txDev1);
     ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.0.2"));
+    ipv4->SetNetworkMask (netdev_idx, Ipv4Mask (0xffff0000U));
+    ipv4->SetUp (netdev_idx);
+  }
+  Ptr<SimpleNetDevice> txDev2;
+  {
+    txDev2 = CreateObject<SimpleNetDevice> ();
+    txDev2->SetAddress (Mac48Address::Allocate ());
+    txNode->AddDevice (txDev2);
+    Ptr<Ipv4> ipv4 = txNode->GetObject<Ipv4> ();
+    uint32_t netdev_idx = ipv4->AddInterface (txDev2);
+    ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.1.2"));
     ipv4->SetNetworkMask (netdev_idx, Ipv4Mask (0xffff0000U));
     ipv4->SetUp (netdev_idx);
   }
 
   // link the two nodes
-  Ptr<SimpleChannel> channel = CreateObject<SimpleChannel> ();
-  rxDev1->SetChannel (channel);
-  // XXX: I believe that it is a bug to not associate rxDev2 with the
-  // channel but the tests below fail if you do so.
-  //rxDev2->SetChannel (channel);
-  txDev->SetChannel (channel);
+  Ptr<SimpleChannel> channel1 = CreateObject<SimpleChannel> ();
+  rxDev1->SetChannel (channel1);
+  txDev1->SetChannel (channel1);
+
+  Ptr<SimpleChannel> channel2 = CreateObject<SimpleChannel> ();
+  rxDev2->SetChannel (channel2);
+  txDev2->SetChannel (channel2);
 
 
   // Create the UDP sockets
