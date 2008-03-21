@@ -122,20 +122,36 @@ void
 NqapWifiMac::SetSlot (Time slotTime)
 {
   m_dcfManager->SetSlot (slotTime);
-  WifiMac::SetSlot (slotTime);
+  m_slot = slotTime;
 }
 void 
 NqapWifiMac::SetSifs (Time sifs)
 {
   m_dcfManager->SetSifs (sifs);
-  WifiMac::SetSifs (sifs);
+  m_sifs = sifs;
 }
 void 
 NqapWifiMac::SetEifsNoDifs (Time eifsNoDifs)
 {
   m_dcfManager->SetEifsNoDifs (eifsNoDifs);
-  WifiMac::SetEifsNoDifs (eifsNoDifs);
+  m_eifsNoDifs = eifsNoDifs;
 }
+Time 
+NqapWifiMac::GetSlot (void) const
+{
+  return m_slot;
+}
+Time 
+NqapWifiMac::GetSifs (void) const
+{
+  return m_sifs;
+}
+Time 
+NqapWifiMac::GetEifsNoDifs (void) const
+{
+  return m_eifsNoDifs;
+}
+
 
 void 
 NqapWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)

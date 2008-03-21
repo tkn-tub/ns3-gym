@@ -80,19 +80,34 @@ void
 AdhocWifiMac::SetSlot (Time slotTime)
 {
   m_dcfManager->SetSlot (slotTime);
-  WifiMac::SetSlot (slotTime);
+  m_slot = slotTime;
 }
 void 
 AdhocWifiMac::SetSifs (Time sifs)
 {
   m_dcfManager->SetSifs (sifs);
-  WifiMac::SetSifs (sifs);
+  m_sifs = sifs;
 }
 void 
 AdhocWifiMac::SetEifsNoDifs (Time eifsNoDifs)
 {
   m_dcfManager->SetEifsNoDifs (eifsNoDifs);
-  WifiMac::SetEifsNoDifs (eifsNoDifs);
+  m_eifsNoDifs = eifsNoDifs;
+}
+Time 
+AdhocWifiMac::GetSlot (void) const
+{
+  return m_slot;
+}
+Time 
+AdhocWifiMac::GetSifs (void) const
+{
+  return m_sifs;
+}
+Time 
+AdhocWifiMac::GetEifsNoDifs (void) const
+{
+  return m_eifsNoDifs;
 }
 
 void 

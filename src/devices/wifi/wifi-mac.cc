@@ -117,21 +117,6 @@ WifiMac::GetTypeId (void)
   return tid;
 }
 
-void 
-WifiMac::SetSlot (Time slotTime)
-{
-  m_slot = slotTime;
-}
-void
-WifiMac::SetEifsNoDifs (Time eifsNoDifs)
-{
-  m_eifsNoDifs = eifsNoDifs;
-}
-void
-WifiMac::SetSifs (Time sifs)
-{
-  m_sifs = sifs;
-}
 void
 WifiMac::SetPifs (Time pifs)
 {
@@ -156,21 +141,6 @@ Time
 WifiMac::GetPifs (void) const
 {
   return m_pifs;
-}
-Time
-WifiMac::GetSifs (void) const
-{
-  return m_sifs;
-}
-Time
-WifiMac::GetSlot (void) const
-{
-  return m_slot;
-}
-Time 
-WifiMac::GetEifsNoDifs (void) const
-{
-  return m_eifsNoDifs;
 }
 Time
 WifiMac::GetCtsTimeout (void) const

@@ -56,6 +56,9 @@ public:
   virtual void SetSlot (Time slotTime);
   virtual void SetSifs (Time sifs);
   virtual void SetEifsNoDifs (Time eifsNoDifs);
+  virtual Time GetSlot (void) const;
+  virtual Time GetSifs (void) const;
+  virtual Time GetEifsNoDifs (void) const;
   virtual void SetWifiPhy (Ptr<WifiPhy> phy);
   virtual void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to);
@@ -84,6 +87,9 @@ private:
   Ptr<MacLow> m_low;
   Mac48Address m_address;
   Ssid m_ssid;
+  Time m_slot;
+  Time m_sifs;
+  Time m_eifsNoDifs;
 };
 
 } // namespace ns3

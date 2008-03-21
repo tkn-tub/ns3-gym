@@ -45,18 +45,18 @@ public:
   /**
    * \param slotTime the slot duration
    */
-  virtual void SetSlot (Time slotTime);
+  virtual void SetSlot (Time slotTime) = 0;
   /**
    * \param sifs the sifs duration
    */
-  virtual void SetSifs (Time sifs);
+  virtual void SetSifs (Time sifs) = 0;
   /**
    * \param eifsNoDifs the duration of an EIFS minus DIFS.
    *
    * This value is used to calculate the EIFS depending
    * on AIFSN.
    */
-  virtual void SetEifsNoDifs (Time eifsNoDifs);
+  virtual void SetEifsNoDifs (Time eifsNoDifs) = 0;
   /**
    * \param pifs the pifs duration.
    */
@@ -87,15 +87,15 @@ public:
   /**
    * \returns the current SIFS duration.
    */
-  Time GetSifs (void) const;
+  virtual Time GetSifs (void) const = 0;
   /**
    * \returns the current slot duration.
    */
-  Time GetSlot (void) const;
+  virtual Time GetSlot (void) const = 0;
   /**
    * \returns the current EIFS minus DIFS duration
    */
-  Time GetEifsNoDifs (void) const;
+  virtual Time GetEifsNoDifs (void) const = 0;
   /**
    * \returns the current CTS timeout duration.
    */
