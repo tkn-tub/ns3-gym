@@ -301,8 +301,8 @@ Object::GetObject (TypeId tid) const
 template <typename T>
 Ptr<T> CopyObject (Ptr<T> object)
 {
-  Ptr<T> p = Ptr<T> (new T (*PeekPointer (o)), false);
-  NS_ASSERT (p->m_tid == o->m_tid);
+  Ptr<T> p = Ptr<T> (new T (*PeekPointer (object)), false);
+  NS_ASSERT (p->m_tid == object->m_tid);
   return p;
 }
 
