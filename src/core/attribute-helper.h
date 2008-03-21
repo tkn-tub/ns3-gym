@@ -70,9 +70,9 @@ MakeSimpleAttributeChecker (std::string name)
  *
  * The simple macros are implemented in terms of the complex
  * macros and should generally be prefered over the complex macros:
- *    - ATTRIBUTE_HELPER_HEADER_1,
- *    - ATTRIBUTE_HELPER_HEADER_2, and,
- *    - ATTRIBUTE_HELPER_CPP,
+ *    - \ref ATTRIBUTE_HELPER_HEADER_1,
+ *    - \ref ATTRIBUTE_HELPER_HEADER_2, and,
+ *    - \ref ATTRIBUTE_HELPER_CPP,
  */
 
 /**
