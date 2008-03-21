@@ -26,9 +26,15 @@
 
 namespace ns3 {
 
+/**
+ * \brief store a dataset to be used by ns3::Gnuplot
+ */
 class GnuplotDataset
 {
 public:
+  /**
+   * The plotting style to use for this dataset.
+   */
   enum Style {
     LINES,
     POINTS,
@@ -39,6 +45,9 @@ public:
     FSTEPS,
     HISTEPS,
   };
+  /**
+   * Whether errorbars should be used for this dataset.
+   */
   enum ErrorBars {
     NONE,
     X,
@@ -46,12 +55,53 @@ public:
     XY
   };
 
+  /**
+   * Create an empty dataset without any title.
+   */
   GnuplotDataset ();
+  /**
+   * \param title the title to be associated to this dataset.
+   *
+   * Create an empty dataset. Usually, the dataset's title is 
+   * displayed in the legend box.
+   */
   GnuplotDataset (std::string title);
+  /**
+   * \param style the style of plotting to use for this dataset.
+   */
   void SetStyle (enum Style style);
+  /**
+   * \param errorBars the style of errorbars to display.
+   *
+   * If you use any style other than none, you need
+   * to make sure you store the delta information in 
+   * this dataset with the right GnuplotDataset::Add 
+   * method.
+   */
   void SetErrorBars (enum ErrorBars errorBars);
+  /**
+   * \param x x coord to new data point
+   * \param y y coord to new data point
+   *
+   * Use this method with error bar style NONE.
+   */
   void Add (double x, double y);
+  /**
+   * \param x x coord to new data point
+   * \param y y coord to new data point
+   * \param errorDelta
+   *
+   * Use this method with error bar style X or Y.
+   */
   void Add (double x, double y, double errorDelta);
+  /**
+   * \param x x coord to new data point
+   * \param y y coord to new data point
+   * \param errorDeltaX x delta for the new data point
+   * \param errorDeltaY y delta for the new data point
+   *
+   * Use this method with error bar style XY.
+   */
   void Add (double x, double y, double errorDeltaX, double errorDeltaY);
 private:
   friend class Gnuplot;
@@ -68,16 +118,39 @@ private:
   enum ErrorBars m_errorBars;
 };
 
+/**
+ * \brief a simple class to generate gnuplot-ready plotting commands
+ *        from a set of datasets.
+ *
+ * This class really represents a single graph on which multiple datasets
+ * can be plotted.
+ */
 class Gnuplot
 {
 public:
+  /**
+   * \param pngFilename the name of the file where the png rendering of the
+   *        graph will be generated if you feed the command stream output by
+   *        Gnuplot::GenerateOutput to the gnuplot program.
+   */
   Gnuplot (std::string pngFilename);
   ~Gnuplot ();
 
+  /**
+   * \param xLegend the legend for the x horizontal axis
+   * \param yLegend the legend for the y vertical axis
+   */
   void SetLegend (std::string xLegend, std::string yLegend);
 
+  /**
+   * \param dataset add a dataset to the graph to be plotted.
+   */
   void AddDataset (const GnuplotDataset &dataset);
 
+  /**
+   * \param os the output stream on which the relevant gnuplot
+   *        commands should be generated.
+   */
   void GenerateOutput (std::ostream &os);
 private:
   typedef std::vector<GnuplotDataset *> Datasets;
