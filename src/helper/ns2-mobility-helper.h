@@ -25,9 +25,10 @@
 #include <stdint.h>
 #include "ns3/ptr.h"
 #include "ns3/object.h"
-#include "static-speed-mobility-model.h"
 
 namespace ns3 {
+
+class StaticSpeedMobilityModel;
 
 /**
  * \brief a topology object which can read ns2's movement files

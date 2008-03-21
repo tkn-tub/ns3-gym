@@ -24,9 +24,9 @@
 #include "ns3/simulator.h"
 #include "ns3/node-list.h"
 #include "ns3/node.h"
+#include "ns3/static-speed-mobility-model.h"
+#include "ns3/mobility-model-notifier.h"
 #include "ns2-mobility-helper.h"
-#include "static-speed-mobility-model.h"
-#include "mobility-model-notifier.h"
 
 NS_LOG_COMPONENT_DEFINE ("Ns2MobilityHelper");
 
