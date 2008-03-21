@@ -139,7 +139,7 @@ public:
   /**
    * \returns the number of attributes associated to this TypeId
    */
-  uint32_t GetAttributeListN (void) const;
+  uint32_t GetAttributeN (void) const;
   /**
    * \param i index into attribute array
    * \returns the name associated to the attribute whose

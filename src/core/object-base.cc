@@ -36,8 +36,8 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
   TypeId tid = GetInstanceTypeId ();
   do {
     // loop over all attributes in object type
-    NS_LOG_DEBUG ("construct tid="<<tid.GetName ()<<", params="<<tid.GetAttributeListN ());
-    for (uint32_t i = 0; i < tid.GetAttributeListN (); i++)
+    NS_LOG_DEBUG ("construct tid="<<tid.GetName ()<<", params="<<tid.GetAttributeN ());
+    for (uint32_t i = 0; i < tid.GetAttributeN (); i++)
       {
         Ptr<const AttributeAccessor> paramSpec = tid.GetAttributeAccessor (i);
         Attribute initial = tid.GetAttributeInitialValue (i);

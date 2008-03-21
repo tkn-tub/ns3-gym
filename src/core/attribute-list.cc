@@ -171,7 +171,7 @@ AttributeList::LookupAttributeFullNameByChecker (Ptr<const AttributeChecker> che
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); i++)
     {
       TypeId tid = TypeId::GetRegistered (i);
-      for (uint32_t j = 0; j < tid.GetAttributeListN (); j++)
+      for (uint32_t j = 0; j < tid.GetAttributeN (); j++)
         {
           if (checker == tid.GetAttributeChecker (j))
             {

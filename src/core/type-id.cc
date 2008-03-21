@@ -54,7 +54,7 @@ public:
                      ns3::Attribute initialValue,
                      ns3::Ptr<const ns3::AttributeAccessor> spec,
                      ns3::Ptr<const ns3::AttributeChecker> checker);
-  uint32_t GetAttributeListN (uint16_t uid) const;
+  uint32_t GetAttributeN (uint16_t uid) const;
   std::string GetAttributeName (uint16_t uid, uint32_t i) const;
   std::string GetAttributeHelp (uint16_t uid, uint32_t i) const;
   uint32_t GetAttributeFlags (uint16_t uid, uint32_t i) const;
@@ -263,7 +263,7 @@ IidManager::AddAttribute (uint16_t uid,
 
 
 uint32_t 
-IidManager::GetAttributeListN (uint16_t uid) const
+IidManager::GetAttributeN (uint16_t uid) const
 {
   struct IidInformation *information = LookupInformation (uid);
   return information->attributes.size ();
@@ -438,7 +438,7 @@ TypeId::LookupAttributeByName (std::string name, struct TypeId::AttributeInfo *i
   TypeId nextTid = *this;
   do {
     tid = nextTid;
-    for (uint32_t i = 0; i < tid.GetAttributeListN (); i++)
+    for (uint32_t i = 0; i < tid.GetAttributeN (); i++)
       {
         std::string paramName = tid.GetAttributeName (i);
         if (paramName == name)
@@ -548,9 +548,9 @@ TypeId::MustHideFromDocumentation (void) const
 }
 
 uint32_t 
-TypeId::GetAttributeListN (void) const
+TypeId::GetAttributeN (void) const
 {
-  uint32_t n = Singleton<IidManager>::Get ()->GetAttributeListN (m_tid);
+  uint32_t n = Singleton<IidManager>::Get ()->GetAttributeN (m_tid);
   return n;
 }
 std::string 

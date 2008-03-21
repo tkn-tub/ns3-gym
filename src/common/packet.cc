@@ -308,14 +308,14 @@ Packet::Print (std::ostream &os) const
               Chunk *chunk = dynamic_cast<Chunk *> (instance);
               NS_ASSERT (chunk != 0);
               chunk->Deserialize (item.current);
-              for (uint32_t j = 0; j < item.tid.GetAttributeListN (); j++)
+              for (uint32_t j = 0; j < item.tid.GetAttributeN (); j++)
                 {
                   std::string attrName = item.tid.GetAttributeName (j);
                   std::string value;
                   bool ok = chunk->GetAttribute (attrName, value);
                   NS_ASSERT (ok);
                   os << attrName << "=" << value;
-                  if ((j + 1) < item.tid.GetAttributeListN ())
+                  if ((j + 1) < item.tid.GetAttributeN ())
                     {
                       os << ",";
                     }

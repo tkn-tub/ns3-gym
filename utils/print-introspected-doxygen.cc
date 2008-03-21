@@ -7,7 +7,7 @@ void
 PrintAttributes (TypeId tid, std::ostream &os)
 {
   os << "<ul>"<<std::endl;
-  for (uint32_t j = 0; j < tid.GetAttributeListN (); j++)
+  for (uint32_t j = 0; j < tid.GetAttributeN (); j++)
     {
       os << "<li><b>" << tid.GetAttributeName (j) << "</b>: "
 		<< tid.GetAttributeHelp (j) << std::endl;
@@ -52,7 +52,7 @@ int main (int argc, char *argv[])
 	}
       std::cout << "\\fn static TypeId " << tid.GetName () << "::GetTypeId (void)" << std::endl;
       std::cout << "\\brief This method returns the TypeId associated to \\ref " << tid.GetName () << std::endl << std::endl;
-      if (tid.GetAttributeListN () == 0)
+      if (tid.GetAttributeN () == 0)
 	{
 	  std::cout << "No Attributes defined for this type." << std::endl;
 	}
@@ -65,7 +65,7 @@ int main (int argc, char *argv[])
       TypeId tmp = tid.GetParent ();
       while (tmp.GetParent () != tmp)
 	{
-	  if (tmp.GetAttributeListN () != 0)
+	  if (tmp.GetAttributeN () != 0)
 	    {
 	      hasAttributesInParent = true;
 	    }
@@ -77,7 +77,7 @@ int main (int argc, char *argv[])
 	  tmp = tid.GetParent ();
 	  while (tmp.GetParent () != tmp)
 	    {
-	      if (tmp.GetAttributeListN () != 0)
+	      if (tmp.GetAttributeN () != 0)
 		{
 		  std::cout << tmp.GetName () << std::endl;
 		  PrintAttributes (tmp, std::cout);

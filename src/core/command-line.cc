@@ -124,7 +124,7 @@ CommandLine::PrintAttributes (std::string type) const
     {
       NS_FATAL_ERROR ("Unknown type="<<type<<" in --PrintAttributes");
     }
-  for (uint32_t i = 0; i < tid.GetAttributeListN (); ++i)
+  for (uint32_t i = 0; i < tid.GetAttributeN (); ++i)
     {
       std::cout << "    --"<<tid.GetAttributeFullName (i)<<"=[";
       Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (i);
