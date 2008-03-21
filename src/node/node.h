@@ -48,8 +48,6 @@ class Address;
  *     through the Socket API.
  *   - a node Id: a unique per-node identifier.
  *   - a system Id: a unique Id used for parallel simulations.
- *   - a trace resolver which can be used to connect user trace sinks
- *     to the node's trace sources.
  *
  * Every Node created is added to the NodeList automatically.
  */
