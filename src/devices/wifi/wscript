@@ -5,6 +5,8 @@ def build(bld):
     obj.source = [
         'propagation-delay-model.cc',
         'propagation-loss-model.cc',
+        'composite-propagation-loss-model.cc',
+        'jakes-propagation-loss-model.cc',
         'wifi-channel.cc',
         'wifi-mode.cc',
         'ssid.cc',
@@ -43,6 +45,8 @@ def build(bld):
     headers.source = [
         'propagation-delay-model.h',
         'propagation-loss-model.h',
+        'composite-propagation-loss-model.h',
+        'jakes-propagation-loss-model.h',
         'wifi-net-device.h',
         'wifi-channel.h',
         'wifi-mode.h',
