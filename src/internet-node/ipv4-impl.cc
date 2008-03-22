@@ -166,6 +166,12 @@ Ipv4Impl::FindInterfaceForAddr (Ipv4Address addr, Ipv4Mask mask) const
   return m_ipv4->FindInterfaceForAddr (addr, mask);
 }
 
+int32_t 
+Ipv4Impl::FindInterfaceForDevice (Ptr<NetDevice> device) const
+{
+  return m_ipv4->FindInterfaceIndexForDevice (device);
+}
+
 Ptr<NetDevice>
 Ipv4Impl::GetNetDevice (uint32_t i)
 {

@@ -138,6 +138,7 @@ public:
 
   uint32_t FindInterfaceForAddr (Ipv4Address addr) const;
   uint32_t FindInterfaceForAddr (Ipv4Address addr, Ipv4Mask mask) const;
+  int32_t FindInterfaceIndexForDevice (Ptr<NetDevice> device) const;
   
   void JoinMulticastGroup (Ipv4Address origin, Ipv4Address group);
   void LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group);

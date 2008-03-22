@@ -11,6 +11,7 @@ def build(bld):
         'csma-helper.cc',
         'mobility-helper.cc',
         'ns2-mobility-helper.cc',
+        'ipv4-address-helper.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -24,4 +25,5 @@ def build(bld):
         'csma-helper.h',
         'mobility-helper.h',
         'ns2-mobility-helper.h',
+        'ipv4-address-helper.h',
         ]
