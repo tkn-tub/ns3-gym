@@ -45,7 +45,7 @@ SimpleChannel::GetNDevices (void) const
   return m_devices.size ();
 }
 Ptr<NetDevice> 
-SimpleChannel::DoGetDevice (uint32_t i) const
+SimpleChannel::GetDevice (uint32_t i) const
 {
   return m_devices[i];
 }

@@ -87,7 +87,8 @@ public:
    * \param i Index number of the device requested
    * \returns Ptr to PointToPointNetDevice requested
    */
-  Ptr<PointToPointNetDevice> GetDevice (uint32_t i) const;
+  Ptr<PointToPointNetDevice> GetPointToPointDevice (uint32_t i) const;
+  virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
   /*
    * \brief Get reference to DataRate for this channel
    * \returns const reference to underlying DataRate object
@@ -104,7 +105,6 @@ private:
   // Each point to point link has exactly two net devices
   static const int N_DEVICES = 2;
 
-  virtual Ptr<NetDevice> DoGetDevice (uint32_t i) const;
 
   DataRate      m_bps;
   Time          m_delay;

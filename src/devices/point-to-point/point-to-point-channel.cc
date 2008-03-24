@@ -111,7 +111,7 @@ PointToPointChannel::GetNDevices (void) const
 }
 
 Ptr<PointToPointNetDevice>
-PointToPointChannel::GetDevice (uint32_t i) const
+PointToPointChannel::GetPointToPointDevice (uint32_t i) const
 {
   NS_LOG_FUNCTION;
   NS_ASSERT(i < 2);
@@ -133,7 +133,7 @@ PointToPointChannel::GetDelay (void)
 }
 
 Ptr<NetDevice>
-PointToPointChannel::DoGetDevice (uint32_t i) const
+PointToPointChannel::GetDevice (uint32_t i) const
 {
   NS_LOG_FUNCTION;
   return GetDevice (i);

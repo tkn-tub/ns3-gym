@@ -22,9 +22,9 @@ public:
   void Add (Ptr<SimpleNetDevice> device);
 
   virtual uint32_t GetNDevices (void) const;
+  virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
 
 private:
-  virtual Ptr<NetDevice> DoGetDevice (uint32_t i) const;
 
   std::vector<Ptr<SimpleNetDevice> > m_devices;
 };

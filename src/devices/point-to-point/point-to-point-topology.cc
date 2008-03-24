@@ -72,8 +72,8 @@ PointToPointTopology::GetNetDevice (Ptr<Node> n, Ptr<PointToPointChannel> chan)
 
   // The PointToPoint channel is used to find the relevant NetDevice
   NS_ASSERT (chan->GetNDevices () == 2);
-  Ptr<PointToPointNetDevice> nd1 = chan->GetDevice (0);
-  Ptr<PointToPointNetDevice> nd2 = chan->GetDevice (1);
+  Ptr<PointToPointNetDevice> nd1 = chan->GetPointToPointDevice (0);
+  Ptr<PointToPointNetDevice> nd2 = chan->GetPointToPointDevice (1);
   if ( nd1->GetNode ()->GetId () == n->GetId () ) 
     {
       found = nd1;

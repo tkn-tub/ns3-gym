@@ -237,19 +237,19 @@ public:
    * that have been detached from the channel.
    */
   virtual uint32_t GetNDevices (void) const;
+  virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
   /**
    * \param i The deviceId of the net device for which we want the
    * pointer.
    * \return Returns the pointer to the net device that is associated
    * with deviceId i.
    */
-  Ptr<CsmaNetDevice> GetDevice (uint32_t i) const;
+  Ptr<CsmaNetDevice> GetCsmaDevice (uint32_t i) const;
 
   virtual DataRate GetDataRate (void);
   virtual Time GetDelay (void);
 
 private:
-  virtual Ptr<NetDevice> DoGetDevice (uint32_t i) const;
 
   DataRate      m_bps;    /// Data rate of the channel
   Time          m_delay;  /// Delay of the channel.

@@ -67,10 +67,4 @@ Channel::GetName(void)
   return m_name;
 }
 
-  Ptr<NetDevice>
-Channel::GetDevice (uint32_t i) const
-{
-  return DoGetDevice (i);
-}
-
 } // namespace ns3

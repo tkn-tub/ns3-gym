@@ -62,6 +62,16 @@ public:
   virtual uint32_t GetNDevices (void) const;
 
   /**
+   * \param i index of the requested network interface.
+   * \returns the requested network interfaces connected to 
+   *          this channel.
+   *
+   * Overriden from the NetDevice base class.
+   * Indexes start at 0 and end at n-1.
+   */
+  virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
+
+  /**
    * \param loss the new propagation loss model.
    */
   void SetPropagationLossModel (Ptr<PropagationLossModel> loss);
@@ -97,15 +107,6 @@ private:
   typedef std::vector<std::pair<Ptr<NetDevice>, Ptr<WifiPhy> > > DeviceList;
   void Receive (uint32_t i, Ptr<Packet> packet, double rxPowerDbm,
                 WifiMode txMode, WifiPreamble preamble) const;
-  /**
-   * \param i index of the requested network interface.
-   * \returns the requested network interfaces connected to 
-   *          this channel.
-   *
-   * Overriden from the NetDevice base class.
-   * Indexes start at 0 and end at n-1.
-   */
-  virtual Ptr<NetDevice> DoGetDevice (uint32_t i) const ;
 
 
   DeviceList m_deviceList;

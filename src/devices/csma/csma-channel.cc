@@ -291,7 +291,7 @@ CsmaChannel::GetNDevices (void) const
 }
 
 Ptr<CsmaNetDevice>
-CsmaChannel::GetDevice (uint32_t i) const
+CsmaChannel::GetCsmaDevice (uint32_t i) const
 {
   Ptr< CsmaNetDevice > netDevice;
 
@@ -354,7 +354,7 @@ CsmaChannel::GetState(void)
 }
 
 Ptr<NetDevice>
-CsmaChannel::DoGetDevice (uint32_t i) const
+CsmaChannel::GetDevice (uint32_t i) const
 {
   return GetDevice (i);
 }
