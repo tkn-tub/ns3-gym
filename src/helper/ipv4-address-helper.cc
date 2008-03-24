@@ -128,6 +128,10 @@ Ipv4AddressHelper::Allocate (const NetDeviceContainer &c)
     NS_ASSERT_MSG (ipv4, "Ipv4AddressHelper::Allocate(): Bad ipv4");
 
     int32_t ifIndex = ipv4->FindInterfaceForDevice (device);
+    if (ifIndex == -1)
+      {
+        ifIndex = ipv4->AddInterface (device);
+      }
     NS_ASSERT_MSG (ifIndex >= 0, "Ipv4AddressHelper::Allocate(): "
       "Interface index not found");
 
