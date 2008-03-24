@@ -20,6 +20,8 @@
 #ifndef ATTRIBUTE_ACCESSOR_HELPER_H
 #define ATTRIBUTE_ACCESSOR_HELPER_H
 
+#include "attribute.h"
+
 namespace ns3 {
 
 template <typename V, typename T1>
