@@ -86,7 +86,9 @@ public:
    * After calling this method, the object is expected to be
    * totally unusable except for the Ref and Unref methods.
    * It is an error to call Dispose twice on the same object 
-   * instance
+   * instance.
+   *
+   * This method is typically used to break reference cycles.
    */
   void Dispose (void);
   /**
@@ -100,9 +102,15 @@ public:
 
 protected:
   /**
-   * This method is called by Object::Dispose.
-   * Subclasses are expected to override this method and chain
+   * This method is called by Object::Dispose or by the object's 
+   * destructor, whichever comes first.
+   *
+   * Subclasses are expected to implement their real destruction
+   * code in an overriden version of this method and chain
    * up to their parent's implementation once they are done.
+   * i.e., for simplicity, the destructor of every subclass should
+   * be empty and its content should be moved to the associated
+   * DoDispose method.
    */
   virtual void DoDispose (void);
   /**
