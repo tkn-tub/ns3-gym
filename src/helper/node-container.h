@@ -74,6 +74,13 @@ public:
    */
   void Add (Ptr<Node> node);
 
+  /**
+   * \returns a container which contains a list of _all_ nodes
+   *          created through NodeContainer::Create and stored
+   *          in ns3::NodeList.
+   */
+  static NodeContainer GetGlobal (void);
+
  private:
   std::vector<Ptr<Node> > m_nodes;
 };
