@@ -71,7 +71,7 @@ Ipv4AddressHelper::SetBase (
 // the maximum allowed address is with respect to the current mask.
 //
   m_shift = NumAddressBits (m_mask);
-  m_max = (1 << m_shift) - 1;
+  m_max = (1 << m_shift) - 2;
 
   NS_ASSERT_MSG(m_shift <= 32,
     "Ipv4AddressHelper::SetBase(): Unreasonable address length");

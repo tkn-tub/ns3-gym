@@ -63,22 +63,24 @@ public:
  *
  *   SetBase ("192.168.1.0", "255.255.255.0", "0.0.0.3");
  *
- * If you don't care about the initial address it defaults to "0.0.0.0" in 
+ * If you don't care about the initial address it defaults to "0.0.0.1" in 
  * which case you can simply use,
  *
- *   SetBase ("192.168.1.0", "255.255.255.0", "0.0.0.3");
+ *   SetBase ("192.168.1.0", "255.255.255.0");
+ *
+ * and the first address generated will be 192.168.1.1.
  *
  * @param network The Ipv4Address containing the initial network number to
- * use during allocation.  The bits outside the nework mask are not used.
+ * use during allocation.  The bits outside the network mask are not used.
  * @param mask The Ipv4Mask containing one bits in each bit position of the 
  * network number.
  * @param base An optional Ipv4Address containing the initial address used for 
  * IP address alloction.  Will be combined (ORed) with the network number to
- * generate the first IP address.  Defaults to 0.0.0.0
+ * generate the first IP address.  Defaults to 0.0.0.1.
  * @returns Nothing.
  */
   void SetBase (Ipv4Address network, Ipv4Mask mask, 
-    Ipv4Address base = "0.0.0.0");
+    Ipv4Address base = "0.0.0.1");
 
 /**
  * @brief Increment the network number and reset the IP address counter to 
@@ -97,7 +99,7 @@ public:
  * 192.168.1.0, 192.168.2.0, etc.  After each network number increment, the
  * IP address counter is reset to the initial value specified in SetBase.  In 
  * this case, that would be 0.0.0.3. so if you were to call NewAddress after
- * the increment that resulted in a network numebr of 192.168.2.0, the 
+ * the increment that resulted in a network number of 192.168.2.0, the 
  * allocated addresses returned by NewAddress would be 192.168.2.3, 
  * 192.168.2.4, etc.
  *
@@ -125,7 +127,7 @@ public:
  * 255.255.255.0 and a base address of 0.0.0.3 in SetBase, the next call to
  * NewAddress will return 192.168.1.3.  The NewAddress method 
  * has post-increment semantics.  A following NewAddress would return 
- * 192.168.0.4, etc., until the 256th call which would assert due to an address
+ * 192.168.0.4, etc., until the 253rd call which would assert due to an address
  * overflow.
  *
  * @returns The value of the newly allocated IP address.
