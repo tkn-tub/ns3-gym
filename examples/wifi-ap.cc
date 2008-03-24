@@ -150,11 +150,11 @@ int main (int argc, char *argv[])
   Ssid ssid = Ssid ("wifi-default");
   wifi.SetPhy ("ns3::WifiPhy");
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
-  // setup ap.
+  // setup stas.
   wifi.SetMac ("ns3::NqstaWifiMac", "Ssid", ssid,
                "ActiveProbing", Boolean (false));
   staDevs = wifi.Build (stas, channel);
-  // setup stas.
+  // setup ap.
   wifi.SetMac ("ns3::NqapWifiMac", "Ssid", ssid,
                "BeaconGeneration", Boolean (true),
                "BeaconInterval", Seconds (2.5));
