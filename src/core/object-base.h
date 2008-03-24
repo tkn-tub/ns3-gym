@@ -1,3 +1,22 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2008 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
 #ifndef OBJECT_BASE_H
 #define OBJECT_BASE_H
 
@@ -89,19 +108,55 @@ public:
    */
   bool GetAttributeFailSafe (std::string name, Attribute &attribute) const;
 
+  /**
+   * \param name the name of the targetted trace source
+   * \param context the trace context associated to the callback
+   * \param cb the callback to connect to the trace source.
+   *
+   * The targetted trace source should be registered with TypeId::AddTraceSource.
+   */
+  bool TraceConnect (std::string name, std::string context, const CallbackBase &cb);
+  /**
+   * \param name the name of the targetted trace source
+   * \param cb the callback to connect to the trace source.
+   *
+   * The targetted trace source should be registered with TypeId::AddTraceSource.
+   */
   bool TraceConnectWithoutContext (std::string name, const CallbackBase &cb);
-  bool TraceConnectWithoutContext (std::string name, std::string context, const CallbackBase &cb);
+  /**
+   * \param name the name of the targetted trace source
+   * \param context the trace context associated to the callback
+   * \param cb the callback to disconnect from the trace source.
+   *
+   * The targetted trace source should be registered with TypeId::AddTraceSource.
+   */
+  bool TraceDisconnect (std::string name, std::string context, const CallbackBase &cb);
+  /**
+   * \param name the name of the targetted trace source
+   * \param cb the callback to disconnect from the trace source.
+   *
+   * The targetted trace source should be registered with TypeId::AddTraceSource.
+   */
   bool TraceDisconnectWithoutContext (std::string name, const CallbackBase &cb);
-  bool TraceDisconnectWithoutContext (std::string name, std::string context, const CallbackBase &cb);
 
 protected:
+  /**
+   * This method is invoked once all member attributes have been 
+   * initialized. Subclasses can override this method to be notified
+   * of this event but if they do this, they must chain up to their
+   * parent's NotifyConstructionCompleted method.
+   */
   virtual void NotifyConstructionCompleted (void);
   /**
    * \param attributes the attribute values used to initialize 
    *        the member variables of this object's instance.
    *
    * Invoked from subclasses to initialize all of their 
-   * attribute members.
+   * attribute members. This method will typically be invoked
+   * automatically from ns3::CreateObject if your class derives
+   * from ns3::Object. If you derive from ns3::ObjectBase directly,
+   * you should make sure that you invoke this method from
+   * your most-derived constructor.
    */
   void ConstructSelf (const AttributeList &attributes);
 
