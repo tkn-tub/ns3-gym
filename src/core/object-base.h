@@ -33,6 +33,15 @@ public:
   static TypeId GetTypeId (void);
 
   virtual ~ObjectBase ();
+
+  /**
+   * \returns the TypeId associated to the most-derived type
+   *          of this instance.
+   *
+   * This method is typically implemented by ns3::Object::GetInstanceTypeId
+   * but some classes which derive from ns3::ObjectBase directly
+   * have to implement it themselves.
+   */
   virtual TypeId GetInstanceTypeId (void) const = 0;
 
   /**
@@ -52,11 +61,11 @@ public:
   bool SetAttributeFailSafe (std::string name, Attribute value);
   /**
    * \param name the name of the attribute to read
-   * \param value a reference to the string where the value of the 
-   *        attribute should be stored.
    * \returns true if the requested attribute was found, false otherwise.
+   *
+   * If the input attribute name does not exist, this method crashes.
    */
-  bool GetAttribute (std::string name, std::string &value) const;
+  std::string GetAttributeAsString (std::string name) const;
   /**
    * \param name the name of the attribute to read
    * \returns the attribute read.
@@ -64,6 +73,21 @@ public:
    * If the input attribute name does not exist, this method crashes.
    */
   Attribute GetAttribute (std::string name) const;
+
+  /**
+   * \param name the name of the attribute to read
+   * \param value the string where the result value should be stored
+   * \returns true if the requested attribute was found, false otherwise.
+   */
+  bool GetAttributeAsStringFailSafe (std::string name, std::string &value) const;
+  /**
+   * \param name the name of the attribute to read
+   * \param attribute the attribute where the result value should be stored
+   * \returns true if the requested attribute was found, false otherwise.
+   *
+   * If the input attribute name does not exist, this method crashes.
+   */
+  bool GetAttributeFailSafe (std::string name, Attribute &attribute) const;
 
   bool TraceConnectWithoutContext (std::string name, const CallbackBase &cb);
   bool TraceConnectWithoutContext (std::string name, std::string context, const CallbackBase &cb);

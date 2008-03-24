@@ -231,20 +231,22 @@ private:
 };
 
 
-#define CHECK_GET_STR(p,name,value)		\
-  {						\
-    std::string expected = value;		\
-    std::string got;				\
-    bool ok = p->GetAttribute (name, got);	\
-    NS_TEST_ASSERT (ok);			\
-    NS_TEST_ASSERT_EQUAL (got, expected);	\
+#define CHECK_GET_STR(p,name,value)                             \
+  {                                                             \
+    std::string expected = value;                               \
+    std::string got;                                            \
+    bool ok = p->GetAttributeAsStringFailSafe (name, got);	\
+    NS_TEST_ASSERT (ok);                                        \
+    NS_TEST_ASSERT_EQUAL (got, expected);                       \
   }
 #define CHECK_GET_PARAM(p,name,type,value)		\
   {							\
     const type expected = value;			\
     type got = value;					\
-    Attribute v = p->GetAttribute (name);		\
-    got = v;						\
+    Attribute v;                                        \
+    bool ok = p->GetAttributeFailSafe (name, v);        \
+    NS_TEST_ASSERT (ok);                                \
+    got = v;                                            \
     NS_TEST_ASSERT_EQUAL (got.Get (), expected.Get ());	\
   }
 

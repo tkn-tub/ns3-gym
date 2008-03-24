@@ -156,26 +156,27 @@ ObjectBase::SetAttributeFailSafe (std::string name, Attribute value)
     }
   return DoSet (info.accessor, info.initialValue, info.checker, value);
 }
-bool 
-ObjectBase::GetAttribute (std::string name, std::string &value) const
+std::string
+ObjectBase::GetAttributeAsString (std::string name) const
 {
   struct TypeId::AttributeInfo info;
   TypeId tid = GetInstanceTypeId ();
   if (!tid.LookupAttributeByName (name, &info))
     {
-      return false;
+      NS_FATAL_ERROR ("Attribute name="<<name<<" does not exist for this object: tid="<<tid.GetName ());
     }
   if (!(info.flags & TypeId::ATTR_GET))
     {
-      return false;
+      NS_FATAL_ERROR ("Attribute name="<<name<<" is not gettable for this object: tid="<<tid.GetName ());
     }
   Attribute v = info.checker->Create ();
   bool ok = info.accessor->Get (this, v);
-  if (ok)
+  if (!ok)
     {
-      value = v.SerializeToString (info.checker);
+      NS_FATAL_ERROR ("Attribute name="<<name<<" is not gettable for this object: tid="<<tid.GetName ());
     }
-  return ok;
+  std::string value = v.SerializeToString (info.checker);
+  return value;
 }
 
 Attribute
@@ -198,6 +199,46 @@ ObjectBase::GetAttribute (std::string name) const
       return Attribute ();
     }
   return value;
+}
+
+bool
+ObjectBase::GetAttributeAsStringFailSafe (std::string name, std::string &value) const
+{
+  struct TypeId::AttributeInfo info;
+  TypeId tid = GetInstanceTypeId ();
+  if (!tid.LookupAttributeByName (name, &info))
+    {
+      return false;
+    }
+  if (!(info.flags & TypeId::ATTR_GET))
+    {
+      return false;
+    }
+  Attribute v = info.checker->Create ();
+  bool ok = info.accessor->Get (this, v);
+  if (ok)
+    {
+      value = v.SerializeToString (info.checker);
+    }
+  return ok;
+}
+
+bool
+ObjectBase::GetAttributeFailSafe (std::string name, Attribute &value) const
+{
+  struct TypeId::AttributeInfo info;
+  TypeId tid = GetInstanceTypeId ();
+  if (!tid.LookupAttributeByName (name, &info))
+    {
+      return false;
+    }
+  if (!(info.flags & TypeId::ATTR_GET))
+    {
+      return false;
+    }
+  value = info.checker->Create ();
+  bool ok = info.accessor->Get (this, value);
+  return ok;
 }
 
 bool 
