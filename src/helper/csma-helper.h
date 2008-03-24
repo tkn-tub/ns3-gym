@@ -42,7 +42,7 @@ public:
    * \param n1 the name of the attribute to set
    * \param v1 the value of the attribute to set
    *
-   * Set these parameters on each CsmaNetDevice created
+   * Set these parameters on each ns3::CsmaNetDevice created
    * by CsmaHelper::Build
    */
   void SetDeviceParameter (std::string n1, Attribute v1);
@@ -51,7 +51,7 @@ public:
    * \param n1 the name of the attribute to set
    * \param v1 the value of the attribute to set
    *
-   * Set these parameters on each CsmaChannel created
+   * Set these parameters on each ns3::CsmaChannel created
    * by CsmaHelper::Build
    */
   void SetChannelParameter (std::string n1, Attribute v1);
@@ -69,7 +69,7 @@ public:
    * \param c a set of nodes
    * \param channel the channel to use as a backbone.
    *
-   * For each node in the input container, we create a ns::CsmaNetDevice with
+   * For each node in the input container, we create a ns3::CsmaNetDevice with
    * the requested parameters, a queue for this NetDevice, and associate
    * the resulting ns3::NetDevice with the ns3::Node and ns3::CsmaChannel.
    */
