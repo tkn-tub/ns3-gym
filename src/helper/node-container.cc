@@ -1,4 +1,5 @@
 #include "node-container.h"
+#include "ns3/node-list.h"
 
 namespace ns3 {
 
@@ -56,6 +57,17 @@ void
 NodeContainer::Add (Ptr<Node> node)
 {
   m_nodes.push_back (node);
+}
+
+NodeContainer 
+NodeContainer::GetGlobal (void)
+{
+  NodeContainer c;
+  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
+    {
+      c.Add (*i);
+    }
+  return c;
 }
 
 } // namespace ns3

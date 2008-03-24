@@ -5,6 +5,7 @@ def build(bld):
     obj = bld.create_ns3_module('internet-node', ['node'])
     obj.source = [
         'internet-node.cc',
+        'internet-stack.cc',
         'ipv4-l4-demux.cc',
         'ipv4-l4-protocol.cc',
         'ipv4-header.cc',
@@ -39,6 +40,7 @@ def build(bld):
     headers.module = 'internet-node'
     headers.source = [
         'internet-node.h',
+        'internet-stack.h',
         'ascii-trace.h',
         'pcap-trace.h',
         'ipv4-header.h',

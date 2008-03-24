@@ -29,11 +29,8 @@ int main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
 
-  std::vector<Ptr<Object> > objects;
-  for (uint32_t i = 0; i < 10000; i++)
-    {
-      objects.push_back (CreateObject<Node> ());
-    }
+  NodeContainer c;
+  c.Create (10000);
 
   MobilityHelper mobility;
   mobility.EnableNotifier ();
@@ -42,7 +39,7 @@ int main (int argc, char *argv[])
                                  "Y", String ("100.0"),
                                  "Rho", String ("Uniform:0:30"));
   mobility.SetMobilityModel ("ns3::StaticMobilityModel");
-  mobility.Layout (objects.begin (), objects.end ());
+  mobility.Layout (c);
 
   Config::Connect ("/NodeList/*/$ns3::MobilityModelNotifier/CourseChange",
                               MakeCallback (&CourseChange));

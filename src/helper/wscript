@@ -12,6 +12,7 @@ def build(bld):
         'mobility-helper.cc',
         'ns2-mobility-helper.cc',
         'ipv4-address-helper.cc',
+        'internet-stack-helper.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -26,4 +27,5 @@ def build(bld):
         'mobility-helper.h',
         'ns2-mobility-helper.h',
         'ipv4-address-helper.h',
+        'internet-stack-helper.h',
         ]
