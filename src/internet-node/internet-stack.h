@@ -17,22 +17,18 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // Author: George F. Riley<riley@ece.gatech.edu>
-//
-// Implementation of the InternetNode class for ns3.
-// George F. Riley, Georgia Tech, Fall 2006
 
-#include "ns3/net-device.h"
-#include "ns3/callback.h"
-#include "internet-node.h"
-#include "internet-stack.h"
+#ifndef INTERNET_STACK_H
+#define INTERNET_STACK_H
 
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
-InternetNode::InternetNode()
-{
-  AddInternetStack (this);
-}
+class Node;
 
+void AddInternetStack (Ptr<Node> node);
 
 }//namespace ns3
+
+#endif /* INTERNET_STACK_H */

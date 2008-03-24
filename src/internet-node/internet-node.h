@@ -58,13 +58,6 @@ class InternetNode : public Node
 {
 public:
   InternetNode();
-  InternetNode(uint32_t systemId);
-  virtual ~InternetNode ();
-
-protected:
-  virtual void DoDispose(void);
-private:
-  void Construct (void);
 };
 
 }//namespace ns3
