@@ -34,7 +34,11 @@ OlsrHelper::SetAgent (std::string tid,
 void 
 OlsrHelper::Enable (NodeContainer container)
 {
-  Enable (container.Begin (), container.End ());
+  for (NodeContainer::Iterator i = container.Begin (); i != container.End (); ++i)
+    {
+      Ptr<Node> node = *i;
+      Enable (node);
+    }
 }
 void 
 OlsrHelper::Enable (Ptr<Node> node)
@@ -47,7 +51,7 @@ OlsrHelper::Enable (Ptr<Node> node)
 void 
 OlsrHelper::EnableAll (void)
 {
-  Enable (NodeList::Begin (), NodeList::End ());
+  Enable (NodeContainer::GetGlobal ());
 }
 
 } // namespace ns3

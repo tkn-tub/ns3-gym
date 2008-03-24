@@ -22,30 +22,12 @@ public:
 		 std::string n6 = "", Attribute v6 = Attribute (),
 		 std::string n7 = "", Attribute v7 = Attribute ());
 
-  template <typename InputIterator>
-  void Enable (InputIterator begin, InputIterator end);
   void Enable (NodeContainer container);
   void Enable (Ptr<Node> node);
   void EnableAll (void);
 private:
   ObjectFactory m_agentFactory;
 };
-
-} // namespace ns3
-
-namespace ns3 {
-
-template <typename T>
-void 
-OlsrHelper::Enable (T begin, T end)
-{
-  for (T i = begin; i != end; i++)
-    {
-      Ptr<Object> obj = (*i);
-      Ptr<Node> node = obj->GetObject<Node> ();
-      Enable (node);
-    }
-}
 
 } // namespace ns3
 
