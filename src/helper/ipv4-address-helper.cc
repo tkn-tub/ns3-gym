@@ -22,6 +22,7 @@
 #include "ns3/node.h"
 #include "ns3/net-device.h"
 #include "ns3/ipv4.h"
+#include "ns3/ipv4-address-generator.h"
 #include "ipv4-address-helper.h"
 
 NS_LOG_COMPONENT_DEFINE("Ipv4AddressHelper");
@@ -101,7 +102,12 @@ Ipv4AddressHelper::NewAddress (void)
 
   Ipv4Address addr ((m_network << m_shift) | m_address);
   ++m_address;
-
+//
+// The Ipv4AddressGenerator allows us to keep track of the addresses we have
+// allocated and will assert if we accidentally generate a duplicate.  This
+// avoids some really hard to debug problems.
+//
+  Ipv4AddressGenerator::AddAllocated (addr);
   return addr;
 }
 
@@ -233,8 +239,12 @@ AddressHelperTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("0.0.1.4"));
 
 //
-// Make sure the reset to base behavior is working.
+// Make sure the reset to base behavior is working.  We're going to use some
+// of the same addresses allocated above, so reset the Ipv4AddressGenerator
+// to make it forget we did.
 //
+  Ipv4AddressGenerator::Reset ();
+
   h.SetBase ("1.0.0.0", "255.0.0.0", "0.0.0.3");
   address = h.NewAddress();
   NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("1.0.0.3"));
