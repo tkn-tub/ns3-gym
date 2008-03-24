@@ -32,17 +32,14 @@
 #include <string>
 #include <cassert>
 
-#include "ns3/command-line.h"
-#include "ns3/ptr.h"
-#include "ns3/random-variable.h"
-#include "ns3/log.h"
-
-#include "ns3/simulator.h"
-#include "ns3/nstime.h"
-#include "ns3/data-rate.h"
+#include "ns3/core-module.h"
+#include "ns3/common-module.h"
+#include "ns3/simulator-module.h"
+#include "ns3/helper-module.h"
 
 #include "ns3/ascii-trace.h"
 #include "ns3/pcap-trace.h"
+
 #include "ns3/internet-node.h"
 #include "ns3/csma-channel.h"
 #include "ns3/csma-net-device.h"
@@ -98,47 +95,35 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
-  // Here, we will explicitly create four nodes.  In more sophisticated
-  // topologies, we could configure a node factory.
   NS_LOG_INFO ("Create nodes.");
-  Ptr<Node> n0 = CreateObject<InternetNode> ();
-  Ptr<Node> n1 = CreateObject<InternetNode> (); 
-  Ptr<Node> n2 = CreateObject<InternetNode> (); 
+  NodeContainer c0;
+  c0.Create (2);
 
-  // We create the channels first without any IP addressing information
-  NS_LOG_INFO ("Create channels.");
-  Ptr<CsmaChannel> channel0 = 
-    CsmaTopology::CreateCsmaChannel(
-      DataRate(5000000), MilliSeconds(2));
+  NodeContainer c1;
+  c1.Add (c0.Get (0));
+  c1.Create (1);
 
-  // We create the channels first without any IP addressing information
-  Ptr<CsmaChannel> channel1 = 
-    CsmaTopology::CreateCsmaChannel(
-      DataRate(5000000), MilliSeconds(2));
 
   NS_LOG_INFO ("Build Topology.");
-  uint32_t n0ifIndex0 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n0, channel0, 
-                                         Mac48Address("10:54:23:54:0:50"));
-  uint32_t n0ifIndex1 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n0, channel1, 
-                                         Mac48Address("10:54:23:54:0:51"));
-  uint32_t n1ifIndex = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n1, channel0,
-                                         Mac48Address("10:54:23:54:23:51"));
-  uint32_t n2ifIndex = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n2, channel1,
-                                         Mac48Address("10:54:23:54:23:52"));
+  CsmaHelper csma;
+  csma.SetChannelParameter ("BitRate", DataRate(5000000));
+  csma.SetChannelParameter ("Delay", MilliSeconds(2));
 
-  // Later, we add IP addresses.  
+  NetDeviceContainer n0 = csma.Build (c0);
+  NetDeviceContainer n1 = csma.Build (c1);
+
+
+  InternetStackHelper internet;
+  internet.Build (c0);
+  internet.Build (c1);
+
   NS_LOG_INFO ("Assign IP Addresses.");
-  CsmaIpv4Topology::AddIpv4Address (
-      n0, n0ifIndex0, Ipv4Address("10.1.0.1"), Ipv4Mask("255.255.0.0"));
+  Ipv4AddressHelper ipv4;
+  ipv4.SetBase ("10.1.0.0", "255.255.255.0");
+  ipv4.Allocate (n0);
+  ipv4.SetBase ("192.168.1.0", "255.255.255.0");
+  ipv4.Allocate (n1);
 
-  CsmaIpv4Topology::AddIpv4Address (
-      n1, n1ifIndex, Ipv4Address("10.1.0.2"), Ipv4Mask("255.255.0.0"));
-
-  CsmaIpv4Topology::AddIpv4Address (
-      n0, n0ifIndex1, Ipv4Address("192.168.1.1"), Ipv4Mask("255.255.255.0"));
-  
-  CsmaIpv4Topology::AddIpv4Address (
-      n2, n2ifIndex, Ipv4Address("192.168.1.2"), Ipv4Mask("255.255.255.0"));
 
   // RFC 863 discard port ("9") indicates packet should be thrown away
   // by the system.  We allow this silent discard to be overridden
@@ -148,33 +133,22 @@ main (int argc, char *argv[])
   // Create the OnOff application to send UDP datagrams of size
   // 512 bytes (default) at a rate of 500 Kb/s (default) from n0
   NS_LOG_INFO ("Create Applications.");
-  Ptr<OnOffApplication> ooff = 
-    CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress ("255.255.255.255", port)), 
-                                    "Protocol", TypeId::LookupByName ("ns3::Udp"),
-                                    "OnTime", ConstantVariable(1), 
-                                    "OffTime", ConstantVariable(0));
-  n0->AddApplication (ooff);
+  OnOffHelper onoff;
+  onoff.SetUdpRemote (Ipv4Address ("255.255.255.255"), port);
+  onoff.SetAppAttribute ("OnTime", ConstantVariable (1));
+  onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
+
+  ApplicationContainer app = onoff.Build (c0.Get (0));
   // Start the application
-  ooff->Start(Seconds(1.0));
-  ooff->Stop (Seconds(10.0));
+  app.Start (Seconds (1.0));
+  app.Stop (Seconds (10.0));
   
   // Create an optional packet sink to receive these packets
-  Ptr<PacketSink> sink = 
-    CreateObject<PacketSink> ("Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
-                              "Protocol", TypeId::LookupByName ("ns3::Udp"));
-  n1->AddApplication (sink);
-  // Start the sink
-  sink->Start (Seconds (1.0));
-  sink->Stop (Seconds (10.0));
+  PacketSinkHelper sink;
+  sink.SetupUdp (Ipv4Address::GetAny (), port);
+  sink.Build (c0.Get (1));
+  sink.Build (c1.Get (1));
 
-  // Create an optional packet sink to receive these packets
-  sink = CreateObject<PacketSink> ("Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
-                                   "Protocol", TypeId::LookupByName ("ns3::Udp"));
-  n2->AddApplication (sink);
-
-  // Start the sink
-  sink->Start (Seconds (1.0));
-  sink->Stop (Seconds (10.0));
 
   NS_LOG_INFO ("Configure Tracing.");
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
