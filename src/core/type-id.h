@@ -322,6 +322,13 @@ public:
    * \returns true if the requested attribute could be found, false otherwise.
    */
   bool LookupAttributeByName (std::string name, struct AttributeInfo *info) const;
+  /**
+   * \param name the name of the requested trace source
+   * \returns the trace source accessor which can be used to connect and disconnect
+   *          trace sinks with the requested trace source on an object instance.
+   *
+   * If no matching trace source is found, this method returns zero.
+   */
   Ptr<const TraceSourceAccessor> LookupTraceSourceByName (std::string name) const;
 
   /**

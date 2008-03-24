@@ -41,10 +41,12 @@
 namespace ns3 {
 
 /**
- * This base class is really used only to make sure that 
- * every subclass has RTTI information and that they all
- * share a single base class to allow us to make type 
- * checks across all these types.
+ * \brief implement the ns-3 type and attribute system
+ *
+ * Every class which wants to integrate in the ns-3 type and attribute
+ * system should derive from this base class. This base class provides:
+ * - a way to associate an ns3::TypeId to each object instance
+ * - a way to set and get the attributes registered in the ns3::TypeId.
  */
 class ObjectBase
 {
