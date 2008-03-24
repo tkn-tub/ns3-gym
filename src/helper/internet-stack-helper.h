@@ -11,6 +11,12 @@ namespace ns3 {
 class InternetStackHelper
 {
 public:
+  /**
+   * \param c the set of nodes
+   *
+   * For each node in the input container, aggregate implementations
+   * of the ns3::Ipv4, ns3::Udp, and, ns3::Tcp classes.
+   */
   void Build (NodeContainer c);
 };
 
