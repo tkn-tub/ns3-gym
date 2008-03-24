@@ -101,9 +101,9 @@ MobilityHelper::GetMobilityModelType (void) const
 }
 
 void 
-MobilityHelper::Layout (const std::vector<Ptr<Object> > &objects)
+MobilityHelper::Layout (NodeContainer c)
 {
-  for (std::vector<Ptr<Object> >::const_iterator i = objects.begin (); i != objects.end (); i++)
+  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
       Ptr<Object> object = *i;
       Ptr<MobilityModel> model = object->GetObject<MobilityModel> ();
@@ -143,6 +143,12 @@ MobilityHelper::Layout (const std::vector<Ptr<Object> > &objects)
 	    }
 	}
     }
+}
+
+void 
+MobilityHelper::LayoutAll (void)
+{
+  Layout (NodeContainer::GetGlobal ());
 }
 
 } // namespace ns3

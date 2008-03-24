@@ -36,10 +36,8 @@ int main (int argc, char *argv[])
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
-  for (uint32_t i = 0; i < 100; i++)
-    {
-      Ptr<Node> node = CreateObject<Node> ();
-    }
+  NodeContainer c;
+  c.Create (100);
 
   MobilityHelper mobility;
   mobility.EnableNotifier ();
@@ -52,7 +50,7 @@ int main (int argc, char *argv[])
                              "Time", String ("2s"),
                              "Speed", String ("Constant:1.0"),
                              "Bounds", String ("0:200:0:100"));
-  mobility.Layout (NodeList::Begin (), NodeList::End ());
+  mobility.LayoutAll ();
   Config::Connect ("/NodeList/*/$ns3::MobilityModelNotifier/CourseChange",
                               MakeCallback (&CourseChange));
 

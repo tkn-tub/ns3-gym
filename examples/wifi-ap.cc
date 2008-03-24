@@ -161,8 +161,8 @@ int main (int argc, char *argv[])
   wifi.Build (ap, channel);
 
   // mobility.
-  mobility.Layout (stas.Begin (), stas.End ());
-  mobility.Layout (ap.Begin (), ap.End ());
+  mobility.Layout (stas);
+  mobility.Layout (ap);
 
   Simulator::Schedule (Seconds (1.0), &AdvancePosition, ap.Get (0));
 

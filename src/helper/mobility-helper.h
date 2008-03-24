@@ -4,13 +4,17 @@
 #include <vector>
 #include "ns3/object-factory.h"
 #include "ns3/attribute.h"
-#include "position-allocator.h"
+#include "ns3/position-allocator.h"
+#include "node-container.h"
 
 namespace ns3 {
 
 class PositionAllocator;
 class MobilityModel;
 
+/**
+ * \brief assign positions and mobility models to nodes.
+ */
 class MobilityHelper
 {
 public:
@@ -48,33 +52,15 @@ public:
 
   std::string GetMobilityModelType (void) const;
 
-  template <typename T>
-  void Layout (T begin, T end);
+  void Layout (NodeContainer container);
+  void LayoutAll (void);
 private:
-  void Layout (const std::vector<Ptr<Object> > &objects);
 
   std::vector<Ptr<MobilityModel> > m_mobilityStack;
   bool m_notifierEnabled;
   ObjectFactory m_mobility;
   Ptr<PositionAllocator> m_position;
 };
-
-} // namespace ns3
-
-namespace ns3 {
-
-template <typename T>
-void
-MobilityHelper::Layout (T begin, T end)
-{
-  std::vector<Ptr<Object> > objects;
-  for (T i = begin; i != end; i++)
-    {
-      Ptr<Object> object = *i;
-      objects.push_back (object);
-    }
-  Layout (objects);
-}
 
 } // namespace ns3
 

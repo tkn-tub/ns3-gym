@@ -16,13 +16,10 @@ int main (int argc, char *argv[])
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
-  std::vector<Ptr<Object> > nodes;
+  NodeContainer nodes;
 
   // create an array of empty nodes for testing purposes 
-  for (uint32_t i = 0; i < 120; i++)
-    {
-      nodes.push_back (CreateObject<Node> ());
-    }
+  nodes.Create (120);
 
   MobilityHelper mobility;
   // setup the grid itself: objects are layed out
@@ -44,13 +41,13 @@ int main (int argc, char *argv[])
   // finalize the setup by attaching to each object
   // in the input array a position and initializing
   // this position with the calculated coordinates.
-  mobility.Layout (nodes.begin (), nodes.end ());
+  mobility.Layout (nodes);
 
   // iterate our nodes and print their position.
-  for (std::vector<Ptr<Object> >::const_iterator j = nodes.begin ();
-       j != nodes.end (); j++)
+  for (NodeContainer::Iterator j = nodes.Begin ();
+       j != nodes.End (); ++j)
     {
-      Ptr<Object> object = *j;
+      Ptr<Node> object = *j;
       Ptr<MobilityModel> position = object->GetObject<MobilityModel> ();
       NS_ASSERT (position != 0);
       Vector pos = position->GetPosition ();
