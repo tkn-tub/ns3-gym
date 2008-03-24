@@ -103,6 +103,9 @@ public:
    */
   Ptr<Node> GetNode() const;
 
+  /**
+   * \param node the node to which this Application object is attached.
+   */
   void SetNode (Ptr<Node> node);
   
 private:
