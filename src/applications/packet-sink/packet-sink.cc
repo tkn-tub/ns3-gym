@@ -41,6 +41,7 @@ PacketSink::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PacketSink")
     .SetParent<Application> ()
+    .AddConstructor<PacketSink> ()
     .AddAttribute ("Local", "The Address on which to Bind the rx socket.",
                    Address (),
                    MakeAddressAccessor (&PacketSink::m_local),
