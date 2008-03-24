@@ -22,7 +22,6 @@
 #include "assert.h"
 #include "singleton.h"
 #include "attribute.h"
-#include "trace-source-accessor.h"
 #include "log.h"
 #include "string.h"
 #include <vector>
