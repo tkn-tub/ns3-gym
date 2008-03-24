@@ -38,16 +38,16 @@ public:
 		 std::string n4 = "", Attribute v4 = Attribute ());
 
   /**
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
+   * \param name the name of the attribute to set
+   * \param value the value of the attribute to set
    *
    * Set these parameters on each ns3::PointToPointNetDevice created
    * by PointToPointHelper::Build
    */
   void SetDeviceParameter (std::string name, Attribute value);
   /**
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
+   * \param name the name of the attribute to set
+   * \param value the value of the attribute to set
    *
    * Set these parameters on each ns3::PointToPointChannel created
    * by PointToPointHelper::Build
