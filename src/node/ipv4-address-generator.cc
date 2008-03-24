@@ -137,7 +137,7 @@ Ipv4AddressGeneratorImpl::Init (
 // We're going to be playing with the actual bits in the network and mask so
 // pull them out into ints.
 //
-  uint32_t maskBits = mask.GetHostOrder ();
+  uint32_t maskBits __attribute__((unused)) = mask.GetHostOrder ();
   uint32_t netBits = net.GetHostOrder ();
   uint32_t addrBits = addr.GetHostOrder ();
 //
