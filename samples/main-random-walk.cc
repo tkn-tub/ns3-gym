@@ -1,18 +1,8 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
-#include <vector>
-
-#include "ns3/ptr.h"
-#include "ns3/mobility-model.h"
-#include "ns3/position-allocator.h"
-#include "ns3/command-line.h"
-#include "ns3/simulator.h"
-#include "ns3/nstime.h"
-#include "ns3/node.h"
-#include "ns3/node-list.h"
-#include "ns3/mobility-helper.h"
-#include "ns3/string.h"
-#include "ns3/config.h"
+#include "ns3/core-module.h"
+#include "ns3/helper-module.h"
+#include "ns3/mobility-module.h"
 
 using namespace ns3;
 
