@@ -197,19 +197,19 @@ AddressHelperTest::RunTests (void)
   network = h.NewNetwork();
   NS_TEST_ASSERT_EQUAL (network, Ipv4Address ("2.0.0.0"));
   address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("2.0.0.0"));
+  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("2.0.0.1"));
 
   h.SetBase ("0.1.0.0", "255.255.0.0");
   network = h.NewNetwork();
   NS_TEST_ASSERT_EQUAL (network, Ipv4Address ("0.2.0.0"));
   address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("0.2.0.0"));
+  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("0.2.0.1"));
 
   h.SetBase ("0.0.1.0", "255.255.255.0");
   network = h.NewNetwork();
   NS_TEST_ASSERT_EQUAL (network, Ipv4Address ("0.0.2.0"));
   address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("0.0.2.0"));
+  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("0.0.2.1"));
 
 //
 // Make sure the address allocator part is working.
