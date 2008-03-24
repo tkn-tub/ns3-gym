@@ -342,6 +342,21 @@ public:
     Ipv4Mask mask) const = 0;
 
   /**
+   * \brief Find and return the interface ID of the interface that has been
+   *        associated with the specified (masked) NetDevice
+   * \param nd The net device of the interface of interest.
+   * \returns The index of the ipv4 interface associated with the given net 
+   *          device or -1 if not found.
+   *
+   * Each IP interface is associated with a net device.  It is often 
+   * useful to search the list of interfaces for one that corresponds to 
+   * a known net device.  This call takes an smart pointer to a net device
+   * and returns the interface index of the first interface that matches the
+   * net device.
+   */
+  virtual int32_t FindInterfaceForDevice(Ptr<NetDevice> nd) const = 0;
+
+  /**
    * \param i index of ipv4 interface
    * \returns the NetDevice associated with the ipv4 interface index
    */

@@ -415,6 +415,26 @@ Ipv4L3Protocol::FindInterfaceForAddr (Ipv4Address addr, Ipv4Mask mask) const
   return 0;
 }
 
+int32_t 
+Ipv4L3Protocol::FindInterfaceIndexForDevice (Ptr<NetDevice> device) const
+{
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAMS (this << device);
+
+  uint32_t ifIndex = 0;
+  for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); 
+       i != m_interfaces.end (); 
+       i++, ifIndex++)
+    {
+      if ((*i)->GetDevice () == device)
+        {
+          return ifIndex;
+        }
+    }
+
+  return -1;
+}
+
 Ptr<Ipv4Interface>
 Ipv4L3Protocol::FindInterfaceForDevice (Ptr<const NetDevice> device)
 {
