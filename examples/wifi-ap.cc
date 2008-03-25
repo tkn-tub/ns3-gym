@@ -19,28 +19,13 @@
  */
 
 
-#include "ns3/simulator.h"
-#include "ns3/callback.h"
-#include "ns3/ptr.h"
-#include "ns3/node.h"
-#include "ns3/onoff-application.h"
-#include "ns3/mobility-helper.h"
-#include "ns3/wifi-helper.h"
-#include "ns3/node-container.h"
-#include "ns3/random-variable.h"
-#include "ns3/packet-socket-address.h"
-#include "ns3/packet.h"
-#include "ns3/node-list.h"
-#include "ns3/ssid.h"
-#include "ns3/wifi-phy.h"
-#include "ns3/mobility-model.h"
-#include "ns3/config.h"
-#include "ns3/string.h"
-#include "ns3/wifi-channel.h"
-#include "ns3/boolean.h"
-#include "ns3/propagation-loss-model.h"
-#include "ns3/propagation-delay-model.h"
-
+#include "ns3/core-module.h"
+#include "ns3/common-module.h"
+#include "ns3/node-module.h"
+#include "ns3/helper-module.h"
+#include "ns3/mobility-module.h"
+#include "ns3/contrib-module.h"
+#include "ns3/wifi-module.h"
 
 #include <iostream>
 
@@ -137,9 +122,14 @@ int main (int argc, char *argv[])
   NodeContainer stas;
   NodeContainer ap;
   NetDeviceContainer staDevs;
+  PacketSocketHelper packetSocket;
 
   stas.Create (2);
   ap.Create (1);
+
+  // give packet socket powers to nodes.
+  packetSocket.Build (stas);
+  packetSocket.Build (ap);
 
   Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
   channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
@@ -166,18 +156,13 @@ int main (int argc, char *argv[])
 
   Simulator::Schedule (Seconds (1.0), &AdvancePosition, ap.Get (0));
 
-  PacketSocketAddress destination = PacketSocketAddress ();
-  destination.SetProtocol (1);
-  destination.SetSingleDevice (0);
-  destination.SetPhysicalAddress (staDevs.Get(1)->GetAddress ());
-  Ptr<Application> app = 
-    CreateObject<OnOffApplication> ("Remote", Address (destination), 
-                                    "Protocol", TypeId::LookupByName ("ns3::PacketSocketFactory"),
-                                    "OnTime", ConstantVariable (42),
-                                    "OffTime", ConstantVariable (0));
-  stas.Get (0)->AddApplication (app);
-  app->Start (Seconds (0.5));
-  app->Stop (Seconds (43.0));
+  OnOffHelper onoff;
+  onoff.SetAppAttribute ("OnTime", ConstantVariable (42));
+  onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
+  onoff.SetPacketRemote (staDevs.Get (0), staDevs.Get (1)->GetAddress (), 1);
+  ApplicationContainer apps = onoff.Build (stas.Get (0));
+  apps.Start (Seconds (0.5));
+  apps.Stop (Seconds (43.0));
 
   Simulator::StopAt (Seconds (44.0));
 

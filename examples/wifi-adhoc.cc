@@ -18,31 +18,12 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/wifi-net-device.h"
-#include "ns3/arf-wifi-manager.h"
-#include "ns3/adhoc-wifi-mac.h"
-#include "ns3/wifi-phy.h"
-#include "ns3/wifi-channel.h"
-#include "ns3/simulator.h"
-#include "ns3/callback.h"
-#include "ns3/ptr.h"
-#include "ns3/node.h"
-#include "ns3/onoff-application.h"
-#include "ns3/static-mobility-model.h"
-#include "ns3/random-variable.h"
-#include "ns3/packet-socket-address.h"
-#include "ns3/packet.h"
-#include "ns3/socket.h"
-#include "ns3/socket-factory.h"
-#include "ns3/command-line.h"
-#include "ns3/gnuplot.h"
-#include "ns3/uinteger.h"
-#include "ns3/string.h"
-#include "ns3/config.h"
-#include "ns3/wifi-helper.h"
-#include "ns3/mobility-helper.h"
-#include "ns3/log.h"
-
+#include "ns3/core-module.h"
+#include "ns3/common-module.h"
+#include "ns3/node-module.h"
+#include "ns3/helper-module.h"
+#include "ns3/mobility-module.h"
+#include "ns3/contrib-module.h"
 
 #include <iostream>
 
@@ -133,6 +114,9 @@ Experiment::Run (const WifiHelper &wifi)
   NodeContainer c;
   c.Create (2);
 
+  PacketSocketHelper packetSocket;
+  packetSocket.Build (c);
+
   NetDeviceContainer devices = wifi.Build (c);
 
   MobilityHelper mobility;
@@ -144,21 +128,15 @@ Experiment::Run (const WifiHelper &wifi)
 
   mobility.Layout (c);
 
-  PacketSocketAddress destination = PacketSocketAddress ();
-  destination.SetProtocol (1);
-  destination.SetSingleDevice (0);
-  destination.SetPhysicalAddress (devices.Get (1)->GetAddress ());
-  Ptr<Application> app = 
-    CreateObject<OnOffApplication> ("Remote", Address (destination),
-                                    "Protocol", TypeId::LookupByName ("ns3::PacketSocketFactory"),
-                                    "OnTime", ConstantVariable (250),
-                                    "OffTime", ConstantVariable (0),
-                                    "DataRate", DataRate (60000000),
-                                    "PacketSize", Uinteger (2000));
-  c.Get (0)->AddApplication (app);
-
-  app->Start (Seconds (0.5));
-  app->Stop (Seconds (250.0));
+  OnOffHelper onoff;
+  onoff.SetAppAttribute ("OnTime", ConstantVariable (250));
+  onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
+  onoff.SetAppAttribute ("DataRate", DataRate (60000000));
+  onoff.SetAppAttribute ("PacketSize", Uinteger (2000));
+  onoff.SetPacketRemote (devices.Get (0), devices.Get (1)->GetAddress (), 1);
+  ApplicationContainer apps = onoff.Build (c.Get (0));
+  apps.Start (Seconds (0.5));
+  apps.Stop (Seconds (250.0));
 
   Simulator::Schedule (Seconds (1.5), &Experiment::AdvancePosition, this, c.Get (1));
   Ptr<Socket> recvSink = SetupPacketReceive (c.Get (1));

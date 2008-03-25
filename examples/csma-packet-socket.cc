@@ -33,43 +33,16 @@
 #include <string>
 #include <cassert>
 
-#include "ns3/command-line.h"
-#include "ns3/ptr.h"
-#include "ns3/random-variable.h"
-#include "ns3/log.h"
-#include "ns3/string.h"
-
-#include "ns3/simulator.h"
-#include "ns3/nstime.h"
-#include "ns3/data-rate.h"
+#include "ns3/core-module.h"
+#include "ns3/simulator-module.h"
+#include "ns3/helper-module.h"
 
 #include "ns3/ascii-trace.h"
 #include "ns3/pcap-trace.h"
-#include "ns3/internet-node.h"
-#include "ns3/csma-channel.h"
-#include "ns3/csma-net-device.h"
-#include "ns3/mac48-address.h"
-#include "ns3/packet-socket-address.h"
-#include "ns3/socket.h"
-#include "ns3/onoff-application.h"
-#include "ns3/queue.h"
-#include "ns3/drop-tail-queue.h"
 
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("CsmaPacketSocketExample");
-
-static Ptr<CsmaNetDevice>
-CreateCsmaDevice (Ptr<Node> node, Ptr<CsmaChannel> channel)
-{
-  Ptr<CsmaNetDevice> device = CreateObject<CsmaNetDevice> ("Address", Mac48Address::Allocate (),
-                                                           "EncapsulationMode", String ("Llc"));
-  node->AddDevice (device);
-  device->Attach (channel);
-  Ptr<Queue> queue = CreateObject<DropTailQueue> ();
-  device->AddQueue (queue);
-  return device;
-}
 
 int
 main (int argc, char *argv[])
@@ -103,13 +76,13 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
-  // Here, we will explicitly create four nodes.  In more sophisticated
-  // topologies, we could configure a node factory.
+  // Here, we will explicitly create four nodes.
   NS_LOG_INFO ("Create nodes.");
-  Ptr<Node> n0 = CreateObject<Node> ();
-  Ptr<Node> n1 = CreateObject<Node> (); 
-  Ptr<Node> n2 = CreateObject<Node> (); 
-  Ptr<Node> n3 = CreateObject<Node> ();
+  NodeContainer c;
+  c.Create (4);
+
+  PacketSocketHelper packetSocket;
+  packetSocket.Build (c);
 
   // create the shared medium used by all csma devices.
   NS_LOG_INFO ("Create channels.");
@@ -118,46 +91,25 @@ main (int argc, char *argv[])
 
   // use a helper function to connect our nodes to the shared channel.
   NS_LOG_INFO ("Build Topology.");
-  Ptr<NetDevice> n0If = CreateCsmaDevice (n0, channel);
-  Ptr<NetDevice> n1If = CreateCsmaDevice (n1, channel);
-  Ptr<NetDevice> n2If = CreateCsmaDevice (n2, channel);
-  Ptr<NetDevice> n3If = CreateCsmaDevice (n3, channel);
+  CsmaHelper csma;
+  csma.SetDeviceParameter ("EncapsulationMode", String ("Llc"));
+  NetDeviceContainer devs = csma.Build (c, channel);
 
-  // create the address which identifies n1 from n0
-  PacketSocketAddress n0ToN1;
-  n0ToN1.SetSingleDevice (n0If->GetIfIndex ());      // set outgoing interface for outgoing packets
-  n0ToN1.SetPhysicalAddress (n1If->GetAddress ()); // set destination address for outgoing packets
-  n0ToN1.SetProtocol (2);            // set arbitrary protocol for outgoing packets
-
-  // create the address which identifies n0 from n3
-  PacketSocketAddress n3ToN0;
-  n3ToN0.SetSingleDevice (n3If->GetIfIndex ());
-  n3ToN0.SetPhysicalAddress (n0If->GetAddress ());
-  n3ToN0.SetProtocol (3);
-  
-  // Create the OnOff application to send raw datagrams of size
-  // 210 bytes at a rate of 448 Kb/s
-  // from n0 to n1
   NS_LOG_INFO ("Create Applications.");
-  Ptr<OnOffApplication> ooff = 
-    CreateObject<OnOffApplication> ("Remote", Address (n0ToN1),
-                                    "Protocol", TypeId::LookupByName ("ns3::PacketSocketFactory"),
-                                    "OnTime", ConstantVariable(1), 
-                                    "OffTime", ConstantVariable(0));
-  n0->AddApplication (ooff);
-  // Start the application
-  ooff->Start(Seconds(1.0));
-  ooff->Stop (Seconds(10.0));
+  // Create the OnOff application to send raw datagrams
+  OnOffHelper onoff;
+  onoff.SetAppAttribute ("OnTime", ConstantVariable (1.0));
+  onoff.SetAppAttribute ("OffTime", ConstantVariable (0.0));
+  onoff.SetPacketRemote (devs.Get (0), devs.Get (1)->GetAddress (), 2);
+  ApplicationContainer apps = onoff.Build (c.Get (0));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
+  
 
-  // Create a similar flow from n3 to n0, starting at time 1.1 seconds
-  ooff = CreateObject<OnOffApplication> ("Remote", Address (n3ToN0),
-                                         "Protocol", TypeId::LookupByName ("ns3::PacketSocketFactory"),
-                                         "OnTime", ConstantVariable(1), 
-                                         "OffTime", ConstantVariable(0));
-  n3->AddApplication (ooff);
-  // Start the application
-  ooff->Start(Seconds(1.1));
-  ooff->Stop (Seconds(10.0));
+  onoff.SetPacketRemote (devs.Get (3), devs.Get (0)->GetAddress (), 3);
+  apps = onoff.Build (c.Get (3));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
  
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the csma-packet-socket.tr file
