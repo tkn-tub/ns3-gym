@@ -16,6 +16,7 @@ def build(bld):
         'application-container.cc',
         'on-off-helper.cc',
         'packet-sink-helper.cc',
+        'packet-socket-helper.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -34,4 +35,5 @@ def build(bld):
         'application-container.h',
         'on-off-helper.h',
         'packet-sink-helper.h',
+        'packet-socket-helper.h',
         ]
