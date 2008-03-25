@@ -136,7 +136,7 @@ Ptr<NetDevice>
 PointToPointChannel::GetDevice (uint32_t i) const
 {
   NS_LOG_FUNCTION;
-  return GetDevice (i);
+  return GetPointToPointDevice (i);
 }
 
 
