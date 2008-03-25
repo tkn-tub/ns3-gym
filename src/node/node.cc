@@ -22,7 +22,6 @@
 #include "node-list.h"
 #include "net-device.h"
 #include "application.h"
-#include "packet-socket-factory.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/object-vector.h"
@@ -72,8 +71,6 @@ void
 Node::Construct (void)
 {
   m_id = NodeList::Add (this);
-  Ptr<PacketSocketFactory> socketFactory = CreateObject<PacketSocketFactory> ();
-  AggregateObject (socketFactory);
 }
   
 Node::~Node ()
