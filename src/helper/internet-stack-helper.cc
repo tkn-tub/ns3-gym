@@ -1,5 +1,6 @@
 #include "internet-stack-helper.h"
 #include "ns3/internet-stack.h"
+#include "ns3/packet-socket-factory.h"
 
 namespace ns3 {
 
@@ -10,6 +11,8 @@ InternetStackHelper::Build (NodeContainer c)
     {
       Ptr<Node> node = *i;
       AddInternetStack (node);
+      Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
+      node->AggregateObject (factory);
     }
 }
 
