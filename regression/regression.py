@@ -3,7 +3,7 @@
 
 """Regression test.
 
-This will find all modules whose name is "test_*" in the tests
+This will find all modules whose name is "test-*" in the tests
 directory, and run them.
 
 Command line options:
@@ -100,7 +100,7 @@ def findtests(testdir):
         print "findtests(): found ", names
     tests = []
     for name in names:
-        if name[:5] == "test_" and name[-3:] == ".py":
+        if name[:5] == "test-" and name[-3:] == ".py":
             testname = name[:-3]
             tests.append(testname)
     tests.sort()
