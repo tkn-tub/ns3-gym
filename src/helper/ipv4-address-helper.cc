@@ -120,10 +120,11 @@ Ipv4AddressHelper::NewNetwork (void)
   return Ipv4Address (m_network << m_shift);
 }
 
-  void
+Ipv4InterfaceContainer
 Ipv4AddressHelper::Allocate (const NetDeviceContainer &c)
 {
   NS_LOG_FUNCTION;
+  Ipv4InterfaceContainer retval;
   for (uint32_t i = 0; i < c.GetN (); ++i) {
     Ptr<NetDevice> device = c.Get (i);
 
@@ -145,7 +146,9 @@ Ipv4AddressHelper::Allocate (const NetDeviceContainer &c)
     ipv4->SetNetworkMask (ifIndex, m_mask);
     ipv4->SetMetric (ifIndex, 1);
     ipv4->SetUp (ifIndex);
+    retval.Add (ipv4, ifIndex);
   }
+  return retval;
 }
 
 const uint32_t N_BITS = 32;
