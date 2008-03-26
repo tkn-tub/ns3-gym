@@ -28,4 +28,4 @@ def run(verbose, generate):
     else:
         rmdir("knowns")
         os.system("tar -xjf tests/csma-one-subnet.bz2 knowns/")
-        return os.system("diff knowns traces")
+        return os.system("diff -q knowns traces")
