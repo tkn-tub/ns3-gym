@@ -36,11 +36,12 @@
 
 #include "ns3/core-module.h"
 #include "ns3/helper-module.h"
+#include "ns3/node-module.h"
+#include "ns3/global-route-manager.h"
+#include "ns3/simulator-module.h"
 
 #include "ns3/ascii-trace.h"
 #include "ns3/pcap-trace.h"
-
-#include "ns3/internet-node-module.h"
 
 using namespace ns3;
 
