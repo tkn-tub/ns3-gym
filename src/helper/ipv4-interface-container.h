@@ -26,6 +26,7 @@ public:
   uint32_t GetN (void) const;
 
   Ipv4Address GetAddress (uint32_t i) const;
+  void SetMetric (uint32_t i, uint16_t metric);
 
   void Add (Ptr<Ipv4> ipv4, uint32_t interface);
 

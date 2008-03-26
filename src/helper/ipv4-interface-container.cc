@@ -19,6 +19,13 @@ Ipv4InterfaceContainer::GetAddress (uint32_t i) const
   return ipv4->GetAddress (interface);
 }
 void 
+Ipv4InterfaceContainer::SetMetric (uint32_t i, uint16_t metric)
+{
+  Ptr<Ipv4> ipv4 = m_interfaces[i].first;
+  uint32_t interface = m_interfaces[i].second;
+  ipv4->SetMetric (interface, metric);
+}
+void 
 Ipv4InterfaceContainer::Add (Ptr<Ipv4> ipv4, uint32_t interface)
 {
   m_interfaces.push_back (std::make_pair (ipv4, interface));
