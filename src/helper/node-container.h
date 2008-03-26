@@ -35,6 +35,9 @@ public:
    */
   NodeContainer (const NodeContainer &a, const NodeContainer &b);
 
+  NodeContainer (const NodeContainer &a, const NodeContainer &b, const NodeContainer &c);
+  NodeContainer (const NodeContainer &a, const NodeContainer &b, const NodeContainer &c, const NodeContainer &d);
+
   /**
    * \returns an iterator to the start of the vector of node pointers.
    */
