@@ -20,7 +20,6 @@ APPNAME = 'ns'
 srcdir = '.'
 blddir = 'build'
 
-
 def dist_hook():
     shutil.rmtree("doc/html", True)
     shutil.rmtree("doc/latex", True)
@@ -47,6 +46,11 @@ def set_options(opt):
     
     # options provided by the modules
     opt.tool_options('compiler_cxx')
+
+    opt.add_option('--cwd',
+                   help=('Set the working directory for a program.'),
+                   action="store", type="string", default=None,
+                   dest='cwd_launch')
 
     opt.add_option('--enable-gcov',
                    help=('Enable code coverage analysis.'
@@ -164,7 +168,7 @@ def create_ns3_program(bld, name, dependencies=('simulator',)):
 
 def build(bld):
     Params.g_cwd_launch = Params.g_build.m_curdirnode.abspath()
-
+        
     bld.create_ns3_program = types.MethodType(create_ns3_program, bld)
 
     variant_name = bld.env_of_name('default')['NS3_ACTIVE_VARIANT']
@@ -378,9 +382,11 @@ def run_program(program_string, command_template=None):
 
         execvec = shlex.split(command_template % (program_node.abspath(env),))
 
-
     former_cwd = os.getcwd()
-    os.chdir(Params.g_cwd_launch)
+    if (Params.g_options.cwd_launch):
+        os.chdir(Params.g_options.cwd_launch)
+    else:
+        os.chdir(Params.g_cwd_launch)
     try:
         retval = _run_argv(execvec)
     finally:
@@ -415,7 +421,6 @@ def run_shell():
 
     env = Params.g_build.env_of_name('default')
     _run_argv([shell], {'NS3_MODULE_PATH': os.pathsep.join(env['NS3_MODULE_PATH'])})
-
 
 def doxygen():
     if not os.path.exists('doc/introspected-doxygen.h'):
