@@ -358,7 +358,7 @@ CsmaChannel::GetState(void)
 Ptr<NetDevice>
 CsmaChannel::GetDevice (uint32_t i) const
 {
-  return GetDevice (i);
+  return GetCsmaDevice (i);
 }
 
 } // namespace ns3
