@@ -37,32 +37,12 @@
 #include <string>
 #include <cassert>
 
-#include "ns3/log.h"
-
-#include "ns3/command-line.h"
-#include "ns3/ptr.h"
-#include "ns3/random-variable.h"
-#include "ns3/config.h"
-#include "ns3/uinteger.h"
-
-#include "ns3/simulator.h"
-#include "ns3/nstime.h"
-#include "ns3/data-rate.h"
-
+#include "ns3/core-module.h"
+#include "ns3/simulator-module.h"
+#include "ns3/helper-module.h"
+#include "ns3/global-route-manager.h"
 #include "ns3/ascii-trace.h"
 #include "ns3/pcap-trace.h"
-#include "ns3/internet-node.h"
-#include "ns3/point-to-point-channel.h"
-#include "ns3/point-to-point-net-device.h"
-#include "ns3/ipv4-address.h"
-#include "ns3/ipv4.h"
-#include "ns3/socket.h"
-#include "ns3/inet-socket-address.h"
-#include "ns3/ipv4-route.h"
-#include "ns3/point-to-point-topology.h"
-#include "ns3/onoff-application.h"
-#include "ns3/packet-sink.h"
-#include "ns3/global-route-manager.h"
 
 using namespace ns3;
 
@@ -128,50 +108,50 @@ main (int argc, char *argv[])
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.
   NS_LOG_INFO ("Create nodes.");
-  Ptr<Node> n0 = CreateObject<InternetNode> ();
-  Ptr<Node> n1 = CreateObject<InternetNode> (); 
-  Ptr<Node> n2 = CreateObject<InternetNode> (); 
-  Ptr<Node> n3 = CreateObject<InternetNode> ();
+  NodeContainer c;
+  c.Create (4);
+  NodeContainer n0n2 = NodeContainer (c.Get (0), c.Get (2));
+  NodeContainer n1n2 = NodeContainer (c.Get (1), c.Get (2));
+  NodeContainer n3n2 = NodeContainer (c.Get (3), c.Get (2));
+  NodeContainer n1n3 = NodeContainer (c.Get (1), c.Get (3));
 
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
-  Ptr<PointToPointChannel> channel0 = 
-    PointToPointTopology::AddPointToPointLink (
-      n0, n2, DataRate (5000000), MilliSeconds (2));
+  PointToPointHelper p2p;
+  p2p.SetChannelParameter ("BitRate", DataRate (5000000));
+  p2p.SetChannelParameter ("Delay", MilliSeconds (2));
+  NetDeviceContainer d0d2 = p2p.Build (n0n2);
 
-  Ptr<PointToPointChannel> channel1 = 
-    PointToPointTopology::AddPointToPointLink (
-      n1, n2, DataRate (5000000), MilliSeconds (2));
-  
-  Ptr<PointToPointChannel> channel2 = 
-    PointToPointTopology::AddPointToPointLink (
-      n2, n3, DataRate (1500000), MilliSeconds (10));
-  
-  Ptr<PointToPointChannel> channel3 = 
-    PointToPointTopology::AddPointToPointLink (
-      n1, n3, DataRate (1500000), MilliSeconds (100));
+  NetDeviceContainer d1d2 = p2p.Build (n1n2);
+
+  p2p.SetChannelParameter ("BitRate", DataRate(1500000));
+  p2p.SetChannelParameter ("Delay", MilliSeconds (10));
+  NetDeviceContainer d3d2 = p2p.Build (n3n2);
+
+  p2p.SetChannelParameter ("Delay", MilliSeconds (100));
+  NetDeviceContainer d1d3 = p2p.Build (n1n3);
+
+  InternetStackHelper internet;
+  internet.Build (c);
   
   // Later, we add IP addresses.  The middle two octets correspond to 
  // the channel number.  
   NS_LOG_INFO ("Assign IP Addresses.");
-  PointToPointTopology::AddIpv4Addresses (
-      channel0, n0, Ipv4Address ("10.0.0.1"),
-      n2, Ipv4Address ("10.0.0.2"));
+  Ipv4AddressHelper ipv4;
+  ipv4.SetBase ("10.0.0.0", "255.255.255.0");
+  ipv4.Allocate (d0d2);
   
-  PointToPointTopology::AddIpv4Addresses (
-      channel1, n1, Ipv4Address ("10.1.1.1"),
-      n2, Ipv4Address ("10.1.1.2"));
+  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+  Ipv4InterfaceContainer i1i2 = ipv4.Allocate (d1d2);
   
-  PointToPointTopology::AddIpv4Addresses (
-      channel2, n2, Ipv4Address ("10.2.2.1"),
-      n3, Ipv4Address ("10.2.2.2"));
+  ipv4.SetBase ("10.2.2.0", "255.255.255.0");
+  ipv4.Allocate (d3d2);
 
-  PointToPointTopology::AddIpv4Addresses (
-      channel3, n1, Ipv4Address ("10.3.3.1"),
-      n3, Ipv4Address ("10.3.3.2"));
+  ipv4.SetBase ("10.3.3.0", "255.255.255.0");
+  Ipv4InterfaceContainer i1i3 = ipv4.Allocate (d1d3);
 
-  PointToPointTopology::SetIpv4Metric (
-      channel3, n1, n3, sampleMetric);
+  i1i3.SetMetric (0, sampleMetric);
+  i1i3.SetMetric (1, sampleMetric);
 
   // Create router nodes, initialize routing database and set up the routing
   // tables in the nodes.
@@ -182,24 +162,20 @@ main (int argc, char *argv[])
   uint16_t port = 9;   // Discard port (RFC 863)
 
   // Create a flow from n3 to n1, starting at time 1.1 seconds
-  Ptr<OnOffApplication> ooff = 
-    CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress ("10.1.1.1", port)),
-                                    "Protocol", TypeId::LookupByName ("ns3::Udp"),
-                                    "OnTime", ConstantVariable (1), 
-                                    "OffTime", ConstantVariable (0));
-  n3->AddApplication (ooff);
-  // Start the application
-  ooff->Start (Seconds (1.1));
-  ooff->Stop (Seconds (10.0));
+  OnOffHelper onoff;
+  onoff.SetAppAttribute ("OnTime", ConstantVariable (1));
+  onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
+  onoff.SetUdpRemote (i1i2.GetAddress (0), port);
+  ApplicationContainer apps = onoff.Build (c.Get (3));
+  apps.Start (Seconds (1.1));
+  apps.Start (Seconds (10.0));
 
   // Create a packet sink to receive these packets
-  Ptr<PacketSink> sink = 
-    CreateObject<PacketSink> ("Remote", Address (InetSocketAddress (Ipv4Address::GetAny (), port)), 
-                              "Protocol", TypeId::LookupByName ("ns3::Udp"));
-  n1->AddApplication (sink);
-  // Start the sink
-  sink->Start (Seconds (1.1));
-  sink->Stop (Seconds (10.0));
+  PacketSinkHelper sink;
+  sink.SetupUdp (Ipv4Address::GetAny (), port);
+  apps = sink.Build (c.Get (1));
+  apps.Start (Seconds (1.1));
+  apps.Stop (Seconds (10.0));
 
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the simple-alternate-routing.tr file
