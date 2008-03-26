@@ -71,6 +71,13 @@ OnOffApplication::GetTypeId (void)
                    ConstantVariable (1.0),
                    MakeRandomVariableAccessor (&OnOffApplication::m_offTime),
                    MakeRandomVariableChecker ())
+    .AddAttribute ("MaxBytes", 
+                   "The total number of bytes to send. Once these bytes are sent, "
+                   "no packet is sent again, even in on state. The value zero means "
+                   "that there is no limit.",
+                   Uinteger (0),
+                   MakeUintegerAccessor (&OnOffApplication::m_maxBytes),
+                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Protocol", "The type of protocol to use.",
                    Udp::GetTypeId (),
                    MakeTypeIdAccessor (&OnOffApplication::m_tid),
@@ -89,7 +96,6 @@ OnOffApplication::OnOffApplication ()
   m_connected = false;
   m_residualBits = 0;
   m_lastStartTime = Seconds (0);
-  m_maxBytes = 0;
   m_totBytes = 0;
 }
 

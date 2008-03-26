@@ -7,7 +7,11 @@ namespace ns3 {
 
 
 PointToPointHelper::PointToPointHelper ()
-{}
+{
+  m_queueFactory.SetTypeId ("ns3::DropTailQueue");
+  m_deviceFactory.SetTypeId ("ns3::PointToPointNetDevice");
+  m_channelFactory.SetTypeId ("ns3::PointToPointChannel");
+}
 
 void 
 PointToPointHelper::SetQueue (std::string type,
@@ -47,17 +51,17 @@ PointToPointHelper::Build (Ptr<Node> a, Ptr<Node> b)
 {
   NetDeviceContainer container;
 
-  Ptr<PointToPointNetDevice> devA = CreateObject<PointToPointNetDevice> ();
+  Ptr<PointToPointNetDevice> devA = m_deviceFactory.Create<PointToPointNetDevice> ();
   devA->SetAddress (Mac48Address::Allocate ());
   a->AddDevice (devA);
   Ptr<Queue> queueA = m_queueFactory.Create<Queue> ();
   devA->AddQueue (queueA);
-  Ptr<PointToPointNetDevice> devB = CreateObject<PointToPointNetDevice> ();
+  Ptr<PointToPointNetDevice> devB = m_deviceFactory.Create<PointToPointNetDevice> ();
   devB->SetAddress (Mac48Address::Allocate ());
   b->AddDevice (devB);
   Ptr<Queue> queueB = m_queueFactory.Create<Queue> ();
   devB->AddQueue (queueB);
-  Ptr<PointToPointChannel> channel = CreateObject<PointToPointChannel> ();
+  Ptr<PointToPointChannel> channel = m_channelFactory.Create<PointToPointChannel> ();
   devA->Attach (channel);
   devB->Attach (channel);
   container.Add (devA);

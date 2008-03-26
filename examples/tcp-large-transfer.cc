@@ -34,33 +34,13 @@
 #include <string>
 #include <cassert>
 
-#include "ns3/command-line.h"
-#include "ns3/ptr.h"
-#include "ns3/random-variable.h"
-#include "ns3/log.h"
-
-#include "ns3/simulator.h"
-#include "ns3/nstime.h"
-#include "ns3/data-rate.h"
+#include "ns3/core-module.h"
+#include "ns3/helper-module.h"
 
 #include "ns3/ascii-trace.h"
 #include "ns3/pcap-trace.h"
-#include "ns3/internet-node.h"
-#include "ns3/point-to-point-channel.h"
-#include "ns3/point-to-point-net-device.h"
-#include "ns3/ipv4-address.h"
-#include "ns3/inet-socket-address.h"
-#include "ns3/ipv4.h"
-#include "ns3/socket.h"
-#include "ns3/ipv4-route.h"
-#include "ns3/point-to-point-topology.h"
-#include "ns3/onoff-application.h"
-#include "ns3/packet-sink.h"
-#include "ns3/error-model.h"
-#include "ns3/node-list.h"
-#include "ns3/config.h"
 
-#include "ns3/tcp.h"
+#include "ns3/internet-node-module.h"
 
 using namespace ns3;
 
@@ -101,10 +81,11 @@ void CloseConnection (Ptr<Socket> localSocket)
 }
 
 void StartFlow(Ptr<Socket> localSocket, uint32_t nBytes, 
-  uint16_t servPort)
+               Ipv4Address servAddress,
+               uint16_t servPort)
 {
  // NS_LOG_LOGIC("Starting flow at time " <<  Simulator::Now ().GetSeconds ());
-  localSocket->Connect (InetSocketAddress ("10.1.2.2", servPort));//connect
+  localSocket->Connect (InetSocketAddress (servAddress, servPort));//connect
   localSocket->SetConnectCallback (MakeCallback (&CloseConnection),
                                    Callback<void, Ptr<Socket> > (),
                                    Callback<void, Ptr<Socket> > ());
@@ -133,52 +114,45 @@ int main (int argc, char *argv[])
 
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
-//  LogComponentEnable("TcpL4Protocol", LOG_LEVEL_ALL);
-//  LogComponentEnable("TcpSocket", LOG_LEVEL_ALL);
-//  LogComponentEnable("PacketSink", LOG_LEVEL_ALL);
-  //LogComponentEnable("TcpLargeTransfer", LOG_LEVEL_ALL);
+  //  LogComponentEnable("TcpL4Protocol", LOG_LEVEL_ALL);
+  //  LogComponentEnable("TcpSocket", LOG_LEVEL_ALL);
+  //  LogComponentEnable("PacketSink", LOG_LEVEL_ALL);
+  //  LogComponentEnable("TcpLargeTransfer", LOG_LEVEL_ALL);
 
   // Allow the user to override any of the defaults and the above
   // Bind()s at run-time, via command-line arguments
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
-  // Here, we will explicitly create three nodes.  In more sophisticated
-  // topologies, we could configure a node factory.
-  Ptr<Node> n0 = Create<InternetNode> ();
-  Ptr<Node> n1 = Create<InternetNode> (); 
-  Ptr<Node> n2 = Create<InternetNode> ();
+  // Here, we will explicitly create three nodes. 
+  NodeContainer c0;
+  c0.Create (2);
+
+  NodeContainer c1;
+  c1.Add (c0.Get (1));
+  c1.Create (1);
 
   // We create the channels first without any IP addressing information
-  Ptr<PointToPointChannel> channel0 = 
-    PointToPointTopology::AddPointToPointLink (
-    n0, n1, DataRate(10000000), MilliSeconds(10));
-  
+  PointToPointHelper p2p;
+  p2p.SetChannelParameter ("BitRate", DataRate(10000000));
+  p2p.SetChannelParameter ("Delay", MilliSeconds(10));
+  NetDeviceContainer dev0 = p2p.Build (c0);
+  NetDeviceContainer dev1 = p2p.Build (c1);
+
+  // add ip/tcp stack to nodes.
+  NodeContainer c = NodeContainer (c0, c1.Get (1));
+  InternetStackHelper internet;
+  internet.Build (c);
+
   // Later, we add IP addresses.  
-  PointToPointTopology::AddIpv4Addresses (
-      channel0, n0, Ipv4Address("10.1.3.1"),
-      n1, Ipv4Address("10.1.3.2"));
+  Ipv4AddressHelper ipv4;
+  ipv4.SetBase ("10.1.3.0", "255.255.255.0");
+  ipv4.Allocate (dev0);
+  ipv4.SetBase ("10.1.2.0", "255.255.255.0");
+  ipv4.Allocate (dev1);
 
-  Ptr<PointToPointChannel> channel1 = 
-      PointToPointTopology::AddPointToPointLink (
-      n1, n2, DataRate(10000000), MilliSeconds(10));
-  
-  PointToPointTopology::AddIpv4Addresses (
-      channel1, n1, Ipv4Address("10.1.2.1"),
-      n2, Ipv4Address("10.1.2.2"));
-  
-  // Finally, we add static routes.  These three steps (Channel and
-  // NetDevice creation, IP Address assignment, and routing) are 
-  // separated because there may be a need to postpone IP Address
-  // assignment (emulation) or modify to use dynamic routing
-  PointToPointTopology::AddIpv4Routes(n0, n1, channel0);
-  PointToPointTopology::AddIpv4Routes(n1, n2, channel1);
-  Ptr<Ipv4> ipv4;
-  ipv4 = n0->GetObject<Ipv4> ();
-  ipv4->SetDefaultRoute (Ipv4Address ("10.1.3.2"), 1);
-  ipv4 = n2->GetObject<Ipv4> ();
-  ipv4->SetDefaultRoute (Ipv4Address ("10.1.2.1"), 1);
-
+  // and setup ip routing tables to get total ip-level connectivity.
+  GlobalRouteManager::PopulateRoutingTables ();
 
   ///////////////////////////////////////////////////////////////////////////
   // Simulation 1
@@ -191,21 +165,19 @@ int main (int argc, char *argv[])
   int nBytes = 2000000;
   uint16_t servPort = 50000;
 
+  // Create a packet sink to receive these packets
+  PacketSinkHelper sink;
+  sink.SetupTcp (Ipv4Address::GetAny (), servPort);
+  ApplicationContainer apps = sink.Build (c1.Get (1));
+  apps.Start (Seconds (0.0));
+
+  // and generate traffic to remote sink.
   Ptr<SocketFactory> socketFactory = 
-    n0->GetObject<SocketFactory> ();
+    c0.Get (0)->GetObject<Tcp> ();
   Ptr<Socket> localSocket = socketFactory->CreateSocket ();
   localSocket->Bind ();
-
-  // Create a packet sink to receive these packets
-  Ptr<PacketSink> sink = 
-    CreateObject<PacketSink> ("Local", Address (InetSocketAddress (Ipv4Address::GetAny (), servPort)),
-                              "Protocol", TypeId::LookupByName ("ns3::Tcp"));
-  n2->AddApplication (sink);
-  sink->Start (Seconds (0.0));
-  sink->Stop (Seconds (100.0));
-
-  Simulator::Schedule(Seconds(0), &StartFlow, localSocket, nBytes,
-    servPort);
+  Simulator::ScheduleNow (&StartFlow, localSocket, nBytes,
+                          Ipv4Address ("10.1.2.2"), servPort);
 
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the simple-examples.tr file

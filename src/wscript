@@ -153,10 +153,10 @@ def gen_ns3_module_header(task):
 #ifndef NS3_MODULE_%s
 """ % (task.module.upper().replace('-', '_'),)
 
-    if task.module_deps:
-        print >> outfile, "// Module dependencies:"
-    for dep in task.module_deps:
-        print >> outfile, "#include \"%s-module.h\"" % dep
+#     if task.module_deps:
+#         print >> outfile, "// Module dependencies:"
+#     for dep in task.module_deps:
+#         print >> outfile, "#include \"%s-module.h\"" % dep
 
     print >> outfile
     print >> outfile, "// Module headers:"

@@ -33,26 +33,8 @@
 #include <cassert>
 
 #include "ns3/core-module.h"
-#include "ns3/common-module.h"
-#include "ns3/simulator-module.h"
 #include "ns3/helper-module.h"
-
-#include "ns3/ascii-trace.h"
-#include "ns3/pcap-trace.h"
-
-#include "ns3/internet-node.h"
-#include "ns3/csma-channel.h"
-#include "ns3/csma-net-device.h"
-#include "ns3/csma-topology.h"
-#include "ns3/csma-ipv4-topology.h"
-#include "ns3/mac48-address.h"
-#include "ns3/ipv4-address.h"
-#include "ns3/inet-socket-address.h"
-#include "ns3/ipv4.h"
-#include "ns3/socket.h"
-#include "ns3/ipv4-route.h"
-#include "ns3/onoff-application.h"
-#include "ns3/packet-sink.h"
+#include "ns3/internet-node-module.h"
 
 using namespace ns3;
 
