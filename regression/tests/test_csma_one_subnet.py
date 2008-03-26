@@ -4,7 +4,28 @@
 
 import os
 
+def rmdir(dir):
+    if os.path.exists(dir):
+        files = os.listdir(dir)
+        for file in files:
+            if file == '.' or file == '..':
+                continue
+            path = dir + os.sep + file
+            os.remove(path)
+        os.rmdir(dir)
+
 def run(verbose, generate):
     """Execute a test."""
+
     os.system("./waf --cwd regression/traces --run csma-one-subnet")
-    return 0
+
+    if generate:
+        rmdir("knowns")
+        os.rename("traces", "knowns")
+        os.system("tar -cjf tests/csma-one-subnet.bz2 knowns/")
+        rmdir("knowns")
+        return 0
+    else:
+        rmdir("knowns")
+        os.system("tar -xjf tests/csma-one-subnet.bz2 knowns/")
+        return os.system("diff knowns traces")

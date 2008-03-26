@@ -45,9 +45,6 @@ def main(tests = None, testdir = None):
         if o == '-v': verbose = 1
         if o == '-g': generate = 1
 
-    if not os.path.exists('./traces'):
-        os.mkdir('./traces')
-    
     bad = []
 
     if not testdir:
@@ -77,7 +74,10 @@ def main(tests = None, testdir = None):
             print "main(): running test", test
         result = runtest(test)
         if result == 0:
-            print "PASS ", test
+            if generate:
+                print "GENERATE ", test
+            else:
+                print "PASS ", test
         else:
             bad.append(test)
             print "FAIL ", test
@@ -114,6 +114,16 @@ def runtest(test):
     Arguments:
     test -- the name of the test
     """
+    if os.path.exists("traces"):
+        files = os.listdir("traces")
+        for file in files:
+            if file == '.' or file == '..':
+                continue
+            path = "traces" + os.sep + file
+            os.remove(path)
+    else:
+        os.mkdir("traces")
+    
     if verbose:
         print "runtest(): run ", test
     mod = __import__(test, globals(), locals(), [])
