@@ -7,7 +7,11 @@ namespace ns3 {
 
 
 PointToPointHelper::PointToPointHelper ()
-{}
+{
+  m_queueFactory.SetTypeId ("ns3::DropTailQueue");
+  m_deviceFactory.SetTypeId ("ns3::PointToPointNetDevice");
+  m_channelFactory.SetTypeId ("ns3::PointToPointChannel");
+}
 
 void 
 PointToPointHelper::SetQueue (std::string type,
