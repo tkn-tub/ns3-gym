@@ -22,10 +22,10 @@
 #include "ns3/application.h"
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
+#include "ns3/address.h"
 
 namespace ns3 {
 
-class Address;
 class Socket;
 class Packet;
 
