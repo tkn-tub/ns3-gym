@@ -38,6 +38,8 @@ public:
 
   virtual ~UdpEchoClient ();
 
+  void SetRemote (Ipv4Address ip, uint16_t port);
+
 protected:
   virtual void DoDispose (void);
 
