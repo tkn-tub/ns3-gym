@@ -48,7 +48,7 @@ class RandomVariableBase;
  * the University of Montreal.
  * 
  * NS-3 has a rich set of  random number generators.
- * Class RandomVariableBase defines the base class functionalty
+ * Class RandomVariable defines the base class functionalty
  * required for all random number generators.  By default, the underlying
  * generator is seeded with the time of day, and then deterministically
  * creates a sequence of seeds for each subsequent generator that is created.
@@ -93,7 +93,7 @@ public:
    * generator is seeded with data from /dev/random instead of
    * being seeded based upon the time of day.  For this to be effective,
    * it must be called before the creation of the first instance of a 
-   * RandomVariableBase or subclass.  Example:
+   * RandomVariable or subclass.  Example:
    * \code
    * RandomVariable::UseDevRandom();
    * UniformVariable x(2,3);  //these are seeded randomly
@@ -221,19 +221,19 @@ public:
  * \brief A random variable that returns a constant
  * \ingroup randomvariable
  *
- * Class ConstantVariableImpl defines a random number generator that
+ * Class ConstantVariable defines a random number generator that
  * returns the same value every sample.
  */
 class ConstantVariable : public RandomVariable { 
 
 public:
   /**
-   * Construct a ConstantVariableImpl RNG that returns zero every sample
+   * Construct a ConstantVariable RNG that returns zero every sample
    */
   ConstantVariable();
   
   /**
-   * Construct a ConstantVariableImpl RNG that returns the specified value
+   * Construct a ConstantVariable RNG that returns the specified value
    * every sample.
    * \param c Unchanging value for this RNG.
    */
@@ -260,10 +260,10 @@ class SequentialVariable : public RandomVariable
 {
 public:
   /**
-   * \brief Constructor for the SequentialVariableImpl RNG.
+   * \brief Constructor for the SequentialVariable RNG.
    *
    * The four parameters define the sequence.  For example
-   * SequentialVariableImpl(0,5,1,2) creates a RNG that has the sequence
+   * SequentialVariable(0,5,1,2) creates a RNG that has the sequence
    * 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 0, 0 ...
    * \param f First value of the sequence.
    * \param l One more than the last value of the sequence.
@@ -273,13 +273,13 @@ public:
   SequentialVariable(double f, double l, double i = 1, uint32_t c = 1);
 
   /**
-   * \brief Constructor for the SequentialVariableImpl RNG.
+   * \brief Constructor for the SequentialVariable RNG.
    *
    * Differs from the first only in that the increment parameter is a
    * random variable
    * \param f First value of the sequence.
    * \param l One more than the last value of the sequence.
-   * \param i Reference to a RandomVariableBase for the sequence increment
+   * \param i Reference to a RandomVariable for the sequence increment
    * \param c Number of times each member of the sequence is repeated
    */
   SequentialVariable(double f, double l, const RandomVariable& i, uint32_t c = 1);
@@ -303,10 +303,10 @@ public:
  * \f$ \left\{ \begin{array}{cl} \alpha  e^{-\alpha x} & x < bound \\ bound & x > bound \end{array}\right. \f$
  * 
  * \code
- * ExponentialVariableImpl x(3.14);
+ * ExponentialVariable x(3.14);
  * x.GetValue();  //will always return with mean 3.14
- * ExponentialVariableImpl::GetSingleValue(20.1); //returns with mean 20.1
- * ExponentialVariableImpl::GetSingleValue(108); //returns with mean 108
+ * ExponentialVariable::GetSingleValue(20.1); //returns with mean 20.1
+ * ExponentialVariable::GetSingleValue(108); //returns with mean 108
  * \endcode
  *
  */
@@ -347,7 +347,7 @@ public:
 };
 
 /**
- * \brief ParetoVariableImpl distributed random var
+ * \brief ParetoVariable distributed random var
  * \ingroup randomvariable
  *
  * This class supports the creation of objects that return random numbers
@@ -362,10 +362,10 @@ public:
  * with the equation \f$ x_m = mean \frac{k-1}{k},  k > 1\f$.
  *
  * \code
- * ParetoVariableImpl x(3.14);
+ * ParetoVariable x(3.14);
  * x.GetValue();  //will always return with mean 3.14
- * ParetoVariableImpl::GetSingleValue(20.1); //returns with mean 20.1
- * ParetoVariableImpl::GetSingleValue(108); //returns with mean 108
+ * ParetoVariable::GetSingleValue(20.1); //returns with mean 20.1
+ * ParetoVariable::GetSingleValue(108); //returns with mean 108
  * \endcode
  */
 class ParetoVariable : public RandomVariable
@@ -419,7 +419,7 @@ public:
 };
 
 /**
- * \brief WeibullVariableImpl distributed random var
+ * \brief WeibullVariable distributed random var
  * \ingroup randomvariable
  *
  * This class supports the creation of objects that return random numbers
@@ -459,7 +459,7 @@ public:
    /**
    * \brief Constructs a weibull random variable with the specified mean
    * \brief value, shape (alpha), and upper bound.
-   * Since WeibullVariableImpl distributions can theoretically return unbounded values,
+   * Since WeibullVariable distributions can theoretically return unbounded values,
    * it is sometimes usefull to specify a fixed upper limit.  Note however
    * that when the upper limit is specified, the true mean of the distribution
    * is slightly smaller than the mean value specified.
@@ -478,7 +478,7 @@ public:
 };
 
 /**
- * \brief Class NormalVariableImpl defines a random variable with a
+ * \brief Class NormalVariable defines a random variable with a
  * normal (Gaussian) distribution.
  * \ingroup randomvariable
  * 
@@ -505,20 +505,20 @@ public:
    * \brief Construct a normal random variable with specified mean and variance
    * \param m Mean value
    * \param v Variance
-   * \param b Bound.  The NormalVariableImpl is bounded within +-bound.
+   * \param b Bound.  The NormalVariable is bounded within +-bound.
    */ 
   NormalVariable(double m, double v, double b = INFINITE_VALUE);
   /**
    * \param m Mean value
    * \param v Variance
-   * \param b Bound.  The NormalVariableImpl is bounded within +-bound.
+   * \param b Bound.  The NormalVariable is bounded within +-bound.
    * \return A random number from a distribution specified by m,v, and b.
    */ 
   static double GetSingleValue(double m, double v, double b = INFINITE_VALUE);
 };
 
 /**
- * \brief EmpiricalVariableImpl distribution random var
+ * \brief EmpiricalVariable distribution random var
  * \ingroup randomvariable
  *
  * Defines a random variable  that has a specified, empirical 
@@ -528,12 +528,14 @@ public:
  * the specified value.  When values are requested,
  * a uniform random variable is used to select a probabililty,
  * and the return value is interpreted linerarly between the
- * two appropriate points in the CDF
+ * two appropriate points in the CDF.  The method is known
+ * as inverse transform sampling:
+ * (http://en.wikipedia.org/wiki/Inverse_transform_sampling).
  */
 class EmpiricalVariable : public RandomVariable {
 public:
   /**
-   * Constructor for the EmpiricalVariableImpl random variables.
+   * Constructor for the EmpiricalVariable random variables.
    */
   explicit EmpiricalVariable();
 
@@ -552,8 +554,9 @@ protected:
  * \ingroup randomvariable
  *
  * Defines an empirical distribution where all values are integers.
- * Indentical to EmpiricalVariableImpl, but with slightly different
- * interpolation between points.
+ * Indentical to EmpiricalVariable, except that the inverse transform
+ * sampling interpolation described in the EmpiricalVariable documentation
+ * is modified to only return integers.
  */
 class IntEmpiricalVariable : public EmpiricalVariable 
 {
@@ -580,7 +583,7 @@ public:
    * on successive calls to ::Value().  Note that the d pointer is copied
    * for use by the generator (shallow-copy), not its contents, so the 
    * contents of the array d points to have to remain unchanged for the use 
-   * of DeterministicVariableImpl to be meaningful.
+   * of DeterministicVariable to be meaningful.
    * \param d Pointer to array of random values to return in sequence
    * \param c Number of values in the array
    */
@@ -592,7 +595,7 @@ public:
  * \brief Log-normal Distributed random var
  * \ingroup randomvariable
  *
- * LogNormalVariableImpl defines a random variable with log-normal
+ * LogNormalVariable defines a random variable with log-normal
  * distribution.  If one takes the natural logarithm of random
  * variable following the log-normal distribution, the obtained values
  * follow a normal distribution.
