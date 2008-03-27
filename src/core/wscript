@@ -76,6 +76,7 @@ def build(bld):
         'empty.h',
         'callback.h',
         'object-base.h',
+        'ref-count-base.h',
         'type-id.h',
         'attribute-list.h',
         'ptr.h',
