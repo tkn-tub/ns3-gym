@@ -73,6 +73,6 @@ private:
   std::ofstream *m_writer;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* PCAP_WRITER_H */
