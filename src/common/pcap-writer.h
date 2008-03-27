@@ -71,7 +71,6 @@ private:
   void Write16 (uint16_t data);
   void WriteHeader (uint32_t network);
   std::ofstream *m_writer;
-  Callback<void,uint8_t *,uint32_t> m_writeCallback;
 };
 
 }; // namespace ns3
