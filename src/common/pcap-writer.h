@@ -22,7 +22,6 @@
 #ifndef PCAP_WRITER_H
 #define PCAP_WRITER_H
 
-#include "ns3/callback.h"
 #include <stdint.h>
 
 namespace ns3 {
