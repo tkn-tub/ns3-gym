@@ -36,36 +36,12 @@
 #include <string>
 #include <cassert>
 
-#include "ns3/log.h"
-
-#include "ns3/command-line.h"
-#include "ns3/ptr.h"
-#include "ns3/random-variable.h"
-#include "ns3/config.h"
-
-#include "ns3/simulator.h"
-#include "ns3/nstime.h"
-#include "ns3/data-rate.h"
-
+#include "ns3/core-module.h"
+#include "ns3/helper-module.h"
+#include "ns3/simulator-module.h"
 #include "ns3/ascii-trace.h"
 #include "ns3/pcap-trace.h"
-#include "ns3/internet-node.h"
-#include "ns3/point-to-point-channel.h"
-#include "ns3/point-to-point-net-device.h"
-#include "ns3/csma-channel.h"
-#include "ns3/csma-net-device.h"
-#include "ns3/csma-topology.h"
-#include "ns3/csma-ipv4-topology.h"
-#include "ns3/mac48-address.h"
-#include "ns3/ipv4-address.h"
-#include "ns3/ipv4.h"
-#include "ns3/socket.h"
-#include "ns3/inet-socket-address.h"
-#include "ns3/ipv4-route.h"
-#include "ns3/point-to-point-topology.h"
-#include "ns3/onoff-application.h"
 #include "ns3/global-route-manager.h"
-#include "ns3/uinteger.h"
 
 using namespace ns3;
 
@@ -114,68 +90,49 @@ main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   NS_LOG_INFO ("Create nodes.");
-  Ptr<Node> n0 = CreateObject<InternetNode> ();
-  Ptr<Node> n1 = CreateObject<InternetNode> (); 
-  Ptr<Node> n2 = CreateObject<InternetNode> (); 
-  Ptr<Node> n3 = CreateObject<InternetNode> ();
-  Ptr<Node> n4 = CreateObject<InternetNode> (); 
-  Ptr<Node> n5 = CreateObject<InternetNode> (); 
-  Ptr<Node> n6 = CreateObject<InternetNode> ();
+  NodeContainer c;
+  c.Create (7);
+  NodeContainer n0n2 = NodeContainer (c.Get (0), c.Get (2));
+  NodeContainer n1n2 = NodeContainer (c.Get (1), c.Get (2));
+  NodeContainer n5n6 = NodeContainer (c.Get (5), c.Get (6));
+  NodeContainer n2345 = NodeContainer (c.Get (2), c.Get (3), c.Get (4), c.Get (5));
+
+  InternetStackHelper internet;
+  internet.Build (c);
 
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
-  Ptr<PointToPointChannel> channel0 = 
-    PointToPointTopology::AddPointToPointLink (
-      n0, n2, DataRate (5000000), MilliSeconds (2));
+  PointToPointHelper p2p;
+  p2p.SetChannelParameter ("BitRate", DataRate (5000000));
+  p2p.SetChannelParameter ("Delay", MilliSeconds (2));
+  NetDeviceContainer d0d2 = p2p.Build (n0n2);
 
-  Ptr<PointToPointChannel> channel1 = 
-    PointToPointTopology::AddPointToPointLink (
-      n1, n2, DataRate (5000000), MilliSeconds (2));
-  
-  Ptr<PointToPointChannel> channel2 = 
-    PointToPointTopology::AddPointToPointLink (
-      n5, n6, DataRate (1500000), MilliSeconds (10));
+  NetDeviceContainer d1d2 = p2p.Build (n1n2);
+
+  p2p.SetChannelParameter ("BitRate", DataRate (1500000));
+  p2p.SetChannelParameter ("Delay", MilliSeconds (10));
+  NetDeviceContainer d5d6 = p2p.Build (n5n6);
 
   // We create the channels first without any IP addressing information
-  Ptr<CsmaChannel> channelc0 = 
-    CsmaTopology::CreateCsmaChannel(
-      DataRate(5000000), MilliSeconds(2));
-
-  NS_LOG_INFO ("Build Topology.");
-  uint32_t n2ifIndex = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n2, channelc0,
-                                         Mac48Address("10:54:23:54:23:50"));
-  uint32_t n3ifIndex = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n3, channelc0,
-                                         Mac48Address("10:54:23:54:23:51"));
-  uint32_t n4ifIndex = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n4, channelc0,
-                                         Mac48Address("10:54:23:54:23:52"));
-  uint32_t n5ifIndex = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n5, channelc0,
-                                         Mac48Address("10:54:23:54:23:53"));
-
+  CsmaHelper csma;
+  csma.SetChannelParameter ("BitRate", DataRate (5000000));
+  csma.SetChannelParameter ("Delay", MilliSeconds (2));
+  NetDeviceContainer d2345 = csma.Build (n2345);
+  
   // Later, we add IP addresses.  
   NS_LOG_INFO ("Assign IP Addresses.");
-  PointToPointTopology::AddIpv4Addresses (
-      channel0, n0, Ipv4Address ("10.1.1.1"),
-      n2, Ipv4Address ("10.1.1.2"));
-  
-  PointToPointTopology::AddIpv4Addresses (
-      channel1, n1, Ipv4Address ("10.1.2.1"),
-      n2, Ipv4Address ("10.1.2.2"));
-  
-  PointToPointTopology::AddIpv4Addresses (
-      channel2, n5, Ipv4Address ("10.1.3.1"),
-      n6, Ipv4Address ("10.1.3.2"));
+  Ipv4AddressHelper ipv4;
+  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+  ipv4.Allocate (d0d2);
 
-  CsmaIpv4Topology::AddIpv4Address (
-      n2, n2ifIndex, Ipv4Address("10.250.1.1"), Ipv4Mask("255.255.255.0"));
+  ipv4.SetBase ("10.1.2.0", "255.255.255.0");
+  ipv4.Allocate (d1d2);
 
-  CsmaIpv4Topology::AddIpv4Address (
-      n3, n3ifIndex, Ipv4Address("10.250.1.2"), Ipv4Mask("255.255.255.0"));
-  
-  CsmaIpv4Topology::AddIpv4Address (
-      n4, n4ifIndex, Ipv4Address("10.250.1.3"), Ipv4Mask("255.255.255.0"));
-  
-  CsmaIpv4Topology::AddIpv4Address (
-      n5, n5ifIndex, Ipv4Address("10.250.1.4"), Ipv4Mask("255.255.255.0"));
+  ipv4.SetBase ("10.1.3.0", "255.255.255.0");
+  Ipv4InterfaceContainer i5i6 = ipv4.Allocate (d5d6);
+
+  ipv4.SetBase ("10.250.1.0", "255.255.255.0");
+  ipv4.Allocate (d2345);
 
   // Create router nodes, initialize routing database and set up the routing
   // tables in the nodes.
@@ -185,17 +142,15 @@ main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
-  Ptr<OnOffApplication> ooff = 
-    CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress ("10.1.3.2", port)), 
-                                    "Protocol", TypeId::LookupByName ("ns3::Udp"),
-                                    "OnTime", ConstantVariable (1), 
-                                    "OffTime", ConstantVariable (0),
-                                    "DataRate", DataRate("300bps"),
-                                    "PacketSize", Uinteger (50));
-  n0->AddApplication (ooff);
-  // Start the application
-  ooff->Start (Seconds (1.0));
-  ooff->Stop (Seconds (10.0));
+  OnOffHelper onoff;
+  onoff.SetAppAttribute ("OnTime", ConstantVariable (1));
+  onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
+  onoff.SetAppAttribute ("DataRate", DataRate("300bps"));
+  onoff.SetAppAttribute ("PacketSize", Uinteger (50));
+  onoff.SetUdpRemote (i5i6.GetAddress (1), port);
+  ApplicationContainer apps = onoff.Build (c.Get (0));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
 
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the simple-global-routing.tr file

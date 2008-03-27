@@ -35,6 +35,7 @@
 #include "ns3/core-module.h"
 #include "ns3/helper-module.h"
 #include "ns3/internet-node-module.h"
+#include "ns3/simulator-module.h"
 
 using namespace ns3;
 

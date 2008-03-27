@@ -20,7 +20,8 @@
 #define IPV4_ADDRESS_HELPER_H
 
 #include "ns3/ipv4-address.h"
-#include "ns3/net-device-container.h"
+#include "net-device-container.h"
+#include "ipv4-interface-container.h"
 
 namespace ns3 {
 
@@ -164,7 +165,7 @@ public:
  * @see SetBase
  * @see NewNetwork
  */
-  void Allocate (const NetDeviceContainer &c);
+  Ipv4InterfaceContainer Allocate (const NetDeviceContainer &c);
 
 private:
   uint32_t NumAddressBits (uint32_t maskbits) const;

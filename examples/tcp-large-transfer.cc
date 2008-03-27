@@ -36,11 +36,12 @@
 
 #include "ns3/core-module.h"
 #include "ns3/helper-module.h"
+#include "ns3/node-module.h"
+#include "ns3/global-route-manager.h"
+#include "ns3/simulator-module.h"
 
 #include "ns3/ascii-trace.h"
 #include "ns3/pcap-trace.h"
-
-#include "ns3/internet-node-module.h"
 
 using namespace ns3;
 
@@ -149,7 +150,7 @@ int main (int argc, char *argv[])
   ipv4.SetBase ("10.1.3.0", "255.255.255.0");
   ipv4.Allocate (dev0);
   ipv4.SetBase ("10.1.2.0", "255.255.255.0");
-  ipv4.Allocate (dev1);
+  Ipv4InterfaceContainer ipInterfs = ipv4.Allocate (dev1);
 
   // and setup ip routing tables to get total ip-level connectivity.
   GlobalRouteManager::PopulateRoutingTables ();
@@ -177,7 +178,7 @@ int main (int argc, char *argv[])
   Ptr<Socket> localSocket = socketFactory->CreateSocket ();
   localSocket->Bind ();
   Simulator::ScheduleNow (&StartFlow, localSocket, nBytes,
-                          Ipv4Address ("10.1.2.2"), servPort);
+                          ipInterfs.GetAddress (1), servPort);
 
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the simple-examples.tr file

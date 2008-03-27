@@ -50,7 +50,7 @@ PointToPointNetDevice::GetTypeId (void)
                    DataRate ("10Mb/s"),
                    MakeDataRateAccessor (&PointToPointNetDevice::m_bps),
                    MakeDataRateChecker ())
-    .AddAttribute ("RxErrorModel", "XXX",
+    .AddAttribute ("ReceiveErrorModel", "XXX",
                    Ptr<ErrorModel> (0),
                    MakePtrAccessor (&PointToPointNetDevice::m_receiveErrorModel),
                    MakePtrChecker<ErrorModel> ())
@@ -224,7 +224,6 @@ void PointToPointNetDevice::AddReceiveErrorModel (Ptr<ErrorModel> em)
   NS_LOG_PARAMS ("(" << em << ")");
 
   m_receiveErrorModel = em;
-  AggregateObject (em);
 }
 
 void PointToPointNetDevice::Receive (Ptr<Packet> packet)
