@@ -34,6 +34,7 @@ def build(bld):
         'type-id.cc',
         'attribute-list.cc',
         'object-base.cc',
+        'ref-count-base.cc',
         'ptr.cc',
         'object.cc',
         'test.cc',
