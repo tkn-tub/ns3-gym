@@ -89,6 +89,9 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
+  std::ofstream ascii;
+  ascii.open ("mixed-global-routing.tr");
+
   NS_LOG_INFO ("Create nodes.");
   NodeContainer c;
   c.Create (7);
@@ -103,6 +106,8 @@ main (int argc, char *argv[])
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
   PointToPointHelper p2p;
+  p2p.EnablePcap ("mixed-global-routing.pcap");
+  p2p.EnableAscii (ascii);
   p2p.SetChannelParameter ("BitRate", DataRate (5000000));
   p2p.SetChannelParameter ("Delay", MilliSeconds (2));
   NetDeviceContainer d0d2 = p2p.Build (n0n2);
@@ -115,6 +120,8 @@ main (int argc, char *argv[])
 
   // We create the channels first without any IP addressing information
   CsmaHelper csma;
+  csma.EnablePcap ("mixed-global-routing.pcap");
+  csma.EnableAscii (ascii);
   csma.SetChannelParameter ("BitRate", DataRate (5000000));
   csma.SetChannelParameter ("Delay", MilliSeconds (2));
   NetDeviceContainer d2345 = csma.Build (n2345);
@@ -152,19 +159,6 @@ main (int argc, char *argv[])
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
-  // Configure tracing of all enqueue, dequeue, and NetDevice receive events
-  // Trace output will be sent to the simple-global-routing.tr file
-  NS_LOG_INFO ("Configure Tracing.");
-  AsciiTrace asciitrace ("mixed-global-routing.tr");
-  asciitrace.TraceAllQueues ();
-  asciitrace.TraceAllNetDeviceRx ();
-
-  // Also configure some tcpdump traces; each interface will be traced
-  // The output files will be named simple-p2p.pcap-<nodeId>-<interfaceId>
-  // and can be read by the "tcpdump -r" command (use "-tt" option to
-  // display timestamps correctly)
-  PcapTrace pcaptrace ("mixed-global-routing.pcap");
-  pcaptrace.TraceAllIp ();
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();
