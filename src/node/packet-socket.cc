@@ -116,7 +116,7 @@ PacketSocket::DoBind (const PacketSocketAddress &address)
     }
   else
     {
-      m_node->GetDevice (address.GetSingleDevice ());
+      dev = m_node->GetDevice (address.GetSingleDevice ());
     }
   m_node->RegisterProtocolHandler (MakeCallback (&PacketSocket::ForwardUp, this),
                                    address.GetProtocol (), dev);
