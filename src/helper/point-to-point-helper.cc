@@ -2,6 +2,10 @@
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/point-to-point-channel.h"
 #include "ns3/queue.h"
+#include "ns3/pcap-writer.h"
+#include "ns3/config.h"
+#include "ns3/packet.h"
+
 
 namespace ns3 {
 
@@ -40,6 +44,58 @@ PointToPointHelper::SetChannelParameter (std::string n1, Attribute v1)
 }
 
 
+void 
+PointToPointHelper::EnablePcap (std::string filename)
+{
+  m_pcap = true;
+  m_pcapFilename = filename;
+}
+void 
+PointToPointHelper::DisablePcap (void)
+{
+  m_pcap = false;
+}
+
+void 
+PointToPointHelper::EnableAscii (std::ostream &os)
+{
+  m_ascii = true;
+  m_asciiOs = &os;
+}
+void 
+PointToPointHelper::DisableAscii (void)
+{
+  m_ascii = false;
+}
+
+void
+PointToPointHelper::EnablePcap (Ptr<Node> node, Ptr<NetDevice> device, Ptr<Queue> queue)
+{
+  std::ostringstream oss;
+  oss << m_pcapFilename << "-" << node->GetId () << "-" << device->GetIfIndex ();
+  std::string filename = oss.str ();
+  Ptr<PcapWriter> pcap = Create<PcapWriter> ();
+  pcap->Open (filename);
+  pcap->WriteEthernetHeader ();
+  device->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&PointToPointHelper::RxEvent, pcap));
+  queue->TraceConnectWithoutContext ("Enqueue", MakeBoundCallback (&PointToPointHelper::EnqueueEvent, pcap));
+}
+
+void
+PointToPointHelper::EnableAscii (Ptr<Node> node, Ptr<NetDevice> device)
+{
+  Packet::EnableMetadata ();
+  std::ostringstream oss;
+  oss << "/NodeList/" << node->GetId () << "/DeviceList/" << device->GetIfIndex () << "/Rx";
+  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiEvent, m_asciiOs));
+  oss.str ("");
+  oss << "/NodeList/" << node->GetId () << "/DeviceList/" << device->GetIfIndex () << "/TxQueue/Enqueue";
+  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiEvent, m_asciiOs));
+  oss.str ("");
+  oss << "/NodeList/" << node->GetId () << "/DeviceList/" << device->GetIfIndex () << "/TxQueue/Dequeue";
+  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiEvent, m_asciiOs));
+}
+
 NetDeviceContainer 
 PointToPointHelper::Build (NodeContainer c)
 {
@@ -64,10 +120,37 @@ PointToPointHelper::Build (Ptr<Node> a, Ptr<Node> b)
   Ptr<PointToPointChannel> channel = m_channelFactory.Create<PointToPointChannel> ();
   devA->Attach (channel);
   devB->Attach (channel);
+  if (m_pcap)
+    {
+      EnablePcap (a, devA, queueA);
+      EnablePcap (b, devB, queueB);
+    }
+  if (m_ascii)
+    {
+      EnableAscii (a, devA);
+      EnableAscii (b, devB);
+    }
+
   container.Add (devA);
   container.Add (devB);
 
   return container;
+}
+
+void 
+PointToPointHelper::EnqueueEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
+{
+  writer->WritePacket (packet);
+}
+void 
+PointToPointHelper::RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
+{
+  writer->WritePacket (packet);
+}
+void 
+PointToPointHelper::AsciiEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+{
+  *os << path << " " << *packet << std::endl;
 }
 
 

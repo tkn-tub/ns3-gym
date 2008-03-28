@@ -8,6 +8,11 @@
 
 namespace ns3 {
 
+class Queue;
+class NetDevice;
+class Node;
+class PcapWriter;
+
 /**
  * \brief build a set of PointToPointNetDevice objects
  */
@@ -55,6 +60,36 @@ public:
   void SetChannelParameter (std::string name, Attribute value);
 
   /**
+   * \param filename file template to dump pcap traces in.
+   *
+   * Every ns3::PointToPointNetDevice created through subsequent calls
+   * to PointToPointHelper::Build will be configured to dump
+   * pcap output in a file named filename-nodeid-deviceid.
+   */
+  void EnablePcap (std::string filename);
+  /**
+   * Every ns3::PointToPointNetDevice created through subsequent calls
+   * to PointToPointHelper::Build will be configured to not dump any pcap
+   * output.
+   */
+  void DisablePcap (void);
+
+  /**
+   * \param os an output stream where ascii trace should be sent.
+   *
+   * Every ns3::PointToPointNetDevice created through subsequent calls
+   * to PointToPointHelper::Build will be configured to dump Rx, EnQueue
+   * and Dequeue events as ascii data in the specified output stream.
+   */
+  void EnableAscii (std::ostream &os);
+  /**
+   * Every ns3::PointToPointNetDevice created through subsequent calls
+   * to PointToPointHelper::Build will be configured to not dump any
+   * ascii output.
+   */
+  void DisableAscii (void);
+
+  /**
    * \param c a set of nodes
    *
    * This method creates a ns3::PointToPointChannel with the
@@ -74,9 +109,18 @@ public:
   NetDeviceContainer Build (Ptr<Node> a, Ptr<Node> b);
 
 private:
+  void EnablePcap (Ptr<Node> node, Ptr<NetDevice> device, Ptr<Queue> queue);
+  void EnableAscii (Ptr<Node> node, Ptr<NetDevice> device);
+  static void RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
+  static void EnqueueEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
+  static void AsciiEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
   ObjectFactory m_queueFactory;
   ObjectFactory m_channelFactory;
   ObjectFactory m_deviceFactory;
+  bool m_pcap;
+  std::string m_pcapFilename;
+  bool m_ascii;
+  std::ostream *m_asciiOs;
 };
 
 
