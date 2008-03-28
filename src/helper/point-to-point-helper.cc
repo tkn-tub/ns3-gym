@@ -43,57 +43,93 @@ PointToPointHelper::SetChannelParameter (std::string n1, Attribute v1)
   m_channelFactory.Set (n1, v1);
 }
 
-
 void 
-PointToPointHelper::EnablePcap (std::string filename)
-{
-  m_pcap = true;
-  m_pcapFilename = filename;
-}
-void 
-PointToPointHelper::DisablePcap (void)
-{
-  m_pcap = false;
-}
-
-void 
-PointToPointHelper::EnableAscii (std::ostream &os)
-{
-  m_ascii = true;
-  m_asciiOs = &os;
-}
-void 
-PointToPointHelper::DisableAscii (void)
-{
-  m_ascii = false;
-}
-
-void
-PointToPointHelper::EnablePcap (Ptr<Node> node, Ptr<NetDevice> device, Ptr<Queue> queue)
+PointToPointHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid)
 {
   std::ostringstream oss;
-  oss << m_pcapFilename << "-" << node->GetId () << "-" << device->GetIfIndex ();
-  std::string filename = oss.str ();
+  oss << filename << "-" << nodeid << "-" << deviceid;
   Ptr<PcapWriter> pcap = Create<PcapWriter> ();
-  pcap->Open (filename);
+  pcap->Open (oss.str ());
   pcap->WriteEthernetHeader ();
-  device->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&PointToPointHelper::RxEvent, pcap));
-  queue->TraceConnectWithoutContext ("Enqueue", MakeBoundCallback (&PointToPointHelper::EnqueueEvent, pcap));
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/Rx";
+  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PointToPointHelper::RxEvent, pcap));
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Enqueue";
+  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PointToPointHelper::EnqueueEvent, pcap));
+}
+void 
+PointToPointHelper::EnablePcap (std::string filename, NetDeviceContainer d)
+{
+  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
+    {
+      Ptr<NetDevice> dev = *i;
+      EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex ());
+    }
+}
+void
+PointToPointHelper::EnablePcap (std::string filename, NodeContainer n)
+{
+  NetDeviceContainer devs;
+  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
+    {
+      Ptr<Node> node = *i;
+      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
+	{
+	  devs.Add (node->GetDevice (j));
+	}
+    }
+  EnablePcap (filename, devs);
 }
 
 void
-PointToPointHelper::EnableAscii (Ptr<Node> node, Ptr<NetDevice> device)
+PointToPointHelper::EnablePcap (std::string filename)
+{
+  EnablePcap (filename, NodeContainer::GetGlobal ());
+}
+
+void 
+PointToPointHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
 {
   Packet::EnableMetadata ();
   std::ostringstream oss;
-  oss << "/NodeList/" << node->GetId () << "/DeviceList/" << device->GetIfIndex () << "/Rx";
-  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiEvent, m_asciiOs));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/Rx";
+  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiEvent, &os));
   oss.str ("");
-  oss << "/NodeList/" << node->GetId () << "/DeviceList/" << device->GetIfIndex () << "/TxQueue/Enqueue";
-  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiEvent, m_asciiOs));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Enqueue";
+  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiEvent, &os));
   oss.str ("");
-  oss << "/NodeList/" << node->GetId () << "/DeviceList/" << device->GetIfIndex () << "/TxQueue/Dequeue";
-  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiEvent, m_asciiOs));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Dequeue";
+  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiEvent, &os));
+}
+void 
+PointToPointHelper::EnableAscii (std::ostream &os, NetDeviceContainer d)
+{
+  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
+    {
+      Ptr<NetDevice> dev = *i;
+      EnableAscii (os, dev->GetNode ()->GetId (), dev->GetIfIndex ());
+    }
+}
+void
+PointToPointHelper::EnableAscii (std::ostream &os, NodeContainer n)
+{
+  NetDeviceContainer devs;
+  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
+    {
+      Ptr<Node> node = *i;
+      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
+	{
+	  devs.Add (node->GetDevice (j));
+	}
+    }
+  EnableAscii (os, devs);
+}
+
+void
+PointToPointHelper::EnableAscii (std::ostream &os)
+{
+  EnableAscii (os, NodeContainer::GetGlobal ());
 }
 
 NetDeviceContainer 
@@ -120,17 +156,6 @@ PointToPointHelper::Build (Ptr<Node> a, Ptr<Node> b)
   Ptr<PointToPointChannel> channel = m_channelFactory.Create<PointToPointChannel> ();
   devA->Attach (channel);
   devB->Attach (channel);
-  if (m_pcap)
-    {
-      EnablePcap (a, devA, queueA);
-      EnablePcap (b, devB, queueB);
-    }
-  if (m_ascii)
-    {
-      EnableAscii (a, devA);
-      EnableAscii (b, devB);
-    }
-
   container.Add (devA);
   container.Add (devB);
 

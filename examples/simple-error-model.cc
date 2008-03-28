@@ -71,9 +71,6 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
-  std::ofstream ascii;
-  ascii.open ("simple-error-model.pcap");
-
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.
   NS_LOG_INFO ("Create nodes.");
@@ -89,8 +86,6 @@ main (int argc, char *argv[])
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
   PointToPointHelper p2p;
-  p2p.EnablePcap ("simple-error-model.pcap");
-  p2p.EnableAscii (ascii);
   p2p.SetChannelParameter ("BitRate", DataRate (5000000));
   p2p.SetChannelParameter ("Delay", MilliSeconds (2));
   NetDeviceContainer d0d2 = p2p.Build (n0n2);
@@ -166,6 +161,10 @@ main (int argc, char *argv[])
   pem->SetList (sampleList);
   d0d2.Get (1)->SetAttribute ("ReceiveErrorModel", pem);
 
+  std::ofstream ascii;
+  ascii.open ("simple-error-model.tr");
+  PointToPointHelper::EnablePcap ("simple-error-model.pcap");
+  PointToPointHelper::EnableAscii (ascii);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();    

@@ -130,13 +130,8 @@ int main (int argc, char *argv[])
   c1.Add (c0.Get (1));
   c1.Create (1);
 
-  std::ofstream ascii;
-  ascii.open ("tcp-large-transfer.tr");
-
   // We create the channels first without any IP addressing information
   PointToPointHelper p2p;
-  p2p.EnablePcap ("tcp-large-transfer.pcap");
-  p2p.EnableAscii (ascii);
   p2p.SetChannelParameter ("BitRate", DataRate(10000000));
   p2p.SetChannelParameter ("Delay", MilliSeconds(10));
   NetDeviceContainer dev0 = p2p.Build (c0);
@@ -184,6 +179,12 @@ int main (int argc, char *argv[])
 
   Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/Rx", 
                    MakeCallback (&ApplicationTraceSink));
+
+  std::ofstream ascii;
+  ascii.open ("tcp-large-transfer.tr");
+  PointToPointHelper::EnablePcap ("tcp-large-transfer.pcap");
+  PointToPointHelper::EnableAscii (ascii);
+
 
   Simulator::StopAt (Seconds(1000));
   Simulator::Run ();

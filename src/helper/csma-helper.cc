@@ -11,8 +11,6 @@
 namespace ns3 {
 
 CsmaHelper::CsmaHelper ()
-  : m_pcap (false), 
-    m_ascii (false)
 {
   m_queueFactory.SetTypeId ("ns3::DropTailQueue");
   m_deviceFactory.SetTypeId ("ns3::CsmaNetDevice");
@@ -46,27 +44,92 @@ CsmaHelper::SetChannelParameter (std::string n1, Attribute v1)
 }
 
 void 
-CsmaHelper::EnablePcap (std::string filename)
+CsmaHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid)
 {
-  m_pcap = true;
-  m_pcapFilename = filename;
+  std::ostringstream oss;
+  oss << filename << "-" << nodeid << "-" << deviceid;
+  Ptr<PcapWriter> pcap = Create<PcapWriter> ();
+  pcap->Open (oss.str ());
+  pcap->WriteEthernetHeader ();
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/Rx";
+  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&CsmaHelper::RxEvent, pcap));
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/TxQueue/Enqueue";
+  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&CsmaHelper::EnqueueEvent, pcap));
 }
 void 
-CsmaHelper::DisablePcap (void)
+CsmaHelper::EnablePcap (std::string filename, NetDeviceContainer d)
 {
-  m_pcap = false;
+  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
+    {
+      Ptr<NetDevice> dev = *i;
+      EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex ());
+    }
+}
+void
+CsmaHelper::EnablePcap (std::string filename, NodeContainer n)
+{
+  NetDeviceContainer devs;
+  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
+    {
+      Ptr<Node> node = *i;
+      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
+	{
+	  devs.Add (node->GetDevice (j));
+	}
+    }
+  EnablePcap (filename, devs);
+}
+
+void
+CsmaHelper::EnablePcap (std::string filename)
+{
+  EnablePcap (filename, NodeContainer::GetGlobal ());
 }
 
 void 
-CsmaHelper::EnableAscii (std::ostream &os)
+CsmaHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
 {
-  m_ascii = true;
-  m_asciiOs = &os;
+  Packet::EnableMetadata ();
+  std::ostringstream oss;
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/Rx";
+  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiEvent, &os));
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/TxQueue/Enqueue";
+  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiEvent, &os));
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/TxQueue/Dequeue";
+  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiEvent, &os));
 }
 void 
-CsmaHelper::DisableAscii (void)
+CsmaHelper::EnableAscii (std::ostream &os, NetDeviceContainer d)
 {
-  m_ascii = false;
+  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
+    {
+      Ptr<NetDevice> dev = *i;
+      EnableAscii (os, dev->GetNode ()->GetId (), dev->GetIfIndex ());
+    }
+}
+void
+CsmaHelper::EnableAscii (std::ostream &os, NodeContainer n)
+{
+  NetDeviceContainer devs;
+  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
+    {
+      Ptr<Node> node = *i;
+      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
+	{
+	  devs.Add (node->GetDevice (j));
+	}
+    }
+  EnableAscii (os, devs);
+}
+
+void
+CsmaHelper::EnableAscii (std::ostream &os)
+{
+  EnableAscii (os, NodeContainer::GetGlobal ());
 }
 
 
@@ -90,31 +153,6 @@ CsmaHelper::Build (const NodeContainer &c, Ptr<CsmaChannel> channel)
       Ptr<Queue> queue = m_queueFactory.Create<Queue> ();
       device->AddQueue (queue);
       device->Attach (channel);
-      if (m_pcap)
-	{
-	  std::ostringstream oss;
-	  oss << m_pcapFilename << "-" << node->GetId () << "-" << device->GetIfIndex ();
-	  std::string filename = oss.str ();
-	  Ptr<PcapWriter> pcap = Create<PcapWriter> ();
-	  pcap->Open (filename);
-	  pcap->WriteEthernetHeader ();
-	  device->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&CsmaHelper::RxEvent, pcap));
-	  queue->TraceConnectWithoutContext ("Enqueue", MakeBoundCallback (&CsmaHelper::EnqueueEvent, pcap));
-	}
-      if (m_ascii)
-	{
-	  Packet::EnableMetadata ();
-	  std::ostringstream oss;
-	  oss << "/NodeList/" << node->GetId () << "/DeviceList/" << device->GetIfIndex () << "/Rx";
-	  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiEvent, m_asciiOs));
-	  oss.str ("");
-	  oss << "/NodeList/" << node->GetId () << "/DeviceList/" << device->GetIfIndex () << "/TxQueue/Enqueue";
-	  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiEvent, m_asciiOs));
-	  oss.str ("");
-	  oss << "/NodeList/" << node->GetId () << "/DeviceList/" << device->GetIfIndex () << "/TxQueue/Dequeue";
-	  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiEvent, m_asciiOs));
-	  
-	}
       container.Add (device);
     }
   return container;

@@ -103,9 +103,6 @@ main (int argc, char *argv[])
   // DefaultValue::Bind ()s at run-time, via command-line arguments
   cmd.Parse (argc, argv);
 
-  std::ofstream ascii;
-  ascii.open ("simple-alternate-routing.tr");
-
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.
   NS_LOG_INFO ("Create nodes.");
@@ -119,8 +116,6 @@ main (int argc, char *argv[])
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
   PointToPointHelper p2p;
-  p2p.EnablePcap ("simple-alternate-routing.pcap");
-  p2p.EnableAscii (ascii);
   p2p.SetChannelParameter ("BitRate", DataRate (5000000));
   p2p.SetChannelParameter ("Delay", MilliSeconds (2));
   NetDeviceContainer d0d2 = p2p.Build (n0n2);
@@ -179,6 +174,11 @@ main (int argc, char *argv[])
   apps = sink.Build (c.Get (1));
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));
+
+  std::ofstream ascii;
+  ascii.open ("simple-alternate-routing.tr");
+  PointToPointHelper::EnablePcap ("simple-alternate-routing.pcap");
+  PointToPointHelper::EnableAscii (ascii);
 
 
   NS_LOG_INFO ("Run Simulation.");

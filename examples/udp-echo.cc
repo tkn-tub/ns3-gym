@@ -82,16 +82,11 @@ main (int argc, char *argv[])
   InternetStackHelper internet;
   internet.Build (n);
 
-  std::ofstream ascii;
-  ascii.open ("udp-echo.tr");
-
   NS_LOG_INFO ("Create channels.");
 //
 // Explicitly create the channels required by the topology (shown above).
 //
   CsmaHelper csma;
-  csma.EnablePcap ("udp-echo.pcap");
-  csma.EnableAscii (ascii);
   csma.SetChannelParameter ("BitRate", DataRate(5000000));
   csma.SetChannelParameter ("Delay", MilliSeconds (2));
   NetDeviceContainer d = csma.Build (n);
@@ -130,6 +125,11 @@ main (int argc, char *argv[])
   apps = client.Build (n.Get (0));
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (10.0));
+
+  std::ofstream ascii;
+  ascii.open ("udp-echo.tr");
+  CsmaHelper::EnablePcap ("udp-echo.pcap");
+  CsmaHelper::EnableAscii (ascii);
 
 //
 // Now, do the actual simulation.
