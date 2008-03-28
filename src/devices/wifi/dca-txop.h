@@ -26,7 +26,6 @@
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
-#include "ns3/traced-value.h"
 #include "wifi-mac-header.h"
 #include "wifi-mode.h"
 #include "wifi-remote-station-manager.h"
@@ -114,6 +113,7 @@ private:
   class Dcf;
   friend class Dcf;
   friend class TransmissionListener;
+  friend class WifiRemoteStation;
 
   // Inherited from ns3::Object
   Ptr<MacLow> Low (void);
@@ -134,13 +134,13 @@ private:
   void RestartAccessIfNeeded (void);
   void StartAccessIfNeeded (void);
   bool NeedRts (void);
+  bool NeedRtsRetransmission (void);
+  bool NeedDataRetransmission (void);
   bool NeedFragmentation (void);
   uint32_t GetNFragments (void);
   uint32_t GetNextFragmentSize (void);
   uint32_t GetFragmentSize (void);
   WifiRemoteStation *GetStation (Mac48Address to) const;
-  uint32_t GetMaxSsrc (void) const;
-  uint32_t GetMaxSlrc (void) const;
   bool IsLastFragment (void);
   void NextFragment (void);
   Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);
@@ -161,8 +161,6 @@ private:
   bool m_accessOngoing;
   Ptr<const Packet> m_currentPacket;
   WifiMacHeader m_currentHdr;
-  TracedValue<uint32_t> m_ssrc;
-  TracedValue<uint32_t> m_slrc;
   uint8_t m_fragmentNumber;
 };
 

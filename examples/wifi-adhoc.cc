@@ -225,7 +225,6 @@ int main (int argc, char *argv[])
   gnuplot.GenerateOutput (std::cout);
 
 
-
   gnuplot = Gnuplot ("rate-control.png");
   Config::SetDefault ("ns3::WifiPhy::Standard", String ("holland"));
 

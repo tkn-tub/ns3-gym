@@ -89,31 +89,31 @@ AmrrWifiRemoteStation::~AmrrWifiRemoteStation ()
 {}
 
 void 
-AmrrWifiRemoteStation::ReportRxOk (double rxSnr, WifiMode txMode)
+AmrrWifiRemoteStation::DoReportRxOk (double rxSnr, WifiMode txMode)
 {}
 void 
-AmrrWifiRemoteStation::ReportRtsFailed (void)
+AmrrWifiRemoteStation::DoReportRtsFailed (void)
 {}
 void 
-AmrrWifiRemoteStation::ReportDataFailed (void)
+AmrrWifiRemoteStation::DoReportDataFailed (void)
 {
   m_retry++;
   m_tx_retr++;
 }
 void 
-AmrrWifiRemoteStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
+AmrrWifiRemoteStation::DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {}
 void 
-AmrrWifiRemoteStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
+AmrrWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
 {
   m_retry = 0;
   m_tx_ok++;
 }
 void 
-AmrrWifiRemoteStation::ReportFinalRtsFailed (void)
+AmrrWifiRemoteStation::DoReportFinalRtsFailed (void)
 {}
 void 
-AmrrWifiRemoteStation::ReportFinalDataFailed (void)
+AmrrWifiRemoteStation::DoReportFinalDataFailed (void)
 {
   m_retry = 0;
   m_tx_err++;

@@ -81,11 +81,11 @@ RraaWifiRemoteStation::GetThresholds (uint32_t rate)
 
 
 void 
-RraaWifiRemoteStation::ReportRtsFailed (void)
+RraaWifiRemoteStation::DoReportRtsFailed (void)
 {}
 
 void 
-RraaWifiRemoteStation::ReportDataFailed (void)
+RraaWifiRemoteStation::DoReportDataFailed (void)
 {
   m_lastFrameFail = true;
   CheckTimeout ();
@@ -94,15 +94,15 @@ RraaWifiRemoteStation::ReportDataFailed (void)
   RunBasicAlgorithm ();
 }
 void 
-RraaWifiRemoteStation::ReportRxOk (double rxSnr, WifiMode txMode)
+RraaWifiRemoteStation::DoReportRxOk (double rxSnr, WifiMode txMode)
 {}
 void 
-RraaWifiRemoteStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
+RraaWifiRemoteStation::DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
   NS_LOG_DEBUG ("self="<<this<<" rts ok");
 }
 void 
-RraaWifiRemoteStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
+RraaWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
 {
   m_lastFrameFail = false;
   CheckTimeout ();
@@ -110,10 +110,10 @@ RraaWifiRemoteStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dat
   RunBasicAlgorithm ();
 }
 void 
-RraaWifiRemoteStation::ReportFinalRtsFailed (void)
+RraaWifiRemoteStation::DoReportFinalRtsFailed (void)
 {}
 void 
-RraaWifiRemoteStation::ReportFinalDataFailed (void)
+RraaWifiRemoteStation::DoReportFinalDataFailed (void)
 {}
 
 WifiMode

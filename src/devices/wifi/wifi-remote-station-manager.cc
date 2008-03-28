@@ -25,6 +25,7 @@
 #include "ns3/boolean.h"
 #include "ns3/uinteger.h"
 #include "ns3/wifi-phy.h"
+#include "ns3/trace-source-accessor.h"
 
 NS_LOG_COMPONENT_DEFINE ("WifiRemoteStationManager");
 
@@ -41,14 +42,14 @@ class NonUnicastWifiRemoteStation : public WifiRemoteStation
 {
 public:
   NonUnicastWifiRemoteStation (Ptr<WifiRemoteStationManager> stations);
-  virtual void ReportRxOk (double rxSnr, WifiMode txMode);
-  virtual void ReportRtsFailed (void);
-  virtual void ReportDataFailed (void);
-  virtual void ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
-  virtual void ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
-  virtual void ReportFinalRtsFailed (void);
-  virtual void ReportFinalDataFailed (void);
-
+protected:
+  virtual void DoReportRxOk (double rxSnr, WifiMode txMode);
+  virtual void DoReportRtsFailed (void);
+  virtual void DoReportDataFailed (void);
+  virtual void DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
+  virtual void DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
+  virtual void DoReportFinalRtsFailed (void);
+  virtual void DoReportFinalDataFailed (void);
 private:
   virtual Ptr<WifiRemoteStationManager> GetManager (void) const;
   virtual WifiMode DoGetDataMode (uint32_t size);
@@ -62,35 +63,35 @@ NonUnicastWifiRemoteStation::NonUnicastWifiRemoteStation (Ptr<WifiRemoteStationM
   RecordDisassociated ();
 }
 void 
-NonUnicastWifiRemoteStation::ReportRxOk (double rxSnr, WifiMode txMode)
+NonUnicastWifiRemoteStation::DoReportRxOk (double rxSnr, WifiMode txMode)
 {
   NS_ASSERT (false);
 }
 void 
-NonUnicastWifiRemoteStation::ReportRtsFailed (void)
+NonUnicastWifiRemoteStation::DoReportRtsFailed (void)
 {
   NS_ASSERT (false);
 }
 void 
-NonUnicastWifiRemoteStation::ReportDataFailed (void)
+NonUnicastWifiRemoteStation::DoReportDataFailed (void)
 {
   NS_ASSERT (false);
 }
 void 
-NonUnicastWifiRemoteStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
+NonUnicastWifiRemoteStation::DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
   NS_ASSERT (false);
 }
 void 
-NonUnicastWifiRemoteStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
+NonUnicastWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
 {
   NS_ASSERT (false);
 }
 void 
-NonUnicastWifiRemoteStation::ReportFinalRtsFailed (void)
+NonUnicastWifiRemoteStation::DoReportFinalRtsFailed (void)
 {}
 void 
-NonUnicastWifiRemoteStation::ReportFinalDataFailed (void)
+NonUnicastWifiRemoteStation::DoReportFinalDataFailed (void)
 {}
 
 WifiMode 
@@ -374,8 +375,23 @@ TxModeTag::GetSerializedSize (void) const
 
 namespace ns3 {
 
+TypeId 
+WifiRemoteStation::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::WifiRemoteStation")
+    .SetParent<Object> ()
+    .AddTraceSource ("Ssrc", "XXX",
+                     MakeTraceSourceAccessor (&WifiRemoteStation::m_ssrc))
+    .AddTraceSource ("Slrc", "XXX",
+                     MakeTraceSourceAccessor (&WifiRemoteStation::m_slrc))
+    ;
+  return tid;
+}
+
 WifiRemoteStation::WifiRemoteStation ()
-  : m_state (BRAND_NEW)
+  : m_state (BRAND_NEW),
+    m_ssrc (0),
+    m_slrc (0)
 {}
 WifiRemoteStation::~WifiRemoteStation ()
 {}
@@ -560,16 +576,16 @@ WifiRemoteStation::NeedRts (Ptr<const Packet> packet)
       return false;
     }
 }
-uint32_t 
-WifiRemoteStation::GetMaxSsrc (Ptr<const Packet> packet)
+bool
+WifiRemoteStation::NeedRtsRetransmission (Ptr<const Packet> packet)
 {
-  return GetManager ()->GetMaxSsrc ();
+  return (m_ssrc < GetManager ()->GetMaxSsrc ());
 }
 
-uint32_t 
-WifiRemoteStation::GetMaxSlrc (Ptr<const Packet> packet)
+bool
+WifiRemoteStation::NeedDataRetransmission (Ptr<const Packet> packet)
 {
-  return GetManager ()->GetMaxSlrc ();
+  return (m_slrc < GetManager ()->GetMaxSlrc ());
 }
 
 bool
@@ -623,5 +639,52 @@ WifiRemoteStation::IsLastFragment (Ptr<const Packet> packet, uint32_t fragmentNu
     }
 }
 
+void 
+WifiRemoteStation::ReportRtsFailed (void)
+{
+  m_ssrc++;
+  DoReportRtsFailed ();
+}
+
+void 
+WifiRemoteStation::ReportDataFailed (void)
+{
+  m_slrc++;
+  DoReportDataFailed ();
+}
+
+void 
+WifiRemoteStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
+{
+  m_ssrc = 0;
+  DoReportRtsOk (ctsSnr, ctsMode, rtsSnr);
+}
+
+void 
+WifiRemoteStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
+{
+  m_slrc = 0;
+  DoReportDataOk (ackSnr, ackMode, dataSnr);
+}
+
+void 
+WifiRemoteStation::ReportFinalRtsFailed (void)
+{
+  m_ssrc = 0;
+  DoReportFinalRtsFailed ();
+}
+
+void 
+WifiRemoteStation::ReportFinalDataFailed (void)
+{
+  m_slrc = 0;
+  DoReportFinalDataFailed ();
+}
+
+void 
+WifiRemoteStation::ReportRxOk (double rxSnr, WifiMode txMode)
+{
+  DoReportRxOk (rxSnr, txMode);
+}
 } // namespace ns3
 

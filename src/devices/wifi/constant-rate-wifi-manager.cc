@@ -32,25 +32,25 @@ ConstantRateWifiRemoteStation::~ConstantRateWifiRemoteStation ()
 {}
 
 void 
-ConstantRateWifiRemoteStation::ReportRxOk (double rxSnr, WifiMode txMode)
+ConstantRateWifiRemoteStation::DoReportRxOk (double rxSnr, WifiMode txMode)
 {}
 void 
-ConstantRateWifiRemoteStation::ReportRtsFailed (void)
+ConstantRateWifiRemoteStation::DoReportRtsFailed (void)
 {}
 void 
-ConstantRateWifiRemoteStation::ReportDataFailed (void)
+ConstantRateWifiRemoteStation::DoReportDataFailed (void)
 {}
 void 
-ConstantRateWifiRemoteStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
+ConstantRateWifiRemoteStation::DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {}
 void 
-ConstantRateWifiRemoteStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
+ConstantRateWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
 {}
 void 
-ConstantRateWifiRemoteStation::ReportFinalRtsFailed (void)
+ConstantRateWifiRemoteStation::DoReportFinalRtsFailed (void)
 {}
 void 
-ConstantRateWifiRemoteStation::ReportFinalDataFailed (void)
+ConstantRateWifiRemoteStation::DoReportFinalDataFailed (void)
 {}
 
 WifiMode 

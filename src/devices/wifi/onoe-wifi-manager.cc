@@ -75,35 +75,35 @@ OnoeWifiRemoteStation::~OnoeWifiRemoteStation ()
 {}
 
 void 
-OnoeWifiRemoteStation::ReportRxOk (double rxSnr, WifiMode txMode)
+OnoeWifiRemoteStation::DoReportRxOk (double rxSnr, WifiMode txMode)
 {}
 void 
-OnoeWifiRemoteStation::ReportRtsFailed (void)
+OnoeWifiRemoteStation::DoReportRtsFailed (void)
 {
   m_shortRetry++;
 }
 void 
-OnoeWifiRemoteStation::ReportDataFailed (void)
+OnoeWifiRemoteStation::DoReportDataFailed (void)
 {
   m_longRetry++;
 }
 void 
-OnoeWifiRemoteStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
+OnoeWifiRemoteStation::DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {}
 void 
-OnoeWifiRemoteStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
+OnoeWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
 {
   UpdateRetry ();
   m_tx_ok++;
 }
 void 
-OnoeWifiRemoteStation::ReportFinalRtsFailed (void)
+OnoeWifiRemoteStation::DoReportFinalRtsFailed (void)
 {
   UpdateRetry ();
   m_tx_err++;
 }
 void 
-OnoeWifiRemoteStation::ReportFinalDataFailed (void)
+OnoeWifiRemoteStation::DoReportFinalDataFailed (void)
 {
   UpdateRetry ();
   m_tx_err++;

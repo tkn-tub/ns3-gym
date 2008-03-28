@@ -104,31 +104,31 @@ IdealWifiRemoteStation::IdealWifiRemoteStation (Ptr<IdealWifiManager> manager)
 IdealWifiRemoteStation::~IdealWifiRemoteStation ()
 {}
 void 
-IdealWifiRemoteStation::ReportRxOk (double rxSnr, WifiMode txMode)
+IdealWifiRemoteStation::DoReportRxOk (double rxSnr, WifiMode txMode)
 {}
 void 
-IdealWifiRemoteStation::ReportRtsFailed (void)
+IdealWifiRemoteStation::DoReportRtsFailed (void)
 {}
 void 
-IdealWifiRemoteStation::ReportDataFailed (void)
+IdealWifiRemoteStation::DoReportDataFailed (void)
 {}
 void 
-IdealWifiRemoteStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
+IdealWifiRemoteStation::DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
   TRACE ("got cts for rts snr="<<rtsSnr);
   m_lastSnr = rtsSnr;
 }
 void 
-IdealWifiRemoteStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
+IdealWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
 {
   TRACE ("got cts for rts snr="<<dataSnr);
   m_lastSnr = dataSnr;
 }
 void 
-IdealWifiRemoteStation::ReportFinalRtsFailed (void)
+IdealWifiRemoteStation::DoReportFinalRtsFailed (void)
 {}
 void 
-IdealWifiRemoteStation::ReportFinalDataFailed (void)
+IdealWifiRemoteStation::DoReportFinalDataFailed (void)
 {}
 
 WifiMode
