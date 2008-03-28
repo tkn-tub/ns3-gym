@@ -23,6 +23,7 @@
 #define PCAP_WRITER_H
 
 #include <stdint.h>
+#include "ns3/ref-count-base.h"
 
 namespace ns3 {
 
@@ -34,7 +35,8 @@ class Packet;
  * Log Packets to a file in pcap format which can be
  * read by pcap readers.
  */
-class PcapWriter {
+class PcapWriter : public RefCountBase
+{
 public:
   PcapWriter ();
   ~PcapWriter ();
