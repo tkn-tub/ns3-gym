@@ -75,7 +75,19 @@ public:
    */
   void DisablePcap (void);
 
+  /**
+   * \param os an output stream where ascii trace should be sent.
+   *
+   * Every ns3::CsmaNetDevice created through subsequent calls
+   * to CsmaHelper::Build will be configured to dump Rx, EnQueue
+   * and Dequeue events as ascii data in the specified output stream.
+   */
   void EnableAscii (std::ostream &os);
+  /**
+   * Every ns3::CsmaNetDevice created through subsequent calls
+   * to CsmaHelper::Build will be configured to not dump any
+   * ascii output.
+   */
   void DisableAscii (void);
 
   /**
