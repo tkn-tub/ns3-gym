@@ -38,12 +38,11 @@
 // - Tracing of queues and packet receptions to file 
 //   "simple-error-model.tr"
 
+#include <fstream>
 #include "ns3/core-module.h"
 #include "ns3/common-module.h"
 #include "ns3/simulator-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/ascii-trace.h"
-#include "ns3/pcap-trace.h"
 #include "ns3/global-route-manager.h"
 
 using namespace ns3;
@@ -72,6 +71,9 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
+  std::ofstream ascii;
+  ascii.open ("simple-error-model.pcap");
+
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.
   NS_LOG_INFO ("Create nodes.");
@@ -87,6 +89,8 @@ main (int argc, char *argv[])
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
   PointToPointHelper p2p;
+  p2p.EnablePcap ("simple-error-model.pcap");
+  p2p.EnableAscii (ascii);
   p2p.SetChannelParameter ("BitRate", DataRate (5000000));
   p2p.SetChannelParameter ("Delay", MilliSeconds (2));
   NetDeviceContainer d0d2 = p2p.Build (n0n2);
@@ -162,12 +166,6 @@ main (int argc, char *argv[])
   pem->SetList (sampleList);
   d0d2.Get (1)->SetAttribute ("ReceiveErrorModel", pem);
 
-  // Configure tracing of all enqueue, dequeue, and NetDevice receive events
-  // Trace output will be sent to the simple-error-model.tr file
-  NS_LOG_INFO ("Configure Tracing.");
-  AsciiTrace asciitrace ("simple-error-model.tr");
-  asciitrace.TraceAllQueues ();
-  asciitrace.TraceAllNetDeviceRx ();
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();    

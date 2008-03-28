@@ -40,9 +40,6 @@
 #include "ns3/global-route-manager.h"
 #include "ns3/simulator-module.h"
 
-#include "ns3/ascii-trace.h"
-#include "ns3/pcap-trace.h"
-
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpLargeTransfer");
@@ -133,8 +130,13 @@ int main (int argc, char *argv[])
   c1.Add (c0.Get (1));
   c1.Create (1);
 
+  std::ofstream ascii;
+  ascii.open ("tcp-large-transfer.tr");
+
   // We create the channels first without any IP addressing information
   PointToPointHelper p2p;
+  p2p.EnablePcap ("tcp-large-transfer.pcap");
+  p2p.EnableAscii (ascii);
   p2p.SetChannelParameter ("BitRate", DataRate(10000000));
   p2p.SetChannelParameter ("Delay", MilliSeconds(10));
   NetDeviceContainer dev0 = p2p.Build (c0);
@@ -179,21 +181,6 @@ int main (int argc, char *argv[])
   localSocket->Bind ();
   Simulator::ScheduleNow (&StartFlow, localSocket, nBytes,
                           ipInterfs.GetAddress (1), servPort);
-
-  // Configure tracing of all enqueue, dequeue, and NetDevice receive events
-  // Trace output will be sent to the simple-examples.tr file
-  AsciiTrace asciitrace ("tcp-large-transfer.tr");
-  asciitrace.TraceAllQueues ();
-  asciitrace.TraceAllNetDeviceRx ();
-
-  
-  // Also configure some tcpdump traces; each interface will be traced
-  // The output files will be named 
-  // simple-examples.pcap-<nodeId>-<interfaceId>
-  // and can be read by the "tcpdump -r" command (use "-tt" option to
-  // display timestamps correctly)
-  PcapTrace pcaptrace ("tcp-large-transfer.pcap");
-  pcaptrace.TraceAllIp ();
 
   Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/Rx", 
                    MakeCallback (&ApplicationTraceSink));
