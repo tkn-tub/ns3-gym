@@ -2,6 +2,7 @@
 #define CSMA_HELPER_H
 
 #include <string>
+#include <ostream>
 #include "ns3/attribute.h"
 #include "ns3/object-factory.h"
 #include "ns3/net-device-container.h"
@@ -9,6 +10,9 @@
 #include "ns3/csma-channel.h"
 
 namespace ns3 {
+
+class Packet;
+class PcapWriter;
 
 /**
  * \brief build a set of CsmaNetDevice objects
@@ -57,6 +61,24 @@ public:
   void SetChannelParameter (std::string n1, Attribute v1);
 
   /**
+   * \param filename file template to dump pcap traces in.
+   *
+   * Every ns3::CsmaNetDevice created through subsequent calls
+   * to CsmaHelper::Build will be configured to dump
+   * pcap output in a file named filename-nodeid-deviceid.
+   */
+  void EnablePcap (std::string filename);
+  /**
+   * Every ns3::CsmaNetDevice created through subsequent calls
+   * to CsmaHelper::Build will be configured to not dump any pcap
+   * output.
+   */
+  void DisablePcap (void);
+
+  void EnableAscii (std::ostream &os);
+  void DisableAscii (void);
+
+  /**
    * \param c a set of nodes
    *
    * This method creates a simple ns3::CsmaChannel with the
@@ -76,9 +98,16 @@ public:
   NetDeviceContainer Build (const NodeContainer &c, Ptr<CsmaChannel> channel);
 
 private:
+  static void RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
+  static void EnqueueEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
+  static void AsciiEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
   ObjectFactory m_queueFactory;
   ObjectFactory m_deviceFactory;
   ObjectFactory m_channelFactory;
+  bool m_pcap;
+  std::string m_pcapFilename;
+  bool m_ascii;
+  std::ostream *m_asciiOs;
 };
 
 
