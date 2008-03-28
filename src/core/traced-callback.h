@@ -28,11 +28,14 @@
 namespace ns3 {
 
 /**
- * \brief log arbitrary number of parameters to a matching ns3::Callback
+ * \brief forward calls to a chain of Callback
  * \ingroup tracing
  *
- * Whenever operator () is invoked on this class, the call and its arguments
- * are forwarded to the internal matching ns3::Callback.
+ * An ns3::TracedCallback has almost exactly the same API as a normal ns3::Callback but
+ * instead of forwarding calls to a single function (as an ns3::Callback normally does),
+ * it forwards calls to a chain of ns3::Callback. TracedCallback::Connect adds a ns3::Callback
+ * at the end of the chain of callbacks. TracedCallback::Disconnect removes a ns3::Callback from
+ * the chain of callbacks.
  */
 template<typename T1 = empty, typename T2 = empty, 
          typename T3 = empty, typename T4 = empty>
@@ -40,9 +43,39 @@ class TracedCallback
 {
 public:
   TracedCallback ();
+  /**
+   * \param callback callback to add to chain of callbacks
+   *
+   * Append the input callback to the end of the internal list 
+   * of ns3::Callback.
+   */
   void ConnectWithoutContext (const CallbackBase & callback);
+  /**
+   * \param callback callback to add to chain of callbacks
+   * \param path the path to send back to the user callback.
+   *
+   * Append the input callback to the end of the internal list 
+   * of ns3::Callback. This method also will make sure that the
+   * input path specified by the user will be give back to the
+   * user's callback as its first argument. 
+   */
   void Connect (const CallbackBase & callback, std::string path);
+  /**
+   * \param callback callback to remove from the chain of callbacks.
+   *
+   * Remove the input callback from the internal list 
+   * of ns3::Callback. This method is really the symmetric
+   * of the TracedCallback::ConnectWithoutContext method.
+   */
   void DisconnectWithoutContext (const CallbackBase & callback);
+  /**
+   * \param callback callback to remove from the chain of callbacks.
+   * \param path the path which is sent back to the user callback.
+   *
+   * Remove the input callback which has a matching path as first argument 
+   * from the internal list of ns3::Callback. This method is really the symmetric
+   * of the TracedCallback::Connect method.
+   */
   void Disconnect (const CallbackBase & callback, std::string path);
   void operator() (void) const;
   void operator() (T1 a1) const;
