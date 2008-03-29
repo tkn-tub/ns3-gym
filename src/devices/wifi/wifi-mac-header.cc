@@ -51,6 +51,7 @@ enum {
 };
 
 WifiMacHeader::WifiMacHeader ()
+  : m_ctrlMoreData (0)
 {}
 WifiMacHeader::~WifiMacHeader ()
 {}
@@ -879,14 +880,14 @@ WifiMacHeader::GetSerializedSize (void) const
 void 
 WifiMacHeader::Serialize (Buffer::Iterator i) const
 {
-  i.WriteHtonU16 (GetFrameControl ());
-  i.WriteHtonU16 (m_duration);
+  i.WriteHtolsbU16 (GetFrameControl ());
+  i.WriteHtolsbU16 (m_duration);
   WriteTo (i, m_addr1);
   switch (m_ctrlType) {
   case TYPE_MGT:
     WriteTo (i, m_addr2);
     WriteTo (i, m_addr3);
-    i.WriteHtonU16 (GetSequenceControl ());
+    i.WriteHtolsbU16 (GetSequenceControl ());
     break;
   case TYPE_CTL:
     switch (m_ctrlSubtype) {
@@ -910,12 +911,12 @@ WifiMacHeader::Serialize (Buffer::Iterator i) const
   case TYPE_DATA: {
     WriteTo (i, m_addr2);
     WriteTo (i, m_addr3);
-    i.WriteHtonU16 (GetSequenceControl ());
+    i.WriteHtolsbU16 (GetSequenceControl ());
     if (m_ctrlToDs && m_ctrlFromDs) {
       WriteTo (i, m_addr4);
     }
     if (m_ctrlSubtype & 0x08) {
-      i.WriteHtonU16 (GetQosControl ());
+      i.WriteHtolsbU16 (GetQosControl ());
     }
     } break;
   default:
@@ -928,15 +929,15 @@ uint32_t
 WifiMacHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  uint16_t frame_control = i.ReadNtohU16 ();
+  uint16_t frame_control = i.ReadLsbtohU16 ();
   SetFrameControl (frame_control);
-  m_duration = i.ReadNtohU16 ();
+  m_duration = i.ReadLsbtohU16 ();
   ReadFrom (i, m_addr1);
   switch (m_ctrlType) {
   case TYPE_MGT:
     ReadFrom (i, m_addr2);
     ReadFrom (i, m_addr3);
-    SetSequenceControl (i.ReadNtohU16 ());
+    SetSequenceControl (i.ReadLsbtohU16 ());
     break;
   case TYPE_CTL:
     switch (m_ctrlSubtype) {
@@ -956,12 +957,12 @@ WifiMacHeader::Deserialize (Buffer::Iterator start)
   case TYPE_DATA:
     ReadFrom (i, m_addr2);
     ReadFrom (i, m_addr3);
-    SetSequenceControl (i.ReadNtohU16 ());
+    SetSequenceControl (i.ReadLsbtohU16 ());
     if (m_ctrlToDs && m_ctrlFromDs) {
       ReadFrom (i, m_addr4);
     }
     if (m_ctrlSubtype & 0x08) {
-      SetQosControl (i.ReadNtohU16 ());
+      SetQosControl (i.ReadLsbtohU16 ());
     }
     break;
   }
