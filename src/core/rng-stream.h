@@ -22,8 +22,20 @@
 #include <string>
 #include <stdint.h>
 
-namespace ns3{
+namespace ns3 {
 
+/**
+ * \ingroup core
+ * \ingroup randomvariable 
+ *
+ * \brief Combined Multiple-Recursive Generator MRG32k3a
+ *
+ * This class is the combined multiple-recursive random number
+ * generator called MRG32k3a.  The ns3::RandomVariableBase class
+ * holds a static instance of this class.  The details of this
+ * class are explained in:  
+ * http://www.iro.umontreal.ca/~lecuyer/myftp/papers/streams00.pdf
+ */
 class RngStream {
 public:  //public api
   RngStream ();
@@ -52,7 +64,7 @@ private: //static data
   static double nextSeed[6];
 };
 
-};//namespace ns3
+} //namespace ns3
 
 #endif
  
