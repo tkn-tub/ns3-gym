@@ -601,7 +601,7 @@ CsmaNetDevice::GetBroadcast (void) const
 bool 
 CsmaNetDevice::IsMulticast (void) const
 {
-  return false;
+  return true;
 }
 Address 
 CsmaNetDevice::GetMulticast (void) const
