@@ -456,7 +456,7 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t pro
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << &device << packet << protocol <<  from);
 
-  NS_LOG_LOGIC ("Packet from " << from);
+  NS_LOG_LOGIC ("Packet from " << from << " received on node " << m_node->GetId ());
 
   uint32_t index = 0;
   Ptr<Ipv4Interface> ipv4Interface;
@@ -485,7 +485,6 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t pro
       return;
     }
 
-  NS_LOG_LOGIC ("Forward up");
   ForwardUp (packet, ipHeader, ipv4Interface);
 }
 
@@ -584,6 +583,7 @@ Ipv4L3Protocol::Forwarding (
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (ifIndex << packet << &ipHeader<< device);
+  NS_LOG_LOGIC ("Forwarding logic for node: " << m_node->GetId ());
 
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin ();
        i != m_interfaces.end (); i++) 
@@ -632,26 +632,29 @@ Ipv4L3Protocol::Forwarding (
     }
   ipHeader.SetTtl (ipHeader.GetTtl () - 1);
 
-  NS_LOG_LOGIC ("Forwarding packet.");
-  Lookup (ifIndex, ipHeader, packet,
-          MakeCallback (&Ipv4L3Protocol::SendRealOut, this));
-//
+//  
 // If this is a to a multicast address and this node is a member of the 
 // indicated group we need to return false so the multicast is forwarded up.
-// Note that we may have just forwarded this packet too.
-//
+//        
   for (Ipv4MulticastGroupList::const_iterator i = m_multicastGroups.begin ();
-       i != m_multicastGroups.end (); i++) 
+       i != m_multicastGroups.end (); i++)
     {
       if ((*i).first.IsEqual (ipHeader.GetSource ()) &&
           (*i).second.IsEqual (ipHeader.GetDestination ()))
         {
           NS_LOG_LOGIC ("For me (Joined multicast group)");
+          // We forward with a packet copy, since forwarding may change
+          // the packet, affecting our local delivery
+          NS_LOG_LOGIC ("Forwarding (multicast).");
+          Lookup (ifIndex, ipHeader, packet->Copy (),
+          MakeCallback (&Ipv4L3Protocol::SendRealOut, this));
           return false;
-        }
-    }
+        }   
+    }     
+  NS_LOG_LOGIC ("Not for me, forwarding.");
+  Lookup (ifIndex, ipHeader, packet,
+  MakeCallback (&Ipv4L3Protocol::SendRealOut, this));
   
-  NS_LOG_LOGIC("Not for me.");
   return true;
 }
 
