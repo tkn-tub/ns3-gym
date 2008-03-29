@@ -91,12 +91,14 @@ namespace ns3 {
  *
  * A simple state invariant is that m_start <= m_zeroStart <= m_zeroEnd <= m_end
  */
-class Buffer {
+class Buffer 
+{
 public:
   /**
    * \brief iterator in a Buffer instance
    */
-  class Iterator {
+  class Iterator 
+  {
   public:
       Iterator ();
       /**
@@ -186,6 +188,30 @@ public:
        *
        * Write the data in buffer and avance the iterator position
        * by two bytes. The data is written in network order and the
+       * input data is expected to be in host order.
+       */
+      void WriteHtolsbU16 (uint16_t data);
+      /**
+       * \param data data to write in buffer
+       *
+       * Write the data in buffer and avance the iterator position
+       * by four bytes. The data is written in least significant byte order and the
+       * input data is expected to be in host order.
+       */
+      void WriteHtolsbU32 (uint32_t data);
+      /**
+       * \param data data to write in buffer
+       *
+       * Write the data in buffer and avance the iterator position
+       * by eight bytes. The data is written in least significant byte order and the
+       * input data is expected to be in host order.
+       */
+      void WriteHtolsbU64 (uint64_t data);
+      /**
+       * \param data data to write in buffer
+       *
+       * Write the data in buffer and avance the iterator position
+       * by two bytes. The data is written in least significant byte order and the
        * input data is expected to be in host order.
        */
       void WriteHtonU16 (uint16_t data);
@@ -281,6 +307,30 @@ public:
        * The data is read in network format and return in host format.
        */
       uint64_t ReadNtohU64 (void);
+      /**
+       * \return the two bytes read in the buffer.
+       *
+       * Read data and advance the Iterator by the number of bytes
+       * read.
+       * The data is read in network format and return in host format.
+       */
+      uint16_t ReadLsbtohU16 (void);
+      /**
+       * \return the four bytes read in the buffer.
+       *
+       * Read data and advance the Iterator by the number of bytes
+       * read.
+       * The data is read in network format and return in host format.
+       */
+      uint32_t ReadLsbtohU32 (void);
+      /**
+       * \return the eight bytes read in the buffer.
+       *
+       * Read data and advance the Iterator by the number of bytes
+       * read.
+       * The data is read in network format and return in host format.
+       */
+      uint64_t ReadLsbtohU64 (void);
       /**
        * \param buffer buffer to copy data into
        * \param size number of bytes to copy
