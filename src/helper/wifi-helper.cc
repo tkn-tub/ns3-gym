@@ -8,10 +8,31 @@
 #include "ns3/propagation-loss-model.h"
 #include "ns3/mobility-model.h"
 #include "ns3/log.h"
+#include "ns3/pcap-writer.h"
+#include "ns3/wifi-mode.h"
+#include "ns3/wifi-preamble.h"
+#include "ns3/config.h"
+
+
 
 NS_LOG_COMPONENT_DEFINE ("WifiHelper");
 
 namespace ns3 {
+
+static void PhyTxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet,
+			WifiMode mode, WifiPreamble preamble, 
+			uint8_t txLevel)
+{
+  writer->WritePacket (packet);
+}
+
+static void PhyRxEvent (Ptr<PcapWriter> writer, 
+			Ptr<const Packet> packet, double snr, WifiMode mode, 
+			enum WifiPreamble preamble)
+{
+  writer->WritePacket (packet);
+}
+
 
 WifiHelper::WifiHelper ()
 {
@@ -89,6 +110,21 @@ WifiHelper::SetPhy (std::string type,
   m_phy.Set (n7, v7);
 }
 
+void 
+WifiHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid)
+{
+  std::ostringstream oss;
+  oss << filename << "-" << nodeid << "-" << deviceid;
+  Ptr<PcapWriter> pcap = Create<PcapWriter> ();
+  pcap->Open (oss.str ());
+  pcap->WriteWifiHeader ();
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/Tx";
+  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PhyTxEvent, pcap));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/RxOk";
+  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PhyRxEvent, pcap));
+}
+
 NetDeviceContainer
 WifiHelper::Build (NodeContainer c) const
 {
@@ -121,4 +157,5 @@ WifiHelper::Build (NodeContainer c, Ptr<WifiChannel> channel) const
     }
   return devices;
 }
+
 } // namespace ns3

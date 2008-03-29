@@ -119,6 +119,9 @@ public:
 	       std::string n6 = "", Attribute v6 = Attribute (),
 	       std::string n7 = "", Attribute v7 = Attribute ());
 
+
+  static void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
+
   /**
    * \param c a set of nodes
    *
