@@ -172,6 +172,8 @@ main (int argc, char *argv[])
   PointToPointHelper::EnablePcap ("simple-point-to-point-olsr.pcap");
   PointToPointHelper::EnableAscii (ascii);
 
+  Simulator::StopAt (Seconds (30));
+
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();
   Simulator::Destroy ();
