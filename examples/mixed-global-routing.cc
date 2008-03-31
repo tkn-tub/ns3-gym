@@ -152,19 +152,13 @@ main (int argc, char *argv[])
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
-  // Configure tracing of all enqueue, dequeue, and NetDevice receive events
-  // Trace output will be sent to the simple-global-routing.tr file
-  NS_LOG_INFO ("Configure Tracing.");
-  AsciiTrace asciitrace ("mixed-global-routing.tr");
-  asciitrace.TraceAllQueues ();
-  asciitrace.TraceAllNetDeviceRx ();
+  std::ofstream ascii;
+  ascii.open ("mixed-global-routing.tr");
+  PointToPointHelper::EnablePcap ("mixed-global-routing.pcap");
+  PointToPointHelper::EnableAscii (ascii);
+  CsmaHelper::EnablePcap ("mixed-global-routing.pcap");
+  CsmaHelper::EnableAscii (ascii);
 
-  // Also configure some tcpdump traces; each interface will be traced
-  // The output files will be named simple-p2p.pcap-<nodeId>-<interfaceId>
-  // and can be read by the "tcpdump -r" command (use "-tt" option to
-  // display timestamps correctly)
-  PcapTrace pcaptrace ("mixed-global-routing.pcap");
-  pcaptrace.TraceAllIp ();
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

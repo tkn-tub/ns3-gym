@@ -34,7 +34,6 @@
 
 #include "ns3/core-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/internet-node-module.h"
 #include "ns3/simulator-module.h"
 
 using namespace ns3;
@@ -86,14 +85,6 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Build Topology.");
   CsmaHelper csma;
-  // Also configure some tcpdump traces; each interface will be traced
-  // The output files will be named 
-  // csma-broadcast.pcap-<nodeId>-<interfaceId>
-  // and can be read by the "tcpdump -tt -r" command 
-  csma.EnablePcap ("csma-broadcast.pcap");
-  std::ofstream ascii;
-  ascii.open ("csma-broadcast.tr");
-  csma.EnableAscii (ascii);
   csma.SetChannelParameter ("BitRate", DataRate(5000000));
   csma.SetChannelParameter ("Delay", MilliSeconds(2));
 
@@ -138,6 +129,14 @@ main (int argc, char *argv[])
   sink.Build (c1.Get (1));
 
 
+  // Also configure some tcpdump traces; each interface will be traced
+  // The output files will be named 
+  // csma-broadcast.pcap-<nodeId>-<interfaceId>
+  // and can be read by the "tcpdump -tt -r" command 
+  CsmaHelper::EnablePcap ("csma-broadcast.pcap");
+  std::ofstream ascii;
+  ascii.open ("csma-broadcast.tr");
+  CsmaHelper::EnableAscii (ascii);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();    

@@ -28,9 +28,7 @@ def build(bld):
     obj.source = 'tutorial-linear-dumbbell.cc'
 
     obj = bld.create_ns3_program('testipv4', ['node'])
-    obj.source = ['testipv4.cc', 'ipv4-address-generator.cc']
+    obj.source = ['testipv4.cc']
 
     obj = bld.create_ns3_program('tutorial-bus-network', ['internet-node'])
-    obj.source = ['tutorial-bus-network.cc',
-                  'ipv4-bus-network.cc',
-                  'ipv4-address-generator.cc']
+    obj.source = ['tutorial-bus-network.cc']

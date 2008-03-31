@@ -38,12 +38,11 @@
 // - Tracing of queues and packet receptions to file 
 //   "simple-error-model.tr"
 
+#include <fstream>
 #include "ns3/core-module.h"
 #include "ns3/common-module.h"
 #include "ns3/simulator-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/ascii-trace.h"
-#include "ns3/pcap-trace.h"
 #include "ns3/global-route-manager.h"
 
 using namespace ns3;
@@ -162,12 +161,10 @@ main (int argc, char *argv[])
   pem->SetList (sampleList);
   d0d2.Get (1)->SetAttribute ("ReceiveErrorModel", pem);
 
-  // Configure tracing of all enqueue, dequeue, and NetDevice receive events
-  // Trace output will be sent to the simple-error-model.tr file
-  NS_LOG_INFO ("Configure Tracing.");
-  AsciiTrace asciitrace ("simple-error-model.tr");
-  asciitrace.TraceAllQueues ();
-  asciitrace.TraceAllNetDeviceRx ();
+  std::ofstream ascii;
+  ascii.open ("simple-error-model.tr");
+  PointToPointHelper::EnablePcap ("simple-error-model.pcap");
+  PointToPointHelper::EnableAscii (ascii);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();    

@@ -91,7 +91,10 @@ LogComponent::LogComponent (char const * name)
        i != components->end ();
        i++)
     {
-      NS_ASSERT (i->first != name);
+      if (i->first == name)
+        {
+          NS_FATAL_ERROR ("Log component \""<<name<<"\" has already been registered once.");
+        }
     }
   components->push_back (std::make_pair (name, this));
 }

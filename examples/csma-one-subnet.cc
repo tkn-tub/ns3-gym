@@ -25,27 +25,12 @@
 // - DropTail queues 
 // - Tracing of queues and packet receptions to file "csma-one-subnet.tr"
 
-#include "ns3/command-line.h"
-#include "ns3/ptr.h"
-#include "ns3/random-variable.h"
-#include "ns3/log.h"
-#include "ns3/simulator.h"
-#include "ns3/nstime.h"
-#include "ns3/data-rate.h"
-#include "ns3/ascii-trace.h"
-#include "ns3/pcap-trace.h"
-#include "ns3/internet-node.h"
-#include "ns3/csma-channel.h"
-#include "ns3/csma-net-device.h"
-#include "ns3/csma-topology.h"
-#include "ns3/csma-ipv4-topology.h"
-#include "ns3/mac48-address.h"
-#include "ns3/ipv4-address.h"
-#include "ns3/inet-socket-address.h"
-#include "ns3/ipv4.h"
-#include "ns3/socket.h"
-#include "ns3/ipv4-route.h"
-#include "ns3/onoff-application.h"
+#include <iostream>
+#include <fstream>
+
+#include "ns3/simulator-module.h"
+#include "ns3/core-module.h"
+#include "ns3/helper-module.h"
 
 using namespace ns3;
 
@@ -60,28 +45,6 @@ main (int argc, char *argv[])
 //
 #if 0 
   LogComponentEnable ("CsmaOneSubnetExample", LOG_LEVEL_INFO);
-
-  LogComponentEnable("Object", LOG_LEVEL_ALL);
-  LogComponentEnable("Queue", LOG_LEVEL_ALL);
-  LogComponentEnable("DropTailQueue", LOG_LEVEL_ALL);
-  LogComponentEnable("Channel", LOG_LEVEL_ALL);
-  LogComponentEnable("CsmaChannel", LOG_LEVEL_ALL);
-  LogComponentEnable("NetDevice", LOG_LEVEL_ALL);
-  LogComponentEnable("CsmaNetDevice", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("PacketSocket", LOG_LEVEL_ALL);
-  LogComponentEnable("Socket", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpSocket", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpL4Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4StaticRouting", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4Interface", LOG_LEVEL_ALL);
-  LogComponentEnable("ArpIpv4Interface", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4LoopbackInterface", LOG_LEVEL_ALL);
-  LogComponentEnable("OnOffApplication", LOG_LEVEL_ALL);
-  LogComponentEnable("PacketSinkApplication", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_ALL);
 #endif
 //
 //
@@ -94,19 +57,13 @@ main (int argc, char *argv[])
 // Explicitly create the nodes required by the topology (shown above).
 //
   NS_LOG_INFO ("Create nodes.");
-  Ptr<Node> n0 = CreateObject<InternetNode> ();
-  Ptr<Node> n1 = CreateObject<InternetNode> (); 
-  Ptr<Node> n2 = CreateObject<InternetNode> (); 
-  Ptr<Node> n3 = CreateObject<InternetNode> ();
+  NodeContainer c;
+  c.Create (4);
 
-  NS_LOG_INFO ("Create channels.");
-//
-// Explicitly create the channels required by the topology (shown above).
-//
-  Ptr<CsmaChannel> lan = CsmaTopology::CreateCsmaChannel(
-    DataRate(5000000), MilliSeconds(2));
-
-  NS_LOG_INFO ("Build Topology.");
+  NS_LOG_INFO ("Build Topology");
+  CsmaHelper csma;
+  csma.SetChannelParameter ("BitRate", DataRate (5000000));
+  csma.SetChannelParameter ("Delay", MilliSeconds (2));
 //
 // Now fill out the topology by creating the net devices required to connect
 // the nodes to the channels and hooking them up.  AddIpv4CsmaNetDevice will
@@ -116,80 +73,57 @@ main (int argc, char *argv[])
 // created on the node.  Interpret nd0 as the net device we created for node
 // zero.
 //
-  uint32_t nd0 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n0, lan, 
-    Mac48Address("08:00:2e:00:00:00"));
+  NetDeviceContainer nd0 = csma.Build (c);
 
-  uint32_t nd1 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n1, lan, 
-    Mac48Address("08:00:2e:00:00:01"));
+  InternetStackHelper internet;
+  internet.Build (c);
 
-  uint32_t nd2 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n2, lan, 
-    Mac48Address("08:00:2e:00:00:02"));
-
-  uint32_t nd3 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n3, lan, 
-    Mac48Address("08:00:2e:00:00:03"));
-//
 // We've got the "hardware" in place.  Now we need to add IP addresses.
 //
   NS_LOG_INFO ("Assign IP Addresses.");
-//
-// XXX BUGBUG
-// Need a better way to get the interface index.  The point-to-point topology
-// as implemented can't return the index since it creates interfaces on both
-// sides (i.e., it does AddIpv4Addresses, not AddIpv4Address).  We need a
-// method on Ipv4 to find the interface index corresponding to a given ipv4 
-// address.
-//
-// Assign IP addresses to the net devices and associated interfaces
-// on the lan.  The AddIpv4Address method returns an Ipv4 interface index
-// which we do not need here.
-//
-  CsmaIpv4Topology::AddIpv4Address (n0, nd0, Ipv4Address("10.1.1.1"), 
-    Ipv4Mask("255.255.255.0"));
+  Ipv4AddressHelper ipv4;
+  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+  ipv4.Allocate (nd0);
 
-  CsmaIpv4Topology::AddIpv4Address (n1, nd1, Ipv4Address("10.1.1.2"), 
-    Ipv4Mask("255.255.255.0"));
-
-  CsmaIpv4Topology::AddIpv4Address (n2, nd2, Ipv4Address("10.1.1.3"), 
-    Ipv4Mask("255.255.255.0"));
-  
-  CsmaIpv4Topology::AddIpv4Address (n3, nd3, Ipv4Address("10.1.1.4"), 
-    Ipv4Mask("255.255.255.0"));
 //
 // Create an OnOff application to send UDP datagrams from node zero to node 1.
 //
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
-  Ptr<OnOffApplication> ooff = 
-    CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress ("10.1.1.2", port)), 
-                                    "Protocol", TypeId::LookupByName ("ns3::Udp"),
-                                    "OnTime", ConstantVariable(1), 
-                                    "OffTime", ConstantVariable(0));
-  n0->AddApplication (ooff);
 
-//
-// Tell the application when to start and stop.
-//
-  ooff->Start(Seconds(1.0));
-  ooff->Stop (Seconds(10.0));
+  OnOffHelper onoff;
+  onoff.SetUdpRemote (Ipv4Address ("10.1.1.2"), port);
+  onoff.SetAppAttribute ("OnTime", ConstantVariable (1));
+  onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
+
+  ApplicationContainer app = onoff.Build (c.Get (0));
+  // Start the application
+  app.Start (Seconds (1.0));
+  app.Stop (Seconds (10.0));
+
+  // Create an optional packet sink to receive these packets
+  PacketSinkHelper sink;
+  sink.SetupUdp (Ipv4Address::GetAny (), port);
+  sink.Build (c.Get (1));
+
 // 
 // Create a similar flow from n3 to n0, starting at time 1.1 seconds
 //
-  ooff = CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress ("10.1.1.1", port)), 
-                                         "Protocol", TypeId::LookupByName ("ns3::Udp"),
-                                         "OnTime", ConstantVariable(1), 
-                                         "OffTime", ConstantVariable(0));
-  n3->AddApplication (ooff);
+  onoff.SetUdpRemote (Ipv4Address("10.1.1.1"), port);
+  ApplicationContainer app2 = onoff.Build (c.Get (3));
 
-  ooff->Start(Seconds(1.1));
-  ooff->Stop (Seconds(10.0));
+  sink.Build (c.Get (0));
+
+  app2.Start(Seconds (1.1));
+  app2.Stop (Seconds (10.0));
 //
 // Configure tracing of all enqueue, dequeue, and NetDevice receive events.
 // Trace output will be sent to the file "csma-one-subnet.tr"
 //
-   NS_LOG_INFO ("Configure Tracing.");
-  AsciiTrace asciitrace ("csma-one-subnet.tr");
-  asciitrace.TraceAllNetDeviceRx ();
-  asciitrace.TraceAllQueues ();
+  NS_LOG_INFO ("Configure Tracing.");
+  std::ofstream ascii;
+  ascii.open ("csma-one-subnet.tr");
+  CsmaHelper::EnableAscii (ascii);
 //
 // Also configure some tcpdump traces; each interface will be traced.
 // The output files will be named:
@@ -197,8 +131,7 @@ main (int argc, char *argv[])
 // and can be read by the "tcpdump -r" command (use "-tt" option to
 // display timestamps correctly)
 //
-  PcapTrace pcaptrace ("csma-one-subnet.pcap");
-  pcaptrace.TraceAllIp ();
+  CsmaHelper::EnablePcap ("csma-one-subnet.pcap");
 //
 // Now, do the actual simulation.
 //

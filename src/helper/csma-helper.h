@@ -61,22 +61,81 @@ public:
   void SetChannelParameter (std::string n1, Attribute v1);
 
   /**
-   * \param filename file template to dump pcap traces in.
+   * \param filename filename prefix to use for pcap files.
+   * \param nodeid the id of the node to generate pcap output for.
+   * \param deviceid the id of the device to generate pcap output for.
    *
-   * Every ns3::CsmaNetDevice created through subsequent calls
-   * to CsmaHelper::Build will be configured to dump
-   * pcap output in a file named filename-nodeid-deviceid.
+   * Generate a pcap file which contains the link-level data observed
+   * by the specified deviceid within the specified nodeid. The pcap
+   * data is stored in the file prefix-nodeid-deviceid.
+   *
+   * This method should be invoked after the network topology has 
+   * been fully constructed.
    */
-  void EnablePcap (std::string filename);
+  static void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
   /**
-   * Every ns3::CsmaNetDevice created through subsequent calls
-   * to CsmaHelper::Build will be configured to not dump any pcap
-   * output.
+   * \param filename filename prefix to use for pcap files.
+   * \param d container of devices of type ns3::CsmaNetDevice
+   *
+   * Enable pcap output on each input device which is of the
+   * ns3::CsmaNetDevice type.
    */
-  void DisablePcap (void);
+  static void EnablePcap (std::string filename, NetDeviceContainer d);
+  /**
+   * \param filename filename prefix to use for pcap files.
+   * \param n container of nodes.
+   *
+   * Enable pcap output on each device which is of the
+   * ns3::CsmaNetDevice type and which is located in one of the 
+   * input nodes.
+   */
+  static void EnablePcap (std::string filename, NodeContainer n);
+  /**
+   * \param filename filename prefix to use for pcap files.
+   *
+   * Enable pcap output on each device which is of the
+   * ns3::CsmaNetDevice type
+   */
+  static void EnablePcap (std::string filename);
 
-  void EnableAscii (std::ostream &os);
-  void DisableAscii (void);
+  /**
+   * \param os output stream
+   * \param nodeid the id of the node to generate ascii output for.
+   * \param deviceid the id of the device to generate ascii output for.
+   *
+   * Enable ascii output on the specified deviceid within the
+   * specified nodeid if it is of type ns3::CsmaNetDevice and dump 
+   * that to the specified stdc++ output stream.
+   */
+  static void EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid);
+  /**
+   * \param os output stream
+   * \param d device container
+   *
+   * Enable ascii output on each device which is of the
+   * ns3::CsmaNetDevice type and which is located in the input
+   * device container and dump that to the specified
+   * stdc++ output stream.
+   */
+  static void EnableAscii (std::ostream &os, NetDeviceContainer d);
+  /**
+   * \param os output stream
+   * \param n node container
+   *
+   * Enable ascii output on each device which is of the
+   * ns3::CsmaNetDevice type and which is located in one
+   * of the input node and dump that to the specified
+   * stdc++ output stream.
+   */
+  static void EnableAscii (std::ostream &os, NodeContainer n);
+  /**
+   * \param os output stream
+   *
+   * Enable ascii output on each device which is of the
+   * ns3::CsmaNetDevice type and dump that to the specified
+   * stdc++ output stream.
+   */
+  static void EnableAscii (std::ostream &os);
 
   /**
    * \param c a set of nodes
@@ -100,14 +159,13 @@ public:
 private:
   static void RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
   static void EnqueueEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
-  static void AsciiEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
+  static void AsciiEnqueueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
+  static void AsciiDequeueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
+  static void AsciiDropEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
+  static void AsciiRxEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
   ObjectFactory m_queueFactory;
   ObjectFactory m_deviceFactory;
   ObjectFactory m_channelFactory;
-  bool m_pcap;
-  std::string m_pcapFilename;
-  bool m_ascii;
-  std::ostream *m_asciiOs;
 };
 
 

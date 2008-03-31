@@ -8,10 +8,46 @@
 #include "ns3/propagation-loss-model.h"
 #include "ns3/mobility-model.h"
 #include "ns3/log.h"
+#include "ns3/pcap-writer.h"
+#include "ns3/wifi-mode.h"
+#include "ns3/wifi-preamble.h"
+#include "ns3/config.h"
+
+
 
 NS_LOG_COMPONENT_DEFINE ("WifiHelper");
 
 namespace ns3 {
+
+static void PcapPhyTxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet,
+			    WifiMode mode, WifiPreamble preamble, 
+			    uint8_t txLevel)
+{
+  writer->WritePacket (packet);
+}
+
+static void PcapPhyRxEvent (Ptr<PcapWriter> writer, 
+			    Ptr<const Packet> packet, double snr, WifiMode mode, 
+			    enum WifiPreamble preamble)
+{
+  writer->WritePacket (packet);
+}
+
+static void AsciiPhyTxEvent (std::ostream *os, std::string context, 
+			     Ptr<const Packet> packet,
+			     WifiMode mode, WifiPreamble preamble, 
+			     uint8_t txLevel)
+{
+  *os << context << " " << *packet << std::endl;
+}
+
+static void AsciiPhyRxOkEvent (std::ostream *os, std::string context, 
+			       Ptr<const Packet> packet, double snr, WifiMode mode, 
+			       enum WifiPreamble preamble)
+{
+  *os << context << " " << *packet << std::endl;
+}
+
 
 WifiHelper::WifiHelper ()
 {
@@ -89,6 +125,91 @@ WifiHelper::SetPhy (std::string type,
   m_phy.Set (n7, v7);
 }
 
+void 
+WifiHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid)
+{
+  std::ostringstream oss;
+  oss << filename << "-" << nodeid << "-" << deviceid;
+  Ptr<PcapWriter> pcap = Create<PcapWriter> ();
+  pcap->Open (oss.str ());
+  pcap->WriteWifiHeader ();
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/Tx";
+  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapPhyTxEvent, pcap));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/RxOk";
+  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapPhyRxEvent, pcap));
+}
+void 
+WifiHelper::EnablePcap (std::string filename, NetDeviceContainer d)
+{
+  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
+    {
+      Ptr<NetDevice> dev = *i;
+      EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex ());
+    }
+}
+void
+WifiHelper::EnablePcap (std::string filename, NodeContainer n)
+{
+  NetDeviceContainer devs;
+  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
+    {
+      Ptr<Node> node = *i;
+      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
+	{
+	  devs.Add (node->GetDevice (j));
+	}
+    }
+  EnablePcap (filename, devs);
+}
+
+void
+WifiHelper::EnablePcap (std::string filename)
+{
+  EnablePcap (filename, NodeContainer::GetGlobal ());
+}
+
+void 
+WifiHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
+{
+    Packet::EnableMetadata ();
+  std::ostringstream oss;
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/RxOk";
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyRxOkEvent, &os));
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/Tx";
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyTxEvent, &os));
+}
+void 
+WifiHelper::EnableAscii (std::ostream &os, NetDeviceContainer d)
+{
+  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
+    {
+      Ptr<NetDevice> dev = *i;
+      EnableAscii (os, dev->GetNode ()->GetId (), dev->GetIfIndex ());
+    }
+}
+void
+WifiHelper::EnableAscii (std::ostream &os, NodeContainer n)
+{
+  NetDeviceContainer devs;
+  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
+    {
+      Ptr<Node> node = *i;
+      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
+	{
+	  devs.Add (node->GetDevice (j));
+	}
+    }
+  EnableAscii (os, devs);
+}
+
+void
+WifiHelper::EnableAscii (std::ostream &os)
+{
+  EnableAscii (os, NodeContainer::GetGlobal ());
+}
+
 NetDeviceContainer
 WifiHelper::Build (NodeContainer c) const
 {
@@ -121,4 +242,5 @@ WifiHelper::Build (NodeContainer c, Ptr<WifiChannel> channel) const
     }
   return devices;
 }
+
 } // namespace ns3

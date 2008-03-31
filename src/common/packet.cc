@@ -257,6 +257,7 @@ Packet::Print (std::ostream &os) const
               NS_ASSERT (chunk != 0);
               chunk->Deserialize (item.current);
               chunk->Print (os);
+              delete chunk;
             }
             os << ")";
             break;

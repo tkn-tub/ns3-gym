@@ -841,6 +841,7 @@ MacLow::SendRtsForPacket (void)
   rts.SetType (WIFI_MAC_CTL_RTS);
   rts.SetDsNotFrom ();
   rts.SetDsNotTo ();
+  rts.SetNoMoreFragments ();
   rts.SetAddr1 (m_currentHdr.GetAddr1 ());
   rts.SetAddr2 (m_mac->GetAddress ());
   WifiMode rtsTxMode = GetRtsTxMode (m_currentPacket, &m_currentHdr);
@@ -984,6 +985,7 @@ MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiMode rtsTxMode,
   cts.SetType (WIFI_MAC_CTL_CTS);
   cts.SetDsNotFrom ();
   cts.SetDsNotTo ();
+  cts.SetNoMoreFragments ();
   cts.SetAddr1 (source);
   duration -= GetCtsDuration (source, rtsTxMode);
   duration -= GetSifs ();
@@ -1058,6 +1060,7 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
   ack.SetType (WIFI_MAC_CTL_ACK);
   ack.SetDsNotFrom ();
   ack.SetDsNotTo ();
+  ack.SetNoMoreFragments ();
   ack.SetAddr1 (source);
   duration -= GetAckDuration (source, dataTxMode);
   duration -= GetSifs ();

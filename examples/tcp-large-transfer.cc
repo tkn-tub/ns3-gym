@@ -40,9 +40,6 @@
 #include "ns3/global-route-manager.h"
 #include "ns3/simulator-module.h"
 
-#include "ns3/ascii-trace.h"
-#include "ns3/pcap-trace.h"
-
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpLargeTransfer");
@@ -180,23 +177,14 @@ int main (int argc, char *argv[])
   Simulator::ScheduleNow (&StartFlow, localSocket, nBytes,
                           ipInterfs.GetAddress (1), servPort);
 
-  // Configure tracing of all enqueue, dequeue, and NetDevice receive events
-  // Trace output will be sent to the simple-examples.tr file
-  AsciiTrace asciitrace ("tcp-large-transfer.tr");
-  asciitrace.TraceAllQueues ();
-  asciitrace.TraceAllNetDeviceRx ();
-
-  
-  // Also configure some tcpdump traces; each interface will be traced
-  // The output files will be named 
-  // simple-examples.pcap-<nodeId>-<interfaceId>
-  // and can be read by the "tcpdump -r" command (use "-tt" option to
-  // display timestamps correctly)
-  PcapTrace pcaptrace ("tcp-large-transfer.pcap");
-  pcaptrace.TraceAllIp ();
-
   Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/Rx", 
                    MakeCallback (&ApplicationTraceSink));
+
+  std::ofstream ascii;
+  ascii.open ("tcp-large-transfer.tr");
+  PointToPointHelper::EnablePcap ("tcp-large-transfer.pcap");
+  PointToPointHelper::EnableAscii (ascii);
+
 
   Simulator::StopAt (Seconds(1000));
   Simulator::Run ();

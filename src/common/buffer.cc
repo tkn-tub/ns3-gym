@@ -762,6 +762,33 @@ Buffer::Iterator::WriteU64 (uint64_t data)
   WriteU8 (data & 0xff);
 }
 void 
+Buffer::Iterator::WriteHtolsbU16 (uint16_t data)
+{
+  WriteU8 ((data >> 0) & 0xff);
+  WriteU8 ((data >> 8) & 0xff);
+}
+void 
+Buffer::Iterator::WriteHtolsbU32 (uint32_t data)
+{
+  WriteU8 ((data >> 0) & 0xff);
+  WriteU8 ((data >> 8) & 0xff);
+  WriteU8 ((data >> 16) & 0xff);
+  WriteU8 ((data >> 24) & 0xff);
+}
+void 
+Buffer::Iterator::WriteHtolsbU64 (uint64_t data)
+{
+  WriteU8 ((data >> 0) & 0xff);
+  WriteU8 ((data >> 8) & 0xff);
+  WriteU8 ((data >> 16) & 0xff);
+  WriteU8 ((data >> 24) & 0xff);
+  WriteU8 ((data >> 32) & 0xff);
+  WriteU8 ((data >> 40) & 0xff);
+  WriteU8 ((data >> 48) & 0xff);
+  WriteU8 ((data >> 54) & 0xff);
+}
+
+void 
 Buffer::Iterator::WriteHtonU16 (uint16_t data)
 {
   WriteU8 ((data >> 8) & 0xff);
@@ -894,6 +921,61 @@ Buffer::Iterator::ReadNtohU64 (void)
   retval <<= 8;
   retval |= ReadU8 ();
   return retval;
+}
+uint16_t 
+Buffer::Iterator::ReadLsbtohU16 (void)
+{
+  uint8_t byte0 = ReadU8 ();
+  uint8_t byte1 = ReadU8 ();
+  uint16_t data = byte1;
+  data <<= 8;
+  data |= byte0;
+  return data;
+}
+uint32_t 
+Buffer::Iterator::ReadLsbtohU32 (void)
+{
+  uint8_t byte0 = ReadU8 ();
+  uint8_t byte1 = ReadU8 ();
+  uint8_t byte2 = ReadU8 ();
+  uint8_t byte3 = ReadU8 ();
+  uint32_t data = byte3;
+  data <<= 8;
+  data |= byte2;
+  data <<= 8;
+  data |= byte1;
+  data <<= 8;
+  data |= byte0;
+  return data;
+}
+uint64_t 
+Buffer::Iterator::ReadLsbtohU64 (void)
+{
+  uint8_t byte0 = ReadU8 ();
+  uint8_t byte1 = ReadU8 ();
+  uint8_t byte2 = ReadU8 ();
+  uint8_t byte3 = ReadU8 ();
+  uint8_t byte4 = ReadU8 ();
+  uint8_t byte5 = ReadU8 ();
+  uint8_t byte6 = ReadU8 ();
+  uint8_t byte7 = ReadU8 ();
+  uint32_t data = byte7;
+  data <<= 8;
+  data |= byte6;
+  data <<= 8;
+  data |= byte5;
+  data <<= 8;
+  data |= byte4;
+  data <<= 8;
+  data |= byte3;
+  data <<= 8;
+  data |= byte2;
+  data <<= 8;
+  data |= byte1;
+  data <<= 8;
+  data |= byte0;
+
+  return data;
 }
 void 
 Buffer::Iterator::Read (uint8_t *buffer, uint32_t size)

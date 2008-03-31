@@ -25,11 +25,10 @@
 // - DropTail queues 
 // - Tracing of queues and packet receptions to file "udp-echo.tr"
 
+#include <fstream>
 #include "ns3/core-module.h"
 #include "ns3/simulator-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/ascii-trace.h"
-#include "ns3/pcap-trace.h"
 
 using namespace ns3;
 
@@ -127,23 +126,11 @@ main (int argc, char *argv[])
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (10.0));
 
-//
-// Configure tracing of all enqueue, dequeue, and NetDevice receive events.
-// Trace output will be sent to the file "udp-echo.tr"
-//
-  NS_LOG_INFO ("Configure Tracing.");
-  AsciiTrace asciitrace ("udp-echo.tr");
-  asciitrace.TraceAllNetDeviceRx ();
-  asciitrace.TraceAllQueues ();
-//
-// Also configure some tcpdump traces; each interface will be traced.
-// The output files will be named:
-//     udp-echo.pcap-<nodeId>-<interfaceId>
-// and can be read by the "tcpdump -r" command (use "-tt" option to
-// display timestamps correctly)
-//
-  PcapTrace pcaptrace ("udp-echo.pcap");
-  pcaptrace.TraceAllIp ();
+  std::ofstream ascii;
+  ascii.open ("udp-echo.tr");
+  CsmaHelper::EnablePcap ("udp-echo.pcap");
+  CsmaHelper::EnableAscii (ascii);
+
 //
 // Now, do the actual simulation.
 //
