@@ -3,6 +3,17 @@
 
 This file contains ns-3 release notes (most recent releases first).
 
+Release 3.0.12 (2008/03/31)
+========================
+    - Add Attribute support to the TypeId metadata system and add
+attribute support to all in-tree models
+    - Add a mid-level helper API to build simulation topologies 
+and perform simple ascii and pcap link-level tracing.
+    - Large amount of structural changes to accomodate the needs
+of the upcoming python bindings
+    - new rate control algorithm (RRAA) and a jakes propagation model
+in the 802.11 model (Federico Maguolo).
+
 Release 3.0.11 (2008/02/15)
 ========================
     - Initial port of GTNetS TCP implementation (initial version 

@@ -1,3 +1,22 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2008 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
 #include "wifi-helper.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-mac.h"
@@ -12,6 +31,7 @@
 #include "ns3/wifi-mode.h"
 #include "ns3/wifi-preamble.h"
 #include "ns3/config.h"
+#include "ns3/simulator.h"
 
 
 
@@ -38,14 +58,14 @@ static void AsciiPhyTxEvent (std::ostream *os, std::string context,
 			     WifiMode mode, WifiPreamble preamble, 
 			     uint8_t txLevel)
 {
-  *os << context << " " << *packet << std::endl;
+  *os << "+ " << Simulator::Now () << " " << context << " " << *packet << std::endl;
 }
 
 static void AsciiPhyRxOkEvent (std::ostream *os, std::string context, 
 			       Ptr<const Packet> packet, double snr, WifiMode mode, 
 			       enum WifiPreamble preamble)
 {
-  *os << context << " " << *packet << std::endl;
+  *os << "r " << Simulator::Now () << " " << context << " " << *packet << std::endl;
 }
 
 
@@ -129,7 +149,7 @@ void
 WifiHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid)
 {
   std::ostringstream oss;
-  oss << filename << "-" << nodeid << "-" << deviceid;
+  oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
   Ptr<PcapWriter> pcap = Create<PcapWriter> ();
   pcap->Open (oss.str ());
   pcap->WriteWifiHeader ();

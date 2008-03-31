@@ -1,7 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 INRIA
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -352,13 +351,13 @@ UdpSocket::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
 #ifdef RUN_SELF_TESTS
 
 #include "ns3/test.h"
-#include "ns3/internet-node.h"
 #include "ns3/socket-factory.h"
 #include "ns3/udp.h"
 #include "ns3/simulator.h"
 #include "ns3/simple-channel.h"
 #include "ns3/simple-net-device.h"
 #include "ns3/drop-tail-queue.h"
+#include "internet-stack.h"
 #include <string>
 
 namespace ns3 {
@@ -399,7 +398,8 @@ UdpSocketTest::RunTests (void)
   // Create topology
   
   // Receiver Node
-  Ptr<Node> rxNode = CreateObject<InternetNode> ();
+  Ptr<Node> rxNode = CreateObject<Node> ();
+  AddInternetStack (rxNode);
   Ptr<SimpleNetDevice> rxDev1, rxDev2;
   { // first interface
     rxDev1 = CreateObject<SimpleNetDevice> ();
@@ -424,7 +424,8 @@ UdpSocketTest::RunTests (void)
   }
   
   // Sender Node
-  Ptr<Node> txNode = CreateObject<InternetNode> ();
+  Ptr<Node> txNode = CreateObject<Node> ();
+  AddInternetStack (txNode);
   Ptr<SimpleNetDevice> txDev1;
   {
     txDev1 = CreateObject<SimpleNetDevice> ();

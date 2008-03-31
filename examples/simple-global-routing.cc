@@ -93,9 +93,6 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
-  std::ofstream ascii;
-  ascii.open ("simple-global-routing.tr");
-
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.
   NS_LOG_INFO ("Create nodes.");
@@ -111,8 +108,6 @@ main (int argc, char *argv[])
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
   PointToPointHelper p2p;
-  p2p.EnablePcap ("simple-global-routing.pcap");
-  p2p.EnableAscii (ascii);
   p2p.SetChannelParameter ("BitRate", DataRate (5000000));
   p2p.SetChannelParameter ("Delay", MilliSeconds (2));
   NetDeviceContainer d0d2 = p2p.Build (n0n2);
@@ -152,7 +147,6 @@ main (int argc, char *argv[])
   apps.Stop (Seconds (10.0));
 
   // Create a packet sink to receive these packets
-  // The last argument "true" disables output from the Receive callback
   PacketSinkHelper sink;
   sink.SetupUdp (Ipv4Address::GetAny (), port);
   apps = sink.Build (c.Get (3));
@@ -170,6 +164,10 @@ main (int argc, char *argv[])
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));
 
+  std::ofstream ascii;
+  ascii.open ("simple-global-routing.tr");
+  PointToPointHelper::EnablePcap ("simple-global-routing");
+  PointToPointHelper::EnableAscii (ascii);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

@@ -6,8 +6,6 @@ def build(bld):
         'backoff.cc',
         'csma-net-device.cc',
         'csma-channel.cc',
-        'csma-topology.cc',
-        'csma-ipv4-topology.cc',
         ]
     headers = bld.create_obj('ns3header')
     headers.module = 'csma'
@@ -15,6 +13,4 @@ def build(bld):
         'backoff.h',
         'csma-net-device.h',
         'csma-channel.h',
-        'csma-topology.h',
-        'csma-ipv4-topology.h',
         ]

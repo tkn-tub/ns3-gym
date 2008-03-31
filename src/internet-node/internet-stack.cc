@@ -1,7 +1,6 @@
 // -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*-
 //
 // Copyright (c) 2006 Georgia Tech Research Corporation
-// All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as
@@ -21,9 +20,9 @@
 
 #include "ns3/net-device.h"
 #include "ns3/callback.h"
+#include "ns3/node.h"
 
 #include "ipv4-l4-demux.h"
-#include "internet-node.h"
 #include "udp-l4-protocol.h"
 #include "tcp-l4-protocol.h"
 #include "ipv4-l3-protocol.h"

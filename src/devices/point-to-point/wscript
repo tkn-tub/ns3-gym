@@ -6,7 +6,6 @@ def build(bld):
     module.source = [
         'point-to-point-net-device.cc',
         'point-to-point-channel.cc',
-        'point-to-point-topology.cc',
         'point-to-point-test.cc',
         ]
     headers = bld.create_obj('ns3header')
@@ -14,6 +13,5 @@ def build(bld):
     headers.source = [
         'point-to-point-net-device.h',
         'point-to-point-channel.h',
-        'point-to-point-topology.h',
         ]
 

@@ -22,7 +22,7 @@
 #include "ns3/assert.h"
 #include "ns3/channel.h"
 #include "ns3/net-device.h"
-#include "ns3/internet-node.h"
+#include "ns3/node.h"
 #include "ns3/ipv4.h"
 #include "global-router-interface.h"
 

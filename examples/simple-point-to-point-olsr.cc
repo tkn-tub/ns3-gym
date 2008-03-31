@@ -35,38 +35,20 @@
 // - UDP packet size of 210 bytes, with per-packet interval 0.00375 sec.
 //   (i.e., DataRate of 448,000 bps)
 // - DropTail queues 
-// - Tracing of queues and packet receptions to file 
-//   "simple-point-to-point.tr"
+// - Tracing of queues and packet receptions to file "simple-point-to-point-olsr.tr"
 
-#include "ns3/log.h"
-#include "ns3/command-line.h"
-#include "ns3/ptr.h"
-#include "ns3/random-variable.h"
-#include "ns3/config.h"
-#include "ns3/string.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <cassert>
 
-#include "ns3/simulator.h"
-#include "ns3/nstime.h"
-#include "ns3/data-rate.h"
-
-#include "ns3/ascii-trace.h"
-#include "ns3/pcap-trace.h"
-#include "ns3/internet-node.h"
-#include "ns3/point-to-point-channel.h"
-#include "ns3/point-to-point-net-device.h"
-#include "ns3/ipv4-address.h"
-#include "ns3/inet-socket-address.h"
-#include "ns3/ipv4.h"
-#include "ns3/socket.h"
-#include "ns3/ipv4-route.h"
-#include "ns3/point-to-point-topology.h"
-#include "ns3/onoff-application.h"
-#include "ns3/packet-sink.h"
-#include "ns3/olsr-helper.h"
+#include "ns3/core-module.h"
+#include "ns3/simulator-module.h"
+#include "ns3/helper-module.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("SimplePointToPointExample");
+NS_LOG_COMPONENT_DEFINE ("SimpleGlobalRoutingExample");
 
 int 
 main (int argc, char *argv[])
@@ -74,7 +56,7 @@ main (int argc, char *argv[])
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
 #if 0 
-  LogComponentEnable ("SimplePointToPointExample", LOG_LEVEL_INFO);
+  LogComponentEnable ("SimpleGlobalRoutingExample", LOG_LEVEL_INFO);
 
   LogComponentEnable("Object", LOG_LEVEL_ALL);
   LogComponentEnable("Queue", LOG_LEVEL_ALL);
@@ -98,125 +80,104 @@ main (int argc, char *argv[])
   LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_ALL);
   LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_ALL);
 #endif
+  // Set up some default values for the simulation.  Use the 
 
-  // Set up some default values for the simulation.
-
-  Config::SetDefault ("ns3::OnOffApplication::PacketSize", String ("210"));
-  Config::SetDefault ("ns3::OnOffApplication::DataRate", String ("448kb/s"));
+  Config::SetDefault ("ns3::OnOffApplication::PacketSize", Uinteger (210));
+  Config::SetDefault ("ns3::OnOffApplication::DataRate", DataRate ("448kb/s"));
 
   //DefaultValue::Bind ("DropTailQueue::m_maxPackets", 30);   
 
   // Allow the user to override any of the defaults and the above
-  // Bind()s at run-time, via command-line arguments
+  // DefaultValue::Bind ()s at run-time, via command-line arguments
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.
   NS_LOG_INFO ("Create nodes.");
-  Ptr<Node> n0 = CreateObject<InternetNode> ();
-  Ptr<Node> n1 = CreateObject<InternetNode> (); 
-  Ptr<Node> n2 = CreateObject<InternetNode> (); 
-  Ptr<Node> n3 = CreateObject<InternetNode> ();
-  Ptr<Node> n4 = CreateObject<InternetNode> ();
+  NodeContainer c;
+  c.Create (5);
+  NodeContainer n02 = NodeContainer (c.Get(0), c.Get (2));
+  NodeContainer n12 = NodeContainer (c.Get(1), c.Get (2));
+  NodeContainer n32 = NodeContainer (c.Get(3), c.Get (2));
+  NodeContainer n34 = NodeContainer (c.Get (3), c.Get (4));
+
+  InternetStackHelper internet;
+  internet.Build (c);
 
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
-  Ptr<PointToPointChannel> channel0 = 
-    PointToPointTopology::AddPointToPointLink (
-      n0, n2, DataRate(5000000), MilliSeconds(2));
-
-  Ptr<PointToPointChannel> channel1 = 
-    PointToPointTopology::AddPointToPointLink (
-      n1, n2, DataRate(5000000), MilliSeconds(2));
-  
-  Ptr<PointToPointChannel> channel2 = 
-    PointToPointTopology::AddPointToPointLink (
-      n2, n3, DataRate(1500000), MilliSeconds(10));
-
-  Ptr<PointToPointChannel> channel3 = 
-    PointToPointTopology::AddPointToPointLink (
-      n3, n4, DataRate(1500000), MilliSeconds(10));
+  PointToPointHelper p2p;
+  p2p.SetChannelParameter ("BitRate", DataRate (5000000));
+  p2p.SetChannelParameter ("Delay", MilliSeconds (2));
+  NetDeviceContainer nd02 = p2p.Build (n02);
+  NetDeviceContainer nd12 = p2p.Build (n12);
+  p2p.SetChannelParameter ("BitRate", DataRate (1500000));
+  p2p.SetChannelParameter ("Delay", MilliSeconds (10));
+  NetDeviceContainer nd32 = p2p.Build (n32);
+  NetDeviceContainer nd34 = p2p.Build (n34);
   
   // Later, we add IP addresses.  
   NS_LOG_INFO ("Assign IP Addresses.");
-  PointToPointTopology::AddIpv4Addresses (
-      channel0, n0, Ipv4Address("10.1.1.1"),
-      n2, Ipv4Address("10.1.1.2"));
-  
-  PointToPointTopology::AddIpv4Addresses (
-      channel1, n1, Ipv4Address("10.1.2.1"),
-      n2, Ipv4Address("10.1.2.2"));
-  
-  PointToPointTopology::AddIpv4Addresses (
-      channel2, n2, Ipv4Address("10.1.3.1"),
-      n3, Ipv4Address("10.1.3.2"));
+  Ipv4AddressHelper ipv4;
+  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+  Ipv4InterfaceContainer i02 = ipv4.Allocate (nd02);
 
-  PointToPointTopology::AddIpv4Addresses (
-      channel3, n3, Ipv4Address("10.1.4.1"),
-      n4, Ipv4Address("10.1.4.2"));
+  ipv4.SetBase ("10.1.2.0", "255.255.255.0");
+  Ipv4InterfaceContainer i12 = ipv4.Allocate (nd12);
+  
+  ipv4.SetBase ("10.1.3.0", "255.255.255.0");
+  Ipv4InterfaceContainer i32 = ipv4.Allocate (nd32);
+
+  ipv4.SetBase ("10.1.4.0", "255.255.255.0");
+  Ipv4InterfaceContainer i34 = ipv4.Allocate (nd34);
 
   // Enable OLSR
   NS_LOG_INFO ("Enabling OLSR Routing.");
   OlsrHelper olsr;
   olsr.EnableAll ();
 
-
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
-  Ptr<OnOffApplication> ooff = 
-    CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress ("10.1.4.2", port)), 
-                                    "Protocol", TypeId::LookupByName ("ns3::Udp"),
-                                    "OnTime", ConstantVariable(1), 
-                                    "OffTime", ConstantVariable(0));
-  n0->AddApplication (ooff);
-  // Start the application
-  ooff->Start(Seconds(1.0));
-
-  // Create an optional packet sink to receive these packets
-  Ptr<PacketSink> sink = 
-    CreateObject<PacketSink> ("Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
-                              "Protocol", TypeId::LookupByName ("ns3::Udp"));
-  n3->AddApplication (sink);
-  // Start the sink
-  sink->Start (Seconds (1.0));
-
-  // Create a similar flow from n3 to n1, starting at time 1.1 seconds
-  ooff = CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress ("10.1.2.1", port)), 
-                                         "Protocol", TypeId::LookupByName ("ns3::Udp"),
-                                         "OnTime", ConstantVariable(1), 
-                                         "OffTime", ConstantVariable(0));
-  n3->AddApplication (ooff);
-  // Start the application
-  ooff->Start (Seconds(1.1));
+  OnOffHelper onoff;
+  onoff.SetAppAttribute ("OnTime", ConstantVariable (1));
+  onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
+  onoff.SetUdpRemote (i34.GetAddress (1), port);
+  ApplicationContainer apps = onoff.Build (c.Get (0));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
 
   // Create a packet sink to receive these packets
-  sink = CreateObject<PacketSink> ("Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
-                                   "Protocol", TypeId::LookupByName ("ns3::Udp"));
-  n1->AddApplication (sink);
-  // Start the sink
-  sink->Start (Seconds (1.1));
+  PacketSinkHelper sink;
+  sink.SetupUdp (Ipv4Address::GetAny (), port);
+  apps = sink.Build (c.Get (3));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
 
-  // Configure tracing of all enqueue, dequeue, and NetDevice receive events
-  // Trace output will be sent to the simple-point-to-point.tr file
-  NS_LOG_INFO ("Configure Tracing.");
-  AsciiTrace asciitrace ("simple-point-to-point-olsr.tr");
-  asciitrace.TraceAllQueues ();
-  asciitrace.TraceAllNetDeviceRx ();
+  // Create a similar flow from n3 to n1, starting at time 1.1 seconds
+  onoff.SetUdpRemote (i12.GetAddress (0), port);
+  apps = onoff.Build (c.Get (3));
+  apps.Start (Seconds (1.1));
+  apps.Stop (Seconds (10.0));
 
-  // Also configure some tcpdump traces; each interface will be traced
-  // The output files will be named 
-  // simple-point-to-point.pcap-<nodeId>-<interfaceId>
-  // and can be read by the "tcpdump -r" command (use "-tt" option to
-  // display timestamps correctly)
-  PcapTrace pcaptrace ("simple-point-to-point-olsr.pcap");
-  pcaptrace.TraceAllIp ();
+  // Create a packet sink to receive these packets
+  apps = sink.Build (c.Get (1));
+  apps.Start (Seconds (1.1));
+  apps.Stop (Seconds (10.0));
+
+  std::ofstream ascii;
+  ascii.open ("simple-point-to-point-olsr.tr");
+  PointToPointHelper::EnablePcap ("simple-point-to-point-olsr");
+  PointToPointHelper::EnableAscii (ascii);
+
+  Simulator::StopAt (Seconds (30));
 
   NS_LOG_INFO ("Run Simulation.");
-  Simulator::StopAt (Seconds (30));
   Simulator::Run ();
   Simulator::Destroy ();
   NS_LOG_INFO ("Done.");
+
+  return 0;
 }

@@ -17,12 +17,10 @@ def build(bld):
     obj.source = 'tutorial-point-to-point.cc'
 
     obj = bld.create_ns3_program('tutorial-star', ['internet-node', 'point-to-point'])
-    obj.source = ['tutorial-star.cc',
-                  'point-to-point-ipv4-topology.cc']
+    obj.source = ['tutorial-star.cc']
 
     obj = bld.create_ns3_program('tutorial-star-routing', ['internet-node', 'point-to-point'])
-    obj.source = ['tutorial-star-routing.cc',
-                  'point-to-point-ipv4-topology.cc']
+    obj.source = ['tutorial-star-routing.cc']
 
     obj = bld.create_ns3_program('tutorial-linear-dumbbell', ['internet-node', 'point-to-point'])
     obj.source = 'tutorial-linear-dumbbell.cc'

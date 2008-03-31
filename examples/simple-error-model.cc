@@ -163,7 +163,7 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("simple-error-model.tr");
-  PointToPointHelper::EnablePcap ("simple-error-model.pcap");
+  PointToPointHelper::EnablePcap ("simple-error-model");
   PointToPointHelper::EnableAscii (ascii);
 
   NS_LOG_INFO ("Run Simulation.");
