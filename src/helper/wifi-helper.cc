@@ -139,6 +139,35 @@ WifiHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/RxOk";
   Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapPhyRxEvent, pcap));
 }
+void 
+WifiHelper::EnablePcap (std::string filename, NetDeviceContainer d)
+{
+  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
+    {
+      Ptr<NetDevice> dev = *i;
+      EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex ());
+    }
+}
+void
+WifiHelper::EnablePcap (std::string filename, NodeContainer n)
+{
+  NetDeviceContainer devs;
+  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
+    {
+      Ptr<Node> node = *i;
+      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
+	{
+	  devs.Add (node->GetDevice (j));
+	}
+    }
+  EnablePcap (filename, devs);
+}
+
+void
+WifiHelper::EnablePcap (std::string filename)
+{
+  EnablePcap (filename, NodeContainer::GetGlobal ());
+}
 
 void 
 WifiHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
@@ -150,6 +179,35 @@ WifiHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/Tx";
   Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyTxEvent, &os));
+}
+void 
+WifiHelper::EnableAscii (std::ostream &os, NetDeviceContainer d)
+{
+  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
+    {
+      Ptr<NetDevice> dev = *i;
+      EnableAscii (os, dev->GetNode ()->GetId (), dev->GetIfIndex ());
+    }
+}
+void
+WifiHelper::EnableAscii (std::ostream &os, NodeContainer n)
+{
+  NetDeviceContainer devs;
+  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
+    {
+      Ptr<Node> node = *i;
+      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
+	{
+	  devs.Add (node->GetDevice (j));
+	}
+    }
+  EnableAscii (os, devs);
+}
+
+void
+WifiHelper::EnableAscii (std::ostream &os)
+{
+  EnableAscii (os, NodeContainer::GetGlobal ());
 }
 
 NetDeviceContainer

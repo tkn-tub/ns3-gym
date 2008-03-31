@@ -59,14 +59,81 @@ public:
    */
   void SetChannelParameter (std::string name, Attribute value);
 
+  /**
+   * \param filename filename prefix to use for pcap files.
+   * \param nodeid the id of the node to generate pcap output for.
+   * \param deviceid the id of the device to generate pcap output for.
+   *
+   * Generate a pcap file which contains the link-level data observed
+   * by the specified deviceid within the specified nodeid. The pcap
+   * data is stored in the file prefix-nodeid-deviceid.
+   *
+   * This method should be invoked after the network topology has 
+   * been fully constructed.
+   */
   static void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
+  /**
+   * \param filename filename prefix to use for pcap files.
+   * \param d container of devices of type ns3::PointToPointNetDevice
+   *
+   * Enable pcap output on each input device which is of the
+   * ns3::PointToPointNetDevice type.
+   */
   static void EnablePcap (std::string filename, NetDeviceContainer d);
+  /**
+   * \param filename filename prefix to use for pcap files.
+   * \param n container of nodes.
+   *
+   * Enable pcap output on each device which is of the
+   * ns3::PointToPointNetDevice type and which is located in one of the 
+   * input nodes.
+   */
   static void EnablePcap (std::string filename, NodeContainer n);
+  /**
+   * \param filename filename prefix to use for pcap files.
+   *
+   * Enable pcap output on each device which is of the
+   * ns3::PointToPointNetDevice type
+   */
   static void EnablePcap (std::string filename);
 
+  /**
+   * \param os output stream
+   * \param nodeid the id of the node to generate ascii output for.
+   * \param deviceid the id of the device to generate ascii output for.
+   *
+   * Enable ascii output on the specified deviceid within the
+   * specified nodeid if it is of type ns3::PointToPointNetDevice and dump 
+   * that to the specified stdc++ output stream.
+   */
   static void EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid);
+  /**
+   * \param os output stream
+   * \param d device container
+   *
+   * Enable ascii output on each device which is of the
+   * ns3::PointToPointNetDevice type and which is located in the input
+   * device container and dump that to the specified
+   * stdc++ output stream.
+   */
   static void EnableAscii (std::ostream &os, NetDeviceContainer d);
+  /**
+   * \param os output stream
+   * \param n node container
+   *
+   * Enable ascii output on each device which is of the
+   * ns3::PointToPointNetDevice type and which is located in one
+   * of the input node and dump that to the specified
+   * stdc++ output stream.
+   */
   static void EnableAscii (std::ostream &os, NodeContainer n);
+  /**
+   * \param os output stream
+   *
+   * Enable ascii output on each device which is of the
+   * ns3::PointToPointNetDevice type and dump that to the specified
+   * stdc++ output stream.
+   */
   static void EnableAscii (std::ostream &os);
 
   /**
