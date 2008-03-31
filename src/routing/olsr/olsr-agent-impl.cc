@@ -32,7 +32,6 @@
 #include "olsr-agent-impl.h"
 #include "ns3/socket-factory.h"
 #include "ns3/udp.h"
-#include "ns3/internet-node.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/random-variable.h"
