@@ -61,7 +61,7 @@ public:
    */
   void Add (ApplicationContainer other);
   /**
-   * \param device another netdevice pointer.
+   * \param application another netdevice pointer.
    *
    * Append to the end of this container the input netdevice pointer.
    */
