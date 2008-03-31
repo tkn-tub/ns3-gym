@@ -12,6 +12,7 @@
 #include "ns3/wifi-mode.h"
 #include "ns3/wifi-preamble.h"
 #include "ns3/config.h"
+#include "ns3/simulator.h"
 
 
 
@@ -38,14 +39,14 @@ static void AsciiPhyTxEvent (std::ostream *os, std::string context,
 			     WifiMode mode, WifiPreamble preamble, 
 			     uint8_t txLevel)
 {
-  *os << context << " " << *packet << std::endl;
+  *os << "+ " << Simulator::Now () << " " << context << " " << *packet << std::endl;
 }
 
 static void AsciiPhyRxOkEvent (std::ostream *os, std::string context, 
 			       Ptr<const Packet> packet, double snr, WifiMode mode, 
 			       enum WifiPreamble preamble)
 {
-  *os << context << " " << *packet << std::endl;
+  *os << "r " << Simulator::Now () << " " << context << " " << *packet << std::endl;
 }
 
 
