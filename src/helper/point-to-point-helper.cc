@@ -1,4 +1,5 @@
 #include "point-to-point-helper.h"
+#include "ns3/simulator.h"
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/point-to-point-channel.h"
 #include "ns3/queue.h"
@@ -94,13 +95,16 @@ PointToPointHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t dev
   Packet::EnableMetadata ();
   std::ostringstream oss;
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/Rx";
-  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiRxEvent, &os));
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Enqueue";
-  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiEnqueueEvent, &os));
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Dequeue";
-  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiDequeueEvent, &os));
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Drop";
+  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiDropEvent, &os));
 }
 void 
 PointToPointHelper::EnableAscii (std::ostream &os, NetDeviceContainer d)
@@ -173,8 +177,27 @@ PointToPointHelper::RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
   writer->WritePacket (packet);
 }
 void 
-PointToPointHelper::AsciiEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+PointToPointHelper::AsciiEnqueueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
 {
+  *os << "+ " << Simulator::Now ().GetSeconds () << " ";
+  *os << path << " " << *packet << std::endl;
+}
+void 
+PointToPointHelper::AsciiDequeueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+{
+  *os << "- " << Simulator::Now ().GetSeconds () << " ";
+  *os << path << " " << *packet << std::endl;
+}
+void 
+PointToPointHelper::AsciiDropEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+{
+  *os << "d " << Simulator::Now ().GetSeconds () << " ";
+  *os << path << " " << *packet << std::endl;
+}
+void 
+PointToPointHelper::AsciiRxEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+{
+  *os << "r " << Simulator::Now ().GetSeconds () << " ";
   *os << path << " " << *packet << std::endl;
 }
 
