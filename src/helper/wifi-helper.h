@@ -121,6 +121,7 @@ public:
 
 
   static void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
+  static void EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid);
 
   /**
    * \param c a set of nodes

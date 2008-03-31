@@ -19,18 +19,33 @@ NS_LOG_COMPONENT_DEFINE ("WifiHelper");
 
 namespace ns3 {
 
-static void PhyTxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet,
-			WifiMode mode, WifiPreamble preamble, 
-			uint8_t txLevel)
+static void PcapPhyTxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet,
+			    WifiMode mode, WifiPreamble preamble, 
+			    uint8_t txLevel)
 {
   writer->WritePacket (packet);
 }
 
-static void PhyRxEvent (Ptr<PcapWriter> writer, 
-			Ptr<const Packet> packet, double snr, WifiMode mode, 
-			enum WifiPreamble preamble)
+static void PcapPhyRxEvent (Ptr<PcapWriter> writer, 
+			    Ptr<const Packet> packet, double snr, WifiMode mode, 
+			    enum WifiPreamble preamble)
 {
   writer->WritePacket (packet);
+}
+
+static void AsciiPhyTxEvent (std::ostream *os, std::string context, 
+			     Ptr<const Packet> packet,
+			     WifiMode mode, WifiPreamble preamble, 
+			     uint8_t txLevel)
+{
+  *os << context << " " << *packet << std::endl;
+}
+
+static void AsciiPhyRxOkEvent (std::ostream *os, std::string context, 
+			       Ptr<const Packet> packet, double snr, WifiMode mode, 
+			       enum WifiPreamble preamble)
+{
+  *os << context << " " << *packet << std::endl;
 }
 
 
@@ -120,9 +135,21 @@ WifiHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid
   pcap->WriteWifiHeader ();
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/Tx";
-  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PhyTxEvent, pcap));
+  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapPhyTxEvent, pcap));
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/RxOk";
-  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PhyRxEvent, pcap));
+  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapPhyRxEvent, pcap));
+}
+
+void 
+WifiHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
+{
+    Packet::EnableMetadata ();
+  std::ostringstream oss;
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/RxOk";
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyRxOkEvent, &os));
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/Tx";
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyTxEvent, &os));
 }
 
 NetDeviceContainer
