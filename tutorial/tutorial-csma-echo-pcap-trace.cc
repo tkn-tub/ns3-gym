@@ -61,7 +61,7 @@ main (int argc, char *argv[])
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
-  CsmaHelper::EnablePcap ("tutorial.pcap");
+  CsmaHelper::EnablePcap ("tutorial");
   
   Simulator::Run ();
   Simulator::Destroy ();

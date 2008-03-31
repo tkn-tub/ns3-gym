@@ -140,8 +140,8 @@ main (int argc, char *argv[])
   PointToPointHelper::EnableAscii (os);
   CsmaHelper::EnableAscii (os);
 
-  PointToPointHelper::EnablePcap ("tutorial.pcap");
-  CsmaHelper::EnablePcap ("tutorial.pcap");
+  PointToPointHelper::EnablePcap ("tutorial");
+  CsmaHelper::EnablePcap ("tutorial");
 
   Simulator::Run ();
   Simulator::Destroy ();
