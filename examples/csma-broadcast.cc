@@ -79,16 +79,21 @@ main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   NS_LOG_INFO ("Create nodes.");
-  NodeContainer c0;
-  c0.Create (2);
-
-  NodeContainer c1;
-  c1.Add (c0.Get (0));
-  c1.Create (1);
-
+  NodeContainer c;
+  c.Create (3);
+  NodeContainer c0 = NodeContainer (c.Get (0), c.Get (1));
+  NodeContainer c1 = NodeContainer (c.Get (0), c.Get (2));
 
   NS_LOG_INFO ("Build Topology.");
   CsmaHelper csma;
+  // Also configure some tcpdump traces; each interface will be traced
+  // The output files will be named 
+  // csma-broadcast.pcap-<nodeId>-<interfaceId>
+  // and can be read by the "tcpdump -tt -r" command 
+  csma.EnablePcap ("csma-broadcast.pcap");
+  std::ofstream ascii;
+  ascii.open ("csma-broadcast.tr");
+  csma.EnableAscii (ascii);
   csma.SetChannelParameter ("BitRate", DataRate(5000000));
   csma.SetChannelParameter ("Delay", MilliSeconds(2));
 
@@ -133,20 +138,6 @@ main (int argc, char *argv[])
   sink.Build (c1.Get (1));
 
 
-  NS_LOG_INFO ("Configure Tracing.");
-  // Configure tracing of all enqueue, dequeue, and NetDevice receive events
-  // Trace output will be sent to the csma-broadcast.tr file
-  AsciiTrace asciitrace ("csma-broadcast.tr");
-  asciitrace.TraceAllNetDeviceRx ();
-  asciitrace.TraceAllQueues ();
-
-  // Also configure some tcpdump traces; each interface will be traced
-  // The output files will be named 
-  // simple-point-to-point.pcap-<nodeId>-<interfaceId>
-  // and can be read by the "tcpdump -r" command (use "-tt" option to
-  // display timestamps correctly)
-  PcapTrace pcaptrace ("csma-broadcast.pcap");
-  pcaptrace.TraceAllIp ();
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();    

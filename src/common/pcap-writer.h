@@ -22,8 +22,8 @@
 #ifndef PCAP_WRITER_H
 #define PCAP_WRITER_H
 
-#include "ns3/callback.h"
 #include <stdint.h>
+#include "ns3/ref-count-base.h"
 
 namespace ns3 {
 
@@ -35,7 +35,8 @@ class Packet;
  * Log Packets to a file in pcap format which can be
  * read by pcap readers.
  */
-class PcapWriter {
+class PcapWriter : public RefCountBase
+{
 public:
   PcapWriter ();
   ~PcapWriter ();
@@ -71,9 +72,8 @@ private:
   void Write16 (uint16_t data);
   void WriteHeader (uint32_t network);
   std::ofstream *m_writer;
-  Callback<void,uint8_t *,uint32_t> m_writeCallback;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* PCAP_WRITER_H */

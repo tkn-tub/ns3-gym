@@ -762,7 +762,7 @@ WifiPhy::GetPowerDbm (uint8_t power) const
 {
   NS_ASSERT (m_txPowerBaseDbm <= m_txPowerEndDbm);
   NS_ASSERT (m_nTxPower > 0);
-  double dbm = m_txPowerBaseDbm + (m_txPowerEndDbm - m_txPowerBaseDbm) / m_nTxPower;
+  double dbm = m_txPowerBaseDbm + power * (m_txPowerEndDbm - m_txPowerBaseDbm) / m_nTxPower;
   return dbm;
 }
 

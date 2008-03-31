@@ -120,4 +120,4 @@ PcapWriter::Write16 (uint16_t data)
   WriteData((uint8_t*)&data, 2);
 }
 
-}; // namespace ns3
+} // namespace ns3

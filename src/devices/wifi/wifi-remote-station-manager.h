@@ -25,6 +25,7 @@
 #include "ns3/mac48-address.h"
 #include "ns3/packet.h"
 #include "ns3/object.h"
+#include "ns3/traced-value.h"
 #include "wifi-mode.h"
 
 namespace ns3 {
@@ -85,6 +86,7 @@ public:
   WifiRemoteStation *Lookup (Mac48Address address);
   WifiRemoteStation *LookupNonUnicast (void);
 protected:
+  friend class WifiRemoteStation;
   virtual void DoDispose (void);
 private:
   typedef std::vector <std::pair<Mac48Address, WifiRemoteStation *> > Stations;
@@ -106,6 +108,9 @@ namespace ns3 {
 
 class WifiRemoteStation {
 public:
+  
+  static TypeId GetTypeId (void);
+  
   WifiRemoteStation ();
   virtual ~WifiRemoteStation ();
 
@@ -130,20 +135,21 @@ public:
   void PrepareForQueue (Ptr<const Packet> packet, uint32_t fullPacketSize);
   WifiMode GetDataMode (Ptr<const Packet> packet, uint32_t fullPacketSize);
   WifiMode GetRtsMode (Ptr<const Packet> packet);
+  // transmission-related methods
+  void ReportRtsFailed (void);
+  void ReportDataFailed (void);
+  void ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
+  void ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
+  void ReportFinalRtsFailed (void);
+  void ReportFinalDataFailed (void);
 
   // reception-related method
-  virtual void ReportRxOk (double rxSnr, WifiMode txMode) = 0;
+  void ReportRxOk (double rxSnr, WifiMode txMode);
 
-  // transmission-related methods
-  virtual void ReportRtsFailed (void) = 0;
-  virtual void ReportDataFailed (void) = 0;
-  virtual void ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr) = 0;
-  virtual void ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr) = 0;
-  virtual void ReportFinalRtsFailed (void) = 0;
-  virtual void ReportFinalDataFailed (void) = 0;
   virtual bool NeedRts (Ptr<const Packet> packet);
-  virtual uint32_t GetMaxSsrc (Ptr<const Packet> packet);
-  virtual uint32_t GetMaxSlrc (Ptr<const Packet> packet);
+  virtual bool NeedRtsRetransmission (Ptr<const Packet> packet);
+  virtual bool NeedDataRetransmission (Ptr<const Packet> packet);
+
   virtual bool NeedFragmentation (Ptr<const Packet> packet);
   virtual uint32_t GetNFragments (Ptr<const Packet> packet);
   virtual uint32_t GetFragmentSize (Ptr<const Packet> packet, uint32_t fragmentNumber);
@@ -158,6 +164,13 @@ private:
   virtual WifiMode DoGetDataMode (uint32_t size) = 0;
   virtual WifiMode DoGetRtsMode (void) = 0;
 protected:
+  virtual void DoReportRtsFailed (void) = 0;
+  virtual void DoReportDataFailed (void) = 0;
+  virtual void DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr) = 0;
+  virtual void DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr) = 0;
+  virtual void DoReportFinalRtsFailed (void) = 0;
+  virtual void DoReportFinalDataFailed (void) = 0;
+  virtual void DoReportRxOk (double rxSnr, WifiMode txMode) = 0;
   uint32_t GetNSupportedModes (void) const;
   WifiMode GetSupportedMode (uint32_t i) const;
 private:
@@ -170,6 +183,8 @@ private:
     GOT_ASSOC_TX_OK
   } m_state;
   SupportedModes m_modes;
+  TracedValue<uint32_t> m_ssrc;
+  TracedValue<uint32_t> m_slrc;
 };
 
 } // namespace ns3 

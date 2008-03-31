@@ -87,14 +87,15 @@ public:
   RraaWifiRemoteStation (Ptr<RraaWifiManager> stations);
   virtual ~RraaWifiRemoteStation ();
 
-  virtual void ReportRxOk (double rxSnr, WifiMode txMode);
-  virtual void ReportRtsFailed (void);
-  virtual void ReportDataFailed (void);
-  virtual void ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
-  virtual void ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
-  virtual void ReportFinalRtsFailed (void);
-  virtual void ReportFinalDataFailed (void);
   virtual bool NeedRts (Ptr<const Packet> packet);
+protected:
+  virtual void DoReportRxOk (double rxSnr, WifiMode txMode);
+  virtual void DoReportRtsFailed (void);
+  virtual void DoReportDataFailed (void);
+  virtual void DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
+  virtual void DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
+  virtual void DoReportFinalRtsFailed (void);
+  virtual void DoReportFinalDataFailed (void);
 
 private:
   virtual Ptr<WifiRemoteStationManager> GetManager (void) const;

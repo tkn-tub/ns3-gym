@@ -200,6 +200,7 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p, Mac48Address dest,
       lengthType = protocolNumber;
       break;
     case LLC: {
+      lengthType = p->GetSize() + header.GetSerializedSize() + trailer.GetSerializedSize();
       LlcSnapHeader llc;
       llc.SetType (protocolNumber);
       p->AddHeader (llc);
@@ -441,6 +442,8 @@ CsmaNetDevice::Receive (Ptr<Packet> packet)
       return;
     }
 
+  m_rxTrace (packet);
+
   if (m_encapMode == RAW)
     {
       m_rxCallback (this, packet, 0, GetBroadcast ());
@@ -490,7 +493,6 @@ CsmaNetDevice::Receive (Ptr<Packet> packet)
     }
   else
     {
-      m_rxTrace (packet);
 //
 // protocol must be initialized to avoid a compiler warning in the RAW
 // case that breaks the optimized build.

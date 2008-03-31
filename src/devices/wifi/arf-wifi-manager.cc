@@ -88,7 +88,7 @@ ArfWifiRemoteStation::NeedNormalFallback (void)
 
 
 void 
-ArfWifiRemoteStation::ReportRtsFailed (void)
+ArfWifiRemoteStation::DoReportRtsFailed (void)
 {}
 /**
  * It is important to realize that "recovery" mode starts after failure of
@@ -100,7 +100,7 @@ ArfWifiRemoteStation::ReportRtsFailed (void)
  * transmission, be it an initial transmission or a retransmission.
  */
 void 
-ArfWifiRemoteStation::ReportDataFailed (void)
+ArfWifiRemoteStation::DoReportDataFailed (void)
 {
   m_timer++;
   m_failed++;
@@ -138,13 +138,13 @@ ArfWifiRemoteStation::ReportDataFailed (void)
     }
 }
 void 
-ArfWifiRemoteStation::ReportRxOk (double rxSnr, WifiMode txMode)
+ArfWifiRemoteStation::DoReportRxOk (double rxSnr, WifiMode txMode)
 {}
-void ArfWifiRemoteStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
+void ArfWifiRemoteStation::DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
   NS_LOG_DEBUG ("self="<<this<<" rts ok");
 }
-void ArfWifiRemoteStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
+void ArfWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
 {
   m_timer++;
   m_success++;
@@ -164,10 +164,10 @@ void ArfWifiRemoteStation::ReportDataOk (double ackSnr, WifiMode ackMode, double
     }
 }
 void 
-ArfWifiRemoteStation::ReportFinalRtsFailed (void)
+ArfWifiRemoteStation::DoReportFinalRtsFailed (void)
 {}
 void 
-ArfWifiRemoteStation::ReportFinalDataFailed (void)
+ArfWifiRemoteStation::DoReportFinalDataFailed (void)
 {}
 
 WifiMode

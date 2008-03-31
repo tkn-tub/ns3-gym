@@ -22,10 +22,10 @@
 #include "ns3/application.h"
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
+#include "ns3/ipv4-address.h"
 
 namespace ns3 {
 
-class Address;
 class Socket;
 class Packet;
 
@@ -37,6 +37,8 @@ public:
   UdpEchoClient ();
 
   virtual ~UdpEchoClient ();
+
+  void SetRemote (Ipv4Address ip, uint16_t port);
 
 protected:
   virtual void DoDispose (void);

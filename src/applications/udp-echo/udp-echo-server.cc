@@ -39,8 +39,8 @@ UdpEchoServer::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::UdpEchoServer")
     .SetParent<Application> ()
     .AddConstructor<UdpEchoServer> ()
-    .AddAttribute ("Port", "Client Port",
-                   Uinteger (0),
+    .AddAttribute ("Port", "Port on which we listen for incoming packets.",
+                   Uinteger (9),
                    MakeUintegerAccessor (&UdpEchoServer::m_port),
                    MakeUintegerChecker<uint16_t> ())
     ;

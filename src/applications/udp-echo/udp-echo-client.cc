@@ -74,6 +74,13 @@ UdpEchoClient::~UdpEchoClient()
   NS_LOG_FUNCTION;
 }
 
+void 
+UdpEchoClient::SetRemote (Ipv4Address ip, uint16_t port)
+{
+  m_peerAddress = ip;
+  m_peerPort = port;
+}
+
 void
 UdpEchoClient::DoDispose (void)
 {
