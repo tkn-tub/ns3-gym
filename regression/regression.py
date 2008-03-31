@@ -49,11 +49,11 @@ def main(tests = None, testdir = None):
     repoName = "ns-3-ref-traces/"
 
     if not os.path.exists(repoName):
-        cloneCmd = "hg clone http://code.nsnam.org/" + userName + repoName
+        cloneCmd = "hg clone http://code.nsnam.org/" + userName + repoName + " >& /dev/null"
         os.system(cloneCmd)
     else:
         os.chdir(repoName)
-        pullCmd = "hg pull http://code.nsnam.org/" + userName + repoName
+        pullCmd = "hg pull http://code.nsnam.org/" + userName + repoName + " >& /dev/null"
         os.system(pullCmd)
         os.chdir("..")
 
@@ -66,9 +66,6 @@ def main(tests = None, testdir = None):
         print "Tests directory does not exist"
         return 3
     
-    if verbose:
-        print "tests directory: ", testdir
-
     sys.path.append(testdir)
         
     for i in range(len(args)):
@@ -83,7 +80,7 @@ def main(tests = None, testdir = None):
 
     for test in tests:
         if verbose:
-            print "main(): running test", test
+            print "Running test", test
         result = runtest(test)
         if result == 0:
             if generate:
@@ -102,11 +99,6 @@ def findtests(testdir):
     Arguments:
     testdir -- the directory to look in for tests
     """
-    if verbose:
-        print "findtests(", testdir, ")"
-    if verbose:
-        print "findtests(): look in ", testdir
-
     names = os.listdir(testdir)
     if verbose:
         print "findtests(): found ", names
@@ -116,8 +108,6 @@ def findtests(testdir):
             testname = name[:-3]
             tests.append(testname)
     tests.sort()
-    if verbose:
-        print "findtests(): found tests ", tests
     return tests
 
 def runtest(test):
@@ -136,8 +126,6 @@ def runtest(test):
     else:
         os.mkdir("traces")
     
-    if verbose:
-        print "runtest(): run ", test
     mod = __import__(test, globals(), locals(), [])
     return mod.run(verbose, generate)
 
