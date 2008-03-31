@@ -152,7 +152,6 @@ main (int argc, char *argv[])
   apps.Stop (Seconds (10.0));
 
   // Create a packet sink to receive these packets
-  // The last argument "true" disables output from the Receive callback
   PacketSinkHelper sink;
   sink.SetupUdp (Ipv4Address::GetAny (), port);
   apps = sink.Build (c.Get (3));
