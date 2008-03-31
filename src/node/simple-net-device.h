@@ -1,5 +1,5 @@
-#ifndef TEST_NET_DEVICE_H
-#define TEST_NET_DEVICE_H
+#ifndef SIMPLE_NET_DEVICE_H
+#define SIMPLE_NET_DEVICE_H
 
 #include "net-device.h"
 #include "mac48-address.h"
@@ -58,4 +58,4 @@ private:
 
 } // namespace ns3
 
-#endif /* TEST_NET_DEVICE_H */
+#endif /* SIMPLE_NET_DEVICE_H */
