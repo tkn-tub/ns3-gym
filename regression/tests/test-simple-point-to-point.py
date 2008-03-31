@@ -37,4 +37,5 @@ def run(verbose, generate):
         os.system("./waf --cwd regression/traces --run " +
           testName + " >& /dev/null")
         
-        return os.system("diff -q traces csma-one-subnet.ref >& /dev/null")
+        return os.system("diff -q traces " + repoName + refDirName +
+         " >& /dev/null")
