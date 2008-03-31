@@ -14,17 +14,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/log.h"
-#include "ns3/ipv4-address.h"
-#include "ns3/udp-echo-client.h"
-#include "ns3/udp-echo-server.h"
-#include "ns3/simulator.h"
-#include "ns3/nstime.h"
-#include "ns3/ascii-trace.h"
-#include "ns3/inet-socket-address.h"
-#include "ns3/uinteger.h"
+#include <fstream>
 
-#include "ipv4-bus-network.h"
+#include "ns3/core-module.h"
+#include "ns3/node-module.h"
+#include "ns3/helper-module.h"
+#include "ns3/simulator-module.h"
+#include "ns3/global-route-manager.h"
 
 NS_LOG_COMPONENT_DEFINE ("BusNetworkSimulation");
 
@@ -37,34 +33,42 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Bus Network Simulation");
 
-  Ipv4BusNetwork bus ("10.1.0.0", "255.255.0.0", "0.0.0.3",
-    DataRate(10000000), MilliSeconds(20), 10);
+  NodeContainer n;
+  n.Create (10);
+
+  InternetStackHelper internet;
+  internet.Build (n);
+
+  CsmaHelper csma;
+  csma.SetChannelParameter ("BitRate", DataRate(10000000));
+  csma.SetChannelParameter ("Delay", MilliSeconds(20));
+  NetDeviceContainer nd = csma.Build (n);
+
+  Ipv4AddressHelper ipv4;
+  ipv4.SetBase ("10.1.0.0", "255.255.0.0", "0.0.0.3");
+  Ipv4InterfaceContainer i = ipv4.Allocate (nd);
 
   uint32_t port = 7;
+  UdpEchoClientHelper client;
+  client.SetRemote (i.GetAddress (1), port);
+  client.SetAppAttribute ("MaxPackets", Uinteger (1));
+  client.SetAppAttribute ("Interval", Seconds (1.0));
+  client.SetAppAttribute ("PacketSize", Uinteger (1024));
+  ApplicationContainer apps = client.Build (n.Get (0));
+  apps.Start (Seconds (2.0));
+  apps.Stop (Seconds (10.0));
 
-  Ptr<Node> n0 = bus.GetNode (0);
-  Ptr<UdpEchoClient> client =  
-    CreateObject<UdpEchoClient> ("RemoteIpv4", Ipv4Address ("10.1.0.1"),
-				 "RemotePort", Uinteger (port),
-				 "MaxPackets", Uinteger (1), 
-				 "Interval", Seconds(1.), 
-				 "PacketSize", Uinteger (1024));
-  n0->AddApplication (client);
+  UdpEchoServerHelper server;
+  server.SetPort (port);
+  apps = server.Build (n.Get (1));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
 
-  Ptr<Node> n1 = bus.GetNode (1);
-  Ptr<UdpEchoServer> server = 
-    CreateObject<UdpEchoServer> ("Port", Uinteger (port));
-  n1->AddApplication (server);
+  GlobalRouteManager::PopulateRoutingTables ();
 
-  server->Start(Seconds(1.));
-  client->Start(Seconds(2.));
-
-  server->Stop (Seconds(10.));
-  client->Stop (Seconds(10.));
-
-  AsciiTrace asciitrace ("tutorial.tr");
-  asciitrace.TraceAllQueues ();
-  asciitrace.TraceAllNetDeviceRx ();
+  std::ofstream ascii;
+  ascii.open ("tutorial.tr");
+  CsmaHelper::EnableAscii (ascii);
 
   Simulator::Run ();
   Simulator::Destroy ();
