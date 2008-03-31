@@ -29,12 +29,12 @@
 // - Nodes n0, n1, n2, n3, and n4 receive the multicast frame.
 // - Node n4 listens for the data 
 
+#include <iostream>
+#include <fstream>
+
 #include "ns3/core-module.h"
 #include "ns3/helper-module.h"
 #include "ns3/simulator-module.h"
-#include "ns3/ascii-trace.h"
-#include "ns3/pcap-trace.h"
-
 
 using namespace ns3;
 
@@ -160,21 +160,20 @@ main (int argc, char *argv[])
 
   //
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events.
-  // Trace output will be sent to the file "csma-multicast.tr"
-  //
   NS_LOG_INFO ("Configure Tracing.");
-  AsciiTrace asciitrace ("csma-multicast.tr");
-  asciitrace.TraceAllNetDeviceRx ();
-  asciitrace.TraceAllQueues ();
   //
+  // Ascii trace output will be sent to the file "csma-multicast.tr"
+  //
+  std::ofstream ascii;
+  ascii.open ("csma-multicast.tr");
+  CsmaHelper::EnableAscii (ascii);
+
   // Also configure some tcpdump traces; each interface will be traced.
   // The output files will be named:
   //     csma-multicast.pcap-<nodeId>-<interfaceId>
   // and can be read by the "tcpdump -r" command (use "-tt" option to
   // display timestamps correctly)
-  //
-  PcapTrace pcaptrace ("csma-multicast.pcap");
-  pcaptrace.TraceAllIp ();
+  CsmaHelper::EnablePcap ("csma-multicast.pcap");
   //
   // Now, do the actual simulation.
   //
