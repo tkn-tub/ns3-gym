@@ -21,9 +21,9 @@
 
 #include "ns3/net-device.h"
 #include "ns3/callback.h"
+#include "ns3/node.h"
 
 #include "ipv4-l4-demux.h"
-#include "internet-node.h"
 #include "udp-l4-protocol.h"
 #include "tcp-l4-protocol.h"
 #include "ipv4-l3-protocol.h"
