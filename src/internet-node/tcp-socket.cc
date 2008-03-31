@@ -733,7 +733,7 @@ bool TcpSocket::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
         {
           NS_LOG_LOGIC ("TCP " << this 
               << " calling AppCloseRequest");
-          NotifyHalfClose ();
+          NotifyCloseRequested(); 
           m_closeRequestNotified = true;
         }
       NS_LOG_LOGIC ("TcpSocket " << this 
@@ -741,7 +741,7 @@ bool TcpSocket::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       if (m_state == saveState)
         { // Need to ack, the application will close later
           SendEmptyPacket (TcpHeader::ACK);
-              // Also need to re-tx the ack if we
+//               // Also need to re-tx the ack if we
         }
       if (m_state == LAST_ACK)
         {
@@ -851,10 +851,11 @@ bool TcpSocket::SendPendingData (bool withAck)
           return -1;
         }
 
-      Time rto = m_rtt->RetransmitTimeout ();
+      
       if (m_retxEvent.IsExpired () ) //go ahead and schedule the retransmit
         {
-          NS_LOG_LOGIC ("Schedule retransmission timeout at time " << 
+            Time rto = m_rtt->RetransmitTimeout (); 
+            NS_LOG_LOGIC ("Schedule retransmission timeout at time " << 
               Simulator::Now ().GetSeconds () << " to expire at time " <<
               (Simulator::Now () + rto).GetSeconds () );
           m_retxEvent = Simulator::Schedule (rto,&TcpSocket::ReTxTimeout,this);
@@ -1042,11 +1043,17 @@ void TcpSocket::CommonNewAck (SequenceNumber ack, bool skipTimer)
   // and MUST be called by any subclass, from the NewAck function
   // Always cancel any pending re-tx timer on new acknowledgement
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << ack << skipTimer);
+  NS_LOG_PARAMS (this << ack << skipTimer); 
   //DEBUG(1,(cout << "TCP " << this << "Cancelling retx timer " << endl));
   if (!skipTimer)
     {
-      m_retxEvent.Cancel ();
+      m_retxEvent.Cancel ();  
+      //On recieving a "New" ack we restart retransmission timer .. RFC 2988
+      Time rto = m_rtt->RetransmitTimeout ();
+      NS_LOG_LOGIC ("Schedule retransmission timeout at time " 
+          << Simulator::Now ().GetSeconds () << " to expire at time " 
+          << (Simulator::Now () + rto).GetSeconds ());
+    m_retxEvent = Simulator::Schedule (rto, &TcpSocket::ReTxTimeout, this);
     }
   NS_LOG_LOGIC ("TCP " << this << " NewAck " << ack 
            << " numberAck " << (ack - m_highestRxAck)); // Number bytes ack'ed
