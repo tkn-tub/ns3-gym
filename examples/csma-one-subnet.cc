@@ -131,7 +131,7 @@ main (int argc, char *argv[])
 // and can be read by the "tcpdump -r" command (use "-tt" option to
 // display timestamps correctly)
 //
-  CsmaHelper::EnablePcap ("csma-one-subnet.pcap");
+  CsmaHelper::EnablePcap ("csma-one-subnet");
 //
 // Now, do the actual simulation.
 //

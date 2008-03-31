@@ -173,7 +173,7 @@ main (int argc, char *argv[])
   //     csma-multicast.pcap-<nodeId>-<interfaceId>
   // and can be read by the "tcpdump -r" command (use "-tt" option to
   // display timestamps correctly)
-  CsmaHelper::EnablePcap ("csma-multicast.pcap");
+  CsmaHelper::EnablePcap ("csma-multicast");
   //
   // Now, do the actual simulation.
   //

@@ -154,9 +154,9 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("mixed-global-routing.tr");
-  PointToPointHelper::EnablePcap ("mixed-global-routing.pcap");
+  PointToPointHelper::EnablePcap ("mixed-global-routing");
   PointToPointHelper::EnableAscii (ascii);
-  CsmaHelper::EnablePcap ("mixed-global-routing.pcap");
+  CsmaHelper::EnablePcap ("mixed-global-routing");
   CsmaHelper::EnableAscii (ascii);
 
 

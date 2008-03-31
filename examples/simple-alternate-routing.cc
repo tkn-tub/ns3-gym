@@ -177,7 +177,7 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("simple-alternate-routing.tr");
-  PointToPointHelper::EnablePcap ("simple-alternate-routing.pcap");
+  PointToPointHelper::EnablePcap ("simple-alternate-routing");
   PointToPointHelper::EnableAscii (ascii);
 
 

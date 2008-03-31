@@ -133,7 +133,7 @@ main (int argc, char *argv[])
   // The output files will be named 
   // csma-broadcast.pcap-<nodeId>-<interfaceId>
   // and can be read by the "tcpdump -tt -r" command 
-  CsmaHelper::EnablePcap ("csma-broadcast.pcap");
+  CsmaHelper::EnablePcap ("csma-broadcast");
   std::ofstream ascii;
   ascii.open ("csma-broadcast.tr");
   CsmaHelper::EnableAscii (ascii);
