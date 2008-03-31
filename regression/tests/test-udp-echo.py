@@ -1,31 +1,40 @@
 #! /usr/bin/env python
 
-"""Regression test udp-echo."""
+"""Generic trace-comparison-type regression test."""
 
 import os
-
-def rmdir(dir):
-    if os.path.exists(dir):
-        files = os.listdir(dir)
-        for file in files:
-            if file == '.' or file == '..':
-                continue
-            path = dir + os.sep + file
-            os.remove(path)
-        os.rmdir(dir)
+import shutil
 
 def run(verbose, generate):
     """Execute a test."""
 
-    os.system("./waf --cwd regression/traces --run udp-echo >& /dev/null")
+    testName = "udp-echo"
+    repoName = "ns-3-ref-traces/"
+    refDirName = testName + ".ref"
+
+    if not os.path.exists(repoName):
+        print"No reference trace repository"
+        return 1
 
     if generate:
-        rmdir("knowns")
-        os.rename("traces", "knowns")
-        os.system("tar -cjf tests/test-udp-echo.bz2 knowns/")
-        rmdir("knowns")
+        if not os.path.exists(repoName + refDirName):
+            print "creating new " + repoName + refDirName
+            os.mkdir(repoName + refDirName)
+
+        os.system("./waf --cwd regression/" + repoName + refDirName +
+            " --run " + testName + " >& /dev/null")
+
+        print "Remember to commit " + repoName + refDirName
         return 0
     else:
-        rmdir("knowns")
-        os.system("tar -xjf tests/test-udp-echo.bz2 knowns/")
-        return os.system("diff -q knowns traces >& /dev/null")
+        if not os.path.exists(repoName + refDirName):
+            print "Cannot locate reference traces"
+            return 1
+
+        shutil.rmtree("traces");
+        os.mkdir("traces")
+        
+        os.system("./waf --cwd regression/traces --run " +
+          testName + " >& /dev/null")
+        
+        return os.system("diff -q traces csma-one-subnet.ref >& /dev/null")

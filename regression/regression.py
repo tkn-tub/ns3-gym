@@ -45,6 +45,18 @@ def main(tests = None, testdir = None):
         if o == '-v': verbose = 1
         if o == '-g': generate = 1
 
+    userName = "craigdo/"
+    repoName = "ns-3-ref-traces/"
+
+    if not os.path.exists(repoName):
+        cloneCmd = "hg clone http://code.nsnam.org/" + userName + repoName
+        os.system(cloneCmd)
+    else:
+        os.chdir(repoName)
+        pullCmd = "hg pull http://code.nsnam.org/" + userName + repoName
+        os.system(pullCmd)
+        os.chdir("..")
+
     bad = []
 
     if not testdir:
