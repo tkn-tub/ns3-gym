@@ -44,6 +44,8 @@ public:
   virtual bool NeedsArp (void) const;
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
 
+protected:
+  virtual void DoDispose (void);
 private:
   Ptr<SimpleChannel> m_channel;
   NetDevice::ReceiveCallback m_rxCallback;

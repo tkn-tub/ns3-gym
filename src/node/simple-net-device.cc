@@ -153,6 +153,14 @@ SimpleNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
   m_rxCallback = cb;
 }
 
+void
+SimpleNetDevice::DoDispose (void)
+{
+  m_channel = 0;
+  m_node = 0;
+  NetDevice::DoDispose ();
+}
+
 
 
 } // namespace ns3
