@@ -14,22 +14,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/log.h"
-#include "ns3/ptr.h"
-#include "ns3/internet-node.h"
-#include "ns3/point-to-point-channel.h"
-#include "ns3/mac48-address.h"
-#include "ns3/point-to-point-net-device.h"
-#include "ns3/point-to-point-topology.h"
-#include "ns3/udp-echo-client.h"
-#include "ns3/udp-echo-server.h"
-#include "ns3/simulator.h"
-#include "ns3/nstime.h"
-#include "ns3/ascii-trace.h"
-#include "ns3/pcap-trace.h"
-#include "ns3/global-route-manager.h"
-#include "ns3/inet-socket-address.h"
-#include "ns3/uinteger.h"
+#include <fstream>
+
+#include "ns3/core-module.h"
+#include "ns3/simulator-module.h"
+#include "ns3/helper-module.h"
 
 NS_LOG_COMPONENT_DEFINE ("PointToPointSimulation");
 
@@ -49,38 +38,40 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Point to Point Topology Simulation");
 
-  Ptr<Node> n0 = CreateObject<InternetNode> ();
-  Ptr<Node> n1 = CreateObject<InternetNode> ();
+  NodeContainer n;
+  n.Create (2);
 
-  Ptr<PointToPointChannel> link = PointToPointTopology::AddPointToPointLink (
-    n0, n1, DataRate (38400), MilliSeconds (20));
+  InternetStackHelper internet;
+  internet.Build (n);
 
-  PointToPointTopology::AddIpv4Addresses (link, n0, "10.1.1.1", 
-    n1, "10.1.1.2");
+  PointToPointHelper p2p;
+  p2p.SetChannelParameter ("BitRate", DataRate (38400));
+  p2p.SetChannelParameter ("Delay", MilliSeconds (20));
+  NetDeviceContainer nd = p2p.Build (n);
+
+  Ipv4AddressHelper ipv4;
+  ipv4.SetBase ("10.1.1.0", "255.255.255.252");
+  Ipv4InterfaceContainer i = ipv4.Allocate (nd);
 
   uint16_t port = 7;
+  UdpEchoClientHelper client;
+  client.SetRemote (i.GetAddress (1), port);
+  client.SetAppAttribute ("MaxPackets", Uinteger (1));
+  client.SetAppAttribute ("Interval", Seconds (1.0));
+  client.SetAppAttribute ("PacketSize", Uinteger (1024));
+  ApplicationContainer apps = client.Build (n.Get (0));
+  apps.Start (Seconds (2.0));
+  apps.Stop (Seconds (10.0));
+  
+  UdpEchoServerHelper server;
+  server.SetPort (port);
+  apps = server.Build (n.Get (1));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
 
-  Ptr<UdpEchoClient> client = 
-    CreateObject<UdpEchoClient> ("RemoteIpv4", Ipv4Address ("10.1.1.2"), 
-                                 "RemotePort", Uinteger (port), 
-                                 "MaxPackets", Uinteger (1), 
-                                 "Interval", Seconds(1.), 
-                                 "PacketSize", Uinteger (1024));
-  n0->AddApplication (client);
-
-  Ptr<UdpEchoServer> server = 
-    CreateObject<UdpEchoServer> ("Port", Uinteger (port));
-  n1->AddApplication (server);
-
-  server->Start(Seconds(1.));
-  client->Start(Seconds(2.));
-
-  server->Stop (Seconds(10.));
-  client->Stop (Seconds(10.));
-
-  AsciiTrace asciitrace ("tutorial.tr");
-  asciitrace.TraceAllQueues ();
-  asciitrace.TraceAllNetDeviceRx ();
+  std::ofstream ascii;
+  ascii.open ("tutorial.tr");
+  PointToPointHelper::EnableAscii (ascii);
 
   Simulator::Run ();
   Simulator::Destroy ();
