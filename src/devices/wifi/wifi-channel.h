@@ -39,11 +39,10 @@ class PropagationDelayModel;
  *
  * This channel subclass can be used to connect together a set of 
  * ns3::WifiNetDevice network interfaces. A WifiChannel contains
- * a PropagationLossModel and a PropagationDelayModel which can
+ * a ns3::PropagationLossModel and a ns3::PropagationDelayModel which can
  * be overriden by the WifiChannel::SetPropagationLossModel
  * and the WifiChannel::SetPropagationDelayModel methods. By default,
- * The PropagationDelayModel is a ns3::ConstantSpeedPropagationModel,
- * and the PropagationLossModel is a ns3::PathLossPropagationModel.
+ * no propagation models are set.
  */
 class WifiChannel : public Channel
 {
