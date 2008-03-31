@@ -1,4 +1,5 @@
 #include "csma-helper.h"
+#include "ns3/simulator.h"
 #include "ns3/object-factory.h"
 #include "ns3/queue.h"
 #include "ns3/csma-net-device.h"
@@ -94,13 +95,16 @@ CsmaHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
   Packet::EnableMetadata ();
   std::ostringstream oss;
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/Rx";
-  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiRxEvent, &os));
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/TxQueue/Enqueue";
-  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiEnqueueEvent, &os));
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/TxQueue/Dequeue";
-  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiDequeueEvent, &os));
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/TxQueue/Drop";
+  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiDropEvent, &os));
 }
 void 
 CsmaHelper::EnableAscii (std::ostream &os, NetDeviceContainer d)
@@ -169,10 +173,31 @@ CsmaHelper::RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
   writer->WritePacket (packet);
 }
 void 
-CsmaHelper::AsciiEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+CsmaHelper::AsciiEnqueueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
 {
+  *os << "+ " << Simulator::Now ().GetSeconds () << " ";
   *os << path << " " << *packet << std::endl;
 }
 
+void 
+CsmaHelper::AsciiDequeueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+{
+  *os << "- " << Simulator::Now ().GetSeconds () << " ";
+  *os << path << " " << *packet << std::endl;
+}
+
+void 
+CsmaHelper::AsciiDropEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+{
+  *os << "d " << Simulator::Now ().GetSeconds () << " ";
+  *os << path << " " << *packet << std::endl;
+}
+
+void 
+CsmaHelper::AsciiRxEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+{
+  *os << "r " << Simulator::Now ().GetSeconds () << " ";
+  *os << path << " " << *packet << std::endl;
+}
 
 } // namespace ns3

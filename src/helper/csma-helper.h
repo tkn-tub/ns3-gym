@@ -92,7 +92,10 @@ public:
 private:
   static void RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
   static void EnqueueEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
-  static void AsciiEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
+  static void AsciiEnqueueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
+  static void AsciiDequeueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
+  static void AsciiDropEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
+  static void AsciiRxEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
   ObjectFactory m_queueFactory;
   ObjectFactory m_deviceFactory;
   ObjectFactory m_channelFactory;
