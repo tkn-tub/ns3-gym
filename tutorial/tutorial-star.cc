@@ -14,25 +14,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/log.h"
-#include "ns3/ptr.h"
-#include "ns3/internet-node.h"
-#include "ns3/point-to-point-channel.h"
-#include "ns3/mac48-address.h"
-#include "ns3/point-to-point-net-device.h"
-#include "ns3/udp-echo-client.h"
-#include "ns3/udp-echo-server.h"
-#include "ns3/simulator.h"
-#include "ns3/nstime.h"
-#include "ns3/ascii-trace.h"
-#include "ns3/pcap-trace.h"
-#include "ns3/global-route-manager.h"
-#include "ns3/inet-socket-address.h"
-#include "ns3/uinteger.h"
+#include <fstream>
 
-#include "point-to-point-ipv4-topology.h"
+#include "ns3/core-module.h"
+#include "ns3/node-module.h"
+#include "ns3/helper-module.h"
+#include "ns3/simulator-module.h"
 
-NS_LOG_COMPONENT_DEFINE ("StarSimulation");
+NS_LOG_COMPONENT_DEFINE ("StarRoutingSimulation");
 
 using namespace ns3;
 
@@ -49,125 +38,67 @@ using namespace ns3;
 int 
 main (int argc, char *argv[])
 {
-  LogComponentEnable ("StarSimulation", LOG_LEVEL_INFO);
+  LogComponentEnable ("StarRoutingSimulation", LOG_LEVEL_INFO);
 
-  NS_LOG_INFO ("Star Topology Simulation");
+  NS_LOG_INFO ("Star Topology with Routing Simulation");
 
-  Ptr<Node> n0 = CreateObject<InternetNode> ();
-  Ptr<Node> n1 = CreateObject<InternetNode> ();
-  Ptr<Node> n2 = CreateObject<InternetNode> ();
-  Ptr<Node> n3 = CreateObject<InternetNode> ();
-  Ptr<Node> n4 = CreateObject<InternetNode> ();
-  Ptr<Node> n5 = CreateObject<InternetNode> ();
-  Ptr<Node> n6 = CreateObject<InternetNode> ();
+  NodeContainer n;
+  n.Create (7);
+  NodeContainer n01 = NodeContainer (n.Get (0), n.Get (1));
+  NodeContainer n02 = NodeContainer (n.Get (0), n.Get (2));
+  NodeContainer n03 = NodeContainer (n.Get (0), n.Get (3));
+  NodeContainer n04 = NodeContainer (n.Get (0), n.Get (4));
+  NodeContainer n05 = NodeContainer (n.Get (0), n.Get (5));
+  NodeContainer n06 = NodeContainer (n.Get (0), n.Get (6));
 
-  Ptr<PointToPointChannel> link01 = 
-    PointToPointIpv4Topology::CreateChannel (DataRate (38400), 
-    MilliSeconds (20));
+  InternetStackHelper internet;
+  internet.Build (n);
 
-  uint32_t nd01 = PointToPointIpv4Topology::AddNetDevice (n0,
-    link01);
+  PointToPointHelper p2p;
+  p2p.SetChannelParameter ("BitRate", DataRate (38400));
+  p2p.SetChannelParameter ("Delay", MilliSeconds (20));
 
-  Ptr<PointToPointChannel> link02 = 
-    PointToPointIpv4Topology::CreateChannel (DataRate (38400), 
-    MilliSeconds (20));
+  NetDeviceContainer d01 = p2p.Build (n01);
+  NetDeviceContainer d02 = p2p.Build (n02);
+  NetDeviceContainer d03 = p2p.Build (n03);
+  NetDeviceContainer d04 = p2p.Build (n04);
+  NetDeviceContainer d05 = p2p.Build (n05);
+  NetDeviceContainer d06 = p2p.Build (n06);
 
-  uint32_t nd02 = PointToPointIpv4Topology::AddNetDevice (n0,
-    link02);
-
-  Ptr<PointToPointChannel> link03 = 
-    PointToPointIpv4Topology::CreateChannel (DataRate (38400), 
-    MilliSeconds (20));
-
-  uint32_t nd03 = PointToPointIpv4Topology::AddNetDevice (n0,
-    link03);
-
-  Ptr<PointToPointChannel> link04 = 
-    PointToPointIpv4Topology::CreateChannel (DataRate (38400), 
-    MilliSeconds (20));
-
-  uint32_t nd04 = PointToPointIpv4Topology::AddNetDevice (n0, 
-    link04);
-
-  Ptr<PointToPointChannel> link05 = 
-    PointToPointIpv4Topology::CreateChannel (DataRate (38400), 
-    MilliSeconds (20));
-
-  uint32_t nd05 = PointToPointIpv4Topology::AddNetDevice (n0,
-    link05);
-
-  Ptr<PointToPointChannel> link06 = 
-    PointToPointIpv4Topology::CreateChannel (DataRate (38400), 
-    MilliSeconds (20));
-
-  uint32_t nd06 = PointToPointIpv4Topology::AddNetDevice (n0, link06);
-
-  uint32_t nd1 = PointToPointIpv4Topology::AddNetDevice (n1, link01);
-  uint32_t nd2 = PointToPointIpv4Topology::AddNetDevice (n2, link02);
-  uint32_t nd3 = PointToPointIpv4Topology::AddNetDevice (n3, link03);
-  uint32_t nd4 = PointToPointIpv4Topology::AddNetDevice (n4, link04);
-  uint32_t nd5 = PointToPointIpv4Topology::AddNetDevice (n5, link05);
-  uint32_t nd6 = PointToPointIpv4Topology::AddNetDevice (n6, link06);
-
-  PointToPointIpv4Topology::AddAddress (n0, nd01, "10.1.1.1", 
-    "255.255.255.252");
-
-  PointToPointIpv4Topology::AddAddress (n1, nd1, "10.1.1.2", 
-    "255.255.255.252");
-
-  PointToPointIpv4Topology::AddAddress (n0, nd02, "10.1.2.1", 
-    "255.255.255.252");
-
-  PointToPointIpv4Topology::AddAddress (n2, nd2, "10.1.2.2", 
-    "255.255.255.252");
-
-  PointToPointIpv4Topology::AddAddress (n0, nd03, "10.1.3.1", 
-    "255.255.255.252");
-
-  PointToPointIpv4Topology::AddAddress (n3, nd3, "10.1.2.2", 
-    "255.255.255.252");
-
-  PointToPointIpv4Topology::AddAddress (n0, nd04, "10.1.4.1", 
-    "255.255.255.252");
-
-  PointToPointIpv4Topology::AddAddress (n4, nd4, "10.1.4.2", 
-    "255.255.255.252");
-
-  PointToPointIpv4Topology::AddAddress (n0, nd05, "10.1.5.1", 
-    "255.255.255.252");
-
-  PointToPointIpv4Topology::AddAddress (n5, nd5, "10.1.5.2", 
-    "255.255.255.252");
-
-  PointToPointIpv4Topology::AddAddress (n0, nd06, "10.1.6.1", 
-    "255.255.255.252");
-
-  PointToPointIpv4Topology::AddAddress (n6, nd6, "10.1.6.2", 
-    "255.255.255.252");
+  Ipv4AddressHelper ipv4;
+  ipv4.SetBase ("10.1.1.0", "255.255.255.252");
+  Ipv4InterfaceContainer i01 = ipv4.Allocate (d01);
+  ipv4.SetBase ("10.1.2.0", "255.255.255.252");
+  Ipv4InterfaceContainer i02 = ipv4.Allocate (d02);
+  ipv4.SetBase ("10.1.3.0", "255.255.255.252");
+  Ipv4InterfaceContainer i03 = ipv4.Allocate (d03);
+  ipv4.SetBase ("10.1.4.0", "255.255.255.252");
+  Ipv4InterfaceContainer i04 = ipv4.Allocate (d04);
+  ipv4.SetBase ("10.1.5.0", "255.255.255.252");
+  Ipv4InterfaceContainer i05 = ipv4.Allocate (d05);
+  ipv4.SetBase ("10.1.6.0", "255.255.255.252");
+  Ipv4InterfaceContainer i06 = ipv4.Allocate (d06);
 
   uint16_t port = 7;
 
-  Ptr<UdpEchoClient> client = 
-    CreateObject<UdpEchoClient> ("RemoteIpv4", Ipv4Address ("10.1.1.2"),
-                                 "RemotePort", Uinteger (port), 
-                                 "MaxPackets", Uinteger (1), 
-                                 "Interval", Seconds(1.), 
-                                 "PacketSize", Uinteger (1024));
-  n0->AddApplication (client);
+  UdpEchoServerHelper server;
+  server.SetPort (port);
+  ApplicationContainer apps = server.Build (n.Get (1));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
 
-  Ptr<UdpEchoServer> server = 
-    CreateObject<UdpEchoServer> ("Port", Uinteger (port));
-  n1->AddApplication (server);
+  UdpEchoClientHelper client;
+  client.SetRemote (i01.GetAddress (1), port);
+  client.SetAppAttribute ("MaxPackets", Uinteger (1));
+  client.SetAppAttribute ("Interval", Seconds (1.0));
+  client.SetAppAttribute ("PacketSize", Uinteger (1024));
+  apps = client.Build (n.Get (0));
+  apps.Start (Seconds (2.0));
+  apps.Stop (Seconds (10.0));
 
-  server->Start(Seconds(1.));
-  client->Start(Seconds(2.));
-
-  server->Stop (Seconds(10.));
-  client->Stop (Seconds(10.));
-
-  AsciiTrace asciitrace ("tutorial.tr");
-  asciitrace.TraceAllQueues ();
-  asciitrace.TraceAllNetDeviceRx ();
+  std::ofstream ascii;
+  ascii.open ("tutorial.tr");
+  PointToPointHelper::EnableAscii (ascii);
 
   Simulator::Run ();
   Simulator::Destroy ();
