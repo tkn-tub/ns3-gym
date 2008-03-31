@@ -14,22 +14,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/log.h"
-#include "ns3/ptr.h"
-#include "ns3/internet-node.h"
-#include "ns3/csma-channel.h"
-#include "ns3/mac48-address.h"
-#include "ns3/csma-net-device.h"
-#include "ns3/csma-topology.h"
-#include "ns3/csma-ipv4-topology.h"
-#include "ns3/udp-echo-client.h"
-#include "ns3/udp-echo-server.h"
-#include "ns3/simulator.h"
-#include "ns3/nstime.h"
-#include "ns3/ascii-trace.h"
-#include "ns3/pcap-trace.h"
-#include "ns3/inet-socket-address.h"
-#include "ns3/uinteger.h"
+#include "ns3/core-module.h"
+#include "ns3/simulator-module.h"
+#include "ns3/helper-module.h"
 
 NS_LOG_COMPONENT_DEFINE ("UdpEchoSimulation");
 
@@ -42,60 +29,40 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("UDP Echo Simulation");
 
-  Ptr<Node> n0 = CreateObject<InternetNode> ();
-  Ptr<Node> n1 = CreateObject<InternetNode> ();
-  Ptr<Node> n2 = CreateObject<InternetNode> ();
-  Ptr<Node> n3 = CreateObject<InternetNode> ();
+  NodeContainer n;
+  n.Create (4);
 
-  Ptr<CsmaChannel> lan = 
-    CsmaTopology::CreateCsmaChannel (DataRate (5000000), MilliSeconds (2));
+  InternetStackHelper internet;
+  internet.Build (n);
 
-  uint32_t nd0 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n0, lan, 
-    "08:00:2e:00:00:00");
+  CsmaHelper csma;
+  csma.SetChannelParameter ("BitRate", DataRate (5000000));
+  csma.SetChannelParameter ("Delay", MilliSeconds (2));
+  NetDeviceContainer nd = csma.Build (n);
 
-  uint32_t nd1 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n1, lan, 
-    "08:00:2e:00:00:01");
-
-  uint32_t nd2 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n2, lan, 
-    "08:00:2e:00:00:02");
-
-  uint32_t nd3 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n3, lan, 
-    "08:00:2e:00:00:03");
-
-  CsmaIpv4Topology::AddIpv4Address (n0, nd0, "10.1.1.1", "255.255.255.0");
-  CsmaIpv4Topology::AddIpv4Address (n1, nd1, "10.1.1.2", "255.255.255.0");
-  CsmaIpv4Topology::AddIpv4Address (n2, nd2, "10.1.1.3", "255.255.255.0");
-  CsmaIpv4Topology::AddIpv4Address (n3, nd3, "10.1.1.4", "255.255.255.0");
+  Ipv4AddressHelper ipv4;
+  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+  Ipv4InterfaceContainer i = ipv4.Allocate (nd);
 
   uint16_t port = 7;
 
-  Ptr<UdpEchoClient> client = 
-    CreateObject<UdpEchoClient> ("RemoteIpv4", Ipv4Address ("10.1.1.2"),
-                                 "RemotePort", Uinteger (port), 
-                                 "MaxPackets", Uinteger (1), 
-                                 "Interval", Seconds(1.), 
-                                 "PacketSize", Uinteger (1024));
-  n0->AddApplication (client);
+  UdpEchoClientHelper client;
+  client.SetRemote (i.GetAddress (1), port);
+  client.SetAppAttribute ("MaxPackets", Uinteger (1));
+  client.SetAppAttribute ("Interval", Seconds (1.0));
+  client.SetAppAttribute ("PacketSize", Uinteger (1024));
+  ApplicationContainer apps = client.Build (n.Get (0));
+  apps.Start (Seconds (2.0));
+  apps.Stop (Seconds (10.0));
 
-  Ptr<UdpEchoServer> server = 
-    CreateObject<UdpEchoServer> ("Port", Uinteger (port));
-  n1->AddApplication (server);
+  UdpEchoServerHelper server;
+  server.SetPort (port);
+  apps = server.Build (n.Get (1));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
 
-  server->Start(Seconds(1.));
-  client->Start(Seconds(2.));
-
-  server->Stop (Seconds(10.));
-  client->Stop (Seconds(10.));
-
-  AsciiTrace asciitrace ("tutorial.tr");
-  asciitrace.TraceAllQueues ();
-#if 0
-  asciitrace.TraceAllNetDeviceRx ();
-#endif
-
-  PcapTrace pcaptrace ("tutorial.pcap");
-  pcaptrace.TraceAllIp ();
-
+  CsmaHelper::EnablePcap ("tutorial.pcap");
+  
   Simulator::Run ();
   Simulator::Destroy ();
 }
