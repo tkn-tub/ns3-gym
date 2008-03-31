@@ -86,7 +86,7 @@ public:
    *
    * Generate a pcap file which contains the link-level data observed
    * by the specified deviceid within the specified nodeid. The pcap
-   * data is stored in the file prefix-nodeid-deviceid.
+   * data is stored in the file prefix-nodeid-deviceid.pcap.
    *
    * This method should be invoked after the network topology has 
    * been fully constructed.

@@ -67,7 +67,7 @@ void
 CsmaHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid)
 {
   std::ostringstream oss;
-  oss << filename << "-" << nodeid << "-" << deviceid;
+  oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
   Ptr<PcapWriter> pcap = Create<PcapWriter> ();
   pcap->Open (oss.str ());
   pcap->WriteEthernetHeader ();
