@@ -14,26 +14,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/log.h"
-#include "ns3/ptr.h"
-#include "ns3/internet-node.h"
-#include "ns3/point-to-point-channel.h"
-#include "ns3/csma-channel.h"
-#include "ns3/mac48-address.h"
-#include "ns3/point-to-point-net-device.h"
-#include "ns3/csma-net-device.h"
-#include "ns3/point-to-point-topology.h"
-#include "ns3/csma-topology.h"
-#include "ns3/csma-ipv4-topology.h"
-#include "ns3/udp-echo-client.h"
-#include "ns3/udp-echo-server.h"
-#include "ns3/simulator.h"
-#include "ns3/nstime.h"
-#include "ns3/ascii-trace.h"
-#include "ns3/pcap-trace.h"
+#include <fstream>
+
+#include "ns3/core-module.h"
+#include "ns3/node-module.h"
+#include "ns3/helper-module.h"
+#include "ns3/simulator-module.h"
 #include "ns3/global-route-manager.h"
-#include "ns3/inet-socket-address.h"
-#include "ns3/uinteger.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("DumbbellSimulation");
 
@@ -58,65 +46,44 @@ main (int argc, char *argv[])
 //
 // Create the lan on the left side of the dumbbell.
 //
-  Ptr<Node> n0 = CreateObject<InternetNode> ();
-  Ptr<Node> n1 = CreateObject<InternetNode> ();
-  Ptr<Node> n2 = CreateObject<InternetNode> ();
-  Ptr<Node> n3 = CreateObject<InternetNode> ();
+  NodeContainer lan1;
+  lan1.Create (4);
 
-  Ptr<CsmaChannel> lan1 = 
-    CsmaTopology::CreateCsmaChannel (DataRate (10000000), MilliSeconds (2));
+  InternetStackHelper internet;
+  internet.Build (lan1);
 
-  uint32_t nd0 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n0, lan1, 
-    "08:00:2e:00:00:00");
+  CsmaHelper csma;
+  csma.SetChannelParameter ("BitRate", DataRate (10000000));
+  csma.SetChannelParameter ("Delay", MilliSeconds (2));
+  NetDeviceContainer dev1 = csma.Build (lan1);
+  Ipv4AddressHelper ipv4;
+  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+  Ipv4InterfaceContainer i1 = ipv4.Allocate (dev1);
 
-  uint32_t nd1 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n1, lan1, 
-    "08:00:2e:00:00:01");
 
-  uint32_t nd2 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n2, lan1, 
-    "08:00:2e:00:00:02");
-
-  uint32_t nd3 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n3, lan1, 
-    "08:00:2e:00:00:03");
-
-  CsmaIpv4Topology::AddIpv4Address (n0, nd0, "10.1.1.1", "255.255.255.0");
-  CsmaIpv4Topology::AddIpv4Address (n1, nd1, "10.1.1.2", "255.255.255.0");
-  CsmaIpv4Topology::AddIpv4Address (n2, nd2, "10.1.1.3", "255.255.255.0");
-  CsmaIpv4Topology::AddIpv4Address (n3, nd3, "10.1.1.4", "255.255.255.0");
 //
 // Create the lan on the right side of the dumbbell.
 //
-  Ptr<Node> n4 = CreateObject<InternetNode> ();
-  Ptr<Node> n5 = CreateObject<InternetNode> ();
-  Ptr<Node> n6 = CreateObject<InternetNode> ();
-  Ptr<Node> n7 = CreateObject<InternetNode> ();
+  NodeContainer lan2;
+  lan2.Create (4);
+  internet.Build (lan2);
 
-  Ptr<CsmaChannel> lan2 = 
-    CsmaTopology::CreateCsmaChannel (DataRate (10000000), MilliSeconds (2));
+  NetDeviceContainer dev2 = csma.Build (lan2);
+  ipv4.SetBase ("10.1.2.0", "255.255.255.0");
+  Ipv4InterfaceContainer i2 = ipv4.Allocate (dev2);
 
-  uint32_t nd4 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n4, lan2, 
-    "08:00:2e:00:00:04");
 
-  uint32_t nd5 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n5, lan2, 
-    "08:00:2e:00:00:05");
-
-  uint32_t nd6 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n6, lan2, 
-    "08:00:2e:00:00:06");
-
-  uint32_t nd7 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n7, lan2, 
-    "08:00:2e:00:00:07");
-
-  CsmaIpv4Topology::AddIpv4Address (n4, nd4, "10.1.2.1", "255.255.255.0");
-  CsmaIpv4Topology::AddIpv4Address (n5, nd5, "10.1.2.2", "255.255.255.0");
-  CsmaIpv4Topology::AddIpv4Address (n6, nd6, "10.1.2.3", "255.255.255.0");
-  CsmaIpv4Topology::AddIpv4Address (n7, nd7, "10.1.2.4", "255.255.255.0");
 //
 // Create the point-to-point link to connect the two lans.
 //
-  Ptr<PointToPointChannel> link = PointToPointTopology::AddPointToPointLink (
-    n3, n4, DataRate (38400), MilliSeconds (20));
+  NodeContainer backbone = NodeContainer (lan1.Get (3), lan2.Get (0));
+  PointToPointHelper p2p;
+  p2p.SetChannelParameter ("BitRate", DataRate (38400));
+  p2p.SetChannelParameter ("Delay", MilliSeconds (20));
+  NetDeviceContainer dev3 = p2p.Build (backbone);
+  ipv4.SetBase ("10.1.3.0", "255.255.255.0");
+  ipv4.Allocate (dev3);
 
-  PointToPointTopology::AddIpv4Addresses (link, n3, "10.1.3.1", 
-    n4, "10.1.3.2");
 //
 // Create data flows across the link:
 //   n0 ==> n4 ==> n0
@@ -126,76 +93,55 @@ main (int argc, char *argv[])
 //
   uint16_t port = 7;
 
-  Ptr<UdpEchoClient> client0 = 
-    CreateObject<UdpEchoClient> ("RemoteIpv4", Ipv4Address ("10.1.2.1"),
-                                 "RemotePort", Uinteger (port),
-                                 "MaxPackets", Uinteger (100),
-                                 "Interval", Seconds (0.01),
-                                 "PacketSize", Uinteger (1024));
-  n0->AddApplication (client0);
-  Ptr<UdpEchoClient> client1 = 
-    CreateObject<UdpEchoClient> ("RemoteIpv4", Ipv4Address ("10.1.2.2"),
-                                 "RemotePort", Uinteger (port),
-                                 "MaxPackets", Uinteger (100),
-                                 "Interval", Seconds (0.01),
-                                 "PacketSize", Uinteger (1024));
-  n1->AddApplication (client1);
-  Ptr<UdpEchoClient> client2 = 
-    CreateObject<UdpEchoClient> ("RemoteIpv4", Ipv4Address ("10.1.2.3"),
-                                 "RemotePort", Uinteger (port),
-                                 "MaxPackets", Uinteger (100),
-                                 "Interval", Seconds (0.01),
-                                 "PacketSize", Uinteger (1024));
-  n2->AddApplication (client2);
-  Ptr<UdpEchoClient> client3 = 
-    CreateObject<UdpEchoClient> ("RemoteIpv4", Ipv4Address ("10.1.2.4"),
-                                 "RemotePort", Uinteger (port),
-                                 "MaxPackets", Uinteger (100),
-                                 "Interval", Seconds (0.01),
-                                 "PacketSize", Uinteger (1024));
-  n3->AddApplication (client3);
+  UdpEchoClientHelper client;
+  client.SetRemote (i2.GetAddress (0), port);
+  client.SetAppAttribute ("MaxPackets", Uinteger (100));
+  client.SetAppAttribute ("Interval", Seconds (0.01));
+  client.SetAppAttribute ("PacketSize", Uinteger (1024));
+  ApplicationContainer apps = client.Build (lan1.Get (0));
+  apps.Start (Seconds(2.));
+  apps.Stop (Seconds (10.0));
 
-  Ptr<UdpEchoServer> server4 = 
-    CreateObject<UdpEchoServer> ("Port", Uinteger (port));
-  n4->AddApplication (server4);
-  Ptr<UdpEchoServer> server5 = 
-    CreateObject<UdpEchoServer> ("Port", Uinteger (port));
-  n5->AddApplication (server5);
-  Ptr<UdpEchoServer> server6 = 
-    CreateObject<UdpEchoServer> ("Port", Uinteger (port));
-  n6->AddApplication (server6);
-  Ptr<UdpEchoServer> server7 = 
-    CreateObject<UdpEchoServer> ("Port", Uinteger (port));
-  n7->AddApplication (server7);
+  client.SetRemote (i2.GetAddress (1), port);
+  apps = client.Build (lan1.Get (1));
+  apps.Start (Seconds(2.1));
+  apps.Stop (Seconds (10.0));
+  
+  client.SetRemote (i2.GetAddress (2), port);
+  apps = client.Build (lan1.Get (2));
+  apps.Start (Seconds(2.2));
+  apps.Stop (Seconds (10.0));
 
-  server4->Start(Seconds(1.));
-  server5->Start(Seconds(1.));
-  server6->Start(Seconds(1.));
-  server7->Start(Seconds(1.));
+  client.SetRemote (i2.GetAddress (3), port);
+  apps = client.Build (lan1.Get (3));
+  apps.Start (Seconds(2.3));
+  apps.Stop (Seconds (10.0));
 
-  client0->Start(Seconds(2.));
-  client1->Start(Seconds(2.1));
-  client2->Start(Seconds(2.2));
-  client3->Start(Seconds(2.3));
 
-  server4->Stop (Seconds(10.));
-  server5->Stop (Seconds(10.));
-  server6->Stop (Seconds(10.));
-  server7->Stop (Seconds(10.));
-
-  client0->Stop (Seconds(10.));
-  client1->Stop (Seconds(10.));
-  client2->Stop (Seconds(10.));
-  client3->Stop (Seconds(10.));
-
-  AsciiTrace asciitrace ("tutorial.tr");
-  asciitrace.TraceAllQueues ();
-  asciitrace.TraceAllNetDeviceRx ();
-
-  PcapTrace pcaptrace ("tutorial.pcap");
-  pcaptrace.TraceAllIp ();
+  UdpEchoServerHelper server;
+  server.SetPort (port);
+  apps = server.Build (lan2.Get (0));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
+  apps = server.Build (lan2.Get (1));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
+  apps = server.Build (lan2.Get (2));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
+  apps = server.Build (lan2.Get (3));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
 
   GlobalRouteManager::PopulateRoutingTables ();
+
+  std::ofstream os;
+  os.open ("tutorial.tr");
+  PointToPointHelper::EnableAscii (os);
+  CsmaHelper::EnableAscii (os);
+
+  PointToPointHelper::EnablePcap ("tutorial.pcap");
+  CsmaHelper::EnablePcap ("tutorial.pcap");
 
   Simulator::Run ();
   Simulator::Destroy ();
