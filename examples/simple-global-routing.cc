@@ -58,31 +58,14 @@ main (int argc, char *argv[])
   // for selected modules; the below lines suggest how to do this
 #if 0 
   LogComponentEnable ("SimpleGlobalRoutingExample", LOG_LEVEL_INFO);
-
-  LogComponentEnable("Object", LOG_LEVEL_ALL);
-  LogComponentEnable("Queue", LOG_LEVEL_ALL);
-  LogComponentEnable("DropTailQueue", LOG_LEVEL_ALL);
-  LogComponentEnable("Channel", LOG_LEVEL_ALL);
-  LogComponentEnable("CsmaChannel", LOG_LEVEL_ALL);
-  LogComponentEnable("NetDevice", LOG_LEVEL_ALL);
-  LogComponentEnable("CsmaNetDevice", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("PacketSocket", LOG_LEVEL_ALL);
-  LogComponentEnable("Socket", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpSocket", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpL4Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4StaticRouting", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4Interface", LOG_LEVEL_ALL);
-  LogComponentEnable("ArpIpv4Interface", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4LoopbackInterface", LOG_LEVEL_ALL);
-  LogComponentEnable("OnOffApplication", LOG_LEVEL_ALL);
-  LogComponentEnable("PacketSinkApplication", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_ALL);
 #endif
-  // Set up some default values for the simulation.  Use the 
 
+  //
+  // Make the random number generators generate reproducible results.
+  //
+  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
+
+  // Set up some default values for the simulation.  Use the 
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", Uinteger (210));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", DataRate ("448kb/s"));
 

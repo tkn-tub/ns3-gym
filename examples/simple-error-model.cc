@@ -58,6 +58,11 @@ main (int argc, char *argv[])
   LogComponentEnable ("SimplePointToPointExample", LOG_LEVEL_INFO);
 #endif
 
+  //
+  // Make the random number generators generate reproducible results.
+  //
+  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
+
   // Set a few parameters
   Config::SetDefault ("ns3::RateErrorModel::ErrorRate", Double (0.01));
   Config::SetDefault ("ns3::RateErrorModel::ErrorUnit", String ("EU_PKT"));

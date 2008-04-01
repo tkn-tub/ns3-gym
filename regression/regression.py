@@ -48,6 +48,8 @@ def main(tests = None, testdir = None):
     userName = "craigdo/"
     repoName = "ns-3-ref-traces/"
 
+    print "Synchronizing reference traces."
+    
     if not os.path.exists(repoName):
         cloneCmd = "hg clone http://code.nsnam.org/" + userName + repoName + " >& /dev/null"
         os.system(cloneCmd)
@@ -56,6 +58,8 @@ def main(tests = None, testdir = None):
         pullCmd = "hg pull http://code.nsnam.org/" + userName + repoName + " >& /dev/null"
         os.system(pullCmd)
         os.chdir("..")
+
+    print "Done."
 
     bad = []
 
