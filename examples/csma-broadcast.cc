@@ -47,30 +47,12 @@ main (int argc, char *argv[])
   // for selected modules; the below lines suggest how to do this
 #if 0
   LogComponentEnable ("CsmaBroadcastExample", LOG_LEVEL_INFO);
-
-  LogComponentEnable("Object", LOG_LEVEL_ALL);
-  LogComponentEnable("Queue", LOG_LEVEL_ALL);
-  LogComponentEnable("DropTailQueue", LOG_LEVEL_ALL);
-  LogComponentEnable("Channel", LOG_LEVEL_ALL);
-  LogComponentEnable("CsmaChannel", LOG_LEVEL_ALL);
-  LogComponentEnable("NetDevice", LOG_LEVEL_ALL);
-  LogComponentEnable("CsmaNetDevice", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("PacketSocket", LOG_LEVEL_ALL);
-  LogComponentEnable("Socket", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpSocket", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpL4Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4StaticRouting", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4Interface", LOG_LEVEL_ALL);
-  LogComponentEnable("ArpIpv4Interface", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4LoopbackInterface", LOG_LEVEL_ALL);
-  LogComponentEnable("OnOffApplication", LOG_LEVEL_ALL);
-  // Enable the below logging command to see the packets being received
-  LogComponentEnable("PacketSinkApplication", LOG_LEVEL_ALL);
 #endif
 
-  // Set up some default values for the simulation.  Use the Bind()
+  //
+  // Make the random number generators generate reproducible results.
+  //
+  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
 
   // Allow the user to override any of the defaults and the above
   // Bind()s at run-time, via command-line arguments

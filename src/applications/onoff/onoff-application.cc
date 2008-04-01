@@ -208,6 +208,7 @@ void OnOffApplication::ScheduleStopEvent()
   NS_LOG_FUNCTION;
 
   Time onInterval = Seconds(m_onTime.GetValue());
+  NS_LOG_LOGIC ("stop at " << onInterval);
   Simulator::Schedule(onInterval, &OnOffApplication::StopSending, this);
 }
 
@@ -215,7 +216,7 @@ void OnOffApplication::ScheduleStopEvent()
 void OnOffApplication::SendPacket()
 {
   NS_LOG_FUNCTION;
-
+  NS_LOG_LOGIC ("sending packet at " << Simulator::Now());
   NS_ASSERT (m_sendEvent.IsExpired ());
   Ptr<Packet> packet = Create<Packet> (m_pktSize);
   m_txTrace (packet);
