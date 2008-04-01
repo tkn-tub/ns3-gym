@@ -48,6 +48,10 @@ def main(tests = None, testdir = None):
     userName = "craigdo/"
     repoName = "ns-3-ref-traces/"
 
+    print "========== Running Unit Tests =========="
+    os.system("./waf check")
+
+    print "========== Running Regression Tests =========="
     print "Synchronizing reference traces."
     
     if not os.path.exists(repoName):
@@ -84,13 +88,13 @@ def main(tests = None, testdir = None):
 
     for test in tests:
         if verbose:
-            print "Running test", test
+            print "Running test " + test
         result = runtest(test)
         if result == 0:
             if generate:
-                print "GENERATE ", test
+                print "GENERATE" + test
             else:
-                print "PASS ", test
+                print "PASS " + test
         else:
             bad.append(test)
             print "FAIL ", test
