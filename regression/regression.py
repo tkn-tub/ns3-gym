@@ -8,7 +8,7 @@ directory, and run them.
 
 Command line options:
 
--v: verbose   -- run tests in verbose mode with output to stdout
+-v: verbose   -- run tests in verbose mode (print diff output)
 -g: generate  -- write the output file for a test instead of comparing it
 
 If non-option arguments are present, they are names for tests to run.
@@ -16,12 +16,40 @@ If no test names are given, all tests are run.
 
 """
 
+import getopt
 import sys
 import os
-import getopt
+import urllib
+import subprocess
 
 verbose = 0
 generate = 0
+
+#
+# The directory in which the tarball of the reference traces lives.  This is
+# used if Mercurial is not on the system.
+#
+refUrl = "http://www.nsnam.org/releases/"
+
+#
+# The name of the tarball to find the reference traces in if there is no
+# mercurial on the system.  It is expected to be created using tar -cjf and
+# will be extracted using tar -xjf
+#
+refTarName = "ns-3-ref-traces.tar.bz2"
+
+#
+# The path to the Mercurial repository used to find the reference traces if
+# we find "hg" on the system.  We expect that the repository will be named
+# identically to refDirName below
+#
+refRepo = "http://code.nsnam.org/craigdo/"
+
+#
+# The local directory name into which the reference traces will go in either
+# case (net or hg).
+#
+refDirName = "ns-3-ref-traces"
 
 def main(tests = None, testdir = None):
     """Execute regression tests.
@@ -33,6 +61,11 @@ def main(tests = None, testdir = None):
 
     global verbose
     global generate
+    global refUrl
+    global refTarName
+    global refRepo
+    global refRepoName
+    global refDirName
     
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'vg')
@@ -45,28 +78,33 @@ def main(tests = None, testdir = None):
         if o == '-v': verbose = 1
         if o == '-g': generate = 1
 
-    userName = "craigdo/"
-    repoName = "ns-3-ref-traces/"
-
     print "========== Running Unit Tests =========="
     os.system("./waf check")
 
     print "========== Running Regression Tests =========="
-    print "Synchronizing reference traces."
-    
-    if not os.path.exists(repoName):
-        cloneCmd = "hg clone http://code.nsnam.org/" + userName + repoName + " >& /dev/null"
-        os.system(cloneCmd)
+    if os.system("hg version > /dev/null 2>&1") == 0:
+        print "Synchronizing reference traces using Mercurial."
+        if not os.path.exists(refDirName):
+            os.system("hg clone " + refRepo + refDirName +
+              " > /dev/null 2>&1")
+        else:
+            os.chdir(refDirName)
+            os.system("hg pull " + refRepo + refDirName +
+                " > /dev/null 2>&1")
+            os.chdir("..")
     else:
-        os.chdir(repoName)
-        pullCmd = "hg pull http://code.nsnam.org/" + userName + repoName + " >& /dev/null"
-        os.system(pullCmd)
-        os.chdir("..")
+        print "Synchronizing reference traces from web."
+        urllib.urlretrieve(refUrl + refTarName, refTarName)
+        os.system("tar -xjf " + refTarName)
 
     print "Done."
 
     bad = []
 
+    if not os.path.exists(refDirName):
+        print "Reference traces directory does not exist"
+        return 3
+    
     if not testdir:
         testdir = os.path.join(os.curdir, "tests")
 
@@ -87,9 +125,7 @@ def main(tests = None, testdir = None):
         tests = findtests(testdir)
 
     for test in tests:
-        if verbose:
-            print "Running test " + test
-        result = runtest(test)
+        result = run_test(test)
         if result == 0:
             if generate:
                 print "GENERATE" + test
@@ -108,8 +144,6 @@ def findtests(testdir):
     testdir -- the directory to look in for tests
     """
     names = os.listdir(testdir)
-    if verbose:
-        print "findtests(): found ", names
     tests = []
     for name in names:
         if name[:5] == "test-" and name[-3:] == ".py":
@@ -118,7 +152,7 @@ def findtests(testdir):
     tests.sort()
     return tests
 
-def runtest(test):
+def run_test(test):
     """Run a single test.
 
     Arguments:
@@ -135,7 +169,7 @@ def runtest(test):
         os.mkdir("traces")
     
     mod = __import__(test, globals(), locals(), [])
-    return mod.run(verbose, generate)
+    return mod.run(verbose, generate, refDirName)
 
 if __name__ == '__main__':
     sys.exit(main())

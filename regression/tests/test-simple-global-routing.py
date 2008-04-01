@@ -4,38 +4,10 @@
 
 import os
 import shutil
+import tracediff
 
-def run(verbose, generate):
+def run(verbose, generate, refDirName):
     """Execute a test."""
 
-    testName = "simple-global-routing"
-    repoName = "ns-3-ref-traces/"
-    refDirName = testName + ".ref"
-
-    if not os.path.exists(repoName):
-        print"No reference trace repository"
-        return 1
-
-    if generate:
-        if not os.path.exists(repoName + refDirName):
-            print "creating new " + repoName + refDirName
-            os.mkdir(repoName + refDirName)
-
-        os.system("./waf --cwd regression/" + repoName + refDirName +
-            " --run " + testName + " >& /dev/null")
-
-        print "Remember to commit " + repoName + refDirName
-        return 0
-    else:
-        if not os.path.exists(repoName + refDirName):
-            print "Cannot locate reference traces"
-            return 1
-
-        shutil.rmtree("traces");
-        os.mkdir("traces")
-        
-        os.system("./waf --cwd regression/traces --run " +
-          testName + " >& /dev/null")
-        
-        return os.system("diff -q traces " + repoName + refDirName +
-         " >& /dev/null")
+    return tracediff.run_test(verbose, generate, refDirName,
+        "simple-global-routing")
