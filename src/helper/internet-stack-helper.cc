@@ -20,8 +20,12 @@
 #include "internet-stack-helper.h"
 #include "ns3/internet-stack.h"
 #include "ns3/packet-socket-factory.h"
+#include "ns3/config.h"
 
 namespace ns3 {
+
+std::vector<InternetStackHelper::Trace> InternetStackHelper::m_traces;
+std::string InternetStackHelper::m_pcapBaseFilename;
 
 void 
 InternetStackHelper::Build (NodeContainer c)
@@ -35,5 +39,68 @@ InternetStackHelper::Build (NodeContainer c)
     }
 }
 
+void
+InternetStackHelper::EnablePcap (std::string filename)
+{
+  InternetStackHelper::m_pcapBaseFilename = filename;
+  Config::Connect ("/NodeList/*/$ns3::Ipv4L3Protocol/Tx",
+                              MakeCallback (&InternetStackHelper::LogTxIp));
+  Config::Connect ("/NodeList/*/$ns3::Ipv4L3Protocol/Rx",
+                              MakeCallback (&InternetStackHelper::LogRxIp));
+}
+
+uint32_t
+InternetStackHelper::GetNodeIndex (std::string context)
+{
+  std::string::size_type pos;
+  pos = context.find ("/NodeList/");
+  NS_ASSERT (pos == 0);
+  std::string::size_type afterNodeIndex = context.find ("/", 11);
+  NS_ASSERT (afterNodeIndex != std::string::npos);
+  std::string index = context.substr (10, afterNodeIndex - 10);
+  std::istringstream iss;
+  iss.str (index);
+  uint32_t nodeIndex;
+  iss >> nodeIndex;
+  return nodeIndex;
+}
+
+void
+InternetStackHelper::LogTxIp (std::string context, Ptr<const Packet> packet, uint32_t interfaceIndex)
+{
+  Ptr<PcapWriter> writer = InternetStackHelper::GetStream (GetNodeIndex (context), interfaceIndex);
+  writer->WritePacket (packet);
+}
+
+void
+InternetStackHelper::LogRxIp (std::string context, Ptr<const Packet> packet, uint32_t interfaceIndex)
+{
+  Ptr<PcapWriter> writer = InternetStackHelper::GetStream (GetNodeIndex (context), interfaceIndex);
+  writer->WritePacket (packet);
+}
+
+Ptr<PcapWriter>
+InternetStackHelper::GetStream (uint32_t nodeId, uint32_t interfaceId)
+{
+  for (std::vector<Trace>::iterator i = m_traces.begin ();
+       i != m_traces.end (); i++)
+  {
+    if (i->nodeId == nodeId &&
+        i->interfaceId == interfaceId)
+    {
+      return i->writer;
+    }
+  }
+  InternetStackHelper::Trace trace;
+  trace.nodeId = nodeId;
+  trace.interfaceId = interfaceId;
+  trace.writer = Create<PcapWriter> ();
+  std::ostringstream oss;
+  oss << m_pcapBaseFilename << ".pcap-" << nodeId << "-" << interfaceId;
+  trace.writer->Open (oss.str ());
+  trace.writer->WriteIpHeader ();
+  m_traces.push_back (trace);
+  return trace.writer;
+}
 
 } // namespace ns3

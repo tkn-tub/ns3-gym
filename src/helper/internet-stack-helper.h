@@ -21,6 +21,9 @@
 #define INTERNET_STACK_HELPER_H
 
 #include "node-container.h"
+#include "net-device-container.h"
+#include "ns3/pcap-writer.h"
+#include "ns3/packet.h"
 
 namespace ns3 {
 
@@ -37,6 +40,27 @@ public:
    * of the ns3::Ipv4, ns3::Udp, and, ns3::Tcp classes.
    */
   void Build (NodeContainer c);
+
+  /**
+   * \param filename filename prefix to use for pcap files.
+   *
+   * Enable pcap output on each protocol instance which is of the
+   * ns3::Ipv4L3Protocol type.  Both Tx and Rx events will be logged.
+   */
+  static void EnablePcap (std::string filename);
+
+private:
+  static void LogRxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);
+  static void LogTxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);
+  static Ptr<PcapWriter> GetStream (uint32_t nodeId, uint32_t interfaceId);
+  struct Trace {
+    uint32_t nodeId;
+    uint32_t interfaceId;
+    Ptr<PcapWriter> writer;
+  };
+  static std::string m_pcapBaseFilename;
+  static uint32_t GetNodeIndex (std::string context);
+  static std::vector<Trace> m_traces;
 };
 
 } // namespace ns3
