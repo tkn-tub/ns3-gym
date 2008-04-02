@@ -133,7 +133,7 @@ def main(tests = None, testdir = None):
                 print "PASS " + test
         else:
             bad.append(test)
-            print "FAIL ", test
+            print "FAIL " + test
 
     return len(bad) > 0
 

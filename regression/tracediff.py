@@ -46,5 +46,17 @@ def run_test(verbose, generate, refDirName, testName):
             diffCmd = "diff traces " + repoName + refDirName + \
                 " > /dev/null 2>&1"
 
-        return os.system(diffCmd)
+        rc = os.system(diffCmd)
+        if rc:
+            print "----------"
+            print "Traces differ in test: test-" + testName
+            print "Reference traces in directory: " + repoName + \
+                refDirName
+            print "Traces in directory: traces"
+            print "Rerun regression test as: " + \
+                "\"python regression.py test-" + testName + "\""
+            print "Then do \"diff -u traces " + repoName + refDirName + \
+                "\" for details"
+            print "----------"
+        return rc
                 
