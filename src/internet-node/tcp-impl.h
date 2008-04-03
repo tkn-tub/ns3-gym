@@ -28,7 +28,7 @@ namespace ns3 {
 class TcpL4Protocol;
 
 /**
- * \ingroup InternetNode
+ * \ingroup internetNode
  * \defgroup Tcp Tcp
  *
  * \section Tcp Overview

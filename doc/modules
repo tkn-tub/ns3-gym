@@ -41,9 +41,6 @@
  * 
  *
  * @defgroup devices Devices
- * The "devices" module contains:
- *    - a PointToPoint MAC device: ns3::PointToPointNetDevice, ns3::PointToPointChannel,
- *      and ns3::PointToPointTopology.
  *
  * @defgroup internetNode InternetNode
  * 
@@ -53,6 +50,8 @@
  *    - an ARP module
  *    - an InternetNode class which is a Node subclass.
  *    
+ * @defgroup helper Helpers
+ * 
  * @defgroup applications Applications
  *
  * @defgroup mobility Mobility

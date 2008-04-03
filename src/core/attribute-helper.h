@@ -57,6 +57,7 @@ MakeSimpleAttributeChecker (std::string name)
 }
 
 /**
+ * \ingroup core
  * \defgroup AttributeHelper Attribute Helper
  *
  * All these macros can be used to generate automatically the code
