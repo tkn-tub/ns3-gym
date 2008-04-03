@@ -59,6 +59,13 @@ def set_options(opt):
                    action="store_true", default=False,
                    dest='enable_gcov')
 
+    opt.add_option('--no-task-lines',
+                   help=("Don't print task lines, i.e. messages saying which tasks are being executed by WAF."
+                         "  Coupled with a single -v will cause WAF to output only the executed commands,"
+                         " just like 'make' does by default."),
+                   action="store_true", default=False,
+                   dest='no_task_lines')
+
     opt.add_option('--lcov-report',
                    help=('Generate a code coverage report '
                          '(use this option at build time, not in configure)'),
@@ -167,10 +174,14 @@ def create_ns3_program(bld, name, dependencies=('simulator',)):
 
 
 def build(bld):
-    Params.g_cwd_launch = Params.g_build.m_curdirnode.abspath()
-        
-    bld.create_ns3_program = types.MethodType(create_ns3_program, bld)
+    if Params.g_options.no_task_lines:
+        import Runner
+        def null_printout(s):
+            pass
+        Runner.printout = null_printout
 
+    Params.g_cwd_launch = Params.g_build.m_curdirnode.abspath()
+    bld.create_ns3_program = types.MethodType(create_ns3_program, bld)
     variant_name = bld.env_of_name('default')['NS3_ACTIVE_VARIANT']
     variant_env = bld.env_of_name(variant_name)
     bld.m_allenvs['default'] = variant_env # switch to the active variant
