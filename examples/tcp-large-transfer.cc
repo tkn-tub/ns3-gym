@@ -117,6 +117,11 @@ int main (int argc, char *argv[])
   //  LogComponentEnable("PacketSink", LOG_LEVEL_ALL);
   //  LogComponentEnable("TcpLargeTransfer", LOG_LEVEL_ALL);
 
+  //
+  // Make the random number generators generate reproducible results.
+  //
+  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
+
   // Allow the user to override any of the defaults and the above
   // Bind()s at run-time, via command-line arguments
   CommandLine cmd;
@@ -182,9 +187,9 @@ int main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("tcp-large-transfer.tr");
-  PointToPointHelper::EnablePcap ("tcp-large-transfer");
   PointToPointHelper::EnableAscii (ascii);
 
+  InternetStackHelper::EnablePcap ("tcp-large-transfer");
 
   Simulator::StopAt (Seconds(1000));
   Simulator::Run ();

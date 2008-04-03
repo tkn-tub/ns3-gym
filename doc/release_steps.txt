@@ -19,10 +19,25 @@ Steps in doing an ns-3 release
    - cd /home/code/repos/ns-3.0.x/.hg and edit the hgrc appropriately:
      "description = ns-3.0.x release
       name = ns-3.0.x"
-6. upload "ns-3.0.x.tar.bz2" to the /var/www/html/releases/ directory on 
+6. Run the regression tests on the new release and update the reference traces
+   - cd regression
+   - python regression.py
+   - There should be no regressions at this time
+   - tag ns-3-dev-ref-traces with "release ns-3.0.X"
+     hg tag "release ns-3.0.x"
+     hg push
+   - clone the ns-3-dev-ref-traces and place it on the repository as in step
+     6 but use the name ns-3.0.x-ref-traces
+7. Create a reference traces tarball
+   - cd regression
+   - tar -cjf ns-3.0.x-ref-traces.tar.bz2 ns-3-dev-ref-traces/
+8. upload "ns-3.0.x.tar.bz2" to the /var/www/html/releases/ directory on 
    the www.nsnam.org server
    - give it 644 file permissions, and user/group = apache
-7. update web pages on www.nsnam.org (source is in the www/ module)
+9. upload "ns-3.0.x-ref-traces.tar.bz2" to the /var/www/html/releases/ 
+   directory on the www.nsnam.org server
+   - give it 644 file permissions, and user/group = apache
+10. update web pages on www.nsnam.org (source is in the www/ module)
    - add link to news.html
    - update getting_started.html
    - update documents.html
@@ -32,4 +47,4 @@ Steps in doing an ns-3 release
      -- edit ~/bin/update-doxygen-release file and change RELEASE variable 
         to the right version number 
      -- run ~/bin/update-doxygen-release
-8. announce to ns-developers, with summary of release notes
+11. announce to ns-developers, with summary of release notes

@@ -36,20 +36,20 @@ refUrl = "http://www.nsnam.org/releases/"
 # mercurial on the system.  It is expected to be created using tar -cjf and
 # will be extracted using tar -xjf
 #
-refTarName = "ns-3-ref-traces.tar.bz2"
+refTarName = "ns-3.0.12-ref-traces.tar.bz2"
 
 #
 # The path to the Mercurial repository used to find the reference traces if
 # we find "hg" on the system.  We expect that the repository will be named
 # identically to refDirName below
 #
-refRepo = "http://code.nsnam.org/craigdo/"
+refRepo = "http://code.nsnam.org/"
 
 #
 # The local directory name into which the reference traces will go in either
 # case (net or hg).
 #
-refDirName = "ns-3-ref-traces"
+refDirName = "ns-3-dev-ref-traces"
 
 def main(tests = None, testdir = None):
     """Execute regression tests.
@@ -78,33 +78,6 @@ def main(tests = None, testdir = None):
         if o == '-v': verbose = 1
         if o == '-g': generate = 1
 
-    print "========== Running Unit Tests =========="
-    os.system("./waf check")
-
-    print "========== Running Regression Tests =========="
-    if os.system("hg version > /dev/null 2>&1") == 0:
-        print "Synchronizing reference traces using Mercurial."
-        if not os.path.exists(refDirName):
-            os.system("hg clone " + refRepo + refDirName +
-              " > /dev/null 2>&1")
-        else:
-            os.chdir(refDirName)
-            os.system("hg pull " + refRepo + refDirName +
-                " > /dev/null 2>&1")
-            os.chdir("..")
-    else:
-        print "Synchronizing reference traces from web."
-        urllib.urlretrieve(refUrl + refTarName, refTarName)
-        os.system("tar -xjf " + refTarName)
-
-    print "Done."
-
-    bad = []
-
-    if not os.path.exists(refDirName):
-        print "Reference traces directory does not exist"
-        return 3
-    
     if not testdir:
         testdir = os.path.join(os.curdir, "tests")
 
@@ -123,12 +96,39 @@ def main(tests = None, testdir = None):
 
     if not tests:
         tests = findtests(testdir)
+        if not generate:
+            print "========== Running Unit Tests =========="
+            os.system("./waf check")
+
+    print "========== Running Regression Tests =========="
+
+    if os.system("hg version > /dev/null 2>&1") == 0:
+        print "Synchronizing reference traces using Mercurial."
+        if not os.path.exists(refDirName):
+            os.system("hg clone " + refRepo + refDirName + " > /dev/null 2>&1")
+        else:
+            os.chdir(refDirName)
+            os.system("hg pull " + refRepo + refDirName + " > /dev/null 2>&1")
+            os.chdir("..")
+    else:
+        print "Synchronizing reference traces from web."
+        urllib.urlretrieve(refUrl + refTarName, refTarName)
+        os.system("tar -xjf " + refTarName)
+
+    print "Done."
+
+    if not os.path.exists(refDirName):
+        print "Reference traces directory does not exist"
+        return 3
+    
+    bad = []
+
 
     for test in tests:
         result = run_test(test)
         if result == 0:
             if generate:
-                print "GENERATE" + test
+                print "GENERATE " + test
             else:
                 print "PASS " + test
         else:
