@@ -224,14 +224,9 @@ int main (int argc, char *argv[])
   runBench (&benchPtrC, n, "c");
 
   //runBench (&benchPrint, n, "print");
-  PacketMetadata::SetOptOne (false);
   runBench (&benchPtrA, n, "meta-a");
   runBench (&benchPtrB, n, "meta-b");
   runBench (&benchPtrC, n, "meta-c");
-  PacketMetadata::SetOptOne (true);
-  runBench (&benchPtrA, n, "meta-a-opt");
-  runBench (&benchPtrB, n, "meta-b-opt");
-  runBench (&benchPtrC, n, "meta-c-opt");
 
 
   return 0;

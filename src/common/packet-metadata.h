@@ -124,7 +124,6 @@ public:
   };
 
   static void Enable (void);
-  static void SetOptOne (bool optOne);
 
   inline PacketMetadata (uint32_t uid, uint32_t size);
   inline PacketMetadata (PacketMetadata const &o);
@@ -254,7 +253,6 @@ private:
   uint32_t ReadUleb128 (const uint8_t **pBuffer) const;
   inline void Append16 (uint16_t value, uint8_t *buffer);
   inline bool TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end);
-  inline bool TryToAppendFast (uint32_t value, uint8_t **pBuffer, uint8_t *end);
   inline bool TryToAppend32 (uint32_t value, uint8_t **pBuffer, uint8_t *end);
   inline bool TryToAppend16 (uint16_t value, uint8_t **pBuffer, uint8_t *end);
   void AppendValue (uint32_t value, uint8_t *buffer);

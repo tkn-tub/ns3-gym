@@ -36,7 +36,6 @@ bool PacketMetadata::m_metadataSkipped = false;
 uint32_t PacketMetadata::m_maxSize = 0;
 uint16_t PacketMetadata::m_chunkUid = 0;
 PacketMetadata::DataFreeList PacketMetadata::m_freeList;
-bool g_optOne = false;
 
 PacketMetadata::DataFreeList::~DataFreeList ()
 {
@@ -58,12 +57,6 @@ PacketMetadata::Enable (void)
                  "to call ns3::PacketMetadata::Enable () near the beginning of"
                  " the program, before any packets are sent.");
   m_enable = true;
-}
-
-void 
-PacketMetadata::SetOptOne (bool optOne)
-{
-  g_optOne = optOne;
 }
 
 void
@@ -184,27 +177,6 @@ PacketMetadata::Append16 (uint16_t value, uint8_t *buffer)
   buffer[0] = value & 0xff;
   value >>= 8;
   buffer[1] = value;
-}
-bool
-PacketMetadata::TryToAppendFast (uint32_t value, uint8_t **pBuffer, uint8_t *end)
-{
-  uint8_t *start = *pBuffer;
-  if (value < 0x80 && start < end)
-    {
-      start[0] = value;
-      *pBuffer = start + 1;
-      return true;
-    }
-  if (value < 0x4000 && start + 1 < end)
-    {
-      uint8_t byte = value & (~0x80);
-      start[0] = 0x80 | byte;
-      value >>= 7;
-      start[1] = value;
-      *pBuffer = start + 2;
-      return true;
-    }
-  return false;
 }
 bool
 PacketMetadata::TryToAppend16 (uint16_t value,  uint8_t **pBuffer, uint8_t *end)
@@ -423,65 +395,32 @@ PacketMetadata::AddSmall (const struct PacketMetadata::SmallItem *item)
 {
   NS_ASSERT (m_data != 0);
   NS_ASSERT (m_used != item->prev && m_used != item->next);
-  if (g_optOne)
-    {
-      uint32_t typeUidSize = GetUleb128Size (item->typeUid);
-      uint32_t sizeSize = GetUleb128Size (item->size);
-      uint32_t n = typeUidSize + sizeSize + 2 + 2 + 2;
-    restart:
-      if (m_used + n <= m_data->m_size &&
-      (m_head == 0xffff ||
-       m_data->m_count == 1 ||
-       m_used == m_data->m_dirtyEnd))
-        {
-          uint8_t *buffer = &m_data->m_data[m_used];
-          Append16 (item->next, buffer);
-          buffer += 2;
-          Append16 (item->prev, buffer);
-          buffer += 2;
-          AppendValue (item->typeUid, buffer);
-          buffer += typeUidSize;
-          AppendValue (item->size, buffer);
-          buffer += sizeSize;
-          Append16 (item->chunkUid, buffer);
-        }
-      else
-        {
-          ReserveCopy (n);
-          goto restart;
-        }
-      return n;
-    }
- append:
-  uint8_t *start = &m_data->m_data[m_used];
-  uint8_t *end = &m_data->m_data[m_data->m_size];
-  if (end - start >= 8 &&
+  uint32_t typeUidSize = GetUleb128Size (item->typeUid);
+  uint32_t sizeSize = GetUleb128Size (item->size);
+  uint32_t n = typeUidSize + sizeSize + 2 + 2 + 2;
+ restart:
+  if (m_used + n <= m_data->m_size &&
       (m_head == 0xffff ||
        m_data->m_count == 1 ||
        m_used == m_data->m_dirtyEnd))
     {
-      uint8_t *buffer = start;
-
+      uint8_t *buffer = &m_data->m_data[m_used];
       Append16 (item->next, buffer);
       buffer += 2;
       Append16 (item->prev, buffer);
       buffer += 2;
-      if (TryToAppendFast (item->typeUid, &buffer, end) &&
-          TryToAppendFast (item->size, &buffer, end) &&
-          TryToAppend16 (item->chunkUid, &buffer, end))
-        {
-          uintptr_t written = buffer - start;
-          NS_ASSERT (written <= 0xffff);
-          NS_ASSERT (written >= 8);
-          return written;
-        }
+      AppendValue (item->typeUid, buffer);
+      buffer += typeUidSize;
+      AppendValue (item->size, buffer);
+      buffer += sizeSize;
+      Append16 (item->chunkUid, buffer);
     }
-  uint32_t n = GetUleb128Size (item->typeUid);
-  n += GetUleb128Size (item->size);
-  n += 2;
-  n += 2 + 2;
-  Reserve (n);
-  goto append;
+  else
+    {
+      ReserveCopy (n);
+      goto restart;
+    }
+  return n;
 }
 
 uint16_t
