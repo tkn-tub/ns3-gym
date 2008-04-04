@@ -1,0 +1,20 @@
+@node Helper Functions
+@chapter Helper Functions
+@anchor{chap:Helpers}
+This chapter describes an intermediate API for the simulator; what we
+call the "helper API".  The helper API is implemented in 
+@code{src/helper/} directory; it depends on (and wraps) the low-level
+API which is implemented everywhere else in @code{src/}.  The following
+figure shows this relationship.
+@center @image{figures/helpers,,,,png}
+
+The use of the helper API is optional.  It has two main goals:
+@itemize @bullet
+@item Provide "syntactic sugar" to wrap a number of related low-level
+API calls together, that would normally be grouped together often, into 
+something that is more user-friendly.
+@item Handle configuration of larger topological units (e.g., a set 
+of nodes or a set of nodes on a particular link) . 
+@end itemize
+
+(more to follow)
