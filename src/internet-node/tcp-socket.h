@@ -101,6 +101,7 @@ private:
   // XXX This should be virtual and overridden
   void DupAck (const TcpHeader& t, uint32_t count); 
   void ReTxTimeout ();
+  void DelAckTimeout ();
   void LastAckTimeout ();
   void Retransmit ();
   void CommonNewAck (SequenceNumber seq, bool skipTimer = false);
@@ -110,6 +111,11 @@ private:
   EventId m_retxEvent;
   EventId m_lastAckEvent;
 
+  EventId m_delAckEvent;
+  uint32_t m_delAckCount;
+  uint32_t m_delAckMaxCount;
+  Time m_delAckTimout;
+
   Ipv4EndPoint *m_endPoint;
   Ptr<Node> m_node;
   Ptr<TcpL4Protocol> m_tcp;
@@ -118,10 +124,6 @@ private:
   //these two are so that the socket/endpoint cloning works
   Ipv4Address m_localAddress;
   uint16_t m_localPort;
-  //XXX Dead code?
-  Callback<void, Ptr<Socket>, uint32_t, const Address &> m_dummyRxCallback;
-  Callback<void, Ptr<Socket>, uint8_t const*, uint32_t, const Address &> 
-    m_rxCallback;
   enum SocketErrno m_errno;
   bool m_shutdownSend;
   bool m_shutdownRecv;

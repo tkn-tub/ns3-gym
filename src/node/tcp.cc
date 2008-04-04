@@ -19,6 +19,7 @@
  */
 #include "tcp.h"
 #include "ns3/uinteger.h"
+#include "ns3/double.h"
 
 namespace ns3 {
 
@@ -69,6 +70,16 @@ Tcp::GetTypeId (void)
                    Uinteger (6),
                    MakeUintegerAccessor (&Tcp::m_defaultConnCount),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("TcpDefaultDelAckTimeout",
+                   "Default timeout value for TCP delayed acks, in seconds",
+                   Double (0.2),
+                   MakeDoubleAccessor (&Tcp::m_defaultDelAckTimeout),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("TcpDefaultDelAckCount",
+                   "Default number of packets to wait before sending a TCP ack",
+                   Uinteger (2),
+                   MakeUintegerAccessor (&Tcp::m_defaultDelAckCount),
+                   MakeUintegerChecker<uint32_t> ())
      ;
   return tid;
 }
@@ -112,6 +123,18 @@ uint32_t
 Tcp::GetDefaultConnCount (void) const
 {
   return m_defaultConnCount;
+}
+
+double
+Tcp::GetDefaultDelAckTimeout (void) const
+{
+  return m_defaultDelAckTimeout;
+}
+
+uint32_t
+Tcp::GetDefaultDelAckCount (void) const
+{
+  return m_defaultDelAckCount;
 }
 
 } // namespace ns3

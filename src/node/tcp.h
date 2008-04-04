@@ -55,15 +55,20 @@ public:
   uint32_t GetDefaultInitialCwnd (void) const;
   uint32_t GetDefaultConnTimeout (void) const;
   uint32_t GetDefaultConnCount (void) const;
+  double   GetDefaultDelAckTimeout (void) const;
+  uint32_t GetDefaultDelAckCount (void) const;
+
 private:
-  uint32_t  m_defaultSegSize;  
-  uint32_t  m_defaultAdvWin;   
-  uint32_t  m_defaultSsThresh; 
-  uint32_t  m_defaultTxBuffer; 
-  uint32_t  m_defaultRxBuffer; 
-  uint32_t  m_defaultInitialCwnd; 
-  uint32_t  m_defaultConnTimeout;  
-  uint32_t  m_defaultConnCount;  
+  uint32_t  m_defaultSegSize;
+  uint32_t  m_defaultAdvWin; 
+  uint32_t  m_defaultSsThresh;
+  uint32_t  m_defaultTxBuffer;
+  uint32_t  m_defaultRxBuffer;
+  uint32_t  m_defaultInitialCwnd;
+  uint32_t  m_defaultConnTimeout;
+  uint32_t  m_defaultConnCount;
+  double    m_defaultDelAckTimeout;
+  uint32_t  m_defaultDelAckCount;
 
 };
 
