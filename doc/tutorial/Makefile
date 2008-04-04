@@ -3,19 +3,23 @@ TEXI2PDF = texi2dvi --pdf
 EPSTOPDF = epstopdf
 TGIF = tgif 
 CSS = --css-include=tutorial.css
+SPLIT = --split section
 
 TGIF_SOURCES = helpers.obj
 TGIF_EPS = ${TGIF_SOURCES:.obj=.eps}
 
-all:  images tutorial.html tutorial.pdf
+all:  images html split-html pdf
 
 images:
 	cd figures/; $(TGIF) -print -png $(TGIF_SOURCES) 
 	cd figures/; $(TGIF) -print -eps $(TGIF_SOURCES) 
 	cd figures/; $(EPSTOPDF) $(TGIF_EPS)
 
-tutorial.html:
+html: images
 	$(TEXI2HTML) ${CSS} tutorial.texi
 
-tutorial.pdf:
+split-html: images
+	$(TEXI2HTML) ${CSS} ${SPLIT} tutorial.texi
+
+pdf: images
 	$(TEXI2PDF) tutorial.texi
