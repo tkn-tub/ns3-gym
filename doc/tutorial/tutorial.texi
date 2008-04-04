@@ -109,10 +109,12 @@ Part 5:  Extending ns-3
 @include introduction.texi
 @include log.texi
 @include attributes.texi
+@include statistics.texi
+@include helpers.texi
 @include callbacks.texi
 @include output.texi
 @include routing.texi
-@include other.texi
+@c @include other.texi
 @include troubleshoot.texi
 
 @printindex cp
