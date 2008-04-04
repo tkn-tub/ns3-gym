@@ -604,6 +604,9 @@ PacketMetadataTest::RunTests (void)
   p->RemoveAtStart (8);
   CHECK_HISTORY (p, 0);
 
+  p = Create<Packet> (16383);
+  p = Create<Packet> (16384);
+
   return ok;
 }
 
