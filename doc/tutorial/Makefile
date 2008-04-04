@@ -12,9 +12,13 @@ TGIF_PNG = ${TGIF_SOURCES:.obj=.eps}
 
 all:  images html split-html pdf
 
+# Note:  tgif requires a valid x display to convert from .obj to .png.  
+#        If running this makefile on a remote console, the X virtual frame
+#        buffer may be needed (xorg-x11-server-Xvfb) to provide a "fake"
+#        display
 images:
 	cd figures/; $(TGIF) -print -eps $(TGIF_SOURCES) 
-	cd figures/; $(foreach FILE,$(TGIF_EPS),$(CONVERT) $(FILE) ${FILE:.eps=.png};)
+	cd figures/; $(TGIF) -print -png $(TGIF_SOURCES) 
 	cd figures/; $(foreach FILE,$(TGIF_EPS),$(EPSTOPDF) $(FILE);)
 
 html: images
