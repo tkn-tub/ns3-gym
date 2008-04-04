@@ -6,7 +6,7 @@ CONVERT = convert
 CSS = --css-include=tutorial.css
 SPLIT = --split section
 
-TGIF_SOURCES = helpers.obj helpers2.obj
+TGIF_SOURCES = helpers.obj 
 TGIF_EPS = ${TGIF_SOURCES:.obj=.eps}
 TGIF_PNG = ${TGIF_SOURCES:.obj=.eps}
 
