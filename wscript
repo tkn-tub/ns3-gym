@@ -12,6 +12,7 @@ import pproc as subprocess
 
 Params.g_autoconfig = 1
 
+
 # the following two variables are used by the target "waf dist"
 VERSION = file("VERSION").read().strip()
 APPNAME = 'ns'
@@ -19,6 +20,33 @@ APPNAME = 'ns'
 # these variables are mandatory ('/' are converted automatically)
 srcdir = '.'
 blddir = 'build'
+
+#
+# The directory in which the tarball of the reference traces lives.  This is
+# used if Mercurial is not on the system.
+#
+REGRESSION_TRACES_URL = "http://www.nsnam.org/releases/"
+
+#
+# The name of the tarball to find the reference traces in if there is no
+# mercurial on the system.  It is expected to be created using tar -cjf and
+# will be extracted using tar -xjf
+#
+REGRESSION_TRACES_TAR_NAME  = "ns-3.0.12-ref-traces.tar.bz2"
+
+#
+# The path to the Mercurial repository used to find the reference traces if
+# we find "hg" on the system.  We expect that the repository will be named
+# identically to refDirName below
+#
+REGRESSION_TRACES_REPO = "http://code.nsnam.org/"
+
+#
+# The local directory name (relative to the 'regression' dir) into
+# which the reference traces will go in either case (net or hg).
+#
+REGRESSION_TRACES_DIR_NAME = "ns-3-dev-ref-traces"
+
 
 def dist_hook():
     shutil.rmtree("doc/html", True)
@@ -94,6 +122,17 @@ def set_options(opt):
                    help=('Run a shell with an environment suitably modified to run locally built programs'),
                    action="store_true", default=False,
                    dest='shell')
+
+    opt.add_option('--regression',
+                   help=("Enable regression testing; only used for the 'check' target"),
+                   default=False, dest='regression', action="store_true")
+    opt.add_option('--regression-generate',
+                   help=("Generate new regression test traces; only used for the 'check' target"),
+                   default=False, dest='regression_generate', action="store_true")
+    opt.add_option('--regression-tests',
+                   help=('For regression testing, only run/generate the indicated regression tests, '
+                         'specified as a comma separated list of test names'),
+                   dest='regression_tests', type="string")
 
     # options provided in a script in a subdirectory named "src"
     opt.sub_options('src')
@@ -256,7 +295,7 @@ def get_command_template():
     if Params.g_options.valgrind:
         if Params.g_options.command_template:
             Params.fatal("Options --command-template and --valgrind are conflicting")
-        return "valgrind %s"
+        return "valgrind --leak-check=full %s"
     else:
         return (Params.g_options.command_template or '%s')
 
@@ -272,6 +311,14 @@ def shutdown():
 
     if Params.g_commands['check']:
         _run_waf_check()
+
+    if Params.g_options.regression or Params.g_options.regression_generate:
+        _dir = os.getcwd()
+        os.chdir("regression")
+        try:
+            run_regression()
+        finally:
+            os.chdir(_dir)
 
     if Params.g_options.lcov_report:
         lcov_report()
@@ -588,3 +635,154 @@ def DistDir(appname, version):
     return TMPFOLDER
 
 Scripting.DistDir = DistDir
+
+
+
+
+### Regression testing
+class Regression(object):
+    def __init__(self, testdir):
+        self.testdir = testdir
+
+    def run_test(self, verbose, generate, refDirName, testName):
+        refTestDirName = os.path.join(refDirName, (testName + ".ref"))
+
+        if not os.path.exists(refDirName):
+            print"No reference trace repository"
+            return 1
+
+        if generate:
+            if not os.path.exists(refTestDirName):
+                print "creating new " + refTestDirName
+                os.mkdir(refTestDirName)
+
+            #os.system("./waf --cwd regression/" + refTestDirName +
+            #    " --run " + testName + " > /dev/null 2>&1")
+            Params.g_options.cwd_launch = refTestDirName
+            run_program(testName)
+
+            print "Remember to commit " + refTestDirName
+            return 0
+        else:
+            if not os.path.exists(refTestDirName):
+                print "Cannot locate reference traces"
+                return 1
+
+            shutil.rmtree("traces");
+            os.mkdir("traces")
+
+            #os.system("./waf --cwd regression/traces --run " +
+            #  testName + " > /dev/null 2>&1")
+            Params.g_options.cwd_launch = "traces"
+            run_program(testName, command_template=get_command_template())
+
+            if verbose:
+                diffCmd = "diff traces " + refTestDirName + " | head"
+            else:
+                diffCmd = "diff traces " + refTestDirName + \
+                    " > /dev/null 2>&1"
+
+            rc = os.system(diffCmd)
+            if rc:
+                print "----------"
+                print "Traces differ in test: test-" + testName
+                print "Reference traces in directory: " + refTestDirName
+                print "Traces in directory: traces"
+                print "Rerun regression test as: " + \
+                    "\"python regression.py test-" + testName + "\""
+                print "Then do \"diff -u traces " + refTestDirName + \
+                    "\" for details"
+                print "----------"
+            return rc
+
+def _find_tests(testdir):
+    """Return a list of test modules in the test directory
+
+    Arguments:
+    testdir -- the directory to look in for tests
+    """
+    names = os.listdir(testdir)
+    tests = []
+    for name in names:
+        if name[:5] == "test-" and name[-3:] == ".py":
+            testname = name[:-3]
+            tests.append(testname)
+    tests.sort()
+    return tests
+
+def run_regression():
+    """Execute regression tests."""
+
+    testdir = "tests"
+    if not os.path.exists(testdir):
+        print "Tests directory does not exist"
+        sys.exit(3)
+    
+    sys.path.append(testdir)
+    sys.modules['tracediff'] = Regression(testdir)
+
+    if Params.g_options.regression_tests:
+        tests = Params.g_options.regression_tests.split(',')
+    else:
+        tests = _find_tests(testdir)
+
+    print "========== Running Regression Tests =========="
+
+    if os.system("hg version > /dev/null 2>&1") == 0:
+        print "Synchronizing reference traces using Mercurial."
+        if not os.path.exists(REGRESSION_TRACES_DIR_NAME):
+            os.system("hg clone " + REGRESSION_TRACES_REPO + REGRESSION_TRACES_DIR_NAME + " > /dev/null 2>&1")
+        else:
+            _dir = os.getcwd()
+            os.chdir(REGRESSION_TRACES_DIR_NAME)
+            try:
+                os.system("hg pull " + REGRESSION_TRACES_REPO + REGRESSION_TRACES_DIR_NAME + " > /dev/null 2>&1")
+            finally:
+                os.chdir("..")
+    else:
+        print "Synchronizing reference traces from web."
+        urllib.urlretrieve(REGRESSION_TRACES_URL + REGRESSION_TRACES_TAR_NAME, REGRESSION_TRACES_TAR_NAME)
+        os.system("tar -xjf %s" % (REGRESSION_TRACES_TAR_NAME,))
+
+    print "Done."
+
+    if not os.path.exists(REGRESSION_TRACES_DIR_NAME):
+        print "Reference traces directory does not exist"
+        return 3
+    
+    bad = []
+
+    for test in tests:
+        result = _run_regression_test(test)
+        if result == 0:
+            if Params.g_options.regression_generate:
+                print "GENERATE " + test
+            else:
+                print "PASS " + test
+        else:
+            bad.append(test)
+            print "FAIL " + test
+
+    return len(bad) > 0
+
+
+def _run_regression_test(test):
+    """Run a single test.
+
+    Arguments:
+    test -- the name of the test
+    """
+    if os.path.exists("traces"):
+        files = os.listdir("traces")
+        for file in files:
+            if file == '.' or file == '..':
+                continue
+            path = "traces" + os.sep + file
+            os.remove(path)
+    else:
+        os.mkdir("traces")
+    
+    mod = __import__(test, globals(), locals(), [])
+    return mod.run(verbose=(Params.g_options.verbose > 0),
+                   generate=Params.g_options.regression_generate,
+                   refDirName=REGRESSION_TRACES_DIR_NAME)
