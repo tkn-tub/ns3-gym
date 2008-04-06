@@ -49,8 +49,21 @@ REGRESSION_TRACES_DIR_NAME = "ns-3-dev-ref-traces"
 
 
 def dist_hook():
+    import tarfile
     shutil.rmtree("doc/html", True)
     shutil.rmtree("doc/latex", True)
+
+    ## Create a tar.bz2 file with the traces
+    traces_dir = os.path.join("regression", "ns-3-dev-ref-traces")
+    if not os.path.isdir(traces_dir):
+        Params.warning("Not creating traces archive: the %s directory does not exist" % traces_dir)
+    else:
+        tar = tarfile.open(os.path.join("..", "ns-%s-ref-traces.tar.bz2" % VERSION), 'w:bz2')
+        tar.add(traces_dir, "ns-3-dev-ref-traces")
+        tar.close()
+        ## Now remove it; we do not ship the traces with the main tarball...
+        shutil.rmtree(traces_dir, True)
+
 
 def set_options(opt):
 
