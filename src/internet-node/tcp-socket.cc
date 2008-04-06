@@ -43,6 +43,7 @@ namespace ns3 {
   TcpSocket::TcpSocket ()
   : m_skipRetxResched (false),
     m_dupAckCount (0),
+    m_delAckCount (0),
     m_endPoint (0),
     m_node (0),
     m_tcp (0),
@@ -73,6 +74,9 @@ TcpSocket::TcpSocket(const TcpSocket& sock)
   : Socket(sock), //copy the base class callbacks
     m_skipRetxResched (sock.m_skipRetxResched),
     m_dupAckCount (sock.m_dupAckCount),
+    m_delAckCount (0),
+    m_delAckMaxCount (sock.m_delAckMaxCount),
+    m_delAckTimout (sock.m_delAckTimout),
     m_endPoint (0),
     m_node (sock.m_node),
     m_tcp (sock.m_tcp),
@@ -160,6 +164,8 @@ TcpSocket::SetNode (Ptr<Node> node)
   m_initialCWnd = t->GetDefaultInitialCwnd ();
   m_cnTimeout = Seconds (t->GetDefaultConnTimeout ());
   m_cnCount = t->GetDefaultConnCount ();
+  m_delAckTimout = Seconds(t->GetDefaultDelAckTimeout ());
+  m_delAckMaxCount = t->GetDefaultDelAckCount ();
 }
 
 void 
@@ -1034,9 +1040,23 @@ void TcpSocket::NewRx (Ptr<Packet> p,
                << "       flags " << tcpHeader.GetFlags ());
     }
   // Now send a new ack packet acknowledging all received and delivered data
-  SendEmptyPacket (TcpHeader::ACK);
+  if(++m_delAckCount >= m_delAckMaxCount)
+  {
+    m_delAckEvent.Cancel();
+    m_delAckCount = 0;
+    SendEmptyPacket (TcpHeader::ACK);
+  }
+  else
+  {
+    m_delAckEvent = Simulator::Schedule (m_delAckTimout, &TcpSocket::DelAckTimeout, this);
+  }
 }
 
+void TcpSocket::DelAckTimeout ()
+{
+  m_delAckCount = 0;
+  SendEmptyPacket (TcpHeader::ACK);
+}
 
 void TcpSocket::CommonNewAck (SequenceNumber ack, bool skipTimer)
 { // CommonNewAck is called only for "New" (non-duplicate) acks

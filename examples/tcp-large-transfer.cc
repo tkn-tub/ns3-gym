@@ -75,7 +75,7 @@ ApplicationTraceSink (Ptr<const Packet> packet,
 
 void CloseConnection (Ptr<Socket> localSocket)
 {
-  //localSocket->Close ();
+  localSocket->Close ();
 }
 
 void StartFlow(Ptr<Socket> localSocket, uint32_t nBytes, 
