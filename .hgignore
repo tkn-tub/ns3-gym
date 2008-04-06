@@ -9,3 +9,4 @@
 ^\.lock-wscript
 ^\.waf
 ^doc/introspected-doxygen\.h$
+.*\.py[co]$
