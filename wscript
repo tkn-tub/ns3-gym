@@ -127,7 +127,7 @@ def set_options(opt):
                    help=("Enable regression testing; only used for the 'check' target"),
                    default=False, dest='regression', action="store_true")
     opt.add_option('--regression-generate',
-                   help=("Generate new regression test traces; only used for the 'check' target"),
+                   help=("Generate new regression test traces."),
                    default=False, dest='regression_generate', action="store_true")
     opt.add_option('--regression-tests',
                    help=('For regression testing, only run/generate the indicated regression tests, '
@@ -678,10 +678,12 @@ class Regression(object):
 
             if verbose:
                 #diffCmd = "diff traces " + refTestDirName + " | head"
-                diffCmd = subprocess.Popen(args=["diff", "traces", refTestDirName], stdout=subprocess.PIPE)
-                headCmd = subprocess.Popen(args=["diff", "traces", refTestDirName], stdin=diffCmd.stdout)
-                rc1 = diffCmd.wait()
+                diffCmd = subprocess.Popen(["diff", "traces", refTestDirName],
+                                           stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+                headCmd = subprocess.Popen("head", stdin=diffCmd.stdout)
                 rc2 = headCmd.wait()
+                diffCmd.stdout.close()
+                rc1 = diffCmd.wait()
                 rc = rc1 or rc2
             else:
                 diffCmd = "diff traces " + refTestDirName + \
@@ -690,11 +692,11 @@ class Regression(object):
             if rc:
                 print "----------"
                 print "Traces differ in test: test-" + testName
-                print "Reference traces in directory: " + refTestDirName
+                print "Reference traces in directory: regression/" + refTestDirName
                 print "Traces in directory: traces"
                 print "Rerun regression test as: " + \
-                    "\"python regression.py test-" + testName + "\""
-                print "Then do \"diff -u traces " + refTestDirName + \
+                    "\"./waf --regression --regression-tests=test-" + testName + "\""
+                print "Then do \"diff -u regression/traces regression/" + refTestDirName + \
                     "\" for details"
                 print "----------"
             return rc
