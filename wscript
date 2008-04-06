@@ -677,12 +677,16 @@ class Regression(object):
             run_program(testName, command_template=get_command_template())
 
             if verbose:
-                diffCmd = "diff traces " + refTestDirName + " | head"
+                #diffCmd = "diff traces " + refTestDirName + " | head"
+                diffCmd = subprocess.Popen(args=["diff", "traces", refTestDirName], stdout=subprocess.PIPE)
+                headCmd = subprocess.Popen(args=["diff", "traces", refTestDirName], stdin=diffCmd.stdout)
+                rc1 = diffCmd.wait()
+                rc2 = headCmd.wait()
+                rc = rc1 or rc2
             else:
                 diffCmd = "diff traces " + refTestDirName + \
                     " > /dev/null 2>&1"
-
-            rc = os.system(diffCmd)
+                rc = os.system(diffCmd)
             if rc:
                 print "----------"
                 print "Traces differ in test: test-" + testName
