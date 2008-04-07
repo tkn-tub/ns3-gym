@@ -59,7 +59,7 @@ OnOffHelper::SetAppAttribute (std::string name, Attribute value)
 }
 
 ApplicationContainer
-OnOffHelper::Build (NodeContainer c)
+OnOffHelper::Install (NodeContainer c)
 {
   ApplicationContainer apps;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)

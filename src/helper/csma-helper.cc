@@ -157,14 +157,14 @@ CsmaHelper::EnableAscii (std::ostream &os)
 
 
 NetDeviceContainer 
-CsmaHelper::Build (const NodeContainer &c)
+CsmaHelper::Install (const NodeContainer &c)
 {
   Ptr<CsmaChannel> channel = m_channelFactory.Create ()->GetObject<CsmaChannel> ();
-  return Build (c, channel);
+  return Install (c, channel);
 }
 
 NetDeviceContainer 
-CsmaHelper::Build (const NodeContainer &c, Ptr<CsmaChannel> channel)
+CsmaHelper::Install (const NodeContainer &c, Ptr<CsmaChannel> channel)
 {
   NetDeviceContainer container;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); i++)

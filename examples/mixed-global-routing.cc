@@ -98,26 +98,26 @@ main (int argc, char *argv[])
   NodeContainer n2345 = NodeContainer (c.Get (2), c.Get (3), c.Get (4), c.Get (5));
 
   InternetStackHelper internet;
-  internet.Build (c);
+  internet.Install (c);
 
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
   PointToPointHelper p2p;
   p2p.SetChannelParameter ("BitRate", DataRate (5000000));
   p2p.SetChannelParameter ("Delay", MilliSeconds (2));
-  NetDeviceContainer d0d2 = p2p.Build (n0n2);
+  NetDeviceContainer d0d2 = p2p.Install (n0n2);
 
-  NetDeviceContainer d1d2 = p2p.Build (n1n2);
+  NetDeviceContainer d1d2 = p2p.Install (n1n2);
 
   p2p.SetChannelParameter ("BitRate", DataRate (1500000));
   p2p.SetChannelParameter ("Delay", MilliSeconds (10));
-  NetDeviceContainer d5d6 = p2p.Build (n5n6);
+  NetDeviceContainer d5d6 = p2p.Install (n5n6);
 
   // We create the channels first without any IP addressing information
   CsmaHelper csma;
   csma.SetChannelParameter ("BitRate", DataRate (5000000));
   csma.SetChannelParameter ("Delay", MilliSeconds (2));
-  NetDeviceContainer d2345 = csma.Build (n2345);
+  NetDeviceContainer d2345 = csma.Install (n2345);
   
   // Later, we add IP addresses.  
   NS_LOG_INFO ("Assign IP Addresses.");
@@ -148,7 +148,7 @@ main (int argc, char *argv[])
   onoff.SetAppAttribute ("DataRate", DataRate("300bps"));
   onoff.SetAppAttribute ("PacketSize", Uinteger (50));
   onoff.SetUdpRemote (i5i6.GetAddress (1), port);
-  ApplicationContainer apps = onoff.Build (c.Get (0));
+  ApplicationContainer apps = onoff.Install (c.Get (0));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 

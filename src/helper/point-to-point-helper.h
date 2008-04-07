@@ -53,7 +53,7 @@ public:
    * \param v4 the value of the attribute to set on the queue
    *
    * Set the type of queue to create and associated to each
-   * PointToPointNetDevice created through PointToPointHelper::Build.
+   * PointToPointNetDevice created through PointToPointHelper::Install.
    */
   void SetQueue (std::string type,
 		 std::string n1 = "", Attribute v1 = Attribute (),
@@ -66,7 +66,7 @@ public:
    * \param value the value of the attribute to set
    *
    * Set these parameters on each ns3::PointToPointNetDevice created
-   * by PointToPointHelper::Build
+   * by PointToPointHelper::Install
    */
   void SetDeviceParameter (std::string name, Attribute value);
   /**
@@ -74,7 +74,7 @@ public:
    * \param value the value of the attribute to set
    *
    * Set these parameters on each ns3::PointToPointChannel created
-   * by PointToPointHelper::Build
+   * by PointToPointHelper::Install
    */
   void SetChannelParameter (std::string name, Attribute value);
 
@@ -165,14 +165,14 @@ public:
    * a queue for this ns3::NetDevice, and associate the resulting 
    * ns3::NetDevice with the ns3::Node and ns3::PointToPointChannel.
    */
-  NetDeviceContainer Build (NodeContainer c);
+  NetDeviceContainer Install (NodeContainer c);
   /**
    * \param a first node
    * \param b second node
    *
    * Saves you from having to construct a temporary NodeContainer.
    */
-  NetDeviceContainer Build (Ptr<Node> a, Ptr<Node> b);
+  NetDeviceContainer Install (Ptr<Node> a, Ptr<Node> b);
 
 private:
   void EnablePcap (Ptr<Node> node, Ptr<NetDevice> device, Ptr<Queue> queue);

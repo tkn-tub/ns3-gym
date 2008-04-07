@@ -80,7 +80,7 @@ main (int argc, char *argv[])
   n.Create (4);
 
   InternetStackHelper internet;
-  internet.Build (n);
+  internet.Install (n);
 
   NS_LOG_INFO ("Create channels.");
 //
@@ -89,7 +89,7 @@ main (int argc, char *argv[])
   CsmaHelper csma;
   csma.SetChannelParameter ("BitRate", DataRate(5000000));
   csma.SetChannelParameter ("Delay", MilliSeconds (2));
-  NetDeviceContainer d = csma.Build (n);
+  NetDeviceContainer d = csma.Install (n);
 
   Ipv4AddressHelper ipv4;
 //
@@ -106,7 +106,7 @@ main (int argc, char *argv[])
   uint16_t port = 9;  // well-known echo port number
   UdpEchoServerHelper server;
   server.SetPort (port);
-  ApplicationContainer apps = server.Build (n.Get(1));
+  ApplicationContainer apps = server.Install (n.Get(1));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
@@ -122,7 +122,7 @@ main (int argc, char *argv[])
   client.SetAppAttribute ("MaxPackets", Uinteger (maxPacketCount));
   client.SetAppAttribute ("Interval", interPacketInterval);
   client.SetAppAttribute ("PacketSize", Uinteger (packetSize));
-  apps = client.Build (n.Get (0));
+  apps = client.Install (n.Get (0));
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (10.0));
 

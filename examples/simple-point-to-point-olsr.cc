@@ -87,19 +87,19 @@ main (int argc, char *argv[])
   NodeContainer n34 = NodeContainer (c.Get (3), c.Get (4));
 
   InternetStackHelper internet;
-  internet.Build (c);
+  internet.Install (c);
 
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
   PointToPointHelper p2p;
   p2p.SetChannelParameter ("BitRate", DataRate (5000000));
   p2p.SetChannelParameter ("Delay", MilliSeconds (2));
-  NetDeviceContainer nd02 = p2p.Build (n02);
-  NetDeviceContainer nd12 = p2p.Build (n12);
+  NetDeviceContainer nd02 = p2p.Install (n02);
+  NetDeviceContainer nd12 = p2p.Install (n12);
   p2p.SetChannelParameter ("BitRate", DataRate (1500000));
   p2p.SetChannelParameter ("Delay", MilliSeconds (10));
-  NetDeviceContainer nd32 = p2p.Build (n32);
-  NetDeviceContainer nd34 = p2p.Build (n34);
+  NetDeviceContainer nd32 = p2p.Install (n32);
+  NetDeviceContainer nd34 = p2p.Install (n34);
   
   // Later, we add IP addresses.  
   NS_LOG_INFO ("Assign IP Addresses.");
@@ -129,25 +129,25 @@ main (int argc, char *argv[])
   onoff.SetAppAttribute ("OnTime", ConstantVariable (1));
   onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
   onoff.SetUdpRemote (i34.GetAddress (1), port);
-  ApplicationContainer apps = onoff.Build (c.Get (0));
+  ApplicationContainer apps = onoff.Install (c.Get (0));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
   // Create a packet sink to receive these packets
   PacketSinkHelper sink;
   sink.SetupUdp (Ipv4Address::GetAny (), port);
-  apps = sink.Build (c.Get (3));
+  apps = sink.Install (c.Get (3));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
   onoff.SetUdpRemote (i12.GetAddress (0), port);
-  apps = onoff.Build (c.Get (3));
+  apps = onoff.Install (c.Get (3));
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));
 
   // Create a packet sink to receive these packets
-  apps = sink.Build (c.Get (1));
+  apps = sink.Install (c.Get (1));
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));
 

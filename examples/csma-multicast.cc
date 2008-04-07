@@ -78,13 +78,13 @@ main (int argc, char *argv[])
   csma.SetChannelParameter ("Delay", MilliSeconds (2));
  
   // We will use these NetDevice containers later, for IP addressing
-  NetDeviceContainer nd0 = csma.Build (c0);  // First LAN
-  NetDeviceContainer nd1 = csma.Build (c1);  // Second LAN
+  NetDeviceContainer nd0 = csma.Install (c0);  // First LAN
+  NetDeviceContainer nd1 = csma.Install (c1);  // Second LAN
 
   NS_LOG_INFO ("Add IP Stack.");
   InternetStackHelper internet;
-  internet.Build (c0);
-  internet.Build (c1);
+  internet.Install (c0);
+  internet.Install (c1);
 
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4Addr;
@@ -147,7 +147,7 @@ main (int argc, char *argv[])
   onoff.SetAppAttribute ("DataRate", DataRate ("255b/s"));
   onoff.SetAppAttribute ("PacketSize", Uinteger (128));
 
-  ApplicationContainer srcC = onoff.Build (c0.Get (0));
+  ApplicationContainer srcC = onoff.Install (c0.Get (0));
 
   //
   // Tell the application when to start and stop.
@@ -158,7 +158,7 @@ main (int argc, char *argv[])
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink;
   sink.SetupUdp (Ipv4Address::GetAny(), multicastPort);
-  ApplicationContainer sinkC = sink.Build (c1.Get (2)); // Node n4 
+  ApplicationContainer sinkC = sink.Install (c1.Get (2)); // Node n4 
   // Start the sink
   sinkC.Start (Seconds (1.0));
   sinkC.Stop (Seconds (10.0));

@@ -50,12 +50,12 @@ main (int argc, char *argv[])
   lan1.Create (4);
 
   InternetStackHelper internet;
-  internet.Build (lan1);
+  internet.Install (lan1);
 
   CsmaHelper csma;
   csma.SetChannelParameter ("BitRate", DataRate (10000000));
   csma.SetChannelParameter ("Delay", MilliSeconds (2));
-  NetDeviceContainer dev1 = csma.Build (lan1);
+  NetDeviceContainer dev1 = csma.Install (lan1);
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer i1 = ipv4.Allocate (dev1);
@@ -66,9 +66,9 @@ main (int argc, char *argv[])
 //
   NodeContainer lan2;
   lan2.Create (4);
-  internet.Build (lan2);
+  internet.Install (lan2);
 
-  NetDeviceContainer dev2 = csma.Build (lan2);
+  NetDeviceContainer dev2 = csma.Install (lan2);
   ipv4.SetBase ("10.1.2.0", "255.255.255.0");
   Ipv4InterfaceContainer i2 = ipv4.Allocate (dev2);
 
@@ -80,7 +80,7 @@ main (int argc, char *argv[])
   PointToPointHelper p2p;
   p2p.SetChannelParameter ("BitRate", DataRate (38400));
   p2p.SetChannelParameter ("Delay", MilliSeconds (20));
-  NetDeviceContainer dev3 = p2p.Build (backbone);
+  NetDeviceContainer dev3 = p2p.Install (backbone);
   ipv4.SetBase ("10.1.3.0", "255.255.255.0");
   ipv4.Allocate (dev3);
 
@@ -98,38 +98,38 @@ main (int argc, char *argv[])
   client.SetAppAttribute ("MaxPackets", Uinteger (100));
   client.SetAppAttribute ("Interval", Seconds (0.01));
   client.SetAppAttribute ("PacketSize", Uinteger (1024));
-  ApplicationContainer apps = client.Build (lan1.Get (0));
+  ApplicationContainer apps = client.Install (lan1.Get (0));
   apps.Start (Seconds(2.));
   apps.Stop (Seconds (10.0));
 
   client.SetRemote (i2.GetAddress (1), port);
-  apps = client.Build (lan1.Get (1));
+  apps = client.Install (lan1.Get (1));
   apps.Start (Seconds(2.1));
   apps.Stop (Seconds (10.0));
   
   client.SetRemote (i2.GetAddress (2), port);
-  apps = client.Build (lan1.Get (2));
+  apps = client.Install (lan1.Get (2));
   apps.Start (Seconds(2.2));
   apps.Stop (Seconds (10.0));
 
   client.SetRemote (i2.GetAddress (3), port);
-  apps = client.Build (lan1.Get (3));
+  apps = client.Install (lan1.Get (3));
   apps.Start (Seconds(2.3));
   apps.Stop (Seconds (10.0));
 
 
   UdpEchoServerHelper server;
   server.SetPort (port);
-  apps = server.Build (lan2.Get (0));
+  apps = server.Install (lan2.Get (0));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
-  apps = server.Build (lan2.Get (1));
+  apps = server.Install (lan2.Get (1));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
-  apps = server.Build (lan2.Get (2));
+  apps = server.Install (lan2.Get (2));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
-  apps = server.Build (lan2.Get (3));
+  apps = server.Install (lan2.Get (3));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 

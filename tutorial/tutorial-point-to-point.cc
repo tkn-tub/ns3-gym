@@ -42,12 +42,12 @@ main (int argc, char *argv[])
   n.Create (2);
 
   InternetStackHelper internet;
-  internet.Build (n);
+  internet.Install (n);
 
   PointToPointHelper p2p;
   p2p.SetChannelParameter ("BitRate", DataRate (38400));
   p2p.SetChannelParameter ("Delay", MilliSeconds (20));
-  NetDeviceContainer nd = p2p.Build (n);
+  NetDeviceContainer nd = p2p.Install (n);
 
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.252");
@@ -59,13 +59,13 @@ main (int argc, char *argv[])
   client.SetAppAttribute ("MaxPackets", Uinteger (1));
   client.SetAppAttribute ("Interval", Seconds (1.0));
   client.SetAppAttribute ("PacketSize", Uinteger (1024));
-  ApplicationContainer apps = client.Build (n.Get (0));
+  ApplicationContainer apps = client.Install (n.Get (0));
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (10.0));
   
   UdpEchoServerHelper server;
   server.SetPort (port);
-  apps = server.Build (n.Get (1));
+  apps = server.Install (n.Get (1));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 

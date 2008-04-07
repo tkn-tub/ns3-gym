@@ -34,7 +34,7 @@ UdpEchoServerHelper::SetPort (uint16_t port)
   m_port = port;
 }
 ApplicationContainer 
-UdpEchoServerHelper::Build (NodeContainer c)
+UdpEchoServerHelper::Install (NodeContainer c)
 {
   ApplicationContainer apps;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
@@ -64,7 +64,7 @@ UdpEchoClientHelper::SetAppAttribute (std::string name, Attribute value)
 }
 
 ApplicationContainer 
-UdpEchoClientHelper::Build (NodeContainer c)
+UdpEchoClientHelper::Install (NodeContainer c)
 {
   ApplicationContainer apps;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)

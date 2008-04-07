@@ -231,17 +231,17 @@ WifiHelper::EnableAscii (std::ostream &os)
 }
 
 NetDeviceContainer
-WifiHelper::Build (NodeContainer c) const
+WifiHelper::Install (NodeContainer c) const
 {
   Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
   channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
   Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
   log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
   channel->SetPropagationLossModel (log);
-  return Build (c, channel);
+  return Install (c, channel);
 }
 NetDeviceContainer
-WifiHelper::Build (NodeContainer c, Ptr<WifiChannel> channel) const
+WifiHelper::Install (NodeContainer c, Ptr<WifiChannel> channel) const
 {
   NetDeviceContainer devices;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); i++)

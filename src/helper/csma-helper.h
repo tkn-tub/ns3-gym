@@ -53,7 +53,7 @@ public:
    * \param v4 the value of the attribute to set on the queue
    *
    * Set the type of queue to create and associated to each
-   * CsmaNetDevice created through CsmaHelper::Build.
+   * CsmaNetDevice created through CsmaHelper::Install.
    */
   void SetQueue (std::string type,
 		 std::string n1 = "", Attribute v1 = Attribute (),
@@ -66,7 +66,7 @@ public:
    * \param v1 the value of the attribute to set
    *
    * Set these parameters on each ns3::CsmaNetDevice created
-   * by CsmaHelper::Build
+   * by CsmaHelper::Install
    */
   void SetDeviceParameter (std::string n1, Attribute v1);
 
@@ -75,7 +75,7 @@ public:
    * \param v1 the value of the attribute to set
    *
    * Set these parameters on each ns3::CsmaChannel created
-   * by CsmaHelper::Build
+   * by CsmaHelper::Install
    */
   void SetChannelParameter (std::string n1, Attribute v1);
 
@@ -161,9 +161,9 @@ public:
    *
    * This method creates a simple ns3::CsmaChannel with the
    * attributes configured by CsmaHelper::SetChannelParameter and
-   * then calls CsmaHelper::Build.
+   * then calls CsmaHelper::Install.
    */
-  NetDeviceContainer Build (const NodeContainer &c);
+  NetDeviceContainer Install (const NodeContainer &c);
 
   /**
    * \param c a set of nodes
@@ -173,7 +173,7 @@ public:
    * the requested parameters, a queue for this NetDevice, and associate
    * the resulting ns3::NetDevice with the ns3::Node and ns3::CsmaChannel.
    */
-  NetDeviceContainer Build (const NodeContainer &c, Ptr<CsmaChannel> channel);
+  NetDeviceContainer Install (const NodeContainer &c, Ptr<CsmaChannel> channel);
 
 private:
   static void RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);

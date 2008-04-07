@@ -33,12 +33,12 @@ main (int argc, char *argv[])
   n.Create (4);
 
   InternetStackHelper internet;
-  internet.Build (n);
+  internet.Install (n);
 
   CsmaHelper csma;
   csma.SetChannelParameter ("BitRate", DataRate (5000000));
   csma.SetChannelParameter ("Delay", MilliSeconds (2));
-  NetDeviceContainer nd = csma.Build (n);
+  NetDeviceContainer nd = csma.Install (n);
 
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
@@ -51,13 +51,13 @@ main (int argc, char *argv[])
   client.SetAppAttribute ("MaxPackets", Uinteger (1));
   client.SetAppAttribute ("Interval", Seconds (1.0));
   client.SetAppAttribute ("PacketSize", Uinteger (1024));
-  ApplicationContainer apps = client.Build (n.Get (0));
+  ApplicationContainer apps = client.Install (n.Get (0));
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (10.0));
 
   UdpEchoServerHelper server;
   server.SetPort (port);
-  apps = server.Build (n.Get (1));
+  apps = server.Install (n.Get (1));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
   

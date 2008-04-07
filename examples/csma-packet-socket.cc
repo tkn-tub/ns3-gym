@@ -65,7 +65,7 @@ main (int argc, char *argv[])
   c.Create (4);
 
   PacketSocketHelper packetSocket;
-  packetSocket.Build (c);
+  packetSocket.Install (c);
 
   // create the shared medium used by all csma devices.
   NS_LOG_INFO ("Create channels.");
@@ -76,7 +76,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Build Topology.");
   CsmaHelper csma;
   csma.SetDeviceParameter ("EncapsulationMode", String ("Llc"));
-  NetDeviceContainer devs = csma.Build (c, channel);
+  NetDeviceContainer devs = csma.Install (c, channel);
 
   NS_LOG_INFO ("Create Applications.");
   // Create the OnOff application to send raw datagrams
@@ -84,13 +84,13 @@ main (int argc, char *argv[])
   onoff.SetAppAttribute ("OnTime", ConstantVariable (1.0));
   onoff.SetAppAttribute ("OffTime", ConstantVariable (0.0));
   onoff.SetPacketRemote (devs.Get (0), devs.Get (1)->GetAddress (), 2);
-  ApplicationContainer apps = onoff.Build (c.Get (0));
+  ApplicationContainer apps = onoff.Install (c.Get (0));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
   
 
   onoff.SetPacketRemote (devs.Get (3), devs.Get (0)->GetAddress (), 3);
-  apps = onoff.Build (c.Get (3));
+  apps = onoff.Install (c.Get (3));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
  

@@ -41,7 +41,7 @@ RunSimulation (void)
   c.Create (1);
 
   InternetStackHelper internet;
-  internet.Build (c);
+  internet.Install (c);
 
 
   TypeId tid = TypeId::LookupByName ("ns3::Udp");

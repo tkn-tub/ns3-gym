@@ -35,7 +35,7 @@ public:
   void SetupUdp (Ipv4Address ip, uint16_t port);
   void SetupTcp (Ipv4Address ip, uint16_t port);
 
-  ApplicationContainer Build (NodeContainer c);
+  ApplicationContainer Install (NodeContainer c);
 private:
   ObjectFactory m_factory;
 };

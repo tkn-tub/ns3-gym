@@ -156,13 +156,13 @@ PointToPointHelper::EnableAscii (std::ostream &os)
 }
 
 NetDeviceContainer 
-PointToPointHelper::Build (NodeContainer c)
+PointToPointHelper::Install (NodeContainer c)
 {
   NS_ASSERT (c.GetN () == 2);
-  return Build (c.Get (0), c.Get (1));
+  return Install (c.Get (0), c.Get (1));
 }
 NetDeviceContainer 
-PointToPointHelper::Build (Ptr<Node> a, Ptr<Node> b)
+PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
 {
   NetDeviceContainer container;
 

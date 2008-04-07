@@ -229,7 +229,7 @@ public:
    * attributes specified in WifiHelper::SetRemoteStationManager, 
    * WifiHelper::SetMac, and, WifiHelper::SetPhy.
    */
-  NetDeviceContainer Build (NodeContainer c) const;
+  NetDeviceContainer Install (NodeContainer c) const;
   /**
    * \param channel a channel to use
    * \param c a set of nodes
@@ -244,7 +244,7 @@ public:
    * The user is expected to attach to the input channel a proper 
    * ns3::PropagationLossModel, and ns3::PropagationDelayModel.
    */
-  NetDeviceContainer Build (NodeContainer c, Ptr<WifiChannel> channel) const;
+  NetDeviceContainer Install (NodeContainer c, Ptr<WifiChannel> channel) const;
 
 private:
   ObjectFactory m_stationManager;

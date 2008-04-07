@@ -139,13 +139,13 @@ int main (int argc, char *argv[])
   PointToPointHelper p2p;
   p2p.SetChannelParameter ("BitRate", DataRate(10000000));
   p2p.SetChannelParameter ("Delay", MilliSeconds(10));
-  NetDeviceContainer dev0 = p2p.Build (c0);
-  NetDeviceContainer dev1 = p2p.Build (c1);
+  NetDeviceContainer dev0 = p2p.Install (c0);
+  NetDeviceContainer dev1 = p2p.Install (c1);
 
   // add ip/tcp stack to nodes.
   NodeContainer c = NodeContainer (c0, c1.Get (1));
   InternetStackHelper internet;
-  internet.Build (c);
+  internet.Install (c);
 
   // Later, we add IP addresses.  
   Ipv4AddressHelper ipv4;
@@ -171,7 +171,7 @@ int main (int argc, char *argv[])
   // Create a packet sink to receive these packets
   PacketSinkHelper sink;
   sink.SetupTcp (Ipv4Address::GetAny (), servPort);
-  ApplicationContainer apps = sink.Build (c1.Get (1));
+  ApplicationContainer apps = sink.Install (c1.Get (1));
   apps.Start (Seconds (0.0));
 
   // and generate traffic to remote sink.

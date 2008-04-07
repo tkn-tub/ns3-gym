@@ -86,20 +86,20 @@ main (int argc, char *argv[])
   NodeContainer n3n2 = NodeContainer (c.Get (3), c.Get (2));
 
   InternetStackHelper internet;
-  internet.Build (c);
+  internet.Install (c);
 
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
   PointToPointHelper p2p;
   p2p.SetChannelParameter ("BitRate", DataRate (5000000));
   p2p.SetChannelParameter ("Delay", MilliSeconds (2));
-  NetDeviceContainer d0d2 = p2p.Build (n0n2);
+  NetDeviceContainer d0d2 = p2p.Install (n0n2);
 
-  NetDeviceContainer d1d2 = p2p.Build (n1n2);
+  NetDeviceContainer d1d2 = p2p.Install (n1n2);
 
   p2p.SetChannelParameter ("BitRate", DataRate (1500000));
   p2p.SetChannelParameter ("Delay", MilliSeconds (10));
-  NetDeviceContainer d3d2 = p2p.Build (n3n2);
+  NetDeviceContainer d3d2 = p2p.Install (n3n2);
   
   // Later, we add IP addresses.  
   NS_LOG_INFO ("Assign IP Addresses.");
@@ -124,26 +124,26 @@ main (int argc, char *argv[])
   onoff.SetUdpRemote (i3i2.GetAddress (1), port);
   onoff.SetAppAttribute ("OnTime", ConstantVariable(1));
   onoff.SetAppAttribute ("OffTime", ConstantVariable(0));
-  ApplicationContainer apps = onoff.Build (c.Get (0));
+  ApplicationContainer apps = onoff.Install (c.Get (0));
   apps.Start(Seconds(1.0));
   apps.Stop (Seconds(10.0));
 
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink;
   sink.SetupUdp (Ipv4Address::GetAny (), port);
-  apps = sink.Build (c.Get (3));
+  apps = sink.Install (c.Get (3));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
   onoff.SetUdpRemote (i1i2.GetAddress (0), port);
-  apps = onoff.Build (c.Get (3));
+  apps = onoff.Install (c.Get (3));
   apps.Start(Seconds(1.1));
   apps.Stop (Seconds(10.0));
 
   // Create a packet sink to receive these packets
   sink.SetupUdp (Ipv4Address::GetAny (), port);
-  apps = sink.Build (c.Get (1));
+  apps = sink.Install (c.Get (1));
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));
 

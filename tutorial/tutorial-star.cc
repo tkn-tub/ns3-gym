@@ -52,18 +52,18 @@ main (int argc, char *argv[])
   NodeContainer n06 = NodeContainer (n.Get (0), n.Get (6));
 
   InternetStackHelper internet;
-  internet.Build (n);
+  internet.Install (n);
 
   PointToPointHelper p2p;
   p2p.SetChannelParameter ("BitRate", DataRate (38400));
   p2p.SetChannelParameter ("Delay", MilliSeconds (20));
 
-  NetDeviceContainer d01 = p2p.Build (n01);
-  NetDeviceContainer d02 = p2p.Build (n02);
-  NetDeviceContainer d03 = p2p.Build (n03);
-  NetDeviceContainer d04 = p2p.Build (n04);
-  NetDeviceContainer d05 = p2p.Build (n05);
-  NetDeviceContainer d06 = p2p.Build (n06);
+  NetDeviceContainer d01 = p2p.Install (n01);
+  NetDeviceContainer d02 = p2p.Install (n02);
+  NetDeviceContainer d03 = p2p.Install (n03);
+  NetDeviceContainer d04 = p2p.Install (n04);
+  NetDeviceContainer d05 = p2p.Install (n05);
+  NetDeviceContainer d06 = p2p.Install (n06);
 
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.252");
@@ -83,7 +83,7 @@ main (int argc, char *argv[])
 
   UdpEchoServerHelper server;
   server.SetPort (port);
-  ApplicationContainer apps = server.Build (n.Get (1));
+  ApplicationContainer apps = server.Install (n.Get (1));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
@@ -92,7 +92,7 @@ main (int argc, char *argv[])
   client.SetAppAttribute ("MaxPackets", Uinteger (1));
   client.SetAppAttribute ("Interval", Seconds (1.0));
   client.SetAppAttribute ("PacketSize", Uinteger (1024));
-  apps = client.Build (n.Get (0));
+  apps = client.Install (n.Get (0));
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (10.0));
 

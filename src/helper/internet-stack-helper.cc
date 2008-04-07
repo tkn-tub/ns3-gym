@@ -28,7 +28,7 @@ std::vector<InternetStackHelper::Trace> InternetStackHelper::m_traces;
 std::string InternetStackHelper::m_pcapBaseFilename;
 
 void 
-InternetStackHelper::Build (NodeContainer c)
+InternetStackHelper::Install (NodeContainer c)
 {
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {

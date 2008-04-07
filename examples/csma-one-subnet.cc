@@ -76,10 +76,10 @@ main (int argc, char *argv[])
 // created on the node.  Interpret nd0 as the net device we created for node
 // zero.
 //
-  NetDeviceContainer nd0 = csma.Build (c);
+  NetDeviceContainer nd0 = csma.Install (c);
 
   InternetStackHelper internet;
-  internet.Build (c);
+  internet.Install (c);
 
 // We've got the "hardware" in place.  Now we need to add IP addresses.
 //
@@ -99,7 +99,7 @@ main (int argc, char *argv[])
   onoff.SetAppAttribute ("OnTime", ConstantVariable (1));
   onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
 
-  ApplicationContainer app = onoff.Build (c.Get (0));
+  ApplicationContainer app = onoff.Install (c.Get (0));
   // Start the application
   app.Start (Seconds (1.0));
   app.Stop (Seconds (10.0));
@@ -107,15 +107,15 @@ main (int argc, char *argv[])
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink;
   sink.SetupUdp (Ipv4Address::GetAny (), port);
-  sink.Build (c.Get (1));
+  sink.Install (c.Get (1));
 
 // 
 // Create a similar flow from n3 to n0, starting at time 1.1 seconds
 //
   onoff.SetUdpRemote (Ipv4Address("10.1.1.1"), port);
-  ApplicationContainer app2 = onoff.Build (c.Get (3));
+  ApplicationContainer app2 = onoff.Install (c.Get (3));
 
-  sink.Build (c.Get (0));
+  sink.Install (c.Get (0));
 
   app2.Start(Seconds (1.1));
   app2.Stop (Seconds (10.0));

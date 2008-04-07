@@ -115,9 +115,9 @@ Experiment::Run (const WifiHelper &wifi)
   c.Create (2);
 
   PacketSocketHelper packetSocket;
-  packetSocket.Build (c);
+  packetSocket.Install (c);
 
-  NetDeviceContainer devices = wifi.Build (c);
+  NetDeviceContainer devices = wifi.Install (c);
 
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
@@ -134,7 +134,7 @@ Experiment::Run (const WifiHelper &wifi)
   onoff.SetAppAttribute ("DataRate", DataRate (60000000));
   onoff.SetAppAttribute ("PacketSize", Uinteger (2000));
   onoff.SetPacketRemote (devices.Get (0), devices.Get (1)->GetAddress (), 1);
-  ApplicationContainer apps = onoff.Build (c.Get (0));
+  ApplicationContainer apps = onoff.Install (c.Get (0));
   apps.Start (Seconds (0.5));
   apps.Stop (Seconds (250.0));
 

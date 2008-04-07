@@ -42,7 +42,7 @@ public:
   
   void SetAppAttribute (std::string name, Attribute value);
 
-  ApplicationContainer Build (NodeContainer c);
+  ApplicationContainer Install (NodeContainer c);
 
 private:
   std::string m_protocol;

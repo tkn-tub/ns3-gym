@@ -4,7 +4,7 @@
 namespace ns3 {
 
 void 
-PacketSocketHelper::Build (NodeContainer c)
+PacketSocketHelper::Install (NodeContainer c)
 {
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {

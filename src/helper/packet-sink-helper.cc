@@ -42,7 +42,7 @@ PacketSinkHelper::SetupTcp (Ipv4Address ip, uint16_t port)
 }
 
 ApplicationContainer 
-PacketSinkHelper::Build (NodeContainer c)
+PacketSinkHelper::Install (NodeContainer c)
 {
   ApplicationContainer apps;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)

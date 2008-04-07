@@ -33,7 +33,7 @@ class UdpEchoServerHelper
 public:
   UdpEchoServerHelper ();
   void SetPort (uint16_t port);
-  ApplicationContainer Build (NodeContainer c);
+  ApplicationContainer Install (NodeContainer c);
 private:
   uint16_t m_port;
 };
@@ -45,7 +45,7 @@ public:
 
   void SetRemote (Ipv4Address ip, uint16_t port);
   void SetAppAttribute (std::string name, Attribute value);
-  ApplicationContainer Build (NodeContainer c);
+  ApplicationContainer Install (NodeContainer c);
  private:
   ObjectFactory m_factory;
   Ipv4Address m_remoteIp;

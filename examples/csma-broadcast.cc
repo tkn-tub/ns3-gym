@@ -70,13 +70,13 @@ main (int argc, char *argv[])
   csma.SetChannelParameter ("BitRate", DataRate(5000000));
   csma.SetChannelParameter ("Delay", MilliSeconds(2));
 
-  NetDeviceContainer n0 = csma.Build (c0);
-  NetDeviceContainer n1 = csma.Build (c1);
+  NetDeviceContainer n0 = csma.Install (c0);
+  NetDeviceContainer n1 = csma.Install (c1);
 
 
   InternetStackHelper internet;
-  internet.Build (c0);
-  internet.Build (c1);
+  internet.Install (c0);
+  internet.Install (c1);
 
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4;
@@ -99,7 +99,7 @@ main (int argc, char *argv[])
   onoff.SetAppAttribute ("OnTime", ConstantVariable (1));
   onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
 
-  ApplicationContainer app = onoff.Build (c0.Get (0));
+  ApplicationContainer app = onoff.Install (c0.Get (0));
   // Start the application
   app.Start (Seconds (1.0));
   app.Stop (Seconds (10.0));
@@ -107,8 +107,8 @@ main (int argc, char *argv[])
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink;
   sink.SetupUdp (Ipv4Address::GetAny (), port);
-  sink.Build (c0.Get (1));
-  sink.Build (c1.Get (1));
+  sink.Install (c0.Get (1));
+  sink.Install (c1.Get (1));
 
 
   // Also configure some tcpdump traces; each interface will be traced

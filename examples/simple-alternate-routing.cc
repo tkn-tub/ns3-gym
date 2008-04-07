@@ -98,19 +98,19 @@ main (int argc, char *argv[])
   PointToPointHelper p2p;
   p2p.SetChannelParameter ("BitRate", DataRate (5000000));
   p2p.SetChannelParameter ("Delay", MilliSeconds (2));
-  NetDeviceContainer d0d2 = p2p.Build (n0n2);
+  NetDeviceContainer d0d2 = p2p.Install (n0n2);
 
-  NetDeviceContainer d1d2 = p2p.Build (n1n2);
+  NetDeviceContainer d1d2 = p2p.Install (n1n2);
 
   p2p.SetChannelParameter ("BitRate", DataRate(1500000));
   p2p.SetChannelParameter ("Delay", MilliSeconds (10));
-  NetDeviceContainer d3d2 = p2p.Build (n3n2);
+  NetDeviceContainer d3d2 = p2p.Install (n3n2);
 
   p2p.SetChannelParameter ("Delay", MilliSeconds (100));
-  NetDeviceContainer d1d3 = p2p.Build (n1n3);
+  NetDeviceContainer d1d3 = p2p.Install (n1n3);
 
   InternetStackHelper internet;
-  internet.Build (c);
+  internet.Install (c);
   
   // Later, we add IP addresses.  The middle two octets correspond to 
  // the channel number.  
@@ -144,14 +144,14 @@ main (int argc, char *argv[])
   onoff.SetAppAttribute ("OnTime", ConstantVariable (1));
   onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
   onoff.SetUdpRemote (i1i2.GetAddress (0), port);
-  ApplicationContainer apps = onoff.Build (c.Get (3));
+  ApplicationContainer apps = onoff.Install (c.Get (3));
   apps.Start (Seconds (1.1));
   apps.Start (Seconds (10.0));
 
   // Create a packet sink to receive these packets
   PacketSinkHelper sink;
   sink.SetupUdp (Ipv4Address::GetAny (), port);
-  apps = sink.Build (c.Get (1));
+  apps = sink.Install (c.Get (1));
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));
 

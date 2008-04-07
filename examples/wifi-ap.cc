@@ -128,8 +128,8 @@ int main (int argc, char *argv[])
   ap.Create (1);
 
   // give packet socket powers to nodes.
-  packetSocket.Build (stas);
-  packetSocket.Build (ap);
+  packetSocket.Install (stas);
+  packetSocket.Install (ap);
 
   Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
   channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
@@ -143,12 +143,12 @@ int main (int argc, char *argv[])
   // setup stas.
   wifi.SetMac ("ns3::NqstaWifiMac", "Ssid", ssid,
                "ActiveProbing", Boolean (false));
-  staDevs = wifi.Build (stas, channel);
+  staDevs = wifi.Install (stas, channel);
   // setup ap.
   wifi.SetMac ("ns3::NqapWifiMac", "Ssid", ssid,
                "BeaconGeneration", Boolean (true),
                "BeaconInterval", Seconds (2.5));
-  wifi.Build (ap, channel);
+  wifi.Install (ap, channel);
 
   // mobility.
   mobility.Layout (stas);
@@ -160,7 +160,7 @@ int main (int argc, char *argv[])
   onoff.SetAppAttribute ("OnTime", ConstantVariable (42));
   onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
   onoff.SetPacketRemote (staDevs.Get (0), staDevs.Get (1)->GetAddress (), 1);
-  ApplicationContainer apps = onoff.Build (stas.Get (0));
+  ApplicationContainer apps = onoff.Install (stas.Get (0));
   apps.Start (Seconds (0.5));
   apps.Stop (Seconds (43.0));
 

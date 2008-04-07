@@ -17,7 +17,7 @@ public:
    * For each node in the input container, aggregate a ns3::PacketSocketFactory
    * object instance.
    */
-  void Build (NodeContainer c);
+  void Install (NodeContainer c);
 };
 
 } // namespace ns3
