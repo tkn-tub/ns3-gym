@@ -157,7 +157,7 @@ main (int argc, char *argv[])
 
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink;
-  sink.SetupUdp (Ipv4Address::GetAny(), multicastPort);
+  sink.SetUdpLocal (Ipv4Address::GetAny(), multicastPort);
   ApplicationContainer sinkC = sink.Install (c1.Get (2)); // Node n4 
   // Start the sink
   sinkC.Start (Seconds (1.0));

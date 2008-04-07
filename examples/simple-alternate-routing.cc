@@ -150,7 +150,7 @@ main (int argc, char *argv[])
 
   // Create a packet sink to receive these packets
   PacketSinkHelper sink;
-  sink.SetupUdp (Ipv4Address::GetAny (), port);
+  sink.SetUdpLocal (Ipv4Address::GetAny (), port);
   apps = sink.Install (c.Get (1));
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));

@@ -170,7 +170,7 @@ int main (int argc, char *argv[])
 
   // Create a packet sink to receive these packets
   PacketSinkHelper sink;
-  sink.SetupTcp (Ipv4Address::GetAny (), servPort);
+  sink.SetTcpLocal (Ipv4Address::GetAny (), servPort);
   ApplicationContainer apps = sink.Install (c1.Get (1));
   apps.Start (Seconds (0.0));
 

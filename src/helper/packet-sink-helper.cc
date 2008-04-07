@@ -29,13 +29,13 @@ PacketSinkHelper::PacketSinkHelper ()
 }
 
 void 
-PacketSinkHelper::SetupUdp (Ipv4Address ip, uint16_t port)
+PacketSinkHelper::SetUdpLocal (Ipv4Address ip, uint16_t port)
 {
   m_factory.Set ("Protocol", String ("ns3::Udp"));
   m_factory.Set ("Local", Address (InetSocketAddress (ip, port)));
 }
 void 
-PacketSinkHelper::SetupTcp (Ipv4Address ip, uint16_t port)
+PacketSinkHelper::SetTcpLocal (Ipv4Address ip, uint16_t port)
 {
   m_factory.Set ("Protocol", String ("ns3::Tcp"));
   m_factory.Set ("Local", Address (InetSocketAddress (ip, port)));

@@ -106,7 +106,7 @@ main (int argc, char *argv[])
 
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink;
-  sink.SetupUdp (Ipv4Address::GetAny (), port);
+  sink.SetUdpLocal (Ipv4Address::GetAny (), port);
   sink.Install (c.Get (1));
 
 // 

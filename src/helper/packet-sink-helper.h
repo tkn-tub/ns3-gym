@@ -32,8 +32,8 @@ class PacketSinkHelper
 public:
   PacketSinkHelper ();
 
-  void SetupUdp (Ipv4Address ip, uint16_t port);
-  void SetupTcp (Ipv4Address ip, uint16_t port);
+  void SetUdpLocal (Ipv4Address ip, uint16_t port);
+  void SetTcpLocal (Ipv4Address ip, uint16_t port);
 
   ApplicationContainer Install (NodeContainer c);
 private:
