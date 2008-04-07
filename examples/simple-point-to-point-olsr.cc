@@ -105,16 +105,16 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer i02 = ipv4.Allocate (nd02);
+  Ipv4InterfaceContainer i02 = ipv4.Assign (nd02);
 
   ipv4.SetBase ("10.1.2.0", "255.255.255.0");
-  Ipv4InterfaceContainer i12 = ipv4.Allocate (nd12);
+  Ipv4InterfaceContainer i12 = ipv4.Assign (nd12);
   
   ipv4.SetBase ("10.1.3.0", "255.255.255.0");
-  Ipv4InterfaceContainer i32 = ipv4.Allocate (nd32);
+  Ipv4InterfaceContainer i32 = ipv4.Assign (nd32);
 
   ipv4.SetBase ("10.1.4.0", "255.255.255.0");
-  Ipv4InterfaceContainer i34 = ipv4.Allocate (nd34);
+  Ipv4InterfaceContainer i34 = ipv4.Assign (nd34);
 
   // Enable OLSR
   NS_LOG_INFO ("Enabling OLSR Routing.");

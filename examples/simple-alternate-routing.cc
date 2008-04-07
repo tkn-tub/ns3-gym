@@ -117,16 +117,16 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.0.0.0", "255.255.255.0");
-  ipv4.Allocate (d0d2);
+  ipv4.Assign (d0d2);
   
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer i1i2 = ipv4.Allocate (d1d2);
+  Ipv4InterfaceContainer i1i2 = ipv4.Assign (d1d2);
   
   ipv4.SetBase ("10.2.2.0", "255.255.255.0");
-  ipv4.Allocate (d3d2);
+  ipv4.Assign (d3d2);
 
   ipv4.SetBase ("10.3.3.0", "255.255.255.0");
-  Ipv4InterfaceContainer i1i3 = ipv4.Allocate (d1d3);
+  Ipv4InterfaceContainer i1i3 = ipv4.Assign (d1d3);
 
   i1i3.SetMetric (0, sampleMetric);
   i1i3.SetMetric (1, sampleMetric);

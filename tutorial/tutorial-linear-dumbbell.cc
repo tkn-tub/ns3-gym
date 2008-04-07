@@ -58,7 +58,7 @@ main (int argc, char *argv[])
   NetDeviceContainer dev1 = csma.Install (lan1);
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer i1 = ipv4.Allocate (dev1);
+  Ipv4InterfaceContainer i1 = ipv4.Assign (dev1);
 
 
 //
@@ -70,7 +70,7 @@ main (int argc, char *argv[])
 
   NetDeviceContainer dev2 = csma.Install (lan2);
   ipv4.SetBase ("10.1.2.0", "255.255.255.0");
-  Ipv4InterfaceContainer i2 = ipv4.Allocate (dev2);
+  Ipv4InterfaceContainer i2 = ipv4.Assign (dev2);
 
 
 //
@@ -82,7 +82,7 @@ main (int argc, char *argv[])
   p2p.SetChannelParameter ("Delay", MilliSeconds (20));
   NetDeviceContainer dev3 = p2p.Install (backbone);
   ipv4.SetBase ("10.1.3.0", "255.255.255.0");
-  ipv4.Allocate (dev3);
+  ipv4.Assign (dev3);
 
 //
 // Create data flows across the link:

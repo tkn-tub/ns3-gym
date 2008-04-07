@@ -67,17 +67,17 @@ main (int argc, char *argv[])
 
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.252");
-  Ipv4InterfaceContainer i01 = ipv4.Allocate (d01);
+  Ipv4InterfaceContainer i01 = ipv4.Assign (d01);
   ipv4.SetBase ("10.1.2.0", "255.255.255.252");
-  Ipv4InterfaceContainer i02 = ipv4.Allocate (d02);
+  Ipv4InterfaceContainer i02 = ipv4.Assign (d02);
   ipv4.SetBase ("10.1.3.0", "255.255.255.252");
-  Ipv4InterfaceContainer i03 = ipv4.Allocate (d03);
+  Ipv4InterfaceContainer i03 = ipv4.Assign (d03);
   ipv4.SetBase ("10.1.4.0", "255.255.255.252");
-  Ipv4InterfaceContainer i04 = ipv4.Allocate (d04);
+  Ipv4InterfaceContainer i04 = ipv4.Assign (d04);
   ipv4.SetBase ("10.1.5.0", "255.255.255.252");
-  Ipv4InterfaceContainer i05 = ipv4.Allocate (d05);
+  Ipv4InterfaceContainer i05 = ipv4.Assign (d05);
   ipv4.SetBase ("10.1.6.0", "255.255.255.252");
-  Ipv4InterfaceContainer i06 = ipv4.Allocate (d06);
+  Ipv4InterfaceContainer i06 = ipv4.Assign (d06);
 
   uint16_t port = 7;
 

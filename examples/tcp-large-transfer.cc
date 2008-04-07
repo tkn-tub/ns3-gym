@@ -150,9 +150,9 @@ int main (int argc, char *argv[])
   // Later, we add IP addresses.  
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.3.0", "255.255.255.0");
-  ipv4.Allocate (dev0);
+  ipv4.Assign (dev0);
   ipv4.SetBase ("10.1.2.0", "255.255.255.0");
-  Ipv4InterfaceContainer ipInterfs = ipv4.Allocate (dev1);
+  Ipv4InterfaceContainer ipInterfs = ipv4.Assign (dev1);
 
   // and setup ip routing tables to get total ip-level connectivity.
   GlobalRouteManager::PopulateRoutingTables ();

@@ -121,7 +121,7 @@ Ipv4AddressHelper::NewNetwork (void)
 }
 
 Ipv4InterfaceContainer
-Ipv4AddressHelper::Allocate (const NetDeviceContainer &c)
+Ipv4AddressHelper::Assign (const NetDeviceContainer &c)
 {
   NS_LOG_FUNCTION;
   Ipv4InterfaceContainer retval;

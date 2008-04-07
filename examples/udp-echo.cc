@@ -97,7 +97,7 @@ main (int argc, char *argv[])
 //
   NS_LOG_INFO ("Assign IP Addresses.");
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer i = ipv4.Allocate (d);
+  Ipv4InterfaceContainer i = ipv4.Assign (d);
 
   NS_LOG_INFO ("Create Applications.");
 //

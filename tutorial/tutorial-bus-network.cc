@@ -46,7 +46,7 @@ main (int argc, char *argv[])
 
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.0.0", "255.255.0.0", "0.0.0.3");
-  Ipv4InterfaceContainer i = ipv4.Allocate (nd);
+  Ipv4InterfaceContainer i = ipv4.Assign (nd);
 
   uint32_t port = 7;
   UdpEchoClientHelper client;

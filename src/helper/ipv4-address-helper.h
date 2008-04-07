@@ -165,7 +165,7 @@ public:
  * @see SetBase
  * @see NewNetwork
  */
-  Ipv4InterfaceContainer Allocate (const NetDeviceContainer &c);
+  Ipv4InterfaceContainer Assign (const NetDeviceContainer &c);
 
 private:
   uint32_t NumAddressBits (uint32_t maskbits) const;

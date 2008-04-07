@@ -123,16 +123,16 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-  ipv4.Allocate (d0d2);
+  ipv4.Assign (d0d2);
 
   ipv4.SetBase ("10.1.2.0", "255.255.255.0");
-  ipv4.Allocate (d1d2);
+  ipv4.Assign (d1d2);
 
   ipv4.SetBase ("10.1.3.0", "255.255.255.0");
-  Ipv4InterfaceContainer i5i6 = ipv4.Allocate (d5d6);
+  Ipv4InterfaceContainer i5i6 = ipv4.Assign (d5d6);
 
   ipv4.SetBase ("10.250.1.0", "255.255.255.0");
-  ipv4.Allocate (d2345);
+  ipv4.Assign (d2345);
 
   // Create router nodes, initialize routing database and set up the routing
   // tables in the nodes.
