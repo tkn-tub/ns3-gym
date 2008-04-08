@@ -3,7 +3,7 @@
 
 This file contains ns-3 release notes (most recent releases first).
 
-Release 3.0.12 (2008/03/31)
+Release 3.0.12 (2008/04/07)
 ========================
     - Add Attribute support to the TypeId metadata system and add
 attribute support to all in-tree models
@@ -13,6 +13,8 @@ and perform simple ascii and pcap link-level tracing.
 of the upcoming python bindings
     - new rate control algorithm (RRAA) and a jakes propagation model
 in the 802.11 model (Federico Maguolo).
+    - regression test framework added
+    - TCP delayed acknowledgements and multitasking server
 
 Release 3.0.11 (2008/02/15)
 ========================

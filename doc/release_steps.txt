@@ -20,14 +20,14 @@ Steps in doing an ns-3 release
      "description = ns-3.0.x release
       name = ns-3.0.x"
 6. Run the regression tests on the new release and update the reference traces
-   - cd regression
-   - python regression.py
+   - ./waf --regression
+   - ./waf --valgrind --regression (for valgrind version)
    - There should be no regressions at this time
    - tag ns-3-dev-ref-traces with "release ns-3.0.X"
      hg tag "release ns-3.0.x"
      hg push
    - clone the ns-3-dev-ref-traces and place it on the repository as in step
-     6 but use the name ns-3.0.x-ref-traces
+     5 but use the name ns-3.0.x-ref-traces
 7. Create a reference traces tarball
    - cd regression
    - tar -cjf ns-3.0.x-ref-traces.tar.bz2 ns-3-dev-ref-traces/

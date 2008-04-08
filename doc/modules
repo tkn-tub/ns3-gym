@@ -15,7 +15,6 @@
  *    - a class to register regression tests with the test manager: ns3::Test and ns3::TestManager
  *    - debugging facilities: \ref logging, \ref assert, \ref error
  *    - \ref randomvariable
- *    - \ref config
  *    - a base class for objects which need to support reference counting
  *      and QueryInterface: ns3::Object and ns3::InterfaceId 
  *    - a set of low-level trace facilities integrated in the ns3::Object system: \ref tracing

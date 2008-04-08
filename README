@@ -36,24 +36,25 @@ project.  These steps are described in doc/contributing.txt
 
 This package contains the latest version of ns-3 which aims 
 at being a replacement for ns-2. Currently, ns-3 provides a 
-number of very simple network simulation models:
-  - an ipv4 and udp stack
+number of simple network simulation models:
+  - an ipv4 and tcp and udp stack
   - arp support at the bottom of the stack
-  - point-to-point physical-layer links
+  - static global and OLSR unicast routing
+  - point-to-point, CSMA, and Wifi links
+  - mobility
   - OnOff traffic generator
 
 Our focus to date has been on getting an overall software
 framework in place.  The framework is there to make adding 
 new models as simple as possible:
-  - an extensive tracing system can be used to connect
-    any number of arbitrary trace sources to any number
-    of trace sinks. This tracing system is decoupled
-    from the act of serializing the trace events to a 
-    file: users can and should provide their own
-    trace handling routines.
+
+  - an extensive callback-based tracing system 
 
   - simple file trace serialization support is included
     to both text and pcap files.
+
+  - an attribute system for configuring parameters in the 
+    models
 
   - adding new MAC-level models simply requires subclassing
     the pair of classes NetDevice and Channel.
@@ -123,12 +124,7 @@ include some of it in this release for ease of use.
 
 This documentation includes:
 
-  - an architecture document which describes a very 
-    high-level view of ns-3: it tries to explain the
-    use-cases the ns-3 developers really focused on when
-    doing the initial design and then goes on to explain
-    the structure of the resulting framework.
-    See the file doc/architecture.pdf
+  - a tutorial
 
   - a wiki for user-contributed tips: http://www.nsnam.org/wiki/
 
@@ -136,17 +132,6 @@ This documentation includes:
     a reference manual, most likely not very well suited 
     as introductory text:
     http://www.nsnam.org/doxygen/index.html
-
-If you want to re-generate this documentation, you can 
-easily do so:
-
-  - doc/architecture.pdf is generated from the architecture.tex
-    file in http://code.nsnam.org/docs
-
-  - the doxygen documentation is generated from the doc/doxygen.conf
-    configuration file. The command "./waf --doxygen" will generate it
-    as doc/html/index.html if you have installed the doxygen tools 
-    (see http://www.doxygen.org)
 
 6) Working with the development version of ns-3
 -----------------------------------------------
