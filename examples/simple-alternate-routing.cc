@@ -39,6 +39,7 @@
 
 #include "ns3/core-module.h"
 #include "ns3/simulator-module.h"
+#include "ns3/node-module.h"
 #include "ns3/helper-module.h"
 #include "ns3/global-route-manager.h"
 
@@ -140,17 +141,18 @@ main (int argc, char *argv[])
   uint16_t port = 9;   // Discard port (RFC 863)
 
   // Create a flow from n3 to n1, starting at time 1.1 seconds
-  OnOffHelper onoff;
-  onoff.SetAppAttribute ("OnTime", ConstantVariable (1));
-  onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
-  onoff.SetUdpRemote (i1i2.GetAddress (0), port);
+  OnOffHelper onoff ("ns3::Udp",
+    Address (InetSocketAddress (i1i2.GetAddress (0), port)));
+  onoff.SetAttribute ("OnTime", ConstantVariable (1));
+  onoff.SetAttribute ("OffTime", ConstantVariable (0));
+
   ApplicationContainer apps = onoff.Install (c.Get (3));
   apps.Start (Seconds (1.1));
   apps.Start (Seconds (10.0));
 
   // Create a packet sink to receive these packets
-  PacketSinkHelper sink;
-  sink.SetUdpLocal (Ipv4Address::GetAny (), port);
+  PacketSinkHelper sink ("ns3::Udp",
+    Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   apps = sink.Install (c.Get (1));
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));
@@ -159,7 +161,6 @@ main (int argc, char *argv[])
   ascii.open ("simple-alternate-routing.tr");
   PointToPointHelper::EnablePcap ("simple-alternate-routing");
   PointToPointHelper::EnableAscii (ascii);
-
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

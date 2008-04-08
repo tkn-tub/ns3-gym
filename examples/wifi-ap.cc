@@ -156,10 +156,15 @@ int main (int argc, char *argv[])
 
   Simulator::Schedule (Seconds (1.0), &AdvancePosition, ap.Get (0));
 
-  OnOffHelper onoff;
-  onoff.SetAppAttribute ("OnTime", ConstantVariable (42));
-  onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
-  onoff.SetPacketRemote (staDevs.Get (0), staDevs.Get (1)->GetAddress (), 1);
+  PacketSocketAddress socket;
+  socket.SetSingleDevice(staDevs.Get (0)->GetIfIndex ());
+  socket.SetPhysicalAddress (staDevs.Get (1)->GetAddress ());
+  socket.SetProtocol (1);
+
+  OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
+  onoff.SetAttribute ("OnTime", ConstantVariable (42));
+  onoff.SetAttribute ("OffTime", ConstantVariable (0));
+
   ApplicationContainer apps = onoff.Install (stas.Get (0));
   apps.Start (Seconds (0.5));
   apps.Stop (Seconds (43.0));

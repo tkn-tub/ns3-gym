@@ -37,8 +37,9 @@
 #include <cassert>
 
 #include "ns3/core-module.h"
-#include "ns3/helper-module.h"
 #include "ns3/simulator-module.h"
+#include "ns3/node-module.h"
+#include "ns3/helper-module.h"
 #include "ns3/ascii-trace.h"
 #include "ns3/pcap-trace.h"
 #include "ns3/global-route-manager.h"
@@ -50,37 +51,6 @@ NS_LOG_COMPONENT_DEFINE ("MixedGlobalRoutingExample");
 int 
 main (int argc, char *argv[])
 {
-
-  // Users may find it convenient to turn on explicit debugging
-  // for selected modules; the below lines suggest how to do this
-#if 0 
-  LogComponentEnable ("MixedGlobalRoutingExample", LOG_LEVEL_INFO);
-
-  LogComponentEnable("Object", LOG_LEVEL_ALL);
-  LogComponentEnable("Queue", LOG_LEVEL_ALL);
-  LogComponentEnable("DropTailQueue", LOG_LEVEL_ALL);
-  LogComponentEnable("Channel", LOG_LEVEL_ALL);
-  LogComponentEnable("CsmaChannel", LOG_LEVEL_ALL);
-  LogComponentEnable("NetDevice", LOG_LEVEL_ALL);
-  LogComponentEnable("CsmaNetDevice", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("PacketSocket", LOG_LEVEL_ALL);
-  LogComponentEnable("Socket", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpSocket", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpL4Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4StaticRouting", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4Interface", LOG_LEVEL_ALL);
-  LogComponentEnable("ArpIpv4Interface", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4LoopbackInterface", LOG_LEVEL_ALL);
-  LogComponentEnable("OnOffApplication", LOG_LEVEL_ALL);
-  LogComponentEnable("PacketSinkApplication", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_ALL);
-#endif
-  // Set up some default values for the simulation.  Use the Bind ()
-
-
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", Uinteger (210));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", DataRate ("448kb/s"));
 
@@ -142,12 +112,13 @@ main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
-  OnOffHelper onoff;
-  onoff.SetAppAttribute ("OnTime", ConstantVariable (1));
-  onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
-  onoff.SetAppAttribute ("DataRate", DataRate("300bps"));
-  onoff.SetAppAttribute ("PacketSize", Uinteger (50));
-  onoff.SetUdpRemote (i5i6.GetAddress (1), port);
+  OnOffHelper onoff ("ns3::Udp",
+    Address (InetSocketAddress (i5i6.GetAddress (1), port)));
+  onoff.SetAttribute ("OnTime", ConstantVariable (1));
+  onoff.SetAttribute ("OffTime", ConstantVariable (0));
+  onoff.SetAttribute ("DataRate", DataRate("300bps"));
+  onoff.SetAttribute ("PacketSize", Uinteger (50));
+
   ApplicationContainer apps = onoff.Install (c.Get (0));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));

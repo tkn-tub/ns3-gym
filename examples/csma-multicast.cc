@@ -33,8 +33,9 @@
 #include <fstream>
 
 #include "ns3/core-module.h"
-#include "ns3/helper-module.h"
 #include "ns3/simulator-module.h"
+#include "ns3/node-module.h"
+#include "ns3/helper-module.h"
 
 using namespace ns3;
 
@@ -140,12 +141,12 @@ main (int argc, char *argv[])
 
   // Configure a multicast packet generator that generates a packet
   // every few seconds
-  OnOffHelper onoff;
-  onoff.SetUdpRemote (multicastGroup, multicastPort);
-  onoff.SetAppAttribute ("OnTime", ConstantVariable (1));
-  onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
-  onoff.SetAppAttribute ("DataRate", DataRate ("255b/s"));
-  onoff.SetAppAttribute ("PacketSize", Uinteger (128));
+  OnOffHelper onoff ("ns3::Udp", 
+    Address (InetSocketAddress (multicastGroup, multicastPort)));
+  onoff.SetAttribute ("OnTime", ConstantVariable (1));
+  onoff.SetAttribute ("OffTime", ConstantVariable (0));
+  onoff.SetAttribute ("DataRate", DataRate ("255b/s"));
+  onoff.SetAttribute ("PacketSize", Uinteger (128));
 
   ApplicationContainer srcC = onoff.Install (c0.Get (0));
 
@@ -156,8 +157,9 @@ main (int argc, char *argv[])
   srcC.Stop (Seconds(10.));
 
   // Create an optional packet sink to receive these packets
-  PacketSinkHelper sink;
-  sink.SetUdpLocal (Ipv4Address::GetAny(), multicastPort);
+  PacketSinkHelper sink ("ns3::Udp",
+    Address (InetSocketAddress (Ipv4Address::GetAny(), multicastPort)));
+
   ApplicationContainer sinkC = sink.Install (c1.Get (2)); // Node n4 
   // Start the sink
   sinkC.Start (Seconds (1.0));

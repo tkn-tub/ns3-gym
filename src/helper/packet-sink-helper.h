@@ -30,10 +30,9 @@ namespace ns3 {
 class PacketSinkHelper
 {
 public:
-  PacketSinkHelper ();
+  PacketSinkHelper (std::string protocol, Address address);
 
-  void SetUdpLocal (Ipv4Address ip, uint16_t port);
-  void SetTcpLocal (Ipv4Address ip, uint16_t port);
+  void SetAttribute (std::string name, Attribute value);
 
   ApplicationContainer Install (NodeContainer c);
 private:

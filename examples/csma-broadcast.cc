@@ -33,8 +33,9 @@
 #include <cassert>
 
 #include "ns3/core-module.h"
-#include "ns3/helper-module.h"
 #include "ns3/simulator-module.h"
+#include "ns3/node-module.h"
+#include "ns3/helper-module.h"
 
 using namespace ns3;
 
@@ -94,10 +95,10 @@ main (int argc, char *argv[])
   // Create the OnOff application to send UDP datagrams of size
   // 512 bytes (default) at a rate of 500 Kb/s (default) from n0
   NS_LOG_INFO ("Create Applications.");
-  OnOffHelper onoff;
-  onoff.SetUdpRemote (Ipv4Address ("255.255.255.255"), port);
-  onoff.SetAppAttribute ("OnTime", ConstantVariable (1));
-  onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
+  OnOffHelper onoff ("ns3::Udp", 
+    Address (InetSocketAddress (Ipv4Address ("255.255.255.255"), port)));
+  onoff.SetAttribute ("OnTime", ConstantVariable (1));
+  onoff.SetAttribute ("OffTime", ConstantVariable (0));
 
   ApplicationContainer app = onoff.Install (c0.Get (0));
   // Start the application
@@ -105,11 +106,10 @@ main (int argc, char *argv[])
   app.Stop (Seconds (10.0));
   
   // Create an optional packet sink to receive these packets
-  PacketSinkHelper sink;
-  sink.SetUdpLocal (Ipv4Address::GetAny (), port);
+  PacketSinkHelper sink ("ns3::Udp",
+    Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   sink.Install (c0.Get (1));
   sink.Install (c1.Get (1));
-
 
   // Also configure some tcpdump traces; each interface will be traced
   // The output files will be named 

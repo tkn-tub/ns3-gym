@@ -44,6 +44,7 @@
 
 #include "ns3/core-module.h"
 #include "ns3/simulator-module.h"
+#include "ns3/node-module.h"
 #include "ns3/helper-module.h"
 #include "ns3/global-route-manager.h"
 
@@ -121,23 +122,24 @@ main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
-  OnOffHelper onoff;
-  onoff.SetAppAttribute ("OnTime", ConstantVariable (1));
-  onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
-  onoff.SetUdpRemote (i3i2.GetAddress (0), port);
+  OnOffHelper onoff ("ns3::Udp", 
+    Address (InetSocketAddress (i3i2.GetAddress (0), port)));
+  onoff.SetAttribute ("OnTime", ConstantVariable (1));
+  onoff.SetAttribute ("OffTime", ConstantVariable (0));
   ApplicationContainer apps = onoff.Install (c.Get (0));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
   // Create a packet sink to receive these packets
-  PacketSinkHelper sink;
-  sink.SetUdpLocal (Ipv4Address::GetAny (), port);
+  PacketSinkHelper sink ("ns3::Udp",
+    Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   apps = sink.Install (c.Get (3));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
-  onoff.SetUdpRemote (i1i2.GetAddress (0), port);
+  onoff.SetAttribute ("Remote", 
+    Address (InetSocketAddress (i1i2.GetAddress (0), port)));
   apps = onoff.Install (c.Get (3));
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));

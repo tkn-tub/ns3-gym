@@ -128,12 +128,17 @@ Experiment::Run (const WifiHelper &wifi)
 
   mobility.Layout (c);
 
-  OnOffHelper onoff;
-  onoff.SetAppAttribute ("OnTime", ConstantVariable (250));
-  onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
-  onoff.SetAppAttribute ("DataRate", DataRate (60000000));
-  onoff.SetAppAttribute ("PacketSize", Uinteger (2000));
-  onoff.SetPacketRemote (devices.Get (0), devices.Get (1)->GetAddress (), 1);
+  PacketSocketAddress socket;
+  socket.SetSingleDevice(devices.Get (0)->GetIfIndex ());
+  socket.SetPhysicalAddress (devices.Get (1)->GetAddress ());
+  socket.SetProtocol (1);
+
+  OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
+  onoff.SetAttribute ("OnTime", ConstantVariable (250));
+  onoff.SetAttribute ("OffTime", ConstantVariable (0));
+  onoff.SetAttribute ("DataRate", DataRate (60000000));
+  onoff.SetAttribute ("PacketSize", Uinteger (2000));
+
   ApplicationContainer apps = onoff.Install (c.Get (0));
   apps.Start (Seconds (0.5));
   apps.Stop (Seconds (250.0));

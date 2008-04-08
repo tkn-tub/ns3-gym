@@ -35,6 +35,7 @@
 
 #include "ns3/core-module.h"
 #include "ns3/simulator-module.h"
+#include "ns3/node-module.h"
 #include "ns3/helper-module.h"
 
 #include "ns3/ascii-trace.h"
@@ -80,16 +81,23 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Create Applications.");
   // Create the OnOff application to send raw datagrams
-  OnOffHelper onoff;
-  onoff.SetAppAttribute ("OnTime", ConstantVariable (1.0));
-  onoff.SetAppAttribute ("OffTime", ConstantVariable (0.0));
-  onoff.SetPacketRemote (devs.Get (0), devs.Get (1)->GetAddress (), 2);
+  PacketSocketAddress socket;
+  socket.SetSingleDevice(devs.Get (0)->GetIfIndex ());
+  socket.SetPhysicalAddress (devs.Get (1)->GetAddress ());
+  socket.SetProtocol (2);
+  OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
+  onoff.SetAttribute ("OnTime", ConstantVariable (1.0));
+  onoff.SetAttribute ("OffTime", ConstantVariable (0.0));
+
   ApplicationContainer apps = onoff.Install (c.Get (0));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
   
-
-  onoff.SetPacketRemote (devs.Get (3), devs.Get (0)->GetAddress (), 3);
+  socket.SetSingleDevice (devs.Get (3)->GetIfIndex ());
+  socket.SetPhysicalAddress (devs.Get (0)->GetAddress ());
+  socket.SetProtocol (3);
+  onoff.SetAttribute ("Remote", Address (socket));
+  onoff.SetAttribute ("OffTime", ConstantVariable (0.0));
   apps = onoff.Install (c.Get (3));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));

@@ -51,6 +51,14 @@ public:
    *
    * Create a node container which is a concatenation of the two input
    * NodeContainers.
+   *
+   * \note A frequently seen idiom that uses these constructors involves the
+   * implicit conversion by constructor of Ptr<Node>.  When used, two 
+   * Ptr<Node> will be passed to this constructor instead of NodeContainer&.
+   * C++ will notice the implicit conversion path that goes through the 
+   * NodeContainer (Ptr<Node> node) constructor above.  Using this conversion
+   * one may provide optionally provide arguments of Ptr<Node> to these 
+   * constructors.
    */
   NodeContainer (const NodeContainer &a, const NodeContainer &b);
 

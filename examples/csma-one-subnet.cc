@@ -29,6 +29,7 @@
 #include <fstream>
 
 #include "ns3/simulator-module.h"
+#include "ns3/node-module.h"
 #include "ns3/core-module.h"
 #include "ns3/helper-module.h"
 
@@ -94,10 +95,10 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
 
-  OnOffHelper onoff;
-  onoff.SetUdpRemote (Ipv4Address ("10.1.1.2"), port);
-  onoff.SetAppAttribute ("OnTime", ConstantVariable (1));
-  onoff.SetAppAttribute ("OffTime", ConstantVariable (0));
+  OnOffHelper onoff ("ns3::Udp", 
+    Address (InetSocketAddress (Ipv4Address ("10.1.1.2"), port)));
+  onoff.SetAttribute ("OnTime", ConstantVariable (1));
+  onoff.SetAttribute ("OffTime", ConstantVariable (0));
 
   ApplicationContainer app = onoff.Install (c.Get (0));
   // Start the application
@@ -105,14 +106,15 @@ main (int argc, char *argv[])
   app.Stop (Seconds (10.0));
 
   // Create an optional packet sink to receive these packets
-  PacketSinkHelper sink;
-  sink.SetUdpLocal (Ipv4Address::GetAny (), port);
+  PacketSinkHelper sink ("ns3::Udp",
+    Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   sink.Install (c.Get (1));
 
 // 
 // Create a similar flow from n3 to n0, starting at time 1.1 seconds
 //
-  onoff.SetUdpRemote (Ipv4Address("10.1.1.1"), port);
+  onoff.SetAttribute ("Remote", 
+    Address (InetSocketAddress (Ipv4Address ("10.1.1.1"), port)));
   ApplicationContainer app2 = onoff.Install (c.Get (3));
 
   sink.Install (c.Get (0));

@@ -34,13 +34,9 @@ namespace ns3 {
 class OnOffHelper
 {
 public:
-  OnOffHelper ();
+  OnOffHelper (std::string protocol, Address address);
 
-  void SetUdpRemote (Ipv4Address ip, uint16_t port);
-  void SetTcpRemote (Ipv4Address ip, uint16_t port);
-  void SetPacketRemote (Ptr<NetDevice> source, Address destination, uint16_t protocol);
-  
-  void SetAppAttribute (std::string name, Attribute value);
+  void SetAttribute (std::string name, Attribute value);
 
   ApplicationContainer Install (NodeContainer c);
 

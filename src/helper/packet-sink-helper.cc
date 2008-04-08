@@ -23,11 +23,21 @@
 
 namespace ns3 {
 
-PacketSinkHelper::PacketSinkHelper ()
+PacketSinkHelper::PacketSinkHelper (std::string protocol, Address address)
 {
   m_factory.SetTypeId ("ns3::PacketSink");
+  m_factory.Set ("Protocol", String(protocol));
+  m_factory.Set ("Local", address);
 }
 
+void 
+PacketSinkHelper::SetAttribute (std::string name, Attribute value)
+{
+  m_factory.Set (name, value);
+}
+
+
+#if 0
 void 
 PacketSinkHelper::SetUdpLocal (Ipv4Address ip, uint16_t port)
 {
@@ -40,6 +50,7 @@ PacketSinkHelper::SetTcpLocal (Ipv4Address ip, uint16_t port)
   m_factory.Set ("Protocol", String ("ns3::Tcp"));
   m_factory.Set ("Local", Address (InetSocketAddress (ip, port)));
 }
+#endif
 
 ApplicationContainer 
 PacketSinkHelper::Install (NodeContainer c)

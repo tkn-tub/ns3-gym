@@ -169,8 +169,9 @@ int main (int argc, char *argv[])
   uint16_t servPort = 50000;
 
   // Create a packet sink to receive these packets
-  PacketSinkHelper sink;
-  sink.SetTcpLocal (Ipv4Address::GetAny (), servPort);
+  PacketSinkHelper sink ("ns3::Tcp",
+    Address (InetSocketAddress (Ipv4Address::GetAny (), servPort)));
+
   ApplicationContainer apps = sink.Install (c1.Get (1));
   apps.Start (Seconds (0.0));
 
