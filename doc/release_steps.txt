@@ -9,6 +9,7 @@ Steps in doing an ns-3 release
      (./waf --doxygen), and check in any necessary changes 
 2. ./waf configure; ./waf dist
    - this will create a ns-3.0.x.tar.bz2 tarball
+   - this will also create a ns-3.0.x-ref-traces.tar.bz2 tarball
 3. test tarball on release platforms (waf check and maybe some other scripts)
 4. once you are happy with the tarball, tag ns-3-dev with "release ns-3.0.X"
    - hg tag "release ns-3.0.x"
@@ -29,8 +30,7 @@ Steps in doing an ns-3 release
    - clone the ns-3-dev-ref-traces and place it on the repository as in step
      5 but use the name ns-3.0.x-ref-traces
 7. Create a reference traces tarball
-   - cd regression
-   - tar -cjf ns-3.0.x-ref-traces.tar.bz2 ns-3-dev-ref-traces/
+   - again, run "./waf dist" 
 8. upload "ns-3.0.x.tar.bz2" to the /var/www/html/releases/ directory on 
    the www.nsnam.org server
    - give it 644 file permissions, and user/group = apache
