@@ -30,6 +30,7 @@
 #include "object-vector.h"
 #include "traced-value.h"
 #include "trace-source-accessor.h"
+#include "pointer.h"
 
 namespace ns3 {
 
@@ -171,6 +172,10 @@ public:
 		       MakeTraceSourceAccessor (&AttributeObjectTest::m_cb))
       .AddTraceSource ("ValueSource", "help text",
 		       MakeTraceSourceAccessor (&AttributeObjectTest::m_valueSrc))
+      .AddAttribute ("Pointer", "XXX",
+                     Pointer (),
+                     MakePointerAccessor (&AttributeObjectTest::m_ptr),
+                     MakePointerChecker<Derived> ())
       ;
         
     return tid;
@@ -228,6 +233,7 @@ private:
   TracedValue<int8_t> m_intSrc2;
   TracedCallback<double, int, float> m_cb;
   TracedValue<ValueClassTest> m_valueSrc;
+  Ptr<Derived> m_ptr;
 };
 
 
@@ -481,6 +487,24 @@ AttributeTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (m_got2, 1.0);
 
   NS_TEST_ASSERT (p->TraceConnectWithoutContext ("ValueSource", MakeCallback (&AttributeTest::NotifySourceValue, this)));
+
+
+  derived = Pointer (p->GetAttribute ("Pointer"));
+  NS_TEST_ASSERT (derived == 0);
+  derived = Create<Derived> ();
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("Pointer", Pointer (derived)));
+  stored = Pointer (p->GetAttribute ("Pointer"));
+  NS_TEST_ASSERT (stored == derived);
+  storedBase = Pointer (p->GetAttribute ("Pointer"));
+  NS_TEST_ASSERT (stored == storedBase);
+  x = Pointer (p->GetAttribute ("Pointer"));
+  NS_TEST_ASSERT (x == 0);
+
+  p = CreateObject<AttributeObjectTest> ("Pointer", Pointer (Create<Derived> ()));
+  NS_TEST_ASSERT (p != 0);
+  derived = 0;
+  derived = Pointer (p->GetAttribute ("Pointer"));
+  NS_TEST_ASSERT (derived != 0);
   
 
 
