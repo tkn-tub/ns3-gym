@@ -586,11 +586,11 @@ private:
             typename T1, typename T2, typename T3, typename T4, typename T5>
   static Ptr<EventImpl> MakeEvent (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
-  static SimulatorPrivate *GetPriv (void);
+  static Ptr<SimulatorPrivate> GetPriv (void);
   static EventId Schedule (Time const &time, const Ptr<EventImpl> &event);
   static EventId ScheduleDestroy (const Ptr<EventImpl> &event);
   static EventId ScheduleNow (const Ptr<EventImpl> &event);
-  static SimulatorPrivate *m_priv;
+  static Ptr<SimulatorPrivate> m_priv;
 };
 
 /**

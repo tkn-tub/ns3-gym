@@ -57,6 +57,8 @@ public:
   SimulatorPrivate ();
   ~SimulatorPrivate ();
 
+  void Destroy ();
+
   void EnableLogTo (char const *filename);
 
   bool IsFinished (void) const;
@@ -132,6 +134,15 @@ SimulatorPrivate::SimulatorPrivate ()
 
 SimulatorPrivate::~SimulatorPrivate ()
 {
+  while (!m_events->IsEmpty ())
+    {
+      EventId next = m_events->RemoveNext ();
+    }
+  m_events = 0;
+}
+void
+SimulatorPrivate::Destroy ()
+{
   while (!m_destroyEvents.empty ()) 
     {
       Ptr<EventImpl> ev = m_destroyEvents.front ().PeekEventImpl ();
@@ -142,11 +153,6 @@ SimulatorPrivate::~SimulatorPrivate ()
           ev->Invoke ();
         }
     }
-  while (!m_events->IsEmpty ())
-    {
-      EventId next = m_events->RemoveNext ();
-    }
-  m_events = 0;
 }
 
 void
@@ -394,7 +400,7 @@ SimulatorPrivate::GetMaximumSimulationTime (void) const
 
 namespace ns3 {
 
-SimulatorPrivate *Simulator::m_priv = 0;
+Ptr<SimulatorPrivate> Simulator::m_priv = 0;
 
 void Simulator::SetScheduler (Ptr<Scheduler> scheduler)
 {
@@ -406,12 +412,12 @@ void Simulator::EnableLogTo (char const *filename)
 }
 
 
-SimulatorPrivate *
+Ptr<SimulatorPrivate>
 Simulator::GetPriv (void)
 {
   if (m_priv == 0) 
     {
-      m_priv = new SimulatorPrivate ();
+      m_priv = CreateObject<SimulatorPrivate> ();
       Ptr<Scheduler> scheduler = CreateObject<SchedulerMap> ();
       m_priv->SetScheduler (scheduler);
     }
@@ -422,7 +428,11 @@ Simulator::GetPriv (void)
 void
 Simulator::Destroy (void)
 {
-  delete m_priv;
+  if (m_priv == 0)
+    {
+      return;
+    }
+  m_priv->Destroy ();
   m_priv = 0;
 }
 
