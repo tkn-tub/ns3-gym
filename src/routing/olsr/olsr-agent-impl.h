@@ -52,6 +52,7 @@ public:
   static TypeId GetTypeId (void);
 
   AgentImpl ();
+  virtual ~AgentImpl ();
 
   virtual void SetNode (Ptr<Node> node);
 

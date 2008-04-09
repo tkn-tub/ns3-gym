@@ -190,6 +190,9 @@ AgentImpl::AgentImpl ()
   m_midTimer (Timer::CANCEL_ON_DESTROY)
 {}
 
+AgentImpl::~AgentImpl ()
+{}
+
 void
 AgentImpl::SetNode (Ptr<Node> node)
 {
