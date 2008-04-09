@@ -29,6 +29,11 @@ namespace ns3 {
 /**
  * \brief Hold an unsigned integer type
  *
+ * \anchor uint8_t
+ * \anchor uint16_t
+ * \anchor uint32_t
+ * \anchor uint64_t
+ *
  * This class can be used to hold variables of unsigned integer
  * type such as uint8_t, uint16_t, uint32_t, uint64_t, or,
  * unsigned int, etc.

@@ -28,6 +28,8 @@ namespace ns3 {
 /**
  * \brief Hold a bool native type
  *
+ * \anchor bool
+ *
  * This class can be used to hold bool variables
  * which must go through the Attribute system.
  */

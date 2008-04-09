@@ -29,6 +29,11 @@ namespace ns3 {
 /**
  * \brief Hold a signed integer type
  *
+ * \anchor int8_t
+ * \anchor int16_t
+ * \anchor int32_t
+ * \anchor int64_t
+ *
  * This class can be used to hold variables of signed integer
  * type such as int8_t, int16_t, int32_t, int64_t, or,
  * int, etc.
