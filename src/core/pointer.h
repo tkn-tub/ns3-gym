@@ -110,7 +110,7 @@ class APointerChecker : public PointerChecker
   virtual std::string GetType (void) const {
     // XXX: we should be able to return better information
     TypeId tid = T::GetTypeId ();
-    return "Ptr<" + tid.GetName () + ">";
+    return "Ptr< " + tid.GetName () + " >";
   }
   virtual bool HasTypeConstraints (void) const {
     return false;
