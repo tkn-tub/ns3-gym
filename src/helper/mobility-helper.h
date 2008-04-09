@@ -40,6 +40,7 @@ class MobilityHelper
 {
 public:
   MobilityHelper ();
+  ~MobilityHelper ();
 
   /**
    * After this method is called, every call to MobilityHelper::Layout

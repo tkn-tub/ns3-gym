@@ -35,6 +35,8 @@ MobilityHelper::MobilityHelper ()
 								   "Y", ConstantVariable (0.0));
   m_mobility.SetTypeId ("ns3::StaticMobilityModel");
 }
+MobilityHelper::~MobilityHelper ()
+{}
 void 
 MobilityHelper::EnableNotifier (void)
 {
