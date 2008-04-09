@@ -12,7 +12,7 @@ PrintAttributes (TypeId tid, std::ostream &os)
       os << "<li><b>" << tid.GetAttributeName (j) << "</b>: "
 		<< tid.GetAttributeHelp (j) << std::endl;
       Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (j);
-      os << "  <ul>" << std::endl << "    <li>Type: " <<  checker->GetType ();
+      os << "  <ul>" << std::endl << "    <li>Type: \\ref " <<  checker->GetType ();
       if (checker->HasTypeConstraints ())
 	{
 	  os << " -> " << checker->GetTypeConstraints ();
