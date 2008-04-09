@@ -512,11 +512,11 @@ TypeId MyNode::GetTypeId (void)
     .AddAttribute ("NodesA", "",
 		   ObjectVector (),
 		   MakeObjectVectorAccessor (&MyNode::m_nodesA),
-		   MakeObjectVectorChecker ())
+		   MakeObjectVectorChecker<MyNode> ())
     .AddAttribute ("NodesB", "",
 		   ObjectVector (),
 		   MakeObjectVectorAccessor (&MyNode::m_nodesB),
-		   MakeObjectVectorChecker ())
+		   MakeObjectVectorChecker<MyNode> ())
     .AddAttribute ("NodeA", "",
                    Pointer (),
 		   MakePointerAccessor (&MyNode::m_nodeA),

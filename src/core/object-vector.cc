@@ -102,6 +102,4 @@ ObjectVectorAccessor::Get (const ObjectBase * object, Attribute value) const
   return true;
 }
 
-ATTRIBUTE_CHECKER_IMPLEMENT (ObjectVector);
-
 } // name

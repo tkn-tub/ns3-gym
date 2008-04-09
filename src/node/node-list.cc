@@ -63,7 +63,7 @@ NodeListPriv::GetTypeId (void)
     .AddAttribute ("NodeList", "The list of all nodes created during the simulation.",
                    ObjectVector (),
                    MakeObjectVectorAccessor (&NodeListPriv::m_nodes),
-                   MakeObjectVectorChecker ())
+                   MakeObjectVectorChecker<Node> ())
     ;
   return tid;
 }

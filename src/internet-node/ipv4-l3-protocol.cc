@@ -64,7 +64,7 @@ Ipv4L3Protocol::GetTypeId (void)
     .AddAttribute ("InterfaceList", "The set of Ipv4 interfaces associated to this Ipv4 stack.",
                    ObjectVector (),
                    MakeObjectVectorAccessor (&Ipv4L3Protocol::m_interfaces),
-                   MakeObjectVectorChecker ())
+                   MakeObjectVectorChecker<Ipv4Interface> ())
     ;
   return tid;
 }

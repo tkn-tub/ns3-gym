@@ -5,7 +5,6 @@
 #include "object.h"
 #include "ptr.h"
 #include "attribute.h"
-#include "attribute-helper.h"
 
 namespace ns3 {
 
@@ -48,8 +47,14 @@ Ptr<const AttributeAccessor>
 MakeObjectVectorAccessor (INDEX (T::*getN) (void) const,
 			  Ptr<U> (T::*get) (INDEX) const);
 
+class ObjectVectorChecker : public AttributeChecker
+{
+public:
+  virtual TypeId GetItemTypeId (void) const = 0;
+};
 
-ATTRIBUTE_CHECKER_DEFINE (ObjectVector);
+template <typename T>
+Ptr<const AttributeChecker> MakeObjectVectorChecker (void);
 
 } // namespace ns3
 
@@ -71,6 +76,36 @@ private:
   friend class ObjectVectorAccessor;
   ObjectVector m_vector;
 };
+
+
+namespace internal {
+
+template <typename T>
+class AnObjectVectorChecker : public ObjectVectorChecker
+{
+public:
+  virtual TypeId GetItemTypeId (void) const {
+    return T::GetTypeId ();
+  }
+  virtual bool Check (Attribute value) const {
+    return value.DynCast<const ObjectVectorValue *> () != 0;
+  }
+  virtual std::string GetType (void) const {
+    return "ns3::ObjectVector";
+  }
+  virtual bool HasTypeConstraints (void) const {
+    return true;
+  }
+  virtual std::string GetTypeConstraints (void) const {
+    return T::GetTypeId ().GetName ();
+  }
+  virtual Attribute Create (void) const {
+    return Attribute::Create<ObjectVectorValue> ();
+  }
+};
+
+} // namespace internal
+
 
 class ObjectVectorAccessor : public AttributeAccessor
 {
@@ -155,6 +190,13 @@ MakeObjectVectorAccessor (INDEX (T::*getN) (void) const,
 {
   return MakeObjectVectorAccessor (get, getN);
 }
+
+template <typename T>
+Ptr<const AttributeChecker> MakeObjectVectorChecker (void)
+{
+  return Create<internal::AnObjectVectorChecker<T> > ();
+}
+
 
 } // namespace ns3
 

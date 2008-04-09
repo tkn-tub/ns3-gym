@@ -143,12 +143,12 @@ public:
       .AddAttribute ("TestVector1", "help text",
 		     ObjectVector (),
 		     MakeObjectVectorAccessor (&AttributeObjectTest::m_vector1),
-		     MakeObjectVectorChecker ())
+		     MakeObjectVectorChecker<Derived> ())
       .AddAttribute ("TestVector2", "help text",
 		     ObjectVector (),
 		     MakeObjectVectorAccessor (&AttributeObjectTest::DoGetVectorN,
 						&AttributeObjectTest::DoGetVector),
-		     MakeObjectVectorChecker ())
+		     MakeObjectVectorChecker<Derived> ())
       .AddAttribute ("IntegerTraceSource1", "help text",
 		     Integer (-2),
 		     MakeIntegerAccessor (&AttributeObjectTest::m_intSrc1),

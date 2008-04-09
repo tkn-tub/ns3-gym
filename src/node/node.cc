@@ -39,11 +39,11 @@ Node::GetTypeId (void)
     .AddAttribute ("DeviceList", "The list of devices associated to this Node.",
                    ObjectVector (),
                    MakeObjectVectorAccessor (&Node::m_devices),
-                   MakeObjectVectorChecker ())
+                   MakeObjectVectorChecker<NetDevice> ())
     .AddAttribute ("ApplicationList", "The list of applications associated to this Node.",
                    ObjectVector (),
                    MakeObjectVectorAccessor (&Node::m_applications),
-                   MakeObjectVectorChecker ())
+                   MakeObjectVectorChecker<Application> ())
     .AddAttribute ("Id", "The id (unique integer) of this Node.",
                    TypeId::ATTR_GET, // allow only getting it.
                    Uinteger (0),
