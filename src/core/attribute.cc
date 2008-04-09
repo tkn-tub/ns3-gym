@@ -172,19 +172,4 @@ AttributeChecker::Unref (void) const
 AttributeChecker::~AttributeChecker ()
 {}
 
-std::string 
-PtrValueBase::SerializeToString (Ptr<const AttributeChecker> checker) const
-{
-  std::ostringstream oss;
-  oss << PeekObjectBase ();
-  return oss.str ();
-}
-
-bool 
-PtrValueBase::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
-{
-  // XXX
-  return false;
-}
-
 } // namespace ns3

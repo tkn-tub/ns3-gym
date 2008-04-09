@@ -25,6 +25,7 @@
 #include "ns3/llc-snap-header.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
+#include "ns3/pointer.h"
 #include "ns3/node.h"
 #include "ns3/trace-source-accessor.h"
 
@@ -36,25 +37,25 @@ WifiNetDevice::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::WifiNetDevice")
     .SetParent<NetDevice> ()
     .AddAttribute ("Channel", "XXX",
-                   Ptr<Channel> (0),
-                   MakePtrAccessor (&WifiNetDevice::DoGetChannel,
-                                    &WifiNetDevice::SetChannel),
-                   MakePtrChecker<Channel> ())
+                   Pointer (),
+                   MakePointerAccessor (&WifiNetDevice::DoGetChannel,
+                                        &WifiNetDevice::SetChannel),
+                   MakePointerChecker<Channel> ())
     .AddAttribute ("Phy", "XXX",
-                   Ptr<WifiPhy> (0),
-                   MakePtrAccessor (&WifiNetDevice::GetPhy,
-                                    &WifiNetDevice::SetPhy),
-                   MakePtrChecker<WifiPhy> ())
+                   Pointer (),
+                   MakePointerAccessor (&WifiNetDevice::GetPhy,
+                                        &WifiNetDevice::SetPhy),
+                   MakePointerChecker<WifiPhy> ())
     .AddAttribute ("Mac", "XXX",
-                   Ptr<WifiMac> (0),
-                   MakePtrAccessor (&WifiNetDevice::GetMac,
-                                    &WifiNetDevice::SetMac),
-                   MakePtrChecker<WifiMac> ())
+                   Pointer (),
+                   MakePointerAccessor (&WifiNetDevice::GetMac,
+                                        &WifiNetDevice::SetMac),
+                   MakePointerChecker<WifiMac> ())
     .AddAttribute ("RemoteStationManager", "XXX",
-                   Ptr<WifiRemoteStationManager> (0),
-                   MakePtrAccessor (&WifiNetDevice::SetRemoteStationManager,
-                                    &WifiNetDevice::GetRemoteStationManager),
-                   MakePtrChecker<WifiRemoteStationManager> ())
+                   Pointer (),
+                   MakePointerAccessor (&WifiNetDevice::SetRemoteStationManager,
+                                        &WifiNetDevice::GetRemoteStationManager),
+                   MakePointerChecker<WifiRemoteStationManager> ())
     .AddTraceSource ("Rx", "XXX",
                      MakeTraceSourceAccessor (&WifiNetDevice::m_rxLogger))
     .AddTraceSource ("Tx", "XXX",

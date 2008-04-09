@@ -19,6 +19,7 @@
  */
 #include "hierarchical-mobility-model.h"
 #include "mobility-model-notifier.h"
+#include "ns3/pointer.h"
 
 namespace ns3 {
 
@@ -31,13 +32,13 @@ HierarchicalMobilityModel::GetTypeId (void)
     .SetParent<MobilityModel> ()
     .AddConstructor<HierarchicalMobilityModel> ()
     .AddAttribute ("Child", "The child mobility model.",
-                   Ptr<MobilityModel> (0),
-                   MakePtrAccessor (&HierarchicalMobilityModel::SetChild),
-                   MakePtrChecker<MobilityModel> ())
+                   Pointer (),
+                   MakePointerAccessor (&HierarchicalMobilityModel::SetChild),
+                   MakePointerChecker<MobilityModel> ())
     .AddAttribute ("Parent", "The parent mobility model.",
-                   Ptr<MobilityModel> (0),
-                   MakePtrAccessor (&HierarchicalMobilityModel::SetParent),
-                   MakePtrChecker<MobilityModel> ())
+                   Pointer (),
+                   MakePointerAccessor (&HierarchicalMobilityModel::SetParent),
+                   MakePointerChecker<MobilityModel> ())
     ;
   return tid;
 }

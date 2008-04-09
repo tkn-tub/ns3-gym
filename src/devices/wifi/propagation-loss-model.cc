@@ -22,6 +22,7 @@
 #include "ns3/mobility-model.h"
 #include "ns3/static-mobility-model.h"
 #include "ns3/double.h"
+#include "ns3/pointer.h"
 #include <math.h>
 
 NS_LOG_COMPONENT_DEFINE ("PropagationLossModel");
@@ -192,9 +193,9 @@ LogDistancePropagationLossModel::GetTypeId (void)
                    MakeDoubleChecker<double> ())
     .AddAttribute ("ReferenceModel",
                    "The reference model at the reference distance.",
-                   Ptr<PropagationLossModel> (0),
-                   MakePtrAccessor (&LogDistancePropagationLossModel::m_reference),
-                   MakePtrChecker<PropagationLossModel> ())
+                   Pointer (),
+                   MakePointerAccessor (&LogDistancePropagationLossModel::m_reference),
+                   MakePointerChecker<PropagationLossModel> ())
     ;
   return tid;
                    

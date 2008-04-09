@@ -23,6 +23,7 @@
 #include "event-impl.h"
 
 #include "ns3/ptr.h"
+#include "ns3/pointer.h"
 #include "ns3/assert.h"
 
 
@@ -108,10 +109,10 @@ SimulatorPrivate::GetTypeId (void)
     .AddConstructor<SimulatorPrivate> ()
     .AddAttribute ("Scheduler",
                    "XXX",
-                   Ptr<Scheduler> (0),
+                   Pointer (),
                    // XXX: allow getting the scheduler too.
-                   MakePtrAccessor (&SimulatorPrivate::SetScheduler),
-                   MakePtrChecker<Scheduler> ())
+                   MakePointerAccessor (&SimulatorPrivate::SetScheduler),
+                   MakePointerChecker<Scheduler> ())
     ;
   return tid;
 }

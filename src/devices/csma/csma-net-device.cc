@@ -27,6 +27,7 @@
 #include "ns3/error-model.h"
 #include "ns3/enum.h"
 #include "ns3/boolean.h"
+#include "ns3/pointer.h"
 #include "ns3/trace-source-accessor.h"
 #include "csma-net-device.h"
 #include "csma-channel.h"
@@ -68,13 +69,13 @@ CsmaNetDevice::GetTypeId (void)
                    MakeDataRateAccessor (&CsmaNetDevice::m_bps),
                    MakeDataRateChecker ())
     .AddAttribute ("RxErrorModel", "XXX",
-                   Ptr<ErrorModel> (0),
-                   MakePtrAccessor (&CsmaNetDevice::m_receiveErrorModel),
-                   MakePtrChecker<ErrorModel> ())
+                   Pointer (),
+                   MakePointerAccessor (&CsmaNetDevice::m_receiveErrorModel),
+                   MakePointerChecker<ErrorModel> ())
     .AddAttribute ("TxQueue", "XXX",
-                   Ptr<Queue> (0),
-                   MakePtrAccessor (&CsmaNetDevice::m_queue),
-                   MakePtrChecker<Queue> ())
+                   Pointer (),
+                   MakePointerAccessor (&CsmaNetDevice::m_queue),
+                   MakePointerChecker<Queue> ())
     .AddTraceSource ("Rx", "Receive MAC packet.",
                      MakeTraceSourceAccessor (&CsmaNetDevice::m_rxTrace))
     .AddTraceSource ("Drop", "Drop MAC packet.",

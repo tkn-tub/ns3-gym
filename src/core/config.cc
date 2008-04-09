@@ -22,6 +22,7 @@
 #include "object.h"
 #include "global-value.h"
 #include "object-vector.h"
+#include "pointer.h"
 #include "log.h"
 #include <sstream>
 
@@ -213,14 +214,11 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
 	  return;
 	}
       // attempt to cast to a pointer checker.
-      const PtrChecker *ptr = dynamic_cast<const PtrChecker *> (PeekPointer (info.checker));
+      const PointerChecker *ptr = dynamic_cast<const PointerChecker *> (PeekPointer (info.checker));
       if (ptr != 0)
 	{
 	  NS_LOG_DEBUG ("GetAttribute(ptr)="<<item<<" on path="<<GetResolvedPath (""));
-	  // XXX: This is not completely right because anything could be stored in a
-	  // Ptr<>. We really need to fix this by thinking seriously about our
-	  // object hierarchy.
-	  Ptr<Object> object = root->GetAttribute (item);
+	  Ptr<Object> object = Pointer (root->GetAttribute (item));
 	  if (object == 0)
 	    {
 	      NS_LOG_ERROR ("Requested object name=\""<<item<<
@@ -520,13 +518,13 @@ TypeId MyNode::GetTypeId (void)
 		   MakeObjectVectorAccessor (&MyNode::m_nodesB),
 		   MakeObjectVectorChecker ())
     .AddAttribute ("NodeA", "",
-		   Ptr<MyNode> (0),
-		   MakePtrAccessor (&MyNode::m_nodeA),
-		   MakePtrChecker<MyNode> ())
+                   Pointer (),
+		   MakePointerAccessor (&MyNode::m_nodeA),
+		   MakePointerChecker<MyNode> ())
     .AddAttribute ("NodeB", "",
-		   Ptr<MyNode> (0),
-		   MakePtrAccessor (&MyNode::m_nodeB),
-		   MakePtrChecker<MyNode> ())
+                   Pointer (),
+		   MakePointerAccessor (&MyNode::m_nodeB),
+		   MakePointerChecker<MyNode> ())
     .AddAttribute ("A", "",
 		   Integer (10),
 		   MakeIntegerAccessor (&MyNode::m_a),

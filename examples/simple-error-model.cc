@@ -159,7 +159,7 @@ main (int argc, char *argv[])
   // specified by the default classId
   Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ("RanVar", UniformVariable (0.0, 1.0),
                                                          "ErrorRate", Double (0.001));
-  d3d2.Get (0)->SetAttribute ("ReceiveErrorModel", em);
+  d3d2.Get (0)->SetAttribute ("ReceiveErrorModel", Pointer (em));
 
   // Now, let's use the ListErrorModel and explicitly force a loss
   // of the packets with pkt-uids = 11 and 17 on node 2, device 0
@@ -169,7 +169,7 @@ main (int argc, char *argv[])
   // This time, we'll explicitly create the error model we want
   Ptr<ListErrorModel> pem = CreateObject<ListErrorModel> ();
   pem->SetList (sampleList);
-  d0d2.Get (1)->SetAttribute ("ReceiveErrorModel", pem);
+  d0d2.Get (1)->SetAttribute ("ReceiveErrorModel", Pointer (pem));
 
   std::ofstream ascii;
   ascii.open ("simple-error-model.tr");

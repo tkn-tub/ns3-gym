@@ -88,7 +88,7 @@ namespace ns3 {
 namespace internal {
 
 template <typename T>
-class APointerChecker : public PtrChecker
+class APointerChecker : public PointerChecker
 {
   virtual bool Check (Attribute val) const {
     const PointerValue *value = val.DynCast<const PointerValue *> ();

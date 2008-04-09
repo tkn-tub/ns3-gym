@@ -23,6 +23,7 @@
 #include "ns3/position-allocator.h"
 #include "ns3/hierarchical-mobility-model.h"
 #include "ns3/log.h"
+#include "ns3/pointer.h"
 
 namespace ns3 {
 
@@ -146,8 +147,8 @@ MobilityHelper::Layout (NodeContainer c)
 	      // we need to setup a hierarchical mobility model
 	      Ptr<MobilityModel> parent = m_mobilityStack.back ();
 	      Ptr<MobilityModel> hierarchical = 
-		CreateObject<HierarchicalMobilityModel> ("Child", model,
-							 "Parent", parent);
+		CreateObject<HierarchicalMobilityModel> ("Child", Pointer (model),
+							 "Parent", Pointer (parent));
 	      object->AggregateObject (hierarchical);
 	      NS_LOG_DEBUG ("node="<<object<<", mob="<<hierarchical);
 	    }

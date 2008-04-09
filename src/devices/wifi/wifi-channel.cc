@@ -23,6 +23,7 @@
 #include "ns3/net-device.h"
 #include "ns3/node.h"
 #include "ns3/log.h"
+#include "ns3/pointer.h"
 #include "wifi-channel.h"
 #include "propagation-loss-model.h"
 #include "propagation-delay-model.h"
@@ -38,13 +39,13 @@ WifiChannel::GetTypdId (void)
     .SetParent<WifiChannel> ()
     .AddConstructor<WifiChannel> ()
     .AddAttribute ("PropagationLossModel", "XXX",
-                   Ptr<PropagationLossModel> (0),
-                   MakePtrAccessor (&WifiChannel::m_loss),
-                   MakePtrChecker<PropagationLossModel> ())
+                   Pointer (),
+                   MakePointerAccessor (&WifiChannel::m_loss),
+                   MakePointerChecker<PropagationLossModel> ())
     .AddAttribute ("PropagationDelayModel", "XXX",
-                   Ptr<PropagationDelayModel> (0),
-                   MakePtrAccessor (&WifiChannel::m_delay),
-                   MakePtrChecker<PropagationDelayModel> ())
+                   Pointer (),
+                   MakePointerAccessor (&WifiChannel::m_delay),
+                   MakePointerChecker<PropagationDelayModel> ())
     ;
   return tid;
 }

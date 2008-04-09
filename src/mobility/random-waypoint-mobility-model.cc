@@ -20,6 +20,7 @@
 #include <cmath>
 #include "ns3/simulator.h"
 #include "ns3/random-variable.h"
+#include "ns3/pointer.h"
 #include "random-waypoint-mobility-model.h"
 #include "position-allocator.h"
 
@@ -46,9 +47,9 @@ RandomWaypointMobilityModel::GetTypeId (void)
                    MakeRandomVariableChecker ())
     .AddAttribute ("Position",
                    "The position model used to pick a destination point.",
-                   Ptr<PositionAllocator> (0),
-                   MakePtrAccessor (&RandomWaypointMobilityModel::m_position),
-                   MakePtrChecker<PositionAllocator> ());
+                   Pointer (),
+                   MakePointerAccessor (&RandomWaypointMobilityModel::m_position),
+                   MakePointerChecker<PositionAllocator> ());
   
   return tid;
 }

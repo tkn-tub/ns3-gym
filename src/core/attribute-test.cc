@@ -109,10 +109,6 @@ public:
 		     MakeBooleanAccessor (&AttributeObjectTest::DoSetTestB,
 					   &AttributeObjectTest::DoGetTestB),
 		     MakeBooleanChecker ())
-      .AddAttribute ("TestPtr", "help text", 
-		     Ptr<Derived> (0),
-		     MakePtrAccessor (&AttributeObjectTest::m_derived),
-		     MakePtrChecker<Derived> ())
       .AddAttribute ("TestInt16", "help text",
 		     Integer (-2),
 		     MakeIntegerAccessor (&AttributeObjectTest::m_int16),
@@ -219,7 +215,6 @@ private:
   }
   bool m_boolTestA;
   bool m_boolTest;
-  Ptr<Derived> m_derived;
   int16_t m_int16;
   int16_t m_int16WithBounds;
   int16_t m_int16SetGet;
@@ -297,23 +292,6 @@ AttributeTest::RunTests (void)
   CHECK_GET_STR (p, "TestBoolA", "true");
   CHECK_GET_PARAM (p, "TestBoolA", Boolean, true);
 
-
-  Ptr<Derived> derived = p->GetAttribute ("TestPtr");
-  NS_TEST_ASSERT (derived == 0);
-  derived = Create<Derived> ();
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestPtr", derived));
-  Ptr<Derived> stored = p->GetAttribute ("TestPtr");
-  NS_TEST_ASSERT (stored == derived);
-  Ptr<Object> storedBase = p->GetAttribute ("TestPtr");
-  NS_TEST_ASSERT (stored == storedBase);
-  Ptr<AttributeObjectTest> x = p->GetAttribute ("TestPtr");
-  NS_TEST_ASSERT (x == 0);
-
-  p = CreateObject<AttributeObjectTest> ("TestPtr", Create<Derived> ());
-  NS_TEST_ASSERT (p != 0);
-  derived = 0;
-  derived = p->GetAttribute ("TestPtr");
-  NS_TEST_ASSERT (derived != 0);
 
   CHECK_GET_STR (p, "TestInt16", "-2");
   CHECK_GET_PARAM (p, "TestInt16", Integer, -2);
@@ -488,16 +466,15 @@ AttributeTest::RunTests (void)
 
   NS_TEST_ASSERT (p->TraceConnectWithoutContext ("ValueSource", MakeCallback (&AttributeTest::NotifySourceValue, this)));
 
-
-  derived = Pointer (p->GetAttribute ("Pointer"));
+  Ptr<Derived>derived = Pointer (p->GetAttribute ("Pointer"));
   NS_TEST_ASSERT (derived == 0);
   derived = Create<Derived> ();
   NS_TEST_ASSERT (p->SetAttributeFailSafe("Pointer", Pointer (derived)));
-  stored = Pointer (p->GetAttribute ("Pointer"));
+  Ptr<Derived> stored = Pointer (p->GetAttribute ("Pointer"));
   NS_TEST_ASSERT (stored == derived);
-  storedBase = Pointer (p->GetAttribute ("Pointer"));
+  Ptr<Object> storedBase = Pointer (p->GetAttribute ("Pointer"));
   NS_TEST_ASSERT (stored == storedBase);
-  x = Pointer (p->GetAttribute ("Pointer"));
+  Ptr<AttributeObjectTest> x = Pointer (p->GetAttribute ("Pointer"));
   NS_TEST_ASSERT (x == 0);
 
   p = CreateObject<AttributeObjectTest> ("Pointer", Pointer (Create<Derived> ()));

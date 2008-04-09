@@ -24,6 +24,7 @@
 #include "ns3/config.h"
 #include "ns3/uinteger.h"
 #include "ns3/string.h"
+#include "ns3/pointer.h"
 #include "ns3/simulator.h"
 
 #include "ns3/node.h"
@@ -87,7 +88,7 @@ main (int argc, char *argv[])
   // First, we observe that we can get a pointer to the (base class)
   // queue via the PointToPointNetDevice attributes, where it is called
   // TxQueue 
-  Ptr<Queue> txQueue = net0->GetAttribute ("TxQueue");
+  Ptr<Queue> txQueue = Pointer (net0->GetAttribute ("TxQueue"));
 
   // Using the GetObject function, we can perform a safe downcast
   // to a DropTailQueue, where MaxPackets is a member
