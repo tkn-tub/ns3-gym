@@ -22,10 +22,13 @@
 #include "ns3/simulator.h"
 #include "ns3/object-vector.h"
 #include "ns3/config.h"
+#include "ns3/log.h"
 #include "node-list.h"
 #include "node.h"
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("NodeList");
 
 
 /**
@@ -85,15 +88,19 @@ NodeListPriv::DoGet (void)
 void 
 NodeListPriv::Delete (void)
 {
+  NS_LOG_FUNCTION;
   Config::UnregisterRootNamespaceObject (Get ());
   (*DoGet ()) = 0;
 }
 
 
 NodeListPriv::NodeListPriv ()
-{}
+{
+  NS_LOG_FUNCTION;
+}
 NodeListPriv::~NodeListPriv ()
 {
+  NS_LOG_FUNCTION;
   for (std::vector<Ptr<Node> >::iterator i = m_nodes.begin ();
        i != m_nodes.end (); i++)
     {
