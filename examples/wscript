@@ -2,6 +2,10 @@
 
 def build(bld):
         
+    obj = bld.create_ns3_program('mixed-wireless',
+        ['core', 'simulator', 'mobility', 'wifi', 'point-to-point', 'internet-node'])
+    obj.source = 'mixed-wireless.cc'
+
     obj = bld.create_ns3_program('simple-global-routing',
         ['point-to-point', 'internet-node', 'global-routing'])
     obj.source = 'simple-global-routing.cc'
