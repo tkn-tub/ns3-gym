@@ -277,11 +277,11 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
 //
       if (addr >= (*i).addrLow && addr <= (*i).addrHigh)
         {
-          NS_LOG_LOGIC ("Ipv4AddressGeneratorImpl::Add(): Address Collision"); 
+          NS_LOG_LOGIC ("Ipv4AddressGeneratorImpl::Add(): Address Collision: " << Ipv4Address (addr)); 
           if (!m_test) 
             {
               NS_ASSERT_MSG (0, 
-                "Ipv4AddressGeneratorImpl::Add(): Address Collision"); 
+                "Ipv4AddressGeneratorImpl::Add(): Address Collision: " << Ipv4Address (addr)); 
             }
           return false;
        }
@@ -308,11 +308,12 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
               if (addr == (*j).addrLow)
                 {
                   NS_LOG_LOGIC ("Ipv4AddressGeneratorImpl::Add(): "
-                    "Address Collision"); 
+                    "Address Collision: " << Ipv4Address (addr)); 
                   if (!m_test)
                     {
                       NS_ASSERT_MSG (0, 
-                        "Ipv4AddressGeneratorImpl::Add(): Address Collision");
+                        "Ipv4AddressGeneratorImpl::Add(): "
+                     "Address Collision: " << Ipv4Address (addr));
                     }
                   return false;
                 }
