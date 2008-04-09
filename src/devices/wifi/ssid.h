@@ -26,6 +26,10 @@
 
 namespace ns3 {
 
+/**
+ * \brief a IEEE 802.11 SSID
+ *
+ */
 class Ssid 
 {
 public:
