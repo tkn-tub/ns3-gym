@@ -76,7 +76,11 @@ Ptr<const AttributeAccessor>
 MakePointerAccessor (Ptr<U> (T::*getter) (void) const,
 		     void (T::*setter) (Ptr<U>));
 
-class PointerChecker : public AttributeChecker {};
+class PointerChecker : public AttributeChecker 
+{
+public:
+  virtual TypeId GetPointeeTypeId (void) const = 0;
+};
 template <typename T>
 Ptr<AttributeChecker> MakePointerChecker (void);
 
@@ -120,6 +124,9 @@ class APointerChecker : public PointerChecker
   }
   virtual Attribute Create (void) const {
     return Attribute::Create<PointerValue> ();
+  }
+  virtual TypeId GetPointeeTypeId (void) const {
+    return T::GetTypeId ();
   }
 };
 
