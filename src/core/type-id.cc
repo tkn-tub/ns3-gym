@@ -480,7 +480,7 @@ TypeId::IsChildOf (TypeId other) const
     {
       tmp = tmp.GetParent ();
     }
-  return tmp == other;
+  return tmp == other && *this != other;
 }
 std::string 
 TypeId::GetGroupName (void) const
@@ -694,6 +694,11 @@ bool operator == (TypeId a, TypeId b)
 bool operator != (TypeId a, TypeId b)
 {
   return a.m_tid != b.m_tid;
+}
+
+bool operator < (TypeId a, TypeId b)
+{
+  return a.m_tid < b.m_tid;
 }
 
 } // namespace ns3

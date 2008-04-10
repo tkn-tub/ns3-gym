@@ -357,6 +357,7 @@ private:
   friend class AttributeList;
   friend bool operator == (TypeId a, TypeId b);
   friend bool operator != (TypeId a, TypeId b);
+  friend bool operator <  (TypeId a, TypeId b);
 
 
   /**
@@ -375,6 +376,10 @@ private:
 
 std::ostream & operator << (std::ostream &os, TypeId tid);
 std::istream & operator >> (std::istream &is, TypeId &tid);
+bool operator == (TypeId a, TypeId b);
+bool operator != (TypeId a, TypeId b);
+bool operator <  (TypeId a, TypeId b);
+
 
 ATTRIBUTE_HELPER_HEADER_2 (TypeId);
 
