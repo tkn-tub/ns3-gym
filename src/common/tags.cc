@@ -20,59 +20,29 @@
 #include "tags.h"
 #include <string.h>
 #include "ns3/fatal-error.h"
+#include "ns3/log.h"
 
 namespace ns3 {
 
-#ifdef USE_FREE_LIST
-
-struct Tags::TagData *Tags::gFree = 0;
-uint32_t Tags::gN_free = 0;
+NS_LOG_COMPONENT_DEFINE ("Tags");
 
 struct Tags::TagData *
-Tags::AllocData (void) const
-{
-  struct Tags::TagData *retval;
-  if (gFree != 0) 
-    {
-      retval = gFree;
-      gFree = gFree->m_next;
-      gN_free--;
-    } 
-  else 
-    {
-      retval = new struct Tags::TagData ();
-    }
-  return retval;
-}
-
-void
-Tags::FreeData (struct TagData *data) const
-{
-  if (gN_free > 1000) 
-    {
-      delete data;
-      return;
-    }
-  gN_free++;
-  data->m_next = gFree;
-  data->m_id = 0;
-  gFree = data;
-}
-#else
-struct Tags::TagData *
-Tags::AllocData (void) const
+Tags::AllocData (uint32_t size) const
 {
   struct Tags::TagData *retval;
   retval = new struct Tags::TagData ();
+  retval->m_data = new uint8_t [size];
+  NS_LOG_DEBUG ("alloc " << retval << " in " << (int *)retval->m_data);
   return retval;
 }
 
 void
 Tags::FreeData (struct TagData *data) const
 {
+  NS_LOG_DEBUG ("free " << data << " in " << (int *)data->m_data);
+  delete [] data->m_data;
   delete data;
 }
-#endif
 
 bool
 Tags::Remove (uint32_t id)
@@ -103,7 +73,7 @@ Tags::Remove (uint32_t id)
            */
           continue;
         }
-      struct TagData *copy = AllocData ();
+      struct TagData *copy = AllocData (Tags::SIZE);
       copy->m_id = cur->m_id;
       copy->m_count = 1;
       copy->m_next = 0;
@@ -183,7 +153,7 @@ Tags::Deserialize (Buffer::Iterator i)
         }
       bytesRead += uidStringSize;
       uint32_t uid = TagRegistry::GetUidFromUidString (uidString);
-      struct TagData *newStart = AllocData ();
+      struct TagData *newStart = AllocData (Tags::SIZE);
       newStart->m_count = 1;
       newStart->m_next = 0;
       newStart->m_id = uid;
