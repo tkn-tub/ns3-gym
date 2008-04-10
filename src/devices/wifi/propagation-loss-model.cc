@@ -52,7 +52,7 @@ NS_OBJECT_ENSURE_REGISTERED (RandomPropagationLossModel);
 TypeId 
 RandomPropagationLossModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("RandomPropagationLossModel")
+  static TypeId tid = TypeId ("ns3::RandomPropagationLossModel")
     .SetParent<PropagationLossModel> ()
     .AddConstructor<RandomPropagationLossModel> ()
     .AddAttribute ("Variable", "XXX",
@@ -82,7 +82,7 @@ NS_OBJECT_ENSURE_REGISTERED (FriisPropagationLossModel);
 TypeId 
 FriisPropagationLossModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("FriisPropagationLossModel")
+  static TypeId tid = TypeId ("ns3::FriisPropagationLossModel")
     .SetParent<PropagationLossModel> ()
     .AddConstructor<FriisPropagationLossModel> ()
     .AddAttribute ("Lambda", 
@@ -196,7 +196,7 @@ NS_OBJECT_ENSURE_REGISTERED (LogDistancePropagationLossModel);
 TypeId
 LogDistancePropagationLossModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("LogDistancePropagationLossModel")
+  static TypeId tid = TypeId ("ns3::LogDistancePropagationLossModel")
     .SetParent<PropagationLossModel> ()
     .AddConstructor<LogDistancePropagationLossModel> ()
     .AddAttribute ("Exponent",

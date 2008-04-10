@@ -50,6 +50,9 @@ std::cout << "SIMU TRACE " << x << std::endl;
 namespace ns3 {
 
 
+/**
+ * \brief private implementation detail of the Simulator API.
+ */
 class SimulatorPrivate : public Object
 {
 public:
@@ -100,11 +103,13 @@ private:
   int m_unscheduledEvents;
 };
 
+NS_OBJECT_ENSURE_REGISTERED (SimulatorPrivate);
+
 
 TypeId
 SimulatorPrivate::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("SimulatorPrivate")
+  static TypeId tid = TypeId ("ns3::SimulatorPrivate")
     .SetParent<Object> ()
     .AddConstructor<SimulatorPrivate> ()
     .AddAttribute ("Scheduler",
