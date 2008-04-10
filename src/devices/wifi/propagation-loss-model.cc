@@ -32,8 +32,22 @@ namespace ns3 {
 
 const double FriisPropagationLossModel::PI = 3.1415;
 
+NS_OBJECT_ENSURE_REGISTERED (PropagationLossModel);
+
+TypeId 
+PropagationLossModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::PropagationLossModel")
+    .SetParent<Object> ()
+    ;
+  return tid;
+}
+
+
 PropagationLossModel::~PropagationLossModel ()
 {}
+
+NS_OBJECT_ENSURE_REGISTERED (RandomPropagationLossModel);
 
 TypeId 
 RandomPropagationLossModel::GetTypeId (void)
@@ -62,6 +76,8 @@ RandomPropagationLossModel::GetLoss (Ptr<MobilityModel> a,
   NS_LOG_DEBUG ("attenuation coefficent="<<rxc<<"Db");
   return rxc;
 }
+
+NS_OBJECT_ENSURE_REGISTERED (FriisPropagationLossModel);
 
 TypeId 
 FriisPropagationLossModel::GetTypeId (void)
@@ -174,6 +190,8 @@ FriisPropagationLossModel::GetLoss (Ptr<MobilityModel> a,
   NS_LOG_DEBUG ("distance="<<distance<<"m, attenuation coefficient="<<pr<<"dB");
   return pr;
 }
+
+NS_OBJECT_ENSURE_REGISTERED (LogDistancePropagationLossModel);
 
 TypeId
 LogDistancePropagationLossModel::GetTypeId (void)

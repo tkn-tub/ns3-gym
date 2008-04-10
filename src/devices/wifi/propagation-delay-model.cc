@@ -24,6 +24,17 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (PropagationDelayModel);
+
+TypeId 
+PropagationDelayModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::PropagationDelayModel")
+    .SetParent<Object> ()
+    ;
+  return tid;
+}
+
 PropagationDelayModel::~PropagationDelayModel ()
 {}
 
