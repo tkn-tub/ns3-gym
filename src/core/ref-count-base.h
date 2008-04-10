@@ -41,6 +41,8 @@ class RefCountBase
 { 
 public:
   RefCountBase();
+  RefCountBase (const RefCountBase &o);
+  RefCountBase &operator = (const RefCountBase &o);
   virtual ~RefCountBase ();
   /**
    * Increment the reference count. This method should not be called
