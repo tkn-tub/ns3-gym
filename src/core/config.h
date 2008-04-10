@@ -118,6 +118,17 @@ void RegisterRootNamespaceObject (Ptr<Object> obj);
  */
 void UnregisterRootNamespaceObject (Ptr<Object> obj);
 
+/**
+ * \returns the number of registered root namespace objects.
+ */
+uint32_t GetRootNamespaceObjectN (void);
+
+/**
+ * \param i the index of the requested object.
+ * \returns the requested root namespace object
+ */
+Ptr<Object> GetRootNamespaceObject (uint32_t i);
+
 } // namespace Config
 
 } // namespace ns3

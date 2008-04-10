@@ -290,6 +290,9 @@ public:
 
   void RegisterRootNamespaceObject (Ptr<Object> obj);
   void UnregisterRootNamespaceObject (Ptr<Object> obj);
+
+  uint32_t GetRootNamespaceObjectN (void) const;
+  Ptr<Object> GetRootNamespaceObject (uint32_t i) const;
   
 private:
   typedef std::vector<Ptr<Object> > Roots;
@@ -415,6 +418,16 @@ ConfigImpl::UnregisterRootNamespaceObject (Ptr<Object> obj)
     }
 }
 
+uint32_t 
+ConfigImpl::GetRootNamespaceObjectN (void) const
+{
+  return m_roots.size ();
+}
+Ptr<Object> 
+ConfigImpl::GetRootNamespaceObject (uint32_t i) const
+{
+  return m_roots[i];
+}
 
 namespace Config {
 
@@ -466,6 +479,17 @@ void UnregisterRootNamespaceObject (Ptr<Object> obj)
 {
   Singleton<ConfigImpl>::Get ()->UnregisterRootNamespaceObject (obj);
 }
+
+uint32_t GetRootNamespaceObjectN (void)
+{
+  return Singleton<ConfigImpl>::Get ()->GetRootNamespaceObjectN ();
+}
+
+Ptr<Object> GetRootNamespaceObject (uint32_t i)
+{
+  return Singleton<ConfigImpl>::Get ()->GetRootNamespaceObject (i);
+}
+
 
 } // namespace Config
 
