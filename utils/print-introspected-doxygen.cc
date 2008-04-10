@@ -46,6 +46,21 @@ PrintAttributes (TypeId tid, std::ostream &os)
   os << "</ul>" << std::endl;
 }
 
+void
+PrintTraceSources (TypeId tid, std::ostream &os)
+{
+  os << "<ul>"<<std::endl;
+  for (uint32_t i = 0; i < tid.GetTraceSourceN (); ++i)
+    {
+      os << "<li><b>" << tid.GetTraceSourceName (i) << "</b>: "
+	 << tid.GetTraceSourceHelp (i)
+	 << std::endl;
+      os << "</li>" << std::endl;
+    }
+  os << "</ul>"<<std::endl;
+}
+
+
 class StaticInformation
 {
 public:
@@ -263,29 +278,39 @@ int main (int argc, char *argv[])
 	  std::cout << "Attributes defined for this type:" << std::endl;
 	  PrintAttributes (tid, std::cout);
 	}
-      bool hasAttributesInParent = false;
-      TypeId tmp = tid.GetParent ();
-      while (tmp.GetParent () != tmp)
+      {
+	TypeId tmp = tid.GetParent ();
+	while (tmp.GetParent () != tmp)
+	  {
+	    if (tmp.GetAttributeN () != 0)
+	      {
+		std::cout << "Attributes defined in parent class " << tmp.GetName () << ":<br>" << std::endl;
+		PrintAttributes (tmp, std::cout);
+	      }
+	    tmp = tmp.GetParent ();
+	  }
+      }
+      if (tid.GetTraceSourceN () == 0)
 	{
-	  if (tmp.GetAttributeN () != 0)
-	    {
-	      hasAttributesInParent = true;
-	    }
-	  tmp = tmp.GetParent ();
+	  std::cout << "No TraceSources defined for this type." << std::endl;
 	}
-      if (hasAttributesInParent)
+      else
 	{
-	  tmp = tid.GetParent ();
-	  while (tmp.GetParent () != tmp)
-	    {
-	      if (tmp.GetAttributeN () != 0)
-		{
-		  std::cout << "Attributes defined in parent class " << tmp.GetName () << ":<br>" << std::endl;
-		  PrintAttributes (tmp, std::cout);
-		}
-	      tmp = tmp.GetParent ();
-	    }
+	  std::cout << "TraceSources defined for this type:" << std::endl;
+	  PrintTraceSources (tid, std::cout);
 	}
+      {
+	TypeId tmp = tid.GetParent ();
+	while (tmp.GetParent () != tmp)
+	  {
+	    if (tmp.GetTraceSourceN () != 0)
+	      {
+		std::cout << "TraceSources defined in parent class " << tmp.GetName () << ":<br>" << std::endl;
+		PrintTraceSources (tmp, std::cout);
+	      }
+	    tmp = tmp.GetParent ();
+	  }
+      }
       std::cout << "*/" << std::endl;
     }
 
