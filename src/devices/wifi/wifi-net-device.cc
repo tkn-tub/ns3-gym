@@ -31,6 +31,8 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (WifiNetDevice);
+
 TypeId 
 WifiNetDevice::GetTypeId (void)
 {
