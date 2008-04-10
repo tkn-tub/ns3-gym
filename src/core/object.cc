@@ -37,6 +37,43 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (Object);
 
+Object::AggregateIterator::AggregateIterator ()
+  : m_first (0),
+    m_current (0)
+{}
+
+bool 
+Object::AggregateIterator::HasNext (void) const
+{
+  if (m_current == 0 && m_first != 0)
+    {
+      return true;
+    }
+  if (m_current != 0 && m_current->m_next != PeekPointer (m_first))
+    {
+      return true;
+    }
+  return false;
+}
+Ptr<const Object> 
+Object::AggregateIterator::Next (void)
+{
+  if (m_current == 0)
+    {
+      m_current = m_first;
+    }
+  else
+    {
+      m_current = m_current->m_next;
+    }
+  return m_current;
+}
+Object::AggregateIterator::AggregateIterator (Ptr<const Object> first)
+  : m_first (first),
+    m_current (0)
+{}
+
+
 TypeId 
 Object::GetInstanceTypeId (void) const
 {
@@ -120,6 +157,12 @@ Object::AggregateObject (Ptr<Object> o)
   other->m_next = next;
   NS_ASSERT (CheckLoose ());
   NS_ASSERT (o->CheckLoose ());
+}
+
+Object::AggregateIterator 
+Object::GetAggregateIterator (void) const
+{
+  return AggregateIterator (this);
 }
 
 void 

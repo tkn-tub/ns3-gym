@@ -47,6 +47,20 @@ class Object : public ObjectBase
 public:
   static TypeId GetTypeId (void);
 
+  class AggregateIterator
+  {
+  public:
+    AggregateIterator ();
+
+    bool HasNext (void) const;
+    Ptr<const Object> Next (void);
+  private:
+    friend class Object;
+    AggregateIterator (Ptr<const Object> first);
+    Ptr<const Object> m_first;
+    Ptr<const Object> m_current;
+  };
+
   Object ();
   virtual ~Object ();
 
@@ -100,6 +114,8 @@ public:
    */
   void AggregateObject (Ptr<Object> other);
 
+  AggregateIterator GetAggregateIterator (void) const;
+
 protected:
   /**
    * This method is called by Object::Dispose or by the object's 
@@ -139,6 +155,7 @@ private:
   friend Ptr<T> CopyObject (Ptr<T> object);
 
   friend class ObjectFactory;
+  friend class AggregateIterator;
 
   Ptr<Object> DoGetObject (TypeId tid) const;
   bool Check (void) const;
