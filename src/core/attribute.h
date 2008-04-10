@@ -75,7 +75,6 @@ public:
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) = 0;
 private:
   friend class Attribute;
-  uint32_t m_count;
 };
 
 /**
@@ -130,12 +129,10 @@ private:
  * of this base class are usually provided through the MakeAccessorHelper
  * template functions, hidden behind an ATTRIBUTE_HELPER_* macro.
  */
-class AttributeAccessor
+class AttributeAccessor : public RefCountBase
 {
 public:
   AttributeAccessor ();
-  void Ref (void) const;
-  void Unref (void) const;
   virtual ~AttributeAccessor ();
 
   /**
@@ -157,8 +154,6 @@ public:
    * valid with AttributeChecker::Check.
    */
   virtual bool Get (const ObjectBase * object, Attribute attribute) const = 0;
-private:
-  mutable uint32_t m_count;
 };
 
 /**
@@ -173,12 +168,10 @@ private:
  * Most subclasses of this base class are implemented by the 
  * ATTRIBUTE_HELPER_* macros.
  */
-class AttributeChecker
+class AttributeChecker : public RefCountBase
 {
 public:
   AttributeChecker ();
-  void Ref (void) const;
-  void Unref (void) const;
   virtual ~AttributeChecker ();
   /**
    * \param value a pointer to the value to check
@@ -198,8 +191,6 @@ public:
    * to calling Attribute::DeserializeFromString.
    */
   virtual Attribute Create (void) const = 0;
-private:
-  mutable uint32_t m_count;
 };
 
 } // namespace ns3

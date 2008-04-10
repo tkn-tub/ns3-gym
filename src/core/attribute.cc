@@ -55,42 +55,12 @@ Attribute::DeserializeFromString (std::string value, Ptr<const AttributeChecker>
 }
 
 AttributeAccessor::AttributeAccessor ()
-  : m_count (1)
 {}
-void 
-AttributeAccessor::Ref (void) const
-{
-  m_count++;
-}
-void 
-AttributeAccessor::Unref (void) const
-{
-  m_count--;
-  if (m_count == 0)
-    {
-      delete this;
-    }
-}
 AttributeAccessor::~AttributeAccessor ()
 {}
 
 AttributeChecker::AttributeChecker ()
-  : m_count (1)
 {}
-void 
-AttributeChecker::Ref (void) const
-{
-  m_count++;
-}
-void 
-AttributeChecker::Unref (void) const
-{
-  m_count--;
-  if (m_count == 0)
-    {
-      delete this;
-    }
-}
 AttributeChecker::~AttributeChecker ()
 {}
 
