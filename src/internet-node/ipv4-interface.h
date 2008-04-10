@@ -63,6 +63,8 @@ class TraceContext;
 class Ipv4Interface  : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   Ipv4Interface ();
   virtual ~Ipv4Interface();
 
