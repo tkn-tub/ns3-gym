@@ -33,10 +33,10 @@ NS_LOG_COMPONENT_DEFINE ("WifiChannel");
 namespace ns3 {
 
 TypeId 
-WifiChannel::GetTypdId (void)
+WifiChannel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiChannel")
-    .SetParent<WifiChannel> ()
+    .SetParent<Channel> ()
     .AddConstructor<WifiChannel> ()
     .AddAttribute ("PropagationLossModel", "XXX",
                    Pointer (),

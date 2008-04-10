@@ -47,7 +47,7 @@ class PropagationDelayModel;
 class WifiChannel : public Channel
 {
 public:
-  static TypeId GetTypdId (void);
+  static TypeId GetTypeId (void);
 
   WifiChannel ();
   virtual ~WifiChannel ();
