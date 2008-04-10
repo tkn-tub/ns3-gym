@@ -40,7 +40,7 @@ WifiNetDevice::GetTypeId (void)
                    Pointer (),
                    MakePointerAccessor (&WifiNetDevice::DoGetChannel,
                                         &WifiNetDevice::SetChannel),
-                   MakePointerChecker<Channel> ())
+                   MakePointerChecker<WifiChannel> ())
     .AddAttribute ("Phy", "XXX",
                    Pointer (),
                    MakePointerAccessor (&WifiNetDevice::GetPhy,
