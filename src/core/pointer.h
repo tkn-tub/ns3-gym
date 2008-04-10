@@ -123,7 +123,7 @@ class APointerChecker : public PointerChecker
     return "";
   }
   virtual Attribute Create (void) const {
-    return Attribute::Create<PointerValue> ();
+    return Attribute (ns3::Create<PointerValue> ());
   }
   virtual TypeId GetPointeeTypeId (void) const {
     return T::GetTypeId ();

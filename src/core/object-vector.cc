@@ -38,7 +38,7 @@ ObjectVector::ObjectVector (Attribute value)
 
 ObjectVector::operator Attribute () const
 {
-  return Attribute::Create<ObjectVectorValue> ();
+  return Attribute (ns3::Create<ObjectVectorValue> ());
 }
 
 ObjectVectorValue::ObjectVectorValue ()
@@ -58,7 +58,7 @@ ObjectVectorValue::Get (void) const
 Attribute 
 ObjectVectorValue::Copy (void) const
 {
-  return Attribute::Create<ObjectVectorValue> (*this);
+  return Attribute (ns3::Create<ObjectVectorValue> (*this));
 }
 std::string 
 ObjectVectorValue::SerializeToString (Ptr<const AttributeChecker> checker) const

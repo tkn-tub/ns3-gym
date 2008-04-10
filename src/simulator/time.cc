@@ -312,7 +312,7 @@ TimeUnit<1>::TimeUnit (Attribute value)
 }
 TimeUnit<1>::operator Attribute () const
 {
-  return Attribute::Create<TimeValue> (*this);
+  return Attribute (ns3::Create<TimeValue> (*this));
 }
 
 ATTRIBUTE_VALUE_IMPLEMENT (Time);

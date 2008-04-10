@@ -43,7 +43,7 @@ Enum::Get (void) const
 Attribute
 Enum::Copy (void) const
 {
-  return Attribute::Create<Enum> (*this);
+  return Attribute (ns3::Create<Enum> (*this));
 }
 std::string 
 Enum::SerializeToString (Ptr<const AttributeChecker> checker) const
@@ -89,7 +89,7 @@ Enum::Enum (Attribute value)
 }
 Enum::operator Attribute () const
 {
-  return Attribute::Create<Enum> (*this);
+  return Attribute (ns3::Create<Enum> (*this));
 }
 
 
@@ -152,7 +152,7 @@ EnumChecker::GetTypeConstraints (void) const
 Attribute 
 EnumChecker::Create (void) const
 {
-  return Attribute::Create<Enum> ();
+  return Attribute (ns3::Create<Enum> ());
 }
 
 

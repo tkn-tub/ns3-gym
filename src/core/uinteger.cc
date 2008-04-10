@@ -88,7 +88,7 @@ Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max, std
       return oss.str ();
     }
     virtual Attribute Create (void) const {
-      return Attribute::Create<UintegerValue> ();
+      return Attribute (ns3::Create<UintegerValue> ());
     }
     uint64_t m_minValue;
     uint64_t m_maxValue;

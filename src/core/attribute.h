@@ -23,6 +23,7 @@
 #include <string>
 #include <stdint.h>
 #include "ptr.h"
+#include "ref-count-base.h"
 
 namespace ns3 {
 
@@ -34,17 +35,14 @@ class ObjectBase;
 /**
  * \brief Hold a value for an Attribute.
  *
- * Instances of this class are usually created by Attribute::Create<> and
- * should always be wrapped into an Attribute object.
+ * Instances of this class should always be wrapped into an Attribute object.
  * Most subclasses of this base class are implemented by the 
  * ATTRIBUTE_HELPER_* macros.
  */
-class AttributeValue
+class AttributeValue : public RefCountBase
 {
 public:
   AttributeValue ();
-  AttributeValue (const AttributeValue &o);
-  AttributeValue &operator = (const AttributeValue &o);
   virtual ~AttributeValue ();
 
   /**
@@ -94,9 +92,6 @@ class Attribute
 {
 public:
   Attribute ();
-  Attribute (const Attribute &o);
-  Attribute &operator = (const Attribute &o);
-  ~Attribute ();
 
   /**
    * Forward to AttributeValue::Copy
@@ -111,19 +106,6 @@ public:
    */
   bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
-  /**
-   * \returns a new Attribute object which wraps an instance of the requested
-   * subclass of AttributeValue.
-   */
-  template <typename T>
-  static Attribute Create (void);
-  /**
-   * \param a1 a value to pass through to the constructor of the class T.
-   * \returns a new Attribute object which wraps an instance of the requested
-   * subclass of AttributeValue.
-   */
-  template <typename T, typename T1>
-  static Attribute Create (T1 a1);
 
   /**
    * This method performs a dynamic_cast on the underlying AttributeValue.
@@ -135,9 +117,9 @@ public:
   template <typename T>
   T DynCast (void) const;
 
+  Attribute (Ptr<AttributeValue> value);
 private:
-  Attribute (AttributeValue *value);
-  AttributeValue *m_value;
+  Ptr<AttributeValue> m_value;
 };
 
 /**
@@ -230,23 +212,10 @@ namespace ns3 {
  ********************************************************/
 
 template <typename T>
-Attribute 
-Attribute::Create (void)
-{
-  return Attribute (new T ());
-}
-template <typename T, typename T1>
-Attribute 
-Attribute::Create (T1 a1)
-{
-  return Attribute (new T (a1));
-}
-
-template <typename T>
 T
 Attribute::DynCast (void) const
 {
-  return dynamic_cast<T> (m_value);
+  return dynamic_cast<T> (PeekPointer (m_value));
 }
 
 } // namespace ns3

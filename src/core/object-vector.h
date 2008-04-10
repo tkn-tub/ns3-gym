@@ -100,7 +100,7 @@ public:
     return T::GetTypeId ().GetName ();
   }
   virtual Attribute Create (void) const {
-    return Attribute::Create<ObjectVectorValue> ();
+    return Attribute (ns3::Create<ObjectVectorValue> ());
   }
 };
 

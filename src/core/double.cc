@@ -88,7 +88,7 @@ Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max, std::stri
       return oss.str ();
     }
     virtual Attribute Create (void) const {
-      return Attribute::Create<DoubleValue> ();
+      return Attribute (ns3::Create<DoubleValue> ());
     }
     double m_minValue;
     double m_maxValue;

@@ -46,7 +46,7 @@ MakeSimpleAttributeChecker (std::string name)
       return "";
     }
     virtual Attribute Create (void) const {
-      return Attribute::Create<T> ();
+      return Attribute (ns3::Create<T> ());
     }
     std::string m_type;
   } *checker = new SimpleAttributeChecker ();
@@ -168,7 +168,7 @@ MakeSimpleAttributeChecker (std::string name)
   }									\
   Attribute								\
   type##Value::Copy (void) const {					\
-    return Attribute::Create<type##Value> (*this);			\
+    return Attribute (ns3::Create<type##Value> (*this));                \
   }									\
   type##Value::type##Value (Attribute value)				\
   {									\
@@ -181,7 +181,7 @@ MakeSimpleAttributeChecker (std::string name)
   }									\
   type##Value::operator Attribute () const				\
   {									\
-    return Attribute::Create<type##Value> (*this);			\
+    return Attribute (ns3::Create<type##Value> (*this));                \
   }
 
 /**
@@ -241,7 +241,7 @@ MakeSimpleAttributeChecker (std::string name)
   }									\
   type::operator Attribute () const					\
   {									\
-    return Attribute::Create<type##Value> (*this);			\
+    return Attribute (ns3::Create<type##Value> (*this));                \
   }
 
 

@@ -93,7 +93,7 @@ MakeIntegerChecker (int64_t min, int64_t max, std::string name)
       return oss.str ();
     }
     virtual Attribute Create (void) const {
-      return Attribute::Create<IntegerValue> ();
+      return Attribute (ns3::Create<IntegerValue> ());
     }
     int64_t m_minValue;
     int64_t m_maxValue;

@@ -311,7 +311,7 @@ RandomVariable::RandomVariable (Attribute value)
 }
 RandomVariable::operator Attribute () const
 {
-  return Attribute::Create<RandomVariableValue> (*this);
+  return Attribute (ns3::Create<RandomVariableValue> (*this));
 }
 
 ATTRIBUTE_VALUE_IMPLEMENT (RandomVariable);
