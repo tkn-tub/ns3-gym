@@ -45,10 +45,6 @@ Object::AggregateIterator::AggregateIterator ()
 bool 
 Object::AggregateIterator::HasNext (void) const
 {
-  if (m_current == 0 && m_first != 0)
-    {
-      return true;
-    }
   if (m_current != 0 && m_current->m_next != PeekPointer (m_first))
     {
       return true;
@@ -58,19 +54,12 @@ Object::AggregateIterator::HasNext (void) const
 Ptr<const Object> 
 Object::AggregateIterator::Next (void)
 {
-  if (m_current == 0)
-    {
-      m_current = m_first;
-    }
-  else
-    {
-      m_current = m_current->m_next;
-    }
+  m_current = m_current->m_next;
   return m_current;
 }
 Object::AggregateIterator::AggregateIterator (Ptr<const Object> first)
   : m_first (first),
-    m_current (0)
+    m_current (first)
 {}
 
 

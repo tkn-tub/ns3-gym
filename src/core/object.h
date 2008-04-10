@@ -47,12 +47,28 @@ class Object : public ObjectBase
 public:
   static TypeId GetTypeId (void);
 
+  /**
+   * \brief Iterate over the objects aggregated to an ns3::Object.
+   *
+   * This iterator does not allow you to iterate over the initial
+   * object used to call Object::GetAggregateIterator. 
+   *
+   * Note: this is a java-style iterator.
+   */
   class AggregateIterator
   {
   public:
     AggregateIterator ();
 
+    /**
+     * \returns true if HasNext can be called and return a non-null
+     *          pointer, false otherwise.
+     */
     bool HasNext (void) const;
+
+    /**
+     * \returns the next aggregated object.
+     */
     Ptr<const Object> Next (void);
   private:
     friend class Object;
@@ -114,6 +130,14 @@ public:
    */
   void AggregateObject (Ptr<Object> other);
 
+  /**
+   * \returns an iterator to the first object aggregated to this
+   *          object.
+   *
+   * If no objects are aggregated to this object, then, the returned
+   * iterator will be empty and AggregateIterator::HasNext will
+   * always return false.
+   */
   AggregateIterator GetAggregateIterator (void) const;
 
 protected:
