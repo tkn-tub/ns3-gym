@@ -26,16 +26,17 @@ PrintAttributes (TypeId tid, std::ostream &os)
 	}
       os << "</li>" << std::endl;
       uint32_t flags = tid.GetAttributeFlags (j);
+      Ptr<const AttributeAccessor> accessor = tid.GetAttributeAccessor (j);
       os << "    <li>Flags: ";
-      if (flags & TypeId::ATTR_SET)
+      if (flags & TypeId::ATTR_SET && accessor->HasSetter ())
 	{
 	  os << "write ";
 	}
-      if (flags & TypeId::ATTR_GET)
+      if (flags & TypeId::ATTR_GET && accessor->HasGetter ())
 	{
 	  os << "read ";
 	}
-      if (flags & TypeId::ATTR_CONSTRUCT)
+      if (flags & TypeId::ATTR_CONSTRUCT && accessor->HasSetter ())
 	{
 	  os << "construct ";
 	}
