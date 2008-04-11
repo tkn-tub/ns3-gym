@@ -230,7 +230,7 @@ std::istream& operator>> (std::istream& is, Time & time)
       is.setstate (std::ios_base::failbit);
       return is;
     }
-  std::string trailer = value.substr(n, value.size ()-1-n);
+  std::string trailer = value.substr(n, value.size ()-n);
   std::istringstream iss;
   iss.str (value.substr(0, n));
 
