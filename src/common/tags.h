@@ -63,15 +63,18 @@ public:
   };
 private:
   struct TagData {
-    struct TagData *m_next;
-    uint32_t m_id;
-    uint32_t m_count;
-    uint8_t *m_data;
+      uint8_t m_data[Tags::SIZE];
+      struct TagData *m_next;
+      uint32_t m_id;
+      uint32_t m_count;
   };
 
   bool Remove (uint32_t id);
-  struct Tags::TagData *AllocData (uint32_t size) const;
+  struct Tags::TagData *AllocData (void) const;
   void FreeData (struct TagData *data) const;
+
+  static struct Tags::TagData *gFree;
+  static uint32_t gN_free;
 
   struct TagData *m_next;
 };
@@ -105,11 +108,11 @@ Tags::Add (T const&tag) const
     {
       NS_ASSERT (cur->m_id != T::GetUid ());
     }
-  struct TagData *newStart = AllocData (Tags::SIZE);
+  struct TagData *newStart = AllocData ();
   newStart->m_count = 1;
   newStart->m_next = 0;
   newStart->m_id = T::GetUid ();
-  void *buf = newStart->m_data;
+  void *buf = &newStart->m_data;
   new (buf) T (tag);
   newStart->m_next = m_next;
   const_cast<Tags *> (this)->m_next = newStart;
@@ -149,7 +152,7 @@ Tags::Peek (T &tag) const
       if (cur->m_id == T::GetUid ()) 
         {
           /* found tag */
-          T *data = reinterpret_cast<T *> (cur->m_data);
+          T *data = reinterpret_cast<T *> (&cur->m_data);
           tag = T (*data);
           return true;
         }
