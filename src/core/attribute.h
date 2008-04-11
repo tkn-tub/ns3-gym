@@ -154,6 +154,17 @@ public:
    * valid with AttributeChecker::Check.
    */
   virtual bool Get (const ObjectBase * object, Attribute attribute) const = 0;
+
+  /**
+   * \return true if this accessor supports the Get operation, false
+   *         otherwise.
+   */
+  virtual bool HasGetter (void) const = 0;
+  /**
+   * \return true if this accessor supports the Set operation, false
+   *         otherwise.
+   */
+  virtual bool HasSetter (void) const = 0;
 };
 
 /**

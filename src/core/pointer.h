@@ -222,6 +222,12 @@ MakePointerAccessor (Ptr<U> T::*memberVariable)
     virtual Ptr<U> DoGet (const T *object) const {
       return object->*m_memberVariable;
     }
+    virtual bool HasGetter (void) const {
+      return true;
+    }
+    virtual bool HasSetter (void) const {
+      return true;
+    }
   } *spec = new MemberVariable ();
   spec->m_memberVariable = memberVariable;
   return Ptr<const AttributeAccessor> (spec, false);
@@ -241,6 +247,12 @@ MakePointerAccessor (void (T::*setter) (Ptr<U>))
       return 0;
       //return (object->*m_getter) ();
     }
+    virtual bool HasGetter (void) const {
+      return false;
+    }
+    virtual bool HasSetter (void) const {
+      return true;
+    }
   } *spec = new MemberMethod ();
   spec->m_setter = setter;
   return Ptr<const AttributeAccessor> (spec, false);
@@ -258,6 +270,12 @@ MakePointerAccessor (Ptr<U> (T::*getter) (void) const)
     }
     virtual Ptr<U> DoGet (const T *object) const {
       return (object->*m_getter) ();
+    }
+    virtual bool HasGetter (void) const {
+      return true;
+    }
+    virtual bool HasSetter (void) const {
+      return false;
     }
   } *spec = new MemberMethod ();
   spec->m_getter = getter;
@@ -284,6 +302,12 @@ MakePointerAccessor (Ptr<U> (T::*getter) (void) const,
     }
     virtual Ptr<U> DoGet (const T *object) const {
       return (object->*m_getter) ();
+    }
+    virtual bool HasGetter (void) const {
+      return true;
+    }
+    virtual bool HasSetter (void) const {
+      return true;
     }
   } *spec = new MemberMethod ();
   spec->m_setter = setter;

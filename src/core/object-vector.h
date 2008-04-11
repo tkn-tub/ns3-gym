@@ -112,6 +112,8 @@ class ObjectVectorAccessor : public AttributeAccessor
 public:
   virtual bool Set (ObjectBase * object, Attribute value) const;
   virtual bool Get (const ObjectBase * object, Attribute value) const;
+  virtual bool HasGetter (void) const;
+  virtual bool HasSetter (void) const;
 private:
   virtual bool DoGetN (const ObjectBase *object, uint32_t *n) const = 0;
   virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i) const = 0;

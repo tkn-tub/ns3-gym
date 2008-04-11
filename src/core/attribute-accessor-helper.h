@@ -102,6 +102,12 @@ DoMakeAccessorHelperOne (U T::*memberVariable)
 	v->Set (object->*m_memberVariable);
 	return true;
       }
+      virtual bool HasGetter (void) const {
+        return true;
+      }
+      virtual bool HasSetter (void) const {
+        return true;
+      }
       
       U T::*m_memberVariable;
     };
@@ -127,6 +133,12 @@ DoMakeAccessorHelperOne (U (T::*getter) (void) const)
 	v->Set ((object->*m_getter) ());
 	return true;
       }
+      virtual bool HasGetter (void) const {
+        return true;
+      }
+      virtual bool HasSetter (void) const {
+        return false;
+      }
       U (T::*m_getter) (void) const;
     };
   return Ptr<const AttributeAccessor> (new MemberMethod (getter), false);
@@ -151,6 +163,12 @@ DoMakeAccessorHelperOne (void (T::*setter) (U))
       }
       virtual bool DoGet (const T *object, V *v) const {
 	return false;
+      }
+      virtual bool HasGetter (void) const {
+        return false;
+      }
+      virtual bool HasSetter (void) const {
+        return true;
       }
       void (T::*m_setter) (U);
     };
@@ -179,6 +197,12 @@ DoMakeAccessorHelperTwo (void (T::*setter) (U),
       virtual bool DoGet (const T *object, W *v) const {
 	v->Set ((object->*m_getter) ());
 	return true;
+      }
+      virtual bool HasGetter (void) const {
+        return true;
+      }
+      virtual bool HasSetter (void) const {
+        return true;
       }
       void (T::*m_setter) (U);
       V (T::*m_getter) (void) const;

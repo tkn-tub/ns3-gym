@@ -101,5 +101,15 @@ ObjectVectorAccessor::Get (const ObjectBase * object, Attribute value) const
     }
   return true;
 }
+bool 
+ObjectVectorAccessor::HasGetter (void) const
+{
+  return true;
+}
+bool 
+ObjectVectorAccessor::HasSetter (void) const
+{
+  return false;
+}
 
 } // name
