@@ -111,12 +111,20 @@ PcapWriter::WriteData (uint8_t const*buffer, uint32_t size)
 void
 PcapWriter::Write32 (uint32_t data)
 {
-  WriteData ((uint8_t*)&data, 4);
+  uint8_t buffer[4];
+  buffer[0] = (data >> 0) & 0xff;
+  buffer[1] = (data >> 8) & 0xff;
+  buffer[2] = (data >> 16) & 0xff;
+  buffer[3] = (data >> 24) & 0xff;
+  WriteData (buffer, 4);
 }
 void
 PcapWriter::Write16 (uint16_t data)
 {
-  WriteData((uint8_t*)&data, 2);
+  uint8_t buffer[2];
+  buffer[0] = (data >> 0) & 0xff;
+  buffer[1] = (data >> 8) & 0xff;
+  WriteData (buffer, 2);
 }
 
 } // namespace ns3
