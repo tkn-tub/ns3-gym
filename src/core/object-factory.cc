@@ -75,7 +75,17 @@ std::ostream & operator << (std::ostream &os, const ObjectFactory &factory)
 }
 std::istream & operator >> (std::istream &is, ObjectFactory &factory)
 {
-  // XXX
+  std::string v;
+  is >> v;
+  std::string::size_type lbracket, rbracket;
+  lbracket = v.find ("[");
+  rbracket = v.find ("]");
+  NS_ASSERT (lbracket != std::string::npos);
+  NS_ASSERT (rbracket != std::string::npos);
+  std::string tid = v.substr (0, lbracket);
+  std::string parameters = v.substr (lbracket+1,rbracket-(lbracket+1));
+  factory.SetTypeId (tid);
+  factory.m_parameters.DeserializeFromString (parameters);
   return is;
 }
 
