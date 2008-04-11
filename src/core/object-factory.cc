@@ -70,7 +70,7 @@ ObjectFactory::Create (void) const
 
 std::ostream & operator << (std::ostream &os, const ObjectFactory &factory)
 {
-  // XXX
+  os << factory.m_tid.GetName () << "[" << factory.m_parameters.SerializeToString () << "]";
   return os;
 }
 std::istream & operator >> (std::istream &is, ObjectFactory &factory)
