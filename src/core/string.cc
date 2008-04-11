@@ -27,6 +27,11 @@ String::Get (void) const
   return m_value;
 }
 
+String::operator std::string () const
+{
+  return m_value;
+}
+
 std::ostream & operator << (std::ostream &os, const String &value)
 {
   os << value.Get ();

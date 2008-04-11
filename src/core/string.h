@@ -22,6 +22,8 @@ public:
   void Set (const char *value);
   std::string Get (void) const;
 
+  operator std::string () const;
+
   ATTRIBUTE_HELPER_HEADER_1 (String);
 private:
   std::string m_value;
