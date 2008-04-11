@@ -118,6 +118,12 @@ private:
   TracedCallback<T,T> m_cb;
 };
 
+template <typename T>
+std::ostream& operator << (std::ostream& os, const TracedValue<T>& rhs)
+{
+  return os<<rhs.Get();
+}
+
 template <typename T, typename U>
 bool operator == (const TracedValue<T> &lhs, const TracedValue<U> &rhs)
 {

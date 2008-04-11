@@ -74,10 +74,8 @@ main (int argc, char *argv[])
   NetDeviceContainer n0 = csma.Install (c0);
   NetDeviceContainer n1 = csma.Install (c1);
 
-
   InternetStackHelper internet;
-  internet.Install (c0);
-  internet.Install (c1);
+  internet.Install (c);
 
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4;

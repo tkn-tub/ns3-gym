@@ -190,7 +190,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
     {
       // This is a call to GetObject
       std::string tidString = item.substr (1, item.size () - 1);
-      NS_LOG_DEBUG ("GetObject="<<tidString<<"on path="<<GetResolvedPath (""));
+      NS_LOG_DEBUG ("GetObject="<<tidString<<" on path="<<GetResolvedPath (""));
       TypeId tid = TypeId::LookupByName (tidString);
       Ptr<Object> object = root->GetObject<Object> (tid);
       if (object == 0)
