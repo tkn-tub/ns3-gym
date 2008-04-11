@@ -107,6 +107,7 @@ private:
   static uint8_t GetType (void);
   friend bool operator < (const Mac48Address &a, const Mac48Address &b);
   friend bool operator == (const Mac48Address &a, const Mac48Address &b);
+  friend std::istream& operator>> (std::istream& is, Mac48Address & address);
 
   uint8_t m_address[6];
 };
@@ -117,7 +118,7 @@ bool operator == (const Mac48Address &a, const Mac48Address &b);
 bool operator != (const Mac48Address &a, const Mac48Address &b);
 bool operator < (const Mac48Address &a, const Mac48Address &b);
 std::ostream& operator<< (std::ostream& os, const Mac48Address & address);
-std::istream& operator>> (std::istream& is, const Mac48Address & address);
+std::istream& operator>> (std::istream& is, Mac48Address & address);
 
 } // namespace ns3
 

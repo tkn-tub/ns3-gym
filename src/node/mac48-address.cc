@@ -200,9 +200,40 @@ std::ostream& operator<< (std::ostream& os, const Mac48Address & address)
   return os;
 }
 
-std::istream& operator>> (std::istream& is, const Mac48Address & address)
+static uint8_t
+AsInt (std::string v)
 {
-  // XXX !
+  std::istringstream iss;
+  iss.str (v);
+  uint32_t retval;
+  iss >> std::hex >> retval >> std::dec;
+  return retval;
+}
+
+std::istream& operator>> (std::istream& is, Mac48Address & address)
+{
+  std::string v;
+  is >> v;
+
+  std::string::size_type col = 0;
+  for (uint8_t i = 0; i < 6; ++i)
+    {
+      std::string tmp;
+      std::string::size_type next;
+      next = v.find (":", col);
+      if (next == std::string::npos)
+	{
+	  tmp = v.substr (col, v.size ()-col);
+	  address.m_address[i] = AsInt (tmp);
+	  break;
+	}
+      else
+	{
+	  tmp = v.substr (col, next-col);
+	  address.m_address[i] = AsInt (tmp);
+	  col = next + 1;
+	}
+    }
   return is;
 }
 
