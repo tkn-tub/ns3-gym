@@ -187,10 +187,11 @@ std::string
 AttributeList::SerializeToString (void) const
 {
   std::ostringstream oss;
-  for (Attrs::const_iterator i = m_attributes.begin (); i != m_attributes.end (); i++)
+  for (Attrs::const_iterator i = m_attributes.begin (); i != m_attributes.end ();)
     {
       std::string name = LookupAttributeFullNameByChecker (i->checker);
       oss << name << "=" << i->value.SerializeToString (i->checker);
+      i++;
       if (i != m_attributes.end ())
         {
           oss << "|";
