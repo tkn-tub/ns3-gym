@@ -114,6 +114,13 @@ Object::AggregateObject (Ptr<Object> o)
   NS_ASSERT (!o->m_disposed);
   NS_ASSERT (CheckLoose ());
   NS_ASSERT (o->CheckLoose ());
+
+  if (DoGetObject (o->m_tid))
+    {
+      NS_FATAL_ERROR ("Object::AggregateObject(): "
+       "Multiple aggregation of objects of type " << o->m_tid.GetName ());
+    }
+
   Object *other = PeekPointer (o);
   Object *next = m_next;
   m_next = other->m_next;
