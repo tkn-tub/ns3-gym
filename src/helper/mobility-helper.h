@@ -34,7 +34,7 @@ class MobilityModel;
 /**
  * \brief assign positions and mobility models to nodes.
  *
- * MobilityHelper::Layout is the most important method here.
+ * MobilityHelper::Install is the most important method here.
  */
 class MobilityHelper
 {
@@ -43,14 +43,14 @@ public:
   ~MobilityHelper ();
 
   /**
-   * After this method is called, every call to MobilityHelper::Layout
+   * After this method is called, every call to MobilityHelper::Install
    * will also attach to the new ns3::MobilityModel an ns3::MobilityModelNotifier
    * which can be used to listen to CourseChange events.
    */
   void EnableNotifier (void);
   /**
    * After this method is called, no ns3::MobilityModelNotifier object will
-   * be associated to any new ns3::MobilityModel created by MobilityHelper::Layout.
+   * be associated to any new ns3::MobilityModel created by MobilityHelper::Install.
    * This will make it impossible to listen to "CourseChange" events from these
    * new ns3::MobilityModel instances.
    */
@@ -60,7 +60,7 @@ public:
    * \param allocator allocate initial node positions
    *
    * Set the position allocator which will be used to allocate
-   * the initial position of every node in MobilityModel::Layout.
+   * the initial position of every node in MobilityModel::Install.
    */
   void SetPositionAllocator (Ptr<PositionAllocator> allocator);
 
@@ -117,7 +117,7 @@ public:
    * \param n9 the name of the attribute to set in the mobility model.
    * \param v9 the value of the attribute to set in the mobility model.
    *
-   * Calls to MobilityHelper::Layout will create an instance of a matching 
+   * Calls to MobilityHelper::Install will create an instance of a matching 
    * mobility model for each node.
    */
   void SetMobilityModel (std::string type,
@@ -136,9 +136,9 @@ public:
    *
    * Push an item on the top of the stack of "reference mobility models".
    * The input item should be a node instance to which a mobility model
-   * has already been aggregated (usually by a call to Layout).
+   * has already been aggregated (usually by a call to Install).
    *
-   * If this this stack is not empty when MobilityHelper::Layout
+   * If this this stack is not empty when MobilityHelper::Install
    * is called, the model from the top of the stack is used
    * to create a ns3::HierarchicalMobilityModel to make the
    * newly-created models define their positions relative to that
@@ -173,13 +173,13 @@ public:
    * ns3::MobilityModelNotifier to generate 'CourseChange' events based on the 
    * boolean flag set by MobilityHelper::EnableNotifier and MobilityHelper::DisableNotifier.
    */
-  void Layout (NodeContainer container);
+  void Install (NodeContainer container);
 
   /**
-   * Perform the work of MobilityHelper::Layout on _all_ nodes which
+   * Perform the work of MobilityHelper::Install on _all_ nodes which
    * exist in the simulation.
    */
-  void LayoutAll (void);
+  void InstallAll (void);
 private:
 
   std::vector<Ptr<MobilityModel> > m_mobilityStack;

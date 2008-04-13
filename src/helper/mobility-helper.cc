@@ -122,7 +122,7 @@ MobilityHelper::GetMobilityModelType (void) const
 }
 
 void 
-MobilityHelper::Layout (NodeContainer c)
+MobilityHelper::Install (NodeContainer c)
 {
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
@@ -167,9 +167,9 @@ MobilityHelper::Layout (NodeContainer c)
 }
 
 void 
-MobilityHelper::LayoutAll (void)
+MobilityHelper::InstallAll (void)
 {
-  Layout (NodeContainer::GetGlobal ());
+  Install (NodeContainer::GetGlobal ());
 }
 
 } // namespace ns3

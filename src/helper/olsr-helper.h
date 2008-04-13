@@ -41,9 +41,9 @@ public:
 		 std::string n6 = "", Attribute v6 = Attribute (),
 		 std::string n7 = "", Attribute v7 = Attribute ());
 
-  void Enable (NodeContainer container);
-  void Enable (Ptr<Node> node);
-  void EnableAll (void);
+  void Install (NodeContainer container);
+  void Install (Ptr<Node> node);
+  void InstallAll (void);
 private:
   ObjectFactory m_agentFactory;
 };

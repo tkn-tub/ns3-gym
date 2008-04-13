@@ -37,7 +37,10 @@ public:
    * \param c the set of nodes
    *
    * For each node in the input container, aggregate implementations
-   * of the ns3::Ipv4, ns3::Udp, and, ns3::Tcp classes.
+   * of the ns3::Ipv4, ns3::Udp, and, ns3::Tcp classes.  The program
+   * will assert if this method is called on a container with a node
+   * that already has an Ipv4 object aggregated to it.
+   * 
    */
   void Install (NodeContainer c);
 

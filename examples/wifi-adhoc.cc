@@ -126,7 +126,7 @@ Experiment::Run (const WifiHelper &wifi)
   mobility.SetPositionAllocator (positionAlloc);
   mobility.SetMobilityModel ("ns3::StaticMobilityModel");
 
-  mobility.Layout (c);
+  mobility.Install (c);
 
   PacketSocketAddress socket;
   socket.SetSingleDevice(devices.Get (0)->GetIfIndex ());

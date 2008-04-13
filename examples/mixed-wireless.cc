@@ -166,7 +166,7 @@ main (int argc, char *argv[])
                               "Bounds", Rectangle (0, 1000, 0, 1000),
                               "Speed", ConstantVariable (2000),
                               "Pause", ConstantVariable (0.2));
-  mobility.Layout (backbone);
+  mobility.Install (backbone);
 
   /////////////////////////////////////////////////////////////////////////// 
   //                                                                       //
@@ -178,17 +178,19 @@ main (int argc, char *argv[])
   // the "172.16 address space
   ipAddrs.SetBase ("172.16.0.0", "255.255.255.0");
 
+
   for (uint32_t i = 0; i < backboneNodes; ++i)
     {
       NS_LOG_INFO ("Configuring local area network for backbone node " << i);
       //
-      // Create a container to manage the nodes of the LAN.  Pick one of 
-      // the backbone nodes to be part of the LAN and first add it to 
-      // the container.  Then create the rest of the nodes we'll need.
+      // Create a container to manage the nodes of the LAN.  We need
+      // two containers here; one with all of the new nodes, and one
+      // with all of the nodes including new and existing nodes
       //
-      NodeContainer lan;
-      lan.Add (backbone.Get (i));
-      lan.Create (lanNodes - 1);
+      NodeContainer newLanNodes;
+      newLanNodes.Create (lanNodes - 1);
+      // Now, create the container with all nodes on this link
+      NodeContainer lan (backbone.Get (i), newLanNodes);
       //
       // Create the CSMA net devices and install them into the nodes in our 
       // collection.
@@ -198,9 +200,9 @@ main (int argc, char *argv[])
       csma.SetChannelParameter ("Delay", MilliSeconds (2));
       NetDeviceContainer lanDevices = csma.Install (lan);
       //
-      // Add the IPv4 protocol stack to the nodes in our container
+      // Add the IPv4 protocol stack to the new LAN nodes
       //
-      internet.Install (lan);
+      internet.Install (newLanNodes);
       //
       // Assign IPv4 addresses to the device drivers (actually to the 
       // associated IPv4 interfaces) we just created.
@@ -227,13 +229,14 @@ main (int argc, char *argv[])
     {
       NS_LOG_INFO ("Configuring wireless network for backbone node " << i);
       //
-      // Create a container to manage the nodes of the network.  Pick one of 
-      // the backbone nodes to be part of the network and first add it to 
-      // the container.  Then create the rest of the nodes we'll need.
+      // Create a container to manage the nodes of the LAN.  We need
+      // two containers here; one with all of the new nodes, and one
+      // with all of the nodes including new and existing nodes
       //
-      NodeContainer infra;
-      infra.Add (backbone.Get (i));
-      infra.Create (infraNodes - 1);
+      NodeContainer newInfraNodes;
+      newInfraNodes.Create (infraNodes - 1);
+      // Now, create the container with all nodes on this link
+      NodeContainer infra (backbone.Get (i), newInfraNodes);
       //
       // Create another ad hoc network and devices
       //
@@ -244,7 +247,7 @@ main (int argc, char *argv[])
 
       // Add the IPv4 protocol stack to the nodes in our container
       //
-      internet.Install (infra);
+      internet.Install (newInfraNodes);
       //
       // Assign IPv4 addresses to the device drivers (actually to the associated
       // IPv4 interfaces) we just created.
@@ -272,7 +275,7 @@ main (int argc, char *argv[])
                                  "Bounds", Rectangle (-25, 25, -25, 25),
                                  "Speed", ConstantVariable (30),
                                  "Pause", ConstantVariable (0.4));
-      mobility.Layout (infra);
+      mobility.Install (infra);
     }
   /////////////////////////////////////////////////////////////////////////// 
   //                                                                       //
@@ -282,7 +285,7 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Enabling OLSR routing on all backbone nodes");
   OlsrHelper olsr;
-  olsr.Enable (backbone);
+  olsr.Install (backbone);
 
   /////////////////////////////////////////////////////////////////////////// 
   //                                                                       //

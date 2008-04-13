@@ -17,6 +17,10 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+#include "ns3/assert.h"
+#include "ns3/log.h"
+#include "ns3/object.h"
+#include "ns3/ipv4.h"
 #include "internet-stack-helper.h"
 #include "ns3/internet-stack.h"
 #include "ns3/packet-socket-factory.h"
@@ -33,6 +37,12 @@ InternetStackHelper::Install (NodeContainer c)
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
       Ptr<Node> node = *i;
+      if (node->GetObject<Ipv4> () != 0)
+        {
+          NS_FATAL_ERROR ("InternetStackHelper::Install(): Aggregating " 
+             "an InternetStack to a node with an existing Ipv4 object");
+          return;
+        } 
       AddInternetStack (node);
       Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
       node->AggregateObject (factory);

@@ -51,26 +51,32 @@ OlsrHelper::SetAgent (std::string tid,
 }
 
 void 
-OlsrHelper::Enable (NodeContainer container)
+OlsrHelper::Install (NodeContainer container)
 {
   for (NodeContainer::Iterator i = container.Begin (); i != container.End (); ++i)
     {
       Ptr<Node> node = *i;
-      Enable (node);
+      Install (node);
     }
 }
 void 
-OlsrHelper::Enable (Ptr<Node> node)
+OlsrHelper::Install (Ptr<Node> node)
 {
+  if (node->GetObject<olsr::Agent> () != 0)
+    {
+      NS_FATAL_ERROR ("OlsrHelper::Install(): Aggregating "
+         "an Olsr Agent to a node with an existing Olsr Agent");
+      return;
+    }
   Ptr<olsr::Agent> agent = m_agentFactory.Create<olsr::Agent> ();
   agent->SetNode (node);
   node->AggregateObject (agent);
   agent->Start ();
 }
 void 
-OlsrHelper::EnableAll (void)
+OlsrHelper::InstallAll (void)
 {
-  Enable (NodeContainer::GetGlobal ());
+  Install (NodeContainer::GetGlobal ());
 }
 
 } // namespace ns3
