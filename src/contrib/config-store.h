@@ -7,6 +7,10 @@
 
 namespace ns3 {
 
+/**
+ * \brief Store and load simulation attribute configuration
+ *
+ */
 class ConfigStore : public ObjectBase
 {
 public:
@@ -15,6 +19,11 @@ public:
 
   ConfigStore ();
 
+  /**
+   * Depending on which attribute was set:
+   *  - Store simulation configuration in file and exit
+   *  - Load simulation configuration from file and proceed.
+   */
   void Configure (void);
 
 private:

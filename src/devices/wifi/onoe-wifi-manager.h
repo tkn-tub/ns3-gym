@@ -25,6 +25,15 @@
 
 namespace ns3 {
 
+/**
+ * \brief an implementation of rate control algorithm developed 
+ *        by Atsushi Onoe
+ *
+ * This algorithm is well known because it has been used as the default
+ * rate control algorithm for the madwifi driver. I am not aware of
+ * any publication or reference about this algorithm beyond the madwifi
+ * source code.
+ */
 class OnoeWifiManager : public WifiRemoteStationManager
 {
 public:
@@ -41,15 +50,6 @@ private:
   uint32_t m_raiseThreshold;
 };
 
-/**
- * \brief an implementation of rate control algorithm developed 
- *        by Atsushi Onoe
- *
- * This algorithm is well known because it has been used as the default
- * rate control algorithm for the madwifi driver. I am not aware of
- * any publication or reference about this algorithm beyond the madwifi
- * source code.
- */
 class OnoeWifiRemoteStation : public WifiRemoteStation
 {
 public:
