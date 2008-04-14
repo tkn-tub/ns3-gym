@@ -340,9 +340,6 @@ def shutdown():
         run_program(Params.g_options.run, get_command_template())
         raise SystemExit(0)
 
-    if Params.g_options.command_template:
-        Params.fatal("Option --command-template requires the option --run to be given")
-
 def _run_waf_check():
     ## generate the trace sources list docs
     env = Params.g_build.env_of_name('default')
