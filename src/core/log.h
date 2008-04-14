@@ -377,6 +377,7 @@ public:
 #define LogComponentDisable(name,level)
 #define LogComponentEnableAll(level)
 #define LogComponentDisableAll(level)
+#define LogRegisterTimePrinter(printer)
 
 #endif /* LOG_ENABLE */
 

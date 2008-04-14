@@ -411,11 +411,13 @@ void Simulator::EnableLogTo (char const *filename)
   GetPriv ()->EnableLogTo (filename);
 }
 
+#ifdef NS3_LOG_ENABLE
 static void
 TimePrinter (std::ostream &os)
 {
   os << Simulator::Now ();
 }
+#endif /* NS3_LOG_ENABLE */
 
 Ptr<SimulatorPrivate>
 Simulator::GetPriv (void)
