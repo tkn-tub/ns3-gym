@@ -67,7 +67,7 @@ PrintList::PrintList ()
   std::string::size_type next = 0;
   while (next != std::string::npos)
     {
-      next = env.find_first_of (";", cur);
+      next = env.find_first_of (":", cur);
       std::string tmp = std::string (env, cur, next-cur);
       if (tmp == "print-list")
         {
@@ -115,7 +115,7 @@ LogComponent::EnvVarCheck (char const * name)
   std::string::size_type next = 0;
   while (next != std::string::npos)
     {
-      next = env.find_first_of (";", cur);
+      next = env.find_first_of (":", cur);
       std::string tmp = std::string (env, cur, next-cur);
       std::string::size_type equal = tmp.find ("=");
       std::string component;
@@ -124,7 +124,8 @@ LogComponent::EnvVarCheck (char const * name)
           component = tmp;
           if (component == myName || component == "*")
             {
-              Enable (LOG_DEBUG);
+              int level = LOG_ALL | LOG_PREFIX_TIME | LOG_PREFIX_FUNC;
+              Enable ((enum LogLevel)level);
               return;
             }
         }

@@ -38,16 +38,16 @@
  * messages, use the ns3::LogComponentEnable
  * function or use the NS_LOG environment variable 
  *
- * Use the environment variable NS_LOG to define a ';'-separated list of
+ * Use the environment variable NS_LOG to define a ':'-separated list of
  * logging components to enable. For example (using bash syntax), 
  * NS_LOG="OlsrAgent" would enable one component; 
- * NS_LOG="OlsrAgent;Ipv4L3Protocol" would enable two
- * components, etc.  NS_LOG="*" will enable all available log components.
- * For each component, the "debug" log level is enabled by default.
+ * NS_LOG="OlsrAgent:Ipv4L3Protocol" would enable two
+ * components, etc.  NS_LOG="*" will enable all available log components at
+ * all levels.
  *
  * To obtain more components than just debug log level, more components 
  * can be enabled selectively with the following
- * syntax: NS_LOG='Component1=func|param|warn;Component2=error|debug'
+ * syntax: NS_LOG='Component1=func|param|warn:Component2=error|debug'
  * This example would enable the 'func', 'param', and 'warn' log
  * levels for 'Component1' and the 'error' and 'debug' log levels
  * for 'Component2'.  The wildcard can be used here as well.  For example
