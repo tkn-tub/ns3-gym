@@ -416,7 +416,7 @@ CsmaNetDevice::AddQueue (Ptr<Queue> q)
 void CsmaNetDevice::AddReceiveErrorModel (Ptr<ErrorModel> em)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << em << ")");
+  NS_LOG_PARAMS (em);
   
   m_receiveErrorModel = em; 
 }

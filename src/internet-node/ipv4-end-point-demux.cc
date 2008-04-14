@@ -188,15 +188,7 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
   EndPoints retval3; // Matches all but local address
   EndPoints retval4; // Exact match on all 4
   
-  //NS_LOG_PARAMS (this << daddr << dport << saddr << sport);
-  NS_LOG_PARAMS_BEGIN ();
-  NS_LOG_PARAM (this);
-  NS_LOG_PARAM (daddr);
-  NS_LOG_PARAM (dport);
-  NS_LOG_PARAM (saddr);
-  NS_LOG_PARAM (sport);
-  NS_LOG_PARAM (incomingInterface);
-  NS_LOG_PARAMS_END ();
+  NS_LOG_PARAMS (this << daddr << dport << saddr << sport << incomingInterface);
   NS_LOG_DEBUG ("Looking up endpoint for destination address " << daddr);
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {

@@ -97,12 +97,6 @@ namespace ns3 {
 struct EndParameterListStruct {};
 extern EndParameterListStruct EndParameterList;
 
-struct ParameterName
-{
-  const char *name;
-  ParameterName (const char *name_) : name (name_) {}
-};
-
 class ParameterLogger : public std::ostream
 {
   int m_itemNumber;
@@ -144,13 +138,6 @@ public:
         break;
       }
     m_itemNumber++;
-    return *this;
-  }
-
-  ParameterLogger&
-  operator << (ParameterName paramName)
-  {
-    m_parameterName = paramName.name;
     return *this;
   }
   
@@ -238,19 +225,6 @@ extern ParameterLogger g_parameterLogger;
   while (false)
 
 
-#define NS_LOG_PARAMS_BEGIN()                           \
-      if (g_log.IsEnabled (ns3::LOG_PARAM))             \
-        {                                               \
-          g_parameterLogger << __PRETTY_FUNCTION__;
-
-#define NS_LOG_PARAM(param) \
-          g_parameterLogger << ParameterName (#param) << param;
-
-#define NS_LOG_PARAMS_END()                             \
-          g_parameterLogger << EndParameterList;        \
-        }
-
-
 #define NS_LOG_LOGIC(msg) \
   NS_LOG(ns3::LOG_LOGIC, msg)
 
@@ -271,9 +245,6 @@ extern ParameterLogger g_parameterLogger;
 #define NS_LOG_INFO(msg)
 #define NS_LOG_FUNCTION
 #define NS_LOG_PARAMS(parameters)
-#define NS_LOG_PARAMS_BEGIN()
-#define NS_LOG_PARAM(param)
-#define NS_LOG_PARAMS_END()
 #define NS_LOG_LOGIC(msg)
 #define NS_LOG_UNCOND(msg)
 
