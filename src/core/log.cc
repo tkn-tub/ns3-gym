@@ -18,8 +18,6 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-// What about print-list!!!!!!???????
-
 #ifdef NS3_LOG_ENABLE
 
 #include <list>
@@ -35,6 +33,8 @@
 #endif
 
 namespace ns3 {
+
+LogTimePrinter g_logTimePrinter = 0;
 
 typedef std::list<std::pair <std::string, LogComponent *> > ComponentList;
 typedef std::list<std::pair <std::string, LogComponent *> >::iterator ComponentListI;
@@ -173,9 +173,13 @@ LogComponent::EnvVarCheck (char const * name)
                     {
                       level |= LOG_ALL;
                     }
-                  else if (lev == "prefix")
+                  else if (lev == "prefix_func")
                     {
-                      level |= LOG_PREFIX_ALL;
+                      level |= LOG_PREFIX_FUNC;
+                    }
+                  else if (lev == "prefix_time")
+                    {
+                      level |= LOG_PREFIX_TIME;
                     }
                   else if (lev == "level_error")
                     {
@@ -358,12 +362,20 @@ LogComponentPrintList (void)
     }
 }
 
-ParameterLogger::ParameterLogger ()
-  : m_itemNumber (0)
+void LogRegisterTimePrinter (LogTimePrinter printer)
+{
+  g_logTimePrinter = printer;
+}
+LogTimePrinter LogGetTimePrinter(void)
+{
+  return g_logTimePrinter;
+}
+
+
+ParameterLogger::ParameterLogger (std::ostream &os)
+  : m_itemNumber (0),
+    m_os (os)
 {}
-
-ParameterLogger g_parameterLogger;
-
 
 } // namespace ns3
 

@@ -24,6 +24,7 @@
 
 #include "ns3/ptr.h"
 #include "ns3/assert.h"
+#include "ns3/log.h"
 
 
 #include <math.h>
@@ -47,7 +48,6 @@ std::cout << "SIMU TRACE " << x << std::endl;
 
 
 namespace ns3 {
-
 
 class SimulatorPrivate : public Object
 {
@@ -411,12 +411,18 @@ void Simulator::EnableLogTo (char const *filename)
   GetPriv ()->EnableLogTo (filename);
 }
 
+static void
+TimePrinter (std::ostream &os)
+{
+  os << Simulator::Now ();
+}
 
 Ptr<SimulatorPrivate>
 Simulator::GetPriv (void)
 {
   if (m_priv == 0) 
     {
+      LogRegisterTimePrinter (&TimePrinter);
       m_priv = CreateObject<SimulatorPrivate> ();
       Ptr<Scheduler> scheduler = CreateObject<SchedulerMap> ();
       m_priv->SetScheduler (scheduler);

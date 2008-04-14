@@ -68,8 +68,27 @@
  * ns3::LogComponentDisable functions or with the NS_LOG
  * environment variable.
  */
-#define NS_LOG_COMPONENT_DEFINE(name)                                \
+#define NS_LOG_COMPONENT_DEFINE(name)                           \
   static ns3::LogComponent g_log = ns3::LogComponent (name)
+
+#define APPEND_TIME_PREFIX                                      \
+  if (g_log.IsEnabled (ns3::LOG_PREFIX_TIME))                   \
+    {                                                           \
+      LogTimePrinter printer = LogGetTimePrinter ();            \
+      if (printer != 0)                                         \
+        {                                                       \
+          (*printer) (std::clog);                               \
+          std::clog << " ";                                     \
+        }                                                       \
+    }
+
+#define APPEND_FUNC_PREFIX                                      \
+  if (g_log.IsEnabled (ns3::LOG_PREFIX_FUNC))                   \
+    {                                                           \
+      std::clog << g_log.Name () << ":" <<                      \
+        __FUNCTION__ << "(): ";                                 \
+    }                                                           \
+
 
 /**
  * \ingroup logging
@@ -90,11 +109,8 @@
     {                                                           \
       if (g_log.IsEnabled (level))                              \
         {                                                       \
-          if (g_log.IsEnabled (ns3::LOG_PREFIX_ALL))            \
-            {                                                   \
-              std::clog << g_log.Name () << ":" <<              \
-                __FUNCTION__ << "(): ";                         \
-            }                                                   \
+          APPEND_TIME_PREFIX;                                   \
+          APPEND_FUNC_PREFIX;                                   \
           std::clog << msg << std::endl;                        \
         }                                                       \
     }                                                           \
@@ -133,9 +149,10 @@
     {                                                   \
       if (g_log.IsEnabled (ns3::LOG_PARAM))             \
         {                                               \
+          APPEND_TIME_PREFIX;                           \
           std::clog << g_log.Name () << ":"             \
                     << __FUNCTION__ << "(";             \
-          g_parameterLogger << parameters;              \
+          ParameterLogger (std::clog)  << parameters;   \
           std::clog << ")" << std::endl;                \
         }                                               \
     }                                                   \
@@ -178,10 +195,11 @@ enum LogLevel {
   LOG_LOGIC          = 0x00000040, // control flow tracing within functions
   LOG_LEVEL_LOGIC    = 0x0000007f,
 
-  LOG_ALL            = 0x7fffffff, // print everything
+  LOG_ALL            = 0x3fffffff, // print everything
   LOG_LEVEL_ALL      = LOG_ALL,
 
-  LOG_PREFIX_ALL     = 0x80000000  // prefix all trace prints with function
+  LOG_PREFIX_FUNC    = 0x80000000, // prefix all trace prints with function
+  LOG_PREFIX_TIME    = 0x40000000  // prefix all trace prints with simulation time
 };
 
 /**
@@ -192,6 +210,9 @@ enum LogLevel {
  * Enable the logging output associated with that log component.
  * The logging output can be later disabled with a call
  * to ns3::LogComponentDisable.
+ *
+ * Same as running your program with the NS_LOG environment
+ * variable set as NS_LOG='name=level'
  */
 void LogComponentEnable (char const *name, enum LogLevel level);
 
@@ -200,6 +221,9 @@ void LogComponentEnable (char const *name, enum LogLevel level);
  * \ingroup logging
  *
  * Enable the logging output for all registered log components.
+ *
+ * Same as running your program with the NS_LOG environment
+ * variable set as NS_LOG='*=level'
  */
 void LogComponentEnableAll (enum LogLevel level);
 
@@ -228,8 +252,16 @@ void LogComponentDisableAll (enum LogLevel level);
  * \ingroup logging
  *
  * Print the list of logging messages available.
+ * Same as running your program with the NS_LOG environment
+ * variable set as NS_LOG=print-list
  */
 void LogComponentPrintList (void);
+
+typedef void (*LogTimePrinter) (std::ostream &os);
+
+void LogRegisterTimePrinter (LogTimePrinter);
+LogTimePrinter LogGetTimePrinter(void);
+
 
 class LogComponent {
 public:
@@ -250,8 +282,9 @@ private:
 class ParameterLogger : public std::ostream
 {
   int m_itemNumber;
+  std::ostream &m_os;
 public:
-  ParameterLogger ();
+  ParameterLogger (std::ostream &os);
 
   template<typename T>
   ParameterLogger& operator<< (T param)
@@ -259,19 +292,16 @@ public:
     switch (m_itemNumber)
       {
       case 0: // first parameter
-        std::clog << param;
+        m_os << param;
         break;
       default: // parameter following a previous parameter
-        std::clog << ", " << param;
+        m_os << ", " << param;
         break;
       }
     m_itemNumber++;
     return *this;
   }
 };
-
-extern ParameterLogger g_parameterLogger;
-
 
 } // namespace ns3
 
