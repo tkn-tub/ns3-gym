@@ -91,7 +91,7 @@ void
 Ipv4Interface::SetMetric (uint16_t metric)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS ("(" << metric << ")");
+  NS_LOG_PARAMS (metric);
   m_metric = metric;
 }
 

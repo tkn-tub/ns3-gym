@@ -736,7 +736,7 @@ void
 Ipv4L3Protocol::SetMetric (uint32_t i, uint16_t metric)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS ("(" << i << ", " << metric << ")");
+  NS_LOG_PARAMS (i << metric);
   Ptr<Ipv4Interface> interface = GetInterface (i);
   interface->SetMetric (metric);
 }
@@ -745,7 +745,7 @@ uint16_t
 Ipv4L3Protocol::GetMetric (uint32_t i) const
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS ("(" << i << ")");
+  NS_LOG_PARAMS (i);
   Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->GetMetric ();
 }
