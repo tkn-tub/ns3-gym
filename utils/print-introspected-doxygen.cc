@@ -316,5 +316,50 @@ int main (int argc, char *argv[])
     }
 
 
+  std::cout << "/*!" << std::endl
+	    << "\\ingroup core" << std::endl
+	    << "\\defgroup TraceSourceList The list of all trace sources." << std::endl;
+  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
+    {
+      TypeId tid = TypeId::GetRegistered (i);
+      if (tid.GetTraceSourceN () == 0 ||
+	  tid.MustHideFromDocumentation ())
+	{
+	  continue;
+	}
+      std::cout << "<b>" << tid.GetName () << "</b><br>" << std::endl
+		<< "<ul>" << std::endl;
+      for (uint32_t j = 0; j < tid.GetTraceSourceN (); ++j)
+	{
+	  std::cout << "<li>" << tid.GetTraceSourceName (j) << ": " << tid.GetTraceSourceHelp (j) << "</li>" << std::endl;
+	}
+      std::cout << "</ul>" << std::endl;
+    }
+  std::cout << "*/" << std::endl;
+
+
+  std::cout << "/*!" << std::endl
+	    << "\\ingroup core" << std::endl
+	    << "\\defgroup AttributeList The list of all attributes." << std::endl;
+  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
+    {
+      TypeId tid = TypeId::GetRegistered (i);
+      if (tid.GetAttributeN () == 0 ||
+	  tid.MustHideFromDocumentation ())
+	{
+	  continue;
+	}
+      std::cout << "<b>" << tid.GetName () << "</b><br>" << std::endl
+		<< "<ul>" << std::endl;
+      for (uint32_t j = 0; j < tid.GetAttributeN (); ++j)
+	{
+	  std::cout << "<li>" << tid.GetAttributeName (j) << ": " << tid.GetAttributeHelp (j) << "</li>" << std::endl;
+	}
+      std::cout << "</ul>" << std::endl;
+    }
+  std::cout << "*/" << std::endl;
+
+
+
   return 0;
 }
