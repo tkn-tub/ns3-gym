@@ -24,6 +24,9 @@
 #include <string>
 #include <iostream>
 
+#ifdef NS3_LOG_ENABLE
+
+
 /**
  * \ingroup core
  * \defgroup logging Logging
@@ -65,65 +68,11 @@
  * ns3::LogComponentDisable functions or with the NS_LOG
  * environment variable.
  */
-
-#ifdef NS3_LOG_ENABLE
-
 #define NS_LOG_COMPONENT_DEFINE(name)                                \
   static ns3::LogComponent g_log = ns3::LogComponent (name)
 
-#else
-
-#define NS_LOG_COMPONENT_DEFINE(name)
-
-#endif
-
-
 /**
  * \ingroup logging
- * \param msg message to output
- *
- * Generate logging output in the "log component" of the 
- * current file. i.e., every call to NS_LOG from within
- * a file implicitely generates out within the component
- * defined with the NS_LOG_COMPONENT_DEFINE macro in the
- * same file.
- */
-
-#ifdef NS3_LOG_ENABLE
-
-
-namespace ns3 {
-
-class ParameterLogger : public std::ostream
-{
-  int m_itemNumber;
-public:
-  ParameterLogger ();
-
-  template<typename T>
-  ParameterLogger& operator<< (T param)
-  {
-    switch (m_itemNumber)
-      {
-      case 0: // first parameter
-        std::clog << param;
-        break;
-      default: // parameter following a previous parameter
-        std::clog << ", " << param;
-        break;
-      }
-    m_itemNumber++;
-    return *this;
-  }
-};
-
-extern ParameterLogger g_parameterLogger;
-
-}
-
-
-
-/**
  * \param level the log level
  * \param msg the message to log
  *
@@ -203,24 +152,7 @@ extern ParameterLogger g_parameterLogger;
     }                                   \
   while (false)
 
-#else
-
-#define NS_LOG(level, msg)
-#define NS_LOG_F(level)
-#define NS_LOG_ERROR(msg)
-#define NS_LOG_WARN(msg)
-#define NS_LOG_DEBUG(msg)
-#define NS_LOG_INFO(msg)
-#define NS_LOG_FUNCTION
-#define NS_LOG_PARAMS(parameters)
-#define NS_LOG_LOGIC(msg)
-#define NS_LOG_UNCOND(msg)
-
-#endif
-
 namespace ns3 {
-
-#ifdef NS3_LOG_ENABLE
 
 enum LogLevel {
   LOG_NONE           = 0x00000000, // no logging
@@ -252,9 +184,6 @@ enum LogLevel {
   LOG_PREFIX_ALL     = 0x80000000  // prefix all trace prints with function
 };
 
-#endif
-
-#ifdef NS3_LOG_ENABLE
 /**
  * \param name a log component name
  * \param level a logging level
@@ -264,7 +193,7 @@ enum LogLevel {
  * The logging output can be later disabled with a call
  * to ns3::LogComponentDisable.
  */
-  void LogComponentEnable (char const *name, enum LogLevel level);
+void LogComponentEnable (char const *name, enum LogLevel level);
 
 /**
  * \param level a logging level
@@ -272,13 +201,9 @@ enum LogLevel {
  *
  * Enable the logging output for all registered log components.
  */
-  void LogComponentEnableAll (enum LogLevel level);
-#else
-#define LogComponentEnable(a,b)
-#define LogComponentEnableAll(a)
-#endif
+void LogComponentEnableAll (enum LogLevel level);
 
-#ifdef NS3_LOG_ENABLE
+
 /**
  * \param name a log component name
  * \param level a logging level
@@ -298,23 +223,13 @@ void LogComponentDisable (char const *name, enum LogLevel level);
  */
 void LogComponentDisableAll (enum LogLevel level);
 
-#else
-#define LogComponentDisable(a,b)
-#define LogComponentDisableAll(a)
-#endif
 
 /**
  * \ingroup logging
  *
  * Print the list of logging messages available.
  */
-#ifdef NS3_LOG_ENABLE
 void LogComponentPrintList (void);
-#else
-#define LogComponentPrintList()
-#endif
-
-#ifdef NS3_LOG_ENABLE
 
 class LogComponent {
 public:
@@ -332,8 +247,53 @@ private:
   bool        m_decorate;
 };
 
-#endif
+class ParameterLogger : public std::ostream
+{
+  int m_itemNumber;
+public:
+  ParameterLogger ();
+
+  template<typename T>
+  ParameterLogger& operator<< (T param)
+  {
+    switch (m_itemNumber)
+      {
+      case 0: // first parameter
+        std::clog << param;
+        break;
+      default: // parameter following a previous parameter
+        std::clog << ", " << param;
+        break;
+      }
+    m_itemNumber++;
+    return *this;
+  }
+};
+
+extern ParameterLogger g_parameterLogger;
+
 
 } // namespace ns3
+
+#else /* LOG_ENABLE */
+
+#define NS_LOG_COMPONENT_DEFINE(component)
+#define NS_LOG(level, msg)
+#define NS_LOG_ERROR(msg)
+#define NS_LOG_WARN(msg)
+#define NS_LOG_DEBUG(msg)
+#define NS_LOG_INFO(msg)
+#define NS_LOG_FUNCTION
+#define NS_LOG_PARAMS(parameters)
+#define NS_LOG_LOGIC(msg)
+#define NS_LOG_UNCOND(msg)
+
+#define LogComponentPrintList
+#define LogComponentEnable(name,level)
+#define LogComponentDisable(name,level)
+#define LogComponentEnableAll(level)
+#define LogComponentDisableAll(level)
+
+#endif /* LOG_ENABLE */
 
 #endif // __LOG_H__
