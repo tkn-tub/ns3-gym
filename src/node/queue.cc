@@ -31,11 +31,11 @@ Queue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Queue")
     .SetParent<Object> ()
-    .AddTraceSource ("Enqueue", "XXX",
+    .AddTraceSource ("Enqueue", "Enqueue a packet in the queue.",
                      MakeTraceSourceAccessor (&Queue::m_traceEnqueue))
-    .AddTraceSource ("Dequeue", "XXX",
+    .AddTraceSource ("Dequeue", "Dequeue a packet from the queue.",
                      MakeTraceSourceAccessor (&Queue::m_traceDequeue))
-    .AddTraceSource ("Drop", "XXX",
+    .AddTraceSource ("Drop", "Drop a packet stored in the queue.",
                      MakeTraceSourceAccessor (&Queue::m_traceDrop))
     ;
   return tid;

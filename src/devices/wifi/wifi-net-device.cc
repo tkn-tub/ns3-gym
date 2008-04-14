@@ -38,29 +38,29 @@ WifiNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiNetDevice")
     .SetParent<NetDevice> ()
-    .AddAttribute ("Channel", "XXX",
+    .AddAttribute ("Channel", "The channel attached to this device",
                    Pointer (),
                    MakePointerAccessor (&WifiNetDevice::DoGetChannel,
                                         &WifiNetDevice::SetChannel),
                    MakePointerChecker<WifiChannel> ())
-    .AddAttribute ("Phy", "XXX",
+    .AddAttribute ("Phy", "The PHY layer attached to this device.",
                    Pointer (),
                    MakePointerAccessor (&WifiNetDevice::GetPhy,
                                         &WifiNetDevice::SetPhy),
                    MakePointerChecker<WifiPhy> ())
-    .AddAttribute ("Mac", "XXX",
+    .AddAttribute ("Mac", "The MAC layer attached to this device.",
                    Pointer (),
                    MakePointerAccessor (&WifiNetDevice::GetMac,
                                         &WifiNetDevice::SetMac),
                    MakePointerChecker<WifiMac> ())
-    .AddAttribute ("RemoteStationManager", "XXX",
+    .AddAttribute ("RemoteStationManager", "The station manager attached to this device.",
                    Pointer (),
                    MakePointerAccessor (&WifiNetDevice::SetRemoteStationManager,
                                         &WifiNetDevice::GetRemoteStationManager),
                    MakePointerChecker<WifiRemoteStationManager> ())
-    .AddTraceSource ("Rx", "XXX",
+    .AddTraceSource ("Rx", "Received payload from the MAC layer.",
                      MakeTraceSourceAccessor (&WifiNetDevice::m_rxLogger))
-    .AddTraceSource ("Tx", "XXX",
+    .AddTraceSource ("Tx", "Send payload to the MAC layer.",
                      MakeTraceSourceAccessor (&WifiNetDevice::m_txLogger))
     ;
   return tid;
