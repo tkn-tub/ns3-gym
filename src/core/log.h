@@ -94,58 +94,25 @@
 
 namespace ns3 {
 
-struct EndParameterListStruct {};
-extern EndParameterListStruct EndParameterList;
-
 class ParameterLogger : public std::ostream
 {
   int m_itemNumber;
-  const char *m_parameterName;
 public:
-  ParameterLogger ()
-    : m_itemNumber (0)
-  {}
+  ParameterLogger ();
 
   template<typename T>
   ParameterLogger& operator<< (T param)
   {
     switch (m_itemNumber)
       {
-      case 0: // first item is actually the function name
-        std::clog << param << " (";
-        break;
-      case 1: // first parameter
-        if (m_parameterName)
-          {
-            std::clog << m_parameterName << "=" << param;
-            m_parameterName = 0;
-          }
-        else
-          {
-            std::clog << param;
-          }
+      case 0: // first parameter
+        std::clog << param;
         break;
       default: // parameter following a previous parameter
-        if (m_parameterName)
-          {
-            std::clog << ", " << m_parameterName << "=" << param;
-            m_parameterName = 0;
-          }
-        else
-          {
-            std::clog << ", " << param;
-          }
+        std::clog << ", " << param;
         break;
       }
     m_itemNumber++;
-    return *this;
-  }
-  
-  ParameterLogger&
-  operator << (EndParameterListStruct dummy)
-  {
-    std::clog << ")" << std::endl;
-    m_itemNumber = 0;
     return *this;
   }
 };
@@ -217,9 +184,10 @@ extern ParameterLogger g_parameterLogger;
     {                                                   \
       if (g_log.IsEnabled (ns3::LOG_PARAM))             \
         {                                               \
-          g_parameterLogger << __PRETTY_FUNCTION__      \
-                            << parameters               \
-                            << EndParameterList;        \
+          std::clog << g_log.Name () << ":"             \
+                    << __FUNCTION__ << "(";             \
+          g_parameterLogger << parameters;              \
+          std::clog << ")" << std::endl;                \
         }                                               \
     }                                                   \
   while (false)

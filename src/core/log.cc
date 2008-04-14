@@ -358,9 +358,11 @@ LogComponentPrintList (void)
     }
 }
 
+ParameterLogger::ParameterLogger ()
+  : m_itemNumber (0)
+{}
 
 ParameterLogger g_parameterLogger;
-EndParameterListStruct EndParameterList;
 
 
 } // namespace ns3
