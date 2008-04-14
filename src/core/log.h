@@ -116,34 +116,76 @@
     }                                                           \
   while (false)
 
-#define NS_LOG_F(level)                                         \
+/**
+ * \ingroup logging
+ * \param msg the message to log
+ *
+ * Use \ref NS_LOG to output a message of level LOG_ERROR.
+ */
+#define NS_LOG_ERROR(msg) \
+  NS_LOG(ns3::LOG_ERROR, msg)
+
+/**
+ * \ingroup logging
+ * \param msg the message to log
+ *
+ * Use \ref NS_LOG to output a message of level LOG_WARN.
+ */
+#define NS_LOG_WARN(msg) \
+  NS_LOG(ns3::LOG_WARN, msg)
+
+/**
+ * \ingroup logging
+ * \param msg the message to log
+ *
+ * Use \ref NS_LOG to output a message of level LOG_DEBUG.
+ */
+#define NS_LOG_DEBUG(msg) \
+  NS_LOG(ns3::LOG_DEBUG, msg)
+
+/**
+ * \ingroup logging
+ * \param msg the message to log
+ *
+ * Use \ref NS_LOG to output a message of level LOG_INFO.
+ */
+#define NS_LOG_INFO(msg) \
+  NS_LOG(ns3::LOG_INFO, msg)
+
+/**
+ * \ingroup logging
+ *
+ * Output the name of the function.
+ */
+#define NS_LOG_FUNCTION                                         \
   do                                                            \
     {                                                           \
-      if (g_log.IsEnabled (level))                              \
+      if (g_log.IsEnabled (ns3::LOG_FUNCTION))                  \
         {                                                       \
-          std::clog << g_log.Name () << ":" << __FUNCTION__ <<  \
-            "()" << std::endl;                                \
+          APPEND_TIME_PREFIX;                                   \
+          std::clog << g_log.Name () << ":"                     \
+                    << __FUNCTION__ << "()" << std::endl;       \
         }                                                       \
     }                                                           \
   while (false)
 
-#define NS_LOG_ERROR(msg) \
-  NS_LOG(ns3::LOG_ERROR, msg)
 
-#define NS_LOG_WARN(msg) \
-  NS_LOG(ns3::LOG_WARN, msg)
-
-#define NS_LOG_DEBUG(msg) \
-  NS_LOG(ns3::LOG_DEBUG, msg)
-
-#define NS_LOG_INFO(msg) \
-  NS_LOG(ns3::LOG_INFO, msg)
-
-#define NS_LOG_FUNCTION \
-  NS_LOG_F(ns3::LOG_FUNCTION)
-
-
-
+/**
+ * \ingroup logging
+ * \param parameters the parameters to output.
+ *
+ * If log level LOG_PARAM is enabled, this macro will output
+ * all input parameters separated by ", ".
+ *
+ * Typical usage looks like:
+ * \code
+ * NS_LOG_PARAMS (aNumber<<anotherNumber);
+ * \endcode
+ * And the output will look like:
+ * \code
+ * Component:Function (aNumber, anotherNumber)
+ * \endcode
+ */
 #define NS_LOG_PARAMS(parameters)                       \
   do                                                    \
     {                                                   \
@@ -159,9 +201,21 @@
   while (false)
 
 
+/**
+ * \ingroup logging
+ * \param msg the message to log
+ *
+ * Use \ref NS_LOG to output a message of level LOG_LOGIC
+ */
 #define NS_LOG_LOGIC(msg) \
   NS_LOG(ns3::LOG_LOGIC, msg)
 
+/**
+ * \ingroup logging
+ * \param msg the message to log
+ *
+ * Output the requested message unconditionaly.
+ */
 #define NS_LOG_UNCOND(msg)              \
   do                                    \
     {                                   \
