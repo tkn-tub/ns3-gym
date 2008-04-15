@@ -21,17 +21,6 @@
 #include "ns3/address-utils.h"
 #include "wifi-mac-header.h"
 
-#define MAC80211HEADER_DEBUG 1
-
-#ifdef MAC80211HEADER_DEBUG
-#include <iostream>
-#  define TRACE(x) \
-std::Cout << "MAC80211HEADER " << x << std::Endl;
-#else
-#  define TRACE(x)
-#endif
-
-
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (WifiMacHeader);

@@ -36,9 +36,6 @@
 
 NS_LOG_COMPONENT_DEFINE ("NqstaWifiMac");
 
-#define TRACE(x) \
-  NS_LOG_DEBUG (Simulator::Now () << " " << GetAddress () << " " << x);
-
 /*
  * The state machine for this NQSTA is:
  --------------            -----------
@@ -94,6 +91,7 @@ NqstaWifiMac::NqstaWifiMac ()
     m_assocRequestEvent (),
     m_beaconWatchdogEnd (Seconds (0.0))
 {
+  NS_LOG_FUNCTION (this);
   m_rxMiddle = new MacRxMiddle ();
   m_rxMiddle->SetForwardCallback (MakeCallback (&NqstaWifiMac::Receive, this));
 
@@ -110,11 +108,14 @@ NqstaWifiMac::NqstaWifiMac ()
 }
 
 NqstaWifiMac::~NqstaWifiMac ()
-{}
+{
+  NS_LOG_FUNCTION (this);
+}
 
 void
 NqstaWifiMac::DoDispose (void)
 {
+  NS_LOG_FUNCTION (this);
   delete m_rxMiddle;
   delete m_dcfManager;
   m_rxMiddle = 0;
@@ -128,18 +129,21 @@ NqstaWifiMac::DoDispose (void)
 void 
 NqstaWifiMac::SetSlot (Time slotTime)
 {
+  NS_LOG_FUNCTION (this << slotTime);
   m_dcfManager->SetSlot (slotTime);
   m_slot = slotTime;
 }
 void 
 NqstaWifiMac::SetSifs (Time sifs)
 {
+  NS_LOG_FUNCTION (this << sifs);
   m_dcfManager->SetSifs (sifs);
   m_sifs = sifs;
 }
 void 
 NqstaWifiMac::SetEifsNoDifs (Time eifsNoDifs)
 {
+  NS_LOG_FUNCTION (this << eifsNoDifs);
   m_dcfManager->SetEifsNoDifs (eifsNoDifs);
   m_eifsNoDifs = eifsNoDifs;
 }
@@ -206,33 +210,39 @@ NqstaWifiMac::GetBssid (void) const
 void 
 NqstaWifiMac::SetAddress (Mac48Address address)
 {
+  NS_LOG_FUNCTION (this << address);
   m_address = address;
 }
 void 
 NqstaWifiMac::SetSsid (Ssid ssid)
 {
+  NS_LOG_FUNCTION (this << ssid);
   m_ssid = ssid;
 }
 
 void 
 NqstaWifiMac::SetMaxMissedBeacons (uint32_t missed)
 {
+  NS_LOG_FUNCTION (this << missed);
   m_maxMissedBeacons = missed;
 }
 void 
 NqstaWifiMac::SetProbeRequestTimeout (Time timeout)
 {
+  NS_LOG_FUNCTION (this << timeout);
   m_probeRequestTimeout = timeout;
 }
 void 
 NqstaWifiMac::SetAssocRequestTimeout (Time timeout)
 {
+  NS_LOG_FUNCTION (this << timeout);
   m_assocRequestTimeout = timeout;
 }
 
 void 
 NqstaWifiMac::StartActiveAssociation (void)
 {
+  NS_LOG_FUNCTION (this);
   TryToEnsureAssociated ();
 }
 
@@ -245,11 +255,13 @@ NqstaWifiMac::GetBroadcastBssid (void)
 void 
 NqstaWifiMac::SetBssid (Mac48Address bssid)
 {
+  NS_LOG_FUNCTION (this << bssid);
   m_bssid = bssid;
 }
 void 
 NqstaWifiMac::SetActiveProbing (bool enable)
 {
+  NS_LOG_FUNCTION (this << enable);
   if (enable)
     {
       TryToEnsureAssociated ();
@@ -262,12 +274,13 @@ NqstaWifiMac::SetActiveProbing (bool enable)
 void 
 NqstaWifiMac::ForwardUp (Ptr<Packet> packet, const Mac48Address &address)
 {
+  NS_LOG_FUNCTION (this << packet << address);
   m_forwardUp (packet, address);
 }
 void
 NqstaWifiMac::SendProbeRequest (void)
 {
-  TRACE ("send probe request");
+  NS_LOG_FUNCTION (this);
   WifiMacHeader hdr;
   hdr.SetProbeReq ();
   hdr.SetAddr1 (GetBroadcastBssid ());
@@ -290,7 +303,7 @@ NqstaWifiMac::SendProbeRequest (void)
 void
 NqstaWifiMac::SendAssociationRequest (void)
 {
-  TRACE ("send assoc request to=" << GetBssid ());
+  NS_LOG_FUNCTION (this << GetBssid ());
   WifiMacHeader hdr;
   hdr.SetAssocReq ();
   hdr.SetAddr1 (GetBssid ());
@@ -312,6 +325,7 @@ NqstaWifiMac::SendAssociationRequest (void)
 void
 NqstaWifiMac::TryToEnsureAssociated (void)
 {
+  NS_LOG_FUNCTION (this);
   switch (m_state) {
   case ASSOCIATED:
     return;
@@ -351,37 +365,40 @@ NqstaWifiMac::TryToEnsureAssociated (void)
 void
 NqstaWifiMac::AssocRequestTimeout (void)
 {
-  TRACE ("assoc request timeout");
+  NS_LOG_FUNCTION (this);
   m_state = WAIT_ASSOC_RESP;
   SendAssociationRequest ();
 }
 void
 NqstaWifiMac::ProbeRequestTimeout (void)
 {
-  TRACE ("probe request timeout");
+  NS_LOG_FUNCTION (this);
   m_state = WAIT_PROBE_RESP;
   SendProbeRequest ();
 }
 void 
 NqstaWifiMac::MissedBeacons (void)
 {
+  NS_LOG_FUNCTION (this);
   if (m_beaconWatchdogEnd > Simulator::Now ())
     {
       m_beaconWatchdog = Simulator::Schedule (m_beaconWatchdogEnd - Simulator::Now (),
                                               &NqstaWifiMac::MissedBeacons, this);
       return;
     }
-  TRACE ("beacon missed");
+  NS_LOG_DEBUG ("beacon missed");
   m_state = BEACON_MISSED;
   TryToEnsureAssociated ();
 }
 void 
 NqstaWifiMac::RestartBeaconWatchdog (Time delay)
 {
+  NS_LOG_FUNCTION (this << delay);
   m_beaconWatchdogEnd = std::max (Simulator::Now () + delay, m_beaconWatchdogEnd);
   if (Simulator::GetDelayLeft (m_beaconWatchdog) < delay &&
       m_beaconWatchdog.IsExpired ())
     {
+      NS_LOG_DEBUG ("really restart watchdog.");
       m_beaconWatchdog = Simulator::Schedule (delay, &NqstaWifiMac::MissedBeacons, this);
     }
 }
@@ -394,12 +411,13 @@ NqstaWifiMac::IsAssociated (void)
 void 
 NqstaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 {
+  NS_LOG_FUNCTION (this << packet << to);
   if (!IsAssociated ()) 
     {
       TryToEnsureAssociated ();
       return;
     }
-  //TRACE ("enqueue size="<<packet->GetSize ()<<", to="<<to);
+  //NS_LOG_DEBUG ("enqueue size="<<packet->GetSize ()<<", to="<<to);
   WifiMacHeader hdr;
   hdr.SetTypeData ();
   hdr.SetAddr1 (GetBssid ());
@@ -413,6 +431,7 @@ NqstaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 void 
 NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
+  NS_LOG_FUNCTION (this << packet << hdr);
   NS_ASSERT (!hdr->IsCtl ());
   if (hdr->GetAddr1 () != GetAddress () &&
       !hdr->GetAddr1 ().IsBroadcast ()) 
@@ -487,7 +506,7 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
           if (assocResp.GetStatusCode ().IsSuccess ()) 
             {
               m_state = ASSOCIATED;
-              TRACE ("assoc completed"); 
+              NS_LOG_DEBUG ("assoc completed"); 
               SupportedRates rates = assocResp.GetSupportedRates ();
               WifiRemoteStation *ap = m_stationManager->Lookup (hdr->GetAddr2 ());
               for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
@@ -509,7 +528,7 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
             } 
           else 
             {
-              TRACE ("assoc refused");
+              NS_LOG_DEBUG ("assoc refused");
               m_state = REFUSED;
             }
         }

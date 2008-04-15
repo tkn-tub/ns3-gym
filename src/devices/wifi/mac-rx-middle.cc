@@ -29,8 +29,6 @@
 
 NS_LOG_COMPONENT_DEFINE ("MacRxMiddle");
 
-#define TRACE(x) NS_LOG_DEBUG(Simulator::Now () << " " << x)
-
 namespace ns3 {
 
 
@@ -99,10 +97,13 @@ public:
 
 
 MacRxMiddle::MacRxMiddle ()
-{}
+{
+  NS_LOG_FUNCTION_NOARGS ();
+}
 
 MacRxMiddle::~MacRxMiddle ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
   for (OriginatorsI i = m_originatorStatus.begin ();
        i != m_originatorStatus.end (); i++) 
     {
@@ -122,16 +123,18 @@ MacRxMiddle::~MacRxMiddle ()
 void 
 MacRxMiddle::SetForwardCallback (ForwardUpCallback callback)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_callback = callback;
 }
 
 bool
 MacRxMiddle::SequenceControlSmaller (int seqca, int seqcb)
 {
+  NS_LOG_FUNCTION (seqca << seqcb);
   int seqa = seqca >> 4;
   int seqb = seqcb >> 4;
   int delta = seqb - seqa;
-  TRACE ("seqb="<<seqb<<", seqa="<<seqa<<", delta="<<delta);
+  NS_LOG_DEBUG ("seqb="<<seqb<<", seqa="<<seqa<<", delta="<<delta);
   if (delta <= 0 && delta < -2048) 
     {
       return true;
@@ -150,6 +153,7 @@ MacRxMiddle::SequenceControlSmaller (int seqca, int seqcb)
 OriginatorRxStatus *
 MacRxMiddle::Lookup (WifiMacHeader const *hdr)
 {
+  NS_LOG_FUNCTION (hdr);
   OriginatorRxStatus *originator;
   Mac48Address source = hdr->GetAddr2 ();
   if (hdr->IsQosData () &&
@@ -184,6 +188,7 @@ bool
 MacRxMiddle::IsDuplicate (WifiMacHeader const*hdr, 
                           OriginatorRxStatus *originator) const
 {
+  NS_LOG_FUNCTION (hdr << originator);
   if (hdr->IsRetry () &&
       originator->GetLastSequenceControl () == hdr->GetSequenceControl ()) 
     {
@@ -196,13 +201,14 @@ Ptr<Packet>
 MacRxMiddle::HandleFragments (Ptr<Packet> packet, WifiMacHeader const*hdr,
                               OriginatorRxStatus *originator)
 {
+  NS_LOG_FUNCTION (packet << hdr << originator);
   if (originator->IsDeFragmenting ()) 
     {
       if (hdr->IsMoreFragments ()) 
         {
           if (originator->IsNextFragment (hdr->GetSequenceControl ())) 
             {
-              TRACE ("accumulate fragment seq="<<hdr->GetSequenceNumber ()<<
+              NS_LOG_DEBUG ("accumulate fragment seq="<<hdr->GetSequenceNumber ()<<
                      ", frag="<<hdr->GetFragmentNumber ()<<
                      ", size="<<packet->GetSize ());
               originator->AccumulateFragment (packet);
@@ -210,7 +216,7 @@ MacRxMiddle::HandleFragments (Ptr<Packet> packet, WifiMacHeader const*hdr,
             } 
           else 
             {
-              TRACE ("non-ordered fragment");
+              NS_LOG_DEBUG ("non-ordered fragment");
             }
           return 0;
         } 
@@ -218,7 +224,7 @@ MacRxMiddle::HandleFragments (Ptr<Packet> packet, WifiMacHeader const*hdr,
         {
           if (originator->IsNextFragment (hdr->GetSequenceControl ())) 
             {
-              TRACE ("accumulate last fragment seq="<<hdr->GetSequenceNumber ()<<
+              NS_LOG_DEBUG ("accumulate last fragment seq="<<hdr->GetSequenceNumber ()<<
                      ", frag="<<hdr->GetFragmentNumber ()<<
                      ", size="<<hdr->GetSize ());
               Ptr<Packet> p = originator->AccumulateLastFragment (packet);
@@ -227,7 +233,7 @@ MacRxMiddle::HandleFragments (Ptr<Packet> packet, WifiMacHeader const*hdr,
             } 
           else 
             {
-              TRACE ("non-ordered fragment");
+              NS_LOG_DEBUG ("non-ordered fragment");
               return 0;
             }
         }
@@ -236,7 +242,7 @@ MacRxMiddle::HandleFragments (Ptr<Packet> packet, WifiMacHeader const*hdr,
     {
       if (hdr->IsMoreFragments ()) 
         {
-          TRACE ("accumulate first fragment seq="<<hdr->GetSequenceNumber ()<<
+          NS_LOG_DEBUG ("accumulate first fragment seq="<<hdr->GetSequenceNumber ()<<
                  ", frag="<<hdr->GetFragmentNumber ()<<
                  ", size="<<packet->GetSize ());
           originator->AccumulateFirstFragment (packet);
@@ -253,6 +259,7 @@ MacRxMiddle::HandleFragments (Ptr<Packet> packet, WifiMacHeader const*hdr,
 void
 MacRxMiddle::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
+  NS_LOG_FUNCTION (packet << hdr);
   OriginatorRxStatus *originator = Lookup (hdr);
   if (hdr->IsData ()) 
     {
@@ -272,7 +279,7 @@ MacRxMiddle::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
       // filter duplicates.
       if (IsDuplicate (hdr, originator)) 
         {
-          TRACE ("duplicate from="<<hdr->GetAddr2 ()<<
+          NS_LOG_DEBUG ("duplicate from="<<hdr->GetAddr2 ()<<
                  ", seq="<<hdr->GetSequenceNumber ()<<
                  ", frag="<<hdr->GetFragmentNumber ());
           return;
@@ -282,7 +289,7 @@ MacRxMiddle::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
         {
           return;
         }
-      TRACE ("forwarding data from="<<hdr->GetAddr2 ()<<
+      NS_LOG_DEBUG ("forwarding data from="<<hdr->GetAddr2 ()<<
              ", seq="<<hdr->GetSequenceNumber ()<<
              ", frag="<<hdr->GetFragmentNumber ());
       if (!hdr->GetAddr1 ().IsBroadcast ())
@@ -293,7 +300,7 @@ MacRxMiddle::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
     } 
   else 
     {
-      TRACE ("forwarding "<<hdr->GetTypeString ()<<
+      NS_LOG_DEBUG ("forwarding "<<hdr->GetTypeString ()<<
              ", from="<<hdr->GetAddr2 ()<<
              ", seq="<<hdr->GetSequenceNumber ()<<
              ", frag="<<hdr->GetFragmentNumber ());

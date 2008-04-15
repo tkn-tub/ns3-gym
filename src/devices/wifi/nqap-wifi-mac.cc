@@ -33,9 +33,6 @@
 
 NS_LOG_COMPONENT_DEFINE ("NqapWifiMac");
 
-#define TRACE(x) \
-  NS_LOG_DEBUG(Simulator::Now () << " " << GetAddress () << " " << x);
-
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (NqapWifiMac);
@@ -61,6 +58,7 @@ NqapWifiMac::GetTypeId (void)
 
 NqapWifiMac::NqapWifiMac ()
 {
+  NS_LOG_FUNCTION (this);
   m_rxMiddle = new MacRxMiddle ();
   m_rxMiddle->SetForwardCallback (MakeCallback (&NqapWifiMac::Receive, this));
 
@@ -82,11 +80,14 @@ NqapWifiMac::NqapWifiMac ()
   m_beaconDca->SetManager (m_dcfManager);
 }
 NqapWifiMac::~NqapWifiMac ()
-{}
+{
+  NS_LOG_FUNCTION (this);
+}
 
 void
 NqapWifiMac::DoDispose (void)
 {
+  NS_LOG_FUNCTION (this);
   delete m_rxMiddle;
   delete m_dcfManager;
   m_rxMiddle = 0;
@@ -102,6 +103,7 @@ NqapWifiMac::DoDispose (void)
 void
 NqapWifiMac::SetBeaconGeneration (bool enable)
 {
+  NS_LOG_FUNCTION (this << enable);
   if (enable)
     {
       m_beaconEvent = Simulator::ScheduleNow (&NqapWifiMac::SendOneBeacon, this);
@@ -121,18 +123,21 @@ NqapWifiMac::GetBeaconGeneration (void) const
 void 
 NqapWifiMac::SetSlot (Time slotTime)
 {
+  NS_LOG_FUNCTION (this << slotTime);
   m_dcfManager->SetSlot (slotTime);
   m_slot = slotTime;
 }
 void 
 NqapWifiMac::SetSifs (Time sifs)
 {
+  NS_LOG_FUNCTION (this << sifs);
   m_dcfManager->SetSifs (sifs);
   m_sifs = sifs;
 }
 void 
 NqapWifiMac::SetEifsNoDifs (Time eifsNoDifs)
 {
+  NS_LOG_FUNCTION (this << eifsNoDifs);
   m_dcfManager->SetEifsNoDifs (eifsNoDifs);
   m_eifsNoDifs = eifsNoDifs;
 }
@@ -156,6 +161,7 @@ NqapWifiMac::GetEifsNoDifs (void) const
 void 
 NqapWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
 {
+  NS_LOG_FUNCTION (this << phy);
   m_phy = phy;
   m_dcfManager->SetupPhyListener (phy);
   m_low->SetPhy (phy);
@@ -163,6 +169,7 @@ NqapWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
 void 
 NqapWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager)
 {
+  NS_LOG_FUNCTION (this << stationManager);
   m_stationManager = stationManager;
   m_dca->SetWifiRemoteStationManager (stationManager);
   m_beaconDca->SetWifiRemoteStationManager (stationManager);
@@ -171,11 +178,13 @@ NqapWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationM
 void 
 NqapWifiMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address &> upCallback)
 {
+  NS_LOG_FUNCTION (this);
   m_upCallback = upCallback;
 }
 void 
 NqapWifiMac::SetLinkUpCallback (Callback<void> linkUp)
 {
+  NS_LOG_FUNCTION (this);
   if (!linkUp.IsNull ())
     {
       linkUp ();
@@ -183,7 +192,9 @@ NqapWifiMac::SetLinkUpCallback (Callback<void> linkUp)
 }
 void 
 NqapWifiMac::SetLinkDownCallback (Callback<void> linkDown)
-{}
+{
+  NS_LOG_FUNCTION (this);
+}
 Mac48Address 
 NqapWifiMac::GetAddress (void) const
 {
@@ -202,11 +213,13 @@ NqapWifiMac::GetBssid (void) const
 void 
 NqapWifiMac::SetAddress (Mac48Address address)
 {
+  NS_LOG_FUNCTION (address);
   m_address = address;
 }
 void 
 NqapWifiMac::SetSsid (Ssid ssid)
 {
+  NS_LOG_FUNCTION (ssid);
   m_ssid = ssid;
 }
 
@@ -214,21 +227,25 @@ NqapWifiMac::SetSsid (Ssid ssid)
 void 
 NqapWifiMac::SetBeaconInterval (Time interval)
 {
+  NS_LOG_FUNCTION (this << interval);
   m_beaconInterval = interval;
 }
 void
 NqapWifiMac::StartBeaconing (void)
 {
+  NS_LOG_FUNCTION (this);
   SendOneBeacon ();
 }
 void 
 NqapWifiMac::ForwardUp (Ptr<Packet> packet, Mac48Address from)
 {
+  NS_LOG_FUNCTION (this << packet << from);
   m_upCallback (packet, from);
 }
 void 
 NqapWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to)
 {
+  NS_LOG_FUNCTION (this << packet << from << to);
   WifiMacHeader hdr;
   hdr.SetTypeData ();
   hdr.SetAddr1 (to);
@@ -241,6 +258,7 @@ NqapWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Addr
 void 
 NqapWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 {
+  NS_LOG_FUNCTION (this << packet << to);
   ForwardDown (packet, GetAddress (), to);
 }
 SupportedRates
@@ -265,7 +283,7 @@ NqapWifiMac::GetSupportedRates (void) const
 void
 NqapWifiMac::SendProbeResp (Mac48Address to)
 {
-  TRACE ("send probe response to="<<to);
+  NS_LOG_FUNCTION (this << to);
   WifiMacHeader hdr;
   hdr.SetProbeResp ();
   hdr.SetAddr1 (to);
@@ -285,7 +303,7 @@ NqapWifiMac::SendProbeResp (Mac48Address to)
 void
 NqapWifiMac::SendAssocResp (Mac48Address to, bool success)
 {
-  TRACE ("send assoc response to="<<to);
+  NS_LOG_FUNCTION (this << to << success);
   WifiMacHeader hdr;
   hdr.SetAssocResp ();
   hdr.SetAddr1 (to);
@@ -313,7 +331,7 @@ NqapWifiMac::SendAssocResp (Mac48Address to, bool success)
 void
 NqapWifiMac::SendOneBeacon (void)
 {
-  TRACE ("send beacon to="<<Mac48Address::GetBroadcast ());
+  NS_LOG_FUNCTION (this);
   WifiMacHeader hdr;
   hdr.SetBeacon ();
   hdr.SetAddr1 (Mac48Address::GetBroadcast ());
@@ -334,28 +352,32 @@ NqapWifiMac::SendOneBeacon (void)
 void 
 NqapWifiMac::TxOk (WifiMacHeader const &hdr)
 {
+  NS_LOG_FUNCTION (this);
   WifiRemoteStation *station = m_stationManager->Lookup (hdr.GetAddr1 ());
   if (hdr.IsAssocResp () && 
       station->IsWaitAssocTxOk ()) 
     {
-      TRACE ("associated with sta="<<hdr.GetAddr1 ());
+      NS_LOG_DEBUG ("associated with sta="<<hdr.GetAddr1 ());
       station->RecordGotAssocTxOk ();
     }
 }
 void 
 NqapWifiMac::TxFailed (WifiMacHeader const &hdr)
 {
+  NS_LOG_FUNCTION (this);
   WifiRemoteStation *station = m_stationManager->Lookup (hdr.GetAddr1 ());
   if (hdr.IsAssocResp () && 
       station->IsWaitAssocTxOk ()) 
     {
-      TRACE ("assoc failed with sta="<<hdr.GetAddr1 ());
+      NS_LOG_DEBUG ("assoc failed with sta="<<hdr.GetAddr1 ());
       station->RecordGotAssocTxFailed ();
     }
 }
 void 
 NqapWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
+  NS_LOG_FUNCTION (this << packet << hdr);
+
   WifiRemoteStation *station = m_stationManager->Lookup (hdr->GetAddr2 ());
 
   if (hdr->IsData ()) 
@@ -367,12 +389,12 @@ NqapWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
         {
           if (hdr->GetAddr3 () == GetAddress ()) 
             {
-              TRACE ("frame for me from="<<hdr->GetAddr2 ());
+              NS_LOG_DEBUG ("frame for me from="<<hdr->GetAddr2 ());
               ForwardUp (packet, hdr->GetAddr2 ());
             } 
           else 
             {
-              TRACE ("forwarding frame from="<<hdr->GetAddr2 ()<<", to="<<hdr->GetAddr3 ());
+              NS_LOG_DEBUG ("forwarding frame from="<<hdr->GetAddr2 ()<<", to="<<hdr->GetAddr3 ());
               Ptr<Packet> copy = packet->Copy ();
               ForwardDown (packet,
                            hdr->GetAddr2 (), 

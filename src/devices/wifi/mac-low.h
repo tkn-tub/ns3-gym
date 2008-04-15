@@ -22,6 +22,7 @@
 
 #include <vector>
 #include <stdint.h>
+#include <ostream>
 
 #include "wifi-mac-header.h"
 #include "wifi-mode.h"
@@ -252,6 +253,7 @@ public:
   uint32_t GetNextPacketSize (void) const;
 
 private:
+  friend std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters &params);
   uint32_t m_nextSize;
   enum {
     ACK_NONE,
@@ -262,6 +264,8 @@ private:
   bool m_sendRts;
   Time m_overrideDurationId;
 };
+
+std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters &params);
 
 
 /**

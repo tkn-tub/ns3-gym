@@ -258,14 +258,19 @@ WifiPhy::WifiPhy ()
     m_previousStateChangeTime (Seconds (0)),
     m_endSyncEvent (),
     m_random (0.0, 1.0)
-{}
+{
+  NS_LOG_FUNCTION (this);
+}
 
 WifiPhy::~WifiPhy ()
-{}
+{
+  NS_LOG_FUNCTION (this);
+}
 
 void
 WifiPhy::DoDispose (void)
 {
+  NS_LOG_FUNCTION (this);
   m_channel = 0;
   m_events.clear ();
   m_modes.clear ();
@@ -274,6 +279,7 @@ WifiPhy::DoDispose (void)
 void
 WifiPhy::SetStandard (enum WifiPhyStandard standard)
 {
+  NS_LOG_FUNCTION (this << standard);
   m_standard = standard;
   switch (standard) {
   case WIFI_PHY_STANDARD_80211a:
@@ -292,36 +298,43 @@ WifiPhy::SetStandard (enum WifiPhyStandard standard)
 void 
 WifiPhy::SetRxNoise (double db)
 {
+  NS_LOG_FUNCTION (this << db);
   m_rxNoiseRatio = DbToRatio (db);
 }
 void 
 WifiPhy::SetTxPowerStart (double start)
 {
+  NS_LOG_FUNCTION (this << start);
   m_txPowerBaseDbm = start;
 }
 void 
 WifiPhy::SetTxPowerEnd (double end)
 {
+  NS_LOG_FUNCTION (this << end);
   m_txPowerEndDbm = end;
 }
 void 
 WifiPhy::SetNTxPower (uint32_t n)
 {
+  NS_LOG_FUNCTION (this << n);
   m_nTxPower = n;
 }
 void 
 WifiPhy::SetTxGain (double gain)
 {
+  NS_LOG_FUNCTION (this << gain);
   m_txGainDb = gain;
 }
 void 
 WifiPhy::SetRxGain (double gain)
 {
+  NS_LOG_FUNCTION (this << gain);
   m_rxGainDb = gain;
 }
 void 
 WifiPhy::SetEdThreshold (double threshold)
 {
+  NS_LOG_FUNCTION (this << threshold);
   m_edThresholdW = DbmToW (threshold);
 }
 double 
@@ -384,6 +397,7 @@ WifiPhy::StartReceivePacket (Ptr<Packet> packet,
                              WifiMode txMode,
                              enum WifiPreamble preamble)
 {
+  NS_LOG_FUNCTION (this << packet << rxPowerDbm << txMode << preamble);
   rxPowerDbm += m_rxGainDb;
   double rxPowerW = DbmToW (rxPowerDbm);
   Time rxDuration = CalculateTxDuration (packet->GetSize (), txMode, preamble);
@@ -472,6 +486,7 @@ WifiPhy::StartReceivePacket (Ptr<Packet> packet,
 void 
 WifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble preamble, uint8_t txPower)
 {
+  NS_LOG_FUNCTION (this << packet << txMode << preamble << txPower);
   /* Transmission can happen if:
    *  - we are syncing on a packet. It is the responsability of the
    *    MAC layer to avoid doing this but the PHY does nothing to 
@@ -529,6 +544,7 @@ WifiPhy::CalculateSnr (WifiMode txMode, double ber) const
 void
 WifiPhy::Configure80211aParameters (void)
 {
+  NS_LOG_FUNCTION (this);
   m_plcpLongPreambleDelayUs = 16;
   m_plcpShortPreambleDelayUs = 16;
   m_longPlcpHeaderMode = g_6mba;
@@ -558,6 +574,7 @@ WifiPhy::PrintModes (void) const
 void
 WifiPhy::Configure80211a (void)
 {
+  NS_LOG_FUNCTION (this);
   Configure80211aParameters ();
   m_modes.push_back (g_6mba);
   m_modes.push_back (g_9mba);
@@ -574,6 +591,7 @@ WifiPhy::Configure80211a (void)
 void
 WifiPhy::ConfigureHolland (void)
 {
+  NS_LOG_FUNCTION (this);
   Configure80211aParameters ();
   m_modes.push_back (g_6mba);
   m_modes.push_back (g_12mba);
@@ -1329,6 +1347,7 @@ WifiPhy::CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const
 void
 WifiPhy::EndSync (Ptr<Packet> packet, Ptr<RxEvent> event)
 {
+  NS_LOG_FUNCTION (this << packet << event);
   NS_ASSERT (IsStateSync ());
   NS_ASSERT (event->GetEndTime () == Simulator::Now ());
 
