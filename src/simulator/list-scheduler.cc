@@ -18,7 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "scheduler-list.h"
+#include "list-scheduler.h"
 #include "event-impl.h"
 #include <utility>
 #include <string>
@@ -27,13 +27,13 @@
 namespace ns3 {
 
 
-SchedulerList::SchedulerList ()
+ListScheduler::ListScheduler ()
 {}
-SchedulerList::~SchedulerList ()
+ListScheduler::~ListScheduler ()
 {}
 
 bool 
-SchedulerList::IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const
+ListScheduler::IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const
 {
   if (a->m_ts < b->m_ts)
     {
@@ -51,7 +51,7 @@ SchedulerList::IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b
 }
 
 void
-SchedulerList::Insert (const EventId &id)
+ListScheduler::Insert (const EventId &id)
 {
   Scheduler::EventKey key;
   // acquire refcount on EventImpl
@@ -70,19 +70,19 @@ SchedulerList::Insert (const EventId &id)
   m_events.push_back (std::make_pair (event, key));
 }
 bool 
-SchedulerList::IsEmpty (void) const
+ListScheduler::IsEmpty (void) const
 {
   return m_events.empty ();
 }
 EventId
-SchedulerList::PeekNext (void) const
+ListScheduler::PeekNext (void) const
 {
   std::pair<EventImpl *, EventKey> next = m_events.front ();
   return EventId (next.first, next.second.m_ts, next.second.m_uid);
 }
 
 EventId
-SchedulerList::RemoveNext (void)
+ListScheduler::RemoveNext (void)
 {
   std::pair<EventImpl *, EventKey> next = m_events.front ();
   m_events.pop_front ();
@@ -90,7 +90,7 @@ SchedulerList::RemoveNext (void)
 }
 
 bool
-SchedulerList::Remove (const EventId &id)
+ListScheduler::Remove (const EventId &id)
 {
   for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
     {

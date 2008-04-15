@@ -31,7 +31,7 @@
  *    to move one if statement out of the loop.
  */
 
-#include "scheduler-heap.h"
+#include "heap-scheduler.h"
 #include "event-impl.h"
 #include "ns3/assert.h"
 
@@ -52,7 +52,7 @@ std::cout << "HEAP TRACE " << x << std::endl;
 namespace ns3 {
 
 
-SchedulerHeap::SchedulerHeap ()
+HeapScheduler::HeapScheduler ()
 {
   // we purposedly waste an item at the start of
   // the array to make sure the indexes in the
@@ -61,57 +61,57 @@ SchedulerHeap::SchedulerHeap ()
   m_heap.push_back (std::make_pair (static_cast<EventImpl *>(0), emptyKey));
 }
 
-SchedulerHeap::~SchedulerHeap ()
+HeapScheduler::~HeapScheduler ()
 {}
 
 uint32_t 
-SchedulerHeap::Parent (uint32_t id) const
+HeapScheduler::Parent (uint32_t id) const
 {
   return id / 2;
 }
 uint32_t 
-SchedulerHeap::Sibling (uint32_t id) const
+HeapScheduler::Sibling (uint32_t id) const
 {
   return id + 1;
 }
 uint32_t 
-SchedulerHeap::LeftChild (uint32_t id) const
+HeapScheduler::LeftChild (uint32_t id) const
 {
   return id * 2;
 }
 uint32_t 
-SchedulerHeap::RightChild (uint32_t id) const
+HeapScheduler::RightChild (uint32_t id) const
 {
   return id * 2 + 1;
 }
 
 uint32_t
-SchedulerHeap::Root (void) const
+HeapScheduler::Root (void) const
 {
   return 1;
 }
 
 bool
-SchedulerHeap::IsRoot (uint32_t id) const
+HeapScheduler::IsRoot (uint32_t id) const
 {
   return (id == Root ())?true:false;
 }
 
 uint32_t
-SchedulerHeap::Last (void) const
+HeapScheduler::Last (void) const
 {
   return m_heap.size () - 1;
 }
 
 
 bool
-SchedulerHeap::IsBottom (uint32_t id) const
+HeapScheduler::IsBottom (uint32_t id) const
 {
   return (id >= m_heap.size ())?true:false;
 }
 
 void
-SchedulerHeap::Exch (uint32_t a, uint32_t b) 
+HeapScheduler::Exch (uint32_t a, uint32_t b) 
 {
   NS_ASSERT (b < m_heap.size () && a < m_heap.size ());
   TRACE ("Exch " << a << ", " << b);
@@ -121,7 +121,7 @@ SchedulerHeap::Exch (uint32_t a, uint32_t b)
 }
 
 bool
-SchedulerHeap::IsLowerStrictly (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const
+HeapScheduler::IsLowerStrictly (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const
 {
   if (a->m_ts < b->m_ts)
     {
@@ -142,25 +142,25 @@ SchedulerHeap::IsLowerStrictly (Scheduler::EventKey const*a, Scheduler::EventKey
 }
 
 bool
-SchedulerHeap::IsLessStrictly (uint32_t a, uint32_t b) const
+HeapScheduler::IsLessStrictly (uint32_t a, uint32_t b) const
 {
   return IsLowerStrictly (&m_heap[a].second, &m_heap[b].second);
 }
 
 uint32_t 
-SchedulerHeap::Smallest (uint32_t a, uint32_t b) const
+HeapScheduler::Smallest (uint32_t a, uint32_t b) const
 {
   return IsLessStrictly (a,b)?a:b;
 }
 
 bool
-SchedulerHeap::IsEmpty (void) const
+HeapScheduler::IsEmpty (void) const
 {
   return (m_heap.size () == 1)?true:false;
 }
 
 void
-SchedulerHeap::BottomUp (void)
+HeapScheduler::BottomUp (void)
 {
   uint32_t index = Last ();
   while (!IsRoot (index) && 
@@ -172,7 +172,7 @@ SchedulerHeap::BottomUp (void)
 }
 
 void
-SchedulerHeap::TopDown (uint32_t start)
+HeapScheduler::TopDown (uint32_t start)
 {
   uint32_t index = start;
   uint32_t right = RightChild (index);
@@ -207,7 +207,7 @@ SchedulerHeap::TopDown (uint32_t start)
 
 
 void
-SchedulerHeap::Insert (const EventId &id)
+HeapScheduler::Insert (const EventId &id)
 {
   // acquire single ref
   EventImpl *event = id.PeekEventImpl ();
@@ -220,13 +220,13 @@ SchedulerHeap::Insert (const EventId &id)
 }
 
 EventId
-SchedulerHeap::PeekNext (void) const
+HeapScheduler::PeekNext (void) const
 {
   std::pair<EventImpl *,Scheduler::EventKey> next = m_heap[Root ()];
   return EventId (next.first, next.second.m_ts, next.second.m_uid);
 }
 EventId
-SchedulerHeap::RemoveNext (void)
+HeapScheduler::RemoveNext (void)
 {
   std::pair<EventImpl *,Scheduler::EventKey> next = m_heap[Root ()];
   Exch (Root (), Last ());
@@ -237,7 +237,7 @@ SchedulerHeap::RemoveNext (void)
 
 
 bool
-SchedulerHeap::Remove (const EventId &id)
+HeapScheduler::Remove (const EventId &id)
 {
   uint32_t uid = id.GetUid ();
   for (uint32_t i = 1; i < m_heap.size (); i++)
