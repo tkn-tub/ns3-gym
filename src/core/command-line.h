@@ -64,7 +64,7 @@ public:
    * Obviously, this method will parse the input command-line arguments and
    * will attempt to handle them all.
    */
-  void Parse (int &argc, char *argv[]) const;
+  void Parse (int argc, char *argv[]) const;
 private:
   class Item 
   {
