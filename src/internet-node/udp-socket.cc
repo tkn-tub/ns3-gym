@@ -300,6 +300,7 @@ UdpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
           NotifyDataSent (p->GetSize ());
         }
       NS_LOG_LOGIC ("Limited broadcast end.");
+      return p->GetSize();
     }
   else if (ipv4->GetIfIndexForDestination(dest, localIfIndex))
     {
@@ -307,7 +308,7 @@ UdpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
       m_udp->Send (p, ipv4->GetAddress (localIfIndex), dest,
 		   m_endPoint->GetLocalPort (), port);
       NotifyDataSent (p->GetSize ());
-      return 0;
+      return p->GetSize();;
     }
   else
    {
