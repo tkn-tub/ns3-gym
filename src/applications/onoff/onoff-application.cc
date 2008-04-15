@@ -91,7 +91,7 @@ OnOffApplication::GetTypeId (void)
 
 OnOffApplication::OnOffApplication ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_socket = 0;
   m_connected = false;
   m_residualBits = 0;
@@ -101,14 +101,13 @@ OnOffApplication::OnOffApplication ()
 
 OnOffApplication::~OnOffApplication()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 void 
 OnOffApplication::SetMaxBytes(uint32_t maxBytes)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << maxBytes);
+  NS_LOG_FUNCTION (this << maxBytes);
   m_maxBytes = maxBytes;
 }
 
@@ -116,7 +115,7 @@ OnOffApplication::SetMaxBytes(uint32_t maxBytes)
 void
 OnOffApplication::DoDispose (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   m_socket = 0;
   // chain up
@@ -126,7 +125,7 @@ OnOffApplication::DoDispose (void)
 // Application Methods
 void OnOffApplication::StartApplication() // Called at time specified by Start
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   // Create the socket if not already
   if (!m_socket)
@@ -146,7 +145,7 @@ void OnOffApplication::StartApplication() // Called at time specified by Start
 
 void OnOffApplication::StopApplication() // Called at time specified by Stop
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   if (m_sendEvent.IsRunning ())
     { // Cancel the pending send packet event
@@ -161,14 +160,14 @@ void OnOffApplication::StopApplication() // Called at time specified by Stop
 // Event handlers
 void OnOffApplication::StartSending()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   ScheduleNextTx();  // Schedule the send packet event
 }
 
 void OnOffApplication::StopSending()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   Simulator::Cancel(m_sendEvent);
 }
@@ -176,7 +175,7 @@ void OnOffApplication::StopSending()
 // Private helpers
 void OnOffApplication::ScheduleNextTx()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   if (m_maxBytes == 0 || m_totBytes < m_maxBytes)
     {
@@ -196,7 +195,7 @@ void OnOffApplication::ScheduleNextTx()
 
 void OnOffApplication::ScheduleStartEvent()
 {  // Schedules the event to start sending data (switch to the "On" state)
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   Time offInterval = Seconds(m_offTime.GetValue());
   NS_LOG_LOGIC ("start at " << offInterval);
@@ -205,7 +204,7 @@ void OnOffApplication::ScheduleStartEvent()
 
 void OnOffApplication::ScheduleStopEvent()
 {  // Schedules the event to stop sending data (switch to "Off" state)
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   Time onInterval = Seconds(m_onTime.GetValue());
   NS_LOG_LOGIC ("stop at " << onInterval);
@@ -215,7 +214,7 @@ void OnOffApplication::ScheduleStopEvent()
   
 void OnOffApplication::SendPacket()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC ("sending packet at " << Simulator::Now());
   NS_ASSERT (m_sendEvent.IsExpired ());
   Ptr<Packet> packet = Create<Packet> (m_pktSize);
@@ -229,7 +228,7 @@ void OnOffApplication::SendPacket()
 
 void OnOffApplication::ConnectionSucceeded(Ptr<Socket>)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   m_connected = true;
   ScheduleStartEvent();
@@ -237,7 +236,7 @@ void OnOffApplication::ConnectionSucceeded(Ptr<Socket>)
   
 void OnOffApplication::ConnectionFailed(Ptr<Socket>)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   cout << "OnOffApplication, Connection Failed" << endl;
 }
 

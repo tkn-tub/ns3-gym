@@ -71,7 +71,7 @@ CsmaChannel::CsmaChannel()
 : 
   Channel ("Csma Channel")
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_state = IDLE;
   m_deviceList.clear();
 }
@@ -79,8 +79,7 @@ CsmaChannel::CsmaChannel()
 int32_t
 CsmaChannel::Attach(Ptr<CsmaNetDevice> device)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << device);
+  NS_LOG_FUNCTION (this << device);
   NS_ASSERT(device != 0);
 
   CsmaDeviceRec rec(device);
@@ -92,8 +91,7 @@ CsmaChannel::Attach(Ptr<CsmaNetDevice> device)
 bool
 CsmaChannel::Reattach(Ptr<CsmaNetDevice> device)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << device);
+  NS_LOG_FUNCTION (this << device);
   NS_ASSERT(device != 0);
 
   std::vector<CsmaDeviceRec>::iterator it;
@@ -118,8 +116,7 @@ CsmaChannel::Reattach(Ptr<CsmaNetDevice> device)
 bool
 CsmaChannel::Reattach(uint32_t deviceId)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << deviceId);
+  NS_LOG_FUNCTION (this << deviceId);
 
   if (deviceId < m_deviceList.size())
     {
@@ -140,8 +137,7 @@ CsmaChannel::Reattach(uint32_t deviceId)
 bool
 CsmaChannel::Detach(uint32_t deviceId)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << deviceId);
+  NS_LOG_FUNCTION (this << deviceId);
 
   if (deviceId < m_deviceList.size())
     {
@@ -171,8 +167,7 @@ CsmaChannel::Detach(uint32_t deviceId)
 bool
 CsmaChannel::Detach(Ptr<CsmaNetDevice> device)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << device);
+  NS_LOG_FUNCTION (this << device);
   NS_ASSERT(device != 0);
 
   std::vector<CsmaDeviceRec>::iterator it;
@@ -190,8 +185,7 @@ CsmaChannel::Detach(Ptr<CsmaNetDevice> device)
 bool
 CsmaChannel::TransmitStart(Ptr<Packet> p, uint32_t srcId)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << p << srcId);
+  NS_LOG_FUNCTION (this << p << srcId);
   NS_LOG_INFO ("UID is " << p->GetUid () << ")");
 
   if (m_state != IDLE)
@@ -222,8 +216,7 @@ CsmaChannel::IsActive(uint32_t deviceId)
 bool
 CsmaChannel::TransmitEnd()
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << m_currentPkt << m_currentSrc);
+  NS_LOG_FUNCTION (this << m_currentPkt << m_currentSrc);
   NS_LOG_INFO ("UID is " << m_currentPkt->GetUid () << ")");
 
   NS_ASSERT(m_state == TRANSMITTING);
@@ -248,8 +241,7 @@ CsmaChannel::TransmitEnd()
 void
 CsmaChannel::PropagationCompleteEvent()
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << m_currentPkt);
+  NS_LOG_FUNCTION (this << m_currentPkt);
   NS_LOG_INFO ("UID is " << m_currentPkt->GetUid () << ")");
 
   NS_ASSERT(m_state == PROPAGATING);

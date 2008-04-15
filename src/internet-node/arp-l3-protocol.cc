@@ -47,12 +47,12 @@ ArpL3Protocol::GetTypeId (void)
 
 ArpL3Protocol::ArpL3Protocol ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 ArpL3Protocol::~ArpL3Protocol ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 void 
@@ -64,7 +64,7 @@ ArpL3Protocol::SetNode (Ptr<Node> node)
 void 
 ArpL3Protocol::DoDispose (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   for (CacheList::const_iterator i = m_cacheList.begin (); i != m_cacheList.end (); i++)
     {
       delete *i;
@@ -77,7 +77,7 @@ ArpL3Protocol::DoDispose (void)
 ArpCache *
 ArpL3Protocol::FindCache (Ptr<NetDevice> device)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   for (CacheList::const_iterator i = m_cacheList.begin (); i != m_cacheList.end (); i++)
     {
       if ((*i)->GetDevice () == device)
@@ -97,7 +97,7 @@ ArpL3Protocol::FindCache (Ptr<NetDevice> device)
 void 
 ArpL3Protocol::Receive(Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol, const Address &from)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   ArpCache *cache = FindCache (device);
   ArpHeader arp;
   packet->RemoveHeader (arp);
@@ -161,7 +161,7 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination,
                        Ptr<NetDevice> device,
                        Address *hardwareDestination)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   ArpCache *cache = FindCache (device);
   ArpCache::Entry *entry = cache->Lookup (destination);
   if (entry != 0)
@@ -230,7 +230,7 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination,
 void
 ArpL3Protocol::SendArpRequest (ArpCache const *cache, Ipv4Address to)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   ArpHeader arp;
   NS_LOG_LOGIC ("ARP: sending request from node "<<m_node->GetId ()<<
             " || src: " << cache->GetDevice ()->GetAddress () <<
@@ -249,7 +249,7 @@ ArpL3Protocol::SendArpRequest (ArpCache const *cache, Ipv4Address to)
 void
 ArpL3Protocol::SendArpReply (ArpCache const *cache, Ipv4Address toIp, Address toMac)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   ArpHeader arp;
   NS_LOG_LOGIC ("ARP: sending reply from node "<<m_node->GetId ()<<
             "|| src: " << cache->GetDevice ()->GetAddress () << 

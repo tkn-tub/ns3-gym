@@ -52,12 +52,12 @@ UdpL4Protocol::GetTypeId (void)
 UdpL4Protocol::UdpL4Protocol ()
   : m_endPoints (new Ipv4EndPointDemux ())
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 UdpL4Protocol::~UdpL4Protocol ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 void 
@@ -81,7 +81,7 @@ UdpL4Protocol::GetVersion (void) const
 void
 UdpL4Protocol::DoDispose (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_endPoints != 0)
     {
       delete m_endPoints;
@@ -94,7 +94,7 @@ UdpL4Protocol::DoDispose (void)
 Ptr<Socket>
 UdpL4Protocol::CreateSocket (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Ptr<UdpSocket> socket = CreateObject<UdpSocket> ();
   socket->SetNode (m_node);
   socket->SetUdp (this);
@@ -104,39 +104,35 @@ UdpL4Protocol::CreateSocket (void)
 Ipv4EndPoint *
 UdpL4Protocol::Allocate (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_endPoints->Allocate ();
 }
 
 Ipv4EndPoint *
 UdpL4Protocol::Allocate (Ipv4Address address)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << address);
+  NS_LOG_FUNCTION (this << address);
   return m_endPoints->Allocate (address);
 }
 
 Ipv4EndPoint *
 UdpL4Protocol::Allocate (uint16_t port)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << port);
+  NS_LOG_FUNCTION (this << port);
   return m_endPoints->Allocate (port);
 }
 
 Ipv4EndPoint *
 UdpL4Protocol::Allocate (Ipv4Address address, uint16_t port)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << address << port);
+  NS_LOG_FUNCTION (this << address << port);
   return m_endPoints->Allocate (address, port);
 }
 Ipv4EndPoint *
 UdpL4Protocol::Allocate (Ipv4Address localAddress, uint16_t localPort,
                          Ipv4Address peerAddress, uint16_t peerPort)
 {
-  NS_LOG_FUNCTION; 
-  NS_LOG_PARAMS (this << localAddress << localPort << peerAddress << peerPort);
+  NS_LOG_FUNCTION (this << localAddress << localPort << peerAddress << peerPort);
   return m_endPoints->Allocate (localAddress, localPort,
                                 peerAddress, peerPort);
 }
@@ -144,8 +140,7 @@ UdpL4Protocol::Allocate (Ipv4Address localAddress, uint16_t localPort,
 void 
 UdpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
 {
-  NS_LOG_FUNCTION; 
-  NS_LOG_PARAMS (this << endPoint);
+  NS_LOG_FUNCTION (this << endPoint);
   m_endPoints->DeAllocate (endPoint);
 }
 
@@ -155,8 +150,7 @@ UdpL4Protocol::Receive(Ptr<Packet> packet,
                        Ipv4Address const &destination,
                        Ptr<Ipv4Interface> interface)
 {
-  NS_LOG_FUNCTION; 
-  NS_LOG_PARAMS (this << packet << source << destination);
+  NS_LOG_FUNCTION (this << packet << source << destination);
 
   UdpHeader udpHeader;
   packet->RemoveHeader (udpHeader);
@@ -175,8 +169,7 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
                      Ipv4Address saddr, Ipv4Address daddr, 
                      uint16_t sport, uint16_t dport)
 {
-  NS_LOG_FUNCTION; 
-  NS_LOG_PARAMS (this << packet << saddr << daddr << sport << dport);
+  NS_LOG_FUNCTION (this << packet << saddr << daddr << sport << dport);
 
   UdpHeader udpHeader;
   udpHeader.SetDestination (dport);

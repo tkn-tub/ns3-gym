@@ -34,12 +34,12 @@ namespace ns3 {
 Ipv4LoopbackInterface::Ipv4LoopbackInterface ()
   : m_node (0)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT (m_node != 0);
 }
 
@@ -58,8 +58,7 @@ Ipv4LoopbackInterface::SetNode (Ptr<Node> node)
 void 
 Ipv4LoopbackInterface::SendTo (Ptr<Packet> packet, Ipv4Address dest)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << packet << dest);
+  NS_LOG_FUNCTION (this << packet << dest);
 
   Ptr<Ipv4L3Protocol> ipv4 = 
     m_node->GetObject<Ipv4L3Protocol> ();

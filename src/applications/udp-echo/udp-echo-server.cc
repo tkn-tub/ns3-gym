@@ -49,25 +49,25 @@ UdpEchoServer::GetTypeId (void)
 
 UdpEchoServer::UdpEchoServer ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 UdpEchoServer::~UdpEchoServer()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 void
 UdpEchoServer::DoDispose (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Application::DoDispose ();
 }
 
 void 
 UdpEchoServer::StartApplication (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   if (!m_socket)
     {
@@ -85,7 +85,7 @@ UdpEchoServer::StartApplication (void)
 void 
 UdpEchoServer::StopApplication ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   if (!m_socket) 
     {
@@ -100,8 +100,7 @@ UdpEchoServer::Receive(
   Ptr<Packet> packet,
   const Address &from) 
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << socket << packet << from);
+  NS_LOG_FUNCTION (this << socket << packet << from);
 
   if (InetSocketAddress::IsMatchingType (from))
     {

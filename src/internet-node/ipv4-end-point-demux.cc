@@ -29,12 +29,12 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4EndPointDemux");
 Ipv4EndPointDemux::Ipv4EndPointDemux ()
   : m_ephemeral (49152)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 Ipv4EndPointDemux::~Ipv4EndPointDemux ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {
       Ipv4EndPoint *endPoint = *i;
@@ -46,7 +46,7 @@ Ipv4EndPointDemux::~Ipv4EndPointDemux ()
 bool
 Ipv4EndPointDemux::LookupPortLocal (uint16_t port)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {
       if ((*i)->GetLocalPort  () == port) 
@@ -60,7 +60,7 @@ Ipv4EndPointDemux::LookupPortLocal (uint16_t port)
 bool
 Ipv4EndPointDemux::LookupLocal (Ipv4Address addr, uint16_t port)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {
       if ((*i)->GetLocalPort () == port &&
@@ -75,7 +75,7 @@ Ipv4EndPointDemux::LookupLocal (Ipv4Address addr, uint16_t port)
 Ipv4EndPoint *
 Ipv4EndPointDemux::Allocate (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   uint16_t port = AllocateEphemeralPort ();
   if (port == 0) 
     {
@@ -91,8 +91,7 @@ Ipv4EndPointDemux::Allocate (void)
 Ipv4EndPoint *
 Ipv4EndPointDemux::Allocate (Ipv4Address address)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << address);
+  NS_LOG_FUNCTION (this << address);
   uint16_t port = AllocateEphemeralPort ();
   if (port == 0) 
     {
@@ -108,8 +107,7 @@ Ipv4EndPointDemux::Allocate (Ipv4Address address)
 Ipv4EndPoint *
 Ipv4EndPointDemux::Allocate (uint16_t port)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this <<  port);
+  NS_LOG_FUNCTION (this <<  port);
 
   return Allocate (Ipv4Address::GetAny (), port);
 }
@@ -117,8 +115,7 @@ Ipv4EndPointDemux::Allocate (uint16_t port)
 Ipv4EndPoint *
 Ipv4EndPointDemux::Allocate (Ipv4Address address, uint16_t port)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << address << port);
+  NS_LOG_FUNCTION (this << address << port);
   if (LookupLocal (address, port)) 
     {
       NS_LOG_WARN ("Duplicate address/port; failing.");
@@ -134,8 +131,7 @@ Ipv4EndPoint *
 Ipv4EndPointDemux::Allocate (Ipv4Address localAddress, uint16_t localPort,
 			     Ipv4Address peerAddress, uint16_t peerPort)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << localAddress << localPort << peerAddress << peerPort);
+  NS_LOG_FUNCTION (this << localAddress << localPort << peerAddress << peerPort);
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {
       if ((*i)->GetLocalPort () == localPort &&
@@ -160,7 +156,7 @@ Ipv4EndPointDemux::Allocate (Ipv4Address localAddress, uint16_t localPort,
 void 
 Ipv4EndPointDemux::DeAllocate (Ipv4EndPoint *endPoint)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {
       if (*i == endPoint)
@@ -182,13 +178,13 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
                            Ipv4Address saddr, uint16_t sport,
                            Ptr<Ipv4Interface> incomingInterface)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   EndPoints retval1; // Matches exact on local port, wildcards on others
   EndPoints retval2; // Matches exact on local port/adder, wildcards on others
   EndPoints retval3; // Matches all but local address
   EndPoints retval4; // Exact match on all 4
   
-  NS_LOG_PARAMS (this << daddr << dport << saddr << sport << incomingInterface);
+  NS_LOG_FUNCTION (this << daddr << dport << saddr << sport << incomingInterface);
   NS_LOG_DEBUG ("Looking up endpoint for destination address " << daddr);
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {
@@ -276,7 +272,7 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
 uint16_t
 Ipv4EndPointDemux::AllocateEphemeralPort (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   uint16_t port = m_ephemeral;
   do 
     {

@@ -31,7 +31,7 @@ namespace ns3 {
 
 Ipv4AddressHelper::Ipv4AddressHelper () 
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
 //
 // Set the default values to an illegal state.  Do this so the client is 
@@ -52,7 +52,7 @@ Ipv4AddressHelper::SetBase (
   const Ipv4Mask mask,
   const Ipv4Address address)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   m_network = network.GetHostOrder ();
   m_mask = mask.GetHostOrder ();
@@ -114,7 +114,7 @@ Ipv4AddressHelper::NewAddress (void)
   Ipv4Address
 Ipv4AddressHelper::NewNetwork (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   ++m_network;
   m_address = m_base;
   return Ipv4Address (m_network << m_shift);
@@ -123,7 +123,7 @@ Ipv4AddressHelper::NewNetwork (void)
 Ipv4InterfaceContainer
 Ipv4AddressHelper::Assign (const NetDeviceContainer &c)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Ipv4InterfaceContainer retval;
   for (uint32_t i = 0; i < c.GetN (); ++i) {
     Ptr<NetDevice> device = c.Get (i);
@@ -156,7 +156,7 @@ const uint32_t N_BITS = 32;
   uint32_t
 Ipv4AddressHelper::NumAddressBits (uint32_t maskbits) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   for (uint32_t i = 0; i < N_BITS; ++i)
     {
       if (maskbits & 1)

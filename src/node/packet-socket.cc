@@ -31,8 +31,7 @@ namespace ns3 {
 
 PacketSocket::PacketSocket ()
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_state = STATE_OPEN;
   m_shutdownSend = false;
   m_shutdownRecv = false;
@@ -47,34 +46,34 @@ PacketSocket::SetNode (Ptr<Node> node)
 
 PacketSocket::~PacketSocket ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 void 
 PacketSocket::DoDispose (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_device = 0;
 }
 
 enum Socket::SocketErrno
 PacketSocket::GetErrno (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_errno;
 }
 
 Ptr<Node>
 PacketSocket::GetNode (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_node;
 }
 
 int
 PacketSocket::Bind (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   PacketSocketAddress address;
   address.SetProtocol (0);
   address.SetAllDevices ();
@@ -84,7 +83,7 @@ PacketSocket::Bind (void)
 int
 PacketSocket::Bind (const Address &address)
 { 
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (!PacketSocketAddress::IsMatchingType (address))
     {
       m_errno = ERROR_INVAL;
@@ -97,7 +96,7 @@ PacketSocket::Bind (const Address &address)
 int
 PacketSocket::DoBind (const PacketSocketAddress &address)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_state == STATE_BOUND ||
       m_state == STATE_CONNECTED)
     {
@@ -130,7 +129,7 @@ PacketSocket::DoBind (const PacketSocketAddress &address)
 int
 PacketSocket::ShutdownSend (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_state == STATE_CLOSED)
     {
       m_errno = ERROR_BADF;
@@ -143,7 +142,7 @@ PacketSocket::ShutdownSend (void)
 int
 PacketSocket::ShutdownRecv (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_state == STATE_CLOSED)
     {
       m_errno = ERROR_BADF;
@@ -156,7 +155,7 @@ PacketSocket::ShutdownRecv (void)
 int
 PacketSocket::Close(void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_state == STATE_CLOSED)
     {
       m_errno = ERROR_BADF;
@@ -170,7 +169,7 @@ PacketSocket::Close(void)
 int
 PacketSocket::Connect(const Address &ad)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   PacketSocketAddress address;
   if (m_state == STATE_CLOSED)
     {
@@ -205,7 +204,7 @@ PacketSocket::Connect(const Address &ad)
 int
 PacketSocket::Send (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_state == STATE_OPEN ||
       m_state == STATE_BOUND)
     {
@@ -218,7 +217,7 @@ PacketSocket::Send (Ptr<Packet> p)
 int
 PacketSocket::SendTo(const Address &address, Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   PacketSocketAddress ad;
   if (m_state == STATE_CLOSED)
     {
@@ -291,7 +290,7 @@ void
 PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet, 
                          uint16_t protocol, const Address &from)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_shutdownRecv)
     {
       return;

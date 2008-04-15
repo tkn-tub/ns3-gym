@@ -80,8 +80,7 @@ TcpSocket::GetTypeId ()
     m_rtt (0),
     m_lastMeasuredRtt (Seconds(0.0))
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this);
+  NS_LOG_FUNCTION (this);
   
 }
 
@@ -125,7 +124,7 @@ TcpSocket::TcpSocket(const TcpSocket& sock)
     m_cnTimeout (sock.m_cnTimeout),
     m_cnCount (sock.m_cnCount)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC("Invoked the copy constructor");
   //copy the pending data if necessary
   if(sock.m_pendingData)
@@ -143,8 +142,7 @@ TcpSocket::TcpSocket(const TcpSocket& sock)
 
 TcpSocket::~TcpSocket ()
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS(this);
+  NS_LOG_FUNCTION(this);
   m_node = 0;
   if (m_endPoint != 0)
     {
@@ -198,21 +196,21 @@ TcpSocket::SetRtt (Ptr<RttEstimator> rtt)
 enum Socket::SocketErrno
 TcpSocket::GetErrno (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_errno;
 }
 
 Ptr<Node>
 TcpSocket::GetNode (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_node;
 }
 
 void 
 TcpSocket::Destroy (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_node = 0;
   m_endPoint = 0;
   m_tcp = 0;
@@ -221,7 +219,7 @@ TcpSocket::Destroy (void)
 int
 TcpSocket::FinishBind (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_endPoint == 0)
     {
       return -1;
@@ -236,15 +234,14 @@ TcpSocket::FinishBind (void)
 int
 TcpSocket::Bind (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_endPoint = m_tcp->Allocate ();
   return FinishBind ();
 }
 int 
 TcpSocket::Bind (const Address &address)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this<<address);
+  NS_LOG_FUNCTION (this<<address);
   if (!InetSocketAddress::IsMatchingType (address))
     {
       return ERROR_INVAL;
@@ -279,14 +276,14 @@ TcpSocket::Bind (const Address &address)
 int 
 TcpSocket::ShutdownSend (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_shutdownSend = true;
   return 0;
 }
 int 
 TcpSocket::ShutdownRecv (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_shutdownRecv = false;
   return 0;
 }
@@ -294,7 +291,7 @@ TcpSocket::ShutdownRecv (void)
 int
 TcpSocket::Close (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_state == CLOSED) 
     {
       return -1;
@@ -316,8 +313,7 @@ TcpSocket::Close (void)
 int
 TcpSocket::Connect (const Address & address)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << address);
+  NS_LOG_FUNCTION (this << address);
   if (m_endPoint == 0)
     {
       if (Bind () == -1)
@@ -360,8 +356,7 @@ TcpSocket::Send (const Ptr<Packet> p) //p here is just data, no headers
 
 int TcpSocket::Send (const uint8_t* buf, uint32_t size)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << buf << size);
+  NS_LOG_FUNCTION (this << buf << size);
   if (m_state == ESTABLISHED || m_state == SYN_SENT || m_state == CLOSE_WAIT)
     { // Ok to buffer some data to send
       if (!m_pendingData)
@@ -390,8 +385,7 @@ int TcpSocket::Send (const uint8_t* buf, uint32_t size)
 
 int TcpSocket::DoSendTo (Ptr<Packet> p, const Address &address)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << p << address);
+  NS_LOG_FUNCTION (this << p << address);
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
   uint16_t port = transport.GetPort ();
@@ -400,8 +394,7 @@ int TcpSocket::DoSendTo (Ptr<Packet> p, const Address &address)
 
 int TcpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address ipv4, uint16_t port)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << p << ipv4 << port);
+  NS_LOG_FUNCTION (this << p << ipv4 << port);
   if (m_endPoint == 0)
     {
       if (Bind () == -1)
@@ -425,8 +418,7 @@ int TcpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address ipv4, uint16_t port)
 int 
 TcpSocket::SendTo (const Address &address, Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << address << p);
+  NS_LOG_FUNCTION (this << address << p);
   if (!m_connected)
     {
       m_errno = ERROR_NOTCONN;
@@ -441,8 +433,7 @@ TcpSocket::SendTo (const Address &address, Ptr<Packet> p)
 int
 TcpSocket::Listen (uint32_t q)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << q);
+  NS_LOG_FUNCTION (this << q);
   Actions_t action = ProcessEvent (APP_LISTEN);
   ProcessAction (action);
   return 0;
@@ -457,8 +448,7 @@ TcpSocket::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
                " sport " << m_endPoint->GetPeerPort() <<
                " saddr " << m_endPoint->GetPeerAddress());
 
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << packet << ipv4 << port);
+  NS_LOG_FUNCTION (this << packet << ipv4 << port);
   if (m_shutdownRecv)
     {
       return;
@@ -486,8 +476,7 @@ TcpSocket::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
 
 Actions_t TcpSocket::ProcessEvent (Events_t e)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << e);
+  NS_LOG_FUNCTION (this << e);
   States_t saveState = m_state;
   NS_LOG_LOGIC ("TcpSocket " << this << " processing event " << e);
   // simulation singleton is a way to get a single global static instance of a
@@ -538,8 +527,7 @@ Actions_t TcpSocket::ProcessEvent (Events_t e)
 
 void TcpSocket::SendEmptyPacket (uint8_t flags)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << flags);
+  NS_LOG_FUNCTION (this << flags);
   Ptr<Packet> p = Create<Packet> ();
   TcpHeader header;
 
@@ -569,8 +557,7 @@ void TcpSocket::SendEmptyPacket (uint8_t flags)
 
 bool TcpSocket::ProcessAction (Actions_t a)
 { // These actions do not require a packet or any TCP Headers
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << a);
+  NS_LOG_FUNCTION (this << a);
   switch (a)
   {
     case NO_ACT:
@@ -648,8 +635,7 @@ bool TcpSocket::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
                                      const TcpHeader& tcpHeader,
                                      const Address& fromAddress)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << a << p  << fromAddress);
+  NS_LOG_FUNCTION (this << a << p  << fromAddress);
   uint32_t localIfIndex;
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
   switch (a)
@@ -813,8 +799,7 @@ void TcpSocket::ConnectionSucceeded()
 
 bool TcpSocket::SendPendingData (bool withAck)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << withAck);
+  NS_LOG_FUNCTION (this << withAck);
   NS_LOG_LOGIC ("ENTERING SendPendingData");
   if (!m_pendingData)
     {
@@ -900,26 +885,26 @@ bool TcpSocket::SendPendingData (bool withAck)
 
 uint32_t  TcpSocket::UnAckDataCount ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_nextTxSequence - m_highestRxAck;
 }
 
 uint32_t  TcpSocket::BytesInFlight ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_highTxMark - m_highestRxAck;
 }
 
 uint32_t  TcpSocket::Window ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC ("TcpSocket::Window() "<<this);
   return std::min (m_rxWindowSize, m_cWnd.Get());
 }
 
 uint32_t  TcpSocket::AvailableWindow ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   uint32_t unack = UnAckDataCount (); // Number of outstanding bytes
   uint32_t win = Window ();
   if (win < unack) 
@@ -933,8 +918,7 @@ void TcpSocket::NewRx (Ptr<Packet> p,
                         const TcpHeader& tcpHeader, 
                         const Address& fromAddress)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << p << "tcpHeader " << fromAddress);
+  NS_LOG_FUNCTION (this << p << "tcpHeader " << fromAddress);
   NS_LOG_LOGIC ("TcpSocket " << this << " NewRx,"
                 << " seq " << tcpHeader.GetSequenceNumber()
                 << " ack " << tcpHeader.GetAckNumber()
@@ -1077,8 +1061,7 @@ void TcpSocket::CommonNewAck (SequenceNumber ack, bool skipTimer)
 { // CommonNewAck is called only for "New" (non-duplicate) acks
   // and MUST be called by any subclass, from the NewAck function
   // Always cancel any pending re-tx timer on new acknowledgement
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << ack << skipTimer); 
+  NS_LOG_FUNCTION (this << ack << skipTimer); 
   //DEBUG(1,(cout << "TCP " << this << "Cancelling retx timer " << endl));
   if (!skipTimer)
     {
@@ -1121,8 +1104,7 @@ Ptr<TcpSocket> TcpSocket::Copy ()
 void TcpSocket::NewAck (SequenceNumber seq)
 { // New acknowledgement up to sequence number "seq"
   // Adjust congestion window in response to new ack's received
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << seq);
+  NS_LOG_FUNCTION (this << seq);
   NS_LOG_LOGIC ("TcpSocket " << this << " NewAck "
            << " seq " << seq
            << " cWnd " << m_cWnd
@@ -1149,8 +1131,7 @@ void TcpSocket::NewAck (SequenceNumber seq)
 
 void TcpSocket::DupAck (const TcpHeader& t, uint32_t count)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << "t " << count);
+  NS_LOG_FUNCTION (this << "t " << count);
   NS_LOG_LOGIC ("TcpSocket " << this << " DupAck " <<  t.GetAckNumber ()
       << ", count " << count
       << ", time " << Simulator::Now ());
@@ -1172,8 +1153,7 @@ void TcpSocket::DupAck (const TcpHeader& t, uint32_t count)
 
 void TcpSocket::ReTxTimeout ()
 { // Retransmit timeout
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this);
+  NS_LOG_FUNCTION (this);
   m_ssThresh = Window () / 2; // Per RFC2581
   m_ssThresh = std::max (m_ssThresh, 2 * m_segmentSize);
   // Set cWnd to segSize on timeout,  per rfc2581
@@ -1200,8 +1180,7 @@ void TcpSocket::LastAckTimeout ()
 
 void TcpSocket::Retransmit ()
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this);
+  NS_LOG_FUNCTION (this);
   uint8_t flags = TcpHeader::NONE;
   if (m_state == SYN_SENT) 
     {

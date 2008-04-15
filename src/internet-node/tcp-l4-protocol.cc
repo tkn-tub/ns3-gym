@@ -49,7 +49,7 @@ TcpStateMachine::TcpStateMachine()
   : aT (LAST_STATE, StateActionVec_t(LAST_EVENT)),
        eV (MAX_FLAGS)
 { 
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   // Create the state table
   // Closed state
@@ -290,15 +290,13 @@ TcpStateMachine::TcpStateMachine()
 
 SA TcpStateMachine::Lookup (States_t s, Events_t e)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << s << e);
+  NS_LOG_FUNCTION (this << s << e);
   return aT[s][e];
 }
 
 Events_t TcpStateMachine::FlagsEvent (uint8_t f)
 { 
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << f);
+  NS_LOG_FUNCTION (this << f);
   // Lookup event from flags
   if (f >= MAX_FLAGS) return BAD_FLAGS;
   return eV[f]; // Look up flags event
@@ -337,13 +335,13 @@ TcpL4Protocol::GetTypeId (void)
 TcpL4Protocol::TcpL4Protocol ()
   : m_endPoints (new Ipv4EndPointDemux ())
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC("Made a TcpL4Protocol "<<this);
 }
 
 TcpL4Protocol::~TcpL4Protocol ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 void 
@@ -366,7 +364,7 @@ TcpL4Protocol::GetVersion (void) const
 void
 TcpL4Protocol::DoDispose (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_endPoints != 0)
     {
       delete m_endPoints;
@@ -379,7 +377,7 @@ TcpL4Protocol::DoDispose (void)
 Ptr<Socket>
 TcpL4Protocol::CreateSocket (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Ptr<RttEstimator> rtt = m_rttFactory.Create<RttEstimator> ();
   Ptr<TcpSocket> socket = CreateObject<TcpSocket> ();
   socket->SetNode (m_node);
@@ -391,31 +389,28 @@ TcpL4Protocol::CreateSocket (void)
 Ipv4EndPoint *
 TcpL4Protocol::Allocate (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_endPoints->Allocate ();
 }
 
 Ipv4EndPoint *
 TcpL4Protocol::Allocate (Ipv4Address address)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << address);
+  NS_LOG_FUNCTION (this << address);
   return m_endPoints->Allocate (address);
 }
 
 Ipv4EndPoint *
 TcpL4Protocol::Allocate (uint16_t port)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << port);
+  NS_LOG_FUNCTION (this << port);
   return m_endPoints->Allocate (port);
 }
 
 Ipv4EndPoint *
 TcpL4Protocol::Allocate (Ipv4Address address, uint16_t port)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << address << port);
+  NS_LOG_FUNCTION (this << address << port);
   return m_endPoints->Allocate (address, port);
 }
 
@@ -423,8 +418,7 @@ Ipv4EndPoint *
 TcpL4Protocol::Allocate (Ipv4Address localAddress, uint16_t localPort,
                          Ipv4Address peerAddress, uint16_t peerPort)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << localAddress << localPort << peerAddress << peerPort);
+  NS_LOG_FUNCTION (this << localAddress << localPort << peerAddress << peerPort);
   return m_endPoints->Allocate (localAddress, localPort,
                                 peerAddress, peerPort);
 }
@@ -432,8 +426,7 @@ TcpL4Protocol::Allocate (Ipv4Address localAddress, uint16_t localPort,
 void 
 TcpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << endPoint);
+  NS_LOG_FUNCTION (this << endPoint);
   m_endPoints->DeAllocate (endPoint);
 }
 
@@ -443,8 +436,7 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
              Ipv4Address const &destination,
              Ptr<Ipv4Interface> incomingInterface)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << packet << source << destination << incomingInterface);
+  NS_LOG_FUNCTION (this << packet << source << destination << incomingInterface);
 
   TcpHeader tcpHeader;
   //these two do a peek, so that the packet can be forwarded up
@@ -481,8 +473,7 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
            Ipv4Address saddr, Ipv4Address daddr, 
            uint16_t sport, uint16_t dport)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << packet << saddr << daddr << sport << dport);
+  NS_LOG_FUNCTION (this << packet << saddr << daddr << sport << dport);
 
   TcpHeader tcpHeader;
   tcpHeader.SetDestinationPort (dport);
@@ -512,8 +503,7 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, TcpHeader outgoingHeader,
               << " ack " << outgoingHeader.GetAckNumber()
               << " flags " << std::hex << (int)outgoingHeader.GetFlags() << std::dec
               << " data size " << packet->GetSize());
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << packet << saddr << daddr);
+  NS_LOG_FUNCTION (this << packet << saddr << daddr);
   // XXX outgoingHeader cannot be logged
 
   outgoingHeader.SetLength (5); //header length in units of 32bit words

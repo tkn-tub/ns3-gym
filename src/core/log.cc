@@ -162,10 +162,6 @@ LogComponent::EnvVarCheck (char const * name)
                     {
                       level |= LOG_FUNCTION;
                     }
-                  else if (lev == "param")
-                    {
-                      level |= LOG_PARAM;
-                    }
                   else if (lev == "logic")
                     {
                       level |= LOG_LOGIC;
@@ -201,10 +197,6 @@ LogComponent::EnvVarCheck (char const * name)
                   else if (lev == "level_function")
                     {
                       level |= LOG_LEVEL_FUNCTION;
-                    }
-                  else if (lev == "level_param")
-                    {
-                      level |= LOG_LEVEL_PARAM;
                     }
                   else if (lev == "level_logic")
                     {
@@ -346,10 +338,6 @@ LogComponentPrintList (void)
       if (i->second->IsEnabled (LOG_FUNCTION))
         {
           std::cout << "|function";
-        }
-      if (i->second->IsEnabled (LOG_PARAM))
-        {
-          std::cout << "|param";
         }
       if (i->second->IsEnabled (LOG_LOGIC))
         {

@@ -78,14 +78,14 @@ private:
 Ipv4AddressGeneratorImpl::Ipv4AddressGeneratorImpl () 
   : m_entries (), m_test (false)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Reset ();
 }
 
   void
 Ipv4AddressGeneratorImpl::Reset (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   uint32_t mask = 0;
 //
@@ -123,7 +123,7 @@ Ipv4AddressGeneratorImpl::Reset (void)
 
 Ipv4AddressGeneratorImpl::~Ipv4AddressGeneratorImpl ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
   void
@@ -132,7 +132,7 @@ Ipv4AddressGeneratorImpl::Init (
   const Ipv4Mask mask,
   const Ipv4Address addr)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 //
 // We're going to be playing with the actual bits in the network and mask so
 // pull them out into ints.
@@ -170,7 +170,7 @@ Ipv4AddressGeneratorImpl::Init (
 Ipv4AddressGeneratorImpl::GetNetwork (
   const Ipv4Mask mask) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   uint32_t index = MaskToIndex (mask);
   return Ipv4Address (m_netTable[index].network << m_netTable[index].shift);
@@ -180,7 +180,7 @@ Ipv4AddressGeneratorImpl::GetNetwork (
 Ipv4AddressGeneratorImpl::NextNetwork (
   const Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 //
 // The way this is expected to be used is that an address and network prefix
 // are initialized, and then NextAddress() is called repeatedly to set the
@@ -200,7 +200,7 @@ Ipv4AddressGeneratorImpl::InitAddress (
   const Ipv4Address addr,
   const Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   uint32_t index = MaskToIndex (mask);
   uint32_t addrBits = addr.GetHostOrder ();
@@ -215,7 +215,7 @@ Ipv4AddressGeneratorImpl::InitAddress (
 Ipv4AddressGeneratorImpl::GetAddress (
   const Ipv4Mask mask) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   uint32_t index = MaskToIndex (mask);
 
@@ -227,7 +227,7 @@ Ipv4AddressGeneratorImpl::GetAddress (
   Ipv4Address
 Ipv4AddressGeneratorImpl::NextAddress (const Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 //
 // The way this is expected to be used is that an address and network prefix
 // are initialized, and then NextAddress() is called repeatedly to set the
@@ -256,7 +256,7 @@ Ipv4AddressGeneratorImpl::NextAddress (const Ipv4Mask mask)
   bool
 Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   uint32_t addr = address.GetHostOrder ();
 
@@ -347,7 +347,7 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
   void
 Ipv4AddressGeneratorImpl::TestMode (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_test = true;
 }
 
@@ -390,7 +390,7 @@ Ipv4AddressGenerator::Init (
   const Ipv4Mask mask,
   const Ipv4Address addr)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
     ->Init (net, mask, addr);
@@ -399,7 +399,7 @@ Ipv4AddressGenerator::Init (
   Ipv4Address
 Ipv4AddressGenerator::NextNetwork (const Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
     ->NextNetwork (mask);
@@ -408,7 +408,7 @@ Ipv4AddressGenerator::NextNetwork (const Ipv4Mask mask)
   Ipv4Address
 Ipv4AddressGenerator::GetNetwork (const Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
     ->GetNetwork (mask);
@@ -419,7 +419,7 @@ Ipv4AddressGenerator::InitAddress (
   const Ipv4Address addr,
   const Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
     ->InitAddress (addr, mask);
@@ -428,7 +428,7 @@ Ipv4AddressGenerator::InitAddress (
   Ipv4Address
 Ipv4AddressGenerator::GetAddress (const Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
     ->GetAddress (mask);
@@ -437,7 +437,7 @@ Ipv4AddressGenerator::GetAddress (const Ipv4Mask mask)
   Ipv4Address
 Ipv4AddressGenerator::NextAddress (const Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
     ->NextAddress (mask);
@@ -446,7 +446,7 @@ Ipv4AddressGenerator::NextAddress (const Ipv4Mask mask)
   void
 Ipv4AddressGenerator::Reset (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
     ->Reset ();
@@ -455,7 +455,7 @@ Ipv4AddressGenerator::Reset (void)
   bool
 Ipv4AddressGenerator::AddAllocated (const Ipv4Address addr)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
     ->AddAllocated (addr);
@@ -464,7 +464,7 @@ Ipv4AddressGenerator::AddAllocated (const Ipv4Address addr)
   void
   Ipv4AddressGenerator::TestMode (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
     ->TestMode ();

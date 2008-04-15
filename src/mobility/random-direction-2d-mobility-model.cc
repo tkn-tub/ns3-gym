@@ -85,7 +85,7 @@ RandomDirection2dMobilityModel::BeginPause (void)
 void
 RandomDirection2dMobilityModel::SetDirectionAndSpeed (double direction)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   double speed = m_speed.GetValue ();
   const Vector vector (std::cos (direction) * speed,
                        std::sin (direction) * speed,

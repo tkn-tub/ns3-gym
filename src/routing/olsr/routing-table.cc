@@ -40,7 +40,7 @@ NS_LOG_COMPONENT_DEFINE ("OlsrRoutingTable");
 void
 RoutingTable::Clear ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_table.clear ();
 }
 
@@ -183,7 +183,7 @@ RoutingTable::AddEntry (Ipv4Address const &dest,
                         uint32_t interface,
                         uint32_t distance)
 {
-  NS_LOG_PARAMS (this << dest << next << interface << distance << m_mainAddress);
+  NS_LOG_FUNCTION (this << dest << next << interface << distance << m_mainAddress);
 
   NS_ASSERT (distance > 0);
 
@@ -202,7 +202,7 @@ RoutingTable::AddEntry (Ipv4Address const &dest,
                         Ipv4Address const &interfaceAddress,
                         uint32_t distance)
 {
-  NS_LOG_PARAMS (this << dest << next << interfaceAddress << distance << m_mainAddress);
+  NS_LOG_FUNCTION (this << dest << next << interfaceAddress << distance << m_mainAddress);
 
   NS_ASSERT (distance > 0);
   NS_ASSERT (m_ipv4);

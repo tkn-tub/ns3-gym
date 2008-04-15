@@ -40,20 +40,18 @@
  *
  * Use the environment variable NS_LOG to define a ':'-separated list of
  * logging components to enable. For example (using bash syntax), 
- * NS_LOG="OlsrAgent" would enable one component; 
- * NS_LOG="OlsrAgent:Ipv4L3Protocol" would enable two
- * components, etc.  NS_LOG="*" will enable all available log components at
- * all levels.
+ * NS_LOG="OlsrAgent" would enable one component at all log levels. 
+ * NS_LOG="OlsrAgent:Ipv4L3Protocol" would enable two components, 
+ * at all log levels, etc.  
+ * NS_LOG="*" will enable all available log components at all levels.
  *
- * To obtain more components than just debug log level, more components 
- * can be enabled selectively with the following
- * syntax: NS_LOG='Component1=func|param|warn:Component2=error|debug'
- * This example would enable the 'func', 'param', and 'warn' log
+ * To control more selectively the log levels for each component, use
+ * this syntax: NS_LOG='Component1=func|warn:Component2=error|debug'
+ * This example would enable the 'func', and 'warn' log
  * levels for 'Component1' and the 'error' and 'debug' log levels
  * for 'Component2'.  The wildcard can be used here as well.  For example
  * NS_LOG='*=level_all|prefix' would enable all log levels and prefix all
  * prints with the component and function names.
- *
  */
 
 /**
@@ -157,7 +155,7 @@
  *
  * Output the name of the function.
  */
-#define NS_LOG_FUNCTION                                         \
+#define NS_LOG_FUNCTION_NOARGS()                                \
   do                                                            \
     {                                                           \
       if (g_log.IsEnabled (ns3::LOG_FUNCTION))                  \
@@ -174,22 +172,22 @@
  * \ingroup logging
  * \param parameters the parameters to output.
  *
- * If log level LOG_PARAM is enabled, this macro will output
+ * If log level LOG_FUNCTION is enabled, this macro will output
  * all input parameters separated by ", ".
  *
  * Typical usage looks like:
  * \code
- * NS_LOG_PARAMS (aNumber<<anotherNumber);
+ * NS_LOG_FUNCTION (aNumber<<anotherNumber);
  * \endcode
  * And the output will look like:
  * \code
  * Component:Function (aNumber, anotherNumber)
  * \endcode
  */
-#define NS_LOG_PARAMS(parameters)                       \
+#define NS_LOG_FUNCTION(parameters)                     \
   do                                                    \
     {                                                   \
-      if (g_log.IsEnabled (ns3::LOG_PARAM))             \
+      if (g_log.IsEnabled (ns3::LOG_FUNCTION))          \
         {                                               \
           APPEND_TIME_PREFIX;                           \
           std::clog << g_log.Name () << ":"             \
@@ -243,11 +241,8 @@ enum LogLevel {
   LOG_FUNCTION       = 0x00000010, // function tracing
   LOG_LEVEL_FUNCTION = 0x0000001f, 
 
-  LOG_PARAM          = 0x00000020, // parameters to functions
-  LOG_LEVEL_PARAM    = 0x0000003f,
-
-  LOG_LOGIC          = 0x00000040, // control flow tracing within functions
-  LOG_LEVEL_LOGIC    = 0x0000007f,
+  LOG_LOGIC          = 0x00000020, // control flow tracing within functions
+  LOG_LEVEL_LOGIC    = 0x0000003f,
 
   LOG_ALL            = 0x3fffffff, // print everything
   LOG_LEVEL_ALL      = LOG_ALL,
@@ -367,8 +362,8 @@ public:
 #define NS_LOG_WARN(msg)
 #define NS_LOG_DEBUG(msg)
 #define NS_LOG_INFO(msg)
-#define NS_LOG_FUNCTION
-#define NS_LOG_PARAMS(parameters)
+#define NS_LOG_FUNCTION_NOARGS()
+#define NS_LOG_FUNCTION()
 #define NS_LOG_LOGIC(msg)
 #define NS_LOG_UNCOND(msg)
 

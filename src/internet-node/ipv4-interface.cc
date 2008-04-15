@@ -38,42 +38,39 @@ Ipv4Interface::Ipv4Interface ()
   : m_ifup(false),
     m_metric(1)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this);
+  NS_LOG_FUNCTION (this);
 }
 
 Ipv4Interface::~Ipv4Interface ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 void
 Ipv4Interface::DoDispose (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Object::DoDispose ();
 }
 
 void 
 Ipv4Interface::SetAddress (Ipv4Address a)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << a);
+  NS_LOG_FUNCTION (this << a);
   m_address = a;
 }
 
 void 
 Ipv4Interface::SetNetworkMask (Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << mask);
+  NS_LOG_FUNCTION (this << mask);
   m_netmask = mask;
 }
 
 Ipv4Address
 Ipv4Interface::GetBroadcast (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   uint32_t mask = m_netmask.GetHostOrder ();
   uint32_t address = m_address.GetHostOrder ();
   Ipv4Address broadcast = Ipv4Address (address | (~mask));
@@ -83,36 +80,35 @@ Ipv4Interface::GetBroadcast (void) const
 Ipv4Mask 
 Ipv4Interface::GetNetworkMask (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_netmask;
 }
 
 void
 Ipv4Interface::SetMetric (uint16_t metric)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (metric);
+  NS_LOG_FUNCTION (metric);
   m_metric = metric;
 }
 
 uint16_t
 Ipv4Interface::GetMetric (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_metric;
 }
 
 Ipv4Address 
 Ipv4Interface::GetAddress (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_address;
 }
 
 uint16_t 
 Ipv4Interface::GetMtu (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (GetDevice () == 0)
     {
       uint32_t mtu = (1<<16) - 1;
@@ -129,28 +125,28 @@ Ipv4Interface::GetMtu (void) const
 bool 
 Ipv4Interface::IsUp (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_ifup;
 }
 
 bool 
 Ipv4Interface::IsDown (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return !m_ifup;
 }
 
 void 
 Ipv4Interface::SetUp (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_ifup = true;
 }
 
 void 
 Ipv4Interface::SetDown (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_ifup = false;
 }
 
@@ -158,7 +154,7 @@ Ipv4Interface::SetDown (void)
 void 
 Ipv4Interface::Send(Ptr<Packet> p, Ipv4Address dest)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (IsUp()) {
     NS_LOG_LOGIC ("SendTo");
     SendTo(p, dest);

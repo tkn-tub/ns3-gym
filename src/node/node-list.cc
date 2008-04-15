@@ -88,7 +88,7 @@ NodeListPriv::DoGet (void)
 void 
 NodeListPriv::Delete (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Config::UnregisterRootNamespaceObject (Get ());
   (*DoGet ()) = 0;
 }
@@ -96,11 +96,11 @@ NodeListPriv::Delete (void)
 
 NodeListPriv::NodeListPriv ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 NodeListPriv::~NodeListPriv ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   for (std::vector<Ptr<Node> >::iterator i = m_nodes.begin ();
        i != m_nodes.end (); i++)
     {
