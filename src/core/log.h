@@ -363,7 +363,7 @@ public:
 #define NS_LOG_DEBUG(msg)
 #define NS_LOG_INFO(msg)
 #define NS_LOG_FUNCTION_NOARGS()
-#define NS_LOG_FUNCTION()
+#define NS_LOG_FUNCTION(msg)
 #define NS_LOG_LOGIC(msg)
 #define NS_LOG_UNCOND(msg)
 
