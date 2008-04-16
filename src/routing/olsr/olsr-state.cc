@@ -64,12 +64,15 @@ void
 OlsrState::EraseMprSelectorTuples (const Ipv4Address &mainAddr)
 {
   for (MprSelectorSet::iterator it = m_mprSelectorSet.begin ();
-       it != m_mprSelectorSet.end (); it++)
+       it != m_mprSelectorSet.end ();)
     {
       if (it->mainAddr == mainAddr)
         {
           it = m_mprSelectorSet.erase (it);
-          it--;
+        }
+      else
+        {
+          it++;
         }
     }
 }
@@ -203,14 +206,17 @@ OlsrState::EraseTwoHopNeighborTuples (const Ipv4Address &neighborMainAddr,
                                       const Ipv4Address &twoHopNeighborAddr)
 {
   for (TwoHopNeighborSet::iterator it = m_twoHopNeighborSet.begin ();
-       it != m_twoHopNeighborSet.end (); it++)
+       it != m_twoHopNeighborSet.end ();)
     {
       if (it->neighborMainAddr == neighborMainAddr
           && it->twoHopNeighborAddr == twoHopNeighborAddr)
         {
           it = m_twoHopNeighborSet.erase (it);
-          it--; // FIXME: is this correct in the case 'it' pointed to the first element?
           m_modified = true;
+        }
+      else
+        {
+          it++;
         }
     }
 }
@@ -219,13 +225,17 @@ void
 OlsrState::EraseTwoHopNeighborTuples (const Ipv4Address &neighborMainAddr)
 {
   for (TwoHopNeighborSet::iterator it = m_twoHopNeighborSet.begin ();
-       it != m_twoHopNeighborSet.end (); it++)
+       it != m_twoHopNeighborSet.end ();)
     {
-      if (it->neighborMainAddr == neighborMainAddr) {
-        it = m_twoHopNeighborSet.erase (it);
-        it--;
-        m_modified = true;
-      }
+      if (it->neighborMainAddr == neighborMainAddr)
+        {
+          it = m_twoHopNeighborSet.erase (it);
+          m_modified = true;
+        }
+      else
+        {
+          it++;
+        }
     }
 }
 
@@ -385,13 +395,16 @@ void
 OlsrState::EraseOlderTopologyTuples (const Ipv4Address &lastAddr, uint16_t ansn)
 {
   for (TopologySet::iterator it = m_topologySet.begin();
-       it != m_topologySet.end(); it++)
+       it != m_topologySet.end();)
     {
       if (it->lastAddr == lastAddr && it->sequenceNumber < ansn)
         {
           it = m_topologySet.erase (it);
-          it--;
           m_modified = true;
+        }
+      else
+        {
+          it++;
         }
     }
 }
