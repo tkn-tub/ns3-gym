@@ -111,9 +111,10 @@ ATTRIBUTE_HELPER_CPP (Address);
 
 bool operator == (const Address &a, const Address &b)
 {
-  NS_ASSERT (a.m_type == b.m_type || 
-	     a.m_type == 0 || 
-	     b.m_type == 0);
+  if (a.m_type != b.m_type)
+    {
+      return false;
+    }
   NS_ASSERT (a.GetLength() == b.GetLength());  
   return memcmp (a.m_data, b.m_data, a.m_len) == 0;
 }
