@@ -48,8 +48,8 @@ class AccessorHelper : public AttributeAccessor
 public:
   AccessorHelper () {}
 
-  virtual bool Set (ObjectBase * object, Attribute val) const {
-    const U *value = val.DynCast<const U*> ();
+  virtual bool Set (ObjectBase * object, const AttributeValue & val) const {
+    const U *value = dynamic_cast<const U *> (&val);
     if (value == 0)
       {
 	return false;
@@ -62,8 +62,8 @@ public:
     return DoSet (obj, value);
   }
 
-  virtual bool Get (const ObjectBase * object, Attribute val) const {
-    U *value = val.DynCast<U*> ();
+  virtual bool Get (const ObjectBase * object, AttributeValue &val) const {
+    U *value = dynamic_cast<U *> (&val);
     if (value == 0)
       {
 	return false;
@@ -75,7 +75,6 @@ public:
       }
     return DoGet (obj, value);
   }
-
 
 private:
   virtual bool DoSet (T *object, const U *v) const = 0;

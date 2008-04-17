@@ -14,20 +14,22 @@ namespace ns3 {
  * This class it used to get attribute access to an array of
  * ns3::Object pointers.
  */
-class ObjectVector
+class ObjectVectorValue : public AttributeValue
 {
 public:
   typedef std::vector<Ptr<Object> >::const_iterator Iterator;
 
-  ObjectVector ();
+  ObjectVectorValue ();
 
   Iterator Begin (void) const;
   Iterator End (void) const;
   uint32_t GetN (void) const;
   Ptr<Object> Get (uint32_t i) const;
 
-  ObjectVector (Attribute value);
-  operator Attribute () const;
+  virtual Ptr<AttributeValue> Copy (void) const;
+  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
+
 private:
   friend class ObjectVectorAccessor;
   std::vector<Ptr<Object> > m_objects;
@@ -60,24 +62,6 @@ Ptr<const AttributeChecker> MakeObjectVectorChecker (void);
 
 namespace ns3 {
 
-class ObjectVectorValue : public AttributeValue
-{
-public:
-  ObjectVectorValue ();
-  ObjectVectorValue (const ObjectVector &vector);
-
-  ObjectVector Get (void) const;
-
-  virtual Attribute Copy (void) const;
-  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
-  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
-
-private:
-  friend class ObjectVectorAccessor;
-  ObjectVector m_vector;
-};
-
-
 namespace internal {
 
 template <typename T>
@@ -87,8 +71,8 @@ public:
   virtual TypeId GetItemTypeId (void) const {
     return T::GetTypeId ();
   }
-  virtual bool Check (Attribute value) const {
-    return value.DynCast<const ObjectVectorValue *> () != 0;
+  virtual bool Check (const AttributeValue &value) const {
+    return dynamic_cast<const ObjectVectorValue *> (&value) != 0;
   }
   virtual std::string GetType (void) const {
     return "ns3::ObjectVector";
@@ -99,8 +83,18 @@ public:
   virtual std::string GetTypeConstraints (void) const {
     return T::GetTypeId ().GetName ();
   }
-  virtual Attribute Create (void) const {
-    return Attribute (ns3::Create<ObjectVectorValue> ());
+  virtual Ptr<AttributeValue> Create (void) const {
+    return ns3::Create<ObjectVectorValue> ();
+  }
+  virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const {
+    const ObjectVectorValue *src = dynamic_cast<const ObjectVectorValue *> (&source);
+    ObjectVectorValue *dst = dynamic_cast<ObjectVectorValue *> (&destination);
+    if (src == 0 || dst == 0)
+      {
+	return false;
+      }
+    *dst = *src;
+    return true;    
   }
 };
 
@@ -110,8 +104,8 @@ public:
 class ObjectVectorAccessor : public AttributeAccessor
 {
 public:
-  virtual bool Set (ObjectBase * object, Attribute value) const;
-  virtual bool Get (const ObjectBase * object, Attribute value) const;
+  virtual bool Set (ObjectBase * object, const AttributeValue &value) const;
+  virtual bool Get (const ObjectBase * object, AttributeValue &value) const;
   virtual bool HasGetter (void) const;
   virtual bool HasSetter (void) const;
 private:

@@ -39,11 +39,11 @@ WifiChannel::GetTypeId (void)
     .SetParent<Channel> ()
     .AddConstructor<WifiChannel> ()
     .AddAttribute ("PropagationLossModel", "XXX",
-                   Pointer (),
+                   PointerValue (),
                    MakePointerAccessor (&WifiChannel::m_loss),
                    MakePointerChecker<PropagationLossModel> ())
     .AddAttribute ("PropagationDelayModel", "XXX",
-                   Pointer (),
+                   PointerValue (),
                    MakePointerAccessor (&WifiChannel::m_delay),
                    MakePointerChecker<PropagationDelayModel> ())
     ;

@@ -23,44 +23,7 @@
 
 namespace ns3 {
 
-Integer::Integer (int64_t value)
-  : m_value (value)
-{}
-Integer::Integer ()
-  : m_value (0)
-{}
-void 
-Integer::Set (int64_t value)
-{
-  m_value = value;
-}
-int64_t 
-Integer::Get (void) const
-{
-  return m_value;
-}
-
-Integer::operator int64_t () const
-{
-  return m_value;
-}
-
-ATTRIBUTE_VALUE_IMPLEMENT (Integer);
-
-std::ostream &operator << (std::ostream &os, const Integer &integer)
-{
-  os << integer.Get ();
-  return os;
-}
-std::istream &operator >> (std::istream &is, Integer &integer)
-{
-  int64_t v;
-  is >> v;
-  integer.Set (v);
-  return is;
-}
-
-ATTRIBUTE_CONVERTER_IMPLEMENT (Integer);
+ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME (int64_t, Integer);
 
 namespace internal {
 
@@ -73,13 +36,13 @@ MakeIntegerChecker (int64_t min, int64_t max, std::string name)
       : m_minValue (minValue),
         m_maxValue (maxValue),
         m_name (name) {}
-    virtual bool Check (Attribute value) const {
-      const IntegerValue *v = value.DynCast<const IntegerValue *> ();
+    virtual bool Check (const AttributeValue &value) const {
+      const IntegerValue *v = dynamic_cast<const IntegerValue *> (&value);
       if (v == 0)
 	{
 	  return false;
 	}
-      return v->Get ().Get () >= m_minValue && v->Get ().Get() <= m_maxValue;
+      return v->Get () >= m_minValue && v->Get () <= m_maxValue;
     }
     virtual std::string GetType (void) const {
       return m_name;
@@ -92,8 +55,18 @@ MakeIntegerChecker (int64_t min, int64_t max, std::string name)
       oss << m_minValue << ":" << m_maxValue;
       return oss.str ();
     }
-    virtual Attribute Create (void) const {
-      return Attribute (ns3::Create<IntegerValue> ());
+    virtual Ptr<AttributeValue> Create (void) const {
+      return ns3::Create<IntegerValue> ();
+    }
+    virtual bool Copy (const AttributeValue &src, AttributeValue &dst) const {
+      const IntegerValue *source = dynamic_cast<const IntegerValue *> (&src);
+      IntegerValue *destination = dynamic_cast<IntegerValue *> (&dst);
+      if (source == 0 || destination == 0)
+        {
+          return false;
+        }
+      *destination = *source;
+      return true;
     }
     int64_t m_minValue;
     int64_t m_maxValue;

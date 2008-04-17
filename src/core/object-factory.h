@@ -20,10 +20,13 @@
 #ifndef OBJECT_FACTORY_H
 #define OBJECT_FACTORY_H
 
-#include "attribute.h"
+#include "attribute-list.h"
 #include "object.h"
+#include "type-id.h"
 
 namespace ns3 {
+
+class AttributeValue;
 
 /**
  * \brief instantiate subclasses of ns3::Object.
@@ -52,7 +55,7 @@ public:
    * \param name the name of the attribute to set during object construction
    * \param value the value of the attribute to set during object construction
    */
-  void Set (std::string name, Attribute value);
+  void Set (std::string name, const AttributeValue &value);
 
   /**
    * \returns the currently-selected TypeId to use to create an object

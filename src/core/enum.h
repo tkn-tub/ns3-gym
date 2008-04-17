@@ -32,20 +32,18 @@ namespace ns3 {
  * This class can be used to hold variables of any kind
  * of enum.
  */
-class Enum : public AttributeValue
+class EnumValue : public AttributeValue
 {
 public:
-  Enum ();
-  Enum (int v);
+  EnumValue ();
+  EnumValue (int v);
   void Set (int v);
   int Get (void) const;
 
-  virtual Attribute Copy (void) const;
+  virtual Ptr<AttributeValue> Copy (void) const;
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
-  Enum (Attribute value);
-  operator Attribute () const;
 private:
   int m_v;
 };
@@ -58,14 +56,15 @@ public:
   void AddDefault (int v, std::string name);
   void Add (int v, std::string name);
 
-  virtual bool Check (Attribute value) const;
+  virtual bool Check (const AttributeValue &value) const;
   virtual std::string GetType (void) const;
   virtual bool HasTypeConstraints (void) const;
   virtual std::string GetTypeConstraints (void) const;
-  virtual Attribute Create (void) const;
+  virtual Ptr<AttributeValue> Create (void) const;
+  virtual bool Copy (const AttributeValue &src, AttributeValue &dst) const;
 
 private:
-  friend class Enum;
+  friend class EnumValue;
   typedef std::list<std::pair<int,std::string> > ValueSet;
   ValueSet m_valueSet;
 };
@@ -97,13 +96,13 @@ namespace ns3 {
 template <typename T1>
 Ptr<const AttributeAccessor> MakeEnumAccessor (T1 a1)
 {
-  return MakeAccessorHelper<Enum> (a1);
+  return MakeAccessorHelper<EnumValue> (a1);
 }
 
 template <typename T1, typename T2>
 Ptr<const AttributeAccessor> MakeEnumAccessor (T1 a1, T2 a2)
 {
-  return MakeAccessorHelper<Enum> (a1, a2);
+  return MakeAccessorHelper<EnumValue> (a1, a2);
 }
 
 } // namespace ns3

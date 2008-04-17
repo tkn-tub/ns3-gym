@@ -53,8 +53,8 @@ main (int argc, char *argv[])
   internet.Install (lan1);
 
   CsmaHelper csma;
-  csma.SetChannelParameter ("BitRate", DataRate (10000000));
-  csma.SetChannelParameter ("Delay", MilliSeconds (2));
+  csma.SetChannelParameter ("BitRate", StringValue ("10Mbps"));
+  csma.SetChannelParameter ("Delay", StringValue ("2ms"));
   NetDeviceContainer dev1 = csma.Install (lan1);
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
@@ -78,8 +78,8 @@ main (int argc, char *argv[])
 //
   NodeContainer backbone = NodeContainer (lan1.Get (3), lan2.Get (0));
   PointToPointHelper p2p;
-  p2p.SetChannelParameter ("BitRate", DataRate (38400));
-  p2p.SetChannelParameter ("Delay", MilliSeconds (20));
+  p2p.SetChannelParameter ("BitRate", StringValue ("38400bps"));
+  p2p.SetChannelParameter ("Delay", StringValue ("20ms"));
   NetDeviceContainer dev3 = p2p.Install (backbone);
   ipv4.SetBase ("10.1.3.0", "255.255.255.0");
   ipv4.Assign (dev3);
@@ -95,9 +95,9 @@ main (int argc, char *argv[])
 
   UdpEchoClientHelper client;
   client.SetRemote (i2.GetAddress (0), port);
-  client.SetAppAttribute ("MaxPackets", Uinteger (100));
-  client.SetAppAttribute ("Interval", Seconds (0.01));
-  client.SetAppAttribute ("PacketSize", Uinteger (1024));
+  client.SetAppAttribute ("MaxPackets", UintegerValue (100));
+  client.SetAppAttribute ("Interval", StringValue ("10ms"));
+  client.SetAppAttribute ("PacketSize", UintegerValue (1024));
   ApplicationContainer apps = client.Install (lan1.Get (0));
   apps.Start (Seconds(2.));
   apps.Stop (Seconds (10.0));

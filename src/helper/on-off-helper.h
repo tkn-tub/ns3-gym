@@ -36,7 +36,7 @@ class OnOffHelper
 public:
   OnOffHelper (std::string protocol, Address address);
 
-  void SetAttribute (std::string name, Attribute value);
+  void SetAttribute (std::string name, const AttributeValue &value);
 
   ApplicationContainer Install (NodeContainer c);
 

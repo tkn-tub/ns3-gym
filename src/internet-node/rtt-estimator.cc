@@ -43,12 +43,12 @@ RttEstimator::GetTypeId (void)
     .SetParent<Object> ()
     .AddAttribute ("MaxMultiplier", 
                    "XXX",
-                   Double (64.0),
+                   DoubleValue (64.0),
                    MakeDoubleAccessor (&RttEstimator::m_maxMultiplier),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("InitialEstimation", 
                    "XXX",
-                   Seconds (1.0),
+                   TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&RttEstimator::est),
                    MakeTimeChecker ())
     ;
@@ -177,7 +177,7 @@ RttMeanDeviation::GetTypeId (void)
     .AddConstructor<RttMeanDeviation> ()
     .AddAttribute ("Gain",
                    "XXX",
-                   Double (0.1),
+                   DoubleValue (0.1),
                    MakeDoubleAccessor (&RttMeanDeviation::gain),
                    MakeDoubleChecker<double> ())
     ;

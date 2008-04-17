@@ -39,22 +39,22 @@ WifiNetDevice::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::WifiNetDevice")
     .SetParent<NetDevice> ()
     .AddAttribute ("Channel", "The channel attached to this device",
-                   Pointer (),
+                   PointerValue (),
                    MakePointerAccessor (&WifiNetDevice::DoGetChannel,
                                         &WifiNetDevice::SetChannel),
                    MakePointerChecker<WifiChannel> ())
     .AddAttribute ("Phy", "The PHY layer attached to this device.",
-                   Pointer (),
+                   PointerValue (),
                    MakePointerAccessor (&WifiNetDevice::GetPhy,
                                         &WifiNetDevice::SetPhy),
                    MakePointerChecker<WifiPhy> ())
     .AddAttribute ("Mac", "The MAC layer attached to this device.",
-                   Pointer (),
+                   PointerValue (),
                    MakePointerAccessor (&WifiNetDevice::GetMac,
                                         &WifiNetDevice::SetMac),
                    MakePointerChecker<WifiMac> ())
     .AddAttribute ("RemoteStationManager", "The station manager attached to this device.",
-                   Pointer (),
+                   PointerValue (),
                    MakePointerAccessor (&WifiNetDevice::SetRemoteStationManager,
                                         &WifiNetDevice::GetRemoteStationManager),
                    MakePointerChecker<WifiRemoteStationManager> ())
@@ -207,8 +207,9 @@ WifiNetDevice::GetAddress (void) const
 bool 
 WifiNetDevice::SetMtu (const uint16_t mtu)
 {
-  Uinteger maxMsduSize = m_mac->GetAttribute ("MaxMsduSize");
-  if (mtu > maxMsduSize && mtu > 0)
+  UintegerValue maxMsduSize;
+  m_mac->GetAttribute ("MaxMsduSize", maxMsduSize);
+  if (mtu > maxMsduSize.Get () || mtu == 0)
     {
       return false;
     }
@@ -220,8 +221,9 @@ WifiNetDevice::GetMtu (void) const
 {
   if (m_mtu == 0)
     {
-      Uinteger maxMsduSize = m_mac->GetAttribute ("MaxMsduSize");
-      m_mtu = maxMsduSize;
+      UintegerValue maxMsduSize;
+      m_mac->GetAttribute ("MaxMsduSize", maxMsduSize);
+      m_mtu = maxMsduSize.Get ();
     }
   return m_mtu;
 }

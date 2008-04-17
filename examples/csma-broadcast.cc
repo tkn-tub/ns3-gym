@@ -68,8 +68,8 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Build Topology.");
   CsmaHelper csma;
-  csma.SetChannelParameter ("BitRate", DataRate(5000000));
-  csma.SetChannelParameter ("Delay", MilliSeconds(2));
+  csma.SetChannelParameter ("BitRate", DataRateValue (DataRate(5000000)));
+  csma.SetChannelParameter ("Delay", TimeValue (MilliSeconds(2)));
 
   NetDeviceContainer n0 = csma.Install (c0);
   NetDeviceContainer n1 = csma.Install (c1);
@@ -97,8 +97,8 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   OnOffHelper onoff ("ns3::Udp", 
     Address (InetSocketAddress (Ipv4Address ("255.255.255.255"), port)));
-  onoff.SetAttribute ("OnTime", ConstantVariable (1));
-  onoff.SetAttribute ("OffTime", ConstantVariable (0));
+  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
+  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
 
   ApplicationContainer app = onoff.Install (c0.Get (0));
   // Start the application

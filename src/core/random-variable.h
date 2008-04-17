@@ -163,10 +163,6 @@ public:
    */
   static void SetRunNumber(uint32_t n);
 
-
-  RandomVariable (Attribute value);
-  operator Attribute () const;
-
 private:
   friend std::ostream &operator << (std::ostream &os, const RandomVariable &var);
   friend std::istream &operator >> (std::istream &os, RandomVariable &var);

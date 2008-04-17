@@ -56,7 +56,7 @@ RandomPropagationLossModel::GetTypeId (void)
     .SetParent<PropagationLossModel> ()
     .AddConstructor<RandomPropagationLossModel> ()
     .AddAttribute ("Variable", "XXX",
-                   ConstantVariable (1.0),
+                   RandomVariableValue (ConstantVariable (1.0)),
                    MakeRandomVariableAccessor (&RandomPropagationLossModel::m_variable),
                    MakeRandomVariableChecker ())
     ;
@@ -87,16 +87,16 @@ FriisPropagationLossModel::GetTypeId (void)
     .AddConstructor<FriisPropagationLossModel> ()
     .AddAttribute ("Lambda", 
                    "The wavelength  (default is 5.15 GHz at 300 000 km/s).",
-                   Double (300000000.0 / 5.150e9),
+                   DoubleValue (300000000.0 / 5.150e9),
                    MakeDoubleAccessor (&FriisPropagationLossModel::m_lambda),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("SystemLoss", "The system loss",
-                   Double (1.0),
+                   DoubleValue (1.0),
                    MakeDoubleAccessor (&FriisPropagationLossModel::m_systemLoss),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("MinDistance", 
                    "The distance under which the propagation model refuses to give results (m)",
-                   Double (0.5),
+                   DoubleValue (0.5),
                    MakeDoubleAccessor (&FriisPropagationLossModel::m_minDistance),
                    MakeDoubleChecker<double> ())
     ;
@@ -201,17 +201,17 @@ LogDistancePropagationLossModel::GetTypeId (void)
     .AddConstructor<LogDistancePropagationLossModel> ()
     .AddAttribute ("Exponent",
                    "The exponent of the Path Loss propagation model",
-                   Double (3.0),
+                   DoubleValue (3.0),
                    MakeDoubleAccessor (&LogDistancePropagationLossModel::m_exponent),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("ReferenceDistance",
                    "The distance at which the reference loss is calculated (m)",
-                   Double (1.0),
+                   DoubleValue (1.0),
                    MakeDoubleAccessor (&LogDistancePropagationLossModel::m_referenceDistance),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("ReferenceModel",
                    "The reference model at the reference distance.",
-                   Pointer (),
+                   PointerValue (),
                    MakePointerAccessor (&LogDistancePropagationLossModel::m_reference),
                    MakePointerChecker<PropagationLossModel> ())
     ;
@@ -268,10 +268,10 @@ LogDistancePropagationLossModel::GetLoss (Ptr<MobilityModel> a,
    */
   static Ptr<StaticMobilityModel> zero = 
     CreateObject<StaticMobilityModel> ("Position", 
-                                       Vector (0.0, 0.0, 0.0));
+                                       VectorValue (Vector (0.0, 0.0, 0.0)));
   static Ptr<StaticMobilityModel> reference = 
     CreateObject<StaticMobilityModel> ("Position", 
-                                       Vector (m_referenceDistance, 0.0, 0.0));
+                                       VectorValue (Vector (m_referenceDistance, 0.0, 0.0)));
   double ref = m_reference->GetLoss (zero, reference);
   double pathLossDb = 10 * m_exponent * log10 (distance / m_referenceDistance);
   double rxc = ref - pathLossDb;

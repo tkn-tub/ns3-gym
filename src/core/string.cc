@@ -2,49 +2,8 @@
 
 namespace ns3 {
 
-String::String ()
-  : m_value ()
-{}
-String::String (const char *value)
-  : m_value (value)
-{}
-String::String (std::string value)
-  : m_value (value)
-{}
-void 
-String::Set (std::string value)
-{
-  m_value = value;
-}
-void 
-String::Set (const char *value)
-{
-  m_value = value;
-}
-std::string 
-String::Get (void) const
-{
-  return m_value;
-}
-
-String::operator std::string () const
-{
-  return m_value;
-}
-
-std::ostream & operator << (std::ostream &os, const String &value)
-{
-  os << value.Get ();
-  return os;
-}
-std::istream &operator >> (std::istream &is, String &value)
-{
-  std::string str;
-  is >> str;
-  value = String (str);
-  return is;
-}
-
-ATTRIBUTE_HELPER_CPP (String);
+ATTRIBUTE_CHECKER_IMPLEMENT (String);
+ATTRIBUTE_CONVERTER_IMPLEMENT (String);
+ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME (std::string, String);
 
 } // namespace ns3

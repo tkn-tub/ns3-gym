@@ -46,34 +46,34 @@ CsmaNetDevice::GetTypeId (void)
     .SetParent<NetDevice> ()
     .AddConstructor<CsmaNetDevice> ()
     .AddAttribute ("Address", "The address of this device.",
-                   Mac48Address ("ff:ff:ff:ff:ff:ff"),
+                   Mac48AddressValue (Mac48Address ("ff:ff:ff:ff:ff:ff")),
                    MakeMac48AddressAccessor (&CsmaNetDevice::m_address),
                    MakeMac48AddressChecker ())
     .AddAttribute ("EncapsulationMode", "The mode of link-layer encapsulation to use.",
-                   Enum (LLC),
+                   EnumValue (LLC),
                    MakeEnumAccessor (&CsmaNetDevice::m_encapMode),
                    MakeEnumChecker (ETHERNET_V1, "EthernetV1",
                                     IP_ARP, "IpArp",
                                     RAW, "Raw",
                                     LLC, "Llc"))
     .AddAttribute ("SendEnable", "should tx be enabled ?",
-                   Boolean (true),
+                   BooleanValue (true),
                    MakeBooleanAccessor (&CsmaNetDevice::m_sendEnable),
                    MakeBooleanChecker ())
     .AddAttribute ("ReceiveEnable", "should rx be enabled ?",
-                   Boolean (true),
+                   BooleanValue (true),
                    MakeBooleanAccessor (&CsmaNetDevice::m_receiveEnable),
                    MakeBooleanChecker ())
     .AddAttribute ("DataRate", "XXX",
-                   DataRate (0xffffffff),
+                   DataRateValue (DataRate (0xffffffff)),
                    MakeDataRateAccessor (&CsmaNetDevice::m_bps),
                    MakeDataRateChecker ())
     .AddAttribute ("RxErrorModel", "XXX",
-                   Pointer (),
+                   PointerValue (),
                    MakePointerAccessor (&CsmaNetDevice::m_receiveErrorModel),
                    MakePointerChecker<ErrorModel> ())
     .AddAttribute ("TxQueue", "XXX",
-                   Pointer (),
+                   PointerValue (),
                    MakePointerAccessor (&CsmaNetDevice::m_queue),
                    MakePointerChecker<Queue> ())
     .AddTraceSource ("Rx", "Receive MAC packet.",

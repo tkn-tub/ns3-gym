@@ -38,23 +38,23 @@ UdpEchoClient::GetTypeId (void)
     .SetParent<Application> ()
     .AddConstructor<UdpEchoClient> ()
     .AddAttribute ("MaxPackets", "XXX",
-                   Uinteger (100),
+                   UintegerValue (100),
                    MakeUintegerAccessor (&UdpEchoClient::m_count),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Interval", "XXX",
-                   Seconds (1.0),
+                   TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&UdpEchoClient::m_interval),
                    MakeTimeChecker ())
     .AddAttribute ("RemoteIpv4", "XXX",
-                   Ipv4Address (),
+                   Ipv4AddressValue (),
                    MakeIpv4AddressAccessor (&UdpEchoClient::m_peerAddress),
                    MakeIpv4AddressChecker ())
     .AddAttribute ("RemotePort", "XXX",
-                   Uinteger (0),
+                   UintegerValue (0),
                    MakeUintegerAccessor (&UdpEchoClient::m_peerPort),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("PacketSize", "Size of packets generated",
-                   Uinteger (100),
+                   UintegerValue (100),
                    MakeUintegerAccessor (&UdpEchoClient::m_size),
                    MakeUintegerChecker<uint32_t> ())
     ;

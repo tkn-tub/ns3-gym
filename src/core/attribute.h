@@ -48,7 +48,7 @@ public:
   /**
    * \returns a deep copy of this class, wrapped into an Attribute object.
    */
-  virtual Attribute Copy (void) const = 0;
+  virtual Ptr<AttributeValue> Copy (void) const = 0;
   /**
    * \param checker the checker associated to the attribute
    * \returns a string representation of this value.
@@ -73,52 +73,6 @@ public:
    * the EnumValue::SerializeToString code.
    */
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) = 0;
-private:
-  friend class Attribute;
-};
-
-/**
- * \brief an opaque wrapper around a value to set or retrieved
- *        from an attribute.
- *
- * This class is really a smart pointer to an instance of AttributeValue.
- * Of course, the question is "why not use a Ptr<AttributeValue>" ?. The 
- * answer is long and complicated but the crux of the issue is that if we
- * do not reproduce the smart pointer code in this class, we cannot provide
- * transparent handling of Ptr<T> values through the attribute system.
- */
-class Attribute
-{
-public:
-  Attribute ();
-
-  /**
-   * Forward to AttributeValue::Copy
-   */
-  Attribute Copy (void) const;
-  /**
-   * Forward to AttributeValue::SerializeToString
-   */
-  std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
-  /**
-   * Forward to AttributeValue::DeserializeFromString
-   */
-  bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
-
-
-  /**
-   * This method performs a dynamic_cast on the underlying AttributeValue.
-   * This method is typically used to implement conversion operators
-   * from the type Attribute. In most cases, these conversion operators
-   * will be generated for you by the ATTRIBUTE_HELPER_* macros.
-   * \returns the casted pointer.
-   */
-  template <typename T>
-  T DynCast (void) const;
-
-  Attribute (Ptr<AttributeValue> value);
-private:
-  Ptr<AttributeValue> m_value;
 };
 
 /**
@@ -143,7 +97,7 @@ public:
    * This method expects that the caller has checked that the input value is
    * valid with AttributeChecker::Check.
    */
-  virtual bool Set (ObjectBase * object, Attribute value) const = 0;
+  virtual bool Set (ObjectBase * object, const AttributeValue &value) const = 0;
   /**
    * \param object the object instance to get the value from
    * \param attribute a pointer to where the value should be set.
@@ -153,7 +107,7 @@ public:
    * This method expects that the caller has checked that the input value is
    * valid with AttributeChecker::Check.
    */
-  virtual bool Get (const ObjectBase * object, Attribute attribute) const = 0;
+  virtual bool Get (const ObjectBase * object, AttributeValue &attribute) const = 0;
 
   /**
    * \return true if this accessor supports the Get operation, false
@@ -190,7 +144,7 @@ public:
    *          and if its value is within the requested range. Returns
    *          false otherwise.
    */
-  virtual bool Check (Attribute value) const = 0;
+  virtual bool Check (const AttributeValue &value) const = 0;
   virtual std::string GetType (void) const = 0;
   virtual bool HasTypeConstraints (void) const = 0;
   virtual std::string GetTypeConstraints (void) const = 0;
@@ -201,24 +155,21 @@ public:
    * This method is typically used to create a temporary variable prior
    * to calling Attribute::DeserializeFromString.
    */
-  virtual Attribute Create (void) const = 0;
+  virtual Ptr<AttributeValue> Create (void) const = 0;
+
+  virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const = 0;
+
 };
 
-} // namespace ns3
-
-namespace ns3 {
-
-/********************************************************
- *        The implementation of the Attribute 
- *          class template methods.
- ********************************************************/
-
-template <typename T>
-T
-Attribute::DynCast (void) const
+class EmptyAttributeValue : public AttributeValue
 {
-  return dynamic_cast<T> (PeekPointer (m_value));
-}
+public:
+  EmptyAttributeValue ();
+private:
+  virtual Ptr<AttributeValue> Copy (void) const;
+  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
+};
 
 } // namespace ns3
 

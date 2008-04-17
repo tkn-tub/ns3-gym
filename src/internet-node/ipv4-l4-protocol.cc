@@ -34,11 +34,11 @@ Ipv4L4Protocol::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Ipv4L4Protocol")
     .SetParent<Object> ()
     .AddAttribute ("ProtocolNumber", "The Ipv4 protocol number.",
-                   Uinteger (0),
+                   UintegerValue (0),
                    MakeUintegerAccessor (&Ipv4L4Protocol::GetProtocolNumber),
                    MakeUintegerChecker<int> ())
     .AddAttribute ("Version", "The version of the protocol.",
-                   Uinteger (0),
+                   UintegerValue (0),
                    MakeUintegerAccessor (&Ipv4L4Protocol::GetVersion),
                    MakeUintegerChecker<int> ())
     ;

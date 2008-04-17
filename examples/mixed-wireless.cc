@@ -96,8 +96,8 @@ main (int argc, char *argv[])
   // Simulation defaults are typically set next, before command line
   // arguments are parsed.
   //
-  Config::SetDefault ("ns3::OnOffApplication::PacketSize", String ("210"));
-  Config::SetDefault ("ns3::OnOffApplication::DataRate", String ("448kb/s"));
+  Config::SetDefault ("ns3::OnOffApplication::PacketSize", StringValue ("210"));
+  Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("448kb/s"));
 
   //
   // For convenience, we add the local variables to the command line argument
@@ -163,9 +163,9 @@ main (int argc, char *argv[])
   positionAlloc->Add (Vector (5.0, 0.0, 0.0));
   mobility.SetPositionAllocator (positionAlloc);
   mobility.SetMobilityModel ("ns3::RandomDirection2dMobilityModel",
-                              "Bounds", Rectangle (0, 1000, 0, 1000),
-                              "Speed", ConstantVariable (2000),
-                              "Pause", ConstantVariable (0.2));
+                             "Bounds", RectangleValue (Rectangle (0, 1000, 0, 1000)),
+                             "Speed", RandomVariableValue (ConstantVariable (2000)),
+                             "Pause", RandomVariableValue (ConstantVariable (0.2)));
   mobility.Layout (backbone);
 
   /////////////////////////////////////////////////////////////////////////// 
@@ -194,8 +194,8 @@ main (int argc, char *argv[])
       // collection.
       //
       CsmaHelper csma;
-      csma.SetChannelParameter ("BitRate", DataRate (5000000));
-      csma.SetChannelParameter ("Delay", MilliSeconds (2));
+      csma.SetChannelParameter ("BitRate", DataRateValue (DataRate (5000000)));
+      csma.SetChannelParameter ("Delay", TimeValue (MilliSeconds (2)));
       NetDeviceContainer lanDevices = csma.Install (lan);
       //
       // Add the IPv4 protocol stack to the nodes in our container
@@ -269,9 +269,9 @@ main (int argc, char *argv[])
       mobility.PushReferenceMobilityModel (backbone.Get (i));
       mobility.SetPositionAllocator (subnetAlloc);
       mobility.SetMobilityModel ("ns3::RandomDirection2dMobilityModel",
-                                 "Bounds", Rectangle (-25, 25, -25, 25),
-                                 "Speed", ConstantVariable (30),
-                                 "Pause", ConstantVariable (0.4));
+                                 "Bounds", RectangleValue (Rectangle (-25, 25, -25, 25)),
+                                 "Speed", RandomVariableValue (ConstantVariable (30)),
+                                 "Pause", RandomVariableValue (ConstantVariable (0.4)));
       mobility.Layout (infra);
     }
   /////////////////////////////////////////////////////////////////////////// 
@@ -304,8 +304,8 @@ main (int argc, char *argv[])
 
   OnOffHelper onoff ("ns3::Udp", 
                      Address (InetSocketAddress (remoteAddr, port)));
-  onoff.SetAttribute ("OnTime", ConstantVariable (1));
-  onoff.SetAttribute ("OffTime", ConstantVariable (0));
+  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
+  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   ApplicationContainer apps = onoff.Install (appSource);
   apps.Start (Seconds (3.0));
   apps.Stop (Seconds (20.0));

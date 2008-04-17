@@ -21,39 +21,44 @@
 
 namespace ns3 {
 
-Pointer::Pointer ()
+PointerValue::PointerValue ()
   : m_value ()
 {}
 
-Pointer::Pointer (Ptr<Object> object)
+PointerValue::PointerValue (Ptr<Object> object)
   : m_value (object)
 {}
 
 void 
-Pointer::SetObject (Ptr<Object> object)
+PointerValue::SetObject (Ptr<Object> object)
 {
   m_value = object;
 }
 
 Ptr<Object> 
-Pointer::GetObject (void) const
+PointerValue::GetObject (void) const
 {
   return m_value;
 }
 
-ATTRIBUTE_VALUE_IMPLEMENT (Pointer);
-ATTRIBUTE_CONVERTER_IMPLEMENT (Pointer);
-
-std::ostream & operator << (std::ostream &os, const Pointer &pointer)
+Ptr<AttributeValue> 
+PointerValue::Copy (void) const
 {
-  os << pointer.GetObject ();
-  return os;
+  return Create<PointerValue> (*this);
 }
-std::istream & operator >> (std::istream &is, Pointer &pointer)
+std::string 
+PointerValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
-  // XXX: This cannot work;
-  return is;
+  std::ostringstream oss;
+  oss << m_value;
+  return oss.str ();
 }
 
+bool 
+PointerValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
+{
+  NS_FATAL_ERROR ("It is not possible to deserialize a pointer.");
+  return false;
+}
 
 } // namespace ns3

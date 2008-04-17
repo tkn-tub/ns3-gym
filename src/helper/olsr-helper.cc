@@ -30,14 +30,14 @@ OlsrHelper::OlsrHelper ()
 
 void 
 OlsrHelper::SetAgent (std::string tid,
-		      std::string n0, Attribute v0,
-		      std::string n1, Attribute v1,
-		      std::string n2, Attribute v2,
-		      std::string n3, Attribute v3,
-		      std::string n4, Attribute v4,
-		      std::string n5, Attribute v5,
-		      std::string n6, Attribute v6,
-		      std::string n7, Attribute v7)
+		      std::string n0, const AttributeValue &v0,
+		      std::string n1, const AttributeValue &v1,
+		      std::string n2, const AttributeValue &v2,
+		      std::string n3, const AttributeValue &v3,
+		      std::string n4, const AttributeValue &v4,
+		      std::string n5, const AttributeValue &v5,
+		      std::string n6, const AttributeValue &v6,
+		      std::string n7, const AttributeValue &v7)
 {
   m_agentFactory.SetTypeId (tid);
   m_agentFactory.Set (n0, v0);

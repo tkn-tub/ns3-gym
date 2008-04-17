@@ -33,26 +33,8 @@ namespace ns3 {
  * This class can be used to hold variables of floating point type
  * such as 'double' or 'float'. The internal format is 'double'.
  */
-class Double
-{
-public:
-  Double ();
-  Double (double value);
 
-  void Set (double value);
-  double Get (void) const;
-
-  operator double () const;
-
-  ATTRIBUTE_CONVERTER_DEFINE (Double);
-private:
-  double m_value;
-};
-
-std::ostream & operator << (std::ostream &os, const Double &value);
-std::istream & operator >> (std::istream &is, Double &value);
-
-ATTRIBUTE_VALUE_DEFINE (Double);
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME (double, Double);
 ATTRIBUTE_ACCESSOR_DEFINE (Double);
 
 template <typename T>

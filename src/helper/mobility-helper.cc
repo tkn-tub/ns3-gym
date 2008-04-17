@@ -32,8 +32,9 @@ NS_LOG_COMPONENT_DEFINE ("MobilityHelper");
 MobilityHelper::MobilityHelper ()
   : m_notifierEnabled (false)
 {
-  m_position = CreateObject<RandomRectanglePositionAllocator> ("X", ConstantVariable (0.0),
-								   "Y", ConstantVariable (0.0));
+  m_position = CreateObject<RandomRectanglePositionAllocator> 
+    ("X", RandomVariableValue (ConstantVariable (0.0)),
+     "Y", RandomVariableValue (ConstantVariable (0.0)));
   m_mobility.SetTypeId ("ns3::StaticMobilityModel");
 }
 MobilityHelper::~MobilityHelper ()
@@ -55,15 +56,15 @@ MobilityHelper::SetPositionAllocator (Ptr<PositionAllocator> allocator)
 }
 void 
 MobilityHelper::SetPositionAllocator (std::string type,
-				      std::string n1, Attribute v1,
-				      std::string n2, Attribute v2,
-				      std::string n3, Attribute v3,
-				      std::string n4, Attribute v4,
-				      std::string n5, Attribute v5,
-				      std::string n6, Attribute v6,
-				      std::string n7, Attribute v7,
-				      std::string n8, Attribute v8,
-				      std::string n9, Attribute v9)
+				      std::string n1, const AttributeValue &v1,
+				      std::string n2, const AttributeValue &v2,
+				      std::string n3, const AttributeValue &v3,
+				      std::string n4, const AttributeValue &v4,
+				      std::string n5, const AttributeValue &v5,
+				      std::string n6, const AttributeValue &v6,
+				      std::string n7, const AttributeValue &v7,
+				      std::string n8, const AttributeValue &v8,
+				      std::string n9, const AttributeValue &v9)
 {
   ObjectFactory pos;
   pos.SetTypeId (type);
@@ -81,15 +82,15 @@ MobilityHelper::SetPositionAllocator (std::string type,
 
 void 
 MobilityHelper::SetMobilityModel (std::string type,
-				  std::string n1, Attribute v1,
-				  std::string n2, Attribute v2,
-				  std::string n3, Attribute v3,
-				  std::string n4, Attribute v4,
-				  std::string n5, Attribute v5,
-				  std::string n6, Attribute v6,
-				  std::string n7, Attribute v7,
-				  std::string n8, Attribute v8,
-				  std::string n9, Attribute v9)
+				  std::string n1, const AttributeValue &v1,
+				  std::string n2, const AttributeValue &v2,
+				  std::string n3, const AttributeValue &v3,
+				  std::string n4, const AttributeValue &v4,
+				  std::string n5, const AttributeValue &v5,
+				  std::string n6, const AttributeValue &v6,
+				  std::string n7, const AttributeValue &v7,
+				  std::string n8, const AttributeValue &v8,
+				  std::string n9, const AttributeValue &v9)
 {
   m_mobility.SetTypeId (type);
   m_mobility.Set (n1, v1);
@@ -147,8 +148,8 @@ MobilityHelper::Layout (NodeContainer c)
 	      // we need to setup a hierarchical mobility model
 	      Ptr<MobilityModel> parent = m_mobilityStack.back ();
 	      Ptr<MobilityModel> hierarchical = 
-		CreateObject<HierarchicalMobilityModel> ("Child", Pointer (model),
-							 "Parent", Pointer (parent));
+		CreateObject<HierarchicalMobilityModel> ("Child", PointerValue (model),
+							 "Parent", PointerValue (parent));
 	      object->AggregateObject (hierarchical);
 	      NS_LOG_DEBUG ("node="<<object<<", mob="<<hierarchical);
 	    }

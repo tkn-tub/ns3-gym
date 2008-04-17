@@ -22,12 +22,12 @@ ConfigStore::GetTypeId (void)
     .SetParent<ObjectBase> ()
     .AddAttribute ("LoadFilename", 
 		   "The file where the configuration should be loaded from.",
-		   String (""),
+		   StringValue (""),
 		   MakeStringAccessor (&ConfigStore::m_loadFilename),
 		   MakeStringChecker ())
     .AddAttribute ("StoreFilename", 
 		   "The file where the configuration should be stored to.",
-		   String (""),
+		   StringValue (""),
 		   MakeStringAccessor (&ConfigStore::m_storeFilename),
 		   MakeStringChecker ())
     ;
@@ -55,7 +55,7 @@ ConfigStore::LoadFrom (std::string filename)
     {
       is >> path >> value;
       NS_LOG_DEBUG (path << "=" << value);
-      Config::Set (path, String (value));
+      Config::Set (path, StringValue (value));
     }
 }
 void 
@@ -116,7 +116,9 @@ ConfigStore::Store (std::ostream &os, Ptr<const Object> object)
       if (ptrChecker != 0)
 	{
 	  NS_LOG_DEBUG ("pointer attribute " << tid.GetAttributeName (i));
-	  Ptr<const Object> tmp = Pointer (object->GetAttribute (tid.GetAttributeName (i)));
+	  PointerValue ptr;
+	  object->GetAttribute (tid.GetAttributeName (i), ptr);
+	  Ptr<const Object> tmp = ptr.Get<Object> ();
 	  if (tmp != 0)
 	    {
 	      m_currentPath.push_back (tid.GetAttributeName (i));
@@ -132,7 +134,8 @@ ConfigStore::Store (std::ostream &os, Ptr<const Object> object)
       if (vectorChecker != 0)
 	{
 	  NS_LOG_DEBUG ("vector attribute " << tid.GetAttributeName (i));
-	  ObjectVector vector = object->GetAttribute (tid.GetAttributeName (i));
+	  ObjectVectorValue vector;
+	  object->GetAttribute (tid.GetAttributeName (i), vector);
 	  for (uint32_t j = 0; j < vector.GetN (); ++j)
 	    {
 	      NS_LOG_DEBUG ("vector attribute item " << j);
@@ -152,8 +155,9 @@ ConfigStore::Store (std::ostream &os, Ptr<const Object> object)
       if ((flags & TypeId::ATTR_GET) && accessor->HasGetter () &&
 	  (flags & TypeId::ATTR_SET) && accessor->HasSetter ())
 	{
-	  std::string value = object->GetAttributeAsString (tid.GetAttributeName (i));
-	  os << GetCurrentPath (tid.GetAttributeName (i)) << " " << value << std::endl;
+	  StringValue str;
+	  object->GetAttribute (tid.GetAttributeName (i), str);
+	  os << GetCurrentPath (tid.GetAttributeName (i)) << " " << str.Get () << std::endl;
 	}
       else
 	{

@@ -187,48 +187,48 @@ WifiPhy::GetTypeId (void)
     .AddAttribute ("EnergyDetectionThreshold",
                    "The energy of a received signal should be higher than "
                    "this threshold (dbm) to allow the PHY layer to detect the signal.",
-                   Double (-140.0),
+                   DoubleValue (-140.0),
                    MakeDoubleAccessor (&WifiPhy::SetEdThreshold,
                                        &WifiPhy::GetEdThreshold),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxGain",
                    "Transmission gain (dB).",
-                   Double (1.0),
+                   DoubleValue (1.0),
                    MakeDoubleAccessor (&WifiPhy::SetTxGain,
                                        &WifiPhy::GetTxGain),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("RxGain",
                    "Reception gain (dB).",
-                   Double (1.0),
+                   DoubleValue (1.0),
                    MakeDoubleAccessor (&WifiPhy::SetRxGain,
                                        &WifiPhy::GetRxGain),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxPowerLevels",
                    "Number of transmission power levels available between "
                    "TxPowerBase and TxPowerEnd included.",
-                   Uinteger (1),
+                   UintegerValue (1),
                    MakeUintegerAccessor (&WifiPhy::m_nTxPower),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("TxPowerEnd",
                    "Maximum available transmission level (dbm).",
-                   Double (16.0206),
+                   DoubleValue (16.0206),
                    MakeDoubleAccessor (&WifiPhy::SetTxPowerEnd, 
                                        &WifiPhy::GetTxPowerEnd),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxPowerStart",
                    "Minimum available transmission level (dbm).",
-                   Double (16.0206),
+                   DoubleValue (16.0206),
                    MakeDoubleAccessor (&WifiPhy::SetTxPowerStart, 
                                        &WifiPhy::GetTxPowerStart),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("RxNoise",
                    "Ratio of energy lost by receiver (dB).",
-                   Double (7),
+                   DoubleValue (7),
                    MakeDoubleAccessor (&WifiPhy::SetRxNoise,
                                        &WifiPhy::GetRxNoise),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("Standard", "XXX",
-                   Enum (WIFI_PHY_STANDARD_80211a),
+                   EnumValue (WIFI_PHY_STANDARD_80211a),
                    MakeEnumAccessor (&WifiPhy::SetStandard),
                    MakeEnumChecker (WIFI_PHY_STANDARD_80211a, "802.11a",
                                     WIFI_PHY_STANDARD_holland, "holland"))

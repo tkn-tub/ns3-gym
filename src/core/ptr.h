@@ -447,7 +447,6 @@ Ptr<T>::operator * ()
   return *m_ptr;
 }
 
-
 template <typename T>
 bool 
 Ptr<T>::operator! () 

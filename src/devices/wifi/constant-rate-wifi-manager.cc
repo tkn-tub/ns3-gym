@@ -78,11 +78,11 @@ ConstantRateWifiManager::GetTypeId (void)
     .SetParent<WifiRemoteStationManager> ()
     .AddConstructor<ConstantRateWifiManager> ()
     .AddAttribute ("DataMode", "XXX",
-                   String ("wifia-6mbs"),
+                   StringValue ("wifia-6mbs"),
                    MakeWifiModeAccessor (&ConstantRateWifiManager::m_dataMode),
                    MakeWifiModeChecker ())
     .AddAttribute ("ControlMode", "XXX",
-                   String ("wifia-6mbs"),
+                   StringValue ("wifia-6mbs"),
                    MakeWifiModeAccessor (&ConstantRateWifiManager::m_ctlMode),
                    MakeWifiModeChecker ())
     ;

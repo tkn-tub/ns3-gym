@@ -32,11 +32,11 @@ HierarchicalMobilityModel::GetTypeId (void)
     .SetParent<MobilityModel> ()
     .AddConstructor<HierarchicalMobilityModel> ()
     .AddAttribute ("Child", "The child mobility model.",
-                   Pointer (),
+                   PointerValue (),
                    MakePointerAccessor (&HierarchicalMobilityModel::SetChild),
                    MakePointerChecker<MobilityModel> ())
     .AddAttribute ("Parent", "The parent mobility model.",
-                   Pointer (),
+                   PointerValue (),
                    MakePointerAccessor (&HierarchicalMobilityModel::SetParent),
                    MakePointerChecker<MobilityModel> ())
     ;

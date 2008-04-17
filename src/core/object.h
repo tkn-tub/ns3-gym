@@ -283,15 +283,15 @@ Ptr<T> CreateObject (const AttributeList &attributes);
  */
 template <typename T>
 Ptr<T> 
-CreateObject (std::string n1 = "", Attribute v1 = Attribute (),
-              std::string n2 = "", Attribute v2 = Attribute (),
-              std::string n3 = "", Attribute v3 = Attribute (),
-              std::string n4 = "", Attribute v4 = Attribute (),
-              std::string n5 = "", Attribute v5 = Attribute (),
-              std::string n6 = "", Attribute v6 = Attribute (),
-              std::string n7 = "", Attribute v7 = Attribute (),
-              std::string n8 = "", Attribute v8 = Attribute (),
-              std::string n9 = "", Attribute v9 = Attribute ());
+CreateObject (std::string n1 = "", const AttributeValue & v1 = EmptyAttributeValue (),
+              std::string n2 = "", const AttributeValue & v2 = EmptyAttributeValue (),
+              std::string n3 = "", const AttributeValue & v3 = EmptyAttributeValue (),
+              std::string n4 = "", const AttributeValue & v4 = EmptyAttributeValue (),
+              std::string n5 = "", const AttributeValue & v5 = EmptyAttributeValue (),
+              std::string n6 = "", const AttributeValue & v6 = EmptyAttributeValue (),
+              std::string n7 = "", const AttributeValue & v7 = EmptyAttributeValue (),
+              std::string n8 = "", const AttributeValue & v8 = EmptyAttributeValue (),
+              std::string n9 = "", const AttributeValue & v9 = EmptyAttributeValue ());
   
 
 
@@ -367,16 +367,15 @@ Ptr<T> CreateObject (const AttributeList &attributes)
 
 template <typename T>
 Ptr<T> 
-CreateObject (std::string n1 = "", Attribute v1 = Attribute (),
-              std::string n2 = "", Attribute v2 = Attribute (),
-              std::string n3 = "", Attribute v3 = Attribute (),
-              std::string n4 = "", Attribute v4 = Attribute (),
-              std::string n5 = "", Attribute v5 = Attribute (),
-              std::string n6 = "", Attribute v6 = Attribute (),
-              std::string n7 = "", Attribute v7 = Attribute (),
-              std::string n8 = "", Attribute v8 = Attribute (),
-              std::string n9 = "", Attribute v9 = Attribute ())
-  
+CreateObject (std::string n1 = "", const AttributeValue & v1 = EmptyAttributeValue (),
+              std::string n2 = "", const AttributeValue & v2 = EmptyAttributeValue (),
+              std::string n3 = "", const AttributeValue & v3 = EmptyAttributeValue (),
+              std::string n4 = "", const AttributeValue & v4 = EmptyAttributeValue (),
+              std::string n5 = "", const AttributeValue & v5 = EmptyAttributeValue (),
+              std::string n6 = "", const AttributeValue & v6 = EmptyAttributeValue (),
+              std::string n7 = "", const AttributeValue & v7 = EmptyAttributeValue (),
+              std::string n8 = "", const AttributeValue & v8 = EmptyAttributeValue (),
+              std::string n9 = "", const AttributeValue & v9 = EmptyAttributeValue ())
 {
   AttributeList attributes;
   if (n1 == "")

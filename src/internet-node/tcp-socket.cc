@@ -1165,7 +1165,7 @@ void TcpSocket::ReTxTimeout ()
   // Collapse congestion window (re-enter slowstart)
   m_cWnd = m_segmentSize;           
   m_nextTxSequence = m_highestRxAck; // Start from highest Ack
-  m_rtt->IncreaseMultiplier (); // Double timeout value for next retx timer
+  m_rtt->IncreaseMultiplier (); // DoubleValue timeout value for next retx timer
   Retransmit ();             // Retransmit the packet
 }
 

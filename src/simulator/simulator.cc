@@ -113,8 +113,8 @@ SimulatorPrivate::GetTypeId (void)
     .SetParent<Object> ()
     .AddConstructor<SimulatorPrivate> ()
     .AddAttribute ("Scheduler",
-                   "XXX",
-                   Pointer (),
+                   "The Scheduler used to handle all simulation events.",
+                   PointerValue (),
                    // XXX: allow getting the scheduler too.
                    MakePointerAccessor (&SimulatorPrivate::SetScheduler),
                    MakePointerChecker<Scheduler> ())

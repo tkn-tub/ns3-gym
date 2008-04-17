@@ -436,8 +436,6 @@ public:
   static uint64_t UnitsToTimestep (uint64_t unitValue, 
                                    uint64_t unitFactor);
 
-  TimeUnit (Attribute value);
-  operator Attribute () const;
 private:
   HighPrecision m_data;
 

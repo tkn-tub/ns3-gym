@@ -228,12 +228,12 @@ ArfWifiManager::GetTypeId (void)
     .SetParent<WifiRemoteStationManager> ()
     .AddConstructor<ArfWifiManager> ()
     .AddAttribute ("TimerThreshold", "The 'timer' threshold in the ARF algorithm.",
-                   Uinteger (15),
+                   UintegerValue (15),
                    MakeUintegerAccessor (&ArfWifiManager::m_timerThreshold),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("SuccessThreshold",
                    "The minimum number of sucessfull transmissions to try a new rate.",
-                   Uinteger (10),
+                   UintegerValue (10),
                    MakeUintegerAccessor (&ArfWifiManager::m_successThreshold),
                    MakeUintegerChecker<uint32_t> ())
     ;

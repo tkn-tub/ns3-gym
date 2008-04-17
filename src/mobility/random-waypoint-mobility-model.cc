@@ -37,17 +37,17 @@ RandomWaypointMobilityModel::GetTypeId (void)
     .AddConstructor<RandomWaypointMobilityModel> ()
     .AddAttribute ("Speed",
                    "A random variable used to pick the speed of a random waypoint model.",
-                   UniformVariable (0.3, 0.7),
+                   RandomVariableValue (UniformVariable (0.3, 0.7)),
                    MakeRandomVariableAccessor (&RandomWaypointMobilityModel::m_speed),
                    MakeRandomVariableChecker ())
     .AddAttribute ("Pause",
                    "A random variable used to pick the pause of a random waypoint model.",
-                   ConstantVariable (2.0),
+                   RandomVariableValue (ConstantVariable (2.0)),
                    MakeRandomVariableAccessor (&RandomWaypointMobilityModel::m_pause),
                    MakeRandomVariableChecker ())
     .AddAttribute ("Position",
                    "The position model used to pick a destination point.",
-                   Pointer (),
+                   PointerValue (),
                    MakePointerAccessor (&RandomWaypointMobilityModel::m_position),
                    MakePointerChecker<PositionAllocator> ());
   

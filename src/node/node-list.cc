@@ -62,7 +62,7 @@ NodeListPriv::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::NodeListPriv")
     .SetParent<Object> ()
     .AddAttribute ("NodeList", "The list of all nodes created during the simulation.",
-                   ObjectVector (),
+                   ObjectVectorValue (),
                    MakeObjectVectorAccessor (&NodeListPriv::m_nodes),
                    MakeObjectVectorChecker<Node> ())
     ;

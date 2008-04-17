@@ -157,19 +157,19 @@ AgentImpl::GetTypeId (void)
     .SetParent<Agent> ()
     .AddConstructor<AgentImpl> ()
     .AddAttribute ("HelloInterval", "XXX",
-                   OLSR_HELLO_INTERVAL,
+                   TimeValue (OLSR_HELLO_INTERVAL),
                    MakeTimeAccessor (&AgentImpl::m_helloInterval),
                    MakeTimeChecker ())
     .AddAttribute ("TcInterval", "XXX",
-                   OLSR_TC_INTERVAL,
+                   TimeValue (OLSR_TC_INTERVAL),
                    MakeTimeAccessor (&AgentImpl::m_tcInterval),
                    MakeTimeChecker ())
     .AddAttribute ("MidInterval", "XXX",
-                   OLSR_MID_INTERVAL,
+                   TimeValue (OLSR_MID_INTERVAL),
                    MakeTimeAccessor (&AgentImpl::m_midInterval),
                    MakeTimeChecker ())
     .AddAttribute ("Willingness", "XXX",
-                   Uinteger (OLSR_WILL_DEFAULT),
+                   UintegerValue (OLSR_WILL_DEFAULT),
                    MakeUintegerAccessor (&AgentImpl::m_willingness),
                    MakeUintegerChecker<uint8_t> ())
     .AddTraceSource ("Rx", "Receive OLSR packet.",

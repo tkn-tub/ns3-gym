@@ -43,11 +43,11 @@ PacketSink::GetTypeId (void)
     .SetParent<Application> ()
     .AddConstructor<PacketSink> ()
     .AddAttribute ("Local", "The Address on which to Bind the rx socket.",
-                   Address (),
+                   AddressValue (),
                    MakeAddressAccessor (&PacketSink::m_local),
                    MakeAddressChecker ())
     .AddAttribute ("Protocol", "The type id of the protocol to use for the rx socket.",
-                   Udp::GetTypeId (),
+                   TypeIdValue (Udp::GetTypeId ()),
                    MakeTypeIdAccessor (&PacketSink::m_tid),
                    MakeTypeIdChecker ())
     .AddTraceSource ("Rx", "A packet has been received",

@@ -25,19 +25,19 @@
 
 namespace ns3 {
 
-class Pointer
+class PointerValue : public AttributeValue
 {
 public:
-  Pointer ();
+  PointerValue ();
 
-  Pointer (Ptr<Object> object);
+  PointerValue (Ptr<Object> object);
 
   void SetObject (Ptr<Object> object);
 
   Ptr<Object> GetObject (void) const;
 
   template <typename T>
-  Pointer (const Ptr<T> &object);
+  PointerValue (const Ptr<T> &object);
 
   template <typename T>
   void Set (const Ptr<T> &object);
@@ -48,15 +48,13 @@ public:
   template <typename T>
   operator Ptr<T> () const;
 
-  ATTRIBUTE_CONVERTER_DEFINE (Pointer);
+  virtual Ptr<AttributeValue> Copy (void) const;
+  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
+
 private:
   Ptr<Object> m_value;
 };
-
-std::ostream & operator << (std::ostream &os, const Pointer &pointer);
-std::istream & operator >> (std::istream &is, Pointer &pointer);
-
-ATTRIBUTE_VALUE_DEFINE (Pointer);
 
 template <typename T, typename U>
 Ptr<const AttributeAccessor>
@@ -94,17 +92,17 @@ namespace internal {
 template <typename T>
 class APointerChecker : public PointerChecker
 {
-  virtual bool Check (Attribute val) const {
-    const PointerValue *value = val.DynCast<const PointerValue *> ();
+  virtual bool Check (const AttributeValue &val) const {
+    const PointerValue *value = dynamic_cast<const PointerValue *> (&val);
     if (value == 0)
       {
 	return false;
       }
-    if (value->Get ().GetObject () == 0)
+    if (value->GetObject () == 0)
       {
 	return true;
       }
-    T *ptr = dynamic_cast<T*> (PeekPointer (value->Get ().GetObject ()));
+    T *ptr = dynamic_cast<T*> (PeekPointer (value->GetObject ()));
     if (ptr == 0)
       {
 	return false;
@@ -122,8 +120,18 @@ class APointerChecker : public PointerChecker
   virtual std::string GetTypeConstraints (void) const {
     return "";
   }
-  virtual Attribute Create (void) const {
-    return Attribute (ns3::Create<PointerValue> ());
+  virtual Ptr<AttributeValue> Create (void) const {
+    return ns3::Create<PointerValue> ();
+  }
+  virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const {
+    const PointerValue *src = dynamic_cast<const PointerValue *> (&source);
+    PointerValue *dst = dynamic_cast<PointerValue *> (&destination);
+    if (src == 0 || dst == 0)
+      {
+        return false;
+      }
+    *dst = *src;
+    return true;
   }
   virtual TypeId GetPointeeTypeId (void) const {
     return T::GetTypeId ();
@@ -140,18 +148,18 @@ class PointerAccessor : public AttributeAccessor
 {
 public:
   virtual ~PointerAccessor () {}
-  virtual bool Set (ObjectBase * object, Attribute val) const {
+  virtual bool Set (ObjectBase * object, const AttributeValue &val) const {
       T *obj = dynamic_cast<T *> (object);
       if (obj == 0)
         {
           return false;
         }
-      const PointerValue *value = val.DynCast<const PointerValue *> ();
+      const PointerValue *value = dynamic_cast<const PointerValue *> (&val);
       if (value == 0)
         {
           return false;
         }
-      Ptr<U> ptr = dynamic_cast<U*> (PeekPointer (value->Get ().GetObject ()));
+      Ptr<U> ptr = dynamic_cast<U*> (PeekPointer (value->GetObject ()));
       if (ptr == 0)
         {
           return false;
@@ -159,18 +167,18 @@ public:
       DoSet (obj, ptr);
       return true;
     }
-  virtual bool Get (const ObjectBase * object, Attribute val) const {
+  virtual bool Get (const ObjectBase * object, AttributeValue &val) const {
       const T *obj = dynamic_cast<const T *> (object);
       if (obj == 0)
         {
           return false;
         }
-      PointerValue *value = val.DynCast<PointerValue *> ();
+      PointerValue *value = dynamic_cast<PointerValue *> (&val);
       if (value == 0)
         {
           return false;
         }
-      value->Set (Pointer (DoGet (obj)));
+      value->Set (DoGet (obj));
       return true;
     }
 private:
@@ -182,28 +190,28 @@ private:
 
 
 template <typename T>
-Pointer::Pointer (const Ptr<T> &object)
+PointerValue::PointerValue (const Ptr<T> &object)
 {
   m_value = object;
 }
 
 template <typename T>
 void 
-Pointer::Set (const Ptr<T> &object)
+PointerValue::Set (const Ptr<T> &object)
 {
   m_value = object;
 }
 
 template <typename T>
 Ptr<T> 
-Pointer::Get (void) const
+PointerValue::Get (void) const
 {
   T *v = dynamic_cast<T *> (PeekPointer (m_value));
   return v;
 }
 
 template <typename T>
-Pointer::operator Ptr<T> () const
+PointerValue::operator Ptr<T> () const
 {
   return Get<T> ();
 }

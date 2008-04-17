@@ -41,7 +41,7 @@ ObjectFactory::SetTypeId (const char *tid)
   m_tid = TypeId::LookupByName (tid);
 }
 void 
-ObjectFactory::Set (std::string name, Attribute value)
+ObjectFactory::Set (std::string name, const AttributeValue &value)
 {
   if (name == "")
     {

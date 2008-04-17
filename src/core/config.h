@@ -20,12 +20,14 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "attribute.h"
 #include "ptr.h"
-#include "object.h"
 #include <string>
 
 namespace ns3 {
+
+class AttributeValue;
+class Object;
+class CallbackBase;
 
 namespace Config {
 
@@ -37,7 +39,7 @@ namespace Config {
  * match the input path and will then set their value to the input
  * value.
  */
-void Set (std::string path, Attribute value);
+void Set (std::string path, const AttributeValue &value);
 /**
  * \param name the full name of the attribute
  * \param value the value to set.
@@ -46,7 +48,7 @@ void Set (std::string path, Attribute value);
  * matching attribute. This method cannot fail: it will
  * crash if the input attribute name or value is invalid.
  */
-void SetDefault (std::string name, Attribute value);
+void SetDefault (std::string name, const AttributeValue &value);
 /**
  * \param name the full name of the attribute
  * \param value the value to set.
@@ -55,21 +57,21 @@ void SetDefault (std::string name, Attribute value);
  * This method overrides the initial value of the 
  * matching attribute. 
  */
-bool SetDefaultFailSafe (std::string name, Attribute value);
+bool SetDefaultFailSafe (std::string name, const AttributeValue &value);
 /**
  * \param name the name of the requested GlobalValue.
  * \param value the value to set
  *
  * This method is equivalent to GlobalValue::Bind
  */
-void SetGlobal (std::string name, Attribute value);
+void SetGlobal (std::string name, const AttributeValue &value);
 /**
  * \param name the name of the requested GlobalValue.
  * \param value the value to set
  *
  * This method is equivalent to GlobalValue::BindFailSafe
  */
-bool SetGlobalFailSafe (std::string name, Attribute value);
+bool SetGlobalFailSafe (std::string name, const AttributeValue &value);
 /**
  * \param path a path to match trace sources.
  * \param cb the callback to connect to the matching trace sources.

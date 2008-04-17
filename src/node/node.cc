@@ -37,16 +37,16 @@ Node::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Node")
     .SetParent<Object> ()
     .AddAttribute ("DeviceList", "The list of devices associated to this Node.",
-                   ObjectVector (),
+                   ObjectVectorValue (),
                    MakeObjectVectorAccessor (&Node::m_devices),
                    MakeObjectVectorChecker<NetDevice> ())
     .AddAttribute ("ApplicationList", "The list of applications associated to this Node.",
-                   ObjectVector (),
+                   ObjectVectorValue (),
                    MakeObjectVectorAccessor (&Node::m_applications),
                    MakeObjectVectorChecker<Application> ())
     .AddAttribute ("Id", "The id (unique integer) of this Node.",
                    TypeId::ATTR_GET, // allow only getting it.
-                   Uinteger (0),
+                   UintegerValue (0),
                    MakeUintegerAccessor (&Node::m_id),
                    MakeUintegerChecker<uint32_t> ())
     ;

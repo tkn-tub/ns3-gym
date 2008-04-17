@@ -37,15 +37,15 @@ OnoeWifiManager::GetTypeId (void)
     .AddConstructor<OnoeWifiManager> ()
     .AddAttribute ("UpdatePeriod",
                    "The interval between decisions about rate control changes",
-                   Seconds (1.0),
+                   TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&OnoeWifiManager::m_updatePeriod),
                    MakeTimeChecker ())
     .AddAttribute ("RaiseThreshold", "XXX",
-                   Uinteger (10),
+                   UintegerValue (10),
                    MakeUintegerAccessor (&OnoeWifiManager::m_raiseThreshold),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("AddCreditThreshold", "Add credit threshold",
-                   Uinteger (10),
+                   UintegerValue (10),
                    MakeUintegerAccessor (&OnoeWifiManager::m_addCreditThreshold),
                    MakeUintegerChecker<uint32_t> ())
     ;

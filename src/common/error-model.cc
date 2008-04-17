@@ -42,7 +42,7 @@ TypeId ErrorModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::ErrorModel")
     .SetParent<Object> ()
     .AddAttribute ("IsEnabled", "Whether this ErrorModel is enabled or not.",
-                   Boolean (true),
+                   BooleanValue (true),
                    MakeBooleanAccessor (&ErrorModel::m_enable),
                    MakeBooleanChecker ())
     ;
@@ -111,17 +111,17 @@ TypeId RateErrorModel::GetTypeId (void)
     .SetParent<ErrorModel> ()
     .AddConstructor<RateErrorModel> ()
     .AddAttribute ("ErrorUnit", "The error unit",
-                   Enum (EU_BYTE),
+                   EnumValue (EU_BYTE),
                    MakeEnumAccessor (&RateErrorModel::m_unit),
                    MakeEnumChecker (EU_BYTE, "EU_BYTE",
                                     EU_PKT, "EU_PKT",
                                     EU_BIT, "EU_BIT"))
     .AddAttribute ("ErrorRate", "The error rate.",
-                   Double (0.0),
+                   DoubleValue (0.0),
                    MakeDoubleAccessor (&RateErrorModel::m_rate),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("RanVar", "The decision variable attached to this error model.",
-                   UniformVariable (0.0, 1.0),
+                   RandomVariableValue (UniformVariable (0.0, 1.0)),
                    MakeRandomVariableAccessor (&RateErrorModel::m_ranvar),
                    MakeRandomVariableChecker ())
     ;

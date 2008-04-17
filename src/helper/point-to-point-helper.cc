@@ -39,10 +39,10 @@ PointToPointHelper::PointToPointHelper ()
 
 void 
 PointToPointHelper::SetQueue (std::string type,
-			      std::string n1, Attribute v1,
-			      std::string n2, Attribute v2,
-			      std::string n3, Attribute v3,
-			      std::string n4, Attribute v4)
+			      std::string n1, const AttributeValue &v1,
+			      std::string n2, const AttributeValue &v2,
+			      std::string n3, const AttributeValue &v3,
+			      std::string n4, const AttributeValue &v4)
 {
   m_queueFactory.SetTypeId (type);
   m_queueFactory.Set (n1, v1);
@@ -52,13 +52,13 @@ PointToPointHelper::SetQueue (std::string type,
 }
 
 void 
-PointToPointHelper::SetDeviceParameter (std::string n1, Attribute v1)
+PointToPointHelper::SetDeviceParameter (std::string n1, const AttributeValue &v1)
 {
   m_deviceFactory.Set (n1, v1);
 }
 
 void 
-PointToPointHelper::SetChannelParameter (std::string n1, Attribute v1)
+PointToPointHelper::SetChannelParameter (std::string n1, const AttributeValue &v1)
 {
   m_channelFactory.Set (n1, v1);
 }

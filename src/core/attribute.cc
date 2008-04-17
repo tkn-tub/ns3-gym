@@ -31,28 +31,6 @@ AttributeValue::AttributeValue ()
 AttributeValue::~AttributeValue ()
 {}
 
-Attribute::Attribute ()
-  : m_value ()
-{}
-Attribute::Attribute (Ptr<AttributeValue> value)
-  : m_value (value)
-{}
-
-Attribute 
-Attribute::Copy (void) const
-{
-  return m_value->Copy ();
-}
-std::string 
-Attribute::SerializeToString (Ptr<const AttributeChecker> checker) const
-{
-  return m_value->SerializeToString (checker);
-}
-bool 
-Attribute::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
-{
-  return m_value->DeserializeFromString (value, checker);
-}
 
 AttributeAccessor::AttributeAccessor ()
 {}
@@ -63,5 +41,24 @@ AttributeChecker::AttributeChecker ()
 {}
 AttributeChecker::~AttributeChecker ()
 {}
+
+EmptyAttributeValue::EmptyAttributeValue ()
+{}
+Ptr<AttributeValue> 
+EmptyAttributeValue::Copy (void) const
+{
+  return Create<EmptyAttributeValue> ();
+}
+std::string 
+EmptyAttributeValue::SerializeToString (Ptr<const AttributeChecker> checker) const
+{
+  return "";
+}
+bool 
+EmptyAttributeValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
+{
+  return true;
+}
+
 
 } // namespace ns3
