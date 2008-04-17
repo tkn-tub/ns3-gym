@@ -41,7 +41,7 @@ CommandLine::Item::~Item ()
 {}
 
 void 
-CommandLine::Parse (int &iargc, char *argv[]) const
+CommandLine::Parse (int iargc, char *argv[]) const
 {
   int argc = iargc;
   for (argc--, argv++; argc > 0; argc--, argv++)

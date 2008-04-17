@@ -393,9 +393,7 @@ SimulatorPrivate::GetMaximumSimulationTime (void) const
 }; // namespace ns3
 
 
-#include "scheduler-list.h"
-#include "scheduler-heap.h"
-#include "scheduler-map.h"
+#include "map-scheduler.h"
 
 
 namespace ns3 {
@@ -426,7 +424,7 @@ Simulator::GetPriv (void)
     {
       LogRegisterTimePrinter (&TimePrinter);
       m_priv = CreateObject<SimulatorPrivate> ();
-      Ptr<Scheduler> scheduler = CreateObject<SchedulerMap> ();
+      Ptr<Scheduler> scheduler = CreateObject<MapScheduler> ();
       m_priv->SetScheduler (scheduler);
     }
   TRACE_S ("priv " << m_priv);
@@ -572,6 +570,8 @@ Simulator::GetMaximumSimulationTime (void)
 
 #include "ns3/test.h"
 #include "ns3/ptr.h"
+#include "list-scheduler.h"
+#include "heap-scheduler.h"
 
 namespace ns3 {
 
@@ -942,19 +942,19 @@ SimulatorTests::RunTests (void)
   bool result = true;
 
   Simulator::Destroy ();
-  Simulator::SetScheduler (CreateObject<SchedulerList> ());
+  Simulator::SetScheduler (CreateObject<ListScheduler> ());
   if (!RunOneTest ()) 
     {
       result = false;
     }
   Simulator::Destroy ();
-  Simulator::SetScheduler (CreateObject<SchedulerHeap> ());
+  Simulator::SetScheduler (CreateObject<HeapScheduler> ());
   if (!RunOneTest ()) 
     {
       result = false;
     }
   Simulator::Destroy ();
-  Simulator::SetScheduler (CreateObject<SchedulerMap> ());
+  Simulator::SetScheduler (CreateObject<MapScheduler> ());
   if (!RunOneTest ()) 
     {
       result = false;

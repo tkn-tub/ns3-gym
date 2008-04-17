@@ -19,7 +19,7 @@
  * The idea to use a std c++ map came from GTNetS
  */
 
-#include "scheduler-map.h"
+#include "map-scheduler.h"
 #include "event-impl.h"
 #include "ns3/assert.h"
 #include <string>
@@ -37,9 +37,9 @@ std::cout << "MAP TRACE " << x << std::endl;
 
 namespace ns3 {
 
-SchedulerMap::SchedulerMap ()
+MapScheduler::MapScheduler ()
 {}
-SchedulerMap::~SchedulerMap ()
+MapScheduler::~MapScheduler ()
 {}
 
 /* Note the invariants which this function must provide:
@@ -48,7 +48,7 @@ SchedulerMap::~SchedulerMap ()
  * - transitivity: f(x,y) and f(y,z) => f(x,z)
  */
 bool
-SchedulerMap::EventKeyCompare::operator () (struct EventKey const&a, struct EventKey const&b)
+MapScheduler::EventKeyCompare::operator () (struct EventKey const&a, struct EventKey const&b)
 {
   if (a.m_ts < b.m_ts) 
     {
@@ -71,7 +71,7 @@ SchedulerMap::EventKeyCompare::operator () (struct EventKey const&a, struct Even
 
 
 void
-SchedulerMap::Insert (const EventId &id)
+MapScheduler::Insert (const EventId &id)
 {
   // acquire a single ref
   EventImpl *event = id.PeekEventImpl ();
@@ -85,13 +85,13 @@ SchedulerMap::Insert (const EventId &id)
 }
 
 bool
-SchedulerMap::IsEmpty (void) const
+MapScheduler::IsEmpty (void) const
 {
   return m_list.empty ();
 }
 
 EventId
-SchedulerMap::PeekNext (void) const
+MapScheduler::PeekNext (void) const
 {
   EventMapCI i = m_list.begin ();
   NS_ASSERT (i != m_list.end ());
@@ -99,7 +99,7 @@ SchedulerMap::PeekNext (void) const
   return EventId (i->second, i->first.m_ts, i->first.m_uid);
 }
 EventId
-SchedulerMap::RemoveNext (void)
+MapScheduler::RemoveNext (void)
 {
   EventMapI i = m_list.begin ();
   std::pair<Scheduler::EventKey, EventImpl*> next = *i;
@@ -108,7 +108,7 @@ SchedulerMap::RemoveNext (void)
 }
 
 bool
-SchedulerMap::Remove (const EventId &id)
+MapScheduler::Remove (const EventId &id)
 {
   Scheduler::EventKey key;
   key.m_ts = id.GetTs ();

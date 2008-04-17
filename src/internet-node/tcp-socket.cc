@@ -681,6 +681,7 @@ bool TcpSocket::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       // TCP SYN consumes one byte
       m_nextRxSequence = tcpHeader.GetSequenceNumber() + SequenceNumber(1);
       m_nextTxSequence = tcpHeader.GetAckNumber ();
+      m_firstPendingSequence = m_nextTxSequence;  //bug 166
       NS_LOG_DEBUG ("TcpSocket " << this << " ACK_TX_1" <<
                     " nextRxSeq " << m_nextRxSequence);
       SendEmptyPacket (TcpHeader::ACK);

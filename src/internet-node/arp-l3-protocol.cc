@@ -108,6 +108,11 @@ ArpL3Protocol::Receive(Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t proto
             arp.GetDestinationIpv4Address () << "; we have address " <<
             cache->GetInterface ()->GetAddress ());
 
+  /**
+   * Note: we do not update the ARP cache when we receive an ARP request
+   * from an unknown node. See bug #107
+   */
+
   if (arp.IsRequest () && 
       arp.GetDestinationIpv4Address () == cache->GetInterface ()->GetAddress ()) 
     {
