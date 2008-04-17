@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 #include "ns3/callback.h"
+#include "ns3/traced-value.h"
 #include "ns3/socket.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
@@ -30,6 +31,7 @@
 #include "pending-data.h"
 #include "sequence-number.h"
 #include "rtt-estimator.h"
+
 
 namespace ns3 {
 
@@ -42,6 +44,7 @@ class TcpHeader;
 class TcpSocket : public Socket
 {
 public:
+  static TypeId GetTypeId (void);
   /**
    * Create an unbound tcp socket.
    */
@@ -152,12 +155,12 @@ private:
   SequenceNumber m_firstPendingSequence;
 
   // Window management
-  uint32_t          m_segmentSize;                     // SegmentSize
-  uint32_t          m_rxWindowSize;
-  uint32_t          m_advertisedWindowSize;            // Window to advertise to peer
-  uint32_t          m_cWnd;            // Congestion window
-  uint32_t          m_ssThresh;                     // Slow Start Threshold
-  uint32_t          m_initialCWnd;     // Initial (and reset) value for cWnd
+  uint32_t                       m_segmentSize;          //SegmentSize
+  uint32_t                       m_rxWindowSize;
+  uint32_t                       m_advertisedWindowSize; //Window to advertise
+  TracedValue<uint32_t>          m_cWnd;                 //Congestion window
+  uint32_t                       m_ssThresh;             //Slow Start Threshold
+  uint32_t                       m_initialCWnd;          //Initial cWnd value
 
   // Round trip time estimation
   Ptr<RttEstimator> m_rtt;

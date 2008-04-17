@@ -84,8 +84,7 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Add IP Stack.");
   InternetStackHelper internet;
-  internet.Install (c0);
-  internet.Install (c1);
+  internet.Install (c);
 
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4Addr;

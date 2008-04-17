@@ -18,12 +18,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/simulator.h"
-#include "ns3/scheduler-list.h"
-#include "ns3/scheduler-map.h"
-#include "ns3/scheduler-heap.h"
-#include "ns3/nstime.h"
-#include "ns3/system-wall-clock-ms.h"
+#include "ns3/simulator-module.h"
+#include "ns3/core-module.h"
 #include <vector>
 #include <deque>
 #include <fstream>
@@ -317,15 +313,15 @@ int main (int argc, char *argv[])
     {
       if (is_map)
         {
-          Simulator::SetScheduler (CreateObject<SchedulerMap> ());
+          Simulator::SetScheduler (CreateObject<MapScheduler> ());
         }
       else if (is_list)
         {
-          Simulator::SetScheduler (CreateObject<SchedulerList> ());
+          Simulator::SetScheduler (CreateObject<ListScheduler> ());
         }
       else if (is_heap)
         {
-          Simulator::SetScheduler (CreateObject<SchedulerHeap> ());
+          Simulator::SetScheduler (CreateObject<HeapScheduler> ());
         }
       log.Run ();
       Simulator::Destroy ();

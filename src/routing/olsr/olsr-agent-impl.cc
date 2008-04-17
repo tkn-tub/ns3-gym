@@ -572,12 +572,15 @@ AgentImpl::MprComputation()
           // (not in RFC but I think is needed: remove the 2-hop
           // neighbors reachable by the MPR from N2)
           for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin ();
-               twoHopNeigh != N2.end (); twoHopNeigh++)
+               twoHopNeigh != N2.end (); )
             {
               if (twoHopNeigh->neighborMainAddr == neighbor->neighborMainAddr)
                 {
                   twoHopNeigh = N2.erase (twoHopNeigh);
-                  twoHopNeigh--;
+                }
+              else
+                {
+                  twoHopNeigh++;
                 }
             }
         }
@@ -617,12 +620,15 @@ AgentImpl::MprComputation()
     }
   // Remove the nodes from N2 which are now covered by a node in the MPR set.
   for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin ();
-       twoHopNeigh != N2.end (); twoHopNeigh++)
+       twoHopNeigh != N2.end (); )
     {
       if (coveredTwoHopNeighbors.find (twoHopNeigh->twoHopNeighborAddr) != coveredTwoHopNeighbors.end ())
         {
           twoHopNeigh = N2.erase (twoHopNeigh);
-          twoHopNeigh--;
+        }
+      else
+        {
+          twoHopNeigh++;
         }
     }
 	
@@ -699,12 +705,15 @@ AgentImpl::MprComputation()
         {
           mprSet.insert (max->neighborMainAddr);
           for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin ();
-               twoHopNeigh != N2.end (); twoHopNeigh++)
+               twoHopNeigh != N2.end (); )
             {
               if (twoHopNeigh->neighborMainAddr == max->neighborMainAddr)
                 {
                   twoHopNeigh = N2.erase (twoHopNeigh);
-                  twoHopNeigh--;
+                }
+              else
+                {
+                  twoHopNeigh++;
                 }
             }
         }

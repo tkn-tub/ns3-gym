@@ -31,6 +31,7 @@
 #include "tcp-typedefs.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
+#include "ns3/trace-source-accessor.h"
 
 #include <algorithm>
 
@@ -39,6 +40,20 @@ NS_LOG_COMPONENT_DEFINE ("TcpSocket");
 using namespace std;
 
 namespace ns3 {
+
+NS_OBJECT_ENSURE_REGISTERED (TcpSocket);
+
+TypeId
+TcpSocket::GetTypeId ()
+{
+  static TypeId tid = TypeId("ns3::TcpSocket")
+    .SetParent<Socket> ()
+    .AddTraceSource ("CongestionWindow",
+                     "The TCP connection's congestion window",
+                     MakeTraceSourceAccessor (&TcpSocket::m_cWnd))
+    ;
+  return tid;
+}
 
   TcpSocket::TcpSocket ()
   : m_skipRetxResched (false),
@@ -680,6 +695,7 @@ bool TcpSocket::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       // TCP SYN consumes one byte
       m_nextRxSequence = tcpHeader.GetSequenceNumber() + SequenceNumber(1);
       m_nextTxSequence = tcpHeader.GetAckNumber ();
+      m_firstPendingSequence = m_nextTxSequence;  //bug 166
       NS_LOG_DEBUG ("TcpSocket " << this << " ACK_TX_1" <<
                     " nextRxSeq " << m_nextRxSequence);
       SendEmptyPacket (TcpHeader::ACK);
@@ -899,7 +915,7 @@ uint32_t  TcpSocket::Window ()
 {
   NS_LOG_FUNCTION;
   NS_LOG_LOGIC ("TcpSocket::Window() "<<this);
-  return std::min (m_rxWindowSize, m_cWnd);
+  return std::min (m_rxWindowSize, m_cWnd.Get());
 }
 
 uint32_t  TcpSocket::AvailableWindow ()
@@ -1120,7 +1136,7 @@ void TcpSocket::NewAck (SequenceNumber seq)
     }
   else
     { // Congestion avoidance mode, adjust by (ackBytes*segSize) / cWnd
-      double adder =  ((double) m_segmentSize * m_segmentSize) / m_cWnd;
+      double adder =  ((double) m_segmentSize * m_segmentSize) / m_cWnd.Get();
       if (adder < 1.0) 
         {
           adder = 1.0;
