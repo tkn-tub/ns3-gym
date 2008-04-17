@@ -19,15 +19,24 @@ PrintAttributes (TypeId tid, std::ostream &os)
       os << "<li><b>" << tid.GetAttributeName (j) << "</b>: "
 		<< tid.GetAttributeHelp (j) << std::endl;
       Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (j);
-      os << "  <ul>" << std::endl << "    <li>Set with class: \\ref " 
-	 <<  checker->GetValueTypeName () << "</li>" << std::endl;
+      os << "  <ul>" << std::endl 
+	 << "    <li>Set with class: \\ref " <<  checker->GetValueTypeName () << "</li>" << std::endl;
       if (checker->HasUnderlyingTypeInformation ())
 	{
 	  os << "    <li>Underlying type: \\ref " << checker->GetUnderlyingTypeInformation () << "</li>" << std::endl;
 	}
       uint32_t flags = tid.GetAttributeFlags (j);
       Ptr<const AttributeAccessor> accessor = tid.GetAttributeAccessor (j);
+      if (flags & TypeId::ATTR_CONSTRUCT && accessor->HasSetter ())
+	{
+	  Ptr<const AttributeValue> initial = tid.GetAttributeInitialValue (j);
+	  os << "    <li>Initial value: " << initial->SerializeToString (checker) << "</li>" << std::endl;
+	}
       os << "    <li>Flags: ";
+      if (flags & TypeId::ATTR_CONSTRUCT && accessor->HasSetter ())
+	{
+	  os << "construct ";
+	}
       if (flags & TypeId::ATTR_SET && accessor->HasSetter ())
 	{
 	  os << "write ";
@@ -35,10 +44,6 @@ PrintAttributes (TypeId tid, std::ostream &os)
       if (flags & TypeId::ATTR_GET && accessor->HasGetter ())
 	{
 	  os << "read ";
-	}
-      if (flags & TypeId::ATTR_CONSTRUCT && accessor->HasSetter ())
-	{
-	  os << "construct ";
 	}
       os << "</li>" << std::endl;
       os << "  </ul> " << std::endl;
@@ -272,11 +277,11 @@ int main (int argc, char *argv[])
 	}
       if (tid.GetAttributeN () == 0)
 	{
-	  std::cout << "No Attributes defined for this type." << std::endl;
+	  std::cout << "No Attributes defined for this type.<br>" << std::endl;
 	}
       else
 	{
-	  std::cout << "Attributes defined for this type:" << std::endl;
+	  std::cout << "Attributes defined for this type:<br>" << std::endl;
 	  PrintAttributes (tid, std::cout);
 	}
       {
@@ -293,11 +298,11 @@ int main (int argc, char *argv[])
       }
       if (tid.GetTraceSourceN () == 0)
 	{
-	  std::cout << "No TraceSources defined for this type." << std::endl;
+	  std::cout << "No TraceSources defined for this type.<br>" << std::endl;
 	}
       else
 	{
-	  std::cout << "TraceSources defined for this type:" << std::endl;
+	  std::cout << "TraceSources defined for this type:<br>" << std::endl;
 	  PrintTraceSources (tid, std::cout);
 	}
       {
