@@ -111,7 +111,7 @@ EnumChecker::Check (const AttributeValue &value) const
 std::string 
 EnumChecker::GetType (void) const
 {
-  return "Enum";
+  return "EnumValue";
 }
 bool 
 EnumChecker::HasTypeConstraints (void) const

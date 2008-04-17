@@ -21,9 +21,22 @@ public:
 
   ObjectVectorValue ();
 
+  /**
+   * \returns an iterator to the first object contained in this vector
+   */
   Iterator Begin (void) const;
+  /**
+   * \returns an iterator to the last object contained in this vector
+   */
   Iterator End (void) const;
+  /**
+   * \returns the number of objects contained in this vector.
+   */
   uint32_t GetN (void) const;
+  /**
+   * \param i the index of the requested object.
+   * \returns the requested object
+   */
   Ptr<Object> Get (uint32_t i) const;
 
   virtual Ptr<AttributeValue> Copy (void) const;
@@ -75,7 +88,7 @@ public:
     return dynamic_cast<const ObjectVectorValue *> (&value) != 0;
   }
   virtual std::string GetType (void) const {
-    return "ns3::ObjectVector";
+    return "ns3::ObjectVectorValue";
   }
   virtual bool HasTypeConstraints (void) const {
     return true;
