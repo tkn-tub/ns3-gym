@@ -27,6 +27,7 @@
 namespace ns3 {
 
 /**
+ * \class ns3::UintegerValue
  * \brief Hold an unsigned integer type
  *
  * \anchor uint8_t
