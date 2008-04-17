@@ -120,7 +120,7 @@ class APointerChecker : public PointerChecker
   }
   virtual std::string GetUnderlyingTypeInformation (void) const {
     TypeId tid = T::GetTypeId ();
-    return "Ptr< " + tid.GetName () + " >";
+    return "ns3::Ptr< " + tid.GetName () + " >";
   }
   virtual Ptr<AttributeValue> Create (void) const {
     return ns3::Create<PointerValue> ();

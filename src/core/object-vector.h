@@ -94,7 +94,7 @@ public:
     return true;
   }
   virtual std::string GetUnderlyingTypeInformation (void) const {
-    return T::GetTypeId ().GetName ();
+    return "ns3::Ptr< " + T::GetTypeId ().GetName () + " >";
   }
   virtual Ptr<AttributeValue> Create (void) const {
     return ns3::Create<ObjectVectorValue> ();
