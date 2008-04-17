@@ -44,15 +44,15 @@ MakeIntegerChecker (int64_t min, int64_t max, std::string name)
 	}
       return v->Get () >= m_minValue && v->Get () <= m_maxValue;
     }
-    virtual std::string GetType (void) const {
-      return m_name;
+    virtual std::string GetValueTypeName (void) const {
+      return "ns3::IntegerValue";
     }
-    virtual bool HasTypeConstraints (void) const {
+    virtual bool HasUnderlyingTypeInformation (void) const {
       return true;
     }
-    virtual std::string GetTypeConstraints (void) const {
+    virtual std::string GetUnderlyingTypeInformation (void) const {
       std::ostringstream oss;
-      oss << m_minValue << ":" << m_maxValue;
+      oss << m_name << " " << m_minValue << ":" << m_maxValue;
       return oss.str ();
     }
     virtual Ptr<AttributeValue> Create (void) const {

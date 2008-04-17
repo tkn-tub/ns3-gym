@@ -89,6 +89,11 @@ private:
 std::ostream & operator << (std::ostream &os, const ObjectFactory &factory);
 std::istream & operator >> (std::istream &is, ObjectFactory &factory);
 
+/**
+ * \class ns3::ObjectFactoryValue
+ * \brief hold objects of type ns3::ObjectFactory
+ */
+
 ATTRIBUTE_HELPER_HEADER_2 (ObjectFactory);
 
 } // namespace ns3

@@ -27,7 +27,7 @@
 namespace ns3 {
 
 /**
- * \class IntegerValue
+ * \class ns3::IntegerValue
  * \brief Hold a signed integer type
  *
  * \anchor int8_t

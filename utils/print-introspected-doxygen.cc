@@ -19,12 +19,12 @@ PrintAttributes (TypeId tid, std::ostream &os)
       os << "<li><b>" << tid.GetAttributeName (j) << "</b>: "
 		<< tid.GetAttributeHelp (j) << std::endl;
       Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (j);
-      os << "  <ul>" << std::endl << "    <li>Type: \\ref " <<  checker->GetType ();
-      if (checker->HasTypeConstraints ())
+      os << "  <ul>" << std::endl << "    <li>Set with class: \\ref " 
+	 <<  checker->GetValueTypeName () << "</li>" << std::endl;
+      if (checker->HasUnderlyingTypeInformation ())
 	{
-	  os << " -> " << checker->GetTypeConstraints ();
+	  os << "    <li>Underlying type: \\ref " << checker->GetUnderlyingTypeInformation () << "</li>" << std::endl;
 	}
-      os << "</li>" << std::endl;
       uint32_t flags = tid.GetAttributeFlags (j);
       Ptr<const AttributeAccessor> accessor = tid.GetAttributeAccessor (j);
       os << "    <li>Flags: ";

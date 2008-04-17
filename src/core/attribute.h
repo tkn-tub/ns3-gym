@@ -145,9 +145,28 @@ public:
    *          false otherwise.
    */
   virtual bool Check (const AttributeValue &value) const = 0;
-  virtual std::string GetType (void) const = 0;
-  virtual bool HasTypeConstraints (void) const = 0;
-  virtual std::string GetTypeConstraints (void) const = 0;
+  /**
+   * \returns the c++ fully-qualified typename of the subclass
+   *          of the ns3::AttributeValue base class which is associated
+   *          to this checker.
+   *
+   * A typical return value here is FooValue where Foo is the name of the
+   * type being wrapped.
+   */
+  virtual std::string GetValueTypeName (void) const = 0;
+  /**
+   * \returns true if this checker has information about the underlying
+   *          C++ type, false otherwise.
+   *
+   * If this method returns false, the return value of the GetUnderlyingTypeInformation
+   * method cannot be relied upon.
+   */
+  virtual bool HasUnderlyingTypeInformation (void) const = 0;
+  /**
+   * \returns a human-readable representation of information about
+   *          the underlying C++ type.
+   */
+  virtual std::string GetUnderlyingTypeInformation (void) const = 0;
   /**
    * \returns a new instance of an AttributeValue (wrapper in an Attribute 
    *          instance) which matches the type of the underlying attribute.

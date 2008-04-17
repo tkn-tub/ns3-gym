@@ -58,6 +58,11 @@ private:
 std::ostream &operator << (std::ostream &os, const Ssid &ssid);
 std::istream &operator >> (std::istream &is, Ssid &ssid);
 
+/**
+ * \class ns3::SsidValue
+ * \brief hold objects of type ns3::Ssid
+ */
+
 ATTRIBUTE_HELPER_HEADER_2 (Ssid);
 
 } // namespace ns3

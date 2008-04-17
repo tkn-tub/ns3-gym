@@ -87,13 +87,13 @@ public:
   virtual bool Check (const AttributeValue &value) const {
     return dynamic_cast<const ObjectVectorValue *> (&value) != 0;
   }
-  virtual std::string GetType (void) const {
+  virtual std::string GetValueTypeName (void) const {
     return "ns3::ObjectVectorValue";
   }
-  virtual bool HasTypeConstraints (void) const {
+  virtual bool HasUnderlyingTypeInformation (void) const {
     return true;
   }
-  virtual std::string GetTypeConstraints (void) const {
+  virtual std::string GetUnderlyingTypeInformation (void) const {
     return T::GetTypeId ().GetName ();
   }
   virtual Ptr<AttributeValue> Create (void) const {

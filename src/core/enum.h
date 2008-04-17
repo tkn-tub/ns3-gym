@@ -57,9 +57,9 @@ public:
   void Add (int v, std::string name);
 
   virtual bool Check (const AttributeValue &value) const;
-  virtual std::string GetType (void) const;
-  virtual bool HasTypeConstraints (void) const;
-  virtual std::string GetTypeConstraints (void) const;
+  virtual std::string GetValueTypeName (void) const;
+  virtual bool HasUnderlyingTypeInformation (void) const;
+  virtual std::string GetUnderlyingTypeInformation (void) const;
   virtual Ptr<AttributeValue> Create (void) const;
   virtual bool Copy (const AttributeValue &src, AttributeValue &dst) const;
 

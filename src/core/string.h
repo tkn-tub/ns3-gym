@@ -7,7 +7,7 @@
 namespace ns3 {
 
 /**
- * \class StringValue
+ * \class ns3::StringValue
  * \brief hold variables of type string
  *
  * This class can be used to hold variables of type string,

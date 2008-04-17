@@ -667,6 +667,12 @@ typedef TimeUnit<0> Scalar;
 typedef TimeUnit<-1> TimeInvert;
 typedef TimeUnit<2> TimeSquare;
 
+/**
+ * \class ns3::TimeValue
+ * \brief hold objects of type ns3::Time
+ */
+
+
 ATTRIBUTE_ACCESSOR_DEFINE (Time);
 ATTRIBUTE_VALUE_DEFINE (Time);
 ATTRIBUTE_CHECKER_DEFINE (Time);

@@ -27,7 +27,7 @@
 namespace ns3 {
 
 /**
- * \class DoubleValue
+ * \class ns3::DoubleValue
  * \brief Hold an floating point type
  *
  * \anchor double

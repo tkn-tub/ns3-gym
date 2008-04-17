@@ -29,21 +29,21 @@ namespace ns3 {
 
 template <typename T, typename BASE>
 Ptr<AttributeChecker>
-MakeSimpleAttributeChecker (std::string name)
+MakeSimpleAttributeChecker (std::string name, std::string underlying)
 {
   struct SimpleAttributeChecker : public BASE
   {
     virtual bool Check (const AttributeValue &value) const {
       return dynamic_cast<const T *> (&value) != 0;
     }
-    virtual std::string GetType (void) const {
+    virtual std::string GetValueTypeName (void) const {
       return m_type;
     }
-    virtual bool HasTypeConstraints (void) const {
-      return false;
+    virtual bool HasUnderlyingTypeInformation (void) const {
+      return true;
     }
-    virtual std::string GetTypeConstraints (void) const {
-      return "";
+    virtual std::string GetUnderlyingTypeInformation (void) const {
+      return m_underlying;
     }
     virtual Ptr<AttributeValue> Create (void) const {
       return ns3::Create<T> ();
@@ -59,8 +59,10 @@ MakeSimpleAttributeChecker (std::string name)
       return true;
     }
     std::string m_type;
+    std::string m_underlying;
   } *checker = new SimpleAttributeChecker ();
   checker->m_type = name;
+  checker->m_underlying = underlying;
   return Ptr<AttributeChecker> (checker, false);
 }
 
@@ -108,7 +110,7 @@ MakeSimpleAttributeChecker (std::string name)
     return MakeAccessorHelper<type##Value> (a1, a2);			\
   }
 
-#define ATTRIBUTE_VALUE_DEFINE_WITH_NAME(type,name) \
+#define ATTRIBUTE_VALUE_DEFINE_WITH_NAME(type,name)                     \
   class name##Value : public AttributeValue				\
   {									\
   public:								\
@@ -210,8 +212,15 @@ MakeSimpleAttributeChecker (std::string name)
 #define ATTRIBUTE_CHECKER_IMPLEMENT(type)				\
   Ptr<const AttributeChecker> Make##type##Checker (void)		\
   {									\
-    return MakeSimpleAttributeChecker<type##Value,type##Checker> (#type);	\
+    return MakeSimpleAttributeChecker<type##Value,type##Checker> (#type "Value", #type); \
   }									\
+
+#define ATTRIBUTE_CHECKER_IMPLEMENT_WITH_NAME(type,name)                    \
+  Ptr<const AttributeChecker> Make##type##Checker (void)		\
+  {									\
+    return MakeSimpleAttributeChecker<type##Value,type##Checker> (#type "Value", name); \
+  }									\
+
 
 /**
  * \ingroup AttributeHelper

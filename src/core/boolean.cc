@@ -97,6 +97,6 @@ BooleanValue::DeserializeFromString (std::string value, Ptr<const AttributeCheck
 }
 
 
-ATTRIBUTE_CHECKER_IMPLEMENT (Boolean);
+ATTRIBUTE_CHECKER_IMPLEMENT_WITH_NAME (Boolean,"bool");
 
 } // namespace ns3

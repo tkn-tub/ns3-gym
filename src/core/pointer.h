@@ -25,6 +25,9 @@
 
 namespace ns3 {
 
+/**
+ * \brief hold objects of type Ptr<T>
+ */
 class PointerValue : public AttributeValue
 {
 public:
@@ -109,16 +112,15 @@ class APointerChecker : public PointerChecker
       }
     return true;
   }
-  virtual std::string GetType (void) const {
-    // XXX: we should be able to return better information
+  virtual std::string GetValueTypeName (void) const {
+    return "ns3::PointerValue";
+  }
+  virtual bool HasUnderlyingTypeInformation (void) const {
+    return true;
+  }
+  virtual std::string GetUnderlyingTypeInformation (void) const {
     TypeId tid = T::GetTypeId ();
     return "Ptr< " + tid.GetName () + " >";
-  }
-  virtual bool HasTypeConstraints (void) const {
-    return false;
-  }
-  virtual std::string GetTypeConstraints (void) const {
-    return "";
   }
   virtual Ptr<AttributeValue> Create (void) const {
     return ns3::Create<PointerValue> ();

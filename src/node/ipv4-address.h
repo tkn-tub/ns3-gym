@@ -185,6 +185,15 @@ private:
   uint32_t m_mask;
 };
 
+/**
+ * \class ns3::Ipv4AddressValue
+ * \brief hold objects of type ns3::Ipv4Address
+ */
+/**
+ * \class ns3::Ipv4MaskValue
+ * \brief hold objects of type ns3::Ipv4Mask
+ */
+
 ATTRIBUTE_HELPER_HEADER_2 (Ipv4Address);
 ATTRIBUTE_HELPER_HEADER_2 (Ipv4Mask);
 

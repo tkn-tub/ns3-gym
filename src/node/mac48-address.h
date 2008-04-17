@@ -112,6 +112,11 @@ private:
   uint8_t m_address[6];
 };
 
+/**
+ * \class ns3::Mac48AddressValue
+ * \brief hold objects of type ns3::Mac48Address
+ */
+
 ATTRIBUTE_HELPER_HEADER_2 (Mac48Address);
 
 bool operator == (const Mac48Address &a, const Mac48Address &b);

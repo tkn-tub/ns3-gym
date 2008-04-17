@@ -109,17 +109,17 @@ EnumChecker::Check (const AttributeValue &value) const
   return false;
 }
 std::string 
-EnumChecker::GetType (void) const
+EnumChecker::GetValueTypeName (void) const
 {
-  return "EnumValue";
+  return "ns3::EnumValue";
 }
 bool 
-EnumChecker::HasTypeConstraints (void) const
+EnumChecker::HasUnderlyingTypeInformation (void) const
 {
   return true;
 }
 std::string 
-EnumChecker::GetTypeConstraints (void) const
+EnumChecker::GetUnderlyingTypeInformation (void) const
 {
   std::ostringstream oss;
   for (ValueSet::const_iterator i = m_valueSet.begin (); i != m_valueSet.end ();)
