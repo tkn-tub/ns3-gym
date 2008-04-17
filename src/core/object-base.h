@@ -83,6 +83,7 @@ public:
   bool SetAttributeFailSafe (std::string name, const AttributeValue &value);
   /**
    * \param name the name of the attribute to read
+   * \param value a reference to the value where the result should be stored.
    * \returns the attribute read.
    *
    * If the input attribute name does not exist, this method crashes.
