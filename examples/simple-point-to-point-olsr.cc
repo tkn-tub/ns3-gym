@@ -97,7 +97,7 @@ main (int argc, char *argv[])
   p2p.SetChannelParameter ("Delay", StringValue ("2ms"));
   NetDeviceContainer nd02 = p2p.Install (n02);
   NetDeviceContainer nd12 = p2p.Install (n12);
-  p2p.SetChannelParameter ("BitRate", StringValue ("1500Kbps"));
+  p2p.SetChannelParameter ("BitRate", StringValue ("1500kbps"));
   p2p.SetChannelParameter ("Delay", StringValue ("10ms"));
   NetDeviceContainer nd32 = p2p.Install (n32);
   NetDeviceContainer nd34 = p2p.Install (n34);
