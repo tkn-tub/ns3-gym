@@ -30,13 +30,13 @@ MobilityModel::GetTypeId (void)
     .SetParent<Object> ()
     .AddAttribute ("Position", "The current position of the mobility model.",
                    TypeId::ATTR_SGC,
-                   Vector (0.0, 0.0, 0.0),
+                   VectorValue (Vector (0.0, 0.0, 0.0)),
                    MakeVectorAccessor (&MobilityModel::SetPosition,
                                         &MobilityModel::GetPosition),
                    MakeVectorChecker ())
     .AddAttribute ("Velocity", "The current velocity of the mobility model.",
                    TypeId::ATTR_GET,
-                   Vector (0.0, 0.0, 0.0), // ignored initial value.
+                   VectorValue (Vector (0.0, 0.0, 0.0)), // ignored initial value.
                    MakeVectorAccessor (&MobilityModel::GetVelocity),
                    MakeVectorChecker ())
     ;

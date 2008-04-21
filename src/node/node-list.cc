@@ -30,9 +30,8 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("NodeList");
 
-
 /**
- * The private node list used by the static-based API
+ * \brief private implementation detail of the NodeList API.
  */
 class NodeListPriv : public Object
 {
@@ -55,15 +54,17 @@ private:
   std::vector<Ptr<Node> > m_nodes;
 };
 
+NS_OBJECT_ENSURE_REGISTERED (NodeListPriv);
+
 TypeId 
 NodeListPriv::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("NodeListPriv")
+  static TypeId tid = TypeId ("ns3::NodeListPriv")
     .SetParent<Object> ()
     .AddAttribute ("NodeList", "The list of all nodes created during the simulation.",
-                   ObjectVector (),
+                   ObjectVectorValue (),
                    MakeObjectVectorAccessor (&NodeListPriv::m_nodes),
-                   MakeObjectVectorChecker ())
+                   MakeObjectVectorChecker<Node> ())
     ;
   return tid;
 }

@@ -52,34 +52,34 @@ OnOffApplication::GetTypeId (void)
     .SetParent<Application> ()
     .AddConstructor<OnOffApplication> ()
     .AddAttribute ("DataRate", "The data rate in on state.",
-                   DataRate ("500kb/s"),
+                   DataRateValue (DataRate ("500kb/s")),
                    MakeDataRateAccessor (&OnOffApplication::m_cbrRate),
                    MakeDataRateChecker ())
     .AddAttribute ("PacketSize", "The size of packets sent in on state",
-                   Uinteger (512),
+                   UintegerValue (512),
                    MakeUintegerAccessor (&OnOffApplication::m_pktSize),
                    MakeUintegerChecker<uint32_t> (1))
     .AddAttribute ("Remote", "The address of the destination",
-                   Address (),
+                   AddressValue (),
                    MakeAddressAccessor (&OnOffApplication::m_peer),
                    MakeAddressChecker ())
     .AddAttribute ("OnTime", "A RandomVariable used to pick the duration of the 'On' state.",
-                   ConstantVariable (1.0),
+                   RandomVariableValue (ConstantVariable (1.0)),
                    MakeRandomVariableAccessor (&OnOffApplication::m_onTime),
                    MakeRandomVariableChecker ())
     .AddAttribute ("OffTime", "A RandomVariable used to pick the duration of the 'Off' state.",
-                   ConstantVariable (1.0),
+                   RandomVariableValue (ConstantVariable (1.0)),
                    MakeRandomVariableAccessor (&OnOffApplication::m_offTime),
                    MakeRandomVariableChecker ())
     .AddAttribute ("MaxBytes", 
                    "The total number of bytes to send. Once these bytes are sent, "
                    "no packet is sent again, even in on state. The value zero means "
                    "that there is no limit.",
-                   Uinteger (0),
+                   UintegerValue (0),
                    MakeUintegerAccessor (&OnOffApplication::m_maxBytes),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Protocol", "The type of protocol to use.",
-                   Udp::GetTypeId (),
+                   TypeIdValue (Udp::GetTypeId ()),
                    MakeTypeIdAccessor (&OnOffApplication::m_tid),
                    MakeTypeIdChecker ())
     .AddTraceSource ("Tx", "A new packet is created and is sent",

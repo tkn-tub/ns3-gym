@@ -28,28 +28,30 @@ namespace ns3 {
 /**
  * \brief Hold a bool native type
  *
+ * \anchor bool
+ *
  * This class can be used to hold bool variables
  * which must go through the Attribute system.
  */
-class Boolean
+class BooleanValue : public AttributeValue
 {
 public:
-  Boolean ();
-  Boolean (bool value);
+  BooleanValue ();
+  BooleanValue (bool value);
   void Set (bool value);
   bool Get (void) const;
-
+  
   operator bool () const;
 
-  ATTRIBUTE_CONVERTER_DEFINE (Boolean);
+  virtual Ptr<AttributeValue> Copy (void) const;
+  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 private:
   bool m_value;
 };
 
-std::ostream & operator << (std::ostream &os, const Boolean &value);
-std::istream & operator >> (std::istream &is, Boolean &value);
+std::ostream & operator << (std::ostream &os, const BooleanValue &value);
 
-ATTRIBUTE_VALUE_DEFINE (Boolean);
 ATTRIBUTE_CHECKER_DEFINE (Boolean);
 ATTRIBUTE_ACCESSOR_DEFINE (Boolean);
 

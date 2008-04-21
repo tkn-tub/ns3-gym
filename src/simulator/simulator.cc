@@ -23,6 +23,7 @@
 #include "event-impl.h"
 
 #include "ns3/ptr.h"
+#include "ns3/pointer.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
 
@@ -49,6 +50,9 @@ std::cout << "SIMU TRACE " << x << std::endl;
 
 namespace ns3 {
 
+/**
+ * \brief private implementation detail of the Simulator API.
+ */
 class SimulatorPrivate : public Object
 {
 public:
@@ -99,19 +103,21 @@ private:
   int m_unscheduledEvents;
 };
 
+NS_OBJECT_ENSURE_REGISTERED (SimulatorPrivate);
+
 
 TypeId
 SimulatorPrivate::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("SimulatorPrivate")
+  static TypeId tid = TypeId ("ns3::SimulatorPrivate")
     .SetParent<Object> ()
     .AddConstructor<SimulatorPrivate> ()
     .AddAttribute ("Scheduler",
-                   "XXX",
-                   Ptr<Scheduler> (0),
+                   "The Scheduler used to handle all simulation events.",
+                   PointerValue (),
                    // XXX: allow getting the scheduler too.
-                   MakePtrAccessor (&SimulatorPrivate::SetScheduler),
-                   MakePtrChecker<Scheduler> ())
+                   MakePointerAccessor (&SimulatorPrivate::SetScheduler),
+                   MakePointerChecker<Scheduler> ())
     ;
   return tid;
 }

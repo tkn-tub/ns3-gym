@@ -87,8 +87,8 @@ main (int argc, char *argv[])
 // Explicitly create the channels required by the topology (shown above).
 //
   CsmaHelper csma;
-  csma.SetChannelParameter ("BitRate", DataRate(5000000));
-  csma.SetChannelParameter ("Delay", MilliSeconds (2));
+  csma.SetChannelParameter ("BitRate", DataRateValue (DataRate(5000000)));
+  csma.SetChannelParameter ("Delay", TimeValue (MilliSeconds (2)));
   NetDeviceContainer d = csma.Install (n);
 
   Ipv4AddressHelper ipv4;
@@ -119,9 +119,9 @@ main (int argc, char *argv[])
   Time interPacketInterval = Seconds (1.);
   UdpEchoClientHelper client;
   client.SetRemote (i.GetAddress (1), port);
-  client.SetAppAttribute ("MaxPackets", Uinteger (maxPacketCount));
-  client.SetAppAttribute ("Interval", interPacketInterval);
-  client.SetAppAttribute ("PacketSize", Uinteger (packetSize));
+  client.SetAppAttribute ("MaxPackets", UintegerValue (maxPacketCount));
+  client.SetAppAttribute ("Interval", TimeValue (interPacketInterval));
+  client.SetAppAttribute ("PacketSize", UintegerValue (packetSize));
   apps = client.Install (n.Get (0));
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (10.0));

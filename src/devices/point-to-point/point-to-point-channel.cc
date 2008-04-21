@@ -37,11 +37,11 @@ PointToPointChannel::GetTypeId (void)
     .SetParent<Channel> ()
     .AddConstructor<PointToPointChannel> ()
     .AddAttribute ("BitRate", "The maximum bitrate of the channel",
-                   DataRate (0xffffffff),
+                   DataRateValue (DataRate (0xffffffff)),
                    MakeDataRateAccessor (&PointToPointChannel::m_bps),
                    MakeDataRateChecker ())
     .AddAttribute ("Delay", "Transmission delay through the channel",
-                   Seconds (0),
+                   TimeValue (Seconds (0)),
                    MakeTimeAccessor (&PointToPointChannel::m_delay),
                    MakeTimeChecker ())
     ;

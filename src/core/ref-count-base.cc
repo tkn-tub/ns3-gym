@@ -30,6 +30,15 @@ RefCountBase::RefCountBase()
 {
 }
 
+RefCountBase::RefCountBase (const RefCountBase &o)
+ : m_count (1)
+{}
+RefCountBase &
+RefCountBase::operator = (const RefCountBase &o)
+{
+  return *this;
+}
+
 RefCountBase::~RefCountBase () 
 {
 }

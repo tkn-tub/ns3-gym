@@ -25,6 +25,14 @@
 
 namespace ns3 {
 
+/**
+ * \brief AMRR Rate control algorithm
+ *
+ * This class implements the AMRR rate control algorithm which
+ * was initially described in <i>IEEE 802.11 Rate Adaptation:
+ * A Practical Approach</i>, by M. Lacage, M.H. Manshaei, and 
+ * T. Turletti.
+ */
 class AmrrWifiManager : public WifiRemoteStationManager
 {
 public:

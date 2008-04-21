@@ -50,14 +50,14 @@ public:
                      std::string name,
                      std::string help, 
                      uint32_t flags,
-                     ns3::Attribute initialValue,
+                     ns3::Ptr<const ns3::AttributeValue> initialValue,
                      ns3::Ptr<const ns3::AttributeAccessor> spec,
                      ns3::Ptr<const ns3::AttributeChecker> checker);
   uint32_t GetAttributeN (uint16_t uid) const;
   std::string GetAttributeName (uint16_t uid, uint32_t i) const;
   std::string GetAttributeHelp (uint16_t uid, uint32_t i) const;
   uint32_t GetAttributeFlags (uint16_t uid, uint32_t i) const;
-  ns3::Attribute GetAttributeInitialValue (uint16_t uid, uint32_t i) const;
+  ns3::Ptr<const ns3::AttributeValue> GetAttributeInitialValue (uint16_t uid, uint32_t i) const;
   ns3::Ptr<const ns3::AttributeAccessor> GetAttributeAccessor (uint16_t uid, uint32_t i) const;
   ns3::Ptr<const ns3::AttributeChecker> GetAttributeChecker (uint16_t uid, uint32_t i) const;
   void AddTraceSource (uint16_t uid,
@@ -75,7 +75,7 @@ private:
     std::string name;
     std::string help;
     uint32_t flags;
-    ns3::Attribute initialValue;
+    ns3::Ptr<const ns3::AttributeValue> initialValue;
     ns3::Ptr<const ns3::AttributeAccessor> param;
     ns3::Ptr<const ns3::AttributeChecker> checker;
   };
@@ -236,7 +236,7 @@ IidManager::AddAttribute (uint16_t uid,
                           std::string name,
                           std::string help, 
                           uint32_t flags,
-                          ns3::Attribute initialValue,
+                          ns3::Ptr<const ns3::AttributeValue> initialValue,
                           ns3::Ptr<const ns3::AttributeAccessor> spec,
                           ns3::Ptr<const ns3::AttributeChecker> checker)
 {
@@ -288,7 +288,7 @@ IidManager::GetAttributeFlags (uint16_t uid, uint32_t i) const
   NS_ASSERT (i < information->attributes.size ());
   return information->attributes[i].flags;
 }
-ns3::Attribute 
+ns3::Ptr<const ns3::AttributeValue> 
 IidManager::GetAttributeInitialValue (uint16_t uid, uint32_t i) const
 {
   struct IidInformation *information = LookupInformation (uid);
@@ -480,7 +480,7 @@ TypeId::IsChildOf (TypeId other) const
     {
       tmp = tmp.GetParent ();
     }
-  return tmp == other;
+  return tmp == other && *this != other;
 }
 std::string 
 TypeId::GetGroupName (void) const
@@ -512,11 +512,11 @@ TypeId::DoAddConstructor (Callback<ObjectBase *> cb)
 TypeId 
 TypeId::AddAttribute (std::string name,
                       std::string help, 
-                      Attribute initialValue,
+                      const AttributeValue &initialValue,
                       Ptr<const AttributeAccessor> param,
                       Ptr<const AttributeChecker> checker)
 {
-  Singleton<IidManager>::Get ()->AddAttribute (m_tid, name, help, ATTR_SGC, initialValue, param, checker);
+  Singleton<IidManager>::Get ()->AddAttribute (m_tid, name, help, ATTR_SGC, initialValue.Copy (), param, checker);
   return *this;
 }
 
@@ -524,11 +524,11 @@ TypeId
 TypeId::AddAttribute (std::string name,
                       std::string help, 
                       uint32_t flags,
-                      Attribute initialValue,
+                      const AttributeValue &initialValue,
                       Ptr<const AttributeAccessor> param,
                       Ptr<const AttributeChecker> checker)
 {
-  Singleton<IidManager>::Get ()->AddAttribute (m_tid, name, help, flags, initialValue, param, checker);
+  Singleton<IidManager>::Get ()->AddAttribute (m_tid, name, help, flags, initialValue.Copy (), param, checker);
   return *this;
 }
 
@@ -569,10 +569,10 @@ TypeId::GetAttributeFullName (uint32_t i) const
 {
   return GetName () + "::" + GetAttributeName (i);
 }
-Attribute 
+Ptr<const AttributeValue>
 TypeId::GetAttributeInitialValue (uint32_t i) const
 {
-  Attribute value = Singleton<IidManager>::Get ()->GetAttributeInitialValue (m_tid, i);
+  Ptr<const AttributeValue> value = Singleton<IidManager>::Get ()->GetAttributeInitialValue (m_tid, i);
   return value;
 }
 Ptr<const AttributeAccessor>
@@ -694,6 +694,11 @@ bool operator == (TypeId a, TypeId b)
 bool operator != (TypeId a, TypeId b)
 {
   return a.m_tid != b.m_tid;
+}
+
+bool operator < (TypeId a, TypeId b)
+{
+  return a.m_tid < b.m_tid;
 }
 
 } // namespace ns3

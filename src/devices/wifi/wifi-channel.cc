@@ -23,6 +23,7 @@
 #include "ns3/net-device.h"
 #include "ns3/node.h"
 #include "ns3/log.h"
+#include "ns3/pointer.h"
 #include "wifi-channel.h"
 #include "propagation-loss-model.h"
 #include "propagation-delay-model.h"
@@ -32,19 +33,19 @@ NS_LOG_COMPONENT_DEFINE ("WifiChannel");
 namespace ns3 {
 
 TypeId 
-WifiChannel::GetTypdId (void)
+WifiChannel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiChannel")
-    .SetParent<WifiChannel> ()
+    .SetParent<Channel> ()
     .AddConstructor<WifiChannel> ()
     .AddAttribute ("PropagationLossModel", "XXX",
-                   Ptr<PropagationLossModel> (0),
-                   MakePtrAccessor (&WifiChannel::m_loss),
-                   MakePtrChecker<PropagationLossModel> ())
+                   PointerValue (),
+                   MakePointerAccessor (&WifiChannel::m_loss),
+                   MakePointerChecker<PropagationLossModel> ())
     .AddAttribute ("PropagationDelayModel", "XXX",
-                   Ptr<PropagationDelayModel> (0),
-                   MakePtrAccessor (&WifiChannel::m_delay),
-                   MakePtrChecker<PropagationDelayModel> ())
+                   PointerValue (),
+                   MakePointerAccessor (&WifiChannel::m_delay),
+                   MakePointerChecker<PropagationDelayModel> ())
     ;
   return tid;
 }

@@ -100,17 +100,17 @@ DcaTxop::GetTypeId (void)
     .SetParent<Object> ()
     .AddConstructor<DcaTxop> ()
     .AddAttribute ("MinCw", "XXX",
-                   Uinteger (15),
+                   UintegerValue (15),
                    MakeUintegerAccessor (&DcaTxop::SetMinCw,
                                          &DcaTxop::GetMinCw),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("MaxCw", "XXX",
-                   Uinteger (1023),
+                   UintegerValue (1023),
                    MakeUintegerAccessor (&DcaTxop::SetMaxCw,
                                          &DcaTxop::GetMaxCw),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Aifsn", "XXX",
-                   Uinteger (2),
+                   UintegerValue (2),
                    MakeUintegerAccessor (&DcaTxop::SetAifsn,
                                          &DcaTxop::GetAifsn),
                    MakeUintegerChecker<uint32_t> ())

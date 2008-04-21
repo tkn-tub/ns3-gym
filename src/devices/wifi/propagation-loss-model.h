@@ -36,6 +36,8 @@ class MobilityModel;
 class PropagationLossModel : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   virtual ~PropagationLossModel ();
   /**
    * \param a the mobility model of the source

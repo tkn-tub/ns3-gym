@@ -22,28 +22,28 @@
 
 namespace ns3 {
 
-Boolean::Boolean ()
+BooleanValue::BooleanValue ()
   : m_value (false)
 {}
-Boolean::Boolean (bool value)
+BooleanValue::BooleanValue (bool value)
   : m_value (value)
 {}
 void 
-Boolean::Set (bool value)
+BooleanValue::Set (bool value)
 {
   m_value = value;
 }
 bool 
-Boolean::Get (void) const
+BooleanValue::Get (void) const
 {
   return m_value;
 }
-Boolean::operator bool () const
+BooleanValue::operator bool () const
 {
   return m_value;
 }
 
-std::ostream & operator << (std::ostream &os, const Boolean &value)
+std::ostream & operator << (std::ostream &os, const BooleanValue &value)
 {
   if (value.Get ())
     {
@@ -55,31 +55,48 @@ std::ostream & operator << (std::ostream &os, const Boolean &value)
     }
   return os;
 }
-std::istream & operator >> (std::istream &is, Boolean &value)
+
+Ptr<AttributeValue> 
+BooleanValue::Copy (void) const
 {
-  std::string v;
-  is >> v;
-  if (v == "true" ||
-      v == "1" ||
-      v == "t")
+  return Create<BooleanValue> (*this);
+}
+std::string 
+BooleanValue::SerializeToString (Ptr<const AttributeChecker> checker) const
+{
+  if (m_value)
     {
-      value.Set (true);
+      return "true";
+    } 
+  else
+    {
+      return "false";
     }
-  else if (v == "false" ||
-	   v == "0" ||
-	   v == "f")
+}
+bool 
+BooleanValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
+{
+  if (value == "true" ||
+      value == "1" ||
+      value == "t")
     {
-      value.Set (false);
+      m_value = true;
+      return true;
+    }
+  else if (value == "false" ||
+           value == "0" ||
+           value == "f")
+    {
+      m_value = false;
+      return true;
     }
   else
     {
-      is.setstate (std::ios_base::badbit);
+      return false;
     }  
-  return is;
 }
 
-ATTRIBUTE_CONVERTER_IMPLEMENT (Boolean);
-ATTRIBUTE_VALUE_IMPLEMENT (Boolean);
-ATTRIBUTE_CHECKER_IMPLEMENT (Boolean);
+
+ATTRIBUTE_CHECKER_IMPLEMENT_WITH_NAME (Boolean,"bool");
 
 } // namespace ns3

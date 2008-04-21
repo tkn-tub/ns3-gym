@@ -32,52 +32,52 @@ Tcp::GetTypeId (void)
     .SetParent<SocketFactory> ()
     .AddAttribute ("DefaultSegmentSize",
                    "Default TCP maximum segment size in bytes (may be adjusted based on MTU discovery)",
-                   Uinteger (536),
+                   UintegerValue (536),
                    MakeUintegerAccessor (&Tcp::m_defaultSegSize),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("DefaultAdvertisedWindowSize",
                    "Default TCP advertised window size (bytes)",
-                   Uinteger (0xffff),
+                   UintegerValue (0xffff),
                    MakeUintegerAccessor (&Tcp::m_defaultAdvWin),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("DefaultSlowStartThreshold",
                    "Default TCP slow start threshold (bytes)",
-                   Uinteger (0xffff),
+                   UintegerValue (0xffff),
                    MakeUintegerAccessor (&Tcp::m_defaultSsThresh),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("DefaultTxBufferSize",
                    "Default TCP maximum transmit buffer size (bytes)",
-                   Uinteger (0xffffffffl),
+                   UintegerValue (0xffffffffl),
                    MakeUintegerAccessor (&Tcp::m_defaultTxBuffer),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("DefaultRxBufferSize",
                    "Default TCP maximum receive buffer size (bytes)",
-                   Uinteger (0xffffffffl),
+                   UintegerValue (0xffffffffl),
                    MakeUintegerAccessor (&Tcp::m_defaultRxBuffer),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("DefaultInitialCongestionWindowSize",
                    "Default TCP initial congestion window size (segments)",
-                   Uinteger (1),
+                   UintegerValue (1),
                    MakeUintegerAccessor (&Tcp::m_defaultInitialCwnd),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("DefaultConnTimeout",
                    "Default TCP retransmission timeout when opening connection (seconds)",
-                   Uinteger (3),
+                   UintegerValue (3),
                    MakeUintegerAccessor (&Tcp::m_defaultConnTimeout),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("DefaultConnCount",
                    "Default number of connection attempts (SYN retransmissions) before returning failure",
-                   Uinteger (6),
+                   UintegerValue (6),
                    MakeUintegerAccessor (&Tcp::m_defaultConnCount),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("DefaultDelAckTimeout",
                    "Default timeout value for TCP delayed acks, in seconds",
-                   Double (0.2),
+                   DoubleValue (0.2),
                    MakeDoubleAccessor (&Tcp::m_defaultDelAckTimeout),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("DefaultDelAckCount",
                    "Default number of packets to wait before sending a TCP ack",
-                   Uinteger (2),
+                   UintegerValue (2),
                    MakeUintegerAccessor (&Tcp::m_defaultDelAckCount),
                    MakeUintegerChecker<uint32_t> ())
      ;

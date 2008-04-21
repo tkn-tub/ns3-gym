@@ -70,13 +70,13 @@ main (int argc, char *argv[])
 
   // create the shared medium used by all csma devices.
   NS_LOG_INFO ("Create channels.");
-  Ptr<CsmaChannel> channel = CreateObject<CsmaChannel> ("BitRate", DataRate(5000000), 
-                                                        "Delay", MilliSeconds(2));
+  Ptr<CsmaChannel> channel = CreateObject<CsmaChannel> ("BitRate", DataRateValue (DataRate(5000000)), 
+                                                        "Delay", TimeValue (MilliSeconds(2)));
 
   // use a helper function to connect our nodes to the shared channel.
   NS_LOG_INFO ("Build Topology.");
   CsmaHelper csma;
-  csma.SetDeviceParameter ("EncapsulationMode", String ("Llc"));
+  csma.SetDeviceParameter ("EncapsulationMode", StringValue ("Llc"));
   NetDeviceContainer devs = csma.Install (c, channel);
 
   NS_LOG_INFO ("Create Applications.");
@@ -86,8 +86,8 @@ main (int argc, char *argv[])
   socket.SetPhysicalAddress (devs.Get (1)->GetAddress ());
   socket.SetProtocol (2);
   OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
-  onoff.SetAttribute ("OnTime", ConstantVariable (1.0));
-  onoff.SetAttribute ("OffTime", ConstantVariable (0.0));
+  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1.0)));
+  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0.0)));
 
   ApplicationContainer apps = onoff.Install (c.Get (0));
   apps.Start (Seconds (1.0));
@@ -96,8 +96,8 @@ main (int argc, char *argv[])
   socket.SetSingleDevice (devs.Get (3)->GetIfIndex ());
   socket.SetPhysicalAddress (devs.Get (0)->GetAddress ());
   socket.SetProtocol (3);
-  onoff.SetAttribute ("Remote", Address (socket));
-  onoff.SetAttribute ("OffTime", ConstantVariable (0.0));
+  onoff.SetAttribute ("Remote", AddressValue (socket));
+  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0.0)));
   apps = onoff.Install (c.Get (3));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));

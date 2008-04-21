@@ -22,7 +22,6 @@
 
 #include "type-id.h"
 #include "callback.h"
-#include "attribute-list.h"
 #include <string>
 
 /**
@@ -39,6 +38,8 @@
 } x_##type##RegistrationVariable
 
 namespace ns3 {
+
+class AttributeList;
 
 /**
  * \brief implement the ns-3 type and attribute system
@@ -72,35 +73,22 @@ public:
    * Set a single attribute. This cannot fail: if the input is invalid,
    * it will crash immediately.
    */
-  void SetAttribute (std::string name, Attribute value);
+  void SetAttribute (std::string name, const AttributeValue &value);
   /**
    * \param name the name of the attribute to set
    * \param value the name of the attribute to set
    * \returns true if the requested attribute exists and could be set, 
    * false otherwise.
    */
-  bool SetAttributeFailSafe (std::string name, Attribute value);
+  bool SetAttributeFailSafe (std::string name, const AttributeValue &value);
   /**
    * \param name the name of the attribute to read
-   * \returns true if the requested attribute was found, false otherwise.
-   *
-   * If the input attribute name does not exist, this method crashes.
-   */
-  std::string GetAttributeAsString (std::string name) const;
-  /**
-   * \param name the name of the attribute to read
+   * \param value a reference to the value where the result should be stored.
    * \returns the attribute read.
    *
    * If the input attribute name does not exist, this method crashes.
    */
-  Attribute GetAttribute (std::string name) const;
-
-  /**
-   * \param name the name of the attribute to read
-   * \param value the string where the result value should be stored
-   * \returns true if the requested attribute was found, false otherwise.
-   */
-  bool GetAttributeAsStringFailSafe (std::string name, std::string &value) const;
+  void GetAttribute (std::string name, AttributeValue &value) const;
   /**
    * \param name the name of the attribute to read
    * \param attribute the attribute where the result value should be stored
@@ -108,7 +96,7 @@ public:
    *
    * If the input attribute name does not exist, this method crashes.
    */
-  bool GetAttributeFailSafe (std::string name, Attribute &attribute) const;
+  bool GetAttributeFailSafe (std::string name, AttributeValue &attribute) const;
 
   /**
    * \param name the name of the targetted trace source
@@ -163,8 +151,9 @@ protected:
   void ConstructSelf (const AttributeList &attributes);
 
 private:
-  bool DoSet (Ptr<const AttributeAccessor> spec, Attribute intialValue, 
-              Ptr<const AttributeChecker> checker, Attribute value);
+  bool DoSet (Ptr<const AttributeAccessor> spec,
+              Ptr<const AttributeChecker> checker, 
+              const AttributeValue &value);
 
 };
 

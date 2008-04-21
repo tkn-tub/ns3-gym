@@ -38,27 +38,27 @@ AmrrWifiManager::GetTypeId (void)
     .AddConstructor<AmrrWifiManager> ()
     .AddAttribute ("UpdatePeriod",
                    "The interval between decisions about rate control changes",
-                   Seconds (1.0),
+                   TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&AmrrWifiManager::m_updatePeriod),
                    MakeTimeChecker ())
     .AddAttribute ("FailureRatio",
                    "Ratio of minimum erronous transmissions needed to switch to a lower rate",
-                   Double (1.0/3.0),
+                   DoubleValue (1.0/3.0),
                    MakeDoubleAccessor (&AmrrWifiManager::m_failureRatio),
                    MakeDoubleChecker<double> (0.0, 1.0))
     .AddAttribute ("SuccessRatio",
                    "Ratio of maximum erronous transmissions needed to switch to a higher rate",
-                   Double (1.0/10.0),
+                   DoubleValue (1.0/10.0),
                    MakeDoubleAccessor (&AmrrWifiManager::m_successRatio),
                    MakeDoubleChecker<double> (0.0, 1.0))
     .AddAttribute ("MaxSuccessThreshold",
                    "Maximum number of consecutive success periods needed to switch to a higher rate",
-                   Uinteger (10),
+                   UintegerValue (10),
                    MakeUintegerAccessor (&AmrrWifiManager::m_maxSuccessThreshold),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("MinSuccessThreshold",
                    "Minimum number of consecutive success periods needed to switch to a higher rate",
-                   Uinteger (1),
+                   UintegerValue (1),
                    MakeUintegerAccessor (&AmrrWifiManager::m_minSuccessThreshold),
                    MakeUintegerChecker<uint32_t> ())
     ;

@@ -35,7 +35,7 @@ IdealWifiManager::GetTypeId (void)
     .AddConstructor<IdealWifiManager> ()
     .AddAttribute ("BerThreshold",
                    "The maximum Bit Error Rate acceptable at any transmission mode",
-                   Double (10e-6),
+                   DoubleValue (10e-6),
                    MakeDoubleAccessor (&IdealWifiManager::m_ber),
                    MakeDoubleChecker<double> ())
     ;

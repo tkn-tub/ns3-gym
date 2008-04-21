@@ -113,9 +113,9 @@ int main (int argc, char *argv[])
   Packet::EnableMetadata ();
 
   // enable rts cts all the time.
-  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", String ("0"));
+  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("0"));
   // disable fragmentation
-  Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", String ("2200"));
+  Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
 
   WifiHelper wifi;
   MobilityHelper mobility;
@@ -141,13 +141,14 @@ int main (int argc, char *argv[])
   wifi.SetPhy ("ns3::WifiPhy");
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
   // setup stas.
-  wifi.SetMac ("ns3::NqstaWifiMac", "Ssid", ssid,
-               "ActiveProbing", Boolean (false));
+  wifi.SetMac ("ns3::NqstaWifiMac", 
+               "Ssid", SsidValue (ssid),
+               "ActiveProbing", BooleanValue (false));
   staDevs = wifi.Install (stas, channel);
   // setup ap.
-  wifi.SetMac ("ns3::NqapWifiMac", "Ssid", ssid,
-               "BeaconGeneration", Boolean (true),
-               "BeaconInterval", Seconds (2.5));
+  wifi.SetMac ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid),
+               "BeaconGeneration", BooleanValue (true),
+               "BeaconInterval", TimeValue (Seconds (2.5)));
   wifi.Install (ap, channel);
 
   // mobility.
@@ -162,8 +163,8 @@ int main (int argc, char *argv[])
   socket.SetProtocol (1);
 
   OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
-  onoff.SetAttribute ("OnTime", ConstantVariable (42));
-  onoff.SetAttribute ("OffTime", ConstantVariable (0));
+  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (42)));
+  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
 
   ApplicationContainer apps = onoff.Install (stas.Get (0));
   apps.Start (Seconds (0.5));

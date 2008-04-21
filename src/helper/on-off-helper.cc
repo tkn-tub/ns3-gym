@@ -27,12 +27,12 @@ namespace ns3 {
 OnOffHelper::OnOffHelper (std::string protocol, Address address)
 {
   m_factory.SetTypeId ("ns3::OnOffApplication");
-  m_factory.Set ("Protocol", String(protocol));
-  m_factory.Set ("Remote", address);
+  m_factory.Set ("Protocol", StringValue (protocol));
+  m_factory.Set ("Remote", AddressValue (address));
 }
 
 void 
-OnOffHelper::SetAttribute (std::string name, Attribute value)
+OnOffHelper::SetAttribute (std::string name, const AttributeValue &value)
 {
   m_factory.Set (name, value);
 }

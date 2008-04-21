@@ -35,6 +35,7 @@ class MobilityModel;
 class PropagationDelayModel : public Object
 {
 public:
+  static TypeId GetTypeId (void);
   virtual ~PropagationDelayModel ();
   /**
    * \param a the source

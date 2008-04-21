@@ -44,11 +44,11 @@ NqapWifiMac::GetTypeId (void)
     .SetParent<WifiMac> ()
     .AddConstructor<NqapWifiMac> ()
     .AddAttribute ("BeaconInterval", "Delay between two beacons",
-                   Seconds (1.0),
+                   TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&NqapWifiMac::m_beaconInterval),
                    MakeTimeChecker ())
     .AddAttribute ("BeaconGeneration", "Whether or not beacons are generated.",
-                   Boolean (false),
+                   BooleanValue (false),
                    MakeBooleanAccessor (&NqapWifiMac::SetBeaconGeneration,
                                         &NqapWifiMac::GetBeaconGeneration),
                    MakeBooleanChecker ())

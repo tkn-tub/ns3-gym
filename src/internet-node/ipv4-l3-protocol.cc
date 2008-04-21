@@ -52,7 +52,7 @@ Ipv4L3Protocol::GetTypeId (void)
     .SetParent<Object> ()
     .AddConstructor<Ipv4L3Protocol> ()
     .AddAttribute ("DefaultTtl", "The TTL value set by default on all outgoing packets generated on this node.",
-                   Uinteger (64),
+                   UintegerValue (64),
                    MakeUintegerAccessor (&Ipv4L3Protocol::m_defaultTtl),
                    MakeUintegerChecker<uint8_t> ())
     .AddTraceSource ("Tx", "Send ipv4 packet to outgoing interface.",
@@ -62,9 +62,9 @@ Ipv4L3Protocol::GetTypeId (void)
     .AddTraceSource ("Drop", "Drop ipv4 packet",
                      MakeTraceSourceAccessor (&Ipv4L3Protocol::m_dropTrace))
     .AddAttribute ("InterfaceList", "The set of Ipv4 interfaces associated to this Ipv4 stack.",
-                   ObjectVector (),
+                   ObjectVectorValue (),
                    MakeObjectVectorAccessor (&Ipv4L3Protocol::m_interfaces),
-                   MakeObjectVectorChecker ())
+                   MakeObjectVectorChecker<Ipv4Interface> ())
     ;
   return tid;
 }

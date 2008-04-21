@@ -23,40 +23,7 @@
 
 namespace ns3 {
 
-Uinteger::Uinteger (uint64_t value)
-  : m_value (value)
-{}
-Uinteger::Uinteger ()
-{}
-void 
-Uinteger::Set (uint64_t value)
-{
-  m_value = value;
-}
-uint64_t 
-Uinteger::Get (void) const
-{
-  return m_value;
-}
-Uinteger::operator uint64_t () const
-{
-  return m_value;
-}
-std::ostream & operator << (std::ostream &os, const Uinteger &uinteger)
-{
-  os << uinteger.Get ();
-  return os;
-}
-std::istream & operator >> (std::istream &is, Uinteger &uinteger)
-{
-  uint64_t v;
-  is >> v;
-  uinteger.Set (v);
-  return is;
-}
-
-ATTRIBUTE_CONVERTER_IMPLEMENT(Uinteger);
-ATTRIBUTE_VALUE_IMPLEMENT(Uinteger);
+ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(uint64_t,Uinteger);
 
 namespace internal {
 
@@ -68,27 +35,37 @@ Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max, std
       : m_minValue (minValue),
         m_maxValue (maxValue),
         m_name (name) {}
-    virtual bool Check (Attribute value) const {
-      const UintegerValue *v = value.DynCast<const UintegerValue *> ();
+    virtual bool Check (const AttributeValue &value) const {
+      const UintegerValue *v = dynamic_cast<const UintegerValue *> (&value);
       if (v == 0)
 	{
 	  return false;
 	}
-      return v->Get ().Get () >= m_minValue && v->Get ().Get () <= m_maxValue;
+      return v->Get () >= m_minValue && v->Get () <= m_maxValue;
     }
-    virtual std::string GetType (void) const {
-      return m_name;
+    virtual std::string GetValueTypeName (void) const {
+      return "ns3::UintegerValue";
     }
-    virtual bool HasTypeConstraints (void) const {
+    virtual bool HasUnderlyingTypeInformation (void) const {
       return true;
     }
-    virtual std::string GetTypeConstraints (void) const {
+    virtual std::string GetUnderlyingTypeInformation (void) const {
       std::ostringstream oss;
-      oss << m_minValue << ":" << m_maxValue;
+      oss << m_name << " " << m_minValue << ":" << m_maxValue;
       return oss.str ();
     }
-    virtual Attribute Create (void) const {
-      return Attribute::Create<UintegerValue> ();
+    virtual Ptr<AttributeValue> Create (void) const {
+      return ns3::Create<UintegerValue> ();
+    }
+    virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const {
+      const UintegerValue *src = dynamic_cast<const UintegerValue *> (&source);
+      UintegerValue *dst = dynamic_cast<UintegerValue *> (&destination);
+      if (src == 0 || dst == 0)
+        {
+          return false;
+        }
+      *dst = *src;
+      return true;
     }
     uint64_t m_minValue;
     uint64_t m_maxValue;

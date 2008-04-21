@@ -44,7 +44,7 @@ public:
   UdpEchoClientHelper ();
 
   void SetRemote (Ipv4Address ip, uint16_t port);
-  void SetAppAttribute (std::string name, Attribute value);
+  void SetAppAttribute (std::string name, const AttributeValue &value);
   ApplicationContainer Install (NodeContainer c);
  private:
   ObjectFactory m_factory;

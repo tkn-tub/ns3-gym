@@ -63,21 +63,21 @@ NqstaWifiMac::GetTypeId (void)
     .SetParent<WifiMac> ()
     .AddConstructor<NqstaWifiMac> ()
     .AddAttribute ("ProbeRequestTimeout", "XXX",
-                   Seconds (0.5),
+                   TimeValue (Seconds (0.5)),
                    MakeTimeAccessor (&NqstaWifiMac::m_probeRequestTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("AssocRequestTimeout", "XXX",
-                   Seconds (0.5),
+                   TimeValue (Seconds (0.5)),
                    MakeTimeAccessor (&NqstaWifiMac::m_assocRequestTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("MaxMissedBeacons", 
                    "Number of beacons which much be consecutively missed before "
                    "we attempt to restart association.",
-                   Uinteger (10),
+                   UintegerValue (10),
                    MakeUintegerAccessor (&NqstaWifiMac::m_maxMissedBeacons),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("ActiveProbing", "XXX",
-                   Boolean (false),
+                   BooleanValue (false),
                    MakeBooleanAccessor (&NqstaWifiMac::SetActiveProbing),
                    MakeBooleanChecker ())
     ;

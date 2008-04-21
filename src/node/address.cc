@@ -166,27 +166,63 @@ bool operator < (const Address &a, const Address &b)
 
 std::ostream& operator<< (std::ostream& os, const Address & address)
 {
-  if (address.m_len == 0) 
-    {
-      os << "NULL-ADDRESS";
-      return os;
-    }
   os.setf (std::ios::hex, std::ios::basefield);
   os.fill('0');
-  for (uint8_t i=0; i < (address.m_len-1); i++) 
+  os << std::setw(2) << (uint32_t) address.m_type << "-" << std::setw(2) << (uint32_t) address.m_len << "-";
+  for (uint8_t i = 0; i < (address.m_len-1); ++i)
     {
       os << std::setw(2) << (uint32_t)address.m_data[i] << ":";
     }
   // Final byte not suffixed by ":"
-  os << std::setw(2) << (uint32_t)address.m_data[address.m_len-1];
+  os << std::setw(2) << (uint32_t) address.m_data[address.m_len-1];
   os.setf (std::ios::dec, std::ios::basefield);
   os.fill(' ');
   return os;
 }
 
+static uint8_t
+AsInt (std::string v)
+{
+  std::istringstream iss;
+  iss.str (v);
+  uint32_t retval;
+  iss >> std::hex >> retval >> std::dec;
+  return retval;
+}
+
 std::istream& operator>> (std::istream& is, Address & address)
 {
-  // XXX: need to be able to parse this.
+  std::string v;
+  is >> v;
+  std::string::size_type firstDash, secondDash;
+  firstDash = v.find ("-");
+  secondDash = v.find ("-", firstDash+1);
+  std::string type = v.substr (0, firstDash-0);
+  std::string len = v.substr (firstDash+1, secondDash-(firstDash+1));
+
+  address.m_type = AsInt (type);
+  address.m_len = AsInt (len);
+  NS_ASSERT (address.m_len <= Address::MAX_SIZE);
+
+  std::string::size_type col = secondDash + 1;
+  for (uint8_t i = 0; i < address.m_len; ++i)
+    {
+      std::string tmp;
+      std::string::size_type next;
+      next = v.find (":", col);
+      if (next == std::string::npos)
+	{
+	  tmp = v.substr (col, v.size ()-col);
+	  address.m_data[i] = AsInt (tmp);
+	  break;
+	}
+      else
+	{
+	  tmp = v.substr (col, next-col);
+	  address.m_data[i] = AsInt (tmp);
+	  col = next + 1;
+	}
+    }
   return is;
 }
 

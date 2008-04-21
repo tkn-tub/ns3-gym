@@ -21,6 +21,7 @@
 #include "log.h"
 #include "config.h"
 #include "global-value.h"
+#include "type-id.h"
 #include "string.h"
 #include <stdlib.h>
 
@@ -109,8 +110,9 @@ CommandLine::PrintGlobals (void) const
     {
       std::cout << "    --" << (*i)->GetName () << "=[";
       Ptr<const AttributeChecker> checker = (*i)->GetChecker ();
-      Attribute value = (*i)->GetValue ();
-      std::cout << value.SerializeToString (checker) << "]:  "
+      StringValue v;
+      (*i)->GetValue (v);
+      std::cout << v.Get () << "]:  "
 		<< (*i)->GetHelp () << std::endl;      
     }
   exit (0);
@@ -128,8 +130,8 @@ CommandLine::PrintAttributes (std::string type) const
     {
       std::cout << "    --"<<tid.GetAttributeFullName (i)<<"=[";
       Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (i);
-      Attribute initial = tid.GetAttributeInitialValue (i);
-      std::cout << initial.SerializeToString (checker) << "]:  "
+      Ptr<const AttributeValue> initial = tid.GetAttributeInitialValue (i);
+      std::cout << initial->SerializeToString (checker) << "]:  "
 		<< tid.GetAttributeHelp (i) << std::endl;
     }
   exit (0);
@@ -243,8 +245,8 @@ CommandLine::HandleArgument (std::string name, std::string value) const
 	    }
 	}
     }
-  if (!Config::SetGlobalFailSafe (name, String (value))
-      && !Config::SetDefaultFailSafe (name, String (value)))
+  if (!Config::SetGlobalFailSafe (name, StringValue (value))
+      && !Config::SetDefaultFailSafe (name, StringValue (value)))
     {
       std::cerr << "Invalid command-line arguments: --"<<name<<"="<<value<<std::endl;
       PrintHelp ();

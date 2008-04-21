@@ -23,12 +23,12 @@ int main (int argc, char *argv[])
   // the x interval between each object is 5 meters
   // and the y interval between each object is 20 meters
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                 "MinX", Double (-100.0),
-                                 "MinY", Double (-100.0),
-                                 "DeltaX", Double (5.0),
-                                 "DeltaY", Double (20.0),
-                                 "GridWidth", Uinteger (20),
-                                 "LayoutType", String ("RowFirst"));
+                                 "MinX", DoubleValue (-100.0),
+                                 "MinY", DoubleValue (-100.0),
+                                 "DeltaX", DoubleValue (5.0),
+                                 "DeltaY", DoubleValue (20.0),
+                                 "GridWidth", UintegerValue (20),
+                                 "LayoutType", StringValue ("RowFirst"));
   // each object will be attached a static position.
   // i.e., once set by the "position allocator", the
   // position will never change.

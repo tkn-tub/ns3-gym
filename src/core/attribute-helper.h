@@ -29,28 +29,40 @@ namespace ns3 {
 
 template <typename T, typename BASE>
 Ptr<AttributeChecker>
-MakeSimpleAttributeChecker (std::string name)
+MakeSimpleAttributeChecker (std::string name, std::string underlying)
 {
   struct SimpleAttributeChecker : public BASE
   {
-    virtual bool Check (Attribute value) const {
-      return value.DynCast<const T *> () != 0;
+    virtual bool Check (const AttributeValue &value) const {
+      return dynamic_cast<const T *> (&value) != 0;
     }
-    virtual std::string GetType (void) const {
+    virtual std::string GetValueTypeName (void) const {
       return m_type;
     }
-    virtual bool HasTypeConstraints (void) const {
-      return false;
+    virtual bool HasUnderlyingTypeInformation (void) const {
+      return true;
     }
-    virtual std::string GetTypeConstraints (void) const {
-      return "";
+    virtual std::string GetUnderlyingTypeInformation (void) const {
+      return m_underlying;
     }
-    virtual Attribute Create (void) const {
-      return Attribute::Create<T> ();
+    virtual Ptr<AttributeValue> Create (void) const {
+      return ns3::Create<T> ();
+    }
+    virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const {
+      const T *src = dynamic_cast<const T *> (&source);
+      T *dst = dynamic_cast<T *> (&destination);
+      if (src == 0 || dst == 0)
+        {
+          return false;
+        }
+      *dst = *src;
+      return true;
     }
     std::string m_type;
+    std::string m_underlying;
   } *checker = new SimpleAttributeChecker ();
   checker->m_type = name;
+  checker->m_underlying = underlying;
   return Ptr<AttributeChecker> (checker, false);
 }
 
@@ -98,6 +110,22 @@ MakeSimpleAttributeChecker (std::string name)
     return MakeAccessorHelper<type##Value> (a1, a2);			\
   }
 
+#define ATTRIBUTE_VALUE_DEFINE_WITH_NAME(type,name)                     \
+  class name##Value : public AttributeValue				\
+  {									\
+  public:								\
+    name##Value ();							\
+    name##Value (const type &value);					\
+    void Set (const type &value);					\
+    type Get (void) const;						\
+    virtual Ptr<AttributeValue> Copy (void) const;                      \
+    virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const; \
+    virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker); \
+  private:								\
+    type m_value;							\
+  };
+
+
 /**
  * \ingroup AttributeHelper
  * \param type the name of the class.
@@ -106,21 +134,8 @@ MakeSimpleAttributeChecker (std::string name)
  * This macro is typically invoked in a class header.
  */
 #define ATTRIBUTE_VALUE_DEFINE(type)					\
-  class type##Value : public AttributeValue				\
-  {									\
-  public:								\
-    type##Value ();							\
-    type##Value (const type &value);					\
-    void Set (const type &value);					\
-    type Get (void) const;						\
-    virtual Attribute Copy (void) const;				\
-    virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const; \
-    virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker); \
-    type##Value (Attribute value);					\
-    operator Attribute () const;					\
-  private:								\
-    type m_value;							\
-  };
+  ATTRIBUTE_VALUE_DEFINE_WITH_NAME (type,type)
+
 
 /**
  * \ingroup AttributeHelper
@@ -130,9 +145,7 @@ MakeSimpleAttributeChecker (std::string name)
  * from instances of type Attribute.
  * Typically invoked from xxx.h.
  */
-#define ATTRIBUTE_CONVERTER_DEFINE(type)	\
-  type (Attribute value);			\
-  operator Attribute () const;
+#define ATTRIBUTE_CONVERTER_DEFINE(type)
 
 /**
  * \ingroup AttributeHelper
@@ -146,42 +159,34 @@ MakeSimpleAttributeChecker (std::string name)
   class type##Checker : public AttributeChecker {};		\
   Ptr<const AttributeChecker> Make##type##Checker (void);	\
 
-/**
- * \ingroup AttributeHelper
- * \param type the name of the class
- *
- * This macro implements the XXXValue class (without the 
- * XXXValue::SerializeToString and XXXValue::DeserializeFromString 
- * methods).
- * Typically invoked from xxx.cc.
- */
-#define ATTRIBUTE_VALUE_IMPLEMENT_NO_SERIALIZE(type)			\
-  type##Value::type##Value ()						\
+
+#define ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(type,name)                  \
+  name##Value::name##Value ()						\
     : m_value () {}							\
-  type##Value::type##Value (const type &value)				\
+  name##Value::name##Value (const type &value)				\
   : m_value (value) {}							\
-  void type##Value::Set (const type &v) {				\
+  void name##Value::Set (const type &v) {				\
     m_value = v;							\
   }									\
-  type type##Value::Get (void) const {					\
+  type name##Value::Get (void) const {					\
     return m_value;							\
   }									\
-  Attribute								\
-  type##Value::Copy (void) const {					\
-    return Attribute::Create<type##Value> (*this);			\
+  Ptr<AttributeValue>                                                   \
+  name##Value::Copy (void) const {					\
+    return ns3::Create<name##Value> (*this);                            \
+  }                                                                     \
+  std::string								\
+  name##Value::SerializeToString (Ptr<const AttributeChecker> checker) const { \
+    std::ostringstream oss;						\
+    oss << m_value;							\
+    return oss.str ();							\
   }									\
-  type##Value::type##Value (Attribute value)				\
-  {									\
-    type##Value *v = value.DynCast<type##Value *> ();			\
-    if (v == 0)								\
-      {									\
-	NS_FATAL_ERROR ("Unexpected type of value. Expected \"" << #type << "Value\""); \
-      }									\
-    m_value = v->Get ();						\
-  }									\
-  type##Value::operator Attribute () const				\
-  {									\
-    return Attribute::Create<type##Value> (*this);			\
+  bool									\
+  name##Value::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) { \
+    std::istringstream iss;						\
+    iss.str (value);							\
+    iss >> m_value;							\
+    return !iss.bad () && !iss.fail ();					\
   }
 
 /**
@@ -194,20 +199,8 @@ MakeSimpleAttributeChecker (std::string name)
  * Typically invoked from xxx.cc.
  */
 #define ATTRIBUTE_VALUE_IMPLEMENT(type)					\
-  std::string								\
-  type##Value::SerializeToString (Ptr<const AttributeChecker> checker) const { \
-    std::ostringstream oss;						\
-    oss << m_value;							\
-    return oss.str ();							\
-  }									\
-  bool									\
-  type##Value::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) { \
-    std::istringstream iss;						\
-    iss.str (value);							\
-    iss >> m_value;							\
-    return !iss.bad () && !iss.fail ();					\
-  }									\
-  ATTRIBUTE_VALUE_IMPLEMENT_NO_SERIALIZE (type)
+  ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(type,type)
+
 
 /**
  * \ingroup AttributeHelper
@@ -219,8 +212,15 @@ MakeSimpleAttributeChecker (std::string name)
 #define ATTRIBUTE_CHECKER_IMPLEMENT(type)				\
   Ptr<const AttributeChecker> Make##type##Checker (void)		\
   {									\
-    return MakeSimpleAttributeChecker<type##Value,type##Checker> (#type);	\
+    return MakeSimpleAttributeChecker<type##Value,type##Checker> (#type "Value", #type); \
   }									\
+
+#define ATTRIBUTE_CHECKER_IMPLEMENT_WITH_NAME(type,name)                    \
+  Ptr<const AttributeChecker> Make##type##Checker (void)		\
+  {									\
+    return MakeSimpleAttributeChecker<type##Value,type##Checker> (#type "Value", name); \
+  }									\
+
 
 /**
  * \ingroup AttributeHelper
@@ -229,20 +229,7 @@ MakeSimpleAttributeChecker (std::string name)
  * This macro implements the conversion operators to and from
  * instances of type Attribute. Typically invoked from xxx.cc.
  */
-#define ATTRIBUTE_CONVERTER_IMPLEMENT(type)				\
-  type::type (Attribute value)						\
-  {									\
-    const type##Value *v = value.DynCast<const type##Value *> ();	\
-    if (v == 0)								\
-      {									\
-      NS_FATAL_ERROR ("Unexpected type of value. Expected \"" << #type << "Value\""); \
-      }									\
-    *this = v->Get ();							\
-  }									\
-  type::operator Attribute () const					\
-  {									\
-    return Attribute::Create<type##Value> (*this);			\
-  }
+#define ATTRIBUTE_CONVERTER_IMPLEMENT(type)
 
 
 /**
@@ -252,8 +239,7 @@ MakeSimpleAttributeChecker (std::string name)
  * This macro should be invoked from a public section of the class
  * declaration.
  */
-#define ATTRIBUTE_HELPER_HEADER_1(type) \
-  ATTRIBUTE_CONVERTER_DEFINE (type)
+#define ATTRIBUTE_HELPER_HEADER_1(type)
 
 /**
  * \ingroup AttributeHelper

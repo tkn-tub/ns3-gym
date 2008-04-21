@@ -2,63 +2,34 @@
 
 namespace ns3 {
 
-ObjectVector::ObjectVector ()
+ObjectVectorValue::ObjectVectorValue ()
 {}
 
-ObjectVector::Iterator 
-ObjectVector::Begin (void) const
+ObjectVectorValue::Iterator 
+ObjectVectorValue::Begin (void) const
 {
   return m_objects.begin ();
 }
-ObjectVector::Iterator 
-ObjectVector::End (void) const
+ObjectVectorValue::Iterator 
+ObjectVectorValue::End (void) const
 {
   return m_objects.end ();
 }
 uint32_t 
-ObjectVector::GetN (void) const
+ObjectVectorValue::GetN (void) const
 {
   return m_objects.size ();
 }
 Ptr<Object> 
-ObjectVector::Get (uint32_t i) const
+ObjectVectorValue::Get (uint32_t i) const
 {
   return m_objects[i];
 }
 
-ObjectVector::ObjectVector (Attribute value)
-{
-  const ObjectVectorValue *v = value.DynCast<const ObjectVectorValue *> ();
-  if (v == 0)
-    {
-      NS_FATAL_ERROR ("Expected value of type ObjectVectorValue.");
-    }
-  *this = v->Get ();
-}
-
-ObjectVector::operator Attribute () const
-{
-  return Attribute::Create<ObjectVectorValue> ();
-}
-
-ObjectVectorValue::ObjectVectorValue ()
-  : m_vector ()
-{}
-
-ObjectVectorValue::ObjectVectorValue (const ObjectVector &vector)
-  : m_vector (vector)
-{}
-
-ObjectVector 
-ObjectVectorValue::Get (void) const
-{
-  return m_vector;
-}
-
-Attribute 
+Ptr<AttributeValue>
 ObjectVectorValue::Copy (void) const
 {
-  return Attribute::Create<ObjectVectorValue> (*this);
+  return ns3::Create<ObjectVectorValue> (*this);
 }
 std::string 
 ObjectVectorValue::SerializeToString (Ptr<const AttributeChecker> checker) const
@@ -69,25 +40,25 @@ ObjectVectorValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 bool 
 ObjectVectorValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
-  // XXX ?? Can we implement this correctly ?? I doubt it very much.
+  NS_FATAL_ERROR ("cannot deserialize a vector of object pointers.");
   return true;
 }
 
 bool 
-ObjectVectorAccessor::Set (ObjectBase * object, Attribute value) const
+ObjectVectorAccessor::Set (ObjectBase * object, const AttributeValue & value) const
 {
   // not allowed.
   return false;
 }
 bool 
-ObjectVectorAccessor::Get (const ObjectBase * object, Attribute value) const
+ObjectVectorAccessor::Get (const ObjectBase * object, AttributeValue &value) const
 {
-  ObjectVectorValue *v = value.DynCast<ObjectVectorValue *> ();
+  ObjectVectorValue *v = dynamic_cast<ObjectVectorValue *> (&value);
   if (v == 0)
     {
       return false;
     }
-  v->m_vector.m_objects.clear ();
+  v->m_objects.clear ();
   uint32_t n;
   bool ok = DoGetN (object, &n);
   if (!ok)
@@ -97,11 +68,19 @@ ObjectVectorAccessor::Get (const ObjectBase * object, Attribute value) const
   for (uint32_t i = 0; i < n; i++)
     {
       Ptr<Object> o = DoGet (object, i);
-      v->m_vector.m_objects.push_back (o);
+      v->m_objects.push_back (o);
     }
   return true;
 }
-
-ATTRIBUTE_CHECKER_IMPLEMENT (ObjectVector);
+bool 
+ObjectVectorAccessor::HasGetter (void) const
+{
+  return true;
+}
+bool 
+ObjectVectorAccessor::HasSetter (void) const
+{
+  return false;
+}
 
 } // name

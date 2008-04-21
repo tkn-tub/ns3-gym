@@ -437,8 +437,6 @@ public:
   static uint64_t UnitsToTimestep (uint64_t unitValue, 
                                    uint64_t unitFactor);
 
-  TimeUnit (Attribute value);
-  operator Attribute () const;
 private:
   HighPrecision m_data;
 
@@ -669,6 +667,12 @@ typedef TimeUnit<0> Scalar;
 
 typedef TimeUnit<-1> TimeInvert;
 typedef TimeUnit<2> TimeSquare;
+
+/**
+ * \class ns3::TimeValue
+ * \brief hold objects of type ns3::Time
+ */
+
 
 ATTRIBUTE_ACCESSOR_DEFINE (Time);
 ATTRIBUTE_VALUE_DEFINE (Time);

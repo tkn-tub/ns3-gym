@@ -28,6 +28,15 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4Interface");
 
 namespace ns3 {
 
+TypeId 
+Ipv4Interface::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::Ipv4Interface")
+    .SetParent<Object> ()
+    ;
+  return tid;
+}
+
   /**
    * By default, Ipv4 interface are created in the "down" state
    * with ip address 192.168.0.1 and a matching mask. Before

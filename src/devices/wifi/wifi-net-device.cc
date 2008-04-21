@@ -25,39 +25,42 @@
 #include "ns3/llc-snap-header.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
+#include "ns3/pointer.h"
 #include "ns3/node.h"
 #include "ns3/trace-source-accessor.h"
 
 namespace ns3 {
+
+NS_OBJECT_ENSURE_REGISTERED (WifiNetDevice);
 
 TypeId 
 WifiNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiNetDevice")
     .SetParent<NetDevice> ()
-    .AddAttribute ("Channel", "XXX",
-                   Ptr<Channel> (0),
-                   MakePtrAccessor (&WifiNetDevice::DoGetChannel,
-                                    &WifiNetDevice::SetChannel),
-                   MakePtrChecker<Channel> ())
-    .AddAttribute ("Phy", "XXX",
-                   Ptr<WifiPhy> (0),
-                   MakePtrAccessor (&WifiNetDevice::GetPhy,
-                                    &WifiNetDevice::SetPhy),
-                   MakePtrChecker<WifiPhy> ())
-    .AddAttribute ("Mac", "XXX",
-                   Ptr<WifiMac> (0),
-                   MakePtrAccessor (&WifiNetDevice::GetMac,
-                                    &WifiNetDevice::SetMac),
-                   MakePtrChecker<WifiMac> ())
-    .AddAttribute ("RemoteStationManager", "XXX",
-                   Ptr<WifiRemoteStationManager> (0),
-                   MakePtrAccessor (&WifiNetDevice::SetRemoteStationManager,
-                                    &WifiNetDevice::GetRemoteStationManager),
-                   MakePtrChecker<WifiRemoteStationManager> ())
-    .AddTraceSource ("Rx", "XXX",
+    .AddAttribute ("Channel", "The channel attached to this device",
+                   PointerValue (),
+                   MakePointerAccessor (&WifiNetDevice::DoGetChannel,
+                                        &WifiNetDevice::SetChannel),
+                   MakePointerChecker<WifiChannel> ())
+    .AddAttribute ("Phy", "The PHY layer attached to this device.",
+                   PointerValue (),
+                   MakePointerAccessor (&WifiNetDevice::GetPhy,
+                                        &WifiNetDevice::SetPhy),
+                   MakePointerChecker<WifiPhy> ())
+    .AddAttribute ("Mac", "The MAC layer attached to this device.",
+                   PointerValue (),
+                   MakePointerAccessor (&WifiNetDevice::GetMac,
+                                        &WifiNetDevice::SetMac),
+                   MakePointerChecker<WifiMac> ())
+    .AddAttribute ("RemoteStationManager", "The station manager attached to this device.",
+                   PointerValue (),
+                   MakePointerAccessor (&WifiNetDevice::SetRemoteStationManager,
+                                        &WifiNetDevice::GetRemoteStationManager),
+                   MakePointerChecker<WifiRemoteStationManager> ())
+    .AddTraceSource ("Rx", "Received payload from the MAC layer.",
                      MakeTraceSourceAccessor (&WifiNetDevice::m_rxLogger))
-    .AddTraceSource ("Tx", "XXX",
+    .AddTraceSource ("Tx", "Send payload to the MAC layer.",
                      MakeTraceSourceAccessor (&WifiNetDevice::m_txLogger))
     ;
   return tid;
@@ -204,8 +207,9 @@ WifiNetDevice::GetAddress (void) const
 bool 
 WifiNetDevice::SetMtu (const uint16_t mtu)
 {
-  Uinteger maxMsduSize = m_mac->GetAttribute ("MaxMsduSize");
-  if (mtu > maxMsduSize && mtu > 0)
+  UintegerValue maxMsduSize;
+  m_mac->GetAttribute ("MaxMsduSize", maxMsduSize);
+  if (mtu > maxMsduSize.Get () || mtu == 0)
     {
       return false;
     }
@@ -217,8 +221,9 @@ WifiNetDevice::GetMtu (void) const
 {
   if (m_mtu == 0)
     {
-      Uinteger maxMsduSize = m_mac->GetAttribute ("MaxMsduSize");
-      m_mtu = maxMsduSize;
+      UintegerValue maxMsduSize;
+      m_mac->GetAttribute ("MaxMsduSize", maxMsduSize);
+      m_mtu = maxMsduSize.Get ();
     }
   return m_mtu;
 }

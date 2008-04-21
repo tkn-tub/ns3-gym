@@ -325,7 +325,7 @@ TcpL4Protocol::GetTypeId (void)
     .SetParent<Ipv4L4Protocol> ()
     .AddAttribute ("RttEstimatorFactory",
                    "How RttEstimator objects are created.",
-                   GetDefaultRttEstimatorFactory (),
+                   ObjectFactoryValue (GetDefaultRttEstimatorFactory ()),
                    MakeObjectFactoryAccessor (&TcpL4Protocol::m_rttFactory),
                    MakeObjectFactoryChecker ())
     ;

@@ -53,11 +53,11 @@ CsmaChannel::GetTypeId (void)
     .SetParent<Channel> ()
     .AddConstructor<CsmaChannel> ()
     .AddAttribute ("BitRate", "The maximum bitrate of the channel",
-                   DataRate (0xffffffff),
+                   DataRateValue (DataRate (0xffffffff)),
                    MakeDataRateAccessor (&CsmaChannel::m_bps),
                    MakeDataRateChecker ())
     .AddAttribute ("Delay", "Transmission delay through the channel",
-                   Seconds (0),
+                   TimeValue (Seconds (0)),
                    MakeTimeAccessor (&CsmaChannel::m_delay),
                    MakeTimeChecker ())
     ;

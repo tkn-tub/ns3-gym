@@ -89,6 +89,11 @@ private:
 std::ostream &operator << (std::ostream &os, const DataRate &rate);
 std::istream &operator >> (std::istream &is, DataRate &rate);
 
+/**
+ * \class ns3::DataRateValue
+ * \brief hold objects of type ns3::DataRate
+ */
+
 ATTRIBUTE_HELPER_HEADER_2 (DataRate);
 
 /**

@@ -48,14 +48,14 @@ public:
    * value of that attribute. If any of these checks fails,
    * the program terminates with a message.
    */
-  void Set (std::string name, Attribute value);
+  void Set (std::string name, const AttributeValue &value);
   /**
    * \param name the full name of the attribute to set
    * \param value the value to set
    * \returns true if the requested attribute exists and could be
    *          stored, false otherwise.
    */
-  bool SetFailSafe (std::string name, Attribute value);
+  bool SetFailSafe (std::string name, const AttributeValue &value);
   /**
    * \param tid the TypeId associated to this attribute
    * \param name the name (not full!) of the attribute
@@ -66,7 +66,7 @@ public:
    * value of that attribute. If any of these checks fails,
    * the program terminates with a message.
    */
-  void SetWithTid (TypeId tid, std::string name, Attribute value);
+  void SetWithTid (TypeId tid, std::string name, const AttributeValue &value);
 
   /**
    * Clear the content of this instance.
@@ -92,7 +92,7 @@ private:
   friend class ObjectBase;
   struct Attr {
     Ptr<const AttributeChecker> checker;
-    Attribute value;
+    Ptr<const AttributeValue> value;
   };
   typedef std::vector<struct Attr> Attrs;
   typedef Attrs::iterator Iterator;
@@ -100,8 +100,8 @@ private:
 
 
 
-  bool DoSet (struct TypeId::AttributeInfo *info, Attribute param);
-  void DoSetOne (Ptr<const AttributeChecker> checker, Attribute param);
+  bool DoSet (struct TypeId::AttributeInfo *info, const AttributeValue &param);
+  void DoSetOne (Ptr<const AttributeChecker> checker, const AttributeValue &param);
   std::string LookupAttributeFullNameByChecker (Ptr<const AttributeChecker> checker) const;
 
   Attrs m_attributes;

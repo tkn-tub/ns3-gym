@@ -26,6 +26,7 @@
 #include "ns3/llc-snap-header.h"
 #include "ns3/error-model.h"
 #include "ns3/trace-source-accessor.h"
+#include "ns3/pointer.h"
 #include "point-to-point-net-device.h"
 #include "point-to-point-channel.h"
 
@@ -42,23 +43,23 @@ PointToPointNetDevice::GetTypeId (void)
     .SetParent<NetDevice> ()
     .AddConstructor<PointToPointNetDevice> ()
     .AddAttribute ("Address", "The address of this device.",
-                   Mac48Address ("ff:ff:ff:ff:ff:ff"),
+                   Mac48AddressValue (Mac48Address ("ff:ff:ff:ff:ff:ff")),
                    MakeMac48AddressAccessor (&PointToPointNetDevice::m_address),
                    MakeMac48AddressChecker ())
     .AddAttribute ("DataRate", "The default data rate for point to point links",
-                   DataRate ("10Mb/s"),
+                   DataRateValue (DataRate ("10Mb/s")),
                    MakeDataRateAccessor (&PointToPointNetDevice::m_bps),
                    MakeDataRateChecker ())
     .AddAttribute ("ReceiveErrorModel", "XXX",
-                   Ptr<ErrorModel> (0),
-                   MakePtrAccessor (&PointToPointNetDevice::m_receiveErrorModel),
-                   MakePtrChecker<ErrorModel> ())
+                   PointerValue (),
+                   MakePointerAccessor (&PointToPointNetDevice::m_receiveErrorModel),
+                   MakePointerChecker<ErrorModel> ())
     .AddAttribute ("TxQueue", "XXX",
-                   Ptr<Queue> (0),
-                   MakePtrAccessor (&PointToPointNetDevice::m_queue),
-                   MakePtrChecker<Queue> ())
+                   PointerValue (),
+                   MakePointerAccessor (&PointToPointNetDevice::m_queue),
+                   MakePointerChecker<Queue> ())
     .AddAttribute ("InterframeGap", "XXX",
-                   Seconds (0.0),
+                   TimeValue (Seconds (0.0)),
                    MakeTimeAccessor (&PointToPointNetDevice::m_tInterframeGap),
                    MakeTimeChecker ())
     .AddTraceSource ("Rx", "Receive MAC packet.",

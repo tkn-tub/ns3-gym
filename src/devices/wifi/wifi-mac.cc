@@ -74,42 +74,42 @@ WifiMac::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::WifiMac")
     .SetParent<Object> ()
     .AddAttribute ("CtsTimeout", "XXX",
-                   GetDefaultCtsAckTimeout (),
+                   TimeValue (GetDefaultCtsAckTimeout ()),
                    MakeTimeAccessor (&WifiMac::m_ctsTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("AckTimeout", "XXX",
-                   GetDefaultCtsAckTimeout (),
+                   TimeValue (GetDefaultCtsAckTimeout ()),
                    MakeTimeAccessor (&WifiMac::m_ackTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("Sifs", "XXX",
-                   GetDefaultSifs (),
+                   TimeValue (GetDefaultSifs ()),
                    MakeTimeAccessor (&WifiMac::SetSifs,
 				     &WifiMac::GetSifs),
                    MakeTimeChecker ())
     .AddAttribute ("EifsNoDifs", "XXX",
-		   GetDefaultEifsNoDifs (),
+		   TimeValue (GetDefaultEifsNoDifs ()),
 		   MakeTimeAccessor (&WifiMac::SetEifsNoDifs,
 				     &WifiMac::GetEifsNoDifs),
 		   MakeTimeChecker ())
     .AddAttribute ("Slot", "XXX",
-                   GetDefaultSlot (),
+                   TimeValue (GetDefaultSlot ()),
                    MakeTimeAccessor (&WifiMac::SetSlot,
 				     &WifiMac::GetSlot),
                    MakeTimeChecker ())
     .AddAttribute ("Pifs", "XXX",
-                   GetDefaultSifs () + GetDefaultSlot (),
+                   TimeValue (GetDefaultSifs () + GetDefaultSlot ()),
                    MakeTimeAccessor (&WifiMac::m_pifs),
                    MakeTimeChecker ())
     .AddAttribute ("MaxPropagationDelay", "XXX",
-                   GetDefaultMaxPropagationDelay (),
+                   TimeValue (GetDefaultMaxPropagationDelay ()),
                    MakeTimeAccessor (&WifiMac::m_maxPropagationDelay),
                    MakeTimeChecker ())
     .AddAttribute ("MaxMsduSize", "XXX",
-		   Uinteger (2304),
+		   UintegerValue (2304),
 		   MakeUintegerAccessor (&WifiMac::m_maxMsduSize),
 		   MakeUintegerChecker<uint16_t> (1,2304))
     .AddAttribute ("Ssid", "XXX",
-		   Ssid ("default"),
+		   SsidValue (Ssid ("default")),
 		   MakeSsidAccessor (&WifiMac::GetSsid,
 				     &WifiMac::SetSsid),
 		   MakeSsidChecker ())

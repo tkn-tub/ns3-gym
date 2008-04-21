@@ -66,8 +66,8 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Build Topology");
   CsmaHelper csma;
-  csma.SetChannelParameter ("BitRate", DataRate (5000000));
-  csma.SetChannelParameter ("Delay", MilliSeconds (2));
+  csma.SetChannelParameter ("BitRate", DataRateValue (5000000));
+  csma.SetChannelParameter ("Delay", TimeValue (MilliSeconds (2)));
 //
 // Now fill out the topology by creating the net devices required to connect
 // the nodes to the channels and hooking them up.  AddIpv4CsmaNetDevice will
@@ -97,8 +97,8 @@ main (int argc, char *argv[])
 
   OnOffHelper onoff ("ns3::Udp", 
     Address (InetSocketAddress (Ipv4Address ("10.1.1.2"), port)));
-  onoff.SetAttribute ("OnTime", ConstantVariable (1));
-  onoff.SetAttribute ("OffTime", ConstantVariable (0));
+  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
+  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
 
   ApplicationContainer app = onoff.Install (c.Get (0));
   // Start the application
@@ -114,7 +114,7 @@ main (int argc, char *argv[])
 // Create a similar flow from n3 to n0, starting at time 1.1 seconds
 //
   onoff.SetAttribute ("Remote", 
-    Address (InetSocketAddress (Ipv4Address ("10.1.1.1"), port)));
+                      AddressValue (InetSocketAddress (Ipv4Address ("10.1.1.1"), port)));
   ApplicationContainer app2 = onoff.Install (c.Get (3));
 
   sink.Install (c.Get (0));

@@ -22,6 +22,7 @@
 #include "object.h"
 #include "global-value.h"
 #include "object-vector.h"
+#include "pointer.h"
 #include "log.h"
 #include <sstream>
 
@@ -125,7 +126,7 @@ public:
   void Resolve (Ptr<Object> root);
 private:
   void DoResolve (std::string path, Ptr<Object> root);
-  void DoArrayResolve (std::string path, const ObjectVector &vector);
+  void DoArrayResolve (std::string path, const ObjectVectorValue &vector);
   void DoResolveOne (Ptr<Object> object, std::string name);
   std::string GetResolvedPath (std::string name) const;
   virtual void DoOne (Ptr<Object> object, std::string path, std::string name) = 0;
@@ -213,14 +214,13 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
 	  return;
 	}
       // attempt to cast to a pointer checker.
-      const PtrChecker *ptr = dynamic_cast<const PtrChecker *> (PeekPointer (info.checker));
+      const PointerChecker *ptr = dynamic_cast<const PointerChecker *> (PeekPointer (info.checker));
       if (ptr != 0)
 	{
 	  NS_LOG_DEBUG ("GetAttribute(ptr)="<<item<<" on path="<<GetResolvedPath (""));
-	  // XXX: This is not completely right because anything could be stored in a
-	  // Ptr<>. We really need to fix this by thinking seriously about our
-	  // object hierarchy.
-	  Ptr<Object> object = root->GetAttribute (item);
+          PointerValue ptr;
+          root->GetAttribute (item, ptr);
+	  Ptr<Object> object = ptr.Get<Object> ();
 	  if (object == 0)
 	    {
 	      NS_LOG_ERROR ("Requested object name=\""<<item<<
@@ -237,7 +237,8 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
       if (vectorChecker != 0)
 	{
 	  NS_LOG_DEBUG ("GetAttribute(vector)="<<item<<" on path="<<GetResolvedPath (""));
-	  ObjectVector vector = root->GetAttribute (item);
+	  ObjectVectorValue vector;
+          root->GetAttribute (item, vector);
 	  m_workStack.push_back (item);
 	  DoArrayResolve (pathLeft, vector);
 	  m_workStack.pop_back ();
@@ -248,7 +249,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
 }
 
 void 
-Resolver::DoArrayResolve (std::string path, const ObjectVector &vector)
+Resolver::DoArrayResolve (std::string path, const ObjectVectorValue &vector)
 {
   NS_ASSERT (path != "");
   std::string::size_type pos = path.find ("/");
@@ -284,7 +285,7 @@ Resolver::DoArrayResolve (std::string path, const ObjectVector &vector)
 class ConfigImpl 
 {
 public:
-  void Set (std::string path, Attribute value);
+  void Set (std::string path, const AttributeValue &value);
   void ConnectWithoutContext (std::string path, const CallbackBase &cb);
   void Connect (std::string path, const CallbackBase &cb);
   void DisconnectWithoutContext (std::string path, const CallbackBase &cb);
@@ -292,6 +293,9 @@ public:
 
   void RegisterRootNamespaceObject (Ptr<Object> obj);
   void UnregisterRootNamespaceObject (Ptr<Object> obj);
+
+  uint32_t GetRootNamespaceObjectN (void) const;
+  Ptr<Object> GetRootNamespaceObject (uint32_t i) const;
   
 private:
   typedef std::vector<Ptr<Object> > Roots;
@@ -299,19 +303,19 @@ private:
 };
 
 void 
-ConfigImpl::Set (std::string path, Attribute value)
+ConfigImpl::Set (std::string path, const AttributeValue &value)
 {
   class SetResolver : public Resolver 
   {
   public:
-    SetResolver (std::string path, Attribute value)
+    SetResolver (std::string path, const AttributeValue &value)
       : Resolver (path),
-	m_value (value) {}
+	m_value (value.Copy ()) {}
   private:
     virtual void DoOne (Ptr<Object> object, std::string path, std::string name) {
-      object->SetAttribute (name, m_value);
+      object->SetAttribute (name, *m_value);
     }
-    Attribute m_value;
+    Ptr<const AttributeValue> m_value;
   } resolver = SetResolver (path, value);
   for (Roots::const_iterator i = m_roots.begin (); i != m_roots.end (); i++)
     {
@@ -417,26 +421,36 @@ ConfigImpl::UnregisterRootNamespaceObject (Ptr<Object> obj)
     }
 }
 
+uint32_t 
+ConfigImpl::GetRootNamespaceObjectN (void) const
+{
+  return m_roots.size ();
+}
+Ptr<Object> 
+ConfigImpl::GetRootNamespaceObject (uint32_t i) const
+{
+  return m_roots[i];
+}
 
 namespace Config {
 
-void Set (std::string path, Attribute value)
+void Set (std::string path, const AttributeValue &value)
 {
   Singleton<ConfigImpl>::Get ()->Set (path, value);
 }
-void SetDefault (std::string name, Attribute value)
+void SetDefault (std::string name, const AttributeValue &value)
 {
   AttributeList::GetGlobal ()->Set (name, value);
 }
-bool SetDefaultFailSafe (std::string name, Attribute value)
+bool SetDefaultFailSafe (std::string name, const AttributeValue &value)
 {
   return AttributeList::GetGlobal ()->SetFailSafe (name, value);
 }
-void SetGlobal (std::string name, Attribute value)
+void SetGlobal (std::string name, const AttributeValue &value)
 {
   GlobalValue::Bind (name, value);
 }
-bool SetGlobalFailSafe (std::string name, Attribute value)
+bool SetGlobalFailSafe (std::string name, const AttributeValue &value)
 {
   return GlobalValue::BindFailSafe (name, value);
 }
@@ -468,6 +482,17 @@ void UnregisterRootNamespaceObject (Ptr<Object> obj)
 {
   Singleton<ConfigImpl>::Get ()->UnregisterRootNamespaceObject (obj);
 }
+
+uint32_t GetRootNamespaceObjectN (void)
+{
+  return Singleton<ConfigImpl>::Get ()->GetRootNamespaceObjectN ();
+}
+
+Ptr<Object> GetRootNamespaceObject (uint32_t i)
+{
+  return Singleton<ConfigImpl>::Get ()->GetRootNamespaceObject (i);
+}
+
 
 } // namespace Config
 
@@ -512,31 +537,31 @@ TypeId MyNode::GetTypeId (void)
   static TypeId tid = TypeId ("MyNode")
     .SetParent<Object> ()
     .AddAttribute ("NodesA", "",
-		   ObjectVector (),
+		   ObjectVectorValue (),
 		   MakeObjectVectorAccessor (&MyNode::m_nodesA),
-		   MakeObjectVectorChecker ())
+		   MakeObjectVectorChecker<MyNode> ())
     .AddAttribute ("NodesB", "",
-		   ObjectVector (),
+		   ObjectVectorValue (),
 		   MakeObjectVectorAccessor (&MyNode::m_nodesB),
-		   MakeObjectVectorChecker ())
+		   MakeObjectVectorChecker<MyNode> ())
     .AddAttribute ("NodeA", "",
-		   Ptr<MyNode> (0),
-		   MakePtrAccessor (&MyNode::m_nodeA),
-		   MakePtrChecker<MyNode> ())
+                   PointerValue (),
+		   MakePointerAccessor (&MyNode::m_nodeA),
+		   MakePointerChecker<MyNode> ())
     .AddAttribute ("NodeB", "",
-		   Ptr<MyNode> (0),
-		   MakePtrAccessor (&MyNode::m_nodeB),
-		   MakePtrChecker<MyNode> ())
+                   PointerValue (),
+		   MakePointerAccessor (&MyNode::m_nodeB),
+		   MakePointerChecker<MyNode> ())
     .AddAttribute ("A", "",
-		   Integer (10),
+		   IntegerValue (10),
 		   MakeIntegerAccessor (&MyNode::m_a),
 		   MakeIntegerChecker<int8_t> ())
     .AddAttribute ("B", "",
-		   Integer (9),
+		   IntegerValue (9),
 		   MakeIntegerAccessor (&MyNode::m_b),
 		   MakeIntegerChecker<int8_t> ())
     .AddAttribute ("Source", "XX",
-		   Integer (-1),
+		   IntegerValue (-1),
 		   MakeIntegerAccessor (&MyNode::m_trace),
 		   MakeIntegerChecker<int16_t> ())
     .AddTraceSource ("Source", "XX",
@@ -615,44 +640,45 @@ ConfigTest::RunTests (void)
 
   Ptr<MyNode> root = CreateObject<MyNode> ();
   Config::RegisterRootNamespaceObject (root);
-  Config::Set ("/A", Integer (1));
-  Config::Set ("/B", Integer (-1));
-  Integer v = root->GetAttribute ("A");
+  Config::Set ("/A", IntegerValue (1));
+  Config::Set ("/B", IntegerValue (-1));
+  IntegerValue v;
+  root->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), 1);
-  v = root->GetAttribute ("B");
+  root->GetAttribute ("B", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -1);
 
   Ptr<MyNode> a = CreateObject<MyNode> ();
   root->SetNodeA (a);
-  Config::Set ("/NodeA/A", Integer (2));
-  Config::Set ("/NodeA/B", Integer (-2));
-  v = a->GetAttribute ("A");
+  Config::Set ("/NodeA/A", IntegerValue (2));
+  Config::Set ("/NodeA/B", IntegerValue (-2));
+  a->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), 2);
-  v = a->GetAttribute ("B");
+  a->GetAttribute ("B", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -2);
-  Config::Set ("/NodeB/A", Integer (3));
-  Config::Set ("/NodeB/B", Integer (-3));
-  v = a->GetAttribute ("A");
+  Config::Set ("/NodeB/A", IntegerValue (3));
+  Config::Set ("/NodeB/B", IntegerValue (-3));
+  a->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), 2);
-  v = a->GetAttribute ("B");
+  a->GetAttribute ("B", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -2);
 
   Ptr<MyNode> b = CreateObject<MyNode> ();
   a->SetNodeB (b);
-  Config::Set ("/NodeA/NodeB/A", Integer (4));
-  Config::Set ("/NodeA/NodeB/B", Integer (-4));
-  v = b->GetAttribute ("A");
+  Config::Set ("/NodeA/NodeB/A", IntegerValue (4));
+  Config::Set ("/NodeA/NodeB/B", IntegerValue (-4));
+  b->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), 4);
-  v = b->GetAttribute ("B");
+  b->GetAttribute ("B", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -4);
 
   Ptr<MyNode> c = CreateObject<MyNode> ();
   root->SetNodeB (c);
-  Config::Set ("/NodeB/A", Integer (5));
-  Config::Set ("/NodeB/B", Integer (-5));
-  v = c->GetAttribute ("A");
+  Config::Set ("/NodeB/A", IntegerValue (5));
+  Config::Set ("/NodeB/B", IntegerValue (-5));
+  c->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), 5);
-  v = c->GetAttribute ("B");
+  c->GetAttribute ("B", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -5);
 
 
@@ -664,49 +690,49 @@ ConfigTest::RunTests (void)
   b->AddNodeB (d1);
   b->AddNodeB (d2);
   b->AddNodeB (d3);
-  Config::Set ("/NodeA/NodeB/NodesB/0/A", Integer (-11));
-  v = d0->GetAttribute ("A");
+  Config::Set ("/NodeA/NodeB/NodesB/0/A", IntegerValue (-11));
+  d0->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -11);
-  v = d0->GetAttribute ("B");
+  d0->GetAttribute ("B", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), 9);
-  v = d1->GetAttribute ("A");
+  d1->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), 10);
-  v = d1->GetAttribute ("B");
+  d1->GetAttribute ("B", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), 9);
-  Config::Set ("/NodeA/NodeB/NodesB/0|1/A", Integer (-12));
-  v = d0->GetAttribute ("A");
+  Config::Set ("/NodeA/NodeB/NodesB/0|1/A", IntegerValue (-12));
+  d0->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -12);
-  v = d1->GetAttribute ("A");
+  d1->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -12);
-  Config::Set ("/NodeA/NodeB/NodesB/|0|1|/A", Integer (-13));
-  v = d0->GetAttribute ("A");
+  Config::Set ("/NodeA/NodeB/NodesB/|0|1|/A", IntegerValue (-13));
+  d0->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -13);
-  v = d1->GetAttribute ("A");
+  d1->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -13);
-  Config::Set ("/NodeA/NodeB/NodesB/[0-2]/A", Integer (-14));
-  v = d0->GetAttribute ("A");
+  Config::Set ("/NodeA/NodeB/NodesB/[0-2]/A", IntegerValue (-14));
+  d0->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -14);
-  v = d1->GetAttribute ("A");
+  d1->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -14);
-  v = d2->GetAttribute ("A");
+  d2->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -14);
-  Config::Set ("/NodeA/NodeB/NodesB/[1-3]/A", Integer (-15));
-  v = d0->GetAttribute ("A");
+  Config::Set ("/NodeA/NodeB/NodesB/[1-3]/A", IntegerValue (-15));
+  d0->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -14);
-  v = d1->GetAttribute ("A");
+  d1->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -15);
-  v = d2->GetAttribute ("A");
+  d2->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -15);
-  v = d3->GetAttribute ("A");
+  d3->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -15);
-  Config::Set ("/NodeA/NodeB/NodesB/[0-1]|3/A", Integer (-16));
-  v = d0->GetAttribute ("A");
+  Config::Set ("/NodeA/NodeB/NodesB/[0-1]|3/A", IntegerValue (-16));
+  d0->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -16);
-  v = d1->GetAttribute ("A");
+  d1->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -16);
-  v = d2->GetAttribute ("A");
+  d2->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -15);
-  v = d3->GetAttribute ("A");
+  d3->GetAttribute ("A", v);
   NS_TEST_ASSERT_EQUAL (v.Get (), -16);
 
 
@@ -714,17 +740,17 @@ ConfigTest::RunTests (void)
 		   MakeCallback (&ConfigTest::ChangeNotification, this));
   m_traceNotification = 0;
   // this should trigger no notification
-  d2->SetAttribute ("Source", Integer (-2));
+  d2->SetAttribute ("Source", IntegerValue (-2));
   NS_TEST_ASSERT_EQUAL (m_traceNotification, 0);
   m_traceNotification = 0;
   // this should trigger a notification
-  d1->SetAttribute ("Source", Integer (-3));
+  d1->SetAttribute ("Source", IntegerValue (-3));
   NS_TEST_ASSERT_EQUAL (m_traceNotification, -3);
   Config::DisconnectWithoutContext ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
 		      MakeCallback (&ConfigTest::ChangeNotification, this));
   m_traceNotification = 0;
   // this should _not_ trigger a notification
-  d1->SetAttribute ("Source", Integer (-4));
+  d1->SetAttribute ("Source", IntegerValue (-4));
   NS_TEST_ASSERT_EQUAL (m_traceNotification, 0);
 
   
@@ -732,25 +758,25 @@ ConfigTest::RunTests (void)
 			      MakeCallback (&ConfigTest::ChangeNotificationWithPath, this));
   m_traceNotification = 0;
   // this should trigger no notification
-  d2->SetAttribute ("Source", Integer (-2));
+  d2->SetAttribute ("Source", IntegerValue (-2));
   NS_TEST_ASSERT_EQUAL (m_traceNotification, 0);
   m_traceNotification = 0;
   m_tracePath = "";
   // this should trigger a notification
-  d1->SetAttribute ("Source", Integer (-3));
+  d1->SetAttribute ("Source", IntegerValue (-3));
   NS_TEST_ASSERT_EQUAL (m_traceNotification, -3);
   NS_TEST_ASSERT_EQUAL (m_tracePath, "/NodeA/NodeB/NodesB/1/Source")
   m_traceNotification = 0;
   m_tracePath = "";
   // this should trigger a notification
-  d3->SetAttribute ("Source", Integer (-3));
+  d3->SetAttribute ("Source", IntegerValue (-3));
   NS_TEST_ASSERT_EQUAL (m_traceNotification, -3);
   NS_TEST_ASSERT_EQUAL (m_tracePath, "/NodeA/NodeB/NodesB/3/Source");
   Config::Disconnect ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
 				 MakeCallback (&ConfigTest::ChangeNotificationWithPath, this));
   m_traceNotification = 0;
   // this should _not_ trigger a notification
-  d1->SetAttribute ("Source", Integer (-4));
+  d1->SetAttribute ("Source", IntegerValue (-4));
   NS_TEST_ASSERT_EQUAL (m_traceNotification, 0);
 
 

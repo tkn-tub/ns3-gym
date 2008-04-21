@@ -41,6 +41,9 @@ class Ipv4Route;
 class Node;
 
 
+/**
+ * \brief Implement the Ipv4 layer.
+ */
 class Ipv4L3Protocol : public Object
 {
 public:

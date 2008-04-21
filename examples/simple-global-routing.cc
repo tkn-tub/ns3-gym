@@ -67,8 +67,8 @@ main (int argc, char *argv[])
   RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
 
   // Set up some default values for the simulation.  Use the 
-  Config::SetDefault ("ns3::OnOffApplication::PacketSize", Uinteger (210));
-  Config::SetDefault ("ns3::OnOffApplication::DataRate", DataRate ("448kb/s"));
+  Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
+  Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("448kb/s"));
 
   //DefaultValue::Bind ("DropTailQueue::m_maxPackets", 30);   
 
@@ -92,14 +92,14 @@ main (int argc, char *argv[])
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
   PointToPointHelper p2p;
-  p2p.SetChannelParameter ("BitRate", DataRate (5000000));
-  p2p.SetChannelParameter ("Delay", MilliSeconds (2));
+  p2p.SetChannelParameter ("BitRate", StringValue ("5Mbps"));
+  p2p.SetChannelParameter ("Delay", StringValue ("2ms"));
   NetDeviceContainer d0d2 = p2p.Install (n0n2);
 
   NetDeviceContainer d1d2 = p2p.Install (n1n2);
   
-  p2p.SetChannelParameter ("BitRate", DataRate (1500000));
-  p2p.SetChannelParameter ("Delay", MilliSeconds (10));
+  p2p.SetChannelParameter ("BitRate", StringValue ("1500kbps"));
+  p2p.SetChannelParameter ("Delay", StringValue ("10ms"));
   NetDeviceContainer d3d2 = p2p.Install (n3n2);
   
   // Later, we add IP addresses.  
@@ -124,8 +124,8 @@ main (int argc, char *argv[])
   uint16_t port = 9;   // Discard port (RFC 863)
   OnOffHelper onoff ("ns3::Udp", 
     Address (InetSocketAddress (i3i2.GetAddress (0), port)));
-  onoff.SetAttribute ("OnTime", ConstantVariable (1));
-  onoff.SetAttribute ("OffTime", ConstantVariable (0));
+  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
+  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   ApplicationContainer apps = onoff.Install (c.Get (0));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
@@ -139,7 +139,7 @@ main (int argc, char *argv[])
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
   onoff.SetAttribute ("Remote", 
-    Address (InetSocketAddress (i1i2.GetAddress (0), port)));
+    AddressValue (InetSocketAddress (i1i2.GetAddress (0), port)));
   apps = onoff.Install (c.Get (3));
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));

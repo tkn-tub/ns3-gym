@@ -29,6 +29,11 @@ namespace ns3 {
 class Socket;
 class Packet;
 
+/**
+ * \brief A Udp Echo server
+ *
+ * Every packet received is sent back.
+ */
 class UdpEchoServer : public Application 
 {
 public:

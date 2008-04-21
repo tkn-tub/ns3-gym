@@ -22,6 +22,7 @@
 #include "ns3/mobility-model.h"
 #include "ns3/static-mobility-model.h"
 #include "ns3/double.h"
+#include "ns3/pointer.h"
 #include <math.h>
 
 NS_LOG_COMPONENT_DEFINE ("PropagationLossModel");
@@ -31,17 +32,31 @@ namespace ns3 {
 
 const double FriisPropagationLossModel::PI = 3.1415;
 
+NS_OBJECT_ENSURE_REGISTERED (PropagationLossModel);
+
+TypeId 
+PropagationLossModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::PropagationLossModel")
+    .SetParent<Object> ()
+    ;
+  return tid;
+}
+
+
 PropagationLossModel::~PropagationLossModel ()
 {}
+
+NS_OBJECT_ENSURE_REGISTERED (RandomPropagationLossModel);
 
 TypeId 
 RandomPropagationLossModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("RandomPropagationLossModel")
+  static TypeId tid = TypeId ("ns3::RandomPropagationLossModel")
     .SetParent<PropagationLossModel> ()
     .AddConstructor<RandomPropagationLossModel> ()
     .AddAttribute ("Variable", "XXX",
-                   ConstantVariable (1.0),
+                   RandomVariableValue (ConstantVariable (1.0)),
                    MakeRandomVariableAccessor (&RandomPropagationLossModel::m_variable),
                    MakeRandomVariableChecker ())
     ;
@@ -62,24 +77,26 @@ RandomPropagationLossModel::GetLoss (Ptr<MobilityModel> a,
   return rxc;
 }
 
+NS_OBJECT_ENSURE_REGISTERED (FriisPropagationLossModel);
+
 TypeId 
 FriisPropagationLossModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("FriisPropagationLossModel")
+  static TypeId tid = TypeId ("ns3::FriisPropagationLossModel")
     .SetParent<PropagationLossModel> ()
     .AddConstructor<FriisPropagationLossModel> ()
     .AddAttribute ("Lambda", 
                    "The wavelength  (default is 5.15 GHz at 300 000 km/s).",
-                   Double (300000000.0 / 5.150e9),
+                   DoubleValue (300000000.0 / 5.150e9),
                    MakeDoubleAccessor (&FriisPropagationLossModel::m_lambda),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("SystemLoss", "The system loss",
-                   Double (1.0),
+                   DoubleValue (1.0),
                    MakeDoubleAccessor (&FriisPropagationLossModel::m_systemLoss),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("MinDistance", 
                    "The distance under which the propagation model refuses to give results (m)",
-                   Double (0.5),
+                   DoubleValue (0.5),
                    MakeDoubleAccessor (&FriisPropagationLossModel::m_minDistance),
                    MakeDoubleChecker<double> ())
     ;
@@ -174,27 +191,29 @@ FriisPropagationLossModel::GetLoss (Ptr<MobilityModel> a,
   return pr;
 }
 
+NS_OBJECT_ENSURE_REGISTERED (LogDistancePropagationLossModel);
+
 TypeId
 LogDistancePropagationLossModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("LogDistancePropagationLossModel")
+  static TypeId tid = TypeId ("ns3::LogDistancePropagationLossModel")
     .SetParent<PropagationLossModel> ()
     .AddConstructor<LogDistancePropagationLossModel> ()
     .AddAttribute ("Exponent",
                    "The exponent of the Path Loss propagation model",
-                   Double (3.0),
+                   DoubleValue (3.0),
                    MakeDoubleAccessor (&LogDistancePropagationLossModel::m_exponent),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("ReferenceDistance",
                    "The distance at which the reference loss is calculated (m)",
-                   Double (1.0),
+                   DoubleValue (1.0),
                    MakeDoubleAccessor (&LogDistancePropagationLossModel::m_referenceDistance),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("ReferenceModel",
                    "The reference model at the reference distance.",
-                   Ptr<PropagationLossModel> (0),
-                   MakePtrAccessor (&LogDistancePropagationLossModel::m_reference),
-                   MakePtrChecker<PropagationLossModel> ())
+                   PointerValue (),
+                   MakePointerAccessor (&LogDistancePropagationLossModel::m_reference),
+                   MakePointerChecker<PropagationLossModel> ())
     ;
   return tid;
                    
@@ -249,10 +268,10 @@ LogDistancePropagationLossModel::GetLoss (Ptr<MobilityModel> a,
    */
   static Ptr<StaticMobilityModel> zero = 
     CreateObject<StaticMobilityModel> ("Position", 
-                                       Vector (0.0, 0.0, 0.0));
+                                       VectorValue (Vector (0.0, 0.0, 0.0)));
   static Ptr<StaticMobilityModel> reference = 
     CreateObject<StaticMobilityModel> ("Position", 
-                                       Vector (m_referenceDistance, 0.0, 0.0));
+                                       VectorValue (Vector (m_referenceDistance, 0.0, 0.0)));
   double ref = m_reference->GetLoss (zero, reference);
   double pathLossDb = 10 * m_exponent * log10 (distance / m_referenceDistance);
   double rxc = ref - pathLossDb;

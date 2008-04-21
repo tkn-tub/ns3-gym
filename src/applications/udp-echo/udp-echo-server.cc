@@ -40,7 +40,7 @@ UdpEchoServer::GetTypeId (void)
     .SetParent<Application> ()
     .AddConstructor<UdpEchoServer> ()
     .AddAttribute ("Port", "Port on which we listen for incoming packets.",
-                   Uinteger (9),
+                   UintegerValue (9),
                    MakeUintegerAccessor (&UdpEchoServer::m_port),
                    MakeUintegerChecker<uint16_t> ())
     ;
