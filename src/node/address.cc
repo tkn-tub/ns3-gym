@@ -109,13 +109,28 @@ Address::Register (void)
 
 ATTRIBUTE_HELPER_CPP (Address);
 
+
 bool operator == (const Address &a, const Address &b)
 {
-  if (a.m_type != b.m_type)
+  /* Two addresses can be equal even if their types are 
+   * different if one of the two types is zero. a type of 
+   * zero identifies an Address which might contain meaningful 
+   * payload but for which the type field could not be set because
+   * we did not know it. This can typically happen in the ARP
+   * layer where we receive an address from an ArpHeader but
+   * we do not know its type: we really want to be able to
+   * compare addresses without knowing their real type.
+   */
+  if (a.m_type != b.m_type &&
+      a.m_type != 0 && 
+      b.m_type != 0)
     {
       return false;
     }
-  NS_ASSERT (a.GetLength() == b.GetLength());  
+  if (a.m_len != b.m_len)
+    {
+      return false;
+    }
   return memcmp (a.m_data, b.m_data, a.m_len) == 0;
 }
 bool operator != (const Address &a, const Address &b)
@@ -124,9 +139,16 @@ bool operator != (const Address &a, const Address &b)
 }
 bool operator < (const Address &a, const Address &b)
 {
-  NS_ASSERT (a.m_type == b.m_type  || 
-	     a.m_type == 0 || 
-	     b.m_type == 0);
+  // XXX: it is not clear to me how to order based on type.
+  // so, we do not compare the types here but we should.
+  if (a.m_len < b.m_len)
+    {
+      return true;
+    }
+  else if (a.m_len > b.m_len)
+    {
+      return false;
+    }
   NS_ASSERT (a.GetLength() == b.GetLength());
   for (uint8_t i = 0; i < a.GetLength(); i++) 
     {

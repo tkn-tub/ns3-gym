@@ -51,7 +51,6 @@ public:
   static TypeId GetTypeId (void);
 
   RttEstimator();
-  RttEstimator(Time e);
   RttEstimator(const RttEstimator&); // Copy constructor
   virtual ~RttEstimator();
 
@@ -71,7 +70,6 @@ private:
   SequenceNumber        next;    // Next expected sequence to be sent
   RttHistory_t history; // List of sent packet
   double m_maxMultiplier;
-  Time m_initialEstimate;
 public:
   Time       est;     // Current estimate
   uint32_t      nSamples;// Number of samples

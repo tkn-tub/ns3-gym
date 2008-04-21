@@ -177,6 +177,8 @@ private:
   friend Ptr<T> CreateObject (const AttributeList &attributes);
   template <typename T>
   friend Ptr<T> CopyObject (Ptr<T> object);
+  template <typename T>
+  friend Ptr<T> CopyObject (Ptr<const T> object);
 
   friend class ObjectFactory;
   friend class AggregateIterator;
@@ -244,7 +246,10 @@ private:
  * and returns the new instance.
  */
 template <typename T>
+Ptr<T> CopyObject (Ptr<const T> object);
+template <typename T>
 Ptr<T> CopyObject (Ptr<T> object);
+
 
 /**
  * \param attributes a list of attributes to set on the 
@@ -349,6 +354,14 @@ Object::GetObject (TypeId tid) const
 
 template <typename T>
 Ptr<T> CopyObject (Ptr<T> object)
+{
+  Ptr<T> p = Ptr<T> (new T (*PeekPointer (object)), false);
+  NS_ASSERT (p->m_tid == object->m_tid);
+  return p;
+}
+
+template <typename T>
+Ptr<T> CopyObject (Ptr<const T> object)
 {
   Ptr<T> p = Ptr<T> (new T (*PeekPointer (object)), false);
   NS_ASSERT (p->m_tid == object->m_tid);
