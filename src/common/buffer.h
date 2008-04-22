@@ -410,6 +410,8 @@ public:
    * pointing to this Buffer.
    */
   void AddAtEnd (uint32_t end);
+
+  void AddAtEnd (const Buffer &o);
   /**
    * \param start size to remove
    *

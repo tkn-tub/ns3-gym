@@ -462,6 +462,19 @@ Buffer::AddAtEnd (uint32_t end)
 }
 
 void 
+Buffer::AddAtEnd (const Buffer &o)
+{
+  Buffer dst = CreateFullCopy ();
+  Buffer src = o.CreateFullCopy ();
+
+  dst.AddAtEnd (src.GetSize ());
+  Buffer::Iterator destStart = dst.End ();
+  destStart.Prev (src.GetSize ());
+  destStart.Write (src.Begin (), src.End ());
+  *this = dst;
+}
+
+void 
 Buffer::RemoveAtStart (uint32_t start)
 {
   NS_ASSERT (CheckInternalState ());

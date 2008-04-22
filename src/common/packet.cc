@@ -159,14 +159,7 @@ Packet::RemoveTrailer (Trailer &trailer)
 void 
 Packet::AddAtEnd (Ptr<const Packet> packet)
 {
-  Buffer src = packet->m_buffer.CreateFullCopy ();
-  Buffer dst = m_buffer.CreateFullCopy ();
-
-  dst.AddAtEnd (src.GetSize ());
-  Buffer::Iterator destStart = dst.End ();
-  destStart.Prev (src.GetSize ());
-  destStart.Write (src.Begin (), src.End ());
-  m_buffer = dst;
+  m_buffer.AddAtEnd (packet->m_buffer);
   /**
    * XXX: we might need to merge the tag list of the
    * other packet into the current packet.
