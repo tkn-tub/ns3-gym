@@ -544,14 +544,6 @@ Buffer
 Buffer::CreateFragment (uint32_t start, uint32_t length) const
 {
   NS_ASSERT (CheckInternalState ());
-  uint32_t zeroStart = m_zeroAreaStart - m_start;
-  uint32_t zeroEnd = zeroStart + m_zeroAreaEnd;
-  if (m_zeroAreaEnd != 0 &&
-      start + length > zeroStart &&
-      start <= zeroEnd) 
-    {
-      TransformIntoRealBuffer ();
-    }
   Buffer tmp = *this;
   tmp.RemoveAtStart (start);
   tmp.RemoveAtEnd (GetSize () - (start + length));
@@ -563,7 +555,7 @@ Buffer
 Buffer::CreateFullCopy (void) const
 {
   NS_ASSERT (CheckInternalState ());
-  if (m_zeroAreaEnd != 0) 
+  if (m_zeroAreaEnd - m_zeroAreaStart != 0) 
     {
       Buffer tmp;
       tmp.AddAtStart (m_zeroAreaEnd - m_zeroAreaStart);
