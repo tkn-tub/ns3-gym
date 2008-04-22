@@ -752,9 +752,11 @@ def run_regression():
             _dir = os.getcwd()
             os.chdir(REGRESSION_TRACES_DIR_NAME)
             try:
-                os.system("hg pull " + REGRESSION_TRACES_REPO + REGRESSION_TRACES_DIR_NAME + " > /dev/null 2>&1")
+                result = os.system("hg -q pull %s && hg -q update" % (REGRESSION_TRACES_REPO + REGRESSION_TRACES_DIR_NAME))
             finally:
                 os.chdir("..")
+            if result:
+                Params.fatal("Synchronizing reference traces using Mercurial failed.")
     else:
         print "Synchronizing reference traces from web."
         urllib.urlretrieve(REGRESSION_TRACES_URL + REGRESSION_TRACES_TAR_NAME, REGRESSION_TRACES_TAR_NAME)
