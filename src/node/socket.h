@@ -120,7 +120,36 @@ public:
                           Callback<void, Ptr<Socket>, 
                             const Address&> newConnectionCreated,
                           Callback<void, Ptr<Socket> > closeRequested);
-  void SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent);
+  /**
+   * \brief Notify application when a packet has been sent from transport 
+   *        protocol (non-standard socket call)
+   * \param dataSent Callback for the event that data is sent from the
+   *        underlying transport protocol.  This callback is passed a
+   *        pointer to the socket, and the number of bytes sent.
+   * \returns whether or not this socket supports this callback.  Note 
+   *        that this is a non-standard socket call.  Some socket 
+   *        implementations in ns-3 may not support this call, so the
+   *        user should check this return value to confirm that the
+   *        callback is supported.
+   */
+  virtual bool SetDataSentCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent);
+  /**
+   * \brief Notify application when space in transmit buffer is added
+   *
+   *        This callback is intended to notify a 
+   *        socket that would have been blocked in a blocking socket model
+   *        that some data has been acked and removed from the transmit
+   *        buffer, and that it can call send again.  The semantics for
+   *        reliable stream sockets are that when data is acked and removed
+   *        from the transmit buffer, this callback is invoked.
+   *
+   * \param sendCb Callback for the event that the socket transmit buffer
+   *        fill level has decreased.  This callback is passed a pointer to
+   *        the socket, and the number of bytes available for writing
+   *        into the buffer (an absolute value).  If there is no transmit
+   *        buffer limit, a maximum-sized integer is always returned.
+   */
+  void SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> sendCb);
   /**
    * \brief Receive data
    * \param receivedData Invoked whenever new data is received.
@@ -232,6 +261,7 @@ protected:
   void NotifyNewConnectionCreated (Ptr<Socket> socket, const Address &from);
   void NotifyCloseRequested (void);
   void NotifyDataSent (uint32_t size);
+  void NotifySend (uint32_t spaceAvailable);
   void NotifyDataReceived (Ptr<Packet> p, const Address &from);
 
   Callback<void,Ptr<Socket> >    m_closeCompleted;
@@ -242,6 +272,7 @@ protected:
   Callback<bool, Ptr<Socket>, const Address &>   m_connectionRequest;
   Callback<void, Ptr<Socket>, const Address&>    m_newConnectionCreated;
   Callback<void, Ptr<Socket>, uint32_t>          m_dataSent;
+  Callback<void, Ptr<Socket>, uint32_t >         m_sendCb;
   Callback<void, Ptr<Socket>, Ptr<Packet>,const Address&> m_receivedData;
 };
 

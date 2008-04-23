@@ -64,11 +64,19 @@ Socket::SetAcceptCallback (
   m_closeRequested = closeRequested;
 }
 
-void 
-Socket::SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent)
+bool 
+Socket::SetDataSentCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_dataSent = dataSent;
+  return true;
+}
+
+void
+Socket::SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> sendCb)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_sendCb = sendCb;
 }
 
 void 
@@ -199,6 +207,16 @@ Socket::NotifyDataSent (uint32_t size)
   if (!m_dataSent.IsNull ())
     {
       m_dataSent (this, size);
+    }
+}
+
+void 
+Socket::NotifySend (uint32_t spaceAvailable)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  if (!m_sendCb.IsNull ())
+    {
+      m_sendCb (this, spaceAvailable);
     }
 }
 
