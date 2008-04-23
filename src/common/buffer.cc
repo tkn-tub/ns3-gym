@@ -418,7 +418,7 @@ Buffer::AddAtEnd (uint32_t end)
       m_zeroAreaStart += delta;
       m_zeroAreaEnd += delta;
       m_end += delta;
-      m_start = 0;
+      m_start += delta;
 
       m_end += end;
 
