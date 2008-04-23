@@ -392,24 +392,36 @@ public:
 
   /**
    * \param start size to reserve
+   * \returns the adjustment delta.
    *
    * Add bytes at the start of the Buffer. The
    * content of these bytes is undefined but debugging
    * builds initialize them to 0x33.
    * Any call to this method invalidates any Iterator
    * pointing to this Buffer.
+   *
+   * The value returned by this method indicates how the internal
+   * buffer was modified to handle the user request to reserve space.
+   * If that value is zero, the buffer was not modified: the user
+   * request was completed without further memory allocation.
    */
-  void AddAtStart (uint32_t start);
+  int32_t AddAtStart (uint32_t start);
   /**
    * \param end size to reserve
+   * \returns the adjustment delta.
    *
    * Add bytes at the end of the Buffer. The
    * content of these bytes is undefined but debugging
    * builds initialize them to 0x33.
    * Any call to this method invalidates any Iterator
    * pointing to this Buffer.
+   *
+   * The value returned by this method indicates how the internal
+   * buffer was modified to handle the user request to reserve space.
+   * If that value is zero, the buffer was not modified: the user
+   * request was completed without further memory allocation.
    */
-  void AddAtEnd (uint32_t end);
+  int32_t AddAtEnd (uint32_t end);
 
   void AddAtEnd (const Buffer &o);
   /**

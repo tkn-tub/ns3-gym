@@ -333,9 +333,10 @@ Buffer::GetInternalEnd (void) const
   return m_end - (m_zeroAreaEnd - m_zeroAreaStart);
 }
 
-void 
+int32_t
 Buffer::AddAtStart (uint32_t start)
 {
+  int32_t delta;
   NS_ASSERT (CheckInternalState ());
   bool isDirty = m_data->m_count > 1 && m_start > m_data->m_dirtyStart;
   if (m_start >= start && !isDirty)
@@ -347,6 +348,7 @@ Buffer::AddAtStart (uint32_t start)
        */
       NS_ASSERT (m_data->m_count == 1 || m_start == m_data->m_dirtyStart);
       m_start -= start;
+      delta = 0;
       HEURISTICS (g_nAddNoRealloc++);
     } 
   else
@@ -361,11 +363,13 @@ Buffer::AddAtStart (uint32_t start)
         }
       m_data = newData;
 
-      int32_t delta = start - m_start;
-      m_start = 0;
+      delta = start - m_start;
+      m_start += delta;
       m_zeroAreaStart += delta;
       m_zeroAreaEnd += delta;
       m_end += delta;
+
+      m_start -= start;
 
       HEURISTICS (g_nAddRealloc++);
     }
@@ -375,10 +379,12 @@ Buffer::AddAtStart (uint32_t start)
   m_data->m_dirtyEnd = m_end;
   LOG_INTERNAL_STATE ("add start=" << start << ", ");
   NS_ASSERT (CheckInternalState ());
+  return delta;
 }
-void 
+int32_t
 Buffer::AddAtEnd (uint32_t end)
 {
+  int32_t delta;
   NS_ASSERT (CheckInternalState ());
   bool isDirty = m_data->m_count > 1 && m_end < m_data->m_dirtyEnd;
   if (GetInternalEnd () + end <= m_data->m_size && !isDirty)
@@ -390,6 +396,8 @@ Buffer::AddAtEnd (uint32_t end)
        */
       NS_ASSERT (m_data->m_count == 1 || m_end == m_data->m_dirtyEnd);
       m_end += end;
+
+      delta = 0;
 
       HEURISTICS (g_nAddNoRealloc++);
     } 
@@ -405,10 +413,11 @@ Buffer::AddAtEnd (uint32_t end)
         }
       m_data = newData;
 
+      delta = -m_start;
 
-      m_zeroAreaStart -= m_start;
-      m_zeroAreaEnd -= m_start;
-      m_end -= m_start;
+      m_zeroAreaStart += delta;
+      m_zeroAreaEnd += delta;
+      m_end += delta;
       m_start = 0;
 
       m_end += end;
@@ -421,6 +430,8 @@ Buffer::AddAtEnd (uint32_t end)
   m_data->m_dirtyEnd = m_end;
   LOG_INTERNAL_STATE ("add end=" << end << ", ");
   NS_ASSERT (CheckInternalState ());
+
+  return delta;
 }
 
 void 
