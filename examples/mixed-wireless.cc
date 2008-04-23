@@ -335,8 +335,8 @@ main (int argc, char *argv[])
   // asciiTrace.TraceNetDeviceRx ("/NodeList/11|13/DeviceList/0");
   std::ofstream ascii;
   ascii.open ("mixed-wireless.tr");
-  WifiHelper::EnableAscii (ascii);
-  CsmaHelper::EnableAscii (ascii);
+  WifiHelper::EnableAsciiAll (ascii);
+  CsmaHelper::EnableAsciiAll (ascii);
 
   // Let's do a pcap trace on the backbone devices
   WifiHelper::EnablePcap ("mixed-wireless.pcap", backboneDevices); 

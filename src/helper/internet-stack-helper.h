@@ -50,7 +50,7 @@ public:
    * Enable pcap output on each protocol instance which is of the
    * ns3::Ipv4L3Protocol type.  Both Tx and Rx events will be logged.
    */
-  static void EnablePcap (std::string filename);
+  static void EnablePcapAll (std::string filename);
 
 private:
   static void LogRxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);

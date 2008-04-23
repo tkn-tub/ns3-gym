@@ -128,8 +128,8 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("udp-echo.tr");
-  CsmaHelper::EnablePcap ("udp-echo");
-  CsmaHelper::EnableAscii (ascii);
+  CsmaHelper::EnablePcapAll ("udp-echo");
+  CsmaHelper::EnableAsciiAll (ascii);
 
 //
 // Now, do the actual simulation.

@@ -115,7 +115,7 @@ public:
    * Enable pcap output on each device which is of the
    * ns3::CsmaNetDevice type
    */
-  static void EnablePcap (std::string filename);
+  static void EnablePcapAll (std::string filename);
 
   /**
    * \param os output stream
@@ -154,7 +154,7 @@ public:
    * ns3::CsmaNetDevice type and dump that to the specified
    * stdc++ output stream.
    */
-  static void EnableAscii (std::ostream &os);
+  static void EnableAsciiAll (std::ostream &os);
 
   /**
    * \param c a set of nodes

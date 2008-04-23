@@ -50,7 +50,7 @@ InternetStackHelper::Install (NodeContainer c)
 }
 
 void
-InternetStackHelper::EnablePcap (std::string filename)
+InternetStackHelper::EnablePcapAll (std::string filename)
 {
   InternetStackHelper::m_pcapBaseFilename = filename;
   Config::Connect ("/NodeList/*/$ns3::Ipv4L3Protocol/Tx",

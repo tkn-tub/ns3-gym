@@ -171,7 +171,7 @@ public:
    * position allocator (set through MobilityHelper::SetPositionAllocator). 
    * Optionally, this method will also create and aggregate a
    * ns3::MobilityModelNotifier to generate 'CourseChange' events based on the 
-   * boolean flag set by MobilityHelper::EnableNotifier and MobilityHelper::DisableNotifier.
+   * boolean flag set by MobilityHelper::EnableNotifierAll and MobilityHelper::DisableNotifier.
    */
   void Install (NodeContainer container);
 

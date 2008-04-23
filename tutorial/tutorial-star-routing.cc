@@ -101,7 +101,7 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("tutorial.tr");
-  PointToPointHelper::EnableAscii (ascii);
+  PointToPointHelper::EnableAsciiAll (ascii);
 
   Simulator::Run ();
   Simulator::Destroy ();

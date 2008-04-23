@@ -172,14 +172,14 @@ main (int argc, char *argv[])
   //
   std::ofstream ascii;
   ascii.open ("csma-multicast.tr");
-  CsmaHelper::EnableAscii (ascii);
+  CsmaHelper::EnableAsciiAll (ascii);
 
   // Also configure some tcpdump traces; each interface will be traced.
   // The output files will be named:
   //     csma-multicast.pcap-<nodeId>-<interfaceId>
   // and can be read by the "tcpdump -r" command (use "-tt" option to
   // display timestamps correctly)
-  CsmaHelper::EnablePcap ("csma-multicast");
+  CsmaHelper::EnablePcapAll ("csma-multicast");
   //
   // Now, do the actual simulation.
   //

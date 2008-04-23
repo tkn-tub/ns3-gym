@@ -137,11 +137,11 @@ main (int argc, char *argv[])
 
   std::ofstream os;
   os.open ("tutorial.tr");
-  PointToPointHelper::EnableAscii (os);
-  CsmaHelper::EnableAscii (os);
+  PointToPointHelper::EnableAsciiAll (os);
+  CsmaHelper::EnableAsciiAll (os);
 
-  PointToPointHelper::EnablePcap ("tutorial");
-  CsmaHelper::EnablePcap ("tutorial");
+  PointToPointHelper::EnablePcapAll ("tutorial");
+  CsmaHelper::EnablePcapAll ("tutorial");
 
   Simulator::Run ();
   Simulator::Destroy ();

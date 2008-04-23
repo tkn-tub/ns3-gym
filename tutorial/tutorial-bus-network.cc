@@ -68,7 +68,7 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("tutorial.tr");
-  CsmaHelper::EnableAscii (ascii);
+  CsmaHelper::EnableAsciiAll (ascii);
 
   Simulator::Run ();
   Simulator::Destroy ();
