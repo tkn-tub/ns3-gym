@@ -765,7 +765,7 @@ ConfigTest::RunTests (void)
   // this should trigger a notification
   d1->SetAttribute ("Source", IntegerValue (-3));
   NS_TEST_ASSERT_EQUAL (m_traceNotification, -3);
-  NS_TEST_ASSERT_EQUAL (m_tracePath, "/NodeA/NodeB/NodesB/1/Source")
+  NS_TEST_ASSERT_EQUAL (m_tracePath, "/NodeA/NodeB/NodesB/1/Source");
   m_traceNotification = 0;
   m_tracePath = "";
   // this should trigger a notification

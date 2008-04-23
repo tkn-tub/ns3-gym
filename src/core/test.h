@@ -100,6 +100,42 @@ private:
 };
 }; // namespace ns3 
 
+#define NS_TEST_ASSERT_EQUAL_FILELINE(got, expected, file, line)    \
+  do {                                                              \
+    if ((got) != (expected))                                        \
+      {                                                             \
+        Failure () << file << ":" <<line                            \
+                   << ": expected " << (expected)                   \
+                   << ", got " << (got) << std::endl;               \
+        result = false;                                             \
+      }                                                             \
+  } while (false)
+
+#define NS_TEST_ASSERT_UNEQUAL_FILELINE(got, expected,file,line)    \
+  do {                                                              \
+    if ((got) == (expected))                                        \
+      {                                                             \
+        Failure () << file << ":" <<line                            \
+                   << ": did not want " << (expected)               \
+                   << ", got " << (got) << std::endl;               \
+        result = false;                                             \
+      }                                                             \
+  } while (false)
+
+
+#define NS_TEST_ASSERT_FILELINE(assertion, file, line)  \
+  do {                                                  \
+    if (!(assertion))                                   \
+      {                                                 \
+        Failure () << file << ":" <<line                \
+                   << ": assertion `" << #assertion     \
+                   << "' failed." << std::endl;         \
+        result = false;                                 \
+      }                                                 \
+  } while (false)
+
+
+
 /**
  * Convenience macro to check that a value returned by a test is what
  * is expected.  Note: this macro assumes a 'bool result = true'
@@ -110,13 +146,8 @@ private:
  * \param expected value that the test is expected to return
  */
 #define NS_TEST_ASSERT_EQUAL(got, expected)             \
-    if ((got) != (expected))                            \
-      {                                                 \
-        Failure () << __FILE__ << ":" <<__LINE__        \
-                   << ": expected " << (expected)       \
-                   << ", got " << (got) << std::endl;   \
-        result = false;                                 \
-      }
+  NS_TEST_ASSERT_EQUAL_FILELINE(got,expected,__FILE__,__LINE__)
+
 /**
  * Convenience macro to check that a value returned by a test is what
  * is expected.  Note: this macro assumes a 'bool result = true'
@@ -127,13 +158,8 @@ private:
  * \param expected value that the test is expected to return
  */
 #define NS_TEST_ASSERT_UNEQUAL(got, expected)           \
-    if ((got) == (expected))                            \
-      {                                                 \
-        Failure () << __FILE__ << ":" <<__LINE__        \
-                   << ": did not want " << (expected)   \
-                   << ", got " << (got) << std::endl;   \
-        result = false;                                 \
-      }
+  NS_TEST_ASSERT_UNEQUAL_FILELINE(got,expected,__FILE__,__LINE__)
+
 /**
  * Convenience macro to check an assertion is held during an unit
  * test.  Note: this macro assumes a 'bool result = true' declaration
@@ -143,13 +169,7 @@ private:
  * \param assertion expression that must be true if the test did not fail
  */
 #define NS_TEST_ASSERT(assertion)                       \
-    if (!(assertion))                                   \
-      {                                                 \
-        Failure () << __FILE__ << ":" <<__LINE__        \
-                   << ": assertion `" << #assertion     \
-                   << "' failed." << std::endl;         \
-        result = false;                                 \
-      }
+  NS_TEST_ASSERT_FILELINE (assertion, __FILE__,__LINE__)
 
 
 #endif /* RUN_SELF_TESTS */
