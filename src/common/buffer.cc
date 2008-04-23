@@ -349,29 +349,8 @@ Buffer::AddAtStart (uint32_t start)
       m_start -= start;
       HEURISTICS (g_nAddNoRealloc++);
     } 
-#if 0
-  // the following is an optimization
-  else if (m_start >= start)
-    {
-      struct BufferData *newData = Buffer::Create (m_data->m_size);
-      memcpy (newData->m_data + m_start, m_data->m_data + m_start, GetInternalSize ());
-      m_data->m_count--;
-      if (m_data->m_count == 0)
-        {
-          Buffer::Recycle (m_data);
-        }
-      m_data = newData;
-
-      m_start -= start;
-      HEURISTICS (g_nAddRealloc++);
-    }
   else
     {
-      NS_ASSERT (m_start < start);
-#else
-  else
-    {
-#endif
       uint32_t newSize = GetInternalSize () + start;
       struct BufferData *newData = Buffer::Create (newSize);
       memcpy (newData->m_data + start, m_data->m_data + m_start, GetInternalSize ());
@@ -414,23 +393,6 @@ Buffer::AddAtEnd (uint32_t end)
 
       HEURISTICS (g_nAddNoRealloc++);
     } 
-#if 0
-  // this is an optimization
-  else if (GetInternalEnd () + end > m_data->m_size)
-    {
-      struct BufferData *newData = Buffer::Create (newSize);
-      memcpy (newData->m_data + m_start, m_data->m_data + m_start, GetInternalSize ());
-      m_data->m_count--;
-      if (m_data->m_count == 0) 
-        {
-          Buffer::Recycle (m_data);
-        }
-      m_data = newData;
-
-      m_end += end;
-      HEURISTICS (g_nAddRealloc++);
-    }
-#endif
   else
     {
       uint32_t newSize = GetInternalSize () + end;
