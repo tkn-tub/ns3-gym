@@ -28,7 +28,9 @@
 #include "packet.h"
 #include "packet-metadata.h"
 
-namespace ns3 {
+using namespace ns3;
+
+namespace {
 
 template <int N>
 class HistoryHeader : public Header
@@ -190,6 +192,10 @@ HistoryTrailer<N>::Deserialize (Buffer::Iterator start)
     }
   return N;
 }
+
+}
+
+namespace ns3 {
 
 
 
