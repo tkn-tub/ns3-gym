@@ -423,7 +423,20 @@ public:
    */
   int32_t AddAtEnd (uint32_t end);
 
-  void AddAtEnd (const Buffer &o);
+  /**
+   * \param o the buffer to append to the end of this buffer.
+   * \returns the adjustment delta.
+   *
+   * Add bytes at the end of the Buffer.
+   * Any call to this method invalidates any Iterator
+   * pointing to this Buffer.
+   *
+   * The value returned by this method indicates how the internal
+   * buffer was modified to handle the user request to reserve space.
+   * If that value is zero, the buffer was not modified: the user
+   * request was completed without further memory allocation.
+   */
+  int32_t AddAtEnd (const Buffer &o);
   /**
    * \param start size to remove
    *

@@ -434,9 +434,10 @@ Buffer::AddAtEnd (uint32_t end)
   return delta;
 }
 
-void 
+int32_t
 Buffer::AddAtEnd (const Buffer &o)
 {
+  int32_t orgStart = m_start;
   if (m_end == m_zeroAreaEnd &&
       o.m_start == o.m_zeroAreaStart &&
       o.m_zeroAreaEnd - o.m_zeroAreaStart > 0)
@@ -456,7 +457,7 @@ Buffer::AddAtEnd (const Buffer &o)
       Buffer::Iterator src = o.End ();
       src.Prev (endData);
       dst.Write (src, o.End ());
-      return;
+      return m_start - orgStart;
     }
   Buffer dst = CreateFullCopy ();
   Buffer src = o.CreateFullCopy ();
@@ -466,6 +467,7 @@ Buffer::AddAtEnd (const Buffer &o)
   destStart.Prev (src.GetSize ());
   destStart.Write (src.Begin (), src.End ());
   *this = dst;
+  return m_start - orgStart;
 }
 
 void 
