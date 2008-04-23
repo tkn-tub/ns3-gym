@@ -86,6 +86,12 @@ Socket::SetRecvCallback (Callback<void, Ptr<Socket>, Ptr<Packet>,const Address&>
   m_receivedData = receivedData;
 }
 
+int Socket::Listen (uint32_t queueLimit)
+{
+  return 0; //XXX the base class version does nothing
+}
+
+
 int Socket::Send (const uint8_t* buf, uint32_t size)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -115,12 +121,6 @@ int Socket::SendTo (const Address &address, const uint8_t* buf, uint32_t size)
     }
   return SendTo (address,p);
 }
-
-int Socket::Listen(uint32_t queueLimit)
-{
-  return 0; //XXX the base class version does nothing
-}
-
 
 void 
 Socket::NotifyCloseCompleted (void)
