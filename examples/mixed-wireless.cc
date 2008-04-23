@@ -166,7 +166,7 @@ main (int argc, char *argv[])
                              "Bounds", RectangleValue (Rectangle (0, 1000, 0, 1000)),
                              "Speed", RandomVariableValue (ConstantVariable (2000)),
                              "Pause", RandomVariableValue (ConstantVariable (0.2)));
-  mobility.Layout (backbone);
+  mobility.Install (backbone);
 
   /////////////////////////////////////////////////////////////////////////// 
   //                                                                       //
@@ -275,7 +275,7 @@ main (int argc, char *argv[])
                                  "Bounds", RectangleValue (Rectangle (-25, 25, -25, 25)),
                                  "Speed", RandomVariableValue (ConstantVariable (30)),
                                  "Pause", RandomVariableValue (ConstantVariable (0.4)));
-      mobility.Layout (infra);
+      mobility.Install (infra);
     }
   /////////////////////////////////////////////////////////////////////////// 
   //                                                                       //
