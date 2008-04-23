@@ -23,17 +23,6 @@
 #include "ns3/double.h"
 #include <math.h>
 
-#define noIDEAL_DEBUG 1
-
-#ifdef IDEAL_DEBUG
-#include <iostream>
-#  define TRACE(x) \
-std::cout << "IDEAL TRACE " << x << std::endl;
-#else
-#  define TRACE(x)
-#endif
-
-
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (IdealWifiManager);
@@ -46,7 +35,7 @@ IdealWifiManager::GetTypeId (void)
     .AddConstructor<IdealWifiManager> ()
     .AddAttribute ("BerThreshold",
                    "The maximum Bit Error Rate acceptable at any transmission mode",
-                   Double (10e-6),
+                   DoubleValue (10e-6),
                    MakeDoubleAccessor (&IdealWifiManager::m_ber),
                    MakeDoubleChecker<double> ())
     ;
@@ -115,13 +104,11 @@ IdealWifiRemoteStation::DoReportDataFailed (void)
 void 
 IdealWifiRemoteStation::DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
-  TRACE ("got cts for rts snr="<<rtsSnr);
   m_lastSnr = rtsSnr;
 }
 void 
 IdealWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
 {
-  TRACE ("got cts for rts snr="<<dataSnr);
   m_lastSnr = dataSnr;
 }
 void 

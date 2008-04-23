@@ -30,6 +30,7 @@
 #include "object-vector.h"
 #include "traced-value.h"
 #include "trace-source-accessor.h"
+#include "pointer.h"
 
 namespace ns3 {
 
@@ -37,7 +38,6 @@ class ValueClassTest
 {
 public:
   ValueClassTest () {}
-  ATTRIBUTE_HELPER_HEADER_1 (ValueClassTest);
 private:
   int m_v;
 };
@@ -90,7 +90,7 @@ public:
 class AttributeObjectTest : public Object
 {
 public:
-  enum TestEnum {
+  enum Test_e {
     TEST_A,
     TEST_B,
     TEST_C
@@ -100,69 +100,65 @@ public:
       .SetParent<Object> ()
       .HideFromDocumentation ()
       .AddAttribute ("TestBoolName", "help text",
-		     Boolean (false),
+		     BooleanValue (false),
 		     MakeBooleanAccessor (&AttributeObjectTest::m_boolTest),
 		     MakeBooleanChecker ())
       .AddAttribute ("TestBoolA", "help text",
-		     Boolean (false),
+		     BooleanValue (false),
 		     MakeBooleanAccessor (&AttributeObjectTest::DoSetTestB,
 					   &AttributeObjectTest::DoGetTestB),
 		     MakeBooleanChecker ())
-      .AddAttribute ("TestPtr", "help text", 
-		     Ptr<Derived> (0),
-		     MakePtrAccessor (&AttributeObjectTest::m_derived),
-		     MakePtrChecker<Derived> ())
       .AddAttribute ("TestInt16", "help text",
-		     Integer (-2),
+		     IntegerValue (-2),
 		     MakeIntegerAccessor (&AttributeObjectTest::m_int16),
 		     MakeIntegerChecker<int16_t> ())
       .AddAttribute ("TestInt16WithBounds", "help text",
-		     Integer (-2),
+		     IntegerValue (-2),
 		     MakeIntegerAccessor (&AttributeObjectTest::m_int16WithBounds),
 		     MakeIntegerChecker<int16_t> (-5, 10))
       .AddAttribute ("TestInt16SetGet", "help text",
-		     Integer (6),
+		     IntegerValue (6),
 		     MakeIntegerAccessor (&AttributeObjectTest::DoSetInt16,
 				       &AttributeObjectTest::DoGetInt16),
 		     MakeIntegerChecker<int16_t> ())
       .AddAttribute ("TestUint8", "help text",
-		     Uinteger (1),
+		     UintegerValue (1),
 		     MakeUintegerAccessor (&AttributeObjectTest::m_uint8),
 		     MakeUintegerChecker<uint8_t> ())
       .AddAttribute ("TestEnum", "help text",
-		     Enum (TEST_A),
+		     EnumValue (TEST_A),
 		     MakeEnumAccessor (&AttributeObjectTest::m_enum),
 		     MakeEnumChecker (TEST_A, "TestA",
 				      TEST_B, "TestB",
 				      TEST_C, "TestC"))
       .AddAttribute ("TestRandom", "help text",
-		     ConstantVariable (1.0),
+		     RandomVariableValue (ConstantVariable (1.0)),
 		     MakeRandomVariableAccessor (&AttributeObjectTest::m_random),
 		     MakeRandomVariableChecker ())
       .AddAttribute ("TestFloat", "help text",
-		     Double (-1.1),
+		     DoubleValue (-1.1),
 		     MakeDoubleAccessor (&AttributeObjectTest::m_float),
 		     MakeDoubleChecker<float> ())
       .AddAttribute ("TestVector1", "help text",
-		     ObjectVector (),
+		     ObjectVectorValue (),
 		     MakeObjectVectorAccessor (&AttributeObjectTest::m_vector1),
-		     MakeObjectVectorChecker ())
+		     MakeObjectVectorChecker<Derived> ())
       .AddAttribute ("TestVector2", "help text",
-		     ObjectVector (),
+		     ObjectVectorValue (),
 		     MakeObjectVectorAccessor (&AttributeObjectTest::DoGetVectorN,
 						&AttributeObjectTest::DoGetVector),
-		     MakeObjectVectorChecker ())
+		     MakeObjectVectorChecker<Derived> ())
       .AddAttribute ("IntegerTraceSource1", "help text",
-		     Integer (-2),
+		     IntegerValue (-2),
 		     MakeIntegerAccessor (&AttributeObjectTest::m_intSrc1),
 		     MakeIntegerChecker<int8_t> ())
       .AddAttribute ("IntegerTraceSource2", "help text",
-		     Integer (-2),
+		     IntegerValue (-2),
 		     MakeIntegerAccessor (&AttributeObjectTest::DoSetIntSrc,
 					  &AttributeObjectTest::DoGetIntSrc),
 		     MakeIntegerChecker<int8_t> ())
       .AddAttribute ("ValueClassSource", "help text",
-		     ValueClassTest (),
+		     ValueClassTestValue (ValueClassTest ()),
 		     MakeValueClassTestAccessor (&AttributeObjectTest::m_valueSrc),
 		     MakeValueClassTestChecker ())
       .AddTraceSource ("Source1", "help test",
@@ -171,6 +167,10 @@ public:
 		       MakeTraceSourceAccessor (&AttributeObjectTest::m_cb))
       .AddTraceSource ("ValueSource", "help text",
 		       MakeTraceSourceAccessor (&AttributeObjectTest::m_valueSrc))
+      .AddAttribute ("Pointer", "XXX",
+                     PointerValue (),
+                     MakePointerAccessor (&AttributeObjectTest::m_ptr),
+                     MakePointerChecker<Derived> ())
       ;
         
     return tid;
@@ -214,13 +214,12 @@ private:
   }
   bool m_boolTestA;
   bool m_boolTest;
-  Ptr<Derived> m_derived;
   int16_t m_int16;
   int16_t m_int16WithBounds;
   int16_t m_int16SetGet;
   uint8_t m_uint8;
   float m_float;
-  enum TestEnum m_enum;
+  enum Test_e m_enum;
   RandomVariable m_random;
   std::vector<Ptr<Derived> > m_vector1;
   std::vector<Ptr<Derived> > m_vector2;
@@ -228,25 +227,24 @@ private:
   TracedValue<int8_t> m_intSrc2;
   TracedCallback<double, int, float> m_cb;
   TracedValue<ValueClassTest> m_valueSrc;
+  Ptr<Derived> m_ptr;
 };
 
 
-#define CHECK_GET_STR(p,name,value)                             \
-  {                                                             \
-    std::string expected = value;                               \
-    std::string got;                                            \
-    bool ok = p->GetAttributeAsStringFailSafe (name, got);	\
-    NS_TEST_ASSERT (ok);                                        \
-    NS_TEST_ASSERT_EQUAL (got, expected);                       \
+#define CHECK_GET_STR(p,name,value)                               \
+  {                                                               \
+    std::string expected = value;                                 \
+    StringValue got;                                              \
+    bool ok = p->GetAttributeFailSafe (name, got);                \
+    NS_TEST_ASSERT (ok);                                          \
+    NS_TEST_ASSERT_EQUAL (got.Get (), expected);                  \
   }
 #define CHECK_GET_PARAM(p,name,type,value)		\
   {							\
     const type expected = value;			\
-    type got = value;					\
-    Attribute v;                                        \
-    bool ok = p->GetAttributeFailSafe (name, v);        \
+    type got;                                           \
+    bool ok = p->GetAttributeFailSafe (name, got);      \
     NS_TEST_ASSERT (ok);                                \
-    got = v;                                            \
     NS_TEST_ASSERT_EQUAL (got.Get (), expected.Get ());	\
   }
 
@@ -262,211 +260,199 @@ AttributeTest::RunTests (void)
 
   AttributeList params;
   Ptr<AttributeObjectTest> p;
-  NS_TEST_ASSERT (params.SetFailSafe ("ns3::AttributeObjectTest::TestBoolName", String ("false")));
+  NS_TEST_ASSERT (params.SetFailSafe ("ns3::AttributeObjectTest::TestBoolName", StringValue ("false")));
   p = CreateObject<AttributeObjectTest> (params);
   CHECK_GET_STR (p, "TestBoolName", "false");
-  CHECK_GET_PARAM (p, "TestBoolName", Boolean, false);
+  CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, false);
 
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestBoolName", String ("true")));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestBoolName", StringValue ("true")));
   CHECK_GET_STR (p, "TestBoolName", "true");
-  CHECK_GET_PARAM (p, "TestBoolName", Boolean, true);
+  CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, true);
 
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestBoolName", Boolean (false)));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestBoolName", BooleanValue (false)));
   CHECK_GET_STR (p, "TestBoolName", "false");
-  CHECK_GET_PARAM (p, "TestBoolName", Boolean, false);
+  CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, false);
 
-  p = CreateObject<AttributeObjectTest> ("TestBoolName", String ("true"));
+  p = CreateObject<AttributeObjectTest> ("TestBoolName", StringValue ("true"));
   CHECK_GET_STR (p, "TestBoolName", "true");
-  CHECK_GET_PARAM (p, "TestBoolName", Boolean, true);
+  CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, true);
 
-  p = CreateObject<AttributeObjectTest> ("TestBoolName", Boolean (true));
+  p = CreateObject<AttributeObjectTest> ("TestBoolName", BooleanValue (true));
   CHECK_GET_STR (p, "TestBoolName", "true");
-  CHECK_GET_PARAM (p, "TestBoolName", Boolean, true);
+  CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, true);
 
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestBoolA", String ("false")));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestBoolA", StringValue ("false")));
   CHECK_GET_STR (p, "TestBoolA", "false");
-  CHECK_GET_PARAM (p, "TestBoolA", Boolean, false);
+  CHECK_GET_PARAM (p, "TestBoolA", BooleanValue, false);
 
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestBoolA", String ("true")));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestBoolA", StringValue ("true")));
   CHECK_GET_STR (p, "TestBoolA", "true");
-  CHECK_GET_PARAM (p, "TestBoolA", Boolean, true);
+  CHECK_GET_PARAM (p, "TestBoolA", BooleanValue, true);
 
-
-  Ptr<Derived> derived = p->GetAttribute ("TestPtr");
-  NS_TEST_ASSERT (derived == 0);
-  derived = Create<Derived> ();
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestPtr", derived));
-  Ptr<Derived> stored = p->GetAttribute ("TestPtr");
-  NS_TEST_ASSERT (stored == derived);
-  Ptr<Object> storedBase = p->GetAttribute ("TestPtr");
-  NS_TEST_ASSERT (stored == storedBase);
-  Ptr<AttributeObjectTest> x = p->GetAttribute ("TestPtr");
-  NS_TEST_ASSERT (x == 0);
-
-  p = CreateObject<AttributeObjectTest> ("TestPtr", Create<Derived> ());
-  NS_TEST_ASSERT (p != 0);
-  derived = 0;
-  derived = p->GetAttribute ("TestPtr");
-  NS_TEST_ASSERT (derived != 0);
 
   CHECK_GET_STR (p, "TestInt16", "-2");
-  CHECK_GET_PARAM (p, "TestInt16", Integer, -2);
+  CHECK_GET_PARAM (p, "TestInt16", IntegerValue, -2);
 
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestInt16", String ("-5")));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestInt16", StringValue ("-5")));
   CHECK_GET_STR (p, "TestInt16", "-5");
-  CHECK_GET_PARAM (p, "TestInt16", Integer, -5);
+  CHECK_GET_PARAM (p, "TestInt16", IntegerValue, -5);
 
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestInt16", Integer (+2)));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestInt16", IntegerValue (+2)));
   CHECK_GET_STR (p, "TestInt16", "2");
-  CHECK_GET_PARAM (p, "TestInt16", Integer, +2);
+  CHECK_GET_PARAM (p, "TestInt16", IntegerValue, +2);
 
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestInt16", Integer (-32768)));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestInt16", IntegerValue (-32768)));
   CHECK_GET_STR (p, "TestInt16", "-32768");
-  CHECK_GET_PARAM (p, "TestInt16", Integer, -32768);
+  CHECK_GET_PARAM (p, "TestInt16", IntegerValue, -32768);
 
-  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestInt16", Integer (-32769)));
+  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestInt16", IntegerValue (-32769)));
   CHECK_GET_STR (p, "TestInt16", "-32768");
-  CHECK_GET_PARAM (p, "TestInt16", Integer, -32768);
+  CHECK_GET_PARAM (p, "TestInt16", IntegerValue, -32768);
 
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestInt16", Integer (32767)));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestInt16", IntegerValue (32767)));
   CHECK_GET_STR (p, "TestInt16", "32767");
-  CHECK_GET_PARAM (p, "TestInt16", Integer, 32767);
+  CHECK_GET_PARAM (p, "TestInt16", IntegerValue, 32767);
 
-  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestInt16", Integer (32768)));
+  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestInt16", IntegerValue (32768)));
   CHECK_GET_STR (p, "TestInt16", "32767");
-  CHECK_GET_PARAM (p, "TestInt16", Integer, 32767);
+  CHECK_GET_PARAM (p, "TestInt16", IntegerValue, 32767);
 
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestInt16WithBounds", Integer (10)));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestInt16WithBounds", IntegerValue (10)));
   CHECK_GET_STR (p, "TestInt16WithBounds", "10");
-  CHECK_GET_PARAM (p, "TestInt16WithBounds", Integer, 10);
-  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestInt16WithBounds", Integer (11)));
+  CHECK_GET_PARAM (p, "TestInt16WithBounds", IntegerValue, 10);
+  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestInt16WithBounds", IntegerValue (11)));
   CHECK_GET_STR (p, "TestInt16WithBounds", "10");
-  CHECK_GET_PARAM (p, "TestInt16WithBounds", Integer, 10);
+  CHECK_GET_PARAM (p, "TestInt16WithBounds", IntegerValue, 10);
 
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestInt16WithBounds", Integer (-5)));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestInt16WithBounds", IntegerValue (-5)));
   CHECK_GET_STR (p, "TestInt16WithBounds", "-5");
-  CHECK_GET_PARAM (p, "TestInt16WithBounds", Integer, -5);
-  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestInt16WithBounds", Integer (-6)));
+  CHECK_GET_PARAM (p, "TestInt16WithBounds", IntegerValue, -5);
+  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestInt16WithBounds", IntegerValue (-6)));
   CHECK_GET_STR (p, "TestInt16WithBounds", "-5");
-  CHECK_GET_PARAM (p, "TestInt16WithBounds", Integer, -5);
+  CHECK_GET_PARAM (p, "TestInt16WithBounds", IntegerValue, -5);
 
   CHECK_GET_STR (p, "TestInt16SetGet", "6");
-  CHECK_GET_PARAM (p, "TestInt16SetGet", Integer, 6);
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestInt16SetGet", Integer (0)));
+  CHECK_GET_PARAM (p, "TestInt16SetGet", IntegerValue, 6);
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestInt16SetGet", IntegerValue (0)));
   CHECK_GET_STR (p, "TestInt16SetGet", "0");
-  CHECK_GET_PARAM (p, "TestInt16SetGet", Integer, 0);
+  CHECK_GET_PARAM (p, "TestInt16SetGet", IntegerValue, 0);
 
   CHECK_GET_STR (p, "TestUint8", "1");
-  CHECK_GET_PARAM (p, "TestUint8", Uinteger, 1);
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestUint8", Uinteger (0)));
+  CHECK_GET_PARAM (p, "TestUint8", UintegerValue, 1);
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestUint8", UintegerValue (0)));
   CHECK_GET_STR (p, "TestUint8", "0");
-  CHECK_GET_PARAM (p, "TestUint8", Uinteger, 0);
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestUint8", Uinteger (255)));
+  CHECK_GET_PARAM (p, "TestUint8", UintegerValue, 0);
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestUint8", UintegerValue (255)));
   CHECK_GET_STR (p, "TestUint8", "255");
-  CHECK_GET_PARAM (p, "TestUint8", Uinteger, 255);
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestUint8", String ("255")));
+  CHECK_GET_PARAM (p, "TestUint8", UintegerValue, 255);
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestUint8", StringValue ("255")));
   CHECK_GET_STR (p, "TestUint8", "255");
-  CHECK_GET_PARAM (p, "TestUint8", Uinteger, 255);
-  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestUint8", String ("256")));
+  CHECK_GET_PARAM (p, "TestUint8", UintegerValue, 255);
+  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestUint8", StringValue ("256")));
   CHECK_GET_STR (p, "TestUint8", "255");
-  CHECK_GET_PARAM (p, "TestUint8", Uinteger, 255);
-  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestUint8", String ("-1")));
+  CHECK_GET_PARAM (p, "TestUint8", UintegerValue, 255);
+  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestUint8", StringValue ("-1")));
   CHECK_GET_STR (p, "TestUint8", "255");
-  CHECK_GET_PARAM (p, "TestUint8", Uinteger, 255);
-  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestUint8", Uinteger ((uint64_t)-1)));
+  CHECK_GET_PARAM (p, "TestUint8", UintegerValue, 255);
+  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestUint8", UintegerValue ((uint64_t)-1)));
   CHECK_GET_STR (p, "TestUint8", "255");
-  CHECK_GET_PARAM (p, "TestUint8", Uinteger, 255);
+  CHECK_GET_PARAM (p, "TestUint8", UintegerValue, 255);
 
   CHECK_GET_STR (p, "TestFloat", "-1.1");
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestFloat", Double ((float)+2.3)));
-  CHECK_GET_PARAM (p, "TestFloat", Double, (float)+2.3);
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestFloat", DoubleValue ((float)+2.3)));
+  CHECK_GET_PARAM (p, "TestFloat", DoubleValue, (float)+2.3);
 
   CHECK_GET_STR (p, "TestEnum", "TestA");
-  CHECK_GET_PARAM (p, "TestEnum", Enum, AttributeObjectTest::TEST_A);
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestEnum", Enum (AttributeObjectTest::TEST_C)));
+  CHECK_GET_PARAM (p, "TestEnum", EnumValue, AttributeObjectTest::TEST_A);
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestEnum", EnumValue (AttributeObjectTest::TEST_C)));
   CHECK_GET_STR (p, "TestEnum", "TestC");
-  CHECK_GET_PARAM (p, "TestEnum", Enum, AttributeObjectTest::TEST_C);
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestEnum", String ("TestB")));
+  CHECK_GET_PARAM (p, "TestEnum", EnumValue, AttributeObjectTest::TEST_C);
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestEnum", StringValue ("TestB")));
   CHECK_GET_STR (p, "TestEnum", "TestB");
-  CHECK_GET_PARAM (p, "TestEnum", Enum, AttributeObjectTest::TEST_B);
-  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestEnum", String ("TestD")));
+  CHECK_GET_PARAM (p, "TestEnum", EnumValue, AttributeObjectTest::TEST_B);
+  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestEnum", StringValue ("TestD")));
   CHECK_GET_STR (p, "TestEnum", "TestB");
-  CHECK_GET_PARAM (p, "TestEnum", Enum, AttributeObjectTest::TEST_B);
-  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestEnum", Enum (5)));
+  CHECK_GET_PARAM (p, "TestEnum", EnumValue, AttributeObjectTest::TEST_B);
+  NS_TEST_ASSERT (!p->SetAttributeFailSafe("TestEnum", EnumValue (5)));
   CHECK_GET_STR (p, "TestEnum", "TestB");
-  CHECK_GET_PARAM (p, "TestEnum", Enum, AttributeObjectTest::TEST_B);
+  CHECK_GET_PARAM (p, "TestEnum", EnumValue, AttributeObjectTest::TEST_B);
 
-  RandomVariable ran = p->GetAttribute ("TestRandom");
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestRandom", UniformVariable (0.0, 1.0)));
-  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestRandom", ConstantVariable (10.0)));
+  RandomVariableValue ran;
+  p->GetAttribute ("TestRandom", ran);
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestRandom", RandomVariableValue (UniformVariable (0.0, 1.0))));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("TestRandom", RandomVariableValue (ConstantVariable (10.0))));
 
   {
-    ObjectVector vector = p->GetAttribute ("TestVector1");
+    ObjectVectorValue vector;
+    p->GetAttribute ("TestVector1", vector);
     NS_TEST_ASSERT_EQUAL (vector.GetN (), 0);
     p->AddToVector1 ();
     NS_TEST_ASSERT_EQUAL (vector.GetN (), 0);
-    vector = p->GetAttribute ("TestVector1");
+    p->GetAttribute ("TestVector1", vector);
     NS_TEST_ASSERT_EQUAL (vector.GetN (), 1);
     Ptr<Object> a = vector.Get (0);
     NS_TEST_ASSERT_UNEQUAL (a, 0);
     p->AddToVector1 ();
     NS_TEST_ASSERT_EQUAL (vector.GetN (), 1);
-    vector = p->GetAttribute ("TestVector1");
+    p->GetAttribute ("TestVector1", vector);
     NS_TEST_ASSERT_EQUAL (vector.GetN (), 2);
   }
 
   {
-    ObjectVector vector = p->GetAttribute ("TestVector2");
+    ObjectVectorValue vector;
+    p->GetAttribute ("TestVector2", vector);
     NS_TEST_ASSERT_EQUAL (vector.GetN (), 0);
     p->AddToVector2 ();
     NS_TEST_ASSERT_EQUAL (vector.GetN (), 0);
-    vector = p->GetAttribute ("TestVector2");
+    p->GetAttribute ("TestVector2", vector);
     NS_TEST_ASSERT_EQUAL (vector.GetN (), 1);
     Ptr<Object> a = vector.Get (0);
     NS_TEST_ASSERT_UNEQUAL (a, 0);
     p->AddToVector2 ();
     NS_TEST_ASSERT_EQUAL (vector.GetN (), 1);
-    vector = p->GetAttribute ("TestVector2");
+    p->GetAttribute ("TestVector2", vector);
     NS_TEST_ASSERT_EQUAL (vector.GetN (), 2);
   }
 
-  NS_TEST_ASSERT (AttributeList::GetGlobal ()->SetFailSafe ("ns3::AttributeObjectTest::TestBoolName", String ("true")));
+  NS_TEST_ASSERT (AttributeList::GetGlobal ()->SetFailSafe ("ns3::AttributeObjectTest::TestBoolName", StringValue ("true")));
   p = CreateObject<AttributeObjectTest> ();
-  Boolean boolV = p->GetAttribute ("TestBoolName");
-  NS_TEST_ASSERT_EQUAL (boolV, Boolean (true));
+  BooleanValue boolV;
+  p->GetAttribute ("TestBoolName", boolV);
+  NS_TEST_ASSERT_EQUAL (boolV.Get (), true);
 
-  NS_TEST_ASSERT (AttributeList::GetGlobal ()->SetFailSafe ("ns3::AttributeObjectTest::TestBoolName", String ("false")));
+  NS_TEST_ASSERT (AttributeList::GetGlobal ()->SetFailSafe ("ns3::AttributeObjectTest::TestBoolName", StringValue ("false")));
   p = CreateObject<AttributeObjectTest> ();
-  boolV = p->GetAttribute ("TestBoolName");
-  NS_TEST_ASSERT_EQUAL (boolV, Boolean (false));
+  p->GetAttribute ("TestBoolName", boolV);
+  NS_TEST_ASSERT_EQUAL (boolV.Get (), false);
 
-  Integer i = p->GetAttribute ("IntegerTraceSource1");
+  IntegerValue i;
+  p->GetAttribute ("IntegerTraceSource1", i);
   NS_TEST_ASSERT_EQUAL (i.Get (), -2);
-  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource1", Integer (+5)));
-  i = p->GetAttribute ("IntegerTraceSource1");
+  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource1", IntegerValue (+5)));
+  p->GetAttribute ("IntegerTraceSource1", i);
   NS_TEST_ASSERT_EQUAL (i.Get (), +5);
-  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource1", Integer (127)));
-  NS_TEST_ASSERT (!p->SetAttributeFailSafe ("IntegerTraceSource1", Integer (128)));
-  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource1", Integer (-128)));
-  NS_TEST_ASSERT (!p->SetAttributeFailSafe ("IntegerTraceSource1", Integer (-129)));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource1", IntegerValue (127)));
+  NS_TEST_ASSERT (!p->SetAttributeFailSafe ("IntegerTraceSource1", IntegerValue (128)));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource1", IntegerValue (-128)));
+  NS_TEST_ASSERT (!p->SetAttributeFailSafe ("IntegerTraceSource1", IntegerValue (-129)));
 
-  i = p->GetAttribute ("IntegerTraceSource2");
+  p->GetAttribute ("IntegerTraceSource2", i);
   NS_TEST_ASSERT_EQUAL (i.Get (), -2);
-  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource2", Integer (+5)));
-  i = p->GetAttribute ("IntegerTraceSource2");
+  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource2", IntegerValue (+5)));
+  p->GetAttribute ("IntegerTraceSource2", i);
   NS_TEST_ASSERT_EQUAL (i.Get (), +5);
-  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource2", Integer (127)));
-  NS_TEST_ASSERT (!p->SetAttributeFailSafe ("IntegerTraceSource2", Integer (128)));
-  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource2", Integer (-128)));
-  NS_TEST_ASSERT (!p->SetAttributeFailSafe ("IntegerTraceSource2", Integer (-129)));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource2", IntegerValue (127)));
+  NS_TEST_ASSERT (!p->SetAttributeFailSafe ("IntegerTraceSource2", IntegerValue (128)));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource2", IntegerValue (-128)));
+  NS_TEST_ASSERT (!p->SetAttributeFailSafe ("IntegerTraceSource2", IntegerValue (-129)));
 
   m_got1 = -2;
-  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource1", Integer (-1)));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource1", IntegerValue (-1)));
   NS_TEST_ASSERT (p->TraceConnectWithoutContext ("Source1", MakeCallback (&AttributeTest::NotifySource1, this)));
-  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource1", Integer (0)));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource1", IntegerValue (0)));
   NS_TEST_ASSERT_EQUAL (m_got1, 0);
   NS_TEST_ASSERT (p->TraceDisconnectWithoutContext ("Source1", MakeCallback (&AttributeTest::NotifySource1, this)));
-  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource1", Integer (1)));
+  NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource1", IntegerValue (1)));
   NS_TEST_ASSERT_EQUAL (m_got1, 0);
 
   m_got2 = 4.3;
@@ -481,8 +467,29 @@ AttributeTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (m_got2, 1.0);
 
   NS_TEST_ASSERT (p->TraceConnectWithoutContext ("ValueSource", MakeCallback (&AttributeTest::NotifySourceValue, this)));
-  
 
+  PointerValue ptr;
+  p->GetAttribute ("Pointer", ptr);
+  Ptr<Derived> derived = ptr.Get<Derived> ();
+  NS_TEST_ASSERT (derived == 0);
+  derived = Create<Derived> ();
+  NS_TEST_ASSERT (p->SetAttributeFailSafe("Pointer", PointerValue (derived)));
+  p->GetAttribute ("Pointer", ptr);
+  Ptr<Derived> stored = ptr.Get<Derived> ();
+  NS_TEST_ASSERT (stored == derived);
+  p->GetAttribute ("Pointer", ptr);
+  Ptr<Object> storedBase = ptr.Get<Object> ();
+  NS_TEST_ASSERT (stored == storedBase);
+  p->GetAttribute ("Pointer", ptr);
+  Ptr<AttributeObjectTest> x = ptr.Get<AttributeObjectTest> ();
+  NS_TEST_ASSERT (x == 0);
+
+  p = CreateObject<AttributeObjectTest> ("Pointer", PointerValue (Create<Derived> ()));
+  NS_TEST_ASSERT (p != 0);
+  derived = 0;
+  p->GetAttribute ("Pointer", ptr);
+  derived = ptr.Get<Derived> ();
+  NS_TEST_ASSERT (derived != 0);
 
   return result;
 }

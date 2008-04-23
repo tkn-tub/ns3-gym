@@ -40,8 +40,8 @@ main (int argc, char *argv[])
   internet.Install (n);
 
   CsmaHelper csma;
-  csma.SetChannelParameter ("BitRate", DataRate(10000000));
-  csma.SetChannelParameter ("Delay", MilliSeconds(20));
+  csma.SetChannelParameter ("BitRate", StringValue ("10Mbps"));
+  csma.SetChannelParameter ("Delay", StringValue ("10ms"));
   NetDeviceContainer nd = csma.Install (n);
 
   Ipv4AddressHelper ipv4;
@@ -51,9 +51,9 @@ main (int argc, char *argv[])
   uint32_t port = 7;
   UdpEchoClientHelper client;
   client.SetRemote (i.GetAddress (1), port);
-  client.SetAppAttribute ("MaxPackets", Uinteger (1));
-  client.SetAppAttribute ("Interval", Seconds (1.0));
-  client.SetAppAttribute ("PacketSize", Uinteger (1024));
+  client.SetAppAttribute ("MaxPackets", UintegerValue (1));
+  client.SetAppAttribute ("Interval", StringValue ("1s"));
+  client.SetAppAttribute ("PacketSize", UintegerValue (1024));
   ApplicationContainer apps = client.Install (n.Get (0));
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (10.0));

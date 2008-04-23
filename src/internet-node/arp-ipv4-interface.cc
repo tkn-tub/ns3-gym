@@ -35,12 +35,12 @@ namespace ns3 {
 
 ArpIpv4Interface::ArpIpv4Interface ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 ArpIpv4Interface::~ArpIpv4Interface ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 void 
@@ -70,8 +70,7 @@ ArpIpv4Interface::GetDevice (void) const
 void 
 ArpIpv4Interface::SendTo (Ptr<Packet> p, Ipv4Address dest)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << p << dest);
+  NS_LOG_FUNCTION (this << p << dest);
 
   NS_ASSERT (GetDevice () != 0);
   if (GetDevice ()->NeedsArp ())

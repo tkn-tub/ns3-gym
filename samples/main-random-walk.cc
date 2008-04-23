@@ -19,10 +19,10 @@ CourseChange (ns3::TraceContext const&, Ptr<const MobilityModel> mobility)
 
 int main (int argc, char *argv[])
 {
-  Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Mode", String ("Time"));
-  Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Time", String ("2s"));
-  Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Speed", String ("Constant:1.0"));
-  Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Bounds", String ("0:200:0:100"));
+  Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Mode", StringValue ("Time"));
+  Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Time", StringValue ("2s"));
+  Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Speed", StringValue ("Constant:1.0"));
+  Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Bounds", StringValue ("0:200:0:100"));
 
   CommandLine cmd;
   cmd.Parse (argc, argv);
@@ -33,17 +33,17 @@ int main (int argc, char *argv[])
   MobilityHelper mobility;
   mobility.EnableNotifier ();
   mobility.SetPositionAllocator ("ns3::RandomDiscPositionAllocator",
-                                 "X", String ("100.0"),
-                                 "Y", String ("100.0"),
-                                 "Rho", String ("Uniform:0:30"));
+                                 "X", StringValue ("100.0"),
+                                 "Y", StringValue ("100.0"),
+                                 "Rho", StringValue ("Uniform:0:30"));
   mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
-                             "Mode", String ("Time"),
-                             "Time", String ("2s"),
-                             "Speed", String ("Constant:1.0"),
-                             "Bounds", String ("0:200:0:100"));
-  mobility.InstallAll ();
+                             "Mode", StringValue ("Time"),
+                             "Time", StringValue ("2s"),
+                             "Speed", StringValue ("Constant:1.0"),
+                             "Bounds", StringValue ("0:200:0:100"));
+  mobility.LayoutAll ();
   Config::Connect ("/NodeList/*/$ns3::MobilityModelNotifier/CourseChange",
-                              MakeCallback (&CourseChange));
+                   MakeCallback (&CourseChange));
 
   Simulator::StopAt (Seconds (100.0));
 

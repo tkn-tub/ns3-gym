@@ -157,19 +157,19 @@ AgentImpl::GetTypeId (void)
     .SetParent<Agent> ()
     .AddConstructor<AgentImpl> ()
     .AddAttribute ("HelloInterval", "XXX",
-                   OLSR_HELLO_INTERVAL,
+                   TimeValue (OLSR_HELLO_INTERVAL),
                    MakeTimeAccessor (&AgentImpl::m_helloInterval),
                    MakeTimeChecker ())
     .AddAttribute ("TcInterval", "XXX",
-                   OLSR_TC_INTERVAL,
+                   TimeValue (OLSR_TC_INTERVAL),
                    MakeTimeAccessor (&AgentImpl::m_tcInterval),
                    MakeTimeChecker ())
     .AddAttribute ("MidInterval", "XXX",
-                   OLSR_MID_INTERVAL,
+                   TimeValue (OLSR_MID_INTERVAL),
                    MakeTimeAccessor (&AgentImpl::m_midInterval),
                    MakeTimeChecker ())
     .AddAttribute ("Willingness", "XXX",
-                   Uinteger (OLSR_WILL_DEFAULT),
+                   UintegerValue (OLSR_WILL_DEFAULT),
                    MakeUintegerAccessor (&AgentImpl::m_willingness),
                    MakeUintegerChecker<uint8_t> ())
     .AddTraceSource ("Rx", "Receive OLSR packet.",
@@ -572,12 +572,15 @@ AgentImpl::MprComputation()
           // (not in RFC but I think is needed: remove the 2-hop
           // neighbors reachable by the MPR from N2)
           for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin ();
-               twoHopNeigh != N2.end (); twoHopNeigh++)
+               twoHopNeigh != N2.end (); )
             {
               if (twoHopNeigh->neighborMainAddr == neighbor->neighborMainAddr)
                 {
                   twoHopNeigh = N2.erase (twoHopNeigh);
-                  twoHopNeigh--;
+                }
+              else
+                {
+                  twoHopNeigh++;
                 }
             }
         }
@@ -617,12 +620,15 @@ AgentImpl::MprComputation()
     }
   // Remove the nodes from N2 which are now covered by a node in the MPR set.
   for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin ();
-       twoHopNeigh != N2.end (); twoHopNeigh++)
+       twoHopNeigh != N2.end (); )
     {
       if (coveredTwoHopNeighbors.find (twoHopNeigh->twoHopNeighborAddr) != coveredTwoHopNeighbors.end ())
         {
           twoHopNeigh = N2.erase (twoHopNeigh);
-          twoHopNeigh--;
+        }
+      else
+        {
+          twoHopNeigh++;
         }
     }
 	
@@ -699,12 +705,15 @@ AgentImpl::MprComputation()
         {
           mprSet.insert (max->neighborMainAddr);
           for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin ();
-               twoHopNeigh != N2.end (); twoHopNeigh++)
+               twoHopNeigh != N2.end (); )
             {
               if (twoHopNeigh->neighborMainAddr == max->neighborMainAddr)
                 {
                   twoHopNeigh = N2.erase (twoHopNeigh);
-                  twoHopNeigh--;
+                }
+              else
+                {
+                  twoHopNeigh++;
                 }
             }
         }

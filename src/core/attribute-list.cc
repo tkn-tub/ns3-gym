@@ -36,7 +36,7 @@ AttributeList::AttributeList (const AttributeList &o)
     {
       struct Attr attr;
       attr.checker = i->checker;
-      attr.value = i->value.Copy ();
+      attr.value = i->value->Copy ();
       m_attributes.push_back (attr);
     }
 }
@@ -48,7 +48,7 @@ AttributeList::operator = (const AttributeList &o)
     {
       struct Attr attr;
       attr.checker = i->checker;
-      attr.value = i->value.Copy ();
+      attr.value = i->value->Copy ();
       m_attributes.push_back (attr);
     }
   return *this;
@@ -59,7 +59,7 @@ AttributeList::~AttributeList ()
 }
 
 void
-AttributeList::Set (std::string name, Attribute value)
+AttributeList::Set (std::string name, const AttributeValue &value)
 {
   struct TypeId::AttributeInfo info;
   bool ok = TypeId::LookupAttributeByFullName (name, &info);
@@ -74,7 +74,7 @@ AttributeList::Set (std::string name, Attribute value)
     }
 }
 bool 
-AttributeList::SetFailSafe (std::string name, Attribute value)
+AttributeList::SetFailSafe (std::string name, const AttributeValue &value)
 {
   struct TypeId::AttributeInfo info;
   bool ok = TypeId::LookupAttributeByFullName (name, &info);
@@ -86,7 +86,7 @@ AttributeList::SetFailSafe (std::string name, Attribute value)
   return ok;
 }
 void
-AttributeList::SetWithTid (TypeId tid, std::string name, Attribute value)
+AttributeList::SetWithTid (TypeId tid, std::string name, const AttributeValue & value)
 {
   struct TypeId::AttributeInfo info;
   bool ok = tid.LookupAttributeByName (name, &info);
@@ -102,7 +102,7 @@ AttributeList::SetWithTid (TypeId tid, std::string name, Attribute value)
 }
 
 void
-AttributeList::DoSetOne (Ptr<const AttributeChecker> checker, Attribute value)
+AttributeList::DoSetOne (Ptr<const AttributeChecker> checker, const AttributeValue &value)
 {
   // get rid of any previous value stored in this
   // vector of values.
@@ -121,36 +121,38 @@ AttributeList::DoSetOne (Ptr<const AttributeChecker> checker, Attribute value)
   m_attributes.push_back (attr);
 }
 bool
-AttributeList::DoSet (struct TypeId::AttributeInfo *info, Attribute value)
+AttributeList::DoSet (struct TypeId::AttributeInfo *info, const AttributeValue &value)
 {
   if (info->checker == 0)
     {
       return false;
     }
   bool ok = info->checker->Check (value);
+  if (ok)
+    {
+      DoSetOne (info->checker, value);
+      return true;
+    }
+
+  // attempt to convert to string.
+  const StringValue *str = dynamic_cast<const StringValue *> (&value);
+  if (str == 0)
+    {
+      return false;
+    }
+  // attempt to convert back to value.
+  Ptr<AttributeValue> v = info->checker->Create ();
+  ok = v->DeserializeFromString (str->Get (), info->checker);
   if (!ok)
     {
-      // attempt to convert to string.
-      const StringValue *str = value.DynCast<const StringValue *> ();
-      if (str == 0)
-        {
-          return false;
-        }
-      // attempt to convert back to value.
-      Attribute v = info->checker->Create ();
-      ok = v.DeserializeFromString (str->Get ().Get (), info->checker);
-      if (!ok)
-        {
-          return false;
-        }
-      ok = info->checker->Check (v);
-      if (!ok)
-        {
-          return false;
-        }
-      value = v;
+      return false;
     }
-  DoSetOne (info->checker, value);
+  ok = info->checker->Check (*v);
+  if (!ok)
+    {
+      return false;
+    }
+  DoSetOne (info->checker, *v);
   return true;
 }
 void 
@@ -187,10 +189,11 @@ std::string
 AttributeList::SerializeToString (void) const
 {
   std::ostringstream oss;
-  for (Attrs::const_iterator i = m_attributes.begin (); i != m_attributes.end (); i++)
+  for (Attrs::const_iterator i = m_attributes.begin (); i != m_attributes.end ();)
     {
       std::string name = LookupAttributeFullNameByChecker (i->checker);
-      oss << name << "=" << i->value.SerializeToString (i->checker);
+      oss << name << "=" << i->value->SerializeToString (i->checker);
+      i++;
       if (i != m_attributes.end ())
         {
           oss << "|";
@@ -235,8 +238,8 @@ AttributeList::DeserializeFromString (std::string str)
                 value = str.substr (equal+1, next - (equal+1));
                 cur++;
               }
-            Attribute val = info.checker->Create ();
-            bool ok = val.DeserializeFromString (value, info.checker);
+            Ptr<AttributeValue> val = info.checker->Create ();
+            bool ok = val->DeserializeFromString (value, info.checker);
             if (!ok)
               {
                 // XXX invalid value
@@ -244,7 +247,7 @@ AttributeList::DeserializeFromString (std::string str)
               }
             else
               {
-                DoSetOne (info.checker, val);
+                DoSetOne (info.checker, *val);
               }
           }
       }

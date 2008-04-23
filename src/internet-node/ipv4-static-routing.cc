@@ -29,7 +29,7 @@ namespace ns3 {
 Ipv4StaticRouting::Ipv4StaticRouting () 
 : m_defaultRoute (0), m_defaultMulticastRoute (0)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 void 
@@ -37,7 +37,7 @@ Ipv4StaticRouting::AddHostRouteTo (Ipv4Address dest,
                                    Ipv4Address nextHop, 
                                    uint32_t interface)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Ipv4Route *route = new Ipv4Route ();
   *route = Ipv4Route::CreateHostRouteTo (dest, nextHop, interface);
   m_hostRoutes.push_back (route);
@@ -47,7 +47,7 @@ void
 Ipv4StaticRouting::AddHostRouteTo (Ipv4Address dest, 
                                    uint32_t interface)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Ipv4Route *route = new Ipv4Route ();
   *route = Ipv4Route::CreateHostRouteTo (dest, interface);
   m_hostRoutes.push_back (route);
@@ -59,7 +59,7 @@ Ipv4StaticRouting::AddNetworkRouteTo (Ipv4Address network,
                                       Ipv4Address nextHop, 
                                       uint32_t interface)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Ipv4Route *route = new Ipv4Route ();
   *route = Ipv4Route::CreateNetworkRouteTo (network,
                                             networkMask,
@@ -73,7 +73,7 @@ Ipv4StaticRouting::AddNetworkRouteTo (Ipv4Address network,
                                       Ipv4Mask networkMask, 
                                       uint32_t interface)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Ipv4Route *route = new Ipv4Route ();
   *route = Ipv4Route::CreateNetworkRouteTo (network,
                                             networkMask,
@@ -85,7 +85,7 @@ void
 Ipv4StaticRouting::SetDefaultRoute (Ipv4Address nextHop, 
                                     uint32_t interface)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Ipv4Route *route = new Ipv4Route ();
   *route = Ipv4Route::CreateDefaultRoute (nextHop, interface);
   delete m_defaultRoute;
@@ -98,7 +98,7 @@ Ipv4StaticRouting::AddMulticastRoute(Ipv4Address origin,
                                      uint32_t inputInterface,
                                      std::vector<uint32_t> outputInterfaces)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Ipv4MulticastRoute *route = new Ipv4MulticastRoute ();
   *route = Ipv4MulticastRoute::CreateMulticastRoute (origin, group, 
     inputInterface, outputInterfaces);
@@ -108,7 +108,7 @@ Ipv4StaticRouting::AddMulticastRoute(Ipv4Address origin,
 void 
 Ipv4StaticRouting::SetDefaultMulticastRoute(uint32_t outputInterface)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Ipv4Address origin = Ipv4Address::GetAny ();
   Ipv4Address group = Ipv4Address::GetAny ();
   uint32_t inputInterface = Ipv4RoutingProtocol::IF_INDEX_ANY;
@@ -127,14 +127,14 @@ Ipv4StaticRouting::SetDefaultMulticastRoute(uint32_t outputInterface)
 uint32_t 
 Ipv4StaticRouting::GetNMulticastRoutes (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_multicastRoutes.size () + m_defaultMulticastRoute ? 1 : 0;
 }
 
 Ipv4MulticastRoute *
 Ipv4StaticRouting::GetMulticastRoute (uint32_t index) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT_MSG(index < m_multicastRoutes.size (),
     "Ipv4StaticRouting::GetMulticastRoute ():  Index out of range");
 //
@@ -182,7 +182,7 @@ Ipv4StaticRouting::GetMulticastRoute (uint32_t index) const
 Ipv4MulticastRoute *
 Ipv4StaticRouting::GetDefaultMulticastRoute () const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_defaultMulticastRoute != 0)
     {
       return m_defaultMulticastRoute;
@@ -195,7 +195,7 @@ Ipv4StaticRouting::RemoveMulticastRoute(Ipv4Address origin,
                                         Ipv4Address group,
                                         uint32_t inputInterface)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   for (MulticastRoutesI i = m_multicastRoutes.begin (); 
        i != m_multicastRoutes.end (); 
        i++) 
@@ -216,7 +216,7 @@ Ipv4StaticRouting::RemoveMulticastRoute(Ipv4Address origin,
 void 
 Ipv4StaticRouting::RemoveMulticastRoute(uint32_t index)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 //
 // From an external point of view the default route appears to be in slot 0
 // of the routing table.  The implementation, however, puts it in a separate 
@@ -261,7 +261,7 @@ Ipv4StaticRouting::RemoveMulticastRoute(uint32_t index)
 Ipv4Route *
 Ipv4StaticRouting::LookupStatic (Ipv4Address dest)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   for (HostRoutesCI i = m_hostRoutes.begin (); 
        i != m_hostRoutes.end (); 
        i++) 
@@ -298,7 +298,7 @@ Ipv4StaticRouting::LookupStatic (
   Ipv4Address group,
   uint32_t    ifIndex)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 //
 // We treat the "any" address (typically 0.0.0.0) as a wildcard in our matching
 // scheme.
@@ -400,7 +400,7 @@ Ipv4StaticRouting::LookupStatic (
 uint32_t 
 Ipv4StaticRouting::GetNRoutes (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   uint32_t n = 0;
   if (m_defaultRoute != 0)
     {
@@ -414,7 +414,7 @@ Ipv4StaticRouting::GetNRoutes (void)
 Ipv4Route *
 Ipv4StaticRouting::GetDefaultRoute ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_defaultRoute != 0)
     {
       return m_defaultRoute;
@@ -428,7 +428,7 @@ Ipv4StaticRouting::GetDefaultRoute ()
 Ipv4Route *
 Ipv4StaticRouting::GetRoute (uint32_t index)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (index == 0 && m_defaultRoute != 0)
     {
       return m_defaultRoute;
@@ -470,7 +470,7 @@ Ipv4StaticRouting::GetRoute (uint32_t index)
 void 
 Ipv4StaticRouting::RemoveRoute (uint32_t index)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (index == 0 && m_defaultRoute != 0)
     {
       delete m_defaultRoute;
@@ -520,8 +520,7 @@ Ipv4StaticRouting::RequestRoute (
   Ptr<Packet> packet,
   RouteReplyCallback routeReply)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << ifIndex << &ipHeader << packet << &routeReply);
+  NS_LOG_FUNCTION (this << ifIndex << &ipHeader << packet << &routeReply);
 
   NS_LOG_LOGIC ("source = " << ipHeader.GetSource ());
 
@@ -573,8 +572,7 @@ Ipv4StaticRouting::RequestRoute (
 bool
 Ipv4StaticRouting::RequestIfIndex (Ipv4Address destination, uint32_t& ifIndex)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << destination << &ifIndex);
+  NS_LOG_FUNCTION (this << destination << &ifIndex);
 //
 // First, see if this is a multicast packet we have a route for.  If we
 // have a route, then send the packet down each of the specified interfaces.
@@ -621,7 +619,7 @@ Ipv4StaticRouting::RequestIfIndex (Ipv4Address destination, uint32_t& ifIndex)
 void
 Ipv4StaticRouting::DoDispose (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   for (HostRoutesI i = m_hostRoutes.begin (); 
        i != m_hostRoutes.end (); 
        i = m_hostRoutes.erase (i)) 

@@ -20,6 +20,7 @@
 #include "object-base.h"
 #include "log.h"
 #include "trace-source-accessor.h"
+#include "attribute-list.h"
 #include "string.h"
 
 NS_LOG_COMPONENT_DEFINE ("ObjectBase");
@@ -58,8 +59,8 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
     NS_LOG_DEBUG ("construct tid="<<tid.GetName ()<<", params="<<tid.GetAttributeN ());
     for (uint32_t i = 0; i < tid.GetAttributeN (); i++)
       {
-        Ptr<const AttributeAccessor> paramSpec = tid.GetAttributeAccessor (i);
-        Attribute initial = tid.GetAttributeInitialValue (i);
+        Ptr<const AttributeAccessor> accessor = tid.GetAttributeAccessor (i);
+        Ptr<const AttributeValue> initial = tid.GetAttributeInitialValue (i);
         Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (i);
         NS_LOG_DEBUG ("try to construct \""<< tid.GetName ()<<"::"<<
                       tid.GetAttributeName (i)<<"\"");
@@ -75,7 +76,7 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
             if (j->checker == checker)
               {
                 // We have a matching attribute value.
-                DoSet (paramSpec, initial, checker, j->value);
+                DoSet (accessor, checker, *j->value);
                 NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
                               tid.GetAttributeName (i)<<"\"");
                 found = true;
@@ -91,7 +92,7 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
                 if (j->checker == checker)
                   {
                     // We have a matching attribute value.
-                    DoSet (paramSpec, initial, checker, j->value);
+                    DoSet (accessor, checker, *j->value);
                     NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
                                   tid.GetAttributeName (i)<<"\" from global");
                     found = true;
@@ -102,7 +103,7 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
         if (!found)
           {
             // No matching attribute value so we set the default value.
-            paramSpec->Set (this, initial);
+            DoSet (accessor, checker, *initial);
             NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
                           tid.GetAttributeName (i)<<"\" from initial value.");
           }
@@ -113,37 +114,39 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
 }
 
 bool
-ObjectBase::DoSet (Ptr<const AttributeAccessor> spec, Attribute initialValue, 
-		   Ptr<const AttributeChecker> checker, Attribute value)
+ObjectBase::DoSet (Ptr<const AttributeAccessor> spec, 
+		   Ptr<const AttributeChecker> checker, 
+                   const AttributeValue &value)
 {
   bool ok = checker->Check (value);
+  if (ok)
+    {
+      ok = spec->Set (this, value);
+      return ok;
+    }
+  // attempt to convert to string
+  const StringValue *str = dynamic_cast<const StringValue *> (&value);
+  if (str == 0)
+    {
+      return false;
+    }
+  // attempt to convert back from string.
+  Ptr<AttributeValue> v = checker->Create ();
+  ok = v->DeserializeFromString (str->Get (), checker);
   if (!ok)
     {
-      // attempt to convert to string
-      const StringValue *str = value.DynCast<const StringValue *> ();
-      if (str == 0)
-        {
-          return false;
-        }
-      // attempt to convert back from string.
-      Attribute v = checker->Create ();
-      ok = v.DeserializeFromString (str->Get ().Get (), checker);
-      if (!ok)
-        {
-          return false;
-        }
-      ok = checker->Check (v);
-      if (!ok)
-        {
-          return false;
-        }
-      value = v;
+      return false;
     }
-  ok = spec->Set (this, value);
+  ok = checker->Check (*v);
+  if (!ok)
+    {
+      return false;
+    }
+  ok = spec->Set (this, *v);
   return ok;
 }
 void
-ObjectBase::SetAttribute (std::string name, Attribute value)
+ObjectBase::SetAttribute (std::string name, const AttributeValue &value)
 {
   struct TypeId::AttributeInfo info;
   TypeId tid = GetInstanceTypeId ();
@@ -151,17 +154,18 @@ ObjectBase::SetAttribute (std::string name, Attribute value)
     {
       NS_FATAL_ERROR ("Attribute name="<<name<<" does not exist for this object: tid="<<tid.GetName ());
     }
-  if (!(info.flags & TypeId::ATTR_SET))
+  if (!(info.flags & TypeId::ATTR_SET) ||
+      !info.accessor->HasSetter ())
     {
       NS_FATAL_ERROR ("Attribute name="<<name<<" is not settable for this object: tid="<<tid.GetName ());
     }
-  if (!DoSet (info.accessor, info.initialValue, info.checker, value))
+  if (!DoSet (info.accessor, info.checker, value))
     {
       NS_FATAL_ERROR ("Attribute name="<<name<<" could not be set for this object: tid="<<tid.GetName ());
     }
 }
 bool 
-ObjectBase::SetAttributeFailSafe (std::string name, Attribute value)
+ObjectBase::SetAttributeFailSafe (std::string name, const AttributeValue &value)
 {
   struct TypeId::AttributeInfo info;
   TypeId tid = GetInstanceTypeId ();
@@ -169,14 +173,16 @@ ObjectBase::SetAttributeFailSafe (std::string name, Attribute value)
     {
       return false;
     }
-  if (!(info.flags & TypeId::ATTR_SET))
+  if (!(info.flags & TypeId::ATTR_SET) ||
+      !info.accessor->HasSetter ())
     {
       return false;
     }
-  return DoSet (info.accessor, info.initialValue, info.checker, value);
+  return DoSet (info.accessor, info.checker, value);
 }
-std::string
-ObjectBase::GetAttributeAsString (std::string name) const
+
+void
+ObjectBase::GetAttribute (std::string name, AttributeValue &value) const
 {
   struct TypeId::AttributeInfo info;
   TypeId tid = GetInstanceTypeId ();
@@ -184,66 +190,33 @@ ObjectBase::GetAttributeAsString (std::string name) const
     {
       NS_FATAL_ERROR ("Attribute name="<<name<<" does not exist for this object: tid="<<tid.GetName ());
     }
-  if (!(info.flags & TypeId::ATTR_GET))
+  if (!(info.flags & TypeId::ATTR_GET) || 
+      !info.accessor->HasGetter ())
     {
       NS_FATAL_ERROR ("Attribute name="<<name<<" is not gettable for this object: tid="<<tid.GetName ());
     }
-  Attribute v = info.checker->Create ();
-  bool ok = info.accessor->Get (this, v);
-  if (!ok)
-    {
-      NS_FATAL_ERROR ("Attribute name="<<name<<" is not gettable for this object: tid="<<tid.GetName ());
-    }
-  std::string value = v.SerializeToString (info.checker);
-  return value;
-}
-
-Attribute
-ObjectBase::GetAttribute (std::string name) const
-{
-  struct TypeId::AttributeInfo info;
-  TypeId tid = GetInstanceTypeId ();
-  if (!tid.LookupAttributeByName (name, &info))
-    {
-      return Attribute ();
-    }
-  if (!(info.flags & TypeId::ATTR_GET))
-    {
-      return Attribute ();
-    }
-  Attribute value = info.checker->Create ();
   bool ok = info.accessor->Get (this, value);
-  if (!ok)
-    {
-      return Attribute ();
-    }
-  return value;
-}
-
-bool
-ObjectBase::GetAttributeAsStringFailSafe (std::string name, std::string &value) const
-{
-  struct TypeId::AttributeInfo info;
-  TypeId tid = GetInstanceTypeId ();
-  if (!tid.LookupAttributeByName (name, &info))
-    {
-      return false;
-    }
-  if (!(info.flags & TypeId::ATTR_GET))
-    {
-      return false;
-    }
-  Attribute v = info.checker->Create ();
-  bool ok = info.accessor->Get (this, v);
   if (ok)
     {
-      value = v.SerializeToString (info.checker);
+      return;
     }
-  return ok;
+  StringValue *str = dynamic_cast<StringValue *> (&value);
+  if (str == 0)
+    {
+      NS_FATAL_ERROR ("Attribute name="<<name<<" tid="<<tid.GetName () << ": input value is not a string");
+    }
+  Ptr<AttributeValue> v = info.checker->Create ();
+  ok = info.accessor->Get (this, *PeekPointer (v));
+  if (!ok)
+    {
+      NS_FATAL_ERROR ("Attribute name="<<name<<" tid="<<tid.GetName () << ": could not get value");
+    }
+  str->Set (v->SerializeToString (info.checker));
 }
 
+
 bool
-ObjectBase::GetAttributeFailSafe (std::string name, Attribute &value) const
+ObjectBase::GetAttributeFailSafe (std::string name, AttributeValue &value) const
 {
   struct TypeId::AttributeInfo info;
   TypeId tid = GetInstanceTypeId ();
@@ -251,13 +224,29 @@ ObjectBase::GetAttributeFailSafe (std::string name, Attribute &value) const
     {
       return false;
     }
-  if (!(info.flags & TypeId::ATTR_GET))
+  if (!(info.flags & TypeId::ATTR_GET) ||
+      !info.accessor->HasGetter ())
     {
       return false;
     }
-  value = info.checker->Create ();
   bool ok = info.accessor->Get (this, value);
-  return ok;
+  if (ok)
+    {
+      return true;
+    }
+  StringValue *str = dynamic_cast<StringValue *> (&value);
+  if (str == 0)
+    {
+      return false;
+    }
+  Ptr<AttributeValue> v = info.checker->Create ();
+  ok = info.accessor->Get (this, *PeekPointer (v));
+  if (!ok)
+    {
+      return false;
+    }
+  str->Set (v->SerializeToString (info.checker));
+  return true;
 }
 
 bool 

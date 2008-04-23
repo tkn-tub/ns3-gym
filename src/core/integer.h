@@ -27,30 +27,20 @@
 namespace ns3 {
 
 /**
+ * \class ns3::IntegerValue
  * \brief Hold a signed integer type
+ *
+ * \anchor int8_t
+ * \anchor int16_t
+ * \anchor int32_t
+ * \anchor int64_t
  *
  * This class can be used to hold variables of signed integer
  * type such as int8_t, int16_t, int32_t, int64_t, or,
  * int, etc.
  */
-class Integer
-{
-public:
-  Integer (int64_t value);
-  Integer ();
-  void Set (int64_t value);
-  int64_t Get (void) const;
 
-  operator int64_t () const;
-  ATTRIBUTE_CONVERTER_DEFINE (Integer);
-private:
-  int64_t m_value;
-};
-
-std::ostream &operator << (std::ostream &os, const Integer &integer);
-std::istream &operator >> (std::istream &is, Integer &integer);
-
-ATTRIBUTE_VALUE_DEFINE(Integer);
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(int64_t, Integer);
 ATTRIBUTE_ACCESSOR_DEFINE(Integer);
 
 template <typename T>

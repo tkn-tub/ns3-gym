@@ -40,7 +40,7 @@ UdpEchoServerHelper::Install (NodeContainer c)
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
       Ptr<Node> node = *i;
-      Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> ("Port", Uinteger (m_port));
+      Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> ("Port", UintegerValue (m_port));
       node->AddApplication (server);
       apps.Add (server);
     }
@@ -58,7 +58,7 @@ UdpEchoClientHelper::SetRemote (Ipv4Address ip, uint16_t port)
   m_remotePort = port;
 }
 void 
-UdpEchoClientHelper::SetAppAttribute (std::string name, Attribute value)
+UdpEchoClientHelper::SetAppAttribute (std::string name, const AttributeValue &value)
 {
   m_factory.Set (name, value);
 }

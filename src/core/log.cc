@@ -18,8 +18,6 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-// What about print-list!!!!!!???????
-
 #ifdef NS3_LOG_ENABLE
 
 #include <list>
@@ -35,6 +33,8 @@
 #endif
 
 namespace ns3 {
+
+LogTimePrinter g_logTimePrinter = 0;
 
 typedef std::list<std::pair <std::string, LogComponent *> > ComponentList;
 typedef std::list<std::pair <std::string, LogComponent *> >::iterator ComponentListI;
@@ -67,7 +67,7 @@ PrintList::PrintList ()
   std::string::size_type next = 0;
   while (next != std::string::npos)
     {
-      next = env.find_first_of (";", cur);
+      next = env.find_first_of (":", cur);
       std::string tmp = std::string (env, cur, next-cur);
       if (tmp == "print-list")
         {
@@ -115,7 +115,7 @@ LogComponent::EnvVarCheck (char const * name)
   std::string::size_type next = 0;
   while (next != std::string::npos)
     {
-      next = env.find_first_of (";", cur);
+      next = env.find_first_of (":", cur);
       std::string tmp = std::string (env, cur, next-cur);
       std::string::size_type equal = tmp.find ("=");
       std::string component;
@@ -124,7 +124,8 @@ LogComponent::EnvVarCheck (char const * name)
           component = tmp;
           if (component == myName || component == "*")
             {
-              Enable (LOG_DEBUG);
+              int level = LOG_ALL | LOG_PREFIX_TIME | LOG_PREFIX_FUNC;
+              Enable ((enum LogLevel)level);
               return;
             }
         }
@@ -161,10 +162,6 @@ LogComponent::EnvVarCheck (char const * name)
                     {
                       level |= LOG_FUNCTION;
                     }
-                  else if (lev == "param")
-                    {
-                      level |= LOG_PARAM;
-                    }
                   else if (lev == "logic")
                     {
                       level |= LOG_LOGIC;
@@ -173,9 +170,13 @@ LogComponent::EnvVarCheck (char const * name)
                     {
                       level |= LOG_ALL;
                     }
-                  else if (lev == "prefix")
+                  else if (lev == "prefix_func")
                     {
-                      level |= LOG_PREFIX_ALL;
+                      level |= LOG_PREFIX_FUNC;
+                    }
+                  else if (lev == "prefix_time")
+                    {
+                      level |= LOG_PREFIX_TIME;
                     }
                   else if (lev == "level_error")
                     {
@@ -196,10 +197,6 @@ LogComponent::EnvVarCheck (char const * name)
                   else if (lev == "level_function")
                     {
                       level |= LOG_LEVEL_FUNCTION;
-                    }
-                  else if (lev == "level_param")
-                    {
-                      level |= LOG_LEVEL_PARAM;
                     }
                   else if (lev == "level_logic")
                     {
@@ -342,10 +339,6 @@ LogComponentPrintList (void)
         {
           std::cout << "|function";
         }
-      if (i->second->IsEnabled (LOG_PARAM))
-        {
-          std::cout << "|param";
-        }
       if (i->second->IsEnabled (LOG_LOGIC))
         {
           std::cout << "|logic";
@@ -358,10 +351,20 @@ LogComponentPrintList (void)
     }
 }
 
+void LogRegisterTimePrinter (LogTimePrinter printer)
+{
+  g_logTimePrinter = printer;
+}
+LogTimePrinter LogGetTimePrinter(void)
+{
+  return g_logTimePrinter;
+}
 
-ParameterLogger g_parameterLogger;
-EndParameterListStruct EndParameterList;
 
+ParameterLogger::ParameterLogger (std::ostream &os)
+  : m_itemNumber (0),
+    m_os (os)
+{}
 
 } // namespace ns3
 

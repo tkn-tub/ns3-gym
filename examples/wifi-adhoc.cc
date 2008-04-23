@@ -134,10 +134,10 @@ Experiment::Run (const WifiHelper &wifi)
   socket.SetProtocol (1);
 
   OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
-  onoff.SetAttribute ("OnTime", ConstantVariable (250));
-  onoff.SetAttribute ("OffTime", ConstantVariable (0));
-  onoff.SetAttribute ("DataRate", DataRate (60000000));
-  onoff.SetAttribute ("PacketSize", Uinteger (2000));
+  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (250)));
+  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onoff.SetAttribute ("DataRate", DataRateValue (DataRate (60000000)));
+  onoff.SetAttribute ("PacketSize", UintegerValue (2000));
 
   ApplicationContainer apps = onoff.Install (c.Get (0));
   apps.Start (Seconds (0.5));
@@ -156,8 +156,8 @@ Experiment::Run (const WifiHelper &wifi)
 int main (int argc, char *argv[])
 {
   // disable fragmentation
-  Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", String ("2200"));
-  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", String ("2200"));
+  Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
+  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("2200"));
 
   CommandLine cmd;
   cmd.Parse (argc, argv);
@@ -174,56 +174,56 @@ int main (int argc, char *argv[])
   NS_LOG_DEBUG ("54");
   experiment = Experiment ("54mb");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", String ("wifia-54mbs"));
+                                "DataMode", StringValue ("wifia-54mbs"));
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("48");
   experiment = Experiment ("48mb");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", String ("wifia-48mbs"));
+                                "DataMode", StringValue ("wifia-48mbs"));
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("36");
   experiment = Experiment ("36mb");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", String ("wifia-36mbs"));
+                                "DataMode", StringValue ("wifia-36mbs"));
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("24");
   experiment = Experiment ("24mb");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", String ("wifia-24mbs"));
+                                "DataMode", StringValue ("wifia-24mbs"));
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("18");
   experiment = Experiment ("18mb");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", String ("wifia-18mbs"));
+                                "DataMode", StringValue ("wifia-18mbs"));
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("12");
   experiment = Experiment ("12mb");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", String ("wifia-12mbs"));
+                                "DataMode", StringValue ("wifia-12mbs"));
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("9");
   experiment = Experiment ("9mb");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", String ("wifia-9mbs"));
+                                "DataMode", StringValue ("wifia-9mbs"));
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("6");
   experiment = Experiment ("6mb");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", String ("wifia-6mbs"));
+                                "DataMode", StringValue ("wifia-6mbs"));
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 
@@ -231,7 +231,7 @@ int main (int argc, char *argv[])
 
 
   gnuplot = Gnuplot ("rate-control.png");
-  Config::SetDefault ("ns3::WifiPhy::Standard", String ("holland"));
+  Config::SetDefault ("ns3::WifiPhy::Standard", StringValue ("holland"));
 
 
   NS_LOG_DEBUG ("arf");

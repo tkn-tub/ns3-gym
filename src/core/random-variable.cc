@@ -299,20 +299,6 @@ RandomVariable::Peek (void) const
 {
   return m_variable;
 }
-RandomVariable::RandomVariable (Attribute value)
-  : m_variable (0)
-{
-  const RandomVariableValue *v = value.DynCast<const RandomVariableValue *> ();
-  if (v == 0)
-    {
-      NS_FATAL_ERROR ("Unexpected type of value. Expected \"RandomVariableValue\"");
-    }
-  *this = v->Get ();
-}
-RandomVariable::operator Attribute () const
-{
-  return Attribute::Create<RandomVariableValue> (*this);
-}
 
 ATTRIBUTE_VALUE_IMPLEMENT (RandomVariable);
 ATTRIBUTE_CHECKER_IMPLEMENT (RandomVariable);
@@ -1267,7 +1253,7 @@ EmpiricalVariable::CDF(double v, double c)
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-// Integer EmpiricalVariableImpl methods
+// IntegerValue EmpiricalVariableImpl methods
 class IntEmpiricalVariableImpl : public EmpiricalVariableImpl {
 public:
 

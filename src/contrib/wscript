@@ -6,6 +6,7 @@ def build(bld):
         'event-garbage-collector.cc',
         'gnuplot.cc',
         'delay-jitter-estimation.cc',
+        'config-store.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -14,4 +15,5 @@ def build(bld):
         'event-garbage-collector.h',
         'gnuplot.h',
         'delay-jitter-estimation.h',
+        'config-store.h',
         ]

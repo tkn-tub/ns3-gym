@@ -45,8 +45,8 @@ main (int argc, char *argv[])
   internet.Install (n);
 
   PointToPointHelper p2p;
-  p2p.SetChannelParameter ("BitRate", DataRate (38400));
-  p2p.SetChannelParameter ("Delay", MilliSeconds (20));
+  p2p.SetChannelParameter ("BitRate", StringValue ("38400bps"));
+  p2p.SetChannelParameter ("Delay", StringValue ("20ms"));
   NetDeviceContainer nd = p2p.Install (n);
 
   Ipv4AddressHelper ipv4;
@@ -56,9 +56,9 @@ main (int argc, char *argv[])
   uint16_t port = 7;
   UdpEchoClientHelper client;
   client.SetRemote (i.GetAddress (1), port);
-  client.SetAppAttribute ("MaxPackets", Uinteger (1));
-  client.SetAppAttribute ("Interval", Seconds (1.0));
-  client.SetAppAttribute ("PacketSize", Uinteger (1024));
+  client.SetAppAttribute ("MaxPackets", UintegerValue (1));
+  client.SetAppAttribute ("Interval", StringValue ("1s"));
+  client.SetAppAttribute ("PacketSize", UintegerValue (1024));
   ApplicationContainer apps = client.Install (n.Get (0));
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (10.0));

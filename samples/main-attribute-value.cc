@@ -24,6 +24,7 @@
 #include "ns3/config.h"
 #include "ns3/uinteger.h"
 #include "ns3/string.h"
+#include "ns3/pointer.h"
 #include "ns3/simulator.h"
 
 #include "ns3/node.h"
@@ -50,10 +51,10 @@ main (int argc, char *argv[])
   // (this default can be observed in the function DropTailQueue::GetTypeId)
   // 
   // Here, we set it to 80 packets.  We could use one of two value types:
-  // a string-based value or a Uinteger value
-  Config::SetDefault ("ns3::DropTailQueue::MaxPackets", String ("80"));
+  // a string-based value or a UintegerValue value
+  Config::SetDefault ("ns3::DropTailQueue::MaxPackets", StringValue ("80"));
   // The below function call is redundant
-  Config::SetDefault ("ns3::DropTailQueue::MaxPackets", Uinteger(80));
+  Config::SetDefault ("ns3::DropTailQueue::MaxPackets", UintegerValue (80));
 
   // Allow the user to override any of the defaults and the above
   // SetDefaults() at run-time, via command-line arguments
@@ -87,7 +88,9 @@ main (int argc, char *argv[])
   // First, we observe that we can get a pointer to the (base class)
   // queue via the PointToPointNetDevice attributes, where it is called
   // TxQueue 
-  Ptr<Queue> txQueue = net0->GetAttribute ("TxQueue");
+  PointerValue ptr;
+  net0->GetAttribute ("TxQueue", ptr);
+  Ptr<Queue> txQueue = ptr.Get<Queue> ();
 
   // Using the GetObject function, we can perform a safe downcast
   // to a DropTailQueue, where MaxPackets is a member
@@ -100,18 +103,19 @@ main (int argc, char *argv[])
   // the attribute system stores values and not disparate types.
   // Here, the attribute value is assigned to a Uinteger, and
   // the Get() method on this value produces the (unwrapped) uint32_t.
-  Uinteger limit = dtq->GetAttribute ("MaxPackets");
+  UintegerValue limit;
+  dtq->GetAttribute ("MaxPackets", limit);
   NS_LOG_INFO ("1.  dtq limit: " << limit.Get () << " packets");
   
   // Note that the above downcast is not really needed; we could have
   // done the same using the Ptr<Queue> even though the attribute
   // is a member of the subclass
-  limit = txQueue->GetAttribute ("MaxPackets");
+  txQueue->GetAttribute ("MaxPackets", limit);
   NS_LOG_INFO ("2.  txQueue limit: " << limit.Get () << " packets");
 
   // Now, let's set it to another value (60 packets)
-  txQueue->SetAttribute("MaxPackets", Uinteger (60));
-  limit = txQueue->GetAttribute ("MaxPackets");
+  txQueue->SetAttribute("MaxPackets", UintegerValue (60));
+  txQueue->GetAttribute ("MaxPackets", limit);
   NS_LOG_INFO ("3.  txQueue limit changed: " << limit.Get () << " packets");
 
   // 2.  Namespace-based access
@@ -121,18 +125,18 @@ main (int argc, char *argv[])
   // namespace; this approach is useful if one doesn't have access to
   // the underlying pointers and would like to configure a specific
   // attribute with a single statement.  
-  Config::Set ("/NodeList/0/DeviceList/0/TxQueue/MaxPackets", Uinteger (25));
-  limit = txQueue->GetAttribute ("MaxPackets"); 
+  Config::Set ("/NodeList/0/DeviceList/0/TxQueue/MaxPackets", UintegerValue (25));
+  txQueue->GetAttribute ("MaxPackets", limit); 
   NS_LOG_INFO ("4.  txQueue limit changed through namespace: " << 
-    limit.Get () << " packets");
+               limit.Get () << " packets");
 
   // we could have also used wildcards to set this value for all nodes
   // and all net devices (which in this simple example has the same
   // effect as the previous Set())
-  Config::Set ("/NodeList/*/DeviceList/*/TxQueue/MaxPackets", Uinteger (15));
-  limit = txQueue->GetAttribute ("MaxPackets"); 
+  Config::Set ("/NodeList/*/DeviceList/*/TxQueue/MaxPackets", UintegerValue (15));
+  txQueue->GetAttribute ("MaxPackets", limit); 
   NS_LOG_INFO ("5.  txQueue limit changed through wildcarded namespace: " << 
-    limit.Get () << " packets");
+               limit.Get () << " packets");
 
   Simulator::Destroy ();
 }

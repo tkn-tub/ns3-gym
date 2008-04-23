@@ -15,38 +15,50 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef ON_OFF_HELPER_H
-#define ON_OFF_HELPER_H
-
-#include <stdint.h>
-#include <string>
-#include "ns3/object-factory.h"
-#include "ns3/address.h"
-#include "ns3/attribute.h"
-#include "ns3/net-device.h"
-#include "node-container.h"
-#include "application-container.h"
+#include "pointer.h"
 
 namespace ns3 {
 
-class OnOffHelper
+PointerValue::PointerValue ()
+  : m_value ()
+{}
+
+PointerValue::PointerValue (Ptr<Object> object)
+  : m_value (object)
+{}
+
+void 
+PointerValue::SetObject (Ptr<Object> object)
 {
-public:
-  OnOffHelper (std::string protocol, Address address);
+  m_value = object;
+}
 
-  void SetAttribute (std::string name, const AttributeValue &value);
+Ptr<Object> 
+PointerValue::GetObject (void) const
+{
+  return m_value;
+}
 
-  ApplicationContainer Install (NodeContainer c);
+Ptr<AttributeValue> 
+PointerValue::Copy (void) const
+{
+  return Create<PointerValue> (*this);
+}
+std::string 
+PointerValue::SerializeToString (Ptr<const AttributeChecker> checker) const
+{
+  std::ostringstream oss;
+  oss << m_value;
+  return oss.str ();
+}
 
-private:
-  std::string m_protocol;
-  Address m_remote;
-  ObjectFactory m_factory;
-};
+bool 
+PointerValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
+{
+  NS_FATAL_ERROR ("It is not possible to deserialize a pointer.");
+  return false;
+}
 
 } // namespace ns3
-
-#endif /* ON_OFF_HELPER_H */
-

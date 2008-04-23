@@ -131,22 +131,22 @@ JakesPropagationLossModel::GetTypeId (void)
     .AddConstructor<JakesPropagationLossModel> ()
     .AddAttribute ("NumberOfRaysPerPath",
                    "The number of rays to use by default for compute the fading coeficent for a given path (default is 1)",
-                   Uinteger (1),
+                   UintegerValue (1),
 		   MakeUintegerAccessor (&JakesPropagationLossModel::m_nRays),
 		   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("NumberOfOscillatorsPerRay",
                    "The number of oscillators to use by default for compute the coeficent for a given ray of a given path (default is 4)",
-                   Uinteger (4),
+                   UintegerValue (4),
 		   MakeUintegerAccessor (&JakesPropagationLossModel::m_nOscillators),
 		   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("DopplerFreq",
                    "The doppler frequency in Hz (f_d = v / lambda = v * f / c, the defualt is 0)",
-                   Double(0.0),
+                   DoubleValue (0.0),
 		   MakeDoubleAccessor (&JakesPropagationLossModel::m_fd),
 		   MakeDoubleChecker<double> ())
     .AddAttribute ("Distribution",
                    "The distribution to choose the initial phases.",
-                   ConstantVariable (1.0),
+                   RandomVariableValue (ConstantVariable (1.0)),
                    MakeRandomVariableAccessor (&JakesPropagationLossModel::m_variable),
                    MakeRandomVariableChecker ())
     ;

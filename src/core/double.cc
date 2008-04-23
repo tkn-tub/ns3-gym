@@ -23,40 +23,7 @@
 
 namespace ns3 {
 
-Double::Double ()
-{}
-Double::Double (double value)
-  : m_value (value)
-{}
-void 
-Double::Set (double value)
-{
-  m_value = value;
-}
-double 
-Double::Get (void) const
-{
-  return m_value;
-}
-Double::operator double () const
-{
-  return m_value;
-}
-std::ostream & operator << (std::ostream &os, const Double &value)
-{
-  os << value.Get ();
-  return os;
-}
-std::istream & operator >> (std::istream &is, Double &value)
-{
-  double v;
-  is >> v;
-  value.Set (v);
-  return is;
-}
-
-ATTRIBUTE_VALUE_IMPLEMENT (Double);
-ATTRIBUTE_CONVERTER_IMPLEMENT (Double);
+ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME (double, Double);
 
 namespace internal {
 
@@ -68,27 +35,37 @@ Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max, std::stri
       : m_minValue (minValue),
         m_maxValue (maxValue),
         m_name (name) {}
-    virtual bool Check (Attribute value) const {
-      const DoubleValue *v = value.DynCast<const DoubleValue *> ();
+    virtual bool Check (const AttributeValue &value) const {
+      const DoubleValue *v = dynamic_cast<const DoubleValue *> (&value);
       if (v == 0)
 	{
 	  return false;
 	}
       return v->Get () >= m_minValue && v->Get () <= m_maxValue;
     }
-    virtual std::string GetType (void) const {
-      return m_name;
+    virtual std::string GetValueTypeName (void) const {
+      return "ns3::DoubleValue";
     }
-    virtual bool HasTypeConstraints (void) const {
+    virtual bool HasUnderlyingTypeInformation (void) const {
       return true;
     }
-    virtual std::string GetTypeConstraints (void) const {
+    virtual std::string GetUnderlyingTypeInformation (void) const {
       std::ostringstream oss;
-      oss << m_minValue << ":" << m_maxValue;
+      oss << m_name << " " << m_minValue << ":" << m_maxValue;
       return oss.str ();
     }
-    virtual Attribute Create (void) const {
-      return Attribute::Create<DoubleValue> ();
+    virtual Ptr<AttributeValue> Create (void) const {
+      return ns3::Create<DoubleValue> ();
+    }
+    virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const {
+      const DoubleValue *src = dynamic_cast<const DoubleValue *> (&source);
+      DoubleValue *dst = dynamic_cast<DoubleValue *> (&destination);
+      if (src == 0 || dst == 0)
+        {
+          return false;
+        }
+      *dst = *src;
+      return true;
     }
     double m_minValue;
     double m_maxValue;

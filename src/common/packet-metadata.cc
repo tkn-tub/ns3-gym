@@ -649,7 +649,7 @@ PacketMetadata::DoAddHeader (uint32_t uid, uint32_t size)
       m_metadataSkipped = true;
       return;
     }
-  NS_LOG_PARAMS ("uid=" << uid << "size=" << size << "");
+  NS_LOG_FUNCTION ("uid=" << uid << "size=" << size << "");
 
   struct PacketMetadata::SmallItem item;
   item.next = m_head;
@@ -670,7 +670,7 @@ PacketMetadata::RemoveHeader (const Header &header, uint32_t size)
       m_metadataSkipped = true;
       return;
     }
-  NS_LOG_PARAMS ("(uid=" << uid << ", size=" << size << ")");
+  NS_LOG_FUNCTION ("(uid=" << uid << ", size=" << size << ")");
   struct PacketMetadata::SmallItem item;
   struct PacketMetadata::ExtraItem extraItem;
   uint32_t read = ReadItems (m_head, &item, &extraItem);
@@ -708,7 +708,7 @@ PacketMetadata::AddTrailer (const Trailer &trailer, uint32_t size)
       m_metadataSkipped = true;
       return;
     }
-  NS_LOG_PARAMS ("(uid=" << uid << ", size=" << size << ")");
+  NS_LOG_FUNCTION ("(uid=" << uid << ", size=" << size << ")");
   struct PacketMetadata::SmallItem item;
   item.next = 0xffff;
   item.prev = m_tail;
@@ -728,7 +728,7 @@ PacketMetadata::RemoveTrailer (const Trailer &trailer, uint32_t size)
       m_metadataSkipped = true;
       return;
     }
-  NS_LOG_PARAMS ("(uid=" << uid << ", size=" << size << ")");
+  NS_LOG_FUNCTION ("(uid=" << uid << ", size=" << size << ")");
   struct PacketMetadata::SmallItem item;
   struct PacketMetadata::ExtraItem extraItem;
   uint32_t read = ReadItems (m_tail, &item, &extraItem);

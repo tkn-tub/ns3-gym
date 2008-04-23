@@ -42,7 +42,7 @@ TypeId ErrorModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::ErrorModel")
     .SetParent<Object> ()
     .AddAttribute ("IsEnabled", "Whether this ErrorModel is enabled or not.",
-                   Boolean (true),
+                   BooleanValue (true),
                    MakeBooleanAccessor (&ErrorModel::m_enable),
                    MakeBooleanChecker ())
     ;
@@ -52,18 +52,18 @@ TypeId ErrorModel::GetTypeId (void)
 ErrorModel::ErrorModel () :
   m_enable (true) 
 {
-  NS_LOG_FUNCTION;  
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 ErrorModel::~ErrorModel ()
 {
-  NS_LOG_FUNCTION;  
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 bool
 ErrorModel::IsCorrupt (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   bool result;
   // Insert any pre-conditions here
   result = DoCorrupt (p);
@@ -74,28 +74,28 @@ ErrorModel::IsCorrupt (Ptr<Packet> p)
 void
 ErrorModel::Reset (void)
 {
-  NS_LOG_FUNCTION;  
+  NS_LOG_FUNCTION_NOARGS ();
   DoReset ();
 }
 
 void
 ErrorModel::Enable (void)
 {
-  NS_LOG_FUNCTION;  
+  NS_LOG_FUNCTION_NOARGS ();
   m_enable = true;
 }
 
 void
 ErrorModel::Disable (void)
 {
-  NS_LOG_FUNCTION;  
+  NS_LOG_FUNCTION_NOARGS ();
   m_enable = false;
 }
 
 bool
 ErrorModel::IsEnabled (void) const
 {
-  NS_LOG_FUNCTION;  
+  NS_LOG_FUNCTION_NOARGS ();
   return m_enable;
 }
 
@@ -111,17 +111,17 @@ TypeId RateErrorModel::GetTypeId (void)
     .SetParent<ErrorModel> ()
     .AddConstructor<RateErrorModel> ()
     .AddAttribute ("ErrorUnit", "The error unit",
-                   Enum (EU_BYTE),
+                   EnumValue (EU_BYTE),
                    MakeEnumAccessor (&RateErrorModel::m_unit),
                    MakeEnumChecker (EU_BYTE, "EU_BYTE",
                                     EU_PKT, "EU_PKT",
                                     EU_BIT, "EU_BIT"))
     .AddAttribute ("ErrorRate", "The error rate.",
-                   Double (0.0),
+                   DoubleValue (0.0),
                    MakeDoubleAccessor (&RateErrorModel::m_rate),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("RanVar", "The decision variable attached to this error model.",
-                   UniformVariable (0.0, 1.0),
+                   RandomVariableValue (UniformVariable (0.0, 1.0)),
                    MakeRandomVariableAccessor (&RateErrorModel::m_ranvar),
                    MakeRandomVariableChecker ())
     ;
@@ -131,53 +131,53 @@ TypeId RateErrorModel::GetTypeId (void)
 
 RateErrorModel::RateErrorModel ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 RateErrorModel::~RateErrorModel () 
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 enum ErrorUnit 
 RateErrorModel::GetUnit (void) const 
 { 
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_unit; 
 }
 
 void 
 RateErrorModel::SetUnit (enum ErrorUnit error_unit) 
 { 
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_unit = error_unit; 
 }
 
 double
 RateErrorModel::GetRate (void) const 
 { 
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_rate; 
 }
 
 void 
 RateErrorModel::SetRate (double rate)
 { 
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_rate = rate;
 }
 
 void 
 RateErrorModel::SetRandomVariable (const RandomVariable &ranvar)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_ranvar = ranvar;
 }
 
 bool 
 RateErrorModel::DoCorrupt (Ptr<Packet> p) 
 { 
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (!m_enable)
     {
       return false;  
@@ -200,14 +200,14 @@ RateErrorModel::DoCorrupt (Ptr<Packet> p)
 bool
 RateErrorModel::DoCorruptPkt (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return (m_ranvar.GetValue () < m_rate);
 }
 
 bool
 RateErrorModel::DoCorruptByte (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   // compute pkt error rate, assume uniformly distributed byte error
   double per = 1 - pow (1.0 - m_rate, p->GetSize ());
   return (m_ranvar.GetValue () < per);
@@ -216,7 +216,7 @@ RateErrorModel::DoCorruptByte (Ptr<Packet> p)
 bool
 RateErrorModel::DoCorruptBit(Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   // compute pkt error rate, assume uniformly distributed bit error
   double per = 1 - pow (1.0 - m_rate, (8 * p->GetSize ()) );
   return (m_ranvar.GetValue () < per);
@@ -225,7 +225,7 @@ RateErrorModel::DoCorruptBit(Ptr<Packet> p)
 void 
 RateErrorModel::DoReset (void) 
 { 
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   /* re-initialize any state; no-op for now */ 
 }
 
@@ -246,25 +246,25 @@ TypeId ListErrorModel::GetTypeId (void)
 
 ListErrorModel::ListErrorModel ()  
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 ListErrorModel::~ListErrorModel () 
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 std::list<uint32_t> 
 ListErrorModel::GetList (void) const 
 { 
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_packetList; 
 }
 
 void 
 ListErrorModel::SetList (const std::list<uint32_t> &packetlist)
 { 
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_packetList = packetlist;
 }
 
@@ -274,7 +274,7 @@ ListErrorModel::SetList (const std::list<uint32_t> &packetlist)
 bool 
 ListErrorModel::DoCorrupt (Ptr<Packet> p) 
 { 
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (!m_enable)
     {
       return false;  
@@ -294,7 +294,7 @@ ListErrorModel::DoCorrupt (Ptr<Packet> p)
 void 
 ListErrorModel::DoReset (void) 
 { 
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_packetList.clear();
 }
 

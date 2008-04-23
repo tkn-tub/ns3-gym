@@ -23,7 +23,9 @@
 #include "event-impl.h"
 
 #include "ns3/ptr.h"
+#include "ns3/pointer.h"
 #include "ns3/assert.h"
+#include "ns3/log.h"
 
 
 #include <math.h>
@@ -48,7 +50,9 @@ std::cout << "SIMU TRACE " << x << std::endl;
 
 namespace ns3 {
 
-
+/**
+ * \brief private implementation detail of the Simulator API.
+ */
 class SimulatorPrivate : public Object
 {
 public:
@@ -99,19 +103,21 @@ private:
   int m_unscheduledEvents;
 };
 
+NS_OBJECT_ENSURE_REGISTERED (SimulatorPrivate);
+
 
 TypeId
 SimulatorPrivate::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("SimulatorPrivate")
+  static TypeId tid = TypeId ("ns3::SimulatorPrivate")
     .SetParent<Object> ()
     .AddConstructor<SimulatorPrivate> ()
     .AddAttribute ("Scheduler",
-                   "XXX",
-                   Ptr<Scheduler> (0),
+                   "The Scheduler used to handle all simulation events.",
+                   PointerValue (),
                    // XXX: allow getting the scheduler too.
-                   MakePtrAccessor (&SimulatorPrivate::SetScheduler),
-                   MakePtrChecker<Scheduler> ())
+                   MakePointerAccessor (&SimulatorPrivate::SetScheduler),
+                   MakePointerChecker<Scheduler> ())
     ;
   return tid;
 }
@@ -393,9 +399,7 @@ SimulatorPrivate::GetMaximumSimulationTime (void) const
 }; // namespace ns3
 
 
-#include "scheduler-list.h"
-#include "scheduler-heap.h"
-#include "scheduler-map.h"
+#include "map-scheduler.h"
 
 
 namespace ns3 {
@@ -411,14 +415,22 @@ void Simulator::EnableLogTo (char const *filename)
   GetPriv ()->EnableLogTo (filename);
 }
 
+#ifdef NS3_LOG_ENABLE
+static void
+TimePrinter (std::ostream &os)
+{
+  os << Simulator::Now ();
+}
+#endif /* NS3_LOG_ENABLE */
 
 Ptr<SimulatorPrivate>
 Simulator::GetPriv (void)
 {
   if (m_priv == 0) 
     {
+      LogRegisterTimePrinter (&TimePrinter);
       m_priv = CreateObject<SimulatorPrivate> ();
-      Ptr<Scheduler> scheduler = CreateObject<SchedulerMap> ();
+      Ptr<Scheduler> scheduler = CreateObject<MapScheduler> ();
       m_priv->SetScheduler (scheduler);
     }
   TRACE_S ("priv " << m_priv);
@@ -564,6 +576,8 @@ Simulator::GetMaximumSimulationTime (void)
 
 #include "ns3/test.h"
 #include "ns3/ptr.h"
+#include "list-scheduler.h"
+#include "heap-scheduler.h"
 
 namespace ns3 {
 
@@ -934,19 +948,19 @@ SimulatorTests::RunTests (void)
   bool result = true;
 
   Simulator::Destroy ();
-  Simulator::SetScheduler (CreateObject<SchedulerList> ());
+  Simulator::SetScheduler (CreateObject<ListScheduler> ());
   if (!RunOneTest ()) 
     {
       result = false;
     }
   Simulator::Destroy ();
-  Simulator::SetScheduler (CreateObject<SchedulerHeap> ());
+  Simulator::SetScheduler (CreateObject<HeapScheduler> ());
   if (!RunOneTest ()) 
     {
       result = false;
     }
   Simulator::Destroy ();
-  Simulator::SetScheduler (CreateObject<SchedulerMap> ());
+  Simulator::SetScheduler (CreateObject<MapScheduler> ());
   if (!RunOneTest ()) 
     {
       result = false;

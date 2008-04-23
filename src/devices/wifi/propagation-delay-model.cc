@@ -24,6 +24,17 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (PropagationDelayModel);
+
+TypeId 
+PropagationDelayModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::PropagationDelayModel")
+    .SetParent<Object> ()
+    ;
+  return tid;
+}
+
 PropagationDelayModel::~PropagationDelayModel ()
 {}
 
@@ -37,7 +48,7 @@ RandomPropagationDelayModel::GetTypeId (void)
     .AddConstructor<RandomPropagationDelayModel> ()
     .AddAttribute ("Variable",
                    "The random variable which generates random delays (s).",
-                   UniformVariable (0.0, 1.0),
+                   RandomVariableValue (UniformVariable (0.0, 1.0)),
                    MakeRandomVariableAccessor (&RandomPropagationDelayModel::m_variable),
                    MakeRandomVariableChecker ())
     ;
@@ -63,7 +74,7 @@ ConstantSpeedPropagationDelayModel::GetTypeId (void)
     .SetParent<PropagationDelayModel> ()
     .AddConstructor<ConstantSpeedPropagationDelayModel> ()
     .AddAttribute ("Speed", "The speed (m/s)",
-                   Double (300000000.0),
+                   DoubleValue (300000000.0),
                    MakeDoubleAccessor (&ConstantSpeedPropagationDelayModel::m_speed),
                    MakeDoubleChecker<double> ())
     ;

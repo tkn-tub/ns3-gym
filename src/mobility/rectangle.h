@@ -68,6 +68,11 @@ public:
 std::ostream &operator << (std::ostream &os, const Rectangle &rectangle);
 std::istream &operator >> (std::istream &is, Rectangle &rectangle);
 
+/**
+ * \class ns3::RectangleValue
+ * \brief hold objects of type ns3::Rectangle
+ */
+
 ATTRIBUTE_HELPER_HEADER_2 (Rectangle);
 
 } // namespace ns3

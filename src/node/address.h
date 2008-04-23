@@ -159,11 +159,17 @@ private:
   friend bool operator == (const Address &a, const Address &b);
   friend bool operator < (const Address &a, const Address &b);
   friend std::ostream& operator<< (std::ostream& os, const Address & address);
+  friend std::istream& operator>> (std::istream& is, Address & address);
 
   uint8_t m_type;
   uint8_t m_len;
   uint8_t m_data[MAX_SIZE];
 };
+
+/**
+ * \class ns3::AddressValue
+ * \brief hold objects of type ns3::Address
+ */
 
 ATTRIBUTE_HELPER_HEADER_2 (Address);
 

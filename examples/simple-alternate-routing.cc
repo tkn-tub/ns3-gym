@@ -62,8 +62,8 @@ main (int argc, char *argv[])
   //
   RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
 
-  Config::SetDefault ("ns3::OnOffApplication::PacketSize", Uinteger (210));
-  Config::SetDefault ("ns3::OnOffApplication::DataRate", DataRate ("300b/s"));
+  Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
+  Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("300b/s"));
 
   // The below metric, if set to 3 or higher, will cause packets between
   // n1 and n3 to take the 2-hop route through n2
@@ -97,17 +97,17 @@ main (int argc, char *argv[])
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
   PointToPointHelper p2p;
-  p2p.SetChannelParameter ("BitRate", DataRate (5000000));
-  p2p.SetChannelParameter ("Delay", MilliSeconds (2));
+  p2p.SetChannelParameter ("BitRate", StringValue ("5Mbps"));
+  p2p.SetChannelParameter ("Delay", StringValue ("2ms"));
   NetDeviceContainer d0d2 = p2p.Install (n0n2);
 
   NetDeviceContainer d1d2 = p2p.Install (n1n2);
 
-  p2p.SetChannelParameter ("BitRate", DataRate(1500000));
-  p2p.SetChannelParameter ("Delay", MilliSeconds (10));
+  p2p.SetChannelParameter ("BitRate", StringValue ("1500kbps"));
+  p2p.SetChannelParameter ("Delay", StringValue ("10ms"));
   NetDeviceContainer d3d2 = p2p.Install (n3n2);
 
-  p2p.SetChannelParameter ("Delay", MilliSeconds (100));
+  p2p.SetChannelParameter ("Delay", StringValue ("100ms"));
   NetDeviceContainer d1d3 = p2p.Install (n1n3);
 
   InternetStackHelper internet;
@@ -143,8 +143,8 @@ main (int argc, char *argv[])
   // Create a flow from n3 to n1, starting at time 1.1 seconds
   OnOffHelper onoff ("ns3::Udp",
     Address (InetSocketAddress (i1i2.GetAddress (0), port)));
-  onoff.SetAttribute ("OnTime", ConstantVariable (1));
-  onoff.SetAttribute ("OffTime", ConstantVariable (0));
+  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
+  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
 
   ApplicationContainer apps = onoff.Install (c.Get (3));
   apps.Start (Seconds (1.1));

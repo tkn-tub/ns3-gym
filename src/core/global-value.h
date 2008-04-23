@@ -51,8 +51,8 @@ public:
    *        value matches the requested type constraints.
    */
   GlobalValue (std::string name, std::string help,
-		Attribute initialValue,
-		Ptr<const AttributeChecker> checker);
+               const AttributeValue &initialValue,
+               Ptr<const AttributeChecker> checker);
 
   /**
    * \returns the name of this GlobalValue.
@@ -65,7 +65,7 @@ public:
   /**
    * \returns the current value of this GlobalValue.
    */
-  Attribute GetValue (void) const;
+  void GetValue (AttributeValue &value) const;
   /**
    * \returns the checker associated to this GlobalValue.
    */
@@ -73,7 +73,7 @@ public:
   /**
    * \param value the new value to set in this GlobalValue.
    */
-  bool SetValue (Attribute value);
+  bool SetValue (const AttributeValue &value);
 
   /**
    * \param name the name of the global value
@@ -84,7 +84,7 @@ public:
    *
    * This method cannot fail. It will crash if the input is not valid.
    */
-  static void Bind (std::string name, Attribute value);
+  static void Bind (std::string name, const AttributeValue &value);
   
   /**
    * \param name the name of the global value
@@ -94,7 +94,7 @@ public:
    * Iterate over the set of GlobalValues until a matching name is found
    * and then set its value with GlobalValue::SetValue.
    */
-  static bool BindFailSafe (std::string name, Attribute value);
+  static bool BindFailSafe (std::string name, const AttributeValue &value);
 
   /**
    * \returns an iterator which represents a pointer to the first GlobalValue registered.
@@ -109,7 +109,7 @@ private:
   static Vector *GetVector (void);
   std::string m_name;
   std::string m_help;
-  Attribute m_initialValue;
+  Ptr<AttributeValue> m_initialValue;
   Ptr<const AttributeChecker> m_checker;
 };
 

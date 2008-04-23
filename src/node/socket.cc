@@ -30,13 +30,13 @@ namespace ns3 {
 
 Socket::~Socket ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 void 
 Socket::SetCloseCallback (Callback<void,Ptr<Socket> > closeCompleted)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_closeCompleted = closeCompleted;
 }
 
@@ -46,7 +46,7 @@ Socket::SetConnectCallback (
   Callback<void, Ptr<Socket> > connectionFailed,
   Callback<void, Ptr<Socket> > halfClose)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_connectionSucceeded = connectionSucceeded;
   m_connectionFailed = connectionFailed;
   m_halfClose = halfClose;
@@ -58,7 +58,7 @@ Socket::SetAcceptCallback (
   Callback<void, Ptr<Socket>, const Address&> newConnectionCreated,
   Callback<void, Ptr<Socket> > closeRequested)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_connectionRequest = connectionRequest;
   m_newConnectionCreated = newConnectionCreated;
   m_closeRequested = closeRequested;
@@ -67,20 +67,20 @@ Socket::SetAcceptCallback (
 void 
 Socket::SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_dataSent = dataSent;
 }
 
 void 
 Socket::SetRecvCallback (Callback<void, Ptr<Socket>, Ptr<Packet>,const Address&> receivedData)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_receivedData = receivedData;
 }
 
 int Socket::Send (const uint8_t* buf, uint32_t size)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Ptr<Packet> p;
   if (buf)
     {
@@ -95,7 +95,7 @@ int Socket::Send (const uint8_t* buf, uint32_t size)
 
 int Socket::SendTo (const Address &address, const uint8_t* buf, uint32_t size)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Ptr<Packet> p;
   if(buf)
     {
@@ -117,7 +117,7 @@ int Socket::Listen(uint32_t queueLimit)
 void 
 Socket::NotifyCloseCompleted (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (!m_closeCompleted.IsNull ())
     {
       m_closeCompleted (this);
@@ -127,7 +127,7 @@ Socket::NotifyCloseCompleted (void)
 void 
 Socket::NotifyConnectionSucceeded (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (!m_connectionSucceeded.IsNull ())
     {
       m_connectionSucceeded (this);
@@ -137,7 +137,7 @@ Socket::NotifyConnectionSucceeded (void)
 void 
 Socket::NotifyConnectionFailed (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (!m_connectionFailed.IsNull ())
     {
       m_connectionFailed (this);
@@ -147,7 +147,7 @@ Socket::NotifyConnectionFailed (void)
 void 
 Socket::NotifyHalfClose (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (!m_halfClose.IsNull ())
     {
       m_halfClose (this);
@@ -157,7 +157,7 @@ Socket::NotifyHalfClose (void)
 bool 
 Socket::NotifyConnectionRequest (const Address &from)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (!m_connectionRequest.IsNull ())
     {
       return m_connectionRequest (this, from);
@@ -175,7 +175,7 @@ Socket::NotifyConnectionRequest (const Address &from)
 void 
 Socket::NotifyNewConnectionCreated (Ptr<Socket> socket, const Address &from)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (!m_newConnectionCreated.IsNull ())
     {
       m_newConnectionCreated (socket, from);
@@ -185,7 +185,7 @@ Socket::NotifyNewConnectionCreated (Ptr<Socket> socket, const Address &from)
 void 
 Socket::NotifyCloseRequested (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (!m_closeRequested.IsNull ())
     {
       m_closeRequested (this);
@@ -195,7 +195,7 @@ Socket::NotifyCloseRequested (void)
 void 
 Socket::NotifyDataSent (uint32_t size)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (!m_dataSent.IsNull ())
     {
       m_dataSent (this, size);
@@ -205,7 +205,7 @@ Socket::NotifyDataSent (uint32_t size)
 void 
 Socket::NotifyDataReceived (Ptr<Packet> p, const Address &from)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (!m_receivedData.IsNull ())
     {
       m_receivedData (this, p, from);

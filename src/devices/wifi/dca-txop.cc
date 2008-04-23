@@ -37,7 +37,7 @@
 NS_LOG_COMPONENT_DEFINE ("DcaTxop");
 
 #define MY_DEBUG(x) \
-  NS_LOG_DEBUG (Simulator::Now () << " " << m_low->GetMac ()->GetAddress () << " " << x)
+  NS_LOG_DEBUG (m_low->GetMac ()->GetAddress () << " " << x)
 
 
 namespace ns3 {
@@ -100,17 +100,17 @@ DcaTxop::GetTypeId (void)
     .SetParent<Object> ()
     .AddConstructor<DcaTxop> ()
     .AddAttribute ("MinCw", "XXX",
-                   Uinteger (15),
+                   UintegerValue (15),
                    MakeUintegerAccessor (&DcaTxop::SetMinCw,
                                          &DcaTxop::GetMinCw),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("MaxCw", "XXX",
-                   Uinteger (1023),
+                   UintegerValue (1023),
                    MakeUintegerAccessor (&DcaTxop::SetMaxCw,
                                          &DcaTxop::GetMaxCw),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Aifsn", "XXX",
-                   Uinteger (2),
+                   UintegerValue (2),
                    MakeUintegerAccessor (&DcaTxop::SetAifsn,
                                          &DcaTxop::GetAifsn),
                    MakeUintegerChecker<uint32_t> ())
@@ -122,6 +122,7 @@ DcaTxop::DcaTxop ()
   : m_manager (0),
     m_currentPacket (0)
 {
+  NS_LOG_FUNCTION (this);
   m_transmissionListener = new DcaTxop::TransmissionListener (this);
   m_dcf = new DcaTxop::Dcf (this);
   m_queue = CreateObject<WifiMacQueue> ();
@@ -130,11 +131,14 @@ DcaTxop::DcaTxop ()
 }
 
 DcaTxop::~DcaTxop ()
-{}
+{
+  NS_LOG_FUNCTION (this);
+}
 
 void
 DcaTxop::DoDispose (void)
 {
+  NS_LOG_FUNCTION (this);
   delete m_transmissionListener;
   delete m_dcf;
   delete m_rng;
@@ -151,6 +155,7 @@ DcaTxop::DoDispose (void)
 void
 DcaTxop::SetManager (DcfManager *manager)
 {
+  NS_LOG_FUNCTION (this << manager);
   m_manager = manager;
   m_manager->Add (m_dcf);
 }
@@ -158,11 +163,13 @@ DcaTxop::SetManager (DcfManager *manager)
 void 
 DcaTxop::SetLow (Ptr<MacLow> low)
 {
+  NS_LOG_FUNCTION (this << low);
   m_low = low;
 }
 void 
 DcaTxop::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> remoteManager)
 {
+  NS_LOG_FUNCTION (this << remoteManager);
   m_stationManager = remoteManager;
 }
 void 
@@ -179,26 +186,31 @@ DcaTxop::SetTxFailedCallback (TxFailed callback)
 void 
 DcaTxop::SetMaxQueueSize (uint32_t size)
 {
+  NS_LOG_FUNCTION (this << size);
   m_queue->SetMaxSize (size);
 }
 void 
 DcaTxop::SetMaxQueueDelay (Time delay)
 {
+  NS_LOG_FUNCTION (this << delay);
   m_queue->SetMaxDelay (delay);
 }
 void 
 DcaTxop::SetMinCw (uint32_t minCw)
 {
+  NS_LOG_FUNCTION (this << minCw);
   m_dcf->SetCwMin (minCw);
 }
 void 
 DcaTxop::SetMaxCw (uint32_t maxCw)
 {
+  NS_LOG_FUNCTION (this << maxCw);
   m_dcf->SetCwMax (maxCw);
 }
 void 
 DcaTxop::SetAifsn (uint32_t aifsn)
 {
+  NS_LOG_FUNCTION (this << aifsn);
   m_dcf->SetAifsn (aifsn);
 }
 uint32_t 
@@ -220,6 +232,7 @@ DcaTxop::GetAifsn (void) const
 void 
 DcaTxop::Queue (Ptr<const Packet> packet, WifiMacHeader const &hdr)
 {
+  NS_LOG_FUNCTION (this << packet << &hdr);
   WifiMacTrailer fcs;
   uint32_t fullPacketSize = hdr.GetSerializedSize () + packet->GetSize () + fcs.GetSerializedSize ();
   WifiRemoteStation *station = GetStation (hdr.GetAddr1 ());
@@ -237,6 +250,7 @@ DcaTxop::GetStation (Mac48Address ad) const
 void
 DcaTxop::RestartAccessIfNeeded (void)
 {
+  NS_LOG_FUNCTION (this);
   if ((m_currentPacket != 0 ||
        !m_queue->IsEmpty ()) &&
       !m_dcf->IsAccessRequested ())
@@ -248,6 +262,7 @@ DcaTxop::RestartAccessIfNeeded (void)
 void
 DcaTxop::StartAccessIfNeeded (void)
 {
+  NS_LOG_FUNCTION (this);
   if (m_currentPacket == 0 &&
       !m_queue->IsEmpty () &&
       !m_dcf->IsAccessRequested ())
@@ -350,6 +365,7 @@ DcaTxop::NeedsAccess (void) const
 void 
 DcaTxop::NotifyAccessGranted (void)
 {
+  NS_LOG_FUNCTION (this);
   if (m_currentPacket == 0) 
     {
       if (m_queue->IsEmpty ()) 
@@ -383,6 +399,7 @@ DcaTxop::NotifyAccessGranted (void)
       m_currentPacket = 0;
       m_dcf->ResetCw ();
       m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+      StartAccessIfNeeded ();
       MY_DEBUG ("tx broadcast");
     } 
   else 
@@ -429,11 +446,13 @@ DcaTxop::NotifyAccessGranted (void)
 void 
 DcaTxop::NotifyInternalCollision (void)
 {
+  NS_LOG_FUNCTION (this);
   NotifyCollision ();
 }
 void 
 DcaTxop::NotifyCollision (void)
 {
+  NS_LOG_FUNCTION (this);
   MY_DEBUG ("collision");
   m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
   RestartAccessIfNeeded ();
@@ -442,11 +461,13 @@ DcaTxop::NotifyCollision (void)
 void 
 DcaTxop::GotCts (double snr, WifiMode txMode)
 {
+  NS_LOG_FUNCTION (this << snr << txMode);
   MY_DEBUG ("got cts");
 }
 void 
 DcaTxop::MissedCts (void)
 {
+  NS_LOG_FUNCTION (this);
   MY_DEBUG ("missed cts");
   if (!NeedRtsRetransmission ())
     {
@@ -467,6 +488,7 @@ DcaTxop::MissedCts (void)
 void 
 DcaTxop::GotAck (double snr, WifiMode txMode)
 {
+  NS_LOG_FUNCTION (this << snr << txMode);
   if (!NeedFragmentation () ||
       IsLastFragment ()) 
     {
@@ -492,6 +514,7 @@ DcaTxop::GotAck (double snr, WifiMode txMode)
 void 
 DcaTxop::MissedAck (void)
 {
+  NS_LOG_FUNCTION (this);
   MY_DEBUG ("missed ack");
   if (!NeedDataRetransmission ()) 
     {
@@ -518,6 +541,7 @@ DcaTxop::MissedAck (void)
 void 
 DcaTxop::StartNext (void)
 {
+  NS_LOG_FUNCTION (this);
   MY_DEBUG ("start next packet fragment");
   /* this callback is used only for fragments. */
   NextFragment ();
@@ -541,6 +565,7 @@ DcaTxop::StartNext (void)
 void
 DcaTxop::Cancel (void)
 {
+  NS_LOG_FUNCTION (this);
   MY_DEBUG ("transmission cancelled");
   /**
    * This happens in only one case: in an AP, you have two DcaTxop:

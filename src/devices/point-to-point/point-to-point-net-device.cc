@@ -26,6 +26,7 @@
 #include "ns3/llc-snap-header.h"
 #include "ns3/error-model.h"
 #include "ns3/trace-source-accessor.h"
+#include "ns3/pointer.h"
 #include "point-to-point-net-device.h"
 #include "point-to-point-channel.h"
 
@@ -42,23 +43,23 @@ PointToPointNetDevice::GetTypeId (void)
     .SetParent<NetDevice> ()
     .AddConstructor<PointToPointNetDevice> ()
     .AddAttribute ("Address", "The address of this device.",
-                   Mac48Address ("ff:ff:ff:ff:ff:ff"),
+                   Mac48AddressValue (Mac48Address ("ff:ff:ff:ff:ff:ff")),
                    MakeMac48AddressAccessor (&PointToPointNetDevice::m_address),
                    MakeMac48AddressChecker ())
     .AddAttribute ("DataRate", "The default data rate for point to point links",
-                   DataRate ("10Mb/s"),
+                   DataRateValue (DataRate ("10Mb/s")),
                    MakeDataRateAccessor (&PointToPointNetDevice::m_bps),
                    MakeDataRateChecker ())
     .AddAttribute ("ReceiveErrorModel", "XXX",
-                   Ptr<ErrorModel> (0),
-                   MakePtrAccessor (&PointToPointNetDevice::m_receiveErrorModel),
-                   MakePtrChecker<ErrorModel> ())
+                   PointerValue (),
+                   MakePointerAccessor (&PointToPointNetDevice::m_receiveErrorModel),
+                   MakePointerChecker<ErrorModel> ())
     .AddAttribute ("TxQueue", "XXX",
-                   Ptr<Queue> (0),
-                   MakePtrAccessor (&PointToPointNetDevice::m_queue),
-                   MakePtrChecker<Queue> ())
+                   PointerValue (),
+                   MakePointerAccessor (&PointToPointNetDevice::m_queue),
+                   MakePointerChecker<Queue> ())
     .AddAttribute ("InterframeGap", "XXX",
-                   Seconds (0.0),
+                   TimeValue (Seconds (0.0)),
                    MakeTimeAccessor (&PointToPointNetDevice::m_tInterframeGap),
                    MakeTimeChecker ())
     .AddTraceSource ("Rx", "Receive MAC packet.",
@@ -79,8 +80,7 @@ PointToPointNetDevice::PointToPointNetDevice ()
   m_linkUp (false),
   m_mtu (0xffff)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this);
+  NS_LOG_FUNCTION (this);
 }
 
 PointToPointNetDevice::~PointToPointNetDevice ()
@@ -95,7 +95,7 @@ PointToPointNetDevice::SetAddress (Mac48Address self)
 void 
 PointToPointNetDevice::AddHeader(Ptr<Packet> p, uint16_t protocolNumber)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   LlcSnapHeader llc;
   llc.SetType (protocolNumber);
   p->AddHeader (llc);
@@ -104,7 +104,7 @@ PointToPointNetDevice::AddHeader(Ptr<Packet> p, uint16_t protocolNumber)
 bool 
 PointToPointNetDevice::ProcessHeader(Ptr<Packet> p, uint16_t& param)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   LlcSnapHeader llc;
   p->RemoveHeader (llc);
 
@@ -115,7 +115,7 @@ PointToPointNetDevice::ProcessHeader(Ptr<Packet> p, uint16_t& param)
 
 void PointToPointNetDevice::DoDispose()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_node = 0;
   m_channel = 0;
   m_receiveErrorModel = 0;
@@ -124,7 +124,7 @@ void PointToPointNetDevice::DoDispose()
 
 void PointToPointNetDevice::SetDataRate(const DataRate& bps)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (!m_channel || bps <= m_channel->GetDataRate ())
     {
       m_bps = bps;
@@ -133,15 +133,14 @@ void PointToPointNetDevice::SetDataRate(const DataRate& bps)
 
 void PointToPointNetDevice::SetInterframeGap(const Time& t)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_tInterframeGap = t;
 }
 
 bool
 PointToPointNetDevice::TransmitStart (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << p);
+  NS_LOG_FUNCTION (this << p);
   NS_LOG_LOGIC ("UID is " << p->GetUid () << ")");
 //
 // This function is called to start the process of transmitting a packet.
@@ -164,7 +163,7 @@ PointToPointNetDevice::TransmitStart (Ptr<Packet> p)
 
 void PointToPointNetDevice::TransmitComplete (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 //
 // This function is called to finish the  process of transmitting a packet.
 // We need to tell the channel that we've stopped wiggling the wire and
@@ -184,8 +183,7 @@ void PointToPointNetDevice::TransmitComplete (void)
 bool 
 PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << &ch);
+  NS_LOG_FUNCTION (this << &ch);
 
   m_channel = ch;
 
@@ -211,24 +209,21 @@ PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 
 void PointToPointNetDevice::AddQueue (Ptr<Queue> q)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << q);
+  NS_LOG_FUNCTION (this << q);
 
   m_queue = q;
 }
 
 void PointToPointNetDevice::AddReceiveErrorModel (Ptr<ErrorModel> em)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS ("(" << em << ")");
+  NS_LOG_FUNCTION ("(" << em << ")");
 
   m_receiveErrorModel = em;
 }
 
 void PointToPointNetDevice::Receive (Ptr<Packet> packet)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << packet);
+  NS_LOG_FUNCTION (this << packet);
   uint16_t protocol = 0;
 
   if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) ) 
@@ -246,7 +241,7 @@ void PointToPointNetDevice::Receive (Ptr<Packet> packet)
 
 Ptr<Queue> PointToPointNetDevice::GetQueue(void) const 
 { 
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_queue;
 }
 
@@ -344,7 +339,7 @@ PointToPointNetDevice::IsPointToPoint (void) const
 bool 
 PointToPointNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
-    NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC ("p=" << packet << ", dest=" << &dest);
   NS_LOG_LOGIC ("UID is " << packet->GetUid ());
 

@@ -56,10 +56,10 @@ public:
    * CsmaNetDevice created through CsmaHelper::Install.
    */
   void SetQueue (std::string type,
-		 std::string n1 = "", Attribute v1 = Attribute (),
-		 std::string n2 = "", Attribute v2 = Attribute (),
-		 std::string n3 = "", Attribute v3 = Attribute (),
-		 std::string n4 = "", Attribute v4 = Attribute ());
+		 std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+		 std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+		 std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+		 std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue ());
 
   /**
    * \param n1 the name of the attribute to set
@@ -68,7 +68,7 @@ public:
    * Set these parameters on each ns3::CsmaNetDevice created
    * by CsmaHelper::Install
    */
-  void SetDeviceParameter (std::string n1, Attribute v1);
+  void SetDeviceParameter (std::string n1, const AttributeValue &v1);
 
   /**
    * \param n1 the name of the attribute to set
@@ -77,7 +77,7 @@ public:
    * Set these parameters on each ns3::CsmaChannel created
    * by CsmaHelper::Install
    */
-  void SetChannelParameter (std::string n1, Attribute v1);
+  void SetChannelParameter (std::string n1, const AttributeValue &v1);
 
   /**
    * \param filename filename prefix to use for pcap files.

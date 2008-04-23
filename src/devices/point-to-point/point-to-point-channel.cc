@@ -37,11 +37,11 @@ PointToPointChannel::GetTypeId (void)
     .SetParent<Channel> ()
     .AddConstructor<PointToPointChannel> ()
     .AddAttribute ("BitRate", "The maximum bitrate of the channel",
-                   DataRate (0xffffffff),
+                   DataRateValue (DataRate (0xffffffff)),
                    MakeDataRateAccessor (&PointToPointChannel::m_bps),
                    MakeDataRateChecker ())
     .AddAttribute ("Delay", "Transmission delay through the channel",
-                   Seconds (0),
+                   TimeValue (Seconds (0)),
                    MakeTimeAccessor (&PointToPointChannel::m_delay),
                    MakeTimeChecker ())
     ;
@@ -56,14 +56,13 @@ PointToPointChannel::PointToPointChannel()
   Channel ("PointToPoint Channel"), 
   m_nDevices(0)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 void
 PointToPointChannel::Attach(Ptr<PointToPointNetDevice> device)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << device);
+  NS_LOG_FUNCTION (this << device);
   NS_ASSERT(m_nDevices < N_DEVICES && "Only two devices permitted");
   NS_ASSERT(device != 0);
 
@@ -86,8 +85,7 @@ PointToPointChannel::TransmitStart(Ptr<Packet> p,
                                    Ptr<PointToPointNetDevice> src,
                                    const Time& txTime)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << p << src);
+  NS_LOG_FUNCTION (this << p << src);
   NS_LOG_LOGIC ("UID is " << p->GetUid () << ")");
 
   NS_ASSERT(m_link[0].m_state != INITIALIZING);
@@ -107,14 +105,14 @@ PointToPointChannel::TransmitStart(Ptr<Packet> p,
 uint32_t 
 PointToPointChannel::GetNDevices (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_nDevices;
 }
 
 Ptr<PointToPointNetDevice>
 PointToPointChannel::GetPointToPointDevice (uint32_t i) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT(i < 2);
   return m_link[i].m_src;
 }
@@ -122,21 +120,21 @@ PointToPointChannel::GetPointToPointDevice (uint32_t i) const
 const DataRate&
 PointToPointChannel::GetDataRate (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_bps;
 }
 
 const Time&
 PointToPointChannel::GetDelay (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_delay;
 }
 
 Ptr<NetDevice>
 PointToPointChannel::GetDevice (uint32_t i) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return GetPointToPointDevice (i);
 }
 

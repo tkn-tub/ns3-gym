@@ -137,8 +137,8 @@ int main (int argc, char *argv[])
 
   // We create the channels first without any IP addressing information
   PointToPointHelper p2p;
-  p2p.SetChannelParameter ("BitRate", DataRate(10000000));
-  p2p.SetChannelParameter ("Delay", MilliSeconds(10));
+  p2p.SetChannelParameter ("BitRate", DataRateValue (DataRate(10000000)));
+  p2p.SetChannelParameter ("Delay", TimeValue (MilliSeconds(10)));
   NetDeviceContainer dev0 = p2p.Install (c0);
   NetDeviceContainer dev1 = p2p.Install (c1);
 
@@ -170,7 +170,7 @@ int main (int argc, char *argv[])
 
   // Create a packet sink to receive these packets
   PacketSinkHelper sink ("ns3::Tcp",
-    Address (InetSocketAddress (Ipv4Address::GetAny (), servPort)));
+                         InetSocketAddress (Ipv4Address::GetAny (), servPort));
 
   ApplicationContainer apps = sink.Install (c1.Get (1));
   apps.Start (Seconds (0.0));

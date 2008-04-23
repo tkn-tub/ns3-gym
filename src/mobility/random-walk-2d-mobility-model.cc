@@ -19,6 +19,7 @@
  */
 #include "random-walk-2d-mobility-model.h"
 #include "ns3/enum.h"
+#include "ns3/double.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include <cmath>
@@ -38,34 +39,34 @@ RandomWalk2dMobilityModel::GetTypeId (void)
     .AddConstructor<RandomWalk2dMobilityModel> ()
     .AddAttribute ("Bounds",
                    "Bounds of the area to cruise.",
-                   Rectangle (0.0, 0.0, 100.0, 100.0),
+                   RectangleValue (Rectangle (0.0, 0.0, 100.0, 100.0)),
                    MakeRectangleAccessor (&RandomWalk2dMobilityModel::m_bounds),
                    MakeRectangleChecker ())
     .AddAttribute ("Time",
                    "Change current direction and speed after moving for this delay.",
-                   Seconds (1.0),
+                   TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&RandomWalk2dMobilityModel::m_modeTime),
                    MakeTimeChecker ())
     .AddAttribute ("Distance",
                    "Change current direction and speed after moving for this distance.",
-                   Seconds (1.0),
-                   MakeTimeAccessor (&RandomWalk2dMobilityModel::m_modeTime),
-                   MakeTimeChecker ())
+                   DoubleValue (1.0),
+                   MakeDoubleAccessor (&RandomWalk2dMobilityModel::m_modeDistance),
+                   MakeDoubleChecker<double> ())
     .AddAttribute ("Mode",
                    "The mode indicates the condition used to "
                    "change the current speed and direction",
-                   Enum (RandomWalk2dMobilityModel::MODE_DISTANCE),
+                   EnumValue (RandomWalk2dMobilityModel::MODE_DISTANCE),
                    MakeEnumAccessor (&RandomWalk2dMobilityModel::m_mode),
                    MakeEnumChecker (RandomWalk2dMobilityModel::MODE_DISTANCE, "Distance",
                                     RandomWalk2dMobilityModel::MODE_TIME, "Time"))
     .AddAttribute ("Direction",
                    "A random variable used to pick the direction (gradients).",
-                   UniformVariable (0.0, 6.283184),
+                   RandomVariableValue (UniformVariable (0.0, 6.283184)),
                    MakeRandomVariableAccessor (&RandomWalk2dMobilityModel::m_direction),
                    MakeRandomVariableChecker ())
     .AddAttribute ("Speed",
                    "A random variable used to pick the speed (m/s).",
-                   UniformVariable (2.0, 4.0),
+                   RandomVariableValue (UniformVariable (2.0, 4.0)),
                    MakeRandomVariableAccessor (&RandomWalk2dMobilityModel::m_speed),
                    MakeRandomVariableChecker ());
   return tid;

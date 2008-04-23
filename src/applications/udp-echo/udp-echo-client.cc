@@ -38,23 +38,23 @@ UdpEchoClient::GetTypeId (void)
     .SetParent<Application> ()
     .AddConstructor<UdpEchoClient> ()
     .AddAttribute ("MaxPackets", "XXX",
-                   Uinteger (100),
+                   UintegerValue (100),
                    MakeUintegerAccessor (&UdpEchoClient::m_count),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Interval", "XXX",
-                   Seconds (1.0),
+                   TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&UdpEchoClient::m_interval),
                    MakeTimeChecker ())
     .AddAttribute ("RemoteIpv4", "XXX",
-                   Ipv4Address (),
+                   Ipv4AddressValue (),
                    MakeIpv4AddressAccessor (&UdpEchoClient::m_peerAddress),
                    MakeIpv4AddressChecker ())
     .AddAttribute ("RemotePort", "XXX",
-                   Uinteger (0),
+                   UintegerValue (0),
                    MakeUintegerAccessor (&UdpEchoClient::m_peerPort),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("PacketSize", "Size of packets generated",
-                   Uinteger (100),
+                   UintegerValue (100),
                    MakeUintegerAccessor (&UdpEchoClient::m_size),
                    MakeUintegerChecker<uint32_t> ())
     ;
@@ -63,7 +63,7 @@ UdpEchoClient::GetTypeId (void)
 
 UdpEchoClient::UdpEchoClient ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_sent = 0;
   m_socket = 0;
   m_sendEvent = EventId ();
@@ -71,7 +71,7 @@ UdpEchoClient::UdpEchoClient ()
 
 UdpEchoClient::~UdpEchoClient()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 void 
@@ -84,14 +84,14 @@ UdpEchoClient::SetRemote (Ipv4Address ip, uint16_t port)
 void
 UdpEchoClient::DoDispose (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Application::DoDispose ();
 }
 
 void 
 UdpEchoClient::StartApplication (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   if (!m_socket)
     {
@@ -111,7 +111,7 @@ UdpEchoClient::StartApplication (void)
 void 
 UdpEchoClient::StopApplication ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   if (!m_socket) 
     {
@@ -125,14 +125,14 @@ UdpEchoClient::StopApplication ()
 void 
 UdpEchoClient::ScheduleTransmit (Time dt)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_sendEvent = Simulator::Schedule(dt, &UdpEchoClient::Send, this);
 }
 
 void 
 UdpEchoClient::Send (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   NS_ASSERT (m_sendEvent.IsExpired ());
 
@@ -154,8 +154,7 @@ UdpEchoClient::Receive(
   Ptr<Packet> packet,
   const Address &from) 
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << socket << packet << from);
+  NS_LOG_FUNCTION (this << socket << packet << from);
 
   if (InetSocketAddress::IsMatchingType (from))
     {

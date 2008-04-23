@@ -33,7 +33,7 @@
 NS_LOG_COMPONENT_DEFINE ("MacLow");
 
 #define MY_DEBUG(x) \
-  NS_LOG_DEBUG (Simulator::Now () << " " << m_mac->GetAddress () << " " << x)
+  NS_LOG_DEBUG (m_mac->GetAddress () << " " << x)
 
 namespace ns3 {
 
@@ -215,7 +215,30 @@ MacLowTransmissionParameters::GetNextPacketSize (void) const
   return m_nextSize;
 }
 
-
+std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters &params)
+{
+  os << "[" 
+     << "send rts=" << params.m_sendRts << ", "
+     << "next size=" << params.m_nextSize << ", "
+     << "dur=" << params.m_overrideDurationId << ", "
+     << "ack=";
+  switch (params.m_waitAck) {
+  case MacLowTransmissionParameters::ACK_NONE:
+    os << "none";
+    break;
+  case MacLowTransmissionParameters::ACK_NORMAL:
+    os << "normal";
+    break;
+  case MacLowTransmissionParameters::ACK_FAST:
+    os << "fast";
+    break;
+  case MacLowTransmissionParameters::ACK_SUPER_FAST:
+    os << "super-fast";
+    break;
+  }
+  os << "]";
+  return os;
+}
 
 MacLow::MacLow ()
   : m_normalAckTimeoutEvent (),
@@ -230,16 +253,20 @@ MacLow::MacLow ()
     m_currentPacket (0),
     m_listener (0)
 {
+  NS_LOG_FUNCTION (this);
   m_lastNavDuration = Seconds (0);
   m_lastNavStart = Seconds (0);
 }
 
 MacLow::~MacLow ()
-{}
+{
+  NS_LOG_FUNCTION (this);
+}
 
 void 
 MacLow::DoDispose (void)
 {
+  NS_LOG_FUNCTION (this);
   CancelAllEvents ();
   m_phy = 0;
   m_mac = 0;
@@ -249,6 +276,7 @@ MacLow::DoDispose (void)
 void
 MacLow::CancelAllEvents (void)
 {
+  NS_LOG_FUNCTION (this);
   bool oneRunning = false;
   if (m_normalAckTimeoutEvent.IsRunning ()) 
     {
@@ -339,9 +367,10 @@ MacLow::RegisterNavListener (MacLowNavListener *listener)
 void 
 MacLow::StartTransmission (Ptr<const Packet> packet, 
                            WifiMacHeader const*hdr, 
-                           MacLowTransmissionParameters parameters,
+                           MacLowTransmissionParameters params,
                            MacLowTransmissionListener *listener)
 {
+  NS_LOG_FUNCTION (this << packet << hdr << params << listener);
   /* m_currentPacket is not NULL because someone started
    * a transmission and was interrupted before one of:
    *   - ctsTimeout
@@ -360,7 +389,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
   m_currentHdr = *hdr;
   CancelAllEvents ();
   m_listener = listener;
-  m_txParams = parameters;
+  m_txParams = params;
 
   //NS_ASSERT (m_phy->IsStateIdle ());
 
@@ -383,6 +412,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
 void
 MacLow::ReceiveError (Ptr<Packet> packet, double rxSnr)
 {
+  NS_LOG_FUNCTION (this << packet << rxSnr);
   MY_DEBUG ("rx failed ");
   if (m_txParams.MustWaitFastAck ()) 
     {
@@ -396,6 +426,7 @@ MacLow::ReceiveError (Ptr<Packet> packet, double rxSnr)
 void 
 MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamble preamble)
 {
+  NS_LOG_FUNCTION (this << packet << rxSnr << txMode << preamble);
   /* A packet is received from the PHY.
    * When we have handled this packet,
    * we handle any packet present in the
@@ -754,6 +785,7 @@ void
 MacLow::ForwardDown (Ptr<const Packet> packet, WifiMacHeader const* hdr, 
                      WifiMode txMode)
 {
+  NS_LOG_FUNCTION (this << packet << hdr << txMode);
   MY_DEBUG ("send " << hdr->GetTypeString () <<
             ", to=" << hdr->GetAddr1 () <<
             ", size=" << packet->GetSize () <<
@@ -773,6 +805,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, WifiMacHeader const* hdr,
 void
 MacLow::CtsTimeout (void)
 {
+  NS_LOG_FUNCTION (this);
   MY_DEBUG ("cts timeout");
   // XXX: should check that there was no rx start before now.
   // we should restart a new cts timeout now until the expected
@@ -787,6 +820,7 @@ MacLow::CtsTimeout (void)
 void
 MacLow::NormalAckTimeout (void)
 {
+  NS_LOG_FUNCTION (this);
   MY_DEBUG ("normal ack timeout");
   // XXX: should check that there was no rx start before now.
   // we should restart a new ack timeout now until the expected
@@ -800,6 +834,7 @@ MacLow::NormalAckTimeout (void)
 void
 MacLow::FastAckTimeout (void)
 {
+  NS_LOG_FUNCTION (this);
   WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
   station->ReportDataFailed ();
   MacLowTransmissionListener *listener = m_listener;
@@ -817,6 +852,7 @@ MacLow::FastAckTimeout (void)
 void
 MacLow::SuperFastAckTimeout ()
 {
+  NS_LOG_FUNCTION (this);
   WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
   station->ReportDataFailed ();
   MacLowTransmissionListener *listener = m_listener;
@@ -836,6 +872,7 @@ MacLow::SuperFastAckTimeout ()
 void
 MacLow::SendRtsForPacket (void)
 {
+  NS_LOG_FUNCTION (this);
   /* send an RTS for this packet. */
   WifiMacHeader rts;
   rts.SetType (WIFI_MAC_CTL_RTS);
@@ -917,6 +954,7 @@ MacLow::StartDataTxTimers (void)
 void
 MacLow::SendDataPacket (void)
 {
+  NS_LOG_FUNCTION (this);
   /* send this packet directly. No RTS is needed. */
   StartDataTxTimers ();
 
@@ -977,6 +1015,7 @@ MacLow::GetStation (Mac48Address ad) const
 void
 MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiMode rtsTxMode, double rtsSnr)
 {
+  NS_LOG_FUNCTION (this);
   /* send a CTS when you receive a RTS 
    * right after SIFS.
    */
@@ -1007,6 +1046,7 @@ MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiMode rtsTxMode,
 void
 MacLow::SendDataAfterCts (Mac48Address source, Time duration, WifiMode txMode)
 {
+  NS_LOG_FUNCTION (this);
   /* send the third step in a 
    * RTS/CTS/DATA/ACK hanshake 
    */
@@ -1043,6 +1083,7 @@ MacLow::WaitSifsAfterEndTx (void)
 void
 MacLow::FastAckFailedTimeout (void)
 {
+  NS_LOG_FUNCTION (this);
   MacLowTransmissionListener *listener = m_listener;
   m_listener = 0;
   listener->MissedAck ();
@@ -1052,6 +1093,7 @@ MacLow::FastAckFailedTimeout (void)
 void
 MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMode, double dataSnr)
 {
+  NS_LOG_FUNCTION (this);
   /* send an ACK when you receive 
    * a packet after SIFS. 
    */

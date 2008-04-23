@@ -37,27 +37,27 @@ AarfWifiManager::GetTypeId (void)
     .SetParent<ArfWifiManager> ()
     .AddConstructor<AarfWifiManager> ()
     .AddAttribute ("SuccessK", "Multiplication factor for the success threshold in the AARF algorithm.",
-                   Double (2.0),
+                   DoubleValue (2.0),
                    MakeDoubleAccessor (&AarfWifiManager::m_successK),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TimerK",
                    "Multiplication factor for the timer threshold in the AARF algorithm.",
-                   Double (2.0),
+                   DoubleValue (2.0),
                    MakeDoubleAccessor (&AarfWifiManager::m_timerK),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("MaxSuccessThreshold",
                    "Maximum value of the success threshold in the AARF algorithm.",
-                   Uinteger (60),
+                   UintegerValue (60),
                    MakeUintegerAccessor (&AarfWifiManager::m_maxSuccessThreshold),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("MinTimerThreshold",
                    "The minimum value for the 'timer' threshold in the AARF algorithm.",
-                   Uinteger (15),
+                   UintegerValue (15),
                    MakeUintegerAccessor (&AarfWifiManager::m_minTimerThreshold),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("MinSuccessThreshold",
                    "The minimum value for the success threshold in the AARF algorithm.",
-                   Uinteger (10),
+                   UintegerValue (10),
                    MakeUintegerAccessor (&AarfWifiManager::m_minSuccessThreshold),
                    MakeUintegerChecker<uint32_t> ())
     ;

@@ -1,3 +1,22 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2005,2006,2007 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
 #ifndef TRACED_VALUE_H
 #define TRACED_VALUE_H
 
@@ -41,25 +60,25 @@ public:
     Set (o.m_v);
     return *this;
   }
-  TracedValue (const Integer &value) 
+  TracedValue (const IntegerValue &value) 
     : m_v (value.Get ()) {}
-  operator Integer () const {
-    return Integer (m_v);
+  operator IntegerValue () const {
+    return IntegerValue (m_v);
   }
-  TracedValue (const Uinteger &value)
+  TracedValue (const UintegerValue &value)
     : m_v (value.Get ()) {}
-  operator Uinteger () const {
-    return Uinteger (m_v);
+  operator UintegerValue () const {
+    return UintegerValue (m_v);
   }
-  TracedValue (const Boolean &value)
+  TracedValue (const BooleanValue &value)
     : m_v (value.Get ()) {}
-  operator Boolean () const {
-    return Boolean (m_v);
+  operator BooleanValue () const {
+    return BooleanValue (m_v);
   }
-  TracedValue (const Enum &value)
+  TracedValue (const EnumValue &value)
     : m_v (value.Get ()) {}
-  operator Enum () const {
-    return Enum (m_v);
+  operator EnumValue () const {
+    return EnumValue (m_v);
   }
   void ConnectWithoutContext (const CallbackBase &cb) {
     m_cb.ConnectWithoutContext (cb);

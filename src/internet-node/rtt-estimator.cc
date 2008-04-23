@@ -43,12 +43,12 @@ RttEstimator::GetTypeId (void)
     .SetParent<Object> ()
     .AddAttribute ("MaxMultiplier", 
                    "XXX",
-                   Double (64.0),
+                   DoubleValue (64.0),
                    MakeDoubleAccessor (&RttEstimator::m_maxMultiplier),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("InitialEstimation", 
                    "XXX",
-                   Seconds (1.0),
+                   TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&RttEstimator::est),
                    MakeTimeChecker ())
     ;
@@ -74,12 +74,9 @@ RttEstimator::RttEstimator () : next (1), history (),
   //note next=1 everywhere since first segment will have sequence 1
 }
 
-RttEstimator::RttEstimator (Time e) : next (1), history (), est (e),
-    nSamples (0), multiplier (1.0) 
-{ }
-
 RttEstimator::RttEstimator(const RttEstimator& c)
-  : next(c.next), history(c.history), est(c.est), nSamples(c.nSamples),
+  : Object (c), next(c.next), history(c.history), 
+    m_maxMultiplier (c.m_maxMultiplier), est(c.est), nSamples(c.nSamples),
     multiplier(c.multiplier)
 {}
 
@@ -144,6 +141,10 @@ void RttEstimator::ClearSent ()
 
 void RttEstimator::IncreaseMultiplier ()
 {
+  double a;
+  a = multiplier * 2.0;
+  double b;
+  b = m_maxMultiplier * 2.0;
   multiplier = std::min (multiplier * 2.0, m_maxMultiplier);
 }
 
@@ -177,7 +178,7 @@ RttMeanDeviation::GetTypeId (void)
     .AddConstructor<RttMeanDeviation> ()
     .AddAttribute ("Gain",
                    "XXX",
-                   Double (0.1),
+                   DoubleValue (0.1),
                    MakeDoubleAccessor (&RttMeanDeviation::gain),
                    MakeDoubleChecker<double> ())
     ;
@@ -223,7 +224,7 @@ Time RttMeanDeviation::RetransmitTimeout ()
 
 Ptr<RttEstimator> RttMeanDeviation::Copy () const
 {
-  return Create<RttMeanDeviation> (*this);
+  return CopyObject<RttMeanDeviation> (this);
 }
 
 void RttMeanDeviation::Reset ()

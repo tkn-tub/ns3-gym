@@ -24,6 +24,9 @@
 #include <string>
 #include <iostream>
 
+#ifdef NS3_LOG_ENABLE
+
+
 /**
  * \ingroup core
  * \defgroup logging Logging
@@ -35,22 +38,20 @@
  * messages, use the ns3::LogComponentEnable
  * function or use the NS_LOG environment variable 
  *
- * Use the environment variable NS_LOG to define a ';'-separated list of
+ * Use the environment variable NS_LOG to define a ':'-separated list of
  * logging components to enable. For example (using bash syntax), 
- * NS_LOG="OlsrAgent" would enable one component; 
- * NS_LOG="OlsrAgent;Ipv4L3Protocol" would enable two
- * components, etc.  NS_LOG="*" will enable all available log components.
- * For each component, the "debug" log level is enabled by default.
+ * NS_LOG="OlsrAgent" would enable one component at all log levels. 
+ * NS_LOG="OlsrAgent:Ipv4L3Protocol" would enable two components, 
+ * at all log levels, etc.  
+ * NS_LOG="*" will enable all available log components at all levels.
  *
- * To obtain more components than just debug log level, more components 
- * can be enabled selectively with the following
- * syntax: NS_LOG='Component1=func|param|warn;Component2=error|debug'
- * This example would enable the 'func', 'param', and 'warn' log
+ * To control more selectively the log levels for each component, use
+ * this syntax: NS_LOG='Component1=func|warn:Component2=error|debug'
+ * This example would enable the 'func', and 'warn' log
  * levels for 'Component1' and the 'error' and 'debug' log levels
  * for 'Component2'.  The wildcard can be used here as well.  For example
  * NS_LOG='*=level_all|prefix' would enable all log levels and prefix all
  * prints with the component and function names.
- *
  */
 
 /**
@@ -65,111 +66,30 @@
  * ns3::LogComponentDisable functions or with the NS_LOG
  * environment variable.
  */
-
-#ifdef NS3_LOG_ENABLE
-
-#define NS_LOG_COMPONENT_DEFINE(name)                                \
+#define NS_LOG_COMPONENT_DEFINE(name)                           \
   static ns3::LogComponent g_log = ns3::LogComponent (name)
 
-#else
+#define APPEND_TIME_PREFIX                                      \
+  if (g_log.IsEnabled (ns3::LOG_PREFIX_TIME))                   \
+    {                                                           \
+      LogTimePrinter printer = LogGetTimePrinter ();            \
+      if (printer != 0)                                         \
+        {                                                       \
+          (*printer) (std::clog);                               \
+          std::clog << " ";                                     \
+        }                                                       \
+    }
 
-#define NS_LOG_COMPONENT_DEFINE(name)
-
-#endif
+#define APPEND_FUNC_PREFIX                                      \
+  if (g_log.IsEnabled (ns3::LOG_PREFIX_FUNC))                   \
+    {                                                           \
+      std::clog << g_log.Name () << ":" <<                      \
+        __FUNCTION__ << "(): ";                                 \
+    }                                                           \
 
 
 /**
  * \ingroup logging
- * \param msg message to output
- *
- * Generate logging output in the "log component" of the 
- * current file. i.e., every call to NS_LOG from within
- * a file implicitely generates out within the component
- * defined with the NS_LOG_COMPONENT_DEFINE macro in the
- * same file.
- */
-
-#ifdef NS3_LOG_ENABLE
-
-
-namespace ns3 {
-
-struct EndParameterListStruct {};
-extern EndParameterListStruct EndParameterList;
-
-struct ParameterName
-{
-  const char *name;
-  ParameterName (const char *name_) : name (name_) {}
-};
-
-class ParameterLogger : public std::ostream
-{
-  int m_itemNumber;
-  const char *m_parameterName;
-public:
-  ParameterLogger ()
-    : m_itemNumber (0)
-  {}
-
-  template<typename T>
-  ParameterLogger& operator<< (T param)
-  {
-    switch (m_itemNumber)
-      {
-      case 0: // first item is actually the function name
-        std::clog << param << " (";
-        break;
-      case 1: // first parameter
-        if (m_parameterName)
-          {
-            std::clog << m_parameterName << "=" << param;
-            m_parameterName = 0;
-          }
-        else
-          {
-            std::clog << param;
-          }
-        break;
-      default: // parameter following a previous parameter
-        if (m_parameterName)
-          {
-            std::clog << ", " << m_parameterName << "=" << param;
-            m_parameterName = 0;
-          }
-        else
-          {
-            std::clog << ", " << param;
-          }
-        break;
-      }
-    m_itemNumber++;
-    return *this;
-  }
-
-  ParameterLogger&
-  operator << (ParameterName paramName)
-  {
-    m_parameterName = paramName.name;
-    return *this;
-  }
-  
-  ParameterLogger&
-  operator << (EndParameterListStruct dummy)
-  {
-    std::clog << ")" << std::endl;
-    m_itemNumber = 0;
-    return *this;
-  }
-};
-
-extern ParameterLogger g_parameterLogger;
-
-}
-
-
-
-/**
  * \param level the log level
  * \param msg the message to log
  *
@@ -187,73 +107,113 @@ extern ParameterLogger g_parameterLogger;
     {                                                           \
       if (g_log.IsEnabled (level))                              \
         {                                                       \
-          if (g_log.IsEnabled (ns3::LOG_PREFIX_ALL))            \
-            {                                                   \
-              std::clog << g_log.Name () << ":" <<              \
-                __FUNCTION__ << "(): ";                         \
-            }                                                   \
+          APPEND_TIME_PREFIX;                                   \
+          APPEND_FUNC_PREFIX;                                   \
           std::clog << msg << std::endl;                        \
         }                                                       \
     }                                                           \
   while (false)
 
-#define NS_LOG_F(level)                                         \
+/**
+ * \ingroup logging
+ * \param msg the message to log
+ *
+ * Use \ref NS_LOG to output a message of level LOG_ERROR.
+ */
+#define NS_LOG_ERROR(msg) \
+  NS_LOG(ns3::LOG_ERROR, msg)
+
+/**
+ * \ingroup logging
+ * \param msg the message to log
+ *
+ * Use \ref NS_LOG to output a message of level LOG_WARN.
+ */
+#define NS_LOG_WARN(msg) \
+  NS_LOG(ns3::LOG_WARN, msg)
+
+/**
+ * \ingroup logging
+ * \param msg the message to log
+ *
+ * Use \ref NS_LOG to output a message of level LOG_DEBUG.
+ */
+#define NS_LOG_DEBUG(msg) \
+  NS_LOG(ns3::LOG_DEBUG, msg)
+
+/**
+ * \ingroup logging
+ * \param msg the message to log
+ *
+ * Use \ref NS_LOG to output a message of level LOG_INFO.
+ */
+#define NS_LOG_INFO(msg) \
+  NS_LOG(ns3::LOG_INFO, msg)
+
+/**
+ * \ingroup logging
+ *
+ * Output the name of the function.
+ */
+#define NS_LOG_FUNCTION_NOARGS()                                \
   do                                                            \
     {                                                           \
-      if (g_log.IsEnabled (level))                              \
+      if (g_log.IsEnabled (ns3::LOG_FUNCTION))                  \
         {                                                       \
-          std::clog << g_log.Name () << ":" << __FUNCTION__ <<  \
-            "()" << std::endl;                                \
+          APPEND_TIME_PREFIX;                                   \
+          std::clog << g_log.Name () << ":"                     \
+                    << __FUNCTION__ << "()" << std::endl;       \
         }                                                       \
     }                                                           \
   while (false)
 
-#define NS_LOG_ERROR(msg) \
-  NS_LOG(ns3::LOG_ERROR, msg)
 
-#define NS_LOG_WARN(msg) \
-  NS_LOG(ns3::LOG_WARN, msg)
-
-#define NS_LOG_DEBUG(msg) \
-  NS_LOG(ns3::LOG_DEBUG, msg)
-
-#define NS_LOG_INFO(msg) \
-  NS_LOG(ns3::LOG_INFO, msg)
-
-#define NS_LOG_FUNCTION \
-  NS_LOG_F(ns3::LOG_FUNCTION)
-
-
-
-#define NS_LOG_PARAMS(parameters)                       \
+/**
+ * \ingroup logging
+ * \param parameters the parameters to output.
+ *
+ * If log level LOG_FUNCTION is enabled, this macro will output
+ * all input parameters separated by ", ".
+ *
+ * Typical usage looks like:
+ * \code
+ * NS_LOG_FUNCTION (aNumber<<anotherNumber);
+ * \endcode
+ * And the output will look like:
+ * \code
+ * Component:Function (aNumber, anotherNumber)
+ * \endcode
+ */
+#define NS_LOG_FUNCTION(parameters)                     \
   do                                                    \
     {                                                   \
-      if (g_log.IsEnabled (ns3::LOG_PARAM))             \
+      if (g_log.IsEnabled (ns3::LOG_FUNCTION))          \
         {                                               \
-          g_parameterLogger << __PRETTY_FUNCTION__      \
-                            << parameters               \
-                            << EndParameterList;        \
+          APPEND_TIME_PREFIX;                           \
+          std::clog << g_log.Name () << ":"             \
+                    << __FUNCTION__ << "(";             \
+          ParameterLogger (std::clog)  << parameters;   \
+          std::clog << ")" << std::endl;                \
         }                                               \
     }                                                   \
   while (false)
 
 
-#define NS_LOG_PARAMS_BEGIN()                           \
-      if (g_log.IsEnabled (ns3::LOG_PARAM))             \
-        {                                               \
-          g_parameterLogger << __PRETTY_FUNCTION__;
-
-#define NS_LOG_PARAM(param) \
-          g_parameterLogger << ParameterName (#param) << param;
-
-#define NS_LOG_PARAMS_END()                             \
-          g_parameterLogger << EndParameterList;        \
-        }
-
-
+/**
+ * \ingroup logging
+ * \param msg the message to log
+ *
+ * Use \ref NS_LOG to output a message of level LOG_LOGIC
+ */
 #define NS_LOG_LOGIC(msg) \
   NS_LOG(ns3::LOG_LOGIC, msg)
 
+/**
+ * \ingroup logging
+ * \param msg the message to log
+ *
+ * Output the requested message unconditionaly.
+ */
 #define NS_LOG_UNCOND(msg)              \
   do                                    \
     {                                   \
@@ -261,27 +221,7 @@ extern ParameterLogger g_parameterLogger;
     }                                   \
   while (false)
 
-#else
-
-#define NS_LOG(level, msg)
-#define NS_LOG_F(level)
-#define NS_LOG_ERROR(msg)
-#define NS_LOG_WARN(msg)
-#define NS_LOG_DEBUG(msg)
-#define NS_LOG_INFO(msg)
-#define NS_LOG_FUNCTION
-#define NS_LOG_PARAMS(parameters)
-#define NS_LOG_PARAMS_BEGIN()
-#define NS_LOG_PARAM(param)
-#define NS_LOG_PARAMS_END()
-#define NS_LOG_LOGIC(msg)
-#define NS_LOG_UNCOND(msg)
-
-#endif
-
 namespace ns3 {
-
-#ifdef NS3_LOG_ENABLE
 
 enum LogLevel {
   LOG_NONE           = 0x00000000, // no logging
@@ -301,21 +241,16 @@ enum LogLevel {
   LOG_FUNCTION       = 0x00000010, // function tracing
   LOG_LEVEL_FUNCTION = 0x0000001f, 
 
-  LOG_PARAM          = 0x00000020, // parameters to functions
-  LOG_LEVEL_PARAM    = 0x0000003f,
+  LOG_LOGIC          = 0x00000020, // control flow tracing within functions
+  LOG_LEVEL_LOGIC    = 0x0000003f,
 
-  LOG_LOGIC          = 0x00000040, // control flow tracing within functions
-  LOG_LEVEL_LOGIC    = 0x0000007f,
-
-  LOG_ALL            = 0x7fffffff, // print everything
+  LOG_ALL            = 0x3fffffff, // print everything
   LOG_LEVEL_ALL      = LOG_ALL,
 
-  LOG_PREFIX_ALL     = 0x80000000  // prefix all trace prints with function
+  LOG_PREFIX_FUNC    = 0x80000000, // prefix all trace prints with function
+  LOG_PREFIX_TIME    = 0x40000000  // prefix all trace prints with simulation time
 };
 
-#endif
-
-#ifdef NS3_LOG_ENABLE
 /**
  * \param name a log component name
  * \param level a logging level
@@ -324,22 +259,24 @@ enum LogLevel {
  * Enable the logging output associated with that log component.
  * The logging output can be later disabled with a call
  * to ns3::LogComponentDisable.
+ *
+ * Same as running your program with the NS_LOG environment
+ * variable set as NS_LOG='name=level'
  */
-  void LogComponentEnable (char const *name, enum LogLevel level);
+void LogComponentEnable (char const *name, enum LogLevel level);
 
 /**
  * \param level a logging level
  * \ingroup logging
  *
  * Enable the logging output for all registered log components.
+ *
+ * Same as running your program with the NS_LOG environment
+ * variable set as NS_LOG='*=level'
  */
-  void LogComponentEnableAll (enum LogLevel level);
-#else
-#define LogComponentEnable(a,b)
-#define LogComponentEnableAll(a)
-#endif
+void LogComponentEnableAll (enum LogLevel level);
 
-#ifdef NS3_LOG_ENABLE
+
 /**
  * \param name a log component name
  * \param level a logging level
@@ -359,23 +296,21 @@ void LogComponentDisable (char const *name, enum LogLevel level);
  */
 void LogComponentDisableAll (enum LogLevel level);
 
-#else
-#define LogComponentDisable(a,b)
-#define LogComponentDisableAll(a)
-#endif
 
 /**
  * \ingroup logging
  *
  * Print the list of logging messages available.
+ * Same as running your program with the NS_LOG environment
+ * variable set as NS_LOG=print-list
  */
-#ifdef NS3_LOG_ENABLE
 void LogComponentPrintList (void);
-#else
-#define LogComponentPrintList()
-#endif
 
-#ifdef NS3_LOG_ENABLE
+typedef void (*LogTimePrinter) (std::ostream &os);
+
+void LogRegisterTimePrinter (LogTimePrinter);
+LogTimePrinter LogGetTimePrinter(void);
+
 
 class LogComponent {
 public:
@@ -393,8 +328,52 @@ private:
   bool        m_decorate;
 };
 
-#endif
+class ParameterLogger : public std::ostream
+{
+  int m_itemNumber;
+  std::ostream &m_os;
+public:
+  ParameterLogger (std::ostream &os);
+
+  template<typename T>
+  ParameterLogger& operator<< (T param)
+  {
+    switch (m_itemNumber)
+      {
+      case 0: // first parameter
+        m_os << param;
+        break;
+      default: // parameter following a previous parameter
+        m_os << ", " << param;
+        break;
+      }
+    m_itemNumber++;
+    return *this;
+  }
+};
 
 } // namespace ns3
+
+#else /* LOG_ENABLE */
+
+#define NS_LOG_COMPONENT_DEFINE(component)
+#define NS_LOG(level, msg)
+#define NS_LOG_ERROR(msg)
+#define NS_LOG_WARN(msg)
+#define NS_LOG_DEBUG(msg)
+#define NS_LOG_INFO(msg)
+#define NS_LOG_FUNCTION_NOARGS()
+#define NS_LOG_FUNCTION(msg)
+#define NS_LOG_LOGIC(msg)
+#define NS_LOG_UNCOND(msg)
+
+#define LogComponentPrintList
+#define LogComponentEnable(name,level)
+#define LogComponentDisable(name,level)
+#define LogComponentEnableAll(level)
+#define LogComponentDisableAll(level)
+#define LogRegisterTimePrinter(printer)
+
+#endif /* LOG_ENABLE */
 
 #endif // __LOG_H__

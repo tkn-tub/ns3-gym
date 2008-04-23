@@ -29,10 +29,10 @@ namespace ns3 {
 
 class EventHolder;
 
-class SchedulerHeap : public Scheduler {
+class HeapScheduler : public Scheduler {
 public:
-  SchedulerHeap ();
-  virtual ~SchedulerHeap ();
+  HeapScheduler ();
+  virtual ~HeapScheduler ();
 
   virtual void Insert (const EventId &id);
   virtual bool IsEmpty (void) const;

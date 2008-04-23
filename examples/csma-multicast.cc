@@ -59,7 +59,7 @@ main (int argc, char *argv[])
   // Set up default values for the simulation.  
   //
   // Select Ethernet II-style encapsulation (no LLC/Snap header)
-  Config::SetDefault ("ns3::CsmaNetDevice::EncapsulationMode", String ("IpArp"));  
+  Config::SetDefault ("ns3::CsmaNetDevice::EncapsulationMode", StringValue ("IpArp"));  
 
   // Allow the user to override any of the defaults at
   // run-time, via command-line arguments
@@ -75,8 +75,8 @@ main (int argc, char *argv[])
   
   NS_LOG_INFO ("Build Topology.");
   CsmaHelper csma;
-  csma.SetChannelParameter ("BitRate", DataRate (5000000));
-  csma.SetChannelParameter ("Delay", MilliSeconds (2));
+  csma.SetChannelParameter ("BitRate", DataRateValue (DataRate (5000000)));
+  csma.SetChannelParameter ("Delay", TimeValue (MilliSeconds (2)));
  
   // We will use these NetDevice containers later, for IP addressing
   NetDeviceContainer nd0 = csma.Install (c0);  // First LAN
@@ -142,10 +142,10 @@ main (int argc, char *argv[])
   // every few seconds
   OnOffHelper onoff ("ns3::Udp", 
     Address (InetSocketAddress (multicastGroup, multicastPort)));
-  onoff.SetAttribute ("OnTime", ConstantVariable (1));
-  onoff.SetAttribute ("OffTime", ConstantVariable (0));
-  onoff.SetAttribute ("DataRate", DataRate ("255b/s"));
-  onoff.SetAttribute ("PacketSize", Uinteger (128));
+  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
+  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onoff.SetAttribute ("DataRate", DataRateValue (DataRate ("255b/s")));
+  onoff.SetAttribute ("PacketSize", UintegerValue (128));
 
   ApplicationContainer srcC = onoff.Install (c0.Get (0));
 
@@ -157,7 +157,7 @@ main (int argc, char *argv[])
 
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink ("ns3::Udp",
-    Address (InetSocketAddress (Ipv4Address::GetAny(), multicastPort)));
+                         InetSocketAddress (Ipv4Address::GetAny(), multicastPort));
 
   ApplicationContainer sinkC = sink.Install (c1.Get (2)); // Node n4 
   // Start the sink

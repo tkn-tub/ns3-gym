@@ -54,7 +54,6 @@ def build(bld):
         'wifi-preamble.h',
 	'wifi-phy-standard.h',
         'wifi-phy.h',
-	'wifi-trace.h',
         'wifi-remote-station-manager.h',
         'arf-wifi-manager.h',
         'aarf-wifi-manager.h',

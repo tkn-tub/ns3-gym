@@ -163,10 +163,6 @@ public:
    */
   static void SetRunNumber(uint32_t n);
 
-
-  RandomVariable (Attribute value);
-  operator Attribute () const;
-
 private:
   friend std::ostream &operator << (std::ostream &os, const RandomVariable &var);
   friend std::istream &operator >> (std::istream &os, RandomVariable &var);
@@ -665,6 +661,11 @@ public:
 
 std::ostream &operator << (std::ostream &os, const RandomVariable &var);
 std::istream &operator >> (std::istream &os, RandomVariable &var);
+
+/**
+ * \class ns3::RandomVariableValue
+ * \brief hold objects of type ns3::RandomVariable
+ */
 
 ATTRIBUTE_VALUE_DEFINE (RandomVariable);
 ATTRIBUTE_CHECKER_DEFINE (RandomVariable);

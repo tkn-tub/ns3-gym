@@ -23,30 +23,30 @@
 
 namespace ns3 {
 
-Enum::Enum ()
+EnumValue::EnumValue ()
   : m_v ()
 {}
-Enum::Enum (int v)
+EnumValue::EnumValue (int v)
   : m_v (v)
 {}
 void 
-Enum::Set (int v)
+EnumValue::Set (int v)
 {
   m_v = v;
 }
 int 
-Enum::Get (void) const
+EnumValue::Get (void) const
 {
   return m_v;
 }
 
-Attribute
-Enum::Copy (void) const
+Ptr<AttributeValue>
+EnumValue::Copy (void) const
 {
-  return Attribute::Create<Enum> (*this);
+  return ns3::Create<EnumValue> (*this);
 }
 std::string 
-Enum::SerializeToString (Ptr<const AttributeChecker> checker) const
+EnumValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
   const EnumChecker *p = dynamic_cast<const EnumChecker *> (PeekPointer (checker));
   NS_ASSERT (p != 0);
@@ -63,7 +63,7 @@ Enum::SerializeToString (Ptr<const AttributeChecker> checker) const
   return "";
 }
 bool 
-Enum::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
+EnumValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
   const EnumChecker *p = dynamic_cast<const EnumChecker *> (PeekPointer (checker));
   NS_ASSERT (p != 0);
@@ -77,22 +77,6 @@ Enum::DeserializeFromString (std::string value, Ptr<const AttributeChecker> chec
     }
   return false;
 }
-
-Enum::Enum (Attribute value)
-{
-  const Enum *v = value.DynCast<const Enum *> ();
-  if (v == 0)
-    {
-      NS_FATAL_ERROR ("assigning non-Enum value to Enum value.");
-    }
-  m_v = v->m_v;
-}
-Enum::operator Attribute () const
-{
-  return Attribute::Create<Enum> (*this);
-}
-
-
 
 EnumChecker::EnumChecker ()
 {}
@@ -108,9 +92,9 @@ EnumChecker::Add (int v, std::string name)
   m_valueSet.push_back (std::make_pair (v, name));
 }
 bool 
-EnumChecker::Check (Attribute value) const
+EnumChecker::Check (const AttributeValue &value) const
 {
-  const Enum *p = value.DynCast<const Enum *> ();
+  const EnumValue *p = dynamic_cast<const EnumValue *> (&value);
   if (p == 0)
     {
       return false;
@@ -125,17 +109,17 @@ EnumChecker::Check (Attribute value) const
   return false;
 }
 std::string 
-EnumChecker::GetType (void) const
+EnumChecker::GetValueTypeName (void) const
 {
-  return "Enum";
+  return "ns3::EnumValue";
 }
 bool 
-EnumChecker::HasTypeConstraints (void) const
+EnumChecker::HasUnderlyingTypeInformation (void) const
 {
   return true;
 }
 std::string 
-EnumChecker::GetTypeConstraints (void) const
+EnumChecker::GetUnderlyingTypeInformation (void) const
 {
   std::ostringstream oss;
   for (ValueSet::const_iterator i = m_valueSet.begin (); i != m_valueSet.end ();)
@@ -149,10 +133,23 @@ EnumChecker::GetTypeConstraints (void) const
     }
   return oss.str ();
 }
-Attribute 
+Ptr<AttributeValue>
 EnumChecker::Create (void) const
 {
-  return Attribute::Create<Enum> ();
+  return ns3::Create<EnumValue> ();
+}
+
+bool 
+EnumChecker::Copy (const AttributeValue &source, AttributeValue &destination) const
+{
+  const EnumValue *src = dynamic_cast<const EnumValue *> (&source);
+  EnumValue *dst = dynamic_cast<EnumValue *> (&destination);
+  if (src == 0 || dst == 0)
+    {
+      return false;
+    }
+  *dst = *src;
+  return true;
 }
 
 

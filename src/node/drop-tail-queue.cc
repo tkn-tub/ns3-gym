@@ -32,7 +32,7 @@ TypeId DropTailQueue::GetTypeId (void)
     .SetParent<Queue> ()
     .AddConstructor<DropTailQueue> ()
     .AddAttribute ("MaxPackets", "The maximum number of packets accepted by this DropTailQueue.",
-                   Uinteger (100),
+                   UintegerValue (100),
                    MakeUintegerAccessor (&DropTailQueue::m_maxPackets),
                    MakeUintegerChecker<uint32_t> ())
     ;
@@ -44,19 +44,18 @@ DropTailQueue::DropTailQueue () :
   Queue (),
   m_packets ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 DropTailQueue::~DropTailQueue ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 bool 
 DropTailQueue::DoEnqueue (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << p);
+  NS_LOG_FUNCTION (this << p);
 
   if (m_packets.size () >= m_maxPackets)
     {
@@ -72,8 +71,7 @@ DropTailQueue::DoEnqueue (Ptr<Packet> p)
 Ptr<Packet>
 DropTailQueue::DoDequeue (void)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this);
+  NS_LOG_FUNCTION (this);
 
   if (m_packets.empty()) 
     {
@@ -92,8 +90,7 @@ DropTailQueue::DoDequeue (void)
 Ptr<Packet>
 DropTailQueue::DoPeek (void) const
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this);
+  NS_LOG_FUNCTION (this);
 
   if (m_packets.empty()) 
     {
@@ -132,7 +129,7 @@ DropTailQueueTest::RunTests (void)
   bool result = true;
 
   Ptr<DropTailQueue> queue = CreateObject<DropTailQueue> ();
-  NS_TEST_ASSERT (queue->SetAttributeFailSafe ("MaxPackets", Uinteger (3)));
+  NS_TEST_ASSERT (queue->SetAttributeFailSafe ("MaxPackets", UintegerValue (3)));
   
   Ptr<Packet> p1, p2, p3, p4;
   p1 = Create<Packet> ();

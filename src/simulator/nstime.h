@@ -274,6 +274,7 @@ TimeUnit<N1+N2> operator * (TimeUnit<N1> const &lhs, TimeUnit<N2> const &rhs)
 template <int N1, int N2>
 TimeUnit<N1-N2> operator / (TimeUnit<N1> const &lhs, TimeUnit<N2> const &rhs)
 {
+  NS_ASSERT (rhs.GetHighPrecision ().GetDouble () != 0);
   HighPrecision retval = lhs.GetHighPrecision ();
   retval.Div (rhs.GetHighPrecision ());
   return TimeUnit<N1-N2> (retval);
@@ -436,8 +437,6 @@ public:
   static uint64_t UnitsToTimestep (uint64_t unitValue, 
                                    uint64_t unitFactor);
 
-  TimeUnit (Attribute value);
-  operator Attribute () const;
 private:
   HighPrecision m_data;
 
@@ -668,6 +667,12 @@ typedef TimeUnit<0> Scalar;
 
 typedef TimeUnit<-1> TimeInvert;
 typedef TimeUnit<2> TimeSquare;
+
+/**
+ * \class ns3::TimeValue
+ * \brief hold objects of type ns3::Time
+ */
+
 
 ATTRIBUTE_ACCESSOR_DEFINE (Time);
 ATTRIBUTE_VALUE_DEFINE (Time);

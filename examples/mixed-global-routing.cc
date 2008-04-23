@@ -51,8 +51,8 @@ NS_LOG_COMPONENT_DEFINE ("MixedGlobalRoutingExample");
 int 
 main (int argc, char *argv[])
 {
-  Config::SetDefault ("ns3::OnOffApplication::PacketSize", Uinteger (210));
-  Config::SetDefault ("ns3::OnOffApplication::DataRate", DataRate ("448kb/s"));
+  Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
+  Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("448kb/s"));
 
   // Allow the user to override any of the defaults and the above
   // Bind ()s at run-time, via command-line arguments
@@ -73,20 +73,20 @@ main (int argc, char *argv[])
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
   PointToPointHelper p2p;
-  p2p.SetChannelParameter ("BitRate", DataRate (5000000));
-  p2p.SetChannelParameter ("Delay", MilliSeconds (2));
+  p2p.SetChannelParameter ("BitRate", StringValue ("5Mbps"));
+  p2p.SetChannelParameter ("Delay", StringValue ("2ms"));
   NetDeviceContainer d0d2 = p2p.Install (n0n2);
 
   NetDeviceContainer d1d2 = p2p.Install (n1n2);
 
-  p2p.SetChannelParameter ("BitRate", DataRate (1500000));
-  p2p.SetChannelParameter ("Delay", MilliSeconds (10));
+  p2p.SetChannelParameter ("BitRate", StringValue ("1500kbps"));
+  p2p.SetChannelParameter ("Delay", StringValue ("10ms"));
   NetDeviceContainer d5d6 = p2p.Install (n5n6);
 
   // We create the channels first without any IP addressing information
   CsmaHelper csma;
-  csma.SetChannelParameter ("BitRate", DataRate (5000000));
-  csma.SetChannelParameter ("Delay", MilliSeconds (2));
+  csma.SetChannelParameter ("BitRate", StringValue ("5Mbps"));
+  csma.SetChannelParameter ("Delay", StringValue ("2ms"));
   NetDeviceContainer d2345 = csma.Install (n2345);
   
   // Later, we add IP addresses.  
@@ -113,11 +113,11 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
   OnOffHelper onoff ("ns3::Udp",
-    Address (InetSocketAddress (i5i6.GetAddress (1), port)));
-  onoff.SetAttribute ("OnTime", ConstantVariable (1));
-  onoff.SetAttribute ("OffTime", ConstantVariable (0));
-  onoff.SetAttribute ("DataRate", DataRate("300bps"));
-  onoff.SetAttribute ("PacketSize", Uinteger (50));
+                     InetSocketAddress (i5i6.GetAddress (1), port));
+  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
+  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onoff.SetAttribute ("DataRate", StringValue ("300bps"));
+  onoff.SetAttribute ("PacketSize", UintegerValue (50));
 
   ApplicationContainer apps = onoff.Install (c.Get (0));
   apps.Start (Seconds (1.0));

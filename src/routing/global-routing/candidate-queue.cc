@@ -28,19 +28,19 @@ namespace ns3 {
 CandidateQueue::CandidateQueue()
   : m_candidates ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 CandidateQueue::~CandidateQueue()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   Clear ();
 }
 
   void
 CandidateQueue::Clear (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   while (!m_candidates.empty ())
     {
       SPFVertex *p = Pop ();
@@ -52,8 +52,7 @@ CandidateQueue::Clear (void)
   void
 CandidateQueue::Push (SPFVertex *vNew)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << vNew);
+  NS_LOG_FUNCTION (this << vNew);
 
   CandidateList_t::iterator i = m_candidates.begin ();  
 
@@ -71,7 +70,7 @@ CandidateQueue::Push (SPFVertex *vNew)
   SPFVertex *
 CandidateQueue::Pop (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_candidates.empty ())
     {
       return 0;
@@ -85,7 +84,7 @@ CandidateQueue::Pop (void)
   SPFVertex *
 CandidateQueue::Top (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_candidates.empty ())
     {
       return 0;
@@ -97,21 +96,21 @@ CandidateQueue::Top (void) const
   bool
 CandidateQueue::Empty (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_candidates.empty ();
 }
 
   uint32_t
 CandidateQueue::Size (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_candidates.size ();
 }
 
   SPFVertex *
 CandidateQueue::Find (const Ipv4Address addr) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   CandidateList_t::const_iterator i = m_candidates.begin ();
 
   for (; i != m_candidates.end (); i++)
@@ -129,7 +128,7 @@ CandidateQueue::Find (const Ipv4Address addr) const
   void
 CandidateQueue::Reorder (void)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   std::list<SPFVertex*> temp;
 
   while (!m_candidates.empty ()) {

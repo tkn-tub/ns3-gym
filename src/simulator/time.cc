@@ -41,7 +41,7 @@ static uint64_t g_tsPrecFactor = NS_FACTOR;
 
 static GlobalValue g_precisionDefaultValue ("TimeStepPrecision", 
                                             "The time unit of the internal 64 bit integer time.",
-                                            Enum (NS),
+                                            EnumValue (NS),
                                             MakeEnumChecker (NS, "NS",
                                                              S, "S",
                                                              MS, "MS",
@@ -53,14 +53,15 @@ static GlobalValue g_precisionDefaultValue ("TimeStepPrecision",
 precision_t
 Get (void)
 {
-  Enum v = g_precisionDefaultValue.GetValue ();
+  EnumValue v;
+  g_precisionDefaultValue.GetValue (v);
   return (precision_t) v.Get ();
 }
 
 void 
 Set (precision_t precision)
 {
-  g_precisionDefaultValue.SetValue (Enum (precision));
+  g_precisionDefaultValue.SetValue (EnumValue (precision));
   g_tsPrecFactor = (uint64_t)pow(10, precision);
 }
 
@@ -230,7 +231,7 @@ std::istream& operator>> (std::istream& is, Time & time)
       is.setstate (std::ios_base::failbit);
       return is;
     }
-  std::string trailer = value.substr(n, value.size ()-1-n);
+  std::string trailer = value.substr(n, value.size ()-n);
   std::istringstream iss;
   iss.str (value.substr(0, n));
 
@@ -299,20 +300,6 @@ TimeUnit<1>::UnitsToTimestep (uint64_t unitValue,
       unitValue = unitValue * precFactor;
     }
   return unitValue;
-}
-
-TimeUnit<1>::TimeUnit (Attribute value)
-{
-  const TimeValue *v = value.DynCast<const TimeValue *> ();
-  if (v == 0)
-    {
-      NS_FATAL_ERROR ("Unexpected type of value. Expected \"TimeValue\"");
-    }
-  *this = v->Get ();
-}
-TimeUnit<1>::operator Attribute () const
-{
-  return Attribute::Create<TimeValue> (*this);
 }
 
 ATTRIBUTE_VALUE_IMPLEMENT (Time);
@@ -491,12 +478,12 @@ bool TimeTests::RunTests (void)
 
   TimeStepPrecision::Set (TimeStepPrecision::NS);
 
-  Config::SetGlobal ("TimeStepPrecision", String ("S"));
-  Config::SetGlobal ("TimeStepPrecision", String ("MS"));
-  Config::SetGlobal ("TimeStepPrecision", String ("US"));
-  Config::SetGlobal ("TimeStepPrecision", String ("NS"));
-  Config::SetGlobal ("TimeStepPrecision", String ("PS"));
-  Config::SetGlobal ("TimeStepPrecision", String ("FS"));
+  Config::SetGlobal ("TimeStepPrecision", StringValue ("S"));
+  Config::SetGlobal ("TimeStepPrecision", StringValue ("MS"));
+  Config::SetGlobal ("TimeStepPrecision", StringValue ("US"));
+  Config::SetGlobal ("TimeStepPrecision", StringValue ("NS"));
+  Config::SetGlobal ("TimeStepPrecision", StringValue ("PS"));
+  Config::SetGlobal ("TimeStepPrecision", StringValue ("FS"));
 
 
   Time tooBig = TimeStep (0x8000000000000000LL);

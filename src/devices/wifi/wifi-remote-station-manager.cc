@@ -127,23 +127,23 @@ WifiRemoteStationManager::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::WifiRemoteStationManager")
     .SetParent<Object> ()
     .AddAttribute ("IsLowLatency", "XXX",
-                   Boolean (true),
+                   BooleanValue (true),
                    MakeBooleanAccessor (&WifiRemoteStationManager::m_isLowLatency),
                    MakeBooleanChecker ())
     .AddAttribute ("MaxSsrc", "XXX",
-                   Uinteger (7),
+                   UintegerValue (7),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_maxSsrc),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("MaxSlrc", "XXX",
-                   Uinteger (7),
+                   UintegerValue (7),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_maxSlrc),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("RtsCtsThreshold", "XXX",
-                   Uinteger (1500),
+                   UintegerValue (1500),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_rtsCtsThreshold),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("FragmentationThreshold", "XXX",
-                   Uinteger (1500),
+                   UintegerValue (1500),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_fragmentationThreshold),
                    MakeUintegerChecker<uint32_t> ())
     ;

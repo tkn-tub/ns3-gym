@@ -54,7 +54,7 @@ SPFVertex::SPFVertex () :
   m_parent (0),
   m_children ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 SPFVertex::SPFVertex (GlobalRoutingLSA* lsa) : 
@@ -66,7 +66,7 @@ SPFVertex::SPFVertex (GlobalRoutingLSA* lsa) :
   m_parent (0),
   m_children ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (lsa->GetLSType () == GlobalRoutingLSA::RouterLSA) 
     {
       NS_LOG_LOGIC ("Setting m_vertexType to VertexRouter");
@@ -81,7 +81,7 @@ SPFVertex::SPFVertex (GlobalRoutingLSA* lsa) :
 
 SPFVertex::~SPFVertex ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   for ( ListOfSPFVertex_t::iterator i = m_children.begin ();
         i != m_children.end ();
         i++)
@@ -97,112 +97,112 @@ SPFVertex::~SPFVertex ()
   void 
 SPFVertex::SetVertexType (SPFVertex::VertexType type)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_vertexType = type;
 }
 
   SPFVertex::VertexType 
 SPFVertex::GetVertexType (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_vertexType;
 }
 
   void 
 SPFVertex::SetVertexId (Ipv4Address id)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_vertexId = id;
 }
 
   Ipv4Address
 SPFVertex::GetVertexId (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_vertexId;
 }
 
   void 
 SPFVertex::SetLSA (GlobalRoutingLSA* lsa)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_lsa = lsa;
 }
 
   GlobalRoutingLSA* 
 SPFVertex::GetLSA (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_lsa;
 }
 
   void 
 SPFVertex::SetDistanceFromRoot (uint32_t distance)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_distanceFromRoot = distance;
 }
 
   uint32_t
 SPFVertex::GetDistanceFromRoot (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_distanceFromRoot;
 }
 
   void 
 SPFVertex::SetOutgoingTypeId (uint32_t id)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_rootOif = id;
 }
 
   uint32_t 
 SPFVertex::GetOutgoingTypeId (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_rootOif;
 }
 
   void 
 SPFVertex::SetNextHop (Ipv4Address nextHop)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_nextHop = nextHop;
 }
 
   Ipv4Address
 SPFVertex::GetNextHop (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_nextHop;
 }
 
   void
 SPFVertex::SetParent (SPFVertex* parent)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_parent = parent;
 }
 
   SPFVertex* 
 SPFVertex::GetParent (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_parent;
 }
 
   uint32_t 
 SPFVertex::GetNChildren (void) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   return m_children.size ();
 }
 
   SPFVertex* 
 SPFVertex::GetChild (uint32_t n) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   uint32_t j = 0;
 
   for ( ListOfSPFVertex_t::const_iterator i = m_children.begin ();
@@ -221,7 +221,7 @@ SPFVertex::GetChild (uint32_t n) const
   uint32_t 
 SPFVertex::AddChild (SPFVertex* child)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_children.push_back (child);
   return m_children.size ();
 }
@@ -236,12 +236,12 @@ GlobalRouteManagerLSDB::GlobalRouteManagerLSDB ()
 :
   m_database ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 GlobalRouteManagerLSDB::~GlobalRouteManagerLSDB ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   LSDBMap_t::iterator i;
   for (i= m_database.begin (); i!= m_database.end (); i++)
     {
@@ -256,7 +256,7 @@ GlobalRouteManagerLSDB::~GlobalRouteManagerLSDB ()
   void
 GlobalRouteManagerLSDB::Initialize ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   LSDBMap_t::iterator i;
   for (i= m_database.begin (); i!= m_database.end (); i++)
     {
@@ -268,14 +268,14 @@ GlobalRouteManagerLSDB::Initialize ()
   void
 GlobalRouteManagerLSDB::Insert (Ipv4Address addr, GlobalRoutingLSA* lsa)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_database.insert (LSDBPair_t (addr, lsa));
 }
 
   GlobalRoutingLSA*
 GlobalRouteManagerLSDB::GetLSA (Ipv4Address addr) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 //
 // Look up an LSA by its address.
 //
@@ -293,7 +293,7 @@ GlobalRouteManagerLSDB::GetLSA (Ipv4Address addr) const
   GlobalRoutingLSA*
 GlobalRouteManagerLSDB::GetLSAByLinkData (Ipv4Address addr) const
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 //
 // Look up an LSA by its address.
 //
@@ -325,13 +325,13 @@ GlobalRouteManagerImpl::GlobalRouteManagerImpl ()
 : 
   m_spfroot (0) 
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   m_lsdb = new GlobalRouteManagerLSDB ();
 }
 
 GlobalRouteManagerImpl::~GlobalRouteManagerImpl ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_lsdb)
     {
       delete m_lsdb;
@@ -341,7 +341,7 @@ GlobalRouteManagerImpl::~GlobalRouteManagerImpl ()
   void
 GlobalRouteManagerImpl::DebugUseLsdb (GlobalRouteManagerLSDB* lsdb)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_lsdb)
     {
       delete m_lsdb;
@@ -359,7 +359,7 @@ GlobalRouteManagerImpl::DebugUseLsdb (GlobalRouteManagerLSDB* lsdb)
   void
 GlobalRouteManagerImpl::SelectRouterNodes () 
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
     {
       Ptr<Node> node = *i;
@@ -383,7 +383,7 @@ GlobalRouteManagerImpl::SelectRouterNodes ()
   void
 GlobalRouteManagerImpl::BuildGlobalRoutingDatabase () 
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 //
 // Walk the list of nodes looking for the GlobalRouter Interface.
 //
@@ -464,7 +464,7 @@ GlobalRouteManagerImpl::BuildGlobalRoutingDatabase ()
   void
 GlobalRouteManagerImpl::InitializeRoutes ()
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 //
 // Walk the list of nodes in the system.
 //
@@ -504,7 +504,7 @@ GlobalRouteManagerImpl::InitializeRoutes ()
   void
 GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   SPFVertex* w = 0;
   GlobalRoutingLSA* w_lsa = 0;
@@ -706,7 +706,7 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
   GlobalRoutingLinkRecord* l,
   uint32_t distance)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 //
 // If w is a NetworkVertex, l should be null
 /*
@@ -891,7 +891,7 @@ GlobalRouteManagerImpl::SPFGetNextLink (
   SPFVertex* w,
   GlobalRoutingLinkRecord* prev_link) 
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   bool skip = true;
   bool found_prev_link = false;
@@ -966,7 +966,7 @@ GlobalRouteManagerImpl::SPFGetNextLink (
   void
 GlobalRouteManagerImpl::DebugSPFCalculate (Ipv4Address root)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   SPFCalculate (root);
 }
 
@@ -974,8 +974,7 @@ GlobalRouteManagerImpl::DebugSPFCalculate (Ipv4Address root)
   void
 GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
 {
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << root);
+  NS_LOG_FUNCTION (this << root);
 
   SPFVertex *v;
 //
@@ -1124,7 +1123,7 @@ GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
   uint32_t
 GlobalRouteManagerImpl::FindOutgoingTypeId (Ipv4Address a, Ipv4Mask amask)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 //
 // We have an IP address <a> and a vertex ID of the root of the SPF tree.  
 // The question is what interface index does this address correspond to.
@@ -1200,7 +1199,7 @@ GlobalRouteManagerImpl::FindOutgoingTypeId (Ipv4Address a, Ipv4Mask amask)
   void
 GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   NS_ASSERT_MSG (m_spfroot, 
     "GlobalRouteManagerImpl::SPFIntraAddRouter (): Root pointer not set");
@@ -1317,7 +1316,7 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
   void
 GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
 
   NS_ASSERT_MSG (m_spfroot, 
     "GlobalRouteManagerImpl::SPFIntraAddTransit (): Root pointer not set");
@@ -1410,7 +1409,7 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
   void
 GlobalRouteManagerImpl::SPFVertexAddParent (SPFVertex* v)
 {
-  NS_LOG_FUNCTION;
+  NS_LOG_FUNCTION_NOARGS ();
   v->GetParent ()->AddChild (v);
 }
 

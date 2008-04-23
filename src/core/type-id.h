@@ -163,7 +163,7 @@ public:
    * \returns the value with which the associated attribute 
    *          is initialized.
    */
-  Attribute GetAttributeInitialValue (uint32_t i) const;
+  Ptr<const AttributeValue> GetAttributeInitialValue (uint32_t i) const;
   /**
    * \param i index into attribute array.
    * \returns the flags associated to the requested attribute.
@@ -264,7 +264,7 @@ public:
    */
   TypeId AddAttribute (std::string name,
                        std::string help, 
-                       Attribute initialValue,
+                       const AttributeValue &initialValue,
                        Ptr<const AttributeAccessor> accessor,
                        Ptr<const AttributeChecker> checker);
 
@@ -283,7 +283,7 @@ public:
   TypeId AddAttribute (std::string name,
                        std::string help, 
                        uint32_t flags,
-                       Attribute initialValue,
+                       const AttributeValue &initialValue,
                        Ptr<const AttributeAccessor> accessor,
                        Ptr<const AttributeChecker> checker);
 
@@ -308,7 +308,7 @@ public:
     // The accessor associated to the attribute.
     Ptr<const AttributeAccessor> accessor;
     // The initial value associated to the attribute.
-    Attribute initialValue;
+    Ptr<const AttributeValue> initialValue;
     // The set of access control flags associated to the attribute.
     uint32_t flags;
     // The checker associated to the attribute.
@@ -357,6 +357,7 @@ private:
   friend class AttributeList;
   friend bool operator == (TypeId a, TypeId b);
   friend bool operator != (TypeId a, TypeId b);
+  friend bool operator <  (TypeId a, TypeId b);
 
 
   /**
@@ -375,6 +376,15 @@ private:
 
 std::ostream & operator << (std::ostream &os, TypeId tid);
 std::istream & operator >> (std::istream &is, TypeId &tid);
+bool operator == (TypeId a, TypeId b);
+bool operator != (TypeId a, TypeId b);
+bool operator <  (TypeId a, TypeId b);
+
+/**
+ * \class ns3::TypeIdValue
+ * \brief hold objects of type ns3::TypeId
+ */
+
 
 ATTRIBUTE_HELPER_HEADER_2 (TypeId);
 

@@ -47,6 +47,36 @@ class Object : public ObjectBase
 public:
   static TypeId GetTypeId (void);
 
+  /**
+   * \brief Iterate over the objects aggregated to an ns3::Object.
+   *
+   * This iterator does not allow you to iterate over the initial
+   * object used to call Object::GetAggregateIterator. 
+   *
+   * Note: this is a java-style iterator.
+   */
+  class AggregateIterator
+  {
+  public:
+    AggregateIterator ();
+
+    /**
+     * \returns true if HasNext can be called and return a non-null
+     *          pointer, false otherwise.
+     */
+    bool HasNext (void) const;
+
+    /**
+     * \returns the next aggregated object.
+     */
+    Ptr<const Object> Next (void);
+  private:
+    friend class Object;
+    AggregateIterator (Ptr<const Object> first);
+    Ptr<const Object> m_first;
+    Ptr<const Object> m_current;
+  };
+
   Object ();
   virtual ~Object ();
 
@@ -100,6 +130,16 @@ public:
    */
   void AggregateObject (Ptr<Object> other);
 
+  /**
+   * \returns an iterator to the first object aggregated to this
+   *          object.
+   *
+   * If no objects are aggregated to this object, then, the returned
+   * iterator will be empty and AggregateIterator::HasNext will
+   * always return false.
+   */
+  AggregateIterator GetAggregateIterator (void) const;
+
 protected:
   /**
    * This method is called by Object::Dispose or by the object's 
@@ -137,8 +177,11 @@ private:
   friend Ptr<T> CreateObject (const AttributeList &attributes);
   template <typename T>
   friend Ptr<T> CopyObject (Ptr<T> object);
+  template <typename T>
+  friend Ptr<T> CopyObject (Ptr<const T> object);
 
   friend class ObjectFactory;
+  friend class AggregateIterator;
 
   Ptr<Object> DoGetObject (TypeId tid) const;
   bool Check (void) const;
@@ -203,7 +246,10 @@ private:
  * and returns the new instance.
  */
 template <typename T>
+Ptr<T> CopyObject (Ptr<const T> object);
+template <typename T>
 Ptr<T> CopyObject (Ptr<T> object);
+
 
 /**
  * \param attributes a list of attributes to set on the 
@@ -242,15 +288,15 @@ Ptr<T> CreateObject (const AttributeList &attributes);
  */
 template <typename T>
 Ptr<T> 
-CreateObject (std::string n1 = "", Attribute v1 = Attribute (),
-              std::string n2 = "", Attribute v2 = Attribute (),
-              std::string n3 = "", Attribute v3 = Attribute (),
-              std::string n4 = "", Attribute v4 = Attribute (),
-              std::string n5 = "", Attribute v5 = Attribute (),
-              std::string n6 = "", Attribute v6 = Attribute (),
-              std::string n7 = "", Attribute v7 = Attribute (),
-              std::string n8 = "", Attribute v8 = Attribute (),
-              std::string n9 = "", Attribute v9 = Attribute ());
+CreateObject (std::string n1 = "", const AttributeValue & v1 = EmptyAttributeValue (),
+              std::string n2 = "", const AttributeValue & v2 = EmptyAttributeValue (),
+              std::string n3 = "", const AttributeValue & v3 = EmptyAttributeValue (),
+              std::string n4 = "", const AttributeValue & v4 = EmptyAttributeValue (),
+              std::string n5 = "", const AttributeValue & v5 = EmptyAttributeValue (),
+              std::string n6 = "", const AttributeValue & v6 = EmptyAttributeValue (),
+              std::string n7 = "", const AttributeValue & v7 = EmptyAttributeValue (),
+              std::string n8 = "", const AttributeValue & v8 = EmptyAttributeValue (),
+              std::string n9 = "", const AttributeValue & v9 = EmptyAttributeValue ());
   
 
 
@@ -314,6 +360,14 @@ Ptr<T> CopyObject (Ptr<T> object)
   return p;
 }
 
+template <typename T>
+Ptr<T> CopyObject (Ptr<const T> object)
+{
+  Ptr<T> p = Ptr<T> (new T (*PeekPointer (object)), false);
+  NS_ASSERT (p->m_tid == object->m_tid);
+  return p;
+}
+
 
 template <typename T>
 Ptr<T> CreateObject (const AttributeList &attributes)
@@ -326,16 +380,15 @@ Ptr<T> CreateObject (const AttributeList &attributes)
 
 template <typename T>
 Ptr<T> 
-CreateObject (std::string n1 = "", Attribute v1 = Attribute (),
-              std::string n2 = "", Attribute v2 = Attribute (),
-              std::string n3 = "", Attribute v3 = Attribute (),
-              std::string n4 = "", Attribute v4 = Attribute (),
-              std::string n5 = "", Attribute v5 = Attribute (),
-              std::string n6 = "", Attribute v6 = Attribute (),
-              std::string n7 = "", Attribute v7 = Attribute (),
-              std::string n8 = "", Attribute v8 = Attribute (),
-              std::string n9 = "", Attribute v9 = Attribute ())
-  
+CreateObject (std::string n1 = "", const AttributeValue & v1 = EmptyAttributeValue (),
+              std::string n2 = "", const AttributeValue & v2 = EmptyAttributeValue (),
+              std::string n3 = "", const AttributeValue & v3 = EmptyAttributeValue (),
+              std::string n4 = "", const AttributeValue & v4 = EmptyAttributeValue (),
+              std::string n5 = "", const AttributeValue & v5 = EmptyAttributeValue (),
+              std::string n6 = "", const AttributeValue & v6 = EmptyAttributeValue (),
+              std::string n7 = "", const AttributeValue & v7 = EmptyAttributeValue (),
+              std::string n8 = "", const AttributeValue & v8 = EmptyAttributeValue (),
+              std::string n9 = "", const AttributeValue & v9 = EmptyAttributeValue ())
 {
   AttributeList attributes;
   if (n1 == "")
