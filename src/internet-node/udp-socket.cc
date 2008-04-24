@@ -513,6 +513,14 @@ UdpSocketTest::RunTests (void)
   return result;
 }
 
+Ptr<Packet>
+UdpSocket::Recv (uint32_t maxSize, uint32_t flags)
+{
+  Ptr<Packet> p = m_deliveryQueue.front ();
+  m_deliveryQueue.pop ();
+  return p;
+}
+
 
 static UdpSocketTest gUdpSocketTest;
 

@@ -66,6 +66,8 @@ private:
   virtual void StopApplication (void);     // Called at time specified by Stop
 
   virtual void Receive (Ptr<Socket> socket, Ptr<Packet> packet, const Address& from);
+  virtual void HandleRead (Ptr<Socket> socket);
+
   virtual void CloseConnection (Ptr<Socket> socket);
 
   Ptr<Socket>     m_socket;       // Associated socket

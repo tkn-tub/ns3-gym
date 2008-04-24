@@ -305,4 +305,12 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet,
   NotifyDataReceived (packet, address);
 }
 
+Ptr<Packet> 
+PacketSocket::Recv (uint32_t maxSize, uint32_t flags)
+{
+  Ptr<Packet> p = m_deliveryQueue.front ();
+  m_deliveryQueue.pop ();
+  return p;
+}
+
 }//namespace ns3

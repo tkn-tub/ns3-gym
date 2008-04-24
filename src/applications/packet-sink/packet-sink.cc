@@ -88,6 +88,7 @@ void PacketSink::StartApplication()    // Called at time specified by Start
     }
 
   m_socket->SetRecvCallback (MakeCallback(&PacketSink::Receive, this));
+  m_socket->SetRecv_Callback (MakeCallback(&PacketSink::HandleRead, this));
   m_socket->SetAcceptCallback (
             MakeNullCallback<bool, Ptr<Socket>, const Address &> (),
             MakeNullCallback<void, Ptr<Socket>, const Address&> (),
@@ -100,6 +101,28 @@ void PacketSink::StopApplication()     // Called at time specified by Stop
     {
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket>, 
         Ptr<Packet>, const Address &> ());
+    }
+}
+
+void PacketSink::HandleRead (Ptr<Socket> socket)
+{
+  Ptr<Packet> packet;
+  uint32_t maxSize = std::numeric_limits<uint32_t>::max();
+  uint32_t flags = 0;  // no flags
+  while (packet = socket->Recv (maxSize, flags))
+    {
+          NS_LOG_INFO ("Received " << packet->GetSize());
+#if 0
+      // this code waits until we pass address as a Packet tag
+      if (InetSocketAddress::IsMatchingType (from))
+        {
+          address = InetSocketAddress::ConvertFrom (from);
+          NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
+            address.GetIpv4() << " [" << address << "]---'" << 
+            packet->PeekData() << "'");
+        }    
+      m_rxTrace (packet, from);
+#endif
     }
 }
 

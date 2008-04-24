@@ -21,6 +21,7 @@
 #define TCP_SOCKET_H
 
 #include <stdint.h>
+#include <queue>
 #include "ns3/callback.h"
 #include "ns3/traced-value.h"
 #include "ns3/socket.h"
@@ -68,6 +69,8 @@ public:
   virtual int Send (const uint8_t* buf, uint32_t size);
   virtual int SendTo(const Address &address, Ptr<Packet> p);
   virtual int Listen(uint32_t queueLimit);
+
+  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
 
 private:
   friend class Tcp;
@@ -170,6 +173,8 @@ private:
   Time              m_cnTimeout; 
   uint32_t          m_cnCount;
   
+  // Temporary queue for delivering data to application
+  std::queue<Ptr<Packet> > m_deliveryQueue;
 };
 
 }//namespace ns3

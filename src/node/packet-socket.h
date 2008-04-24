@@ -22,6 +22,7 @@
 #define PACKET_SOCKET_H
 
 #include <stdint.h>
+#include <queue>
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
 #include "ns3/socket.h"
@@ -87,6 +88,8 @@ public:
   virtual int Send (Ptr<Packet> p);
   virtual int SendTo(const Address &address,Ptr<Packet> p);
 
+  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
+
 
 private:
   void ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet, 
@@ -109,6 +112,8 @@ private:
   bool m_isSingleDevice;
   uint32_t m_device;
   Address m_destAddr; /// Default destination address
+
+  std::queue<Ptr<Packet> > m_deliveryQueue;
 };
 
 }//namespace ns3

@@ -157,7 +157,12 @@ public:
    */
   void SetRecvCallback (Callback<void, Ptr<Socket>, Ptr<Packet>,
                           const Address&> receivedData);
-
+  /**
+   * \brief Receive data
+   * \param receivedData Invoked whenever new data is received.
+   *
+   */
+  void SetRecv_Callback (Callback<void, Ptr<Socket> >);
   /** 
    * \param address the address to try to allocate
    * \returns 0 on success, -1 on failure.
@@ -252,6 +257,8 @@ public:
    */
   int SendTo (const Address &address, const uint8_t* buf, uint32_t size);
 
+  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags) = 0;
+
 protected:
   void NotifyCloseCompleted (void);
   void NotifyConnectionSucceeded (void);
@@ -263,6 +270,7 @@ protected:
   void NotifyDataSent (uint32_t size);
   void NotifySend (uint32_t spaceAvailable);
   void NotifyDataReceived (Ptr<Packet> p, const Address &from);
+  void NotifyDataRecv (void);
 
   Callback<void,Ptr<Socket> >    m_closeCompleted;
   Callback<void, Ptr<Socket> >   m_connectionSucceeded;
@@ -274,6 +282,7 @@ protected:
   Callback<void, Ptr<Socket>, uint32_t>          m_dataSent;
   Callback<void, Ptr<Socket>, uint32_t >         m_sendCb;
   Callback<void, Ptr<Socket>, Ptr<Packet>,const Address&> m_receivedData;
+  Callback<void, Ptr<Socket> > m_receivedData_;
 };
 
 } //namespace ns3

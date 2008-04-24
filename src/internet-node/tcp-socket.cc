@@ -442,6 +442,14 @@ TcpSocket::Listen (uint32_t q)
   return 0;
 }
 
+Ptr<Packet>
+TcpSocket::Recv (uint32_t maxSize, uint32_t flags)
+{
+  Ptr<Packet> p = m_deliveryQueue.front ();
+  m_deliveryQueue.pop ();
+  return p;
+}
+
 void
 TcpSocket::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
 {

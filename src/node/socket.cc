@@ -86,6 +86,13 @@ Socket::SetRecvCallback (Callback<void, Ptr<Socket>, Ptr<Packet>,const Address&>
   m_receivedData = receivedData;
 }
 
+void 
+Socket::SetRecv_Callback (Callback<void, Ptr<Socket> > receivedData)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_receivedData_ = receivedData;
+}
+
 int Socket::Listen (uint32_t queueLimit)
 {
   return 0; //XXX the base class version does nothing
@@ -230,4 +237,13 @@ Socket::NotifyDataReceived (Ptr<Packet> p, const Address &from)
     }
 }
 
+void 
+Socket::NotifyDataRecv (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  if (!m_receivedData_.IsNull ())
+    {
+      m_receivedData_ (this);
+    }
+}
 }//namespace ns3

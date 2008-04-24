@@ -21,6 +21,7 @@
 #define UDP_SOCKET_H
 
 #include <stdint.h>
+#include <queue>
 #include "ns3/callback.h"
 #include "ns3/socket.h"
 #include "ns3/ptr.h"
@@ -56,7 +57,7 @@ public:
   virtual int Send (Ptr<Packet> p);
   virtual int SendTo(const Address &address,Ptr<Packet> p);
 
-private:
+  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
 
 private:
   friend class Udp;
@@ -79,6 +80,8 @@ private:
   bool m_shutdownSend;
   bool m_shutdownRecv;
   bool m_connected;
+
+  std::queue<Ptr<Packet> > m_deliveryQueue;
 };
 
 }//namespace ns3
