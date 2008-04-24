@@ -1,6 +1,6 @@
 
 #include "delay-jitter-estimation.h"
-#include "ns3/mtag.h"
+#include "ns3/tag.h"
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 

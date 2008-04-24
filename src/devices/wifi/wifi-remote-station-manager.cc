@@ -21,7 +21,7 @@
 #include "wifi-remote-station-manager.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
-#include "ns3/mtag.h"
+#include "ns3/tag.h"
 #include "ns3/boolean.h"
 #include "ns3/uinteger.h"
 #include "ns3/wifi-phy.h"

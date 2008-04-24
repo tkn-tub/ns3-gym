@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include "ns3/type-id.h"
-#include "mtag-buffer.h"
+#include "tag-buffer.h"
 
 namespace ns3 {
 

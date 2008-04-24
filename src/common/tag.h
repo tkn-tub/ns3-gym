@@ -2,7 +2,7 @@
 #define MTAG_H
 
 #include "ns3/object-base.h"
-#include "mtag-buffer.h"
+#include "tag-buffer.h"
 #include <stdint.h>
 
 namespace ns3 {

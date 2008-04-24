@@ -21,7 +21,7 @@
 #include "ns3/assert.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
-#include "ns3/mtag.h"
+#include "ns3/tag.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
 
