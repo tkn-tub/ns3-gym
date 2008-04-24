@@ -1,19 +1,22 @@
 
 #include "delay-jitter-estimation.h"
-#include "ns3/tag.h"
+#include "ns3/mtag.h"
 #include "ns3/simulator.h"
+#include "ns3/string.h"
 
 namespace {
 
-class TimestampTag : public ns3::Tag
+class TimestampTag : public ns3::Mtag
 {
 public:
   TimestampTag ();
-  static uint32_t GetUid (void);
-  void Print (std::ostream &os) const;
-  void Serialize (ns3::Buffer::Iterator start) const;
-  uint32_t Deserialize (ns3::Buffer::Iterator start);
-  uint32_t GetSerializedSize (void) const;
+  static ns3::TypeId GetTypeId (void);
+  virtual ns3::TypeId GetInstanceTypeId (void) const;
+
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (ns3::MtagBuffer i) const;
+  virtual void Deserialize (ns3::MtagBuffer i);
+
 
   ns3::Time GetTxTime (void) const;
 private:
@@ -23,29 +26,41 @@ private:
 TimestampTag::TimestampTag ()
   : m_creationTime (ns3::Simulator::Now ().GetTimeStep ())
 {}
-uint32_t 
-TimestampTag::GetUid (void)
+
+ns3::TypeId 
+TimestampTag::GetTypeId (void)
 {
-  static uint32_t uid = ns3::Tag::AllocateUid<TimestampTag> ("mathieu.paper.TimestampTag");
-  return uid;
+  static ns3::TypeId tid = ns3::TypeId ("anon::TimestampTag")
+    .SetParent<Mtag> ()
+    .AddConstructor<TimestampTag> ()
+    .AddAttribute ("CreationTime",
+		   "The time at which the timestamp was created",
+		   ns3::StringValue ("0.0s"),
+		   ns3::MakeTimeAccessor (&TimestampTag::GetTxTime),
+		   ns3::MakeTimeChecker ())
+    ;
+  return tid;
 }
-void 
-TimestampTag::Print (std::ostream &os) const
+ns3::TypeId 
+TimestampTag::GetInstanceTypeId (void) const
 {
-  os << ns3::TimeStep (m_creationTime);
+  return GetTypeId ();
 }
-void 
-TimestampTag::Serialize (ns3::Buffer::Iterator start) const
-{}
-uint32_t 
-TimestampTag::Deserialize (ns3::Buffer::Iterator start)
-{
-  return 0;
-}
+
 uint32_t 
 TimestampTag::GetSerializedSize (void) const
 {
-  return 0;
+  return 8;
+}
+void 
+TimestampTag::Serialize (ns3::MtagBuffer i) const
+{
+  i.WriteU64 (m_creationTime);
+}
+void 
+TimestampTag::Deserialize (ns3::MtagBuffer i)
+{
+  m_creationTime = i.ReadU64 ();
 }
 ns3::Time 
 TimestampTag::GetTxTime (void) const
@@ -67,14 +82,14 @@ void
 DelayJitterEstimation::PrepareTx (Ptr<const Packet> packet)
 {
   TimestampTag tag;
-  packet->AddTag (tag);
+  packet->AddMtag (tag);
 }
 void 
 DelayJitterEstimation::RecordRx (Ptr<const Packet> packet)
 {
   TimestampTag tag;
   bool found;
-  found = packet->PeekTag (tag);
+  found = packet->FindFirstMatchingTag (tag);
   if (!found)
     {
       return;

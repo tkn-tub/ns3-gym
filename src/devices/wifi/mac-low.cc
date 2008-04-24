@@ -21,7 +21,7 @@
 #include "ns3/assert.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
-#include "ns3/tag.h"
+#include "ns3/mtag.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
 
@@ -37,17 +37,16 @@ NS_LOG_COMPONENT_DEFINE ("MacLow");
 
 namespace ns3 {
 
-class SnrTag : public Tag
+class SnrTag : public Mtag
 {
 public:
-  SnrTag ();
-  SnrTag (const SnrTag &o);
-  ~SnrTag ();
-  static uint32_t GetUid (void);
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
-  void Serialize (Buffer::Iterator i) const;
-  uint32_t Deserialize (Buffer::Iterator i);
+
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (MtagBuffer i) const;
+  virtual void Deserialize (MtagBuffer i);
 
   void Set (double snr);
   double Get (void) const;
@@ -55,40 +54,39 @@ private:
   double m_snr;
 };
 
-SnrTag::SnrTag ()
-  : m_snr (0.0)
-{}
-SnrTag::SnrTag (const SnrTag &o)
-  : m_snr (o.m_snr)
-{}
-SnrTag::~SnrTag ()
-{}
-uint32_t 
-SnrTag::GetUid (void)
+TypeId 
+SnrTag::GetTypeId (void)
 {
-  static uint32_t uid = AllocateUid<SnrTag> ("SnrTag.ns3.inria.fr");
-  return uid;
+  static TypeId tid = TypeId ("ns3::SnrTag")
+    .SetParent<Mtag> ()
+    .AddConstructor<SnrTag> ()
+    .AddAttribute ("Snr", "The snr of the last packet received",
+                   DoubleValue (0.0),
+                   MakeDoubleAccessor (&SnrTag::Get),
+                   MakeDoubleChecker<double> ())
+    ;
+  return tid;
 }
-void 
-SnrTag::Print (std::ostream &os) const
+TypeId 
+SnrTag::GetInstanceTypeId (void) const
 {
-  os << "snr="<<m_snr;
+  return GetTypeId ();
 }
+
 uint32_t 
 SnrTag::GetSerializedSize (void) const
 {
-  return 0;
+  return sizeof (double);
 }
 void 
-SnrTag::Serialize (Buffer::Iterator i) const
+SnrTag::Serialize (MtagBuffer i) const
 {
-  // would need to serialize double to platform-independent format.
+  i.WriteDouble (m_snr);
 }
-uint32_t 
-SnrTag::Deserialize (Buffer::Iterator i)
+void 
+SnrTag::Deserialize (MtagBuffer i)
 {
-  // would need to deserialize double from platform-independent format.
-  return 0;
+  m_snr = i.ReadDouble ();
 }
 void 
 SnrTag::Set (double snr)
@@ -472,7 +470,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
     {
       MY_DEBUG ("receive cts from="<<m_currentHdr.GetAddr1 ());
       SnrTag tag;
-      packet->PeekTag (tag);
+      packet->FindFirstMatchingTag (tag);
       WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
       station->ReportRxOk (rxSnr, txMode);
       station->ReportRtsOk (rxSnr, txMode, tag.Get ());
@@ -495,7 +493,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
     {
       MY_DEBUG ("receive ack from="<<m_currentHdr.GetAddr1 ());
       SnrTag tag;
-      packet->PeekTag (tag);
+      packet->FindFirstMatchingTag (tag);
       WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
       station->ReportRxOk (rxSnr, txMode);
       station->ReportDataOk (rxSnr, txMode, tag.Get ());
@@ -1038,7 +1036,7 @@ MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiMode rtsTxMode,
 
   struct SnrTag tag;
   tag.Set (rtsSnr);
-  packet->AddTag (tag);
+  packet->AddMtag (tag);
 
   ForwardDown (packet, &cts, ctsTxMode);
 }
@@ -1116,7 +1114,7 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
 
   struct SnrTag tag;
   tag.Set (dataSnr);
-  packet->AddTag (tag);
+  packet->AddMtag (tag);
 
   ForwardDown (packet, &ack, ackTxMode);
 }
