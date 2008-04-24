@@ -27,11 +27,67 @@
 #include "tags.h"
 #include "packet-metadata.h"
 #include "tag.h"
+#include "mtag.h"
+#include "mtag-list.h"
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {
+
+/**
+ * \brief Iterator over the set of tags in a packet
+ */
+class TagIterator
+{
+public:
+  /**
+   * Identifies a set tag and a set of bytes within a packet
+   * to which the tag applies.
+   */
+  class Item
+  {
+  public:
+    /**
+     * \returns the ns3::TypeId associated to this tag.
+     */
+    TypeId GetTypeId (void) const;
+    /**
+     * \returns the index of the first byte tagged by this tag.
+     *
+     * The index is an offset from the start of the packet.
+     */
+    uint32_t GetStart (void) const;
+    /**
+     * \returns the index of the last byte tagged by this tag.
+     *
+     * The index is an offset from the start of the packet.
+     */
+    uint32_t GetEnd (void) const;
+    /**
+     * \param tag the user tag to which the data should be copied.
+     *
+     * Read the requested tag and store it in the user-provided
+     * tag instance. This method will crash if the type of the
+     * tag provided by the user does not match the type of
+     * the underlying tag.
+     */
+    void GetTag (Mtag &tag) const;
+  private:
+    friend class TagIterator;
+    Item (TypeId tid, uint32_t start, uint32_t end, MtagBuffer buffer);
+    TypeId m_tid;
+    uint32_t m_start;
+    uint32_t m_end;
+    MtagBuffer m_buffer;
+  };
+  bool HasNext (void) const;
+  Item Next (void);
+private:
+  friend class Packet;
+  TagIterator (MtagList::Iterator i);
+  MtagList::Iterator m_current;
+};
 
 /**
  * \brief network packets
@@ -330,12 +386,34 @@ public:
    * a different CPU.
    */
   void Deserialize (Buffer buffer);
+
+  /**
+   * \param tag the new tag to add to this packet
+   *
+   * Tag each byte included in this packet with the
+   * new tag.
+   */
+  void AddMtag (const Mtag &tag) const;
+  /**
+   * \returns an iterator over the set of tags included in this packet.
+   */
+  TagIterator GetTagIterator (void) const;
+  /**
+   * \param tag the tag to search in this packet
+   * \returns true if the requested tag type was found, false otherwise.
+   *
+   * If the requested tag type is found, it is copied in the user's 
+   * provided tag instance.
+   */
+  bool FindFirstMatchingTag (Mtag &tag) const;
+
 private:
-  Packet (Buffer buffer, Tags tags, PacketMetadata metadata);
+  Packet (const Buffer &buffer, const Tags &tags, const MtagList &tagList, const PacketMetadata &metadata);
   Packet (const Packet &o);
   Packet &operator = (const Packet &o);
   Buffer m_buffer;
   Tags m_tags;
+  MtagList m_tagList;
   PacketMetadata m_metadata;
   mutable uint32_t m_refCount;
   static uint32_t m_globalUid;

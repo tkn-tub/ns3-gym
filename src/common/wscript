@@ -15,6 +15,9 @@ def build(bld):
         'pcap-writer.cc',
         'data-rate.cc',
         'error-model.cc',
+        'mtag.cc',
+        'mtag-list.cc',
+        'mtag-buffer.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -32,4 +35,7 @@ def build(bld):
         'pcap-writer.h',
         'data-rate.h',
         'error-model.h',
+        'mtag.h',
+        'mtag-list.h',
+        'mtag-buffer.h',
         ]

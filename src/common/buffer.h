@@ -392,51 +392,35 @@ public:
 
   /**
    * \param start size to reserve
-   * \returns the adjustment delta.
+   * \returns true if the buffer needed resizing, false otherwise.
    *
    * Add bytes at the start of the Buffer. The
    * content of these bytes is undefined but debugging
    * builds initialize them to 0x33.
    * Any call to this method invalidates any Iterator
    * pointing to this Buffer.
-   *
-   * The value returned by this method indicates how the internal
-   * buffer was modified to handle the user request to reserve space.
-   * If that value is zero, the buffer was not modified: the user
-   * request was completed without further memory allocation.
    */
-  int32_t AddAtStart (uint32_t start);
+  bool AddAtStart (uint32_t start);
   /**
    * \param end size to reserve
-   * \returns the adjustment delta.
+   * \returns true if the buffer needed resizing, false otherwise.
    *
    * Add bytes at the end of the Buffer. The
    * content of these bytes is undefined but debugging
    * builds initialize them to 0x33.
    * Any call to this method invalidates any Iterator
    * pointing to this Buffer.
-   *
-   * The value returned by this method indicates how the internal
-   * buffer was modified to handle the user request to reserve space.
-   * If that value is zero, the buffer was not modified: the user
-   * request was completed without further memory allocation.
    */
-  int32_t AddAtEnd (uint32_t end);
+  bool AddAtEnd (uint32_t end);
 
   /**
    * \param o the buffer to append to the end of this buffer.
-   * \returns the adjustment delta.
    *
    * Add bytes at the end of the Buffer.
    * Any call to this method invalidates any Iterator
    * pointing to this Buffer.
-   *
-   * The value returned by this method indicates how the internal
-   * buffer was modified to handle the user request to reserve space.
-   * If that value is zero, the buffer was not modified: the user
-   * request was completed without further memory allocation.
    */
-  int32_t AddAtEnd (const Buffer &o);
+  void AddAtEnd (const Buffer &o);
   /**
    * \param start size to remove
    *
@@ -475,6 +459,9 @@ public:
   Buffer::Iterator End (void) const;
 
   Buffer CreateFullCopy (void) const;
+
+  int32_t GetCurrentStartOffset (void) const;
+  int32_t GetCurrentEndOffset (void) const;
 
   Buffer (Buffer const &o);
   Buffer &operator = (Buffer const &o);

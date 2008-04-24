@@ -333,10 +333,10 @@ Buffer::GetInternalEnd (void) const
   return m_end - (m_zeroAreaEnd - m_zeroAreaStart);
 }
 
-int32_t
+bool
 Buffer::AddAtStart (uint32_t start)
 {
-  int32_t delta;
+  bool dirty;
   NS_ASSERT (CheckInternalState ());
   bool isDirty = m_data->m_count > 1 && m_start > m_data->m_dirtyStart;
   if (m_start >= start && !isDirty)
@@ -348,7 +348,7 @@ Buffer::AddAtStart (uint32_t start)
        */
       NS_ASSERT (m_data->m_count == 1 || m_start == m_data->m_dirtyStart);
       m_start -= start;
-      delta = 0;
+      dirty = m_start > m_data->m_dirtyStart;
       HEURISTICS (g_nAddNoRealloc++);
     } 
   else
@@ -363,13 +363,14 @@ Buffer::AddAtStart (uint32_t start)
         }
       m_data = newData;
 
-      delta = start - m_start;
+      int32_t delta = start - m_start;
       m_start += delta;
       m_zeroAreaStart += delta;
       m_zeroAreaEnd += delta;
       m_end += delta;
-
       m_start -= start;
+
+      dirty = true;
 
       HEURISTICS (g_nAddRealloc++);
     }
@@ -379,12 +380,12 @@ Buffer::AddAtStart (uint32_t start)
   m_data->m_dirtyEnd = m_end;
   LOG_INTERNAL_STATE ("add start=" << start << ", ");
   NS_ASSERT (CheckInternalState ());
-  return delta;
+  return dirty;
 }
-int32_t
+bool
 Buffer::AddAtEnd (uint32_t end)
 {
-  int32_t delta;
+  bool dirty;
   NS_ASSERT (CheckInternalState ());
   bool isDirty = m_data->m_count > 1 && m_end < m_data->m_dirtyEnd;
   if (GetInternalEnd () + end <= m_data->m_size && !isDirty)
@@ -397,7 +398,7 @@ Buffer::AddAtEnd (uint32_t end)
       NS_ASSERT (m_data->m_count == 1 || m_end == m_data->m_dirtyEnd);
       m_end += end;
 
-      delta = 0;
+      dirty = m_end < m_data->m_dirtyEnd;
 
       HEURISTICS (g_nAddNoRealloc++);
     } 
@@ -413,14 +414,14 @@ Buffer::AddAtEnd (uint32_t end)
         }
       m_data = newData;
 
-      delta = -m_start;
-
+      int32_t delta = -m_start;
       m_zeroAreaStart += delta;
       m_zeroAreaEnd += delta;
       m_end += delta;
       m_start += delta;
-
       m_end += end;
+
+      dirty = true;
 
       HEURISTICS (g_nAddRealloc++);
     } 
@@ -431,13 +432,12 @@ Buffer::AddAtEnd (uint32_t end)
   LOG_INTERNAL_STATE ("add end=" << end << ", ");
   NS_ASSERT (CheckInternalState ());
 
-  return delta;
+  return dirty;
 }
 
-int32_t
+void
 Buffer::AddAtEnd (const Buffer &o)
 {
-  int32_t orgStart = m_start;
   if (m_end == m_zeroAreaEnd &&
       o.m_start == o.m_zeroAreaStart &&
       o.m_zeroAreaEnd - o.m_zeroAreaStart > 0)
@@ -457,7 +457,7 @@ Buffer::AddAtEnd (const Buffer &o)
       Buffer::Iterator src = o.End ();
       src.Prev (endData);
       dst.Write (src, o.End ());
-      return m_start - orgStart;
+      return;
     }
   Buffer dst = CreateFullCopy ();
   Buffer src = o.CreateFullCopy ();
@@ -467,7 +467,6 @@ Buffer::AddAtEnd (const Buffer &o)
   destStart.Prev (src.GetSize ());
   destStart.Write (src.Begin (), src.End ());
   *this = dst;
-  return m_start - orgStart;
 }
 
 void 
@@ -582,6 +581,18 @@ Buffer::CreateFullCopy (void) const
   NS_ASSERT (CheckInternalState ());
   return *this;
 }
+
+int32_t 
+Buffer::GetCurrentStartOffset (void) const
+{
+  return m_start;
+}
+int32_t 
+Buffer::GetCurrentEndOffset (void) const
+{
+  return m_end;
+}
+
 
 void
 Buffer::TransformIntoRealBuffer (void) const
