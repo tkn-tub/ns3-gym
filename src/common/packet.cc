@@ -103,7 +103,6 @@ Packet::Copy (void) const
 
 Packet::Packet ()
   : m_buffer (),
-    m_tags (),
     m_tagList (),
     m_metadata (m_globalUid, 0),
     m_refCount (1)
@@ -113,7 +112,6 @@ Packet::Packet ()
 
 Packet::Packet (const Packet &o)
   : m_buffer (o.m_buffer),
-    m_tags (o.m_tags),
     m_tagList (o.m_tagList),
     m_metadata (o.m_metadata),
     m_refCount (1)
@@ -127,7 +125,6 @@ Packet::operator = (const Packet &o)
       return *this;
     }
   m_buffer = o.m_buffer;
-  m_tags = o.m_tags;
   m_tagList = o.m_tagList;
   m_metadata = o.m_metadata;
   return *this;
@@ -135,7 +132,6 @@ Packet::operator = (const Packet &o)
 
 Packet::Packet (uint32_t size)
   : m_buffer (size),
-    m_tags (),
     m_tagList (),
     m_metadata (m_globalUid, size),
     m_refCount (1)
@@ -144,7 +140,6 @@ Packet::Packet (uint32_t size)
 }
 Packet::Packet (uint8_t const*buffer, uint32_t size)
   : m_buffer (),
-    m_tags (),
     m_tagList (),
     m_metadata (m_globalUid, size),
     m_refCount (1)
@@ -155,9 +150,8 @@ Packet::Packet (uint8_t const*buffer, uint32_t size)
   i.Write (buffer, size);
 }
 
-Packet::Packet (const Buffer &buffer, const Tags &tags, const MtagList &tagList, const PacketMetadata &metadata)
+Packet::Packet (const Buffer &buffer,  const MtagList &tagList, const PacketMetadata &metadata)
   : m_buffer (buffer),
-    m_tags (tags),
     m_tagList (tagList),
     m_metadata (metadata),
     m_refCount (1)
@@ -172,7 +166,7 @@ Packet::CreateFragment (uint32_t start, uint32_t length) const
   PacketMetadata metadata = m_metadata.CreateFragment (start, end);
   // again, call the constructor directly rather than
   // through Create because it is private.
-  return Ptr<Packet> (new Packet (buffer, m_tags, m_tagList, metadata), false);
+  return Ptr<Packet> (new Packet (buffer, m_tagList, metadata), false);
 }
 
 uint32_t 
@@ -270,7 +264,6 @@ Packet::RemoveAtStart (uint32_t size)
 void 
 Packet::RemoveAllTags (void)
 {
-  m_tags.RemoveAll ();
   m_tagList.RemoveAll ();
 }
 
@@ -289,8 +282,8 @@ Packet::GetUid (void) const
 void 
 Packet::PrintTags (std::ostream &os) const
 {
-  m_tags.Print (os, " ");
-  // XXX: tagList.
+  // XXX:
+  //m_tagList.Print (os, " ");
 }
 
 void 
@@ -434,20 +427,20 @@ Packet::Serialize (void) const
   m_metadata.Serialize (buffer.Begin (), reserve);
 
   // write tags
-  reserve = m_tags.GetSerializedSize ();
-  buffer.AddAtStart (reserve);
-  m_tags.Serialize (buffer.Begin (), reserve);
+  //XXX
+  //reserve = m_tags.GetSerializedSize ();
+  //buffer.AddAtStart (reserve);
+  //m_tags.Serialize (buffer.Begin (), reserve);
   
   // aggregate byte buffer, metadata, and tags
   Buffer tmp = m_buffer.CreateFullCopy ();
-  buffer.AddAtStart (tmp.GetSize ());
-  buffer.Begin ().Write (tmp.Begin (), tmp.End ());
+  tmp.AddAtEnd (buffer);
   
   // write byte buffer size.
-  buffer.AddAtStart (4);
-  buffer.Begin ().WriteU32 (m_buffer.GetSize ());
+  tmp.AddAtStart (4);
+  tmp.Begin ().WriteU32 (m_buffer.GetSize ());
 
-  return buffer;
+  return tmp;
 }
 void 
 Packet::Deserialize (Buffer buffer)
@@ -460,11 +453,13 @@ Packet::Deserialize (Buffer buffer)
   // read buffer.
   buf.RemoveAtEnd (buf.GetSize () - packetSize);
   m_buffer = buf;
+  buffer.RemoveAtStart (4 + packetSize);
+
 
   // read tags
-  buffer.RemoveAtStart (4 + packetSize);
-  uint32_t tagsDeserialized = m_tags.Deserialize (buffer.Begin ());
-  buffer.RemoveAtStart (tagsDeserialized);
+  //XXX
+  //uint32_t tagsDeserialized = m_tags.Deserialize (buffer.Begin ());
+  //buffer.RemoveAtStart (tagsDeserialized);
 
   // read metadata
   uint32_t metadataDeserialized = 
