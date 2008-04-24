@@ -37,6 +37,8 @@ namespace ns3 {
 
 /**
  * \brief Iterator over the set of tags in a packet
+ *
+ * This is a java-style iterator.
  */
 class TagIterator
 {
@@ -81,7 +83,13 @@ public:
     uint32_t m_end;
     MtagBuffer m_buffer;
   };
+  /**
+   * \returns true if calling Next is safe, false otherwise.
+   */
   bool HasNext (void) const;
+  /**
+   * \returns the next item found and prepare for the next one.
+   */
   Item Next (void);
 private:
   friend class Packet;
