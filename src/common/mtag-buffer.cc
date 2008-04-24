@@ -36,6 +36,23 @@ MtagBuffer::WriteU64 (uint64_t data)
   WriteU8 ((data >> 48) & 0xff);
   WriteU8 ((data >> 54) & 0xff);
 }
+void
+MtagBuffer::WriteDouble (double v)
+{
+  uint8_t *buf = (uint8_t *)&v;
+  for (uint32_t i = 0; i < sizeof (double); ++i, ++buf)
+    {
+      WriteU8 (*buf);
+    }
+}
+void 
+MtagBuffer::Write (const uint8_t *buffer, uint32_t size)
+{
+  for (uint32_t i = 0; i < size; ++i, ++buffer)
+    {
+      WriteU8 (*buffer);
+    }
+}
 uint8_t  
 MtagBuffer::ReadU8 (void)
 {
@@ -99,6 +116,25 @@ MtagBuffer::ReadU64 (void)
   data |= byte0;
 
   return data;
+}
+double
+MtagBuffer::ReadDouble (void)
+{
+  double v;
+  uint8_t *buf = (uint8_t *)&v;
+  for (uint32_t i = 0; i < sizeof (double); ++i, ++buf)
+    {
+      *buf = ReadU8 ();
+    }
+  return v;
+}
+void 
+MtagBuffer::Read (uint8_t *buffer, uint32_t size)
+{
+  for (uint32_t i = 0; i < size; ++i, ++buffer)
+    {
+      *buffer = ReadU8 ();
+    }
 }
 MtagBuffer::MtagBuffer (uint8_t *start, uint8_t *end)
   : m_current (start),

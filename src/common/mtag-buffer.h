@@ -15,10 +15,14 @@ public:
   void WriteU16 (uint16_t v);
   void WriteU32 (uint32_t v);
   void WriteU64 (uint64_t v);
+  void WriteDouble (double v);
+  void Write (const uint8_t *buffer, uint32_t size);
   uint8_t  ReadU8 (void);
   uint16_t ReadU16 (void);
   uint32_t ReadU32 (void);
   uint64_t ReadU64 (void);
+  double ReadDouble (void);
+  void Read (uint8_t *buffer, uint32_t size);
 
   void CopyFrom (MtagBuffer o);
 private:
