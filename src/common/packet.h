@@ -72,14 +72,14 @@ public:
      * tag provided by the user does not match the type of
      * the underlying tag.
      */
-    void GetTag (Mtag &tag) const;
+    void GetTag (Tag &tag) const;
   private:
     friend class TagIterator;
-    Item (TypeId tid, uint32_t start, uint32_t end, MtagBuffer buffer);
+    Item (TypeId tid, uint32_t start, uint32_t end, TagBuffer buffer);
     TypeId m_tid;
     uint32_t m_start;
     uint32_t m_end;
-    MtagBuffer m_buffer;
+    TagBuffer m_buffer;
   };
   /**
    * \returns true if calling Next is safe, false otherwise.
@@ -91,8 +91,8 @@ public:
   Item Next (void);
 private:
   friend class Packet;
-  TagIterator (MtagList::Iterator i);
-  MtagList::Iterator m_current;
+  TagIterator (TagList::Iterator i);
+  TagList::Iterator m_current;
 };
 
 /**
@@ -353,7 +353,7 @@ public:
    * totally evil to allow a trace sink to modify the content of a
    * packet).
    */
-  void AddMtag (const Mtag &tag) const;
+  void AddTag (const Tag &tag) const;
   /**
    * \returns an iterator over the set of tags included in this packet.
    */
@@ -365,7 +365,7 @@ public:
    * If the requested tag type is found, it is copied in the user's 
    * provided tag instance.
    */
-  bool FindFirstMatchingTag (Mtag &tag) const;
+  bool FindFirstMatchingTag (Tag &tag) const;
 
   /**
    * Remove all the tags stored in this packet.
@@ -373,11 +373,11 @@ public:
   void RemoveAllTags (void);
 
 private:
-  Packet (const Buffer &buffer, const MtagList &tagList, const PacketMetadata &metadata);
+  Packet (const Buffer &buffer, const TagList &tagList, const PacketMetadata &metadata);
   Packet (const Packet &o);
   Packet &operator = (const Packet &o);
   Buffer m_buffer;
-  MtagList m_tagList;
+  TagList m_tagList;
   PacketMetadata m_metadata;
   mutable uint32_t m_refCount;
   static uint32_t m_globalUid;

@@ -2,20 +2,20 @@
 
 namespace ns3 {
 
-MtagList::Iterator::Item::Item (MtagBuffer buf_)
+TagList::Iterator::Item::Item (TagBuffer buf_)
     : buf (buf_)
 {}
 
 bool 
-MtagList::Iterator::HasNext (void) const
+TagList::Iterator::HasNext (void) const
 {
   return m_current < m_end;
 }
-struct MtagList::Iterator::Item 
-MtagList::Iterator::Next (void)
+struct TagList::Iterator::Item 
+TagList::Iterator::Next (void)
 {
   NS_ASSERT (HasNext ());
-  struct Item item = Item (MtagBuffer (m_current, m_end));
+  struct Item item = Item (TagBuffer (m_current, m_end));
   item.tid.SetUid (item.buf.ReadU32 ());
   item.size = item.buf.ReadU32 ();
   item.start = item.buf.ReadU32 ();
@@ -28,11 +28,11 @@ MtagList::Iterator::Next (void)
   return item;
 }
 void
-MtagList::Iterator::PrepareForNext (void)
+TagList::Iterator::PrepareForNext (void)
 {
   while (m_current < m_end)
     {
-      struct Item item = Item (MtagBuffer (m_current, m_end));
+      struct Item item = Item (TagBuffer (m_current, m_end));
       item.tid.SetUid (item.buf.ReadU32 ());
       item.size = item.buf.ReadU32 ();
       item.start = item.buf.ReadU32 ();
@@ -47,7 +47,7 @@ MtagList::Iterator::PrepareForNext (void)
 	}
     }
 }
-MtagList::Iterator::Iterator (uint8_t *start, uint8_t *end, uint32_t offsetStart, uint32_t offsetEnd)
+TagList::Iterator::Iterator (uint8_t *start, uint8_t *end, uint32_t offsetStart, uint32_t offsetEnd)
   : m_current (start),
     m_end (end),
     m_offsetStart (offsetStart),
@@ -57,24 +57,24 @@ MtagList::Iterator::Iterator (uint8_t *start, uint8_t *end, uint32_t offsetStart
 }
 
 uint32_t 
-MtagList::Iterator::GetOffsetStart (void) const
+TagList::Iterator::GetOffsetStart (void) const
 {
   return m_offsetStart;
 }
 
 
-MtagList::MtagList ()
+TagList::TagList ()
   : m_buffer (0),
     m_size (0)
 {}
-MtagList::MtagList (const MtagList &o)
+TagList::TagList (const TagList &o)
   : m_size (o.m_size)
 {
   m_buffer = new uint8_t [o.m_size] ();
   memcpy (m_buffer, o.m_buffer, o.m_size);
 }
-MtagList &
-MtagList::operator = (const MtagList &o)
+TagList &
+TagList::operator = (const TagList &o)
 {
   delete [] m_buffer;
   m_buffer = new uint8_t [o.m_size] ();
@@ -82,20 +82,20 @@ MtagList::operator = (const MtagList &o)
   m_size = o.m_size;
   return *this;
 }
-MtagList::~MtagList ()
+TagList::~TagList ()
 {
   delete [] m_buffer;
   m_buffer = 0;
   m_size = 0;
 }
 
-MtagBuffer
-MtagList::Add (TypeId tid, uint32_t bufferSize, uint32_t start, uint32_t end)
+TagBuffer
+TagList::Add (TypeId tid, uint32_t bufferSize, uint32_t start, uint32_t end)
 {
   uint32_t newSize = m_size + bufferSize + 4 + 4 + 4 + 4;
   uint8_t *newBuffer = new uint8_t [newSize] ();
   memcpy (newBuffer, m_buffer, m_size);
-  MtagBuffer tag = MtagBuffer (newBuffer + m_size, newBuffer + newSize);
+  TagBuffer tag = TagBuffer (newBuffer + m_size, newBuffer + newSize);
   tag.WriteU32 (tid.GetUid ());
   tag.WriteU32 (bufferSize);
   tag.WriteU32 (start);
@@ -107,44 +107,44 @@ MtagList::Add (TypeId tid, uint32_t bufferSize, uint32_t start, uint32_t end)
 }
 
 void 
-MtagList::Add (const MtagList &o)
+TagList::Add (const TagList &o)
 {
-  MtagList::Iterator i = o.Begin (0, 0xffffffff);
+  TagList::Iterator i = o.Begin (0, 0xffffffff);
   while (i.HasNext ())
     {
-      MtagList::Iterator::Item item = i.Next ();
-      MtagBuffer buf = Add (item.tid, item.size, item.start, item.end);
+      TagList::Iterator::Item item = i.Next ();
+      TagBuffer buf = Add (item.tid, item.size, item.start, item.end);
       buf.CopyFrom (item.buf);
     }
 }
 
 void 
-MtagList::Remove (const Iterator &i)
+TagList::Remove (const Iterator &i)
 {
   // XXX: more complex to implement.
 }
 
 void 
-MtagList::RemoveAll (void)
+TagList::RemoveAll (void)
 {
   delete [] m_buffer;
   m_buffer = 0;
   m_size = 0;  
 }
 
-MtagList::Iterator 
-MtagList::Begin (uint32_t offsetStart, uint32_t offsetEnd) const
+TagList::Iterator 
+TagList::Begin (uint32_t offsetStart, uint32_t offsetEnd) const
 {
   return Iterator (m_buffer, m_buffer + m_size, offsetStart, offsetEnd);
 }
 
 bool 
-MtagList::IsDirtyAtEnd (uint32_t appendOffset)
+TagList::IsDirtyAtEnd (uint32_t appendOffset)
 {
-  MtagList::Iterator i = Begin (0, 0xffffffff);
+  TagList::Iterator i = Begin (0, 0xffffffff);
   while (i.HasNext ())
     {
-      MtagList::Iterator::Item item = i.Next ();
+      TagList::Iterator::Item item = i.Next ();
       if (item.end > appendOffset)
 	{
 	  return true;
@@ -154,12 +154,12 @@ MtagList::IsDirtyAtEnd (uint32_t appendOffset)
 }
 
 bool 
-MtagList::IsDirtyAtStart (uint32_t prependOffset)
+TagList::IsDirtyAtStart (uint32_t prependOffset)
 {
-  MtagList::Iterator i = Begin (0, 0xffffffff);
+  TagList::Iterator i = Begin (0, 0xffffffff);
   while (i.HasNext ())
     {
-      MtagList::Iterator::Item item = i.Next ();
+      TagList::Iterator::Item item = i.Next ();
       if (item.start < prependOffset)
 	{
 	  return true;
@@ -169,17 +169,17 @@ MtagList::IsDirtyAtStart (uint32_t prependOffset)
 }
 
 void 
-MtagList::AddAtEnd (int32_t adjustment, uint32_t appendOffset)
+TagList::AddAtEnd (int32_t adjustment, uint32_t appendOffset)
 {
   if (adjustment == 0 && !IsDirtyAtEnd (appendOffset))
     {
       return;
     }
-  MtagList list;
-  MtagList::Iterator i = Begin (0, 0xffffffff);
+  TagList list;
+  TagList::Iterator i = Begin (0, 0xffffffff);
   while (i.HasNext ())
     {
-      MtagList::Iterator::Item item = i.Next ();
+      TagList::Iterator::Item item = i.Next ();
       item.start += adjustment;
       item.end += adjustment;
 
@@ -195,24 +195,24 @@ MtagList::AddAtEnd (int32_t adjustment, uint32_t appendOffset)
 	{
 	  // nothing to do.
 	}
-      MtagBuffer buf = list.Add (item.tid, item.size, item.start, item.end);
+      TagBuffer buf = list.Add (item.tid, item.size, item.start, item.end);
       buf.CopyFrom (item.buf);
     }
   *this = list;  
 }
 
 void 
-MtagList::AddAtStart (int32_t adjustment, uint32_t prependOffset)
+TagList::AddAtStart (int32_t adjustment, uint32_t prependOffset)
 {
   if (adjustment == 0 && !IsDirtyAtStart (prependOffset))
     {
       return;
     }
-  MtagList list;
-  MtagList::Iterator i = Begin (0, 0xffffffff);
+  TagList list;
+  TagList::Iterator i = Begin (0, 0xffffffff);
   while (i.HasNext ())
     {
-      MtagList::Iterator::Item item = i.Next ();
+      TagList::Iterator::Item item = i.Next ();
       item.start += adjustment;
       item.end += adjustment;
 
@@ -228,7 +228,7 @@ MtagList::AddAtStart (int32_t adjustment, uint32_t prependOffset)
 	{
 	  // nothing to do.
 	}
-      MtagBuffer buf = list.Add (item.tid, item.size, item.start, item.end);
+      TagBuffer buf = list.Add (item.tid, item.size, item.start, item.end);
       buf.CopyFrom (item.buf);
     }
   *this = list;    

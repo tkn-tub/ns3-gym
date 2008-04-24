@@ -25,14 +25,14 @@
 using namespace ns3;
 
 // define this class in a public header
-class MyTag : public Mtag
+class MyTag : public Tag
 {
 public:
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (MtagBuffer i) const;
-  virtual void Deserialize (MtagBuffer i);
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
   
   // these are our accessors to our tag structure
   void SetSimpleValue (uint8_t value);
@@ -45,7 +45,7 @@ TypeId
 MyTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MyTag")
-    .SetParent<Mtag> ()
+    .SetParent<Tag> ()
     .AddConstructor<MyTag> ()
     .AddAttribute ("SimpleValue",
                    "A simple value",
@@ -66,12 +66,12 @@ MyTag::GetSerializedSize (void) const
   return 1;
 }
 void 
-MyTag::Serialize (MtagBuffer i) const
+MyTag::Serialize (TagBuffer i) const
 {
   i.WriteU8 (m_simpleValue);
 }
 void 
-MyTag::Deserialize (MtagBuffer i)
+MyTag::Deserialize (TagBuffer i)
 {
   m_simpleValue = i.ReadU8 ();
 }
@@ -95,7 +95,7 @@ int main (int argc, char *argv[])
 
   // store the tag in a packet.
   Ptr<Packet> p = Create<Packet> ();
-  p->AddMtag (tag);
+  p->AddTag (tag);
 
   // create a copy of the packet
   Ptr<Packet> aCopy = p->Copy ();

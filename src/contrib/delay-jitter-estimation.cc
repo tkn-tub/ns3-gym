@@ -6,7 +6,7 @@
 
 namespace {
 
-class TimestampTag : public ns3::Mtag
+class TimestampTag : public ns3::Tag
 {
 public:
   TimestampTag ();
@@ -14,8 +14,8 @@ public:
   virtual ns3::TypeId GetInstanceTypeId (void) const;
 
   virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (ns3::MtagBuffer i) const;
-  virtual void Deserialize (ns3::MtagBuffer i);
+  virtual void Serialize (ns3::TagBuffer i) const;
+  virtual void Deserialize (ns3::TagBuffer i);
 
 
   ns3::Time GetTxTime (void) const;
@@ -31,7 +31,7 @@ ns3::TypeId
 TimestampTag::GetTypeId (void)
 {
   static ns3::TypeId tid = ns3::TypeId ("anon::TimestampTag")
-    .SetParent<Mtag> ()
+    .SetParent<Tag> ()
     .AddConstructor<TimestampTag> ()
     .AddAttribute ("CreationTime",
 		   "The time at which the timestamp was created",
@@ -53,12 +53,12 @@ TimestampTag::GetSerializedSize (void) const
   return 8;
 }
 void 
-TimestampTag::Serialize (ns3::MtagBuffer i) const
+TimestampTag::Serialize (ns3::TagBuffer i) const
 {
   i.WriteU64 (m_creationTime);
 }
 void 
-TimestampTag::Deserialize (ns3::MtagBuffer i)
+TimestampTag::Deserialize (ns3::TagBuffer i)
 {
   m_creationTime = i.ReadU64 ();
 }
@@ -82,7 +82,7 @@ void
 DelayJitterEstimation::PrepareTx (Ptr<const Packet> packet)
 {
   TimestampTag tag;
-  packet->AddMtag (tag);
+  packet->AddTag (tag);
 }
 void 
 DelayJitterEstimation::RecordRx (Ptr<const Packet> packet)

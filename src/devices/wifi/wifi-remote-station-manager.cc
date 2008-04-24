@@ -306,7 +306,7 @@ WifiRemoteStationManager::IsLowLatency (void) const
 
 namespace ns3 {
 
-class TxModeTag : public Mtag
+class TxModeTag : public Tag
 {
 public:
   TxModeTag ();
@@ -317,8 +317,8 @@ public:
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (MtagBuffer i) const;
-  virtual void Deserialize (MtagBuffer i);
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
 private:
   WifiMode m_rtsMode;
   WifiMode m_dataMode;
@@ -344,7 +344,7 @@ TypeId
 TxModeTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TxModeTag")
-    .SetParent<Mtag> ()
+    .SetParent<Tag> ()
     .AddConstructor<TxModeTag> ()
     .AddAttribute ("RtsTxMode", 
                    "Tx mode of rts to use later",
@@ -370,13 +370,13 @@ TxModeTag::GetSerializedSize (void) const
   return sizeof (WifiMode) * 2;
 }
 void 
-TxModeTag::Serialize (MtagBuffer i) const
+TxModeTag::Serialize (TagBuffer i) const
 {
   i.Write ((uint8_t *)&m_rtsMode, sizeof (WifiMode));
   i.Write ((uint8_t *)&m_dataMode, sizeof (WifiMode));
 }
 void 
-TxModeTag::Deserialize (MtagBuffer i)
+TxModeTag::Deserialize (TagBuffer i)
 {
   i.Read ((uint8_t *)&m_rtsMode, sizeof (WifiMode));
   i.Read ((uint8_t *)&m_dataMode, sizeof (WifiMode));
@@ -551,7 +551,7 @@ WifiRemoteStation::PrepareForQueue (Ptr<const Packet> packet, uint32_t fullPacke
       return;
     }
   TxModeTag tag = TxModeTag (DoGetRtsMode (), DoGetDataMode (fullPacketSize));
-  packet->AddMtag (tag);
+  packet->AddTag (tag);
 }
 WifiMode 
 WifiRemoteStation::GetDataMode (Ptr<const Packet> packet, uint32_t fullPacketSize)

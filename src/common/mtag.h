@@ -7,14 +7,14 @@
 
 namespace ns3 {
 
-class Mtag : public ObjectBase
+class Tag : public ObjectBase
 {
 public:
   static TypeId GetTypeId (void);
 
   virtual uint32_t GetSerializedSize (void) const = 0;
-  virtual void Serialize (MtagBuffer i) const = 0;
-  virtual void Deserialize (MtagBuffer i) = 0;
+  virtual void Serialize (TagBuffer i) const = 0;
+  virtual void Deserialize (TagBuffer i) = 0;
 };
 
 } // namespace ns3

@@ -7,7 +7,7 @@
 
 namespace ns3 {
 
-class MtagList
+class TagList
 {
 public:
 
@@ -20,16 +20,16 @@ public:
       uint32_t size;
       uint32_t start;
       uint32_t end;
-      MtagBuffer buf;
+      TagBuffer buf;
     private:
-      friend class MtagList;
-      Item (MtagBuffer buf);
+      friend class TagList;
+      Item (TagBuffer buf);
     };
     bool HasNext (void) const;
-    struct MtagList::Iterator::Item Next (void);
+    struct TagList::Iterator::Item Next (void);
     uint32_t GetOffsetStart (void) const;
   private:
-    friend class MtagList;
+    friend class TagList;
     Iterator (uint8_t *start, uint8_t *end, uint32_t offsetStart, uint32_t offsetEnd);
     void PrepareForNext (void);
     uint8_t *m_current;
@@ -38,19 +38,19 @@ public:
     uint32_t m_offsetEnd;
   };
 
-  MtagList ();
-  MtagList (const MtagList &o);
-  MtagList &operator = (const MtagList &o);
-  ~MtagList ();
+  TagList ();
+  TagList (const TagList &o);
+  TagList &operator = (const TagList &o);
+  ~TagList ();
 
-  MtagBuffer Add (TypeId tid, uint32_t bufferSize, uint32_t start, uint32_t end);
+  TagBuffer Add (TypeId tid, uint32_t bufferSize, uint32_t start, uint32_t end);
 
-  void Add (const MtagList &o);
+  void Add (const TagList &o);
 
   void Remove (const Iterator &i);
   void RemoveAll (void);
 
-  MtagList::Iterator Begin (uint32_t offsetStart, uint32_t offsetEnd) const;
+  TagList::Iterator Begin (uint32_t offsetStart, uint32_t offsetEnd) const;
 
   void AddAtEnd (int32_t adjustment, uint32_t appendOffset);
   void AddAtStart (int32_t adjustment, uint32_t prependOffset);

@@ -37,7 +37,7 @@ NS_LOG_COMPONENT_DEFINE ("MacLow");
 
 namespace ns3 {
 
-class SnrTag : public Mtag
+class SnrTag : public Tag
 {
 public:
 
@@ -45,8 +45,8 @@ public:
   virtual TypeId GetInstanceTypeId (void) const;
 
   virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (MtagBuffer i) const;
-  virtual void Deserialize (MtagBuffer i);
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
 
   void Set (double snr);
   double Get (void) const;
@@ -58,7 +58,7 @@ TypeId
 SnrTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SnrTag")
-    .SetParent<Mtag> ()
+    .SetParent<Tag> ()
     .AddConstructor<SnrTag> ()
     .AddAttribute ("Snr", "The snr of the last packet received",
                    DoubleValue (0.0),
@@ -79,12 +79,12 @@ SnrTag::GetSerializedSize (void) const
   return sizeof (double);
 }
 void 
-SnrTag::Serialize (MtagBuffer i) const
+SnrTag::Serialize (TagBuffer i) const
 {
   i.WriteDouble (m_snr);
 }
 void 
-SnrTag::Deserialize (MtagBuffer i)
+SnrTag::Deserialize (TagBuffer i)
 {
   m_snr = i.ReadDouble ();
 }
@@ -1036,7 +1036,7 @@ MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiMode rtsTxMode,
 
   struct SnrTag tag;
   tag.Set (rtsSnr);
-  packet->AddMtag (tag);
+  packet->AddTag (tag);
 
   ForwardDown (packet, &cts, ctsTxMode);
 }
@@ -1114,7 +1114,7 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
 
   struct SnrTag tag;
   tag.Set (dataSnr);
-  packet->AddMtag (tag);
+  packet->AddTag (tag);
 
   ForwardDown (packet, &ack, ackTxMode);
 }

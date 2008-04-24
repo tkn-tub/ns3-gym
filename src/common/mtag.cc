@@ -3,9 +3,9 @@
 namespace ns3 {
 
 TypeId 
-Mtag::GetTypeId (void)
+Tag::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::Mtag")
+  static TypeId tid = TypeId ("ns3::Tag")
     .SetParent<ObjectBase> ()
     ;
   return tid;

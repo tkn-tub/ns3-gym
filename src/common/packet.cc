@@ -40,7 +40,7 @@ TagIterator::Item::GetEnd (void) const
   return m_end;
 }
 void 
-TagIterator::Item::GetTag (Mtag &tag) const
+TagIterator::Item::GetTag (Tag &tag) const
 {
   if (tag.GetInstanceTypeId () != GetTypeId ())
     {
@@ -48,7 +48,7 @@ TagIterator::Item::GetTag (Mtag &tag) const
     }
   tag.Deserialize (m_buffer);
 }
-TagIterator::Item::Item (TypeId tid, uint32_t start, uint32_t end, MtagBuffer buffer)
+TagIterator::Item::Item (TypeId tid, uint32_t start, uint32_t end, TagBuffer buffer)
   : m_tid (tid),
     m_start (start),
     m_end (end),
@@ -62,7 +62,7 @@ TagIterator::HasNext (void) const
 TagIterator::Item 
 TagIterator::Next (void)
 {
-  MtagList::Iterator::Item i = m_current.Next ();
+  TagList::Iterator::Item i = m_current.Next ();
   
   TagIterator::Item item = TagIterator::Item (i.tid, 
                                               i.start-m_current.GetOffsetStart (), 
@@ -72,7 +72,7 @@ TagIterator::Next (void)
   
   return item;
 }
-TagIterator::TagIterator (MtagList::Iterator i)
+TagIterator::TagIterator (TagList::Iterator i)
   : m_current (i)
 {}
 
@@ -150,7 +150,7 @@ Packet::Packet (uint8_t const*buffer, uint32_t size)
   i.Write (buffer, size);
 }
 
-Packet::Packet (const Buffer &buffer,  const MtagList &tagList, const PacketMetadata &metadata)
+Packet::Packet (const Buffer &buffer,  const TagList &tagList, const PacketMetadata &metadata)
   : m_buffer (buffer),
     m_tagList (tagList),
     m_metadata (metadata),
@@ -230,7 +230,7 @@ Packet::AddAtEnd (Ptr<const Packet> packet)
   uint32_t appendPrependOffset = m_buffer.GetCurrentEndOffset () - packet->m_buffer.GetSize ();
   m_tagList.AddAtEnd (m_buffer.GetCurrentStartOffset () - aStart, 
                       appendPrependOffset);
-  MtagList copy = packet->m_tagList;
+  TagList copy = packet->m_tagList;
   copy.AddAtStart (m_buffer.GetCurrentEndOffset () - bEnd,
                    appendPrependOffset);
   m_tagList.Add (copy);
@@ -468,10 +468,10 @@ Packet::Deserialize (Buffer buffer)
 }
 
 void 
-Packet::AddMtag (const Mtag &tag) const
+Packet::AddTag (const Tag &tag) const
 {
-  MtagList *list = const_cast<MtagList *> (&m_tagList);
-  MtagBuffer buffer = list->Add (tag.GetInstanceTypeId (), tag.GetSerializedSize (), 
+  TagList *list = const_cast<TagList *> (&m_tagList);
+  TagBuffer buffer = list->Add (tag.GetInstanceTypeId (), tag.GetSerializedSize (), 
                                  m_buffer.GetCurrentStartOffset (),
                                  m_buffer.GetCurrentEndOffset ());
   tag.Serialize (buffer);
@@ -483,7 +483,7 @@ Packet::GetTagIterator (void) const
 }
 
 bool 
-Packet::FindFirstMatchingTag (Mtag &tag) const
+Packet::FindFirstMatchingTag (Tag &tag) const
 {
   TypeId tid = tag.GetInstanceTypeId ();
   TagIterator i = GetTagIterator ();
@@ -520,7 +520,7 @@ using namespace ns3;
 
 namespace {
 
-class ATestTagBase : public Mtag
+class ATestTagBase : public Tag
 {
 public:
   ATestTagBase () : m_error (false) {}
@@ -535,7 +535,7 @@ public:
     std::ostringstream oss;
     oss << "anon::ATestTag<" << N << ">";
     static TypeId tid = TypeId (oss.str ().c_str ())
-      .SetParent<Mtag> ()
+      .SetParent<Tag> ()
       .AddConstructor<ATestTag<N> > ()
       .HideFromDocumentation ()
       ;
@@ -547,13 +547,13 @@ public:
   virtual uint32_t GetSerializedSize (void) const {
     return N;
   }
-  virtual void Serialize (MtagBuffer buf) const {
+  virtual void Serialize (TagBuffer buf) const {
     for (uint32_t i = 0; i < N; ++i)
       {
         buf.WriteU8 (N);
       }
   }
-  virtual void Deserialize (MtagBuffer buf) {
+  virtual void Deserialize (TagBuffer buf) {
     for (uint32_t i = 0; i < N; ++i)
       {
         uint8_t v = buf.ReadU8 ();
@@ -660,23 +660,23 @@ PacketTest::RunTests (void)
 
   Ptr<const Packet> p = Create<Packet> (1000);
 
-  p->AddMtag (ATestTag<1> ());
+  p->AddTag (ATestTag<1> ());
   CHECK (p, 1, E (1, 0, 1000));
   Ptr<const Packet> copy = p->Copy ();
   CHECK (copy, 1, E (1, 0, 1000));
 
-  p->AddMtag (ATestTag<2> ());
+  p->AddTag (ATestTag<2> ());
   CHECK (p, 2, E (1, 0, 1000), E(2, 0, 1000));
   CHECK (copy, 1, E (1, 0, 1000));
 
   Ptr<Packet> frag0 = p->CreateFragment (0, 10);
   Ptr<Packet> frag1 = p->CreateFragment (10, 90);
   Ptr<const Packet> frag2 = p->CreateFragment (100, 900);
-  frag0->AddMtag (ATestTag<3> ());
+  frag0->AddTag (ATestTag<3> ());
   CHECK (frag0, 3, E (1, 0, 10), E(2, 0, 10), E (3, 0, 10));
-  frag1->AddMtag (ATestTag<4> ());
+  frag1->AddTag (ATestTag<4> ());
   CHECK (frag1, 3, E (1, 0, 90), E(2, 0, 90), E (4, 0, 90));
-  frag2->AddMtag (ATestTag<5> ());
+  frag2->AddTag (ATestTag<5> ());
   CHECK (frag2, 3, E (1, 0, 900), E(2, 0, 900), E (5, 0, 900));
 
   frag1->AddAtEnd (frag2);

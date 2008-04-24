@@ -5,10 +5,10 @@
 
 namespace ns3 {
 
-class MtagBuffer
+class TagBuffer
 {
 public:
-  MtagBuffer (uint8_t *start, uint8_t *end);
+  TagBuffer (uint8_t *start, uint8_t *end);
   void TrimAtEnd (uint32_t trim);
 
   void WriteU8 (uint8_t v);
@@ -24,7 +24,7 @@ public:
   double ReadDouble (void);
   void Read (uint8_t *buffer, uint32_t size);
 
-  void CopyFrom (MtagBuffer o);
+  void CopyFrom (TagBuffer o);
 private:
   
   uint8_t *m_current;
