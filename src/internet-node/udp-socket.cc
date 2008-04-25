@@ -325,6 +325,25 @@ UdpSocket::SendTo(const Address &address, Ptr<Packet> p)
   return DoSendTo (p, ipv4, port);
 }
 
+Ptr<Packet>
+UdpSocket::Recv (uint32_t maxSize, uint32_t flags)
+{
+  if (m_deliveryQueue.empty() )
+    {
+      return 0;
+    }
+  Ptr<Packet> p = m_deliveryQueue.front ();
+  if (p->GetSize() <= maxSize) 
+    {
+      m_deliveryQueue.pop ();
+    }
+  else
+    {
+      p = 0; 
+    }
+  return p;
+}
+
 void 
 UdpSocket::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
 {
@@ -334,9 +353,12 @@ UdpSocket::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
     {
       return;
     }
-  
   Address address = InetSocketAddress (ipv4, port);
-  NotifyDataReceived (packet, address);
+  SocketRxAddressTag tag;
+  tag.SetAddress (address);
+  packet->AddTag (tag);
+  m_deliveryQueue.push (packet);
+  NotifyDataRecv ();
 }
 
 } //namespace ns3
@@ -367,6 +389,8 @@ public:
 
   void ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
   void ReceivePacket2 (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
+  void ReceivePkt (Ptr<Socket> socket);
+  void ReceivePkt2 (Ptr<Socket> socket);
 };
 
 
@@ -382,6 +406,16 @@ void UdpSocketTest::ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const
 void UdpSocketTest::ReceivePacket2 (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
 {
   m_receivedPacket2 = packet;
+}
+
+void UdpSocketTest::ReceivePkt (Ptr<Socket> socket)
+{
+  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
+}
+
+void UdpSocketTest::ReceivePkt2 (Ptr<Socket> socket)
+{
+  m_receivedPacket2 = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
 }
 
 bool
@@ -457,10 +491,18 @@ UdpSocketTest::RunTests (void)
   Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<Udp> ();
   Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
   NS_TEST_ASSERT_EQUAL (rxSocket->Bind (InetSocketAddress (Ipv4Address ("10.0.0.1"), 1234)), 0);
+#ifdef OLDSEMANTICS
   rxSocket->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePacket, this));
+#else
+  rxSocket->SetRecv_Callback (MakeCallback (&UdpSocketTest::ReceivePkt, this));
+#endif
 
   Ptr<Socket> rxSocket2 = rxSocketFactory->CreateSocket ();
+#ifdef OLDSEMANTICS
   rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePacket2, this));
+#else
+  rxSocket2->SetRecv_Callback (MakeCallback (&UdpSocketTest::ReceivePkt2, this));
+#endif
   NS_TEST_ASSERT_EQUAL (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("10.0.1.1"), 1234)), 0);
 
   Ptr<SocketFactory> txSocketFactory = txNode->GetObject<Udp> ();
@@ -477,6 +519,8 @@ UdpSocketTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
   NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 0); // second interface should receive it
 
+  m_receivedPacket->RemoveAllTags ();
+  m_receivedPacket2->RemoveAllTags ();
 
   // Simple broadcast test
 
@@ -489,6 +533,8 @@ UdpSocketTest::RunTests (void)
   // second socket should not receive it (it is bound specifically to the second interface's address
   NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 0);
 
+  m_receivedPacket->RemoveAllTags ();
+  m_receivedPacket2->RemoveAllTags ();
 
   // Broadcast test with multiple receiving sockets
 
@@ -497,7 +543,11 @@ UdpSocketTest::RunTests (void)
   // the socket address matches.
   rxSocket2->Dispose ();
   rxSocket2 = rxSocketFactory->CreateSocket ();
+#ifdef OLDSEMANTICS
   rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePacket2, this));
+#else
+  rxSocket2->SetRecv_Callback (MakeCallback (&UdpSocketTest::ReceivePkt2, this));
+#endif
   NS_TEST_ASSERT_EQUAL (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("0.0.0.0"), 1234)), 0);
 
   m_receivedPacket = Create<Packet> ();
@@ -508,17 +558,12 @@ UdpSocketTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
   NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 123);
 
+  m_receivedPacket->RemoveAllTags ();
+  m_receivedPacket2->RemoveAllTags ();
+
   Simulator::Destroy ();
 
   return result;
-}
-
-Ptr<Packet>
-UdpSocket::Recv (uint32_t maxSize, uint32_t flags)
-{
-  Ptr<Packet> p = m_deliveryQueue.front ();
-  m_deliveryQueue.pop ();
-  return p;
 }
 
 

@@ -33,7 +33,7 @@ namespace ns3 {
  * The maximum size (in bytes) of a Tag is stored
  * in this constant.
  */
-#define TAGS_MAX_SIZE 16
+#define TAGS_MAX_SIZE 32
 
 class Tags {
 public:

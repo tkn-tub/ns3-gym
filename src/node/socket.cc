@@ -246,4 +246,53 @@ Socket::NotifyDataRecv (void)
       m_receivedData_ (this);
     }
 }
+
+SocketRxAddressTag::SocketRxAddressTag ()  
+{
+}
+
+uint32_t 
+SocketRxAddressTag::GetUid (void)
+{
+  static uint32_t uid = ns3::Tag::AllocateUid<SocketRxAddressTag> ("SocketRxAddressTag.ns3");
+  return uid;
+}
+
+void
+SocketRxAddressTag::Print (std::ostream &os) const
+{
+  os << "address="<< m_address;
+}
+
+uint32_t 
+SocketRxAddressTag::GetSerializedSize (void) const
+{
+  return 0;
+}
+
+void 
+SocketRxAddressTag::Serialize (Buffer::Iterator i) const
+{
+  // for local use in stack only
+}
+
+uint32_t 
+SocketRxAddressTag::Deserialize (Buffer::Iterator i)
+{
+  // for local use in stack only
+  return 0;
+}
+
+void 
+SocketRxAddressTag::SetAddress (Address addr)
+{
+  m_address = addr;
+}
+
+Address 
+SocketRxAddressTag::GetAddress (void) const
+{
+  return m_address;
+}
+
 }//namespace ns3

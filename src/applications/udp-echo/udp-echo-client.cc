@@ -103,7 +103,7 @@ UdpEchoClient::StartApplication (void)
       m_socket->Connect (InetSocketAddress (m_peerAddress, m_peerPort));
     }
 
-  m_socket->SetRecvCallback(MakeCallback(&UdpEchoClient::Receive, this));
+  m_socket->SetRecv_Callback(MakeCallback(&UdpEchoClient::HandleRead, this));
 
   ScheduleTransmit (Seconds(0.));
 }
@@ -145,6 +145,29 @@ UdpEchoClient::Send (void)
   if (m_sent < m_count) 
     {
       ScheduleTransmit (m_interval);
+    }
+}
+
+void
+UdpEchoClient::HandleRead (Ptr<Socket> socket)
+{
+  NS_LOG_FUNCTION (this << socket);
+  Ptr<Packet> packet;
+  uint32_t maxSize = std::numeric_limits<uint32_t>::max();
+  uint32_t flags = 0;  // no flags
+  while (packet = socket->Recv (maxSize, flags))
+    {
+      SocketRxAddressTag tag;
+      bool found = packet->PeekTag (tag);
+      NS_ASSERT (found);
+      Address from = tag.GetAddress ();
+      packet->RemoveTag (tag);
+      if (InetSocketAddress::IsMatchingType (from))
+        {
+          InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
+          NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " <<
+            address.GetIpv4());
+        }
     }
 }
 

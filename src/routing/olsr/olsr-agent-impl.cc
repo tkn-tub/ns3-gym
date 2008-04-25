@@ -282,7 +282,7 @@ void AgentImpl::Start ()
 
       // Create a socket to listen only on this interface
       Ptr<Socket> socket = socketFactory->CreateSocket ();
-      socket->SetRecvCallback (MakeCallback (&AgentImpl::RecvOlsr,  this));
+      socket->SetRecv_Callback (MakeCallback (&AgentImpl::RecvOlsr,  this));
       if (socket->Bind (InetSocketAddress (addr, OLSR_PORT_NUMBER)))
         {
           NS_FATAL_ERROR ("Failed to bind() OLSR receive socket");
@@ -307,10 +307,18 @@ void AgentImpl::SetMainInterface (uint32_t interface)
 //
 // \brief Processes an incoming %OLSR packet following RFC 3626 specification.
 void
-AgentImpl::RecvOlsr (Ptr<Socket> socket,
-                     Ptr<Packet> receivedPacket,
-                     const Address &sourceAddress)
+AgentImpl::RecvOlsr (Ptr<Socket> socket)
 {
+  Ptr<Packet> receivedPacket;
+  uint32_t maxSize = std::numeric_limits<uint32_t>::max();
+  uint32_t flags = 0;  // no flags
+  receivedPacket = socket->Recv (maxSize, flags);
+
+  SocketRxAddressTag tag;
+  bool found = receivedPacket->PeekTag (tag);
+  NS_ASSERT (found);
+  Address sourceAddress = tag.GetAddress ();
+
   InetSocketAddress inetSourceAddr = InetSocketAddress::ConvertFrom (sourceAddress);
   Ipv4Address senderIfaceAddr = inetSourceAddr.GetIpv4 ();
   Ipv4Address receiverIfaceAddr = m_socketAddresses[socket];

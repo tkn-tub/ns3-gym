@@ -79,7 +79,8 @@ UdpEchoServer::StartApplication (void)
       m_socket->Bind (local);
     }
 
-  m_socket->SetRecvCallback(MakeCallback(&UdpEchoServer::Receive, this));
+  //m_socket->SetRecvCallback(MakeCallback(&UdpEchoServer::Receive, this));
+  m_socket->SetRecv_Callback(MakeCallback(&UdpEchoServer::HandleRead, this));
 }
 
 void 
@@ -91,6 +92,31 @@ UdpEchoServer::StopApplication ()
     {
       m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>, 
         Ptr<Packet>, const Address &> ());
+    }
+}
+
+void 
+UdpEchoServer::HandleRead (Ptr<Socket> socket)
+{
+  Ptr<Packet> packet;
+  uint32_t maxSize = std::numeric_limits<uint32_t>::max();
+  uint32_t flags = 0;  // no flags
+  while (packet = socket->Recv (maxSize, flags))
+    {
+      SocketRxAddressTag tag;
+      bool found = packet->PeekTag (tag); 
+      NS_ASSERT (found);
+      Address from = tag.GetAddress ();
+      packet->RemoveTag (tag);
+      if (InetSocketAddress::IsMatchingType (from))
+        {
+          InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
+          NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
+            address.GetIpv4());
+
+          NS_LOG_LOGIC ("Echoing packet");
+          socket->SendTo (from, packet);
+        }
     }
 }
 

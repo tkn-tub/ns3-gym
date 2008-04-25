@@ -25,11 +25,13 @@
 
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
+#include "ns3/tag.h"
 #include "ns3/object.h"
 #include "address.h"
 #include <stdint.h>
 
 namespace ns3 {
+
 
 class Node;
 class Packet;
@@ -257,6 +259,14 @@ public:
    */
   int SendTo (const Address &address, const uint8_t* buf, uint32_t size);
 
+  /**
+   * \brief Read a single packet from the socket
+   * \param maxSize reader will accept packet up to maxSize
+   * \param flags Socket recv flags
+   * \returns Ptr<Packet> of the next in-sequence packet.  Returns
+   * 0 if the socket cannot return a next in-sequence packet conforming
+   * to the maxSize and flags.
+   */
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags) = 0;
 
 protected:
@@ -283,6 +293,26 @@ protected:
   Callback<void, Ptr<Socket>, uint32_t >         m_sendCb;
   Callback<void, Ptr<Socket>, Ptr<Packet>,const Address&> m_receivedData;
   Callback<void, Ptr<Socket> > m_receivedData_;
+};
+
+/**
+ * \brief This class implements a tag that carries the source address
+ * of a packet across the receiving socket interface.
+ */
+class SocketRxAddressTag : public Tag
+{
+public:
+  SocketRxAddressTag ();
+  static uint32_t GetUid (void);
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator i) const;
+  uint32_t Deserialize (Buffer::Iterator i);
+
+  void SetAddress (Address addr);
+  Address GetAddress (void) const;
+private:
+  Address m_address;
 };
 
 } //namespace ns3

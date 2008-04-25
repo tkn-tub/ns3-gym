@@ -445,8 +445,19 @@ TcpSocket::Listen (uint32_t q)
 Ptr<Packet>
 TcpSocket::Recv (uint32_t maxSize, uint32_t flags)
 {
+  if (m_deliveryQueue.empty() )
+    {
+      return 0;
+    }
   Ptr<Packet> p = m_deliveryQueue.front ();
-  m_deliveryQueue.pop ();
+  if (p->GetSize() <= maxSize)
+    {
+      m_deliveryQueue.pop ();
+    }
+  else
+    {
+      p = 0;
+    }
   return p;
 }
 

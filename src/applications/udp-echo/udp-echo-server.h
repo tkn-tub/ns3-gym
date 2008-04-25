@@ -50,6 +50,7 @@ private:
   virtual void StopApplication (void);
 
   void Receive(Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
+  void HandleRead (Ptr<Socket> socket);
 
   uint16_t m_port;
   Ptr<Socket> m_socket;
