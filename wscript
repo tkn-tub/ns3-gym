@@ -255,7 +255,7 @@ def build(bld):
         doxygen()
         raise SystemExit(0)
 
-    print "Entering directory `%s/build'" % Params.g_build.m_curdirnode.abspath()
+    print "Entering directory `%s'" % os.path.join(Params.g_build.m_curdirnode.abspath(), 'build')
     # process subfolders from here
     bld.add_subdirs('src')
     bld.add_subdirs('samples utils examples tutorial')
