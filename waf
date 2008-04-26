@@ -2,6 +2,9 @@
 # encoding: utf-8
 # Thomas Nagy, 2005-2008
 
+raise RuntimeError("Sorry, this ns-3 branch temporarily requires WAF trunk (or 1.4.1);"
+                   " I will update the WAF script later...")
+
 """
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
