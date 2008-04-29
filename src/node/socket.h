@@ -157,13 +157,6 @@ public:
    * \param receivedData Invoked whenever new data is received.
    *
    */
-  void SetRecvCallback (Callback<void, Ptr<Socket>, Ptr<Packet>,
-                          const Address&> receivedData);
-  /**
-   * \brief Receive data
-   * \param receivedData Invoked whenever new data is received.
-   *
-   */
   void SetRecv_Callback (Callback<void, Ptr<Socket> >);
   /** 
    * \param address the address to try to allocate
@@ -279,7 +272,6 @@ protected:
   void NotifyCloseRequested (void);
   void NotifyDataSent (uint32_t size);
   void NotifySend (uint32_t spaceAvailable);
-  void NotifyDataReceived (Ptr<Packet> p, const Address &from);
   void NotifyDataRecv (void);
 
   Callback<void,Ptr<Socket> >    m_closeCompleted;
@@ -291,7 +283,6 @@ protected:
   Callback<void, Ptr<Socket>, const Address&>    m_newConnectionCreated;
   Callback<void, Ptr<Socket>, uint32_t>          m_dataSent;
   Callback<void, Ptr<Socket>, uint32_t >         m_sendCb;
-  Callback<void, Ptr<Socket>, Ptr<Packet>,const Address&> m_receivedData;
   Callback<void, Ptr<Socket> > m_receivedData_;
 };
 

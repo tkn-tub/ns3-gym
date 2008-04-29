@@ -23,15 +23,21 @@ GenerateTraffic (Ptr<Socket> socket, uint32_t size)
 }
 
 static void
-SocketPrinter (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
+SocketPrinter (Ptr<Socket> socket)
 {
-  std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << packet->GetSize () << std::endl;
+  Ptr<Packet> packet;
+  uint32_t maxSize = std::numeric_limits<uint32_t>::max();
+  uint32_t flags = 0;  // no flags
+  while (packet = socket->Recv (maxSize, flags))
+    { 
+      std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << packet->GetSize () << std::endl;
+    }
 }
 
 static void
 PrintTraffic (Ptr<Socket> socket)
 {
-  socket->SetRecvCallback (MakeCallback (&SocketPrinter));
+  socket->SetRecv_Callback (MakeCallback (&SocketPrinter));
 }
 
 void

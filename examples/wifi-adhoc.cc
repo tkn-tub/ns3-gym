@@ -38,7 +38,7 @@ public:
   Experiment (std::string name);
   GnuplotDataset Run (const WifiHelper &wifi);
 private:
-  void ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &address);
+  void ReceivePacket (Ptr<Socket> socket);
   void SetPosition (Ptr<Node> node, Vector position);
   Vector GetPosition (Ptr<Node> node);
   void AdvancePosition (Ptr<Node> node);
@@ -90,9 +90,15 @@ Experiment::AdvancePosition (Ptr<Node> node)
 }
 
 void
-Experiment::ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &address)
+Experiment::ReceivePacket (Ptr<Socket> socket)
 {
-  m_bytesTotal += packet->GetSize ();
+  Ptr<Packet> packet;
+  uint32_t maxSize = std::numeric_limits<uint32_t>::max();
+  uint32_t flags = 0;  // no flags
+  while (packet = socket->Recv (maxSize, flags))
+    {
+      m_bytesTotal += packet->GetSize ();
+    }
 }
 
 Ptr<Socket>
@@ -102,7 +108,7 @@ Experiment::SetupPacketReceive (Ptr<Node> node)
   Ptr<SocketFactory> socketFactory = node->GetObject<SocketFactory> (tid);
   Ptr<Socket> sink = socketFactory->CreateSocket ();
   sink->Bind ();
-  sink->SetRecvCallback (MakeCallback (&Experiment::ReceivePacket, this));
+  sink->SetRecv_Callback (MakeCallback (&Experiment::ReceivePacket, this));
   return sink;
 }
 

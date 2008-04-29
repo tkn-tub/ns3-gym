@@ -80,13 +80,6 @@ Socket::SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> sendCb)
 }
 
 void 
-Socket::SetRecvCallback (Callback<void, Ptr<Socket>, Ptr<Packet>,const Address&> receivedData)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_receivedData = receivedData;
-}
-
-void 
 Socket::SetRecv_Callback (Callback<void, Ptr<Socket> > receivedData)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -224,16 +217,6 @@ Socket::NotifySend (uint32_t spaceAvailable)
   if (!m_sendCb.IsNull ())
     {
       m_sendCb (this, spaceAvailable);
-    }
-}
-
-void 
-Socket::NotifyDataReceived (Ptr<Packet> p, const Address &from)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  if (!m_receivedData.IsNull ())
-    {
-      m_receivedData (this, p, from);
     }
 }
 

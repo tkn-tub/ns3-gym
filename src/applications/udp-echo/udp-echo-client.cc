@@ -115,8 +115,7 @@ UdpEchoClient::StopApplication ()
 
   if (!m_socket) 
     {
-      m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>, Ptr<Packet>,
-                                const Address &> ());
+      m_socket->SetRecv_Callback(MakeNullCallback<void, Ptr<Socket> > ());
     }
 
   Simulator::Cancel(m_sendEvent);

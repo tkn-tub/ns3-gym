@@ -79,7 +79,6 @@ UdpEchoServer::StartApplication (void)
       m_socket->Bind (local);
     }
 
-  //m_socket->SetRecvCallback(MakeCallback(&UdpEchoServer::Receive, this));
   m_socket->SetRecv_Callback(MakeCallback(&UdpEchoServer::HandleRead, this));
 }
 
@@ -90,8 +89,7 @@ UdpEchoServer::StopApplication ()
 
   if (!m_socket) 
     {
-      m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>, 
-        Ptr<Packet>, const Address &> ());
+      m_socket->SetRecv_Callback(MakeNullCallback<void, Ptr<Socket> > ());
     }
 }
 
