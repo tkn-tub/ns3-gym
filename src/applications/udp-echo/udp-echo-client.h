@@ -56,7 +56,6 @@ private:
   void ScheduleTransmit (Time dt);
   void Send (void);
 
-  void Receive(Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
   void HandleRead (Ptr<Socket> socket);
 
   uint32_t m_count;

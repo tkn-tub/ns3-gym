@@ -170,21 +170,4 @@ UdpEchoClient::HandleRead (Ptr<Socket> socket)
     }
 }
 
-void
-UdpEchoClient::Receive(
-  Ptr<Socket> socket, 
-  Ptr<Packet> packet,
-  const Address &from) 
-{
-  NS_LOG_FUNCTION (this << socket << packet << from);
-
-  if (InetSocketAddress::IsMatchingType (from))
-    {
-      InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-      NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
-        address.GetIpv4());
-    }
-}
-
-
 } // Namespace ns3

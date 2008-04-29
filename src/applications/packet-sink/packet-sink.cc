@@ -109,33 +109,20 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
   uint32_t flags = 0;  // no flags
   while (packet = socket->Recv (maxSize, flags))
     {
-          NS_LOG_INFO ("Received " << packet->GetSize());
-#if 0
-      // this code waits until we pass address as a Packet tag
+      SocketRxAddressTag tag;
+      bool found = packet->PeekTag (tag);
+      NS_ASSERT (found);
+      Address from = tag.GetAddress ();
+      packet->RemoveTag (tag);
       if (InetSocketAddress::IsMatchingType (from))
         {
-          address = InetSocketAddress::ConvertFrom (from);
+          InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
           NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
             address.GetIpv4() << " [" << address << "]---'" << 
             packet->PeekData() << "'");
         }    
       m_rxTrace (packet, from);
-#endif
     }
-}
-
-// This LOG output inspired by the application on Joseph Kopena's wiki
-void PacketSink::Receive(Ptr<Socket> socket, Ptr<Packet> packet,
-                       const Address &from) 
-{
-  if (InetSocketAddress::IsMatchingType (from))
-    {
-      InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-      NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
-        address.GetIpv4() << " [" << address << "]---'" << 
-        packet->PeekData() << "'");
-    }
-  m_rxTrace (packet, from);
 }
 
 void PacketSink::CloseConnection (Ptr<Socket> socket)

@@ -118,23 +118,4 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
     }
 }
 
-void
-UdpEchoServer::Receive(
-  Ptr<Socket> socket, 
-  Ptr<Packet> packet,
-  const Address &from) 
-{
-  NS_LOG_FUNCTION (this << socket << packet << from);
-
-  if (InetSocketAddress::IsMatchingType (from))
-    {
-      InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-      NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
-        address.GetIpv4());
-
-      NS_LOG_LOGIC ("Echoing packet");
-      socket->SendTo (from, packet);
-    }
-}
-
 } // Namespace ns3
