@@ -975,7 +975,11 @@ void TcpSocket::NewRx (Ptr<Packet> p,
       m_nextRxSequence += s;           // Advance next expected sequence
       //bytesReceived += s;       // Statistics
       NS_LOG_LOGIC("Case 1, advanced nrxs to " << m_nextRxSequence );
-      NotifyDataReceived (p, fromAddress);
+      SocketRxAddressTag tag;
+      tag.SetAddress (fromAddress);
+      p->AddTag (tag);
+      m_deliveryQueue.push (p);
+      NotifyDataRecv ();
       if (m_closeNotified)
         {
           NS_LOG_LOGIC ("Tcp " << this << " HuH?  Got data after closeNotif");
@@ -1027,7 +1031,11 @@ void TcpSocket::NewRx (Ptr<Packet> p,
                 }
               s1 = p1->GetSize ();
             }
-          NotifyDataReceived (p1, fromAddress);
+          SocketRxAddressTag tag;
+          tag.SetAddress (fromAddress);
+          p1->AddTag (tag);
+          m_deliveryQueue.push (p1);
+          NotifyDataRecv ();
 
           NS_LOG_LOGIC ("TcpSocket " << this << " adv rxseq1 by " << s1 );
           m_nextRxSequence += s1;           // Note data received
