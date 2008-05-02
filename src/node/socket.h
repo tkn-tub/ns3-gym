@@ -273,7 +273,13 @@ public:
    * 0 if the socket cannot return a next in-sequence packet.
    */
    Ptr<Packet> Recv (void);
-
+  /**
+   * Return number of bytes which can be returned from one or 
+   * multiple calls to Recv.
+   * Must be possible to call this method from the Recv callback.
+   */
+  virtual uint32_t GetRxAvailable (void) const = 0;
+ 
 protected:
   void NotifyCloseCompleted (void);
   void NotifyConnectionSucceeded (void);

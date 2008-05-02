@@ -58,6 +58,7 @@ public:
   virtual int SendTo(const Address &address,Ptr<Packet> p);
 
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
+  virtual uint32_t GetRxAvailable (void) const;
 
 private:
   friend class Udp;
@@ -82,6 +83,7 @@ private:
   bool m_connected;
 
   std::queue<Ptr<Packet> > m_deliveryQueue;
+  uint32_t m_rxAvailable;
 };
 
 }//namespace ns3

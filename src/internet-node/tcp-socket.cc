@@ -78,7 +78,8 @@ TcpSocket::GetTypeId ()
     m_nextRxSequence (0),
     m_pendingData (0),
     m_rtt (0),
-    m_lastMeasuredRtt (Seconds(0.0))
+    m_lastMeasuredRtt (Seconds(0.0)),
+    m_rxAvailable (0)
 {
   NS_LOG_FUNCTION (this);
   
@@ -122,7 +123,8 @@ TcpSocket::TcpSocket(const TcpSocket& sock)
     m_rtt (0),
     m_lastMeasuredRtt (Seconds(0.0)),
     m_cnTimeout (sock.m_cnTimeout),
-    m_cnCount (sock.m_cnCount)
+    m_cnCount (sock.m_cnCount),
+    m_rxAvailable (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC("Invoked the copy constructor");
@@ -450,15 +452,24 @@ TcpSocket::Recv (uint32_t maxSize, uint32_t flags)
       return 0;
     }
   Ptr<Packet> p = m_deliveryQueue.front ();
-  if (p->GetSize() <= maxSize)
+  if (p->GetSize () <= maxSize)
     {
       m_deliveryQueue.pop ();
+      m_rxAvailable -= p->GetSize ();
     }
   else
     {
       p = 0;
     }
   return p;
+}
+
+uint32_t
+TcpSocket::GetRxAvailable (void) const
+{
+  // We separately maintain this state to avoid walking the queue 
+  // every time this might be called
+  return m_rxAvailable;
 }
 
 void
@@ -979,6 +990,7 @@ void TcpSocket::NewRx (Ptr<Packet> p,
       tag.SetAddress (fromAddress);
       p->AddTag (tag);
       m_deliveryQueue.push (p);
+      m_rxAvailable += p->GetSize ();
       NotifyDataRecv ();
       if (m_closeNotified)
         {
@@ -1035,6 +1047,7 @@ void TcpSocket::NewRx (Ptr<Packet> p,
           tag.SetAddress (fromAddress);
           p1->AddTag (tag);
           m_deliveryQueue.push (p1);
+          m_rxAvailable += p->GetSize ();
           NotifyDataRecv ();
 
           NS_LOG_LOGIC ("TcpSocket " << this << " adv rxseq1 by " << s1 );

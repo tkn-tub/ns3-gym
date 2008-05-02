@@ -71,6 +71,7 @@ public:
   virtual int Listen(uint32_t queueLimit);
 
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
+  virtual uint32_t GetRxAvailable (void) const;
 
 private:
   friend class Tcp;
@@ -175,6 +176,7 @@ private:
   
   // Temporary queue for delivering data to application
   std::queue<Ptr<Packet> > m_deliveryQueue;
+  uint32_t m_rxAvailable; 
 };
 
 }//namespace ns3

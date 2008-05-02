@@ -40,7 +40,8 @@ UdpSocket::UdpSocket ()
     m_errno (ERROR_NOTERROR),
     m_shutdownSend (false),
     m_shutdownRecv (false),
-    m_connected (false)
+    m_connected (false),
+    m_rxAvailable (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -333,15 +334,24 @@ UdpSocket::Recv (uint32_t maxSize, uint32_t flags)
       return 0;
     }
   Ptr<Packet> p = m_deliveryQueue.front ();
-  if (p->GetSize() <= maxSize) 
+  if (p->GetSize () <= maxSize) 
     {
       m_deliveryQueue.pop ();
+      m_rxAvailable -= p->GetSize ();
     }
   else
     {
       p = 0; 
     }
   return p;
+}
+
+uint32_t
+UdpSocket::GetRxAvailable (void) const
+{
+  // We separately maintain this state to avoid walking the queue 
+  // every time this might be called
+  return m_rxAvailable;
 }
 
 void 
@@ -358,6 +368,7 @@ UdpSocket::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
   tag.SetAddress (address);
   packet->AddTag (tag);
   m_deliveryQueue.push (packet);
+  m_rxAvailable += packet->GetSize ();
   NotifyDataRecv ();
 }
 
@@ -410,12 +421,16 @@ void UdpSocketTest::ReceivePacket2 (Ptr<Socket> socket, Ptr<Packet> packet, cons
 
 void UdpSocketTest::ReceivePkt (Ptr<Socket> socket)
 {
+  uint32_t availableData = socket->GetRxAvailable ();
   m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
+  NS_ASSERT (availableData == m_receivedPacket->GetSize ());
 }
 
 void UdpSocketTest::ReceivePkt2 (Ptr<Socket> socket)
 {
+  uint32_t availableData = socket->GetRxAvailable ();
   m_receivedPacket2 = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
+  NS_ASSERT (availableData == m_receivedPacket2->GetSize ());
 }
 
 bool

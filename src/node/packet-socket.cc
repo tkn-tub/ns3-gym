@@ -29,7 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("PacketSocket");
 
 namespace ns3 {
 
-PacketSocket::PacketSocket ()
+PacketSocket::PacketSocket () : m_rxAvailable (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_state = STATE_OPEN;
@@ -305,6 +305,7 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet,
   tag.SetAddress (address);
   packet->AddTag (tag);
   m_deliveryQueue.push (packet);
+  m_rxAvailable += packet->GetSize ();
   NS_LOG_LOGIC ("UID is " << packet->GetUid() << " PacketSocket " << this);
   NotifyDataRecv ();
 }
@@ -317,15 +318,24 @@ PacketSocket::Recv (uint32_t maxSize, uint32_t flags)
       return 0;
     }
   Ptr<Packet> p = m_deliveryQueue.front ();
-  if (p->GetSize() <= maxSize)
+  if (p->GetSize () <= maxSize)
     {
       m_deliveryQueue.pop ();
+      m_rxAvailable -= p->GetSize ();
     }
   else
     {
       p = 0;
     }
   return p;
+}
+
+uint32_t
+PacketSocket::GetRxAvailable (void) const
+{
+  // We separately maintain this state to avoid walking the queue 
+  // every time this might be called
+  return m_rxAvailable;
 }
 
 }//namespace ns3

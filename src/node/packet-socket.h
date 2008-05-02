@@ -89,6 +89,7 @@ public:
   virtual int SendTo(const Address &address,Ptr<Packet> p);
 
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
+  virtual uint32_t GetRxAvailable (void) const;
 
 
 private:
@@ -114,6 +115,8 @@ private:
   Address m_destAddr; /// Default destination address
 
   std::queue<Ptr<Packet> > m_deliveryQueue;
+  uint32_t m_rxAvailable;
+
 };
 
 }//namespace ns3
