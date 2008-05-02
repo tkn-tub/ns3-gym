@@ -26,9 +26,7 @@ static void
 SocketPrinter (Ptr<Socket> socket)
 {
   Ptr<Packet> packet;
-  uint32_t maxSize = std::numeric_limits<uint32_t>::max();
-  uint32_t flags = 0;  // no flags
-  while (packet = socket->Recv (maxSize, flags))
+  while (packet = socket->Recv ())
     { 
       std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << packet->GetSize () << std::endl;
     }

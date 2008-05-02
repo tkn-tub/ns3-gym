@@ -263,6 +263,16 @@ public:
    * to the maxSize and flags.
    */
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags) = 0;
+  /**
+   * \brief Read a single packet from the socket
+   *
+   *      Overloaded version of Recv(maxSize, flags) with maxSize
+   *      implicitly set to maximum sized integer, and flags set to zero.
+   *
+   * \returns Ptr<Packet> of the next in-sequence packet.  Returns
+   * 0 if the socket cannot return a next in-sequence packet.
+   */
+   Ptr<Packet> Recv (void);
 
 protected:
   void NotifyCloseCompleted (void);

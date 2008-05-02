@@ -310,9 +310,7 @@ void
 AgentImpl::RecvOlsr (Ptr<Socket> socket)
 {
   Ptr<Packet> receivedPacket;
-  uint32_t maxSize = std::numeric_limits<uint32_t>::max();
-  uint32_t flags = 0;  // no flags
-  receivedPacket = socket->Recv (maxSize, flags);
+  receivedPacket = socket->Recv ();
 
   SocketRxAddressTag tag;
   bool found = receivedPacket->PeekTag (tag);

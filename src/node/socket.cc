@@ -107,6 +107,12 @@ int Socket::Send (const uint8_t* buf, uint32_t size)
   return Send (p);
 }
 
+Ptr<Packet>
+Socket::Recv (void)
+{
+  return Recv (std::numeric_limits<uint32_t>::max(), 0);
+}
+
 int Socket::SendTo (const Address &address, const uint8_t* buf, uint32_t size)
 {
   NS_LOG_FUNCTION_NOARGS ();
