@@ -153,11 +153,13 @@ public:
    */
   void SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> sendCb);
   /**
-   * \brief Receive data
-   * \param receivedData Invoked whenever new data is received.
+   * \brief Notify application when new data is available to be read.
    *
+   *        This callback is intended to notify a socket that would
+   *        have been blocked in a blocking socket model that data
+   *        is available to be read.
    */
-  void SetRecv_Callback (Callback<void, Ptr<Socket> >);
+  void SetRecvCallback (Callback<void, Ptr<Socket> >);
   /** 
    * \param address the address to try to allocate
    * \returns 0 on success, -1 on failure.
@@ -283,7 +285,7 @@ protected:
   Callback<void, Ptr<Socket>, const Address&>    m_newConnectionCreated;
   Callback<void, Ptr<Socket>, uint32_t>          m_dataSent;
   Callback<void, Ptr<Socket>, uint32_t >         m_sendCb;
-  Callback<void, Ptr<Socket> > m_receivedData_;
+  Callback<void, Ptr<Socket> > m_receivedData;
 };
 
 /**

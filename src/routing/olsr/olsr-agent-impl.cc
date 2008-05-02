@@ -282,7 +282,7 @@ void AgentImpl::Start ()
 
       // Create a socket to listen only on this interface
       Ptr<Socket> socket = socketFactory->CreateSocket ();
-      socket->SetRecv_Callback (MakeCallback (&AgentImpl::RecvOlsr,  this));
+      socket->SetRecvCallback (MakeCallback (&AgentImpl::RecvOlsr,  this));
       if (socket->Bind (InetSocketAddress (addr, OLSR_PORT_NUMBER)))
         {
           NS_FATAL_ERROR ("Failed to bind() OLSR receive socket");

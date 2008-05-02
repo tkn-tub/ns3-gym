@@ -491,18 +491,10 @@ UdpSocketTest::RunTests (void)
   Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<Udp> ();
   Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
   NS_TEST_ASSERT_EQUAL (rxSocket->Bind (InetSocketAddress (Ipv4Address ("10.0.0.1"), 1234)), 0);
-#ifdef OLDSEMANTICS
-  rxSocket->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePacket, this));
-#else
-  rxSocket->SetRecv_Callback (MakeCallback (&UdpSocketTest::ReceivePkt, this));
-#endif
+  rxSocket->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePkt, this));
 
   Ptr<Socket> rxSocket2 = rxSocketFactory->CreateSocket ();
-#ifdef OLDSEMANTICS
-  rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePacket2, this));
-#else
-  rxSocket2->SetRecv_Callback (MakeCallback (&UdpSocketTest::ReceivePkt2, this));
-#endif
+  rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePkt2, this));
   NS_TEST_ASSERT_EQUAL (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("10.0.1.1"), 1234)), 0);
 
   Ptr<SocketFactory> txSocketFactory = txNode->GetObject<Udp> ();
@@ -543,11 +535,7 @@ UdpSocketTest::RunTests (void)
   // the socket address matches.
   rxSocket2->Dispose ();
   rxSocket2 = rxSocketFactory->CreateSocket ();
-#ifdef OLDSEMANTICS
-  rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePacket2, this));
-#else
-  rxSocket2->SetRecv_Callback (MakeCallback (&UdpSocketTest::ReceivePkt2, this));
-#endif
+  rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePkt2, this));
   NS_TEST_ASSERT_EQUAL (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("0.0.0.0"), 1234)), 0);
 
   m_receivedPacket = Create<Packet> ();

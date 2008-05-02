@@ -108,7 +108,7 @@ Experiment::SetupPacketReceive (Ptr<Node> node)
   Ptr<SocketFactory> socketFactory = node->GetObject<SocketFactory> (tid);
   Ptr<Socket> sink = socketFactory->CreateSocket ();
   sink->Bind ();
-  sink->SetRecv_Callback (MakeCallback (&Experiment::ReceivePacket, this));
+  sink->SetRecvCallback (MakeCallback (&Experiment::ReceivePacket, this));
   return sink;
 }
 

@@ -80,10 +80,10 @@ Socket::SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> sendCb)
 }
 
 void 
-Socket::SetRecv_Callback (Callback<void, Ptr<Socket> > receivedData)
+Socket::SetRecvCallback (Callback<void, Ptr<Socket> > receivedData)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_receivedData_ = receivedData;
+  m_receivedData = receivedData;
 }
 
 int Socket::Listen (uint32_t queueLimit)
@@ -224,9 +224,9 @@ void
 Socket::NotifyDataRecv (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if (!m_receivedData_.IsNull ())
+  if (!m_receivedData.IsNull ())
     {
-      m_receivedData_ (this);
+      m_receivedData (this);
     }
 }
 

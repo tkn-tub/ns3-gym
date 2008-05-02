@@ -37,7 +37,7 @@ SocketPrinter (Ptr<Socket> socket)
 static void
 PrintTraffic (Ptr<Socket> socket)
 {
-  socket->SetRecv_Callback (MakeCallback (&SocketPrinter));
+  socket->SetRecvCallback (MakeCallback (&SocketPrinter));
 }
 
 void

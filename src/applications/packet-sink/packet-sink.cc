@@ -87,7 +87,7 @@ void PacketSink::StartApplication()    // Called at time specified by Start
       m_socket->Listen (0);
     }
 
-  m_socket->SetRecv_Callback (MakeCallback(&PacketSink::HandleRead, this));
+  m_socket->SetRecvCallback (MakeCallback(&PacketSink::HandleRead, this));
   m_socket->SetAcceptCallback (
             MakeNullCallback<bool, Ptr<Socket>, const Address &> (),
             MakeNullCallback<void, Ptr<Socket>, const Address&> (),
@@ -98,7 +98,7 @@ void PacketSink::StopApplication()     // Called at time specified by Stop
 {
   if (m_socket) 
     {
-      m_socket->SetRecv_Callback (MakeNullCallback<void, Ptr<Socket> > ());
+      m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
     }
 }
 

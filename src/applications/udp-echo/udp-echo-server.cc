@@ -79,7 +79,7 @@ UdpEchoServer::StartApplication (void)
       m_socket->Bind (local);
     }
 
-  m_socket->SetRecv_Callback(MakeCallback(&UdpEchoServer::HandleRead, this));
+  m_socket->SetRecvCallback(MakeCallback(&UdpEchoServer::HandleRead, this));
 }
 
 void 
@@ -89,7 +89,7 @@ UdpEchoServer::StopApplication ()
 
   if (!m_socket) 
     {
-      m_socket->SetRecv_Callback(MakeNullCallback<void, Ptr<Socket> > ());
+      m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket> > ());
     }
 }
 

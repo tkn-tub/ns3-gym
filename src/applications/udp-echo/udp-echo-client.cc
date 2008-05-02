@@ -103,7 +103,7 @@ UdpEchoClient::StartApplication (void)
       m_socket->Connect (InetSocketAddress (m_peerAddress, m_peerPort));
     }
 
-  m_socket->SetRecv_Callback(MakeCallback(&UdpEchoClient::HandleRead, this));
+  m_socket->SetRecvCallback(MakeCallback(&UdpEchoClient::HandleRead, this));
 
   ScheduleTransmit (Seconds(0.));
 }
@@ -115,7 +115,7 @@ UdpEchoClient::StopApplication ()
 
   if (!m_socket) 
     {
-      m_socket->SetRecv_Callback(MakeNullCallback<void, Ptr<Socket> > ());
+      m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket> > ());
     }
 
   Simulator::Cancel(m_sendEvent);
