@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include <queue>
 #include "ns3/callback.h"
+#include "ns3/traced-callback.h"
 #include "ns3/socket.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
@@ -37,6 +38,7 @@ class UdpL4Protocol;
 class UdpSocket : public Socket
 {
 public:
+  static TypeId GetTypeId (void);
   /**
    * Create an unbound udp socket.
    */
@@ -56,9 +58,15 @@ public:
   virtual int Connect(const Address &address);
   virtual int Send (Ptr<Packet> p);
   virtual int SendTo(const Address &address,Ptr<Packet> p);
+  virtual uint32_t GetTxAvailable (void) const;
 
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual uint32_t GetRxAvailable (void) const;
+
+  virtual void SetSndBuf (uint32_t size);
+  virtual uint32_t GetSndBuf (void);
+  virtual void SetRcvBuf (uint32_t size);
+  virtual uint32_t GetRcvBuf (void);
 
 private:
   friend class Udp;
@@ -77,6 +85,8 @@ private:
   uint16_t m_defaultPort;
   Callback<void,Ptr<Socket>,uint32_t,const Address &> m_dummyRxCallback;
   Callback<void,Ptr<Socket>,uint8_t const*,uint32_t,const Address &> m_rxCallback;
+  TracedCallback<Ptr<const Packet> > m_dropTrace;
+
   enum SocketErrno m_errno;
   bool m_shutdownSend;
   bool m_shutdownRecv;
@@ -84,6 +94,8 @@ private:
 
   std::queue<Ptr<Packet> > m_deliveryQueue;
   uint32_t m_rxAvailable;
+  
+  uint32_t m_udp_rmem;
 };
 
 }//namespace ns3

@@ -28,10 +28,24 @@
 #include "ipv4-end-point.h"
 #include "ipv4-l4-demux.h"
 #include "ns3/ipv4.h"
+#include "ns3/udp.h"
+#include "ns3/trace-source-accessor.h"
 
 NS_LOG_COMPONENT_DEFINE ("UdpSocket");
 
 namespace ns3 {
+
+TypeId
+UdpSocket::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::UdpSocket")
+    .SetParent<Socket> ()
+    .AddConstructor<UdpSocket> ()
+    .AddTraceSource ("Drop", "Drop UDP packet due to receive buffer overflow",
+                     MakeTraceSourceAccessor (&UdpSocket::m_dropTrace))
+    ;
+  return tid;
+}
 
 UdpSocket::UdpSocket ()
   : m_endPoint (0),
@@ -41,7 +55,8 @@ UdpSocket::UdpSocket ()
     m_shutdownSend (false),
     m_shutdownRecv (false),
     m_connected (false),
-    m_rxAvailable (0)
+    m_rxAvailable (0),
+    m_udp_rmem (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -73,6 +88,9 @@ void
 UdpSocket::SetNode (Ptr<Node> node)
 {
   m_node = node;
+  Ptr<Udp> u = node->GetObject<Udp> ();
+  m_udp_rmem =u->GetDefaultRxBuffer ();
+
 }
 void 
 UdpSocket::SetUdp (Ptr<UdpL4Protocol> udp)
@@ -316,8 +334,15 @@ UdpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
   return 0;
 }
 
+uint32_t
+UdpSocket::GetTxAvailable (void) const
+{
+  // No finite send buffer is modelled
+  return 0xffffffff;
+}
+
 int 
-UdpSocket::SendTo(const Address &address, Ptr<Packet> p)
+UdpSocket::SendTo (const Address &address, Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << address << p);
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
@@ -363,14 +388,58 @@ UdpSocket::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
     {
       return;
     }
-  Address address = InetSocketAddress (ipv4, port);
-  SocketRxAddressTag tag;
-  tag.SetAddress (address);
-  packet->AddTag (tag);
-  m_deliveryQueue.push (packet);
-  m_rxAvailable += packet->GetSize ();
-  NotifyDataRecv ();
+  if ((m_rxAvailable + packet->GetSize ()) <= m_udp_rmem) 
+    {
+      Address address = InetSocketAddress (ipv4, port);
+      SocketRxAddressTag tag;
+      tag.SetAddress (address);
+      packet->AddTag (tag);
+      m_deliveryQueue.push (packet);
+      m_rxAvailable += packet->GetSize ();
+      NotifyDataRecv ();
+    }
+  else
+    {
+      // In general, this case should not occur unless the
+      // receiving application reads data from this socket slowly
+      // in comparison to the arrival rate
+      //
+      // drop and trace packet
+      NS_LOG_WARN ("No receive buffer space available.  Drop.");
+      m_dropTrace (packet);
+    }
 }
+
+void 
+UdpSocket::SetSndBuf (uint32_t size)
+{
+  // return EINVAL since we are not modelling a finite send buffer
+  // Enforcing buffer size should be added if we ever start to model
+  // non-zero processing delay in the UDP/IP stack
+  m_errno = ERROR_INVAL;
+}
+
+uint32_t 
+UdpSocket::GetSndBuf (void)
+{
+  m_errno = ERROR_NOTERROR;
+  return 0xffffffff;
+}
+
+void 
+UdpSocket::SetRcvBuf (uint32_t size)
+{
+  m_errno = ERROR_NOTERROR;
+  m_udp_rmem = size;
+}
+
+uint32_t 
+UdpSocket::GetRcvBuf (void)
+{
+  m_errno = ERROR_NOTERROR;
+  return m_udp_rmem;
+}
+
 
 } //namespace ns3
 

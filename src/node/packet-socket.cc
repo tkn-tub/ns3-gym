@@ -214,6 +214,13 @@ PacketSocket::Send (Ptr<Packet> p)
   return SendTo (m_destAddr, p);
 }
 
+uint32_t 
+PacketSocket::GetTxAvailable (void) const
+{
+  // No finite send buffer is modelled
+  return 0xffffffff;
+}
+
 int
 PacketSocket::SendTo(const Address &address, Ptr<Packet> p)
 {
@@ -336,6 +343,25 @@ PacketSocket::GetRxAvailable (void) const
   // We separately maintain this state to avoid walking the queue 
   // every time this might be called
   return m_rxAvailable;
+}
+
+void 
+PacketSocket::SetSndBuf (uint32_t size)
+{
+}
+uint32_t 
+PacketSocket::GetSndBuf (void)
+{
+return 0;
+}
+void 
+PacketSocket::SetRcvBuf (uint32_t size)
+{
+}
+uint32_t 
+PacketSocket::GetRcvBuf (void)
+{
+return 0;
 }
 
 }//namespace ns3

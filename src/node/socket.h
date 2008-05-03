@@ -221,6 +221,12 @@ public:
   virtual int Send (Ptr<Packet> p) = 0;
   
   /**
+   * returns the number of bytes which can be sent in a single call
+   * to Send. 
+   */
+  virtual uint32_t GetTxAvailable (void) const = 0;
+
+  /**
    * \brief Send data (or dummy data) to the remote host
    * \param buf A pointer to a raw byte buffer of some data to send.  If this 
    * is 0, we send dummy data whose size is specified by the second parameter
@@ -280,6 +286,35 @@ public:
    */
   virtual uint32_t GetRxAvailable (void) const = 0;
  
+  /**
+   * \brief ns-3 version of setsockopt (SO_SNDBUF)
+   * 
+   * The error code value can be checked by calling GetErrno () 
+   */
+  virtual void SetSndBuf (uint32_t size) = 0;
+  /**
+   * \brief ns-3 version of getsockopt (SO_SNDBUF)
+   * 
+   * The error code value can be checked by calling GetErrno () 
+   *
+   * \returns The size in bytes of the send buffer
+   */
+  virtual uint32_t GetSndBuf (void) = 0;
+  /**
+   * \brief ns-3 version of setsockopt (SO_RCVBUF)
+   * 
+   * The error code value can be checked by calling GetErrno () 
+   */
+  virtual void SetRcvBuf (uint32_t size) = 0;
+  /**
+   * \brief ns-3 version of getsockopt (SO_RCVBUF)
+   * 
+   * The error code value can be checked by calling GetErrno () 
+   *
+   * \returns The size in bytes of the receive buffer
+   */
+  virtual uint32_t GetRcvBuf (void) = 0;
+
 protected:
   void NotifyCloseCompleted (void);
   void NotifyConnectionSucceeded (void);

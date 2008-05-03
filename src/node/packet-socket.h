@@ -86,11 +86,17 @@ public:
   virtual int ShutdownRecv (void);
   virtual int Connect(const Address &address);
   virtual int Send (Ptr<Packet> p);
+  virtual uint32_t GetTxAvailable (void) const;
+
   virtual int SendTo(const Address &address,Ptr<Packet> p);
 
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual uint32_t GetRxAvailable (void) const;
 
+  virtual void SetSndBuf (uint32_t size);
+  virtual uint32_t GetSndBuf (void);
+  virtual void SetRcvBuf (uint32_t size);
+  virtual uint32_t GetRcvBuf (void);
 
 private:
   void ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet, 

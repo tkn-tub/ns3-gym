@@ -435,6 +435,14 @@ TcpSocket::SendTo (const Address &address, Ptr<Packet> p)
     }
 }
 
+// XXX Raj to make this functional
+uint32_t
+TcpSocket::GetTxAvailable (void) const
+{
+  // No finite send buffer is modelled
+  return 0xffffffff;
+}
+
 int
 TcpSocket::Listen (uint32_t q)
 {
@@ -470,6 +478,33 @@ TcpSocket::GetRxAvailable (void) const
   // We separately maintain this state to avoid walking the queue 
   // every time this might be called
   return m_rxAvailable;
+}
+
+// XXX Raj to finish
+void
+TcpSocket::SetSndBuf (uint32_t size)
+{
+
+}
+
+// XXX Raj to finish
+uint32_t
+TcpSocket::GetSndBuf (void) 
+{
+  return 0;
+}
+
+// XXX Raj to finish
+void
+TcpSocket::SetRcvBuf (uint32_t size)
+{
+}
+
+// XXX Raj to finish
+uint32_t
+TcpSocket::GetRcvBuf (void) 
+{
+  return 0;
 }
 
 void

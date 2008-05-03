@@ -53,6 +53,10 @@ public:
    * implementations..
    */
   virtual Ptr<Socket> CreateSocket (void) = 0;
+
+  uint32_t GetDefaultRxBuffer (void) const;
+private:
+  uint32_t  m_defaultRxBuffer;
 };
 
 } // namespace ns3

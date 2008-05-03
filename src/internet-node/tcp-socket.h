@@ -68,10 +68,16 @@ public:
   virtual int Send (Ptr<Packet> p);
   virtual int Send (const uint8_t* buf, uint32_t size);
   virtual int SendTo(const Address &address, Ptr<Packet> p);
+  virtual uint32_t GetTxAvailable (void) const;
   virtual int Listen(uint32_t queueLimit);
 
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual uint32_t GetRxAvailable (void) const;
+
+  virtual void SetSndBuf (uint32_t size);
+  virtual uint32_t GetSndBuf (void);
+  virtual void SetRcvBuf (uint32_t size);
+  virtual uint32_t GetRcvBuf (void);
 
 private:
   friend class Tcp;
