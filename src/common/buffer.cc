@@ -462,6 +462,40 @@ Buffer::AddAtEnd (uint32_t end)
 }
 
 void 
+Buffer::AddAtEnd (const Buffer &o)
+{
+  if (m_end == m_zeroAreaEnd &&
+      o.m_start == o.m_zeroAreaStart &&
+      o.m_zeroAreaEnd - o.m_zeroAreaStart > 0)
+    {
+      /**
+       * This is an optimization which kicks in when
+       * we attempt to aggregate two buffers which contain
+       * adjacent zero areas.
+       */
+      uint32_t zeroSize = o.m_zeroAreaEnd - o.m_zeroAreaStart;
+      m_zeroAreaEnd += zeroSize;
+      m_end = m_zeroAreaEnd;
+      uint32_t endData = o.m_end - o.m_zeroAreaEnd;
+      AddAtEnd (endData);
+      Buffer::Iterator dst = End ();
+      dst.Prev (endData);
+      Buffer::Iterator src = o.End ();
+      src.Prev (endData);
+      dst.Write (src, o.End ());
+      return;
+    }
+  Buffer dst = CreateFullCopy ();
+  Buffer src = o.CreateFullCopy ();
+
+  dst.AddAtEnd (src.GetSize ());
+  Buffer::Iterator destStart = dst.End ();
+  destStart.Prev (src.GetSize ());
+  destStart.Write (src.Begin (), src.End ());
+  *this = dst;
+}
+
+void 
 Buffer::RemoveAtStart (uint32_t start)
 {
   NS_ASSERT (CheckInternalState ());
@@ -544,14 +578,6 @@ Buffer
 Buffer::CreateFragment (uint32_t start, uint32_t length) const
 {
   NS_ASSERT (CheckInternalState ());
-  uint32_t zeroStart = m_zeroAreaStart - m_start;
-  uint32_t zeroEnd = zeroStart + m_zeroAreaEnd;
-  if (m_zeroAreaEnd != 0 &&
-      start + length > zeroStart &&
-      start <= zeroEnd) 
-    {
-      TransformIntoRealBuffer ();
-    }
   Buffer tmp = *this;
   tmp.RemoveAtStart (start);
   tmp.RemoveAtEnd (GetSize () - (start + length));
@@ -563,7 +589,7 @@ Buffer
 Buffer::CreateFullCopy (void) const
 {
   NS_ASSERT (CheckInternalState ());
-  if (m_zeroAreaEnd != 0) 
+  if (m_zeroAreaEnd - m_zeroAreaStart != 0) 
     {
       Buffer tmp;
       tmp.AddAtStart (m_zeroAreaEnd - m_zeroAreaStart);
@@ -1330,6 +1356,21 @@ BufferTest::RunTests (void)
 
     NS_TEST_ASSERT (memcmp (inputBuffer.PeekData (), outputBuffer.PeekData (), chunkSize) == 0);
   }
+
+  buffer = Buffer (5);
+  buffer.AddAtEnd (2);
+  i = buffer.End ();
+  i.Prev (2);
+  i.WriteU8 (0);
+  i.WriteU8 (0x66);
+  ENSURE_WRITTEN_BYTES (buffer, 7, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x66);
+  Buffer frag0 = buffer.CreateFragment (0, 2);
+  ENSURE_WRITTEN_BYTES (frag0, 2, 0x00, 0x00);
+  Buffer frag1 = buffer.CreateFragment (2, 5);
+  ENSURE_WRITTEN_BYTES (frag1, 5, 0x00, 0x00, 0x00, 0x00, 0x66);
+  frag0.AddAtEnd (frag1);
+  ENSURE_WRITTEN_BYTES (buffer, 7, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x66);
+  ENSURE_WRITTEN_BYTES (frag0, 7, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x66);
 
   return result;
 }

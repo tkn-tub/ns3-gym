@@ -125,10 +125,10 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("mixed-global-routing.tr");
-  PointToPointHelper::EnablePcap ("mixed-global-routing");
-  PointToPointHelper::EnableAscii (ascii);
-  CsmaHelper::EnablePcap ("mixed-global-routing");
-  CsmaHelper::EnableAscii (ascii);
+  PointToPointHelper::EnablePcapAll ("mixed-global-routing");
+  PointToPointHelper::EnableAsciiAll (ascii);
+  CsmaHelper::EnablePcapAll ("mixed-global-routing");
+  CsmaHelper::EnableAsciiAll (ascii);
 
 
   NS_LOG_INFO ("Run Simulation.");

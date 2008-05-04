@@ -38,9 +38,11 @@ class Packet;
  * \brief Define a Socket API based on the BSD Socket API.
  *
  * Contrary to the original BSD socket API, this API is asynchronous:
- * it does not contain blocking calls. Other than that, it tries to stick
- * to the BSD API to make it easier those who know the BSD API to use
- * this API.
+ * it does not contain blocking calls. It also uses class ns3::Packet
+ * as a fancy byte buffer, allowing data to be passed across the API
+ * using an ns3::Packet instead of a raw data pointer.  Other than that, 
+ * it tries to stick to the BSD API to make it easier for those who know 
+ * the BSD API to use this API.
  */
 class Socket : public Object
 {
@@ -94,8 +96,8 @@ public:
    *        Or when I call Close ?
    */
   void SetConnectCallback (Callback<void, Ptr<Socket> > connectionSucceeded,
-                          Callback<void,  Ptr<Socket> > connectionFailed,
-                          Callback<void,  Ptr<Socket> > halfClose);
+                           Callback<void,  Ptr<Socket> > connectionFailed,
+                           Callback<void,  Ptr<Socket> > halfClose);
   /**
    * \brief Accept connection requests from remote hosts
    * \param connectionRequest Callback for connection request from peer. 
@@ -120,7 +122,34 @@ public:
                           Callback<void, Ptr<Socket>, 
                             const Address&> newConnectionCreated,
                           Callback<void, Ptr<Socket> > closeRequested);
-  void SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent);
+  /**
+   * \brief Notify application when a packet has been sent from transport 
+   *        protocol (non-standard socket call)
+   * \param dataSent Callback for the event that data is sent from the
+   *        underlying transport protocol.  This callback is passed a
+   *        pointer to the socket, and the number of bytes sent.
+   * \returns whether or not this socket supports this callback.  Note 
+   *        that this is a non-standard socket call.  Some socket 
+   *        implementations in ns-3 may not support this call, so the
+   *        user should check this return value to confirm that the
+   *        callback is supported.
+   */
+  virtual bool SetDataSentCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent);
+  /**
+   * \brief Notify application when space in transmit buffer is added
+   *
+   *        This callback is intended to notify a 
+   *        socket that would have been blocked in a blocking socket model
+   *        that space is available in the transmit buffer and that it
+   *        can call Send() again.  
+   *
+   * \param sendCb Callback for the event that the socket transmit buffer
+   *        fill level has decreased.  This callback is passed a pointer to
+   *        the socket, and the number of bytes available for writing
+   *        into the buffer (an absolute value).  If there is no transmit
+   *        buffer limit, a maximum-sized integer is always returned.
+   */
+  void SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> sendCb);
   /**
    * \brief Receive data
    * \param receivedData Invoked whenever new data is received.
@@ -150,7 +179,7 @@ public:
    * After the Close call, the socket is no longer valid, and cannot
    * safely be used for subsequent operations.
    */
-  virtual int Close(void) = 0;
+  virtual int Close (void) = 0;
 
   /**
    * \returns zero on success, -1 on failure.
@@ -172,8 +201,15 @@ public:
    * \brief Initiate a connection to a remote host
    * \param address Address of remote.
    */
-  virtual int Connect(const Address &address) = 0;
+  virtual int Connect (const Address &address) = 0;
     
+  /**
+   * \brief Listen for incoming connections.
+   * \param queueLimit maximum number of incoming request to queue
+   * \returns XXX an error code
+   */
+  virtual int Listen (uint32_t queueLimit);
+
   /**
    * \brief Send data (or dummy data) to the remote host
    * \param p packet to send
@@ -200,14 +236,7 @@ public:
    * \returns -1 in case of error or the number of bytes copied in the 
    *          internal buffer and accepted for transmission.
    */
-  virtual int SendTo(const Address &address,Ptr<Packet> p) = 0;
-
-  /**
-   * \brief Listen for incoming connections.
-   * \param queueLimit maximum number of incoming request to queue
-   * \returns XXX an error code
-   */
-  virtual int Listen(uint32_t queueLimit);
+  virtual int SendTo (const Address &address,Ptr<Packet> p) = 0;
 
   /**
    * \brief Send data to a specified peer.
@@ -221,7 +250,7 @@ public:
    * This is provided so as to have an API which is closer in appearance 
    * to that of real network or BSD sockets.
    */
-  int SendTo(const Address &address, const uint8_t* buf, uint32_t size);
+  int SendTo (const Address &address, const uint8_t* buf, uint32_t size);
 
 protected:
   void NotifyCloseCompleted (void);
@@ -232,6 +261,7 @@ protected:
   void NotifyNewConnectionCreated (Ptr<Socket> socket, const Address &from);
   void NotifyCloseRequested (void);
   void NotifyDataSent (uint32_t size);
+  void NotifySend (uint32_t spaceAvailable);
   void NotifyDataReceived (Ptr<Packet> p, const Address &from);
 
   Callback<void,Ptr<Socket> >    m_closeCompleted;
@@ -242,6 +272,7 @@ protected:
   Callback<bool, Ptr<Socket>, const Address &>   m_connectionRequest;
   Callback<void, Ptr<Socket>, const Address&>    m_newConnectionCreated;
   Callback<void, Ptr<Socket>, uint32_t>          m_dataSent;
+  Callback<void, Ptr<Socket>, uint32_t >         m_sendCb;
   Callback<void, Ptr<Socket>, Ptr<Packet>,const Address&> m_receivedData;
 };
 

@@ -37,7 +37,10 @@ public:
    * \param c the set of nodes
    *
    * For each node in the input container, aggregate implementations
-   * of the ns3::Ipv4, ns3::Udp, and, ns3::Tcp classes.
+   * of the ns3::Ipv4, ns3::Udp, and, ns3::Tcp classes.  The program
+   * will assert if this method is called on a container with a node
+   * that already has an Ipv4 object aggregated to it.
+   * 
    */
   void Install (NodeContainer c);
 
@@ -47,7 +50,7 @@ public:
    * Enable pcap output on each protocol instance which is of the
    * ns3::Ipv4L3Protocol type.  Both Tx and Rx events will be logged.
    */
-  static void EnablePcap (std::string filename);
+  static void EnablePcapAll (std::string filename);
 
 private:
   static void LogRxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);

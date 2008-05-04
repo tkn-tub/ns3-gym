@@ -151,8 +151,8 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("simple-global-routing.tr");
-  PointToPointHelper::EnablePcap ("simple-global-routing");
-  PointToPointHelper::EnableAscii (ascii);
+  PointToPointHelper::EnablePcapAll ("simple-global-routing");
+  PointToPointHelper::EnableAsciiAll (ascii);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

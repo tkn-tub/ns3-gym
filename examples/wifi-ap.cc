@@ -152,8 +152,8 @@ int main (int argc, char *argv[])
   wifi.Install (ap, channel);
 
   // mobility.
-  mobility.Layout (stas);
-  mobility.Layout (ap);
+  mobility.Install (stas);
+  mobility.Install (ap);
 
   Simulator::Schedule (Seconds (1.0), &AdvancePosition, ap.Get (0));
 

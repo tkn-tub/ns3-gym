@@ -41,7 +41,7 @@ int main (int argc, char *argv[])
                              "Time", StringValue ("2s"),
                              "Speed", StringValue ("Constant:1.0"),
                              "Bounds", StringValue ("0:200:0:100"));
-  mobility.LayoutAll ();
+  mobility.InstallAll ();
   Config::Connect ("/NodeList/*/$ns3::MobilityModelNotifier/CourseChange",
                    MakeCallback (&CourseChange));
 

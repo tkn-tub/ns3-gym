@@ -41,9 +41,9 @@ public:
 		 std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
 		 std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 
-  void Enable (NodeContainer container);
-  void Enable (Ptr<Node> node);
-  void EnableAll (void);
+  void Install (NodeContainer container);
+  void Install (Ptr<Node> node);
+  void InstallAll (void);
 private:
   ObjectFactory m_agentFactory;
 };

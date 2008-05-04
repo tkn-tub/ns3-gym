@@ -154,9 +154,9 @@ Ns2MobilityHelper::LayoutObjectStore (const ObjectStore &store) const
 }
 
 void 
-Ns2MobilityHelper::Layout (void) const
+Ns2MobilityHelper::Install (void) const
 {
-  Layout (NodeList::Begin (), NodeList::End ());
+  Install (NodeList::Begin (), NodeList::End ());
 }
 
 } // namespace ns3

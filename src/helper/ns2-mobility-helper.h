@@ -51,7 +51,7 @@ public:
    * whose nodeId is matches the nodeId of the nodes in the trace
    * file.
    */
-  void Layout (void) const;
+  void Install (void) const;
 
   /**
    * \param begin an iterator which points to the start of the input
@@ -65,7 +65,7 @@ public:
    * the index of the object in the input array.
    */
   template <typename T>
-  void Layout (T begin, T end) const;
+  void Install (T begin, T end) const;
 private:
   class ObjectStore
   {
@@ -86,7 +86,7 @@ namespace ns3 {
 
 template <typename T>
 void 
-Ns2MobilityHelper::Layout (T begin, T end) const
+Ns2MobilityHelper::Install (T begin, T end) const
 {
   class MyObjectStore : public ObjectStore
   {

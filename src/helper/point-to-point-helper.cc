@@ -103,7 +103,7 @@ PointToPointHelper::EnablePcap (std::string filename, NodeContainer n)
 }
 
 void
-PointToPointHelper::EnablePcap (std::string filename)
+PointToPointHelper::EnablePcapAll (std::string filename)
 {
   EnablePcap (filename, NodeContainer::GetGlobal ());
 }
@@ -150,7 +150,7 @@ PointToPointHelper::EnableAscii (std::ostream &os, NodeContainer n)
 }
 
 void
-PointToPointHelper::EnableAscii (std::ostream &os)
+PointToPointHelper::EnableAsciiAll (std::ostream &os)
 {
   EnableAscii (os, NodeContainer::GetGlobal ());
 }

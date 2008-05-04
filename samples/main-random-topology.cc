@@ -31,7 +31,7 @@ int main (int argc, char *argv[])
                                  "Y", StringValue ("100.0"),
                                  "Rho", StringValue ("Uniform:0:30"));
   mobility.SetMobilityModel ("ns3::StaticMobilityModel");
-  mobility.Layout (c);
+  mobility.Install (c);
 
   Config::Connect ("/NodeList/*/$ns3::MobilityModelNotifier/CourseChange",
                               MakeCallback (&CourseChange));
