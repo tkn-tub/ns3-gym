@@ -58,8 +58,18 @@ public:
 private:
   bool IsDirtyAtEnd (uint32_t appendOffset);
   bool IsDirtyAtStart (uint32_t prependOffset);
-  uint8_t *m_buffer;
-  uint32_t m_size;
+
+  struct Data {
+    uint32_t size;
+    uint32_t count;
+    uint32_t dirty;
+    uint8_t data[4];
+  };
+  struct TagList::Data *Allocate (uint32_t size);
+  void Deallocate (struct Data *data);
+
+  uint16_t m_used;
+  struct Data *m_data;
 };
 
 } // namespace ns3

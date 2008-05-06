@@ -64,45 +64,68 @@ TagList::Iterator::GetOffsetStart (void) const
 
 
 TagList::TagList ()
-  : m_buffer (0),
-    m_size (0)
+  : m_used (0),
+    m_data (0)
 {}
 TagList::TagList (const TagList &o)
-  : m_size (o.m_size)
+  : m_used (o.m_used),
+    m_data (o.m_data)
 {
-  m_buffer = new uint8_t [o.m_size] ();
-  memcpy (m_buffer, o.m_buffer, o.m_size);
+  if (m_data != 0)
+    {
+      m_data->count++;
+    }
 }
 TagList &
 TagList::operator = (const TagList &o)
 {
-  delete [] m_buffer;
-  m_buffer = new uint8_t [o.m_size] ();
-  memcpy (m_buffer, o.m_buffer, m_size);
-  m_size = o.m_size;
+  if (this == &o)
+    {
+      return *this;
+    }
+
+  Deallocate (m_data);
+  m_data = o.m_data;
+  m_used = o.m_used;
+  if (m_data != 0)
+    {
+      m_data->count++;
+    }
   return *this;
 }
 TagList::~TagList ()
 {
-  delete [] m_buffer;
-  m_buffer = 0;
-  m_size = 0;
+  Deallocate (m_data);
+  m_data = 0;
+  m_used = 0;
 }
 
 TagBuffer
 TagList::Add (TypeId tid, uint32_t bufferSize, uint32_t start, uint32_t end)
 {
-  uint32_t newSize = m_size + bufferSize + 4 + 4 + 4 + 4;
-  uint8_t *newBuffer = new uint8_t [newSize] ();
-  memcpy (newBuffer, m_buffer, m_size);
-  TagBuffer tag = TagBuffer (newBuffer + m_size, newBuffer + newSize);
+  uint32_t spaceNeeded = m_used + bufferSize + 4 + 4 + 4 + 4;
+  NS_ASSERT (m_used <= spaceNeeded);
+  if (m_data == 0)
+    {
+      m_data = Allocate (spaceNeeded);
+      m_used = 0;
+    } 
+  else if (m_data->size < spaceNeeded ||
+	   (m_data->count != 1 && m_data->dirty != m_used))
+    {
+      struct TagList::Data *newData = Allocate (spaceNeeded);
+      memcpy (&newData->data, &m_data->data, m_used);
+      Deallocate (m_data);
+      m_data = newData;
+    }
+  TagBuffer tag = TagBuffer (&m_data->data[m_used], 
+			     &m_data->data[spaceNeeded]);
   tag.WriteU32 (tid.GetUid ());
   tag.WriteU32 (bufferSize);
   tag.WriteU32 (start);
   tag.WriteU32 (end);
-  delete [] m_buffer;
-  m_buffer = newBuffer;
-  m_size = newSize;
+  m_used = spaceNeeded;
+  m_data->dirty = m_used;
   return tag;
 }
 
@@ -127,15 +150,22 @@ TagList::Remove (const Iterator &i)
 void 
 TagList::RemoveAll (void)
 {
-  delete [] m_buffer;
-  m_buffer = 0;
-  m_size = 0;  
+  Deallocate (m_data);
+  m_data = 0;
+  m_used = 0;
 }
 
 TagList::Iterator 
 TagList::Begin (uint32_t offsetStart, uint32_t offsetEnd) const
 {
-  return Iterator (m_buffer, m_buffer + m_size, offsetStart, offsetEnd);
+  if (m_data == 0)
+    {
+      return Iterator (0, 0, offsetStart, offsetEnd);
+    }
+  else
+    {
+      return Iterator (m_data->data, &m_data->data[m_used], offsetStart, offsetEnd);
+    }
 }
 
 bool 
@@ -233,5 +263,33 @@ TagList::AddAtStart (int32_t adjustment, uint32_t prependOffset)
     }
   *this = list;    
 }
+
+
+struct TagList::Data *
+TagList::Allocate (uint32_t size)
+{
+  uint8_t *buffer = new uint8_t [size + sizeof (struct TagList::Data) - 4];
+  struct Data *data = (struct Data *)buffer;
+  data->count = 1;
+  data->size = size;
+  data->dirty = 0;
+  return data;
+}
+
+void 
+TagList::Deallocate (struct Data *data)
+{
+  if (data == 0)
+    {
+      return;
+    }
+  data->count--;
+  if (data->count == 0)
+    {
+      uint8_t *buffer = (uint8_t *)data;
+      delete [] buffer;
+    }
+}
+
 
 } // namespace ns3
