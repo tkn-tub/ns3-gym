@@ -5,6 +5,12 @@
 
 namespace ns3 {
 
+/**
+ * \brief read and write tag data
+ *
+ * This class allows subclasses of the ns3::Tag base class
+ * to serialize and deserialize their data.
+ */
 class TagBuffer
 {
 public:

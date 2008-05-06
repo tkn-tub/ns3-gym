@@ -98,7 +98,7 @@ private:
 /**
  * \brief network packets
  *
- * Each network packet contains a byte buffer, a list of tags, and
+ * Each network packet contains a byte buffer, a set of tags, and
  * metadata.
  *
  * - The byte buffer stores the serialized content of the headers and trailers 
@@ -107,13 +107,10 @@ private:
  * forces you to do this) which means that the content of a packet buffer
  * is expected to be that of a real packet.
  *
- * - The list of tags stores an arbitrarily large set of arbitrary 
- * user-provided data structures in the packet: only one instance of
- * each type of data structure is allowed in a list of tags. 
- * These tags typically contain per-packet cross-layer information or 
- * flow identifiers. Each tag stored in the tag list can be at most
- * 16 bytes big. Trying to attach bigger data structures will trigger
- * crashes at runtime.
+ * - Each tag tags a subset of the bytes in the packet byte buffer with the 
+ * information stored in the tag. A classic example of a tag is a FlowIdTag 
+ * which contains a flow id: the set of bytes tagged by this tag implicitely 
+ * belong to the attached flow id.
  *
  * - The metadata describes the type of the headers and trailers which
  * were serialized in the byte buffer. The maintenance of metadata is
