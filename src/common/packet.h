@@ -142,6 +142,8 @@ public:
    * by getUid).
    */
   Packet ();
+  Packet (const Packet &o);
+  Packet &operator = (const Packet &o);  
   /**
    * Create a packet with a zero-filled payload.
    * The memory necessary for the payload is not allocated:
@@ -371,8 +373,6 @@ public:
 
 private:
   Packet (const Buffer &buffer, const TagList &tagList, const PacketMetadata &metadata);
-  Packet (const Packet &o);
-  Packet &operator = (const Packet &o);
   Buffer m_buffer;
   TagList m_tagList;
   PacketMetadata m_metadata;

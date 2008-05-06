@@ -669,6 +669,19 @@ PacketTest::RunTests (void)
   CHECK (p, 2, E (1, 0, 1000), E(2, 0, 1000));
   CHECK (copy, 1, E (1, 0, 1000));
 
+  {
+    Packet c0 = *copy;
+    Packet c1 = *copy;
+    c0 = c1;
+    CHECK (&c0, 1, E (1, 0, 1000));
+    CHECK (&c1, 1, E (1, 0, 1000));
+    CHECK (copy, 1, E (1, 0, 1000));
+    c0.AddTag (ATestTag<10> ());
+    CHECK (&c0, 2, E (1, 0, 1000), E (10, 0, 1000));
+    CHECK (&c1, 1, E (1, 0, 1000));
+    CHECK (copy, 1, E (1, 0, 1000));
+  }
+
   Ptr<Packet> frag0 = p->CreateFragment (0, 10);
   Ptr<Packet> frag1 = p->CreateFragment (10, 90);
   Ptr<const Packet> frag2 = p->CreateFragment (100, 900);
