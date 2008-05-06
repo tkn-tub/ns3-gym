@@ -308,7 +308,7 @@ void LogComponentPrintList (void);
 
 typedef void (*LogTimePrinter) (std::ostream &os);
 
-void LogRegisterTimePrinter (LogTimePrinter);
+void LogSetTimePrinter (LogTimePrinter);
 LogTimePrinter LogGetTimePrinter(void);
 
 

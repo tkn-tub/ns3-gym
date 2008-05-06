@@ -428,10 +428,10 @@ Simulator::GetPriv (void)
 {
   if (m_priv == 0) 
     {
-      LogRegisterTimePrinter (&TimePrinter);
       m_priv = CreateObject<SimulatorPrivate> ();
       Ptr<Scheduler> scheduler = CreateObject<MapScheduler> ();
       m_priv->SetScheduler (scheduler);
+      LogSetTimePrinter (&TimePrinter);
     }
   TRACE_S ("priv " << m_priv);
   return m_priv;
@@ -444,6 +444,7 @@ Simulator::Destroy (void)
     {
       return;
     }
+  LogSetTimePrinter (0);
   m_priv->Destroy ();
   m_priv = 0;
 }
