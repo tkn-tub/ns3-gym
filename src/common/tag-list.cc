@@ -1,6 +1,36 @@
 #include "tag-list.h"
+#include <vector>
+
+#define USE_FREE_LIST 1
+#define FREE_LIST_SIZE 1000
 
 namespace ns3 {
+
+struct TagListData {
+  uint32_t size;
+  uint32_t count;
+  uint32_t dirty;
+  uint8_t data[4];
+};
+
+#ifdef USE_FREE_LIST
+static class TagListDataFreeList : public std::vector<struct TagListData *>
+{
+public:
+  ~TagListDataFreeList ();
+} g_freeList;
+static uint32_t g_maxSize = 0;
+
+TagListDataFreeList::~TagListDataFreeList ()
+{
+  for (TagListDataFreeList::iterator i = begin ();
+       i != end (); i++)
+    {
+      uint8_t *buffer = (uint8_t *)(*i);
+      delete [] buffer;
+    }
+}
+#endif /* USE_FREE_LIST */
 
 TagList::Iterator::Item::Item (TagBuffer buf_)
     : buf (buf_)
@@ -113,7 +143,7 @@ TagList::Add (TypeId tid, uint32_t bufferSize, uint32_t start, uint32_t end)
   else if (m_data->size < spaceNeeded ||
 	   (m_data->count != 1 && m_data->dirty != m_used))
     {
-      struct TagList::Data *newData = Allocate (spaceNeeded);
+      struct TagListData *newData = Allocate (spaceNeeded);
       memcpy (&newData->data, &m_data->data, m_used);
       Deallocate (m_data);
       m_data = newData;
@@ -144,7 +174,11 @@ TagList::Add (const TagList &o)
 void 
 TagList::Remove (const Iterator &i)
 {
-  // XXX: more complex to implement.
+  if (m_data == 0)
+    {
+      return;
+    } 
+  // XXX
 }
 
 void 
@@ -264,12 +298,27 @@ TagList::AddAtStart (int32_t adjustment, uint32_t prependOffset)
   *this = list;    
 }
 
+#ifdef USE_FREE_LIST
 
-struct TagList::Data *
+struct TagListData *
 TagList::Allocate (uint32_t size)
 {
-  uint8_t *buffer = new uint8_t [size + sizeof (struct TagList::Data) - 4];
-  struct Data *data = (struct Data *)buffer;
+  while (!g_freeList.empty ())
+    {
+      struct TagListData *data = g_freeList.back ();
+      g_freeList.pop_back ();
+      NS_ASSERT (data != 0);
+      if (data->size >= size)
+	{
+	  data->count = 1;
+	  data->dirty = 0;
+	  return data;
+	}
+      uint8_t *buffer = (uint8_t *)data;
+      delete [] buffer;
+    }
+  uint8_t *buffer = new uint8_t [std::max (size, g_maxSize) + sizeof (struct TagListData) - 4];
+  struct TagListData *data = (struct TagListData *)buffer;
   data->count = 1;
   data->size = size;
   data->dirty = 0;
@@ -277,7 +326,44 @@ TagList::Allocate (uint32_t size)
 }
 
 void 
-TagList::Deallocate (struct Data *data)
+TagList::Deallocate (struct TagListData *data)
+{
+  if (data == 0)
+    {
+      return;
+    }
+  g_maxSize = std::max (g_maxSize, data->size);
+  data->count--;
+  if (data->count == 0)
+    {
+      if (g_freeList.size () > FREE_LIST_SIZE ||
+	  data->size < g_maxSize)
+	{
+	  uint8_t *buffer = (uint8_t *)data;
+	  delete [] buffer;
+	}
+      else
+	{
+	  g_freeList.push_back (data);
+	}
+    }
+}
+
+#else /* USE_FREE_LIST */
+
+struct TagListData *
+TagList::Allocate (uint32_t size)
+{
+  uint8_t *buffer = new uint8_t [size + sizeof (struct TagListData) - 4];
+  struct TagListData *data = (struct TagListData *)buffer;
+  data->count = 1;
+  data->size = size;
+  data->dirty = 0;
+  return data;
+}
+
+void 
+TagList::Deallocate (struct TagListData *data)
 {
   if (data == 0)
     {
@@ -290,6 +376,8 @@ TagList::Deallocate (struct Data *data)
       delete [] buffer;
     }
 }
+
+#endif /* USE_FREE_LIST */
 
 
 } // namespace ns3

@@ -7,6 +7,8 @@
 
 namespace ns3 {
 
+struct TagListData;
+
 class TagList
 {
 public:
@@ -59,17 +61,11 @@ private:
   bool IsDirtyAtEnd (uint32_t appendOffset);
   bool IsDirtyAtStart (uint32_t prependOffset);
 
-  struct Data {
-    uint32_t size;
-    uint32_t count;
-    uint32_t dirty;
-    uint8_t data[4];
-  };
-  struct TagList::Data *Allocate (uint32_t size);
-  void Deallocate (struct Data *data);
+  struct TagListData *Allocate (uint32_t size);
+  void Deallocate (struct TagListData *data);
 
   uint16_t m_used;
-  struct Data *m_data;
+  struct TagListData *m_data;
 };
 
 } // namespace ns3
