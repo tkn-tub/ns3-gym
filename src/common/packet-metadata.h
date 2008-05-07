@@ -252,6 +252,7 @@ private:
   inline uint32_t GetUleb128Size (uint32_t value) const;
   uint32_t ReadUleb128 (const uint8_t **pBuffer) const;
   inline void Append16 (uint16_t value, uint8_t *buffer);
+  inline void Append32 (uint32_t value, uint8_t *buffer);
   inline bool TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end);
   inline bool TryToAppend32 (uint32_t value, uint8_t **pBuffer, uint8_t *end);
   inline bool TryToAppend16 (uint16_t value, uint8_t **pBuffer, uint8_t *end);

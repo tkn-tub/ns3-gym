@@ -178,6 +178,14 @@ PacketMetadata::Append16 (uint16_t value, uint8_t *buffer)
   value >>= 8;
   buffer[1] = value;
 }
+void
+PacketMetadata::Append32 (uint32_t value,  uint8_t *buffer)
+{
+  buffer[0] = value & 0xff;
+  buffer[1] = (value >> 8) & 0xff;
+  buffer[2] = (value >> 16) & 0xff;
+  buffer[3] = (value >> 24) & 0xff;
+}
 bool
 PacketMetadata::TryToAppend16 (uint16_t value,  uint8_t **pBuffer, uint8_t *end)
 {
@@ -397,7 +405,7 @@ PacketMetadata::AddSmall (const struct PacketMetadata::SmallItem *item)
   NS_ASSERT (m_used != item->prev && m_used != item->next);
   uint32_t typeUidSize = GetUleb128Size (item->typeUid);
   uint32_t sizeSize = GetUleb128Size (item->size);
-  uint32_t n = typeUidSize + sizeSize + 2 + 2 + 2;
+  uint32_t n =  2 + 2 + typeUidSize + sizeSize + 2;
   if (m_used + n > m_data->m_size ||
       (m_head != 0xffff &&
        m_data->m_count != 1 &&
@@ -426,43 +434,40 @@ PacketMetadata::AddBig (uint32_t next, uint32_t prev,
   NS_ASSERT (m_data != 0);
   uint32_t typeUid = ((item->typeUid & 0x1) == 0x1)?item->typeUid:item->typeUid+1;
   NS_ASSERT (m_used != prev && m_used != next);
- append:
-  uint8_t *start = &m_data->m_data[m_used];
-  uint8_t *end = &m_data->m_data[m_data->m_size];
-  if (end - start >= 14 &&
-      (m_head == 0xffff ||
-       m_data->m_count == 1 ||
-       m_used == m_data->m_dirtyEnd))
-    {
-      uint8_t *buffer = start;
 
-      Append16 (next, buffer);
-      buffer += 2;
-      Append16 (prev, buffer);
-      buffer += 2;
-      if (TryToAppend (typeUid, &buffer, end) &&
-          TryToAppend (item->size, &buffer, end) &&
-          TryToAppend16 (item->chunkUid, &buffer, end) &&
-          TryToAppend (extraItem->fragmentStart, &buffer, end) &&
-          TryToAppend (extraItem->fragmentEnd, &buffer, end) &&
-          TryToAppend32 (extraItem->packetUid, &buffer, end))
-        {
-          uintptr_t written = buffer - start;
-          NS_ASSERT (written <= 0xffff);
-          NS_ASSERT (written >= 14);
-          return written;
-        }
+  uint32_t typeUidSize = GetUleb128Size (typeUid);
+  uint32_t sizeSize = GetUleb128Size (item->size);
+  uint32_t fragStartSize = GetUleb128Size (extraItem->fragmentStart);
+  uint32_t fragEndSize = GetUleb128Size (extraItem->fragmentEnd);
+  uint32_t n = 2 + 2 + typeUidSize + sizeSize + 2 + fragStartSize + fragEndSize + 4;
+
+  if (m_used + n > m_data->m_size ||
+      (m_head != 0xffff &&
+       m_data->m_count != 1 &&
+       m_used != m_data->m_dirtyEnd))
+    {
+      ReserveCopy (n);
     }
 
-  uint32_t n = GetUleb128Size (typeUid);
-  n += GetUleb128Size (item->size);
-  n += 2;
-  n += GetUleb128Size (extraItem->fragmentStart);
-  n += GetUleb128Size (extraItem->fragmentEnd);
-  n += 4;
-  n += 2 + 2;
-  ReserveCopy (n);
-  goto append;
+  uint8_t *buffer = &m_data->m_data[m_used];
+
+  Append16 (next, buffer);
+  buffer += 2;
+  Append16 (prev, buffer);
+  buffer += 2;
+  AppendValue (typeUid, buffer);
+  buffer += typeUidSize;
+  AppendValue (item->size, buffer);
+  buffer += sizeSize;
+  Append16 (item->chunkUid, buffer);
+  buffer += 2;
+  AppendValue (extraItem->fragmentStart, buffer);
+  buffer += fragStartSize;
+  AppendValue (extraItem->fragmentEnd, buffer);
+  buffer += fragEndSize;
+  Append32 (extraItem->packetUid, buffer);
+
+  return n;
 }
 
 void
