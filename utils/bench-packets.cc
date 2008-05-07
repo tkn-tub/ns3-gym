@@ -175,24 +175,6 @@ benchPtrC (uint32_t n)
   }
 }
 
-#if 0
-static void
-benchPrint (uint32_t n)
-{
-  PacketPrinter printer;
-  BenchHeader<25> ipv4;
-  BenchHeader<8> udp;
-  Ptr<Packet> p = Create<Packet> (2000);
-  p->AddHeader (udp);
-  p->AddHeader (ipv4);
-
-  for (uint32_t i = 0; i < n; i++) 
-    {
-      p->Print (std::cerr, printer);
-    }  
-}
-#endif
-
 
 static void
 runBench (void (*bench) (uint32_t), uint32_t n, char const *name)
@@ -227,15 +209,15 @@ int main (int argc, char *argv[])
     }
   std::cout << "Running bench-packets with n=" << n << std::endl;
 
-  Packet::EnableMetadata ();
   runBench (&benchPtrA, n, "a");
   runBench (&benchPtrB, n, "b");
   runBench (&benchPtrC, n, "c");
 
-  //runBench (&benchPrint, n, "print");
+  Packet::EnableMetadata ();
   runBench (&benchPtrA, n, "meta-a");
   runBench (&benchPtrB, n, "meta-b");
   runBench (&benchPtrC, n, "meta-c");
+
 
 
   return 0;
