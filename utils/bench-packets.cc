@@ -22,6 +22,7 @@
 #include "ns3/packet-metadata.h"
 #include <iostream>
 #include <sstream>
+#include <string>
 
 using namespace ns3;
 
@@ -39,6 +40,7 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 private:
+  static std::string GetTypeName (void);
   bool m_ok;
 };
 
@@ -55,12 +57,19 @@ BenchHeader<N>::IsOk (void) const
 }
 
 template <int N>
+std::string 
+BenchHeader<N>::GetTypeName (void)
+{
+  std::ostringstream oss;
+  oss << "ns3::BenchHeader<" << N << ">";
+  return oss.str ();
+}
+
+template <int N>
 TypeId 
 BenchHeader<N>::GetTypeId (void)
 {
-  std::ostringstream oss;
-  oss << "ns3::BenchHeader<"<<N<<">";
-  static TypeId tid = TypeId (oss.str ().c_str ())
+  static TypeId tid = TypeId (GetTypeName ().c_str ())
     .SetParent<Header> ()
     ;
   return tid;
