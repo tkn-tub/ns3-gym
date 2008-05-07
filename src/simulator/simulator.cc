@@ -428,6 +428,12 @@ Simulator::GetPriv (void)
 {
   if (m_priv == 0) 
     {
+      /* Note: we call LogSetTimePrinter below _after_ calling CreateObject because
+       * CreateObject can trigger calls to the logging framework which would call
+       * the TimePrinter function above which would call Simulator::Now which would
+       * call Simulator::GetPriv, and, thus, get us in an infinite recursion until the
+       * stack explodes.
+       */
       m_priv = CreateObject<SimulatorPrivate> ();
       Ptr<Scheduler> scheduler = CreateObject<MapScheduler> ();
       m_priv->SetScheduler (scheduler);
@@ -444,6 +450,11 @@ Simulator::Destroy (void)
     {
       return;
     }
+  /* Note: we have to call LogSetTimePrinter (0) below because if we do not do this,
+   * and restart a simulation after this call to Destroy, (which is legal), 
+   * Simulator::GetPriv will trigger again an infinite recursion until the stack 
+   * explodes.
+   */
   LogSetTimePrinter (0);
   m_priv->Destroy ();
   m_priv = 0;
