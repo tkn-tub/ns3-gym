@@ -437,9 +437,7 @@ Simulator::GetPriv (void)
       m_priv = CreateObject<SimulatorPrivate> ();
       Ptr<Scheduler> scheduler = CreateObject<MapScheduler> ();
       m_priv->SetScheduler (scheduler);
-#ifdef NS3_LOG_ENABLE
       LogSetTimePrinter (&TimePrinter);
-#endif /* NS3_LOG_ENABLE */
     }
   TRACE_S ("priv " << m_priv);
   return m_priv;
@@ -457,9 +455,7 @@ Simulator::Destroy (void)
    * Simulator::GetPriv will trigger again an infinite recursion until the stack 
    * explodes.
    */
-#ifdef NS3_LOG_ENABLE
   LogSetTimePrinter (0);
-#endif /* NS3_LOG_ENABLE */
   m_priv->Destroy ();
   m_priv = 0;
 }
