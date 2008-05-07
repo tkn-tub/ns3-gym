@@ -262,12 +262,10 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
 
   NS_ASSERT_MSG (addr, "Ipv4AddressGeneratorImpl::Add(): "
     "Allocating the broadcast address is not a good idea"); 
+ 
+  std::list<Entry>::iterator i;
 
-  std::list<Entry>::iterator i, j;
-
-  for (i = m_entries.begin (), j = m_entries.begin (), ++j; 
-       i != m_entries.end (); 
-       ++i, ++j)
+  for (i = m_entries.begin (); i != m_entries.end (); ++i)
     {
       NS_LOG_LOGIC ("examine entry: " << Ipv4Address ((*i).addrLow) << 
         " to " << Ipv4Address ((*i).addrHigh));
@@ -277,11 +275,12 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
 //
       if (addr >= (*i).addrLow && addr <= (*i).addrHigh)
         {
-          NS_LOG_LOGIC ("Ipv4AddressGeneratorImpl::Add(): Address Collision: " << Ipv4Address (addr)); 
+          NS_LOG_LOGIC ("Ipv4AddressGeneratorImpl::Add(): "
+            "Address Collision: " << Ipv4Address (addr)); 
           if (!m_test) 
             {
-              NS_ASSERT_MSG (0, 
-                "Ipv4AddressGeneratorImpl::Add(): Address Collision: " << Ipv4Address (addr)); 
+              NS_ASSERT_MSG (0, "Ipv4AddressGeneratorImpl::Add(): "
+                "Address Collision: " << Ipv4Address (addr)); 
             }
           return false;
        }
@@ -303,6 +302,9 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
 // 
       if (addr == (*i).addrHigh + 1)
         {
+          std::list<Entry>::iterator j = i;
+          ++j;
+
           if (j != m_entries.end ())
             {
               if (addr == (*j).addrLow)

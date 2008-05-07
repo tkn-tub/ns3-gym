@@ -374,6 +374,9 @@ public:
 #define LogComponentDisableAll(level)
 #define LogRegisterTimePrinter(printer)
 
+#define LogSetTimePrinter(printer)
+#define LogGetTimePrinter
+
 #endif /* LOG_ENABLE */
 
 #endif // __LOG_H__
