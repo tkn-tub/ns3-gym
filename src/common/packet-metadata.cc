@@ -398,28 +398,23 @@ PacketMetadata::AddSmall (const struct PacketMetadata::SmallItem *item)
   uint32_t typeUidSize = GetUleb128Size (item->typeUid);
   uint32_t sizeSize = GetUleb128Size (item->size);
   uint32_t n = typeUidSize + sizeSize + 2 + 2 + 2;
- restart:
-  if (m_used + n <= m_data->m_size &&
-      (m_head == 0xffff ||
-       m_data->m_count == 1 ||
-       m_used == m_data->m_dirtyEnd))
-    {
-      uint8_t *buffer = &m_data->m_data[m_used];
-      Append16 (item->next, buffer);
-      buffer += 2;
-      Append16 (item->prev, buffer);
-      buffer += 2;
-      AppendValue (item->typeUid, buffer);
-      buffer += typeUidSize;
-      AppendValue (item->size, buffer);
-      buffer += sizeSize;
-      Append16 (item->chunkUid, buffer);
-    }
-  else
+  if (m_used + n > m_data->m_size ||
+      (m_head != 0xffff &&
+       m_data->m_count != 1 &&
+       m_used != m_data->m_dirtyEnd))
     {
       ReserveCopy (n);
-      goto restart;
     }
+  uint8_t *buffer = &m_data->m_data[m_used];
+  Append16 (item->next, buffer);
+  buffer += 2;
+  Append16 (item->prev, buffer);
+  buffer += 2;
+  AppendValue (item->typeUid, buffer);
+  buffer += typeUidSize;
+  AppendValue (item->size, buffer);
+  buffer += sizeSize;
+  Append16 (item->chunkUid, buffer);
   return n;
 }
 
