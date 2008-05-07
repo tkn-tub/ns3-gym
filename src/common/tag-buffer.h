@@ -1,5 +1,5 @@
-#ifndef MTAG_BUFFER_H
-#define MTAG_BUFFER_H
+#ifndef TAG_BUFFER_H
+#define TAG_BUFFER_H
 
 #include <stdint.h>
 
@@ -39,4 +39,4 @@ private:
 
 } // namespace ns3
 
-#endif /* MTAG_BUFFER_H */
+#endif /* TAG_BUFFER_H */

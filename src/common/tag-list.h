@@ -1,5 +1,5 @@
-#ifndef MTAG_LIST_H
-#define MTAG_LIST_H
+#ifndef TAG_LIST_H
+#define TAG_LIST_H
 
 #include <stdint.h>
 #include "ns3/type-id.h"
@@ -70,4 +70,4 @@ private:
 
 } // namespace ns3
 
-#endif /* MTAG_LIST_H */
+#endif /* TAG_LIST_H */

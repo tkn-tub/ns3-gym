@@ -1,5 +1,5 @@
-#ifndef MTAG_H
-#define MTAG_H
+#ifndef TAG_H
+#define TAG_H
 
 #include "ns3/object-base.h"
 #include "tag-buffer.h"
@@ -40,4 +40,4 @@ public:
 
 } // namespace ns3
 
-#endif /* MTAG_H */
+#endif /* TAG_H */
