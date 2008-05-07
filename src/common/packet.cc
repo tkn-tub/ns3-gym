@@ -567,6 +567,57 @@ public:
     : ATestTagBase () {}
 };
 
+class ATestHeaderBase : public Header
+{
+public:
+  ATestHeaderBase () : Header (), m_error (false) {}
+  bool m_error;
+};
+
+template <int N>
+class ATestHeader : public ATestHeaderBase
+{
+public:
+  static TypeId GetTypeId (void) {
+    std::ostringstream oss;
+    oss << "anon::ATestHeader<" << N << ">";
+    static TypeId tid = TypeId (oss.str ().c_str ())
+      .SetParent<Header> ()
+      .AddConstructor<ATestHeader<N> > ()
+      .HideFromDocumentation ()
+      ;
+    return tid;
+  }
+  virtual TypeId GetInstanceTypeId (void) const {
+    return GetTypeId ();
+  }
+  virtual uint32_t GetSerializedSize (void) const {
+    return N;
+  }
+  virtual void Serialize (Buffer::Iterator iter) const {
+    for (uint32_t i = 0; i < N; ++i)
+      {
+        iter.WriteU8 (N);
+      }
+  }
+  virtual uint32_t Deserialize (Buffer::Iterator iter) {
+    for (uint32_t i = 0; i < N; ++i)
+      {
+        uint8_t v = iter.ReadU8 ();
+        if (v != N)
+          {
+            m_error = true;
+          }
+      }
+    return N;
+  }
+  virtual void Print (std::ostream &os) const {
+  }
+  ATestHeader ()
+    : ATestHeaderBase () {}
+
+};
+
 struct Expected
 {
   Expected (uint32_t n_, uint32_t start_, uint32_t end_)
@@ -701,6 +752,24 @@ PacketTest::RunTests (void)
          E (1, 0, 10), E(2, 0, 10), E (3, 0, 10),
          E (1, 10, 100), E(2, 10, 100), E (4, 10, 100), 
          E (1, 100, 1000), E(2, 100, 1000), E (5, 100, 1000));
+
+
+  // force caching a buffer of the right size.
+  frag0 = Create<Packet> (1000);
+  frag0->AddHeader (ATestHeader<10> ());
+  frag0 = 0;
+
+  p = Create<Packet> (1000);
+  p->AddTag (ATestTag<20> ());
+  CHECK (p, 1, E (20, 0, 1000));
+  frag0 = p->CreateFragment (10, 90);
+  CHECK (p, 1, E (20, 0, 1000));
+  CHECK (frag0, 1, E (20, 0, 90));
+  p = 0;
+  frag0->AddHeader (ATestHeader<10> ());
+  CHECK (frag0, 1, E (20, 10, 100));
+
+  
 
   return result;
 }
