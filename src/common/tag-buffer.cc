@@ -152,8 +152,10 @@ TagBuffer::TrimAtEnd (uint32_t trim)
 void 
 TagBuffer::CopyFrom (TagBuffer o)
 {
-  uint32_t size = o.m_end - o.m_current;
-  NS_ASSERT (size <= m_end - m_current);
+  NS_ASSERT (o.m_end >= o.m_current);
+  NS_ASSERT (m_end >= m_current);
+  uintptr_t size = o.m_end - o.m_current;
+  NS_ASSERT (size <= (uintptr_t)(m_end - m_current));
   memcpy (m_current, o.m_current, size);
   m_current += size;
 }
