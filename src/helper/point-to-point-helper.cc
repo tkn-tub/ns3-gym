@@ -170,12 +170,12 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
   devA->SetAddress (Mac48Address::Allocate ());
   a->AddDevice (devA);
   Ptr<Queue> queueA = m_queueFactory.Create<Queue> ();
-  devA->AddQueue (queueA);
+  devA->SetQueue (queueA);
   Ptr<PointToPointNetDevice> devB = m_deviceFactory.Create<PointToPointNetDevice> ();
   devB->SetAddress (Mac48Address::Allocate ());
   b->AddDevice (devB);
   Ptr<Queue> queueB = m_queueFactory.Create<Queue> ();
-  devB->AddQueue (queueB);
+  devB->SetQueue (queueB);
   Ptr<PointToPointChannel> channel = m_channelFactory.Create<PointToPointChannel> ();
   devA->Attach (channel);
   devB->Attach (channel);
