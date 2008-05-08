@@ -114,10 +114,72 @@ BenchHeader<N>::Deserialize (Buffer::Iterator start)
   return N;
 }
 
+template <int N>
+class BenchTag : public Tag
+{
+public:
+  static std::string GetName (void) {
+    std::ostringstream oss;
+    oss << "anon::BenchTag<" << N << ">";
+    return oss.str ();
+  }
+  static TypeId GetTypeId (void) {
+    static TypeId tid = TypeId (GetName ().c_str ())
+      .SetParent<Tag> ()
+      .AddConstructor<BenchTag > ()
+      .HideFromDocumentation ()
+      ;
+    return tid;
+  }
+  virtual TypeId GetInstanceTypeId (void) const {
+    return GetTypeId ();
+  }
+  virtual uint32_t GetSerializedSize (void) const {
+    return N;
+  }
+  virtual void Serialize (TagBuffer buf) const {
+    for (uint32_t i = 0; i < N; ++i)
+      {
+        buf.WriteU8 (N);
+      }
+  }
+  virtual void Deserialize (TagBuffer buf) {
+    for (uint32_t i = 0; i < N; ++i)
+      {
+        buf.ReadU8 ();
+      }
+  }
+  BenchTag ()
+    : Tag () {}
+};
 
 
 static void 
-benchPtrA (uint32_t n)
+benchD (uint32_t n)
+{
+  BenchHeader<25> ipv4;
+  BenchHeader<8> udp;
+  BenchTag<16> tag1;
+  BenchTag<17> tag2;
+
+  for (uint32_t i = 0; i < n; i++) {
+    Ptr<Packet> p = Create<Packet> (2000);
+    p->AddTag (tag1);
+    p->AddHeader (udp);
+    p->FindFirstMatchingTag (tag1);
+    p->AddTag (tag2);
+    p->AddHeader (ipv4);
+    Ptr<Packet> o = p->Copy ();
+    o->RemoveHeader (ipv4);
+    p->FindFirstMatchingTag (tag2);
+    o->RemoveHeader (udp);
+  }
+}
+
+
+
+static void 
+benchA (uint32_t n)
 {
   BenchHeader<25> ipv4;
   BenchHeader<8> udp;
@@ -133,7 +195,7 @@ benchPtrA (uint32_t n)
 }
 
 static void 
-benchPtrB (uint32_t n)
+benchB (uint32_t n)
 {
   BenchHeader<25> ipv4;
   BenchHeader<8> udp;
@@ -146,7 +208,7 @@ benchPtrB (uint32_t n)
 }
 
 static void
-ptrC2 (Ptr<Packet> p)
+C2 (Ptr<Packet> p)
 {
   BenchHeader<8> udp;
 
@@ -154,15 +216,15 @@ ptrC2 (Ptr<Packet> p)
 }
 
 static void 
-ptrC1 (Ptr<Packet> p)
+C1 (Ptr<Packet> p)
 {
   BenchHeader<25> ipv4;
   p->RemoveHeader (ipv4);
-  ptrC2 (p);
+  C2 (p);
 }
 
 static void
-benchPtrC (uint32_t n)
+benchC (uint32_t n)
 {
   BenchHeader<25> ipv4;
   BenchHeader<8> udp;
@@ -171,7 +233,7 @@ benchPtrC (uint32_t n)
     Ptr<Packet> p = Create<Packet> (2000);
     p->AddHeader (udp);
     p->AddHeader (ipv4);
-    ptrC1 (p);
+    C1 (p);
   }
 }
 
@@ -209,14 +271,16 @@ int main (int argc, char *argv[])
     }
   std::cout << "Running bench-packets with n=" << n << std::endl;
 
-  runBench (&benchPtrA, n, "a");
-  runBench (&benchPtrB, n, "b");
-  runBench (&benchPtrC, n, "c");
+  runBench (&benchA, n, "a");
+  runBench (&benchB, n, "b");
+  runBench (&benchC, n, "c");
+  runBench (&benchD, n, "d");
 
   Packet::EnableMetadata ();
-  runBench (&benchPtrA, n, "meta-a");
-  runBench (&benchPtrB, n, "meta-b");
-  runBench (&benchPtrC, n, "meta-c");
+  runBench (&benchA, n, "meta-a");
+  runBench (&benchB, n, "meta-b");
+  runBench (&benchC, n, "meta-c");
+  runBench (&benchD, n, "meta-d");
 
 
 
