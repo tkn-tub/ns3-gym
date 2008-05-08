@@ -375,7 +375,7 @@ int TcpSocket::Send (const uint8_t* buf, uint32_t size)
                    " state " << m_state);
       Actions_t action = ProcessEvent (APP_SEND);
       NS_LOG_DEBUG(" action " << action);
-      NotifySend (GetTxAvailable ());
+      //NotifySend (GetTxAvailable ()); //XXX not here, do this when data acked
       if (!ProcessAction (action)) 
         {
           return -1; // Failed, return zero
@@ -446,8 +446,10 @@ TcpSocket::GetTxAvailable (void) const
   }
   if (m_pendingData != 0)
   {
-    NS_ASSERT (m_maxTxBuffer >= m_pendingData->Size()); //else a logical error
-    return m_maxTxBuffer-m_pendingData->Size();
+    uint32_t unAckedDataSize = 
+        m_pendingData->SizeFromSeq (m_firstPendingSequence, m_highestRxAck);
+    NS_ASSERT (m_maxTxBuffer >= unAckedDataSize); //else a logical error
+    return m_maxTxBuffer-unAckedDataSize;
   }
   else
   {
@@ -769,9 +771,7 @@ bool TcpSocket::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       if (tcpHeader.GetAckNumber () > m_highestRxAck)
       {
         m_highestRxAck = tcpHeader.GetAckNumber ();
-        // We do not model any limit to the buffer, so report that the
-        // maximum is available
-        NotifySend (std::numeric_limits<uint32_t>::max ());
+        //NotifySend (GetTxAvailable() );  //XXX do when data gets acked
       }
       SendPendingData ();
       break;
@@ -1170,9 +1170,9 @@ void TcpSocket::CommonNewAck (SequenceNumber ack, bool skipTimer)
   NS_LOG_LOGIC ("TCP " << this << " NewAck " << ack 
            << " numberAck " << (ack - m_highestRxAck)); // Number bytes ack'ed
   m_highestRxAck = ack;         // Note the highest recieved Ack
-  // We do not model any limit to the buffer, so report that the
-  // maximum is available
-  NotifySend (std::numeric_limits<uint32_t>::max ());
+  //m_highestRxAck advancing means some data was acked, and the size of free
+  //space in the buffer has increased
+  NotifySend (GetTxAvailable ());
   if (ack > m_nextTxSequence) 
     {
       m_nextTxSequence = ack; // If advanced
