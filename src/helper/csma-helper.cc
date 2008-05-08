@@ -174,7 +174,7 @@ CsmaHelper::Install (const NodeContainer &c, Ptr<CsmaChannel> channel)
       device->SetAddress (Mac48Address::Allocate ());
       node->AddDevice (device);
       Ptr<Queue> queue = m_queueFactory.Create<Queue> ();
-      device->AddQueue (queue);
+      device->SetQueue (queue);
       device->Attach (channel);
       container.Add (device);
     }
