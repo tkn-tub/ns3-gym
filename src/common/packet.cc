@@ -63,14 +63,10 @@ TagIterator::Item
 TagIterator::Next (void)
 {
   TagList::Iterator::Item i = m_current.Next ();
-  
-  TagIterator::Item item = TagIterator::Item (i.tid, 
-                                              i.start-m_current.GetOffsetStart (), 
-                                              i.end-m_current.GetOffsetStart (), 
-                                              i.buf);
-  
-  
-  return item;
+  return TagIterator::Item (i.tid, 
+                            i.start-m_current.GetOffsetStart (), 
+                            i.end-m_current.GetOffsetStart (), 
+                            i.buf);
 }
 TagIterator::TagIterator (TagList::Iterator i)
   : m_current (i)
