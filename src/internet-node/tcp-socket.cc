@@ -79,7 +79,8 @@ TcpSocket::GetTypeId ()
     m_pendingData (0),
     m_rtt (0),
     m_lastMeasuredRtt (Seconds(0.0)),
-    m_rxAvailable (0)
+    m_rxAvailable (0), //XXX zero?
+    m_maxTxBuffer (65536) //interpret 0 as no limit, //XXX hook into default values
 {
   NS_LOG_FUNCTION (this);
   
@@ -124,7 +125,8 @@ TcpSocket::TcpSocket(const TcpSocket& sock)
     m_lastMeasuredRtt (Seconds(0.0)),
     m_cnTimeout (sock.m_cnTimeout),
     m_cnCount (sock.m_cnCount),
-    m_rxAvailable (0)
+    m_rxAvailable (0),
+    m_maxTxBuffer (0) //interpret 0 as no limit, //XXX hook into default values
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC("Invoked the copy constructor");
@@ -361,20 +363,19 @@ int TcpSocket::Send (const uint8_t* buf, uint32_t size)
   NS_LOG_FUNCTION (this << buf << size);
   if (m_state == ESTABLISHED || m_state == SYN_SENT || m_state == CLOSE_WAIT)
     { // Ok to buffer some data to send
+      size = std::min(size, GetTxAvailable() ); //only buffer what can fit
       if (!m_pendingData)
-      {
-        m_pendingData = new PendingData ();   // Create if non-existent
-        m_firstPendingSequence = m_nextTxSequence; // Note seq of first
-      }
+        {
+          m_pendingData = new PendingData ();   // Create if non-existent
+          m_firstPendingSequence = m_nextTxSequence; // Note seq of first
+        }
       //PendingData::Add always copies the data buffer, never modifies
       m_pendingData->Add (size,buf);
       NS_LOG_DEBUG("TcpSock::Send, pdsize " << m_pendingData->Size() << 
                    " state " << m_state);
       Actions_t action = ProcessEvent (APP_SEND);
       NS_LOG_DEBUG(" action " << action);
-      // We do not model any limit to the buffer, so report that the
-      // maximum is available
-      NotifySend (std::numeric_limits<uint32_t>::max ());
+      NotifySend (GetTxAvailable ());
       if (!ProcessAction (action)) 
         {
           return -1; // Failed, return zero
@@ -439,8 +440,19 @@ TcpSocket::SendTo (const Address &address, Ptr<Packet> p)
 uint32_t
 TcpSocket::GetTxAvailable (void) const
 {
-  // No finite send buffer is modelled
-  return 0xffffffff;
+  if (m_maxTxBuffer == 0) //interpret this as infinite buffer
+  {
+    return std::numeric_limits<uint32_t>::max ();
+  }
+  if (m_pendingData != 0)
+  {
+    NS_ASSERT (m_maxTxBuffer >= m_pendingData->Size()); //else a logical error
+    return m_maxTxBuffer-m_pendingData->Size();
+  }
+  else
+  {
+    return m_maxTxBuffer;
+  }
 }
 
 int
