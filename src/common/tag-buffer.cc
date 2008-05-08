@@ -23,6 +23,8 @@
 
 namespace ns3 {
 
+#ifndef TAG_BUFFER_USE_INLINE
+
 void 
 TagBuffer::WriteU8 (uint8_t v)
 {
@@ -30,6 +32,7 @@ TagBuffer::WriteU8 (uint8_t v)
   *m_current = v;
   m_current++;
 }
+
 void 
 TagBuffer::WriteU16 (uint16_t data)
 {
@@ -44,6 +47,48 @@ TagBuffer::WriteU32 (uint32_t data)
   WriteU8 ((data >> 16) & 0xff);
   WriteU8 ((data >> 24) & 0xff);
 }
+
+
+uint8_t  
+TagBuffer::ReadU8 (void)
+{
+  NS_ASSERT (m_current + 1 <= m_end);
+  uint8_t v;
+  v = *m_current;
+  m_current++;
+  return v;
+}
+
+uint16_t 
+TagBuffer::ReadU16 (void)
+{
+  uint8_t byte0 = ReadU8 ();
+  uint8_t byte1 = ReadU8 ();
+  uint16_t data = byte1;
+  data <<= 8;
+  data |= byte0;
+  return data;
+}
+uint32_t 
+TagBuffer::ReadU32 (void)
+{
+  uint8_t byte0 = ReadU8 ();
+  uint8_t byte1 = ReadU8 ();
+  uint8_t byte2 = ReadU8 ();
+  uint8_t byte3 = ReadU8 ();
+  uint32_t data = byte3;
+  data <<= 8;
+  data |= byte2;
+  data <<= 8;
+  data |= byte1;
+  data <<= 8;
+  data |= byte0;
+  return data;
+}
+
+#endif /* TAG_BUFFER_USE_INLINE */
+
+
 void 
 TagBuffer::WriteU64 (uint64_t data)
 {
@@ -72,41 +117,6 @@ TagBuffer::Write (const uint8_t *buffer, uint32_t size)
     {
       WriteU8 (*buffer);
     }
-}
-uint8_t  
-TagBuffer::ReadU8 (void)
-{
-  NS_ASSERT (m_current + 1 <= m_end);
-  uint8_t v;
-  v = *m_current;
-  m_current++;
-  return v;
-}
-uint16_t 
-TagBuffer::ReadU16 (void)
-{
-  uint8_t byte0 = ReadU8 ();
-  uint8_t byte1 = ReadU8 ();
-  uint16_t data = byte1;
-  data <<= 8;
-  data |= byte0;
-  return data;
-}
-uint32_t 
-TagBuffer::ReadU32 (void)
-{
-  uint8_t byte0 = ReadU8 ();
-  uint8_t byte1 = ReadU8 ();
-  uint8_t byte2 = ReadU8 ();
-  uint8_t byte3 = ReadU8 ();
-  uint32_t data = byte3;
-  data <<= 8;
-  data |= byte2;
-  data <<= 8;
-  data |= byte1;
-  data <<= 8;
-  data |= byte0;
-  return data;
 }
 uint64_t 
 TagBuffer::ReadU64 (void)
@@ -180,3 +190,4 @@ TagBuffer::CopyFrom (TagBuffer o)
 }
 
 } // namespace ns3
+
