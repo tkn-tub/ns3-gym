@@ -64,11 +64,11 @@ struct TagList::Iterator::Item
 TagList::Iterator::Next (void)
 {
   NS_ASSERT (HasNext ());
-  struct Item item = Item (TagBuffer (m_current, m_end));
-  item.tid.SetUid (item.buf.ReadU32 ());
-  item.size = item.buf.ReadU32 ();
-  item.start = item.buf.ReadU32 ();
-  item.end = item.buf.ReadU32 ();
+  struct Item item = Item (TagBuffer (m_current+16, m_end));
+  item.tid.SetUid (m_nextTid);
+  item.size = m_nextSize;
+  item.start = m_nextStart;
+  item.end = m_nextEnd;
   item.start = std::max (item.start, m_offsetStart);
   item.end = std::min (item.end, m_offsetEnd);
   m_current += 4 + 4 + 4 + 4 + item.size;
@@ -81,14 +81,14 @@ TagList::Iterator::PrepareForNext (void)
 {
   while (m_current < m_end)
     {
-      struct Item item = Item (TagBuffer (m_current, m_end));
-      item.tid.SetUid (item.buf.ReadU32 ());
-      item.size = item.buf.ReadU32 ();
-      item.start = item.buf.ReadU32 ();
-      item.end = item.buf.ReadU32 ();
-      if (item.start > m_offsetEnd || item.end < m_offsetStart)
+      TagBuffer buf = TagBuffer (m_current, m_end);
+      m_nextTid = buf.ReadU32 ();
+      m_nextSize = buf.ReadU32 ();
+      m_nextStart = buf.ReadU32 ();
+      m_nextEnd = buf.ReadU32 ();
+      if (m_nextStart > m_offsetEnd || m_nextEnd < m_offsetStart)
 	{
-	  m_current += 4 + 4 + 4 + 4 + item.size;
+	  m_current += 4 + 4 + 4 + 4 + m_nextSize;
 	}
       else
 	{

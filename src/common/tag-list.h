@@ -57,6 +57,10 @@ public:
     uint8_t *m_end;
     uint32_t m_offsetStart;
     uint32_t m_offsetEnd;
+    uint32_t m_nextTid;
+    uint32_t m_nextSize;
+    uint32_t m_nextStart;
+    uint32_t m_nextEnd;
   };
 
   TagList ();
