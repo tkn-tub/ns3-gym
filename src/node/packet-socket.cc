@@ -349,19 +349,21 @@ void
 PacketSocket::SetSndBuf (uint32_t size)
 {
 }
+
 uint32_t 
-PacketSocket::GetSndBuf (void)
+PacketSocket::GetSndBuf (void) const
 {
-return 0;
+  return 0;
 }
 void 
 PacketSocket::SetRcvBuf (uint32_t size)
 {
 }
+
 uint32_t 
-PacketSocket::GetRcvBuf (void)
+PacketSocket::GetRcvBuf (void) const
 {
-return 0;
+  return 0;
 }
 
 }//namespace ns3

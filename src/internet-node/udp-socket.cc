@@ -338,7 +338,7 @@ uint32_t
 UdpSocket::GetTxAvailable (void) const
 {
   // No finite send buffer is modelled
-  return 0xffffffff;
+  return std::numeric_limits<uint32_t>::max ();
 }
 
 int 
@@ -416,27 +416,24 @@ UdpSocket::SetSndBuf (uint32_t size)
   // return EINVAL since we are not modelling a finite send buffer
   // Enforcing buffer size should be added if we ever start to model
   // non-zero processing delay in the UDP/IP stack
-  m_errno = ERROR_INVAL;
+  NS_LOG_WARN ("UdpSocket has infinite send buffer");
 }
 
 uint32_t 
-UdpSocket::GetSndBuf (void)
+UdpSocket::GetSndBuf (void) const
 {
-  m_errno = ERROR_NOTERROR;
-  return 0xffffffff;
+  return std::numeric_limits<uint32_t>::max ();
 }
 
 void 
 UdpSocket::SetRcvBuf (uint32_t size)
 {
-  m_errno = ERROR_NOTERROR;
   m_udp_rmem = size;
 }
 
 uint32_t 
-UdpSocket::GetRcvBuf (void)
+UdpSocket::GetRcvBuf (void) const
 {
-  m_errno = ERROR_NOTERROR;
   return m_udp_rmem;
 }
 

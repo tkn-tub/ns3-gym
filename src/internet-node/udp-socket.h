@@ -63,10 +63,11 @@ public:
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual uint32_t GetRxAvailable (void) const;
 
+protected:
   virtual void SetSndBuf (uint32_t size);
-  virtual uint32_t GetSndBuf (void);
+  virtual uint32_t GetSndBuf (void) const;
   virtual void SetRcvBuf (uint32_t size);
-  virtual uint32_t GetRcvBuf (void);
+  virtual uint32_t GetRcvBuf (void) const;
 
 private:
   friend class Udp;

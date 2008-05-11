@@ -489,7 +489,7 @@ TcpSocket::SetSndBuf (uint32_t size)
 
 // XXX Raj to finish
 uint32_t
-TcpSocket::GetSndBuf (void) 
+TcpSocket::GetSndBuf (void) const 
 {
   return 0;
 }
@@ -502,7 +502,7 @@ TcpSocket::SetRcvBuf (uint32_t size)
 
 // XXX Raj to finish
 uint32_t
-TcpSocket::GetRcvBuf (void) 
+TcpSocket::GetRcvBuf (void) const
 {
   return 0;
 }
