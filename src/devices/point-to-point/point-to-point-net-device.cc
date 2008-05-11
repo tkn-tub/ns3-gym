@@ -207,14 +207,14 @@ PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
   return true;
 }
 
-void PointToPointNetDevice::AddQueue (Ptr<Queue> q)
+void PointToPointNetDevice::SetQueue (Ptr<Queue> q)
 {
   NS_LOG_FUNCTION (this << q);
 
   m_queue = q;
 }
 
-void PointToPointNetDevice::AddReceiveErrorModel (Ptr<ErrorModel> em)
+void PointToPointNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
 {
   NS_LOG_FUNCTION ("(" << em << ")");
 

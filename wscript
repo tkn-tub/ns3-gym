@@ -6,9 +6,11 @@ import types
 import optparse
 import os.path
 
+import pproc as subprocess
+
 import Params
 import Object
-import pproc as subprocess
+import ccroot
 
 Params.g_autoconfig = 1
 
@@ -218,6 +220,7 @@ def configure(conf):
 
 def create_ns3_program(bld, name, dependencies=('simulator',)):
     program = bld.create_obj('cpp', 'program')
+    program.is_ns3_program = True
     program.name = name
     program.target = program.name
     program.uselib_local = 'ns3'
@@ -252,7 +255,7 @@ def build(bld):
         doxygen()
         raise SystemExit(0)
 
-    print "Entering directory `%s/build'" % Params.g_build.m_curdirnode.abspath()
+    print "Entering directory `%s'" % os.path.join(Params.g_build.m_curdirnode.abspath(), 'build')
     # process subfolders from here
     bld.add_subdirs('src')
     bld.add_subdirs('samples utils examples tutorial')
@@ -351,7 +354,7 @@ def _run_waf_check():
                        # --enable-modules=xxx
         pass
     else:
-        prog = program_obj.path.find_build(program_obj.get_target_name()).abspath(env)
+        prog = program_obj.path.find_build(ccroot.get_target_name(program_obj)).abspath(env)
         out = open('doc/introspected-doxygen.h', 'w')
         if subprocess.Popen([prog], stdout=out, env=proc_env).wait():
             raise SystemExit(1)
@@ -359,12 +362,11 @@ def _run_waf_check():
 
     run_program('run-tests', get_command_template())
 
-
 def _find_program(program_name, env):
     launch_dir = os.path.abspath(Params.g_cwd_launch)
     found_programs = []
     for obj in Object.g_allobjs:
-        if obj.m_type != 'program' or not obj.target:
+        if not getattr(obj, 'is_ns3_program', False):
             continue
 
         ## filter out programs not in the subtree starting at the launch dir
@@ -430,7 +432,7 @@ def run_program(program_string, command_template=None):
             Params.fatal(str(ex))
 
         try:
-            program_node = program_obj.path.find_build(program_obj.get_target_name())
+            program_node = program_obj.path.find_build(ccroot.get_target_name(program_obj))
         except AttributeError:
             Params.fatal("%s does not appear to be a program" % (program_name,))
 
@@ -444,7 +446,7 @@ def run_program(program_string, command_template=None):
         except ValueError, ex:
             Params.fatal(str(ex))
         try:
-            program_node = program_obj.path.find_build(program_obj.get_target_name())
+            program_node = program_obj.path.find_build(ccroot.get_target_name(program_obj))
         except AttributeError:
             Params.fatal("%s does not appear to be a program" % (program_name,))
 

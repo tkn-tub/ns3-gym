@@ -44,10 +44,10 @@ PointToPointTest::RunTests (void)
 
   devA->Attach (channel);
   devA->SetAddress (Mac48Address::Allocate ());
-  devA->AddQueue (CreateObject<DropTailQueue> ());
+  devA->SetQueue (CreateObject<DropTailQueue> ());
   devB->Attach (channel);
   devB->SetAddress (Mac48Address::Allocate ());
-  devB->AddQueue (CreateObject<DropTailQueue> ());
+  devB->SetQueue (CreateObject<DropTailQueue> ());
 
   a->AddDevice (devA);
   b->AddDevice (devB);

@@ -308,7 +308,7 @@ void LogComponentPrintList (void);
 
 typedef void (*LogTimePrinter) (std::ostream &os);
 
-void LogRegisterTimePrinter (LogTimePrinter);
+void LogSetTimePrinter (LogTimePrinter);
 LogTimePrinter LogGetTimePrinter(void);
 
 
@@ -373,6 +373,9 @@ public:
 #define LogComponentEnableAll(level)
 #define LogComponentDisableAll(level)
 #define LogRegisterTimePrinter(printer)
+
+#define LogSetTimePrinter(printer)
+#define LogGetTimePrinter
 
 #endif /* LOG_ENABLE */
 
