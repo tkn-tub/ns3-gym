@@ -161,7 +161,9 @@ private:
   SequenceNumber m_nextRxSequence;
 
   //history data
+  //this is the incoming data buffer which sorts out of sequence data
   UnAckData_t m_bufferedData;
+  //this is kind of the tx buffer
   PendingData* m_pendingData;
   SequenceNumber m_firstPendingSequence;
 
@@ -183,9 +185,12 @@ private:
   
   // Temporary queue for delivering data to application
   std::queue<Ptr<Packet> > m_deliveryQueue;
-  uint32_t m_rxAvailable; 
+  uint32_t m_rxAvailable;
+  
+  // buffer limit for the outgoing queue
+  uint32_t m_maxTxBuffer;
 };
 
 }//namespace ns3
 
-#endif /* UDP_SOCKET_H */
+#endif /* TCP_SOCKET_H */
