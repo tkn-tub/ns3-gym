@@ -7,6 +7,7 @@ def build(bld):
         'point-to-point-net-device.cc',
         'point-to-point-channel.cc',
         'point-to-point-test.cc',
+        'ppp-header.cc',
         ]
     headers = bld.create_obj('ns3header')
     headers.module = 'point-to-point'

@@ -70,7 +70,7 @@ PointToPointHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t 
   oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
   Ptr<PcapWriter> pcap = Create<PcapWriter> ();
   pcap->Open (oss.str ());
-  pcap->WriteEthernetHeader ();
+  pcap->WritePppHeader ();
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/Rx";
   Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PointToPointHelper::RxEvent, pcap));

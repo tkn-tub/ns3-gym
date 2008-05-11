@@ -34,6 +34,7 @@ namespace ns3 {
 
 enum {
   PCAP_ETHERNET = 1,
+  PCAP_PPP      = 9,
   PCAP_RAW_IP   = 101,
   PCAP_80211    = 105,
 };
@@ -42,6 +43,7 @@ PcapWriter::PcapWriter ()
 {
   m_writer = 0;
 }
+
 PcapWriter::~PcapWriter ()
 {
   delete m_writer;
@@ -73,6 +75,12 @@ PcapWriter::WriteWifiHeader (void)
 }
 
 void 
+PcapWriter::WritePppHeader (void)
+{
+  WriteHeader (PCAP_PPP);
+}
+
+void 
 PcapWriter::WriteHeader (uint32_t network)
 {
   Write32 (0xa1b2c3d4);
@@ -83,9 +91,6 @@ PcapWriter::WriteHeader (uint32_t network)
   Write32 (0xffff);
   Write32 (network);
 }
-
-
-
 
 void 
 PcapWriter::WritePacket (Ptr<const Packet> packet)
@@ -108,6 +113,7 @@ PcapWriter::WriteData (uint8_t const*buffer, uint32_t size)
 {
   m_writer->write ((char const *)buffer, size);
 }
+
 void
 PcapWriter::Write32 (uint32_t data)
 {
@@ -118,6 +124,7 @@ PcapWriter::Write32 (uint32_t data)
   buffer[3] = (data >> 24) & 0xff;
   WriteData (buffer, 4);
 }
+
 void
 PcapWriter::Write16 (uint16_t data)
 {
