@@ -190,7 +190,7 @@ int main (int argc, char *argv[])
   ascii.open ("tcp-large-transfer.tr");
   PointToPointHelper::EnableAsciiAll (ascii);
 
-  InternetStackHelper::EnablePcapAll ("tcp-large-transfer");
+  PointToPointHelper::EnablePcapAll ("tcp-large-transfer");
 
   Simulator::StopAt (Seconds(1000));
   Simulator::Run ();

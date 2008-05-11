@@ -60,6 +60,8 @@ public:
 
   void WriteWifiHeader (void);
 
+  void WritePppHeader (void);
+
   /**
    * \param packet packet to write to output file
    */

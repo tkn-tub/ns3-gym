@@ -29,6 +29,7 @@
 #include "ns3/pointer.h"
 #include "point-to-point-net-device.h"
 #include "point-to-point-channel.h"
+#include "ppp-header.h"
 
 NS_LOG_COMPONENT_DEFINE ("PointToPointNetDevice");
 
@@ -96,20 +97,19 @@ void
 PointToPointNetDevice::AddHeader(Ptr<Packet> p, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  LlcSnapHeader llc;
-  llc.SetType (protocolNumber);
-  p->AddHeader (llc);
+  NS_ASSERT_MSG (protocolNumber == 0x800,
+    "PointToPointNetDevice::AddHeader(): protocolNumber must be 0x800");
+  PppHeader ppp;
+  p->AddHeader (ppp);
 }
 
 bool 
 PointToPointNetDevice::ProcessHeader(Ptr<Packet> p, uint16_t& param)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  LlcSnapHeader llc;
-  p->RemoveHeader (llc);
-
-  param = llc.GetType ();
-
+  PppHeader ppp;
+  p->RemoveHeader (ppp);
+  param = 0x800;
   return true;
 }
 
