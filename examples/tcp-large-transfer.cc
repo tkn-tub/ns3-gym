@@ -28,6 +28,10 @@
 //   "tcp-large-transfer.pcap-$n-$i" where n and i represent node and interface numbers respectively
 //  Usage (e.g.): ./waf --run tcp-large-transfer
 
+//XXX this isn't working as described right now
+//it is just blasting away for 10 seconds, with no fixed amount of data
+//being sent
+
 #include <ctype.h>
 #include <iostream>
 #include <fstream>
@@ -73,39 +77,9 @@ ApplicationTraceSink (Ptr<const Packet> packet,
 #endif
 }
 
-void CloseConnection (Ptr<Socket> localSocket)
-{
-  localSocket->Close ();
-}
-
-void StartFlow(Ptr<Socket> localSocket, uint32_t nBytes, 
-               Ipv4Address servAddress,
-               uint16_t servPort)
-{
- // NS_LOG_LOGIC("Starting flow at time " <<  Simulator::Now ().GetSeconds ());
-  localSocket->Connect (InetSocketAddress (servAddress, servPort));//connect
-  localSocket->SetConnectCallback (MakeCallback (&CloseConnection),
-                                   Callback<void, Ptr<Socket> > (),
-                                   Callback<void, Ptr<Socket> > ());
-  //we want to close as soon as the connection is established
-  //the tcp state machine and outgoing buffer will assure that
-  //all of the data is delivered
-
-  // Perform series of 1040 byte writes (this is a multiple of 26 since
-  // we want to detect data splicing in the output stream)
-  uint32_t writeSize = 1040;
-  uint8_t data[writeSize];
-  while (nBytes > 0) {
-    uint32_t curSize= nBytes > writeSize ? writeSize : nBytes;
-    for(uint32_t i = 0; i < curSize; ++i)
-    {
-      char m = toascii (97 + i % 26);
-      data[i] = m;
-    }
-    localSocket->Send (data, curSize);
-    nBytes -= curSize;
-  }
-}
+void CloseConnection (Ptr<Socket> localSocket);
+void StartFlow(Ptr<Socket>, uint32_t, Ipv4Address, uint16_t);
+void WriteUntilBufferFull (Ptr<Socket>, uint32_t);
 
 int main (int argc, char *argv[])
 {
@@ -137,7 +111,7 @@ int main (int argc, char *argv[])
 
   // We create the channels first without any IP addressing information
   PointToPointHelper p2p;
-  p2p.SetChannelParameter ("BitRate", DataRateValue (DataRate(10000000)));
+  p2p.SetChannelParameter ("BitRate", DataRateValue (DataRate(100000)));
   p2p.SetChannelParameter ("Delay", TimeValue (MilliSeconds(10)));
   NetDeviceContainer dev0 = p2p.Install (c0);
   NetDeviceContainer dev1 = p2p.Install (c1);
@@ -165,7 +139,7 @@ int main (int argc, char *argv[])
   //
   ///////////////////////////////////////////////////////////////////////////
 
-  int nBytes = 2000;
+  int nBytes = 2000000;
   uint16_t servPort = 50000;
 
   // Create a packet sink to receive these packets
@@ -192,7 +166,47 @@ int main (int argc, char *argv[])
 
   InternetStackHelper::EnablePcapAll ("tcp-large-transfer");
 
-  Simulator::StopAt (Seconds(1000));
+  Simulator::StopAt (Seconds(10));
   Simulator::Run ();
   Simulator::Destroy ();
+}
+
+void CloseConnection (Ptr<Socket> localSocket)
+{
+  localSocket->Close ();
+}
+
+void StartFlow(Ptr<Socket> localSocket, uint32_t nBytes, 
+               Ipv4Address servAddress,
+               uint16_t servPort)
+{
+ // NS_LOG_LOGIC("Starting flow at time " <<  Simulator::Now ().GetSeconds ());
+  localSocket->Connect (InetSocketAddress (servAddress, servPort));//connect
+  localSocket->SetConnectCallback (MakeCallback (&CloseConnection),
+                                   Callback<void, Ptr<Socket> > (),
+                                       Callback<void, Ptr<Socket> > ());
+  //we want to close as soon as the connection is established
+  //the tcp state machine and outgoing buffer will assure that
+  //all of the data is delivered
+  localSocket->SetSendCallback (MakeCallback (&WriteUntilBufferFull));
+  WriteUntilBufferFull (localSocket, nBytes);
+}
+
+void WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t nBytes)
+{
+  // Perform series of 1040 byte writes (this is a multiple of 26 since
+  // we want to detect data splicing in the output stream)
+  std::cout << "nBytes = " <<nBytes <<"@"<<Simulator::Now().GetSeconds()<<std::endl;
+  uint32_t writeSize = 1040;
+  uint8_t data[writeSize];
+  while (nBytes > 0) {
+    uint32_t curSize= nBytes > writeSize ? writeSize : nBytes;
+    for(uint32_t i = 0; i < curSize; ++i)
+    {
+      char m = toascii (97 + i % 26);
+      data[i] = m;
+    }
+    localSocket->Send (data, curSize);
+    nBytes -= curSize;
+  }
 }
