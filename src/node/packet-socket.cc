@@ -24,10 +24,23 @@
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
+#include "ns3/trace-source-accessor.h"
 
 NS_LOG_COMPONENT_DEFINE ("PacketSocket");
 
 namespace ns3 {
+
+TypeId
+PacketSocket::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::PacketSocket")
+    .SetParent<Socket> ()
+    .AddConstructor<PacketSocket> ()
+    .AddTraceSource ("Drop", "Drop packet due to receive buffer overflow",
+                     MakeTraceSourceAccessor (&PacketSocket::m_dropTrace))
+    ;
+  return tid;
+}
 
 PacketSocket::PacketSocket () : m_rxAvailable (0)
 {
@@ -41,6 +54,7 @@ PacketSocket::PacketSocket () : m_rxAvailable (0)
 void 
 PacketSocket::SetNode (Ptr<Node> node)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_node = node;
 }
 
@@ -308,18 +322,32 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet,
   address.SetSingleDevice (device->GetIfIndex ());
   address.SetProtocol (protocol);
 
-  SocketRxAddressTag tag;
-  tag.SetAddress (address);
-  packet->AddTag (tag);
-  m_deliveryQueue.push (packet);
-  m_rxAvailable += packet->GetSize ();
-  NS_LOG_LOGIC ("UID is " << packet->GetUid() << " PacketSocket " << this);
-  NotifyDataRecv ();
+  if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufLimit)
+    {
+      SocketRxAddressTag tag;
+      tag.SetAddress (address);
+      packet->AddTag (tag);
+      m_deliveryQueue.push (packet);
+      m_rxAvailable += packet->GetSize ();
+      NS_LOG_LOGIC ("UID is " << packet->GetUid() << " PacketSocket " << this);
+      NotifyDataRecv ();
+    }
+  else
+    {
+      // In general, this case should not occur unless the
+      // receiving application reads data from this socket slowly
+      // in comparison to the arrival rate
+      //
+      // drop and trace packet
+      NS_LOG_WARN ("No receive buffer space available.  Drop.");
+      m_dropTrace (packet);
+    }
 }
 
 Ptr<Packet> 
 PacketSocket::Recv (uint32_t maxSize, uint32_t flags)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_deliveryQueue.empty() )
     {
       return 0;
@@ -340,6 +368,7 @@ PacketSocket::Recv (uint32_t maxSize, uint32_t flags)
 uint32_t
 PacketSocket::GetRxAvailable (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   // We separately maintain this state to avoid walking the queue 
   // every time this might be called
   return m_rxAvailable;
@@ -348,22 +377,29 @@ PacketSocket::GetRxAvailable (void) const
 void 
 PacketSocket::SetSndBuf (uint32_t size)
 {
+  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_WARN ("PacketSocket send buffer limit not enforced");
+  m_sndBufLimit = size;
 }
 
 uint32_t 
 PacketSocket::GetSndBuf (void) const
 {
-  return 0;
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_sndBufLimit;
 }
 void 
 PacketSocket::SetRcvBuf (uint32_t size)
 {
+  NS_LOG_FUNCTION_NOARGS ();
+  m_rcvBufLimit = size;
 }
 
 uint32_t 
 PacketSocket::GetRcvBuf (void) const
 {
-  return 0;
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_rcvBufLimit;
 }
 
 }//namespace ns3

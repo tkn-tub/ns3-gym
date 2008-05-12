@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <queue>
 #include "ns3/callback.h"
+#include "ns3/traced-callback.h"
 #include "ns3/ptr.h"
 #include "ns3/socket.h"
 
@@ -72,6 +73,8 @@ class PacketSocketAddress;
 class PacketSocket : public Socket
 {
 public:
+  static TypeId GetTypeId (void);
+
   PacketSocket ();
   virtual ~PacketSocket ();
 
@@ -123,6 +126,11 @@ private:
 
   std::queue<Ptr<Packet> > m_deliveryQueue;
   uint32_t m_rxAvailable;
+  
+  TracedCallback<Ptr<const Packet> > m_dropTrace;
+
+  uint32_t m_sndBufLimit;  // Max send buffer size 
+  uint32_t m_rcvBufLimit;  // Max receive buffer size
 
 };
 
