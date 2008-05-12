@@ -130,8 +130,7 @@ void OnOffApplication::StartApplication() // Called at time specified by Start
   // Create the socket if not already
   if (!m_socket)
     {
-      Ptr<SocketFactory> socketFactory = GetNode ()->GetObject<SocketFactory> (m_tid);
-      m_socket = socketFactory->CreateSocket ();
+      m_socket = Socket::CreateSocket (GetNode(), m_tid);
       m_socket->Bind ();
       m_socket->Connect (m_peer);
     }

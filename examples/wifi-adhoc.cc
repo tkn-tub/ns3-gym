@@ -102,9 +102,8 @@ Experiment::ReceivePacket (Ptr<Socket> socket)
 Ptr<Socket>
 Experiment::SetupPacketReceive (Ptr<Node> node)
 {
-  TypeId tid = TypeId::LookupByName ("ns3::PacketSocketFactory");
-  Ptr<SocketFactory> socketFactory = node->GetObject<SocketFactory> (tid);
-  Ptr<Socket> sink = socketFactory->CreateSocket ();
+  TypeId tid = TypeId::LookupByName ("ns3::PacketSocket");
+  Ptr<Socket> sink = Socket::CreateSocket (node, tid);
   sink->Bind ();
   sink->SetRecvCallback (MakeCallback (&Experiment::ReceivePacket, this));
   return sink;
@@ -137,7 +136,7 @@ Experiment::Run (const WifiHelper &wifi)
   socket.SetPhysicalAddress (devices.Get (1)->GetAddress ());
   socket.SetProtocol (1);
 
-  OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
+  OnOffHelper onoff ("ns3::PacketSocket", Address (socket));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (250)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (60000000)));

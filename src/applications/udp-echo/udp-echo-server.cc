@@ -72,9 +72,7 @@ UdpEchoServer::StartApplication (void)
   if (!m_socket)
     {
       TypeId tid = TypeId::LookupByName ("ns3::Udp");
-      Ptr<SocketFactory> socketFactory = 
-        GetNode ()->GetObject<SocketFactory> (tid);
-      m_socket = socketFactory->CreateSocket ();
+      m_socket = Socket::CreateSocket (GetNode(), tid);
       InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), m_port);
       m_socket->Bind (local);
     }

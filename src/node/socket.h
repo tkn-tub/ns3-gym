@@ -99,6 +99,17 @@ public:
   };
 
   /**
+   * This method wraps the creation of sockets that is performed
+   * by a socket factory on a given node based on a TypeId.
+   * 
+   * \return A smart pointer to a newly created socket.
+   * 
+   * \param node The node on which to create the socket
+   * \param tid The TypeId of the socket to create
+   */
+  static Ptr<Socket> CreateSocket (Ptr<Node> node, TypeId tid);
+
+  /**
    * \return the errno associated to the last call which failed in this
    *         socket. Each socket's errno is initialized to zero
    *         when the socket is created.

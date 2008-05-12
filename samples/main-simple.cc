@@ -49,13 +49,11 @@ RunSimulation (void)
 
 
   TypeId tid = TypeId::LookupByName ("ns3::Udp");
-  Ptr<SocketFactory> socketFactory = c.Get (0)->GetObject<SocketFactory> (tid);
-
-  Ptr<Socket> sink = socketFactory->CreateSocket ();
+  Ptr<Socket> sink = Socket::CreateSocket (c.Get (0), tid);
   InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 80);
   sink->Bind (local);
 
-  Ptr<Socket> source = socketFactory->CreateSocket ();
+  Ptr<Socket> source = Socket::CreateSocket (c.Get (0), tid);
   InetSocketAddress remote = InetSocketAddress (Ipv4Address::GetLoopback (), 80);
   source->Connect (remote);
 

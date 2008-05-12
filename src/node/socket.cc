@@ -22,7 +22,9 @@
 
 #include "ns3/log.h"
 #include "ns3/packet.h"
+#include "node.h"
 #include "socket.h"
+#include "socket-factory.h"
 
 NS_LOG_COMPONENT_DEFINE ("Socket");
 
@@ -81,6 +83,16 @@ Socket::Socket (void)
 Socket::~Socket ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+}
+
+Ptr<Socket> 
+Socket::CreateSocket (Ptr<Node> node, TypeId tid)
+{
+  Ptr<Socket> s;
+  Ptr<SocketFactory> socketFactory = node->GetObject<SocketFactory> (tid);
+  s = socketFactory->CreateSocket ();
+  NS_ASSERT (s != 0);
+  return s;
 }
 
 void 
