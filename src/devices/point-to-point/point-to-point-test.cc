@@ -27,7 +27,7 @@ void
 PointToPointTest::SendOnePacket (Ptr<PointToPointNetDevice> device)
 {
   Ptr<Packet> p = Create<Packet> ();
-  device->Send (p, device->GetBroadcast (), 1);
+  device->Send (p, device->GetBroadcast (), 0x800);
 }
 
 
