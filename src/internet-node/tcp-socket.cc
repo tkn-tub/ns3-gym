@@ -282,13 +282,25 @@ TcpSocket::ShutdownSend (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_shutdownSend = true;
+  if (m_state == CLOSED) 
+    {
+      return -1;
+    }
+  if (m_pendingData && m_pendingData->Size() != 0)
+    { // App shutdown with pending data must wait until all data transmitted
+      m_closeOnEmpty = true;
+      NS_LOG_LOGIC("TcpSocket "<<this<< " deferring close, state " << m_state);
+      return 0;
+    }
+  Actions_t action  = ProcessEvent (APP_CLOSE);
+  ProcessAction (action);
   return 0;
 }
 int 
 TcpSocket::ShutdownRecv (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_shutdownRecv = false;
+  m_shutdownRecv = true;
   return 0;
 }
 
@@ -303,7 +315,7 @@ TcpSocket::Close (void)
   if (m_pendingData && m_pendingData->Size() != 0)
     { // App close with pending data must wait until all data transmitted
       m_closeOnEmpty = true;
-      NS_LOG_LOGIC("Socket " << this << 
+      NS_LOG_LOGIC("TcpSocket " << this << 
                    " deferring close, state " << m_state);
       return 0;
     }
@@ -955,8 +967,12 @@ bool TcpSocket::SendPendingData (bool withAck)
                          m_endPoint->GetLocalAddress (),
                          m_remoteAddress);
       m_rtt->SentSeq(m_nextTxSequence, sz);       // notify the RTT
-      // Notify the application
+      // Notify the application data was sent
       Simulator::ScheduleNow(&TcpSocket::NotifyDataSent, this, p->GetSize ());
+      if (m_state == FIN_WAIT_1)
+      {
+        Simulator::ScheduleNow(&TcpSocket::NotifyCloseUnblocks, this);
+      }
       nPacketsSent++;                             // Count sent this loop
       m_nextTxSequence += sz;                     // Advance next tx sequence
       // Note the high water mark

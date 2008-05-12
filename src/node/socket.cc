@@ -33,6 +33,13 @@ Socket::~Socket ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
+void
+Socket::SetCloseUnblocksCallback (Callback<void,Ptr<Socket> > closeUnblocks)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_closeUnblocks = closeUnblocks;
+}
+
 void 
 Socket::SetCloseCallback (Callback<void,Ptr<Socket> > closeCompleted)
 {
@@ -91,6 +98,15 @@ int Socket::Listen (uint32_t queueLimit)
   return 0; //XXX the base class version does nothing
 }
 
+void
+Socket::NotifyCloseUnblocks (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  if (!m_closeUnblocks.IsNull ())
+  {
+    m_closeUnblocks (this);
+  }
+}
 
 int Socket::Send (const uint8_t* buf, uint32_t size)
 {

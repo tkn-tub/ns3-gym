@@ -165,7 +165,7 @@ int main (int argc, char *argv[])
   //
   ///////////////////////////////////////////////////////////////////////////
 
-  int nBytes = 2000000;
+  int nBytes = 2000;
   uint16_t servPort = 50000;
 
   // Create a packet sink to receive these packets

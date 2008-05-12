@@ -78,6 +78,8 @@ public:
    */
   virtual Ptr<Node> GetNode (void) const = 0;
 
+  void SetCloseUnblocksCallback (Callback<void, Ptr<Socket> > closeUnblocks);
+
   /**
    * \param closeCompleted Callback invoked when the close operation is
    *        completed.
@@ -316,6 +318,7 @@ public:
   virtual uint32_t GetRcvBuf (void) = 0;
 
 protected:
+  void NotifyCloseUnblocks (void);
   void NotifyCloseCompleted (void);
   void NotifyConnectionSucceeded (void);
   void NotifyConnectionFailed (void);
@@ -327,6 +330,7 @@ protected:
   void NotifySend (uint32_t spaceAvailable);
   void NotifyDataRecv (void);
 
+  Callback<void, Ptr<Socket> >   m_closeUnblocks;
   Callback<void,Ptr<Socket> >    m_closeCompleted;
   Callback<void, Ptr<Socket> >   m_connectionSucceeded;
   Callback<void, Ptr<Socket> >   m_connectionFailed;
