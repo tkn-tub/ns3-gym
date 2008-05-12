@@ -96,7 +96,8 @@ private:
   std::queue<Ptr<Packet> > m_deliveryQueue;
   uint32_t m_rxAvailable;
   
-  uint32_t m_udp_rmem;
+  uint32_t m_sndBufLimit;
+  uint32_t m_rcvBufLimit;
 };
 
 }//namespace ns3

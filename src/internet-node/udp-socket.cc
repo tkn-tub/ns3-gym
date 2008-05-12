@@ -56,7 +56,8 @@ UdpSocket::UdpSocket ()
     m_shutdownRecv (false),
     m_connected (false),
     m_rxAvailable (0),
-    m_udp_rmem (0)
+    m_sndBufLimit (0),
+    m_rcvBufLimit (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -87,14 +88,16 @@ UdpSocket::~UdpSocket ()
 void 
 UdpSocket::SetNode (Ptr<Node> node)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_node = node;
   Ptr<Udp> u = node->GetObject<Udp> ();
-  m_udp_rmem =u->GetDefaultRxBuffer ();
+  m_rcvBufLimit =u->GetDefaultRxBuffer ();
 
 }
 void 
 UdpSocket::SetUdp (Ptr<UdpL4Protocol> udp)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_udp = udp;
 }
 
@@ -337,6 +340,7 @@ UdpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
 uint32_t
 UdpSocket::GetTxAvailable (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   // No finite send buffer is modelled
   return std::numeric_limits<uint32_t>::max ();
 }
@@ -354,6 +358,7 @@ UdpSocket::SendTo (const Address &address, Ptr<Packet> p)
 Ptr<Packet>
 UdpSocket::Recv (uint32_t maxSize, uint32_t flags)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_deliveryQueue.empty() )
     {
       return 0;
@@ -374,6 +379,7 @@ UdpSocket::Recv (uint32_t maxSize, uint32_t flags)
 uint32_t
 UdpSocket::GetRxAvailable (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   // We separately maintain this state to avoid walking the queue 
   // every time this might be called
   return m_rxAvailable;
@@ -388,7 +394,7 @@ UdpSocket::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
     {
       return;
     }
-  if ((m_rxAvailable + packet->GetSize ()) <= m_udp_rmem) 
+  if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufLimit)
     {
       Address address = InetSocketAddress (ipv4, port);
       SocketRxAddressTag tag;
@@ -413,28 +419,33 @@ UdpSocket::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
 void 
 UdpSocket::SetSndBuf (uint32_t size)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   // return EINVAL since we are not modelling a finite send buffer
   // Enforcing buffer size should be added if we ever start to model
   // non-zero processing delay in the UDP/IP stack
   NS_LOG_WARN ("UdpSocket has infinite send buffer");
+  m_sndBufLimit = size; 
 }
 
 uint32_t 
 UdpSocket::GetSndBuf (void) const
 {
-  return std::numeric_limits<uint32_t>::max ();
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_sndBufLimit;
 }
 
 void 
 UdpSocket::SetRcvBuf (uint32_t size)
 {
-  m_udp_rmem = size;
+  NS_LOG_FUNCTION_NOARGS ();
+  m_rcvBufLimit = size;
 }
 
 uint32_t 
 UdpSocket::GetRcvBuf (void) const
 {
-  return m_udp_rmem;
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_rcvBufLimit;
 }
 
 
