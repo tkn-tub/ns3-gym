@@ -187,8 +187,8 @@ private:
   std::queue<Ptr<Packet> > m_deliveryQueue;
   uint32_t m_rxAvailable;
   
-  // buffer limit for the outgoing queue
-  uint32_t m_maxTxBuffer;
+  uint32_t m_sndBufLimit;   // buffer limit for the outgoing queue
+  uint32_t m_rcvBufLimit;   // maximum receive socket buffer size
 };
 
 }//namespace ns3
