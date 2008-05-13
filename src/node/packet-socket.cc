@@ -24,6 +24,8 @@
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
+#include "ns3/uinteger.h"
+#include "ns3/socket-defaults.h"
 #include "ns3/trace-source-accessor.h"
 
 NS_LOG_COMPONENT_DEFINE ("PacketSocket");
@@ -56,6 +58,16 @@ PacketSocket::SetNode (Ptr<Node> node)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_node = node;
+  // Pull default values for socket options from SocketDefaults
+  // object that was aggregated to the node 
+  Ptr<SocketDefaults> sd = node->GetObject<SocketDefaults> ();
+  NS_ASSERT (sd != 0);
+  UintegerValue uiv;
+  sd->GetAttribute ("DefaultSndBufLimit", uiv);
+  m_sndBufLimit =  uiv.Get();
+  sd->GetAttribute ("DefaultRcvBufLimit", uiv);
+  m_rcvBufLimit =  uiv.Get();
+
 }
 
 PacketSocket::~PacketSocket ()

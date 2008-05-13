@@ -21,6 +21,7 @@
 #include "ns3/net-device.h"
 #include "ns3/callback.h"
 #include "ns3/node.h"
+#include "ns3/socket-defaults.h"
 
 #include "ipv4-l4-demux.h"
 #include "udp-l4-protocol.h"
@@ -61,6 +62,7 @@ AddInternetStack (Ptr<Node> node)
   Ptr<UdpImpl> udpImpl = CreateObject<UdpImpl> ();
   Ptr<TcpImpl> tcpImpl = CreateObject<TcpImpl> ();
   Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> ();
+  Ptr<SocketDefaults> sockDef = CreateObject<SocketDefaults> ();
 
   udpImpl->SetUdp (udp);
   tcpImpl->SetTcp (tcp);
@@ -72,6 +74,7 @@ AddInternetStack (Ptr<Node> node)
   node->AggregateObject (udpImpl);
   node->AggregateObject (tcpImpl);
   node->AggregateObject (ipv4L4Demux);
+  node->AggregateObject (sockDef);
 }
 
 }//namespace ns3

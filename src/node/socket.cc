@@ -54,23 +54,33 @@ SocketOptions::~SocketOptions (void)
 void 
 SocketOptions::SetSndBuf (uint32_t size)
 {
+  NS_LOG_FUNCTION_NOARGS ();
+  Ptr<Socket> sock = GetObject<Socket> ();
+  sock->SetSndBuf (size);
 }
 
 uint32_t 
 SocketOptions::GetSndBuf (void) const
 {
-  return 0;
+  NS_LOG_FUNCTION_NOARGS ();
+  Ptr<Socket> sock = GetObject<Socket> ();
+  return sock->GetSndBuf ();
 }
 
 void 
 SocketOptions::SetRcvBuf (uint32_t size)
 {
+  NS_LOG_FUNCTION_NOARGS ();
+  Ptr<Socket> sock = GetObject<Socket> ();
+  sock->SetRcvBuf (size);
 }
 
 uint32_t 
 SocketOptions::GetRcvBuf (void) const
 {
-  return 0;
+  NS_LOG_FUNCTION_NOARGS ();
+  Ptr<Socket> sock = GetObject<Socket> ();
+  return sock->GetRcvBuf ();
 }
 
 Socket::Socket (void)

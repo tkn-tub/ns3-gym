@@ -23,13 +23,15 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/ipv4.h"
+#include "ns3/ipv4.h"
+#include "ns3/udp.h"
+#include "ns3/socket-defaults.h"
+#include "ns3/trace-source-accessor.h"
+#include "ns3/uinteger.h"
 #include "udp-socket.h"
 #include "udp-l4-protocol.h"
 #include "ipv4-end-point.h"
 #include "ipv4-l4-demux.h"
-#include "ns3/ipv4.h"
-#include "ns3/udp.h"
-#include "ns3/trace-source-accessor.h"
 
 NS_LOG_COMPONENT_DEFINE ("UdpSocket");
 
@@ -89,9 +91,14 @@ void
 UdpSocket::SetNode (Ptr<Node> node)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  // Pull default values for socket options from SocketDefaults
+  // object that was aggregated to the node 
   m_node = node;
-  Ptr<Udp> u = node->GetObject<Udp> ();
-  m_rcvBufLimit =u->GetDefaultRxBuffer ();
+  Ptr<SocketDefaults> sd = node->GetObject<SocketDefaults> ();
+  NS_ASSERT (sd != 0);
+  UintegerValue uiv;
+  sd->GetAttribute ("DefaultRcvBufLimit", uiv);
+  m_rcvBufLimit =  uiv.Get();
 
 }
 void 

@@ -1,5 +1,6 @@
 #include "packet-socket-helper.h"
 #include "ns3/packet-socket-factory.h"
+#include "ns3/socket-defaults.h"
 
 namespace ns3 {
 
@@ -11,6 +12,8 @@ PacketSocketHelper::Install (NodeContainer c)
       Ptr<Node> node = *i;
       Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
       node->AggregateObject (factory);
+      Ptr<SocketDefaults> sockDefaults = CreateObject<SocketDefaults> ();
+      node->AggregateObject (sockDefaults);
     }
 }
 

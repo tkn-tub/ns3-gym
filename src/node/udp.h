@@ -44,8 +44,6 @@ class Udp : public SocketFactory
 public:
   static TypeId GetTypeId (void);
 
-  Udp ();
-
   /**
    * \return smart pointer to Socket
    * 
@@ -54,9 +52,6 @@ public:
    */
   virtual Ptr<Socket> CreateSocket (void) = 0;
 
-  uint32_t GetDefaultRxBuffer (void) const;
-private:
-  uint32_t  m_defaultRxBuffer;
 };
 
 } // namespace ns3

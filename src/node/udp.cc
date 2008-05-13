@@ -28,22 +28,8 @@ TypeId Udp::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Udp")
     .SetParent<SocketFactory> ()
-    .AddAttribute ("DefaultRxBufferSize",
-                   "Default UDP maximum receive buffer size (bytes)",
-                   UintegerValue (0xffffffffl),
-                   MakeUintegerAccessor (&Udp::m_defaultRxBuffer),
-                   MakeUintegerChecker<uint32_t> ())
     ;
   return tid;
-}
-
-Udp::Udp ()
-{}
-
-uint32_t
-Udp::GetDefaultRxBuffer (void) const
-{
-  return m_defaultRxBuffer;
 }
 
 } // namespace ns3
