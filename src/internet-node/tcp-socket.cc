@@ -83,7 +83,8 @@ TcpSocket::GetTypeId ()
     m_lastMeasuredRtt (Seconds(0.0)),
     m_rxAvailable (0), 
     m_sndBufLimit (0xffffffff), 
-    m_rcvBufLimit (0xffffffff) 
+    m_rcvBufLimit (0xffffffff), 
+    m_wouldBlock (false) 
 {
   NS_LOG_FUNCTION (this);
   
@@ -378,7 +379,11 @@ int TcpSocket::Send (const uint8_t* buf, uint32_t size)
   NS_LOG_FUNCTION (this << buf << size);
   if (m_state == ESTABLISHED || m_state == SYN_SENT || m_state == CLOSE_WAIT)
     { // Ok to buffer some data to send
-      size = std::min(size, GetTxAvailable() ); //only buffer what can fit
+      if (size > GetTxAvailable ())
+        {
+          size = std::min(size, GetTxAvailable() ); //only buffer what can fit
+          m_wouldBlock = true;
+        }
       if (!m_pendingData)
         {
           m_pendingData = new PendingData ();   // Create if non-existent
@@ -390,7 +395,6 @@ int TcpSocket::Send (const uint8_t* buf, uint32_t size)
                    " state " << m_state);
       Actions_t action = ProcessEvent (APP_SEND);
       NS_LOG_DEBUG(" action " << action);
-      //NotifySend (GetTxAvailable ()); //XXX not here, do this when data acked
       if (!ProcessAction (action)) 
         {
           return -1; // Failed, return zero
@@ -785,7 +789,12 @@ bool TcpSocket::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       if (tcpHeader.GetAckNumber () > m_highestRxAck)
       {
         m_highestRxAck = tcpHeader.GetAckNumber ();
-        //NotifySend (GetTxAvailable() );  //XXX do when data gets acked
+        // Data freed from the send buffer; notify any blocked sender
+        if (m_wouldBlock)
+          {
+            NotifySend (GetTxAvailable ());
+            m_wouldBlock = false;
+          }
       }
       SendPendingData ();
       break;
@@ -1184,9 +1193,13 @@ void TcpSocket::CommonNewAck (SequenceNumber ack, bool skipTimer)
   NS_LOG_LOGIC ("TCP " << this << " NewAck " << ack 
            << " numberAck " << (ack - m_highestRxAck)); // Number bytes ack'ed
   m_highestRxAck = ack;         // Note the highest recieved Ack
-  //m_highestRxAck advancing means some data was acked, and the size of free
-  //space in the buffer has increased
-  NotifySend (GetTxAvailable ());
+  if (m_wouldBlock)
+    {
+      // m_highestRxAck advancing means some data was acked, and the size 
+      // of free space in the buffer has increased
+      NotifySend (GetTxAvailable ());
+      m_wouldBlock = false;
+    }
   if (ack > m_nextTxSequence) 
     {
       m_nextTxSequence = ack; // If advanced

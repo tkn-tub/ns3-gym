@@ -189,6 +189,7 @@ private:
   
   uint32_t m_sndBufLimit;   // buffer limit for the outgoing queue
   uint32_t m_rcvBufLimit;   // maximum receive socket buffer size
+  bool m_wouldBlock;  // set to true whenever socket would block on send()
 };
 
 }//namespace ns3
