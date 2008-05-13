@@ -109,7 +109,7 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
             address.GetIpv4());
 
           NS_LOG_LOGIC ("Echoing packet");
-          socket->SendTo (from, packet);
+          socket->SendTo (packet, from);
         }
     }
 }

@@ -237,7 +237,7 @@ PacketSocket::Send (Ptr<Packet> p)
       m_errno = ERROR_NOTCONN;
       return -1;
     }
-  return SendTo (m_destAddr, p);
+  return SendTo (p, m_destAddr);
 }
 
 uint32_t 
@@ -248,7 +248,7 @@ PacketSocket::GetTxAvailable (void) const
 }
 
 int
-PacketSocket::SendTo(const Address &address, Ptr<Packet> p)
+PacketSocket::SendTo(Ptr<Packet> p, const Address &address)
 {
   NS_LOG_FUNCTION_NOARGS ();
   PacketSocketAddress ad;

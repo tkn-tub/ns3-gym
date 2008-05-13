@@ -282,26 +282,26 @@ public:
   
   /**
    * \brief Send data to a specified peer.
-   * \param address IP Address of remote host
    * \param p packet to send
+   * \param address IP Address of remote host
    * \returns -1 in case of error or the number of bytes copied in the 
    *          internal buffer and accepted for transmission.
    */
-  virtual int SendTo (const Address &address,Ptr<Packet> p) = 0;
+  virtual int SendTo (Ptr<Packet> p, const Address &address) = 0;
 
   /**
    * \brief Send data to a specified peer.
-   * \param address IP Address of remote host
    * \param buf A pointer to a raw byte buffer of some data to send.  If this 
    * is 0, we send dummy data whose size is specified by the third parameter
    * \param size the number of bytes to copy from the buffer
+   * \param address IP Address of remote host
    * \returns -1 in case of error or the number of bytes copied in the 
    *          internal buffer and accepted for transmission.
    *
    * This is provided so as to have an API which is closer in appearance 
    * to that of real network or BSD sockets.
    */
-  int SendTo (const Address &address, const uint8_t* buf, uint32_t size);
+  int SendTo (const uint8_t* buf, uint32_t size, const Address &address); 
 
   /**
    * \brief Read a single packet from the socket

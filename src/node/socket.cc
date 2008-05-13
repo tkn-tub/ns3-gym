@@ -185,7 +185,7 @@ Socket::Recv (void)
   return Recv (std::numeric_limits<uint32_t>::max(), 0);
 }
 
-int Socket::SendTo (const Address &address, const uint8_t* buf, uint32_t size)
+int Socket::SendTo (const uint8_t* buf, uint32_t size, const Address &address)
 {
   NS_LOG_FUNCTION_NOARGS ();
   Ptr<Packet> p;
@@ -197,7 +197,7 @@ int Socket::SendTo (const Address &address, const uint8_t* buf, uint32_t size)
     {
       p = Create<Packet> (size);
     }
-  return SendTo (address,p);
+  return SendTo (p, address);
 }
 
 void 

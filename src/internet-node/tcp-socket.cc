@@ -441,7 +441,7 @@ int TcpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address ipv4, uint16_t port)
 }
 
 int 
-TcpSocket::SendTo (const Address &address, Ptr<Packet> p)
+TcpSocket::SendTo (Ptr<Packet> p, const Address &address)
 {
   NS_LOG_FUNCTION (this << address << p);
   if (!m_connected)

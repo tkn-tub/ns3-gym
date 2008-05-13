@@ -353,7 +353,7 @@ UdpSocket::GetTxAvailable (void) const
 }
 
 int 
-UdpSocket::SendTo (const Address &address, Ptr<Packet> p)
+UdpSocket::SendTo (Ptr<Packet> p, const Address &address)
 {
   NS_LOG_FUNCTION (this << address << p);
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
@@ -604,8 +604,8 @@ UdpSocketTest::RunTests (void)
   // Unicast test
   m_receivedPacket = Create<Packet> ();
   m_receivedPacket2 = Create<Packet> ();
-  NS_TEST_ASSERT_EQUAL (txSocket->SendTo (InetSocketAddress (Ipv4Address("10.0.0.1"), 1234),
-                                          Create<Packet> (123)), 123);
+  NS_TEST_ASSERT_EQUAL (txSocket->SendTo ( Create<Packet> (123), 
+    InetSocketAddress (Ipv4Address("10.0.0.1"), 1234)), 123);
   Simulator::Run ();
   NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
   NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 0); // second interface should receive it
@@ -617,8 +617,8 @@ UdpSocketTest::RunTests (void)
 
   m_receivedPacket = Create<Packet> ();
   m_receivedPacket2 = Create<Packet> ();
-  NS_TEST_ASSERT_EQUAL (txSocket->SendTo (InetSocketAddress (Ipv4Address("255.255.255.255"), 1234),
-                                          Create<Packet> (123)), 123);
+  NS_TEST_ASSERT_EQUAL (txSocket->SendTo ( Create<Packet> (123), 
+    InetSocketAddress (Ipv4Address("255.255.255.255"), 1234)), 123);
   Simulator::Run ();
   NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
   // second socket should not receive it (it is bound specifically to the second interface's address
@@ -639,8 +639,8 @@ UdpSocketTest::RunTests (void)
 
   m_receivedPacket = Create<Packet> ();
   m_receivedPacket2 = Create<Packet> ();
-  NS_TEST_ASSERT_EQUAL (txSocket->SendTo (InetSocketAddress (Ipv4Address("255.255.255.255"), 1234),
-                                          Create<Packet> (123)), 123);
+  NS_TEST_ASSERT_EQUAL (txSocket->SendTo (Create<Packet> (123),
+InetSocketAddress (Ipv4Address("255.255.255.255"), 1234)), 123);
   Simulator::Run ();
   NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
   NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 123);

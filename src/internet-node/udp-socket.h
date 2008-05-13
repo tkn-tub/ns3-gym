@@ -57,7 +57,7 @@ public:
   virtual int ShutdownRecv (void);
   virtual int Connect(const Address &address);
   virtual int Send (Ptr<Packet> p);
-  virtual int SendTo(const Address &address,Ptr<Packet> p);
+  virtual int SendTo (Ptr<Packet> p, const Address &address);
   virtual uint32_t GetTxAvailable (void) const;
 
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
