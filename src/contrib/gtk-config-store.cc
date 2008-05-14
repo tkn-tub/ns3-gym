@@ -307,16 +307,20 @@ cell_tooltip_callback (GtkWidget  *widget,
       }
     break;
   case ModelNode::NODE_ATTRIBUTE: {
-    TypeId tid = node->object->GetInstanceTypeId ();
     uint32_t attrIndex;
-    for (uint32_t i = 0; i < tid.GetAttributeN (); ++i)
+    TypeId tid;
+    for (tid = node->object->GetInstanceTypeId (); tid.HasParent (); tid = tid.GetParent ())
       {
-	if (tid.GetAttributeName (i) == node->name)
+	for (uint32_t i = 0; i < tid.GetAttributeN (); ++i)
 	  {
-	    attrIndex = i;
-	    break;
+	    if (tid.GetAttributeName (i) == node->name)
+	      {
+		attrIndex = i;
+		goto out;
+	      }
 	  }
       }
+    out:
     if (col == 0)
       {
 	std::string tip = tid.GetAttributeHelp (attrIndex);
