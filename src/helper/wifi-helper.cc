@@ -156,6 +156,7 @@ WifiHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/Tx";
   Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapPhyTxEvent, pcap));
+  oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/RxOk";
   Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapPhyRxEvent, pcap));
 }
