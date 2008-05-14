@@ -54,7 +54,7 @@ ConfigStore::LoadFrom (std::string filename)
   while (is.good())
     {
       is >> path >> value;
-      NS_LOG_DEBUG (path << "=" << value);
+      NS_LOG_DEBUG (path << " " << value);
       Config::Set (path, StringValue (value));
     }
 }
