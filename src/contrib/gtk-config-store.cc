@@ -133,6 +133,7 @@ create_view_and_model (void)
 
   view = gtk_tree_view_new();
   gtk_tree_view_set_grid_lines (GTK_TREE_VIEW (view), GTK_TREE_VIEW_GRID_LINES_BOTH);
+  gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view), TRUE);
 
   col = gtk_tree_view_column_new();
   gtk_tree_view_column_set_title(col, "Object Attributes");
@@ -234,6 +235,7 @@ GtkConfigStore::Configure (void)
 {
   GtkWidget *window;
   GtkWidget *view;
+  GtkWidget *scroll;
 
   gtk_init (0, 0);
 
@@ -241,9 +243,11 @@ GtkConfigStore::Configure (void)
   g_signal_connect (window, "delete_event", gtk_main_quit, NULL); /* dirty */
 
   view = create_view_and_model ();
+  scroll = gtk_scrolled_window_new (NULL, NULL);
+  gtk_container_add (GTK_CONTAINER (scroll), view);
 
   GtkWidget *vbox = gtk_vbox_new (FALSE, 5);
-  gtk_box_pack_start (GTK_BOX (vbox), view, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), scroll, TRUE, TRUE, 0);
   gtk_box_pack_end (GTK_BOX (vbox), gtk_hseparator_new (), FALSE, FALSE, 0);
   GtkWidget *hbox = gtk_hbox_new (FALSE, 5);
   gtk_box_pack_end (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
