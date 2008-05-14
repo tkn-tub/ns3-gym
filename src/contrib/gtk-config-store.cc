@@ -240,6 +240,9 @@ GtkConfigStore::Configure (void)
   gtk_init (0, 0);
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (window), "ns-3 Object attributes.");
+  gtk_window_set_default_size (GTK_WINDOW (window), 400, 600);
+  
   g_signal_connect (window, "delete_event", gtk_main_quit, NULL); /* dirty */
 
   view = create_view_and_model ();
