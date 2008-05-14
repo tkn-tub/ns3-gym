@@ -2,6 +2,7 @@
 #include "attribute-iterator.h"
 #include "ns3/config.h"
 #include "ns3/string.h"
+#include "ns3/pointer.h"
 #include <gtk/gtk.h>
 #include <fstream>
 
@@ -9,16 +10,27 @@
 namespace ns3 {
 
 enum {
-  COL_NAME = 0,
-  COL_VALUE,
+  COL_NODE = 0,
   COL_LAST
 };
 
-struct AttributeNode
+struct ModelNode
 {
+  enum {
+    // store object + attribute name
+    NODE_ATTRIBUTE,
+    // store object + attribute name
+    NODE_POINTER,
+    // store object + attribute name
+    NODE_VECTOR,
+    // store index + value (object)
+    NODE_VECTOR_ITEM,
+    // store object
+    NODE_OBJECT
+  } type;
   std::string name;
-  std::string path;
   Ptr<Object> object;
+  uint32_t index;
 };
 
 class ModelCreator : public AttributeIterator
@@ -28,9 +40,15 @@ public:
 
   void Build (GtkTreeStore *treestore);
 private:
-  virtual void DoVisit (Ptr<Object> object, std::string name, std::string path);
-  virtual void DoPush (std::string name, std::string path);
-  virtual void DoPop (void);
+  virtual void DoVisitAttribute (Ptr<Object> object, std::string name);
+  virtual void DoStartVisitObject (Ptr<Object> object);
+  virtual void DoEndVisitObject (void);
+  virtual void DoStartVisitPointerAttribute (Ptr<Object> object, std::string name, Ptr<Object> value);
+  virtual void DoEndVisitPointerAttribute (void);
+  virtual void DoStartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectVectorValue &vector);
+  virtual void DoEndVisitArrayAttribute (void);
+  virtual void DoStartVisitArrayItem (const ObjectVectorValue &vector, uint32_t index, Ptr<Object> item);
+  virtual void DoEndVisitArrayItem (void);
 
   GtkTreeStore *m_treestore;
   std::vector<GtkTreeIter *> m_iters;
@@ -46,63 +64,163 @@ ModelCreator::Build (GtkTreeStore *treestore)
   Iterate ();
   NS_ASSERT (m_iters.size () == 1);
 }
+
 void 
-ModelCreator::DoVisit (Ptr<Object> object, std::string name, std::string path)
+ModelCreator::DoVisitAttribute (Ptr<Object> object, std::string name)
 {
-  StringValue str;
-  object->GetAttribute (name, str);
   GtkTreeIter *parent = m_iters.back ();
   GtkTreeIter current;
-  gtk_tree_store_append (m_treestore, &current, parent);
-  AttributeNode *node = new AttributeNode ();
-  node->name = name;
-  node->path = path + "/" + str.Get ();
+  ModelNode *node = new ModelNode ();
+  node->type = ModelNode::NODE_ATTRIBUTE;
   node->object = object;
+  node->name = name;
+  gtk_tree_store_append (m_treestore, &current, parent);
   gtk_tree_store_set (m_treestore, &current,
-		      COL_NAME, g_strdup (name.c_str ()), 
-		      COL_VALUE, node,
-		      -1);
+		      COL_NODE, node,
+                     -1);
 }
 void 
-ModelCreator::DoPush (std::string name, std::string path)
+ModelCreator::DoStartVisitObject (Ptr<Object> object)
 {
   GtkTreeIter *parent = m_iters.back ();
   GtkTreeIter *current = g_new (GtkTreeIter, 1);
+  ModelNode *node = new ModelNode ();
+  node->type = ModelNode::NODE_OBJECT;
+  node->object = object;
   gtk_tree_store_append (m_treestore, current, parent);
   gtk_tree_store_set (m_treestore, current,
-		      COL_NAME, g_strdup (name.c_str ()),
-		      COL_VALUE, NULL, 
+		      COL_NODE, node,
                      -1);
   m_iters.push_back (current);
 }
 void 
-ModelCreator::DoPop (void)
+ModelCreator::DoEndVisitObject (void)
 {
-  GtkTreeIter *current = m_iters.back ();
-  g_free (current);
+  GtkTreeIter *iter = m_iters.back ();
+  g_free (iter);
   m_iters.pop_back ();
+}
+void 
+ModelCreator::DoStartVisitPointerAttribute (Ptr<Object> object, std::string name, Ptr<Object> value)
+{
+  GtkTreeIter *parent = m_iters.back ();
+  GtkTreeIter *current = g_new (GtkTreeIter, 1);
+  ModelNode *node = new ModelNode ();
+  node->type = ModelNode::NODE_POINTER;
+  node->object = object;
+  node->name = name;
+  gtk_tree_store_append (m_treestore, current, parent);
+  gtk_tree_store_set (m_treestore, current,
+		      COL_NODE, node,
+                     -1);
+  m_iters.push_back (current);
+}
+void 
+ModelCreator::DoEndVisitPointerAttribute (void)
+{
+  GtkTreeIter *iter = m_iters.back ();
+  g_free (iter);
+  m_iters.pop_back ();  
+}
+void 
+ModelCreator::DoStartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectVectorValue &vector)
+{
+  GtkTreeIter *parent = m_iters.back ();
+  GtkTreeIter *current = g_new (GtkTreeIter, 1);
+  ModelNode *node = new ModelNode ();
+  node->type = ModelNode::NODE_VECTOR;
+  node->object = object;
+  node->name = name;
+  gtk_tree_store_append (m_treestore, current, parent);
+  gtk_tree_store_set (m_treestore, current,
+		      COL_NODE, node,
+                     -1);
+  m_iters.push_back (current);
+}
+void 
+ModelCreator::DoEndVisitArrayAttribute (void)
+{
+  GtkTreeIter *iter = m_iters.back ();
+  g_free (iter);
+  m_iters.pop_back ();  
+}
+void 
+ModelCreator::DoStartVisitArrayItem (const ObjectVectorValue &vector, uint32_t index, Ptr<Object> item)
+{
+  GtkTreeIter *parent = m_iters.back ();
+  GtkTreeIter *current = g_new (GtkTreeIter, 1);
+  ModelNode *node = new ModelNode ();
+  node->type = ModelNode::NODE_VECTOR_ITEM;
+  node->object = item;
+  node->index = index;
+  gtk_tree_store_append (m_treestore, current, parent);
+  gtk_tree_store_set (m_treestore, current,
+		      COL_NODE, node,
+                     -1);
+  m_iters.push_back (current);
+}
+void 
+ModelCreator::DoEndVisitArrayItem (void)
+{
+  GtkTreeIter *iter = m_iters.back ();
+  g_free (iter);
+  m_iters.pop_back ();  
 }
 
 static void
-attribute_cell_data_function (GtkTreeViewColumn *col,
-			      GtkCellRenderer   *renderer,
-			      GtkTreeModel      *model,
-			      GtkTreeIter       *iter,
-			      gpointer           user_data)
+cell_data_function_col_1 (GtkTreeViewColumn *col,
+			  GtkCellRenderer   *renderer,
+			  GtkTreeModel      *model,
+			  GtkTreeIter       *iter,
+			  gpointer           user_data)
 {
-  AttributeNode *node = 0;
-  gtk_tree_model_get (model, iter, COL_VALUE, &node, -1);
-  if (node != 0)
+  ModelNode *node;
+  gtk_tree_model_get (model, iter, COL_NODE, &node, -1);
+  if (node->type == ModelNode::NODE_ATTRIBUTE)
     {
       StringValue str;
       node->object->GetAttribute (node->name, str);
       g_object_set(renderer, "text", str.Get ().c_str (), NULL);
+      g_object_set(renderer, "editable", TRUE, NULL);
     }
   else
     {
       g_object_set(renderer, "text", "", NULL);
+      g_object_set(renderer, "editable", FALSE, NULL);
     }
 }
+
+static void
+cell_data_function_col_0 (GtkTreeViewColumn *col,
+			  GtkCellRenderer   *renderer,
+			  GtkTreeModel      *model,
+			  GtkTreeIter       *iter,
+			  gpointer           user_data)
+{
+  ModelNode *node;
+  gtk_tree_model_get (model, iter, COL_NODE, &node, -1);
+  g_object_set (renderer, "editable", FALSE, NULL);
+  switch (node->type) {
+  case ModelNode::NODE_OBJECT:
+    g_object_set(renderer, "text", node->object->GetInstanceTypeId ().GetName ().c_str (), NULL);
+    break;
+  case ModelNode::NODE_POINTER:
+    g_object_set(renderer, "text", node->name.c_str (), NULL);
+    break;
+  case ModelNode::NODE_VECTOR:
+    g_object_set(renderer, "text", node->name.c_str (), NULL);
+    break;
+  case ModelNode::NODE_VECTOR_ITEM: {
+    std::stringstream oss;
+    oss << node->index;
+    g_object_set(renderer, "text", oss.str ().c_str (), NULL);
+  } break;
+  case ModelNode::NODE_ATTRIBUTE:
+    g_object_set(renderer, "text", node->name.c_str (), NULL);
+    break;
+  }
+}
+
 
 static void
 cell_edited_callback (GtkCellRendererText *cell,
@@ -113,9 +231,112 @@ cell_edited_callback (GtkCellRendererText *cell,
   GtkTreeModel *model = GTK_TREE_MODEL (user_data);
   GtkTreeIter iter;
   gtk_tree_model_get_iter_from_string (model, &iter, path_string);
-  AttributeNode *node;
-  gtk_tree_model_get (model, &iter, COL_VALUE, &node, -1);
+  ModelNode *node;
+  gtk_tree_model_get (model, &iter, COL_NODE, &node, -1);
+  NS_ASSERT (node->type == ModelNode::NODE_ATTRIBUTE);
   node->object->SetAttribute (node->name, StringValue (new_text));
+}
+
+static int
+get_col_number_from_tree_view_column (GtkTreeViewColumn *col)
+{
+  GList *cols;
+  int   num;
+  g_return_val_if_fail ( col != NULL, -1 );
+  g_return_val_if_fail ( col->tree_view != NULL, -1 );
+  cols = gtk_tree_view_get_columns(GTK_TREE_VIEW(col->tree_view));
+  num = g_list_index(cols, (gpointer) col);
+  g_list_free(cols);
+  return num;
+}
+
+static gboolean
+cell_tooltip_callback (GtkWidget  *widget,
+		       gint        x,
+		       gint        y,
+		       gboolean    keyboard_tip,
+		       GtkTooltip *tooltip,
+		       gpointer    user_data)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  GtkTreeViewColumn * column;
+  if (!gtk_tree_view_get_tooltip_context (GTK_TREE_VIEW (widget), 
+					  &x, &y, keyboard_tip,
+					  &model, NULL, &iter))
+    {
+      return FALSE;
+    }
+  if (!gtk_tree_view_get_path_at_pos (GTK_TREE_VIEW (widget),
+				      x, y, NULL, &column, NULL, NULL))
+    {
+      return FALSE;
+    }  
+  int col = get_col_number_from_tree_view_column (column);
+
+  ModelNode *node;
+  gtk_tree_model_get (model, &iter, COL_NODE, &node, -1);
+
+  switch (node->type) {
+  case ModelNode::NODE_OBJECT:
+    if (col == 0)
+      {
+	std::string tip = "This object is of type " + node->object->GetInstanceTypeId ().GetName ();
+	gtk_tooltip_set_text (tooltip, tip.c_str ());
+	return TRUE;
+      }
+    break;
+  case ModelNode::NODE_POINTER:
+    if (col == 0)
+      {
+	PointerValue ptr;
+	node->object->GetAttribute (node->name, ptr);
+	std::string tip = "This object is of type " + ptr.GetObject ()->GetInstanceTypeId ().GetName ();
+	gtk_tooltip_set_text (tooltip, tip.c_str ());
+	return TRUE;
+      }
+    break;
+  case ModelNode::NODE_VECTOR:
+    break;
+  case ModelNode::NODE_VECTOR_ITEM:
+    if (col == 0)
+      {
+	std::string tip = "This object is of type " + node->object->GetInstanceTypeId ().GetName ();
+	gtk_tooltip_set_text (tooltip, tip.c_str ());
+	return TRUE;
+      }
+    break;
+  case ModelNode::NODE_ATTRIBUTE: {
+    TypeId tid = node->object->GetInstanceTypeId ();
+    uint32_t attrIndex;
+    for (uint32_t i = 0; i < tid.GetAttributeN (); ++i)
+      {
+	if (tid.GetAttributeName (i) == node->name)
+	  {
+	    attrIndex = i;
+	    break;
+	  }
+      }
+    if (col == 0)
+      {
+	std::string tip = tid.GetAttributeHelp (attrIndex);
+	gtk_tooltip_set_text (tooltip, tip.c_str ());
+      }
+    else
+      {
+	Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (attrIndex);
+	std::string tip;
+	tip = "This attribute is of type " + checker->GetValueTypeName ();
+	if (checker->HasUnderlyingTypeInformation ())
+	  {
+	    tip += " " + checker->GetUnderlyingTypeInformation ();
+	  }
+	gtk_tooltip_set_text (tooltip, tip.c_str ());
+      }
+    return TRUE;
+  } break;
+  }
+  return FALSE;
 }
 
 
@@ -126,12 +347,15 @@ create_view_and_model (void)
   GtkCellRenderer     *renderer;
   GtkWidget           *view;
 
-  GtkTreeStore *model = gtk_tree_store_new (COL_LAST, G_TYPE_STRING, G_TYPE_POINTER);
+  GtkTreeStore *model = gtk_tree_store_new (COL_LAST, G_TYPE_POINTER);
   ModelCreator creator;
   creator.Build (model);
 
 
   view = gtk_tree_view_new();
+  g_object_set (view, "has-tooltip", TRUE, NULL);
+  g_signal_connect (view, "query-tooltip", (GCallback) cell_tooltip_callback, NULL);
+  
   gtk_tree_view_set_grid_lines (GTK_TREE_VIEW (view), GTK_TREE_VIEW_GRID_LINES_BOTH);
   gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view), TRUE);
 
@@ -140,16 +364,16 @@ create_view_and_model (void)
   gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
   renderer = gtk_cell_renderer_text_new ();
   gtk_tree_view_column_pack_start(col, renderer, TRUE);
-  gtk_tree_view_column_add_attribute(col, renderer, "text", COL_NAME);
+  gtk_tree_view_column_set_cell_data_func(col, renderer, cell_data_function_col_0, NULL, NULL);
+  g_object_set(renderer, "editable", FALSE, NULL);
 
   col = gtk_tree_view_column_new();
   gtk_tree_view_column_set_title(col, "Attribute Value");
   gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
   renderer = gtk_cell_renderer_text_new();
-  g_object_set(renderer, "editable", TRUE, NULL);
   g_signal_connect(renderer, "edited", (GCallback) cell_edited_callback, model);
   gtk_tree_view_column_pack_start(col, renderer, TRUE);
-  gtk_tree_view_column_set_cell_data_func(col, renderer, attribute_cell_data_function, NULL, NULL);
+  gtk_tree_view_column_set_cell_data_func(col, renderer, cell_data_function_col_1, NULL, NULL);
 
 
   gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL (model));

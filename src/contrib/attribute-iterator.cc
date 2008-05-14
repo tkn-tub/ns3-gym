@@ -24,7 +24,9 @@ AttributeIterator::Iterate (void)
   for (uint32_t i = 0; i < Config::GetRootNamespaceObjectN (); ++i)
     {
       Ptr<Object> object = Config::GetRootNamespaceObject (i);
+      StartVisitObject (object);
       DoIterate (object);
+      EndVisitObject ();
     }
   NS_ASSERT (m_currentPath.empty ());
   NS_ASSERT (m_examined.empty ());
@@ -59,22 +61,104 @@ AttributeIterator::GetCurrentPath (std::string attr) const
   return oss.str ();
 }
 
+std::string
+AttributeIterator::GetCurrentPath (void) const
+{
+  std::ostringstream oss;
+  for (uint32_t i = 0; i < m_currentPath.size (); ++i)
+    {
+      oss << "/" << m_currentPath[i];
+    }
+  return oss.str ();
+}
+
 void 
-AttributeIterator::Push (std::string name)
+AttributeIterator::DoStartVisitObject (Ptr<Object> object)
+{}
+void 
+AttributeIterator::DoEndVisitObject (void)
+{}
+void 
+AttributeIterator::DoStartVisitPointerAttribute (Ptr<Object> object, std::string name, Ptr<Object> item)
+{}
+void 
+AttributeIterator::DoEndVisitPointerAttribute (void)
+{}
+void 
+AttributeIterator::DoStartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectVectorValue &vector)
+{}
+void 
+AttributeIterator::DoEndVisitArrayAttribute (void)
+{}
+void 
+AttributeIterator::DoStartVisitArrayItem (const ObjectVectorValue &vector, uint32_t index, Ptr<Object> item)
+{}
+void 
+AttributeIterator::DoEndVisitArrayItem (void)
+{}
+
+void 
+AttributeIterator::VisitAttribute (Ptr<Object> object, std::string name)
 {
   m_currentPath.push_back (name);
-  DoPush (name, GetCurrentPath (""));
-}
-void 
-AttributeIterator::Pop (void)
-{
-  DoPop ();
+  DoVisitAttribute (object, name);
   m_currentPath.pop_back ();
 }
-void
-AttributeIterator::Visit (Ptr<Object> object, std::string name)
+
+void 
+AttributeIterator::StartVisitObject (Ptr<Object> object)
 {
-  DoVisit (object, name, GetCurrentPath (name));
+  m_currentPath.push_back ("$" + object->GetInstanceTypeId ().GetName ());
+  DoStartVisitObject (object);
+}
+void 
+AttributeIterator::EndVisitObject (void)
+{
+  m_currentPath.pop_back ();
+  DoEndVisitObject ();
+}
+void 
+AttributeIterator::StartVisitPointerAttribute (Ptr<Object> object, std::string name, Ptr<Object> value)
+{
+  m_currentPath.push_back (name);
+  m_currentPath.push_back ("$" + value->GetInstanceTypeId ().GetName ());
+  DoStartVisitPointerAttribute (object, name, value);
+}
+void 
+AttributeIterator::EndVisitPointerAttribute (void)
+{
+  m_currentPath.pop_back ();
+  m_currentPath.pop_back ();
+  DoEndVisitPointerAttribute ();
+}
+void 
+AttributeIterator::StartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectVectorValue &vector)
+{
+  m_currentPath.push_back (name);
+  DoStartVisitArrayAttribute (object, name, vector);
+}
+void 
+AttributeIterator::EndVisitArrayAttribute (void)
+{
+  m_currentPath.pop_back ();
+  DoEndVisitArrayAttribute ();
+}
+
+void 
+AttributeIterator::StartVisitArrayItem (const ObjectVectorValue &vector, uint32_t index, Ptr<Object> item)
+{
+  std::ostringstream oss;
+  oss << index;
+  m_currentPath.push_back (oss.str ());
+  m_currentPath.push_back ("$" + item->GetInstanceTypeId ().GetName ());
+  DoStartVisitArrayItem (vector, index, item);
+}
+void 
+AttributeIterator::EndVisitArrayItem (void)
+{
+  m_currentPath.pop_back ();
+  m_currentPath.pop_back ();
+  DoEndVisitArrayItem ();
 }
 
 
@@ -86,7 +170,6 @@ AttributeIterator::DoIterate (Ptr<Object> object)
       return;
     }
   TypeId tid = object->GetInstanceTypeId ();
-  Push ("$" + tid.GetName ());
   NS_LOG_DEBUG ("store " << tid.GetName ());
   for (uint32_t i = 0; i < tid.GetAttributeN (); ++i)
     {
@@ -100,11 +183,11 @@ AttributeIterator::DoIterate (Ptr<Object> object)
 	  Ptr<Object> tmp = ptr.Get<Object> ();
 	  if (tmp != 0)
 	    {
-	      Push (tid.GetAttributeName (i));
+	      StartVisitPointerAttribute (object, tid.GetAttributeName (i), tmp);
 	      m_examined.push_back (object);
 	      DoIterate (tmp);
 	      m_examined.pop_back ();
-	      Pop ();
+	      EndVisitPointerAttribute ();
 	    }
 	  continue;
 	}
@@ -115,20 +198,18 @@ AttributeIterator::DoIterate (Ptr<Object> object)
 	  NS_LOG_DEBUG ("vector attribute " << tid.GetAttributeName (i));
 	  ObjectVectorValue vector;
 	  object->GetAttribute (tid.GetAttributeName (i), vector);
-	  Push (tid.GetAttributeName (i));
+	  StartVisitArrayAttribute (object, tid.GetAttributeName (i), vector);
 	  for (uint32_t j = 0; j < vector.GetN (); ++j)
 	    {
 	      NS_LOG_DEBUG ("vector attribute item " << j);
 	      Ptr<Object> tmp = vector.Get (j);
-	      std::ostringstream oss;
-	      oss << j;
-	      Push (oss.str ());
+	      StartVisitArrayItem (vector, j, tmp);
 	      m_examined.push_back (object);
 	      DoIterate (tmp);
 	      m_examined.pop_back ();
-	      Pop ();
+	      EndVisitArrayItem ();
 	    }
-	  Pop ();
+	  EndVisitArrayAttribute ();
 	  continue;
 	}
       uint32_t flags = tid.GetAttributeFlags (i);
@@ -136,7 +217,7 @@ AttributeIterator::DoIterate (Ptr<Object> object)
       if ((flags & TypeId::ATTR_GET) && accessor->HasGetter () &&
 	  (flags & TypeId::ATTR_SET) && accessor->HasSetter ())
 	{
-	  Visit (object, tid.GetAttributeName (i));
+	  VisitAttribute (object, tid.GetAttributeName (i));
 	}
       else
 	{
@@ -159,32 +240,25 @@ AttributeIterator::DoIterate (Ptr<Object> object)
       while (iter.HasNext ())
 	{
 	  Ptr<Object> tmp = const_cast<Object *> (PeekPointer (iter.Next ()));
+	  StartVisitObject (tmp);
 	  m_examined.push_back (object);
 	  DoIterate (tmp);
 	  m_examined.pop_back ();
+	  EndVisitObject ();
 	}
     }
-  Pop ();
 }
-
-
 
 TextFileAttributeIterator::TextFileAttributeIterator (std::ostream &os)
   : m_os (os)
 {}
 void 
-TextFileAttributeIterator::DoVisit (Ptr<Object> object, std::string name, std::string path)
+TextFileAttributeIterator::DoVisitAttribute (Ptr<Object> object, std::string name)
 {
   StringValue str;
   object->GetAttribute (name, str);
-  m_os << path << " " << str.Get () << std::endl;
+  m_os << GetCurrentPath () << " " << str.Get () << std::endl;
 }
-void 
-TextFileAttributeIterator::DoPush (std::string name, std::string path)
-{}
-void 
-TextFileAttributeIterator::DoPop (void)
-{}
 
 void 
 TextFileAttributeIterator::Save (void)
