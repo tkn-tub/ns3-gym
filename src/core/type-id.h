@@ -109,6 +109,8 @@ public:
    */
   TypeId GetParent (void) const;
 
+  bool HasParent (void) const;
+
   /**
    * \param other a parent TypeId
    * \returns true if the input TypeId is really a parent

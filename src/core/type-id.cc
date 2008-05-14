@@ -473,6 +473,12 @@ TypeId::GetParent (void) const
   return TypeId (parent);
 }
 bool 
+TypeId::HasParent (void) const
+{
+  uint16_t parent = Singleton<IidManager>::Get ()->GetParent (m_tid);
+  return parent != m_tid;
+}
+bool 
 TypeId::IsChildOf (TypeId other) const
 {
   TypeId tmp = *this;
