@@ -169,59 +169,62 @@ AttributeIterator::DoIterate (Ptr<Object> object)
     {
       return;
     }
-  TypeId tid = object->GetInstanceTypeId ();
-  NS_LOG_DEBUG ("store " << tid.GetName ());
-  for (uint32_t i = 0; i < tid.GetAttributeN (); ++i)
+  TypeId tid;
+  for (tid = object->GetInstanceTypeId (); tid.HasParent (); tid = tid.GetParent ())
     {
-      Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (i);
-      const PointerChecker *ptrChecker = dynamic_cast<const PointerChecker *> (PeekPointer (checker));
-      if (ptrChecker != 0)
+      NS_LOG_DEBUG ("store " << tid.GetName ());
+      for (uint32_t i = 0; i < tid.GetAttributeN (); ++i)
 	{
-	  NS_LOG_DEBUG ("pointer attribute " << tid.GetAttributeName (i));
-	  PointerValue ptr;
-	  object->GetAttribute (tid.GetAttributeName (i), ptr);
-	  Ptr<Object> tmp = ptr.Get<Object> ();
-	  if (tmp != 0)
+	  Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (i);
+	  const PointerChecker *ptrChecker = dynamic_cast<const PointerChecker *> (PeekPointer (checker));
+	  if (ptrChecker != 0)
 	    {
-	      StartVisitPointerAttribute (object, tid.GetAttributeName (i), tmp);
-	      m_examined.push_back (object);
-	      DoIterate (tmp);
-	      m_examined.pop_back ();
-	      EndVisitPointerAttribute ();
+	      NS_LOG_DEBUG ("pointer attribute " << tid.GetAttributeName (i));
+	      PointerValue ptr;
+	      object->GetAttribute (tid.GetAttributeName (i), ptr);
+	      Ptr<Object> tmp = ptr.Get<Object> ();
+	      if (tmp != 0)
+		{
+		  StartVisitPointerAttribute (object, tid.GetAttributeName (i), tmp);
+		  m_examined.push_back (object);
+		  DoIterate (tmp);
+		  m_examined.pop_back ();
+		  EndVisitPointerAttribute ();
+		}
+	      continue;
 	    }
-	  continue;
-	}
-      // attempt to cast to an object vector.
-      const ObjectVectorChecker *vectorChecker = dynamic_cast<const ObjectVectorChecker *> (PeekPointer (checker));
-      if (vectorChecker != 0)
-	{
-	  NS_LOG_DEBUG ("vector attribute " << tid.GetAttributeName (i));
-	  ObjectVectorValue vector;
-	  object->GetAttribute (tid.GetAttributeName (i), vector);
-	  StartVisitArrayAttribute (object, tid.GetAttributeName (i), vector);
-	  for (uint32_t j = 0; j < vector.GetN (); ++j)
+	  // attempt to cast to an object vector.
+	  const ObjectVectorChecker *vectorChecker = dynamic_cast<const ObjectVectorChecker *> (PeekPointer (checker));
+	  if (vectorChecker != 0)
 	    {
-	      NS_LOG_DEBUG ("vector attribute item " << j);
-	      Ptr<Object> tmp = vector.Get (j);
-	      StartVisitArrayItem (vector, j, tmp);
-	      m_examined.push_back (object);
-	      DoIterate (tmp);
-	      m_examined.pop_back ();
-	      EndVisitArrayItem ();
+	      NS_LOG_DEBUG ("vector attribute " << tid.GetAttributeName (i));
+	      ObjectVectorValue vector;
+	      object->GetAttribute (tid.GetAttributeName (i), vector);
+	      StartVisitArrayAttribute (object, tid.GetAttributeName (i), vector);
+	      for (uint32_t j = 0; j < vector.GetN (); ++j)
+		{
+		  NS_LOG_DEBUG ("vector attribute item " << j);
+		  Ptr<Object> tmp = vector.Get (j);
+		  StartVisitArrayItem (vector, j, tmp);
+		  m_examined.push_back (object);
+		  DoIterate (tmp);
+		  m_examined.pop_back ();
+		  EndVisitArrayItem ();
+		}
+	      EndVisitArrayAttribute ();
+	      continue;
 	    }
-	  EndVisitArrayAttribute ();
-	  continue;
-	}
-      uint32_t flags = tid.GetAttributeFlags (i);
-      Ptr<const AttributeAccessor> accessor = tid.GetAttributeAccessor (i);
-      if ((flags & TypeId::ATTR_GET) && accessor->HasGetter () &&
-	  (flags & TypeId::ATTR_SET) && accessor->HasSetter ())
-	{
-	  VisitAttribute (object, tid.GetAttributeName (i));
-	}
-      else
-	{
-	  NS_LOG_DEBUG ("could not store " << tid.GetAttributeName (i));
+	  uint32_t flags = tid.GetAttributeFlags (i);
+	  Ptr<const AttributeAccessor> accessor = tid.GetAttributeAccessor (i);
+	  if ((flags & TypeId::ATTR_GET) && accessor->HasGetter () &&
+	      (flags & TypeId::ATTR_SET) && accessor->HasSetter ())
+	    {
+	      VisitAttribute (object, tid.GetAttributeName (i));
+	    }
+	  else
+	    {
+	      NS_LOG_DEBUG ("could not store " << tid.GetAttributeName (i));
+	    }
 	}
     }
   Object::AggregateIterator iter = object->GetAggregateIterator ();
