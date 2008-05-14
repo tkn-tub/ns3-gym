@@ -305,6 +305,7 @@ def build(bld):
         lib.add_objects = list(modules)
     else:
         lib.add_objects = list(env['NS3_MODULES'])
+        lib.uselib_local = list(env['NS3_MODULES'])
 
 
 def get_command_template():
