@@ -32,7 +32,6 @@
 namespace ns3 {
 
 class Node;
-class TraceContext;
 class Channel;
 class Packet;
 

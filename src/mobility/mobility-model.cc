@@ -17,9 +17,11 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "mobility-model.h"
-#include "mobility-model-notifier.h"
+
 #include <math.h>
+
+#include "mobility-model.h"
+#include "ns3/trace-source-accessor.h"
 
 namespace ns3 {
 
@@ -39,6 +41,9 @@ MobilityModel::GetTypeId (void)
                    VectorValue (Vector (0.0, 0.0, 0.0)), // ignored initial value.
                    MakeVectorAccessor (&MobilityModel::GetVelocity),
                    MakeVectorChecker ())
+    .AddTraceSource ("CourseChange", 
+                     "The value of the position and/or velocity vector changed",
+                     MakeTraceSourceAccessor (&MobilityModel::m_trace))
     ;
   return tid;
 }
@@ -77,11 +82,7 @@ MobilityModel::GetDistanceFrom (Ptr<const MobilityModel> other) const
 void
 MobilityModel::NotifyCourseChange (void) const
 {
-  Ptr<MobilityModelNotifier> notifier = GetObject<MobilityModelNotifier> ();
-  if (notifier != 0)
-    {
-      notifier->Notify (this);
-    }
+  m_trace(this);
 }
 
 } // namespace ns3

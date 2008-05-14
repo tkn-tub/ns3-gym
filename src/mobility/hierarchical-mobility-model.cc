@@ -18,7 +18,6 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "hierarchical-mobility-model.h"
-#include "mobility-model-notifier.h"
 #include "ns3/pointer.h"
 
 namespace ns3 {
@@ -52,28 +51,14 @@ void
 HierarchicalMobilityModel::SetChild (Ptr<MobilityModel> model)
 {
   m_child = model;
-  Ptr<MobilityModelNotifier> notifier = 
-    m_child->GetObject<MobilityModelNotifier> ();
-  if (notifier == 0)
-    {
-      notifier = CreateObject<MobilityModelNotifier> ();
-      m_child->AggregateObject (notifier);
-    }
-  notifier->TraceConnectWithoutContext ("CourseChange", MakeCallback (&HierarchicalMobilityModel::ChildChanged, this));
+  m_child->TraceConnectWithoutContext ("CourseChange", MakeCallback (&HierarchicalMobilityModel::ChildChanged, this));
 }
 
 void 
 HierarchicalMobilityModel::SetParent (Ptr<MobilityModel> model)
 {
   m_parent = model;
-  Ptr<MobilityModelNotifier> notifier = 
-    m_parent->GetObject<MobilityModelNotifier> ();
-  if (notifier == 0)
-    {
-      notifier = CreateObject<MobilityModelNotifier> ();
-      m_parent->AggregateObject (notifier);
-    }
-  notifier->TraceConnectWithoutContext ("CourseChange", MakeCallback (&HierarchicalMobilityModel::ParentChanged, this));
+  m_parent->TraceConnectWithoutContext ("CourseChange", MakeCallback (&HierarchicalMobilityModel::ParentChanged, this));
 }
 
 

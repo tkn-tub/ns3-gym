@@ -27,7 +27,6 @@
 namespace ns3 {
 
 class Packet;
-class TraceContext;
 class PcapWriter;
 
 class PcapTrace 

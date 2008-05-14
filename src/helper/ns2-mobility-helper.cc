@@ -24,7 +24,6 @@
 #include "ns3/node-list.h"
 #include "ns3/node.h"
 #include "ns3/static-speed-mobility-model.h"
-#include "ns3/mobility-model-notifier.h"
 #include "ns2-mobility-helper.h"
 
 NS_LOG_COMPONENT_DEFINE ("Ns2MobilityHelper");
@@ -35,17 +34,6 @@ namespace ns3 {
 Ns2MobilityHelper::Ns2MobilityHelper (std::string filename)
   : m_filename (filename)
 {}
-
-void 
-Ns2MobilityHelper::EnableNotifier (void)
-{
-  m_notifierEnabled = true;
-}
-void 
-Ns2MobilityHelper::DisableNotifier (void)
-{
-  m_notifierEnabled = false;
-}
 
 
 
@@ -66,12 +54,6 @@ Ns2MobilityHelper::GetMobilityModel (std::string idString, const ObjectStore &st
     {
       model = CreateObject<StaticSpeedMobilityModel> ();
       object->AggregateObject (model);
-    }
-  Ptr<MobilityModelNotifier> notifier = object->GetObject<MobilityModelNotifier> ();
-  if (notifier == 0)
-    {
-      notifier = CreateObject<MobilityModelNotifier> ();
-      object->AggregateObject (notifier);
     }
   return model;
 }
