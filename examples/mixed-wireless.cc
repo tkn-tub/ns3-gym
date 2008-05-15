@@ -338,9 +338,9 @@ main (int argc, char *argv[])
   CsmaHelper::EnableAsciiAll (ascii);
 
   // Let's do a pcap trace on the backbone devices
-  WifiHelper::EnablePcap ("mixed-wireless.pcap", backboneDevices); 
+  WifiHelper::EnablePcap ("mixed-wireless", backboneDevices); 
   // Let's additionally trace the application Sink, ifIndex 0
-  CsmaHelper::EnablePcap ("mixed-wireless.pcap", appSink->GetId (), 0);
+  CsmaHelper::EnablePcap ("mixed-wireless", appSink->GetId (), 0);
 
 #ifdef ENABLE_FOR_TRACING_EXAMPLE
   Config::Connect ("/NodeList/*/$MobilityModel/CourseChange",
