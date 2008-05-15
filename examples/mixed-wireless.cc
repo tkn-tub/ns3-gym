@@ -92,6 +92,8 @@ main (int argc, char *argv[])
   uint32_t lanNodes = 5;
   uint32_t stopTime = 10;
 
+
+
   //
   // Simulation defaults are typically set next, before command line
   // arguments are parsed.
@@ -159,8 +161,12 @@ main (int argc, char *argv[])
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = 
     CreateObject<ListPositionAllocator> ();
-  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
-  positionAlloc->Add (Vector (5.0, 0.0, 0.0));
+  double x = 0.0;
+  for (uint32_t i = 0; i < backboneNodes; ++i)
+    {
+      positionAlloc->Add (Vector (x, 0.0, 0.0));
+      x += 5.0;
+    }
   mobility.SetPositionAllocator (positionAlloc);
   mobility.SetMobilityModel ("ns3::RandomDirection2dMobilityModel",
                              "Bounds", RectangleValue (Rectangle (0, 1000, 0, 1000)),
