@@ -92,8 +92,6 @@ main (int argc, char *argv[])
   uint32_t lanNodes = 5;
   uint32_t stopTime = 10;
 
-
-
   //
   // Simulation defaults are typically set next, before command line
   // arguments are parsed.
@@ -335,14 +333,13 @@ main (int argc, char *argv[])
   //
   // Let's set up some ns-2-like ascii traces, using another helper class
   //
-  // Look at nodes 11, 13 only
-  // XXX todo
-  // asciiTrace.TraceQueues ("/NodeList/11|13/DeviceList/0");
-  // asciiTrace.TraceNetDeviceRx ("/NodeList/11|13/DeviceList/0");
   std::ofstream ascii;
   ascii.open ("mixed-wireless.tr");
   WifiHelper::EnableAsciiAll (ascii);
   CsmaHelper::EnableAsciiAll (ascii);
+  // Look at nodes 11, 13 only
+  //WifiHelper::EnableAscii (ascii, 11, 0); 
+  //WifiHelper::EnableAscii (ascii, 13, 0); 
 
   // Let's do a pcap trace on the backbone devices
   WifiHelper::EnablePcap ("mixed-wireless", backboneDevices); 
@@ -353,6 +350,7 @@ main (int argc, char *argv[])
   Config::Connect ("/NodeList/*/$MobilityModelNotifier/CourseChange",
     MakeCallback (&CourseChangeCallback));
 #endif
+
 
   /////////////////////////////////////////////////////////////////////////// 
   //                                                                       //
