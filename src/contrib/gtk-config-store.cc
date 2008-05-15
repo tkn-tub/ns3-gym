@@ -231,7 +231,7 @@ cell_edited_callback (GtkCellRendererText *cell,
   ModelNode *node;
   gtk_tree_model_get (model, &iter, COL_NODE, &node, -1);
   NS_ASSERT (node->type == ModelNode::NODE_ATTRIBUTE);
-  //node->object->SetAttribute (node->name, StringValue (new_text));
+  node->object->SetAttribute (node->name, StringValue (new_text));
 }
 
 static int
