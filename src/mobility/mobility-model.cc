@@ -43,7 +43,7 @@ MobilityModel::GetTypeId (void)
                    MakeVectorChecker ())
     .AddTraceSource ("CourseChange", 
                      "The value of the position and/or velocity vector changed",
-                     MakeTraceSourceAccessor (&MobilityModel::m_trace))
+                     MakeTraceSourceAccessor (&MobilityModel::m_courseChangeTrace))
     ;
   return tid;
 }
@@ -82,7 +82,7 @@ MobilityModel::GetDistanceFrom (Ptr<const MobilityModel> other) const
 void
 MobilityModel::NotifyCourseChange (void) const
 {
-  m_trace(this);
+  m_courseChangeTrace(this);
 }
 
 } // namespace ns3

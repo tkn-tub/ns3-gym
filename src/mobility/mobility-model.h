@@ -91,7 +91,7 @@ private:
    * Used to alert subscribers that a change in direction, velocity,
    * or position has occurred.
    */
-  TracedCallback<Ptr<const MobilityModel> > m_trace;
+  TracedCallback<Ptr<const MobilityModel> > m_courseChangeTrace;
 
 };
 
