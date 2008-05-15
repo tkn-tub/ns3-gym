@@ -533,6 +533,21 @@ GlobalRouter::DiscoverLSAs (void)
     {
       Ptr<NetDevice> ndLocal = node->GetDevice(i);
 
+      // Check if it is an IP interface (could be a pure L2 NetDevice)
+      bool isIp = false;
+      for (uint32_t i = 0; i < ipv4Local->GetNInterfaces (); ++i )
+        {
+          if (ipv4Local->GetNetDevice (i) == ndLocal) 
+            {
+              isIp = true;
+              break;
+            }
+        }
+      if (!isIp)
+        {
+          continue;
+        }
+
       if (ndLocal->IsBroadcast () && !ndLocal->IsPointToPoint () )
         {
           NS_LOG_LOGIC ("Broadcast link");
