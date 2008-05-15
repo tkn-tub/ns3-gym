@@ -438,7 +438,9 @@ Buffer::AddAtEnd (uint32_t end)
 void
 Buffer::AddAtEnd (const Buffer &o)
 {
-  if (m_end == m_zeroAreaEnd &&
+  if (m_data->m_count == 1 &&
+      m_end == m_zeroAreaEnd &&
+      m_end == m_data->m_dirtyEnd &&
       o.m_start == o.m_zeroAreaStart &&
       o.m_zeroAreaEnd - o.m_zeroAreaStart > 0)
     {
@@ -450,6 +452,7 @@ Buffer::AddAtEnd (const Buffer &o)
       uint32_t zeroSize = o.m_zeroAreaEnd - o.m_zeroAreaStart;
       m_zeroAreaEnd += zeroSize;
       m_end = m_zeroAreaEnd;
+      m_data->m_dirtyEnd = m_zeroAreaEnd;
       uint32_t endData = o.m_end - o.m_zeroAreaEnd;
       AddAtEnd (endData);
       Buffer::Iterator dst = End ();
@@ -459,6 +462,7 @@ Buffer::AddAtEnd (const Buffer &o)
       dst.Write (src, o.End ());
       return;
     }
+
   Buffer dst = CreateFullCopy ();
   Buffer src = o.CreateFullCopy ();
 
