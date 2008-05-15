@@ -3,11 +3,14 @@
 #include "ns3/config.h"
 #include "ns3/string.h"
 #include "ns3/pointer.h"
+#include "ns3/log.h"
 #include <gtk/gtk.h>
 #include <fstream>
 
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("GtkconfigStore");
 
 enum {
   COL_NODE = 0,
@@ -49,6 +52,8 @@ private:
   virtual void DoEndVisitArrayAttribute (void);
   virtual void DoStartVisitArrayItem (const ObjectVectorValue &vector, uint32_t index, Ptr<Object> item);
   virtual void DoEndVisitArrayItem (void);
+  void Add (ModelNode *node);
+  void Remove (void);
 
   GtkTreeStore *m_treestore;
   std::vector<GtkTreeIter *> m_iters;
@@ -65,84 +70,76 @@ ModelCreator::Build (GtkTreeStore *treestore)
   NS_ASSERT (m_iters.size () == 1);
 }
 
-void 
-ModelCreator::DoVisitAttribute (Ptr<Object> object, std::string name)
-{
-  GtkTreeIter *parent = m_iters.back ();
-  GtkTreeIter current;
-  ModelNode *node = new ModelNode ();
-  node->type = ModelNode::NODE_ATTRIBUTE;
-  node->object = object;
-  node->name = name;
-  gtk_tree_store_append (m_treestore, &current, parent);
-  gtk_tree_store_set (m_treestore, &current,
-		      COL_NODE, node,
-                     -1);
-}
-void 
-ModelCreator::DoStartVisitObject (Ptr<Object> object)
+
+void
+ModelCreator::Add (ModelNode *node)
 {
   GtkTreeIter *parent = m_iters.back ();
   GtkTreeIter *current = g_new (GtkTreeIter, 1);
-  ModelNode *node = new ModelNode ();
-  node->type = ModelNode::NODE_OBJECT;
-  node->object = object;
   gtk_tree_store_append (m_treestore, current, parent);
   gtk_tree_store_set (m_treestore, current,
 		      COL_NODE, node,
                      -1);
   m_iters.push_back (current);
 }
-void 
-ModelCreator::DoEndVisitObject (void)
+void
+ModelCreator::Remove (void)
 {
   GtkTreeIter *iter = m_iters.back ();
   g_free (iter);
   m_iters.pop_back ();
 }
+
+void 
+ModelCreator::DoVisitAttribute (Ptr<Object> object, std::string name)
+{
+  ModelNode *node = new ModelNode ();
+  node->type = ModelNode::NODE_ATTRIBUTE;
+  node->object = object;
+  node->name = name;
+  Add (node);
+  Remove ();
+}
+void 
+ModelCreator::DoStartVisitObject (Ptr<Object> object)
+{
+  ModelNode *node = new ModelNode ();
+  node->type = ModelNode::NODE_OBJECT;
+  node->object = object;
+  Add (node);
+}
+void 
+ModelCreator::DoEndVisitObject (void)
+{
+  Remove ();
+}
 void 
 ModelCreator::DoStartVisitPointerAttribute (Ptr<Object> object, std::string name, Ptr<Object> value)
 {
-  GtkTreeIter *parent = m_iters.back ();
-  GtkTreeIter *current = g_new (GtkTreeIter, 1);
   ModelNode *node = new ModelNode ();
   node->type = ModelNode::NODE_POINTER;
   node->object = object;
   node->name = name;
-  gtk_tree_store_append (m_treestore, current, parent);
-  gtk_tree_store_set (m_treestore, current,
-		      COL_NODE, node,
-                     -1);
-  m_iters.push_back (current);
+  Add (node);
 }
 void 
 ModelCreator::DoEndVisitPointerAttribute (void)
 {
-  GtkTreeIter *iter = m_iters.back ();
-  g_free (iter);
-  m_iters.pop_back ();  
+  Remove ();
 }
 void 
 ModelCreator::DoStartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectVectorValue &vector)
 {
-  GtkTreeIter *parent = m_iters.back ();
-  GtkTreeIter *current = g_new (GtkTreeIter, 1);
   ModelNode *node = new ModelNode ();
   node->type = ModelNode::NODE_VECTOR;
   node->object = object;
   node->name = name;
-  gtk_tree_store_append (m_treestore, current, parent);
-  gtk_tree_store_set (m_treestore, current,
-		      COL_NODE, node,
-                     -1);
-  m_iters.push_back (current);
+  Add (node);
 }
 void 
 ModelCreator::DoEndVisitArrayAttribute (void)
 {
-  GtkTreeIter *iter = m_iters.back ();
-  g_free (iter);
-  m_iters.pop_back ();  
+  Remove ();
 }
 void 
 ModelCreator::DoStartVisitArrayItem (const ObjectVectorValue &vector, uint32_t index, Ptr<Object> item)
@@ -234,7 +231,7 @@ cell_edited_callback (GtkCellRendererText *cell,
   ModelNode *node;
   gtk_tree_model_get (model, &iter, COL_NODE, &node, -1);
   NS_ASSERT (node->type == ModelNode::NODE_ATTRIBUTE);
-  node->object->SetAttribute (node->name, StringValue (new_text));
+  //node->object->SetAttribute (node->name, StringValue (new_text));
 }
 
 static int
@@ -345,16 +342,11 @@ cell_tooltip_callback (GtkWidget  *widget,
 
 
 static GtkWidget *
-create_view_and_model (void)
+create_view (GtkTreeStore *model)
 {
   GtkTreeViewColumn   *col;
   GtkCellRenderer     *renderer;
   GtkWidget           *view;
-
-  GtkTreeStore *model = gtk_tree_store_new (COL_LAST, G_TYPE_POINTER);
-  ModelCreator creator;
-  creator.Build (model);
-
 
   view = gtk_tree_view_new();
   g_object_set (view, "has-tooltip", TRUE, NULL);
@@ -455,6 +447,39 @@ load_clicked (GtkButton *button,
   gtk_widget_destroy (dialog);
 }
 
+static void 
+exit_clicked_callback (GtkButton *button,
+		       gpointer   user_data)
+{
+  gtk_main_quit ();
+}
+
+static gboolean
+delete_event_callback (GtkWidget *widget,
+		       GdkEvent  *event,
+		       gpointer   user_data)
+{
+  gtk_main_quit ();
+  return TRUE;
+}
+
+static gboolean 
+clean_model_callback (GtkTreeModel *model,
+		      GtkTreePath *path,
+		      GtkTreeIter *iter,
+		      gpointer data)
+{
+  ModelNode *node;
+  gtk_tree_model_get (GTK_TREE_MODEL (model), iter, 
+		      COL_NODE, &node, 
+		      -1);
+  delete node;
+  gtk_tree_store_set (GTK_TREE_STORE (model), iter,
+		      COL_NODE, NULL,
+		      -1);
+  return FALSE;
+}
+
 GtkConfigStore::GtkConfigStore ()
 {}
 
@@ -471,9 +496,14 @@ GtkConfigStore::Configure (void)
   gtk_window_set_title (GTK_WINDOW (window), "ns-3 Object attributes.");
   gtk_window_set_default_size (GTK_WINDOW (window), 400, 600);
   
-  g_signal_connect (window, "delete_event", gtk_main_quit, NULL); /* dirty */
+  g_signal_connect (window, "delete_event", (GCallback)delete_event_callback, NULL);
 
-  view = create_view_and_model ();
+
+  GtkTreeStore *model = gtk_tree_store_new (COL_LAST, G_TYPE_POINTER);
+  ModelCreator creator;
+  creator.Build (model);
+
+  view = create_view (model);
   scroll = gtk_scrolled_window_new (NULL, NULL);
   gtk_container_add (GTK_CONTAINER (scroll), view);
 
@@ -489,7 +519,7 @@ GtkConfigStore::Configure (void)
   g_signal_connect (load, "clicked",  (GCallback) load_clicked, window);
   gtk_box_pack_end (GTK_BOX (hbox), load, FALSE, FALSE, 0);
   GtkWidget *exit = gtk_button_new_with_label ("Exit");
-  g_signal_connect (exit, "clicked",  (GCallback) gtk_main_quit, NULL);
+  g_signal_connect (exit, "clicked",  (GCallback) exit_clicked_callback, NULL);
   gtk_box_pack_end (GTK_BOX (hbox), exit, FALSE, FALSE, 0);
 
   gtk_container_add (GTK_CONTAINER (window), vbox);
@@ -497,6 +527,12 @@ GtkConfigStore::Configure (void)
   gtk_widget_show_all (window);
 
   gtk_main ();
+
+  gtk_tree_model_foreach (GTK_TREE_MODEL (model), 
+			  clean_model_callback, 
+			  NULL);
+
+  gtk_widget_destroy (window);
 }
 
 } // namespace ns3
