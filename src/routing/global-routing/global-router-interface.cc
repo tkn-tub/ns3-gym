@@ -638,6 +638,10 @@ GlobalRouter::DiscoverLSAs (void)
 // router (to use OSPF lingo) is running.  
 //
           Ptr<Channel> ch = ndLocal->GetChannel();
+          if (ch == NULL)
+            {
+              continue;
+            }
           Ptr<NetDevice> ndRemote = GetAdjacent(ndLocal, ch);
 //
 // The adjacent net device is aggregated to a node.  We need to ask that net 
