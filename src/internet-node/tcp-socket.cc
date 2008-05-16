@@ -378,11 +378,12 @@ int TcpSocket::Send (const uint8_t* buf, uint32_t size)
 {
   NS_LOG_FUNCTION (this << buf << size);
   if (m_state == ESTABLISHED || m_state == SYN_SENT || m_state == CLOSE_WAIT)
-    { // Ok to buffer some data to send
+    { 
       if (size > GetTxAvailable ())
         {
-          size = std::min(size, GetTxAvailable() ); //only buffer what can fit
           m_wouldBlock = true;
+          m_errno = ERROR_MSGSIZE;
+          return -1;
         }
       if (!m_pendingData)
         {

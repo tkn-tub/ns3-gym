@@ -240,11 +240,12 @@ PacketSocket::Send (Ptr<Packet> p)
   return SendTo (p, m_destAddr);
 }
 
+// XXX must limit it to interface MTU
 uint32_t 
 PacketSocket::GetTxAvailable (void) const
 {
-  // No finite send buffer is modelled
-  return 0xffffffff;
+  // Use 65536 for now
+  return 0xffff;
 }
 
 int
@@ -275,6 +276,11 @@ PacketSocket::SendTo(Ptr<Packet> p, const Address &address)
     {
       NS_LOG_LOGIC ("ERROR_AFNOSUPPORT");
       m_errno = ERROR_AFNOSUPPORT;
+      return -1;
+    }
+  if (p->GetSize () > GetTxAvailable ())
+    {
+      m_errno = ERROR_MSGSIZE;
       return -1;
     }
   ad = PacketSocketAddress::ConvertFrom (address);

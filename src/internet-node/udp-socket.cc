@@ -37,6 +37,8 @@ NS_LOG_COMPONENT_DEFINE ("UdpSocket");
 
 namespace ns3 {
 
+static const uint32_t MAX_IPV4_UDP_DATAGRAM_SIZE = 65507;
+
 TypeId
 UdpSocket::GetTypeId (void)
 {
@@ -302,6 +304,12 @@ UdpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
       return -1;
     }
 
+  if (p->GetSize () > GetTxAvailable () )
+    {
+      m_errno = ERROR_MSGSIZE;
+      return -1;
+    }
+
   uint32_t localIfIndex;
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
 
@@ -344,12 +352,15 @@ UdpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
   return 0;
 }
 
+// XXX maximum message size for UDP broadcast is limited by MTU
+// size of underlying link; we are not checking that now.
 uint32_t
 UdpSocket::GetTxAvailable (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  // No finite send buffer is modelled
-  return std::numeric_limits<uint32_t>::max ();
+  // No finite send buffer is modelled, but we must respect
+  // the maximum size of an IP datagram (65535 bytes - headers).
+  return MAX_IPV4_UDP_DATAGRAM_SIZE;
 }
 
 int 

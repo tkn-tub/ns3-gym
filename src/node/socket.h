@@ -257,15 +257,50 @@ public:
 
   /**
    * \brief Send data (or dummy data) to the remote host
-   * \param p packet to send
-   * \returns -1 in case of error or the number of bytes copied in the 
-   *          internal buffer and accepted for transmission.
+   *
+   * This function matches closely in semantics to the send() function
+   * call in the standard C library (libc):
+   *   ssize_t send (int s, const void *msg, size_t len, int flags);
+   * except that the function call is asynchronous.
+   * 
+   * In a typical blocking sockets model, this call would block upon
+   * lack of space to hold the message to be sent.  In ns-3 at this
+   * API, the call returns immediately in such a case, but the callback
+   * registered with SetSendCallback() is invoked when the socket
+   * has space (when it conceptually unblocks); this is an asynchronous
+   * I/O model for send().
+   * 
+   * This variant of Send() uses class ns3::Packet to encapsulate
+   * data, rather than providing a raw pointer and length field.  
+   * This allows an ns-3 application to attach tags if desired (such
+   * as a flow ID) and may allow the simulator to avoid some data
+   * copies.  Despite the appearance of sending Packets on a stream
+   * socket, just think of it as a fancy byte buffer with streaming
+   * semantics.    
+   *
+   * If either the message buffer within the Packet is too long to pass 
+   * atomically through the underlying protocol (for datagram sockets), 
+   * or the message buffer cannot entirely fit in the transmit buffer
+   * (for stream sockets), -1 is returned and SocketErrno is set 
+   * to ERROR_MSGSIZE.  If the packet does not fit, the caller can
+   * split the Packet (based on information obtained from 
+   * GetTxAvailable) and reattempt to send the data.
+   *
+   * \param p ns3::Packet to send
+   * \returns the number of bytes accepted for transmission if no error
+   *          occurs, and -1 otherwise.
    */
   virtual int Send (Ptr<Packet> p) = 0;
   
   /**
-   * returns the number of bytes which can be sent in a single call
+   * \brief Returns the number of bytes which can be sent in a single call
    * to Send. 
+   * 
+   * For datagram sockets, this returns the number of bytes that
+   * can be passed atomically through the underlying protocol.
+   *
+   * For stream sockets, this returns the available space in bytes
+   * left in the transmit buffer.
    */
   virtual uint32_t GetTxAvailable (void) const = 0;
 
