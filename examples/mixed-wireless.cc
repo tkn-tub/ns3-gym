@@ -272,7 +272,6 @@ main (int argc, char *argv[])
         {
           subnetAlloc->Add (Vector (0.0, j, 0.0));
         }
-      mobility.EnableNotifier ();
       mobility.PushReferenceMobilityModel (backbone.Get (i));
       mobility.SetPositionAllocator (subnetAlloc);
       mobility.SetMobilityModel ("ns3::RandomDirection2dMobilityModel",
@@ -347,7 +346,7 @@ main (int argc, char *argv[])
   CsmaHelper::EnablePcap ("mixed-wireless", appSink->GetId (), 0);
 
 #ifdef ENABLE_FOR_TRACING_EXAMPLE
-  Config::Connect ("/NodeList/*/$MobilityModelNotifier/CourseChange",
+  Config::Connect ("/NodeList/*/$MobilityModel/CourseChange",
     MakeCallback (&CourseChangeCallback));
 #endif
 

@@ -31,8 +31,6 @@ namespace ns3 {
 
 class Packet;
 class Ipv4Address;
-class TraceResolver;
-class TraceContext;
 
 /**
  * \brief L4 Protocol base class 

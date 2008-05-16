@@ -29,7 +29,6 @@
 
 namespace ns3 {
 
-class TraceContext;
 class NetDevice;
 class Application;
 class Packet;

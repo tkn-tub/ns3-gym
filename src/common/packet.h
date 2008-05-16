@@ -24,9 +24,9 @@
 #include "buffer.h"
 #include "header.h"
 #include "trailer.h"
-#include "tags.h"
 #include "packet-metadata.h"
 #include "tag.h"
+#include "tag-list.h"
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 #include "ns3/ptr.h"
@@ -34,9 +34,71 @@
 namespace ns3 {
 
 /**
+ * \brief Iterator over the set of tags in a packet
+ *
+ * This is a java-style iterator.
+ */
+class TagIterator
+{
+public:
+  /**
+   * Identifies a set tag and a set of bytes within a packet
+   * to which the tag applies.
+   */
+  class Item
+  {
+  public:
+    /**
+     * \returns the ns3::TypeId associated to this tag.
+     */
+    TypeId GetTypeId (void) const;
+    /**
+     * \returns the index of the first byte tagged by this tag.
+     *
+     * The index is an offset from the start of the packet.
+     */
+    uint32_t GetStart (void) const;
+    /**
+     * \returns the index of the last byte tagged by this tag.
+     *
+     * The index is an offset from the start of the packet.
+     */
+    uint32_t GetEnd (void) const;
+    /**
+     * \param tag the user tag to which the data should be copied.
+     *
+     * Read the requested tag and store it in the user-provided
+     * tag instance. This method will crash if the type of the
+     * tag provided by the user does not match the type of
+     * the underlying tag.
+     */
+    void GetTag (Tag &tag) const;
+  private:
+    friend class TagIterator;
+    Item (TypeId tid, uint32_t start, uint32_t end, TagBuffer buffer);
+    TypeId m_tid;
+    uint32_t m_start;
+    uint32_t m_end;
+    TagBuffer m_buffer;
+  };
+  /**
+   * \returns true if calling Next is safe, false otherwise.
+   */
+  bool HasNext (void) const;
+  /**
+   * \returns the next item found and prepare for the next one.
+   */
+  Item Next (void);
+private:
+  friend class Packet;
+  TagIterator (TagList::Iterator i);
+  TagList::Iterator m_current;
+};
+
+/**
  * \brief network packets
  *
- * Each network packet contains a byte buffer, a list of tags, and
+ * Each network packet contains a byte buffer, a set of tags, and
  * metadata.
  *
  * - The byte buffer stores the serialized content of the headers and trailers 
@@ -45,13 +107,10 @@ namespace ns3 {
  * forces you to do this) which means that the content of a packet buffer
  * is expected to be that of a real packet.
  *
- * - The list of tags stores an arbitrarily large set of arbitrary 
- * user-provided data structures in the packet: only one instance of
- * each type of data structure is allowed in a list of tags. 
- * These tags typically contain per-packet cross-layer information or 
- * flow identifiers. Each tag stored in the tag list can be at most
- * 16 bytes big. Trying to attach bigger data structures will trigger
- * crashes at runtime.
+ * - Each tag tags a subset of the bytes in the packet byte buffer with the 
+ * information stored in the tag. A classic example of a tag is a FlowIdTag 
+ * which contains a flow id: the set of bytes tagged by this tag implicitely 
+ * belong to the attached flow id.
  *
  * - The metadata describes the type of the headers and trailers which
  * were serialized in the byte buffer. The maintenance of metadata is
@@ -83,6 +142,8 @@ public:
    * by getUid).
    */
   Packet ();
+  Packet (const Packet &o);
+  Packet &operator = (const Packet &o);  
   /**
    * Create a packet with a zero-filled payload.
    * The memory necessary for the payload is not allocated:
@@ -151,63 +212,6 @@ public:
    * \returns the number of bytes removed from the end of the packet.
    */
   uint32_t RemoveTrailer (Trailer &trailer);
-  /**
-   * \param tag a pointer to the tag to attach to this packet.
-   *
-   * Attach a tag to this packet. The tag is fully copied
-   * in a packet-specific internal buffer. This operation 
-   * is expected to be really fast. The copy constructor of the
-   * tag is invoked to copy it into the tag buffer.
-   *
-   * Note that adding a tag is a const operation which is pretty 
-   * un-intuitive. The rationale is that the content and behavior of
-   * a packet is _not_ changed when a tag is added to a packet: any
-   * code which was not aware of the new tag is going to work just
-   * the same if the new tag is added. The real reason why adding a
-   * tag was made a const operation is to allow a trace sink which gets
-   * a packet to tag the packet, even if the packet is const (and most
-   * trace sources should use const packets because it would be
-   * totally evil to allow a trace sink to modify the content of a
-   * packet).
-   *
-   */
-  template <typename T>
-  void AddTag (T const &tag) const;
-  /**
-   * Remove a tag from this packet. The data stored internally
-   * for this tag is copied in the input tag if an instance
-   * of this tag type is present in the internal buffer. If this
-   * tag type is not present, the input tag is not modified. 
-   *
-   * This operation can be potentially slow and might trigger
-   * unexpectedly large memory allocations. It is thus
-   * usually a better idea to create a copy of this packet,
-   * and invoke removeAllTags on the copy to remove all 
-   * tags rather than remove the tags one by one from a packet.
-   *
-   * \param tag a pointer to the tag to remove from this packet
-   * \returns true if an instance of this tag type is stored
-   *          in this packet, false otherwise.
-   */
-  template <typename T>
-  bool RemoveTag (T &tag);
-  /**
-   * Copy a tag stored internally to the input tag. If no instance
-   * of this tag is present internally, the input tag is not modified.
-   * The copy constructor of the tag is invoked to copy it into the 
-   * input tag variable.
-   *
-   * \param tag a pointer to the tag to read from this packet
-   * \returns true if an instance of this tag type is stored
-   *          in this packet, false otherwise.
-   */
-  template <typename T>
-  bool PeekTag (T &tag) const;
-  /**
-   * Remove all the tags stored in this packet. This operation is
-   * much much faster than invoking removeTag n times.
-   */
-  void RemoveAllTags (void);
   /**
    * \param os output stream in which the data should be printed.
    *
@@ -330,12 +334,47 @@ public:
    * a different CPU.
    */
   void Deserialize (Buffer buffer);
+
+  /**
+   * \param tag the new tag to add to this packet
+   *
+   * Tag each byte included in this packet with the
+   * new tag.
+   *
+   * Note that adding a tag is a const operation which is pretty 
+   * un-intuitive. The rationale is that the content and behavior of
+   * a packet is _not_ changed when a tag is added to a packet: any
+   * code which was not aware of the new tag is going to work just
+   * the same if the new tag is added. The real reason why adding a
+   * tag was made a const operation is to allow a trace sink which gets
+   * a packet to tag the packet, even if the packet is const (and most
+   * trace sources should use const packets because it would be
+   * totally evil to allow a trace sink to modify the content of a
+   * packet).
+   */
+  void AddTag (const Tag &tag) const;
+  /**
+   * \returns an iterator over the set of tags included in this packet.
+   */
+  TagIterator GetTagIterator (void) const;
+  /**
+   * \param tag the tag to search in this packet
+   * \returns true if the requested tag type was found, false otherwise.
+   *
+   * If the requested tag type is found, it is copied in the user's 
+   * provided tag instance.
+   */
+  bool FindFirstMatchingTag (Tag &tag) const;
+
+  /**
+   * Remove all the tags stored in this packet.
+   */
+  void RemoveAllTags (void);
+
 private:
-  Packet (Buffer buffer, Tags tags, PacketMetadata metadata);
-  Packet (const Packet &o);
-  Packet &operator = (const Packet &o);
+  Packet (const Buffer &buffer, const TagList &tagList, const PacketMetadata &metadata);
   Buffer m_buffer;
-  Tags m_tags;
+  TagList m_tagList;
   PacketMetadata m_metadata;
   mutable uint32_t m_refCount;
   static uint32_t m_globalUid;
@@ -378,44 +417,6 @@ std::ostream& operator<< (std::ostream& os, const Packet &packet);
  * means that most of the time, these operations will not trigger
  * data copies and will thus be still very fast.
  */
-
-} // namespace ns3
-
-
-/**************************************************
-  Start of implementation of templates defined
-  above
- *************************************************/
-
-namespace ns3 {
-
-template <typename T>
-void Packet::AddTag (T const& tag) const
-{
-  const Tag *parent;
-  // if the following assignment fails, it is because the
-  // input to this function is not a subclass of the Tag class.
-  parent = &tag;
-  m_tags.Add (tag);
-}
-template <typename T>
-bool Packet::RemoveTag (T & tag)
-{
-  Tag *parent;
-  // if the following assignment fails, it is because the
-  // input to this function is not a subclass of the Tag class.
-  parent = &tag;
-  return m_tags.Remove (tag);
-}
-template <typename T>
-bool Packet::PeekTag (T & tag) const
-{
-  Tag *parent;
-  // if the following assignment fails, it is because the
-  // input to this function is not a subclass of the Tag class.
-  parent = &tag;
-  return m_tags.Peek (tag);
-}
 
 } // namespace ns3
 

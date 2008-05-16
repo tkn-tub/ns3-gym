@@ -375,7 +375,7 @@ ObjectTest::RunTests (void)
   NS_TEST_ASSERT_UNEQUAL (baseBCopy->GetObject<DerivedA> (), 0);
   NS_TEST_ASSERT_UNEQUAL (baseBCopy->GetObject<BaseA> (), 0);
   NS_TEST_ASSERT_UNEQUAL (baseB->GetObject<DerivedB> (), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseB->GetObject<BaseB> (), 0)
+  NS_TEST_ASSERT_UNEQUAL (baseB->GetObject<BaseB> (), 0);
 
   baseA = CreateObject<BaseA> ();
   baseB = CreateObject<BaseB> ();

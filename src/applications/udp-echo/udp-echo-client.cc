@@ -93,7 +93,7 @@ UdpEchoClient::StartApplication (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  if (!m_socket)
+  if (m_socket == 0)
     {
       TypeId tid = TypeId::LookupByName ("ns3::Udp");
       Ptr<SocketFactory> socketFactory = 
@@ -113,10 +113,10 @@ UdpEchoClient::StopApplication ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  if (!m_socket) 
+  if (m_socket != 0) 
     {
-      m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>, Ptr<Packet>,
-                                const Address &> ());
+      m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>, 
+        Ptr<Packet>, const Address &> ());
     }
 
   Simulator::Cancel(m_sendEvent);

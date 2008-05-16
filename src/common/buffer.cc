@@ -333,9 +333,10 @@ Buffer::GetInternalEnd (void) const
   return m_end - (m_zeroAreaEnd - m_zeroAreaStart);
 }
 
-void 
+bool
 Buffer::AddAtStart (uint32_t start)
 {
+  bool dirty;
   NS_ASSERT (CheckInternalState ());
   bool isDirty = m_data->m_count > 1 && m_start > m_data->m_dirtyStart;
   if (m_start >= start && !isDirty)
@@ -347,31 +348,11 @@ Buffer::AddAtStart (uint32_t start)
        */
       NS_ASSERT (m_data->m_count == 1 || m_start == m_data->m_dirtyStart);
       m_start -= start;
+      dirty = m_start > m_data->m_dirtyStart;
       HEURISTICS (g_nAddNoRealloc++);
     } 
-#if 0
-  // the following is an optimization
-  else if (m_start >= start)
-    {
-      struct BufferData *newData = Buffer::Create (m_data->m_size);
-      memcpy (newData->m_data + m_start, m_data->m_data + m_start, GetInternalSize ());
-      m_data->m_count--;
-      if (m_data->m_count == 0)
-        {
-          Buffer::Recycle (m_data);
-        }
-      m_data = newData;
-
-      m_start -= start;
-      HEURISTICS (g_nAddRealloc++);
-    }
   else
     {
-      NS_ASSERT (m_start < start);
-#else
-  else
-    {
-#endif
       uint32_t newSize = GetInternalSize () + start;
       struct BufferData *newData = Buffer::Create (newSize);
       memcpy (newData->m_data + start, m_data->m_data + m_start, GetInternalSize ());
@@ -383,10 +364,13 @@ Buffer::AddAtStart (uint32_t start)
       m_data = newData;
 
       int32_t delta = start - m_start;
-      m_start = 0;
+      m_start += delta;
       m_zeroAreaStart += delta;
       m_zeroAreaEnd += delta;
       m_end += delta;
+      m_start -= start;
+
+      dirty = true;
 
       HEURISTICS (g_nAddRealloc++);
     }
@@ -396,10 +380,12 @@ Buffer::AddAtStart (uint32_t start)
   m_data->m_dirtyEnd = m_end;
   LOG_INTERNAL_STATE ("add start=" << start << ", ");
   NS_ASSERT (CheckInternalState ());
+  return dirty;
 }
-void 
+bool
 Buffer::AddAtEnd (uint32_t end)
 {
+  bool dirty;
   NS_ASSERT (CheckInternalState ());
   bool isDirty = m_data->m_count > 1 && m_end < m_data->m_dirtyEnd;
   if (GetInternalEnd () + end <= m_data->m_size && !isDirty)
@@ -412,25 +398,10 @@ Buffer::AddAtEnd (uint32_t end)
       NS_ASSERT (m_data->m_count == 1 || m_end == m_data->m_dirtyEnd);
       m_end += end;
 
+      dirty = m_end < m_data->m_dirtyEnd;
+
       HEURISTICS (g_nAddNoRealloc++);
     } 
-#if 0
-  // this is an optimization
-  else if (GetInternalEnd () + end > m_data->m_size)
-    {
-      struct BufferData *newData = Buffer::Create (newSize);
-      memcpy (newData->m_data + m_start, m_data->m_data + m_start, GetInternalSize ());
-      m_data->m_count--;
-      if (m_data->m_count == 0) 
-        {
-          Buffer::Recycle (m_data);
-        }
-      m_data = newData;
-
-      m_end += end;
-      HEURISTICS (g_nAddRealloc++);
-    }
-#endif
   else
     {
       uint32_t newSize = GetInternalSize () + end;
@@ -443,13 +414,14 @@ Buffer::AddAtEnd (uint32_t end)
         }
       m_data = newData;
 
-
-      m_zeroAreaStart -= m_start;
-      m_zeroAreaEnd -= m_start;
-      m_end -= m_start;
-      m_start = 0;
-
+      int32_t delta = -m_start;
+      m_zeroAreaStart += delta;
+      m_zeroAreaEnd += delta;
+      m_end += delta;
+      m_start += delta;
       m_end += end;
+
+      dirty = true;
 
       HEURISTICS (g_nAddRealloc++);
     } 
@@ -459,12 +431,16 @@ Buffer::AddAtEnd (uint32_t end)
   m_data->m_dirtyEnd = m_end;
   LOG_INTERNAL_STATE ("add end=" << end << ", ");
   NS_ASSERT (CheckInternalState ());
+
+  return dirty;
 }
 
-void 
+void
 Buffer::AddAtEnd (const Buffer &o)
 {
-  if (m_end == m_zeroAreaEnd &&
+  if (m_data->m_count == 1 &&
+      m_end == m_zeroAreaEnd &&
+      m_end == m_data->m_dirtyEnd &&
       o.m_start == o.m_zeroAreaStart &&
       o.m_zeroAreaEnd - o.m_zeroAreaStart > 0)
     {
@@ -476,6 +452,7 @@ Buffer::AddAtEnd (const Buffer &o)
       uint32_t zeroSize = o.m_zeroAreaEnd - o.m_zeroAreaStart;
       m_zeroAreaEnd += zeroSize;
       m_end = m_zeroAreaEnd;
+      m_data->m_dirtyEnd = m_zeroAreaEnd;
       uint32_t endData = o.m_end - o.m_zeroAreaEnd;
       AddAtEnd (endData);
       Buffer::Iterator dst = End ();
@@ -485,6 +462,7 @@ Buffer::AddAtEnd (const Buffer &o)
       dst.Write (src, o.End ());
       return;
     }
+
   Buffer dst = CreateFullCopy ();
   Buffer src = o.CreateFullCopy ();
 
@@ -607,6 +585,18 @@ Buffer::CreateFullCopy (void) const
   NS_ASSERT (CheckInternalState ());
   return *this;
 }
+
+int32_t 
+Buffer::GetCurrentStartOffset (void) const
+{
+  return m_start;
+}
+int32_t 
+Buffer::GetCurrentEndOffset (void) const
+{
+  return m_end;
+}
+
 
 void
 Buffer::TransformIntoRealBuffer (void) const
