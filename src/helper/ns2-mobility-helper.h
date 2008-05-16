@@ -42,9 +42,6 @@ public:
    */
   Ns2MobilityHelper (std::string filename);
 
-  void EnableNotifier (void);
-  void DisableNotifier (void);
-
   /**
    * Read the ns2 trace file and configure the movement
    * patterns of all nodes contained in the global ns3::NodeList
@@ -77,7 +74,6 @@ private:
   Ptr<StaticSpeedMobilityModel> GetMobilityModel (std::string idString, const ObjectStore &store) const;
   double ReadDouble (std::string valueString) const;
   std::string m_filename;
-  bool m_notifierEnabled;
 };
 
 } // namespace ns3

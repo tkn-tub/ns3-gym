@@ -20,8 +20,10 @@
 #ifndef MOBILITY_MODEL_H
 #define MOBILITY_MODEL_H
 
-#include "ns3/object.h"
 #include "vector.h"
+
+#include "ns3/object.h"
+#include "ns3/traced-callback.h"
 
 namespace ns3 {
 
@@ -84,6 +86,13 @@ private:
    * implement this method.
    */
   virtual Vector DoGetVelocity (void) const = 0;
+
+  /**
+   * Used to alert subscribers that a change in direction, velocity,
+   * or position has occurred.
+   */
+  TracedCallback<Ptr<const MobilityModel> > m_courseChangeTrace;
+
 };
 
 }; // namespace ns3

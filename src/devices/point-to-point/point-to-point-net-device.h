@@ -267,7 +267,6 @@ private:
    * fire.
    *
    * @see class CallBackTraceSource
-   * @see class TraceResolver
    */
   TracedCallback<Ptr<const Packet> > m_rxTrace;
   /**
@@ -275,7 +274,6 @@ private:
    * fire.
    *
    * @see class CallBackTraceSource
-   * @see class TraceResolver
    */
   TracedCallback<Ptr<const Packet> > m_dropTrace;
 
