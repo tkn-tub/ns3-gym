@@ -43,20 +43,6 @@ public:
   ~MobilityHelper ();
 
   /**
-   * After this method is called, every call to MobilityHelper::Install
-   * will also attach to the new ns3::MobilityModel an ns3::MobilityModelNotifier
-   * which can be used to listen to CourseChange events.
-   */
-  void EnableNotifier (void);
-  /**
-   * After this method is called, no ns3::MobilityModelNotifier object will
-   * be associated to any new ns3::MobilityModel created by MobilityHelper::Install.
-   * This will make it impossible to listen to "CourseChange" events from these
-   * new ns3::MobilityModel instances.
-   */
-  void DisableNotifier (void);
-
-  /**
    * \param allocator allocate initial node positions
    *
    * Set the position allocator which will be used to allocate
@@ -169,9 +155,6 @@ public:
    * subclass (the type of which was set with MobilityHelper::SetMobilityModel), 
    * aggregates it to the mode, and sets an initial position based on the current 
    * position allocator (set through MobilityHelper::SetPositionAllocator). 
-   * Optionally, this method will also create and aggregate a
-   * ns3::MobilityModelNotifier to generate 'CourseChange' events based on the 
-   * boolean flag set by MobilityHelper::EnableNotifierAll and MobilityHelper::DisableNotifier.
    */
   void Install (NodeContainer container);
 
@@ -183,7 +166,6 @@ public:
 private:
 
   std::vector<Ptr<MobilityModel> > m_mobilityStack;
-  bool m_notifierEnabled;
   ObjectFactory m_mobility;
   Ptr<PositionAllocator> m_position;
 };

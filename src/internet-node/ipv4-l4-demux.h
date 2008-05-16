@@ -32,7 +32,6 @@ namespace ns3 {
 
 class Ipv4L4Protocol;
 class Node;
-class TraceContext;
 
 /**
  * \brief L4 Ipv4 Demux
