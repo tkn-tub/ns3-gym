@@ -137,11 +137,11 @@ PacketSocket::DoBind (const PacketSocketAddress &address)
   Ptr<NetDevice> dev ;
   if (address.IsSingleDevice ())
     {
-      dev = 0;
+      dev = m_node->GetDevice (address.GetSingleDevice ());
     }
   else
     {
-      dev = m_node->GetDevice (address.GetSingleDevice ());
+      dev = 0;
     }
   m_node->RegisterProtocolHandler (MakeCallback (&PacketSocket::ForwardUp, this),
                                    address.GetProtocol (), dev);

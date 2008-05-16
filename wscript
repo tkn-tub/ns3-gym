@@ -303,8 +303,10 @@ def build(bld):
     lib.target = 'ns3'
     if env['NS3_ENABLED_MODULES']:
         lib.add_objects = list(modules)
+        lib.uselib_local = list(modules)
     else:
         lib.add_objects = list(env['NS3_MODULES'])
+        lib.uselib_local = list(env['NS3_MODULES'])
 
 
 def get_command_template():
