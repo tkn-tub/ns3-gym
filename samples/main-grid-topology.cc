@@ -37,7 +37,7 @@ int main (int argc, char *argv[])
   // finalize the setup by attaching to each object
   // in the input array a position and initializing
   // this position with the calculated coordinates.
-  mobility.Layout (nodes);
+  mobility.Install (nodes);
 
   // iterate our nodes and print their position.
   for (NodeContainer::Iterator j = nodes.Begin ();

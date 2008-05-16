@@ -69,33 +69,27 @@ def create_ns3_module(bld, name, dependencies=()):
     
 
 def build(bld):
-    Object.register('ns3header', Ns3Header)
+    #Object.register('ns3header', Ns3Header)
     Action.Action('ns3header', func=_ns3_headers_inst, color='BLUE')
-    Object.register('ns3-module-header', Ns3ModuleHeader)
+    #Object.register('ns3-module-header', Ns3ModuleHeader)
     Action.Action('gen-ns3-module-header', func=gen_ns3_module_header, color='BLUE')
     bld.create_ns3_module = types.MethodType(create_ns3_module, bld)
     
     bld.add_subdirs(list(all_modules))
 
     for module in all_modules:
-        modheader = bld.create_obj('ns3-module-header')
+        modheader = bld.create_obj('ns3moduleheader')
         modheader.module = module.split('/')[-1]
 
 
-class Ns3Header(Object.genobj):
+class ns3header_taskgen(Object.task_gen):
     """A set of NS-3 header files"""
-    def __init__(self, env=None):
-        Object.genobj.__init__(self, 'ns3header')
+    def __init__(self, *features):
+        Object.task_gen.__init__(self, *features)
         self.inst_var = 'INCLUDEDIR'
         self.inst_dir = 'ns3'
         self.sub_dir = None # if not None, header files will be published as ns3/sub_dir/file.h
         self.module = None # module name
-        self.env = env
-        if not self.env:
-            self.env = Params.g_build.m_allenvs['default']
-
-    def get_valid_types(self):
-        return ['ns3header']
 
     def apply(self):
         if self.module is None:
@@ -169,17 +163,13 @@ def gen_ns3_module_header(task):
     return 0
 
 
-class Ns3ModuleHeader(Object.genobj):
+class ns3moduleheader_taskgen(Object.task_gen):
     """
     Generates a 'ns3/foo-module.h' header file that includes all
     public ns3 headers of a certain module.
     """
-    def __init__(self, env=None):
-        Object.genobj.__init__(self, 'other')
-        self.install_var = 0
-        self.env = env
-        if not self.env:
-            self.env = Params.g_build.m_allenvs['default'].copy()
+    def __init__(self, *features):
+        Object.task_gen.__init__(self, *features)
         self.module_name = None
 
     def apply(self):
@@ -187,7 +177,7 @@ class Ns3ModuleHeader(Object.genobj):
         ns3_dir_node = Params.g_build.m_srcnode.find_dir("ns3")
         all_headers_inputs = []
         for ns3headers in Object.g_allobjs:
-            if ns3headers.m_type == 'ns3header':
+            if isinstance(ns3headers, ns3header_taskgen):
                 if ns3headers.module != self.module:
                     continue
                 for source in ns3headers.to_list(ns3headers.source):

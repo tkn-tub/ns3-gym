@@ -404,14 +404,14 @@ CsmaNetDevice::Attach (Ptr<CsmaChannel> ch)
 }
 
 void
-CsmaNetDevice::AddQueue (Ptr<Queue> q)
+CsmaNetDevice::SetQueue (Ptr<Queue> q)
 {
   NS_LOG_FUNCTION (this << q);
 
   m_queue = q;
 }
 
-void CsmaNetDevice::AddReceiveErrorModel (Ptr<ErrorModel> em)
+void CsmaNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
 {
   NS_LOG_FUNCTION (em);
   

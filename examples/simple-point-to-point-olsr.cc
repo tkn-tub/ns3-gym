@@ -120,7 +120,7 @@ main (int argc, char *argv[])
   // Enable OLSR
   NS_LOG_INFO ("Enabling OLSR Routing.");
   OlsrHelper olsr;
-  olsr.EnableAll ();
+  olsr.InstallAll ();
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
@@ -158,8 +158,8 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("simple-point-to-point-olsr.tr");
-  PointToPointHelper::EnablePcap ("simple-point-to-point-olsr");
-  PointToPointHelper::EnableAscii (ascii);
+  PointToPointHelper::EnablePcapAll ("simple-point-to-point-olsr");
+  PointToPointHelper::EnableAsciiAll (ascii);
 
   Simulator::StopAt (Seconds (30));
 

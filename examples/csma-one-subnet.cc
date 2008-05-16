@@ -128,7 +128,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Configure Tracing.");
   std::ofstream ascii;
   ascii.open ("csma-one-subnet.tr");
-  CsmaHelper::EnableAscii (ascii);
+  CsmaHelper::EnableAsciiAll (ascii);
 //
 // Also configure some tcpdump traces; each interface will be traced.
 // The output files will be named:
@@ -136,7 +136,7 @@ main (int argc, char *argv[])
 // and can be read by the "tcpdump -r" command (use "-tt" option to
 // display timestamps correctly)
 //
-  CsmaHelper::EnablePcap ("csma-one-subnet");
+  CsmaHelper::EnablePcapAll ("csma-one-subnet");
 //
 // Now, do the actual simulation.
 //

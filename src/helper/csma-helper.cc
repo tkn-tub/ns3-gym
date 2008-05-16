@@ -103,7 +103,7 @@ CsmaHelper::EnablePcap (std::string filename, NodeContainer n)
 }
 
 void
-CsmaHelper::EnablePcap (std::string filename)
+CsmaHelper::EnablePcapAll (std::string filename)
 {
   EnablePcap (filename, NodeContainer::GetGlobal ());
 }
@@ -150,7 +150,7 @@ CsmaHelper::EnableAscii (std::ostream &os, NodeContainer n)
 }
 
 void
-CsmaHelper::EnableAscii (std::ostream &os)
+CsmaHelper::EnableAsciiAll (std::ostream &os)
 {
   EnableAscii (os, NodeContainer::GetGlobal ());
 }
@@ -174,7 +174,7 @@ CsmaHelper::Install (const NodeContainer &c, Ptr<CsmaChannel> channel)
       device->SetAddress (Mac48Address::Allocate ());
       node->AddDevice (device);
       Ptr<Queue> queue = m_queueFactory.Create<Queue> ();
-      device->AddQueue (queue);
+      device->SetQueue (queue);
       device->Attach (channel);
       container.Add (device);
     }

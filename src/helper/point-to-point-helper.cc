@@ -70,7 +70,7 @@ PointToPointHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t 
   oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
   Ptr<PcapWriter> pcap = Create<PcapWriter> ();
   pcap->Open (oss.str ());
-  pcap->WriteEthernetHeader ();
+  pcap->WritePppHeader ();
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/Rx";
   Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PointToPointHelper::RxEvent, pcap));
@@ -103,7 +103,7 @@ PointToPointHelper::EnablePcap (std::string filename, NodeContainer n)
 }
 
 void
-PointToPointHelper::EnablePcap (std::string filename)
+PointToPointHelper::EnablePcapAll (std::string filename)
 {
   EnablePcap (filename, NodeContainer::GetGlobal ());
 }
@@ -150,7 +150,7 @@ PointToPointHelper::EnableAscii (std::ostream &os, NodeContainer n)
 }
 
 void
-PointToPointHelper::EnableAscii (std::ostream &os)
+PointToPointHelper::EnableAsciiAll (std::ostream &os)
 {
   EnableAscii (os, NodeContainer::GetGlobal ());
 }
@@ -170,12 +170,12 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
   devA->SetAddress (Mac48Address::Allocate ());
   a->AddDevice (devA);
   Ptr<Queue> queueA = m_queueFactory.Create<Queue> ();
-  devA->AddQueue (queueA);
+  devA->SetQueue (queueA);
   Ptr<PointToPointNetDevice> devB = m_deviceFactory.Create<PointToPointNetDevice> ();
   devB->SetAddress (Mac48Address::Allocate ());
   b->AddDevice (devB);
   Ptr<Queue> queueB = m_queueFactory.Create<Queue> ();
-  devB->AddQueue (queueB);
+  devB->SetQueue (queueB);
   Ptr<PointToPointChannel> channel = m_channelFactory.Create<PointToPointChannel> ();
   devA->Attach (channel);
   devB->Attach (channel);

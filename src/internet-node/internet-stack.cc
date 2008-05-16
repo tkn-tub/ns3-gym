@@ -36,11 +36,6 @@ namespace ns3 {
 void 
 AddInternetStack (Ptr<Node> node)
 {
-  // This may be called on a node with a previously added stack
-  if (node->GetObject<Ipv4> ())
-    {
-      return;
-    }
   Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
   Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> ();
   ipv4->SetNode (node);

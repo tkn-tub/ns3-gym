@@ -184,7 +184,7 @@ WifiHelper::EnablePcap (std::string filename, NodeContainer n)
 }
 
 void
-WifiHelper::EnablePcap (std::string filename)
+WifiHelper::EnablePcapAll (std::string filename)
 {
   EnablePcap (filename, NodeContainer::GetGlobal ());
 }
@@ -225,7 +225,7 @@ WifiHelper::EnableAscii (std::ostream &os, NodeContainer n)
 }
 
 void
-WifiHelper::EnableAscii (std::ostream &os)
+WifiHelper::EnableAsciiAll (std::ostream &os)
 {
   EnableAscii (os, NodeContainer::GetGlobal ());
 }

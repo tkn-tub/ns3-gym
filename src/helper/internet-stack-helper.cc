@@ -17,15 +17,35 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+#include "ns3/assert.h"
+#include "ns3/log.h"
+#include "ns3/object.h"
+#include "ns3/ipv4.h"
 #include "internet-stack-helper.h"
 #include "ns3/internet-stack.h"
 #include "ns3/packet-socket-factory.h"
 #include "ns3/config.h"
+#include "ns3/simulator.h"
 
 namespace ns3 {
 
 std::vector<InternetStackHelper::Trace> InternetStackHelper::m_traces;
 std::string InternetStackHelper::m_pcapBaseFilename;
+
+void
+InternetStackHelper::Cleanup (void)
+{
+  uint32_t illegal = std::numeric_limits<uint32_t>::max();
+
+  for (std::vector<Trace>::iterator i = m_traces.begin ();
+       i != m_traces.end (); i++)
+  {
+    i->nodeId = illegal;
+    i->interfaceId = illegal;
+    i->writer = 0;
+  }
+  m_traces.clear ();
+}
 
 void 
 InternetStackHelper::Install (NodeContainer c)
@@ -33,6 +53,12 @@ InternetStackHelper::Install (NodeContainer c)
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
       Ptr<Node> node = *i;
+      if (node->GetObject<Ipv4> () != 0)
+        {
+          NS_FATAL_ERROR ("InternetStackHelper::Install(): Aggregating " 
+             "an InternetStack to a node with an existing Ipv4 object");
+          return;
+        } 
       AddInternetStack (node);
       Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
       node->AggregateObject (factory);
@@ -40,8 +66,10 @@ InternetStackHelper::Install (NodeContainer c)
 }
 
 void
-InternetStackHelper::EnablePcap (std::string filename)
+InternetStackHelper::EnablePcapAll (std::string filename)
 {
+  Simulator::ScheduleDestroy (&InternetStackHelper::Cleanup);
+
   InternetStackHelper::m_pcapBaseFilename = filename;
   Config::Connect ("/NodeList/*/$ns3::Ipv4L3Protocol/Tx",
                               MakeCallback (&InternetStackHelper::LogTxIp));

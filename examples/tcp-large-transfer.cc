@@ -188,9 +188,9 @@ int main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("tcp-large-transfer.tr");
-  PointToPointHelper::EnableAscii (ascii);
+  PointToPointHelper::EnableAsciiAll (ascii);
 
-  InternetStackHelper::EnablePcap ("tcp-large-transfer");
+  PointToPointHelper::EnablePcapAll ("tcp-large-transfer");
 
   Simulator::StopAt (Seconds(1000));
   Simulator::Run ();

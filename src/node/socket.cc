@@ -64,11 +64,19 @@ Socket::SetAcceptCallback (
   m_closeRequested = closeRequested;
 }
 
-void 
-Socket::SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent)
+bool 
+Socket::SetDataSentCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_dataSent = dataSent;
+  return true;
+}
+
+void
+Socket::SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> sendCb)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_sendCb = sendCb;
 }
 
 void 
@@ -77,6 +85,12 @@ Socket::SetRecvCallback (Callback<void, Ptr<Socket>, Ptr<Packet>,const Address&>
   NS_LOG_FUNCTION_NOARGS ();
   m_receivedData = receivedData;
 }
+
+int Socket::Listen (uint32_t queueLimit)
+{
+  return 0; //XXX the base class version does nothing
+}
+
 
 int Socket::Send (const uint8_t* buf, uint32_t size)
 {
@@ -107,12 +121,6 @@ int Socket::SendTo (const Address &address, const uint8_t* buf, uint32_t size)
     }
   return SendTo (address,p);
 }
-
-int Socket::Listen(uint32_t queueLimit)
-{
-  return 0; //XXX the base class version does nothing
-}
-
 
 void 
 Socket::NotifyCloseCompleted (void)
@@ -199,6 +207,16 @@ Socket::NotifyDataSent (uint32_t size)
   if (!m_dataSent.IsNull ())
     {
       m_dataSent (this, size);
+    }
+}
+
+void 
+Socket::NotifySend (uint32_t spaceAvailable)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  if (!m_sendCb.IsNull ())
+    {
+      m_sendCb (this, spaceAvailable);
     }
 }
 

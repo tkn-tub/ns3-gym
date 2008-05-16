@@ -113,10 +113,10 @@ main (int argc, char *argv[])
   // The output files will be named 
   // csma-broadcast.pcap-<nodeId>-<interfaceId>
   // and can be read by the "tcpdump -tt -r" command 
-  CsmaHelper::EnablePcap ("csma-broadcast");
+  CsmaHelper::EnablePcapAll ("csma-broadcast");
   std::ofstream ascii;
   ascii.open ("csma-broadcast.tr");
-  CsmaHelper::EnableAscii (ascii);
+  CsmaHelper::EnableAsciiAll (ascii);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();    
