@@ -48,7 +48,7 @@ void
 UdpImpl::DoDispose (void)
 {
   m_udp = 0;
-  Udp::DoDispose ();
+  UdpSocketFactory::DoDispose ();
 }
 
 } // namespace ns3

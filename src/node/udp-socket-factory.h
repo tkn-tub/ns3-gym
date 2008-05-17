@@ -17,19 +17,43 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "udp.h"
-#include "ns3/uinteger.h"
+#ifndef UDP_SOCKET_FACTORY_H
+#define UDP_SOCKET_FACTORY_H
+
+#include "socket-factory.h"
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Udp);
+class Socket;
 
-TypeId Udp::GetTypeId (void)
+/**
+ * \brief API to create UDP socket instances 
+ *
+ * This abstract class defines the API for UDP sockets.
+ * This class also can hold the global default variables used to
+ * initialize newly created sockets, such as values that are
+ * set through the sysctl or proc interfaces in Linux.
+
+ * All UDP implementations must provide an implementation of CreateSocket
+ * below.
+ * 
+ * \see UdpImpl
+ */
+class UdpSocketFactory : public SocketFactory
 {
-  static TypeId tid = TypeId ("ns3::Udp")
-    .SetParent<SocketFactory> ()
-    ;
-  return tid;
-}
+public:
+  static TypeId GetTypeId (void);
+
+  /**
+   * \return smart pointer to Socket
+   * 
+   * API for creating socket instances; must be implemented by UDP 
+   * implementations..
+   */
+  virtual Ptr<Socket> CreateSocket (void) = 0;
+
+};
 
 } // namespace ns3
+
+#endif /* UDP_SOCKET_FACTORY_H */

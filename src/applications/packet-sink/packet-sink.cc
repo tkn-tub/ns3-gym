@@ -26,7 +26,7 @@
 #include "ns3/socket-factory.h"
 #include "ns3/packet.h"
 #include "ns3/trace-source-accessor.h"
-#include "ns3/udp.h"
+#include "ns3/udp-socket-factory.h"
 #include "packet-sink.h"
 
 using namespace std;
@@ -47,7 +47,7 @@ PacketSink::GetTypeId (void)
                    MakeAddressAccessor (&PacketSink::m_local),
                    MakeAddressChecker ())
     .AddAttribute ("Protocol", "The type id of the protocol to use for the rx socket.",
-                   TypeIdValue (Udp::GetTypeId ()),
+                   TypeIdValue (UdpSocketFactory::GetTypeId ()),
                    MakeTypeIdAccessor (&PacketSink::m_tid),
                    MakeTypeIdChecker ())
     .AddTraceSource ("Rx", "A packet has been received",

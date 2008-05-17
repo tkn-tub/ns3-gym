@@ -31,7 +31,7 @@
 
 #include "olsr-agent-impl.h"
 #include "ns3/socket-factory.h"
-#include "ns3/udp.h"
+#include "ns3/udp-socket-factory.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/random-variable.h"
@@ -280,7 +280,7 @@ void AgentImpl::Start ()
 
       // Create a socket to listen only on this interface
       Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (), 
-        Udp::GetTypeId()); 
+        UdpSocketFactory::GetTypeId()); 
       socket->SetRecvCallback (MakeCallback (&AgentImpl::RecvOlsr,  this));
       if (socket->Bind (InetSocketAddress (addr, OLSR_PORT_NUMBER)))
         {

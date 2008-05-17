@@ -48,7 +48,7 @@ RunSimulation (void)
   internet.Install (c);
 
 
-  TypeId tid = TypeId::LookupByName ("ns3::Udp");
+  TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
   Ptr<Socket> sink = Socket::CreateSocket (c.Get (0), tid);
   InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 80);
   sink->Bind (local);

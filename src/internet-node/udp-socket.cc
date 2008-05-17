@@ -23,8 +23,7 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/ipv4.h"
-#include "ns3/ipv4.h"
-#include "ns3/udp.h"
+#include "ns3/udp-socket-factory.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/uinteger.h"
 #include "ns3/boolean.h"
@@ -464,7 +463,7 @@ UdpSocket::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
 
 #include "ns3/test.h"
 #include "ns3/socket-factory.h"
-#include "ns3/udp.h"
+#include "ns3/udp-socket-factory.h"
 #include "ns3/simulator.h"
 #include "ns3/simple-channel.h"
 #include "ns3/simple-net-device.h"
@@ -588,7 +587,7 @@ UdpSocketTest::RunTests (void)
 
 
   // Create the UDP sockets
-  Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<Udp> ();
+  Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<UdpSocketFactory> ();
   Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
   NS_TEST_ASSERT_EQUAL (rxSocket->Bind (InetSocketAddress (Ipv4Address ("10.0.0.1"), 1234)), 0);
   rxSocket->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePkt, this));
@@ -597,7 +596,7 @@ UdpSocketTest::RunTests (void)
   rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePkt2, this));
   NS_TEST_ASSERT_EQUAL (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("10.0.1.1"), 1234)), 0);
 
-  Ptr<SocketFactory> txSocketFactory = txNode->GetObject<Udp> ();
+  Ptr<SocketFactory> txSocketFactory = txNode->GetObject<UdpSocketFactory> ();
   Ptr<Socket> txSocket = txSocketFactory->CreateSocket ();
 
   // ------ Now the tests ------------

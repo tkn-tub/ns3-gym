@@ -20,7 +20,7 @@
 #ifndef UDP_IMPL_H
 #define UDP_IMPL_H
 
-#include "ns3/udp.h"
+#include "ns3/udp-socket-factory.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {
@@ -36,7 +36,7 @@ class UdpL4Protocol;
  * also hold global variables used to initialize newly created sockets, 
  * such as values that are set through the sysctl or proc interfaces in Linux.
  */
-class UdpImpl : public Udp
+class UdpImpl : public UdpSocketFactory
 {
 public:
   UdpImpl ();

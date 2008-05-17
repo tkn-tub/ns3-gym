@@ -64,7 +64,7 @@ public:
   virtual uint32_t GetRxAvailable (void) const;
 
 private:
-  friend class Udp;
+  friend class UdpSocketFactory;
   // invoked by Udp class
   int FinishBind (void);
   void ForwardUp (Ptr<Packet> p, Ipv4Address ipv4, uint16_t port);
