@@ -37,39 +37,9 @@ class Node;
 class Packet;
 
 /**
- * \brief Support for socket options at the socket level.
- *
- * A SocketOptions object is aggregated to each Socket.  This object
- * can be fetched using GetObject() by any user of a Socket.  An 
- * instance of SocketOptions is aggregated to each Socket when the
- * Socket is constructed.
- * 
- * This implements the equivalent of getsockopt() and setsockopt()  
- * function calls to manipulate the options associated with the
- * socket at the uppermost ``socket'' level.  Socket options that
- * exist at a lower level (such as TCP socket options) are manipulated
- * using a different aggregated class (TcpSocketOptions).
- */
-class SocketOptions : public Object
-{
-public:
-  static TypeId GetTypeId (void);
-
-  SocketOptions (void);
-  virtual ~SocketOptions (void);
-
-  virtual void SetSndBuf (uint32_t size);
-  virtual uint32_t GetSndBuf (void) const;
-  virtual void SetRcvBuf (uint32_t size);
-  virtual uint32_t GetRcvBuf (void) const;
-
-  // all others
-};
-
-/**
  * \brief Define a Socket API based on the BSD Socket API.
  *
- * Contrary to the original BSD socket API, this API is asynchronous:
+ * In contrast to the original BSD socket API, this API is asynchronous:
  * it does not contain blocking calls. It also uses class ns3::Packet
  * as a fancy byte buffer, allowing data to be passed across the API
  * using an ns3::Packet instead of a raw data pointer.  Other than that, 
@@ -78,7 +48,6 @@ public:
  */
 class Socket : public Object
 {
-  friend class SocketOptions;
 public:
   Socket (void);
   virtual ~Socket (void);
@@ -387,11 +356,6 @@ protected:
   Callback<void, Ptr<Socket>, uint32_t >         m_sendCb;
   Callback<void, Ptr<Socket> > m_receivedData;
 
-  // Socket options at level socket
-  virtual void SetSndBuf (uint32_t size) = 0;
-  virtual uint32_t GetSndBuf (void) const = 0;
-  virtual void SetRcvBuf (uint32_t size) = 0;
-  virtual uint32_t GetRcvBuf (void) const = 0;
 };
 
 /**

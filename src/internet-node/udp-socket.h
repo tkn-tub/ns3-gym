@@ -63,12 +63,6 @@ public:
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual uint32_t GetRxAvailable (void) const;
 
-protected:
-  virtual void SetSndBuf (uint32_t size);
-  virtual uint32_t GetSndBuf (void) const;
-  virtual void SetRcvBuf (uint32_t size);
-  virtual uint32_t GetRcvBuf (void) const;
-
 private:
   friend class Udp;
   // invoked by Udp class
@@ -96,8 +90,13 @@ private:
   std::queue<Ptr<Packet> > m_deliveryQueue;
   uint32_t m_rxAvailable;
   
-  uint32_t m_sndBufLimit;
-  uint32_t m_rcvBufLimit;
+  // Socket options (UdpSocket attributes)
+  uint32_t m_rcvBufSize;
+  bool m_dontRoute;
+  bool m_acceptConn;
+  uint8_t m_ipTtl;
+  uint8_t m_ipMulticastTtl;
+
 };
 
 }//namespace ns3

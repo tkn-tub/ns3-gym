@@ -25,9 +25,9 @@
 #include "ns3/ipv4.h"
 #include "ns3/ipv4.h"
 #include "ns3/udp.h"
-#include "ns3/socket-defaults.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/uinteger.h"
+#include "ns3/boolean.h"
 #include "udp-socket.h"
 #include "udp-l4-protocol.h"
 #include "ipv4-end-point.h"
@@ -47,6 +47,31 @@ UdpSocket::GetTypeId (void)
     .AddConstructor<UdpSocket> ()
     .AddTraceSource ("Drop", "Drop UDP packet due to receive buffer overflow",
                      MakeTraceSourceAccessor (&UdpSocket::m_dropTrace))
+    .AddAttribute ("RcvBufSize",
+                   "UdpSocket maximum receive buffer size (bytes)",
+                   UintegerValue (0xffffffffl),
+                   MakeUintegerAccessor (&UdpSocket::m_rcvBufSize),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("DontRoute",
+                   "Bypass normal routing; destination must be local",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&UdpSocket::m_dontRoute),
+                   MakeBooleanChecker ())
+    .AddAttribute ("AcceptConn",
+                   "Whether a socket is enabled for listening (read-only)",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&UdpSocket::m_acceptConn),
+                   MakeBooleanChecker ())
+    .AddAttribute ("IpTtl",
+                   "Time-to-live for unicast IP packets",
+                   UintegerValue (64),
+                   MakeUintegerAccessor (&UdpSocket::m_ipTtl),
+                   MakeUintegerChecker<uint8_t> ())
+    .AddAttribute ("IpMulticastTtl",
+                   "Time-to-live for multicast IP packets",
+                   UintegerValue (64),
+                   MakeUintegerAccessor (&UdpSocket::m_ipMulticastTtl),
+                   MakeUintegerChecker<uint8_t> ())
     ;
   return tid;
 }
@@ -59,9 +84,7 @@ UdpSocket::UdpSocket ()
     m_shutdownSend (false),
     m_shutdownRecv (false),
     m_connected (false),
-    m_rxAvailable (0),
-    m_sndBufLimit (0),
-    m_rcvBufLimit (0)
+    m_rxAvailable (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -93,14 +116,7 @@ void
 UdpSocket::SetNode (Ptr<Node> node)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  // Pull default values for socket options from SocketDefaults
-  // object that was aggregated to the node 
   m_node = node;
-  Ptr<SocketDefaults> sd = node->GetObject<SocketDefaults> ();
-  NS_ASSERT (sd != 0);
-  UintegerValue uiv;
-  sd->GetAttribute ("DefaultRcvBufLimit", uiv);
-  m_rcvBufLimit =  uiv.Get();
 
 }
 void 
@@ -412,7 +428,7 @@ UdpSocket::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
     {
       return;
     }
-  if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufLimit)
+  if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufSize)
     {
       Address address = InetSocketAddress (ipv4, port);
       SocketRxAddressTag tag;
@@ -433,39 +449,6 @@ UdpSocket::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
       m_dropTrace (packet);
     }
 }
-
-void 
-UdpSocket::SetSndBuf (uint32_t size)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  // return EINVAL since we are not modelling a finite send buffer
-  // Enforcing buffer size should be added if we ever start to model
-  // non-zero processing delay in the UDP/IP stack
-  NS_LOG_WARN ("UdpSocket has infinite send buffer");
-  m_sndBufLimit = size; 
-}
-
-uint32_t 
-UdpSocket::GetSndBuf (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_sndBufLimit;
-}
-
-void 
-UdpSocket::SetRcvBuf (uint32_t size)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_rcvBufLimit = size;
-}
-
-uint32_t 
-UdpSocket::GetRcvBuf (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_rcvBufLimit;
-}
-
 
 } //namespace ns3
 

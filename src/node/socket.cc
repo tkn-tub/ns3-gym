@@ -30,64 +30,9 @@ NS_LOG_COMPONENT_DEFINE ("Socket");
 
 namespace ns3 {
 
-TypeId
-SocketOptions::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::SocketOptions")
-    .SetParent<Object> ()
-    .AddConstructor<SocketOptions> ()
-    ;
-  return tid;
-}
-
-SocketOptions::SocketOptions (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-}
-
-SocketOptions::~SocketOptions (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-}
-
-
-void 
-SocketOptions::SetSndBuf (uint32_t size)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  Ptr<Socket> sock = GetObject<Socket> ();
-  sock->SetSndBuf (size);
-}
-
-uint32_t 
-SocketOptions::GetSndBuf (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  Ptr<Socket> sock = GetObject<Socket> ();
-  return sock->GetSndBuf ();
-}
-
-void 
-SocketOptions::SetRcvBuf (uint32_t size)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  Ptr<Socket> sock = GetObject<Socket> ();
-  sock->SetRcvBuf (size);
-}
-
-uint32_t 
-SocketOptions::GetRcvBuf (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  Ptr<Socket> sock = GetObject<Socket> ();
-  return sock->GetRcvBuf ();
-}
-
 Socket::Socket (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  Ptr<SocketOptions> s = CreateObject<SocketOptions> ();
-  AggregateObject (s);
 }
 
 Socket::~Socket ()

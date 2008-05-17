@@ -25,7 +25,6 @@
 #include "ns3/node.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
-#include "ns3/socket-defaults.h"
 #include "ns3/trace-source-accessor.h"
 
 NS_LOG_COMPONENT_DEFINE ("PacketSocket");
@@ -40,6 +39,11 @@ PacketSocket::GetTypeId (void)
     .AddConstructor<PacketSocket> ()
     .AddTraceSource ("Drop", "Drop packet due to receive buffer overflow",
                      MakeTraceSourceAccessor (&PacketSocket::m_dropTrace))
+    .AddAttribute ("RcvBufSize",
+                   "PacketSocket maximum receive buffer size (bytes)",
+                   UintegerValue (0xffffffffl),
+                   MakeUintegerAccessor (&PacketSocket::m_rcvBufSize),
+                   MakeUintegerChecker<uint32_t> ())
     ;
   return tid;
 }
@@ -58,16 +62,6 @@ PacketSocket::SetNode (Ptr<Node> node)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_node = node;
-  // Pull default values for socket options from SocketDefaults
-  // object that was aggregated to the node 
-  Ptr<SocketDefaults> sd = node->GetObject<SocketDefaults> ();
-  NS_ASSERT (sd != 0);
-  UintegerValue uiv;
-  sd->GetAttribute ("DefaultSndBufLimit", uiv);
-  m_sndBufLimit =  uiv.Get();
-  sd->GetAttribute ("DefaultRcvBufLimit", uiv);
-  m_rcvBufLimit =  uiv.Get();
-
 }
 
 PacketSocket::~PacketSocket ()
@@ -340,7 +334,7 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet,
   address.SetSingleDevice (device->GetIfIndex ());
   address.SetProtocol (protocol);
 
-  if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufLimit)
+  if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufSize)
     {
       SocketRxAddressTag tag;
       tag.SetAddress (address);
@@ -390,34 +384,6 @@ PacketSocket::GetRxAvailable (void) const
   // We separately maintain this state to avoid walking the queue 
   // every time this might be called
   return m_rxAvailable;
-}
-
-void 
-PacketSocket::SetSndBuf (uint32_t size)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  NS_LOG_WARN ("PacketSocket send buffer limit not enforced");
-  m_sndBufLimit = size;
-}
-
-uint32_t 
-PacketSocket::GetSndBuf (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_sndBufLimit;
-}
-void 
-PacketSocket::SetRcvBuf (uint32_t size)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_rcvBufLimit = size;
-}
-
-uint32_t 
-PacketSocket::GetRcvBuf (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_rcvBufLimit;
 }
 
 }//namespace ns3

@@ -96,12 +96,6 @@ public:
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual uint32_t GetRxAvailable (void) const;
 
-protected:
-  virtual void SetSndBuf (uint32_t size);
-  virtual uint32_t GetSndBuf (void) const;
-  virtual void SetRcvBuf (uint32_t size);
-  virtual uint32_t GetRcvBuf (void) const;
-
 private:
   void ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet, 
                   uint16_t protocol, const Address &from);
@@ -128,9 +122,9 @@ private:
   uint32_t m_rxAvailable;
   
   TracedCallback<Ptr<const Packet> > m_dropTrace;
-
-  uint32_t m_sndBufLimit;  // Max send buffer size 
-  uint32_t m_rcvBufLimit;  // Max receive buffer size
+  
+  // Socket options (attributes)
+  uint32_t m_rcvBufSize;
 
 };
 
