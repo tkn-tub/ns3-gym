@@ -52,24 +52,14 @@ UdpSocket::GetTypeId (void)
                    UintegerValue (0xffffffffl),
                    MakeUintegerAccessor (&UdpSocket::m_rcvBufSize),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("DontRoute",
-                   "Bypass normal routing; destination must be local",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&UdpSocket::m_dontRoute),
-                   MakeBooleanChecker ())
-    .AddAttribute ("AcceptConn",
-                   "Whether a socket is enabled for listening (read-only)",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&UdpSocket::m_acceptConn),
-                   MakeBooleanChecker ())
     .AddAttribute ("IpTtl",
-                   "Time-to-live for unicast IP packets",
-                   UintegerValue (64),
+                   "socket-specific TTL for unicast IP packets (if non-zero)",
+                   UintegerValue (0),
                    MakeUintegerAccessor (&UdpSocket::m_ipTtl),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("IpMulticastTtl",
-                   "Time-to-live for multicast IP packets",
-                   UintegerValue (64),
+                   "socket-specific TTL for multicast IP packets (if non-zero)",
+                   UintegerValue (0),
                    MakeUintegerAccessor (&UdpSocket::m_ipMulticastTtl),
                    MakeUintegerChecker<uint8_t> ())
     ;
@@ -232,7 +222,6 @@ int
 UdpSocket::Connect(const Address & address)
 {
   NS_LOG_FUNCTION (this << address);
-  Ipv4Route routeToDest;
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   m_defaultAddress = transport.GetIpv4 ();
   m_defaultPort = transport.GetPort ();
@@ -303,8 +292,6 @@ UdpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
 {
   NS_LOG_FUNCTION (this << p << dest << port);
 
-  Ipv4Route routeToDest;
-
   if (m_endPoint == 0)
     {
       if (Bind () == -1)
@@ -329,6 +316,26 @@ UdpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
   uint32_t localIfIndex;
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
 
+  // Locally override the IP TTL for this socket
+  // We cannot directly modify the TTL at this stage, so we set a Packet tag
+  // The destination can be either multicast, unicast/anycast, or
+  // either all-hosts broadcast or limited (subnet-directed) broadcast.
+  // For the latter two broadcast types, the TTL will later be set to one
+  // irrespective of what is set in these socket options.  So, this tagging  
+  // may end up setting the TTL of a limited broadcast packet to be
+  // the same as a unicast, but it will be fixed further down the stack
+  if (m_ipMulticastTtl != 0 && dest.IsMulticast ())
+    {
+      SocketIpTtlTag tag;
+      tag.SetTtl (m_ipMulticastTtl);
+      p->AddTag (tag);
+    }
+  else if (m_ipTtl != 0 && !dest.IsMulticast () && !dest.IsBroadcast ())
+    {
+      SocketIpTtlTag tag;
+      tag.SetTtl (m_ipTtl);
+      p->AddTag (tag);
+    }
   //
   // If dest is sent to the limited broadcast address (all ones),
   // convert it to send a copy of the packet out of every interface

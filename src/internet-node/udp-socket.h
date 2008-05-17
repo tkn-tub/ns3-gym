@@ -92,8 +92,6 @@ private:
   
   // Socket options (UdpSocket attributes)
   uint32_t m_rcvBufSize;
-  bool m_dontRoute;
-  bool m_acceptConn;
   uint8_t m_ipTtl;
   uint8_t m_ipMulticastTtl;
 

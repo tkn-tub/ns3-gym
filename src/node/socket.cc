@@ -301,4 +301,52 @@ SocketRxAddressTag::GetAddress (void) const
   return m_address;
 }
 
+SocketIpTtlTag::SocketIpTtlTag ()  
+{
+}
+
+uint32_t 
+SocketIpTtlTag::GetUid (void)
+{
+  static uint32_t uid = ns3::Tag::AllocateUid<SocketIpTtlTag> ("SocketIpTtlTag.ns3");
+  return uid;
+}
+
+void
+SocketIpTtlTag::Print (std::ostream &os) const
+{
+  os << "ttl="<< m_ttl;
+}
+
+uint32_t 
+SocketIpTtlTag::GetSerializedSize (void) const
+{
+  return 0;
+}
+
+void 
+SocketIpTtlTag::Serialize (Buffer::Iterator i) const
+{
+  // for local use in stack only
+}
+
+uint32_t 
+SocketIpTtlTag::Deserialize (Buffer::Iterator i)
+{
+  // for local use in stack only
+  return 0;
+}
+
+void 
+SocketIpTtlTag::SetTtl (uint8_t ttl)
+{
+  m_ttl = ttl;
+}
+
+uint8_t 
+SocketIpTtlTag::GetTtl (void) const
+{
+  return m_ttl;
+}
+
 }//namespace ns3

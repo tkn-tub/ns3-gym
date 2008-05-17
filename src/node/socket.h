@@ -378,6 +378,26 @@ private:
   Address m_address;
 };
 
+/**
+ * \brief This class implements a tag that carries the socket-specific
+ * TTL of a packet to the IP layer
+ */
+class SocketIpTtlTag : public Tag
+{
+public:
+  SocketIpTtlTag ();
+  static uint32_t GetUid (void);
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator i) const;
+  uint32_t Deserialize (Buffer::Iterator i);
+
+  void SetTtl (uint8_t ttl);
+  uint8_t GetTtl (void) const;
+private:
+  uint8_t m_ttl;
+};
+
 } //namespace ns3
 
 #endif /* SOCKET_H */
