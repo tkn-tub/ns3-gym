@@ -27,7 +27,7 @@
 #include "tcp-l4-protocol.h"
 #include "ipv4-l3-protocol.h"
 #include "arp-l3-protocol.h"
-#include "udp-impl.h"
+#include "udp-socket-factory-impl.h"
 #include "tcp-impl.h"
 #include "ipv4-impl.h"
 
@@ -58,18 +58,18 @@ AddInternetStack (Ptr<Node> node)
   ipv4L4Demux->Insert (udp);
   ipv4L4Demux->Insert (tcp);
 
-  Ptr<UdpImpl> udpImpl = CreateObject<UdpImpl> ();
+  Ptr<UdpSocketFactoryImpl> udpFactory = CreateObject<UdpSocketFactoryImpl> ();
   Ptr<TcpImpl> tcpImpl = CreateObject<TcpImpl> ();
   Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> ();
 
-  udpImpl->SetUdp (udp);
+  udpFactory->SetUdp (udp);
   tcpImpl->SetTcp (tcp);
   ipv4Impl->SetIpv4 (ipv4);
 
   node->AggregateObject (ipv4);
   node->AggregateObject (arp);
   node->AggregateObject (ipv4Impl);
-  node->AggregateObject (udpImpl);
+  node->AggregateObject (udpFactory);
   node->AggregateObject (tcpImpl);
   node->AggregateObject (ipv4L4Demux);
 }

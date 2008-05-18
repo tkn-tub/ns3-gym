@@ -28,7 +28,7 @@ def build(bld):
         'ipv4-impl.cc',
         'ascii-trace.cc',
         'pcap-trace.cc',
-        'udp-impl.cc',
+        'udp-socket-factory-impl.cc',
         'tcp-impl.cc',
         'pending-data.cc',
         'sequence-number.cc',

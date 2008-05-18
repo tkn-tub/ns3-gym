@@ -17,8 +17,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef UDP_IMPL_H
-#define UDP_IMPL_H
+#ifndef UDP_SOCKET_FACTORY_IMPL_H
+#define UDP_SOCKET_FACTORY_IMPL_H
 
 #include "ns3/udp-socket-factory.h"
 #include "ns3/ptr.h"
@@ -31,21 +31,19 @@ class UdpL4Protocol;
  * \brief Object to create UDP socket instances 
  * \internal
  *
- * This class implements the API for UDP sockets.
- * It is a socket factory (deriving from class SocketFactory) and can
- * also hold global variables used to initialize newly created sockets, 
- * such as values that are set through the sysctl or proc interfaces in Linux.
+ * This class implements the API for creating UDP sockets.
+ * It is a socket factory (deriving from class SocketFactory).
  */
-class UdpImpl : public UdpSocketFactory
+class UdpSocketFactoryImpl : public UdpSocketFactory
 {
 public:
-  UdpImpl ();
-  virtual ~UdpImpl ();
+  UdpSocketFactoryImpl ();
+  virtual ~UdpSocketFactoryImpl ();
 
   void SetUdp (Ptr<UdpL4Protocol> udp);
 
   /**
-   * \brief Implements a method to create a UdpImpl-based socket and return
+   * \brief Implements a method to create a Udp-based socket and return
    * a base class smart pointer to the socket.
    * \internal
    *
@@ -61,4 +59,4 @@ private:
 
 } // namespace ns3
 
-#endif /* UDP_IMPL_H */
+#endif /* UDP_SOCKET_FACTORY_IMPL_H */

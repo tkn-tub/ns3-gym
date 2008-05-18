@@ -49,6 +49,7 @@ main (int argc, char *argv[])
 #if 0
   LogComponentEnable ("CsmaBroadcastExample", LOG_LEVEL_INFO);
 #endif
+  LogComponentEnable ("CsmaBroadcastExample", LOG_PREFIX_TIME);
 
   //
   // Make the random number generators generate reproducible results.
