@@ -27,6 +27,7 @@
 #include "ns3/socket.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/udp-socketx.h"
 
 namespace ns3 {
 
@@ -35,7 +36,7 @@ class Node;
 class Packet;
 class UdpL4Protocol;
 
-class UdpSocket : public Socket
+class UdpSocket : public UdpSocketx
 {
 public:
   static TypeId GetTypeId (void);
@@ -62,6 +63,14 @@ public:
 
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual uint32_t GetRxAvailable (void) const;
+
+  // Attributes set through UdpSocket base class 
+  virtual void SetRcvBufSize (uint32_t size);
+  virtual uint32_t GetRcvBufSize (void) const;
+  virtual void SetIpTtl (uint32_t ipTtl);
+  virtual uint32_t GetIpTtl (void) const;
+  virtual void SetIpMulticastTtl (uint32_t ipTtl);
+  virtual uint32_t GetIpMulticastTtl (void) const;
 
 private:
   friend class UdpSocketFactory;
@@ -90,10 +99,10 @@ private:
   std::queue<Ptr<Packet> > m_deliveryQueue;
   uint32_t m_rxAvailable;
   
-  // Socket options (UdpSocket attributes)
+  // Socket attributes
   uint32_t m_rcvBufSize;
-  uint8_t m_ipTtl;
-  uint8_t m_ipMulticastTtl;
+  uint32_t m_ipTtl;
+  uint32_t m_ipMulticastTtl;
 
 };
 

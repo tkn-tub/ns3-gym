@@ -49,6 +49,8 @@ class Packet;
 class Socket : public Object
 {
 public:
+// static TypeId GetTypeId (void);
+
   Socket (void);
   virtual ~Socket (void);
 

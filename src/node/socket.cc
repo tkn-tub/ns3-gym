@@ -30,6 +30,19 @@ NS_LOG_COMPONENT_DEFINE ("Socket");
 
 namespace ns3 {
 
+#if 0
+TypeId
+Socket::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::Socket")
+    .SetParent<Object> ()
+    .AddConstructor<Socket> ()
+  ;
+  return tid;
+}
+
+#endif
+
 Socket::Socket (void)
 {
   NS_LOG_FUNCTION_NOARGS ();

@@ -29,15 +29,11 @@ class Socket;
 /**
  * \brief API to create UDP socket instances 
  *
- * This abstract class defines the API for UDP sockets.
- * This class also can hold the global default variables used to
- * initialize newly created sockets, such as values that are
- * set through the sysctl or proc interfaces in Linux.
-
+ * This abstract class defines the API for UDP socket factory.
  * All UDP implementations must provide an implementation of CreateSocket
  * below.
  * 
- * \see UdpImpl
+ * \see UdpSocketFactoryImpl
  */
 class UdpSocketFactory : public SocketFactory
 {

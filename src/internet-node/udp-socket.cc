@@ -38,29 +38,15 @@ namespace ns3 {
 
 static const uint32_t MAX_IPV4_UDP_DATAGRAM_SIZE = 65507;
 
+// Add attributes generic to all UdpSockets to base class UdpSocket
 TypeId
 UdpSocket::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UdpSocket")
-    .SetParent<Socket> ()
+    .SetParent<UdpSocketx> ()
     .AddConstructor<UdpSocket> ()
     .AddTraceSource ("Drop", "Drop UDP packet due to receive buffer overflow",
                      MakeTraceSourceAccessor (&UdpSocket::m_dropTrace))
-    .AddAttribute ("RcvBufSize",
-                   "UdpSocket maximum receive buffer size (bytes)",
-                   UintegerValue (0xffffffffl),
-                   MakeUintegerAccessor (&UdpSocket::m_rcvBufSize),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("IpTtl",
-                   "socket-specific TTL for unicast IP packets (if non-zero)",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&UdpSocket::m_ipTtl),
-                   MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("IpMulticastTtl",
-                   "socket-specific TTL for multicast IP packets (if non-zero)",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&UdpSocket::m_ipMulticastTtl),
-                   MakeUintegerChecker<uint8_t> ())
     ;
   return tid;
 }
@@ -323,6 +309,7 @@ UdpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
   // irrespective of what is set in these socket options.  So, this tagging  
   // may end up setting the TTL of a limited broadcast packet to be
   // the same as a unicast, but it will be fixed further down the stack
+  //NS_LOG_UNCOND ("IPttl: " << m_ipTtl);
   if (m_ipMulticastTtl != 0 && dest.IsMulticast ())
     {
       SocketIpTtlTag tag;
@@ -456,6 +443,43 @@ UdpSocket::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
     }
 }
 
+
+void 
+UdpSocket::SetRcvBufSize (uint32_t size)
+{
+  m_rcvBufSize = size;
+}
+
+uint32_t 
+UdpSocket::GetRcvBufSize (void) const
+{
+  return m_rcvBufSize;
+}
+
+void 
+UdpSocket::SetIpTtl (uint32_t ipTtl)
+{
+  m_ipTtl = ipTtl;
+}
+
+uint32_t 
+UdpSocket::GetIpTtl (void) const
+{
+  return m_ipTtl;
+}
+
+void 
+UdpSocket::SetIpMulticastTtl (uint32_t ipTtl)
+{
+  m_ipMulticastTtl = ipTtl;
+}
+
+uint32_t 
+UdpSocket::GetIpMulticastTtl (void) const
+{
+  return m_ipMulticastTtl;
+}
+
 } //namespace ns3
 
 
@@ -490,8 +514,9 @@ public:
 
 
 UdpSocketTest::UdpSocketTest ()
-  : Test ("UdpSocket") {}
-
+  : Test ("UdpSocket") 
+{
+}
 
 void UdpSocketTest::ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
 {
@@ -652,7 +677,6 @@ InetSocketAddress (Ipv4Address("255.255.255.255"), 1234)), 123);
 
   return result;
 }
-
 
 static UdpSocketTest gUdpSocketTest;
 
