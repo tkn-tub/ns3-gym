@@ -17,8 +17,8 @@
  *
  * Author: Raj Bhattacharjea <raj.b@gatech.edu>
  */
-#ifndef TCP_SOCKET_H
-#define TCP_SOCKET_H
+#ifndef TCP_SOCKET_IMPL_H
+#define TCP_SOCKET_IMPL_H
 
 #include <stdint.h>
 #include <queue>
@@ -42,16 +42,16 @@ class Packet;
 class TcpL4Protocol;
 class TcpHeader;
 
-class TcpSocket : public Socket
+class TcpSocketImpl : public Socket
 {
 public:
   static TypeId GetTypeId (void);
   /**
    * Create an unbound tcp socket.
    */
-  TcpSocket ();
-  TcpSocket (const TcpSocket& sock);
-  virtual ~TcpSocket ();
+  TcpSocketImpl ();
+  TcpSocketImpl (const TcpSocketImpl& sock);
+  virtual ~TcpSocketImpl ();
 
   void SetNode (Ptr<Node> node);
   void SetTcp (Ptr<TcpL4Protocol> tcp);
@@ -110,7 +110,7 @@ private:
   // Manage data tx/rx
   void NewRx (Ptr<Packet>, const TcpHeader&, const Address&);
   // XXX This should be virtual and overridden
-  Ptr<TcpSocket> Copy ();
+  Ptr<TcpSocketImpl> Copy ();
   void NewAck (SequenceNumber seq); 
   // XXX This should be virtual and overridden
   void DupAck (const TcpHeader& t, uint32_t count); 
@@ -194,4 +194,4 @@ private:
 
 }//namespace ns3
 
-#endif /* TCP_SOCKET_H */
+#endif /* TCP_SOCKET_IMPL_H */

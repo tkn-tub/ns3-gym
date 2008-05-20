@@ -37,7 +37,7 @@ class TcpL4Protocol;
  * <a href="http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/">
  * Georgia Tech Network Simulator (GTNetS)</a>.
  * 
- * Most of the logic is in class ns3::TcpSocket.
+ * Most of the logic is in class ns3::TcpSocketImpl.
  */
 class TcpImpl : public Tcp
 {

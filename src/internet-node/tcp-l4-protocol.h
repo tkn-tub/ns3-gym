@@ -59,7 +59,7 @@ public:
   virtual int GetVersion (void) const;
 
   /**
-   * \return A smart Socket pointer to a TcpSocket, allocated by this instance
+   * \return A smart Socket pointer to a TcpSocketImpl, allocated by this instance
    * of the TCP protocol
    */
   Ptr<Socket> CreateSocket (void);
@@ -73,7 +73,7 @@ public:
 
   void DeAllocate (Ipv4EndPoint *endPoint);
 
-//   // called by TcpSocket.
+//   // called by TcpSocketImpl.
 //   bool Connect (const Ipv4Address& saddr, const Ipv4Address& daddr,
 //                 uint16_t sport, uint16_t dport);
 
@@ -107,7 +107,7 @@ private:
   Ipv4EndPointDemux *m_endPoints;
   ObjectFactory m_rttFactory;
 private:
-  friend class TcpSocket;
+  friend class TcpSocketImpl;
   void SendPacket (Ptr<Packet>, TcpHeader,
                   Ipv4Address, Ipv4Address);
   static ObjectFactory GetDefaultRttEstimatorFactory (void);

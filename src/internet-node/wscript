@@ -23,7 +23,7 @@ def build(bld):
         'arp-l3-protocol.cc',
         'ipv4-loopback-interface.cc',
         'udp-socket-impl.cc',
-        'tcp-socket.cc',
+        'tcp-socket-impl.cc',
         'ipv4-end-point-demux.cc',
         'ipv4-impl.cc',
         'ascii-trace.cc',

@@ -30,7 +30,7 @@
 #include "ipv4-end-point-demux.h"
 #include "ipv4-end-point.h"
 #include "ipv4-l3-protocol.h"
-#include "tcp-socket.h"
+#include "tcp-socket-impl.h"
 
 #include "tcp-typedefs.h"
 
@@ -379,7 +379,7 @@ TcpL4Protocol::CreateSocket (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   Ptr<RttEstimator> rtt = m_rttFactory.Create<RttEstimator> ();
-  Ptr<TcpSocket> socket = CreateObject<TcpSocket> ();
+  Ptr<TcpSocketImpl> socket = CreateObject<TcpSocketImpl> ();
   socket->SetNode (m_node);
   socket->SetTcp (this);
   socket->SetRtt (rtt);
