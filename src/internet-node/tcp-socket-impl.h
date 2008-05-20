@@ -24,7 +24,7 @@
 #include <queue>
 #include "ns3/callback.h"
 #include "ns3/traced-value.h"
-#include "ns3/socket.h"
+#include "ns3/tcp-socket.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/event-id.h"
@@ -42,7 +42,7 @@ class Packet;
 class TcpL4Protocol;
 class TcpHeader;
 
-class TcpSocketImpl : public Socket
+class TcpSocketImpl : public TcpSocket
 {
 public:
   static TypeId GetTypeId (void);

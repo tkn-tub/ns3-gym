@@ -90,7 +90,7 @@ TcpSocketImpl::GetTypeId ()
 }
 
 TcpSocketImpl::TcpSocketImpl(const TcpSocketImpl& sock)
-  : Socket(sock), //copy the base class callbacks
+  : TcpSocket(sock), //copy the base class callbacks
     m_skipRetxResched (sock.m_skipRetxResched),
     m_dupAckCount (sock.m_dupAckCount),
     m_delAckCount (0),
