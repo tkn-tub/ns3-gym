@@ -29,7 +29,7 @@ def build(bld):
         'ascii-trace.cc',
         'pcap-trace.cc',
         'udp-socket-factory-impl.cc',
-        'tcp-impl.cc',
+        'tcp-socket-factory-impl.cc',
         'pending-data.cc',
         'sequence-number.cc',
         'rtt-estimator.cc',

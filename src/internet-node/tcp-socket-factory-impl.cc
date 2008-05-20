@@ -17,35 +17,35 @@
  *
  * Author: Raj Bhattacharjea <raj.b@gatech.edu>
  */
-#include "tcp-impl.h"
+#include "tcp-socket-factory-impl.h"
 #include "tcp-l4-protocol.h"
 #include "ns3/socket.h"
 #include "ns3/assert.h"
 
 namespace ns3 {
 
-TcpImpl::TcpImpl ()
+TcpSocketFactoryImpl::TcpSocketFactoryImpl ()
   : m_tcp (0)
 {}
-TcpImpl::~TcpImpl ()
+TcpSocketFactoryImpl::~TcpSocketFactoryImpl ()
 {
   NS_ASSERT (m_tcp == 0);
 }
 
 void 
-TcpImpl::SetTcp (Ptr<TcpL4Protocol> tcp)
+TcpSocketFactoryImpl::SetTcp (Ptr<TcpL4Protocol> tcp)
 {
   m_tcp = tcp;
 }
 
 Ptr<Socket>
-TcpImpl::CreateSocket (void)
+TcpSocketFactoryImpl::CreateSocket (void)
 {
   return m_tcp->CreateSocket ();
 }
 
 void 
-TcpImpl::DoDispose (void)
+TcpSocketFactoryImpl::DoDispose (void)
 {
   m_tcp = 0;
   TcpSocketFactory::DoDispose ();
