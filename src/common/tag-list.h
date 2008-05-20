@@ -77,9 +77,10 @@ public:
       uint32_t start;
       uint32_t end;
       TagBuffer buf;
+      Item (TagBuffer buf);
     private:
       friend class TagList;
-      Item (TagBuffer buf);
+      friend class TagList::Iterator;
     };
     bool HasNext (void) const;
     struct TagList::Iterator::Item Next (void);
