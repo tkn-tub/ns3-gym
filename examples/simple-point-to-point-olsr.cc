@@ -67,7 +67,6 @@ main (int argc, char *argv[])
 
   // Set up some default values for the simulation.  Use the 
 
-  Config::SetDefault ("ns3::UdpSocketx::IpTtl", UintegerValue (19));
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("448kb/s"));
 
