@@ -2,7 +2,7 @@
 
 def configure(conf):
     check = conf.create_pkgconfig_configurator()
-    check.name = 'gtk+-2.0'
+    check.name = 'gtk+-2.0 >= 2.12'
     check.uselib = 'GTK_CONFIG_STORE'
     check.mandatory = False
     conf.env['ENABLE_GTK_CONFIG_STORE'] = check.run()
