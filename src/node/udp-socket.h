@@ -20,8 +20,8 @@
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef __UDP_SOCKETX_H__
-#define __UDP_SOCKETX_H__
+#ifndef __UDP_SOCKET_H__
+#define __UDP_SOCKET_H__
 
 #include "socket.h"
 #include "ns3/traced-callback.h"
@@ -40,13 +40,13 @@ class Packet;
  * This class exists solely for hosting UdpSocket attributes that can
  * be reused across different implementations.
  */
-class UdpSocketx : public Socket
+class UdpSocket : public Socket
 {
 public:
  static TypeId GetTypeId (void);
  
-  UdpSocketx (void);
-  virtual ~UdpSocketx (void);
+  UdpSocket (void);
+  virtual ~UdpSocket (void);
 
   virtual enum Socket::SocketErrno GetErrno (void) const = 0;
   virtual Ptr<Node> GetNode (void) const = 0;

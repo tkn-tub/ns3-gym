@@ -22,47 +22,47 @@
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
 #include "ns3/trace-source-accessor.h"
-#include "udp-socketx.h"
+#include "udp-socket.h"
 
-NS_LOG_COMPONENT_DEFINE ("UdpSocketx");
+NS_LOG_COMPONENT_DEFINE ("UdpSocket");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UdpSocketx);
+NS_OBJECT_ENSURE_REGISTERED (UdpSocket);
 
 TypeId
-UdpSocketx::GetTypeId (void)
+UdpSocket::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::UdpSocketx")
+  static TypeId tid = TypeId ("ns3::UdpSocket")
     .SetParent<Socket> ()
     .AddAttribute ("RcvBufSize",
                    "UdpSocket maximum receive buffer size (bytes)",
                    UintegerValue (0xffffffffl),
-                   MakeUintegerAccessor (&UdpSocketx::GetRcvBufSize,
-                                         &UdpSocketx::SetRcvBufSize),
+                   MakeUintegerAccessor (&UdpSocket::GetRcvBufSize,
+                                         &UdpSocket::SetRcvBufSize),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("IpTtl",
                    "socket-specific TTL for unicast IP packets (if non-zero)",
                    UintegerValue (0),
-                   MakeUintegerAccessor (&UdpSocketx::GetIpTtl,
-                                         &UdpSocketx::SetIpTtl),
+                   MakeUintegerAccessor (&UdpSocket::GetIpTtl,
+                                         &UdpSocket::SetIpTtl),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("IpMulticastTtl",
                    "socket-specific TTL for multicast IP packets (if non-zero)",
                    UintegerValue (0),
-                   MakeUintegerAccessor (&UdpSocketx::GetIpMulticastTtl,
-                                         &UdpSocketx::SetIpMulticastTtl),
+                   MakeUintegerAccessor (&UdpSocket::GetIpMulticastTtl,
+                                         &UdpSocket::SetIpMulticastTtl),
                    MakeUintegerChecker<uint32_t> ())
     ;
   return tid;
 }
 
-UdpSocketx::UdpSocketx ()
+UdpSocket::UdpSocket ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-UdpSocketx::~UdpSocketx ()
+UdpSocket::~UdpSocket ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 }

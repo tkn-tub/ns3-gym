@@ -17,8 +17,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef UDP_SOCKET_H
-#define UDP_SOCKET_H
+#ifndef UDP_SOCKET_IMPL_H
+#define UDP_SOCKET_IMPL_H
 
 #include <stdint.h>
 #include <queue>
@@ -27,7 +27,7 @@
 #include "ns3/socket.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/udp-socketx.h"
+#include "ns3/udp-socket.h"
 
 namespace ns3 {
 
@@ -36,15 +36,15 @@ class Node;
 class Packet;
 class UdpL4Protocol;
 
-class UdpSocket : public UdpSocketx
+class UdpSocketImpl : public UdpSocket
 {
 public:
   static TypeId GetTypeId (void);
   /**
    * Create an unbound udp socket.
    */
-  UdpSocket ();
-  virtual ~UdpSocket ();
+  UdpSocketImpl ();
+  virtual ~UdpSocketImpl ();
 
   void SetNode (Ptr<Node> node);
   void SetUdp (Ptr<UdpL4Protocol> udp);
@@ -108,4 +108,4 @@ private:
 
 }//namespace ns3
 
-#endif /* UDP_SOCKET_H */
+#endif /* UDP_SOCKET_IMPL_H */
