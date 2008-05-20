@@ -122,7 +122,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
 
-  OnOffHelper onoff ("ns3::Udp",
+  OnOffHelper onoff ("ns3::UdpSocketFactory",
     Address (InetSocketAddress (i3i2.GetAddress (1), port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable(1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable(0)));
@@ -132,7 +132,7 @@ main (int argc, char *argv[])
   apps.Stop (Seconds(10.0));
 
   // Create an optional packet sink to receive these packets
-  PacketSinkHelper sink ("ns3::Udp",
+  PacketSinkHelper sink ("ns3::UdpSocketFactory",
     Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   apps = sink.Install (c.Get (3));
   apps.Start (Seconds (1.0));

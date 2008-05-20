@@ -95,10 +95,8 @@ UdpEchoClient::StartApplication (void)
 
   if (!m_socket)
     {
-      TypeId tid = TypeId::LookupByName ("ns3::Udp");
-      Ptr<SocketFactory> socketFactory = 
-        GetNode ()->GetObject<SocketFactory> (tid);
-      m_socket = socketFactory->CreateSocket ();
+      TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
+      m_socket = Socket::CreateSocket (GetNode(), tid);
       m_socket->Bind ();
       m_socket->Connect (InetSocketAddress (m_peerAddress, m_peerPort));
     }

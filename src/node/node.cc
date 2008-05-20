@@ -186,6 +186,11 @@ Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet,
                          uint16_t protocol, const Address &from)
 {
   bool found = false;
+  // if there are (potentially) multiple handlers, we need to copy the
+  // packet before passing it to each handler, because handlers may
+  // modify it.
+  bool copyNeeded = (m_handlers.size () > 1);
+
   for (ProtocolHandlerList::iterator i = m_handlers.begin ();
        i != m_handlers.end (); i++)
     {
@@ -195,7 +200,7 @@ Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet,
           if (i->protocol == 0 || 
               i->protocol == protocol)
             {
-              i->handler (device, packet, protocol, from);
+              i->handler (device, (copyNeeded ? packet->Copy () : packet), protocol, from);
               found = true;
             }
         }

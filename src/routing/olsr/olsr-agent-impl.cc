@@ -31,7 +31,7 @@
 
 #include "olsr-agent-impl.h"
 #include "ns3/socket-factory.h"
-#include "ns3/udp.h"
+#include "ns3/udp-socket-factory.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/random-variable.h"
@@ -258,9 +258,7 @@ void AgentImpl::Start ()
   // Add OLSR as routing protocol, with slightly higher priority than
   // static routing.
   m_ipv4->AddRoutingProtocol (m_routingTable, 10);
-
-  Ptr<SocketFactory> socketFactory = GetObject<SocketFactory> (Udp::GetTypeId ());
-
+  
   Ipv4Address loopback ("127.0.0.1");
   for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
     {
@@ -281,7 +279,8 @@ void AgentImpl::Start ()
         }
 
       // Create a socket to listen only on this interface
-      Ptr<Socket> socket = socketFactory->CreateSocket ();
+      Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (), 
+        UdpSocketFactory::GetTypeId()); 
       socket->SetRecvCallback (MakeCallback (&AgentImpl::RecvOlsr,  this));
       if (socket->Bind (InetSocketAddress (addr, OLSR_PORT_NUMBER)))
         {

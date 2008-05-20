@@ -150,9 +150,8 @@ int main (int argc, char *argv[])
   apps.Start (Seconds (0.0));
 
   // and generate traffic to remote sink.
-  Ptr<SocketFactory> socketFactory = 
-    c0.Get (0)->GetObject<Tcp> ();
-  Ptr<Socket> localSocket = socketFactory->CreateSocket ();
+  //TypeId tid = TypeId::LookupByName ("ns3::Tcp");
+  Ptr<Socket> localSocket = Socket::CreateSocket (c0.Get (0), Tcp::GetTypeId ());
   localSocket->Bind ();
   Simulator::ScheduleNow (&StartFlow, localSocket, nBytes,
                           ipInterfs.GetAddress (1), servPort);
@@ -164,7 +163,7 @@ int main (int argc, char *argv[])
   ascii.open ("tcp-large-transfer.tr");
   PointToPointHelper::EnableAsciiAll (ascii);
 
-  InternetStackHelper::EnablePcapAll ("tcp-large-transfer");
+  PointToPointHelper::EnablePcapAll ("tcp-large-transfer");
 
   Simulator::StopAt (Seconds(10));
   Simulator::Run ();

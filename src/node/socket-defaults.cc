@@ -1,7 +1,5 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2007 INRIA
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -15,35 +13,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "udp.h"
+#include "socket-defaults.h"
 #include "ns3/uinteger.h"
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Udp);
+NS_OBJECT_ENSURE_REGISTERED (SocketDefaults);
 
-TypeId Udp::GetTypeId (void)
+TypeId SocketDefaults::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::Udp")
-    .SetParent<SocketFactory> ()
-    .AddAttribute ("DefaultRxBufferSize",
-                   "Default UDP maximum receive buffer size (bytes)",
+  static TypeId tid = TypeId ("ns3::SocketDefaults")
+    .SetParent<Object> ()
+    .AddAttribute ("DefaultSndBufLimit",
+                   "Default maximum receive buffer size (bytes)",
                    UintegerValue (0xffffffffl),
-                   MakeUintegerAccessor (&Udp::m_defaultRxBuffer),
+                   MakeUintegerAccessor (&SocketDefaults::m_defaultSndBufLimit),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("DefaultRcvBufLimit",
+                   "Default maximum receive buffer size (bytes)",
+                   UintegerValue (0xffffffffl),
+                   MakeUintegerAccessor (&SocketDefaults::m_defaultRcvBufLimit),
                    MakeUintegerChecker<uint32_t> ())
     ;
   return tid;
-}
-
-Udp::Udp ()
-{}
-
-uint32_t
-Udp::GetDefaultRxBuffer (void) const
-{
-  return m_defaultRxBuffer;
 }
 
 } // namespace ns3

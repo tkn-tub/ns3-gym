@@ -351,7 +351,7 @@ LogComponentPrintList (void)
     }
 }
 
-void LogRegisterTimePrinter (LogTimePrinter printer)
+void LogSetTimePrinter (LogTimePrinter printer)
 {
   g_logTimePrinter = printer;
 }

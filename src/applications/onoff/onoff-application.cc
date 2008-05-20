@@ -35,7 +35,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/trace-source-accessor.h"
 #include "onoff-application.h"
-#include "ns3/udp.h"
+#include "ns3/udp-socket-factory.h"
 
 NS_LOG_COMPONENT_DEFINE ("OnOffApplication");
 
@@ -79,7 +79,7 @@ OnOffApplication::GetTypeId (void)
                    MakeUintegerAccessor (&OnOffApplication::m_maxBytes),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Protocol", "The type of protocol to use.",
-                   TypeIdValue (Udp::GetTypeId ()),
+                   TypeIdValue (UdpSocketFactory::GetTypeId ()),
                    MakeTypeIdAccessor (&OnOffApplication::m_tid),
                    MakeTypeIdChecker ())
     .AddTraceSource ("Tx", "A new packet is created and is sent",
@@ -130,8 +130,7 @@ void OnOffApplication::StartApplication() // Called at time specified by Start
   // Create the socket if not already
   if (!m_socket)
     {
-      Ptr<SocketFactory> socketFactory = GetNode ()->GetObject<SocketFactory> (m_tid);
-      m_socket = socketFactory->CreateSocket ();
+      m_socket = Socket::CreateSocket (GetNode(), m_tid);
       m_socket->Bind ();
       m_socket->Connect (m_peer);
     }

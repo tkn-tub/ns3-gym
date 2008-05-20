@@ -67,17 +67,18 @@ public:
   virtual int Connect(const Address &address);
   virtual int Send (Ptr<Packet> p);
   virtual int Send (const uint8_t* buf, uint32_t size);
-  virtual int SendTo(const Address &address, Ptr<Packet> p);
+  virtual int SendTo(Ptr<Packet> p, const Address &address);
   virtual uint32_t GetTxAvailable (void) const;
   virtual int Listen(uint32_t queueLimit);
 
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual uint32_t GetRxAvailable (void) const;
 
+protected:
   virtual void SetSndBuf (uint32_t size);
-  virtual uint32_t GetSndBuf (void);
+  virtual uint32_t GetSndBuf (void) const;
   virtual void SetRcvBuf (uint32_t size);
-  virtual uint32_t GetRcvBuf (void);
+  virtual uint32_t GetRcvBuf (void) const;
 
 private:
   friend class Tcp;
@@ -186,8 +187,9 @@ private:
   std::queue<Ptr<Packet> > m_deliveryQueue;
   uint32_t m_rxAvailable;
   
-  // buffer limit for the outgoing queue
-  uint32_t m_maxTxBuffer;
+  uint32_t m_sndBufLimit;   // buffer limit for the outgoing queue
+  uint32_t m_rcvBufLimit;   // maximum receive socket buffer size
+  bool m_wouldBlock;  // set to true whenever socket would block on send()
 };
 
 }//namespace ns3

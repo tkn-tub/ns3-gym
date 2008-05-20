@@ -140,7 +140,7 @@ main (int argc, char *argv[])
 
   // Configure a multicast packet generator that generates a packet
   // every few seconds
-  OnOffHelper onoff ("ns3::Udp", 
+  OnOffHelper onoff ("ns3::UdpSocketFactory", 
     Address (InetSocketAddress (multicastGroup, multicastPort)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
@@ -156,7 +156,7 @@ main (int argc, char *argv[])
   srcC.Stop (Seconds(10.));
 
   // Create an optional packet sink to receive these packets
-  PacketSinkHelper sink ("ns3::Udp",
+  PacketSinkHelper sink ("ns3::UdpSocketFactory",
                          InetSocketAddress (Ipv4Address::GetAny(), multicastPort));
 
   ApplicationContainer sinkC = sink.Install (c1.Get (2)); // Node n4 

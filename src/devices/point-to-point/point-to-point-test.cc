@@ -27,7 +27,7 @@ void
 PointToPointTest::SendOnePacket (Ptr<PointToPointNetDevice> device)
 {
   Ptr<Packet> p = Create<Packet> ();
-  device->Send (p, device->GetBroadcast (), 1);
+  device->Send (p, device->GetBroadcast (), 0x800);
 }
 
 
@@ -44,10 +44,10 @@ PointToPointTest::RunTests (void)
 
   devA->Attach (channel);
   devA->SetAddress (Mac48Address::Allocate ());
-  devA->AddQueue (CreateObject<DropTailQueue> ());
+  devA->SetQueue (CreateObject<DropTailQueue> ());
   devB->Attach (channel);
   devB->SetAddress (Mac48Address::Allocate ());
-  devB->AddQueue (CreateObject<DropTailQueue> ());
+  devB->SetQueue (CreateObject<DropTailQueue> ());
 
   a->AddDevice (devA);
   b->AddDevice (devB);

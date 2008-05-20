@@ -22,11 +22,31 @@
 
 #include "ns3/log.h"
 #include "ns3/packet.h"
+#include "node.h"
 #include "socket.h"
+#include "socket-factory.h"
 
 NS_LOG_COMPONENT_DEFINE ("Socket");
 
 namespace ns3 {
+
+#if 0
+TypeId
+Socket::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::Socket")
+    .SetParent<Object> ()
+    .AddConstructor<Socket> ()
+  ;
+  return tid;
+}
+
+#endif
+
+Socket::Socket (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+}
 
 Socket::~Socket ()
 {
@@ -38,6 +58,16 @@ Socket::SetCloseUnblocksCallback (Callback<void,Ptr<Socket> > closeUnblocks)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_closeUnblocks = closeUnblocks;
+}
+
+Ptr<Socket> 
+Socket::CreateSocket (Ptr<Node> node, TypeId tid)
+{
+  Ptr<Socket> s;
+  Ptr<SocketFactory> socketFactory = node->GetObject<SocketFactory> (tid);
+  s = socketFactory->CreateSocket ();
+  NS_ASSERT (s != 0);
+  return s;
 }
 
 void 
@@ -129,7 +159,7 @@ Socket::Recv (void)
   return Recv (std::numeric_limits<uint32_t>::max(), 0);
 }
 
-int Socket::SendTo (const Address &address, const uint8_t* buf, uint32_t size)
+int Socket::SendTo (const uint8_t* buf, uint32_t size, const Address &address)
 {
   NS_LOG_FUNCTION_NOARGS ();
   Ptr<Packet> p;
@@ -141,7 +171,7 @@ int Socket::SendTo (const Address &address, const uint8_t* buf, uint32_t size)
     {
       p = Create<Packet> (size);
     }
-  return SendTo (address,p);
+  return SendTo (p, address);
 }
 
 void 
@@ -298,6 +328,54 @@ Address
 SocketRxAddressTag::GetAddress (void) const
 {
   return m_address;
+}
+
+SocketIpTtlTag::SocketIpTtlTag ()  
+{
+}
+
+uint32_t 
+SocketIpTtlTag::GetUid (void)
+{
+  static uint32_t uid = ns3::Tag::AllocateUid<SocketIpTtlTag> ("SocketIpTtlTag.ns3");
+  return uid;
+}
+
+void
+SocketIpTtlTag::Print (std::ostream &os) const
+{
+  os << "ttl="<< m_ttl;
+}
+
+uint32_t 
+SocketIpTtlTag::GetSerializedSize (void) const
+{
+  return 0;
+}
+
+void 
+SocketIpTtlTag::Serialize (Buffer::Iterator i) const
+{
+  // for local use in stack only
+}
+
+uint32_t 
+SocketIpTtlTag::Deserialize (Buffer::Iterator i)
+{
+  // for local use in stack only
+  return 0;
+}
+
+void 
+SocketIpTtlTag::SetTtl (uint8_t ttl)
+{
+  m_ttl = ttl;
+}
+
+uint8_t 
+SocketIpTtlTag::GetTtl (void) const
+{
+  return m_ttl;
 }
 
 }//namespace ns3

@@ -25,11 +25,27 @@
 #include "ns3/internet-stack.h"
 #include "ns3/packet-socket-factory.h"
 #include "ns3/config.h"
+#include "ns3/simulator.h"
 
 namespace ns3 {
 
 std::vector<InternetStackHelper::Trace> InternetStackHelper::m_traces;
 std::string InternetStackHelper::m_pcapBaseFilename;
+
+void
+InternetStackHelper::Cleanup (void)
+{
+  uint32_t illegal = std::numeric_limits<uint32_t>::max();
+
+  for (std::vector<Trace>::iterator i = m_traces.begin ();
+       i != m_traces.end (); i++)
+  {
+    i->nodeId = illegal;
+    i->interfaceId = illegal;
+    i->writer = 0;
+  }
+  m_traces.clear ();
+}
 
 void 
 InternetStackHelper::Install (NodeContainer c)
@@ -52,6 +68,8 @@ InternetStackHelper::Install (NodeContainer c)
 void
 InternetStackHelper::EnablePcapAll (std::string filename)
 {
+  Simulator::ScheduleDestroy (&InternetStackHelper::Cleanup);
+
   InternetStackHelper::m_pcapBaseFilename = filename;
   Config::Connect ("/NodeList/*/$ns3::Ipv4L3Protocol/Tx",
                               MakeCallback (&InternetStackHelper::LogTxIp));

@@ -24,10 +24,29 @@
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
+#include "ns3/uinteger.h"
+#include "ns3/trace-source-accessor.h"
 
 NS_LOG_COMPONENT_DEFINE ("PacketSocket");
 
 namespace ns3 {
+
+TypeId
+PacketSocket::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::PacketSocket")
+    .SetParent<Socket> ()
+    .AddConstructor<PacketSocket> ()
+    .AddTraceSource ("Drop", "Drop packet due to receive buffer overflow",
+                     MakeTraceSourceAccessor (&PacketSocket::m_dropTrace))
+    .AddAttribute ("RcvBufSize",
+                   "PacketSocket maximum receive buffer size (bytes)",
+                   UintegerValue (0xffffffffl),
+                   MakeUintegerAccessor (&PacketSocket::m_rcvBufSize),
+                   MakeUintegerChecker<uint32_t> ())
+    ;
+  return tid;
+}
 
 PacketSocket::PacketSocket () : m_rxAvailable (0)
 {
@@ -41,6 +60,7 @@ PacketSocket::PacketSocket () : m_rxAvailable (0)
 void 
 PacketSocket::SetNode (Ptr<Node> node)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_node = node;
 }
 
@@ -111,11 +131,11 @@ PacketSocket::DoBind (const PacketSocketAddress &address)
   Ptr<NetDevice> dev ;
   if (address.IsSingleDevice ())
     {
-      dev = 0;
+      dev = m_node->GetDevice (address.GetSingleDevice ());
     }
   else
     {
-      dev = m_node->GetDevice (address.GetSingleDevice ());
+      dev = 0;
     }
   m_node->RegisterProtocolHandler (MakeCallback (&PacketSocket::ForwardUp, this),
                                    address.GetProtocol (), dev);
@@ -211,18 +231,19 @@ PacketSocket::Send (Ptr<Packet> p)
       m_errno = ERROR_NOTCONN;
       return -1;
     }
-  return SendTo (m_destAddr, p);
+  return SendTo (p, m_destAddr);
 }
 
+// XXX must limit it to interface MTU
 uint32_t 
 PacketSocket::GetTxAvailable (void) const
 {
-  // No finite send buffer is modelled
-  return 0xffffffff;
+  // Use 65536 for now
+  return 0xffff;
 }
 
 int
-PacketSocket::SendTo(const Address &address, Ptr<Packet> p)
+PacketSocket::SendTo(Ptr<Packet> p, const Address &address)
 {
   NS_LOG_FUNCTION_NOARGS ();
   PacketSocketAddress ad;
@@ -249,6 +270,11 @@ PacketSocket::SendTo(const Address &address, Ptr<Packet> p)
     {
       NS_LOG_LOGIC ("ERROR_AFNOSUPPORT");
       m_errno = ERROR_AFNOSUPPORT;
+      return -1;
+    }
+  if (p->GetSize () > GetTxAvailable ())
+    {
+      m_errno = ERROR_MSGSIZE;
       return -1;
     }
   ad = PacketSocketAddress::ConvertFrom (address);
@@ -308,18 +334,32 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet,
   address.SetSingleDevice (device->GetIfIndex ());
   address.SetProtocol (protocol);
 
-  SocketRxAddressTag tag;
-  tag.SetAddress (address);
-  packet->AddTag (tag);
-  m_deliveryQueue.push (packet);
-  m_rxAvailable += packet->GetSize ();
-  NS_LOG_LOGIC ("UID is " << packet->GetUid() << " PacketSocket " << this);
-  NotifyDataRecv ();
+  if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufSize)
+    {
+      SocketRxAddressTag tag;
+      tag.SetAddress (address);
+      packet->AddTag (tag);
+      m_deliveryQueue.push (packet);
+      m_rxAvailable += packet->GetSize ();
+      NS_LOG_LOGIC ("UID is " << packet->GetUid() << " PacketSocket " << this);
+      NotifyDataRecv ();
+    }
+  else
+    {
+      // In general, this case should not occur unless the
+      // receiving application reads data from this socket slowly
+      // in comparison to the arrival rate
+      //
+      // drop and trace packet
+      NS_LOG_WARN ("No receive buffer space available.  Drop.");
+      m_dropTrace (packet);
+    }
 }
 
 Ptr<Packet> 
 PacketSocket::Recv (uint32_t maxSize, uint32_t flags)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_deliveryQueue.empty() )
     {
       return 0;
@@ -340,28 +380,10 @@ PacketSocket::Recv (uint32_t maxSize, uint32_t flags)
 uint32_t
 PacketSocket::GetRxAvailable (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   // We separately maintain this state to avoid walking the queue 
   // every time this might be called
   return m_rxAvailable;
-}
-
-void 
-PacketSocket::SetSndBuf (uint32_t size)
-{
-}
-uint32_t 
-PacketSocket::GetSndBuf (void)
-{
-return 0;
-}
-void 
-PacketSocket::SetRcvBuf (uint32_t size)
-{
-}
-uint32_t 
-PacketSocket::GetRcvBuf (void)
-{
-return 0;
 }
 
 }//namespace ns3

@@ -71,10 +71,8 @@ UdpEchoServer::StartApplication (void)
 
   if (!m_socket)
     {
-      TypeId tid = TypeId::LookupByName ("ns3::Udp");
-      Ptr<SocketFactory> socketFactory = 
-        GetNode ()->GetObject<SocketFactory> (tid);
-      m_socket = socketFactory->CreateSocket ();
+      TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
+      m_socket = Socket::CreateSocket (GetNode(), tid);
       InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), m_port);
       m_socket->Bind (local);
     }
@@ -111,7 +109,7 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
             address.GetIpv4());
 
           NS_LOG_LOGIC ("Echoing packet");
-          socket->SendTo (from, packet);
+          socket->SendTo (packet, from);
         }
     }
 }

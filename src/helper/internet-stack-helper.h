@@ -49,10 +49,18 @@ public:
    *
    * Enable pcap output on each protocol instance which is of the
    * ns3::Ipv4L3Protocol type.  Both Tx and Rx events will be logged.
+   *
+   * \warning If you perform multiple simulations in a single script,
+   * each iteration of the simulation will result in the trace files
+   * being overwritten.  We don't attempt to anticipate what a user
+   * might actually want to do, so we leave it up to them.  If you want
+   * to save any particular data, do so manually at inter-simulation 
+   * time.
    */
   static void EnablePcapAll (std::string filename);
 
 private:
+  static void Cleanup (void);
   static void LogRxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);
   static void LogTxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);
   static Ptr<PcapWriter> GetStream (uint32_t nodeId, uint32_t interfaceId);

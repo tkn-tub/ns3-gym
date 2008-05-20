@@ -121,7 +121,7 @@ public:
    * @param queue a pointer to the queue for which object is assuming
    *        ownership.
    */
-  void AddQueue (Ptr<Queue> queue);
+  void SetQueue (Ptr<Queue> queue);
   /**
    * Attach a receive ErrorModel to the PointToPointNetDevice.
    *
@@ -131,7 +131,7 @@ public:
    * @see ErrorModel
    * @param em a pointer to the ErrorModel 
    */
-  void AddReceiveErrorModel(Ptr<ErrorModel> em);
+  void SetReceiveErrorModel(Ptr<ErrorModel> em);
   /**
    * Receive a packet from a connected PointToPointChannel.
    *

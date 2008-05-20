@@ -17,8 +17,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef UDP_SOCKET_H
-#define UDP_SOCKET_H
+#ifndef UDP_SOCKET_IMPL_H
+#define UDP_SOCKET_IMPL_H
 
 #include <stdint.h>
 #include <queue>
@@ -27,6 +27,7 @@
 #include "ns3/socket.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/udp-socket.h"
 
 namespace ns3 {
 
@@ -35,15 +36,15 @@ class Node;
 class Packet;
 class UdpL4Protocol;
 
-class UdpSocket : public Socket
+class UdpSocketImpl : public UdpSocket
 {
 public:
   static TypeId GetTypeId (void);
   /**
    * Create an unbound udp socket.
    */
-  UdpSocket ();
-  virtual ~UdpSocket ();
+  UdpSocketImpl ();
+  virtual ~UdpSocketImpl ();
 
   void SetNode (Ptr<Node> node);
   void SetUdp (Ptr<UdpL4Protocol> udp);
@@ -57,19 +58,22 @@ public:
   virtual int ShutdownRecv (void);
   virtual int Connect(const Address &address);
   virtual int Send (Ptr<Packet> p);
-  virtual int SendTo(const Address &address,Ptr<Packet> p);
+  virtual int SendTo (Ptr<Packet> p, const Address &address);
   virtual uint32_t GetTxAvailable (void) const;
 
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual uint32_t GetRxAvailable (void) const;
 
-  virtual void SetSndBuf (uint32_t size);
-  virtual uint32_t GetSndBuf (void);
-  virtual void SetRcvBuf (uint32_t size);
-  virtual uint32_t GetRcvBuf (void);
+  // Attributes set through UdpSocket base class 
+  virtual void SetRcvBufSize (uint32_t size);
+  virtual uint32_t GetRcvBufSize (void) const;
+  virtual void SetIpTtl (uint32_t ipTtl);
+  virtual uint32_t GetIpTtl (void) const;
+  virtual void SetIpMulticastTtl (uint32_t ipTtl);
+  virtual uint32_t GetIpMulticastTtl (void) const;
 
 private:
-  friend class Udp;
+  friend class UdpSocketFactory;
   // invoked by Udp class
   int FinishBind (void);
   void ForwardUp (Ptr<Packet> p, Ipv4Address ipv4, uint16_t port);
@@ -95,9 +99,13 @@ private:
   std::queue<Ptr<Packet> > m_deliveryQueue;
   uint32_t m_rxAvailable;
   
-  uint32_t m_udp_rmem;
+  // Socket attributes
+  uint32_t m_rcvBufSize;
+  uint32_t m_ipTtl;
+  uint32_t m_ipMulticastTtl;
+
 };
 
 }//namespace ns3
 
-#endif /* UDP_SOCKET_H */
+#endif /* UDP_SOCKET_IMPL_H */
