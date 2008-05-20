@@ -48,7 +48,7 @@ void
 TcpImpl::DoDispose (void)
 {
   m_tcp = 0;
-  Tcp::DoDispose ();
+  TcpSocketFactory::DoDispose ();
 }
 
 } // namespace ns3

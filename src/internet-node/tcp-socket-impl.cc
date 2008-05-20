@@ -176,7 +176,7 @@ void
 TcpSocketImpl::SetNode (Ptr<Node> node)
 {
   m_node = node;
-  Ptr<Tcp> t = node->GetObject<Tcp> ();
+  Ptr<TcpSocketFactory> t = node->GetObject<TcpSocketFactory> ();
   m_segmentSize = t->GetDefaultSegSize ();
   m_rxWindowSize = t->GetDefaultAdvWin ();
   m_advertisedWindowSize = t->GetDefaultAdvWin ();

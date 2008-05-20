@@ -17,8 +17,8 @@
  *
  * Author: Raj Bhattacharjea <raj.b@gatech.edu>
  */
-#ifndef TCP_H
-#define TCP_H
+#ifndef TCP_SOCKET_FACTORY_H
+#define TCP_SOCKET_FACTORY_H
 
 #include "socket-factory.h"
 
@@ -34,13 +34,14 @@ class Socket;
  * initialize newly created sockets, such as values that are
  * set through the sysctl or proc interfaces in Linux.
 
- * All TCP implementations must provide an implementation of CreateSocket
+ * All TCP socket factory implementations must provide an implementation 
+ * of CreateSocket
  * below, and should make use of the default values configured below.
  * 
- * \see TcpImpl
+ * \see TcpSocketFactoryImpl
  *
  */
-class Tcp : public SocketFactory
+class TcpSocketFactory : public SocketFactory
 {
 public:
   static TypeId GetTypeId (void);
@@ -74,4 +75,4 @@ private:
 
 } // namespace ns3
 
-#endif /* TCP_H */
+#endif /* TCP_SOCKET_FACTORY_H */

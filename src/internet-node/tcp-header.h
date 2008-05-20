@@ -24,7 +24,7 @@
 #include <stdint.h>
 #include "ns3/header.h"
 #include "ns3/buffer.h"
-#include "ns3/tcp.h"
+#include "ns3/tcp-socket-factory.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/sequence-number.h"
 

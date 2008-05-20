@@ -20,7 +20,7 @@
 #ifndef TCP_IMPL_H
 #define TCP_IMPL_H
 
-#include "ns3/tcp.h"
+#include "ns3/tcp-socket-factory.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {
@@ -39,7 +39,7 @@ class TcpL4Protocol;
  * 
  * Most of the logic is in class ns3::TcpSocketImpl.
  */
-class TcpImpl : public Tcp
+class TcpImpl : public TcpSocketFactory
 {
 public:
   TcpImpl ();

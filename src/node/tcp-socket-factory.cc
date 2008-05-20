@@ -17,122 +17,122 @@
  *
  * Author: Raj Bhattacharjea <raj.b@gatech.edu>
  */
-#include "tcp.h"
+#include "tcp-socket-factory.h"
 #include "ns3/uinteger.h"
 #include "ns3/double.h"
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Tcp);
+NS_OBJECT_ENSURE_REGISTERED (TcpSocketFactory);
 
 TypeId
-Tcp::GetTypeId (void)
+TcpSocketFactory::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::Tcp")
+  static TypeId tid = TypeId ("ns3::TcpSocketFactory")
     .SetParent<SocketFactory> ()
     .AddAttribute ("DefaultSegmentSize",
                    "Default TCP maximum segment size in bytes (may be adjusted based on MTU discovery)",
                    UintegerValue (536),
-                   MakeUintegerAccessor (&Tcp::m_defaultSegSize),
+                   MakeUintegerAccessor (&TcpSocketFactory::m_defaultSegSize),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("DefaultAdvertisedWindowSize",
                    "Default TCP advertised window size (bytes)",
                    UintegerValue (0xffff),
-                   MakeUintegerAccessor (&Tcp::m_defaultAdvWin),
+                   MakeUintegerAccessor (&TcpSocketFactory::m_defaultAdvWin),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("DefaultSlowStartThreshold",
                    "Default TCP slow start threshold (bytes)",
                    UintegerValue (0xffff),
-                   MakeUintegerAccessor (&Tcp::m_defaultSsThresh),
+                   MakeUintegerAccessor (&TcpSocketFactory::m_defaultSsThresh),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("DefaultTxBufferSize",
                    "Default TCP maximum transmit buffer size (bytes)",
                    UintegerValue (0xffffffffl),
-                   MakeUintegerAccessor (&Tcp::m_defaultTxBuffer),
+                   MakeUintegerAccessor (&TcpSocketFactory::m_defaultTxBuffer),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("DefaultRxBufferSize",
                    "Default TCP maximum receive buffer size (bytes)",
                    UintegerValue (0xffffffffl),
-                   MakeUintegerAccessor (&Tcp::m_defaultRxBuffer),
+                   MakeUintegerAccessor (&TcpSocketFactory::m_defaultRxBuffer),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("DefaultInitialCongestionWindowSize",
                    "Default TCP initial congestion window size (segments)",
                    UintegerValue (1),
-                   MakeUintegerAccessor (&Tcp::m_defaultInitialCwnd),
+                   MakeUintegerAccessor (&TcpSocketFactory::m_defaultInitialCwnd),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("DefaultConnTimeout",
                    "Default TCP retransmission timeout when opening connection (seconds)",
                    UintegerValue (3),
-                   MakeUintegerAccessor (&Tcp::m_defaultConnTimeout),
+                   MakeUintegerAccessor (&TcpSocketFactory::m_defaultConnTimeout),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("DefaultConnCount",
                    "Default number of connection attempts (SYN retransmissions) before returning failure",
                    UintegerValue (6),
-                   MakeUintegerAccessor (&Tcp::m_defaultConnCount),
+                   MakeUintegerAccessor (&TcpSocketFactory::m_defaultConnCount),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("DefaultDelAckTimeout",
                    "Default timeout value for TCP delayed acks, in seconds",
                    DoubleValue (0.2),
-                   MakeDoubleAccessor (&Tcp::m_defaultDelAckTimeout),
+                   MakeDoubleAccessor (&TcpSocketFactory::m_defaultDelAckTimeout),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("DefaultDelAckCount",
                    "Default number of packets to wait before sending a TCP ack",
                    UintegerValue (2),
-                   MakeUintegerAccessor (&Tcp::m_defaultDelAckCount),
+                   MakeUintegerAccessor (&TcpSocketFactory::m_defaultDelAckCount),
                    MakeUintegerChecker<uint32_t> ())
      ;
   return tid;
 }
 
 uint32_t 
-Tcp::GetDefaultSegSize (void) const
+TcpSocketFactory::GetDefaultSegSize (void) const
 {
   return m_defaultSegSize;
 }
 uint32_t 
-Tcp::GetDefaultAdvWin (void) const
+TcpSocketFactory::GetDefaultAdvWin (void) const
 {
   return m_defaultAdvWin;
 }
 uint32_t 
-Tcp::GetDefaultSsThresh (void) const
+TcpSocketFactory::GetDefaultSsThresh (void) const
 {
   return m_defaultSsThresh;
 }
 uint32_t 
-Tcp::GetDefaultTxBuffer (void) const
+TcpSocketFactory::GetDefaultTxBuffer (void) const
 {
   return m_defaultTxBuffer;
 }
 uint32_t 
-Tcp::GetDefaultRxBuffer (void) const
+TcpSocketFactory::GetDefaultRxBuffer (void) const
 {
   return m_defaultRxBuffer;
 }
 uint32_t 
-Tcp::GetDefaultInitialCwnd (void) const
+TcpSocketFactory::GetDefaultInitialCwnd (void) const
 {
   return m_defaultInitialCwnd;
 }
 uint32_t 
-Tcp::GetDefaultConnTimeout (void) const
+TcpSocketFactory::GetDefaultConnTimeout (void) const
 {
   return m_defaultConnTimeout;
 }
 uint32_t 
-Tcp::GetDefaultConnCount (void) const
+TcpSocketFactory::GetDefaultConnCount (void) const
 {
   return m_defaultConnCount;
 }
 
 double
-Tcp::GetDefaultDelAckTimeout (void) const
+TcpSocketFactory::GetDefaultDelAckTimeout (void) const
 {
   return m_defaultDelAckTimeout;
 }
 
 uint32_t
-Tcp::GetDefaultDelAckCount (void) const
+TcpSocketFactory::GetDefaultDelAckCount (void) const
 {
   return m_defaultDelAckCount;
 }
