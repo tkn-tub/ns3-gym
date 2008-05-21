@@ -64,6 +64,7 @@ public:
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual uint32_t GetRxAvailable (void) const;
 
+private:
   // Attributes set through UdpSocket base class 
   virtual void SetRcvBufSize (uint32_t size);
   virtual uint32_t GetRcvBufSize (void) const;
@@ -72,7 +73,6 @@ public:
   virtual void SetIpMulticastTtl (uint32_t ipTtl);
   virtual uint32_t GetIpMulticastTtl (void) const;
 
-private:
   friend class UdpSocketFactory;
   // invoked by Udp class
   int FinishBind (void);

@@ -28,6 +28,7 @@
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
 #include "ns3/object.h"
+#include "ns3/nstime.h"
 
 namespace ns3 {
 
@@ -61,16 +62,28 @@ public:
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags) = 0;
   virtual uint32_t GetRxAvailable (void) const = 0;
 
-public:
-#if 0
+private:
   // Indirect the attribute setting and getting through private virtual methods
+  virtual void SetSndBufSize (uint32_t size) = 0;
+  virtual uint32_t GetSndBufSize (void) const = 0;
   virtual void SetRcvBufSize (uint32_t size) = 0;
   virtual uint32_t GetRcvBufSize (void) const = 0;
-  virtual void SetIpTtl (uint32_t ipTtl) = 0;
-  virtual uint32_t GetIpTtl (void) const = 0;
-  virtual void SetIpMulticastTtl (uint32_t ipTtl) = 0;
-  virtual uint32_t GetIpMulticastTtl (void) const = 0;
-#endif
+  virtual void SetSegSize (uint32_t size) = 0;
+  virtual uint32_t GetSegSize (void) const = 0;
+  virtual void SetAdvWin (uint32_t window) = 0;
+  virtual uint32_t GetAdvWin (void) const = 0;
+  virtual void SetSSThresh (uint32_t threshold) = 0;
+  virtual uint32_t GetSSThresh (void) const = 0;
+  virtual void SetInitialCwnd (uint32_t count) = 0;
+  virtual uint32_t GetInitialCwnd (void) const = 0;
+  virtual void SetConnTimeout (Time timeout) = 0;
+  virtual Time GetConnTimeout (void) const = 0;
+  virtual void SetConnCount (uint32_t count) = 0;
+  virtual uint32_t GetConnCount (void) const = 0;
+  virtual void SetDelAckTimeout (Time timeout) = 0;
+  virtual Time GetDelAckTimeout (void) const = 0;
+  virtual void SetDelAckMaxCount (uint32_t count) = 0;
+  virtual uint32_t GetDelAckMaxCount (void) const = 0;
   
 };
 

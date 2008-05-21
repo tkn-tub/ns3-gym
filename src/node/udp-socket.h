@@ -61,7 +61,7 @@ public:
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags) = 0;
   virtual uint32_t GetRxAvailable (void) const = 0;
 
-public:
+private:
   // Indirect the attribute setting and getting through private virtual methods
   virtual void SetRcvBufSize (uint32_t size) = 0;
   virtual uint32_t GetRcvBufSize (void) const = 0;

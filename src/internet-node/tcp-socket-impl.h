@@ -74,12 +74,6 @@ public:
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual uint32_t GetRxAvailable (void) const;
 
-protected:
-  virtual void SetSndBuf (uint32_t size);
-  virtual uint32_t GetSndBuf (void) const;
-  virtual void SetRcvBuf (uint32_t size);
-  virtual uint32_t GetRcvBuf (void) const;
-
 private:
   friend class Tcp;
   // invoked by Tcp class
@@ -120,6 +114,28 @@ private:
   void Retransmit ();
   void CommonNewAck (SequenceNumber seq, bool skipTimer = false);
 
+  // attribute related
+  virtual void SetSndBufSize (uint32_t size);
+  virtual uint32_t GetSndBufSize (void) const;
+  virtual void SetRcvBufSize (uint32_t size);
+  virtual uint32_t GetRcvBufSize (void) const;
+  virtual void SetSegSize (uint32_t size);
+  virtual uint32_t GetSegSize (void) const;
+  virtual void SetAdvWin (uint32_t window);
+  virtual uint32_t GetAdvWin (void) const;
+  virtual void SetSSThresh (uint32_t threshold);
+  virtual uint32_t GetSSThresh (void) const;
+  virtual void SetInitialCwnd (uint32_t cwnd);
+  virtual uint32_t GetInitialCwnd (void) const;
+  virtual void SetConnTimeout (Time timeout);
+  virtual Time GetConnTimeout (void) const;
+  virtual void SetConnCount (uint32_t count);
+  virtual uint32_t GetConnCount (void) const;
+  virtual void SetDelAckTimeout (Time timeout);
+  virtual Time GetDelAckTimeout (void) const;
+  virtual void SetDelAckMaxCount (uint32_t count);
+  virtual uint32_t GetDelAckMaxCount (void) const;
+
   bool m_skipRetxResched;
   uint32_t m_dupAckCount;
   EventId m_retxEvent;
@@ -128,7 +144,7 @@ private:
   EventId m_delAckEvent;
   uint32_t m_delAckCount;
   uint32_t m_delAckMaxCount;
-  Time m_delAckTimout;
+  Time m_delAckTimeout;
 
   Ipv4EndPoint *m_endPoint;
   Ptr<Node> m_node;
@@ -187,9 +203,11 @@ private:
   std::queue<Ptr<Packet> > m_deliveryQueue;
   uint32_t m_rxAvailable;
   
-  uint32_t m_sndBufLimit;   // buffer limit for the outgoing queue
-  uint32_t m_rcvBufLimit;   // maximum receive socket buffer size
   bool m_wouldBlock;  // set to true whenever socket would block on send()
+
+  // Attributes
+  uint32_t m_rcvBufSize;   // maximum receive socket buffer size
+  uint32_t m_sndBufSize;   // buffer limit for the outgoing queue
 };
 
 }//namespace ns3

@@ -21,7 +21,9 @@
 #include "ns3/object.h"
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
+#include "ns3/double.h"
 #include "ns3/trace-source-accessor.h"
+#include "ns3/nstime.h"
 #include "tcp-socket.h"
 
 NS_LOG_COMPONENT_DEFINE ("TcpSocket");
@@ -35,26 +37,66 @@ TcpSocket::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TcpSocket")
     .SetParent<Socket> ()
-#if 0
+    .AddAttribute ("SndBufSize",
+                   "TcpSocket maximum transmit buffer size (bytes)",
+                   UintegerValue (0xffffffffl),
+                   MakeUintegerAccessor (&TcpSocket::GetSndBufSize,
+                                         &TcpSocket::SetSndBufSize),
+                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("RcvBufSize",
                    "TcpSocket maximum receive buffer size (bytes)",
                    UintegerValue (0xffffffffl),
                    MakeUintegerAccessor (&TcpSocket::GetRcvBufSize,
                                          &TcpSocket::SetRcvBufSize),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("IpTtl",
-                   "socket-specific TTL for unicast IP packets (if non-zero)",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&TcpSocket::GetIpTtl,
-                                         &TcpSocket::SetIpTtl),
+    .AddAttribute ("SegmentSize",
+                   "TCP maximum segment size in bytes (may be adjusted based on MTU discovery)",
+                   UintegerValue (536),
+                   MakeUintegerAccessor (&TcpSocket::GetSegSize,
+                                         &TcpSocket::SetSegSize),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("IpMulticastTtl",
-                   "socket-specific TTL for multicast IP packets (if non-zero)",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&TcpSocket::GetIpMulticastTtl,
-                                         &TcpSocket::SetIpMulticastTtl),
+    .AddAttribute ("AdvertisedWindowSize",
+                   "TCP advertised window size (bytes)",
+                   UintegerValue (0xffff),
+                   MakeUintegerAccessor (&TcpSocket::GetAdvWin,
+                                         &TcpSocket::SetAdvWin),
                    MakeUintegerChecker<uint32_t> ())
-#endif
+    .AddAttribute ("SlowStartThreshold",
+                   "TCP slow start threshold (bytes)",
+                   UintegerValue (0xffff),
+                   MakeUintegerAccessor (&TcpSocket::GetSSThresh,
+                                         &TcpSocket::SetSSThresh),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("InitialCwnd",
+                   "TCP initial congestion window size (segments)",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&TcpSocket::GetInitialCwnd,
+                                         &TcpSocket::SetInitialCwnd),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("ConnTimeout",
+                   "TCP retransmission timeout when opening connection (seconds)",
+                   TimeValue (Seconds (3)),
+                   MakeTimeAccessor (&TcpSocket::GetConnTimeout,
+                                     &TcpSocket::SetConnTimeout),
+                   MakeTimeChecker ())
+    .AddAttribute ("ConnCount",
+                   "Number of connection attempts (SYN retransmissions) before returning failure",
+                   UintegerValue (6),
+                   MakeUintegerAccessor (&TcpSocket::GetConnCount,
+                                         &TcpSocket::SetConnCount),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("DelAckTimeout",
+                   "Timeout value for TCP delayed acks, in seconds",
+                   TimeValue (Seconds (0.2)),
+                   MakeTimeAccessor (&TcpSocket::GetDelAckTimeout,
+                                       &TcpSocket::SetDelAckTimeout),
+                   MakeTimeChecker ())
+    .AddAttribute ("DelAckCount",
+                   "Number of packets to wait before sending a TCP ack",
+                   UintegerValue (2),
+                   MakeUintegerAccessor (&TcpSocket::GetDelAckMaxCount,
+                                         &TcpSocket::SetDelAckMaxCount),
+                   MakeUintegerChecker<uint32_t> ())
     ;
   return tid;
 }

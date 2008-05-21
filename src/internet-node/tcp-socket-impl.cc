@@ -48,7 +48,7 @@ TypeId
 TcpSocketImpl::GetTypeId ()
 {
   static TypeId tid = TypeId("ns3::TcpSocketImpl")
-    .SetParent<Socket> ()
+    .SetParent<TcpSocket> ()
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
                      MakeTraceSourceAccessor (&TcpSocketImpl::m_cWnd))
@@ -81,12 +81,9 @@ TcpSocketImpl::GetTypeId ()
     m_rtt (0),
     m_lastMeasuredRtt (Seconds(0.0)),
     m_rxAvailable (0), 
-    m_sndBufLimit (0xffffffff), 
-    m_rcvBufLimit (0xffffffff), 
     m_wouldBlock (false) 
 {
   NS_LOG_FUNCTION (this);
-  
 }
 
 TcpSocketImpl::TcpSocketImpl(const TcpSocketImpl& sock)
@@ -95,7 +92,7 @@ TcpSocketImpl::TcpSocketImpl(const TcpSocketImpl& sock)
     m_dupAckCount (sock.m_dupAckCount),
     m_delAckCount (0),
     m_delAckMaxCount (sock.m_delAckMaxCount),
-    m_delAckTimout (sock.m_delAckTimout),
+    m_delAckTimeout (sock.m_delAckTimeout),
     m_endPoint (0),
     m_node (sock.m_node),
     m_tcp (sock.m_tcp),
@@ -128,9 +125,7 @@ TcpSocketImpl::TcpSocketImpl(const TcpSocketImpl& sock)
     m_lastMeasuredRtt (Seconds(0.0)),
     m_cnTimeout (sock.m_cnTimeout),
     m_cnCount (sock.m_cnCount),
-    m_rxAvailable (0),
-    m_sndBufLimit (0xffffffff),
-    m_rcvBufLimit (0xffffffff) 
+    m_rxAvailable (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC("Invoked the copy constructor");
@@ -176,17 +171,9 @@ void
 TcpSocketImpl::SetNode (Ptr<Node> node)
 {
   m_node = node;
-  Ptr<TcpSocketFactory> t = node->GetObject<TcpSocketFactory> ();
-  m_segmentSize = t->GetDefaultSegSize ();
-  m_rxWindowSize = t->GetDefaultAdvWin ();
-  m_advertisedWindowSize = t->GetDefaultAdvWin ();
-  m_cWnd = t->GetDefaultInitialCwnd () * m_segmentSize;
-  m_ssThresh = t->GetDefaultSsThresh ();
-  m_initialCWnd = t->GetDefaultInitialCwnd ();
-  m_cnTimeout = Seconds (t->GetDefaultConnTimeout ());
-  m_cnCount = t->GetDefaultConnCount ();
-  m_delAckTimout = Seconds(t->GetDefaultDelAckTimeout ());
-  m_delAckMaxCount = t->GetDefaultDelAckCount ();
+  // Initialize some variables 
+  m_cWnd = m_initialCWnd * m_segmentSize;
+  m_rxWindowSize = m_advertisedWindowSize;
 }
 
 void 
@@ -452,12 +439,12 @@ TcpSocketImpl::GetTxAvailable (void) const
     {
       uint32_t unAckedDataSize = 
         m_pendingData->SizeFromSeq (m_firstPendingSequence, m_highestRxAck);
-      NS_ASSERT (m_sndBufLimit >= unAckedDataSize); //else a logical error
-      return m_sndBufLimit-unAckedDataSize;
+      NS_ASSERT (m_sndBufSize >= unAckedDataSize); //else a logical error
+      return m_sndBufSize-unAckedDataSize;
     }
   else
     {
-      return m_sndBufLimit;
+      return m_sndBufSize;
     }
 }
 
@@ -498,34 +485,6 @@ TcpSocketImpl::GetRxAvailable (void) const
   // We separately maintain this state to avoid walking the queue 
   // every time this might be called
   return m_rxAvailable;
-}
-
-void
-TcpSocketImpl::SetSndBuf (uint32_t size)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_sndBufLimit = size;
-}
-
-uint32_t
-TcpSocketImpl::GetSndBuf (void) const 
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_sndBufLimit;
-}
-
-void
-TcpSocketImpl::SetRcvBuf (uint32_t size)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_rcvBufLimit = size;
-}
-
-uint32_t
-TcpSocketImpl::GetRcvBuf (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_rcvBufLimit;
 }
 
 void
@@ -1153,7 +1112,7 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
   }
   else
   {
-    m_delAckEvent = Simulator::Schedule (m_delAckTimout, &TcpSocketImpl::DelAckTimeout, this);
+    m_delAckEvent = Simulator::Schedule (m_delAckTimeout, &TcpSocketImpl::DelAckTimeout, this);
   }
 }
 
@@ -1349,6 +1308,126 @@ void TcpSocketImpl::Retransmit ()
 
   m_tcp->SendPacket (p, tcpHeader, m_endPoint->GetLocalAddress (),
     m_remoteAddress);
+}
+
+void
+TcpSocketImpl::SetSndBufSize (uint32_t size)
+{
+  m_sndBufSize = size;
+}
+
+uint32_t
+TcpSocketImpl::GetSndBufSize (void) const
+{
+  return m_sndBufSize;
+}
+
+void
+TcpSocketImpl::SetRcvBufSize (uint32_t size)
+{
+  m_rcvBufSize = size;
+}
+
+uint32_t
+TcpSocketImpl::GetRcvBufSize (void) const
+{
+  return m_rcvBufSize;
+}
+
+void
+TcpSocketImpl::SetSegSize (uint32_t size)
+{
+  m_segmentSize = size;
+}
+
+uint32_t
+TcpSocketImpl::GetSegSize (void) const
+{
+  return m_segmentSize;
+}
+
+void
+TcpSocketImpl::SetAdvWin (uint32_t window)
+{
+  m_advertisedWindowSize = window;
+}
+
+uint32_t
+TcpSocketImpl::GetAdvWin (void) const
+{
+  return m_advertisedWindowSize;
+}
+
+void
+TcpSocketImpl::SetSSThresh (uint32_t threshold)
+{
+  m_ssThresh = threshold;
+}
+
+uint32_t
+TcpSocketImpl::GetSSThresh (void) const
+{
+  return m_ssThresh;
+}
+
+void
+TcpSocketImpl::SetInitialCwnd (uint32_t cwnd)
+{
+  m_initialCWnd = cwnd;
+}
+
+uint32_t
+TcpSocketImpl::GetInitialCwnd (void) const
+{
+  return m_initialCWnd;
+}
+
+void 
+TcpSocketImpl::SetConnTimeout (Time timeout)
+{
+  m_cnTimeout = timeout;
+}
+
+Time
+TcpSocketImpl::GetConnTimeout (void) const
+{
+  return m_cnTimeout;
+}
+
+void 
+TcpSocketImpl::SetConnCount (uint32_t count)
+{
+  m_cnCount = count;
+}
+
+uint32_t 
+TcpSocketImpl::GetConnCount (void) const
+{
+  return m_cnCount;
+}
+
+void 
+TcpSocketImpl::SetDelAckTimeout (Time timeout)
+{
+  m_delAckTimeout = timeout;
+}
+
+Time
+TcpSocketImpl::GetDelAckTimeout (void) const
+{
+  return m_delAckTimeout;
+}
+
+void
+TcpSocketImpl::SetDelAckMaxCount (uint32_t count)
+{
+  m_delAckMaxCount = count;
+}
+
+uint32_t
+TcpSocketImpl::GetDelAckMaxCount (void) const
+{
+  return m_delAckMaxCount;
 }
 
 }//namespace ns3
