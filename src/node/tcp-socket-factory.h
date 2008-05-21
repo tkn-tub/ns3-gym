@@ -17,38 +17,39 @@
  *
  * Author: Raj Bhattacharjea <raj.b@gatech.edu>
  */
-#include "tcp-impl.h"
-#include "tcp-l4-protocol.h"
-#include "ns3/socket.h"
-#include "ns3/assert.h"
+#ifndef TCP_SOCKET_FACTORY_H
+#define TCP_SOCKET_FACTORY_H
+
+#include "socket-factory.h"
 
 namespace ns3 {
 
-TcpImpl::TcpImpl ()
-  : m_tcp (0)
-{}
-TcpImpl::~TcpImpl ()
-{
-  NS_ASSERT (m_tcp == 0);
-}
+class Socket;
 
-void 
-TcpImpl::SetTcp (Ptr<TcpL4Protocol> tcp)
-{
-  m_tcp = tcp;
-}
+/**
+ * \brief API to create TCP socket instances 
+ *
+ * This abstract class defines the API for TCP sockets.
+ * This class also holds the global default variables used to
+ * initialize newly created sockets, such as values that are
+ * set through the sysctl or proc interfaces in Linux.
 
-Ptr<Socket>
-TcpImpl::CreateSocket (void)
+ * All TCP socket factory implementations must provide an implementation 
+ * of CreateSocket
+ * below, and should make use of the default values configured below.
+ * 
+ * \see TcpSocketFactoryImpl
+ *
+ */
+class TcpSocketFactory : public SocketFactory
 {
-  return m_tcp->CreateSocket ();
-}
+public:
+  static TypeId GetTypeId (void);
 
-void 
-TcpImpl::DoDispose (void)
-{
-  m_tcp = 0;
-  Tcp::DoDispose ();
-}
+  virtual Ptr<Socket> CreateSocket (void) = 0;
+
+};
 
 } // namespace ns3
+
+#endif /* TCP_SOCKET_FACTORY_H */

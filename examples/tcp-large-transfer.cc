@@ -143,15 +143,15 @@ int main (int argc, char *argv[])
   uint16_t servPort = 50000;
 
   // Create a packet sink to receive these packets
-  PacketSinkHelper sink ("ns3::Tcp",
+  PacketSinkHelper sink ("ns3::TcpSocketFactory",
                          InetSocketAddress (Ipv4Address::GetAny (), servPort));
 
   ApplicationContainer apps = sink.Install (c1.Get (1));
   apps.Start (Seconds (0.0));
 
   // and generate traffic to remote sink.
-  //TypeId tid = TypeId::LookupByName ("ns3::Tcp");
-  Ptr<Socket> localSocket = Socket::CreateSocket (c0.Get (0), Tcp::GetTypeId ());
+  //TypeId tid = TypeId::LookupByName ("ns3::TcpSocketFactory");
+  Ptr<Socket> localSocket = Socket::CreateSocket (c0.Get (0), TcpSocketFactory::GetTypeId ());
   localSocket->Bind ();
   Simulator::ScheduleNow (&StartFlow, localSocket, nBytes,
                           ipInterfs.GetAddress (1), servPort);

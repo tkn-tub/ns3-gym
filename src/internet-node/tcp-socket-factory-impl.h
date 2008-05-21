@@ -17,10 +17,10 @@
  *
  * Author: Raj Bhattacharjea <raj.b@gatech.edu>
  */
-#ifndef TCP_IMPL_H
-#define TCP_IMPL_H
+#ifndef TCP_SOCKET_FACTORY_IMPL_H
+#define TCP_SOCKET_FACTORY_IMPL_H
 
-#include "ns3/tcp.h"
+#include "ns3/tcp-socket-factory.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {
@@ -37,13 +37,13 @@ class TcpL4Protocol;
  * <a href="http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/">
  * Georgia Tech Network Simulator (GTNetS)</a>.
  * 
- * Most of the logic is in class ns3::TcpSocket.
+ * Most of the logic is in class ns3::TcpSocketImpl.
  */
-class TcpImpl : public Tcp
+class TcpSocketFactoryImpl : public TcpSocketFactory
 {
 public:
-  TcpImpl ();
-  virtual ~TcpImpl ();
+  TcpSocketFactoryImpl ();
+  virtual ~TcpSocketFactoryImpl ();
 
   void SetTcp (Ptr<TcpL4Protocol> tcp);
 
@@ -57,4 +57,4 @@ private:
 
 } // namespace ns3
 
-#endif /* TCP_IMPL_H */
+#endif /* TCP_SOCKET_FACTORY_IMPL_H */

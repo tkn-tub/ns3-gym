@@ -17,14 +17,14 @@
  *
  * Author: Raj Bhattacharjea <raj.b@gatech.edu>
  */
-#ifndef TCP_SOCKET_H
-#define TCP_SOCKET_H
+#ifndef TCP_SOCKET_IMPL_H
+#define TCP_SOCKET_IMPL_H
 
 #include <stdint.h>
 #include <queue>
 #include "ns3/callback.h"
 #include "ns3/traced-value.h"
-#include "ns3/socket.h"
+#include "ns3/tcp-socket.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/event-id.h"
@@ -42,16 +42,16 @@ class Packet;
 class TcpL4Protocol;
 class TcpHeader;
 
-class TcpSocket : public Socket
+class TcpSocketImpl : public TcpSocket
 {
 public:
   static TypeId GetTypeId (void);
   /**
    * Create an unbound tcp socket.
    */
-  TcpSocket ();
-  TcpSocket (const TcpSocket& sock);
-  virtual ~TcpSocket ();
+  TcpSocketImpl ();
+  TcpSocketImpl (const TcpSocketImpl& sock);
+  virtual ~TcpSocketImpl ();
 
   void SetNode (Ptr<Node> node);
   void SetTcp (Ptr<TcpL4Protocol> tcp);
@@ -73,12 +73,6 @@ public:
 
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual uint32_t GetRxAvailable (void) const;
-
-protected:
-  virtual void SetSndBuf (uint32_t size);
-  virtual uint32_t GetSndBuf (void) const;
-  virtual void SetRcvBuf (uint32_t size);
-  virtual uint32_t GetRcvBuf (void) const;
 
 private:
   friend class Tcp;
@@ -110,7 +104,7 @@ private:
   // Manage data tx/rx
   void NewRx (Ptr<Packet>, const TcpHeader&, const Address&);
   // XXX This should be virtual and overridden
-  Ptr<TcpSocket> Copy ();
+  Ptr<TcpSocketImpl> Copy ();
   void NewAck (SequenceNumber seq); 
   // XXX This should be virtual and overridden
   void DupAck (const TcpHeader& t, uint32_t count); 
@@ -120,6 +114,28 @@ private:
   void Retransmit ();
   void CommonNewAck (SequenceNumber seq, bool skipTimer = false);
 
+  // attribute related
+  virtual void SetSndBufSize (uint32_t size);
+  virtual uint32_t GetSndBufSize (void) const;
+  virtual void SetRcvBufSize (uint32_t size);
+  virtual uint32_t GetRcvBufSize (void) const;
+  virtual void SetSegSize (uint32_t size);
+  virtual uint32_t GetSegSize (void) const;
+  virtual void SetAdvWin (uint32_t window);
+  virtual uint32_t GetAdvWin (void) const;
+  virtual void SetSSThresh (uint32_t threshold);
+  virtual uint32_t GetSSThresh (void) const;
+  virtual void SetInitialCwnd (uint32_t cwnd);
+  virtual uint32_t GetInitialCwnd (void) const;
+  virtual void SetConnTimeout (Time timeout);
+  virtual Time GetConnTimeout (void) const;
+  virtual void SetConnCount (uint32_t count);
+  virtual uint32_t GetConnCount (void) const;
+  virtual void SetDelAckTimeout (Time timeout);
+  virtual Time GetDelAckTimeout (void) const;
+  virtual void SetDelAckMaxCount (uint32_t count);
+  virtual uint32_t GetDelAckMaxCount (void) const;
+
   bool m_skipRetxResched;
   uint32_t m_dupAckCount;
   EventId m_retxEvent;
@@ -128,7 +144,7 @@ private:
   EventId m_delAckEvent;
   uint32_t m_delAckCount;
   uint32_t m_delAckMaxCount;
-  Time m_delAckTimout;
+  Time m_delAckTimeout;
 
   Ipv4EndPoint *m_endPoint;
   Ptr<Node> m_node;
@@ -187,11 +203,13 @@ private:
   std::queue<Ptr<Packet> > m_deliveryQueue;
   uint32_t m_rxAvailable;
   
-  uint32_t m_sndBufLimit;   // buffer limit for the outgoing queue
-  uint32_t m_rcvBufLimit;   // maximum receive socket buffer size
   bool m_wouldBlock;  // set to true whenever socket would block on send()
+
+  // Attributes
+  uint32_t m_rcvBufSize;   // maximum receive socket buffer size
+  uint32_t m_sndBufSize;   // buffer limit for the outgoing queue
 };
 
 }//namespace ns3
 
-#endif /* TCP_SOCKET_H */
+#endif /* TCP_SOCKET_IMPL_H */
