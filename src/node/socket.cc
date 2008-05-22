@@ -30,19 +30,6 @@ NS_LOG_COMPONENT_DEFINE ("Socket");
 
 namespace ns3 {
 
-#if 0
-TypeId
-Socket::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::Socket")
-    .SetParent<Object> ()
-    .AddConstructor<Socket> ()
-  ;
-  return tid;
-}
-
-#endif
-
 Socket::Socket (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -266,40 +253,12 @@ Socket::NotifyDataRecv (void)
     }
 }
 
+/***************************************************************
+ *           Socket Tags
+ ***************************************************************/
+
 SocketRxAddressTag::SocketRxAddressTag ()  
 {
-}
-
-uint32_t 
-SocketRxAddressTag::GetUid (void)
-{
-  static uint32_t uid = ns3::Tag::AllocateUid<SocketRxAddressTag> ("SocketRxAddressTag.ns3");
-  return uid;
-}
-
-void
-SocketRxAddressTag::Print (std::ostream &os) const
-{
-  os << "address="<< m_address;
-}
-
-uint32_t 
-SocketRxAddressTag::GetSerializedSize (void) const
-{
-  return 0;
-}
-
-void 
-SocketRxAddressTag::Serialize (Buffer::Iterator i) const
-{
-  // for local use in stack only
-}
-
-uint32_t 
-SocketRxAddressTag::Deserialize (Buffer::Iterator i)
-{
-  // for local use in stack only
-  return 0;
 }
 
 void 
@@ -314,40 +273,39 @@ SocketRxAddressTag::GetAddress (void) const
   return m_address;
 }
 
+
+TypeId
+SocketRxAddressTag::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SocketRxAddressTag")
+    .SetParent<Tag> ()
+    .AddConstructor<SocketRxAddressTag> ()
+    ;
+  return tid;
+}
+TypeId
+SocketRxAddressTag::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+uint32_t 
+SocketRxAddressTag::GetSerializedSize (void) const
+{ 
+  return 0;
+}
+void 
+SocketRxAddressTag::Serialize (TagBuffer i) const
+{ 
+  // for local use in stack only
+}
+void 
+SocketRxAddressTag::Deserialize (TagBuffer i)
+{ 
+  // for local use in stack only
+}
+
 SocketIpTtlTag::SocketIpTtlTag ()  
 {
-}
-
-uint32_t 
-SocketIpTtlTag::GetUid (void)
-{
-  static uint32_t uid = ns3::Tag::AllocateUid<SocketIpTtlTag> ("SocketIpTtlTag.ns3");
-  return uid;
-}
-
-void
-SocketIpTtlTag::Print (std::ostream &os) const
-{
-  os << "ttl="<< m_ttl;
-}
-
-uint32_t 
-SocketIpTtlTag::GetSerializedSize (void) const
-{
-  return 0;
-}
-
-void 
-SocketIpTtlTag::Serialize (Buffer::Iterator i) const
-{
-  // for local use in stack only
-}
-
-uint32_t 
-SocketIpTtlTag::Deserialize (Buffer::Iterator i)
-{
-  // for local use in stack only
-  return 0;
 }
 
 void 
@@ -360,6 +318,37 @@ uint8_t
 SocketIpTtlTag::GetTtl (void) const
 {
   return m_ttl;
+}
+
+
+TypeId
+SocketIpTtlTag::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SocketIpTtlTag")
+    .SetParent<Tag> ()
+    .AddConstructor<SocketIpTtlTag> ()
+    ;
+  return tid;
+}
+TypeId
+SocketIpTtlTag::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+uint32_t 
+SocketIpTtlTag::GetSerializedSize (void) const
+{ 
+  return 0;
+}
+void 
+SocketIpTtlTag::Serialize (TagBuffer i) const
+{ 
+  // for local use in stack only
+}
+void 
+SocketIpTtlTag::Deserialize (TagBuffer i)
+{ 
+  // for local use in stack only
 }
 
 }//namespace ns3

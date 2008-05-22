@@ -98,10 +98,10 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
   while (packet = socket->Recv ())
     {
       SocketRxAddressTag tag;
-      bool found = packet->PeekTag (tag); 
+      bool found = packet->FindFirstMatchingTag (tag); 
       NS_ASSERT (found);
       Address from = tag.GetAddress ();
-      packet->RemoveTag (tag);
+      // XXX packet->RemoveTag (tag);
       if (InetSocketAddress::IsMatchingType (from))
         {
           InetSocketAddress address = InetSocketAddress::ConvertFrom (from);

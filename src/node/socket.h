@@ -368,14 +368,15 @@ class SocketRxAddressTag : public Tag
 {
 public:
   SocketRxAddressTag ();
-  static uint32_t GetUid (void);
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
-  void Serialize (Buffer::Iterator i) const;
-  uint32_t Deserialize (Buffer::Iterator i);
-
   void SetAddress (Address addr);
   Address GetAddress (void) const;
+
+  static TypeId GetTypeId (void);  
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
+
 private:
   Address m_address;
 };
@@ -388,14 +389,15 @@ class SocketIpTtlTag : public Tag
 {
 public:
   SocketIpTtlTag ();
-  static uint32_t GetUid (void);
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
-  void Serialize (Buffer::Iterator i) const;
-  uint32_t Deserialize (Buffer::Iterator i);
-
   void SetTtl (uint8_t ttl);
   uint8_t GetTtl (void) const;
+
+  static TypeId GetTypeId (void);  
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
+
 private:
   uint8_t m_ttl;
 };

@@ -490,9 +490,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   // Set TTL to 1 if it is a broadcast packet of any type.  Otherwise,
   // possibly override the default TTL if the packet is tagged
   SocketIpTtlTag tag;
-  bool found = packet->PeekTag (tag);
-  uint8_t socketTtl = tag.GetTtl ();
-  packet->RemoveTag (tag);
+  bool found = packet->FindFirstMatchingTag (tag);
 
   if (destination.IsBroadcast ()) 
     {
@@ -500,7 +498,8 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
     }
   else if (found)
     {
-      ipHeader.SetTtl (socketTtl);
+      ipHeader.SetTtl (tag.GetTtl ());
+      // XXX remove tag here?  
     }
   else
     {
