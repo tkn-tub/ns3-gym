@@ -198,11 +198,10 @@ private:
   // Timer-related members
   Time              m_cnTimeout; 
   uint32_t          m_cnCount;
-  
+
   // Temporary queue for delivering data to application
-  std::queue<Ptr<Packet> > m_deliveryQueue;
   uint32_t m_rxAvailable;
-  
+
   bool m_wouldBlock;  // set to true whenever socket would block on send()
 
   // Attributes
