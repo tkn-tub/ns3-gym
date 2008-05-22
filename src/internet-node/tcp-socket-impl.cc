@@ -461,6 +461,10 @@ Ptr<Packet>
 TcpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  if(m_bufferedData.empty())
+    {
+      return 0;
+    }
   UnAckData_t out; //serves as buffer to return up to the user
   UnAckData_t::iterator i;
   while (!m_bufferedData.empty ())
@@ -474,7 +478,7 @@ TcpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
         {
           break;  // we're done, no more in-sequence data exits
         }
-      if (i->first < m_nextRxSequence)
+      else // (i->first <= m_nextRxSequence)
         { // Two cases here.
           // 1) seq + length > nextRxSeq, can deliver partial
           // 2) seq + length <= nextRxSeq, deliver whole
@@ -488,23 +492,22 @@ TcpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
           // so don't do anything else and output it
           out[i->first]  = i->second;
         }
-      else
-        { // At this point i->first must equal nextRxSeq
-          if (i->first != m_nextRxSequence)
-            {
-              NS_FATAL_ERROR ("HuH?  NexRx failure, first " 
-              << i->first << " nextRxSeq " << m_nextRxSequence);
-            }
-        }
       m_rxAvailable -= i->second->GetSize ();
       m_bufferedData.erase (i);     // Remove from list
     }
+  if (out.size() == 0)
+    {
+      return 0;
+    }
   Ptr<Packet> outPacket = Create<Packet>();
+  SocketRxAddressTag tag;     //Packet AddAt* APIs don't preserve tags
+  out.begin()->second->PeekTag (tag); //XXX so manually copy the address tag
+  outPacket->AddTag (tag);
   for(i = out.begin(); i!=out.end(); ++i)
   {
     if (outPacket->GetSize() + i->second->GetSize() <= maxSize )
     {
-      outPacket->AddAtEnd(i->second);
+      outPacket->AddAtEnd(i->second); //XXX this doesn't copy the tags
     }
     else
     {

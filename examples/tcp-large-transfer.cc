@@ -139,7 +139,7 @@ int main (int argc, char *argv[])
   //
   ///////////////////////////////////////////////////////////////////////////
 
-  int nBytes = 2000000;
+  int nBytes = 200000;
   uint16_t servPort = 50000;
 
   // Create a packet sink to receive these packets
@@ -165,7 +165,7 @@ int main (int argc, char *argv[])
 
   PointToPointHelper::EnablePcapAll ("tcp-large-transfer");
 
-  Simulator::StopAt (Seconds(10));
+  Simulator::StopAt (Seconds(100));
   Simulator::Run ();
   Simulator::Destroy ();
 }
