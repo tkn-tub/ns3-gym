@@ -5,8 +5,8 @@
  *  - a set of mobility models which are used to track and maintain
  *    the "current" cartesian position and speed of an object.
  *
- *  - a "course change notifier" which can be used to register listeners
- *    to the course changes of a mobility model: ns3::MobilityModelNotifier.
+ *  - a "course change notifier" trace which can be used to register
+ *    listeners to the course changes of a mobility model
  *
  * The mobility models themselves are:
  *   - ns3::StaticMobilityModel: a model which maintains a constant position

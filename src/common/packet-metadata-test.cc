@@ -28,7 +28,9 @@
 #include "packet.h"
 #include "packet-metadata.h"
 
-namespace ns3 {
+using namespace ns3;
+
+namespace {
 
 template <int N>
 class HistoryHeader : public Header
@@ -190,6 +192,10 @@ HistoryTrailer<N>::Deserialize (Buffer::Iterator start)
     }
   return N;
 }
+
+}
+
+namespace ns3 {
 
 
 
@@ -606,6 +612,17 @@ PacketMetadataTest::RunTests (void)
 
   p = Create<Packet> (16383);
   p = Create<Packet> (16384);
+
+
+  // bug 179.
+  p = Create<Packet> (40);
+  p2 = p->CreateFragment (5, 5);
+  p3 = p->CreateFragment (10, 30);
+  ADD_HEADER (p2, 8);
+  ADD_HEADER (p3, 8);
+  REM_HEADER (p2, 8);
+  REM_HEADER (p3, 8);
+  p2->AddAtEnd (p3);
 
   return ok;
 }

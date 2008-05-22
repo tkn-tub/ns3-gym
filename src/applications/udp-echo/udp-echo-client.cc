@@ -93,7 +93,7 @@ UdpEchoClient::StartApplication (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  if (!m_socket)
+  if (m_socket == 0)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
       m_socket = Socket::CreateSocket (GetNode(), tid);
@@ -111,7 +111,7 @@ UdpEchoClient::StopApplication ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  if (!m_socket) 
+  if (m_socket != 0) 
     {
       m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket> > ());
     }

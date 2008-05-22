@@ -314,11 +314,11 @@ public:
   WifiMode GetRtsMode (void) const;
   WifiMode GetDataMode (void) const;
 
-  static uint32_t GetUid (void);
-  void Print (std::ostream &os) const;
-  void Serialize (ns3::Buffer::Iterator start) const;
-  uint32_t Deserialize (ns3::Buffer::Iterator start);
-  uint32_t GetSerializedSize (void) const;
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
 private:
   WifiMode m_rtsMode;
   WifiMode m_dataMode;
@@ -340,30 +340,46 @@ TxModeTag::GetDataMode (void) const
 {
   return m_dataMode;
 }
-
-uint32_t 
-TxModeTag::GetUid (void)
+TypeId 
+TxModeTag::GetTypeId (void)
 {
-  static uint32_t uid = Tag::AllocateUid<TxModeTag> ("ns3.wifi.TxModeTag");
-  return uid;
+  static TypeId tid = TypeId ("ns3::TxModeTag")
+    .SetParent<Tag> ()
+    .AddConstructor<TxModeTag> ()
+    .AddAttribute ("RtsTxMode", 
+                   "Tx mode of rts to use later",
+                   EmptyAttributeValue (),
+                   MakeWifiModeAccessor (&TxModeTag::GetRtsMode),
+                   MakeWifiModeChecker ())
+    .AddAttribute ("DataTxMode", 
+                   "Tx mode of data to use later",
+                   EmptyAttributeValue (),
+                   MakeWifiModeAccessor (&TxModeTag::GetDataMode),
+                   MakeWifiModeChecker ())
+    ;
+  return tid;
 }
-void 
-TxModeTag::Print (std::ostream &os) const
+TypeId 
+TxModeTag::GetInstanceTypeId (void) const
 {
-  os << "rts="<<m_rtsMode<<" data="<<m_dataMode;
-}
-void 
-TxModeTag::Serialize (ns3::Buffer::Iterator start) const
-{}
-uint32_t 
-TxModeTag::Deserialize (ns3::Buffer::Iterator start)
-{
-  return 0;
+  return GetTypeId ();
 }
 uint32_t 
 TxModeTag::GetSerializedSize (void) const
 {
-  return 0;
+  return sizeof (WifiMode) * 2;
+}
+void 
+TxModeTag::Serialize (TagBuffer i) const
+{
+  i.Write ((uint8_t *)&m_rtsMode, sizeof (WifiMode));
+  i.Write ((uint8_t *)&m_dataMode, sizeof (WifiMode));
+}
+void 
+TxModeTag::Deserialize (TagBuffer i)
+{
+  i.Read ((uint8_t *)&m_rtsMode, sizeof (WifiMode));
+  i.Read ((uint8_t *)&m_dataMode, sizeof (WifiMode));
 }
 
 } // namespace ns3
@@ -546,7 +562,7 @@ WifiRemoteStation::GetDataMode (Ptr<const Packet> packet, uint32_t fullPacketSiz
     }
   TxModeTag tag;
   bool found;
-  found = packet->PeekTag (tag);
+  found = packet->FindFirstMatchingTag (tag);
   NS_ASSERT (found);
   return tag.GetDataMode ();
 }
@@ -559,7 +575,7 @@ WifiRemoteStation::GetRtsMode (Ptr<const Packet> packet)
     }
   TxModeTag tag;
   bool found;
-  found = packet->PeekTag (tag);
+  found = packet->FindFirstMatchingTag (tag);
   NS_ASSERT (found);
   return tag.GetRtsMode ();
 }

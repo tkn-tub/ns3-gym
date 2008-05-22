@@ -2,14 +2,26 @@
 #define CONFIG_STORE_H
 
 #include "ns3/object-base.h"
-#include "ns3/object.h"
-#include <vector>
 
 namespace ns3 {
 
 /**
  * \brief Store and load simulation attribute configuration
  *
+ * While it is possible to generate a sample config file and lightly
+ * edit it to change a couple of values, there are cases where this
+ * process will not work because the same value on the same object
+ * can appear multiple times in the same automatically-generated 
+ * configuration file under different configuration paths.
+ *
+ * As such, the best way to use this class is to use it to generate
+ * an initial configuration file, extract from that configuration
+ * file only the strictly necessary elements, and move these minimal
+ * elements to a new configuration file which can then safely
+ * be edited. Another option is to use the ns3::GtkConfigStore class
+ * which will allow you to edit the parameters and will generate 
+ * configuration files where all the instances of the same parameter
+ * are changed.
  */
 class ConfigStore : public ObjectBase
 {
@@ -29,14 +41,9 @@ public:
 private:
   void LoadFrom (std::string filename);
   void StoreTo (std::string filename);
-  void Store (std::ostream &os, Ptr<const Object> object);
-  bool IsExamined (Ptr<const Object> object);
-  std::string GetCurrentPath (std::string attr) const;
 
   std::string m_loadFilename;
   std::string m_storeFilename;
-  std::vector<Ptr<const Object> > m_examined;
-  std::vector<std::string> m_currentPath;
 };
 
 }  // namespace ns3

@@ -1,6 +1,6 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2007 INRIA
+ * Copyright (c) 2008 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -17,31 +17,18 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "mobility-model-notifier.h"
-#include "ns3/trace-source-accessor.h"
+#include "tag.h"
 
 namespace ns3 {
 
 TypeId 
-MobilityModelNotifier::GetTypeId (void)
+Tag::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("MobilityModelNotifier")
-    .SetParent<Object> ()
-    .AddConstructor<MobilityModelNotifier> ()
-    .AddTraceSource ("CourseChange", 
-                     "The value of the position and/or velocity vector changed",
-                     MakeTraceSourceAccessor (&MobilityModelNotifier::m_trace))
+  static TypeId tid = TypeId ("ns3::Tag")
+    .SetParent<ObjectBase> ()
     ;
   return tid;
 }
 
-MobilityModelNotifier::MobilityModelNotifier ()
-{}
-
-void 
-MobilityModelNotifier::Notify (Ptr<const MobilityModel> position) const
-{
-  m_trace (position);
-}
 
 } // namespace ns3

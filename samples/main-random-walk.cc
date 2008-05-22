@@ -8,7 +8,7 @@
 using namespace ns3;
 
 static void 
-CourseChange (ns3::TraceContext const&, Ptr<const MobilityModel> mobility)
+CourseChange (std::string foo, Ptr<const MobilityModel> mobility)
 {
   Vector pos = mobility->GetPosition ();
   Vector vel = mobility->GetVelocity ();
@@ -22,7 +22,7 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Mode", StringValue ("Time"));
   Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Time", StringValue ("2s"));
   Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Speed", StringValue ("Constant:1.0"));
-  Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Bounds", StringValue ("0:200:0:100"));
+  Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Bounds", StringValue ("0|200|0|200"));
 
   CommandLine cmd;
   cmd.Parse (argc, argv);
@@ -31,7 +31,6 @@ int main (int argc, char *argv[])
   c.Create (100);
 
   MobilityHelper mobility;
-  mobility.EnableNotifier ();
   mobility.SetPositionAllocator ("ns3::RandomDiscPositionAllocator",
                                  "X", StringValue ("100.0"),
                                  "Y", StringValue ("100.0"),
@@ -40,9 +39,9 @@ int main (int argc, char *argv[])
                              "Mode", StringValue ("Time"),
                              "Time", StringValue ("2s"),
                              "Speed", StringValue ("Constant:1.0"),
-                             "Bounds", StringValue ("0:200:0:100"));
+                             "Bounds", StringValue ("0|200|0|200"));
   mobility.InstallAll ();
-  Config::Connect ("/NodeList/*/$ns3::MobilityModelNotifier/CourseChange",
+  Config::Connect ("/NodeList/*/$ns3::MobilityModel/CourseChange",
                    MakeCallback (&CourseChange));
 
   Simulator::StopAt (Seconds (100.0));

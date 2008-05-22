@@ -25,7 +25,6 @@ int main (int argc, char *argv[])
   c.Create (10000);
 
   MobilityHelper mobility;
-  mobility.EnableNotifier ();
   mobility.SetPositionAllocator ("ns3::RandomDiscPositionAllocator",
                                  "X", StringValue ("100.0"),
                                  "Y", StringValue ("100.0"),

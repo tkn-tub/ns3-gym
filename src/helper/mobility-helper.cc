@@ -19,7 +19,6 @@
  */
 #include "ns3/mobility-helper.h"
 #include "ns3/mobility-model.h"
-#include "ns3/mobility-model-notifier.h"
 #include "ns3/position-allocator.h"
 #include "ns3/hierarchical-mobility-model.h"
 #include "ns3/log.h"
@@ -30,7 +29,6 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("MobilityHelper");
 
 MobilityHelper::MobilityHelper ()
-  : m_notifierEnabled (false)
 {
   m_position = CreateObject<RandomRectanglePositionAllocator> 
     ("X", RandomVariableValue (ConstantVariable (0.0)),
@@ -39,16 +37,6 @@ MobilityHelper::MobilityHelper ()
 }
 MobilityHelper::~MobilityHelper ()
 {}
-void 
-MobilityHelper::EnableNotifier (void)
-{
-  m_notifierEnabled = true;
-}
-void 
-MobilityHelper::DisableNotifier (void)
-{
-  m_notifierEnabled = false;
-}
 void 
 MobilityHelper::SetPositionAllocator (Ptr<PositionAllocator> allocator)
 {
@@ -156,15 +144,6 @@ MobilityHelper::Install (NodeContainer c)
 	}
       Vector position = m_position->GetNext ();
       model->SetPosition (position);
-      if (m_notifierEnabled)
-	{
-	  Ptr<MobilityModelNotifier> notifier = 
-	    object->GetObject<MobilityModelNotifier> ();
-	  if (notifier == 0)
-	    {
-	      object->AggregateObject (CreateObject<MobilityModelNotifier> ());
-	    }
-	}
     }
 }
 

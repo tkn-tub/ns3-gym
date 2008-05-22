@@ -46,7 +46,12 @@ PcapWriter::PcapWriter ()
 
 PcapWriter::~PcapWriter ()
 {
+  if (m_writer != 0)
+    {
+      m_writer->close ();
+    }
   delete m_writer;
+  m_writer = 0;
 }
 
 void

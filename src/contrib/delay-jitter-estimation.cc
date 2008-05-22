@@ -2,60 +2,71 @@
 #include "delay-jitter-estimation.h"
 #include "ns3/tag.h"
 #include "ns3/simulator.h"
+#include "ns3/string.h"
 
-namespace {
+namespace ns3 {
 
-class TimestampTag : public ns3::Tag
+class DelayJitterEstimationTimestampTag : public Tag
 {
 public:
-  TimestampTag ();
-  static uint32_t GetUid (void);
-  void Print (std::ostream &os) const;
-  void Serialize (ns3::Buffer::Iterator start) const;
-  uint32_t Deserialize (ns3::Buffer::Iterator start);
-  uint32_t GetSerializedSize (void) const;
+  DelayJitterEstimationTimestampTag ();
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
 
-  ns3::Time GetTxTime (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
+
+
+  Time GetTxTime (void) const;
 private:
   uint64_t m_creationTime;
 };
 
-TimestampTag::TimestampTag ()
-  : m_creationTime (ns3::Simulator::Now ().GetTimeStep ())
+DelayJitterEstimationTimestampTag::DelayJitterEstimationTimestampTag ()
+  : m_creationTime (Simulator::Now ().GetTimeStep ())
 {}
-uint32_t 
-TimestampTag::GetUid (void)
+
+TypeId 
+DelayJitterEstimationTimestampTag::GetTypeId (void)
 {
-  static uint32_t uid = ns3::Tag::AllocateUid<TimestampTag> ("mathieu.paper.TimestampTag");
-  return uid;
+  static TypeId tid = TypeId ("anon::DelayJitterEstimationTimestampTag")
+    .SetParent<Tag> ()
+    .AddConstructor<DelayJitterEstimationTimestampTag> ()
+    .AddAttribute ("CreationTime",
+		   "The time at which the timestamp was created",
+		   StringValue ("0.0s"),
+		   MakeTimeAccessor (&DelayJitterEstimationTimestampTag::GetTxTime),
+		   MakeTimeChecker ())
+    ;
+  return tid;
 }
-void 
-TimestampTag::Print (std::ostream &os) const
+TypeId 
+DelayJitterEstimationTimestampTag::GetInstanceTypeId (void) const
 {
-  os << ns3::TimeStep (m_creationTime);
-}
-void 
-TimestampTag::Serialize (ns3::Buffer::Iterator start) const
-{}
-uint32_t 
-TimestampTag::Deserialize (ns3::Buffer::Iterator start)
-{
-  return 0;
-}
-uint32_t 
-TimestampTag::GetSerializedSize (void) const
-{
-  return 0;
-}
-ns3::Time 
-TimestampTag::GetTxTime (void) const
-{
-  return ns3::TimeStep (m_creationTime);
+  return GetTypeId ();
 }
 
+uint32_t 
+DelayJitterEstimationTimestampTag::GetSerializedSize (void) const
+{
+  return 8;
 }
-
-namespace ns3 {
+void 
+DelayJitterEstimationTimestampTag::Serialize (TagBuffer i) const
+{
+  i.WriteU64 (m_creationTime);
+}
+void 
+DelayJitterEstimationTimestampTag::Deserialize (TagBuffer i)
+{
+  m_creationTime = i.ReadU64 ();
+}
+Time 
+DelayJitterEstimationTimestampTag::GetTxTime (void) const
+{
+  return TimeStep (m_creationTime);
+}
 
 DelayJitterEstimation::DelayJitterEstimation ()
   : m_previousRx (Simulator::Now ()),
@@ -66,15 +77,15 @@ DelayJitterEstimation::DelayJitterEstimation ()
 void 
 DelayJitterEstimation::PrepareTx (Ptr<const Packet> packet)
 {
-  TimestampTag tag;
+  DelayJitterEstimationTimestampTag tag;
   packet->AddTag (tag);
 }
 void 
 DelayJitterEstimation::RecordRx (Ptr<const Packet> packet)
 {
-  TimestampTag tag;
+  DelayJitterEstimationTimestampTag tag;
   bool found;
-  found = packet->PeekTag (tag);
+  found = packet->FindFirstMatchingTag (tag);
   if (!found)
     {
       return;

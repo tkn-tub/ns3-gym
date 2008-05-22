@@ -38,9 +38,6 @@
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
 
-#include "ns3/ascii-trace.h"
-#include "ns3/pcap-trace.h"
-
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("CsmaPacketSocketExample");
@@ -105,9 +102,9 @@ main (int argc, char *argv[])
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the csma-packet-socket.tr file
   NS_LOG_INFO ("Configure Tracing.");
-  AsciiTrace asciitrace ("csma-packet-socket.tr");
-  asciitrace.TraceAllNetDeviceRx ();
-  asciitrace.TraceAllQueues ();
+  std::ofstream os;
+  os.open ("csma-packet-socket.tr");
+  csma.EnableAsciiAll (os);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();
