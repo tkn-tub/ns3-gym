@@ -93,7 +93,9 @@ Part 3:  Reconfiguring Existing ns-3 Scripts
 Part 4:  Creating New or Revised Topologies
 * Helper Functions::
 * Other-network-topologies::
-Part 5:  Extending ns-3
+Part 5:  Key ns-3 objects and systems
+* ns-3 Packets::
+Part 6:  Extending ns-3
 * ns-3 Callbacks::
 * ns-3 routing overview::
 * Nonlinear-Thinking::
@@ -111,8 +113,9 @@ Part 5:  Extending ns-3
 @include attributes.texi
 @include statistics.texi
 @include helpers.texi
+@include packets.texi
 @include callbacks.texi
-@include output.texi
+@c @include output.texi
 @include routing.texi
 @c @include other.texi
 @include troubleshoot.texi

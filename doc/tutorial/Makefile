@@ -2,13 +2,20 @@ TEXI2HTML = texi2html
 TEXI2PDF = texi2dvi --pdf
 EPSTOPDF = epstopdf
 TGIF = tgif 
+DIA = dia
 CONVERT = convert
 CSS = --css-include=tutorial.css
 SPLIT = --split section
 
-TGIF_SOURCES = helpers.obj 
+TGIF_SOURCES = packet.obj helpers.obj 
+DIA_SOURCES = buffer.dia 
+
 TGIF_EPS = ${TGIF_SOURCES:.obj=.eps}
-TGIF_PNG = ${TGIF_SOURCES:.obj=.eps}
+TGIF_PNG = ${TGIF_SOURCES:.obj=.png}
+TGIF_PDF = ${TGIF_SOURCES:.obj=.pdf}
+DIA_EPS = ${DIA_SOURCES:.dia=.eps}
+DIA_PNG = ${DIA_SOURCES:.dia=.png}
+DIA_PDF = ${DIA_SOURCES:.dia=.pdf}
 
 all:  images html split-html pdf
 
@@ -17,9 +24,12 @@ all:  images html split-html pdf
 #        buffer may be needed (xorg-x11-server-Xvfb) to provide a "fake"
 #        display
 images:
-	cd figures/; $(TGIF) -print -eps $(TGIF_SOURCES) 
 	cd figures/; $(TGIF) -print -png $(TGIF_SOURCES) 
+	cd figures/; $(TGIF) -print -eps $(TGIF_SOURCES) 
 	cd figures/; $(foreach FILE,$(TGIF_EPS),$(EPSTOPDF) $(FILE);)
+	cd figures/; $(DIA) --export-to-format=png $(DIA_SOURCES) 
+	cd figures/; $(DIA) --export-to-format=eps $(DIA_SOURCES) 
+	cd figures/; $(foreach FILE,$(DIA_EPS),$(EPSTOPDF) $(FILE);)
 
 html: images
 	$(TEXI2HTML) ${CSS} tutorial.texi
@@ -30,5 +40,9 @@ split-html: images
 pdf: images
 	$(TEXI2PDF) tutorial.texi
 
-clean:
+figures-clean:
+	cd figures/; rm -rf $(DIA_EPS); rm -rf $(DIA_PNG); rm -rf $(DIA_PDF)
+	cd figures/; rm -rf $(TGIF_EPS); rm -rf $(TGIF_PNG); rm -rf $(TGIF_PDF)
+
+clean: figures-clean
 	rm -rf tutorial.aux tutorial.cp tutorial.cps tutorial.fn tutorial.ky tutorial.pg tutorial.tp tutorial.vr tutorial.toc tutorial.log tutorial.pdf tutorial.html tutorial/ 
