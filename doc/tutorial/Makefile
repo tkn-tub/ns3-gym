@@ -27,8 +27,8 @@ images:
 	cd figures/; $(TGIF) -print -png $(TGIF_SOURCES) 
 	cd figures/; $(TGIF) -print -eps $(TGIF_SOURCES) 
 	cd figures/; $(foreach FILE,$(TGIF_EPS),$(EPSTOPDF) $(FILE);)
-	cd figures/; $(DIA) --export-to-format=png $(DIA_SOURCES) 
-	cd figures/; $(DIA) --export-to-format=eps $(DIA_SOURCES) 
+	cd figures/; $(DIA) -t png $(DIA_SOURCES) 
+	cd figures/; $(DIA) -t eps $(DIA_SOURCES) 
 	cd figures/; $(foreach FILE,$(DIA_EPS),$(EPSTOPDF) $(FILE);)
 
 html: images
