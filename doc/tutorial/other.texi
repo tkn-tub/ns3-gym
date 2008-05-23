@@ -34,7 +34,7 @@ see this point-to-point network, you can think of an RS-422 (or RS-232 for
 you old-timers) cable.  This topology is shown below.
 
 @sp 1
-@center @image{pp,,,,png}
+@center @image{figures/pp,,,,png}
 
 @cindex CreateObject
 @cindex InternetNode
@@ -173,7 +173,7 @@ a file for you in the @code{tutorial} directory called @code{tutorial-star.cc}
 that implements a simple star network as seen below.
 
 @sp 1
-@center @image{star,,,,png}
+@center @image{figures/star,,,,png}
 
 In order to create a star network, we need to be able to instantiate some
 number (greater than one) of net devices on a node.  In the name of simplicity
@@ -506,7 +506,7 @@ configured with a lower bandwidth than the bus elements to provide a
 The following is a representation of the topology.
 
 @sp 1
-@center @image{dumbbell,,,,png}
+@center @image{figures/dumbbell,,,,png}
 
 We have provided a file that constructs this dumbbell network and creates 
 enough data flowing across the choke point that some packets will be dropped.

@@ -7,15 +7,16 @@ CONVERT = convert
 CSS = --css-include=tutorial.css
 SPLIT = --split section
 
+DIA_SOURCES = buffer.dia pp.dia dumbbell.dia star.dia
 TGIF_SOURCES = packet.obj helpers.obj 
-DIA_SOURCES = buffer.dia 
+
+DIA_EPS = ${DIA_SOURCES:.dia=.eps}
+DIA_PNG = ${DIA_SOURCES:.dia=.png}
+DIA_PDF = ${DIA_SOURCES:.dia=.pdf}
 
 TGIF_EPS = ${TGIF_SOURCES:.obj=.eps}
 TGIF_PNG = ${TGIF_SOURCES:.obj=.png}
 TGIF_PDF = ${TGIF_SOURCES:.obj=.pdf}
-DIA_EPS = ${DIA_SOURCES:.dia=.eps}
-DIA_PNG = ${DIA_SOURCES:.dia=.png}
-DIA_PDF = ${DIA_SOURCES:.dia=.pdf}
 
 all:  images html split-html pdf
 
@@ -24,12 +25,12 @@ all:  images html split-html pdf
 #        buffer may be needed (xorg-x11-server-Xvfb) to provide a "fake"
 #        display
 images:
-	cd figures/; $(TGIF) -print -png $(TGIF_SOURCES) 
-	cd figures/; $(TGIF) -print -eps $(TGIF_SOURCES) 
-	cd figures/; $(foreach FILE,$(TGIF_EPS),$(EPSTOPDF) $(FILE);)
 	cd figures/; $(DIA) -t png $(DIA_SOURCES) 
 	cd figures/; $(DIA) -t eps $(DIA_SOURCES) 
 	cd figures/; $(foreach FILE,$(DIA_EPS),$(EPSTOPDF) $(FILE);)
+	cd figures/; $(TGIF) -print -png $(TGIF_SOURCES) 
+	cd figures/; $(TGIF) -print -eps $(TGIF_SOURCES) 
+	cd figures/; $(foreach FILE,$(TGIF_EPS),$(EPSTOPDF) $(FILE);)
 
 html: images
 	$(TEXI2HTML) ${CSS} tutorial.texi
