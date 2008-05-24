@@ -1275,7 +1275,7 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 // the local side of the point-to-point links found on the node described by
 // the vertex <v>.
 //
-          for (uint32_t j = 0; j < nLinkRecords; j += 2)
+          for (uint32_t j = 0; j < nLinkRecords; ++j)
             {
 //
 // We are only concerned about point-to-point links
