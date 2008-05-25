@@ -53,12 +53,12 @@ ArpL3Protocol::GetTypeId (void)
 
 ArpL3Protocol::ArpL3Protocol ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 ArpL3Protocol::~ArpL3Protocol ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void 
@@ -70,7 +70,12 @@ ArpL3Protocol::SetNode (Ptr<Node> node)
 void 
 ArpL3Protocol::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
+  for (CacheList::iterator i = m_cacheList.begin (); i != m_cacheList.end (); ++i)
+    {
+      Ptr<ArpCache> cache = *i;
+      cache->Dispose ();
+    }
   m_cacheList.clear ();
   m_node = 0;
   Object::DoDispose ();
@@ -145,8 +150,17 @@ ArpL3Protocol::Receive(Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t proto
                         arp.GetSourceIpv4Address ()
                      << " for waiting entry -- flush");
               Address from_mac = arp.GetSourceHardwareAddress ();
-              Ptr<Packet> waiting = entry->MarkAlive (from_mac);
-	      cache->GetInterface ()->Send (waiting, arp.GetSourceIpv4Address ());
+              entry->MarkAlive (from_mac);
+              while (true)
+                {
+                  Ptr<Packet> pending = entry->DequeuePending();
+                  if (pending != 0)
+                    {
+                      break;
+                    }
+                  cache->GetInterface ()->Send (pending,
+                                                arp.GetSourceIpv4Address ());
+                }
             } 
           else 
             {
@@ -210,25 +224,24 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination,
           if (entry->IsDead ()) 
             {
               NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
-                        ", dead entry for " << destination << " valid -- drop");
+                            ", dead entry for " << destination << " valid -- drop");
 	      // XXX report packet as 'dropped'
             } 
           else if (entry->IsAlive ()) 
             {
               NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
-                        ", alive entry for " << destination << " valid -- send");
+                            ", alive entry for " << destination << " valid -- send");
 	      *hardwareDestination = entry->GetMacAddress ();
               return true;
             } 
           else if (entry->IsWaitReply ()) 
             {
               NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
-                        ", wait reply for " << destination << " valid -- drop previous");
-              Ptr<Packet> old = entry->UpdateWaitReply (packet);
-	      // XXX report 'old' packet as 'dropped'
+                            ", wait reply for " << destination << " valid -- drop previous");
+              // XXX potentially report current packet as 'dropped'
+              entry->UpdateWaitReply (packet);
             }
         }
-
     }
   else
     {

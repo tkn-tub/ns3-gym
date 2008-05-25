@@ -21,6 +21,7 @@
 #define ARP_CACHE_H
 
 #include <stdint.h>
+#include <list>
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
 #include "ns3/net-device.h"
@@ -103,9 +104,8 @@ public:
     void MarkDead (void);
     /**
      * \param macAddress
-     * \return 
      */
-    Ptr<Packet> MarkAlive (Address macAddress);
+    void MarkAlive (Address macAddress);
     /**
      * \param waiting
      */
@@ -114,7 +114,7 @@ public:
      * \param waiting
      * \return 
      */
-    Ptr<Packet> UpdateWaitReply (Ptr<Packet> waiting);
+    bool UpdateWaitReply (Ptr<Packet> waiting);
     /**
      * \return True if the state of this entry is dead; false otherwise.
      */
@@ -136,6 +136,12 @@ public:
      * \return True if this entry has timedout; false otherwise.
      */
     bool IsExpired (void);
+
+    /**
+     * \returns 0 is no packet is pending, the next packet to send if 
+     *            packets are pending.
+     */
+    Ptr<Packet> DequeuePending (void);
   private:
     enum ArpCacheEntryState_e {
       ALIVE,
@@ -148,18 +154,21 @@ public:
     ArpCacheEntryState_e m_state;
     Time m_lastSeen;
     Address m_macAddress;
-    Ptr<Packet> m_waiting;
+    std::list<Ptr<Packet> > m_pending;
   };
 
 private:
   typedef sgi::hash_map<Ipv4Address, ArpCache::Entry *, Ipv4AddressHash> Cache;
   typedef sgi::hash_map<Ipv4Address, ArpCache::Entry *, Ipv4AddressHash>::iterator CacheI;
 
+  virtual void DoDispose (void);
+
   Ptr<NetDevice> m_device;
   Ptr<Ipv4Interface> m_interface;
   Time m_aliveTimeout;
   Time m_deadTimeout;
   Time m_waitReplyTimeout;
+  uint32_t m_pendingQueueSize;
   Cache m_arpCache;
 };
 
