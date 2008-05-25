@@ -53,20 +53,22 @@ ArpIpv4Interface::ArpIpv4Interface ()
   : m_node (0),
     m_device (0)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 ArpIpv4Interface::~ArpIpv4Interface ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void 
 ArpIpv4Interface::DoDispose (void)
 {
+  NS_LOG_FUNCTION (this);
   m_node = 0;
   m_device = 0;
   m_cache = 0;
+  Ipv4Interface::DoDispose ();
 }
 
 void 
