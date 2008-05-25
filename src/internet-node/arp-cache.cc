@@ -27,17 +27,45 @@
 
 namespace ns3 {
 
-ArpCache::ArpCache (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface)
-  : m_device (device), 
-    m_interface (interface),
-    m_aliveTimeout (Seconds (120)),
-    m_deadTimeout (Seconds (100)),
-    m_waitReplyTimeout (Seconds (1))
+TypeId 
+ArpCache::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::ArpCache")
+    .SetParent<Object> ()
+    .AddAttribute ("AliveTimeout",
+                   "When this timeout expires, the matching cache entry needs refreshing",
+                   TimeValue (Seconds (120)),
+                   MakeTimeAccessor (&ArpCache::m_aliveTimeout),
+                   MakeTimeChecker ())
+    .AddAttribute ("DeadTimeout",
+                   "When this timeout expires, a new attempt to resolve the matching entry is made",
+                   TimeValue (Seconds (100)),
+                   MakeTimeAccessor (&ArpCache::m_deadTimeout),
+                   MakeTimeChecker ())
+    .AddAttribute ("WaitReplyTimeout",
+                   "When this timeout expires, the matching cache entry is marked dead",
+                   TimeValue (Seconds (1)),
+                   MakeTimeAccessor (&ArpCache::m_waitReplyTimeout),
+                   MakeTimeChecker ())
+    ;
+  return tid;
+}
+
+ArpCache::ArpCache ()
+  : m_device (0), 
+    m_interface (0)
 {}
 
 ArpCache::~ArpCache ()
 {
   Flush ();
+}
+
+void
+ArpCache::SetDevice (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface)
+{
+  m_device = device;
+  m_interface = interface;
 }
 
 Ptr<NetDevice>

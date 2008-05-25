@@ -21,6 +21,7 @@
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/net-device.h"
+#include "ns3/object-vector.h"
 
 #include "ipv4-l3-protocol.h"
 #include "arp-l3-protocol.h"
@@ -41,6 +42,11 @@ ArpL3Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ArpL3Protocol")
     .SetParent<Object> ()
+    .AddAttribute ("CacheList",
+                   "The list of ARP caches",
+                   ObjectVectorValue (),
+                   MakeObjectVectorAccessor (&ArpL3Protocol::m_cacheList),
+                   MakeObjectVectorChecker<ArpCache> ())
     ;
   return tid;
 }
@@ -65,16 +71,12 @@ void
 ArpL3Protocol::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  for (CacheList::const_iterator i = m_cacheList.begin (); i != m_cacheList.end (); i++)
-    {
-      delete *i;
-    }
   m_cacheList.clear ();
   m_node = 0;
   Object::DoDispose ();
 }
 
-ArpCache *
+Ptr<ArpCache>
 ArpL3Protocol::FindCache (Ptr<NetDevice> device)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -87,7 +89,8 @@ ArpL3Protocol::FindCache (Ptr<NetDevice> device)
     }
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
   Ptr<Ipv4Interface> interface = ipv4->FindInterfaceForDevice (device);
-  ArpCache * cache = new ArpCache (device, interface);
+  Ptr<ArpCache> cache = CreateObject<ArpCache> ();
+  cache->SetDevice (device, interface);
   NS_ASSERT (device->IsBroadcast ());
   device->SetLinkChangeCallback (MakeCallback (&ArpCache::Flush, cache));
   m_cacheList.push_back (cache);
@@ -98,7 +101,7 @@ void
 ArpL3Protocol::Receive(Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol, const Address &from)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  ArpCache *cache = FindCache (device);
+  Ptr<ArpCache> cache = FindCache (device);
   ArpHeader arp;
   packet->RemoveHeader (arp);
   
@@ -167,7 +170,7 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination,
                        Address *hardwareDestination)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  ArpCache *cache = FindCache (device);
+  Ptr<ArpCache> cache = FindCache (device);
   ArpCache::Entry *entry = cache->Lookup (destination);
   if (entry != 0)
     {
@@ -233,7 +236,7 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination,
 }
 
 void
-ArpL3Protocol::SendArpRequest (ArpCache const *cache, Ipv4Address to)
+ArpL3Protocol::SendArpRequest (Ptr<const ArpCache> cache, Ipv4Address to)
 {
   NS_LOG_FUNCTION_NOARGS ();
   ArpHeader arp;
@@ -252,7 +255,7 @@ ArpL3Protocol::SendArpRequest (ArpCache const *cache, Ipv4Address to)
 }
 
 void
-ArpL3Protocol::SendArpReply (ArpCache const *cache, Ipv4Address toIp, Address toMac)
+ArpL3Protocol::SendArpReply (Ptr<const ArpCache> cache, Ipv4Address toIp, Address toMac)
 {
   NS_LOG_FUNCTION_NOARGS ();
   ArpHeader arp;
