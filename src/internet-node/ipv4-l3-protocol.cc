@@ -80,7 +80,7 @@ Ipv4L3Protocol::Ipv4L3Protocol()
 
 Ipv4L3Protocol::~Ipv4L3Protocol ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void
@@ -93,7 +93,12 @@ Ipv4L3Protocol::SetNode (Ptr<Node> node)
 void 
 Ipv4L3Protocol::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
+  for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); ++i)
+    {
+      Ptr<Ipv4Interface> interface = *i;
+      interface->Dispose ();
+    }
   m_interfaces.clear ();
   m_node = 0;
   m_staticRouting->Dispose ();
