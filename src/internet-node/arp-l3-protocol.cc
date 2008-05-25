@@ -22,6 +22,7 @@
 #include "ns3/node.h"
 #include "ns3/net-device.h"
 #include "ns3/object-vector.h"
+#include "ns3/trace-source-accessor.h"
 
 #include "ipv4-l3-protocol.h"
 #include "arp-l3-protocol.h"
@@ -47,6 +48,9 @@ ArpL3Protocol::GetTypeId (void)
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&ArpL3Protocol::m_cacheList),
                    MakeObjectVectorChecker<ArpCache> ())
+    .AddTraceSource ("Drop",
+                     "Packet dropped because not enough room in pending queue for a specific cache entry.",
+                     MakeTraceSourceAccessor (&ArpL3Protocol::m_dropTrace))
     ;
   return tid;
 }
@@ -169,13 +173,13 @@ ArpL3Protocol::Receive(Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t proto
               NS_LOG_LOGIC("node="<<m_node->GetId ()<<", got reply from " << 
                         arp.GetSourceIpv4Address () << 
                         " for non-waiting entry -- drop");
-	      // XXX report packet as dropped.
+              m_dropTrace (packet);
             }
         } 
       else 
         {
           NS_LOG_LOGIC ("node="<<m_node->GetId ()<<", got reply for unknown entry -- drop");
-	  // XXX report packet as dropped.
+          m_dropTrace (packet);
         }
     }
   else
@@ -216,7 +220,16 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination,
               NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
                         ", wait reply for " << destination << " expired -- drop");
               entry->MarkDead ();
-	      // XXX report packet as 'dropped'
+              while (true)
+                {
+                  Ptr<Packet> pending = entry->DequeuePending();
+                  if (pending != 0)
+                    {
+                      break;
+                    }
+                  m_dropTrace (pending);
+                }
+              m_dropTrace (packet);
             }
         } 
       else 
@@ -225,7 +238,7 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination,
             {
               NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
                             ", dead entry for " << destination << " valid -- drop");
-	      // XXX report packet as 'dropped'
+              m_dropTrace (packet);
             } 
           else if (entry->IsAlive ()) 
             {
@@ -238,8 +251,10 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination,
             {
               NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
                             ", wait reply for " << destination << " valid -- drop previous");
-              // XXX potentially report current packet as 'dropped'
-              entry->UpdateWaitReply (packet);
+              if (!entry->UpdateWaitReply (packet))
+                {
+                  m_dropTrace (packet);
+                }
             }
         }
     }

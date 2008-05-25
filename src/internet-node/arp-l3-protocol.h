@@ -24,6 +24,7 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/address.h"
 #include "ns3/ptr.h"
+#include "ns3/traced-callback.h"
 
 namespace ns3 {
 
@@ -73,6 +74,7 @@ private:
   void SendArpReply (Ptr<const ArpCache> cache, Ipv4Address toIp, Address toMac);
   CacheList m_cacheList;
   Ptr<Node> m_node;
+  TracedCallback<Ptr<const Packet> > m_dropTrace;
 };
 
 }//namespace ns3
