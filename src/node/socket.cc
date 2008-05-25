@@ -288,20 +288,35 @@ SocketRxAddressTag::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
-uint32_t 
+uint32_t
 SocketRxAddressTag::GetSerializedSize (void) const
-{ 
-  return 0;
+{
+  return m_address.GetSerializedSize ();
 }
-void 
+void
 SocketRxAddressTag::Serialize (TagBuffer i) const
-{ 
-  // for local use in stack only
+{
+  uint8_t len = m_address.GetSerializedSize ();
+  uint8_t* buffer = new uint8_t[len];
+  memset (buffer, 0, len);
+  m_address.Serialize (buffer, len);
+  i.Write (buffer, len);
+  delete [] buffer;
 }
-void 
+void
 SocketRxAddressTag::Deserialize (TagBuffer i)
-{ 
-  // for local use in stack only
+{
+  uint8_t type = i.ReadU8 (); 
+  uint8_t len = i.ReadU8 (); 
+  // Len is the length of the address starting from buffer[2]
+  NS_ASSERT (len >= 2);
+  uint8_t* buffer = new uint8_t[len];
+  memset (buffer, 0, len);
+  buffer[0] = type;
+  buffer[1] = len;
+  i.Read (buffer+2, len); // ReadU8 consumes a byte
+  m_address = Address::Deserialize (buffer);
+  delete [] buffer;
 }
 
 SocketIpTtlTag::SocketIpTtlTag ()  
@@ -335,20 +350,21 @@ SocketIpTtlTag::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
+
 uint32_t 
 SocketIpTtlTag::GetSerializedSize (void) const
 { 
-  return 0;
+  return 1;
 }
 void 
 SocketIpTtlTag::Serialize (TagBuffer i) const
 { 
-  // for local use in stack only
+  i.WriteU8 (m_ttl);
 }
 void 
 SocketIpTtlTag::Deserialize (TagBuffer i)
 { 
-  // for local use in stack only
+  m_ttl = i.ReadU8 ();
 }
 
 }//namespace ns3

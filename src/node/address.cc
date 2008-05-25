@@ -107,6 +107,30 @@ Address::Register (void)
   return type;
 }
 
+uint32_t
+Address::GetSerializedSize (void) const
+{
+  return 1 + 1 + m_len;
+}
+
+void
+Address::Serialize (uint8_t* buf, uint32_t len) const
+{
+  NS_ASSERT (len >= static_cast<uint32_t> (m_len + 2));
+  buf[0] = m_type;
+  buf[1] = m_len;
+  for (uint8_t i = 0; i < m_len; i++)
+    {
+      buf[i+2] = m_data[i];
+    }
+}
+
+Address
+Address::Deserialize (const uint8_t* buf)
+{
+  return Address (buf[0], buf + 2, buf[1]);
+}
+
 ATTRIBUTE_HELPER_CPP (Address);
 
 
