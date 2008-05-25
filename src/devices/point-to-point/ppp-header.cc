@@ -55,7 +55,7 @@ PppHeader::GetInstanceTypeId (void) const
 void 
 PppHeader::Print (std::ostream &os) const
 {
-  os << "Point-to-Point Protocol: IP (0x0021)" << std::endl;
+  os << "Point-to-Point Protocol: IP (0x0021)";
 }
 
   uint32_t
