@@ -46,6 +46,8 @@ public:
 
   void SetNode (Ptr<Node> node);
 
+  Ptr<ArpCache> CreateCache (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface);
+
   /**
    * \brief Recieve a packet
    */
@@ -60,6 +62,7 @@ public:
    */
   bool Lookup (Ptr<Packet> p, Ipv4Address destination, 
 	       Ptr<NetDevice> device,
+               Ptr<ArpCache> cache,
 	       Address *hardwareDestination);
 protected:
   virtual void DoDispose (void);

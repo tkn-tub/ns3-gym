@@ -32,7 +32,8 @@ class Node;
  */
 class Ipv4LoopbackInterface : public Ipv4Interface 
 {
- public:
+public:
+  static TypeId GetTypeId (void);
   Ipv4LoopbackInterface ();
   virtual ~Ipv4LoopbackInterface ();
 

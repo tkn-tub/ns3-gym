@@ -76,6 +76,18 @@ ArpL3Protocol::DoDispose (void)
   Object::DoDispose ();
 }
 
+Ptr<ArpCache> 
+ArpL3Protocol::CreateCache (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface)
+{
+  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
+  Ptr<ArpCache> cache = CreateObject<ArpCache> ();
+  cache->SetDevice (device, interface);
+  NS_ASSERT (device->IsBroadcast ());
+  device->SetLinkChangeCallback (MakeCallback (&ArpCache::Flush, cache));
+  m_cacheList.push_back (cache);
+  return cache;
+}
+
 Ptr<ArpCache>
 ArpL3Protocol::FindCache (Ptr<NetDevice> device)
 {
@@ -87,14 +99,9 @@ ArpL3Protocol::FindCache (Ptr<NetDevice> device)
 	  return *i;
 	}
     }
-  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
-  Ptr<Ipv4Interface> interface = ipv4->FindInterfaceForDevice (device);
-  Ptr<ArpCache> cache = CreateObject<ArpCache> ();
-  cache->SetDevice (device, interface);
-  NS_ASSERT (device->IsBroadcast ());
-  device->SetLinkChangeCallback (MakeCallback (&ArpCache::Flush, cache));
-  m_cacheList.push_back (cache);
-  return cache;
+  NS_ASSERT (false);
+  // quiet compiler
+  return 0;
 }
 
 void 
@@ -167,10 +174,10 @@ ArpL3Protocol::Receive(Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t proto
 bool 
 ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination, 
                        Ptr<NetDevice> device,
+                       Ptr<ArpCache> cache,
                        Address *hardwareDestination)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  Ptr<ArpCache> cache = FindCache (device);
   ArpCache::Entry *entry = cache->Lookup (destination);
   if (entry != 0)
     {

@@ -31,6 +31,15 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4LoopbackInterface");
 
 namespace ns3 {
 
+TypeId 
+Ipv4LoopbackInterface::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::Ipv4LoopbackInterface")
+    .SetParent<Ipv4Interface> ()
+    ;
+  return tid;
+}
+
 Ipv4LoopbackInterface::Ipv4LoopbackInterface ()
   : m_node (0)
 {
