@@ -37,19 +37,28 @@ class Node;
 class Packet;
 
 /**
- * \brief Define a Socket API based on the BSD Socket API.
+ * \ingroup node
+ * \defgroup socket Socket
+ * \brief A low-level Socket API based loosely on the BSD Socket API.
  *
- * In contrast to the original BSD socket API, this API is asynchronous:
- * it does not contain blocking calls. It also uses class ns3::Packet
- * as a fancy byte buffer, allowing data to be passed across the API
- * using an ns3::Packet instead of a raw data pointer.  Other than that, 
- * it tries to stick to the BSD API to make it easier for those who know 
- * the BSD API to use this API.
+ * A few things to keep in mind about this type of socket:
+ * - it uses ns-3 API constructs such as class ns3::Address instead of
+ *   C-style structs
+ * - in contrast to the original BSD socket API, this API is asynchronous:
+ *   it does not contain blocking calls.  Sending and receiving operations
+ *   must make use of the callbacks provided. 
+ * - It also uses class ns3::Packet as a fancy byte buffer, allowing 
+ *   data to be passed across the API using an ns-3 Packet instead of 
+ *   a raw data pointer.  
+ * - Not all of the full POSIX sockets API is supported
+ *
+ * Other than that, it tries to stick to the BSD API to make it 
+ * easier for those who know the BSD API to use this API.  
+ * More details are provided in the ns-3 tutorial.
  */
 class Socket : public Object
 {
 public:
-// static TypeId GetTypeId (void);
 
   Socket (void);
   virtual ~Socket (void);
