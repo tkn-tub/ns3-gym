@@ -329,6 +329,19 @@ public:
    */
    Ptr<Packet> Recv (void);
   /**
+   * \brief Recv data (or dummy data) from the remote host
+   * \param buf A pointer to a raw byte buffer to write the data to. 
+   * If the underlying packet was carring null (fake) data, this buffer
+   * will be zeroed up to the length specified by the return value.
+   * \param size Number of bytes (at most) to copy to buf
+   * \param flags any flags to pass to the socket
+   * \returns number of bytes copied into buf
+   * 
+   * This is provided so as to have an API which is closer in appearance 
+   * to that of real network or BSD sockets.  
+   */
+  int Recv (uint8_t* buf, uint32_t size, uint32_t flags);
+  /**
    * Return number of bytes which can be returned from one or 
    * multiple calls to Recv.
    * Must be possible to call this method from the Recv callback.

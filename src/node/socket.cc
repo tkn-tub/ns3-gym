@@ -130,6 +130,14 @@ Socket::Recv (void)
   return Recv (std::numeric_limits<uint32_t>::max(), 0);
 }
 
+int 
+Socket::Recv (uint8_t* buf, uint32_t size, uint32_t flags)
+{
+  Ptr<Packet> p = Recv (size, flags); // read up to "size" bytes
+  memcpy (buf, p->PeekData (), p->GetSize());
+  return p->GetSize ();
+}
+
 int Socket::SendTo (const uint8_t* buf, uint32_t size, const Address &address)
 {
   NS_LOG_FUNCTION_NOARGS ();
