@@ -304,7 +304,7 @@ cell_tooltip_callback (GtkWidget  *widget,
       }
     break;
   case ModelNode::NODE_ATTRIBUTE: {
-    uint32_t attrIndex;
+    uint32_t attrIndex = 0;
     TypeId tid;
     for (tid = node->object->GetInstanceTypeId (); tid.HasParent (); tid = tid.GetParent ())
       {

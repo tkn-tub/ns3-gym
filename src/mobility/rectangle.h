@@ -61,8 +61,6 @@ public:
   double xMax;
   double yMin;
   double yMax;
-
-  ATTRIBUTE_HELPER_HEADER_1 (Rectangle);
 };
 
 std::ostream &operator << (std::ostream &os, const Rectangle &rectangle);
@@ -73,7 +71,7 @@ std::istream &operator >> (std::istream &is, Rectangle &rectangle);
  * \brief hold objects of type ns3::Rectangle
  */
 
-ATTRIBUTE_HELPER_HEADER_2 (Rectangle);
+ATTRIBUTE_HELPER_HEADER (Rectangle);
 
 } // namespace ns3
 
