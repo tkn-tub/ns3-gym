@@ -95,15 +95,13 @@ UdpEchoClient::StartApplication (void)
 
   if (m_socket == 0)
     {
-      TypeId tid = TypeId::LookupByName ("ns3::Udp");
-      Ptr<SocketFactory> socketFactory = 
-        GetNode ()->GetObject<SocketFactory> (tid);
-      m_socket = socketFactory->CreateSocket ();
+      TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
+      m_socket = Socket::CreateSocket (GetNode(), tid);
       m_socket->Bind ();
       m_socket->Connect (InetSocketAddress (m_peerAddress, m_peerPort));
     }
 
-  m_socket->SetRecvCallback(MakeCallback(&UdpEchoClient::Receive, this));
+  m_socket->SetRecvCallback(MakeCallback(&UdpEchoClient::HandleRead, this));
 
   ScheduleTransmit (Seconds(0.));
 }
@@ -115,8 +113,7 @@ UdpEchoClient::StopApplication ()
 
   if (m_socket != 0) 
     {
-      m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>, 
-        Ptr<Packet>, const Address &> ());
+      m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket> > ());
     }
 
   Simulator::Cancel(m_sendEvent);
@@ -149,20 +146,25 @@ UdpEchoClient::Send (void)
 }
 
 void
-UdpEchoClient::Receive(
-  Ptr<Socket> socket, 
-  Ptr<Packet> packet,
-  const Address &from) 
+UdpEchoClient::HandleRead (Ptr<Socket> socket)
 {
-  NS_LOG_FUNCTION (this << socket << packet << from);
-
-  if (InetSocketAddress::IsMatchingType (from))
+  NS_LOG_FUNCTION (this << socket);
+  Ptr<Packet> packet;
+  while (packet = socket->Recv ())
     {
-      InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-      NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
-        address.GetIpv4());
+      SocketRxAddressTag tag;
+      bool found;
+      found  = packet->FindFirstMatchingTag (tag);
+      NS_ASSERT (found);
+      Address from = tag.GetAddress ();
+      // XXX packet->RemoveTag (tag);
+      if (InetSocketAddress::IsMatchingType (from))
+        {
+          InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
+          NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " <<
+            address.GetIpv4());
+        }
     }
 }
-
 
 } // Namespace ns3

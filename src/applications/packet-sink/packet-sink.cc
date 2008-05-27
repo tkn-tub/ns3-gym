@@ -26,7 +26,7 @@
 #include "ns3/socket-factory.h"
 #include "ns3/packet.h"
 #include "ns3/trace-source-accessor.h"
-#include "ns3/udp.h"
+#include "ns3/udp-socket-factory.h"
 #include "packet-sink.h"
 
 using namespace std;
@@ -47,7 +47,7 @@ PacketSink::GetTypeId (void)
                    MakeAddressAccessor (&PacketSink::m_local),
                    MakeAddressChecker ())
     .AddAttribute ("Protocol", "The type id of the protocol to use for the rx socket.",
-                   TypeIdValue (Udp::GetTypeId ()),
+                   TypeIdValue (UdpSocketFactory::GetTypeId ()),
                    MakeTypeIdAccessor (&PacketSink::m_tid),
                    MakeTypeIdChecker ())
     .AddTraceSource ("Rx", "A packet has been received",
@@ -80,14 +80,12 @@ void PacketSink::StartApplication()    // Called at time specified by Start
   // Create the socket if not already
   if (!m_socket)
     {
-      Ptr<SocketFactory> socketFactory = 
-        GetNode ()->GetObject<SocketFactory> (m_tid);
-      m_socket = socketFactory->CreateSocket ();
+      m_socket = Socket::CreateSocket (GetNode(), m_tid);
       m_socket->Bind (m_local);
       m_socket->Listen (0);
     }
 
-  m_socket->SetRecvCallback (MakeCallback(&PacketSink::Receive, this));
+  m_socket->SetRecvCallback (MakeCallback(&PacketSink::HandleRead, this));
   m_socket->SetAcceptCallback (
             MakeNullCallback<bool, Ptr<Socket>, const Address &> (),
             MakeNullCallback<void, Ptr<Socket>, const Address&> (),
@@ -98,23 +96,30 @@ void PacketSink::StopApplication()     // Called at time specified by Stop
 {
   if (m_socket) 
     {
-      m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket>, 
-        Ptr<Packet>, const Address &> ());
+      m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
     }
 }
 
-// This LOG output inspired by the application on Joseph Kopena's wiki
-void PacketSink::Receive(Ptr<Socket> socket, Ptr<Packet> packet,
-                       const Address &from) 
+void PacketSink::HandleRead (Ptr<Socket> socket)
 {
-  if (InetSocketAddress::IsMatchingType (from))
+  Ptr<Packet> packet;
+  while (packet = socket->Recv ())
     {
-      InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-      NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
-        address.GetIpv4() << " [" << address << "]---'" << 
-        packet->PeekData() << "'");
+      SocketRxAddressTag tag;
+      bool found;
+      found = packet->FindFirstMatchingTag (tag);
+      NS_ASSERT (found);
+      Address from = tag.GetAddress ();
+      // XXX packet->RemoveTag (tag);
+      if (InetSocketAddress::IsMatchingType (from))
+        {
+          InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
+          NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
+            address.GetIpv4() << " [" << address << "]---'" << 
+            packet->PeekData() << "'");
+        }    
+      m_rxTrace (packet, from);
     }
-  m_rxTrace (packet, from);
 }
 
 void PacketSink::CloseConnection (Ptr<Socket> socket)

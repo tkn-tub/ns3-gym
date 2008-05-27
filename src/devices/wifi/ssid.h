@@ -49,7 +49,6 @@ public:
   Buffer::Iterator Serialize (Buffer::Iterator i) const;
   Buffer::Iterator Deserialize (Buffer::Iterator i);
 
-  ATTRIBUTE_HELPER_HEADER_1 (Ssid);
 private:
   uint8_t m_ssid[33];
   uint8_t m_length;
@@ -63,7 +62,7 @@ std::istream &operator >> (std::istream &is, Ssid &ssid);
  * \brief hold objects of type ns3::Ssid
  */
 
-ATTRIBUTE_HELPER_HEADER_2 (Ssid);
+ATTRIBUTE_HELPER_HEADER (Ssid);
 
 } // namespace ns3
 

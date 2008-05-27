@@ -25,29 +25,43 @@
 
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
+#include "ns3/tag.h"
 #include "ns3/object.h"
 #include "address.h"
 #include <stdint.h>
 
 namespace ns3 {
 
+
 class Node;
 class Packet;
 
 /**
- * \brief Define a Socket API based on the BSD Socket API.
+ * \ingroup node
+ * \defgroup socket Socket
+ * \brief A low-level Socket API based loosely on the BSD Socket API.
  *
- * Contrary to the original BSD socket API, this API is asynchronous:
- * it does not contain blocking calls. It also uses class ns3::Packet
- * as a fancy byte buffer, allowing data to be passed across the API
- * using an ns3::Packet instead of a raw data pointer.  Other than that, 
- * it tries to stick to the BSD API to make it easier for those who know 
- * the BSD API to use this API.
+ * A few things to keep in mind about this type of socket:
+ * - it uses ns-3 API constructs such as class ns3::Address instead of
+ *   C-style structs
+ * - in contrast to the original BSD socket API, this API is asynchronous:
+ *   it does not contain blocking calls.  Sending and receiving operations
+ *   must make use of the callbacks provided. 
+ * - It also uses class ns3::Packet as a fancy byte buffer, allowing 
+ *   data to be passed across the API using an ns-3 Packet instead of 
+ *   a raw data pointer.  
+ * - Not all of the full POSIX sockets API is supported
+ *
+ * Other than that, it tries to stick to the BSD API to make it 
+ * easier for those who know the BSD API to use this API.  
+ * More details are provided in the ns-3 tutorial.
  */
 class Socket : public Object
 {
 public:
-  virtual ~Socket();
+
+  Socket (void);
+  virtual ~Socket (void);
 
   enum SocketErrno {
     ERROR_NOTERROR,
@@ -63,6 +77,17 @@ public:
     ERROR_NOROUTETOHOST,
     SOCKET_ERRNO_LAST
   };
+
+  /**
+   * This method wraps the creation of sockets that is performed
+   * by a socket factory on a given node based on a TypeId.
+   * 
+   * \return A smart pointer to a newly created socket.
+   * 
+   * \param node The node on which to create the socket
+   * \param tid The TypeId of the socket to create
+   */
+  static Ptr<Socket> CreateSocket (Ptr<Node> node, TypeId tid);
 
   /**
    * \return the errno associated to the last call which failed in this
@@ -151,13 +176,13 @@ public:
    */
   void SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> sendCb);
   /**
-   * \brief Receive data
-   * \param receivedData Invoked whenever new data is received.
+   * \brief Notify application when new data is available to be read.
    *
+   *        This callback is intended to notify a socket that would
+   *        have been blocked in a blocking socket model that data
+   *        is available to be read.
    */
-  void SetRecvCallback (Callback<void, Ptr<Socket>, Ptr<Packet>,
-                          const Address&> receivedData);
-
+  void SetRecvCallback (Callback<void, Ptr<Socket> >);
   /** 
    * \param address the address to try to allocate
    * \returns 0 on success, -1 on failure.
@@ -212,12 +237,53 @@ public:
 
   /**
    * \brief Send data (or dummy data) to the remote host
-   * \param p packet to send
-   * \returns -1 in case of error or the number of bytes copied in the 
-   *          internal buffer and accepted for transmission.
+   *
+   * This function matches closely in semantics to the send() function
+   * call in the standard C library (libc):
+   *   ssize_t send (int s, const void *msg, size_t len, int flags);
+   * except that the function call is asynchronous.
+   * 
+   * In a typical blocking sockets model, this call would block upon
+   * lack of space to hold the message to be sent.  In ns-3 at this
+   * API, the call returns immediately in such a case, but the callback
+   * registered with SetSendCallback() is invoked when the socket
+   * has space (when it conceptually unblocks); this is an asynchronous
+   * I/O model for send().
+   * 
+   * This variant of Send() uses class ns3::Packet to encapsulate
+   * data, rather than providing a raw pointer and length field.  
+   * This allows an ns-3 application to attach tags if desired (such
+   * as a flow ID) and may allow the simulator to avoid some data
+   * copies.  Despite the appearance of sending Packets on a stream
+   * socket, just think of it as a fancy byte buffer with streaming
+   * semantics.    
+   *
+   * If either the message buffer within the Packet is too long to pass 
+   * atomically through the underlying protocol (for datagram sockets), 
+   * or the message buffer cannot entirely fit in the transmit buffer
+   * (for stream sockets), -1 is returned and SocketErrno is set 
+   * to ERROR_MSGSIZE.  If the packet does not fit, the caller can
+   * split the Packet (based on information obtained from 
+   * GetTxAvailable) and reattempt to send the data.
+   *
+   * \param p ns3::Packet to send
+   * \returns the number of bytes accepted for transmission if no error
+   *          occurs, and -1 otherwise.
    */
   virtual int Send (Ptr<Packet> p) = 0;
   
+  /**
+   * \brief Returns the number of bytes which can be sent in a single call
+   * to Send. 
+   * 
+   * For datagram sockets, this returns the number of bytes that
+   * can be passed atomically through the underlying protocol.
+   *
+   * For stream sockets, this returns the available space in bytes
+   * left in the transmit buffer.
+   */
+  virtual uint32_t GetTxAvailable (void) const = 0;
+
   /**
    * \brief Send data (or dummy data) to the remote host
    * \param buf A pointer to a raw byte buffer of some data to send.  If this 
@@ -231,27 +297,66 @@ public:
   
   /**
    * \brief Send data to a specified peer.
-   * \param address IP Address of remote host
    * \param p packet to send
+   * \param address IP Address of remote host
    * \returns -1 in case of error or the number of bytes copied in the 
    *          internal buffer and accepted for transmission.
    */
-  virtual int SendTo (const Address &address,Ptr<Packet> p) = 0;
+  virtual int SendTo (Ptr<Packet> p, const Address &address) = 0;
 
   /**
    * \brief Send data to a specified peer.
-   * \param address IP Address of remote host
    * \param buf A pointer to a raw byte buffer of some data to send.  If this 
    * is 0, we send dummy data whose size is specified by the third parameter
    * \param size the number of bytes to copy from the buffer
+   * \param address IP Address of remote host
    * \returns -1 in case of error or the number of bytes copied in the 
    *          internal buffer and accepted for transmission.
    *
    * This is provided so as to have an API which is closer in appearance 
    * to that of real network or BSD sockets.
    */
-  int SendTo (const Address &address, const uint8_t* buf, uint32_t size);
+  int SendTo (const uint8_t* buf, uint32_t size, const Address &address); 
 
+  /**
+   * \brief Read a single packet from the socket
+   * \param maxSize reader will accept packet up to maxSize
+   * \param flags Socket recv flags
+   * \returns Ptr<Packet> of the next in-sequence packet.  Returns
+   * 0 if the socket cannot return a next in-sequence packet conforming
+   * to the maxSize and flags.
+   */
+  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags) = 0;
+  /**
+   * \brief Read a single packet from the socket
+   *
+   *      Overloaded version of Recv(maxSize, flags) with maxSize
+   *      implicitly set to maximum sized integer, and flags set to zero.
+   *
+   * \returns Ptr<Packet> of the next in-sequence packet.  Returns
+   * 0 if the socket cannot return a next in-sequence packet.
+   */
+   Ptr<Packet> Recv (void);
+  /**
+   * \brief Recv data (or dummy data) from the remote host
+   * \param buf A pointer to a raw byte buffer to write the data to. 
+   * If the underlying packet was carring null (fake) data, this buffer
+   * will be zeroed up to the length specified by the return value.
+   * \param size Number of bytes (at most) to copy to buf
+   * \param flags any flags to pass to the socket
+   * \returns number of bytes copied into buf
+   * 
+   * This is provided so as to have an API which is closer in appearance 
+   * to that of real network or BSD sockets.  
+   */
+  int Recv (uint8_t* buf, uint32_t size, uint32_t flags);
+  /**
+   * Return number of bytes which can be returned from one or 
+   * multiple calls to Recv.
+   * Must be possible to call this method from the Recv callback.
+   */
+  virtual uint32_t GetRxAvailable (void) const = 0;
+ 
 protected:
   void NotifyCloseCompleted (void);
   void NotifyConnectionSucceeded (void);
@@ -262,7 +367,7 @@ protected:
   void NotifyCloseRequested (void);
   void NotifyDataSent (uint32_t size);
   void NotifySend (uint32_t spaceAvailable);
-  void NotifyDataReceived (Ptr<Packet> p, const Address &from);
+  void NotifyDataRecv (void);
 
   Callback<void,Ptr<Socket> >    m_closeCompleted;
   Callback<void, Ptr<Socket> >   m_connectionSucceeded;
@@ -273,7 +378,50 @@ protected:
   Callback<void, Ptr<Socket>, const Address&>    m_newConnectionCreated;
   Callback<void, Ptr<Socket>, uint32_t>          m_dataSent;
   Callback<void, Ptr<Socket>, uint32_t >         m_sendCb;
-  Callback<void, Ptr<Socket>, Ptr<Packet>,const Address&> m_receivedData;
+  Callback<void, Ptr<Socket> > m_receivedData;
+
+};
+
+/**
+ * \brief This class implements a tag that carries the source address
+ * of a packet across the receiving socket interface.
+ */
+class SocketRxAddressTag : public Tag
+{
+public:
+  SocketRxAddressTag ();
+  void SetAddress (Address addr);
+  Address GetAddress (void) const;
+
+  static TypeId GetTypeId (void);  
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
+
+private:
+  Address m_address;
+};
+
+/**
+ * \brief This class implements a tag that carries the socket-specific
+ * TTL of a packet to the IP layer
+ */
+class SocketIpTtlTag : public Tag
+{
+public:
+  SocketIpTtlTag ();
+  void SetTtl (uint8_t ttl);
+  uint8_t GetTtl (void) const;
+
+  static TypeId GetTypeId (void);  
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
+
+private:
+  uint8_t m_ttl;
 };
 
 } //namespace ns3

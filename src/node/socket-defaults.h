@@ -1,7 +1,5 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright 2007 University of Washington
- * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -15,48 +13,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#ifndef SOCKET_DEFAULTS_H
+#define SOCKET_DEFAULTS_H
 
-#ifndef __UDP_ECHO_SERVER_H__
-#define __UDP_ECHO_SERVER_H__
-
-#include "ns3/application.h"
-#include "ns3/event-id.h"
-#include "ns3/ptr.h"
-#include "ns3/address.h"
+#include "ns3/object.h"
 
 namespace ns3 {
 
-class Socket;
-class Packet;
-
 /**
- * \brief A Udp Echo server
+ * \brief Object to hold socket option defaults
  *
- * Every packet received is sent back.
+ * This class can be aggregated to a Node and can be used to store
+ * socket defaults for a Node.  
+ * 
  */
-class UdpEchoServer : public Application 
+class SocketDefaults : public Object
 {
 public:
   static TypeId GetTypeId (void);
-  UdpEchoServer ();
-  virtual ~UdpEchoServer ();
-
-protected:
-  virtual void DoDispose (void);
 
 private:
-
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
-
-  void HandleRead (Ptr<Socket> socket);
-
-  uint16_t m_port;
-  Ptr<Socket> m_socket;
-  Address m_local;
+  uint32_t m_defaultSndBufLimit;
+  uint32_t m_defaultRcvBufLimit;
 };
 
 } // namespace ns3
 
-#endif // __UDP_ECHO_SERVER_H__
-
+#endif /* SOCKET_DEFAULTS_H */

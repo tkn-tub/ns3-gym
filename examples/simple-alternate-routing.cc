@@ -141,7 +141,7 @@ main (int argc, char *argv[])
   uint16_t port = 9;   // Discard port (RFC 863)
 
   // Create a flow from n3 to n1, starting at time 1.1 seconds
-  OnOffHelper onoff ("ns3::Udp",
+  OnOffHelper onoff ("ns3::UdpSocketFactory",
     Address (InetSocketAddress (i1i2.GetAddress (0), port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
@@ -151,7 +151,7 @@ main (int argc, char *argv[])
   apps.Start (Seconds (10.0));
 
   // Create a packet sink to receive these packets
-  PacketSinkHelper sink ("ns3::Udp",
+  PacketSinkHelper sink ("ns3::UdpSocketFactory",
     Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   apps = sink.Install (c.Get (1));
   apps.Start (Seconds (1.1));

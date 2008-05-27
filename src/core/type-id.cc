@@ -386,7 +386,7 @@ TypeId
 TypeId::LookupByName (std::string name)
 {
   uint16_t uid = Singleton<IidManager>::Get ()->GetUid (name);
-  NS_ASSERT (uid != 0);
+  NS_ASSERT_MSG (uid != 0, "Assert in TypeId::LookupByName: " << name << " not found");
   return TypeId (uid);
 }
 bool

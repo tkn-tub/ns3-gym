@@ -22,15 +22,32 @@
 
 #include "ns3/log.h"
 #include "ns3/packet.h"
+#include "node.h"
 #include "socket.h"
+#include "socket-factory.h"
 
 NS_LOG_COMPONENT_DEFINE ("Socket");
 
 namespace ns3 {
 
+Socket::Socket (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+}
+
 Socket::~Socket ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+}
+
+Ptr<Socket> 
+Socket::CreateSocket (Ptr<Node> node, TypeId tid)
+{
+  Ptr<Socket> s;
+  Ptr<SocketFactory> socketFactory = node->GetObject<SocketFactory> (tid);
+  s = socketFactory->CreateSocket ();
+  NS_ASSERT (s != 0);
+  return s;
 }
 
 void 
@@ -80,7 +97,7 @@ Socket::SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> sendCb)
 }
 
 void 
-Socket::SetRecvCallback (Callback<void, Ptr<Socket>, Ptr<Packet>,const Address&> receivedData)
+Socket::SetRecvCallback (Callback<void, Ptr<Socket> > receivedData)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_receivedData = receivedData;
@@ -107,7 +124,21 @@ int Socket::Send (const uint8_t* buf, uint32_t size)
   return Send (p);
 }
 
-int Socket::SendTo (const Address &address, const uint8_t* buf, uint32_t size)
+Ptr<Packet>
+Socket::Recv (void)
+{
+  return Recv (std::numeric_limits<uint32_t>::max(), 0);
+}
+
+int 
+Socket::Recv (uint8_t* buf, uint32_t size, uint32_t flags)
+{
+  Ptr<Packet> p = Recv (size, flags); // read up to "size" bytes
+  memcpy (buf, p->PeekData (), p->GetSize());
+  return p->GetSize ();
+}
+
+int Socket::SendTo (const uint8_t* buf, uint32_t size, const Address &address)
 {
   NS_LOG_FUNCTION_NOARGS ();
   Ptr<Packet> p;
@@ -119,7 +150,7 @@ int Socket::SendTo (const Address &address, const uint8_t* buf, uint32_t size)
     {
       p = Create<Packet> (size);
     }
-  return SendTo (address,p);
+  return SendTo (p, address);
 }
 
 void 
@@ -221,13 +252,127 @@ Socket::NotifySend (uint32_t spaceAvailable)
 }
 
 void 
-Socket::NotifyDataReceived (Ptr<Packet> p, const Address &from)
+Socket::NotifyDataRecv (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   if (!m_receivedData.IsNull ())
     {
-      m_receivedData (this, p, from);
+      m_receivedData (this);
     }
+}
+
+/***************************************************************
+ *           Socket Tags
+ ***************************************************************/
+
+SocketRxAddressTag::SocketRxAddressTag ()  
+{
+}
+
+void 
+SocketRxAddressTag::SetAddress (Address addr)
+{
+  m_address = addr;
+}
+
+Address 
+SocketRxAddressTag::GetAddress (void) const
+{
+  return m_address;
+}
+
+
+TypeId
+SocketRxAddressTag::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SocketRxAddressTag")
+    .SetParent<Tag> ()
+    .AddConstructor<SocketRxAddressTag> ()
+    ;
+  return tid;
+}
+TypeId
+SocketRxAddressTag::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+uint32_t
+SocketRxAddressTag::GetSerializedSize (void) const
+{
+  return m_address.GetSerializedSize ();
+}
+void
+SocketRxAddressTag::Serialize (TagBuffer i) const
+{
+  uint8_t len = m_address.GetSerializedSize ();
+  uint8_t* buffer = new uint8_t[len];
+  memset (buffer, 0, len);
+  m_address.Serialize (buffer, len);
+  i.Write (buffer, len);
+  delete [] buffer;
+}
+void
+SocketRxAddressTag::Deserialize (TagBuffer i)
+{
+  uint8_t type = i.ReadU8 (); 
+  uint8_t len = i.ReadU8 (); 
+  // Len is the length of the address starting from buffer[2]
+  NS_ASSERT (len >= 2);
+  uint8_t* buffer = new uint8_t[len];
+  memset (buffer, 0, len);
+  buffer[0] = type;
+  buffer[1] = len;
+  i.Read (buffer+2, len); // ReadU8 consumes a byte
+  m_address = Address::Deserialize (buffer);
+  delete [] buffer;
+}
+
+SocketIpTtlTag::SocketIpTtlTag ()  
+{
+}
+
+void 
+SocketIpTtlTag::SetTtl (uint8_t ttl)
+{
+  m_ttl = ttl;
+}
+
+uint8_t 
+SocketIpTtlTag::GetTtl (void) const
+{
+  return m_ttl;
+}
+
+
+TypeId
+SocketIpTtlTag::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SocketIpTtlTag")
+    .SetParent<Tag> ()
+    .AddConstructor<SocketIpTtlTag> ()
+    ;
+  return tid;
+}
+TypeId
+SocketIpTtlTag::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+uint32_t 
+SocketIpTtlTag::GetSerializedSize (void) const
+{ 
+  return 1;
+}
+void 
+SocketIpTtlTag::Serialize (TagBuffer i) const
+{ 
+  i.WriteU8 (m_ttl);
+}
+void 
+SocketIpTtlTag::Deserialize (TagBuffer i)
+{ 
+  m_ttl = i.ReadU8 ();
 }
 
 }//namespace ns3

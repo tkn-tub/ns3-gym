@@ -23,9 +23,13 @@ GenerateTraffic (Ptr<Socket> socket, uint32_t size)
 }
 
 static void
-SocketPrinter (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
+SocketPrinter (Ptr<Socket> socket)
 {
-  std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << packet->GetSize () << std::endl;
+  Ptr<Packet> packet;
+  while (packet = socket->Recv ())
+    { 
+      std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << packet->GetSize () << std::endl;
+    }
 }
 
 static void
@@ -44,14 +48,12 @@ RunSimulation (void)
   internet.Install (c);
 
 
-  TypeId tid = TypeId::LookupByName ("ns3::Udp");
-  Ptr<SocketFactory> socketFactory = c.Get (0)->GetObject<SocketFactory> (tid);
-
-  Ptr<Socket> sink = socketFactory->CreateSocket ();
+  TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
+  Ptr<Socket> sink = Socket::CreateSocket (c.Get (0), tid);
   InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 80);
   sink->Bind (local);
 
-  Ptr<Socket> source = socketFactory->CreateSocket ();
+  Ptr<Socket> source = Socket::CreateSocket (c.Get (0), tid);
   InetSocketAddress remote = InetSocketAddress (Ipv4Address::GetLoopback (), 80);
   source->Connect (remote);
 

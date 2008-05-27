@@ -153,8 +153,28 @@ public:
    * \returns a new type id.
    */
   static uint8_t Register (void);
+  /**
+   * Get the number of bytes needed to serialize the underlying Address
+   * Typically, this is GetLength () + 2 
+   *
+   * \returns the number of bytes required for an Address in serialized form
+   */
+  uint32_t GetSerializedSize (void) const;
+  /**
+   * Serialize this address in host byte order to a byte buffer
+   *
+   * \param buf output buffer that gets written with this Address
+   * \param len length of output buffer
+   */
+  void Serialize (uint8_t* buf, uint32_t len) const;
+  /**
+   * \param buf buffer to read address from
+   * \returns an Address
+   * 
+   * The input address buffer is expected to be in host byte order format.
+   */
+  static Address Deserialize (const uint8_t* buf);
 
-  ATTRIBUTE_HELPER_HEADER_1 (Address);
 private:
   friend bool operator == (const Address &a, const Address &b);
   friend bool operator < (const Address &a, const Address &b);
@@ -171,7 +191,7 @@ private:
  * \brief hold objects of type ns3::Address
  */
 
-ATTRIBUTE_HELPER_HEADER_2 (Address);
+ATTRIBUTE_HELPER_HEADER (Address);
 
 bool operator == (const Address &a, const Address &b);
 bool operator != (const Address &a, const Address &b);

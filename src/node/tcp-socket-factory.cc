@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2007 INRIA
+ * Copyright (c) 2007 Georgia Tech Research Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,40 +15,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Raj Bhattacharjea <raj.b@gatech.edu>
  */
-#include "udp-impl.h"
-#include "udp-l4-protocol.h"
-#include "ns3/socket.h"
-#include "ns3/assert.h"
+#include "tcp-socket-factory.h"
+#include "ns3/uinteger.h"
+#include "ns3/double.h"
 
 namespace ns3 {
 
-UdpImpl::UdpImpl ()
-  : m_udp (0)
-{}
-UdpImpl::~UdpImpl ()
-{
-  NS_ASSERT (m_udp == 0);
-}
+NS_OBJECT_ENSURE_REGISTERED (TcpSocketFactory);
 
-void 
-UdpImpl::SetUdp (Ptr<UdpL4Protocol> udp)
+TypeId
+TcpSocketFactory::GetTypeId (void)
 {
-  m_udp = udp;
-}
-
-Ptr<Socket>
-UdpImpl::CreateSocket (void)
-{
-  return m_udp->CreateSocket ();
-}
-
-void 
-UdpImpl::DoDispose (void)
-{
-  m_udp = 0;
-  Udp::DoDispose ();
+  static TypeId tid = TypeId ("ns3::TcpSocketFactory")
+    .SetParent<SocketFactory> ()
+  ;
+  return tid;
 }
 
 } // namespace ns3

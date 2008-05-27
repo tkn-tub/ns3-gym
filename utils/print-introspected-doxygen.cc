@@ -236,8 +236,8 @@ int main (int argc, char *argv[])
   NodeContainer c; c.Create (1);
 
   StaticInformation info;
-  info.RecordAggregationInfo ("ns3::Node", "ns3::Tcp");
-  info.RecordAggregationInfo ("ns3::Node", "ns3::Udp");
+  info.RecordAggregationInfo ("ns3::Node", "ns3::TcpSocketFactory");
+  info.RecordAggregationInfo ("ns3::Node", "ns3::UdpSocketFactory");
   info.RecordAggregationInfo ("ns3::Node", "ns3::PacketSocketFactory");
   info.RecordAggregationInfo ("ns3::Node", "ns3::olsr::Agent");
   info.RecordAggregationInfo ("ns3::Node", "ns3::MobilityModel");

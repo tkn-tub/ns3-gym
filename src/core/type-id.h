@@ -354,7 +354,6 @@ public:
   TypeId ();
   ~TypeId ();
 
-  ATTRIBUTE_HELPER_HEADER_1 (TypeId);
 private:
   friend class AttributeList;
   friend bool operator == (TypeId a, TypeId b);
@@ -388,7 +387,7 @@ bool operator <  (TypeId a, TypeId b);
  */
 
 
-ATTRIBUTE_HELPER_HEADER_2 (TypeId);
+ATTRIBUTE_HELPER_HEADER (TypeId);
 
 } // namespace ns3 
 

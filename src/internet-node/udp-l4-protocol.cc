@@ -28,7 +28,7 @@
 #include "ipv4-end-point-demux.h"
 #include "ipv4-end-point.h"
 #include "ipv4-l3-protocol.h"
-#include "udp-socket.h"
+#include "udp-socket-impl.h"
 
 NS_LOG_COMPONENT_DEFINE ("UdpL4Protocol");
 
@@ -95,7 +95,7 @@ Ptr<Socket>
 UdpL4Protocol::CreateSocket (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  Ptr<UdpSocket> socket = CreateObject<UdpSocket> ();
+  Ptr<UdpSocketImpl> socket = CreateObject<UdpSocketImpl> ();
   socket->SetNode (m_node);
   socket->SetUdp (this);
   return socket;

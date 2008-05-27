@@ -308,7 +308,7 @@ main (int argc, char *argv[])
   Ptr<Node> appSink = NodeList::GetNode (13);  
   Ipv4Address remoteAddr = Ipv4Address ("172.16.0.5");
 
-  OnOffHelper onoff ("ns3::Udp", 
+  OnOffHelper onoff ("ns3::UdpSocketFactory", 
                      Address (InetSocketAddress (remoteAddr, port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
@@ -317,7 +317,7 @@ main (int argc, char *argv[])
   apps.Stop (Seconds (20.0));
 
   // Create a packet sink to receive these packets
-  PacketSinkHelper sink ("ns3::Udp", 
+  PacketSinkHelper sink ("ns3::UdpSocketFactory", 
                          InetSocketAddress (Ipv4Address::GetAny (), port));
   apps = sink.Install (appSink);
   apps.Start (Seconds (3.0));

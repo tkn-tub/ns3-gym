@@ -98,9 +98,7 @@ protected:
   /// Increments message sequence number and returns the new value.
   inline uint16_t GetMessageSequenceNumber ();
 	
-  void RecvOlsr (Ptr<Socket> socket,
-                 Ptr<Packet> receivedPacket,
-                 const Address &sourceAddress);
+  void RecvOlsr (Ptr<Socket> socket);
 
   void MprComputation ();
   void RoutingTableComputation ();

@@ -27,8 +27,8 @@
 #include "tcp-l4-protocol.h"
 #include "ipv4-l3-protocol.h"
 #include "arp-l3-protocol.h"
-#include "udp-impl.h"
-#include "tcp-impl.h"
+#include "udp-socket-factory-impl.h"
+#include "tcp-socket-factory-impl.h"
 #include "ipv4-impl.h"
 
 namespace ns3 {
@@ -58,19 +58,19 @@ AddInternetStack (Ptr<Node> node)
   ipv4L4Demux->Insert (udp);
   ipv4L4Demux->Insert (tcp);
 
-  Ptr<UdpImpl> udpImpl = CreateObject<UdpImpl> ();
-  Ptr<TcpImpl> tcpImpl = CreateObject<TcpImpl> ();
+  Ptr<UdpSocketFactoryImpl> udpFactory = CreateObject<UdpSocketFactoryImpl> ();
+  Ptr<TcpSocketFactoryImpl> tcpFactory = CreateObject<TcpSocketFactoryImpl> ();
   Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> ();
 
-  udpImpl->SetUdp (udp);
-  tcpImpl->SetTcp (tcp);
+  udpFactory->SetUdp (udp);
+  tcpFactory->SetTcp (tcp);
   ipv4Impl->SetIpv4 (ipv4);
 
   node->AggregateObject (ipv4);
   node->AggregateObject (arp);
   node->AggregateObject (ipv4Impl);
-  node->AggregateObject (udpImpl);
-  node->AggregateObject (tcpImpl);
+  node->AggregateObject (udpFactory);
+  node->AggregateObject (tcpFactory);
   node->AggregateObject (ipv4L4Demux);
 }
 

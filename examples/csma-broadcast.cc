@@ -49,6 +49,7 @@ main (int argc, char *argv[])
 #if 0
   LogComponentEnable ("CsmaBroadcastExample", LOG_LEVEL_INFO);
 #endif
+  LogComponentEnable ("CsmaBroadcastExample", LOG_PREFIX_TIME);
 
   //
   // Make the random number generators generate reproducible results.
@@ -93,7 +94,7 @@ main (int argc, char *argv[])
   // Create the OnOff application to send UDP datagrams of size
   // 512 bytes (default) at a rate of 500 Kb/s (default) from n0
   NS_LOG_INFO ("Create Applications.");
-  OnOffHelper onoff ("ns3::Udp", 
+  OnOffHelper onoff ("ns3::UdpSocketFactory", 
     Address (InetSocketAddress (Ipv4Address ("255.255.255.255"), port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
@@ -104,7 +105,7 @@ main (int argc, char *argv[])
   app.Stop (Seconds (10.0));
   
   // Create an optional packet sink to receive these packets
-  PacketSinkHelper sink ("ns3::Udp",
+  PacketSinkHelper sink ("ns3::UdpSocketFactory",
     Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   sink.Install (c0.Get (1));
   sink.Install (c1.Get (1));

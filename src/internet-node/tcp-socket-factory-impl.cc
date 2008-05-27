@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright 2007 University of Washington
- * 
+ * Copyright (c) 2007 Georgia Tech Research Corporation
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -14,49 +14,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Raj Bhattacharjea <raj.b@gatech.edu>
  */
-
-#ifndef __UDP_ECHO_SERVER_H__
-#define __UDP_ECHO_SERVER_H__
-
-#include "ns3/application.h"
-#include "ns3/event-id.h"
-#include "ns3/ptr.h"
-#include "ns3/address.h"
+#include "tcp-socket-factory-impl.h"
+#include "tcp-l4-protocol.h"
+#include "ns3/socket.h"
+#include "ns3/assert.h"
 
 namespace ns3 {
 
-class Socket;
-class Packet;
-
-/**
- * \brief A Udp Echo server
- *
- * Every packet received is sent back.
- */
-class UdpEchoServer : public Application 
+TcpSocketFactoryImpl::TcpSocketFactoryImpl ()
+  : m_tcp (0)
+{}
+TcpSocketFactoryImpl::~TcpSocketFactoryImpl ()
 {
-public:
-  static TypeId GetTypeId (void);
-  UdpEchoServer ();
-  virtual ~UdpEchoServer ();
+  NS_ASSERT (m_tcp == 0);
+}
 
-protected:
-  virtual void DoDispose (void);
+void 
+TcpSocketFactoryImpl::SetTcp (Ptr<TcpL4Protocol> tcp)
+{
+  m_tcp = tcp;
+}
 
-private:
+Ptr<Socket>
+TcpSocketFactoryImpl::CreateSocket (void)
+{
+  return m_tcp->CreateSocket ();
+}
 
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
-
-  void HandleRead (Ptr<Socket> socket);
-
-  uint16_t m_port;
-  Ptr<Socket> m_socket;
-  Address m_local;
-};
+void 
+TcpSocketFactoryImpl::DoDispose (void)
+{
+  m_tcp = 0;
+  TcpSocketFactory::DoDispose ();
+}
 
 } // namespace ns3
-
-#endif // __UDP_ECHO_SERVER_H__
-

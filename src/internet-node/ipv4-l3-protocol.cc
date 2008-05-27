@@ -24,6 +24,7 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/node.h"
+#include "ns3/socket.h"
 #include "ns3/net-device.h"
 #include "ns3/uinteger.h"
 #include "ns3/trace-source-accessor.h"
@@ -491,6 +492,34 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
 
   m_identification ++;
 
+  // Set TTL to 1 if it is a broadcast packet of any type.  Otherwise,
+  // possibly override the default TTL if the packet is tagged
+  SocketIpTtlTag tag;
+  bool found = packet->FindFirstMatchingTag (tag);
+
+  if (destination.IsBroadcast ()) 
+    {
+      ipHeader.SetTtl (1);
+    }
+  else if (found)
+    {
+      ipHeader.SetTtl (tag.GetTtl ());
+      // XXX remove tag here?  
+    }
+  else
+    {
+      uint32_t ifaceIndex = 0;
+      for (Ipv4InterfaceList::iterator ifaceIter = m_interfaces.begin ();
+           ifaceIter != m_interfaces.end (); ifaceIter++, ifaceIndex++)
+        {
+          Ptr<Ipv4Interface> outInterface = *ifaceIter;
+          if (destination.IsSubnetDirectedBroadcast (
+                outInterface->GetNetworkMask ()))
+          {
+            ipHeader.SetTtl (1);
+          }
+        }
+    }
   if (destination.IsBroadcast ())
     {
       uint32_t ifaceIndex = 0;

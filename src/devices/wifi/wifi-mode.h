@@ -107,7 +107,6 @@ class WifiMode
    */
   WifiMode ();
 
-  ATTRIBUTE_HELPER_HEADER_1 (WifiMode);
 private:
   friend class WifiModeFactory;
   WifiMode (uint32_t uid);
@@ -123,7 +122,7 @@ std::istream & operator >> (std::istream &is, WifiMode &mode);
  * \brief hold objects of type ns3::WifiMode
  */
 
-ATTRIBUTE_HELPER_HEADER_2 (WifiMode);
+ATTRIBUTE_HELPER_HEADER (WifiMode);
 
 /**
  * \brief create WifiMode class instances and keep track of them.

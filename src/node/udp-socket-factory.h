@@ -17,48 +17,39 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef UDP_IMPL_H
-#define UDP_IMPL_H
+#ifndef UDP_SOCKET_FACTORY_H
+#define UDP_SOCKET_FACTORY_H
 
-#include "ns3/udp.h"
-#include "ns3/ptr.h"
+#include "socket-factory.h"
 
 namespace ns3 {
 
-class UdpL4Protocol;
+class Socket;
 
 /**
- * \brief Object to create UDP socket instances 
- * \internal
+ * \brief API to create UDP socket instances 
  *
- * This class implements the API for UDP sockets.
- * It is a socket factory (deriving from class SocketFactory) and can
- * also hold global variables used to initialize newly created sockets, 
- * such as values that are set through the sysctl or proc interfaces in Linux.
+ * This abstract class defines the API for UDP socket factory.
+ * All UDP implementations must provide an implementation of CreateSocket
+ * below.
+ * 
+ * \see UdpSocketFactoryImpl
  */
-class UdpImpl : public Udp
+class UdpSocketFactory : public SocketFactory
 {
 public:
-  UdpImpl ();
-  virtual ~UdpImpl ();
-
-  void SetUdp (Ptr<UdpL4Protocol> udp);
+  static TypeId GetTypeId (void);
 
   /**
-   * \brief Implements a method to create a UdpImpl-based socket and return
-   * a base class smart pointer to the socket.
-   * \internal
-   *
    * \return smart pointer to Socket
+   * 
+   * API for creating socket instances; must be implemented by UDP 
+   * implementations..
    */
-  virtual Ptr<Socket> CreateSocket (void);
+  virtual Ptr<Socket> CreateSocket (void) = 0;
 
-protected:
-  virtual void DoDispose (void);
-private:
-  Ptr<UdpL4Protocol> m_udp;
 };
 
 } // namespace ns3
 
-#endif /* UDP_IMPL_H */
+#endif /* UDP_SOCKET_FACTORY_H */

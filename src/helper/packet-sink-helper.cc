@@ -41,13 +41,13 @@ PacketSinkHelper::SetAttribute (std::string name, const AttributeValue &value)
 void 
 PacketSinkHelper::SetUdpLocal (Ipv4Address ip, uint16_t port)
 {
-  m_factory.Set ("Protocol", String ("ns3::Udp"));
+  m_factory.Set ("Protocol", String ("ns3::UdpSocketFactory"));
   m_factory.Set ("Local", Address (InetSocketAddress (ip, port)));
 }
 void 
 PacketSinkHelper::SetTcpLocal (Ipv4Address ip, uint16_t port)
 {
-  m_factory.Set ("Protocol", String ("ns3::Tcp"));
+  m_factory.Set ("Protocol", String ("ns3::TcpSocketFactory"));
   m_factory.Set ("Local", Address (InetSocketAddress (ip, port)));
 }
 #endif

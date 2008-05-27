@@ -7,7 +7,7 @@ CONVERT = convert
 CSS = --css-include=tutorial.css
 SPLIT = --split section
 
-DIA_SOURCES = buffer.dia pp.dia dumbbell.dia star.dia
+DIA_SOURCES = buffer.dia pp.dia dumbbell.dia star.dia sockets-overview.dia
 TGIF_SOURCES = packet.obj helpers.obj 
 
 DIA_EPS = ${DIA_SOURCES:.dia=.eps}

@@ -162,7 +162,7 @@ int main (int argc, char *argv[])
   socket.SetPhysicalAddress (staDevs.Get (1)->GetAddress ());
   socket.SetProtocol (1);
 
-  OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
+  OnOffHelper onoff ("ns3::PacketSocket", Address (socket));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (42)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
 
