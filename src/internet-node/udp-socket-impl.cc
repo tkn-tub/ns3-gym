@@ -530,14 +530,16 @@ void UdpSocketImplTest::ReceivePacket2 (Ptr<Socket> socket, Ptr<Packet> packet, 
 
 void UdpSocketImplTest::ReceivePkt (Ptr<Socket> socket)
 {
-  uint32_t availableData = socket->GetRxAvailable ();
+  uint32_t availableData;
+  availableData = socket->GetRxAvailable ();
   m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
   NS_ASSERT (availableData == m_receivedPacket->GetSize ());
 }
 
 void UdpSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
 {
-  uint32_t availableData = socket->GetRxAvailable ();
+  uint32_t availableData;
+  availableData = socket->GetRxAvailable ();
   m_receivedPacket2 = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
   NS_ASSERT (availableData == m_receivedPacket2->GetSize ());
 }

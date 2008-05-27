@@ -153,7 +153,8 @@ UdpEchoClient::HandleRead (Ptr<Socket> socket)
   while (packet = socket->Recv ())
     {
       SocketRxAddressTag tag;
-      bool found = packet->FindFirstMatchingTag (tag);
+      bool found;
+      found  = packet->FindFirstMatchingTag (tag);
       NS_ASSERT (found);
       Address from = tag.GetAddress ();
       // XXX packet->RemoveTag (tag);
