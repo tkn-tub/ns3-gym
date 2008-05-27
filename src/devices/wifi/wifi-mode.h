@@ -107,7 +107,6 @@ class WifiMode
    */
   WifiMode ();
 
-  ATTRIBUTE_HELPER_HEADER_1 (WifiMode);
 private:
   friend class WifiModeFactory;
   WifiMode (uint32_t uid);

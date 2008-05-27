@@ -57,8 +57,6 @@ public:
    * z coordinate of vector vector
    */
   double z;
-
-  ATTRIBUTE_HELPER_HEADER_1 (Vector);
 };
 
 double CalculateDistance (const Vector &a, const Vector &b);

@@ -142,7 +142,6 @@ public:
   static Ipv4Address GetBroadcast (void);
   static Ipv4Address GetLoopback (void);
 
-  ATTRIBUTE_HELPER_HEADER_1 (Ipv4Address);
 private:
   Address ConvertTo (void) const;
   static uint8_t GetType (void);
@@ -180,7 +179,6 @@ public:
   static Ipv4Mask GetLoopback (void);
   static Ipv4Mask GetZero (void);
 
-  ATTRIBUTE_HELPER_HEADER_1 (Ipv4Mask);
 private:
   uint32_t m_mask;
 };

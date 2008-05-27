@@ -96,7 +96,6 @@ public:
    */
   static Mac48Address GetBroadcast (void);
 
-  ATTRIBUTE_HELPER_HEADER_1 (Mac48Address);
 private:
   /**
    * \returns a new Address instance

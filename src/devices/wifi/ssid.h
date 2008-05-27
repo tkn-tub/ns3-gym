@@ -49,7 +49,6 @@ public:
   Buffer::Iterator Serialize (Buffer::Iterator i) const;
   Buffer::Iterator Deserialize (Buffer::Iterator i);
 
-  ATTRIBUTE_HELPER_HEADER_1 (Ssid);
 private:
   uint8_t m_ssid[33];
   uint8_t m_length;

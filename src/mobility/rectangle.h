@@ -61,8 +61,6 @@ public:
   double xMax;
   double yMin;
   double yMax;
-
-  ATTRIBUTE_HELPER_HEADER_1 (Rectangle);
 };
 
 std::ostream &operator << (std::ostream &os, const Rectangle &rectangle);

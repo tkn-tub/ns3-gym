@@ -83,8 +83,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  *
  * The simple macros are implemented in terms of the complex
  * macros and should generally be prefered over the complex macros:
- *    - \ref ATTRIBUTE_HELPER_HEADER_1,
- *    - \ref ATTRIBUTE_HELPER_HEADER_2, and,
+ *    - \ref ATTRIBUTE_HELPER_HEADER, and,
  *    - \ref ATTRIBUTE_HELPER_CPP,
  */
 
@@ -231,15 +230,6 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  */
 #define ATTRIBUTE_CONVERTER_IMPLEMENT(type)
 
-
-/**
- * \ingroup AttributeHelper
- * \param type the name of the class
- *
- * This macro should be invoked from a public section of the class
- * declaration.
- */
-#define ATTRIBUTE_HELPER_HEADER_1(type)
 
 /**
  * \ingroup AttributeHelper

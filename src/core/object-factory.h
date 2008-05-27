@@ -77,7 +77,6 @@ public:
   template <typename T>
   Ptr<T> Create (void) const;
 
-  ATTRIBUTE_HELPER_HEADER_1 (ObjectFactory);
 private:
   friend std::ostream & operator << (std::ostream &os, const ObjectFactory &factory);
   friend std::istream & operator >> (std::istream &is, ObjectFactory &factory);

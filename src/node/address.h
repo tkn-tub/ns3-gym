@@ -154,7 +154,6 @@ public:
    */
   static uint8_t Register (void);
 
-  ATTRIBUTE_HELPER_HEADER_1 (Address);
 private:
   friend bool operator == (const Address &a, const Address &b);
   friend bool operator < (const Address &a, const Address &b);
