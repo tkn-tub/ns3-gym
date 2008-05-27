@@ -93,7 +93,7 @@ std::istream &operator >> (std::istream &is, DataRate &rate);
  * \brief hold objects of type ns3::DataRate
  */
 
-ATTRIBUTE_HELPER_HEADER_2 (DataRate);
+ATTRIBUTE_HELPER_HEADER (DataRate);
 
 /**
  * \param lhs

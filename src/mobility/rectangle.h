@@ -71,7 +71,7 @@ std::istream &operator >> (std::istream &is, Rectangle &rectangle);
  * \brief hold objects of type ns3::Rectangle
  */
 
-ATTRIBUTE_HELPER_HEADER_2 (Rectangle);
+ATTRIBUTE_HELPER_HEADER (Rectangle);
 
 } // namespace ns3
 

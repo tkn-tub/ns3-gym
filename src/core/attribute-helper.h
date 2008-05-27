@@ -238,7 +238,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  * This macro should be invoked outside of the class
  * declaration in its public header.
  */
-#define ATTRIBUTE_HELPER_HEADER_2(type)					\
+#define ATTRIBUTE_HELPER_HEADER(type)					\
   ATTRIBUTE_VALUE_DEFINE (type);					\
   ATTRIBUTE_ACCESSOR_DEFINE (type);					\
   ATTRIBUTE_CHECKER_DEFINE (type);

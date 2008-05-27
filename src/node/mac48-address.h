@@ -116,7 +116,7 @@ private:
  * \brief hold objects of type ns3::Mac48Address
  */
 
-ATTRIBUTE_HELPER_HEADER_2 (Mac48Address);
+ATTRIBUTE_HELPER_HEADER (Mac48Address);
 
 bool operator == (const Mac48Address &a, const Mac48Address &b);
 bool operator != (const Mac48Address &a, const Mac48Address &b);

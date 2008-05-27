@@ -387,7 +387,7 @@ bool operator <  (TypeId a, TypeId b);
  */
 
 
-ATTRIBUTE_HELPER_HEADER_2 (TypeId);
+ATTRIBUTE_HELPER_HEADER (TypeId);
 
 } // namespace ns3 
 

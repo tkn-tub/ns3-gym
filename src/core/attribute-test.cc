@@ -53,7 +53,7 @@ std::istream & operator >> (std::istream &is, ValueClassTest &v)
 {
   return is;
 }
-ATTRIBUTE_HELPER_HEADER_2 (ValueClassTest);
+ATTRIBUTE_HELPER_HEADER (ValueClassTest);
 ATTRIBUTE_HELPER_CPP (ValueClassTest);
 
 class AttributeTest : public Test

@@ -62,7 +62,7 @@ std::istream &operator >> (std::istream &is, Ssid &ssid);
  * \brief hold objects of type ns3::Ssid
  */
 
-ATTRIBUTE_HELPER_HEADER_2 (Ssid);
+ATTRIBUTE_HELPER_HEADER (Ssid);
 
 } // namespace ns3
 

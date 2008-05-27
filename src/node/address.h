@@ -170,7 +170,7 @@ private:
  * \brief hold objects of type ns3::Address
  */
 
-ATTRIBUTE_HELPER_HEADER_2 (Address);
+ATTRIBUTE_HELPER_HEADER (Address);
 
 bool operator == (const Address &a, const Address &b);
 bool operator != (const Address &a, const Address &b);

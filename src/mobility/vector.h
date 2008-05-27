@@ -66,7 +66,7 @@ double CalculateDistance (const Vector &a, const Vector &b);
  * \brief hold objects of type ns3::Vector
  */
 
-ATTRIBUTE_HELPER_HEADER_2 (Vector);
+ATTRIBUTE_HELPER_HEADER (Vector);
 
 std::ostream &operator << (std::ostream &os, const Vector &vector);
 std::istream &operator >> (std::istream &is, Vector &vector);
