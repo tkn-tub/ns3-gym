@@ -133,8 +133,8 @@ UdpSocketImpl::FinishBind (void)
     {
       return -1;
     }
-  m_endPoint->SetRxCallback (MakeCallback (&UdpSocketImpl::ForwardUp, this));
-  m_endPoint->SetDestroyCallback (MakeCallback (&UdpSocketImpl::Destroy, this));
+  m_endPoint->SetRxCallback (MakeCallback (&UdpSocketImpl::ForwardUp, Ptr<UdpSocketImpl> (this)));
+  m_endPoint->SetDestroyCallback (MakeCallback (&UdpSocketImpl::Destroy, Ptr<UdpSocketImpl> (this)));
   return 0;
 }
 
