@@ -643,7 +643,7 @@ PacketMetadataTest::RunTests (void)
   p1 = p->CreateFragment (0, 1500);
   p2 = p1->Copy ();
   ADD_HEADER (p2, 24);
-  NS_TEST_ASSERT_EQUAL (p->GetSize (), 1518);
+  NS_TEST_ASSERT_EQUAL (p->GetSize (), 1519);
 
 
   return result;
