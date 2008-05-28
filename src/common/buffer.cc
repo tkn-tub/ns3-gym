@@ -203,11 +203,13 @@ Buffer::Create (uint32_t size)
 
 Buffer::Buffer ()
 {
+  NS_LOG_FUNCTION (this);
   Initialize (0);
 }
 
 Buffer::Buffer (uint32_t dataSize)
 {
+  NS_LOG_FUNCTION (this << dataSize);
   Initialize (dataSize);
 }
 
@@ -225,12 +227,15 @@ Buffer::CheckInternalState (void) const
     m_start <= m_data->m_size &&
     m_zeroAreaStart <= m_data->m_size;
 
-  NS_ASSERT (offsetsOk);
-  NS_ASSERT (dirtyOk);
-  NS_ASSERT (internalSizeOk);
-
-  return m_data->m_count > 0 && offsetsOk && dirtyOk && 
-    internalSizeOk;
+  bool ok = m_data->m_count > 0 && offsetsOk && dirtyOk && internalSizeOk;
+  if (!ok)
+    {
+      LOG_INTERNAL_STATE ("check " << this << 
+                          ", " << (offsetsOk?"true":"false") << 
+                          ", " << (dirtyOk?"true":"false") << 
+                          ", " << (internalSizeOk?"true":"false") << " ");
+    }
+  return ok;
 }
 
 void
@@ -262,6 +267,7 @@ Buffer::Buffer (Buffer const&o)
     m_start (o.m_start),
     m_end (o.m_end)
 {
+  NS_LOG_FUNCTION (this << &o);
   m_data->m_count++;
   NS_ASSERT (CheckInternalState ());
 }
@@ -269,6 +275,7 @@ Buffer::Buffer (Buffer const&o)
 Buffer &
 Buffer::operator = (Buffer const&o)
 {
+  NS_LOG_FUNCTION (this << &o);
   NS_ASSERT (CheckInternalState ());
   if (m_data != o.m_data) 
     {
@@ -295,6 +302,8 @@ Buffer::operator = (Buffer const&o)
 
 Buffer::~Buffer ()
 {
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (CheckInternalState ());
   HEURISTICS (g_recommendedStart = std::max (g_recommendedStart, m_maxZeroAreaStart));
   m_data->m_count--;
   if (m_data->m_count == 0) 
