@@ -139,10 +139,6 @@ void
 DcaTxop::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  delete m_transmissionListener;
-  delete m_dcf;
-  delete m_rng;
-  delete m_txMiddle;
   m_transmissionListener = 0;
   m_dcf = 0;
   m_rng = 0;
@@ -150,6 +146,10 @@ DcaTxop::DoDispose (void)
   m_queue = 0;
   m_low = 0;
   m_stationManager = 0;
+  delete m_transmissionListener;
+  delete m_dcf;
+  delete m_rng;
+  delete m_txMiddle;
 }
 
 void
