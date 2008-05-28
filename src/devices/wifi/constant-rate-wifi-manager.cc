@@ -77,11 +77,11 @@ ConstantRateWifiManager::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::ConstantRateWifiManager")
     .SetParent<WifiRemoteStationManager> ()
     .AddConstructor<ConstantRateWifiManager> ()
-    .AddAttribute ("DataMode", "XXX",
+    .AddAttribute ("DataMode", "The transmission mode to use for every data packet transmission",
                    StringValue ("wifia-6mbs"),
                    MakeWifiModeAccessor (&ConstantRateWifiManager::m_dataMode),
                    MakeWifiModeChecker ())
-    .AddAttribute ("ControlMode", "XXX",
+    .AddAttribute ("ControlMode", "The transmission mode to use for every control packet transmission.",
                    StringValue ("wifia-6mbs"),
                    MakeWifiModeAccessor (&ConstantRateWifiManager::m_ctlMode),
                    MakeWifiModeChecker ())
