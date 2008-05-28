@@ -58,8 +58,13 @@ namespace ns3 {
  * BufferData. If the BufferData::m_count field is one, it means that
  * there exist only one instance of Buffer which references the 
  * BufferData instance so, it is safe to modify it. It is also
- * safe to modify the content of a BufferData if the modification
- * falls outside of the "dirty area" defined by the BufferData.
+ * safe to modify the content of a BufferData if someone has not yet
+ * made incompatible changes to the BufferData and we detect that
+ * case when the m_ownerId field is equal to the m_ownerId of the
+ * BufferData itself. Whenever a change potentially incompatible
+ * with other users is made to a BufferData object, we update the
+ * m_ownerId field of the BufferData to ensure that the other users
+ * will detect out modification.
  * In every other case, the BufferData must be copied before
  * being modified.
  *
@@ -481,6 +486,13 @@ private:
   /* This structure is described in the buffer.cc file.
    */
   struct BufferData *m_data;
+  /* id of the owner of the BufferData object.
+   * If this id matches the id stored in the BufferData object,
+   * we are the current owner of the data. If we are not the owner,
+   * and we need to acquire ownership before making modifications
+   * by doing a copy.
+   */
+  uint32_t m_ownerId;
 #ifdef BUFFER_HEURISTICS
   /* keep track of the maximum value of m_zeroAreaStart across
    * the lifetime of a Buffer instance. This variable is used
