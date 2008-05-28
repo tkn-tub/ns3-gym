@@ -114,21 +114,20 @@ Address::GetSerializedSize (void) const
 }
 
 void
-Address::Serialize (uint8_t* buf, uint32_t len) const
+Address::Serialize (TagBuffer buffer) const
 {
-  NS_ASSERT (len >= static_cast<uint32_t> (m_len + 2));
-  buf[0] = m_type;
-  buf[1] = m_len;
-  for (uint8_t i = 0; i < m_len; i++)
-    {
-      buf[i+2] = m_data[i];
-    }
+  buffer.WriteU8 (m_type);
+  buffer.WriteU8 (m_len);
+  buffer.Write (m_data,  m_len);
 }
 
-Address
-Address::Deserialize (const uint8_t* buf)
+void
+Address::Deserialize (TagBuffer buffer)
 {
-  return Address (buf[0], buf + 2, buf[1]);
+  m_type = buffer.ReadU8 ();
+  m_len = buffer.ReadU8 ();
+  NS_ASSERT (m_len <= MAX_SIZE);
+  buffer.Read (m_data, m_len);
 }
 
 ATTRIBUTE_HELPER_CPP (Address);
