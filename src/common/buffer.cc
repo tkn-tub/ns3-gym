@@ -360,6 +360,8 @@ Buffer::AddAtStart (uint32_t start)
       NS_ASSERT (m_data->m_count == 1 || m_start == m_data->m_dirtyStart);
       m_start -= start;
       dirty = m_start > m_data->m_dirtyStart;
+      // update dirty area
+      m_data->m_dirtyStart = m_start;
       HEURISTICS (g_nAddNoRealloc++);
     } 
   else
@@ -381,14 +383,15 @@ Buffer::AddAtStart (uint32_t start)
       m_end += delta;
       m_start -= start;
 
+      // update dirty area
+      m_data->m_dirtyStart = m_start;
+      m_data->m_dirtyEnd = m_end;
+
       dirty = true;
 
       HEURISTICS (g_nAddRealloc++);
     }
   HEURISTICS (m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart));
-  // update dirty area
-  m_data->m_dirtyStart = m_start;
-  m_data->m_dirtyEnd = m_end;
   LOG_INTERNAL_STATE ("add start=" << start << ", ");
   NS_ASSERT (CheckInternalState ());
   return dirty;
@@ -409,6 +412,8 @@ Buffer::AddAtEnd (uint32_t end)
        */
       NS_ASSERT (m_data->m_count == 1 || m_end == m_data->m_dirtyEnd);
       m_end += end;
+      // update dirty area.
+      m_data->m_dirtyEnd = m_end;
 
       dirty = m_end < m_data->m_dirtyEnd;
 
@@ -433,14 +438,15 @@ Buffer::AddAtEnd (uint32_t end)
       m_start += delta;
       m_end += end;
 
+      // update dirty area
+      m_data->m_dirtyStart = m_start;
+      m_data->m_dirtyEnd = m_end;
+
       dirty = true;
 
       HEURISTICS (g_nAddRealloc++);
     } 
   HEURISTICS (m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart));
-  // update dirty area
-  m_data->m_dirtyStart = m_start;
-  m_data->m_dirtyEnd = m_end;
   LOG_INTERNAL_STATE ("add end=" << end << ", ");
   NS_ASSERT (CheckInternalState ());
 

@@ -32,33 +32,60 @@ using namespace ns3;
 
 namespace {
 
+class HistoryHeaderBase : public Header
+{
+public:
+  static TypeId GetTypeId (void);
+  HistoryHeaderBase ();
+  bool IsOk (void) const;
+protected:
+  void ReportError (void);
+private:
+  bool m_ok;
+};
+
+TypeId 
+HistoryHeaderBase::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::HistoryHeaderBase")
+    .SetParent<Header> ()
+    ;
+  return tid;
+}
+
+HistoryHeaderBase::HistoryHeaderBase ()
+  : m_ok (true)
+{}
+
+bool 
+HistoryHeaderBase::IsOk (void) const
+{
+  return m_ok;
+}
+void 
+HistoryHeaderBase::ReportError (void)
+{
+  m_ok = false;
+}
+
+
 template <int N>
-class HistoryHeader : public Header
+class HistoryHeader : public HistoryHeaderBase
 {
 public:
   HistoryHeader ();
-  bool IsOk (void) const;
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
-private:
-  bool m_ok;
 };
 
 template <int N>
 HistoryHeader<N>::HistoryHeader ()
-  : m_ok (false)
+  : HistoryHeaderBase ()
 {}
-
-template <int N>
-bool 
-HistoryHeader<N>::IsOk (void) const
-{
-  return m_ok;
-}
 
 template <int N>
 TypeId
@@ -67,7 +94,8 @@ HistoryHeader<N>::GetTypeId (void)
   std::ostringstream oss;
   oss << "ns3::HistoryHeader<"<<N<<">";
   static TypeId tid = TypeId (oss.str ().c_str ())
-    .SetParent<Header> ()
+    .SetParent<HistoryHeaderBase> ()
+    .AddConstructor<HistoryHeader<N> > ()
     ;
   return tid;
 }
@@ -100,19 +128,53 @@ template <int N>
 uint32_t
 HistoryHeader<N>::Deserialize (Buffer::Iterator start)
 {
-  m_ok = true;
   for (int i = 0; i < N; i++)
     {
       if (start.ReadU8 () != N)
         {
-          m_ok = false;
+          ReportError ();
         }
     }
   return N;
 }
 
+class HistoryTrailerBase : public Trailer
+{
+public:
+  static TypeId GetTypeId (void);
+  HistoryTrailerBase ();
+  bool IsOk (void) const;
+protected:
+  void ReportError (void);
+private:
+  bool m_ok;
+};
+
+TypeId 
+HistoryTrailerBase::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::HistoryTrailerBase")
+    .SetParent<Trailer> ()
+    ;
+  return tid;
+}
+HistoryTrailerBase::HistoryTrailerBase ()
+  : m_ok (true)
+{}
+bool 
+HistoryTrailerBase::IsOk (void) const
+{
+  return m_ok;
+}
+void 
+HistoryTrailerBase::ReportError (void)
+{
+  m_ok = false;
+}
+
+
 template <int N>
-class HistoryTrailer : public Trailer
+class HistoryTrailer : public HistoryTrailerBase
 {
 public:
   HistoryTrailer ();
@@ -130,15 +192,7 @@ private:
 
 template <int N>
 HistoryTrailer<N>::HistoryTrailer ()
-  : m_ok (false)
 {}
-
-template <int N>
-bool
-HistoryTrailer<N>::IsOk (void) const
-{
-  return m_ok;
-}
 
 template <int N>
 TypeId
@@ -147,7 +201,8 @@ HistoryTrailer<N>::GetTypeId (void)
   std::ostringstream oss;
   oss << "ns3::HistoryTrailer<"<<N<<">";
   static TypeId tid = TypeId (oss.str ().c_str ())
-    .SetParent<Trailer> ()
+    .SetParent<HistoryTrailerBase> ()
+    .AddConstructor<HistoryTrailer<N> > ()
     ;
   return tid;
 }
@@ -181,13 +236,12 @@ template <int N>
 uint32_t
 HistoryTrailer<N>::Deserialize (Buffer::Iterator start)
 {
-  m_ok = true;
   start.Prev (N);
   for (int i = 0; i < N; i++)
     {
       if (start.ReadU8 () != N)
         {
-          m_ok = false;
+          ReportError ();
         }
     }
   return N;
@@ -234,6 +288,43 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uin
   while (k.HasNext ())
     {
       struct PacketMetadata::Item item = k.Next ();
+      if (item.isFragment || item.type == PacketMetadata::Item::PAYLOAD)
+        {
+          got.push_back (item.currentSize);
+          continue;
+        }
+      if (item.type == PacketMetadata::Item::HEADER)
+        {
+          Callback<ObjectBase *> constructor = item.tid.GetConstructor ();
+          HistoryHeaderBase *header = dynamic_cast<HistoryHeaderBase *> (constructor ());
+          if (header == 0)
+            {
+              goto error;
+            }
+          header->Deserialize (item.current);
+          if (!header->IsOk ())
+            {
+              delete header;
+              goto error;
+            }
+          delete header;
+        }
+      else if (item.type == PacketMetadata::Item::TRAILER)
+        {
+          Callback<ObjectBase *> constructor = item.tid.GetConstructor ();
+          HistoryTrailerBase *trailer = dynamic_cast<HistoryTrailerBase *> (constructor ());
+          if (trailer == 0)
+            {
+              goto error;
+            }
+          trailer->Deserialize (item.current);
+          if (!trailer->IsOk ())
+            {
+              delete trailer;
+              goto error;
+            }
+          delete trailer;
+        }
       got.push_back (item.currentSize);
     }
 
@@ -291,7 +382,7 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uin
     if (!CheckHistory (p, __FILE__,             \
                       __LINE__, __VA_ARGS__))   \
       {                                         \
-        ok = false;                             \
+        result = false;                         \
       }                                         \
     Buffer buffer;                              \
     buffer = p->Serialize ();                   \
@@ -300,7 +391,7 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uin
     if (!CheckHistory (otherPacket, __FILE__,   \
                       __LINE__, __VA_ARGS__))   \
       {                                         \
-        ok = false;                             \
+        result = false;                         \
       }                                         \
   }
 
@@ -315,7 +406,7 @@ PacketMetadataTest::DoAddHeader (Ptr<Packet> p)
 bool
 PacketMetadataTest::RunTests (void)
 {
-  bool ok = true;
+  bool result = true;
 
   PacketMetadata::Enable ();
 
@@ -624,7 +715,40 @@ PacketMetadataTest::RunTests (void)
   REM_HEADER (p3, 8);
   p2->AddAtEnd (p3);
 
-  return ok;
+
+  p = Create<Packet> (1000);
+  ADD_HEADER (p, 10);
+  ADD_TRAILER (p, 5);
+  p1 = p->Copy ();
+  ADD_HEADER (p1, 20);
+  REM_HEADER (p1, 20);
+  REM_TRAILER (p1, 5);
+  NS_TEST_ASSERT_EQUAL (p->GetSize (), 1015);
+
+  
+  p = Create<Packet> (1510);
+  ADD_HEADER (p, 8);
+  ADD_HEADER (p, 25);
+  REM_HEADER (p, 25);
+  ADD_HEADER (p, 1);
+  p1 = p->CreateFragment (0, 1500);
+  p2 = p1->Copy ();
+  ADD_HEADER (p2, 24);
+  NS_TEST_ASSERT_EQUAL (p->GetSize (), 1519);
+
+  p = Create<Packet> (1000);
+  ADD_HEADER (p, 2);
+  ADD_TRAILER (p, 3);
+  p1 = p->Copy ();
+  CHECK_HISTORY (p1, 3, 2, 1000, 3);
+  REM_HEADER (p, 2);
+  ADD_HEADER (p, 1);
+  CHECK_HISTORY (p, 3, 1, 1000, 3);
+  CHECK_HISTORY (p1, 3, 2, 1000, 3);
+
+
+
+  return result;
 }
 
 static PacketMetadataTest g_packetHistoryTest;
