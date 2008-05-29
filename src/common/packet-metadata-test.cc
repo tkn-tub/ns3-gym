@@ -291,7 +291,7 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uin
     if (!CheckHistory (p, __FILE__,             \
                       __LINE__, __VA_ARGS__))   \
       {                                         \
-        result = false;                         \
+        ok = false;                             \
       }                                         \
     Buffer buffer;                              \
     buffer = p->Serialize ();                   \
@@ -300,7 +300,7 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uin
     if (!CheckHistory (otherPacket, __FILE__,   \
                       __LINE__, __VA_ARGS__))   \
       {                                         \
-        result = false;                         \
+        ok = false;                             \
       }                                         \
   }
 
@@ -315,7 +315,7 @@ PacketMetadataTest::DoAddHeader (Ptr<Packet> p)
 bool
 PacketMetadataTest::RunTests (void)
 {
-  bool result = true;
+  bool ok = true;
 
   PacketMetadata::Enable ();
 
@@ -624,29 +624,7 @@ PacketMetadataTest::RunTests (void)
   REM_HEADER (p3, 8);
   p2->AddAtEnd (p3);
 
-
-  p = Create<Packet> (1000);
-  ADD_HEADER (p, 10);
-  ADD_TRAILER (p, 5);
-  p1 = p->Copy ();
-  ADD_HEADER (p1, 20);
-  REM_HEADER (p1, 20);
-  REM_TRAILER (p1, 5);
-  NS_TEST_ASSERT_EQUAL (p->GetSize (), 1015);
-
-  
-  p = Create<Packet> (1510);
-  ADD_HEADER (p, 8);
-  ADD_HEADER (p, 25);
-  REM_HEADER (p, 25);
-  ADD_HEADER (p, 1);
-  p1 = p->CreateFragment (0, 1500);
-  p2 = p1->Copy ();
-  ADD_HEADER (p2, 24);
-  NS_TEST_ASSERT_EQUAL (p->GetSize (), 1519);
-
-
-  return result;
+  return ok;
 }
 
 static PacketMetadataTest g_packetHistoryTest;
