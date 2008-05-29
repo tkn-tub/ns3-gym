@@ -710,7 +710,7 @@ class Regression(object):
                 print "Traces in directory: traces"
                 print "Rerun regression test as: " + \
                     "\"./waf --regression --regression-tests=test-" + testName + "\""
-                print "Then do \"diff -u regression/traces regression/" + refTestDirName + \
+                print "Then do \"diff -u regression/" + refTestDirName + " regression/traces" \
                     "\" for details"
                 print "----------"
             return rc
