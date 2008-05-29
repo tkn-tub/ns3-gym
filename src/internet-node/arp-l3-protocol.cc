@@ -155,15 +155,12 @@ ArpL3Protocol::Receive(Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t proto
                      << " for waiting entry -- flush");
               Address from_mac = arp.GetSourceHardwareAddress ();
               entry->MarkAlive (from_mac);
-              while (true)
+              Ptr<Packet> pending = entry->DequeuePending();
+              while (pending != 0)
                 {
-                  Ptr<Packet> pending = entry->DequeuePending();
-                  if (pending != 0)
-                    {
-                      break;
-                    }
                   cache->GetInterface ()->Send (pending,
                                                 arp.GetSourceIpv4Address ());
+                  pending = entry->DequeuePending();
                 }
             } 
           else 
@@ -220,14 +217,11 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination,
               NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
                         ", wait reply for " << destination << " expired -- drop");
               entry->MarkDead ();
-              while (true)
+              Ptr<Packet> pending = entry->DequeuePending();
+              while (pending != 0)
                 {
-                  Ptr<Packet> pending = entry->DequeuePending();
-                  if (pending != 0)
-                    {
-                      break;
-                    }
                   m_dropTrace (pending);
+                  pending = entry->DequeuePending();
                 }
               m_dropTrace (packet);
             }
