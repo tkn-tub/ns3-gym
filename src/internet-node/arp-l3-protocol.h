@@ -26,6 +26,8 @@
 #include "ns3/ptr.h"
 #include "ns3/traced-callback.h"
 
+#include "ipv4-interface.h"
+
 namespace ns3 {
 
 class ArpCache;
