@@ -80,8 +80,8 @@ Ipv4Address
 Ipv4Interface::GetBroadcast (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  uint32_t mask = m_netmask.GetHostOrder ();
-  uint32_t address = m_address.GetHostOrder ();
+  uint32_t mask = m_netmask.Get ();
+  uint32_t address = m_address.Get ();
   Ipv4Address broadcast = Ipv4Address (address | (~mask));
   return broadcast;
 }

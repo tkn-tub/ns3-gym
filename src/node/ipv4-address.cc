@@ -81,7 +81,7 @@ Ipv4Mask::IsEqual (Ipv4Mask other) const
 bool 
 Ipv4Mask::IsMatch (Ipv4Address a, Ipv4Address b) const
 {
-  if ((a.GetHostOrder () & m_mask) == (b.GetHostOrder () & m_mask)) {
+  if ((a.Get () & m_mask) == (b.Get () & m_mask)) {
     return true;
   } else {
     return false;
@@ -89,14 +89,14 @@ Ipv4Mask::IsMatch (Ipv4Address a, Ipv4Address b) const
 }
 
 uint32_t 
-Ipv4Mask::GetHostOrder (void) const
+Ipv4Mask::Get (void) const
 {
   return m_mask;
 }
 void 
-Ipv4Mask::SetHostOrder (uint32_t value)
+Ipv4Mask::Set (uint32_t mask)
 {
-  m_mask = value;
+  m_mask = mask;
 }
 uint32_t 
 Ipv4Mask::GetInverse (void) const
@@ -139,6 +139,11 @@ Ipv4Address::Ipv4Address (char const *address)
   m_address = AsciiToIpv4Host (address);
 }
 
+uint32_t
+Ipv4Address::Get (void) const
+{
+  return m_address;
+}
 void
 Ipv4Address::Set (uint32_t address)
 {
@@ -153,19 +158,19 @@ Ipv4Address::Set (char const *address)
 Ipv4Address
 Ipv4Address::CombineMask (Ipv4Mask const &mask) const
 {
-  return Ipv4Address (GetHostOrder () & mask.GetHostOrder ());
+  return Ipv4Address (Get () & mask.Get ());
 }
 
 Ipv4Address 
 Ipv4Address::GetSubnetDirectedBroadcast (Ipv4Mask const &mask) const
 {
-  return Ipv4Address (GetHostOrder () | mask.GetInverse ());
+  return Ipv4Address (Get () | mask.GetInverse ());
 }
 
 bool
 Ipv4Address::IsSubnetDirectedBroadcast (Ipv4Mask const &mask) const
 {
-  return ( (GetHostOrder () | mask.GetInverse ()) == GetHostOrder () );
+  return ( (Get () | mask.GetInverse ()) == Get () );
 }
 
 bool
@@ -184,16 +189,6 @@ Ipv4Address::IsMulticast (void) const
   return (m_address >= 0xe0000000 && m_address <= 0xefffffff);
 }
 
-uint32_t
-Ipv4Address::GetHostOrder (void) const
-{
-  return m_address;
-}
-void 
-Ipv4Address::SetHostOrder (uint32_t ip)
-{
-  m_address = ip;
-}
 void
 Ipv4Address::Serialize (uint8_t buf[4]) const
 {
@@ -287,7 +282,7 @@ Ipv4Address::GetLoopback (void)
 
 size_t Ipv4AddressHash::operator()(Ipv4Address const &x) const 
 { 
-  return x.GetHostOrder ();
+  return x.Get ();
 }
 
 std::ostream& operator<< (std::ostream& os, Ipv4Address const& address)

@@ -261,8 +261,8 @@ Ipv4Header::Serialize (Buffer::Iterator start) const
   i.WriteU8 (m_ttl);
   i.WriteU8 (m_protocol);
   i.WriteHtonU16 (0);
-  i.WriteHtonU32 (m_source.GetHostOrder ());
-  i.WriteHtonU32 (m_destination.GetHostOrder ());
+  i.WriteHtonU32 (m_source.Get ());
+  i.WriteHtonU32 (m_destination.Get ());
 
   if (m_calcChecksum) 
     {
@@ -307,8 +307,8 @@ Ipv4Header::Deserialize (Buffer::Iterator start)
   m_ttl = i.ReadU8 ();
   m_protocol = i.ReadU8 ();
   i.Next (2); // checksum
-  m_source.SetHostOrder (i.ReadNtohU32 ());
-  m_destination.SetHostOrder (i.ReadNtohU32 ());
+  m_source.Set (i.ReadNtohU32 ());
+  m_destination.Set (i.ReadNtohU32 ());
 
   if (m_calcChecksum) 
     {

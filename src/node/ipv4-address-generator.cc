@@ -137,9 +137,9 @@ Ipv4AddressGeneratorImpl::Init (
 // We're going to be playing with the actual bits in the network and mask so
 // pull them out into ints.
 //
-  uint32_t maskBits __attribute__((unused)) = mask.GetHostOrder ();
-  uint32_t netBits = net.GetHostOrder ();
-  uint32_t addrBits = addr.GetHostOrder ();
+  uint32_t maskBits __attribute__((unused)) = mask.Get ();
+  uint32_t netBits = net.Get ();
+  uint32_t addrBits = addr.Get ();
 //
 // Some quick reasonableness testing.
 //
@@ -203,7 +203,7 @@ Ipv4AddressGeneratorImpl::InitAddress (
   NS_LOG_FUNCTION_NOARGS ();
 
   uint32_t index = MaskToIndex (mask);
-  uint32_t addrBits = addr.GetHostOrder ();
+  uint32_t addrBits = addr.Get ();
 
   NS_ASSERT_MSG (addrBits <= m_netTable[index].addrMax,
     "Ipv4AddressGeneratorImpl::InitAddress(): Address overflow");
@@ -258,7 +258,7 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  uint32_t addr = address.GetHostOrder ();
+  uint32_t addr = address.Get ();
 
   NS_ASSERT_MSG (addr, "Ipv4AddressGeneratorImpl::Add(): "
     "Allocating the broadcast address is not a good idea"); 
@@ -367,7 +367,7 @@ Ipv4AddressGeneratorImpl::MaskToIndex (Ipv4Mask mask) const
 // We use the number of bits in the mask as the number of bits in the network
 // number and as the index into the network number state table.
 //
-  uint32_t maskBits = mask.GetHostOrder ();
+  uint32_t maskBits = mask.Get ();
 
   for (uint32_t i = 0; i < N_BITS; ++i)
     {

@@ -584,7 +584,7 @@ GlobalRouter::DiscoverLSAs (void)
               plr->SetLinkId (addrLocal.CombineMask(maskLocal));
               // Link Data is network mask; convert to Ipv4Address
               Ipv4Address maskLocalAddr;
-              maskLocalAddr.Set(maskLocal.GetHostOrder ());
+              maskLocalAddr.Set(maskLocal.Get ());
               plr->SetLinkData (maskLocalAddr);
               plr->SetMetric (metricLocal);
               pLSA->AddLinkRecord(plr);
@@ -689,7 +689,7 @@ GlobalRouter::DiscoverLSAs (void)
           plr = new GlobalRoutingLinkRecord;
           plr->SetLinkType (GlobalRoutingLinkRecord::StubNetwork);
           plr->SetLinkId (addrRemote);
-          plr->SetLinkData (Ipv4Address(maskRemote.GetHostOrder()));  // Frown
+          plr->SetLinkData (Ipv4Address(maskRemote.Get()));  // Frown
           plr->SetMetric (metricLocal);
           pLSA->AddLinkRecord (plr);
           plr = 0;

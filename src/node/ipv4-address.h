@@ -51,7 +51,11 @@ public:
     * \param address C-string containing the address as described above
     */
   Ipv4Address (char const *address);
-  
+  /** 
+   * Get the host-order 32-bit IP address
+   * \return the host-order 32-bit IP address
+   */
+  uint32_t Get (void) const;
   /**
    * input address is in host order.
    * \param address The host order 32-bit address
@@ -67,7 +71,6 @@ public:
     * \param address C-string containing the address as described above
     */
   void Set (char const *address);
-
   /**
    * \brief Comparison operation between two Ipv4Addresses
    * \param other address to which to compare this address
@@ -77,17 +80,6 @@ public:
   {
     return m_address == other.m_address;
   }
-
-  /** 
-   * \brief Get the host-order 32-bit IP address
-   *
-   * Using this method is frowned upon.
-   * Please, do _not_ use this method.
-   * It is there only for chunk-ipv4.
-   * \return the host-order 32-bit IP address
-   */
-  uint32_t GetHostOrder (void) const;
-  void SetHostOrder (uint32_t ip);
   /**
    * Serialize this address to a 4-byte buffer
    *
@@ -162,13 +154,16 @@ public:
   bool IsMatch (Ipv4Address a, Ipv4Address b) const;
 
   bool IsEqual (Ipv4Mask other) const;
-
-
-  /* Using this method is frowned upon.
-   * Please, do _not_ use this method.
+  /** 
+   * Get the host-order 32-bit IP mask
+   * \return the host-order 32-bit IP mask
    */
-  uint32_t GetHostOrder (void) const;
-  void SetHostOrder (uint32_t value);
+  uint32_t Get (void) const;
+  /**
+   * input mask is in host order.
+   * \param mask The host order 32-bit mask
+   */
+  void Set (uint32_t mask);
   /**
    * \brief Return the inverse mask in host order. 
    */
