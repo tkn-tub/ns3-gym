@@ -5,6 +5,7 @@
 #include <ostream>
 #include "ns3/attribute.h"
 #include "ns3/attribute-helper.h"
+#include "ns3/tag-buffer.h"
 
 namespace ns3 {
 
@@ -166,14 +167,14 @@ public:
    * \param buf output buffer that gets written with this Address
    * \param len length of output buffer
    */
-  void Serialize (uint8_t* buf, uint32_t len) const;
+  void Serialize (TagBuffer buffer) const;
   /**
    * \param buf buffer to read address from
    * \returns an Address
    * 
    * The input address buffer is expected to be in host byte order format.
    */
-  static Address Deserialize (const uint8_t* buf);
+  void Deserialize (TagBuffer buffer);
 
 private:
   friend bool operator == (const Address &a, const Address &b);

@@ -19,6 +19,9 @@
  */
 #include "packet.h"
 #include "ns3/assert.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("Packet");
 
 namespace ns3 {
 
@@ -156,6 +159,7 @@ Packet::Packet (const Buffer &buffer,  const TagList &tagList, const PacketMetad
 Ptr<Packet>
 Packet::CreateFragment (uint32_t start, uint32_t length) const
 {
+  NS_LOG_FUNCTION (this << start << length);
   Buffer buffer = m_buffer.CreateFragment (start, length);
   NS_ASSERT (m_buffer.GetSize () >= start + length);
   uint32_t end = m_buffer.GetSize () - (start + length);
@@ -174,6 +178,7 @@ Packet::GetSize (void) const
 void
 Packet::AddHeader (const Header &header)
 {
+  NS_LOG_FUNCTION (this << &header);
   uint32_t size = header.GetSerializedSize ();
   uint32_t orgStart = m_buffer.GetCurrentStartOffset ();
   bool resized = m_buffer.AddAtStart (size);
@@ -188,6 +193,7 @@ Packet::AddHeader (const Header &header)
 uint32_t
 Packet::RemoveHeader (Header &header)
 {
+  NS_LOG_FUNCTION (this << &header);
   uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
   m_buffer.RemoveAtStart (deserialized);
   m_metadata.RemoveHeader (header, deserialized);
@@ -196,6 +202,7 @@ Packet::RemoveHeader (Header &header)
 void
 Packet::AddTrailer (const Trailer &trailer)
 {
+  NS_LOG_FUNCTION (this << &trailer);
   uint32_t size = trailer.GetSerializedSize ();
   uint32_t orgEnd = m_buffer.GetCurrentEndOffset ();
   bool resized = m_buffer.AddAtEnd (size);
@@ -211,6 +218,7 @@ Packet::AddTrailer (const Trailer &trailer)
 uint32_t
 Packet::RemoveTrailer (Trailer &trailer)
 {
+  NS_LOG_FUNCTION (this << &trailer);
   uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
   m_buffer.RemoveAtEnd (deserialized);
   m_metadata.RemoveTrailer (trailer, deserialized);
@@ -220,6 +228,7 @@ Packet::RemoveTrailer (Trailer &trailer)
 void 
 Packet::AddAtEnd (Ptr<const Packet> packet)
 {
+  NS_LOG_FUNCTION (this << packet);
   uint32_t aStart = m_buffer.GetCurrentStartOffset ();
   uint32_t bEnd = packet->m_buffer.GetCurrentEndOffset ();
   m_buffer.AddAtEnd (packet->m_buffer);
@@ -235,6 +244,7 @@ Packet::AddAtEnd (Ptr<const Packet> packet)
 void
 Packet::AddPaddingAtEnd (uint32_t size)
 {
+  NS_LOG_FUNCTION (this << size);
   uint32_t orgEnd = m_buffer.GetCurrentEndOffset ();
   bool resized = m_buffer.AddAtEnd (size);
   if (resized)
@@ -247,12 +257,14 @@ Packet::AddPaddingAtEnd (uint32_t size)
 void 
 Packet::RemoveAtEnd (uint32_t size)
 {
+  NS_LOG_FUNCTION (this << size);
   m_buffer.RemoveAtEnd (size);
   m_metadata.RemoveAtEnd (size);
 }
 void 
 Packet::RemoveAtStart (uint32_t size)
 {
+  NS_LOG_FUNCTION (this << size);
   m_buffer.RemoveAtStart (size);
   m_metadata.RemoveAtStart (size);
 }
@@ -260,6 +272,7 @@ Packet::RemoveAtStart (uint32_t size)
 void 
 Packet::RemoveAllTags (void)
 {
+  NS_LOG_FUNCTION (this);
   m_tagList.RemoveAll ();
 }
 
@@ -408,12 +421,14 @@ Packet::BeginItem (void) const
 void
 Packet::EnableMetadata (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   PacketMetadata::Enable ();
 }
 
 Buffer 
 Packet::Serialize (void) const
 {
+  NS_LOG_FUNCTION (this);
   Buffer buffer;
   uint32_t reserve;
 
@@ -441,6 +456,7 @@ Packet::Serialize (void) const
 void 
 Packet::Deserialize (Buffer buffer)
 {
+  NS_LOG_FUNCTION (this);
   Buffer buf = buffer;
   // read size
   uint32_t packetSize = buf.Begin ().ReadU32 ();
@@ -466,6 +482,7 @@ Packet::Deserialize (Buffer buffer)
 void 
 Packet::AddTag (const Tag &tag) const
 {
+  NS_LOG_FUNCTION (this << &tag);
   TagList *list = const_cast<TagList *> (&m_tagList);
   TagBuffer buffer = list->Add (tag.GetInstanceTypeId (), tag.GetSerializedSize (), 
                                  m_buffer.GetCurrentStartOffset (),

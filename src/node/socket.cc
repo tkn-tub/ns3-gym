@@ -304,27 +304,12 @@ SocketRxAddressTag::GetSerializedSize (void) const
 void
 SocketRxAddressTag::Serialize (TagBuffer i) const
 {
-  uint8_t len = m_address.GetSerializedSize ();
-  uint8_t* buffer = new uint8_t[len];
-  memset (buffer, 0, len);
-  m_address.Serialize (buffer, len);
-  i.Write (buffer, len);
-  delete [] buffer;
+  m_address.Serialize (i);
 }
 void
 SocketRxAddressTag::Deserialize (TagBuffer i)
 {
-  uint8_t type = i.ReadU8 (); 
-  uint8_t len = i.ReadU8 (); 
-  // Len is the length of the address starting from buffer[2]
-  NS_ASSERT (len >= 2);
-  uint8_t* buffer = new uint8_t[len];
-  memset (buffer, 0, len);
-  buffer[0] = type;
-  buffer[1] = len;
-  i.Read (buffer+2, len); // ReadU8 consumes a byte
-  m_address = Address::Deserialize (buffer);
-  delete [] buffer;
+  m_address.Deserialize (i);
 }
 
 SocketIpTtlTag::SocketIpTtlTag ()  

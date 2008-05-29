@@ -327,12 +327,10 @@ public:
   bool IsNoneEnabled (void) const;
   void Enable (enum LogLevel level);
   void Disable (enum LogLevel level);
-  bool Decorate (void) const;
   char const *Name (void) const;
 private:
   int32_t     m_levels;
   char const *m_name;
-  bool        m_decorate;
 };
 
 class ParameterLogger : public std::ostream
