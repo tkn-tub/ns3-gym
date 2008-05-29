@@ -358,7 +358,7 @@ main (int argc, char *argv[])
   /////////////////////////////////////////////////////////////////////////// 
 
   NS_LOG_INFO ("Run Simulation.");
-  Simulator::StopAt (Seconds (stopTime));
+  Simulator::Stop (Seconds (stopTime));
   Simulator::Run ();    
   Simulator::Destroy ();
 }

@@ -108,15 +108,13 @@ void Application::StopApplication()
 // Private helpers
 void Application::ScheduleStart (const Time &startTime)
 {
-  m_startEvent = Simulator::Schedule(startTime -
-                                     Simulator::Now(),
-                                     &Application::StartApplication, this);
+  m_startEvent = Simulator::Schedule (startTime,
+                                      &Application::StartApplication, this);
 }
 
 void Application::ScheduleStop (const Time &stopTime)
 {
-  m_stopEvent = Simulator::Schedule(stopTime -
-                                    Simulator::Now(),
+  m_stopEvent = Simulator::Schedule (stopTime,
                                     &Application::StopApplication, this);
 }
 

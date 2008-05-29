@@ -44,7 +44,7 @@ int main (int argc, char *argv[])
   Config::Connect ("/NodeList/*/$ns3::MobilityModel/CourseChange",
                    MakeCallback (&CourseChange));
 
-  Simulator::StopAt (Seconds (100.0));
+  Simulator::Stop (Seconds (100.0));
 
   Simulator::Run ();
   

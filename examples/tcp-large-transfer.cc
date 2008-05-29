@@ -191,7 +191,7 @@ int main (int argc, char *argv[])
 
   PointToPointHelper::EnablePcapAll ("tcp-large-transfer");
 
-  Simulator::StopAt (Seconds(1000));
+  Simulator::Stop (Seconds(1000));
   Simulator::Run ();
   Simulator::Destroy ();
 }

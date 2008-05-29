@@ -126,12 +126,13 @@ public:
    */
   static void Stop (void);
   /**
-   * Force the Simulator::run method to return to the caller
-   * when the expiration time of the next event to be processed 
-   * is greater than or equal to the stop time.
-   * @param time the stop time.
+   * Force the Simulator::run method to return to the caller when the
+   * expiration time of the next event to be processed is greater than
+   * or equal to the stop time.  The stop time is relative to the
+   * current simulation time.
+   * @param time the stop time, relative to the current time.
    */
-  static void StopAt (Time const &time);
+  static void Stop (Time const &time);
 
   /**
    * Schedule an event to expire when the time "now + time" 

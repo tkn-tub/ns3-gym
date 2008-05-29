@@ -68,7 +68,7 @@ public:
   bool IsFinished (void) const;
   Time Next (void) const;
   void Stop (void);
-  void StopAt (Time const &time);
+  void Stop (Time const &time);
   EventId Schedule (Time const &time, const Ptr<EventImpl> &event);
   EventId ScheduleNow (const Ptr<EventImpl> &event);
   EventId ScheduleDestroy (const Ptr<EventImpl> &event);
@@ -249,10 +249,11 @@ SimulatorPrivate::Stop (void)
   m_stop = true;
 }
 void 
-SimulatorPrivate::StopAt (Time const &at)
+SimulatorPrivate::Stop (Time const &time)
 {
-  NS_ASSERT (at.IsPositive ());
-  m_stopAt = at.GetTimeStep ();
+  NS_ASSERT (time.IsPositive ());
+  Time absolute = Simulator::Now () + time;
+  m_stopAt = absolute.GetTimeStep ();
 }
 EventId
 SimulatorPrivate::Schedule (Time const &time, const Ptr<EventImpl> &event)
@@ -485,9 +486,9 @@ Simulator::Stop (void)
   GetPriv ()->Stop ();
 }
 void 
-Simulator::StopAt (Time const &at)
+Simulator::Stop (Time const &time)
 {
-  GetPriv ()->StopAt (at);
+  GetPriv ()->Stop (time);
 }
 Time
 Simulator::Now (void)
@@ -1125,7 +1126,7 @@ SimulatorTests::RunTests (void)
   Simulator::Destroy ();
 
   Simulator::Schedule (Seconds (10.0), &SimulatorTests::baz1, this, 0);
-  Simulator::StopAt (Seconds (1.0));
+  Simulator::Stop (Seconds (1.0));
   Simulator::Run ();
   Simulator::Destroy ();
 
