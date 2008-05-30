@@ -36,14 +36,7 @@ class Packet;
  * This class represents a very simple point to point channel.  Think full
  * duplex RS-232 or RS-422 with null modem and no handshaking.  There is no
  * multi-drop capability on this channel -- there can be a maximum of two 
- * point-to-point net devices connected.  Once we start talking about multi-
- * drop, or CSMA, or some other sharing mechanism, things begin getting 
- * complicated quickly.  Rather than invent some ad-hoc mechanism, we just
- * Keep It Simple everywhere.
- *
- * When the channel is instaniated, the constructor takes parameters for
- * a single speed, in bits per second, and a speed-of-light delay time as a
- * Time object.  Both directions use the same speed and delay time.
+ * point-to-point net devices connected.
  *
  * There are two "wires" in the channel.  The first device connected gets the
  * [0] wire to transmit on.  The second device gets the [1] wire.  There is a
@@ -58,7 +51,7 @@ public:
    * \brief Create a PointToPointChannel
    *
    * By default, you get a channel with the name "PointToPoint Channel" that
-   * has an "infitely" fast transmission speed and zero delay.
+   * has zero transmission delay.
    */
   PointToPointChannel ();
 
@@ -75,38 +68,32 @@ public:
    * \param txTime Transmit time to apply
    */
   bool TransmitStart (Ptr<Packet> p, Ptr<PointToPointNetDevice> src,
-                      const Time& txTime);
+    Time txTime);
 
   /**
    * \brief Get number of devices on this channel
    * \returns number of devices on this channel
    */
   virtual uint32_t GetNDevices (void) const;
+
   /*
    * \brief Get PointToPointNetDevice corresponding to index i on this channel
    * \param i Index number of the device requested
    * \returns Ptr to PointToPointNetDevice requested
    */
   Ptr<PointToPointNetDevice> GetPointToPointDevice (uint32_t i) const;
+
+  /*
+   * \brief Get NetDevice corresponding to index i on this channel
+   * \param i Index number of the device requested
+   * \returns Ptr to NetDevice requested
+   */
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
-  /*
-   * \brief Get reference to DataRate for this channel
-   * \returns const reference to underlying DataRate object
-   */
-  const DataRate& GetDataRate (void);
-  /*
-   * \brief Get reference to Time object storing the delay on this channel
-   * \returns const reference to underlying Time object
-   */
-  const Time&     GetDelay (void);
 
 private:
-
   // Each point to point link has exactly two net devices
   static const int N_DEVICES = 2;
 
-
-  DataRate      m_bps;
   Time          m_delay;
   int32_t       m_nDevices;
 
@@ -122,7 +109,7 @@ private:
   {
   public:
     Link() : m_state (INITIALIZING), m_src (0), m_dst (0) {}
-    WireState              m_state;
+    WireState                  m_state;
     Ptr<PointToPointNetDevice> m_src;
     Ptr<PointToPointNetDevice> m_dst;
   };

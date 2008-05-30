@@ -40,6 +40,6 @@
  * beyond the eight bits per byte of the packet sent.  That is, we do not 
  * model Flag Sequences, Frame Check Sequences nor do we "escape" any data.
  *
- * The ns3::PointToPointChannel does model a speed-of-light delay which can
- * be accessed via the attribute "Delay."
+ * The ns3::PointToPointChannel does model a speed-of-light or transmission
+ * delay which can be set and get via the attribute "Delay."
  */

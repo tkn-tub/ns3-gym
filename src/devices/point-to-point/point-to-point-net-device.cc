@@ -45,7 +45,7 @@ PointToPointNetDevice::GetTypeId (void)
                    MakeMac48AddressAccessor (&PointToPointNetDevice::m_address),
                    MakeMac48AddressChecker ())
     .AddAttribute ("DataRate", "The default data rate for point to point links",
-                   DataRateValue (DataRate ("10Mb/s")),
+                   DataRateValue (DataRate ("32768b/s")),
                    MakeDataRateAccessor (&PointToPointNetDevice::m_bps),
                    MakeDataRateChecker ())
     .AddAttribute ("ReceiveErrorModel", "XXX",
@@ -82,15 +82,10 @@ PointToPointNetDevice::PointToPointNetDevice ()
 }
 
 PointToPointNetDevice::~PointToPointNetDevice ()
-{}
-
-void 
-PointToPointNetDevice::SetAddress (Mac48Address self)
 {
-  m_address = self;
 }
 
-void 
+  void 
 PointToPointNetDevice::AddHeader(Ptr<Packet> p, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -100,7 +95,7 @@ PointToPointNetDevice::AddHeader(Ptr<Packet> p, uint16_t protocolNumber)
   p->AddHeader (ppp);
 }
 
-bool 
+  bool 
 PointToPointNetDevice::ProcessHeader(Ptr<Packet> p, uint16_t& param)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -110,7 +105,8 @@ PointToPointNetDevice::ProcessHeader(Ptr<Packet> p, uint16_t& param)
   return true;
 }
 
-void PointToPointNetDevice::DoDispose()
+  void 
+PointToPointNetDevice::DoDispose()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_node = 0;
@@ -119,22 +115,21 @@ void PointToPointNetDevice::DoDispose()
   NetDevice::DoDispose ();
 }
 
-void PointToPointNetDevice::SetDataRate(const DataRate& bps)
+  void 
+PointToPointNetDevice::SetDataRate(DataRate bps)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if (!m_channel || bps <= m_channel->GetDataRate ())
-    {
-      m_bps = bps;
-    }
+  m_bps = bps;
 }
 
-void PointToPointNetDevice::SetInterframeGap(const Time& t)
+  void 
+PointToPointNetDevice::SetInterframeGap(Time t)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_tInterframeGap = t;
 }
 
-bool
+  bool
 PointToPointNetDevice::TransmitStart (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p);
@@ -151,33 +146,40 @@ PointToPointNetDevice::TransmitStart (Ptr<Packet> p)
 
   NS_LOG_LOGIC ("Schedule TransmitCompleteEvent in " << 
     txCompleteTime.GetSeconds () << "sec");
-  // Schedule the tx complete event
+
   Simulator::Schedule (txCompleteTime, 
-                       &PointToPointNetDevice::TransmitComplete, 
-                       this);
+    &PointToPointNetDevice::TransmitComplete, this);
+
   return m_channel->TransmitStart(p, this, txTime); 
 }
 
-void PointToPointNetDevice::TransmitComplete (void)
+  void 
+PointToPointNetDevice::TransmitComplete (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 //
-// This function is called to finish the  process of transmitting a packet.
-// We need to tell the channel that we've stopped wiggling the wire and
-// get the next packet from the queue.  If the queue is empty, we are
-// done, otherwise transmit the next packet.
+// This function is called to when we're all done transmitting a packet.
+// We try and pull another packet off of the transmit queue.  If the queue
+// is empty, we are done, otherwise we need to start transmitting the
+// next packet.
 //
   NS_ASSERT_MSG(m_txMachineState == BUSY, "Must be BUSY if transmitting");
   m_txMachineState = READY;
   Ptr<Packet> p = m_queue->Dequeue ();
   if (p == 0)
     {
-      return; // Nothing to do at this point
+//
+// No packet was on the queue, so we just exit.
+//
+      return;
     }
+//
+// Got another packet off of the queue, so start the transmit process agin.
+//
   TransmitStart(p);
 }
 
-bool 
+  bool 
 PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 {
   NS_LOG_FUNCTION (this << &ch);
@@ -185,64 +187,64 @@ PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
   m_channel = ch;
 
   m_channel->Attach(this);
-  m_bps = m_channel->GetDataRate ();
-  // GFR Comment.  Below is definitely wrong.  Interframe gap
-  // is unrelated to channel delay.
-  // -- unlesss you want to introduce a default gap which is there to avoid
-  // parts of multiple packets flowing on the "wire" at the same time.
-  //m_tInterframeGap = m_channel->GetDelay ();
 
-  /* 
-   * For now, this device is up whenever a channel is attached to it.
-   * In fact, it should become up only when the second device
-   * is attached to the channel. So, there should be a way for
-   * a PointToPointChannel to notify both of its attached devices
-   * that the channel is 'complete', hence that the devices are
-   * up, hence that they can call NotifyLinkUp. 
-   */
+//
+// This device is up whenever it is attached to a channel.  A better plan
+// would be to have the link come up when both devices are attached, but this
+// is not done for now.
+//
   NotifyLinkUp ();
   return true;
 }
 
-void PointToPointNetDevice::SetQueue (Ptr<Queue> q)
+  void
+PointToPointNetDevice::SetQueue (Ptr<Queue> q)
 {
   NS_LOG_FUNCTION (this << q);
-
   m_queue = q;
 }
 
-void PointToPointNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
+  void
+PointToPointNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
 {
   NS_LOG_FUNCTION ("(" << em << ")");
-
   m_receiveErrorModel = em;
 }
 
-void PointToPointNetDevice::Receive (Ptr<Packet> packet)
+ void
+PointToPointNetDevice::Receive (Ptr<Packet> packet)
 {
   NS_LOG_FUNCTION (this << packet);
   uint16_t protocol = 0;
 
   if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) ) 
     {
+// 
+// If we have an error model and it indicates that it is time to lose a
+// corrupted packet, don't forward this packet up, let it go.
+//
       m_dropTrace (packet);
-      // Do not forward up; let this packet go
     }
   else 
     {
+// 
+// Hit the receive trace hook, strip off the point-to-point protocol header
+// and forward this packet up the protocol stack.
+//
       m_rxTrace (packet);
       ProcessHeader(packet, protocol);
       m_rxCallback (this, packet, protocol, GetBroadcast ());
     }
 }
 
-Ptr<Queue> PointToPointNetDevice::GetQueue(void) const 
+  Ptr<Queue> 
+PointToPointNetDevice::GetQueue(void) const 
 { 
   NS_LOG_FUNCTION_NOARGS ();
   return m_queue;
 }
 
-void
+  void
 PointToPointNetDevice::NotifyLinkUp (void)
 {
   m_linkUp = true;
@@ -252,110 +254,167 @@ PointToPointNetDevice::NotifyLinkUp (void)
     }
 }
 
-void 
+  void 
 PointToPointNetDevice::SetName(const std::string name)
 {
   m_name = name;
 }
-std::string 
+
+  std::string 
 PointToPointNetDevice::GetName(void) const
 {
   return m_name;
 }
-void 
+
+  void 
 PointToPointNetDevice::SetIfIndex(const uint32_t index)
 {
   m_ifIndex = index;
 }
-uint32_t 
+
+  uint32_t 
 PointToPointNetDevice::GetIfIndex(void) const
 {
   return m_ifIndex;
 }
-Ptr<Channel> 
+
+  Ptr<Channel> 
 PointToPointNetDevice::GetChannel (void) const
 {
   return m_channel;
 }
-Address 
+
+//
+// This is a point-to-point device, so we really don't need any kind of address
+// information.  However, the base class NetDevice wants us to define the
+// methods to get and set the address.  Rather than be rude and assert, we let
+// clients get and set the address, but simply ignore them.
+  void 
+PointToPointNetDevice::SetAddress (Mac48Address addr)
+{
+  m_address = addr;
+}
+
+  Address 
 PointToPointNetDevice::GetAddress (void) const
 {
   return m_address;
 }
-bool 
+
+  bool 
 PointToPointNetDevice::SetMtu (const uint16_t mtu)
 {
   m_mtu = mtu;
   return true;
 }
-uint16_t 
+
+  uint16_t 
 PointToPointNetDevice::GetMtu (void) const
 {
   return m_mtu;
 }
-bool 
+
+  bool 
 PointToPointNetDevice::IsLinkUp (void) const
 {
   return m_linkUp;
 }
-void 
+
+  void 
 PointToPointNetDevice::SetLinkChangeCallback (Callback<void> callback)
 {
   m_linkChangeCallback = callback;
 }
-bool 
+
+//
+// This is a point-to-point device, so every transmission is a broadcast to
+// all of the devices on the network.
+//
+  bool 
 PointToPointNetDevice::IsBroadcast (void) const
 {
   return true;
 }
-Address
+
+//
+// We don't really need any addressing information since this is a 
+// point-to-point device.  The base class NetDevice wants us to return a
+// broadcast address, so we make up something reasonable.
+//
+  Address
 PointToPointNetDevice::GetBroadcast (void) const
 {
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
-bool 
+
+//
+// We don't deal with multicast here.  It doesn't make sense to include some
+// of the one destinations on the network but exclude some of the others.
+  bool 
 PointToPointNetDevice::IsMulticast (void) const
 {
   return false;
 }
-Address 
+
+//
+// Since we return false in the IsMulticast call, calls to other multicast
+// related methods returns are undefined according to the base class.  So we
+// can freely make something up, which is the base of the MAC multicast
+// address space.
+//
+  Address 
 PointToPointNetDevice::GetMulticast (void) const
 {
   return Mac48Address ("01:00:5e:00:00:00");
 }
-Address 
+
+  Address 
 PointToPointNetDevice::MakeMulticastAddress (Ipv4Address multicastGroup) const
 {
   return Mac48Address ("01:00:5e:00:00:00");
 }
-bool 
+
+  bool 
 PointToPointNetDevice::IsPointToPoint (void) const
 {
   return true;
 }
-bool 
-PointToPointNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
+
+  bool 
+PointToPointNetDevice::Send(
+  Ptr<Packet> packet, 
+  const Address &dest, 
+  uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC ("p=" << packet << ", dest=" << &dest);
   NS_LOG_LOGIC ("UID is " << packet->GetUid ());
 
-  // GFR Comment. Why is this an assertion? Can't a link legitimately
-  // "go down" during the simulation?  Shouldn't we just wait for it
-  // to come back up?
-  NS_ASSERT (IsLinkUp ());
+//
+// If IsLinkUp() is false it means there is no channel to send any packet 
+// over so we just return an error.
+//
+  if (IsLinkUp () == false)
+    {
+      return false;
+    }
+
+//
+// Stick a point to point protocol header on the packet in preparation for
+// shoving it out the door.
+//
   AddHeader(packet, protocolNumber);
 
 //
-// This class simulates a point to point device.  In the case of a serial
-// link, this means that we're simulating something like a UART.
-//
-//
 // If there's a transmission in progress, we enque the packet for later
 // transmission; otherwise we send it now.
+//
   if (m_txMachineState == READY) 
     {
-// We still enqueue and dequeue it to hit the tracing hooks
+// 
+// Even if the transmitter is immediately available, we still enqueue and 
+// dequeue the packet to hit the tracing hooks.
+//
       m_queue->Enqueue (packet);
       packet = m_queue->Dequeue ();
       return TransmitStart (packet);
@@ -365,22 +424,26 @@ PointToPointNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t pr
       return m_queue->Enqueue(packet);
     }
 }
-Ptr<Node> 
+
+  Ptr<Node> 
 PointToPointNetDevice::GetNode (void) const
 {
   return m_node;
 }
-void 
+
+  void 
 PointToPointNetDevice::SetNode (Ptr<Node> node)
 {
   m_node = node;
 }
-bool 
+
+  bool 
 PointToPointNetDevice::NeedsArp (void) const
 {
   return false;
 }
-void 
+
+  void 
 PointToPointNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
   m_rxCallback = cb;
