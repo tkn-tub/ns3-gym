@@ -33,6 +33,10 @@ class EventImpl;
 
 /**
  * \ingroup scheduler
+ * \brief a std::list event scheduler
+ *
+ * This class implements the an event scheduler using an std::list
+ * data structure, that is, a double linked-list.
  */
 class ListScheduler : public Scheduler {
  public:

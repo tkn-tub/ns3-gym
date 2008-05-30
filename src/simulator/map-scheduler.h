@@ -32,6 +32,10 @@ class EventImpl;
 
 /**
  * \ingroup scheduler
+ * \brief a std::map event scheduler
+ *
+ * This class implements the an event scheduler using an std::map 
+ * data structure.
  */
 class MapScheduler : public Scheduler {
 public:

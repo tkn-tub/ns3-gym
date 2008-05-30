@@ -29,11 +29,24 @@ namespace ns3 {
 class EventImpl;
 
 /**
+ * \ingroup simulator
  * \brief an identifier for simulation events.
+ *
+ * Each EventId identifies a unique event scheduled with one
+ * of the many Simulator::Schedule methods. This EventId can
+ * be used to Cancel or Remove events after they are scheduled
+ * with Simulator::Cancel or Simulator::Remove.
+ *
+ * The important thing to remember about this class is that
+ * every variable of this type is _always_ in a valid state, 
+ * even when it has not been assigned an EventId coming from a Schedule
+ * method: calling Cancel, IsRunning, IsExpired or passing around
+ * instances of this object will not result in crashes or memory leaks.
  */
 class EventId {
 public:
   EventId ();
+  // internal.
   EventId (const Ptr<EventImpl> &impl, uint64_t ts, uint32_t uid);
   /**
    * This method is syntactic sugar for the ns3::Simulator::cancel
@@ -46,6 +59,11 @@ public:
    * \returns true if the event has expired, false otherwise.
    */
   bool IsExpired (void) const;
+  /**
+   * This method is syntactic sugar for the ns3::Simulator::isExpired
+   * method.
+   * \returns true if the event has not expired, false otherwise.
+   */
   bool IsRunning (void) const;
 public:
   /* The following methods are semi-private

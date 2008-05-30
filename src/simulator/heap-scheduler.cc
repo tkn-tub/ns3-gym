@@ -18,17 +18,6 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  *
- * This code started as a c++ translation of a java-based code written in 2005
- * to implement a heap sort. Which explains the "Copyright Mathieu Lacage" at the
- * top of this file.
- *
- * What is smart about this code ?
- *  - it does not use the index 0 in the array to avoid having to convert
- *    C-style array indexes (which start at zero) and heap-style indexes
- *    (which start at 1). This is why _all_ indexes start at 1, and that
- *    the index of the root is 1.
- *  - It uses a slightly non-standard while loop for top-down heapify
- *    to move one if statement out of the loop.
  */
 
 #include "heap-scheduler.h"

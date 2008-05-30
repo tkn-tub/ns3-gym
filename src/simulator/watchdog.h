@@ -29,6 +29,10 @@ class TimerImpl;
 
 /**
  * \ingroup simulator
+ * \brief a very simple watchdog
+ *
+ * If you don't ping the watchdog sufficiently often, it triggers its
+ * listening function.
  */
 class Watchdog 
 {
@@ -36,6 +40,13 @@ public:
   Watchdog ();
   ~Watchdog ();
 
+  /**
+   * \param delay the watchdog delay
+   *
+   * After a call to this method, the watchdog will not be triggered
+   * until the delay specified has been expired. This operation is
+   * sometimes named "re-arming" a watchdog in some operating systems.
+   */
   void Ping (Time delay);
 
   /**
