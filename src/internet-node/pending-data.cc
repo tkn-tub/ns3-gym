@@ -34,21 +34,6 @@
 namespace ns3
 {
 
-namespace Serializable
-{
-  uint8_t* GetSize (uint8_t* b, uint32_t& r, uint32_t& s)
-  { // Get the size of the next size field
-    if (sizeof(s) > r)
-    {
-      NS_FATAL_ERROR ("Serialization error; remaining " << r
-           << " thissize " << sizeof(s) << std::endl);
-    }
-    r -= sizeof (s); // Reduce remaining for next time
-    memcpy (&s, b, sizeof(s));
-    return b + sizeof (s);
-  }
-}
-
 PendingData::PendingData () : size (0), data (0),
                msgSize (0), responseSize (0)
 {
