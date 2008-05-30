@@ -24,6 +24,9 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup simulator
+ */
 class EventImpl
 {
 public:

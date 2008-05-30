@@ -6,6 +6,9 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup packet
+ */
 class Chunk : public ObjectBase
 {
  public:

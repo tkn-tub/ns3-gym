@@ -39,6 +39,11 @@ class AttributeList;
 class TraceSourceAccessor;
 
 /**
+ * \ingroup core
+ * \defgroup object Object
+ */
+/**
+ * \ingroup object
  * \brief a base class which provides memory management and object aggregation
  *
  */

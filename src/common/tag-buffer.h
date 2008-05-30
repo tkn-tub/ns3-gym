@@ -33,6 +33,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup packet
+ *
  * \brief read and write tag data
  *
  * This class allows subclasses of the ns3::Tag base class

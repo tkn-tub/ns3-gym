@@ -29,6 +29,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup packet
+ *
  * \brief Protocol trailer serialization and deserialization.
  *
  * Every Protocol trailer which needs to be inserted or removed

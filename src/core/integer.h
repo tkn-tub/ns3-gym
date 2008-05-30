@@ -27,6 +27,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup attribute
  * \class ns3::IntegerValue
  * \brief Hold a signed integer type
  *

@@ -7,6 +7,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup attribute
+ *
  * \class ns3::StringValue
  * \brief hold variables of type string
  *

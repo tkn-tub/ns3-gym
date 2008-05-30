@@ -27,6 +27,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup attribute
+ *
  * \brief hold variables of type 'enum'
  *
  * This class can be used to hold variables of any kind

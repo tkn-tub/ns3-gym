@@ -29,6 +29,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup Core
+ *
  * \brief hold a so-called 'global value'.
  *
  * Instances of this class are expected to be allocated as static 

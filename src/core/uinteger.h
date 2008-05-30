@@ -27,6 +27,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup attribute
+ *
  * \class ns3::UintegerValue
  * \brief Hold an unsigned integer type
  *

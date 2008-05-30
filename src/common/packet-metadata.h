@@ -36,6 +36,7 @@ class Trailer;
 
 /**
  * \internal
+ * \ingroup packet
  * \brief handle packet metadata about packet headers and trailers
  *
  * This class is used by the Packet class to record every operation

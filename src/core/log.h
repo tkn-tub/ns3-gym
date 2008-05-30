@@ -28,7 +28,7 @@
 
 
 /**
- * \ingroup core
+ * \ingroup debugging
  * \defgroup logging Logging
  * \brief Logging functions and macros
  *

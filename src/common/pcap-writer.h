@@ -29,6 +29,8 @@ namespace ns3 {
 class Packet;
 
 /**
+ * \ingroup common
+ *
  * \brief Pcap output for Packet logger
  *
  * Log Packets to a file in pcap format which can be

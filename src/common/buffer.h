@@ -36,6 +36,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup packet
+ *
  * \brief automatically resized byte buffer
  *
  * This represents a buffer of bytes. Its size is

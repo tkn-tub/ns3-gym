@@ -26,6 +26,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup attribute
+ *
  * \brief hold objects of type Ptr<T>
  */
 class PointerValue : public AttributeValue

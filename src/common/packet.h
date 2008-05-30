@@ -96,6 +96,9 @@ private:
 };
 
 /**
+ * \ingroup common
+ * \defgroup packet Packet
+ *
  * \brief network packets
  *
  * Each network packet contains a byte buffer, a set of tags, and

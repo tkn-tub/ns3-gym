@@ -33,6 +33,12 @@ namespace ns3 {
 class TestManager;
 
 /**
+ * \ingroup core
+ * \defgroup test Test
+ */
+/**
+ * \ingroup test
+ *
  * \brief base class for new regressions tests
  *
  * To add a new regression test, you need to:
@@ -65,6 +71,8 @@ protected:
 };
 
 /**
+ * \ingroup test
+ *
  * \brief gather and run all regression tests
  */
 class TestManager {

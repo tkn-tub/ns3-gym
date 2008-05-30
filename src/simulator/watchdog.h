@@ -27,6 +27,9 @@ namespace ns3 {
 
 class TimerImpl;
 
+/**
+ * \ingroup simulator
+ */
 class Watchdog 
 {
 public:
