@@ -159,7 +159,6 @@ public:
   WifiMode GetDataMode (Ptr<const Packet> packet, uint32_t fullPacketSize);
   /**
    * \param packet the packet to send
-   * \param fullPacketSize the size of the packet after its 802.11 MAC header has been added.
    * \returns the transmission mode to use to send the RTS prior to the
    *          transmission of the data packet itself.
    */
@@ -223,23 +222,23 @@ public:
   virtual bool NeedDataRetransmission (Ptr<const Packet> packet);
 
   /**
-   * \param the packet to send
+   * \param packet the packet to send
    * \returns true if this packet should be fragmented, false otherwise.
    */
   virtual bool NeedFragmentation (Ptr<const Packet> packet);
   /**
-   * \param the packet to send
+   * \param packet the packet to send
    * \returns the number of fragments which should be used for this packet.
    */
   virtual uint32_t GetNFragments (Ptr<const Packet> packet);
   /**
-   * \param the packet to send
+   * \param packet the packet to send
    * \param fragmentNumber the fragment index of the next fragment to send (starts at zero).
    * \returns the size of the corresponding fragment.
    */
   virtual uint32_t GetFragmentSize (Ptr<const Packet> packet, uint32_t fragmentNumber);
   /**
-   * \param the packet to send
+   * \param packet the packet to send
    * \param fragmentNumber the fragment index of the next fragment to send (starts at zero).
    * \returns true if this is the last fragment, false otherwise.
    */
@@ -252,7 +251,7 @@ public:
    */
   WifiMode GetCtsMode (WifiMode rtsMode);
   /**
-   * \param ackMode the transmission mode used to send an ACK we just received
+   * \param dataMode the transmission mode used to send an ACK we just received
    * \returns the transmission mode to use for the ACK to complete the data/ACK
    *          handshake.
    */

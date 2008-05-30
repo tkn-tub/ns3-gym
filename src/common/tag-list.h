@@ -109,7 +109,7 @@ public:
    * \param bufferSize the size of the tag when its serialization will 
    *        be completed. Typically, the return value of Tag::GetSerializedSize
    * \param start offset which uniquely identifies the first byte tagged by this tag.
-   * \param start offset which uniquely identifies the last byte tagged by this tag.
+   * \param end offset which uniquely identifies the last byte tagged by this tag.
    * \returns a buffer which can be used to write the tag data.     
    *
    * 
