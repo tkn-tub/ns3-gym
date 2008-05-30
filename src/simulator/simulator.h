@@ -61,7 +61,11 @@ public:
    */
   static void EnableParallelSimulation (void);
   /**
-   * XXX
+   * \param scheduler a new event scheduler
+   *
+   * The event scheduler can be set at any time: the events scheduled
+   * in the previous scheduler will be transfered to the new scheduler
+   * before we start to use it.
    */
   static void SetScheduler (Ptr<Scheduler> scheduler);
 
