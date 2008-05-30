@@ -36,6 +36,8 @@ class Node;
 class Packet;
 
 /**
+ * \ingroup socket
+ *
  * \brief (abstract) base class of all TcpSockets
  *
  * This class exists solely for hosting TcpSocket attributes that can

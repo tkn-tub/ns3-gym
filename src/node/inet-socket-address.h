@@ -29,6 +29,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup address
+ *
  * \brief an Inet address class
  *
  * This class is similar to inet_sockaddr in the BSD socket

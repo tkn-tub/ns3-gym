@@ -28,6 +28,8 @@ namespace ns3 {
 class TraceContainer;
 
 /**
+ * \ingroup queue
+ *
  * \brief A FIFO packet queue that drops tail-end packets on overflow
  */
 class DropTailQueue : public Queue {

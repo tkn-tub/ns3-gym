@@ -24,7 +24,7 @@
  *      in a simulation: ns3::Config.
  *
  * @defgroup common Common
- * The "core" module contains: 
+ * The "common" module contains: 
  *    - a packet class to create and manipulate simulation packets: 
  *      ns3::Packet, ns3::Header,  and ns3::Trailer. This packet class 
  *      also supports per-packet ns3::Tag which are  globs of data 

@@ -28,7 +28,7 @@
 namespace ns3 {
 
 /**
- * \ingroup Packet
+ * \ingroup packet
  *
  * \brief Protocol header serialization and deserialization.
  *

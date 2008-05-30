@@ -10,6 +10,11 @@
 namespace ns3 {
 
 /**
+ * \ingroup node
+ * \defgroup address Address
+ */
+/**
+ * \ingroup address
  * \brief a polymophic address class
  *
  * This class is very similar in design and spirit to the BSD sockaddr

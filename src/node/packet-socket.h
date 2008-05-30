@@ -36,6 +36,8 @@ class NetDevice;
 class PacketSocketAddress;
 
 /**
+ * \ingroup socket
+ *
  * \brief A PacketSocket is a link between an application and a net device.
  *
  * A PacketSocket can be used to connect an application to a net

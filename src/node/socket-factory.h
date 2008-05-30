@@ -28,6 +28,8 @@ namespace ns3 {
 class Socket;
 
 /**
+ * \ingroup socket
+ *
  * \brief Object to create transport layer instances that provide a 
  * socket API to applications.
  *

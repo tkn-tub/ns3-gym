@@ -28,6 +28,8 @@ namespace ns3 {
 class Address;
 
 /**
+ * \ingroup address
+ *
  * \brief an EUI-64 address
  *
  * This class can contain 64 bit IEEE addresses.

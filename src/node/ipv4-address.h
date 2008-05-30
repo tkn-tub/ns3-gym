@@ -30,9 +30,11 @@ namespace ns3 {
 
 class Ipv4Mask;
 
-/** Ipv4 addresses are stored in host order in
-  * this class.
-  */
+/** 
+ * \ingroup address
+ *
+ * \brief Ipv4 addresses are stored in host order in this class.
+ */
 class Ipv4Address {
 public:
   Ipv4Address ();
@@ -144,7 +146,11 @@ private:
   friend bool operator < (Ipv4Address const &addrA, Ipv4Address const &addrB);
 };
 
-
+/**
+ * \ingroup address
+ *
+ * \brief a class to represent an Ipv4 address mask
+ */
 class Ipv4Mask {
 public:
   Ipv4Mask ();
