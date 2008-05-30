@@ -926,7 +926,7 @@ bool TcpSocketImpl::SendPendingData (bool withAck)
       uint32_t s = std::min (w, m_segmentSize);  // Send no more than window
       Ptr<Packet> p = m_pendingData->CopyFromSeq (s, m_firstPendingSequence, 
         m_nextTxSequence);
-      NS_LOG_LOGIC("TcpSocketImpl " << this << " sendPendingData"
+      NS_LOG_LOGIC("TcpSocketImpl " << this << " SendPendingData"
                    << " txseq " << m_nextTxSequence
                    << " s " << s 
                    << " datasize " << p->GetSize() );
@@ -961,7 +961,7 @@ bool TcpSocketImpl::SendPendingData (bool withAck)
       if (m_retxEvent.IsExpired () ) //go ahead and schedule the retransmit
         {
             Time rto = m_rtt->RetransmitTimeout (); 
-            NS_LOG_LOGIC ("Schedule retransmission timeout at time " << 
+            NS_LOG_LOGIC ("SendPendingData Schedule retransmission timeout at time " << 
               Simulator::Now ().GetSeconds () << " to expire at time " <<
               (Simulator::Now () + rto).GetSeconds () );
           m_retxEvent = Simulator::Schedule (rto,&TcpSocketImpl::ReTxTimeout,this);
@@ -978,7 +978,7 @@ bool TcpSocketImpl::SendPendingData (bool withAck)
       // Note the high water mark
       m_highTxMark = std::max (m_nextTxSequence, m_highTxMark);
     }
-  NS_LOG_LOGIC ("Sent "<<nPacketsSent<<" packets");
+    NS_LOG_LOGIC ("SendPendingData Sent "<<nPacketsSent<<" packets");
   NS_LOG_LOGIC("RETURN SendPendingData");
   return (nPacketsSent>0);
 }
