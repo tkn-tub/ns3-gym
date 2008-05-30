@@ -164,13 +164,11 @@ public:
   /**
    * Serialize this address in host byte order to a byte buffer
    *
-   * \param buf output buffer that gets written with this Address
-   * \param len length of output buffer
+   * \param buffer output buffer that gets written with this Address
    */
   void Serialize (TagBuffer buffer) const;
   /**
-   * \param buf buffer to read address from
-   * \returns an Address
+   * \param buffer buffer to read address from
    * 
    * The input address buffer is expected to be in host byte order format.
    */
