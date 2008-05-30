@@ -26,6 +26,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup attribute
+ *
  * \brief Hold a bool native type
  *
  * \anchor bool

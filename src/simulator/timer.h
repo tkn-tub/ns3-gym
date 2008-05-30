@@ -30,6 +30,8 @@ namespace ns3 {
 class TimerImpl;
 
 /**
+ * \ingroup simulator
+ *
  * \brief a simple Timer class
  *
  * A timer is used to hold together a delay, a function to invoke

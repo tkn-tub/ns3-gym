@@ -28,7 +28,12 @@
 
 /**
  * \ingroup core
+ * \defgroup debugging Debugging
+ */
+/**
+ * \ingroup debugging
  * \defgroup assert Assert
+ *
  * \brief assert functions and macros
  *
  * The assert macros are used to verify

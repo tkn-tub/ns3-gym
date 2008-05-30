@@ -23,6 +23,12 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup address
+ *
+ * \brief This generator assigns addresses sequentially from a provided
+ * network address; used in topology code.
+ */
 class Ipv4AddressGenerator {
 public:
   static void Init (const Ipv4Address net, const Ipv4Mask mask, 

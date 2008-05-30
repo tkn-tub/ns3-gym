@@ -30,6 +30,9 @@ namespace ns3 {
 
 class EventImpl;
 
+/**
+ * \ingroup scheduler
+ */
 class MapScheduler : public Scheduler {
 public:
   MapScheduler ();

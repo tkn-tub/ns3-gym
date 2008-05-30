@@ -24,8 +24,7 @@
 #include <iostream>
 
 /**
- * \ingroup core
- * \defgroup error Error
+ * \ingroup debugging
  * \brief fatal error handling
  *
  * \param msg message to output when this macro is hit.

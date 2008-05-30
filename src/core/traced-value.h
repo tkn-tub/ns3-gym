@@ -32,6 +32,13 @@
 namespace ns3 {
 
 /**
+ * \ingroup core
+ * \defgroup tracing Tracing
+ */
+
+/**
+ * \ingroup tracing
+ *
  * \brief trace classes with value semantics
  *
  * If you want to trace the change of value of a class or

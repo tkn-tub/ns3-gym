@@ -32,10 +32,17 @@ class Node;
 class NetDevice;
 class Packet;
 class Ipv4Route;
-class Ipv4Header; // FIXME: ipv4-header.h needs to move from module
+class Ipv4Header; // XXX: ipv4-header.h needs to move from module
                   // "internet-node" to module "node"
 
 /**
+ * \ingroup node
+ * \defgroup ipv4 Ipv4
+ */
+
+/**
+ * \ingroup ipv4
+ *
  * \brief Base class for IPv4 routing protocols.
  *
  * This class represents the interface between the IPv4 routing core

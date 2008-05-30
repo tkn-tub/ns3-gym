@@ -27,6 +27,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup packet
+ *
  * \brief tag a set of bytes in a packet
  *
  * New kinds of tags can be created by subclassing this base class.

@@ -93,11 +93,11 @@ main (int argc, char *argv[])
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
   PointToPointHelper p2p;
-  p2p.SetChannelParameter ("BitRate", StringValue ("5Mbps"));
+  p2p.SetDeviceParameter ("DataRate", StringValue ("5Mbps"));
   p2p.SetChannelParameter ("Delay", StringValue ("2ms"));
   NetDeviceContainer nd02 = p2p.Install (n02);
   NetDeviceContainer nd12 = p2p.Install (n12);
-  p2p.SetChannelParameter ("BitRate", StringValue ("1500kbps"));
+  p2p.SetDeviceParameter ("DataRate", StringValue ("1500kbps"));
   p2p.SetChannelParameter ("Delay", StringValue ("10ms"));
   NetDeviceContainer nd32 = p2p.Install (n32);
   NetDeviceContainer nd34 = p2p.Install (n34);

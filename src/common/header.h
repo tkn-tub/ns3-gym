@@ -28,6 +28,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup packet
+ *
  * \brief Protocol header serialization and deserialization.
  *
  * Every Protocol header which needs to be inserted or removed

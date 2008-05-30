@@ -31,6 +31,9 @@ namespace ns3 {
 
 class EventImpl;
 
+/**
+ * \ingroup scheduler
+ */
 class ListScheduler : public Scheduler {
  public:
   ListScheduler ();

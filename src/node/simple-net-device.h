@@ -30,6 +30,11 @@ namespace ns3 {
 class SimpleChannel;
 class Node;
 
+/**
+ * \ingroup netdevice
+ * 
+ * \brief simple net device for simple things and testing
+ */
 class SimpleNetDevice : public NetDevice
 {
 public:

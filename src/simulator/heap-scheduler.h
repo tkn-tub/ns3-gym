@@ -29,6 +29,9 @@ namespace ns3 {
 
 class EventHolder;
 
+/**
+ * \ingroup scheduler
+ */
 class HeapScheduler : public Scheduler {
 public:
   HeapScheduler ();

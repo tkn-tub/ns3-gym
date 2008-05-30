@@ -36,6 +36,8 @@ class Address;
 
 
 /**
+ * \ingroup node
+ *
  * \brief A network Node.
  *
  * This class holds together:

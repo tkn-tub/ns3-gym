@@ -24,10 +24,16 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup AttributeHelper
+ */
 template <typename V, typename T1>
 Ptr<const AttributeAccessor>
 MakeAccessorHelper (T1 a1);
 
+/**
+ * \ingroup AttributeHelper
+ */
 template <typename V, typename T1, typename T2>
 Ptr<const AttributeAccessor>
 MakeAccessorHelper (T1 a1, T2 a2);

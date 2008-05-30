@@ -29,6 +29,8 @@ namespace ns3 {
 class Packet;
 
 /**
+ * \ingroup node
+ *
  * \brief Packet trailer for Ethernet
  *
  * This class can be used to add and verify the FCS at the end of an

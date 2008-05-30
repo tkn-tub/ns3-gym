@@ -27,6 +27,8 @@ namespace ns3 {
 class Socket;
 
 /**
+ * \ingroup socket 
+ * 
  * This can be used as an interface in a node in order for the node to
  * generate PacketSockets that can connect to net devices.
  */

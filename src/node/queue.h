@@ -33,6 +33,9 @@
 namespace ns3 {
 
 /**
+ * \ingroup node
+ * \defgroup queue Queue
+ *
  * \brief Abstract base class for packet Queues
  * 
  * This class defines the base APIs for packet queues in the ns-3 system

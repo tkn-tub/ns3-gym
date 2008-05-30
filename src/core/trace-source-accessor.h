@@ -29,6 +29,8 @@ namespace ns3 {
 class ObjectBase;
 
 /**
+ * \ingroup tracing
+ *
  * \brief control access to objects' trace sources
  *
  * This class abstracts the kind of trace source to which we want to connect

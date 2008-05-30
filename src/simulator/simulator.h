@@ -35,6 +35,8 @@ class SimulatorPrivate;
 class SchedulerFactory;
 
 /**
+ * \ingroup simulator
+ *
  * \brief Control the scheduling of simulation events. 
  *
  * The internal simulation clock is maintained

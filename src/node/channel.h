@@ -27,6 +27,9 @@ namespace ns3 {
 class NetDevice;
 
 /**
+ * \ingroup node
+ * \defgroup channel Channel
+ *
  * \brief Abstract Channel Base Class.
  *
  * A channel is a logical path over which information flows.  The path can

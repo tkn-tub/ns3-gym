@@ -30,6 +30,11 @@ namespace ns3 {
 
 class NetDevice;
 
+/**
+ * \ingroup address
+ *
+ * \brief an address for a packet socket
+ */
 class PacketSocketAddress
 {
  public:

@@ -27,6 +27,8 @@ namespace ns3 {
 class Socket;
 
 /**
+ * \ingroup socket
+ *
  * \brief API to create UDP socket instances 
  *
  * This abstract class defines the API for UDP socket factory.

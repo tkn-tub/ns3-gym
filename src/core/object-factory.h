@@ -29,6 +29,8 @@ namespace ns3 {
 class AttributeValue;
 
 /**
+ * \ingroup object
+ *
  * \brief instantiate subclasses of ns3::Object.
  *
  * This class can also hold a set of attributes to set

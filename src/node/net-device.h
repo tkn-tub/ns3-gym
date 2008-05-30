@@ -36,6 +36,12 @@ class Channel;
 class Packet;
 
 /**
+ * \ingroup node
+ * \defgroup netdevice NetDevice
+ */
+/**
+ * \ingroup NetDevice
+ *
  * \brief Network layer to device interface
  *
  * This interface defines the API which the IP and ARP

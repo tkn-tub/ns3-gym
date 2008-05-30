@@ -29,6 +29,8 @@ namespace ns3 {
 struct TagListData;
 
 /**
+ * \ingroup packet
+ *
  * \brief keep track of the tags stored in a packet.
  *
  * This class is mostly private to the Packet implementation and users

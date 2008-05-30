@@ -28,6 +28,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup attribute
+ *
  * \brief a container of attributes to be used during object's construction
  *        and in ns3::Object::Set.
  *
