@@ -746,7 +746,11 @@ PacketMetadataTest::RunTests (void)
   CHECK_HISTORY (p, 3, 1, 1000, 3);
   CHECK_HISTORY (p1, 3, 2, 1000, 3);
 
-
+  p = Create<Packet> (200);
+  ADD_HEADER (p, 24);
+  p1 = p->CreateFragment(0, 100);
+  p2 = p->CreateFragment(100, 100);	
+  p1->AddAtEnd (p2);
 
   return result;
 }
