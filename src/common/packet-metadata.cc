@@ -455,6 +455,7 @@ PacketMetadata::ReplaceTail (PacketMetadata::SmallItem *item,
       uint16_t written = h.AddBig (0xffff, h.m_tail, 
                                    &tmpItem, &tmpExtraItem);
       h.UpdateTail (written);
+      current = tmpItem.next;
     }
   // append new tail.
   uint16_t written = h.AddBig (0xffff, h.m_tail, item, extraItem);
