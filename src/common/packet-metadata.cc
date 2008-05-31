@@ -496,6 +496,11 @@ PacketMetadata::ReplaceTail (PacketMetadata::SmallItem *item,
                    available);
 
   NS_ASSERT (m_data != 0);  
+  /* If the tail we want to replace is located at the end of the data array,
+   * and if there is extra room at the end of this array, then, 
+   * we can try to use that extra space to avoid falling in the slow
+   * path below.
+   */
   if (m_tail + available == m_used &&
       m_used == m_data->m_dirtyEnd)
     {
