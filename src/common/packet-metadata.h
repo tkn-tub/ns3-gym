@@ -254,9 +254,6 @@ private:
   uint32_t ReadUleb128 (const uint8_t **pBuffer) const;
   inline void Append16 (uint16_t value, uint8_t *buffer);
   inline void Append32 (uint32_t value, uint8_t *buffer);
-  inline bool TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end);
-  inline bool TryToAppend32 (uint32_t value, uint8_t **pBuffer, uint8_t *end);
-  inline bool TryToAppend16 (uint16_t value, uint8_t **pBuffer, uint8_t *end);
   inline void AppendValue (uint32_t value, uint8_t *buffer);
   void AppendValueExtra (uint32_t value, uint8_t *buffer);
   inline void Reserve (uint32_t n);

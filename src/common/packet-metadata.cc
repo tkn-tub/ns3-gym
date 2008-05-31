@@ -186,101 +186,6 @@ PacketMetadata::Append32 (uint32_t value,  uint8_t *buffer)
   buffer[2] = (value >> 16) & 0xff;
   buffer[3] = (value >> 24) & 0xff;
 }
-bool
-PacketMetadata::TryToAppend16 (uint16_t value,  uint8_t **pBuffer, uint8_t *end)
-{
-  uint8_t *start = *pBuffer;
-  if (start + 1 < end)
-    {
-      start[0] = value & 0xff;
-      start[1] = value >> 8;
-      *pBuffer = start + 2;
-      return true;
-    }
-  return false;
-}
-bool
-PacketMetadata::TryToAppend32 (uint32_t value,  uint8_t **pBuffer, uint8_t *end)
-{
-  uint8_t *start = *pBuffer;
-  if (start + 3 < end)
-    {
-      start[0] = value & 0xff;
-      start[1] = (value >> 8) & 0xff;
-      start[2] = (value >> 16) & 0xff;
-      start[3] = (value >> 24) & 0xff;
-      *pBuffer = start + 4;
-      return true;
-    }
-  return false;
-}
-bool
-PacketMetadata::TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end)
-{
-  uint8_t *start = *pBuffer;
-  if (value < 0x80 && start < end)
-    {
-      start[0] = value;
-      *pBuffer = start + 1;
-      return true;
-    }
-  if (value < 0x4000 && start + 1 < end)
-    {
-      uint8_t byte = value & (~0x80);
-      start[0] = 0x80 | byte;
-      value >>= 7;
-      start[1] = value;
-      *pBuffer = start + 2;
-      return true;
-    }
-  if (value < 0x200000 && start + 2 < end)
-    {
-      uint8_t byte = value & (~0x80);
-      start[0] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      start[1] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      start[2] = value;
-      *pBuffer = start + 3;
-      return true;
-    }
-  if (value < 0x10000000 && start + 3 < end)
-    {
-      uint8_t byte = value & (~0x80);
-      start[0] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      start[1] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      start[2] = 0x80 | byte;
-      value >>= 7;
-      start[3] = value;
-      *pBuffer = start + 4;
-      return true;
-    }
-  if (start + 4 < end)
-    {
-      uint8_t byte = value & (~0x80);
-      start[0] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      start[1] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      start[2] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      start[3] = 0x80 | byte;
-      value >>= 7;
-      start[4] = value;
-      *pBuffer = start + 5;
-      return true;
-    }
-  return false;
-}
 
 void
 PacketMetadata::AppendValueExtra (uint32_t value, uint8_t *buffer)
@@ -481,9 +386,6 @@ PacketMetadata::AddBig (uint32_t next, uint32_t prev,
  * \param extraItem the extra item data to write
  * \param available the number of bytes which can 
  *        be written without having to rewrite the buffer entirely.
- *
- * XXX: should rewrite the code below to avoid using 
- * TryToAppend calls.
  */
 void
 PacketMetadata::ReplaceTail (PacketMetadata::SmallItem *item, 
@@ -507,27 +409,35 @@ PacketMetadata::ReplaceTail (PacketMetadata::SmallItem *item,
       available = m_data->m_size - m_tail;
     }
 
-  if (available >= 14 &&
+  uint32_t typeUid = ((item->typeUid & 0x1) == 0x1)?item->typeUid:item->typeUid+1;
+  uint32_t typeUidSize = GetUleb128Size (typeUid);
+  uint32_t sizeSize = GetUleb128Size (item->size);
+  uint32_t fragStartSize = GetUleb128Size (extraItem->fragmentStart);
+  uint32_t fragEndSize = GetUleb128Size (extraItem->fragmentEnd);
+  uint32_t n = 2 + 2 + typeUidSize + sizeSize + 2 + fragStartSize + fragEndSize + 4;
+
+  if (available >= n &&
       m_data->m_count == 1)
     {
       uint8_t *buffer = &m_data->m_data[m_tail];
-      uint8_t *end = buffer + available;
-
       Append16 (item->next, buffer);
       buffer += 2;
       Append16 (item->prev, buffer);
       buffer += 2;
-      if (TryToAppend (item->typeUid, &buffer, end) &&
-          TryToAppend (item->size, &buffer, end) &&
-          TryToAppend16 (item->chunkUid, &buffer, end) &&
-          TryToAppend (extraItem->fragmentStart, &buffer, end) &&
-          TryToAppend (extraItem->fragmentEnd, &buffer, end) &&
-          TryToAppend32 (extraItem->packetUid, &buffer, end))
-        {
-          m_used = buffer - &m_data->m_data[0];
-          m_data->m_dirtyEnd = m_used;
-          return;
-        }
+      AppendValue (typeUid, buffer);
+      buffer += typeUidSize;
+      AppendValue (item->size, buffer);
+      buffer += sizeSize;
+      Append16 (item->chunkUid, buffer);
+      buffer += 2;
+      AppendValue (extraItem->fragmentStart, buffer);
+      buffer += fragStartSize;
+      AppendValue (extraItem->fragmentEnd, buffer);
+      buffer += fragEndSize;
+      Append32 (extraItem->packetUid, buffer);
+      m_used = buffer - &m_data->m_data[0];
+      m_data->m_dirtyEnd = m_used;
+      return;
     }
   
   // create a copy of the packet.
