@@ -439,6 +439,10 @@ PacketMetadata::ReplaceTail (PacketMetadata::SmallItem *item,
       m_data->m_dirtyEnd = m_used;
       return;
     }
+
+  /* Below is the slow path which is hit if the new tail we want 
+   * to append is bigger than the previous tail.
+   */
   
   // create a copy of the packet.
   PacketMetadata h (m_packetUid, 0);
