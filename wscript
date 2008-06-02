@@ -217,6 +217,9 @@ def configure(conf):
         conf.env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
                                            Params.g_options.enable_modules.split(',')]
 
+    ## we cannot run regression tests without diff
+    conf.find_program('diff', var='DIFF')
+
 
 def create_ns3_program(bld, name, dependencies=('simulator',)):
     program = bld.create_obj('cpp', 'program')
@@ -326,11 +329,14 @@ def shutdown():
     #ut.want_to_see_test_error = True
     #ut.run()
     #ut.print_results()
+    env = Params.g_build.env_of_name('default')
 
     if Params.g_commands['check']:
         _run_waf_check()
 
     if Params.g_options.regression or Params.g_options.regression_generate:
+        if not env['DIFF']:
+            Params.fatal("Cannot run regression tests: the 'diff' program is not installed.")
         _dir = os.getcwd()
         os.chdir("regression")
         try:
@@ -657,6 +663,8 @@ Scripting.DistDir = DistDir
 class Regression(object):
     def __init__(self, testdir):
         self.testdir = testdir
+        env = Params.g_build.env_of_name('default')
+        self.diff = env['DIFF']
 
     def run_test(self, verbose, generate, refDirName, testName):
         refTestDirName = os.path.join(refDirName, (testName + ".ref"))
@@ -692,7 +700,7 @@ class Regression(object):
 
             if verbose:
                 #diffCmd = "diff traces " + refTestDirName + " | head"
-                diffCmd = subprocess.Popen(["diff", "traces", refTestDirName],
+                diffCmd = subprocess.Popen([self.diff, "traces", refTestDirName],
                                            stderr=subprocess.PIPE, stdout=subprocess.PIPE)
                 headCmd = subprocess.Popen("head", stdin=diffCmd.stdout)
                 rc2 = headCmd.wait()
@@ -700,7 +708,7 @@ class Regression(object):
                 rc1 = diffCmd.wait()
                 rc = rc1 or rc2
             else:
-                diffCmd = "diff traces " + refTestDirName + \
+                diffCmd = self.diff +" traces " + refTestDirName + \
                     " > /dev/null 2>&1"
                 rc = os.system(diffCmd)
             if rc:
