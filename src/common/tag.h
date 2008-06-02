@@ -49,12 +49,16 @@ public:
    * \param i the buffer to write data into.
    *
    * Write the content of the tag in the provided tag buffer.
+   * DO NOT attempt to write more bytes than you requested
+   * with Tag::GetSerializedSize.
    */
   virtual void Serialize (TagBuffer i) const = 0;
   /**
    * \param i the buffer to read data from.
    *
    * Read the content of the tag from the provided tag buffer.
+   * DO NOT attempt to read more bytes than you wrote with
+   * Tag::Serialize.
    */
   virtual void Deserialize (TagBuffer i) = 0;
 };

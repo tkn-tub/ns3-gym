@@ -42,7 +42,7 @@ class TagIterator
 {
 public:
   /**
-   * Identifies a set tag and a set of bytes within a packet
+   * Identifies a tag and a set of bytes within a packet
    * to which the tag applies.
    */
   class Item
