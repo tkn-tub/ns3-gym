@@ -144,7 +144,7 @@ public:
  * to detect the type of the associated attribute.
  *
  * Most subclasses of this base class are implemented by the 
- * ATTRIBUTE_HELPER_* macros.
+ * \ref ATTRIBUTE_HELPER_HEADER and \ref ATTRIBUTE_HELPER_CPP macros.
  */
 class AttributeChecker : public RefCountBase
 {

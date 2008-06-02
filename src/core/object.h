@@ -46,6 +46,14 @@ class TraceSourceAccessor;
  * \ingroup object
  * \brief a base class which provides memory management and object aggregation
  *
+ * The memory management scheme is based on reference-counting with dispose-like
+ * functionality to break the reference cycles. The reference count is increamented
+ * and decremented with the methods Object::Ref and Object::Unref. If a reference cycle is
+ * present, the user is responsible for breaking it by calling Object::Dispose in
+ * a single location. This will eventually trigger the invocation of Object::DoDispose 
+ * on itself and all its aggregates. The Object::DoDispose method is always automatically
+ * invoked from the Object::Unref method before destroying the object, even if the user 
+ * did not call Object::Dispose directly.
  */
 class Object : public ObjectBase
 {

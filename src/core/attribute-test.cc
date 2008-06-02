@@ -167,7 +167,7 @@ public:
 		       MakeTraceSourceAccessor (&AttributeObjectTest::m_cb))
       .AddTraceSource ("ValueSource", "help text",
 		       MakeTraceSourceAccessor (&AttributeObjectTest::m_valueSrc))
-      .AddAttribute ("Pointer", "XXX",
+      .AddAttribute ("Pointer", "help text",
                      PointerValue (),
                      MakePointerAccessor (&AttributeObjectTest::m_ptr),
                      MakePointerChecker<Derived> ())

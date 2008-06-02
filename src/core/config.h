@@ -29,6 +29,10 @@ class AttributeValue;
 class Object;
 class CallbackBase;
 
+/**
+ * \brief Configuration of simulation parameters and tracing
+ * \ingroup core
+ */
 namespace Config {
 
 /**
