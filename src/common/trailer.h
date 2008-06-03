@@ -35,9 +35,7 @@ namespace ns3 {
  *
  * Every Protocol trailer which needs to be inserted or removed
  * from a Packet instance must derive from this base class and
- * implement the following public methods:
- *   - a default constructor: is used by the internal implementation
- *     if the Packet class.
+ * implement the pure virtual methods defined here.
  */
 class Trailer : public Chunk
 {

@@ -87,7 +87,6 @@ public:
    */
   static AttributeList *GetGlobal (void);
 
-  // XXX: untested.
   std::string SerializeToString (void) const;
   bool DeserializeFromString (std::string value);
 private:

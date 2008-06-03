@@ -6,7 +6,7 @@ Steps in doing an ns-3 release
    - revise and check in RELEASE_NOTES
    - update and check in VERSION to the latest release number
    - confirm that Doxygen builds cleanly and without warnings
-     (./waf --doxygen), and check in any necessary changes 
+     (./waf check; ./waf --doxygen), and check in any necessary changes 
 2. ./waf configure; ./waf dist
    - this will create a ns-3.0.x.tar.bz2 tarball
    - this will also create a ns-3.0.x-ref-traces.tar.bz2 tarball
@@ -23,7 +23,7 @@ Steps in doing an ns-3 release
 6. Run the regression tests on the new release and update the reference traces
    - ./waf --regression
    - ./waf --valgrind --regression (for valgrind version)
-   - There should be no regressions at this time
+   - There should be no regression errors at this time
    - tag ns-3-dev-ref-traces with "release ns-3.0.X"
      hg tag "release ns-3.0.x"
      hg push

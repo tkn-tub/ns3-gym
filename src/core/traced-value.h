@@ -47,7 +47,7 @@ namespace ns3 {
  * this template: this instance will behave just like
  * the original class (if it did not export any special method),
  * and will define Connect/DisconnectWithoutContext methods to work
- * with an ns3::TraceSourceAccessor.
+ * with ns3::MakeTraceSourceAccessor.
  */
 template <typename T>
 class TracedValue

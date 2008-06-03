@@ -38,28 +38,106 @@ namespace ns3 {
  * \brief read and write tag data
  *
  * This class allows subclasses of the ns3::Tag base class
- * to serialize and deserialize their data.
+ * to serialize and deserialize their data through a stream-like
+ * API. This class keeps track of the "current" point in the
+ * buffer and advances that "current" point everytime data is 
+ * written. The in-memory format of the data written by 
+ * this class is unspecified.
+ *
+ * If the user attempts to write more data in the buffer than 
+ * he allocated with Tag::GetSerializedSize, he will trigger
+ * an NS_ASSERT error.
  */
 class TagBuffer
 {
 public:
   TagBuffer (uint8_t *start, uint8_t *end);
   void TrimAtEnd (uint32_t trim);
-
-  TAG_BUFFER_INLINE void WriteU8 (uint8_t v);
-  TAG_BUFFER_INLINE void WriteU16 (uint16_t v);
-  TAG_BUFFER_INLINE void WriteU32 (uint32_t v);
-  void WriteU64 (uint64_t v);
-  void WriteDouble (double v);
-  void Write (const uint8_t *buffer, uint32_t size);
-  TAG_BUFFER_INLINE uint8_t  ReadU8 (void);
-  TAG_BUFFER_INLINE uint16_t ReadU16 (void);
-  TAG_BUFFER_INLINE uint32_t ReadU32 (void);
-  uint64_t ReadU64 (void);
-  double ReadDouble (void);
-  void Read (uint8_t *buffer, uint32_t size);
-
   void CopyFrom (TagBuffer o);
+
+  /**
+   * \param v the value to write
+   *
+   * Write one byte and advance the "current" point by one.
+   */
+  TAG_BUFFER_INLINE void WriteU8 (uint8_t v);
+  /**
+   * \param v the value to write
+   *
+   * Write two bytes and advance the "current" point by two.
+   */
+  TAG_BUFFER_INLINE void WriteU16 (uint16_t v);
+  /**
+   * \param v the value to write
+   *
+   * Write four bytes and advance the "current" point by four.
+   */
+  TAG_BUFFER_INLINE void WriteU32 (uint32_t v);
+  /**
+   * \param v the value to write
+   *
+   * Write eight bytes and advance the "current" point by eight.
+   */
+  void WriteU64 (uint64_t v);
+  /**
+   * \param v the value to write
+   *
+   * Write a double and advance the "current" point by the size of the
+   * data written.
+   */
+  void WriteDouble (double v);
+  /**
+   * \param buffer a pointer to data to write
+   * \param size the size of the data to write
+   *
+   * Write all the input data and advance the "current" point by the size of the
+   * data written.
+   */
+  void Write (const uint8_t *buffer, uint32_t size);
+  /**
+   * \returns the value read
+   *
+   * Read one byte, advance the "current" point by one,
+   * and return the value read.
+   */
+  TAG_BUFFER_INLINE uint8_t  ReadU8 (void);
+  /**
+   * \returns the value read
+   *
+   * Read two bytes, advance the "current" point by two,
+   * and return the value read.
+   */
+  TAG_BUFFER_INLINE uint16_t ReadU16 (void);
+  /**
+   * \returns the value read
+   *
+   * Read four bytes, advance the "current" point by four,
+   * and return the value read.
+   */
+  TAG_BUFFER_INLINE uint32_t ReadU32 (void);
+  /**
+   * \returns the value read
+   *
+   * Read eight bytes, advance the "current" point by eight,
+   * and return the value read.
+   */
+  uint64_t ReadU64 (void);
+  /**
+   * \returns the value read
+   *
+   * Read a double, advance the "current" point by the size
+   * of the data read, and, return the value read.
+   */
+  double ReadDouble (void);
+  /**
+   * \param buffer a pointer to the buffer where data should be
+   * written.
+   * \param size the number of bytes to read.
+   *
+   * Read the number of bytes requested, advance the "current"
+   * point by the number of bytes read, return.
+   */
+  void Read (uint8_t *buffer, uint32_t size);
 private:
   
   uint8_t *m_current;
