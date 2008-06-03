@@ -13,6 +13,16 @@ Release 3.0.13 (2008/06/02)
 - ARP cache now supports per-entry pending queues
 - lots of bugfixes and implementation and API cleanups
 
+Warning: among API changes in this release, Application::Start and 
+Application::Stop now interprets the time argument as a relative
+instead of absolute simulation time, to align with how Simulator::Schedule
+behaves.  Any code that calls these APIs in the middle of the simulation 
+will need to be adapted.  
+
+The API of Simulator::StopAt (time) has also changed.  Now it is 
+called Simulator::Stop (time), and takes a relative time, instead of 
+absolute.
+
 Release 3.0.12 (2008/04/07)
 ========================
     - Add Attribute support to the TypeId metadata system and add
