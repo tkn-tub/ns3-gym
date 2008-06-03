@@ -3,6 +3,16 @@
 
 This file contains ns-3 release notes (most recent releases first).
 
+Release 3.0.13 (2008/06/02)
+========================
+- point to point links generate ppp pcap traces
+- point to point links support asymmetrical data rates.
+- generate doxygen documentation for all attributes and trace sources
+- add ConfigStore and GtkConfigStore to contrib module
+- socket API now support tx and rx buffers: implemented for UDP and TCP
+- ARP cache now supports per-entry pending queues
+- lots of bugfixes and implementation and API cleanups
+
 Release 3.0.12 (2008/04/07)
 ========================
     - Add Attribute support to the TypeId metadata system and add
