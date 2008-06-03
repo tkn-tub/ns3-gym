@@ -291,8 +291,30 @@ Packet::GetUid (void) const
 void 
 Packet::PrintTags (std::ostream &os) const
 {
-  // XXX:
-  //m_tagList.Print (os, " ");
+  TagIterator i = GetTagIterator ();
+  while (i.HasNext ())
+    {
+      TagIterator::Item item = i.Next ();
+      os << item.GetTypeId ().GetName () << " [" << item.GetStart () << "-" << item.GetEnd () << "]";
+      Callback<ObjectBase *> constructor = item.GetTypeId ().GetConstructor ();
+      if (constructor.IsNull ())
+        {
+          if (i.HasNext ())
+            {
+              os << " ";
+            }
+          continue;
+        }
+      Tag *tag = dynamic_cast<Tag *> (constructor ());
+      NS_ASSERT (tag != 0);
+      os << " ";
+      tag->Print (os);
+      if (i.HasNext ())
+        {
+          os << " ";
+        }
+      delete tag;
+    }
 }
 
 void 
@@ -575,6 +597,9 @@ public:
             m_error = true;
           }
       }
+  }
+  virtual void Print (std::ostream &os) const {
+    os << N;
   }
   ATestTag ()
     : ATestTagBase () {}

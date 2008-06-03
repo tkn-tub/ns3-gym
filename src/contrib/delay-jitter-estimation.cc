@@ -16,7 +16,7 @@ public:
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
-
+  virtual void Print (std::ostream &os) const;
 
   Time GetTxTime (void) const;
 private:
@@ -61,6 +61,11 @@ void
 DelayJitterEstimationTimestampTag::Deserialize (TagBuffer i)
 {
   m_creationTime = i.ReadU64 ();
+}
+void 
+DelayJitterEstimationTimestampTag::Print (std::ostream &os) const
+{
+  os << "CreationTime=" << m_creationTime;
 }
 Time 
 DelayJitterEstimationTimestampTag::GetTxTime (void) const
