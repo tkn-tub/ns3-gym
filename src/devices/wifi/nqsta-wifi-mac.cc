@@ -63,7 +63,7 @@ NqstaWifiMac::GetTypeId (void)
     .SetParent<WifiMac> ()
     .AddConstructor<NqstaWifiMac> ()
     .AddAttribute ("ProbeRequestTimeout", "XXX",
-                   TimeValue (Seconds (0.5)),
+                   TimeValue (Seconds (0.05)),
                    MakeTimeAccessor (&NqstaWifiMac::m_probeRequestTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("AssocRequestTimeout", "XXX",
