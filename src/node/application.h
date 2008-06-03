@@ -34,7 +34,7 @@ class RandomVariable;
 
 /**
  * \ingroup node
- * \defgroup application
+ * \defgroup application Application
  *
  * \brief The base class for all ns3 applicationes
  * 
