@@ -217,6 +217,13 @@ UdpSocketImpl::Connect(const Address & address)
 }
 
 int 
+UdpSocketImpl::Listen (uint32_t queueLimit)
+{
+  m_errno = Socket::ERROR_OPNOTSUPP;
+  return -1;
+}
+
+int 
 UdpSocketImpl::Send (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p);

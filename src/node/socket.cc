@@ -103,12 +103,6 @@ Socket::SetRecvCallback (Callback<void, Ptr<Socket> > receivedData)
   m_receivedData = receivedData;
 }
 
-int Socket::Listen (uint32_t queueLimit)
-{
-  return 0; //XXX the base class version does nothing
-}
-
-
 int Socket::Send (const uint8_t* buf, uint32_t size)
 {
   NS_LOG_FUNCTION_NOARGS ();

@@ -231,9 +231,9 @@ public:
   /**
    * \brief Listen for incoming connections.
    * \param queueLimit maximum number of incoming request to queue
-   * \returns XXX an error code
+   * \returns 0 on success, -1 on error (in which case errno is set).
    */
-  virtual int Listen (uint32_t queueLimit);
+  virtual int Listen (uint32_t queueLimit) = 0;
 
   /**
    * \brief Send data (or dummy data) to the remote host

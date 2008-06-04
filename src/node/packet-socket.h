@@ -71,6 +71,8 @@ class PacketSocketAddress;
  *       The fields "physical address", device, and protocol are filled.
  *
  * - Accept: not allowed
+ *
+ * - Listen: returns -1 (OPNOTSUPP)
  */
 class PacketSocket : public Socket
 {
@@ -90,6 +92,7 @@ public:
   virtual int ShutdownSend (void);
   virtual int ShutdownRecv (void);
   virtual int Connect(const Address &address);
+  virtual int Listen(uint32_t queueLimit);
   virtual int Send (Ptr<Packet> p);
   virtual uint32_t GetTxAvailable (void) const;
 

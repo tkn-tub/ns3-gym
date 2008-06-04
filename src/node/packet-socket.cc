@@ -220,6 +220,12 @@ PacketSocket::Connect(const Address &ad)
   NotifyConnectionFailed ();
   return -1;
 }
+int 
+PacketSocket::Listen(uint32_t queueLimit)
+{
+  m_errno = Socket::ERROR_OPNOTSUPP;
+  return -1;
+}
 
 int
 PacketSocket::Send (Ptr<Packet> p)
