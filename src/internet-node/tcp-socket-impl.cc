@@ -126,7 +126,8 @@ TcpSocketImpl::TcpSocketImpl(const TcpSocketImpl& sock)
     m_cnTimeout (sock.m_cnTimeout),
     m_cnCount (sock.m_cnCount),
     m_rxAvailable (0),
-    m_wouldBlock (false) 
+    m_wouldBlock (false),
+    m_sndBufSize (sock.m_sndBufSize)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC("Invoked the copy constructor");
