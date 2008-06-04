@@ -105,6 +105,7 @@ private:
   void ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet, 
                   uint16_t protocol, const Address &from);
   int DoBind (const PacketSocketAddress &address);
+  uint32_t GetMinMtu (PacketSocketAddress ad) const;
   virtual void DoDispose (void);
 
   enum State {

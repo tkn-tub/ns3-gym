@@ -27,6 +27,8 @@
 #include "ns3/uinteger.h"
 #include "ns3/trace-source-accessor.h"
 
+#include <algorithm>
+
 NS_LOG_COMPONENT_DEFINE ("PacketSocket");
 
 namespace ns3 {
@@ -240,11 +242,35 @@ PacketSocket::Send (Ptr<Packet> p)
   return SendTo (p, m_destAddr);
 }
 
-// XXX must limit it to interface MTU
+uint32_t
+PacketSocket::GetMinMtu (PacketSocketAddress ad) const
+{
+  if (ad.IsSingleDevice ())
+    {
+      Ptr<NetDevice> device = m_node->GetDevice (ad.GetSingleDevice ());
+      return device->GetMtu ();
+    }
+  else
+    {
+      uint32_t minMtu = 0xffff;
+      for (uint32_t i = 0; i < m_node->GetNDevices (); i++)
+        {
+          Ptr<NetDevice> device = m_node->GetDevice (i);
+          minMtu = std::min (minMtu, (uint32_t)device->GetMtu ());
+        }
+      return minMtu;
+    }
+}
+
 uint32_t 
 PacketSocket::GetTxAvailable (void) const
 {
-  // Use 65536 for now
+  if (m_state == STATE_CONNECTED)
+    {
+      PacketSocketAddress ad = PacketSocketAddress::ConvertFrom (m_destAddr);      
+      return GetMinMtu (ad);
+    }
+  // If we are not connected, we return a 'safe' value by default.
   return 0xffff;
 }
 
@@ -271,12 +297,12 @@ PacketSocket::SendTo(Ptr<Packet> p, const Address &address)
       m_errno = ERROR_AFNOSUPPORT;
       return -1;
     }
-  if (p->GetSize () > GetTxAvailable ())
+  ad = PacketSocketAddress::ConvertFrom (address);
+  if (p->GetSize () > GetMinMtu (ad))
     {
       m_errno = ERROR_MSGSIZE;
       return -1;
     }
-  ad = PacketSocketAddress::ConvertFrom (address);
   
   bool error = false;
   Address dest = ad.GetPhysicalAddress ();
