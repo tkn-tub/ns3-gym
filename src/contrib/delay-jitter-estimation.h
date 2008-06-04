@@ -7,7 +7,7 @@
 namespace ns3 {
 
 /**
- * \brief quick and diry delay and jitter estimation
+ * \brief quick and dirty delay and jitter estimation
  *
  */
 class DelayJitterEstimation
