@@ -38,7 +38,8 @@ namespace ns3 {
  *
  * The implementation of this model is not 2d-specific. i.e. if you provide
  * a 3d random waypoint position model to this mobility model, the model 
- * will still work.
+ * will still work. There is no 3d position allocator for now but it should
+ * be trivial to add one.
  */
 class RandomWaypointMobilityModel : public MobilityModel
 {

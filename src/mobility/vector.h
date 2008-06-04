@@ -59,6 +59,11 @@ public:
   double z;
 };
 
+/**
+ * \param a one point
+ * \param b another point
+ * \returns the cartesian distance between a and b.
+ */
 double CalculateDistance (const Vector &a, const Vector &b);
 
 /**
