@@ -311,6 +311,11 @@ SocketRxAddressTag::Deserialize (TagBuffer i)
 {
   m_address.Deserialize (i);
 }
+void
+SocketRxAddressTag::Print (std::ostream &os) const
+{
+  os << "address=" << m_address;
+}
 
 SocketIpTtlTag::SocketIpTtlTag ()  
 {
@@ -358,6 +363,11 @@ void
 SocketIpTtlTag::Deserialize (TagBuffer i)
 { 
   m_ttl = i.ReadU8 ();
+}
+void
+SocketIpTtlTag::Print (std::ostream &os) const
+{
+  os << "Ttl=" << (uint32_t) m_ttl;
 }
 
 }//namespace ns3

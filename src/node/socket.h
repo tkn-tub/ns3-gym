@@ -398,6 +398,7 @@ public:
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
+  virtual void Print (std::ostream &os) const;
 
 private:
   Address m_address;
@@ -419,6 +420,7 @@ public:
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
+  virtual void Print (std::ostream &os) const;
 
 private:
   uint8_t m_ttl;

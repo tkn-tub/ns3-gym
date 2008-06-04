@@ -47,6 +47,7 @@ public:
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
+  virtual void Print (std::ostream &os) const;
 
   void Set (double snr);
   double Get (void) const;
@@ -87,6 +88,11 @@ void
 SnrTag::Deserialize (TagBuffer i)
 {
   m_snr = i.ReadDouble ();
+}
+void 
+SnrTag::Print (std::ostream &os) const
+{
+  os << "Snr=" << m_snr;
 }
 void 
 SnrTag::Set (double snr)

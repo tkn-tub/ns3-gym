@@ -61,6 +61,13 @@ public:
    * Tag::Serialize.
    */
   virtual void Deserialize (TagBuffer i) = 0;
+
+  /**
+   * \param os the stream to print to
+   *
+   * This method is typically invoked from the Packet::PrintTags method
+   */
+  virtual void Print (std::ostream &os) const = 0;
 };
 
 } // namespace ns3

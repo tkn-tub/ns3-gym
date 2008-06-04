@@ -149,6 +149,9 @@ public:
         buf.ReadU8 ();
       }
   }
+  virtual void Print (std::ostream &os) const {
+    os << "N=" << N;
+  }
   BenchTag ()
     : Tag () {}
 };

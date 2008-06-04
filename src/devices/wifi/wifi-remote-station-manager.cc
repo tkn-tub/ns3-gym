@@ -319,6 +319,7 @@ public:
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
+  virtual void Print (std::ostream &os) const;
 private:
   WifiMode m_rtsMode;
   WifiMode m_dataMode;
@@ -380,6 +381,11 @@ TxModeTag::Deserialize (TagBuffer i)
 {
   i.Read ((uint8_t *)&m_rtsMode, sizeof (WifiMode));
   i.Read ((uint8_t *)&m_dataMode, sizeof (WifiMode));
+}
+void 
+TxModeTag::Print (std::ostream &os) const
+{
+  os << "Rts=" << m_rtsMode << ", Data=" << m_dataMode;
 }
 
 } // namespace ns3

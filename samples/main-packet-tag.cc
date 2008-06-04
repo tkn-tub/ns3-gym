@@ -33,6 +33,7 @@ public:
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
+  virtual void Print (std::ostream &os) const;
   
   // these are our accessors to our tag structure
   void SetSimpleValue (uint8_t value);
@@ -76,6 +77,11 @@ MyTag::Deserialize (TagBuffer i)
   m_simpleValue = i.ReadU8 ();
 }
 void 
+MyTag::Print (std::ostream &os) const
+{
+  os << "v=" << (uint32_t)m_simpleValue;
+}
+void 
 MyTag::SetSimpleValue (uint8_t value)
 {
   m_simpleValue = value;
@@ -94,7 +100,7 @@ int main (int argc, char *argv[])
   tag.SetSimpleValue (0x56);
 
   // store the tag in a packet.
-  Ptr<Packet> p = Create<Packet> ();
+  Ptr<Packet> p = Create<Packet> (100);
   p->AddTag (tag);
 
   // create a copy of the packet
