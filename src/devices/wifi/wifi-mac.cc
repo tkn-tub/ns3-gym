@@ -73,42 +73,43 @@ WifiMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiMac")
     .SetParent<Object> ()
-    .AddAttribute ("CtsTimeout", "XXX",
+    .AddAttribute ("CtsTimeout", "When this timeout expires, the RTS/CTS handshake has failed.",
                    TimeValue (GetDefaultCtsAckTimeout ()),
                    MakeTimeAccessor (&WifiMac::m_ctsTimeout),
                    MakeTimeChecker ())
-    .AddAttribute ("AckTimeout", "XXX",
+    .AddAttribute ("AckTimeout", "When this timeout expires, the DATA/ACK handshake has failed.",
                    TimeValue (GetDefaultCtsAckTimeout ()),
                    MakeTimeAccessor (&WifiMac::m_ackTimeout),
                    MakeTimeChecker ())
-    .AddAttribute ("Sifs", "XXX",
+    .AddAttribute ("Sifs", "The value of the SIFS constant.",
                    TimeValue (GetDefaultSifs ()),
                    MakeTimeAccessor (&WifiMac::SetSifs,
 				     &WifiMac::GetSifs),
                    MakeTimeChecker ())
-    .AddAttribute ("EifsNoDifs", "XXX",
+    .AddAttribute ("EifsNoDifs", "The value of EIFS-DIFS",
 		   TimeValue (GetDefaultEifsNoDifs ()),
 		   MakeTimeAccessor (&WifiMac::SetEifsNoDifs,
 				     &WifiMac::GetEifsNoDifs),
 		   MakeTimeChecker ())
-    .AddAttribute ("Slot", "XXX",
+    .AddAttribute ("Slot", "The duration of a Slot.",
                    TimeValue (GetDefaultSlot ()),
                    MakeTimeAccessor (&WifiMac::SetSlot,
 				     &WifiMac::GetSlot),
                    MakeTimeChecker ())
-    .AddAttribute ("Pifs", "XXX",
+    .AddAttribute ("Pifs", "The value of the PIFS constant.",
                    TimeValue (GetDefaultSifs () + GetDefaultSlot ()),
                    MakeTimeAccessor (&WifiMac::m_pifs),
                    MakeTimeChecker ())
-    .AddAttribute ("MaxPropagationDelay", "XXX",
+    .AddAttribute ("MaxPropagationDelay", "The maximum propagation delay. Unused for now.",
                    TimeValue (GetDefaultMaxPropagationDelay ()),
                    MakeTimeAccessor (&WifiMac::m_maxPropagationDelay),
                    MakeTimeChecker ())
-    .AddAttribute ("MaxMsduSize", "XXX",
+    .AddAttribute ("MaxMsduSize", "The maximum size of an MSDU accepted by the MAC layer."
+                   "This value conforms to the specification.",
 		   UintegerValue (2304),
 		   MakeUintegerAccessor (&WifiMac::m_maxMsduSize),
 		   MakeUintegerChecker<uint16_t> (1,2304))
-    .AddAttribute ("Ssid", "XXX",
+    .AddAttribute ("Ssid", "The ssid we want to belong to.",
 		   SsidValue (Ssid ("default")),
 		   MakeSsidAccessor (&WifiMac::GetSsid,
 				     &WifiMac::SetSsid),

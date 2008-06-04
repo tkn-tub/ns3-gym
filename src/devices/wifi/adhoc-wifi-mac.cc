@@ -137,9 +137,7 @@ AdhocWifiMac::SetLinkUpCallback (Callback<void> linkUp)
 }
 void 
 AdhocWifiMac::SetLinkDownCallback (Callback<void> linkDown)
-{
-  //XXX
-}
+{}
 Mac48Address 
 AdhocWifiMac::GetAddress (void) const
 {

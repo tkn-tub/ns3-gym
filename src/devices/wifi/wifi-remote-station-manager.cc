@@ -126,23 +126,32 @@ WifiRemoteStationManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiRemoteStationManager")
     .SetParent<Object> ()
-    .AddAttribute ("IsLowLatency", "XXX",
+    .AddAttribute ("IsLowLatency", "If true, we attempt to modelize a so-called low-latency device: a device"
+                   " where decisions about tx parameters can be made on a per-packet basis and feedback about the"
+                   " transmission of each packet is obtained before sending the next. Otherwise, we modelize a "
+                   " high-latency device, that is a device where we cannot update our decision about tx parameters"
+                   " after every packet transmission.",
                    BooleanValue (true),
                    MakeBooleanAccessor (&WifiRemoteStationManager::m_isLowLatency),
                    MakeBooleanChecker ())
-    .AddAttribute ("MaxSsrc", "XXX",
+    .AddAttribute ("MaxSsrc", "The maximum number of retransmission attempts for an RTS. This value"
+                   " will not have any effect on some rate control algorithms.",
                    UintegerValue (7),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_maxSsrc),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MaxSlrc", "XXX",
+    .AddAttribute ("MaxSlrc", "The maximum number of retransmission attempts for a DATA packet. This value"
+                   " will not have any effect on some rate control algorithms.",
                    UintegerValue (7),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_maxSlrc),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("RtsCtsThreshold", "XXX",
+    .AddAttribute ("RtsCtsThreshold", "If a data packet is bigger than this value, we use an RTS/CTS handshake"
+                   " before sending the data. This value will not have any effect on some rate control algorithms.",
                    UintegerValue (1500),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_rtsCtsThreshold),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("FragmentationThreshold", "XXX",
+    .AddAttribute ("FragmentationThreshold", "If a data packet is bigger than this value, we fragment it such that"
+                   " the size of the fragments are equal or smaller than this value. This value will not have any effect"
+                   " on some rate control algorithms.",
                    UintegerValue (1500),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_fragmentationThreshold),
                    MakeUintegerChecker<uint32_t> ())
@@ -402,9 +411,9 @@ WifiRemoteStation::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiRemoteStation")
     .SetParent<Object> ()
-    .AddTraceSource ("Ssrc", "XXX",
+    .AddTraceSource ("Ssrc", "The value of the ssrc counter: indicates the number of retransmissions of RTS.",
                      MakeTraceSourceAccessor (&WifiRemoteStation::m_ssrc))
-    .AddTraceSource ("Slrc", "XXX",
+    .AddTraceSource ("Slrc", "The value of the slrc counter: indicates the number of retransmissions of DATA.",
                      MakeTraceSourceAccessor (&WifiRemoteStation::m_slrc))
     ;
   return tid;

@@ -70,13 +70,9 @@ public:
    */
   void SetAckTimeout (Time ackTimeout);
   /**
-   * \param msduLifetime
+   * \param delay the max propagation delay.
    *
-   * XXX: I cannot remmeber what this is used for.
-   */
-  void SetMsduLifetime (Time msduLifetime);
-  /**
-   * XXX: I cannot remember what this is used for.
+   * Unused for now.
    */
   void SetMaxPropagationDelay (Time delay);
 
@@ -105,11 +101,11 @@ public:
    */
   Time GetAckTimeout (void) const;
   /**
-   * XXX: I cannot remember what this is used for.
+   * Unused for now.
    */
   Time GetMsduLifetime (void) const;
   /**
-   * XXX: I cannot remember what this is used for.
+   * Unused for now.
    */
   Time GetMaxPropagationDelay (void) const;
   /**
