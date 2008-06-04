@@ -300,9 +300,8 @@ Ipv4Header::Deserialize (Buffer::Iterator start)
     {
       m_flags |= MORE_FRAGMENTS;
     }
-  //XXXX I think we should clear some bits in fragmentOffset !
   i.Prev ();
-  m_fragmentOffset = i.ReadNtohU16 ();
+  m_fragmentOffset = i.ReadNtohU16 () & 0xfff8;
   m_fragmentOffset *= 8;
   m_ttl = i.ReadU8 ();
   m_protocol = i.ReadU8 ();
