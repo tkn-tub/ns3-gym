@@ -100,8 +100,11 @@ Queue::Dequeue (void)
 void
 Queue::DequeueAll (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  NS_ASSERT_MSG (0, "Don't know what to do with dequeued packets!");
+  NS_LOG_FUNCTION (this);
+  while (!IsEmpty ())
+    {
+      Dequeue ();
+    }
 }
 
 Ptr<Packet>

@@ -69,7 +69,7 @@ public:
   Ptr<Packet> Peek (void) const;
 
   /**
-   * XXX Doesn't do anything right now, think its supposed to flush the queue
+   * Flush the queue.
    */
   void DequeueAll (void);
   /**
