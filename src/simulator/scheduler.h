@@ -30,7 +30,9 @@ namespace ns3 {
 /**
  * \ingroup simulator
  * \defgroup scheduler Scheduler
- *
+ */
+/**
+ * \ingroup scheduler
  * \brief Maintain the event list
  *
  * This base class specifies the interface used to maintain the 

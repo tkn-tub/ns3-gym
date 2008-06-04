@@ -30,7 +30,9 @@ class TcpL4Protocol;
 /**
  * \ingroup internetNode
  * \defgroup Tcp Tcp
- *
+ */
+/**
+ * \ingroup Tcp
  * \section Tcp Overview
  *
  * The TCP code in ns3::InternetNode is ported from the  

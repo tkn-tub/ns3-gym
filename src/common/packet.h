@@ -34,6 +34,12 @@
 namespace ns3 {
 
 /**
+ * \ingroup common
+ * \defgroup packet Packet
+ */
+
+/**
+ * \ingroup packet
  * \brief Iterator over the set of tags in a packet
  *
  * This is a java-style iterator.
@@ -96,9 +102,7 @@ private:
 };
 
 /**
- * \ingroup common
- * \defgroup packet Packet
- *
+ * \ingroup packet
  * \brief network packets
  *
  * Each network packet contains a byte buffer, a set of tags, and

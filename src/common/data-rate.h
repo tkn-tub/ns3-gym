@@ -33,7 +33,9 @@ namespace ns3 {
 /**
  * \ingroup common
  * \defgroup datarate Data Rate
- *
+ */
+/**
+ * \ingroup datarate
  * \brief Class for representing data rates
  *
  * Allows for natural and familiar use of data rates.  Allows construction

@@ -62,7 +62,9 @@ precision_t Get (void);
 /**
  * \ingroup simulator
  * \defgroup time Time
- *
+ */
+/**
+ * \ingroup time
  * \brief keep track of time unit.
  *
  * This template class is used to keep track of the value 

@@ -40,7 +40,7 @@ class Packet;
  * \defgroup netdevice NetDevice
  */
 /**
- * \ingroup NetDevice
+ * \ingroup netdevice
  *
  * \brief Network layer to device interface
  *

@@ -39,7 +39,11 @@ class Packet;
 /**
  * \ingroup node
  * \defgroup socket Socket
+ */
+
+/**
  * \brief A low-level Socket API based loosely on the BSD Socket API.
+ * \ingroup socket
  *
  * A few things to keep in mind about this type of socket:
  * - it uses ns-3 API constructs such as class ns3::Address instead of

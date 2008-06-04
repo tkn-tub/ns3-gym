@@ -35,8 +35,10 @@ class RandomVariable;
 /**
  * \ingroup node
  * \defgroup application Application
- *
- * \brief The base class for all ns3 applicationes
+ */
+/**
+ * \ingroup application
+ * \brief The base class for all ns3 applications
  * 
  * Class Application is the base class for all ns3 applications.
  * Applications are associated with individual nodes.

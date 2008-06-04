@@ -29,7 +29,9 @@ class NetDevice;
 /**
  * \ingroup node
  * \defgroup channel Channel
- *
+ */
+/**
+ * \ingroup channel
  * \brief Abstract Channel Base Class.
  *
  * A channel is a logical path over which information flows.  The path can
