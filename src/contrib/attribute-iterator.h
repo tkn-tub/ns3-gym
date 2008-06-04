@@ -9,6 +9,7 @@ namespace ns3 {
 
 class ObjectVectorValue;
 
+// This class is used internally by ConfigStore and GtkConfigStore.
 class AttributeIterator
 {
 public:
