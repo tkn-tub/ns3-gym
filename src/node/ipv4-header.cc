@@ -301,8 +301,10 @@ Ipv4Header::Deserialize (Buffer::Iterator start)
       m_flags |= MORE_FRAGMENTS;
     }
   i.Prev ();
-  m_fragmentOffset = i.ReadNtohU16 () & 0xfff8;
-  m_fragmentOffset *= 8;
+  m_fragmentOffset = i.ReadU8 () & 0x1f;
+  m_fragmentOffset <<= 8;
+  m_fragmentOffset |= i.ReadU8 ();
+  m_fragmentOffset <<= 3;
   m_ttl = i.ReadU8 ();
   m_protocol = i.ReadU8 ();
   i.Next (2); // checksum
