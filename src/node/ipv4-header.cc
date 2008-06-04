@@ -261,8 +261,8 @@ Ipv4Header::Serialize (Buffer::Iterator start) const
   i.WriteU8 (m_ttl);
   i.WriteU8 (m_protocol);
   i.WriteHtonU16 (0);
-  i.WriteHtonU32 (m_source.GetHostOrder ());
-  i.WriteHtonU32 (m_destination.GetHostOrder ());
+  i.WriteHtonU32 (m_source.Get ());
+  i.WriteHtonU32 (m_destination.Get ());
 
   if (m_calcChecksum) 
     {
@@ -300,15 +300,16 @@ Ipv4Header::Deserialize (Buffer::Iterator start)
     {
       m_flags |= MORE_FRAGMENTS;
     }
-  //XXXX I think we should clear some bits in fragmentOffset !
   i.Prev ();
-  m_fragmentOffset = i.ReadNtohU16 ();
-  m_fragmentOffset *= 8;
+  m_fragmentOffset = i.ReadU8 () & 0x1f;
+  m_fragmentOffset <<= 8;
+  m_fragmentOffset |= i.ReadU8 ();
+  m_fragmentOffset <<= 3;
   m_ttl = i.ReadU8 ();
   m_protocol = i.ReadU8 ();
   i.Next (2); // checksum
-  m_source.SetHostOrder (i.ReadNtohU32 ());
-  m_destination.SetHostOrder (i.ReadNtohU32 ());
+  m_source.Set (i.ReadNtohU32 ());
+  m_destination.Set (i.ReadNtohU32 ());
 
   if (m_calcChecksum) 
     {

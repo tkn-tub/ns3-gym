@@ -34,8 +34,16 @@ ObjectVectorValue::Copy (void) const
 std::string 
 ObjectVectorValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
-  // XXX
-  return "";
+  std::ostringstream oss;
+  for (uint32_t i = 0; i < m_objects.size (); ++i)
+    {
+      oss << m_objects[i];
+      if (i != m_objects.size () - 1)
+	{
+	  oss << " ";
+	}
+    }
+  return oss.str ();
 }
 bool 
 ObjectVectorValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)

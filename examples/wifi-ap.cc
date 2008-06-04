@@ -162,7 +162,7 @@ int main (int argc, char *argv[])
   socket.SetPhysicalAddress (staDevs.Get (1)->GetAddress ());
   socket.SetProtocol (1);
 
-  OnOffHelper onoff ("ns3::PacketSocket", Address (socket));
+  OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (42)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
 
@@ -170,7 +170,7 @@ int main (int argc, char *argv[])
   apps.Start (Seconds (0.5));
   apps.Stop (Seconds (43.0));
 
-  Simulator::StopAt (Seconds (44.0));
+  Simulator::Stop (Seconds (44.0));
 
   Config::Connect ("/NodeList/*/DeviceList/*/Tx", MakeCallback (&DevTxTrace));
   Config::Connect ("/NodeList/*/DeviceList/*/Rx", MakeCallback (&DevRxTrace));

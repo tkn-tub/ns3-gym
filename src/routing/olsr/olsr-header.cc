@@ -211,7 +211,7 @@ MessageHeader::Serialize (Buffer::Iterator start) const
   i.WriteU8 (m_messageType);
   i.WriteU8 (m_vTime);
   i.WriteHtonU16 (GetSerializedSize ());
-  i.WriteHtonU32 (m_originatorAddress.GetHostOrder ());
+  i.WriteHtonU32 (m_originatorAddress.Get ());
   i.WriteU8 (m_timeToLive);
   i.WriteU8 (m_hopCount);
   i.WriteHtonU16 (m_messageSequenceNumber);
@@ -293,7 +293,7 @@ MessageHeader::Mid::Serialize (Buffer::Iterator start) const
   for (std::vector<Ipv4Address>::const_iterator iter = this->interfaceAddresses.begin ();
        iter != this->interfaceAddresses.end (); iter++)
     {
-      i.WriteHtonU32 (iter->GetHostOrder ());
+      i.WriteHtonU32 (iter->Get ());
     }
 }
 
@@ -364,7 +364,7 @@ MessageHeader::Hello::Serialize (Buffer::Iterator start) const
       for (std::vector<Ipv4Address>::const_iterator neigh_iter = lm.neighborInterfaceAddresses.begin ();
            neigh_iter != lm.neighborInterfaceAddresses.end (); neigh_iter++)
         {
-          i.WriteHtonU32 (neigh_iter->GetHostOrder ());
+          i.WriteHtonU32 (neigh_iter->Get ());
         }
     }
 }
@@ -432,7 +432,7 @@ MessageHeader::Tc::Serialize (Buffer::Iterator start) const
   for (std::vector<Ipv4Address>::const_iterator iter = this->neighborAddresses.begin ();
        iter != this->neighborAddresses.end (); iter++)
     {
-      i.WriteHtonU32 (iter->GetHostOrder ());
+      i.WriteHtonU32 (iter->Get ());
     }
 }
 
@@ -478,8 +478,8 @@ MessageHeader::Hna::Serialize (Buffer::Iterator start) const
 
   for (size_t n = 0; n < this->associations.size (); ++n)
     {
-      i.WriteHtonU32 (this->associations[n].address.GetHostOrder ());
-      i.WriteHtonU32 (this->associations[n].mask.GetHostOrder ());
+      i.WriteHtonU32 (this->associations[n].address.Get ());
+      i.WriteHtonU32 (this->associations[n].mask.Get ());
     }
 }
 

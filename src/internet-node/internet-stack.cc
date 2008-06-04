@@ -40,12 +40,6 @@ AddInternetStack (Ptr<Node> node)
   Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> ();
   ipv4->SetNode (node);
   arp->SetNode (node);
-  // XXX remove the PeekPointer below.
-  node->RegisterProtocolHandler (MakeCallback (&Ipv4L3Protocol::Receive, PeekPointer (ipv4)), 
-                                 Ipv4L3Protocol::PROT_NUMBER, 0);
-  node->RegisterProtocolHandler (MakeCallback (&ArpL3Protocol::Receive, PeekPointer (arp)),
-                                 ArpL3Protocol::PROT_NUMBER, 0);
-
 
   Ptr<Ipv4L4Demux> ipv4L4Demux = CreateObject<Ipv4L4Demux> ();
   Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();

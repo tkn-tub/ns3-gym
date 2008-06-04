@@ -28,6 +28,7 @@ namespace ns3 {
 
 /**
  * \brief parse command-line arguments
+ * \ingroup core
  *
  * Instances of this class can be used to parse command-line 
  * arguments: users can register new arguments with

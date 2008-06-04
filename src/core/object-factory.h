@@ -29,6 +29,8 @@ namespace ns3 {
 class AttributeValue;
 
 /**
+ * \ingroup object
+ *
  * \brief instantiate subclasses of ns3::Object.
  *
  * This class can also hold a set of attributes to set
@@ -77,7 +79,6 @@ public:
   template <typename T>
   Ptr<T> Create (void) const;
 
-  ATTRIBUTE_HELPER_HEADER_1 (ObjectFactory);
 private:
   friend std::ostream & operator << (std::ostream &os, const ObjectFactory &factory);
   friend std::istream & operator >> (std::istream &is, ObjectFactory &factory);
@@ -94,7 +95,7 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory);
  * \brief hold objects of type ns3::ObjectFactory
  */
 
-ATTRIBUTE_HELPER_HEADER_2 (ObjectFactory);
+ATTRIBUTE_HELPER_HEADER (ObjectFactory);
 
 } // namespace ns3
 

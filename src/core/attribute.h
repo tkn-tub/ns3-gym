@@ -33,6 +33,15 @@ class Attribute;
 class ObjectBase;
 
 /**
+ *
+ * \ingroup core
+ * \defgroup attribute Attribute
+ */
+
+/**
+ *
+ * \ingroup attribute
+ *
  * \brief Hold a value for an Attribute.
  *
  * Instances of this class should always be wrapped into an Attribute object.
@@ -77,6 +86,8 @@ public:
 
 /**
  * \brief allow setting and getting the value of an attribute.
+ *
+ * \ingroup attribute
  *
  * The goal of this class is to hide from the user how an attribute
  * is actually set or get to or from a class instance. Implementations
@@ -124,6 +135,8 @@ public:
 /**
  * \brief Represent the type of an attribute
  *
+ * \ingroup attribute
+ *
  * Each type of attribute has an associated unique AttributeChecker
  * subclass. The type of the subclass can be safely used by users
  * to infer the type of the associated attribute. i.e., we expect
@@ -131,7 +144,7 @@ public:
  * to detect the type of the associated attribute.
  *
  * Most subclasses of this base class are implemented by the 
- * ATTRIBUTE_HELPER_* macros.
+ * \ref ATTRIBUTE_HELPER_HEADER and \ref ATTRIBUTE_HELPER_CPP macros.
  */
 class AttributeChecker : public RefCountBase
 {
@@ -180,6 +193,11 @@ public:
 
 };
 
+/**
+ * \brief A class for an empty attribute value
+ *
+ * \ingroup attribute
+ */
 class EmptyAttributeValue : public AttributeValue
 {
 public:

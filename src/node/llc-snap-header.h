@@ -27,6 +27,11 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup node
+ *
+ * \brief Header for the LLC/SNAP encapsulation
+ */
 class LlcSnapHeader : public Header 
 {
 public:

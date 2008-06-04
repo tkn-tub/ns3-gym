@@ -37,19 +37,32 @@ class Node;
 class Packet;
 
 /**
- * \brief Define a Socket API based on the BSD Socket API.
+ * \ingroup node
+ * \defgroup socket Socket
+ */
+
+/**
+ * \brief A low-level Socket API based loosely on the BSD Socket API.
+ * \ingroup socket
  *
- * In contrast to the original BSD socket API, this API is asynchronous:
- * it does not contain blocking calls. It also uses class ns3::Packet
- * as a fancy byte buffer, allowing data to be passed across the API
- * using an ns3::Packet instead of a raw data pointer.  Other than that, 
- * it tries to stick to the BSD API to make it easier for those who know 
- * the BSD API to use this API.
+ * A few things to keep in mind about this type of socket:
+ * - it uses ns-3 API constructs such as class ns3::Address instead of
+ *   C-style structs
+ * - in contrast to the original BSD socket API, this API is asynchronous:
+ *   it does not contain blocking calls.  Sending and receiving operations
+ *   must make use of the callbacks provided. 
+ * - It also uses class ns3::Packet as a fancy byte buffer, allowing 
+ *   data to be passed across the API using an ns-3 Packet instead of 
+ *   a raw data pointer.  
+ * - Not all of the full POSIX sockets API is supported
+ *
+ * Other than that, it tries to stick to the BSD API to make it 
+ * easier for those who know the BSD API to use this API.  
+ * More details are provided in the ns-3 tutorial.
  */
 class Socket : public Object
 {
 public:
-// static TypeId GetTypeId (void);
 
   Socket (void);
   virtual ~Socket (void);
@@ -224,9 +237,9 @@ public:
   /**
    * \brief Listen for incoming connections.
    * \param queueLimit maximum number of incoming request to queue
-   * \returns XXX an error code
+   * \returns 0 on success, -1 on error (in which case errno is set).
    */
-  virtual int Listen (uint32_t queueLimit);
+  virtual int Listen (uint32_t queueLimit) = 0;
 
   /**
    * \brief Send data (or dummy data) to the remote host
@@ -331,6 +344,19 @@ public:
    */
    Ptr<Packet> Recv (void);
   /**
+   * \brief Recv data (or dummy data) from the remote host
+   * \param buf A pointer to a raw byte buffer to write the data to. 
+   * If the underlying packet was carring null (fake) data, this buffer
+   * will be zeroed up to the length specified by the return value.
+   * \param size Number of bytes (at most) to copy to buf
+   * \param flags any flags to pass to the socket
+   * \returns number of bytes copied into buf
+   * 
+   * This is provided so as to have an API which is closer in appearance 
+   * to that of real network or BSD sockets.  
+   */
+  int Recv (uint8_t* buf, uint32_t size, uint32_t flags);
+  /**
    * Return number of bytes which can be returned from one or 
    * multiple calls to Recv.
    * Must be possible to call this method from the Recv callback.
@@ -372,14 +398,16 @@ class SocketRxAddressTag : public Tag
 {
 public:
   SocketRxAddressTag ();
-  static uint32_t GetUid (void);
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
-  void Serialize (Buffer::Iterator i) const;
-  uint32_t Deserialize (Buffer::Iterator i);
-
   void SetAddress (Address addr);
   Address GetAddress (void) const;
+
+  static TypeId GetTypeId (void);  
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
+  virtual void Print (std::ostream &os) const;
+
 private:
   Address m_address;
 };
@@ -392,14 +420,16 @@ class SocketIpTtlTag : public Tag
 {
 public:
   SocketIpTtlTag ();
-  static uint32_t GetUid (void);
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
-  void Serialize (Buffer::Iterator i) const;
-  uint32_t Deserialize (Buffer::Iterator i);
-
   void SetTtl (uint8_t ttl);
   uint8_t GetTtl (void) const;
+
+  static TypeId GetTypeId (void);  
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
+  virtual void Print (std::ostream &os) const;
+
 private:
   uint8_t m_ttl;
 };

@@ -57,6 +57,7 @@ public:
   virtual int ShutdownSend (void);
   virtual int ShutdownRecv (void);
   virtual int Connect(const Address &address);
+  virtual int Listen (uint32_t queueLimit);
   virtual int Send (Ptr<Packet> p);
   virtual int SendTo (Ptr<Packet> p, const Address &address);
   virtual uint32_t GetTxAvailable (void) const;

@@ -22,6 +22,17 @@
 
 namespace ns3 {
 
+/**
+ * \brief a template singleton
+ *
+ * This template class can be used to implement the singleton pattern.
+ * The underlying object will be destroyed automatically when the process
+ * exits. Note that, if you call Singleton::Get again after the object has
+ * been destroyed, the object will be re-created which will result in a
+ * memory leak as reported by most memory leak checkers. It is up to the
+ * user to ensure that Singleton::Get is never called from a static variable
+ * finalizer.
+ */
 template <typename T>
 class Singleton
 {

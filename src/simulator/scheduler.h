@@ -28,6 +28,11 @@
 namespace ns3 {
 
 /**
+ * \ingroup simulator
+ * \defgroup scheduler Scheduler
+ */
+/**
+ * \ingroup scheduler
  * \brief Maintain the event list
  *
  * This base class specifies the interface used to maintain the 
@@ -40,13 +45,6 @@ namespace ns3 {
  *   - ns3::Scheduler::RemoveNext
  *   - ns3::Scheduler::Remove
  *
- * If you need to provide a new event list scheduler without
- * editing the main simulator class, you need to also implement
- * a subclass of the ns3::SchedulerFactory base class and
- * feed it to ns3::Simulator::setExternal.
- * The simplest example of a scheduler is the linked-list
- * scheduler included in ns3: see the files 
- * src/simulator/scheduler-list.h and src/simulator/scheduler-list.cc
  */
 class Scheduler : public Object
 {

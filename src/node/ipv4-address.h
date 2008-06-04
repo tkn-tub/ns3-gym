@@ -30,9 +30,11 @@ namespace ns3 {
 
 class Ipv4Mask;
 
-/** Ipv4 addresses are stored in host order in
-  * this class.
-  */
+/** 
+ * \ingroup address
+ *
+ * \brief Ipv4 addresses are stored in host order in this class.
+ */
 class Ipv4Address {
 public:
   Ipv4Address ();
@@ -51,7 +53,11 @@ public:
     * \param address C-string containing the address as described above
     */
   Ipv4Address (char const *address);
-  
+  /** 
+   * Get the host-order 32-bit IP address
+   * \return the host-order 32-bit IP address
+   */
+  uint32_t Get (void) const;
   /**
    * input address is in host order.
    * \param address The host order 32-bit address
@@ -67,7 +73,6 @@ public:
     * \param address C-string containing the address as described above
     */
   void Set (char const *address);
-
   /**
    * \brief Comparison operation between two Ipv4Addresses
    * \param other address to which to compare this address
@@ -77,17 +82,6 @@ public:
   {
     return m_address == other.m_address;
   }
-
-  /** 
-   * \brief Get the host-order 32-bit IP address
-   *
-   * Using this method is frowned upon.
-   * Please, do _not_ use this method.
-   * It is there only for chunk-ipv4.
-   * \return the host-order 32-bit IP address
-   */
-  uint32_t GetHostOrder (void) const;
-  void SetHostOrder (uint32_t ip);
   /**
    * Serialize this address to a 4-byte buffer
    *
@@ -142,7 +136,6 @@ public:
   static Ipv4Address GetBroadcast (void);
   static Ipv4Address GetLoopback (void);
 
-  ATTRIBUTE_HELPER_HEADER_1 (Ipv4Address);
 private:
   Address ConvertTo (void) const;
   static uint8_t GetType (void);
@@ -153,7 +146,11 @@ private:
   friend bool operator < (Ipv4Address const &addrA, Ipv4Address const &addrB);
 };
 
-
+/**
+ * \ingroup address
+ *
+ * \brief a class to represent an Ipv4 address mask
+ */
 class Ipv4Mask {
 public:
   Ipv4Mask ();
@@ -163,13 +160,16 @@ public:
   bool IsMatch (Ipv4Address a, Ipv4Address b) const;
 
   bool IsEqual (Ipv4Mask other) const;
-
-
-  /* Using this method is frowned upon.
-   * Please, do _not_ use this method.
+  /** 
+   * Get the host-order 32-bit IP mask
+   * \return the host-order 32-bit IP mask
    */
-  uint32_t GetHostOrder (void) const;
-  void SetHostOrder (uint32_t value);
+  uint32_t Get (void) const;
+  /**
+   * input mask is in host order.
+   * \param mask The host order 32-bit mask
+   */
+  void Set (uint32_t mask);
   /**
    * \brief Return the inverse mask in host order. 
    */
@@ -180,7 +180,6 @@ public:
   static Ipv4Mask GetLoopback (void);
   static Ipv4Mask GetZero (void);
 
-  ATTRIBUTE_HELPER_HEADER_1 (Ipv4Mask);
 private:
   uint32_t m_mask;
 };
@@ -194,8 +193,8 @@ private:
  * \brief hold objects of type ns3::Ipv4Mask
  */
 
-ATTRIBUTE_HELPER_HEADER_2 (Ipv4Address);
-ATTRIBUTE_HELPER_HEADER_2 (Ipv4Mask);
+ATTRIBUTE_HELPER_HEADER (Ipv4Address);
+ATTRIBUTE_HELPER_HEADER (Ipv4Mask);
 
 std::ostream& operator<< (std::ostream& os, Ipv4Address const& address);
 std::ostream& operator<< (std::ostream& os, Ipv4Mask const& mask);

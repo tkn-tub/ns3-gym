@@ -31,6 +31,11 @@
 namespace ns3 {
 
 /**
+ * \ingroup common
+ * \defgroup datarate Data Rate
+ */
+/**
+ * \ingroup datarate
  * \brief Class for representing data rates
  *
  * Allows for natural and familiar use of data rates.  Allows construction
@@ -80,7 +85,6 @@ public:
    */
   uint64_t GetBitRate() const;
 
-  ATTRIBUTE_HELPER_HEADER_1 (DataRate);
 private:
   uint64_t m_bps;
   static uint64_t Parse(const std::string);
@@ -94,7 +98,7 @@ std::istream &operator >> (std::istream &is, DataRate &rate);
  * \brief hold objects of type ns3::DataRate
  */
 
-ATTRIBUTE_HELPER_HEADER_2 (DataRate);
+ATTRIBUTE_HELPER_HEADER (DataRate);
 
 /**
  * \param lhs

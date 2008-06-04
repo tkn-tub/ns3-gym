@@ -107,6 +107,29 @@ Address::Register (void)
   return type;
 }
 
+uint32_t
+Address::GetSerializedSize (void) const
+{
+  return 1 + 1 + m_len;
+}
+
+void
+Address::Serialize (TagBuffer buffer) const
+{
+  buffer.WriteU8 (m_type);
+  buffer.WriteU8 (m_len);
+  buffer.Write (m_data,  m_len);
+}
+
+void
+Address::Deserialize (TagBuffer buffer)
+{
+  m_type = buffer.ReadU8 ();
+  m_len = buffer.ReadU8 ();
+  NS_ASSERT (m_len <= MAX_SIZE);
+  buffer.Read (m_data, m_len);
+}
+
 ATTRIBUTE_HELPER_CPP (Address);
 
 
@@ -139,8 +162,14 @@ bool operator != (const Address &a, const Address &b)
 }
 bool operator < (const Address &a, const Address &b)
 {
-  // XXX: it is not clear to me how to order based on type.
-  // so, we do not compare the types here but we should.
+  if (a.m_type < b.m_type)
+    {
+      return true;
+    }
+  else if (a.m_type > b.m_type)
+    {
+      return false;
+    }
   if (a.m_len < b.m_len)
     {
       return true;

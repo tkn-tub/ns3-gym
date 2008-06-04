@@ -36,6 +36,8 @@ class NetDevice;
 class PacketSocketAddress;
 
 /**
+ * \ingroup socket
+ *
  * \brief A PacketSocket is a link between an application and a net device.
  *
  * A PacketSocket can be used to connect an application to a net
@@ -69,6 +71,8 @@ class PacketSocketAddress;
  *       The fields "physical address", device, and protocol are filled.
  *
  * - Accept: not allowed
+ *
+ * - Listen: returns -1 (OPNOTSUPP)
  */
 class PacketSocket : public Socket
 {
@@ -88,6 +92,7 @@ public:
   virtual int ShutdownSend (void);
   virtual int ShutdownRecv (void);
   virtual int Connect(const Address &address);
+  virtual int Listen(uint32_t queueLimit);
   virtual int Send (Ptr<Packet> p);
   virtual uint32_t GetTxAvailable (void) const;
 
@@ -100,6 +105,7 @@ private:
   void ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet, 
                   uint16_t protocol, const Address &from);
   int DoBind (const PacketSocketAddress &address);
+  uint32_t GetMinMtu (PacketSocketAddress ad) const;
   virtual void DoDispose (void);
 
   enum State {

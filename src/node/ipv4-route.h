@@ -28,6 +28,7 @@
 
 namespace ns3 {
 /**
+ * \ingroup ipv4
  * \brief A record of an IPv4 route
  */
 class Ipv4Route {
@@ -106,6 +107,7 @@ private:
 std::ostream& operator<< (std::ostream& os, Ipv4Route const& route);
 
 /**
+ * \ingroup ipv4 
  * \brief A record of an IPv4 multicast route
  */
 class Ipv4MulticastRoute {

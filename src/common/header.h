@@ -28,13 +28,13 @@
 namespace ns3 {
 
 /**
+ * \ingroup packet
+ *
  * \brief Protocol header serialization and deserialization.
  *
  * Every Protocol header which needs to be inserted or removed
  * from a Packet instance must derive from this base class and
- * implement the following public methods:
- *   - a default constructor: is used by the internal implementation
- *     if the Packet class.
+ * implement the pure virtual methods defined here. 
  *
  * Sample code which shows how to create a new type of Header, and how to use it, 
  * is shown in the sample file samples/main-packet-header.cc

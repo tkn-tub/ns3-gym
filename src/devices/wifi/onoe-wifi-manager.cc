@@ -40,7 +40,7 @@ OnoeWifiManager::GetTypeId (void)
                    TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&OnoeWifiManager::m_updatePeriod),
                    MakeTimeChecker ())
-    .AddAttribute ("RaiseThreshold", "XXX",
+    .AddAttribute ("RaiseThreshold", "Attempt to raise the rate if we hit that threshold",
                    UintegerValue (10),
                    MakeUintegerAccessor (&OnoeWifiManager::m_raiseThreshold),
                    MakeUintegerChecker<uint32_t> ())

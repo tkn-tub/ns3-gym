@@ -38,6 +38,8 @@ namespace ns3 {
     QINQ      /**< Double tagged packet. Header includes two VLAN tags */
   };
 /**
+ * \ingroup node
+ *
  * \brief Packet header for Ethernet
  *
  * This class can be used to add a header to an ethernet packet that

@@ -99,17 +99,17 @@ DcaTxop::GetTypeId (void)
   static TypeId tid = TypeId ("DcaTxop")
     .SetParent<Object> ()
     .AddConstructor<DcaTxop> ()
-    .AddAttribute ("MinCw", "XXX",
+    .AddAttribute ("MinCw", "The minimum value of the contention window.",
                    UintegerValue (15),
                    MakeUintegerAccessor (&DcaTxop::SetMinCw,
                                          &DcaTxop::GetMinCw),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MaxCw", "XXX",
+    .AddAttribute ("MaxCw", "The maximum value of the contention window.",
                    UintegerValue (1023),
                    MakeUintegerAccessor (&DcaTxop::SetMaxCw,
                                          &DcaTxop::GetMaxCw),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("Aifsn", "XXX",
+    .AddAttribute ("Aifsn", "The AIFSN: the default value conforms to simple DCA.",
                    UintegerValue (2),
                    MakeUintegerAccessor (&DcaTxop::SetAifsn,
                                          &DcaTxop::GetAifsn),
@@ -139,6 +139,9 @@ void
 DcaTxop::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
+  m_queue = 0;
+  m_low = 0;
+  m_stationManager = 0;
   delete m_transmissionListener;
   delete m_dcf;
   delete m_rng;
@@ -147,9 +150,6 @@ DcaTxop::DoDispose (void)
   m_dcf = 0;
   m_rng = 0;
   m_txMiddle = 0;
-  m_queue = 0;
-  m_low = 0;
-  m_stationManager = 0;
 }
 
 void

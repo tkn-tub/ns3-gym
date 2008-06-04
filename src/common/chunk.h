@@ -6,6 +6,11 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup packet
+ *
+ * \brief abstract base class for ns3::Header and ns3::Trailer
+ */
 class Chunk : public ObjectBase
 {
  public:

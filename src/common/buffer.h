@@ -36,6 +36,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup packet
+ *
  * \brief automatically resized byte buffer
  *
  * This represents a buffer of bytes. Its size is
@@ -392,6 +394,7 @@ public:
 
   /**
    * \param start size to reserve
+   * \returns true if the buffer needed resizing, false otherwise.
    *
    * Add bytes at the start of the Buffer. The
    * content of these bytes is undefined but debugging
@@ -399,9 +402,10 @@ public:
    * Any call to this method invalidates any Iterator
    * pointing to this Buffer.
    */
-  void AddAtStart (uint32_t start);
+  bool AddAtStart (uint32_t start);
   /**
    * \param end size to reserve
+   * \returns true if the buffer needed resizing, false otherwise.
    *
    * Add bytes at the end of the Buffer. The
    * content of these bytes is undefined but debugging
@@ -409,8 +413,15 @@ public:
    * Any call to this method invalidates any Iterator
    * pointing to this Buffer.
    */
-  void AddAtEnd (uint32_t end);
+  bool AddAtEnd (uint32_t end);
 
+  /**
+   * \param o the buffer to append to the end of this buffer.
+   *
+   * Add bytes at the end of the Buffer.
+   * Any call to this method invalidates any Iterator
+   * pointing to this Buffer.
+   */
   void AddAtEnd (const Buffer &o);
   /**
    * \param start size to remove
@@ -450,6 +461,9 @@ public:
   Buffer::Iterator End (void) const;
 
   Buffer CreateFullCopy (void) const;
+
+  int32_t GetCurrentStartOffset (void) const;
+  int32_t GetCurrentEndOffset (void) const;
 
   Buffer (Buffer const &o);
   Buffer &operator = (Buffer const &o);

@@ -38,11 +38,11 @@ WifiChannel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::WifiChannel")
     .SetParent<Channel> ()
     .AddConstructor<WifiChannel> ()
-    .AddAttribute ("PropagationLossModel", "XXX",
+    .AddAttribute ("PropagationLossModel", "A pointer to the propagation loss model attached to this channel.",
                    PointerValue (),
                    MakePointerAccessor (&WifiChannel::m_loss),
                    MakePointerChecker<PropagationLossModel> ())
-    .AddAttribute ("PropagationDelayModel", "XXX",
+    .AddAttribute ("PropagationDelayModel", "A pointer to the propagation delay model attached to this channel.",
                    PointerValue (),
                    MakePointerAccessor (&WifiChannel::m_delay),
                    MakePointerChecker<PropagationDelayModel> ())

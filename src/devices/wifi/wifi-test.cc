@@ -81,7 +81,7 @@ WifiTest::RunOne (void)
   Simulator::Run ();
   Simulator::Destroy ();
 
-  Simulator::StopAt (Seconds (10.0));
+  Simulator::Stop (Seconds (10.0));
 }
 
 bool

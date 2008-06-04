@@ -133,8 +133,8 @@ UdpSocketImpl::FinishBind (void)
     {
       return -1;
     }
-  m_endPoint->SetRxCallback (MakeCallback (&UdpSocketImpl::ForwardUp, this));
-  m_endPoint->SetDestroyCallback (MakeCallback (&UdpSocketImpl::Destroy, this));
+  m_endPoint->SetRxCallback (MakeCallback (&UdpSocketImpl::ForwardUp, Ptr<UdpSocketImpl> (this)));
+  m_endPoint->SetDestroyCallback (MakeCallback (&UdpSocketImpl::Destroy, Ptr<UdpSocketImpl> (this)));
   return 0;
 }
 
@@ -214,6 +214,13 @@ UdpSocketImpl::Connect(const Address & address)
   m_connected = true;
 
   return 0;
+}
+
+int 
+UdpSocketImpl::Listen (uint32_t queueLimit)
+{
+  m_errno = Socket::ERROR_OPNOTSUPP;
+  return -1;
 }
 
 int 
@@ -530,14 +537,16 @@ void UdpSocketImplTest::ReceivePacket2 (Ptr<Socket> socket, Ptr<Packet> packet, 
 
 void UdpSocketImplTest::ReceivePkt (Ptr<Socket> socket)
 {
-  uint32_t availableData = socket->GetRxAvailable ();
+  uint32_t availableData;
+  availableData = socket->GetRxAvailable ();
   m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
   NS_ASSERT (availableData == m_receivedPacket->GetSize ());
 }
 
 void UdpSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
 {
-  uint32_t availableData = socket->GetRxAvailable ();
+  uint32_t availableData;
+  availableData = socket->GetRxAvailable ();
   m_receivedPacket2 = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
   NS_ASSERT (availableData == m_receivedPacket2->GetSize ());
 }

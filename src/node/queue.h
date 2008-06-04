@@ -33,6 +33,11 @@
 namespace ns3 {
 
 /**
+ * \ingroup node
+ * \defgroup queue Queue
+ */
+/**
+ * \ingroup queue
  * \brief Abstract base class for packet Queues
  * 
  * This class defines the base APIs for packet queues in the ns-3 system
@@ -66,7 +71,7 @@ public:
   Ptr<Packet> Peek (void) const;
 
   /**
-   * XXX Doesn't do anything right now, think its supposed to flush the queue
+   * Flush the queue.
    */
   void DequeueAll (void);
   /**

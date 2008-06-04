@@ -29,6 +29,8 @@ namespace ns3 {
 class Packet;
 
 /**
+ * \ingroup common
+ *
  * \brief Pcap output for Packet logger
  *
  * Log Packets to a file in pcap format which can be
@@ -49,17 +51,35 @@ public:
 
   /**
    * Write a pcap header in the output file which specifies
-   * that the content of the file will Packets with
+   * that the content of the file will be Packets with
    * Ethernet/LLC/SNAP encapsulation. This method should
    * be invoked before ns3::PcapWriter::writePacket and after
    * ns3::PcapWriter::open.
    */
   void WriteEthernetHeader (void);
 
+  /**
+   * Write a pcap header in the output file which specifies
+   * that the content of the file will be IPv4 Packets. This 
+   * method should be invoked before ns3::PcapWriter::WritePacket 
+   * and after ns3::PcapWriter::Open.
+   */
   void WriteIpHeader (void);
 
+  /**
+   * Write a pcap header in the output file which specifies
+   * that the content of the file will be 802.11 Packets. This 
+   * method should be invoked before ns3::PcapWriter::WritePacket 
+   * and after ns3::PcapWriter::Open.
+   */
   void WriteWifiHeader (void);
 
+  /**
+   * Write a pcap header in the output file which specifies
+   * that the content of the file will be ppp Packets. This 
+   * method should be invoked before ns3::PcapWriter::WritePacket 
+   * and after ns3::PcapWriter::Open.
+   */
   void WritePppHeader (void);
 
   /**

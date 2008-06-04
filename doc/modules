@@ -13,7 +13,7 @@
  *    - a Functor class: ns3::Callback  
  *    - an os-independent interface to get access to the elapsed wall clock time: ns3::SystemWallClockMs 
  *    - a class to register regression tests with the test manager: ns3::Test and ns3::TestManager
- *    - debugging facilities: \ref logging, \ref assert, \ref error
+ *    - debugging facilities: \ref logging, \ref assert
  *    - \ref randomvariable
  *    - a base class for objects which need to support per-instance "attributes" and
  *      trace sources: ns3::ObjectBase
@@ -24,7 +24,7 @@
  *      in a simulation: ns3::Config.
  *
  * @defgroup common Common
- * The "core" module contains: 
+ * The "common" module contains: 
  *    - a packet class to create and manipulate simulation packets: 
  *      ns3::Packet, ns3::Header,  and ns3::Trailer. This packet class 
  *      also supports per-packet ns3::Tag which are  globs of data 

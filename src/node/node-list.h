@@ -31,6 +31,8 @@ class CallbackBase;
 
 
 /**
+ * \ingroup node
+ *
  * \brief the list of simulation nodes.
  *
  * Every Node created is automatically added to this list.

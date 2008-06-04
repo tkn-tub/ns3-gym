@@ -86,6 +86,7 @@ Rectangle::GetClosestSide (const Vector &position) const
 Vector
 Rectangle::CalculateIntersection (const Vector &current, const Vector &speed) const
 {
+  NS_ASSERT (IsInside (current));
   double xMaxY = current.y + (this->xMax - current.x) / speed.x * speed.y;
   double xMinY = current.y + (this->xMin - current.x) / speed.x * speed.y;
   double yMaxX = current.x + (this->yMax - current.y) / speed.y * speed.x;

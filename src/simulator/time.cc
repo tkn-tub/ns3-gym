@@ -271,7 +271,6 @@ std::istream& operator>> (std::istream& is, Time & time)
   else
     {
       is.setstate (std::ios_base::failbit);
-      // XXX: problem ?
     }
   return is;
 }

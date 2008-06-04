@@ -53,16 +53,43 @@ public:
    * Create a zero-sized rectangle located at coordinates (0.0,0.0)
    */
   Rectangle ();
+  /**
+   * \param position the position to test.
+   * \returns true if the input position is located within the rectangle, 
+   *          false otherwise.
+   *
+   * This method compares only the x and y coordinates of the input position.
+   * It ignores the z coordinate.
+   */
   bool IsInside (const Vector &position) const;
+  /**
+   * \param position the position to test.
+   * \returns the side of the rectangle the input position is closest to.
+   *
+   * This method compares only the x and y coordinates of the input position.
+   * It ignores the z coordinate.
+   */
   Side GetClosestSide (const Vector &position) const;
+  /**
+   * \param current the current position
+   * \param speed the current speed
+   * \returns the intersection point between the rectangle and the current+speed vector.
+   *
+   * This method assumes that the current position is located _inside_
+   * the rectangle and checks for this with an assert.
+   * This method compares only the x and y coordinates of the input position
+   * and speed. It ignores the z coordinate.
+   */
   Vector CalculateIntersection (const Vector &current, const Vector &speed) const;
 
+  /* The x coordinate of the left bound of the rectangle */
   double xMin;
+  /* The x coordinate of the right bound of the rectangle */
   double xMax;
+  /* The y coordinate of the bottom bound of the rectangle */
   double yMin;
+  /* The y coordinate of the top bound of the rectangle */
   double yMax;
-
-  ATTRIBUTE_HELPER_HEADER_1 (Rectangle);
 };
 
 std::ostream &operator << (std::ostream &os, const Rectangle &rectangle);
@@ -73,7 +100,7 @@ std::istream &operator >> (std::istream &is, Rectangle &rectangle);
  * \brief hold objects of type ns3::Rectangle
  */
 
-ATTRIBUTE_HELPER_HEADER_2 (Rectangle);
+ATTRIBUTE_HELPER_HEADER (Rectangle);
 
 } // namespace ns3
 

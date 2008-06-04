@@ -30,6 +30,11 @@ namespace ns3 {
 class Packet;
 
 /**
+ * \ingroup common
+ * \defgroup errormodel Error Model
+ */
+/**
+ * \ingroup errormodel
  * \brief General error model that can be used to corrupt packets
  *
  * This object is used to flag packets as being lost/errored or not.

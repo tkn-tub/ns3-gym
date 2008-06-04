@@ -42,6 +42,8 @@ namespace ns3 {
 class AttributeList;
 
 /**
+ * \ingroup object
+ *
  * \brief implement the ns-3 type and attribute system
  *
  * Every class which wants to integrate in the ns-3 type and attribute

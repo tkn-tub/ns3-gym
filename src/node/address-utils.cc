@@ -23,7 +23,7 @@ namespace ns3 {
 
 void WriteTo (Buffer::Iterator &i, Ipv4Address ad)
 {
-  i.WriteHtonU32 (ad.GetHostOrder ());
+  i.WriteHtonU32 (ad.Get ());
 }
 void WriteTo (Buffer::Iterator &i, const Address &ad)
 {
@@ -40,7 +40,7 @@ void WriteTo (Buffer::Iterator &i, Mac48Address ad)
 
 void ReadFrom (Buffer::Iterator &i, Ipv4Address &ad)
 {
-  ad.SetHostOrder (i.ReadNtohU32 ());
+  ad.Set (i.ReadNtohU32 ());
 }
 void ReadFrom (Buffer::Iterator &i, Address &ad, uint32_t len)
 {

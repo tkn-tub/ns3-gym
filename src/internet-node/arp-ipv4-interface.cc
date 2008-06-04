@@ -24,41 +24,64 @@
 #include "ns3/node.h"
 #include "ns3/net-device.h"
 #include "ns3/address.h"
+#include "ns3/pointer.h"
 
 #include "arp-ipv4-interface.h"
 #include "ipv4-l3-protocol.h"
 #include "arp-l3-protocol.h"
+#include "arp-cache.h"
 
 NS_LOG_COMPONENT_DEFINE ("ArpIpv4Interface");
 
 namespace ns3 {
 
-ArpIpv4Interface::ArpIpv4Interface ()
+TypeId 
+ArpIpv4Interface::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  static TypeId tid = TypeId ("ns3::ArpIpv4Interface")
+    .SetParent<Ipv4Interface> ()
+    .AddAttribute ("ArpCache",
+                   "The arp cache for this ipv4 interface",
+                   PointerValue (0),
+                   MakePointerAccessor (&ArpIpv4Interface::m_cache),
+                   MakePointerChecker<ArpIpv4Interface> ())
+    ;
+  return tid;
+}
+
+ArpIpv4Interface::ArpIpv4Interface ()
+  : m_node (0),
+    m_device (0)
+{
+  NS_LOG_FUNCTION (this);
 }
 
 ArpIpv4Interface::~ArpIpv4Interface ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void 
 ArpIpv4Interface::DoDispose (void)
 {
+  NS_LOG_FUNCTION (this);
   m_node = 0;
   m_device = 0;
+  m_cache = 0;
+  Ipv4Interface::DoDispose ();
 }
 
 void 
 ArpIpv4Interface::SetNode (Ptr<Node> node)
 {
   m_node = node;
+  DoSetup ();
 }
 void 
 ArpIpv4Interface::SetDevice (Ptr<NetDevice> device)
 {
   m_device = device;
+  DoSetup ();
 }
 
 Ptr<NetDevice> 
@@ -67,13 +90,24 @@ ArpIpv4Interface::GetDevice (void) const
   return m_device;
 }
 
+void
+ArpIpv4Interface::DoSetup (void)
+{
+  if (m_node == 0 || m_device == 0)
+    {
+      return;
+    }
+  Ptr<ArpL3Protocol> arp = m_node->GetObject<ArpL3Protocol> ();
+  m_cache = arp->CreateCache (m_device, this);
+}
+
 void 
 ArpIpv4Interface::SendTo (Ptr<Packet> p, Ipv4Address dest)
 {
   NS_LOG_FUNCTION (this << p << dest);
 
   NS_ASSERT (GetDevice () != 0);
-  if (GetDevice ()->NeedsArp ())
+  if (m_device->NeedsArp ())
     {
       NS_LOG_LOGIC ("Needs ARP");
       Ptr<ArpL3Protocol> arp = 
@@ -101,7 +135,7 @@ ArpIpv4Interface::SendTo (Ptr<Packet> p, Ipv4Address dest)
       else
         {
           NS_LOG_LOGIC ("ARP Lookup");
-          found = arp->Lookup (p, dest, GetDevice (), &hardwareDestination);
+          found = arp->Lookup (p, dest, GetDevice (), m_cache, &hardwareDestination);
         }
 
       if (found)

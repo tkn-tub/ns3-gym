@@ -27,6 +27,7 @@
 namespace ns3 {
 
 class Node;
+class ArpCache;
 
 /**
  * \brief an Ipv4 Interface which uses ARP
@@ -37,7 +38,9 @@ class Node;
  */
 class ArpIpv4Interface : public Ipv4Interface
 {
- public:
+public:
+  static TypeId GetTypeId (void);
+
   ArpIpv4Interface ();
   virtual ~ArpIpv4Interface ();
 
@@ -49,8 +52,10 @@ class ArpIpv4Interface : public Ipv4Interface
 private:
   virtual void SendTo (Ptr<Packet> p, Ipv4Address dest);
   virtual void DoDispose (void);
+  void DoSetup (void);
   Ptr<Node> m_node;
   Ptr<NetDevice> m_device;
+  Ptr<ArpCache> m_cache;
 };
 
 }//namespace ns3

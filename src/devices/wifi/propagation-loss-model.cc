@@ -55,7 +55,7 @@ RandomPropagationLossModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::RandomPropagationLossModel")
     .SetParent<PropagationLossModel> ()
     .AddConstructor<RandomPropagationLossModel> ()
-    .AddAttribute ("Variable", "XXX",
+    .AddAttribute ("Variable", "The random variable used to pick a loss everytime GetLoss is invoked.",
                    RandomVariableValue (ConstantVariable (1.0)),
                    MakeRandomVariableAccessor (&RandomPropagationLossModel::m_variable),
                    MakeRandomVariableChecker ())

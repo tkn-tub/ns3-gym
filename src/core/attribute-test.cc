@@ -53,7 +53,7 @@ std::istream & operator >> (std::istream &is, ValueClassTest &v)
 {
   return is;
 }
-ATTRIBUTE_HELPER_HEADER_2 (ValueClassTest);
+ATTRIBUTE_HELPER_HEADER (ValueClassTest);
 ATTRIBUTE_HELPER_CPP (ValueClassTest);
 
 class AttributeTest : public Test
@@ -167,7 +167,7 @@ public:
 		       MakeTraceSourceAccessor (&AttributeObjectTest::m_cb))
       .AddTraceSource ("ValueSource", "help text",
 		       MakeTraceSourceAccessor (&AttributeObjectTest::m_valueSrc))
-      .AddAttribute ("Pointer", "XXX",
+      .AddAttribute ("Pointer", "help text",
                      PointerValue (),
                      MakePointerAccessor (&AttributeObjectTest::m_ptr),
                      MakePointerChecker<Derived> ())

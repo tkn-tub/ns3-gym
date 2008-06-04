@@ -38,18 +38,18 @@ NS_LOG_COMPONENT_DEFINE ("NqstaWifiMac");
 
 /*
  * The state machine for this NQSTA is:
- --------------            -----------
+ --------------                                          -----------
  | Associated |   <--------------------      ------->    | Refused |
- --------------      \    /      -----------
-    \           \  /
+ --------------                        \    /            -----------
+    \                                   \  /
      \    -----------------     -----------------------------
       \-> | Beacon Missed | --> | Wait Association Response |
-    -----------------     -----------------------------
-    \           ^
-     \          |
-      \    -----------------------
-       \-> | Wait Probe Response |
-           -----------------------
+          -----------------     -----------------------------
+	        \                       ^
+		 \                      |
+		  \    -----------------------
+	           \-> | Wait Probe Response |
+		       -----------------------
  */
 
 namespace ns3 {
@@ -62,11 +62,11 @@ NqstaWifiMac::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::NqstaWifiMac")
     .SetParent<WifiMac> ()
     .AddConstructor<NqstaWifiMac> ()
-    .AddAttribute ("ProbeRequestTimeout", "XXX",
-                   TimeValue (Seconds (0.5)),
+    .AddAttribute ("ProbeRequestTimeout", "The interval between two consecutive probe request attempts.",
+                   TimeValue (Seconds (0.05)),
                    MakeTimeAccessor (&NqstaWifiMac::m_probeRequestTimeout),
                    MakeTimeChecker ())
-    .AddAttribute ("AssocRequestTimeout", "XXX",
+    .AddAttribute ("AssocRequestTimeout", "The interval between two consecutive assoc request attempts.",
                    TimeValue (Seconds (0.5)),
                    MakeTimeAccessor (&NqstaWifiMac::m_assocRequestTimeout),
                    MakeTimeChecker ())
@@ -76,7 +76,7 @@ NqstaWifiMac::GetTypeId (void)
                    UintegerValue (10),
                    MakeUintegerAccessor (&NqstaWifiMac::m_maxMissedBeacons),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("ActiveProbing", "XXX",
+    .AddAttribute ("ActiveProbing", "If true, we send probe requests. If false, we don't.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&NqstaWifiMac::SetActiveProbing),
                    MakeBooleanChecker ())

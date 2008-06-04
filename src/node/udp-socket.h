@@ -35,6 +35,8 @@ class Node;
 class Packet;
 
 /**
+ * \ingroup socket
+ *
  * \brief (abstract) base class of all UdpSockets
  *
  * This class exists solely for hosting UdpSocket attributes that can

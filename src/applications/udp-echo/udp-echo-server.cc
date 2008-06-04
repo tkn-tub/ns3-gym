@@ -69,7 +69,7 @@ UdpEchoServer::StartApplication (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  if (!m_socket)
+  if (m_socket == 0)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
       m_socket = Socket::CreateSocket (GetNode(), tid);
@@ -85,7 +85,7 @@ UdpEchoServer::StopApplication ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  if (!m_socket) 
+  if (m_socket != 0) 
     {
       m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket> > ());
     }
@@ -98,10 +98,11 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
   while (packet = socket->Recv ())
     {
       SocketRxAddressTag tag;
-      bool found = packet->PeekTag (tag); 
+      bool found;
+      found = packet->FindFirstMatchingTag (tag); 
       NS_ASSERT (found);
       Address from = tag.GetAddress ();
-      packet->RemoveTag (tag);
+      // XXX packet->RemoveTag (tag);
       if (InetSocketAddress::IsMatchingType (from))
         {
           InetSocketAddress address = InetSocketAddress::ConvertFrom (from);

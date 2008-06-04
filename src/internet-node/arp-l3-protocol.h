@@ -24,6 +24,9 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/address.h"
 #include "ns3/ptr.h"
+#include "ns3/traced-callback.h"
+
+#include "ipv4-interface.h"
 
 namespace ns3 {
 
@@ -31,7 +34,7 @@ class ArpCache;
 class NetDevice;
 class Node;
 class Packet;
-class TraceContext;
+
 /**
  * \brief An implementation of the ARP protocol
  */
@@ -46,6 +49,8 @@ public:
 
   void SetNode (Ptr<Node> node);
 
+  Ptr<ArpCache> CreateCache (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface);
+
   /**
    * \brief Recieve a packet
    */
@@ -55,21 +60,24 @@ public:
    * \param p
    * \param destination
    * \param device
+   * \param cache
    * \param hardwareDestination
    * \return 
    */
   bool Lookup (Ptr<Packet> p, Ipv4Address destination, 
 	       Ptr<NetDevice> device,
+               Ptr<ArpCache> cache,
 	       Address *hardwareDestination);
 protected:
   virtual void DoDispose (void);
 private:
-  typedef std::list<ArpCache *> CacheList;
-  ArpCache *FindCache (Ptr<NetDevice> device);
-  void SendArpRequest (ArpCache const *cache, Ipv4Address to);
-  void SendArpReply (ArpCache const *cache, Ipv4Address toIp, Address toMac);
+  typedef std::list<Ptr<ArpCache> > CacheList;
+  Ptr<ArpCache> FindCache (Ptr<NetDevice> device);
+  void SendArpRequest (Ptr<const ArpCache>cache, Ipv4Address to);
+  void SendArpReply (Ptr<const ArpCache> cache, Ipv4Address toIp, Address toMac);
   CacheList m_cacheList;
   Ptr<Node> m_node;
+  TracedCallback<Ptr<const Packet> > m_dropTrace;
 };
 
 }//namespace ns3

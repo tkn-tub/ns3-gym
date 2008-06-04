@@ -32,6 +32,13 @@
 namespace ns3 {
 
 /**
+ * \ingroup core
+ * \defgroup tracing Tracing
+ */
+
+/**
+ * \ingroup tracing
+ *
  * \brief trace classes with value semantics
  *
  * If you want to trace the change of value of a class or
@@ -40,7 +47,7 @@ namespace ns3 {
  * this template: this instance will behave just like
  * the original class (if it did not export any special method),
  * and will define Connect/DisconnectWithoutContext methods to work
- * with an ns3::TraceSourceAccessor.
+ * with ns3::MakeTraceSourceAccessor.
  */
 template <typename T>
 class TracedValue

@@ -29,6 +29,8 @@ namespace ns3 {
 class ObjectBase;
 
 /**
+ * \ingroup tracing
+ *
  * \brief control access to objects' trace sources
  *
  * This class abstracts the kind of trace source to which we want to connect
@@ -72,7 +74,10 @@ private:
  * \param a the trace source
  *
  * Create a TraceSourceAccessor which will control access to the underlying
- * trace source.
+ * trace source. This helper template method assumes that the underlying
+ * type implements a statically-polymorphic set of Connect and Disconnect
+ * methods and creates a dynamic-polymorphic class to wrap the underlying
+ * static-polymorphic class.
  */
 template <typename T>
 Ptr<const TraceSourceAccessor> MakeTraceSourceAccessor (T a);

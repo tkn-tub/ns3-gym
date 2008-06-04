@@ -312,7 +312,8 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket)
   receivedPacket = socket->Recv ();
 
   SocketRxAddressTag tag;
-  bool found = receivedPacket->PeekTag (tag);
+  bool found;
+  found = receivedPacket->FindFirstMatchingTag (tag);
   NS_ASSERT (found);
   Address sourceAddress = tag.GetAddress ();
 

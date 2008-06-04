@@ -178,100 +178,13 @@ PacketMetadata::Append16 (uint16_t value, uint8_t *buffer)
   value >>= 8;
   buffer[1] = value;
 }
-bool
-PacketMetadata::TryToAppend16 (uint16_t value,  uint8_t **pBuffer, uint8_t *end)
+void
+PacketMetadata::Append32 (uint32_t value,  uint8_t *buffer)
 {
-  uint8_t *start = *pBuffer;
-  if (start + 1 < end)
-    {
-      start[0] = value & 0xff;
-      start[1] = value >> 8;
-      *pBuffer = start + 2;
-      return true;
-    }
-  return false;
-}
-bool
-PacketMetadata::TryToAppend32 (uint32_t value,  uint8_t **pBuffer, uint8_t *end)
-{
-  uint8_t *start = *pBuffer;
-  if (start + 3 < end)
-    {
-      start[0] = value & 0xff;
-      start[1] = (value >> 8) & 0xff;
-      start[2] = (value >> 16) & 0xff;
-      start[3] = (value >> 24) & 0xff;
-      *pBuffer = start + 4;
-      return true;
-    }
-  return false;
-}
-bool
-PacketMetadata::TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end)
-{
-  uint8_t *start = *pBuffer;
-  if (value < 0x80 && start < end)
-    {
-      start[0] = value;
-      *pBuffer = start + 1;
-      return true;
-    }
-  if (value < 0x4000 && start + 1 < end)
-    {
-      uint8_t byte = value & (~0x80);
-      start[0] = 0x80 | byte;
-      value >>= 7;
-      start[1] = value;
-      *pBuffer = start + 2;
-      return true;
-    }
-  if (value < 0x200000 && start + 2 < end)
-    {
-      uint8_t byte = value & (~0x80);
-      start[0] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      start[1] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      start[2] = value;
-      *pBuffer = start + 3;
-      return true;
-    }
-  if (value < 0x10000000 && start + 3 < end)
-    {
-      uint8_t byte = value & (~0x80);
-      start[0] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      start[1] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      start[2] = 0x80 | byte;
-      value >>= 7;
-      start[3] = value;
-      *pBuffer = start + 4;
-      return true;
-    }
-  if (start + 4 < end)
-    {
-      uint8_t byte = value & (~0x80);
-      start[0] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      start[1] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      start[2] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      start[3] = 0x80 | byte;
-      value >>= 7;
-      start[4] = value;
-      *pBuffer = start + 5;
-      return true;
-    }
-  return false;
+  buffer[0] = value & 0xff;
+  buffer[1] = (value >> 8) & 0xff;
+  buffer[2] = (value >> 16) & 0xff;
+  buffer[3] = (value >> 24) & 0xff;
 }
 
 void
@@ -342,6 +255,7 @@ PacketMetadata::AppendValue (uint32_t value, uint8_t *buffer)
 void
 PacketMetadata::UpdateTail (uint16_t written)
 {
+  NS_LOG_FUNCTION (this << written);
   if (m_head == 0xffff)
     {
       NS_ASSERT (m_tail == 0xffff);
@@ -368,6 +282,7 @@ PacketMetadata::UpdateTail (uint16_t written)
 void
 PacketMetadata::UpdateHead (uint16_t written)
 {
+  NS_LOG_FUNCTION (this << written);
   if (m_head == 0xffff)
     {
       NS_ASSERT (m_tail == 0xffff);
@@ -393,33 +308,29 @@ PacketMetadata::UpdateHead (uint16_t written)
 uint16_t
 PacketMetadata::AddSmall (const struct PacketMetadata::SmallItem *item)
 {
+  NS_LOG_FUNCTION (this << item->next << item->prev << item->typeUid << item->size << item->chunkUid);
   NS_ASSERT (m_data != 0);
   NS_ASSERT (m_used != item->prev && m_used != item->next);
   uint32_t typeUidSize = GetUleb128Size (item->typeUid);
   uint32_t sizeSize = GetUleb128Size (item->size);
-  uint32_t n = typeUidSize + sizeSize + 2 + 2 + 2;
- restart:
-  if (m_used + n <= m_data->m_size &&
-      (m_head == 0xffff ||
-       m_data->m_count == 1 ||
-       m_used == m_data->m_dirtyEnd))
-    {
-      uint8_t *buffer = &m_data->m_data[m_used];
-      Append16 (item->next, buffer);
-      buffer += 2;
-      Append16 (item->prev, buffer);
-      buffer += 2;
-      AppendValue (item->typeUid, buffer);
-      buffer += typeUidSize;
-      AppendValue (item->size, buffer);
-      buffer += sizeSize;
-      Append16 (item->chunkUid, buffer);
-    }
-  else
+  uint32_t n =  2 + 2 + typeUidSize + sizeSize + 2;
+  if (m_used + n > m_data->m_size ||
+      (m_head != 0xffff &&
+       m_data->m_count != 1 &&
+       m_used != m_data->m_dirtyEnd))
     {
       ReserveCopy (n);
-      goto restart;
     }
+  uint8_t *buffer = &m_data->m_data[m_used];
+  Append16 (item->next, buffer);
+  buffer += 2;
+  Append16 (item->prev, buffer);
+  buffer += 2;
+  AppendValue (item->typeUid, buffer);
+  buffer += typeUidSize;
+  AppendValue (item->size, buffer);
+  buffer += sizeSize;
+  Append16 (item->chunkUid, buffer);
   return n;
 }
 
@@ -428,76 +339,110 @@ PacketMetadata::AddBig (uint32_t next, uint32_t prev,
                        const PacketMetadata::SmallItem *item, 
                        const PacketMetadata::ExtraItem *extraItem)
 {
+  NS_LOG_FUNCTION (this << next << prev <<  
+                   item->next << item->prev << item->typeUid << item->size << item->chunkUid <<
+                   extraItem->fragmentStart << extraItem->fragmentEnd << extraItem->packetUid);
   NS_ASSERT (m_data != 0);
   uint32_t typeUid = ((item->typeUid & 0x1) == 0x1)?item->typeUid:item->typeUid+1;
   NS_ASSERT (m_used != prev && m_used != next);
- append:
-  uint8_t *start = &m_data->m_data[m_used];
-  uint8_t *end = &m_data->m_data[m_data->m_size];
-  if (end - start >= 14 &&
-      (m_head == 0xffff ||
-       m_data->m_count == 1 ||
-       m_used == m_data->m_dirtyEnd))
-    {
-      uint8_t *buffer = start;
 
-      Append16 (next, buffer);
-      buffer += 2;
-      Append16 (prev, buffer);
-      buffer += 2;
-      if (TryToAppend (typeUid, &buffer, end) &&
-          TryToAppend (item->size, &buffer, end) &&
-          TryToAppend16 (item->chunkUid, &buffer, end) &&
-          TryToAppend (extraItem->fragmentStart, &buffer, end) &&
-          TryToAppend (extraItem->fragmentEnd, &buffer, end) &&
-          TryToAppend32 (extraItem->packetUid, &buffer, end))
-        {
-          uintptr_t written = buffer - start;
-          NS_ASSERT (written <= 0xffff);
-          NS_ASSERT (written >= 14);
-          return written;
-        }
+  uint32_t typeUidSize = GetUleb128Size (typeUid);
+  uint32_t sizeSize = GetUleb128Size (item->size);
+  uint32_t fragStartSize = GetUleb128Size (extraItem->fragmentStart);
+  uint32_t fragEndSize = GetUleb128Size (extraItem->fragmentEnd);
+  uint32_t n = 2 + 2 + typeUidSize + sizeSize + 2 + fragStartSize + fragEndSize + 4;
+
+  if (m_used + n > m_data->m_size ||
+      (m_head != 0xffff &&
+       m_data->m_count != 1 &&
+       m_used != m_data->m_dirtyEnd))
+    {
+      ReserveCopy (n);
     }
 
-  uint32_t n = GetUleb128Size (typeUid);
-  n += GetUleb128Size (item->size);
-  n += 2;
-  n += GetUleb128Size (extraItem->fragmentStart);
-  n += GetUleb128Size (extraItem->fragmentEnd);
-  n += 4;
-  n += 2 + 2;
-  ReserveCopy (n);
-  goto append;
+  uint8_t *buffer = &m_data->m_data[m_used];
+
+  Append16 (next, buffer);
+  buffer += 2;
+  Append16 (prev, buffer);
+  buffer += 2;
+  AppendValue (typeUid, buffer);
+  buffer += typeUidSize;
+  AppendValue (item->size, buffer);
+  buffer += sizeSize;
+  Append16 (item->chunkUid, buffer);
+  buffer += 2;
+  AppendValue (extraItem->fragmentStart, buffer);
+  buffer += fragStartSize;
+  AppendValue (extraItem->fragmentEnd, buffer);
+  buffer += fragEndSize;
+  Append32 (extraItem->packetUid, buffer);
+
+  return n;
 }
 
+/**
+ * \param item the item data to write
+ * \param extraItem the extra item data to write
+ * \param available the number of bytes which can 
+ *        be written without having to rewrite the buffer entirely.
+ */
 void
 PacketMetadata::ReplaceTail (PacketMetadata::SmallItem *item, 
                             PacketMetadata::ExtraItem *extraItem,
                             uint32_t available)
 {
+  NS_LOG_FUNCTION (this <<
+                   item->next << item->prev << item->typeUid << item->size << item->chunkUid <<
+                   extraItem->fragmentStart << extraItem->fragmentEnd << extraItem->packetUid <<
+                   available);
+
   NS_ASSERT (m_data != 0);  
-  if (available >= 14 &&
+  /* If the tail we want to replace is located at the end of the data array,
+   * and if there is extra room at the end of this array, then, 
+   * we can try to use that extra space to avoid falling in the slow
+   * path below.
+   */
+  if (m_tail + available == m_used &&
+      m_used == m_data->m_dirtyEnd)
+    {
+      available = m_data->m_size - m_tail;
+    }
+
+  uint32_t typeUid = ((item->typeUid & 0x1) == 0x1)?item->typeUid:item->typeUid+1;
+  uint32_t typeUidSize = GetUleb128Size (typeUid);
+  uint32_t sizeSize = GetUleb128Size (item->size);
+  uint32_t fragStartSize = GetUleb128Size (extraItem->fragmentStart);
+  uint32_t fragEndSize = GetUleb128Size (extraItem->fragmentEnd);
+  uint32_t n = 2 + 2 + typeUidSize + sizeSize + 2 + fragStartSize + fragEndSize + 4;
+
+  if (available >= n &&
       m_data->m_count == 1)
     {
       uint8_t *buffer = &m_data->m_data[m_tail];
-      uint8_t *end = buffer + available;
-
       Append16 (item->next, buffer);
       buffer += 2;
       Append16 (item->prev, buffer);
       buffer += 2;
-      if (TryToAppend (item->typeUid, &buffer, end) &&
-          TryToAppend (item->size, &buffer, end) &&
-          TryToAppend16 (item->chunkUid, &buffer, end) &&
-          TryToAppend (extraItem->fragmentStart, &buffer, end) &&
-          TryToAppend (extraItem->fragmentEnd, &buffer, end) &&
-          TryToAppend32 (extraItem->packetUid, &buffer, end))
-        {
-          m_used = buffer - &m_data->m_data[0];
-          m_data->m_dirtyEnd = m_used;
-          return;
-        }
+      AppendValue (typeUid, buffer);
+      buffer += typeUidSize;
+      AppendValue (item->size, buffer);
+      buffer += sizeSize;
+      Append16 (item->chunkUid, buffer);
+      buffer += 2;
+      AppendValue (extraItem->fragmentStart, buffer);
+      buffer += fragStartSize;
+      AppendValue (extraItem->fragmentEnd, buffer);
+      buffer += fragEndSize;
+      Append32 (extraItem->packetUid, buffer);
+      m_used = buffer - &m_data->m_data[0];
+      m_data->m_dirtyEnd = m_used;
+      return;
     }
+
+  /* Below is the slow path which is hit if the new tail we want 
+   * to append is bigger than the previous tail.
+   */
   
   // create a copy of the packet.
   PacketMetadata h (m_packetUid, 0);
@@ -510,6 +455,7 @@ PacketMetadata::ReplaceTail (PacketMetadata::SmallItem *item,
       uint16_t written = h.AddBig (0xffff, h.m_tail, 
                                    &tmpItem, &tmpExtraItem);
       h.UpdateTail (written);
+      current = tmpItem.next;
     }
   // append new tail.
   uint16_t written = h.AddBig (0xffff, h.m_tail, item, extraItem);
@@ -518,11 +464,18 @@ PacketMetadata::ReplaceTail (PacketMetadata::SmallItem *item,
   *this = h;
 }
 
+/**
+ * \param current the offset we should start reading the data from
+ * \param item pointer to where we should store the data to return to the caller
+ * \param extraItem pointer to where we should store the data to return to the caller
+ * \returns the number of bytes read.
+ */
 uint32_t
 PacketMetadata::ReadItems (uint16_t current, 
                           struct PacketMetadata::SmallItem *item,
                           struct PacketMetadata::ExtraItem *extraItem) const
 {
+  NS_LOG_FUNCTION (this << current);
   const uint8_t *buffer = &m_data->m_data[current];
   item->next = buffer[0];
   item->next |= (buffer[1]) << 8;
@@ -644,12 +597,12 @@ PacketMetadata::AddHeader (const Header &header, uint32_t size)
 void
 PacketMetadata::DoAddHeader (uint32_t uid, uint32_t size)
 {
+  NS_LOG_FUNCTION (this << uid << size);
   if (!m_enable)
     {
       m_metadataSkipped = true;
       return;
     }
-  NS_LOG_FUNCTION ("uid=" << uid << "size=" << size << "");
 
   struct PacketMetadata::SmallItem item;
   item.next = m_head;
@@ -665,12 +618,12 @@ void
 PacketMetadata::RemoveHeader (const Header &header, uint32_t size)
 {
   uint32_t uid = header.GetInstanceTypeId ().GetUid () << 1;
+  NS_LOG_FUNCTION (this << uid << size);
   if (!m_enable) 
     {
       m_metadataSkipped = true;
       return;
     }
-  NS_LOG_FUNCTION ("(uid=" << uid << ", size=" << size << ")");
   struct PacketMetadata::SmallItem item;
   struct PacketMetadata::ExtraItem extraItem;
   uint32_t read = ReadItems (m_head, &item, &extraItem);
@@ -703,12 +656,12 @@ void
 PacketMetadata::AddTrailer (const Trailer &trailer, uint32_t size)
 {
   uint32_t uid = trailer.GetInstanceTypeId ().GetUid () << 1;
+  NS_LOG_FUNCTION (this << uid << size);
   if (!m_enable)
     {
       m_metadataSkipped = true;
       return;
     }
-  NS_LOG_FUNCTION ("(uid=" << uid << ", size=" << size << ")");
   struct PacketMetadata::SmallItem item;
   item.next = 0xffff;
   item.prev = m_tail;
@@ -723,12 +676,12 @@ void
 PacketMetadata::RemoveTrailer (const Trailer &trailer, uint32_t size)
 {
   uint32_t uid = trailer.GetInstanceTypeId ().GetUid () << 1;
+  NS_LOG_FUNCTION (this << uid << size);
   if (!m_enable) 
     {
       m_metadataSkipped = true;
       return;
     }
-  NS_LOG_FUNCTION ("(uid=" << uid << ", size=" << size << ")");
   struct PacketMetadata::SmallItem item;
   struct PacketMetadata::ExtraItem extraItem;
   uint32_t read = ReadItems (m_tail, &item, &extraItem);
@@ -760,6 +713,7 @@ PacketMetadata::RemoveTrailer (const Trailer &trailer, uint32_t size)
 void
 PacketMetadata::AddAtEnd (PacketMetadata const&o)
 {
+  NS_LOG_FUNCTION (this << &o);
   if (!m_enable) 
     {
       m_metadataSkipped = true;
@@ -767,46 +721,52 @@ PacketMetadata::AddAtEnd (PacketMetadata const&o)
     }
   if (m_tail == 0xffff)
     {
+      // We have no items so 'AddAtEnd' is 
+      // equivalent to self-assignment.
       *this = o;
       return;
     }
   NS_ASSERT (m_head != 0xffff && m_tail != 0xffff);
 
-  uint16_t lastTail;
-  lastTail = m_tail;
-  struct PacketMetadata::SmallItem lastItem;
-  PacketMetadata::ExtraItem lastExtraItem;
-  uint32_t lastTailSize = ReadItems (m_tail, &lastItem, &lastExtraItem);
-  if (m_tail + lastTailSize == m_used &&
-      m_used == m_data->m_dirtyEnd)
+  // We read the current tail because we are going to append
+  // after this item.
+  struct PacketMetadata::SmallItem tailItem;
+  PacketMetadata::ExtraItem tailExtraItem;
+  uint32_t tailSize = ReadItems (m_tail, &tailItem, &tailExtraItem);
+
+  uint16_t current;
+  struct PacketMetadata::SmallItem item;
+  PacketMetadata::ExtraItem extraItem;
+  o.ReadItems (o.m_head, &item, &extraItem);
+  if (extraItem.packetUid == tailExtraItem.packetUid &&
+      item.typeUid == tailItem.typeUid &&
+      item.chunkUid == tailItem.chunkUid &&
+      item.size == tailItem.size &&
+      extraItem.fragmentStart == tailExtraItem.fragmentEnd)
     {
-      lastTailSize = m_data->m_size - m_tail;
+      /* If the previous tail came from the same header as
+       * the next item we want to append to our array, then, 
+       * we merge them and attempt to reuse the previous tail's
+       * location.
+       */
+      tailExtraItem.fragmentEnd = extraItem.fragmentEnd;
+      ReplaceTail (&tailItem, &tailExtraItem, tailSize);
+      current = item.next;
+    }
+  else
+    {
+      current = o.m_head;
     }
 
-  uint16_t current = o.m_head;
+  /* Now that we have merged our current tail with the head of the
+   * next packet, we just append all items from the next packet
+   * to the current packet.
+   */
   while (current != 0xffff)
     {
-      struct PacketMetadata::SmallItem item;
-      PacketMetadata::ExtraItem extraItem;
       o.ReadItems (current, &item, &extraItem);
-      if (extraItem.packetUid == lastExtraItem.packetUid &&
-          item.typeUid == lastItem.typeUid &&
-          item.chunkUid == lastItem.chunkUid &&
-          item.size == lastItem.size &&
-          extraItem.fragmentStart == lastExtraItem.fragmentEnd)
-        {
-          // replace previous tail.
-          lastExtraItem.fragmentEnd = extraItem.fragmentEnd;
-          NS_ASSERT (m_tail == lastTail);
-          // XXX This call might be wrong. 
-          ReplaceTail (&lastItem, &lastExtraItem, lastTailSize);
-        }
-      else
-        {
-          // append the extra items.
-          uint16_t written = AddBig (0xffff, m_tail, &item, &extraItem);
-          UpdateTail (written);
-        }
+      uint16_t written = AddBig (0xffff, m_tail, &item, &extraItem);
+      UpdateTail (written);
       if (current == o.m_tail)
         {
           break;
@@ -826,6 +786,7 @@ PacketMetadata::AddPaddingAtEnd (uint32_t end)
 void 
 PacketMetadata::RemoveAtStart (uint32_t start)
 {
+  NS_LOG_FUNCTION (this << start);
   if (!m_enable) 
     {
       m_metadataSkipped = true;
@@ -891,6 +852,7 @@ PacketMetadata::RemoveAtStart (uint32_t start)
 void 
 PacketMetadata::RemoveAtEnd (uint32_t end)
 {
+  NS_LOG_FUNCTION (this << end);
   if (!m_enable) 
     {
       m_metadataSkipped = true;
@@ -1069,6 +1031,7 @@ PacketMetadata::ItemIterator::Next (void)
 uint32_t 
 PacketMetadata::GetSerializedSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   uint32_t totalSize = 0;
   totalSize += 4;
   if (!m_enable)
@@ -1105,6 +1068,7 @@ PacketMetadata::GetSerializedSize (void) const
 void 
 PacketMetadata::Serialize (Buffer::Iterator i, uint32_t size) const
 {
+  NS_LOG_FUNCTION (this);
   uint32_t bytesWritten = 0;
   i.WriteU32 (size);
   bytesWritten += 4;
@@ -1160,6 +1124,7 @@ PacketMetadata::Serialize (Buffer::Iterator i, uint32_t size) const
 uint32_t 
 PacketMetadata::Deserialize (Buffer::Iterator i)
 {
+  NS_LOG_FUNCTION (this);
   struct PacketMetadata::SmallItem item;
   struct PacketMetadata::ExtraItem extraItem;
   uint32_t totalSize = i.ReadU32 ();

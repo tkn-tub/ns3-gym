@@ -5,10 +5,16 @@
 #include <ostream>
 #include "ns3/attribute.h"
 #include "ns3/attribute-helper.h"
+#include "ns3/tag-buffer.h"
 
 namespace ns3 {
 
 /**
+ * \ingroup node
+ * \defgroup address Address
+ */
+/**
+ * \ingroup address
  * \brief a polymophic address class
  *
  * This class is very similar in design and spirit to the BSD sockaddr
@@ -153,8 +159,26 @@ public:
    * \returns a new type id.
    */
   static uint8_t Register (void);
+  /**
+   * Get the number of bytes needed to serialize the underlying Address
+   * Typically, this is GetLength () + 2 
+   *
+   * \returns the number of bytes required for an Address in serialized form
+   */
+  uint32_t GetSerializedSize (void) const;
+  /**
+   * Serialize this address in host byte order to a byte buffer
+   *
+   * \param buffer output buffer that gets written with this Address
+   */
+  void Serialize (TagBuffer buffer) const;
+  /**
+   * \param buffer buffer to read address from
+   * 
+   * The input address buffer is expected to be in host byte order format.
+   */
+  void Deserialize (TagBuffer buffer);
 
-  ATTRIBUTE_HELPER_HEADER_1 (Address);
 private:
   friend bool operator == (const Address &a, const Address &b);
   friend bool operator < (const Address &a, const Address &b);
@@ -171,7 +195,7 @@ private:
  * \brief hold objects of type ns3::Address
  */
 
-ATTRIBUTE_HELPER_HEADER_2 (Address);
+ATTRIBUTE_HELPER_HEADER (Address);
 
 bool operator == (const Address &a, const Address &b);
 bool operator != (const Address &a, const Address &b);

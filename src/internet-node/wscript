@@ -7,7 +7,6 @@ def build(bld):
         'internet-stack.cc',
         'ipv4-l4-demux.cc',
         'ipv4-l4-protocol.cc',
-        'ipv4-header.cc',
         'udp-header.cc',
         'tcp-header.cc',
         'ipv4-checksum.cc',
@@ -26,8 +25,6 @@ def build(bld):
         'tcp-socket-impl.cc',
         'ipv4-end-point-demux.cc',
         'ipv4-impl.cc',
-        'ascii-trace.cc',
-        'pcap-trace.cc',
         'udp-socket-factory-impl.cc',
         'tcp-socket-factory-impl.cc',
         'pending-data.cc',
@@ -39,9 +36,6 @@ def build(bld):
     headers.module = 'internet-node'
     headers.source = [
         'internet-stack.h',
-        'ascii-trace.h',
-        'pcap-trace.h',
-        'ipv4-header.h',
         'udp-header.h',
         'tcp-header.h',
         'sequence-number.h',

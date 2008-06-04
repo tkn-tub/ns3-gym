@@ -37,8 +37,10 @@ namespace ns3 {
  * Each instance moves with a speed and direction choosen at random
  * with the user-provided random variables until
  * either a fixed distance has been walked or until a fixed amount
- * of time.
- *
+ * of time. If we hit one of the boundaries (specified by a rectangle),
+ * of the model, we rebound on the boundary with a reflexive angle
+ * and speed. This model is often identified as a brownian motion
+ * model.
  */
 class RandomWalk2dMobilityModel : public MobilityModel 
 {

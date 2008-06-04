@@ -227,7 +227,8 @@ WifiPhy::GetTypeId (void)
                    MakeDoubleAccessor (&WifiPhy::SetRxNoise,
                                        &WifiPhy::GetRxNoise),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("Standard", "XXX",
+    .AddAttribute ("Standard", "The standard chosen configures a set of transmission modes"
+                   " and some PHY-specific constants.",
                    EnumValue (WIFI_PHY_STANDARD_80211a),
                    MakeEnumAccessor (&WifiPhy::SetStandard),
                    MakeEnumChecker (WIFI_PHY_STANDARD_80211a, "802.11a",
@@ -712,7 +713,9 @@ WifiPhy::StateToString (enum State state)
     return "SYNC";
     break;
   default:
-    return "XXX";
+    NS_ASSERT (false);
+    // quiet compiler
+    return "INVALID";
     break;
   }
 }

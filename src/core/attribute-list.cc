@@ -212,7 +212,7 @@ AttributeList::DeserializeFromString (std::string str)
     std::string::size_type equal = str.find ("=", cur);
     if (equal == std::string::npos)
       {
-        // XXX: invalid attribute.
+        NS_FATAL_ERROR ("Error while parsing serialized attribute: \"" << str << "\"");
         break;
       }
     else
@@ -221,7 +221,7 @@ AttributeList::DeserializeFromString (std::string str)
         struct TypeId::AttributeInfo info;
         if (!TypeId::LookupAttributeByFullName (name, &info))
           {
-            // XXX invalid name.
+            NS_FATAL_ERROR ("Error while parsing serialized attribute: name does not exist: \"" << name << "\"");
             break;
           }
         else
@@ -242,7 +242,7 @@ AttributeList::DeserializeFromString (std::string str)
             bool ok = val->DeserializeFromString (value, info.checker);
             if (!ok)
               {
-                // XXX invalid value
+                NS_FATAL_ERROR ("Error while parsing serialized attribute: value invalid: \"" << value << "\"");
                 break;
               }
             else

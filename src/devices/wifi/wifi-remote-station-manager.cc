@@ -126,23 +126,32 @@ WifiRemoteStationManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiRemoteStationManager")
     .SetParent<Object> ()
-    .AddAttribute ("IsLowLatency", "XXX",
+    .AddAttribute ("IsLowLatency", "If true, we attempt to modelize a so-called low-latency device: a device"
+                   " where decisions about tx parameters can be made on a per-packet basis and feedback about the"
+                   " transmission of each packet is obtained before sending the next. Otherwise, we modelize a "
+                   " high-latency device, that is a device where we cannot update our decision about tx parameters"
+                   " after every packet transmission.",
                    BooleanValue (true),
                    MakeBooleanAccessor (&WifiRemoteStationManager::m_isLowLatency),
                    MakeBooleanChecker ())
-    .AddAttribute ("MaxSsrc", "XXX",
+    .AddAttribute ("MaxSsrc", "The maximum number of retransmission attempts for an RTS. This value"
+                   " will not have any effect on some rate control algorithms.",
                    UintegerValue (7),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_maxSsrc),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MaxSlrc", "XXX",
+    .AddAttribute ("MaxSlrc", "The maximum number of retransmission attempts for a DATA packet. This value"
+                   " will not have any effect on some rate control algorithms.",
                    UintegerValue (7),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_maxSlrc),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("RtsCtsThreshold", "XXX",
+    .AddAttribute ("RtsCtsThreshold", "If a data packet is bigger than this value, we use an RTS/CTS handshake"
+                   " before sending the data. This value will not have any effect on some rate control algorithms.",
                    UintegerValue (1500),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_rtsCtsThreshold),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("FragmentationThreshold", "XXX",
+    .AddAttribute ("FragmentationThreshold", "If a data packet is bigger than this value, we fragment it such that"
+                   " the size of the fragments are equal or smaller than this value. This value will not have any effect"
+                   " on some rate control algorithms.",
                    UintegerValue (1500),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_fragmentationThreshold),
                    MakeUintegerChecker<uint32_t> ())
@@ -314,11 +323,12 @@ public:
   WifiMode GetRtsMode (void) const;
   WifiMode GetDataMode (void) const;
 
-  static uint32_t GetUid (void);
-  void Print (std::ostream &os) const;
-  void Serialize (ns3::Buffer::Iterator start) const;
-  uint32_t Deserialize (ns3::Buffer::Iterator start);
-  uint32_t GetSerializedSize (void) const;
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
+  virtual void Print (std::ostream &os) const;
 private:
   WifiMode m_rtsMode;
   WifiMode m_dataMode;
@@ -340,30 +350,51 @@ TxModeTag::GetDataMode (void) const
 {
   return m_dataMode;
 }
-
-uint32_t 
-TxModeTag::GetUid (void)
+TypeId 
+TxModeTag::GetTypeId (void)
 {
-  static uint32_t uid = Tag::AllocateUid<TxModeTag> ("ns3.wifi.TxModeTag");
-  return uid;
+  static TypeId tid = TypeId ("ns3::TxModeTag")
+    .SetParent<Tag> ()
+    .AddConstructor<TxModeTag> ()
+    .AddAttribute ("RtsTxMode", 
+                   "Tx mode of rts to use later",
+                   EmptyAttributeValue (),
+                   MakeWifiModeAccessor (&TxModeTag::GetRtsMode),
+                   MakeWifiModeChecker ())
+    .AddAttribute ("DataTxMode", 
+                   "Tx mode of data to use later",
+                   EmptyAttributeValue (),
+                   MakeWifiModeAccessor (&TxModeTag::GetDataMode),
+                   MakeWifiModeChecker ())
+    ;
+  return tid;
 }
-void 
-TxModeTag::Print (std::ostream &os) const
+TypeId 
+TxModeTag::GetInstanceTypeId (void) const
 {
-  os << "rts="<<m_rtsMode<<" data="<<m_dataMode;
-}
-void 
-TxModeTag::Serialize (ns3::Buffer::Iterator start) const
-{}
-uint32_t 
-TxModeTag::Deserialize (ns3::Buffer::Iterator start)
-{
-  return 0;
+  return GetTypeId ();
 }
 uint32_t 
 TxModeTag::GetSerializedSize (void) const
 {
-  return 0;
+  return sizeof (WifiMode) * 2;
+}
+void 
+TxModeTag::Serialize (TagBuffer i) const
+{
+  i.Write ((uint8_t *)&m_rtsMode, sizeof (WifiMode));
+  i.Write ((uint8_t *)&m_dataMode, sizeof (WifiMode));
+}
+void 
+TxModeTag::Deserialize (TagBuffer i)
+{
+  i.Read ((uint8_t *)&m_rtsMode, sizeof (WifiMode));
+  i.Read ((uint8_t *)&m_dataMode, sizeof (WifiMode));
+}
+void 
+TxModeTag::Print (std::ostream &os) const
+{
+  os << "Rts=" << m_rtsMode << ", Data=" << m_dataMode;
 }
 
 } // namespace ns3
@@ -380,9 +411,9 @@ WifiRemoteStation::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiRemoteStation")
     .SetParent<Object> ()
-    .AddTraceSource ("Ssrc", "XXX",
+    .AddTraceSource ("Ssrc", "The value of the ssrc counter: indicates the number of retransmissions of RTS.",
                      MakeTraceSourceAccessor (&WifiRemoteStation::m_ssrc))
-    .AddTraceSource ("Slrc", "XXX",
+    .AddTraceSource ("Slrc", "The value of the slrc counter: indicates the number of retransmissions of DATA.",
                      MakeTraceSourceAccessor (&WifiRemoteStation::m_slrc))
     ;
   return tid;
@@ -546,7 +577,7 @@ WifiRemoteStation::GetDataMode (Ptr<const Packet> packet, uint32_t fullPacketSiz
     }
   TxModeTag tag;
   bool found;
-  found = packet->PeekTag (tag);
+  found = packet->FindFirstMatchingTag (tag);
   NS_ASSERT (found);
   return tag.GetDataMode ();
 }
@@ -559,7 +590,7 @@ WifiRemoteStation::GetRtsMode (Ptr<const Packet> packet)
     }
   TxModeTag tag;
   bool found;
-  found = packet->PeekTag (tag);
+  found = packet->FindFirstMatchingTag (tag);
   NS_ASSERT (found);
   return tag.GetRtsMode ();
 }

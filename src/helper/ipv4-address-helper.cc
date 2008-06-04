@@ -54,9 +54,9 @@ Ipv4AddressHelper::SetBase (
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  m_network = network.GetHostOrder ();
-  m_mask = mask.GetHostOrder ();
-  m_base = m_address = address.GetHostOrder ();
+  m_network = network.Get ();
+  m_mask = mask.Get ();
+  m_base = m_address = address.Get ();
 
 //
 // Some quick reasonableness testing.

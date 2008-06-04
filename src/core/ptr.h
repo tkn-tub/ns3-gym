@@ -28,6 +28,12 @@
 namespace ns3 {
 
 /**
+ * \ingroup core
+ * \defgroup ptr Smart Pointer
+ */
+/**
+ * \ingroup ptr
+ *
  * \brief smart pointer class similar to boost::intrusive_ptr
  *
  * This smart-pointer class assumes that the underlying

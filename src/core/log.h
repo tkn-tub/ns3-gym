@@ -28,7 +28,7 @@
 
 
 /**
- * \ingroup core
+ * \ingroup debugging
  * \defgroup logging Logging
  * \brief Logging functions and macros
  *
@@ -69,7 +69,7 @@
 #define NS_LOG_COMPONENT_DEFINE(name)                           \
   static ns3::LogComponent g_log = ns3::LogComponent (name)
 
-#define APPEND_TIME_PREFIX                                      \
+#define NS_LOG_APPEND_TIME_PREFIX                               \
   if (g_log.IsEnabled (ns3::LOG_PREFIX_TIME))                   \
     {                                                           \
       LogTimePrinter printer = LogGetTimePrinter ();            \
@@ -80,12 +80,16 @@
         }                                                       \
     }
 
-#define APPEND_FUNC_PREFIX                                      \
+#define NS_LOG_APPEND_FUNC_PREFIX                               \
   if (g_log.IsEnabled (ns3::LOG_PREFIX_FUNC))                   \
     {                                                           \
       std::clog << g_log.Name () << ":" <<                      \
         __FUNCTION__ << "(): ";                                 \
     }                                                           \
+
+#ifndef NS_LOG_APPEND_CONTEXT
+#define NS_LOG_APPEND_CONTEXT
+#endif /* NS_LOG_APPEND_CONTEXT */
 
 
 /**
@@ -107,8 +111,9 @@
     {                                                           \
       if (g_log.IsEnabled (level))                              \
         {                                                       \
-          APPEND_TIME_PREFIX;                                   \
-          APPEND_FUNC_PREFIX;                                   \
+          NS_LOG_APPEND_TIME_PREFIX;                            \
+          NS_LOG_APPEND_CONTEXT;                                \
+          NS_LOG_APPEND_FUNC_PREFIX;                            \
           std::clog << msg << std::endl;                        \
         }                                                       \
     }                                                           \
@@ -160,7 +165,8 @@
     {                                                           \
       if (g_log.IsEnabled (ns3::LOG_FUNCTION))                  \
         {                                                       \
-          APPEND_TIME_PREFIX;                                   \
+          NS_LOG_APPEND_TIME_PREFIX;                            \
+          NS_LOG_APPEND_CONTEXT;                                \
           std::clog << g_log.Name () << ":"                     \
                     << __FUNCTION__ << "()" << std::endl;       \
         }                                                       \
@@ -189,7 +195,8 @@
     {                                                   \
       if (g_log.IsEnabled (ns3::LOG_FUNCTION))          \
         {                                               \
-          APPEND_TIME_PREFIX;                           \
+          NS_LOG_APPEND_TIME_PREFIX;                    \
+          NS_LOG_APPEND_CONTEXT;                        \
           std::clog << g_log.Name () << ":"             \
                     << __FUNCTION__ << "(";             \
           ParameterLogger (std::clog)  << parameters;   \
@@ -320,12 +327,10 @@ public:
   bool IsNoneEnabled (void) const;
   void Enable (enum LogLevel level);
   void Disable (enum LogLevel level);
-  bool Decorate (void) const;
   char const *Name (void) const;
 private:
   int32_t     m_levels;
   char const *m_name;
-  bool        m_decorate;
 };
 
 class ParameterLogger : public std::ostream

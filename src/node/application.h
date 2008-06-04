@@ -33,7 +33,12 @@ class Node;
 class RandomVariable;
 
 /**
- * \brief The base class for all ns3 applicationes
+ * \ingroup node
+ * \defgroup application Application
+ */
+/**
+ * \ingroup application
+ * \brief The base class for all ns3 applications
  * 
  * Class Application is the base class for all ns3 applications.
  * Applications are associated with individual nodes.
@@ -53,13 +58,13 @@ class Application : public Object
 {
 public:
   static TypeId GetTypeId (void);
-  Application();
-  virtual ~Application();
+  Application ();
+  virtual ~Application ();
   
   /**
    * \brief Specify application start time
-   * \param startTime Start time for this application, absolute time,
-   *        relative to the start of the simulation.
+   * \param startTime Start time for this application,
+   *        relative to the current simulation time.
    *
    * Applications start at various times in the simulation scenario.
    * The Start method specifies when the application should be
@@ -67,20 +72,20 @@ public:
    * private "StartApplication" method defined below, which is called at the
    * time specified, to cause the application to begin.
    */
-  void Start(const Time& startTime);
+  void Start (const Time& startTime);
 
   /** 
    * \brief Specify application start time.
    * \param startVariable the random variable to use to pick
-   *        the real start time as an absolute time, in units of
-   *        seconds, relative to the start of the simulation.
+   *        the real start time as a relative time, in units of
+   *        seconds, relative to the current simulation time.
    */
-  void Start(const RandomVariable& startVariable);
+  void Start (const RandomVariable& startVariable);
   
   /**
    * \brief Specify application stop time
    * \param stopTime Stop time for this application, relative to the
-   *        start of the simulation.
+   *        current simulation time.
    *
    * Once an application has started, it is sometimes useful
    * to stop the application.  The Stop method specifies when an
@@ -88,20 +93,20 @@ public:
    * the private StopApplication method, to be notified when that
    * time has come.
    */
-  void Stop(const Time& stopTime);
+  void Stop (const Time& stopTime);
 
   /**
    * \brief Specify application stop time
    * \param stopVariable the random variable to use to pick
    *        the real stop time, in units of seconds, 
-   *        relative to the start of the simulation.
+   *        relative to the current simulation time.
    */
-  void Stop(const RandomVariable& stopVariable);
+  void Stop (const RandomVariable& stopVariable);
 
   /**
    * \returns the Node to which this Application object is attached.
    */
-  Ptr<Node> GetNode() const;
+  Ptr<Node> GetNode () const;
 
   /**
    * \param node the node to which this Application object is attached.

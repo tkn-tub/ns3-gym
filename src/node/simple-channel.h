@@ -10,6 +10,10 @@ namespace ns3 {
 class SimpleNetDevice;
 class Packet;
 
+/**
+ * \ingroup channel
+ * \brief A simple channel, for simple things and testing
+ */
 class SimpleChannel : public Channel
 {
 public:

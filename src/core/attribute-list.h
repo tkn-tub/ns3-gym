@@ -28,6 +28,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup attribute
+ *
  * \brief a container of attributes to be used during object's construction
  *        and in ns3::Object::Set.
  *
@@ -85,7 +87,6 @@ public:
    */
   static AttributeList *GetGlobal (void);
 
-  // XXX: untested.
   std::string SerializeToString (void) const;
   bool DeserializeFromString (std::string value);
 private:

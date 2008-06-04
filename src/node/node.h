@@ -29,7 +29,6 @@
 
 namespace ns3 {
 
-class TraceContext;
 class NetDevice;
 class Application;
 class Packet;
@@ -37,6 +36,8 @@ class Address;
 
 
 /**
+ * \ingroup node
+ *
  * \brief A network Node.
  *
  * This class holds together:
@@ -169,9 +170,6 @@ private:
    * \param device the device added to this Node.
    *
    * This method is invoked whenever a user calls Node::AddDevice.
-   * Subclasses are expected to call NetDevice::SetReceiveCallback
-   * at this point to setup the node's receive function for
-   * the NetDevice packets.
    */
   virtual void NotifyDeviceAdded (Ptr<NetDevice> device);
 

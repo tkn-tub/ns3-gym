@@ -27,6 +27,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup attribute 
+ *
  * \class ns3::DoubleValue
  * \brief Hold an floating point type
  *

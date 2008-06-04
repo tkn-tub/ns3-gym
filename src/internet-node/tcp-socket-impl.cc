@@ -125,7 +125,9 @@ TcpSocketImpl::TcpSocketImpl(const TcpSocketImpl& sock)
     m_lastMeasuredRtt (Seconds(0.0)),
     m_cnTimeout (sock.m_cnTimeout),
     m_cnCount (sock.m_cnCount),
-    m_rxAvailable (0)
+    m_rxAvailable (0),
+    m_wouldBlock (false),
+    m_sndBufSize (sock.m_sndBufSize)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC("Invoked the copy constructor");
@@ -500,14 +502,11 @@ TcpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
       return 0;
     }
   Ptr<Packet> outPacket = Create<Packet>();
-  SocketRxAddressTag tag;     //Packet AddAt* APIs don't preserve tags
-  out.begin()->second->PeekTag (tag); //XXX so manually copy the address tag
-  outPacket->AddTag (tag);
   for(i = out.begin(); i!=out.end(); ++i)
   {
     if (outPacket->GetSize() + i->second->GetSize() <= maxSize )
     {
-      outPacket->AddAtEnd(i->second); //XXX this doesn't copy the tags
+      outPacket->AddAtEnd(i->second);
     }
     else
     {

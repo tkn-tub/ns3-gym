@@ -9,6 +9,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup object
+ * 
  * \brief contain a vector of ns3::Object pointers.
  *
  * This class it used to get attribute access to an array of

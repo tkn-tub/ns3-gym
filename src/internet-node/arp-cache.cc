@@ -20,24 +20,73 @@
 #include "ns3/assert.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
+#include "ns3/uinteger.h"
+#include "ns3/log.h"
 
 #include "arp-cache.h"
 #include "arp-header.h"
 #include "ipv4-interface.h"
 
+NS_LOG_COMPONENT_DEFINE ("ArpCache");
+
 namespace ns3 {
 
-ArpCache::ArpCache (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface)
-  : m_device (device), 
-    m_interface (interface),
-    m_aliveTimeout (Seconds (120)),
-    m_deadTimeout (Seconds (100)),
-    m_waitReplyTimeout (Seconds (1))
-{}
+TypeId 
+ArpCache::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::ArpCache")
+    .SetParent<Object> ()
+    .AddAttribute ("AliveTimeout",
+                   "When this timeout expires, the matching cache entry needs refreshing",
+                   TimeValue (Seconds (120)),
+                   MakeTimeAccessor (&ArpCache::m_aliveTimeout),
+                   MakeTimeChecker ())
+    .AddAttribute ("DeadTimeout",
+                   "When this timeout expires, a new attempt to resolve the matching entry is made",
+                   TimeValue (Seconds (100)),
+                   MakeTimeAccessor (&ArpCache::m_deadTimeout),
+                   MakeTimeChecker ())
+    .AddAttribute ("WaitReplyTimeout",
+                   "When this timeout expires, the matching cache entry is marked dead",
+                   TimeValue (Seconds (1)),
+                   MakeTimeAccessor (&ArpCache::m_waitReplyTimeout),
+                   MakeTimeChecker ())
+    .AddAttribute ("PendingQueueSize",
+                   "The size of the queue for packets pending an arp reply.",
+                   UintegerValue (3),
+                   MakeUintegerAccessor (&ArpCache::m_pendingQueueSize),
+                   MakeUintegerChecker<uint32_t> ())
+    ;
+  return tid;
+}
+
+ArpCache::ArpCache ()
+  : m_device (0), 
+    m_interface (0)
+{
+  NS_LOG_FUNCTION (this);
+}
 
 ArpCache::~ArpCache ()
 {
+  NS_LOG_FUNCTION (this);
+}
+
+void 
+ArpCache::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
   Flush ();
+  m_device = 0;
+  m_interface = 0;
+  Object::DoDispose ();
+}
+
+void
+ArpCache::SetDevice (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface)
+{
+  m_device = device;
+  m_interface = interface;
 }
 
 Ptr<NetDevice>
@@ -117,8 +166,7 @@ ArpCache::Add (Ipv4Address to)
 
 ArpCache::Entry::Entry (ArpCache *arp)
   : m_arp (arp),
-    m_state (ALIVE),
-    m_waiting ()
+    m_state (ALIVE)
 {}
 
 
@@ -143,23 +191,18 @@ void
 ArpCache::Entry::MarkDead (void) 
 {
   m_state = DEAD;
-  //NS_ASSERT (m_waiting != 0);
   UpdateSeen ();
 }
-Ptr<Packet>
+void
 ArpCache::Entry::MarkAlive (Address macAddress) 
 {
   NS_ASSERT (m_state == WAIT_REPLY);
-  //NS_ASSERT (m_waiting != 0);
   m_macAddress = macAddress;
   m_state = ALIVE;
   UpdateSeen ();
-  Ptr<Packet> waiting = m_waiting;
-  //m_waiting = 0;
-  return waiting;
 }
 
-Ptr<Packet>
+bool
 ArpCache::Entry::UpdateWaitReply (Ptr<Packet> waiting)
 {
   NS_ASSERT (m_state == WAIT_REPLY);
@@ -167,17 +210,20 @@ ArpCache::Entry::UpdateWaitReply (Ptr<Packet> waiting)
    * we dump the previously waiting packet and
    * replace it with this one.
    */
-  Ptr<Packet> old = m_waiting;
-  m_waiting = waiting;
-  return old;
+  if (m_pending.size () >= m_arp->m_pendingQueueSize)
+    {
+      return false;
+    }
+  m_pending.push_back (waiting);
+  return true;
 }
 void 
 ArpCache::Entry::MarkWaitReply (Ptr<Packet> waiting)
 {
   NS_ASSERT (m_state == ALIVE || m_state == DEAD);
-  //NS_ASSERT (m_waiting == 0);
+  NS_ASSERT (m_pending.empty ());
   m_state = WAIT_REPLY;
-  m_waiting = waiting;
+  m_pending.push_back (waiting);
   UpdateSeen ();
 }
 
@@ -215,6 +261,20 @@ ArpCache::Entry::IsExpired (void)
   else 
     {
       return false;
+    }
+}
+Ptr<Packet> 
+ArpCache::Entry::DequeuePending (void)
+{
+  if (m_pending.empty ())
+    {
+      return 0;
+    }
+  else
+    {
+      Ptr<Packet> p = m_pending.front ();
+      m_pending.pop_front ();
+      return p;
     }
 }
 void 

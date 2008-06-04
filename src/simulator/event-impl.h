@@ -24,6 +24,17 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup simulator
+ * \brief a simulation event
+ *
+ * Each subclass of this base class represents a simulation event. The
+ * EventImpl::Invoke method will be invoked by the simulation engine
+ * when the time associated to this event expires. This class is
+ * obviously (there are Ref and Unref methods) reference-counted and
+ * most subclasses are usually created by one of the many Simulator::Schedule
+ * methods.
+ */
 class EventImpl
 {
 public:
@@ -31,8 +42,21 @@ public:
   inline void Ref (void) const;
   inline void Unref (void) const;
   virtual ~EventImpl () = 0;
+  /**
+   * Called by the simulation engine to notify the event that it has expired.
+   */
   void Invoke (void);
+  /**
+   * Marks the event as 'canceled'. The event will not be removed from
+   * the event list but the simulation engine will check its canceled status
+   * before calling Invoke.
+   */
   void Cancel (void);
+  /**
+   * \returns true if the event has been canceled.
+   *
+   * Invoked by the simulation engine before calling Invoke.
+   */
   bool IsCancelled (void);
 protected:
   virtual void Notify (void) = 0;

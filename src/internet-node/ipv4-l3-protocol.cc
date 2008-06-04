@@ -29,10 +29,11 @@
 #include "ns3/uinteger.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/object-vector.h"
+#include "ns3/ipv4-header.h"
+#include "arp-l3-protocol.h"
 
 #include "ipv4-l3-protocol.h"
 #include "ipv4-l4-protocol.h"
-#include "ipv4-header.h"
 #include "ipv4-interface.h"
 #include "ipv4-loopback-interface.h"
 #include "arp-ipv4-interface.h"
@@ -81,7 +82,7 @@ Ipv4L3Protocol::Ipv4L3Protocol()
 
 Ipv4L3Protocol::~Ipv4L3Protocol ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void
@@ -94,7 +95,12 @@ Ipv4L3Protocol::SetNode (Ptr<Node> node)
 void 
 Ipv4L3Protocol::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
+  for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); ++i)
+    {
+      Ptr<Ipv4Interface> interface = *i;
+      interface->Dispose ();
+    }
   m_interfaces.clear ();
   m_node = 0;
   m_staticRouting->Dispose ();
@@ -315,6 +321,13 @@ uint32_t
 Ipv4L3Protocol::AddInterface (Ptr<NetDevice> device)
 {
   NS_LOG_FUNCTION (this << &device);
+
+  Ptr<Node> node = GetObject<Node> ();
+  node->RegisterProtocolHandler (MakeCallback (&Ipv4L3Protocol::Receive, this), 
+                                 Ipv4L3Protocol::PROT_NUMBER, device);
+  node->RegisterProtocolHandler (MakeCallback (&ArpL3Protocol::Receive, PeekPointer (GetObject<ArpL3Protocol> ())),
+                                 ArpL3Protocol::PROT_NUMBER, device);
+
   Ptr<ArpIpv4Interface> interface = CreateObject<ArpIpv4Interface> ();
   interface->SetNode (m_node);
   interface->SetDevice (device);
@@ -490,9 +503,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   // Set TTL to 1 if it is a broadcast packet of any type.  Otherwise,
   // possibly override the default TTL if the packet is tagged
   SocketIpTtlTag tag;
-  bool found = packet->PeekTag (tag);
-  uint8_t socketTtl = tag.GetTtl ();
-  packet->RemoveTag (tag);
+  bool found = packet->FindFirstMatchingTag (tag);
 
   if (destination.IsBroadcast ()) 
     {
@@ -500,7 +511,8 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
     }
   else if (found)
     {
-      ipHeader.SetTtl (socketTtl);
+      ipHeader.SetTtl (tag.GetTtl ());
+      // XXX remove tag here?  
     }
   else
     {

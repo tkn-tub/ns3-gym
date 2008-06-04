@@ -25,7 +25,6 @@ int main (int argc, char *argv[])
   c.Create (10000);
 
   MobilityHelper mobility;
-  mobility.EnableNotifier ();
   mobility.SetPositionAllocator ("ns3::RandomDiscPositionAllocator",
                                  "X", StringValue ("100.0"),
                                  "Y", StringValue ("100.0"),
@@ -36,7 +35,7 @@ int main (int argc, char *argv[])
   Config::Connect ("/NodeList/*/$ns3::MobilityModelNotifier/CourseChange",
                               MakeCallback (&CourseChange));
   
-  Simulator::StopAt (Seconds (100.0));
+  Simulator::Stop (Seconds (100.0));
 
   Simulator::Run ();
   

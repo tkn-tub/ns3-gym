@@ -27,6 +27,8 @@ namespace ns3 {
 class Socket;
 
 /**
+ * \ingroup socket
+ *
  * \brief API to create TCP socket instances 
  *
  * This abstract class defines the API for TCP sockets.
