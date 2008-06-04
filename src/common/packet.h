@@ -403,7 +403,6 @@ std::ostream& operator<< (std::ostream& os, const Packet &packet);
  * to detect when an operation is "dirty".
  *
  * Dirty operations:
- *   - ns3::Packet::RemoveTag
  *   - ns3::Packet::AddHeader
  *   - ns3::Packet::AddTrailer
  *   - both versions of ns3::Packet::AddAtEnd
