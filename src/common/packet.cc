@@ -308,6 +308,7 @@ Packet::PrintTags (std::ostream &os) const
       Tag *tag = dynamic_cast<Tag *> (constructor ());
       NS_ASSERT (tag != 0);
       os << " ";
+      item.GetTag (*tag);
       tag->Print (os);
       if (i.HasNext ())
         {
