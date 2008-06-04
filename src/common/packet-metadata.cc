@@ -750,7 +750,6 @@ PacketMetadata::AddAtEnd (PacketMetadata const&o)
        * location.
        */
       tailExtraItem.fragmentEnd = extraItem.fragmentEnd;
-      // XXX This call might be wrong. 
       ReplaceTail (&tailItem, &tailExtraItem, tailSize);
       current = item.next;
     }
