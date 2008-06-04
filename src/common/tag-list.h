@@ -125,12 +125,6 @@ public:
    */
   void Add (const TagList &o);
 
-  /**
-   * \param i points to the item to remove from this list.
-   *
-   * Not implemented.
-   */
-  void Remove (const Iterator &i);
   void RemoveAll (void);
 
   /**

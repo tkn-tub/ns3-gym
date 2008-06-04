@@ -191,16 +191,6 @@ TagList::Add (const TagList &o)
 }
 
 void 
-TagList::Remove (const Iterator &i)
-{
-  if (m_data == 0)
-    {
-      return;
-    } 
-  // XXX
-}
-
-void 
 TagList::RemoveAll (void)
 {
   Deallocate (m_data);
