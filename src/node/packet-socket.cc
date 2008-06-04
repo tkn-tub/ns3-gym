@@ -259,13 +259,6 @@ PacketSocket::SendTo(Ptr<Packet> p, const Address &address)
       m_errno = ERROR_BADF;
       return -1;
     }
-  if (m_state == STATE_OPEN)
-    {
-      // XXX should return another error here.
-      NS_LOG_LOGIC ("ERROR_INVAL");
-      m_errno = ERROR_INVAL;
-      return -1;
-    }
   if (m_shutdownSend)
     {
       NS_LOG_LOGIC ("ERROR_SHUTDOWN");
