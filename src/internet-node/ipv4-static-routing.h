@@ -25,7 +25,7 @@
 #include <list>
 #include <stdint.h>
 #include "ns3/ipv4-address.h"
-#include "ipv4-header.h"
+#include "ns3/ipv4-header.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4.h"
 

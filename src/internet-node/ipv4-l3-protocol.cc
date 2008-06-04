@@ -29,11 +29,11 @@
 #include "ns3/uinteger.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/object-vector.h"
+#include "ns3/ipv4-header.h"
 #include "arp-l3-protocol.h"
 
 #include "ipv4-l3-protocol.h"
 #include "ipv4-l4-protocol.h"
-#include "ipv4-header.h"
 #include "ipv4-interface.h"
 #include "ipv4-loopback-interface.h"
 #include "arp-ipv4-interface.h"

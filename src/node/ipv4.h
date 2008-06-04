@@ -32,8 +32,7 @@ class Node;
 class NetDevice;
 class Packet;
 class Ipv4Route;
-class Ipv4Header; // XXX: ipv4-header.h needs to move from module
-                  // "internet-node" to module "node"
+class Ipv4Header;
 
 /**
  * \ingroup node
