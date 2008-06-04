@@ -131,7 +131,7 @@ public:
   Ipv4Address GetDestination (void) const;
   
   /**
-   * \returns true if the upv4 checksum is correct, false otherwise.
+   * \returns true if the ipv4 checksum is correct, false otherwise.
    *
    * If Ipv4Header::EnableChecksums has not been called prior to
    * creating this packet, this method will always return true.
@@ -146,6 +146,7 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 private:
 
+  static uint16_t ChecksumCalculate(Buffer::Iterator &i, uint16_t len);
   enum FlagsE {
     DONT_FRAGMENT = (1<<0),
     MORE_FRAGMENTS = (1<<1)
