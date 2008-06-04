@@ -162,8 +162,14 @@ bool operator != (const Address &a, const Address &b)
 }
 bool operator < (const Address &a, const Address &b)
 {
-  // XXX: it is not clear to me how to order based on type.
-  // so, we do not compare the types here but we should.
+  if (a.m_type < b.m_type)
+    {
+      return true;
+    }
+  else if (a.m_type > b.m_type)
+    {
+      return false;
+    }
   if (a.m_len < b.m_len)
     {
       return true;
