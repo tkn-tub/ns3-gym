@@ -48,6 +48,7 @@ public:
   uint8_t*  Construct (uint8_t*, uint32_t&); // Construct from buffer
   virtual void Clear ();// Remove all associated data
   virtual void Add (uint32_t s, const uint8_t* d = 0);// Add some data to end
+  virtual void Add (Ptr<Packet> p);
   // Inquire available data from (f,o) sequence pair
   virtual uint32_t SizeFromSeq (const SequenceNumber&, const SequenceNumber&);
   // Inquire available data from offset

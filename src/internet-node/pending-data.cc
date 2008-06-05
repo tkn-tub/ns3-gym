@@ -98,6 +98,12 @@ void PendingData::Add (uint32_t s, const uint8_t* d)
   size += s;
 }
 
+void PendingData::Add (Ptr<Packet> p)
+{
+  data.push_back(p);
+  size += p->GetSize();
+}
+
 uint32_t PendingData::SizeFromSeq (const SequenceNumber& f, const SequenceNumber& o)
 {
   uint32_t o1 = OffsetFromSeq (f,o); // Offset to start of unused data

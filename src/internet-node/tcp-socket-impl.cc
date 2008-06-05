@@ -347,43 +347,43 @@ TcpSocketImpl::Connect (const Address & address)
 }
 int 
 TcpSocketImpl::Send (const Ptr<Packet> p) //p here is just data, no headers
-{ // TCP Does not deal with packets from app, just data
-  return Send(p->PeekData(), p->GetSize());
-}
-
-int TcpSocketImpl::Send (const uint8_t* buf, uint32_t size)
 {
-  NS_LOG_FUNCTION (this << buf << size);
+  NS_LOG_FUNCTION (this << p);
   if (m_state == ESTABLISHED || m_state == SYN_SENT || m_state == CLOSE_WAIT)
-    { 
-      if (size > GetTxAvailable ())
-        {
-          m_wouldBlock = true;
-          m_errno = ERROR_MSGSIZE;
-          return -1;
-        }
-      if (!m_pendingData)
-        {
-          m_pendingData = new PendingData ();   // Create if non-existent
-          m_firstPendingSequence = m_nextTxSequence; // Note seq of first
-        }
-      //PendingData::Add always copies the data buffer, never modifies
-      m_pendingData->Add (size,buf);
-      NS_LOG_DEBUG("TcpSock::Send, pdsize " << m_pendingData->Size() << 
-                   " state " << m_state);
-      Actions_t action = ProcessEvent (APP_SEND);
-      NS_LOG_DEBUG(" action " << action);
-      if (!ProcessAction (action)) 
-        {
-          return -1; // Failed, return zero
-        }
-      return size;
+  {
+    if (p->GetSize() > GetTxAvailable ())
+    {
+      m_wouldBlock = true;
+      m_errno = ERROR_MSGSIZE;
+      return -1;
     }
+    if (!m_pendingData)
+    {
+      m_pendingData = new PendingData ();   // Create if non-existent
+      m_firstPendingSequence = m_nextTxSequence; // Note seq of first
+    }
+    //PendingData::Add stores a copy of the Ptr p
+    m_pendingData->Add (p);
+    NS_LOG_DEBUG("TcpSock::Send, pdsize " << m_pendingData->Size() << 
+        " state " << m_state);
+    Actions_t action = ProcessEvent (APP_SEND);
+    NS_LOG_DEBUG(" action " << action);
+    if (!ProcessAction (action)) 
+    {
+      return -1; // Failed, return zero
+    }
+    return p->GetSize();
+  }
   else
   {
     m_errno = ERROR_NOTCONN;
     return -1;
   }
+}
+
+int TcpSocketImpl::Send (const uint8_t* buf, uint32_t size)
+{
+  return Send (Create<Packet> (buf, size));
 }
 
 int TcpSocketImpl::DoSendTo (Ptr<Packet> p, const Address &address)
