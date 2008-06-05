@@ -36,9 +36,9 @@ public:
    */
   Ipv4Header ();
   /**
-   * \brief Enable checksum calculation for IP (XXX currently has no effect)
+   * \brief Enable checksum calculation for this header.
    */
-  static void EnableChecksums (void);
+  void EnableChecksum (void);
   /**
    * \param size the size of the payload in bytes
    */
@@ -134,7 +134,7 @@ public:
    * \returns true if the ipv4 checksum is correct, false otherwise.
    *
    * If Ipv4Header::EnableChecksums has not been called prior to
-   * creating this packet, this method will always return true.
+   * deserializing this header, this method will always return true.
    */
   bool IsChecksumOk (void) const;
 
@@ -152,7 +152,7 @@ private:
     MORE_FRAGMENTS = (1<<1)
   };
 
-  static bool m_calcChecksum;
+  bool m_calcChecksum;
 
   uint16_t m_payloadSize;
   uint16_t m_identification;

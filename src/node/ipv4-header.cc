@@ -29,10 +29,9 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv4Header);
 
-bool Ipv4Header::m_calcChecksum = false;
-
 Ipv4Header::Ipv4Header ()
-  : m_payloadSize (0),
+  : m_calcChecksum (false),
+    m_payloadSize (0),
     m_identification (0),
     m_tos (0),
     m_ttl (0),
@@ -43,7 +42,7 @@ Ipv4Header::Ipv4Header ()
 {}
 
 void 
-Ipv4Header::EnableChecksums (void)
+Ipv4Header::EnableChecksum (void)
 {
   m_calcChecksum = true;
 }
