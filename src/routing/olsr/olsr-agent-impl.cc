@@ -38,6 +38,7 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/boolean.h"
 #include "ns3/uinteger.h"
+#include "ns3/enum.h"
 #include "ns3/trace-source-accessor.h"
 
 /********** Useful macros **********/
@@ -53,17 +54,6 @@
 
 
 
-/********** Intervals **********/
-
-/// HELLO messages emission interval.
-#define OLSR_HELLO_INTERVAL	Seconds (2)
-
-/// TC messages emission interval.
-#define OLSR_TC_INTERVAL	Seconds (5)
-
-/// MID messages emission interval.
-#define OLSR_MID_INTERVAL	OLSR_TC_INTERVAL
-
 ///
 /// \brief Period at which a node must cite every link and every neighbor.
 ///
@@ -77,11 +67,11 @@
 /// Neighbor holding time.
 #define OLSR_NEIGHB_HOLD_TIME	(Scalar (3) * OLSR_REFRESH_INTERVAL)
 /// Top holding time.
-#define OLSR_TOP_HOLD_TIME	(Scalar (3) * OLSR_TC_INTERVAL)
+#define OLSR_TOP_HOLD_TIME	(Scalar (3) * m_tcInterval)
 /// Dup holding time.
 #define OLSR_DUP_HOLD_TIME	Seconds (30)
 /// MID holding time.
-#define OLSR_MID_HOLD_TIME	(Scalar (3) * OLSR_MID_INTERVAL)
+#define OLSR_MID_HOLD_TIME	(Scalar (3) * m_midInterval)
 
 
 /********** Link types **********/
@@ -122,7 +112,7 @@
 /********** Miscellaneous constants **********/
 
 /// Maximum allowed jitter.
-#define OLSR_MAXJITTER		(OLSR_HELLO_INTERVAL.GetSeconds () / 4)
+#define OLSR_MAXJITTER		(m_helloInterval.GetSeconds () / 4)
 /// Maximum allowed sequence number.
 #define OLSR_MAX_SEQ_NUM	65535
 /// Random number between [0-OLSR_MAXJITTER] used to jitter OLSR packet transmission.
@@ -156,22 +146,26 @@ AgentImpl::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::olsr::AgentImpl")
     .SetParent<Agent> ()
     .AddConstructor<AgentImpl> ()
-    .AddAttribute ("HelloInterval", "XXX",
-                   TimeValue (OLSR_HELLO_INTERVAL),
+    .AddAttribute ("HelloInterval", "HELLO messages emission interval.",
+                   TimeValue (Seconds (2)),
                    MakeTimeAccessor (&AgentImpl::m_helloInterval),
                    MakeTimeChecker ())
-    .AddAttribute ("TcInterval", "XXX",
-                   TimeValue (OLSR_TC_INTERVAL),
+    .AddAttribute ("TcInterval", "TC messages emission interval.",
+                   TimeValue (Seconds (5)),
                    MakeTimeAccessor (&AgentImpl::m_tcInterval),
                    MakeTimeChecker ())
-    .AddAttribute ("MidInterval", "XXX",
-                   TimeValue (OLSR_MID_INTERVAL),
+    .AddAttribute ("MidInterval", "MID messages emission interval.  Normally it is equal to TcInterval.",
+                   TimeValue (Seconds (5)),
                    MakeTimeAccessor (&AgentImpl::m_midInterval),
                    MakeTimeChecker ())
-    .AddAttribute ("Willingness", "XXX",
-                   UintegerValue (OLSR_WILL_DEFAULT),
-                   MakeUintegerAccessor (&AgentImpl::m_willingness),
-                   MakeUintegerChecker<uint8_t> ())
+    .AddAttribute ("Willingness", "Willingness of a node to carry and forward traffic for other nodes.",
+                   EnumValue (OLSR_WILL_DEFAULT),
+                   MakeEnumAccessor (&AgentImpl::m_willingness),
+                   MakeEnumChecker (OLSR_WILL_NEVER, "never",
+                                    OLSR_WILL_LOW, "low",
+                                    OLSR_WILL_DEFAULT, "default",
+                                    OLSR_WILL_HIGH, "high",
+                                    OLSR_WILL_ALWAYS, "always"))
     .AddTraceSource ("Rx", "Receive OLSR packet.",
                      MakeTraceSourceAccessor (&AgentImpl::m_rxPacketTrace))
     .AddTraceSource ("Tx", "Send OLSR packet.",
