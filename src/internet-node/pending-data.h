@@ -24,6 +24,7 @@
 #ifndef __datapdu_h__
 #define __datapdu_h__
 
+#include "ns3/packet.h"
 #include "pending-data.h"
 #include "sequence-number.h"
 
@@ -47,7 +48,6 @@ public:
   uint8_t*  Construct (uint8_t*, uint32_t&); // Construct from buffer
   virtual void Clear ();// Remove all associated data
   virtual void Add (uint32_t s, const uint8_t* d = 0);// Add some data to end
-  virtual void Remove (uint32_t);      // Remove data from head
   // Inquire available data from (f,o) sequence pair
   virtual uint32_t SizeFromSeq (const SequenceNumber&, const SequenceNumber&);
   // Inquire available data from offset
@@ -60,10 +60,9 @@ public:
   PendingData*   Copy () const;          // Create a copy of this header
   PendingData*   CopyS (uint32_t);         // Copy with new size
   PendingData*   CopySD (uint32_t, uint8_t*); // Copy with new size, new data
-  virtual uint8_t* Contents() const { return data;}
 public:
   uint32_t size;        // Number of data bytes
-  uint8_t* data;         // Corresponding data (may be null)
+  std::vector<Ptr<Packet> > data;         // Corresponding data (may be null)
   // The next two fields allow simulated applications to exchange some info
   uint32_t msgSize;     // Total size of message
   uint32_t responseSize;// Size of response requested
