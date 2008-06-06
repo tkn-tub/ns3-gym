@@ -155,12 +155,12 @@ UdpL4Protocol::Receive(Ptr<Packet> packet,
   UdpHeader udpHeader;
   packet->RemoveHeader (udpHeader);
   Ipv4EndPointDemux::EndPoints endPoints =
-    m_endPoints->Lookup (destination, udpHeader.GetDestination (),
-                         source, udpHeader.GetSource (), interface);
+    m_endPoints->Lookup (destination, udpHeader.GetDestinationPort (),
+                         source, udpHeader.GetSourcePort (), interface);
   for (Ipv4EndPointDemux::EndPointsI endPoint = endPoints.begin ();
        endPoint != endPoints.end (); endPoint++)
     {
-      (*endPoint)->ForwardUp (packet->Copy (), source, udpHeader.GetSource ());
+      (*endPoint)->ForwardUp (packet->Copy (), source, udpHeader.GetSourcePort ());
     }
 }
 
@@ -172,8 +172,8 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
   NS_LOG_FUNCTION (this << packet << saddr << daddr << sport << dport);
 
   UdpHeader udpHeader;
-  udpHeader.SetDestination (dport);
-  udpHeader.SetSource (sport);
+  udpHeader.SetDestinationPort (dport);
+  udpHeader.SetSourcePort (sport);
   udpHeader.SetPayloadSize (packet->GetSize ());
   udpHeader.InitializeChecksum (saddr,
                                 daddr,

@@ -51,22 +51,22 @@ UdpHeader::EnableChecksums (void)
 }
 
 void 
-UdpHeader::SetDestination (uint16_t port)
+UdpHeader::SetDestinationPort (uint16_t port)
 {
   m_destinationPort = port;
 }
 void 
-UdpHeader::SetSource (uint16_t port)
+UdpHeader::SetSourcePort (uint16_t port)
 {
   m_sourcePort = port;
 }
 uint16_t 
-UdpHeader::GetSource (void) const
+UdpHeader::GetSourcePort (void) const
 {
   return m_sourcePort;
 }
 uint16_t 
-UdpHeader::GetDestination (void) const
+UdpHeader::GetDestinationPort (void) const
 {
   return m_destinationPort;
 }
