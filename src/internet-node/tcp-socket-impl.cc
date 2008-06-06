@@ -127,7 +127,8 @@ TcpSocketImpl::TcpSocketImpl(const TcpSocketImpl& sock)
     m_cnCount (sock.m_cnCount),
     m_rxAvailable (0),
     m_wouldBlock (false),
-    m_sndBufSize (sock.m_sndBufSize)
+    m_sndBufSize (sock.m_sndBufSize),
+    m_rcvBufSize(sock.m_rcvBufSize)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC("Invoked the copy constructor");
