@@ -18,7 +18,10 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "tag-list.h"
+#include "ns3/log.h"
 #include <vector>
+
+NS_LOG_COMPONENT_DEFINE ("TagList");
 
 #define USE_FREE_LIST 1
 #define FREE_LIST_SIZE 1000
@@ -115,11 +118,14 @@ TagList::Iterator::GetOffsetStart (void) const
 TagList::TagList ()
   : m_used (0),
     m_data (0)
-{}
+{
+  NS_LOG_FUNCTION (this);
+}
 TagList::TagList (const TagList &o)
   : m_used (o.m_used),
     m_data (o.m_data)
 {
+  NS_LOG_FUNCTION (this << &o);
   if (m_data != 0)
     {
       m_data->count++;
@@ -128,6 +134,7 @@ TagList::TagList (const TagList &o)
 TagList &
 TagList::operator = (const TagList &o)
 {
+  NS_LOG_FUNCTION (this << &o);
   if (this == &o)
     {
       return *this;
@@ -144,6 +151,7 @@ TagList::operator = (const TagList &o)
 }
 TagList::~TagList ()
 {
+  NS_LOG_FUNCTION (this);
   Deallocate (m_data);
   m_data = 0;
   m_used = 0;
@@ -152,6 +160,7 @@ TagList::~TagList ()
 TagBuffer
 TagList::Add (TypeId tid, uint32_t bufferSize, uint32_t start, uint32_t end)
 {
+  NS_LOG_FUNCTION (this << tid << bufferSize << start << end);
   uint32_t spaceNeeded = m_used + bufferSize + 4 + 4 + 4 + 4;
   NS_ASSERT (m_used <= spaceNeeded);
   if (m_data == 0)
@@ -181,6 +190,7 @@ TagList::Add (TypeId tid, uint32_t bufferSize, uint32_t start, uint32_t end)
 void 
 TagList::Add (const TagList &o)
 {
+  NS_LOG_FUNCTION (this << &o);
   TagList::Iterator i = o.Begin (0, 0xffffffff);
   while (i.HasNext ())
     {
@@ -193,6 +203,7 @@ TagList::Add (const TagList &o)
 void 
 TagList::RemoveAll (void)
 {
+  NS_LOG_FUNCTION (this);
   Deallocate (m_data);
   m_data = 0;
   m_used = 0;
@@ -201,6 +212,7 @@ TagList::RemoveAll (void)
 TagList::Iterator 
 TagList::Begin (uint32_t offsetStart, uint32_t offsetEnd) const
 {
+  NS_LOG_FUNCTION (this << offsetStart << offsetEnd);
   if (m_data == 0)
     {
       return Iterator (0, 0, offsetStart, offsetEnd);
@@ -214,6 +226,7 @@ TagList::Begin (uint32_t offsetStart, uint32_t offsetEnd) const
 bool 
 TagList::IsDirtyAtEnd (uint32_t appendOffset)
 {
+  NS_LOG_FUNCTION (this << appendOffset);
   TagList::Iterator i = Begin (0, 0xffffffff);
   while (i.HasNext ())
     {
@@ -229,6 +242,7 @@ TagList::IsDirtyAtEnd (uint32_t appendOffset)
 bool 
 TagList::IsDirtyAtStart (uint32_t prependOffset)
 {
+  NS_LOG_FUNCTION (this << prependOffset);
   TagList::Iterator i = Begin (0, 0xffffffff);
   while (i.HasNext ())
     {
@@ -244,6 +258,7 @@ TagList::IsDirtyAtStart (uint32_t prependOffset)
 void 
 TagList::AddAtEnd (int32_t adjustment, uint32_t appendOffset)
 {
+  NS_LOG_FUNCTION (this << adjustment << appendOffset);
   if (adjustment == 0 && !IsDirtyAtEnd (appendOffset))
     {
       return;
@@ -277,6 +292,7 @@ TagList::AddAtEnd (int32_t adjustment, uint32_t appendOffset)
 void 
 TagList::AddAtStart (int32_t adjustment, uint32_t prependOffset)
 {
+  NS_LOG_FUNCTION (this << adjustment << prependOffset);
   if (adjustment == 0 && !IsDirtyAtStart (prependOffset))
     {
       return;
@@ -304,7 +320,7 @@ TagList::AddAtStart (int32_t adjustment, uint32_t prependOffset)
       TagBuffer buf = list.Add (item.tid, item.size, item.start, item.end);
       buf.CopyFrom (item.buf);
     }
-  *this = list;    
+  *this = list;
 }
 
 #ifdef USE_FREE_LIST
@@ -312,6 +328,7 @@ TagList::AddAtStart (int32_t adjustment, uint32_t prependOffset)
 struct TagListData *
 TagList::Allocate (uint32_t size)
 {
+  NS_LOG_FUNCTION (this << size);
   while (!g_freeList.empty ())
     {
       struct TagListData *data = g_freeList.back ();
@@ -337,6 +354,7 @@ TagList::Allocate (uint32_t size)
 void 
 TagList::Deallocate (struct TagListData *data)
 {
+  NS_LOG_FUNCTION (this << data);
   if (data == 0)
     {
       return;
@@ -363,6 +381,7 @@ TagList::Deallocate (struct TagListData *data)
 struct TagListData *
 TagList::Allocate (uint32_t size)
 {
+  NS_LOG_FUNCTION (this << size);
   uint8_t *buffer = new uint8_t [size + sizeof (struct TagListData) - 4];
   struct TagListData *data = (struct TagListData *)buffer;
   data->count = 1;
@@ -374,6 +393,7 @@ TagList::Allocate (uint32_t size)
 void 
 TagList::Deallocate (struct TagListData *data)
 {
+  NS_LOG_FUNCTION (this << data);
   if (data == 0)
     {
       return;

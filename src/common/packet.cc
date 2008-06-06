@@ -184,7 +184,7 @@ Packet::AddHeader (const Header &header)
   bool resized = m_buffer.AddAtStart (size);
   if (resized)
     {
-      m_tagList.AddAtStart (m_buffer.GetCurrentStartOffset () - orgStart,
+      m_tagList.AddAtStart (m_buffer.GetCurrentStartOffset () + size - orgStart,
                             m_buffer.GetCurrentStartOffset () + size);
     }
   header.Serialize (m_buffer.Begin ());
@@ -204,11 +204,11 @@ Packet::AddTrailer (const Trailer &trailer)
 {
   NS_LOG_FUNCTION (this << &trailer);
   uint32_t size = trailer.GetSerializedSize ();
-  uint32_t orgEnd = m_buffer.GetCurrentEndOffset ();
+  uint32_t orgStart = m_buffer.GetCurrentStartOffset ();
   bool resized = m_buffer.AddAtEnd (size);
   if (resized)
     {
-      m_tagList.AddAtEnd (m_buffer.GetCurrentEndOffset () - orgEnd,
+      m_tagList.AddAtEnd (m_buffer.GetCurrentStartOffset () - orgStart,
                           m_buffer.GetCurrentEndOffset () - size);
     }
   Buffer::Iterator end = m_buffer.End ();
@@ -657,6 +657,60 @@ public:
 
 };
 
+class ATestTrailerBase : public Trailer
+{
+public:
+  ATestTrailerBase () : Trailer (), m_error (false) {}
+  bool m_error;
+};
+
+template <int N>
+class ATestTrailer : public ATestTrailerBase
+{
+public:
+  static TypeId GetTypeId (void) {
+    std::ostringstream oss;
+    oss << "anon::ATestTrailer<" << N << ">";
+    static TypeId tid = TypeId (oss.str ().c_str ())
+      .SetParent<Header> ()
+      .AddConstructor<ATestTrailer<N> > ()
+      .HideFromDocumentation ()
+      ;
+    return tid;
+  }
+  virtual TypeId GetInstanceTypeId (void) const {
+    return GetTypeId ();
+  }
+  virtual uint32_t GetSerializedSize (void) const {
+    return N;
+  }
+  virtual void Serialize (Buffer::Iterator iter) const {
+    iter.Prev (N);
+    for (uint32_t i = 0; i < N; ++i)
+      {
+        iter.WriteU8 (N);
+      }
+  }
+  virtual uint32_t Deserialize (Buffer::Iterator iter) {
+    iter.Prev (N);
+    for (uint32_t i = 0; i < N; ++i)
+      {
+        uint8_t v = iter.ReadU8 ();
+        if (v != N)
+          {
+            m_error = true;
+          }
+      }
+    return N;
+  }
+  virtual void Print (std::ostream &os) const {
+  }
+  ATestTrailer ()
+    : ATestTrailerBase () {}
+
+};
+
+
 struct Expected
 {
   Expected (uint32_t n_, uint32_t start_, uint32_t end_)
@@ -669,6 +723,7 @@ struct Expected
 
 }
 
+// tag name, start, end
 #define E(a,b,c) a,b,c
 
 #define CHECK(p, n, ...)                                \
@@ -808,6 +863,30 @@ PacketTest::RunTests (void)
   frag0->AddHeader (ATestHeader<10> ());
   CHECK (frag0, 1, E (20, 10, 100));
 
+  {
+    Ptr<Packet> tmp = Create<Packet> (100);
+    tmp->AddTag (ATestTag<20> ());
+    CHECK (tmp, 1, E (20, 0, 100));
+    tmp->AddHeader (ATestHeader<10> ());
+    CHECK (tmp, 1, E (20, 10, 110));
+    ATestHeader<10> h;
+    tmp->RemoveHeader (h);
+    CHECK (tmp, 1, E (20, 0, 100));
+    tmp->AddHeader (ATestHeader<10> ());
+    CHECK (tmp, 1, E (20, 10, 110));
+
+    tmp = Create<Packet> (100);
+    tmp->AddTag (ATestTag<20> ());
+    CHECK (tmp, 1, E (20, 0, 100));
+    tmp->AddTrailer (ATestTrailer<10> ());
+    CHECK (tmp, 1, E (20, 0, 100));
+    ATestTrailer<10> t;
+    tmp->RemoveTrailer (t);
+    CHECK (tmp, 1, E (20, 0, 100));
+    tmp->AddTrailer (ATestTrailer<10> ());
+    CHECK (tmp, 1, E (20, 0, 100));
+    
+  }
   
 
   return result;
