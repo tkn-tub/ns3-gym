@@ -29,10 +29,9 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv4Header);
 
-bool Ipv4Header::m_calcChecksum = false;
-
 Ipv4Header::Ipv4Header ()
-  : m_payloadSize (0),
+  : m_calcChecksum (false),
+    m_payloadSize (0),
     m_identification (0),
     m_tos (0),
     m_ttl (0),
@@ -43,7 +42,7 @@ Ipv4Header::Ipv4Header ()
 {}
 
 void 
-Ipv4Header::EnableChecksums (void)
+Ipv4Header::EnableChecksum (void)
 {
   m_calcChecksum = true;
 }
@@ -178,6 +177,22 @@ Ipv4Header::IsChecksumOk (void) const
   return m_goodChecksum;
 }
 
+uint16_t
+Ipv4Header::ChecksumCalculate(Buffer::Iterator &i, uint16_t size)
+{
+  /* see RFC 1071 to understand this code. */
+  uint32_t sum = 0;
+
+  for (int j = 0; j < size/2; j++)
+    sum += i.ReadU16 ();
+
+  if (size & 1)
+     sum += i.ReadU8 ();
+
+  while (sum >> 16)
+    sum = (sum & 0xffff) + (sum >> 16);
+  return ~sum;
+}
 
 TypeId 
 Ipv4Header::GetTypeId (void)
@@ -266,16 +281,12 @@ Ipv4Header::Serialize (Buffer::Iterator start) const
 
   if (m_calcChecksum) 
     {
-#if 0
-      // XXX we need to add Buffer::Iterator::PeekData method
-      uint8_t *data = start.PeekData ();
-      uint16_t checksum = UtilsChecksumCalculate (0, data, GetSize ());
-      checksum = UtilsChecksumComplete (checksum);
+      i = start;
+      uint16_t checksum = ChecksumCalculate(i, 20);
       NS_LOG_LOGIC ("checksum=" <<checksum);
       i = start;
       i.Next (10);
       i.WriteU16 (checksum);
-#endif
     }
 }
 uint32_t
@@ -313,18 +324,11 @@ Ipv4Header::Deserialize (Buffer::Iterator start)
 
   if (m_calcChecksum) 
     {
-#if 0
-      uint8_t *data = start.PeekData ();
-      uint16_t localChecksum = UtilsChecksumCalculate (0, data, headerSize);
-      if (localChecksum == 0xffff) 
-        {
-          m_goodChecksum = true;
-        } 
-      else 
-        {
-          m_goodChecksum = false;
-        }
-#endif
+      i = start;
+      uint16_t checksum = ChecksumCalculate(i, headerSize);
+      NS_LOG_LOGIC ("checksum=" <<checksum);
+
+      m_goodChecksum = (checksum == 0);
     }
   return GetSerializedSize ();
 }

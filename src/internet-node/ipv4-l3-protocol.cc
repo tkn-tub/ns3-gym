@@ -30,6 +30,7 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/object-vector.h"
 #include "ns3/ipv4-header.h"
+#include "ns3/boolean.h"
 #include "arp-l3-protocol.h"
 
 #include "ipv4-l3-protocol.h"
@@ -57,6 +58,11 @@ Ipv4L3Protocol::GetTypeId (void)
                    UintegerValue (64),
                    MakeUintegerAccessor (&Ipv4L3Protocol::m_defaultTtl),
                    MakeUintegerChecker<uint8_t> ())
+    .AddAttribute ("CalcChecksum", "If true, we calculate the checksum of outgoing packets"
+                   " and verify the checksum of incoming packets.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&Ipv4L3Protocol::m_calcChecksum),
+                   MakeBooleanChecker ())
     .AddTraceSource ("Tx", "Send ipv4 packet to outgoing interface.",
                    MakeTraceSourceAccessor (&Ipv4L3Protocol::m_txTrace))
     .AddTraceSource ("Rx", "Receive ipv4 packet from incoming interface.",
@@ -464,10 +470,15 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t pro
       index++;
     }
   Ipv4Header ipHeader;
+  if (m_calcChecksum)
+    {
+      ipHeader.EnableChecksum ();
+    }
   packet->RemoveHeader (ipHeader);
 
   if (!ipHeader.IsChecksumOk ()) 
     {
+      m_dropTrace (packet);
       return;
     }
 
@@ -489,6 +500,11 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   NS_LOG_FUNCTION (this << packet << source << destination << protocol);
 
   Ipv4Header ipHeader;
+
+  if (m_calcChecksum)
+    {
+      ipHeader.EnableChecksum ();
+    }
 
   ipHeader.SetSource (source);
   ipHeader.SetDestination (destination);
