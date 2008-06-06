@@ -205,8 +205,8 @@ private:
   bool m_wouldBlock;  // set to true whenever socket would block on send()
 
   // Attributes
-  uint32_t m_rcvBufSize;   // maximum receive socket buffer size
   uint32_t m_sndBufSize;   // buffer limit for the outgoing queue
+  uint32_t m_rcvBufSize;   // maximum receive socket buffer size
 };
 
 }//namespace ns3
