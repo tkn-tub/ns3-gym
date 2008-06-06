@@ -167,7 +167,7 @@ Ptr<Packet> PendingData::CopyFromOffset (uint32_t s, uint32_t o)
             }
           else
             {
-              if (count > o + s1)
+              if (count >= o + s1)
                 {
                   end = i;
                   Ptr<Packet> toFragment = data[end];
@@ -183,7 +183,7 @@ Ptr<Packet> PendingData::CopyFromOffset (uint32_t s, uint32_t o)
           outPacket->AddAtEnd (data[i]);
         }
       outPacket->AddAtEnd(endFragment);
-      NS_ASSERT(outPacket->GetSize() == s);
+      NS_ASSERT(outPacket->GetSize() == s1);
       return outPacket;
     }
   else

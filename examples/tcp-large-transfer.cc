@@ -139,7 +139,7 @@ int main (int argc, char *argv[])
   //
   ///////////////////////////////////////////////////////////////////////////
 
-  int nBytes = 200000;
+  int nBytes = 2000000;
   uint16_t servPort = 50000;
 
   // Create a packet sink to receive these packets
@@ -195,7 +195,6 @@ void WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t nBytes)
 {
   // Perform series of 1040 byte writes (this is a multiple of 26 since
   // we want to detect data splicing in the output stream)
-  std::cout << "nBytes = " <<nBytes <<"@"<<Simulator::Now().GetSeconds()<<std::endl;
   uint32_t writeSize = 1040;
   uint8_t data[writeSize];
   while (nBytes > 0) {
