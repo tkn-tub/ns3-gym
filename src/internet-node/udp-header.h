@@ -49,19 +49,19 @@ public:
   /**
    * \param port the destination port for this UdpHeader
    */
-  void SetDestination (uint16_t port);
+  void SetDestinationPort (uint16_t port);
   /**
    * \param port The source port for this UdpHeader
    */
-  void SetSource (uint16_t port);
+  void SetSourcePort (uint16_t port);
   /**
    * \return The source port for this UdpHeader
    */
-  uint16_t GetSource (void) const;
+  uint16_t GetSourcePort (void) const;
   /**
    * \return the destination port for this UdpHeader
    */
-  uint16_t GetDestination (void) const;
+  uint16_t GetDestinationPort (void) const;
   /**
    * \param size The payload size in bytes
    */
