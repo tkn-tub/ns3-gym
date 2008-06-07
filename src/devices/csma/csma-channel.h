@@ -73,27 +73,14 @@ class CsmaNetDevice;
  * flag to indicate if the channel is currently in use. It does not
  * take into account the distances between stations or the speed of
  * light to determine collisions.
- *
- * Each net device must query the state of the channel and make sure
- * that it is IDLE before writing a packet to the channel.
- *
- * When the channel is instaniated, the constructor takes parameters
- * for a single speed, in bits per second, and a speed-of-light delay
- * time as a Time object.  When a net device is attached to a channel,
- * it is assigned a device ID, this is in order to facilitate the
- * check that makes sure that a net device that is trying to send a
- * packet to the channel is really connected to this channel
- *
  */
 class CsmaChannel : public Channel 
 {
 public:
   static TypeId GetTypeId (void);
+
   /**
    * \brief Create a CsmaChannel
-   *
-   * By default, you get a channel with the name "Csma Channel" that
-   * has an "infitely" fast transmission speed and zero delay.
    */
   CsmaChannel ();
 
@@ -104,6 +91,7 @@ public:
    * \return The assigned device number
    */
   int32_t Attach (Ptr<CsmaNetDevice> device);
+
   /**
    * \brief Detach a given netdevice from this channel
    *
@@ -116,6 +104,7 @@ public:
    * can't be found.
    */
   bool Detach (Ptr<CsmaNetDevice> device);
+
   /**
    * \brief Detach a given netdevice from this channel
    *
@@ -129,6 +118,7 @@ public:
    * can't be found.
    */
   bool Detach (uint32_t deviceId);
+
   /**
    * \brief Reattach a previously detached net device to the channel
    *
@@ -143,6 +133,7 @@ public:
    * channel or can't be found.
    */
   bool Reattach(uint32_t deviceId);
+
   /**
    * \brief Reattach a previously detached net device to the channel
    *
@@ -156,6 +147,7 @@ public:
    * channel or can't be found.
    */
   bool Reattach(Ptr<CsmaNetDevice> device);
+
   /**
    * \brief Start transmitting a packet over the channel
    *
@@ -171,6 +163,7 @@ public:
    * device is currently active.
    */
   bool TransmitStart (Ptr<Packet> p, uint32_t srcId);
+
   /**
    * \brief Indicates that the net device has finished transmitting
    * the packet over the channel
@@ -186,6 +179,7 @@ public:
    * completed its transmission.
    */
   bool TransmitEnd ();
+
   /**
    * \brief Indicates that the channel has finished propagating the
    * current packet. The channel is released and becomes free.
@@ -193,7 +187,8 @@ public:
    * Calls the receive function of every active net device that is
    * attached to the channel.
    */
-  void PropagationCompleteEvent();
+  void PropagationCompleteEvent ();
+
   /**
    * \return Returns the device number assigned to a net device by the
    * channel
@@ -202,11 +197,12 @@ public:
    * number is needed
    */
   int32_t GetDeviceNum (Ptr<CsmaNetDevice> device);
+
   /**
    * \return Returns the state of the channel (IDLE -- free,
    * TRANSMITTING -- busy, PROPAGATING - busy )
    */
-  WireState GetState();
+  WireState GetState ();
 
   /**
    * \brief Indicates if the channel is busy. The channel will only
@@ -215,7 +211,7 @@ public:
    * \return Returns true if the channel is busy and false if it is
    * free.
    */
-  bool IsBusy();
+  bool IsBusy ();
   
   /**
    * \brief Indicates if a net device is currently attached or
@@ -226,19 +222,32 @@ public:
    * \return Returns true if the net device is attached to the
    * channel, false otherwise.
    */
-  bool IsActive(uint32_t deviceId);
+  bool IsActive (uint32_t deviceId);
+
   /**
    * \return Returns the number of net devices that are currently
    * attached to the channel.
    */
   uint32_t GetNumActDevices (void);
+
   /**
    * \return Returns the total number of devices including devices
    * that have been detached from the channel.
    */
   virtual uint32_t GetNDevices (void) const;
-  virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
+
   /**
+   * \return Get a NetDevice pointer to a connected network device.
+   *
+   * \param i The index of the net device.
+   * \return Returns the pointer to the net device that is associated
+   * with deviceId i.
+   */
+  virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
+
+  /**
+   * \return Get a CsmaNetDevice pointer to a connected network device.
+   *
    * \param i The deviceId of the net device for which we want the
    * pointer.
    * \return Returns the pointer to the net device that is associated
@@ -246,13 +255,32 @@ public:
    */
   Ptr<CsmaNetDevice> GetCsmaDevice (uint32_t i) const;
 
+  /**
+   * Get the assigned data rate of the channel
+   *
+   * \return Returns the DataRate to be used by device transmitters.
+   * with deviceId i.
+   */
   virtual DataRate GetDataRate (void);
+
+  /**
+   * Get the assigned speed-of-light delay of the channel
+   *
+   * \return Returns the delay used by the channel.
+   */
   virtual Time GetDelay (void);
 
 private:
 
-  DataRate      m_bps;    /// Data rate of the channel
-  Time          m_delay;  /// Delay of the channel.
+  /**
+   * The assigned data rate of the channel
+   */
+  DataRate      m_bps;
+
+  /**
+   * The assigned speed-of-light delay of the channel
+   */
+  Time          m_delay;
 
   /**
    * List of the net devices that have been or are currently connected
@@ -265,19 +293,22 @@ private:
    * whole list does not have to be searched when making sure that a
    * source is attached to a channel when it is transmitting data.
    */
-  std::vector< CsmaDeviceRec >            m_deviceList;
+  std::vector<CsmaDeviceRec> m_deviceList;
+
   /**
-   * Packet that is currently being transmitted on the channel (or last
+   * The Packet that is currently being transmitted on the channel (or last
    * packet to have been transmitted on the channel if the channel is
    * free.)
    */
-  Ptr<Packet>                         m_currentPkt;
+  Ptr<Packet> m_currentPkt;
+
   /**
    * Device Id of the source that is currently transmitting on the
    * channel. Or last source to have transmitted a packet on the
    * channel, if the channel is currently not busy.
    */
   uint32_t                            m_currentSrc;
+
   /**
    * Current state of the channel
    */

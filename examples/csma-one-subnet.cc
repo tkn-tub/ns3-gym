@@ -66,7 +66,7 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Build Topology");
   CsmaHelper csma;
-  csma.SetChannelParameter ("BitRate", DataRateValue (5000000));
+  csma.SetChannelParameter ("DataRate", DataRateValue (5000000));
   csma.SetChannelParameter ("Delay", TimeValue (MilliSeconds (2)));
 //
 // Now fill out the topology by creating the net devices required to connect

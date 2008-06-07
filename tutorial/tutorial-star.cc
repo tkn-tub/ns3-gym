@@ -55,7 +55,7 @@ main (int argc, char *argv[])
   internet.Install (n);
 
   PointToPointHelper p2p;
-  p2p.SetChannelParameter ("BitRate", StringValue ("38400bps"));
+  p2p.SetDeviceParameter ("DataRate", StringValue ("38400bps"));
   p2p.SetChannelParameter ("Delay", StringValue ("20ms"));
 
   NetDeviceContainer d01 = p2p.Install (n01);

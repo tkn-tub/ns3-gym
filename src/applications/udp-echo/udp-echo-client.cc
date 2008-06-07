@@ -37,19 +37,23 @@ UdpEchoClient::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::UdpEchoClient")
     .SetParent<Application> ()
     .AddConstructor<UdpEchoClient> ()
-    .AddAttribute ("MaxPackets", "XXX",
+    .AddAttribute ("MaxPackets", 
+                   "The maximum number of packets the application will send",
                    UintegerValue (100),
                    MakeUintegerAccessor (&UdpEchoClient::m_count),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("Interval", "XXX",
+    .AddAttribute ("Interval", 
+                   "The time to wait between packets",
                    TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&UdpEchoClient::m_interval),
                    MakeTimeChecker ())
-    .AddAttribute ("RemoteIpv4", "XXX",
+    .AddAttribute ("RemoteIpv4", 
+                   "The Ipv4Address of the outbound packets",
                    Ipv4AddressValue (),
                    MakeIpv4AddressAccessor (&UdpEchoClient::m_peerAddress),
                    MakeIpv4AddressChecker ())
-    .AddAttribute ("RemotePort", "XXX",
+    .AddAttribute ("RemotePort", 
+                   "The destination port of the outbound packets",
                    UintegerValue (0),
                    MakeUintegerAccessor (&UdpEchoClient::m_peerPort),
                    MakeUintegerChecker<uint16_t> ())

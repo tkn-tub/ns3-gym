@@ -200,7 +200,8 @@ main (int argc, char *argv[])
       // collection.
       //
       CsmaHelper csma;
-      csma.SetChannelParameter ("BitRate", DataRateValue (DataRate (5000000)));
+      csma.SetChannelParameter ("DataRate", 
+        DataRateValue (DataRate (5000000)));
       csma.SetChannelParameter ("Delay", TimeValue (MilliSeconds (2)));
       NetDeviceContainer lanDevices = csma.Install (lan);
       //

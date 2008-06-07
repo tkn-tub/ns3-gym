@@ -30,6 +30,19 @@
  * - Rx:            A trace source for received packets;
  * - Drop:          A trace source for dropped packets.
  *
+ * The ns3::PointToPointNetDevice models a transmitter section that puts bits
+ * on a corresponding channel "wire."  THe DataRate attribute specifies the
+ * number of bits per second that the device will simulate sending over the 
+ * channel.  In reality no bits are sent, but an event is scheduled for an
+ * elapsed time consistent with the number of bits in each packet and the 
+ * specified DataRate.  The implication here is that the receiving device
+ * models a receiver section that can receive any any data rate.  Therefore
+ * there is no need, nor way to set a receive data rate in this model.  By
+ * setting the DataRate on the transmitter of both devices connected to a 
+ * given ns3::PointToPointChannel one can model a symmetric channel; or by 
+ * setting different DataRates one can model an asymmetric channel (e.g., 
+ * ADSL).
+ *
  * The ns3::PointToPointNetDevice supports the assignment of a "receive error 
  * model."  This is an ns3::ErrorModel object that is used to simulate data
  * corruption on the link.
@@ -40,6 +53,7 @@
  * beyond the eight bits per byte of the packet sent.  That is, we do not 
  * model Flag Sequences, Frame Check Sequences nor do we "escape" any data.
  *
- * The ns3::PointToPointChannel does model a speed-of-light or transmission
- * delay which can be set and get via the attribute "Delay."
+ * The ns3::PointToPointNetChannel provides following Attributes:
+ *
+ * - Delay:       The speed of light transmission delay for the channel.
  */
