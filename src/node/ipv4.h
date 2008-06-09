@@ -74,7 +74,7 @@ public:
   typedef Callback<void, bool, const Ipv4Route&, Ptr<Packet>, const Ipv4Header&> RouteReplyCallback;
 
   /**
-   * \brief Asynchronously requests a route for a given packet and IP header
+   * \brief Request that a packet be routed.
    *
    * \param ifIndex The interface index on which the packet was received.
    * \param ipHeader IP header of the packet
@@ -94,7 +94,7 @@ public:
    * RequestRoute() should return false and the routeReply callback
    * must not be invoked.
    *
-   * If the routing protocol implementations assumes it can provide
+   * If the routing protocol implementation assumes that it can provide
    * the requested route, then it should return true, and the
    * routeReply callback must be invoked, either immediately before
    * returning true (synchronously), or in the future (asynchronous).
@@ -105,6 +105,11 @@ public:
    * allowed to add a new header to the packet, which will appear
    * immediately after the IP header, although most routing do not
    * insert any extra header.
+   *
+   * Multicast routing is expected to be supported in this method.  If a
+   * multicast route is encountered, all routes to a given multicast
+   * destination will be serviced by cloning the packet and calling the 
+   * route reply callback once for each outgoing interface in the route.
    */
   virtual bool RequestRoute (uint32_t ifIndex,
                              const Ipv4Header &ipHeader,
