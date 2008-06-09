@@ -4,29 +4,29 @@ def build(bld):
     obj = bld.create_ns3_program('hello-simulator', ['simulator'])
     obj.source = 'hello-simulator.cc'
 
-    obj = bld.create_ns3_program('tutorial-csma-echo', ['internet-node', 'csma'])
+    obj = bld.create_ns3_program('tutorial-csma-echo', ['internet-stack', 'csma'])
     obj.source = 'tutorial-csma-echo.cc'
 
-    obj = bld.create_ns3_program('tutorial-csma-echo-ascii-trace', ['internet-node', 'csma'])
+    obj = bld.create_ns3_program('tutorial-csma-echo-ascii-trace', ['internet-stack', 'csma'])
     obj.source = 'tutorial-csma-echo-ascii-trace.cc'
 
-    obj = bld.create_ns3_program('tutorial-csma-echo-pcap-trace', ['internet-node', 'csma'])
+    obj = bld.create_ns3_program('tutorial-csma-echo-pcap-trace', ['internet-stack', 'csma'])
     obj.source = 'tutorial-csma-echo-pcap-trace.cc'
 
-    obj = bld.create_ns3_program('tutorial-point-to-point', ['internet-node', 'point-to-point'])
+    obj = bld.create_ns3_program('tutorial-point-to-point', ['internet-stack', 'point-to-point'])
     obj.source = 'tutorial-point-to-point.cc'
 
-    obj = bld.create_ns3_program('tutorial-star', ['internet-node', 'point-to-point'])
+    obj = bld.create_ns3_program('tutorial-star', ['internet-stack', 'point-to-point'])
     obj.source = ['tutorial-star.cc']
 
-    obj = bld.create_ns3_program('tutorial-star-routing', ['internet-node', 'point-to-point'])
+    obj = bld.create_ns3_program('tutorial-star-routing', ['internet-stack', 'point-to-point'])
     obj.source = ['tutorial-star-routing.cc']
 
-    obj = bld.create_ns3_program('tutorial-linear-dumbbell', ['internet-node', 'point-to-point'])
+    obj = bld.create_ns3_program('tutorial-linear-dumbbell', ['internet-stack', 'point-to-point'])
     obj.source = 'tutorial-linear-dumbbell.cc'
 
     obj = bld.create_ns3_program('testipv4', ['node'])
     obj.source = ['testipv4.cc']
 
-    obj = bld.create_ns3_program('tutorial-bus-network', ['internet-node'])
+    obj = bld.create_ns3_program('tutorial-bus-network', ['internet-stack'])
     obj.source = ['tutorial-bus-network.cc']

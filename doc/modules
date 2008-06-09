@@ -42,13 +42,12 @@
  *
  * @defgroup devices Devices
  *
- * @defgroup internetNode InternetNode
+ * @defgroup internetStack InternetStack
  * 
- * The "internet-node" module contains a set of classes which implement the
- * APIs defined in the "node" module:
- *    - an Ipv4/Udp stack with socket support 
+ * The "internet-stack" module contains:
+ *    - an Ipv4 stack
  *    - an ARP module
- *    - an InternetNode class which is a Node subclass.
+ *    - a UDP and a TCP implementation
  *    
  * @defgroup helper Helpers
  * 
