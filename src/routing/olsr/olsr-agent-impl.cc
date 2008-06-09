@@ -305,7 +305,7 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket)
   Ptr<Packet> receivedPacket;
   receivedPacket = socket->Recv ();
 
-  SocketRxAddressTag tag;
+  SocketAddressTag tag;
   bool found;
   found = receivedPacket->FindFirstMatchingTag (tag);
   NS_ASSERT (found);

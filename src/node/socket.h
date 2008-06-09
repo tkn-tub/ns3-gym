@@ -92,27 +92,22 @@ public:
    * \param tid The TypeId of the socket to create
    */
   static Ptr<Socket> CreateSocket (Ptr<Node> node, TypeId tid);
-
   /**
    * \return the errno associated to the last call which failed in this
    *         socket. Each socket's errno is initialized to zero
    *         when the socket is created.
    */
   virtual enum Socket::SocketErrno GetErrno (void) const = 0;
-
   /**
    * \returns the node this socket is associated with.
    */
   virtual Ptr<Node> GetNode (void) const = 0;
-
-  void SetCloseUnblocksCallback (Callback<void, Ptr<Socket> > closeUnblocks);
 
   /**
    * \param closeCompleted Callback invoked when the close operation is
    *        completed.
    */
   void SetCloseCallback (Callback<void, Ptr<Socket> > closeCompleted);
-
   /**
    * \param connectionSucceeded this callback is invoked when the 
    *        connection request initiated by the user is successfully 
@@ -165,7 +160,8 @@ public:
    *        user should check this return value to confirm that the
    *        callback is supported.
    */
-  virtual bool SetDataSentCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent);
+  virtual bool SetDataSentCallback (Callback<void, Ptr<Socket>, 
+                                    uint32_t> dataSent);
   /**
    * \brief Notify application when space in transmit buffer is added
    *
@@ -242,12 +238,26 @@ public:
   virtual int Listen (uint32_t queueLimit) = 0;
 
   /**
+   * \brief Returns the number of bytes which can be sent in a single call
+   * to Send. 
+   * 
+   * For datagram sockets, this returns the number of bytes that
+   * can be passed atomically through the underlying protocol.
+   *
+   * For stream sockets, this returns the available space in bytes
+   * left in the transmit buffer.
+   */
+  virtual uint32_t GetTxAvailable (void) const = 0;
+ 
+  /**
    * \brief Send data (or dummy data) to the remote host
    *
    * This function matches closely in semantics to the send() function
    * call in the standard C library (libc):
    *   ssize_t send (int s, const void *msg, size_t len, int flags);
-   * except that the function call is asynchronous.
+   * except that the send I/O is asynchronous.  This is the
+   * primary Send method at this low-level API and must be implemented 
+   * by subclasses.
    * 
    * In a typical blocking sockets model, this call would block upon
    * lack of space to hold the message to be sent.  In ns-3 at this
@@ -272,96 +282,231 @@ public:
    * split the Packet (based on information obtained from 
    * GetTxAvailable) and reattempt to send the data.
    *
+   * The flags argument is formed by or'ing one or more of the values:     
+   *        MSG_OOB        process out-of-band data 
+   *        MSG_DONTROUTE  bypass routing, use direct interface 
+   * These flags are _unsupported_ as of ns-3.1.  
+   *
    * \param p ns3::Packet to send
+   * \param flags Socket control flags
    * \returns the number of bytes accepted for transmission if no error
    *          occurs, and -1 otherwise.
-   */
-  virtual int Send (Ptr<Packet> p) = 0;
-  
-  /**
-   * \brief Returns the number of bytes which can be sent in a single call
-   * to Send. 
-   * 
-   * For datagram sockets, this returns the number of bytes that
-   * can be passed atomically through the underlying protocol.
    *
-   * For stream sockets, this returns the available space in bytes
-   * left in the transmit buffer.
+   * \see SetSendCallback
    */
-  virtual uint32_t GetTxAvailable (void) const = 0;
+  virtual int Send (Ptr<Packet> p, uint32_t flags) = 0;
 
   /**
-   * \brief Send data (or dummy data) to the remote host
-   * \param buf A pointer to a raw byte buffer of some data to send.  If this 
-   * is 0, we send dummy data whose size is specified by the second parameter
-   * \param size the number of bytes to copy from the buffer
-   * 
-   * This is provided so as to have an API which is closer in appearance 
-   * to that of real network or BSD sockets.  
-   */
-  int Send (const uint8_t* buf, uint32_t size);
-  
-  /**
    * \brief Send data to a specified peer.
+   *
+   * This method has similar semantics to Send () but subclasses may
+   * want to provide checks on socket state, so the implementation is
+   * pushed to subclasses.
+   *
    * \param p packet to send
-   * \param address IP Address of remote host
+   * \param flags Socket control flags
+   * \param toAddress IP Address of remote host
    * \returns -1 in case of error or the number of bytes copied in the 
    *          internal buffer and accepted for transmission.
    */
-  virtual int SendTo (Ptr<Packet> p, const Address &address) = 0;
+  virtual int SendTo (Ptr<Packet> p, uint32_t flags, 
+    const Address &toAddress) = 0;
 
-  /**
-   * \brief Send data to a specified peer.
-   * \param buf A pointer to a raw byte buffer of some data to send.  If this 
-   * is 0, we send dummy data whose size is specified by the third parameter
-   * \param size the number of bytes to copy from the buffer
-   * \param address IP Address of remote host
-   * \returns -1 in case of error or the number of bytes copied in the 
-   *          internal buffer and accepted for transmission.
-   *
-   * This is provided so as to have an API which is closer in appearance 
-   * to that of real network or BSD sockets.
-   */
-  int SendTo (const uint8_t* buf, uint32_t size, const Address &address); 
-
-  /**
-   * \brief Read a single packet from the socket
-   * \param maxSize reader will accept packet up to maxSize
-   * \param flags Socket recv flags
-   * \returns Ptr<Packet> of the next in-sequence packet.  Returns
-   * 0 if the socket cannot return a next in-sequence packet conforming
-   * to the maxSize and flags.
-   */
-  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags) = 0;
-  /**
-   * \brief Read a single packet from the socket
-   *
-   *      Overloaded version of Recv(maxSize, flags) with maxSize
-   *      implicitly set to maximum sized integer, and flags set to zero.
-   *
-   * \returns Ptr<Packet> of the next in-sequence packet.  Returns
-   * 0 if the socket cannot return a next in-sequence packet.
-   */
-   Ptr<Packet> Recv (void);
-  /**
-   * \brief Recv data (or dummy data) from the remote host
-   * \param buf A pointer to a raw byte buffer to write the data to. 
-   * If the underlying packet was carring null (fake) data, this buffer
-   * will be zeroed up to the length specified by the return value.
-   * \param size Number of bytes (at most) to copy to buf
-   * \param flags any flags to pass to the socket
-   * \returns number of bytes copied into buf
-   * 
-   * This is provided so as to have an API which is closer in appearance 
-   * to that of real network or BSD sockets.  
-   */
-  int Recv (uint8_t* buf, uint32_t size, uint32_t flags);
   /**
    * Return number of bytes which can be returned from one or 
    * multiple calls to Recv.
    * Must be possible to call this method from the Recv callback.
    */
   virtual uint32_t GetRxAvailable (void) const = 0;
+
+  /**
+   * \brief Read data from the socket
+   *
+   * This function matches closely in semantics to the recv() function
+   * call in the standard C library (libc):
+   *   ssize_t recv (int s, void *buf, size_t len, int flags);
+   * except that the receive I/O is asynchronous.  This is the
+   * primary Recv method at this low-level API and must be implemented 
+   * by subclasses.
+   * 
+   * This method is normally used only on a connected socket.
+   * In a typical blocking sockets model, this call would block until
+   * at least one byte is returned or the connection closes.  
+   * In ns-3 at this API, the call returns immediately in such a case
+   * and returns 0 if nothing is available to be read.
+   * However, an application can set a callback, ns3::SetRecvCallback,
+   * to be notified of data being available to be read
+   * (when it conceptually unblocks); this is an asynchronous
+   * I/O model for recv().
+   * 
+   * This variant of Recv() uses class ns3::Packet to encapsulate
+   * data, rather than providing a raw pointer and length field.  
+   * This allows an ns-3 application to attach tags if desired (such
+   * as a flow ID) and may allow the simulator to avoid some data
+   * copies.  Despite the appearance of receiving Packets on a stream
+   * socket, just think of it as a fancy byte buffer with streaming
+   * semantics.    
+   *
+   * The semantics depend on the type of socket.  For a datagram socket,
+   * each Recv() returns the data from at most one Send(), and order
+   * is not necessarily preserved.  For a stream socket, the bytes
+   * are delivered in order, and on-the-wire packet boundaries are
+   * not preserved.  
+   * 
+   * The flags argument is formed by or'ing one or more of the values:     
+   *        MSG_OOB        process out-of-band data
+   *        MSG_PEEK       peek at incoming message
+   * These flags are _unsupported_ as of ns-3.1.  
+   *
+   * Some variants of Recv() are supported as additional API,
+   * including RecvFrom(), overloaded Recv() without arguments,
+   * and variants that use raw character buffers.
+   *
+   * \param maxSize reader will accept packet up to maxSize
+   * \param flags Socket control flags
+   * \returns Ptr<Packet> of the next in-sequence packet.  Returns
+   * 0 if the socket cannot return a next in-sequence packet conforming
+   * to the maxSize and flags.
+   *
+   * \see SetRecvCallback
+   */
+  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags) = 0;
+
+  /**
+   * \brief Read a single packet from the socket and retrieve the sender 
+   * address.
+   *
+   * Calls Recv(maxSize, flags) with maxSize
+   * implicitly set to maximum sized integer, and flags set to zero.
+   *
+   * This method has similar semantics to Recv () but subclasses may   
+   * want to provide checks on socket state, so the implementation is   
+   * pushed to subclasses.
+   *
+   * \param maxSize reader will accept packet up to maxSize
+   * \param flags Socket control flags
+   * \param fromAddress output parameter that will return the
+   * address of the sender of the received packet, if any.  Remains
+   * untouched if no packet is received.
+   * \returns Ptr<Packet> of the next in-sequence packet.  Returns
+   * 0 if the socket cannot return a next in-sequence packet.
+   */
+  virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,  
+    Address &fromAddress) = 0;
+
+  /////////////////////////////////////////////////////////////////////
+  //   The remainder of these public methods are overloaded methods  //
+  //   or variants of Send() and Recv(), and they are non-virtual    //
+  /////////////////////////////////////////////////////////////////////
+ 
+  /**
+   * \brief Send data (or dummy data) to the remote host
+   * 
+   * Overloaded version of Send(..., flags) with flags set to zero.
+   *
+   * \param p ns3::Packet to send
+   * \returns the number of bytes accepted for transmission if no error
+   *          occurs, and -1 otherwise.
+   */
+  int Send (Ptr<Packet> p);
+
+  /**
+   * \brief Send data (or dummy data) to the remote host
+   * 
+   * This method is provided so as to have an API which is closer in 
+   * appearance to that of real network or BSD sockets.  
+   *
+   * \param buf A pointer to a raw byte buffer of some data to send.  If 
+   * this buffer is 0, we send dummy data whose size is specified by the 
+   * second parameter
+   * \param size the number of bytes to copy from the buffer
+   * \param flags Socket control flags
+   */
+  int Send (const uint8_t* buf, uint32_t size, uint32_t flags);
+  
+
+  /**
+   * \brief Send data to a specified peer.
+   *
+   * This method is provided so as to have an API which is closer in 
+   * appearance to that of real network or BSD sockets.  
+   *
+   * \param buf A pointer to a raw byte buffer of some data to send.  
+   * If this is 0, we send dummy data whose size is specified by the 
+   * third parameter
+   * \param size the number of bytes to copy from the buffer
+   * \param flags Socket control flags
+   * \param address IP Address of remote host
+   * \returns -1 in case of error or the number of bytes copied in the 
+   *          internal buffer and accepted for transmission.
+   *
+   */
+  int SendTo (const uint8_t* buf, uint32_t size, uint32_t flags, 
+              const Address &address); 
+
+  /**
+   * \brief Read a single packet from the socket
+   *
+   * Overloaded version of Recv(maxSize, flags) with maxSize
+   * implicitly set to maximum sized integer, and flags set to zero.
+   *
+   * \returns Ptr<Packet> of the next in-sequence packet.  Returns
+   * 0 if the socket cannot return a next in-sequence packet.
+   */
+   Ptr<Packet> Recv (void);
+
+  /**
+   * \brief Recv data (or dummy data) from the remote host
+   *
+   * This method is provided so as to have an API which is closer in 
+   * appearance to that of real network or BSD sockets.  
+   * 
+   * If the underlying packet was carring null (fake) data, this buffer
+   * will be zeroed up to the length specified by the return value.
+   *
+   * \param buf A pointer to a raw byte buffer to write the data to. 
+   * \param size Number of bytes (at most) to copy to buf
+   * \param flags any flags to pass to the socket
+   * \returns number of bytes copied into buf
+   */
+  int Recv (uint8_t* buf, uint32_t size, uint32_t flags);
+
+  /**
+   * \brief Read a single packet from the socket and retrieve the sender 
+   * address.
+   *
+   * Calls RecvFrom (maxSize, flags, fromAddress) with maxSize
+   * implicitly set to maximum sized integer, and flags set to zero.
+   *
+   * \param maxSize reader will accept packet up to maxSize
+   * \param flags Socket control flags
+   * \param fromAddress output parameter that will return the
+   * address of the sender of the received packet, if any.  Remains
+   * untouched if no packet is received.
+   * \returns Ptr<Packet> of the next in-sequence packet.  Returns
+   * 0 if the socket cannot return a next in-sequence packet.
+   */
+  Ptr<Packet> RecvFrom (Address &fromAddress);
+
+  /**
+   * \brief Read a single packet from the socket and retrieve the sender
+   * address.
+   *
+   * This method is provided so as to have an API which is closer in 
+   * appearance to that of real network or BSD sockets.  
+   * 
+   * \param buf A pointer to a raw byte buffer to write the data to. 
+   * If the underlying packet was carring null (fake) data, this buffer
+   * will be zeroed up to the length specified by the return value.
+   * \param size Number of bytes (at most) to copy to buf
+   * \param flags any flags to pass to the socket
+   * \param fromAddress output parameter that will return the
+   * address of the sender of the received packet, if any.  Remains
+   * untouched if no packet is received.
+   * \returns number of bytes copied into buf
+   */
+  int RecvFrom (uint8_t* buf, uint32_t size, uint32_t flags,
+                Address &fromAddress);
  
 protected:
   void NotifyCloseUnblocks (void);
@@ -391,13 +536,13 @@ protected:
 };
 
 /**
- * \brief This class implements a tag that carries the source address
- * of a packet across the receiving socket interface.
+ * \brief This class implements a tag that carries an address
+ * of a packet across the socket interface.
  */
-class SocketRxAddressTag : public Tag
+class SocketAddressTag : public Tag
 {
 public:
-  SocketRxAddressTag ();
+  SocketAddressTag ();
   void SetAddress (Address addr);
   Address GetAddress (void) const;
 

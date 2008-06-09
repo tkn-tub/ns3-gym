@@ -97,7 +97,7 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
   Ptr<Packet> packet;
   while (packet = socket->Recv ())
     {
-      SocketRxAddressTag tag;
+      SocketAddressTag tag;
       bool found;
       found = packet->FindFirstMatchingTag (tag); 
       NS_ASSERT (found);
@@ -110,7 +110,7 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
             address.GetIpv4());
 
           NS_LOG_LOGIC ("Echoing packet");
-          socket->SendTo (packet, from);
+          socket->SendTo (packet, 0, from);
         }
     }
 }

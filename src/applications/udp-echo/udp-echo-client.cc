@@ -156,7 +156,7 @@ UdpEchoClient::HandleRead (Ptr<Socket> socket)
   Ptr<Packet> packet;
   while (packet = socket->Recv ())
     {
-      SocketRxAddressTag tag;
+      SocketAddressTag tag;
       bool found;
       found  = packet->FindFirstMatchingTag (tag);
       NS_ASSERT (found);

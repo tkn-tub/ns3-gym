@@ -65,14 +65,14 @@ public:
   virtual int ShutdownSend (void);
   virtual int ShutdownRecv (void);
   virtual int Connect(const Address &address);
-  virtual int Send (Ptr<Packet> p);
-  virtual int Send (const uint8_t* buf, uint32_t size);
-  virtual int SendTo(Ptr<Packet> p, const Address &address);
-  virtual uint32_t GetTxAvailable (void) const;
   virtual int Listen(uint32_t queueLimit);
-
-  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
+  virtual uint32_t GetTxAvailable (void) const;
+  virtual int Send (Ptr<Packet> p, uint32_t flags);
+  virtual int SendTo(Ptr<Packet> p, uint32_t flags, const Address &toAddress);
   virtual uint32_t GetRxAvailable (void) const;
+  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
+  virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
+    Address &fromAddress);
 
 private:
   friend class Tcp;

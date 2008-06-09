@@ -93,13 +93,13 @@ public:
   virtual int ShutdownRecv (void);
   virtual int Connect(const Address &address);
   virtual int Listen(uint32_t queueLimit);
-  virtual int Send (Ptr<Packet> p);
   virtual uint32_t GetTxAvailable (void) const;
-
-  virtual int SendTo(Ptr<Packet> p, const Address &address);
-
-  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
+  virtual int Send (Ptr<Packet> p, uint32_t flags);
+  virtual int SendTo(Ptr<Packet> p, uint32_t flags, const Address &toAddress);
   virtual uint32_t GetRxAvailable (void) const;
+  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
+  virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
+    Address &fromAddress);
 
 private:
   void ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet, 

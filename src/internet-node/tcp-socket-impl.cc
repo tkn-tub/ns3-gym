@@ -346,8 +346,10 @@ TcpSocketImpl::Connect (const Address & address)
     }
   return -1;
 }
+
+//p here is just data, no headers
 int 
-TcpSocketImpl::Send (const Ptr<Packet> p) //p here is just data, no headers
+TcpSocketImpl::Send (Ptr<Packet> p, uint32_t flags) 
 {
   NS_LOG_FUNCTION (this << p);
   if (m_state == ESTABLISHED || m_state == SYN_SENT || m_state == CLOSE_WAIT)
@@ -380,11 +382,6 @@ TcpSocketImpl::Send (const Ptr<Packet> p) //p here is just data, no headers
     m_errno = ERROR_NOTCONN;
     return -1;
   }
-}
-
-int TcpSocketImpl::Send (const uint8_t* buf, uint32_t size)
-{
-  return Send (Create<Packet> (buf, size));
 }
 
 int TcpSocketImpl::DoSendTo (Ptr<Packet> p, const Address &address)
@@ -420,7 +417,7 @@ int TcpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address ipv4, uint16_t port)
 }
 
 int 
-TcpSocketImpl::SendTo (Ptr<Packet> p, const Address &address)
+TcpSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
 {
   NS_LOG_FUNCTION (this << address << p);
   if (!m_connected)
@@ -430,7 +427,7 @@ TcpSocketImpl::SendTo (Ptr<Packet> p, const Address &address)
     }
   else
     {
-      return Send (p); //drop the address according to BSD manpages
+      return Send (p, flags); //drop the address according to BSD manpages
     }
 }
 
@@ -530,6 +527,23 @@ TcpSocketImpl::GetRxAvailable (void) const
   // We separately maintain this state to avoid walking the queue 
   // every time this might be called
   return m_rxAvailable;
+}
+
+Ptr<Packet>
+TcpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
+  Address &fromAddress)
+{
+  NS_LOG_FUNCTION (this << maxSize << flags);
+  Ptr<Packet> packet = Recv (maxSize, flags);
+  if (packet != 0)
+    {
+      SocketAddressTag tag;
+      bool found;
+      found = packet->FindFirstMatchingTag (tag);
+      NS_ASSERT (found);
+      fromAddress = tag.GetAddress ();
+    }
+  return packet;
 }
 
 void
@@ -1048,7 +1062,7 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
       m_nextRxSequence += s;           // Advance next expected sequence
       //bytesReceived += s;       // Statistics
       NS_LOG_LOGIC("Case 1, advanced nrxs to " << m_nextRxSequence );
-      SocketRxAddressTag tag;
+      SocketAddressTag tag;
       tag.SetAddress (fromAddress);
       p->AddTag (tag);
       //buffer this, it'll be read by call to Recv
@@ -1106,7 +1120,7 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
           i->second = 0; // relase reference to already buffered
         }
       // Save for later delivery
-      SocketRxAddressTag tag;
+      SocketAddressTag tag;
       tag.SetAddress (fromAddress);
       p->AddTag (tag);
       m_bufferedData[tcpHeader.GetSequenceNumber () ] = p;  

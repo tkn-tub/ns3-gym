@@ -230,7 +230,7 @@ PacketSocket::Listen(uint32_t queueLimit)
 }
 
 int
-PacketSocket::Send (Ptr<Packet> p)
+PacketSocket::Send (Ptr<Packet> p, uint32_t flags)
 {
   NS_LOG_FUNCTION_NOARGS ();
   if (m_state == STATE_OPEN ||
@@ -239,7 +239,7 @@ PacketSocket::Send (Ptr<Packet> p)
       m_errno = ERROR_NOTCONN;
       return -1;
     }
-  return SendTo (p, m_destAddr);
+  return SendTo (p, flags, m_destAddr);
 }
 
 uint32_t
@@ -275,7 +275,7 @@ PacketSocket::GetTxAvailable (void) const
 }
 
 int
-PacketSocket::SendTo(Ptr<Packet> p, const Address &address)
+PacketSocket::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
 {
   NS_LOG_FUNCTION_NOARGS ();
   PacketSocketAddress ad;
@@ -361,7 +361,7 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet,
 
   if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufSize)
     {
-      SocketRxAddressTag tag;
+      SocketAddressTag tag;
       tag.SetAddress (address);
       packet->AddTag (tag);
       m_deliveryQueue.push (packet);
@@ -379,6 +379,15 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet,
       NS_LOG_WARN ("No receive buffer space available.  Drop.");
       m_dropTrace (packet);
     }
+}
+
+uint32_t
+PacketSocket::GetRxAvailable (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  // We separately maintain this state to avoid walking the queue 
+  // every time this might be called
+  return m_rxAvailable;
 }
 
 Ptr<Packet> 
@@ -402,13 +411,20 @@ PacketSocket::Recv (uint32_t maxSize, uint32_t flags)
   return p;
 }
 
-uint32_t
-PacketSocket::GetRxAvailable (void) const
+Ptr<Packet>
+PacketSocket::RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  // We separately maintain this state to avoid walking the queue 
-  // every time this might be called
-  return m_rxAvailable;
+  Ptr<Packet> packet = Recv (maxSize, flags);
+  if (packet != 0)
+    {
+      SocketAddressTag tag;
+      bool found;
+      found = packet->FindFirstMatchingTag (tag);
+      NS_ASSERT (found);
+      fromAddress = tag.GetAddress ();
+    }
+  return packet;
 }
 
 }//namespace ns3
