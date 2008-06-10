@@ -1272,14 +1272,14 @@ files.  Put the following code after the include statement in @code{simple.cc}.
 
 @verbatim
   #include "ns3/ptr.h"
-  #include "ns3/internet-node.h"
+  #include "ns3/internet-stack.h"
 @end verbatim
 
 @cindex include files
 The ns-3 build system places the core include files it needs into a 
 directory called @code{ns-3} and so whenever you need to include one of the
 core files you need to explicitly code this.  The file @code{ptr.h} defines
-the generic smart pointer that we use.  The file @code{internet-node.h}
+the generic smart pointer that we use.  The file @code{internet-stack.h}
 defines the class InternetNode which, as described above, represents an IP
 version 4-based computing element in the simulator.
 
@@ -1455,7 +1455,7 @@ something like the following,
 @verbatim
   #include "ns3/log.h"
   #include "ns3/ptr.h"
-  #include "ns3/internet-node.h"
+  #include "ns3/internet-stack.h"
   #include "ns3/csma-channel.h"
   #include "ns3/mac48-address.h"
   #include "ns3/csma-net-device.h"
@@ -1632,7 +1632,7 @@ following (let's change the log component name and program banner from
 @verbatim
   #include "ns3/log.h"
   #include "ns3/ptr.h"
-  #include "ns3/internet-node.h"
+  #include "ns3/internet-stack.h"
   #include "ns3/csma-channel.h"
   #include "ns3/mac48-address.h"
   #include "ns3/csma-net-device.h"
@@ -1883,7 +1883,7 @@ source code for the script should look like the following:
 @verbatim
   #include "ns3/log.h"
   #include "ns3/ptr.h"
-  #include "ns3/internet-node.h"
+  #include "ns3/internet-stack.h"
   #include "ns3/csma-channel.h"
   #include "ns3/mac48-address.h"
   #include "ns3/csma-net-device.h"

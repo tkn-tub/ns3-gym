@@ -103,7 +103,7 @@ convenience:
 
 #include "ns3/log.h"
 #include "ns3/ptr.h"
-#include "ns3/internet-node.h"
+#include "ns3/internet-stack.h"
 #include "ns3/point-to-point-channel.h"
 #include "ns3/mac48-address.h"
 #include "ns3/point-to-point-net-device.h"
@@ -313,7 +313,7 @@ The file @code{tutorial-star.cc} is reproduced here for your convenience:
 
 #include "ns3/log.h"
 #include "ns3/ptr.h"
-#include "ns3/internet-node.h"
+#include "ns3/internet-stack.h"
 #include "ns3/point-to-point-channel.h"
 #include "ns3/mac48-address.h"
 #include "ns3/point-to-point-net-device.h"
@@ -1846,7 +1846,7 @@ provided to the template function @code{CreateObject} means that
 call @code{GetObject} on the resulting smart pointer.  Well, I'm afraid that's
 not entirely true.  It's slightly more complicated.
 
-Take a look at @code{src/internet-node/internet-node.h} and find the class
+Take a look at @code{src/internet-stack/internet-stack.h} and find the class
 declaration for @code{InternetNode}.
 
 @verbatim
@@ -1956,7 +1956,7 @@ immediately cast to an @code{Ipv4} pointer.  Clients will then use the
 methods specified in the @code{Ipv4} class to access the @code{Ipv4 Object}
 methods which are, in turn, implemented in the @code{Ipv4Impl} object.
 
-If you now look in the file, @code{src/internet-node/internet-node.cc} you
+If you now look in the file, @code{src/internet-stack/internet-stack.cc} you
 will see the following code in @code{InternetNode::Construct} that creates the
 @code{Ipv4} Interface and aggregates it.
 
@@ -2013,7 +2013,7 @@ of course).
 In the case of @code{Ipv4Impl}, you know that the class inherits somehow 
 from @code{Object} since there is a call to @code{AggregateObject} that
 refers to an instance of an @code{Ipv4Impl}.  You will have to go to
-the header file @code{src/internet-node/ipv4-impl.h} and find that
+the header file @code{src/internet-stack/ipv4-impl.h} and find that
 @code{Ipv4Impl} inherits from class @code{Ipv4}.  You will then have go to
 the file @code{src/node/ipv4.h} and see that it inherits from @code{Object} and
 defines a @code{GetTypeId}.  Thus the @code{Object} for which you can
