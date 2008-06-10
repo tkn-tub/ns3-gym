@@ -1373,7 +1373,10 @@ WifiPhy::EndSync (Ptr<Packet> packet, Ptr<RxEvent> event)
       NotifySyncEndOk ();
       SwitchFromSync ();
       m_rxOkTrace (packet, snr, event->GetPayloadMode (), event->GetPreambleType ());
-      m_syncOkCallback (packet, snr, event->GetPayloadMode (), event->GetPreambleType ());
+      if (!m_syncOkCallback.IsNull ())
+        {
+          m_syncOkCallback (packet, snr, event->GetPayloadMode (), event->GetPreambleType ());
+        }
     } 
   else 
     {
@@ -1381,7 +1384,10 @@ WifiPhy::EndSync (Ptr<Packet> packet, Ptr<RxEvent> event)
       NotifySyncEndError ();
       SwitchFromSync ();
       m_rxErrorTrace (packet, snr);
-      m_syncErrorCallback (packet, snr);
+      if (!m_syncErrorCallback.IsNull ())
+        {
+          m_syncErrorCallback (packet, snr);
+        }
     }
 }
 
