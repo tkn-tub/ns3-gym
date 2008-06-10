@@ -154,14 +154,9 @@ UdpEchoClient::HandleRead (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
   Ptr<Packet> packet;
-  while (packet = socket->Recv ())
+  Address from;
+  while (packet = socket->RecvFrom (from))
     {
-      SocketAddressTag tag;
-      bool found;
-      found  = packet->FindFirstMatchingTag (tag);
-      NS_ASSERT (found);
-      Address from = tag.GetAddress ();
-      // XXX packet->RemoveTag (tag);
       if (InetSocketAddress::IsMatchingType (from))
         {
           InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
