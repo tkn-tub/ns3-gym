@@ -188,27 +188,37 @@ static void PrintPsrVsDistance (int argc, char *argv[])
 
 static void PrintSizeVsRange (int argc, char *argv[])
 {
+  double minPsr = 0.05;
   struct PsrExperiment::Input input = PsrExperiment::GetDefaultInput ();
   CommandLine cmd;
   cmd.AddValue ("TxPowerLevel", "The power level index to use to send each packet", input.txPowerLevel);  
   cmd.AddValue ("TxMode", "The mode to use to send each packet", input.txMode);
   cmd.AddValue ("NPackets", "The number of packets to send", input.nPackets);
+  cmd.AddValue ("LowPsr", "The minimum psr needed to assume that we are within range", minPsr);
   cmd.Parse (argc, argv);
   for (input.packetSize = 10; input.packetSize < 3000; input.packetSize += 40)
     {
-      for (input.distance = 100.0; input.distance < 170; input.distance += 2.0)
+      double precision = 0.1;
+      double low = 1.0;
+      double high = 200.0;
+      while (high - low > precision)
 	{
+	  double middle = low + (high - low) / 2;
 	  struct PsrExperiment::Output output;
 	  PsrExperiment experiment;
+	  input.distance = middle;
 	  output = experiment.Run (input);
-	  double psr = output.received;
-	  psr /= input.nPackets ;
-	  if (psr <= 0.05)
+	  double psr = CalcPsr (output, input);
+	  if (psr >= minPsr)
 	    {
-	      std::cout << input.packetSize << " " << input.distance << std::endl;
-	      break;
+	      low = middle;
+	    }
+	  else
+	    {
+	      high = middle;
 	    }
 	}
+      std::cout << input.packetSize << " " << input.distance << std::endl;
     }
 }
 
