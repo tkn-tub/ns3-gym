@@ -487,7 +487,7 @@ WifiPhy::StartReceivePacket (Ptr<Packet> packet,
 void 
 WifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble preamble, uint8_t txPower)
 {
-  NS_LOG_FUNCTION (this << packet << txMode << preamble << txPower);
+  NS_LOG_FUNCTION (this << packet << txMode << preamble << (uint32_t)txPower);
   /* Transmission can happen if:
    *  - we are syncing on a packet. It is the responsability of the
    *    MAC layer to avoid doing this but the PHY does nothing to 
