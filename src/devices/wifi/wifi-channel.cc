@@ -69,9 +69,13 @@ WifiChannel::SetPropagationDelayModel (Ptr<PropagationDelayModel> delay)
 }
 
 void 
-WifiChannel::Add (Ptr<NetDevice> device, Ptr<WifiPhy> phy)
+WifiChannel::Add (Ptr<NetDevice> device, Ptr<WifiPhy> phy, Ptr<Object> mobility)
 {
-  m_deviceList.push_back (std::make_pair (device, phy));
+  struct Item item;
+  item.device = device;
+  item.phy = phy;
+  item.mobility = mobility;
+  m_deviceList.push_back (item);
 }
 void 
 WifiChannel::Send (Ptr<WifiPhy> sender, Ptr<const Packet> packet, double txPowerDbm,
@@ -80,9 +84,9 @@ WifiChannel::Send (Ptr<WifiPhy> sender, Ptr<const Packet> packet, double txPower
   Ptr<MobilityModel> senderMobility = 0;
   for (DeviceList::const_iterator i = m_deviceList.begin (); i != m_deviceList.end (); i++)
     {
-      if (sender == i->second)
+      if (sender == i->phy)
         {
-          senderMobility = i->first->GetNode ()->GetObject<MobilityModel> ();
+          senderMobility = i->mobility->GetObject<MobilityModel> ();
           break;
         }
     }
@@ -90,9 +94,9 @@ WifiChannel::Send (Ptr<WifiPhy> sender, Ptr<const Packet> packet, double txPower
   uint32_t j = 0;
   for (DeviceList::const_iterator i = m_deviceList.begin (); i != m_deviceList.end (); i++)
     {
-      if (sender != i->second)
+      if (sender != i->phy)
         {
-          Ptr<MobilityModel> receiverMobility = i->first->GetNode ()->GetObject<MobilityModel> ();
+          Ptr<MobilityModel> receiverMobility = i->mobility->GetObject<MobilityModel> ();
           Time delay = m_delay->GetDelay (senderMobility, receiverMobility);
           double rxPowerDbm = txPowerDbm + m_loss->GetLoss (senderMobility, receiverMobility);
           NS_LOG_DEBUG ("propagation: txPower="<<txPowerDbm<<"dbm, rxPower="<<rxPowerDbm<<"dbm, "<<
@@ -109,7 +113,7 @@ void
 WifiChannel::Receive (uint32_t i, Ptr<Packet> packet, double rxPowerDbm,
                       WifiMode txMode, WifiPreamble preamble) const
 {
-  m_deviceList[i].second->StartReceivePacket (packet, rxPowerDbm, txMode, preamble);
+  m_deviceList[i].phy->StartReceivePacket (packet, rxPowerDbm, txMode, preamble);
 }
 
 uint32_t 
@@ -120,7 +124,7 @@ WifiChannel::GetNDevices (void) const
 Ptr<NetDevice> 
 WifiChannel::GetDevice (uint32_t i) const
 {
-  return m_deviceList[i].first;
+  return m_deviceList[i].device;
 }
 
 } // namespace ns3

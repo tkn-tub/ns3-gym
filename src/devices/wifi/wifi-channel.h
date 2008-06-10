@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include "ns3/packet.h"
 #include "ns3/channel.h"
+#include "ns3/net-device.h"
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
 #include "wifi-phy.h"
@@ -84,11 +85,12 @@ public:
    *        devices.
    * \param phy the physical layer which will receive packets
    *        on behalf of the device.
+   * \param mobility the mobility model associated to the device.
    *
    * This method should not be invoked by normal users. It is 
    * currently invoked only from WifiPhy::SetChannel.
    */
-  void Add (Ptr<NetDevice> device,  Ptr<WifiPhy> phy);
+  void Add (Ptr<NetDevice> device,  Ptr<WifiPhy> phy, Ptr<Object> mobility);
   /**
    * \param sender the device from which the packet is originating.
    * \param packet the packet to send
@@ -103,7 +105,12 @@ public:
              WifiMode wifiMode, WifiPreamble preamble) const;
 
 private:
-  typedef std::vector<std::pair<Ptr<NetDevice>, Ptr<WifiPhy> > > DeviceList;
+  struct Item {
+    Ptr<NetDevice> device;
+    Ptr<WifiPhy> phy;
+    Ptr<Object> mobility;
+  };
+  typedef std::vector<struct Item> DeviceList;
   void Receive (uint32_t i, Ptr<Packet> packet, double rxPowerDbm,
                 WifiMode txMode, WifiPreamble preamble) const;
 

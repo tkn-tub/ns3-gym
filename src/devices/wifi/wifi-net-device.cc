@@ -112,9 +112,9 @@ WifiNetDevice::SetPhy (Ptr<WifiPhy> phy)
   m_phy = phy;
   if (m_phy != 0)
     {
-      if (m_channel != 0)
+      if (m_channel != 0 && m_node != 0)
         {
-          m_channel->Add (this, m_phy);
+          m_channel->Add (this, m_phy, m_node);
           m_phy->SetChannel (m_channel);
         }
       if (m_stationManager != 0)
@@ -147,9 +147,9 @@ void
 WifiNetDevice::SetChannel (Ptr<WifiChannel> channel)
 {
   m_channel = channel;
-  if (m_channel != 0 && m_phy != 0)
+  if (m_channel != 0 && m_phy != 0 && m_node != 0)
     {
-      m_channel->Add (this, m_phy);
+      m_channel->Add (this, m_phy, m_node);
       m_phy->SetChannel (m_channel);
     }
 }
@@ -292,6 +292,11 @@ void
 WifiNetDevice::SetNode (Ptr<Node> node)
 {
   m_node = node;
+  if (m_channel != 0 && m_phy != 0 && m_node != 0)
+    {
+      m_channel->Add (this, m_phy, m_node);
+      m_phy->SetChannel (m_channel);
+    }
 }
 bool 
 WifiNetDevice::NeedsArp (void) const
