@@ -50,6 +50,12 @@ ObjectFactory::Set (std::string name, const AttributeValue &value)
   m_parameters.SetWithTid (m_tid, name, value);
 }
 
+void 
+ObjectFactory::Set (const AttributeList &list)
+{
+  m_parameters = list;
+}
+
 TypeId 
 ObjectFactory::GetTypeId (void) const
 {

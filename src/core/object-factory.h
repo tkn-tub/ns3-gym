@@ -59,6 +59,8 @@ public:
    */
   void Set (std::string name, const AttributeValue &value);
 
+  void Set (const AttributeList &list);
+
   /**
    * \returns the currently-selected TypeId to use to create an object
    *          instance.
