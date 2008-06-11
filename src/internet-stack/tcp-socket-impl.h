@@ -198,16 +198,15 @@ private:
   // Timer-related members
   Time              m_cnTimeout; 
   uint32_t          m_cnCount;
-  
+
   // Temporary queue for delivering data to application
-  std::queue<Ptr<Packet> > m_deliveryQueue;
   uint32_t m_rxAvailable;
-  
+
   bool m_wouldBlock;  // set to true whenever socket would block on send()
 
   // Attributes
-  uint32_t m_rcvBufSize;   // maximum receive socket buffer size
   uint32_t m_sndBufSize;   // buffer limit for the outgoing queue
+  uint32_t m_rcvBufSize;   // maximum receive socket buffer size
 };
 
 }//namespace ns3

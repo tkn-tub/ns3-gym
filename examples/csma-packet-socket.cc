@@ -67,8 +67,9 @@ main (int argc, char *argv[])
 
   // create the shared medium used by all csma devices.
   NS_LOG_INFO ("Create channels.");
-  Ptr<CsmaChannel> channel = CreateObject<CsmaChannel> ("BitRate", DataRateValue (DataRate(5000000)), 
-                                                        "Delay", TimeValue (MilliSeconds(2)));
+  Ptr<CsmaChannel> channel = CreateObject<CsmaChannel> (
+    "DataRate", DataRateValue (DataRate(5000000)), 
+    "Delay", TimeValue (MilliSeconds(2)));
 
   // use a helper function to connect our nodes to the shared channel.
   NS_LOG_INFO ("Build Topology.");

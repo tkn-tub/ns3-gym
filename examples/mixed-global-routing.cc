@@ -83,7 +83,7 @@ main (int argc, char *argv[])
 
   // We create the channels first without any IP addressing information
   CsmaHelper csma;
-  csma.SetChannelParameter ("BitRate", StringValue ("5Mbps"));
+  csma.SetChannelParameter ("DataRate", StringValue ("5Mbps"));
   csma.SetChannelParameter ("Delay", StringValue ("2ms"));
   NetDeviceContainer d2345 = csma.Install (n2345);
   

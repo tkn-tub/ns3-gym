@@ -28,14 +28,14 @@ def build(bld):
     obj.source = 'replay-simulation.cc'
 
     obj = bld.create_ns3_program('print-introspected-doxygen',
-                                 ['internet-node', 'csma-cd', 'point-to-point'])
+                                 ['internet-stack', 'csma-cd', 'point-to-point'])
     obj.source = 'print-introspected-doxygen.cc'
 
 # XXX: disable mobility visualizer code temporarily.
     env['ENABLE_MOBILITY_VISUALIZER'] = ''
     if env['ENABLE_MOBILITY_VISUALIZER']:
         obj = bld.create_ns3_program('mobility-visualizer',
-                                     ['internet-node', 'mobility'])
+                                     ['internet-stack', 'mobility'])
         obj.source = ['mobility-visualizer-model.cc', 'mobility-visualizer-view.cc']
         obj.uselib = 'MOBILITY_VISUALIZER'
         if os.path.basename(obj.env['CXX']).startswith("g++"):

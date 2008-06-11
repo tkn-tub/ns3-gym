@@ -40,7 +40,7 @@ main (int argc, char *argv[])
   internet.Install (n);
 
   CsmaHelper csma;
-  csma.SetChannelParameter ("BitRate", StringValue ("10Mbps"));
+  csma.SetChannelParameter ("DataRate", StringValue ("10Mbps"));
   csma.SetChannelParameter ("Delay", StringValue ("10ms"));
   NetDeviceContainer nd = csma.Install (n);
 

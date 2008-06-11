@@ -16,7 +16,7 @@ all_modules = (
     'simulator',
     'contrib',
     'node',
-    'internet-node',
+    'internet-stack',
     'devices/point-to-point',
     'devices/csma',
     'applications/onoff',

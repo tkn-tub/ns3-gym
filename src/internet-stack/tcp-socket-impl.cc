@@ -127,7 +127,8 @@ TcpSocketImpl::TcpSocketImpl(const TcpSocketImpl& sock)
     m_cnCount (sock.m_cnCount),
     m_rxAvailable (0),
     m_wouldBlock (false),
-    m_sndBufSize (sock.m_sndBufSize)
+    m_sndBufSize (sock.m_sndBufSize),
+    m_rcvBufSize(sock.m_rcvBufSize)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC("Invoked the copy constructor");
@@ -347,43 +348,43 @@ TcpSocketImpl::Connect (const Address & address)
 }
 int 
 TcpSocketImpl::Send (const Ptr<Packet> p) //p here is just data, no headers
-{ // TCP Does not deal with packets from app, just data
-  return Send(p->PeekData(), p->GetSize());
-}
-
-int TcpSocketImpl::Send (const uint8_t* buf, uint32_t size)
 {
-  NS_LOG_FUNCTION (this << buf << size);
+  NS_LOG_FUNCTION (this << p);
   if (m_state == ESTABLISHED || m_state == SYN_SENT || m_state == CLOSE_WAIT)
-    { 
-      if (size > GetTxAvailable ())
-        {
-          m_wouldBlock = true;
-          m_errno = ERROR_MSGSIZE;
-          return -1;
-        }
-      if (!m_pendingData)
-        {
-          m_pendingData = new PendingData ();   // Create if non-existent
-          m_firstPendingSequence = m_nextTxSequence; // Note seq of first
-        }
-      //PendingData::Add always copies the data buffer, never modifies
-      m_pendingData->Add (size,buf);
-      NS_LOG_DEBUG("TcpSock::Send, pdsize " << m_pendingData->Size() << 
-                   " state " << m_state);
-      Actions_t action = ProcessEvent (APP_SEND);
-      NS_LOG_DEBUG(" action " << action);
-      if (!ProcessAction (action)) 
-        {
-          return -1; // Failed, return zero
-        }
-      return size;
+  {
+    if (p->GetSize() > GetTxAvailable ())
+    {
+      m_wouldBlock = true;
+      m_errno = ERROR_MSGSIZE;
+      return -1;
     }
+    if (!m_pendingData)
+    {
+      m_pendingData = new PendingData ();   // Create if non-existent
+      m_firstPendingSequence = m_nextTxSequence; // Note seq of first
+    }
+    //PendingData::Add stores a copy of the Ptr p
+    m_pendingData->Add (p);
+    NS_LOG_DEBUG("TcpSock::Send, pdsize " << m_pendingData->Size() << 
+        " state " << m_state);
+    Actions_t action = ProcessEvent (APP_SEND);
+    NS_LOG_DEBUG(" action " << action);
+    if (!ProcessAction (action)) 
+    {
+      return -1; // Failed, return zero
+    }
+    return p->GetSize();
+  }
   else
   {
     m_errno = ERROR_NOTCONN;
     return -1;
   }
+}
+
+int TcpSocketImpl::Send (const uint8_t* buf, uint32_t size)
+{
+  return Send (Create<Packet> (buf, size));
 }
 
 int TcpSocketImpl::DoSendTo (Ptr<Packet> p, const Address &address)
@@ -463,21 +464,63 @@ Ptr<Packet>
 TcpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if (m_deliveryQueue.empty() )
+  if(m_bufferedData.empty())
     {
       return 0;
     }
-  Ptr<Packet> p = m_deliveryQueue.front ();
-  if (p->GetSize () <= maxSize)
-    {
-      m_deliveryQueue.pop ();
-      m_rxAvailable -= p->GetSize ();
+  UnAckData_t out; //serves as buffer to return up to the user
+  UnAckData_t::iterator i;
+  while (!m_bufferedData.empty ())
+    { // Check the buffered data for delivery
+      NS_LOG_LOGIC("TCP " << this << " bufferedData.size() " 
+        << m_bufferedData.size () 
+        << " time " << Simulator::Now ());
+      i = m_bufferedData.begin ();
+      SequenceNumber s1 = 0;
+      if (i->first > m_nextRxSequence) 
+        {
+          break;  // we're done, no more in-sequence data exits
+        }
+      else // (i->first <= m_nextRxSequence)
+        { // Two cases here.
+          // 1) seq + length > nextRxSeq, can deliver partial
+          // 2) seq + length <= nextRxSeq, deliver whole
+          s1 = i->second->GetSize ();
+          if (i->first + s1 > m_nextRxSequence)
+            { // Remove partial data to prepare for delivery
+              uint32_t avail = s1 + i->first - m_nextRxSequence;
+              i->second = i->second->CreateFragment (0, avail);
+            }
+          // else this packet is okay to deliver whole
+          // so don't do anything else and output it
+          out[i->first]  = i->second;
+        }
+      m_rxAvailable -= i->second->GetSize ();
+      m_bufferedData.erase (i);     // Remove from list
     }
-  else
+  if (out.size() == 0)
     {
-      p = 0;
+      return 0;
     }
-  return p;
+  Ptr<Packet> outPacket = Create<Packet>();
+  for(i = out.begin(); i!=out.end(); ++i)
+  {
+    if (outPacket->GetSize() + i->second->GetSize() <= maxSize )
+    {
+      outPacket->AddAtEnd(i->second);
+    }
+    else
+    {
+      //only append as much as will fit
+      uint32_t avail = maxSize - outPacket->GetSize();
+      outPacket->AddAtEnd(i->second->CreateFragment(0,avail));
+      //put the rest back into the buffer
+      m_bufferedData[i->first+SequenceNumber(avail)] 
+          = i->second->CreateFragment(avail,i->second->GetSize()-avail);
+      m_rxAvailable += i->second->GetSize()-avail;
+    }
+  }
+  return outPacket;
 }
 
 uint32_t
@@ -883,7 +926,7 @@ bool TcpSocketImpl::SendPendingData (bool withAck)
       uint32_t s = std::min (w, m_segmentSize);  // Send no more than window
       Ptr<Packet> p = m_pendingData->CopyFromSeq (s, m_firstPendingSequence, 
         m_nextTxSequence);
-      NS_LOG_LOGIC("TcpSocketImpl " << this << " sendPendingData"
+      NS_LOG_LOGIC("TcpSocketImpl " << this << " SendPendingData"
                    << " txseq " << m_nextTxSequence
                    << " s " << s 
                    << " datasize " << p->GetSize() );
@@ -918,7 +961,7 @@ bool TcpSocketImpl::SendPendingData (bool withAck)
       if (m_retxEvent.IsExpired () ) //go ahead and schedule the retransmit
         {
             Time rto = m_rtt->RetransmitTimeout (); 
-            NS_LOG_LOGIC ("Schedule retransmission timeout at time " << 
+            NS_LOG_LOGIC ("SendPendingData Schedule retransmission timeout at time " << 
               Simulator::Now ().GetSeconds () << " to expire at time " <<
               (Simulator::Now () + rto).GetSeconds () );
           m_retxEvent = Simulator::Schedule (rto,&TcpSocketImpl::ReTxTimeout,this);
@@ -935,7 +978,7 @@ bool TcpSocketImpl::SendPendingData (bool withAck)
       // Note the high water mark
       m_highTxMark = std::max (m_nextTxSequence, m_highTxMark);
     }
-  NS_LOG_LOGIC ("Sent "<<nPacketsSent<<" packets");
+    NS_LOG_LOGIC ("SendPendingData Sent "<<nPacketsSent<<" packets");
   NS_LOG_LOGIC("RETURN SendPendingData");
   return (nPacketsSent>0);
 }
@@ -994,90 +1037,57 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
   // Log sequence received if enabled
   // NoteTimeSeq(LOG_SEQ_RX, h->sequenceNumber);
   // Three possibilities
-  // 1) Received seq is expected, deliver this and any buffered data
+  // 1) Received seq is expected, buffer this, update rxAvailable, and ack
   // 2) Received seq is < expected, just re-ack previous
   // 3) Received seq is > expected, just re-ack previous and buffer data
   if (tcpHeader.GetSequenceNumber () == m_nextRxSequence)
     { // If seq is expected seq
       // 1) Update nextRxSeq
-      // 2) Deliver to application this packet
-      // 3) See if any buffered can be delivered
-      // 4) Send the ack
+      // 2) Buffer this packet so Recv can read it
+      // 3) Send the ack
       m_nextRxSequence += s;           // Advance next expected sequence
       //bytesReceived += s;       // Statistics
       NS_LOG_LOGIC("Case 1, advanced nrxs to " << m_nextRxSequence );
       SocketRxAddressTag tag;
       tag.SetAddress (fromAddress);
       p->AddTag (tag);
-      m_deliveryQueue.push (p);
+      //buffer this, it'll be read by call to Recv
+      UnAckData_t::iterator i = 
+          m_bufferedData.find (tcpHeader.GetSequenceNumber () );
+      if (i != m_bufferedData.end () ) //we found it already in the buffer
+      {
+        i->second = 0; // relase reference to already buffered
+      }
+      // Save for later delivery
+      m_bufferedData[tcpHeader.GetSequenceNumber () ] = p;  
       m_rxAvailable += p->GetSize ();
+      //putting this into the buffer might have filled in a sequence gap
+      //so we have to iterate through the list to find the largest contiguous
+      //sequenced chunk, and update m_rxAvailable appropriately
+      i = m_bufferedData.find (tcpHeader.GetSequenceNumber () );
+      UnAckData_t::iterator next = i;
+      next++;
+      while(next != m_bufferedData.end())
+        {
+          if(i->first + SequenceNumber(i->second->GetSize ()) == next->first)
+            {
+                //next packet is in sequence, count it
+                m_rxAvailable += next->second->GetSize();
+                m_nextRxSequence += next->second->GetSize();
+            }
+          else
+            {
+                break; //no more in this contiguous chunk
+            }
+          ++i;
+          ++next;
+        }
       NotifyDataRecv ();
       if (m_closeNotified)
         {
           NS_LOG_LOGIC ("Tcp " << this << " HuH?  Got data after closeNotif");
         }
       NS_LOG_LOGIC ("TcpSocketImpl " << this << " adv rxseq by " << s);
-      // Look for buffered data
-      UnAckData_t::iterator i;
-      // Note that the bufferedData list DOES contain the tcp header
-      while (!m_bufferedData.empty ())
-        { // Check the buffered data for delivery
-          NS_LOG_LOGIC("TCP " << this << " bufferedData.size() " 
-              << m_bufferedData.size () 
-              << " time " << Simulator::Now ());
-          i = m_bufferedData.begin ();
-          Ptr<Packet> p1 = i->second;
-          SequenceNumber s1 = 0;
-          if (i->first > m_nextRxSequence) 
-            {
-              break;  // Not next expected
-            }
-          // already have the header as a param
-          //TCPHeader* h = dynamic_cast<TCPHeader*>(p1->PopPDU());
-          // Check non-null here...
-          uint8_t flags = tcpHeader.GetFlags ();           // Flags (used below)
-          if (i->first < m_nextRxSequence)
-            { // remove already delivered data
-              // Two cases here.
-              // 1) seq + length <= nextRxSeq, just discard
-              // 2) seq + length > nextRxSeq, can deliver partial
-              s1 = p->GetSize ();
-              if (i->first + s1 < m_nextRxSequence)
-                { // Just remove from list
-                  //bufferedData.erase(i);
-                  p1 = 0; // Nothing to deliver
-                }
-              else
-                { // Remove partial data to prepare for delivery
-                  uint32_t dup = m_nextRxSequence - i->first;
-                  i->second = p1->CreateFragment (0, p1->GetSize () - dup);
-                  p1 = i->second;
-                }
-            }
-          else
-            { // At this point i->first must equal nextRxSeq
-              if (i->first != m_nextRxSequence)
-                {
-                  NS_FATAL_ERROR ("HuH?  NexRx failure, first " 
-                      << i->first << " nextRxSeq " << m_nextRxSequence);
-                }
-              s1 = p1->GetSize ();
-            }
-          SocketRxAddressTag tag;
-          tag.SetAddress (fromAddress);
-          p1->AddTag (tag);
-          m_deliveryQueue.push (p1);
-          m_rxAvailable += p->GetSize ();
-          NotifyDataRecv ();
-
-          NS_LOG_LOGIC ("TcpSocketImpl " << this << " adv rxseq1 by " << s1 );
-          m_nextRxSequence += s1;           // Note data received
-          m_bufferedData.erase (i);     // Remove from list
-          if (flags & TcpHeader::FIN)
-            NS_LOG_LOGIC("TcpSocketImpl " << this 
-                    << " found FIN in buffered");
-        }
-
       if (m_pendingClose || (origState > ESTABLISHED))
         { // See if we can close now
           if (m_bufferedData.empty())
@@ -1096,6 +1106,9 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
           i->second = 0; // relase reference to already buffered
         }
       // Save for later delivery
+      SocketRxAddressTag tag;
+      tag.SetAddress (fromAddress);
+      p->AddTag (tag);
       m_bufferedData[tcpHeader.GetSequenceNumber () ] = p;  
     }
   else

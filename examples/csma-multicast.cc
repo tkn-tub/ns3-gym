@@ -75,7 +75,7 @@ main (int argc, char *argv[])
   
   NS_LOG_INFO ("Build Topology.");
   CsmaHelper csma;
-  csma.SetChannelParameter ("BitRate", DataRateValue (DataRate (5000000)));
+  csma.SetChannelParameter ("DataRate", DataRateValue (DataRate (5000000)));
   csma.SetChannelParameter ("Delay", TimeValue (MilliSeconds (2)));
  
   // We will use these NetDevice containers later, for IP addressing

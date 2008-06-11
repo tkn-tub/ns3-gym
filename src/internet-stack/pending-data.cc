@@ -29,25 +29,9 @@
 #include <string.h>
 
 #include "pending-data.h"
-#include "ns3/packet.h"
 #include "ns3/fatal-error.h"
 namespace ns3
 {
-
-namespace Serializable
-{
-  uint8_t* GetSize (uint8_t* b, uint32_t& r, uint32_t& s)
-  { // Get the size of the next size field
-    if (sizeof(s) > r)
-    {
-      NS_FATAL_ERROR ("Serialization error; remaining " << r
-           << " thissize " << sizeof(s) << std::endl);
-    }
-    r -= sizeof (s); // Reduce remaining for next time
-    memcpy (&s, b, sizeof(s));
-    return b + sizeof (s);
-  }
-}
 
 PendingData::PendingData () : size (0), data (0),
                msgSize (0), responseSize (0)
@@ -56,37 +40,28 @@ PendingData::PendingData () : size (0), data (0),
 
 PendingData::PendingData (uint32_t s, uint8_t* d, uint32_t msg, uint32_t resp)
   : size (s), data (0), msgSize (msg), responseSize (resp)
-{ // Make a copy of the data
+{
   if (d)
     {
-      data = new uint8_t[s];
-      memcpy (data, d, s);
+      data.push_back (Create<Packet> (d, size));
     }
 }
 
 PendingData::PendingData(const std::string& s) 
-  : size (s.length () + 1), data ((uint8_t*)strdup(s.c_str ())),
+  : size (s.length () + 1), data (0),
     msgSize (0), responseSize (0)
 {
+  data.push_back (Create<Packet> ((uint8_t*)s.c_str(), size));
 }
 
 PendingData::PendingData(const PendingData& c)
-  : size (c.Size ()), data (0),
+  : size (c.Size ()), data (c.data),
     msgSize (c.msgSize), responseSize (c.responseSize)
-{ // Copy constructor
-  if (c.Contents())
-    { // Has data
-      data = new uint8_t[Size ()];
-      memcpy(data, c.Contents (), Size ());
-    }
+{
 }
 
 PendingData::~PendingData()
-{ // destructor
-  if (data)
-    {
-	  delete [] data;
-    }
+{
 }
 
 PendingData* PendingData::Copy () const
@@ -106,62 +81,27 @@ PendingData* PendingData::CopySD (uint32_t s, uint8_t* d)
 
 void PendingData::Clear ()
 { // Remove all pending data
-  if (data)
-    {
-      delete [] data; // Free memory if used
-    }
-  data = 0;
+  data.clear();
   size = 0;
 }
 
 void PendingData::Add (uint32_t s, const uint8_t* d)
 {
-  if (data)
-    { // PendingData exists, realloc and copy
-      uint8_t* n = new uint8_t[Size () + s];
-      memcpy(n, data, Size ());
-      if (d)
-        { // New data specified
-          memcpy(n + Size (), d, s); // Append the new data
-        }
-      else
-        {
-          memset(n + Size (), 0, s); // Apend zeros
-        }
-      delete [] data;           // Delete the old data
-      data = n;                 // Points to new one
-    }
+  if (d == 0)
+  {
+    data.push_back(Create<Packet> (d,s));
+  }
   else
-    { // No existing data, see if new data
-      if (d)
-        {
-          data = new uint8_t[s];
-          memcpy (data, d, s);
-        }
-    }
+  {
+    data.push_back(Create<Packet> (s));
+  }
   size += s;
 }
 
-void PendingData::Remove(uint32_t s)
+void PendingData::Add (Ptr<Packet> p)
 {
-  uint32_t r = s > Size () ? Size () : s;
-
-  size -= r;          // Reduce size from current
-  if (data)
-    { // data actually exists, realloc and copy
-      if (size)
-        {
-          uint8_t* d = new uint8_t[Size ()];
-          memcpy(d, data, Size ());
-          delete [] data;
-          data = d;
-        }
-      else
-        { // Zero size, so don't need the data anymore
-          delete [] data;
-          data = NULL;
-        }
-    }
+  data.push_back(p);
+  size += p->GetSize();
 }
 
 uint32_t PendingData::SizeFromSeq (const SequenceNumber& f, const SequenceNumber& o)
@@ -193,12 +133,61 @@ Ptr<Packet> PendingData::CopyFromOffset (uint32_t s, uint32_t o)
     {
       return 0;   // No data requested
     }
-  if (data)
+  if (data.size() != 0)
     { // Actual data exists, make copy and return it
-      return Create<Packet> (data+o, s1);
+      uint32_t count = 0;
+      std::vector<Ptr<Packet> >::size_type begin = 0;
+      bool beginFound = false;
+      std::vector<Ptr<Packet> >::size_type end = 0;
+      Ptr<Packet> outPacket;
+      Ptr<Packet> endFragment;
+      for (std::vector<Ptr<Packet> >::size_type i=0;i<data.size();++i)
+        {
+          count+=data[i]->GetSize();
+          if (!beginFound)
+            {
+              if (count > o)
+                {
+                  if (count >= o + s1) //then just copy within this packet
+                  {
+                    Ptr<Packet> toFragment = data[i];
+                    uint32_t packetStart = count - toFragment->GetSize();
+                    uint32_t packetOffset = o - packetStart;
+                    outPacket = toFragment->CreateFragment (packetOffset, s1);
+                    return outPacket;
+                  }
+                  begin = i;
+                  beginFound = true;
+                  Ptr<Packet> toFragment = data[begin];
+                  uint32_t packetStart = count - toFragment->GetSize();
+                  uint32_t packetOffset = o - packetStart;
+                  uint32_t fragmentLength = count - o;
+                  outPacket = toFragment->CreateFragment (packetOffset, fragmentLength);
+                }
+            }
+          else
+            {
+              if (count >= o + s1)
+                {
+                  end = i;
+                  Ptr<Packet> toFragment = data[end];
+                  uint32_t packetStart = count - toFragment->GetSize();
+                  uint32_t fragmentLength = o + s1 - packetStart;
+                  endFragment = toFragment->CreateFragment(0, fragmentLength);
+                  break;
+                }
+            }
+        }
+      for (std::vector<Ptr<Packet> >::size_type i=begin+1;i<end;++i)
+        {
+          outPacket->AddAtEnd (data[i]);
+        }
+      outPacket->AddAtEnd(endFragment);
+      NS_ASSERT(outPacket->GetSize() == s1);
+      return outPacket;
     }
   else
-    { // No actual data, just return non-data pdu of correct size
+    { // No actual data, just return dummy-data packet of correct size
       return Create<Packet> (s1);
     }
 }

@@ -3,51 +3,51 @@
 def build(bld):
         
     obj = bld.create_ns3_program('mixed-wireless',
-        ['core', 'simulator', 'mobility', 'wifi', 'point-to-point', 'internet-node'])
+        ['core', 'simulator', 'mobility', 'wifi', 'point-to-point', 'internet-stack'])
     obj.source = 'mixed-wireless.cc'
 
     obj = bld.create_ns3_program('simple-global-routing',
-        ['point-to-point', 'internet-node', 'global-routing'])
+        ['point-to-point', 'internet-stack', 'global-routing'])
     obj.source = 'simple-global-routing.cc'
 
     obj = bld.create_ns3_program('simple-alternate-routing',
-        ['point-to-point', 'internet-node', 'global-routing'])
+        ['point-to-point', 'internet-stack', 'global-routing'])
     obj.source = 'simple-alternate-routing.cc'
 
     obj = bld.create_ns3_program('simple-error-model',
-        ['point-to-point', 'internet-node'])
+        ['point-to-point', 'internet-stack'])
     obj.source = 'simple-error-model.cc'
 
     obj = bld.create_ns3_program('csma-one-subnet',
-        ['csma', 'internet-node'])
+        ['csma', 'internet-stack'])
     obj.source = 'csma-one-subnet.cc'
 
     obj = bld.create_ns3_program('udp-echo',
-        ['csma', 'internet-node'])
+        ['csma', 'internet-stack'])
     obj.source = 'udp-echo.cc'
 
     obj = bld.create_ns3_program('csma-broadcast',
-        ['csma', 'internet-node'])
+        ['csma', 'internet-stack'])
     obj.source = 'csma-broadcast.cc'
 
     obj = bld.create_ns3_program('csma-packet-socket',
-        ['csma', 'internet-node'])
+        ['csma', 'internet-stack'])
     obj.source = 'csma-packet-socket.cc'
 
     obj = bld.create_ns3_program('csma-multicast',
-        ['csma', 'internet-node'])
+        ['csma', 'internet-stack'])
     obj.source = 'csma-multicast.cc'
 
     obj = bld.create_ns3_program( 'mixed-global-routing',
-        ['point-to-point', 'internet-node', 'global-routing' , 'csma-cd'])
+        ['point-to-point', 'internet-stack', 'global-routing' , 'csma-cd'])
     obj.source = 'mixed-global-routing.cc'
 
     obj = bld.create_ns3_program('simple-point-to-point-olsr',
-        ['point-to-point', 'internet-node', 'olsr'])
+        ['point-to-point', 'internet-stack', 'olsr'])
     obj.source = 'simple-point-to-point-olsr.cc'
 
     obj = bld.create_ns3_program('tcp-large-transfer',
-        ['point-to-point', 'internet-node'])
+        ['point-to-point', 'internet-stack'])
     obj.source = 'tcp-large-transfer.cc'
 
     obj = bld.create_ns3_program('wifi-adhoc',

@@ -53,7 +53,7 @@ main (int argc, char *argv[])
   internet.Install (lan1);
 
   CsmaHelper csma;
-  csma.SetChannelParameter ("BitRate", StringValue ("10Mbps"));
+  csma.SetChannelParameter ("DataRate", StringValue ("10Mbps"));
   csma.SetChannelParameter ("Delay", StringValue ("2ms"));
   NetDeviceContainer dev1 = csma.Install (lan1);
   Ipv4AddressHelper ipv4;
@@ -78,7 +78,7 @@ main (int argc, char *argv[])
 //
   NodeContainer backbone = NodeContainer (lan1.Get (3), lan2.Get (0));
   PointToPointHelper p2p;
-  p2p.SetChannelParameter ("BitRate", StringValue ("38400bps"));
+  p2p.SetChannelParameter ("DataRate", StringValue ("38400bps"));
   p2p.SetChannelParameter ("Delay", StringValue ("20ms"));
   NetDeviceContainer dev3 = p2p.Install (backbone);
   ipv4.SetBase ("10.1.3.0", "255.255.255.0");

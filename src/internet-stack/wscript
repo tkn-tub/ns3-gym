@@ -2,7 +2,7 @@
 
 
 def build(bld):
-    obj = bld.create_ns3_module('internet-node', ['node'])
+    obj = bld.create_ns3_module('internet-stack', ['node'])
     obj.source = [
         'internet-stack.cc',
         'ipv4-l4-demux.cc',
@@ -33,7 +33,7 @@ def build(bld):
         ]
 
     headers = bld.create_obj('ns3header')
-    headers.module = 'internet-node'
+    headers.module = 'internet-stack'
     headers.source = [
         'internet-stack.h',
         'udp-header.h',

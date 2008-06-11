@@ -40,6 +40,13 @@ Socket::~Socket ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
+void
+Socket::SetCloseUnblocksCallback (Callback<void,Ptr<Socket> > closeUnblocks)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_closeUnblocks = closeUnblocks;
+}
+
 Ptr<Socket> 
 Socket::CreateSocket (Ptr<Node> node, TypeId tid)
 {
@@ -101,6 +108,21 @@ Socket::SetRecvCallback (Callback<void, Ptr<Socket> > receivedData)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_receivedData = receivedData;
+}
+
+void
+Socket::NotifyCloseUnblocks (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  if (!m_closeUnblocks.IsNull ())
+  {
+    m_closeUnblocks (this);
+  }
+}
+
+int Socket::Listen (uint32_t queueLimit)
+{
+  return 0; //XXX the base class version does nothing
 }
 
 int Socket::Send (const uint8_t* buf, uint32_t size)

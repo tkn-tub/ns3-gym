@@ -22,8 +22,14 @@
  *
  * The class ns3::CsmaChannel models the actual transmission medium.
  * There is no fixed limit for the number of devices connected to the channel.
- * The ns3::CsmaChannel models a bitrate and a speed-of-light delay which can
- * be accessed via the attributes "BitRate" and "Delay" respectively.
+ * The ns3::CsmaChannel models a data rate and a speed-of-light delay which can
+ * be accessed via the attributes "DataRate" and "Delay" respectively.
+ * The data rate provided to the channel is used to set the data rates
+ * used by the transmitter sections of the CSMA devices connected to the 
+ * channel.  There is no way to independently set data rates in the
+ * devices.  Since the data rate is only used to calculate a delay time, there
+ * is no limitation (other than by the data type holding the value) on the 
+ * speed at which CSMA channels and devices can operate.
  *
  * The ns3::CsmaChannel has three states, IDLE, TRANSMITTING and PROPAGATING.
  * These three states are "seen" instantaneously by all devices on the channel.
@@ -62,7 +68,13 @@
  *
  * The ns3::CsmaChannel models a broadcast medium so the packet is delivered
  * to all of the devices on the channel (including the source) at the end of 
- * the propagation time.
+ * the propagation time.  It is the responsibility of the sending device to 
+ * determine whether or not it receives a packet broadcast over the channel.
+ *
+ * The ns3::CsmaChannel provides following Attributes:
+ *
+ * - DataRate:      The bitrate for packet transmission on connected devices;
+ * - Delay:       The speed of light transmission delay for the channel.
  *
  * \subsection CSMA Net Device Model
  *
@@ -70,7 +82,6 @@
  * ns3::CsmaNetDevice provides following Attributes:
  *
  * - Address:           The ns3::Mac48Address of the device;
- * - DataRate:          The data rate of the device;
  * - SendEnable:        Enable packet transmission if true;
  * - ReceiveEnable:     Enable packet reception if true;
  * - EncapsulationMode: Type of link layer encapsulation to use;

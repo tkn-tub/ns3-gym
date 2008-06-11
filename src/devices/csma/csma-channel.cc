@@ -30,29 +30,15 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (CsmaChannel);
 
-CsmaDeviceRec::CsmaDeviceRec()
-{
-  active = false;
-}
-
-CsmaDeviceRec::CsmaDeviceRec(Ptr<CsmaNetDevice> device)
-{
-  devicePtr = device; 
-  active = true;
-}
-
-bool
-CsmaDeviceRec::IsActive() {
-  return active;
-}
-
-TypeId 
+  TypeId 
 CsmaChannel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::CsmaChannel")
     .SetParent<Channel> ()
     .AddConstructor<CsmaChannel> ()
-    .AddAttribute ("BitRate", "The maximum bitrate of the channel",
+    .AddAttribute ("DataRate", 
+                   "The transmission data rate to be provided to devices "
+                   "connected to the channel",
                    DataRateValue (DataRate (0xffffffff)),
                    MakeDataRateAccessor (&CsmaChannel::m_bps),
                    MakeDataRateChecker ())
@@ -64,10 +50,7 @@ CsmaChannel::GetTypeId (void)
   return tid;
 }
 
-//
-// By default, you get a channel with the name "Csma Channel" that 
-// has an "infitely" fast transmission speed and zero delay.
-CsmaChannel::CsmaChannel()
+CsmaChannel::CsmaChannel ()
 : 
   Channel ("Csma Channel")
 {
@@ -76,26 +59,26 @@ CsmaChannel::CsmaChannel()
   m_deviceList.clear();
 }
 
-int32_t
-CsmaChannel::Attach(Ptr<CsmaNetDevice> device)
+  int32_t
+CsmaChannel::Attach (Ptr<CsmaNetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
-  NS_ASSERT(device != 0);
+  NS_ASSERT (device != 0);
 
-  CsmaDeviceRec rec(device);
+  CsmaDeviceRec rec (device);
   
-  m_deviceList.push_back(rec);
-  return (m_deviceList.size() - 1);
+  m_deviceList.push_back (rec);
+  return (m_deviceList.size () - 1);
 }
 
-bool
-CsmaChannel::Reattach(Ptr<CsmaNetDevice> device)
+  bool
+CsmaChannel::Reattach (Ptr<CsmaNetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
-  NS_ASSERT(device != 0);
+  NS_ASSERT (device != 0);
 
   std::vector<CsmaDeviceRec>::iterator it;
-  for (it = m_deviceList.begin(); it < m_deviceList.end(); it++) 
+  for (it = m_deviceList.begin (); it < m_deviceList.end( ); it++) 
     {
       if (it->devicePtr == device) 
         {
@@ -113,12 +96,12 @@ CsmaChannel::Reattach(Ptr<CsmaNetDevice> device)
   return false;
 }
 
-bool
-CsmaChannel::Reattach(uint32_t deviceId)
+  bool
+CsmaChannel::Reattach (uint32_t deviceId)
 {
   NS_LOG_FUNCTION (this << deviceId);
 
-  if (deviceId < m_deviceList.size())
+  if (deviceId < m_deviceList.size ())
     {
       return false;
     }
@@ -134,26 +117,25 @@ CsmaChannel::Reattach(uint32_t deviceId)
     }
 }
 
-bool
-CsmaChannel::Detach(uint32_t deviceId)
+  bool
+CsmaChannel::Detach (uint32_t deviceId)
 {
   NS_LOG_FUNCTION (this << deviceId);
 
-  if (deviceId < m_deviceList.size())
+  if (deviceId < m_deviceList.size ())
     {
       if (!m_deviceList[deviceId].active)
         {
-          NS_LOG_WARN ("CsmaChannel::Detach Device is already detached (" << 
-            deviceId << ")");
+          NS_LOG_WARN ("CsmaChannel::Detach(): "
+            "Device is already detached (" << deviceId << ")");
           return false;
         }
 
       m_deviceList[deviceId].active = false;
       if ((m_state == TRANSMITTING) && (m_currentSrc == deviceId))
         {
-          NS_LOG_WARN ("CsmaChannel::Detach Device is currently" << 
+          NS_LOG_WARN ("CsmaChannel::Detach(): Device is currently" << 
             "transmitting (" << deviceId << ")");
-          // Here we will need to place a warning in the packet
         }
 
       return true;
@@ -164,14 +146,14 @@ CsmaChannel::Detach(uint32_t deviceId)
     }
 }
 
-bool
-CsmaChannel::Detach(Ptr<CsmaNetDevice> device)
+  bool
+CsmaChannel::Detach (Ptr<CsmaNetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
-  NS_ASSERT(device != 0);
+  NS_ASSERT (device != 0);
 
   std::vector<CsmaDeviceRec>::iterator it;
-  for (it = m_deviceList.begin(); it < m_deviceList.end(); it++) 
+  for (it = m_deviceList.begin (); it < m_deviceList.end (); it++) 
     {
       if ((it->devicePtr == device) && (it->active)) 
         {
@@ -182,21 +164,22 @@ CsmaChannel::Detach(Ptr<CsmaNetDevice> device)
   return false;
 }
 
-bool
-CsmaChannel::TransmitStart(Ptr<Packet> p, uint32_t srcId)
+  bool
+CsmaChannel::TransmitStart (Ptr<Packet> p, uint32_t srcId)
 {
   NS_LOG_FUNCTION (this << p << srcId);
   NS_LOG_INFO ("UID is " << p->GetUid () << ")");
 
   if (m_state != IDLE)
     {
-      NS_LOG_WARN ("state is not IDLE");
+      NS_LOG_WARN ("CsmaChannel::TransmitStart(): State is not IDLE");
       return false;
     }
 
   if (!IsActive(srcId))
     {
-      NS_LOG_ERROR ("Seclected source is not currently attached to network");
+      NS_LOG_ERROR ("CsmaChannel::TransmitStart(): "
+        "Seclected source is not currently attached to network");
       return false;
     }
 
@@ -207,51 +190,51 @@ CsmaChannel::TransmitStart(Ptr<Packet> p, uint32_t srcId)
   return true;
 }
 
-bool
+  bool
 CsmaChannel::IsActive(uint32_t deviceId) 
 {
-    return (m_deviceList[deviceId].active);
+  return (m_deviceList[deviceId].active);
 }
 
-bool
+  bool
 CsmaChannel::TransmitEnd()
 {
   NS_LOG_FUNCTION (this << m_currentPkt << m_currentSrc);
   NS_LOG_INFO ("UID is " << m_currentPkt->GetUid () << ")");
 
-  NS_ASSERT(m_state == TRANSMITTING);
+  NS_ASSERT (m_state == TRANSMITTING);
   m_state = PROPAGATING;
 
   bool retVal = true;
 
-  if (!IsActive(m_currentSrc)) {
-    NS_LOG_ERROR ("Seclected source was detached before the end of the"
-      "transmission");
-    retVal = false;
-  }
+  if (!IsActive (m_currentSrc))
+    {
+      NS_LOG_ERROR ("CsmaChannel::TransmitEnd(): "
+        "Seclected source was detached before the end of the transmission");
+      retVal = false;
+    }
 
   NS_LOG_LOGIC ("Schedule event in " << m_delay.GetSeconds () << " sec");
 
-  Simulator::Schedule (m_delay,
-                       &CsmaChannel::PropagationCompleteEvent,
-                       this);
+  Simulator::Schedule (m_delay, &CsmaChannel::PropagationCompleteEvent,
+    this);
   return retVal;
 }
 
-void
+  void
 CsmaChannel::PropagationCompleteEvent()
 {
   NS_LOG_FUNCTION (this << m_currentPkt);
   NS_LOG_INFO ("UID is " << m_currentPkt->GetUid () << ")");
 
-  NS_ASSERT(m_state == PROPAGATING);
+  NS_ASSERT (m_state == PROPAGATING);
 
   NS_LOG_LOGIC ("Receive");
   
   std::vector<CsmaDeviceRec>::iterator it;
-  for (it = m_deviceList.begin(); it < m_deviceList.end(); it++) 
+  for (it = m_deviceList.begin (); it < m_deviceList.end(); it++) 
     {
-      if (it->IsActive())
+      if (it->IsActive ())
       {
         it->devicePtr->Receive (m_currentPkt->Copy ());
       }
@@ -259,13 +242,12 @@ CsmaChannel::PropagationCompleteEvent()
   m_state = IDLE;
 }
 
-
-uint32_t 
+  uint32_t 
 CsmaChannel::GetNumActDevices (void)
 {
   int numActDevices = 0;
   std::vector<CsmaDeviceRec>::iterator it;
-  for (it = m_deviceList.begin(); it < m_deviceList.end(); it++) 
+  for (it = m_deviceList.begin (); it < m_deviceList.end (); it++) 
     {
       if (it->active)
         {
@@ -275,29 +257,29 @@ CsmaChannel::GetNumActDevices (void)
   return numActDevices;
 }
 
+//
 // This is not the number of active devices. This is the total number
 // of devices even if some were detached after.
-uint32_t 
+//
+  uint32_t 
 CsmaChannel::GetNDevices (void) const
 {
-  return (m_deviceList.size());
+  return (m_deviceList.size ());
 }
 
-Ptr<CsmaNetDevice>
+  Ptr<CsmaNetDevice>
 CsmaChannel::GetCsmaDevice (uint32_t i) const
 {
-  Ptr< CsmaNetDevice > netDevice;
-
-  netDevice = m_deviceList[i].devicePtr;
+  Ptr<CsmaNetDevice> netDevice = m_deviceList[i].devicePtr;
   return netDevice;
 }
 
-int32_t
+  int32_t
 CsmaChannel::GetDeviceNum (Ptr<CsmaNetDevice> device)
 {
   std::vector<CsmaDeviceRec>::iterator it;
   int i = 0;
-  for (it = m_deviceList.begin(); it < m_deviceList.end(); it++) 
+  for (it = m_deviceList.begin (); it < m_deviceList.end (); it++) 
     {
       if (it->devicePtr == device)
         {
@@ -315,7 +297,7 @@ CsmaChannel::GetDeviceNum (Ptr<CsmaNetDevice> device)
   return -1;
 }
 
-bool 
+  bool 
 CsmaChannel::IsBusy (void)
 {
   if (m_state == IDLE) 
@@ -328,28 +310,45 @@ CsmaChannel::IsBusy (void)
     }
 }
 
-DataRate
+  DataRate
 CsmaChannel::GetDataRate (void)
 {
   return m_bps;
 }
 
-Time
+  Time
 CsmaChannel::GetDelay (void)
 {
   return m_delay;
 }
 
-WireState
-CsmaChannel::GetState(void)
+  WireState
+CsmaChannel::GetState (void)
 {
   return m_state;
 }
 
-Ptr<NetDevice>
+  Ptr<NetDevice>
 CsmaChannel::GetDevice (uint32_t i) const
 {
   return GetCsmaDevice (i);
+}
+
+CsmaDeviceRec::CsmaDeviceRec ()
+{
+  active = false;
+}
+
+CsmaDeviceRec::CsmaDeviceRec (Ptr<CsmaNetDevice> device)
+{
+  devicePtr = device; 
+  active = true;
+}
+
+  bool
+CsmaDeviceRec::IsActive () 
+{
+  return active;
 }
 
 } // namespace ns3

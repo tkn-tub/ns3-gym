@@ -2,7 +2,7 @@
 @chapter ns-3 routing overview
 
 This chapter describes the overall design of routing in the 
-@code{src/internet-node}
+@code{src/internet-stack}
 module, and some details about the routing approachs currently
 implemented.
 
@@ -97,7 +97,7 @@ method that allows one to add a routing protocol:
   void AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
                            int16_t priority);
 @end verbatim
-This method is implemented by class Ipv4L3Protocol in the internet-node
+This method is implemented by class Ipv4L3Protocol in the internet-stack
 module.
 
 The priority variable above governs the priority in which the routing
@@ -174,7 +174,7 @@ There are presently no roadmap plans for IPv6.
 @node Static routing
 @section Static routing
 
-The internet-node module provides one routing protocol (Ipv4StaticRouting)
+The internet-stack module provides one routing protocol (Ipv4StaticRouting)
 by default.  This routing protocol allows one to add unicast or multicast
 static routes to a node.
 
@@ -193,7 +193,7 @@ Ipv4Route Ipv4::GetRoute ()
 @uref{http://www.nsnam.org/doxygen/index.html,,Doxygen} documentation
 provides full documentation of these methods.  These methods are forwarding
 functions to the actual implementation in Ipv4StaticRouting, when using
-the internet-node module.
+the internet-stack module.
 
 @node Multicast routing
 @section Multicast routing

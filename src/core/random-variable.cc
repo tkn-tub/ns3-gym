@@ -156,9 +156,8 @@ void RandomVariableBase::UseGlobalSeed(uint32_t s0, uint32_t s1, uint32_t s2,
 {
   if (RandomVariableBase::globalSeedSet)
     {
-      cerr << "Random number generator already initialized!" << endl;
-      cerr << "Call to RandomVariableBase::UseGlobalSeed() ignored" << endl;
-      return;
+      NS_FATAL_ERROR ("Random number generator already initialized! "
+                      "Call to RandomVariableBase::UseGlobalSeed() ignored");
     }
   RandomVariableBase::globalSeed[0] = s0;
   RandomVariableBase::globalSeed[1] = s1;
