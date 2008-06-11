@@ -10,6 +10,7 @@
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
 #include "ns3/command-line.h"
+#include "ns3/flow-id-tag.h"
 
 using namespace ns3;
 
@@ -18,6 +19,7 @@ class PsrExperiment
 public:
   struct Input
   {
+    Input ();
     double distance;
     std::string txMode;
     uint8_t txPowerLevel;
@@ -30,13 +32,10 @@ public:
   };
   PsrExperiment ();
 
-  static struct PsrExperiment::Input GetDefaultInput (void);
-
   struct PsrExperiment::Output Run (struct PsrExperiment::Input input);
 
 private:
   void Send (void);
-  typedef Callback<void,Ptr<Packet>, double, WifiMode, enum WifiPreamble> SyncOkCallback;
   void Receive (Ptr<Packet> p, double snr, WifiMode mode, enum WifiPreamble preamble);
   Ptr<WifiPhy> m_tx;
   struct Input m_input;
@@ -59,17 +58,13 @@ PsrExperiment::Receive (Ptr<Packet> p, double snr, WifiMode mode, enum WifiPream
 
 PsrExperiment::PsrExperiment ()
 {}
-struct PsrExperiment::Input 
-PsrExperiment::GetDefaultInput (void)
-{
-  struct PsrExperiment::Input  input;
-  input.distance = 5.0;
-  input.packetSize = 2304;
-  input.nPackets = 400;
-  input.txPowerLevel = 0;
-  input.txMode = "wifia-6mbs";
-  return input;
-}
+PsrExperiment::Input::Input ()
+  : distance (5.0),
+    txMode ("wifia-6mbs"),
+    txPowerLevel (0),
+    packetSize (2304),
+    nPackets (400)
+{}
 
 struct PsrExperiment::Output
 PsrExperiment::Run (struct PsrExperiment::Input input)
@@ -106,10 +101,146 @@ PsrExperiment::Run (struct PsrExperiment::Input input)
   return m_output;
 }
 
+
+class CollisionExperiment
+{
+public:
+  struct Input
+  {
+    Input ();
+    Time interval;
+    double xA;
+    double xB;
+    std::string txModeA;
+    std::string txModeB;
+    uint8_t txPowerLevelA;
+    uint8_t txPowerLevelB;
+    uint32_t packetSizeA;
+    uint32_t packetSizeB;
+    uint32_t nPackets;
+  };
+  struct Output
+  {
+    uint32_t receivedA;
+    uint32_t receivedB;
+  };
+  CollisionExperiment ();
+
+  struct CollisionExperiment::Output Run (struct CollisionExperiment::Input input);
+private:
+  void SendA (void) const;
+  void SendB (void) const;
+  void Receive (Ptr<Packet> p, double snr, WifiMode mode, enum WifiPreamble preamble);
+  Ptr<WifiPhy> m_txA;
+  Ptr<WifiPhy> m_txB;
+  uint32_t m_flowIdA;
+  uint32_t m_flowIdB;
+  struct Input m_input;
+  struct Output m_output;
+};
+
+void 
+CollisionExperiment::SendA (void) const
+{
+  Ptr<Packet> p = Create<Packet> (m_input.packetSizeA);
+  p->AddTag (FlowIdTag (m_flowIdA));
+  m_txA->SendPacket (p, WifiMode (m_input.txModeA), 
+		     WIFI_PREAMBLE_SHORT, m_input.txPowerLevelA);
+}
+
+void 
+CollisionExperiment::SendB (void) const
+{
+  Ptr<Packet> p = Create<Packet> (m_input.packetSizeB);
+  p->AddTag (FlowIdTag (m_flowIdB));
+  m_txB->SendPacket (p, WifiMode (m_input.txModeB), 
+		     WIFI_PREAMBLE_SHORT, m_input.txPowerLevelB);
+}
+
+void 
+CollisionExperiment::Receive (Ptr<Packet> p, double snr, WifiMode mode, enum WifiPreamble preamble)
+{
+  FlowIdTag tag;
+  p->FindFirstMatchingTag (tag);
+  if (tag.GetFlowId () == m_flowIdA)
+    {
+      m_output.receivedA++;
+    }
+  else if (tag.GetFlowId () == m_flowIdB)
+    {
+      m_output.receivedB++;
+    }
+}
+
+CollisionExperiment::CollisionExperiment ()
+{}
+CollisionExperiment::Input::Input ()
+  : interval (MicroSeconds (0)),
+    xA (-5),
+    xB (5),
+    txModeA ("wifia-6mbs"),
+    txModeB ("wifia-6mbs"),
+    txPowerLevelA (0),
+    txPowerLevelB (0),
+    packetSizeA (2304),
+    packetSizeB (2304),
+    nPackets (400)
+{}
+
+struct CollisionExperiment::Output
+CollisionExperiment::Run (struct CollisionExperiment::Input input)
+{
+  m_output.receivedA = 0;
+  m_output.receivedB = 0;
+  m_input = input;
+
+  m_flowIdA = FlowIdTag::AllocateFlowId ();
+  m_flowIdB = FlowIdTag::AllocateFlowId ();
+
+  Ptr<MobilityModel> posTxA = CreateObject<StaticMobilityModel> ();
+  posTxA->SetPosition (Vector (input.xA, 0.0, 0.0));
+  Ptr<MobilityModel> posTxB = CreateObject<StaticMobilityModel> ();
+  posTxB->SetPosition (Vector (input.xB, 0.0, 0.0));
+  Ptr<MobilityModel> posRx = CreateObject<StaticMobilityModel> ();
+  posRx->SetPosition (Vector (0, 0.0, 0.0));
+
+  Ptr<WifiPhy> txA = CreateObject<WifiPhy> ();
+  Ptr<WifiPhy> txB = CreateObject<WifiPhy> ();
+  Ptr<WifiPhy> rx = CreateObject<WifiPhy> ();
+  rx->SetReceiveOkCallback (MakeCallback (&CollisionExperiment::Receive, this));
+
+  Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
+  channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
+  Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
+  log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
+  channel->SetPropagationLossModel (log);
+
+  channel->Add (0, txA, posTxA);
+  channel->Add (0, txB, posTxB);
+  channel->Add (0, rx, posRx);
+  txA->SetChannel (channel);
+  txB->SetChannel (channel);
+  rx->SetChannel (channel);
+
+  for (uint32_t i = 0; i < m_input.nPackets; ++i)
+    {
+      Simulator::Schedule (Seconds (i), &CollisionExperiment::SendA, this);
+    }
+  for (uint32_t i = 0; i < m_input.nPackets; ++i)
+    {
+      Simulator::Schedule (Seconds (i) + m_input.interval, &CollisionExperiment::SendB, this);
+    }
+  m_txA = txA;
+  m_txB = txB;
+  Simulator::Run ();
+  return m_output;
+}
+
+
 static void PrintPsr (int argc, char *argv[])
 {
   PsrExperiment experiment;
-  struct PsrExperiment::Input input = experiment.GetDefaultInput ();
+  struct PsrExperiment::Input input;
 
   CommandLine cmd;
   cmd.AddValue ("Distance", "The distance between two phys", input.distance);
@@ -137,7 +268,7 @@ double CalcPsr (struct PsrExperiment::Output output, struct PsrExperiment::Input
 
 static void PrintPsrVsDistance (int argc, char *argv[])
 {
-  struct PsrExperiment::Input input = PsrExperiment::GetDefaultInput ();
+  struct PsrExperiment::Input input;
   CommandLine cmd;
   cmd.AddValue ("TxPowerLevel", "The power level index to use to send each packet", input.txPowerLevel);  
   cmd.AddValue ("TxMode", "The mode to use to send each packet", input.txMode);
@@ -189,7 +320,7 @@ static void PrintPsrVsDistance (int argc, char *argv[])
 static void PrintSizeVsRange (int argc, char *argv[])
 {
   double targetPsr = 0.05;
-  struct PsrExperiment::Input input = PsrExperiment::GetDefaultInput ();
+  struct PsrExperiment::Input input;
   CommandLine cmd;
   cmd.AddValue ("TxPowerLevel", "The power level index to use to send each packet", input.txPowerLevel);  
   cmd.AddValue ("TxMode", "The mode to use to send each packet", input.txMode);
@@ -222,6 +353,36 @@ static void PrintSizeVsRange (int argc, char *argv[])
     }
 }
 
+static void PrintPsrVsCollisionInterval (int argc, char *argv[])
+{
+  CollisionExperiment::Input input;
+  input.nPackets = 100;
+  CommandLine cmd;
+  cmd.AddValue ("NPackets", "The number of packets to send for each transmitter", input.nPackets);
+  cmd.AddValue ("xA", "the position of transmitter A", input.xA);
+  cmd.AddValue ("xB", "the position of transmitter B", input.xB);
+  for (uint32_t i = 0; i < 100; i += 1)
+    {
+      CollisionExperiment experiment;
+      CollisionExperiment::Output output;
+      input.interval = MicroSeconds (i);
+      output = experiment.Run (input);
+      double perA = (output.receivedA+0.0) / (input.nPackets+0.0);
+      double perB = (output.receivedB+0.0) / (input.nPackets+0.0);
+      std::cout << i << " " << perA << " " << perB << std::endl;
+    }
+  for (uint32_t i = 100; i < 4000; i += 50)
+    {
+      CollisionExperiment experiment;
+      CollisionExperiment::Output output;
+      input.interval = MicroSeconds (i);
+      output = experiment.Run (input);
+      double perA = (output.receivedA+0.0) / (input.nPackets+0.0);
+      double perB = (output.receivedB+0.0) / (input.nPackets+0.0);
+      std::cout << i << " " << perA << " " << perB << std::endl;
+    }
+}
+
 
 
 int main (int argc, char *argv[])
@@ -232,6 +393,7 @@ int main (int argc, char *argv[])
 		<< "Psr "
 		<< "SizeVsRange "
 		<< "PsrVsDistance "
+		<< "PsrVsCollisionInterval "
 		<< std::endl;
       return -1;
     }
@@ -250,6 +412,10 @@ int main (int argc, char *argv[])
   else if (type == "PsrVsDistance")
     {
       PrintPsrVsDistance (argc, argv);
+    }
+  else if (type == "PsrVsCollisionInterval")
+    {
+      PrintPsrVsCollisionInterval (argc, argv);
     }
 
   return 0;
