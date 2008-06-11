@@ -36,7 +36,6 @@
 
 namespace ns3 {
 
-class WifiNetDevice;
 class WifiPhy;
 class WifiMac;
 

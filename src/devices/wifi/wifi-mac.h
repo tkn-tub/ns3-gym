@@ -138,8 +138,6 @@ public:
    */
   virtual void SetSsid (Ssid ssid) = 0;
 
-private:
-  friend class WifiNetDevice;
   /**
    * \param packet the packet to send.
    * \param to the address to which the packet should be sent.
@@ -169,6 +167,8 @@ private:
    * \param linkDown the callback to invoke when the link becomes down.
    */
   virtual void SetLinkDownCallback (Callback<void> linkDown) = 0;
+private:
+
 
 
   static Time GetDefaultMaxPropagationDelay (void);
