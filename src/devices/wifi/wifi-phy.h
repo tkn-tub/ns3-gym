@@ -141,11 +141,6 @@ public:
   virtual uint32_t GetNTxPower (void) const = 0;
 
   /**
-   * \param channel the channel to connect to.
-   */
-  virtual void SetChannel (Ptr<WifiChannel> channel) = 0;
-
-  /**
    * \param callback the callback to invoke
    *        upon successful packet reception.
    */
@@ -234,11 +229,6 @@ public:
    */
   virtual double CalculateSnr (WifiMode txMode, double ber) const = 0;
 
-  /* rxPower unit is Watt */
-  virtual void StartReceivePacket (Ptr<Packet> packet,
-                                   double rxPowerDbm,
-                                   WifiMode mode,
-                                   WifiPreamble preamble) = 0;
 
   virtual Ptr<WifiChannel> GetChannel (void) const = 0;
 

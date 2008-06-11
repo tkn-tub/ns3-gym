@@ -23,6 +23,7 @@
 #include "ns3/wifi-phy.h"
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/wifi-channel.h"
+#include "ns3/yans-wifi-channel.h"
 #include "ns3/propagation-delay-model.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/mobility-model.h"
@@ -72,7 +73,6 @@ static void AsciiPhyRxOkEvent (std::ostream *os, std::string context,
 WifiHelper::WifiHelper ()
 {
   m_stationManager.SetTypeId ("ns3::ArfWifiManager");
-  m_phy.SetTypeId ("ns3::WifiPhy");
   m_mac.SetTypeId ("ns3::AdhocWifiMac");
 }
 
@@ -123,26 +123,9 @@ WifiHelper::SetMac (std::string type,
 }
 
 void 
-WifiHelper::SetPhy (std::string type,
-		    std::string n0, const AttributeValue &v0,
-		    std::string n1, const AttributeValue &v1,
-		    std::string n2, const AttributeValue &v2,
-		    std::string n3, const AttributeValue &v3,
-		    std::string n4, const AttributeValue &v4,
-		    std::string n5, const AttributeValue &v5,
-		    std::string n6, const AttributeValue &v6,
-		    std::string n7, const AttributeValue &v7)
+WifiHelper::SetPhyAttribute (std::string name, const AttributeValue &value)
 {
-  m_phy = ObjectFactory ();
-  m_phy.SetTypeId (type);
-  m_phy.Set (n0, v0);
-  m_phy.Set (n1, v1);
-  m_phy.Set (n2, v2);
-  m_phy.Set (n3, v3);
-  m_phy.Set (n4, v4);
-  m_phy.Set (n5, v5);
-  m_phy.Set (n6, v6);
-  m_phy.Set (n7, v7);
+  m_phyAttributes.Set (name, value);
 }
 
 void 
@@ -234,7 +217,7 @@ WifiHelper::EnableAsciiAll (std::ostream &os)
 NetDeviceContainer
 WifiHelper::Install (NodeContainer c) const
 {
-  Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
+  Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
   channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
   Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
   log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
@@ -251,7 +234,7 @@ WifiHelper::Install (NodeContainer c, Ptr<WifiChannel> channel) const
       Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
       Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
       Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
-      Ptr<WifiPhy> phy = m_phy.Create<WifiPhy> ();
+      Ptr<WifiPhy> phy = channel->CreatePhy (device, node, m_phyAttributes);
       mac->SetAddress (Mac48Address::Allocate ());
       device->SetMac (mac);
       device->SetPhy (phy);

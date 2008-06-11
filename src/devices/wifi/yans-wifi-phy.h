@@ -42,7 +42,7 @@ namespace ns3 {
 
 class RandomUniform;
 class RxEvent;
-class WifiChannel;
+class YansWifiChannel;
 
 
 /**
@@ -57,7 +57,7 @@ class WifiChannel;
  * This PHY model depends on a channel loss and delay
  * model as provided by the ns3::PropagationLossModel
  * and ns3::PropagationDelayModel classes, both of which are
- * members of the ns3::WifiChannel class.
+ * members of the ns3::YansWifiChannel class.
  */
 class YansWifiPhy : public WifiPhy
 {
@@ -67,6 +67,12 @@ public:
 
   YansWifiPhy ();
   virtual ~YansWifiPhy ();
+
+  void SetChannel (Ptr<YansWifiChannel> channel);
+  void StartReceivePacket (Ptr<Packet> packet,
+                           double rxPowerDbm,
+                           WifiMode mode,
+                           WifiPreamble preamble);
 
   void SetStandard (enum WifiPhyStandard standard);
   void SetRxNoise (double ratio);
@@ -85,7 +91,6 @@ public:
   virtual double GetTxPowerStart (void) const;
   virtual double GetTxPowerEnd (void) const;
   virtual uint32_t GetNTxPower (void) const;
-  virtual void SetChannel (Ptr<WifiChannel> channel);
   virtual void SetReceiveOkCallback (WifiPhy::SyncOkCallback callback);
   virtual void SetReceiveErrorCallback (WifiPhy::SyncErrorCallback callback);
   virtual void SendPacket (Ptr<const Packet> packet, WifiMode mode, enum WifiPreamble preamble, uint8_t txPowerLevel);
@@ -102,10 +107,6 @@ public:
   virtual uint32_t GetNModes (void) const;
   virtual WifiMode GetMode (uint32_t mode) const;
   virtual double CalculateSnr (WifiMode txMode, double ber) const;
-  virtual void StartReceivePacket (Ptr<Packet> packet,
-                                   double rxPowerDbm,
-                                   WifiMode mode,
-                                   WifiPreamble preamble);
   virtual Ptr<WifiChannel> GetChannel (void) const;
 
 private:
@@ -201,7 +202,7 @@ private:
   Time m_startCcaBusy;
   Time m_previousStateChangeTime;
 
-  Ptr<WifiChannel> m_channel;
+  Ptr<YansWifiChannel> m_channel;
   SyncOkCallback m_syncOkCallback;
   SyncErrorCallback m_syncErrorCallback;
   TracedCallback<Ptr<const Packet>, double, WifiMode, enum WifiPreamble> m_rxOkTrace;

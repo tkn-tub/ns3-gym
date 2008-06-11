@@ -20,7 +20,7 @@
 
 #include "yans-wifi-phy.h"
 #include "wifi-mode.h"
-#include "wifi-channel.h"
+#include "yans-wifi-channel.h"
 #include "wifi-preamble.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
@@ -341,7 +341,7 @@ YansWifiPhy::GetChannel (void) const
 }
 
 void 
-YansWifiPhy::SetChannel (Ptr<WifiChannel> channel)
+YansWifiPhy::SetChannel (Ptr<YansWifiChannel> channel)
 {
   m_channel = channel;
 }

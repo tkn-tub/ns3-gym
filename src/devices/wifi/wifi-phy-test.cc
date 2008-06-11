@@ -1,5 +1,5 @@
-#include "wifi-phy.h"
-#include "wifi-channel.h"
+#include "wifi-net-device.h"
+#include "yans-wifi-channel.h"
 #include "yans-wifi-phy.h"
 #include "propagation-loss-model.h"
 #include "propagation-delay-model.h"
@@ -78,20 +78,15 @@ PsrExperiment::Run (struct PsrExperiment::Input input)
   Ptr<MobilityModel> posRx = CreateObject<StaticMobilityModel> ();
   posRx->SetPosition (Vector (m_input.distance, 0.0, 0.0));
 
-  Ptr<WifiPhy> tx = CreateObject<YansWifiPhy> ();
-  Ptr<WifiPhy> rx = CreateObject<YansWifiPhy> ();
-  rx->SetReceiveOkCallback (MakeCallback (&PsrExperiment::Receive, this));
-
-  Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
+  Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
   channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
   Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
   log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
   channel->SetPropagationLossModel (log);
 
-  channel->Add (0, tx, posTx);
-  channel->Add (0, rx, posRx);
-  tx->SetChannel (channel);
-  rx->SetChannel (channel);
+  Ptr<WifiPhy> tx = channel->CreatePhy (0, posTx, UnsafeAttributeList ());
+  Ptr<WifiPhy> rx = channel->CreatePhy (0, posRx, UnsafeAttributeList ());
+  rx->SetReceiveOkCallback (MakeCallback (&PsrExperiment::Receive, this));
 
   for (uint32_t i = 0; i < m_input.nPackets; ++i)
     {
@@ -198,6 +193,12 @@ CollisionExperiment::Run (struct CollisionExperiment::Input input)
   m_flowIdA = FlowIdTag::AllocateFlowId ();
   m_flowIdB = FlowIdTag::AllocateFlowId ();
 
+  Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
+  channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
+  Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
+  log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
+  channel->SetPropagationLossModel (log);
+
   Ptr<MobilityModel> posTxA = CreateObject<StaticMobilityModel> ();
   posTxA->SetPosition (Vector (input.xA, 0.0, 0.0));
   Ptr<MobilityModel> posTxB = CreateObject<StaticMobilityModel> ();
@@ -205,23 +206,10 @@ CollisionExperiment::Run (struct CollisionExperiment::Input input)
   Ptr<MobilityModel> posRx = CreateObject<StaticMobilityModel> ();
   posRx->SetPosition (Vector (0, 0.0, 0.0));
 
-  Ptr<WifiPhy> txA = CreateObject<YansWifiPhy> ();
-  Ptr<WifiPhy> txB = CreateObject<YansWifiPhy> ();
-  Ptr<WifiPhy> rx = CreateObject<YansWifiPhy> ();
+  Ptr<WifiPhy> txA = channel->CreatePhy (0, posTxA, UnsafeAttributeList ());
+  Ptr<WifiPhy> txB = channel->CreatePhy (0, posTxB, UnsafeAttributeList ());
+  Ptr<WifiPhy> rx = channel->CreatePhy (0, posRx, UnsafeAttributeList ());
   rx->SetReceiveOkCallback (MakeCallback (&CollisionExperiment::Receive, this));
-
-  Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
-  channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
-  Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
-  log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
-  channel->SetPropagationLossModel (log);
-
-  channel->Add (0, txA, posTxA);
-  channel->Add (0, txB, posTxB);
-  channel->Add (0, rx, posRx);
-  txA->SetChannel (channel);
-  txB->SetChannel (channel);
-  rx->SetChannel (channel);
 
   for (uint32_t i = 0; i < m_input.nPackets; ++i)
     {

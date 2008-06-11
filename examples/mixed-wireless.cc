@@ -137,7 +137,6 @@ main (int argc, char *argv[])
   //
   WifiHelper wifi;
   wifi.SetMac ("ns3::AdhocWifiMac");
-  wifi.SetPhy ("ns3::YansWifiPhy");
   NetDeviceContainer backboneDevices = wifi.Install (backbone);
   //
   // Add the IPv4 protocol stack to the nodes in our container
@@ -246,7 +245,6 @@ main (int argc, char *argv[])
       //
       WifiHelper wifiInfra;
       wifiInfra.SetMac ("ns3::AdhocWifiMac");
-      wifiInfra.SetPhy ("ns3::YansWifiPhy");
       NetDeviceContainer infraDevices = wifiInfra.Install (infra);
 
       // Add the IPv4 protocol stack to the nodes in our container

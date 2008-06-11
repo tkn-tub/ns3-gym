@@ -131,14 +131,13 @@ int main (int argc, char *argv[])
   packetSocket.Install (stas);
   packetSocket.Install (ap);
 
-  Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
+  Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
   channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
   Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
   log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
   channel->SetPropagationLossModel (log);
 
   Ssid ssid = Ssid ("wifi-default");
-  wifi.SetPhy ("ns3::YansWifiPhy");
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
   // setup stas.
   wifi.SetMac ("ns3::NqstaWifiMac", 

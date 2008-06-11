@@ -172,7 +172,6 @@ int main (int argc, char *argv[])
   GnuplotDataset dataset;
 
   wifi.SetMac ("ns3::AdhocWifiMac");
-  wifi.SetPhy ("ns3::YansWifiPhy");
 
   NS_LOG_DEBUG ("54");
   experiment = Experiment ("54mb");
