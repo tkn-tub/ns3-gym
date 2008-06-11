@@ -25,6 +25,7 @@
 #include "ns3/log.h"
 #include "ns3/pointer.h"
 #include "wifi-channel.h"
+#include "wifi-phy.h"
 #include "propagation-loss-model.h"
 #include "propagation-delay-model.h"
 

@@ -3,7 +3,7 @@
 #include "wifi-net-device.h"
 #include "wifi-channel.h"
 #include "adhoc-wifi-mac.h"
-#include "wifi-phy.h"
+#include "yans-wifi-phy.h"
 #include "arf-wifi-manager.h"
 #include "propagation-delay-model.h"
 #include "propagation-loss-model.h"
@@ -50,7 +50,7 @@ WifiTest::CreateOne (Vector pos, Ptr<WifiChannel> channel)
 
   Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
   Ptr<StaticMobilityModel> mobility = CreateObject<StaticMobilityModel> ();
-  Ptr<WifiPhy> phy = CreateObject<WifiPhy> ();
+  Ptr<WifiPhy> phy = CreateObject<YansWifiPhy> ();
   Ptr<WifiRemoteStationManager> manager = m_manager.Create<WifiRemoteStationManager> ();
 
   mobility->SetPosition (pos);

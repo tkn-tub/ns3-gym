@@ -27,13 +27,13 @@
 #include "ns3/net-device.h"
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
-#include "wifi-phy.h"
 
 namespace ns3 {
 
 class NetDevice;
 class PropagationLossModel;
 class PropagationDelayModel;
+class WifiPhy;
 
 /**
  * \brief A 802.11 Channel

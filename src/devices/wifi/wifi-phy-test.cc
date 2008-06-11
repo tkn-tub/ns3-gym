@@ -1,5 +1,6 @@
 #include "wifi-phy.h"
 #include "wifi-channel.h"
+#include "yans-wifi-phy.h"
 #include "propagation-loss-model.h"
 #include "propagation-delay-model.h"
 #include "ns3/ptr.h"
@@ -77,8 +78,8 @@ PsrExperiment::Run (struct PsrExperiment::Input input)
   Ptr<MobilityModel> posRx = CreateObject<StaticMobilityModel> ();
   posRx->SetPosition (Vector (m_input.distance, 0.0, 0.0));
 
-  Ptr<WifiPhy> tx = CreateObject<WifiPhy> ();
-  Ptr<WifiPhy> rx = CreateObject<WifiPhy> ();
+  Ptr<WifiPhy> tx = CreateObject<YansWifiPhy> ();
+  Ptr<WifiPhy> rx = CreateObject<YansWifiPhy> ();
   rx->SetReceiveOkCallback (MakeCallback (&PsrExperiment::Receive, this));
 
   Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
@@ -204,9 +205,9 @@ CollisionExperiment::Run (struct CollisionExperiment::Input input)
   Ptr<MobilityModel> posRx = CreateObject<StaticMobilityModel> ();
   posRx->SetPosition (Vector (0, 0.0, 0.0));
 
-  Ptr<WifiPhy> txA = CreateObject<WifiPhy> ();
-  Ptr<WifiPhy> txB = CreateObject<WifiPhy> ();
-  Ptr<WifiPhy> rx = CreateObject<WifiPhy> ();
+  Ptr<WifiPhy> txA = CreateObject<YansWifiPhy> ();
+  Ptr<WifiPhy> txB = CreateObject<YansWifiPhy> ();
+  Ptr<WifiPhy> rx = CreateObject<YansWifiPhy> ();
   rx->SetReceiveOkCallback (MakeCallback (&CollisionExperiment::Receive, this));
 
   Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();

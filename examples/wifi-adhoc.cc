@@ -172,7 +172,7 @@ int main (int argc, char *argv[])
   GnuplotDataset dataset;
 
   wifi.SetMac ("ns3::AdhocWifiMac");
-  wifi.SetPhy ("ns3::WifiPhy");
+  wifi.SetPhy ("ns3::YansWifiPhy");
 
   NS_LOG_DEBUG ("54");
   experiment = Experiment ("54mb");
@@ -234,7 +234,7 @@ int main (int argc, char *argv[])
 
 
   gnuplot = Gnuplot ("rate-control.png");
-  Config::SetDefault ("ns3::WifiPhy::Standard", StringValue ("holland"));
+  Config::SetDefault ("ns3::YansWifiPhy::Standard", StringValue ("holland"));
 
 
   NS_LOG_DEBUG ("arf");

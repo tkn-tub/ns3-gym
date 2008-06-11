@@ -138,7 +138,7 @@ int main (int argc, char *argv[])
   channel->SetPropagationLossModel (log);
 
   Ssid ssid = Ssid ("wifi-default");
-  wifi.SetPhy ("ns3::WifiPhy");
+  wifi.SetPhy ("ns3::YansWifiPhy");
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
   // setup stas.
   wifi.SetMac ("ns3::NqstaWifiMac", 
