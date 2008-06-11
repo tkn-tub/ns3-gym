@@ -21,17 +21,12 @@
 #ifndef WIFI_PHY_H
 #define WIFI_PHY_H
 
-#include <vector>
-#include <list>
 #include <stdint.h>
 #include "ns3/callback.h"
-#include "ns3/event-id.h"
 #include "ns3/packet.h"
 #include "ns3/object.h"
-#include "ns3/traced-callback.h"
 #include "ns3/nstime.h"
 #include "ns3/ptr.h"
-#include "ns3/random-variable.h"
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
 #include "wifi-phy-standard.h"
@@ -210,7 +205,7 @@ public:
    *          the transmission of these bytes.
    */
   virtual Time CalculateTxDuration (uint32_t size, WifiMode payloadMode, enum WifiPreamble preamble) const = 0;
-
+  
   /**
    * \returns the number of transmission modes supported by this PHY.
    */
