@@ -174,7 +174,7 @@ public:
   virtual void RegisterListener (WifiPhyListener *listener) = 0;
 
   /**
-   * \returns true of the current state of the PHY layer is WifiPhy:LCCA_BUSY, false otherwise.
+   * \returns true of the current state of the PHY layer is WifiPhy::CCA_BUSY, false otherwise.
    */
   virtual bool IsStateCcaBusy (void) = 0;
   /**
