@@ -166,9 +166,6 @@ public:
   double GetRxGain (void) const;
   double GetEdThreshold (void) const;
 
-
-  Ptr<WifiNetDevice> GetDevice (void) const;
-
   /**
    * \param channel the channel to connect to.
    */
