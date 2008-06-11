@@ -256,4 +256,59 @@ AttributeList::DeserializeFromString (std::string str)
   return true;
 }
 
+UnsafeAttributeList::UnsafeAttributeList ()
+{}
+UnsafeAttributeList::UnsafeAttributeList (const UnsafeAttributeList &o)
+{
+  for (uint32_t i = 0; i < o.m_attributes.size (); ++i)
+    {
+      Set (o.m_attributes[i].first, *(o.m_attributes[i].second));
+    }
+}
+UnsafeAttributeList &
+UnsafeAttributeList::operator = (const UnsafeAttributeList &o)
+{
+  m_attributes.clear ();
+  for (uint32_t i = 0; i < o.m_attributes.size (); ++i)
+    {
+      Set (o.m_attributes[i].first, *(o.m_attributes[i].second));
+    }
+  return *this;
+}
+
+UnsafeAttributeList::~UnsafeAttributeList ()
+{
+  m_attributes.clear ();
+}
+void 
+UnsafeAttributeList::Set (std::string name, const AttributeValue &param)
+{
+  if (name == "")
+    {
+      return;
+    }
+  for (uint32_t i = 0; i < m_attributes.size (); ++i)
+    {
+      if (m_attributes[i].first == name)
+        {
+          m_attributes[i].second = param.Copy ();
+          return;
+        }
+    }
+  m_attributes.push_back (std::make_pair (name, param.Copy ()));
+}
+
+AttributeList 
+UnsafeAttributeList::GetSafe (std::string tidName) const
+{
+  AttributeList list;
+  for (uint32_t i = 0; i < m_attributes.size (); ++i)
+    {
+      TypeId tid = TypeId::LookupByName (tidName);
+      list.SetWithTid (tid, m_attributes[i].first, *m_attributes[i].second);
+    }
+  return list;
+}
+
+
 } // namespace ns3
