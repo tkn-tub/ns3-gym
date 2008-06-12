@@ -56,7 +56,6 @@ def build(bld):
         'ssid.h',
         'wifi-preamble.h',
 	'wifi-phy-standard.h',
-        'wifi-phy-state-helper.h',
         'yans-wifi-phy.h',
         'yans-wifi-channel.h',
         'wifi-phy.h',
