@@ -12,6 +12,7 @@ def build(bld):
         'ssid.cc',
         'wifi-phy.cc',
         'wifi-phy-state-helper.cc',
+        'error-rate-model.cc',
         'yans-wifi-phy.cc',
         'yans-wifi-channel.cc',
         'wifi-mac-header.cc',

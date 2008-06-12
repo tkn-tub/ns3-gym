@@ -44,6 +44,7 @@ class RandomUniform;
 class RxEvent;
 class YansWifiChannel;
 class WifiPhyStateHelper;
+class ErrorRateModel;
 
 
 /**
@@ -146,23 +147,6 @@ private:
   double CalculateChunkSuccessRate (double snir, Time delay, WifiMode mode) const;
   double CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const;
   void EndSync (Ptr<Packet> packet, Ptr<RxEvent> event);
-  double Log2 (double val) const;
-  double GetBpskBer (double snr, uint32_t signalSpread, uint32_t phyRate) const;
-  double GetQamBer (double snr, unsigned int m, uint32_t signalSpread, uint32_t phyRate) const;
-  uint32_t Factorial (uint32_t k) const;
-  double Binomial (uint32_t k, double p, uint32_t n) const;
-  double CalculatePdOdd (double ber, unsigned int d) const;
-  double CalculatePdEven (double ber, unsigned int d) const;
-  double CalculatePd (double ber, unsigned int d) const;
-  double GetFecBpskBer (double snr, double nbits, 
-                        uint32_t signalSpread, uint32_t phyRate,
-                        uint32_t dFree, uint32_t adFree) const;
-  double GetFecQamBer (double snr, uint32_t nbits, 
-                       uint32_t signalSpread,
-                       uint32_t phyRate,
-                       uint32_t m, uint32_t dfree,
-                       uint32_t adFree, uint32_t adFreePlusOne) const;
-  double GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const;
 private:
   uint64_t m_txPrepareDelayUs;
   uint64_t m_plcpLongPreambleDelayUs;
@@ -187,6 +171,7 @@ private:
   UniformVariable m_random;
   WifiPhyStandard m_standard;
   Ptr<WifiPhyStateHelper> m_state;
+  Ptr<ErrorRateModel> m_errorRateModel;
 };
 
 } // namespace ns3
