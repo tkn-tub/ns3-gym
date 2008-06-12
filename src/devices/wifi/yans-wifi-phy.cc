@@ -197,6 +197,7 @@ YansWifiPhy::GetTypeId (void)
                    MakeEnumAccessor (&YansWifiPhy::SetStandard),
                    MakeEnumChecker (WIFI_PHY_STANDARD_80211a, "802.11a",
                                     WIFI_PHY_STANDARD_holland, "holland"))
+#if 0
     .AddTraceSource ("State",
                      "The YansWifiPhy state",
                      MakeTraceSourceAccessor (&YansWifiPhy::m_stateLogger))
@@ -208,21 +209,14 @@ YansWifiPhy::GetTypeId (void)
                      MakeTraceSourceAccessor (&YansWifiPhy::m_rxErrorTrace))
     .AddTraceSource ("Tx", "Packet transmission is starting.",
                      MakeTraceSourceAccessor (&YansWifiPhy::m_txTrace))
+#endif
     ;
   return tid;
 }
 
 YansWifiPhy::YansWifiPhy ()
-  : m_syncing (false),
-    m_endTx (Seconds (0)),
-    m_endSync (Seconds (0)),
-    m_endCcaBusy (Seconds (0)),
-    m_startTx (Seconds (0)),
-    m_startSync (Seconds (0)),
-    m_startCcaBusy (Seconds (0)),
-    m_previousStateChangeTime (Seconds (0)),
-    m_endSyncEvent (),
-    m_random (0.0, 1.0)
+ : m_endSyncEvent (),
+   m_random (0.0, 1.0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -349,12 +343,12 @@ YansWifiPhy::SetChannel (Ptr<YansWifiChannel> channel)
 void 
 YansWifiPhy::SetReceiveOkCallback (SyncOkCallback callback)
 {
-  m_syncOkCallback = callback;
+  m_state.SetReceiveOkCallback (callback);
 }
 void 
 YansWifiPhy::SetReceiveErrorCallback (SyncErrorCallback callback)
 {
-  m_syncErrorCallback = callback;
+  m_state.SetReceiveErrorCallback (callback);
 }
 void 
 YansWifiPhy::StartReceivePacket (Ptr<Packet> packet, 
@@ -375,20 +369,24 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
                                         rxPowerW);
   AppendEvent (event);
 
-  switch (GetState ()) {
+  switch (m_state.GetState ()) {
   case YansWifiPhy::SYNC:
     NS_LOG_DEBUG ("drop packet because already in Sync (power="<<
                   rxPowerW<<"W)");
-    if (endRx > m_endSync) 
+    if (endRx > Simulator::Now () + m_state.GetDelayUntilIdle ()) 
       {
+        // that packet will be noise _after_ the reception of the
+        // currently-received packet.
         goto maybeCcaBusy;
       }
     break;
   case YansWifiPhy::TX:
     NS_LOG_DEBUG ("drop packet because already in Tx (power="<<
                   rxPowerW<<"W)");
-    if (endRx > m_endTx) 
+    if (endRx > Simulator::Now () + m_state.GetDelayUntilIdle ()) 
       {
+        // that packet will be noise _after_ the transmission of the
+        // currently-transmitted packet.
         goto maybeCcaBusy;
       }
     break;
@@ -398,8 +396,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
       {
         NS_LOG_DEBUG ("sync (power="<<rxPowerW<<"W)");
         // sync to signal
-        NotifySyncStart (rxDuration);
-        SwitchToSync (rxDuration);
+        m_state.SwitchToSync (rxDuration);
         NS_ASSERT (m_endSyncEvent.IsExpired ());
         m_endSyncEvent = Simulator::Schedule (rxDuration, &YansWifiPhy::EndSync, this, 
                                               packet,
@@ -420,8 +417,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
 
   if (rxPowerW > m_edThresholdW) 
     {
-      SwitchMaybeToCcaBusy (rxDuration);
-      NotifyCcaBusyStart (rxDuration);
+      m_state.SwitchMaybeToCcaBusy (rxDuration);
     } 
   else 
     {
@@ -442,8 +438,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
       if (end > Simulator::Now ()) 
         {
           Time delta = end - Simulator::Now ();
-          SwitchMaybeToCcaBusy (delta);
-          NotifyCcaBusyStart (delta);
+          m_state.SwitchMaybeToCcaBusy (delta);
         }
     }
 
@@ -458,12 +453,14 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble
    *    prevent it.
    *  - we are idle
    */
-  NS_ASSERT (!IsStateTx ());
+  NS_ASSERT (!m_state.IsStateTx ());
 
-  m_txTrace (packet, txMode, preamble, txPower);
   Time txDuration = CalculateTxDuration (packet->GetSize (), txMode, preamble);
-  NotifyTxStart (txDuration);
-  SwitchToTx (txDuration);
+  if (m_state.IsStateSync ())
+    {
+      m_endSyncEvent.Cancel ();
+    }
+  m_state.SwitchToTx (txDuration, packet, txMode, preamble, txPower);
   m_channel->Send (this, packet, GetPowerDbm (txPower) + m_txGainDb, txMode, preamble);
 }
 
@@ -570,73 +567,51 @@ YansWifiPhy::ConfigureHolland (void)
 void 
 YansWifiPhy::RegisterListener (WifiPhyListener *listener)
 {
-  m_listeners.push_back (listener);
+  m_state.RegisterListener (listener);
 }
 
 bool 
 YansWifiPhy::IsStateCcaBusy (void)
 {
-  return GetState () == CCA_BUSY;
+  return m_state.IsStateCcaBusy ();
 }
 
 bool 
 YansWifiPhy::IsStateIdle (void)
 {
-  return (GetState () == IDLE)?true:false;
+  return m_state.IsStateIdle ();
 }
 bool 
 YansWifiPhy::IsStateBusy (void)
 {
-  return (GetState () != IDLE)?true:false;
+  return m_state.IsStateBusy ();
 }
 bool 
 YansWifiPhy::IsStateSync (void)
 {
-  return (GetState () == SYNC)?true:false;
+  return m_state.IsStateSync ();
 }
 bool 
 YansWifiPhy::IsStateTx (void)
 {
-  return (GetState () == TX)?true:false;
+  return m_state.IsStateTx ();
 }
 
 Time
 YansWifiPhy::GetStateDuration (void)
 {
-  return Simulator::Now () - m_previousStateChangeTime;
+  return m_state.GetStateDuration ();
 }
 Time
 YansWifiPhy::GetDelayUntilIdle (void)
 {
-  Time retval;
-
-  switch (GetState ()) {
-  case SYNC:
-    retval = m_endSync - Simulator::Now ();
-    break;
-  case TX:
-    retval = m_endTx - Simulator::Now ();
-    break;
-  case CCA_BUSY:
-    retval = m_endCcaBusy - Simulator::Now ();
-    break;
-  case IDLE:
-    retval = Seconds (0);
-    break;
-  default:
-    NS_ASSERT (false);
-    // NOTREACHED
-    retval = Seconds (0);
-    break;
-  }
-  retval = Max (retval, Seconds (0));
-  return retval;
+  return m_state.GetDelayUntilIdle ();
 }
 
 Time 
 YansWifiPhy::GetLastRxStartTime (void) const
 {
-  return m_startSync;
+  return m_state.GetLastRxStartTime ();
 }
 
 
@@ -660,49 +635,6 @@ YansWifiPhy::CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPream
   return MicroSeconds (delay);
 }
 
-char const *
-YansWifiPhy::StateToString (enum State state)
-{
-  switch (state) {
-  case TX:
-    return "TX";
-    break;
-  case CCA_BUSY:
-    return "CCA_BUSY";
-    break;
-  case IDLE:
-    return "IDLE";
-    break;
-  case SYNC:
-    return "SYNC";
-    break;
-  default:
-    NS_ASSERT (false);
-    // quiet compiler
-    return "INVALID";
-    break;
-  }
-}
-enum YansWifiPhy::State 
-YansWifiPhy::GetState (void)
-{
-  if (m_endTx > Simulator::Now ()) 
-    {
-      return YansWifiPhy::TX;
-    } 
-  else if (m_syncing) 
-    {
-      return YansWifiPhy::SYNC;
-    } 
-  else if (m_endCcaBusy > Simulator::Now ()) 
-    {
-      return YansWifiPhy::CCA_BUSY;
-    } 
-  else 
-    {
-      return YansWifiPhy::IDLE;
-    }
-}
 
 double 
 YansWifiPhy::DbToRatio (double dB) const
@@ -751,146 +683,6 @@ YansWifiPhy::GetPowerDbm (uint8_t power) const
   return dbm;
 }
 
-void 
-YansWifiPhy::NotifyTxStart (Time duration)
-{
-  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++) {
-    (*i)->NotifyTxStart (duration);
-  }
-}
-void 
-YansWifiPhy::NotifySyncStart (Time duration)
-{
-  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++) {
-    (*i)->NotifyRxStart (duration);
-  }
-}
-void 
-YansWifiPhy::NotifySyncEndOk (void)
-{
-  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++) {
-    (*i)->NotifyRxEndOk ();
-  }
-}
-void 
-YansWifiPhy::NotifySyncEndError (void)
-{
-  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++) {
-    (*i)->NotifyRxEndError ();
-  }
-}
-void 
-YansWifiPhy::NotifyCcaBusyStart (Time duration)
-{
-  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++) {
-    (*i)->NotifyCcaBusyStart (duration);
-  }
-}
-
-void
-YansWifiPhy::LogPreviousIdleAndCcaBusyStates (void)
-{
-  Time now = Simulator::Now ();
-  Time idleStart = Max (m_endCcaBusy, m_endSync);
-  idleStart = Max (idleStart, m_endTx);
-  NS_ASSERT (idleStart <= now);
-  if (m_endCcaBusy > m_endSync && 
-      m_endCcaBusy > m_endTx) {
-    Time ccaBusyStart = Max (m_endTx, m_endSync);
-    ccaBusyStart = Max (ccaBusyStart, m_startCcaBusy);
-    m_stateLogger (ccaBusyStart, idleStart - ccaBusyStart, YansWifiPhy::CCA_BUSY);
-  }
-  m_stateLogger (idleStart, now - idleStart, YansWifiPhy::IDLE);
-}
-
-void
-YansWifiPhy::SwitchToTx (Time txDuration)
-{
-  Time now = Simulator::Now ();
-  switch (GetState ()) {
-  case YansWifiPhy::SYNC:
-    /* The packet which is being received as well
-     * as its endSync event are cancelled by the caller.
-     */
-    m_syncing = false;
-    m_stateLogger (m_startSync, now - m_startSync, YansWifiPhy::SYNC);
-    m_endSyncEvent.Cancel ();
-    m_endSync = now;
-    break;
-  case YansWifiPhy::CCA_BUSY: {
-    Time ccaStart = Max (m_endSync, m_endTx);
-    ccaStart = Max (ccaStart, m_startCcaBusy);
-    m_stateLogger (ccaStart, now - ccaStart, YansWifiPhy::CCA_BUSY);
-  } break;
-  case YansWifiPhy::IDLE:
-    LogPreviousIdleAndCcaBusyStates ();
-    break;
-  default:
-    NS_ASSERT (false);
-    break;
-  }
-  m_stateLogger (now, txDuration, YansWifiPhy::TX);
-  m_previousStateChangeTime = now;
-  m_endTx = now + txDuration;
-  m_startTx = now;
-}
-void
-YansWifiPhy::SwitchToSync (Time rxDuration)
-{
-  NS_ASSERT (IsStateIdle () || IsStateCcaBusy ());
-  NS_ASSERT (!m_syncing);
-  Time now = Simulator::Now ();
-  switch (GetState ()) {
-  case YansWifiPhy::IDLE:
-    LogPreviousIdleAndCcaBusyStates ();
-    break;
-  case YansWifiPhy::CCA_BUSY: {
-    Time ccaStart = Max (m_endSync, m_endTx);
-    ccaStart = Max (ccaStart, m_startCcaBusy);
-    m_stateLogger (ccaStart, now - ccaStart, YansWifiPhy::CCA_BUSY);
-  } break;
-  case YansWifiPhy::SYNC:
-  case YansWifiPhy::TX:
-    NS_ASSERT (false);
-    break;
-  }
-  m_previousStateChangeTime = now;
-  m_syncing = true;
-  m_startSync = now;
-  m_endSync = now + rxDuration;
-  NS_ASSERT (IsStateSync ());
-}
-void
-YansWifiPhy::SwitchFromSync (void)
-{
-  NS_ASSERT (IsStateSync ());
-  NS_ASSERT (m_syncing);
-
-  Time now = Simulator::Now ();
-  m_stateLogger (m_startSync, now - m_startSync, YansWifiPhy::SYNC);
-  m_previousStateChangeTime = now;
-  m_syncing = false;
-
-  NS_ASSERT (IsStateIdle () || IsStateCcaBusy ());
-}
-void
-YansWifiPhy::SwitchMaybeToCcaBusy (Time duration)
-{
-  Time now = Simulator::Now ();
-  switch (GetState ()) {
-  case YansWifiPhy::IDLE:
-    LogPreviousIdleAndCcaBusyStates ();
-  break;
-  case YansWifiPhy::CCA_BUSY:
-    break;
-  case YansWifiPhy::SYNC:
-    break;
-  case YansWifiPhy::TX:
-    break;
-  }
-  m_startCcaBusy = now;
-  m_endCcaBusy = Max (m_endCcaBusy, now + duration);
-}
 
 void 
 YansWifiPhy::AppendEvent (Ptr<RxEvent> event)
@@ -1334,24 +1126,12 @@ YansWifiPhy::EndSync (Ptr<Packet> packet, Ptr<RxEvent> event)
   
   if (m_random.GetValue () > per) 
     {
-      NotifySyncEndOk ();
-      SwitchFromSync ();
-      m_rxOkTrace (packet, snr, event->GetPayloadMode (), event->GetPreambleType ());
-      if (!m_syncOkCallback.IsNull ())
-        {
-          m_syncOkCallback (packet, snr, event->GetPayloadMode (), event->GetPreambleType ());
-        }
+      m_state.SwitchFromSyncEndOk (packet, snr, event->GetPayloadMode (), event->GetPreambleType ());
     } 
   else 
     {
       /* failure. */
-      NotifySyncEndError ();
-      SwitchFromSync ();
-      m_rxErrorTrace (packet, snr);
-      if (!m_syncErrorCallback.IsNull ())
-        {
-          m_syncErrorCallback (packet, snr);
-        }
+      m_state.SwitchFromSyncEndError (packet, snr);
     }
 }
 

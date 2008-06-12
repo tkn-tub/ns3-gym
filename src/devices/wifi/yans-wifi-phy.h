@@ -36,6 +36,7 @@
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
 #include "wifi-phy-standard.h"
+#include "wifi-phy-state-helper.h"
 
 
 namespace ns3 {
@@ -121,7 +122,6 @@ private:
     double m_delta;
   };
   typedef std::vector<WifiMode> Modes;
-  typedef std::list<WifiPhyListener *> Listeners;
   typedef std::list<Ptr<RxEvent> > Events;
   typedef std::vector <NiChange> NiChanges;
 
@@ -131,8 +131,6 @@ private:
   void PrintModes (void) const;
   void Configure80211a (void);
   void ConfigureHolland (void);
-  char const *StateToString (enum State state);
-  enum YansWifiPhy::State GetState (void);
   double GetEdThresholdW (void) const;
   double DbmToW (double dbm) const;
   double DbToRatio (double db) const;
@@ -141,17 +139,7 @@ private:
   Time GetMaxPacketDuration (void) const;
   void CancelRx (void);
   double GetPowerDbm (uint8_t power) const;
-  void NotifyTxStart (Time duration);
-  void NotifyWakeup (void);
-  void NotifySyncStart (Time duration);
-  void NotifySyncEndOk (void);
-  void NotifySyncEndError (void);
-  void NotifyCcaBusyStart (Time duration);
-  void LogPreviousIdleAndCcaBusyStates (void);
-  void SwitchToTx (Time txDuration);
-  void SwitchToSync (Time syncDuration);
-  void SwitchFromSync (void);
-  void SwitchMaybeToCcaBusy (Time duration);
+
   void AppendEvent (Ptr<RxEvent> event);
   double CalculateNoiseInterferenceW (Ptr<RxEvent> event, NiChanges *ni) const;
   double CalculateSnr (double signal, double noiseInterference, WifiMode mode) const;
@@ -193,28 +181,14 @@ private:
   uint32_t m_nTxPower;
 
   
-  bool m_syncing;
-  Time m_endTx;
-  Time m_endSync;
-  Time m_endCcaBusy;
-  Time m_startTx;
-  Time m_startSync;
-  Time m_startCcaBusy;
-  Time m_previousStateChangeTime;
 
   Ptr<YansWifiChannel> m_channel;
-  SyncOkCallback m_syncOkCallback;
-  SyncErrorCallback m_syncErrorCallback;
-  TracedCallback<Ptr<const Packet>, double, WifiMode, enum WifiPreamble> m_rxOkTrace;
-  TracedCallback<Ptr<const Packet>, double> m_rxErrorTrace;
-  TracedCallback<Ptr<const Packet>,WifiMode,WifiPreamble,uint8_t> m_txTrace;
   Modes m_modes;
-  Listeners m_listeners;
   EventId m_endSyncEvent;
   Events m_events;
   UniformVariable m_random;
-  TracedCallback<Time,Time,enum YansWifiPhy::State> m_stateLogger;
   WifiPhyStandard m_standard;
+  WifiPhyStateHelper m_state;
 };
 
 } // namespace ns3
