@@ -414,7 +414,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
 }
 
 void
-MacLow::ReceiveError (Ptr<Packet> packet, double rxSnr)
+MacLow::ReceiveError (Ptr<const Packet> packet, double rxSnr)
 {
   NS_LOG_FUNCTION (this << packet << rxSnr);
   MY_DEBUG ("rx failed ");

@@ -121,7 +121,7 @@ public:
    * arg1: packet received unsuccessfully
    * arg2: snr of packet
    */
-  typedef Callback<void,Ptr<Packet>, double> SyncErrorCallback;
+  typedef Callback<void,Ptr<const Packet>, double> SyncErrorCallback;
 
   static TypeId GetTypeId (void);
 

@@ -301,8 +301,7 @@ WifiPhyStateHelper::SwitchFromSyncEndError (Ptr<const Packet> packet, double snr
   DoSwitchFromSync ();
   if (!m_syncErrorCallback.IsNull ())
     {
-      // XXX
-      m_syncErrorCallback (packet->Copy (), snr);
+      m_syncErrorCallback (packet, snr);
     }
 }
 
