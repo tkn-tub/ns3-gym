@@ -54,24 +54,11 @@ public:
   YansWifiChannel ();
   virtual ~YansWifiChannel ();
 
-  /**
-   * \returns the number of network interfaces connected to 
-   *          this channel.
-   *
-   * Overriden from the NetDevice base class.
-   */
+  // inherited from Channel.
   virtual uint32_t GetNDevices (void) const;
-
-  /**
-   * \param i index of the requested network interface.
-   * \returns the requested network interfaces connected to 
-   *          this channel.
-   *
-   * Overriden from the NetDevice base class.
-   * Indexes start at 0 and end at n-1.
-   */
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
 
+  // inherited from WifiChannel
   virtual Ptr<WifiPhy> CreatePhy (Ptr<WifiNetDevice> device,
                                   Ptr<Object> mobility,
                                   UnsafeAttributeList list);
