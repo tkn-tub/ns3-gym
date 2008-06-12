@@ -22,13 +22,16 @@
 
 #include "wifi-phy.h"
 #include "ns3/traced-callback.h"
+#include "ns3/object.h"
 #include <vector>
 
 namespace ns3 {
 
-class WifiPhyStateHelper
+class WifiPhyStateHelper : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   WifiPhyStateHelper ();
 
   void SetReceiveOkCallback (WifiPhy::SyncOkCallback callback);
@@ -50,6 +53,7 @@ public:
   void SwitchFromSyncEndError (Ptr<const Packet> packet, double snr);
   void SwitchMaybeToCcaBusy (Time duration);
 
+  TracedCallback<Time,Time,enum WifiPhy::State> m_stateLogger;
 private:
   typedef std::vector<WifiPhyListener *> Listeners;
 
@@ -72,7 +76,7 @@ private:
   Time m_startSync;
   Time m_startCcaBusy;
   Time m_previousStateChangeTime;
-  TracedCallback<Time,Time,enum WifiPhy::State> m_stateLogger;
+
   Listeners m_listeners;
   TracedCallback<Ptr<const Packet>, double, WifiMode, enum WifiPreamble> m_rxOkTrace;
   TracedCallback<Ptr<const Packet>, double> m_rxErrorTrace;

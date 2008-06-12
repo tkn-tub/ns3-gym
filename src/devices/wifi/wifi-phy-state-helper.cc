@@ -20,10 +20,32 @@
 #include "wifi-phy-state-helper.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
+#include "ns3/trace-source-accessor.h"
 
 NS_LOG_COMPONENT_DEFINE ("WifiPhyStateHelper");
 
 namespace ns3 {
+
+TypeId 
+WifiPhyStateHelper::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::WifiPhyStateHelper")
+    .SetParent<Object> ()
+    .AddConstructor<WifiPhyStateHelper> ()
+    .AddTraceSource ("State",
+                     "The state of the PHY layer",
+                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_stateLogger))
+    .AddTraceSource ("RxOk",
+                     "A packet has been received successfully.",
+                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_rxOkTrace))
+    .AddTraceSource ("RxError",
+                     "A packet has been received unsuccessfully.",
+                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_rxErrorTrace))
+    .AddTraceSource ("Tx", "Packet transmission is starting.",
+                     MakeTraceSourceAccessor (&WifiPhyStateHelper::m_txTrace))
+    ;
+  return tid;
+}
 
 WifiPhyStateHelper::WifiPhyStateHelper ()
   : m_syncing (false),

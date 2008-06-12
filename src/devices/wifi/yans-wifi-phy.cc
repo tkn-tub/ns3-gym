@@ -19,9 +19,10 @@
  */
 
 #include "yans-wifi-phy.h"
-#include "wifi-mode.h"
 #include "yans-wifi-channel.h"
+#include "wifi-mode.h"
 #include "wifi-preamble.h"
+#include "wifi-phy-state-helper.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
 #include "ns3/random-variable.h"
@@ -30,7 +31,7 @@
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
 #include "ns3/enum.h"
-#include "ns3/trace-source-accessor.h"
+#include "ns3/pointer.h"
 #include <math.h>
 
 NS_LOG_COMPONENT_DEFINE ("YansWifiPhy");
@@ -197,19 +198,10 @@ YansWifiPhy::GetTypeId (void)
                    MakeEnumAccessor (&YansWifiPhy::SetStandard),
                    MakeEnumChecker (WIFI_PHY_STANDARD_80211a, "802.11a",
                                     WIFI_PHY_STANDARD_holland, "holland"))
-#if 0
-    .AddTraceSource ("State",
-                     "The YansWifiPhy state",
-                     MakeTraceSourceAccessor (&YansWifiPhy::m_stateLogger))
-    .AddTraceSource ("RxOk",
-                     "A packet has been received successfully.",
-                     MakeTraceSourceAccessor (&YansWifiPhy::m_rxOkTrace))
-    .AddTraceSource ("RxError",
-                     "A packet has been received unsuccessfully.",
-                     MakeTraceSourceAccessor (&YansWifiPhy::m_rxErrorTrace))
-    .AddTraceSource ("Tx", "Packet transmission is starting.",
-                     MakeTraceSourceAccessor (&YansWifiPhy::m_txTrace))
-#endif
+    .AddAttribute ("State", "The state of the PHY layer",
+                   PointerValue (),
+                   MakePointerAccessor (&YansWifiPhy::m_state),
+                   MakePointerChecker<WifiPhyStateHelper> ())
     ;
   return tid;
 }
@@ -219,6 +211,7 @@ YansWifiPhy::YansWifiPhy ()
    m_random (0.0, 1.0)
 {
   NS_LOG_FUNCTION (this);
+  m_state = CreateObject<WifiPhyStateHelper> ();
 }
 
 YansWifiPhy::~YansWifiPhy ()
@@ -343,12 +336,12 @@ YansWifiPhy::SetChannel (Ptr<YansWifiChannel> channel)
 void 
 YansWifiPhy::SetReceiveOkCallback (SyncOkCallback callback)
 {
-  m_state.SetReceiveOkCallback (callback);
+  m_state->SetReceiveOkCallback (callback);
 }
 void 
 YansWifiPhy::SetReceiveErrorCallback (SyncErrorCallback callback)
 {
-  m_state.SetReceiveErrorCallback (callback);
+  m_state->SetReceiveErrorCallback (callback);
 }
 void 
 YansWifiPhy::StartReceivePacket (Ptr<Packet> packet, 
@@ -369,11 +362,11 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
                                         rxPowerW);
   AppendEvent (event);
 
-  switch (m_state.GetState ()) {
+  switch (m_state->GetState ()) {
   case YansWifiPhy::SYNC:
     NS_LOG_DEBUG ("drop packet because already in Sync (power="<<
                   rxPowerW<<"W)");
-    if (endRx > Simulator::Now () + m_state.GetDelayUntilIdle ()) 
+    if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ()) 
       {
         // that packet will be noise _after_ the reception of the
         // currently-received packet.
@@ -383,7 +376,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
   case YansWifiPhy::TX:
     NS_LOG_DEBUG ("drop packet because already in Tx (power="<<
                   rxPowerW<<"W)");
-    if (endRx > Simulator::Now () + m_state.GetDelayUntilIdle ()) 
+    if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ()) 
       {
         // that packet will be noise _after_ the transmission of the
         // currently-transmitted packet.
@@ -396,7 +389,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
       {
         NS_LOG_DEBUG ("sync (power="<<rxPowerW<<"W)");
         // sync to signal
-        m_state.SwitchToSync (rxDuration);
+        m_state->SwitchToSync (rxDuration);
         NS_ASSERT (m_endSyncEvent.IsExpired ());
         m_endSyncEvent = Simulator::Schedule (rxDuration, &YansWifiPhy::EndSync, this, 
                                               packet,
@@ -417,7 +410,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
 
   if (rxPowerW > m_edThresholdW) 
     {
-      m_state.SwitchMaybeToCcaBusy (rxDuration);
+      m_state->SwitchMaybeToCcaBusy (rxDuration);
     } 
   else 
     {
@@ -438,7 +431,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
       if (end > Simulator::Now ()) 
         {
           Time delta = end - Simulator::Now ();
-          m_state.SwitchMaybeToCcaBusy (delta);
+          m_state->SwitchMaybeToCcaBusy (delta);
         }
     }
 
@@ -453,14 +446,14 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble
    *    prevent it.
    *  - we are idle
    */
-  NS_ASSERT (!m_state.IsStateTx ());
+  NS_ASSERT (!m_state->IsStateTx ());
 
   Time txDuration = CalculateTxDuration (packet->GetSize (), txMode, preamble);
-  if (m_state.IsStateSync ())
+  if (m_state->IsStateSync ())
     {
       m_endSyncEvent.Cancel ();
     }
-  m_state.SwitchToTx (txDuration, packet, txMode, preamble, txPower);
+  m_state->SwitchToTx (txDuration, packet, txMode, preamble, txPower);
   m_channel->Send (this, packet, GetPowerDbm (txPower) + m_txGainDb, txMode, preamble);
 }
 
@@ -567,51 +560,51 @@ YansWifiPhy::ConfigureHolland (void)
 void 
 YansWifiPhy::RegisterListener (WifiPhyListener *listener)
 {
-  m_state.RegisterListener (listener);
+  m_state->RegisterListener (listener);
 }
 
 bool 
 YansWifiPhy::IsStateCcaBusy (void)
 {
-  return m_state.IsStateCcaBusy ();
+  return m_state->IsStateCcaBusy ();
 }
 
 bool 
 YansWifiPhy::IsStateIdle (void)
 {
-  return m_state.IsStateIdle ();
+  return m_state->IsStateIdle ();
 }
 bool 
 YansWifiPhy::IsStateBusy (void)
 {
-  return m_state.IsStateBusy ();
+  return m_state->IsStateBusy ();
 }
 bool 
 YansWifiPhy::IsStateSync (void)
 {
-  return m_state.IsStateSync ();
+  return m_state->IsStateSync ();
 }
 bool 
 YansWifiPhy::IsStateTx (void)
 {
-  return m_state.IsStateTx ();
+  return m_state->IsStateTx ();
 }
 
 Time
 YansWifiPhy::GetStateDuration (void)
 {
-  return m_state.GetStateDuration ();
+  return m_state->GetStateDuration ();
 }
 Time
 YansWifiPhy::GetDelayUntilIdle (void)
 {
-  return m_state.GetDelayUntilIdle ();
+  return m_state->GetDelayUntilIdle ();
 }
 
 Time 
 YansWifiPhy::GetLastRxStartTime (void) const
 {
-  return m_state.GetLastRxStartTime ();
+  return m_state->GetLastRxStartTime ();
 }
 
 
@@ -1126,12 +1119,12 @@ YansWifiPhy::EndSync (Ptr<Packet> packet, Ptr<RxEvent> event)
   
   if (m_random.GetValue () > per) 
     {
-      m_state.SwitchFromSyncEndOk (packet, snr, event->GetPayloadMode (), event->GetPreambleType ());
+      m_state->SwitchFromSyncEndOk (packet, snr, event->GetPayloadMode (), event->GetPreambleType ());
     } 
   else 
     {
       /* failure. */
-      m_state.SwitchFromSyncEndError (packet, snr);
+      m_state->SwitchFromSyncEndError (packet, snr);
     }
 }
 

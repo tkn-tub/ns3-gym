@@ -137,10 +137,10 @@ WifiHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid
   pcap->Open (oss.str ());
   pcap->WriteWifiHeader ();
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/Tx";
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/Tx";
   Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapPhyTxEvent, pcap));
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/RxOk";
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/RxOk";
   Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapPhyRxEvent, pcap));
 }
 void 
@@ -178,10 +178,10 @@ WifiHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
 {
     Packet::EnableMetadata ();
   std::ostringstream oss;
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/RxOk";
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/RxOk";
   Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyRxOkEvent, &os));
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/Tx";
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/Tx";
   Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyTxEvent, &os));
 }
 void 

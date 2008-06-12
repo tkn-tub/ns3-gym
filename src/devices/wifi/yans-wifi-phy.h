@@ -36,7 +36,6 @@
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
 #include "wifi-phy-standard.h"
-#include "wifi-phy-state-helper.h"
 
 
 namespace ns3 {
@@ -44,6 +43,7 @@ namespace ns3 {
 class RandomUniform;
 class RxEvent;
 class YansWifiChannel;
+class WifiPhyStateHelper;
 
 
 /**
@@ -180,15 +180,13 @@ private:
   double   m_txPowerEndDbm;
   uint32_t m_nTxPower;
 
-  
-
   Ptr<YansWifiChannel> m_channel;
   Modes m_modes;
   EventId m_endSyncEvent;
   Events m_events;
   UniformVariable m_random;
   WifiPhyStandard m_standard;
-  WifiPhyStateHelper m_state;
+  Ptr<WifiPhyStateHelper> m_state;
 };
 
 } // namespace ns3
