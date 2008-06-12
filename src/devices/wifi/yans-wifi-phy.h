@@ -138,7 +138,6 @@ private:
   double WToDbm (double w) const;
   double RatioToDb (double ratio) const;
   Time GetMaxPacketDuration (void) const;
-  void CancelRx (void);
   double GetPowerDbm (uint8_t power) const;
 
   void AppendEvent (Ptr<RxEvent> event);
