@@ -21,8 +21,6 @@
 #ifndef OLSR_H
 #define OLSR_H
 
-#include "ns3/node-list.h"
-
 /**
  * \ingroup routing
  * \defgroup olsr OLSR
@@ -32,22 +30,23 @@
  * This model implements the base specification of the Optimized
  * Link State Routing (OLSR) protocol, which is a dynamic mobile ad hoc
  * unicast routing protocol.  It has been developed at the 
- * University of Murcia (Spain) by Francisco J. Ros for ns-2, and was
- * ported to ns-3 by Gustavo Carneiro.
+ * University of Murcia (Spain) by Francisco J. Ros for NS-2, and was
+ * ported to NS-3 by Gustavo Carneiro at INESC Porto (Portugal).
  *
  * Here is a summary of software's main features:
- *  - Compliant with core-OLSR (but the use of multiple interfaces which is currently not supported by NS2) as it is documented in RFC 3626 
- * (http://www.ietf.org/rfc/rfc3626.txt).
- *  -  Support for MAC layer feedback as described in RFC 3626.
+ * - Mostly compliant with OLSR as documented in RFC 3626 (http://www.ietf.org/rfc/rfc3626.txt), with the following differences:
+ *  - The use of multiple interfaces was not supported by the NS-2 version, but is supported in NS-3;
+ *  - Unlike the NS-2 version, does not yet support MAC layer feedback as described in RFC 3626;
+ *  - HNA (Host/Network Association) messages are almost-but-not-quite supported in this version.
  *
  * \section api API and Usage
  * 
  * A helper class for OLSR has been written.  After an IPv4 topology
- * has been created and assigned IP addresses, the simulation script 
- * writer can call one of three overloaded functions with different scope 
- * to enable OLSR:  ns3::OlsrHelper::Install (NodeContainer container);
- * ns3::OlsrHelper::Install (Ptr<Node> node);
- * or ns3::OlsrHelper::InstallAll (void);
+ * has been created and unique IP addresses assigned to each node, the
+ * simulation script writer can call one of three overloaded functions
+ * with different scope to enable OLSR: ns3::OlsrHelper::Install
+ * (NodeContainer container); ns3::OlsrHelper::Install (Ptr<Node>
+ * node); or ns3::OlsrHelper::InstallAll (void);
  *
  * In addition, the behavior of OLSR can be modified by changing certain
  * attributes.  The method ns3::OlsrHelper::SetAgent () can be used
@@ -55,45 +54,6 @@
  * MidInterval, Willingness.  Other parameters are defined as macros
  * in olsr-agent-impl.cc.
  */
-
-namespace ns3
-{
-  /**
-   * \namespace ns3::olsr
-   * \brief Includes a set of utility functions to enable OLSR on
-   * certain nodes with default parameters.  For finer grained control
-   * of OLSR parameters, see OlsrAgent.
-   */
-  namespace olsr
-  {
-    /// \brief Start the OLSR routing agent on all nodes
-    void EnableAllNodes (void);
-
-    /// \brief Start the OLSR routing agent on a given list of nodes
-    template <typename InputIterator>
-    void EnableNodes (InputIterator begin, InputIterator end);
-
-    /// \brief Start the OLSR routing agent on the given node
-    void EnableNode (Ptr<Node> node);
-  }
-}
-
-
-// implementation
-namespace ns3
-{
-  namespace olsr
-  {
-    template <typename InputIterator>
-    void EnableNodes (InputIterator begin, InputIterator end)
-    {
-      for (InputIterator i = begin; i != end; i++)
-        {
-          EnableNode (*i);
-        }
-    }
-  }
-}
 
 
 #endif /* OLSR_H */

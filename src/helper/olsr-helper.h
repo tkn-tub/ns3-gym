@@ -26,11 +26,17 @@
 
 namespace ns3 {
 
+/**
+ * \brief Helper class that adds OLSR routing to nodes.
+ */
 class OlsrHelper
 {
 public:
   OlsrHelper ();
 
+  /**
+   * \brief Set default OLSR routing agent parameters
+   */
   void SetAgent (std::string tid,
 		 std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
 		 std::string n1 = "", const AttributeValue &v2 = EmptyAttributeValue (),
@@ -41,8 +47,17 @@ public:
 		 std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
 		 std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 
+  /**
+   * \brief Enable OLSR routing for a set of nodes
+   */
   void Install (NodeContainer container);
+  /**
+   * \brief Enable OLSR routing for a single node
+   */
   void Install (Ptr<Node> node);
+  /**
+   * \brief Enable OLSR routing for all nodes
+   */
   void InstallAll (void);
 private:
   ObjectFactory m_agentFactory;
