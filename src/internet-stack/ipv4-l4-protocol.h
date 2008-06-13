@@ -33,10 +33,10 @@ class Packet;
 class Ipv4Address;
 
 /**
- * \brief L4 Protocol base class 
+ * \brief L4 Protocol abstract base class 
  *
- * If you want to implement a new L4 protocol, all you have to do is
- * implement a subclass of this base class and add it to an L4Demux.
+ * This is an abstract base class for layer four protocols which use IPv4 as
+ * the network layer.
  */  
 class Ipv4L4Protocol : public Object
 {

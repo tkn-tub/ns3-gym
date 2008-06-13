@@ -39,9 +39,16 @@ namespace ns3 {
 class Node;
 class Socket;
 class TcpHeader;
+
 /**
- * \brief Implementation of the TCP protocol
- */
+ * \brief A layer between the sockets interface and IP
+ * 
+ * This class allocates "endpoint" objects (ns3::Ipv4EndPoint) for TCP,
+ * and SHOULD checksum packets its receives from the socket layer going down
+ * the stack , but currently checksumming is disabled.  It also recieves 
+ * packets from IP, and forwards them up to the endpoints.
+*/
+
 class TcpL4Protocol : public Ipv4L4Protocol {
 public:
   static TypeId GetTypeId (void);

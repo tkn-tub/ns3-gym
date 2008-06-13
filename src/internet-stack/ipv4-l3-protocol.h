@@ -43,6 +43,9 @@ class Node;
 
 /**
  * \brief Implement the Ipv4 layer.
+ * 
+ * This is the actual implementation of IP.  It contains APIs to send and
+ * receive packets at the IP layer, as well as APIs for IP routing.
  */
 class Ipv4L3Protocol : public Object
 {
