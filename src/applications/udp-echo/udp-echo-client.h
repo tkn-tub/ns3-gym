@@ -30,6 +30,7 @@ class Socket;
 class Packet;
 
 /**
+ * \ingroup udpecho
  * \brief A Udp Echo client
  *
  * Every packet sent should be returned by the server and received here.

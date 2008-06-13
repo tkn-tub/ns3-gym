@@ -34,6 +34,21 @@ class Socket;
 class Packet;
 
 /**
+ * \ingroup applications 
+ * \defgroup packetsink PacketSink
+ *
+ * This application was written to complement OnOffApplication, but it
+ * is more general so a PacketSink name was selected.  Functionally it is
+ * important to use in multicast situations, so that reception of the layer-2
+ * multicast frames of interest are enabled, but it is also useful for
+ * unicast as an example of how you can write something simple to receive
+ * packets at the application layer.  Also, if an IP stack generates 
+ * ICMP Port Unreachable errors, receiving applications will be needed.
+ */
+
+/**
+ * \ingroup packetsink
+ *
  * \brief Receive and consume traffic generated to an IP address and port
  *
  * This application was written to complement OnOffApplication, but it

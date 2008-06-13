@@ -33,17 +33,13 @@ class Node;
 class RandomVariable;
 
 /**
- * \ingroup node
- * \defgroup application Application
- */
-/**
- * \ingroup application
- * \brief The base class for all ns3 applications
+ * \addtogroup applications Applications
+ *
+ * Class ns3::Application can be used as a base class for ns3 applications.
+ * Applications are associated with individual nodes.  Each node
+ * holds a list of references (smart pointers) to its applications.
  * 
- * Class Application is the base class for all ns3 applications.
- * Applications are associated with individual nodes.
- * 
- * Conceptually, an application has zero or more Socket
+ * Conceptually, an application has zero or more ns3::Socket
  * objects associated with it, that are created using the Socket
  * creation API of the Kernel capability.  The Socket object
  * API is modeled after the
@@ -53,6 +49,14 @@ class RandomVariable;
  * in ns3.  A set of "upcalls" are defined that will be called when
  * the previous blocking call would normally exit.  THis is documented
  * in more detail Socket class in socket.h.
+ *
+ * The main purpose of the base class application public API is to  
+ * provide a uniform way to start and stop applications.
+ */
+
+ /**
+ * \brief The base class for all ns3 applications
+ * 
  */
 class Application : public Object
 {
