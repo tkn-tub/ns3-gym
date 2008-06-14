@@ -57,11 +57,14 @@ public:
   virtual int ShutdownSend (void) = 0;
   virtual int ShutdownRecv (void) = 0;
   virtual int Connect (const Address &address) = 0;
-  virtual int Send (Ptr<Packet> p) = 0;
   virtual uint32_t GetTxAvailable (void) const = 0;
-  virtual int SendTo (Ptr<Packet> p, const Address &address) = 0;
-  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags) = 0;
+  virtual int Send (Ptr<Packet> p, uint32_t flags) = 0;
+  virtual int SendTo (Ptr<Packet> p, uint32_t flags,
+    const Address &toAddress) = 0;
   virtual uint32_t GetRxAvailable (void) const = 0;
+  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags) = 0;
+  virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
+    Address &fromAddress) = 0;
 
 private:
   // Indirect the attribute setting and getting through private virtual methods

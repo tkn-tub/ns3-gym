@@ -204,7 +204,7 @@ void WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t nBytes)
       char m = toascii (97 + i % 26);
       data[i] = m;
     }
-    uint32_t amountSent = localSocket->Send (data, curSize);
+    uint32_t amountSent = localSocket->Send (data, curSize, 0);
     if(amountSent < curSize)
       {
         std::cout << "Socket blocking, returning" << std::endl;

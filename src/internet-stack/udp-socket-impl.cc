@@ -224,9 +224,9 @@ UdpSocketImpl::Listen (uint32_t queueLimit)
 }
 
 int 
-UdpSocketImpl::Send (Ptr<Packet> p)
+UdpSocketImpl::Send (Ptr<Packet> p, uint32_t flags)
 {
-  NS_LOG_FUNCTION (this << p);
+  NS_LOG_FUNCTION (this << p << flags);
 
   if (!m_connected)
     {
@@ -239,7 +239,7 @@ UdpSocketImpl::Send (Ptr<Packet> p)
 int 
 UdpSocketImpl::DoSend (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << p);
   if (m_endPoint == 0)
     {
       if (Bind () == -1)
@@ -380,19 +380,28 @@ UdpSocketImpl::GetTxAvailable (void) const
 }
 
 int 
-UdpSocketImpl::SendTo (Ptr<Packet> p, const Address &address)
+UdpSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
 {
-  NS_LOG_FUNCTION (this << address << p);
+  NS_LOG_FUNCTION (this << p << flags << address);
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
   uint16_t port = transport.GetPort ();
   return DoSendTo (p, ipv4, port);
 }
 
+uint32_t
+UdpSocketImpl::GetRxAvailable (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  // We separately maintain this state to avoid walking the queue 
+  // every time this might be called
+  return m_rxAvailable;
+}
+
 Ptr<Packet>
 UdpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << maxSize << flags);
   if (m_deliveryQueue.empty() )
     {
       return 0;
@@ -410,13 +419,21 @@ UdpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
   return p;
 }
 
-uint32_t
-UdpSocketImpl::GetRxAvailable (void) const
+Ptr<Packet>
+UdpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags, 
+  Address &fromAddress)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  // We separately maintain this state to avoid walking the queue 
-  // every time this might be called
-  return m_rxAvailable;
+  NS_LOG_FUNCTION (this << maxSize << flags);
+  Ptr<Packet> packet = Recv (maxSize, flags);
+  if (packet != 0)
+    {
+      SocketAddressTag tag;
+      bool found;
+      found = packet->FindFirstMatchingTag (tag);
+      NS_ASSERT (found);
+      fromAddress = tag.GetAddress ();
+    }
+  return packet;
 }
 
 void 
@@ -431,7 +448,7 @@ UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
   if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufSize)
     {
       Address address = InetSocketAddress (ipv4, port);
-      SocketRxAddressTag tag;
+      SocketAddressTag tag;
       tag.SetAddress (address);
       packet->AddTag (tag);
       m_deliveryQueue.push (packet);
@@ -638,7 +655,7 @@ UdpSocketImplTest::RunTests (void)
   // Unicast test
   m_receivedPacket = Create<Packet> ();
   m_receivedPacket2 = Create<Packet> ();
-  NS_TEST_ASSERT_EQUAL (txSocket->SendTo ( Create<Packet> (123), 
+  NS_TEST_ASSERT_EQUAL (txSocket->SendTo ( Create<Packet> (123), 0, 
     InetSocketAddress (Ipv4Address("10.0.0.1"), 1234)), 123);
   Simulator::Run ();
   NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
@@ -651,7 +668,7 @@ UdpSocketImplTest::RunTests (void)
 
   m_receivedPacket = Create<Packet> ();
   m_receivedPacket2 = Create<Packet> ();
-  NS_TEST_ASSERT_EQUAL (txSocket->SendTo ( Create<Packet> (123), 
+  NS_TEST_ASSERT_EQUAL (txSocket->SendTo ( Create<Packet> (123), 0, 
     InetSocketAddress (Ipv4Address("255.255.255.255"), 1234)), 123);
   Simulator::Run ();
   NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
@@ -673,7 +690,7 @@ UdpSocketImplTest::RunTests (void)
 
   m_receivedPacket = Create<Packet> ();
   m_receivedPacket2 = Create<Packet> ();
-  NS_TEST_ASSERT_EQUAL (txSocket->SendTo (Create<Packet> (123),
+  NS_TEST_ASSERT_EQUAL (txSocket->SendTo (Create<Packet> (123), 0,
 InetSocketAddress (Ipv4Address("255.255.255.255"), 1234)), 123);
   Simulator::Run ();
   NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
