@@ -29,6 +29,10 @@
 namespace ns3 {
 /**
  * \brief Packet header for UDP packets
+ *
+ * This class has fields corresponding to those in a network UDP header
+ * (port numbers, payload size, checksum) as well as methods for serialization
+ * to and deserialization from a byte buffer.
  */
 class UdpHeader : public Header 
 {

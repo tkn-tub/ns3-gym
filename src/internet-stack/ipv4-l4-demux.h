@@ -35,6 +35,9 @@ class Node;
 
 /**
  * \brief L4 Ipv4 Demux
+ * 
+ * This class demultiplexes IP datagrams to the correct layer four protocol
+ * object.  This demux sits between IP and layer 4.
  */
 class Ipv4L4Demux : public Object
 {

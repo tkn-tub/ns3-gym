@@ -32,7 +32,7 @@
 namespace ns3
 {
 class Packet;
-//Doc:ClassXRef
+
 class PendingData {
 public:
   PendingData ();

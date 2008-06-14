@@ -36,6 +36,13 @@ class Node;
 class Packet;
 class UdpL4Protocol;
 
+/**
+ * \brief A sockets interface to UDP
+ * 
+ * This class subclasses ns3::UdpSocket, and provides a socket interface
+ * to ns3's implementation of UDP.
+ */
+
 class UdpSocketImpl : public UdpSocket
 {
 public:

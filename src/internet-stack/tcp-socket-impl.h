@@ -42,6 +42,20 @@ class Packet;
 class TcpL4Protocol;
 class TcpHeader;
 
+/**
+ * \ingroup socket
+ *
+ * \brief An implementation of a stream socket using TCP.
+ *
+ * This class contains an implementation of TCP Tahoe, as well as a sockets
+ * interface for talking to TCP.  Features include connection orientation,
+ * reliability through cumulative acknowledgements, congestion and flow 
+ * control.  Finite send/receive buffer semantics are modeled.
+ *
+ * Asynchronous callbacks to provide notifications to higher layers that a 
+ * protocol event has occured, such as space freeing up in the send buffer
+ * or new data arriving in the receive buffer.
+ */
 class TcpSocketImpl : public TcpSocket
 {
 public:

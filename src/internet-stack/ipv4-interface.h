@@ -58,6 +58,7 @@ class Packet;
  *
  * Subclasses must implement the two methods:
  *   - Ipv4Interface::SendTo
+ *   - Ipv4Interface::GetDevice
  */
 class Ipv4Interface  : public Object
 {

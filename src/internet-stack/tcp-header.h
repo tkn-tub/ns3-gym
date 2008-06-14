@@ -30,6 +30,14 @@
 
 namespace ns3 {
 
+/**
+ * \brief Header for the Transmission Control Protocol
+ *
+ * This class has fields corresponding to those in a network TCP header
+ * (port numbers, sequence and acknowledgement numbers, flags, etc) as well
+ * as methods for serialization to and deserialization from a byte buffer.
+ */
+
 class TcpHeader : public Header 
 {
 public:
