@@ -1043,11 +1043,21 @@ double NormalVariableImpl::GetValue()
         { // Got good pair
           double y = sqrt((-2 * log(w))/w);
           m_next = m_mean + v2 * y * sqrt(m_variance);
-          if (fabs(m_next) > m_bound) m_next = m_bound * (m_next)/fabs(m_next);
-          m_nextValid = true;
+          //if next is in bounds, it is valid
+          m_nextValid = fabs(m_next-m_mean) <= m_bound;
           double x1 = m_mean + v1 * y * sqrt(m_variance);
-          if (fabs(x1) > m_bound) x1 = m_bound * (x1)/fabs(x1);
-          return x1;
+          //if x1 is in bounds, return it
+          if (fabs(x1-m_mean) <= m_bound)
+          {
+            return x1;
+          }
+          //otherwise try and return m_next if it is valid
+          else if (m_nextValid)
+          {
+            m_nextValid = false;
+            return m_next;
+          }
+          //otherwise, just run this loop again
         }
     }
 }
@@ -1094,9 +1104,17 @@ double NormalVariableImpl::GetSingleValue(double m, double v, double b)
 NormalVariable::NormalVariable()
   : RandomVariable (NormalVariableImpl ())
 {}
+NormalVariable::NormalVariable(double m, double v)
+  : RandomVariable (NormalVariableImpl (m, v))
+{}
 NormalVariable::NormalVariable(double m, double v, double b)
   : RandomVariable (NormalVariableImpl (m, v, b))
 {}
+double 
+NormalVariable::GetSingleValue(double m, double v)
+{
+  return NormalVariableImpl::GetSingleValue (m, v);
+}
 double 
 NormalVariable::GetSingleValue(double m, double v, double b)
 {
