@@ -46,22 +46,24 @@ public:
   /**
    * \param duration the expected duration of the packet reception.
    *
-   * we have received the first bit of a packet. We decided
+   * We have received the first bit of a packet. We decided
    * that we could synchronize on this packet. It does not mean
    * we will be able to successfully receive completely the
-   * whole packet. It means we will report a BUSY status.
-   * NotifyRxEndOk or NotifyRxEndError will be invoked later 
-   * to report whether or not the packet was successfully received.
+   * whole packet. It means that we will report a BUSY status until
+   * one of the following happens:
+   *   - NotifyRxEndOk
+   *   - NotifyExEndError
+   *   - NotifyTxStart
    */
   virtual void NotifyRxStart (Time duration) = 0;
   /**
-   * we have received the last bit of a packet for which
+   * We have received the last bit of a packet for which
    * NotifyRxStart was invoked first and, the packet has
    * been successfully received.
    */
   virtual void NotifyRxEndOk (void) = 0;  
   /**
-   * we have received the last bit of a packet for which
+   * We have received the last bit of a packet for which
    * NotifyRxStart was invoked first and, the packet has
    * _not_ been successfully received.
    */
@@ -70,14 +72,28 @@ public:
    * \param duration the expected transmission duration.
    *
    * We are about to send the first bit of the packet.
+   * We do not send any event to notify the end of 
+   * transmission. Listeners should assume that the
+   * channel implicitely reverts to the idle state
+   * unless they have received a cca busy report.
    */
   virtual void NotifyTxStart (Time duration) = 0;
   /**
    * \param duration the expected busy duration.
    *
-   * We are going to be cca-busy for a while.
+   * This method does not really report a real state
+   * change as opposed to the other methods in this class.
+   * It merely reports that, unless the medium is reported
+   * busy through NotifyTxStart or NotifyRxStart/End, 
+   * it will be busy as defined by the currently selected 
+   * CCA mode.
+   *
+   * Typical client code which wants to have a clear picture
+   * of the CCA state will need to keep track of the time at
+   * which the last NotifyCcaBusyStart method is called and
+   * what duration it reported.
    */
-  virtual void NotifyCcaBusyStart (Time duration) = 0;
+  virtual void NotifyMaybeCcaBusyStart (Time duration) = 0;
 };
 
 

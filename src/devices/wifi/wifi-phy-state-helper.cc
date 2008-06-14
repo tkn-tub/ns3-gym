@@ -26,6 +26,8 @@ NS_LOG_COMPONENT_DEFINE ("WifiPhyStateHelper");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (WifiPhyStateHelper);
+
 TypeId 
 WifiPhyStateHelper::GetTypeId (void)
 {
@@ -220,10 +222,10 @@ WifiPhyStateHelper::NotifySyncEndError (void)
   }
 }
 void 
-WifiPhyStateHelper::NotifyCcaBusyStart (Time duration)
+WifiPhyStateHelper::NotifyMaybeCcaBusyStart (Time duration)
 {
   for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++) {
-    (*i)->NotifyCcaBusyStart (duration);
+    (*i)->NotifyMaybeCcaBusyStart (duration);
   }
 }
 
@@ -343,7 +345,7 @@ WifiPhyStateHelper::DoSwitchFromSync (void)
 void
 WifiPhyStateHelper::SwitchMaybeToCcaBusy (Time duration)
 {
-  NotifyCcaBusyStart (duration);
+  NotifyMaybeCcaBusyStart (duration);
   Time now = Simulator::Now ();
   switch (GetState ()) {
   case WifiPhy::IDLE:
@@ -357,7 +359,7 @@ WifiPhyStateHelper::SwitchMaybeToCcaBusy (Time duration)
     break;
   }
   m_startCcaBusy = now;
-  m_endCcaBusy = Max (m_endCcaBusy, now + duration);
+  m_endCcaBusy = std::max (m_endCcaBusy, now + duration);
 }
 
 } // namespace ns3

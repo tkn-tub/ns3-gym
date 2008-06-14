@@ -25,6 +25,8 @@ NS_LOG_COMPONENT_DEFINE ("ErrorRateModel");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (ErrorRateModel);
+
 TypeId 
 ErrorRateModel::GetTypeId (void)
 {
@@ -37,6 +39,30 @@ ErrorRateModel::GetTypeId (void)
 
 ErrorRateModel::ErrorRateModel ()
 {}
+
+double 
+ErrorRateModel::CalculateSnr (WifiMode txMode, double ber) const
+{
+  // This is a very simple binary search.
+  double low, high, precision;
+  low = 1e-25;
+  high = 1e25;
+  precision = 1e-12;
+  while (high - low > precision) 
+    {
+      NS_ASSERT (high >= low);
+      double middle = low + (high - low) / 2;
+      if ((1 - GetChunkSuccessRate (txMode, middle, 1)) > ber) 
+        {
+          low = middle;
+        } 
+      else 
+        {
+          high = middle;
+        }
+    }
+  return low;
+}
 
 
 double 

@@ -39,109 +39,6 @@ NS_LOG_COMPONENT_DEFINE ("YansWifiPhy");
 
 namespace ns3 {
 
-/****************************************************************
- *       Phy event class
- ****************************************************************/
-
-class RxEvent
-{
-public:
-  RxEvent (uint32_t size, WifiMode payloadMode, 
-           enum WifiPreamble preamble,
-           Time duration, double rxPower)
-    : m_size (size),
-      m_payloadMode (payloadMode),
-      m_preamble (preamble),
-      m_startTime (Simulator::Now ()),
-      m_endTime (m_startTime + duration),
-      m_rxPowerW (rxPower),
-      m_refCount (1)
-  {}
-  ~RxEvent ()
-  {
-    NS_ASSERT (m_refCount == 0);
-  }
-  
-  void Ref (void) const {
-    m_refCount++;
-  }
-  void Unref (void) const {
-    m_refCount--;
-    if (m_refCount == 0) {
-      delete this;
-    }
-  }
-  Time GetDuration (void) const {
-    return m_endTime - m_startTime;
-  }
-  Time GetStartTime (void) const {
-    return m_startTime;
-  }
-  Time GetEndTime (void) const {
-    return m_endTime;
-  }
-  bool Overlaps (Time time) const {
-    if (m_startTime <= time &&
-        m_endTime >= time) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-  double GetRxPowerW (void) const {
-    return m_rxPowerW;
-  }
-  uint32_t GetSize (void) const {
-    return m_size;
-  }
-  WifiMode GetPayloadMode (void) const {
-    return m_payloadMode;
-  }
-  enum WifiPreamble GetPreambleType (void) const {
-    return m_preamble;
-  }
-
-private:
-  uint32_t m_size;
-  WifiMode m_payloadMode;
-  enum WifiPreamble m_preamble;
-  Time m_startTime;
-  Time m_endTime;
-  double m_rxPowerW;
-  mutable int m_refCount;
-};
-
-
-/****************************************************************
- *       Class which records SNIR change events for a 
- *       short period of time.
- ****************************************************************/
-
-YansWifiPhy::NiChange::NiChange (Time time, double delta)
-  : m_time (time), m_delta (delta) 
-{}
-Time
-YansWifiPhy::NiChange::GetTime (void) const
-{
-  return m_time;
-}
-double 
-YansWifiPhy::NiChange::GetDelta (void) const
-{
-  return m_delta;
-}
-bool 
-YansWifiPhy::NiChange::operator < (YansWifiPhy::NiChange const &o) const
-{
-  return (m_time < o.m_time)?true:false;
-}
-
-
-
-/****************************************************************
- *       The actual YansWifiPhy class
- ****************************************************************/
-
 NS_OBJECT_ENSURE_REGISTERED (YansWifiPhy);
 
 TypeId 
@@ -156,6 +53,13 @@ YansWifiPhy::GetTypeId (void)
                    DoubleValue (-140.0),
                    MakeDoubleAccessor (&YansWifiPhy::SetEdThreshold,
                                        &YansWifiPhy::GetEdThreshold),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("CcaMode1Threshold",
+                   "The energy of a received signal should be higher than "
+                   "this threshold (dbm) to allow the PHY layer to declare CCA BUSY state",
+                   DoubleValue (-140.0),
+                   MakeDoubleAccessor (&YansWifiPhy::SetCcaMode1Threshold,
+                                       &YansWifiPhy::GetCcaMode1Threshold),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxGain",
                    "Transmission gain (dB).",
@@ -213,7 +117,6 @@ YansWifiPhy::YansWifiPhy ()
 {
   NS_LOG_FUNCTION (this);
   m_state = CreateObject<WifiPhyStateHelper> ();
-  m_errorRateModel = Create<ErrorRateModel> ();
 }
 
 YansWifiPhy::~YansWifiPhy ()
@@ -226,7 +129,6 @@ YansWifiPhy::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_channel = 0;
-  m_events.clear ();
   m_modes.clear ();
 }
 
@@ -253,7 +155,7 @@ void
 YansWifiPhy::SetRxNoise (double db)
 {
   NS_LOG_FUNCTION (this << db);
-  m_rxNoiseRatio = DbToRatio (db);
+  m_interference.SetNoiseFloorW (DbToRatio (db));
 }
 void 
 YansWifiPhy::SetTxPowerStart (double start)
@@ -291,10 +193,21 @@ YansWifiPhy::SetEdThreshold (double threshold)
   NS_LOG_FUNCTION (this << threshold);
   m_edThresholdW = DbmToW (threshold);
 }
+void 
+YansWifiPhy::SetCcaMode1Threshold (double threshold)
+{
+  NS_LOG_FUNCTION (this << threshold);
+  m_ccaMode1ThresholdW = DbmToW (threshold);
+}
+void 
+YansWifiPhy::SetErrorRateModel (Ptr<ErrorRateModel> rate)
+{
+  m_interference.SetErrorRateModel (rate);
+}
 double 
 YansWifiPhy::GetRxNoise (void) const
 {
-  return RatioToDb (m_rxNoiseRatio);
+  return RatioToDb (m_interference.GetNoiseFloorW ());
 }
 double 
 YansWifiPhy::GetTxPowerStart (void) const
@@ -323,6 +236,24 @@ YansWifiPhy::GetEdThreshold (void) const
   return WToDbm (m_edThresholdW);
 }
 
+double 
+YansWifiPhy::GetCcaMode1Threshold (void) const
+{
+  return WToDbm (m_ccaMode1ThresholdW);
+}
+
+Ptr<ErrorRateModel> 
+YansWifiPhy::GetErrorRateModel (void) const
+{
+  return m_interference.GetErrorRateModel ();
+}
+
+double 
+YansWifiPhy::CalculateSnr (WifiMode txMode, double ber) const
+{
+  return m_interference.GetErrorRateModel ()->CalculateSnr (txMode, ber);
+}
+
 Ptr<WifiChannel> 
 YansWifiPhy::GetChannel (void) const
 {
@@ -347,9 +278,9 @@ YansWifiPhy::SetReceiveErrorCallback (SyncErrorCallback callback)
 }
 void 
 YansWifiPhy::StartReceivePacket (Ptr<Packet> packet, 
-                             double rxPowerDbm,
-                             WifiMode txMode,
-                             enum WifiPreamble preamble)
+                                 double rxPowerDbm,
+                                 WifiMode txMode,
+                                 enum WifiPreamble preamble)
 {
   NS_LOG_FUNCTION (this << packet << rxPowerDbm << txMode << preamble);
   rxPowerDbm += m_rxGainDb;
@@ -357,12 +288,12 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
   Time rxDuration = CalculateTxDuration (packet->GetSize (), txMode, preamble);
   Time endRx = Simulator::Now () + rxDuration;
 
-  Ptr<RxEvent> event = Create<RxEvent> (packet->GetSize (), 
-                                        txMode,
-                                        preamble,
-                                        rxDuration,
-                                        rxPowerW);
-  AppendEvent (event);
+  Ptr<InterferenceHelper::Event> event;
+  event = m_interference.Add (packet->GetSize (), 
+                              txMode,
+                              preamble,
+                              rxDuration,
+                              rxPowerW);
 
   switch (m_state->GetState ()) {
   case YansWifiPhy::SYNC:
@@ -409,34 +340,16 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
   return;
 
  maybeCcaBusy:
+  // We are here because we have received the first bit of a packet and we are
+  // not going to be able to synchronize on it
+  // In this model, CCA becomes busy when the aggregation of all signals as
+  // tracked by the InterferenceHelper class is higher than the CcaBusyThreshold
 
-  if (rxPowerW > m_edThresholdW) 
+  Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaMode1ThresholdW);
+  if (!delayUntilCcaEnd.IsZero ())
     {
-      m_state->SwitchMaybeToCcaBusy (rxDuration);
-    } 
-  else 
-    {
-      double threshold = m_edThresholdW - rxPowerW;
-      NiChanges ni;
-      CalculateNoiseInterferenceW (event, &ni);
-      double noiseInterferenceW = 0.0;
-      Time end = Simulator::Now ();
-      for (NiChanges::const_iterator i = ni.begin (); i != ni.end (); i++) 
-        {
-          noiseInterferenceW += i->GetDelta ();
-          if (noiseInterferenceW < threshold) 
-            {
-              break;
-            }
-          end = i->GetTime ();
-        }
-      if (end > Simulator::Now ()) 
-        {
-          Time delta = end - Simulator::Now ();
-          m_state->SwitchMaybeToCcaBusy (delta);
-        }
+      m_state->SwitchMaybeToCcaBusy (delayUntilCcaEnd);
     }
-
 }
 void 
 YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble preamble, uint8_t txPower)
@@ -475,64 +388,11 @@ YansWifiPhy::GetNTxPower (void) const
   return m_nTxPower;
 }
 
-double 
-YansWifiPhy::CalculateSnr (WifiMode txMode, double ber) const
-{
-  double low, high, precision;
-  low = 1e-25;
-  high = 1e25;
-  precision = 1e-12;
-  while (high - low > precision) 
-    {
-      NS_ASSERT (high >= low);
-      double middle = low + (high - low) / 2;
-      if ((1 - m_errorRateModel->GetChunkSuccessRate (txMode, middle, 1)) > ber) 
-        {
-          low = middle;
-        } 
-      else 
-        {
-          high = middle;
-        }
-    }
-  return low;
-}
-
-void
-YansWifiPhy::Configure80211aParameters (void)
-{
-  NS_LOG_FUNCTION (this);
-  m_plcpLongPreambleDelayUs = 16;
-  m_plcpShortPreambleDelayUs = 16;
-  m_longPlcpHeaderMode = g_6mba;
-  m_shortPlcpHeaderMode = g_6mba;
-  m_plcpHeaderLength = 4 + 1 + 12 + 1 + 6;
-  /* 4095 bytes at a 6Mb/s rate with a 1/2 coding rate. */
-  m_maxPacketDuration = CalculateTxDuration (4095, g_6mba, WIFI_PREAMBLE_LONG);
-}
-
-void
-YansWifiPhy::PrintModes (void) const
-{
-#if 0
-  for (double db = -10; db < 30; db+= 0.5) {
-    double snr = DbToRatio (db);
-    std::cout <<snr<<" ";
-    for (uint8_t i = 0; i < GetNModes (); i++) {
-      WifiMode mode = GetMode (i);
-      double ber = 1-m_errorRateModel->GetChunkSuccessRate (mode,snr, 2000*8);
-      std::cout <<ber<< " ";
-    }
-    std::cout << std::endl;
-  }
-#endif
-}
-
 void
 YansWifiPhy::Configure80211a (void)
 {
   NS_LOG_FUNCTION (this);
-  Configure80211aParameters ();
+  m_interference.Configure80211aParameters ();
   m_modes.push_back (g_6mba);
   m_modes.push_back (g_9mba);
   m_modes.push_back (g_12mba);
@@ -541,22 +401,18 @@ YansWifiPhy::Configure80211a (void)
   m_modes.push_back (g_36mba);
   m_modes.push_back (g_48mba);
   m_modes.push_back (g_54mba);
-
-  PrintModes ();
 }
 
 void
 YansWifiPhy::ConfigureHolland (void)
 {
   NS_LOG_FUNCTION (this);
-  Configure80211aParameters ();
+  m_interference.Configure80211aParameters ();
   m_modes.push_back (g_6mba);
   m_modes.push_back (g_12mba);
   m_modes.push_back (g_18mba);
   m_modes.push_back (g_36mba);
   m_modes.push_back (g_54mba);
-
-  PrintModes ();
 }
 
 void 
@@ -609,27 +465,11 @@ YansWifiPhy::GetLastRxStartTime (void) const
   return m_state->GetLastRxStartTime ();
 }
 
-
-Time
-YansWifiPhy::CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble) const
+Time 
+YansWifiPhy::CalculateTxDuration (uint32_t size, WifiMode payloadMode, enum WifiPreamble preamble) const
 {
-  uint64_t delay = 0;
-  switch (m_standard) {
-  case WIFI_PHY_STANDARD_80211a:
-  case WIFI_PHY_STANDARD_holland: {
-    delay += m_plcpLongPreambleDelayUs;
-    // symbol duration is 4us
-    delay += 4;
-    delay += lrint (ceil ((size * 8.0 + 16.0 + 6.0) / payloadMode.GetDataRate () / 4e-6) * 4);
-  } break;
-  default:
-    // quiet compiler.
-    NS_ASSERT (false);
-    break;
-  }
-  return MicroSeconds (delay);
+  return m_interference.CalculateTxDuration (size, payloadMode, preamble);
 }
-
 
 double 
 YansWifiPhy::DbToRatio (double dB) const
@@ -663,12 +503,6 @@ YansWifiPhy::GetEdThresholdW (void) const
   return m_edThresholdW;
 }
 
-Time
-YansWifiPhy::GetMaxPacketDuration (void) const
-{
-  return m_maxPacketDuration;
-}
-
 double 
 YansWifiPhy::GetPowerDbm (uint8_t power) const
 {
@@ -678,225 +512,27 @@ YansWifiPhy::GetPowerDbm (uint8_t power) const
   return dbm;
 }
 
-
-void 
-YansWifiPhy::AppendEvent (Ptr<RxEvent> event)
-{
-  /* attempt to remove the events which are 
-   * not useful anymore. 
-   * i.e.: all events which end _before_
-   *       now - m_maxPacketDuration
-   */
-  
-  if (Simulator::Now () > GetMaxPacketDuration ())
-    {
-      Time end = Simulator::Now () - GetMaxPacketDuration ();
-      Events::iterator i = m_events.begin ();
-      while (i != m_events.end () &&
-             (*i)->GetEndTime () <= end) 
-        {
-          i++;
-        }
-      m_events.erase (m_events.begin (), i);
-    } 
-  m_events.push_back (event);
-}
-
-
-double
-YansWifiPhy::CalculateSnr (double signal, double noiseInterference, WifiMode mode) const
-{
-  // thermal noise at 290K in J/s = W
-  static const double BOLTZMANN = 1.3803e-23;
-  double Nt = BOLTZMANN * 290.0 * mode.GetBandwidth ();
-  // receiver noise Floor (W)
-  double noiseFloor = m_rxNoiseRatio * Nt;
-  double noise = noiseFloor + noiseInterference;
-  double snr = signal / noise;
-  return snr;
-}
-
-double
-YansWifiPhy::CalculateNoiseInterferenceW (Ptr<RxEvent> event, NiChanges *ni) const
-{
-  Events::const_iterator i = m_events.begin ();
-  double noiseInterference = 0.0;
-  while (i != m_events.end ()) 
-    {
-      if (event == (*i)) 
-        {
-          i++;
-          continue;
-        }
-      if (event->Overlaps ((*i)->GetStartTime ())) 
-        {
-          ni->push_back (NiChange ((*i)->GetStartTime (), (*i)->GetRxPowerW ()));
-        }
-      if (event->Overlaps ((*i)->GetEndTime ())) 
-        {
-          ni->push_back (NiChange ((*i)->GetEndTime (), -(*i)->GetRxPowerW ()));
-        }
-      if ((*i)->Overlaps (event->GetStartTime ())) 
-        {
-          noiseInterference += (*i)->GetRxPowerW ();
-        }
-      i++;
-    }
-  ni->push_back (NiChange (event->GetStartTime (), noiseInterference));
-  ni->push_back (NiChange (event->GetEndTime (), 0));
-
-  /* quicksort vector of NI changes by time. */
-  std::sort (ni->begin (), ni->end (), std::less<NiChange> ());
-
-  return noiseInterference;
-}
-
-double
-YansWifiPhy::CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode) const
-{
-  if (duration == NanoSeconds (0)) {
-    return 1.0;
-  }
-  uint32_t rate = mode.GetPhyRate ();
-  uint64_t nbits = (uint64_t)(rate * duration.GetSeconds ());
-  double csr = m_errorRateModel->GetChunkSuccessRate (mode, snir, (uint32_t)nbits);
-  return csr;
-}
-
-double 
-YansWifiPhy::CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const
-{  
-  double psr = 1.0; /* Packet Success Rate */
-  NiChanges::iterator j = ni->begin ();
-  Time previous = (*j).GetTime ();
-  uint64_t plcpPreambleDelayUs;
-  WifiMode payloadMode = event->GetPayloadMode ();
-  WifiMode headerMode;
-  switch (event->GetPreambleType ()) {
-  case WIFI_PREAMBLE_LONG:
-    plcpPreambleDelayUs = m_plcpLongPreambleDelayUs;
-    headerMode = m_longPlcpHeaderMode;
-    break;
-  case WIFI_PREAMBLE_SHORT:
-    plcpPreambleDelayUs = m_plcpShortPreambleDelayUs;
-    headerMode = m_shortPlcpHeaderMode;
-    break;
-  default:
-    NS_ASSERT (false);
-    // only to quiet compiler. Really stupid.
-    plcpPreambleDelayUs = 0;
-    headerMode = m_shortPlcpHeaderMode;
-    break;
-  }
-  Time plcpHeaderStart = (*j).GetTime () + MicroSeconds (plcpPreambleDelayUs);
-  Time plcpPayloadStart = plcpHeaderStart + 
-    Seconds ((m_plcpHeaderLength + 0.0) / headerMode.GetDataRate ());
-  double noiseInterferenceW = (*j).GetDelta ();
-  double powerW = event->GetRxPowerW ();
-
-  j++;
-  while (ni->end () != j) 
-    {
-      Time current = (*j).GetTime ();
-      NS_ASSERT (current >= previous);
-    
-      if (previous >= plcpPayloadStart) 
-        {
-          psr *= CalculateChunkSuccessRate (CalculateSnr (powerW, 
-                                                          noiseInterferenceW, 
-                                                          payloadMode), 
-                                            current - previous,
-                                            payloadMode);
-        } 
-      else if (previous >= plcpHeaderStart) 
-        {
-          if (current >= plcpPayloadStart) 
-            {
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW, 
-                                                              noiseInterferenceW, 
-                                                              headerMode), 
-                                                plcpPayloadStart - previous,
-                                                headerMode);
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW, 
-                                                              noiseInterferenceW, 
-                                                              payloadMode),
-                                                current - plcpPayloadStart,
-                                                payloadMode);
-            } 
-          else 
-            {
-              NS_ASSERT (current >= plcpHeaderStart);
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW, 
-                                                              noiseInterferenceW, 
-                                                              headerMode), 
-                                                current - previous,
-                                                headerMode);
-            }
-        } 
-      else 
-        {
-          if (current >= plcpPayloadStart) 
-            {
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW, 
-                                                              noiseInterferenceW, 
-                                                              headerMode), 
-                                                plcpPayloadStart - plcpHeaderStart,
-                                                headerMode);
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW, 
-                                                              noiseInterferenceW, 
-                                                              payloadMode), 
-                                                current - plcpPayloadStart,
-                                                payloadMode);
-            } 
-          else if (current >= plcpHeaderStart) 
-            {
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW, 
-                                                              noiseInterferenceW, 
-                                                              headerMode), 
-                                                current - plcpHeaderStart,
-                                                headerMode);
-            }
-        }
-
-      noiseInterferenceW += (*j).GetDelta ();
-      previous = (*j).GetTime ();
-      j++;
-    }
-
-  double per = 1 - psr;
-  return per;
-}
-
-
 void
-YansWifiPhy::EndSync (Ptr<Packet> packet, Ptr<RxEvent> event)
+YansWifiPhy::EndSync (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event)
 {
   NS_LOG_FUNCTION (this << packet << event);
   NS_ASSERT (IsStateSync ());
   NS_ASSERT (event->GetEndTime () == Simulator::Now ());
 
-  NiChanges ni;
-  double noiseInterferenceW = CalculateNoiseInterferenceW (event, &ni);
-  double snr = CalculateSnr (event->GetRxPowerW (),
-                             noiseInterferenceW,
-                             event->GetPayloadMode ());
-  
-  /* calculate the SNIR at the start of the packet and accumulate
-   * all SNIR changes in the snir vector.
-   */
-  double per = CalculatePer (event, &ni);
+  struct InterferenceHelper::SnrPer snrPer;
+  snrPer = m_interference.CalculateSnrPer (event);
+
   NS_LOG_DEBUG ("mode="<<(event->GetPayloadMode ().GetDataRate ())<<
-                ", ber="<<(1-m_errorRateModel->GetChunkSuccessRate (event->GetPayloadMode (), snr, 1))<<
-                ", snr="<<snr<<", per="<<per<<", size="<<packet->GetSize ());
+                ", snr="<<snrPer.snr<<", per="<<snrPer.per<<", size="<<packet->GetSize ());
   
-  if (m_random.GetValue () > per) 
+  if (m_random.GetValue () > snrPer.per) 
     {
-      m_state->SwitchFromSyncEndOk (packet, snr, event->GetPayloadMode (), event->GetPreambleType ());
+      m_state->SwitchFromSyncEndOk (packet, snrPer.snr, event->GetPayloadMode (), event->GetPreambleType ());
     } 
   else 
     {
       /* failure. */
-      m_state->SwitchFromSyncEndError (packet, snr);
+      m_state->SwitchFromSyncEndError (packet, snrPer.snr);
     }
 }
 

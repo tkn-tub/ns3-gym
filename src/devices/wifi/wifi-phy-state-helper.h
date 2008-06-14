@@ -65,7 +65,7 @@ private:
   void NotifySyncStart (Time duration);
   void NotifySyncEndOk (void);
   void NotifySyncEndError (void);
-  void NotifyCcaBusyStart (Time duration);
+  void NotifyMaybeCcaBusyStart (Time duration);
   void DoSwitchFromSync (void);
 
   bool m_syncing;

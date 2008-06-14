@@ -220,7 +220,7 @@ public:
    *
    * Notify the DCF that a CCA busy period has just started.
    */
-  void NotifyCcaBusyStartNow (Time duration);
+  void NotifyMaybeCcaBusyStartNow (Time duration);
   /**
    * \param duration the value of the received NAV.
    *

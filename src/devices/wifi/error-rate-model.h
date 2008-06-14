@@ -33,6 +33,14 @@ public:
 
   ErrorRateModel ();
 
+  /**
+   * \param txMode a specific transmission mode
+   * \param ber a target ber
+   * \returns the snr which corresponds to the requested
+   *          ber.
+   */
+  double CalculateSnr (WifiMode txMode, double ber) const;
+
   double GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const;
 
 private:

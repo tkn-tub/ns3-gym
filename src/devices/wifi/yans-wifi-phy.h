@@ -21,8 +21,6 @@
 #ifndef YANS_WIFI_PHY_H
 #define YANS_WIFI_PHY_H
 
-#include <vector>
-#include <list>
 #include <stdint.h>
 #include "ns3/callback.h"
 #include "ns3/event-id.h"
@@ -36,6 +34,7 @@
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
 #include "wifi-phy-standard.h"
+#include "interference-helper.h"
 
 
 namespace ns3 {
@@ -44,7 +43,6 @@ class RandomUniform;
 class RxEvent;
 class YansWifiChannel;
 class WifiPhyStateHelper;
-class ErrorRateModel;
 
 
 /**
@@ -84,10 +82,14 @@ public:
   void SetTxGain (double gain);
   void SetRxGain (double gain);
   void SetEdThreshold (double threshold);
+  void SetCcaMode1Threshold (double threshold);
+  void SetErrorRateModel (Ptr<ErrorRateModel> rate);
   double GetRxNoise (void) const;
   double GetTxGain (void) const;
   double GetRxGain (void) const;
   double GetEdThreshold (void) const;
+  double GetCcaMode1Threshold (void) const;
+  Ptr<ErrorRateModel> GetErrorRateModel (void) const;
 
 
   virtual double GetTxPowerStart (void) const;
@@ -112,24 +114,10 @@ public:
   virtual Ptr<WifiChannel> GetChannel (void) const;
 
 private:
-  class NiChange {
-  public:
-    NiChange (Time time, double delta);
-    Time GetTime (void) const;
-    double GetDelta (void) const;
-    bool operator < (NiChange const &o) const;
-  private:
-    Time m_time;
-    double m_delta;
-  };
   typedef std::vector<WifiMode> Modes;
-  typedef std::list<Ptr<RxEvent> > Events;
-  typedef std::vector <NiChange> NiChanges;
 
 private:
   virtual void DoDispose (void);
-  void Configure80211aParameters (void);
-  void PrintModes (void) const;
   void Configure80211a (void);
   void ConfigureHolland (void);
   double GetEdThresholdW (void) const;
@@ -137,28 +125,14 @@ private:
   double DbToRatio (double db) const;
   double WToDbm (double w) const;
   double RatioToDb (double ratio) const;
-  Time GetMaxPacketDuration (void) const;
   double GetPowerDbm (uint8_t power) const;
+  void EndSync (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event);
 
-  void AppendEvent (Ptr<RxEvent> event);
-  double CalculateNoiseInterferenceW (Ptr<RxEvent> event, NiChanges *ni) const;
-  double CalculateSnr (double signal, double noiseInterference, WifiMode mode) const;
-  double CalculateChunkSuccessRate (double snir, Time delay, WifiMode mode) const;
-  double CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const;
-  void EndSync (Ptr<Packet> packet, Ptr<RxEvent> event);
 private:
-  uint64_t m_txPrepareDelayUs;
-  uint64_t m_plcpLongPreambleDelayUs;
-  uint64_t m_plcpShortPreambleDelayUs;
-  WifiMode m_longPlcpHeaderMode;
-  WifiMode m_shortPlcpHeaderMode;
-  uint32_t m_plcpHeaderLength;
-  Time     m_maxPacketDuration;
-
-  double   m_edThresholdW; /* unit: W */
+  double   m_edThresholdW;
+  double   m_ccaMode1ThresholdW;
   double   m_txGainDb;
   double   m_rxGainDb;
-  double   m_rxNoiseRatio;
   double   m_txPowerBaseDbm;
   double   m_txPowerEndDbm;
   uint32_t m_nTxPower;
@@ -166,11 +140,10 @@ private:
   Ptr<YansWifiChannel> m_channel;
   Modes m_modes;
   EventId m_endSyncEvent;
-  Events m_events;
   UniformVariable m_random;
   WifiPhyStandard m_standard;
   Ptr<WifiPhyStateHelper> m_state;
-  Ptr<ErrorRateModel> m_errorRateModel;
+  InterferenceHelper m_interference;
 };
 
 } // namespace ns3
