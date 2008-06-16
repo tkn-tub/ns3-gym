@@ -102,12 +102,6 @@ public:
    * \returns the node this socket is associated with.
    */
   virtual Ptr<Node> GetNode (void) const = 0;
-
-  /**
-   * \param closeCompleted Callback invoked when the close operation is
-   *        completed.
-   */
-  void SetCloseCallback (Callback<void, Ptr<Socket> > closeCompleted);
   /**
    * \param connectionSucceeded this callback is invoked when the 
    *        connection request initiated by the user is successfully 
@@ -117,13 +111,9 @@ public:
    *        connection request initiated by the user is unsuccessfully 
    *        completed. The callback is passed back a pointer to the 
    *        same socket object. 
-   * \param halfClose XXX When exactly is this callback invoked? If 
-   *        it invoked when the other side closes the connection ? 
-   *        Or when I call Close ?
    */
   void SetConnectCallback (Callback<void, Ptr<Socket> > connectionSucceeded,
-                           Callback<void,  Ptr<Socket> > connectionFailed,
-                           Callback<void,  Ptr<Socket> > halfClose);
+                           Callback<void,  Ptr<Socket> > connectionFailed);
   /**
    * \brief Accept connection requests from remote hosts
    * \param connectionRequest Callback for connection request from peer. 
@@ -140,14 +130,11 @@ public:
    *        back to the user through this callback. This user callback is 
    *        passed a pointer to the new socket, and the ip address and 
    *        port number of the connection originator.
-   * \param closeRequested Callback for connection close request from peer.
-   *        XXX: when is this callback invoked ?
    */
   void SetAcceptCallback (Callback<bool, Ptr<Socket>, 
                             const Address &> connectionRequest,
                           Callback<void, Ptr<Socket>, 
-                            const Address&> newConnectionCreated,
-                          Callback<void, Ptr<Socket> > closeRequested);
+                            const Address&> newConnectionCreated);
   /**
    * \brief Notify application when a packet has been sent from transport 
    *        protocol (non-standard socket call)
@@ -509,24 +496,16 @@ public:
                 Address &fromAddress);
  
 protected:
-  void NotifyCloseUnblocks (void);
-  void NotifyCloseCompleted (void);
   void NotifyConnectionSucceeded (void);
   void NotifyConnectionFailed (void);
-  void NotifyHalfClose (void);
   bool NotifyConnectionRequest (const Address &from);
   void NotifyNewConnectionCreated (Ptr<Socket> socket, const Address &from);
-  void NotifyCloseRequested (void);
   void NotifyDataSent (uint32_t size);
   void NotifySend (uint32_t spaceAvailable);
   void NotifyDataRecv (void);
 
-  Callback<void, Ptr<Socket> >   m_closeUnblocks;
-  Callback<void,Ptr<Socket> >    m_closeCompleted;
   Callback<void, Ptr<Socket> >   m_connectionSucceeded;
   Callback<void, Ptr<Socket> >   m_connectionFailed;
-  Callback<void, Ptr<Socket> >   m_halfClose;
-  Callback<void, Ptr<Socket> >   m_closeRequested;
   Callback<bool, Ptr<Socket>, const Address &>   m_connectionRequest;
   Callback<void, Ptr<Socket>, const Address&>    m_newConnectionCreated;
   Callback<void, Ptr<Socket>, uint32_t>          m_dataSent;

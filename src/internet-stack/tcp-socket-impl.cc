@@ -620,7 +620,6 @@ Actions_t TcpSocketImpl::ProcessEvent (Events_t e)
       NS_LOG_LOGIC ("TcpSocketImpl " << this << " transition to CLOSED from " 
                << m_state << " event " << e << " closeNot " << m_closeNotified
                << " action " << stateAction.action);
-      NotifyCloseCompleted ();
       m_closeNotified = true;
       NS_LOG_LOGIC ("TcpSocketImpl " << this << " calling Closed from PE"
               << " origState " << saveState
@@ -854,7 +853,6 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
         {
           NS_LOG_LOGIC ("TCP " << this 
               << " calling AppCloseRequest");
-          NotifyCloseRequested(); 
           m_closeRequestNotified = true;
         }
       NS_LOG_LOGIC ("TcpSocketImpl " << this 
@@ -1298,7 +1296,7 @@ void TcpSocketImpl::Retransmit ()
     } 
   if (!m_pendingData)
     {
-      if (m_state == FIN_WAIT_1 || m_state == FIN_WAIT_2)
+      if (m_state == FIN_WAIT_1)
         { // Must have lost FIN, re-send
           SendEmptyPacket (TcpHeader::FIN);
         }

@@ -199,7 +199,6 @@ int
 UdpSocketImpl::Close(void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NotifyCloseCompleted ();
   return 0;
 }
 

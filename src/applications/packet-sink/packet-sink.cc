@@ -67,6 +67,10 @@ PacketSink::~PacketSink()
 void
 PacketSink::DoDispose (void)
 {
+  if (m_socket != 0)
+    {
+      m_socket->Close ();
+    }
   m_socket = 0;
 
   // chain up
@@ -88,8 +92,7 @@ void PacketSink::StartApplication()    // Called at time specified by Start
   m_socket->SetRecvCallback (MakeCallback(&PacketSink::HandleRead, this));
   m_socket->SetAcceptCallback (
             MakeNullCallback<bool, Ptr<Socket>, const Address &> (),
-            MakeNullCallback<void, Ptr<Socket>, const Address&> (),
-            MakeCallback(&PacketSink::CloseConnection, this) );
+            MakeNullCallback<void, Ptr<Socket>, const Address&> ());
 }
 
 void PacketSink::StopApplication()     // Called at time specified by Stop
@@ -115,11 +118,6 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
         }    
       m_rxTrace (packet, from);
     }
-}
-
-void PacketSink::CloseConnection (Ptr<Socket> socket)
-{
-  socket->Close ();
 }
 
 } // Namespace ns3

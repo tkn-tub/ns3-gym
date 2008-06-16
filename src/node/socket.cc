@@ -51,34 +51,23 @@ Socket::CreateSocket (Ptr<Node> node, TypeId tid)
 }
 
 void 
-Socket::SetCloseCallback (Callback<void,Ptr<Socket> > closeCompleted)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_closeCompleted = closeCompleted;
-}
-
-void 
 Socket::SetConnectCallback (
   Callback<void, Ptr<Socket> > connectionSucceeded,
-  Callback<void, Ptr<Socket> > connectionFailed,
-  Callback<void, Ptr<Socket> > halfClose)
+  Callback<void, Ptr<Socket> > connectionFailed)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_connectionSucceeded = connectionSucceeded;
   m_connectionFailed = connectionFailed;
-  m_halfClose = halfClose;
 }
 
 void 
 Socket::SetAcceptCallback (
   Callback<bool, Ptr<Socket>, const Address &> connectionRequest,
-  Callback<void, Ptr<Socket>, const Address&> newConnectionCreated,
-  Callback<void, Ptr<Socket> > closeRequested)
+  Callback<void, Ptr<Socket>, const Address&> newConnectionCreated)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_connectionRequest = connectionRequest;
   m_newConnectionCreated = newConnectionCreated;
-  m_closeRequested = closeRequested;
 }
 
 bool 
@@ -110,15 +99,6 @@ Socket::Send (Ptr<Packet> p)
   return Send (p, 0);
 }
 
-void
-Socket::NotifyCloseUnblocks (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  if (!m_closeUnblocks.IsNull ())
-  {
-    m_closeUnblocks (this);
-  }
-}
 
 int Socket::Listen (uint32_t queueLimit)
 {
@@ -199,15 +179,6 @@ Socket::RecvFrom (uint8_t* buf, uint32_t size, uint32_t flags,
   return p->GetSize ();
 }
 
-void 
-Socket::NotifyCloseCompleted (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  if (!m_closeCompleted.IsNull ())
-    {
-      m_closeCompleted (this);
-    }
-}
 
 void 
 Socket::NotifyConnectionSucceeded (void)
@@ -226,16 +197,6 @@ Socket::NotifyConnectionFailed (void)
   if (!m_connectionFailed.IsNull ())
     {
       m_connectionFailed (this);
-    }
-}
-
-void 
-Socket::NotifyHalfClose (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  if (!m_halfClose.IsNull ())
-    {
-      m_halfClose (this);
     }
 }
 
@@ -264,16 +225,6 @@ Socket::NotifyNewConnectionCreated (Ptr<Socket> socket, const Address &from)
   if (!m_newConnectionCreated.IsNull ())
     {
       m_newConnectionCreated (socket, from);
-    }
-}
-
-void 
-Socket::NotifyCloseRequested (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  if (!m_closeRequested.IsNull ())
-    {
-      m_closeRequested (this);
     }
 }
 

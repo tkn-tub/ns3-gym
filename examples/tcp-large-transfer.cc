@@ -87,7 +87,7 @@ int main (int argc, char *argv[])
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
   //  LogComponentEnable("TcpL4Protocol", LOG_LEVEL_ALL);
-  //  LogComponentEnable("TcpSocket", LOG_LEVEL_ALL);
+  //  LogComponentEnable("TcpSocketImpl", LOG_LEVEL_ALL);
   //  LogComponentEnable("PacketSink", LOG_LEVEL_ALL);
   //  LogComponentEnable("TcpLargeTransfer", LOG_LEVEL_ALL);
 
@@ -182,8 +182,7 @@ void StartFlow(Ptr<Socket> localSocket, uint32_t nBytes,
  // NS_LOG_LOGIC("Starting flow at time " <<  Simulator::Now ().GetSeconds ());
   localSocket->Connect (InetSocketAddress (servAddress, servPort));//connect
   localSocket->SetConnectCallback (MakeCallback (&CloseConnection),
-                                   Callback<void, Ptr<Socket> > (),
-                                       Callback<void, Ptr<Socket> > ());
+                                   Callback<void, Ptr<Socket> > ());
   //we want to close as soon as the connection is established
   //the tcp state machine and outgoing buffer will assure that
   //all of the data is delivered

@@ -80,9 +80,7 @@ private:
   virtual void StartApplication (void);    // Called at time specified by Start
   virtual void StopApplication (void);     // Called at time specified by Stop
 
-  virtual void HandleRead (Ptr<Socket> socket);
-
-  virtual void CloseConnection (Ptr<Socket> socket);
+  void HandleRead (Ptr<Socket> socket);
 
   Ptr<Socket>     m_socket;       // Associated socket
   Address         m_local;        // Local address to bind to

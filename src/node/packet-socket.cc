@@ -184,7 +184,6 @@ PacketSocket::Close(void)
       return -1;
     }
   m_state = STATE_CLOSED;
-  NotifyCloseCompleted ();
   return 0;
 }
 
