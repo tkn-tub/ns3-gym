@@ -1,0 +1,373 @@
+@node ns-3 routing overview
+@chapter ns-3 routing overview
+
+This chapter describes the overall design of routing in the 
+@code{src/internet-stack}
+module, and some details about the routing approachs currently
+implemented.
+
+@node Routing-Overview
+@section Overview
+
+We intend to support traditional routing approaches and protocols,
+ports of open source routing implementations, and facilitate research
+into unorthodox routing techniques.
+For simulations that are not primarily focused on routing and that
+simply want correct routing tables to occur somehow, we have an
+global centralized routing capability.  A singleton object
+(GlobalRouteManager) be instantiated, builds a network map, and
+populates a forwarding table on each node at time t=0 in the
+simulation.  Simulation script writers can use the same node
+API to manually enter routes as well.
+
+@node Support for multiple routing protocols
+@section Support for multiple routing protocols
+
+Typically, multiple routing protocols are supported in user space and
+coordinate to write a single forwarding table in the kernel.  Presently
+in @command{ns-3}, the implementation instead allows for multiple routing 
+protocols to build/keep their own routing state, and the IPv4 implementation
+will query each one of these routing protocols (in some order determined
+by the simulation author) until a route is found.  
+
+We chose this approach because it may better
+faciliate the integration of disparate routing approaches that may 
+be difficult to coordinate the writing to a single table, approaches
+where more information than destination IP address (e.g., source
+routing) is used to determine the next hop, and on-demand
+routing approaches where packets must be cached.  
+
+There are presently two routing protocols defined:
+@itemize @bullet
+@item class Ipv4StaticRouting (covering both unicast and multicast)
+@item  Optimized Link State Routing (a MANET protocol defined in
+@uref{http://www.ietf.org/rfc/rfc3626.txt,,RFC 3626})
+@end itemize
+but first we describe how multiple routing protocols are supported. 
+
+@subsection class Ipv4RoutingProtocol
+
+@code{class Ipv4RoutingProtocol} derives from ns-3 Object which means
+that it supports interface aggregation and reference counting.  Routing
+protocols should inherit from this class, defined in src/node/ipv4.cc. 
+
+The main function that must be supported by these protocols is called
+@code{RequestRoute}.
+@verbatim
+   * This method is called whenever a node's IPv4 forwarding engine
+   * needs to lookup a route for a given packet and IP header.
+   *
+   * The routing protocol implementation may determine immediately it
+   * should not be handling this particular the route request.  For
+   * instance, a routing protocol may decline to search for routes for
+   * certain classes of addresses, like link-local.  In this case,
+   * RequestRoute() should return false and the routeReply callback
+   * must not be invoked.
+   * 
+   * If the routing protocol implementations assumes it can provide
+   * the requested route, then it should return true, and the
+   * routeReply callback must be invoked, either immediately before
+   * returning true (synchronously), or in the future (asynchronous).
+   * The routing protocol may use any information available in the IP
+   * header and packet as routing key, although most routing protocols
+   * use only the destination address (as given by
+   * ipHeader.GetDestination ()).  The routing protocol is also
+   * allowed to add a new header to the packet, which will appear
+   * immediately after the IP header, although most routing do not
+   * insert any extra header.
+   */
+  virtual bool RequestRoute (uint32_t ifIndex,
+                             const Ipv4Header &ipHeader,
+                             Ptr<Packet> packet,
+                             RouteReplyCallback routeReply) = 0;
+@end verbatim
+
+This class also provides a typedef (used above) for a special Callback 
+that will pass to the callback function the Ipv4Route that is found (see the
+Doxygen documentation):
+@verbatim
+  typedef Callback<void, bool, const Ipv4Route&, Ptr<Packet>, const Ipv4Header&> RouteReplyCallback;
+@end verbatim
+
+@subsection Ipv4::AddRoutingProtocol
+
+Class Ipv4 provides a pure virtual function declaration for the
+method that allows one to add a routing protocol:
+@verbatim
+  void AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
+                           int16_t priority);
+@end verbatim
+This method is implemented by class Ipv4L3Protocol in the internet-stack
+module.
+
+The priority variable above governs the priority in which the routing
+protocols are inserted.  Notice that it is a signed int.
+When the class Ipv4L3Protocol is instantiated, a single routing
+protocol (Ipv4StaticRouting, introduced below) is added at priority
+zero.  Internally, a list of Ipv4RoutingProtocols is stored, and
+and the routing protocols are each consulted in decreasing order
+of priority to see whether a match is found.  Therefore, if you
+want your Ipv4RoutingProtocol to have priority lower than the static
+routing, insert it with priority less than 0; e.g.:
+@verbatim
+  m_ipv4->AddRoutingProtocol (m_routingTable, -10);
+@end verbatim
+
+@subsection Ipv4L3Protocol::Lookup
+
+The main function for obtaining a route is shown below:  
+@verbatim
+Ipv4L3Protocol::Lookup (
+  uint32_t ifIndex,
+  Ipv4Header const &ipHeader,
+  Ptr<Packet> packet,
+  Ipv4RoutingProtocol::RouteReplyCallback routeReply)
+@end verbatim
+
+This function will search the list of routing protocols, in priority order,
+until a route is found.  It will then invoke the RouteReplyCallback
+and no further routing protocols will be searched.  If the caller does
+not want to constrain the possible interface, it can be wildcarded
+as such:
+@verbatim
+  Lookup (Ipv4RoutingProtocol::IF_INDEX_ANY, ipHeader, packet, routeReply);
+@end verbatim
+
+@node Roadmap and Future work
+@section Roadmap and Future work
+
+Some goals for future support are:
+
+Users should be able to trace (either debug print, or redirect to a trace
+file) the routing table in a format such as used in an
+Unix implementation:
+@verbatim
+# netstat -nr (or # route -n)
+Kernel IP routing table
+Destination   Gateway      Genmask         Flags  MSS Window  irtt Iface
+127.0.0.1     *            255.255.255.255 UH       0 0          0 lo
+172.16.1.0    *            255.255.255.0   U        0 0          0 eth0
+172.16.2.0    172.16.1.1   255.255.255.0   UG       0 0          0 eth0
+
+# ip route show
+192.168.99.0/24 dev eth0  scope link 
+127.0.0.0/8 dev lo  scope link 
+default via 192.168.99.254 dev eth0
+@end verbatim
+
+Global computation of multicast routing should be implemented as well.  
+This would ignore group membership and ensure that a copy of every 
+sourced multicast datagram would be delivered to each node.  
+This might be implemented as an RPF mechanism that functioned on-demand 
+by querying the forwarding table,
+and perhaps optimized by a small multicast forwarding cache.  It is
+a bit trickier to implement over wireless links where the input
+interface is the same as the output interface; other aspects of the
+packet must be considered and the forwarding logic slightly changed
+to allow for forwarding out the same interface.
+
+In the future, work on bringing XORP or quagga routing to ns, but it will
+take several months to port and enable.
+
+There are presently no roadmap plans for IPv6.
+
+@node Static routing
+@section Static routing
+
+The internet-stack module provides one routing protocol (Ipv4StaticRouting)
+by default.  This routing protocol allows one to add unicast or multicast
+static routes to a node.
+
+@node Unicast routing
+@section Unicast routing
+
+The unicast static routing API may be accessed via the functions
+@verbatim
+void Ipv4::AddHostRouteTo ()
+void Ipv4::AddNetworkRouteTo () 
+void Ipv4::SetDefaultRoute ()
+uint32_t Ipv4::GetNRoutes ()
+Ipv4Route Ipv4::GetRoute ()
+@end verbatim
+
+@uref{http://www.nsnam.org/doxygen/index.html,,Doxygen} documentation
+provides full documentation of these methods.  These methods are forwarding
+functions to the actual implementation in Ipv4StaticRouting, when using
+the internet-stack module.
+
+@node Multicast routing
+@section Multicast routing
+
+The following function is used to add a static multicast route
+to a node:
+@verbatim
+void 
+Ipv4StaticRouting::AddMulticastRoute (Ipv4Address origin,
+                          Ipv4Address group,
+                          uint32_t inputInterface,
+                          std::vector<uint32_t> outputInterfaces);
+@end verbatim
+
+A multicast route must specify an origin IP address, a multicast group and
+an input network interface index as conditions and provide a vector of
+output network interface indices over which packets matching the conditions
+are sent.
+
+Typically there are two main types of multicast routes:  routes of the 
+first kind are used during forwarding.  All of the conditions must be
+exlicitly provided.  The second kind of routes are used to get packets off
+of a local node.  The difference is in the input interface.  Routes for
+forwarding will always have an explicit input interface specified.  Routes
+off of a node will always set the input interface to a wildcard specified
+by the index Ipv4RoutingProtocol::IF\_INDEX\_ANY.
+
+For routes off of a local node wildcards may be used in the origin and
+multicast group addresses.  The wildcard used for Ipv4Adresses is that 
+address returned by Ipv4Address::GetAny () -- typically "0.0.0.0".  Usage
+of a wildcard allows one to specify default behavior to varying degrees.
+
+For example, making the origin address a wildcard, but leaving the 
+multicast group specific allows one (in the case of a node with multiple
+interfaces) to create different routes using different output interfaces
+for each multicast group.
+
+If the origin and multicast addresses are made wildcards, you have created
+essentially a default multicast address that can forward to multiple 
+interfaces.  Compare this to the actual default multicast address that is
+limited to specifying a single output interface for compatibility with
+existing functionality in other systems.
+
+Another command sets the default multicast route:
+@verbatim
+void 
+Ipv4StaticRouting::SetDefaultMulticastRoute (uint32_t outputInterface);
+@end verbatim
+
+This is the multicast equivalent of the unicast version SetDefaultRoute.
+We tell the routing system what to do in the case where a specific route
+to a destination multicast group is not found.  The system forwards 
+packets out the specified interface in the hope that "something out there"
+knows better how to route the packet.  This method is only used in 
+initially sending packets off of a host.  The default multicast route is
+not consulted during forwarding -- exact routes must be specified using
+AddMulticastRoute for that case.
+
+Since we're basically sending packets to some entity we think may know
+better what to do, we don't pay attention to "subtleties" like origin
+address, nor do we worry about forwarding out multiple  interfaces.  If the
+default multicast route is set, it is returned as the selected route from 
+LookupStatic irrespective of origin or multicast group if another specific
+route is not found.
+
+Finally, a number of additional functions are provided to fetch and
+remove multicast routes:
+@verbatim
+  uint32_t GetNMulticastRoutes (void) const;
+
+  Ipv4MulticastRoute *GetMulticastRoute (uint32_t i) const;
+
+  Ipv4MulticastRoute *GetDefaultMulticastRoute (void) const;
+
+  bool RemoveMulticastRoute (Ipv4Address origin,
+                             Ipv4Address group,
+                             uint32_t inputInterface);
+
+  void RemoveMulticastRoute (uint32_t index);
+@end verbatim
+
+@node Global centralized routing
+@section Global centralized routing
+
+Presently, global centralized IPv4 @emph{unicast} routing over both 
+point-to-point and shared (CSMA) links is supported.
+The global centralized routing will be modified in the future to
+reduce computations once profiling finds the performance bottlenecks.
+
+@node Global Unicast Routing API
+@section Global Unicast Routing API
+
+The public API is very minimal.  User scripts include the following:
+@verbatim
+#include "ns3/global-route-manager.h"
+@end verbatim
+
+After IP addresses are configured, the following function call will
+cause all of the nodes that have an Ipv4 interface to receive
+forwarding tables entered automatically by the GlobalRouteManager:
+@verbatim
+  GlobalRouteManager::PopulateRoutingTables ();
+@end verbatim
+
+@emph{Note:} A reminder that the wifi NetDevice is not yet supported
+(only CSMA and PointToPoint).
+
+@node Global Routing Implementation
+@section Global Routing Implementation
+
+A singleton object (GlobalRouteManager) is responsible for populating
+the static routes on each node, using the public Ipv4 API of that node.
+It queries each node in the topology for a "globalRouter" interface.
+If found, it uses the API of that interface to obtain a "link state
+advertisement (LSA)" for the router.  Link State Advertisements
+are used in OSPF routing, and we follow their formatting.
+
+The GlobalRouteManager populates a link state database with LSAs
+gathered from the entire topology.  Then, for each router in the topology,
+the GlobalRouteManager executes the OSPF shortest path first (SPF)
+computation on the database, and populates the routing tables on each
+node.
+
+The quagga (http://www.quagga.net) OSPF implementation was used as the
+basis for the routing computation logic.
+One benefit of following an existing OSPF SPF implementation is that
+OSPF already has defined link state advertisements for all common
+types of network links:
+@itemize @bullet
+@item point-to-point (serial links)
+@item point-to-multipoint (Frame Relay, ad hoc wireless)
+@item non-broadcast multiple access (ATM)
+@item broadcast (Ethernet)
+@end itemize
+Therefore, we think that enabling these other link types will be more
+straightforward now that the underlying OSPF SPF framework is in place.
+
+Presently, we can handle IPv4 point-to-point, numbered links, as well
+as shared broadcast (CSMA) links, and we do not do equal-cost multipath.  
+
+The GlobalRouteManager first walks the list of nodes and aggregates
+a GlobalRouter interface to each one as follows:
+@verbatim
+  typedef std::vector < Ptr<Node> >::iterator Iterator;
+  for (Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
+    {
+      Ptr<Node> node = *i;
+      Ptr<GlobalRouter> globalRouter = CreateObject<GlobalRouter> (node);
+      node->AggregateObject (globalRouter);
+    }
+@end verbatim
+
+This interface is later queried and used to generate a Link State
+Advertisement for each router, and this link state database is
+fed into the OSPF shortest path computation logic.  The Ipv4 API
+is finally used to populate the routes themselves. 
+
+@node Optimized Link State Routing (OLSR)
+@section Optimized Link State Routing (OLSR)
+
+This is the first dynamic routing protocol for @command{ns-3}.  The implementation
+is found in the src/routing/olsr directory, and an example script is in
+examples/simple-point-to-point-olsr.cc.
+
+The following commands will enable OLSR in a simulation.  
+
+@verbatim
+  olsr::EnableAllNodes ();  // Start OLSR on all nodes
+  olsr::EnableNodes(InputIterator begin, InputIterator end); // Start on
+    // a list of nodes
+  olsr::EnableNode (Ptr<Node> node);  // Start OLSR on "node" only
+@end verbatim
+
+Once instantiated, the agent can be started with the Start() command,
+and the OLSR "main interface" can be set with the SetMainInterface()
+command.  A number of protocol constants are defined in olsr-agent-impl.cc.
+

@@ -1,0 +1,18 @@
+Please write image files in a vector graphics format, when possible, and
+generate the .png and .pdf versions on the fly (see ../Makefile).  
+
+Currently supported tools are dia and tgif.  xfig could be added similarly
+if someone wants to add it.  The main requirement for adding another format
+is that the tool to edit it is freely available and that a cron script can 
+autogenerate the pdf and png from the figure source.
+
+Store the .dia, or .obj versions in mercurial, but not the .png or .pdfs.  
+If the figure is not available in a vector graphics format, store both
+a .png and a .pdf version in this directory.
+
+If you add a source (.dia, .obj) file here, remember to add it to
+the list of figure sources in the Makefile in the directory above
+
+Note:  tgif can convert from .obj to .pdf, but the pdf that results takes
+up a whole page.  Instead, we convert to an intermediate .eps step, and
+then run epstopdf.
