@@ -230,6 +230,19 @@ def create_ns3_program(bld, name, dependencies=('simulator',)):
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
     return program
 
+def add_scratch_programs(bld):
+    all_modules = [mod[len("ns3-"):] for mod in bld.env()['NS3_MODULES']]
+    for filename in os.listdir("scratch"):
+        if os.path.isdir(os.path.join("scratch", filename)):
+            obj = bld.create_ns3_program(filename, all_modules)
+            obj.path = obj.path.find_dir('scratch')
+            obj.find_sources_in_dirs(filename)
+            obj.target = os.path.join(filename, filename)
+        elif filename.endswith(".cc"):
+            name = filename[:-len(".cc")]
+            obj = bld.create_ns3_program(name, all_modules)
+            obj.source = "scratch/%s" % filename
+            obj.target = "scratch/%s" % name
 
 def build(bld):
     if Params.g_options.no_task_lines:
@@ -262,6 +275,8 @@ def build(bld):
     # process subfolders from here
     bld.add_subdirs('src')
     bld.add_subdirs('samples utils examples tutorial')
+
+    add_scratch_programs(bld)
 
     ## if --enabled-modules option was given, we disable building the
     ## modules that were not enabled, and programs that depend on
