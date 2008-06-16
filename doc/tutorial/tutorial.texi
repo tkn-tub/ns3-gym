@@ -92,21 +92,6 @@ Part 3:  Reconfiguring Existing ns-3 Scripts
 * Statistics::
 Part 4:  Creating New or Revised Topologies
 * Helper Functions::
-* Other-network-topologies::
-Part 5:  Key ns-3 objects and systems
-* ns-3 Packets::
-* ns-3 Callbacks::
-* Sockets APIs::
-* ns-3 routing overview::
-Part 6:  Extending ns-3
-* Nonlinear-Thinking::
-* Summary::
-* Object-Model::
-* The-Doxygen-Documentation-System::
-* How-To-Change-Things::
-* How-To-Set-Default-Values::
-* How-To-Write-A-New-Application::
-@ Troubleshooting
 @end menu
 
 @include introduction.texi
@@ -114,13 +99,6 @@ Part 6:  Extending ns-3
 @include attributes.texi
 @include statistics.texi
 @include helpers.texi
-@include packets.texi
-@include callbacks.texi
-@include sockets.texi
-@c @include output.texi
-@include routing.texi
-@c @include other.texi
-@include troubleshoot.texi
 
 @printindex cp
 
