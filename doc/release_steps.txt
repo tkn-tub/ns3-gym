@@ -7,6 +7,7 @@ Steps in doing an ns-3 release
    - update and check in VERSION to the latest release number
    - confirm that Doxygen builds cleanly and without warnings
      (./waf check; ./waf --doxygen), and check in any necessary changes 
+   - ensure no regressions (./waf --regression)
 2. ./waf configure; ./waf dist
    - this will create a ns-3.0.x.tar.bz2 tarball
    - this will also create a ns-3.0.x-ref-traces.tar.bz2 tarball
@@ -38,12 +39,16 @@ Steps in doing an ns-3 release
    directory on the www.nsnam.org server
    - give it 644 file permissions, and user/group = apache
 10. update web pages on www.nsnam.org (source is in the www/ module)
+   - clone the source repo (hg clone http://code.nsnam.org/www)
    - add link to news.html
    - update getting_started.html
    - update documents.html
    - update roadmap on wiki
-   - build and update Doxygen directory on the server
+   - commit and push changes
+   - build and update HTML directory on the server
      -- ssh www.nsnam.org; sudo tcsh; su nsnam;
+     -- run ~/bin/update-html
+   - build and update Doxygen directory on the server
      -- edit ~/bin/update-doxygen-release file and change RELEASE variable 
         to the right version number 
      -- run ~/bin/update-doxygen-release
