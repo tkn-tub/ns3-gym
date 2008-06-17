@@ -8,34 +8,36 @@ Steps in doing an ns-3 release
    - confirm that Doxygen builds cleanly and without warnings
      (./waf check; ./waf --doxygen), and check in any necessary changes 
    - ensure no regressions (./waf --regression)
+   - update the wscript in ns-3-dev to point REGRESSION_TRACES_TAR_NAME and
+     REGRESSION_TRACES_DIR_NAME to the correct places.
 2. ./waf configure; ./waf dist
-   - this will create a ns-3.0.x.tar.bz2 tarball
-   - this will also create a ns-3.0.x-ref-traces.tar.bz2 tarball
+   - this will create a ns-3.1x.tar.bz2 tarball
+   - this will also create a ns-3.1x-ref-traces.tar.bz2 tarball
 3. test tarball on release platforms (waf check and maybe some other scripts)
 4. once you are happy with the tarball, tag ns-3-dev with "release ns-3.0.X"
-   - hg tag "release ns-3.0.x"
+   - hg tag "release ns-3.1x"
    - hg push 
 5. clone the tagged ns-3-dev and place it on the repository
    - ssh code.nsnam.org; sudo tcsh; su code;
-   - cp -r /home/code/repos/ns-3-dev /home/code/repos/ns-3.0.x
-   - cd /home/code/repos/ns-3.0.x/.hg and edit the hgrc appropriately:
-     "description = ns-3.0.x release
-      name = ns-3.0.x"
+   - cp -r /home/code/repos/ns-3-dev /home/code/repos/ns-3.1x
+   - cd /home/code/repos/ns-3.1x/.hg and edit the hgrc appropriately:
+     "description = ns-3.1x release
+      name = ns-3.1x"
 6. Run the regression tests on the new release and update the reference traces
    - ./waf --regression
    - ./waf --valgrind --regression (for valgrind version)
    - There should be no regression errors at this time
-   - tag ns-3-dev-ref-traces with "release ns-3.0.X"
-     hg tag "release ns-3.0.x"
+   - tag ns-3-dev-ref-traces with "release ns-3.1X"
+     hg tag "release ns-3.1x"
      hg push
    - clone the ns-3-dev-ref-traces and place it on the repository as in step
-     5 but use the name ns-3.0.x-ref-traces
+     5 but use the name ns-3.1x-ref-traces
 7. Create a reference traces tarball
    - again, run "./waf dist" 
-8. upload "ns-3.0.x.tar.bz2" to the /var/www/html/releases/ directory on 
+8. upload "ns-3.1x.tar.bz2" to the /var/www/html/releases/ directory on 
    the www.nsnam.org server
    - give it 644 file permissions, and user/group = apache
-9. upload "ns-3.0.x-ref-traces.tar.bz2" to the /var/www/html/releases/ 
+9. upload "ns-3.1x-ref-traces.tar.bz2" to the /var/www/html/releases/ 
    directory on the www.nsnam.org server
    - give it 644 file permissions, and user/group = apache
 10. update web pages on www.nsnam.org (source is in the www/ module)

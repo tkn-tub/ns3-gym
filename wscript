@@ -34,7 +34,7 @@ REGRESSION_TRACES_URL = "http://www.nsnam.org/releases/"
 # mercurial on the system.  It is expected to be created using tar -cjf and
 # will be extracted using tar -xjf
 #
-REGRESSION_TRACES_TAR_NAME  = "ns-3.0.12-ref-traces.tar.bz2"
+REGRESSION_TRACES_TAR_NAME  = "ns-3.1-RC1-ref-traces.tar.bz2"
 
 #
 # The path to the Mercurial repository used to find the reference traces if
@@ -47,7 +47,7 @@ REGRESSION_TRACES_REPO = "http://code.nsnam.org/"
 # The local directory name (relative to the 'regression' dir) into
 # which the reference traces will go in either case (net or hg).
 #
-REGRESSION_TRACES_DIR_NAME = "ns-3-dev-ref-traces"
+REGRESSION_TRACES_DIR_NAME = "ns-3.1-RC1-ref-traces"
 
 
 def dist_hook():
