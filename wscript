@@ -47,7 +47,7 @@ REGRESSION_TRACES_REPO = "http://code.nsnam.org/"
 # The local directory name (relative to the 'regression' dir) into
 # which the reference traces will go in either case (net or hg).
 #
-REGRESSION_TRACES_DIR_NAME = "ns-3.1-RC1-ref-traces"
+REGRESSION_TRACES_DIR_NAME = "ns-3-dev-ref-traces"
 
 
 def dist_hook():
