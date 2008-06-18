@@ -26,7 +26,7 @@ Steps in doing an ns-3 release
      "description = ns-3.1x release
       name = ns-3.1x"
    - clone the ns-3-dev-ref-traces and place it on the repository as above
-     but use the name ns-3.1x-ref-traces
+     but use the name ns-3.1x-ref-traces and edit the hgrc appropriately
 7. check out a clean version of the new release (ns-3.1x) somewhere
 8. Update the VERSION for this new release
    - change the string 3-dev in the VERSION file to the real version 
@@ -34,12 +34,20 @@ Steps in doing an ns-3 release
      for the regression tests to work.
    - hg commit
    - hg push
-9. Run the regression tests on the new release
+9. Run the regression tests on the new release (debug and optimized)
+   - ./waf -d debug configure
+   - ./waf
+   - ./waf --regression
+   - ./waf --valgrind --regression (for valgrind version)
+   - ./waf -d optimized configure
+   - ./waf
    - ./waf --regression
    - ./waf --valgrind --regression (for valgrind version)
    - There should be no regression errors at this time
 10. Create final tarballs
-   - run "./waf dist" 
+   - ./waf configure; ./waf dist
+   - this will create an ns-3.1x.tar.bz2 tarball
+   - this will also create a ns-3.1x-ref-traces.tar.bz2 tarball
 11. upload "ns-3.1x.tar.bz2" to the /var/www/html/releases/ directory on 
    the www.nsnam.org server
    - give it 644 file permissions, and user/group = apache
@@ -61,8 +69,9 @@ Steps in doing an ns-3 release
         to the right version number 
      -- run ~/bin/update-doxygen-release
 14. Final checks
-    - download tarball from web, build and run regression tests for as many
-      targets as you can
-    - download release from mercurial, build and run regression tests for as
-      many targets as you can
+   - download tarball from web, build and run regression tests for as many
+     targets as you can
+   - download release from mercurial, build and run regression tests for as
+     many targets as you can
+   - test and verify until you're confident the release is solid.
 15. announce to ns-developers, with summary of release notes
