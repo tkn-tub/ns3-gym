@@ -2,6 +2,7 @@
 import sys
 import shlex
 import shutil
+import urllib
 import types
 import optparse
 import os.path
@@ -13,7 +14,6 @@ import Object
 import ccroot
 
 Params.g_autoconfig = 1
-
 
 # the following two variables are used by the target "waf dist"
 VERSION = file("VERSION").read().strip()
@@ -30,13 +30,6 @@ blddir = 'build'
 REGRESSION_TRACES_URL = "http://www.nsnam.org/releases/"
 
 #
-# The name of the tarball to find the reference traces in if there is no
-# mercurial on the system.  It is expected to be created using tar -cjf and
-# will be extracted using tar -xjf
-#
-REGRESSION_TRACES_TAR_NAME  = "ns-3.1-RC1-ref-traces.tar.bz2"
-
-#
 # The path to the Mercurial repository used to find the reference traces if
 # we find "hg" on the system.  We expect that the repository will be named
 # identically to refDirName below
@@ -44,10 +37,23 @@ REGRESSION_TRACES_TAR_NAME  = "ns-3.1-RC1-ref-traces.tar.bz2"
 REGRESSION_TRACES_REPO = "http://code.nsnam.org/"
 
 #
-# The local directory name (relative to the 'regression' dir) into
-# which the reference traces will go in either case (net or hg).
+# Name of the local directory where the regression code lives.
 #
-REGRESSION_TRACES_DIR_NAME = "ns-3-dev-ref-traces"
+REGRESSION_DIR = "regression"
+
+#
+# The last part of the path name to use to find the regression traces.  The
+# path will be APPNAME + '-' + VERSION + REGRESSION_SUFFIX, e.g.,
+# ns-3-dev-ref-traces
+#
+REGRESSION_SUFFIX = "-ref-traces"
+
+#
+# The last part of the path name to use to find the regression traces tarball.
+# path will be APPNAME + '-' + VERSION + REGRESSION_SUFFIX + TRACEBALL_SUFFIX,
+# e.g., ns-3-dev-ref-traces.tar.bz2
+#
+TRACEBALL_SUFFIX = ".tar.bz2"
 
 
 def dist_hook():
@@ -55,13 +61,17 @@ def dist_hook():
     shutil.rmtree("doc/html", True)
     shutil.rmtree("doc/latex", True)
 
+    ## build the name of the traces subdirectory.  Will be something like
+    ## ns-3-dev-ref-traces
+    traces_name = APPNAME + '-' + VERSION + REGRESSION_SUFFIX
     ## Create a tar.bz2 file with the traces
-    traces_dir = os.path.join("regression", "ns-3-dev-ref-traces")
+    traces_dir = os.path.join(REGRESSION_DIR, traces_name)
     if not os.path.isdir(traces_dir):
         Params.warning("Not creating traces archive: the %s directory does not exist" % traces_dir)
     else:
-        tar = tarfile.open(os.path.join("..", "ns-%s-ref-traces.tar.bz2" % VERSION), 'w:bz2')
-        tar.add(traces_dir, "ns-3-dev-ref-traces")
+        traceball = traces_name + TRACEBALL_SUFFIX
+        tar = tarfile.open(os.path.join("..", traceball), 'w:bz2')
+        tar.add(traces_dir)
         tar.close()
         ## Now remove it; we do not ship the traces with the main tarball...
         shutil.rmtree(traces_dir, True)
@@ -790,28 +800,32 @@ def run_regression():
         tests = _find_tests(testdir)
 
     print "========== Running Regression Tests =========="
+    dir_name = APPNAME + '-' + VERSION + REGRESSION_SUFFIX
+    print "dir_name = " + dir_name
 
-    if os.system("hg version > /dev/null 2>&1") == 0:
+    if os.system("hg version > /dev/null 2>&1") == 1:
         print "Synchronizing reference traces using Mercurial."
-        if not os.path.exists(REGRESSION_TRACES_DIR_NAME):
-            os.system("hg clone " + REGRESSION_TRACES_REPO + REGRESSION_TRACES_DIR_NAME + " > /dev/null 2>&1")
+        if not os.path.exists(dir_name):
+            os.system("hg clone " + REGRESSION_TRACES_REPO + dir_name + " > /dev/null 2>&1")
         else:
             _dir = os.getcwd()
-            os.chdir(REGRESSION_TRACES_DIR_NAME)
+            os.chdir(dir_name)
             try:
-                result = os.system("hg -q pull %s && hg -q update" % (REGRESSION_TRACES_REPO + REGRESSION_TRACES_DIR_NAME))
+                print "pull and update " + REGRESSION_TRACES_REPO + dir_name
+                result = os.system("hg -q pull %s && hg -q update" % (REGRESSION_TRACES_REPO + dir_name))
             finally:
                 os.chdir("..")
             if result:
                 Params.fatal("Synchronizing reference traces using Mercurial failed.")
     else:
-        print "Synchronizing reference traces from web."
-        urllib.urlretrieve(REGRESSION_TRACES_URL + REGRESSION_TRACES_TAR_NAME, REGRESSION_TRACES_TAR_NAME)
-        os.system("tar -xjf %s" % (REGRESSION_TRACES_TAR_NAME,))
+        traceball = dir_name + TRACEBALL_SUFFIX
+        print "Synchronizing " + traceball + " from web."
+        urllib.urlretrieve(REGRESSION_TRACES_URL + traceball, traceball)
+        os.system("tar -xjf %s" % (traceball,))
 
     print "Done."
 
-    if not os.path.exists(REGRESSION_TRACES_DIR_NAME):
+    if not os.path.exists(dir_name):
         print "Reference traces directory does not exist"
         return 3
     
@@ -847,7 +861,9 @@ def _run_regression_test(test):
     else:
         os.mkdir("traces")
     
+    dir_name = APPNAME + '-' + VERSION + REGRESSION_SUFFIX
+
     mod = __import__(test, globals(), locals(), [])
     return mod.run(verbose=(Params.g_options.verbose > 0),
                    generate=Params.g_options.regression_generate,
-                   refDirName=REGRESSION_TRACES_DIR_NAME)
+                   refDirName=dir_name)
