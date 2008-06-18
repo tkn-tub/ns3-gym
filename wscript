@@ -820,7 +820,6 @@ def run_regression():
         print "Synchronizing " + traceball + " from web."
         urllib.urlretrieve(REGRESSION_TRACES_URL + traceball, traceball)
         os.system("tar -xjf %s" % (traceball,))
-
     print "Done."
 
     if not os.path.exists(dir_name):
