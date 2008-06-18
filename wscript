@@ -806,6 +806,7 @@ def run_regression():
                 Params.fatal("Synchronizing reference traces using Mercurial failed.")
     else:
         print "Synchronizing reference traces from web."
+        import urllib
         urllib.urlretrieve(REGRESSION_TRACES_URL + REGRESSION_TRACES_TAR_NAME, REGRESSION_TRACES_TAR_NAME)
         os.system("tar -xjf %s" % (REGRESSION_TRACES_TAR_NAME,))
 
