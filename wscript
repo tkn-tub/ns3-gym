@@ -723,8 +723,6 @@ class Regression(object):
                 print "creating new " + refTestDirName
                 os.mkdir(refTestDirName)
 
-            #os.system("./waf --cwd regression/" + refTestDirName +
-            #    " --run " + testName + " > /dev/null 2>&1")
             Params.g_options.cwd_launch = refTestDirName
             run_program(testName)
 
