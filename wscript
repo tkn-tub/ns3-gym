@@ -799,9 +799,8 @@ def run_regression():
 
     print "========== Running Regression Tests =========="
     dir_name = APPNAME + '-' + VERSION + REGRESSION_SUFFIX
-    print "dir_name = " + dir_name
 
-    if os.system("hg version > /dev/null 2>&1") == 1:
+    if os.system("hg version > /dev/null 2>&1") == 0:
         print "Synchronizing reference traces using Mercurial."
         if not os.path.exists(dir_name):
             os.system("hg clone " + REGRESSION_TRACES_REPO + dir_name + " > /dev/null 2>&1")
@@ -809,7 +808,7 @@ def run_regression():
             _dir = os.getcwd()
             os.chdir(dir_name)
             try:
-                print "pull and update " + REGRESSION_TRACES_REPO + dir_name
+                print REGRESSION_TRACES_REPO + dir_name
                 result = os.system("hg -q pull %s && hg -q update" % (REGRESSION_TRACES_REPO + dir_name))
             finally:
                 os.chdir("..")
