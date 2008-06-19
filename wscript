@@ -803,12 +803,13 @@ def run_regression():
     if os.system("hg version > /dev/null 2>&1") == 0:
         print "Synchronizing reference traces using Mercurial."
         if not os.path.exists(dir_name):
+            print "Cloning " + REGRESSION_TRACES_REPO + dir_name + " from repo."
             os.system("hg clone " + REGRESSION_TRACES_REPO + dir_name + " > /dev/null 2>&1")
         else:
             _dir = os.getcwd()
             os.chdir(dir_name)
             try:
-                print REGRESSION_TRACES_REPO + dir_name
+                print "Pulling " + REGRESSION_TRACES_REPO + dir_name + " from repo."
                 result = os.system("hg -q pull %s && hg -q update" % (REGRESSION_TRACES_REPO + dir_name))
             finally:
                 os.chdir("..")
@@ -816,7 +817,7 @@ def run_regression():
                 Params.fatal("Synchronizing reference traces using Mercurial failed.")
     else:
         traceball = dir_name + TRACEBALL_SUFFIX
-        print "Synchronizing " + traceball + " from web."
+        print "Retrieving " + traceball + " from web."
         urllib.urlretrieve(REGRESSION_TRACES_URL + traceball, traceball)
         os.system("tar -xjf %s -C .." % (traceball))
     print "Done."
