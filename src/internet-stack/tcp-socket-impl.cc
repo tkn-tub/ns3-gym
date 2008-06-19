@@ -798,8 +798,8 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
         // Data freed from the send buffer; notify any blocked sender
         if (m_wouldBlock)
           {
-            NotifySend (GetTxAvailable ());
             m_wouldBlock = false;
+            NotifySend (GetTxAvailable ());
           }
       }
       SendPendingData ();
@@ -1172,8 +1172,8 @@ void TcpSocketImpl::CommonNewAck (SequenceNumber ack, bool skipTimer)
     {
       // m_highestRxAck advancing means some data was acked, and the size 
       // of free space in the buffer has increased
-      NotifySend (GetTxAvailable ());
       m_wouldBlock = false;
+      NotifySend (GetTxAvailable ());
     }
   if (ack > m_nextTxSequence) 
     {
