@@ -172,5 +172,10 @@ NodeList::GetNode (uint32_t n)
 {
   return NodeListPriv::Get ()->GetNode (n);
 }
+uint32_t
+NodeList::GetNNodes (void)
+{
+  return NodeListPriv::Get ()->GetNNodes ();
+}
 
 }//namespace ns3
