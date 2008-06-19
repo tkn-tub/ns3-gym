@@ -1033,7 +1033,8 @@ double NormalVariableImpl::GetValue()
     }
   while(1)
     { // See Simulation Modeling and Analysis p. 466 (Averill Law)
-      // for algorithm
+      // for algorithm; basically a Box-Muller transform:
+      // http://en.wikipedia.org/wiki/Box-Muller_transform
       double u1 = m_generator->RandU01();
       double u2 = m_generator->RandU01();;
       double v1 = 2 * u1 - 1;
@@ -1082,7 +1083,8 @@ double NormalVariableImpl::GetSingleValue(double m, double v, double b)
     }
   while(1)
     { // See Simulation Modeling and Analysis p. 466 (Averill Law)
-      // for algorithm
+      // for algorithm; basically a Box-Muller transform:
+      // http://en.wikipedia.org/wiki/Box-Muller_transform
       double u1 = m_static_generator->RandU01();
       double u2 = m_static_generator->RandU01();;
       double v1 = 2 * u1 - 1;
@@ -1092,11 +1094,21 @@ double NormalVariableImpl::GetSingleValue(double m, double v, double b)
         { // Got good pair
           double y = sqrt((-2 * log(w))/w);
           m_static_next = m + v2 * y * sqrt(v);
-          if (fabs(m_static_next) > b) m_static_next = b * (m_static_next)/fabs(m_static_next);
-          m_static_nextValid = true;
+          //if next is in bounds, it is valid
+          m_static_nextValid = fabs(m_static_next-m) <= b;;
           double x1 = m + v1 * y * sqrt(v);
-          if (fabs(x1) > b) x1 = b * (x1)/fabs(x1);
-          return x1;
+          //if x1 is in bounds, return it
+          if (fabs(x1-m) <= b)
+          {
+            return x1;
+          }
+          //otherwise try and return m_next if it is valid
+          else if (m_static_nextValid)
+          {
+            m_static_nextValid = false;
+            return m_static_next;
+          }
+          //otherwise, just run this loop again
         }
     }
 }
