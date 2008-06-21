@@ -904,6 +904,18 @@ PacketTest::RunTests (void)
     tmp->AddTag (ATestTag<20> ());
     CHECK (tmp, 0, E (20, 0, 0));
   }
+  {
+    Ptr<Packet> tmp = Create<Packet> (1000);
+    tmp->AddTag (ATestTag<20> ());
+    CHECK (tmp, 1, E (20, 0, 1000));
+    tmp->RemoveAtStart (1000);
+    CHECK (tmp, 0,  E (0,0,0));
+    Ptr<Packet> a = Create<Packet> (10);
+    a->AddTag (ATestTag<10> ());
+    CHECK (a, 1, E (10, 0, 10));
+    tmp->AddAtEnd (a);
+    CHECK (tmp, 1, E (10, 0, 10));
+  }
   
 
   return result;

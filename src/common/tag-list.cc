@@ -281,7 +281,7 @@ TagList::AddAtEnd (int32_t adjustment, int32_t appendOffset)
       item.start += adjustment;
       item.end += adjustment;
 
-      if (item.start > appendOffset)
+      if (item.start >= appendOffset)
 	{
 	  continue;
 	}
@@ -315,7 +315,7 @@ TagList::AddAtStart (int32_t adjustment, int32_t prependOffset)
       item.start += adjustment;
       item.end += adjustment;
 
-      if (item.end < prependOffset)
+      if (item.end <= prependOffset)
 	{
 	  continue;
 	}
