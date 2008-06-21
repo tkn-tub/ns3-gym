@@ -727,10 +727,7 @@ struct Expected
 #define E(a,b,c) a,b,c
 
 #define CHECK(p, n, ...)                                \
-  if (!DoCheck (p, __FILE__, __LINE__, n, __VA_ARGS__)) \
-    {                                                   \
-      result = false;                                   \
-    }
+  NS_TEST_ASSERT (DoCheck (p, __FILE__, __LINE__, n, __VA_ARGS__))
 
 namespace ns3 {
 
@@ -782,6 +779,7 @@ PacketTest::DoCheck (Ptr<const Packet> p, const char *file, int line, uint32_t n
       delete tag;
       j++;
     }
+  NS_TEST_ASSERT (!i.HasNext ());
   NS_TEST_ASSERT_EQUAL (j, expected.size ());
   return result;
 }
@@ -899,7 +897,14 @@ PacketTest::RunTests (void)
     Ptr<Packet> a = Create<Packet> (0);
     a->AddAtEnd (tmp);
     CHECK (a, 1, E (20, 0, 36));
-  }  
+  }
+
+  {
+    Ptr<Packet> tmp = Create<Packet> (0);
+    tmp->AddTag (ATestTag<20> ());
+    CHECK (tmp, 0, E (20, 0, 0));
+  }
+  
 
   return result;
 }

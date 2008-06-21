@@ -90,7 +90,7 @@ TagList::Iterator::PrepareForNext (void)
       m_nextSize = buf.ReadU32 ();
       m_nextStart = buf.ReadU32 ();
       m_nextEnd = buf.ReadU32 ();
-      if (m_nextStart > m_offsetEnd || m_nextEnd < m_offsetStart)
+      if (m_nextStart >= m_offsetEnd || m_nextEnd <= m_offsetStart)
 	{
 	  m_current += 4 + 4 + 4 + 4 + m_nextSize;
 	}
