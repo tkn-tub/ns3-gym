@@ -76,8 +76,8 @@ public:
     {
       TypeId tid;
       uint32_t size;
-      uint32_t start;
-      uint32_t end;
+      int32_t start;
+      int32_t end;
       TagBuffer buf;
       Item (TagBuffer buf);
     private:
@@ -89,16 +89,16 @@ public:
     uint32_t GetOffsetStart (void) const;
   private:
     friend class TagList;
-    Iterator (uint8_t *start, uint8_t *end, uint32_t offsetStart, uint32_t offsetEnd);
+    Iterator (uint8_t *start, uint8_t *end, int32_t offsetStart, int32_t offsetEnd);
     void PrepareForNext (void);
     uint8_t *m_current;
     uint8_t *m_end;
-    uint32_t m_offsetStart;
-    uint32_t m_offsetEnd;
+    int32_t m_offsetStart;
+    int32_t m_offsetEnd;
     uint32_t m_nextTid;
     uint32_t m_nextSize;
-    uint32_t m_nextStart;
-    uint32_t m_nextEnd;
+    int32_t m_nextStart;
+    int32_t m_nextEnd;
   };
 
   TagList ();
@@ -116,7 +116,7 @@ public:
    *
    * 
    */
-  TagBuffer Add (TypeId tid, uint32_t bufferSize, uint32_t start, uint32_t end);
+  TagBuffer Add (TypeId tid, uint32_t bufferSize, int32_t start, int32_t end);
 
   /**
    * \param o the other list of tags to aggregate.
@@ -138,24 +138,25 @@ public:
    * in this list: the boundaries of each tag as reported by their start and
    * end offsets will be included within the input offsetStart and offsetEnd.
    */
-  TagList::Iterator Begin (uint32_t offsetStart, uint32_t offsetEnd) const;
+  TagList::Iterator Begin (int32_t offsetStart, int32_t offsetEnd) const;
 
   /**
    * Adjust the offsets stored internally by the adjustment delta and
    * make sure that all offsets are smaller than appendOffset which represents
    * the location where new bytes have been added to the byte buffer.
    */
-  void AddAtEnd (int32_t adjustment, uint32_t appendOffset);
+  void AddAtEnd (int32_t adjustment, int32_t appendOffset);
   /**
    * Adjust the offsets stored internally by the adjustment delta and
    * make sure that all offsets are bigger than prependOffset which represents
    * the location where new bytes have been added to the byte buffer.
    */
-  void AddAtStart (int32_t adjustment, uint32_t prependOffset);
+  void AddAtStart (int32_t adjustment, int32_t prependOffset);
 
 private:
-  bool IsDirtyAtEnd (uint32_t appendOffset);
-  bool IsDirtyAtStart (uint32_t prependOffset);
+  bool IsDirtyAtEnd (int32_t appendOffset);
+  bool IsDirtyAtStart (int32_t prependOffset);
+  TagList::Iterator BeginAll (void) const;
 
   struct TagListData *Allocate (uint32_t size);
   void Deallocate (struct TagListData *data);
