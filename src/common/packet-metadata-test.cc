@@ -752,6 +752,13 @@ PacketMetadataTest::RunTests (void)
   p2 = p->CreateFragment(100, 100);	
   p1->AddAtEnd (p2);
 
+  p = Create<Packet> ();
+  ADD_HEADER (p, 10);
+  p1 = Create<Packet> ();
+  ADD_HEADER (p1, 11);
+  REM_HEADER (p1, 11);
+  p->AddAtEnd (p1);
+
   return result;
 }
 
