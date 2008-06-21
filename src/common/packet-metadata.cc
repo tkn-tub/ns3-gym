@@ -726,6 +726,12 @@ PacketMetadata::AddAtEnd (PacketMetadata const&o)
       *this = o;
       return;
     }
+  if (o.m_head == 0xffff)
+    {
+      NS_ASSERT (o.m_tail == 0xffff);
+      // we have nothing to append.
+      return;
+    }
   NS_ASSERT (m_head != 0xffff && m_tail != 0xffff);
 
   // We read the current tail because we are going to append
