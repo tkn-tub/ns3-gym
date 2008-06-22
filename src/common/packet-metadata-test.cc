@@ -767,6 +767,15 @@ PacketMetadataTest::RunTests (void)
   CHECK_HISTORY (p, 1, 500);
   p->RemoveAtEnd (10);
   CHECK_HISTORY (p, 1, 490);
+
+  p = Create<Packet> (500);
+  CHECK_HISTORY (p, 1, 500);
+  ADD_TRAILER (p, 10);
+  CHECK_HISTORY (p, 2, 500, 10);
+  REM_TRAILER (p, 10);
+  CHECK_HISTORY (p, 1, 500);
+  p->RemoveAtStart (10);
+  CHECK_HISTORY (p, 1, 490);
   
 
   return result;

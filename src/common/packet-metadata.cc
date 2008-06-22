@@ -830,18 +830,13 @@ PacketMetadata::RemoveAtStart (uint32_t start)
           uint16_t written = fragment.AddBig (0xffff, fragment.m_tail,
                                               &item, &extraItem);
           fragment.UpdateTail (written);
-          current = item.next;
-          while (current != 0xffff)
+          while (current != 0xffff && current != m_tail)
             {
+              current = item.next;
               ReadItems (current, &item, &extraItem);
               written = fragment.AddBig (0xffff, fragment.m_tail,
                                          &item, &extraItem);
               fragment.UpdateTail (written);
-              if (current == m_tail)
-                {
-                  break;
-                }
-              current = item.next;
             }
           *this = fragment;
         }
