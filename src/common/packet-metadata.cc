@@ -898,18 +898,13 @@ PacketMetadata::RemoveAtEnd (uint32_t end)
           uint16_t written = fragment.AddBig (fragment.m_head, 0xffff,
                                               &item, &extraItem);
           fragment.UpdateHead (written);
-          current = item.prev;
-          while (current != 0xffff)
+          while (current != 0xffff && current != m_head)
             {
+              current = item.prev;
               ReadItems (current, &item, &extraItem);
               written = fragment.AddBig (fragment.m_head, 0xffff,
                                          &item, &extraItem);
               fragment.UpdateHead (written);
-              if (current == m_head)
-                {
-                  break;
-                }
-              current = item.prev;
             }
           *this = fragment;
         }
