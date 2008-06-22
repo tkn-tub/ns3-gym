@@ -137,6 +137,13 @@ public:
   void AddTrailer (Trailer const &trailer, uint32_t size);
   void RemoveTrailer (Trailer const &trailer, uint32_t size);
 
+  /**
+   * \param start the amount of stuff to remove from the start
+   * \param end the amount of stuff to remove from the end
+   *
+   * Calling this method is equivalent to calling RemoveAtStart (start)
+   * and then, RemoveAtEnd (end).
+   */
   PacketMetadata CreateFragment (uint32_t start, uint32_t end) const;
   void AddAtEnd (PacketMetadata const&o);
   void AddPaddingAtEnd (uint32_t end);
