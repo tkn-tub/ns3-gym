@@ -759,6 +759,16 @@ PacketMetadataTest::RunTests (void)
   REM_HEADER (p1, 11);
   p->AddAtEnd (p1);
 
+  p = Create<Packet> (500);
+  CHECK_HISTORY (p, 1, 500);
+  ADD_HEADER (p, 10);
+  CHECK_HISTORY (p, 2, 10, 500);
+  REM_HEADER (p, 10);
+  CHECK_HISTORY (p, 1, 500);
+  p->RemoveAtEnd (10);
+  CHECK_HISTORY (p, 1, 490);
+  
+
   return result;
 }
 
