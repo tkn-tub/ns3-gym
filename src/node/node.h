@@ -90,9 +90,6 @@ public:
    *          NetDevice.
    *
    * Associate this device to this node.
-   * This method is called automatically from NetDevice::NetDevice
-   * so the user has little reason to call this method himself.
-   * The index returned is always non-zero.
    */
   uint32_t AddDevice (Ptr<NetDevice> device);
   /**
