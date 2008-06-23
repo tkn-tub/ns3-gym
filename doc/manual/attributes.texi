@@ -271,7 +271,7 @@ main (int argc, char *argv[])
 The main thing to notice in the above are the two calls to 
 @code{Config::SetDefault}.  This is how we set the default value
 for all subsequently instantiated DropTailQueues.  We illustrate
-that two types of Value classes, a String and a Uinteger class,
+that two types of Value classes, a StringValue and a UintegerValue class,
 can be used to assign the value to the attribute named by
 "ns3::DropTailQueue::MaxPackets".
 
@@ -392,9 +392,10 @@ or from the higher-level helper APIs, such as:
 
 @node Value classes
 @subsection Value classes
-Readers will note the new Value classes.  These can be thought of as
+Readers will note the new FooValue classes which are subclasses of the
+AttributeValue base class.  These can be thought of as
 an intermediate class that can be used to convert from raw types to the
-Values that are used by the system.  Recall that this database is holding
+Values that are used by the attribute system.  Recall that this database is holding
 objects of many types with a single generic type.  Conversions to this
 type can either be done using an intermediate class (IntegerValue, DoubleValue for
 "floating point") or via strings.  Direct implicit conversion of types
@@ -406,8 +407,12 @@ p->Set ("cwnd", IntegerValue (100)); // integer-based setter
 @end verbatim
 
 The system provides some macros that help users declare and define
-new Value subclasses for new types that they want to introduce into
-the attribute system.
+new AttributeValue subclasses for new types that they want to introduce into
+the attribute system: 
+@itemize @bullet
+@item ATTRIBUTE_HELPER_HEADER
+@item ATTRIBUTE_HELPER_CPP
+@end itemize
 
 @node Extending attributes
 @section Extending attributes
@@ -417,8 +422,6 @@ attribute system, but undoubtedly users will want to extend this
 to pick up ones we have missed, or to add their own classes to this.
 
 @subsection Adding an existing internal variable to the metadata system 
-
-// XXX revise me
 
 Consider this variable in class TcpSocket:
 @verbatim
@@ -432,7 +435,9 @@ in the metadata system (to the TypeId declaration for TcpSocket):
 @verbatim
     .AddParameter ("Congestion window", 
                    "Tcp congestion window (bytes)",
-                   MakeUIntParamSpec (&TcpSocket::m_cWnd, 1));
+                   Uinteger (1),
+                   MakeUintegerAccessor (&TcpSocket::m_cWnd),
+                   MakeUintegerChecker<uint16_t> ());
 
 @end verbatim
 
@@ -451,21 +456,25 @@ We've already introduced what a TypeId definition looks like:
 @verbatim
 TypeId
 RandomWalk2dMobilityModel::GetTypeId (void)
-{  
-  static TypeId tid = TypeId ("RandomWalkMobilityModel")    
-    .SetParent<MobilityModel> ()    
-    .SetGroupName ("Mobility")    
+{
+  static TypeId tid = TypeId ("ns3::RandomWalk2dMobilityModel")
+    .SetParent<MobilityModel> ()
+    .SetGroupName ("Mobility")
     .AddConstructor<RandomWalk2dMobilityModel> ()
-    // followed by a number of Parameters
-    .AddParameter ("bounds",                   
-                   "Bounds of the area to cruise.",                   
-                    MakeRectangleParamSpec (&RandomWalk2dMobilityModel::m_bounds,                                           Rectangle (0.0, 0.0, 100.0, 100.0)))    
-    .AddParameter ("time",                   
-                   "Change current direction and speed after moving for this delay.",              
-                   MakeTimeParamSpec (&RandomWalk2dMobilityModel::m_modeTime,
-                                      Seconds (1.0)))
-
+    .AddAttribute ("Bounds",
+                   "Bounds of the area to cruise.",
+                   RectangleValue (Rectangle (0.0, 0.0, 100.0, 100.0)),
+                   MakeRectangleAccessor (&RandomWalk2dMobilityModel::m_bounds),
+                   MakeRectangleChecker ())
+    .AddAttribute ("Time",
+                   "Change current direction and speed after moving for this delay.",
+                   TimeValue (Seconds (1.0)),
+                   MakeTimeAccessor (&RandomWalk2dMobilityModel::m_modeTime),
+                   MakeTimeChecker ())
     // etc (more parameters).
+    ;
+  return tid;
+}
 @end verbatim
 
 The declaration for this in the class declaration is one-line public
@@ -475,12 +484,24 @@ member method:
   static TypeId GetTypeId (void);
 @end verbatim
 
-@section Adding new class type to the Value system
+Typical mistakes here involve:
+@itemize @bullet
+@item Not calling the SetParent method or calling it with the wrong type
+@item Not calling the AddConstructor method of calling it with the wrong type
+@item Introducing a typographical error in the name of the TypeId in its constructor
+@item Not using the fully-qualified c++ typename of the enclosing c++ class as the 
+name of the TypeId
+@end itemize
+None of these mistakes can be detected by the ns-3 codebase so, users
+are advised to check carefully multiple times that they got these right.
+
+
+@section Adding new class type to the attribute system
 
 From the perspective of the user who writes a new class in the system and
 wants to hook it in to the attribute system, there is mainly the matter 
 of writing 
-the conversions to/from strings and Values.  Most of this can be
+the conversions to/from strings and attribute values.  Most of this can be
 copy/pasted with macro-ized code.  For instance, consider class
 Rectangle in the @code{src/mobility/} directory:
 
@@ -493,24 +514,22 @@ class Rectangle
 {
 ...
 
-  VALUE_HELPER_HEADER_1 (Rectangle);
 };
 @end verbatim
  
-One templatized declaration, and two operators, are added below the 
-class declaration:
+One macro call and two operators, are added below the class declaration:
 
 @verbatim
 std::ostream &operator << (std::ostream &os, const Rectangle &rectangle);
 std::istream &operator >> (std::istream &is, Rectangle &rectangle);
 
-VALUE_HELPER_HEADER_2 (Rectangle);
+ATTRIBUTE_HELPER_HEADER (Rectangle);
 @end verbatim
 
 In the class definition, the code looks like this:
 
 @verbatim
-VALUE_HELPER_CPP (Rectangle);
+ATTRIBUTE_HELPER_CPP (Rectangle);
 
 std::ostream &
 operator << (std::ostream &os, const Rectangle &rectangle)
