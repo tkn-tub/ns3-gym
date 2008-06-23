@@ -11,6 +11,7 @@ for ns-3.  This complements the following wiki pages:
 Please consider contributing tips to either the wiki (yourself) or
 by submitting a patch to this maintained documentation.
 
+- \subpage net-device
 - \subpage callbacks
 - \subpage packet-header-trailer
 
