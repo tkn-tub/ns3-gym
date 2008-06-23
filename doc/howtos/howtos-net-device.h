@@ -90,4 +90,73 @@ SimpleNetDevice::SetAddress (Mac48Address address)
 }
 \endcode
 
+Building a topology with such a device is then a matter of
+instanciating a set of SimpleNetDevice objects connected on a shared
+SimpleChannel:
+\code
+NodeContainer nodes;
+nodes.Create (10);
+Ptr<SimpleChannel> channel = CreateObject<SimpleChannel> ();
+for (uint32_t i = 0; i < nodes.GetN (); ++i)
+  {
+    CreateSimpleDevice (nodes.Get (i), channel);
+  }
+\endcode
+
+With the following CreateSimpleDevice function:
+\code
+static Ptr<SimpleNetDevice>
+CreateSimpleDevice (Ptr<Node> node, Ptr<SimpleChannel> channel)
+{
+  Ptr<SimpleNetDevice> device = CreateObject<SimpleNetDevice> ();
+  device->SetAddress (Mac48Address:Allocate ());
+  device->SetChannel (channel);
+  node->AddDevice (device);
+  return device;
+}
+\endcode
+
+Of course, ultimately, you need to provide a helper class for this new device and channel
+to save each user from having to re-implement their own CreateSimpleDevice helper 
+function:
+
+\code
+class SimpleHelper
+{
+public:
+  NetDeviceContainer Install (NodeContainer nodes, Ptr<SimpleChannel> channel);
+  NetDeviceContainer Install (NodeContainer nodes);
+};
+\endcode
+
+with the following straightforward implementation, inspired by the CreateSimpleDevice 
+function defined above:
+
+\code
+NetDeviceContainer
+SimpleHelper::Install (NodeContainer nodes, Ptr<SimpleChannel> channel)
+{
+  NetDeviceContainer devices;
+  for (NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i)
+    {
+      Ptr<SimpleNetDevice> dev = CreateObject<SimpleNetDevice> ();
+      dev->SetAddress (Mac48Address::Allocate ());
+      dev->SetChannel (channel);
+      (*i)->AddDevice (dev);
+      devices.Add (dev);
+    }
+  return devices;
+}
+NetDeviceContainer
+SimpleHelper::Install (NodeContainer nodes)
+{
+  return Install (nodes, CreateObject<SimpleChannel> ());
+}
+\endcode
+
+Of course, at some point, this device helper class should also contain a couple of 
+ascii and pcap tracing helper functions but, since the default SimpleNetDevice
+class we used as an example here does not report any trace event, it would
+be of little use.
+
 */
