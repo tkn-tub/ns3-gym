@@ -225,6 +225,11 @@ public:
    */
   virtual Ptr<Node> GetNode (void) const = 0;
 
+  /**
+   * \param node the node associated to this netdevice.
+   *
+   * This method is called from ns3::Node::AddDevice.
+   */
   virtual void SetNode (Ptr<Node> node) = 0;
 
   /**
