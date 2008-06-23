@@ -125,12 +125,13 @@ Node::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Node")
     .SetParent<Object> ()
+    ;
   return tid;
 }
 @end verbatim
 Finally, when users want to create Nodes, they call:
 @verbatim
-  Ptr<Node> n = CreateObject<Node> n;
+  Ptr<Node> n = CreateObject<Node> ();
 @end verbatim
 
 We next discuss how attributes (values associated with member variables
@@ -208,8 +209,9 @@ TypeId DropTailQueue::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::DropTailQueue")
     .SetParent<Queue> ()
     .AddConstructor<DropTailQueue> ()
-    .AddAttribute ("MaxPackets", "The maximum number of packets accepted by this DropTailQueue.",
-                   Uinteger (100),
+    .AddAttribute ("MaxPackets", 
+                   "The maximum number of packets accepted by this DropTailQueue.",
+                   UintegerValue (100),
                    MakeUintegerAccessor (&DropTailQueue::m_maxPackets),
                    MakeUintegerChecker<uint32_t> ())
     ;
@@ -256,9 +258,9 @@ main (int argc, char *argv[])
   // 
   // Here, we set it to 80 packets.  We could use one of two value types:
   // a string-based value or a Uinteger value
-  Config::SetDefault ("ns3::DropTailQueue::MaxPackets", String ("80"));
+  Config::SetDefault ("ns3::DropTailQueue::MaxPackets", StringValue ("80"));
   // The below function call is redundant
-  Config::SetDefault ("ns3::DropTailQueue::MaxPackets", Uinteger(80));
+  Config::SetDefault ("ns3::DropTailQueue::MaxPackets", UintegerValue (80));
 
   // Allow the user to override any of the defaults and the above
   // SetDefaults() at run-time, via command-line arguments
@@ -306,24 +308,27 @@ First, we observe that we can get a pointer to the (base class)
 queue via the PointToPointNetDevice attributes, where it is called
 TxQueue 
 @verbatim
-  Ptr<Queue> txQueue = net0->GetAttribute ("TxQueue");
+  PointerValue tmp;
+  net0->GetAttribute ("TxQueue", tmp);
+  Ptr<Object> txQueue = tmp.GetObject ();
 @end verbatim
 
 Using the GetObject function, we can perform a safe downcast
 to a DropTailQueue, where MaxPackets is a member
 @verbatim
   Ptr<DropTailQueue> dtq = txQueue->GetObject <DropTailQueue> ();
-  NS_ASSERT (dtq);
+  NS_ASSERT (dtq != 0);
 @end verbatim
 
-Next, we can get the value of an attribute on this queue
+Next, we can get the value of an attribute on this queue.
 We have introduced wrapper "Value" classes for the underlying
 data types, similar to Java wrappers around these types, since
 the attribute system stores values and not disparate types.
-Here, the attribute value is assigned to a Uinteger, and
+Here, the attribute value is assigned to a UintegerValue, and
 the Get() method on this value produces the (unwrapped) uint32_t.
 @verbatim
-  Uinteger limit = dtq->GetAttribute ("MaxPackets");
+  UintegerValue limit;
+  dtq->GetAttribute ("MaxPackets", limit);
   NS_LOG_INFO ("1.  dtq limit: " << limit.Get () << " packets");
 @end verbatim
   
@@ -331,14 +336,14 @@ Note that the above downcast is not really needed; we could have
 done the same using the Ptr<Queue> even though the attribute
 is a member of the subclass
 @verbatim
-  limit = txQueue->GetAttribute ("MaxPackets");
+  txQueue->GetAttribute ("MaxPackets", limit);
   NS_LOG_INFO ("2.  txQueue limit: " << limit.Get () << " packets");
 @end verbatim
 
 Now, let's set it to another value (60 packets)
 @verbatim
-  txQueue->SetAttribute("MaxPackets", Uinteger (60));
-  limit = txQueue->GetAttribute ("MaxPackets");
+  txQueue->SetAttribute("MaxPackets", UintegerValue (60));
+  txQueue->GetAttribute ("MaxPackets", limit);
   NS_LOG_INFO ("3.  txQueue limit changed: " << limit.Get () << " packets");
 @end verbatim
 
@@ -350,8 +355,8 @@ namespace; this approach is useful if one doesn't have access to
 the underlying pointers and would like to configure a specific
 attribute with a single statement.  
 @verbatim
-  Config::Set ("/NodeList/0/DeviceList/0/TxQueue/MaxPackets", Uinteger (25));
-  limit = txQueue->GetAttribute ("MaxPackets"); 
+  Config::Set ("/NodeList/0/DeviceList/0/TxQueue/MaxPackets", UintegerValue (25));
+  txQueue->GetAttribute ("MaxPackets", limit); 
   NS_LOG_INFO ("4.  txQueue limit changed through namespace: " << 
     limit.Get () << " packets");
 @end verbatim
@@ -360,8 +365,8 @@ We could have also used wildcards to set this value for all nodes
 and all net devices (which in this simple example has the same
 effect as the previous Set())
 @verbatim
-  Config::Set ("/NodeList/*/DeviceList/*/TxQueue/MaxPackets", Uinteger (15));
-  limit = txQueue->GetAttribute ("MaxPackets"); 
+  Config::Set ("/NodeList/*/DeviceList/*/TxQueue/MaxPackets", UintegerValue (15));
+  txQueue->GetAttribute ("MaxPackets", limit); 
   NS_LOG_INFO ("5.  txQueue limit changed through wildcarded namespace: " << 
     limit.Get () << " packets");
 @end verbatim
@@ -377,12 +382,12 @@ Ptr<Object> p = CreateObject<MyNewObject> ("n1", v1, "n2", v2, ...);
 or from the higher-level helper APIs, such as:
 @verbatim
   mobility.SetPositionAllocator ("GridPositionAllocator",
-                                 "MinX", FpValue (-100.0),
-                                 "MinY", FpValue (-100.0),
-                                 "DeltaX", FpValue (5.0),
-                                 "DeltaY", FpValue (20.0),
-                                 "GridWidth", UintValue (20),
-                                 "LayoutType", "RowFirst");
+                                 "MinX", DoubleValue (-100.0),
+                                 "MinY", DoubleValue (-100.0),
+                                 "DeltaX", DoubleValue (5.0),
+                                 "DeltaY", DoubleValue (20.0),
+                                 "GridWidth", UintegerValue (20),
+                                 "LayoutType", StringValue ("RowFirst"));
 @end verbatim
 
 @node Value classes
@@ -391,13 +396,13 @@ Readers will note the new Value classes.  These can be thought of as
 an intermediate class that can be used to convert from raw types to the
 Values that are used by the system.  Recall that this database is holding
 objects of many types with a single generic type.  Conversions to this
-type can either be done using an intermediate class (IntValue, FpValue for
+type can either be done using an intermediate class (IntegerValue, DoubleValue for
 "floating point") or via strings.  Direct implicit conversion of types
 to Value is not really practical.  So in the above, users have a choice
 of using strings or values: 
 @verbatim
-p->Set ("cwnd", "100"); // string-based setter
-p->Set ("cwnd", IntValue(100)); // value-based setter
+p->Set ("cwnd", StringValue ("100")); // string-based setter
+p->Set ("cwnd", IntegerValue (100)); // integer-based setter
 @end verbatim
 
 The system provides some macros that help users declare and define
