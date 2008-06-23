@@ -7,7 +7,7 @@
 
 @ifinfo
 Primary documentation for the @command{ns-3} project is available in
-three forms:
+four forms:
 @itemize @bullet
 @item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen/Manual}:  Documentation of the public APIs of the simulator
 @item @uref{http://www.nsnam.org/tutorial/index.html,,ns-3 Tutorial}
@@ -23,12 +23,13 @@ the document should be discussed on the ns-developers@@isi.edu mailing list.
 
 @copying
 
-This is an @command{ns-3} manual.
+This is an @command{ns-3} reference manual.
 Primary documentation for the @command{ns-3} project is available in
-three forms:
+four forms:
 @itemize @bullet
-@item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen/Manual}:  Documentation of the public APIs of the simulator
-@item Manual (this document)
+@item @uref{http://www.nsnam.org/tutorial/index.html,,ns-3 Tutorial}
+@item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen}:  Documentation of the public APIs of the simulator
+@item Reference Manual (this document)
 @item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
 @end itemize
  
@@ -77,15 +78,19 @@ see @uref{http://www.nsnam.org/docs/manual.pdf}.
 @end ifnottex
 
 @menu
-* ns-3 Packets::
-* ns-3 Callbacks::
+* Random variables::
+* Callbacks::
+* Attributes::
+* Packets::
 * Sockets APIs::
-* ns-3 routing overview::
+* Routing overview::
 * Troubleshooting
 @end menu
 
-@include packets.texi
+@include random.texi
 @include callbacks.texi
+@include attributes.texi
+@include packets.texi
 @include sockets.texi
 @c @include output.texi
 @include routing.texi

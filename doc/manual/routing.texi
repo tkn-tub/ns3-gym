@@ -1,5 +1,5 @@
-@node ns-3 routing overview
-@chapter ns-3 routing overview
+@node Routing overview
+@chapter Routing overview
 
 This chapter describes the overall design of routing in the 
 @code{src/internet-stack}
