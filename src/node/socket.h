@@ -465,8 +465,6 @@ public:
    * Calls RecvFrom (maxSize, flags, fromAddress) with maxSize
    * implicitly set to maximum sized integer, and flags set to zero.
    *
-   * \param maxSize reader will accept packet up to maxSize
-   * \param flags Socket control flags
    * \param fromAddress output parameter that will return the
    * address of the sender of the received packet, if any.  Remains
    * untouched if no packet is received.
