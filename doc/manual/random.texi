@@ -1,0 +1,304 @@
+@anchor{chap:rv}
+@node Random variables
+@chapter Random variables
+
+ns-3 contains a built-in pseudo-random number generator (PRNG).
+It is important for serious users of the simulator to understand
+the functionality, configuration, and usage of this PRNG, and
+to decide whether it is sufficient for his or her research use.  
+
+@node Quick Overview
+@section Quick Overview
+
+ns-3 random numbers are provided via instances of @code{class RandomVariable}.
+@itemize @bullet
+@item @strong{by default, ns-3 simulations use a random seed}; if there is any 
+randomness in the simulation, each run of the program will yield different results.  To use a fixed seed, users must call 
+@code{RandomVariable::UseGlobalSeed ()} at the beginning of the program;
+see section @xref{Seeding and independent replications}
+@item each RandomVariable used in ns-3 has a virtual random number 
+generator associated with it; all random variables use either a fixed
+or random seed based on the use of the global seed (previous bullet);
+@item if you intend to perform multiple runs of the same scenario, with
+different random numbers, please be sure to read the section on how to
+perform independent replications: @xref{Seeding and independent replications}.
+@end itemize
+
+Read further for more explanation about the random number facility for
+ns-3.
+
+@node Background
+@section Background
+
+Simulations use a lot of random numbers; the study in [cite]
+found that most network simulations spend as much as 50% 
+of the CPU generating random numbers.  Simulation users need
+to be concerned with the quality of the (pseudo) random numbers and
+the independence between different streams of random numbers.  
+
+Users need to be concerned with a few issues, such as:
+@itemize @bullet
+@item the seeding of the random number generator and whether a 
+simulation run is deterministic or not,
+@item how to acquire different streams of random numbers that are 
+independent from one another, and 
+@item how long it takes for streams to cycle
+@end itemize 
+
+We will introduce a few terms here:  a RNG provides a long sequence
+of (pseudo) random numbers.
+The length of this sequence is called the @emph{cycle length}
+or @emph{period}, after which the RNG will repeat itself.  
+This sequence can
+be  partitioned into disjoint @emph{streams}.  A stream of a
+RNG is a contiguous subset or block of the RNG sequence.
+For instance, if the
+RNG period is of length N, and two streams are provided from this
+RNG, then
+the first stream might use the first N/2 values and the second
+stream might produce the second N/2 values.  An important property
+here is that the two streams are uncorrelated.  Likewise, each
+stream can be partitioned disjointly to a number of 
+uncorrelated @emph{substreams}.  The underlying RNG hopefully
+produces a pseudo-random sequence of numbers with a very long
+cycle length, and partitions this into streams and substreams in an 
+efficient manner.
+  
+ns-3 uses the same underlying random number generator as does
+ns-2:  the MRG32k3a generator from Pierre L'Ecuyer.  A
+detailed description can be found in 
+@uref{http://www.iro.umontreal.ca/~lecuyer/myftp/papers/streams00.pdf,,}.
+The MRG32k3a generator provides 1.8x10^19 independent
+streams of random numbers, each of which consists of
+2.3x10^15 substreams. Each substream has a period
+(@emph{i.e.}, the number of random numbers before overlap) of
+7.6x10^22. The period of the entire generator is
+3.1x10^57. Figure ref-streams provides a graphical idea of
+how the streams and substreams fit together.
+
+Class @code{ns3::RandomVariable} is the public interface to this 
+underlying random number generator.  When users create new
+RandomVariables (such as UniformVariable, ExponentialVariable, 
+etc.), they create an object that uses one of the distinct, independent
+streams of the random number generator.  Therefore, each
+object of type RandomVariable has, conceptually, its own "virtual" RNG.
+Furthermore, each RandomVariable can be configured to use
+one of the set of substreams drawn from the main stream.
+
+An alternate implementation would be to allow each RandomVariable
+to have its own (differently seeded) RNG.  However, we cannot 
+guarantee as strongly that the different sequences would be 
+uncorrelated in such a case; hence, we prefer to use a single RNG
+and streams and substreams from it.
+
+@anchor{chap:rv:indeprep}
+@node Seeding and independent replications
+@section Seeding and independent replications
+
+ns-3 simulations can be configured to produce deterministic or
+random results.  If the ns-3 simulation is configured to use 
+a fixed, deterministic seed with the same run number, it should give 
+the same output each time it is run.
+
+By default, ns-3 simulations use random seeds where the seeding
+is drawn from @code{/dev/random} (if it is available) or else from
+the time of day.  A user who wants to fix the initial seeding
+of the PRNG must call the following static method during simulation
+configuration:
+@verbatim
+RandomVariable::UseGlobalSeed (uint32_t s0, s1, s2, s3, s4, s5);
+@end verbatim
+where the six parameters are each of type uint32_t.
+
+A typical use case is to run a simulation as a sequence of independent
+trials, so as to compute statistics on a large number of independent
+runs.  The user can either change the global seed and rerun the 
+simulation, or can advance the substream state of the RNG.  
+This seeding and substream state setting must be called before any 
+random variables are created; e.g.
+
+@verbatim
+  RandomVariable::UseGlobalSeed(1,2,3,4,5,6);
+  int N = atol(argv[1]); //read in run number from command line
+  RandomVariable::SetRunNumber(N);
+  // Now, create random variables
+  UniformVariable x(0,10);
+  ExponentialVariable y(2902);
+  ...
+@end verbatim
+
+Which is better, setting a new seed or advancing the substream state?
+There is no guarantee that the streams
+produced by two random seeds will not overlap.  The only way to
+guarantee that two streams do not overlap is to use the substream
+capability provided by the RNG implementation.
+@strong{Therefore, use the substream capability to produce
+multiple independent runs of the same simulation.}
+In other words, the more statistically rigorous way to configure
+multiple independent replications is not to simply ignore the
+seeding (and use /dev/random to seed the generator each time) but
+instead to use a fixed seed and to iterate the run number.
+This implementation allows for a maximum of
+2.3x10^15 independent replications using the substreams. 
+
+@node class RandomVariable
+@section class RandomVariable
+
+All random variables should derive from @code{class RandomVariable}.
+This base class provides a few static methods for globally configuring
+the behavior of the random number generator.  Derived classes
+provide API for drawing random variates from the particular
+distribution being supported.
+
+Each RandomVariable created in the simulation is given a generator
+that is a new RNGStream from the underlying PRNG.  
+Used in this manner, the L'Ecuyer implementation allows for a maximum of
+1.8x10^19 random variables.  Each random variable in
+a single replication can produce up to 7.6x10^22 random
+numbers before overlapping.
+
+@node Base class public API
+@section Base class public API
+
+Below are excerpted a few public methods of @code{class RandomVariable}
+that deal with the global configuration and state of the RNG. 
+@verbatim
+  /**
+   * \brief Set seeding behavior
+   * 
+   * Specify whether the POSIX device /dev/random is to
+   * be used for seeding.  When this is used, the underlying
+   * generator is seeded with data from /dev/random instead of
+   * being seeded based upon the time of day.   Defaults to true.
+   */
+  static  void UseDevRandom(bool udr = true);
+
+   /**
+   * \brief Use the global seed to force precisely reproducible results.
+   */ 
+  static void UseGlobalSeed(uint32_t s0, uint32_t s1, uint32_t s2, 
+                            uint32_t s3, uint32_t s4, uint32_t s5);
+
+  /**
+   * \brief Set the run number of this simulation
+   */
+  static void SetRunNumber(uint32_t n);
+
+  /**
+   * \brief Get the internal state of the RNG
+   *
+   * This function is for power users who understand the inner workings
+   * of the underlying RngStream method used.  It returns the internal
+   * state of the RNG via the input parameter.
+   * \param seed Output parameter; gets overwritten with the internal state
+   * of the RNG.
+   */
+  void GetSeed(uint32_t seed[6]) const;
+@end verbatim
+
+We have already described the seeding configuration above.
+
+@node Types of RandomVariables
+@section Types of RandomVariables
+
+The following types of random variables are provided, and are documented
+in the ns-3 Doxygen or by reading @code{src/core/random-variable.h}.  Users
+can also create their own custom random variables by deriving from
+class RandomVariable.
+@itemize @bullet
+@item @code{class UniformVariable }
+@item @code{class ConstantVariable }
+@item @code{class SequentialVariable }
+@item @code{class ExponentialVariable }
+@item @code{class ParetoVariable }
+@item @code{class WeibullVariable }
+@item @code{class NormalVariable }
+@item @code{class EmpiricalVariable }
+@item @code{class IntEmpiricalVariable }
+@item @code{class DeterministicVariable }
+@item @code{class LogNormalVariable }
+@item @code{class TriangularVariable }
+@end itemize
+
+@node Semantics of RandomVariable objects
+@section Semantics of RandomVariable objects
+
+RandomVariable objects have value semantics.  This means that they
+can be passed by value to functions.  The can also be passed by
+reference to const.  RandomVariables do not derive from 
+@code{ns3::Object} and we do not use smart pointers to manage them;
+they are either allocated on the stack or else users explicitly manage
+any heap-allocated RandomVariables.
+
+RandomVariable objects can also be used in ns-3 attributes, which means
+that values can be set for them through the ns-3 attribute system.
+An example is in the propagation models for WifiNetDevice:
+@verbatim
+TypeId
+RandomPropagationDelayModel::GetTypeId (void)
+{ 
+  static TypeId tid = TypeId ("ns3::RandomPropagationDelayModel")
+    .SetParent<PropagationDelayModel> ()
+    .AddConstructor<RandomPropagationDelayModel> ()
+    .AddAttribute ("Variable",
+                   "The random variable which generates random delays (s).",
+                   RandomVariableValue (UniformVariable (0.0, 1.0)),
+         MakeRandomVariableAccessor (&RandomPropagationDelayModel::m_variable), 
+                   MakeRandomVariableChecker ())
+    ;
+  return tid;
+}
+@end verbatim
+Here, the ns-3 user can change the default random variable for this
+delay model (which is a UniformVariable ranging from 0 to 1) through
+the attribute system.
+
+@node Using other PRNG
+@section Using other PRNG
+
+There is presently no support for substituting a different underlying
+random number generator (e.g., the GNU Scientific Library or the Akaroa
+package).  Patches are welcome.
+
+@node More advanced usage
+@section More advanced usage
+
+@emph{To be completed}
+
+@node Publishing your results
+@section Publishing your results
+
+When you publish simulation results, a key piece of configuration 
+information that you should always state is how you used the
+the random number generator.
+@itemize @bullet
+@item what seeds you used,
+@item what RNG you used if not the default,
+@item how were independent runs performed,
+@item for large simulations, how did you check that you did not cycle.
+@end itemize
+
+It is incumbent on the researcher publishing results to include enough
+information to allow others to reproduce his or her results.  It is
+also incumbent on the researcher to convince oneself that the random
+numbers used were statistically valid, and to state in the paper why
+such confidence is assumed.
+
+@node Summary
+@section Summary
+
+Let's review what things you should do when creating a simulation.
+
+@itemize @bullet
+@item Decide whether you are running with a fixed seed or random seed;
+a random seed is the default, 
+@item Decide how you are going to manage independent replications, if
+applicable, 
+@item Convince yourself that you are not drawing more random values
+than the cycle length, if you are running a long simulation, and
+@item When you publish, follow the guidelines above about documenting your
+use of the random number generator.
+@end itemize
+
+The program @emph{samples/main-random.cc} has some examples of usage.
+

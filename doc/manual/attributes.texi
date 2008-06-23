@@ -1,5 +1,5 @@
-@node ns-3 Attributes
-@chapter ns-3 Attributes 
+@node Attributes
+@chapter Attributes 
 @anchor{chap:Attributes}
 
 In ns-3 simulations, there are two main aspects to configuration:

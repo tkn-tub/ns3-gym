@@ -1,5 +1,5 @@
-@node ns-3 Packets
-@chapter ns-3 Packets
+@node Packets
+@chapter Packets
 
 The design of the Packet framework of @emph{ns} was heavily guided by a few
 important use-cases:

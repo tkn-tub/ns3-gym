@@ -1,5 +1,5 @@
-@node ns-3 Callbacks
-@chapter ns-3 Callbacks
+@node Callbacks
+@chapter Callbacks
 
 Some new users to @command{ns-3} are unfamiliar with an extensively used 
 programming idiom used throughout the code:  the ``ns-3 callback''.  This 
