@@ -40,29 +40,37 @@ PointToPointNetDevice::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::PointToPointNetDevice")
     .SetParent<NetDevice> ()
     .AddConstructor<PointToPointNetDevice> ()
-    .AddAttribute ("Address", "The address of this device.",
+    .AddAttribute ("Address", 
+                   "The MAC address of this device.",
                    Mac48AddressValue (Mac48Address ("ff:ff:ff:ff:ff:ff")),
                    MakeMac48AddressAccessor (&PointToPointNetDevice::m_address),
                    MakeMac48AddressChecker ())
-    .AddAttribute ("DataRate", "The default data rate for point to point links",
+    .AddAttribute ("DataRate", 
+                   "The default data rate for point to point links",
                    DataRateValue (DataRate ("32768b/s")),
                    MakeDataRateAccessor (&PointToPointNetDevice::m_bps),
                    MakeDataRateChecker ())
-    .AddAttribute ("ReceiveErrorModel", "XXX",
+    .AddAttribute ("ReceiveErrorModel", 
+                   "The receiver error model used to simulate packet loss",
                    PointerValue (),
                    MakePointerAccessor (&PointToPointNetDevice::m_receiveErrorModel),
                    MakePointerChecker<ErrorModel> ())
-    .AddAttribute ("TxQueue", "XXX",
+    .AddAttribute ("TxQueue",
+                   "A queue to use as the transmit queue in the device.",
                    PointerValue (),
                    MakePointerAccessor (&PointToPointNetDevice::m_queue),
                    MakePointerChecker<Queue> ())
-    .AddAttribute ("InterframeGap", "XXX",
+    .AddAttribute ("InterframeGap", 
+                   "The time to wait between packet (frame) transmissions",
                    TimeValue (Seconds (0.0)),
                    MakeTimeAccessor (&PointToPointNetDevice::m_tInterframeGap),
                    MakeTimeChecker ())
-    .AddTraceSource ("Rx", "Receive MAC packet.",
+    .AddTraceSource ("Rx", 
+                     "Trace source to fire on reception of a MAC packet.",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_rxTrace))
-    .AddTraceSource ("Drop", "Drop MAC packet.",
+    .AddTraceSource ("Drop",
+                     "Trace source to fire on when a MAC packet is dropped.",
+
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_dropTrace))
 
     ;
@@ -207,7 +215,7 @@ PointToPointNetDevice::SetQueue (Ptr<Queue> q)
   void
 PointToPointNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
 {
-  NS_LOG_FUNCTION ("(" << em << ")");
+  NS_LOG_FUNCTION (this << em);
   m_receiveErrorModel = em;
 }
 
@@ -350,6 +358,7 @@ PointToPointNetDevice::GetBroadcast (void) const
 //
 // We don't deal with multicast here.  It doesn't make sense to include some
 // of the one destinations on the network but exclude some of the others.
+//
   bool 
 PointToPointNetDevice::IsMulticast (void) const
 {
