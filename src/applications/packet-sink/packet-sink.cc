@@ -67,10 +67,6 @@ PacketSink::~PacketSink()
 void
 PacketSink::DoDispose (void)
 {
-  if (m_socket != 0)
-    {
-      m_socket->Close ();
-    }
   m_socket = 0;
 
   // chain up
