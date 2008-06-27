@@ -467,13 +467,18 @@ CsmaNetDevice::Receive (Ptr<Packet> packet)
       return;
     }
 
-  m_rxTrace (packet);
-
   if (m_encapMode == RAW)
     {
+      m_rxTrace (packet);
       m_rxCallback (this, packet, 0, GetBroadcast ());
       return;
     }
+
+//
+// Trace sinks will expect complete packets, not packets without some of the
+// headers.
+//
+  Ptr<Packet> originalPacket = packet->Copy ();
 
   EthernetTrailer trailer;
   packet->RemoveTrailer (trailer);
@@ -492,7 +497,7 @@ CsmaNetDevice::Receive (Ptr<Packet> packet)
 //
   if (header.GetSource () == GetAddress ())
     {
-      NS_LOG_LOGIC ("Dropping packet sourced by this device");
+      NS_LOG_LOGIC ("Ignoring packet sourced by this device");
       return;
     }
 
@@ -556,6 +561,7 @@ CsmaNetDevice::Receive (Ptr<Packet> packet)
           NS_ASSERT (false);
           break;
         }
+      m_rxTrace (originalPacket);
       m_rxCallback (this, packet, protocol, header.GetSource ());
     }
 }
