@@ -1012,7 +1012,7 @@ NormalVariableImpl::NormalVariableImpl(double m, double v, double b/*=INFINITE_V
 
 NormalVariableImpl::NormalVariableImpl(const NormalVariableImpl& c)
   : RandomVariableBase(c), m_mean(c.m_mean), m_variance(c.m_variance),
-    m_bound(c.m_bound) { }
+    m_bound(c.m_bound), m_nextValid(false) { }
 
 double NormalVariableImpl::GetValue()
 {
