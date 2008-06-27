@@ -80,8 +80,7 @@ TcpSocketImpl::GetTypeId ()
     m_pendingData (0),
     m_rtt (0),
     m_lastMeasuredRtt (Seconds(0.0)),
-    m_rxAvailable (0), 
-    m_wouldBlock (false) 
+    m_rxAvailable (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -126,7 +125,6 @@ TcpSocketImpl::TcpSocketImpl(const TcpSocketImpl& sock)
     m_cnTimeout (sock.m_cnTimeout),
     m_cnCount (sock.m_cnCount),
     m_rxAvailable (0),
-    m_wouldBlock (false),
     m_sndBufSize (sock.m_sndBufSize),
     m_rcvBufSize(sock.m_rcvBufSize)
 {
@@ -356,7 +354,6 @@ TcpSocketImpl::Send (Ptr<Packet> p, uint32_t flags)
   {
     if (p->GetSize() > GetTxAvailable ())
     {
-      m_wouldBlock = true;
       m_errno = ERROR_MSGSIZE;
       return -1;
     }
@@ -796,9 +793,8 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       {
         m_highestRxAck = tcpHeader.GetAckNumber ();
         // Data freed from the send buffer; notify any blocked sender
-        if (m_wouldBlock)
+        if (GetTxAvailable () > 0)
           {
-            m_wouldBlock = false;
             NotifySend (GetTxAvailable ());
           }
       }
@@ -1168,11 +1164,8 @@ void TcpSocketImpl::CommonNewAck (SequenceNumber ack, bool skipTimer)
   NS_LOG_LOGIC ("TCP " << this << " NewAck " << ack 
            << " numberAck " << (ack - m_highestRxAck)); // Number bytes ack'ed
   m_highestRxAck = ack;         // Note the highest recieved Ack
-  if (m_wouldBlock)
+  if (GetTxAvailable () > 0)
     {
-      // m_highestRxAck advancing means some data was acked, and the size 
-      // of free space in the buffer has increased
-      m_wouldBlock = false;
       NotifySend (GetTxAvailable ());
     }
   if (ack > m_nextTxSequence) 
