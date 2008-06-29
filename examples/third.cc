@@ -22,6 +22,17 @@
 #include "ns3/wifi-module.h"
 #include "ns3/mobility-module.h"
 
+// Default Network Topology
+//
+//   Wifi 10.1.3.0
+//                 AP   
+//  *    *    *    *
+//  |    |    |    |    10.1.1.0
+// n5   n6   n7   n0 -------------- n1   n2   n3   n4
+//                   point-to-point  |    |    |    |
+//                                   ================
+//                                     LAN 10.1.2.0
+
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("ThirdScriptExample");
@@ -32,11 +43,11 @@ main (int argc, char *argv[])
   LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
   LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
 
-  uint32_t nCsma = 10;
-  uint32_t nWifi = 10;
+  uint32_t nCsma = 3;
+  uint32_t nWifi = 3;
   CommandLine cmd;
-  cmd.AddValue ("nCsma", "number of csma devices", nCsma);
-  cmd.AddValue ("nWifi", "number of wifi devices", nWifi);
+  cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
+  cmd.AddValue ("nWifi", "Number of wifi STA devices", nWifi);
   cmd.Parse (argc,argv);
 
   NodeContainer p2pNodes;
@@ -124,23 +135,29 @@ main (int argc, char *argv[])
   UdpEchoServerHelper echoServer;
   echoServer.SetPort (9);
 
-  ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (5));
+  ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma));
   serverApps.Start (Seconds (1.0));
   serverApps.Stop (Seconds (10.0));
 
   UdpEchoClientHelper echoClient;
-  echoClient.SetRemote (csmaInterfaces.GetAddress (5), 9);
+  echoClient.SetRemote (csmaInterfaces.GetAddress (nCsma), 9);
   echoClient.SetAppAttribute ("MaxPackets", UintegerValue (1));
   echoClient.SetAppAttribute ("Interval", TimeValue (Seconds (1.)));
   echoClient.SetAppAttribute ("PacketSize", UintegerValue (1024));
 
-  ApplicationContainer clientApps = echoClient.Install (wifiStaNodes.Get (3));
+  ApplicationContainer clientApps = 
+    echoClient.Install (wifiStaNodes.Get (nWifi - 1));
   clientApps.Start (Seconds (2.0));
   clientApps.Stop (Seconds (10.0));
 
   GlobalRouteManager::PopulateRoutingTables ();
 
   Simulator::Stop (Seconds (10.0));
+
+  PointToPointHelper::EnablePcap ("third", 
+    wifiStaNodes.Get (nWifi - 1)->GetId (), 0);
+  CsmaHelper::EnablePcap ("third", 
+    csmaNodes.Get (nCsma)->GetId (), 0);
 
   Simulator::Run ();
   Simulator::Destroy ();
