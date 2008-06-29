@@ -108,12 +108,12 @@ look something like the following:
 You are now ready to build the ns-3 distribution.
 
 @section Building and Testing
-@cindex Waf!build
-@cindex Waf!configure
-@cindex Waf!debug
-@cindex Waf!compile
-@cindex Waf!check
-@cindex Waf!regression
+@cindex building with Waf
+@cindex configuring Waf
+@cindex building debug version with Waf
+@cindex compiling with Waf
+@cindex unit tests with Waf
+@cindex regression tests with Waf
 We use Waf to build the ns-3 project.  The first thing you will need to do is 
 to configure the build.  For reasons that will become clear later, we are 
 going to work with debug builds in the tutorial.  To explain to Waf that it
@@ -170,7 +170,7 @@ most important is the last one,
   Compilation finished successfully
 @end verbatim
 
-@cindex tests|unit
+@cindex unit tests
 You can run the unit tests of the ns-3 distribution by running the ``check''
 command,
 
@@ -197,7 +197,7 @@ test has passed.
   ~/repos/ns-3-dev >
 @end verbatim
 
-@cindex tests|regression
+@cindex regression tests
 This command is typically run by @code{users} to quickly verify that an ns-3
 distribution has built correctly.  
 
@@ -250,7 +250,7 @@ pointer to the offending trace file and its associated reference trace file
 along with a suggestion on how to run diff in order to see what has gone awry.
 
 @section Running a Script
-@cindex Waf!run
+@cindex running a script with Waf
 We typically run scripts under the control of Waf.  This allows the build 
 system to ensure that the shared library paths are set correctly and that
 the libraries are available at run time.  To run a program, simply use the

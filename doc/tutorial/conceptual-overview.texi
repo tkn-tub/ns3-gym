@@ -39,7 +39,7 @@ intentionally do not use the term host since it is closely associated with
 the Internet and its protocols.  Instead, we use a more generic term also
 used by other simulators that originates in Graph Theory --- the @emph{node}.
 
-@cindex Node!class
+@cindex class Node
 In ns-3 the basic computing device abstraction is called the 
 node.  This abstraction is represented in C++ by the class @code{Node}.  The 
 @code{Node} class provides methods for managing the representations of 
@@ -74,7 +74,7 @@ idea of an application.  Just as software applications run on computers to
 perform tasks in the ``real world,'' ns-3 applications run on
 ns-3 @code{Node}s to drive simulations in the simulated world.
 
-@cindex Application!class
+@cindex class Application
 In ns-3 the basic abstraction for a user program that generates some
 activity to be simulated is the application.  This abstraction is represented 
 in C++ by the class @code{Application}.  The @code{Application} class provides 
@@ -145,7 +145,7 @@ Just as an Ethernet NIC is designed to work with an Ethernet network, the
 @subsection Topology Helpers
 @cindex helper
 @cindex topology
-@cindex helper|topology
+@cindex topology helper
 In a real network, you will find host computers with added (or built-in)
 NICs.  In ns-3 we would say that you will find @code{Nodes} with 
 attached @code{NetDevices}.  In a large simulated network you will need to 

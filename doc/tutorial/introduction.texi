@@ -230,8 +230,9 @@ You will find user and developer FAQs there as well as troubleshooting guides,
 third-party contributed code, papers, etc. The source code may be found 
 and browsed at @uref{http://code.nsnam.org/}. 
 
-@cindex repository!ns-3-dev
-@cindex repository!releases
+@cindex mercurial repository
+@cindex ns-3-dev repository
+@cindex release repository
 There you will find the current development tree in the repository named
 @code{ns-3-dev}. Past releases and experimental repositories of the core
 developers may also be found there.

@@ -17,6 +17,7 @@
 
 @menu
 * Building a Bus Network Topology
+* Building a Wireless Network Topology
 @end menu
 
 @c ========================================================================
@@ -26,7 +27,7 @@
 @section Building a Bus Network Topology
 
 @cindex topology
-@cindex topology|star
+@cindex bus network topology
 In this section we are going to expand our mastery of ns-3 network devices and
 channels to cover an example of a bus network.  Ns-3 provides a net device and 
 channel we call CSMA (Carrier Sense Multiple Access).
@@ -541,3 +542,721 @@ rightmost CSMA device which is where the echo server resides.
 
 
 
+
+
+
+
+
+
+
+
+@menu
+* Building a Wireless Network Topology
+@end menu
+
+@c ========================================================================
+@c Building a Wireless Network Topology
+@c ========================================================================
+@node Building a Wireless Network Topology
+@section Building a Wireless Network Topology
+
+@cindex topology
+@cindex wireless network topology
+In this section we are going to further expand our knowledge of ns-3 network
+devices and channels to cover an example of a wireless network.  Ns-3 provides
+a set of 802.11 models that attempt to provide an accurate MAC-level 
+implementation of the 802.11 specification a ``not-so-slow'' PHY-level model 
+of the 802.11a specification.
+
+Just as we have seen both point-to-point and CSMA topology helper objects when
+constructing point-to-point topologies, we will see equivalent @code{Wifi}
+topology helpers in this section.  The appearance and operation of these 
+helpers should look quite familiar to you.
+
+We provide an example script in our @code{examples} directory.  This script
+builds on the @code{second.cc} script and adds a Wifi network.  Go ahead and
+open @code{examples/third.cc} in your favorite editor.  You will have already
+seen enough ns-3 code to understand most of what is going on in this example,
+but there are a few new things, so we will go over the entire script and 
+examine some of the output.
+
+Just as in the @code{second.cc} example (and in all ns-3 examples) the file
+begins with an emacs mode line and some GPL boilerplate.
+
+Lets take a look at the ASCII art that shows the default network topology 
+constructed in the example.  
+
+In this case, you can see that we are going to further extend our example 
+by hanging a wireless network off of the left side.  Notice that this is the 
+default network topology since you can actually vary the number of nodes 
+created on the wired and wireless networks.  Just as in the @code{sedond.cc}
+case, if you @code{nCsma} will give you a number of ``extra'' CSMA nodes.
+Similarly, you can set @code{nWifi} to control how many @code{STA} (station)
+nodes are created in the simulation.  There will always be one @code{AP}
+(access point) node on the wireless network.  By default there are
+thee ``extra'' CSMA nodes and three wireless @code{STA} nodes as seen below:
+
+The code begins by loading module include files just as was done in the
+@code{second.cc} example.  There are a couple of new includes corresponding
+to the Wifi module and the mobility module which we will discuss below.
+
+@verbatim
+#include ``ns3/core-module.h''
+#include ``ns3/simulator-module.h''
+#include ``ns3/node-module.h''
+#include ``ns3/helper-module.h''
+#include ``ns3/global-routing-module.h''
+#include ``ns3/wifi-module.h''
+#include ``ns3/mobility-module.h''
+@end verbatim
+
+The network topology illustration follows:
+
+@verbatim
+  // Default Network Topology
+  //
+  //   Wifi 10.1.3.0
+  //                 AP
+  //  *    *    *    *
+  //  |    |    |    |    10.1.1.0
+  // n5   n6   n7   n0 -------------- n1   n2   n3   n4
+  //                   point-to-point  |    |    |    |
+  //                                   ================
+  //                                     LAN 10.1.2.0
+@end verbatim
+
+You can see that we are adding a new network device to the left side of the 
+point-to-point link that becomes the access point for the wireless network.
+A number of wireless STA nodes are created to fill out the new 10.1.3.0
+network as shown on the far left side of the illustration.
+
+After the illustration, the ns-3 namespace is @code{used} and a logging
+component is defined.  This should all be quite familiar by now.
+
+@verbatim
+  using namespace ns3;
+  
+  NS_LOG_COMPONENT_DEFINE ("ThirdScriptExample");
+@end verbatim
+
+As has become the norm in this tutorial, the main program begins by enabling
+the @code{UdpEchoClientApplication} and @code{UdpEchoServerApplication} 
+logging components at @code{INFO} level so we can see some output when we run
+the simulation.
+
+@verbatim
+  int
+  main (int argc, char *argv[])
+  {
+    LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
+    LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
+@end verbatim
+
+Next, you will see more familiar code that will allow you to change the number
+of devices on the CSMA and Wifi networks via command line argument.
+
+@verbatim
+  uint32_t nCsma = 3;
+  uint32_t nWifi = 3;
+  CommandLine cmd;
+  cmd.AddValue (``nCsma'', ``Number of \"extra\" CSMA nodes/devices'', nCsma);
+  cmd.AddValue (``nWifi'', ``Number of wifi STA devices'', nWifi);
+  cmd.Parse (argc,argv);
+@end verbatim
+
+Just as in all of the previous examples, the next step is to create two nodes
+that we will connect via the point-to-point link.  
+
+@verbatim
+  NodeContainer p2pNodes;
+  p2pNodes.Create (2);
+@end verbatim
+
+Next, we see an old friend.  We instantiate a @code{PointToPointHelper} and 
+set the associated default attributes so that we create a five megabit per 
+second transmitter on devices created using the helper and a two millisecond 
+delay on channels created by the helper.  We then @code{Intall} the devices
+on the nodes and the channel between them.
+
+@verbatim
+  PointToPointHelper pointToPoint;
+  pointToPoint.SetDeviceParameter ("DataRate", StringValue ("5Mbps"));
+  pointToPoint.SetChannelParameter ("Delay", StringValue ("2ms"));
+
+  NetDeviceContainer p2pDevices;
+  p2pDevices = pointToPoint.Install (p2pNodes);
+@end verbatim
+
+Next, we delare another @code{NodeContainer} to hold the nodes that will be
+part of the bus (CSMA) network.  First we just instantiate the container
+object itself.  
+
+@verbatim
+  NodeContainer csmaNodes;
+  csmaNodes.Add (p2pNodes.Get (1));
+  csmaNodes.Create (nCsma);
+@end verbatim
+
+The next line of code @code{Get}s the first node (as in having an index of one)
+from the point-to-point node container and adds it to the container of nodes
+that will get CSMA devices.  The node in question is going to end up with a 
+point-to-point device and a CSMA device.  We then create a number of ``extra''
+nodes that compose the remainder of the CSMA network.
+
+We then instantiate a @code{NetDeviceContainer} to keep track of the 
+point-to-point net devices and we install devices on the point-to-point 
+nodes.
+
+The next piece of code creates and connects CSMA devices and channels as we
+have previously seen.
+
+@verbatim
+  CsmaHelper csma;
+
+  NetDeviceContainer csmaDevices;
+  csmaDevices = csma.Install (csmaNodes);
+@end verbatim
+
+Next, we are going to create the nodes that will be part of the Wifi network.
+We are going to create a number  ``station'' nodes as specified by the command
+line argument, and we are going to use the ``leftmost'' node of the 
+point-to-point link as the node for the access point.
+
+@verbatim
+  NodeContainer wifiStaNodes;
+  wifiStaNodes.Create (nWifi);
+  NodeContainer wifiApNode = p2pNodes.Get (0);
+@end verbatim
+
+The next bit of code is going to be quite different from the helper-based
+topology generation we've seen so far, so we're going to take it line-by-line
+for a while.  The next line of code you will see is:
+
+@verbatim
+  Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
+@end verbatim
+
+Now, I'm not going to explain at this stage precisely what this all means, but
+hopefully with a very short digression I can give you enough information so
+that this makes sense.
+
+C++ is an object oriented programming language.  Ns-3 extends the basic C++
+object model to implement a number of nifty features.  We have seen the 
+@code{Attribute} system which is one of the major extensions we have 
+implemented.  Another extension is to provide for relatively automatic memory 
+management.  Like many systems, ns-3 creates a base class called @code{Object}
+that provides our extensions ``for free'' to other classes that inherit from 
+our @code{class Object}.  
+
+In the code snipped above, the right hand side of the expression is a 
+call to a templated C++ function called @code{CreateObject}.  The 
+@emph{template parameter} inside the angle brackets basically tells the 
+compiler what class it is we want to instantiate.  Our system returns a
+@emph{smart pointer} to the object of the class that was created and assigns
+it to the smart pointer called @code{channel} that is declared on the left 
+hand side of the assignment.
+
+The ns-3 smart pointer is also template-based.  Here you see that we declare
+a smart pointer to a @code{WifiChannel} which is the type of object that was
+created in the @code{CreateObject} call.  The feature of immediate interest
+here is that we never delete the underlying C++ object.  It is  handled 
+automatically for us.
+
+The idea to take away from this discussion is that this line of code creates
+an ns-3 @code{Object} that will automatically bring you the benefits of the 
+ns-3 @code{Attribute} system we've seen previously.  The resulting smart
+pointer works with the @code{Object} to perform memory management automatically
+for you.  If you are interested in more details about low level ns-3 code and
+exactly what it is doing, you are encouraged to explore the ns-3 manual and
+our ``how-to'' documents.
+
+Now, back to the example.  The line of code above has created a wireless
+@code{Wifi} channel.  This channel model requires that we create and attach 
+other models that describe various behaviors.  This provides an accomplished
+user with the opportunity to change the way the wireless network behaves
+without changing the core code.
+
+The first opportunity we have to change the behavior of the wireless network is
+by providing a propagation delay model.  Again, I don't want to devolve this
+tutorial into a manual on @code{Wifi}, but this model describes how the EM 
+signals are going to propagate.  We are going to create the simplest model,
+the @code{ConstantSpeedPropagationDelayModel} that, by default, has the 
+signals propagating at a constant speed --- that of the speed of light in a
+vacuum.
+
+Recall that we created the @code{WifiChannel} and assigned it to a smart 
+pointer.  One of the features of a smart pointer is that you can use it
+just as you would a ``normal'' C++ pointer.  The next line of code will
+create a @code{ConstantSpeedPropagationDelayModel} using the 
+@code{CreateObject} template function and pass the resulting smart pointer
+to the model as an unnamed parameter to the 
+@code{WifiChannel SetPropagationDelayModel} method.
+
+@verbatim
+  channel->SetPropagationDelayModel (
+    CreateObject<ConstantSpeedPropagationDelayModel> ());
+@end verbatim
+
+The next lines of code use similar low-level ns-3 methods to create and set
+a ``propagation loss model'' for the channel.  
+
+@verbatim
+  Ptr<LogDistancePropagationLossModel> log =
+    CreateObject<LogDistancePropagationLossModel> ();
+
+  log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
+
+  channel->SetPropagationLossModel (log);
+@end verbatim
+
+This snippet tells the channel how it should calculate signal attenuation 
+of a signal.  The details of these calcuations are beyond the scope of a
+tutorial.  You are encouraged to explore the Doxygen documentation of classes 
+@code{LogDistancePropagationLossModel} and
+@code{FriisPropagationLossModel} if you are interested in the details.  You
+will find the documentation in the ``Classes'' tab of the Doxygen page.
+
+Now we will return to more familiar ground.  We next create a @code{WifiHelper}
+object and set two default atributes taht it will use when creating the actual
+devices.
+
+@verbatim
+  WifiHelper wifi;
+  wifi.SetPhy ("ns3::WifiPhy");
+  wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
+@end verbatim
+
+The @code{SetPhy} method tells the helper the type of physical layer class to
+instantiate when building @code{Wifi} devices.  In this case, it is asking 
+for physical layer models based on the YANS 802.11a model.  Again, details
+are avialable in Doxygen.
+
+The @code{SetRemoteStationManager} method tells the helper the type of 
+rate control algorithm.  Here, it is asking the helper to use the AARF
+algorithm --- details are, of course, avialable in Doxygen.
+
+Just as we could vary attributes describing the physical layer, we can do the
+same for the MAC layer.
+
+@verbatim
+  Ssid ssid = Ssid ("ns-3-ssid");
+  wifi.SetMac ("ns3::NqstaWifiMac",
+    "Ssid", SsidValue (ssid),
+    "ActiveProbing", BooleanValue (false));
+@end verbatim
+
+This code first creates an 802.11 service set identifier (SSID) object that 
+will be used to set the value of the ``Ssid'' @code{Attribute} of the MAC
+layer implementation.  The particular kind of MAC layer is specified by
+Attribute as being of the "ns3::NqstaWifiMac" type.  This means that the MAC
+will use a ``non-QoS station'' (nqsta) state machine.  Finally, the 
+``ActiveProbing'' attribute is set to false.  This means that probe requests
+will not be sent by MACs created by this helper.
+
+Again, for the next lines of code we are back on familiar ground.  This code
+will @code{Install} Wifi net devices on the nodes we have created as STA nodes
+and will tie them to the @code{WifiChannel} we created manually.
+
+@verbatim
+  NetDeviceContainer staDevices;
+  staDevices = wifi.Install (wifiStaNodes, channel);
+@end verbatim
+
+We have now configured Wifi for all of our STA nodes, and now we need to 
+configure the AP (access point) node.  We begin this process by changing
+the default @code{Attributes} to reflect the requirements of the AP.
+
+@verbatim
+  wifi.SetMac ("ns3::NqapWifiMac", 
+    "Ssid", SsidValue (ssid),
+    "BeaconGeneration", BooleanValue (true),
+    "BeaconInterval", TimeValue (Seconds (2.5)));
+@end verbatim
+
+In this case, the @code{WifiHelper} is going to create MAC layers of the 
+``ns3::NqapWifiMac'' (Non-Qos Access Point) type.  We set the 
+``BeaconGeneration'' attribute to true and also set an interval between 
+beacons.
+
+The next lines create the single AP and connect it to the channel.
+
+@verbatim
+  NetDeviceContainer apDevices;
+  apDevices = wifi.Install (wifiApNode, channel);
+@end verbatim
+
+Now, we are going to add mobility models.  We want the STA nodes to be mobile,
+wandering around inside a bounding box and we want to make the AP node 
+stationary.  We use a @code{MobilityHelper} to make this easy for us.
+
+First, we instantiate a @code{MobilityHelper} obejct and set some attributes
+controlling the ``position allocator'' functionality.
+
+@verbatim
+  MobilityHelper mobility;
+
+  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
+    "MinX", DoubleValue (0.0),
+    "MinY", DoubleValue (0.0),
+    "DeltaX", DoubleValue (5.0),
+    "DeltaY", DoubleValue (10.0),
+    "GridWidth", UintegerValue (3),
+    "LayoutType", StringValue ("RowFirst"));
+@end verbatim
+
+This code tells the mobility helper to use a two-dimensional grid to initially
+place the STA nodes.  Feel free to explore the Doxygen for class 
+@code{ns3::GridPositionAllocator} to see exactly what is being done.
+
+We have aranged our nodes on an initial grid, but now we need to tell them
+how to move.  We choose the @code{RandomWalk2dMobilityModel} which has the 
+nodes move in a random direction at a random speed around the bounding box.
+
+@verbatim
+  mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
+    "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)));
+@end verbatim
+
+We now tell the @code{MobilityHelper} to install the mobility models on the 
+STA nodes.
+
+@verbatim
+  mobility.Install (wifiStaNodes);
+@end verbatim
+
+We wanted the access point to remain in a fixed position during the simulation.
+We accomplish this by setting the mobility model for this node to be the 
+@code{ns3::StaticMobilityModel}:
+
+@verbatim
+  mobility.SetMobilityModel (``ns3::StaticMobilityModel'');
+  mobility.Install (wifiApNode);
+@end verbatim
+
+We now have our nodes, devices and channels created, and mobility models 
+chosen for the Wifi nodes, but we have no protocol stacks present.  Just as 
+previously, we will use the @code{InternetStackHelper} to install these stacks.
+
+@verbatim
+  InternetStackHelper stack;
+  stack.Install (csmaNodes);
+  stack.Install (wifiApNode);
+  stack.Install (wifiStaNodes);
+@end verbatim
+
+Just as in the @code{second.cc} example script, we are going to use the 
+@code{Ipv4AddressHelper} to assign IP addresses to our device interfaces.
+First we use the network 10.1.1.0 to create the two addresses needed for our
+two point-to-point devices.  Then we use network 10.1.2.0 to assign addresses
+the the CSMA network and then we assign addresses from network 10.1.3.0 to
+both the STA devices and the AP on the wireless network.
+
+@verbatim
+  Ipv4AddressHelper address;
+
+  address.SetBase ("10.1.1.0", "255.255.255.0");
+  Ipv4InterfaceContainer p2pInterfaces;
+  p2pInterfaces = address.Assign (p2pDevices);
+
+  address.SetBase ("10.1.2.0", "255.255.255.0");
+  Ipv4InterfaceContainer csmaInterfaces;
+  csmaInterfaces = address.Assign (csmaDevices);
+
+  address.SetBase ("10.1.3.0", "255.255.255.0");
+  address.Assign (staDevices);
+  address.Assign (apDevices);
+@end verbatim
+
+Recall that we save the created interfaces in a container to make it easy to
+pull out addressing information later.
+
+We then need to assign IP addresses to our CSMA device interfaces.  The 
+operation works just as it did for the point-to-point case, except we now
+are performing the operation on a container that has a variable number of 
+CSMA devices --- remember we made that number changeable by command line 
+argument.  So the CSMA devices will be associated with IP addresses from 
+network number 10.1.2.0 in this case.
+
+@verbatim
+  address.SetBase ("10.1.2.0", "255.255.255.0");
+  Ipv4InterfaceContainer csmaInterfaces;
+  csmaInterfaces = address.Assign (csmaDevices);
+@end verbatim
+
+We put the echo server on the ``rightmost'' node in the illustration at the
+start of the file:
+
+@verbatim
+  UdpEchoServerHelper echoServer;
+  echoServer.SetPort (9);
+
+  ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma));
+  serverApps.Start (Seconds (1.0));
+  serverApps.Stop (Seconds (10.0));
+@end verbatim
+
+And we put the echo client on the last STA node we created, pointing it to
+the server on the CSMA network.
+
+@verbatim
+  UdpEchoClientHelper echoClient;
+  echoClient.SetRemote (csmaInterfaces.GetAddress (nCsma), 9);
+  echoClient.SetAppAttribute (``MaxPackets'', UintegerValue (1));
+  echoClient.SetAppAttribute (``Interval'', TimeValue (Seconds (1.)));
+  echoClient.SetAppAttribute (``PacketSize'', UintegerValue (1024));
+
+  ApplicationContainer clientApps =
+    echoClient.Install (wifiStaNodes.Get (nWifi - 1));
+  clientApps.Start (Seconds (2.0));
+  clientApps.Stop (Seconds (10.0));
+@end verbatim
+
+Since we have built an internetwork here, we need enable internetwork routing.
+
+@verbatim
+  GlobalRouteManager::PopulateRoutingTables ();
+@end verbatim
+
+One thing that can surprise some users is the fact that the simulation we just
+created will never ``naturally'' stop.  This is because we asked the wireless
+access point to generate beacons.  It will generate beacons forever, so we must
+tell the simulator to stop even though it may have beacon generation events 
+scheduled.  The following line of code tells the simulator to stop so that 
+we don't simulate beacons forever.
+
+@verbatim
+  Simulator::Stop (Seconds (10.0));
+@end verbatim
+
+We use the same trick as in the @code{second.cc} script to only generate 
+pcap traces from the nodes we find interesting.  Note that we use the same
+``formula'' to get pcap tracing enabled on Wifi devices:
+
+@verbatim
+  WifiHelper::EnablePcap (``third'',
+    wifiStaNodes.Get (nWifi - 1)->GetId (), 0);
+  CsmaHelper::EnablePcap (``third'',
+    csmaNodes.Get (nCsma)->GetId (), 0);
+@end verbatim
+
+Finally, we actually run the simulation call the @code{Simulator::Destroy} 
+method to clean up and then exit the program.
+
+@verbatim
+    Simulator::Run ();
+    Simulator::Destroy ();
+    return 0;
+  }
+@end verbatim
+
+In order to run this example, you have to copy the @code{third.cc} example
+script into the scratch directory and use waf to build just as you did with
+the @code{second.cc} example.  If you are in the top-level directory of the
+repository you would type,
+
+@verbatim
+  cp examples/third.cc scratch/
+  ./waf
+  ./waf --run scratch/third
+@end verbatim
+
+Since we have set up the UDP echo applications just as we did in the 
+@code{second.cc} script, you will see similar output.
+
+@verbatim
+  ~/repos/ns-3-dev > ./waf --run scratch/third
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
+  Compilation finished successfully
+  Sent 1024 bytes to 10.1.2.4
+  Received 1024 bytes from 10.1.3.3
+  Received 1024 bytes from 10.1.2.4
+  ~/repos/ns-3-dev >
+@end verbatim
+
+Recall that the first message, @code{Sent 1024 bytes to 10.1.2.4} is the 
+UDP echo client sending a packet to the server.  In this case, the server
+is on the wireless network (10.1.3.0).  The second message, 
+@code{Received 1024 bytes from 10.1.3.3}, is from the UDP echo server, 
+generated when it receives the echo packet.  The final message, 
+@code{Received 1024 bytes from 10.1.2.4} is from the echo client, indicating
+that it has received its echo back from the server.
+
+If you now go and look in the top level directory, you will find two trace 
+files:
+
+@verbatim
+  ~/repos/ns-3-dev > ls *.pcap
+  third-4-0.pcap  third-7-0.pcap
+  ~/repos/ns-3-dev >
+@end verbatim
+
+The file ``third-4-0.pcap'' corresponds to node four, device zero.  This is
+the CSMA network node that acted as the echo server.  Take a look at the 
+tcpdump for this device:
+
+@verbatim
+  ~/repos/ns-3-dev > tcpdump -r third-4-0.pcap -nn -tt
+  reading from file third-4-0.pcap, link-type EN10MB (Ethernet)
+  2.005855 arp who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1
+  2.005855 arp reply 10.1.2.4 is-at 00:00:00:00:00:06
+  2.005859 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
+  2.005859 arp who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.4
+  2.005861 arp reply 10.1.2.1 is-at 00:00:00:00:00:03
+  2.005861 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
+  ~/repos/ns-3-dev >
+@end verbatim
+
+This should be easily understood.  If you've forgotten, go back and look at 
+the discussion in @code{second.cc}.  This is the same sequence.
+
+Now, take a look at the other trace file, ``third-7-0.pcap.''  This is the
+trace file for the wireless STA node that acts as the echo client.
+
+@verbatim
+  ~/repos/ns-3-dev > tcpdump -r third-7-0.pcap -nn -tt
+  reading from file third-7-0.pcap, link-type IEEE802_11 (802.11)
+  0.000146 Beacon (ns-3-ssid) ...
+  H: 0
+  0.000180 Assoc Request (ns-3-ssid) ...
+  0.000336 Acknowledgment RA:00:00:00:00:00:07
+  0.000454 Assoc Response AID(0) :: Succesful
+  0.000514 Acknowledgment RA:00:00:00:00:00:0a
+  0.000746 Assoc Request (ns-3-ssid) ...
+  0.000902 Acknowledgment RA:00:00:00:00:00:09
+  0.001020 Assoc Response AID(0) :: Succesful
+  0.001036 Acknowledgment RA:00:00:00:00:00:0a
+  0.001219 Assoc Request (ns-3-ssid) ...
+  0.001279 Acknowledgment RA:00:00:00:00:00:08
+  0.001478 Assoc Response AID(0) :: Succesful
+  0.001538 Acknowledgment RA:00:00:00:00:00:0a
+  2.000000 arp who-has 10.1.3.4 (ff:ff:ff:ff:ff:ff) tell 10.1.3.3
+  2.000172 Acknowledgment RA:00:00:00:00:00:09
+  2.000318 arp who-has 10.1.3.4 (ff:ff:ff:ff:ff:ff) tell 10.1.3.3
+  2.000581 arp reply 10.1.3.4 is-at 00:00:00:00:00:0a
+  2.000597 Acknowledgment RA:00:00:00:00:00:0a
+  2.000693 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
+  2.002229 Acknowledgment RA:00:00:00:00:00:09
+  2.009663 arp who-has 10.1.3.3 (ff:ff:ff:ff:ff:ff) tell 10.1.3.4
+  2.009697 arp reply 10.1.3.3 is-at 00:00:00:00:00:09
+  2.009869 Acknowledgment RA:00:00:00:00:00:09
+  2.011487 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
+  2.011503 Acknowledgment RA:00:00:00:00:00:0a
+  2.500112 Beacon[|802.11]
+  5.000112 Beacon[|802.11]
+  7.500112 Beacon[|802.11]
+  ~/repos/ns-3-dev >
+@end verbatim
+
+You can see that the link type is now 802.11 as you would expect.  We leave
+it as an exercise to parse the dump and trace packets across the internetwork.
+
+Now, we spent a lot of time setting up mobility models for the wireless network
+and so it would be a shame to finish up without even showing that the STA
+nodes are actually moving.  Let's do this by hooking into the 
+@code{MobilityModel} course change trace source.  This is usually considered
+a fairly advanced topic, but let's just go for it.
+
+As mentioned in the Tweaking Ns-3 section, the ns-3 tracing system is divided
+into trace sources and trace sinks, and we provide functions to connect the
+two.  We will use the mobility model predefined course change trace source
+to originate the trace events.  We will need to write a trace sink to connect
+to that source that will display some pretty information for us.  It's really
+quite simple.  Just before the main program of the @code{scratch/third.cc}
+script, add the following function:
+
+@verbatim
+  void
+  CourseChange (std::string context, Ptr<const MobilityModel> model)
+  {
+    Vector position = model->GetPosition ();
+    NS_LOG_UNCOND (context << 
+      " x = " << position.x << ", y = " << position.y);
+  }
+@end verbatim
+
+This code just unconditionally logs the x and y position of the node.  We are
+going to arrange for this function to be called every time the wireless
+node with the echo client changes its position.  We do this using the 
+@code{Config::Connect} function.  Add the following lines of code to the
+script just before the @code{Simulator::Run} call.
+
+@verbatim
+  std::ostringstream oss;
+  oss <<
+    ``/NodeList/'' << wifiStaNodes.Get (nWifi - 1)->GetId () <<
+    ``/$ns3::MobilityModel/CourseChange'';
+
+  Config::Connect (oss.str (), MakeCallback (&CourseChange));
+@end verbatim
+
+What we do here is to create a string containing the tracing namespace path
+to the event we want to connect.  In the case of the default number of CSMA
+and wireless nodes, this turns out to be,
+
+@verbatim
+  /NodeList/7/$ns3::MobilityModel/CourseChange
+@end verbatim
+
+From the discussion in the tracing section, you may recall that references the
+seventh node in the NodeList and looks for what is called an aggregated object
+of type @code{ns3::MobilityModel}.  Then we hook into the ``CourseChange'' 
+event of that model.  We actually connect the trace source in node seven with
+our trace sink --- the function we just added called @code{CourseChange} ---
+by calling @code{Config::Connect}.  Once this is done, every course change
+event on node seven will be hooked into our trace sink, which will print out
+the new position.
+
+If you now run the simulation, you will see the course changes displayed as 
+they happen.
+
+@verbatim
+  ~/repos/ns-3-dev > ./waf --run scratch/third
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
+  Compilation finished successfully
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 10, y = 0
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.1304, y = 0.493761
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.70417, y = 1.39837
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.94799, y = 2.05274
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.82597, y = 1.57404
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.3003, y = 0.723347
+  Sent 1024 bytes to 10.1.2.4
+  Received 1024 bytes from 10.1.3.3
+  Received 1024 bytes from 10.1.2.4
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.74083, y = 1.62109
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.00146, y = 0.655647
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.98731, y = 0.823279
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.50206, y = 1.69766
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.68108, y = 2.26862
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.25992, y = 1.45317
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.55655, y = 0.742346
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.21992, y = 1.68398
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.81273, y = 0.878638
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.83171, y = 1.07256
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.60027, y = 0.0997156
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.45367, y = 0.620978
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.68484, y = 1.26043
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.53659, y = 0.736479
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.51876, y = 0.548502
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.89778, y = 1.47389
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.98984, y = 1.893
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 9.91524, y = 1.51402
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.98761, y = 1.14054
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.16617, y = 0.570239
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.02954, y = 1.56086
+  /NodeList/7/$ns3::MobilityModel/CourseChange x = 8.09551, y = 2.55868
+  ~/repos/ns-3-dev >
+@end verbatim
+
+If you are feeling brave, there is a list of all trace sources in the ns-3
+Doxygen which you can find in the ``NS-3 Modules'' section.  Under the 
+``core'' section, you will find a link to ``The list of all trace sources.''
+You will find a list of all of the trace sources that you can hook to.  You
+may find it interesting to try and hook some of these traces yourself.
+Additionally in the ``NS-3 Modules'' documentation, there is a link to
+``The list of all attributes.''  You can set the default value of any of these
+atributes via the command line as we have previously discussed.
+
+We have just scratched the surface of ns-3 in this tutorial, but we hope we
+have covered enough to get you started doing useful work.
+
+-- The ns-3 development team.
