@@ -20,6 +20,15 @@
 #include "ns3/helper-module.h"
 #include "ns3/global-routing-module.h"
 
+// Default Network Topology
+//
+//       10.1.1.0
+// n0 -------------- n1   n2   n3   n4
+//    point-to-point  |    |    |    |
+//                    ================
+//                      LAN 10.1.2.0
+
+
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("SecondScriptExample");
@@ -30,9 +39,9 @@ main (int argc, char *argv[])
   LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
   LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
 
-  uint32_t nCsma = 10;
+  uint32_t nCsma = 3;
   CommandLine cmd;
-  cmd.AddValue ("nCsma", "number of csma devices", nCsma);
+  cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
   cmd.Parse (argc,argv);
 
   NodeContainer p2pNodes;
@@ -70,12 +79,12 @@ main (int argc, char *argv[])
   UdpEchoServerHelper echoServer;
   echoServer.SetPort (9);
 
-  ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (5));
+  ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma));
   serverApps.Start (Seconds (1.0));
   serverApps.Stop (Seconds (10.0));
 
   UdpEchoClientHelper echoClient;
-  echoClient.SetRemote (csmaInterfaces.GetAddress (5), 9);
+  echoClient.SetRemote (csmaInterfaces.GetAddress (nCsma), 9);
   echoClient.SetAppAttribute ("MaxPackets", UintegerValue (1));
   echoClient.SetAppAttribute ("Interval", TimeValue (Seconds (1.)));
   echoClient.SetAppAttribute ("PacketSize", UintegerValue (1024));
@@ -85,6 +94,9 @@ main (int argc, char *argv[])
   clientApps.Stop (Seconds (10.0));
 
   GlobalRouteManager::PopulateRoutingTables ();
+
+  PointToPointHelper::EnablePcapAll ("second");
+  CsmaHelper::EnablePcapAll ("second");
 
   Simulator::Run ();
   Simulator::Destroy ();

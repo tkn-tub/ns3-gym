@@ -4,12 +4,6 @@ def build(bld):
     obj = bld.create_ns3_program('hello-simulator')
     obj.source = 'hello-simulator.cc'
         
-    obj = bld.create_ns3_program('second')
-    obj.source = 'second.cc'
-        
-    obj = bld.create_ns3_program('third')
-    obj.source = 'third.cc'
-        
     obj = bld.create_ns3_program('mixed-wireless',
         ['core', 'simulator', 'mobility', 'wifi', 'point-to-point', 'internet-stack'])
     obj.source = 'mixed-wireless.cc'
