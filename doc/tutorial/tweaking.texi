@@ -32,7 +32,8 @@ We have already taken a brief look at the ns-3 logging module while going
 over the @code{first.cc} script.  We will now take a closer look and see what
 kind of use-cases the logging subsystem was designed to cover.
 
-@section Logging Overview
+@node Logging Overview
+@subsection Logging Overview
 Many large systems support some kind of message logging facility, and ns-3
 is not an exception.  In some cases, only error messages are logged to the 
 ``operator console'' (which is typically @code{stderr} in Unix-based systems).
@@ -83,7 +84,8 @@ Now that you have read the documentation in great detail, we can get some
 interesting information out of the @code{first.cc} example script you dropped
 in the scratch directory after the script walkthrough.
 
-@section Enabling Logging Using the NS_LOG Environment Variable
+@node Enabling Logging
+@subsection Enabling Logging Using the NS_LOG Environment Variable
 @cindex NS_LOG
 First, let's use the NS_LOG environment variable to turn on some more logging
 in the @code{first.cc} script you have already built.  Go ahead and run the
@@ -323,7 +325,8 @@ transition into a debugger for fine-grained examination of the problem.  This
 output can be especially useful when your script does something completely 
 unexpected.
 
-@section Adding Logging to your Code
+@node Adding Logging to your Code
+@subsection Adding Logging to your Code
 @cindex NS_LOG
 You can add new logging to your simulations by making calls to the log 
 component via several macros.  Let's do so in the @code{first.cc} script we
@@ -390,7 +393,7 @@ with component name and simulation time.
 @node Using Command Line Arguments
 @section Using Command Line Arguments
 
-@section Overriding Default Attributes
+@subsection Overriding Default Attributes
 @cindex arguments|command line
 Another way you can change the way that ns-3 scripts behave without editing
 and building scripts is via @emph{command line arguments.}  We provide a 
