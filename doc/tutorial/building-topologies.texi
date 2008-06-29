@@ -435,8 +435,8 @@ to find the entries corresponding to the packet returning back on its way to
 the client (we have already dumped the traces and you can find them in those
 tcpdumps above.
 
-Finally, let's take a look at one of the CSMA nodes that wasn't involved in
-the packet exchange:
+Let's take a look at one of the CSMA nodes that wasn't involved in the packet 
+exchange:
 
 @verbatim
   ~/repos/ns-3-dev > tcpdump -r second-2-0.pcap -nn -tt
@@ -449,4 +449,95 @@ the packet exchange:
 You can see that the CSMA channel is a broadcast medium and so all of the 
 devices see the ARP requests involved in the packet exchange.  The remaining
 pcap trace will be identical to this one.
+
+Finally, recall that we added the ability to control the number of CSMA devices
+in the simulation by command line argument.  You can change this argument in
+the same way as when we looked at changing the number of packets echoed in the
+@code{first.cc} example.  Try setting the number of ``extra'' devices to four:
+
+@verbatim
+  ~/repos/ns-3-dev > ./waf --run "scratch/second --nCsma=4"
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
+  Compilation finished successfully
+  Sent 1024 bytes to 10.1.2.5
+  Received 1024 bytes from 10.1.1.1
+  Received 1024 bytes from 10.1.2.5
+  ~/repos/ns-3-dev >
+@end verbatim
+
+Notice that the echo server has now been relocated to the last of the CSMA
+nodes, which is 10.1.2.5 instead of the default case, 10.1.2.4.  You can 
+increase the number to your hearts content, but remember that you will get a
+pcap trace file for every node in the simulation.  One thing you can do to
+keep from getting all of those pcap traces with nothing but ARP exchanges in 
+them is to be more specific about which nodes and devices you want to trace.
+
+Let's take a look at @code{scratch/second.cc} and be more specific about which
+nodes and devices we want to trace.  The file we provide uses the 
+@code{EnablePcapAll} methods of the helpers to enable pcap on all devices.  
+We want to use the more specific method, @code{EnablePcap}, which takes
+a node number and device number as parameters.  Go ahead and replace the 
+@code{EnablePcapAll} calls with the calls below.
+
+@verbatim
+  PointToPointHelper::EnablePcap ("second", p2pNodes.Get (0)->GetId (), 0);
+  CsmaHelper::EnablePcap ("second", csmaNodes.Get (nCsma)->GetId (), 0);
+@end verbatim
+
+We know that we want to create a pcap file with the base name "second" and
+we also know that the device of interest in both cases is going to be zero,
+so those parameters are not really interesting.  In order to get the node
+number, you have two choices:  first, nodes are numbered in a monotonically
+increasing fashion starting from zero in the order in which you created them.
+One way to get a node number to pass to the helper is to figure this number
+out ``manually.''  If you take a look at the network topology illustration at
+the beginning of the file, you can see that the last CSMA node is going to be
+node number code{nCsma + 1}.  This can become annoyingly difficult in larger
+simulations.  An alternate way, which we use here, is to realize that the
+@code{NodeContainer}s contain pointers to ns-3 @code{Node} Objects.  The
+@code{Node} Object has a method called @code{GetId} which will return that
+node's ID.  Let's go take a look at the Doxygen for the @code{Node} and locate
+that method, which is further down in the code than we've seen so far.
+
+Go to the Doxygen documentation for your release (recall that you can find it
+on the project web site).  You can get to the @code{Node} documentation by
+looking through at the ``Classes'' tab in and scrolling down to 
+@code{ns3::Node} in the list.  Select @code{ns3::Node} and you will be taken
+to the documentation for the @code{Node} class.  If you now scroll down to the
+@code{GetId} method and select it, you will be taken to the detailed 
+documentation for the method.  Using the @code{GetId} method can make 
+determining node numbers much easier in complex topologies.
+
+Now that we have got some trace filtering in place, it is reasonable to start
+increasing the number of CSMA devices in our simulation.  If you run the 
+simulation setting @code{nCsma} to 100, you will see the following:
+
+@verbatim
+  ~/repos/ns-3-dev > ./waf --run "scratch/second --nCsma=100"
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
+  Compilation finished successfully
+  Sent 1024 bytes to 10.1.2.101
+  Received 1024 bytes from 10.1.1.1
+  Received 1024 bytes from 10.1.2.101
+  ~/repos/ns-3-dev >
+@end verbatim
+
+Note that the echo server is now located at 10.1.2.101 which corresponds to
+100 ``extra'' CSMA nodes with the echo server on the last one.  If you list
+the pcap files in the top level directory,
+
+@verbatim
+  ~/repos/ns-3-dev > ls *.pcap
+  second-0-0.pcap  second-101-0.pcap
+  ~/repos/ns-3-dev >
+@end verbatim
+
+you will see that we have, in fact, only created two trace files.  The trace
+file @code{second-0-0.pcap} is the ``leftmost'' point-to-point device which is
+the echo packet source.  The file @code{second-101-0.pcap} corresponds to the
+rightmost CSMA device which is where the echo server resides.
+
+
+
+
 
