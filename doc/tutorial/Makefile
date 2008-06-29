@@ -45,5 +45,5 @@ figures-clean:
 	cd figures/; rm -rf $(DIA_EPS); rm -rf $(DIA_PNG); rm -rf $(DIA_PDF)
 	cd figures/; rm -rf $(TGIF_EPS); rm -rf $(TGIF_PNG); rm -rf $(TGIF_PDF)
 
-clean: figures-clean
+clean: # figures-clean
 	rm -rf tutorial.aux tutorial.cp tutorial.cps tutorial.fn tutorial.ky tutorial.pg tutorial.tp tutorial.vr tutorial.toc tutorial.log tutorial.pdf tutorial.html tutorial/ 
