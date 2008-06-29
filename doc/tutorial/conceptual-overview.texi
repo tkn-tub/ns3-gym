@@ -11,7 +11,7 @@
 @c ========================================================================
 @c Some Conceptual Overview
 @c ========================================================================
-@node Conceptual Overveiw
+@node Conceptual Overview
 @chapter Conceptual Overview
 
 @menu
@@ -167,7 +167,7 @@ to compose those distinct operations into an easy to use model.
 @c A First ns-3 script
 @c ========================================================================
 @node A First ns-3 Script
-@chapter A First ns-3 script
+@chapter A First ns-3 Script
 @cindex first script
 If you downloaded the system as was suggested above, you will have a release
 of ns-3 in a directory called @code{repos} under your home directory.  Change

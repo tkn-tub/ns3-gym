@@ -7,10 +7,11 @@
 
 @ifinfo
 Primary documentation for the @command{ns-3} project is available in
-three forms:
+four forms:
 @itemize @bullet
 @item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen/Manual}:  Documentation of the public APIs of the simulator
 @item Tutorial (this document)
+@item @uref{http://www.nsnam.org/docs/manual.html,,Reference Manual}:  Reference Manual
 @item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
 @end itemize
 
@@ -24,10 +25,11 @@ the document should be discussed on the ns-developers@@isi.edu mailing list.
 
 This is an @command{ns-3} tutorial.
 Primary documentation for the @command{ns-3} project is available in
-three forms:
+four forms:
 @itemize @bullet
 @item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen/Manual}:  Documentation of the public APIs of the simulator
 @item Tutorial (this document)
+@item @uref{http://www.nsnam.org/docs/manual.html,,Reference Manual}:  Reference Manual
 @item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
 @end itemize
  
@@ -77,9 +79,12 @@ see @uref{http://www.nsnam.org/docs/tutorial.pdf}.
 
 @menu
 * Introduction::
-* Geting Started::
+* Browsing ns-3::
+* Resources::
+* Getting Started::
 * Conceptual Overview::
-* Tweaking Ns-3::
+* A First ns-3 Script::
+* Tweaking ns-3::
 * Building Topologies::
 @end menu
 

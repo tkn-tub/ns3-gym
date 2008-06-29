@@ -4,16 +4,16 @@
 @c ========================================================================
 
 @c ========================================================================
-@c PART:  Tweaking Ns-3
+@c PART:  Tweaking ns-3
 @c ========================================================================
-@c The below chapters are under the major heading "Tweaking Ns-3"
+@c The below chapters are under the major heading "Tweaking ns-3"
 @c This is similar to the Latex \part command
 @c
 @c ========================================================================
-@c Tweaking Ns-3
+@c Tweaking ns-3
 @c ========================================================================
-@node Tweaking Ns-3
-@chapter Tweaking Ns-3
+@node Tweaking ns-3
+@chapter Tweaking ns-3
 
 @menu
 * Using the Logging Module::
@@ -40,7 +40,7 @@ In other systems, warning messages may be output as well as more detailed
 informational messages.  In some cases, logging facilities are used to output
 debug messages which can quickly turn the output into a blur.
 
-Ns-3 takes the view that all of these verbosity levels are useful and se
+ns-3 takes the view that all of these verbosity levels are useful and se
 provides a selectable, multi-level approach to message logging.  Logging can
 be disabled completely, enabled on a component-by-component basis, enabled
 globally and has selectable verbosity levels.  The ns-3 log module provides
@@ -736,7 +736,7 @@ extending the tracing namespace and creating new tracing sources.
 @cindex tracing
 @cindex tracing|ASCII
 @subsection ASCII Tracing
-Ns-3 provides an ASCII trace helper that is a wrapper around low-level 
+ns-3 provides an ASCII trace helper that is a wrapper around low-level 
 tracing system.  This helper lets you configure some useful and easily
 understood packet traces easily.  The output of a trace of a simulation run 
 is an ASCII file --- thus the name.  For those familiar with @command{ns-2} 
