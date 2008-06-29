@@ -304,7 +304,7 @@ def build(bld):
     print "Entering directory `%s'" % os.path.join(Params.g_build.m_curdirnode.abspath(), 'build')
     # process subfolders from here
     bld.add_subdirs('src')
-    bld.add_subdirs('samples utils examples tutorial')
+    bld.add_subdirs('samples utils examples')
 
     add_scratch_programs(bld)
 
