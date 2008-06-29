@@ -24,14 +24,14 @@
 The ns-3 simulator is a discrete-event network simulator targeted primarily 
 for research and educational use.  The 
 @uref{http://www.nsnam.org,,ns-3 project}, 
-started in 2006, is an open-source project.  The goal of the project is to
-build a new network simulator primarily for research and educational use.  
+started in 2006, is an open-source project developing ns-3.
 
-Primary documentation for the ns-3 project is available in three forms:
+Primary documentation for the ns-3 project is available in four forms:
 @itemize @bullet
 @item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen/Manual}:  
 Documentation of the public APIs of the simulator
 @item Tutorial (this document)
+@item @uref{http://www.nsnam.org/docs/manual.html,,Reference Manual}:  Reference Manual
 @item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
 @end itemize
 
@@ -96,7 +96,7 @@ page
 started with the simulator (please contact @uref{http://www.nsnam.org/people.html,,one of us})
 @end itemize  
 
-If you are an ns user, please consider providing your feedback, bug fixes, or
+If you are an ns-3 user, please consider providing your feedback, bug fixes, or
 code to the project.  
 
 @node Tutorial Organization
@@ -174,11 +174,6 @@ click on the @code{file} link, you will be sent to the source file for
 Example scripts are in the @code{examples} directory.  The @code{examples}
 directory is a good place to start browsing the code.
 
-For ns-2 users, who may be familiar with the @code{simple.tcl} example script
-in the ns-2 documentation, an analogous script is found in 
-@code{examples/simple-point-to-point.cc} with a Python equivalent found
-in @emph{(pending Python merge)}. 
-
 @node Doxygen
 @section Doxygen
 
@@ -190,7 +185,7 @@ look.
 @section Other Documentation
 
 We provide a large amount of documentation regarding the various components
-of ns-2 on our website.  See:  @uref{http://www.nsnam.org/documents.html}.
+of ns-3 on our website.  See:  @uref{http://www.nsnam.org/documents.html}.
 
 @c ========================================================================
 @c Resources
@@ -284,7 +279,7 @@ only have to understand a tiny and intuitively obvious subset of Python in
 order to extend the system in most cases.
 
 For those interested in the gory details of Waf, the main web site can be 
-found at @uref{http://freehackers.org/\~tnagy/waf.html}.
+found at @uref{http://freehackers.org/~tnagy/waf.html}.
 
 @node Environment Idioms Design Patterns
 @section Environment, Idioms, and Design Patterns

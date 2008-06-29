@@ -17,6 +17,9 @@
 
 @menu
 * Downloading and Compiling ns-3::
+* Downloading::
+* Building and Testing::
+* Running a Script::
 @end menu
 
 @c ========================================================================
@@ -40,6 +43,7 @@ We are going to assume that you have Mercurial and Waf installed and running
 on the target system as described in the Getting Started section of the 
 ns-3 web site: @uref{http://www.nsnam.org/getting_started.html}.
 
+@node Downloading
 @section Downloading
 @cindex tarball
 The ns-3 code is available in Mercurial repositories on the server
@@ -107,6 +111,7 @@ look something like the following:
 
 You are now ready to build the ns-3 distribution.
 
+@node Building and Testing
 @section Building and Testing
 @cindex Waf!build
 @cindex Waf!configure
@@ -249,6 +254,7 @@ If a regression tests fails you will see a FAIL indication along with a
 pointer to the offending trace file and its associated reference trace file
 along with a suggestion on how to run diff in order to see what has gone awry.
 
+@node Running a Script
 @section Running a Script
 @cindex Waf!run
 We typically run scripts under the control of Waf.  This allows the build 
