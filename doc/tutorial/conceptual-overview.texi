@@ -1,0 +1,809 @@
+
+@c ========================================================================
+@c Begin document body here
+@c ========================================================================
+
+@c ========================================================================
+@c PART:  Conceptual Overview
+@c ========================================================================
+@c The below chapters are under the major heading "Getting Started"
+@c This is similar to the Latex \part command
+@c ========================================================================
+@c Some Conceptual Overview
+@c ========================================================================
+@node Conceptual Overveiw
+@chapter Conceptual Overview
+
+@menu
+* Key Abstractions::
+@end menu
+
+The first thing we need to do before actually starting to look at or write
+ns-3 code is to explain a few core concepts, abstractions and idioms in the
+system.  Much of this may appear transparently obvious to some, but we
+recommend taking the time to read through this chapter just to ensure you
+are starting on a firm foundation.
+
+@node Key Abstractions
+@section Key Abstractions
+
+In this section, we'll review some terms that are commonly used in
+networking, but have a specific meaning in ns-3.
+
+@subsection Node
+@cindex Node
+In Internet jargon, a computing device that connects to a network is called
+a @emph{host} or sometimes an @emph{end system}.  Because ns-3 is a 
+@emph{network} simulator, not specifically an @emph{Internet} simulator, we 
+intentionally do not use the term host since it is closely associated with
+the Internet and its protocols.  Instead, we use a more generic term also
+used by other simulators that originates in Graph Theory --- the @emph{node}.
+
+@cindex Node!class
+In ns-3 the basic computing device abstraction is called the 
+node.  This abstraction is represented in C++ by the class @code{Node}.  The 
+@code{Node} class provides methods for managing the representations of 
+computing devices in simulations.  Developers are expected to specialize the 
+@code{Node} in the object-oriented programming sense to create new computing
+device models.  In this tutorial, we will use a specialization of class 
+@code{Node} called @code{InternetNode}.  As you might expect, the
+@code{InternetNode} is a class that represents a host in the Internet sense,
+and automatically provides core IPv4 networking protocols.
+
+You should think of a @code{Node} as a computer to which you will add 
+functionality.  One adds things like applications, protocol stacks and
+peripheral cards with their associated drivers to enable the computer to do
+useful work.  We use the same basic model in ns-3.
+
+@subsection Application
+@cindex Application
+Typically, computer software is divided into two broad classes.  @emph{System
+Software} organizes various computer resources such as memory, processor
+cycles, disk, network, etc., according to some computing model.  System
+software usually does not use those resources to complete tasks that directly
+benefit a user.  A user would typically run an @emph{application} that acquires
+and uses the resources controlled by the system software to accomplish some
+goal.  
+
+@cindex system call
+Often, the line of separation between system and application software is made
+at the privilege level change that happens in operating system traps.
+In ns-3 there is no real concept of operating system and especially
+no concept of privilege levels or system calls.  We do, however, have the
+idea of an application.  Just as software applications run on computers to
+perform tasks in the ``real world,'' ns-3 applications run on
+ns-3 @code{Node}s to drive simulations in the simulated world.
+
+@cindex Application!class
+In ns-3 the basic abstraction for a user program that generates some
+activity to be simulated is the application.  This abstraction is represented 
+in C++ by the class @code{Application}.  The @code{Application} class provides 
+methods for managing the representations of our version of user-level 
+applications in simulations.  Developers are expected to specialize the
+@code{Application} in the object-oriented programming sense to create new
+applications.  In this tutorial, we will use specializations of class 
+@code{Application} called @code{UdpEchoClient} and @code{UdpEchoServer}.
+As you might expect, these applications compose a client/server application set
+used to generate and echo simulated network packets 
+
+@subsection Channel
+@cindex Channel
+
+In the real world, one can connect a computer to a network.  Often the media
+over which data flows in these netowrks are called @emph{channels}.  When
+you connect your Ethernet cable to the plug in the wall, you are connecting 
+your computer to an Ethernet communication channel.  In the simulated world
+of ns-3 one connects a @code{Node} to an object representing a
+communication channel.  Here the basic communication subnetwork abstraction 
+is called the channel and is represented in C++ by the class @code{Channel}.  
+
+The @code{Channel} class provides methods for managing communication 
+subnetwork objects and connecting nodes to them.  They may also be specialized
+by developers in the object oriented programming sense.  A @code{Channel}
+specialization may model something as simple as a wire.  The specialized 
+@code{Channel} can also model things as complicated as a large Ethernet
+switch, or three-dimensional space in the case of wireless networks.
+
+We will use specialized versions of the @code{Channel} called
+@code{CsmaChannel} and @code{PointToPointChannel} in this tutorial.  The
+@code{CsmaChannel}, for example, models a version of a communication subnetwork
+that implements a @emph{carrier sense multiple access} communication medium.
+This gives us Ethernet-like functionality.  
+
+@subsection Net Device
+@cindex NetDevice
+@cindex Ethernet
+It used to be the case that if you wanted to connect a computers to a network,
+you had to buy a specific kind of network cable and a hardware device called
+(in PC terminology) a @emph{peripheral card} that needed to be installed in
+your computer.  These cards were called Network Interface Cards, or 
+@emph{NIC}s.  Today most computers come with the network controller hardware
+built in and users don't see these building blocks.
+
+A NIC will not work without a software driver to control the hardware.  In 
+Unix (or Linux), a piece of peripheral hardware is classified as a 
+@emph{device}.  Devices are controlled using @emph{device drivers}, and network
+devices (NICs) are controlled using @emph{network device drivers}
+collectively known as @emph{net devices}.  In Unix and Linux you refer
+to these net devices by names such as @emph{eth0}.
+
+In ns-3 the @emph{net device} abstraction covers both the software 
+driver and the simulated hardware.  A net device is ``attached'' to a 
+@code{Node} in order to enable the @code{Node} to communicate with other 
+@code{Node}s in the simulation via @code{Channel}s.  Just as in a real
+computer, a @code{Node} may be connected to more than one @code{Channel} via
+multiple @code{NetDevice}s.
+
+The net device abstraction is represented in C++ by the class @code{NetDevice}.
+The @code{NetDevice} class provides methods for managing connections to 
+@code{Node} and @code{Channel} objects; and may be specialized by developers
+in the object-oriented programming sense.  We will use the specialized version
+of the @code{NetDevice} called the @code{CsmaNetDevice} in this tutorial.
+Just as an Ethernet NIC is designed to work with an Ethernet network, the
+@code{CsmaNetDevice} is designed to work with a @code{CsmaChannel}.
+
+@subsection Topology Helpers
+@cindex helper
+@cindex topology
+@cindex helper|topology
+In a real network, you will find host computers with added (or built-in)
+NICs.  In ns-3 we would say that you will find @code{Nodes} with 
+attached @code{NetDevices}.  In a large simulated network you will need to 
+arrange many connections between @code{Node}s, @code{NetDevice}s and 
+@code{Channel}s.
+
+Since connecting @code{NetDevice}s to @code{Node}s, @code{NetDevice}s
+to @code{Channel}s, assigning IP addresses,  etc., are such common tasks
+in ns-3 we provide what we call @emph{topology helpers} to make this as easy 
+as possible.  For example, will take several distinct ns-3 core operations
+to create a NetDevice, add a MAC address, connect the net device to a 
+@code{Node}, configure the protocol stack, and then connect the 
+@code{NetDevice} to a @code{Channel}.  More higher level operations would be
+required to connect multiple devices onto multipoint channels and then to 
+connect networks together into internetworks.  We use topology helper objects
+to compose those distinct operations into an easy to use model.
+
+@c ========================================================================
+@c A First ns-3 script
+@c ========================================================================
+@node A First ns-3 Script
+@chapter A First ns-3 script
+@cindex first script
+If you downloaded the system as was suggested above, you will have a release
+of ns-3 in a directory called @code{repos} under your home directory.  Change
+into that release directory, and you should find a directory structure 
+something like the following:
+
+@verbatim
+  AUTHORS  examples/  README         samples/  tutorial/  waf*
+  build/   LICENSE    regression/    scratch/  utils/     waf.bat*
+  doc/     ns3/       RELEASE_NOTES  src/      VERSION    wscript
+@end verbatim
+
+@cindex first.cc
+Change into the examples directory.  You should see a file named 
+@code{first.cc} located there.  This is a script that will create a simple
+point-to-point link between two nodes and echo a single packet between the
+nodes.  Let's take a look at the script line by line.
+
+The first line in the file is an emacs mode line.  This tells emacs about the
+formatting conventions (coding style) we use in our source code.  
+
+@verbatim
+  /* -*- Mode:C++; c-file-style:''gnu''; indent-tabs-mode:nil; -*- */
+@end verbatim
+
+This is always a somewhat controversial subject, so we might as well get it
+out of the way immediately.  The ns-3 project, like most large projects, has 
+adopted a coding style to which all contributed code must adhere.  If you want
+to contribute your code to the project, you will eventually have to conform to
+the ns-3 coding style as described in INSERT LINK TO CODING STYLE PAGE ON WEB.
+The emacs mode line above makes it easier to get the formatting correct if you
+use the emacs editor.
+
+The ns-3 simulator is licentsed using the GNU General Public License.  You
+will see the appropriate GNU legalese at the head of every file in the ns-3
+distribution.
+
+@verbatim
+  /*
+   * This program is free software; you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License version 2 as
+   * published by the Free Software Foundation;
+   *
+   * This program is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with this program; if not, write to the Free Software
+   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+   */
+@end verbatim
+
+@section Module Includes
+The code proper starts with a number of include statements.  To help our high
+level users deal with the large number of include files present in the system,
+we group includes according to relatively large modules.  We provide a single
+include file that, in turn, includes all of the include files used in each
+module.  Rather than having to look up exactly what header you need, and
+possibly have to get dependencies right, we give you the ability to load a 
+group of files at a large granularity.  This is not the most efficient approach
+but it certainly makes writing scripts much easier.  Each of the ns-3 files
+is placed in a directory called @code{ns3} to help with include file name
+collisions.
+
+@verbatim
+  #include "ns3/core-module.h"
+  #include "ns3/simulator-module.h"
+  #include "ns3/node-module.h"
+  #include "ns3/helper-module.h"
+@end verbatim
+
+The @code{ns3/core-module.h} file corresponds to the ns-3 module you will find
+in the directory @code{src/core} in your downloaded release distribution.  If 
+you list this directory you will find a large number of header files.  When
+you do a build, Waf will place public header files in an @code{ns3} directory
+under the appropriate @code{build/debug} or @code{build/optimized} directory
+depending on your configuration.  Waf will also automatically generate a module
+include file to load all of the public header files.  Since you are following
+this tutorial perfectly, you will have done a
+
+@verbatim
+  ./waf -d debug configure
+@end verbatim
+
+to configure the project to perform debug builds.  You will also have done a,
+
+@verbatim
+  ./waf
+@end verbatim
+
+to build the project.  So if you look in the directory @code{build/debug/ns-3}
+you will find the four module includes shown above.
+
+@section Ns3 Namespace
+The next line in the @code{first.cc} script is a namespace statement:
+
+@verbatim
+  using namespace ns3;
+@end verbatim
+
+The ns-3 project is implemented in a C++ namespace called @code{ns3}.  This
+groups all ns-3-related declarations in a scope outside the global namespace
+which we hope will help with integration with other code.  The C++ @code{using}
+statement introduces the ns-3 namespace into the current (global) declarative
+region.  This is a fancy way of saying that after this declaration, you will 
+not have to type @code{ns3::} before all of the ns-3 code in order to use it.
+If you are unfamiliar with namespaces, please consult almost any C++ tutorial
+and compare the ns3 namespace and usage here with the std namespace and 
+a @code{using namespace std;} statement.
+
+@section Logging
+The next line of the script is the following,
+
+@verbatim
+  NS_LOG_COMPONENT_DEFINE ("FirstScriptExample");
+@end verbatim
+
+We will use this statement as a convenient place to talk about our Doxygen
+documentation system.  If you look at the project web site, 
+@uref{http://www.nsnam.org,,ns-3 project}, you will find a link to ``Other
+Documentation'' in the navigation bar.  If you select this link, you will be
+taken to our documentation page.  You will find links to our development
+@code{ns-3-dev} documentation as well as that for our latest release.  If you
+select the @code{HTML} link you will be taken to the Doxygen documentation for
+that version.  
+
+Along the left side, you will find a graphical representation of the structure
+of the documentation.  A good place to start is the @code{NS-3 Modules} 
+``book.''  If you expand @code{Modules} you will see a list of ns-3 module 
+documentation.  The concept of module here ties directly into the module 
+include files discussed above.  It turns out that the ns-3 logging subsystem 
+is part of the @code{core} module, so go ahead and expand that node.  Now,
+open the @code{Debugging} book and then select the @code{Logging} page.
+
+You should now be looking at the Doxygen documentation for the Logging module.
+In the list of @code{#define}s you will see @code{NS_LOG_COMPONENT_DEFINE}.  
+It would probably be good to look for the ``Detailed Description'' of the 
+logging module now to get a feel for the overall operation and then look at
+the specific @code{NS_LOG_COMPONENT_DEFINE} documentation.  I won't duplicate
+the documentation here, but to summarize, this line declares a logging 
+component called @code{FirstScriptExample} that allows you to enable and 
+disable console message logging by reference to the name.
+
+The next lines of the script you will find are:
+
+@verbatim
+    int
+  main (int argc, char *argv[])
+  {
+@end verbatim
+
+This is just the declaration of the main function of your program.  Just as in
+any C++ program, you need to define a main function that will be the first 
+function run.  There is nothing at all special here.  Your ns-3 script is just
+a C++ program.
+
+The next two lines of the script are used to enable two logging components that
+are built into the Echo Client and Echo Server applications:
+
+@verbatim
+    LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
+    LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
+@end verbatim
+
+If you have read over the Logging component documentation you will see that
+there are a number of levels of detail that you enable on each component.  
+These two lines of code enable debug logging at the INFO level for echo 
+clients and servers.  This will result in the application printing out 
+a message as packets are sent and received.
+
+Now we will get directly to the business of creating a topology and running 
+a simulation.  We will use the topology helper objects to make this job as
+easy as possible.
+
+@section Topology Helpers
+@subsection NodeContainer
+The next two lines of code in our script will actually create the ns-3 objects
+that will represent the computers in the simulation.  
+
+@verbatim
+    NodeContainer nodes;
+    nodes.Create (2);
+@end verbatim
+
+Let's find the documentation for the first object before we continue.  Another
+way to get into the documentation system is via the @code{Classes} tab in the 
+HTML pages.  If you still have the Doxygen handy, just scroll up to the top 
+of the page and select the @code{Classes} tab.  You should see a new set of
+tabs appear, one of which is @code{Class List}.  Under that tab you will see 
+a list of all of the ns-3 classes.  Scroll down, looking for
+@code{ns3::NodeContainer}.  When you find the class, go ahead and select it to
+go to the Doxygen.
+
+You may recall that one of our key abstractions is the @code{Node}.  This
+represents a computer to which we are going to add things like protocol stacks,
+applications and peripheral cards.  The @code{NodeContainer} topology helper
+provides a convenient way to create, manage and access any @code{Node} objects
+that we create in order to run a simulation.  The first line just declares a
+NodeContainer which we call @code{nodes}.  The second line calls the
+@code{Create} method on the @code{nodes} object and asks the container to 
+create two nodes.  As described in the Doxygen, the container calls down into
+the ns-3 system to create two @code{Node} objects and stores the pointers
+internally.
+
+The nodes as they stand at this point in the script do nothing.  The next step
+in constructing a topology is to connect our nodes together into a network.
+The simplest form of network is a single point-to-point link between two nodes
+so we'll construct one here.
+
+@subsection PointToPointHelper
+We are constructing a point to point link, and in a pattern which will become
+quite familiar to you, we use a topology helper object to do the low-level
+work required to put the link together.  Recall that two of our key 
+abstractions are the @code{NetDevice} and the @code{Channel}.  In the real
+world, this corresponds roughly to peripheral cards and network cables.  
+Typically these two things are intimately tied together and one cannot expect
+to interchange Ethernet devices and wireless channels, for example.  Our 
+Topology Helpers follow this intimate coupling and therefore you will use a
+single @code{PointToPointHelper} to configure and connect ns-3 
+@code{PointToPointNetDevice} and @code{PointToPointChannel} objects in this 
+script.
+
+The next three lines in the @code{first.cc} script are
+
+@verbatim
+    PointToPointHelper pointToPoint;
+    pointToPoint.SetDeviceParameter ("DataRate", StringValue ("5Mbps"));
+    pointToPoint.SetChannelParameter ("Delay", StringValue ("2ms"));
+@end verbatim
+
+The first line 
+
+@verbatim
+    PointToPointHelper pointToPoint;
+@end verbatim
+
+creates a @code{PointToPointHelper} object on the stack.  
+
+From a high-level perspective the next line,
+
+@verbatim
+    pointToPoint.SetDeviceParameter ("DataRate", StringValue ("5Mbps"));
+@end verbatim
+
+tells the @code{PointToPointHelper} object to use the value ``5mbps''
+(five megabits per second) as the ``DataRate'' when it creates a 
+@code{PointToPointNetDevice} object.
+
+From a more detailed perspective, the string ``DataRate'' corresponds
+to what we call an @code{Attribute} of the @code{PointToPointNetDevice}.
+If you look at the Doxygen for class @code{ns3::PointToPointNetDevice} and 
+find the documentation for the @code{GetTypeId} method, you will find a list
+of  @code{Attributes} defined for the device.  Among these is the ``DataRate''
+attribute.  Most user-visible ns-3 objects have similar lists of attributes.
+We use this mechanism to easily configure simulations without recompiling
+as you will see in a following section.
+
+Similar to the ``DataRate'' on the @code{PointToPointNetDevice} we find a
+``Delay'' attribute associated with the @code{PointToPointChannel}.  THe 
+final line,
+
+@verbatim
+    pointToPoint.SetChannelParameter ("Delay", StringValue ("2ms"));
+@end verbatim
+
+Tells the @code{PointToPointHelper} to use the value ``2ms'' (two milliseconds)
+as the value of the transmission delay of every point to point channel it 
+creates.
+
+@subsection NetDeviceContainer
+At this point in the script, we have a @code{NodeContainer} that contains
+two nodes.  We have a @code{PointToPointHelper} that is primed and ready to 
+make @code{PointToPointNetDevices} and wire @code{PoiintToPointChannel} objects
+between them.  Just as we used the @code{NodeContainer} topology helper object
+to create the @code{Node}s for our simulation, we will ask the 
+@code{PointToPointHelper} to do the work involved in creating, configuring and
+installing our devices for us.  We will need to have a list of all of the 
+NetDevice objects that are created, so we use a NetDeviceContainer to hold 
+them just as we used a NodeContainer to hold the nodes we created.  The 
+following two lines of code,
+
+@verbatim
+    NetDeviceContainer devices;
+    devices = pointToPoint.Install (nodes);
+@end verbatim
+
+will finish configuring the devices and channel.  The first line declares the 
+device container mentioned above and the second does the heavy lifting.  The 
+@code{Install} method of the @code{PointToPointHelper} takes a 
+@code{NodeContainer} as a parameter.  Internally, a @code{NetDeviceContainer} 
+is created.  For each node in the @code{NodeContainer} (there must be exactly 
+two for a point-to-point link) a @code{PointToPointNetDevice} is created and 
+saved in the device container.  A @code{PointToPointChannel} is created and 
+the two @code{PointToPointNetDevices} are attached.  When objects are created
+by the @code{PointToPointHelper} the attributes previously set in the helper
+are used to initialize the corresponding attributes in the created objects.
+
+After executing the the @code{pointToPoint.Install (nodes)} call we will have
+two nodes, each with an installed point-to-point net device and a 
+point-to-point channel between them.  Both devices will send data at five
+megabits per second over the channel which has a two millisecond transmission
+delay.
+
+@subsection InternetStackHelper
+We have nodes and devices configured, but we don't have any protocol stacks
+installed on our nodes.  The next two lines of code take care of that.
+
+@verbatim
+    InternetStackHelper stack;
+    stack.Install (nodes);
+@end verbatim
+
+The @code{InternetStackHelper} is a topology helper that is to internet stacks
+what the @code{PointToPointHelper} is to point-to-point net devices.  The
+@code{Install} method takes a @code{NodeContainer} as a parameter.  When it is
+executed, it will install an Internet Stack (TCP, UDP, IP, etc.) on each of
+the nodes in the node container.
+
+@subsection Ipv4AddressHelper
+Next we need to associate the devices on our nodes with IP addresses.  We 
+provide a topology helper to manage the allocation of IP addresses.  The only
+user-visible API is to set the base IP address and network mask to use when
+performing the actual address allocation (which is done at a lower level in the
+code).  
+
+The next two lines of code in our example script, @code{first.cc},
+
+@verbatim
+    Ipv4AddressHelper address;
+    address.SetBase ("10.1.1.0", "255.255.255.0");
+@end verbatim
+
+declare an address helper object and tell it that it should begin allocating IP
+addresses from the network 10.1.1.0 using the mask 255.255.255.0 to define 
+the allocatable bits.
+
+The next line of code,
+
+@verbatim
+    Ipv4InterfaceContainer interfaces = address.Assign (devices);
+@end verbatim
+
+performs the actual address assignment.  In ns-3 we make the association
+between an IP address and a device using an @code{Ipv4Interface} object.
+Just as we sometimes need a list of net devices created by a helper for future
+reference we sometimes need a list of @code{Ipv4Interface} objects.  The 
+@code{Ipv4InterfaceContainer} provides this functionality.
+
+Now we have a point-to-point network made with IP addresses assigned.  What
+we need at this point are applications to generate traffic.
+
+@section Applications
+Another one of the core abstractions of the ns-3 system is the 
+@code{Application}.  In this script we use two specializations of the core
+ns-3 class @code{Application} called @code{UdpEchoServerApplication} and
+@code{UdpEchoClientApplication}.  Just as in the previous instances of ns-3
+objects, we use helper objects to help configure and manage the underlying
+objects.  Here, we use @code{UdpEchoServerHelper} and
+@code{UdpEchoClientHelper} objects to make our lives easier.
+
+@subsection UdpEchoServerHelper
+The following lines of code in our example script, @code{first.cc}, are used
+to set up a UDP echo server application on one of the nodes we have previously
+created and connected using a point-to-point link.  
+
+@verbatim
+    UdpEchoServerHelper echoServer;
+    echoServer.SetPort (9);
+
+    ApplicationContainer serverApps = echoServer.Install (nodes.Get (1));
+    serverApps.Start (Seconds (1.0));
+    serverApps.Stop (Seconds (10.0));
+@end verbatim
+
+The first line of code in the above snippet declares the 
+@code{UdpEchoServerHelper}.  As usual, this isn't the application itself, it
+is an object to help us create the actual applications.  The second line
+that has the @code{SetPort} call, is used to tell the helper to assign the
+value nine to the ``Port'' attribute when creating 
+@code{UdpEchoServerApplication} objects.
+
+Similar to many other helper objects, the @code{UdpEchoServerHelper} object 
+has an @code{Install} method.  It is the execution of this method that actually
+causes the underlying echo server application to be instantiated and attached
+to a node.  Interestingly, the @code{Install} method takes a
+@code{NodeContainter} as a parameter just as the other @code{Install} methods
+we have seen.  This is actually what is passed to the method even though it 
+doesn't look so in this case.  It will be worth a slight digression
+to undersand what is going on here.
+
+@subsubsection Implicit Conversions
+This is an example of a C++ @code{implicit conversion} at work.  Many
+programmers use implicit conversions without even realizing it since they are
+sometimes so intuitive.  For example, in the following code,
+
+@verbatim
+  int i = 1;
+  double d = 2.;
+  if (n == d) ...
+@end verbatim
+
+@cindex standard conversion
+the integer (1) is implicitly converted to a double (1.) before the comparison
+takes place.  This conversion is performed using what is known as a C++ 
+@emph{standard conversion}.
+
+C++ will try to determine a sequence of type conversions to use in order to
+convert an argument in a function call to the type of a corresponding paramter
+in a method declaration.  The method call in this case is,
+
+@verbatim
+    ApplicationContainer serverApps = echoServer.Install (nodes.Get (1));
+@end verbatim
+
+If you look at the declaration of the Install method in the source (or the
+Doxygen) you will see,
+
+@verbatim
+  ApplicationContainer 
+  UdpEchoServerHelper::Install (NodeContainer c)
+  {
+    ...
+  }
+@end verbatim
+
+Now, the @code{Get} method of the @code{NodeContainer} returns a smart pointer
+to a node object:
+
+@verbatim
+  Ptr<Node> 
+  NodeContainer::Get (uint32_t i) const
+  {
+   ...
+  }
+@end verbatim
+
+C++ notices that it needs to convert a type @code{Ptr<Node>} into a type
+@code{NodeContainer}.  It turns out that @code{NodeContainer} has a
+constructor that takes a @code{Ptr<Node>} as a parameter.
+
+@verbatim
+  NodeContainer::NodeContainer (Ptr<Node> node)
+  {
+   ...
+  }
+@end verbatim
+
+The C++ compiler implicitly provides the @code{Ptr<Node>} returned from the
+@code{NodeContainer::Get} to the above constructor for @code{NodeContainer} to 
+make a new @code{NodeContainer} to pass to the @code{Install} method of the
+@code{UdpEchoServerHelper} object.
+
+Taking advantage of these implicit conversion sequences can allow you to 
+avoid doing a lot of typing.  The result is also fairly intuitive if you
+don't pay close attention to the called method signatures.  If you are
+one of those folks that pays close attention, it does have the downside of
+sometimes being surprising when you, for example, look for the method 
+in @code{UdpEchoServerHelper} named @code{Install} that takes a parameter
+@code{Ptr<Node>} and cannot find it.
+
+@subsection UdpEchoServerHelper Continued
+Returning to the example script, we are looking at the following code snippet.
+
+@verbatim
+    UdpEchoServerHelper echoServer;
+    echoServer.SetPort (9);
+
+    ApplicationContainer serverApps = echoServer.Install (nodes.Get (1));
+    serverApps.Start (Seconds (1.0));
+    serverApps.Stop (Seconds (10.0));
+@end verbatim
+
+We now see that @code{echoServer.Install} is going to install an 
+@code{UdpEchoServerApplication} on the node found at index number one of the
+@code{NodeContainer} we use to manage our nodes.  @code{Install} will return
+a container that has all of the applications (one in this case since we passed
+a @code{NodeContainer} containing one node) made by the helper.  
+
+Applications require a time to ``start'' generating traffic and a time to
+``stop.''  These times are set using @code{ApplicationContainer} methods
+@code{Start} and @code{Stop}.  These methods take @code{Time} parameters.  
+In this case, we use an explicit conversion sequence to take a c++ double
+1.0 and convert it to a @code{Time} object using a @code{Seconds ()} cast.
+The two lines,
+
+@verbatim
+    serverApps.Start (Seconds (1.0));
+    serverApps.Stop (Seconds (10.0));
+@end verbatim
+
+will cause the echo server application to @code{Start} (enable itself) at one
+second into the simulation and to @code{Stop} (disable itself) at ten seconds
+into the simulation.  By virtue of the fact that we have implicilty declared
+a simulation event at ten seconds, the simulation will last at least ten 
+seconds.
+
+@subsection UdpEchoClientHelper
+
+The echo client application is set up in a method similar to the server.
+There is an underlying @code{UdpEchoClientApplication} that is managed by an
+@code{UdpEchoClientHelper}.
+
+@verbatim
+    UdpEchoClientHelper echoClient;
+    echoClient.SetRemote (interfaces.GetAddress (1), 9);
+    echoClient.SetAppAttribute ("MaxPackets", UintegerValue (1));
+    echoClient.SetAppAttribute ("Interval", TimeValue (Seconds (1.)));
+    echoClient.SetAppAttribute ("PacketSize", UintegerValue (1024));
+
+    ApplicationContainer clientApps = echoClient.Install (nodes.Get (0));
+    clientApps.Start (Seconds (2.0));
+    clientApps.Stop (Seconds (10.0));
+@end verbatim
+
+For the echo client, we need to set four different attributes.  The first 
+attribute is set using the @code{SetRemote} method.  Here we refer back to 
+the @code{Ipv4InterfaceContainer} we created to keep track of the IP addresses
+we assigned to our devices.
+
+@verbatim
+    Ipv4InterfaceContainer interfaces = address.Assign (devices);
+@end verbatim
+
+In this case, the zeroth interface in the @code{interfaces} container 
+cooresponds to the IP address of the zeroth node in the @code{nodes} container.
+The first interface in the @code{interfaces} container cooresponds to the IP
+address of the first node in the @code{nodes} container.  So, in the following 
+line of code, we are setting the remote address of the client to be the IP
+address assigned to the node on which the server resides.  We tell it to send
+to port nine.
+
+@verbatim
+    echoClient.SetRemote (interfaces.GetAddress (1), 9);
+@end verbatim
+
+The ``MaxPackets'' attribute tells the client the maximum number of packets 
+it can send.  The ``Interval'' attribute tells the cleint how long to wait 
+between packets and the ``PacketSize'' attribute tells the client how large 
+its packets should be.  In this case we are telling the client to send one 
+1024-byte packet.
+
+Just as in the case of the echo server, we tell the echo client to @code{Start}
+and @code{Stop}, but here we start the client one second after the server is
+enabled (at two seconds into the simulation).
+
+@subsection Simulator
+What we need to do at this point is to actually run the simulation.  This is 
+done using the @code{Simulator} singleton which is accessed via the global 
+function @code{Simulator::Run} 
+
+@verbatim
+    Simulator::Run ();
+@end verbatim
+
+When we called the methods,
+
+@verbatim
+    serverApps.Start (Seconds (1.0));
+    serverApps.Stop (Seconds (10.0));
+    ...
+    clientApps.Start (Seconds (2.0));
+    clientApps.Stop (Seconds (10.0));
+@end verbatim
+
+we actually scheduled events in the simulator at 1.0 seconds, 2.0 seconds and
+10.0 seconds.  When @code{Simulator::Run} is called, it will begin looking
+through the list of scheduled events and executing them.  First it will run
+the event at 1.0 seconds, which will enable the echo server application.  Then
+it will run the event scheduled for t=2.0 seconds which will start the echo
+client application.  The start event implementation in the echo cleint will 
+begin the data transfer phase of the simulation by sending a packet to the 
+server.
+
+The act of sending the packet to the server will trigger a chain of events
+which will be automatically scheduled and which will perform the packet echo
+according to the various timing parameters that we have set in the script.
+
+Eventually, since we only sent one packet, the chain of events triggered by 
+the single client echo request will taper off and the simulation will go 
+idle.  Once this happens, the remaining events are the @code{Stop} events
+for the server and the client.  When these events are executed, there are
+no further events to process and @code{Simulator::Run} returns.  The simulation
+is complete.
+
+All that remains is to clean up after ourselves.  This is done by calling the
+global function @code{Simulator::Destroy}.  As the helper functions (or low
+level ns-3 code) executed they arranged it so that hooks were inserted in the
+simulator to destruct all of the objects that were created.  You do not have
+to keep track of all of these objects yourself --- all you have to do is to
+call @code{Simulator::Destroy} and exit.  The remaining lines of our first 
+ns-3 script, @code{first.cc}, do just that
+
+@verbatim
+    Simulator::Destroy ();
+    return 0;
+  }
+@end verbatim
+
+@section Building Your Script
+We have made it trivial to build your simple scripts.  All you have to do is 
+to drop your script into the scratch directory and it will automatically be built.  Let's try it.  Copy @code{examples/first.cc} into @code{scratch}:
+
+@verbatim
+  ~/repos/ns-3-tutorial > cp examples/first.cc scratch
+@end verbatim
+
+and then build it using waf,
+
+@verbatim
+  ~/repos/ns-3-tutorial > ./waf
+  Entering directory `/home/craigdo/repos/ns-3-tutorial/build'
+  [432/477] cxx: scratch/first.cc -> build/debug/scratch/first_2.o
+  [433/477] cxx: scratch/simple.cc -> build/debug/scratch/simple_3.o
+  [475/477] cxx_link: build/debug/scratch/first_2.o -> build/debug/scratch/first
+  Compilation finished successfully
+~/repos/ns-3-tutorial >
+@end verbatim
+
+You can now run the example (note that if you build your program in the scratch
+directory you must run it out of the scratch direcory):
+
+@verbatim
+  ~/repos/ns-3-tutorial > ./waf --run scratch/first
+  Entering directory `/home/craigdo/repos/ns-3-tutorial/build'
+  Compilation finished successfully
+  Sent 1024 bytes to 10.1.1.2
+  Received 1024 bytes from 10.1.1.1
+  Received 1024 bytes from 10.1.1.2
+  ~/repos/ns-3-tutorial >
+@end verbatim
+
+Here you see that the build system checks to make sure that the file has been
+build and then runs it.  You see the logging component on the echo client 
+note that it has sent one 1024 byte packet to the Echo Server on 10.1.1.2.  
+You also see the logging component on the echo server receive the 1024 bytes
+from 10.1.1.1.  The echo server silently echoes the packet and you see the
+echo client note that it has received its packet back from the server.

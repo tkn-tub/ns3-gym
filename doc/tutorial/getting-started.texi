@@ -1,0 +1,275 @@
+
+@c ========================================================================
+@c Begin document body here
+@c ========================================================================
+
+@c ========================================================================
+@c PART:  Getting Started
+@c ========================================================================
+@c The below chapters are under the major heading "Getting Started"
+@c This is similar to the Latex \part command
+@c
+@c ========================================================================
+@c Getting Started
+@c ========================================================================
+@node Getting Started
+@chapter Getting Started
+
+@menu
+* Downloading and Compiling ns-3::
+@end menu
+
+@c ========================================================================
+@c Downloading and Compiling ns-3
+@c ========================================================================
+
+@node Downloading and Compiling ns-3
+@section Downloading and Compiling ns-3
+
+@cindex Linux
+@cindex Cygwin
+@cindex GNU
+@cindex toolchain
+From this point forward, we are going to assume that the reader is working in
+Linux or a Linux emulation environment (Linux, Cygwin, etc.) and has the GNU
+toolchain installed and verified.  
+
+@cindex Mercurial
+@cindex Waf
+We are going to assume that you have Mercurial and Waf installed and running
+on the target system as described in the Getting Started section of the 
+ns-3 web site: @uref{http://www.nsnam.org/getting_started.html}.
+
+@section Downloading
+@cindex tarball
+The ns-3 code is available in Mercurial repositories on the server
+code.nsnam.org.  You can download a tarball, but we recommend working with
+Mercurial --- it will make your life easier in the long run.
+
+@cindex repository
+If you go to the following link: @uref{http://code.nsnam.org/},
+you will see a number of repositories.  Many are the private repositories of
+the ns-3 development team.  The repositories of interest to you will be
+prefixed with ``ns-3''.  The current development snapshot (unreleased)
+of ns-3 may be found at: @uref{http://code.nsnam.org/ns-3-dev/}.  Official 
+releases of ns-3 will be numbered as @code{ns-3.<release>} with any requred 
+hotfixes added as minor release numbers.  For example, a second hotfix to a
+hypothetical release nine of ns-3 would be numbered @code{ns-3.9.2}.
+
+The current development snapshot (unreleased) of ns-3 may be found at:
+@uref{http://code.nsnam.org/ns-3-dev/}.  The developers attempt to keep this
+repository in a consistent, working state but it is a development area with
+unreleased code present, so you may want to consider staying with an official
+release.
+
+Since the release numbers are going to be changing, I will stick with 
+the more constant ns-3-dev here in the tutorial, but you can replace the 
+string ns-3-dev with your choice of release (e.g., ns-3.1) in the text below.
+You can find the latest version  of the code either by inspection of the 
+repository list or by going to the ``Getting Started'' web page and looking 
+for the latest release identifier.
+
+One practice is to create a directory called @code{repos} in one's home 
+directory under which one can keep local Mercurial repositories.  
+@emph{Hint:  we will assume you do this later in the tutorial.}  If you adopt
+that approach, you can get a copy of any of the development versions of ns-3 
+by typing the following into your Linux shell (assuming you have installed 
+Mercurial):
+
+@verbatim
+  cd
+  mkdir repos
+  cd !$
+  hg clone http://code.nanam.org/ns-3-dev
+@end verbatim
+
+As the hg command executes, you should see something like the following,
+
+@verbatim
+  destination directory: ns-3-dev
+  requesting all changes
+  adding changesets
+  adding manifests
+  adding file changes
+  added 3276 changesets with 12301 changes to 1353 files
+  594 files updated, 0 files merged, 0 files removed, 0 files unresolved
+@end verbatim
+
+After the clone command completes, you should have a directory called 
+ns-3-dev under your @code{~/repos} directory, the contents of which should 
+look something like the following:
+
+@verbatim
+  AUTHORS    LICENSE  regression/    scratch/   utils/   waf.bat*
+  doc/       ns3/     RELEASE_NOTES  src/       VERSION  wscript
+  examples/  README   samples/       tutorial/  waf*
+@end verbatim
+
+You are now ready to build the ns-3 distribution.
+
+@section Building and Testing
+@cindex Waf!build
+@cindex Waf!configure
+@cindex Waf!debug
+@cindex Waf!compile
+@cindex Waf!check
+@cindex Waf!regression
+We use Waf to build the ns-3 project.  The first thing you will need to do is 
+to configure the build.  For reasons that will become clear later, we are 
+going to work with debug builds in the tutorial.  To explain to Waf that it
+should do debug builds you will need to execute the following command,
+
+@verbatim
+  ./waf -d debug configure
+@end verbatim
+
+This runs the copy of Waf in the local directory (which is provided as a 
+convenience for you).  As the build system checks for various dependencies
+you should see output that looks similar to the following,
+
+@verbatim
+  ~/repos/ns-3-dev >./waf -d debug configure
+  Checking for program g++                 : ok /usr/bin/g++
+  Checking for compiler version            : ok Version 4.1.2
+  Checking for program cpp                 : ok /usr/bin/cpp
+  Checking for program ar                  : ok /usr/bin/ar
+  Checking for program ranlib              : ok /usr/bin/ranlib
+  Checking for compiler could create programs : ok
+  Checking for compiler could create shared libs : ok
+  Checking for compiler could create static libs : ok
+  Checking for flags -O2 -DNDEBUG                : ok
+  Checking for flags -g -DDEBUG                  : ok
+  Checking for flags -g3 -O0 -DDEBUG             : ok
+  Checking for flags -Wall                       : ok
+  Checking for g++                               : ok
+  Checking for header stdlib.h                   : ok
+  Checking for header stdlib.h                   : ok
+  Checking for header signal.h                   : ok
+  Checking for high precision time implementation : 128-bit integer
+  Checking for header stdint.h                    : ok
+  Checking for header inttypes.h                  : ok
+  Checking for header sys/inttypes.h              : not found
+  Checking for package gtk+-2.0 >= 2.12           : not found
+  Checking for package goocanvas gthread-2.0      : not found
+  Checking for program diff                       : ok /usr/bin/diff
+  Configuration finished successfully; project is now ready to build.
+  ~/repos/ns-3-dev >
+@end verbatim
+
+The build system is now configured and you can build the debug versions of 
+the ns-3 programs by simply typing,
+
+@verbatim
+  ./waf check
+@end verbatim
+
+You will see many Waf status messages displayed as the system compiles.  The
+most important is the last one,
+
+@verbatim
+  Compilation finished successfully
+@end verbatim
+
+@cindex tests|unit
+You can run the unit tests of the ns-3 distribution by running the ``check''
+command,
+
+@verbatim
+  ./waf check
+@end verbatim
+
+You should see a report from each unit test that executes indicating that the
+test has passed.
+
+@verbatim
+  ~/repos/ns-3-dev > ./waf check
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
+  Compilation finished successfully
+  PASS AddressHelper
+  PASS Wifi
+  PASS DcfManager
+  
+  ...
+
+  PASS Object
+  PASS Ptr
+  PASS Callback
+  ~/repos/ns-3-dev >
+@end verbatim
+
+@cindex tests|regression
+This command is typically run by @code{users} to quickly verify that an ns-3
+distribution has built correctly.  
+
+You can also run @code{regression tests} to ensure that your distribution and
+tool chain have produced binaries that generate trace files which are
+compatible with reference trace files stored in a central location.  To run the
+regression tests you run Waf with the regression flag.
+
+@verbatim
+  ./waf --regression
+@end verbatim
+
+Waf will verify that the current files in the ns-3 distribution are built and
+will then look for trace files in the aforementioned centralized location.  If
+your tool chain includes Mercurial, the regression tests will be downloaded 
+from a repository at @code{code.nsnam.org}.  If you do not have Mercurial 
+installed, the reference traces will be downloaded from a tarball located in 
+the @code{releases} section of @code{www.nsnam.org}.  The particular name of 
+the reference trace location is built from the ns-3 version located in the 
+VERSION file, so don't change that string.
+
+Once the reference traces are downloaded to your local machine, Waf will run
+a number of tests that generate trace files.  The content of these trace
+files are compared with the reference traces just downloaded.  If they are
+identical, the regression tests report a PASS status.  If the regression tests
+pass, you should see something like,
+
+@verbatim
+  ~/repos/ns-3-dev > ./waf --regression
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
+  Compilation finished successfully
+  ========== Running Regression Tests ==========
+  Synchronizing reference traces using Mercurial.
+  http://code.nsnam.org/ns-3-dev-ref-traces
+  Done.
+  PASS test-csma-broadcast
+  PASS test-csma-multicast
+  PASS test-csma-one-subnet
+  PASS test-csma-packet-socket
+  PASS test-simple-error-model
+  PASS test-simple-global-routing
+  PASS test-simple-point-to-point-olsr
+  PASS test-tcp-large-transfer
+  PASS test-udp-echo
+  ~/repos/ns-3-dev >
+@end verbatim
+
+If a regression tests fails you will see a FAIL indication along with a
+pointer to the offending trace file and its associated reference trace file
+along with a suggestion on how to run diff in order to see what has gone awry.
+
+@section Running a Script
+@cindex Waf!run
+We typically run scripts under the control of Waf.  This allows the build 
+system to ensure that the shared library paths are set correctly and that
+the libraries are available at run time.  To run a program, simply use the
+@code{run} option in Waf.  Let's run the ns-3 equivalent of the hello
+world program by typing the following:
+
+@verbatim
+  ./waf --run hello-simulator
+@end verbatim
+
+Waf first checks to make sure that the program is built correctly and 
+executes a build if required.  Waf then then executes the program, which 
+produces the following output.
+
+@verbatim
+  Hello Simulator
+@end verbatim
+
+If you want to run programs under another tool such as gdb or valgrind,
+see this @uref{http://www.nsnam.org/wiki/index.php/User_FAQ#How_to_run_NS-3_programs_under_another_tool,,wiki entry}.
+
+@emph{Congratulations.  You are now an ns-3 user.}

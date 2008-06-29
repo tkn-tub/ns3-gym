@@ -1,0 +1,300 @@
+
+@c ========================================================================
+@c Begin document body here
+@c ========================================================================
+
+@c ========================================================================
+@c PART:  Building Topologies
+@c ========================================================================
+@c The below chapters are under the major heading "Building Topologies"
+@c This is similar to the Latex \part command
+@c
+@c ========================================================================
+@c Building Topologies
+@c ========================================================================
+@node Building Topologies
+@chapter Building Topologies
+
+@menu
+* Building a Star Topology
+@end menu
+
+@c ========================================================================
+@c Building a Star Topology
+@c ========================================================================
+@node Building a Star Topology
+@section Building a Star Topology
+
+@cindex topology
+@cindex topology|star
+In this section we are going to use the point-to-point topology primitive we
+have explored in quite some detail to construct a star network.  In the star,
+there is a central node that is connected to other nodes in a ``hub and spoke''
+fashion, with each ``spoke'' being a point-to-point link.
+
+We provide an example of a star topology simulation script on our 
+@code{examples} directory.  Go ahead and open @code{examples/star.cc} in your
+favorite editor.  You will have already seen enough ns-3 code to understand
+this example, but we will go over the script briefly and examine some of the 
+output.
+
+There is an amazingly beautiful bit of ASCII art at the beginning of the file
+that shows the topology used in the script.  Most ns-3 example programs 
+provide this, which can be surprisingly useful in understanding the code.
+
+@verbatim
+  // Network topology
+  //
+  //                  n3    n2
+  //                   |   /
+  //                    | /
+  //              n4 --- n0 --- n1
+  //                    /  |
+  //                   /    |
+  //                  n5    n6
+@end verbatim
+
+There are seven nodes in this simulation, nodes zero through six.  Node zero is
+the hub of this star network.  We are going to discover that there will be a
+flow of echo packets between node four and node one, between node three and 
+node  six, and node five and node two.
+
+The script starts by creating seven nodes in a @code{NodeContainer} and 
+installs internet protocol stacks on all seven.
+
+@verbatim
+    int
+  main (int argc, char *argv[])
+  {
+    NodeContainer nodes;
+    nodes.Create (7);
+
+    InternetStackHelper stack;
+    stack.Install (nodes);
+
+    ...
+@end verbatim
+
+It then creates six more @code{NodeContainer}s representing the nodes at each
+end of the six spokes.  In all cases, the first node in the spoke is node zero.
+
+@verbatim
+  NodeContainer nodes0and1 = NodeContainer (nodes.Get (0), nodes.Get (1));
+  NodeContainer nodes0and2 = NodeContainer (nodes.Get (0), nodes.Get (2));
+  NodeContainer nodes0and3 = NodeContainer (nodes.Get (0), nodes.Get (3));
+  NodeContainer nodes0and4 = NodeContainer (nodes.Get (0), nodes.Get (4));
+  NodeContainer nodes0and5 = NodeContainer (nodes.Get (0), nodes.Get (5));
+  NodeContainer nodes0and6 = NodeContainer (nodes.Get (0), nodes.Get (6));
+@end verbatim
+
+These node containers will be used during the creation of the point-to-point
+links by the @code{PointToPointHelper}.  The next bit of code instantiates
+a helper and sets the default values for the device @code{DataRate} and the
+channel @code{Delay} attributes as we have previously seen.
+
+@verbatim
+  PointToPointHelper pointToPoint;
+  pointToPoint.SetDeviceParameter ("DataRate", StringValue ("5Mbps"));
+  pointToPoint.SetChannelParameter ("Delay", StringValue ("2ms"));
+@end verbatim
+
+The next step is to install the net devices on the nodes referenced by the 
+six node containers and connect them via channels.  We used one instance
+of the @code{pointToPoint.Install} method to construct our single 
+point-to-point link in the @code{first.cc} script.  This code just does that
+six times between different combinations of nodes.
+
+@verbatim
+  NetDeviceContainer devicesOnNodes0and1 = pointToPoint.Install (nodes0and1);
+  NetDeviceContainer devicesOnNodes0and2 = pointToPoint.Install (nodes0and2);
+  NetDeviceContainer devicesOnNodes0and3 = pointToPoint.Install (nodes0and3);
+  NetDeviceContainer devicesOnNodes0and4 = pointToPoint.Install (nodes0and4);
+  NetDeviceContainer devicesOnNodes0and5 = pointToPoint.Install (nodes0and5);
+  NetDeviceContainer devicesOnNodes0and6 = pointToPoint.Install (nodes0and6);
+@end verbatim
+
+Note that this does mean that node zero will have six net devices after this
+code executes.  Recall that we need to keep containers holding the net devices
+we created in order to do IP address assignment.  This is the next step in the
+script.
+
+Just as in @code{first.cc} we use the Ipv4AddressHelper to make it easy to
+deal with addressing.  We need to create different networks for each stub, so
+we have to call the @code{SetBase} method and provide a different network
+number before assigning addresses to the devices on each network.  We make it
+easy to remember what is what by setting the least significant bits of the 
+network number to the unique node on the spoke.  For example, the spoke between
+nodes zero and one is network 10.1.1; and the spoke between nodes zero and
+two is 10.1.2, etc.  Note that the network mask is set to 255.255.255.252 in
+all cases.
+
+@verbatim
+  Ipv4AddressHelper ipv4;
+
+  ipv4.SetBase ("10.1.1.0", "255.255.255.252");
+  Ipv4InterfaceContainer interfacesOnNodes0and1 =
+    ipv4.Assign (devicesOnNodes0and1);
+
+  ipv4.SetBase ("10.1.2.0", "255.255.255.252");
+  Ipv4InterfaceContainer interfacesOnNodes0and2 =
+    ipv4.Assign (devicesOnNodes0and2);
+
+  ipv4.SetBase ("10.1.3.0", "255.255.255.252");
+  Ipv4InterfaceContainer interfacesOnNodes0and3 =
+    ipv4.Assign (devicesOnNodes0and3);
+
+  ipv4.SetBase ("10.1.4.0", "255.255.255.252");
+  Ipv4InterfaceContainer interfacesOnNodes0and4 =
+    ipv4.Assign (devicesOnNodes0and4);
+
+  ipv4.SetBase ("10.1.5.0", "255.255.255.252");
+  Ipv4InterfaceContainer interfacesOnNodes0and5 =
+    ipv4.Assign (devicesOnNodes0and5);
+
+  ipv4.SetBase ("10.1.6.0", "255.255.255.252");
+  Ipv4InterfaceContainer interfacesOnNodes0and6 =
+    ipv4.Assign (devicesOnNodes0and6);
+@end verbatim
+
+When the above code has executed, we will have the topology complete and then
+need to move on to applications.  The code to do this should be familiar to 
+you, but we have rearranged it slightly.
+
+We use an ApplicationContainer to hold the results of the helper operations,
+and use the UdpEchoServerHelper and UdpEchoClient server to configure the 
+apps just as we did in the @code{first.cc} script.
+
+@verbatim
+  uint16_t port = 9;
+
+  ApplicationContainer apps;
+
+  UdpEchoServerHelper server;
+  server.SetPort (port);
+
+  UdpEchoClientHelper client;
+  client.SetAppAttribute ("MaxPackets", UintegerValue (10));
+  client.SetAppAttribute ("Interval", StringValue ("10ms"));
+  client.SetAppAttribute ("PacketSize", UintegerValue (137));
+@end verbatim
+
+The next section of code is repeated three times, once for each data flow.
+We'll skim over the first instance quickly.  The other two differ only in
+the nodes selected and the starting times of the flows.
+
+Just as we did in the @code{first.cc} script, we use the 
+@code{UdpEchoServerHelper} to install the echo server on a node (in this case,
+node number one -- the rightmost spoke in the topology).  We tell the server
+application to start at a simulation time of one second.  We use the
+@code{UdpEchoClientHelper} to install the echo client on a node (in this case,
+node number four -- the leftmost spoke in the topology).  We tell the client
+to start sending data at a simulation time of two seconds.
+
+@verbatim
+  //
+  // Echo from node 4 to node 1 starting at 2 sec
+  //
+    apps = server.Install (nodes.Get (1));
+    apps.Start (Seconds (1.0));
+
+    client.SetRemote (interfacesOnNodes0and1.GetAddress (1), port);
+    apps = client.Install (nodes.Get (4));
+    apps.Start (Seconds (2.0));
+@end verbatim
+
+The next sections do the same thing, but for nodes three and six with a flow 
+starting at 2.1 seconds, and for nodes five and two with flow starting at 2.2
+seconds.
+
+The only piece of code you may not have seen before follows.  Since we have
+built an internetwork, we need some form of internetwork routing.  Ns-3 
+provides what we call a global route manager to set up the routing tables on
+nodes.  This route manager has a global function that runs though the nodes
+of the simulation and does the hard work of setting up routing for you.  
+
+Basically, what happens is that each node behaves as if it were an OSPF router
+that communicates instantly and magically with all other routers.  Each node
+generates link advertisements to the global route manager, which uses this 
+information to construct the routing tables for each node.
+
+@verbatim
+  GlobalRouteManager::PopulateRoutingTables ();
+@end verbatim
+
+The remainder of the script should be very familiar to you.  We just enable
+ASCII and pcap tracing and run the simulation:
+
+@verbatim
+    std::ofstream ascii;
+    ascii.open (``star.tr'');
+    PointToPointHelper::EnableAsciiAll (ascii);
+    PointToPointHelper::EnablePcapAll (``star'');
+  
+    Simulator::Run ();
+    Simulator::Destroy ();
+  }
+@end verbatim
+
+In order to run this example, you use waf.  All of our example programs are
+built by default, so all you have to do is run it.  Now, you did not build
+this script by copying it into the scratch directory, so you don't have to
+add the scratch directory to the run command.  You just do the following,
+
+@verbatim
+  ./waf --run star
+@end verbatim
+
+There is no output from this script by default.  It will just go off and 
+silently do its thing.  All you will see are waf messages:
+
+@verbatim
+  ~/repos/ns-3-tutorial > ./waf --run star
+  Entering directory `/home/craigdo/repos/ns-3-tutorial/build'
+  Compilation finished successfully
+  ~/repos/ns-3-tutorial >
+@end verbatim
+
+If you now go and look in the top level directory, you will find a number of
+trace files:
+
+@verbatim
+  ~/repos/ns-3-tutorial > ls *.pcap *.tr
+  star-0-0.pcap  star-0-3.pcap  star-1-0.pcap  star-4-0.pcap  star.tr
+  star-0-1.pcap  star-0-4.pcap  star-2-0.pcap  star-5-0.pcap
+  star-0-2.pcap  star-0-5.pcap  star-3-0.pcap  star-6-0.pcap
+  ~/repos/ns-3-tutorial >
+@end verbatim
+
+If you have gone through the tracing section of this tutorial, you know how to
+interpret all of these files.  For your reading pleasure, we reproduce a
+tcpdump from the net device on node four:
+
+@verbatim
+  [ns-regression] ~/repos/ns-3-tutorial > tcpdump -r star-4-0.pcap -nn -tt
+  reading from file star-4-0.pcap, link-type PPP (PPP)
+  2.000000 IP 10.1.4.2.49153 > 10.1.1.2.9: UDP, length 137
+  2.009068 IP 10.1.1.2.9 > 10.1.4.2.49153: UDP, length 137
+  2.010000 IP 10.1.4.2.49153 > 10.1.1.2.9: UDP, length 137
+  2.019068 IP 10.1.1.2.9 > 10.1.4.2.49153: UDP, length 137
+  2.020000 IP 10.1.4.2.49153 > 10.1.1.2.9: UDP, length 137
+  2.029068 IP 10.1.1.2.9 > 10.1.4.2.49153: UDP, length 137
+  2.030000 IP 10.1.4.2.49153 > 10.1.1.2.9: UDP, length 137
+  2.039068 IP 10.1.1.2.9 > 10.1.4.2.49153: UDP, length 137
+  2.040000 IP 10.1.4.2.49153 > 10.1.1.2.9: UDP, length 137
+  2.049068 IP 10.1.1.2.9 > 10.1.4.2.49153: UDP, length 137
+  2.050000 IP 10.1.4.2.49153 > 10.1.1.2.9: UDP, length 137
+  2.059068 IP 10.1.1.2.9 > 10.1.4.2.49153: UDP, length 137
+  2.060000 IP 10.1.4.2.49153 > 10.1.1.2.9: UDP, length 137
+  2.069068 IP 10.1.1.2.9 > 10.1.4.2.49153: UDP, length 137
+  2.070000 IP 10.1.4.2.49153 > 10.1.1.2.9: UDP, length 137
+  2.079068 IP 10.1.1.2.9 > 10.1.4.2.49153: UDP, length 137
+  2.080000 IP 10.1.4.2.49153 > 10.1.1.2.9: UDP, length 137
+  2.089068 IP 10.1.1.2.9 > 10.1.4.2.49153: UDP, length 137
+  2.090000 IP 10.1.4.2.49153 > 10.1.1.2.9: UDP, length 137
+  2.099068 IP 10.1.1.2.9 > 10.1.4.2.49153: UDP, length 137
+  [ns-regression] ~/repos/ns-3-tutorial >
+@end verbatim
+
+You are encouraged to think through the pcap traces and map them back to the
+script.  Also, take a look at the @code{star.tr} ASCII trace file (which is
+quite large) to make sure you understand what it is telling you.
