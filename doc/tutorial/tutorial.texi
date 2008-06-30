@@ -83,7 +83,6 @@ see @uref{http://www.nsnam.org/docs/tutorial.pdf}.
 * Resources::
 * Getting Started::
 * Conceptual Overview::
-* A First ns-3 Script::
 * Tweaking ns-3::
 * Building Topologies::
 @end menu
