@@ -401,7 +401,7 @@ message,
 
 @subsection Overriding Default Attributes
 @cindex command line arguments
-Another way you can change how @command}ns-3} scripts behave without editing
+Another way you can change how @command{ns-3} scripts behave without editing
 and building is via @emph{command line arguments.}  We provide a mechanism to 
 parse command line arguments and automatically set local and global variables
 based on those arguments.
