@@ -394,7 +394,7 @@ with component name and simulation time.
 @section Using Command Line Arguments
 
 @subsection Overriding Default Attributes
-@cindex arguments|command line
+@cindex command line arguments
 Another way you can change the way that ns-3 scripts behave without editing
 and building scripts is via @emph{command line arguments.}  We provide a 
 mechanism to parse command line arguments and automatically set local and 
@@ -737,7 +737,7 @@ or how-to sections for information on advanced tracing configuration including
 extending the tracing namespace and creating new tracing sources.
 
 @cindex tracing
-@cindex tracing|ASCII
+@cindex ASCII tracing
 @subsection ASCII Tracing
 ns-3 provides an ASCII trace helper that is a wrapper around low-level 
 tracing system.  This helper lets you configure some useful and easily
@@ -746,7 +746,7 @@ is an ASCII file --- thus the name.  For those familiar with @command{ns-2}
 output, this type of trace is analogous to the @command{out.tr} generated 
 by many scripts.
 
-@cindex tracing|packets
+@cindex tracing packets
 Let's just jump right in and add some ASCII tracing output to our 
 @code{first.cc} script.  The first thing you need to do is to add the 
 following code to the script just before the call to @code{Simulator::Run ()}.
@@ -804,10 +804,10 @@ every packet destined for a channel must pass --- it is the device
 lone character (has a space after it).  This character will have the following
 meaning:
 
-@cindex ascii trace|enqueue
-@cindex ascii trace|dequeue
-@cindex ascii trace|drop
-@cindex ascii trace|receive
+@cindex ascii trace enqueue operation
+@cindex ascii trace dequeue operation
+@cindex ascii trace drop operation
+@cindex ascii trace receive operation
 @itemize @bullet
 @item @code{+}: An enqueue operation occurred on the device queue;
 @item @code{-}: A dequeue operation occurred on the device queue;
@@ -916,7 +916,7 @@ However, there are many traffic trace analyzers that use this packet format.
 We encourage users to exploit the many tools available for analyzing pcap
 traces.  In this tutorial, we show how tcpdump and Wireshark can be used.
 
-@cindex tracing|pcap
+@cindex pcap tracing
 The code used to enable pcap tracing is a one-liner.  
 
 @verbatim

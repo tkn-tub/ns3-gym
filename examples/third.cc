@@ -73,44 +73,52 @@ main (int argc, char *argv[])
   wifiStaNodes.Create (nWifi);
   NodeContainer wifiApNode = p2pNodes.Get (0);
 
-  // setup the wifi channel: this is a log distance propagation model
-  // with a friis model as reference model for the log distance model.
   Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
-  channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
-  Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
+
+  channel->SetPropagationDelayModel (
+    CreateObject<ConstantSpeedPropagationDelayModel> ());
+
+  Ptr<LogDistancePropagationLossModel> log = 
+    CreateObject<LogDistancePropagationLossModel> ();
+
   log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
+
   channel->SetPropagationLossModel (log);
 
-  Ssid ssid = Ssid ("ns-3-ssid");
   WifiHelper wifi;
   wifi.SetPhy ("ns3::WifiPhy");
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
-  // setup stas.
+
+  Ssid ssid = Ssid ("ns-3-ssid");
   wifi.SetMac ("ns3::NqstaWifiMac", 
-               "Ssid", SsidValue (ssid),
-               "ActiveProbing", BooleanValue (false));
+    "Ssid", SsidValue (ssid),
+    "ActiveProbing", BooleanValue (false));
+
   NetDeviceContainer staDevices;
   staDevices = wifi.Install (wifiStaNodes, channel);
-  // setup ap.
-  wifi.SetMac ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid),
-               "BeaconGeneration", BooleanValue (true),
-               "BeaconInterval", TimeValue (Seconds (2.5)));
+
+  wifi.SetMac ("ns3::NqapWifiMac", 
+    "Ssid", SsidValue (ssid),
+    "BeaconGeneration", BooleanValue (true),
+    "BeaconInterval", TimeValue (Seconds (2.5)));
+
   NetDeviceContainer apDevices;
   apDevices = wifi.Install (wifiApNode, channel);
 
   MobilityHelper mobility;
-  // layout the initial position of the nodes.
+
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                 "MinX", DoubleValue (0.0),
-                                 "MinY", DoubleValue (0.0),
-                                 "DeltaX", DoubleValue (5.0),
-                                 "DeltaY", DoubleValue (10.0),
-                                 "GridWidth", UintegerValue (3),
-                                 "LayoutType", StringValue ("RowFirst"));
+    "MinX", DoubleValue (0.0),
+    "MinY", DoubleValue (0.0),
+    "DeltaX", DoubleValue (5.0),
+    "DeltaY", DoubleValue (10.0),
+    "GridWidth", UintegerValue (3),
+    "LayoutType", StringValue ("RowFirst"));
 
   mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
-                             "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)));
+    "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)));
   mobility.Install (wifiStaNodes);
+
   mobility.SetMobilityModel ("ns3::StaticMobilityModel");
   mobility.Install (wifiApNode);
 
@@ -120,6 +128,7 @@ main (int argc, char *argv[])
   stack.Install (wifiStaNodes);
 
   Ipv4AddressHelper address;
+
   address.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer p2pInterfaces;
   p2pInterfaces = address.Assign (p2pDevices);
@@ -154,7 +163,7 @@ main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (10.0));
 
-  PointToPointHelper::EnablePcap ("third", 
+  WifiHelper::EnablePcap ("third", 
     wifiStaNodes.Get (nWifi - 1)->GetId (), 0);
   CsmaHelper::EnablePcap ("third", 
     csmaNodes.Get (nCsma)->GetId (), 0);
