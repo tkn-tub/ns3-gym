@@ -738,3 +738,56 @@ indicate that it has sent one 1024 byte packet to the Echo Server on
 it has received the 1024 bytes from 10.1.1.1.  The echo server silently 
 echoes the packet and you see the echo client log that it has received its 
 packet back from the server.
+
+@c ========================================================================
+@c Browsing ns-3
+@c ========================================================================
+
+@node Ns-3 Source Code
+@section Ns-3 Source Code 
+
+Now that you have used some of the @command{ns-3} helpers you may want to 
+have a look at some of the source code that implements that functionality.
+The most recent code can be browsed on our web server at the following link:
+@uref{http://code.nsnam.org/?sort=lastchange}.  If you click on the bold
+repository names on the left of the page, you will see @emph{changelogs} for
+these repositories, and links to the @emph{manifest}.  From the manifest
+links, one can browse the source tree.
+
+The top-level directory for one of our @emph{repositories} will look 
+something like:
+@verbatim
+drwxr-xr-x  [up]   
+drwxr-xr-x         doc             manifest 
+drwxr-xr-x         examples        manifest 
+drwxr-xr-x         ns3             manifest 
+drwxr-xr-x         regression      manifest 
+drwxr-xr-x         samples         manifest 
+drwxr-xr-x         scratch         manifest 
+drwxr-xr-x         src             manifest 
+drwxr-xr-x         tutorial        manifest 
+drwxr-xr-x         utils           manifest 
+-rw-r--r-- 135     .hgignore       file | revisions | annotate 
+-rw-r--r-- 891     .hgtags         file | revisions | annotate 
+-rw-r--r-- 441     AUTHORS         file | revisions | annotate 
+-rw-r--r-- 17987   LICENSE         file | revisions | annotate 
+-rw-r--r-- 4948    README          file | revisions | annotate 
+-rw-r--r-- 4917    RELEASE_NOTES   file | revisions | annotate 
+-rw-r--r-- 7       VERSION         file | revisions | annotate 
+-rwxr-xr-x 99143   waf             file | revisions | annotate 
+-rwxr-xr-x 28      waf.bat         file | revisions | annotate 
+-rw-r--r-- 30584   wscript         file | revisions | annotate 
+@end verbatim
+
+The source code is mainly in the @code{src} directory.  You can view source
+code by clicking on the @code{manifest} link to the right of the directory 
+name.  If you click on the @code{manifest} link to the right of the src
+directory you will find a subdirectory.  If you click on the @code{manifest}
+link next to the @code{core} subdirectory in under @code{src}, you will find
+a list of files.  The first file you will find is @code{assert.h}.  If you 
+click on the @code{file} link, you will be sent to the source file for
+@code{assert.h}.
+
+Our example scripts are in the @code{examples} directory.  The source code for
+the helpers we have used in this chapter can be found in the 
+@code{src/helpers} directory.
