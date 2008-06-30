@@ -51,7 +51,7 @@ Mercurial --- it will make your life easier in the long run.
 @cindex repository
 If you go to the following link: @uref{http://code.nsnam.org/},
 you will see a number of repositories.  Many are the private repositories of
-the @comamnd{ns-3} development team.  The repositories of interest to you will
+the @command{ns-3} development team.  The repositories of interest to you will
 be prefixed with ``ns-3''.  The current development snapshot (unreleased)
 of @command{ns-3} may be found at: @uref{http://code.nsnam.org/ns-3-dev/}.
 Official releases of @command{ns-3} will be numbered as @code{ns-3.<release>}
