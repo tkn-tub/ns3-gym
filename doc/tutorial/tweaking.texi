@@ -86,7 +86,7 @@ that knowledge to get some interesting information out of the @code{first.cc}
 example script you have already built.
 
 @node Enabling Logging
-@subsection Enabling Logging Using the NS_LOG Environment Variable
+@subsection Enabling Logging
 @cindex NS_LOG
 Let's use the NS_LOG environment variable to turn on some more logging, but
 to get our bearings, go ahead and run the script just as you did previously,

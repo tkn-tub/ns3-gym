@@ -223,8 +223,6 @@ If you are new to C++, you may want to find a tutorial- or cookbook-based
 book or web site and work through at least the basic features of the language
 before proceeding.
 
-@subsection Environment
-
 @cindex toolchain
 @cindex GNU
 The @command{ns-3} system uses the GNU ``toolchain'' for development.  A 
