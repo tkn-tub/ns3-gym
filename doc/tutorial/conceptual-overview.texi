@@ -201,7 +201,7 @@ you are working with our code.  All of the development team have done so.
 The emacs mode line above makes it easier to get the formatting correct if you
 use the emacs editor.
 
-The @command{ns-3} simulator is licentsed using the GNU General Public 
+The @command{ns-3} simulator is licensed using the GNU General Public 
 License.  You will see the appropriate GNU legalese at the head of every file 
 in the @command{ns-3} distribution.  Often you will see a copyright notice for
 one of the institutions involved in the @code{ns-3} project and an author
@@ -451,7 +451,7 @@ creates.
 @subsubsection NetDeviceContainer
 At this point in the script, we have a @code{NodeContainer} that contains
 two nodes.  We have a @code{PointToPointHelper} that is primed and ready to 
-make @code{PointToPointNetDevices} and wire @code{PoiintToPointChannel} objects
+make @code{PointToPointNetDevices} and wire @code{PointToPointChannel} objects
 between them.  Just as we used the @code{NodeContainer} topology helper object
 to create the @code{Node}s for our simulation, we will ask the 
 @code{PointToPointHelper} to do the work involved in creating, configuring and
