@@ -259,6 +259,30 @@ public:
    */
   virtual void SetReceiveCallback (ReceiveCallback cb) = 0;
 
+  /**
+   * \param device a pointer to the net device which is calling this callback
+   * \param packet the packet received
+   * \param protocol the 16 bit protocol number associated with this packet.
+   *        This protocol number is expected to be the same protocol number
+   *        given to the Send method by the user on the sender side.
+   * \param sourceAddress source address
+   * \param destinationAddress destination address
+   * \returns true if the callback could handle the packet successfully, false
+   *          otherwise.
+   */
+  typedef Callback<bool,Ptr<NetDevice>,Ptr<Packet>,uint16_t,const Address &, const Address &> PromiscuousReceiveCallback;
+
+  /**
+   * \param cb callback to invoke whenever a packet has been received
+   *        in promiscuous mode and must be forwarded to the higher
+   *        layers, i.e. for all packets whose destination address
+   *        does NOT match the NetDevice address.  Note that
+   *        ReceiveCallback and PromiscuousReceiveCallback handle
+   *        mutually exclusive sets of packets, and you need to use
+   *        both callbacks in order to receive ALL packets.
+   */
+  virtual void SetPromiscuousReceiveCallback (PromiscuousReceiveCallback cb) = 0;
+
 };
 
 } // namespace ns3

@@ -279,6 +279,7 @@ public:
    * \param cb The callback.
    */
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
+  virtual void SetPromiscuousReceiveCallback (PromiscuousReceiveCallback cb);
 
 protected:
   /**

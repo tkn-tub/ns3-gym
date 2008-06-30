@@ -458,4 +458,10 @@ PointToPointNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
   m_rxCallback = cb;
 }
 
+void 
+PointToPointNetDevice::SetPromiscuousReceiveCallback (NetDevice::PromiscuousReceiveCallback cb)
+{
+  // TODO
+}
+
 } // namespace ns3

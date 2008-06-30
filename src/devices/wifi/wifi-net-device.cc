@@ -304,6 +304,12 @@ WifiNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
   m_forwardUp = cb;
 }
 
+void 
+WifiNetDevice::SetPromiscuousReceiveCallback (NetDevice::PromiscuousReceiveCallback cb)
+{
+  // TODO
+}
+
 void
 WifiNetDevice::ForwardUp (Ptr<Packet> packet, const Mac48Address &from)
 {

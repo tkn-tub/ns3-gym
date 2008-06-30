@@ -171,6 +171,10 @@ SimpleNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
   m_rxCallback = cb;
 }
+void 
+SimpleNetDevice::SetPromiscuousReceiveCallback (NetDevice::PromiscuousReceiveCallback cb)
+{
+}
 
 void
 SimpleNetDevice::DoDispose (void)

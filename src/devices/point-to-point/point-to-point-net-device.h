@@ -176,6 +176,7 @@ public:
   virtual bool NeedsArp (void) const;
 
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
+  virtual void SetPromiscuousReceiveCallback (PromiscuousReceiveCallback cb);
 
 private:
 
