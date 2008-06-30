@@ -6,7 +6,7 @@
 @c ========================================================================
 @c Conceptual Overview
 @c ========================================================================
-@node Conceptual Overveiw
+@node Conceptual Overview
 @chapter Conceptual Overview
 
 @menu

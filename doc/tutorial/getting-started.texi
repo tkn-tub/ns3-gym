@@ -267,9 +267,10 @@ pointer to the offending trace file and its associated reference trace file
 along with a suggestion on how to run diff in order to see what has gone awry.
 
 @c ========================================================================
-@c Testing ns-3
+@c Running a Script
 @c ========================================================================
 
+@node Running a Script
 @section Running a Script
 @cindex running a script with Waf
 We typically run scripts under the control of Waf.  This allows the build 

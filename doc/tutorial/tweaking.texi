@@ -4,16 +4,16 @@
 @c ========================================================================
 
 @c ========================================================================
-@c PART:  Tweaking Ns-3
+@c PART:  Tweaking ns-3
 @c ========================================================================
-@c The below chapters are under the major heading "Tweaking Ns-3"
+@c The below chapters are under the major heading "Tweaking ns-3"
 @c This is similar to the Latex \part command
 @c
 @c ========================================================================
-@c Tweaking Ns-3
+@c Tweaking ns-3
 @c ========================================================================
-@node Tweaking Ns-3
-@chapter Tweaking Ns-3
+@node Tweaking ns-3
+@chapter Tweaking ns-3
 
 @menu
 * Using the Logging Module::
@@ -32,7 +32,8 @@ We have already taken a brief look at the ns-3 logging module while going
 over the @code{first.cc} script.  We will now take a closer look and see what
 kind of use-cases the logging subsystem was designed to cover.
 
-@section Logging Overview
+@node Logging Overview
+@subsection Logging Overview
 Many large systems support some kind of message logging facility, and ns-3
 is not an exception.  In some cases, only error messages are logged to the 
 ``operator console'' (which is typically @code{stderr} in Unix-based systems).
@@ -40,7 +41,7 @@ In other systems, warning messages may be output as well as more detailed
 informational messages.  In some cases, logging facilities are used to output
 debug messages which can quickly turn the output into a blur.
 
-Ns-3 takes the view that all of these verbosity levels are useful and se
+ns-3 takes the view that all of these verbosity levels are useful and se
 provides a selectable, multi-level approach to message logging.  Logging can
 be disabled completely, enabled on a component-by-component basis, enabled
 globally and has selectable verbosity levels.  The ns-3 log module provides
@@ -83,7 +84,8 @@ Now that you have read the documentation in great detail, we can get some
 interesting information out of the @code{first.cc} example script you dropped
 in the scratch directory after the script walkthrough.
 
-@section Enabling Logging Using the NS_LOG Environment Variable
+@node Enabling Logging
+@subsection Enabling Logging Using the NS_LOG Environment Variable
 @cindex NS_LOG
 First, let's use the NS_LOG environment variable to turn on some more logging
 in the @code{first.cc} script you have already built.  Go ahead and run the
@@ -323,7 +325,8 @@ transition into a debugger for fine-grained examination of the problem.  This
 output can be especially useful when your script does something completely 
 unexpected.
 
-@section Adding Logging to your Code
+@node Adding Logging to your Code
+@subsection Adding Logging to your Code
 @cindex NS_LOG
 You can add new logging to your simulations by making calls to the log 
 component via several macros.  Let's do so in the @code{first.cc} script we
@@ -390,7 +393,7 @@ with component name and simulation time.
 @node Using Command Line Arguments
 @section Using Command Line Arguments
 
-@section Overriding Default Attributes
+@subsection Overriding Default Attributes
 @cindex command line arguments
 Another way you can change the way that ns-3 scripts behave without editing
 and building scripts is via @emph{command line arguments.}  We provide a 
@@ -736,7 +739,7 @@ extending the tracing namespace and creating new tracing sources.
 @cindex tracing
 @cindex ASCII tracing
 @subsection ASCII Tracing
-Ns-3 provides an ASCII trace helper that is a wrapper around low-level 
+ns-3 provides an ASCII trace helper that is a wrapper around low-level 
 tracing system.  This helper lets you configure some useful and easily
 understood packet traces easily.  The output of a trace of a simulation run 
 is an ASCII file --- thus the name.  For those familiar with @command{ns-2} 
