@@ -43,10 +43,10 @@ used to output debug messages which can quickly turn the output into a blur.
 
 @command{Ns-3} takes the view that all of these verbosity levels are useful 
 and we provide a selectable, multi-level approach to message logging.  Logging
-can be disabled completely, enabled on a component-by-component basis, enabled
-globally and has selectable verbosity levels.  The @command{ns-3} log module
-provides a straightforward, relatively easy to use way to get some kinds of 
-information out of your simulation.
+can be disabled completely, enabled on a component-by-component basis, or
+enabled globally; and it provides selectable verbosity levels.  The 
+@command{ns-3} log module provides a straightforward, relatively easy to use
+way to get useful information out of your simulation.
 
 You should understand that we do provide a general purpose mechanism --- 
 tracing --- to get data out of your models which should be preferred for 
@@ -78,19 +78,18 @@ irrespective of logging levels or component selection.
 Each level can be requested singly or cumulatively; and logging can be set 
 up using a shell environment variable (NS_LOG) or by logging system function 
 call.  As was seen earlier in the tutorial, the logging system has Doxygen 
-documentation so now would be a good time to peruse the Logging Module 
-documentation.
+documentation and now would be a good time to peruse the Logging Module 
+documentation if you have not done so.
 
-Now that you have read the documentation in great detail, we can get some
-interesting information out of the @code{first.cc} example script you dropped
-in the scratch directory after the script walkthrough.
+Now that you have read the documentation in great detail, let's use some of
+that knowledge to get some interesting information out of the @code{first.cc}
+example script you have already built.
 
 @node Enabling Logging
 @subsection Enabling Logging Using the NS_LOG Environment Variable
 @cindex NS_LOG
-First, let's use the NS_LOG environment variable to turn on some more logging
-in the @code{first.cc} script you have already built.  Go ahead and run the
-script just as you did previously,
+Let's use the NS_LOG environment variable to turn on some more logging, but
+to get our bearings, go ahead and run the script just as you did previously,
 
 @verbatim
   ~/repos/ns-3-dev > ./waf --run scratch/first
@@ -102,16 +101,19 @@ script just as you did previously,
   ~/repos/ns-3-dev >
 @end verbatim
 
-The ``Sent'' and ``Received'' messages are actually logging messages from the
-@code{UdpEchoClientApplication} and @code{UdpEchoServerApplication}.  We can
-ask the client application, for example, to print more information by setting
-its logging level via the NS_LOG environment variable.  I am going to assume
-from here on that are using an sh-like shell that uses the``VARIABLE=value''
-syntax.  If you are using a csh-like shell, then you will have to convert to
-the ``setenv VARIABLE value'' syntax required by those shells.
+It turns out that the ``Sent'' and ``Received'' messages are actually logging
+messages from the @code{UdpEchoClientApplication} and 
+@code{UdpEchoServerApplication}.  We can ask the client application, for 
+example, to print more information by setting its logging level via the 
+NS_LOG environment variable.  
 
-Let's ask the UDP echo client application to print a little more information.
-Right now, it is responding to the following line of code in @code{first.cc},
+I am going to assume from here on that are using an sh-like shell that uses 
+the``VARIABLE=value'' syntax.  If you are using a csh-like shell, then you 
+will have to convert my examples to the ``setenv VARIABLE value'' syntax 
+required by those shells.
+
+Right now, the UDP echo client application is responding to the following line
+of code in @code{first.cc},
 
 @verbatim
   LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
@@ -128,7 +130,7 @@ script and recompiling by setting the NS_LOG environment variable like this:
   ~/repos/ns-3-dev > export NS_LOG=UdpEchoClientApplication=level_all
 @end verbatim
 
-This sets the environment variable @code{NS_LOG} to the string,
+This sets the shell environment variable @code{NS_LOG} to the string,
 
 @verbatim
   UdpEchoClientApplication=level_all
@@ -137,8 +139,8 @@ This sets the environment variable @code{NS_LOG} to the string,
 The left hand side of the assignment is the name of the logging component we
 want to set, and the right hand side is the flag we want to use.  In this case,
 we are going to turn on all of the debugging levels for the application.  If
-you run the script with NS_LOG set this way you should see the following 
-output:
+you run the script with NS_LOG set this way, the @command{ns-3} logging 
+system will pick up the change and you should see the following output:
 
 @verbatim
   ~/repos/ns-3-dev > ./waf --run scratch/first
@@ -158,11 +160,13 @@ output:
   ~/repos/ns-3-dev >
 @end verbatim
 
-The only additional debug information provided by the application is from
-the NS_LOG_FUNCTION level.  Note that there are no requirements in the
-@command{ns-3} system that logging components must support any particular
-logging functionality.  The decision regarding how much information is logged
-is left to the individual developer.
+The additional debug information provided by the application is from
+the NS_LOG_FUNCTION level.  This shows every time a function in the application
+is called during script execution.  Note that there are no requirements in the
+@command{ns-3} system that models must support any particular logging 
+functionality.  The decision regarding how much information is logged
+is left to the individual model developer.  In the case of the echo 
+applications, a good deal of log output is available.
 
 You can now see a log of the function calls that were made to the application.
 If you look closely you will notice a single colon between the string 
@@ -296,9 +300,10 @@ simulation starts.  The same for the UdpEchoClient constructor.
 
 Recall that the @code{first.cc} script started the echo server application at
 one second into the simulation.  You can now see that the 
-@code{StartApplication} of the server is, in fact, called at one second (or
-one billion nanoseconds).  You can also see that the echo client application
-is started at a simulation time of two seconds as we requested in the script.
+@code{StartApplication} method of the server is, in fact, called at one second
+(or one billion nanoseconds).  You can also see that the echo client 
+application is started at a simulation time of two seconds as we requested in
+the script.
 
 You can now follow the progress of the simulation from the 
 @code{ScheduleTransmit} call in the client that calls @code{Send} to the 
@@ -306,7 +311,7 @@ You can now follow the progress of the simulation from the
 elapsed time as the packet is sent across the point-to-point link is 3.6864
 milliseconds.  You see the echo server logging a message telling you that it
 has echoed the packet and then, after a delay, you see the echo client receive
-the echoed packet.
+the echoed packet in its @code{HandleRead} method.
 
 There is a lot that is happening under the covers in this simulation that you
 are not seeing as well.  You can very easily follow the entire process by
@@ -641,7 +646,7 @@ instead of the constant @code{1} as is shown below.
 @end verbatim
 
 Now if you run the script and provide the @code{--PrintHelp} argument, you 
-should see your new @code{User Argument} listed in the help.
+should see your new @code{User Argument} listed in the help display.
 
 @verbatim
   ~/repos/ns-3-dev > ./waf --run "scratch/first --PrintHelp"
@@ -676,12 +681,12 @@ setting the @code{--nPackets} argument in the command line,
 
 You have now echoed two packets.
 
-If you are an @command{ns-3} user, you can use the command line argument 
-system to control global values and attributes.  If you are a model author, 
-you can add new attributes to your Objects and they will automatically be 
-available for setting by your users through the command line system.  If you
-are a script author, you can add new variables to your scripts and hook them 
-into the command line system quite painlessly.
+You can see that if you are an @command{ns-3} user, you can use the command 
+line argument system to control global values and attributes.  If you are a 
+model author, you can add new attributes to your Objects and they will 
+automatically be available for setting by your users through the command line
+system.  If you are a script author, you can add new variables to your scripts
+and hook them into the command line system quite painlessly.
 
 @c ========================================================================
 @c Using the Tracing System
@@ -692,7 +697,7 @@ into the command line system quite painlessly.
 The whole point of simulation is to generate output for further study, and 
 the @command{ns-3} tracing system is a primary mechanism for this.  Since 
 @command{ns-3} is a C++ program, standard facilities for generating output 
-from C++ programs apply:  
+from C++ programs could be used:  
 
 @verbatim
   #include <iostream>
@@ -704,6 +709,11 @@ from C++ programs apply:
     ...
   } 
 @end verbatim
+
+You could even use the logging module to add a little structure to your 
+solution.  There are many well-known problems generated by such approaches
+and so we have provided a generic event tracing subsystem to address the 
+issues we thought were important.
 
 The basic goals of the @command{ns-3} tracing system are:
 
@@ -736,7 +746,7 @@ The rationale for this explicit division is to allow users to attach new
 types of sinks to existing tracing sources, without requiring editing and 
 recompilation of the the core of the simulator.  Thus, in the example above, 
 a user could define a new tracing sink in her script and attach it to an 
-existing tracing source defined in the simulation core editing only the 
+existing tracing source defined in the simulation core by editing only the 
 user script.
 
 In this tutorial, we will walk through some pre-defined sources and sinks and
@@ -747,12 +757,12 @@ extending the tracing namespace and creating new tracing sources.
 @cindex tracing
 @cindex ASCII tracing
 @subsection ASCII Tracing
-@command{Ns-3} provides functionality wrapping the low-level tracing system
-to help you with the details involved in configuring some easily 
-understood packe traces.  If you enable this functionality, you will see
-output of a trace of a simulation appear in an ASCII file --- thus the name.
-For those familiar with @command{ns-2} output, this type of trace is 
-analogous to the @command{out.tr} generated by many scripts.
+@command{Ns-3} provides helper functionality that wraps the low-level tracing
+system to help you with the details involved in configuring some easily 
+understood packet traces.  If you enable this functionality, you will see
+output in a ASCII files --- thus the name.  For those familiar with 
+@command{ns-2} output, this type of trace is analogous to the @command{out.tr}
+generated by many scripts.
 
 @cindex tracing packets
 Let's just jump right in and add some ASCII tracing output to our 
@@ -790,8 +800,8 @@ You can now build the script and run it from the command line:
 
 @cindex first.tr
 Just as you have seen previously, you may see some messages from Waf and then
-the ``Compilation finished successfully'' message.  The following messages are
-from the running program.  
+the ``Compilation finished successfully'' with some number of messages from 
+the running program.  
 
 When it ran, the program will have created a file named @code{first.tr}.  
 Because of the way that Waf works, the file is not created in the local 
@@ -799,7 +809,7 @@ directory, it is created at the top-level directory of the repository by
 default.  If you want to control where the traces are saved you can use the 
 @code{--cwd} option of Waf to specify this.  We have not done so, thus we 
 need to change into the top level directory of our repo and take a look at 
-the file @code{first.tr} in your favorite editor.
+the ASCII trace file @code{first.tr} in your favorite editor.
 
 @subsubsection Parsing Ascii Traces
 @cindex parsing ascii traces
@@ -808,11 +818,11 @@ to notice is that there are a number of distinct lines in this file.  It may
 be difficult to see this clearly unless you widen your window considerably.
 
 Each line in the file corresponds to a @emph{trace event}.  In this case
-we are tracing events on the @emph{transmit queue} present in every net device
-on every node in the simulation.  The transmit queue is a queue through which
-every packet destined for a channel must pass.  Note that each line in the 
-trace file begins with a lone character (has a space after it).  This 
-character will have the following meaning:
+we are tracing events on the @emph{transmit queue} present in every 
+point-to-point net device in the simulation.  The transmit queue is a queue 
+through which every packet destined for a point-to-point channel must pass.
+Note that each line in the trace file begins with a lone character (has a 
+space after it).  This character will have the following meaning:
 
 @cindex ascii trace enqueue operation
 @cindex ascii trace dequeue operation
@@ -855,8 +865,8 @@ we see confirmation that this is, indeed, happening.
 @cindex node number
 @cindex net device number
 @cindex smart pointer
-The next line of the example trace (reference 02) tell us the trace source
-that originated this even expressed in the tracing namespace.  You can think
+The next line of the example trace (reference 02) tell us which trace source
+originated this event (expressed in the tracing namespace).  You can think
 of the tracing namespace somewhat like you would a filesystem namespace.  The 
 root of the namespace is the @code{NodeList}.  This corresponds to a container
 managed in the @command{ns-3} core code that contains all of the nodes that are
@@ -869,8 +879,8 @@ You can see that this trace event comes from @code{DeviceList/0} which is the
 zeroth device installed in the node. 
 
 The next string, @code{$ns3::PointToPointNetDevice} tells you what kind of 
-device it is that is in the zeroth position of the device list for node zero.
-Recall that the operation @code{+} found at reference 00 means an enqueue 
+device is in the zeroth position of the device list for node zero.
+Recall that the operation @code{+} found at reference 00 meant that an enqueue 
 operation happened on the transmit queue of the device.  This is reflected in 
 the final segments of the ``trace path'' which are @code{TxQueue/Enqueue}.
 
@@ -916,7 +926,7 @@ traces in the file.
 @subsection PCAP Tracing
 @cindex pcap
 @cindex Wireshark
-The @command{ns-3} device helpers can be used to create trace files in the
+The @command{ns-3} device helpers can also be used to create trace files in the
 @code{.pcap} format.  The acronym pcap (usually written in lower case) stands
 for @emph{p}acket @emph{cap}ture, and is actually an API that includes the 
 definition of a @code{.pcap} file format.  The most popular program that can
@@ -940,11 +950,12 @@ create a trace file for every point-to-point device in the simulation.  The
 file names will be built using the prefix, the node number, the device number
  and a ``.pcap'' suffix.
 
-In our example script, we will see a files named ``first-0-0.pcap'' and
-``first.1-0.pcap'' which are the pcap traces for node 0-device 0 and 
+In our example script, we will eventually see files named ``first-0-0.pcap'' 
+and ``first.1-0.pcap'' which are the pcap traces for node 0-device 0 and 
 node 1-device 1, respectively.
 
-You can now run the script in the usual way:
+Once you have added the line of code to enable pcap tracing, you can run the
+script in the usual way:
 
 @verbatim
   ./waf --run scratch/first

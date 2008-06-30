@@ -246,9 +246,9 @@ if we create @code{nCsma} ``extra'' nodes the last one will be at index
 code.
 
 The client application is set up exactly as we did in the @code{first.cc}
-example script.  We point the client to the server we just set up on the last
-of the ``extra'' CSMA nodes and install the client onto the point-to-point node
-that is not associated with any CSMA device.
+example script.  We tell the client to send packets to the server we just
+installed on the last of the ``extra'' CSMA nodes.  We install the client on
+the leftmost point-to-point node seen in the topology illustration.
 
 @verbatim
   UdpEchoClientHelper echoClient;
@@ -305,8 +305,8 @@ repository you would type,
   ./waf --run scratch/second
 @end verbatim
 
-Since we have set up the UDP echo applications to log just as we did in the 
-@code{first.cc} script, you will see similar output.
+Since we have set up the UDP echo applications to log just as we did in 
+@code{first.cc}, you will see similar output when you run the script.
 
 @verbatim
   ~/repos/ns-3-dev > ./waf --run scratch/second
@@ -473,12 +473,12 @@ pcap trace file for every node in the simulation.  One thing you can do to
 keep from getting all of those pcap traces with nothing but ARP exchanges in 
 them is to be more specific about which nodes and devices you want to trace.
 
-Let's take a look at @code{scratch/second.cc} and be more specific about which
-nodes and devices we want to trace.  The file we provide uses the 
-@code{EnablePcapAll} methods of the helpers to enable pcap on all devices.  
-We want to use the more specific method, @code{EnablePcap}, which takes
-a node number and device number as parameters.  Go ahead and replace the 
-@code{EnablePcapAll} calls with the calls below.
+Let's take a look at @code{scratch/second.cc} and add that code enabling us
+to be more specific.  The file we provided used the @code{EnablePcapAll} 
+methods of the helpers to enable pcap on all devices.  We now want to use the
+more specific method, @code{EnablePcap}, which takes a node number and device
+number as parameters.  Go ahead and replace the @code{EnablePcapAll} calls 
+with the calls below.
 
 @verbatim
   PointToPointHelper::EnablePcap ("second", p2pNodes.Get (0)->GetId (), 0);
@@ -490,30 +490,34 @@ we also know that the device of interest in both cases is going to be zero,
 so those parameters are not really interesting.  In order to get the node
 number, you have two choices:  first, nodes are numbered in a monotonically
 increasing fashion starting from zero in the order in which you created them.
-One way to get a node number to pass to the helper is to figure this number
-out ``manually.''  If you take a look at the network topology illustration at
-the beginning of the file, you can see that the last CSMA node is going to be
-node number code{nCsma + 1}.  This can become annoyingly difficult in larger
+One way to get a node number is to figure this number out ``manually'' by
+contemplating the order of node creation.  If you take a look at the network 
+topology illustration at the beginning of the file, we did this for you and
+you can see that the last CSMA node is going to be node number 
+@code{nCsma + 1}.  This approach can become annoyingly difficult in larger 
 simulations.  
 
 An alternate way, which we use here, is to realize that the
 @code{NodeContainers} contain pointers to @command{ns-3} @code{Node} Objects.
 The @code{Node} Object has a method called @code{GetId} which will return that
-node's ID.  Let's go take a look at the Doxygen for the @code{Node} and locate
-that method, which is further down in the code than we've seen so far.
+node's ID, which is the node number we seek.  Let's go take a look at the 
+Doxygen for the @code{Node} and locate that method, which is further down in 
+the @command{ns-3} core code than we've seen so far; but sometimes you have to
+search diligently for useful things.
 
 Go to the Doxygen documentation for your release (recall that you can find it
 on the project web site).  You can get to the @code{Node} documentation by
-looking through at the ``Classes'' tab in and scrolling down to 
-@code{ns3::Node} in the list.  Select @code{ns3::Node} and you will be taken
+looking through at the ``Classes'' tab and scrolling down the ``Class List'' 
+until you find @code{ns3::Node}.  Select @code{ns3::Node} and you will be taken
 to the documentation for the @code{Node} class.  If you now scroll down to the
 @code{GetId} method and select it, you will be taken to the detailed 
 documentation for the method.  Using the @code{GetId} method can make 
 determining node numbers much easier in complex topologies.
 
 Now that we have got some trace filtering in place, it is reasonable to start
-increasing the number of CSMA devices in our simulation.  If you run the 
-simulation setting @code{nCsma} to 100, you will see the following:
+increasing the number of CSMA devices in our simulation.  If you build the 
+new script and run the simulation setting @code{nCsma} to 100, you will see 
+the following output:
 
 @verbatim
   ~/repos/ns-3-dev > ./waf --run "scratch/second --nCsma=100"
@@ -526,8 +530,8 @@ simulation setting @code{nCsma} to 100, you will see the following:
 @end verbatim
 
 Note that the echo server is now located at 10.1.2.101 which corresponds to
-100 ``extra'' CSMA nodes with the echo server on the last one.  If you list
-the pcap files in the top level directory,
+having 100 ``extra'' CSMA nodes with the echo server on the last one.  If you
+list the pcap files in the top level directory,
 
 @verbatim
   ~/repos/ns-3-dev > ls *.pcap
@@ -569,8 +573,8 @@ script and examine some of the output.
 Just as in the @code{second.cc} example (and in all @command{ns-3} examples)
 the file begins with an emacs mode line and some GPL boilerplate.
 
-Lets take a look at the ASCII art that shows the default network topology 
-constructed in the example.  In this case, you can see that we are going to 
+Take a look at the ASCII art (reproduced below) that shows the default network
+topology constructed in the example.  You can see that we are going to 
 further extend our example by hanging a wireless network off of the left side.
 Notice that this is a default network topology since you can actually vary the
 number of nodes created on the wired and wireless networks.  Just as in the 
@@ -762,8 +766,8 @@ by providing a propagation delay model.  Again, I don't want to devolve this
 tutorial into a manual on @code{Wifi}, but this model describes how the 
 electromagnetic signals are going to propagate.  We are going to create the 
 simplest model, the @code{ConstantSpeedPropagationDelayModel} that, by default,
-has the signals propagating at a constant speed --- that of the speed of light
-in a vacuum.
+has the signals propagating at a constant speed --- approximately that of the 
+speed of light in air.
 
 Recall that we created the @code{WifiChannel} and assigned it to a smart 
 pointer.  One of the features of a smart pointer is that you can use it
@@ -771,7 +775,9 @@ just as you would a ``normal'' C++ pointer.  The next line of code will
 create a @code{ConstantSpeedPropagationDelayModel} using the 
 @code{CreateObject} template function and pass the resulting smart pointer
 to the chanel model as an unnamed parameter of the 
-@code{WifiChannel SetPropagationDelayModel} method.
+@code{WifiChannel SetPropagationDelayModel} method.  In English, we create
+a model for propagation speed of electromagnetic signals and tell the 
+wireless channel to use it.
 
 @verbatim
   channel->SetPropagationDelayModel (
@@ -790,12 +796,13 @@ and set a ``propagation loss model'' for the channel.
   channel->SetPropagationLossModel (log);
 @end verbatim
 
-This snippet tells the channel how it should calculate signal attenuation 
-of a signal.  The details of these calcuations are beyond the scope of a
-tutorial.  You are encouraged to explore the Doxygen documentation of classes 
-@code{LogDistancePropagationLossModel} and
-@code{FriisPropagationLossModel} if you are interested in the details.  You
-will find the documentation in the ``Classes'' tab of the Doxygen page.
+This snippet is used to tell the channel how it should calculate signal 
+attenuation of waves flowing in the channel.  The details of these calcuations
+are beyond the scope of a tutorial.  You are encouraged to explore the Doxygen
+documentation of classes @code{LogDistancePropagationLossModel} and
+@code{FriisPropagationLossModel} if you are interested in the details.  As
+usual, you will find the documentation in the ``Classes'' tab of the Doxygen 
+documentation.
 
 Now we will return to more familiar ground.  We next create a @code{WifiHelper}
 object and set two default atributes that it will use when creating the actual
@@ -808,9 +815,9 @@ devices.
 @end verbatim
 
 The @code{SetPhy} method tells the helper the type of physical layer class
-we want to instantiate when building @code{Wifi} devices.  In this case, it 
-is asking for physical layer models based on the YANS 802.11a model.  Again, 
-details are avialable in Doxygen.
+we want it to instantiate when building @code{Wifi} devices.  In this case,  
+the script is asking for physical layer models based on the YANS 802.11a 
+model.  Again, details are avialable in Doxygen.
 
 The @code{SetRemoteStationManager} method tells the helper the type of 
 rate control algorithm to use.  Here, it is asking the helper to use the AARF
@@ -836,8 +843,9 @@ will not be sent by MACs created by this helper.
 
 Again, for the next lines of code we are back on familiar ground.  This code
 will @code{Install} Wifi net devices on the nodes we have created as STA nodes
-and will tie them to the @code{WifiChannel} we created manually by passing
-in the @code{channel} to the @code{Install} method.
+and will tie them to the @code{WifiChannel}.  Since we created the 
+@code{channel} manually rather than having the helper do it for us, we have to
+pass it into the helper when we call the @code{Install} method.
 
 @verbatim
   NetDeviceContainer staDevices;
@@ -846,7 +854,8 @@ in the @code{channel} to the @code{Install} method.
 
 We have configured Wifi for all of our STA nodes, and now we need to 
 configure the AP (access point) node.  We begin this process by changing
-the default @code{Attributes} to reflect the requirements of the AP.
+the default @code{Attributes} of the @code{WifiHelper} to reflect the 
+requirements of the AP.
 
 @verbatim
   wifi.SetMac ("ns3::NqapWifiMac", 
@@ -869,7 +878,7 @@ familiar way.
 @end verbatim
 
 Now, we are going to add mobility models.  We want the STA nodes to be mobile,
-wandering around inside a bounding box and we want to make the AP node 
+wandering around inside a bounding box, and we want to make the AP node 
 stationary.  We use the @code{MobilityHelper} to make this easy for us.
 First, we instantiate a @code{MobilityHelper} obejct and set some attributes
 controlling the ``position allocator'' functionality.
@@ -907,7 +916,7 @@ STA nodes.
   mobility.Install (wifiStaNodes);
 @end verbatim
 
-We wanted the access point to remain in a fixed position during the simulation.
+We want the access point to remain in a fixed position during the simulation.
 We accomplish this by setting the mobility model for this node to be the 
 @code{ns3::StaticMobilityModel}:
 
@@ -1145,8 +1154,8 @@ following function:
   }
 @end verbatim
 
-This code just unconditionally pulls the position information from the 
-mobility model and logs the x and y position of the node.  We are
+This code just pulls the position information from the mobility model and 
+unconditionally logs the x and y position of the node.  We are
 going to arrange for this function to be called every time the wireless
 node with the echo client changes its position.  We do this using the 
 @code{Config::Connect} function.  Add the following lines of code to the
@@ -1162,24 +1171,27 @@ script just before the @code{Simulator::Run} call.
 @end verbatim
 
 What we do here is to create a string containing the tracing namespace path
-to the event we want to connect.  We have to figure out which node it is we
-want to connect to.  In the case of the default number of CSMA and wireless 
-nodes, this turns out to be node seven and the tracing namespace path to the
-mobility model is,
+of the event to which we want to connect.  First, we have to figure out which 
+node it is we want using the @code{GetId} method as described earlier.  In the
+case of the default number of CSMA and wireless nodes, this turns out to be 
+node seven and the tracing namespace path to the mobility model would look
+like,
 
 @verbatim
   /NodeList/7/$ns3::MobilityModel/CourseChange
 @end verbatim
 
-Based on the discussion in the tracing section, you may easily infer that 
-this string references the seventh node in the NodeList and looks for what is 
-called an aggregated object of type @code{ns3::MobilityModel}.  The dollar
-sign prefix implies that the MobilityModel is aggregated to node seven.  The
-last component of the path means that we are hooking into the ``CourseChange''
-event of that model.  We have made a connection between the trace source in 
-node seven with our trace sink by calling @code{Config::Connect}.  Once this 
-is done, every course change event on node seven will be hooked into our trace
-sink, which will in turn print out the new position.
+Based on the discussion in the tracing section, you can easily infer that 
+this trace path references the seventh node in the NodeList.  It specifies
+what is called an aggregated object of type @code{ns3::MobilityModel}.  The 
+dollar sign prefix implies that the MobilityModel is aggregated to node seven.
+The last component of the path means that we are hooking into the 
+``CourseChange'' event of that model.  
+
+We make a connection between the trace source in node seven with our trace 
+sink by calling @code{Config::Connect} and passing this namespace path.  Once 
+this is done, every course change event on node seven will be hooked into our 
+trace sink, which will in turn print out the new position.
 
 If you now run the simulation, you will see the course changes displayed as 
 they happen.
@@ -1225,8 +1237,7 @@ they happen.
 If you are feeling brave, there is a list of all trace sources in the 
 @command{ns-3} Doxygen which you can find in the ``NS-3 Modules'' section.  
 Under the ``core'' section, you will find a link to ``The list of all trace 
-sources.''  In that link you will find a list of all of the trace sources that
- you can hook to.  You may find it interesting to try and hook some of these 
+sources.''  You may find it interesting to try and hook some of these 
 traces yourself.  Additionally in the ``NS-3 Modules'' documentation, there is
 a link to ``The list of all attributes.''  You can set the default value of 
 any of these atributes via the command line as we have previously discussed.

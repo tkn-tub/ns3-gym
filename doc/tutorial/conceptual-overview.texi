@@ -687,7 +687,7 @@ the echo client application will begin the data transfer phase of the
 simulation by sending a packet to the server.
 
 The act of sending the packet to the server will trigger a chain of events
-that will be automatically scheduled behind the scene and which will perform 
+that will be automatically scheduled behind the scenes and which will perform 
 the mechanics of the packet echo according to the various timing parameters 
 that we have set in the script.
 
