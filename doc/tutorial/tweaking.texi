@@ -93,13 +93,13 @@ in the @code{first.cc} script you have already built.  Go ahead and run the
 script just as you did previously,
 
 @verbatim
-  ~/repos/ns-3-tutorial > ./waf --run scratch/first
-  Entering directory `/home/craigdo/repos/ns-3-tutorial/build'
+  ~/repos/ns-3-dev > ./waf --run scratch/first
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
   Compilation finished successfully
   Sent 1024 bytes to 10.1.1.2
   Received 1024 bytes from 10.1.1.1
   Received 1024 bytes from 10.1.1.2
-  ~/repos/ns-3-tutorial >
+  ~/repos/ns-3-dev >
 @end verbatim
 
 The ``Sent'' and ``Received'' messages are actually logging messages from the
@@ -125,7 +125,7 @@ increase the logging level and get more information without changing the
 script and recompiling by setting the NS_LOG environment variable like this:
 
 @verbatim
-  ~/repos/ns-3-tutorial > export NS_LOG=UdpEchoClientApplication=level_all
+  ~/repos/ns-3-dev > export NS_LOG=UdpEchoClientApplication=level_all
 @end verbatim
 
 This sets the environment variable @code{NS_LOG} to the string,
@@ -141,8 +141,8 @@ you run the script with NS_LOG set this way you should see the following
 output:
 
 @verbatim
-  ~/repos/ns-3-tutorial > ./waf --run scratch/first
-  Entering directory `/home/craigdo/repos/ns-3-tutorial/build'
+  ~/repos/ns-3-dev > ./waf --run scratch/first
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
   Compilation finished successfully
   UdpEchoClientApplication:UdpEchoClient()
   UdpEchoClientApplication:StartApplication()
@@ -155,7 +155,7 @@ output:
   UdpEchoClientApplication:StopApplication()
   UdpEchoClientApplication:DoDispose()
   UdpEchoClientApplication:~UdpEchoClient()
-  ~/repos/ns-3-tutorial >
+  ~/repos/ns-3-dev >
 @end verbatim
 
 The only additional debug information provided by the application is from
@@ -194,8 +194,8 @@ that every message from the given log component is prefixed with the component
 name.
 
 @verbatim
-  ~/repos/ns-3-tutorial > ./waf --run scratch/first
-  Entering directory `/home/craigdo/repos/ns-3-tutorial/build'
+  ~/repos/ns-3-dev > ./waf --run scratch/first
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
   Compilation finished successfully
   UdpEchoClientApplication:UdpEchoClient()
   UdpEchoClientApplication:StartApplication()
@@ -208,7 +208,7 @@ name.
   UdpEchoClientApplication:StopApplication()
   UdpEchoClientApplication:DoDispose()
   UdpEchoClientApplication:~UdpEchoClient()
-  ~/repos/ns-3-tutorial >
+  ~/repos/ns-3-dev >
 @end verbatim
 
 You can now see all of the messages coming from the UDP echo client application
@@ -231,8 +231,8 @@ echo client and server applications.  You may see that this can be very useful
 in debugging problems.
 
 @verbatim
-  ~/repos/ns-3-tutorial > ./waf --run scratch/first
-  Entering directory `/home/craigdo/repos/ns-3-tutorial/build'
+  ~/repos/ns-3-dev > ./waf --run scratch/first
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
   Compilation finished successfully
   UdpEchoServerApplication:UdpEchoServer()
   UdpEchoClientApplication:UdpEchoClient()
@@ -251,7 +251,7 @@ in debugging problems.
   UdpEchoServerApplication:DoDispose()
   UdpEchoClientApplication:~UdpEchoClient()
   UdpEchoServerApplication:~UdpEchoServer()
-  ~/repos/ns-3-tutorial >
+  ~/repos/ns-3-dev >
 @end verbatim
 
 It is also sometimes useful to be able to see the simulation time at which a
@@ -265,8 +265,8 @@ log message is generated.  You can do this by ORing in the prefix_time bit.
 If you run the script now, you should see the following output:
 
 @verbatim
-  ~/repos/ns-3-tutorial > ./waf --run scratch/first
-  Entering directory `/home/craigdo/repos/ns-3-tutorial/build'
+  ~/repos/ns-3-dev > ./waf --run scratch/first
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
   Compilation finished successfully
   0ns UdpEchoServerApplication:UdpEchoServer()
   0ns UdpEchoClientApplication:UdpEchoClient()
@@ -287,7 +287,7 @@ If you run the script now, you should see the following output:
   UdpEchoServerApplication:DoDispose()
   UdpEchoClientApplication:~UdpEchoClient()
   UdpEchoServerApplication:~UdpEchoServer()
-  ~/repos/ns-3-tutorial >
+  ~/repos/ns-3-dev >
 @end verbatim
 
 You can see that the constructor for the UdpEchoServer was called at a 
@@ -324,7 +324,7 @@ for the single packet echo) but you can redirect this information into a file
 and look through it with your favorite editor if you like,
 
 @verbatim
-  ~/repos/ns-3-tutorial > ./waf --run scratch/first >& log.out
+  ~/repos/ns-3-dev > ./waf --run scratch/first >& log.out
 @end verbatim
 
 I personally use this quite a bit when I am presented with a problem and I
@@ -365,7 +365,7 @@ Now build the script using waf and clear the @code{NS_LOG} variable to turn
 off the torrent of logging we previously enabled:
 
 @verbatim
-  ~/repos/ns-3-tutorial > export NS_LOG=
+  ~/repos/ns-3-dev > export NS_LOG=
 @end verbatim
 
 Now, if you run the script, you will not see your new message since its 
@@ -376,21 +376,21 @@ to @code{NS_LOG_INFO}.  If you just want to see this particular level of
 logging, you can enable it by,
 
 @verbatim
-  ~/repos/ns-3-tutorial > export NS_LOG=FirstScriptExample=info
+  ~/repos/ns-3-dev > export NS_LOG=FirstScriptExample=info
 @end verbatim
 
 If you now run the script you will see your new ``Creating Topology'' log
 message,
 
 @verbatim
-  ~/repos/ns-3-tutorial > ./waf --run scratch/first
-  Entering directory `/home/craigdo/repos/ns-3-tutorial/build'
+  ~/repos/ns-3-dev > ./waf --run scratch/first
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
   Compilation finished successfully
   Creating Topology
   Sent 1024 bytes to 10.1.1.2
   Received 1024 bytes from 10.1.1.1
   Received 1024 bytes from 10.1.1.2
-  ~/repos/ns-3-tutorial >
+  ~/repos/ns-3-dev >
 @end verbatim
 
 @c ========================================================================
@@ -430,7 +430,7 @@ and add that two lines of code to the @code{first.cc} script at the start of
 for help in the following way,
 
 @verbatim
-  ~/repos/ns-3-tutorial > ./waf --run "scratch/first --PrintHelp"
+  ~/repos/ns-3-dev > ./waf --run "scratch/first --PrintHelp"
 @end verbatim
 
 This will ask Waf to run the @code{scratch/first} script and pass the command
@@ -439,8 +439,8 @@ sort out which program gets which argument.  The command line parser will
 now see the @code{--PrintHelp} argument and respond with,
 
 @verbatim
-  ~/repos/ns-3-tutorial > ./waf --run ``scratch/first --PrintHelp''
-  Entering directory `/home/craigdo/repos/ns-3-tutorial/build'
+  ~/repos/ns-3-dev > ./waf --run ``scratch/first --PrintHelp''
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
   Compilation finished successfully
   --PrintHelp: Print this help message.
   --PrintGroups: Print the list of groups.
@@ -448,7 +448,7 @@ now see the @code{--PrintHelp} argument and respond with,
   --PrintGroup=[group]: Print all TypeIds of group.
   --PrintAttributes=[typeid]: Print all attributes of typeid.
   --PrintGlobals: Print the list of globals.
-  ~/repos/ns-3-tutorial >
+  ~/repos/ns-3-dev >
 @end verbatim
 
 Let's focus on the @code{--PrintAttributes} option.  We have already hinted
@@ -515,8 +515,8 @@ time prefix.
 If you run the script, you should now see the following output,
 
 @verbatim
-  ~/repos/ns-3-tutorial > ./waf --run scratch/first
-  Entering directory `/home/craigdo/repos/ns-3-tutorial/build'
+  ~/repos/ns-3-dev > ./waf --run scratch/first
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
   Compilation finished successfully
   0ns UdpEchoServerApplication:UdpEchoServer()
   1000000000ns UdpEchoServerApplication:StartApplication()
@@ -527,7 +527,7 @@ If you run the script, you should now see the following output,
   10000000000ns UdpEchoServerApplication:StopApplication()
   UdpEchoServerApplication:DoDispose()
   UdpEchoServerApplication:~UdpEchoServer()
-  ~/repos/ns-3-tutorial >
+  ~/repos/ns-3-dev >
 @end verbatim
 
 Recall that the last time we looked at the simulation time at which the packet
@@ -644,8 +644,8 @@ Now if you run the script and provide the @code{--PrintHelp} argument, you
 should see your new @code{User Argument} listed in the help.
 
 @verbatim
-  ~/repos/ns-3-tutorial > ./waf --run "scratch/first --PrintHelp"
-  Entering directory `/home/craigdo/repos/ns-3-tutorial/build'
+  ~/repos/ns-3-dev > ./waf --run "scratch/first --PrintHelp"
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
   Compilation finished successfully
   --PrintHelp: Print this help message.
   --PrintGroups: Print the list of groups.
@@ -655,15 +655,15 @@ should see your new @code{User Argument} listed in the help.
   --PrintGlobals: Print the list of globals.
   User Arguments:
       --nPackets: Number of packets to echo
-  ~/repos/ns-3-tutorial >
+  ~/repos/ns-3-dev >
 @end verbatim
 
 If you want to specify the number of packets to echo, you can now do so by
 setting the @code{--nPackets} argument in the command line,
 
 @verbatim
-  ~/repos/ns-3-tutorial > ./waf --run "scratch/first --nPackets=2"
-  Entering directory `/home/craigdo/repos/ns-3-tutorial/build'
+  ~/repos/ns-3-dev > ./waf --run "scratch/first --nPackets=2"
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
   Compilation finished successfully
   Sent 1024 bytes to 10.1.1.2
   Received 1024 bytes from 10.1.1.1
@@ -671,7 +671,7 @@ setting the @code{--nPackets} argument in the command line,
   Sent 1024 bytes to 10.1.1.2
   Received 1024 bytes from 10.1.1.1
   Received 1024 bytes from 10.1.1.2
-  ~/repos/ns-3-tutorial >
+  ~/repos/ns-3-dev >
 @end verbatim
 
 You have now echoed two packets.
@@ -961,15 +961,15 @@ The easiest thing to do at this point will be to use @code{tcpdump} to look
 at the @code{pcap} files.  Output from dumping both files is shown below:
 
 @verbatim
-  ~/repos/ns-3-tutorial > /usr/sbin/tcpdump -r first-0-0.pcap -nn -tt
+  ~/repos/ns-3-dev > /usr/sbin/tcpdump -r first-0-0.pcap -nn -tt
   reading from file first-0-0.pcap, link-type PPP (PPP)
   2.000000 IP 10.1.1.1.49153 > 10.1.1.2.9: UDP, length 1024
   2.514648 IP 10.1.1.2.9 > 10.1.1.1.49153: UDP, length 1024
-  ~/repos/ns-3-tutorial > /usr/sbin/tcpdump -r first-1-0.pcap -nn -tt
+  ~/repos/ns-3-dev > /usr/sbin/tcpdump -r first-1-0.pcap -nn -tt
   reading from file first-1-0.pcap, link-type PPP (PPP)
   2.257324 IP 10.1.1.1.49153 > 10.1.1.2.9: UDP, length 1024
   2.257324 IP 10.1.1.2.9 > 10.1.1.1.49153: UDP, length 1024
-  ~/repos/ns-3-tutorial >
+  ~/repos/ns-3-dev >
 @end verbatim
 
 You can see in the dump of ``first-0.0.pcap'' (the client device) that the 

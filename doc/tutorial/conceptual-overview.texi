@@ -63,7 +63,7 @@ In @command{ns-3} there is no real concept of operating system and especially
 no concept of privilege levels or system calls.  We do, however, have the
 idea of an application.  Just as software applications run on computers to
 perform tasks in the ``real world,'' @command{ns-3} applications run on
-@command{ns-3} @code{Node}s to drive simulations in the simulated world.
+@command{ns-3} @code{Nodes} to drive simulations in the simulated world.
 
 @cindex class Application
 In @command{ns-3} the basic abstraction for a user program that generates some
@@ -85,16 +85,17 @@ In the real world, one can connect a computer to a network.  Often the media
 over which data flows in these netowrks are called @emph{channels}.  When
 you connect your Ethernet cable to the plug in the wall, you are connecting 
 your computer to an Ethernet communication channel.  In the simulated world
-of @command{ns-3} one connects a @code{Node} to an object representing a
+of @command{ns-3}, one connects a @code{Node} to an object representing a
 communication channel.  Here the basic communication subnetwork abstraction 
 is called the channel and is represented in C++ by the class @code{Channel}.  
 
 The @code{Channel} class provides methods for managing communication 
-subnetwork objects and connecting nodes to them.  They may also be specialized
-by developers in the object oriented programming sense.  A @code{Channel}
-specialization may model something as simple as a wire.  The specialized 
-@code{Channel} can also model things as complicated as a large Ethernet
-switch, or three-dimensional space in the case of wireless networks.
+subnetwork objects and connecting nodes to them.  @code{Channels} may also be
+specialized by developers in the object oriented programming sense.  A 
+@code{Channel} specialization may model something as simple as a wire.  The 
+specialized  @code{Channel} can also model things as complicated as a large 
+Ethernet switch, or three-dimensional space full of obstructions in the case 
+of wireless networks.
 
 We will use specialized versions of the @code{Channel} called
 @code{CsmaChannel}, @code{PointToPointChannel} and @code{WifiChannel} in this
@@ -108,9 +109,10 @@ access} communication medium.  This gives us Ethernet-like functionality.
 It used to be the case that if you wanted to connect a computers to a network,
 you had to buy a specific kind of network cable and a hardware device called
 (in PC terminology) a @emph{peripheral card} that needed to be installed in
-your computer.  These cards were called Network Interface Cards, or 
-@emph{NIC}s.  Today most computers come with the network controller hardware
-built in and users don't see these building blocks.
+your computer.  If the peripheral card implemented some networking function,
+theys were called Network Interface Cards, or @emph{NICs}.  Today most 
+computers come with the network interface hardware built in and users don't 
+see these building blocks.
 
 A NIC will not work without a software driver to control the hardware.  In 
 Unix (or Linux), a piece of peripheral hardware is classified as a 
@@ -122,9 +124,9 @@ to these net devices by names such as @emph{eth0}.
 In @command{ns-3} the @emph{net device} abstraction covers both the software 
 driver and the simulated hardware.  A net device is ``installed'' in a 
 @code{Node} in order to enable the @code{Node} to communicate with other 
-@code{Node}s in the simulation via @code{Channel}s.  Just as in a real
+@code{Nodes} in the simulation via @code{Channels}.  Just as in a real
 computer, a @code{Node} may be connected to more than one @code{Channel} via
-multiple @code{NetDevice}s.
+multiple @code{NetDevices}.
 
 The net device abstraction is represented in C++ by the class @code{NetDevice}.
 The @code{NetDevice} class provides methods for managing connections to 
@@ -145,25 +147,26 @@ a @code{WifiChannel}.
 In a real network, you will find host computers with added (or built-in)
 NICs.  In @command{ns-3} we would say that you will find @code{Nodes} with 
 attached @code{NetDevices}.  In a large simulated network you will need to 
-arrange many connections between @code{Node}s, @code{NetDevice}s and 
-@code{Channel}s.
+arrange many connections between @code{Nodes}, @code{NetDevices} and 
+@code{Channels}.
 
-Since connecting @code{NetDevice}s to @code{Node}s, @code{NetDevice}s
-to @code{Channel}s, assigning IP addresses,  etc., are such common tasks
+Since connecting @code{NetDevices} to @code{Nodes}, @code{NetDevices}
+to @code{Channels}, assigning IP addresses,  etc., are such common tasks
 in @command{ns-3}, we provide what we call @emph{topology helpers} to make 
-this as easy as possible.  For example, will take several distinct 
+this as easy as possible.  For example, it may take many distinct 
 @command{ns-3} core operations to create a NetDevice, add a MAC address, 
-connect the net device to a @code{Node}, configure the protocol stack, and 
-then connect the @code{NetDevice} to a @code{Channel}.  More operations would
-be required to connect multiple devices onto multipoint channels and then to 
-connect networks together into internetworks.  We use topology helper objects
-to combine those many distinct operations into an easy to use model.
+install that net device on a @code{Node}, configure the node's protocol stack,
+and then connect the @code{NetDevice} to a @code{Channel}.  Even more
+operations would be required to connect multiple devices onto multipoint 
+channels and then to connect individual networks together into internetworks.
+We provide topology helper objects that combine those many distinct operations
+into an easy to use model for your convenience.
 
 @c ========================================================================
 @c A First ns-3 script
 @c ========================================================================
 @node A First ns-3 Script
-@section A First ns-3 script
+@section A First ns-3 Script
 @cindex first script
 If you downloaded the system as was suggested above, you will have a release
 of @command{ns-3} in a directory called @code{repos} under your home 
@@ -180,7 +183,8 @@ directory structure something like the following:
 Change into the examples directory.  You should see a file named 
 @code{first.cc} located there.  This is a script that will create a simple
 point-to-point link between two nodes and echo a single packet between the
-nodes.  Let's take a look at that script line by line.
+nodes.  Let's take a look at that script line by line, so go ahead and open
+@code{first.cc} in your favorite editor.
 
 @subsection Boilerplate
 The first line in the file is an emacs mode line.  This tells emacs about the
@@ -195,17 +199,20 @@ out of the way immediately.  The @code{ns-3} project, like most large
 projects, has adopted a coding style to which all contributed code must 
 adhere.  If you want to contribute your code to the project, you will 
 eventually have to conform to the @command{ns-3} coding standard as described 
-in the file @code{doc/codingstd.txt}.  We recommend that you, well, just get 
-used to the look and feel of @code{ns-3} code and adopt this standard whenever
-you are working with our code.  All of the development team have done so.
-The emacs mode line above makes it easier to get the formatting correct if you
-use the emacs editor.
+in the file @code{doc/codingstd.txt} or shown on the project web page
+@uref{http://www.nsnam.org/codingstyle.html,,here}.
+
+We recommend that you, well, just get used to the look and feel of @code{ns-3}
+code and adopt this standard whenever you are working with our code.  All of 
+the development team and contributors have done so with various amounts of 
+grumbling.  The emacs mode line above makes it easier to get the formatting 
+correct if you use the emacs editor.
 
 The @command{ns-3} simulator is licensed using the GNU General Public 
 License.  You will see the appropriate GNU legalese at the head of every file 
 in the @command{ns-3} distribution.  Often you will see a copyright notice for
-one of the institutions involved in the @code{ns-3} project and an author
-listed.
+one of the institutions involved in the @code{ns-3} project above the GPL
+text and an author listed below.
 
 @verbatim
   /*
@@ -225,16 +232,7 @@ listed.
 @end verbatim
 
 @subsection Module Includes
-The code proper starts with a number of include statements.  To help our high
-level users deal with the large number of include files present in the system,
-we group includes according to relatively large modules.  We provide a single
-include file that, in turn, includes all of the include files used in each
-module.  Rather than having to look up exactly what header you need, and
-possibly have to get dependencies right, we give you the ability to load a 
-group of files at a large granularity.  This is not the most efficient approach
-but it certainly makes writing scripts much easier.  Each of the 
-@command{ns-3} files is placed in a directory called @code{ns3} (under the 
-build directory) to help avoid include file name collisions.
+The code proper starts with a number of include statements.  
 
 @verbatim
   #include "ns3/core-module.h"
@@ -243,20 +241,35 @@ build directory) to help avoid include file name collisions.
   #include "ns3/helper-module.h"
 @end verbatim
 
-The @code{ns3/core-module.h} file corresponds to the ns-3 module you will find
-in the directory @code{src/core} in your downloaded release distribution.  If 
-you list this directory you will find a large number of header files.  When
-you do a build, Waf will place public header files in an @code{ns3} directory
-under the appropriate @code{build/debug} or @code{build/optimized} directory
-depending on your configuration.  Waf will also automatically generate a module
-include file to load all of the public header files.  Since you are following
-this tutorial religiously, you will already have done a
+To help our high-level script users deal with the large number of include 
+files present in the system, we group includes according to relatively large 
+modules.  We provide a single include file that will recursively load all of 
+the include files used in each module.  Rather than having to look up exactly
+what header you need, and possibly have to get a number of dependencies right,
+we give you the ability to load a group of files at a large granularity.  This
+is not the most efficient approach but it certainly makes writing scripts much
+easier.
+
+Each of the @command{ns-3} include files is placed in a directory called 
+@code{ns3} (under the build directory) during the build process to help avoid
+include file name collisions.  The @code{ns3/core-module.h} file corresponds 
+to the ns-3 module you will find in the directory @code{src/core} in your 
+downloaded release distribution.  If you list this directory you will find a
+large number of header files.  When you do a build, Waf will place public 
+header files in an @code{ns3} directory under the appropriate 
+@code{build/debug} or @code{build/optimized} directory depending on your 
+configuration.  Waf will also automatically generate a module include file to
+load all of the public header files.
+
+Since you are, of course, following this tutorial religiously, you will 
+already have done a
 
 @verbatim
   ./waf -d debug configure
 @end verbatim
 
-to configure the project to perform debug builds.  You will also have done a
+in order to configure the project to perform debug builds.  You will also have
+done a
 
 @verbatim
   ./waf
@@ -264,8 +277,8 @@ to configure the project to perform debug builds.  You will also have done a
 
 to build the project.  So now if you look in the directory 
 @code{build/debug/ns-3} you will find the four module include files shown 
-above.  You can take a look at the contents to find that these files will
-include all of the public includes in the respective modules.
+above.  You can take a look at the contents of these files and find that they
+do include all of the public include files in their respective modules.
 
 @subsection Ns3 Namespace
 The next line in the @code{first.cc} script is a namespace declaration.
@@ -295,12 +308,9 @@ The next line of the script is the following,
 
 We will use this statement as a convenient place to talk about our Doxygen
 documentation system.  If you look at the project web site, 
-@uref{http://www.nsnam.org,,ns-3 project}, you will find a link to ``Other
-Documentation'' in the navigation bar.  If you select this link, you will be
-taken to our documentation page.  You will find links to our development
-@code{ns-3-dev} documentation as well as that for our latest release.  If you
-select the @code{HTML} link you will be taken to the Doxygen documentation for
-that version.  
+@uref{http://www.nsnam.org,,ns-3 project}, you will find a link to ``APIs
+(Doxygen)'' in the navigation bar.  If you select this link, you will be
+taken to our documentation page.
 
 Along the left side, you will find a graphical representation of the structure
 of the documentation.  A good place to start is the @code{NS-3 Modules} 
@@ -308,20 +318,24 @@ of the documentation.  A good place to start is the @code{NS-3 Modules}
 module documentation.  The concept of module here ties directly into the 
 module include files discussed above.  It turns out that the @command{ns-3}
 logging subsystem is part of the @code{core} module, so go ahead and expand 
-that documentation node.  Now, open the @code{Debugging} book and then select 
-the @code{Logging} page.
+that documentation node.  Now, expand the @code{Debugging} book and then 
+select the @code{Logging} page.
 
 You should now be looking at the Doxygen documentation for the Logging module.
-In the list of @code{#define}s you will see @code{NS_LOG_COMPONENT_DEFINE}.  
-It would probably be good to look for the ``Detailed Description'' of the 
-logging module now to get a feel for the overall operation and then look at
+In the list of @code{#define}s at the top of the page you will see the entry
+for @code{NS_LOG_COMPONENT_DEFINE}.  Before jumping in, it would probably be 
+good to look for the ``Detailed Description'' of the logging module to get a 
+feel for the overall operation.  You can either scroll down or select the
+``More...'' link under the collaboration diagram to do this.
+
+Once you have a general idea of what is going on, go ahead and take a look at
 the specific @code{NS_LOG_COMPONENT_DEFINE} documentation.  I won't duplicate
 the documentation here, but to summarize, this line declares a logging 
 component called @code{FirstScriptExample} that allows you to enable and 
 disable console message logging by reference to the name.
 
 @subsection Main Function
-The next lines of the script you will find are:
+The next lines of the script you will find are,
 
 @verbatim
     int
@@ -329,10 +343,10 @@ The next lines of the script you will find are:
   {
 @end verbatim
 
-This is just the declaration of the main function of your program.  Just as in
-any C++ program, you need to define a main function that will be the first 
-function run.  There is nothing at all special here.  Your @command{ns-3}
-script is just a C++ program.
+This is just the declaration of the main function of your program (script).
+Just as in any C++ program, you need to define a main function that will be 
+the first function run.  There is nothing at all special here.  Your 
+@command{ns-3} script is just a C++ program.
 
 The next two lines of the script are used to enable two logging components that
 are built into the Echo Client and Echo Server applications:
@@ -342,14 +356,14 @@ are built into the Echo Client and Echo Server applications:
     LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
 @end verbatim
 
-If you have read over the Logging component documentation you will see that
-there are a number of levels of detail that you can enable on each component.  
-These two lines of code enable debug logging at the INFO level for echo 
-clients and servers.  This will result in the application printing out 
-messages as packets are sent and received.
+If you have read over the Logging component documentation you will have seen
+that there are a number of levels of logging verbosity/detail that you can 
+enable on each component.  These two lines of code enable debug logging at the
+INFO level for echo clients and servers.  This will result in the application
+printing out messages as packets are sent and received during the simulation.
 
 Now we will get directly to the business of creating a topology and running 
-a simulation.  We will use the topology helper objects to make this job as
+a simulation.  We use the topology helper objects to make this job as
 easy as possible.
 
 @subsection Topology Helpers
@@ -379,7 +393,7 @@ applications and peripheral cards.  The @code{NodeContainer} topology helper
 provides a convenient way to create, manage and access any @code{Node} objects
 that we create in order to run a simulation.  The first line above just 
 declares a NodeContainer which we call @code{nodes}.  The second line calls the
-@code{Create} method on the @code{nodes} object that asks the container to 
+@code{Create} method on the @code{nodes} object and asks the container to 
 create two nodes.  As described in the Doxygen, the container calls down into
 the @command{ns-3} system proper to create two @code{Node} objects and stores
 pointers to those objects internally.
@@ -416,8 +430,8 @@ The first line
     PointToPointHelper pointToPoint;
 @end verbatim
 
-creates a @code{PointToPointHelper} object on the stack.  From a high-level 
-perspective the next line,
+instantiates a @code{PointToPointHelper} object on the stack.  From a 
+high-level perspective the next line,
 
 @verbatim
     pointToPoint.SetDeviceParameter ("DataRate", StringValue ("5Mbps"));
@@ -436,7 +450,7 @@ attribute.  Most user-visible @command{ns-3} objects have similar lists of
 attributes.  We use this mechanism to easily configure simulations without
 recompiling as you will see in a following section.
 
-Similar to the ``DataRate'' on the @code{PointToPointNetDevice} we find a
+Similar to the ``DataRate'' on the @code{PointToPointNetDevice} you will find a
 ``Delay'' attribute associated with the @code{PointToPointChannel}.  The 
 final line,
 
@@ -446,14 +460,14 @@ final line,
 
 tells the @code{PointToPointHelper} to use the value ``2ms'' (two milliseconds)
 as the value of the transmission delay of every point to point channel it 
-creates.
+subsequently creates.
 
 @subsubsection NetDeviceContainer
 At this point in the script, we have a @code{NodeContainer} that contains
 two nodes.  We have a @code{PointToPointHelper} that is primed and ready to 
 make @code{PointToPointNetDevices} and wire @code{PointToPointChannel} objects
 between them.  Just as we used the @code{NodeContainer} topology helper object
-to create the @code{Node}s for our simulation, we will ask the 
+to create the @code{Nodes} for our simulation, we will ask the 
 @code{PointToPointHelper} to do the work involved in creating, configuring and
 installing our devices for us.  We will need to have a list of all of the 
 NetDevice objects that are created, so we use a NetDeviceContainer to hold 
@@ -518,7 +532,7 @@ and increase monotonically, so the first address allocated from this base will
 be 10.1.1.1, followed by 10.1.1.2, etc.  The low level @command{ns-3} system
 actually remembers all of the IP addresses allocated and will generate a
 fatal error if you accidentally cause the same address to be generated twice 
-(which is a very hard to find error, by the way).
+(which is a very hard to debug error, by the way).
 
 The next line of code,
 
@@ -548,7 +562,7 @@ underlying objects.  Here, we use @code{UdpEchoServerHelper} and
 @subsubsection UdpEchoServerHelper
 The following lines of code in our example script, @code{first.cc}, are used
 to set up a UDP echo server application on one of the nodes we have previously
-created and connected using a point-to-point link.  
+created.
 
 @verbatim
     UdpEchoServerHelper echoServer;
@@ -578,15 +592,16 @@ work here.
 We now see that @code{echoServer.Install} is going to install a
 @code{UdpEchoServerApplication} on the node found at index number one of the
 @code{NodeContainer} we used to manage our nodes.  @code{Install} will return
-a container that has all of the applications (one in this case since we passed
-a @code{NodeContainer} containing one node) made by the helper.  
+a container that holds pointers to all of the applications (one in this case 
+since we passed a @code{NodeContainer} containing one node) created by the 
+helper.
 
-Applications require a time to ``start'' generating traffic and a time to
-``stop.''  These times are set using @code{ApplicationContainer} methods
-@code{Start} and @code{Stop}.  These methods take @code{Time} parameters.  
-In this case, we use an explicit conversion sequence to take the C++ double
-1.0 and convert it to an @command{ns-3} @code{Time} object using a 
-@code{Seconds ()} cast.  The two lines,
+Applications require a time to ``start'' generating traffic and may take an
+optional time to ``stop.''  We provide both.  These times are set using  the
+@code{ApplicationContainer} methods @code{Start} and @code{Stop}.  These 
+methods take @code{Time} parameters.  In this case, we use an explicit C++
+conversion sequence to take the C++ double 1.0 and convert it to an 
+@command{ns-3} @code{Time} object using a @code{Seconds} cast.  The two lines,
 
 @verbatim
     serverApps.Start (Seconds (1.0));
@@ -596,14 +611,14 @@ In this case, we use an explicit conversion sequence to take the C++ double
 will cause the echo server application to @code{Start} (enable itself) at one
 second into the simulation and to @code{Stop} (disable itself) at ten seconds
 into the simulation.  By virtue of the fact that we have implicilty declared
-a simulation event at ten seconds, the simulation will last at least ten 
-seconds.
+a simulation event (the application stop event) to be executed at ten seconds,
+the simulation will last at least ten seconds.
 
 @subsubsection UdpEchoClientHelper
 
-The echo client application is set up in a substantially method similar to the
-server.  There is an underlying @code{UdpEchoClientApplication} that is 
-managed by an @code{UdpEchoClientHelper}.
+The echo client application is set up in a method substantially similar to
+that for the server.  There is an underlying @code{UdpEchoClientApplication}
+that is managed by an @code{UdpEchoClientHelper}.
 
 @verbatim
     UdpEchoClientHelper echoClient;
@@ -620,24 +635,25 @@ managed by an @code{UdpEchoClientHelper}.
 For the echo client, however, we need to set four different attributes.  The 
 first attribute is set using the @code{SetRemote} method.  Recall that
 we used an @code{Ipv4InterfaceContainer} to keep track of the IP addresses we
-assigned to our devices.  As a result of the allocation, the zeroth interface
-in the @code{interfaces} container cooresponds to the IP address of the 
-zeroth node in the @code{nodes} container.  The first interface in the 
-@code{interfaces} container cooresponds to the IP address of the first node in
-the @code{nodes} container.  So, in the following line of code (reproduced 
-from above), we are setting the remote address of the client to be the IP 
-address assigned to the node on which the server resides, and we tell it to 
-send packets to port nine.
+assigned to our devices.  The zeroth interface in the @code{interfaces} 
+container is going to coorespond to the IP address of the zeroth node in the 
+@code{nodes} container.  The first interface in the @code{interfaces} 
+container cooresponds to the IP address of the first node in the @code{nodes} 
+container.  So, in the following line of code (reproduced from above), we are 
+setting the remote address of the client to be the IP address assigned to the
+node on which the server resides.  We also tell it to send packets to port 
+nine while we are at ti.
 
 @verbatim
     echoClient.SetRemote (interfaces.GetAddress (1), 9);
 @end verbatim
 
 The ``MaxPackets'' attribute tells the client the maximum number of packets 
-it can send.  The ``Interval'' attribute tells the client how long to wait 
-between packets, and the ``PacketSize'' attribute tells the client how large 
-its packets should be.  With this combination of attributes, we are telling 
-the client to send one 1024-byte packet.
+we allow it to send during the simulation.  The ``Interval'' attribute tells
+the client how long to wait between packets, and the ``PacketSize'' attribute
+tells the client how large its packet payloads should be.  With this 
+particular combination of attributes, we are telling the client to send one 
+1024-byte packet.
 
 Just as in the case of the echo server, we tell the echo client to @code{Start}
 and @code{Stop}, but here we start the client one second after the server is
@@ -667,13 +683,13 @@ looking through the list of scheduled events and executing them.  First it
 will run the event at 1.0 seconds, which will enable the echo server 
 application.  Then it will run the event scheduled for t=2.0 seconds which 
 will start the echo client application.  The start event implementation in 
-the echo client will begin the data transfer phase of the simulation by 
-sending a packet to the server.
+the echo client application will begin the data transfer phase of the 
+simulation by sending a packet to the server.
 
 The act of sending the packet to the server will trigger a chain of events
-which will be automatically scheduled and which will perform the mechanics of
-the packet echo according to the various timing parameters that we have set 
-in the script.
+that will be automatically scheduled behind the scene and which will perform 
+the mechanics of the packet echo according to the various timing parameters 
+that we have set in the script.
 
 Eventually, since we only send one packet, the chain of events triggered by 
 that single client echo request will taper off and the simulation will go 
@@ -704,31 +720,31 @@ built if you run Waf.  Let's try it.  Copy @code{examples/first.cc} into
 the @code{scratch} directory.
 
 @verbatim
-  ~/repos/ns-3-tutorial > cp examples/first.cc scratch/
+  ~/repos/ns-3-dev > cp examples/first.cc scratch/
 @end verbatim
 
 and then build it using waf,
 
 @verbatim
-  ~/repos/ns-3-tutorial > ./waf
-  Entering directory `/home/craigdo/repos/ns-3-tutorial/build'
+  ~/repos/ns-3-dev > ./waf
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
   [432/477] cxx: scratch/first.cc -> build/debug/scratch/first_2.o
   [475/477] cxx_link: build/debug/scratch/first_2.o ...
   Compilation finished successfully
-~/repos/ns-3-tutorial >
+~/repos/ns-3-dev >
 @end verbatim
 
 You can now run the example (note that if you build your program in the scratch
 directory you must run it out of the scratch direcory):
 
 @verbatim
-  ~/repos/ns-3-tutorial > ./waf --run scratch/first
-  Entering directory `/home/craigdo/repos/ns-3-tutorial/build'
+  ~/repos/ns-3-dev > ./waf --run scratch/first
+  Entering directory `/home/craigdo/repos/ns-3-dev/build'
   Compilation finished successfully
   Sent 1024 bytes to 10.1.1.2
   Received 1024 bytes from 10.1.1.1
   Received 1024 bytes from 10.1.1.2
-  ~/repos/ns-3-tutorial >
+  ~/repos/ns-3-dev >
 @end verbatim
 
 Here you see that the build system checks to make sure that the file has been

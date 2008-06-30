@@ -136,7 +136,7 @@ object itself.
   csmaNodes.Create (nCsma);
 @end verbatim
 
-The next line of code @code{Get}s the first node (as in having an index of one)
+The next line of code @code{Gets} the first node (as in having an index of one)
 from the point-to-point node container and adds it to the container of nodes
 that will get CSMA devices.  The node in question is going to end up with a 
 point-to-point device @emph{and} a CSMA device.  We then create a number of 
@@ -497,7 +497,7 @@ node number code{nCsma + 1}.  This can become annoyingly difficult in larger
 simulations.  
 
 An alternate way, which we use here, is to realize that the
-@code{NodeContainer}s contain pointers to @command{ns-3} @code{Node} Objects.
+@code{NodeContainers} contain pointers to @command{ns-3} @code{Node} Objects.
 The @code{Node} Object has a method called @code{GetId} which will return that
 node's ID.  Let's go take a look at the Doxygen for the @code{Node} and locate
 that method, which is further down in the code than we've seen so far.
@@ -681,7 +681,7 @@ part of the bus (CSMA) network.
   csmaNodes.Create (nCsma);
 @end verbatim
 
-The next line of code @code{Get}s the first node (as in having an index of one)
+The next line of code @code{Gets} the first node (as in having an index of one)
 from the point-to-point node container and adds it to the container of nodes
 that will get CSMA devices.  The node in question is going to end up with a 
 point-to-point device and a CSMA device.  We then create a number of ``extra''

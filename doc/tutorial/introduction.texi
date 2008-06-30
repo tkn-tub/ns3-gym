@@ -126,7 +126,7 @@ broad sequences of events.
 * The Web::
 * Mercurial::
 * Waf::
-* Environment Idioms Design Patterns::
+* Development Environment::
 * Socket Programming::
 @end menu
 
@@ -134,21 +134,19 @@ broad sequences of events.
 @section The Web
 
 @cindex www.nsnam.org
+@cindex documentation
+@cindex architecture
 There are several important resources of which any @command{ns-3} user must be
 aware.  The main web site is located at @uref{http://www.nsnam.org} and 
 provides access to basic information about the ns-3 system.  Detailed 
 documentation is available through the main web site at
-@uref{http://www.nsnam.org/documents.html}.
+@uref{http://www.nsnam.org/documents.html}.  You can also find documents 
+relating to the system architecture from this page.
 
-@cindex documentation
-@cindex architecture
-You can find documents relating to the system architecture from this page,
-and also gain access to the detailed software documentation.  There is a Wiki
-that complements the main ns-3 web site which you will find at 
-@uref{http://www.nsnam.org/wiki/}.
-
-You will find user and developer FAQs there, as well as troubleshooting 
-guides, third-party contributed code, papers, etc. 
+There is a Wiki that complements the main ns-3 web site which you will find at 
+@uref{http://www.nsnam.org/wiki/}.  You will find user and developer FAQs 
+there, as well as troubleshooting guides, third-party contributed code, 
+papers, etc. 
 
 @cindex mercurial repository
 @cindex ns-3-dev repository
@@ -208,8 +206,8 @@ order to extend the system in most cases.
 For those interested in the gory details of Waf, the main web site can be 
 found at @uref{http://freehackers.org/~tnagy/waf.html}.
 
-@node Environment Idioms Design Patterns
-@section Environment, Idioms, and Design Patterns
+@node Development Environment
+@section Development Environment
 
 @cindex C++
 As mentioned above, scripting in ns-3 is done in C++.  A working 
@@ -278,5 +276,5 @@ not have access to a copy of the book, the echo clients and servers shown in
 the website above) you will be in good shape to understand the tutorial.
 There is a similar book on Multicast Sockets,
 @uref{http://www.elsevier.com/wps/product/cws_home/700736,,Multicast Sockets, Makofske and Almeroth}.
-that covers material you may need to understand for the multicast examples in
-the distribution.
+that covers material you may need to understand if you look at the multicast 
+examples in the distribution.

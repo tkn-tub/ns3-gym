@@ -33,15 +33,14 @@
 @cindex Cygwin
 @cindex GNU
 @cindex toolchain
-From this point forward, we are going to assume that the reader is working in
-Linux or a Linux emulation environment (Linux, Cygwin, etc.) and has the GNU
-toolchain installed and verified.  
-
 @cindex Mercurial
 @cindex Waf
-We are going to assume that you have Mercurial and Waf installed and running
-on the target system as described in the Getting Started section of the 
-@command{ns-3} web site: @uref{http://www.nsnam.org/getting_started.html}.
+From this point forward, we are going to assume that the reader is working in
+Linux or a Linux emulation environment (Linux, Cygwin, etc.) and has the GNU
+toolchain installed and verified.  We are also going to assume that you have
+Mercurial and Waf installed and running on the target system as described in
+the Getting Started section of the  @command{ns-3} web site: 
+@uref{http://www.nsnam.org/getting_started.html}.
 
 @cindex tarball
 The @command{ns-3} code is available in Mercurial repositories on the server
@@ -67,15 +66,15 @@ official release.
 
 Since the release numbers are going to be changing, I will stick with 
 the more constant ns-3-dev here in the tutorial, but you can replace the 
-string ns-3-dev with your choice of release (e.g., ns-3.1) in the text below.
-You can find the latest version  of the code either by inspection of the 
-repository list or by going to the ``Getting Started'' web page and looking 
-for the latest release identifier.
+string ``ns-3-dev'' with your choice of release (e.g., ns-3.1) in the text 
+below.  You can find the latest version  of the code either by inspection of 
+the repository list or by going to the ``Getting Started'' web page and 
+looking for the latest release identifier.
 
 One practice is to create a directory called @code{repos} in one's home 
 directory under which one can keep local Mercurial repositories.  
 @emph{Hint:  we will assume you do this later in the tutorial.}  If you adopt
-that approach, you can get a copy of any of the development versions of 
+that approach, you can get a copy of the development version of 
 @command{ns-3} by typing the following into your Linux shell (assuming you 
 have installed Mercurial):
 
@@ -86,7 +85,8 @@ have installed Mercurial):
   hg clone http://code.nanam.org/ns-3-dev
 @end verbatim
 
-As the hg command executes, you should see something like the following,
+As the hg (Mercurial) command executes, you should see something like the 
+following,
 
 @verbatim
   destination directory: ns-3-dev
@@ -169,7 +169,7 @@ The build system is now configured and you can build the debug versions of
 the @command{ns-3} programs by simply typing,
 
 @verbatim
-  ./waf check
+  ./waf
 @end verbatim
 
 You will see many Waf status messages displayed as the system compiles.  The
@@ -217,10 +217,10 @@ test has passed.
 This command is typically run by @code{users} to quickly verify that an 
 @command{ns-3} distribution has built correctly.  
 
-You can also run @code{regression tests} to ensure that your distribution and
-tool chain have produced binaries that generate trace files which are
-compatible with reference trace files stored in a central location.  To run the
-regression tests you run Waf with the regression flag.
+You can also run our regression test suite to ensure that your distribution and
+tool chain have produced binaries that generate output that is identical to
+reference output files stored in a central location.  To run the regression 
+tests, you provide Waf with the regression flag.
 
 @verbatim
   ./waf --regression
@@ -231,16 +231,16 @@ built and will then look for trace files in the aforementioned centralized
 location.  If your tool chain includes Mercurial, the regression tests will 
 be downloaded from a repository at @code{code.nsnam.org}.  If you do not have 
 Mercurial installed, the reference traces will be downloaded from a tarball 
-located in the @code{releases} section of @code{www.nsnam.org}.  The 
-particular name of the reference trace location is built from the 
-@command{ns-3} version located in the VERSION file, so don't change that 
-string yourself unless you know what you are doing.
+located in the releases section of @code{www.nsnam.org}.  The particular name 
+of the reference trace location is built from the @command{ns-3} version 
+located in the VERSION file, so don't change that string yourself unless you 
+know what you are doing.
 
 Once the reference traces are downloaded to your local machine, Waf will run
-a number of tests that generate trace files.  The content of these trace
-files are compared with the reference traces just downloaded.  If they are
-identical, the regression tests report a PASS status.  If the regression tests
-pass, you should see something like,
+a number of tests that generate what we call trace files.  The content of 
+these trace files are compared with the reference traces just downloaded.  If 
+they are identical, the regression tests report a PASS status.  If the 
+regression tests pass, you should see something like,
 
 @verbatim
   ~/repos/ns-3-dev > ./waf --regression
@@ -264,7 +264,8 @@ pass, you should see something like,
 
 If a regression tests fails you will see a FAIL indication along with a
 pointer to the offending trace file and its associated reference trace file
-along with a suggestion on how to run diff in order to see what has gone awry.
+along with a suggestion on diff parameters and options in order to see what 
+has gone awry.
 
 @c ========================================================================
 @c Running a Script
@@ -276,7 +277,7 @@ along with a suggestion on how to run diff in order to see what has gone awry.
 We typically run scripts under the control of Waf.  This allows the build 
 system to ensure that the shared library paths are set correctly and that
 the libraries are available at run time.  To run a program, simply use the
-@code{run} option in Waf.  Let's run the @command{ns-3} equivalent of the
+@code{--run} option in Waf.  Let's run the @command{ns-3} equivalent of the
 ubiquitous hello world program by typing the following:
 
 @verbatim
@@ -291,7 +292,8 @@ produces the following output.
   Hello Simulator
 @end verbatim
 
+@emph{Congratulations.  You are now an ns-3 user.}
+
 If you want to run programs under another tool such as gdb or valgrind,
 see this @uref{http://www.nsnam.org/wiki/index.php/User_FAQ#How_to_run_NS-3_programs_under_another_tool,,wiki entry}.
 
-@emph{Congratulations.  You are now an ns-3 user.}
