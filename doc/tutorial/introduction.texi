@@ -21,13 +21,14 @@
 * Tutorial Organization::
 @end menu
 
-The ns-3 simulator is a discrete-event network simulator targeted primarily 
-for research and educational use.  The 
+The @command{ns-3} simulator is a discrete-event network simulator targeted 
+primarily for research and educational use.  The 
 @uref{http://www.nsnam.org,,ns-3 project}, 
 started in 2006, is an open-source project.  The goal of the project is to
 build a new network simulator primarily for research and educational use.  
 
-Primary documentation for the ns-3 project is available in three forms:
+Primary documentation for the @command{ns-3} project is available in three 
+forms:
 @itemize @bullet
 @item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen/Manual}:  
 Documentation of the public APIs of the simulator
@@ -35,7 +36,7 @@ Documentation of the public APIs of the simulator
 @item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
 @end itemize
 
-The purpose of this tutorial is to introduce new ns-3 users to the 
+The purpose of this tutorial is to introduce new @command{ns-3} users to the 
 system in a structured way.  It is sometimes difficult for new users to
 glean essential information from detailed manuals and to convert this
 information into working simulations.  In this tutorial, we will build 
@@ -48,52 +49,52 @@ into the workings of the system.
 
 A few key points are worth noting at the onset:
 @itemize @bullet
-@item ns-3 is not an extension of @uref{http://www.isi.edu/nsnam/ns,,ns-2}; 
-it is a new simulator.  The two simulators are both written in C++ but ns-3
-is a new simulator that does not support the ns-2 APIs.  Some models from ns-2 
-have already been ported from ns-2 to ns-3. The project will continue to 
-maintain ns-2 while ns-3 is being built, and will study transition and
-integration mechanisms.
-@item ns-3 is open-source, and the project strives to maintain an open 
-environment for researchers to contribute and share their software.  
+@item Ns-3 is not an extension of @uref{http://www.isi.edu/nsnam/ns,,ns-2}; 
+it is a new simulator.  The two simulators are both written in C++ but 
+@command{ns-3} is a new simulator that does not support the ns-2 APIs.  Some 
+models from ns-2 have already been ported from ns-2 to ns-3. The project will
+continue to maintain ns-2 while ns-3 is being built, and will study transition
+and integration mechanisms.
+@item @command{Ns-3} is open-source, and the project strives to maintain an 
+open  environment for researchers to contribute and share their software.  
 @end itemize
  
 @node For ns-2 Users
 @section For ns-2 Users
 
 For those familiar with ns-2, the most visible outward change when moving to 
-ns-3 is the choice of scripting language.  ns-2 is typically scripted in Tcl
-and results of simulations can be visualized using the Network Animator 
-@command{nam}.  In ns-3 there is currently no visualization module, and Python
-bindings have been developed (Tcl bindings have been prototyped
-using @uref{http://www.swig.org,,SWIG}, but are not supported by the 
-current development team).  In this tutorial, we will concentrate on 
-scripting directly in C++ and interpreting results via trace files.  
+@command{ns-3} is the choice of scripting language.  Ns-2 is typically 
+scripted in Tcl and results of simulations can be visualized using the 
+Network Animator @command{nam}.  In @command{ns-3} there is currently no
+visualization module, and Python bindings have been developed (Tcl bindings
+have been prototyped using @uref{http://www.swig.org,,SWIG}, but are not 
+currently supported).  In this tutorial, we will concentrate on scripting 
+directly in C++ and interpreting results via trace files.  
 
-But there are similarities as well (both, for example, are based
-on C++ objects, and some code from ns-2 has already been ported
-to ns-3).  We will try to highlight differences between ns-2 and ns-3
+But there are similarities as well (both, for example, are based on C++ 
+objects, and some code from ns-2 has already been ported to @command{ns-3}). 
+We will try to highlight differences between ns-2 and @command{ns-3}
 as we proceed in this tutorial.
 
 @node Contributing
 @section Contributing
 
 @cindex contributing
-ns-3 is a research and educational simulator, by and for the research 
-community.  It will rely on the ongoing contributions of the community to 
-develop new models, debug or maintain existing ones, and share results.  There
-are a few policies that we hope will encourage people to contribute to ns-3 
-like they have for ns-2:
+@command{Ns-3} is a research and educational simulator, by and for the 
+research community.  It will rely on the ongoing contributions of the 
+community to develop new models, debug or maintain existing ones, and share 
+results.  There are a few policies that we hope will encourage people to 
+contribute to @command{ns-3} like they have for ns-2:
 @itemize @bullet
-@item open source licensing based on GNU GPLv2 compatibility
-@item @uref{http://www.nsnam.org/wiki/index.php,,wiki}
+@item Open source licensing based on GNU GPLv2 compatibility;
+@item @uref{http://www.nsnam.org/wiki/index.php,,wiki};
 @item @uref{http://www.nsnam.org/wiki/index.php/Contributed_Code,,Contributed Code} page, similar to ns-2's popular 
 @uref{http://nsnam.isi.edu/nsnam/index.php/Contributed_Code,,Contributed Code} 
-page
-@item @code{src/contrib} directory (we will host your contributed code)
-@item open @uref{http://www.nsnam.org/bugzilla,,bug tracker}
-@item ns-3 developers will gladly help potential contributors to get
-started with the simulator (please contact @uref{http://www.nsnam.org/people.html,,one of us})
+page;
+@item @code{src/contrib} directory (we will host your contributed code);
+@item Open @uref{http://www.nsnam.org/bugzilla,,bug tracker};
+@item @command{Ns-3} developers will gladly help potential contributors to get
+started with the simulator (please contact @uref{http://www.nsnam.org/people.html,,one of us}).
 @end itemize  
 
 If you are an ns user, please consider providing your feedback, bug fixes, or
@@ -110,7 +111,7 @@ following:
 the simulator and what it might be like to use;
 @item Try to download and build a copy;
 @item Try to run a few sample programs, and perhaps change some configurations;
-@item Look at simulation output, and try to adjust it
+@item Look at simulation output, and try to adjust it.
 @end itemize
 
 As a result, we have tried to organize the tutorial along the above
@@ -138,7 +139,8 @@ repository names on the left of the page, you will see @emph{changelogs} for
 these repositories, and links to the @emph{manifest}.  From the manifest
 links, one can browse the source tree.
 
-The top-level directory will look something like:
+The top-level directory for one of our @emph{repositories} will look 
+something like:
 @verbatim
 drwxr-xr-x  [up]   
 drwxr-xr-x         doc             manifest 
@@ -175,9 +177,9 @@ Example scripts are in the @code{examples} directory.  The @code{examples}
 directory is a good place to start browsing the code.
 
 For ns-2 users, who may be familiar with the @code{simple.tcl} example script
-in the ns-2 documentation, an analogous script is found in 
-@code{examples/simple-point-to-point.cc} with a Python equivalent found
-in @emph{(pending Python merge)}. 
+in the ns-2 documentation, a roughly analogous script is found in 
+@code{examples/first.cc} with a Python equivalent found in 
+@emph{(pending Python merge)}. 
 
 @node Doxygen
 @section Doxygen
@@ -190,7 +192,8 @@ look.
 @section Other Documentation
 
 We provide a large amount of documentation regarding the various components
-of ns-2 on our website.  See:  @uref{http://www.nsnam.org/documents.html}.
+of @command{ns-3} on our website.  See:  
+@uref{http://www.nsnam.org/documents.html}.
 
 @c ========================================================================
 @c Resources
@@ -211,28 +214,26 @@ of ns-2 on our website.  See:  @uref{http://www.nsnam.org/documents.html}.
 @section The Web
 
 @cindex www.nsnam.org
-There are several important resources of which any ns-3 user must be
-aware.  The main web site is located at @uref{http://www.nsnam.org}
-and provides access to basic information about the ns-3 system.  
-Detailed documentation is available through the main web site at
+There are several important resources of which any @command{ns-3} user must be
+aware.  The main web site is located at @uref{http://www.nsnam.org} and 
+provides access to basic information about the ns-3 system.  Detailed 
+documentation is available through the main web site at
 @uref{http://www.nsnam.org/documents.html}.
 
 @cindex documentation
 @cindex architecture
 You can find documents relating to the system architecture from this page,
-and also gain access to the detailed software documentation.  The software
-system is documented in great detail using 
-@uref{http://www.stack.nl/~dimitri/doxygen/,,Doxygen}.  There is a Wiki that
-complements the main ns-3 web site which you will find at 
+and also gain access to the detailed software documentation.  There is a Wiki
+that complements the main ns-3 web site which you will find at 
 @uref{http://www.nsnam.org/wiki/}.
 
-You will find user and developer FAQs there as well as troubleshooting guides, 
-third-party contributed code, papers, etc. The source code may be found 
-and browsed at @uref{http://code.nsnam.org/}. 
+You will find user and developer FAQs there, as well as troubleshooting 
+guides, third-party contributed code, papers, etc. 
 
 @cindex mercurial repository
 @cindex ns-3-dev repository
 @cindex release repository
+The source code may be found and browsed at @uref{http://code.nsnam.org/}. 
 There you will find the current development tree in the repository named
 @code{ns-3-dev}. Past releases and experimental repositories of the core
 developers may also be found there.
@@ -248,7 +249,7 @@ the most well known.
 
 @cindex software configuration management
 @cindex Mercurial
-The ns-3 project uses Mercurial as its source code management system.
+The @command{ns-3} project uses Mercurial as its source code management system.
 Although you do not need to know much about Mercurial in order to complete
 this tutorial, we recommend becoming familiar with Mercurial and using it 
 to access the source code.  Mercurial has a web site at 
@@ -260,8 +261,8 @@ also provides a tutorial at
 and a QuickStart guide at
 @uref{http://www.selenic.com/mercurial/wiki/index.cgi/QuickStart/}.
 
-You can also find vital information about using Mercurial and ns-3
-on the main ns-3 web site.
+You can also find vital information about using Mercurial and @command{ns-3}
+on the main @command{ns-3} web site.
 
 @node Waf
 @section Waf
@@ -278,7 +279,7 @@ use in a very large and highly configurable system.  Because of this, many
 alternatives have been developed.  Recently these systems have been developed
 using the Python language.
 
-The build system @code{Waf} is used on the ns-3 project.  It is one 
+The build system @code{Waf} is used on the @command{ns-3} project.  It is one 
 of the new generation of Python-based build systems.  You will not need to 
 understand any Python to build the existing ns-3 system, and will 
 only have to understand a tiny and intuitively obvious subset of Python in 
@@ -308,15 +309,15 @@ before proceeding.
 
 @cindex toolchain
 @cindex GNU
-The ns-3 system uses the GNU ``toolchain'' for development.  
-A software toolchain is the set of programming tools available in the given 
+The @command{ns-3} system uses the GNU ``toolchain'' for development.  A 
+software toolchain is the set of programming tools available in the given 
 environment. For a quick review of what is included in the GNU toolchain see,
 @uref{http://en.wikipedia.org/wiki/GNU_toolchain}.
 
 @cindex Linux
-Typically an ns-3 author will work in Linux or a Linux-like
+Typically an @command{ns-3} author will work in Linux or a Linux-like
 environment.  For those running under Windows, there do exist environments 
-which simulate the Linux environment to various degrees.  The ns-3 
+which simulate the Linux environment to various degrees.  The @command{ns-3} 
 project supports development in the Cygwin and the MinGW environments for 
 these users.  See @uref{http://www.cygwin.com/} and 
 @uref{http://www.mingw.org/} for details on downloading and using these
@@ -337,7 +338,7 @@ crash creating a sh.exe.stackdump file when I try to compile my source code.''
 Believe it or not, the @code{Logitech Process Monitor} insinuates itself into
 every DLL in the system when it is running.  It can cause your Cygwin or
 MinGW DLLs to die in mysterious ways and often prevents debuggers from 
-running.  Beware of Logitech.
+running.  Beware of Logitech software.
 
 @node Socket Programming
 @section Socket Programming
@@ -357,5 +358,5 @@ not have access to a copy of the book, the echo clients and servers shown in
 the website above) you will be in good shape to understand the tutorial.
 There is a similar book on Multicast Sockets,
 @uref{http://www.elsevier.com/wps/product/cws_home/700736,,Multicast Sockets, Makofske and Almeroth}.
-that covers material you may need to understand for the multicast examples.
-
+that covers material you may need to understand for the multicast examples in
+the distribution.

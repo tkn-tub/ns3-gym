@@ -14,10 +14,10 @@ three forms:
 @item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
 @end itemize
 
-This document is written in GNU Texinfo and is to be maintained in
-revision control on the @command{ns-3} code server.  Both PDF and HTML versions
-should be available on the server.  Changes to 
-the document should be discussed on the ns-developers@@isi.edu mailing list.
+This document is written in GNU Texinfo and is to be maintained in revision 
+control on the @command{ns-3} code server.  Both PDF and HTML versions should 
+be available on the server.  Changes to the document should be discussed on 
+the ns-developers@@isi.edu mailing list.
 @end ifinfo
 
 @copying
@@ -31,10 +31,10 @@ three forms:
 @item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
 @end itemize
  
-This document is written in GNU Texinfo and is to be maintained in
-revision control on the @command{ns-3} code server.  Both PDF and HTML 
-versions should be available on the server.  Changes to 
-the document should be discussed on the ns-developers@@isi.edu mailing list.
+This document is written in GNU Texinfo and is to be maintained in revision 
+control on the @command{ns-3} code server.  Both PDF and HTML versions should 
+be available on the server.  Changes to the document should be discussed on 
+the ns-developers@@isi.edu mailing list.
 
 This software is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
