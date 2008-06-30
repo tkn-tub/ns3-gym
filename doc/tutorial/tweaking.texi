@@ -28,25 +28,25 @@
 @section Using the Logging Module
 
 @cindex logging
-We have already taken a brief look at the ns-3 logging module while going
-over the @code{first.cc} script.  We will now take a closer look and see what
-kind of use-cases the logging subsystem was designed to cover.
+We have already taken a brief look at the @command{ns-3} logging module while
+going over the @code{first.cc} script.  We will now take a closer look and 
+see what kind of use-cases the logging subsystem was designed to cover.
 
 @node Logging Overview
 @subsection Logging Overview
-Many large systems support some kind of message logging facility, and ns-3
-is not an exception.  In some cases, only error messages are logged to the 
-``operator console'' (which is typically @code{stderr} in Unix-based systems).
-In other systems, warning messages may be output as well as more detailed 
-informational messages.  In some cases, logging facilities are used to output
-debug messages which can quickly turn the output into a blur.
+Many large systems support some kind of message logging facility, and 
+@command{ns-3} is not an exception.  In some cases, only error messages are 
+logged to the ``operator console'' (which is typically @code{stderr} in Unix-
+based systems).  In other systems, warning messages may be output as well as 
+more detailed informational messages.  In some cases, logging facilities are 
+used to output debug messages which can quickly turn the output into a blur.
 
-ns-3 takes the view that all of these verbosity levels are useful and se
-provides a selectable, multi-level approach to message logging.  Logging can
-be disabled completely, enabled on a component-by-component basis, enabled
-globally and has selectable verbosity levels.  The ns-3 log module provides
-a straightforward, relatively easy to use way to get some kinds of information
-out of your simulation.
+@command{Ns-3} takes the view that all of these verbosity levels are useful 
+and we provide a selectable, multi-level approach to message logging.  Logging
+can be disabled completely, enabled on a component-by-component basis, enabled
+globally and has selectable verbosity levels.  The @command{ns-3} log module
+provides a straightforward, relatively easy to use way to get some kinds of 
+information out of your simulation.
 
 You should understand that we do provide a general purpose mechanism --- 
 tracing --- to get data out of your models which should be preferred for 
@@ -64,7 +64,7 @@ defined in the system.
 @item NS_LOG_DEBUG --- Log relatively rare, ad-hoc debugging messages;
 @item NS_LOG_INFO --- Log informational messages about program progress;
 @item NS_LOG_FUNCTION --- Log a message describing each function called;
-@item NS_LOG_LOGIC -- Log messages describing logical flow in a function;
+@item NS_LOG_LOGIC -- Log messages describing logical flow within a function;
 @item NS_LOG_ALL --- Log everything.
 @end itemize
 
@@ -72,13 +72,14 @@ We also provide an unconditional logging level that is always displayed,
 irrespective of logging levels or component selection.
 
 @itemize @bullet
-NS_LOG_UNCOND -- Log the associated message unconditionally.
+@item NS_LOG_UNCOND -- Log the associated message unconditionally.
 @end itemize
 
-Each level can be requested singly or cumulatively; and can be set using a
-shell environment variable (NS_LOG) or by logging system function call.  As
-was seen earlier in the tutorial, the logging system has Doxygen documentation
-so now would be a good time to peruse the Logging Module documentation.
+Each level can be requested singly or cumulatively; and logging can be set 
+up using a shell environment variable (NS_LOG) or by logging system function 
+call.  As was seen earlier in the tutorial, the logging system has Doxygen 
+documentation so now would be a good time to peruse the Logging Module 
+documentation.
 
 Now that you have read the documentation in great detail, we can get some
 interesting information out of the @code{first.cc} example script you dropped
@@ -107,7 +108,7 @@ ask the client application, for example, to print more information by setting
 its logging level via the NS_LOG environment variable.  I am going to assume
 from here on that are using an sh-like shell that uses the``VARIABLE=value''
 syntax.  If you are using a csh-like shell, then you will have to convert to
-``setenv VARIABLE value'' syntax.
+the ``setenv VARIABLE value'' syntax required by those shells.
 
 Let's ask the UDP echo client application to print a little more information.
 Right now, it is responding to the following line of code in @code{first.cc},
@@ -158,19 +159,26 @@ output:
 @end verbatim
 
 The only additional debug information provided by the application is from
-the NS_LOG_FUNCTION level.  You can now see a log of the function calls that
-were made to the application.  If you look closely you will notice a single
-colon between the string @code{UdpEchoClientApplication} and the method name
-where you might have expected a C++ scope operator (@code{::}).  This is
-intentional.  The name is not actually a class name, it is a logging component
-name.  When there is a one-to-one correspondence between a source file and a
-class, this will generally be the class name but you should understand that
-it is not actually a class name, and there is a single colon to separate the
-logging component name from the function name that is printed.
+the NS_LOG_FUNCTION level.  Note that there are no requirements in the
+@command{ns-3} system that logging components must support any particular
+logging functionality.  The decision regarding how much information is logged
+is left to the individual developer.
+
+You can now see a log of the function calls that were made to the application.
+If you look closely you will notice a single colon between the string 
+@code{UdpEchoClientApplication} and the method name where you might have 
+expected a C++ scope operator (@code{::}).  This is intentional.  
+
+The name is not actually a class name, it is a logging component name.  When 
+there is a one-to-one correspondence between a source file and a class, this 
+will generally be the class name but you should understand that it is not 
+actually a class name, and there is a single colon there instead of a double
+colon to remind you in a relatively subtle way to conceptually separate the 
+logging component name from the class name.
 
 It turns out that in come cases, it can be hard to determine which method
 actually generates a log message.  If you look in the text above, you may
-wonder where the string ``@code{Received 1024 bytes from 10.1.1.1}'' comes
+wonder where the string ``@code{Received 1024 bytes from 10.1.1.2}'' comes
 from.  You can resolve this by ORing the @code{prefix_func} level into the
 @code{NS_LOG} environment variable.  Try doing the following,
 
@@ -178,8 +186,8 @@ from.  You can resolve this by ORing the @code{prefix_func} level into the
   export 'NS_LOG=UdpEchoClientApplication=level_all|prefix_func'
 @end verbatim
 
-Note that the single quotes are required since the vertical bar is a Unix
-pipe connector.
+Note that the quotes are required since the vertical bar we use to indicate an
+OR operation is also a Unix pipe connector.
 
 Now, if you run the script you will see that the logging system makes sure 
 that every message from the given log component is prefixed with the component
@@ -204,9 +212,11 @@ name.
 @end verbatim
 
 You can now see all of the messages coming from the UDP echo client application
-are identified as such.  The remaining message must be coming from the UDP
-echo server application.  We can enable that component by entering a colon
-separated list of components in the NS_LOG environment variable.
+are identified as such.  The message ``Received 1024 bytes from 10.1.1.2'' is
+now clearly identified as coming from the echo client application.  The 
+remaining message must be coming from the UDP echo server application.  We 
+can enable that component by entering a colon separated list of components in
+the NS_LOG environment variable.
 
 @verbatim
   export 'NS_LOG=UdpEchoClientApplication=level_all|prefix_func:
@@ -307,11 +317,11 @@ turning on all of the logging components in the system.  Try setting the
   export 'NS_LOG=*=level_all|prefix_func|prefix_time'
 @end verbatim
 
-The asterisk is the logging component wildcard.  This will turn on all of the
-logging in all of the components in the system.  I won't reproduce the output
-here (as of this writing it produces 772 lines of output for the single packet
-echo) but you can redirect this information into a file and look through it 
-with your favorite editor if you like,
+The asterisk above is the logging component wildcard.  This will turn on all 
+of the logging in all of the components used in the simulation.  I won't 
+reproduce the output here (as of this writing it produces 772 lines of output
+for the single packet echo) but you can redirect this information into a file 
+and look through it with your favorite editor if you like,
 
 @verbatim
   ~/repos/ns-3-tutorial > ./waf --run scratch/first >& log.out
@@ -322,8 +332,10 @@ have no idea where things are going wrong.  I can follow the progress of the
 code quite easily without having to set breakpoints and step through code
 in a debugger.  When I have a general idea about what is going wrong, I 
 transition into a debugger for fine-grained examination of the problem.  This
-output can be especially useful when your script does something completely 
-unexpected.
+kind of output can be especially useful when your script does something 
+completely unexpected.  If you are stepping using a debugger you may miss an
+unexpected excursion completely.  Logging the excursion makes it quickly
+visible.
 
 @node Adding Logging to your Code
 @subsection Adding Logging to your Code
@@ -332,7 +344,7 @@ You can add new logging to your simulations by making calls to the log
 component via several macros.  Let's do so in the @code{first.cc} script we
 have in the @code{scratch} directory.
 
-Recall that we have defined a logging component in that script.
+Recall that we have defined a logging component in that script:
 
 @verbatim
   NS_LOG_COMPONENT_DEFINE ("FirstScriptExample");
@@ -340,10 +352,10 @@ Recall that we have defined a logging component in that script.
 
 You now know that you can enable all of the logging for this component by
 setting the @code{NS_LOG} environment variable to the various levels.  Let's
-add some logging.  The macro to add an informational level log message is
-@code{NS_LOG_INFO}.  Add one just before we start creating the nodes that 
-tells you that the script is ``Creating Topology.''  This is done as in this
-code snippet,
+go ahead add some logging to the script.  The macro used to add an 
+informational level log message is @code{NS_LOG_INFO}.  Go ahead and add one 
+just before we start creating the nodes that tells you that the script is 
+``Creating Topology.''  This is done as in this code snippet,
 
 @verbatim
   NS_LOG_INFO ("Creating Topology");
@@ -357,17 +369,18 @@ off the torrent of logging we previously enabled:
 @end verbatim
 
 Now, if you run the script, you will not see your new message since its 
-associated logging component has not been enabled.  In order to see your 
-message you will have to enable the @code{FirstScriptExample} logging 
-component with a level greater than or equal to @code{NS_LOG_INFO}.  If
-you just want to see this particular level of logging, you can enable that
-by,
+associated logging component (@code{FirstScriptExample}) has not been enabled.
+In order to see your message you will have to enable the 
+@code{FirstScriptExample} logging component with a level greater than or equal
+to @code{NS_LOG_INFO}.  If you just want to see this particular level of 
+logging, you can enable it by,
 
 @verbatim
   ~/repos/ns-3-tutorial > export NS_LOG=FirstScriptExample=info
 @end verbatim
 
-If you now run the script you will see your new logging message,
+If you now run the script you will see your new ``Creating Topology'' log
+message,
 
 @verbatim
   ~/repos/ns-3-tutorial > ./waf --run scratch/first
@@ -380,13 +393,6 @@ If you now run the script you will see your new logging message,
   ~/repos/ns-3-tutorial >
 @end verbatim
 
-As previously described, this does not also enable the lower levels of logging
-but selects out the single infomational level.  
-
-As we outlined in the Logging Overview, there are currently seven levels of 
-logging verbosity you can use and you can also prefix your various log messages
-with component name and simulation time.
-
 @c ========================================================================
 @c Using Command Line Arguments
 @c ========================================================================
@@ -395,10 +401,10 @@ with component name and simulation time.
 
 @subsection Overriding Default Attributes
 @cindex command line arguments
-Another way you can change the way that ns-3 scripts behave without editing
-and building scripts is via @emph{command line arguments.}  We provide a 
-mechanism to parse command line arguments and automatically set local and 
-global variables based on those arguments.
+Another way you can change how @command}ns-3} scripts behave without editing
+and building is via @emph{command line arguments.}  We provide a mechanism to 
+parse command line arguments and automatically set local and global variables
+based on those arguments.
 
 The first step in using the command line argument system is to declare the
 command line parser.  This is done quite simply (in your main program) as
@@ -418,18 +424,19 @@ in the following code,
 @end verbatim
 
 This simple two line snippet is actually very useful by itself.  It opens the
-door to the ns-3 global variable and attribute systems.  Go ahead and add that
-two lines of code to the @code{first.cc} script at the start of @code{main}.
-Go ahead and build the script and run it, but ask the script for help in the
-following way,
+door to the @command{ns-3} global variable and attribute systems.  Go ahead 
+and add that two lines of code to the @code{first.cc} script at the start of 
+@code{main}.  Go ahead and build the script and run it, but ask the script 
+for help in the following way,
 
 @verbatim
   ~/repos/ns-3-tutorial > ./waf --run "scratch/first --PrintHelp"
 @end verbatim
 
-This will ask way to run the @code{scratch/first} script and pass the command
-line argument @code{--PrintHelp} to the script.  The command line parser will
-now see the @code{PrintHelp} argument and respond with,
+This will ask Waf to run the @code{scratch/first} script and pass the command
+line argument @code{--PrintHelp} to the script.  The quotes are required to 
+sort out which program gets which argument.  The command line parser will
+now see the @code{--PrintHelp} argument and respond with,
 
 @verbatim
   ~/repos/ns-3-tutorial > ./waf --run ``scratch/first --PrintHelp''
@@ -445,8 +452,8 @@ now see the @code{PrintHelp} argument and respond with,
 @end verbatim
 
 Let's focus on the @code{--PrintAttributes} option.  We have already hinted
-at the attribute system while walking through the @code{first.cc} script.  We
-looked at the following lines of code,
+at the @command{ns-3} attribute system while walking through the 
+@code{first.cc} script.  We looked at the following lines of code,
 
 @verbatim
     PointToPointHelper pointToPoint;
@@ -457,9 +464,9 @@ looked at the following lines of code,
 and mentioned that @code{DataRate} was actually an @code{Attribute} of the 
 @code{PointToPointNetDevice}.  Let's use the command line argument parser
 to take a look at the attributes of the PointToPointNetDevice.  The help
-listing says that we should provide a typeid.  This corresponds to the class
-name of the class to which the attributes belong.  In this case it will be
-@code{ns3::PointToPointNetDevice}.  Let's go ahead and type in,
+listing says that we should provide a @code{TypeId}.  This corresponds to the
+class name of the class to which the attributes belong.  In this case it will
+be @code{ns3::PointToPointNetDevice}.  Let's go ahead and type in,
 
 @verbatim
   ./waf --run "scratch/first --PrintAttributes=ns3::PointToPointNetDevice"
@@ -470,18 +477,18 @@ Among the attributes you will see listed is,
 
 @verbatim
   --ns3::PointToPointNetDevice::DataRate=[32768bps]:
-    The default data rate fo r point to point links
+    The default data rate for point to point links
 @end verbatim
 
-This is the default value that will be used when a PointToPointNetDevice is
-created in the system.  We overrode this default with the parameter setting
-in the PointToPointHelper above.  Let's use the default values for the 
-PointToPoint devices and channels by deleting the SetDeviceParameter call and
-the SetChannelParameter call from the @code{first.cc} we have in the scratch
-directory.
+This is the default value that will be used when a @code{PointToPointNetDevice}
+is created in the system.  We overrode this default with the ``parameter''
+setting in the @code{PointToPointHelper} above.  Let's use the default values 
+for the point-to-point devices and channels by deleting the 
+@code{SetDeviceParameter} call and the @code{SetChannelParameter} call from 
+the @code{first.cc} we have in the scratch directory.
 
-Your script should now just declare the PointToPointHelper and not do any
-sets as in the following example,
+Your script should now just declare the @code{PointToPointHelper} and not do 
+any @code{set} operations as in the following example,
 
 @verbatim
   ...
@@ -497,8 +504,9 @@ sets as in the following example,
   ...
 @end verbatim
 
-Go ahead and build the new script with waf.  Now let's go back and enable some
-logging from the UDP echo server application and turn on the time prefix.
+Go ahead and build the new script with Waf (@code{./waf}) and let's go back 
+and enable some logging from the UDP echo server application and turn on the 
+time prefix.
 
 @verbatim
   export 'NS_LOG=UdpEchoServerApplication=level_all|prefix_time'
@@ -529,23 +537,25 @@ the data rate of the @code{PointToPointNetDevice} down to its default of
 32768 bits per second from five megabits per second.
 
 If we were to provide a new @code{DataRate} using the command line, we could 
-speed our simulation up again,
+speed our simulation up again.  We do this in the following way, according to
+the formula implied by the help item:
 
 @verbatim
   ./waf --run "scratch/first --ns3::PointToPointNetDevice::DataRate=5Mbps"
 @end verbatim
 
 This will set the default value of the @code{DataRate} attribute back to 
-five megabits per second.  To get the old behavior back, we will have to set
-the speed-of-light delay of the channel.  We can ask the command line system
-to print out the @code{Attributes} of the channel just like we did the net
-device:
+five megabits per second.  To get the original behavior of the script back, 
+we will have to set the speed-of-light delay of the channel.  We can ask the 
+command line system to print out the @code{Attributes} of the channel just 
+like we did the net device:
 
 @verbatim
   ./waf --run "scratch/first --PrintAttributes=ns3::PointToPointChannel"
 @end verbatim
 
-and we discover the @code{Delay} attribute.
+We discover the @code{Delay} attribute of the channel is set in the following
+way:
 
 @verbatim
   --ns3::PointToPointChannel::Delay=[0ns]:
@@ -560,7 +570,7 @@ We can then set both of these default values through the command line system,
     --ns3::PointToPointChannel::Delay=2ms"
 @end verbatim
 
-In which case we recover the timing we had when we explicitly set the
+in which case we recover the timing we had when we explicitly set the
 @code{DataRate} and @code{Delay} in the script:
 
 @verbatim
@@ -576,7 +586,7 @@ In which case we recover the timing we had when we explicitly set the
   UdpEchoServerApplication:~UdpEchoServer()
 @end verbatim
 
-Note that the packet is received by the server at 2.0036864 seconds.  We 
+Note that the packet is again received by the server at 2.0036864 seconds.  We 
 could actually set any of the attributes used in the script in this way.  In
 particular we could set the @code{UdpEchoClient} attribute @code{MaxPackets} 
 to some other value than one.
@@ -603,9 +613,9 @@ quite simply by using the @code{AddValue} method to the command line parser.
 
 Let's use this facility to specify the number of packets to echo in a 
 completely different way.  Let's add a local variable called @code{nPackets}
-to the main function.  We'll initialize it to one to match our previous 
+to the @code{main} function.  We'll initialize it to one to match our previous 
 default behavior.  To allow the command line parser to change this value, we
-need to hook the value into the parser.  Do this by adding a call to 
+need to hook the value into the parser.  We do this by adding a call to 
 @code{AddValue}.  Go ahead and change the @code{scratch/first.cc} script to
 start with the following code,
 
@@ -624,7 +634,7 @@ start with the following code,
 
 Scroll down to the point in the script where we set the @code{MaxPackets}
 attribute and change it so that it is set to the variable @code{nPackets}
-instead of the constant @code{1} as below.
+instead of the constant @code{1} as is shown below.
 
 @verbatim
   echoClient.SetAppAttribute ("MaxPackets", UintegerValue (nPackets));
@@ -649,7 +659,7 @@ should see your new @code{User Argument} listed in the help.
 @end verbatim
 
 If you want to specify the number of packets to echo, you can now do so by
-setting the @code{nPackets} argument,
+setting the @code{--nPackets} argument in the command line,
 
 @verbatim
   ~/repos/ns-3-tutorial > ./waf --run "scratch/first --nPackets=2"
@@ -664,12 +674,14 @@ setting the @code{nPackets} argument,
   ~/repos/ns-3-tutorial >
 @end verbatim
 
-If you are an ns-3 user, you can use the command line argument system to 
-control global values and attributes.  If you are a model author, you can
-add new attributes to your Objects and they will automatically be available
-for setting by your users through the command line system.  If you are a
-script author, you can add new variables to your scripts and hook them into
-the command line system quite painlessly.
+You have now echoed two packets.
+
+If you are an @command{ns-3} user, you can use the command line argument 
+system to control global values and attributes.  If you are a model author, 
+you can add new attributes to your Objects and they will automatically be 
+available for setting by your users through the command line system.  If you
+are a script author, you can add new variables to your scripts and hook them 
+into the command line system quite painlessly.
 
 @c ========================================================================
 @c Using the Tracing System
@@ -707,17 +719,17 @@ and sinks.
 @end itemize 
 
 The @command{ns-3} tracing system is built on the concepts of independent 
-tracing sources and tracing sinks and a uniform mechanism for connecting
+tracing sources and tracing sinks, and a uniform mechanism for connecting
 sources to sinks.  Trace sources are entities that can signal events that
 happen in a simulation and provide access to interesting underlying data. 
 For example, a trace source could indicate when a packet is received by a net
-device and provide access to the packet for interested trace sinks.
+device and provide access to the packet contents for interested trace sinks.
 
 Trace sources are not useful by themselves, they must be ``connected'' to
 other pieces of code that actually do something useful with the information 
 provided by the sink.  Trace sinks are consumers of the events and data
-provided by the trace sources.  For example, one could create a trace sink t
-hat would (when connected to the trace source of the previous example) print 
+provided by the trace sources.  For example, one could create a trace sink 
+that would (when connected to the trace source of the previous example) print 
 out interesting parts of the received packet.
 
 The rationale for this explicit division is to allow users to attach new
@@ -727,10 +739,6 @@ a user could define a new tracing sink in her script and attach it to an
 existing tracing source defined in the simulation core editing only the 
 user script.
 
-What remains to be defined is a way for users to find these hooks (tracing 
-sources) and attach sinks to them.  A tracing namespace is defined for
-this purpose.  
-
 In this tutorial, we will walk through some pre-defined sources and sinks and
 show how they may be customized with little user effort.  See the ns-3 manual
 or how-to sections for information on advanced tracing configuration including
@@ -739,12 +747,12 @@ extending the tracing namespace and creating new tracing sources.
 @cindex tracing
 @cindex ASCII tracing
 @subsection ASCII Tracing
-ns-3 provides an ASCII trace helper that is a wrapper around low-level 
-tracing system.  This helper lets you configure some useful and easily
-understood packet traces easily.  The output of a trace of a simulation run 
-is an ASCII file --- thus the name.  For those familiar with @command{ns-2} 
-output, this type of trace is analogous to the @command{out.tr} generated 
-by many scripts.
+@command{Ns-3} provides an ASCII trace helper that is a wrapper around the 
+low-level tracing system.  This helper lets you configure some useful and 
+easily understood packet traces easily.  The output of a trace of a simulation
+run is an ASCII file --- thus the name.  For those familiar with 
+@command{ns-2} output, this type of trace is analogous to the @command{out.tr}
+generated by many scripts.
 
 @cindex tracing packets
 Let's just jump right in and add some ASCII tracing output to our 
@@ -760,11 +768,11 @@ following code to the script just before the call to @code{Simulator::Run ()}.
 The first two lines are just vanilla C++ code to open a stream that will be
 written to a file named ``first.tr.''  See your favorite C++ tutorial if you
 are unfamiliar with this code.  The last line of code in the snippet above
-tells ns-3 that you want to enable ASCII tracing on all point-to-point devices
-in your simulation; and you want the (provided) trace sinks to write out
-information about packet movement in ASCII format to the stream provided.
-For those familiar with @command{ns-2}, the traced events are equivalent
-to the popular trace points that log "+", "-", "d", and "r" events.
+tells @command{ns-3} that you want to enable ASCII tracing on all 
+point-to-point devices in your simulation; and you want the (provided) trace
+sinks to write out information about packet movement in ASCII format to the 
+stream provided. For those familiar with @command{ns-2}, the traced events are
+equivalent to the popular trace points that log "+", "-", "d", and "r" events.
 
 Since we have used a @code{std::ofstream} object, we also need to include the
 appropriate header.  Add the following line to the script (I typically add it
@@ -783,26 +791,28 @@ You can now build the script and run it from the command line:
 @cindex first.tr
 Just as you have seen previously, you may see some messages from Waf and then
 the ``Compilation finished successfully'' message.  The following messages are
-from the running program.  When it ran, the program will have created a file
-named @code{first.tr}.  Because of the way that Waf works, the file is not 
-created in the local directory, it is created at the top-level directory of 
-the repository by default.  If you want to control where the traces are saved
-you can use the @code{--cwd} option of Waf to specify this.  We have not done
-so, thus we need to change into the top level directory of our repo and take a
-look at the file @code{first.tr} in your favorite editor.
+from the running program.  
+
+When it ran, the program will have created a file named @code{first.tr}.  
+Because of the way that Waf works, the file is not created in the local 
+directory, it is created at the top-level directory of the repository by 
+default.  If you want to control where the traces are saved you can use the 
+@code{--cwd} option of Waf to specify this.  We have not done so, thus we 
+need to change into the top level directory of our repo and take a look at 
+the file @code{first.tr} in your favorite editor.
 
 @subsubsection Parsing Ascii Traces
 @cindex parsing ascii traces
 There's a lot of information there in a pretty dense form, but the first thing
 to notice is that there are a number of distinct lines in this file.  It may
-be difficult to see this clearly unless you widen your windows considerably.
+be difficult to see this clearly unless you widen your window considerably.
+
 Each line in the file corresponds to a @emph{trace event}.  In this case
-we are tracing events on the @emph{device queue} present in every net device
-on every node in the simulation.  The device queue is a queue through which
-every packet destined for a channel must pass --- it is the device
-@emph{transmit} queue.  Note that each line in the trace file begins with a
-lone character (has a space after it).  This character will have the following
-meaning:
+we are tracing events on the @emph{transmit queue} present in every net device
+on every node in the simulation.  The transmit queue is a queue through which
+every packet destined for a channel must pass.  Note that each line in the 
+trace file begins with a lone character (has a space after it).  This 
+character will have the following meaning:
 
 @cindex ascii trace enqueue operation
 @cindex ascii trace dequeue operation
@@ -815,9 +825,9 @@ meaning:
 @item @code{r}: A packet was received by the net device.
 @end itemize
 
-Let's take a more detailed view of the first line.  I'll break it down into
-sections (indented for clarity) with a two digit reference number on the
-left side:
+Let's take a more detailed view of the first line in the trace file.  I'll 
+break it down into sections (indented for clarity) with a two digit reference
+number on the left side:
 
 @verbatim
   00 + 
@@ -836,40 +846,40 @@ left side:
 @cindex trace event
 @cindex simulation time
 The first line of this expanded trace event (reference number 00) is the 
-queue operation.  We have a @code{+} character, so this corresponds to an
-@emph{enqueue} operation.  The second line (reference 01) is the simulation 
-time expressed in seconds.  You may recall that we asked the 
-@code{UdpEchoClient} to start sending packets at two seconds.  Here we again
-see confirmation that this is, indeed, happening.
+operation.  We have a @code{+} character, so this corresponds to an
+@emph{enqueue} operation on the transmit queue.  The second line (reference 01)
+is the simulation time expressed in seconds.  You may recall that we asked the 
+@code{UdpEchoClientApplication} to start sending packets at two seconds.  Here
+we see confirmation that this is, indeed, happening.
 
 @cindex node number
 @cindex net device number
 @cindex smart pointer
-The next line of the example listing (reference 02) tell us the trace source
+The next line of the example trace (reference 02) tell us the trace source
 that originated this even expressed in the tracing namespace.  You can think
-of the tracing womewhat like you would a filesystem namespace.  The root of 
-the namespace is the @code{NodeList}.  This corresponds to a container in the 
-ns-3 code that contains all of the nodes that were created in the system.
-Just as a filesystem has may have directories under the root, we have node 
-numbers in the @code{NodeList}.  The string @code{/NodeList/0} therefore 
-refers to the zeroth node in the @code{NodeList} which we can think of as
-``node 0.''  In each node there is a list of devices that have been installed.
-This list appears next.  You can see that this trace event comes from 
-@code{DeviceList/0} which is the zeroth device installed in the node. 
+of the tracing namespace somewhat like you would a filesystem namespace.  The 
+root of the namespace is the @code{NodeList}.  This corresponds to a container
+managed in the @command{ns-3} core code that contains all of the nodes that are
+created in a script.  Just as a filesystem may have directories under the 
+root, we may have node numbers in the @code{NodeList}.  The string 
+@code{/NodeList/0} therefore refers to the zeroth node in the @code{NodeList}
+which we typically think of as ``node 0.''  In each node there is a list of 
+devices that have been installed.  This list appears next in the namespace.
+You can see that this trace event comes from @code{DeviceList/0} which is the 
+zeroth device installed in the node. 
 
 The next string, @code{$ns3::PointToPointNetDevice} tells you what kind of 
 device it is that is in the zeroth position of the device list for node zero.
-This should by now be completely expected.  Recall that the operation @code{+}
-found at reference 00 means an enqueue operation on the transmit queue of the
-device.  This is reflected in the final segments of the ``trace path'' which
-are @code{TxQueue/Enqueue}.
+Recall that the operation @code{+} found at reference 00 means an enqueue 
+operation happened on the transmit queue of the device.  This is reflected in 
+the final segments of the ``trace path'' which are @code{TxQueue/Enqueue}.
 
 The remaining lines in the trace should be fairly intuitive.  References 03-04
 indicate that the packet is encapulated in the point-to-point protocol.  
 References 05-07 show that the packet has an IP version four header and has
 originated from IP address 10.1.1.1 and is destined for 10.1.1.2.  References
-08-09 show that this is a UDP packet from and finally reference 10 shows that
-the payload is the expected 1024 bytes.
+08-09 show that this packet has a UDP header and, finally, reference 10 shows
+that the payload is the expected 1024 bytes.
 
 The next line in the trace file shows the same packet being dequeued from the
 transmit queue on the same node. 
@@ -894,9 +904,8 @@ device on the node with the echo server. I have reproduced that event below.
 Notice that the trace operation is now @code{r} and the simulation time has
 increased to 2.25732 seconds.  If you have been following the tutorial steps
 closely this means that you have left the @code{DataRate} of the net devices
-set to their default value of 32768 bps with a channel @code{Delay} of two
-milliseconds.  This time should be familiar as you have seen it before in a
-previous section.
+and the channel @code{Delay} set to their default values.  This time should 
+be familiar as you have seen it before in a previous section.
 
 The trace source namespace entry (reference 02) has changed to reflect that
 this event is coming from node 1 (@code{/NodeList/1}) and the packet reception
@@ -904,17 +913,17 @@ trace source (@code{/Rx}).  It should be quite easy for you to follow the
 progress of the packet through the topology by looking at the rest of the 
 traces in the file.
 
-@subsection PCAP Trace Helper
+@subsection PCAP Tracing
 @cindex pcap
 @cindex Wireshark
-The @command{ns-3} @emph{pcap trace helper} is used to create trace files in
+The @command{ns-3} device helpers can be used to create trace files in the
 @code{.pcap} format.  The acronym pcap (usually written in lower case) stands
 for @emph{p}acket @emph{cap}ture, and is actually an API that includes the 
 definition of a @code{.pcap} file format.  The most popular program that can
 read and display this format is Wireshark (formerly called Ethereal).
 However, there are many traffic trace analyzers that use this packet format.
 We encourage users to exploit the many tools available for analyzing pcap
-traces.  In this tutorial, we show how tcpdump and Wireshark can be used.
+traces.  In this tutorial, we concentrate on viewing pcap traces with tcpdump.
 
 @cindex pcap tracing
 The code used to enable pcap tracing is a one-liner.  
@@ -924,18 +933,18 @@ The code used to enable pcap tracing is a one-liner.
 @end verbatim
 
 Go ahead and insert this line of code after the ASCII tracing code we just 
-added to @code{scratch/first.cc}.  Notice that we only gave the pcap trace
-helper call the string, ``first,'' and not ``first.pcap'' or something 
-similar.  This is because the parameter is a prefix, not a complete file name.
-The pcap trace helper will actually create a trace file for every device in 
-the simulation that generates a traced event.  The file names will be built
-using the prefix, the node number, the device number and a ``.pcap'' suffix.
+added to @code{scratch/first.cc}.  Notice that we only passed the string
+``first,'' and not ``first.pcap'' or something similar.  This is because the 
+parameter is a prefix, not a complete file name.  The helper will actually 
+create a trace file for every point-to-point device in the simulation.  The 
+file names will be built using the prefix, the node number, the device number
+ and a ``.pcap'' suffix.
 
 In our example script, we will see a files named ``first-0-0.pcap'' and
-``first.1-0.pcap'' which are the pcap traces for node 0, device 0 and node 1,
-device 1, respectively.
+``first.1-0.pcap'' which are the pcap traces for node 0-device 0 and 
+node 1-device 1, respectively.
 
-You can now run the script as you have been:
+You can now run the script in the usual way:
 
 @verbatim
   ./waf --run scratch/first

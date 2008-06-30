@@ -11,7 +11,7 @@
 
 @menu
 * Key Abstractions::
-* A First ns-3 script
+* A First ns-3 script::
 @end menu
 
 The first thing we need to do before actually starting to look at or write
