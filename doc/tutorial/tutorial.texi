@@ -79,7 +79,6 @@ see @uref{http://www.nsnam.org/docs/tutorial.pdf}.
 
 @menu
 * Introduction::
-* Browsing ns-3::
 * Resources::
 * Getting Started::
 * Conceptual Overview::
