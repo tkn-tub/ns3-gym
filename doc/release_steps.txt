@@ -14,10 +14,10 @@ Steps in doing an ns-3 release
 4. test dev tarball on release platforms (waf check and maybe some other 
    scripts)
 5. once you are happy with the tarball, tag ns-3-dev and ns-3-dev-ref-traces
-   - hg tag "release ns-3.1x"
+   - hg tag "ns-3.1x"
    - hg push 
    - cd into regression/ns-3-dev-ref-traces
-   - hg tag "release ns-3.1x"
+   - hg tag "ns-3.1x"
    - hg push 
 6. clone the tagged ns-3-dev and place it on the repository
    - ssh code.nsnam.org; sudo tcsh; su code;
