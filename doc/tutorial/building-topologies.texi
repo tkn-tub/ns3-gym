@@ -16,8 +16,8 @@
 @chapter Building Topologies
 
 @menu
-* Building a Bus Network Topology
-* Building a Wireless Network Topology
+* Building a Bus Network Topology::
+* Building a Wireless Network Topology::
 @end menu
 
 @c ========================================================================
@@ -565,8 +565,8 @@ rightmost CSMA device which is where the echo server resides.
 In this section we are going to further expand our knowledge of ns-3 network
 devices and channels to cover an example of a wireless network.  Ns-3 provides
 a set of 802.11 models that attempt to provide an accurate MAC-level 
-implementation of the 802.11 specification a ``not-so-slow'' PHY-level model 
-of the 802.11a specification.
+implementation of the 802.11 specification and a ``not-so-slow'' 
+PHY-level model of the 802.11a specification.
 
 Just as we have seen both point-to-point and CSMA topology helper objects when
 constructing point-to-point topologies, we will see equivalent @code{Wifi}
@@ -748,7 +748,7 @@ management.  Like many systems, ns-3 creates a base class called @code{Object}
 that provides our extensions ``for free'' to other classes that inherit from 
 our @code{class Object}.  
 
-In the code snipped above, the right hand side of the expression is a 
+In the code snippet above, the right hand side of the expression is a 
 call to a templated C++ function called @code{CreateObject}.  The 
 @emph{template parameter} inside the angle brackets basically tells the 
 compiler what class it is we want to instantiate.  Our system returns a
