@@ -38,6 +38,7 @@ Ipv4Header::Ipv4Header ()
     m_protocol (0),
     m_flags (0),
     m_fragmentOffset (0),
+    m_checksum(0),
     m_goodChecksum (true)
 {}
 
@@ -177,23 +178,6 @@ Ipv4Header::IsChecksumOk (void) const
   return m_goodChecksum;
 }
 
-uint16_t
-Ipv4Header::ChecksumCalculate(Buffer::Iterator &i, uint16_t size)
-{
-  /* see RFC 1071 to understand this code. */
-  uint32_t sum = 0;
-
-  for (int j = 0; j < size/2; j++)
-    sum += i.ReadU16 ();
-
-  if (size & 1)
-     sum += i.ReadU8 ();
-
-  while (sum >> 16)
-    sum = (sum & 0xffff) + (sum >> 16);
-  return ~sum;
-}
-
 TypeId 
 Ipv4Header::GetTypeId (void)
 {
@@ -282,7 +266,7 @@ Ipv4Header::Serialize (Buffer::Iterator start) const
   if (m_calcChecksum) 
     {
       i = start;
-      uint16_t checksum = ChecksumCalculate(i, 20);
+      uint16_t checksum = i.CalculateIpChecksum(20);
       NS_LOG_LOGIC ("checksum=" <<checksum);
       i = start;
       i.Next (10);
@@ -318,14 +302,15 @@ Ipv4Header::Deserialize (Buffer::Iterator start)
   m_fragmentOffset <<= 3;
   m_ttl = i.ReadU8 ();
   m_protocol = i.ReadU8 ();
-  i.Next (2); // checksum
+  m_checksum = i.ReadU16();
+  /* i.Next (2); // checksum */
   m_source.Set (i.ReadNtohU32 ());
   m_destination.Set (i.ReadNtohU32 ());
 
   if (m_calcChecksum) 
     {
       i = start;
-      uint16_t checksum = ChecksumCalculate(i, headerSize);
+      uint16_t checksum = i.CalculateIpChecksum(headerSize);
       NS_LOG_LOGIC ("checksum=" <<checksum);
 
       m_goodChecksum = (checksum == 0);

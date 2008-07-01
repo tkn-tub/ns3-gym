@@ -117,6 +117,9 @@ private:
   void SendPacket (Ptr<Packet>, TcpHeader,
                   Ipv4Address, Ipv4Address);
   static ObjectFactory GetDefaultRttEstimatorFactory (void);
+
+  bool m_goodChecksum;
+  bool m_calcChecksum;
 };
 
 }; // namespace ns3

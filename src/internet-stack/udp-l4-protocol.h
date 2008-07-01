@@ -93,6 +93,7 @@ protected:
 private:
   Ptr<Node> m_node;
   Ipv4EndPointDemux *m_endPoints;
+  bool m_calcChecksum;
 };
 
 }; // namespace ns3

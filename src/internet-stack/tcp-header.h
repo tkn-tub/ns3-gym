@@ -47,7 +47,7 @@ public:
   /**
    * \brief Enable checksum calculation for TCP (XXX currently has no effect)
    */
-  static void EnableChecksums (void);
+  void EnableChecksums (void);
 //Setters
   /**
    * \param port The source port for this TcpHeader
@@ -150,6 +150,17 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
+  /**
+   * \param size The payload size in bytes
+   */
+  void SetPayloadSize (uint16_t size);
+
+  /**
+   * \brief Is the TCP checksum correct ?
+   * \returns true if the checksum is correct, false otherwise.
+   */
+  bool IsChecksumOk (void) const;
+
 private:
   uint16_t m_sourcePort;
   uint16_t m_destinationPort;
@@ -158,10 +169,14 @@ private:
   uint8_t m_length; // really a uint4_t
   uint8_t m_flags;      // really a uint6_t
   uint16_t m_windowSize;
-  uint16_t m_checksum;
   uint16_t m_urgentPointer;
+  uint16_t m_payloadSize;
+  uint16_t m_initialChecksum;
+  uint16_t m_checksum;
 
-  static bool m_calcChecksum;
+  bool m_calcChecksum;
+  bool m_goodChecksum;
+
 };
 
 }; // namespace ns3

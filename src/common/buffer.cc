@@ -1105,6 +1105,29 @@ Buffer::Iterator::ReadU8 (void)
 
 #endif /* BUFFER_USE_INLINE */
 
+uint16_t
+Buffer::Iterator::CalculateIpChecksum(uint16_t size)
+{
+  return CalculateIpChecksum(size, 0);
+}
+
+uint16_t
+Buffer::Iterator::CalculateIpChecksum(uint16_t size, uint32_t initialChecksum)
+{
+  /* see RFC 1071 to understand this code. */
+  uint32_t sum = initialChecksum;
+
+  for (int j = 0; j < size/2; j++)
+    sum += ReadU16 ();
+
+  if (size & 1)
+     sum += ReadU8 ();
+
+  while (sum >> 16)
+    sum = (sum & 0xffff) + (sum >> 16);
+  return ~sum;
+}
+
 } // namespace ns3
 
 

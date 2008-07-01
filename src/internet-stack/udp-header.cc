@@ -19,13 +19,10 @@
  */
 
 #include "udp-header.h"
-#include "ipv4-checksum.h"
 
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (UdpHeader);
-
-bool UdpHeader::m_calcChecksum = false;
 
 /* The magic values below are used only for debugging.
  * They can be used to easily detect memory corruption
@@ -35,7 +32,10 @@ UdpHeader::UdpHeader ()
   : m_sourcePort (0xfffd),
     m_destinationPort (0xfffd),
     m_payloadSize (0xfffd),
-    m_initialChecksum (0)
+    m_initialChecksum (0),
+    m_checksum(0),
+    m_calcChecksum(false),
+    m_goodChecksum(true)
 {}
 UdpHeader::~UdpHeader ()
 {
@@ -80,17 +80,34 @@ UdpHeader::InitializeChecksum (Ipv4Address source,
                               Ipv4Address destination,
                               uint8_t protocol)
 {
-  uint8_t buf[12];
-  source.Serialize (buf);
-  destination.Serialize (buf+4);
-  buf[8] = 0;
-  buf[9] = protocol;
-  uint16_t udpLength = m_payloadSize + GetSerializedSize ();
-  buf[10] = udpLength >> 8;
-  buf[11] = udpLength & 0xff;
+  Buffer buf = Buffer(12);
+  uint8_t tmp[4];
+  Buffer::Iterator it;
+  uint16_t udpLength = m_payloadSize + GetSerializedSize();
 
-  m_initialChecksum = Ipv4ChecksumCalculate (0, buf, 12);
+  buf.AddAtStart(12);
+  it = buf.Begin();
+
+  source.Serialize(tmp);
+  it.Write(tmp, 4); /* source IP address */
+  destination.Serialize(tmp);
+  it.Write(tmp, 4); /* destination IP address */
+  it.WriteU8(0); /* protocol */
+  it.WriteU8(protocol); /* protocol */
+  it.WriteU8(udpLength >> 8); /* length */
+  it.WriteU8(udpLength & 0xff); /* length */
+
+  it = buf.Begin();
+  /* we don't CompleteChecksum ( ~ ) now */
+  m_initialChecksum = ~(it.CalculateIpChecksum(12));
 }
+
+bool
+UdpHeader::IsChecksumOk (void) const
+{
+  return m_goodChecksum; 
+}
+
 
 TypeId 
 UdpHeader::GetTypeId (void)
@@ -125,23 +142,21 @@ void
 UdpHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
+  uint16_t udpLength = m_payloadSize + GetSerializedSize();
+
   i.WriteHtonU16 (m_sourcePort);
   i.WriteHtonU16 (m_destinationPort);
-  i.WriteHtonU16 (m_payloadSize + GetSerializedSize ());
+  i.WriteHtonU16 (udpLength);
   i.WriteU16 (0);
 
-  if (m_calcChecksum) 
+  if (m_calcChecksum)
     {
-#if 0
-      //XXXX
-      uint16_t checksum = Ipv4ChecksumCalculate (m_initialChecksum, 
-                                                  buffer->PeekData (), 
-                                                  GetSerializedSize () + m_payloadSize);
-      checksum = Ipv4ChecksumComplete (checksum);
-      i = buffer->Begin ();
-      i.Next (6);
-      i.WriteU16 (checksum);
-#endif
+      i = start;
+      uint16_t checksum = i.CalculateIpChecksum(udpLength, m_initialChecksum);
+
+      i = start;
+      i.Next(6);
+      i.WriteU16(checksum);
     }
 }
 uint32_t
@@ -151,10 +166,16 @@ UdpHeader::Deserialize (Buffer::Iterator start)
   m_sourcePort = i.ReadNtohU16 ();
   m_destinationPort = i.ReadNtohU16 ();
   m_payloadSize = i.ReadNtohU16 () - GetSerializedSize ();
-  if (m_calcChecksum) 
-    {
-      // XXX verify checksum.
-    }
+  m_checksum = i.ReadU16();
+
+  if(m_calcChecksum)
+  {
+      i = start;
+      uint16_t checksum = i.CalculateIpChecksum(m_payloadSize + GetSerializedSize(), m_initialChecksum);
+
+      m_goodChecksum = (checksum == 0);
+  }
+
   return GetSerializedSize ();
 }
 
