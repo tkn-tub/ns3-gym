@@ -83,6 +83,7 @@ see @uref{http://www.nsnam.org/docs/manual.pdf}.
 * Attributes::
 * Packets::
 * Sockets APIs::
+* Node and Internet Stack::
 * Routing overview::
 * Troubleshooting
 @end menu
@@ -92,6 +93,7 @@ see @uref{http://www.nsnam.org/docs/manual.pdf}.
 @include attributes.texi
 @include packets.texi
 @include sockets.texi
+@include node.texi
 @c @include output.texi
 @include routing.texi
 @c @include other.texi

@@ -8,8 +8,7 @@ CSS = --css-include=manual.css
 SPLIT = --split section
 
 DIA_SOURCES = buffer.dia sockets-overview.dia
-TGIF_SOURCES = packet.obj 
-
+TGIF_SOURCES = packet.obj node.obj internet-node-send.obj internet-node-recv.obj 
 DIA_EPS = ${DIA_SOURCES:.dia=.eps}
 DIA_PNG = ${DIA_SOURCES:.dia=.png}
 DIA_PDF = ${DIA_SOURCES:.dia=.pdf}
