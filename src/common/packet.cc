@@ -199,6 +199,13 @@ Packet::RemoveHeader (Header &header)
   m_metadata.RemoveHeader (header, deserialized);
   return deserialized;
 }
+uint32_t
+Packet::PeekHeader (Header &header)
+{
+  NS_LOG_FUNCTION (this << &header);
+  uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
+  return deserialized;
+}
 void
 Packet::AddTrailer (const Trailer &trailer)
 {
@@ -222,6 +229,13 @@ Packet::RemoveTrailer (Trailer &trailer)
   uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
   m_buffer.RemoveAtEnd (deserialized);
   m_metadata.RemoveTrailer (trailer, deserialized);
+  return deserialized;
+}
+uint32_t
+Packet::PeekTrailer (Trailer &trailer)
+{
+  NS_LOG_FUNCTION (this << &trailer);
+  uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
   return deserialized;
 }
 

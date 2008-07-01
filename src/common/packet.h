@@ -187,7 +187,7 @@ public:
   uint32_t GetSize (void) const;
   /**
    * Add header to this packet. This method invokes the
-   * GetSerializedSize and Serialize
+   * Header::GetSerializedSize and Header::Serialize
    * methods to reserve space in the buffer and request the 
    * header to serialize itself in the packet buffer.
    *
@@ -196,15 +196,23 @@ public:
   void AddHeader (const Header & header);
   /**
    * Deserialize and remove the header from the internal buffer.
-   * This method invokes Deserialize.
+   * This method invokes Header::Deserialize.
    *
    * \param header a reference to the header to remove from the internal buffer.
    * \returns the number of bytes removed from the packet.
    */
   uint32_t RemoveHeader (Header &header);
   /**
+   * Deserialize but does _not_ remove the header from the internal buffer.
+   * This method invokes Header::Deserialize.
+   *
+   * \param header a reference to the header to read from the internal buffer.
+   * \returns the number of bytes read from the packet.
+   */  
+  uint32_t PeekHeader (Header &header);
+  /**
    * Add trailer to this packet. This method invokes the
-   * GetSerializedSize and Serialize
+   * Trailer::GetSerializedSize and Trailer::Serialize
    * methods to reserve space in the buffer and request the trailer 
    * to serialize itself in the packet buffer.
    *
@@ -219,6 +227,14 @@ public:
    * \returns the number of bytes removed from the end of the packet.
    */
   uint32_t RemoveTrailer (Trailer &trailer);
+  /**
+   * Deserialize but does _not_ remove a trailer from the internal buffer.
+   * This method invokes the Trailer::Deserialize method.
+   *
+   * \param trailer a reference to the trailer to read from the internal buffer.
+   * \returns the number of bytes read from the end of the packet.
+   */
+  uint32_t PeekTrailer (Trailer &trailer);
   /**
    * \param os output stream in which the data should be printed.
    *

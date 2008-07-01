@@ -449,13 +449,8 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
   {
     tcpHeader.EnableChecksums();
   }
-  /* XXX very dirty but needs this to AddHeader again because of checksum */
-  tcpHeader.SetLength(5); /* XXX TCP without options */
-  tcpHeader.SetPayloadSize(packet->GetSize() - tcpHeader.GetSerializedSize());
-  tcpHeader.InitializeChecksum(source, destination, PROT_NUMBER);
 
-  //these two do a peek, so that the packet can be forwarded up
-  packet->RemoveHeader (tcpHeader);
+  packet->PeekHeader (tcpHeader);
 
   NS_LOG_LOGIC("TcpL4Protocol " << this
                << " receiving seq " << tcpHeader.GetSequenceNumber()
@@ -469,7 +464,6 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
     return;
   }
 
-  packet->AddHeader (tcpHeader);
   NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" received a packet");
   Ipv4EndPointDemux::EndPoints endPoints =
     m_endPoints->Lookup (destination, tcpHeader.GetDestinationPort (),
