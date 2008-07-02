@@ -44,7 +44,7 @@ class TraceSourceAccessor;
 class TypeId
 {
 public:
-  enum {
+  enum AttributeFlag {
     /**
      * The attribute can be read
      */
