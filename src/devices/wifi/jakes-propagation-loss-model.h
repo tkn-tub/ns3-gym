@@ -97,7 +97,8 @@ public:
    * Set the number of oscillators to use to compute the ray coefficient
    */
   void SetNOscillators (uint8_t nOscillators);
-protected:
+
+private:
   class PathCoefficients;
   struct ComplexNumber {
     double real;
@@ -109,7 +110,7 @@ protected:
   ComplexNumber* m_amp;
   RandomVariable m_variable;
   double m_fd;
-private:
+
   typedef std::vector<PathCoefficients *> DestinationList;
   struct PathsSet {
     Ptr<MobilityModel> sender;
