@@ -23,6 +23,7 @@
 #include "attribute.h"
 #include "attribute-helper.h"
 #include <stdint.h>
+#include <limits>
 
 namespace ns3 {
 

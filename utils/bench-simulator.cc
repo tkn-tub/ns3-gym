@@ -23,6 +23,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <string.h>
 
 using namespace ns3;
 

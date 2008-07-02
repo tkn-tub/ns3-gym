@@ -29,7 +29,10 @@ DoParse (const std::string s, uint64_t *v)
   std::string::size_type n = s.find_first_not_of("0123456789.");
   if (n != std::string::npos)
   { // Found non-numeric
-    double r = ::atof(s.substr(0, n).c_str());
+    std::istringstream iss;
+    iss.str (s.substr(0, n));
+    double r;
+    iss >> r;
     std::string trailer = s.substr(n, std::string::npos);
     if (trailer == "bps")
       {
@@ -117,7 +120,9 @@ DoParse (const std::string s, uint64_t *v)
       }
     return true;
   }
-  *v = ::atoll(s.c_str());
+  std::istringstream iss;
+  iss.str (s);
+  iss >> *v;
   return true;
 }
 

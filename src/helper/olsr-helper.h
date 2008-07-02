@@ -39,7 +39,7 @@ public:
    */
   void SetAgent (std::string tid,
 		 std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-		 std::string n1 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+		 std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
 		 std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
 		 std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
 		 std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),

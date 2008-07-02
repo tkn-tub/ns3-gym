@@ -20,6 +20,7 @@
 #include "tag-list.h"
 #include "ns3/log.h"
 #include <vector>
+#include <string.h>
 
 NS_LOG_COMPONENT_DEFINE ("TagList");
 
