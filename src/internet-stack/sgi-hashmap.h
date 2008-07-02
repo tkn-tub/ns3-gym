@@ -20,8 +20,14 @@ namespace sgi = std;         // GCC 3.0
 namespace sgi = ::__gnu_cxx;       // GCC 3.1 and later
        #endif
      #else  // gcc 4.x and later
+       #if __GNUC_MINOR__ < 3
        #include <ext/hash_map>
-       namespace sgi = ::__gnu_cxx;
+namespace sgi = ::__gnu_cxx;
+       #else
+#undef __DEPRECATED
+       #include <backward/hash_map>
+namespace sgi = ::__gnu_cxx;
+       #endif
      #endif
   #endif
 #else      // ...  there are other compilers, right?

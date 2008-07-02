@@ -536,6 +536,7 @@ private:
 #ifdef BUFFER_USE_INLINE
 
 #include "ns3/assert.h"
+#include <string.h>
 
 namespace ns3 {
 

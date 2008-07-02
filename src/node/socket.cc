@@ -25,6 +25,7 @@
 #include "node.h"
 #include "socket.h"
 #include "socket-factory.h"
+#include <limits>
 
 NS_LOG_COMPONENT_DEFINE ("Socket");
 

@@ -22,6 +22,7 @@
 #include "ns3/assert.h"
 #include <iomanip>
 #include <iostream>
+#include <string.h>
 
 namespace ns3 {
 

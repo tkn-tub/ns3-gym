@@ -23,6 +23,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <stdlib.h> // for exit ()
 
 using namespace ns3;
 
@@ -261,7 +262,9 @@ int main (int argc, char *argv[])
       if (strncmp ("--n=", argv[0],strlen ("--n=")) == 0) 
         {
           char const *nAscii = argv[0] + strlen ("--n=");
-          n = atoi (nAscii);
+          std::istringstream iss;
+          iss.str (nAscii);
+          iss >> n;
         }
       argc--;
       argv++;
