@@ -554,6 +554,31 @@ public:
    * The returned value will always be bigger than or equal to Simulator::Now.
    */
   static Time GetMaximumSimulationTime (void);
+  /**
+   * \param time delay until the event expires
+   * \param event the event to schedule
+   * \returns a unique identifier for the newly-scheduled event.
+   *
+   * This method will be typically used by language bindings
+   * to delegate events to their own subclass of the EventImpl base class.
+   */
+  static EventId Schedule (Time const &time, const Ptr<EventImpl> &event);  
+  /**
+   * \param event the event to schedule
+   * \returns a unique identifier for the newly-scheduled event.
+   *
+   * This method will be typically used by language bindings
+   * to delegate events to their own subclass of the EventImpl base class.
+   */
+  static EventId ScheduleDestroy (const Ptr<EventImpl> &event);
+  /**
+   * \param event the event to schedule
+   * \returns a unique identifier for the newly-scheduled event.
+   *
+   * This method will be typically used by language bindings
+   * to delegate events to their own subclass of the EventImpl base class.
+   */
+  static EventId ScheduleNow (const Ptr<EventImpl> &event);
 private:
   Simulator ();
   ~Simulator ();
@@ -594,9 +619,6 @@ private:
   static Ptr<EventImpl> MakeEvent (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
   static Ptr<SimulatorPrivate> GetPriv (void);
-  static EventId Schedule (Time const &time, const Ptr<EventImpl> &event);
-  static EventId ScheduleDestroy (const Ptr<EventImpl> &event);
-  static EventId ScheduleNow (const Ptr<EventImpl> &event);
   static Ptr<SimulatorPrivate> m_priv;
 };
 
