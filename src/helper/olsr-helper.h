@@ -35,7 +35,7 @@ public:
   OlsrHelper ();
 
   /**
-   * \brief Set default OLSR routing agent parameters
+   * \brief Set default OLSR routing agent attributes
    */
   void SetAgent (std::string tid,
 		 std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),

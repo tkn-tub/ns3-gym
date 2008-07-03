@@ -71,20 +71,20 @@ main (int argc, char *argv[])
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
   PointToPointHelper p2p;
-  p2p.SetDeviceParameter ("DataRate", StringValue ("5Mbps"));
-  p2p.SetChannelParameter ("Delay", StringValue ("2ms"));
+  p2p.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+  p2p.SetChannelAttribute ("Delay", StringValue ("2ms"));
   NetDeviceContainer d0d2 = p2p.Install (n0n2);
 
   NetDeviceContainer d1d2 = p2p.Install (n1n2);
 
-  p2p.SetDeviceParameter ("DataRate", StringValue ("1500kbps"));
-  p2p.SetChannelParameter ("Delay", StringValue ("10ms"));
+  p2p.SetDeviceAttribute ("DataRate", StringValue ("1500kbps"));
+  p2p.SetChannelAttribute ("Delay", StringValue ("10ms"));
   NetDeviceContainer d5d6 = p2p.Install (n5n6);
 
   // We create the channels first without any IP addressing information
   CsmaHelper csma;
-  csma.SetChannelParameter ("DataRate", StringValue ("5Mbps"));
-  csma.SetChannelParameter ("Delay", StringValue ("2ms"));
+  csma.SetChannelAttribute ("DataRate", StringValue ("5Mbps"));
+  csma.SetChannelAttribute ("Delay", StringValue ("2ms"));
   NetDeviceContainer d2345 = csma.Install (n2345);
   
   // Later, we add IP addresses.  

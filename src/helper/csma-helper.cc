@@ -52,13 +52,13 @@ CsmaHelper::SetQueue (std::string type,
 }
 
 void 
-CsmaHelper::SetDeviceParameter (std::string n1, const AttributeValue &v1)
+CsmaHelper::SetDeviceAttribute (std::string n1, const AttributeValue &v1)
 {
   m_deviceFactory.Set (n1, v1);
 }
 
 void 
-CsmaHelper::SetChannelParameter (std::string n1, const AttributeValue &v1)
+CsmaHelper::SetChannelAttribute (std::string n1, const AttributeValue &v1)
 {
   m_channelFactory.Set (n1, v1);
 }

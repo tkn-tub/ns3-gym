@@ -106,8 +106,8 @@ main (int argc, char *argv[])
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
   PointToPointHelper p2p;
-  p2p.SetDeviceParameter ("DataRate", StringValue ("5Mbps"));
-  p2p.SetChannelParameter ("Delay", StringValue ("2ms"));
+  p2p.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+  p2p.SetChannelAttribute ("Delay", StringValue ("2ms"));
   std::vector<NetDeviceContainer> deviceAdjacencyList(N-1);
   for(uint32_t i=0; i<deviceAdjacencyList.size(); ++i)
   {
