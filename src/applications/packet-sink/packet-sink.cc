@@ -95,6 +95,7 @@ void PacketSink::StopApplication()     // Called at time specified by Stop
 {
   if (m_socket) 
     {
+      m_socket->Close ();
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
     }
 }
