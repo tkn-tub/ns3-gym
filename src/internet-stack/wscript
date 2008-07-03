@@ -39,4 +39,7 @@ def build(bld):
         'udp-header.h',
         'tcp-header.h',
         'sequence-number.h',
+        'ipv4-interface.h',
+        'ipv4-l3-protocol.h',
+        'ipv4-static-routing.h',
         ]
