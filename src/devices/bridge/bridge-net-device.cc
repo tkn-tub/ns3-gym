@@ -49,7 +49,7 @@ BridgeNetDevice::PromiscReceive (Ptr<NetDevice> incomingPort, Ptr<Packet> packet
                                  Address const &src, Address const &dst, bool forMe)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_LOG_LOGIC ("UID is " << packet->GetUid ());
+  NS_LOG_DEBUG ("UID is " << packet->GetUid ());
 
   Mac48Address src48 = Mac48Address::ConvertFrom (src);
   Mac48Address dst48 = Mac48Address::ConvertFrom (dst);
@@ -124,8 +124,10 @@ BridgeNetDevice::LearningBridgeForward (Ptr<NetDevice> incomingPort, Ptr<Packet>
       Ptr<NetDevice> port = *iter;
       if (port != incomingPort)
         {
-          // TODO: port->SendFrom (packet, protocol, dst, src);
-          port->Send (packet->Copy (), dst, protocol);
+          NS_LOG_LOGIC ("LearningBridgeForward (" << src << " => " << dst << "): " << incomingPort->GetName ()
+                        << " --> " << port->GetName ()
+                        << " (UID " << packet->GetUid () << ").");
+          port->SendFrom (packet->Copy (), src, dst, protocol);
         }
     }
 }
@@ -134,6 +136,7 @@ BridgeNetDevice::LearningBridgeForward (Ptr<NetDevice> incomingPort, Ptr<Packet>
 void 
 BridgeNetDevice::AddBridgePort (Ptr<NetDevice> bridgePort)
 {
+  NS_ASSERT (bridgePort != this);
   if (m_address == Mac48Address ())
     {
       m_address = Mac48Address::ConvertFrom (bridgePort->GetAddress ());
@@ -294,16 +297,26 @@ BridgeNetDevice::IsPointToPoint (void) const
 
 
 bool 
-BridgeNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
+BridgeNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
-  Mac48Address to = Mac48Address::ConvertFrom (dest);
-
   for (std::vector< Ptr<NetDevice> >::iterator iter = m_ports.begin ();
          iter != m_ports.end (); iter++)
     {
       Ptr<NetDevice> port = *iter;
-      // TODO: port->SendFrom (packet, protocolNumber, to, m_address);
-      port->Send (packet->Copy (), to, protocolNumber);
+      port->SendFrom (packet, m_address, dest, protocolNumber);
+    }
+
+  return true;
+}
+
+bool 
+BridgeNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& dest, uint16_t protocolNumber)
+{
+  for (std::vector< Ptr<NetDevice> >::iterator iter = m_ports.begin ();
+         iter != m_ports.end (); iter++)
+    {
+      Ptr<NetDevice> port = *iter;
+      port->SendFrom (packet, src, dest, protocolNumber);
     }
 
   return true;
