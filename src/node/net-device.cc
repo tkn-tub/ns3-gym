@@ -21,6 +21,7 @@
 #include "ns3/object.h"
 #include "ns3/log.h"
 #include "net-device.h"
+#include "ns3/packet.h"
 
 NS_LOG_COMPONENT_DEFINE ("NetDevice");
 
@@ -37,5 +38,25 @@ TypeId NetDevice::GetTypeId (void)
 
 NetDevice::~NetDevice ()
 {}
+
+bool
+NetDevice::SupportsPromiscuousReceiveCallback (void) const
+{
+  return false;
+}
+
+void
+NetDevice::SetPromiscuousReceiveCallback (PromiscuousReceiveCallback cb)
+{
+  NS_FATAL_ERROR ("promiscuous receive callback not supported for this device");
+}
+
+bool
+NetDevice::SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
+{
+  NS_FATAL_ERROR ("NetDevice " << GetInstanceTypeId ().GetName () << " does not support SendFrom.");
+  return false;
+}
+
 
 } // namespace ns3
