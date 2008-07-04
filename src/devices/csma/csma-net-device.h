@@ -529,6 +529,11 @@ private:
   NetDevice::ReceiveCallback m_rxCallback;
 
   /**
+   * The callback used to notify higher layers that a packet has been received in promiscuous mode.
+   */
+  NetDevice::PromiscuousReceiveCallback m_promiscRxCallback;
+
+  /**
    * The interface index (really net evice index) that has been assigned to 
    * this network device.
    */

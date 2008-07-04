@@ -470,6 +470,7 @@ CsmaNetDevice::Receive (Ptr<Packet> packet)
   if (m_encapMode == RAW)
     {
       m_rxTrace (packet);
+      m_promiscRxCallback (this, packet->Copy (), 0, GetAddress (), GetBroadcast (), true);
       m_rxCallback (this, packet, 0, GetBroadcast ());
       return;
     }
@@ -522,15 +523,6 @@ CsmaNetDevice::Receive (Ptr<Packet> packet)
   Mac48Address broadcast = Mac48Address::ConvertFrom (GetBroadcast ());
   Mac48Address destination = Mac48Address::ConvertFrom (GetAddress ());
 
-  if ((header.GetDestination () != broadcast) &&
-      (mcDest != multicast) &&
-      (header.GetDestination () != destination))
-    {
-      NS_LOG_LOGIC ("Dropping pkt ");
-      m_dropTrace (packet);
-      return;
-    }
-
   if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) )
     {
       NS_LOG_LOGIC ("Dropping pkt due to error model ");
@@ -561,6 +553,18 @@ CsmaNetDevice::Receive (Ptr<Packet> packet)
           NS_ASSERT (false);
           break;
         }
+
+      if ((header.GetDestination () != broadcast) &&
+          (mcDest != multicast) &&
+          (header.GetDestination () != destination))
+        {
+          NS_LOG_LOGIC ("Not for me: promisc rx, then dropping pkt ");
+          m_promiscRxCallback (this, packet->Copy (), protocol, header.GetSource (), header.GetDestination (), false);
+          m_dropTrace (packet);
+          return;
+        }
+
+      m_promiscRxCallback (this, packet->Copy (), protocol, header.GetSource (), header.GetDestination (), true);
       m_rxTrace (originalPacket);
       m_rxCallback (this, packet, protocol, header.GetSource ());
     }
@@ -828,7 +832,7 @@ CsmaNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 void 
 CsmaNetDevice::SetPromiscuousReceiveCallback (NetDevice::PromiscuousReceiveCallback cb)
 {
-  // TODO
+  m_promiscRxCallback = cb;
 }
 
 } // namespace ns3
