@@ -31,25 +31,25 @@ namespace ns3 {
 class UdpEchoServerHelper
 {
 public:
-  UdpEchoServerHelper ();
-  void SetPort (uint16_t port);
+  UdpEchoServerHelper (uint16_t port);
+
+  void SetAttribute (std::string name, const AttributeValue &value);
   ApplicationContainer Install (NodeContainer c);
-private:
-  uint16_t m_port;
+
+ private:
+  ObjectFactory m_factory;
 };
 
 class UdpEchoClientHelper
 {
 public:
-  UdpEchoClientHelper ();
+  UdpEchoClientHelper (Ipv4Address ip, uint16_t port);
 
-  void SetRemote (Ipv4Address ip, uint16_t port);
-  void SetAppAttribute (std::string name, const AttributeValue &value);
+  void SetAttribute (std::string name, const AttributeValue &value);
   ApplicationContainer Install (NodeContainer c);
+
  private:
   ObjectFactory m_factory;
-  Ipv4Address m_remoteIp;
-  uint16_t m_remotePort;
 };
 
 
