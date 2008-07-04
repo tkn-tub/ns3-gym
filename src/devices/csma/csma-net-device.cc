@@ -785,6 +785,25 @@ CsmaNetDevice::GetNode (void) const
 CsmaNetDevice::SetNode (Ptr<Node> node)
 {
   m_node = node;
+  int count = -1;
+  if (m_name.size () == 0)
+    {
+      for (uint32_t i = 0; i < node->GetNDevices (); i++)
+        {
+          Ptr<NetDevice> dev = node->GetDevice (i);
+          if (dynamic_cast<CsmaNetDevice*> (PeekPointer (dev)))
+            {
+              count++;
+              if (dev == this)
+                {
+                  break;
+                }
+            }
+        }
+      std::ostringstream s;
+      s << "eth" << count;
+      m_name = s.str ();
+    }
 }
 
   bool 
