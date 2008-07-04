@@ -267,19 +267,21 @@ public:
    *        given to the Send method by the user on the sender side.
    * \param sourceAddress source address
    * \param destinationAddress destination address
+   * \param forMe true if the packet is normally picked up also for
+   * the non-promiscuous callback, false if it is received exclusively
+   * by the promiscuous callback.
    * \returns true if the callback could handle the packet successfully, false
    *          otherwise.
    */
-  typedef Callback<bool,Ptr<NetDevice>,Ptr<Packet>,uint16_t,const Address &, const Address &> PromiscuousReceiveCallback;
+  typedef Callback<bool,Ptr<NetDevice>,Ptr<Packet>,uint16_t,
+                   const Address &, const Address &, bool> PromiscuousReceiveCallback;
 
   /**
    * \param cb callback to invoke whenever a packet has been received
-   *        in promiscuous mode and must be forwarded to the higher
-   *        layers, i.e. for all packets whose destination address
-   *        does NOT match the NetDevice address.  Note that
-   *        ReceiveCallback and PromiscuousReceiveCallback handle
-   *        mutually exclusive sets of packets, and you need to use
-   *        both callbacks in order to receive ALL packets.
+   *        in promiscuous mode.  Note that PromiscuousReceiveCallback
+   *        handles both packets for the device and packets not for
+   *        it.  In that sense, it receives a superset of packets
+   *        received by the normal ReceivedCallback.
    */
   virtual void SetPromiscuousReceiveCallback (PromiscuousReceiveCallback cb) = 0;
 

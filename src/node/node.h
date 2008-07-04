@@ -158,7 +158,7 @@ public:
    * A promiscuous protocol handler
    */
   typedef Callback<void,Ptr<NetDevice>, Ptr<Packet>,uint16_t,
-                   const Address &, const Address &> PromiscuousProtocolHandler;
+                   const Address &, const Address &, bool> PromiscuousProtocolHandler;
   /**
    * \param handler the handler to register
    * \param protocolType the type of protocol this handler is 
@@ -202,7 +202,7 @@ private:
   bool ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet>, 
                           uint16_t protocol, const Address &from);
   bool PromiscuousReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet>, 
-                                     uint16_t protocol, const Address &from, const Address &to);
+                                     uint16_t protocol, const Address &from, const Address &to, bool forMe);
   void Construct (void);
 
   struct ProtocolHandlerEntry {

@@ -238,7 +238,7 @@ Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet,
 
 bool
 Node::PromiscuousReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet, 
-                                    uint16_t protocol, const Address &from, const Address &to)
+                                    uint16_t protocol, const Address &from, const Address &to, bool forMe)
 {
   bool found = false;
   // if there are (potentially) multiple handlers, we need to copy the
@@ -255,7 +255,7 @@ Node::PromiscuousReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet,
           if (i->protocol == 0 || 
               i->protocol == protocol)
             {
-              i->handler (device, (copyNeeded ? packet->Copy () : packet), protocol, from, to);
+              i->handler (device, (copyNeeded ? packet->Copy () : packet), protocol, from, to, forMe);
               found = true;
             }
         }
