@@ -20,8 +20,10 @@
 
 #include "ns3/net-device.h"
 #include "ns3/mac48-address.h"
+#include "ns3/nstime.h"
 #include <stdint.h>
 #include <string>
+#include <map>
 
 namespace ns3 {
 
@@ -70,20 +72,31 @@ protected:
 
   void PromiscReceive (Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol,
                        Address const &source, Address const &destination, bool forMe);
-  void LearningBridgeForward (Ptr<NetDevice> incomingPort, Ptr<Packet> packet,
-                              uint16_t protocol, Mac48Address src, Mac48Address dst);
-
+  void ForwardUnicast (Ptr<NetDevice> incomingPort, Ptr<Packet> packet,
+                       uint16_t protocol, Mac48Address src, Mac48Address dst);
+  void ForwardBroadcast (Ptr<NetDevice> incomingPort, Ptr<Packet> packet,
+                         uint16_t protocol, Mac48Address src, Mac48Address dst);
+  void Learn (Mac48Address source, Ptr<NetDevice> port);
+  Ptr<NetDevice> GetLearnedState (Mac48Address source);
 
 private:
   NetDevice::ReceiveCallback m_rxCallback;
   NetDevice::PromiscuousReceiveCallback m_promiscRxCallback;
-  Ptr<Node> m_node;
-  uint16_t m_mtu;
-  std::string m_name;
-  uint32_t m_ifIndex;
-  Mac48Address m_address;
 
+  Mac48Address m_address;
+  Time m_expirationTime; // time it takes for learned MAC state to expire
+  struct LearnedState
+  {
+    Ptr<NetDevice> associatedPort;
+    Time expirationTime;
+  };
+  std::map<Mac48Address, LearnedState> m_learnState;
+  Ptr<Node> m_node;
+  std::string m_name;
   std::vector< Ptr<NetDevice> > m_ports;
+  uint32_t m_ifIndex;
+  uint16_t m_mtu;
+  bool m_enableLearning;
 };
 
 } // namespace ns3

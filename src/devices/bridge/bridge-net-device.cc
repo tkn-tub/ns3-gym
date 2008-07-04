@@ -20,6 +20,8 @@
 #include "ns3/channel.h"
 #include "ns3/packet.h"
 #include "ns3/log.h"
+#include "ns3/boolean.h"
+#include "ns3/simulator.h"
 
 NS_LOG_COMPONENT_DEFINE ("BridgeNetDevice");
 
@@ -32,6 +34,16 @@ BridgeNetDevice::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::BridgeNetDevice")
     .SetParent<NetDevice> ()
     .AddConstructor<BridgeNetDevice> ()
+    .AddAttribute ("EnableLearning",
+                   "Enable the learning mode of the Learning Bridge",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&BridgeNetDevice::m_enableLearning),
+                   MakeBooleanChecker ())
+    .AddAttribute ("ExpirationTime",
+                   "Time it takes for learned MAC state entry to expire.",
+                   TimeValue (Seconds (30)),
+                   MakeTimeAccessor (&BridgeNetDevice::m_expirationTime),
+                   MakeTimeChecker ())
     ;
   return tid;
 }
@@ -39,9 +51,9 @@ BridgeNetDevice::GetTypeId (void)
 
 BridgeNetDevice::BridgeNetDevice ()
   : m_node (0),
-    m_mtu (0xffff),
     m_name (""),
-    m_ifIndex (0)
+    m_ifIndex (0),
+    m_mtu (0xffff)
 {}
 
 void
@@ -102,21 +114,57 @@ BridgeNetDevice::PromiscReceive (Ptr<NetDevice> incomingPort, Ptr<Packet> packet
 
   // decide whether the packet should be forwarded
   if ((dst48 == broadcast) ||
-      (mcDest == multicast) ||
-      (dst48 != m_address))
+      (mcDest == multicast))
     {
-      LearningBridgeForward (incomingPort, packet, protocol, src48, dst48);
+      ForwardBroadcast (incomingPort, packet, protocol, src48, dst48);
+    }
+  else if (dst48 != m_address)
+    {
+      ForwardUnicast (incomingPort, packet, protocol, src48, dst48);
     }
 }
 
 void
-BridgeNetDevice::LearningBridgeForward (Ptr<NetDevice> incomingPort, Ptr<Packet> packet,
+BridgeNetDevice::ForwardUnicast (Ptr<NetDevice> incomingPort, Ptr<Packet> packet,
+                                 uint16_t protocol, Mac48Address src, Mac48Address dst)
+{
+  NS_LOG_DEBUG ("LearningBridgeForward (incomingPort=" << incomingPort->GetName ()
+                << ", packet=" << packet << ", protocol="<<protocol
+                << ", src=" << src << ", dst=" << dst << ")");
+
+  Learn (src, incomingPort);
+  Ptr<NetDevice> outPort = GetLearnedState (dst);
+  if (outPort != NULL && outPort != incomingPort)
+    {
+      NS_LOG_LOGIC ("Learning bridge state says to use port `" << outPort->GetName () << "'");
+      outPort->SendFrom (packet->Copy (), src, dst, protocol);
+    }
+  else
+    {
+      NS_LOG_LOGIC ("No learned state: send through all ports");
+      for (std::vector< Ptr<NetDevice> >::iterator iter = m_ports.begin ();
+           iter != m_ports.end (); iter++)
+        {
+          Ptr<NetDevice> port = *iter;
+          if (port != incomingPort)
+            {
+              NS_LOG_LOGIC ("LearningBridgeForward (" << src << " => " << dst << "): " << incomingPort->GetName ()
+                            << " --> " << port->GetName ()
+                            << " (UID " << packet->GetUid () << ").");
+              port->SendFrom (packet->Copy (), src, dst, protocol);
+            }
+        }
+    }
+}
+
+void
+BridgeNetDevice::ForwardBroadcast (Ptr<NetDevice> incomingPort, Ptr<Packet> packet,
                                         uint16_t protocol, Mac48Address src, Mac48Address dst)
 {
   NS_LOG_DEBUG ("LearningBridgeForward (incomingPort=" << incomingPort->GetName ()
                 << ", packet=" << packet << ", protocol="<<protocol
                 << ", src=" << src << ", dst=" << dst << ")");
-  // TODO: add the "learning" part
+  Learn (src, incomingPort);
 
   for (std::vector< Ptr<NetDevice> >::iterator iter = m_ports.begin ();
          iter != m_ports.end (); iter++)
@@ -132,6 +180,37 @@ BridgeNetDevice::LearningBridgeForward (Ptr<NetDevice> incomingPort, Ptr<Packet>
     }
 }
 
+void BridgeNetDevice::Learn (Mac48Address source, Ptr<NetDevice> port)
+{
+  if (m_enableLearning)
+    {
+      LearnedState &state = m_learnState[source];
+      state.associatedPort = port;
+      state.expirationTime = Simulator::Now () + m_expirationTime;
+    }
+}
+
+Ptr<NetDevice> BridgeNetDevice::GetLearnedState (Mac48Address source)
+{
+  if (m_enableLearning)
+    {
+      std::map<Mac48Address, LearnedState>::iterator iter =
+        m_learnState.find (source);
+      if (iter != m_learnState.end ())
+        {
+          LearnedState &state = iter->second;
+          if (state.expirationTime > Simulator::Now ())
+            {
+              return state.associatedPort;
+            }
+          else
+            {
+              m_learnState.erase (iter);
+            }
+        }
+    }
+  return NULL;
+}
 
 void 
 BridgeNetDevice::AddBridgePort (Ptr<NetDevice> bridgePort)
