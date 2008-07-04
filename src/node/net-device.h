@@ -216,6 +216,20 @@ public:
    */
   virtual bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) = 0;
   /**
+   * \param packet packet sent from above down to Network Device
+   * \param source source mac address (so called "MAC spoofing")
+   * \param dest mac address of the destination (already resolved)
+   * \param protocolNumber identifies the type of payload contained in
+   *        this packet. Used to call the right L3Protocol when the packet
+   *        is received.
+   * 
+   *  Called from higher layer to send packet into Network Device
+   *  with the specified source and destination Addresses.
+   * 
+   * \return whether the Send operation succeeded 
+   */
+  virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber) = 0;
+  /**
    * \returns the node base class which contains this network
    *          interface.
    *

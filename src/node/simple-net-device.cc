@@ -151,6 +151,15 @@ SimpleNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocol
   m_channel->Send (packet, protocolNumber, to, m_address, this);
   return true;
 }
+bool 
+SimpleNetDevice::SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
+{
+  Mac48Address to = Mac48Address::ConvertFrom (dest);
+  Mac48Address from = Mac48Address::ConvertFrom (source);
+  m_channel->Send (packet, protocolNumber, to, from, this);
+  return true;
+}
+
 Ptr<Node> 
 SimpleNetDevice::GetNode (void) const
 {

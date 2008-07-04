@@ -251,6 +251,12 @@ public:
     uint16_t protocolNumber);
 
   /**
+   * Start sending a packet down the channel, with MAC spoofing
+   */
+  virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, 
+                         uint16_t protocolNumber);
+
+  /**
    * Get the node to which this device is attached.
    *
    * \returns Ptr to the Node to which the device is attached.
@@ -307,7 +313,7 @@ protected:
    * \param protocolNumber In some protocols, identifies the type of
    * payload contained in this packet.
    */
-  void AddHeader (Ptr<Packet> p, Mac48Address dest, uint16_t protocolNumber);
+  void AddHeader (Ptr<Packet> p, Mac48Address source, Mac48Address dest, uint16_t protocolNumber);
 
   /**
    * Removes, from a packet of data, all headers and trailers that
