@@ -241,7 +241,7 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
 //
       m_rxTrace (packet);
       ProcessHeader(packet, protocol);
-      m_rxCallback (this, packet, protocol, GetBroadcast ());
+      m_rxCallback (this, packet, protocol, GetBroadcast (), m_address, PACKET_HOST);
     }
 }
 
@@ -465,12 +465,6 @@ PointToPointNetDevice::NeedsArp (void) const
 PointToPointNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
   m_rxCallback = cb;
-}
-
-void 
-PointToPointNetDevice::SetPromiscuousReceiveCallback (NetDevice::PromiscuousReceiveCallback cb)
-{
-  // TODO
 }
 
 } // namespace ns3

@@ -96,7 +96,6 @@ Node::AddDevice (Ptr<NetDevice> device)
   device->SetNode (this);
   device->SetIfIndex(index);
   device->SetReceiveCallback (MakeCallback (&Node::ReceiveFromDevice, this));
-  device->SetPromiscuousReceiveCallback (MakeCallback (&Node::PromiscuousReceiveFromDevice, this));
   NotifyDeviceAdded (device);
   return index;
 }
@@ -182,35 +181,9 @@ Node::UnregisterProtocolHandler (ProtocolHandler handler)
     }
 }
 
-void
-Node::RegisterPromiscuousProtocolHandler (PromiscuousProtocolHandler handler, 
-                                          uint16_t protocolType,
-                                          Ptr<NetDevice> device)
-{
-  struct Node::PromiscuousProtocolHandlerEntry entry;
-  entry.handler = handler;
-  entry.protocol = protocolType;
-  entry.device = device;
-  m_promiscuousHandlers.push_back (entry);
-}
-
-void
-Node::UnregisterPromiscuousProtocolHandler (PromiscuousProtocolHandler handler)
-{
-  for (PromiscuousProtocolHandlerList::iterator i = m_promiscuousHandlers.begin ();
-       i != m_promiscuousHandlers.end (); i++)
-    {
-      if (i->handler.IsEqual (handler))
-        {
-          m_promiscuousHandlers.erase (i);
-          break;
-        }
-    }
-}
-
 bool
-Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet, 
-                         uint16_t protocol, const Address &from)
+Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol,
+                         const Address &from, const Address &to, NetDevice::PacketType packetType)
 {
   bool found = false;
   // if there are (potentially) multiple handlers, we need to copy the
@@ -227,35 +200,7 @@ Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet,
           if (i->protocol == 0 || 
               i->protocol == protocol)
             {
-              i->handler (device, (copyNeeded ? packet->Copy () : packet), protocol, from);
-              found = true;
-            }
-        }
-    }
-  return found;
-}
-
-
-bool
-Node::PromiscuousReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet, 
-                                    uint16_t protocol, const Address &from, const Address &to, bool forMe)
-{
-  bool found = false;
-  // if there are (potentially) multiple handlers, we need to copy the
-  // packet before passing it to each handler, because handlers may
-  // modify it.
-  bool copyNeeded = (m_handlers.size () > 1);
-
-  for (PromiscuousProtocolHandlerList::iterator i = m_promiscuousHandlers.begin ();
-       i != m_promiscuousHandlers.end (); i++)
-    {
-      if (i->device == 0 ||
-          (i->device != 0 && i->device == device))
-        {
-          if (i->protocol == 0 || 
-              i->protocol == protocol)
-            {
-              i->handler (device, (copyNeeded ? packet->Copy () : packet), protocol, from, to, forMe);
+              i->handler (device, (copyNeeded ? packet->Copy () : packet), protocol, from, to, packetType);
               found = true;
             }
         }

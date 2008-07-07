@@ -25,6 +25,7 @@
 #include <stdint.h>
 #include "ns3/ipv4-address.h"
 #include "ns3/ptr.h"
+#include "ns3/net-device.h"
 #include "ns3/ipv4.h"
 #include "ns3/traced-callback.h"
 #include "ns3/ipv4-header.h"
@@ -82,7 +83,8 @@ public:
    *    - implement a per-NetDevice ARP cache
    *    - send back arp replies on the right device
    */
-  void Receive( Ptr<NetDevice> device, Ptr<Packet> p, uint16_t protocol, const Address &from);
+  void Receive( Ptr<NetDevice> device, Ptr<Packet> p, uint16_t protocol, const Address &from,
+                const Address &to, NetDevice::PacketType packetType);
 
   /**
    * \param packet packet to send

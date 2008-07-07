@@ -254,17 +254,28 @@ public:
    */
   virtual bool NeedsArp (void) const = 0;
 
+
+  /** Packet types */
+  enum PacketType
+    {
+      PACKET_HOST = 1,  /* To us                */
+      PACKET_BROADCAST, /* To all               */
+      PACKET_MULTICAST, /* To group             */
+      PACKET_OTHERHOST, /* To someone else      */
+    };
+
   /**
    * \param device a pointer to the net device which is calling this callback
    * \param packet the packet received
    * \param protocol the 16 bit protocol number associated with this packet.
    *        This protocol number is expected to be the same protocol number
    *        given to the Send method by the user on the sender side.
-   * \param address the address of the sender
+   * \param sender the address of the sender
+   * \param receiver the address of the receiver
    * \returns true if the callback could handle the packet successfully, false
    *          otherwise.
    */
-  typedef Callback<bool,Ptr<NetDevice>,Ptr<Packet>,uint16_t,const Address &> ReceiveCallback;
+  typedef Callback<bool,Ptr<NetDevice>,Ptr<Packet>,uint16_t,const Address &,const Address &, PacketType> ReceiveCallback;
 
   /**
    * \param cb callback to invoke whenever a packet has been received and must
@@ -272,32 +283,6 @@ public:
    *
    */
   virtual void SetReceiveCallback (ReceiveCallback cb) = 0;
-
-  /**
-   * \param device a pointer to the net device which is calling this callback
-   * \param packet the packet received
-   * \param protocol the 16 bit protocol number associated with this packet.
-   *        This protocol number is expected to be the same protocol number
-   *        given to the Send method by the user on the sender side.
-   * \param sourceAddress source address
-   * \param destinationAddress destination address
-   * \param forMe true if the packet is normally picked up also for
-   * the non-promiscuous callback, false if it is received exclusively
-   * by the promiscuous callback.
-   * \returns true if the callback could handle the packet successfully, false
-   *          otherwise.
-   */
-  typedef Callback<bool,Ptr<NetDevice>,Ptr<Packet>,uint16_t,
-                   const Address &, const Address &, bool> PromiscuousReceiveCallback;
-
-  /**
-   * \param cb callback to invoke whenever a packet has been received
-   *        in promiscuous mode.  Note that PromiscuousReceiveCallback
-   *        handles both packets for the device and packets not for
-   *        it.  In that sense, it receives a superset of packets
-   *        received by the normal ReceivedCallback.
-   */
-  virtual void SetPromiscuousReceiveCallback (PromiscuousReceiveCallback cb) = 0;
 
 };
 

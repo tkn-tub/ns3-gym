@@ -481,8 +481,7 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
   if (m_encapMode == RAW)
     {
       m_rxTrace (packet);
-      m_promiscRxCallback (this, packet->Copy (), 0, GetAddress (), GetBroadcast (), true);
-      m_rxCallback (this, packet, 0, GetBroadcast ());
+      m_rxCallback (this, packet, 0, GetBroadcast (), GetAddress (), PACKET_HOST);
       return;
     }
 
@@ -554,19 +553,29 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
           break;
         }
 
-      if ((header.GetDestination () != broadcast) &&
-          (mcDest != multicast) &&
-          (header.GetDestination () != destination))
+      PacketType packetType;
+      
+      if (header.GetDestination () == broadcast)
         {
-          NS_LOG_LOGIC ("Not for me: promisc rx, then dropping pkt ");
-          m_promiscRxCallback (this, packet->Copy (), protocol, header.GetSource (), header.GetDestination (), false);
-          m_dropTrace (packet);
-          return;
+          packetType = PACKET_BROADCAST;
+          m_rxTrace (originalPacket);
         }
-
-      m_promiscRxCallback (this, packet->Copy (), protocol, header.GetSource (), header.GetDestination (), true);
-      m_rxTrace (originalPacket);
-      m_rxCallback (this, packet, protocol, header.GetSource ());
+      else if (mcDest == multicast)
+        {
+          packetType = PACKET_MULTICAST;          
+          m_rxTrace (originalPacket);
+        }
+      else if (header.GetDestination () == destination)
+        {
+          packetType = PACKET_HOST;
+          m_rxTrace (originalPacket);
+        }
+      else
+        {
+          packetType = PACKET_OTHERHOST;
+        }
+      
+      m_rxCallback (this, packet, protocol, header.GetSource (), header.GetDestination (), packetType);
     }
 }
 
@@ -836,12 +845,6 @@ CsmaNetDevice::NeedsArp (void) const
 CsmaNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
   m_rxCallback = cb;
-}
-
-void 
-CsmaNetDevice::SetPromiscuousReceiveCallback (NetDevice::PromiscuousReceiveCallback cb)
-{
-  m_promiscRxCallback = cb;
 }
 
 } // namespace ns3

@@ -46,10 +46,20 @@ void
 SimpleNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol, 
 			  Mac48Address to, Mac48Address from)
 {
-  if (to == m_address || to == Mac48Address::GetBroadcast ())
+  NetDevice::PacketType packetType;
+  if (to == m_address)
     {
-      m_rxCallback (this, packet, protocol, from);
+      packetType = NetDevice::PACKET_HOST;
     }
+  else if (to == Mac48Address::GetBroadcast ())
+    {
+      packetType = NetDevice::PACKET_HOST;
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Weird packet destination " << to);
+    }
+  m_rxCallback (this, packet, protocol, from, to, packetType);
 }
 
 void 
@@ -179,10 +189,6 @@ void
 SimpleNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
   m_rxCallback = cb;
-}
-void 
-SimpleNetDevice::SetPromiscuousReceiveCallback (NetDevice::PromiscuousReceiveCallback cb)
-{
 }
 
 void

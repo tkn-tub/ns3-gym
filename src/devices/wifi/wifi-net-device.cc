@@ -310,19 +310,15 @@ WifiNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
   m_forwardUp = cb;
 }
 
-void 
-WifiNetDevice::SetPromiscuousReceiveCallback (NetDevice::PromiscuousReceiveCallback cb)
-{
-  // TODO
-}
-
 void
 WifiNetDevice::ForwardUp (Ptr<Packet> packet, const Mac48Address &from)
 {
   m_rxLogger (packet, from);
   LlcSnapHeader llc;
   packet->RemoveHeader (llc);
-  m_forwardUp (this, packet, llc.GetType (), from);
+  Mac48Address to = from; // FIXME
+  PacketType packetType = PACKET_HOST; // FIXME
+  m_forwardUp (this, packet, llc.GetType (), from, to, packetType);
 }
 
 void

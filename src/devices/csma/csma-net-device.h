@@ -286,7 +286,6 @@ public:
    * \param cb The callback.
    */
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
-  virtual void SetPromiscuousReceiveCallback (PromiscuousReceiveCallback cb);
 
 protected:
   /**
@@ -534,11 +533,6 @@ private:
    * The callback used to notify higher layers that a packet has been received.
    */
   NetDevice::ReceiveCallback m_rxCallback;
-
-  /**
-   * The callback used to notify higher layers that a packet has been received in promiscuous mode.
-   */
-  NetDevice::PromiscuousReceiveCallback m_promiscRxCallback;
 
   /**
    * The interface index (really net evice index) that has been assigned to 

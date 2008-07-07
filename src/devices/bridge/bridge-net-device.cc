@@ -57,8 +57,8 @@ BridgeNetDevice::BridgeNetDevice ()
 {}
 
 void
-BridgeNetDevice::PromiscReceive (Ptr<NetDevice> incomingPort, Ptr<Packet> packet, uint16_t protocol,
-                                 Address const &src, Address const &dst, bool forMe)
+BridgeNetDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<Packet> packet, uint16_t protocol,
+                                    Address const &src, Address const &dst, PacketType packetType)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_DEBUG ("UID is " << packet->GetUid ());
@@ -66,61 +66,25 @@ BridgeNetDevice::PromiscReceive (Ptr<NetDevice> incomingPort, Ptr<Packet> packet
   Mac48Address src48 = Mac48Address::ConvertFrom (src);
   Mac48Address dst48 = Mac48Address::ConvertFrom (dst);
 
-//
-// We never forward up packets that we sent.  Real devices don't do this since
-// their receivers are disabled during send, so we don't.  Drop the packet 
-// silently (no tracing) since it would really never get here in a real device.
-//
-  if (src48 == m_address)
+
+  switch (packetType)
     {
-      NS_LOG_LOGIC ("Ignoring packet sourced by this device");
-      return;
-    }
+    case PACKET_HOST:
+      if (dst48 == m_address)
+        {
+          m_rxCallback (this, packet, protocol, src, dst, packetType);
+        }
+      break;
 
-//
-// An IP host group address is mapped to an Ethernet multicast address
-// by placing the low-order 23-bits of the IP address into the low-order
-// 23 bits of the Ethernet multicast address 01-00-5E-00-00-00 (hex).
-//
-// We are going to receive all packets destined to any multicast address,
-// which means clearing the low-order 23 bits the header destination 
-//
-  Mac48Address mcDest;
-  uint8_t      mcBuf[6];
-
-  dst48.CopyTo (mcBuf);
-  mcBuf[3] &= 0x80;
-  mcBuf[4] = 0;
-  mcBuf[5] = 0;
-  mcDest.CopyFrom (mcBuf);
-
-  Mac48Address multicast = Mac48Address::ConvertFrom (GetMulticast ());
-  Mac48Address broadcast = Mac48Address::ConvertFrom (GetBroadcast ());
-
-  // decide whether this node should receive the packet for itself
-  
-  NS_LOG_DEBUG ("incomingPort: "  << incomingPort->GetName ()
-                << "; my address: " << m_address
-                << "; broadcast: " << broadcast
-                << "; dst48: " << dst48);
-
-  if ((dst48 == broadcast) ||
-      (mcDest == multicast) ||
-      (dst48 == m_address))
-    {
-      m_rxCallback (this, packet, protocol, src);
-      // m_rxTrace (originalPacket);
-    }
-
-  // decide whether the packet should be forwarded
-  if ((dst48 == broadcast) ||
-      (mcDest == multicast))
-    {
+    case PACKET_BROADCAST:
+    case PACKET_MULTICAST:
+      m_rxCallback (this, packet, protocol, src, dst, packetType);
       ForwardBroadcast (incomingPort, packet, protocol, src48, dst48);
-    }
-  else if (dst48 != m_address)
-    {
+      break;
+
+    case PACKET_OTHERHOST:
       ForwardUnicast (incomingPort, packet, protocol, src48, dst48);
+      break;
     }
 }
 
@@ -221,8 +185,8 @@ BridgeNetDevice::AddBridgePort (Ptr<NetDevice> bridgePort)
       m_address = Mac48Address::ConvertFrom (bridgePort->GetAddress ());
     }
 
-  m_node->RegisterPromiscuousProtocolHandler (MakeCallback (&BridgeNetDevice::PromiscReceive, this),
-                                              0, bridgePort);
+  m_node->RegisterProtocolHandler (MakeCallback (&BridgeNetDevice::ReceiveFromDevice, this),
+                                   0, bridgePort);
   m_ports.push_back (bridgePort);
 }
 
@@ -427,13 +391,6 @@ void
 BridgeNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
   m_rxCallback = cb;
-}
-
-
-void 
-BridgeNetDevice::SetPromiscuousReceiveCallback (NetDevice::PromiscuousReceiveCallback cb)
-{
-  m_promiscRxCallback = cb;
 }
 
 

@@ -114,9 +114,16 @@ ArpL3Protocol::FindCache (Ptr<NetDevice> device)
 }
 
 void 
-ArpL3Protocol::Receive(Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol, const Address &from)
+ArpL3Protocol::Receive(Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol, const Address &from,
+                       const Address &to, NetDevice::PacketType packetType)
 {
   NS_LOG_FUNCTION_NOARGS ();
+
+  if (packetType == NetDevice::PACKET_OTHERHOST)
+    {
+      return;
+    }
+
   Ptr<ArpCache> cache = FindCache (device);
   ArpHeader arp;
   packet->RemoveHeader (arp);

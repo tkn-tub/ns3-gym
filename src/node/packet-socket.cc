@@ -345,13 +345,19 @@ PacketSocket::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
 
 void 
 PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet, 
-                         uint16_t protocol, const Address &from)
+                         uint16_t protocol, const Address &from,
+                         const Address &to, NetDevice::PacketType packetType)
 {
   NS_LOG_FUNCTION_NOARGS ();
   if (m_shutdownRecv)
     {
       return;
     }
+  if (packetType != NetDevice::PACKET_HOST)
+    {
+      return;
+    }
+
 
   PacketSocketAddress address;
   address.SetPhysicalAddress (from);

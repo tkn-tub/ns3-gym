@@ -65,13 +65,12 @@ public:
   virtual void SetNode (Ptr<Node> node);
   virtual bool NeedsArp (void) const;
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
-  virtual void SetPromiscuousReceiveCallback (PromiscuousReceiveCallback cb);
 
 protected:
   virtual void DoDispose (void);
 
-  void PromiscReceive (Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol,
-                       Address const &source, Address const &destination, bool forMe);
+  void ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol,
+                          Address const &source, Address const &destination, PacketType packetType);
   void ForwardUnicast (Ptr<NetDevice> incomingPort, Ptr<Packet> packet,
                        uint16_t protocol, Mac48Address src, Mac48Address dst);
   void ForwardBroadcast (Ptr<NetDevice> incomingPort, Ptr<Packet> packet,
@@ -81,7 +80,6 @@ protected:
 
 private:
   NetDevice::ReceiveCallback m_rxCallback;
-  NetDevice::PromiscuousReceiveCallback m_promiscRxCallback;
 
   Mac48Address m_address;
   Time m_expirationTime; // time it takes for learned MAC state to expire
