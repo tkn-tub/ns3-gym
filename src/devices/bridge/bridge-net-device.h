@@ -21,6 +21,7 @@
 #include "ns3/net-device.h"
 #include "ns3/mac48-address.h"
 #include "ns3/nstime.h"
+#include "ns3/bridge-channel.h"
 #include <stdint.h>
 #include <string>
 #include <map>
@@ -90,6 +91,7 @@ private:
   };
   std::map<Mac48Address, LearnedState> m_learnState;
   Ptr<Node> m_node;
+  Ptr<BridgeChannel> m_channel;
   std::string m_name;
   std::vector< Ptr<NetDevice> > m_ports;
   uint32_t m_ifIndex;

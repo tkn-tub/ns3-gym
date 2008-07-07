@@ -4,9 +4,11 @@ def build(bld):
     obj = bld.create_ns3_module('bridge', ['node'])
     obj.source = [
         'bridge-net-device.cc',
+        'bridge-channel.cc',
         ]
     headers = bld.create_obj('ns3header')
     headers.module = 'bridge'
     headers.source = [
         'bridge-net-device.h',
+        'bridge-channel.h',
         ]

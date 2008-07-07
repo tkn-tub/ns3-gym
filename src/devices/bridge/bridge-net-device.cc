@@ -54,7 +54,9 @@ BridgeNetDevice::BridgeNetDevice ()
     m_name (""),
     m_ifIndex (0),
     m_mtu (0xffff)
-{}
+{
+  m_channel = CreateObject<BridgeChannel> ();
+}
 
 void
 BridgeNetDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<Packet> packet, uint16_t protocol,
@@ -188,6 +190,7 @@ BridgeNetDevice::AddBridgePort (Ptr<NetDevice> bridgePort)
   m_node->RegisterProtocolHandler (MakeCallback (&BridgeNetDevice::ReceiveFromDevice, this),
                                    0, bridgePort);
   m_ports.push_back (bridgePort);
+  m_channel->AddChannel (bridgePort->GetChannel ());
 }
 
 void 
@@ -217,7 +220,7 @@ BridgeNetDevice::GetIfIndex(void) const
 Ptr<Channel> 
 BridgeNetDevice::GetChannel (void) const
 {
-  return 0;
+  return m_channel;
 }
 
 Address 
