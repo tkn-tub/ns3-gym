@@ -235,9 +235,9 @@ CsmaChannel::PropagationCompleteEvent()
   uint32_t devId = 0;
   for (it = m_deviceList.begin (); it < m_deviceList.end(); it++) 
     {
-      if (it->IsActive () && m_currentSrc != devId)
+      if (it->IsActive ())
       {
-        it->devicePtr->Receive (m_currentPkt->Copy ());
+        it->devicePtr->Receive (m_currentPkt->Copy (), m_deviceList[m_currentSrc].devicePtr);
       }
       devId++;
     }

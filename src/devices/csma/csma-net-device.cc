@@ -452,11 +452,22 @@ CsmaNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
   m_receiveErrorModel = em; 
 }
 
-  void
-CsmaNetDevice::Receive (Ptr<Packet> packet)
+void
+CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC ("UID is " << packet->GetUid ());
+
+
+  //
+  // We never forward up packets that we sent. Real devices don't do this since
+  // their receivers are disabled during send, so we don't. Drop the packet
+  // silently (no tracing) since it would really never get here in a real device.
+  // 
+  if (senderDevice == this)
+    {
+      return;
+    }
 
 // 
 // Only receive if the send side of net device is enabled
