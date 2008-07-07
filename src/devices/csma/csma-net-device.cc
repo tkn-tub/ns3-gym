@@ -833,10 +833,4 @@ CsmaNetDevice::SetPromiscuousReceiveCallback (NetDevice::PromiscuousReceiveCallb
   m_promiscRxCallback = cb;
 }
 
-bool
-CsmaNetDevice::SupportsPromiscuousReceiveCallback (void) const
-{
-  return true;
-}
-
 } // namespace ns3

@@ -286,7 +286,6 @@ public:
    */
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
   virtual void SetPromiscuousReceiveCallback (PromiscuousReceiveCallback cb);
-  virtual bool SupportsPromiscuousReceiveCallback (void) const;
 
 protected:
   /**

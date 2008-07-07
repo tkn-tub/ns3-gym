@@ -96,10 +96,7 @@ Node::AddDevice (Ptr<NetDevice> device)
   device->SetNode (this);
   device->SetIfIndex(index);
   device->SetReceiveCallback (MakeCallback (&Node::ReceiveFromDevice, this));
-  if (device->SupportsPromiscuousReceiveCallback ())
-    {
-      device->SetPromiscuousReceiveCallback (MakeCallback (&Node::PromiscuousReceiveFromDevice, this));
-    }
+  device->SetPromiscuousReceiveCallback (MakeCallback (&Node::PromiscuousReceiveFromDevice, this));
   NotifyDeviceAdded (device);
   return index;
 }
@@ -194,10 +191,6 @@ Node::RegisterPromiscuousProtocolHandler (PromiscuousProtocolHandler handler,
   entry.handler = handler;
   entry.protocol = protocolType;
   entry.device = device;
-  if (device)
-    {
-      NS_ASSERT (device->SupportsPromiscuousReceiveCallback ());
-    }
   m_promiscuousHandlers.push_back (entry);
 }
 

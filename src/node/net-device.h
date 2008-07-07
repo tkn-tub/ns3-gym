@@ -228,7 +228,7 @@ public:
    * 
    * \return whether the Send operation succeeded 
    */
-  virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
+  virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber) = 0;
   /**
    * \returns the node base class which contains this network
    *          interface.
@@ -297,12 +297,7 @@ public:
    *        it.  In that sense, it receives a superset of packets
    *        received by the normal ReceivedCallback.
    */
-  virtual void SetPromiscuousReceiveCallback (PromiscuousReceiveCallback cb);
-
-  /**
-   * \returns true if device supports promiscuous receive callback
-   */
-  virtual bool SupportsPromiscuousReceiveCallback (void) const;
+  virtual void SetPromiscuousReceiveCallback (PromiscuousReceiveCallback cb) = 0;
 
 };
 
