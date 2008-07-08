@@ -112,6 +112,12 @@ public:
    * dangerous.
    */
   inline void Unref (void) const;
+
+  /**
+   * Get the reference count of the object.  Normally not needed; for language bindings.
+   */
+  uint32_t GetReferenceCount (void) const;
+
   /**
    * \returns a pointer to the requested interface or zero if it could not be found.
    */

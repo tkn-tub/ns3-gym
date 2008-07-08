@@ -95,6 +95,11 @@ Object::Object (const Object &o)
     m_disposed (false),
     m_next (this)
 {}
+uint32_t
+Object::GetReferenceCount (void) const
+{
+  return m_count;
+}
 void
 Object::Construct (const AttributeList &attributes)
 {
