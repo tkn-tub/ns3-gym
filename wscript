@@ -61,6 +61,9 @@ def dist_hook():
     shutil.rmtree("doc/html", True)
     shutil.rmtree("doc/latex", True)
 
+    if not os.path.exists("bindings/python/pybindgen"):
+        Params.fatal("Missing pybindgen checkout; run './waf configure --pybindgen-checkout' first.")
+
     ## build the name of the traces subdirectory.  Will be something like
     ## ns-3-dev-ref-traces
     traces_name = APPNAME + '-' + VERSION + REGRESSION_SUFFIX
@@ -75,7 +78,6 @@ def dist_hook():
         tar.close()
         ## Now remove it; we do not ship the traces with the main tarball...
         shutil.rmtree(traces_dir, True)
-
 
 def set_options(opt):
 
@@ -161,6 +163,7 @@ def set_options(opt):
 
     # options provided in a script in a subdirectory named "src"
     opt.sub_options('src')
+    opt.sub_options('bindings/python')
 
 
 def configure(conf):
@@ -222,6 +225,7 @@ def configure(conf):
 
     conf.sub_config('src')
     conf.sub_config('utils')
+    conf.sub_config('bindings/python')
 
     if Params.g_options.enable_modules:
         conf.env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
@@ -351,11 +355,13 @@ def build(bld):
     lib.target = 'ns3'
     if env['NS3_ENABLED_MODULES']:
         lib.add_objects = list(modules)
+        env['NS3_ENABLED_MODULES'] = list(modules)
         lib.uselib_local = list(modules)
     else:
         lib.add_objects = list(env['NS3_MODULES'])
         lib.uselib_local = list(env['NS3_MODULES'])
 
+    bld.add_subdirs('bindings/python')
 
 def get_command_template():
     if Params.g_options.valgrind:
@@ -413,7 +419,12 @@ def _run_waf_check():
             raise SystemExit(1)
         out.close()
 
+    print "-- Running NS-3 C++ core unit tests..."
     run_program('run-tests', get_command_template())
+
+    print "-- Running NS-3 Python bindings unit tests..."
+    _run_argv([env['PYTHON'], os.path.join("utils", "python-unit-tests.py")], proc_env)
+
 
 def _find_program(program_name, env):
     launch_dir = os.path.abspath(Params.g_cwd_launch)
@@ -457,10 +468,18 @@ def _get_proc_env(os_env=None):
             proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']) + [proc_env[pathvar]])
         else:
             proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']))
+
+    pymoddir = Params.g_build.m_curdirnode.find_dir('bindings/python').abspath(env)
+    if 'PYTHONPATH' in proc_env:
+        proc_env['PYTHONPATH'] = os.pathsep.join([pymoddir] + [proc_env['PYTHONPATH']])
+    else:
+        proc_env['PYTHONPATH'] = pymoddir
+
     return proc_env
 
 def _run_argv(argv, os_env=None):
     proc_env = _get_proc_env(os_env)
+    env = Params.g_build.env_of_name('default')
     retval = subprocess.Popen(argv, env=proc_env).wait()
     if retval:
         Params.fatal("Command %s exited with code %i" % (argv, retval))
