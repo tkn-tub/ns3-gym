@@ -65,19 +65,19 @@ public:
    * \param n1 the name of the attribute to set
    * \param v1 the value of the attribute to set
    *
-   * Set these parameters on each ns3::CsmaNetDevice created
+   * Set these attributes on each ns3::CsmaNetDevice created
    * by CsmaHelper::Install
    */
-  void SetDeviceParameter (std::string n1, const AttributeValue &v1);
+  void SetDeviceAttribute (std::string n1, const AttributeValue &v1);
 
   /**
    * \param n1 the name of the attribute to set
    * \param v1 the value of the attribute to set
    *
-   * Set these parameters on each ns3::CsmaChannel created
+   * Set these attributes on each ns3::CsmaChannel created
    * by CsmaHelper::Install
    */
-  void SetChannelParameter (std::string n1, const AttributeValue &v1);
+  void SetChannelAttribute (std::string n1, const AttributeValue &v1);
 
   /**
    * \param filename filename prefix to use for pcap files.
@@ -160,7 +160,7 @@ public:
    * \param c a set of nodes
    *
    * This method creates a simple ns3::CsmaChannel with the
-   * attributes configured by CsmaHelper::SetChannelParameter and
+   * attributes configured by CsmaHelper::SetChannelAttribute and
    * then calls CsmaHelper::Install.
    */
   NetDeviceContainer Install (const NodeContainer &c);
@@ -170,7 +170,7 @@ public:
    * \param channel the channel to use as a backbone.
    *
    * For each node in the input container, we create a ns3::CsmaNetDevice with
-   * the requested parameters, a queue for this NetDevice, and associate
+   * the requested attributes, a queue for this NetDevice, and associate
    * the resulting ns3::NetDevice with the ns3::Node and ns3::CsmaChannel.
    */
   NetDeviceContainer Install (const NodeContainer &c, Ptr<CsmaChannel> channel);

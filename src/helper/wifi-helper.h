@@ -35,7 +35,7 @@ class WifiChannel;
  *
  * This class can help to create a large set of similar
  * WifiNetDevice objects and to configure a large set of
- * their parameters during creation.
+ * their attributes during creation.
  */
 class WifiHelper
 {

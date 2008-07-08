@@ -87,8 +87,8 @@ main (int argc, char *argv[])
 // Explicitly create the channels required by the topology (shown above).
 //
   CsmaHelper csma;
-  csma.SetChannelParameter ("DataRate", DataRateValue (DataRate(5000000)));
-  csma.SetChannelParameter ("Delay", TimeValue (MilliSeconds (2)));
+  csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate(5000000)));
+  csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
   NetDeviceContainer d = csma.Install (n);
 
   Ipv4AddressHelper ipv4;
@@ -104,8 +104,7 @@ main (int argc, char *argv[])
 // Create a UdpEchoServer application on node one.
 //
   uint16_t port = 9;  // well-known echo port number
-  UdpEchoServerHelper server;
-  server.SetPort (port);
+  UdpEchoServerHelper server (port);
   ApplicationContainer apps = server.Install (n.Get(1));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
@@ -117,11 +116,10 @@ main (int argc, char *argv[])
   uint32_t packetSize = 1024;
   uint32_t maxPacketCount = 1;
   Time interPacketInterval = Seconds (1.);
-  UdpEchoClientHelper client;
-  client.SetRemote (i.GetAddress (1), port);
-  client.SetAppAttribute ("MaxPackets", UintegerValue (maxPacketCount));
-  client.SetAppAttribute ("Interval", TimeValue (interPacketInterval));
-  client.SetAppAttribute ("PacketSize", UintegerValue (packetSize));
+  UdpEchoClientHelper client (i.GetAddress (1), port);
+  client.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
+  client.SetAttribute ("Interval", TimeValue (interPacketInterval));
+  client.SetAttribute ("PacketSize", UintegerValue (packetSize));
   apps = client.Install (n.Get (0));
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (10.0));

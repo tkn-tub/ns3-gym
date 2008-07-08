@@ -420,8 +420,8 @@ The next three lines in the script are,
 
 @verbatim
     PointToPointHelper pointToPoint;
-    pointToPoint.SetDeviceParameter ("DataRate", StringValue ("5Mbps"));
-    pointToPoint.SetChannelParameter ("Delay", StringValue ("2ms"));
+    pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+    pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
 @end verbatim
 
 The first line 
@@ -434,7 +434,7 @@ instantiates a @code{PointToPointHelper} object on the stack.  From a
 high-level perspective the next line,
 
 @verbatim
-    pointToPoint.SetDeviceParameter ("DataRate", StringValue ("5Mbps"));
+    pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
 @end verbatim
 
 tells the @code{PointToPointHelper} object to use the value ``5mbps''
@@ -455,7 +455,7 @@ Similar to the ``DataRate'' on the @code{PointToPointNetDevice} you will find a
 final line,
 
 @verbatim
-    pointToPoint.SetChannelParameter ("Delay", StringValue ("2ms"));
+    pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
 @end verbatim
 
 tells the @code{PointToPointHelper} to use the value ``2ms'' (two milliseconds)
@@ -565,8 +565,7 @@ to set up a UDP echo server application on one of the nodes we have previously
 created.
 
 @verbatim
-    UdpEchoServerHelper echoServer;
-    echoServer.SetPort (9);
+    UdpEchoServerHelper echoServer (9);
 
     ApplicationContainer serverApps = echoServer.Install (nodes.Get (1));
     serverApps.Start (Seconds (1.0));
@@ -575,10 +574,14 @@ created.
 
 The first line of code in the above snippet declares the 
 @code{UdpEchoServerHelper}.  As usual, this isn't the application itself, it
-is an object used to help us create the actual applications.  The second line
-that has the @code{SetPort} call, is used to tell the helper to assign the
-value nine to the ``Port'' attribute when creating 
-@code{UdpEchoServerApplication} objects.
+is an object used to help us create the actual applications.  One of our 
+conventions is to place required attributes in the helper constructor.  In this
+case, the helper can't do anything useful unless it is provided with a port
+number that the client also knows about.  Rather than just picking one and
+hoping it all works out, we require the port number as a parameter to the 
+constructor.  The constructor, in turn, simply does a @code{SetAttribute}
+with the passed value.  You can, if desired, set the ``Port'' attribute to
+another value later.
 
 Similar to many other helper objects, the @code{UdpEchoServerHelper} object 
 has an @code{Install} method.  It is the execution of this method that actually
@@ -621,32 +624,32 @@ that for the server.  There is an underlying @code{UdpEchoClientApplication}
 that is managed by an @code{UdpEchoClientHelper}.
 
 @verbatim
-    UdpEchoClientHelper echoClient;
-    echoClient.SetRemote (interfaces.GetAddress (1), 9);
-    echoClient.SetAppAttribute ("MaxPackets", UintegerValue (1));
-    echoClient.SetAppAttribute ("Interval", TimeValue (Seconds (1.)));
-    echoClient.SetAppAttribute ("PacketSize", UintegerValue (1024));
+    UdpEchoClientHelper echoClient (interfaces.GetAddress (1), 9);
+    echoClient.SetAttribute ("MaxPackets", UintegerValue (1));
+    echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.)));
+    echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
 
     ApplicationContainer clientApps = echoClient.Install (nodes.Get (0));
     clientApps.Start (Seconds (2.0));
     clientApps.Stop (Seconds (10.0));
 @end verbatim
 
-For the echo client, however, we need to set four different attributes.  The 
-first attribute is set using the @code{SetRemote} method.  Recall that
-we used an @code{Ipv4InterfaceContainer} to keep track of the IP addresses we
-assigned to our devices.  The zeroth interface in the @code{interfaces} 
-container is going to coorespond to the IP address of the zeroth node in the 
-@code{nodes} container.  The first interface in the @code{interfaces} 
-container cooresponds to the IP address of the first node in the @code{nodes} 
-container.  So, in the following line of code (reproduced from above), we are 
-setting the remote address of the client to be the IP address assigned to the
-node on which the server resides.  We also tell it to send packets to port 
-nine while we are at ti.
+For the echo client, however, we need to set five different attributes.  The 
+first two attributes are set during construction of the 
+@code{UdpEchoClientHelper}.  We pass parameters that are used (internally to
+the helper) to set the ``RemoteAddress'' and ``RemotePort'' attributes in
+accordance with our convention to make required attributes parameters in the 
+helper constructors.  
 
-@verbatim
-    echoClient.SetRemote (interfaces.GetAddress (1), 9);
-@end verbatim
+Recall that we used an @code{Ipv4InterfaceContainer} to keep track of the IP 
+addresses we assigned to our devices.  The zeroth interface in the 
+@code{interfaces} container is going to coorespond to the IP address of the 
+zeroth node in the @code{nodes} container.  The first interface in the 
+@code{interfaces} container cooresponds to the IP address of the first node 
+in the @code{nodes} container.  So, in the first line of code (from above), we
+are creating the helper and telling it so set the remote address of the client
+to be  the IP address assigned to the node on which the server resides.  We 
+also tell it to arrange to send packets to port nine.
 
 The ``MaxPackets'' attribute tells the client the maximum number of packets 
 we allow it to send during the simulation.  The ``Interval'' attribute tells

@@ -74,7 +74,7 @@ main (int argc, char *argv[])
   // use a helper function to connect our nodes to the shared channel.
   NS_LOG_INFO ("Build Topology.");
   CsmaHelper csma;
-  csma.SetDeviceParameter ("EncapsulationMode", StringValue ("Llc"));
+  csma.SetDeviceAttribute ("EncapsulationMode", StringValue ("Llc"));
   NetDeviceContainer devs = csma.Install (c, channel);
 
   NS_LOG_INFO ("Create Applications.");

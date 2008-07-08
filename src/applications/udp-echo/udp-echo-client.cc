@@ -47,8 +47,8 @@ UdpEchoClient::GetTypeId (void)
                    TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&UdpEchoClient::m_interval),
                    MakeTimeChecker ())
-    .AddAttribute ("RemoteIpv4", 
-                   "The Ipv4Address of the outbound packets",
+    .AddAttribute ("RemoteAddress", 
+                   "The destination Ipv4Address of the outbound packets",
                    Ipv4AddressValue (),
                    MakeIpv4AddressAccessor (&UdpEchoClient::m_peerAddress),
                    MakeIpv4AddressChecker ())

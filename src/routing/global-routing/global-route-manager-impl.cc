@@ -1425,6 +1425,7 @@ GlobalRouteManagerImpl::SPFVertexAddParent (SPFVertex* v)
 
 #include "ns3/test.h"
 #include "ns3/simulator.h"
+#include <stdlib.h> // for rand ()
 
 namespace ns3 {
 

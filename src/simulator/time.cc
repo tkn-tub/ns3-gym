@@ -72,7 +72,10 @@ TimeUnit<1>::TimeUnit(const std::string& s)
   std::string::size_type n = s.find_first_not_of("0123456789.");
   if (n != std::string::npos)
   { // Found non-numeric
-    double r = atof(s.substr(0, n).c_str());
+    std::istringstream iss;
+    iss.str (s.substr(0, n));
+    double r;
+    iss >> r;
     std::string trailer = s.substr(n, std::string::npos);
     if (trailer == std::string("s"))
     {
@@ -113,7 +116,11 @@ TimeUnit<1>::TimeUnit(const std::string& s)
   }
   //else
   //they didn't provide units, assume seconds
-  m_data = HighPrecision (atof(s.c_str()) * TimeStepPrecision::g_tsPrecFactor);
+  std::istringstream iss;
+  iss. str (s);
+  double v;
+  iss >> v;
+  m_data = HighPrecision (v * TimeStepPrecision::g_tsPrecFactor);
 }
 
 double 

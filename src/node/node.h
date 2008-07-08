@@ -123,6 +123,13 @@ public:
    */
   Ptr<Application> GetApplication (uint32_t index) const;
   /**
+   * \param index
+   * \returns the application associated to this requested index
+   *          within this Node.
+   */
+  Ptr<Application> GetFirstApplication (TypeId tid);
+
+  /**
    * \returns the number of applications associated to this Node.
    */
   uint32_t GetNApplications (void) const;

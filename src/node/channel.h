@@ -44,6 +44,7 @@ public:
 
   Channel ();
   Channel (std::string name);
+  virtual ~Channel ();
 
   void SetName(std::string);
   std::string GetName(void);
@@ -62,8 +63,7 @@ public:
    */
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const = 0;
 
-protected:
-  virtual      ~Channel ();
+private:
   std::string   m_name;
 };
 

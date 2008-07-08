@@ -104,9 +104,6 @@ public:
    */
   bool IsEnabled (void) const;
 
-protected:
-  bool m_enable;
-
 private:
   /*
    * These methods must be implemented by subclasses
@@ -114,6 +111,7 @@ private:
   virtual bool DoCorrupt (Ptr<Packet>) = 0;
   virtual void DoReset (void) = 0;
 
+  bool m_enable;
 };
 
 enum ErrorUnit

@@ -162,10 +162,6 @@ public:
  */
   void Reorder (void);
 
-protected:
-  typedef std::list<SPFVertex*> CandidateList_t;
-  CandidateList_t m_candidates;
-
 private:
 /**
  * Candidate Queue copy construction is disallowed (not implemented) to 
@@ -180,6 +176,9 @@ private:
  * properly deal with deep copies.
  */
   CandidateQueue& operator= (CandidateQueue& sr);
+
+  typedef std::list<SPFVertex*> CandidateList_t;
+  CandidateList_t m_candidates;
 };
 
 } // namespace ns3

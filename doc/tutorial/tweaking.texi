@@ -462,8 +462,8 @@ at the @command{ns-3} attribute system while walking through the
 
 @verbatim
     PointToPointHelper pointToPoint;
-    pointToPoint.SetDeviceParameter ("DataRate", StringValue ("5Mbps"));
-    pointToPoint.SetChannelParameter ("Delay", StringValue ("2ms"));
+    pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+    pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
 @end verbatim
 
 and mentioned that @code{DataRate} was actually an @code{Attribute} of the 
@@ -486,10 +486,10 @@ Among the attributes you will see listed is,
 @end verbatim
 
 This is the default value that will be used when a @code{PointToPointNetDevice}
-is created in the system.  We overrode this default with the ``parameter''
+is created in the system.  We overrode this default with the attribute
 setting in the @code{PointToPointHelper} above.  Let's use the default values 
 for the point-to-point devices and channels by deleting the 
-@code{SetDeviceParameter} call and the @code{SetChannelParameter} call from 
+@code{SetDeviceAttribute} call and the @code{SetChannelAttribute} call from 
 the @code{first.cc} we have in the scratch directory.
 
 Your script should now just declare the @code{PointToPointHelper} and not do 

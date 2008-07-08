@@ -65,18 +65,18 @@ public:
    * \param name the name of the attribute to set
    * \param value the value of the attribute to set
    *
-   * Set these parameters on each ns3::PointToPointNetDevice created
+   * Set these attributes on each ns3::PointToPointNetDevice created
    * by PointToPointHelper::Install
    */
-  void SetDeviceParameter (std::string name, const AttributeValue &value);
+  void SetDeviceAttribute (std::string name, const AttributeValue &value);
   /**
    * \param name the name of the attribute to set
    * \param value the value of the attribute to set
    *
-   * Set these parameters on each ns3::PointToPointChannel created
+   * Set these attribute on each ns3::PointToPointChannel created
    * by PointToPointHelper::Install
    */
-  void SetChannelParameter (std::string name, const AttributeValue &value);
+  void SetChannelAttribute (std::string name, const AttributeValue &value);
 
   /**
    * \param filename filename prefix to use for pcap files.
@@ -159,9 +159,9 @@ public:
    * \param c a set of nodes
    *
    * This method creates a ns3::PointToPointChannel with the
-   * attributes configured by PointToPointHelper::SetChannelParameter,
+   * attributes configured by PointToPointHelper::SetChannelAttribute,
    * then, for each node in the input container, we create a 
-   * ns3::PointToPointNetDevice with the requested parameters, 
+   * ns3::PointToPointNetDevice with the requested attributes, 
    * a queue for this ns3::NetDevice, and associate the resulting 
    * ns3::NetDevice with the ns3::Node and ns3::PointToPointChannel.
    */

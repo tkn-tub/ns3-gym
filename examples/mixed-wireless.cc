@@ -200,9 +200,9 @@ main (int argc, char *argv[])
       // collection.
       //
       CsmaHelper csma;
-      csma.SetChannelParameter ("DataRate", 
+      csma.SetChannelAttribute ("DataRate", 
         DataRateValue (DataRate (5000000)));
-      csma.SetChannelParameter ("Delay", TimeValue (MilliSeconds (2)));
+      csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
       NetDeviceContainer lanDevices = csma.Install (lan);
       //
       // Add the IPv4 protocol stack to the new LAN nodes

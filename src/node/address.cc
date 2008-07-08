@@ -1,5 +1,6 @@
 #include "ns3/assert.h"
 #include "address.h"
+#include <string.h>
 #include <iostream>
 #include <iomanip>
 

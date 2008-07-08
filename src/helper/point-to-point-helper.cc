@@ -52,13 +52,13 @@ PointToPointHelper::SetQueue (std::string type,
 }
 
 void 
-PointToPointHelper::SetDeviceParameter (std::string n1, const AttributeValue &v1)
+PointToPointHelper::SetDeviceAttribute (std::string n1, const AttributeValue &v1)
 {
   m_deviceFactory.Set (n1, v1);
 }
 
 void 
-PointToPointHelper::SetChannelParameter (std::string n1, const AttributeValue &v1)
+PointToPointHelper::SetChannelAttribute (std::string n1, const AttributeValue &v1)
 {
   m_channelFactory.Set (n1, v1);
 }

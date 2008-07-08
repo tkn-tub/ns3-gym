@@ -128,6 +128,18 @@ Node::GetNApplications (void) const
 {
   return m_applications.size ();
 }
+Ptr<Application>
+Node::GetFirstApplication(TypeId tid)
+{
+  for (std::vector<Ptr<Application> >::iterator i = m_applications.begin ();
+       i != m_applications.end (); i++) {
+    Ptr<Application> app = *i;
+    if (app->GetInstanceTypeId() == tid)
+      return app;
+  }
+
+  return 0;
+}
 
 void 
 Node::DoDispose()

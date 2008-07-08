@@ -26,6 +26,7 @@
 #include "ns3/packet-socket-factory.h"
 #include "ns3/config.h"
 #include "ns3/simulator.h"
+#include <limits>
 
 namespace ns3 {
 

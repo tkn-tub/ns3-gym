@@ -21,6 +21,7 @@
 #define STATUS_CODE_H
 
 #include <stdint.h>
+#include <ostream>
 #include "ns3/buffer.h"
 
 namespace ns3 {

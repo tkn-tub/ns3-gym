@@ -149,8 +149,8 @@ helper and a two millisecond delay on channels created by the helper.
 
 @verbatim
   PointToPointHelper pointToPoint;
-  pointToPoint.SetDeviceParameter ("DataRate", StringValue ("5Mbps"));
-  pointToPoint.SetChannelParameter ("Delay", StringValue ("2ms"));
+  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+  pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
 
   NetDeviceContainer p2pDevices;
   p2pDevices = pointToPoint.Install (p2pNodes);
@@ -227,9 +227,15 @@ going to be fundamentally similar to the applications section of
 nodes that has a CSMA node and the client on the node having only a 
 point-to-point device.
 
-First, we set up the echo server.
+First, we set up the echo server.  We create a @code{UdpEchoServerHelper} and
+provide a required attribute value to the constructor which is the server port
+number.  Recall that this port can be changed later using the 
+@code{SetAttribute} method if desired, but we require it to be provided to
+the constructor.
 
 @verbatim
+  UdpEchoServerHelper echoServer (9);
+
   ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma));
   serverApps.Start (Seconds (1.0));
   serverApps.Stop (Seconds (10.0));
@@ -246,16 +252,17 @@ if we create @code{nCsma} ``extra'' nodes the last one will be at index
 code.
 
 The client application is set up exactly as we did in the @code{first.cc}
-example script.  We tell the client to send packets to the server we just
-installed on the last of the ``extra'' CSMA nodes.  We install the client on
-the leftmost point-to-point node seen in the topology illustration.
+example script.  Again, we provide required attributes to the 
+@code{UdpEchoClientHelper} in the constructor (in this case the remote address
+and port).  We tell the client to send packets to the server we just installed
+on the last of the ``extra'' CSMA nodes.  We install the client on the 
+leftmost point-to-point node seen in the topology illustration.
 
 @verbatim
-  UdpEchoClientHelper echoClient;
-  echoClient.SetRemote (csmaInterfaces.GetAddress (nCsma), 9);
-  echoClient.SetAppAttribute ("MaxPackets", UintegerValue (1));
-  echoClient.SetAppAttribute ("Interval", TimeValue (Seconds (1.)));
-  echoClient.SetAppAttribute ("PacketSize", UintegerValue (1024));
+  UdpEchoClientHelper echoClient (csmaInterfaces.GetAddress (nCsma), 9);
+  echoClient.SetAttribute ("MaxPackets", UintegerValue (1));
+  echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.)));
+  echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
 
   ApplicationContainer clientApps = echoClient.Install (p2pNodes.Get (0));
   clientApps.Start (Seconds (2.0));
@@ -669,8 +676,8 @@ on the nodes and the channel between them.
 
 @verbatim
   PointToPointHelper pointToPoint;
-  pointToPoint.SetDeviceParameter ("DataRate", StringValue ("5Mbps"));
-  pointToPoint.SetChannelParameter ("Delay", StringValue ("2ms"));
+  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+  pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
 
   NetDeviceContainer p2pDevices;
   p2pDevices = pointToPoint.Install (p2pNodes);
@@ -964,8 +971,7 @@ We put the echo server on the ``rightmost'' node in the illustration at the
 start of the file.  We have done this before.
 
 @verbatim
-  UdpEchoServerHelper echoServer;
-  echoServer.SetPort (9);
+  UdpEchoServerHelper echoServer (9);
 
   ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma));
   serverApps.Start (Seconds (1.0));
@@ -976,11 +982,10 @@ And we put the echo client on the last STA node we created, pointing it to
 the server on the CSMA network.  We have also seen similar operations before.
 
 @verbatim
-  UdpEchoClientHelper echoClient;
-  echoClient.SetRemote (csmaInterfaces.GetAddress (nCsma), 9);
-  echoClient.SetAppAttribute ("MaxPackets", UintegerValue (1));
-  echoClient.SetAppAttribute ("Interval", TimeValue (Seconds (1.)));
-  echoClient.SetAppAttribute ("PacketSize", UintegerValue (1024));
+  UdpEchoClientHelper echoClient (csmaInterfaces.GetAddress (nCsma), 9);
+  echoClient.SetAttribute ("MaxPackets", UintegerValue (1));
+  echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.)));
+  echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
 
   ApplicationContainer clientApps =
     echoClient.Install (wifiStaNodes.Get (nWifi - 1));

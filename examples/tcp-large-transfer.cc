@@ -90,10 +90,10 @@ int main (int argc, char *argv[])
 
   // We create the channels first without any IP addressing information
   // First make and configure the helper, so that it will put the appropriate
-  // parameters on the network interfaces and channels we are about to install.
+  // attributes on the network interfaces and channels we are about to install.
   PointToPointHelper p2p;
-  p2p.SetDeviceParameter ("DataRate", DataRateValue (DataRate(10000000)));
-  p2p.SetChannelParameter ("Delay", TimeValue (MilliSeconds(10)));
+  p2p.SetDeviceAttribute ("DataRate", DataRateValue (DataRate(10000000)));
+  p2p.SetChannelAttribute ("Delay", TimeValue (MilliSeconds(10)));
 
   // And then install devices and channels connecting our topology.
   NetDeviceContainer dev0 = p2p.Install (n0n1);

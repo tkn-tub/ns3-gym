@@ -54,8 +54,8 @@ main (int argc, char *argv[])
   p2pNodes.Create (2);
 
   PointToPointHelper pointToPoint;
-  pointToPoint.SetDeviceParameter ("DataRate", StringValue ("5Mbps"));
-  pointToPoint.SetChannelParameter ("Delay", StringValue ("2ms"));
+  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+  pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
 
   NetDeviceContainer p2pDevices;
   p2pDevices = pointToPoint.Install (p2pNodes);
@@ -141,18 +141,16 @@ main (int argc, char *argv[])
   address.Assign (staDevices);
   address.Assign (apDevices);
 
-  UdpEchoServerHelper echoServer;
-  echoServer.SetPort (9);
+  UdpEchoServerHelper echoServer (9);
 
   ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma));
   serverApps.Start (Seconds (1.0));
   serverApps.Stop (Seconds (10.0));
 
-  UdpEchoClientHelper echoClient;
-  echoClient.SetRemote (csmaInterfaces.GetAddress (nCsma), 9);
-  echoClient.SetAppAttribute ("MaxPackets", UintegerValue (1));
-  echoClient.SetAppAttribute ("Interval", TimeValue (Seconds (1.)));
-  echoClient.SetAppAttribute ("PacketSize", UintegerValue (1024));
+  UdpEchoClientHelper echoClient (csmaInterfaces.GetAddress (nCsma), 9);
+  echoClient.SetAttribute ("MaxPackets", UintegerValue (1));
+  echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.)));
+  echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
 
   ApplicationContainer clientApps = 
     echoClient.Install (wifiStaNodes.Get (nWifi - 1));
