@@ -59,6 +59,11 @@ public:
    */
   inline void Unref (void) const;
 
+  /**
+   * Get the reference count of the object.  Normally not needed; for language bindings.
+   */
+  inline uint32_t GetReferenceCount (void) const;
+
 private:
   // Note we make this mutable so that the const methods can still
   // change it.
@@ -84,6 +89,12 @@ RefCountBase::Unref (void) const
     { // All references removed, ok to delete
       delete this;
     }
+}
+
+uint32_t
+RefCountBase::GetReferenceCount (void) const
+{
+  return m_count;
 }
 
 } // namespace ns3
