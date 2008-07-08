@@ -52,14 +52,9 @@ class SchedulerFactory;
  * is shown below:
  * \include samples/main-simulator.cc
  */
-class Simulator {
+class Simulator 
+{
 public:
-  /**
-   * Enable ParallelSimulation.
-   * This method must be invoked before every other method exported
-   * by the Simulator class.
-   */
-  static void EnableParallelSimulation (void);
   /**
    * \param scheduler a new event scheduler
    *
@@ -68,13 +63,6 @@ public:
    * before we start to use it.
    */
   static void SetScheduler (Ptr<Scheduler> scheduler);
-
-  /**
-   * Force the use of a user-provided event scheduler.
-   * This method must be invoked before any other method exported
-   * by the Simulator class.
-   */
-  static void SetExternal (const std::string &name);
 
   /**
    * Enable logging to the file identified by filename. If the file
