@@ -800,32 +800,6 @@ def register_Ns3UdpSocket_methods(root_module, cls):
     cls.add_method('GetTypeId', 'ns3::TypeId', [], is_static=True)
     ## udp-socket.h: ns3::UdpSocket::UdpSocket() [constructor]
     cls.add_constructor([], visibility='public')
-    ## udp-socket.h: ns3::Socket::SocketErrno ns3::UdpSocket::GetErrno() const [member function]
-    cls.add_method('GetErrno', 'ns3::Socket::SocketErrno', [], is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## udp-socket.h: ns3::Ptr<ns3::Node> ns3::UdpSocket::GetNode() const [member function]
-    cls.add_method('GetNode', 'ns3::Ptr< ns3::Node >', [], is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## udp-socket.h: int ns3::UdpSocket::Bind() [member function]
-    cls.add_method('Bind', 'int', [], is_pure_virtual=True, is_virtual=True)
-    ## udp-socket.h: int ns3::UdpSocket::Close() [member function]
-    cls.add_method('Close', 'int', [], is_pure_virtual=True, is_virtual=True)
-    ## udp-socket.h: int ns3::UdpSocket::ShutdownSend() [member function]
-    cls.add_method('ShutdownSend', 'int', [], is_pure_virtual=True, is_virtual=True)
-    ## udp-socket.h: int ns3::UdpSocket::ShutdownRecv() [member function]
-    cls.add_method('ShutdownRecv', 'int', [], is_pure_virtual=True, is_virtual=True)
-    ## udp-socket.h: int ns3::UdpSocket::Connect(ns3::Address const & address) [member function]
-    cls.add_method('Connect', 'int', [param('ns3::Address&', 'address', is_const=True)], is_pure_virtual=True, is_virtual=True)
-    ## udp-socket.h: uint32_t ns3::UdpSocket::GetTxAvailable() const [member function]
-    cls.add_method('GetTxAvailable', 'uint32_t', [], is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## udp-socket.h: int ns3::UdpSocket::Send(ns3::Ptr<ns3::Packet> p, uint32_t flags) [member function]
-    cls.add_method('Send', 'int', [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint32_t', 'flags')], is_pure_virtual=True, is_virtual=True)
-    ## udp-socket.h: int ns3::UdpSocket::SendTo(ns3::Ptr<ns3::Packet> p, uint32_t flags, ns3::Address const & toAddress) [member function]
-    cls.add_method('SendTo', 'int', [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint32_t', 'flags'), param('ns3::Address&', 'toAddress', is_const=True)], is_pure_virtual=True, is_virtual=True)
-    ## udp-socket.h: uint32_t ns3::UdpSocket::GetRxAvailable() const [member function]
-    cls.add_method('GetRxAvailable', 'uint32_t', [], is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## udp-socket.h: ns3::Ptr<ns3::Packet> ns3::UdpSocket::Recv(uint32_t maxSize, uint32_t flags) [member function]
-    cls.add_method('Recv', 'ns3::Ptr< ns3::Packet >', [param('uint32_t', 'maxSize'), param('uint32_t', 'flags')], is_pure_virtual=True, is_virtual=True)
-    ## udp-socket.h: ns3::Ptr<ns3::Packet> ns3::UdpSocket::RecvFrom(uint32_t maxSize, uint32_t flags, ns3::Address & fromAddress) [member function]
-    cls.add_method('RecvFrom', 'ns3::Ptr< ns3::Packet >', [param('uint32_t', 'maxSize'), param('uint32_t', 'flags'), param('ns3::Address&', 'fromAddress')], is_pure_virtual=True, is_virtual=True)
     ## udp-socket.h: void ns3::UdpSocket::SetRcvBufSize(uint32_t size) [member function]
     cls.add_method('SetRcvBufSize', 'void', [param('uint32_t', 'size')], is_pure_virtual=True, visibility='private', is_virtual=True)
     ## udp-socket.h: uint32_t ns3::UdpSocket::GetRcvBufSize() const [member function]
@@ -977,32 +951,6 @@ def register_Ns3TcpSocket_methods(root_module, cls):
     cls.add_method('GetTypeId', 'ns3::TypeId', [], is_static=True)
     ## tcp-socket.h: ns3::TcpSocket::TcpSocket() [constructor]
     cls.add_constructor([], visibility='public')
-    ## tcp-socket.h: ns3::Socket::SocketErrno ns3::TcpSocket::GetErrno() const [member function]
-    cls.add_method('GetErrno', 'ns3::Socket::SocketErrno', [], is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## tcp-socket.h: ns3::Ptr<ns3::Node> ns3::TcpSocket::GetNode() const [member function]
-    cls.add_method('GetNode', 'ns3::Ptr< ns3::Node >', [], is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## tcp-socket.h: int ns3::TcpSocket::Bind() [member function]
-    cls.add_method('Bind', 'int', [], is_pure_virtual=True, is_virtual=True)
-    ## tcp-socket.h: int ns3::TcpSocket::Close() [member function]
-    cls.add_method('Close', 'int', [], is_pure_virtual=True, is_virtual=True)
-    ## tcp-socket.h: int ns3::TcpSocket::ShutdownSend() [member function]
-    cls.add_method('ShutdownSend', 'int', [], is_pure_virtual=True, is_virtual=True)
-    ## tcp-socket.h: int ns3::TcpSocket::ShutdownRecv() [member function]
-    cls.add_method('ShutdownRecv', 'int', [], is_pure_virtual=True, is_virtual=True)
-    ## tcp-socket.h: int ns3::TcpSocket::Connect(ns3::Address const & address) [member function]
-    cls.add_method('Connect', 'int', [param('ns3::Address&', 'address', is_const=True)], is_pure_virtual=True, is_virtual=True)
-    ## tcp-socket.h: uint32_t ns3::TcpSocket::GetTxAvailable() const [member function]
-    cls.add_method('GetTxAvailable', 'uint32_t', [], is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## tcp-socket.h: int ns3::TcpSocket::Send(ns3::Ptr<ns3::Packet> p, uint32_t flags) [member function]
-    cls.add_method('Send', 'int', [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint32_t', 'flags')], is_pure_virtual=True, is_virtual=True)
-    ## tcp-socket.h: int ns3::TcpSocket::SendTo(ns3::Ptr<ns3::Packet> p, uint32_t flags, ns3::Address const & toAddress) [member function]
-    cls.add_method('SendTo', 'int', [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint32_t', 'flags'), param('ns3::Address&', 'toAddress', is_const=True)], is_pure_virtual=True, is_virtual=True)
-    ## tcp-socket.h: uint32_t ns3::TcpSocket::GetRxAvailable() const [member function]
-    cls.add_method('GetRxAvailable', 'uint32_t', [], is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## tcp-socket.h: ns3::Ptr<ns3::Packet> ns3::TcpSocket::Recv(uint32_t maxSize, uint32_t flags) [member function]
-    cls.add_method('Recv', 'ns3::Ptr< ns3::Packet >', [param('uint32_t', 'maxSize'), param('uint32_t', 'flags')], is_pure_virtual=True, is_virtual=True)
-    ## tcp-socket.h: ns3::Ptr<ns3::Packet> ns3::TcpSocket::RecvFrom(uint32_t maxSize, uint32_t flags, ns3::Address & fromAddress) [member function]
-    cls.add_method('RecvFrom', 'ns3::Ptr< ns3::Packet >', [param('uint32_t', 'maxSize'), param('uint32_t', 'flags'), param('ns3::Address&', 'fromAddress')], is_pure_virtual=True, is_virtual=True)
     ## tcp-socket.h: void ns3::TcpSocket::SetSndBufSize(uint32_t size) [member function]
     cls.add_method('SetSndBufSize', 'void', [param('uint32_t', 'size')], is_pure_virtual=True, visibility='private', is_virtual=True)
     ## tcp-socket.h: uint32_t ns3::TcpSocket::GetSndBufSize() const [member function]

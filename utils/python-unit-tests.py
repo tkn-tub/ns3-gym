@@ -59,27 +59,25 @@ class TestSimulator(unittest.TestCase):
         ns3.Config.SetDefault("ns3::OnOffApplication::PacketSize", ns3.UintegerValue(123))
         # hm.. no Config.Get?
 
-    if 0:
-        # not yet: https://bugs.launchpad.net/pybindgen/+bug/246069
-        def testSocket(self):
-            node = ns3.Node()
-            ns3.AddInternetStack(node)
-            self._received_packet = None
+    def testSocket(self):
+        node = ns3.Node()
+        ns3.AddInternetStack(node)
+        self._received_packet = None
 
-            def rx_callback(socket):
-                assert self._received_packet is None
-                self._received_packet = socket.Recv()
+        def rx_callback(socket):
+            assert self._received_packet is None
+            self._received_packet = socket.Recv()
 
-            sink = ns3.Socket.CreateSocket(node, ns3.TypeId.LookupByName("ns3::UdpSocketFactory"))
-            sink.Bind(ns3.InetSocketAddress(ns3.Ipv4Address.GetAny(), 80))
-            sink.SetRecvCallback(rx_callback)
+        sink = ns3.Socket.CreateSocket(node, ns3.TypeId.LookupByName("ns3::UdpSocketFactory"))
+        sink.Bind(ns3.InetSocketAddress(ns3.Ipv4Address.GetAny(), 80))
+        sink.SetRecvCallback(rx_callback)
 
-            source = ns3.Socket.CreateSocket(node, ns3.TypeId.LookupByName("ns3::UdpSocketFactory"))
-            source.SendTo(ns3.InetSocketAddress(ns3.Ipv4Address.GetAny(), 80), ns3.Packet(19))
+        source = ns3.Socket.CreateSocket(node, ns3.TypeId.LookupByName("ns3::UdpSocketFactory"))
+        source.SendTo(ns3.Packet(19), 0, ns3.InetSocketAddress(ns3.Ipv4Address("127.0.0.1"), 80))
 
-            ns3.Simulator.Run()
-            self.assert_(self._received_packet is not None)
-            self.assertEqual(self._received_packet.GetSize(), 19)
+        ns3.Simulator.Run()
+        self.assert_(self._received_packet is not None)
+        self.assertEqual(self._received_packet.GetSize(), 19)
         
 
 if __name__ == '__main__':

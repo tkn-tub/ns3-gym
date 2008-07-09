@@ -658,6 +658,8 @@ def register_Ns3NqapWifiMac_methods(root_module, cls):
     cls.add_method('SetSsid', 'void', [param('ns3::Ssid', 'ssid')], is_virtual=True)
     ## nqap-wifi-mac.h: void ns3::NqapWifiMac::SetBeaconInterval(ns3::Time interval) [member function]
     cls.add_method('SetBeaconInterval', 'void', [param('ns3::Time', 'interval')])
+    ## nqap-wifi-mac.h: ns3::Time ns3::NqapWifiMac::GetBeaconInterval() const [member function]
+    cls.add_method('GetBeaconInterval', 'ns3::Time', [], is_const=True)
     ## nqap-wifi-mac.h: void ns3::NqapWifiMac::StartBeaconing() [member function]
     cls.add_method('StartBeaconing', 'void', [])
     ## nqap-wifi-mac.h: void ns3::NqapWifiMac::DoDispose() [member function]
@@ -713,6 +715,10 @@ def register_Ns3FriisPropagationLossModel_methods(root_module, cls):
     cls.add_method('SetLambda', 'void', [param('double', 'lambda')])
     ## propagation-loss-model.h: void ns3::FriisPropagationLossModel::SetSystemLoss(double systemLoss) [member function]
     cls.add_method('SetSystemLoss', 'void', [param('double', 'systemLoss')])
+    ## propagation-loss-model.h: void ns3::FriisPropagationLossModel::SetMinDistance(double minDistance) [member function]
+    cls.add_method('SetMinDistance', 'void', [param('double', 'minDistance')])
+    ## propagation-loss-model.h: double ns3::FriisPropagationLossModel::GetMinDistance() const [member function]
+    cls.add_method('GetMinDistance', 'double', [], is_const=True)
     ## propagation-loss-model.h: double ns3::FriisPropagationLossModel::GetLambda() const [member function]
     cls.add_method('GetLambda', 'double', [], is_const=True)
     ## propagation-loss-model.h: double ns3::FriisPropagationLossModel::GetSystemLoss() const [member function]
