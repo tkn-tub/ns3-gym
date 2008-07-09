@@ -379,7 +379,7 @@ template <typename T>
 Ptr<T> CopyObject (Ptr<T> object)
 {
   Ptr<T> p = Ptr<T> (new T (*PeekPointer (object)), false);
-  NS_ASSERT (p->m_tid == object->m_tid);
+  NS_ASSERT (p->GetInstanceTypeId () == object->GetInstanceTypeId ());
   return p;
 }
 
@@ -387,7 +387,7 @@ template <typename T>
 Ptr<T> CopyObject (Ptr<const T> object)
 {
   Ptr<T> p = Ptr<T> (new T (*PeekPointer (object)), false);
-  NS_ASSERT (p->m_tid == object->m_tid);
+  NS_ASSERT (p->GetInstanceTypeId () == object->GetInstanceTypeId ());
   return p;
 }
 
