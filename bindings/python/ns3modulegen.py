@@ -77,7 +77,7 @@ class MyMultiSectionFactory(MultiSectionFactory):
 def main():
     out = MyMultiSectionFactory(sys.argv[1], sys.argv[2:])
     root_module = module_init()
-    root_module.add_include('"ns3/everything.h"')
+    root_module.add_include('"everything.h"')
 
     register_types(root_module)
 

@@ -228,7 +228,7 @@ class MyPygenClassifier(PygenClassifier):
             return '__main__'
 
 
-def ns3_module_scan(top_builddir, pygen_file_name):
+def ns3_module_scan(top_builddir, pygen_file_name, everything_h):
 
     ns3_modules = eval(sys.stdin.read())
 
@@ -239,7 +239,7 @@ def ns3_module_scan(top_builddir, pygen_file_name):
         for dep in ns3_module_deps:
             graph.append((dep, ns3_module_name))
     sorted_ns3_modules = topsort(graph)
-    print >> sys.stderr, "******* topological sort: ", sorted_ns3_modules
+    #print >> sys.stderr, "******* topological sort: ", sorted_ns3_modules
 
     sections = [PygenSection('__main__', FileCodeSink(open(pygen_file_name, "wt")))]
     headers_map = {} # header_name -> section_name
@@ -255,8 +255,8 @@ def ns3_module_scan(top_builddir, pygen_file_name):
 
     module_parser.add_pre_scan_hook(pre_scan_hook)
     #module_parser.add_post_scan_hook(post_scan_hook)
-    module_parser.parse_init([os.path.join(top_builddir, 'ns3', 'everything.h')],
-                             include_paths=[top_builddir], whitelist_paths=[top_builddir],
+    module_parser.parse_init([everything_h],
+                             include_paths=[top_builddir], whitelist_paths=[top_builddir, os.path.dirname(everything_h)],
                              #includes=['"ns3/everything.h"'],
                              pygen_sink=sections,
                              pygen_classifier=MyPygenClassifier(headers_map))
@@ -277,5 +277,5 @@ def ns3_module_scan(top_builddir, pygen_file_name):
 
 
 if __name__ == '__main__':
-    ns3_module_scan(sys.argv[1], sys.argv[2])
+    ns3_module_scan(sys.argv[1], sys.argv[3], sys.argv[2])
 

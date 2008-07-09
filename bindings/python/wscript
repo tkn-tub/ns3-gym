@@ -219,8 +219,8 @@ class all_ns3_headers_taskgen(Object.task_gen):
     """
     def __init__(self, *features):
         Object.task_gen.__init__(self, *features)
-        self.inst_var = 'INCLUDEDIR'
-        self.inst_dir = 'ns3'
+        self.inst_var = 0#'INCLUDEDIR'
+        #self.inst_dir = 'ns3'
 
     def apply(self):
         ## get all of the ns3 headers
@@ -249,7 +249,7 @@ class all_ns3_headers_taskgen(Object.task_gen):
                             fatal("missing header file %s" % (source,))
                         all_headers_inputs.append(node)
         assert all_headers_inputs
-        all_headers_outputs = [ns3_dir_node.find_build("everything.h")]
+        all_headers_outputs = [self.path.find_build("everything.h")]
         task = self.create_task('gen-ns3-metaheader', self.env, 4)
         task.set_inputs(all_headers_inputs)
         task.set_outputs(all_headers_outputs)
@@ -302,6 +302,7 @@ def build(bld):
             env['PYTHON'],
             os.path.join(curdir, 'ns3modulescan.py'), # scanning script
             bld.m_curdirnode.find_dir('../..').abspath(env), # include path (where the ns3 include dir is)
+            bld.m_curdirnode.find_build('everything.h').abspath(env),
             os.path.join(curdir, 'ns3modulegen_generated.py'), # output file
             ]
         scan = subprocess.Popen(argv, stdin=subprocess.PIPE)
@@ -323,7 +324,7 @@ def build(bld):
             bindgen.output_file("ns3module.cc"),
             ]
         bindgen.argv.extend(get_modules_and_headers().iterkeys())
-        bindgen.hidden_inputs = ['../../ns3/everything.h',
+        bindgen.hidden_inputs = ['everything.h',
                                  'ns3modulegen_generated.py',
                                  'ns3modulegen_core_customizations.py']
         for module in get_modules_and_headers().iterkeys():
