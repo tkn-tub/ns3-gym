@@ -316,9 +316,9 @@ def build(bld):
     if env['ENABLE_PYTHON_BINDINGS']:
         bindgen = bld.create_obj('command-output')
         bindgen.name = 'pybindgen'
-
         bindgen.command = env['PYTHON']
         bindgen.command_is_external = True
+        bindgen.stderr = 'ns3modulegen.log'
         bindgen.argv = [
             bindgen.input_file("ns3modulegen.py"),
             bindgen.output_file("ns3module.cc"),
