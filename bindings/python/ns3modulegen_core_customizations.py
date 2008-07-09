@@ -145,7 +145,7 @@ class CallbackImplProxyMethod(typehandlers.ReverseWrapperBase):
 
     def generate_python_call(self):
         """code to call the python method"""
-        build_params = self.build_params.get_parameters()
+        build_params = self.build_params.get_parameters(force_tuple_creation=True)
         if build_params[0][0] == '"':
             build_params[0] = '(char *) ' + build_params[0]
         args = self.before_call.declare_variable('PyObject*', 'args')
