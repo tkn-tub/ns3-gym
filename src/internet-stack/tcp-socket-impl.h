@@ -50,7 +50,13 @@ class TcpHeader;
  * This class contains an implementation of TCP Tahoe, as well as a sockets
  * interface for talking to TCP.  Features include connection orientation,
  * reliability through cumulative acknowledgements, congestion and flow 
- * control.  Finite send/receive buffer semantics are modeled.
+ * control.  Finite send buffer semantics are modeled, but as of yet, finite
+ * receive buffer modelling is unimplemented.
+ *
+ * The closedown of these sockets is as of yet not compliant with the relevent
+ * RFCs, i.e. the FIN handshaking isn't correct.  While this is visible at the
+ * PCAP tracing level, it has no effect on the statistics users are interested
+ * in, i.e. throughput, delay, etc. of actual payload data.
  *
  * Asynchronous callbacks to provide notifications to higher layers that a 
  * protocol event has occured, such as space freeing up in the send buffer
