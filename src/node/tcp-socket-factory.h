@@ -48,8 +48,6 @@ class TcpSocketFactory : public SocketFactory
 public:
   static TypeId GetTypeId (void);
 
-  virtual Ptr<Socket> CreateSocket (void) = 0;
-
 };
 
 } // namespace ns3
