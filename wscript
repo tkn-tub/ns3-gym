@@ -163,6 +163,27 @@ def set_options(opt):
     opt.sub_options('src')
 
 
+def check_compilation_flag(conf, flag):
+    """
+    Checks if the C++ compiler accepts a certain compilation flag or flags
+    flag: can be a string or a list of strings
+    """
+
+    # Check for -Wno-error=deprecated-declarations
+    save_CXXFLAGS = list(conf.env['CXXFLAGS'])
+    conf.env.append_value('CXXFLAGS', flag)
+    e = conf.create_test_configurator()
+    e.mandatory = 0
+    e.code = '#include <stdio.h>\nint main() { return 0; }\n'
+    e.want_message = 0
+    ok = e.run()
+    conf.check_message_custom(flag, 'compilation flag support',
+                              (ok and 'yes' or 'no'))
+
+    if not ok: # if it doesn't accept, remove it again
+        conf.env['CXXFLAGS'] = save_CXXFLAGS
+    
+
 def configure(conf):
     conf.check_tool('compiler_cxx')
 
@@ -194,8 +215,12 @@ def configure(conf):
     
     if (os.path.basename(conf.env['CXX']).startswith("g++")
         and 'CXXFLAGS' not in os.environ):
-        variant_env.append_value('CXXFLAGS', ['-Werror', '-Wno-error=deprecated-declarations'])
 
+        variant_env.append_value('CXXFLAGS', '-Werror')
+
+        check_compilation_flag(conf, '-Wno-error=deprecated-declarations')
+
+        
     if 'debug' in Params.g_options.debug_level.lower():
         variant_env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
         variant_env.append_value('CXXDEFINES', 'NS3_LOG_ENABLE')
