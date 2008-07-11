@@ -448,6 +448,7 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
   if(m_calcChecksum)
   {
     tcpHeader.EnableChecksums();
+    tcpHeader.InitializeChecksum (source, destination, PROT_NUMBER);
   }
 
   packet->PeekHeader (tcpHeader);
@@ -495,7 +496,6 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
   TcpHeader tcpHeader;
   tcpHeader.SetDestinationPort (dport);
   tcpHeader.SetSourcePort (sport);
-  tcpHeader.SetPayloadSize(packet->GetSize());
   if(m_calcChecksum)
   {
     tcpHeader.EnableChecksums();
@@ -529,7 +529,6 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, TcpHeader outgoingHeader,
   // XXX outgoingHeader cannot be logged
 
   outgoingHeader.SetLength (5); //header length in units of 32bit words
-  outgoingHeader.SetPayloadSize(packet->GetSize());
   /* outgoingHeader.SetUrgentPointer (0); //XXX */
   if(m_calcChecksum)
   {

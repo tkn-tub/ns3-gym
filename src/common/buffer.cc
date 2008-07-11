@@ -1128,6 +1128,12 @@ Buffer::Iterator::CalculateIpChecksum(uint16_t size, uint32_t initialChecksum)
   return ~sum;
 }
 
+uint32_t 
+Buffer::Iterator::GetSize (void) const
+{
+  return m_dataEnd - m_dataStart;
+}
+
 } // namespace ns3
 
 

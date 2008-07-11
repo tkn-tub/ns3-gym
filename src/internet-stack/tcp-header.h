@@ -78,10 +78,6 @@ public:
    */
   void SetWindowSize (uint16_t windowSize);
   /**
-   * \param checksum the checksum for this TcpHeader
-   */
-  void SetChecksum (uint16_t checksum);
-  /**
    * \param urgentPointer the urgent pointer for this TcpHeader
    */
   void SetUrgentPointer (uint16_t urgentPointer);
@@ -117,10 +113,6 @@ public:
    */
   uint16_t GetWindowSize () const;
   /**
-   * \return the checksum for this TcpHeader
-   */
-  uint16_t GetChecksum () const;
-  /**
    * \return the urgent pointer for this TcpHeader
    */
   uint16_t GetUrgentPointer () const;
@@ -151,17 +143,13 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
   /**
-   * \param size The payload size in bytes
-   */
-  void SetPayloadSize (uint16_t size);
-
-  /**
    * \brief Is the TCP checksum correct ?
    * \returns true if the checksum is correct, false otherwise.
    */
   bool IsChecksumOk (void) const;
 
 private:
+  uint16_t CalculateHeaderChecksum (uint16_t size) const;
   uint16_t m_sourcePort;
   uint16_t m_destinationPort;
   uint32_t m_sequenceNumber;
@@ -170,13 +158,14 @@ private:
   uint8_t m_flags;      // really a uint6_t
   uint16_t m_windowSize;
   uint16_t m_urgentPointer;
-  uint16_t m_payloadSize;
-  uint16_t m_initialChecksum;
-  uint16_t m_checksum;
 
+  Ipv4Address m_source;
+  Ipv4Address m_destination;
+  uint8_t m_protocol;
+
+  uint16_t m_initialChecksum;
   bool m_calcChecksum;
   bool m_goodChecksum;
-
 };
 
 }; // namespace ns3

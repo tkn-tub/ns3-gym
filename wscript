@@ -197,7 +197,7 @@ def configure(conf):
     
     if (os.path.basename(conf.env['CXX']).startswith("g++")
         and 'CXXFLAGS' not in os.environ):
-        variant_env.append_value('CXXFLAGS', ['-Werror'])
+        variant_env.append_value('CXXFLAGS', ['-Werror', '-Wno-error=deprecated-declarations'])
 
     if 'debug' in Params.g_options.debug_level.lower():
         variant_env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
