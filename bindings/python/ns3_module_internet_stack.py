@@ -116,8 +116,6 @@ def register_Ns3UdpHeader_methods(root_module, cls):
     cls.add_method('GetSourcePort', 'uint16_t', [], is_const=True)
     ## udp-header.h: uint16_t ns3::UdpHeader::GetDestinationPort() const [member function]
     cls.add_method('GetDestinationPort', 'uint16_t', [], is_const=True)
-    ## udp-header.h: void ns3::UdpHeader::SetPayloadSize(uint16_t size) [member function]
-    cls.add_method('SetPayloadSize', 'void', [param('uint16_t', 'size')])
     ## udp-header.h: void ns3::UdpHeader::InitializeChecksum(ns3::Ipv4Address source, ns3::Ipv4Address destination, uint8_t protocol) [member function]
     cls.add_method('InitializeChecksum', 'void', [param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'destination'), param('uint8_t', 'protocol')])
     ## udp-header.h: static ns3::TypeId ns3::UdpHeader::GetTypeId() [member function]
@@ -155,8 +153,6 @@ def register_Ns3TcpHeader_methods(root_module, cls):
     cls.add_method('SetFlags', 'void', [param('uint8_t', 'flags')])
     ## tcp-header.h: void ns3::TcpHeader::SetWindowSize(uint16_t windowSize) [member function]
     cls.add_method('SetWindowSize', 'void', [param('uint16_t', 'windowSize')])
-    ## tcp-header.h: void ns3::TcpHeader::SetChecksum(uint16_t checksum) [member function]
-    cls.add_method('SetChecksum', 'void', [param('uint16_t', 'checksum')])
     ## tcp-header.h: void ns3::TcpHeader::SetUrgentPointer(uint16_t urgentPointer) [member function]
     cls.add_method('SetUrgentPointer', 'void', [param('uint16_t', 'urgentPointer')])
     ## tcp-header.h: uint16_t ns3::TcpHeader::GetSourcePort() const [member function]
@@ -173,8 +169,6 @@ def register_Ns3TcpHeader_methods(root_module, cls):
     cls.add_method('GetFlags', 'uint8_t', [], is_const=True)
     ## tcp-header.h: uint16_t ns3::TcpHeader::GetWindowSize() const [member function]
     cls.add_method('GetWindowSize', 'uint16_t', [], is_const=True)
-    ## tcp-header.h: uint16_t ns3::TcpHeader::GetChecksum() const [member function]
-    cls.add_method('GetChecksum', 'uint16_t', [], is_const=True)
     ## tcp-header.h: uint16_t ns3::TcpHeader::GetUrgentPointer() const [member function]
     cls.add_method('GetUrgentPointer', 'uint16_t', [], is_const=True)
     ## tcp-header.h: void ns3::TcpHeader::InitializeChecksum(ns3::Ipv4Address source, ns3::Ipv4Address destination, uint8_t protocol) [member function]
@@ -191,8 +185,6 @@ def register_Ns3TcpHeader_methods(root_module, cls):
     cls.add_method('Serialize', 'void', [param('ns3::Buffer::Iterator', 'start')], is_const=True, is_virtual=True)
     ## tcp-header.h: uint32_t ns3::TcpHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
     cls.add_method('Deserialize', 'uint32_t', [param('ns3::Buffer::Iterator', 'start')], is_virtual=True)
-    ## tcp-header.h: void ns3::TcpHeader::SetPayloadSize(uint16_t size) [member function]
-    cls.add_method('SetPayloadSize', 'void', [param('uint16_t', 'size')])
     ## tcp-header.h: bool ns3::TcpHeader::IsChecksumOk() const [member function]
     cls.add_method('IsChecksumOk', 'bool', [], is_const=True)
     return

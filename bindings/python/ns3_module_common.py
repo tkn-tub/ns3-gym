@@ -369,6 +369,8 @@ def register_Ns3BufferIterator_methods(root_module, cls):
     cls.add_method('CalculateIpChecksum', 'uint16_t', [param('uint16_t', 'size')])
     ## buffer.h: uint16_t ns3::Buffer::Iterator::CalculateIpChecksum(uint16_t size, uint32_t initialChecksum) [member function]
     cls.add_method('CalculateIpChecksum', 'uint16_t', [param('uint16_t', 'size'), param('uint32_t', 'initialChecksum')])
+    ## buffer.h: uint32_t ns3::Buffer::Iterator::GetSize() const [member function]
+    cls.add_method('GetSize', 'uint32_t', [], is_const=True)
     return
 
 def register_Ns3Chunk_methods(root_module, cls):

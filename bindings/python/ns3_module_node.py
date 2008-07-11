@@ -96,11 +96,11 @@ def register_types(module):
     ## llc-snap-header.h: ns3::LlcSnapHeader [class]
     module.add_class('LlcSnapHeader', allow_subclassing=True, parent=root_module['ns3::Header'])
     ## udp-socket-factory.h: ns3::UdpSocketFactory [class]
-    module.add_class('UdpSocketFactory', allow_subclassing=True, parent=root_module['ns3::SocketFactory'])
+    module.add_class('UdpSocketFactory', parent=root_module['ns3::SocketFactory'])
     ## simple-net-device.h: ns3::SimpleNetDevice [class]
     module.add_class('SimpleNetDevice', allow_subclassing=True, parent=root_module['ns3::NetDevice'])
     ## tcp-socket-factory.h: ns3::TcpSocketFactory [class]
-    module.add_class('TcpSocketFactory', allow_subclassing=True, parent=root_module['ns3::SocketFactory'])
+    module.add_class('TcpSocketFactory', parent=root_module['ns3::SocketFactory'])
     ## packet-socket-factory.h: ns3::PacketSocketFactory [class]
     module.add_class('PacketSocketFactory', allow_subclassing=True, parent=root_module['ns3::SocketFactory'])
     
@@ -1207,8 +1207,6 @@ def register_Ns3LlcSnapHeader_methods(root_module, cls):
 def register_Ns3UdpSocketFactory_methods(root_module, cls):
     ## udp-socket-factory.h: static ns3::TypeId ns3::UdpSocketFactory::GetTypeId() [member function]
     cls.add_method('GetTypeId', 'ns3::TypeId', [], is_static=True)
-    ## udp-socket-factory.h: ns3::Ptr<ns3::Socket> ns3::UdpSocketFactory::CreateSocket() [member function]
-    cls.add_method('CreateSocket', 'ns3::Ptr< ns3::Socket >', [], is_pure_virtual=True, is_virtual=True)
     cls.add_constructor([])
     return
 
@@ -1272,8 +1270,6 @@ def register_Ns3SimpleNetDevice_methods(root_module, cls):
 def register_Ns3TcpSocketFactory_methods(root_module, cls):
     ## tcp-socket-factory.h: static ns3::TypeId ns3::TcpSocketFactory::GetTypeId() [member function]
     cls.add_method('GetTypeId', 'ns3::TypeId', [], is_static=True)
-    ## tcp-socket-factory.h: ns3::Ptr<ns3::Socket> ns3::TcpSocketFactory::CreateSocket() [member function]
-    cls.add_method('CreateSocket', 'ns3::Ptr< ns3::Socket >', [], is_pure_virtual=True, is_virtual=True)
     cls.add_constructor([])
     return
 

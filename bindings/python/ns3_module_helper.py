@@ -168,6 +168,10 @@ def register_Ns3PointToPointHelper_methods(root_module, cls):
     cls.add_method('SetDeviceAttribute', 'void', [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
     ## point-to-point-helper.h: void ns3::PointToPointHelper::SetChannelAttribute(std::string name, ns3::AttributeValue const & value) [member function]
     cls.add_method('SetChannelAttribute', 'void', [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
+    ## point-to-point-helper.h: void ns3::PointToPointHelper::SetDeviceParameter(std::string name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('SetDeviceParameter', 'void', [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
+    ## point-to-point-helper.h: void ns3::PointToPointHelper::SetChannelParameter(std::string name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('SetChannelParameter', 'void', [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
     ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnablePcap(std::string filename, uint32_t nodeid, uint32_t deviceid) [member function]
     cls.add_method('EnablePcap', 'void', [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], is_static=True)
     ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnablePcap(std::string filename, ns3::NetDeviceContainer d) [member function]
@@ -215,6 +219,10 @@ def register_Ns3CsmaHelper_methods(root_module, cls):
     cls.add_method('SetDeviceAttribute', 'void', [param('std::string', 'n1'), param('ns3::AttributeValue&', 'v1', is_const=True)])
     ## csma-helper.h: void ns3::CsmaHelper::SetChannelAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
     cls.add_method('SetChannelAttribute', 'void', [param('std::string', 'n1'), param('ns3::AttributeValue&', 'v1', is_const=True)])
+    ## csma-helper.h: void ns3::CsmaHelper::SetDeviceParameter(std::string n1, ns3::AttributeValue const & v1) [member function]
+    cls.add_method('SetDeviceParameter', 'void', [param('std::string', 'n1'), param('ns3::AttributeValue&', 'v1', is_const=True)])
+    ## csma-helper.h: void ns3::CsmaHelper::SetChannelParameter(std::string n1, ns3::AttributeValue const & v1) [member function]
+    cls.add_method('SetChannelParameter', 'void', [param('std::string', 'n1'), param('ns3::AttributeValue&', 'v1', is_const=True)])
     ## csma-helper.h: static void ns3::CsmaHelper::EnablePcap(std::string filename, uint32_t nodeid, uint32_t deviceid) [member function]
     cls.add_method('EnablePcap', 'void', [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], is_static=True)
     ## csma-helper.h: static void ns3::CsmaHelper::EnablePcap(std::string filename, ns3::NetDeviceContainer d) [member function]
