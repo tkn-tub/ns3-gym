@@ -141,6 +141,11 @@ def set_options(opt):
                          ' It should be a shell command string containing %s inside,'
                          ' which will be replaced by the actual program.'),
                    type="string", default=None, dest='command_template')
+    opt.add_option('--pyrun',
+                   help=('Run a python program using locally built ns3 python module;'
+                         ' argument is the path to the python program, optionally followed'
+                         ' by command-line options that are passed to the program.'),
+                   type="string", default='', dest='pyrun')
     opt.add_option('--valgrind',
                    help=('Change the default command template to run programs and unit tests with valgrind'),
                    action="store_true", default=False,
@@ -427,6 +432,10 @@ def shutdown():
         run_program(Params.g_options.run, get_command_template())
         raise SystemExit(0)
 
+    if Params.g_options.pyrun:
+        run_python_program(Params.g_options.pyrun)
+        raise SystemExit(0)
+
 def _run_waf_check():
     ## generate the trace sources list docs
     env = Params.g_build.env_of_name('default')
@@ -560,6 +569,25 @@ def run_program(program_string, command_template=None):
         os.chdir(former_cwd)
 
     return retval
+
+
+
+def run_python_program(program_string):
+    env = Params.g_build.env_of_name('default')
+    execvec = shlex.split(program_string)
+
+    former_cwd = os.getcwd()
+    if (Params.g_options.cwd_launch):
+        os.chdir(Params.g_options.cwd_launch)
+    else:
+        os.chdir(Params.g_cwd_launch)
+    try:
+        retval = _run_argv([env['PYTHON']] + execvec)
+    finally:
+        os.chdir(former_cwd)
+
+    return retval
+
 
 def check_shell():
     if 'NS3_MODULE_PATH' not in os.environ:
