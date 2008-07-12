@@ -334,6 +334,10 @@ def build(bld):
             bindgen.hidden_outputs.append("ns3_module_%s.cc" % module.replace('-', '_'))
         bindgen.prio = 50
 
+        bindgen.os_env = dict(os.environ)
+        if not env['ENABLE_GTK_CONFIG_STORE']:
+            bindgen.os_env['DISABLE_GTK_CONFIG_STORE'] = "1"
+
 
     ## we build python bindings if either we have the tools to
     ## generate them or if the pregenerated source file is already

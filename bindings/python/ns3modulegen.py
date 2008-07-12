@@ -107,6 +107,11 @@ def main():
         mod = __import__(local_module)
         mod.register_functions(root_module)
 
+
+    # if GtkConfigStore support is disabled, disable the class wrapper
+    if 'DISABLE_GTK_CONFIG_STORE' in os.environ:
+        root_module.classes.remove(root_module['ns3::GtkConfigStore'])
+
     root_module.generate(out, '_ns3')
 
     out.close()
