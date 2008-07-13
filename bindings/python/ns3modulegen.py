@@ -100,6 +100,7 @@ def main():
         mod.register_methods(root_module)
 
     ns3modulegen_core_customizations.Object_customizations(root_module)
+    ns3modulegen_core_customizations.Attribute_customizations(root_module)
 
     register_functions(root_module)
 

@@ -5,6 +5,7 @@ from pybindgen import (ReturnValue, Parameter)
 from pybindgen.cppmethod import CustomCppMethodWrapper, CustomCppConstructorWrapper
 from pybindgen.typehandlers.codesink import MemoryCodeSink
 from pybindgen.typehandlers import ctypeparser
+from pybindgen import cppclass
 import warnings
 
 from pybindgen.typehandlers.base import CodeGenerationError
@@ -493,3 +494,27 @@ int KwargsToAttributeList(PyObject *kwargs, ns3::TypeId tid, ns3::AttributeList 
     return 0;
 }
 ''')
+
+
+def Attribute_customizations(module):
+    # Fix up for the "const AttributeValue &v = EmptyAttribute()"
+    # case, as used extensively by helper classes.
+
+    # Here's why we need to do this: pybindgen.gccxmlscanner, when
+    # scanning parameter default values, is only provided with the
+    # value as a simple C expression string.  (py)gccxml does not
+    # report the type of the default value.
+
+    # As a workaround, here we iterate over all parameters of all
+    # methods of all classes and tell pybindgen what is the type of
+    # the default value for attributes.
+
+    for cls in module.classes:
+        for meth in cls.get_all_methods():
+            for param in meth.parameters:
+                if isinstance(param, cppclass.CppClassRefParameter):
+                    if param.cpp_class.name == 'AttributeValue' \
+                            and param.default_value is not None \
+                            and param.default_value_type is None:
+                        param.default_value_type = 'ns3::EmptyAttributeValue'
+
