@@ -16,7 +16,7 @@ def register_types(module):
     ## gtk-config-store.h: ns3::GtkConfigStore [class]
     module.add_class('GtkConfigStore')
     ## config-store.h: ns3::ConfigStore [class]
-    module.add_class('ConfigStore', allow_subclassing=True, parent=root_module['ns3::ObjectBase'])
+    module.add_class('ConfigStore', parent=root_module['ns3::ObjectBase'])
     ## delay-jitter-estimation.h: ns3::DelayJitterEstimation [class]
     module.add_class('DelayJitterEstimation')
     

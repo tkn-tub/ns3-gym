@@ -16,7 +16,7 @@ def register_types(module):
     ## global-router-interface.h: ns3::GlobalRoutingLinkRecord::LinkType [enumeration]
     module.add_enum('LinkType', ['Unknown', 'PointToPoint', 'TransitNetwork', 'StubNetwork', 'VirtualLink'], outer_class=root_module['ns3::GlobalRoutingLinkRecord'])
     ## global-router-interface.h: ns3::GlobalRouter [class]
-    module.add_class('GlobalRouter', allow_subclassing=True, is_singleton=True, parent=root_module['ns3::Object'])
+    module.add_class('GlobalRouter', is_singleton=True, parent=root_module['ns3::Object'])
     
     ## Register a nested module for the namespace internal
     

@@ -16,15 +16,15 @@ def register_types(module):
     ## supported-rates.h: ns3::SupportedRates [class]
     module.add_class('SupportedRates')
     ## ideal-wifi-manager.h: ns3::IdealWifiRemoteStation [class]
-    module.add_class('IdealWifiRemoteStation', allow_subclassing=True, parent=root_module['ns3::WifiRemoteStation'])
+    module.add_class('IdealWifiRemoteStation', parent=root_module['ns3::WifiRemoteStation'])
     ## wifi-mode.h: ns3::WifiModeChecker [class]
     module.add_class('WifiModeChecker', parent=root_module['ns3::AttributeChecker'])
     ## wifi-mode.h: ns3::WifiModeFactory [class]
     module.add_class('WifiModeFactory')
     ## onoe-wifi-manager.h: ns3::OnoeWifiRemoteStation [class]
-    module.add_class('OnoeWifiRemoteStation', allow_subclassing=True, parent=root_module['ns3::WifiRemoteStation'])
+    module.add_class('OnoeWifiRemoteStation', parent=root_module['ns3::WifiRemoteStation'])
     ## rraa-wifi-manager.h: ns3::RraaWifiRemoteStation [class]
-    module.add_class('RraaWifiRemoteStation', allow_subclassing=True, parent=root_module['ns3::WifiRemoteStation'])
+    module.add_class('RraaWifiRemoteStation', parent=root_module['ns3::WifiRemoteStation'])
     ## ssid.h: ns3::Ssid [class]
     module.add_class('Ssid')
     ## wifi-mode.h: ns3::WifiMode [class]
@@ -32,69 +32,69 @@ def register_types(module):
     ## wifi-mode.h: ns3::WifiMode::ModulationType [enumeration]
     module.add_enum('ModulationType', ['BPSK', 'QAM'], outer_class=root_module['ns3::WifiMode'])
     ## ssid.h: ns3::SsidValue [class]
-    module.add_class('SsidValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('SsidValue', parent=root_module['ns3::AttributeValue'])
     ## ssid.h: ns3::SsidChecker [class]
     module.add_class('SsidChecker', parent=root_module['ns3::AttributeChecker'])
     ## constant-rate-wifi-manager.h: ns3::ConstantRateWifiRemoteStation [class]
-    module.add_class('ConstantRateWifiRemoteStation', allow_subclassing=True, parent=root_module['ns3::WifiRemoteStation'])
+    module.add_class('ConstantRateWifiRemoteStation', parent=root_module['ns3::WifiRemoteStation'])
     ## propagation-loss-model.h: ns3::PropagationLossModel [class]
-    module.add_class('PropagationLossModel', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('PropagationLossModel', parent=root_module['ns3::Object'])
     ## arf-wifi-manager.h: ns3::ArfWifiRemoteStation [class]
-    module.add_class('ArfWifiRemoteStation', allow_subclassing=True, parent=root_module['ns3::WifiRemoteStation'])
+    module.add_class('ArfWifiRemoteStation', parent=root_module['ns3::WifiRemoteStation'])
     ## wifi-mac.h: ns3::WifiMac [class]
-    module.add_class('WifiMac', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('WifiMac', parent=root_module['ns3::Object'])
     ## nqap-wifi-mac.h: ns3::NqapWifiMac [class]
-    module.add_class('NqapWifiMac', allow_subclassing=True, parent=root_module['ns3::WifiMac'])
+    module.add_class('NqapWifiMac', parent=root_module['ns3::WifiMac'])
     ## amrr-wifi-manager.h: ns3::AmrrWifiRemoteStation [class]
-    module.add_class('AmrrWifiRemoteStation', allow_subclassing=True, parent=root_module['ns3::WifiRemoteStation'])
+    module.add_class('AmrrWifiRemoteStation', parent=root_module['ns3::WifiRemoteStation'])
     ## composite-propagation-loss-model.h: ns3::CompositePropagationLossModel [class]
-    module.add_class('CompositePropagationLossModel', allow_subclassing=True, parent=root_module['ns3::PropagationLossModel'])
+    module.add_class('CompositePropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## propagation-loss-model.h: ns3::FriisPropagationLossModel [class]
-    module.add_class('FriisPropagationLossModel', allow_subclassing=True, parent=root_module['ns3::PropagationLossModel'])
+    module.add_class('FriisPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## wifi-remote-station-manager.h: ns3::WifiRemoteStationManager [class]
-    module.add_class('WifiRemoteStationManager', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('WifiRemoteStationManager', parent=root_module['ns3::Object'])
     ## wifi-mode.h: ns3::WifiModeValue [class]
-    module.add_class('WifiModeValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('WifiModeValue', parent=root_module['ns3::AttributeValue'])
     ## onoe-wifi-manager.h: ns3::OnoeWifiManager [class]
-    module.add_class('OnoeWifiManager', allow_subclassing=True, parent=root_module['ns3::WifiRemoteStationManager'])
+    module.add_class('OnoeWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
     ## wifi-phy.h: ns3::WifiPhy [class]
-    module.add_class('WifiPhy', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('WifiPhy', parent=root_module['ns3::Object'])
     ## wifi-phy.h: ns3::WifiPhy::State [enumeration]
     module.add_enum('State', ['SYNC', 'TX', 'CCA_BUSY', 'IDLE'], outer_class=root_module['ns3::WifiPhy'])
     ## wifi-channel.h: ns3::WifiChannel [class]
-    module.add_class('WifiChannel', allow_subclassing=True, parent=root_module['ns3::Channel'])
+    module.add_class('WifiChannel', parent=root_module['ns3::Channel'])
     ## propagation-loss-model.h: ns3::LogDistancePropagationLossModel [class]
-    module.add_class('LogDistancePropagationLossModel', allow_subclassing=True, parent=root_module['ns3::PropagationLossModel'])
+    module.add_class('LogDistancePropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## constant-rate-wifi-manager.h: ns3::ConstantRateWifiManager [class]
-    module.add_class('ConstantRateWifiManager', allow_subclassing=True, parent=root_module['ns3::WifiRemoteStationManager'])
+    module.add_class('ConstantRateWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
     ## aarf-wifi-manager.h: ns3::AarfWifiRemoteStation [class]
-    module.add_class('AarfWifiRemoteStation', allow_subclassing=True, parent=root_module['ns3::ArfWifiRemoteStation'])
+    module.add_class('AarfWifiRemoteStation', parent=root_module['ns3::ArfWifiRemoteStation'])
     ## propagation-delay-model.h: ns3::PropagationDelayModel [class]
-    module.add_class('PropagationDelayModel', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('PropagationDelayModel', parent=root_module['ns3::Object'])
     ## adhoc-wifi-mac.h: ns3::AdhocWifiMac [class]
-    module.add_class('AdhocWifiMac', allow_subclassing=True, parent=root_module['ns3::WifiMac'])
+    module.add_class('AdhocWifiMac', parent=root_module['ns3::WifiMac'])
     ## jakes-propagation-loss-model.h: ns3::JakesPropagationLossModel [class]
-    module.add_class('JakesPropagationLossModel', allow_subclassing=True, parent=root_module['ns3::PropagationLossModel'])
+    module.add_class('JakesPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## propagation-delay-model.h: ns3::ConstantSpeedPropagationDelayModel [class]
-    module.add_class('ConstantSpeedPropagationDelayModel', allow_subclassing=True, parent=root_module['ns3::PropagationDelayModel'])
+    module.add_class('ConstantSpeedPropagationDelayModel', parent=root_module['ns3::PropagationDelayModel'])
     ## wifi-net-device.h: ns3::WifiNetDevice [class]
-    module.add_class('WifiNetDevice', allow_subclassing=True, parent=root_module['ns3::NetDevice'])
+    module.add_class('WifiNetDevice', parent=root_module['ns3::NetDevice'])
     ## nqsta-wifi-mac.h: ns3::NqstaWifiMac [class]
-    module.add_class('NqstaWifiMac', allow_subclassing=True, parent=root_module['ns3::WifiMac'])
+    module.add_class('NqstaWifiMac', parent=root_module['ns3::WifiMac'])
     ## propagation-loss-model.h: ns3::RandomPropagationLossModel [class]
-    module.add_class('RandomPropagationLossModel', allow_subclassing=True, parent=root_module['ns3::PropagationLossModel'])
+    module.add_class('RandomPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## propagation-delay-model.h: ns3::RandomPropagationDelayModel [class]
-    module.add_class('RandomPropagationDelayModel', allow_subclassing=True, parent=root_module['ns3::PropagationDelayModel'])
+    module.add_class('RandomPropagationDelayModel', parent=root_module['ns3::PropagationDelayModel'])
     ## amrr-wifi-manager.h: ns3::AmrrWifiManager [class]
-    module.add_class('AmrrWifiManager', allow_subclassing=True, parent=root_module['ns3::WifiRemoteStationManager'])
+    module.add_class('AmrrWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
     ## rraa-wifi-manager.h: ns3::RraaWifiManager [class]
-    module.add_class('RraaWifiManager', allow_subclassing=True, parent=root_module['ns3::WifiRemoteStationManager'])
+    module.add_class('RraaWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
     ## ideal-wifi-manager.h: ns3::IdealWifiManager [class]
-    module.add_class('IdealWifiManager', allow_subclassing=True, parent=root_module['ns3::WifiRemoteStationManager'])
+    module.add_class('IdealWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
     ## arf-wifi-manager.h: ns3::ArfWifiManager [class]
-    module.add_class('ArfWifiManager', allow_subclassing=True, parent=root_module['ns3::WifiRemoteStationManager'])
+    module.add_class('ArfWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
     ## aarf-wifi-manager.h: ns3::AarfWifiManager [class]
-    module.add_class('AarfWifiManager', allow_subclassing=True, parent=root_module['ns3::ArfWifiManager'])
+    module.add_class('AarfWifiManager', parent=root_module['ns3::ArfWifiManager'])
     
     ## Register a nested module for the namespace internal
     
@@ -1067,14 +1067,16 @@ def register_Ns3WifiNetDevice_methods(root_module, cls):
     cls.add_method('IsPointToPoint', 'bool', [], is_const=True, is_virtual=True)
     ## wifi-net-device.h: bool ns3::WifiNetDevice::Send(ns3::Ptr<ns3::Packet> packet, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Send', 'bool', [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address&', 'dest', is_const=True), param('uint16_t', 'protocolNumber')], is_virtual=True)
+    ## wifi-net-device.h: bool ns3::WifiNetDevice::SendFrom(ns3::Ptr<ns3::Packet> packet, ns3::Address const & src, ns3::Address const & dest, uint16_t protocolNumber) [member function]
+    cls.add_method('SendFrom', 'bool', [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address&', 'src', is_const=True), param('ns3::Address&', 'dest', is_const=True), param('uint16_t', 'protocolNumber')], is_virtual=True)
     ## wifi-net-device.h: ns3::Ptr<ns3::Node> ns3::WifiNetDevice::GetNode() const [member function]
     cls.add_method('GetNode', 'ns3::Ptr< ns3::Node >', [], is_const=True, is_virtual=True)
     ## wifi-net-device.h: void ns3::WifiNetDevice::SetNode(ns3::Ptr<ns3::Node> node) [member function]
     cls.add_method('SetNode', 'void', [param('ns3::Ptr< ns3::Node >', 'node')], is_virtual=True)
     ## wifi-net-device.h: bool ns3::WifiNetDevice::NeedsArp() const [member function]
     cls.add_method('NeedsArp', 'bool', [], is_const=True, is_virtual=True)
-    ## wifi-net-device.h: void ns3::WifiNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty> cb) [member function]
-    cls.add_method('SetReceiveCallback', 'void', [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::empty, ns3::empty >', 'cb')], is_virtual=True)
+    ## wifi-net-device.h: void ns3::WifiNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> cb) [member function]
+    cls.add_method('SetReceiveCallback', 'void', [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], is_virtual=True)
     ## wifi-net-device.h: void ns3::WifiNetDevice::DoDispose() [member function]
     cls.add_method('DoDispose', 'void', [], visibility='private', is_virtual=True)
     return

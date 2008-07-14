@@ -16,37 +16,37 @@ def register_types(module):
     ## rectangle.h: ns3::Rectangle::Side [enumeration]
     module.add_enum('Side', ['RIGHT', 'LEFT', 'TOP', 'BOTTOM'], outer_class=root_module['ns3::Rectangle'])
     ## position-allocator.h: ns3::PositionAllocator [class]
-    module.add_class('PositionAllocator', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('PositionAllocator', parent=root_module['ns3::Object'])
     ## position-allocator.h: ns3::ListPositionAllocator [class]
-    module.add_class('ListPositionAllocator', allow_subclassing=True, parent=root_module['ns3::PositionAllocator'])
+    module.add_class('ListPositionAllocator', parent=root_module['ns3::PositionAllocator'])
     ## rectangle.h: ns3::RectangleValue [class]
-    module.add_class('RectangleValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('RectangleValue', parent=root_module['ns3::AttributeValue'])
     ## position-allocator.h: ns3::RandomRectanglePositionAllocator [class]
-    module.add_class('RandomRectanglePositionAllocator', allow_subclassing=True, parent=root_module['ns3::PositionAllocator'])
+    module.add_class('RandomRectanglePositionAllocator', parent=root_module['ns3::PositionAllocator'])
     ## vector.h: ns3::VectorValue [class]
-    module.add_class('VectorValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('VectorValue', parent=root_module['ns3::AttributeValue'])
     ## position-allocator.h: ns3::RandomDiscPositionAllocator [class]
-    module.add_class('RandomDiscPositionAllocator', allow_subclassing=True, parent=root_module['ns3::PositionAllocator'])
+    module.add_class('RandomDiscPositionAllocator', parent=root_module['ns3::PositionAllocator'])
     ## mobility-model.h: ns3::MobilityModel [class]
-    module.add_class('MobilityModel', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('MobilityModel', parent=root_module['ns3::Object'])
     ## random-direction-2d-mobility-model.h: ns3::RandomDirection2dMobilityModel [class]
-    module.add_class('RandomDirection2dMobilityModel', allow_subclassing=True, parent=root_module['ns3::MobilityModel'])
+    module.add_class('RandomDirection2dMobilityModel', parent=root_module['ns3::MobilityModel'])
     ## position-allocator.h: ns3::GridPositionAllocator [class]
-    module.add_class('GridPositionAllocator', allow_subclassing=True, parent=root_module['ns3::PositionAllocator'])
+    module.add_class('GridPositionAllocator', parent=root_module['ns3::PositionAllocator'])
     ## position-allocator.h: ns3::GridPositionAllocator::LayoutType [enumeration]
     module.add_enum('LayoutType', ['ROW_FIRST', 'COLUMN_FIRST'], outer_class=root_module['ns3::GridPositionAllocator'])
     ## random-waypoint-mobility-model.h: ns3::RandomWaypointMobilityModel [class]
-    module.add_class('RandomWaypointMobilityModel', allow_subclassing=True, parent=root_module['ns3::MobilityModel'])
+    module.add_class('RandomWaypointMobilityModel', parent=root_module['ns3::MobilityModel'])
     ## random-walk-2d-mobility-model.h: ns3::RandomWalk2dMobilityModel [class]
-    module.add_class('RandomWalk2dMobilityModel', allow_subclassing=True, parent=root_module['ns3::MobilityModel'])
+    module.add_class('RandomWalk2dMobilityModel', parent=root_module['ns3::MobilityModel'])
     ## random-walk-2d-mobility-model.h: ns3::RandomWalk2dMobilityModel::Mode [enumeration]
     module.add_enum('Mode', ['MODE_DISTANCE', 'MODE_TIME'], outer_class=root_module['ns3::RandomWalk2dMobilityModel'])
     ## static-speed-mobility-model.h: ns3::StaticSpeedMobilityModel [class]
-    module.add_class('StaticSpeedMobilityModel', allow_subclassing=True, parent=root_module['ns3::MobilityModel'])
+    module.add_class('StaticSpeedMobilityModel', parent=root_module['ns3::MobilityModel'])
     ## hierarchical-mobility-model.h: ns3::HierarchicalMobilityModel [class]
-    module.add_class('HierarchicalMobilityModel', allow_subclassing=True, parent=root_module['ns3::MobilityModel'])
+    module.add_class('HierarchicalMobilityModel', parent=root_module['ns3::MobilityModel'])
     ## static-mobility-model.h: ns3::StaticMobilityModel [class]
-    module.add_class('StaticMobilityModel', allow_subclassing=True, parent=root_module['ns3::MobilityModel'])
+    module.add_class('StaticMobilityModel', parent=root_module['ns3::MobilityModel'])
     
     ## Register a nested module for the namespace internal
     

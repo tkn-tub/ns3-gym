@@ -4,17 +4,17 @@ def register_types(module):
     root_module = module.get_root()
     
     ## ipv4-interface.h: ns3::Ipv4Interface [class]
-    module.add_class('Ipv4Interface', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('Ipv4Interface', parent=root_module['ns3::Object'])
     ## udp-header.h: ns3::UdpHeader [class]
-    module.add_class('UdpHeader', allow_subclassing=True, parent=root_module['ns3::Header'])
+    module.add_class('UdpHeader', parent=root_module['ns3::Header'])
     ## tcp-header.h: ns3::TcpHeader [class]
-    module.add_class('TcpHeader', allow_subclassing=True, parent=root_module['ns3::Header'])
+    module.add_class('TcpHeader', parent=root_module['ns3::Header'])
     ## tcp-header.h: ns3::TcpHeader::Flags_t [enumeration]
     module.add_enum('Flags_t', ['NONE', 'FIN', 'SYN', 'RST', 'PSH', 'ACK', 'URG'], outer_class=root_module['ns3::TcpHeader'])
     ## ipv4-static-routing.h: ns3::Ipv4StaticRouting [class]
-    module.add_class('Ipv4StaticRouting', allow_subclassing=True, parent=root_module['ns3::Ipv4RoutingProtocol'])
+    module.add_class('Ipv4StaticRouting', parent=root_module['ns3::Ipv4RoutingProtocol'])
     ## ipv4-l3-protocol.h: ns3::Ipv4L3Protocol [class]
-    module.add_class('Ipv4L3Protocol', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('Ipv4L3Protocol', parent=root_module['ns3::Object'])
     
     ## Register a nested module for the namespace internal
     
@@ -245,8 +245,8 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
     cls.add_method('SetDefaultTtl', 'void', [param('uint8_t', 'ttl')])
     ## ipv4-l3-protocol.h: ns3::Ptr<ns3::Ipv4Interface> ns3::Ipv4L3Protocol::FindInterfaceForDevice(ns3::Ptr<const ns3::NetDevice> device) [member function]
     cls.add_method('FindInterfaceForDevice', 'ns3::Ptr< ns3::Ipv4Interface >', [param('ns3::Ptr< const ns3::NetDevice >', 'device')])
-    ## ipv4-l3-protocol.h: void ns3::Ipv4L3Protocol::Receive(ns3::Ptr<ns3::NetDevice> device, ns3::Ptr<ns3::Packet> p, uint16_t protocol, ns3::Address const & from) [member function]
-    cls.add_method('Receive', 'void', [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'protocol'), param('ns3::Address&', 'from', is_const=True)])
+    ## ipv4-l3-protocol.h: void ns3::Ipv4L3Protocol::Receive(ns3::Ptr<ns3::NetDevice> device, ns3::Ptr<ns3::Packet> p, uint16_t protocol, ns3::Address const & from, ns3::Address const & to, ns3::NetDevice::PacketType packetType) [member function]
+    cls.add_method('Receive', 'void', [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'protocol'), param('ns3::Address&', 'from', is_const=True), param('ns3::Address&', 'to', is_const=True), param('ns3::NetDevice::PacketType', 'packetType')])
     ## ipv4-l3-protocol.h: void ns3::Ipv4L3Protocol::Send(ns3::Ptr<ns3::Packet> packet, ns3::Ipv4Address source, ns3::Ipv4Address destination, uint8_t protocol) [member function]
     cls.add_method('Send', 'void', [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'destination'), param('uint8_t', 'protocol')])
     ## ipv4-l3-protocol.h: void ns3::Ipv4L3Protocol::AddHostRouteTo(ns3::Ipv4Address dest, ns3::Ipv4Address nextHop, uint32_t interface) [member function]

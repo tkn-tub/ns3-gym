@@ -44,7 +44,7 @@ def register_types_ns3_olsr(module):
     root_module = module.get_root()
     
     ## olsr-header.h: ns3::olsr::MessageHeader [class]
-    module.add_class('MessageHeader', allow_subclassing=True, parent=root_module['ns3::Header'])
+    module.add_class('MessageHeader', parent=root_module['ns3::Header'])
     ## olsr-header.h: ns3::olsr::MessageHeader::MessageType [enumeration]
     module.add_enum('MessageType', ['HELLO_MESSAGE', 'TC_MESSAGE', 'MID_MESSAGE', 'HNA_MESSAGE'], outer_class=root_module['ns3::olsr::MessageHeader'])
     ## olsr-header.h: ns3::olsr::MessageHeader::Mid [struct]
@@ -60,9 +60,9 @@ def register_types_ns3_olsr(module):
     ## olsr-header.h: ns3::olsr::MessageHeader::Hna::Association [struct]
     module.add_class('Association', outer_class=root_module['ns3::olsr::MessageHeader::Hna'])
     ## olsr-agent.h: ns3::olsr::Agent [class]
-    module.add_class('Agent', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('Agent', parent=root_module['ns3::Object'])
     ## olsr-header.h: ns3::olsr::PacketHeader [class]
-    module.add_class('PacketHeader', allow_subclassing=True, parent=root_module['ns3::Header'])
+    module.add_class('PacketHeader', parent=root_module['ns3::Header'])
 
 def register_methods(root_module):
     register_Ns3OlsrMessageHeader_methods(root_module, root_module['ns3::olsr::MessageHeader'])

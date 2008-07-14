@@ -24,27 +24,27 @@ def register_types(module):
     ## buffer.h: ns3::Buffer::Iterator [class]
     module.add_class('Iterator', outer_class=root_module['ns3::Buffer'])
     ## chunk.h: ns3::Chunk [class]
-    module.add_class('Chunk', allow_subclassing=True, parent=root_module['ns3::ObjectBase'])
+    module.add_class('Chunk', parent=root_module['ns3::ObjectBase'])
     ## data-rate.h: ns3::DataRate [class]
     module.add_class('DataRate')
     ## tag.h: ns3::Tag [class]
-    module.add_class('Tag', allow_subclassing=True, parent=root_module['ns3::ObjectBase'])
+    module.add_class('Tag', parent=root_module['ns3::ObjectBase'])
     ## pcap-writer.h: ns3::PcapWriter [class]
     module.add_class('PcapWriter', parent=root_module['ns3::RefCountBase'])
     ## data-rate.h: ns3::DataRateChecker [class]
     module.add_class('DataRateChecker', parent=root_module['ns3::AttributeChecker'])
     ## error-model.h: ns3::ErrorModel [class]
-    module.add_class('ErrorModel', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('ErrorModel', parent=root_module['ns3::Object'])
     ## header.h: ns3::Header [class]
-    module.add_class('Header', allow_subclassing=True, parent=root_module['ns3::Chunk'])
+    module.add_class('Header', parent=root_module['ns3::Chunk'])
     ## trailer.h: ns3::Trailer [class]
-    module.add_class('Trailer', allow_subclassing=True, parent=root_module['ns3::Chunk'])
+    module.add_class('Trailer', parent=root_module['ns3::Chunk'])
     ## error-model.h: ns3::ListErrorModel [class]
-    module.add_class('ListErrorModel', allow_subclassing=True, parent=root_module['ns3::ErrorModel'])
+    module.add_class('ListErrorModel', parent=root_module['ns3::ErrorModel'])
     ## data-rate.h: ns3::DataRateValue [class]
-    module.add_class('DataRateValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('DataRateValue', parent=root_module['ns3::AttributeValue'])
     ## error-model.h: ns3::RateErrorModel [class]
-    module.add_class('RateErrorModel', allow_subclassing=True, parent=root_module['ns3::ErrorModel'])
+    module.add_class('RateErrorModel', parent=root_module['ns3::ErrorModel'])
     
     ## Register a nested module for the namespace internal
     

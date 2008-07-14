@@ -4,9 +4,9 @@ def register_types(module):
     root_module = module.get_root()
     
     ## udp-echo-client.h: ns3::UdpEchoClient [class]
-    module.add_class('UdpEchoClient', allow_subclassing=True, parent=root_module['ns3::Application'])
+    module.add_class('UdpEchoClient', parent=root_module['ns3::Application'])
     ## udp-echo-server.h: ns3::UdpEchoServer [class]
-    module.add_class('UdpEchoServer', allow_subclassing=True, parent=root_module['ns3::Application'])
+    module.add_class('UdpEchoServer', parent=root_module['ns3::Application'])
     
     ## Register a nested module for the namespace internal
     

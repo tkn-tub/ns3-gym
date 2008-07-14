@@ -32,7 +32,7 @@ def register_types(module):
     ## object-factory.h: ns3::ObjectFactory [class]
     module.add_class('ObjectFactory')
     ## attribute.h: ns3::AttributeAccessor [class]
-    module.add_class('AttributeAccessor', allow_subclassing=True, parent=root_module['ns3::RefCountBase'])
+    module.add_class('AttributeAccessor', parent=root_module['ns3::RefCountBase'])
     ## random-variable.h: ns3::ParetoVariable [class]
     module.add_class('ParetoVariable', parent=root_module['ns3::RandomVariable'])
     ## random-variable.h: ns3::ConstantVariable [class]
@@ -40,7 +40,7 @@ def register_types(module):
     ## random-variable.h: ns3::EmpiricalVariable [class]
     module.add_class('EmpiricalVariable', parent=root_module['ns3::RandomVariable'])
     ## enum.h: ns3::EnumChecker [class]
-    module.add_class('EnumChecker', allow_subclassing=True, parent=root_module['ns3::AttributeChecker'])
+    module.add_class('EnumChecker', parent=root_module['ns3::AttributeChecker'])
     ## empty.h: ns3::empty [class]
     module.add_class('empty')
     ## object-base.h: ns3::ObjectBase [class]
@@ -82,7 +82,7 @@ def register_types(module):
     ## random-variable.h: ns3::IntEmpiricalVariable [class]
     module.add_class('IntEmpiricalVariable', parent=root_module['ns3::EmpiricalVariable'])
     ## pointer.h: ns3::PointerChecker [class]
-    module.add_class('PointerChecker', allow_subclassing=True, parent=root_module['ns3::AttributeChecker'])
+    module.add_class('PointerChecker', parent=root_module['ns3::AttributeChecker'])
     ## random-variable.h: ns3::WeibullVariable [class]
     module.add_class('WeibullVariable', parent=root_module['ns3::RandomVariable'])
     ## callback.h: ns3::CallbackBase [class]
@@ -118,47 +118,47 @@ def register_types(module):
     ## random-variable.h: ns3::UniformVariable [class]
     module.add_class('UniformVariable', parent=root_module['ns3::RandomVariable'])
     ## object.h: ns3::Object [class]
-    module.add_class('Object', peekref_method='GetReferenceCount', parent=root_module['ns3::ObjectBase'], incref_method='Ref', decref_method='Unref', allow_subclassing=True, automatic_type_narrowing=True)
+    module.add_class('Object', incref_method='Ref', automatic_type_narrowing=True, decref_method='Unref', parent=root_module['ns3::ObjectBase'], peekref_method='GetReferenceCount')
     ## object.h: ns3::Object::AggregateIterator [class]
     module.add_class('AggregateIterator', outer_class=root_module['ns3::Object'])
     ## random-variable.h: ns3::SequentialVariable [class]
     module.add_class('SequentialVariable', parent=root_module['ns3::RandomVariable'])
     ## object-vector.h: ns3::ObjectVectorChecker [class]
-    module.add_class('ObjectVectorChecker', allow_subclassing=True, parent=root_module['ns3::AttributeChecker'])
+    module.add_class('ObjectVectorChecker', parent=root_module['ns3::AttributeChecker'])
     ## string.h: ns3::StringChecker [class]
     module.add_class('StringChecker', parent=root_module['ns3::AttributeChecker'])
     ## object-vector.h: ns3::ObjectVectorValue [class]
-    module.add_class('ObjectVectorValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('ObjectVectorValue', parent=root_module['ns3::AttributeValue'])
     ## boolean.h: ns3::BooleanChecker [class]
     module.add_class('BooleanChecker', parent=root_module['ns3::AttributeChecker'])
     ## uinteger.h: ns3::UintegerValue [class]
-    module.add_class('UintegerValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('UintegerValue', parent=root_module['ns3::AttributeValue'])
     ## object-vector.h: ns3::ObjectVectorAccessor [class]
-    module.add_class('ObjectVectorAccessor', allow_subclassing=True, parent=root_module['ns3::AttributeAccessor'])
+    module.add_class('ObjectVectorAccessor', parent=root_module['ns3::AttributeAccessor'])
     ## pointer.h: ns3::PointerValue [class]
-    module.add_class('PointerValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('PointerValue', parent=root_module['ns3::AttributeValue'])
     ## object-factory.h: ns3::ObjectFactoryChecker [class]
     module.add_class('ObjectFactoryChecker', parent=root_module['ns3::AttributeChecker'])
     ## type-id.h: ns3::TypeIdChecker [class]
     module.add_class('TypeIdChecker', parent=root_module['ns3::AttributeChecker'])
     ## double.h: ns3::DoubleValue [class]
-    module.add_class('DoubleValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
-    ## string.h: ns3::StringValue [class]
-    module.add_class('StringValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('DoubleValue', parent=root_module['ns3::AttributeValue'])
     ## type-id.h: ns3::TypeIdValue [class]
-    module.add_class('TypeIdValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('TypeIdValue', parent=root_module['ns3::AttributeValue'])
     ## enum.h: ns3::EnumValue [class]
-    module.add_class('EnumValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('EnumValue', parent=root_module['ns3::AttributeValue'])
     ## random-variable.h: ns3::RandomVariableValue [class]
-    module.add_class('RandomVariableValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('RandomVariableValue', parent=root_module['ns3::AttributeValue'])
     ## object-factory.h: ns3::ObjectFactoryValue [class]
-    module.add_class('ObjectFactoryValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('ObjectFactoryValue', parent=root_module['ns3::AttributeValue'])
     ## integer.h: ns3::IntegerValue [class]
-    module.add_class('IntegerValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
-    ## attribute.h: ns3::EmptyAttributeValue [class]
-    module.add_class('EmptyAttributeValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('IntegerValue', parent=root_module['ns3::AttributeValue'])
     ## boolean.h: ns3::BooleanValue [class]
-    module.add_class('BooleanValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('BooleanValue', parent=root_module['ns3::AttributeValue'])
+    ## string.h: ns3::StringValue [class]
+    module.add_class('StringValue', parent=root_module['ns3::AttributeValue'])
+    ## attribute.h: ns3::EmptyAttributeValue [class]
+    module.add_class('EmptyAttributeValue', parent=root_module['ns3::AttributeValue'])
     ## traced-value.h: ns3::TracedValue<unsigned int> [class]
     module.add_class('TracedValue', template_parameters=['unsigned int'])
     ## traced-value.h: ns3::TracedValue<unsigned int> [class]
@@ -273,14 +273,14 @@ def register_methods(root_module):
     register_Ns3ObjectFactoryChecker_methods(root_module, root_module['ns3::ObjectFactoryChecker'])
     register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
     register_Ns3DoubleValue_methods(root_module, root_module['ns3::DoubleValue'])
-    register_Ns3StringValue_methods(root_module, root_module['ns3::StringValue'])
     register_Ns3TypeIdValue_methods(root_module, root_module['ns3::TypeIdValue'])
     register_Ns3EnumValue_methods(root_module, root_module['ns3::EnumValue'])
     register_Ns3RandomVariableValue_methods(root_module, root_module['ns3::RandomVariableValue'])
     register_Ns3ObjectFactoryValue_methods(root_module, root_module['ns3::ObjectFactoryValue'])
     register_Ns3IntegerValue_methods(root_module, root_module['ns3::IntegerValue'])
-    register_Ns3EmptyAttributeValue_methods(root_module, root_module['ns3::EmptyAttributeValue'])
     register_Ns3BooleanValue_methods(root_module, root_module['ns3::BooleanValue'])
+    register_Ns3StringValue_methods(root_module, root_module['ns3::StringValue'])
+    register_Ns3EmptyAttributeValue_methods(root_module, root_module['ns3::EmptyAttributeValue'])
     register_Ns3TracedValue__Unsigned_int_methods(root_module, root_module['ns3::TracedValue< unsigned int >'])
     return
 
@@ -1061,23 +1061,6 @@ def register_Ns3DoubleValue_methods(root_module, cls):
     cls.add_method('DeserializeFromString', 'bool', [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], is_virtual=True)
     return
 
-def register_Ns3StringValue_methods(root_module, cls):
-    ## string.h: ns3::StringValue::StringValue() [constructor]
-    cls.add_constructor([], visibility='public')
-    ## string.h: ns3::StringValue::StringValue(std::string const & value) [constructor]
-    cls.add_constructor([param('std::string&', 'value', is_const=True)], visibility='public')
-    ## string.h: void ns3::StringValue::Set(std::string const & value) [member function]
-    cls.add_method('Set', 'void', [param('std::string&', 'value', is_const=True)])
-    ## string.h: std::string ns3::StringValue::Get() const [member function]
-    cls.add_method('Get', 'std::string', [], is_const=True)
-    ## string.h: ns3::Ptr<ns3::AttributeValue> ns3::StringValue::Copy() const [member function]
-    cls.add_method('Copy', 'ns3::Ptr< ns3::AttributeValue >', [], is_const=True, is_virtual=True)
-    ## string.h: std::string ns3::StringValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
-    cls.add_method('SerializeToString', 'std::string', [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], is_const=True, is_virtual=True)
-    ## string.h: bool ns3::StringValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
-    cls.add_method('DeserializeFromString', 'bool', [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], is_virtual=True)
-    return
-
 def register_Ns3TypeIdValue_methods(root_module, cls):
     ## type-id.h: ns3::TypeIdValue::TypeIdValue() [constructor]
     cls.add_constructor([], visibility='public')
@@ -1163,19 +1146,6 @@ def register_Ns3IntegerValue_methods(root_module, cls):
     cls.add_method('DeserializeFromString', 'bool', [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], is_virtual=True)
     return
 
-def register_Ns3EmptyAttributeValue_methods(root_module, cls):
-    ## attribute.h: ns3::EmptyAttributeValue::EmptyAttributeValue(ns3::EmptyAttributeValue const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::EmptyAttributeValue&', 'arg0', is_const=True)], visibility='public')
-    ## attribute.h: ns3::EmptyAttributeValue::EmptyAttributeValue() [constructor]
-    cls.add_constructor([], visibility='public')
-    ## attribute.h: ns3::Ptr<ns3::AttributeValue> ns3::EmptyAttributeValue::Copy() const [member function]
-    cls.add_method('Copy', 'ns3::Ptr< ns3::AttributeValue >', [], is_const=True, visibility='private', is_virtual=True)
-    ## attribute.h: std::string ns3::EmptyAttributeValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
-    cls.add_method('SerializeToString', 'std::string', [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], is_const=True, visibility='private', is_virtual=True)
-    ## attribute.h: bool ns3::EmptyAttributeValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
-    cls.add_method('DeserializeFromString', 'bool', [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], visibility='private', is_virtual=True)
-    return
-
 def register_Ns3BooleanValue_methods(root_module, cls):
     ## boolean.h: ns3::BooleanValue::BooleanValue(ns3::BooleanValue const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::BooleanValue&', 'arg0', is_const=True)], visibility='public')
@@ -1194,6 +1164,36 @@ def register_Ns3BooleanValue_methods(root_module, cls):
     ## boolean.h: void ns3::BooleanValue::Set(bool value) [member function]
     cls.add_method('Set', 'void', [param('bool', 'value')])
     cls.add_output_stream_operator()
+    return
+
+def register_Ns3StringValue_methods(root_module, cls):
+    ## string.h: ns3::StringValue::StringValue() [constructor]
+    cls.add_constructor([], visibility='public')
+    ## string.h: ns3::StringValue::StringValue(std::string const & value) [constructor]
+    cls.add_constructor([param('std::string&', 'value', is_const=True)], visibility='public')
+    ## string.h: void ns3::StringValue::Set(std::string const & value) [member function]
+    cls.add_method('Set', 'void', [param('std::string&', 'value', is_const=True)])
+    ## string.h: std::string ns3::StringValue::Get() const [member function]
+    cls.add_method('Get', 'std::string', [], is_const=True)
+    ## string.h: ns3::Ptr<ns3::AttributeValue> ns3::StringValue::Copy() const [member function]
+    cls.add_method('Copy', 'ns3::Ptr< ns3::AttributeValue >', [], is_const=True, is_virtual=True)
+    ## string.h: std::string ns3::StringValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 'std::string', [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], is_const=True, is_virtual=True)
+    ## string.h: bool ns3::StringValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 'bool', [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], is_virtual=True)
+    return
+
+def register_Ns3EmptyAttributeValue_methods(root_module, cls):
+    ## attribute.h: ns3::EmptyAttributeValue::EmptyAttributeValue(ns3::EmptyAttributeValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EmptyAttributeValue&', 'arg0', is_const=True)], visibility='public')
+    ## attribute.h: ns3::EmptyAttributeValue::EmptyAttributeValue() [constructor]
+    cls.add_constructor([], visibility='public')
+    ## attribute.h: ns3::Ptr<ns3::AttributeValue> ns3::EmptyAttributeValue::Copy() const [member function]
+    cls.add_method('Copy', 'ns3::Ptr< ns3::AttributeValue >', [], is_const=True, visibility='private', is_virtual=True)
+    ## attribute.h: std::string ns3::EmptyAttributeValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 'std::string', [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], is_const=True, visibility='private', is_virtual=True)
+    ## attribute.h: bool ns3::EmptyAttributeValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 'bool', [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], visibility='private', is_virtual=True)
     return
 
 def register_Ns3TracedValue__Unsigned_int_methods(root_module, cls):

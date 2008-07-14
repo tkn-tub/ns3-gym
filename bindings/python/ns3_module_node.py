@@ -40,15 +40,15 @@ def register_types(module):
     ## ipv4-address.h: ns3::Ipv4Mask [class]
     module.add_class('Ipv4Mask')
     ## ipv4-address.h: ns3::Ipv4AddressValue [class]
-    module.add_class('Ipv4AddressValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('Ipv4AddressValue', parent=root_module['ns3::AttributeValue'])
     ## ipv4.h: ns3::Ipv4RoutingProtocol [class]
-    module.add_class('Ipv4RoutingProtocol', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('Ipv4RoutingProtocol', parent=root_module['ns3::Object'])
     ## mac48-address.h: ns3::Mac48AddressValue [class]
-    module.add_class('Mac48AddressValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('Mac48AddressValue', parent=root_module['ns3::AttributeValue'])
     ## ipv4-address.h: ns3::Ipv4MaskValue [class]
-    module.add_class('Ipv4MaskValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('Ipv4MaskValue', parent=root_module['ns3::AttributeValue'])
     ## socket.h: ns3::SocketAddressTag [class]
-    module.add_class('SocketAddressTag', allow_subclassing=True, parent=root_module['ns3::Tag'])
+    module.add_class('SocketAddressTag', parent=root_module['ns3::Tag'])
     ## inet-socket-address.h: ns3::InetSocketAddress [class]
     module.add_class('InetSocketAddress')
     ## inet-socket-address.h: ns3::InetSocketAddress [class]
@@ -58,51 +58,53 @@ def register_types(module):
     ## ipv4-address.h: ns3::Ipv4Address [class]
     root_module['ns3::Ipv4Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## application.h: ns3::Application [class]
-    module.add_class('Application', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('Application', parent=root_module['ns3::Object'])
     ## queue.h: ns3::Queue [class]
-    module.add_class('Queue', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('Queue', parent=root_module['ns3::Object'])
     ## socket.h: ns3::Socket [class]
-    module.add_class('Socket', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('Socket', parent=root_module['ns3::Object'])
     ## socket.h: ns3::Socket::SocketErrno [enumeration]
     module.add_enum('SocketErrno', ['ERROR_NOTERROR', 'ERROR_ISCONN', 'ERROR_NOTCONN', 'ERROR_MSGSIZE', 'ERROR_AGAIN', 'ERROR_SHUTDOWN', 'ERROR_OPNOTSUPP', 'ERROR_AFNOSUPPORT', 'ERROR_INVAL', 'ERROR_BADF', 'ERROR_NOROUTETOHOST', 'SOCKET_ERRNO_LAST'], outer_class=root_module['ns3::Socket'])
     ## ipv4-header.h: ns3::Ipv4Header [class]
-    module.add_class('Ipv4Header', allow_subclassing=True, parent=root_module['ns3::Header'])
+    module.add_class('Ipv4Header', parent=root_module['ns3::Header'])
     ## udp-socket.h: ns3::UdpSocket [class]
-    module.add_class('UdpSocket', allow_subclassing=True, parent=root_module['ns3::Socket'])
+    module.add_class('UdpSocket', parent=root_module['ns3::Socket'])
     ## net-device.h: ns3::NetDevice [class]
-    module.add_class('NetDevice', allow_subclassing=True, parent=root_module['ns3::Object'])
-    ## channel.h: ns3::Channel [class]
-    module.add_class('Channel', allow_subclassing=True, parent=root_module['ns3::Object'])
-    ## simple-channel.h: ns3::SimpleChannel [class]
-    module.add_class('SimpleChannel', allow_subclassing=True, parent=root_module['ns3::Channel'])
+    module.add_class('NetDevice', parent=root_module['ns3::Object'])
+    ## net-device.h: ns3::NetDevice::PacketType [enumeration]
+    module.add_enum('PacketType', ['PACKET_HOST', 'PACKET_BROADCAST', 'PACKET_MULTICAST', 'PACKET_OTHERHOST'], outer_class=root_module['ns3::NetDevice'])
     ## address.h: ns3::AddressValue [class]
-    module.add_class('AddressValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('AddressValue', parent=root_module['ns3::AttributeValue'])
     ## node.h: ns3::Node [class]
-    module.add_class('Node', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('Node', parent=root_module['ns3::Object'])
     ## tcp-socket.h: ns3::TcpSocket [class]
-    module.add_class('TcpSocket', allow_subclassing=True, parent=root_module['ns3::Socket'])
+    module.add_class('TcpSocket', parent=root_module['ns3::Socket'])
+    ## channel.h: ns3::Channel [class]
+    module.add_class('Channel', parent=root_module['ns3::Object'])
     ## ethernet-header.h: ns3::EthernetHeader [class]
-    module.add_class('EthernetHeader', allow_subclassing=True, parent=root_module['ns3::Header'])
+    module.add_class('EthernetHeader', parent=root_module['ns3::Header'])
     ## socket.h: ns3::SocketIpTtlTag [class]
-    module.add_class('SocketIpTtlTag', allow_subclassing=True, parent=root_module['ns3::Tag'])
+    module.add_class('SocketIpTtlTag', parent=root_module['ns3::Tag'])
     ## ipv4.h: ns3::Ipv4 [class]
-    module.add_class('Ipv4', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('Ipv4', parent=root_module['ns3::Object'])
     ## socket-factory.h: ns3::SocketFactory [class]
-    module.add_class('SocketFactory', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('SocketFactory', parent=root_module['ns3::Object'])
     ## drop-tail-queue.h: ns3::DropTailQueue [class]
-    module.add_class('DropTailQueue', allow_subclassing=True, parent=root_module['ns3::Queue'])
+    module.add_class('DropTailQueue', parent=root_module['ns3::Queue'])
     ## ethernet-trailer.h: ns3::EthernetTrailer [class]
-    module.add_class('EthernetTrailer', allow_subclassing=True, parent=root_module['ns3::Trailer'])
+    module.add_class('EthernetTrailer', parent=root_module['ns3::Trailer'])
     ## llc-snap-header.h: ns3::LlcSnapHeader [class]
-    module.add_class('LlcSnapHeader', allow_subclassing=True, parent=root_module['ns3::Header'])
+    module.add_class('LlcSnapHeader', parent=root_module['ns3::Header'])
     ## udp-socket-factory.h: ns3::UdpSocketFactory [class]
     module.add_class('UdpSocketFactory', parent=root_module['ns3::SocketFactory'])
     ## simple-net-device.h: ns3::SimpleNetDevice [class]
-    module.add_class('SimpleNetDevice', allow_subclassing=True, parent=root_module['ns3::NetDevice'])
+    module.add_class('SimpleNetDevice', parent=root_module['ns3::NetDevice'])
+    ## simple-channel.h: ns3::SimpleChannel [class]
+    module.add_class('SimpleChannel', parent=root_module['ns3::Channel'])
     ## tcp-socket-factory.h: ns3::TcpSocketFactory [class]
     module.add_class('TcpSocketFactory', parent=root_module['ns3::SocketFactory'])
     ## packet-socket-factory.h: ns3::PacketSocketFactory [class]
-    module.add_class('PacketSocketFactory', allow_subclassing=True, parent=root_module['ns3::SocketFactory'])
+    module.add_class('PacketSocketFactory', parent=root_module['ns3::SocketFactory'])
     
     ## Register a nested module for the namespace internal
     
@@ -171,11 +173,10 @@ def register_methods(root_module):
     register_Ns3Ipv4Header_methods(root_module, root_module['ns3::Ipv4Header'])
     register_Ns3UdpSocket_methods(root_module, root_module['ns3::UdpSocket'])
     register_Ns3NetDevice_methods(root_module, root_module['ns3::NetDevice'])
-    register_Ns3Channel_methods(root_module, root_module['ns3::Channel'])
-    register_Ns3SimpleChannel_methods(root_module, root_module['ns3::SimpleChannel'])
     register_Ns3AddressValue_methods(root_module, root_module['ns3::AddressValue'])
     register_Ns3Node_methods(root_module, root_module['ns3::Node'])
     register_Ns3TcpSocket_methods(root_module, root_module['ns3::TcpSocket'])
+    register_Ns3Channel_methods(root_module, root_module['ns3::Channel'])
     register_Ns3EthernetHeader_methods(root_module, root_module['ns3::EthernetHeader'])
     register_Ns3SocketIpTtlTag_methods(root_module, root_module['ns3::SocketIpTtlTag'])
     register_Ns3Ipv4_methods(root_module, root_module['ns3::Ipv4'])
@@ -185,6 +186,7 @@ def register_methods(root_module):
     register_Ns3LlcSnapHeader_methods(root_module, root_module['ns3::LlcSnapHeader'])
     register_Ns3UdpSocketFactory_methods(root_module, root_module['ns3::UdpSocketFactory'])
     register_Ns3SimpleNetDevice_methods(root_module, root_module['ns3::SimpleNetDevice'])
+    register_Ns3SimpleChannel_methods(root_module, root_module['ns3::SimpleChannel'])
     register_Ns3TcpSocketFactory_methods(root_module, root_module['ns3::TcpSocketFactory'])
     register_Ns3PacketSocketFactory_methods(root_module, root_module['ns3::PacketSocketFactory'])
     return
@@ -851,47 +853,17 @@ def register_Ns3NetDevice_methods(root_module, cls):
     cls.add_method('IsPointToPoint', 'bool', [], is_pure_virtual=True, is_const=True, is_virtual=True)
     ## net-device.h: bool ns3::NetDevice::Send(ns3::Ptr<ns3::Packet> packet, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Send', 'bool', [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address&', 'dest', is_const=True), param('uint16_t', 'protocolNumber')], is_pure_virtual=True, is_virtual=True)
+    ## net-device.h: bool ns3::NetDevice::SendFrom(ns3::Ptr<ns3::Packet> packet, ns3::Address const & source, ns3::Address const & dest, uint16_t protocolNumber) [member function]
+    cls.add_method('SendFrom', 'bool', [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address&', 'source', is_const=True), param('ns3::Address&', 'dest', is_const=True), param('uint16_t', 'protocolNumber')], is_pure_virtual=True, is_virtual=True)
     ## net-device.h: ns3::Ptr<ns3::Node> ns3::NetDevice::GetNode() const [member function]
     cls.add_method('GetNode', 'ns3::Ptr< ns3::Node >', [], is_pure_virtual=True, is_const=True, is_virtual=True)
     ## net-device.h: void ns3::NetDevice::SetNode(ns3::Ptr<ns3::Node> node) [member function]
     cls.add_method('SetNode', 'void', [param('ns3::Ptr< ns3::Node >', 'node')], is_pure_virtual=True, is_virtual=True)
     ## net-device.h: bool ns3::NetDevice::NeedsArp() const [member function]
     cls.add_method('NeedsArp', 'bool', [], is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## net-device.h: void ns3::NetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty> cb) [member function]
-    cls.add_method('SetReceiveCallback', 'void', [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::empty, ns3::empty >', 'cb')], is_pure_virtual=True, is_virtual=True)
+    ## net-device.h: void ns3::NetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> cb) [member function]
+    cls.add_method('SetReceiveCallback', 'void', [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], is_pure_virtual=True, is_virtual=True)
     cls.add_constructor([])
-    return
-
-def register_Ns3Channel_methods(root_module, cls):
-    ## channel.h: static ns3::TypeId ns3::Channel::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 'ns3::TypeId', [], is_static=True)
-    ## channel.h: ns3::Channel::Channel() [constructor]
-    cls.add_constructor([], visibility='public')
-    ## channel.h: ns3::Channel::Channel(std::string name) [constructor]
-    cls.add_constructor([param('std::string', 'name')], visibility='public')
-    ## channel.h: void ns3::Channel::SetName(std::string arg0) [member function]
-    cls.add_method('SetName', 'void', [param('std::string', 'arg0')])
-    ## channel.h: std::string ns3::Channel::GetName() [member function]
-    cls.add_method('GetName', 'std::string', [])
-    ## channel.h: uint32_t ns3::Channel::GetNDevices() const [member function]
-    cls.add_method('GetNDevices', 'uint32_t', [], is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## channel.h: ns3::Ptr<ns3::NetDevice> ns3::Channel::GetDevice(uint32_t i) const [member function]
-    cls.add_method('GetDevice', 'ns3::Ptr< ns3::NetDevice >', [param('uint32_t', 'i')], is_pure_virtual=True, is_const=True, is_virtual=True)
-    return
-
-def register_Ns3SimpleChannel_methods(root_module, cls):
-    ## simple-channel.h: static ns3::TypeId ns3::SimpleChannel::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 'ns3::TypeId', [], is_static=True)
-    ## simple-channel.h: ns3::SimpleChannel::SimpleChannel() [constructor]
-    cls.add_constructor([], visibility='public')
-    ## simple-channel.h: void ns3::SimpleChannel::Send(ns3::Ptr<ns3::Packet> p, uint16_t protocol, ns3::Mac48Address to, ns3::Mac48Address from, ns3::Ptr<ns3::SimpleNetDevice> sender) [member function]
-    cls.add_method('Send', 'void', [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'protocol'), param('ns3::Mac48Address', 'to'), param('ns3::Mac48Address', 'from'), param('ns3::Ptr< ns3::SimpleNetDevice >', 'sender')])
-    ## simple-channel.h: void ns3::SimpleChannel::Add(ns3::Ptr<ns3::SimpleNetDevice> device) [member function]
-    cls.add_method('Add', 'void', [param('ns3::Ptr< ns3::SimpleNetDevice >', 'device')])
-    ## simple-channel.h: uint32_t ns3::SimpleChannel::GetNDevices() const [member function]
-    cls.add_method('GetNDevices', 'uint32_t', [], is_const=True, is_virtual=True)
-    ## simple-channel.h: ns3::Ptr<ns3::NetDevice> ns3::SimpleChannel::GetDevice(uint32_t i) const [member function]
-    cls.add_method('GetDevice', 'ns3::Ptr< ns3::NetDevice >', [param('uint32_t', 'i')], is_const=True, is_virtual=True)
     return
 
 def register_Ns3AddressValue_methods(root_module, cls):
@@ -936,10 +908,14 @@ def register_Ns3Node_methods(root_module, cls):
     cls.add_method('GetFirstApplication', 'ns3::Ptr< ns3::Application >', [param('ns3::TypeId', 'tid')])
     ## node.h: uint32_t ns3::Node::GetNApplications() const [member function]
     cls.add_method('GetNApplications', 'uint32_t', [], is_const=True)
-    ## node.h: void ns3::Node::RegisterProtocolHandler(ns3::Callback<void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty> handler, uint16_t protocolType, ns3::Ptr<ns3::NetDevice> device) [member function]
-    cls.add_method('RegisterProtocolHandler', 'void', [param('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::empty, ns3::empty >', 'handler'), param('uint16_t', 'protocolType'), param('ns3::Ptr< ns3::NetDevice >', 'device')])
-    ## node.h: void ns3::Node::UnregisterProtocolHandler(ns3::Callback<void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty> handler) [member function]
-    cls.add_method('UnregisterProtocolHandler', 'void', [param('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::empty, ns3::empty >', 'handler')])
+    ## node.h: void ns3::Node::RegisterProtocolHandler(ns3::Callback<void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> handler, uint16_t protocolType, ns3::Ptr<ns3::NetDevice> device) [member function]
+    cls.add_method('RegisterProtocolHandler', 'void', [param('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'handler'), param('uint16_t', 'protocolType'), param('ns3::Ptr< ns3::NetDevice >', 'device')])
+    ## node.h: void ns3::Node::UnregisterProtocolHandler(ns3::Callback<void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> handler) [member function]
+    cls.add_method('UnregisterProtocolHandler', 'void', [param('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'handler')])
+    ## node.h: void ns3::Node::RegisterPromiscuousProtocolHandler(ns3::Callback<void,ns3::Ptr<ns3::NetDevice>,ns3::Ptr<ns3::Packet>,short unsigned int,const ns3::Address&,const ns3::Address&,bool> handler, uint16_t protocolType, ns3::Ptr<ns3::NetDevice> device) [member function]
+    cls.add_method('RegisterPromiscuousProtocolHandler', 'void', [param('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, short unsigned int, const ns3::Address&, const ns3::Address&, bool >', 'handler'), param('uint16_t', 'protocolType'), param('ns3::Ptr< ns3::NetDevice >', 'device')])
+    ## node.h: void ns3::Node::UnregisterPromiscuousProtocolHandler(ns3::Callback<void,ns3::Ptr<ns3::NetDevice>,ns3::Ptr<ns3::Packet>,short unsigned int,const ns3::Address&,const ns3::Address&,bool> handler) [member function]
+    cls.add_method('UnregisterPromiscuousProtocolHandler', 'void', [param('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, short unsigned int, const ns3::Address&, const ns3::Address&, bool >', 'handler')])
     ## node.h: void ns3::Node::DoDispose() [member function]
     cls.add_method('DoDispose', 'void', [], visibility='protected', is_virtual=True)
     ## node.h: void ns3::Node::NotifyDeviceAdded(ns3::Ptr<ns3::NetDevice> device) [member function]
@@ -991,6 +967,23 @@ def register_Ns3TcpSocket_methods(root_module, cls):
     cls.add_method('SetDelAckMaxCount', 'void', [param('uint32_t', 'count')], is_pure_virtual=True, visibility='private', is_virtual=True)
     ## tcp-socket.h: uint32_t ns3::TcpSocket::GetDelAckMaxCount() const [member function]
     cls.add_method('GetDelAckMaxCount', 'uint32_t', [], is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3Channel_methods(root_module, cls):
+    ## channel.h: static ns3::TypeId ns3::Channel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 'ns3::TypeId', [], is_static=True)
+    ## channel.h: ns3::Channel::Channel() [constructor]
+    cls.add_constructor([], visibility='public')
+    ## channel.h: ns3::Channel::Channel(std::string name) [constructor]
+    cls.add_constructor([param('std::string', 'name')], visibility='public')
+    ## channel.h: void ns3::Channel::SetName(std::string arg0) [member function]
+    cls.add_method('SetName', 'void', [param('std::string', 'arg0')])
+    ## channel.h: std::string ns3::Channel::GetName() [member function]
+    cls.add_method('GetName', 'std::string', [])
+    ## channel.h: uint32_t ns3::Channel::GetNDevices() const [member function]
+    cls.add_method('GetNDevices', 'uint32_t', [], is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## channel.h: ns3::Ptr<ns3::NetDevice> ns3::Channel::GetDevice(uint32_t i) const [member function]
+    cls.add_method('GetDevice', 'ns3::Ptr< ns3::NetDevice >', [param('uint32_t', 'i')], is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
 def register_Ns3EthernetHeader_methods(root_module, cls):
@@ -1255,16 +1248,33 @@ def register_Ns3SimpleNetDevice_methods(root_module, cls):
     cls.add_method('IsPointToPoint', 'bool', [], is_const=True, is_virtual=True)
     ## simple-net-device.h: bool ns3::SimpleNetDevice::Send(ns3::Ptr<ns3::Packet> packet, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Send', 'bool', [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address&', 'dest', is_const=True), param('uint16_t', 'protocolNumber')], is_virtual=True)
+    ## simple-net-device.h: bool ns3::SimpleNetDevice::SendFrom(ns3::Ptr<ns3::Packet> packet, ns3::Address const & source, ns3::Address const & dest, uint16_t protocolNumber) [member function]
+    cls.add_method('SendFrom', 'bool', [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address&', 'source', is_const=True), param('ns3::Address&', 'dest', is_const=True), param('uint16_t', 'protocolNumber')], is_virtual=True)
     ## simple-net-device.h: ns3::Ptr<ns3::Node> ns3::SimpleNetDevice::GetNode() const [member function]
     cls.add_method('GetNode', 'ns3::Ptr< ns3::Node >', [], is_const=True, is_virtual=True)
     ## simple-net-device.h: void ns3::SimpleNetDevice::SetNode(ns3::Ptr<ns3::Node> node) [member function]
     cls.add_method('SetNode', 'void', [param('ns3::Ptr< ns3::Node >', 'node')], is_virtual=True)
     ## simple-net-device.h: bool ns3::SimpleNetDevice::NeedsArp() const [member function]
     cls.add_method('NeedsArp', 'bool', [], is_const=True, is_virtual=True)
-    ## simple-net-device.h: void ns3::SimpleNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty> cb) [member function]
-    cls.add_method('SetReceiveCallback', 'void', [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::empty, ns3::empty >', 'cb')], is_virtual=True)
+    ## simple-net-device.h: void ns3::SimpleNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> cb) [member function]
+    cls.add_method('SetReceiveCallback', 'void', [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], is_virtual=True)
     ## simple-net-device.h: void ns3::SimpleNetDevice::DoDispose() [member function]
     cls.add_method('DoDispose', 'void', [], visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3SimpleChannel_methods(root_module, cls):
+    ## simple-channel.h: static ns3::TypeId ns3::SimpleChannel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 'ns3::TypeId', [], is_static=True)
+    ## simple-channel.h: ns3::SimpleChannel::SimpleChannel() [constructor]
+    cls.add_constructor([], visibility='public')
+    ## simple-channel.h: void ns3::SimpleChannel::Send(ns3::Ptr<ns3::Packet> p, uint16_t protocol, ns3::Mac48Address to, ns3::Mac48Address from, ns3::Ptr<ns3::SimpleNetDevice> sender) [member function]
+    cls.add_method('Send', 'void', [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'protocol'), param('ns3::Mac48Address', 'to'), param('ns3::Mac48Address', 'from'), param('ns3::Ptr< ns3::SimpleNetDevice >', 'sender')])
+    ## simple-channel.h: void ns3::SimpleChannel::Add(ns3::Ptr<ns3::SimpleNetDevice> device) [member function]
+    cls.add_method('Add', 'void', [param('ns3::Ptr< ns3::SimpleNetDevice >', 'device')])
+    ## simple-channel.h: uint32_t ns3::SimpleChannel::GetNDevices() const [member function]
+    cls.add_method('GetNDevices', 'uint32_t', [], is_const=True, is_virtual=True)
+    ## simple-channel.h: ns3::Ptr<ns3::NetDevice> ns3::SimpleChannel::GetDevice(uint32_t i) const [member function]
+    cls.add_method('GetDevice', 'ns3::Ptr< ns3::NetDevice >', [param('uint32_t', 'i')], is_const=True, is_virtual=True)
     return
 
 def register_Ns3TcpSocketFactory_methods(root_module, cls):

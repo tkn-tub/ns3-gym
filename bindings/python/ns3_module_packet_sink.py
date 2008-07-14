@@ -4,7 +4,7 @@ def register_types(module):
     root_module = module.get_root()
     
     ## packet-sink.h: ns3::PacketSink [class]
-    module.add_class('PacketSink', allow_subclassing=True, parent=root_module['ns3::Application'])
+    module.add_class('PacketSink', parent=root_module['ns3::Application'])
     
     ## Register a nested module for the namespace internal
     

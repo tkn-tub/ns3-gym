@@ -10,9 +10,9 @@ def register_types(module):
     ## backoff.h: ns3::Backoff [class]
     module.add_class('Backoff')
     ## csma-channel.h: ns3::CsmaChannel [class]
-    module.add_class('CsmaChannel', allow_subclassing=True, parent=root_module['ns3::Channel'])
+    module.add_class('CsmaChannel', parent=root_module['ns3::Channel'])
     ## csma-net-device.h: ns3::CsmaNetDevice [class]
-    module.add_class('CsmaNetDevice', allow_subclassing=True, parent=root_module['ns3::NetDevice'])
+    module.add_class('CsmaNetDevice', parent=root_module['ns3::NetDevice'])
     ## csma-net-device.h: ns3::CsmaNetDevice::CsmaEncapsulationMode [enumeration]
     module.add_enum('CsmaEncapsulationMode', ['ETHERNET_V1', 'IP_ARP', 'RAW', 'LLC'], outer_class=root_module['ns3::CsmaNetDevice'])
     
@@ -159,8 +159,8 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
     cls.add_method('SetQueue', 'void', [param('ns3::Ptr< ns3::Queue >', 'queue')])
     ## csma-net-device.h: void ns3::CsmaNetDevice::SetReceiveErrorModel(ns3::Ptr<ns3::ErrorModel> em) [member function]
     cls.add_method('SetReceiveErrorModel', 'void', [param('ns3::Ptr< ns3::ErrorModel >', 'em')])
-    ## csma-net-device.h: void ns3::CsmaNetDevice::Receive(ns3::Ptr<ns3::Packet> p) [member function]
-    cls.add_method('Receive', 'void', [param('ns3::Ptr< ns3::Packet >', 'p')])
+    ## csma-net-device.h: void ns3::CsmaNetDevice::Receive(ns3::Ptr<ns3::Packet> p, ns3::Ptr<ns3::CsmaNetDevice> sender) [member function]
+    cls.add_method('Receive', 'void', [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ptr< ns3::CsmaNetDevice >', 'sender')])
     ## csma-net-device.h: bool ns3::CsmaNetDevice::IsSendEnabled() [member function]
     cls.add_method('IsSendEnabled', 'bool', [])
     ## csma-net-device.h: void ns3::CsmaNetDevice::SetSendEnable(bool enable) [member function]
@@ -205,20 +205,22 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
     cls.add_method('IsPointToPoint', 'bool', [], is_const=True, is_virtual=True)
     ## csma-net-device.h: bool ns3::CsmaNetDevice::Send(ns3::Ptr<ns3::Packet> packet, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Send', 'bool', [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address&', 'dest', is_const=True), param('uint16_t', 'protocolNumber')], is_virtual=True)
+    ## csma-net-device.h: bool ns3::CsmaNetDevice::SendFrom(ns3::Ptr<ns3::Packet> packet, ns3::Address const & source, ns3::Address const & dest, uint16_t protocolNumber) [member function]
+    cls.add_method('SendFrom', 'bool', [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address&', 'source', is_const=True), param('ns3::Address&', 'dest', is_const=True), param('uint16_t', 'protocolNumber')], is_virtual=True)
     ## csma-net-device.h: ns3::Ptr<ns3::Node> ns3::CsmaNetDevice::GetNode() const [member function]
     cls.add_method('GetNode', 'ns3::Ptr< ns3::Node >', [], is_const=True, is_virtual=True)
     ## csma-net-device.h: void ns3::CsmaNetDevice::SetNode(ns3::Ptr<ns3::Node> node) [member function]
     cls.add_method('SetNode', 'void', [param('ns3::Ptr< ns3::Node >', 'node')], is_virtual=True)
     ## csma-net-device.h: bool ns3::CsmaNetDevice::NeedsArp() const [member function]
     cls.add_method('NeedsArp', 'bool', [], is_const=True, is_virtual=True)
-    ## csma-net-device.h: void ns3::CsmaNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty> cb) [member function]
-    cls.add_method('SetReceiveCallback', 'void', [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::empty, ns3::empty >', 'cb')], is_virtual=True)
+    ## csma-net-device.h: void ns3::CsmaNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> cb) [member function]
+    cls.add_method('SetReceiveCallback', 'void', [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], is_virtual=True)
     ## csma-net-device.h: void ns3::CsmaNetDevice::DoDispose() [member function]
     cls.add_method('DoDispose', 'void', [], visibility='protected', is_virtual=True)
     ## csma-net-device.h: ns3::Ptr<ns3::Queue> ns3::CsmaNetDevice::GetQueue() const [member function]
     cls.add_method('GetQueue', 'ns3::Ptr< ns3::Queue >', [], is_const=True, visibility='protected')
-    ## csma-net-device.h: void ns3::CsmaNetDevice::AddHeader(ns3::Ptr<ns3::Packet> p, ns3::Mac48Address dest, uint16_t protocolNumber) [member function]
-    cls.add_method('AddHeader', 'void', [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Mac48Address', 'dest'), param('uint16_t', 'protocolNumber')], visibility='protected')
+    ## csma-net-device.h: void ns3::CsmaNetDevice::AddHeader(ns3::Ptr<ns3::Packet> p, ns3::Mac48Address source, ns3::Mac48Address dest, uint16_t protocolNumber) [member function]
+    cls.add_method('AddHeader', 'void', [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Mac48Address', 'source'), param('ns3::Mac48Address', 'dest'), param('uint16_t', 'protocolNumber')], visibility='protected')
     ## csma-net-device.h: bool ns3::CsmaNetDevice::ProcessHeader(ns3::Ptr<ns3::Packet> p, uint16_t & param) [member function]
     cls.add_method('ProcessHeader', 'bool', [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t&', 'param')], visibility='protected')
     return

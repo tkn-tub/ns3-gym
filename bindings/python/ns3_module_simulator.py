@@ -28,17 +28,17 @@ def register_types(module):
     ## nstime.h: ns3::TimeChecker [class]
     module.add_class('TimeChecker', parent=root_module['ns3::AttributeChecker'])
     ## scheduler.h: ns3::Scheduler [class]
-    module.add_class('Scheduler', allow_subclassing=True, parent=root_module['ns3::Object'])
+    module.add_class('Scheduler', parent=root_module['ns3::Object'])
     ## scheduler.h: ns3::Scheduler::EventKey [struct]
     module.add_class('EventKey', outer_class=root_module['ns3::Scheduler'])
     ## nstime.h: ns3::TimeValue [class]
-    module.add_class('TimeValue', allow_subclassing=True, parent=root_module['ns3::AttributeValue'])
+    module.add_class('TimeValue', parent=root_module['ns3::AttributeValue'])
     ## heap-scheduler.h: ns3::HeapScheduler [class]
-    module.add_class('HeapScheduler', allow_subclassing=True, parent=root_module['ns3::Scheduler'])
+    module.add_class('HeapScheduler', parent=root_module['ns3::Scheduler'])
     ## list-scheduler.h: ns3::ListScheduler [class]
-    module.add_class('ListScheduler', allow_subclassing=True, parent=root_module['ns3::Scheduler'])
+    module.add_class('ListScheduler', parent=root_module['ns3::Scheduler'])
     ## map-scheduler.h: ns3::MapScheduler [class]
-    module.add_class('MapScheduler', allow_subclassing=True, parent=root_module['ns3::Scheduler'])
+    module.add_class('MapScheduler', parent=root_module['ns3::Scheduler'])
     
     ## Register a nested module for the namespace internal
     
