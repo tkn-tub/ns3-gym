@@ -317,7 +317,7 @@ def build(bld):
     ## may be smaller than the set of all modules, in case a new
     ## ns3 module is being developed which wasn't scanned yet.
     scanned_modules = []
-    for filename in os.listdir(bindgen.path.abspath()):
+    for filename in os.listdir(bld.m_curdirnode.abspath()):
         m = re.match(r"^ns3_module_(.+)\.py$", filename)
         if m is None:
             continue
@@ -360,7 +360,7 @@ def build(bld):
         pymod = bld.create_obj('cpp', 'shlib', 'pyext')
         pymod.source = ['ns3module.cc', 'ns3module_helpers.cc']
         pymod.includes = '.'
-        for module in scanned_modules
+        for module in scanned_modules:
             pymod.source.append("ns3_module_%s.cc" % module)
         pymod.target = 'ns3/_ns3'
         pymod.name = 'ns3module'
