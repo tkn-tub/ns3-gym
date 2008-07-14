@@ -313,6 +313,16 @@ def build(bld):
         print "Rescanning the python bindings done."
         raise SystemExit
 
+    ## Get a list of scanned modules; the set of scanned modules
+    ## may be smaller than the set of all modules, in case a new
+    ## ns3 module is being developed which wasn't scanned yet.
+    scanned_modules = []
+    for filename in os.listdir(bld.m_curdirnode.abspath()):
+        m = re.match(r"^ns3_module_(.+)\.py$", filename)
+        if m is None:
+            continue
+        scanned_modules.append(m.group(1))
+
     if env['ENABLE_PYTHON_BINDINGS']:
         bindgen = bld.create_obj('command-output')
         bindgen.name = 'pybindgen'
@@ -328,16 +338,6 @@ def build(bld):
                                  'ns3modulegen_generated.py',
                                  'ns3modulegen_core_customizations.py']
 
-        ## Get a list of scanned modules; the set of scanned modules
-        ## may be smaller than the set of all modules, in case a new
-        ## ns3 module is being developed which wasn't scanned yet.
-        scanned_modules = []
-        for filename in os.listdir(bindgen.path.abspath()):
-            m = re.match(r"^ns3_module_(.+)\.py$", filename)
-            if m is None:
-                continue
-            scanned_modules.append(m.group(1))
-            
         for module in scanned_modules:
             bindgen.hidden_inputs.append("ns3_module_%s.py" % module)
 
@@ -360,8 +360,8 @@ def build(bld):
         pymod = bld.create_obj('cpp', 'shlib', 'pyext')
         pymod.source = ['ns3module.cc', 'ns3module_helpers.cc']
         pymod.includes = '.'
-        for module in get_modules_and_headers().iterkeys():
-            pymod.source.append("ns3_module_%s.cc" % module.replace('-', '_'))
+        for module in scanned_modules:
+            pymod.source.append("ns3_module_%s.cc" % module)
         pymod.target = 'ns3/_ns3'
         pymod.name = 'ns3module'
         pymod.uselib_local = "ns3"
