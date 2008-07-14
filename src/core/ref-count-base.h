@@ -50,14 +50,20 @@ public:
    * conjunction with the Ptr template which would make calling Ref
    * unecessary and dangerous.
    */
-  inline void Ref () const;
+  inline void Ref (void) const;
   /**
    * Decrement the reference count. This method should not be called
    * by user code. RefCountBase instances are expected to be used in 
    * conjunction with the Ptr template which would make calling Ref
    * unecessary and dangerous.
    */
-  inline void Unref () const;
+  inline void Unref (void) const;
+
+  /**
+   * Get the reference count of the object.  Normally not needed; for language bindings.
+   */
+  uint32_t GetReferenceCount (void) const;
+
 private:
   // Note we make this mutable so that the const methods can still
   // change it.
@@ -70,15 +76,16 @@ namespace ns3 {
 
 // Implementation of the in-line methods
 void
-RefCountBase::Ref () const
+RefCountBase::Ref (void) const
 {
   m_count++;
 }
 
 void
-RefCountBase::Unref () const
+RefCountBase::Unref (void) const
 {
-  if (--m_count == 0)
+  m_count--;
+  if (m_count == 0)
     { // All references removed, ok to delete
       delete this;
     }

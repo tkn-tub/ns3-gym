@@ -95,6 +95,11 @@ Object::Object (const Object &o)
     m_disposed (false),
     m_next (this)
 {}
+uint32_t
+Object::GetReferenceCount (void) const
+{
+  return m_count;
+}
 void
 Object::Construct (const AttributeList &attributes)
 {
@@ -108,7 +113,7 @@ Object::DoGetObject (TypeId tid) const
   const Object *currentObject = this;
   do {
     NS_ASSERT (currentObject != 0);
-    TypeId cur = currentObject->m_tid;
+    TypeId cur = currentObject->GetInstanceTypeId ();
     while (cur != tid && cur != Object::GetTypeId ())
       {
         cur = cur.GetParent ();
@@ -141,10 +146,11 @@ Object::AggregateObject (Ptr<Object> o)
   NS_ASSERT (CheckLoose ());
   NS_ASSERT (o->CheckLoose ());
 
-  if (DoGetObject (o->m_tid))
+  if (DoGetObject (o->GetInstanceTypeId ()))
     {
       NS_FATAL_ERROR ("Object::AggregateObject(): "
-       "Multiple aggregation of objects of type " << o->m_tid.GetName ());
+                      "Multiple aggregation of objects of type " << 
+                      o->GetInstanceTypeId ().GetName ());
     }
 
   Object *other = PeekPointer (o);

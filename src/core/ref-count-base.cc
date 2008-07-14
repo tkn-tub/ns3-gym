@@ -43,4 +43,10 @@ RefCountBase::~RefCountBase ()
 {
 }
 
+uint32_t
+RefCountBase::GetReferenceCount (void) const
+{
+  return m_count;
+}
+
 } // namespace ns3

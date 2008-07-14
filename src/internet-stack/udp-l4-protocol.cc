@@ -163,7 +163,6 @@ UdpL4Protocol::Receive(Ptr<Packet> packet,
     udpHeader.EnableChecksums();
   }
 
-  udpHeader.SetPayloadSize (packet->GetSize () - udpHeader.GetSerializedSize ());
   udpHeader.InitializeChecksum (source, destination, PROT_NUMBER);
 
   packet->RemoveHeader (udpHeader);
@@ -195,13 +194,12 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
   if(m_calcChecksum)
   {
     udpHeader.EnableChecksums();
+    udpHeader.InitializeChecksum (saddr,
+                                  daddr,
+                                  PROT_NUMBER);
   }
   udpHeader.SetDestinationPort (dport);
   udpHeader.SetSourcePort (sport);
-  udpHeader.SetPayloadSize (packet->GetSize ());
-  udpHeader.InitializeChecksum (saddr,
-                                daddr,
-                                PROT_NUMBER);
 
   packet->AddHeader (udpHeader);
 

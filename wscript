@@ -61,6 +61,9 @@ def dist_hook():
     shutil.rmtree("doc/html", True)
     shutil.rmtree("doc/latex", True)
 
+    if not os.path.exists("bindings/python/pybindgen"):
+        Params.fatal("Missing pybindgen checkout; run './waf configure --pybindgen-checkout' first.")
+
     ## build the name of the traces subdirectory.  Will be something like
     ## ns-3-dev-ref-traces
     traces_name = APPNAME + '-' + VERSION + REGRESSION_SUFFIX
@@ -75,7 +78,6 @@ def dist_hook():
         tar.close()
         ## Now remove it; we do not ship the traces with the main tarball...
         shutil.rmtree(traces_dir, True)
-
 
 def set_options(opt):
 
@@ -139,6 +141,11 @@ def set_options(opt):
                          ' It should be a shell command string containing %s inside,'
                          ' which will be replaced by the actual program.'),
                    type="string", default=None, dest='command_template')
+    opt.add_option('--pyrun',
+                   help=('Run a python program using locally built ns3 python module;'
+                         ' argument is the path to the python program, optionally followed'
+                         ' by command-line options that are passed to the program.'),
+                   type="string", default='', dest='pyrun')
     opt.add_option('--valgrind',
                    help=('Change the default command template to run programs and unit tests with valgrind'),
                    action="store_true", default=False,
@@ -161,7 +168,29 @@ def set_options(opt):
 
     # options provided in a script in a subdirectory named "src"
     opt.sub_options('src')
+    opt.sub_options('bindings/python')
 
+
+def check_compilation_flag(conf, flag):
+    """
+    Checks if the C++ compiler accepts a certain compilation flag or flags
+    flag: can be a string or a list of strings
+    """
+
+    # Check for -Wno-error=deprecated-declarations
+    save_CXXFLAGS = list(conf.env['CXXFLAGS'])
+    conf.env.append_value('CXXFLAGS', flag)
+    e = conf.create_test_configurator()
+    e.mandatory = 0
+    e.code = '#include <stdio.h>\nint main() { return 0; }\n'
+    e.want_message = 0
+    ok = e.run()
+    conf.check_message_custom(flag, 'compilation flag support',
+                              (ok and 'yes' or 'no'))
+
+    if not ok: # if it doesn't accept, remove it again
+        conf.env['CXXFLAGS'] = save_CXXFLAGS
+    
 
 def configure(conf):
     conf.check_tool('compiler_cxx')
@@ -194,8 +223,12 @@ def configure(conf):
     
     if (os.path.basename(conf.env['CXX']).startswith("g++")
         and 'CXXFLAGS' not in os.environ):
-        variant_env.append_value('CXXFLAGS', ['-Werror'])
 
+        variant_env.append_value('CXXFLAGS', '-Werror')
+
+        check_compilation_flag(conf, '-Wno-error=deprecated-declarations')
+
+        
     if 'debug' in Params.g_options.debug_level.lower():
         variant_env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
         variant_env.append_value('CXXDEFINES', 'NS3_LOG_ENABLE')
@@ -222,6 +255,7 @@ def configure(conf):
 
     conf.sub_config('src')
     conf.sub_config('utils')
+    conf.sub_config('bindings/python')
 
     if Params.g_options.enable_modules:
         conf.env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
@@ -351,11 +385,13 @@ def build(bld):
     lib.target = 'ns3'
     if env['NS3_ENABLED_MODULES']:
         lib.add_objects = list(modules)
+        env['NS3_ENABLED_MODULES'] = list(modules)
         lib.uselib_local = list(modules)
     else:
         lib.add_objects = list(env['NS3_MODULES'])
         lib.uselib_local = list(env['NS3_MODULES'])
 
+    bld.add_subdirs('bindings/python')
 
 def get_command_template():
     if Params.g_options.valgrind:
@@ -396,6 +432,10 @@ def shutdown():
         run_program(Params.g_options.run, get_command_template())
         raise SystemExit(0)
 
+    if Params.g_options.pyrun:
+        run_python_program(Params.g_options.pyrun)
+        raise SystemExit(0)
+
 def _run_waf_check():
     ## generate the trace sources list docs
     env = Params.g_build.env_of_name('default')
@@ -413,7 +453,12 @@ def _run_waf_check():
             raise SystemExit(1)
         out.close()
 
+    print "-- Running NS-3 C++ core unit tests..."
     run_program('run-tests', get_command_template())
+
+    print "-- Running NS-3 Python bindings unit tests..."
+    _run_argv([env['PYTHON'], os.path.join("utils", "python-unit-tests.py")], proc_env)
+
 
 def _find_program(program_name, env):
     launch_dir = os.path.abspath(Params.g_cwd_launch)
@@ -457,10 +502,18 @@ def _get_proc_env(os_env=None):
             proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']) + [proc_env[pathvar]])
         else:
             proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']))
+
+    pymoddir = Params.g_build.m_curdirnode.find_dir('bindings/python').abspath(env)
+    if 'PYTHONPATH' in proc_env:
+        proc_env['PYTHONPATH'] = os.pathsep.join([pymoddir] + [proc_env['PYTHONPATH']])
+    else:
+        proc_env['PYTHONPATH'] = pymoddir
+
     return proc_env
 
 def _run_argv(argv, os_env=None):
     proc_env = _get_proc_env(os_env)
+    env = Params.g_build.env_of_name('default')
     retval = subprocess.Popen(argv, env=proc_env).wait()
     if retval:
         Params.fatal("Command %s exited with code %i" % (argv, retval))
@@ -516,6 +569,25 @@ def run_program(program_string, command_template=None):
         os.chdir(former_cwd)
 
     return retval
+
+
+
+def run_python_program(program_string):
+    env = Params.g_build.env_of_name('default')
+    execvec = shlex.split(program_string)
+
+    former_cwd = os.getcwd()
+    if (Params.g_options.cwd_launch):
+        os.chdir(Params.g_options.cwd_launch)
+    else:
+        os.chdir(Params.g_cwd_launch)
+    try:
+        retval = _run_argv([env['PYTHON']] + execvec)
+    finally:
+        os.chdir(former_cwd)
+
+    return retval
+
 
 def check_shell():
     if 'NS3_MODULE_PATH' not in os.environ:

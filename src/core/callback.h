@@ -85,6 +85,7 @@ public:
       delete this;
     }
   }
+  uint32_t GetReferenceCount (void) const { return m_count; }
   virtual bool IsEqual (Ptr<const CallbackImplBase> other) const = 0;
 private:
   mutable uint32_t m_count;

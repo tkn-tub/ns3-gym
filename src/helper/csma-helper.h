@@ -27,6 +27,7 @@
 #include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
 #include "ns3/csma-channel.h"
+#include "ns3/deprecated.h"
 
 namespace ns3 {
 
@@ -78,6 +79,9 @@ public:
    * by CsmaHelper::Install
    */
   void SetChannelAttribute (std::string n1, const AttributeValue &v1);
+
+  void SetDeviceParameter (std::string n1, const AttributeValue &v1) NS_DEPRECATED;
+  void SetChannelParameter (std::string n1, const AttributeValue &v1) NS_DEPRECATED;
 
   /**
    * \param filename filename prefix to use for pcap files.

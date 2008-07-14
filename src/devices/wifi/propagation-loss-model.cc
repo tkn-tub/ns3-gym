@@ -97,7 +97,8 @@ FriisPropagationLossModel::GetTypeId (void)
     .AddAttribute ("MinDistance", 
                    "The distance under which the propagation model refuses to give results (m)",
                    DoubleValue (0.5),
-                   MakeDoubleAccessor (&FriisPropagationLossModel::m_minDistance),
+                   MakeDoubleAccessor (&FriisPropagationLossModel::SetMinDistance,
+                                       &FriisPropagationLossModel::GetMinDistance),
                    MakeDoubleChecker<double> ())
     ;
   return tid;
@@ -114,6 +115,16 @@ double
 FriisPropagationLossModel::GetSystemLoss (void) const
 {
   return m_systemLoss;
+}
+void 
+FriisPropagationLossModel::SetMinDistance (double minDistance)
+{
+  m_minDistance = minDistance;
+}
+double 
+FriisPropagationLossModel::GetMinDistance (void) const
+{
+  return m_minDistance;
 }
 void 
 FriisPropagationLossModel::SetLambda (double frequency, double speed)

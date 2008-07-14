@@ -66,10 +66,6 @@ public:
    * \return the destination port for this UdpHeader
    */
   uint16_t GetDestinationPort (void) const;
-  /**
-   * \param size The payload size in bytes
-   */
-  void SetPayloadSize (uint16_t size);
 
   /**
    * \param source the ip source to use in the underlying
@@ -100,12 +96,14 @@ public:
   bool IsChecksumOk (void) const;
 
 private:
+  uint16_t CalculateHeaderChecksum (uint16_t size) const;
   uint16_t m_sourcePort;
   uint16_t m_destinationPort;
   uint16_t m_payloadSize;
-  uint16_t m_initialChecksum;
-  uint16_t m_checksum;
 
+  Ipv4Address m_source;
+  Ipv4Address m_destination;
+  uint8_t m_protocol;
   bool m_calcChecksum;
   bool m_goodChecksum;
 };

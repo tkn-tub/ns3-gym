@@ -110,5 +110,6 @@ def build(bld):
         'trace-source-accessor.h',
         'config.h',
         'object-vector.h',
+        'deprecated.h'
         ]
 

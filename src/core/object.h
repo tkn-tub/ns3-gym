@@ -112,6 +112,12 @@ public:
    * dangerous.
    */
   inline void Unref (void) const;
+
+  /**
+   * Get the reference count of the object.  Normally not needed; for language bindings.
+   */
+  uint32_t GetReferenceCount (void) const;
+
   /**
    * \returns a pointer to the requested interface or zero if it could not be found.
    */
@@ -192,6 +198,10 @@ private:
   friend Ptr<T> CopyObject (Ptr<T> object);
   template <typename T>
   friend Ptr<T> CopyObject (Ptr<const T> object);
+  // The following friend method declaration is used only
+  // by our python bindings to call the protected ObjectBase::Construct
+  // method.
+  friend void PythonCompleteConstruct (Ptr<Object> object, TypeId typeId, const AttributeList &attributes);
 
   friend class ObjectFactory;
   friend class AggregateIterator;
@@ -369,7 +379,7 @@ template <typename T>
 Ptr<T> CopyObject (Ptr<T> object)
 {
   Ptr<T> p = Ptr<T> (new T (*PeekPointer (object)), false);
-  NS_ASSERT (p->m_tid == object->m_tid);
+  NS_ASSERT (p->GetInstanceTypeId () == object->GetInstanceTypeId ());
   return p;
 }
 
@@ -377,7 +387,7 @@ template <typename T>
 Ptr<T> CopyObject (Ptr<const T> object)
 {
   Ptr<T> p = Ptr<T> (new T (*PeekPointer (object)), false);
-  NS_ASSERT (p->m_tid == object->m_tid);
+  NS_ASSERT (p->GetInstanceTypeId () == object->GetInstanceTypeId ());
   return p;
 }
 

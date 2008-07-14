@@ -23,6 +23,7 @@
 #include "tcp-socket-impl.h"
 #include "tcp-header.h"
 #include "ns3/buffer.h"
+#include "ns3/address-utils.h"
 
 namespace ns3 {
 
@@ -37,8 +38,6 @@ TcpHeader::TcpHeader ()
     m_flags (0),
     m_windowSize (0xffff),
     m_urgentPointer (0),
-    m_initialChecksum(0),
-    m_checksum (0),
     m_calcChecksum(false),
     m_goodChecksum(true)
 {}
@@ -50,11 +49,6 @@ void
 TcpHeader::EnableChecksums (void)
 {
   m_calcChecksum = true;
-}
-
-void TcpHeader::SetPayloadSize(uint16_t payloadSize)
-{
-  m_payloadSize = payloadSize;
 }
 
 void TcpHeader::SetSourcePort (uint16_t port)
@@ -84,10 +78,6 @@ void TcpHeader::SetFlags (uint8_t flags)
 void TcpHeader::SetWindowSize (uint16_t windowSize)
 {
   m_windowSize = windowSize;
-}
-void TcpHeader::SetChecksum (uint16_t checksum)
-{
-  m_checksum = checksum;
 }
 void TcpHeader::SetUrgentPointer (uint16_t urgentPointer)
 {
@@ -122,10 +112,6 @@ uint16_t TcpHeader::GetWindowSize () const
 {
   return m_windowSize;
 }
-uint16_t TcpHeader::GetChecksum () const
-{
-  return m_checksum;
-}
 uint16_t TcpHeader::GetUrgentPointer () const
 {
   return m_urgentPointer;
@@ -133,29 +119,31 @@ uint16_t TcpHeader::GetUrgentPointer () const
 
 void 
 TcpHeader::InitializeChecksum (Ipv4Address source, 
-                                   Ipv4Address destination,
-                                   uint8_t protocol)
+                               Ipv4Address destination,
+                               uint8_t protocol)
 {
-  Buffer buf = Buffer(12);
-  uint8_t tmp[4];
-  Buffer::Iterator it;
-  uint16_t tcpLength = m_payloadSize + GetSerializedSize();
+  m_source = source;
+  m_destination = destination;
+  m_protocol = protocol;
+}
 
-  buf.AddAtStart(12);
-  it = buf.Begin();
+uint16_t
+TcpHeader::CalculateHeaderChecksum (uint16_t size) const
+{
+  Buffer buf = Buffer (12);
+  buf.AddAtStart (12);
+  Buffer::Iterator it = buf.Begin ();
 
-  source.Serialize(tmp);
-  it.Write(tmp, 4); /* source IP address */
-  destination.Serialize(tmp);
-  it.Write(tmp, 4); /* destination IP address */
-  it.WriteU8(0); /* protocol */
-  it.WriteU8(protocol); /* protocol */
-  it.WriteU8(tcpLength >> 8); /* length */
-  it.WriteU8(tcpLength & 0xff); /* length */
+  WriteTo (it, m_source);
+  WriteTo (it, m_destination);
+  it.WriteU8 (0); /* protocol */
+  it.WriteU8 (m_protocol); /* protocol */
+  it.WriteU8 (size >> 8); /* length */
+  it.WriteU8 (size & 0xff); /* length */
 
-  it = buf.Begin();
+  it = buf.Begin ();
   /* we don't CompleteChecksum ( ~ ) now */
-  m_initialChecksum = ~(it.CalculateIpChecksum(12));
+  return ~(it.CalculateIpChecksum (12));
 }
 
 bool
@@ -219,7 +207,6 @@ uint32_t TcpHeader::GetSerializedSize (void)  const
 void TcpHeader::Serialize (Buffer::Iterator start)  const
 {
   Buffer::Iterator i = start;
-  uint16_t tcpLength = m_payloadSize + GetSerializedSize();
   i.WriteHtonU16 (m_sourcePort);
   i.WriteHtonU16 (m_destinationPort);
   i.WriteHtonU32 (m_sequenceNumber);
@@ -231,8 +218,9 @@ void TcpHeader::Serialize (Buffer::Iterator start)  const
 
   if(m_calcChecksum)
   {
+    uint16_t headerChecksum = CalculateHeaderChecksum (start.GetSize ());
     i = start;
-    uint16_t checksum = i.CalculateIpChecksum(tcpLength, m_initialChecksum);
+    uint16_t checksum = i.CalculateIpChecksum(start.GetSize (), headerChecksum);
     
     i = start;
     i.Next(16);
@@ -250,16 +238,16 @@ uint32_t TcpHeader::Deserialize (Buffer::Iterator start)
   m_flags = field & 0x3F;
   m_length = field>>12;
   m_windowSize = i.ReadNtohU16 ();
-  m_checksum = i.ReadU16 ();
+  i.Next (2);
   m_urgentPointer = i.ReadNtohU16 ();
 
   if(m_calcChecksum)
-  {
+    {
+      uint16_t headerChecksum = CalculateHeaderChecksum (start.GetSize ());
       i = start;
-      uint16_t checksum = i.CalculateIpChecksum(m_payloadSize + GetSerializedSize(), m_initialChecksum);
-
+      uint16_t checksum = i.CalculateIpChecksum(start.GetSize (), headerChecksum);
       m_goodChecksum = (checksum == 0);
-  }
+    }
 
   return GetSerializedSize ();
 }

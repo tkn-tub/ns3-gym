@@ -50,7 +50,6 @@ public:
 
   virtual void SetupPhy (Ptr<WifiPhy> phy);
 
-  WifiMode GetMode (double snr) const;
   // return the min snr needed to successfully transmit
   // data with this mode at the specified ber.
   double GetSnrThreshold (WifiMode mode) const;

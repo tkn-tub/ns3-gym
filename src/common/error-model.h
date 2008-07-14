@@ -72,12 +72,6 @@ class ErrorModel : public Object
 {
 public:
   static TypeId GetTypeId (void);
-  /**
-   * A factory method to generate a preconfigured default ErrorModel for use
-   * \return an ErrorModel smart pointer that is the default ErrorModel 
-   * type defined
-   */
-  static Ptr<ErrorModel> CreateDefault (void);
   
   ErrorModel ();
   virtual ~ErrorModel ();

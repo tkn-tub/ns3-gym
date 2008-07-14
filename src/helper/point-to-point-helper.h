@@ -23,6 +23,7 @@
 #include "ns3/object-factory.h"
 #include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
+#include "ns3/deprecated.h"
 #include <string>
 
 namespace ns3 {
@@ -77,6 +78,9 @@ public:
    * by PointToPointHelper::Install
    */
   void SetChannelAttribute (std::string name, const AttributeValue &value);
+
+  void SetDeviceParameter (std::string name, const AttributeValue &value) NS_DEPRECATED;
+  void SetChannelParameter (std::string name, const AttributeValue &value) NS_DEPRECATED;
 
   /**
    * \param filename filename prefix to use for pcap files.
