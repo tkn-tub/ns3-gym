@@ -21,9 +21,14 @@ def configure(conf):
     e.define = 'HAVE_SIGNAL_H'
     e.run()
 
+    e = conf.create_library_configurator()
+    e.mandatory = False
+    e.name = 'rt'
+    e.define = 'HAVE_RT'
+    e.uselib = 'RT'
+    e.run()
+
     conf.write_config_header('ns3/core-config.h')
-
-
 
 def build(bld):
     core = bld.create_ns3_module('core')
@@ -60,6 +65,7 @@ def build(bld):
         'trace-source-accessor.cc',
         'config.cc',
         ]
+    core.uselib = 'RT'
 
     if sys.platform == 'win32':
         core.source.extend([
@@ -67,12 +73,18 @@ def build(bld):
             ])
     else:
         core.source.extend([
+            'unix-system-thread.cc',
+            'unix-system-mutex.cc',
+            'unix-system-condition.cc',
             'unix-system-wall-clock-ms.cc',
             ])
     
     headers = bld.create_obj('ns3header')
     headers.module = 'core'
     headers.source = [
+        'system-mutex.h',
+        'system-thread.h',
+        'system-condition.h',
         'system-wall-clock-ms.h',
         'empty.h',
         'callback.h',
