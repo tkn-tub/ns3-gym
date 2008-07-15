@@ -3,6 +3,15 @@
 
 This file contains ns-3 release notes (most recent releases first).
 
+Next Release (in ns-3-dev)
+==========================
+- Kernel thread support (class SystemThread) added;
+- Kernel mutual exclusion support (class SystemMutex) added;
+- Kernel critical section RAII support (class CriticalSection) added;
+- Kernel system condition support (class SystemCondition) added;
+- Move required methods in helper classes to constructors;
+- Change obsolete references to Parameter to Attribute in helpers;
+
 Release 3.1 (2008/06/30)
 ========================
 
