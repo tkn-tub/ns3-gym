@@ -21,12 +21,16 @@ def register_types(module):
     module.add_class('SystemWallClockMs')
     ## callback.h: ns3::CallbackImplBase [class]
     module.add_class('CallbackImplBase', incref_method='Ref', allow_subclassing=True, decref_method='Unref', peekref_method='GetReferenceCount')
+    ## system-mutex.h: ns3::CriticalSection [class]
+    module.add_class('CriticalSection')
     ## trace-source-accessor.h: ns3::TraceSourceAccessor [class]
     module.add_class('TraceSourceAccessor', allow_subclassing=True)
     ## attribute.h: ns3::AttributeChecker [class]
     module.add_class('AttributeChecker', incref_method='Ref', allow_subclassing=False, automatic_type_narrowing=True, decref_method='Unref', parent=root_module['ns3::RefCountBase'])
     ## random-variable.h: ns3::RandomVariableChecker [class]
     module.add_class('RandomVariableChecker', parent=root_module['ns3::AttributeChecker'])
+    ## system-mutex.h: ns3::SystemMutex [class]
+    module.add_class('SystemMutex')
     ## random-variable.h: ns3::NormalVariable [class]
     module.add_class('NormalVariable', parent=root_module['ns3::RandomVariable'])
     ## object-factory.h: ns3::ObjectFactory [class]
@@ -37,6 +41,8 @@ def register_types(module):
     module.add_class('ParetoVariable', parent=root_module['ns3::RandomVariable'])
     ## random-variable.h: ns3::ConstantVariable [class]
     module.add_class('ConstantVariable', parent=root_module['ns3::RandomVariable'])
+    ## system-thread.h: ns3::SystemThread [class]
+    module.add_class('SystemThread')
     ## random-variable.h: ns3::EmpiricalVariable [class]
     module.add_class('EmpiricalVariable', parent=root_module['ns3::RandomVariable'])
     ## enum.h: ns3::EnumChecker [class]
@@ -121,6 +127,8 @@ def register_types(module):
     module.add_class('Object', incref_method='Ref', automatic_type_narrowing=True, decref_method='Unref', parent=root_module['ns3::ObjectBase'], peekref_method='GetReferenceCount')
     ## object.h: ns3::Object::AggregateIterator [class]
     module.add_class('AggregateIterator', outer_class=root_module['ns3::Object'])
+    ## system-condition.h: ns3::SystemCondition [class]
+    module.add_class('SystemCondition')
     ## random-variable.h: ns3::SequentialVariable [class]
     module.add_class('SequentialVariable', parent=root_module['ns3::RandomVariable'])
     ## object-vector.h: ns3::ObjectVectorChecker [class]
@@ -219,14 +227,17 @@ def register_methods(root_module):
     register_Ns3TypeIdAttributeInfo_methods(root_module, root_module['ns3::TypeId::AttributeInfo'])
     register_Ns3SystemWallClockMs_methods(root_module, root_module['ns3::SystemWallClockMs'])
     register_Ns3CallbackImplBase_methods(root_module, root_module['ns3::CallbackImplBase'])
+    register_Ns3CriticalSection_methods(root_module, root_module['ns3::CriticalSection'])
     register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
     register_Ns3AttributeChecker_methods(root_module, root_module['ns3::AttributeChecker'])
     register_Ns3RandomVariableChecker_methods(root_module, root_module['ns3::RandomVariableChecker'])
+    register_Ns3SystemMutex_methods(root_module, root_module['ns3::SystemMutex'])
     register_Ns3NormalVariable_methods(root_module, root_module['ns3::NormalVariable'])
     register_Ns3ObjectFactory_methods(root_module, root_module['ns3::ObjectFactory'])
     register_Ns3AttributeAccessor_methods(root_module, root_module['ns3::AttributeAccessor'])
     register_Ns3ParetoVariable_methods(root_module, root_module['ns3::ParetoVariable'])
     register_Ns3ConstantVariable_methods(root_module, root_module['ns3::ConstantVariable'])
+    register_Ns3SystemThread_methods(root_module, root_module['ns3::SystemThread'])
     register_Ns3EmpiricalVariable_methods(root_module, root_module['ns3::EmpiricalVariable'])
     register_Ns3EnumChecker_methods(root_module, root_module['ns3::EnumChecker'])
     register_Ns3Empty_methods(root_module, root_module['ns3::empty'])
@@ -262,6 +273,7 @@ def register_methods(root_module):
     register_Ns3UniformVariable_methods(root_module, root_module['ns3::UniformVariable'])
     register_Ns3Object_methods(root_module, root_module['ns3::Object'])
     register_Ns3ObjectAggregateIterator_methods(root_module, root_module['ns3::Object::AggregateIterator'])
+    register_Ns3SystemCondition_methods(root_module, root_module['ns3::SystemCondition'])
     register_Ns3SequentialVariable_methods(root_module, root_module['ns3::SequentialVariable'])
     register_Ns3ObjectVectorChecker_methods(root_module, root_module['ns3::ObjectVectorChecker'])
     register_Ns3StringChecker_methods(root_module, root_module['ns3::StringChecker'])
@@ -449,6 +461,11 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_method('IsEqual', 'bool', [param('ns3::Ptr< ns3::CallbackImplBase const >', 'other')], is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
+def register_Ns3CriticalSection_methods(root_module, cls):
+    ## system-mutex.h: ns3::CriticalSection::CriticalSection(ns3::SystemMutex & mutex) [constructor]
+    cls.add_constructor([param('ns3::SystemMutex&', 'mutex')], visibility='public')
+    return
+
 def register_Ns3TraceSourceAccessor_methods(root_module, cls):
     ## trace-source-accessor.h: ns3::TraceSourceAccessor::TraceSourceAccessor() [constructor]
     cls.add_constructor([], visibility='public')
@@ -485,6 +502,15 @@ def register_Ns3AttributeChecker_methods(root_module, cls):
 
 def register_Ns3RandomVariableChecker_methods(root_module, cls):
     cls.add_constructor([])
+    return
+
+def register_Ns3SystemMutex_methods(root_module, cls):
+    ## system-mutex.h: ns3::SystemMutex::SystemMutex() [constructor]
+    cls.add_constructor([], visibility='public')
+    ## system-mutex.h: void ns3::SystemMutex::Lock() [member function]
+    cls.add_method('Lock', 'void', [])
+    ## system-mutex.h: void ns3::SystemMutex::Unlock() [member function]
+    cls.add_method('Unlock', 'void', [])
     return
 
 def register_Ns3NormalVariable_methods(root_module, cls):
@@ -553,6 +579,19 @@ def register_Ns3ConstantVariable_methods(root_module, cls):
     cls.add_constructor([param('double', 'c')], visibility='public')
     ## random-variable.h: void ns3::ConstantVariable::SetConstant(double c) [member function]
     cls.add_method('SetConstant', 'void', [param('double', 'c')])
+    return
+
+def register_Ns3SystemThread_methods(root_module, cls):
+    ## system-thread.h: ns3::SystemThread::SystemThread(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [constructor]
+    cls.add_constructor([param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], visibility='public')
+    ## system-thread.h: void ns3::SystemThread::Ref() const [member function]
+    cls.add_method('Ref', 'void', [], is_const=True)
+    ## system-thread.h: void ns3::SystemThread::Unref() const [member function]
+    cls.add_method('Unref', 'void', [], is_const=True)
+    ## system-thread.h: void ns3::SystemThread::Start() [member function]
+    cls.add_method('Start', 'void', [])
+    ## system-thread.h: void ns3::SystemThread::Join() [member function]
+    cls.add_method('Join', 'void', [])
     return
 
 def register_Ns3EmpiricalVariable_methods(root_module, cls):
@@ -942,6 +981,23 @@ def register_Ns3ObjectAggregateIterator_methods(root_module, cls):
     cls.add_method('HasNext', 'bool', [], is_const=True)
     ## object.h: ns3::Ptr<ns3::Object const> ns3::Object::AggregateIterator::Next() [member function]
     cls.add_method('Next', 'ns3::Ptr< ns3::Object const >', [])
+    return
+
+def register_Ns3SystemCondition_methods(root_module, cls):
+    ## system-condition.h: ns3::SystemCondition::SystemCondition() [constructor]
+    cls.add_constructor([], visibility='public')
+    ## system-condition.h: void ns3::SystemCondition::SetCondition(bool condition) [member function]
+    cls.add_method('SetCondition', 'void', [param('bool', 'condition')])
+    ## system-condition.h: bool ns3::SystemCondition::GetCondition() [member function]
+    cls.add_method('GetCondition', 'bool', [])
+    ## system-condition.h: void ns3::SystemCondition::Signal() [member function]
+    cls.add_method('Signal', 'void', [])
+    ## system-condition.h: void ns3::SystemCondition::Broadcast() [member function]
+    cls.add_method('Broadcast', 'void', [])
+    ## system-condition.h: void ns3::SystemCondition::Wait() [member function]
+    cls.add_method('Wait', 'void', [])
+    ## system-condition.h: bool ns3::SystemCondition::TimedWait(uint64_t ns) [member function]
+    cls.add_method('TimedWait', 'bool', [param('uint64_t', 'ns')])
     return
 
 def register_Ns3SequentialVariable_methods(root_module, cls):

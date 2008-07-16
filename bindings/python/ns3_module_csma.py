@@ -213,8 +213,12 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
     cls.add_method('SetNode', 'void', [param('ns3::Ptr< ns3::Node >', 'node')], is_virtual=True)
     ## csma-net-device.h: bool ns3::CsmaNetDevice::NeedsArp() const [member function]
     cls.add_method('NeedsArp', 'bool', [], is_const=True, is_virtual=True)
-    ## csma-net-device.h: void ns3::CsmaNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> cb) [member function]
-    cls.add_method('SetReceiveCallback', 'void', [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], is_virtual=True)
+    ## csma-net-device.h: void ns3::CsmaNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty> cb) [member function]
+    cls.add_method('SetReceiveCallback', 'void', [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::empty, ns3::empty >', 'cb')], is_virtual=True)
+    ## csma-net-device.h: void ns3::CsmaNetDevice::SetPromiscReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> cb) [member function]
+    cls.add_method('SetPromiscReceiveCallback', 'void', [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], is_virtual=True)
+    ## csma-net-device.h: bool ns3::CsmaNetDevice::SupportsPromiscuous() const [member function]
+    cls.add_method('SupportsPromiscuous', 'bool', [], is_const=True, is_virtual=True)
     ## csma-net-device.h: void ns3::CsmaNetDevice::DoDispose() [member function]
     cls.add_method('DoDispose', 'void', [], visibility='protected', is_virtual=True)
     ## csma-net-device.h: ns3::Ptr<ns3::Queue> ns3::CsmaNetDevice::GetQueue() const [member function]

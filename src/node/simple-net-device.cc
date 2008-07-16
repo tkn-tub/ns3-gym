@@ -59,7 +59,7 @@ SimpleNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
     {
       NS_FATAL_ERROR ("Weird packet destination " << to);
     }
-  m_rxCallback (this, packet, protocol, from, to, packetType);
+  m_rxCallback (this, packet, protocol, from);
 }
 
 void 

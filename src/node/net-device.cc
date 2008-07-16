@@ -38,4 +38,19 @@ TypeId NetDevice::GetTypeId (void)
 NetDevice::~NetDevice ()
 {}
 
+bool
+NetDevice::SupportsPromiscuous () const
+{
+  return false;
+}
+
+void
+NetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
+{
+  // assert that the virtual method was overridden in a subclass if it
+  // claims to support promiscuous mode.
+  NS_ASSERT (!SupportsPromiscuous ());
+}
+
+
 } // namespace ns3

@@ -102,8 +102,12 @@ def register_Ns3BridgeNetDevice_methods(root_module, cls):
     cls.add_method('SetNode', 'void', [param('ns3::Ptr< ns3::Node >', 'node')], is_virtual=True)
     ## bridge-net-device.h: bool ns3::BridgeNetDevice::NeedsArp() const [member function]
     cls.add_method('NeedsArp', 'bool', [], is_const=True, is_virtual=True)
-    ## bridge-net-device.h: void ns3::BridgeNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> cb) [member function]
-    cls.add_method('SetReceiveCallback', 'void', [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], is_virtual=True)
+    ## bridge-net-device.h: void ns3::BridgeNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty> cb) [member function]
+    cls.add_method('SetReceiveCallback', 'void', [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::empty, ns3::empty >', 'cb')], is_virtual=True)
+    ## bridge-net-device.h: void ns3::BridgeNetDevice::SetPromiscReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> cb) [member function]
+    cls.add_method('SetPromiscReceiveCallback', 'void', [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], is_virtual=True)
+    ## bridge-net-device.h: bool ns3::BridgeNetDevice::SupportsPromiscuous() const [member function]
+    cls.add_method('SupportsPromiscuous', 'bool', [], is_const=True, is_virtual=True)
     ## bridge-net-device.h: void ns3::BridgeNetDevice::DoDispose() [member function]
     cls.add_method('DoDispose', 'void', [], visibility='protected', is_virtual=True)
     ## bridge-net-device.h: void ns3::BridgeNetDevice::ReceiveFromDevice(ns3::Ptr<ns3::NetDevice> device, ns3::Ptr<ns3::Packet> packet, uint16_t protocol, ns3::Address const & source, ns3::Address const & destination, ns3::NetDevice::PacketType packetType) [member function]

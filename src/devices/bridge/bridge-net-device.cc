@@ -68,19 +68,23 @@ BridgeNetDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<Packet> pac
   Mac48Address src48 = Mac48Address::ConvertFrom (src);
   Mac48Address dst48 = Mac48Address::ConvertFrom (dst);
 
+  if (!m_promiscRxCallback.IsNull ())
+    {
+      m_promiscRxCallback (this, packet, protocol, src, dst, packetType);
+    }
 
   switch (packetType)
     {
     case PACKET_HOST:
       if (dst48 == m_address)
         {
-          m_rxCallback (this, packet, protocol, src, dst, packetType);
+          m_rxCallback (this, packet, protocol, src);
         }
       break;
 
     case PACKET_BROADCAST:
     case PACKET_MULTICAST:
-      m_rxCallback (this, packet, protocol, src, dst, packetType);
+      m_rxCallback (this, packet, protocol, src);
       ForwardBroadcast (incomingPort, packet, protocol, src48, dst48);
       break;
 
@@ -160,12 +164,13 @@ Ptr<NetDevice> BridgeNetDevice::GetLearnedState (Mac48Address source)
 {
   if (m_enableLearning)
     {
+      Time now = Simulator::Now ();
       std::map<Mac48Address, LearnedState>::iterator iter =
         m_learnState.find (source);
       if (iter != m_learnState.end ())
         {
           LearnedState &state = iter->second;
-          if (state.expirationTime > Simulator::Now ())
+          if (state.expirationTime > now)
             {
               return state.associatedPort;
             }
@@ -187,8 +192,9 @@ BridgeNetDevice::AddBridgePort (Ptr<NetDevice> bridgePort)
       m_address = Mac48Address::ConvertFrom (bridgePort->GetAddress ());
     }
 
+  NS_LOG_DEBUG ("RegisterProtocolHandler for " << bridgePort->GetName ());
   m_node->RegisterProtocolHandler (MakeCallback (&BridgeNetDevice::ReceiveFromDevice, this),
-                                   0, bridgePort);
+                                   0, bridgePort, true);
   m_ports.push_back (bridgePort);
   m_channel->AddChannel (bridgePort->GetChannel ());
 }
@@ -394,6 +400,18 @@ void
 BridgeNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
   m_rxCallback = cb;
+}
+
+void 
+BridgeNetDevice::SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb)
+{
+  m_promiscRxCallback = cb;
+}
+
+bool
+BridgeNetDevice::SupportsPromiscuous () const
+{
+  return true;
 }
 
 

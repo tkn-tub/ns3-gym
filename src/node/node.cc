@@ -26,6 +26,9 @@
 #include "ns3/simulator.h"
 #include "ns3/object-vector.h"
 #include "ns3/uinteger.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("Node");
 
 namespace ns3{
 
@@ -95,7 +98,7 @@ Node::AddDevice (Ptr<NetDevice> device)
   m_devices.push_back (device);
   device->SetNode (this);
   device->SetIfIndex(index);
-  device->SetReceiveCallback (MakeCallback (&Node::ReceiveFromDevice, this));
+  device->SetReceiveCallback (MakeCallback (&Node::NonPromiscReceiveFromDevice, this));
   NotifyDeviceAdded (device);
   return index;
 }
@@ -170,12 +173,44 @@ Node::NotifyDeviceAdded (Ptr<NetDevice> device)
 void
 Node::RegisterProtocolHandler (ProtocolHandler handler, 
                                uint16_t protocolType,
-                               Ptr<NetDevice> device)
+                               Ptr<NetDevice> device,
+                               bool promiscuous)
 {
   struct Node::ProtocolHandlerEntry entry;
   entry.handler = handler;
   entry.protocol = protocolType;
   entry.device = device;
+  entry.promiscuous = promiscuous;
+
+  // On demand enable promiscuous mode in netdevices
+  if (promiscuous)
+    {
+      if (device == 0)
+        {
+          for (std::vector<Ptr<NetDevice> >::iterator i = m_devices.begin ();
+               i != m_devices.end (); i++)
+            {
+              Ptr<NetDevice> dev = *i;
+              if (dev->SupportsPromiscuous ())
+                {
+                  dev->SetPromiscReceiveCallback (MakeCallback (&Node::PromiscReceiveFromDevice, this));
+                }
+            }
+        }
+      else
+        {
+          if (device->SupportsPromiscuous ())
+            {
+              device->SetPromiscReceiveCallback (MakeCallback (&Node::PromiscReceiveFromDevice, this));
+            }
+          else
+            {
+              NS_LOG_WARN ("Protocol handler request promiscuous mode for a specific netdevice,"
+                           " but netdevice does not support promiscuous mode.");
+            }
+        }
+    }
+
   m_handlers.push_back (entry);
 }
 
@@ -194,9 +229,26 @@ Node::UnregisterProtocolHandler (ProtocolHandler handler)
 }
 
 bool
-Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol,
-                         const Address &from, const Address &to, NetDevice::PacketType packetType)
+Node::PromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol,
+                                const Address &from, const Address &to, NetDevice::PacketType packetType)
 {
+  NS_LOG_FUNCTION(device->GetName ());
+  return ReceiveFromDevice (device, packet, protocol, from, to, packetType, true);
+}
+
+bool
+Node::NonPromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol,
+                                   const Address &from)
+{
+  NS_LOG_FUNCTION(device->GetName ());
+  return ReceiveFromDevice (device, packet, protocol, from, from, NetDevice::PacketType (0), false);
+}
+
+bool
+Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol,
+                         const Address &from, const Address &to, NetDevice::PacketType packetType, bool promiscuous)
+{
+  NS_LOG_FUNCTION(device->GetName ());
   bool found = false;
   // if there are (potentially) multiple handlers, we need to copy the
   // packet before passing it to each handler, because handlers may
@@ -212,8 +264,11 @@ Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t pro
           if (i->protocol == 0 || 
               i->protocol == protocol)
             {
-              i->handler (device, (copyNeeded ? packet->Copy () : packet), protocol, from, to, packetType);
-              found = true;
+              if (promiscuous == i->promiscuous)
+                {
+                  i->handler (device, (copyNeeded ? packet->Copy () : packet), protocol, from, to, packetType);
+                  found = true;
+                }
             }
         }
     }

@@ -131,8 +131,8 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
     cls.add_method('SetNode', 'void', [param('ns3::Ptr< ns3::Node >', 'node')], is_virtual=True)
     ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::NeedsArp() const [member function]
     cls.add_method('NeedsArp', 'bool', [], is_const=True, is_virtual=True)
-    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> cb) [member function]
-    cls.add_method('SetReceiveCallback', 'void', [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], is_virtual=True)
+    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty> cb) [member function]
+    cls.add_method('SetReceiveCallback', 'void', [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::empty, ns3::empty >', 'cb')], is_virtual=True)
     ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::DoDispose() [member function]
     cls.add_method('DoDispose', 'void', [], visibility='private', is_virtual=True)
     return

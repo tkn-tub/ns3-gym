@@ -136,6 +136,20 @@ public:
 
   /**
    * A protocol handler
+   *
+   * \param device a pointer to the net device which received the packet
+   * \param packet the packet received
+   * \param protocol the 16 bit protocol number associated with this packet.
+   *        This protocol number is expected to be the same protocol number
+   *        given to the Send method by the user on the sender side.
+   * \param sender the address of the sender
+   * \param receiver the address of the receiver; Note: this value is
+   *                 only valid for promiscuous mode protocol
+   *                 handlers.
+   * \param packetType type of packet received
+   *                   (broadcast/multicast/unicast/otherhost); Note:
+   *                   this value is only valid for promiscuous mode
+   *                   protocol handlers.
    */
   typedef Callback<void,Ptr<NetDevice>, Ptr<Packet>,uint16_t,const Address &,
                    const Address &, NetDevice::PacketType> ProtocolHandler;
@@ -150,10 +164,12 @@ public:
    * \param device the device attached to this handler. If the
    *        value is zero, the handler is attached to all
    *        devices on this node.
+   * \param promiscuous whether to register a promiscuous mode handler
    */
   void RegisterProtocolHandler (ProtocolHandler handler, 
                                 uint16_t protocolType,
-                                Ptr<NetDevice> device);
+                                Ptr<NetDevice> device,
+                                bool promiscuous=false);
   /**
    * \param handler the handler to unregister
    *
@@ -161,34 +177,6 @@ public:
    * be invoked anymore.
    */
   void UnregisterProtocolHandler (ProtocolHandler handler);
-
-  /**
-   * A promiscuous protocol handler
-   */
-  typedef Callback<void,Ptr<NetDevice>, Ptr<Packet>,uint16_t,
-                   const Address &, const Address &, bool> PromiscuousProtocolHandler;
-  /**
-   * \param handler the handler to register
-   * \param protocolType the type of protocol this handler is 
-   *        interested in. This protocol type is a so-called
-   *        EtherType, as registered here:
-   *        http://standards.ieee.org/regauth/ethertype/eth.txt
-   *        the value zero is interpreted as matching all
-   *        protocols.
-   * \param device the device attached to this handler. If the
-   *        value is zero, the handler is attached to all
-   *        devices on this node.
-   */
-  void RegisterPromiscuousProtocolHandler (PromiscuousProtocolHandler handler, 
-                                           uint16_t protocolType,
-                                           Ptr<NetDevice> device);
-  /**
-   * \param handler the handler to unregister
-   *
-   * After this call returns, the input handler will never
-   * be invoked anymore.
-   */
-  void UnregisterPromiscuousProtocolHandler (PromiscuousProtocolHandler handler);
 
 
 protected:
@@ -207,14 +195,19 @@ private:
    */
   virtual void NotifyDeviceAdded (Ptr<NetDevice> device);
 
+  bool NonPromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet>, uint16_t protocol, const Address &from);
+  bool PromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet>, uint16_t protocol,
+                                 const Address &from, const Address &to, NetDevice::PacketType packetType);
   bool ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet>, uint16_t protocol,
-                          const Address &from, const Address &to, NetDevice::PacketType packetType);
+                          const Address &from, const Address &to, NetDevice::PacketType packetType, bool promisc);
+
   void Construct (void);
 
   struct ProtocolHandlerEntry {
     ProtocolHandler handler;
-    uint16_t protocol;
     Ptr<NetDevice> device;
+    uint16_t protocol;
+    bool promiscuous;
   };
   typedef std::vector<struct Node::ProtocolHandlerEntry> ProtocolHandlerList;
   uint32_t    m_id;         // Node id for this node

@@ -481,7 +481,11 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
   if (m_encapMode == RAW)
     {
       m_rxTrace (packet);
-      m_rxCallback (this, packet, 0, GetBroadcast (), GetAddress (), PACKET_HOST);
+      if (!m_promiscRxCallback.IsNull ())
+        {
+          m_promiscRxCallback (this, packet, 0, GetBroadcast (), GetAddress (), PACKET_HOST);
+        }
+      m_rxCallback (this, packet, 0, GetBroadcast ());
       return;
     }
 
@@ -575,7 +579,15 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
           packetType = PACKET_OTHERHOST;
         }
       
-      m_rxCallback (this, packet, protocol, header.GetSource (), header.GetDestination (), packetType);
+      if (!m_promiscRxCallback.IsNull ())
+        {
+          m_promiscRxCallback (this, packet, protocol, header.GetSource (), header.GetDestination (), packetType);
+        }
+
+      if (packetType != PACKET_OTHERHOST)
+        {
+          m_rxCallback (this, packet, protocol, header.GetSource ());
+        }
     }
 }
 
@@ -845,6 +857,18 @@ CsmaNetDevice::NeedsArp (void) const
 CsmaNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
   m_rxCallback = cb;
+}
+
+void 
+CsmaNetDevice::SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb)
+{
+  m_promiscRxCallback = cb;
+}
+
+bool 
+CsmaNetDevice::SupportsPromiscuous () const
+{
+  return true;
 }
 
 } // namespace ns3

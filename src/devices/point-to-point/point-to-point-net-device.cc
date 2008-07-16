@@ -241,7 +241,7 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
 //
       m_rxTrace (packet);
       ProcessHeader(packet, protocol);
-      m_rxCallback (this, packet, protocol, GetBroadcast (), m_address, PACKET_HOST);
+      m_rxCallback (this, packet, protocol, GetBroadcast ());
     }
 }
 

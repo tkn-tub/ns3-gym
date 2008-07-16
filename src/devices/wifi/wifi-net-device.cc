@@ -316,9 +316,7 @@ WifiNetDevice::ForwardUp (Ptr<Packet> packet, const Mac48Address &from)
   m_rxLogger (packet, from);
   LlcSnapHeader llc;
   packet->RemoveHeader (llc);
-  Mac48Address to = from; // FIXME
-  PacketType packetType = PACKET_HOST; // FIXME
-  m_forwardUp (this, packet, llc.GetType (), from, to, packetType);
+  m_forwardUp (this, packet, llc.GetType (), from);
 }
 
 void

@@ -66,6 +66,8 @@ public:
   virtual void SetNode (Ptr<Node> node);
   virtual bool NeedsArp (void) const;
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
+  virtual void SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb);
+  virtual bool SupportsPromiscuous () const;
 
 protected:
   virtual void DoDispose (void);
@@ -81,6 +83,7 @@ protected:
 
 private:
   NetDevice::ReceiveCallback m_rxCallback;
+  NetDevice::PromiscReceiveCallback m_promiscRxCallback;
 
   Mac48Address m_address;
   Time m_expirationTime; // time it takes for learned MAC state to expire

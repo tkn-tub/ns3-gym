@@ -271,11 +271,10 @@ public:
    *        This protocol number is expected to be the same protocol number
    *        given to the Send method by the user on the sender side.
    * \param sender the address of the sender
-   * \param receiver the address of the receiver
    * \returns true if the callback could handle the packet successfully, false
    *          otherwise.
    */
-  typedef Callback<bool,Ptr<NetDevice>,Ptr<Packet>,uint16_t,const Address &,const Address &, PacketType> ReceiveCallback;
+  typedef Callback<bool,Ptr<NetDevice>,Ptr<Packet>,uint16_t,const Address &> ReceiveCallback;
 
   /**
    * \param cb callback to invoke whenever a packet has been received and must
@@ -283,6 +282,39 @@ public:
    *
    */
   virtual void SetReceiveCallback (ReceiveCallback cb) = 0;
+
+
+  /**
+   * \param device a pointer to the net device which is calling this callback
+   * \param packet the packet received
+   * \param protocol the 16 bit protocol number associated with this packet.
+   *        This protocol number is expected to be the same protocol number
+   *        given to the Send method by the user on the sender side.
+   * \param sender the address of the sender
+   * \param receiver the address of the receiver
+   * \param packetType type of packet received (broadcast/multicast/unicast/otherhost)
+   * \returns true if the callback could handle the packet successfully, false
+   *          otherwise.
+   */
+  typedef Callback< bool, Ptr<NetDevice>, Ptr<Packet>, uint16_t,
+                    const Address &, const Address &, PacketType > PromiscReceiveCallback;
+
+  /**
+   * \param cb callback to invoke whenever a packet has been received in promiscuous mode and must
+   *        be forwarded to the higher layers.
+   * 
+   * Enables netdevice promiscuous mode and sets the callback that
+   * will handle promiscuous mode packets.  Note, promiscuous mode
+   * packets means _all_ packets, including those packets that can be
+   * sensed by the netdevice but which are intended to be received by
+   * other hosts.
+   */
+  virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
+
+  /**
+   * \return true if this interface supports a promiscuous mode, false otherwise.
+   */
+  virtual bool SupportsPromiscuous (void) const;
 
 };
 
