@@ -454,11 +454,6 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t pro
 {
   NS_LOG_FUNCTION (this << &device << packet << protocol <<  from);
 
-  if (packetType == NetDevice::PACKET_OTHERHOST)
-    {
-      return;
-    }
-
   NS_LOG_LOGIC ("Packet from " << from << " received on node " << m_node->GetId ());
 
   uint32_t index = 0;
