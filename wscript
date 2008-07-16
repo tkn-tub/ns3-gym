@@ -456,8 +456,11 @@ def _run_waf_check():
     print "-- Running NS-3 C++ core unit tests..."
     run_program('run-tests', get_command_template())
 
-    print "-- Running NS-3 Python bindings unit tests..."
-    _run_argv([env['PYTHON'], os.path.join("utils", "python-unit-tests.py")], proc_env)
+    if env['ENABLE_PYTHON_BINDINGS']:
+        print "-- Running NS-3 Python bindings unit tests..."
+        _run_argv([env['PYTHON'], os.path.join("utils", "python-unit-tests.py")], proc_env)
+    else:
+        print "-- Skipping NS-3 Python bindings unit tests: Python bindings not enabled."
 
 
 def _find_program(program_name, env):
