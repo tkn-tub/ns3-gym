@@ -78,7 +78,35 @@ class TestSimulator(unittest.TestCase):
         ns3.Simulator.Run()
         self.assert_(self._received_packet is not None)
         self.assertEqual(self._received_packet.GetSize(), 19)
+
+
+    def testAttributes(self):
+        ##
+        ## Yes, I know, the GetAttribute interface for Python is
+        ## horrible, we should fix this soon, I hope.
+        ##
+        queue = ns3.DropTailQueue()
+
+        queue.SetAttribute("MaxPackets", ns3.UintegerValue(123456))
+
+        limit = ns3.UintegerValue()
+        queue.GetAttribute("MaxPackets", limit)
+        self.assertEqual(limit.Get(), 123456)
+
+        ## -- object pointer values
+        mobility = ns3.RandomWaypointMobilityModel()
+        ptr = ns3.PointerValue()
+        mobility.GetAttribute("Position", ptr)
+        self.assertEqual(ptr.GetObject(), None)
         
+        pos = ns3.ListPositionAllocator()
+        mobility.SetAttribute("Position", ns3.PointerValue(pos))
+
+        ptr = ns3.PointerValue()
+        mobility.GetAttribute("Position", ptr)
+        self.assert_(ptr.GetObject() is not None)
+        
+
 
 if __name__ == '__main__':
     unittest.main()
