@@ -85,6 +85,7 @@ ArpCache::DoDispose (void)
 void
 ArpCache::SetDevice (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_device = device;
   m_interface = interface;
 }
@@ -92,50 +93,59 @@ ArpCache::SetDevice (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface)
 Ptr<NetDevice>
 ArpCache::GetDevice (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return m_device;
 }
 
 Ptr<Ipv4Interface>
 ArpCache::GetInterface (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return m_interface;
 }
 
 void 
 ArpCache::SetAliveTimeout (Time aliveTimeout)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_aliveTimeout = aliveTimeout;
 }
 void 
 ArpCache::SetDeadTimeout (Time deadTimeout)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_deadTimeout = deadTimeout;
 }
 void 
 ArpCache::SetWaitReplyTimeout (Time waitReplyTimeout)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_waitReplyTimeout = waitReplyTimeout;
 }
 
 Time
 ArpCache::GetAliveTimeout (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return m_aliveTimeout;
 }
 Time
 ArpCache::GetDeadTimeout (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return m_deadTimeout;
 }
 Time
 ArpCache::GetWaitReplyTimeout (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return m_waitReplyTimeout;
 }
 
 void 
 ArpCache::Flush (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   for (CacheI i = m_arpCache.begin (); i != m_arpCache.end (); i++) 
     {
       delete (*i).second;
@@ -146,6 +156,7 @@ ArpCache::Flush (void)
 ArpCache::Entry *
 ArpCache::Lookup (Ipv4Address to)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_arpCache.find (to) != m_arpCache.end ()) 
     {
       ArpCache::Entry *entry = m_arpCache[to];
@@ -157,6 +168,7 @@ ArpCache::Lookup (Ipv4Address to)
 ArpCache::Entry *
 ArpCache::Add (Ipv4Address to)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT (m_arpCache.find (to) == m_arpCache.end ());
 
   ArpCache::Entry *entry = new ArpCache::Entry (this);
@@ -167,22 +179,27 @@ ArpCache::Add (Ipv4Address to)
 ArpCache::Entry::Entry (ArpCache *arp)
   : m_arp (arp),
     m_state (ALIVE)
-{}
+{
+  NS_LOG_FUNCTION_NOARGS ();
+}
 
 
 bool 
 ArpCache::Entry::IsDead (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return (m_state == DEAD)?true:false;
 }
 bool 
 ArpCache::Entry::IsAlive (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return (m_state == ALIVE)?true:false;
 }
 bool
 ArpCache::Entry::IsWaitReply (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return (m_state == WAIT_REPLY)?true:false;
 }
 
@@ -190,12 +207,14 @@ ArpCache::Entry::IsWaitReply (void)
 void 
 ArpCache::Entry::MarkDead (void) 
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_state = DEAD;
   UpdateSeen ();
 }
 void
 ArpCache::Entry::MarkAlive (Address macAddress) 
 {
+  NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT (m_state == WAIT_REPLY);
   m_macAddress = macAddress;
   m_state = ALIVE;
@@ -205,6 +224,7 @@ ArpCache::Entry::MarkAlive (Address macAddress)
 bool
 ArpCache::Entry::UpdateWaitReply (Ptr<Packet> waiting)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT (m_state == WAIT_REPLY);
   /* We are already waiting for an answer so
    * we dump the previously waiting packet and
@@ -220,6 +240,7 @@ ArpCache::Entry::UpdateWaitReply (Ptr<Packet> waiting)
 void 
 ArpCache::Entry::MarkWaitReply (Ptr<Packet> waiting)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT (m_state == ALIVE || m_state == DEAD);
   NS_ASSERT (m_pending.empty ());
   m_state = WAIT_REPLY;
@@ -230,12 +251,14 @@ ArpCache::Entry::MarkWaitReply (Ptr<Packet> waiting)
 Address
 ArpCache::Entry::GetMacAddress (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT (m_state == ALIVE);
   return m_macAddress;
 }
 bool 
 ArpCache::Entry::IsExpired (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   Time timeout;
   switch (m_state) {
   case ArpCache::Entry::WAIT_REPLY:
@@ -266,6 +289,7 @@ ArpCache::Entry::IsExpired (void)
 Ptr<Packet> 
 ArpCache::Entry::DequeuePending (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_pending.empty ())
     {
       return 0;
@@ -280,6 +304,7 @@ ArpCache::Entry::DequeuePending (void)
 void 
 ArpCache::Entry::UpdateSeen (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_lastSeen = Simulator::Now ();
 }
 
