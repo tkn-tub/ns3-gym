@@ -51,7 +51,14 @@ SystemMutexPrivate::SystemMutexPrivate ()
 // deadlocking it returns an error.  It will also check to make sure a thread
 // has previously called pthread_mutex_lock when it calls pthread_mutex_unlock.
 //
+// Linux and OS X (at least) have, of course chosen different names for the 
+// error checking flags just to make life difficult.
+//
+#if defined (PTHREAD_MUTEX_ERRORCHECK_NP)
   pthread_mutexattr_settype (&attr, PTHREAD_MUTEX_ERRORCHECK_NP);
+#else
+  pthread_mutexattr_settype (&attr, PTHREAD_MUTEX_ERRORCHECK);
+#endif
   pthread_mutex_init (&m_mutex, &attr);
 }
     
