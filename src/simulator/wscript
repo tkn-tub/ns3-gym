@@ -58,6 +58,7 @@ def build(bld):
         'heap-scheduler.cc',
         'event-impl.cc',
         'simulator.cc',
+        'simulator-impl.cc',
         'timer.cc',
         'watchdog.cc',
         ]
@@ -70,6 +71,7 @@ def build(bld):
         'event-id.h',
         'event-impl.h',
         'simulator.h',
+        'simulator-impl.h',
         'scheduler.h',
         'list-scheduler.h',
         'map-scheduler.h',

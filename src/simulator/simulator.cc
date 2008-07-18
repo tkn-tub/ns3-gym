@@ -19,7 +19,9 @@
  */
 
 #include "simulator.h"
+#include "simulator-impl.h"
 #include "scheduler.h"
+#include "map-scheduler.h"
 #include "event-impl.h"
 
 #include "ns3/ptr.h"
@@ -27,394 +29,15 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 
-
 #include <math.h>
 #include <fstream>
 #include <list>
 #include <vector>
 #include <iostream>
 
-#define noTRACE_SIMU 1
-
-#ifdef TRACE_SIMU
-#include <iostream>
-# define TRACE(x) \
-std::cout << "SIMU TRACE " << Simulator::Now () << " " << x << std::endl;
-# define TRACE_S(x) \
-std::cout << "SIMU TRACE " << x << std::endl;
-#else /* TRACE_SIMU */
-# define TRACE(format,...)
-# define TRACE_S(format,...)
-#endif /* TRACE_SIMU */
-
+NS_LOG_COMPONENT_DEFINE ("Simulator");
 
 namespace ns3 {
-
-/**
- * \brief private implementation detail of the Simulator API.
- */
-class SimulatorPrivate : public Object
-{
-public:
-  static TypeId GetTypeId (void);
-
-  SimulatorPrivate ();
-  ~SimulatorPrivate ();
-
-  void Destroy ();
-
-  void EnableLogTo (char const *filename);
-
-  bool IsFinished (void) const;
-  Time Next (void) const;
-  void Stop (void);
-  void Stop (Time const &time);
-  EventId Schedule (Time const &time, const Ptr<EventImpl> &event);
-  EventId ScheduleNow (const Ptr<EventImpl> &event);
-  EventId ScheduleDestroy (const Ptr<EventImpl> &event);
-  void Remove (const EventId &ev);
-  void Cancel (const EventId &ev);
-  bool IsExpired (const EventId &ev) const;
-  void Run (void);
-  Time Now (void) const;
-  Time GetDelayLeft (const EventId &id) const;
-  Time GetMaximumSimulationTime (void) const;
-
-  void SetScheduler (Ptr<Scheduler> scheduler);
-  Ptr<Scheduler> GetScheduler (void) const;
-
-private:
-  void ProcessOneEvent (void);
-  uint64_t NextTs (void) const;
-
-  typedef std::list<EventId> DestroyEvents;
-  DestroyEvents m_destroyEvents;
-  uint64_t m_stopAt;
-  bool m_stop;
-  Ptr<Scheduler> m_events;
-  uint32_t m_uid;
-  uint32_t m_currentUid;
-  uint64_t m_currentTs;
-  std::ofstream m_log;
-  std::ifstream m_inputLog;
-  bool m_logEnable;
-  // number of events that have been inserted but not yet scheduled,
-  // not counting the "destroy" events; this is used for validation
-  int m_unscheduledEvents;
-};
-
-NS_OBJECT_ENSURE_REGISTERED (SimulatorPrivate);
-
-
-TypeId
-SimulatorPrivate::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::SimulatorPrivate")
-    .SetParent<Object> ()
-    .AddConstructor<SimulatorPrivate> ()
-    .AddAttribute ("Scheduler",
-                   "The Scheduler used to handle all simulation events.",
-                   PointerValue (),
-                   MakePointerAccessor (&SimulatorPrivate::SetScheduler,
-                                        &SimulatorPrivate::GetScheduler),
-                   MakePointerChecker<Scheduler> ())
-    ;
-  return tid;
-}
-
-SimulatorPrivate::SimulatorPrivate ()
-{
-  m_stop = false;
-  m_stopAt = 0;
-  // uids are allocated from 4.
-  // uid 0 is "invalid" events
-  // uid 1 is "now" events
-  // uid 2 is "destroy" events
-  m_uid = 4; 
-  // before ::Run is entered, the m_currentUid will be zero
-  m_currentUid = 0;
-  m_logEnable = false;
-  m_currentTs = 0;
-  m_unscheduledEvents = 0;
-}
-
-SimulatorPrivate::~SimulatorPrivate ()
-{
-  while (!m_events->IsEmpty ())
-    {
-      EventId next = m_events->RemoveNext ();
-    }
-  m_events = 0;
-}
-void
-SimulatorPrivate::Destroy ()
-{
-  while (!m_destroyEvents.empty ()) 
-    {
-      Ptr<EventImpl> ev = m_destroyEvents.front ().PeekEventImpl ();
-      m_destroyEvents.pop_front ();
-      TRACE ("handle destroy " << ev);
-      if (!ev->IsCancelled ())
-        {
-          ev->Invoke ();
-        }
-    }
-}
-
-void
-SimulatorPrivate::SetScheduler (Ptr<Scheduler> scheduler)
-{
-  if (m_events != 0)
-    {
-      while (!m_events->IsEmpty ())
-        {
-          EventId next = m_events->RemoveNext ();
-          scheduler->Insert (next);
-        }
-    }
-  m_events = scheduler;
-}
-
-Ptr<Scheduler>
-SimulatorPrivate::GetScheduler (void) const
-{
-  return m_events;
-}
-
-void
-SimulatorPrivate::EnableLogTo (char const *filename)
-{
-  m_log.open (filename);
-  m_logEnable = true;
-}
-
-void
-SimulatorPrivate::ProcessOneEvent (void)
-{
-  EventId next = m_events->RemoveNext ();
-
-  NS_ASSERT (next.GetTs () >= m_currentTs);
-  --m_unscheduledEvents;
-
-  TRACE ("handle " << nextEv);
-  m_currentTs = next.GetTs ();
-  m_currentUid = next.GetUid ();
-  if (m_logEnable) 
-    {
-      m_log << "e "<<next.GetUid () << " " << next.GetTs () << std::endl;
-    }
-  EventImpl *event = next.PeekEventImpl ();
-  event->Invoke ();
-}
-
-bool 
-SimulatorPrivate::IsFinished (void) const
-{
-  return m_events->IsEmpty ();
-}
-uint64_t
-SimulatorPrivate::NextTs (void) const
-{
-  NS_ASSERT (!m_events->IsEmpty ());
-  EventId id = m_events->PeekNext ();
-  return id.GetTs ();
-}
-Time
-SimulatorPrivate::Next (void) const
-{
-  return TimeStep (NextTs ());
-}
-
-void
-SimulatorPrivate::Run (void)
-{
-
-  while (!m_events->IsEmpty () && !m_stop && 
-         (m_stopAt == 0 || m_stopAt > NextTs ())) 
-    {
-      ProcessOneEvent ();
-    }
-
-  // If the simulator stopped naturally by lack of events, make a
-  // consistency test to check that we didn't lose any events along the way.
-  NS_ASSERT(!m_events->IsEmpty () || m_unscheduledEvents == 0);
-
-  m_log.close ();
-}
-
-
-void 
-SimulatorPrivate::Stop (void)
-{
-  m_stop = true;
-}
-void 
-SimulatorPrivate::Stop (Time const &time)
-{
-  NS_ASSERT (time.IsPositive ());
-  Time absolute = Simulator::Now () + time;
-  m_stopAt = absolute.GetTimeStep ();
-}
-EventId
-SimulatorPrivate::Schedule (Time const &time, const Ptr<EventImpl> &event)
-{
-  NS_ASSERT (time.IsPositive ());
-  NS_ASSERT (time >= TimeStep (m_currentTs));
-  uint64_t ts = (uint64_t) time.GetTimeStep ();
-  EventId id (event, ts, m_uid);
-  if (m_logEnable) 
-    {
-      m_log << "i "<<m_currentUid<<" "<<m_currentTs<<" "
-            <<m_uid<<" "<<time.GetTimeStep () << std::endl;
-    }
-  m_uid++;
-  ++m_unscheduledEvents;
-  m_events->Insert (id);
-  return id;
-}
-EventId
-SimulatorPrivate::ScheduleNow (const Ptr<EventImpl> &event)
-{
-  EventId id (event, m_currentTs, m_uid);
-  if (m_logEnable) 
-    {
-      m_log << "i "<<m_currentUid<<" "<<m_currentTs<<" "
-            <<m_uid<<" "<<m_currentTs << std::endl;
-    }
-  m_uid++;
-  ++m_unscheduledEvents;
-  m_events->Insert (id);
-  return id;
-}
-EventId
-SimulatorPrivate::ScheduleDestroy (const Ptr<EventImpl> &event)
-{
-  EventId id (event, m_currentTs, 2);
-  m_destroyEvents.push_back (id);
-  if (m_logEnable) 
-  {
-    m_log << "id " << m_currentUid << " " << Now ().GetTimeStep () << " "
-          << m_uid << std::endl;
-  }
-  m_uid++;
-  return id;
-}
-
-Time
-SimulatorPrivate::Now (void) const
-{
-  return TimeStep (m_currentTs);
-}
-Time 
-SimulatorPrivate::GetDelayLeft (const EventId &id) const
-{
-  if (IsExpired (id))
-    {
-      return TimeStep (0);
-    }
-  else
-    {
-      return TimeStep (id.GetTs () - m_currentTs);
-    }
-}
-
-void
-SimulatorPrivate::Remove (const EventId &ev)
-{
-  if (ev.GetUid () == 2)
-    {
-      // destroy events.
-      for (DestroyEvents::iterator i = m_destroyEvents.begin (); i != m_destroyEvents.end (); i++)
-        {
-          if (*i == ev)
-            {
-              m_destroyEvents.erase (i);
-              break;
-            }
-         }
-      return;
-    }
-  if (IsExpired (ev))
-    {
-      return;
-    }
-  m_events->Remove (ev);
-  Cancel (ev);
-
-  if (m_logEnable) 
-    {
-      m_log << "r " << m_currentUid << " " << m_currentTs << " "
-            << ev.GetUid () << " " << ev.GetTs () << std::endl;
-    }
-  --m_unscheduledEvents;
-}
-
-void
-SimulatorPrivate::Cancel (const EventId &id)
-{
-  if (!IsExpired (id))
-    {
-      id.PeekEventImpl ()->Cancel ();
-    }
-}
-
-bool
-SimulatorPrivate::IsExpired (const EventId &ev) const
-{
-  if (ev.GetUid () == 2)
-    {
-      // destroy events.
-      for (DestroyEvents::const_iterator i = m_destroyEvents.begin (); i != m_destroyEvents.end (); i++)
-        {
-          if (*i == ev)
-            {
-              return false;
-            }
-         }
-      return true;
-    }
-  if (ev.PeekEventImpl () == 0 ||
-      ev.GetTs () < m_currentTs ||
-      (ev.GetTs () == m_currentTs &&
-       ev.GetUid () <= m_currentUid) ||
-      ev.PeekEventImpl ()->IsCancelled ()) 
-    {
-      return true;
-    }
-  else
-    {
-      return false;
-    }
-}
-
-Time 
-SimulatorPrivate::GetMaximumSimulationTime (void) const
-{
-  // XXX: I am fairly certain other compilers use other non-standard
-  // post-fixes to indicate 64 bit constants.
-  return TimeStep (0x7fffffffffffffffLL);
-}
-
-
-
-}; // namespace ns3
-
-
-#include "map-scheduler.h"
-
-
-namespace ns3 {
-
-Ptr<SimulatorPrivate> Simulator::m_priv = 0;
-
-void Simulator::SetScheduler (Ptr<Scheduler> scheduler)
-{
-  GetPriv ()->SetScheduler (scheduler);
-}
-void Simulator::EnableLogTo (char const *filename)
-{
-  GetPriv ()->EnableLogTo (filename);
-}
 
 #ifdef NS3_LOG_ENABLE
 static void
@@ -424,88 +47,121 @@ TimePrinter (std::ostream &os)
 }
 #endif /* NS3_LOG_ENABLE */
 
-Ptr<SimulatorPrivate>
-Simulator::GetPriv (void)
+Ptr<SimulatorImpl> Simulator::m_impl = 0;
+
+Ptr<SimulatorImpl>
+Simulator::GetImpl (void)
 {
-  if (m_priv == 0) 
+  NS_LOG_FUNCTION_NOARGS ();
+
+  if (m_impl == 0) 
     {
-      /* Note: we call LogSetTimePrinter below _after_ calling CreateObject because
-       * CreateObject can trigger calls to the logging framework which would call
-       * the TimePrinter function above which would call Simulator::Now which would
-       * call Simulator::GetPriv, and, thus, get us in an infinite recursion until the
-       * stack explodes.
+      /* Note: we call LogSetTimePrinter below _after_ calling CreateObject 
+       * because CreateObject can trigger calls to the logging framework which
+       * would call the TimePrinter function above which would call 
+       * Simulator::Now which would call Simulator::GetImpl, and, thus, get 
+       * us in an infinite recursion until the stack explodes.
        */
-      m_priv = CreateObject<SimulatorPrivate> ();
+      m_impl = CreateObject<SimulatorImpl> ();
+
       Ptr<Scheduler> scheduler = CreateObject<MapScheduler> ();
-      m_priv->SetScheduler (scheduler);
+      m_impl->SetScheduler (scheduler);
+
       LogSetTimePrinter (&TimePrinter);
     }
-  TRACE_S ("priv " << m_priv);
-  return m_priv;
+  NS_LOG_LOGIC ("priv " << m_impl);
+  return m_impl;
 }
 
 void
 Simulator::Destroy (void)
 {
-  if (m_priv == 0)
+  NS_LOG_FUNCTION_NOARGS ();
+
+  if (m_impl == 0)
     {
       return;
     }
-  /* Note: we have to call LogSetTimePrinter (0) below because if we do not do this,
-   * and restart a simulation after this call to Destroy, (which is legal), 
-   * Simulator::GetPriv will trigger again an infinite recursion until the stack 
-   * explodes.
+  /* Note: we have to call LogSetTimePrinter (0) below because if we do not do
+   * this, and restart a simulation after this call to Destroy, (which is 
+   * legal), Simulator::GetImpl will trigger again an infinite recursion until
+   * the stack explodes.
    */
   LogSetTimePrinter (0);
-  m_priv->Destroy ();
-  m_priv = 0;
+  m_impl->Destroy ();
+  m_impl = 0;
 }
 
+void
+Simulator::SetScheduler (Ptr<Scheduler> scheduler)
+{
+  NS_LOG_FUNCTION (scheduler);
+  GetImpl ()->SetScheduler (scheduler);
+}
+
+void 
+Simulator::EnableLogTo (char const *filename)
+{
+  NS_LOG_FUNCTION (filename);
+  GetImpl ()->EnableLogTo (filename);
+}
 
 bool 
 Simulator::IsFinished (void)
 {
-  return GetPriv ()->IsFinished ();
+  NS_LOG_FUNCTION_NOARGS ();
+  return GetImpl ()->IsFinished ();
 }
+
 Time
 Simulator::Next (void)
 {
-  return GetPriv ()->Next ();
+  NS_LOG_FUNCTION_NOARGS ();
+  return GetImpl ()->Next ();
 }
-
 
 void 
 Simulator::Run (void)
 {
-  GetPriv ()->Run ();
+  NS_LOG_FUNCTION_NOARGS ();
+  GetImpl ()->Run ();
 }
+
 void 
 Simulator::Stop (void)
 {
-  TRACE ("stop");
-  GetPriv ()->Stop ();
+  NS_LOG_LOGIC ("stop");
+  GetImpl ()->Stop ();
 }
+
 void 
 Simulator::Stop (Time const &time)
 {
-  GetPriv ()->Stop (time);
+  NS_LOG_FUNCTION (time);
+  GetImpl ()->Stop (time);
 }
+
 Time
 Simulator::Now (void)
 {
-  return GetPriv ()->Now ();
+  NS_LOG_FUNCTION_NOARGS ();
+  return GetImpl ()->Now ();
 }
+
 Time
 Simulator::GetDelayLeft (const EventId &id)
 {
-  return GetPriv ()->GetDelayLeft (id);
+  NS_LOG_FUNCTION (&id);
+  return GetImpl ()->GetDelayLeft (id);
 }
 
 Ptr<EventImpl>
 Simulator::MakeEvent (void (*f) (void))
 {
-    // zero arg version
-  class EventFunctionImpl0 : public EventImpl {
+  NS_LOG_FUNCTION (f);
+  // zero arg version
+  class EventFunctionImpl0 : public EventImpl
+  {
   public:
     typedef void (*F)(void);
       
@@ -522,64 +178,81 @@ Simulator::MakeEvent (void (*f) (void))
   } *ev = new EventFunctionImpl0 (f);
   return Ptr<EventImpl> (ev, false);
 }
+
 EventId
 Simulator::Schedule (Time const &time, const Ptr<EventImpl> &ev)
 {
-  return GetPriv ()->Schedule (Now () + time, ev);
+  NS_LOG_FUNCTION (time << ev);
+  return GetImpl ()->Schedule (Now () + time, ev);
 }
+
 EventId
 Simulator::ScheduleNow (const Ptr<EventImpl> &ev)
 {
-  return GetPriv ()->ScheduleNow (ev);
+  NS_LOG_FUNCTION (ev);
+  return GetImpl ()->ScheduleNow (ev);
 }
+
 EventId
 Simulator::ScheduleDestroy (const Ptr<EventImpl> &ev)
 {
-  return GetPriv ()->ScheduleDestroy (ev);
+  NS_LOG_FUNCTION (ev);
+  return GetImpl ()->ScheduleDestroy (ev);
 }  
+
 EventId
 Simulator::Schedule (Time const &time, void (*f) (void))
 {
+  NS_LOG_FUNCTION (time << f);
   return Schedule (time, MakeEvent (f));
 }
+
 EventId
 Simulator::ScheduleNow (void (*f) (void))
 {
+  NS_LOG_FUNCTION (f);
   return ScheduleNow (MakeEvent (f));
 }
+
 EventId
 Simulator::ScheduleDestroy (void (*f) (void))
 {
+  NS_LOG_FUNCTION (f);
   return ScheduleDestroy (MakeEvent (f));
 }
-
 
 void
 Simulator::Remove (const EventId &ev)
 {
-  return GetPriv ()->Remove (ev);
+  NS_LOG_FUNCTION (&ev);
+  return GetImpl ()->Remove (ev);
 }
 
 void
 Simulator::Cancel (const EventId &ev)
 {
-  return GetPriv ()->Cancel (ev);
+  NS_LOG_FUNCTION (&ev);
+  return GetImpl ()->Cancel (ev);
 }
+
 bool 
 Simulator::IsExpired (const EventId &id)
 {
-  return GetPriv ()->IsExpired (id);
+  NS_LOG_FUNCTION (&id);
+  return GetImpl ()->IsExpired (id);
 }
 
 Time Now (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return Time (Simulator::Now ());
 }
 
 Time 
 Simulator::GetMaximumSimulationTime (void)
 {
-  return GetPriv ()->GetMaximumSimulationTime ();
+  NS_LOG_FUNCTION_NOARGS ();
+  return GetImpl ()->GetMaximumSimulationTime ();
 }
 
 } // namespace ns3
@@ -697,25 +370,31 @@ private:
 SimulatorTests::SimulatorTests ()
   : Test ("Simulator")
 {}
+
 SimulatorTests::~SimulatorTests ()
 {}
+
 void 
 SimulatorTests::Ref (void) const
 {}
+
 void 
 SimulatorTests::Unref (void) const
 {}
+
 uint64_t
 SimulatorTests::NowUs (void)
 {
   uint64_t ns = Now ().GetNanoSeconds ();
   return ns / 1000;
 }  
+
 void
 SimulatorTests::A (int a)
 {
   m_a = false;
 }
+
 void
 SimulatorTests::B (int b)
 {
@@ -730,11 +409,13 @@ SimulatorTests::B (int b)
   Simulator::Remove (m_idC);
   Simulator::Schedule (MicroSeconds (10), &SimulatorTests::D, this, 4);
 }
+
 void
 SimulatorTests::C (int c)
 {
   m_c = false;
 }
+
 void
 SimulatorTests::D (int d)
 {
@@ -747,6 +428,7 @@ SimulatorTests::D (int d)
       m_d = true;
     }
 }
+
 void
 SimulatorTests::destroy (void)
 {
@@ -755,21 +437,27 @@ SimulatorTests::destroy (void)
       m_destroy = true; 
     }
 }
+
 void 
 SimulatorTests::bar0 (void)
 {}
+
 void 
 SimulatorTests::bar1 (int)
 {}
+
 void 
 SimulatorTests::bar2 (int, int)
 {}
+
 void 
 SimulatorTests::bar3 (int, int, int)
 {}
+
 void 
 SimulatorTests::bar4 (int, int, int, int)
 {}
+
 void 
 SimulatorTests::bar5 (int, int, int, int, int)
 {}
@@ -777,15 +465,19 @@ SimulatorTests::bar5 (int, int, int, int, int)
 void
 SimulatorTests::baz1 (int &)
 {}
+
 void
 SimulatorTests::baz2 (int &, int &)
 {}
+
 void
 SimulatorTests::baz3 (int &, int &, int &)
 {}
+
 void 
 SimulatorTests::baz4 (int &, int &, int &, int &)
 {}
+
 void 
 SimulatorTests::baz5 (int &, int &, int &, int &, int &)
 {}
@@ -793,15 +485,19 @@ SimulatorTests::baz5 (int &, int &, int &, int &, int &)
 void
 SimulatorTests::cbaz1 (const int &)
 {}
+
 void
 SimulatorTests::cbaz2 (const int &, const int &)
 {}
+
 void
 SimulatorTests::cbaz3 (const int &, const int &, const int &)
 {}
+
 void 
 SimulatorTests::cbaz4 (const int &, const int &, const int &, const int &)
 {}
+
 void 
 SimulatorTests::cbaz5 (const int &, const int &, const int &, const int &, const int &)
 {}
@@ -809,18 +505,23 @@ SimulatorTests::cbaz5 (const int &, const int &, const int &, const int &, const
 void 
 SimulatorTests::bar0c (void) const
 {}
+
 void 
 SimulatorTests::bar1c (int) const
 {}
+
 void 
 SimulatorTests::bar2c (int, int) const
 {}
+
 void 
 SimulatorTests::bar3c (int, int, int) const
 {}
+
 void 
 SimulatorTests::bar4c (int, int, int, int) const
 {}
+
 void 
 SimulatorTests::bar5c (int, int, int, int, int) const
 {}
@@ -828,15 +529,19 @@ SimulatorTests::bar5c (int, int, int, int, int) const
 void
 SimulatorTests::baz1c (int &) const
 {}
+
 void
 SimulatorTests::baz2c (int &, int &) const
 {}
+
 void
 SimulatorTests::baz3c (int &, int &, int &) const
 {}
+
 void 
 SimulatorTests::baz4c (int &, int &, int &, int &) const
 {}
+
 void 
 SimulatorTests::baz5c (int &, int &, int &, int &, int &) const
 {}
@@ -844,15 +549,19 @@ SimulatorTests::baz5c (int &, int &, int &, int &, int &) const
 void
 SimulatorTests::cbaz1c (const int &) const
 {}
+
 void
 SimulatorTests::cbaz2c (const int &, const int &) const
 {}
+
 void
 SimulatorTests::cbaz3c (const int &, const int &, const int &) const
 {}
+
 void 
 SimulatorTests::cbaz4c (const int &, const int &, const int &, const int &) const
 {}
+
 void 
 SimulatorTests::cbaz5c (const int &, const int &, const int &, const int &, const int &) const
 {}
@@ -881,6 +590,7 @@ SimulatorTests::RunOneTest (void)
   NS_TEST_ASSERT (m_d);
   return result;
 }
+
 void
 SimulatorTests::RunTestsConst (void) const
 {
@@ -979,7 +689,6 @@ SimulatorTests::RunTests (void)
       result = false;
     }
   Simulator::Destroy ();
-
 
   Simulator::Schedule (Seconds (0.0), &foo0);
   Simulator::Schedule (Seconds (0.0), &foo1, 0);

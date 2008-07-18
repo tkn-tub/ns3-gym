@@ -31,7 +31,7 @@
 namespace ns3 {
 
 
-class SimulatorPrivate;
+class SimulatorImpl;
 class SchedulerFactory;
 
 /**
@@ -606,8 +606,8 @@ private:
             typename T1, typename T2, typename T3, typename T4, typename T5>
   static Ptr<EventImpl> MakeEvent (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
-  static Ptr<SimulatorPrivate> GetPriv (void);
-  static Ptr<SimulatorPrivate> m_priv;
+  static Ptr<SimulatorImpl> GetImpl (void);
+  static Ptr<SimulatorImpl> m_impl;
 };
 
 /**
