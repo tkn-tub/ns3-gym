@@ -52,5 +52,11 @@ NetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
   NS_ASSERT (!SupportsPromiscuous ());
 }
 
+bool
+NetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
+{
+  NS_FATAL_ERROR ("NetDevice::SendFrom not implemented for " << GetInstanceTypeId ().GetName ());
+  return false;
+}
 
 } // namespace ns3

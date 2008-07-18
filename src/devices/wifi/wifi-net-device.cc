@@ -283,12 +283,6 @@ WifiNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNu
   m_mac->Enqueue (packet, realTo);
   return true;
 }
-bool 
-WifiNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
-{
-  NS_FATAL_ERROR ("WifiNetDevice::SendFrom not implemented.");
-  return false;
-}
 Ptr<Node> 
 WifiNetDevice::GetNode (void) const
 {

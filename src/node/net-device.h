@@ -228,7 +228,7 @@ public:
    * 
    * \return whether the Send operation succeeded 
    */
-  virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber) = 0;
+  virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
   /**
    * \returns the node base class which contains this network
    *          interface.
