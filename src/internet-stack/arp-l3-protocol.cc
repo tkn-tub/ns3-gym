@@ -68,6 +68,7 @@ ArpL3Protocol::~ArpL3Protocol ()
 void 
 ArpL3Protocol::SetNode (Ptr<Node> node)
 {
+  NS_LOG_FUNCTION (this);
   m_node = node;
 }
 
@@ -88,6 +89,7 @@ ArpL3Protocol::DoDispose (void)
 Ptr<ArpCache> 
 ArpL3Protocol::CreateCache (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
   Ptr<ArpCache> cache = CreateObject<ArpCache> ();
   cache->SetDevice (device, interface);
