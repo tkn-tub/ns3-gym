@@ -55,7 +55,15 @@ SystemConditionPrivate::SystemConditionPrivate ()
 
   pthread_mutexattr_t mAttr;
   pthread_mutexattr_init (&mAttr);
+//
+// Linux and OS X (at least) have, of course chosen different names for the 
+// error checking flags just to make life difficult.
+//
+#if defined (PTHREAD_MUTEX_ERRORCHECK_NP)
   pthread_mutexattr_settype (&mAttr, PTHREAD_MUTEX_ERRORCHECK_NP);
+#else
+  pthread_mutexattr_settype (&mAttr, PTHREAD_MUTEX_ERRORCHECK);
+#endif
   pthread_mutex_init (&m_mutex, &mAttr);
 
   pthread_condattr_t cAttr;
