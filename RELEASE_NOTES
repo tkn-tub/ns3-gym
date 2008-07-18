@@ -11,6 +11,31 @@ Next Release (in ns-3-dev)
 - Kernel system condition support (class SystemCondition) added;
 - Move required methods in helper classes to constructors;
 - Change obsolete references to Parameter to Attribute in helpers;
+- New NetDevice APIs: SendFrom and SetPromiscRxCallback;
+- Add learning bridge (IEEE 802.1D) implementation: BridgeNetDevice;
+
+ ---> API Changes in this release <---
+
+In order to support the learning bridge, some API changes in Node and
+NetDevice were made.
+
+In NetDevice, devices may optionally implement the virtual methods
+SendFrom, SupportsPromiscuous, and SetPromiscReceiveCallback.  If
+these new methods are not implemented, the code still compiles and
+works, except if they are used in a BridgeNetDevice.
+
+In Node, the signature for protocol handler callbacks (used in
+AddProtocolHandler) has changed.  Now it looks like:
+
+  void ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol,
+                          Address const &source, Address const &destination, PacketType packetType);
+
+The extra parameters 'destination' and 'packetType' are present for
+all protocol handlers, but only have valid values for promiscuous
+protocol handlers.  Protocol handlers are non-promiscuous by default,
+so no action is needed to adapt existing code besides updating the
+callback signature.
+
 
 Release 3.1 (2008/06/30)
 ========================
