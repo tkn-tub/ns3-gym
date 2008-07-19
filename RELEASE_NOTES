@@ -11,6 +11,10 @@ Next Release (in ns-3-dev)
 - Kernel system condition support (class SystemCondition) added;
 - Move required methods in helper classes to constructors;
 - Change obsolete references to Parameter to Attribute in helpers;
+- Split simulator into interface and implementation pieces, make 
+  implementation a replaceable component via the 
+  "SimulatorImplementationType" global value.
+  Hint:  try ./waf --run "udp-echo --PrintGlobals"
 
 Release 3.1 (2008/06/30)
 ========================
