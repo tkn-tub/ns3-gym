@@ -19,7 +19,7 @@
  */
 
 #include "simulator.h"
-#include "simulator-impl.h"
+#include "default-simulator-impl.h"
 #include "scheduler.h"
 #include "event-impl.h"
 
@@ -30,23 +30,23 @@
 
 #include <math.h>
 
-NS_LOG_COMPONENT_DEFINE ("SimulatorImpl");
+NS_LOG_COMPONENT_DEFINE ("DefaultSimulatorImpl");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (SimulatorImpl);
+NS_OBJECT_ENSURE_REGISTERED (DefaultSimulatorImpl);
 
 TypeId
-SimulatorImpl::GetTypeId (void)
+DefaultSimulatorImpl::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::SimulatorImpl")
+  static TypeId tid = TypeId ("ns3::DefaultSimulatorImpl")
     .SetParent<Object> ()
-    .AddConstructor<SimulatorImpl> ()
+    .AddConstructor<DefaultSimulatorImpl> ()
     ;
   return tid;
 }
 
-SimulatorImpl::SimulatorImpl ()
+DefaultSimulatorImpl::DefaultSimulatorImpl ()
 {
   m_stop = false;
   m_stopAt = 0;
@@ -62,7 +62,7 @@ SimulatorImpl::SimulatorImpl ()
   m_unscheduledEvents = 0;
 }
 
-SimulatorImpl::~SimulatorImpl ()
+DefaultSimulatorImpl::~DefaultSimulatorImpl ()
 {
   while (!m_events->IsEmpty ())
     {
@@ -72,7 +72,7 @@ SimulatorImpl::~SimulatorImpl ()
 }
 
 void
-SimulatorImpl::Destroy ()
+DefaultSimulatorImpl::Destroy ()
 {
   while (!m_destroyEvents.empty ()) 
     {
@@ -87,7 +87,7 @@ SimulatorImpl::Destroy ()
 }
 
 void
-SimulatorImpl::SetScheduler (Ptr<Scheduler> scheduler)
+DefaultSimulatorImpl::SetScheduler (Ptr<Scheduler> scheduler)
 {
   if (m_events != 0)
     {
@@ -101,20 +101,20 @@ SimulatorImpl::SetScheduler (Ptr<Scheduler> scheduler)
 }
 
 Ptr<Scheduler>
-SimulatorImpl::GetScheduler (void) const
+DefaultSimulatorImpl::GetScheduler (void) const
 {
   return m_events;
 }
 
 void
-SimulatorImpl::EnableLogTo (char const *filename)
+DefaultSimulatorImpl::EnableLogTo (char const *filename)
 {
   m_log.open (filename);
   m_logEnable = true;
 }
 
 void
-SimulatorImpl::ProcessOneEvent (void)
+DefaultSimulatorImpl::ProcessOneEvent (void)
 {
   EventId next = m_events->RemoveNext ();
 
@@ -133,13 +133,13 @@ SimulatorImpl::ProcessOneEvent (void)
 }
 
 bool 
-SimulatorImpl::IsFinished (void) const
+DefaultSimulatorImpl::IsFinished (void) const
 {
   return m_events->IsEmpty ();
 }
 
 uint64_t
-SimulatorImpl::NextTs (void) const
+DefaultSimulatorImpl::NextTs (void) const
 {
   NS_ASSERT (!m_events->IsEmpty ());
   EventId id = m_events->PeekNext ();
@@ -147,13 +147,13 @@ SimulatorImpl::NextTs (void) const
 }
 
 Time
-SimulatorImpl::Next (void) const
+DefaultSimulatorImpl::Next (void) const
 {
   return TimeStep (NextTs ());
 }
 
 void
-SimulatorImpl::Run (void)
+DefaultSimulatorImpl::Run (void)
 {
 
   while (!m_events->IsEmpty () && !m_stop && 
@@ -170,13 +170,13 @@ SimulatorImpl::Run (void)
 }
 
 void 
-SimulatorImpl::Stop (void)
+DefaultSimulatorImpl::Stop (void)
 {
   m_stop = true;
 }
 
 void 
-SimulatorImpl::Stop (Time const &time)
+DefaultSimulatorImpl::Stop (Time const &time)
 {
   NS_ASSERT (time.IsPositive ());
   Time absolute = Simulator::Now () + time;
@@ -184,7 +184,7 @@ SimulatorImpl::Stop (Time const &time)
 }
 
 EventId
-SimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &event)
+DefaultSimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &event)
 {
   NS_ASSERT (time.IsPositive ());
   NS_ASSERT (time >= TimeStep (m_currentTs));
@@ -202,7 +202,7 @@ SimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &event)
 }
 
 EventId
-SimulatorImpl::ScheduleNow (const Ptr<EventImpl> &event)
+DefaultSimulatorImpl::ScheduleNow (const Ptr<EventImpl> &event)
 {
   EventId id (event, m_currentTs, m_uid);
   if (m_logEnable) 
@@ -217,7 +217,7 @@ SimulatorImpl::ScheduleNow (const Ptr<EventImpl> &event)
 }
 
 EventId
-SimulatorImpl::ScheduleDestroy (const Ptr<EventImpl> &event)
+DefaultSimulatorImpl::ScheduleDestroy (const Ptr<EventImpl> &event)
 {
   EventId id (event, m_currentTs, 2);
   m_destroyEvents.push_back (id);
@@ -231,13 +231,13 @@ SimulatorImpl::ScheduleDestroy (const Ptr<EventImpl> &event)
 }
 
 Time
-SimulatorImpl::Now (void) const
+DefaultSimulatorImpl::Now (void) const
 {
   return TimeStep (m_currentTs);
 }
 
 Time 
-SimulatorImpl::GetDelayLeft (const EventId &id) const
+DefaultSimulatorImpl::GetDelayLeft (const EventId &id) const
 {
   if (IsExpired (id))
     {
@@ -250,7 +250,7 @@ SimulatorImpl::GetDelayLeft (const EventId &id) const
 }
 
 void
-SimulatorImpl::Remove (const EventId &ev)
+DefaultSimulatorImpl::Remove (const EventId &ev)
 {
   if (ev.GetUid () == 2)
     {
@@ -281,7 +281,7 @@ SimulatorImpl::Remove (const EventId &ev)
 }
 
 void
-SimulatorImpl::Cancel (const EventId &id)
+DefaultSimulatorImpl::Cancel (const EventId &id)
 {
   if (!IsExpired (id))
     {
@@ -290,7 +290,7 @@ SimulatorImpl::Cancel (const EventId &id)
 }
 
 bool
-SimulatorImpl::IsExpired (const EventId &ev) const
+DefaultSimulatorImpl::IsExpired (const EventId &ev) const
 {
   if (ev.GetUid () == 2)
     {
@@ -319,7 +319,7 @@ SimulatorImpl::IsExpired (const EventId &ev) const
 }
 
 Time 
-SimulatorImpl::GetMaximumSimulationTime (void) const
+DefaultSimulatorImpl::GetMaximumSimulationTime (void) const
 {
   // XXX: I am fairly certain other compilers use other non-standard
   // post-fixes to indicate 64 bit constants.

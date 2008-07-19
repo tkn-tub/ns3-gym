@@ -23,6 +23,7 @@
 
 #include "scheduler.h"
 #include "event-impl.h"
+#include "nstime.h"
 
 #include "ns3/ptr.h"
 #include "ns3/assert.h"
@@ -36,51 +37,24 @@ namespace ns3 {
 class SimulatorImpl : public Object
 {
 public:
-  static TypeId GetTypeId (void);
-
-  SimulatorImpl ();
-  ~SimulatorImpl ();
-
-  void Destroy ();
-
-  void EnableLogTo (char const *filename);
-
-  bool IsFinished (void) const;
-  Time Next (void) const;
-  void Stop (void);
-  void Stop (Time const &time);
-  EventId Schedule (Time const &time, const Ptr<EventImpl> &event);
-  EventId ScheduleNow (const Ptr<EventImpl> &event);
-  EventId ScheduleDestroy (const Ptr<EventImpl> &event);
-  void Remove (const EventId &ev);
-  void Cancel (const EventId &ev);
-  bool IsExpired (const EventId &ev) const;
-  void Run (void);
-  Time Now (void) const;
-  Time GetDelayLeft (const EventId &id) const;
-  Time GetMaximumSimulationTime (void) const;
-
-  void SetScheduler (Ptr<Scheduler> scheduler);
-  Ptr<Scheduler> GetScheduler (void) const;
-
-private:
-  void ProcessOneEvent (void);
-  uint64_t NextTs (void) const;
-
-  typedef std::list<EventId> DestroyEvents;
-  DestroyEvents m_destroyEvents;
-  uint64_t m_stopAt;
-  bool m_stop;
-  Ptr<Scheduler> m_events;
-  uint32_t m_uid;
-  uint32_t m_currentUid;
-  uint64_t m_currentTs;
-  std::ofstream m_log;
-  std::ifstream m_inputLog;
-  bool m_logEnable;
-  // number of events that have been inserted but not yet scheduled,
-  // not counting the "destroy" events; this is used for validation
-  int m_unscheduledEvents;
+  virtual void Destroy () = 0;
+  virtual void EnableLogTo (char const *filename) = 0;
+  virtual bool IsFinished (void) const = 0;
+  virtual Time Next (void) const = 0;
+  virtual void Stop (void) = 0;
+  virtual void Stop (Time const &time) = 0;
+  virtual EventId Schedule (Time const &time, const Ptr<EventImpl> &event) = 0;
+  virtual EventId ScheduleNow (const Ptr<EventImpl> &event) = 0;
+  virtual EventId ScheduleDestroy (const Ptr<EventImpl> &event) = 0;
+  virtual void Remove (const EventId &ev) = 0;
+  virtual void Cancel (const EventId &ev) = 0;
+  virtual bool IsExpired (const EventId &ev) const = 0;
+  virtual void Run (void) = 0;
+  virtual Time Now (void) const = 0;
+  virtual Time GetDelayLeft (const EventId &id) const = 0;
+  virtual Time GetMaximumSimulationTime (void) const = 0;
+  virtual void SetScheduler (Ptr<Scheduler> scheduler) = 0;
+  virtual Ptr<Scheduler> GetScheduler (void) const = 0;
 };
 
 } // namespace ns3

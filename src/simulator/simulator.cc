@@ -20,12 +20,15 @@
 
 #include "simulator.h"
 #include "simulator-impl.h"
+#include "default-simulator-impl.h"
 #include "scheduler.h"
 #include "map-scheduler.h"
 #include "event-impl.h"
 
 #include "ns3/ptr.h"
-#include "ns3/pointer.h"
+#include "ns3/string.h"
+#include "ns3/object-factory.h"
+#include "ns3/global-value.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
 
@@ -39,38 +42,56 @@ NS_LOG_COMPONENT_DEFINE ("Simulator");
 
 namespace ns3 {
 
+GlobalValue g_simTypeImpl = GlobalValue ("SimulatorImplementationType", 
+  "The object class to use as the simulator implementation",
+  StringValue ("ns3::DefaultSimulatorImpl"),
+  MakeStringChecker ());
+
+Ptr<SimulatorImpl> Simulator::m_impl = 0;
+
 #ifdef NS3_LOG_ENABLE
+
+//
+// Note:  Calls that take TimePrinter as a parameter are defined as nothing
+// in the logging module if NS3_LOG_ENABLE is not defined.
+// 
+
 static void
 TimePrinter (std::ostream &os)
 {
   os << Simulator::Now ();
 }
+
 #endif /* NS3_LOG_ENABLE */
 
-Ptr<SimulatorImpl> Simulator::m_impl = 0;
-
-Ptr<SimulatorImpl>
+SimulatorImpl *
 Simulator::GetImpl (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
   if (m_impl == 0) 
     {
-      /* Note: we call LogSetTimePrinter below _after_ calling CreateObject 
-       * because CreateObject can trigger calls to the logging framework which
-       * would call the TimePrinter function above which would call 
-       * Simulator::Now which would call Simulator::GetImpl, and, thus, get 
-       * us in an infinite recursion until the stack explodes.
-       */
-      m_impl = CreateObject<SimulatorImpl> ();
+      ObjectFactory factory;
+      StringValue s;
+
+      g_simTypeImpl.GetValue (s);
+      factory.SetTypeId (s.Get ());
+      m_impl = factory.Create<SimulatorImpl> ();
 
       Ptr<Scheduler> scheduler = CreateObject<MapScheduler> ();
       m_impl->SetScheduler (scheduler);
 
+//
+// Note: we call LogSetTimePrinter _after_ creating the implementation
+// object because the act of creation can trigger calls to the logging 
+// framework which would call the TimePrinter function which would call 
+// Simulator::Now which would call Simulator::GetImpl, and, thus, get us 
+// in an infinite recursion until the stack explodes.
+//
       LogSetTimePrinter (&TimePrinter);
     }
   NS_LOG_LOGIC ("priv " << m_impl);
-  return m_impl;
+  return PeekPointer (m_impl);
 }
 
 void

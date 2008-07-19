@@ -21,18 +21,19 @@
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
 
-#include <stdint.h>
 #include "event-id.h"
 #include "event-impl.h"
 #include "nstime.h"
 #include "scheduler.h"
+
 #include "ns3/type-traits.h"
+
+#include <stdint.h>
+#include <string>
 
 namespace ns3 {
 
-
 class SimulatorImpl;
-class SchedulerFactory;
 
 /**
  * \ingroup simulator
@@ -55,6 +56,20 @@ class SchedulerFactory;
 class Simulator 
 {
 public:
+  /**
+   * \param impl a new simulator implementation
+   *
+   * The simulator provides a mechanism to swap out different implementations.
+   * For example, the default implementation is a single-threaded simulator
+   * that performs no realtime synchronization.  By calling this method, you
+   * can substitute in a new simulator implementation that might be multi-
+   * threaded and synchronize events to a realtime clock.
+   *
+   * The simulator implementation can be set when the simulator is not 
+   * running.
+   */
+  static void SetImplementation (Ptr<SimulatorImpl> impl);
+
   /**
    * \param scheduler a new event scheduler
    *
@@ -91,7 +106,6 @@ public:
    */
   static void Destroy (void);
 
-
   /**
    * If there any any events lefts to be scheduled, return
    * true. Return false otherwise.
@@ -113,12 +127,14 @@ public:
    *     is greater than or equal to the stop time.
    */
   static void Run (void);
+
   /**
    * If an event invokes this method, it will be the last
    * event scheduled by the Simulator::run method before
    * returning to the caller.
    */
   static void Stop (void);
+
   /**
    * Force the Simulator::run method to return to the caller when the
    * expiration time of the next event to be processed is greater than
@@ -140,6 +156,7 @@ public:
    */
   template <typename MEM, typename OBJ>
   static EventId Schedule (Time const &time, MEM mem_ptr, OBJ obj);
+
   /**
    * @param time the relative expiration time of the event.
    * @param mem_ptr member method pointer to invoke
@@ -149,6 +166,7 @@ public:
    */
   template <typename MEM, typename OBJ, typename T1>
   static EventId Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1);
+
   /**
    * @param time the relative expiration time of the event.
    * @param mem_ptr member method pointer to invoke
@@ -159,6 +177,7 @@ public:
    */
   template <typename MEM, typename OBJ, typename T1, typename T2>
   static EventId Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2);
+
   /**
    * @param time the relative expiration time of the event.
    * @param mem_ptr member method pointer to invoke
@@ -171,6 +190,7 @@ public:
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3>
   static EventId Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3);
+
   /**
    * @param time the relative expiration time of the event.
    * @param mem_ptr member method pointer to invoke
@@ -184,6 +204,7 @@ public:
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3, typename T4>
   static EventId Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4);
+
   /**
    * @param time the relative expiration time of the event.
    * @param mem_ptr member method pointer to invoke
@@ -205,6 +226,7 @@ public:
    * @returns an id for the scheduled event.
    */
   static EventId Schedule (Time const &time, void (*f) (void));
+
   /**
    * @param time the relative expiration time of the event.
    * @param f the function to invoke
@@ -213,6 +235,7 @@ public:
    */
   template <typename U1, typename T1>
   static EventId Schedule (Time const &time, void (*f) (U1), T1 a1);
+
   /**
    * @param time the relative expiration time of the event.
    * @param f the function to invoke
@@ -222,6 +245,7 @@ public:
    */
   template <typename U1, typename U2, typename T1, typename T2>
   static EventId Schedule (Time const &time, void (*f) (U1,U2), T1 a1, T2 a2);
+
   /**
    * @param time the relative expiration time of the event.
    * @param f the function to invoke
@@ -232,6 +256,7 @@ public:
    */
   template <typename U1, typename U2, typename U3, typename T1, typename T2, typename T3>
   static EventId Schedule (Time const &time, void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3);
+
   /**
    * @param time the relative expiration time of the event.
    * @param f the function to invoke
@@ -244,6 +269,7 @@ public:
   template <typename U1, typename U2, typename U3, typename U4, 
             typename T1, typename T2, typename T3, typename T4>
   static EventId Schedule (Time const &time, void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4);
+
   /**
    * @param time the relative expiration time of the event.
    * @param f the function to invoke
@@ -258,7 +284,6 @@ public:
             typename T1, typename T2, typename T3, typename T4, typename T5>
   static EventId Schedule (Time const &time, void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
-
   /**
    * Schedule an event to expire Now. All events scheduled to
    * to expire "Now" are scheduled FIFO, after all normal events
@@ -269,6 +294,7 @@ public:
    */
   template <typename MEM, typename OBJ>
   static EventId ScheduleNow (MEM mem_ptr, OBJ obj);
+
   /**
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
@@ -277,6 +303,7 @@ public:
   template <typename MEM, typename OBJ, 
             typename T1>
   static EventId ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1);
+
   /**
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
@@ -286,6 +313,7 @@ public:
   template <typename MEM, typename OBJ, 
             typename T1, typename T2>
   static EventId ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2);
+
   /**
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
@@ -296,6 +324,7 @@ public:
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3>
   static EventId ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3);
+
   /**
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
@@ -325,6 +354,7 @@ public:
    * @param f the function to invoke
    */
   static EventId ScheduleNow (void (*f) (void));
+
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
@@ -332,6 +362,7 @@ public:
   template <typename U1,
             typename T1>
   static EventId ScheduleNow (void (*f) (U1), T1 a1);
+
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
@@ -340,6 +371,7 @@ public:
   template <typename U1, typename U2,
             typename T1, typename T2>
   static EventId ScheduleNow (void (*f) (U1,U2), T1 a1, T2 a2);
+
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
@@ -349,6 +381,7 @@ public:
   template <typename U1, typename U2, typename U3,
             typename T1, typename T2, typename T3>
   static EventId ScheduleNow (void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3);
+
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
@@ -359,6 +392,7 @@ public:
   template <typename U1, typename U2, typename U3, typename U4,
             typename T1, typename T2, typename T3, typename T4>
   static EventId ScheduleNow (void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4);
+
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
@@ -371,7 +405,6 @@ public:
             typename T1, typename T2, typename T3, typename T4, typename T5>
   static EventId ScheduleNow (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
-
   /**
    * Schedule an event to expire at Destroy time. All events 
    * scheduled to expire at "Destroy" time are scheduled FIFO, 
@@ -383,6 +416,7 @@ public:
    */
   template <typename MEM, typename OBJ>
   static EventId ScheduleDestroy (MEM mem_ptr, OBJ obj);
+
   /**
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
@@ -391,6 +425,7 @@ public:
   template <typename MEM, typename OBJ, 
             typename T1>
   static EventId ScheduleDestroy (MEM mem_ptr, OBJ obj, T1 a1);
+
   /**
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
@@ -400,6 +435,7 @@ public:
   template <typename MEM, typename OBJ,
             typename T1, typename T2>
   static EventId ScheduleDestroy (MEM mem_ptr, OBJ obj, T1 a1, T2 a2);
+
   /**
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
@@ -410,6 +446,7 @@ public:
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3>
   static EventId ScheduleDestroy (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3);
+
   /**
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
@@ -439,6 +476,7 @@ public:
    * @param f the function to invoke
    */
   static EventId ScheduleDestroy (void (*f) (void));
+
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
@@ -446,6 +484,7 @@ public:
   template <typename U1,
             typename T1>
   static EventId ScheduleDestroy (void (*f) (U1), T1 a1);
+
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
@@ -454,6 +493,7 @@ public:
   template <typename U1, typename U2,
             typename T1, typename T2>
   static EventId ScheduleDestroy (void (*f) (U1,U2), T1 a1, T2 a2);
+
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
@@ -463,6 +503,7 @@ public:
   template <typename U1, typename U2, typename U3,
             typename T1, typename T2, typename T3>
   static EventId ScheduleDestroy (void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3);
+
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
@@ -473,6 +514,7 @@ public:
   template <typename U1, typename U2, typename U3, typename U4,
             typename T1, typename T2, typename T3, typename T4>
   static EventId ScheduleDestroy (void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4);
+
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
@@ -497,6 +539,7 @@ public:
    * @param id the event to remove from the list of scheduled events.
    */
   static void Remove (const EventId &id);
+
   /**
    * Set the cancel bit on this event: the event's associated function
    * will not be invoked when it expires. 
@@ -510,6 +553,7 @@ public:
    * @param id the event to cancel
    */
   static void Cancel (const EventId &id);
+
   /**
    * This method has O(1) complexity.
    * Note that it is not possible to test for the expiration of
@@ -523,10 +567,12 @@ public:
    * @returns true if the event has expired, false otherwise.
    */
   static bool IsExpired (const EventId &id);
+
   /**
    * Return the "current simulation time".
    */
   static Time Now (void);
+
   /**
    * \param id the event id to analyse
    * \returns the delay left until the input event id expires.
@@ -542,6 +588,7 @@ public:
    * The returned value will always be bigger than or equal to Simulator::Now.
    */
   static Time GetMaximumSimulationTime (void);
+
   /**
    * \param time delay until the event expires
    * \param event the event to schedule
@@ -551,6 +598,7 @@ public:
    * to delegate events to their own subclass of the EventImpl base class.
    */
   static EventId Schedule (Time const &time, const Ptr<EventImpl> &event);  
+
   /**
    * \param event the event to schedule
    * \returns a unique identifier for the newly-scheduled event.
@@ -559,6 +607,7 @@ public:
    * to delegate events to their own subclass of the EventImpl base class.
    */
   static EventId ScheduleDestroy (const Ptr<EventImpl> &event);
+
   /**
    * \param event the event to schedule
    * \returns a unique identifier for the newly-scheduled event.
@@ -606,8 +655,10 @@ private:
             typename T1, typename T2, typename T3, typename T4, typename T5>
   static Ptr<EventImpl> MakeEvent (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
-  static Ptr<SimulatorImpl> GetImpl (void);
+  static SimulatorImpl *GetImpl (void);
   static Ptr<SimulatorImpl> m_impl;
+  static std::string m_typeImpl;
+  static std::string m_typeSched;
 };
 
 /**
