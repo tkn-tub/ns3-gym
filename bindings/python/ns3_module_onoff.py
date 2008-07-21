@@ -1,4 +1,4 @@
-from pybindgen import Module, FileCodeSink, write_preamble, param, retval
+from pybindgen import Module, FileCodeSink, param, retval, cppclass
 
 def register_types(module):
     root_module = module.get_root()
@@ -52,17 +52,31 @@ def register_methods(root_module):
 
 def register_Ns3OnOffApplication_methods(root_module, cls):
     ## onoff-application.h: static ns3::TypeId ns3::OnOffApplication::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 'ns3::TypeId', [], is_static=True)
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## onoff-application.h: ns3::OnOffApplication::OnOffApplication() [constructor]
-    cls.add_constructor([], visibility='public')
+    cls.add_constructor([])
     ## onoff-application.h: void ns3::OnOffApplication::SetMaxBytes(uint32_t maxBytes) [member function]
-    cls.add_method('SetMaxBytes', 'void', [param('uint32_t', 'maxBytes')])
+    cls.add_method('SetMaxBytes', 
+                   'void', 
+                   [param('uint32_t', 'maxBytes')])
     ## onoff-application.h: void ns3::OnOffApplication::DoDispose() [member function]
-    cls.add_method('DoDispose', 'void', [], visibility='protected', is_virtual=True)
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
     ## onoff-application.h: void ns3::OnOffApplication::StartApplication() [member function]
-    cls.add_method('StartApplication', 'void', [], visibility='private', is_virtual=True)
+    cls.add_method('StartApplication', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     ## onoff-application.h: void ns3::OnOffApplication::StopApplication() [member function]
-    cls.add_method('StopApplication', 'void', [], visibility='private', is_virtual=True)
+    cls.add_method('StopApplication', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_functions(root_module):

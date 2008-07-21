@@ -1,4 +1,4 @@
-from pybindgen import Module, FileCodeSink, write_preamble, param, retval
+from pybindgen import Module, FileCodeSink, param, retval, cppclass
 
 
 import pybindgen.settings
@@ -668,7 +668,6 @@ def main():
     register_types(root_module)
     register_methods(root_module)
     register_functions(root_module)
-    write_preamble(out)
     root_module.generate(out)
 
 if __name__ == '__main__':

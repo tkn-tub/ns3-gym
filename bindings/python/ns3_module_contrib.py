@@ -1,4 +1,4 @@
-from pybindgen import Module, FileCodeSink, write_preamble, param, retval
+from pybindgen import Module, FileCodeSink, param, retval, cppclass
 
 def register_types(module):
     root_module = module.get_root()
@@ -71,66 +71,103 @@ def register_methods(root_module):
 
 def register_Ns3Gnuplot_methods(root_module, cls):
     ## gnuplot.h: ns3::Gnuplot::Gnuplot(std::string pngFilename) [constructor]
-    cls.add_constructor([param('std::string', 'pngFilename')], visibility='public')
+    cls.add_constructor([param('std::string', 'pngFilename')])
     ## gnuplot.h: void ns3::Gnuplot::SetLegend(std::string xLegend, std::string yLegend) [member function]
-    cls.add_method('SetLegend', 'void', [param('std::string', 'xLegend'), param('std::string', 'yLegend')])
+    cls.add_method('SetLegend', 
+                   'void', 
+                   [param('std::string', 'xLegend'), param('std::string', 'yLegend')])
     ## gnuplot.h: void ns3::Gnuplot::AddDataset(ns3::GnuplotDataset const & dataset) [member function]
-    cls.add_method('AddDataset', 'void', [param('ns3::GnuplotDataset&', 'dataset', is_const=True)])
+    cls.add_method('AddDataset', 
+                   'void', 
+                   [param('ns3::GnuplotDataset&', 'dataset', is_const=True)])
     ## gnuplot.h: void ns3::Gnuplot::GenerateOutput(std::ostream & os) [member function]
-    cls.add_method('GenerateOutput', 'void', [param('std::ostream&', 'os')])
+    cls.add_method('GenerateOutput', 
+                   'void', 
+                   [param('std::ostream&', 'os')])
     return
 
 def register_Ns3EventGarbageCollector_methods(root_module, cls):
     ## event-garbage-collector.h: ns3::EventGarbageCollector::EventGarbageCollector() [constructor]
-    cls.add_constructor([], visibility='public')
+    cls.add_constructor([])
     ## event-garbage-collector.h: void ns3::EventGarbageCollector::Track(ns3::EventId event) [member function]
-    cls.add_method('Track', 'void', [param('ns3::EventId', 'event')])
+    cls.add_method('Track', 
+                   'void', 
+                   [param('ns3::EventId', 'event')])
     return
 
 def register_Ns3GnuplotDataset_methods(root_module, cls):
     ## gnuplot.h: ns3::GnuplotDataset::GnuplotDataset() [constructor]
-    cls.add_constructor([], visibility='public')
+    cls.add_constructor([])
     ## gnuplot.h: ns3::GnuplotDataset::GnuplotDataset(std::string title) [constructor]
-    cls.add_constructor([param('std::string', 'title')], visibility='public')
+    cls.add_constructor([param('std::string', 'title')])
     ## gnuplot.h: void ns3::GnuplotDataset::SetStyle(ns3::GnuplotDataset::Style style) [member function]
-    cls.add_method('SetStyle', 'void', [param('ns3::GnuplotDataset::Style', 'style')])
+    cls.add_method('SetStyle', 
+                   'void', 
+                   [param('ns3::GnuplotDataset::Style', 'style')])
     ## gnuplot.h: void ns3::GnuplotDataset::SetErrorBars(ns3::GnuplotDataset::ErrorBars errorBars) [member function]
-    cls.add_method('SetErrorBars', 'void', [param('ns3::GnuplotDataset::ErrorBars', 'errorBars')])
+    cls.add_method('SetErrorBars', 
+                   'void', 
+                   [param('ns3::GnuplotDataset::ErrorBars', 'errorBars')])
     ## gnuplot.h: void ns3::GnuplotDataset::Add(double x, double y) [member function]
-    cls.add_method('Add', 'void', [param('double', 'x'), param('double', 'y')])
+    cls.add_method('Add', 
+                   'void', 
+                   [param('double', 'x'), param('double', 'y')])
     ## gnuplot.h: void ns3::GnuplotDataset::Add(double x, double y, double errorDelta) [member function]
-    cls.add_method('Add', 'void', [param('double', 'x'), param('double', 'y'), param('double', 'errorDelta')])
+    cls.add_method('Add', 
+                   'void', 
+                   [param('double', 'x'), param('double', 'y'), param('double', 'errorDelta')])
     return
 
 def register_Ns3GtkConfigStore_methods(root_module, cls):
     ## gtk-config-store.h: ns3::GtkConfigStore::GtkConfigStore() [constructor]
-    cls.add_constructor([], visibility='public')
+    cls.add_constructor([])
     ## gtk-config-store.h: void ns3::GtkConfigStore::Configure() [member function]
-    cls.add_method('Configure', 'void', [])
+    cls.add_method('Configure', 
+                   'void', 
+                   [])
     return
 
 def register_Ns3ConfigStore_methods(root_module, cls):
     ## config-store.h: static ns3::TypeId ns3::ConfigStore::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 'ns3::TypeId', [], is_static=True)
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## config-store.h: ns3::TypeId ns3::ConfigStore::GetInstanceTypeId() const [member function]
-    cls.add_method('GetInstanceTypeId', 'ns3::TypeId', [], is_const=True, is_virtual=True)
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## config-store.h: ns3::ConfigStore::ConfigStore() [constructor]
-    cls.add_constructor([], visibility='public')
+    cls.add_constructor([])
     ## config-store.h: void ns3::ConfigStore::Configure() [member function]
-    cls.add_method('Configure', 'void', [])
+    cls.add_method('Configure', 
+                   'void', 
+                   [])
     return
 
 def register_Ns3DelayJitterEstimation_methods(root_module, cls):
     ## delay-jitter-estimation.h: ns3::DelayJitterEstimation::DelayJitterEstimation() [constructor]
-    cls.add_constructor([], visibility='public')
+    cls.add_constructor([])
     ## delay-jitter-estimation.h: static void ns3::DelayJitterEstimation::PrepareTx(ns3::Ptr<const ns3::Packet> packet) [member function]
-    cls.add_method('PrepareTx', 'void', [param('ns3::Ptr< const ns3::Packet >', 'packet')], is_static=True)
+    cls.add_method('PrepareTx', 
+                   'void', 
+                   [param('ns3::Ptr< const ns3::Packet >', 'packet')], 
+                   is_static=True)
     ## delay-jitter-estimation.h: void ns3::DelayJitterEstimation::RecordRx(ns3::Ptr<const ns3::Packet> packet) [member function]
-    cls.add_method('RecordRx', 'void', [param('ns3::Ptr< const ns3::Packet >', 'packet')])
+    cls.add_method('RecordRx', 
+                   'void', 
+                   [param('ns3::Ptr< const ns3::Packet >', 'packet')])
     ## delay-jitter-estimation.h: ns3::Time ns3::DelayJitterEstimation::GetLastDelay() const [member function]
-    cls.add_method('GetLastDelay', 'ns3::Time', [], is_const=True)
+    cls.add_method('GetLastDelay', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
     ## delay-jitter-estimation.h: ns3::Time ns3::DelayJitterEstimation::GetLastJitter() const [member function]
-    cls.add_method('GetLastJitter', 'ns3::Time', [], is_const=True)
+    cls.add_method('GetLastJitter', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
     return
 
 def register_functions(root_module):
