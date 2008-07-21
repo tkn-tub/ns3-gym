@@ -113,7 +113,7 @@ private:
   Ptr<WifiChannel> m_channel;
   Ptr<WifiMac> m_mac;
   Ptr<WifiRemoteStationManager> m_stationManager;
-  Callback <bool,Ptr<NetDevice>,Ptr<Packet>,uint16_t,const Address &> m_forwardUp;
+  ReceiveCallback m_forwardUp;
   TracedCallback<Ptr<const Packet>, Mac48Address> m_rxLogger;
   TracedCallback<Ptr<const Packet>, Mac48Address> m_txLogger;
   uint32_t m_ifIndex;

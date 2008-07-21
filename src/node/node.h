@@ -26,10 +26,10 @@
 #include "ns3/object.h"
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
+#include "ns3/net-device.h"
 
 namespace ns3 {
 
-class NetDevice;
 class Application;
 class Packet;
 class Address;
@@ -136,8 +136,23 @@ public:
 
   /**
    * A protocol handler
+   *
+   * \param device a pointer to the net device which received the packet
+   * \param packet the packet received
+   * \param protocol the 16 bit protocol number associated with this packet.
+   *        This protocol number is expected to be the same protocol number
+   *        given to the Send method by the user on the sender side.
+   * \param sender the address of the sender
+   * \param receiver the address of the receiver; Note: this value is
+   *                 only valid for promiscuous mode protocol
+   *                 handlers.
+   * \param packetType type of packet received
+   *                   (broadcast/multicast/unicast/otherhost); Note:
+   *                   this value is only valid for promiscuous mode
+   *                   protocol handlers.
    */
-  typedef Callback<void,Ptr<NetDevice>, Ptr<Packet>,uint16_t,const Address &> ProtocolHandler;
+  typedef Callback<void,Ptr<NetDevice>, Ptr<Packet>,uint16_t,const Address &,
+                   const Address &, NetDevice::PacketType> ProtocolHandler;
   /**
    * \param handler the handler to register
    * \param protocolType the type of protocol this handler is 
@@ -149,10 +164,12 @@ public:
    * \param device the device attached to this handler. If the
    *        value is zero, the handler is attached to all
    *        devices on this node.
+   * \param promiscuous whether to register a promiscuous mode handler
    */
   void RegisterProtocolHandler (ProtocolHandler handler, 
                                 uint16_t protocolType,
-                                Ptr<NetDevice> device);
+                                Ptr<NetDevice> device,
+                                bool promiscuous=false);
   /**
    * \param handler the handler to unregister
    *
@@ -160,6 +177,7 @@ public:
    * be invoked anymore.
    */
   void UnregisterProtocolHandler (ProtocolHandler handler);
+
 
 protected:
   /**
@@ -177,14 +195,19 @@ private:
    */
   virtual void NotifyDeviceAdded (Ptr<NetDevice> device);
 
-  bool ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet>, 
-                          uint16_t protocol, const Address &from);
+  bool NonPromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet>, uint16_t protocol, const Address &from);
+  bool PromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet>, uint16_t protocol,
+                                 const Address &from, const Address &to, NetDevice::PacketType packetType);
+  bool ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet>, uint16_t protocol,
+                          const Address &from, const Address &to, NetDevice::PacketType packetType, bool promisc);
+
   void Construct (void);
 
   struct ProtocolHandlerEntry {
     ProtocolHandler handler;
-    uint16_t protocol;
     Ptr<NetDevice> device;
+    uint16_t protocol;
+    bool promiscuous;
   };
   typedef std::vector<struct Node::ProtocolHandlerEntry> ProtocolHandlerList;
   uint32_t    m_id;         // Node id for this node
@@ -192,6 +215,7 @@ private:
   std::vector<Ptr<NetDevice> > m_devices;
   std::vector<Ptr<Application> > m_applications;
   ProtocolHandlerList m_handlers;
+
 };
 
 } //namespace ns3

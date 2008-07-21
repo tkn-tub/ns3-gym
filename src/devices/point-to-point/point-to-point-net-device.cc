@@ -434,6 +434,15 @@ PointToPointNetDevice::Send(
     }
 }
 
+bool
+PointToPointNetDevice::SendFrom (Ptr<Packet> packet, 
+                                 const Address &source, 
+                                 const Address &dest, 
+                                 uint16_t protocolNumber)
+{
+  return Send (packet, dest, protocolNumber);
+}
+
   Ptr<Node> 
 PointToPointNetDevice::GetNode (void) const
 {

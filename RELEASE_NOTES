@@ -3,8 +3,13 @@
 
 This file contains ns-3 release notes (most recent releases first).
 
-Next Release (in ns-3-dev)
-==========================
+Release 3.2 (pending)
+=====================
+
+New functionality added
+-----------------------
+- Add learning bridge (IEEE 802.1D) implementation: BridgeNetDevice;
+- Python bindings added
 - Kernel thread support (class SystemThread) added;
 - Kernel mutual exclusion support (class SystemMutex) added;
 - Kernel critical section RAII support (class CriticalSection) added;
@@ -15,6 +20,44 @@ Next Release (in ns-3-dev)
   implementation a replaceable component via the 
   "SimulatorImplementationType" global value.
   Hint:  try ./waf --run "udp-echo --PrintGlobals"
+- implement Packet::PeekHeader and Packet::PeekTrailer to avoid evil workarounds when receiving tcp packets. 
+
+Bugs fixed
+----------
+- add optional support for TCP and UDP checksum (bug 236)
+- close socket upon PacketSink::StopApplication (bug 243)
+- fix build failure with gcc 4.3.x (bug 245)
+
+API changes from 3.1 to 3.2
+---------------------------
+- several helper APIs related to attribute setting (changeset d5f8e5fae1c6, 
+  bug 234); old variants are currently deprecated API and will be removed
+  in a future release
+- remove references to Parameter in helper APIs (changeset 3cdd9d60f7c7,
+  bug 232); old variants are currently deprecated API and will be removed
+  in a future release
+- New NetDevice APIs: SendFrom and SetPromiscRxCallback;
+
+In order to support the learning bridge, some API changes in Node and
+NetDevice were made.
+
+In NetDevice, devices may optionally implement the virtual methods
+SendFrom, SupportsPromiscuous, and SetPromiscReceiveCallback.  If
+these new methods are not implemented, the code still compiles and
+works, except if they are used in a BridgeNetDevice.
+
+In Node, the signature for protocol handler callbacks (used in
+AddProtocolHandler) has changed.  Now it looks like:
+
+  void ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet, 
+    uint16_t protocol, Address const &source, Address const &destination, 
+    PacketType packetType);
+
+The extra parameters 'destination' and 'packetType' are present for
+all protocol handlers, but only have valid values for promiscuous
+protocol handlers.  Protocol handlers are non-promiscuous by default,
+so no action is needed to adapt existing code besides updating the
+callback signature.
 
 Release 3.1 (2008/06/30)
 ========================

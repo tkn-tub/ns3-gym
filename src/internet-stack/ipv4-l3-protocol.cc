@@ -449,7 +449,8 @@ Ipv4L3Protocol::FindInterfaceForDevice (Ptr<const NetDevice> device)
 }  
 
 void 
-Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol, const Address &from)
+Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol, const Address &from,
+                         const Address &to, NetDevice::PacketType packetType)
 {
   NS_LOG_FUNCTION (this << &device << packet << protocol <<  from);
 

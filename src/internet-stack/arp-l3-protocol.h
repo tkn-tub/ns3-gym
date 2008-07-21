@@ -54,7 +54,8 @@ public:
   /**
    * \brief Recieve a packet
    */
-  void Receive(Ptr<NetDevice> device, Ptr<Packet> p, uint16_t protocol, const Address &from);
+  void Receive(Ptr<NetDevice> device, Ptr<Packet> p, uint16_t protocol, const Address &from, const Address &to,
+               NetDevice::PacketType packetType);
   /**
    * \brief Perform an ARP lookup
    * \param p

@@ -158,8 +158,9 @@ public:
    *
    * @see CsmaChannel
    * \param p a reference to the received packet
+   * \param sender the CsmaNetDevice that transmitted the packet in the first place
    */
-  void Receive (Ptr<Packet> p);
+  void Receive (Ptr<Packet> p, Ptr<CsmaNetDevice> sender);
 
   /**
    * Is the send side of the network device enabled?
@@ -251,6 +252,12 @@ public:
     uint16_t protocolNumber);
 
   /**
+   * Start sending a packet down the channel, with MAC spoofing
+   */
+  virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, 
+                         uint16_t protocolNumber);
+
+  /**
    * Get the node to which this device is attached.
    *
    * \returns Ptr to the Node to which the device is attached.
@@ -280,6 +287,10 @@ public:
    */
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
 
+
+  virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
+  virtual bool SupportsPromiscuous (void) const;
+
 protected:
   /**
    * Perform any object release functionality required to break reference 
@@ -306,7 +317,7 @@ protected:
    * \param protocolNumber In some protocols, identifies the type of
    * payload contained in this packet.
    */
-  void AddHeader (Ptr<Packet> p, Mac48Address dest, uint16_t protocolNumber);
+  void AddHeader (Ptr<Packet> p, Mac48Address source, Mac48Address dest, uint16_t protocolNumber);
 
   /**
    * Removes, from a packet of data, all headers and trailers that
@@ -526,6 +537,10 @@ private:
    * The callback used to notify higher layers that a packet has been received.
    */
   NetDevice::ReceiveCallback m_rxCallback;
+  /**
+   * The callback used to notify higher layers that a packet has been received in promiscuous mode.
+   */
+  NetDevice::PromiscReceiveCallback m_promiscRxCallback;
 
   /**
    * The interface index (really net evice index) that has been assigned to 

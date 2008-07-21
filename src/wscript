@@ -27,6 +27,7 @@ all_modules = (
     'mobility',
     'devices/wifi',
     'helper',
+    'devices/bridge',
     )
 
 def set_options(opt):

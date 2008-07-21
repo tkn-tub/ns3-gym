@@ -173,6 +173,7 @@ CsmaNetDevice::SetBackoffParams (
   void 
 CsmaNetDevice::AddHeader (
   Ptr<Packet> p, 
+  Mac48Address source,
   Mac48Address dest,
   uint16_t protocolNumber)
 {
@@ -183,7 +184,6 @@ CsmaNetDevice::AddHeader (
       return;
     }
 
-  Mac48Address source = Mac48Address::ConvertFrom (GetAddress ());
   EthernetHeader header (false);
   header.SetSource (source);
   header.SetDestination (dest);
@@ -452,11 +452,22 @@ CsmaNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
   m_receiveErrorModel = em; 
 }
 
-  void
-CsmaNetDevice::Receive (Ptr<Packet> packet)
+void
+CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC ("UID is " << packet->GetUid ());
+
+
+  //
+  // We never forward up packets that we sent. Real devices don't do this since
+  // their receivers are disabled during send, so we don't. Drop the packet
+  // silently (no tracing) since it would really never get here in a real device.
+  // 
+  if (senderDevice == this)
+    {
+      return;
+    }
 
 // 
 // Only receive if the send side of net device is enabled
@@ -470,6 +481,10 @@ CsmaNetDevice::Receive (Ptr<Packet> packet)
   if (m_encapMode == RAW)
     {
       m_rxTrace (packet);
+      if (!m_promiscRxCallback.IsNull ())
+        {
+          m_promiscRxCallback (this, packet, 0, GetBroadcast (), GetAddress (), PACKET_HOST);
+        }
       m_rxCallback (this, packet, 0, GetBroadcast ());
       return;
     }
@@ -491,17 +506,6 @@ CsmaNetDevice::Receive (Ptr<Packet> packet)
   NS_LOG_LOGIC ("Pkt destination is " << header.GetDestination ());
 
 //
-// We never forward up packets that we sent.  Real devices don't do this since
-// their receivers are disabled during send, so we don't.  Drop the packet 
-// silently (no tracing) since it would really never get here in a real device.
-//
-  if (header.GetSource () == GetAddress ())
-    {
-      NS_LOG_LOGIC ("Ignoring packet sourced by this device");
-      return;
-    }
-
-//
 // An IP host group address is mapped to an Ethernet multicast address
 // by placing the low-order 23-bits of the IP address into the low-order
 // 23 bits of the Ethernet multicast address 01-00-5E-00-00-00 (hex).
@@ -521,15 +525,6 @@ CsmaNetDevice::Receive (Ptr<Packet> packet)
   Mac48Address multicast = Mac48Address::ConvertFrom (GetMulticast ());
   Mac48Address broadcast = Mac48Address::ConvertFrom (GetBroadcast ());
   Mac48Address destination = Mac48Address::ConvertFrom (GetAddress ());
-
-  if ((header.GetDestination () != broadcast) &&
-      (mcDest != multicast) &&
-      (header.GetDestination () != destination))
-    {
-      NS_LOG_LOGIC ("Dropping pkt ");
-      m_dropTrace (packet);
-      return;
-    }
 
   if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) )
     {
@@ -561,8 +556,38 @@ CsmaNetDevice::Receive (Ptr<Packet> packet)
           NS_ASSERT (false);
           break;
         }
-      m_rxTrace (originalPacket);
-      m_rxCallback (this, packet, protocol, header.GetSource ());
+
+      PacketType packetType;
+      
+      if (header.GetDestination () == broadcast)
+        {
+          packetType = PACKET_BROADCAST;
+          m_rxTrace (originalPacket);
+        }
+      else if (mcDest == multicast)
+        {
+          packetType = PACKET_MULTICAST;          
+          m_rxTrace (originalPacket);
+        }
+      else if (header.GetDestination () == destination)
+        {
+          packetType = PACKET_HOST;
+          m_rxTrace (originalPacket);
+        }
+      else
+        {
+          packetType = PACKET_OTHERHOST;
+        }
+      
+      if (!m_promiscRxCallback.IsNull ())
+        {
+          m_promiscRxCallback (this, packet, protocol, header.GetSource (), header.GetDestination (), packetType);
+        }
+
+      if (packetType != PACKET_OTHERHOST)
+        {
+          m_rxCallback (this, packet, protocol, header.GetSource ());
+        }
     }
 }
 
@@ -726,11 +751,19 @@ CsmaNetDevice::IsPointToPoint (void) const
   return false;
 }
 
-  bool 
-CsmaNetDevice::Send(
-  Ptr<Packet> packet, 
-  const Address& dest, 
-  uint16_t protocolNumber)
+bool
+CsmaNetDevice::Send (Ptr<Packet> packet, 
+                     const Address& dest, 
+                     uint16_t protocolNumber)
+{
+  return SendFrom (packet, m_address, dest, protocolNumber);
+}
+
+bool
+CsmaNetDevice::SendFrom (Ptr<Packet> packet,
+                         const Address& src,
+                         const Address& dest,
+                         uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC ("p=" << packet);
@@ -747,7 +780,8 @@ CsmaNetDevice::Send(
     }
 
   Mac48Address destination = Mac48Address::ConvertFrom (dest);
-  AddHeader (packet, destination, protocolNumber);
+  Mac48Address source = Mac48Address::ConvertFrom (src);
+  AddHeader (packet, source, destination, protocolNumber);
 
 //
 // Place the packet to be sent on the send queue
@@ -785,6 +819,25 @@ CsmaNetDevice::GetNode (void) const
 CsmaNetDevice::SetNode (Ptr<Node> node)
 {
   m_node = node;
+  int count = -1;
+  if (m_name.size () == 0)
+    {
+      for (uint32_t i = 0; i < node->GetNDevices (); i++)
+        {
+          Ptr<NetDevice> dev = node->GetDevice (i);
+          if (dynamic_cast<CsmaNetDevice*> (PeekPointer (dev)))
+            {
+              count++;
+              if (dev == this)
+                {
+                  break;
+                }
+            }
+        }
+      std::ostringstream s;
+      s << "eth" << count;
+      m_name = s.str ();
+    }
 }
 
   bool 
@@ -804,6 +857,18 @@ CsmaNetDevice::NeedsArp (void) const
 CsmaNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
   m_rxCallback = cb;
+}
+
+void 
+CsmaNetDevice::SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb)
+{
+  m_promiscRxCallback = cb;
+}
+
+bool 
+CsmaNetDevice::SupportsPromiscuous () const
+{
+  return true;
 }
 
 } // namespace ns3

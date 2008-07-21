@@ -52,14 +52,10 @@ type_annotations = {
         'ignore': None,
         },
     '::ns3::AttributeChecker': {
-        'incref_method': 'Ref',
-        'decref_method': 'Unref',
         'automatic_type_narrowing': 'true',
         'allow_subclassing': 'false',
         },
     '::ns3::AttributeValue': {
-        'incref_method': 'Ref',
-        'decref_method': 'Unref',
         'automatic_type_narrowing': 'true',
         'allow_subclassing': 'false',
         },

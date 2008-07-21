@@ -1,4 +1,4 @@
-from pybindgen import Module, FileCodeSink, write_preamble, param, retval
+from pybindgen import Module, FileCodeSink, param, retval, cppclass
 
 
 import pybindgen.settings
@@ -22,6 +22,7 @@ import ns3_module_point_to_point
 import ns3_module_internet_stack
 import ns3_module_wifi
 import ns3_module_csma
+import ns3_module_bridge
 import ns3_module_packet_sink
 import ns3_module_global_routing
 import ns3_module_onoff
@@ -146,6 +147,17 @@ def register_types(module):
         ns3_module_csma__local.register_types(module)
     
     root_module.end_section('ns3_module_csma')
+    root_module.begin_section('ns3_module_bridge')
+    ns3_module_bridge.register_types(module)
+    
+    try:
+        import ns3_module_bridge__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_bridge__local.register_types(module)
+    
+    root_module.end_section('ns3_module_bridge')
     root_module.begin_section('ns3_module_packet_sink')
     ns3_module_packet_sink.register_types(module)
     
@@ -364,6 +376,17 @@ def register_methods(root_module):
         ns3_module_csma__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_csma')
+    root_module.begin_section('ns3_module_bridge')
+    ns3_module_bridge.register_methods(root_module)
+    
+    try:
+        import ns3_module_bridge__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_bridge__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_bridge')
     root_module.begin_section('ns3_module_packet_sink')
     ns3_module_packet_sink.register_methods(root_module)
     
@@ -544,6 +567,17 @@ def register_functions(root_module):
         ns3_module_csma__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_csma')
+    root_module.begin_section('ns3_module_bridge')
+    ns3_module_bridge.register_functions(root_module)
+    
+    try:
+        import ns3_module_bridge__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_bridge__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_bridge')
     root_module.begin_section('ns3_module_packet_sink')
     ns3_module_packet_sink.register_functions(root_module)
     
@@ -634,7 +668,6 @@ def main():
     register_types(root_module)
     register_methods(root_module)
     register_functions(root_module)
-    write_preamble(out)
     root_module.generate(out)
 
 if __name__ == '__main__':

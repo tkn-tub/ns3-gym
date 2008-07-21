@@ -1,12 +1,12 @@
-from pybindgen import Module, FileCodeSink, write_preamble, param, retval
+from pybindgen import Module, FileCodeSink, param, retval, cppclass
 
 def register_types(module):
     root_module = module.get_root()
     
     ## udp-echo-client.h: ns3::UdpEchoClient [class]
-    module.add_class('UdpEchoClient', allow_subclassing=True, parent=root_module['ns3::Application'])
+    module.add_class('UdpEchoClient', parent=root_module['ns3::Application'])
     ## udp-echo-server.h: ns3::UdpEchoServer [class]
-    module.add_class('UdpEchoServer', allow_subclassing=True, parent=root_module['ns3::Application'])
+    module.add_class('UdpEchoServer', parent=root_module['ns3::Application'])
     
     ## Register a nested module for the namespace internal
     
@@ -55,30 +55,56 @@ def register_methods(root_module):
 
 def register_Ns3UdpEchoClient_methods(root_module, cls):
     ## udp-echo-client.h: static ns3::TypeId ns3::UdpEchoClient::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 'ns3::TypeId', [], is_static=True)
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## udp-echo-client.h: ns3::UdpEchoClient::UdpEchoClient() [constructor]
-    cls.add_constructor([], visibility='public')
+    cls.add_constructor([])
     ## udp-echo-client.h: void ns3::UdpEchoClient::SetRemote(ns3::Ipv4Address ip, uint16_t port) [member function]
-    cls.add_method('SetRemote', 'void', [param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
     ## udp-echo-client.h: void ns3::UdpEchoClient::DoDispose() [member function]
-    cls.add_method('DoDispose', 'void', [], visibility='protected', is_virtual=True)
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
     ## udp-echo-client.h: void ns3::UdpEchoClient::StartApplication() [member function]
-    cls.add_method('StartApplication', 'void', [], visibility='private', is_virtual=True)
+    cls.add_method('StartApplication', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     ## udp-echo-client.h: void ns3::UdpEchoClient::StopApplication() [member function]
-    cls.add_method('StopApplication', 'void', [], visibility='private', is_virtual=True)
+    cls.add_method('StopApplication', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3UdpEchoServer_methods(root_module, cls):
     ## udp-echo-server.h: static ns3::TypeId ns3::UdpEchoServer::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 'ns3::TypeId', [], is_static=True)
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## udp-echo-server.h: ns3::UdpEchoServer::UdpEchoServer() [constructor]
-    cls.add_constructor([], visibility='public')
+    cls.add_constructor([])
     ## udp-echo-server.h: void ns3::UdpEchoServer::DoDispose() [member function]
-    cls.add_method('DoDispose', 'void', [], visibility='protected', is_virtual=True)
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
     ## udp-echo-server.h: void ns3::UdpEchoServer::StartApplication() [member function]
-    cls.add_method('StartApplication', 'void', [], visibility='private', is_virtual=True)
+    cls.add_method('StartApplication', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     ## udp-echo-server.h: void ns3::UdpEchoServer::StopApplication() [member function]
-    cls.add_method('StopApplication', 'void', [], visibility='private', is_virtual=True)
+    cls.add_method('StopApplication', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_functions(root_module):

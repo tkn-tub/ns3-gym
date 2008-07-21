@@ -1,4 +1,4 @@
-from pybindgen import Module, FileCodeSink, write_preamble, param, retval
+from pybindgen import Module, FileCodeSink, param, retval, cppclass
 
 def register_types(module):
     root_module = module.get_root()
@@ -103,296 +103,544 @@ def register_methods(root_module):
 
 def register_Ns3MobilityHelper_methods(root_module, cls):
     ## mobility-helper.h: ns3::MobilityHelper::MobilityHelper() [constructor]
-    cls.add_constructor([], visibility='public')
+    cls.add_constructor([])
     ## mobility-helper.h: void ns3::MobilityHelper::SetPositionAllocator(ns3::Ptr<ns3::PositionAllocator> allocator) [member function]
-    cls.add_method('SetPositionAllocator', 'void', [param('ns3::Ptr< ns3::PositionAllocator >', 'allocator')])
+    cls.add_method('SetPositionAllocator', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PositionAllocator >', 'allocator')])
     ## mobility-helper.h: void ns3::MobilityHelper::SetPositionAllocator(std::string type, std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue(), std::string n8="", ns3::AttributeValue const & v8=ns3::EmptyAttributeValue(), std::string n9="", ns3::AttributeValue const & v9=ns3::EmptyAttributeValue()) [member function]
-    cls.add_method('SetPositionAllocator', 'void', [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue&', 'v1', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue&', 'v2', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue&', 'v3', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue&', 'v4', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue&', 'v5', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue&', 'v6', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue&', 'v7', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n8', default_value='""'), param('ns3::AttributeValue&', 'v8', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n9', default_value='""'), param('ns3::AttributeValue&', 'v9', default_value='ns3::EmptyAttributeValue()', is_const=True)])
+    cls.add_method('SetPositionAllocator', 
+                   'void', 
+                   [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue&', 'v1', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue&', 'v2', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue&', 'v3', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue&', 'v4', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue&', 'v5', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue&', 'v6', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue&', 'v7', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n8', default_value='""'), param('ns3::AttributeValue&', 'v8', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n9', default_value='""'), param('ns3::AttributeValue&', 'v9', default_value='ns3::EmptyAttributeValue()', is_const=True)])
     ## mobility-helper.h: void ns3::MobilityHelper::SetMobilityModel(std::string type, std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue(), std::string n8="", ns3::AttributeValue const & v8=ns3::EmptyAttributeValue(), std::string n9="", ns3::AttributeValue const & v9=ns3::EmptyAttributeValue()) [member function]
-    cls.add_method('SetMobilityModel', 'void', [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue&', 'v1', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue&', 'v2', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue&', 'v3', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue&', 'v4', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue&', 'v5', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue&', 'v6', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue&', 'v7', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n8', default_value='""'), param('ns3::AttributeValue&', 'v8', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n9', default_value='""'), param('ns3::AttributeValue&', 'v9', default_value='ns3::EmptyAttributeValue()', is_const=True)])
+    cls.add_method('SetMobilityModel', 
+                   'void', 
+                   [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue&', 'v1', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue&', 'v2', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue&', 'v3', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue&', 'v4', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue&', 'v5', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue&', 'v6', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue&', 'v7', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n8', default_value='""'), param('ns3::AttributeValue&', 'v8', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n9', default_value='""'), param('ns3::AttributeValue&', 'v9', default_value='ns3::EmptyAttributeValue()', is_const=True)])
     ## mobility-helper.h: void ns3::MobilityHelper::PushReferenceMobilityModel(ns3::Ptr<ns3::Object> reference) [member function]
-    cls.add_method('PushReferenceMobilityModel', 'void', [param('ns3::Ptr< ns3::Object >', 'reference')])
+    cls.add_method('PushReferenceMobilityModel', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Object >', 'reference')])
     ## mobility-helper.h: void ns3::MobilityHelper::PopReferenceMobilityModel() [member function]
-    cls.add_method('PopReferenceMobilityModel', 'void', [])
+    cls.add_method('PopReferenceMobilityModel', 
+                   'void', 
+                   [])
     ## mobility-helper.h: std::string ns3::MobilityHelper::GetMobilityModelType() const [member function]
-    cls.add_method('GetMobilityModelType', 'std::string', [], is_const=True)
+    cls.add_method('GetMobilityModelType', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
     ## mobility-helper.h: void ns3::MobilityHelper::Install(ns3::NodeContainer container) [member function]
-    cls.add_method('Install', 'void', [param('ns3::NodeContainer', 'container')])
+    cls.add_method('Install', 
+                   'void', 
+                   [param('ns3::NodeContainer', 'container')])
     ## mobility-helper.h: void ns3::MobilityHelper::InstallAll() [member function]
-    cls.add_method('InstallAll', 'void', [])
+    cls.add_method('InstallAll', 
+                   'void', 
+                   [])
     return
 
 def register_Ns3InternetStackHelper_methods(root_module, cls):
     ## internet-stack-helper.h: void ns3::InternetStackHelper::Install(ns3::NodeContainer c) [member function]
-    cls.add_method('Install', 'void', [param('ns3::NodeContainer', 'c')])
+    cls.add_method('Install', 
+                   'void', 
+                   [param('ns3::NodeContainer', 'c')])
     ## internet-stack-helper.h: static void ns3::InternetStackHelper::EnablePcapAll(std::string filename) [member function]
-    cls.add_method('EnablePcapAll', 'void', [param('std::string', 'filename')], is_static=True)
+    cls.add_method('EnablePcapAll', 
+                   'void', 
+                   [param('std::string', 'filename')], 
+                   is_static=True)
     cls.add_constructor([])
     return
 
 def register_Ns3NodeContainer_methods(root_module, cls):
     ## node-container.h: ns3::NodeContainer::NodeContainer() [constructor]
-    cls.add_constructor([], visibility='public')
+    cls.add_constructor([])
     ## node-container.h: ns3::NodeContainer::NodeContainer(ns3::Ptr<ns3::Node> node) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::Node >', 'node')], visibility='public')
+    cls.add_constructor([param('ns3::Ptr< ns3::Node >', 'node')])
     ## node-container.h: ns3::NodeContainer::NodeContainer(ns3::NodeContainer const & a, ns3::NodeContainer const & b) [constructor]
-    cls.add_constructor([param('ns3::NodeContainer&', 'a', is_const=True), param('ns3::NodeContainer&', 'b', is_const=True)], visibility='public')
+    cls.add_constructor([param('ns3::NodeContainer&', 'a', is_const=True), param('ns3::NodeContainer&', 'b', is_const=True)])
     ## node-container.h: ns3::NodeContainer::NodeContainer(ns3::NodeContainer const & a, ns3::NodeContainer const & b, ns3::NodeContainer const & c) [constructor]
-    cls.add_constructor([param('ns3::NodeContainer&', 'a', is_const=True), param('ns3::NodeContainer&', 'b', is_const=True), param('ns3::NodeContainer&', 'c', is_const=True)], visibility='public')
+    cls.add_constructor([param('ns3::NodeContainer&', 'a', is_const=True), param('ns3::NodeContainer&', 'b', is_const=True), param('ns3::NodeContainer&', 'c', is_const=True)])
     ## node-container.h: ns3::NodeContainer::NodeContainer(ns3::NodeContainer const & a, ns3::NodeContainer const & b, ns3::NodeContainer const & c, ns3::NodeContainer const & d) [constructor]
-    cls.add_constructor([param('ns3::NodeContainer&', 'a', is_const=True), param('ns3::NodeContainer&', 'b', is_const=True), param('ns3::NodeContainer&', 'c', is_const=True), param('ns3::NodeContainer&', 'd', is_const=True)], visibility='public')
+    cls.add_constructor([param('ns3::NodeContainer&', 'a', is_const=True), param('ns3::NodeContainer&', 'b', is_const=True), param('ns3::NodeContainer&', 'c', is_const=True), param('ns3::NodeContainer&', 'd', is_const=True)])
     ## node-container.h: __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Node>*,std::vector<ns3::Ptr<ns3::Node>, std::allocator<ns3::Ptr<ns3::Node> > > > ns3::NodeContainer::Begin() const [member function]
-    cls.add_method('Begin', '__gnu_cxx::__normal_iterator< const ns3::Ptr< ns3::Node >, std::vector< ns3::Ptr< ns3::Node >, std::allocator< ns3::Ptr< ns3::Node > > > >', [], is_const=True)
+    cls.add_method('Begin', 
+                   '__gnu_cxx::__normal_iterator< const ns3::Ptr< ns3::Node >, std::vector< ns3::Ptr< ns3::Node >, std::allocator< ns3::Ptr< ns3::Node > > > >', 
+                   [], 
+                   is_const=True)
     ## node-container.h: __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Node>*,std::vector<ns3::Ptr<ns3::Node>, std::allocator<ns3::Ptr<ns3::Node> > > > ns3::NodeContainer::End() const [member function]
-    cls.add_method('End', '__gnu_cxx::__normal_iterator< const ns3::Ptr< ns3::Node >, std::vector< ns3::Ptr< ns3::Node >, std::allocator< ns3::Ptr< ns3::Node > > > >', [], is_const=True)
+    cls.add_method('End', 
+                   '__gnu_cxx::__normal_iterator< const ns3::Ptr< ns3::Node >, std::vector< ns3::Ptr< ns3::Node >, std::allocator< ns3::Ptr< ns3::Node > > > >', 
+                   [], 
+                   is_const=True)
     ## node-container.h: uint32_t ns3::NodeContainer::GetN() const [member function]
-    cls.add_method('GetN', 'uint32_t', [], is_const=True)
+    cls.add_method('GetN', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     ## node-container.h: ns3::Ptr<ns3::Node> ns3::NodeContainer::Get(uint32_t i) const [member function]
-    cls.add_method('Get', 'ns3::Ptr< ns3::Node >', [param('uint32_t', 'i')], is_const=True)
+    cls.add_method('Get', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
     ## node-container.h: void ns3::NodeContainer::Create(uint32_t n) [member function]
-    cls.add_method('Create', 'void', [param('uint32_t', 'n')])
+    cls.add_method('Create', 
+                   'void', 
+                   [param('uint32_t', 'n')])
     ## node-container.h: void ns3::NodeContainer::Add(ns3::NodeContainer other) [member function]
-    cls.add_method('Add', 'void', [param('ns3::NodeContainer', 'other')])
+    cls.add_method('Add', 
+                   'void', 
+                   [param('ns3::NodeContainer', 'other')])
     ## node-container.h: void ns3::NodeContainer::Add(ns3::Ptr<ns3::Node> node) [member function]
-    cls.add_method('Add', 'void', [param('ns3::Ptr< ns3::Node >', 'node')])
+    cls.add_method('Add', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')])
     ## node-container.h: static ns3::NodeContainer ns3::NodeContainer::GetGlobal() [member function]
-    cls.add_method('GetGlobal', 'ns3::NodeContainer', [], is_static=True)
+    cls.add_method('GetGlobal', 
+                   'ns3::NodeContainer', 
+                   [], 
+                   is_static=True)
     return
 
 def register_Ns3PointToPointHelper_methods(root_module, cls):
     ## point-to-point-helper.h: ns3::PointToPointHelper::PointToPointHelper() [constructor]
-    cls.add_constructor([], visibility='public')
+    cls.add_constructor([])
     ## point-to-point-helper.h: void ns3::PointToPointHelper::SetQueue(std::string type, std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue()) [member function]
-    cls.add_method('SetQueue', 'void', [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue&', 'v1', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue&', 'v2', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue&', 'v3', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue&', 'v4', default_value='ns3::EmptyAttributeValue()', is_const=True)])
+    cls.add_method('SetQueue', 
+                   'void', 
+                   [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue&', 'v1', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue&', 'v2', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue&', 'v3', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue&', 'v4', default_value='ns3::EmptyAttributeValue()', is_const=True)])
     ## point-to-point-helper.h: void ns3::PointToPointHelper::SetDeviceAttribute(std::string name, ns3::AttributeValue const & value) [member function]
-    cls.add_method('SetDeviceAttribute', 'void', [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
+    cls.add_method('SetDeviceAttribute', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
     ## point-to-point-helper.h: void ns3::PointToPointHelper::SetChannelAttribute(std::string name, ns3::AttributeValue const & value) [member function]
-    cls.add_method('SetChannelAttribute', 'void', [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
+    cls.add_method('SetChannelAttribute', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
     ## point-to-point-helper.h: void ns3::PointToPointHelper::SetDeviceParameter(std::string name, ns3::AttributeValue const & value) [member function]
-    cls.add_method('SetDeviceParameter', 'void', [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
+    cls.add_method('SetDeviceParameter', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)], 
+                   deprecated=True)
     ## point-to-point-helper.h: void ns3::PointToPointHelper::SetChannelParameter(std::string name, ns3::AttributeValue const & value) [member function]
-    cls.add_method('SetChannelParameter', 'void', [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
+    cls.add_method('SetChannelParameter', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)], 
+                   deprecated=True)
     ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnablePcap(std::string filename, uint32_t nodeid, uint32_t deviceid) [member function]
-    cls.add_method('EnablePcap', 'void', [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], is_static=True)
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
+                   is_static=True)
     ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnablePcap(std::string filename, ns3::NetDeviceContainer d) [member function]
-    cls.add_method('EnablePcap', 'void', [param('std::string', 'filename'), param('ns3::NetDeviceContainer', 'd')], is_static=True)
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('ns3::NetDeviceContainer', 'd')], 
+                   is_static=True)
     ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnablePcap(std::string filename, ns3::NodeContainer n) [member function]
-    cls.add_method('EnablePcap', 'void', [param('std::string', 'filename'), param('ns3::NodeContainer', 'n')], is_static=True)
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('ns3::NodeContainer', 'n')], 
+                   is_static=True)
     ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnablePcapAll(std::string filename) [member function]
-    cls.add_method('EnablePcapAll', 'void', [param('std::string', 'filename')], is_static=True)
+    cls.add_method('EnablePcapAll', 
+                   'void', 
+                   [param('std::string', 'filename')], 
+                   is_static=True)
     ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnableAscii(std::ostream & os, uint32_t nodeid, uint32_t deviceid) [member function]
-    cls.add_method('EnableAscii', 'void', [param('std::ostream&', 'os'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], is_static=True)
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::ostream&', 'os'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
+                   is_static=True)
     ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnableAscii(std::ostream & os, ns3::NetDeviceContainer d) [member function]
-    cls.add_method('EnableAscii', 'void', [param('std::ostream&', 'os'), param('ns3::NetDeviceContainer', 'd')], is_static=True)
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::ostream&', 'os'), param('ns3::NetDeviceContainer', 'd')], 
+                   is_static=True)
     ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnableAscii(std::ostream & os, ns3::NodeContainer n) [member function]
-    cls.add_method('EnableAscii', 'void', [param('std::ostream&', 'os'), param('ns3::NodeContainer', 'n')], is_static=True)
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::ostream&', 'os'), param('ns3::NodeContainer', 'n')], 
+                   is_static=True)
     ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnableAsciiAll(std::ostream & os) [member function]
-    cls.add_method('EnableAsciiAll', 'void', [param('std::ostream&', 'os')], is_static=True)
+    cls.add_method('EnableAsciiAll', 
+                   'void', 
+                   [param('std::ostream&', 'os')], 
+                   is_static=True)
     ## point-to-point-helper.h: ns3::NetDeviceContainer ns3::PointToPointHelper::Install(ns3::NodeContainer c) [member function]
-    cls.add_method('Install', 'ns3::NetDeviceContainer', [param('ns3::NodeContainer', 'c')])
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::NodeContainer', 'c')])
     ## point-to-point-helper.h: ns3::NetDeviceContainer ns3::PointToPointHelper::Install(ns3::Ptr<ns3::Node> a, ns3::Ptr<ns3::Node> b) [member function]
-    cls.add_method('Install', 'ns3::NetDeviceContainer', [param('ns3::Ptr< ns3::Node >', 'a'), param('ns3::Ptr< ns3::Node >', 'b')])
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::Ptr< ns3::Node >', 'a'), param('ns3::Ptr< ns3::Node >', 'b')])
     return
 
 def register_Ns3NetDeviceContainer_methods(root_module, cls):
     ## net-device-container.h: __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::NetDevice>*,std::vector<ns3::Ptr<ns3::NetDevice>, std::allocator<ns3::Ptr<ns3::NetDevice> > > > ns3::NetDeviceContainer::Begin() const [member function]
-    cls.add_method('Begin', '__gnu_cxx::__normal_iterator< const ns3::Ptr< ns3::NetDevice >, std::vector< ns3::Ptr< ns3::NetDevice >, std::allocator< ns3::Ptr< ns3::NetDevice > > > >', [], is_const=True)
+    cls.add_method('Begin', 
+                   '__gnu_cxx::__normal_iterator< const ns3::Ptr< ns3::NetDevice >, std::vector< ns3::Ptr< ns3::NetDevice >, std::allocator< ns3::Ptr< ns3::NetDevice > > > >', 
+                   [], 
+                   is_const=True)
     ## net-device-container.h: __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::NetDevice>*,std::vector<ns3::Ptr<ns3::NetDevice>, std::allocator<ns3::Ptr<ns3::NetDevice> > > > ns3::NetDeviceContainer::End() const [member function]
-    cls.add_method('End', '__gnu_cxx::__normal_iterator< const ns3::Ptr< ns3::NetDevice >, std::vector< ns3::Ptr< ns3::NetDevice >, std::allocator< ns3::Ptr< ns3::NetDevice > > > >', [], is_const=True)
+    cls.add_method('End', 
+                   '__gnu_cxx::__normal_iterator< const ns3::Ptr< ns3::NetDevice >, std::vector< ns3::Ptr< ns3::NetDevice >, std::allocator< ns3::Ptr< ns3::NetDevice > > > >', 
+                   [], 
+                   is_const=True)
     ## net-device-container.h: uint32_t ns3::NetDeviceContainer::GetN() const [member function]
-    cls.add_method('GetN', 'uint32_t', [], is_const=True)
+    cls.add_method('GetN', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     ## net-device-container.h: ns3::Ptr<ns3::NetDevice> ns3::NetDeviceContainer::Get(uint32_t i) const [member function]
-    cls.add_method('Get', 'ns3::Ptr< ns3::NetDevice >', [param('uint32_t', 'i')], is_const=True)
+    cls.add_method('Get', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
     ## net-device-container.h: void ns3::NetDeviceContainer::Add(ns3::NetDeviceContainer other) [member function]
-    cls.add_method('Add', 'void', [param('ns3::NetDeviceContainer', 'other')])
+    cls.add_method('Add', 
+                   'void', 
+                   [param('ns3::NetDeviceContainer', 'other')])
     ## net-device-container.h: void ns3::NetDeviceContainer::Add(ns3::Ptr<ns3::NetDevice> device) [member function]
-    cls.add_method('Add', 'void', [param('ns3::Ptr< ns3::NetDevice >', 'device')])
+    cls.add_method('Add', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'device')])
     cls.add_constructor([])
     return
 
 def register_Ns3CsmaHelper_methods(root_module, cls):
     ## csma-helper.h: ns3::CsmaHelper::CsmaHelper() [constructor]
-    cls.add_constructor([], visibility='public')
+    cls.add_constructor([])
     ## csma-helper.h: void ns3::CsmaHelper::SetQueue(std::string type, std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue()) [member function]
-    cls.add_method('SetQueue', 'void', [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue&', 'v1', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue&', 'v2', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue&', 'v3', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue&', 'v4', default_value='ns3::EmptyAttributeValue()', is_const=True)])
+    cls.add_method('SetQueue', 
+                   'void', 
+                   [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue&', 'v1', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue&', 'v2', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue&', 'v3', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue&', 'v4', default_value='ns3::EmptyAttributeValue()', is_const=True)])
     ## csma-helper.h: void ns3::CsmaHelper::SetDeviceAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
-    cls.add_method('SetDeviceAttribute', 'void', [param('std::string', 'n1'), param('ns3::AttributeValue&', 'v1', is_const=True)])
+    cls.add_method('SetDeviceAttribute', 
+                   'void', 
+                   [param('std::string', 'n1'), param('ns3::AttributeValue&', 'v1', is_const=True)])
     ## csma-helper.h: void ns3::CsmaHelper::SetChannelAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
-    cls.add_method('SetChannelAttribute', 'void', [param('std::string', 'n1'), param('ns3::AttributeValue&', 'v1', is_const=True)])
+    cls.add_method('SetChannelAttribute', 
+                   'void', 
+                   [param('std::string', 'n1'), param('ns3::AttributeValue&', 'v1', is_const=True)])
     ## csma-helper.h: void ns3::CsmaHelper::SetDeviceParameter(std::string n1, ns3::AttributeValue const & v1) [member function]
-    cls.add_method('SetDeviceParameter', 'void', [param('std::string', 'n1'), param('ns3::AttributeValue&', 'v1', is_const=True)])
+    cls.add_method('SetDeviceParameter', 
+                   'void', 
+                   [param('std::string', 'n1'), param('ns3::AttributeValue&', 'v1', is_const=True)], 
+                   deprecated=True)
     ## csma-helper.h: void ns3::CsmaHelper::SetChannelParameter(std::string n1, ns3::AttributeValue const & v1) [member function]
-    cls.add_method('SetChannelParameter', 'void', [param('std::string', 'n1'), param('ns3::AttributeValue&', 'v1', is_const=True)])
+    cls.add_method('SetChannelParameter', 
+                   'void', 
+                   [param('std::string', 'n1'), param('ns3::AttributeValue&', 'v1', is_const=True)], 
+                   deprecated=True)
     ## csma-helper.h: static void ns3::CsmaHelper::EnablePcap(std::string filename, uint32_t nodeid, uint32_t deviceid) [member function]
-    cls.add_method('EnablePcap', 'void', [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], is_static=True)
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
+                   is_static=True)
     ## csma-helper.h: static void ns3::CsmaHelper::EnablePcap(std::string filename, ns3::NetDeviceContainer d) [member function]
-    cls.add_method('EnablePcap', 'void', [param('std::string', 'filename'), param('ns3::NetDeviceContainer', 'd')], is_static=True)
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('ns3::NetDeviceContainer', 'd')], 
+                   is_static=True)
     ## csma-helper.h: static void ns3::CsmaHelper::EnablePcap(std::string filename, ns3::NodeContainer n) [member function]
-    cls.add_method('EnablePcap', 'void', [param('std::string', 'filename'), param('ns3::NodeContainer', 'n')], is_static=True)
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('ns3::NodeContainer', 'n')], 
+                   is_static=True)
     ## csma-helper.h: static void ns3::CsmaHelper::EnablePcapAll(std::string filename) [member function]
-    cls.add_method('EnablePcapAll', 'void', [param('std::string', 'filename')], is_static=True)
+    cls.add_method('EnablePcapAll', 
+                   'void', 
+                   [param('std::string', 'filename')], 
+                   is_static=True)
     ## csma-helper.h: static void ns3::CsmaHelper::EnableAscii(std::ostream & os, uint32_t nodeid, uint32_t deviceid) [member function]
-    cls.add_method('EnableAscii', 'void', [param('std::ostream&', 'os'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], is_static=True)
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::ostream&', 'os'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
+                   is_static=True)
     ## csma-helper.h: static void ns3::CsmaHelper::EnableAscii(std::ostream & os, ns3::NetDeviceContainer d) [member function]
-    cls.add_method('EnableAscii', 'void', [param('std::ostream&', 'os'), param('ns3::NetDeviceContainer', 'd')], is_static=True)
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::ostream&', 'os'), param('ns3::NetDeviceContainer', 'd')], 
+                   is_static=True)
     ## csma-helper.h: static void ns3::CsmaHelper::EnableAscii(std::ostream & os, ns3::NodeContainer n) [member function]
-    cls.add_method('EnableAscii', 'void', [param('std::ostream&', 'os'), param('ns3::NodeContainer', 'n')], is_static=True)
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::ostream&', 'os'), param('ns3::NodeContainer', 'n')], 
+                   is_static=True)
     ## csma-helper.h: static void ns3::CsmaHelper::EnableAsciiAll(std::ostream & os) [member function]
-    cls.add_method('EnableAsciiAll', 'void', [param('std::ostream&', 'os')], is_static=True)
+    cls.add_method('EnableAsciiAll', 
+                   'void', 
+                   [param('std::ostream&', 'os')], 
+                   is_static=True)
     ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::NodeContainer const & c) [member function]
-    cls.add_method('Install', 'ns3::NetDeviceContainer', [param('ns3::NodeContainer&', 'c', is_const=True)])
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::NodeContainer&', 'c', is_const=True)])
     ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::NodeContainer const & c, ns3::Ptr<ns3::CsmaChannel> channel) [member function]
-    cls.add_method('Install', 'ns3::NetDeviceContainer', [param('ns3::NodeContainer&', 'c', is_const=True), param('ns3::Ptr< ns3::CsmaChannel >', 'channel')])
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::NodeContainer&', 'c', is_const=True), param('ns3::Ptr< ns3::CsmaChannel >', 'channel')])
     return
 
 def register_Ns3UdpEchoServerHelper_methods(root_module, cls):
     ## udp-echo-helper.h: ns3::UdpEchoServerHelper::UdpEchoServerHelper(uint16_t port) [constructor]
-    cls.add_constructor([param('uint16_t', 'port')], visibility='public')
+    cls.add_constructor([param('uint16_t', 'port')])
     ## udp-echo-helper.h: void ns3::UdpEchoServerHelper::SetAttribute(std::string name, ns3::AttributeValue const & value) [member function]
-    cls.add_method('SetAttribute', 'void', [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
     ## udp-echo-helper.h: ns3::ApplicationContainer ns3::UdpEchoServerHelper::Install(ns3::NodeContainer c) [member function]
-    cls.add_method('Install', 'ns3::ApplicationContainer', [param('ns3::NodeContainer', 'c')])
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::NodeContainer', 'c')])
     return
 
 def register_Ns3OlsrHelper_methods(root_module, cls):
     ## olsr-helper.h: ns3::OlsrHelper::OlsrHelper() [constructor]
-    cls.add_constructor([], visibility='public')
+    cls.add_constructor([])
     ## olsr-helper.h: void ns3::OlsrHelper::SetAgent(std::string tid, std::string n0="", ns3::AttributeValue const & v0=ns3::EmptyAttributeValue(), std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue()) [member function]
-    cls.add_method('SetAgent', 'void', [param('std::string', 'tid'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue&', 'v0', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue&', 'v1', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue&', 'v2', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue&', 'v3', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue&', 'v4', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue&', 'v5', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue&', 'v6', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue&', 'v7', default_value='ns3::EmptyAttributeValue()', is_const=True)])
+    cls.add_method('SetAgent', 
+                   'void', 
+                   [param('std::string', 'tid'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue&', 'v0', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue&', 'v1', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue&', 'v2', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue&', 'v3', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue&', 'v4', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue&', 'v5', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue&', 'v6', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue&', 'v7', default_value='ns3::EmptyAttributeValue()', is_const=True)])
     ## olsr-helper.h: void ns3::OlsrHelper::Install(ns3::NodeContainer container) [member function]
-    cls.add_method('Install', 'void', [param('ns3::NodeContainer', 'container')])
+    cls.add_method('Install', 
+                   'void', 
+                   [param('ns3::NodeContainer', 'container')])
     ## olsr-helper.h: void ns3::OlsrHelper::Install(ns3::Ptr<ns3::Node> node) [member function]
-    cls.add_method('Install', 'void', [param('ns3::Ptr< ns3::Node >', 'node')])
+    cls.add_method('Install', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')])
     ## olsr-helper.h: void ns3::OlsrHelper::InstallAll() [member function]
-    cls.add_method('InstallAll', 'void', [])
+    cls.add_method('InstallAll', 
+                   'void', 
+                   [])
     return
 
 def register_Ns3PacketSocketHelper_methods(root_module, cls):
     ## packet-socket-helper.h: void ns3::PacketSocketHelper::Install(ns3::NodeContainer c) [member function]
-    cls.add_method('Install', 'void', [param('ns3::NodeContainer', 'c')])
+    cls.add_method('Install', 
+                   'void', 
+                   [param('ns3::NodeContainer', 'c')])
     cls.add_constructor([])
     return
 
 def register_Ns3OnOffHelper_methods(root_module, cls):
     ## on-off-helper.h: ns3::OnOffHelper::OnOffHelper(std::string protocol, ns3::Address address) [constructor]
-    cls.add_constructor([param('std::string', 'protocol'), param('ns3::Address', 'address')], visibility='public')
+    cls.add_constructor([param('std::string', 'protocol'), param('ns3::Address', 'address')])
     ## on-off-helper.h: void ns3::OnOffHelper::SetAttribute(std::string name, ns3::AttributeValue const & value) [member function]
-    cls.add_method('SetAttribute', 'void', [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
     ## on-off-helper.h: ns3::ApplicationContainer ns3::OnOffHelper::Install(ns3::NodeContainer c) [member function]
-    cls.add_method('Install', 'ns3::ApplicationContainer', [param('ns3::NodeContainer', 'c')])
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::NodeContainer', 'c')])
     return
 
 def register_Ns3UdpEchoClientHelper_methods(root_module, cls):
     ## udp-echo-helper.h: ns3::UdpEchoClientHelper::UdpEchoClientHelper(ns3::Ipv4Address ip, uint16_t port) [constructor]
-    cls.add_constructor([param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')], visibility='public')
+    cls.add_constructor([param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
     ## udp-echo-helper.h: void ns3::UdpEchoClientHelper::SetAttribute(std::string name, ns3::AttributeValue const & value) [member function]
-    cls.add_method('SetAttribute', 'void', [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
     ## udp-echo-helper.h: ns3::ApplicationContainer ns3::UdpEchoClientHelper::Install(ns3::NodeContainer c) [member function]
-    cls.add_method('Install', 'ns3::ApplicationContainer', [param('ns3::NodeContainer', 'c')])
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::NodeContainer', 'c')])
     return
 
 def register_Ns3StaticMulticastRouteHelper_methods(root_module, cls):
     ## static-multicast-route-helper.h: ns3::StaticMulticastRouteHelper::StaticMulticastRouteHelper() [constructor]
-    cls.add_constructor([], visibility='public')
+    cls.add_constructor([])
     ## static-multicast-route-helper.h: void ns3::StaticMulticastRouteHelper::AddMulticastRoute(ns3::Ptr<ns3::Node> arg0, ns3::Ipv4Address source, ns3::Ipv4Address group, ns3::Ptr<ns3::NetDevice> input, ns3::NetDeviceContainer output) [member function]
-    cls.add_method('AddMulticastRoute', 'void', [param('ns3::Ptr< ns3::Node >', 'arg0'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group'), param('ns3::Ptr< ns3::NetDevice >', 'input'), param('ns3::NetDeviceContainer', 'output')])
+    cls.add_method('AddMulticastRoute', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'arg0'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group'), param('ns3::Ptr< ns3::NetDevice >', 'input'), param('ns3::NetDeviceContainer', 'output')])
     ## static-multicast-route-helper.h: void ns3::StaticMulticastRouteHelper::SetDefaultMulticastRoute(ns3::Ptr<ns3::Node> n, ns3::Ptr<ns3::NetDevice> nd) [member function]
-    cls.add_method('SetDefaultMulticastRoute', 'void', [param('ns3::Ptr< ns3::Node >', 'n'), param('ns3::Ptr< ns3::NetDevice >', 'nd')])
+    cls.add_method('SetDefaultMulticastRoute', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'n'), param('ns3::Ptr< ns3::NetDevice >', 'nd')])
     ## static-multicast-route-helper.h: void ns3::StaticMulticastRouteHelper::JoinMulticastGroup(ns3::Ptr<ns3::Node> n, ns3::Ipv4Address source, ns3::Ipv4Address group) [member function]
-    cls.add_method('JoinMulticastGroup', 'void', [param('ns3::Ptr< ns3::Node >', 'n'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group')])
+    cls.add_method('JoinMulticastGroup', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'n'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group')])
     return
 
 def register_Ns3Ipv4InterfaceContainer_methods(root_module, cls):
     ## ipv4-interface-container.h: ns3::Ipv4InterfaceContainer::Ipv4InterfaceContainer() [constructor]
-    cls.add_constructor([], visibility='public')
+    cls.add_constructor([])
     ## ipv4-interface-container.h: uint32_t ns3::Ipv4InterfaceContainer::GetN() const [member function]
-    cls.add_method('GetN', 'uint32_t', [], is_const=True)
+    cls.add_method('GetN', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     ## ipv4-interface-container.h: ns3::Ipv4Address ns3::Ipv4InterfaceContainer::GetAddress(uint32_t i) const [member function]
-    cls.add_method('GetAddress', 'ns3::Ipv4Address', [param('uint32_t', 'i')], is_const=True)
+    cls.add_method('GetAddress', 
+                   'ns3::Ipv4Address', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
     ## ipv4-interface-container.h: void ns3::Ipv4InterfaceContainer::SetMetric(uint32_t i, uint16_t metric) [member function]
-    cls.add_method('SetMetric', 'void', [param('uint32_t', 'i'), param('uint16_t', 'metric')])
+    cls.add_method('SetMetric', 
+                   'void', 
+                   [param('uint32_t', 'i'), param('uint16_t', 'metric')])
     ## ipv4-interface-container.h: void ns3::Ipv4InterfaceContainer::Add(ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface) [member function]
-    cls.add_method('Add', 'void', [param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')])
+    cls.add_method('Add', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')])
     return
 
 def register_Ns3ApplicationContainer_methods(root_module, cls):
     ## application-container.h: __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Application>*,std::vector<ns3::Ptr<ns3::Application>, std::allocator<ns3::Ptr<ns3::Application> > > > ns3::ApplicationContainer::Begin() const [member function]
-    cls.add_method('Begin', '__gnu_cxx::__normal_iterator< const ns3::Ptr< ns3::Application >, std::vector< ns3::Ptr< ns3::Application >, std::allocator< ns3::Ptr< ns3::Application > > > >', [], is_const=True)
+    cls.add_method('Begin', 
+                   '__gnu_cxx::__normal_iterator< const ns3::Ptr< ns3::Application >, std::vector< ns3::Ptr< ns3::Application >, std::allocator< ns3::Ptr< ns3::Application > > > >', 
+                   [], 
+                   is_const=True)
     ## application-container.h: __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Application>*,std::vector<ns3::Ptr<ns3::Application>, std::allocator<ns3::Ptr<ns3::Application> > > > ns3::ApplicationContainer::End() const [member function]
-    cls.add_method('End', '__gnu_cxx::__normal_iterator< const ns3::Ptr< ns3::Application >, std::vector< ns3::Ptr< ns3::Application >, std::allocator< ns3::Ptr< ns3::Application > > > >', [], is_const=True)
+    cls.add_method('End', 
+                   '__gnu_cxx::__normal_iterator< const ns3::Ptr< ns3::Application >, std::vector< ns3::Ptr< ns3::Application >, std::allocator< ns3::Ptr< ns3::Application > > > >', 
+                   [], 
+                   is_const=True)
     ## application-container.h: uint32_t ns3::ApplicationContainer::GetN() const [member function]
-    cls.add_method('GetN', 'uint32_t', [], is_const=True)
+    cls.add_method('GetN', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     ## application-container.h: ns3::Ptr<ns3::Application> ns3::ApplicationContainer::Get(uint32_t i) const [member function]
-    cls.add_method('Get', 'ns3::Ptr< ns3::Application >', [param('uint32_t', 'i')], is_const=True)
+    cls.add_method('Get', 
+                   'ns3::Ptr< ns3::Application >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
     ## application-container.h: void ns3::ApplicationContainer::Add(ns3::ApplicationContainer other) [member function]
-    cls.add_method('Add', 'void', [param('ns3::ApplicationContainer', 'other')])
+    cls.add_method('Add', 
+                   'void', 
+                   [param('ns3::ApplicationContainer', 'other')])
     ## application-container.h: void ns3::ApplicationContainer::Add(ns3::Ptr<ns3::Application> application) [member function]
-    cls.add_method('Add', 'void', [param('ns3::Ptr< ns3::Application >', 'application')])
+    cls.add_method('Add', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Application >', 'application')])
     ## application-container.h: void ns3::ApplicationContainer::Start(ns3::Time start) [member function]
-    cls.add_method('Start', 'void', [param('ns3::Time', 'start')])
+    cls.add_method('Start', 
+                   'void', 
+                   [param('ns3::Time', 'start')])
     ## application-container.h: void ns3::ApplicationContainer::Stop(ns3::Time stop) [member function]
-    cls.add_method('Stop', 'void', [param('ns3::Time', 'stop')])
+    cls.add_method('Stop', 
+                   'void', 
+                   [param('ns3::Time', 'stop')])
     cls.add_constructor([])
     return
 
 def register_Ns3WifiHelper_methods(root_module, cls):
     ## wifi-helper.h: ns3::WifiHelper::WifiHelper() [constructor]
-    cls.add_constructor([], visibility='public')
+    cls.add_constructor([])
     ## wifi-helper.h: void ns3::WifiHelper::SetRemoteStationManager(std::string type, std::string n0="", ns3::AttributeValue const & v0=ns3::EmptyAttributeValue(), std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue()) [member function]
-    cls.add_method('SetRemoteStationManager', 'void', [param('std::string', 'type'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue&', 'v0', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue&', 'v1', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue&', 'v2', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue&', 'v3', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue&', 'v4', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue&', 'v5', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue&', 'v6', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue&', 'v7', default_value='ns3::EmptyAttributeValue()', is_const=True)])
+    cls.add_method('SetRemoteStationManager', 
+                   'void', 
+                   [param('std::string', 'type'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue&', 'v0', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue&', 'v1', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue&', 'v2', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue&', 'v3', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue&', 'v4', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue&', 'v5', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue&', 'v6', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue&', 'v7', default_value='ns3::EmptyAttributeValue()', is_const=True)])
     ## wifi-helper.h: void ns3::WifiHelper::SetMac(std::string type, std::string n0="", ns3::AttributeValue const & v0=ns3::EmptyAttributeValue(), std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue()) [member function]
-    cls.add_method('SetMac', 'void', [param('std::string', 'type'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue&', 'v0', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue&', 'v1', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue&', 'v2', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue&', 'v3', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue&', 'v4', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue&', 'v5', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue&', 'v6', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue&', 'v7', default_value='ns3::EmptyAttributeValue()', is_const=True)])
+    cls.add_method('SetMac', 
+                   'void', 
+                   [param('std::string', 'type'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue&', 'v0', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue&', 'v1', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue&', 'v2', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue&', 'v3', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue&', 'v4', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue&', 'v5', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue&', 'v6', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue&', 'v7', default_value='ns3::EmptyAttributeValue()', is_const=True)])
     ## wifi-helper.h: void ns3::WifiHelper::SetPhy(std::string phyType, std::string n0="", ns3::AttributeValue const & v0=ns3::EmptyAttributeValue(), std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue()) [member function]
-    cls.add_method('SetPhy', 'void', [param('std::string', 'phyType'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue&', 'v0', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue&', 'v1', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue&', 'v2', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue&', 'v3', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue&', 'v4', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue&', 'v5', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue&', 'v6', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue&', 'v7', default_value='ns3::EmptyAttributeValue()', is_const=True)])
+    cls.add_method('SetPhy', 
+                   'void', 
+                   [param('std::string', 'phyType'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue&', 'v0', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue&', 'v1', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue&', 'v2', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue&', 'v3', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue&', 'v4', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue&', 'v5', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue&', 'v6', default_value='ns3::EmptyAttributeValue()', is_const=True), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue&', 'v7', default_value='ns3::EmptyAttributeValue()', is_const=True)])
     ## wifi-helper.h: static void ns3::WifiHelper::EnablePcap(std::string filename, uint32_t nodeid, uint32_t deviceid) [member function]
-    cls.add_method('EnablePcap', 'void', [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], is_static=True)
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
+                   is_static=True)
     ## wifi-helper.h: static void ns3::WifiHelper::EnablePcap(std::string filename, ns3::NetDeviceContainer d) [member function]
-    cls.add_method('EnablePcap', 'void', [param('std::string', 'filename'), param('ns3::NetDeviceContainer', 'd')], is_static=True)
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('ns3::NetDeviceContainer', 'd')], 
+                   is_static=True)
     ## wifi-helper.h: static void ns3::WifiHelper::EnablePcap(std::string filename, ns3::NodeContainer n) [member function]
-    cls.add_method('EnablePcap', 'void', [param('std::string', 'filename'), param('ns3::NodeContainer', 'n')], is_static=True)
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('ns3::NodeContainer', 'n')], 
+                   is_static=True)
     ## wifi-helper.h: static void ns3::WifiHelper::EnablePcapAll(std::string filename) [member function]
-    cls.add_method('EnablePcapAll', 'void', [param('std::string', 'filename')], is_static=True)
+    cls.add_method('EnablePcapAll', 
+                   'void', 
+                   [param('std::string', 'filename')], 
+                   is_static=True)
     ## wifi-helper.h: static void ns3::WifiHelper::EnableAscii(std::ostream & os, uint32_t nodeid, uint32_t deviceid) [member function]
-    cls.add_method('EnableAscii', 'void', [param('std::ostream&', 'os'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], is_static=True)
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::ostream&', 'os'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
+                   is_static=True)
     ## wifi-helper.h: static void ns3::WifiHelper::EnableAscii(std::ostream & os, ns3::NetDeviceContainer d) [member function]
-    cls.add_method('EnableAscii', 'void', [param('std::ostream&', 'os'), param('ns3::NetDeviceContainer', 'd')], is_static=True)
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::ostream&', 'os'), param('ns3::NetDeviceContainer', 'd')], 
+                   is_static=True)
     ## wifi-helper.h: static void ns3::WifiHelper::EnableAscii(std::ostream & os, ns3::NodeContainer n) [member function]
-    cls.add_method('EnableAscii', 'void', [param('std::ostream&', 'os'), param('ns3::NodeContainer', 'n')], is_static=True)
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::ostream&', 'os'), param('ns3::NodeContainer', 'n')], 
+                   is_static=True)
     ## wifi-helper.h: static void ns3::WifiHelper::EnableAsciiAll(std::ostream & os) [member function]
-    cls.add_method('EnableAsciiAll', 'void', [param('std::ostream&', 'os')], is_static=True)
+    cls.add_method('EnableAsciiAll', 
+                   'void', 
+                   [param('std::ostream&', 'os')], 
+                   is_static=True)
     ## wifi-helper.h: ns3::NetDeviceContainer ns3::WifiHelper::Install(ns3::NodeContainer c) const [member function]
-    cls.add_method('Install', 'ns3::NetDeviceContainer', [param('ns3::NodeContainer', 'c')], is_const=True)
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::NodeContainer', 'c')], 
+                   is_const=True)
     ## wifi-helper.h: ns3::NetDeviceContainer ns3::WifiHelper::Install(ns3::NodeContainer c, ns3::Ptr<ns3::WifiChannel> channel) const [member function]
-    cls.add_method('Install', 'ns3::NetDeviceContainer', [param('ns3::NodeContainer', 'c'), param('ns3::Ptr< ns3::WifiChannel >', 'channel')], is_const=True)
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::NodeContainer', 'c'), param('ns3::Ptr< ns3::WifiChannel >', 'channel')], 
+                   is_const=True)
     return
 
 def register_Ns3Ipv4AddressHelper_methods(root_module, cls):
     ## ipv4-address-helper.h: ns3::Ipv4AddressHelper::Ipv4AddressHelper() [constructor]
-    cls.add_constructor([], visibility='public')
+    cls.add_constructor([])
     ## ipv4-address-helper.h: void ns3::Ipv4AddressHelper::SetBase(ns3::Ipv4Address network, ns3::Ipv4Mask mask, ns3::Ipv4Address base="0.0.0.1") [member function]
-    cls.add_method('SetBase', 'void', [param('ns3::Ipv4Address', 'network'), param('ns3::Ipv4Mask', 'mask'), param('ns3::Ipv4Address', 'base', default_value='"0.0.0.1"')])
+    cls.add_method('SetBase', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'network'), param('ns3::Ipv4Mask', 'mask'), param('ns3::Ipv4Address', 'base', default_value='"0.0.0.1"')])
     ## ipv4-address-helper.h: ns3::Ipv4Address ns3::Ipv4AddressHelper::NewNetwork() [member function]
-    cls.add_method('NewNetwork', 'ns3::Ipv4Address', [])
+    cls.add_method('NewNetwork', 
+                   'ns3::Ipv4Address', 
+                   [])
     ## ipv4-address-helper.h: ns3::Ipv4Address ns3::Ipv4AddressHelper::NewAddress() [member function]
-    cls.add_method('NewAddress', 'ns3::Ipv4Address', [])
+    cls.add_method('NewAddress', 
+                   'ns3::Ipv4Address', 
+                   [])
     ## ipv4-address-helper.h: ns3::Ipv4InterfaceContainer ns3::Ipv4AddressHelper::Assign(ns3::NetDeviceContainer const & c) [member function]
-    cls.add_method('Assign', 'ns3::Ipv4InterfaceContainer', [param('ns3::NetDeviceContainer&', 'c', is_const=True)])
+    cls.add_method('Assign', 
+                   'ns3::Ipv4InterfaceContainer', 
+                   [param('ns3::NetDeviceContainer&', 'c', is_const=True)])
     return
 
 def register_Ns3PacketSinkHelper_methods(root_module, cls):
     ## packet-sink-helper.h: ns3::PacketSinkHelper::PacketSinkHelper(std::string protocol, ns3::Address address) [constructor]
-    cls.add_constructor([param('std::string', 'protocol'), param('ns3::Address', 'address')], visibility='public')
+    cls.add_constructor([param('std::string', 'protocol'), param('ns3::Address', 'address')])
     ## packet-sink-helper.h: void ns3::PacketSinkHelper::SetAttribute(std::string name, ns3::AttributeValue const & value) [member function]
-    cls.add_method('SetAttribute', 'void', [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue&', 'value', is_const=True)])
     ## packet-sink-helper.h: ns3::ApplicationContainer ns3::PacketSinkHelper::Install(ns3::NodeContainer c) [member function]
-    cls.add_method('Install', 'ns3::ApplicationContainer', [param('ns3::NodeContainer', 'c')])
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::NodeContainer', 'c')])
     return
 
 def register_Ns3Ns2MobilityHelper_methods(root_module, cls):
     ## ns2-mobility-helper.h: ns3::Ns2MobilityHelper::Ns2MobilityHelper(std::string filename) [constructor]
-    cls.add_constructor([param('std::string', 'filename')], visibility='public')
+    cls.add_constructor([param('std::string', 'filename')])
     ## ns2-mobility-helper.h: void ns3::Ns2MobilityHelper::Install() const [member function]
-    cls.add_method('Install', 'void', [], is_const=True)
+    cls.add_method('Install', 
+                   'void', 
+                   [], 
+                   is_const=True)
     return
 
 def register_functions(root_module):

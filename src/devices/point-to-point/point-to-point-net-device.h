@@ -167,8 +167,8 @@ public:
 
   virtual bool IsPointToPoint (void) const;
 
-  virtual bool Send(Ptr<Packet> packet, const Address &dest, 
-    uint16_t protocolNumber);
+  virtual bool Send(Ptr<Packet> packet, const Address &dest, uint16_t protocolNumber);
+  virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
 
   virtual Ptr<Node> GetNode (void) const;
   virtual void SetNode (Ptr<Node> node);
