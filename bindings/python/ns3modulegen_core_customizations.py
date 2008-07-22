@@ -1,7 +1,7 @@
 import re
 
 from pybindgen.typehandlers import base as typehandlers
-from pybindgen import (ReturnValue, Parameter)
+from pybindgen import ReturnValue, Parameter
 from pybindgen.cppmethod import CustomCppMethodWrapper, CustomCppConstructorWrapper
 from pybindgen.typehandlers.codesink import MemoryCodeSink
 from pybindgen.typehandlers import ctypeparser

@@ -21,7 +21,7 @@ else:
     os.environ['PYTHONPATH'] = LOCAL_PYBINDGEN_PATH
 
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 8, 0, 511)
+REQUIRED_PYBINDGEN_VERSION = (0, 8, 0, 515)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 
@@ -93,7 +93,7 @@ def configure(conf):
     ## Check for Python
     try:
         conf.check_tool('python')
-        conf.check_python_version((2,4,2))
+        conf.check_python_version((2,3))
         conf.check_python_headers()
     except Configure.ConfigurationError:
         return

@@ -12,7 +12,7 @@ from pybindgen import FileCodeSink, write_preamble
 from pybindgen.module import MultiSectionFactory
 import pybindgen.settings
 
-from ns3modulegen_generated import (module_init, register_types, register_methods, register_functions)
+from ns3modulegen_generated import module_init, register_types, register_methods, register_functions
 import ns3modulegen_core_customizations
 import callbacks_list
 
