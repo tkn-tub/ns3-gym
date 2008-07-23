@@ -88,11 +88,17 @@ void PacketSink::StartApplication()    // Called at time specified by Start
   m_socket->SetRecvCallback (MakeCallback(&PacketSink::HandleRead, this));
   m_socket->SetAcceptCallback (
             MakeNullCallback<bool, Ptr<Socket>, const Address &> (),
-            MakeNullCallback<void, Ptr<Socket>, const Address&> ());
+            MakeCallback(&PacketSink::HandleAccept, this));
 }
 
 void PacketSink::StopApplication()     // Called at time specified by Stop
 {
+  while(!m_socketList.empty()) //these are accepted sockets, close them
+  {
+    Ptr<Socket> acceptedSocket = m_socketList.front();
+    m_socketList.pop_front();
+    acceptedSocket->Close();
+  }
   if (m_socket) 
     {
       m_socket->Close ();
@@ -115,6 +121,12 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
         }    
       m_rxTrace (packet, from);
     }
+}
+
+void PacketSink::HandleAccept (Ptr<Socket> s, const Address& from)
+{
+  s->SetRecvCallback (MakeCallback(&PacketSink::HandleRead, this));
+  m_socketList.push_back (s);
 }
 
 } // Namespace ns3

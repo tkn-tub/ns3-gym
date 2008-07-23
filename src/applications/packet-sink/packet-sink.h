@@ -81,8 +81,13 @@ private:
   virtual void StopApplication (void);     // Called at time specified by Stop
 
   void HandleRead (Ptr<Socket> socket);
+  void HandleAccept (Ptr<Socket>, const Address& from);
 
-  Ptr<Socket>     m_socket;       // Associated socket
+  // In the case of TCP, each socket accept returns a new socket, so the 
+  // listening socket is stored seperately from the accepted sockets
+  Ptr<Socket>     m_socket;       // Listening socket
+  std::list<Ptr<Socket> > m_socketList; //the accepted sockets
+
   Address         m_local;        // Local address to bind to
   TypeId          m_tid;          // Protocol TypeId
   TracedCallback<Ptr<const Packet>, const Address &> m_rxTrace;
