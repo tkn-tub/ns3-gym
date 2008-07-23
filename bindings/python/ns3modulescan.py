@@ -251,11 +251,21 @@ def ns3_module_scan(top_builddir, pygen_file_name, everything_h):
 
     module_parser.add_pre_scan_hook(pre_scan_hook)
     #module_parser.add_post_scan_hook(post_scan_hook)
+
+    gccxml_options = dict(
+        include_paths=[top_builddir],
+         define_symbols={
+            'NS3_ASSERT_ENABLE': None,
+            'NS3_LOG_ENABLE': None,
+            }
+        )
+
     module_parser.parse_init([everything_h],
-                             include_paths=[top_builddir], whitelist_paths=[top_builddir, os.path.dirname(everything_h)],
+                             None, whitelist_paths=[top_builddir, os.path.dirname(everything_h)],
                              #includes=['"ns3/everything.h"'],
                              pygen_sink=sections,
-                             pygen_classifier=MyPygenClassifier(headers_map))
+                             pygen_classifier=MyPygenClassifier(headers_map),
+                             gccxml_options=gccxml_options)
     module_parser.scan_types()
 
     callback_classes_file = open(os.path.join(os.path.dirname(pygen_file_name), "callbacks_list.py"), "wt")

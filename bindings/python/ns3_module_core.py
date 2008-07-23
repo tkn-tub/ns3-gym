@@ -3,6 +3,8 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass
 def register_types(module):
     root_module = module.get_root()
     
+    ## log.h: ns3::LogLevel [enumeration]
+    module.add_enum('LogLevel', ['LOG_NONE', 'LOG_ERROR', 'LOG_LEVEL_ERROR', 'LOG_WARN', 'LOG_LEVEL_WARN', 'LOG_DEBUG', 'LOG_LEVEL_DEBUG', 'LOG_INFO', 'LOG_LEVEL_INFO', 'LOG_FUNCTION', 'LOG_LEVEL_FUNCTION', 'LOG_LOGIC', 'LOG_LEVEL_LOGIC', 'LOG_ALL', 'LOG_LEVEL_ALL', 'LOG_PREFIX_FUNC', 'LOG_PREFIX_TIME'])
     ## random-variable.h: ns3::RandomVariable [class]
     module.add_class('RandomVariable')
     ## random-variable.h: ns3::TriangularVariable [class]
@@ -117,6 +119,8 @@ def register_types(module):
     module.add_class('TracedCallback', template_parameters=['unsigned int', 'unsigned int', 'ns3::empty', 'ns3::empty'])
     ## random-variable.h: ns3::DeterministicVariable [class]
     module.add_class('DeterministicVariable', parent=root_module['ns3::RandomVariable'])
+    ## log.h: ns3::LogComponent [class]
+    module.add_class('LogComponent')
     ## attribute-list.h: ns3::AttributeList [class]
     module.add_class('AttributeList')
     ## attribute.h: ns3::AttributeValue [class]
@@ -268,6 +272,7 @@ def register_methods(root_module):
     register_Ns3TracedCallback__Ns3Ptr__lt__ns3Packet_const__gt___Double_Ns3WifiMode_Ns3WifiPreamble_methods(root_module, root_module['ns3::TracedCallback< ns3::Ptr<ns3::Packet const>, double, ns3::WifiMode, ns3::WifiPreamble >'])
     register_Ns3TracedCallback__Unsigned_int_Unsigned_int_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::TracedCallback< unsigned int, unsigned int, ns3::empty, ns3::empty >'])
     register_Ns3DeterministicVariable_methods(root_module, root_module['ns3::DeterministicVariable'])
+    register_Ns3LogComponent_methods(root_module, root_module['ns3::LogComponent'])
     register_Ns3AttributeList_methods(root_module, root_module['ns3::AttributeList'])
     register_Ns3AttributeValue_methods(root_module, root_module['ns3::AttributeValue'])
     register_Ns3UniformVariable_methods(root_module, root_module['ns3::UniformVariable'])
@@ -887,10 +892,10 @@ def register_Ns3Empty_methods(root_module, cls):
     return
 
 def register_Ns3ObjectBase_methods(root_module, cls):
-    ## object-base.h: ns3::ObjectBase::ObjectBase() [constructor]
-    cls.add_constructor([])
     ## object-base.h: ns3::ObjectBase::ObjectBase(ns3::ObjectBase const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::ObjectBase&', 'arg0', is_const=True)])
+    ## object-base.h: ns3::ObjectBase::ObjectBase() [constructor]
+    cls.add_constructor([])
     ## object-base.h: static ns3::TypeId ns3::ObjectBase::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -1325,6 +1330,38 @@ def register_Ns3TracedCallback__Unsigned_int_Unsigned_int_Ns3Empty_Ns3Empty_meth
 def register_Ns3DeterministicVariable_methods(root_module, cls):
     ## random-variable.h: ns3::DeterministicVariable::DeterministicVariable(double * d, uint32_t c) [constructor]
     cls.add_constructor([param('double *', 'd'), param('uint32_t', 'c')])
+    return
+
+def register_Ns3LogComponent_methods(root_module, cls):
+    ## log.h: ns3::LogComponent::LogComponent(char const * name) [constructor]
+    cls.add_constructor([param('char *', 'name', transfer_ownership=False, is_const=True)])
+    ## log.h: void ns3::LogComponent::EnvVarCheck(char const * name) [member function]
+    cls.add_method('EnvVarCheck', 
+                   'void', 
+                   [param('char *', 'name', transfer_ownership=False, is_const=True)])
+    ## log.h: bool ns3::LogComponent::IsEnabled(ns3::LogLevel level) const [member function]
+    cls.add_method('IsEnabled', 
+                   'bool', 
+                   [param('ns3::LogLevel', 'level')], 
+                   is_const=True)
+    ## log.h: bool ns3::LogComponent::IsNoneEnabled() const [member function]
+    cls.add_method('IsNoneEnabled', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## log.h: void ns3::LogComponent::Enable(ns3::LogLevel level) [member function]
+    cls.add_method('Enable', 
+                   'void', 
+                   [param('ns3::LogLevel', 'level')])
+    ## log.h: void ns3::LogComponent::Disable(ns3::LogLevel level) [member function]
+    cls.add_method('Disable', 
+                   'void', 
+                   [param('ns3::LogLevel', 'level')])
+    ## log.h: char const * ns3::LogComponent::Name() const [member function]
+    cls.add_method('Name', 
+                   retval('char *', is_const=True, caller_owns_return=False), 
+                   [], 
+                   is_const=True)
     return
 
 def register_Ns3AttributeList_methods(root_module, cls):
@@ -2031,6 +2068,10 @@ def register_functions(root_module):
     module.add_function('MakeEnumChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [param('int', 'v1'), param('std::string', 'n1'), param('int', 'v2', default_value='0'), param('std::string', 'n2', default_value='""'), param('int', 'v3', default_value='0'), param('std::string', 'n3', default_value='""'), param('int', 'v4', default_value='0'), param('std::string', 'n4', default_value='""'), param('int', 'v5', default_value='0'), param('std::string', 'n5', default_value='""'), param('int', 'v6', default_value='0'), param('std::string', 'n6', default_value='""'), param('int', 'v7', default_value='0'), param('std::string', 'n7', default_value='""'), param('int', 'v8', default_value='0'), param('std::string', 'n8', default_value='""'), param('int', 'v9', default_value='0'), param('std::string', 'n9', default_value='""'), param('int', 'v10', default_value='0'), param('std::string', 'n10', default_value='""'), param('int', 'v11', default_value='0'), param('std::string', 'n11', default_value='""'), param('int', 'v12', default_value='0'), param('std::string', 'n12', default_value='""')])
+    ## log.h: extern void ns3::LogComponentEnableAll(ns3::LogLevel level) [free function]
+    module.add_function('LogComponentEnableAll', 
+                        'void', 
+                        [param('ns3::LogLevel', 'level')])
     ## type-id.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeTypeIdChecker() [free function]
     module.add_function('MakeTypeIdChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
@@ -2049,6 +2090,14 @@ def register_functions(root_module):
     module.add_function('MakeObjectFactoryChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
+    ## log.h: extern ns3::LogTimePrinter ns3::LogGetTimePrinter() [free function]
+    module.add_function('LogGetTimePrinter', 
+                        'ns3::LogTimePrinter *', 
+                        [])
+    ## log.h: extern void ns3::LogComponentDisableAll(ns3::LogLevel level) [free function]
+    module.add_function('LogComponentDisableAll', 
+                        'void', 
+                        [param('ns3::LogLevel', 'level')])
     ## breakpoint.h: extern void ns3::BreakpointFallback() [free function]
     module.add_function('BreakpointFallback', 
                         'void', 
@@ -2056,6 +2105,22 @@ def register_functions(root_module):
     ## random-variable.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeRandomVariableChecker() [free function]
     module.add_function('MakeRandomVariableChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
+    ## log.h: extern void ns3::LogSetTimePrinter(ns3::LogTimePrinter arg0) [free function]
+    module.add_function('LogSetTimePrinter', 
+                        'void', 
+                        [param('ns3::LogTimePrinter *', 'arg0')])
+    ## log.h: extern void ns3::LogComponentDisable(char const * name, ns3::LogLevel level) [free function]
+    module.add_function('LogComponentDisable', 
+                        'void', 
+                        [param('char *', 'name', transfer_ownership=False, is_const=True), param('ns3::LogLevel', 'level')])
+    ## log.h: extern void ns3::LogComponentEnable(char const * name, ns3::LogLevel level) [free function]
+    module.add_function('LogComponentEnable', 
+                        'void', 
+                        [param('char *', 'name', transfer_ownership=False, is_const=True), param('ns3::LogLevel', 'level')])
+    ## log.h: extern void ns3::LogComponentPrintList() [free function]
+    module.add_function('LogComponentPrintList', 
+                        'void', 
                         [])
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)

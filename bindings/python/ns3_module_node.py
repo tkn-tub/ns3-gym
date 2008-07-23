@@ -73,6 +73,8 @@ def register_types(module):
     module.add_class('NetDevice', parent=root_module['ns3::Object'])
     ## net-device.h: ns3::NetDevice::PacketType [enumeration]
     module.add_enum('PacketType', ['PACKET_HOST', 'PACKET_BROADCAST', 'PACKET_MULTICAST', 'PACKET_OTHERHOST'], outer_class=root_module['ns3::NetDevice'])
+    ## drop-tail-queue.h: ns3::DropTailQueue [class]
+    module.add_class('DropTailQueue', parent=root_module['ns3::Queue'])
     ## address.h: ns3::AddressValue [class]
     module.add_class('AddressValue', parent=root_module['ns3::AttributeValue'])
     ## node.h: ns3::Node [class]
@@ -89,18 +91,16 @@ def register_types(module):
     module.add_class('Ipv4', parent=root_module['ns3::Object'])
     ## socket-factory.h: ns3::SocketFactory [class]
     module.add_class('SocketFactory', parent=root_module['ns3::Object'])
-    ## drop-tail-queue.h: ns3::DropTailQueue [class]
-    module.add_class('DropTailQueue', parent=root_module['ns3::Queue'])
     ## ethernet-trailer.h: ns3::EthernetTrailer [class]
     module.add_class('EthernetTrailer', parent=root_module['ns3::Trailer'])
+    ## simple-channel.h: ns3::SimpleChannel [class]
+    module.add_class('SimpleChannel', parent=root_module['ns3::Channel'])
     ## llc-snap-header.h: ns3::LlcSnapHeader [class]
     module.add_class('LlcSnapHeader', parent=root_module['ns3::Header'])
     ## udp-socket-factory.h: ns3::UdpSocketFactory [class]
     module.add_class('UdpSocketFactory', parent=root_module['ns3::SocketFactory'])
     ## simple-net-device.h: ns3::SimpleNetDevice [class]
     module.add_class('SimpleNetDevice', parent=root_module['ns3::NetDevice'])
-    ## simple-channel.h: ns3::SimpleChannel [class]
-    module.add_class('SimpleChannel', parent=root_module['ns3::Channel'])
     ## tcp-socket-factory.h: ns3::TcpSocketFactory [class]
     module.add_class('TcpSocketFactory', parent=root_module['ns3::SocketFactory'])
     ## packet-socket-factory.h: ns3::PacketSocketFactory [class]
@@ -173,6 +173,7 @@ def register_methods(root_module):
     register_Ns3Ipv4Header_methods(root_module, root_module['ns3::Ipv4Header'])
     register_Ns3UdpSocket_methods(root_module, root_module['ns3::UdpSocket'])
     register_Ns3NetDevice_methods(root_module, root_module['ns3::NetDevice'])
+    register_Ns3DropTailQueue_methods(root_module, root_module['ns3::DropTailQueue'])
     register_Ns3AddressValue_methods(root_module, root_module['ns3::AddressValue'])
     register_Ns3Node_methods(root_module, root_module['ns3::Node'])
     register_Ns3Channel_methods(root_module, root_module['ns3::Channel'])
@@ -181,12 +182,11 @@ def register_methods(root_module):
     register_Ns3SocketIpTtlTag_methods(root_module, root_module['ns3::SocketIpTtlTag'])
     register_Ns3Ipv4_methods(root_module, root_module['ns3::Ipv4'])
     register_Ns3SocketFactory_methods(root_module, root_module['ns3::SocketFactory'])
-    register_Ns3DropTailQueue_methods(root_module, root_module['ns3::DropTailQueue'])
     register_Ns3EthernetTrailer_methods(root_module, root_module['ns3::EthernetTrailer'])
+    register_Ns3SimpleChannel_methods(root_module, root_module['ns3::SimpleChannel'])
     register_Ns3LlcSnapHeader_methods(root_module, root_module['ns3::LlcSnapHeader'])
     register_Ns3UdpSocketFactory_methods(root_module, root_module['ns3::UdpSocketFactory'])
     register_Ns3SimpleNetDevice_methods(root_module, root_module['ns3::SimpleNetDevice'])
-    register_Ns3SimpleChannel_methods(root_module, root_module['ns3::SimpleChannel'])
     register_Ns3TcpSocketFactory_methods(root_module, root_module['ns3::TcpSocketFactory'])
     register_Ns3PacketSocketFactory_methods(root_module, root_module['ns3::PacketSocketFactory'])
     return
@@ -1572,6 +1572,31 @@ def register_Ns3NetDevice_methods(root_module, cls):
     cls.add_constructor([])
     return
 
+def register_Ns3DropTailQueue_methods(root_module, cls):
+    ## drop-tail-queue.h: static ns3::TypeId ns3::DropTailQueue::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## drop-tail-queue.h: ns3::DropTailQueue::DropTailQueue() [constructor]
+    cls.add_constructor([])
+    ## drop-tail-queue.h: bool ns3::DropTailQueue::DoEnqueue(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('DoEnqueue', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
+                   visibility='private', is_virtual=True)
+    ## drop-tail-queue.h: ns3::Ptr<ns3::Packet> ns3::DropTailQueue::DoDequeue() [member function]
+    cls.add_method('DoDequeue', 
+                   'ns3::Ptr< ns3::Packet >', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## drop-tail-queue.h: ns3::Ptr<ns3::Packet> ns3::DropTailQueue::DoPeek() const [member function]
+    cls.add_method('DoPeek', 
+                   'ns3::Ptr< ns3::Packet >', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
 def register_Ns3AddressValue_methods(root_module, cls):
     ## address.h: ns3::AddressValue::AddressValue() [constructor]
     cls.add_constructor([])
@@ -2147,31 +2172,6 @@ def register_Ns3SocketFactory_methods(root_module, cls):
                    is_pure_virtual=True, is_virtual=True)
     return
 
-def register_Ns3DropTailQueue_methods(root_module, cls):
-    ## drop-tail-queue.h: static ns3::TypeId ns3::DropTailQueue::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## drop-tail-queue.h: ns3::DropTailQueue::DropTailQueue() [constructor]
-    cls.add_constructor([])
-    ## drop-tail-queue.h: bool ns3::DropTailQueue::DoEnqueue(ns3::Ptr<ns3::Packet> p) [member function]
-    cls.add_method('DoEnqueue', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   visibility='private', is_virtual=True)
-    ## drop-tail-queue.h: ns3::Ptr<ns3::Packet> ns3::DropTailQueue::DoDequeue() [member function]
-    cls.add_method('DoDequeue', 
-                   'ns3::Ptr< ns3::Packet >', 
-                   [], 
-                   visibility='private', is_virtual=True)
-    ## drop-tail-queue.h: ns3::Ptr<ns3::Packet> ns3::DropTailQueue::DoPeek() const [member function]
-    cls.add_method('DoPeek', 
-                   'ns3::Ptr< ns3::Packet >', 
-                   [], 
-                   is_const=True, visibility='private', is_virtual=True)
-    return
-
 def register_Ns3EthernetTrailer_methods(root_module, cls):
     ## ethernet-trailer.h: ns3::EthernetTrailer::EthernetTrailer() [constructor]
     cls.add_constructor([])
@@ -2232,6 +2232,34 @@ def register_Ns3EthernetTrailer_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'end')], 
                    is_virtual=True)
+    return
+
+def register_Ns3SimpleChannel_methods(root_module, cls):
+    ## simple-channel.h: static ns3::TypeId ns3::SimpleChannel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## simple-channel.h: ns3::SimpleChannel::SimpleChannel() [constructor]
+    cls.add_constructor([])
+    ## simple-channel.h: void ns3::SimpleChannel::Send(ns3::Ptr<ns3::Packet> p, uint16_t protocol, ns3::Mac48Address to, ns3::Mac48Address from, ns3::Ptr<ns3::SimpleNetDevice> sender) [member function]
+    cls.add_method('Send', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'protocol'), param('ns3::Mac48Address', 'to'), param('ns3::Mac48Address', 'from'), param('ns3::Ptr< ns3::SimpleNetDevice >', 'sender')])
+    ## simple-channel.h: void ns3::SimpleChannel::Add(ns3::Ptr<ns3::SimpleNetDevice> device) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::SimpleNetDevice >', 'device')])
+    ## simple-channel.h: uint32_t ns3::SimpleChannel::GetNDevices() const [member function]
+    cls.add_method('GetNDevices', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## simple-channel.h: ns3::Ptr<ns3::NetDevice> ns3::SimpleChannel::GetDevice(uint32_t i) const [member function]
+    cls.add_method('GetDevice', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True, is_virtual=True)
     return
 
 def register_Ns3LlcSnapHeader_methods(root_module, cls):
@@ -2421,34 +2449,6 @@ def register_Ns3SimpleNetDevice_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    return
-
-def register_Ns3SimpleChannel_methods(root_module, cls):
-    ## simple-channel.h: static ns3::TypeId ns3::SimpleChannel::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## simple-channel.h: ns3::SimpleChannel::SimpleChannel() [constructor]
-    cls.add_constructor([])
-    ## simple-channel.h: void ns3::SimpleChannel::Send(ns3::Ptr<ns3::Packet> p, uint16_t protocol, ns3::Mac48Address to, ns3::Mac48Address from, ns3::Ptr<ns3::SimpleNetDevice> sender) [member function]
-    cls.add_method('Send', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'protocol'), param('ns3::Mac48Address', 'to'), param('ns3::Mac48Address', 'from'), param('ns3::Ptr< ns3::SimpleNetDevice >', 'sender')])
-    ## simple-channel.h: void ns3::SimpleChannel::Add(ns3::Ptr<ns3::SimpleNetDevice> device) [member function]
-    cls.add_method('Add', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::SimpleNetDevice >', 'device')])
-    ## simple-channel.h: uint32_t ns3::SimpleChannel::GetNDevices() const [member function]
-    cls.add_method('GetNDevices', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## simple-channel.h: ns3::Ptr<ns3::NetDevice> ns3::SimpleChannel::GetDevice(uint32_t i) const [member function]
-    cls.add_method('GetDevice', 
-                   'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
-                   is_const=True, is_virtual=True)
     return
 
 def register_Ns3TcpSocketFactory_methods(root_module, cls):

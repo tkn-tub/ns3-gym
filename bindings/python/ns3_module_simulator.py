@@ -33,6 +33,10 @@ def register_types(module):
     module.add_class('EventKey', outer_class=root_module['ns3::Scheduler'])
     ## nstime.h: ns3::TimeValue [class]
     module.add_class('TimeValue', parent=root_module['ns3::AttributeValue'])
+    ## simulator-impl.h: ns3::SimulatorImpl [class]
+    module.add_class('SimulatorImpl', parent=root_module['ns3::Object'])
+    ## default-simulator-impl.h: ns3::DefaultSimulatorImpl [class]
+    module.add_class('DefaultSimulatorImpl', parent=root_module['ns3::SimulatorImpl'])
     ## heap-scheduler.h: ns3::HeapScheduler [class]
     module.add_class('HeapScheduler', parent=root_module['ns3::Scheduler'])
     ## list-scheduler.h: ns3::ListScheduler [class]
@@ -96,6 +100,8 @@ def register_methods(root_module):
     register_Ns3Scheduler_methods(root_module, root_module['ns3::Scheduler'])
     register_Ns3SchedulerEventKey_methods(root_module, root_module['ns3::Scheduler::EventKey'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
+    register_Ns3SimulatorImpl_methods(root_module, root_module['ns3::SimulatorImpl'])
+    register_Ns3DefaultSimulatorImpl_methods(root_module, root_module['ns3::DefaultSimulatorImpl'])
     register_Ns3HeapScheduler_methods(root_module, root_module['ns3::HeapScheduler'])
     register_Ns3ListScheduler_methods(root_module, root_module['ns3::ListScheduler'])
     register_Ns3MapScheduler_methods(root_module, root_module['ns3::MapScheduler'])
@@ -326,6 +332,11 @@ def register_Ns3Watchdog_methods(root_module, cls):
     return
 
 def register_Ns3Simulator_methods(root_module, cls):
+    ## simulator.h: static void ns3::Simulator::SetImplementation(ns3::Ptr<ns3::SimulatorImpl> impl) [member function]
+    #cls.add_method('SetImplementation', 
+    #               'void', 
+    #               [param('ns3::Ptr< ns3::SimulatorImpl >', 'impl')], 
+    #               is_static=True)
     ## simulator.h: static void ns3::Simulator::SetScheduler(ns3::Ptr<ns3::Scheduler> scheduler) [member function]
     cls.add_method('SetScheduler', 
                    'void', 
@@ -595,6 +606,200 @@ def register_Ns3TimeValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
+    return
+
+def register_Ns3SimulatorImpl_methods(root_module, cls):
+    ## simulator-impl.h: void ns3::SimulatorImpl::Destroy() [member function]
+    cls.add_method('Destroy', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## simulator-impl.h: void ns3::SimulatorImpl::EnableLogTo(char const * filename) [member function]
+    cls.add_method('EnableLogTo', 
+                   'void', 
+                   [param('char *', 'filename', transfer_ownership=False, is_const=True)], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## simulator-impl.h: bool ns3::SimulatorImpl::IsFinished() const [member function]
+    cls.add_method('IsFinished', 
+                   'bool', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## simulator-impl.h: ns3::Time ns3::SimulatorImpl::Next() const [member function]
+    cls.add_method('Next', 
+                   'ns3::Time', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## simulator-impl.h: void ns3::SimulatorImpl::Stop() [member function]
+    cls.add_method('Stop', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## simulator-impl.h: void ns3::SimulatorImpl::Stop(ns3::Time const & time) [member function]
+    cls.add_method('Stop', 
+                   'void', 
+                   [param('ns3::Time&', 'time', is_const=True)], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## simulator-impl.h: ns3::EventId ns3::SimulatorImpl::Schedule(ns3::Time const & time, ns3::Ptr<ns3::EventImpl> const & event) [member function]
+    cls.add_method('Schedule', 
+                   'ns3::EventId', 
+                   [param('ns3::Time&', 'time', is_const=True), param('ns3::Ptr< ns3::EventImpl >&', 'event', is_const=True)], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## simulator-impl.h: ns3::EventId ns3::SimulatorImpl::ScheduleNow(ns3::Ptr<ns3::EventImpl> const & event) [member function]
+    cls.add_method('ScheduleNow', 
+                   'ns3::EventId', 
+                   [param('ns3::Ptr< ns3::EventImpl >&', 'event', is_const=True)], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## simulator-impl.h: ns3::EventId ns3::SimulatorImpl::ScheduleDestroy(ns3::Ptr<ns3::EventImpl> const & event) [member function]
+    cls.add_method('ScheduleDestroy', 
+                   'ns3::EventId', 
+                   [param('ns3::Ptr< ns3::EventImpl >&', 'event', is_const=True)], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## simulator-impl.h: void ns3::SimulatorImpl::Remove(ns3::EventId const & ev) [member function]
+    cls.add_method('Remove', 
+                   'void', 
+                   [param('ns3::EventId&', 'ev', is_const=True)], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## simulator-impl.h: void ns3::SimulatorImpl::Cancel(ns3::EventId const & ev) [member function]
+    cls.add_method('Cancel', 
+                   'void', 
+                   [param('ns3::EventId&', 'ev', is_const=True)], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## simulator-impl.h: bool ns3::SimulatorImpl::IsExpired(ns3::EventId const & ev) const [member function]
+    cls.add_method('IsExpired', 
+                   'bool', 
+                   [param('ns3::EventId&', 'ev', is_const=True)], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## simulator-impl.h: void ns3::SimulatorImpl::Run() [member function]
+    cls.add_method('Run', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## simulator-impl.h: ns3::Time ns3::SimulatorImpl::Now() const [member function]
+    cls.add_method('Now', 
+                   'ns3::Time', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## simulator-impl.h: ns3::Time ns3::SimulatorImpl::GetDelayLeft(ns3::EventId const & id) const [member function]
+    cls.add_method('GetDelayLeft', 
+                   'ns3::Time', 
+                   [param('ns3::EventId&', 'id', is_const=True)], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## simulator-impl.h: ns3::Time ns3::SimulatorImpl::GetMaximumSimulationTime() const [member function]
+    cls.add_method('GetMaximumSimulationTime', 
+                   'ns3::Time', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## simulator-impl.h: void ns3::SimulatorImpl::SetScheduler(ns3::Ptr<ns3::Scheduler> scheduler) [member function]
+    cls.add_method('SetScheduler', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Scheduler >', 'scheduler')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## simulator-impl.h: ns3::Ptr<ns3::Scheduler> ns3::SimulatorImpl::GetScheduler() const [member function]
+    cls.add_method('GetScheduler', 
+                   'ns3::Ptr< ns3::Scheduler >', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    cls.add_constructor([])
+    return
+
+def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
+    ## default-simulator-impl.h: static ns3::TypeId ns3::DefaultSimulatorImpl::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## default-simulator-impl.h: ns3::DefaultSimulatorImpl::DefaultSimulatorImpl() [constructor]
+    cls.add_constructor([])
+    ## default-simulator-impl.h: void ns3::DefaultSimulatorImpl::Destroy() [member function]
+    cls.add_method('Destroy', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## default-simulator-impl.h: void ns3::DefaultSimulatorImpl::EnableLogTo(char const * filename) [member function]
+    cls.add_method('EnableLogTo', 
+                   'void', 
+                   [param('char *', 'filename', transfer_ownership=False, is_const=True)], 
+                   is_virtual=True)
+    ## default-simulator-impl.h: bool ns3::DefaultSimulatorImpl::IsFinished() const [member function]
+    cls.add_method('IsFinished', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## default-simulator-impl.h: ns3::Time ns3::DefaultSimulatorImpl::Next() const [member function]
+    cls.add_method('Next', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## default-simulator-impl.h: void ns3::DefaultSimulatorImpl::Stop() [member function]
+    cls.add_method('Stop', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## default-simulator-impl.h: void ns3::DefaultSimulatorImpl::Stop(ns3::Time const & time) [member function]
+    cls.add_method('Stop', 
+                   'void', 
+                   [param('ns3::Time&', 'time', is_const=True)], 
+                   is_virtual=True)
+    ## default-simulator-impl.h: ns3::EventId ns3::DefaultSimulatorImpl::Schedule(ns3::Time const & time, ns3::Ptr<ns3::EventImpl> const & event) [member function]
+    cls.add_method('Schedule', 
+                   'ns3::EventId', 
+                   [param('ns3::Time&', 'time', is_const=True), param('ns3::Ptr< ns3::EventImpl >&', 'event', is_const=True)], 
+                   is_virtual=True)
+    ## default-simulator-impl.h: ns3::EventId ns3::DefaultSimulatorImpl::ScheduleNow(ns3::Ptr<ns3::EventImpl> const & event) [member function]
+    cls.add_method('ScheduleNow', 
+                   'ns3::EventId', 
+                   [param('ns3::Ptr< ns3::EventImpl >&', 'event', is_const=True)], 
+                   is_virtual=True)
+    ## default-simulator-impl.h: ns3::EventId ns3::DefaultSimulatorImpl::ScheduleDestroy(ns3::Ptr<ns3::EventImpl> const & event) [member function]
+    cls.add_method('ScheduleDestroy', 
+                   'ns3::EventId', 
+                   [param('ns3::Ptr< ns3::EventImpl >&', 'event', is_const=True)], 
+                   is_virtual=True)
+    ## default-simulator-impl.h: void ns3::DefaultSimulatorImpl::Remove(ns3::EventId const & ev) [member function]
+    cls.add_method('Remove', 
+                   'void', 
+                   [param('ns3::EventId&', 'ev', is_const=True)], 
+                   is_virtual=True)
+    ## default-simulator-impl.h: void ns3::DefaultSimulatorImpl::Cancel(ns3::EventId const & ev) [member function]
+    cls.add_method('Cancel', 
+                   'void', 
+                   [param('ns3::EventId&', 'ev', is_const=True)], 
+                   is_virtual=True)
+    ## default-simulator-impl.h: bool ns3::DefaultSimulatorImpl::IsExpired(ns3::EventId const & ev) const [member function]
+    cls.add_method('IsExpired', 
+                   'bool', 
+                   [param('ns3::EventId&', 'ev', is_const=True)], 
+                   is_const=True, is_virtual=True)
+    ## default-simulator-impl.h: void ns3::DefaultSimulatorImpl::Run() [member function]
+    cls.add_method('Run', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## default-simulator-impl.h: ns3::Time ns3::DefaultSimulatorImpl::Now() const [member function]
+    cls.add_method('Now', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## default-simulator-impl.h: ns3::Time ns3::DefaultSimulatorImpl::GetDelayLeft(ns3::EventId const & id) const [member function]
+    cls.add_method('GetDelayLeft', 
+                   'ns3::Time', 
+                   [param('ns3::EventId&', 'id', is_const=True)], 
+                   is_const=True, is_virtual=True)
+    ## default-simulator-impl.h: ns3::Time ns3::DefaultSimulatorImpl::GetMaximumSimulationTime() const [member function]
+    cls.add_method('GetMaximumSimulationTime', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## default-simulator-impl.h: void ns3::DefaultSimulatorImpl::SetScheduler(ns3::Ptr<ns3::Scheduler> scheduler) [member function]
+    cls.add_method('SetScheduler', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Scheduler >', 'scheduler')], 
+                   is_virtual=True)
+    ## default-simulator-impl.h: ns3::Ptr<ns3::Scheduler> ns3::DefaultSimulatorImpl::GetScheduler() const [member function]
+    cls.add_method('GetScheduler', 
+                   'ns3::Ptr< ns3::Scheduler >', 
+                   [], 
+                   is_const=True, is_virtual=True)
     return
 
 def register_Ns3HeapScheduler_methods(root_module, cls):
