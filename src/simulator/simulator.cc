@@ -276,6 +276,13 @@ Simulator::GetMaximumSimulationTime (void)
   return GetImpl ()->GetMaximumSimulationTime ();
 }
 
+void
+Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
+{
+  NS_FATAL_ERROR ("TODO");
+}
+
+
 } // namespace ns3
 
 
