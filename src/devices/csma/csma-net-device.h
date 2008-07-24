@@ -332,6 +332,10 @@ protected:
   bool ProcessHeader (Ptr<Packet> p, uint16_t & param);
 
 private:
+
+  static const uint16_t DEFAULT_FRAME_LENGTH = 1500;
+  static const uint16_t DEFAULT_MTU = 1492;
+
   /**
    * Operator = is declared but not implemented.  This disables the assigment
    * operator for CsmaNetDevice objects.
@@ -565,10 +569,22 @@ private:
   Callback<void> m_linkChangeCallback;
 
   /**
-   * The maximum transmission unit (biggest packet) allowed to be sent or 
-   * received by this network device.
+   * The MAC-level maximum transmission unit allowed to be sent or received by
+   * this network device.  This corresponds to the maximum payload the device
+   * can accept for transmission.  This is distinct from the PHY-level maximum
+   * as found in the 802.3 header Type/Length field.  For example, if you 
+   * choose "Llc" as your encapsulation mode, this will be reduced by the eight
+   * bytes consumed by the LLC/SNAP header.
    */
   uint16_t m_mtu;
+
+  /**
+   * The PHY-level maximum payload size.  This corresponds to the maximum 
+   * number of bytes that can be transmitted as a payload over a channel.
+   * This corresponds to the 1500 byte limit often seen on Ethernet in the
+   * length interpretation of the Type/Length field of the 802.3 header.
+   */
+  uint32_t m_maxPayloadLength;
 };
 
 }; // namespace ns3
