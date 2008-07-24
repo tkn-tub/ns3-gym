@@ -200,5 +200,16 @@ SimpleNetDevice::DoDispose (void)
 }
 
 
+void
+SimpleNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
+{
+  NS_FATAL_ERROR ("Not supported");
+}
+
+bool
+SimpleNetDevice::SupportsPromiscuous (void) const
+{
+  return false;
+}
 
 } // namespace ns3

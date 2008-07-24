@@ -68,6 +68,8 @@ public:
   virtual void SetNode (Ptr<Node> node);
   virtual bool NeedsArp (void) const;
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
+  virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
+  virtual bool SupportsPromiscuous (void) const;
 
 protected:
   virtual void DoDispose (void);

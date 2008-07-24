@@ -332,5 +332,24 @@ WifiNetDevice::LinkDown (void)
     }
 }
 
+bool
+WifiNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
+{
+  NS_FATAL_ERROR ("TODO");
+  return false;
+}
+
+void
+WifiNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
+{
+  NS_FATAL_ERROR ("TODO");
+}
+
+bool
+WifiNetDevice::SupportsPromiscuous (void) const
+{
+  return false; // TODO
+}
+
 } // namespace ns3
 

@@ -36,7 +36,9 @@ API changes from 3.1 to 3.2
 - remove references to Parameter in helper APIs (changeset 3cdd9d60f7c7,
   bug 232); old variants are currently deprecated API and will be removed
   in a future release
-- New NetDevice APIs: SendFrom and SetPromiscRxCallback;
+- New NetDevice APIs: SendFrom, SetPromiscRxCallback,
+  SupportsPromiscuous.  These are pure virtual methods, so they need
+  to be implemented by NetDevice subclasses;
 
 In order to support the learning bridge, some API changes in Node and
 NetDevice were made.

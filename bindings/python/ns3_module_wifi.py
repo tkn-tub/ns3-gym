@@ -2155,6 +2155,21 @@ def register_Ns3WifiNetDevice_methods(root_module, cls):
                    'void', 
                    [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::empty, ns3::empty >', 'cb')], 
                    is_virtual=True)
+    ## wifi-net-device.h: bool ns3::WifiNetDevice::SendFrom(ns3::Ptr<ns3::Packet> packet, ns3::Address const & source, ns3::Address const & dest, uint16_t protocolNumber) [member function]
+    cls.add_method('SendFrom', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address&', 'source', is_const=True), param('ns3::Address&', 'dest', is_const=True), param('uint16_t', 'protocolNumber')], 
+                   is_virtual=True)
+    ## wifi-net-device.h: void ns3::WifiNetDevice::SetPromiscReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> cb) [member function]
+    cls.add_method('SetPromiscReceiveCallback', 
+                   'void', 
+                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], 
+                   is_virtual=True)
+    ## wifi-net-device.h: bool ns3::WifiNetDevice::SupportsPromiscuous() const [member function]
+    cls.add_method('SupportsPromiscuous', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## wifi-net-device.h: void ns3::WifiNetDevice::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 

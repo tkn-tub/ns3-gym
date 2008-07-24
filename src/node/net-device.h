@@ -228,7 +228,7 @@ public:
    * 
    * \return whether the Send operation succeeded 
    */
-  virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
+  virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber) = 0;
   /**
    * \returns the node base class which contains this network
    *          interface.
@@ -309,12 +309,12 @@ public:
    * sensed by the netdevice but which are intended to be received by
    * other hosts.
    */
-  virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
+  virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb) = 0;
 
   /**
    * \return true if this interface supports a promiscuous mode, false otherwise.
    */
-  virtual bool SupportsPromiscuous (void) const;
+  virtual bool SupportsPromiscuous (void) const = 0;
 
 };
 

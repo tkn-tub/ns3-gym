@@ -38,25 +38,4 @@ TypeId NetDevice::GetTypeId (void)
 NetDevice::~NetDevice ()
 {}
 
-bool
-NetDevice::SupportsPromiscuous () const
-{
-  return false;
-}
-
-void
-NetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
-{
-  // assert that the virtual method was overridden in a subclass if it
-  // claims to support promiscuous mode.
-  NS_ASSERT (!SupportsPromiscuous ());
-}
-
-bool
-NetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
-{
-  NS_FATAL_ERROR ("NetDevice::SendFrom not implemented for " << GetInstanceTypeId ().GetName ());
-  return false;
-}
-
 } // namespace ns3

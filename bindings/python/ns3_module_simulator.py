@@ -333,10 +333,10 @@ def register_Ns3Watchdog_methods(root_module, cls):
 
 def register_Ns3Simulator_methods(root_module, cls):
     ## simulator.h: static void ns3::Simulator::SetImplementation(ns3::Ptr<ns3::SimulatorImpl> impl) [member function]
-    #cls.add_method('SetImplementation', 
-    #               'void', 
-    #               [param('ns3::Ptr< ns3::SimulatorImpl >', 'impl')], 
-    #               is_static=True)
+    cls.add_method('SetImplementation', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::SimulatorImpl >', 'impl')], 
+                   is_static=True)
     ## simulator.h: static void ns3::Simulator::SetScheduler(ns3::Ptr<ns3::Scheduler> scheduler) [member function]
     cls.add_method('SetScheduler', 
                    'void', 

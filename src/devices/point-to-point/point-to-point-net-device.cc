@@ -467,4 +467,16 @@ PointToPointNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
   m_rxCallback = cb;
 }
 
+  void
+PointToPointNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
+{
+  NS_FATAL_ERROR ("not implemented");
+}
+
+  bool
+PointToPointNetDevice::SupportsPromiscuous (void) const
+{
+  return false;
+}
+
 } // namespace ns3

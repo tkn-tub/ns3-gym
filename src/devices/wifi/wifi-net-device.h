@@ -101,6 +101,10 @@ public:
   virtual bool NeedsArp (void) const;
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
 
+  virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
+  virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
+  virtual bool SupportsPromiscuous (void) const;
+
 private:
   virtual void DoDispose (void);
   void ForwardUp (Ptr<Packet> packet, const Mac48Address &from);

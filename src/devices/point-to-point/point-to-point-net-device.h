@@ -177,6 +177,9 @@ public:
 
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
 
+  virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
+  virtual bool SupportsPromiscuous (void) const;
+
 private:
 
   virtual void DoDispose (void);
