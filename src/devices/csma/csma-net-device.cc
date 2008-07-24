@@ -240,7 +240,7 @@ CsmaNetDevice::AddHeader (
 // This corresponds to the length interpretation of the lengthType field,
 // but with an LLC/SNAP header added to the payload.
 //      
-        lengthType = llc.GetSerializedSize () + p->GetSize ();
+        lengthType = p->GetSize ();
         NS_ASSERT_MSG (lengthType <= m_maxPayloadLength,
           "CsmaNetDevice::AddHeader(): 802.3 Length/Type field with LLC/SNAP: "
           "length interpretation must not exceed device max payload length");
