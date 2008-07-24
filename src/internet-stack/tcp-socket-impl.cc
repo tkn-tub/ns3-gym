@@ -86,7 +86,7 @@ TcpSocketImpl::GetTypeId ()
 }
 
 TcpSocketImpl::TcpSocketImpl(const TcpSocketImpl& sock)
-  : TcpSocket(sock), //copy the base class callbacks
+  : TcpSocket(sock), //copy object::m_tid, copy socket::callbacks
     m_skipRetxResched (sock.m_skipRetxResched),
     m_dupAckCount (sock.m_dupAckCount),
     m_delAckCount (0),
@@ -140,6 +140,9 @@ TcpSocketImpl::TcpSocketImpl(const TcpSocketImpl& sock)
     {
       m_rtt = sock.m_rtt->Copy();
     }
+  //null out the socket base class recvcallback,
+  //make user of the socket register this explicitly
+  SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > () );
   //can't "copy" the endpoint just yes, must do this when we know the peer info
   //too; this is in SYN_ACK_TX
 }
