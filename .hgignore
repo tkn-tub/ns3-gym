@@ -26,3 +26,4 @@ doc/manual/manual.vr
 ^doc/manual/figures/.*eps
 ^doc/manual/figures/.*pdf
 ^doc/manual/figures/.*png
+^bindings/python/pybindgen/
