@@ -609,10 +609,10 @@ def register_Ns3BufferIterator_methods(root_module, cls):
     return
 
 def register_Ns3Chunk_methods(root_module, cls):
-    ## chunk.h: ns3::Chunk::Chunk(ns3::Chunk const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Chunk&', 'arg0', is_const=True)])
     ## chunk.h: ns3::Chunk::Chunk() [constructor]
     cls.add_constructor([])
+    ## chunk.h: ns3::Chunk::Chunk(ns3::Chunk const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Chunk&', 'arg0', is_const=True)])
     ## chunk.h: static ns3::TypeId ns3::Chunk::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 

@@ -255,8 +255,8 @@ def ns3_module_scan(top_builddir, pygen_file_name, everything_h):
     gccxml_options = dict(
         include_paths=[top_builddir],
          define_symbols={
-            'NS3_ASSERT_ENABLE': None,
-            'NS3_LOG_ENABLE': None,
+            #'NS3_ASSERT_ENABLE': None,
+            #'NS3_LOG_ENABLE': None,
             }
         )
 
