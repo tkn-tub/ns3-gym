@@ -24,6 +24,85 @@
 #include <string>
 #include <iostream>
 
+namespace ns3 {
+
+enum LogLevel {
+  LOG_NONE           = 0x00000000, // no logging
+
+  LOG_ERROR          = 0x00000001, // serious error messages only
+  LOG_LEVEL_ERROR    = 0x00000001,
+
+  LOG_WARN           = 0x00000002, // warning messages
+  LOG_LEVEL_WARN     = 0x00000003,
+
+  LOG_DEBUG          = 0x00000004, // rare ad-hoc debug messages
+  LOG_LEVEL_DEBUG    = 0x00000007,
+
+  LOG_INFO           = 0x00000008, // informational messages (e.g., banners)
+  LOG_LEVEL_INFO     = 0x0000000f,
+
+  LOG_FUNCTION       = 0x00000010, // function tracing
+  LOG_LEVEL_FUNCTION = 0x0000001f, 
+
+  LOG_LOGIC          = 0x00000020, // control flow tracing within functions
+  LOG_LEVEL_LOGIC    = 0x0000003f,
+
+  LOG_ALL            = 0x3fffffff, // print everything
+  LOG_LEVEL_ALL      = LOG_ALL,
+
+  LOG_PREFIX_FUNC    = 0x80000000, // prefix all trace prints with function
+  LOG_PREFIX_TIME    = 0x40000000  // prefix all trace prints with simulation time
+};
+
+/**
+ * \param name a log component name
+ * \param level a logging level
+ * \ingroup logging
+ *
+ * Enable the logging output associated with that log component.
+ * The logging output can be later disabled with a call
+ * to ns3::LogComponentDisable.
+ *
+ * Same as running your program with the NS_LOG environment
+ * variable set as NS_LOG='name=level'
+ */
+void LogComponentEnable (char const *name, enum LogLevel level);
+
+/**
+ * \param level a logging level
+ * \ingroup logging
+ *
+ * Enable the logging output for all registered log components.
+ *
+ * Same as running your program with the NS_LOG environment
+ * variable set as NS_LOG='*=level'
+ */
+void LogComponentEnableAll (enum LogLevel level);
+
+
+/**
+ * \param name a log component name
+ * \param level a logging level
+ * \ingroup logging
+ *
+ * Disable the logging output associated with that log component.
+ * The logging output can be later re-enabled with a call
+ * to ns3::LogComponentEnable.
+ */
+void LogComponentDisable (char const *name, enum LogLevel level);
+
+/**
+ * \param level a logging level
+ * \ingroup logging
+ *
+ * Disable all logging for all components.
+ */
+void LogComponentDisableAll (enum LogLevel level);
+
+
+} // namespace ns3
+
+
 #ifdef NS3_LOG_ENABLE
 
 
@@ -230,79 +309,6 @@
 
 namespace ns3 {
 
-enum LogLevel {
-  LOG_NONE           = 0x00000000, // no logging
-
-  LOG_ERROR          = 0x00000001, // serious error messages only
-  LOG_LEVEL_ERROR    = 0x00000001,
-
-  LOG_WARN           = 0x00000002, // warning messages
-  LOG_LEVEL_WARN     = 0x00000003,
-
-  LOG_DEBUG          = 0x00000004, // rare ad-hoc debug messages
-  LOG_LEVEL_DEBUG    = 0x00000007,
-
-  LOG_INFO           = 0x00000008, // informational messages (e.g., banners)
-  LOG_LEVEL_INFO     = 0x0000000f,
-
-  LOG_FUNCTION       = 0x00000010, // function tracing
-  LOG_LEVEL_FUNCTION = 0x0000001f, 
-
-  LOG_LOGIC          = 0x00000020, // control flow tracing within functions
-  LOG_LEVEL_LOGIC    = 0x0000003f,
-
-  LOG_ALL            = 0x3fffffff, // print everything
-  LOG_LEVEL_ALL      = LOG_ALL,
-
-  LOG_PREFIX_FUNC    = 0x80000000, // prefix all trace prints with function
-  LOG_PREFIX_TIME    = 0x40000000  // prefix all trace prints with simulation time
-};
-
-/**
- * \param name a log component name
- * \param level a logging level
- * \ingroup logging
- *
- * Enable the logging output associated with that log component.
- * The logging output can be later disabled with a call
- * to ns3::LogComponentDisable.
- *
- * Same as running your program with the NS_LOG environment
- * variable set as NS_LOG='name=level'
- */
-void LogComponentEnable (char const *name, enum LogLevel level);
-
-/**
- * \param level a logging level
- * \ingroup logging
- *
- * Enable the logging output for all registered log components.
- *
- * Same as running your program with the NS_LOG environment
- * variable set as NS_LOG='*=level'
- */
-void LogComponentEnableAll (enum LogLevel level);
-
-
-/**
- * \param name a log component name
- * \param level a logging level
- * \ingroup logging
- *
- * Disable the logging output associated with that log component.
- * The logging output can be later re-enabled with a call
- * to ns3::LogComponentEnable.
- */
-void LogComponentDisable (char const *name, enum LogLevel level);
-
-/**
- * \param level a logging level
- * \ingroup logging
- *
- * Disable all logging for all components.
- */
-void LogComponentDisableAll (enum LogLevel level);
-
 
 /**
  * \ingroup logging
@@ -373,10 +379,6 @@ public:
 #define NS_LOG_UNCOND(msg)
 
 #define LogComponentPrintList
-#define LogComponentEnable(name,level)
-#define LogComponentDisable(name,level)
-#define LogComponentEnableAll(level)
-#define LogComponentDisableAll(level)
 #define LogRegisterTimePrinter(printer)
 
 #define LogSetTimePrinter(printer)
