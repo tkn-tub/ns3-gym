@@ -301,7 +301,8 @@ def build(bld):
     #Object.register('all-ns3-headers', AllNs3Headers)
     Action.Action('gen-ns3-metaheader', func=gen_ns3_metaheader, color='BLUE')
 
-    obj = bld.create_obj('all_ns3_headers')
+    if env['ENABLE_PYTHON_BINDINGS']:
+        obj = bld.create_obj('all_ns3_headers')
 
     if Params.g_options.python_scan:
         if not env['ENABLE_PYTHON_SCANNING']:
