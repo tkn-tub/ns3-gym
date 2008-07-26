@@ -186,9 +186,19 @@ def get_header_prio(header):
             return prio
     return 1
 
+
+def calc_header_include(path):
+    (head, tail) = os.path.split (path)
+    if tail == 'ns3':
+        return ''
+    else:
+        return os.path.join (calc_header_include (head), tail)
+
+
 def gen_ns3_metaheader(task):
     assert len(task.m_outputs) == 1
-    header_files = [os.path.basename(node.abspath(task.m_env)) for node in task.m_inputs]
+
+    header_files = [calc_header_include(node.abspath(task.m_env)) for node in task.m_inputs]
     outfile = file(task.m_outputs[0].bldpath(task.m_env), "w")
 
     def sort_func(h1, h2):
@@ -243,8 +253,8 @@ class all_ns3_headers_taskgen(Object.task_gen):
                             continue
 
                     for source in ns3headers.to_list(ns3headers.source):
-                        source = os.path.basename(source)
-                        node = ns3_dir_node.find_build(os.path.basename(source))
+                        #source = os.path.basename(source)
+                        node = ns3_dir_node.find_build(source)
                         if node is None:
                             fatal("missing header file %s" % (source,))
                         all_headers_inputs.append(node)
