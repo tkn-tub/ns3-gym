@@ -614,11 +614,6 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
-    ## simulator-impl.h: void ns3::SimulatorImpl::EnableLogTo(char const * filename) [member function]
-    cls.add_method('EnableLogTo', 
-                   'void', 
-                   [param('char *', 'filename', transfer_ownership=False, is_const=True)], 
-                   is_pure_virtual=True, is_virtual=True)
     ## simulator-impl.h: bool ns3::SimulatorImpl::IsFinished() const [member function]
     cls.add_method('IsFinished', 
                    'bool', 
@@ -714,11 +709,6 @@ def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
     cls.add_method('Destroy', 
                    'void', 
                    [], 
-                   is_virtual=True)
-    ## default-simulator-impl.h: void ns3::DefaultSimulatorImpl::EnableLogTo(char const * filename) [member function]
-    cls.add_method('EnableLogTo', 
-                   'void', 
-                   [param('char *', 'filename', transfer_ownership=False, is_const=True)], 
                    is_virtual=True)
     ## default-simulator-impl.h: bool ns3::DefaultSimulatorImpl::IsFinished() const [member function]
     cls.add_method('IsFinished', 
