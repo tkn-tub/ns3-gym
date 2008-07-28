@@ -27,6 +27,7 @@
 #include "scheduler.h"
 
 #include "ns3/type-traits.h"
+#include "ns3/deprecated.h"
 
 #include <stdint.h>
 #include <string>
@@ -79,20 +80,7 @@ public:
    */
   static void SetScheduler (Ptr<Scheduler> scheduler);
 
-  /**
-   * Enable logging to the file identified by filename. If the file
-   * does not exist, it is created. If it exists, it is destroyed and
-   * re-created. Every scheduling event is logged to this file in a
-   * simple text format which can be read back by the event replay
-   * utility. This allows you to record the scheduling behavior of
-   * a simulation, and measure the exact overhead related to
-   * event scheduling with the event replay utility. It is also possible
-   * to compare the performance of every scheduling algorithms on this
-   * specific scheduling load.
-   * This method must be invoked before any call to Simulator::run
-   * @param filename the name of the file to log to 
-   */
-  static void EnableLogTo (char const *filename);
+  static void EnableLogTo (char const *filename) NS_DEPRECATED;
 
   /**
    * Every event scheduled by the Simulator::insertAtDestroy method is

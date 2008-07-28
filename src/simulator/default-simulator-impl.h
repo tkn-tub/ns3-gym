@@ -45,8 +45,6 @@ public:
 
   void Destroy ();
 
-  void EnableLogTo (char const *filename);
-
   bool IsFinished (void) const;
   Time Next (void) const;
   void Stop (void);

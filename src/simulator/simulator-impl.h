@@ -38,7 +38,6 @@ class SimulatorImpl : public Object
 {
 public:
   virtual void Destroy () = 0;
-  virtual void EnableLogTo (char const *filename) = 0;
   virtual bool IsFinished (void) const = 0;
   virtual Time Next (void) const = 0;
   virtual void Stop (void) = 0;

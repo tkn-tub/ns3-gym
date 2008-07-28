@@ -122,10 +122,7 @@ Simulator::SetScheduler (Ptr<Scheduler> scheduler)
 
 void 
 Simulator::EnableLogTo (char const *filename)
-{
-  NS_LOG_FUNCTION (filename);
-  GetImpl ()->EnableLogTo (filename);
-}
+{}
 
 bool 
 Simulator::IsFinished (void)

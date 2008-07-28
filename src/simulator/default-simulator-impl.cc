@@ -57,7 +57,6 @@ DefaultSimulatorImpl::DefaultSimulatorImpl ()
   m_uid = 4; 
   // before ::Run is entered, the m_currentUid will be zero
   m_currentUid = 0;
-  m_logEnable = false;
   m_currentTs = 0;
   m_unscheduledEvents = 0;
 }
@@ -106,12 +105,6 @@ DefaultSimulatorImpl::GetScheduler (void) const
   return m_events;
 }
 
-void
-DefaultSimulatorImpl::EnableLogTo (char const *filename)
-{
-  m_log.open (filename);
-  m_logEnable = true;
-}
 
 void
 DefaultSimulatorImpl::ProcessOneEvent (void)
@@ -124,10 +117,6 @@ DefaultSimulatorImpl::ProcessOneEvent (void)
   NS_LOG_LOGIC ("handle " << next.GetTs ());
   m_currentTs = next.GetTs ();
   m_currentUid = next.GetUid ();
-  if (m_logEnable) 
-    {
-      m_log << "e "<<next.GetUid () << " " << next.GetTs () << std::endl;
-    }
   EventImpl *event = next.PeekEventImpl ();
   event->Invoke ();
 }
@@ -190,11 +179,6 @@ DefaultSimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &event)
   NS_ASSERT (time >= TimeStep (m_currentTs));
   uint64_t ts = (uint64_t) time.GetTimeStep ();
   EventId id (event, ts, m_uid);
-  if (m_logEnable) 
-    {
-      m_log << "i "<<m_currentUid<<" "<<m_currentTs<<" "
-            <<m_uid<<" "<<time.GetTimeStep () << std::endl;
-    }
   m_uid++;
   ++m_unscheduledEvents;
   m_events->Insert (id);
@@ -205,11 +189,6 @@ EventId
 DefaultSimulatorImpl::ScheduleNow (const Ptr<EventImpl> &event)
 {
   EventId id (event, m_currentTs, m_uid);
-  if (m_logEnable) 
-    {
-      m_log << "i "<<m_currentUid<<" "<<m_currentTs<<" "
-            <<m_uid<<" "<<m_currentTs << std::endl;
-    }
   m_uid++;
   ++m_unscheduledEvents;
   m_events->Insert (id);
@@ -221,11 +200,6 @@ DefaultSimulatorImpl::ScheduleDestroy (const Ptr<EventImpl> &event)
 {
   EventId id (event, m_currentTs, 2);
   m_destroyEvents.push_back (id);
-  if (m_logEnable) 
-  {
-    m_log << "id " << m_currentUid << " " << Now ().GetTimeStep () << " "
-          << m_uid << std::endl;
-  }
   m_uid++;
   return id;
 }
@@ -272,11 +246,6 @@ DefaultSimulatorImpl::Remove (const EventId &ev)
   m_events->Remove (ev);
   Cancel (ev);
 
-  if (m_logEnable) 
-    {
-      m_log << "r " << m_currentUid << " " << m_currentTs << " "
-            << ev.GetUid () << " " << ev.GetTs () << std::endl;
-    }
   --m_unscheduledEvents;
 }
 
