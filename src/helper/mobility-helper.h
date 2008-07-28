@@ -163,8 +163,36 @@ public:
    * exist in the simulation.
    */
   void InstallAll (void);
-private:
 
+  /**
+   * \param os output stream
+   * \param nodeid the id of the node to generate ascii output for.
+   *
+   * Enable ascii output on the mobility model associated to the
+   * specified nodeid and dump that to the specified stdc++ output 
+   * stream.
+   */
+  static void EnableAscii (std::ostream &os, uint32_t nodeid);
+  /**
+   * \param os output stream
+   * \param n node container
+   *
+   * Enable ascii output on the mobility model associated each of
+   * the nodes in the input container and dump that to the 
+   * specified stdc++ output stream.
+   */
+  static void EnableAscii (std::ostream &os, NodeContainer n);
+  /**
+   * \param os output stream
+   *
+   * Enable ascii output on the mobility model associated
+   * every node in the system and dump that to the specified 
+   * stdc++ output stream.
+   */
+  static void EnableAsciiAll (std::ostream &os);
+
+private:
+  static void CourseChanged (std::ostream *os, Ptr<const MobilityModel> mobility);
   std::vector<Ptr<MobilityModel> > m_mobilityStack;
   ObjectFactory m_mobility;
   Ptr<PositionAllocator> m_position;

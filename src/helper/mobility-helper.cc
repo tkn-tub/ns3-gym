@@ -23,6 +23,8 @@
 #include "ns3/hierarchical-mobility-model.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
+#include "ns3/config.h"
+#include "ns3/simulator.h"
 
 namespace ns3 {
 
@@ -152,5 +154,39 @@ MobilityHelper::InstallAll (void)
 {
   Install (NodeContainer::GetGlobal ());
 }
+
+void
+MobilityHelper::CourseChanged (std::ostream *os, Ptr<const MobilityModel> mobility)
+{
+  Ptr<Node> node = mobility->GetObject<Node> ();
+  *os << "now=" << Simulator::Now ()
+      << " node=" << node->GetId () 
+      << " pos=" << mobility->GetPosition () 
+      << " vel=" << mobility->GetVelocity ()
+      << std::endl;
+}
+
+void 
+MobilityHelper::EnableAscii (std::ostream &os, uint32_t nodeid)
+{
+  std::ostringstream oss;
+  oss << "/NodeList/" << nodeid << "/$ns3::MobilityModel/CourseChange";
+  Config::ConnectWithoutContext (oss.str (), 
+                                 MakeBoundCallback (&MobilityHelper::CourseChanged, &os));
+}
+void 
+MobilityHelper::EnableAscii (std::ostream &os, NodeContainer n)
+{
+  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
+    {
+      EnableAscii (os, (*i)->GetId ());
+    }
+}
+void 
+MobilityHelper::EnableAsciiAll (std::ostream &os)
+{
+  EnableAscii (os, NodeContainer::GetGlobal ());
+}
+
 
 } // namespace ns3
