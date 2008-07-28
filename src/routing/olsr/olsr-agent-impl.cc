@@ -1388,7 +1388,7 @@ AgentImpl::SendHello ()
   msg.SetMessageSequenceNumber (GetMessageSequenceNumber ());
   olsr::MessageHeader::Hello &hello = msg.GetHello ();
 
-  hello.SetHTime (m_helloInterval);
+  hello.SetHTime (Scalar (3) * m_helloInterval);
   hello.willingness = m_willingness;
 
   std::vector<olsr::MessageHeader::Hello::LinkMessage>
