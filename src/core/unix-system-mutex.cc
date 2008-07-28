@@ -19,6 +19,7 @@
  */
 
 #include <pthread.h>
+#include <string.h>
 #include <errno.h>
 #include "fatal-error.h"
 #include "system-mutex.h"

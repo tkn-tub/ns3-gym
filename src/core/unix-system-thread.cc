@@ -19,6 +19,7 @@
  */
 
 #include <pthread.h>
+#include <string.h>
 #include "fatal-error.h"
 #include "system-thread.h"
 #include "log.h"
