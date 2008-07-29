@@ -123,6 +123,7 @@ private:
 
   // Manage data tx/rx
   void NewRx (Ptr<Packet>, const TcpHeader&, const Address&);
+  void RxBufFinishInsert (SequenceNumber);
   // XXX This should be virtual and overridden
   Ptr<TcpSocketImpl> Copy ();
   void NewAck (SequenceNumber seq); 
