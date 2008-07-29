@@ -20,7 +20,6 @@
 #ifndef FATAL_ERROR_H
 #define FATAL_ERROR_H
 
-#include "breakpoint.h"
 #include <iostream>
 
 /**
@@ -30,15 +29,17 @@
  * \param msg message to output when this macro is hit.
  *
  * When this macro is hit at runtime, the user-specified 
- * error message is output and the program is halted by calling
- * the NS_BREAKPOINT macro. This macro is enabled unconditionally
- * in all builds, including debug and optimized builds.
+ * error message is output and the program is halted by
+ * dereferencing a null pointer. This macro is enabled 
+ * unconditionally in all builds, including debug and 
+ * optimized builds.
  */
 #define NS_FATAL_ERROR(msg)				\
   do                                                    \
     {                                                   \
       std::cerr << msg << std::endl;			\
-      NS_BREAKPOINT ();                                 \
+      int *a = 0;                                       \
+      *a = 0;                                           \
     }                                                   \
   while (false)
 

@@ -24,8 +24,6 @@
 
 #include <iostream>
 
-#include "breakpoint.h"
-
 /**
  * \ingroup core
  * \defgroup debugging Debugging
@@ -49,8 +47,7 @@
  *
  * At runtime, in debugging builds, if this condition is not
  * true, the program prints the source file, line number and 
- * unverified condition and halts in the ns3::AssertBreakpoint 
- * function.
+ * unverified condition and halts by dereferencing a null pointer.
  */
 #define NS_ASSERT(condition)                                    \
   do                                                            \
@@ -60,7 +57,8 @@
           std::cerr << "assert failed. file=" << __FILE__ <<    \
             ", line=" << __LINE__ << ", cond=\""#condition <<   \
             "\"" << std::endl;                                  \
-          NS_BREAKPOINT ();                                     \
+          int *a = 0;                                           \
+          *a = 0;                                               \
         }                                                       \
     }                                                           \
   while (false)
@@ -73,7 +71,7 @@
  *
  * At runtime, in debugging builds, if this condition is not
  * true, the program prints the message to output and
- * halts in the ns3::AssertBreakpoint function.
+ * halts by dereferencing a null pointer.
  */
 #define NS_ASSERT_MSG(condition, message)       \
   do                                            \
@@ -81,7 +79,8 @@
       if (!(condition))                         \
         {                                       \
           std::cerr << message << std::endl;    \
-          NS_BREAKPOINT ();                     \
+          int *a = 0;                           \
+          *a = 0;                               \
         }                                       \
     }                                           \
   while (false)
