@@ -95,6 +95,7 @@ ArpL3Protocol::CreateCache (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface)
   cache->SetDevice (device, interface);
   NS_ASSERT (device->IsBroadcast ());
   device->SetLinkChangeCallback (MakeCallback (&ArpCache::Flush, cache));
+  cache->SetArpRequestCallback (MakeCallback (&ArpL3Protocol::SendArpRequest, this));
   m_cacheList.push_back (cache);
   return cache;
 }
@@ -218,16 +219,7 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination,
             } 
           else if (entry->IsWaitReply ()) 
             {
-              NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
-                        ", wait reply for " << destination << " expired -- drop");
-              entry->MarkDead ();
-              Ptr<Packet> pending = entry->DequeuePending();
-              while (pending != 0)
-                {
-                  m_dropTrace (pending);
-                  pending = entry->DequeuePending();
-                }
-              m_dropTrace (packet);
+              NS_FATAL_ERROR ("Test for possibly unreachable code-- please file a bug report if this is ever hit");
             }
         } 
       else 

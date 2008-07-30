@@ -52,7 +52,7 @@ public:
   Ptr<ArpCache> CreateCache (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface);
 
   /**
-   * \brief Recieve a packet
+   * \brief Receive a packet
    */
   void Receive(Ptr<NetDevice> device, Ptr<Packet> p, uint16_t protocol, const Address &from, const Address &to,
                NetDevice::PacketType packetType);
