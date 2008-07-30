@@ -154,8 +154,6 @@ DefaultSimulatorImpl::Run (void)
   // If the simulator stopped naturally by lack of events, make a
   // consistency test to check that we didn't lose any events along the way.
   NS_ASSERT(!m_events->IsEmpty () || m_unscheduledEvents == 0);
-
-  m_log.close ();
 }
 
 void 
