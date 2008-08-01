@@ -22,6 +22,8 @@
 #include "ns3/simulator.h"
 #include "ns3/uinteger.h"
 #include "ns3/log.h"
+#include "ns3/node.h"
+#include "ns3/trace-source-accessor.h"
 
 #include "arp-cache.h"
 #include "arp-header.h"
@@ -47,15 +49,23 @@ ArpCache::GetTypeId (void)
                    MakeTimeAccessor (&ArpCache::m_deadTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("WaitReplyTimeout",
-                   "When this timeout expires, the matching cache entry is marked dead",
+                   "When this timeout expires, the cache entries will be scanned and entries in WaitReply state will resend ArpRequest unless MaxRetries has been exceeded, in which case the entry is marked dead",           
                    TimeValue (Seconds (1)),
                    MakeTimeAccessor (&ArpCache::m_waitReplyTimeout),
                    MakeTimeChecker ())
+    .AddAttribute ("MaxRetries",                   
+                   "Number of retransmissions of ArpRequest before marking dead",                  
+                   UintegerValue (3),
+                   MakeUintegerAccessor (&ArpCache::m_maxRetries),
+                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("PendingQueueSize",
                    "The size of the queue for packets pending an arp reply.",
                    UintegerValue (3),
                    MakeUintegerAccessor (&ArpCache::m_pendingQueueSize),
                    MakeUintegerChecker<uint32_t> ())
+    .AddTraceSource ("Drop",                     
+                     "Packet dropped due to ArpCache entry in WaitReply expiring.",
+                     MakeTraceSourceAccessor (&ArpCache::m_dropTrace))
     ;
   return tid;
 }
@@ -79,6 +89,10 @@ ArpCache::DoDispose (void)
   Flush ();
   m_device = 0;
   m_interface = 0;
+  if (!m_waitReplyTimer.IsRunning ())
+    {
+      Simulator::Remove (m_waitReplyTimer);
+    }
   Object::DoDispose ();
 }
 
@@ -143,6 +157,73 @@ ArpCache::GetWaitReplyTimeout (void) const
 }
 
 void 
+ArpCache::SetArpRequestCallback (Callback<void, Ptr<const ArpCache>,
+                             Ipv4Address> arpRequestCallback)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_arpRequestCallback = arpRequestCallback;
+}
+
+void 
+ArpCache::StartWaitReplyTimer (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  if (!m_waitReplyTimer.IsRunning ())
+    {
+      NS_LOG_LOGIC ("Starting WaitReplyTimer at " << Simulator::Now ().GetSeconds ());
+      m_waitReplyTimer = Simulator::Schedule (m_waitReplyTimeout, 
+        &ArpCache::HandleWaitReplyTimeout, this);
+    }
+}
+
+void
+ArpCache::HandleWaitReplyTimeout (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  ArpCache::Entry* entry;
+  bool restartWaitReplyTimer = false;
+  for (CacheI i = m_arpCache.begin (); i != m_arpCache.end (); i++) 
+    {
+      entry = (*i).second;
+      if (entry != 0 && entry->IsWaitReply () && entry->IsExpired ())
+          {
+          if (entry->GetRetries () < m_maxRetries)
+            {
+              NS_LOG_LOGIC ("node="<< m_device->GetNode ()->GetId () <<
+                ", ArpWaitTimeout for " << entry->GetIpv4Address () <<
+                " expired -- retransmitting arp request since retries = " << 
+                entry->GetRetries ());
+              m_arpRequestCallback (this, entry->GetIpv4Address ());
+              restartWaitReplyTimer = true;
+              entry->IncrementRetries ();
+            }
+          else
+            {
+              NS_LOG_LOGIC ("node="<<m_device->GetNode ()->GetId () <<
+                ", wait reply for " << entry->GetIpv4Address () << 
+                " expired -- drop since max retries exceeded: " << 
+                 entry->GetRetries ());
+              entry->MarkDead ();
+              entry->ClearRetries ();
+              Ptr<Packet> pending = entry->DequeuePending();
+              while (pending != 0)
+                {
+                  m_dropTrace (pending);
+                  pending = entry->DequeuePending();
+                }
+            }
+       }
+
+    }
+  if (restartWaitReplyTimer)
+    {
+      NS_LOG_LOGIC ("Restarting WaitReplyTimer at " << Simulator::Now ().GetSeconds ());
+      m_waitReplyTimer = Simulator::Schedule (m_waitReplyTimeout, 
+        &ArpCache::HandleWaitReplyTimeout, this);
+    }
+}
+
+void 
 ArpCache::Flush (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -173,12 +254,14 @@ ArpCache::Add (Ipv4Address to)
 
   ArpCache::Entry *entry = new ArpCache::Entry (this);
   m_arpCache[to] = entry;  
+  entry->SetIpv4Address (to);
   return entry;
 }
 
 ArpCache::Entry::Entry (ArpCache *arp)
   : m_arp (arp),
-    m_state (ALIVE)
+    m_state (ALIVE),
+    m_retries (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -209,6 +292,7 @@ ArpCache::Entry::MarkDead (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_state = DEAD;
+  ClearRetries ();
   UpdateSeen ();
 }
 void
@@ -218,6 +302,7 @@ ArpCache::Entry::MarkAlive (Address macAddress)
   NS_ASSERT (m_state == WAIT_REPLY);
   m_macAddress = macAddress;
   m_state = ALIVE;
+  ClearRetries ();
   UpdateSeen ();
 }
 
@@ -246,15 +331,29 @@ ArpCache::Entry::MarkWaitReply (Ptr<Packet> waiting)
   m_state = WAIT_REPLY;
   m_pending.push_back (waiting);
   UpdateSeen ();
+  m_arp->StartWaitReplyTimer ();
 }
 
 Address
-ArpCache::Entry::GetMacAddress (void)
+ArpCache::Entry::GetMacAddress (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT (m_state == ALIVE);
   return m_macAddress;
 }
+Ipv4Address 
+ArpCache::Entry::GetIpv4Address (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_ipv4Address;
+}
+void 
+ArpCache::Entry::SetIpv4Address (Ipv4Address destination)
+{
+  NS_LOG_FUNCTION (this << destination);
+  m_ipv4Address = destination;
+}
+
 bool 
 ArpCache::Entry::IsExpired (void)
 {
@@ -306,6 +405,25 @@ ArpCache::Entry::UpdateSeen (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_lastSeen = Simulator::Now ();
+}
+uint32_t
+ArpCache::Entry::GetRetries (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_retries;
+}
+void
+ArpCache::Entry::IncrementRetries (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_retries++;
+  UpdateSeen ();
+}
+void
+ArpCache::Entry::ClearRetries (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_retries = 0;
 }
 
 } // namespace ns3

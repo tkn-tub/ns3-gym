@@ -22,6 +22,8 @@
 
 #include <stdint.h>
 #include <list>
+#include "ns3/simulator.h"
+#include "ns3/callback.h"
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
 #include "ns3/net-device.h"
@@ -29,6 +31,7 @@
 #include "ns3/address.h"
 #include "ns3/ptr.h"
 #include "ns3/object.h"
+#include "ns3/traced-callback.h"
 #include "sgi-hashmap.h"
 
 namespace ns3 {
@@ -72,7 +75,22 @@ public:
   Time GetWaitReplyTimeout (void) const;
 
   /**
-   * \brief Do lookup in the ARP chache against an IP address
+   * This callback is set when the ArpCache is set up and allows
+   * the cache to generate an Arp request when the WaitReply
+   * time expires and a retransmission must be sent
+   *
+   * \param arpRequestCallback Callback for transmitting an Arp request.
+   */
+  void SetArpRequestCallback (Callback<void, Ptr<const ArpCache>, 
+                             Ipv4Address> arpRequestCallback);
+  /**
+   * This method will schedule a timeout at WaitReplyTimeout interval
+   * in the future, unless a timer is already running for the cache,
+   * in which case this method does nothing.
+   */
+  void StartWaitReplyTimer (void);
+  /**
+   * \brief Do lookup in the ARP cache against an IP address
    * \param destination The destination IPv4 address to lookup the MAC address
    * of
    * \return An ArpCache::Entry with info about layer 2
@@ -131,7 +149,15 @@ public:
     /**
      * \return The MacAddress of this entry
      */
-    Address GetMacAddress (void);
+    Address GetMacAddress (void) const;
+    /**
+     * \return The Ipv4Address for this entry
+     */
+    Ipv4Address GetIpv4Address (void) const;
+    /**
+     * \param The Ipv4Address for this entry
+     */
+    void SetIpv4Address (Ipv4Address destination);
     /**
      * \return True if this entry has timedout; false otherwise.
      */
@@ -142,6 +168,20 @@ public:
      *            packets are pending.
      */
     Ptr<Packet> DequeuePending (void);
+    /**
+     * \returns number of retries that have been sent for an ArpRequest
+     *  in WaitReply state.
+     */
+    uint32_t GetRetries (void) const;
+    /**
+     * \brief Increment the counter of number of retries for an entry
+     */
+    void IncrementRetries (void);
+    /**
+     * \brief Zero the counter of number of retries for an entry
+     */
+    void ClearRetries (void);
+
   private:
     enum ArpCacheEntryState_e {
       ALIVE,
@@ -154,7 +194,9 @@ public:
     ArpCacheEntryState_e m_state;
     Time m_lastSeen;
     Address m_macAddress;
+    Ipv4Address m_ipv4Address;
     std::list<Ptr<Packet> > m_pending;
+    uint32_t m_retries;
   };
 
 private:
@@ -168,8 +210,18 @@ private:
   Time m_aliveTimeout;
   Time m_deadTimeout;
   Time m_waitReplyTimeout;
+  EventId m_waitReplyTimer;
+  Callback<void, Ptr<const ArpCache>, Ipv4Address> m_arpRequestCallback;
+  uint32_t m_maxRetries;
+  /**
+   * This function is an event handler for the event that the
+   * ArpCache wants to check whether it must retry any Arp requests.
+   * If there are no Arp requests pending, this event is not scheduled.
+   */
+  void HandleWaitReplyTimeout (void);
   uint32_t m_pendingQueueSize;
   Cache m_arpCache;
+  TracedCallback<Ptr<const Packet> > m_dropTrace;
 };
 
 
