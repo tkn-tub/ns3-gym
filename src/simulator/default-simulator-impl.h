@@ -75,9 +75,6 @@ private:
   uint32_t m_uid;
   uint32_t m_currentUid;
   uint64_t m_currentTs;
-  std::ofstream m_log;
-  std::ifstream m_inputLog;
-  bool m_logEnable;
   // number of events that have been inserted but not yet scheduled,
   // not counting the "destroy" events; this is used for validation
   int m_unscheduledEvents;
