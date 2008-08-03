@@ -67,8 +67,9 @@ TimePrinter (std::ostream &os)
 SimulatorImpl *
 Simulator::GetImpl (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-
+  /* Please, don't include any calls to logging macros in this function
+   * or pay the price, that is, stack explosions.
+   */
   if (m_impl == 0) 
     {
       ObjectFactory factory;
@@ -90,7 +91,6 @@ Simulator::GetImpl (void)
 //
       LogSetTimePrinter (&TimePrinter);
     }
-  NS_LOG_LOGIC ("priv " << m_impl);
   return PeekPointer (m_impl);
 }
 
@@ -162,7 +162,9 @@ Simulator::Stop (Time const &time)
 Time
 Simulator::Now (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  /* Please, don't include any calls to logging macros in this function
+   * or pay the price, that is, stack explosions.
+   */
   return GetImpl ()->Now ();
 }
 
