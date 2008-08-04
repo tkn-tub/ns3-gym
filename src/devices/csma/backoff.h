@@ -36,49 +36,63 @@ namespace ns3 {
 
 class Backoff {
 public:
-  uint32_t m_minSlots; // Minimum number of backoff slots (when
-                       // multiplied by m_slotTime, determines minimum
-                       // backoff time)
-  uint32_t m_maxSlots; // Maximim number of backoff slots (when
-                       // multiplied by m_slotTime, determines
-                       // maximum backoff time)
-  uint32_t m_ceiling;  // Caps the exponential function when the
-                       // number of retries reaches m_ceiling
-  uint32_t m_maxRetries; // Maximum number of transmission retries
-                         // before the packet is dropped.
-  Time     m_slotTime; // Length of one slot. A slot time, it usually
-                       // the packet transmission time, if the packet
-                       // size is fixed.
+  /**
+   * Minimum number of backoff slots (when multiplied by m_slotTime, determines minimum backoff time)
+   */
+  uint32_t m_minSlots; 
 
-  Backoff();
-  Backoff(Time slotTime, uint32_t minSlots, uint32_t maxSlots, 
-          uint32_t ceiling, uint32_t maxRetries);
+  /**
+   * Maximim number of backoff slots (when multiplied by m_slotTime, determines maximum backoff time)
+   */
+  uint32_t m_maxSlots; 
+
+  /**
+   * Caps the exponential function when the number of retries reaches m_ceiling.
+   */
+  uint32_t m_ceiling;
+
+  /**
+   * Maximum number of transmission retries before the packet is dropped.
+   */
+  uint32_t m_maxRetries;
+
+  /**
+   * Length of one slot. A slot time, it usually the packet transmission time, if the packet size is fixed.
+   */
+  Time m_slotTime;
+
+  Backoff (void);
+  Backoff (Time slotTime, uint32_t minSlots, uint32_t maxSlots, uint32_t ceiling, uint32_t maxRetries);
 
   /**
    * \return The amount of time that the net device should wait before
    * trying to retransmit the packet
    */
   Time GetBackoffTime();
+
   /**
    * Indicates to the backoff object that the last packet was
    * successfully transmitted and that the number of retries should be
    * reset to 0.
    */
-  void ResetBackoffTime();
+  void ResetBackoffTime (void);
+
   /**
    * \return True if the maximum number of retries has been reached
    */
-  bool MaxRetriesReached();
+  bool MaxRetriesReached (void);
+
   /**
    * Increments the number of retries by 1.
    */
-  void IncrNumRetries();
+  void IncrNumRetries (void);
 
 private:
-  uint32_t m_numBackoffRetries; // Number of times that the
-                                // transmitter has tried to
-                                // unsuccessfully transmit the current
-                                // packet
+
+  /**
+   * Number of times that the transmitter has tried to unsuccessfully transmit the current packet.
+   */
+  uint32_t m_numBackoffRetries;
 };
 
 }; // namespace ns3

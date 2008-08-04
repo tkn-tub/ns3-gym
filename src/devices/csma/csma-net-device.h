@@ -103,7 +103,7 @@ public:
    * Set the backoff parameters used to determine the wait to retry
    * transmitting a packet when the channel is busy.
    *
-   * @see Attach ()
+   * \see Attach ()
    * \param slotTime Length of a packet slot (or average packet time)
    * \param minSlots Minimum number of slots to wait
    * \param maxSlots Maximum number of slots to wait
@@ -118,8 +118,8 @@ public:
    *
    * The function Attach is used to add a CsmaNetDevice to a CsmaChannel.
    *
-   * @see SetDataRate ()
-   * @see SetInterframeGap ()
+   * \see SetDataRate ()
+   * \see SetInterframeGap ()
    * \param ch a pointer to the channel to which this object is being attached.
    */
   bool Attach (Ptr<CsmaChannel> ch);
@@ -131,8 +131,8 @@ public:
    * level topology objects to implement a particular queueing method such as
    * DropTail or RED.  
    *
-   * @see Queue
-   * @see DropTailQueue
+   * \see Queue
+   * \see DropTailQueue
    * \param queue a Ptr to the queue for being assigned to the device.
    */
   void SetQueue (Ptr<Queue> queue);
@@ -143,8 +143,8 @@ public:
    * The CsmaNetDevice may optionally include an ErrorModel in
    * the packet receive chain to simulate data errors in during transmission.
    *
-   * @see ErrorModel
-   * @param em a pointer to the ErrorModel 
+   * \see ErrorModel
+   * \param em a pointer to the ErrorModel 
    */
   void SetReceiveErrorModel (Ptr<ErrorModel> em);
 
@@ -156,7 +156,7 @@ public:
    * used by the channel to indicate that the last bit of a packet has 
    * arrived at the device.
    *
-   * @see CsmaChannel
+   * \see CsmaChannel
    * \param p a reference to the received packet
    * \param sender the CsmaNetDevice that transmitted the packet in the first place
    */
@@ -216,7 +216,7 @@ public:
   virtual Address GetMulticast (void) const;
 
   /**
-   * @brief Make and return a MAC multicast address using the provided
+   * \brief Make and return a MAC multicast address using the provided
    *        multicast group
    *
    * RFC 1112 says that an Ipv4 host group address is mapped to an Ethernet 
@@ -228,14 +228,14 @@ public:
    * to an EUI-48-based CSMA device.  This MAC address is encapsulated in an
    *  abstract Address to avoid dependencies on the exact address format.
    *
-   * @param multicastGroup The IP address for the multicast group destination
+   * \param multicastGroup The IP address for the multicast group destination
    * of the packet.
-   * @return The MAC multicast Address used to send packets to the provided
+   * \return The MAC multicast Address used to send packets to the provided
    * multicast group.
    *
-   * @see Ipv4Address
-   * @see Mac48Address
-   * @see Address
+   * \see Ipv4Address
+   * \see Mac48Address
+   * \see Address
    */
   virtual Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
 
@@ -368,8 +368,8 @@ private:
    * If the channel is found to be BUSY, this method reschedules itself for
    * execution at a later time (within the backoff period).
    *
-   * @see CsmaChannel::TransmitStart ()
-   * @see TransmitCompleteEvent ()
+   * \see CsmaChannel::TransmitStart ()
+   * \see TransmitCompleteEvent ()
    */
   void TransmitStart ();
 
@@ -386,8 +386,8 @@ private:
    * method, the net device also schedules the TransmitReadyEvent at which
    * time the transmitter becomes ready to send the next packet.
    *
-   * @see CsmaChannel::TransmitEnd ()
-   * @see TransmitReadyEvent ()
+   * \see CsmaChannel::TransmitEnd ()
+   * \see TransmitReadyEvent ()
    */
   void TransmitCompleteEvent (void);
 
@@ -403,7 +403,7 @@ private:
    * If a packet is in the queue, it is extracted for the queue as the
    * next packet to be transmitted by the net device.
    *
-   * @see TransmitStart ()
+   * \see TransmitStart ()
    */
   void TransmitReadyEvent (void);
 
@@ -451,7 +451,7 @@ private:
 
   /**
    * The state of the Net Device transmit state machine.
-   * @see TxMachineState
+   * \see TxMachineState
    */
   TxMachineState m_txMachineState;
   
@@ -465,14 +465,14 @@ private:
   /**
    * The data rate that the Net Device uses to simulate packet transmission
    * timing.
-   * @see class DataRate
+   * \see class DataRate
    */
   DataRate m_bps;
 
   /**
    * The interframe gap that the Net Device uses insert time between packet
    * transmission
-   * @see class Time
+   * \see class Time
    */
   Time m_tInterframeGap;
 
@@ -493,7 +493,7 @@ private:
   /**
    * The CsmaChannel to which this CsmaNetDevice has been
    * attached.
-   * @see class CsmaChannel
+   * \see class CsmaChannel
    */
   Ptr<CsmaChannel> m_channel;
 
@@ -501,8 +501,8 @@ private:
    * The Queue which this CsmaNetDevice uses as a packet source.
    * Management of this Queue has been delegated to the CsmaNetDevice
    * and it has the responsibility for deletion.
-   * @see class Queue
-   * @see class DropTailQueue
+   * \see class Queue
+   * \see class DropTailQueue
    */
   Ptr<Queue> m_queue;
 
@@ -515,7 +515,7 @@ private:
    * The trace source for the packet reception events that the device can
    * fire.
    *
-   * @see class CallBackTraceSource
+   * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_rxTrace;
 
@@ -523,7 +523,7 @@ private:
    * The trace source for the packet drop events that the device can
    * fire.
    *
-   * @see class CallBackTraceSource
+   * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_dropTrace;
 

@@ -37,8 +37,7 @@ CsmaChannel::GetTypeId (void)
     .SetParent<Channel> ()
     .AddConstructor<CsmaChannel> ()
     .AddAttribute ("DataRate", 
-                   "The transmission data rate to be provided to devices "
-                   "connected to the channel",
+                   "The transmission data rate to be provided to devices connected to the channel",
                    DataRateValue (DataRate (0xffffffff)),
                    MakeDataRateAccessor (&CsmaChannel::m_bps),
                    MakeDataRateChecker ())
@@ -126,16 +125,15 @@ CsmaChannel::Detach (uint32_t deviceId)
     {
       if (!m_deviceList[deviceId].active)
         {
-          NS_LOG_WARN ("CsmaChannel::Detach(): "
-            "Device is already detached (" << deviceId << ")");
+          NS_LOG_WARN ("CsmaChannel::Detach(): Device is already detached (" << deviceId << ")");
           return false;
         }
 
       m_deviceList[deviceId].active = false;
+
       if ((m_state == TRANSMITTING) && (m_currentSrc == deviceId))
         {
-          NS_LOG_WARN ("CsmaChannel::Detach(): Device is currently" << 
-            "transmitting (" << deviceId << ")");
+          NS_LOG_WARN ("CsmaChannel::Detach(): Device is currently" << "transmitting (" << deviceId << ")");
         }
 
       return true;
@@ -178,8 +176,7 @@ CsmaChannel::TransmitStart (Ptr<Packet> p, uint32_t srcId)
 
   if (!IsActive(srcId))
     {
-      NS_LOG_ERROR ("CsmaChannel::TransmitStart(): "
-        "Seclected source is not currently attached to network");
+      NS_LOG_ERROR ("CsmaChannel::TransmitStart(): Seclected source is not currently attached to network");
       return false;
     }
 
@@ -209,8 +206,7 @@ CsmaChannel::TransmitEnd()
 
   if (!IsActive (m_currentSrc))
     {
-      NS_LOG_ERROR ("CsmaChannel::TransmitEnd(): "
-        "Seclected source was detached before the end of the transmission");
+      NS_LOG_ERROR ("CsmaChannel::TransmitEnd(): Seclected source was detached before the end of the transmission");
       retVal = false;
     }
 
@@ -259,10 +255,6 @@ CsmaChannel::GetNumActDevices (void)
   return numActDevices;
 }
 
-//
-// This is not the number of active devices. This is the total number
-// of devices even if some were detached after.
-//
   uint32_t 
 CsmaChannel::GetNDevices (void) const
 {
