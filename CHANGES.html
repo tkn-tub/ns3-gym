@@ -1,0 +1,164 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <title>ns-3 Change Log</title>
+</head>
+<body>
+
+<h1>
+ns-3: API and model change history</h1>
+<!--
+This ChangeLog is updated in the reverse order 
+with the most recent changes coming first.  Date format:  DD-MM-YYYY
+-->
+<p>
+ns-3 is an evolving system and there will be API or behavioral changes
+from time to time.   Users who try to use scripts or models across
+versions of ns-3 may encounter problems at compile time, run time, or
+may see the simulation output change.  </p>
+<p>
+We have adopted the development policy that we are going to try to ease
+the impact of these changes on users by documenting these changes in a
+single place (this file), and not by providing a temporary or permanent
+backward-compatibility software layer.  </p>
+<p>
+The goal is that users who encounter a problem when trying to use older
+code with newer code should be able to consult this file to find
+guidance as to how to fix the problem.  For instance, if a method name
+or signature has changed, it should be stated what the new replacement
+name is. </p>
+<p>
+Note that users who upgrade the simulator across versions, or who work
+directly out of the development tree, may find that simulation output
+changes even when the compilation doesn't break, such as when a
+simulator default value is changed.  Therefore, it is good practice for
+_anyone_ using code across multiple ns-3 releases to consult this file,
+as well as the RELEASE_NOTES, to understand what has changed over time.
+</p>
+<p>
+This file is a best-effort approach to solving this issue; we will do
+our best but can guarantee that there will be things that fall through
+the cracks, unfortunately.  If you, as a user, can suggest improvements
+to this file based on your experience, please contribute a patch or drop
+us a note on ns-developers mailing list.  </p>
+
+<hr>
+<h1>changes from ns-3.1 to ns-3.2</h1>
+<h2>new API in existing classes:</h2>
+
+<ul>
+<li>01-08-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/a18520551cdf">a18520551cdf</a></li>
+<ul>
+<li>class ArpCache has two new attributes:  MaxRetries 
+and a Drop trace.  It also has some new public methods but these are 
+mostly for internal use.
+</ul>
+</li>
+</ul>
+
+<h2>changes to existing API:</h2>
+
+<ul>
+<li>21-07-2008; changeset 
+<a href="
+http://code.nsnam.org/ns-3-dev/rev/99698bc858e8">99698bc858e8</a></li>
+<ul>
+<li> class NetDevice has added a pure virtual method that
+must be implemented by all subclasses:
+<pre>
+virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb) = 0;
+</pre>
+All NetDevices must support this method, and must call this callback
+when processing packets in the receive direction (the appropriate place
+to call this is device-dependent).  An approach to stub this out
+temporarily, if you do not care about immediately enabling this
+functionality, would be to add this to your device:
+<pre>
+void
+ExampleNetDevice::SetPromiscReceiveCallback
+(NetDevice::PromiscReceiveCallback cb)
+{ 
+  NS_ASSERT_MSG (false, "No implementation yet for
+SetPromiscReceiveCallback");
+}
+</pre>
+To implement this properly, consult the CsmaNetDevice for examples of
+when the m_promiscRxCallback is called.
+</li>
+</ul>
+</li>
+</ul>
+
+<ul>
+<li>03-07-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/d5f8e5fae1c6">d5f8e5fae1c6</a></li>
+<ul>
+<li>
+Miscellaneous cleanup of Udp Helper API, to fix bug 234
+<pre>
+class UdpEchoServerHelper
+{
+public:
+- UdpEchoServerHelper ();
+- void SetPort (uint16_t port); 
++ UdpEchoServerHelper (uint16_t port);
++ 
++ void SetAttribute (std::string name, const AttributeValue &value);
+ApplicationContainer Install (NodeContainer c);
+
+class UdpEchoClientHelper
+{
+public:
+- UdpEchoClientHelper ();
++ UdpEchoClientHelper (Ipv4Address ip, uint16_t port);
+- void SetRemote (Ipv4Address ip, uint16_t port);
+- void SetAppAttribute (std::string name, const AttributeValue &value);
++ void SetAttribute (std::string name, const AttributeValue &value);
+ApplicationContainer Install (NodeContainer c);
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+
+<ul>
+<li>03-07-2008; changeset 
+<a href="
+http://code.nsnam.org/ns-3-dev/rev/3cdd9d60f7c7">3cdd9d60f7c7</a></li>
+<ul>
+<li>
+Rename all instances method names using "Set..Parameter" to "Set..Attribute"
+(bug 232)
+</li>
+<li> How to fix your code:  Any use of helper API that was using a method
+"Set...Parameter()" should be changed to read "Set...Attribute()".  e.g.
+<pre>
+- csma.SetChannelParameter ("DataRate", DataRateValue (5000000));
+- csma.SetChannelParameter ("Delay", TimeValue (MilliSeconds (2)));
++ csma.SetChannelAttribute ("DataRate", DataRateValue (5000000));
++ csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+
+<h2>changed behavior:</h2>
+<ul>
+<li> 28-07-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/6f68f1044df1">6f68f1044df1</a>
+<ul>
+<li>
+OLSR: HELLO messages hold time changed to 3*hello
+interval from hello interval.  This is an important bug fix as
+hold time == refresh time was never intentional, as it leads to
+instability in neighbor detection.
+</ul>
+</li>
+</ul>
+</li>
+
+</body>
+</html>
