@@ -43,25 +43,23 @@ public:
   DefaultSimulatorImpl ();
   ~DefaultSimulatorImpl ();
 
-  void Destroy ();
-
-  bool IsFinished (void) const;
-  Time Next (void) const;
-  void Stop (void);
-  void Stop (Time const &time);
-  EventId Schedule (Time const &time, const Ptr<EventImpl> &event);
-  EventId ScheduleNow (const Ptr<EventImpl> &event);
-  EventId ScheduleDestroy (const Ptr<EventImpl> &event);
-  void Remove (const EventId &ev);
-  void Cancel (const EventId &ev);
-  bool IsExpired (const EventId &ev) const;
-  void Run (void);
-  Time Now (void) const;
-  Time GetDelayLeft (const EventId &id) const;
-  Time GetMaximumSimulationTime (void) const;
-
-  void SetScheduler (Ptr<Scheduler> scheduler);
-  Ptr<Scheduler> GetScheduler (void) const;
+  virtual void Destroy ();
+  virtual bool IsFinished (void) const;
+  virtual Time Next (void) const;
+  virtual void Stop (void);
+  virtual void Stop (Time const &time);
+  virtual EventId Schedule (Time const &time, const Ptr<EventImpl> &event);
+  virtual EventId ScheduleNow (const Ptr<EventImpl> &event);
+  virtual EventId ScheduleDestroy (const Ptr<EventImpl> &event);
+  virtual void Remove (const EventId &ev);
+  virtual void Cancel (const EventId &ev);
+  virtual bool IsExpired (const EventId &ev) const;
+  virtual void Run (void);
+  virtual Time Now (void) const;
+  virtual Time GetDelayLeft (const EventId &id) const;
+  virtual Time GetMaximumSimulationTime (void) const;
+  virtual void SetScheduler (Ptr<Scheduler> scheduler);
+  virtual Ptr<Scheduler> GetScheduler (void) const;
 
 private:
   void ProcessOneEvent (void);
