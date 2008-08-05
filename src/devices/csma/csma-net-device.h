@@ -65,11 +65,12 @@ class CsmaNetDevice : public NetDevice
 {
 public:
   static TypeId GetTypeId (void);
+
   /**
    * Enumeration of the types of packets supported in the class.
    *
    */
-  enum CsmaEncapsulationMode {
+  enum EncapsulationMode {
     ETHERNET_V1, /**< Version one ethernet packet, length field */
     IP_ARP,      /**< Ethernet packet encapsulates IP/ARP packet */
     RAW,         /**< Packet that contains no headers */
@@ -197,17 +198,108 @@ public:
    */
   void SetAddress (Mac48Address addr);
 
-//
-// The following methods are inherited from NetDevice base class.
-//
+  /**
+   * Set The max PHY-level payload length of packets sent over this device.
+   *
+   * Okay, that was easy to say, but the details are a bit thorny.  We have a MAC-level that is the payload that higher 
+   * level protocols see.  We have a PHY-level MTU which is the maximum number of bytes we can send over the link 
+   * (cf. 1500 bytes for Ethernet).  The value that determines the relationship between these two values is the link
+   * encapsulation mode.  The link encapsulation defines the number of bytes of overhead that are required for the particular
+   * MAC protocol used.  For example, if the LLC/SNAP encapsulation is used, eight bytes of LLC/SNAP header are consumed and
+   * therefore the MAC-level MTU must be set and reported as eight bytes less than the PHY-level MTU (which we call the
+   * payload length to try and avoid confusion).
+   *
+   * So, what do we do since there must be three values which must always be consistent in the driver?  Which values to we
+   * allow to be changed and how do we ensure the other two are consistent?  We want to actually enable a user to change 
+   * these two payload lengths in flexible ways, but we want the results (even at intermediate stages) to be consistent.  
+   * We certainly don't want to require that users must understand the various requirements of an enapsulation mode in order 
+   * to set these variables.
+   *
+   * Consider the following situation:  A user wants to set the physical layer MTU to 1400 bytes instead of 1500.  This
+   * user shouldn't have to concern herself that the current encapuslation mode is LLC and this will consume eight bytes.
+   * She should not have to also set the MAC MTU to 1392 bytes, and she should certainly not have to do this before setting
+   * the PHY MTU.  
+   *
+   * A user who is interested in setting the MAC-level MTU to 1400 bytes should not be forced to understand that in certain
+   * cases the PHY-level MTU must be set to eight bytes more than what he wants in certain cases and zero bytes in others.
+   *
+   * Now, consider a user who is only interested in changing the encapsulation mode from LLC/SNAP to ETHERNET_V1.  This 
+   * is going to change the relationship between the MAC MTU and the PHY MTU.  We've may have to come up with a new value 
+   * for at least one of the MTUs?  Which one?
+   *
+   * We could play games trying to figure out what the user wants to do, but that is typically a bad plan.  So we're going
+   * to just define a flexible behavior.  Here it is:
+   *
+   * - If the user is changing the encapsulation mode, the PHY MTU will remain fixed and the MAC MTU will change, if required,
+   * to make the three values consistent;
+   *
+   * - If the user is changing the MAC MTU, she is interested in getting that part of the system set, so the PHY MTU
+   * will be changed to make the three values consistent;
+   *
+   * - If the user is changing the PHY MTU, he is interested in getting that part of the system set, so the MAC MTU
+   * will be changed to make the three values consistent.
+   * 
+   * So, if a user calls SetMaxPayloadLength, we assume that the PHY-level MTU is the interesting thing for that user and
+   * we just adjust the MAC-level MTU to "the correct value" based on the current encapsulation mode.  If a user calls 
+   * SetMacMtu, we assume that the MAC-level MTU is the interesting property for that user, and we adjust the PHY-level MTU 
+   * to "the correct value" for the current encapsulation mode.  If a user calls SetEncapsulationMode, then we take the
+   * MAC-level MTU as the free variable and set its value to match the current PHY-level MTU.
+   *
+   * \param mayPayloadLength The max PHY-level payload length of packets sent over this device.
+   */
+  void SetMaxPayloadLength (uint16_t maxPayloadLength);
+
+  /**
+   * Get The max PHY-level payload length of packets sent over this device.
+   *
+   * \returns The max PHY-level payload length of packets sent over this device.
+   */
+  uint16_t GetMaxPayloadLength (void) const;
+
+  /**
+   * Set The MAC-level MTU (client payload) of packets sent over this device.
+   *
+   * \param mtu The MAC-level MTU (client payload) of packets sent over this device.
+   *
+   * \see SetMaxPayloadLength
+   */
+  void SetMacMtu (uint16_t mtu);
+
+  /**
+   * Get The MAC-level MTU (client payload) of packets sent over this device.
+   *
+   * \returns The MAC-level MTU (client payload) of packets sent over this device.
+   */
+  uint16_t GetMacMtu (void) const;
+
+
+  /**
+   * Set the encapsulation mode of this device.
+   *
+   * \param mode The encapsulation mode of this device.
+   *
+   * \see SetMaxPayloadLength
+   */
+  void SetEncapsulationMode (CsmaNetDevice::EncapsulationMode mode);
+
+  /**
+   * Get the encapsulation mode of this device.
+   *
+   * \returns The encapsulation mode of this device.
+   */
+  CsmaNetDevice::EncapsulationMode  GetEncapsulationMode (void);
+
+  //
+  // The following methods are inherited from NetDevice base class.
+  //
   virtual void SetName (const std::string name);
   virtual std::string GetName (void) const;
   virtual void SetIfIndex (const uint32_t index);
   virtual uint32_t GetIfIndex (void) const;
   virtual Ptr<Channel> GetChannel (void) const;
-  virtual Address GetAddress (void) const;
   virtual bool SetMtu (const uint16_t mtu);
   virtual uint16_t GetMtu (void) const;
+  virtual Address GetAddress (void) const;
   virtual bool IsLinkUp (void) const;
   virtual void SetLinkChangeCallback (Callback<void> callback);
   virtual bool IsBroadcast (void) const;
@@ -333,9 +425,6 @@ protected:
 
 private:
 
-  static const uint16_t DEFAULT_FRAME_LENGTH = 1500;
-  static const uint16_t DEFAULT_MTU = 1492;
-
   /**
    * Operator = is declared but not implemented.  This disables the assigment
    * operator for CsmaNetDevice objects.
@@ -353,6 +442,18 @@ private:
    * Initialization function used during object construction.
    */
   void Init (bool sendEnable, bool receiveEnable);
+
+  /**
+   * Calculate the value for the MAC-level MTU that would result from 
+   * setting the PHY-level MTU to the given value.
+   */
+  uint16_t MacMtuFromPayload (uint16_t payloadLength);
+
+  /**
+   * Calculate the value for the PHY-level MTU that would be required
+   * to be able to set the MAC-level MTU to the given value.
+   */
+  uint16_t PayloadFromMacMtu (uint16_t mtu);
 
   /**
    * Start Sending a Packet Down the Wire.
@@ -460,7 +561,7 @@ private:
    * function and that should be processed by the ProcessHeader
    * function.
    */
-  CsmaEncapsulationMode m_encapMode;
+  EncapsulationMode m_encapMode;
 
   /**
    * The data rate that the Net Device uses to simulate packet transmission
@@ -567,6 +668,28 @@ private:
    * Callback to fire if the link changes state (up or down).
    */
   Callback<void> m_linkChangeCallback;
+
+  static const uint16_t DEFAULT_PAYLOAD_LENGTH = 1500;
+  static const uint16_t DEFAULT_MTU = 1492;
+
+  /**
+   * There are two MTU types that are used in this driver.  The MAC-level 
+   * MTU corresponds to the amount of data (payload) an upper layer can 
+   * send across the link.  The PHY-level MTU corresponds to the Type/Length
+   * field in the 802.3 header and corresponds to the maximum amount of data
+   * the underlying packet can accept.  These are not the same thing.  For 
+   * example, if you choose "Llc" as your encapsulation mode, the MAC-level
+   * MTU will be reduced by the eight bytes with respect to the PHY-level
+   * MTU which are consumed by the LLC/SNAP header.
+   *
+   * This method checks the current enacpuslation mode (and any other 
+   * relevent information) and determines if the provided payloadLength 
+   * (PHY-level MTU) and mtu (MAC-level MTU) are consistent.
+   *
+   * \param payloadLength The proposed PHY-level MTU
+   * \param mtu The proposed MAC-level MTU
+   */
+  bool CheckMtuConsistency (uint16_t payloadLength, uint16_t mtu);
 
   /**
    * The MAC-level maximum transmission unit allowed to be sent or received by

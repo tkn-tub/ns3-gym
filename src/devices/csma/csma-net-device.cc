@@ -52,18 +52,20 @@ CsmaNetDevice::GetTypeId (void)
                    MakeMac48AddressChecker ())
     .AddAttribute ("PayloadLength", 
                    "The max PHY-level payload length of packets sent over this device.",
-                   UintegerValue (DEFAULT_FRAME_LENGTH),
-                   MakeUintegerAccessor (&CsmaNetDevice::m_maxPayloadLength),
+                   UintegerValue (DEFAULT_PAYLOAD_LENGTH),
+                   MakeUintegerAccessor (&CsmaNetDevice::SetMaxPayloadLength,
+                                         &CsmaNetDevice::GetMaxPayloadLength),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("MTU", 
                    "The MAC-level MTU (client payload) of packets sent over this device.",
                    UintegerValue (DEFAULT_MTU),
-                   MakeUintegerAccessor (&CsmaNetDevice::m_mtu),
+                   MakeUintegerAccessor (&CsmaNetDevice::SetMacMtu,
+                                         &CsmaNetDevice::GetMacMtu),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("EncapsulationMode", 
                    "The link-layer encapsulation type to use.",
                    EnumValue (LLC),
-                   MakeEnumAccessor (&CsmaNetDevice::m_encapMode),
+                   MakeEnumAccessor (&CsmaNetDevice::SetEncapsulationMode),
                    MakeEnumChecker (ETHERNET_V1, "EthernetV1",
                                     IP_ARP, "IpArp",
                                     RAW, "Raw",
@@ -106,6 +108,14 @@ CsmaNetDevice::CsmaNetDevice ()
   m_txMachineState = READY;
   m_tInterframeGap = Seconds (0);
   m_channel = 0; 
+
+  m_encapMode = LLC;
+  m_maxPayloadLength = DEFAULT_PAYLOAD_LENGTH;
+  m_mtu = MacMtuFromPayload (m_maxPayloadLength);
+
+  NS_LOG_LOGIC ("m_encapMode = " << m_encapMode);
+  NS_LOG_LOGIC ("m_maxPayloadLength = " << m_maxPayloadLength);
+  NS_LOG_LOGIC ("m_mtu = " << m_mtu);
 }
 
 CsmaNetDevice::~CsmaNetDevice()
@@ -121,6 +131,133 @@ CsmaNetDevice::DoDispose ()
   m_channel = 0;
   m_node = 0;
   NetDevice::DoDispose ();
+}
+
+  uint16_t
+CsmaNetDevice::MacMtuFromPayload (uint16_t payloadLength)
+{
+  NS_LOG_FUNCTION (payloadLength);
+
+  switch (m_encapMode) 
+    {
+    case RAW:
+    case IP_ARP:
+    case ETHERNET_V1:
+      return payloadLength;
+    case LLC: 
+      {
+        LlcSnapHeader llc;
+
+        NS_ASSERT_MSG (payloadLength >= llc.GetSerializedSize (), "CsmaNetDevice::MacMtuFromPayload(): "
+                       "Given payload too small to support LLC mode");
+        return payloadLength - llc.GetSerializedSize ();
+      }
+    }
+
+  NS_ASSERT_MSG (false, "CsmaNetDevice::MacMtuFromPayload(): Unexpected encapsulation mode");
+  return 0;
+}
+  
+  uint16_t
+CsmaNetDevice::PayloadFromMacMtu (uint16_t mtu)
+{
+  NS_LOG_FUNCTION (mtu);
+
+  switch (m_encapMode) 
+    {
+    case RAW:
+    case IP_ARP:
+    case ETHERNET_V1:
+      return mtu;
+    case LLC: 
+      {
+        LlcSnapHeader llc;
+        return mtu + llc.GetSerializedSize ();
+      }
+    }
+
+  NS_ASSERT_MSG (false, "CsmaNetDevice::PayloadFromMacMtu(): Unexpected encapsulation mode");
+  return 0;
+}
+
+  void 
+CsmaNetDevice::SetEncapsulationMode (enum EncapsulationMode mode)
+{
+  NS_LOG_FUNCTION (mode);
+
+  m_encapMode = mode;
+  m_mtu = MacMtuFromPayload (m_maxPayloadLength);
+
+  NS_LOG_LOGIC ("m_encapMode = " << m_encapMode);
+  NS_LOG_LOGIC ("m_maxPayloadLength = " << m_maxPayloadLength);
+  NS_LOG_LOGIC ("m_mtu = " << m_mtu);
+}
+
+  CsmaNetDevice::EncapsulationMode
+CsmaNetDevice::GetEncapsulationMode (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_encapMode;
+}
+  
+  void 
+CsmaNetDevice::SetMacMtu (uint16_t mtu)
+{
+  NS_LOG_FUNCTION (mtu);
+
+  m_maxPayloadLength = PayloadFromMacMtu (mtu);
+  m_mtu = mtu;
+
+  NS_LOG_LOGIC ("m_encapMode = " << m_encapMode);
+  NS_LOG_LOGIC ("m_maxPayloadLength = " << m_maxPayloadLength);
+  NS_LOG_LOGIC ("m_mtu = " << m_mtu);
+}
+
+  uint16_t
+CsmaNetDevice::GetMacMtu (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_mtu;
+}
+
+//
+// The SetMtu method in the net device base class always refers to the MAC-level MTU by definition.
+//
+  bool 
+CsmaNetDevice::SetMtu (const uint16_t mtu)
+{
+  NS_LOG_FUNCTION (mtu);
+  SetMacMtu (mtu);
+  return true;
+}
+
+//
+// The GetMtu method in the net device base class always refers to the MAC-level MTU by definition.
+//
+  uint16_t 
+CsmaNetDevice::GetMtu (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return GetMacMtu ();
+}
+
+  void 
+CsmaNetDevice::SetMaxPayloadLength (uint16_t maxPayloadLength)
+{
+  NS_LOG_FUNCTION (maxPayloadLength);
+
+  m_maxPayloadLength = maxPayloadLength;
+  m_mtu = MacMtuFromPayload (maxPayloadLength);
+
+  NS_LOG_LOGIC ("m_encapMode = " << m_encapMode);
+  NS_LOG_LOGIC ("m_maxPayloadLength = " << m_maxPayloadLength);
+  NS_LOG_LOGIC ("m_mtu = " << m_mtu);
+}
+
+  uint16_t
+CsmaNetDevice::GetMaxPayloadLength (void) const
+{
+  return m_maxPayloadLength;
 }
 
   void 
@@ -193,6 +330,7 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address de
   EthernetTrailer trailer;
 
   NS_LOG_LOGIC ("p->GetSize () = " << p->GetSize ());
+  NS_LOG_LOGIC ("m_encapMode = " << m_encapMode);
   NS_LOG_LOGIC ("m_mtu = " << m_mtu);
   NS_LOG_LOGIC ("m_maxPayloadLength = " << m_maxPayloadLength);
 
@@ -238,8 +376,7 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address de
       }
       break;
     case RAW:
-      NS_LOG_LOGIC ("Encapsulating packet as RAW");
-      NS_ASSERT (false);
+      NS_ASSERT_MSG (false, "CsmaNetDevice::AddHeader(): RAW packet encapsulation not supported");
       break;
     }
 
@@ -677,21 +814,6 @@ CsmaNetDevice::GetAddress (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_address;
-}
-
-  bool 
-CsmaNetDevice::SetMtu (const uint16_t mtu)
-{
-  NS_LOG_FUNCTION (mtu);
-  m_mtu = mtu;
-  return true;
-}
-
-  uint16_t 
-CsmaNetDevice::GetMtu (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_mtu;
 }
 
   bool 
