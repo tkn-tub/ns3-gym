@@ -61,6 +61,29 @@ mostly for internal use.
 <h2>changes to existing API:</h2>
 
 <ul>
+<li>04-08-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/cba7b2b80fe8">cba7b2b80fe8</a></li>
+<ul>
+<li>
+Cleanup of MTU confusion and initialization in CsmaNetDevice
+<pre>
+The MTU of the CsmaNetDevice defaulted to 65535.  This did not correspond with
+the expected MTU found in Ethernet-like devices.  Also there was not clear 
+documentation regarding which MTU was being set.  There are two MTU here, one
+at the MAC level and one at the PHY level.  We split out the MTU setting to make
+this more clear and set the default PHY level MTU to 1500 to be more like
+Ethernet.  The encapsulation mode defaults to LLC/SNAP which then puts the
+MAC level MTU at 1492 by default.  We allow users to now set the encapsulation
+mode, MAC MTU and PHY MTU while keeping the three values consistent.  See the
+Doxygen of CsmaNetDevice::SetMaxPayloadLength for a detailed description of the
+issues and solution.
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+
+<ul>
 <li>21-07-2008; changeset 
 <a href="
 http://code.nsnam.org/ns-3-dev/rev/99698bc858e8">99698bc858e8</a></li>
