@@ -201,34 +201,36 @@ public:
   /**
    * Set The max PHY-level payload length of packets sent over this device.
    *
-   * Okay, that was easy to say, but the details are a bit thorny.  We have a MAC-level that is the payload that higher 
+   * Okay, that was easy to say, but the details are a bit thorny.  We have a MAC-level MTU that is the payload that higher 
    * level protocols see.  We have a PHY-level MTU which is the maximum number of bytes we can send over the link 
    * (cf. 1500 bytes for Ethernet).  The value that determines the relationship between these two values is the link
-   * encapsulation mode.  The link encapsulation defines the number of bytes of overhead that are required for the particular
-   * MAC protocol used.  For example, if the LLC/SNAP encapsulation is used, eight bytes of LLC/SNAP header are consumed and
-   * therefore the MAC-level MTU must be set and reported as eight bytes less than the PHY-level MTU (which we call the
-   * payload length to try and avoid confusion).
+   * encapsulation mode.  The link encapsulation method dictates the number of bytes of overhead that are required for the 
+   * particular MAC protocol used.  For example, if the LLC/SNAP encapsulation is used, eight bytes of LLC/SNAP header are 
+   * consumed and therefore the MAC-level MTU must be set and reported as eight bytes less than the PHY-level MTU (which we 
+   * call the payload length to try and avoid confusion).
    *
-   * So, what do we do since there must be three values which must always be consistent in the driver?  Which values to we
-   * allow to be changed and how do we ensure the other two are consistent?  We want to actually enable a user to change 
-   * these two payload lengths in flexible ways, but we want the results (even at intermediate stages) to be consistent.  
-   * We certainly don't want to require that users must understand the various requirements of an enapsulation mode in order 
-   * to set these variables.
+   * So, what do we do since there are be three values which must always be consistent in the driver?  Which values to we
+   * allow to be changed and how do we ensure the other two are consistent?  We want to actually allowe a user to change 
+   * these three variables in flexible ways, but we want the results (even at intermediate stages of her ultimate change) to 
+   * be consistent.  We certainly don't want to require that users must understand the various requirements of an enapsulation
+   * mode in order to set these variables.
    *
    * Consider the following situation:  A user wants to set the physical layer MTU to 1400 bytes instead of 1500.  This
    * user shouldn't have to concern herself that the current encapuslation mode is LLC and this will consume eight bytes.
    * She should not have to also set the MAC MTU to 1392 bytes, and she should certainly not have to do this before setting
-   * the PHY MTU.  
+   * the PHY MTU to make the eventual result consistent.  
    *
-   * A user who is interested in setting the MAC-level MTU to 1400 bytes should not be forced to understand that in certain
-   * cases the PHY-level MTU must be set to eight bytes more than what he wants in certain cases and zero bytes in others.
+   * Similarly, a user who is interested in setting the MAC-level MTU to 1400 bytes should not be forced to understand that 
+   * (based on encapsulation mode) the PHY-level MTU may need to be set to eight bytes more than what he wants in certain 
+   * cases and zero bytes in others.
    *
    * Now, consider a user who is only interested in changing the encapsulation mode from LLC/SNAP to ETHERNET_V1.  This 
    * is going to change the relationship between the MAC MTU and the PHY MTU.  We've may have to come up with a new value 
-   * for at least one of the MTUs?  Which one?
+   * for at least one of the MTUs?  Which one?  There are too many free variables.
    *
-   * We could play games trying to figure out what the user wants to do, but that is typically a bad plan.  So we're going
-   * to just define a flexible behavior.  Here it is:
+   * We could play games trying to figure out what the user wants to do, but that is typically a bad plan and programmers
+   * have a long and distinguished history of guessing wrong.  We'll avoid all of that and just define a flexible behavior
+   * that can be worked to get what you want.  Here it is:
    *
    * - If the user is changing the encapsulation mode, the PHY MTU will remain fixed and the MAC MTU will change, if required,
    * to make the three values consistent;
@@ -237,12 +239,14 @@ public:
    * will be changed to make the three values consistent;
    *
    * - If the user is changing the PHY MTU, he is interested in getting that part of the system set, so the MAC MTU
-   * will be changed to make the three values consistent.
+   * will be changed to make the three values consistent;
+   *
+   * - You cannot define the MAC MTU and PHY MTU separately -- they are always tied together by the emulation mode.
    * 
    * So, if a user calls SetMaxPayloadLength, we assume that the PHY-level MTU is the interesting thing for that user and
-   * we just adjust the MAC-level MTU to "the correct value" based on the current encapsulation mode.  If a user calls 
+   * we just adjust the MAC-level MTU to a new "correct value" based on the current encapsulation mode.  If a user calls 
    * SetMacMtu, we assume that the MAC-level MTU is the interesting property for that user, and we adjust the PHY-level MTU 
-   * to "the correct value" for the current encapsulation mode.  If a user calls SetEncapsulationMode, then we take the
+   * to a new "correct value" for the current encapsulation mode.  If a user calls SetEncapsulationMode, then we take the
    * MAC-level MTU as the free variable and set its value to match the current PHY-level MTU.
    *
    * \param mayPayloadLength The max PHY-level payload length of packets sent over this device.
