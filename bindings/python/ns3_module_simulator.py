@@ -346,7 +346,7 @@ def register_Ns3Simulator_methods(root_module, cls):
     cls.add_method('EnableLogTo', 
                    'void', 
                    [param('char *', 'filename', transfer_ownership=False, is_const=True)], 
-                   is_static=True)
+                   is_static=True, deprecated=True)
     ## simulator.h: static void ns3::Simulator::Destroy() [member function]
     cls.add_method('Destroy', 
                    'void', 
@@ -366,7 +366,7 @@ def register_Ns3Simulator_methods(root_module, cls):
     cls.add_method('Run', 
                    'void', 
                    [], 
-                   is_static=True)
+                   is_static=True, unblock_threads=True)
     ## simulator.h: static void ns3::Simulator::Stop() [member function]
     cls.add_method('Stop', 
                    'void', 

@@ -13,8 +13,8 @@ def register_types(module):
     module.add_class('CsmaChannel', parent=root_module['ns3::Channel'])
     ## csma-net-device.h: ns3::CsmaNetDevice [class]
     module.add_class('CsmaNetDevice', parent=root_module['ns3::NetDevice'])
-    ## csma-net-device.h: ns3::CsmaNetDevice::CsmaEncapsulationMode [enumeration]
-    module.add_enum('CsmaEncapsulationMode', ['ETHERNET_V1', 'IP_ARP', 'RAW', 'LLC'], outer_class=root_module['ns3::CsmaNetDevice'])
+    ## csma-net-device.h: ns3::CsmaNetDevice::EncapsulationMode [enumeration]
+    module.add_enum('EncapsulationMode', ['ETHERNET_V1', 'IP_ARP', 'RAW', 'LLC'], outer_class=root_module['ns3::CsmaNetDevice'])
     
     ## Register a nested module for the namespace internal
     
@@ -250,6 +250,32 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
     cls.add_method('SetAddress', 
                    'void', 
                    [param('ns3::Mac48Address', 'addr')])
+    ## csma-net-device.h: void ns3::CsmaNetDevice::SetMaxPayloadLength(uint16_t maxPayloadLength) [member function]
+    cls.add_method('SetMaxPayloadLength', 
+                   'void', 
+                   [param('uint16_t', 'maxPayloadLength')])
+    ## csma-net-device.h: uint16_t ns3::CsmaNetDevice::GetMaxPayloadLength() const [member function]
+    cls.add_method('GetMaxPayloadLength', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## csma-net-device.h: void ns3::CsmaNetDevice::SetMacMtu(uint16_t mtu) [member function]
+    cls.add_method('SetMacMtu', 
+                   'void', 
+                   [param('uint16_t', 'mtu')])
+    ## csma-net-device.h: uint16_t ns3::CsmaNetDevice::GetMacMtu() const [member function]
+    cls.add_method('GetMacMtu', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## csma-net-device.h: void ns3::CsmaNetDevice::SetEncapsulationMode(ns3::CsmaNetDevice::EncapsulationMode mode) [member function]
+    cls.add_method('SetEncapsulationMode', 
+                   'void', 
+                   [param('ns3::CsmaNetDevice::EncapsulationMode', 'mode')])
+    ## csma-net-device.h: ns3::CsmaNetDevice::EncapsulationMode ns3::CsmaNetDevice::GetEncapsulationMode() [member function]
+    cls.add_method('GetEncapsulationMode', 
+                   'ns3::CsmaNetDevice::EncapsulationMode', 
+                   [])
     ## csma-net-device.h: void ns3::CsmaNetDevice::SetName(std::string const name) [member function]
     cls.add_method('SetName', 
                    'void', 
@@ -275,11 +301,6 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::Channel >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## csma-net-device.h: ns3::Address ns3::CsmaNetDevice::GetAddress() const [member function]
-    cls.add_method('GetAddress', 
-                   'ns3::Address', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## csma-net-device.h: bool ns3::CsmaNetDevice::SetMtu(uint16_t const mtu) [member function]
     cls.add_method('SetMtu', 
                    'bool', 
@@ -288,6 +309,11 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
     ## csma-net-device.h: uint16_t ns3::CsmaNetDevice::GetMtu() const [member function]
     cls.add_method('GetMtu', 
                    'uint16_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## csma-net-device.h: ns3::Address ns3::CsmaNetDevice::GetAddress() const [member function]
+    cls.add_method('GetAddress', 
+                   'ns3::Address', 
                    [], 
                    is_const=True, is_virtual=True)
     ## csma-net-device.h: bool ns3::CsmaNetDevice::IsLinkUp() const [member function]

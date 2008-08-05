@@ -137,6 +137,21 @@ def register_Ns3MobilityHelper_methods(root_module, cls):
     cls.add_method('InstallAll', 
                    'void', 
                    [])
+    ## mobility-helper.h: static void ns3::MobilityHelper::EnableAscii(std::ostream & os, uint32_t nodeid) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::ostream&', 'os'), param('uint32_t', 'nodeid')], 
+                   is_static=True)
+    ## mobility-helper.h: static void ns3::MobilityHelper::EnableAscii(std::ostream & os, ns3::NodeContainer n) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::ostream&', 'os'), param('ns3::NodeContainer', 'n')], 
+                   is_static=True)
+    ## mobility-helper.h: static void ns3::MobilityHelper::EnableAsciiAll(std::ostream & os) [member function]
+    cls.add_method('EnableAsciiAll', 
+                   'void', 
+                   [param('std::ostream&', 'os')], 
+                   is_static=True)
     return
 
 def register_Ns3InternetStackHelper_methods(root_module, cls):

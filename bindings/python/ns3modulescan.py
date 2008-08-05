@@ -148,6 +148,13 @@ def pre_scan_hook(dummy_module_parser,
             and pygccxml_definition.name.startswith('Schedule'):
         global_annotations['ignore'] = None
 
+    # unblock python threads for Simulator::Run
+    if isinstance(pygccxml_definition, member_function_t) \
+            and pygccxml_definition.parent.name == 'Simulator' \
+            and pygccxml_definition.name == 'Run':
+        global_annotations['unblock_threads'] = True
+
+
     ## classes
     if isinstance(pygccxml_definition, class_t):
         # no need for helper classes to allow subclassing in Python, I think...
