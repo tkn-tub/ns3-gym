@@ -156,6 +156,12 @@ DefaultSimulatorImpl::Run (void)
   NS_ASSERT(!m_events->IsEmpty () || m_unscheduledEvents == 0);
 }
 
+void
+DefaultSimulatorImpl::RunOneEvent (void)
+{
+  ProcessOneEvent ();
+}
+
 void 
 DefaultSimulatorImpl::Stop (void)
 {

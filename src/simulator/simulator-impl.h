@@ -49,6 +49,7 @@ public:
   virtual void Cancel (const EventId &ev) = 0;
   virtual bool IsExpired (const EventId &ev) const = 0;
   virtual void Run (void) = 0;
+  virtual void RunOneEvent (void) = 0;
   virtual Time Now (void) const = 0;
   virtual Time GetDelayLeft (const EventId &id) const = 0;
   virtual Time GetMaximumSimulationTime (void) const = 0;

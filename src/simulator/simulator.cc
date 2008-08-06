@@ -146,6 +146,13 @@ Simulator::Run (void)
 }
 
 void 
+Simulator::RunOneEvent (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  GetImpl ()->RunOneEvent ();
+}
+
+void 
 Simulator::Stop (void)
 {
   NS_LOG_LOGIC ("stop");

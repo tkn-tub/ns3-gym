@@ -117,6 +117,11 @@ public:
   static void Run (void);
 
   /**
+   * Process only the next simulation event, then return immediately.
+   */
+  static void RunOneEvent (void);
+
+  /**
    * If an event invokes this method, it will be the last
    * event scheduled by the Simulator::run method before
    * returning to the caller.

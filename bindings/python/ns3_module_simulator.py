@@ -367,6 +367,11 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'void', 
                    [], 
                    is_static=True, unblock_threads=True)
+    ## simulator.h: static void ns3::Simulator::RunOneEvent() [member function]
+    cls.add_method('RunOneEvent', 
+                   'void', 
+                   [], 
+                   is_static=True)
     ## simulator.h: static void ns3::Simulator::Stop() [member function]
     cls.add_method('Stop', 
                    'void', 
@@ -669,6 +674,11 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
+    ## simulator-impl.h: void ns3::SimulatorImpl::RunOneEvent() [member function]
+    cls.add_method('RunOneEvent', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     ## simulator-impl.h: ns3::Time ns3::SimulatorImpl::Now() const [member function]
     cls.add_method('Now', 
                    'ns3::Time', 
@@ -762,6 +772,11 @@ def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
                    is_const=True, is_virtual=True)
     ## default-simulator-impl.h: void ns3::DefaultSimulatorImpl::Run() [member function]
     cls.add_method('Run', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## default-simulator-impl.h: void ns3::DefaultSimulatorImpl::RunOneEvent() [member function]
+    cls.add_method('RunOneEvent', 
                    'void', 
                    [], 
                    is_virtual=True)
