@@ -106,7 +106,7 @@ Node::AddDevice (Ptr<NetDevice> device)
 Ptr<NetDevice>
 Node::GetDevice (uint32_t index) const
 {
-  NS_ASSERT_MSG (n < m_devices.size (), "Device index " << n <<
+  NS_ASSERT_MSG (index < m_devices.size (), "Device index " << index <<
                  " is out of range (only have " << m_devices.size () << " devices).");
   return m_devices[index];
 }
@@ -127,7 +127,7 @@ Node::AddApplication (Ptr<Application> application)
 Ptr<Application> 
 Node::GetApplication (uint32_t index) const
 {
-  NS_ASSERT_MSG (n < m_applications.size (), "Application index " << n <<
+  NS_ASSERT_MSG (index < m_applications.size (), "Application index " << index <<
                  " is out of range (only have " << m_applications.size () << " applications).");
   return m_applications[index];
 }
