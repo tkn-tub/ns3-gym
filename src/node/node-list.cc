@@ -23,6 +23,7 @@
 #include "ns3/object-vector.h"
 #include "ns3/config.h"
 #include "ns3/log.h"
+#include "ns3/assert.h"
 #include "node-list.h"
 #include "node.h"
 
@@ -140,6 +141,8 @@ NodeListPriv::GetNNodes (void)
 Ptr<Node>
 NodeListPriv::GetNode (uint32_t n)
 {
+  NS_ASSERT_MSG (n < m_nodes.size (), "Node index " << n <<
+                 " is out of range (only have " << m_nodes.size () << " nodes).");
   return m_nodes[n];
 }
 

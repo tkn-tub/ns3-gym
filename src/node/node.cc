@@ -27,6 +27,7 @@
 #include "ns3/object-vector.h"
 #include "ns3/uinteger.h"
 #include "ns3/log.h"
+#include "ns3/assert.h"
 
 NS_LOG_COMPONENT_DEFINE ("Node");
 
@@ -105,6 +106,8 @@ Node::AddDevice (Ptr<NetDevice> device)
 Ptr<NetDevice>
 Node::GetDevice (uint32_t index) const
 {
+  NS_ASSERT_MSG (n < m_devices.size (), "Device index " << n <<
+                 " is out of range (only have " << m_devices.size () << " devices).");
   return m_devices[index];
 }
 uint32_t 
@@ -124,6 +127,8 @@ Node::AddApplication (Ptr<Application> application)
 Ptr<Application> 
 Node::GetApplication (uint32_t index) const
 {
+  NS_ASSERT_MSG (n < m_applications.size (), "Application index " << n <<
+                 " is out of range (only have " << m_applications.size () << " applications).");
   return m_applications[index];
 }
 uint32_t 
