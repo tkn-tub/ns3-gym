@@ -1671,10 +1671,6 @@ def register_Ns3Node_methods(root_module, cls):
                    'ns3::Ptr< ns3::Application >', 
                    [param('uint32_t', 'index')], 
                    is_const=True)
-    ## node.h: ns3::Ptr<ns3::Application> ns3::Node::GetFirstApplication(ns3::TypeId tid) [member function]
-    cls.add_method('GetFirstApplication', 
-                   'ns3::Ptr< ns3::Application >', 
-                   [param('ns3::TypeId', 'tid')])
     ## node.h: uint32_t ns3::Node::GetNApplications() const [member function]
     cls.add_method('GetNApplications', 
                    'uint32_t', 
