@@ -61,7 +61,7 @@ public:
   virtual Time GetEifsNoDifs (void) const;
   virtual void SetWifiPhy (Ptr<WifiPhy> phy);
   virtual void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
-  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to);
+  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from);
   virtual void SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address &> upCallback);
   virtual void SetLinkUpCallback (Callback<void> linkUp);
   virtual void SetLinkDownCallback (Callback<void> linkDown);

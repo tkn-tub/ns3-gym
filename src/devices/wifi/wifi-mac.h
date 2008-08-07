@@ -148,7 +148,7 @@ private:
    * dequeued as soon as the DCF function determines that
    * access it granted to this MAC.
    */
-  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to) = 0;
+  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from) = 0;
   /**
    * \param phy the physical layer attached to this MAC.
    */

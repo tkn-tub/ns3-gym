@@ -280,7 +280,7 @@ WifiNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNu
 
   m_txLogger (packet, realTo);
 
-  m_mac->Enqueue (packet, realTo);
+  m_mac->Enqueue (packet, realTo, m_mac->GetAddress ());
   return true;
 }
 Ptr<Node> 
@@ -335,8 +335,21 @@ WifiNetDevice::LinkDown (void)
 bool
 WifiNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
 {
-  NS_FATAL_ERROR ("TODO");
-  return false;
+  NS_ASSERT (Mac48Address::IsMatchingType (dest));
+  NS_ASSERT (Mac48Address::IsMatchingType (source));
+
+  Mac48Address realTo = Mac48Address::ConvertFrom (dest);
+  Mac48Address realFrom = Mac48Address::ConvertFrom (source);
+
+  LlcSnapHeader llc;
+  llc.SetType (protocolNumber);
+  packet->AddHeader (llc);
+
+  m_txLogger (packet, realTo);
+
+  m_mac->Enqueue (packet, realTo, realFrom);
+
+  return true;
 }
 
 void

@@ -262,10 +262,10 @@ NqapWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Addr
   m_dca->Queue (packet, hdr);  
 }
 void 
-NqapWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
+NqapWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from)
 {
-  NS_LOG_FUNCTION (this << packet << to);
-  ForwardDown (packet, GetAddress (), to);
+  NS_LOG_FUNCTION (this << packet << to << from);
+  ForwardDown (packet, from, to);
 }
 SupportedRates
 NqapWifiMac::GetSupportedRates (void) const

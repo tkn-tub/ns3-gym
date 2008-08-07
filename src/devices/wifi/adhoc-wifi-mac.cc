@@ -168,13 +168,13 @@ AdhocWifiMac::SetSsid (Ssid ssid)
 }
 
 void 
-AdhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
+AdhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from)
 {
-  NS_LOG_DEBUG ("enqueue size="<<packet->GetSize ()<<", to="<<to);
+  NS_LOG_FUNCTION (packet->GetSize () << to << from);
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_DATA);
   hdr.SetAddr1 (to);
-  hdr.SetAddr2 (GetAddress ());
+  hdr.SetAddr2 (from);
   hdr.SetAddr3 (GetBssid ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();

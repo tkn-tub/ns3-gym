@@ -409,7 +409,7 @@ NqstaWifiMac::IsAssociated (void)
 }
 
 void 
-NqstaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
+NqstaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from)
 {
   NS_LOG_FUNCTION (this << packet << to);
   if (!IsAssociated ()) 
@@ -421,7 +421,7 @@ NqstaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
   WifiMacHeader hdr;
   hdr.SetTypeData ();
   hdr.SetAddr1 (GetBssid ());
-  hdr.SetAddr2 (GetAddress ());
+  hdr.SetAddr2 (from);
   hdr.SetAddr3 (to);
   hdr.SetDsNotFrom ();
   hdr.SetDsTo ();
