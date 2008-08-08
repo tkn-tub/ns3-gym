@@ -147,8 +147,8 @@ public:
    *        user should check this return value to confirm that the
    *        callback is supported.
    */
-  virtual bool SetDataSentCallback (Callback<void, Ptr<Socket>, 
-                                    uint32_t> dataSent);
+  bool SetDataSentCallback (Callback<void, Ptr<Socket>, 
+                            uint32_t> dataSent);
   /**
    * \brief Notify application when space in transmit buffer is added
    *
