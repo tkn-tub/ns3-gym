@@ -33,7 +33,7 @@ using namespace std;
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("PacketSinkApplication");
+NS_LOG_COMPONENT_DEFINE ("PacketSink");
 NS_OBJECT_ENSURE_REGISTERED (PacketSink);
 
 TypeId 
@@ -58,15 +58,19 @@ PacketSink::GetTypeId (void)
 
 PacketSink::PacketSink ()
 {
+  NS_LOG_FUNCTION (this);
   m_socket = 0;
 }
 
 PacketSink::~PacketSink()
-{}
+{
+  NS_LOG_FUNCTION (this);
+}
 
 void
 PacketSink::DoDispose (void)
 {
+  NS_LOG_FUNCTION (this);
   m_socket = 0;
 
   // chain up
@@ -77,6 +81,7 @@ PacketSink::DoDispose (void)
 // Application Methods
 void PacketSink::StartApplication()    // Called at time specified by Start
 {
+  NS_LOG_FUNCTION (this);
   // Create the socket if not already
   if (!m_socket)
     {
@@ -93,6 +98,7 @@ void PacketSink::StartApplication()    // Called at time specified by Start
 
 void PacketSink::StopApplication()     // Called at time specified by Stop
 {
+  NS_LOG_FUNCTION (this);
   while(!m_socketList.empty()) //these are accepted sockets, close them
   {
     Ptr<Socket> acceptedSocket = m_socketList.front();
@@ -108,6 +114,7 @@ void PacketSink::StopApplication()     // Called at time specified by Stop
 
 void PacketSink::HandleRead (Ptr<Socket> socket)
 {
+  NS_LOG_FUNCTION (this << socket);
   Ptr<Packet> packet;
   Address from;
   while (packet = socket->RecvFrom (from))
@@ -125,6 +132,7 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
 
 void PacketSink::HandleAccept (Ptr<Socket> s, const Address& from)
 {
+  NS_LOG_FUNCTION (this << s << from);
   s->SetRecvCallback (MakeCallback(&PacketSink::HandleRead, this));
   m_socketList.push_back (s);
 }
