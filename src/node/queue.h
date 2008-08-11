@@ -68,7 +68,7 @@ public:
    * Get a copy of the item at the front of the queue without removing it
    * \return 0 if the operation was not successful; the packet otherwise.
    */
-  Ptr<Packet> Peek (void) const;
+  Ptr<const Packet> Peek (void) const;
 
   /**
    * Flush the queue.
@@ -142,7 +142,7 @@ private:
 
   virtual bool DoEnqueue (Ptr<Packet> p) = 0;
   virtual Ptr<Packet> DoDequeue (void) = 0;
-  virtual Ptr<Packet> DoPeek (void) const = 0;
+  virtual Ptr<const Packet> DoPeek (void) const = 0;
 
 protected:
   // called by subclasses to notify parent of packet drops.
