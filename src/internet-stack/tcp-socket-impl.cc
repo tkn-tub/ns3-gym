@@ -1547,3 +1547,42 @@ TcpSocketImpl::GetDelAckMaxCount (void) const
 }
 
 }//namespace ns3
+
+#ifdef RUN_SELF_TESTS
+
+#include "ns3/test.h"
+#include "ns3/socket-factory.h"
+#include "ns3/udp-socket-factory.h"
+#include "ns3/simulator.h"
+#include "ns3/simple-channel.h"
+#include "ns3/simple-net-device.h"
+#include "ns3/drop-tail-queue.h"
+#include "internet-stack.h"
+#include <string>
+
+namespace ns3 {
+	
+class TcpSocketImplTest: public Test
+{
+  public:
+  TcpSocketImplTest ();
+  virtual bool RunTests (void);
+};
+
+TcpSocketImplTest::TcpSocketImplTest ()
+  : Test ("TcpSocketImpl")
+{
+}
+
+bool
+TcpSocketImplTest::RunTests (void)
+{
+	bool result = true;
+	return result;
+}
+
+static TcpSocketImplTest gTcpSocketImplTest;
+
+}//namespace ns3
+
+#endif /* RUN_SELF_TESTS */
