@@ -94,14 +94,8 @@ main (int argc, char *argv[])
 
   // Create the bridge netdevice, which will do the packet switching
   Ptr<Node> switchNode = csmaSwitch.Get (0);
-  Ptr<BridgeNetDevice> bridgeDevice = CreateObject<BridgeNetDevice> ();
-  switchNode->AddDevice (bridgeDevice);
-
-  for (NetDeviceContainer::Iterator portIter = switchDevices.Begin ();
-       portIter != switchDevices.End (); portIter++)
-    {
-      bridgeDevice->AddBridgePort (*portIter);
-    }
+  BridgeHelper bridge;
+  bridge.Install (switchNode, switchDevices);
 
   // Add internet stack to the terminals
   InternetStackHelper internet;

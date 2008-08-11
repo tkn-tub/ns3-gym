@@ -20,6 +20,7 @@ def build(bld):
         'packet-socket-helper.cc',
         'ipv4-interface-container.cc',
         'udp-echo-helper.cc',
+        'bridge-helper.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -42,4 +43,5 @@ def build(bld):
         'packet-socket-helper.h',
         'ipv4-interface-container.h',
         'udp-echo-helper.h',
+        'bridge-helper.h',
         ]
