@@ -1001,9 +1001,10 @@ PacketMetadata::ItemIterator::Next (void)
       item.type = PacketMetadata::Item::HEADER;
       if (!item.isFragment)
         {
-          ns3::Buffer::Iterator j = m_buffer.Begin ();
-          j.Next (m_offset);
-          item.current = j;
+          ns3::Buffer tmp = m_buffer;
+          tmp.RemoveAtStart (m_offset);
+          tmp.RemoveAtEnd (tmp.GetSize () - item.currentSize);
+          item.current = tmp.Begin ();
         }
     }
   else if (tid.IsChildOf (Trailer::GetTypeId ()))
@@ -1011,9 +1012,10 @@ PacketMetadata::ItemIterator::Next (void)
       item.type = PacketMetadata::Item::TRAILER;
       if (!item.isFragment)
         {
-          ns3::Buffer::Iterator j = m_buffer.End ();
-          j.Prev (m_buffer.GetSize () - (m_offset + smallItem.size));
-          item.current = j;
+          ns3::Buffer tmp = m_buffer;
+          tmp.RemoveAtEnd (tmp.GetSize () - (m_offset + smallItem.size));
+          tmp.RemoveAtStart (tmp.GetSize () - item.currentSize);
+          item.current = tmp.End ();
         }
     }
   else 
