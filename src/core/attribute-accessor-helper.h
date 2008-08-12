@@ -223,6 +223,49 @@ DoMakeAccessorHelperTwo (V (T::*getter) (void) const,
   return DoMakeAccessorHelperTwo<W> (setter, getter);
 }
 
+template <typename W, typename T, typename U, typename V>
+Ptr<const AttributeAccessor>
+DoMakeAccessorHelperTwo (bool (T::*setter) (U), 
+                         V (T::*getter) (void) const)
+{
+  class MemberMethod : public AccessorHelper<T,W>
+    {
+    public:
+      MemberMethod (bool (T::*setter) (U), 
+		    V (T::*getter) (void) const)
+	: AccessorHelper<T,W> (),
+	m_setter (setter),
+	m_getter (getter)
+	{}
+    private:
+      virtual bool DoSet (T *object, const W *v) const {
+	bool ok = (object->*m_setter) (v->Get ());
+        return ok;
+      }
+      virtual bool DoGet (const T *object, W *v) const {
+	v->Set ((object->*m_getter) ());
+	return true;
+      }
+      virtual bool HasGetter (void) const {
+        return true;
+      }
+      virtual bool HasSetter (void) const {
+        return true;
+      }
+      bool (T::*m_setter) (U);
+      V (T::*m_getter) (void) const;
+    };
+  return Ptr<const AttributeAccessor> (new MemberMethod (setter, getter), false);
+}
+
+template <typename W, typename T, typename U, typename V>
+Ptr<const AttributeAccessor>
+DoMakeAccessorHelperTwo (bool (T::*getter) (void) const, 
+                         void (T::*setter) (U))
+{
+  return DoMakeAccessorHelperTwo<W> (setter, getter);
+}
+
 template <typename V, typename T1>
 Ptr<const AttributeAccessor>
 MakeAccessorHelper (T1 a1)

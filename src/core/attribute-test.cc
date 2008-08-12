@@ -206,8 +206,9 @@ private:
   Ptr<Derived> DoGetVector (uint32_t i) const {
     return m_vector2[i];
   }
-  void DoSetIntSrc (int8_t v) {
+  bool DoSetIntSrc (int8_t v) {
     m_intSrc2 = v;
+    return true;
   }
   int8_t DoGetIntSrc (void) const {
     return m_intSrc2;
