@@ -269,19 +269,19 @@ void LogComponentDisableAll (enum LogLevel level);
  * Component:Function (aNumber, anotherNumber)
  * \endcode
  */
-#define NS_LOG_FUNCTION(parameters)                     \
-  do                                                    \
-    {                                                   \
-      if (g_log.IsEnabled (ns3::LOG_FUNCTION))          \
-        {                                               \
-          NS_LOG_APPEND_TIME_PREFIX;                    \
-          NS_LOG_APPEND_CONTEXT;                        \
-          std::clog << g_log.Name () << ":"             \
-                    << __FUNCTION__ << "(";             \
-          ParameterLogger (std::clog)  << parameters;   \
-          std::clog << ")" << std::endl;                \
-        }                                               \
-    }                                                   \
+#define NS_LOG_FUNCTION(parameters)                             \
+  do                                                            \
+    {                                                           \
+      if (g_log.IsEnabled (ns3::LOG_FUNCTION))                  \
+        {                                                       \
+          NS_LOG_APPEND_TIME_PREFIX;                            \
+          NS_LOG_APPEND_CONTEXT;                                \
+          std::clog << g_log.Name () << ":"                     \
+                    << __FUNCTION__ << "(";                     \
+          ns3::ParameterLogger (std::clog)  << parameters;      \
+          std::clog << ")" << std::endl;                        \
+        }                                                       \
+    }                                                           \
   while (false)
 
 
