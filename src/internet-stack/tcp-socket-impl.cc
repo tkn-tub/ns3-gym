@@ -1569,12 +1569,17 @@ class TcpSocketImplTest: public Test
   virtual bool RunTests (void);
   private:
   void Test1 (void); //send string "Hello world" server->client
+  void Test2 (uint32_t payloadSize);
   Ptr<Node> CreateInternetNode ();
   Ptr<SimpleNetDevice> AddSimpleNetDevice (Ptr<Node>,const char*,const char*);
   
-  void HandleConnectionCreated (Ptr<Socket>, const Address &);
-  void HandleRecv (Ptr<Socket> sock);
-  
+  void Test1_HandleConnectionCreated (Ptr<Socket>, const Address &);
+  void Test1_HandleRecv (Ptr<Socket> sock);
+
+  void Test2_HandleConnectionCreated (Ptr<Socket>, const Address &);
+  void Test2_HandleRecv (Ptr<Socket> sock);
+  uint32_t test2_payloadSize;
+
   void Reset ();
   
   Ptr<Node> node0;
@@ -1606,6 +1611,7 @@ bool
 TcpSocketImplTest::RunTests (void)
 {
   Test1();
+  Test2(600);
   return result;
 }
 
@@ -1638,16 +1644,59 @@ TcpSocketImplTest::Test1 ()
   listeningSock->Listen (0);
   listeningSock->SetAcceptCallback 
     (MakeNullCallback<bool, Ptr< Socket >, const Address &> (),
-     MakeCallback(&TcpSocketImplTest::HandleConnectionCreated,this));
+     MakeCallback(&TcpSocketImplTest::Test1_HandleConnectionCreated,this));
   
   sock1->Connect(serverremoteaddr);
-  sock1->SetRecvCallback (MakeCallback(&TcpSocketImplTest::HandleRecv, this));
+  sock1->SetRecvCallback (MakeCallback(&TcpSocketImplTest::Test1_HandleRecv, this));
   
   Simulator::Run ();
   Simulator::Destroy ();
   
   result = result && (rxBytes1 == 13);
   result = result && (strcmp((const char*) rxPayload,"Hello World!") == 0);
+  
+  Reset ();
+}
+
+void
+TcpSocketImplTest::Test2 (uint32_t payloadSize)
+{
+  test2_payloadSize = payloadSize;
+  const char* netmask = "255.255.255.0";
+  const char* ipaddr0 = "192.168.1.1";
+  const char* ipaddr1 = "192.168.1.2";
+  node0 = CreateInternetNode ();
+  node1 = CreateInternetNode ();
+  dev0 = AddSimpleNetDevice (node0, ipaddr0, netmask);
+  dev1 = AddSimpleNetDevice (node1, ipaddr1, netmask);
+  
+  channel = CreateObject<SimpleChannel> ();
+  dev0->SetChannel (channel);
+  dev1->SetChannel (channel);
+  
+  Ptr<SocketFactory> sockFactory0 = node0->GetObject<TcpSocketFactory> ();
+  Ptr<SocketFactory> sockFactory1 = node1->GetObject<TcpSocketFactory> ();
+  
+  listeningSock = sockFactory0->CreateSocket();
+  sock1 = sockFactory1->CreateSocket();
+  
+  uint16_t port = 50000;
+  InetSocketAddress serverlocaladdr (Ipv4Address::GetAny(), port);
+  InetSocketAddress serverremoteaddr (Ipv4Address(ipaddr0), port);
+  
+  listeningSock->Bind(serverlocaladdr);
+  listeningSock->Listen (0);
+  listeningSock->SetAcceptCallback 
+    (MakeNullCallback<bool, Ptr< Socket >, const Address &> (),
+     MakeCallback(&TcpSocketImplTest::Test2_HandleConnectionCreated,this));
+  
+  sock1->Connect(serverremoteaddr);
+  sock1->SetRecvCallback (MakeCallback(&TcpSocketImplTest::Test2_HandleRecv, this));
+  
+  Simulator::Run ();
+  Simulator::Destroy ();
+  
+  result = result && (rxBytes1 == test2_payloadSize);
   
   Reset ();
 }
@@ -1675,7 +1724,7 @@ TcpSocketImplTest::AddSimpleNetDevice (Ptr<Node> node, const char* ipaddr, const
 }
 
 void
-TcpSocketImplTest::HandleConnectionCreated (Ptr<Socket> s, const Address & addr)
+TcpSocketImplTest::Test1_HandleConnectionCreated (Ptr<Socket> s, const Address & addr)
 {
   NS_ASSERT(s != listeningSock);
   NS_ASSERT(sock0 == 0);
@@ -1684,24 +1733,48 @@ TcpSocketImplTest::HandleConnectionCreated (Ptr<Socket> s, const Address & addr)
   Ptr<Packet> p = Create<Packet> (hello, 13);
   sock0->Send(p);
   
-  sock0->SetRecvCallback (MakeCallback(&TcpSocketImplTest::HandleRecv, this));
+  sock0->SetRecvCallback (MakeCallback(&TcpSocketImplTest::Test1_HandleRecv, this));
 }
 
 void
-TcpSocketImplTest::HandleRecv (Ptr<Socket> sock)
+TcpSocketImplTest::Test1_HandleRecv (Ptr<Socket> sock)
 {
   NS_ASSERT (sock == sock0 | sock == sock1);
   Ptr<Packet> p = sock->Recv();
   uint32_t sz = p->GetSize();
-  if (sock == sock0)
-  {
-    rxBytes0 += sz;
-  }
-  else if (sock == sock1)
+  if (sock == sock1)
   {
     rxBytes1 += sz;
     rxPayload = new uint8_t[sz];
     memcpy (rxPayload, p->PeekData(), sz);
+  }
+  else
+  {
+    NS_FATAL_ERROR ("Recv from unknown socket "<<sock);
+  }
+}
+
+void
+TcpSocketImplTest::Test2_HandleConnectionCreated (Ptr<Socket> s, const Address & addr)
+{
+  NS_ASSERT(s != listeningSock);
+  NS_ASSERT(sock0 == 0);
+  sock0 = s;
+  Ptr<Packet> p = Create<Packet> (test2_payloadSize);
+  sock0->Send(p);
+  
+  sock0->SetRecvCallback (MakeCallback(&TcpSocketImplTest::Test2_HandleRecv, this));
+}
+
+void
+TcpSocketImplTest::Test2_HandleRecv (Ptr<Socket> sock)
+{
+  NS_ASSERT (sock == sock0 | sock == sock1);
+  Ptr<Packet> p = sock->Recv();
+  uint32_t sz = p->GetSize();
+  if (sock == sock1)
+  {
+    rxBytes1 += sz;
   }
   else
   {
