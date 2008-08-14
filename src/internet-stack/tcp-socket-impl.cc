@@ -872,11 +872,11 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
     case SERV_NOTIFY:
       NS_LOG_LOGIC ("TcpSocketImpl " << this <<" Action SERV_NOTIFY");
       NS_LOG_LOGIC ("TcpSocketImpl " << this << " Connected!");
-      NotifyNewConnectionCreated (this, fromAddress);
       m_connected = true; // ! This is bogus; fix when we clone the tcp
       m_endPoint->SetPeer (m_remoteAddress, m_remotePort);
       //treat the connection orientation final ack as a newack
       CommonNewAck (tcpHeader.GetAckNumber (), true);
+      NotifyNewConnectionCreated (this, fromAddress);
       break;
     default:
       break;
@@ -1552,7 +1552,7 @@ TcpSocketImpl::GetDelAckMaxCount (void) const
 
 #include "ns3/test.h"
 #include "ns3/socket-factory.h"
-#include "ns3/udp-socket-factory.h"
+#include "ns3/tcp-socket-factory.h"
 #include "ns3/simulator.h"
 #include "ns3/simple-channel.h"
 #include "ns3/simple-net-device.h"
@@ -1567,18 +1567,163 @@ class TcpSocketImplTest: public Test
   public:
   TcpSocketImplTest ();
   virtual bool RunTests (void);
+  private:
+  void Test1 (void); //send string "Hello world" server->client
+  Ptr<Node> CreateInternetNode ();
+  Ptr<SimpleNetDevice> AddSimpleNetDevice (Ptr<Node>,const char*,const char*);
+  
+  void HandleConnectionCreated (Ptr<Socket>, const Address &);
+  void HandleRecv (Ptr<Socket> sock);
+  
+  void Reset ();
+  
+  Ptr<Node> node0;
+  Ptr<Node> node1;
+  Ptr<SimpleNetDevice> dev0;
+  Ptr<SimpleNetDevice> dev1;
+  Ptr<SimpleChannel> channel;
+  Ptr<Socket> listeningSock;
+  Ptr<Socket> sock0;
+  Ptr<Socket> sock1;
+  uint32_t rxBytes0;
+  uint32_t rxBytes1;
+  
+  uint8_t* rxPayload;
+  
+  bool result;
 };
 
 TcpSocketImplTest::TcpSocketImplTest ()
-  : Test ("TcpSocketImpl")
+  : Test ("TcpSocketImpl"), 
+    rxBytes0 (0),
+    rxBytes1 (0),
+    rxPayload (0),
+    result (true)
 {
 }
 
 bool
 TcpSocketImplTest::RunTests (void)
 {
-	bool result = true;
-	return result;
+  Test1();
+  return result;
+}
+
+void
+TcpSocketImplTest::Test1 ()
+{
+  const char* netmask = "255.255.255.0";
+  const char* ipaddr0 = "192.168.1.1";
+  const char* ipaddr1 = "192.168.1.2";
+  node0 = CreateInternetNode ();
+  node1 = CreateInternetNode ();
+  dev0 = AddSimpleNetDevice (node0, ipaddr0, netmask);
+  dev1 = AddSimpleNetDevice (node1, ipaddr1, netmask);
+  
+  channel = CreateObject<SimpleChannel> ();
+  dev0->SetChannel (channel);
+  dev1->SetChannel (channel);
+  
+  Ptr<SocketFactory> sockFactory0 = node0->GetObject<TcpSocketFactory> ();
+  Ptr<SocketFactory> sockFactory1 = node1->GetObject<TcpSocketFactory> ();
+  
+  listeningSock = sockFactory0->CreateSocket();
+  sock1 = sockFactory1->CreateSocket();
+  
+  uint16_t port = 50000;
+  InetSocketAddress serverlocaladdr (Ipv4Address::GetAny(), port);
+  InetSocketAddress serverremoteaddr (Ipv4Address(ipaddr0), port);
+  
+  listeningSock->Bind(serverlocaladdr);
+  listeningSock->Listen (0);
+  listeningSock->SetAcceptCallback 
+    (MakeNullCallback<bool, Ptr< Socket >, const Address &> (),
+     MakeCallback(&TcpSocketImplTest::HandleConnectionCreated,this));
+  
+  sock1->Connect(serverremoteaddr);
+  sock1->SetRecvCallback (MakeCallback(&TcpSocketImplTest::HandleRecv, this));
+  
+  Simulator::Run ();
+  Simulator::Destroy ();
+  
+  result = result && (rxBytes1 == 13);
+  result = result && (strcmp((const char*) rxPayload,"Hello World!") == 0);
+  
+  Reset ();
+}
+
+Ptr<Node>
+TcpSocketImplTest::CreateInternetNode ()
+{
+  Ptr<Node> node = CreateObject<Node> ();
+  AddInternetStack (node);
+  return node;
+}
+
+Ptr<SimpleNetDevice>
+TcpSocketImplTest::AddSimpleNetDevice (Ptr<Node> node, const char* ipaddr, const char* netmask)
+{
+  Ptr<SimpleNetDevice> dev = CreateObject<SimpleNetDevice> ();
+  dev->SetAddress (Mac48Address::Allocate ());
+  node->AddDevice (dev);
+  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+  uint32_t ndid = ipv4->AddInterface (dev);
+  ipv4->SetAddress (ndid, Ipv4Address (ipaddr));
+  ipv4->SetNetworkMask (ndid, Ipv4Mask (netmask));
+  ipv4->SetUp (ndid);
+  return dev;
+}
+
+void
+TcpSocketImplTest::HandleConnectionCreated (Ptr<Socket> s, const Address & addr)
+{
+  NS_ASSERT(s != listeningSock);
+  NS_ASSERT(sock0 == 0);
+  sock0 = s;
+  const uint8_t* hello = (uint8_t*)"Hello World!";
+  Ptr<Packet> p = Create<Packet> (hello, 13);
+  sock0->Send(p);
+  
+  sock0->SetRecvCallback (MakeCallback(&TcpSocketImplTest::HandleRecv, this));
+}
+
+void
+TcpSocketImplTest::HandleRecv (Ptr<Socket> sock)
+{
+  NS_ASSERT (sock == sock0 | sock == sock1);
+  Ptr<Packet> p = sock->Recv();
+  uint32_t sz = p->GetSize();
+  if (sock == sock0)
+  {
+    rxBytes0 += sz;
+  }
+  else if (sock == sock1)
+  {
+    rxBytes1 += sz;
+    rxPayload = new uint8_t[sz];
+    memcpy (rxPayload, p->PeekData(), sz);
+  }
+  else
+  {
+    NS_FATAL_ERROR ("Recv from unknown socket "<<sock);
+  }
+}
+
+void
+TcpSocketImplTest::Reset ()
+{
+  node0 = 0;
+  node1 = 0;
+  dev0 = 0;
+  dev1 = 0;
+  channel = 0;
+  listeningSock = 0;
+  sock0 = 0;
+  sock1 = 0;
+  rxBytes0 = 0;
+  rxBytes1 = 0;
+  delete[] rxPayload;
+  rxPayload = 0;
 }
 
 static TcpSocketImplTest gTcpSocketImplTest;
