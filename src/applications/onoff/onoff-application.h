@@ -83,6 +83,9 @@ private:
   virtual void StartApplication (void);    // Called at time specified by Start
   virtual void StopApplication (void);     // Called at time specified by Stop
 
+  //helpers
+  void CancelEvents ();
+
   void Construct (Ptr<Node> n,
                   const Address &remote,
                   std::string tid,
