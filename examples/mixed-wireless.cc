@@ -116,9 +116,6 @@ main (int argc, char *argv[])
   //
   cmd.Parse (argc, argv);
 
-  // The metadata system (off by default) is used by ascii tracing below
-  Packet::EnableMetadata ();
-
   /////////////////////////////////////////////////////////////////////////// 
   //                                                                       //
   // Construct the backbone                                                //

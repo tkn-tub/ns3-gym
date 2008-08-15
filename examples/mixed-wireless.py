@@ -97,9 +97,6 @@ def main(argv):
     # 
     cmd.Parse(argv)
 
-    #  The metadata system(off by default) is used by ascii tracing below
-    ns3.Packet.EnableMetadata()
-
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # / 
     #                                                                        # 
     #  Construct the backbone                                                # 
