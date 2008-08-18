@@ -1029,7 +1029,7 @@ def register_Ns3Queue_methods(root_module, cls):
                    [])
     ## queue.h: ns3::Ptr<const ns3::Packet> ns3::Queue::Peek() const [member function]
     cls.add_method('Peek', 
-                   'ns3::Ptr<const ns3::Packet >', 
+                   'ns3::Ptr< const ns3::Packet >', 
                    [], 
                    is_const=True)
     ## queue.h: void ns3::Queue::DequeueAll() [member function]
@@ -1087,7 +1087,7 @@ def register_Ns3Queue_methods(root_module, cls):
                    is_pure_virtual=True, visibility='private', is_virtual=True)
     ## queue.h: ns3::Ptr<const ns3::Packet> ns3::Queue::DoPeek() const [member function]
     cls.add_method('DoPeek', 
-                   'ns3::Ptr<const ns3::Packet >', 
+                   'ns3::Ptr< const ns3::Packet >', 
                    [], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
     return
@@ -1121,8 +1121,7 @@ def register_Ns3Socket_methods(root_module, cls):
     ## socket.h: bool ns3::Socket::SetDataSentCallback(ns3::Callback<void, ns3::Ptr<ns3::Socket>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty> dataSent) [member function]
     cls.add_method('SetDataSentCallback', 
                    'bool', 
-                   [param('ns3::Callback< void, ns3::Ptr< ns3::Socket >, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'dataSent')], 
-                   is_virtual=True)
+                   [param('ns3::Callback< void, ns3::Ptr< ns3::Socket >, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'dataSent')])
     ## socket.h: void ns3::Socket::SetSendCallback(ns3::Callback<void, ns3::Ptr<ns3::Socket>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty> sendCb) [member function]
     cls.add_method('SetSendCallback', 
                    'void', 
@@ -1592,7 +1591,7 @@ def register_Ns3DropTailQueue_methods(root_module, cls):
                    visibility='private', is_virtual=True)
     ## drop-tail-queue.h: ns3::Ptr<const ns3::Packet> ns3::DropTailQueue::DoPeek() const [member function]
     cls.add_method('DoPeek', 
-                   'ns3::Ptr<const ns3::Packet >', 
+                   'ns3::Ptr< const ns3::Packet >', 
                    [], 
                    is_const=True, visibility='private', is_virtual=True)
     return

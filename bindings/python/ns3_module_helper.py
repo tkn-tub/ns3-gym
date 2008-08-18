@@ -35,6 +35,8 @@ def register_types(module):
     module.add_class('WifiHelper', allow_subclassing=False)
     ## ipv4-address-helper.h: ns3::Ipv4AddressHelper [class]
     module.add_class('Ipv4AddressHelper', allow_subclassing=False)
+    ## bridge-helper.h: ns3::BridgeHelper [class]
+    module.add_class('BridgeHelper', allow_subclassing=False)
     ## packet-sink-helper.h: ns3::PacketSinkHelper [class]
     module.add_class('PacketSinkHelper', allow_subclassing=False)
     ## ns2-mobility-helper.h: ns3::Ns2MobilityHelper [class]
@@ -97,6 +99,7 @@ def register_methods(root_module):
     register_Ns3ApplicationContainer_methods(root_module, root_module['ns3::ApplicationContainer'])
     register_Ns3WifiHelper_methods(root_module, root_module['ns3::WifiHelper'])
     register_Ns3Ipv4AddressHelper_methods(root_module, root_module['ns3::Ipv4AddressHelper'])
+    register_Ns3BridgeHelper_methods(root_module, root_module['ns3::BridgeHelper'])
     register_Ns3PacketSinkHelper_methods(root_module, root_module['ns3::PacketSinkHelper'])
     register_Ns3Ns2MobilityHelper_methods(root_module, root_module['ns3::Ns2MobilityHelper'])
     return
@@ -633,6 +636,19 @@ def register_Ns3Ipv4AddressHelper_methods(root_module, cls):
     cls.add_method('Assign', 
                    'ns3::Ipv4InterfaceContainer', 
                    [param('ns3::NetDeviceContainer&', 'c', is_const=True)])
+    return
+
+def register_Ns3BridgeHelper_methods(root_module, cls):
+    ## bridge-helper.h: ns3::BridgeHelper::BridgeHelper() [constructor]
+    cls.add_constructor([])
+    ## bridge-helper.h: void ns3::BridgeHelper::SetDeviceAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
+    cls.add_method('SetDeviceAttribute', 
+                   'void', 
+                   [param('std::string', 'n1'), param('ns3::AttributeValue&', 'v1', is_const=True)])
+    ## bridge-helper.h: ns3::NetDeviceContainer ns3::BridgeHelper::Install(ns3::Ptr<ns3::Node> node, ns3::NetDeviceContainer c) [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::NetDeviceContainer', 'c')])
     return
 
 def register_Ns3PacketSinkHelper_methods(root_module, cls):

@@ -224,6 +224,8 @@ def register_types(module):
         ns3_module_helper__local.register_types(module)
     
     root_module.end_section('ns3_module_helper')
+    module.add_container('std::vector< unsigned int, std::allocator< unsigned int > >', 'unsigned int')
+    module.add_container('std::list< unsigned int, std::allocator< unsigned int > >', 'unsigned int')
     
     ## Register a nested module for the namespace internal
     
