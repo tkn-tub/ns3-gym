@@ -46,7 +46,7 @@ class MyMultiSectionFactory(MultiSectionFactory):
         self.header_name = "ns3module.h"
         header_file_name = os.path.join(os.path.dirname(self.main_file_name), self.header_name)
         self.header_sink = FileCodeSink(open(header_file_name, "wt"))
-        self.section_sinks = {}
+        self.section_sinks = {'__main__': self.main_sink}
 
         for module in modules:
             section_name = 'ns3_module_%s' % module.replace('-', '_')
