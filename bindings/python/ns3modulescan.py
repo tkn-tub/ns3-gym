@@ -166,6 +166,10 @@ def pre_scan_hook(dummy_module_parser,
             global_annotations['ignore'] = None
             return
 
+        if pygccxml_definition.decl_string.startswith('::ns3::TracedCallback<'):
+            global_annotations['ignore'] = None
+            return
+
         if pygccxml_definition.decl_string.startswith('::ns3::Ptr<'):
             # handled by pybindgen "type transformation"
             global_annotations['ignore'] = None
