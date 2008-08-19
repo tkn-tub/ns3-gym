@@ -1739,7 +1739,7 @@ TcpSocketImplTest::Test1_HandleConnectionCreated (Ptr<Socket> s, const Address &
 void
 TcpSocketImplTest::Test1_HandleRecv (Ptr<Socket> sock)
 {
-  NS_ASSERT (sock == sock0 | sock == sock1);
+  NS_ASSERT (sock == sock0 || sock == sock1);
   Ptr<Packet> p = sock->Recv();
   uint32_t sz = p->GetSize();
   if (sock == sock1)
@@ -1769,7 +1769,7 @@ TcpSocketImplTest::Test2_HandleConnectionCreated (Ptr<Socket> s, const Address &
 void
 TcpSocketImplTest::Test2_HandleRecv (Ptr<Socket> sock)
 {
-  NS_ASSERT (sock == sock0 | sock == sock1);
+  NS_ASSERT (sock == sock0 || sock == sock1);
   Ptr<Packet> p = sock->Recv();
   uint32_t sz = p->GetSize();
   if (sock == sock1)
