@@ -77,6 +77,7 @@ private:
   virtual void DoDispose (void);
   /* invoked by the MacLows. */
   void ForwardUp (Ptr<Packet> packet, WifiMacHeader const*hdr);
+  AdhocWifiMac (const AdhocWifiMac & ctor_arg);
 
   Ptr<DcaTxop> m_dca;
   Callback<void,Ptr<Packet>,const Mac48Address &> m_upCallback;

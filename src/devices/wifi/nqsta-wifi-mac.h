@@ -120,6 +120,7 @@ private:
   void RestartBeaconWatchdog (Time delay);
   SupportedRates GetSupportedRates (void) const;
   virtual void DoDispose (void);
+  NqstaWifiMac (const NqstaWifiMac & ctor_arg);
 
   enum {
     ASSOCIATED,

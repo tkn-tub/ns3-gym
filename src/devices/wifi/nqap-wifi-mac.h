@@ -104,6 +104,7 @@ private:
   void SetBeaconGeneration (bool enable);
   bool GetBeaconGeneration (void) const;
   virtual void DoDispose (void);
+  NqapWifiMac (const NqapWifiMac & ctor_arg);
 
   Ptr<DcaTxop> m_dca;
   Ptr<DcaTxop> m_beaconDca;

@@ -335,6 +335,8 @@ private:
                        uint32_t m, uint32_t dfree,
                        uint32_t adFree, uint32_t adFreePlusOne) const;
   double GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const;
+  WifiPhy (const WifiPhy & ctor_arg);
+
 private:
   uint64_t m_txPrepareDelayUs;
   uint64_t m_plcpLongPreambleDelayUs;
