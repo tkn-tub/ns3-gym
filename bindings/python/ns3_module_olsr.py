@@ -275,6 +275,7 @@ def register_Ns3OlsrMessageHeaderHelloLinkMessage_methods(root_module, cls):
     ## olsr-header.h: ns3::olsr::MessageHeader::Hello::LinkMessage::neighborInterfaceAddresses [variable]
     cls.add_instance_attribute('neighborInterfaceAddresses', 'std::vector< ns3::Ipv4Address, std::allocator< ns3::Ipv4Address > >', is_const=False)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3OlsrMessageHeaderTc_methods(root_module, cls):
@@ -337,6 +338,7 @@ def register_Ns3OlsrMessageHeaderHnaAssociation_methods(root_module, cls):
     ## olsr-header.h: ns3::olsr::MessageHeader::Hna::Association::mask [variable]
     cls.add_instance_attribute('mask', 'ns3::Ipv4Mask', is_const=False)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3OlsrAgent_methods(root_module, cls):
@@ -361,6 +363,7 @@ def register_Ns3OlsrAgent_methods(root_module, cls):
                    [], 
                    is_pure_virtual=True, is_virtual=True)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3OlsrPacketHeader_methods(root_module, cls):

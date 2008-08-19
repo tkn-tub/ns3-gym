@@ -267,6 +267,7 @@ def register_Ns3TagIteratorItem_methods(root_module, cls):
                    'void', 
                    [param('ns3::Tag&', 'tag')], 
                    is_const=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3TagList_methods(root_module, cls):
@@ -316,6 +317,7 @@ def register_Ns3TagListIterator_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3TagListIteratorItem_methods(root_module, cls):
@@ -331,6 +333,7 @@ def register_Ns3TagListIteratorItem_methods(root_module, cls):
     cls.add_instance_attribute('buf', 'ns3::TagBuffer', is_const=False)
     ## tag-list.h: ns3::TagList::Iterator::Item::Item(ns3::TagBuffer buf) [constructor]
     cls.add_constructor([param('ns3::TagBuffer', 'buf')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3TagBuffer_methods(root_module, cls):
@@ -392,6 +395,7 @@ def register_Ns3TagBuffer_methods(root_module, cls):
     cls.add_method('Read', 
                    'void', 
                    [param('uint8_t *', 'buffer'), param('uint32_t', 'size')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Buffer_methods(root_module, cls):
@@ -606,6 +610,7 @@ def register_Ns3BufferIterator_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Chunk_methods(root_module, cls):
@@ -679,6 +684,7 @@ def register_Ns3Tag_methods(root_module, cls):
                    [param('std::ostream&', 'os')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3PcapWriter_methods(root_module, cls):
@@ -708,10 +714,12 @@ def register_Ns3PcapWriter_methods(root_module, cls):
     cls.add_method('WritePacket', 
                    'void', 
                    [param('ns3::Ptr< const ns3::Packet >', 'packet')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3DataRateChecker_methods(root_module, cls):
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3ErrorModel_methods(root_module, cls):
@@ -753,6 +761,7 @@ def register_Ns3ErrorModel_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Header_methods(root_module, cls):
@@ -848,6 +857,7 @@ def register_Ns3ListErrorModel_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3DataRateValue_methods(root_module, cls):
@@ -879,6 +889,7 @@ def register_Ns3DataRateValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3RateErrorModel_methods(root_module, cls):
@@ -936,6 +947,7 @@ def register_Ns3RateErrorModel_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):

@@ -218,6 +218,7 @@ def register_Ns3NodeList_methods(root_module, cls):
                    [], 
                    is_static=True)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Address_methods(root_module, cls):
@@ -289,6 +290,7 @@ def register_Ns3Address_methods(root_module, cls):
 
 def register_Ns3Ipv4AddressChecker_methods(root_module, cls):
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Mac48Address_methods(root_module, cls):
@@ -421,14 +423,17 @@ def register_Ns3Ipv4AddressGenerator_methods(root_module, cls):
                    [], 
                    is_static=True)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Mac48AddressChecker_methods(root_module, cls):
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Ipv4MaskChecker_methods(root_module, cls):
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Ipv4Route_methods(root_module, cls):
@@ -558,6 +563,7 @@ def register_Ns3Ipv4MulticastRoute_methods(root_module, cls):
 
 def register_Ns3AddressChecker_methods(root_module, cls):
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3PacketSocketAddress_methods(root_module, cls):
@@ -609,6 +615,7 @@ def register_Ns3PacketSocketAddress_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Address&', 'address', is_const=True)], 
                    is_static=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Ipv4Mask_methods(root_module, cls):
@@ -691,6 +698,7 @@ def register_Ns3Ipv4AddressValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Ipv4RoutingProtocol_methods(root_module, cls):
@@ -707,6 +715,7 @@ def register_Ns3Ipv4RoutingProtocol_methods(root_module, cls):
                    [param('ns3::Ipv4Address', 'destination'), param('uint32_t&', 'ifIndex')], 
                    is_pure_virtual=True, is_virtual=True)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Mac48AddressValue_methods(root_module, cls):
@@ -738,6 +747,7 @@ def register_Ns3Mac48AddressValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Ipv4MaskValue_methods(root_module, cls):
@@ -769,6 +779,7 @@ def register_Ns3Ipv4MaskValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3SocketAddressTag_methods(root_module, cls):
@@ -813,6 +824,7 @@ def register_Ns3SocketAddressTag_methods(root_module, cls):
                    'void', 
                    [param('std::ostream&', 'os')], 
                    is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3InetSocketAddress_methods(root_module, cls):
@@ -854,6 +866,7 @@ def register_Ns3InetSocketAddress_methods(root_module, cls):
                    'ns3::InetSocketAddress', 
                    [param('ns3::Address&', 'address', is_const=True)], 
                    is_static=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Ipv4Address_methods(root_module, cls):
@@ -1004,6 +1017,7 @@ def register_Ns3Application_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Queue_methods(root_module, cls):
@@ -1090,6 +1104,7 @@ def register_Ns3Queue_methods(root_module, cls):
                    'ns3::Ptr< const ns3::Packet >', 
                    [], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Socket_methods(root_module, cls):
@@ -1258,6 +1273,7 @@ def register_Ns3Socket_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected')
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Ipv4Header_methods(root_module, cls):
@@ -1400,6 +1416,7 @@ def register_Ns3Ipv4Header_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3UdpSocket_methods(root_module, cls):
@@ -1440,6 +1457,7 @@ def register_Ns3UdpSocket_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3NetDevice_methods(root_module, cls):
@@ -1569,6 +1587,7 @@ def register_Ns3NetDevice_methods(root_module, cls):
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3DropTailQueue_methods(root_module, cls):
@@ -1594,6 +1613,7 @@ def register_Ns3DropTailQueue_methods(root_module, cls):
                    'ns3::Ptr< const ns3::Packet >', 
                    [], 
                    is_const=True, visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3AddressValue_methods(root_module, cls):
@@ -1625,6 +1645,7 @@ def register_Ns3AddressValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Node_methods(root_module, cls):
@@ -1693,6 +1714,7 @@ def register_Ns3Node_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'device')], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Channel_methods(root_module, cls):
@@ -1723,6 +1745,7 @@ def register_Ns3Channel_methods(root_module, cls):
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('uint32_t', 'i')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3TcpSocket_methods(root_module, cls):
@@ -1833,6 +1856,7 @@ def register_Ns3TcpSocket_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3EthernetHeader_methods(root_module, cls):
@@ -1916,6 +1940,7 @@ def register_Ns3EthernetHeader_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3SocketIpTtlTag_methods(root_module, cls):
@@ -1960,6 +1985,7 @@ def register_Ns3SocketIpTtlTag_methods(root_module, cls):
                    'void', 
                    [param('std::ostream&', 'os')], 
                    is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Ipv4_methods(root_module, cls):
@@ -2150,6 +2176,7 @@ def register_Ns3Ipv4_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Ipv4Address', 'addr'), param('ns3::Ipv4Mask', 'mask', default_value='ns3::Ipv4Mask(((const char*)"255.255.255.255"))')], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3SocketFactory_methods(root_module, cls):
@@ -2165,6 +2192,7 @@ def register_Ns3SocketFactory_methods(root_module, cls):
                    'ns3::Ptr< ns3::Socket >', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3EthernetTrailer_methods(root_module, cls):
@@ -2227,6 +2255,7 @@ def register_Ns3EthernetTrailer_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'end')], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3SimpleChannel_methods(root_module, cls):
@@ -2255,6 +2284,7 @@ def register_Ns3SimpleChannel_methods(root_module, cls):
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('uint32_t', 'i')], 
                    is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3LlcSnapHeader_methods(root_module, cls):
@@ -2298,6 +2328,7 @@ def register_Ns3LlcSnapHeader_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3UdpSocketFactory_methods(root_module, cls):
@@ -2307,6 +2338,7 @@ def register_Ns3UdpSocketFactory_methods(root_module, cls):
                    [], 
                    is_static=True)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3SimpleNetDevice_methods(root_module, cls):
@@ -2454,6 +2486,7 @@ def register_Ns3SimpleNetDevice_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3TcpSocketFactory_methods(root_module, cls):
@@ -2463,6 +2496,7 @@ def register_Ns3TcpSocketFactory_methods(root_module, cls):
                    [], 
                    is_static=True)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3PacketSocketFactory_methods(root_module, cls):
@@ -2478,6 +2512,7 @@ def register_Ns3PacketSocketFactory_methods(root_module, cls):
                    'ns3::Ptr< ns3::Socket >', 
                    [], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):

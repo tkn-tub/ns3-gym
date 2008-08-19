@@ -76,6 +76,7 @@ def register_Ns3CsmaDeviceRec_methods(root_module, cls):
     cls.add_method('IsActive', 
                    'bool', 
                    [])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Backoff_methods(root_module, cls):
@@ -109,6 +110,7 @@ def register_Ns3Backoff_methods(root_module, cls):
     cls.add_method('IncrNumRetries', 
                    'void', 
                    [])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3CsmaChannel_methods(root_module, cls):
@@ -196,6 +198,7 @@ def register_Ns3CsmaChannel_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3CsmaNetDevice_methods(root_module, cls):

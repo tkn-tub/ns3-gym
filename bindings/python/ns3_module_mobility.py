@@ -152,6 +152,7 @@ def register_Ns3StaticSpeedHelper_methods(root_module, cls):
     cls.add_method('Unpause', 
                    'void', 
                    [])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Vector_methods(root_module, cls):
@@ -172,10 +173,12 @@ def register_Ns3Vector_methods(root_module, cls):
 
 def register_Ns3VectorChecker_methods(root_module, cls):
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3RectangleChecker_methods(root_module, cls):
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Rectangle_methods(root_module, cls):
@@ -224,6 +227,7 @@ def register_Ns3PositionAllocator_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3ListPositionAllocator_methods(root_module, cls):
@@ -243,6 +247,7 @@ def register_Ns3ListPositionAllocator_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3RectangleValue_methods(root_module, cls):
@@ -274,6 +279,7 @@ def register_Ns3RectangleValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3RandomRectanglePositionAllocator_methods(root_module, cls):
@@ -297,6 +303,7 @@ def register_Ns3RandomRectanglePositionAllocator_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3VectorValue_methods(root_module, cls):
@@ -328,6 +335,7 @@ def register_Ns3VectorValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3RandomDiscPositionAllocator_methods(root_module, cls):
@@ -359,6 +367,7 @@ def register_Ns3RandomDiscPositionAllocator_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3MobilityModel_methods(root_module, cls):
@@ -408,6 +417,7 @@ def register_Ns3MobilityModel_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3RandomDirection2dMobilityModel_methods(root_module, cls):
@@ -438,6 +448,7 @@ def register_Ns3RandomDirection2dMobilityModel_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True, visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3GridPositionAllocator_methods(root_module, cls):
@@ -507,6 +518,7 @@ def register_Ns3GridPositionAllocator_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3RandomWaypointMobilityModel_methods(root_module, cls):
@@ -532,6 +544,7 @@ def register_Ns3RandomWaypointMobilityModel_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True, visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3RandomWalk2dMobilityModel_methods(root_module, cls):
@@ -562,6 +575,7 @@ def register_Ns3RandomWalk2dMobilityModel_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True, visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3StaticSpeedMobilityModel_methods(root_module, cls):
@@ -591,6 +605,7 @@ def register_Ns3StaticSpeedMobilityModel_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True, visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3HierarchicalMobilityModel_methods(root_module, cls):
@@ -626,6 +641,7 @@ def register_Ns3HierarchicalMobilityModel_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True, visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3StaticMobilityModel_methods(root_module, cls):
@@ -651,6 +667,7 @@ def register_Ns3StaticMobilityModel_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True, visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):

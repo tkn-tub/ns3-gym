@@ -220,6 +220,7 @@ def register_Ns3GlobalRoutingLinkRecord_methods(root_module, cls):
     cls.add_method('SetMetric', 
                    'void', 
                    [param('uint16_t', 'metric')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3GlobalRouter_methods(root_module, cls):

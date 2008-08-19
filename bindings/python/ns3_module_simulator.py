@@ -170,6 +170,7 @@ def register_Ns3Timer_methods(root_module, cls):
     cls.add_method('Resume', 
                    'void', 
                    [])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3TimerImpl_methods(root_module, cls):
@@ -184,6 +185,7 @@ def register_Ns3TimerImpl_methods(root_module, cls):
                    [], 
                    is_pure_virtual=True, is_virtual=True)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Time_methods(root_module, cls):
@@ -329,6 +331,7 @@ def register_Ns3Watchdog_methods(root_module, cls):
     cls.add_method('Ping', 
                    'void', 
                    [param('ns3::Time', 'delay')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Simulator_methods(root_module, cls):
@@ -412,6 +415,7 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_static=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3EventId_methods(root_module, cls):
@@ -482,6 +486,7 @@ def register_Ns3EventImpl_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3HighPrecision_methods(root_module, cls):
@@ -538,6 +543,7 @@ def register_Ns3HighPrecision_methods(root_module, cls):
 
 def register_Ns3TimeChecker_methods(root_module, cls):
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Scheduler_methods(root_module, cls):
@@ -572,6 +578,7 @@ def register_Ns3Scheduler_methods(root_module, cls):
                    [param('ns3::EventId&', 'id', is_const=True)], 
                    is_pure_virtual=True, is_virtual=True)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3SchedulerEventKey_methods(root_module, cls):
@@ -580,6 +587,7 @@ def register_Ns3SchedulerEventKey_methods(root_module, cls):
     ## scheduler.h: ns3::Scheduler::EventKey::m_uid [variable]
     cls.add_instance_attribute('m_uid', 'uint32_t', is_const=False)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3TimeValue_methods(root_module, cls):
@@ -611,6 +619,7 @@ def register_Ns3TimeValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3SimulatorImpl_methods(root_module, cls):
@@ -705,6 +714,7 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
@@ -805,6 +815,7 @@ def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
                    'ns3::Ptr< ns3::Scheduler >', 
                    [], 
                    is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3HeapScheduler_methods(root_module, cls):
@@ -835,6 +846,7 @@ def register_Ns3HeapScheduler_methods(root_module, cls):
                    'bool', 
                    [param('ns3::EventId&', 'ev', is_const=True)], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3ListScheduler_methods(root_module, cls):
@@ -865,6 +877,7 @@ def register_Ns3ListScheduler_methods(root_module, cls):
                    'bool', 
                    [param('ns3::EventId&', 'ev', is_const=True)], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3MapScheduler_methods(root_module, cls):
@@ -895,6 +908,7 @@ def register_Ns3MapScheduler_methods(root_module, cls):
                    'bool', 
                    [param('ns3::EventId&', 'ev', is_const=True)], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):

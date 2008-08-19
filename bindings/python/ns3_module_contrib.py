@@ -84,6 +84,7 @@ def register_Ns3Gnuplot_methods(root_module, cls):
     cls.add_method('GenerateOutput', 
                    'void', 
                    [param('std::ostream&', 'os')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3EventGarbageCollector_methods(root_module, cls):
@@ -93,6 +94,7 @@ def register_Ns3EventGarbageCollector_methods(root_module, cls):
     cls.add_method('Track', 
                    'void', 
                    [param('ns3::EventId', 'event')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3GnuplotDataset_methods(root_module, cls):
@@ -116,6 +118,7 @@ def register_Ns3GnuplotDataset_methods(root_module, cls):
     cls.add_method('Add', 
                    'void', 
                    [param('double', 'x'), param('double', 'y'), param('double', 'errorDelta')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3GtkConfigStore_methods(root_module, cls):
@@ -125,6 +128,7 @@ def register_Ns3GtkConfigStore_methods(root_module, cls):
     cls.add_method('Configure', 
                    'void', 
                    [])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3ConfigStore_methods(root_module, cls):
@@ -144,6 +148,7 @@ def register_Ns3ConfigStore_methods(root_module, cls):
     cls.add_method('Configure', 
                    'void', 
                    [])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3DelayJitterEstimation_methods(root_module, cls):
@@ -168,6 +173,7 @@ def register_Ns3DelayJitterEstimation_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True)
+    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):

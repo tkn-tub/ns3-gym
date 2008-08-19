@@ -155,6 +155,7 @@ def register_Ns3MobilityHelper_methods(root_module, cls):
                    'void', 
                    [param('std::ostream&', 'os')], 
                    is_static=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3InternetStackHelper_methods(root_module, cls):
@@ -168,6 +169,7 @@ def register_Ns3InternetStackHelper_methods(root_module, cls):
                    [param('std::string', 'filename')], 
                    is_static=True)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3NodeContainer_methods(root_module, cls):
@@ -218,6 +220,7 @@ def register_Ns3NodeContainer_methods(root_module, cls):
                    'ns3::NodeContainer', 
                    [], 
                    is_static=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3PointToPointHelper_methods(root_module, cls):
@@ -293,6 +296,7 @@ def register_Ns3PointToPointHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
                    [param('ns3::Ptr< ns3::Node >', 'a'), param('ns3::Ptr< ns3::Node >', 'b')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3NetDeviceContainer_methods(root_module, cls):
@@ -325,6 +329,7 @@ def register_Ns3NetDeviceContainer_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'device')])
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3CsmaHelper_methods(root_module, cls):
@@ -400,6 +405,7 @@ def register_Ns3CsmaHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
                    [param('ns3::NodeContainer&', 'c', is_const=True), param('ns3::Ptr< ns3::CsmaChannel >', 'channel')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3UdpEchoServerHelper_methods(root_module, cls):
@@ -413,6 +419,7 @@ def register_Ns3UdpEchoServerHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
                    [param('ns3::NodeContainer', 'c')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3OlsrHelper_methods(root_module, cls):
@@ -434,6 +441,7 @@ def register_Ns3OlsrHelper_methods(root_module, cls):
     cls.add_method('InstallAll', 
                    'void', 
                    [])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3PacketSocketHelper_methods(root_module, cls):
@@ -442,6 +450,7 @@ def register_Ns3PacketSocketHelper_methods(root_module, cls):
                    'void', 
                    [param('ns3::NodeContainer', 'c')])
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3OnOffHelper_methods(root_module, cls):
@@ -455,6 +464,7 @@ def register_Ns3OnOffHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
                    [param('ns3::NodeContainer', 'c')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3UdpEchoClientHelper_methods(root_module, cls):
@@ -468,6 +478,7 @@ def register_Ns3UdpEchoClientHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
                    [param('ns3::NodeContainer', 'c')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3StaticMulticastRouteHelper_methods(root_module, cls):
@@ -485,6 +496,7 @@ def register_Ns3StaticMulticastRouteHelper_methods(root_module, cls):
     cls.add_method('JoinMulticastGroup', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'n'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Ipv4InterfaceContainer_methods(root_module, cls):
@@ -508,6 +520,7 @@ def register_Ns3Ipv4InterfaceContainer_methods(root_module, cls):
     cls.add_method('Add', 
                    'void', 
                    [param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3ApplicationContainer_methods(root_module, cls):
@@ -548,6 +561,7 @@ def register_Ns3ApplicationContainer_methods(root_module, cls):
                    'void', 
                    [param('ns3::Time', 'stop')])
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3WifiHelper_methods(root_module, cls):
@@ -615,6 +629,7 @@ def register_Ns3WifiHelper_methods(root_module, cls):
                    'ns3::NetDeviceContainer', 
                    [param('ns3::NodeContainer', 'c'), param('ns3::Ptr< ns3::WifiChannel >', 'channel')], 
                    is_const=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Ipv4AddressHelper_methods(root_module, cls):
@@ -636,6 +651,7 @@ def register_Ns3Ipv4AddressHelper_methods(root_module, cls):
     cls.add_method('Assign', 
                    'ns3::Ipv4InterfaceContainer', 
                    [param('ns3::NetDeviceContainer&', 'c', is_const=True)])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3BridgeHelper_methods(root_module, cls):
@@ -649,6 +665,7 @@ def register_Ns3BridgeHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
                    [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::NetDeviceContainer', 'c')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3PacketSinkHelper_methods(root_module, cls):
@@ -662,6 +679,7 @@ def register_Ns3PacketSinkHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
                    [param('ns3::NodeContainer', 'c')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Ns2MobilityHelper_methods(root_module, cls):
@@ -672,6 +690,7 @@ def register_Ns3Ns2MobilityHelper_methods(root_module, cls):
                    'void', 
                    [], 
                    is_const=True)
+    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):

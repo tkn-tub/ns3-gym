@@ -146,6 +146,7 @@ def register_Ns3Ipv4Interface_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Address', 'dest')], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3UdpHeader_methods(root_module, cls):
@@ -212,6 +213,7 @@ def register_Ns3UdpHeader_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3TcpHeader_methods(root_module, cls):
@@ -332,6 +334,7 @@ def register_Ns3TcpHeader_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Ipv4StaticRouting_methods(root_module, cls):
@@ -419,6 +422,7 @@ def register_Ns3Ipv4StaticRouting_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
@@ -609,6 +613,7 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):

@@ -84,6 +84,7 @@ def register_Ns3PointToPointChannel_methods(root_module, cls):
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('uint32_t', 'i')], 
                    is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3PointToPointNetDevice_methods(root_module, cls):
@@ -247,6 +248,7 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):

@@ -80,6 +80,7 @@ def register_Ns3UdpEchoClient_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3UdpEchoServer_methods(root_module, cls):
@@ -105,6 +106,7 @@ def register_Ns3UdpEchoServer_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):

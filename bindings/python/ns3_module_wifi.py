@@ -371,6 +371,7 @@ def register_Ns3WifiRemoteStation_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3WifiPhyListener_methods(root_module, cls):
@@ -400,6 +401,7 @@ def register_Ns3WifiPhyListener_methods(root_module, cls):
                    [param('ns3::Time', 'duration')], 
                    is_pure_virtual=True, is_virtual=True)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3ThresholdsItem_methods(root_module, cls):
@@ -412,6 +414,7 @@ def register_Ns3ThresholdsItem_methods(root_module, cls):
     ## rraa-wifi-manager.h: ns3::ThresholdsItem::ewnd [variable]
     cls.add_instance_attribute('ewnd', 'uint32_t', is_const=False)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3SupportedRates_methods(root_module, cls):
@@ -517,10 +520,12 @@ def register_Ns3IdealWifiRemoteStation_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3WifiModeChecker_methods(root_module, cls):
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3WifiModeFactory_methods(root_module, cls):
@@ -534,6 +539,7 @@ def register_Ns3WifiModeFactory_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [param('std::string', 'uniqueName'), param('bool', 'isMandatory'), param('uint32_t', 'bandwidth'), param('uint32_t', 'dataRate'), param('uint32_t', 'phyRate'), param('uint8_t', 'constellationSize')], 
                    is_static=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3OnoeWifiRemoteStation_methods(root_module, cls):
@@ -589,6 +595,7 @@ def register_Ns3OnoeWifiRemoteStation_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3RraaWifiRemoteStation_methods(root_module, cls):
@@ -649,6 +656,7 @@ def register_Ns3RraaWifiRemoteStation_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3Ssid_methods(root_module, cls):
@@ -784,10 +792,12 @@ def register_Ns3SsidValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3SsidChecker_methods(root_module, cls):
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3ConstantRateWifiRemoteStation_methods(root_module, cls):
@@ -843,6 +853,7 @@ def register_Ns3ConstantRateWifiRemoteStation_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3PropagationLossModel_methods(root_module, cls):
@@ -857,6 +868,7 @@ def register_Ns3PropagationLossModel_methods(root_module, cls):
                    [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3ArfWifiRemoteStation_methods(root_module, cls):
@@ -952,6 +964,7 @@ def register_Ns3ArfWifiRemoteStation_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3WifiMac_methods(root_module, cls):
@@ -1092,6 +1105,7 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'linkDown')], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3NqapWifiMac_methods(root_module, cls):
@@ -1229,6 +1243,7 @@ def register_Ns3CompositePropagationLossModel_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3AmrrWifiRemoteStation_methods(root_module, cls):
@@ -1284,6 +1299,7 @@ def register_Ns3AmrrWifiRemoteStation_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3FriisPropagationLossModel_methods(root_module, cls):
@@ -1330,6 +1346,7 @@ def register_Ns3FriisPropagationLossModel_methods(root_module, cls):
                    'double', 
                    [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3NqstaWifiMac_methods(root_module, cls):
@@ -1553,6 +1570,7 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'ns3::WifiRemoteStation *', 
                    [], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3WifiModeValue_methods(root_module, cls):
@@ -1584,6 +1602,7 @@ def register_Ns3WifiModeValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3OnoeWifiManager_methods(root_module, cls):
@@ -1599,6 +1618,7 @@ def register_Ns3OnoeWifiManager_methods(root_module, cls):
                    'ns3::WifiRemoteStation *', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3WifiPhy_methods(root_module, cls):
@@ -1800,6 +1820,7 @@ def register_Ns3WifiChannel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::WifiPhy >', 'sender'), param('ns3::Ptr< const ns3::Packet >', 'packet'), param('double', 'txPowerDbm'), param('ns3::WifiMode', 'wifiMode'), param('ns3::WifiPreamble', 'preamble')], 
                    is_const=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3LogDistancePropagationLossModel_methods(root_module, cls):
@@ -1832,6 +1853,7 @@ def register_Ns3LogDistancePropagationLossModel_methods(root_module, cls):
                    'double', 
                    [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3ConstantRateWifiManager_methods(root_module, cls):
@@ -1857,6 +1879,7 @@ def register_Ns3ConstantRateWifiManager_methods(root_module, cls):
                    'ns3::WifiRemoteStation *', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3AarfWifiRemoteStation_methods(root_module, cls):
@@ -1872,6 +1895,7 @@ def register_Ns3AarfWifiRemoteStation_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3PropagationDelayModel_methods(root_module, cls):
@@ -1886,6 +1910,7 @@ def register_Ns3PropagationDelayModel_methods(root_module, cls):
                    [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3AdhocWifiMac_methods(root_module, cls):
@@ -2009,6 +2034,7 @@ def register_Ns3JakesPropagationLossModel_methods(root_module, cls):
     cls.add_method('SetNOscillators', 
                    'void', 
                    [param('uint8_t', 'nOscillators')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3WifiNetDevice_methods(root_module, cls):
@@ -2175,6 +2201,7 @@ def register_Ns3WifiNetDevice_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, cls):
@@ -2199,6 +2226,7 @@ def register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3RandomPropagationLossModel_methods(root_module, cls):
@@ -2214,6 +2242,7 @@ def register_Ns3RandomPropagationLossModel_methods(root_module, cls):
                    'double', 
                    [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3RandomPropagationDelayModel_methods(root_module, cls):
@@ -2229,6 +2258,7 @@ def register_Ns3RandomPropagationDelayModel_methods(root_module, cls):
                    'ns3::Time', 
                    [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3AmrrWifiManager_methods(root_module, cls):
@@ -2244,6 +2274,7 @@ def register_Ns3AmrrWifiManager_methods(root_module, cls):
                    'ns3::WifiRemoteStation *', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3RraaWifiManager_methods(root_module, cls):
@@ -2273,6 +2304,7 @@ def register_Ns3RraaWifiManager_methods(root_module, cls):
                    'ns3::WifiRemoteStation *', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3IdealWifiManager_methods(root_module, cls):
@@ -2302,6 +2334,7 @@ def register_Ns3IdealWifiManager_methods(root_module, cls):
                    'ns3::WifiRemoteStation *', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3ArfWifiManager_methods(root_module, cls):
@@ -2317,6 +2350,7 @@ def register_Ns3ArfWifiManager_methods(root_module, cls):
                    'ns3::WifiRemoteStation *', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3AarfWifiManager_methods(root_module, cls):
@@ -2332,6 +2366,7 @@ def register_Ns3AarfWifiManager_methods(root_module, cls):
                    'ns3::WifiRemoteStation *', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):
