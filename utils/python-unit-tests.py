@@ -114,13 +114,7 @@ class TestSimulator(unittest.TestCase):
         c1 = csma.GetChannel()
         c2 = csma.GetChannel()
 
-        ## FIXME: it is a PyBindGen bug that comparison via hash
-        ## functions is required.  However it should be noted that
-        ## hash(channel) here basically returns the self->obj pointer,
-        ## so if hash(c1) == hash(c2) then we know for sure that c1
-        ## and c2 are the same channel, even if with different python
-        ## wrappers.
-        self.assertEqual(hash(c1), hash(c2))
+        self.assert_(c1 is c2)
 
 if __name__ == '__main__':
     unittest.main()

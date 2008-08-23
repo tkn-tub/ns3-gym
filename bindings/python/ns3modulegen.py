@@ -36,6 +36,8 @@ class ErrorHandler(pybindgen.settings.ErrorHandler):
         return True
 pybindgen.settings.error_handler = ErrorHandler()
 
+pybindgen.settings.wrapper_registry = pybindgen.settings.StdMapWrapperRegistry
+
 
 class MyMultiSectionFactory(MultiSectionFactory):
 
