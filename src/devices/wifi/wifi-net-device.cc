@@ -255,12 +255,12 @@ WifiNetDevice::IsMulticast (void) const
 Address 
 WifiNetDevice::GetMulticast (void) const
 {
-  return Mac48Address ("01:00:5e:00:00:00");
+  return Mac48Address::GetMulticastPrefix ();
 }
 Address 
 WifiNetDevice::MakeMulticastAddress (Ipv4Address multicastGroup) const
 {
-  return GetMulticast ();
+  return Mac48Address::GetMulticast (multicastGroup);
 }
 bool 
 WifiNetDevice::IsPointToPoint (void) const
