@@ -61,12 +61,38 @@ mostly for internal use.
 <h2>changes to existing API:</h2>
 
 <ul>
+<li>25-08-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/e5ab96db540e">e5ab96db540e</a></li>
+<ul>
+<li>
+bug 273: constify packet pointers.<br>
+The normal and the promiscuous receive callbacks of the NetDevice API
+have been changed from:
+<pre>
+Callback<bool,Ptr<NetDevice>,Ptr<Packet>,uint16_t,const Address &>
+Callback<bool,Ptr<NetDevice>, Ptr<Packet>, uint16_t,
+         const Address &, const Address &, enum PacketType >
+</pre>
+to:
+<pre>
+Callback<bool,Ptr<NetDevice>,Ptr<const Packet>,uint16_t,const Address &>
+Callback<bool,Ptr<NetDevice>, Ptr<const Packet>, uint16_t,
+         const Address &, const Address &, enum PacketType >
+</pre>
+to avoid the kind of bugs reported in 
+<a href="http://www.nsnam.org/bugzilla/show_bug.cgi?id=273">bug 273</a>.
+Users who implement a subclass of the NetDevice base class need to change the signature
+of their SetReceiveCallback and SetPromiscReceiveCallback methods.
+</li>
+</ul>
+</li>
+
+
 <li>04-08-2008; changeset 
 <a href="http://code.nsnam.org/ns-3-dev/rev/cba7b2b80fe8">cba7b2b80fe8</a></li>
 <ul>
 <li>
-Cleanup of MTU confusion and initialization in CsmaNetDevice
-<pre>
+Cleanup of MTU confusion and initialization in CsmaNetDevice<br>
 The MTU of the CsmaNetDevice defaulted to 65535.  This did not correspond with
 the expected MTU found in Ethernet-like devices.  Also there was not clear 
 documentation regarding which MTU was being set.  There are two MTU here, one
@@ -77,13 +103,11 @@ MAC level MTU at 1492 by default.  We allow users to now set the encapsulation
 mode, MAC MTU and PHY MTU while keeping the three values consistent.  See the
 Doxygen of CsmaNetDevice::SetMaxPayloadLength for a detailed description of the
 issues and solution.
-</pre>
 </li>
 </ul>
 </li>
-</ul>
 
-<ul>
+
 <li>21-07-2008; changeset 
 <a href="
 http://code.nsnam.org/ns-3-dev/rev/99698bc858e8">99698bc858e8</a></li>
@@ -112,9 +136,8 @@ when the m_promiscRxCallback is called.
 </li>
 </ul>
 </li>
-</ul>
 
-<ul>
+
 <li>03-07-2008; changeset 
 <a href="http://code.nsnam.org/ns-3-dev/rev/d5f8e5fae1c6">d5f8e5fae1c6</a></li>
 <ul>
@@ -144,9 +167,8 @@ ApplicationContainer Install (NodeContainer c);
 </li>
 </ul>
 </li>
-</ul>
 
-<ul>
+
 <li>03-07-2008; changeset 
 <a href="
 http://code.nsnam.org/ns-3-dev/rev/3cdd9d60f7c7">3cdd9d60f7c7</a></li>
@@ -181,7 +203,7 @@ instability in neighbor detection.
 </ul>
 </li>
 </ul>
-</li>
+
 
 </body>
 </html>
