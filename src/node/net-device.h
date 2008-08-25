@@ -297,7 +297,7 @@ public:
    *          otherwise.
    */
   typedef Callback< bool, Ptr<NetDevice>, Ptr<const Packet>, uint16_t,
-                    const Address &, const Address &, PacketType > PromiscReceiveCallback;
+                    const Address &, const Address &, enum PacketType > PromiscReceiveCallback;
 
   /**
    * \param cb callback to invoke whenever a packet has been received in promiscuous mode and must
