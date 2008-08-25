@@ -20,6 +20,7 @@
 
 #include "ns3/object.h"
 #include "ns3/log.h"
+#include "ns3/uinteger.h"
 #include "net-device.h"
 
 NS_LOG_COMPONENT_DEFINE ("NetDevice");
@@ -31,7 +32,15 @@ NS_OBJECT_ENSURE_REGISTERED (NetDevice);
 TypeId NetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::NetDevice")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
+                   TypeId::ATTR_SET | TypeId::ATTR_GET,
+                   UintegerValue (0xffff),
+                   MakeUintegerAccessor (&NetDevice::SetMtu,
+                                         &NetDevice::GetMtu),
+                   MakeUintegerChecker<uint16_t> ())
+                   
+    ;
   return tid;
 }
 
