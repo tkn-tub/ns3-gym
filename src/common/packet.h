@@ -30,6 +30,7 @@
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 #include "ns3/ptr.h"
+#include "ns3/deprecated.h"
 
 namespace ns3 {
 
@@ -310,13 +311,17 @@ public:
 
   PacketMetadata::ItemIterator BeginItem (void) const;
 
+  static void EnableMetadata (void) NS_DEPRECATED;
+
   /**
    * By default, packets do not keep around enough metadata to
    * perform the operations requested by the Print methods. If you
    * want to be able to invoke any of the two ::Print methods, 
    * you need to invoke this method at least once during the 
    * simulation setup and before any packet is created.
-   *
+   */
+  static void EnablePrinting (void);
+  /**
    * The packet metadata is also used to perform extensive
    * sanity checks at runtime when performing operations on a 
    * Packet. For example, this metadata is used to verify that
@@ -324,7 +329,7 @@ public:
    * was actually present at the front of the packet. These
    * errors will be detected and will abort the program.
    */
-  static void EnableMetadata (void);
+  static void EnableChecking (void);
 
   /**
    * \returns a byte buffer

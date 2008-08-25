@@ -32,6 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("PacketMetadata");
 namespace ns3 {
 
 bool PacketMetadata::m_enable = false;
+bool PacketMetadata::m_enableChecking = false;
 bool PacketMetadata::m_metadataSkipped = false;
 uint32_t PacketMetadata::m_maxSize = 0;
 uint16_t PacketMetadata::m_chunkUid = 0;
@@ -57,6 +58,13 @@ PacketMetadata::Enable (void)
                  "to call ns3::PacketMetadata::Enable () near the beginning of"
                  " the program, before any packets are sent.");
   m_enable = true;
+}
+
+void 
+PacketMetadata::EnableChecking (void)
+{
+  Enable ();
+  m_enableChecking = true;
 }
 
 void
@@ -630,13 +638,21 @@ PacketMetadata::RemoveHeader (const Header &header, uint32_t size)
   if ((item.typeUid & 0xfffffffe) != uid ||
       item.size != size)
     {
-      NS_FATAL_ERROR ("Removing unexpected header.");
+      if (m_enableChecking)
+        {
+          NS_FATAL_ERROR ("Removing unexpected header.");
+        }
+      return;
     }
   else if (item.typeUid != uid &&
            (extraItem.fragmentStart != 0 ||
             extraItem.fragmentEnd != size))
     {
-      NS_FATAL_ERROR ("Removing incomplete header.");
+      if (m_enableChecking)
+        {
+          NS_FATAL_ERROR ("Removing incomplete header.");
+        }
+      return;
     }
   if (m_head + read == m_used)
     {
@@ -688,13 +704,21 @@ PacketMetadata::RemoveTrailer (const Trailer &trailer, uint32_t size)
   if ((item.typeUid & 0xfffffffe) != uid ||
       item.size != size)
     {
-      NS_FATAL_ERROR ("Removing unexpected trailer.");
+      if (m_enableChecking)
+        {
+          NS_FATAL_ERROR ("Removing unexpected trailer.");
+        }
+      return;
     }
   else if (item.typeUid != uid &&
            (extraItem.fragmentStart != 0 ||
             extraItem.fragmentEnd != size))
     {
-      NS_FATAL_ERROR ("Removing incomplete trailer.");
+      if (m_enableChecking)
+        {
+          NS_FATAL_ERROR ("Removing incomplete trailer.");
+        }
+      return;
     }
   if (m_tail + read == m_used)
     {

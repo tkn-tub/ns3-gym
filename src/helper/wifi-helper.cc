@@ -193,7 +193,7 @@ WifiHelper::EnablePcapAll (std::string filename)
 void 
 WifiHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
 {
-    Packet::EnableMetadata ();
+  Packet::EnablePrinting ();
   std::ostringstream oss;
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/RxOk";
   Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyRxOkEvent, &os));
