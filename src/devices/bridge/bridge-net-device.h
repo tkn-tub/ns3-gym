@@ -72,11 +72,11 @@ public:
 protected:
   virtual void DoDispose (void);
 
-  void ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol,
+  void ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                           Address const &source, Address const &destination, PacketType packetType);
-  void ForwardUnicast (Ptr<NetDevice> incomingPort, Ptr<Packet> packet,
+  void ForwardUnicast (Ptr<NetDevice> incomingPort, Ptr<const Packet> packet,
                        uint16_t protocol, Mac48Address src, Mac48Address dst);
-  void ForwardBroadcast (Ptr<NetDevice> incomingPort, Ptr<Packet> packet,
+  void ForwardBroadcast (Ptr<NetDevice> incomingPort, Ptr<const Packet> packet,
                          uint16_t protocol, Mac48Address src, Mac48Address dst);
   void Learn (Mac48Address source, Ptr<NetDevice> port);
   Ptr<NetDevice> GetLearnedState (Mac48Address source);
