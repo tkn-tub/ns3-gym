@@ -22,7 +22,7 @@ def configure(conf):
     else:
         conf.env['USE_HIGH_PRECISION_DOUBLE'] = 0
         highprec = '128-bit integer'
-    conf.check_message_custom('high precision time', 'implementation', highprec)
+    conf.check_message_custom('high precision time','implementation',highprec)
 
     e = conf.create_header_configurator()
     e.mandatory = False
@@ -59,8 +59,11 @@ def build(bld):
         'event-impl.cc',
         'simulator.cc',
         'default-simulator-impl.cc',
+        'realtime-simulator-impl.cc',
         'timer.cc',
         'watchdog.cc',
+        'synchronizer.cc',
+        'wall-clock-synchronizer.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -73,6 +76,7 @@ def build(bld):
         'simulator.h',
         'simulator-impl.h',
         'default-simulator-impl.h',
+        'realtime-simulator-impl.h',
         'scheduler.h',
         'list-scheduler.h',
         'map-scheduler.h',
@@ -81,6 +85,8 @@ def build(bld):
         'timer.h',
         'timer-impl.h',
         'watchdog.h',
+        'synchronizer.h',
+        'wall-clock-synchronizer.h',
         ]
 
     env = bld.env_of_name('default')

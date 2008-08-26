@@ -32,6 +32,10 @@ def build(bld):
         ['csma', 'internet-stack'])
     obj.source = 'udp-echo.cc'
 
+    obj = bld.create_ns3_program('realtime-udp-echo',
+        ['csma', 'internet-stack'])
+    obj.source = 'realtime-udp-echo.cc'
+
     obj = bld.create_ns3_program('csma-broadcast',
         ['csma', 'internet-stack'])
     obj.source = 'csma-broadcast.cc'
