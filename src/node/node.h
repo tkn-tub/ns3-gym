@@ -145,7 +145,7 @@ public:
    *                   this value is only valid for promiscuous mode
    *                   protocol handlers.
    */
-  typedef Callback<void,Ptr<NetDevice>, Ptr<Packet>,uint16_t,const Address &,
+  typedef Callback<void,Ptr<NetDevice>, Ptr<const Packet>,uint16_t,const Address &,
                    const Address &, NetDevice::PacketType> ProtocolHandler;
   /**
    * \param handler the handler to register
@@ -189,10 +189,10 @@ private:
    */
   virtual void NotifyDeviceAdded (Ptr<NetDevice> device);
 
-  bool NonPromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet>, uint16_t protocol, const Address &from);
-  bool PromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet>, uint16_t protocol,
+  bool NonPromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet>, uint16_t protocol, const Address &from);
+  bool PromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet>, uint16_t protocol,
                                  const Address &from, const Address &to, NetDevice::PacketType packetType);
-  bool ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet>, uint16_t protocol,
+  bool ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet>, uint16_t protocol,
                           const Address &from, const Address &to, NetDevice::PacketType packetType, bool promisc);
 
   void Construct (void);

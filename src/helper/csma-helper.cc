@@ -122,7 +122,7 @@ CsmaHelper::EnablePcapAll (std::string filename)
 void 
 CsmaHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
 {
-  Packet::EnableMetadata ();
+  Packet::EnablePrinting ();
   std::ostringstream oss;
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/Rx";
   Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiRxEvent, &os));

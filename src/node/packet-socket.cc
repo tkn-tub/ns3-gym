@@ -344,7 +344,7 @@ PacketSocket::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
 }
 
 void 
-PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet, 
+PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<const Packet> packet, 
                          uint16_t protocol, const Address &from,
                          const Address &to, NetDevice::PacketType packetType)
 {
@@ -369,7 +369,7 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet,
       SocketAddressTag tag;
       tag.SetAddress (address);
       packet->AddTag (tag);
-      m_deliveryQueue.push (packet);
+      m_deliveryQueue.push (packet->Copy ());
       m_rxAvailable += packet->GetSize ();
       NS_LOG_LOGIC ("UID is " << packet->GetUid() << " PacketSocket " << this);
       NotifyDataRecv ();

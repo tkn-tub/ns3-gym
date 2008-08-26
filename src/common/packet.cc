@@ -459,7 +459,21 @@ void
 Packet::EnableMetadata (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  EnableChecking ();
+}
+
+void
+Packet::EnablePrinting (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
   PacketMetadata::Enable ();
+}
+
+void
+Packet::EnableChecking (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  PacketMetadata::EnableChecking ();
 }
 
 Buffer 

@@ -282,7 +282,7 @@ int main (int argc, char *argv[])
   runBench (&benchC, n, "c");
   runBench (&benchD, n, "d");
 
-  Packet::EnableMetadata ();
+  Packet::EnablePrinting ();
   runBench (&benchA, n, "meta-a");
   runBench (&benchB, n, "meta-b");
   runBench (&benchC, n, "meta-c");

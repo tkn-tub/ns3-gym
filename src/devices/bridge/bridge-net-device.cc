@@ -61,7 +61,7 @@ BridgeNetDevice::BridgeNetDevice ()
 }
 
 void
-BridgeNetDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<Packet> packet, uint16_t protocol,
+BridgeNetDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packet> packet, uint16_t protocol,
                                     Address const &src, Address const &dst, PacketType packetType)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -97,7 +97,7 @@ BridgeNetDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<Packet> pac
 }
 
 void
-BridgeNetDevice::ForwardUnicast (Ptr<NetDevice> incomingPort, Ptr<Packet> packet,
+BridgeNetDevice::ForwardUnicast (Ptr<NetDevice> incomingPort, Ptr<const Packet> packet,
                                  uint16_t protocol, Mac48Address src, Mac48Address dst)
 {
   NS_LOG_DEBUG ("LearningBridgeForward (incomingPort=" << incomingPort->GetName ()
@@ -130,7 +130,7 @@ BridgeNetDevice::ForwardUnicast (Ptr<NetDevice> incomingPort, Ptr<Packet> packet
 }
 
 void
-BridgeNetDevice::ForwardBroadcast (Ptr<NetDevice> incomingPort, Ptr<Packet> packet,
+BridgeNetDevice::ForwardBroadcast (Ptr<NetDevice> incomingPort, Ptr<const Packet> packet,
                                         uint16_t protocol, Mac48Address src, Mac48Address dst)
 {
   NS_LOG_DEBUG ("LearningBridgeForward (incomingPort=" << incomingPort->GetName ()

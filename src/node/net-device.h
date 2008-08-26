@@ -274,7 +274,7 @@ public:
    * \returns true if the callback could handle the packet successfully, false
    *          otherwise.
    */
-  typedef Callback<bool,Ptr<NetDevice>,Ptr<Packet>,uint16_t,const Address &> ReceiveCallback;
+  typedef Callback<bool,Ptr<NetDevice>,Ptr<const Packet>,uint16_t,const Address &> ReceiveCallback;
 
   /**
    * \param cb callback to invoke whenever a packet has been received and must
@@ -296,8 +296,8 @@ public:
    * \returns true if the callback could handle the packet successfully, false
    *          otherwise.
    */
-  typedef Callback< bool, Ptr<NetDevice>, Ptr<Packet>, uint16_t,
-                    const Address &, const Address &, PacketType > PromiscReceiveCallback;
+  typedef Callback< bool, Ptr<NetDevice>, Ptr<const Packet>, uint16_t,
+                    const Address &, const Address &, enum PacketType > PromiscReceiveCallback;
 
   /**
    * \param cb callback to invoke whenever a packet has been received in promiscuous mode and must

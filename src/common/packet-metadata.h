@@ -125,6 +125,7 @@ public:
   };
 
   static void Enable (void);
+  static void EnableChecking (void);
 
   inline PacketMetadata (uint32_t uid, uint32_t size);
   inline PacketMetadata (PacketMetadata const &o);
@@ -279,6 +280,7 @@ private:
   
   static DataFreeList m_freeList;
   static bool m_enable;
+  static bool m_enableChecking;
 
   // set to true when adding metadata to a packet is skipped because
   // m_enable is false; used to detect enabling of metadata in the

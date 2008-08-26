@@ -103,7 +103,7 @@ public:
     Address &fromAddress);
 
 private:
-  void ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet, 
+  void ForwardUp (Ptr<NetDevice> device, Ptr<const Packet> packet, 
                   uint16_t protocol, const Address &from, const Address &to,
                   NetDevice::PacketType packetType);
   int DoBind (const PacketSocketAddress &address);

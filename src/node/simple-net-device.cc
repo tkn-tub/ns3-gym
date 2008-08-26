@@ -142,12 +142,12 @@ SimpleNetDevice::IsMulticast (void) const
 Address 
 SimpleNetDevice::GetMulticast (void) const
 {
-  return Mac48Address ("01:00:5e:00:00:00");
+  return Mac48Address::GetMulticastPrefix ();
 }
 Address 
 SimpleNetDevice::MakeMulticastAddress (Ipv4Address multicastGroup) const
 {
-  return Mac48Address ("01:00:5e:00:00:00");
+  return Mac48Address::GetMulticast (multicastGroup);
 }
 bool 
 SimpleNetDevice::IsPointToPoint (void) const
