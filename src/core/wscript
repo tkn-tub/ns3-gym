@@ -45,7 +45,6 @@ def build(bld):
         'test.cc',
         'random-variable.cc',
         'rng-stream.cc',
-        'uid-manager.cc',
         'command-line.cc',
         'type-name.cc',
         'type-traits-test.cc',
