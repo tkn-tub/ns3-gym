@@ -25,9 +25,13 @@
 namespace ns3 {
 
 /**
- * \ingroup netdevice
+ * \ingroup bridge
  * 
- * \brief bridge net device for bridge things and testing
+ * \brief Virtual channel implementation for bridges (BridgeNetDevice).
+ *
+ * Just like BridgeNetDevice aggregates multiple NetDevices,
+ * BridgeChannel aggregates multiple channels and make them appear as
+ * a single channel to upper layers.
  */
 class BridgeChannel : public Channel
 {

@@ -31,9 +31,37 @@ namespace ns3 {
 class Node;
 
 /**
- * \ingroup netdevice
+ * \ingroup devices
+ * \defgroup bridge Bridge
  * 
- * \brief bridge net device for bridge things and testing
+ * \brief a virtual net device that bridges multiple LAN segments
+ *
+ * The BridgeNetDevice object is a "virtual" netdevice that aggregates
+ * multiple "real" netdevices and implements the data plane forwarding
+ * part of IEEE 802.1D.  By adding a BridgeNetDevice to a Node, it
+ * will act as a "bridge", or "switch", to multiple LAN segments.
+ * 
+ * By default the bridge netdevice implements a "learning bridge"
+ * algorithm (see 802.1D), where incoming unicast frames from one port
+ * may occasionally be forwarded throughout all other ports, but
+ * usually they are forwarded only to a single correct output port.
+ *
+ * \attention The Spanning Tree Protocol part of 802.1D is not
+ * implemented.  Therefore, you have to be careful not to create
+ * bridging loops, or else the network will collapse.
+ *
+ * \attention Bridging is designed to work only with NetDevices
+ * modelling IEEE 802-style technologies, such as CsmaNetDevice and
+ * WifiNetDevice.
+ *
+ * \attention If including a WifiNetDevice in a bridge, the wifi
+ * device must be in Access Point mode.  Adhoc mode is not supported
+ * with bridging.
+ */
+
+/**
+ * \ingroup bridge
+ * \brief a virtual net device that bridges multiple LAN segments
  */
 class BridgeNetDevice : public NetDevice
 {
@@ -41,6 +69,17 @@ public:
   static TypeId GetTypeId (void);
   BridgeNetDevice ();
 
+  /** \brief Add a 'port' to a bridge device
+   *
+   * This method adds a new bridge port to a BridgeNetDevice, so that
+   * the new bridge port NetDevice becomes part of the bridge and L2
+   * frames start being forwarded to/from this NetDevice.
+   *
+   * \attention The netdevice that is being added as bridge port must
+   * _not_ have an IP address.  In order to add IP connectivity to a
+   * bridging node you must enable IP on the BridgeNetDevice itself,
+   * never on its port netdevices.
+   */
   void AddBridgePort (Ptr<NetDevice> bridgePort);
 
   // inherited from NetDevice base class.
