@@ -167,7 +167,7 @@ EventImpl::Ref (void) const
 void
 EventImpl::Unref (void) const
 {
-  register uint32_t c;
+  uint32_t c;
 
   if (m_eventLock)
     {

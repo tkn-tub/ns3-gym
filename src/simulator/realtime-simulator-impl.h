@@ -113,6 +113,8 @@ private:
   RealtimeEventLock m_eventLock;
 
   Ptr<Synchronizer> m_synchronizer;
+
+#ifdef PERMIT_WALLCLOCK_SIMULATION_TIME
   /*
    * In calls to Simulator::Now we have a basic choice to make.  We can either
    * report back the time the simulator thinks it should be, or we can report 
@@ -136,6 +138,7 @@ private:
    * variations in host process scheduling, for example.
    */
   bool m_reportSimulatedTime;
+#endif
 
   /**
    * The policy to use if the simulation cannot keep synchronized to real-time.
