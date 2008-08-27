@@ -255,7 +255,7 @@ Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16
             {
               if (promiscuous == i->promiscuous)
                 {
-                  i->handler (device, packet->Copy (), protocol, from, to, packetType);
+                  i->handler (device, packet, protocol, from, to, packetType);
                   found = true;
                 }
             }
