@@ -114,32 +114,6 @@ private:
 
   Ptr<Synchronizer> m_synchronizer;
 
-#ifdef PERMIT_WALLCLOCK_SIMULATION_TIME
-  /*
-   * In calls to Simulator::Now we have a basic choice to make.  We can either
-   * report back the time the simulator thinks it should be, or we can report 
-   * the time it actually is.
-   *
-   * The synchronizer will make an attempt to cause these two numbers to be as
-   * close as possible to each other, but they will never be exactly the same.
-   * We give the client a choice in this respect.  
-   *
-   * If the client sets m_reportSimulatedTime to true, the behavior will be that 
-   * the simulator runs as close as possible to real time, but reports back to the
-   * client that it is running at exactly real time, and consuming no real time 
-   * as each event executes.  This allows for deterministic execution times and
-   * repeatable trace files.
-   *
-   * If the client sets m_reportSimulatedTime to false, the behavior will be that 
-   * the simulator runs as close as possible to real time, and reports back to the
-   * client the real wall-clock time whenever it asks.  Real time will be consumed
-   * as each event executes.  This allows for non-deterministic execution times and
-   * real variations in event executions.  Simulation time will be influenced by
-   * variations in host process scheduling, for example.
-   */
-  bool m_reportSimulatedTime;
-#endif
-
   /**
    * The policy to use if the simulation cannot keep synchronized to real-time.
    */
