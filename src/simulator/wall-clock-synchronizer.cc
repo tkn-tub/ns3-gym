@@ -56,11 +56,17 @@ WallClockSynchronizer::WallClockSynchronizer ()
 // requires a delay less than a jiffy.  This is on the order of one millisecond
 // (999848 ns) on the ns-regression machine.
 // 
+// If the underlying OS does not support posix clocks, we'll just assume a 
+// one millisecond quantum and deal with this as best we can
+
+#ifdef CLOCK_REALTIME
   struct timespec ts;
   clock_getres (CLOCK_REALTIME, &ts);
   m_jiffy = ts.tv_sec * NS_PER_SEC + ts.tv_nsec;
   NS_LOG_INFO ("Jiffy is " << m_jiffy << " ns");
-
+#else
+  m_jiffy = 1000000;
+#endif
 #if 0
 //
 // DANGER DANGER WILL ROBINSON
