@@ -19,10 +19,14 @@ def register_types(module):
     module.add_class('Watchdog')
     ## simulator.h: ns3::Simulator [class]
     module.add_class('Simulator', is_singleton=True)
+    ## event-impl.h: ns3::EventLock [class]
+    module.add_class('EventLock', allow_subclassing=True)
     ## event-id.h: ns3::EventId [class]
     module.add_class('EventId')
     ## event-impl.h: ns3::EventImpl [class]
     module.add_class('EventImpl', allow_subclassing=True)
+    ## realtime-simulator-impl.h: ns3::RealtimeEventLock [class]
+    module.add_class('RealtimeEventLock', parent=root_module['ns3::EventLock'])
     ## high-precision-128.h: ns3::HighPrecision [class]
     module.add_class('HighPrecision')
     ## nstime.h: ns3::TimeChecker [class]
@@ -35,14 +39,22 @@ def register_types(module):
     module.add_class('TimeValue', parent=root_module['ns3::AttributeValue'])
     ## simulator-impl.h: ns3::SimulatorImpl [class]
     module.add_class('SimulatorImpl', parent=root_module['ns3::Object'])
+    ## realtime-simulator-impl.h: ns3::RealtimeSimulatorImpl [class]
+    module.add_class('RealtimeSimulatorImpl', parent=root_module['ns3::SimulatorImpl'])
+    ## realtime-simulator-impl.h: ns3::RealtimeSimulatorImpl::SynchronizationMode [enumeration]
+    module.add_enum('SynchronizationMode', ['SYNC_BEST_EFFORT', 'SYNC_HARD_LIMIT'], outer_class=root_module['ns3::RealtimeSimulatorImpl'])
     ## default-simulator-impl.h: ns3::DefaultSimulatorImpl [class]
     module.add_class('DefaultSimulatorImpl', parent=root_module['ns3::SimulatorImpl'])
+    ## synchronizer.h: ns3::Synchronizer [class]
+    module.add_class('Synchronizer', parent=root_module['ns3::Object'])
     ## heap-scheduler.h: ns3::HeapScheduler [class]
     module.add_class('HeapScheduler', parent=root_module['ns3::Scheduler'])
     ## list-scheduler.h: ns3::ListScheduler [class]
     module.add_class('ListScheduler', parent=root_module['ns3::Scheduler'])
     ## map-scheduler.h: ns3::MapScheduler [class]
     module.add_class('MapScheduler', parent=root_module['ns3::Scheduler'])
+    ## wall-clock-synchronizer.h: ns3::WallClockSynchronizer [class]
+    module.add_class('WallClockSynchronizer', parent=root_module['ns3::Synchronizer'])
     
     ## Register a nested module for the namespace internal
     
@@ -93,21 +105,28 @@ def register_methods(root_module):
     register_Ns3Scalar_methods(root_module, root_module['ns3::Scalar'])
     register_Ns3Watchdog_methods(root_module, root_module['ns3::Watchdog'])
     register_Ns3Simulator_methods(root_module, root_module['ns3::Simulator'])
+    register_Ns3EventLock_methods(root_module, root_module['ns3::EventLock'])
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
     register_Ns3EventImpl_methods(root_module, root_module['ns3::EventImpl'])
+    register_Ns3RealtimeEventLock_methods(root_module, root_module['ns3::RealtimeEventLock'])
     register_Ns3HighPrecision_methods(root_module, root_module['ns3::HighPrecision'])
     register_Ns3TimeChecker_methods(root_module, root_module['ns3::TimeChecker'])
     register_Ns3Scheduler_methods(root_module, root_module['ns3::Scheduler'])
     register_Ns3SchedulerEventKey_methods(root_module, root_module['ns3::Scheduler::EventKey'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
     register_Ns3SimulatorImpl_methods(root_module, root_module['ns3::SimulatorImpl'])
+    register_Ns3RealtimeSimulatorImpl_methods(root_module, root_module['ns3::RealtimeSimulatorImpl'])
     register_Ns3DefaultSimulatorImpl_methods(root_module, root_module['ns3::DefaultSimulatorImpl'])
+    register_Ns3Synchronizer_methods(root_module, root_module['ns3::Synchronizer'])
     register_Ns3HeapScheduler_methods(root_module, root_module['ns3::HeapScheduler'])
     register_Ns3ListScheduler_methods(root_module, root_module['ns3::ListScheduler'])
     register_Ns3MapScheduler_methods(root_module, root_module['ns3::MapScheduler'])
+    register_Ns3WallClockSynchronizer_methods(root_module, root_module['ns3::WallClockSynchronizer'])
     return
 
 def register_Ns3Timer_methods(root_module, cls):
+    ## timer.h: ns3::Timer::Timer(ns3::Timer const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Timer&', 'arg0', is_const=True)])
     ## timer.h: ns3::Timer::Timer() [constructor]
     cls.add_constructor([])
     ## timer.h: ns3::Timer::Timer(ns3::Timer::DestroyPolicy destroyPolicy) [constructor]
@@ -170,10 +189,13 @@ def register_Ns3Timer_methods(root_module, cls):
     cls.add_method('Resume', 
                    'void', 
                    [])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3TimerImpl_methods(root_module, cls):
+    ## timer-impl.h: ns3::TimerImpl::TimerImpl(ns3::TimerImpl const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TimerImpl&', 'arg0', is_const=True)])
+    ## timer-impl.h: ns3::TimerImpl::TimerImpl() [constructor]
+    cls.add_constructor([])
     ## timer-impl.h: ns3::EventId ns3::TimerImpl::Schedule(ns3::Time const & delay) [member function]
     cls.add_method('Schedule', 
                    'ns3::EventId', 
@@ -184,8 +206,6 @@ def register_Ns3TimerImpl_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
-    cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3Time_methods(root_module, cls):
@@ -325,16 +345,19 @@ def register_Ns3Scalar_methods(root_module, cls):
     return
 
 def register_Ns3Watchdog_methods(root_module, cls):
+    ## watchdog.h: ns3::Watchdog::Watchdog(ns3::Watchdog const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Watchdog&', 'arg0', is_const=True)])
     ## watchdog.h: ns3::Watchdog::Watchdog() [constructor]
     cls.add_constructor([])
     ## watchdog.h: void ns3::Watchdog::Ping(ns3::Time delay) [member function]
     cls.add_method('Ping', 
                    'void', 
                    [param('ns3::Time', 'delay')])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3Simulator_methods(root_module, cls):
+    ## simulator.h: ns3::Simulator::Simulator(ns3::Simulator const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Simulator&', 'arg0', is_const=True)])
     ## simulator.h: static void ns3::Simulator::SetImplementation(ns3::Ptr<ns3::SimulatorImpl> impl) [member function]
     cls.add_method('SetImplementation', 
                    'void', 
@@ -415,7 +438,23 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_static=True)
-    cls.add_copy_constructor()
+    return
+
+def register_Ns3EventLock_methods(root_module, cls):
+    ## event-impl.h: ns3::EventLock::EventLock(ns3::EventLock const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EventLock&', 'arg0', is_const=True)])
+    ## event-impl.h: ns3::EventLock::EventLock() [constructor]
+    cls.add_constructor([])
+    ## event-impl.h: void ns3::EventLock::Lock() [member function]
+    cls.add_method('Lock', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## event-impl.h: void ns3::EventLock::Unlock() [member function]
+    cls.add_method('Unlock', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3EventId_methods(root_module, cls):
@@ -457,6 +496,8 @@ def register_Ns3EventId_methods(root_module, cls):
     return
 
 def register_Ns3EventImpl_methods(root_module, cls):
+    ## event-impl.h: ns3::EventImpl::EventImpl(ns3::EventImpl const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EventImpl&', 'arg0', is_const=True)])
     ## event-impl.h: ns3::EventImpl::EventImpl() [constructor]
     cls.add_constructor([])
     ## event-impl.h: void ns3::EventImpl::Ref() const [member function]
@@ -481,12 +522,38 @@ def register_Ns3EventImpl_methods(root_module, cls):
     cls.add_method('IsCancelled', 
                    'bool', 
                    [])
+    ## event-impl.h: static void ns3::EventImpl::SetEventLock(ns3::EventLock * eventLock) [member function]
+    cls.add_method('SetEventLock', 
+                   'void', 
+                   [param('ns3::EventLock *', 'eventLock')], 
+                   is_static=True)
+    ## event-impl.h: static void ns3::EventImpl::SetNoEventLock() [member function]
+    cls.add_method('SetNoEventLock', 
+                   'void', 
+                   [], 
+                   is_static=True)
     ## event-impl.h: void ns3::EventImpl::Notify() [member function]
     cls.add_method('Notify', 
                    'void', 
                    [], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
-    cls.add_copy_constructor()
+    return
+
+def register_Ns3RealtimeEventLock_methods(root_module, cls):
+    ## realtime-simulator-impl.h: ns3::RealtimeEventLock::RealtimeEventLock(ns3::RealtimeEventLock const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RealtimeEventLock&', 'arg0', is_const=True)])
+    ## realtime-simulator-impl.h: ns3::RealtimeEventLock::RealtimeEventLock() [constructor]
+    cls.add_constructor([])
+    ## realtime-simulator-impl.h: void ns3::RealtimeEventLock::Lock() [member function]
+    cls.add_method('Lock', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## realtime-simulator-impl.h: void ns3::RealtimeEventLock::Unlock() [member function]
+    cls.add_method('Unlock', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     return
 
 def register_Ns3HighPrecision_methods(root_module, cls):
@@ -542,11 +609,17 @@ def register_Ns3HighPrecision_methods(root_module, cls):
     return
 
 def register_Ns3TimeChecker_methods(root_module, cls):
+    ## nstime.h: ns3::TimeChecker::TimeChecker(ns3::TimeChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TimeChecker&', 'arg0', is_const=True)])
+    ## nstime.h: ns3::TimeChecker::TimeChecker() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3Scheduler_methods(root_module, cls):
+    ## scheduler.h: ns3::Scheduler::Scheduler(ns3::Scheduler const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Scheduler&', 'arg0', is_const=True)])
+    ## scheduler.h: ns3::Scheduler::Scheduler() [constructor]
+    cls.add_constructor([])
     ## scheduler.h: static ns3::TypeId ns3::Scheduler::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -577,8 +650,6 @@ def register_Ns3Scheduler_methods(root_module, cls):
                    'bool', 
                    [param('ns3::EventId&', 'id', is_const=True)], 
                    is_pure_virtual=True, is_virtual=True)
-    cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3SchedulerEventKey_methods(root_module, cls):
@@ -586,11 +657,15 @@ def register_Ns3SchedulerEventKey_methods(root_module, cls):
     cls.add_instance_attribute('m_ts', 'uint64_t', is_const=False)
     ## scheduler.h: ns3::Scheduler::EventKey::m_uid [variable]
     cls.add_instance_attribute('m_uid', 'uint32_t', is_const=False)
+    ## scheduler.h: ns3::Scheduler::EventKey::EventKey(ns3::Scheduler::EventKey const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Scheduler::EventKey&', 'arg0', is_const=True)])
+    ## scheduler.h: ns3::Scheduler::EventKey::EventKey() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3TimeValue_methods(root_module, cls):
+    ## nstime.h: ns3::TimeValue::TimeValue(ns3::TimeValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TimeValue&', 'arg0', is_const=True)])
     ## nstime.h: ns3::TimeValue::TimeValue() [constructor]
     cls.add_constructor([])
     ## nstime.h: ns3::TimeValue::TimeValue(ns3::Time const & value) [constructor]
@@ -619,10 +694,13 @@ def register_Ns3TimeValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3SimulatorImpl_methods(root_module, cls):
+    ## simulator-impl.h: ns3::SimulatorImpl::SimulatorImpl(ns3::SimulatorImpl const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::SimulatorImpl&', 'arg0', is_const=True)])
+    ## simulator-impl.h: ns3::SimulatorImpl::SimulatorImpl() [constructor]
+    cls.add_constructor([])
     ## simulator-impl.h: void ns3::SimulatorImpl::Destroy() [member function]
     cls.add_method('Destroy', 
                    'void', 
@@ -713,11 +791,131 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    'ns3::Ptr< ns3::Scheduler >', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
+def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
+    ## realtime-simulator-impl.h: ns3::RealtimeSimulatorImpl::RealtimeSimulatorImpl(ns3::RealtimeSimulatorImpl const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RealtimeSimulatorImpl&', 'arg0', is_const=True)])
+    ## realtime-simulator-impl.h: static ns3::TypeId ns3::RealtimeSimulatorImpl::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## realtime-simulator-impl.h: ns3::RealtimeSimulatorImpl::RealtimeSimulatorImpl() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
+    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::Destroy() [member function]
+    cls.add_method('Destroy', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## realtime-simulator-impl.h: bool ns3::RealtimeSimulatorImpl::IsFinished() const [member function]
+    cls.add_method('IsFinished', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## realtime-simulator-impl.h: ns3::Time ns3::RealtimeSimulatorImpl::Next() const [member function]
+    cls.add_method('Next', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::Stop() [member function]
+    cls.add_method('Stop', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::Stop(ns3::Time const & time) [member function]
+    cls.add_method('Stop', 
+                   'void', 
+                   [param('ns3::Time&', 'time', is_const=True)], 
+                   is_virtual=True)
+    ## realtime-simulator-impl.h: ns3::EventId ns3::RealtimeSimulatorImpl::Schedule(ns3::Time const & time, ns3::Ptr<ns3::EventImpl> const & event) [member function]
+    cls.add_method('Schedule', 
+                   'ns3::EventId', 
+                   [param('ns3::Time&', 'time', is_const=True), param('ns3::Ptr< ns3::EventImpl >&', 'event', is_const=True)], 
+                   is_virtual=True)
+    ## realtime-simulator-impl.h: ns3::EventId ns3::RealtimeSimulatorImpl::ScheduleNow(ns3::Ptr<ns3::EventImpl> const & event) [member function]
+    cls.add_method('ScheduleNow', 
+                   'ns3::EventId', 
+                   [param('ns3::Ptr< ns3::EventImpl >&', 'event', is_const=True)], 
+                   is_virtual=True)
+    ## realtime-simulator-impl.h: ns3::EventId ns3::RealtimeSimulatorImpl::ScheduleDestroy(ns3::Ptr<ns3::EventImpl> const & event) [member function]
+    cls.add_method('ScheduleDestroy', 
+                   'ns3::EventId', 
+                   [param('ns3::Ptr< ns3::EventImpl >&', 'event', is_const=True)], 
+                   is_virtual=True)
+    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::Remove(ns3::EventId const & ev) [member function]
+    cls.add_method('Remove', 
+                   'void', 
+                   [param('ns3::EventId&', 'ev', is_const=True)], 
+                   is_virtual=True)
+    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::Cancel(ns3::EventId const & ev) [member function]
+    cls.add_method('Cancel', 
+                   'void', 
+                   [param('ns3::EventId&', 'ev', is_const=True)], 
+                   is_virtual=True)
+    ## realtime-simulator-impl.h: bool ns3::RealtimeSimulatorImpl::IsExpired(ns3::EventId const & ev) const [member function]
+    cls.add_method('IsExpired', 
+                   'bool', 
+                   [param('ns3::EventId&', 'ev', is_const=True)], 
+                   is_const=True, is_virtual=True)
+    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::RunOneEvent() [member function]
+    cls.add_method('RunOneEvent', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::Run() [member function]
+    cls.add_method('Run', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## realtime-simulator-impl.h: ns3::Time ns3::RealtimeSimulatorImpl::Now() const [member function]
+    cls.add_method('Now', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## realtime-simulator-impl.h: ns3::Time ns3::RealtimeSimulatorImpl::GetDelayLeft(ns3::EventId const & id) const [member function]
+    cls.add_method('GetDelayLeft', 
+                   'ns3::Time', 
+                   [param('ns3::EventId&', 'id', is_const=True)], 
+                   is_const=True, is_virtual=True)
+    ## realtime-simulator-impl.h: ns3::Time ns3::RealtimeSimulatorImpl::GetMaximumSimulationTime() const [member function]
+    cls.add_method('GetMaximumSimulationTime', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::SetScheduler(ns3::Ptr<ns3::Scheduler> scheduler) [member function]
+    cls.add_method('SetScheduler', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Scheduler >', 'scheduler')], 
+                   is_virtual=True)
+    ## realtime-simulator-impl.h: ns3::Ptr<ns3::Scheduler> ns3::RealtimeSimulatorImpl::GetScheduler() const [member function]
+    cls.add_method('GetScheduler', 
+                   'ns3::Ptr< ns3::Scheduler >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::SetSynchronizationMode(ns3::RealtimeSimulatorImpl::SynchronizationMode mode) [member function]
+    cls.add_method('SetSynchronizationMode', 
+                   'void', 
+                   [param('ns3::RealtimeSimulatorImpl::SynchronizationMode', 'mode')])
+    ## realtime-simulator-impl.h: ns3::RealtimeSimulatorImpl::SynchronizationMode ns3::RealtimeSimulatorImpl::GetSynchronizationMode() const [member function]
+    cls.add_method('GetSynchronizationMode', 
+                   'ns3::RealtimeSimulatorImpl::SynchronizationMode', 
+                   [], 
+                   is_const=True)
+    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::SetHardLimit(ns3::Time limit) [member function]
+    cls.add_method('SetHardLimit', 
+                   'void', 
+                   [param('ns3::Time', 'limit')])
+    ## realtime-simulator-impl.h: ns3::Time ns3::RealtimeSimulatorImpl::GetHardLimit() const [member function]
+    cls.add_method('GetHardLimit', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
     return
 
 def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
+    ## default-simulator-impl.h: ns3::DefaultSimulatorImpl::DefaultSimulatorImpl(ns3::DefaultSimulatorImpl const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DefaultSimulatorImpl&', 'arg0', is_const=True)])
     ## default-simulator-impl.h: static ns3::TypeId ns3::DefaultSimulatorImpl::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -815,10 +1013,108 @@ def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
                    'ns3::Ptr< ns3::Scheduler >', 
                    [], 
                    is_const=True, is_virtual=True)
-    cls.add_copy_constructor()
+    return
+
+def register_Ns3Synchronizer_methods(root_module, cls):
+    ## synchronizer.h: ns3::Synchronizer::Synchronizer(ns3::Synchronizer const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Synchronizer&', 'arg0', is_const=True)])
+    ## synchronizer.h: static ns3::TypeId ns3::Synchronizer::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## synchronizer.h: ns3::Synchronizer::Synchronizer() [constructor]
+    cls.add_constructor([])
+    ## synchronizer.h: bool ns3::Synchronizer::Realtime() [member function]
+    cls.add_method('Realtime', 
+                   'bool', 
+                   [])
+    ## synchronizer.h: uint64_t ns3::Synchronizer::GetCurrentRealtime() [member function]
+    cls.add_method('GetCurrentRealtime', 
+                   'uint64_t', 
+                   [])
+    ## synchronizer.h: void ns3::Synchronizer::SetOrigin(uint64_t ts) [member function]
+    cls.add_method('SetOrigin', 
+                   'void', 
+                   [param('uint64_t', 'ts')])
+    ## synchronizer.h: uint64_t ns3::Synchronizer::GetOrigin() [member function]
+    cls.add_method('GetOrigin', 
+                   'uint64_t', 
+                   [])
+    ## synchronizer.h: int64_t ns3::Synchronizer::GetDrift(uint64_t ts) [member function]
+    cls.add_method('GetDrift', 
+                   'int64_t', 
+                   [param('uint64_t', 'ts')])
+    ## synchronizer.h: bool ns3::Synchronizer::Synchronize(uint64_t tsCurrent, uint64_t tsDelay) [member function]
+    cls.add_method('Synchronize', 
+                   'bool', 
+                   [param('uint64_t', 'tsCurrent'), param('uint64_t', 'tsDelay')])
+    ## synchronizer.h: void ns3::Synchronizer::Signal() [member function]
+    cls.add_method('Signal', 
+                   'void', 
+                   [])
+    ## synchronizer.h: void ns3::Synchronizer::SetCondition(bool arg0) [member function]
+    cls.add_method('SetCondition', 
+                   'void', 
+                   [param('bool', 'arg0')])
+    ## synchronizer.h: void ns3::Synchronizer::EventStart() [member function]
+    cls.add_method('EventStart', 
+                   'void', 
+                   [])
+    ## synchronizer.h: uint64_t ns3::Synchronizer::EventEnd() [member function]
+    cls.add_method('EventEnd', 
+                   'uint64_t', 
+                   [])
+    ## synchronizer.h: void ns3::Synchronizer::DoSetOrigin(uint64_t ns) [member function]
+    cls.add_method('DoSetOrigin', 
+                   'void', 
+                   [param('uint64_t', 'ns')], 
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+    ## synchronizer.h: bool ns3::Synchronizer::DoRealtime() [member function]
+    cls.add_method('DoRealtime', 
+                   'bool', 
+                   [], 
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+    ## synchronizer.h: uint64_t ns3::Synchronizer::DoGetCurrentRealtime() [member function]
+    cls.add_method('DoGetCurrentRealtime', 
+                   'uint64_t', 
+                   [], 
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+    ## synchronizer.h: bool ns3::Synchronizer::DoSynchronize(uint64_t nsCurrent, uint64_t nsDelay) [member function]
+    cls.add_method('DoSynchronize', 
+                   'bool', 
+                   [param('uint64_t', 'nsCurrent'), param('uint64_t', 'nsDelay')], 
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+    ## synchronizer.h: void ns3::Synchronizer::DoSignal() [member function]
+    cls.add_method('DoSignal', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+    ## synchronizer.h: void ns3::Synchronizer::DoSetCondition(bool arg0) [member function]
+    cls.add_method('DoSetCondition', 
+                   'void', 
+                   [param('bool', 'arg0')], 
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+    ## synchronizer.h: int64_t ns3::Synchronizer::DoGetDrift(uint64_t ns) [member function]
+    cls.add_method('DoGetDrift', 
+                   'int64_t', 
+                   [param('uint64_t', 'ns')], 
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+    ## synchronizer.h: void ns3::Synchronizer::DoEventStart() [member function]
+    cls.add_method('DoEventStart', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+    ## synchronizer.h: uint64_t ns3::Synchronizer::DoEventEnd() [member function]
+    cls.add_method('DoEventEnd', 
+                   'uint64_t', 
+                   [], 
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
     return
 
 def register_Ns3HeapScheduler_methods(root_module, cls):
+    ## heap-scheduler.h: ns3::HeapScheduler::HeapScheduler(ns3::HeapScheduler const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::HeapScheduler&', 'arg0', is_const=True)])
     ## heap-scheduler.h: ns3::HeapScheduler::HeapScheduler() [constructor]
     cls.add_constructor([])
     ## heap-scheduler.h: void ns3::HeapScheduler::Insert(ns3::EventId const & id) [member function]
@@ -846,10 +1142,11 @@ def register_Ns3HeapScheduler_methods(root_module, cls):
                    'bool', 
                    [param('ns3::EventId&', 'ev', is_const=True)], 
                    is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3ListScheduler_methods(root_module, cls):
+    ## list-scheduler.h: ns3::ListScheduler::ListScheduler(ns3::ListScheduler const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ListScheduler&', 'arg0', is_const=True)])
     ## list-scheduler.h: ns3::ListScheduler::ListScheduler() [constructor]
     cls.add_constructor([])
     ## list-scheduler.h: void ns3::ListScheduler::Insert(ns3::EventId const & id) [member function]
@@ -877,10 +1174,11 @@ def register_Ns3ListScheduler_methods(root_module, cls):
                    'bool', 
                    [param('ns3::EventId&', 'ev', is_const=True)], 
                    is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3MapScheduler_methods(root_module, cls):
+    ## map-scheduler.h: ns3::MapScheduler::MapScheduler(ns3::MapScheduler const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::MapScheduler&', 'arg0', is_const=True)])
     ## map-scheduler.h: ns3::MapScheduler::MapScheduler() [constructor]
     cls.add_constructor([])
     ## map-scheduler.h: void ns3::MapScheduler::Insert(ns3::EventId const & id) [member function]
@@ -908,7 +1206,119 @@ def register_Ns3MapScheduler_methods(root_module, cls):
                    'bool', 
                    [param('ns3::EventId&', 'ev', is_const=True)], 
                    is_virtual=True)
-    cls.add_copy_constructor()
+    return
+
+def register_Ns3WallClockSynchronizer_methods(root_module, cls):
+    ## wall-clock-synchronizer.h: ns3::WallClockSynchronizer::US_PER_NS [variable]
+    cls.add_static_attribute('US_PER_NS', retval('uint64_t', is_const=True), is_const=True)
+    ## wall-clock-synchronizer.h: ns3::WallClockSynchronizer::US_PER_SEC [variable]
+    cls.add_static_attribute('US_PER_SEC', retval('uint64_t', is_const=True), is_const=True)
+    ## wall-clock-synchronizer.h: ns3::WallClockSynchronizer::NS_PER_SEC [variable]
+    cls.add_static_attribute('NS_PER_SEC', retval('uint64_t', is_const=True), is_const=True)
+    ## wall-clock-synchronizer.h: ns3::WallClockSynchronizer::WallClockSynchronizer(ns3::WallClockSynchronizer const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WallClockSynchronizer&', 'arg0', is_const=True)])
+    ## wall-clock-synchronizer.h: ns3::WallClockSynchronizer::WallClockSynchronizer() [constructor]
+    cls.add_constructor([])
+    ## wall-clock-synchronizer.h: bool ns3::WallClockSynchronizer::DoRealtime() [member function]
+    cls.add_method('DoRealtime', 
+                   'bool', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## wall-clock-synchronizer.h: uint64_t ns3::WallClockSynchronizer::DoGetCurrentRealtime() [member function]
+    cls.add_method('DoGetCurrentRealtime', 
+                   'uint64_t', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## wall-clock-synchronizer.h: void ns3::WallClockSynchronizer::DoSetOrigin(uint64_t ns) [member function]
+    cls.add_method('DoSetOrigin', 
+                   'void', 
+                   [param('uint64_t', 'ns')], 
+                   visibility='protected', is_virtual=True)
+    ## wall-clock-synchronizer.h: int64_t ns3::WallClockSynchronizer::DoGetDrift(uint64_t ns) [member function]
+    cls.add_method('DoGetDrift', 
+                   'int64_t', 
+                   [param('uint64_t', 'ns')], 
+                   visibility='protected', is_virtual=True)
+    ## wall-clock-synchronizer.h: bool ns3::WallClockSynchronizer::DoSynchronize(uint64_t nsCurrent, uint64_t nsDelay) [member function]
+    cls.add_method('DoSynchronize', 
+                   'bool', 
+                   [param('uint64_t', 'nsCurrent'), param('uint64_t', 'nsDelay')], 
+                   visibility='protected', is_virtual=True)
+    ## wall-clock-synchronizer.h: void ns3::WallClockSynchronizer::DoSignal() [member function]
+    cls.add_method('DoSignal', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## wall-clock-synchronizer.h: void ns3::WallClockSynchronizer::DoSetCondition(bool cond) [member function]
+    cls.add_method('DoSetCondition', 
+                   'void', 
+                   [param('bool', 'cond')], 
+                   visibility='protected', is_virtual=True)
+    ## wall-clock-synchronizer.h: void ns3::WallClockSynchronizer::DoEventStart() [member function]
+    cls.add_method('DoEventStart', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## wall-clock-synchronizer.h: uint64_t ns3::WallClockSynchronizer::DoEventEnd() [member function]
+    cls.add_method('DoEventEnd', 
+                   'uint64_t', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## wall-clock-synchronizer.h: bool ns3::WallClockSynchronizer::SpinWait(uint64_t arg0) [member function]
+    cls.add_method('SpinWait', 
+                   'bool', 
+                   [param('uint64_t', 'arg0')], 
+                   visibility='protected')
+    ## wall-clock-synchronizer.h: bool ns3::WallClockSynchronizer::SleepWait(uint64_t arg0) [member function]
+    cls.add_method('SleepWait', 
+                   'bool', 
+                   [param('uint64_t', 'arg0')], 
+                   visibility='protected')
+    ## wall-clock-synchronizer.h: uint64_t ns3::WallClockSynchronizer::DriftCorrect(uint64_t nsNow, uint64_t nsDelay) [member function]
+    cls.add_method('DriftCorrect', 
+                   'uint64_t', 
+                   [param('uint64_t', 'nsNow'), param('uint64_t', 'nsDelay')], 
+                   visibility='protected')
+    ## wall-clock-synchronizer.h: uint64_t ns3::WallClockSynchronizer::GetRealtime() [member function]
+    cls.add_method('GetRealtime', 
+                   'uint64_t', 
+                   [], 
+                   visibility='protected')
+    ## wall-clock-synchronizer.h: uint64_t ns3::WallClockSynchronizer::GetNormalizedRealtime() [member function]
+    cls.add_method('GetNormalizedRealtime', 
+                   'uint64_t', 
+                   [], 
+                   visibility='protected')
+    ## wall-clock-synchronizer.h: void ns3::WallClockSynchronizer::NsToTimespec(int64_t ns, timespec * ts) [member function]
+    cls.add_method('NsToTimespec', 
+                   'void', 
+                   [param('int64_t', 'ns'), param('timespec *', 'ts')], 
+                   visibility='protected')
+    ## wall-clock-synchronizer.h: void ns3::WallClockSynchronizer::NsToTimeval(int64_t ns, timeval * tv) [member function]
+    cls.add_method('NsToTimeval', 
+                   'void', 
+                   [param('int64_t', 'ns'), param('timeval *', 'tv')], 
+                   visibility='protected')
+    ## wall-clock-synchronizer.h: uint64_t ns3::WallClockSynchronizer::TimespecToNs(timespec * ts) [member function]
+    cls.add_method('TimespecToNs', 
+                   'uint64_t', 
+                   [param('timespec *', 'ts')], 
+                   visibility='protected')
+    ## wall-clock-synchronizer.h: uint64_t ns3::WallClockSynchronizer::TimevalToNs(timeval * tv) [member function]
+    cls.add_method('TimevalToNs', 
+                   'uint64_t', 
+                   [param('timeval *', 'tv')], 
+                   visibility='protected')
+    ## wall-clock-synchronizer.h: void ns3::WallClockSynchronizer::TimespecAdd(timespec * ts1, timespec * ts2, timespec * result) [member function]
+    cls.add_method('TimespecAdd', 
+                   'void', 
+                   [param('timespec *', 'ts1'), param('timespec *', 'ts2'), param('timespec *', 'result')], 
+                   visibility='protected')
+    ## wall-clock-synchronizer.h: void ns3::WallClockSynchronizer::TimevalAdd(timeval * tv1, timeval * tv2, timeval * result) [member function]
+    cls.add_method('TimevalAdd', 
+                   'void', 
+                   [param('timeval *', 'tv1'), param('timeval *', 'tv2'), param('timeval *', 'result')], 
+                   visibility='protected')
     return
 
 def register_functions(root_module):

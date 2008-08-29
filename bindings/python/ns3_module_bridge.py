@@ -54,6 +54,8 @@ def register_methods(root_module):
     return
 
 def register_Ns3BridgeNetDevice_methods(root_module, cls):
+    ## bridge-net-device.h: ns3::BridgeNetDevice::BridgeNetDevice(ns3::BridgeNetDevice const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BridgeNetDevice&', 'arg0', is_const=True)])
     ## bridge-net-device.h: static ns3::TypeId ns3::BridgeNetDevice::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -170,15 +172,15 @@ def register_Ns3BridgeNetDevice_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## bridge-net-device.h: void ns3::BridgeNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty> cb) [member function]
+    ## bridge-net-device.h: void ns3::BridgeNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty> cb) [member function]
     cls.add_method('SetReceiveCallback', 
                    'void', 
-                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr<const ns3::Packet >, unsigned short, ns3::Address const&, ns3::empty, ns3::empty >', 'cb')], 
+                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const&, ns3::empty, ns3::empty >', 'cb')], 
                    is_virtual=True)
-    ## bridge-net-device.h: void ns3::BridgeNetDevice::SetPromiscReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> cb) [member function]
+    ## bridge-net-device.h: void ns3::BridgeNetDevice::SetPromiscReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> cb) [member function]
     cls.add_method('SetPromiscReceiveCallback', 
                    'void', 
-                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr<const ns3::Packet >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], 
+                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], 
                    is_virtual=True)
     ## bridge-net-device.h: bool ns3::BridgeNetDevice::SupportsPromiscuous() const [member function]
     cls.add_method('SupportsPromiscuous', 
@@ -190,20 +192,20 @@ def register_Ns3BridgeNetDevice_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## bridge-net-device.h: void ns3::BridgeNetDevice::ReceiveFromDevice(ns3::Ptr<ns3::NetDevice> device, ns3::Ptr<ns3::Packet> packet, uint16_t protocol, ns3::Address const & source, ns3::Address const & destination, ns3::NetDevice::PacketType packetType) [member function]
+    ## bridge-net-device.h: void ns3::BridgeNetDevice::ReceiveFromDevice(ns3::Ptr<ns3::NetDevice> device, ns3::Ptr<const ns3::Packet> packet, uint16_t protocol, ns3::Address const & source, ns3::Address const & destination, ns3::NetDevice::PacketType packetType) [member function]
     cls.add_method('ReceiveFromDevice', 
                    'void', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::Packet >', 'packet'), param('uint16_t', 'protocol'), param('ns3::Address&', 'source', is_const=True), param('ns3::Address&', 'destination', is_const=True), param('ns3::NetDevice::PacketType', 'packetType')], 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< const ns3::Packet >', 'packet'), param('uint16_t', 'protocol'), param('ns3::Address&', 'source', is_const=True), param('ns3::Address&', 'destination', is_const=True), param('ns3::NetDevice::PacketType', 'packetType')], 
                    visibility='protected')
-    ## bridge-net-device.h: void ns3::BridgeNetDevice::ForwardUnicast(ns3::Ptr<ns3::NetDevice> incomingPort, ns3::Ptr<ns3::Packet> packet, uint16_t protocol, ns3::Mac48Address src, ns3::Mac48Address dst) [member function]
+    ## bridge-net-device.h: void ns3::BridgeNetDevice::ForwardUnicast(ns3::Ptr<ns3::NetDevice> incomingPort, ns3::Ptr<const ns3::Packet> packet, uint16_t protocol, ns3::Mac48Address src, ns3::Mac48Address dst) [member function]
     cls.add_method('ForwardUnicast', 
                    'void', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'incomingPort'), param('ns3::Ptr< ns3::Packet >', 'packet'), param('uint16_t', 'protocol'), param('ns3::Mac48Address', 'src'), param('ns3::Mac48Address', 'dst')], 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'incomingPort'), param('ns3::Ptr< const ns3::Packet >', 'packet'), param('uint16_t', 'protocol'), param('ns3::Mac48Address', 'src'), param('ns3::Mac48Address', 'dst')], 
                    visibility='protected')
-    ## bridge-net-device.h: void ns3::BridgeNetDevice::ForwardBroadcast(ns3::Ptr<ns3::NetDevice> incomingPort, ns3::Ptr<ns3::Packet> packet, uint16_t protocol, ns3::Mac48Address src, ns3::Mac48Address dst) [member function]
+    ## bridge-net-device.h: void ns3::BridgeNetDevice::ForwardBroadcast(ns3::Ptr<ns3::NetDevice> incomingPort, ns3::Ptr<const ns3::Packet> packet, uint16_t protocol, ns3::Mac48Address src, ns3::Mac48Address dst) [member function]
     cls.add_method('ForwardBroadcast', 
                    'void', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'incomingPort'), param('ns3::Ptr< ns3::Packet >', 'packet'), param('uint16_t', 'protocol'), param('ns3::Mac48Address', 'src'), param('ns3::Mac48Address', 'dst')], 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'incomingPort'), param('ns3::Ptr< const ns3::Packet >', 'packet'), param('uint16_t', 'protocol'), param('ns3::Mac48Address', 'src'), param('ns3::Mac48Address', 'dst')], 
                    visibility='protected')
     ## bridge-net-device.h: void ns3::BridgeNetDevice::Learn(ns3::Mac48Address source, ns3::Ptr<ns3::NetDevice> port) [member function]
     cls.add_method('Learn', 
@@ -215,10 +217,11 @@ def register_Ns3BridgeNetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('ns3::Mac48Address', 'source')], 
                    visibility='protected')
-    cls.add_copy_constructor()
     return
 
 def register_Ns3BridgeChannel_methods(root_module, cls):
+    ## bridge-channel.h: ns3::BridgeChannel::BridgeChannel(ns3::BridgeChannel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BridgeChannel&', 'arg0', is_const=True)])
     ## bridge-channel.h: static ns3::TypeId ns3::BridgeChannel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -240,7 +243,6 @@ def register_Ns3BridgeChannel_methods(root_module, cls):
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('uint32_t', 'i')], 
                    is_const=True, is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):

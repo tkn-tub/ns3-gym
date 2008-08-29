@@ -180,6 +180,8 @@ def register_Ns3GlobalRoutingLSA_methods(root_module, cls):
     return
 
 def register_Ns3GlobalRoutingLinkRecord_methods(root_module, cls):
+    ## global-router-interface.h: ns3::GlobalRoutingLinkRecord::GlobalRoutingLinkRecord(ns3::GlobalRoutingLinkRecord const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::GlobalRoutingLinkRecord&', 'arg0', is_const=True)])
     ## global-router-interface.h: ns3::GlobalRoutingLinkRecord::GlobalRoutingLinkRecord() [constructor]
     cls.add_constructor([])
     ## global-router-interface.h: ns3::GlobalRoutingLinkRecord::GlobalRoutingLinkRecord(ns3::GlobalRoutingLinkRecord::LinkType linkType, ns3::Ipv4Address linkId, ns3::Ipv4Address linkData, uint16_t metric) [constructor]
@@ -220,7 +222,6 @@ def register_Ns3GlobalRoutingLinkRecord_methods(root_module, cls):
     cls.add_method('SetMetric', 
                    'void', 
                    [param('uint16_t', 'metric')])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3GlobalRouter_methods(root_module, cls):
