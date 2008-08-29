@@ -169,6 +169,24 @@ Ipv4EndPointDemux::DeAllocate (Ipv4EndPoint *endPoint)
 }
 
 /*
+ * return list of all available Endpoints
+ */
+Ipv4EndPointDemux::EndPoints
+Ipv4EndPointDemux::GetAllEndPoints (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  EndPoints ret;
+
+  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++)
+   {
+      Ipv4EndPoint* endP = *i;
+      ret.push_back(endP);
+    }
+  return ret;
+}
+
+
+/*
  * If we have an exact match, we return it.
  * Otherwise, if we find a generic match, we return it.
  * Otherwise, we return 0.
