@@ -6,7 +6,7 @@ def configure(conf):
     check.uselib = 'GTK_CONFIG_STORE'
     check.mandatory = False
     conf.env['ENABLE_GTK_CONFIG_STORE'] = check.run()
-
+    conf.sub_config('stats')
 
 def build(bld):
     module = bld.create_ns3_module('contrib', ['simulator'])

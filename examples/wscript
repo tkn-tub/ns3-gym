@@ -76,4 +76,4 @@ def build(bld):
                                  ['core', 'simulator', 'mobility', 'wifi'])
     obj.source = 'wifi-ap.cc'
 
-
+    bld.add_subdirs('stats')

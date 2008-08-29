@@ -1,0 +1,36 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def configure(conf):
+   e = conf.create_library_configurator()
+   e.mandatory = False
+   e.name = 'sqlite3'
+   e.define = 'SQLITE3'
+   e.uselib = 'SQLITE3'
+   conf.env['SQLITE_STATS'] = e.run()
+
+def build(bld):
+    obj = bld.create_ns3_module('stats', ['node'])
+    obj.source = [
+        'data-calculator.cc',
+        'packet-data-calculators.cc',
+        'time-data-calculators.cc',
+        'data-output-interface.cc',
+        'omnet-data-output.cc',
+        'data-collector.cc',
+        ]
+    headers = bld.create_obj('ns3header')
+    headers.module = 'stats'
+    headers.source = [
+        'data-calculator.h',
+        'packet-data-calculators.h',
+        'time-data-calculators.h',
+        'basic-data-calculators.h',
+        'data-output-interface.h',
+        'omnet-data-output.h',
+        'data-collector.h',
+        ]
+
+    if bld.env()['SQLITE_STATS']:
+        headers.source.append('sqlite-data-output.h')
+        obj.source.append('sqlite-data-output.cc')
+        obj.uselib = 'SQLITE3'

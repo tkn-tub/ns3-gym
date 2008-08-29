@@ -1,0 +1,16 @@
+
+			  ns-3 stats example
+
+The example script wifi-example-db.sh in this directly will run
+through the entire process of running a simple experiment.  It assumes
+sqlite3 is installed as it uses the sqlite3 data output format of the
+statistics package.  It also assumes it is being run from the
+examples/stats/ subdirectory of the ns-3 package, together with its
+gnuplot script.  When the script completes successfully, a graph will
+be have been produced in examples/stats/wifi-default.eps demonstrating
+output from this example.
+
+More information on the statistics package and this example is
+available online on the ns-3 wiki at:
+
+http://www.nsnam.org/wiki/index.php/Statistical_Framework_for_Network_Simulation

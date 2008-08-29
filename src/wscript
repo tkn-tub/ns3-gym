@@ -28,6 +28,7 @@ all_modules = (
     'devices/wifi',
     'helper',
     'devices/bridge',
+    'contrib/stats',
     )
 
 def set_options(opt):
