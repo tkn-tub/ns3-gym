@@ -49,6 +49,7 @@ def configure(conf):
     conf.sub_config('core')
     conf.sub_config('simulator')
     conf.sub_config('contrib')
+    conf.sub_config('internet-stack')
 
     blddir = os.path.abspath(os.path.join(conf.m_blddir, conf.env.variant()))
     conf.env.append_value('NS3_MODULE_PATH', blddir)
