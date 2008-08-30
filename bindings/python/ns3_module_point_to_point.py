@@ -54,6 +54,8 @@ def register_methods(root_module):
     return
 
 def register_Ns3PointToPointChannel_methods(root_module, cls):
+    ## point-to-point-channel.h: ns3::PointToPointChannel::PointToPointChannel(ns3::PointToPointChannel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PointToPointChannel&', 'arg0', is_const=True)])
     ## point-to-point-channel.h: static ns3::TypeId ns3::PointToPointChannel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -84,10 +86,11 @@ def register_Ns3PointToPointChannel_methods(root_module, cls):
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('uint32_t', 'i')], 
                    is_const=True, is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3PointToPointNetDevice_methods(root_module, cls):
+    ## point-to-point-net-device.h: ns3::PointToPointNetDevice::PointToPointNetDevice(ns3::PointToPointNetDevice const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PointToPointNetDevice&', 'arg0', is_const=True)])
     ## point-to-point-net-device.h: static ns3::TypeId ns3::PointToPointNetDevice::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -228,15 +231,15 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty> cb) [member function]
+    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty> cb) [member function]
     cls.add_method('SetReceiveCallback', 
                    'void', 
-                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr<const ns3::Packet >, unsigned short, ns3::Address const&, ns3::empty, ns3::empty >', 'cb')], 
+                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const&, ns3::empty, ns3::empty >', 'cb')], 
                    is_virtual=True)
-    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetPromiscReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> cb) [member function]
+    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetPromiscReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> cb) [member function]
     cls.add_method('SetPromiscReceiveCallback', 
                    'void', 
-                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr<const ns3::Packet >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], 
+                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], 
                    is_virtual=True)
     ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::SupportsPromiscuous() const [member function]
     cls.add_method('SupportsPromiscuous', 
@@ -248,7 +251,6 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):

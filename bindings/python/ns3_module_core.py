@@ -43,8 +43,6 @@ def register_types(module):
     module.add_class('ParetoVariable', parent=root_module['ns3::RandomVariable'])
     ## random-variable.h: ns3::ConstantVariable [class]
     module.add_class('ConstantVariable', parent=root_module['ns3::RandomVariable'])
-    ## system-thread.h: ns3::SystemThread [class]
-    module.add_class('SystemThread')
     ## random-variable.h: ns3::EmpiricalVariable [class]
     module.add_class('EmpiricalVariable', parent=root_module['ns3::RandomVariable'])
     ## enum.h: ns3::EnumChecker [class]
@@ -99,6 +97,8 @@ def register_types(module):
     module.add_class('ExponentialVariable', parent=root_module['ns3::RandomVariable'])
     ## random-variable.h: ns3::DeterministicVariable [class]
     module.add_class('DeterministicVariable', parent=root_module['ns3::RandomVariable'])
+    ## system-thread.h: ns3::SystemThread [class]
+    module.add_class('SystemThread')
     ## attribute-list.h: ns3::AttributeList [class]
     module.add_class('AttributeList')
     ## attribute.h: ns3::AttributeValue [class]
@@ -219,7 +219,6 @@ def register_methods(root_module):
     register_Ns3AttributeAccessor_methods(root_module, root_module['ns3::AttributeAccessor'])
     register_Ns3ParetoVariable_methods(root_module, root_module['ns3::ParetoVariable'])
     register_Ns3ConstantVariable_methods(root_module, root_module['ns3::ConstantVariable'])
-    register_Ns3SystemThread_methods(root_module, root_module['ns3::SystemThread'])
     register_Ns3EmpiricalVariable_methods(root_module, root_module['ns3::EmpiricalVariable'])
     register_Ns3EnumChecker_methods(root_module, root_module['ns3::EnumChecker'])
     register_Ns3Empty_methods(root_module, root_module['ns3::empty'])
@@ -240,6 +239,7 @@ def register_methods(root_module):
     register_Ns3CallbackBase_methods(root_module, root_module['ns3::CallbackBase'])
     register_Ns3ExponentialVariable_methods(root_module, root_module['ns3::ExponentialVariable'])
     register_Ns3DeterministicVariable_methods(root_module, root_module['ns3::DeterministicVariable'])
+    register_Ns3SystemThread_methods(root_module, root_module['ns3::SystemThread'])
     register_Ns3AttributeList_methods(root_module, root_module['ns3::AttributeList'])
     register_Ns3AttributeValue_methods(root_module, root_module['ns3::AttributeValue'])
     register_Ns3UniformVariable_methods(root_module, root_module['ns3::UniformVariable'])
@@ -307,6 +307,8 @@ def register_Ns3RandomVariable_methods(root_module, cls):
     return
 
 def register_Ns3TriangularVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::TriangularVariable::TriangularVariable(ns3::TriangularVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TriangularVariable&', 'arg0', is_const=True)])
     ## random-variable.h: ns3::TriangularVariable::TriangularVariable() [constructor]
     cls.add_constructor([])
     ## random-variable.h: ns3::TriangularVariable::TriangularVariable(double s, double l, double mean) [constructor]
@@ -316,10 +318,11 @@ def register_Ns3TriangularVariable_methods(root_module, cls):
                    'double', 
                    [param('double', 's'), param('double', 'l'), param('double', 'mean')], 
                    is_static=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3GlobalValue_methods(root_module, cls):
+    ## global-value.h: ns3::GlobalValue::GlobalValue(ns3::GlobalValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::GlobalValue&', 'arg0', is_const=True)])
     ## global-value.h: ns3::GlobalValue::GlobalValue(std::string name, std::string help, ns3::AttributeValue const & initialValue, ns3::Ptr<ns3::AttributeChecker const> checker) [constructor]
     cls.add_constructor([param('std::string', 'name'), param('std::string', 'help'), param('ns3::AttributeValue&', 'initialValue', is_const=True), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')])
     ## global-value.h: std::string ns3::GlobalValue::GetName() const [member function]
@@ -358,15 +361,14 @@ def register_Ns3GlobalValue_methods(root_module, cls):
                    is_static=True)
     ## global-value.h: static __gnu_cxx::__normal_iterator<ns3::GlobalValue* const*,std::vector<ns3::GlobalValue*, std::allocator<ns3::GlobalValue*> > > ns3::GlobalValue::Begin() [member function]
     cls.add_method('Begin', 
-                   '__gnu_cxx::__normal_iterator< ns3::GlobalValue* const*, std::vector< ns3::GlobalValue*, std::allocator< ns3::GlobalValue* > > >', 
+                   '__gnu_cxx::__normal_iterator< ns3::GlobalValue* const*, std::vector< ns3::GlobalValue* > >', 
                    [], 
                    is_static=True)
     ## global-value.h: static __gnu_cxx::__normal_iterator<ns3::GlobalValue* const*,std::vector<ns3::GlobalValue*, std::allocator<ns3::GlobalValue*> > > ns3::GlobalValue::End() [member function]
     cls.add_method('End', 
-                   '__gnu_cxx::__normal_iterator< ns3::GlobalValue* const*, std::vector< ns3::GlobalValue*, std::allocator< ns3::GlobalValue* > > >', 
+                   '__gnu_cxx::__normal_iterator< ns3::GlobalValue* const*, std::vector< ns3::GlobalValue* > >', 
                    [], 
                    is_static=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3RefCountBase_methods(root_module, cls):
@@ -558,11 +560,15 @@ def register_Ns3TypeIdAttributeInfo_methods(root_module, cls):
     cls.add_instance_attribute('flags', 'uint32_t', is_const=False)
     ## type-id.h: ns3::TypeId::AttributeInfo::checker [variable]
     cls.add_instance_attribute('checker', 'ns3::Ptr< ns3::AttributeChecker const >', is_const=False)
+    ## type-id.h: ns3::TypeId::AttributeInfo::AttributeInfo(ns3::TypeId::AttributeInfo const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TypeId::AttributeInfo&', 'arg0', is_const=True)])
+    ## type-id.h: ns3::TypeId::AttributeInfo::AttributeInfo() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3SystemWallClockMs_methods(root_module, cls):
+    ## system-wall-clock-ms.h: ns3::SystemWallClockMs::SystemWallClockMs(ns3::SystemWallClockMs const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::SystemWallClockMs&', 'arg0', is_const=True)])
     ## system-wall-clock-ms.h: ns3::SystemWallClockMs::SystemWallClockMs() [constructor]
     cls.add_constructor([])
     ## system-wall-clock-ms.h: void ns3::SystemWallClockMs::Start() [member function]
@@ -573,10 +579,11 @@ def register_Ns3SystemWallClockMs_methods(root_module, cls):
     cls.add_method('End', 
                    'long long unsigned int', 
                    [])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3CallbackImplBase_methods(root_module, cls):
+    ## callback.h: ns3::CallbackImplBase::CallbackImplBase(ns3::CallbackImplBase const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CallbackImplBase&', 'arg0', is_const=True)])
     ## callback.h: ns3::CallbackImplBase::CallbackImplBase() [constructor]
     cls.add_constructor([])
     ## callback.h: bool ns3::CallbackImplBase::IsEqual(ns3::Ptr<ns3::CallbackImplBase const> other) const [member function]
@@ -584,16 +591,18 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ptr< ns3::CallbackImplBase const >', 'other')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3CriticalSection_methods(root_module, cls):
+    ## system-mutex.h: ns3::CriticalSection::CriticalSection(ns3::CriticalSection const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CriticalSection&', 'arg0', is_const=True)])
     ## system-mutex.h: ns3::CriticalSection::CriticalSection(ns3::SystemMutex & mutex) [constructor]
     cls.add_constructor([param('ns3::SystemMutex&', 'mutex')])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3TraceSourceAccessor_methods(root_module, cls):
+    ## trace-source-accessor.h: ns3::TraceSourceAccessor::TraceSourceAccessor(ns3::TraceSourceAccessor const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TraceSourceAccessor&', 'arg0', is_const=True)])
     ## trace-source-accessor.h: ns3::TraceSourceAccessor::TraceSourceAccessor() [constructor]
     cls.add_constructor([])
     ## trace-source-accessor.h: void ns3::TraceSourceAccessor::Ref() const [member function]
@@ -626,10 +635,11 @@ def register_Ns3TraceSourceAccessor_methods(root_module, cls):
                    'bool', 
                    [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('std::string', 'context'), param('ns3::CallbackBase&', 'cb', is_const=True)], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3AttributeChecker_methods(root_module, cls):
+    ## attribute.h: ns3::AttributeChecker::AttributeChecker(ns3::AttributeChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::AttributeChecker&', 'arg0', is_const=True)])
     ## attribute.h: ns3::AttributeChecker::AttributeChecker() [constructor]
     cls.add_constructor([])
     ## attribute.h: bool ns3::AttributeChecker::Check(ns3::AttributeValue const & value) const [member function]
@@ -662,15 +672,18 @@ def register_Ns3AttributeChecker_methods(root_module, cls):
                    'bool', 
                    [param('ns3::AttributeValue&', 'source', is_const=True), param('ns3::AttributeValue&', 'destination')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3RandomVariableChecker_methods(root_module, cls):
+    ## random-variable.h: ns3::RandomVariableChecker::RandomVariableChecker(ns3::RandomVariableChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RandomVariableChecker&', 'arg0', is_const=True)])
+    ## random-variable.h: ns3::RandomVariableChecker::RandomVariableChecker() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3SystemMutex_methods(root_module, cls):
+    ## system-mutex.h: ns3::SystemMutex::SystemMutex(ns3::SystemMutex const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::SystemMutex&', 'arg0', is_const=True)])
     ## system-mutex.h: ns3::SystemMutex::SystemMutex() [constructor]
     cls.add_constructor([])
     ## system-mutex.h: void ns3::SystemMutex::Lock() [member function]
@@ -681,10 +694,11 @@ def register_Ns3SystemMutex_methods(root_module, cls):
     cls.add_method('Unlock', 
                    'void', 
                    [])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3NormalVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::NormalVariable::NormalVariable(ns3::NormalVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::NormalVariable&', 'arg0', is_const=True)])
     ## random-variable.h: ns3::NormalVariable::NormalVariable() [constructor]
     cls.add_constructor([])
     ## random-variable.h: ns3::NormalVariable::NormalVariable(double m, double v) [constructor]
@@ -701,7 +715,6 @@ def register_Ns3NormalVariable_methods(root_module, cls):
                    'double', 
                    [param('double', 'm'), param('double', 'v'), param('double', 'b')], 
                    is_static=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3ObjectFactory_methods(root_module, cls):
@@ -739,6 +752,8 @@ def register_Ns3ObjectFactory_methods(root_module, cls):
     return
 
 def register_Ns3AttributeAccessor_methods(root_module, cls):
+    ## attribute.h: ns3::AttributeAccessor::AttributeAccessor(ns3::AttributeAccessor const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::AttributeAccessor&', 'arg0', is_const=True)])
     ## attribute.h: ns3::AttributeAccessor::AttributeAccessor() [constructor]
     cls.add_constructor([])
     ## attribute.h: bool ns3::AttributeAccessor::Set(ns3::ObjectBase * object, ns3::AttributeValue const & value) const [member function]
@@ -761,10 +776,11 @@ def register_Ns3AttributeAccessor_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3ParetoVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::ParetoVariable::ParetoVariable(ns3::ParetoVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ParetoVariable&', 'arg0', is_const=True)])
     ## random-variable.h: ns3::ParetoVariable::ParetoVariable() [constructor]
     cls.add_constructor([])
     ## random-variable.h: ns3::ParetoVariable::ParetoVariable(double m) [constructor]
@@ -778,10 +794,11 @@ def register_Ns3ParetoVariable_methods(root_module, cls):
                    'double', 
                    [param('double', 'm'), param('double', 's'), param('double', 'b', default_value='0')], 
                    is_static=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3ConstantVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::ConstantVariable::ConstantVariable(ns3::ConstantVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ConstantVariable&', 'arg0', is_const=True)])
     ## random-variable.h: ns3::ConstantVariable::ConstantVariable() [constructor]
     cls.add_constructor([])
     ## random-variable.h: ns3::ConstantVariable::ConstantVariable(double c) [constructor]
@@ -790,44 +807,22 @@ def register_Ns3ConstantVariable_methods(root_module, cls):
     cls.add_method('SetConstant', 
                    'void', 
                    [param('double', 'c')])
-    cls.add_copy_constructor()
-    return
-
-def register_Ns3SystemThread_methods(root_module, cls):
-    ## system-thread.h: ns3::SystemThread::SystemThread(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [constructor]
-    cls.add_constructor([param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
-    ## system-thread.h: void ns3::SystemThread::Ref() const [member function]
-    cls.add_method('Ref', 
-                   'void', 
-                   [], 
-                   is_const=True)
-    ## system-thread.h: void ns3::SystemThread::Unref() const [member function]
-    cls.add_method('Unref', 
-                   'void', 
-                   [], 
-                   is_const=True)
-    ## system-thread.h: void ns3::SystemThread::Start() [member function]
-    cls.add_method('Start', 
-                   'void', 
-                   [])
-    ## system-thread.h: void ns3::SystemThread::Join() [member function]
-    cls.add_method('Join', 
-                   'void', 
-                   [])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3EmpiricalVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::EmpiricalVariable::EmpiricalVariable(ns3::EmpiricalVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EmpiricalVariable&', 'arg0', is_const=True)])
     ## random-variable.h: ns3::EmpiricalVariable::EmpiricalVariable() [constructor]
     cls.add_constructor([])
     ## random-variable.h: void ns3::EmpiricalVariable::CDF(double v, double c) [member function]
     cls.add_method('CDF', 
                    'void', 
                    [param('double', 'v'), param('double', 'c')])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3EnumChecker_methods(root_module, cls):
+    ## enum.h: ns3::EnumChecker::EnumChecker(ns3::EnumChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EnumChecker&', 'arg0', is_const=True)])
     ## enum.h: ns3::EnumChecker::EnumChecker() [constructor]
     cls.add_constructor([])
     ## enum.h: void ns3::EnumChecker::AddDefault(int v, std::string name) [member function]
@@ -868,19 +863,20 @@ def register_Ns3EnumChecker_methods(root_module, cls):
                    'bool', 
                    [param('ns3::AttributeValue&', 'src', is_const=True), param('ns3::AttributeValue&', 'dst')], 
                    is_const=True, is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3Empty_methods(root_module, cls):
+    ## empty.h: ns3::empty::empty(ns3::empty const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::empty&', 'arg0', is_const=True)])
+    ## empty.h: ns3::empty::empty() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3ObjectBase_methods(root_module, cls):
-    ## object-base.h: ns3::ObjectBase::ObjectBase() [constructor]
-    cls.add_constructor([])
     ## object-base.h: ns3::ObjectBase::ObjectBase(ns3::ObjectBase const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::ObjectBase&', 'arg0', is_const=True)])
+    ## object-base.h: ns3::ObjectBase::ObjectBase() [constructor]
+    cls.add_constructor([])
     ## object-base.h: static ns3::TypeId ns3::ObjectBase::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -938,43 +934,59 @@ def register_Ns3ObjectBase_methods(root_module, cls):
     return
 
 def register_Ns3CommandLine_methods(root_module, cls):
+    ## command-line.h: ns3::CommandLine::CommandLine(ns3::CommandLine const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CommandLine&', 'arg0', is_const=True)])
+    ## command-line.h: ns3::CommandLine::CommandLine() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3IntToType__6_methods(root_module, cls):
+    ## int-to-type.h: ns3::IntToType<6>::IntToType(ns3::IntToType<6> const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::IntToType< 6 >&', 'arg0', is_const=True)])
+    ## int-to-type.h: ns3::IntToType<6>::IntToType() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3IntToType__5_methods(root_module, cls):
+    ## int-to-type.h: ns3::IntToType<5>::IntToType(ns3::IntToType<5> const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::IntToType< 5 >&', 'arg0', is_const=True)])
+    ## int-to-type.h: ns3::IntToType<5>::IntToType() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3IntToType__4_methods(root_module, cls):
+    ## int-to-type.h: ns3::IntToType<4>::IntToType(ns3::IntToType<4> const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::IntToType< 4 >&', 'arg0', is_const=True)])
+    ## int-to-type.h: ns3::IntToType<4>::IntToType() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3IntToType__3_methods(root_module, cls):
+    ## int-to-type.h: ns3::IntToType<3>::IntToType(ns3::IntToType<3> const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::IntToType< 3 >&', 'arg0', is_const=True)])
+    ## int-to-type.h: ns3::IntToType<3>::IntToType() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3IntToType__2_methods(root_module, cls):
+    ## int-to-type.h: ns3::IntToType<2>::IntToType(ns3::IntToType<2> const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::IntToType< 2 >&', 'arg0', is_const=True)])
+    ## int-to-type.h: ns3::IntToType<2>::IntToType() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3IntToType__1_methods(root_module, cls):
+    ## int-to-type.h: ns3::IntToType<1>::IntToType(ns3::IntToType<1> const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::IntToType< 1 >&', 'arg0', is_const=True)])
+    ## int-to-type.h: ns3::IntToType<1>::IntToType() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3IntToType__0_methods(root_module, cls):
+    ## int-to-type.h: ns3::IntToType<0>::IntToType(ns3::IntToType<0> const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::IntToType< 0 >&', 'arg0', is_const=True)])
+    ## int-to-type.h: ns3::IntToType<0>::IntToType() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3RngStream_methods(root_module, cls):
@@ -1044,6 +1056,8 @@ def register_Ns3RngStream_methods(root_module, cls):
     return
 
 def register_Ns3LogNormalVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::LogNormalVariable::LogNormalVariable(ns3::LogNormalVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LogNormalVariable&', 'arg0', is_const=True)])
     ## random-variable.h: ns3::LogNormalVariable::LogNormalVariable(double mu, double sigma) [constructor]
     cls.add_constructor([param('double', 'mu'), param('double', 'sigma')])
     ## random-variable.h: static double ns3::LogNormalVariable::GetSingleValue(double mu, double sigma) [member function]
@@ -1051,26 +1065,30 @@ def register_Ns3LogNormalVariable_methods(root_module, cls):
                    'double', 
                    [param('double', 'mu'), param('double', 'sigma')], 
                    is_static=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3IntEmpiricalVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::IntEmpiricalVariable::IntEmpiricalVariable(ns3::IntEmpiricalVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::IntEmpiricalVariable&', 'arg0', is_const=True)])
     ## random-variable.h: ns3::IntEmpiricalVariable::IntEmpiricalVariable() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3PointerChecker_methods(root_module, cls):
+    ## pointer.h: ns3::PointerChecker::PointerChecker(ns3::PointerChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PointerChecker&', 'arg0', is_const=True)])
+    ## pointer.h: ns3::PointerChecker::PointerChecker() [constructor]
+    cls.add_constructor([])
     ## pointer.h: ns3::TypeId ns3::PointerChecker::GetPointeeTypeId() const [member function]
     cls.add_method('GetPointeeTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3WeibullVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::WeibullVariable::WeibullVariable(ns3::WeibullVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WeibullVariable&', 'arg0', is_const=True)])
     ## random-variable.h: ns3::WeibullVariable::WeibullVariable() [constructor]
     cls.add_constructor([])
     ## random-variable.h: ns3::WeibullVariable::WeibullVariable(double m) [constructor]
@@ -1084,10 +1102,11 @@ def register_Ns3WeibullVariable_methods(root_module, cls):
                    'double', 
                    [param('double', 'm'), param('double', 's'), param('double', 'b', default_value='0')], 
                    is_static=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3CallbackBase_methods(root_module, cls):
+    ## callback.h: ns3::CallbackBase::CallbackBase(ns3::CallbackBase const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CallbackBase&', 'arg0', is_const=True)])
     ## callback.h: ns3::CallbackBase::CallbackBase() [constructor]
     cls.add_constructor([])
     ## callback.h: ns3::Ptr<ns3::CallbackImplBase> ns3::CallbackBase::GetImpl() const [member function]
@@ -1098,10 +1117,11 @@ def register_Ns3CallbackBase_methods(root_module, cls):
     ## callback.h: ns3::CallbackBase::CallbackBase(ns3::Ptr<ns3::CallbackImplBase> impl) [constructor]
     cls.add_constructor([param('ns3::Ptr< ns3::CallbackImplBase >', 'impl')], 
                         visibility='protected')
-    cls.add_copy_constructor()
     return
 
 def register_Ns3ExponentialVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::ExponentialVariable::ExponentialVariable(ns3::ExponentialVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ExponentialVariable&', 'arg0', is_const=True)])
     ## random-variable.h: ns3::ExponentialVariable::ExponentialVariable() [constructor]
     cls.add_constructor([])
     ## random-variable.h: ns3::ExponentialVariable::ExponentialVariable(double m) [constructor]
@@ -1113,13 +1133,38 @@ def register_Ns3ExponentialVariable_methods(root_module, cls):
                    'double', 
                    [param('double', 'm'), param('double', 'b', default_value='0')], 
                    is_static=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3DeterministicVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::DeterministicVariable::DeterministicVariable(ns3::DeterministicVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DeterministicVariable&', 'arg0', is_const=True)])
     ## random-variable.h: ns3::DeterministicVariable::DeterministicVariable(double * d, uint32_t c) [constructor]
     cls.add_constructor([param('double *', 'd'), param('uint32_t', 'c')])
-    cls.add_copy_constructor()
+    return
+
+def register_Ns3SystemThread_methods(root_module, cls):
+    ## system-thread.h: ns3::SystemThread::SystemThread(ns3::SystemThread const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::SystemThread&', 'arg0', is_const=True)])
+    ## system-thread.h: ns3::SystemThread::SystemThread(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [constructor]
+    cls.add_constructor([param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
+    ## system-thread.h: void ns3::SystemThread::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## system-thread.h: void ns3::SystemThread::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## system-thread.h: void ns3::SystemThread::Start() [member function]
+    cls.add_method('Start', 
+                   'void', 
+                   [])
+    ## system-thread.h: void ns3::SystemThread::Join() [member function]
+    cls.add_method('Join', 
+                   'void', 
+                   [])
     return
 
 def register_Ns3AttributeList_methods(root_module, cls):
@@ -1182,6 +1227,8 @@ def register_Ns3AttributeValue_methods(root_module, cls):
     return
 
 def register_Ns3UniformVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::UniformVariable::UniformVariable(ns3::UniformVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::UniformVariable&', 'arg0', is_const=True)])
     ## random-variable.h: ns3::UniformVariable::UniformVariable() [constructor]
     cls.add_constructor([])
     ## random-variable.h: ns3::UniformVariable::UniformVariable(double s, double l) [constructor]
@@ -1191,7 +1238,6 @@ def register_Ns3UniformVariable_methods(root_module, cls):
                    'double', 
                    [param('double', 's'), param('double', 'l')], 
                    is_static=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3Object_methods(root_module, cls):
@@ -1236,6 +1282,8 @@ def register_Ns3Object_methods(root_module, cls):
     return
 
 def register_Ns3ObjectAggregateIterator_methods(root_module, cls):
+    ## object.h: ns3::Object::AggregateIterator::AggregateIterator(ns3::Object::AggregateIterator const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Object::AggregateIterator&', 'arg0', is_const=True)])
     ## object.h: ns3::Object::AggregateIterator::AggregateIterator() [constructor]
     cls.add_constructor([])
     ## object.h: bool ns3::Object::AggregateIterator::HasNext() const [member function]
@@ -1247,10 +1295,11 @@ def register_Ns3ObjectAggregateIterator_methods(root_module, cls):
     cls.add_method('Next', 
                    'ns3::Ptr< ns3::Object const >', 
                    [])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3SystemCondition_methods(root_module, cls):
+    ## system-condition.h: ns3::SystemCondition::SystemCondition(ns3::SystemCondition const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::SystemCondition&', 'arg0', is_const=True)])
     ## system-condition.h: ns3::SystemCondition::SystemCondition() [constructor]
     cls.add_constructor([])
     ## system-condition.h: void ns3::SystemCondition::SetCondition(bool condition) [member function]
@@ -1277,43 +1326,49 @@ def register_Ns3SystemCondition_methods(root_module, cls):
     cls.add_method('TimedWait', 
                    'bool', 
                    [param('uint64_t', 'ns')])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3SequentialVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::SequentialVariable::SequentialVariable(ns3::SequentialVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::SequentialVariable&', 'arg0', is_const=True)])
     ## random-variable.h: ns3::SequentialVariable::SequentialVariable(double f, double l, double i=1, uint32_t c=1) [constructor]
     cls.add_constructor([param('double', 'f'), param('double', 'l'), param('double', 'i', default_value='1'), param('uint32_t', 'c', default_value='1')])
     ## random-variable.h: ns3::SequentialVariable::SequentialVariable(double f, double l, ns3::RandomVariable const & i, uint32_t c=1) [constructor]
     cls.add_constructor([param('double', 'f'), param('double', 'l'), param('ns3::RandomVariable&', 'i', is_const=True), param('uint32_t', 'c', default_value='1')])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3ObjectVectorChecker_methods(root_module, cls):
+    ## object-vector.h: ns3::ObjectVectorChecker::ObjectVectorChecker(ns3::ObjectVectorChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ObjectVectorChecker&', 'arg0', is_const=True)])
+    ## object-vector.h: ns3::ObjectVectorChecker::ObjectVectorChecker() [constructor]
+    cls.add_constructor([])
     ## object-vector.h: ns3::TypeId ns3::ObjectVectorChecker::GetItemTypeId() const [member function]
     cls.add_method('GetItemTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3StringChecker_methods(root_module, cls):
+    ## string.h: ns3::StringChecker::StringChecker(ns3::StringChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::StringChecker&', 'arg0', is_const=True)])
+    ## string.h: ns3::StringChecker::StringChecker() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3ObjectVectorValue_methods(root_module, cls):
+    ## object-vector.h: ns3::ObjectVectorValue::ObjectVectorValue(ns3::ObjectVectorValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ObjectVectorValue&', 'arg0', is_const=True)])
     ## object-vector.h: ns3::ObjectVectorValue::ObjectVectorValue() [constructor]
     cls.add_constructor([])
     ## object-vector.h: __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Object>*,std::vector<ns3::Ptr<ns3::Object>, std::allocator<ns3::Ptr<ns3::Object> > > > ns3::ObjectVectorValue::Begin() const [member function]
     cls.add_method('Begin', 
-                   '__gnu_cxx::__normal_iterator< const ns3::Ptr< ns3::Object >, std::vector< ns3::Ptr< ns3::Object >, std::allocator< ns3::Ptr< ns3::Object > > > >', 
+                   '__gnu_cxx::__normal_iterator< const ns3::Ptr< ns3::Object >, std::vector< ns3::Ptr< ns3::Object > > >', 
                    [], 
                    is_const=True)
     ## object-vector.h: __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Object>*,std::vector<ns3::Ptr<ns3::Object>, std::allocator<ns3::Ptr<ns3::Object> > > > ns3::ObjectVectorValue::End() const [member function]
     cls.add_method('End', 
-                   '__gnu_cxx::__normal_iterator< const ns3::Ptr< ns3::Object >, std::vector< ns3::Ptr< ns3::Object >, std::allocator< ns3::Ptr< ns3::Object > > > >', 
+                   '__gnu_cxx::__normal_iterator< const ns3::Ptr< ns3::Object >, std::vector< ns3::Ptr< ns3::Object > > >', 
                    [], 
                    is_const=True)
     ## object-vector.h: uint32_t ns3::ObjectVectorValue::GetN() const [member function]
@@ -1341,15 +1396,18 @@ def register_Ns3ObjectVectorValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3BooleanChecker_methods(root_module, cls):
+    ## boolean.h: ns3::BooleanChecker::BooleanChecker(ns3::BooleanChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BooleanChecker&', 'arg0', is_const=True)])
+    ## boolean.h: ns3::BooleanChecker::BooleanChecker() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3UintegerValue_methods(root_module, cls):
+    ## uinteger.h: ns3::UintegerValue::UintegerValue(ns3::UintegerValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::UintegerValue&', 'arg0', is_const=True)])
     ## uinteger.h: ns3::UintegerValue::UintegerValue() [constructor]
     cls.add_constructor([])
     ## uinteger.h: ns3::UintegerValue::UintegerValue(uint64_t const & value) [constructor]
@@ -1378,10 +1436,13 @@ def register_Ns3UintegerValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3ObjectVectorAccessor_methods(root_module, cls):
+    ## object-vector.h: ns3::ObjectVectorAccessor::ObjectVectorAccessor(ns3::ObjectVectorAccessor const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ObjectVectorAccessor&', 'arg0', is_const=True)])
+    ## object-vector.h: ns3::ObjectVectorAccessor::ObjectVectorAccessor() [constructor]
+    cls.add_constructor([])
     ## object-vector.h: bool ns3::ObjectVectorAccessor::Set(ns3::ObjectBase * object, ns3::AttributeValue const & value) const [member function]
     cls.add_method('Set', 
                    'bool', 
@@ -1412,8 +1473,6 @@ def register_Ns3ObjectVectorAccessor_methods(root_module, cls):
                    'ns3::Ptr< ns3::Object >', 
                    [param('ns3::ObjectBase *', 'object', transfer_ownership=False, is_const=True), param('uint32_t', 'i')], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
-    cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3PointerValue_methods(root_module, cls):
@@ -1450,16 +1509,22 @@ def register_Ns3PointerValue_methods(root_module, cls):
     return
 
 def register_Ns3ObjectFactoryChecker_methods(root_module, cls):
+    ## object-factory.h: ns3::ObjectFactoryChecker::ObjectFactoryChecker(ns3::ObjectFactoryChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ObjectFactoryChecker&', 'arg0', is_const=True)])
+    ## object-factory.h: ns3::ObjectFactoryChecker::ObjectFactoryChecker() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3TypeIdChecker_methods(root_module, cls):
+    ## type-id.h: ns3::TypeIdChecker::TypeIdChecker(ns3::TypeIdChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TypeIdChecker&', 'arg0', is_const=True)])
+    ## type-id.h: ns3::TypeIdChecker::TypeIdChecker() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3DoubleValue_methods(root_module, cls):
+    ## double.h: ns3::DoubleValue::DoubleValue(ns3::DoubleValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DoubleValue&', 'arg0', is_const=True)])
     ## double.h: ns3::DoubleValue::DoubleValue() [constructor]
     cls.add_constructor([])
     ## double.h: ns3::DoubleValue::DoubleValue(double const & value) [constructor]
@@ -1488,10 +1553,11 @@ def register_Ns3DoubleValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3TypeIdValue_methods(root_module, cls):
+    ## type-id.h: ns3::TypeIdValue::TypeIdValue(ns3::TypeIdValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TypeIdValue&', 'arg0', is_const=True)])
     ## type-id.h: ns3::TypeIdValue::TypeIdValue() [constructor]
     cls.add_constructor([])
     ## type-id.h: ns3::TypeIdValue::TypeIdValue(ns3::TypeId const & value) [constructor]
@@ -1520,10 +1586,11 @@ def register_Ns3TypeIdValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3EnumValue_methods(root_module, cls):
+    ## enum.h: ns3::EnumValue::EnumValue(ns3::EnumValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EnumValue&', 'arg0', is_const=True)])
     ## enum.h: ns3::EnumValue::EnumValue() [constructor]
     cls.add_constructor([])
     ## enum.h: ns3::EnumValue::EnumValue(int v) [constructor]
@@ -1552,10 +1619,11 @@ def register_Ns3EnumValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3RandomVariableValue_methods(root_module, cls):
+    ## random-variable.h: ns3::RandomVariableValue::RandomVariableValue(ns3::RandomVariableValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RandomVariableValue&', 'arg0', is_const=True)])
     ## random-variable.h: ns3::RandomVariableValue::RandomVariableValue() [constructor]
     cls.add_constructor([])
     ## random-variable.h: ns3::RandomVariableValue::RandomVariableValue(ns3::RandomVariable const & value) [constructor]
@@ -1584,10 +1652,11 @@ def register_Ns3RandomVariableValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3ObjectFactoryValue_methods(root_module, cls):
+    ## object-factory.h: ns3::ObjectFactoryValue::ObjectFactoryValue(ns3::ObjectFactoryValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ObjectFactoryValue&', 'arg0', is_const=True)])
     ## object-factory.h: ns3::ObjectFactoryValue::ObjectFactoryValue() [constructor]
     cls.add_constructor([])
     ## object-factory.h: ns3::ObjectFactoryValue::ObjectFactoryValue(ns3::ObjectFactory const & value) [constructor]
@@ -1616,10 +1685,11 @@ def register_Ns3ObjectFactoryValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3IntegerValue_methods(root_module, cls):
+    ## integer.h: ns3::IntegerValue::IntegerValue(ns3::IntegerValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::IntegerValue&', 'arg0', is_const=True)])
     ## integer.h: ns3::IntegerValue::IntegerValue() [constructor]
     cls.add_constructor([])
     ## integer.h: ns3::IntegerValue::IntegerValue(int64_t const & value) [constructor]
@@ -1648,7 +1718,6 @@ def register_Ns3IntegerValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3BooleanValue_methods(root_module, cls):
@@ -1686,6 +1755,8 @@ def register_Ns3BooleanValue_methods(root_module, cls):
     return
 
 def register_Ns3StringValue_methods(root_module, cls):
+    ## string.h: ns3::StringValue::StringValue(ns3::StringValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::StringValue&', 'arg0', is_const=True)])
     ## string.h: ns3::StringValue::StringValue() [constructor]
     cls.add_constructor([])
     ## string.h: ns3::StringValue::StringValue(std::string const & value) [constructor]
@@ -1714,7 +1785,6 @@ def register_Ns3StringValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3EmptyAttributeValue_methods(root_module, cls):

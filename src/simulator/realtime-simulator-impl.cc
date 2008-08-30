@@ -47,13 +47,6 @@ RealtimeSimulatorImpl::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::RealtimeSimulatorImpl")
     .SetParent<Object> ()
     .AddConstructor<RealtimeSimulatorImpl> ()
-#ifdef PERMIT_WALLCLOCK_SIMULATION_TIME
-    .AddAttribute ("ReportSimulatedTime", 
-                   "Report simulated time in Simulator::Now if true, otherwise wall-clock time (will be different).",
-                   BooleanValue (true),
-                   MakeBooleanAccessor (&RealtimeSimulatorImpl::m_reportSimulatedTime),
-                   MakeBooleanChecker ())
-#endif
     .AddAttribute ("SynchronizationMode", 
                    "What to do if the simulation cannot keep up with real time.",
                    EnumValue (SYNC_BEST_EFFORT),
@@ -643,34 +636,7 @@ RealtimeSimulatorImpl::ScheduleDestroy (const Ptr<EventImpl> &event)
 Time
 RealtimeSimulatorImpl::Now (void) const
 {
-#ifdef PERMIT_WALLCLOCK_SIMULATION_TIME
-  //
-  // The behavior of Now depends on the setting of the "ReportSimulatedTime"
-  // attribute.  If this is set to true, then Now will pretend that the realtime
-  // synchronization is perfect and that event execution consumes no time.  This
-  // allows models written with this kind of assumption to work as they did in 
-  // non-real-time cases.  However, if the attribute is set to false, we're going
-  // to give the caller the bad news right in the face.  If it sets an event to 
-  // be executed at 10.0000000 seconds, and calls Simulator::Now it will get the 
-  // realtime clock value which almost certainly will *not* be ten seconds.  We'll
-  // get as close as possible, but we won't be perfect and we won't pretend to be.
-  // Also, if the client calls Simulator::Now multiple times in an event, she will
-  // get different times as the underlying realtime clock will have moved.  However
-  // if the simulation is not actually running, we'll use the last event timestamp
-  // as the time, which will be a precise simulation time (0 sec before the sim
-  // starts, or the end time after the simulation ends).
-  //
-  if ((m_reportSimulatedTime == false) && Running ())
-    {
-      return TimeStep (m_synchronizer->GetCurrentRealtime ());
-    }
-  else
-    {
-      return TimeStep (m_currentTs);
-    }
-#else // Do not PERMIT_WALLCLOCK_SIMULATION_TIME (the normal case)
   return TimeStep (m_currentTs);
-#endif // Do not PERMIT_WALLCLOCK_SIMULATION_TIME (the normal case)
 }
 
 Time 
@@ -685,39 +651,7 @@ RealtimeSimulatorImpl::GetDelayLeft (const EventId &id) const
       return TimeStep (0);
     }
 
-#ifdef PERMIT_WALLCLOCK_SIMULATION_TIME
-  //
-  // If we're running in real-time mode, it is possible that an event has been
-  // entered into the system using ScheduleNow, which used the current real
-  // time as the invocation time.  By the time the scheduler gets around to
-  // running the event, there will be an implied negative GetDelayLeft.  From
-  // a client point of view, if someone were to ScheduleNow an event and follow
-  // that immediately by a GetDelayLeft on that event there would be a negative 
-  // GetDelayLeft since it is almost certain that at least one minimum time 
-  // quantum has passed.  We don't allow these cases to happen.  GetDelayLeft
-  // reports zero if the event has expired OR if it is late.
-  // 
-  if ((m_reportSimulatedTime == false) && Running ())
-    {
-      uint64_t tsEvent = id.GetTs ();
-      uint64_t tsNow = m_synchronizer->GetCurrentRealtime ();
-
-      if (tsEvent > tsNow)
-        {
-          return TimeStep (tsEvent - tsNow);
-        }
-      else
-        {
-          return TimeStep (0);
-        }
-    }
-  else
-    {
-      return TimeStep (id.GetTs () - m_currentTs);
-    }
-#else  // Do not PERMIT_WALLCLOCK_SIMULATION_TIME (the normal case)
   return TimeStep (id.GetTs () - m_currentTs);
-#endif // Do not PERMIT_WALLCLOCK_SIMULATION_TIME (the normal case)
 }
 
 void
