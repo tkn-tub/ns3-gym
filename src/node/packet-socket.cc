@@ -353,10 +353,6 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<const Packet> packet,
     {
       return;
     }
-  if (packetType != NetDevice::PACKET_HOST)
-    {
-      return;
-    }
 
 
   PacketSocketAddress address;
