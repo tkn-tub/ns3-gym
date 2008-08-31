@@ -398,7 +398,7 @@ Ptr<T> CreateObjectPython (PyObject *pyobj, const AttributeList &attributes)
         else:
             raise AssertionError
 
-        wrapper_name = "_wrap_create_object_%s" % (cls.full_name.replace(':', '_'),) 
+        wrapper_name = "_wrap_create_object_%s" % (cls.mangled_full_name,) 
         constructor = '''
 static int %(WRAPPER_NAME)s (%(PYSTRUCT)s *self, PyObject *args, PyObject *kwargs, PyObject **return_exception)
 {
