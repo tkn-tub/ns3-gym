@@ -50,7 +50,7 @@ AdhocWifiMac::AdhocWifiMac ()
 
   m_low = CreateObject<MacLow> ();
   m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
-  m_low->SetMac (this);
+  m_low->SetBssid (GetBssid ());
 
   m_dcfManager = new DcfManager ();
   m_dcfManager->SetupLowListener (m_low);

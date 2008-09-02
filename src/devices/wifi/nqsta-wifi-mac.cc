@@ -97,7 +97,6 @@ NqstaWifiMac::NqstaWifiMac ()
 
   m_low = CreateObject<MacLow> ();
   m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
-  m_low->SetMac (this);
 
   m_dcfManager = new DcfManager ();
   m_dcfManager->SetupLowListener (m_low);
@@ -235,7 +234,7 @@ NqstaWifiMac::GetSsid (void) const
 Mac48Address 
 NqstaWifiMac::GetBssid (void) const
 {
-  return m_bssid;
+  return m_low->GetBssid ();
 }
 void 
 NqstaWifiMac::SetAddress (Mac48Address address)
@@ -286,7 +285,7 @@ void
 NqstaWifiMac::SetBssid (Mac48Address bssid)
 {
   NS_LOG_FUNCTION (this << bssid);
-  m_bssid = bssid;
+  m_low->SetBssid (bssid);
 }
 void 
 NqstaWifiMac::SetActiveProbing (bool enable)

@@ -122,14 +122,6 @@ public:
    */
   virtual Ssid GetSsid (void) const = 0;
   /**
-   * \returns the BSSID associated to the current SSID. 
-   *
-   * If we are an AP, this is the address of the AP itself.
-   * If are a STA, this is the address of the AP with which
-   * the STA is associated.
-   */
-  virtual Mac48Address GetBssid (void) const = 0;
-  /**
    * \param address the current address of this MAC layer.
    */
   virtual void SetAddress (Mac48Address address) = 0;

@@ -73,7 +73,6 @@ public:
   virtual void SetLinkDownCallback (Callback<void> linkDown);
   virtual Mac48Address GetAddress (void) const;
   virtual Ssid GetSsid (void) const;
-  virtual Mac48Address GetBssid (void) const;
   virtual void SetAddress (Mac48Address address);
   virtual void SetSsid (Ssid ssid);
 
@@ -84,6 +83,7 @@ private:
   /* invoked by the MacLows. */
   void ForwardUp (Ptr<Packet> packet, WifiMacHeader const*hdr);
   AdhocWifiMac (const AdhocWifiMac & ctor_arg);
+  Mac48Address GetBssid (void) const;
 
   Ptr<DcaTxop> m_dca;
   Callback<void,Ptr<Packet>,const Mac48Address &> m_upCallback;

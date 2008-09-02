@@ -37,7 +37,7 @@
 NS_LOG_COMPONENT_DEFINE ("DcaTxop");
 
 #define MY_DEBUG(x) \
-  NS_LOG_DEBUG (m_low->GetMac ()->GetAddress () << " " << x)
+  NS_LOG_DEBUG (m_low->GetAddress () << " " << x)
 
 
 namespace ns3 {

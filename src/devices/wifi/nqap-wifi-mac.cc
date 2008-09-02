@@ -65,7 +65,6 @@ NqapWifiMac::NqapWifiMac ()
 
   m_low = CreateObject<MacLow> ();
   m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
-  m_low->SetMac (this);
 
   m_dcfManager = new DcfManager ();
   m_dcfManager->SetupLowListener (m_low);
@@ -239,16 +238,12 @@ NqapWifiMac::GetSsid (void) const
 {
   return m_ssid;
 }
-Mac48Address 
-NqapWifiMac::GetBssid (void) const
-{
-  return m_address;
-}
 void 
 NqapWifiMac::SetAddress (Mac48Address address)
 {
   NS_LOG_FUNCTION (address);
   m_low->SetAddress (address);
+  m_low->SetBssid (address);
 }
 void 
 NqapWifiMac::SetSsid (Ssid ssid)

@@ -627,6 +627,10 @@ def register_functions(root_module):
     module.add_function('AddInternetStack', 
                         'void', 
                         [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## internet-stack.h: extern void ns3::AddNscInternetStack(ns3::Ptr<ns3::Node> node, std::string const & soname) [free function]
+    module.add_function('AddNscInternetStack', 
+                        'void', 
+                        [param('ns3::Ptr< ns3::Node >', 'node'), param('std::string const &', 'soname')])
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)

@@ -279,10 +279,7 @@ public:
   virtual ~MacLow ();
 
   void SetPhy (Ptr<WifiPhy> phy);
-  void SetMac (Ptr<WifiMac> mac);
   void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> manager);
-
-  Ptr<WifiMac> GetMac (void);
 
   void SetAddress (Mac48Address ad);
   void SetAckTimeout (Time ackTimeout);
@@ -290,12 +287,14 @@ public:
   void SetSifs (Time sifs);
   void SetSlotTime (Time slotTime);
   void SetPifs (Time pifs);
+  void SetBssid (Mac48Address ad);
   Mac48Address GetAddress (void) const;
   Time GetAckTimeout (void) const;
   Time GetCtsTimeout (void) const;
   Time GetSifs (void) const;
   Time GetSlotTime (void) const;
   Time GetPifs (void) const;
+  Mac48Address GetBssid (void) const;
 
   /**
    * \param callback the callback which receives every incoming packet.
@@ -397,7 +396,6 @@ private:
   virtual void DoDispose (void);
 
   Ptr<WifiPhy> m_phy;
-  Ptr<WifiMac> m_mac;
   Ptr<WifiRemoteStationManager> m_stationManager;
   MacLowRxCallback m_rxCallback;
   typedef std::vector<MacLowNavListener *>::const_iterator NavListenersCI;
@@ -420,6 +418,7 @@ private:
   MacLowTransmissionParameters m_txParams;
   MacLowTransmissionListener *m_listener;
   Mac48Address m_self;
+  Mac48Address m_bssid;
   Time m_ackTimeout;
   Time m_ctsTimeout;
   Time m_sifs;

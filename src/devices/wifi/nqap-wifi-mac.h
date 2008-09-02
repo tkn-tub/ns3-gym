@@ -79,7 +79,6 @@ public:
   virtual void SetLinkDownCallback (Callback<void> linkDown);
   virtual Mac48Address GetAddress (void) const;
   virtual Ssid GetSsid (void) const;
-  virtual Mac48Address GetBssid (void) const;
   virtual void SetAddress (Mac48Address address);
   virtual void SetSsid (Ssid ssid);
 
@@ -122,7 +121,6 @@ private:
   DcfManager *m_dcfManager;
   MacRxMiddle *m_rxMiddle;
   Ptr<MacLow> m_low;
-  Mac48Address m_address;
   Ssid m_ssid;
   EventId m_beaconEvent;
   Time m_eifsNoDifs;

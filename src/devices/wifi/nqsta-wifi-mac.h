@@ -79,7 +79,6 @@ public:
   virtual void SetLinkDownCallback (Callback<void> linkDown);
   virtual Mac48Address GetAddress (void) const;
   virtual Ssid GetSsid (void) const;
-  virtual Mac48Address GetBssid (void) const;
   virtual void SetAddress (Mac48Address address);
   virtual void SetSsid (Ssid ssid);
 
@@ -125,6 +124,7 @@ private:
   void MissedBeacons (void);
   void RestartBeaconWatchdog (Time delay);
   SupportedRates GetSupportedRates (void) const;
+  Mac48Address GetBssid (void) const;
   virtual void DoDispose (void);
   NqstaWifiMac (const NqstaWifiMac & ctor_arg);
 
@@ -145,7 +145,6 @@ private:
   Ptr<DcaTxop> m_dca;
   EventId m_beaconWatchdog;
   Time m_beaconWatchdogEnd;
-  Mac48Address m_bssid;
   uint32_t m_maxMissedBeacons;
 
   Ptr<WifiPhy> m_phy;

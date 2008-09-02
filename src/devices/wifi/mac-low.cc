@@ -273,7 +273,6 @@ MacLow::DoDispose (void)
   NS_LOG_FUNCTION (this);
   CancelAllEvents ();
   m_phy = 0;
-  m_mac = 0;
   m_stationManager = 0;
 }
 
@@ -341,20 +340,10 @@ MacLow::SetPhy (Ptr<WifiPhy> phy)
   m_phy->SetReceiveOkCallback (MakeCallback (&MacLow::ReceiveOk, this));
   m_phy->SetReceiveErrorCallback (MakeCallback (&MacLow::ReceiveError, this));
 }
-void
-MacLow::SetMac (Ptr<WifiMac> mac)
-{
-  m_mac = mac;
-}
 void 
 MacLow::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> manager)
 {
   m_stationManager = manager;
-}
-Ptr<WifiMac> 
-MacLow::GetMac (void)
-{
-  return m_mac;
 }
 
 void 
@@ -387,6 +376,11 @@ MacLow::SetPifs (Time pifs)
 {
   m_pifs = pifs;
 }
+void
+MacLow::SetBssid (Mac48Address bssid)
+{
+  m_bssid = bssid;
+}
 Mac48Address 
 MacLow::GetAddress (void) const
 {
@@ -416,6 +410,11 @@ Time
 MacLow::GetPifs (void) const
 {
   return m_pifs;
+}
+Mac48Address 
+MacLow::GetBssid (void) const
+{
+  return m_bssid;
 }
 
 void 
@@ -751,7 +750,7 @@ MacLow::NotifyNav (const WifiMacHeader &hdr, WifiMode txMode, WifiPreamble pream
   Time duration = hdr.GetDuration ();
 
   if (hdr.IsCfpoll () &&
-      hdr.GetAddr2 () == m_mac->GetBssid ()) 
+      hdr.GetAddr2 () == m_bssid) 
     {
       // see section 9.3.2.2 802.11-1999
       DoNavResetNow (duration);
