@@ -124,7 +124,6 @@ private:
   Ssid m_ssid;
   EventId m_beaconEvent;
   Time m_slot;
-  Time m_sifs;
   Time m_eifsNoDifs;
 };
 

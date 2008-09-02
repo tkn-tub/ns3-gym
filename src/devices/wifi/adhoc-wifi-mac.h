@@ -92,7 +92,6 @@ private:
   Ptr<MacLow> m_low;
   Ssid m_ssid;
   Time m_slot;
-  Time m_sifs;
   Time m_eifsNoDifs;
 };
 

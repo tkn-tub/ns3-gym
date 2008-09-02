@@ -372,6 +372,11 @@ MacLow::SetCtsTimeout (Time ctsTimeout)
 {
   m_ctsTimeout = ctsTimeout;
 }
+void
+MacLow::SetSifs (Time sifs)
+{
+  m_sifs = sifs;
+}
 Mac48Address 
 MacLow::GetAddress (void) const
 {
@@ -386,6 +391,11 @@ Time
 MacLow::GetCtsTimeout (void) const
 {
   return m_ctsTimeout;
+}
+Time
+MacLow::GetSifs (void) const
+{
+  return m_sifs;
 }
 
 void 
@@ -640,11 +650,6 @@ MacLow::GetCtsSize (void) const
   WifiMacHeader cts;
   cts.SetType (WIFI_MAC_CTL_CTS);
   return cts.GetSize () + 4;
-}
-Time
-MacLow::GetSifs (void) const
-{
-  return m_mac->GetSifs ();
 }
 Time
 MacLow::GetSlotTime (void) const

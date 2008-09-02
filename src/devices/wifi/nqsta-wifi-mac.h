@@ -154,7 +154,6 @@ private:
   Mac48Address m_address;
   Ssid m_ssid;
   Time m_slot;
-  Time m_sifs;
   Time m_eifsNoDifs;
 };
 

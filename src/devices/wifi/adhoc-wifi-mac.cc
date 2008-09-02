@@ -86,7 +86,7 @@ void
 AdhocWifiMac::SetSifs (Time sifs)
 {
   m_dcfManager->SetSifs (sifs);
-  m_sifs = sifs;
+  m_low->SetSifs (sifs);
 }
 void 
 AdhocWifiMac::SetEifsNoDifs (Time eifsNoDifs)
@@ -112,7 +112,7 @@ AdhocWifiMac::GetSlot (void) const
 Time 
 AdhocWifiMac::GetSifs (void) const
 {
-  return m_sifs;
+  return m_low->GetSifs ();
 }
 Time 
 AdhocWifiMac::GetEifsNoDifs (void) const

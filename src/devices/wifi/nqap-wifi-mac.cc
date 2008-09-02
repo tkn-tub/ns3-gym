@@ -138,7 +138,7 @@ NqapWifiMac::SetSifs (Time sifs)
 {
   NS_LOG_FUNCTION (this << sifs);
   m_dcfManager->SetSifs (sifs);
-  m_sifs = sifs;
+  m_low->SetSifs (sifs);
 }
 void 
 NqapWifiMac::SetEifsNoDifs (Time eifsNoDifs)
@@ -165,7 +165,7 @@ NqapWifiMac::GetSlot (void) const
 Time 
 NqapWifiMac::GetSifs (void) const
 {
-  return m_sifs;
+  return m_low->GetSifs ();
 }
 Time 
 NqapWifiMac::GetEifsNoDifs (void) const
