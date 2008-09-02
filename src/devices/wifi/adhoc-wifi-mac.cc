@@ -227,6 +227,11 @@ AdhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 
   m_dca->Queue (packet, hdr);
 }
+bool 
+AdhocWifiMac::SupportsSendFrom (void) const
+{
+  return true;
+}
 
 void 
 AdhocWifiMac::ForwardUp (Ptr<Packet> packet, WifiMacHeader const *hdr)

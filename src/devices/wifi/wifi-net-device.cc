@@ -361,7 +361,7 @@ WifiNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 bool
 WifiNetDevice::SupportsSendFrom (void) const
 {
-  return false; // TODO
+  return m_mac->SupportsSendFrom ();
 }
 
 } // namespace ns3

@@ -296,6 +296,11 @@ NqapWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
   NS_LOG_FUNCTION (this << packet << to);
   ForwardDown (packet, to, m_low->GetAddress ());
 }
+bool 
+NqapWifiMac::SupportsSendFrom (void) const
+{
+  return true;
+}
 SupportedRates
 NqapWifiMac::GetSupportedRates (void) const
 {

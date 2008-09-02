@@ -69,6 +69,7 @@ public:
   virtual void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from);
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to);
+  virtual bool SupportsSendFrom (void) const;
   virtual void SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address &> upCallback);
   virtual void SetLinkUpCallback (Callback<void> linkUp);
   virtual void SetLinkDownCallback (Callback<void> linkDown);

@@ -461,7 +461,11 @@ NqstaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
   hdr.SetDsTo ();
   m_dca->Queue (packet, hdr);
 }
-  
+bool 
+NqstaWifiMac::SupportsSendFrom (void) const
+{
+  return true;
+}  
 
 
 void 
