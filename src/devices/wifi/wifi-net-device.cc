@@ -280,7 +280,7 @@ WifiNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNu
 
   m_txLogger (packet, realTo);
 
-  m_mac->Enqueue (packet, realTo, m_mac->GetAddress ());
+  m_mac->Enqueue (packet, realTo);
   return true;
 }
 Ptr<Node> 

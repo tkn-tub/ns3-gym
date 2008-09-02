@@ -199,11 +199,16 @@ AdhocWifiMac::SetSsid (Ssid ssid)
 void 
 AdhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from)
 {
-  NS_LOG_FUNCTION (packet->GetSize () << to << from);
+  NS_FATAL_ERROR ("Adhoc does not support a from != m_low->GetAddress ()");
+}
+void 
+AdhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
+{
+  NS_LOG_FUNCTION (packet->GetSize () << to);
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_DATA);
   hdr.SetAddr1 (to);
-  hdr.SetAddr2 (from);
+  hdr.SetAddr2 (m_low->GetAddress ());
   hdr.SetAddr3 (GetBssid ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();

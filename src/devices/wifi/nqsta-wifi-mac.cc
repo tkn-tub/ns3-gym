@@ -440,6 +440,11 @@ NqstaWifiMac::IsAssociated (void)
 void 
 NqstaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from)
 {
+  NS_FATAL_ERROR ("Qsta does not support enqueue");
+}
+void 
+NqstaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
+{
   NS_LOG_FUNCTION (this << packet << to);
   if (!IsAssociated ()) 
     {
@@ -450,12 +455,14 @@ NqstaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address f
   WifiMacHeader hdr;
   hdr.SetTypeData ();
   hdr.SetAddr1 (GetBssid ());
-  hdr.SetAddr2 (from);
+  hdr.SetAddr2 (m_low->GetAddress ());
   hdr.SetAddr3 (to);
   hdr.SetDsNotFrom ();
   hdr.SetDsTo ();
   m_dca->Queue (packet, hdr);
 }
+  
+
 
 void 
 NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
