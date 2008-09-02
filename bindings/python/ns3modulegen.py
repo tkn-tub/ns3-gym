@@ -113,11 +113,17 @@ def main():
 
     # if GtkConfigStore support is disabled, disable the class wrapper
     if 'DISABLE_GTK_CONFIG_STORE' in os.environ:
-        root_module.classes.remove(root_module['ns3::GtkConfigStore'])
+        try:
+            root_module.classes.remove(root_module['ns3::GtkConfigStore'])
+        except KeyError:
+            pass
 
     # if no sqlite, the class SqliteDataOutput is disabled
     if 'SQLITE_STATS' in os.environ:
-        root_module.classes.remove(root_module['ns3::SqliteDataOutput'])
+        try:
+            root_module.classes.remove(root_module['ns3::SqliteDataOutput'])
+        except KeyError:
+            pass
 
     root_module.generate(out, '_ns3')
 
