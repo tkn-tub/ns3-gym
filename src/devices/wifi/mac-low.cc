@@ -28,7 +28,6 @@
 #include "mac-low.h"
 #include "wifi-phy.h"
 #include "wifi-mac-trailer.h"
-#include "wifi-mac.h"
 
 NS_LOG_COMPONENT_DEFINE ("MacLow");
 
