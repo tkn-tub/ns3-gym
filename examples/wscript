@@ -64,6 +64,14 @@ def build(bld):
         ['point-to-point', 'internet-stack'])
     obj.source = 'tcp-errors.cc'
 
+    obj = bld.create_ns3_program('tcp-nsc-lfn',
+      ['point-to-point', 'internet-stack'])
+    obj.source = 'tcp-nsc-lfn.cc'
+
+    obj = bld.create_ns3_program('tcp-nsc-zoo',
+      ['csma', 'internet-stack'])
+    obj.source = 'tcp-nsc-zoo.cc'
+
     obj = bld.create_ns3_program('tcp-star-server',
         ['point-to-point', 'internet-stack'])
     obj.source = 'tcp-star-server.cc'

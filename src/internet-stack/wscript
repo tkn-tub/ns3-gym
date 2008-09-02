@@ -1,4 +1,61 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+import Params
+import os
+
+# Mercurial repository of the network simulation cradle
+NETWORK_SIMULATION_CRADLE_REPO = "https://secure.wand.net.nz/mercurial/nsc"
+def nsc_fetch():
+    def nsc_clone():
+        print "Retrieving nsc from " + NETWORK_SIMULATION_CRADLE_REPO
+        if os.system("hg version > /dev/null 2>&1") != 0:
+            Params.fatal("Mercurial not installed, http fallback not yet implemented")
+        if os.system("hg -q clone " + NETWORK_SIMULATION_CRADLE_REPO) != 0:
+            Params.fatal("hg -q clone %s failed" % NETWORK_SIMULATION_CRADLE_REPO)
+
+    def nsc_update():
+        if os.system("hg version > /dev/null 2>&1") != 0:
+            Params.warning("Mercurial not installed, not updating nsc source")
+
+        print "Pulling nsc updates from " + NETWORK_SIMULATION_CRADLE_REPO
+        if os.system("cd nsc && hg -q pull %s && hg -q update" % NETWORK_SIMULATION_CRADLE_REPO) != 0:
+            Params.warning("Updating nsc using mercurial failed")
+
+    if not os.path.exists("nsc"):
+        nsc_clone()
+    else:
+        nsc_update()
+
+def configure(conf):
+    # checks for flex and bison, which is needed to build NSCs globaliser
+    def check_nsc_buildutils():
+        import flex
+        import bison
+        conf.check_tool('flex bison')
+        e = conf.create_library_configurator()
+        e.mandatory = True
+        e.name = 'fl'
+        e.run()
+
+    if not Params.g_options.nsc:
+	return
+
+    check_nsc_buildutils()
+
+    arch = os.uname()[4]
+    ok = False
+    if arch == 'x86_64' or arch == 'i686' or arch == 'i586' or arch == 'i486' or arch == 'i386':
+        conf.env['NSC_ENABLED'] = 'yes'
+        conf.define('NETWORK_SIMULATION_CRADLE', 1)
+        conf.write_config_header('ns3/core-config.h')
+        e = conf.create_library_configurator()
+        e.mandatory = True
+        e.name = 'dl'
+        e.define = 'HAVE_DL'
+        e.uselib = 'DL'
+        e.run()
+        ok = True
+    conf.check_message('NSC supported architecture', arch, ok)
+    nsc_fetch()
 
 
 def build(bld):
@@ -43,3 +100,9 @@ def build(bld):
         'ipv4-l3-protocol.h',
         'ipv4-static-routing.h',
         ]
+
+    if bld.env()['NSC_ENABLED']:
+        obj.source.append ('nsc-tcp-socket-impl.cc')
+        obj.source.append ('nsc-tcp-l4-protocol.cc')
+        obj.source.append ('nsc-tcp-socket-factory-impl.cc')
+        obj.source.append ('nsc-sysctl.cc')
