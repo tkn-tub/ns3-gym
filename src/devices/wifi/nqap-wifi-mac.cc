@@ -294,7 +294,7 @@ void
 NqapWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << to);
-  ForwardDown (packet, to, m_low->GetAddress ());
+  ForwardDown (packet, m_low->GetAddress (), to);
 }
 bool 
 NqapWifiMac::SupportsSendFrom (void) const
