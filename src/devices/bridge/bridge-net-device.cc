@@ -302,52 +302,8 @@ Address
 BridgeNetDevice::MakeMulticastAddress (Ipv4Address multicastGroup) const
 {
  NS_LOG_FUNCTION (this << multicastGroup);
-//
-// First, get the generic multicast address.
-//
-  Address hardwareDestination = GetMulticast ();
-
-  NS_LOG_LOGIC ("Device multicast address: " << hardwareDestination);
-//
-// It's our address, and we know we're playing with an EUI-48 address here
-// primarily since we know that by construction, but also since the parameter
-// is an Ipv4Address.
-//
-  Mac48Address etherAddr = Mac48Address::ConvertFrom (hardwareDestination);
-//
-// We now have the multicast address in an abstract 48-bit container.  We 
-// need to pull it out so we can play with it.  When we're done, we have the 
-// high order bits in etherBuffer[0], etc.
-//
-  uint8_t etherBuffer[6];
-  etherAddr.CopyTo (etherBuffer);
-//
-// Now we need to pull the raw bits out of the Ipv4 destination address.
-//
-  uint8_t ipBuffer[4];
-  multicastGroup.Serialize (ipBuffer);
-//
-// RFC 1112 says that an Ipv4 host group address is mapped to an EUI-48
-// multicast address by placing the low-order 23-bits of the IP address into 
-// the low-order 23 bits of the Ethernet multicast address 
-// 01-00-5E-00-00-00 (hex). 
-//
-  etherBuffer[3] |= ipBuffer[1] & 0x7f;
-  etherBuffer[4] = ipBuffer[2];
-  etherBuffer[5] = ipBuffer[3];
-//
-// Now, etherBuffer has the desired ethernet multicast address.  We have to
-// suck these bits back into the Mac48Address,
-//
-  etherAddr.CopyFrom (etherBuffer);
-//
-// Implicit conversion (operator Address ()) is defined for Mac48Address, so
-// use it by just returning the EUI-48 address which is automagically converted
-// to an Address.
-//
-  NS_LOG_LOGIC ("multicast address is " << etherAddr);
-
-  return etherAddr;
+ Mac48Address multicast = Mac48Address::GetMulticast (multicastGroup);
+ return multicast;
 }
 
 
