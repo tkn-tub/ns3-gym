@@ -70,7 +70,7 @@ public:
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from);
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to);
   virtual bool SupportsSendFrom (void) const;
-  virtual void SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address &> upCallback);
+  virtual void SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback);
   virtual void SetLinkUpCallback (Callback<void> linkUp);
   virtual void SetLinkDownCallback (Callback<void> linkDown);
   virtual Mac48Address GetAddress (void) const;
@@ -88,7 +88,7 @@ private:
   Mac48Address GetBssid (void) const;
 
   Ptr<DcaTxop> m_dca;
-  Callback<void,Ptr<Packet>,const Mac48Address &> m_upCallback;
+  Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> m_upCallback;
   Ptr<WifiRemoteStationManager> m_stationManager;
   Ptr<WifiPhy> m_phy;
   DcfManager *m_dcfManager;

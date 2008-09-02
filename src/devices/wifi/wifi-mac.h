@@ -154,7 +154,7 @@ private:
   /**
    * \param upCallback the callback to invoke when a packet must be forwarded up the stack.
    */
-  virtual void SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address &> upCallback) = 0;
+  virtual void SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback) = 0;
   /**
    * \param linkUp the callback to invoke when the link becomes up.
    */

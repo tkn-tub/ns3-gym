@@ -305,12 +305,36 @@ WifiNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 }
 
 void
-WifiNetDevice::ForwardUp (Ptr<Packet> packet, const Mac48Address &from)
+WifiNetDevice::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to)
 {
   m_rxLogger (packet, from);
   LlcSnapHeader llc;
   packet->RemoveHeader (llc);
-  m_forwardUp (this, packet, llc.GetType (), from);
+  enum NetDevice::PacketType type;
+  if (to.IsBroadcast ())
+    {
+      type = NetDevice::PACKET_BROADCAST;
+    }
+  else if (to.IsMulticast ())
+    {
+      type = NetDevice::PACKET_MULTICAST;
+    }
+  else if (to == m_mac->GetAddress ())
+    {
+      type = NetDevice::PACKET_HOST;
+    }
+  else
+    {
+      type = NetDevice::PACKET_OTHERHOST;
+    }
+  if (type != NetDevice::PACKET_OTHERHOST)
+    {
+      m_forwardUp (this, packet, llc.GetType (), from);
+    }
+  if (!m_promiscRx.IsNull ())
+    {
+      m_promiscRx (this, packet, llc.GetType (), from, to, type);
+    }
 }
 
 void
@@ -355,7 +379,7 @@ WifiNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Addres
 void
 WifiNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 {
-  NS_FATAL_ERROR ("TODO");
+  m_promiscRx = cb;
 }
 
 bool

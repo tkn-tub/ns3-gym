@@ -76,7 +76,7 @@ public:
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from);
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to);
   virtual bool SupportsSendFrom (void) const;
-  virtual void SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address &> upCallback);
+  virtual void SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback);
   virtual void SetLinkUpCallback (Callback<void> linkUp);
   virtual void SetLinkDownCallback (Callback<void> linkDown);
   virtual Mac48Address GetAddress (void) const;
@@ -100,7 +100,7 @@ public:
 
 private:
   void Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
-  void ForwardUp (Ptr<Packet> packet, Mac48Address from);
+  void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
   void ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
   void TxOk (WifiMacHeader const &hdr);
   void TxFailed (WifiMacHeader const &hdr);
@@ -117,7 +117,7 @@ private:
   Ptr<DcaTxop> m_beaconDca;
   Ptr<WifiRemoteStationManager> m_stationManager;
   Ptr<WifiPhy> m_phy;
-  Callback<void, Ptr<Packet>,const Mac48Address &> m_upCallback;
+  Callback<void, Ptr<Packet>,Mac48Address, Mac48Address> m_upCallback;
   Time m_beaconInterval;
 
   DcfManager *m_dcfManager;

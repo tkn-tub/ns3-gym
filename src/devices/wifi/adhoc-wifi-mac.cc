@@ -154,7 +154,7 @@ AdhocWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> station
   m_low->SetWifiRemoteStationManager (stationManager);
 }
 void 
-AdhocWifiMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address &> upCallback)
+AdhocWifiMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback)
 {
   m_upCallback = upCallback;
 }
@@ -237,10 +237,7 @@ void
 AdhocWifiMac::ForwardUp (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
   NS_LOG_DEBUG ("received size="<<packet->GetSize ()<<", from="<<hdr->GetAddr2 ());
-  if (hdr->GetAddr1 ().IsBroadcast () || hdr->GetAddr1 () == GetAddress ())
-    {
-      m_upCallback (packet, hdr->GetAddr2 ());
-    }
+  m_upCallback (packet, hdr->GetAddr2 (), hdr->GetAddr1 ());
 }
 
 } // namespace ns3

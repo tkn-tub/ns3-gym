@@ -107,7 +107,7 @@ public:
 
 private:
   virtual void DoDispose (void);
-  void ForwardUp (Ptr<Packet> packet, const Mac48Address &from);
+  void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
   void LinkUp (void);
   void LinkDown (void);
   void Setup (void);
@@ -117,7 +117,8 @@ private:
   Ptr<WifiChannel> m_channel;
   Ptr<WifiMac> m_mac;
   Ptr<WifiRemoteStationManager> m_stationManager;
-  ReceiveCallback m_forwardUp;
+  NetDevice::ReceiveCallback m_forwardUp;
+  NetDevice::PromiscReceiveCallback m_promiscRx;
   TracedCallback<Ptr<const Packet>, Mac48Address> m_rxLogger;
   TracedCallback<Ptr<const Packet>, Mac48Address> m_txLogger;
   uint32_t m_ifIndex;

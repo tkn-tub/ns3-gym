@@ -76,7 +76,7 @@ public:
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from);
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to);
   virtual bool SupportsSendFrom (void) const;
-  virtual void SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address &> upCallback);
+  virtual void SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback);
   virtual void SetLinkUpCallback (Callback<void> linkUp);
   virtual void SetLinkDownCallback (Callback<void> linkDown);
   virtual Mac48Address GetAddress (void) const;
@@ -114,7 +114,7 @@ private:
   void SetBssid (Mac48Address bssid);
   void SetActiveProbing (bool enable);
   bool GetActiveProbing (void) const;
-  void ForwardUp (Ptr<Packet> packet, const Mac48Address &address);
+  void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
   void Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
   Mac48Address GetBroadcastBssid (void);
   void SendProbeRequest (void);
@@ -141,7 +141,7 @@ private:
   Time m_assocRequestTimeout;
   EventId m_probeRequestEvent;
   EventId m_assocRequestEvent;
-  Callback<void, Ptr<Packet>,const Mac48Address &> m_forwardUp;
+  Callback<void, Ptr<Packet>, Mac48Address, Mac48Address> m_forwardUp;
   Callback<void> m_linkUp;
   Callback<void> m_linkDown;
   Ptr<DcaTxop> m_dca;

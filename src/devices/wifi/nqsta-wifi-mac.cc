@@ -207,7 +207,7 @@ NqstaWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> station
   m_low->SetWifiRemoteStationManager (stationManager);
 }
 void 
-NqstaWifiMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address &> upCallback)
+NqstaWifiMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback)
 {
   m_forwardUp = upCallback;
 }
@@ -301,10 +301,10 @@ NqstaWifiMac::SetActiveProbing (bool enable)
     }
 }
 void 
-NqstaWifiMac::ForwardUp (Ptr<Packet> packet, const Mac48Address &address)
+NqstaWifiMac::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to)
 {
-  NS_LOG_FUNCTION (this << packet << address);
-  m_forwardUp (packet, address);
+  NS_LOG_FUNCTION (this << packet << from << to);
+  m_forwardUp (packet, from, to);
 }
 void
 NqstaWifiMac::SendProbeRequest (void)
@@ -480,7 +480,7 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
     } 
   else if (hdr->IsData ()) 
     {
-      ForwardUp (packet, hdr->GetAddr2 ());
+      ForwardUp (packet, hdr->GetAddr2 (), hdr->GetAddr1 ());
     } 
   else if (hdr->IsProbeReq () ||
            hdr->IsAssocReq ()) 

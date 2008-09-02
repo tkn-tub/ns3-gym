@@ -209,7 +209,7 @@ NqapWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationM
   m_low->SetWifiRemoteStationManager (stationManager);
 }
 void 
-NqapWifiMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address &> upCallback)
+NqapWifiMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback)
 {
   NS_LOG_FUNCTION (this);
   m_upCallback = upCallback;
@@ -266,10 +266,10 @@ NqapWifiMac::StartBeaconing (void)
   SendOneBeacon ();
 }
 void 
-NqapWifiMac::ForwardUp (Ptr<Packet> packet, Mac48Address from)
+NqapWifiMac::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << from);
-  m_upCallback (packet, from);
+  m_upCallback (packet, from, to);
 }
 void 
 NqapWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to)
@@ -430,7 +430,7 @@ NqapWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
           if (hdr->GetAddr3 () == GetAddress ()) 
             {
               NS_LOG_DEBUG ("frame for me from="<<hdr->GetAddr2 ());
-              ForwardUp (packet, hdr->GetAddr2 ());
+              ForwardUp (packet, hdr->GetAddr2 (), hdr->GetAddr1 ());
             } 
           else 
             {
@@ -439,7 +439,7 @@ NqapWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
               ForwardDown (packet,
                            hdr->GetAddr2 (), 
                            hdr->GetAddr3 ());
-              ForwardUp (copy, hdr->GetAddr2 ());
+              ForwardUp (copy, hdr->GetAddr2 (), hdr->GetAddr1 ());
             }
         } 
       else if (hdr->IsFromDs () &&
