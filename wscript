@@ -55,6 +55,8 @@ REGRESSION_SUFFIX = "-ref-traces"
 #
 TRACEBALL_SUFFIX = ".tar.bz2"
 
+# directory that contains network simulation cradle source
+NSC_DIR = "nsc"
 
 def dist_hook():
     import tarfile
@@ -165,6 +167,10 @@ def set_options(opt):
                    help=('For regression testing, only run/generate the indicated regression tests, '
                          'specified as a comma separated list of test names'),
                    dest='regression_tests', type="string")
+    opt.add_option('--nsc',
+                   help=('Enable Network Simulation Cradle to allow the use real-world network stacks'),
+                   action="store_true", default=False,
+                   dest='nsc')
 
     # options provided in a script in a subdirectory named "src"
     opt.sub_options('src')
@@ -193,6 +199,7 @@ def check_compilation_flag(conf, flag):
     
 
 def configure(conf):
+    conf.env['NS3_BUILDDIR'] = conf.m_blddir
     conf.check_tool('compiler_cxx')
 
     # create the second environment, set the variant and set its name
@@ -304,6 +311,28 @@ def _exec_command_interact_win32(s):
     return stat >> 8
 
 
+def nsc_build(bld):
+    # XXX: Detect gcc major version(s) available to build supported stacks
+    kernels = [['linux-2.6.18', 'linux2.6.18'],
+               ['linux-2.6.26', 'linux2.6.26']]
+    for dir,name in kernels:
+        soname = 'lib' + name + '.so'
+        tmp = NSC_DIR + '/' + dir +'/' + soname
+        if not os.path.exists(tmp):
+            if os.system('cd ' + NSC_DIR + ' && python scons.py ' + dir) != 0:
+                Params.fatal("Building NSC stack failed")
+        builddir = os.path.abspath(os.path.join(bld.env()['NS3_BUILDDIR'], bld.env ().variant()))
+        if not os.path.exists(builddir + '/nsc'):
+            try:
+                os.symlink('../../' + NSC_DIR, builddir + '/nsc')
+            except:
+                Params.fatal("Error linkink " + builddir + '/nsc')
+        if not os.path.exists(builddir + '/' + soname):
+            try:
+                os.symlink('../../' + NSC_DIR + '/' + dir + '/' + soname, builddir +  '/' + soname)
+            except:
+                Params.fatal("Error linking " + builddir + '/' + soname)
+
 def build(bld):
     if Params.g_options.no_task_lines:
         import Runner
@@ -392,6 +421,9 @@ def build(bld):
         lib.uselib_local = list(env['NS3_MODULES'])
 
     bld.add_subdirs('bindings/python')
+
+    if env['NSC_ENABLED'] == 'yes':
+        nsc_build(bld)
 
 def get_command_template():
     if Params.g_options.valgrind:

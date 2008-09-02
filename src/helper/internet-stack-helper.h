@@ -33,6 +33,8 @@ namespace ns3 {
 class InternetStackHelper
 {
 public:
+  InternetStackHelper(void);
+
   /**
    * \param c the set of nodes
    *
@@ -43,6 +45,13 @@ public:
    * 
    */
   void Install (NodeContainer c);
+
+  /**
+   * \param soname name of the shared library with the nsc tcp stack
+   * to use, e.g. 'liblinux2.6.26.so'. The empty string resets
+   * the InternetStackHelper to use the ns-3 models again.
+   */
+  void SetNscStack(std::string soname);
 
   /**
    * \param filename filename prefix to use for pcap files.
@@ -60,6 +69,7 @@ public:
   static void EnablePcapAll (std::string filename);
 
 private:
+  std::string m_nscLibrary;
   static void Cleanup (void);
   static void LogRxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);
   static void LogTxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);

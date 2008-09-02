@@ -48,6 +48,7 @@ public:
   Ipv4EndPointDemux ();
   ~Ipv4EndPointDemux ();
 
+  EndPoints GetAllEndPoints (void);
   bool LookupPortLocal (uint16_t port);
   bool LookupLocal (Ipv4Address addr, uint16_t port);
   EndPoints Lookup (Ipv4Address daddr, 
