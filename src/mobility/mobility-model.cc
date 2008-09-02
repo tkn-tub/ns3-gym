@@ -31,7 +31,7 @@ MobilityModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::MobilityModel")
     .SetParent<Object> ()
     .AddAttribute ("Position", "The current position of the mobility model.",
-                   TypeId::ATTR_SGC,
+                   TypeId::ATTR_SET | TypeId::ATTR_GET,
                    VectorValue (Vector (0.0, 0.0, 0.0)),
                    MakeVectorAccessor (&MobilityModel::SetPosition,
                                         &MobilityModel::GetPosition),
