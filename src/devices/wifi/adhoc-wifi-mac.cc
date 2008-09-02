@@ -99,6 +99,11 @@ AdhocWifiMac::SetAckTimeout (Time ackTimeout)
 {
   m_low->SetAckTimeout (ackTimeout);
 }
+void 
+AdhocWifiMac::SetCtsTimeout (Time ctsTimeout)
+{
+  m_low->SetCtsTimeout (ctsTimeout);
+}
 Time 
 AdhocWifiMac::GetSlot (void) const
 {
@@ -118,6 +123,11 @@ Time
 AdhocWifiMac::GetAckTimeout (void) const
 {
   return m_low->GetAckTimeout ();
+}
+Time 
+AdhocWifiMac::GetCtsTimeout (void) const
+{
+  return m_low->GetCtsTimeout ();
 }
 void 
 AdhocWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)

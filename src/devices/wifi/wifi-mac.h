@@ -64,7 +64,7 @@ public:
   /**
    * \param ctsTimeout the duration of a CTS timeout.
    */
-  void SetCtsTimeout (Time ctsTimeout);
+  virtual void SetCtsTimeout (Time ctsTimeout) = 0;
   /**
    * \param ackTimeout the duration of an ACK timeout.
    */
@@ -95,7 +95,7 @@ public:
   /**
    * \returns the current CTS timeout duration.
    */
-  Time GetCtsTimeout (void) const;
+  virtual Time GetCtsTimeout (void) const = 0;
   /**
    * \returns the current ACK timeout duration.
    */

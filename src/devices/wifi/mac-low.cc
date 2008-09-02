@@ -367,6 +367,11 @@ MacLow::SetAckTimeout (Time ackTimeout)
 {
   m_ackTimeout = ackTimeout;
 }
+void 
+MacLow::SetCtsTimeout (Time ctsTimeout)
+{
+  m_ctsTimeout = ctsTimeout;
+}
 Mac48Address 
 MacLow::GetAddress (void) const
 {
@@ -376,6 +381,11 @@ Time
 MacLow::GetAckTimeout (void) const
 {
   return m_ackTimeout;
+}
+Time 
+MacLow::GetCtsTimeout (void) const
+{
+  return m_ctsTimeout;
 }
 
 void 
@@ -645,11 +655,6 @@ Time
 MacLow::GetPifs (void) const
 {
   return m_mac->GetPifs ();
-}
-Time
-MacLow::GetCtsTimeout (void) const
-{
-  return m_mac->GetCtsTimeout ();
 }
 uint32_t 
 MacLow::GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr) const

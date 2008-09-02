@@ -152,6 +152,11 @@ NqstaWifiMac::SetAckTimeout (Time ackTimeout)
 {
   m_low->SetAckTimeout (ackTimeout);
 }
+void 
+NqstaWifiMac::SetCtsTimeout (Time ctsTimeout)
+{
+  m_low->SetCtsTimeout (ctsTimeout);
+}
 Time 
 NqstaWifiMac::GetSlot (void) const
 {
@@ -171,6 +176,11 @@ Time
 NqstaWifiMac::GetAckTimeout (void) const
 {
   return m_low->GetAckTimeout ();
+}
+Time 
+NqstaWifiMac::GetCtsTimeout (void) const
+{
+  return m_low->GetCtsTimeout ();
 }
 void 
 NqstaWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
