@@ -19,10 +19,10 @@ def register_types(module):
     module.add_class('PositionAllocator', parent=root_module['ns3::Object'])
     ## position-allocator.h: ns3::ListPositionAllocator [class]
     module.add_class('ListPositionAllocator', parent=root_module['ns3::PositionAllocator'])
-    ## rectangle.h: ns3::RectangleValue [class]
-    module.add_class('RectangleValue', parent=root_module['ns3::AttributeValue'])
     ## position-allocator.h: ns3::RandomRectanglePositionAllocator [class]
     module.add_class('RandomRectanglePositionAllocator', parent=root_module['ns3::PositionAllocator'])
+    ## rectangle.h: ns3::RectangleValue [class]
+    module.add_class('RectangleValue', parent=root_module['ns3::AttributeValue'])
     ## vector.h: ns3::VectorValue [class]
     module.add_class('VectorValue', parent=root_module['ns3::AttributeValue'])
     ## position-allocator.h: ns3::RandomDiscPositionAllocator [class]
@@ -96,8 +96,8 @@ def register_methods(root_module):
     register_Ns3Rectangle_methods(root_module, root_module['ns3::Rectangle'])
     register_Ns3PositionAllocator_methods(root_module, root_module['ns3::PositionAllocator'])
     register_Ns3ListPositionAllocator_methods(root_module, root_module['ns3::ListPositionAllocator'])
-    register_Ns3RectangleValue_methods(root_module, root_module['ns3::RectangleValue'])
     register_Ns3RandomRectanglePositionAllocator_methods(root_module, root_module['ns3::RandomRectanglePositionAllocator'])
+    register_Ns3RectangleValue_methods(root_module, root_module['ns3::RectangleValue'])
     register_Ns3VectorValue_methods(root_module, root_module['ns3::VectorValue'])
     register_Ns3RandomDiscPositionAllocator_methods(root_module, root_module['ns3::RandomDiscPositionAllocator'])
     register_Ns3MobilityModel_methods(root_module, root_module['ns3::MobilityModel'])
@@ -112,25 +112,25 @@ def register_methods(root_module):
 
 def register_Ns3StaticSpeedHelper_methods(root_module, cls):
     ## static-speed-helper.h: ns3::StaticSpeedHelper::StaticSpeedHelper(ns3::StaticSpeedHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::StaticSpeedHelper&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::StaticSpeedHelper const &', 'arg0')])
     ## static-speed-helper.h: ns3::StaticSpeedHelper::StaticSpeedHelper() [constructor]
     cls.add_constructor([])
     ## static-speed-helper.h: ns3::StaticSpeedHelper::StaticSpeedHelper(ns3::Vector const & position) [constructor]
-    cls.add_constructor([param('ns3::Vector&', 'position', is_const=True)])
+    cls.add_constructor([param('ns3::Vector const &', 'position')])
     ## static-speed-helper.h: ns3::StaticSpeedHelper::StaticSpeedHelper(ns3::Vector const & position, ns3::Vector const & speed) [constructor]
-    cls.add_constructor([param('ns3::Vector&', 'position', is_const=True), param('ns3::Vector&', 'speed', is_const=True)])
+    cls.add_constructor([param('ns3::Vector const &', 'position'), param('ns3::Vector const &', 'speed')])
     ## static-speed-helper.h: void ns3::StaticSpeedHelper::InitializePosition(ns3::Vector const & position) [member function]
     cls.add_method('InitializePosition', 
                    'void', 
-                   [param('ns3::Vector&', 'position', is_const=True)])
+                   [param('ns3::Vector const &', 'position')])
     ## static-speed-helper.h: void ns3::StaticSpeedHelper::Reset(ns3::Vector const & speed) [member function]
     cls.add_method('Reset', 
                    'void', 
-                   [param('ns3::Vector&', 'speed', is_const=True)])
+                   [param('ns3::Vector const &', 'speed')])
     ## static-speed-helper.h: ns3::Vector ns3::StaticSpeedHelper::GetCurrentPosition(ns3::Rectangle const & bounds) const [member function]
     cls.add_method('GetCurrentPosition', 
                    'ns3::Vector', 
-                   [param('ns3::Rectangle&', 'bounds', is_const=True)], 
+                   [param('ns3::Rectangle const &', 'bounds')], 
                    is_const=True)
     ## static-speed-helper.h: ns3::Vector ns3::StaticSpeedHelper::GetCurrentPosition() const [member function]
     cls.add_method('GetCurrentPosition', 
@@ -145,7 +145,7 @@ def register_Ns3StaticSpeedHelper_methods(root_module, cls):
     ## static-speed-helper.h: void ns3::StaticSpeedHelper::SetSpeed(ns3::Vector const & speed) [member function]
     cls.add_method('SetSpeed', 
                    'void', 
-                   [param('ns3::Vector&', 'speed', is_const=True)])
+                   [param('ns3::Vector const &', 'speed')])
     ## static-speed-helper.h: void ns3::StaticSpeedHelper::Pause() [member function]
     cls.add_method('Pause', 
                    'void', 
@@ -158,7 +158,7 @@ def register_Ns3StaticSpeedHelper_methods(root_module, cls):
 
 def register_Ns3Vector_methods(root_module, cls):
     ## vector.h: ns3::Vector::Vector(ns3::Vector const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Vector&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::Vector const &', 'arg0')])
     ## vector.h: ns3::Vector::Vector(double _x, double _y, double _z) [constructor]
     cls.add_constructor([param('double', '_x'), param('double', '_y'), param('double', '_z')])
     ## vector.h: ns3::Vector::Vector() [constructor]
@@ -174,21 +174,21 @@ def register_Ns3Vector_methods(root_module, cls):
 
 def register_Ns3VectorChecker_methods(root_module, cls):
     ## vector.h: ns3::VectorChecker::VectorChecker(ns3::VectorChecker const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::VectorChecker&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::VectorChecker const &', 'arg0')])
     ## vector.h: ns3::VectorChecker::VectorChecker() [constructor]
     cls.add_constructor([])
     return
 
 def register_Ns3RectangleChecker_methods(root_module, cls):
     ## rectangle.h: ns3::RectangleChecker::RectangleChecker(ns3::RectangleChecker const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RectangleChecker&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::RectangleChecker const &', 'arg0')])
     ## rectangle.h: ns3::RectangleChecker::RectangleChecker() [constructor]
     cls.add_constructor([])
     return
 
 def register_Ns3Rectangle_methods(root_module, cls):
     ## rectangle.h: ns3::Rectangle::Rectangle(ns3::Rectangle const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Rectangle&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::Rectangle const &', 'arg0')])
     ## rectangle.h: ns3::Rectangle::Rectangle(double _xMin, double _xMax, double _yMin, double _yMax) [constructor]
     cls.add_constructor([param('double', '_xMin'), param('double', '_xMax'), param('double', '_yMin'), param('double', '_yMax')])
     ## rectangle.h: ns3::Rectangle::Rectangle() [constructor]
@@ -196,17 +196,17 @@ def register_Ns3Rectangle_methods(root_module, cls):
     ## rectangle.h: ns3::Vector ns3::Rectangle::CalculateIntersection(ns3::Vector const & current, ns3::Vector const & speed) const [member function]
     cls.add_method('CalculateIntersection', 
                    'ns3::Vector', 
-                   [param('ns3::Vector&', 'current', is_const=True), param('ns3::Vector&', 'speed', is_const=True)], 
+                   [param('ns3::Vector const &', 'current'), param('ns3::Vector const &', 'speed')], 
                    is_const=True)
     ## rectangle.h: ns3::Rectangle::Side ns3::Rectangle::GetClosestSide(ns3::Vector const & position) const [member function]
     cls.add_method('GetClosestSide', 
                    'ns3::Rectangle::Side', 
-                   [param('ns3::Vector&', 'position', is_const=True)], 
+                   [param('ns3::Vector const &', 'position')], 
                    is_const=True)
     ## rectangle.h: bool ns3::Rectangle::IsInside(ns3::Vector const & position) const [member function]
     cls.add_method('IsInside', 
                    'bool', 
-                   [param('ns3::Vector&', 'position', is_const=True)], 
+                   [param('ns3::Vector const &', 'position')], 
                    is_const=True)
     ## rectangle.h: ns3::Rectangle::xMax [variable]
     cls.add_instance_attribute('xMax', 'double', is_const=False)
@@ -221,7 +221,7 @@ def register_Ns3Rectangle_methods(root_module, cls):
 
 def register_Ns3PositionAllocator_methods(root_module, cls):
     ## position-allocator.h: ns3::PositionAllocator::PositionAllocator(ns3::PositionAllocator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PositionAllocator&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::PositionAllocator const &', 'arg0')])
     ## position-allocator.h: static ns3::TypeId ns3::PositionAllocator::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -238,7 +238,7 @@ def register_Ns3PositionAllocator_methods(root_module, cls):
 
 def register_Ns3ListPositionAllocator_methods(root_module, cls):
     ## position-allocator.h: ns3::ListPositionAllocator::ListPositionAllocator(ns3::ListPositionAllocator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ListPositionAllocator&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::ListPositionAllocator const &', 'arg0')])
     ## position-allocator.h: static ns3::TypeId ns3::ListPositionAllocator::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -257,42 +257,9 @@ def register_Ns3ListPositionAllocator_methods(root_module, cls):
                    is_const=True, is_virtual=True)
     return
 
-def register_Ns3RectangleValue_methods(root_module, cls):
-    ## rectangle.h: ns3::RectangleValue::RectangleValue(ns3::RectangleValue const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RectangleValue&', 'arg0', is_const=True)])
-    ## rectangle.h: ns3::RectangleValue::RectangleValue() [constructor]
-    cls.add_constructor([])
-    ## rectangle.h: ns3::RectangleValue::RectangleValue(ns3::Rectangle const & value) [constructor]
-    cls.add_constructor([param('ns3::Rectangle&', 'value', is_const=True)])
-    ## rectangle.h: void ns3::RectangleValue::Set(ns3::Rectangle const & value) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('ns3::Rectangle&', 'value', is_const=True)])
-    ## rectangle.h: ns3::Rectangle ns3::RectangleValue::Get() const [member function]
-    cls.add_method('Get', 
-                   'ns3::Rectangle', 
-                   [], 
-                   is_const=True)
-    ## rectangle.h: ns3::Ptr<ns3::AttributeValue> ns3::RectangleValue::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::AttributeValue >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## rectangle.h: std::string ns3::RectangleValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
-    cls.add_method('SerializeToString', 
-                   'std::string', 
-                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
-    ## rectangle.h: bool ns3::RectangleValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
-    cls.add_method('DeserializeFromString', 
-                   'bool', 
-                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True)
-    return
-
 def register_Ns3RandomRectanglePositionAllocator_methods(root_module, cls):
     ## position-allocator.h: ns3::RandomRectanglePositionAllocator::RandomRectanglePositionAllocator(ns3::RandomRectanglePositionAllocator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RandomRectanglePositionAllocator&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::RandomRectanglePositionAllocator const &', 'arg0')])
     ## position-allocator.h: static ns3::TypeId ns3::RandomRectanglePositionAllocator::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -315,17 +282,50 @@ def register_Ns3RandomRectanglePositionAllocator_methods(root_module, cls):
                    is_const=True, is_virtual=True)
     return
 
+def register_Ns3RectangleValue_methods(root_module, cls):
+    ## rectangle.h: ns3::RectangleValue::RectangleValue(ns3::RectangleValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RectangleValue const &', 'arg0')])
+    ## rectangle.h: ns3::RectangleValue::RectangleValue() [constructor]
+    cls.add_constructor([])
+    ## rectangle.h: ns3::RectangleValue::RectangleValue(ns3::Rectangle const & value) [constructor]
+    cls.add_constructor([param('ns3::Rectangle const &', 'value')])
+    ## rectangle.h: void ns3::RectangleValue::Set(ns3::Rectangle const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::Rectangle const &', 'value')])
+    ## rectangle.h: ns3::Rectangle ns3::RectangleValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::Rectangle', 
+                   [], 
+                   is_const=True)
+    ## rectangle.h: ns3::Ptr<ns3::AttributeValue> ns3::RectangleValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## rectangle.h: std::string ns3::RectangleValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## rectangle.h: bool ns3::RectangleValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    return
+
 def register_Ns3VectorValue_methods(root_module, cls):
     ## vector.h: ns3::VectorValue::VectorValue(ns3::VectorValue const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::VectorValue&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::VectorValue const &', 'arg0')])
     ## vector.h: ns3::VectorValue::VectorValue() [constructor]
     cls.add_constructor([])
     ## vector.h: ns3::VectorValue::VectorValue(ns3::Vector const & value) [constructor]
-    cls.add_constructor([param('ns3::Vector&', 'value', is_const=True)])
+    cls.add_constructor([param('ns3::Vector const &', 'value')])
     ## vector.h: void ns3::VectorValue::Set(ns3::Vector const & value) [member function]
     cls.add_method('Set', 
                    'void', 
-                   [param('ns3::Vector&', 'value', is_const=True)])
+                   [param('ns3::Vector const &', 'value')])
     ## vector.h: ns3::Vector ns3::VectorValue::Get() const [member function]
     cls.add_method('Get', 
                    'ns3::Vector', 
@@ -350,7 +350,7 @@ def register_Ns3VectorValue_methods(root_module, cls):
 
 def register_Ns3RandomDiscPositionAllocator_methods(root_module, cls):
     ## position-allocator.h: ns3::RandomDiscPositionAllocator::RandomDiscPositionAllocator(ns3::RandomDiscPositionAllocator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RandomDiscPositionAllocator&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::RandomDiscPositionAllocator const &', 'arg0')])
     ## position-allocator.h: static ns3::TypeId ns3::RandomDiscPositionAllocator::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -383,7 +383,7 @@ def register_Ns3RandomDiscPositionAllocator_methods(root_module, cls):
 
 def register_Ns3MobilityModel_methods(root_module, cls):
     ## mobility-model.h: ns3::MobilityModel::MobilityModel(ns3::MobilityModel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::MobilityModel&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::MobilityModel const &', 'arg0')])
     ## mobility-model.h: static ns3::TypeId ns3::MobilityModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -399,7 +399,7 @@ def register_Ns3MobilityModel_methods(root_module, cls):
     ## mobility-model.h: void ns3::MobilityModel::SetPosition(ns3::Vector const & position) [member function]
     cls.add_method('SetPosition', 
                    'void', 
-                   [param('ns3::Vector&', 'position', is_const=True)])
+                   [param('ns3::Vector const &', 'position')])
     ## mobility-model.h: ns3::Vector ns3::MobilityModel::GetVelocity() const [member function]
     cls.add_method('GetVelocity', 
                    'ns3::Vector', 
@@ -423,7 +423,7 @@ def register_Ns3MobilityModel_methods(root_module, cls):
     ## mobility-model.h: void ns3::MobilityModel::DoSetPosition(ns3::Vector const & position) [member function]
     cls.add_method('DoSetPosition', 
                    'void', 
-                   [param('ns3::Vector&', 'position', is_const=True)], 
+                   [param('ns3::Vector const &', 'position')], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
     ## mobility-model.h: ns3::Vector ns3::MobilityModel::DoGetVelocity() const [member function]
     cls.add_method('DoGetVelocity', 
@@ -434,7 +434,7 @@ def register_Ns3MobilityModel_methods(root_module, cls):
 
 def register_Ns3RandomDirection2dMobilityModel_methods(root_module, cls):
     ## random-direction-2d-mobility-model.h: ns3::RandomDirection2dMobilityModel::RandomDirection2dMobilityModel(ns3::RandomDirection2dMobilityModel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RandomDirection2dMobilityModel&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::RandomDirection2dMobilityModel const &', 'arg0')])
     ## random-direction-2d-mobility-model.h: static ns3::TypeId ns3::RandomDirection2dMobilityModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -455,7 +455,7 @@ def register_Ns3RandomDirection2dMobilityModel_methods(root_module, cls):
     ## random-direction-2d-mobility-model.h: void ns3::RandomDirection2dMobilityModel::DoSetPosition(ns3::Vector const & position) [member function]
     cls.add_method('DoSetPosition', 
                    'void', 
-                   [param('ns3::Vector&', 'position', is_const=True)], 
+                   [param('ns3::Vector const &', 'position')], 
                    visibility='private', is_virtual=True)
     ## random-direction-2d-mobility-model.h: ns3::Vector ns3::RandomDirection2dMobilityModel::DoGetVelocity() const [member function]
     cls.add_method('DoGetVelocity', 
@@ -466,7 +466,7 @@ def register_Ns3RandomDirection2dMobilityModel_methods(root_module, cls):
 
 def register_Ns3GridPositionAllocator_methods(root_module, cls):
     ## position-allocator.h: ns3::GridPositionAllocator::GridPositionAllocator(ns3::GridPositionAllocator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::GridPositionAllocator&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::GridPositionAllocator const &', 'arg0')])
     ## position-allocator.h: static ns3::TypeId ns3::GridPositionAllocator::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -537,7 +537,7 @@ def register_Ns3GridPositionAllocator_methods(root_module, cls):
 
 def register_Ns3RandomWaypointMobilityModel_methods(root_module, cls):
     ## random-waypoint-mobility-model.h: ns3::RandomWaypointMobilityModel::RandomWaypointMobilityModel(ns3::RandomWaypointMobilityModel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RandomWaypointMobilityModel&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::RandomWaypointMobilityModel const &', 'arg0')])
     ## random-waypoint-mobility-model.h: static ns3::TypeId ns3::RandomWaypointMobilityModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -553,7 +553,7 @@ def register_Ns3RandomWaypointMobilityModel_methods(root_module, cls):
     ## random-waypoint-mobility-model.h: void ns3::RandomWaypointMobilityModel::DoSetPosition(ns3::Vector const & position) [member function]
     cls.add_method('DoSetPosition', 
                    'void', 
-                   [param('ns3::Vector&', 'position', is_const=True)], 
+                   [param('ns3::Vector const &', 'position')], 
                    visibility='private', is_virtual=True)
     ## random-waypoint-mobility-model.h: ns3::Vector ns3::RandomWaypointMobilityModel::DoGetVelocity() const [member function]
     cls.add_method('DoGetVelocity', 
@@ -564,7 +564,7 @@ def register_Ns3RandomWaypointMobilityModel_methods(root_module, cls):
 
 def register_Ns3RandomWalk2dMobilityModel_methods(root_module, cls):
     ## random-walk-2d-mobility-model.h: ns3::RandomWalk2dMobilityModel::RandomWalk2dMobilityModel(ns3::RandomWalk2dMobilityModel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RandomWalk2dMobilityModel&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::RandomWalk2dMobilityModel const &', 'arg0')])
     ## random-walk-2d-mobility-model.h: static ns3::TypeId ns3::RandomWalk2dMobilityModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -585,7 +585,7 @@ def register_Ns3RandomWalk2dMobilityModel_methods(root_module, cls):
     ## random-walk-2d-mobility-model.h: void ns3::RandomWalk2dMobilityModel::DoSetPosition(ns3::Vector const & position) [member function]
     cls.add_method('DoSetPosition', 
                    'void', 
-                   [param('ns3::Vector&', 'position', is_const=True)], 
+                   [param('ns3::Vector const &', 'position')], 
                    visibility='private', is_virtual=True)
     ## random-walk-2d-mobility-model.h: ns3::Vector ns3::RandomWalk2dMobilityModel::DoGetVelocity() const [member function]
     cls.add_method('DoGetVelocity', 
@@ -596,7 +596,7 @@ def register_Ns3RandomWalk2dMobilityModel_methods(root_module, cls):
 
 def register_Ns3StaticSpeedMobilityModel_methods(root_module, cls):
     ## static-speed-mobility-model.h: ns3::StaticSpeedMobilityModel::StaticSpeedMobilityModel(ns3::StaticSpeedMobilityModel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::StaticSpeedMobilityModel&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::StaticSpeedMobilityModel const &', 'arg0')])
     ## static-speed-mobility-model.h: static ns3::TypeId ns3::StaticSpeedMobilityModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -607,7 +607,7 @@ def register_Ns3StaticSpeedMobilityModel_methods(root_module, cls):
     ## static-speed-mobility-model.h: void ns3::StaticSpeedMobilityModel::SetSpeed(ns3::Vector const & speed) [member function]
     cls.add_method('SetSpeed', 
                    'void', 
-                   [param('ns3::Vector&', 'speed', is_const=True)])
+                   [param('ns3::Vector const &', 'speed')])
     ## static-speed-mobility-model.h: ns3::Vector ns3::StaticSpeedMobilityModel::DoGetPosition() const [member function]
     cls.add_method('DoGetPosition', 
                    'ns3::Vector', 
@@ -616,7 +616,7 @@ def register_Ns3StaticSpeedMobilityModel_methods(root_module, cls):
     ## static-speed-mobility-model.h: void ns3::StaticSpeedMobilityModel::DoSetPosition(ns3::Vector const & position) [member function]
     cls.add_method('DoSetPosition', 
                    'void', 
-                   [param('ns3::Vector&', 'position', is_const=True)], 
+                   [param('ns3::Vector const &', 'position')], 
                    visibility='private', is_virtual=True)
     ## static-speed-mobility-model.h: ns3::Vector ns3::StaticSpeedMobilityModel::DoGetVelocity() const [member function]
     cls.add_method('DoGetVelocity', 
@@ -627,7 +627,7 @@ def register_Ns3StaticSpeedMobilityModel_methods(root_module, cls):
 
 def register_Ns3HierarchicalMobilityModel_methods(root_module, cls):
     ## hierarchical-mobility-model.h: ns3::HierarchicalMobilityModel::HierarchicalMobilityModel(ns3::HierarchicalMobilityModel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::HierarchicalMobilityModel&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::HierarchicalMobilityModel const &', 'arg0')])
     ## hierarchical-mobility-model.h: static ns3::TypeId ns3::HierarchicalMobilityModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -653,7 +653,7 @@ def register_Ns3HierarchicalMobilityModel_methods(root_module, cls):
     ## hierarchical-mobility-model.h: void ns3::HierarchicalMobilityModel::DoSetPosition(ns3::Vector const & position) [member function]
     cls.add_method('DoSetPosition', 
                    'void', 
-                   [param('ns3::Vector&', 'position', is_const=True)], 
+                   [param('ns3::Vector const &', 'position')], 
                    visibility='private', is_virtual=True)
     ## hierarchical-mobility-model.h: ns3::Vector ns3::HierarchicalMobilityModel::DoGetVelocity() const [member function]
     cls.add_method('DoGetVelocity', 
@@ -664,7 +664,7 @@ def register_Ns3HierarchicalMobilityModel_methods(root_module, cls):
 
 def register_Ns3StaticMobilityModel_methods(root_module, cls):
     ## static-mobility-model.h: ns3::StaticMobilityModel::StaticMobilityModel(ns3::StaticMobilityModel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::StaticMobilityModel&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::StaticMobilityModel const &', 'arg0')])
     ## static-mobility-model.h: static ns3::TypeId ns3::StaticMobilityModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -680,7 +680,7 @@ def register_Ns3StaticMobilityModel_methods(root_module, cls):
     ## static-mobility-model.h: void ns3::StaticMobilityModel::DoSetPosition(ns3::Vector const & position) [member function]
     cls.add_method('DoSetPosition', 
                    'void', 
-                   [param('ns3::Vector&', 'position', is_const=True)], 
+                   [param('ns3::Vector const &', 'position')], 
                    visibility='private', is_virtual=True)
     ## static-mobility-model.h: ns3::Vector ns3::StaticMobilityModel::DoGetVelocity() const [member function]
     cls.add_method('DoGetVelocity', 
@@ -698,7 +698,7 @@ def register_functions(root_module):
     ## vector.h: extern double ns3::CalculateDistance(ns3::Vector const & a, ns3::Vector const & b) [free function]
     module.add_function('CalculateDistance', 
                         'double', 
-                        [param('ns3::Vector&', 'a', is_const=True), param('ns3::Vector&', 'b', is_const=True)])
+                        [param('ns3::Vector const &', 'a'), param('ns3::Vector const &', 'b')])
     ## vector.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeVectorChecker() [free function]
     module.add_function('MakeVectorChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 

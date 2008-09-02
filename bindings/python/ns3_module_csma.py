@@ -69,7 +69,7 @@ def register_Ns3CsmaDeviceRec_methods(root_module, cls):
     ## csma-channel.h: ns3::CsmaDeviceRec::active [variable]
     cls.add_instance_attribute('active', 'bool', is_const=False)
     ## csma-channel.h: ns3::CsmaDeviceRec::CsmaDeviceRec(ns3::CsmaDeviceRec const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::CsmaDeviceRec&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::CsmaDeviceRec const &', 'arg0')])
     ## csma-channel.h: ns3::CsmaDeviceRec::CsmaDeviceRec() [constructor]
     cls.add_constructor([])
     ## csma-channel.h: ns3::CsmaDeviceRec::CsmaDeviceRec(ns3::Ptr<ns3::CsmaNetDevice> device) [constructor]
@@ -92,7 +92,7 @@ def register_Ns3Backoff_methods(root_module, cls):
     ## backoff.h: ns3::Backoff::m_slotTime [variable]
     cls.add_instance_attribute('m_slotTime', 'ns3::Time', is_const=False)
     ## backoff.h: ns3::Backoff::Backoff(ns3::Backoff const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Backoff&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::Backoff const &', 'arg0')])
     ## backoff.h: ns3::Backoff::Backoff() [constructor]
     cls.add_constructor([])
     ## backoff.h: ns3::Backoff::Backoff(ns3::Time slotTime, uint32_t minSlots, uint32_t maxSlots, uint32_t ceiling, uint32_t maxRetries) [constructor]
@@ -117,7 +117,7 @@ def register_Ns3Backoff_methods(root_module, cls):
 
 def register_Ns3CsmaChannel_methods(root_module, cls):
     ## csma-channel.h: ns3::CsmaChannel::CsmaChannel(ns3::CsmaChannel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::CsmaChannel&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::CsmaChannel const &', 'arg0')])
     ## csma-channel.h: static ns3::TypeId ns3::CsmaChannel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -285,7 +285,7 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
     ## csma-net-device.h: void ns3::CsmaNetDevice::SetName(std::string const name) [member function]
     cls.add_method('SetName', 
                    'void', 
-                   [param('std::string', 'name', is_const=True)], 
+                   [param('std::string const', 'name')], 
                    is_virtual=True)
     ## csma-net-device.h: std::string ns3::CsmaNetDevice::GetName() const [member function]
     cls.add_method('GetName', 
@@ -295,7 +295,7 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
     ## csma-net-device.h: void ns3::CsmaNetDevice::SetIfIndex(uint32_t const index) [member function]
     cls.add_method('SetIfIndex', 
                    'void', 
-                   [param('uint32_t', 'index', is_const=True)], 
+                   [param('uint32_t const', 'index')], 
                    is_virtual=True)
     ## csma-net-device.h: uint32_t ns3::CsmaNetDevice::GetIfIndex() const [member function]
     cls.add_method('GetIfIndex', 
@@ -310,7 +310,7 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
     ## csma-net-device.h: bool ns3::CsmaNetDevice::SetMtu(uint16_t const mtu) [member function]
     cls.add_method('SetMtu', 
                    'bool', 
-                   [param('uint16_t', 'mtu', is_const=True)], 
+                   [param('uint16_t const', 'mtu')], 
                    is_virtual=True)
     ## csma-net-device.h: uint16_t ns3::CsmaNetDevice::GetMtu() const [member function]
     cls.add_method('GetMtu', 
@@ -365,12 +365,12 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
     ## csma-net-device.h: bool ns3::CsmaNetDevice::Send(ns3::Ptr<ns3::Packet> packet, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Send', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address&', 'dest', is_const=True), param('uint16_t', 'protocolNumber')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')], 
                    is_virtual=True)
     ## csma-net-device.h: bool ns3::CsmaNetDevice::SendFrom(ns3::Ptr<ns3::Packet> packet, ns3::Address const & source, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('SendFrom', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address&', 'source', is_const=True), param('ns3::Address&', 'dest', is_const=True), param('uint16_t', 'protocolNumber')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'source'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')], 
                    is_virtual=True)
     ## csma-net-device.h: ns3::Ptr<ns3::Node> ns3::CsmaNetDevice::GetNode() const [member function]
     cls.add_method('GetNode', 
@@ -420,7 +420,7 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
     ## csma-net-device.h: bool ns3::CsmaNetDevice::ProcessHeader(ns3::Ptr<ns3::Packet> p, uint16_t & param) [member function]
     cls.add_method('ProcessHeader', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t&', 'param')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t &', 'param')], 
                    visibility='protected')
     return
 

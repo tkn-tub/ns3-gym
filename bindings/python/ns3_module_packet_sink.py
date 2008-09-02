@@ -52,7 +52,7 @@ def register_methods(root_module):
 
 def register_Ns3PacketSink_methods(root_module, cls):
     ## packet-sink.h: ns3::PacketSink::PacketSink(ns3::PacketSink const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PacketSink&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::PacketSink const &', 'arg0')])
     ## packet-sink.h: static ns3::TypeId ns3::PacketSink::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 

@@ -71,7 +71,7 @@ def register_methods(root_module):
 
 def register_Ns3Gnuplot_methods(root_module, cls):
     ## gnuplot.h: ns3::Gnuplot::Gnuplot(ns3::Gnuplot const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Gnuplot&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::Gnuplot const &', 'arg0')])
     ## gnuplot.h: ns3::Gnuplot::Gnuplot(std::string pngFilename) [constructor]
     cls.add_constructor([param('std::string', 'pngFilename')])
     ## gnuplot.h: void ns3::Gnuplot::SetLegend(std::string xLegend, std::string yLegend) [member function]
@@ -81,16 +81,16 @@ def register_Ns3Gnuplot_methods(root_module, cls):
     ## gnuplot.h: void ns3::Gnuplot::AddDataset(ns3::GnuplotDataset const & dataset) [member function]
     cls.add_method('AddDataset', 
                    'void', 
-                   [param('ns3::GnuplotDataset&', 'dataset', is_const=True)])
+                   [param('ns3::GnuplotDataset const &', 'dataset')])
     ## gnuplot.h: void ns3::Gnuplot::GenerateOutput(std::ostream & os) [member function]
     cls.add_method('GenerateOutput', 
                    'void', 
-                   [param('std::ostream&', 'os')])
+                   [param('std::ostream &', 'os')])
     return
 
 def register_Ns3EventGarbageCollector_methods(root_module, cls):
     ## event-garbage-collector.h: ns3::EventGarbageCollector::EventGarbageCollector(ns3::EventGarbageCollector const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::EventGarbageCollector&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::EventGarbageCollector const &', 'arg0')])
     ## event-garbage-collector.h: ns3::EventGarbageCollector::EventGarbageCollector() [constructor]
     cls.add_constructor([])
     ## event-garbage-collector.h: void ns3::EventGarbageCollector::Track(ns3::EventId event) [member function]
@@ -101,7 +101,7 @@ def register_Ns3EventGarbageCollector_methods(root_module, cls):
 
 def register_Ns3GnuplotDataset_methods(root_module, cls):
     ## gnuplot.h: ns3::GnuplotDataset::GnuplotDataset(ns3::GnuplotDataset const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::GnuplotDataset&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::GnuplotDataset const &', 'arg0')])
     ## gnuplot.h: ns3::GnuplotDataset::GnuplotDataset() [constructor]
     cls.add_constructor([])
     ## gnuplot.h: ns3::GnuplotDataset::GnuplotDataset(std::string title) [constructor]
@@ -126,7 +126,7 @@ def register_Ns3GnuplotDataset_methods(root_module, cls):
 
 def register_Ns3GtkConfigStore_methods(root_module, cls):
     ## gtk-config-store.h: ns3::GtkConfigStore::GtkConfigStore(ns3::GtkConfigStore const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::GtkConfigStore&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::GtkConfigStore const &', 'arg0')])
     ## gtk-config-store.h: ns3::GtkConfigStore::GtkConfigStore() [constructor]
     cls.add_constructor([])
     ## gtk-config-store.h: void ns3::GtkConfigStore::Configure() [member function]
@@ -137,7 +137,7 @@ def register_Ns3GtkConfigStore_methods(root_module, cls):
 
 def register_Ns3ConfigStore_methods(root_module, cls):
     ## config-store.h: ns3::ConfigStore::ConfigStore(ns3::ConfigStore const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ConfigStore&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::ConfigStore const &', 'arg0')])
     ## config-store.h: static ns3::TypeId ns3::ConfigStore::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -158,7 +158,7 @@ def register_Ns3ConfigStore_methods(root_module, cls):
 
 def register_Ns3DelayJitterEstimation_methods(root_module, cls):
     ## delay-jitter-estimation.h: ns3::DelayJitterEstimation::DelayJitterEstimation(ns3::DelayJitterEstimation const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::DelayJitterEstimation&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::DelayJitterEstimation const &', 'arg0')])
     ## delay-jitter-estimation.h: ns3::DelayJitterEstimation::DelayJitterEstimation() [constructor]
     cls.add_constructor([])
     ## delay-jitter-estimation.h: static void ns3::DelayJitterEstimation::PrepareTx(ns3::Ptr<const ns3::Packet> packet) [member function]

@@ -84,7 +84,7 @@ def register_Ns3GlobalRoutingLSA_methods(root_module, cls):
     ## global-router-interface.h: ns3::GlobalRoutingLSA::GlobalRoutingLSA(ns3::GlobalRoutingLSA::SPFStatus status, ns3::Ipv4Address linkStateId, ns3::Ipv4Address advertisingRtr) [constructor]
     cls.add_constructor([param('ns3::GlobalRoutingLSA::SPFStatus', 'status'), param('ns3::Ipv4Address', 'linkStateId'), param('ns3::Ipv4Address', 'advertisingRtr')])
     ## global-router-interface.h: ns3::GlobalRoutingLSA::GlobalRoutingLSA(ns3::GlobalRoutingLSA & lsa) [constructor]
-    cls.add_constructor([param('ns3::GlobalRoutingLSA&', 'lsa')])
+    cls.add_constructor([param('ns3::GlobalRoutingLSA &', 'lsa')])
     ## global-router-interface.h: uint32_t ns3::GlobalRoutingLSA::AddAttachedRouter(ns3::Ipv4Address addr) [member function]
     cls.add_method('AddAttachedRouter', 
                    'uint32_t', 
@@ -100,7 +100,7 @@ def register_Ns3GlobalRoutingLSA_methods(root_module, cls):
     ## global-router-interface.h: void ns3::GlobalRoutingLSA::CopyLinkRecords(ns3::GlobalRoutingLSA const & lsa) [member function]
     cls.add_method('CopyLinkRecords', 
                    'void', 
-                   [param('ns3::GlobalRoutingLSA&', 'lsa', is_const=True)])
+                   [param('ns3::GlobalRoutingLSA const &', 'lsa')])
     ## global-router-interface.h: ns3::Ipv4Address ns3::GlobalRoutingLSA::GetAdvertisingRouter() const [member function]
     cls.add_method('GetAdvertisingRouter', 
                    'ns3::Ipv4Address', 
@@ -154,7 +154,7 @@ def register_Ns3GlobalRoutingLSA_methods(root_module, cls):
     ## global-router-interface.h: void ns3::GlobalRoutingLSA::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
                    'void', 
-                   [param('std::ostream&', 'os')], 
+                   [param('std::ostream &', 'os')], 
                    is_const=True)
     ## global-router-interface.h: void ns3::GlobalRoutingLSA::SetAdvertisingRouter(ns3::Ipv4Address rtr) [member function]
     cls.add_method('SetAdvertisingRouter', 
@@ -181,7 +181,7 @@ def register_Ns3GlobalRoutingLSA_methods(root_module, cls):
 
 def register_Ns3GlobalRoutingLinkRecord_methods(root_module, cls):
     ## global-router-interface.h: ns3::GlobalRoutingLinkRecord::GlobalRoutingLinkRecord(ns3::GlobalRoutingLinkRecord const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::GlobalRoutingLinkRecord&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::GlobalRoutingLinkRecord const &', 'arg0')])
     ## global-router-interface.h: ns3::GlobalRoutingLinkRecord::GlobalRoutingLinkRecord() [constructor]
     cls.add_constructor([])
     ## global-router-interface.h: ns3::GlobalRoutingLinkRecord::GlobalRoutingLinkRecord(ns3::GlobalRoutingLinkRecord::LinkType linkType, ns3::Ipv4Address linkId, ns3::Ipv4Address linkData, uint16_t metric) [constructor]
@@ -249,7 +249,7 @@ def register_Ns3GlobalRouter_methods(root_module, cls):
     ## global-router-interface.h: bool ns3::GlobalRouter::GetLSA(uint32_t n, ns3::GlobalRoutingLSA & lsa) const [member function]
     cls.add_method('GetLSA', 
                    'bool', 
-                   [param('uint32_t', 'n'), param('ns3::GlobalRoutingLSA&', 'lsa')], 
+                   [param('uint32_t', 'n'), param('ns3::GlobalRoutingLSA &', 'lsa')], 
                    is_const=True)
     ## global-router-interface.h: void ns3::GlobalRouter::DoDispose() [member function]
     cls.add_method('DoDispose', 

@@ -55,7 +55,7 @@ def register_methods(root_module):
 
 def register_Ns3PointToPointChannel_methods(root_module, cls):
     ## point-to-point-channel.h: ns3::PointToPointChannel::PointToPointChannel(ns3::PointToPointChannel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PointToPointChannel&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::PointToPointChannel const &', 'arg0')])
     ## point-to-point-channel.h: static ns3::TypeId ns3::PointToPointChannel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -90,7 +90,7 @@ def register_Ns3PointToPointChannel_methods(root_module, cls):
 
 def register_Ns3PointToPointNetDevice_methods(root_module, cls):
     ## point-to-point-net-device.h: ns3::PointToPointNetDevice::PointToPointNetDevice(ns3::PointToPointNetDevice const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PointToPointNetDevice&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::PointToPointNetDevice const &', 'arg0')])
     ## point-to-point-net-device.h: static ns3::TypeId ns3::PointToPointNetDevice::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -129,7 +129,7 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
     ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetName(std::string const name) [member function]
     cls.add_method('SetName', 
                    'void', 
-                   [param('std::string', 'name', is_const=True)], 
+                   [param('std::string const', 'name')], 
                    is_virtual=True)
     ## point-to-point-net-device.h: std::string ns3::PointToPointNetDevice::GetName() const [member function]
     cls.add_method('GetName', 
@@ -139,7 +139,7 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
     ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetIfIndex(uint32_t const index) [member function]
     cls.add_method('SetIfIndex', 
                    'void', 
-                   [param('uint32_t', 'index', is_const=True)], 
+                   [param('uint32_t const', 'index')], 
                    is_virtual=True)
     ## point-to-point-net-device.h: uint32_t ns3::PointToPointNetDevice::GetIfIndex() const [member function]
     cls.add_method('GetIfIndex', 
@@ -159,7 +159,7 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
     ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::SetMtu(uint16_t const mtu) [member function]
     cls.add_method('SetMtu', 
                    'bool', 
-                   [param('uint16_t', 'mtu', is_const=True)], 
+                   [param('uint16_t const', 'mtu')], 
                    is_virtual=True)
     ## point-to-point-net-device.h: uint16_t ns3::PointToPointNetDevice::GetMtu() const [member function]
     cls.add_method('GetMtu', 
@@ -209,12 +209,12 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
     ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::Send(ns3::Ptr<ns3::Packet> packet, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Send', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address&', 'dest', is_const=True), param('uint16_t', 'protocolNumber')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')], 
                    is_virtual=True)
     ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::SendFrom(ns3::Ptr<ns3::Packet> packet, ns3::Address const & source, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('SendFrom', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address&', 'source', is_const=True), param('ns3::Address&', 'dest', is_const=True), param('uint16_t', 'protocolNumber')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'source'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')], 
                    is_virtual=True)
     ## point-to-point-net-device.h: ns3::Ptr<ns3::Node> ns3::PointToPointNetDevice::GetNode() const [member function]
     cls.add_method('GetNode', 

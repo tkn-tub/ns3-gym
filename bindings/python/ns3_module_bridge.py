@@ -55,7 +55,7 @@ def register_methods(root_module):
 
 def register_Ns3BridgeNetDevice_methods(root_module, cls):
     ## bridge-net-device.h: ns3::BridgeNetDevice::BridgeNetDevice(ns3::BridgeNetDevice const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::BridgeNetDevice&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::BridgeNetDevice const &', 'arg0')])
     ## bridge-net-device.h: static ns3::TypeId ns3::BridgeNetDevice::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -70,7 +70,7 @@ def register_Ns3BridgeNetDevice_methods(root_module, cls):
     ## bridge-net-device.h: void ns3::BridgeNetDevice::SetName(std::string const name) [member function]
     cls.add_method('SetName', 
                    'void', 
-                   [param('std::string', 'name', is_const=True)], 
+                   [param('std::string const', 'name')], 
                    is_virtual=True)
     ## bridge-net-device.h: std::string ns3::BridgeNetDevice::GetName() const [member function]
     cls.add_method('GetName', 
@@ -80,7 +80,7 @@ def register_Ns3BridgeNetDevice_methods(root_module, cls):
     ## bridge-net-device.h: void ns3::BridgeNetDevice::SetIfIndex(uint32_t const index) [member function]
     cls.add_method('SetIfIndex', 
                    'void', 
-                   [param('uint32_t', 'index', is_const=True)], 
+                   [param('uint32_t const', 'index')], 
                    is_virtual=True)
     ## bridge-net-device.h: uint32_t ns3::BridgeNetDevice::GetIfIndex() const [member function]
     cls.add_method('GetIfIndex', 
@@ -100,7 +100,7 @@ def register_Ns3BridgeNetDevice_methods(root_module, cls):
     ## bridge-net-device.h: bool ns3::BridgeNetDevice::SetMtu(uint16_t const mtu) [member function]
     cls.add_method('SetMtu', 
                    'bool', 
-                   [param('uint16_t', 'mtu', is_const=True)], 
+                   [param('uint16_t const', 'mtu')], 
                    is_virtual=True)
     ## bridge-net-device.h: uint16_t ns3::BridgeNetDevice::GetMtu() const [member function]
     cls.add_method('GetMtu', 
@@ -150,12 +150,12 @@ def register_Ns3BridgeNetDevice_methods(root_module, cls):
     ## bridge-net-device.h: bool ns3::BridgeNetDevice::Send(ns3::Ptr<ns3::Packet> packet, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Send', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address&', 'dest', is_const=True), param('uint16_t', 'protocolNumber')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')], 
                    is_virtual=True)
     ## bridge-net-device.h: bool ns3::BridgeNetDevice::SendFrom(ns3::Ptr<ns3::Packet> packet, ns3::Address const & source, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('SendFrom', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address&', 'source', is_const=True), param('ns3::Address&', 'dest', is_const=True), param('uint16_t', 'protocolNumber')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'source'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')], 
                    is_virtual=True)
     ## bridge-net-device.h: ns3::Ptr<ns3::Node> ns3::BridgeNetDevice::GetNode() const [member function]
     cls.add_method('GetNode', 
@@ -195,7 +195,7 @@ def register_Ns3BridgeNetDevice_methods(root_module, cls):
     ## bridge-net-device.h: void ns3::BridgeNetDevice::ReceiveFromDevice(ns3::Ptr<ns3::NetDevice> device, ns3::Ptr<const ns3::Packet> packet, uint16_t protocol, ns3::Address const & source, ns3::Address const & destination, ns3::NetDevice::PacketType packetType) [member function]
     cls.add_method('ReceiveFromDevice', 
                    'void', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< const ns3::Packet >', 'packet'), param('uint16_t', 'protocol'), param('ns3::Address&', 'source', is_const=True), param('ns3::Address&', 'destination', is_const=True), param('ns3::NetDevice::PacketType', 'packetType')], 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< const ns3::Packet >', 'packet'), param('uint16_t', 'protocol'), param('ns3::Address const &', 'source'), param('ns3::Address const &', 'destination'), param('ns3::NetDevice::PacketType', 'packetType')], 
                    visibility='protected')
     ## bridge-net-device.h: void ns3::BridgeNetDevice::ForwardUnicast(ns3::Ptr<ns3::NetDevice> incomingPort, ns3::Ptr<const ns3::Packet> packet, uint16_t protocol, ns3::Mac48Address src, ns3::Mac48Address dst) [member function]
     cls.add_method('ForwardUnicast', 
@@ -221,7 +221,7 @@ def register_Ns3BridgeNetDevice_methods(root_module, cls):
 
 def register_Ns3BridgeChannel_methods(root_module, cls):
     ## bridge-channel.h: ns3::BridgeChannel::BridgeChannel(ns3::BridgeChannel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::BridgeChannel&', 'arg0', is_const=True)])
+    cls.add_constructor([param('ns3::BridgeChannel const &', 'arg0')])
     ## bridge-channel.h: static ns3::TypeId ns3::BridgeChannel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 

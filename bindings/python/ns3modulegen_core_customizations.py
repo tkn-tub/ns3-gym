@@ -60,7 +60,6 @@ class SmartPointerTransformation(typehandlers.TypeTransformation):
         ## fix the ctype, add ns3:: namespace
         orig_ctype, is_const = self._get_untransformed_type_traits(args[0])
         if is_const:
-            kwargs['is_const'] = True
             correct_ctype = 'ns3::Ptr< %s const >' % orig_ctype[:-2]
         else:
             correct_ctype = 'ns3::Ptr< %s >' % orig_ctype[:-2]
@@ -71,7 +70,7 @@ class SmartPointerTransformation(typehandlers.TypeTransformation):
         return handler
 
     def untransform(self, type_handler, declarations, code_block, expression):
-        return 'ns3::PeekPointer (%s)' % (expression,)
+        return 'const_cast<%s> (ns3::PeekPointer (%s))' % (type_handler.untransformed_ctype, expression)
 
     def transform(self, type_handler, declarations, code_block, expression):
         assert type_handler.untransformed_ctype[-1] == '*'
