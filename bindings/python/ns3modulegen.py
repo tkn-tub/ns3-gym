@@ -115,6 +115,10 @@ def main():
     if 'DISABLE_GTK_CONFIG_STORE' in os.environ:
         root_module.classes.remove(root_module['ns3::GtkConfigStore'])
 
+    # if no sqlite, the class SqliteDataOutput is disabled
+    if 'SQLITE_STATS' in os.environ:
+        root_module.classes.remove(root_module['ns3::SqliteDataOutput'])
+
     root_module.generate(out, '_ns3')
 
     out.close()

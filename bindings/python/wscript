@@ -374,6 +374,8 @@ def build(bld):
         bindgen.os_env = dict(os.environ)
         if not env['ENABLE_GTK_CONFIG_STORE']:
             bindgen.os_env['DISABLE_GTK_CONFIG_STORE'] = "1"
+        if not env['SQLITE_STATS']:
+            bindgen.os_env['SQLITE_STATS'] = "1"
 
 
     ## we build python bindings if either we have the tools to
