@@ -60,7 +60,7 @@ public:
   /**
    * \param pifs the pifs duration.
    */
-  void SetPifs (Time pifs);
+  virtual void SetPifs (Time pifs) = 0;
   /**
    * \param ctsTimeout the duration of a CTS timeout.
    */
@@ -79,7 +79,7 @@ public:
   /**
    * \returns the current PIFS duration.
    */
-  Time GetPifs (void) const;
+  virtual Time GetPifs (void) const = 0;
   /**
    * \returns the current SIFS duration.
    */

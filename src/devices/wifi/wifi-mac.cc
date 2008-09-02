@@ -99,7 +99,8 @@ WifiMac::GetTypeId (void)
                    MakeTimeChecker ())
     .AddAttribute ("Pifs", "The value of the PIFS constant.",
                    TimeValue (GetDefaultSifs () + GetDefaultSlot ()),
-                   MakeTimeAccessor (&WifiMac::m_pifs),
+                   MakeTimeAccessor (&WifiMac::SetPifs,
+                                     &WifiMac::GetPifs),
                    MakeTimeChecker ())
     .AddAttribute ("MaxPropagationDelay", "The maximum propagation delay. Unused for now.",
                    TimeValue (GetDefaultMaxPropagationDelay ()),

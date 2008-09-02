@@ -131,7 +131,7 @@ NqapWifiMac::SetSlot (Time slotTime)
 {
   NS_LOG_FUNCTION (this << slotTime);
   m_dcfManager->SetSlot (slotTime);
-  m_slot = slotTime;
+  m_low->SetSlotTime (slotTime);
 }
 void 
 NqapWifiMac::SetSifs (Time sifs)
@@ -157,10 +157,15 @@ NqapWifiMac::SetCtsTimeout (Time ctsTimeout)
 {
   m_low->SetCtsTimeout (ctsTimeout);
 }
+void 
+NqapWifiMac::SetPifs (Time pifs)
+{
+  m_low->SetPifs (pifs);
+}
 Time 
 NqapWifiMac::GetSlot (void) const
 {
-  return m_slot;
+  return m_low->GetSlotTime ();
 }
 Time 
 NqapWifiMac::GetSifs (void) const
@@ -181,6 +186,11 @@ Time
 NqapWifiMac::GetCtsTimeout (void) const
 {
   return m_low->GetCtsTimeout ();
+}
+Time 
+NqapWifiMac::GetPifs (void) const
+{
+  return m_low->GetPifs ();
 }
 void 
 NqapWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)

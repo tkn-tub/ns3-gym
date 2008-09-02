@@ -80,7 +80,7 @@ void
 AdhocWifiMac::SetSlot (Time slotTime)
 {
   m_dcfManager->SetSlot (slotTime);
-  m_slot = slotTime;
+  m_low->SetSlotTime (slotTime);
 }
 void 
 AdhocWifiMac::SetSifs (Time sifs)
@@ -104,10 +104,15 @@ AdhocWifiMac::SetCtsTimeout (Time ctsTimeout)
 {
   m_low->SetCtsTimeout (ctsTimeout);
 }
+void 
+AdhocWifiMac::SetPifs (Time pifs)
+{
+  m_low->SetPifs (pifs);
+}
 Time 
 AdhocWifiMac::GetSlot (void) const
 {
-  return m_slot;
+  return m_low->GetSlotTime ();
 }
 Time 
 AdhocWifiMac::GetSifs (void) const
@@ -128,6 +133,11 @@ Time
 AdhocWifiMac::GetCtsTimeout (void) const
 {
   return m_low->GetCtsTimeout ();
+}
+Time 
+AdhocWifiMac::GetPifs (void) const
+{
+  return m_low->GetPifs ();
 }
 void 
 AdhocWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)

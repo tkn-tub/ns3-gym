@@ -288,10 +288,14 @@ public:
   void SetAckTimeout (Time ackTimeout);
   void SetCtsTimeout (Time ctsTimeout);
   void SetSifs (Time sifs);
+  void SetSlotTime (Time slotTime);
+  void SetPifs (Time pifs);
   Mac48Address GetAddress (void) const;
   Time GetAckTimeout (void) const;
   Time GetCtsTimeout (void) const;
   Time GetSifs (void) const;
+  Time GetSlotTime (void) const;
+  Time GetPifs (void) const;
 
   /**
    * \param callback the callback which receives every incoming packet.
@@ -355,8 +359,6 @@ private:
   uint32_t GetAckSize (void) const;
   uint32_t GetRtsSize (void) const;
   uint32_t GetCtsSize (void) const;
-  Time GetPifs (void) const;
-  Time GetSlotTime (void) const;
   uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
   Time NowUs (void) const;
   WifiRemoteStation *GetStation (Mac48Address to) const;
@@ -421,6 +423,8 @@ private:
   Time m_ackTimeout;
   Time m_ctsTimeout;
   Time m_sifs;
+  Time m_slotTime;
+  Time m_pifs;
 
   Time m_lastNavStart;
   Time m_lastNavDuration;
