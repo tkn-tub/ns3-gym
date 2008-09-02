@@ -61,7 +61,7 @@ DataCalculator::SetKey(const std::string key)
   // end DataCalculator::SetKey
 }
 
-const std::string
+std::string
 DataCalculator::GetKey() const
 {
   return m_key;

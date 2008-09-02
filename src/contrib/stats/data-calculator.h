@@ -41,7 +41,7 @@ namespace ns3 {
     void Disable();
 
     void SetKey(const std::string key);
-    const std::string GetKey() const;
+    std::string GetKey() const;
 
     virtual void Start(const Time& startTime);
     virtual void Stop(const Time& stopTime);
