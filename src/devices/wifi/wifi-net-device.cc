@@ -359,7 +359,7 @@ WifiNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 }
 
 bool
-WifiNetDevice::SupportsPromiscuous (void) const
+WifiNetDevice::SupportsSendFrom (void) const
 {
   return false; // TODO
 }

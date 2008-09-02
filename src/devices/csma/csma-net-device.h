@@ -385,7 +385,7 @@ public:
 
 
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
-  virtual bool SupportsPromiscuous (void) const;
+  virtual bool SupportsSendFrom (void) const;
 
 protected:
   /**

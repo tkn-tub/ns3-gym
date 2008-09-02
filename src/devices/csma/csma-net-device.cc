@@ -979,7 +979,7 @@ CsmaNetDevice::SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb)
 }
 
   bool 
-CsmaNetDevice::SupportsPromiscuous () const
+CsmaNetDevice::SupportsSendFrom () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return true;

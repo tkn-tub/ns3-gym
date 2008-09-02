@@ -241,7 +241,11 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
 //
       m_rxTrace (packet);
       ProcessHeader(packet, protocol);
-      m_rxCallback (this, packet, protocol, GetBroadcast ());
+      m_rxCallback (this, packet, protocol, GetRemote ());
+      if (!m_promiscCallback.IsNull ())
+        {
+          m_promiscCallback (this, packet, protocol, GetRemote (), GetAddress (), NetDevice::PACKET_HOST);
+        }
     }
 }
 
@@ -440,7 +444,7 @@ PointToPointNetDevice::SendFrom (Ptr<Packet> packet,
                                  const Address &dest, 
                                  uint16_t protocolNumber)
 {
-  return Send (packet, dest, protocolNumber);
+  return false;
 }
 
   Ptr<Node> 
@@ -467,16 +471,34 @@ PointToPointNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
   m_rxCallback = cb;
 }
 
-  void
-PointToPointNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
+void
+PointToPointNetDevice::SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb)
 {
   NS_FATAL_ERROR ("not implemented");
+  m_promiscCallback = cb;
 }
 
   bool
-PointToPointNetDevice::SupportsPromiscuous (void) const
+PointToPointNetDevice::SupportsSendFrom (void) const
 {
   return false;
+}
+
+Address 
+PointToPointNetDevice::GetRemote (void) const
+{
+  NS_ASSERT (m_channel->GetNDevices () == 2);
+  for (uint32_t i = 0; i < m_channel->GetNDevices (); ++i)
+    {
+      Ptr<NetDevice> tmp = m_channel->GetDevice (i);
+      if (tmp != this)
+        {
+          return tmp->GetAddress ();
+        }
+    }
+  NS_ASSERT (false);
+  // quiet compiler.
+  return Address ();
 }
 
 } // namespace ns3

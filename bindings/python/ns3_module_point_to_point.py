@@ -241,8 +241,8 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'void', 
                    [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], 
                    is_virtual=True)
-    ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::SupportsPromiscuous() const [member function]
-    cls.add_method('SupportsPromiscuous', 
+    ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::SupportsSendFrom() const [member function]
+    cls.add_method('SupportsSendFrom', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)

@@ -184,7 +184,7 @@ Node::RegisterProtocolHandler (ProtocolHandler handler,
                i != m_devices.end (); i++)
             {
               Ptr<NetDevice> dev = *i;
-              if (dev->SupportsPromiscuous ())
+              if (dev->SupportsSendFrom ())
                 {
                   dev->SetPromiscReceiveCallback (MakeCallback (&Node::PromiscReceiveFromDevice, this));
                 }
@@ -192,7 +192,7 @@ Node::RegisterProtocolHandler (ProtocolHandler handler,
         }
       else
         {
-          if (device->SupportsPromiscuous ())
+          if (device->SupportsSendFrom ())
             {
               device->SetPromiscReceiveCallback (MakeCallback (&Node::PromiscReceiveFromDevice, this));
             }

@@ -178,7 +178,7 @@ public:
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
 
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
-  virtual bool SupportsPromiscuous (void) const;
+  virtual bool SupportsSendFrom (void) const;
 
 private:
 
@@ -195,6 +195,11 @@ private:
   Ptr<Queue> GetQueue(void) const; 
 
 private:
+  /**
+   * \returns the address of the remote device connected to this device
+   * through the point to point channel.
+   */
+  Address GetRemote (void) const;
   /**
    * Adds the necessary headers and trailers to a packet of data in order to
    * respect the protocol implemented by the agent.
@@ -304,6 +309,7 @@ private:
   Ptr<Node> m_node;
   Mac48Address m_address;
   NetDevice::ReceiveCallback m_rxCallback;
+  NetDevice::PromiscReceiveCallback m_promiscCallback;
   uint32_t m_ifIndex;
   std::string m_name;
   bool m_linkUp;

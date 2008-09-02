@@ -9,6 +9,8 @@ def register_types(module):
     module.add_enum('DestroyPolicy', ['CANCEL_ON_DESTROY', 'REMOVE_ON_DESTROY', 'CHECK_ON_DESTROY'], outer_class=root_module['ns3::Timer'])
     ## timer.h: ns3::Timer::State [enumeration]
     module.add_enum('State', ['RUNNING', 'EXPIRED', 'SUSPENDED'], outer_class=root_module['ns3::Timer'])
+    ## event-impl.h: ns3::EventImpl [class]
+    module.add_class('EventImpl', allow_subclassing=True)
     ## timer-impl.h: ns3::TimerImpl [class]
     module.add_class('TimerImpl', allow_subclassing=True)
     ## nstime.h: ns3::TimeUnit<1> [class]
@@ -23,8 +25,6 @@ def register_types(module):
     module.add_class('EventLock', allow_subclassing=True)
     ## event-id.h: ns3::EventId [class]
     module.add_class('EventId')
-    ## event-impl.h: ns3::EventImpl [class]
-    module.add_class('EventImpl', allow_subclassing=True)
     ## realtime-simulator-impl.h: ns3::RealtimeEventLock [class]
     module.add_class('RealtimeEventLock', parent=root_module['ns3::EventLock'])
     ## high-precision-128.h: ns3::HighPrecision [class]
@@ -47,10 +47,10 @@ def register_types(module):
     module.add_class('DefaultSimulatorImpl', parent=root_module['ns3::SimulatorImpl'])
     ## synchronizer.h: ns3::Synchronizer [class]
     module.add_class('Synchronizer', parent=root_module['ns3::Object'])
-    ## heap-scheduler.h: ns3::HeapScheduler [class]
-    module.add_class('HeapScheduler', parent=root_module['ns3::Scheduler'])
     ## list-scheduler.h: ns3::ListScheduler [class]
     module.add_class('ListScheduler', parent=root_module['ns3::Scheduler'])
+    ## heap-scheduler.h: ns3::HeapScheduler [class]
+    module.add_class('HeapScheduler', parent=root_module['ns3::Scheduler'])
     ## map-scheduler.h: ns3::MapScheduler [class]
     module.add_class('MapScheduler', parent=root_module['ns3::Scheduler'])
     ## wall-clock-synchronizer.h: ns3::WallClockSynchronizer [class]
@@ -100,6 +100,7 @@ def register_types_ns3_olsr(module):
 
 def register_methods(root_module):
     register_Ns3Timer_methods(root_module, root_module['ns3::Timer'])
+    register_Ns3EventImpl_methods(root_module, root_module['ns3::EventImpl'])
     register_Ns3TimerImpl_methods(root_module, root_module['ns3::TimerImpl'])
     register_Ns3Time_methods(root_module, root_module['ns3::Time'])
     register_Ns3Scalar_methods(root_module, root_module['ns3::Scalar'])
@@ -107,7 +108,6 @@ def register_methods(root_module):
     register_Ns3Simulator_methods(root_module, root_module['ns3::Simulator'])
     register_Ns3EventLock_methods(root_module, root_module['ns3::EventLock'])
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
-    register_Ns3EventImpl_methods(root_module, root_module['ns3::EventImpl'])
     register_Ns3RealtimeEventLock_methods(root_module, root_module['ns3::RealtimeEventLock'])
     register_Ns3HighPrecision_methods(root_module, root_module['ns3::HighPrecision'])
     register_Ns3TimeChecker_methods(root_module, root_module['ns3::TimeChecker'])
@@ -118,8 +118,8 @@ def register_methods(root_module):
     register_Ns3RealtimeSimulatorImpl_methods(root_module, root_module['ns3::RealtimeSimulatorImpl'])
     register_Ns3DefaultSimulatorImpl_methods(root_module, root_module['ns3::DefaultSimulatorImpl'])
     register_Ns3Synchronizer_methods(root_module, root_module['ns3::Synchronizer'])
-    register_Ns3HeapScheduler_methods(root_module, root_module['ns3::HeapScheduler'])
     register_Ns3ListScheduler_methods(root_module, root_module['ns3::ListScheduler'])
+    register_Ns3HeapScheduler_methods(root_module, root_module['ns3::HeapScheduler'])
     register_Ns3MapScheduler_methods(root_module, root_module['ns3::MapScheduler'])
     register_Ns3WallClockSynchronizer_methods(root_module, root_module['ns3::WallClockSynchronizer'])
     return
@@ -189,6 +189,50 @@ def register_Ns3Timer_methods(root_module, cls):
     cls.add_method('Resume', 
                    'void', 
                    [])
+    return
+
+def register_Ns3EventImpl_methods(root_module, cls):
+    ## event-impl.h: ns3::EventImpl::EventImpl(ns3::EventImpl const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EventImpl const &', 'arg0')])
+    ## event-impl.h: ns3::EventImpl::EventImpl() [constructor]
+    cls.add_constructor([])
+    ## event-impl.h: void ns3::EventImpl::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## event-impl.h: void ns3::EventImpl::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## event-impl.h: void ns3::EventImpl::Invoke() [member function]
+    cls.add_method('Invoke', 
+                   'void', 
+                   [])
+    ## event-impl.h: void ns3::EventImpl::Cancel() [member function]
+    cls.add_method('Cancel', 
+                   'void', 
+                   [])
+    ## event-impl.h: bool ns3::EventImpl::IsCancelled() [member function]
+    cls.add_method('IsCancelled', 
+                   'bool', 
+                   [])
+    ## event-impl.h: static void ns3::EventImpl::SetEventLock(ns3::EventLock * eventLock) [member function]
+    cls.add_method('SetEventLock', 
+                   'void', 
+                   [param('ns3::EventLock *', 'eventLock')], 
+                   is_static=True)
+    ## event-impl.h: static void ns3::EventImpl::SetNoEventLock() [member function]
+    cls.add_method('SetNoEventLock', 
+                   'void', 
+                   [], 
+                   is_static=True)
+    ## event-impl.h: void ns3::EventImpl::Notify() [member function]
+    cls.add_method('Notify', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
     return
 
 def register_Ns3TimerImpl_methods(root_module, cls):
@@ -495,50 +539,6 @@ def register_Ns3EventId_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    return
-
-def register_Ns3EventImpl_methods(root_module, cls):
-    ## event-impl.h: ns3::EventImpl::EventImpl(ns3::EventImpl const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::EventImpl const &', 'arg0')])
-    ## event-impl.h: ns3::EventImpl::EventImpl() [constructor]
-    cls.add_constructor([])
-    ## event-impl.h: void ns3::EventImpl::Ref() const [member function]
-    cls.add_method('Ref', 
-                   'void', 
-                   [], 
-                   is_const=True)
-    ## event-impl.h: void ns3::EventImpl::Unref() const [member function]
-    cls.add_method('Unref', 
-                   'void', 
-                   [], 
-                   is_const=True)
-    ## event-impl.h: void ns3::EventImpl::Invoke() [member function]
-    cls.add_method('Invoke', 
-                   'void', 
-                   [])
-    ## event-impl.h: void ns3::EventImpl::Cancel() [member function]
-    cls.add_method('Cancel', 
-                   'void', 
-                   [])
-    ## event-impl.h: bool ns3::EventImpl::IsCancelled() [member function]
-    cls.add_method('IsCancelled', 
-                   'bool', 
-                   [])
-    ## event-impl.h: static void ns3::EventImpl::SetEventLock(ns3::EventLock * eventLock) [member function]
-    cls.add_method('SetEventLock', 
-                   'void', 
-                   [param('ns3::EventLock *', 'eventLock')], 
-                   is_static=True)
-    ## event-impl.h: static void ns3::EventImpl::SetNoEventLock() [member function]
-    cls.add_method('SetNoEventLock', 
-                   'void', 
-                   [], 
-                   is_static=True)
-    ## event-impl.h: void ns3::EventImpl::Notify() [member function]
-    cls.add_method('Notify', 
-                   'void', 
-                   [], 
-                   is_pure_virtual=True, visibility='protected', is_virtual=True)
     return
 
 def register_Ns3RealtimeEventLock_methods(root_module, cls):
@@ -1114,38 +1114,6 @@ def register_Ns3Synchronizer_methods(root_module, cls):
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
     return
 
-def register_Ns3HeapScheduler_methods(root_module, cls):
-    ## heap-scheduler.h: ns3::HeapScheduler::HeapScheduler(ns3::HeapScheduler const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::HeapScheduler const &', 'arg0')])
-    ## heap-scheduler.h: ns3::HeapScheduler::HeapScheduler() [constructor]
-    cls.add_constructor([])
-    ## heap-scheduler.h: void ns3::HeapScheduler::Insert(ns3::EventId const & id) [member function]
-    cls.add_method('Insert', 
-                   'void', 
-                   [param('ns3::EventId const &', 'id')], 
-                   is_virtual=True)
-    ## heap-scheduler.h: bool ns3::HeapScheduler::IsEmpty() const [member function]
-    cls.add_method('IsEmpty', 
-                   'bool', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## heap-scheduler.h: ns3::EventId ns3::HeapScheduler::PeekNext() const [member function]
-    cls.add_method('PeekNext', 
-                   'ns3::EventId', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## heap-scheduler.h: ns3::EventId ns3::HeapScheduler::RemoveNext() [member function]
-    cls.add_method('RemoveNext', 
-                   'ns3::EventId', 
-                   [], 
-                   is_virtual=True)
-    ## heap-scheduler.h: bool ns3::HeapScheduler::Remove(ns3::EventId const & ev) [member function]
-    cls.add_method('Remove', 
-                   'bool', 
-                   [param('ns3::EventId const &', 'ev')], 
-                   is_virtual=True)
-    return
-
 def register_Ns3ListScheduler_methods(root_module, cls):
     ## list-scheduler.h: ns3::ListScheduler::ListScheduler(ns3::ListScheduler const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::ListScheduler const &', 'arg0')])
@@ -1172,6 +1140,38 @@ def register_Ns3ListScheduler_methods(root_module, cls):
                    [], 
                    is_virtual=True)
     ## list-scheduler.h: bool ns3::ListScheduler::Remove(ns3::EventId const & ev) [member function]
+    cls.add_method('Remove', 
+                   'bool', 
+                   [param('ns3::EventId const &', 'ev')], 
+                   is_virtual=True)
+    return
+
+def register_Ns3HeapScheduler_methods(root_module, cls):
+    ## heap-scheduler.h: ns3::HeapScheduler::HeapScheduler(ns3::HeapScheduler const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::HeapScheduler const &', 'arg0')])
+    ## heap-scheduler.h: ns3::HeapScheduler::HeapScheduler() [constructor]
+    cls.add_constructor([])
+    ## heap-scheduler.h: void ns3::HeapScheduler::Insert(ns3::EventId const & id) [member function]
+    cls.add_method('Insert', 
+                   'void', 
+                   [param('ns3::EventId const &', 'id')], 
+                   is_virtual=True)
+    ## heap-scheduler.h: bool ns3::HeapScheduler::IsEmpty() const [member function]
+    cls.add_method('IsEmpty', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## heap-scheduler.h: ns3::EventId ns3::HeapScheduler::PeekNext() const [member function]
+    cls.add_method('PeekNext', 
+                   'ns3::EventId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## heap-scheduler.h: ns3::EventId ns3::HeapScheduler::RemoveNext() [member function]
+    cls.add_method('RemoveNext', 
+                   'ns3::EventId', 
+                   [], 
+                   is_virtual=True)
+    ## heap-scheduler.h: bool ns3::HeapScheduler::Remove(ns3::EventId const & ev) [member function]
     cls.add_method('Remove', 
                    'bool', 
                    [param('ns3::EventId const &', 'ev')], 

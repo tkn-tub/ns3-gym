@@ -189,6 +189,14 @@ void
 BridgeNetDevice::AddBridgePort (Ptr<NetDevice> bridgePort)
 {
   NS_ASSERT (bridgePort != this);
+  if (!Mac48Address::IsMatchingType (bridgePort->GetAddress ()))
+    {
+      NS_FATAL_ERROR ("Device does not support eui 48 addresses: cannot be added to bridge.");
+    }
+  if (!bridgePort->SupportsSendFrom ())
+    {
+      NS_FATAL_ERROR ("Device does not support SendFrom: cannot be added to bridge.");
+    }
   if (m_address == Mac48Address ())
     {
       m_address = Mac48Address::ConvertFrom (bridgePort->GetAddress ());
@@ -411,7 +419,7 @@ BridgeNetDevice::SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb
 }
 
 bool
-BridgeNetDevice::SupportsPromiscuous () const
+BridgeNetDevice::SupportsSendFrom () const
 {
   return true;
 }

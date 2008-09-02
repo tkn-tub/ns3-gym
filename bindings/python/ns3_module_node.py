@@ -1625,8 +1625,8 @@ def register_Ns3NetDevice_methods(root_module, cls):
                    'void', 
                    [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## net-device.h: bool ns3::NetDevice::SupportsPromiscuous() const [member function]
-    cls.add_method('SupportsPromiscuous', 
+    ## net-device.h: bool ns3::NetDevice::SupportsSendFrom() const [member function]
+    cls.add_method('SupportsSendFrom', 
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
@@ -2534,8 +2534,8 @@ def register_Ns3SimpleNetDevice_methods(root_module, cls):
                    'void', 
                    [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], 
                    is_virtual=True)
-    ## simple-net-device.h: bool ns3::SimpleNetDevice::SupportsPromiscuous() const [member function]
-    cls.add_method('SupportsPromiscuous', 
+    ## simple-net-device.h: bool ns3::SimpleNetDevice::SupportsSendFrom() const [member function]
+    cls.add_method('SupportsSendFrom', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)

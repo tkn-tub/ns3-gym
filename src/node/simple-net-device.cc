@@ -51,15 +51,23 @@ SimpleNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
     {
       packetType = NetDevice::PACKET_HOST;
     }
-  else if (to == Mac48Address::GetBroadcast ())
+  else if (to.IsBroadcast ())
     {
       packetType = NetDevice::PACKET_HOST;
     }
-  else
+  else if (to.IsMulticast ())
     {
-      NS_FATAL_ERROR ("Weird packet destination " << to);
+      packetType = NetDevice::PACKET_MULTICAST;
+    }
+  else 
+    {
+      packetType = NetDevice::PACKET_OTHERHOST;
     }
   m_rxCallback (this, packet, protocol, from);
+  if (!m_promiscCallback.IsNull ())
+    {
+      m_promiscCallback (this, packet, protocol, from, to, packetType);
+    }
 }
 
 void 
@@ -203,13 +211,13 @@ SimpleNetDevice::DoDispose (void)
 void
 SimpleNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 {
-  NS_FATAL_ERROR ("Not supported");
+  m_promiscCallback = cb;
 }
 
 bool
-SimpleNetDevice::SupportsPromiscuous (void) const
+SimpleNetDevice::SupportsSendFrom (void) const
 {
-  return false;
+  return true;
 }
 
 } // namespace ns3

@@ -69,13 +69,14 @@ public:
   virtual bool NeedsArp (void) const;
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
-  virtual bool SupportsPromiscuous (void) const;
+  virtual bool SupportsSendFrom (void) const;
 
 protected:
   virtual void DoDispose (void);
 private:
   Ptr<SimpleChannel> m_channel;
   NetDevice::ReceiveCallback m_rxCallback;
+  NetDevice::PromiscReceiveCallback m_promiscCallback;
   Ptr<Node> m_node;
   uint16_t m_mtu;
   std::string m_name;

@@ -103,7 +103,7 @@ public:
 
   virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
-  virtual bool SupportsPromiscuous (void) const;
+  virtual bool SupportsSendFrom (void) const;
 
 private:
   virtual void DoDispose (void);

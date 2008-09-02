@@ -19,10 +19,10 @@ def register_types(module):
     module.add_class('PositionAllocator', parent=root_module['ns3::Object'])
     ## position-allocator.h: ns3::ListPositionAllocator [class]
     module.add_class('ListPositionAllocator', parent=root_module['ns3::PositionAllocator'])
-    ## position-allocator.h: ns3::RandomRectanglePositionAllocator [class]
-    module.add_class('RandomRectanglePositionAllocator', parent=root_module['ns3::PositionAllocator'])
     ## rectangle.h: ns3::RectangleValue [class]
     module.add_class('RectangleValue', parent=root_module['ns3::AttributeValue'])
+    ## position-allocator.h: ns3::RandomRectanglePositionAllocator [class]
+    module.add_class('RandomRectanglePositionAllocator', parent=root_module['ns3::PositionAllocator'])
     ## vector.h: ns3::VectorValue [class]
     module.add_class('VectorValue', parent=root_module['ns3::AttributeValue'])
     ## position-allocator.h: ns3::RandomDiscPositionAllocator [class]
@@ -96,8 +96,8 @@ def register_methods(root_module):
     register_Ns3Rectangle_methods(root_module, root_module['ns3::Rectangle'])
     register_Ns3PositionAllocator_methods(root_module, root_module['ns3::PositionAllocator'])
     register_Ns3ListPositionAllocator_methods(root_module, root_module['ns3::ListPositionAllocator'])
-    register_Ns3RandomRectanglePositionAllocator_methods(root_module, root_module['ns3::RandomRectanglePositionAllocator'])
     register_Ns3RectangleValue_methods(root_module, root_module['ns3::RectangleValue'])
+    register_Ns3RandomRectanglePositionAllocator_methods(root_module, root_module['ns3::RandomRectanglePositionAllocator'])
     register_Ns3VectorValue_methods(root_module, root_module['ns3::VectorValue'])
     register_Ns3RandomDiscPositionAllocator_methods(root_module, root_module['ns3::RandomDiscPositionAllocator'])
     register_Ns3MobilityModel_methods(root_module, root_module['ns3::MobilityModel'])
@@ -257,31 +257,6 @@ def register_Ns3ListPositionAllocator_methods(root_module, cls):
                    is_const=True, is_virtual=True)
     return
 
-def register_Ns3RandomRectanglePositionAllocator_methods(root_module, cls):
-    ## position-allocator.h: ns3::RandomRectanglePositionAllocator::RandomRectanglePositionAllocator(ns3::RandomRectanglePositionAllocator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RandomRectanglePositionAllocator const &', 'arg0')])
-    ## position-allocator.h: static ns3::TypeId ns3::RandomRectanglePositionAllocator::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## position-allocator.h: ns3::RandomRectanglePositionAllocator::RandomRectanglePositionAllocator() [constructor]
-    cls.add_constructor([])
-    ## position-allocator.h: void ns3::RandomRectanglePositionAllocator::SetX(ns3::RandomVariable x) [member function]
-    cls.add_method('SetX', 
-                   'void', 
-                   [param('ns3::RandomVariable', 'x')])
-    ## position-allocator.h: void ns3::RandomRectanglePositionAllocator::SetY(ns3::RandomVariable y) [member function]
-    cls.add_method('SetY', 
-                   'void', 
-                   [param('ns3::RandomVariable', 'y')])
-    ## position-allocator.h: ns3::Vector ns3::RandomRectanglePositionAllocator::GetNext() const [member function]
-    cls.add_method('GetNext', 
-                   'ns3::Vector', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    return
-
 def register_Ns3RectangleValue_methods(root_module, cls):
     ## rectangle.h: ns3::RectangleValue::RectangleValue(ns3::RectangleValue const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::RectangleValue const &', 'arg0')])
@@ -313,6 +288,31 @@ def register_Ns3RectangleValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
+    return
+
+def register_Ns3RandomRectanglePositionAllocator_methods(root_module, cls):
+    ## position-allocator.h: ns3::RandomRectanglePositionAllocator::RandomRectanglePositionAllocator(ns3::RandomRectanglePositionAllocator const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RandomRectanglePositionAllocator const &', 'arg0')])
+    ## position-allocator.h: static ns3::TypeId ns3::RandomRectanglePositionAllocator::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## position-allocator.h: ns3::RandomRectanglePositionAllocator::RandomRectanglePositionAllocator() [constructor]
+    cls.add_constructor([])
+    ## position-allocator.h: void ns3::RandomRectanglePositionAllocator::SetX(ns3::RandomVariable x) [member function]
+    cls.add_method('SetX', 
+                   'void', 
+                   [param('ns3::RandomVariable', 'x')])
+    ## position-allocator.h: void ns3::RandomRectanglePositionAllocator::SetY(ns3::RandomVariable y) [member function]
+    cls.add_method('SetY', 
+                   'void', 
+                   [param('ns3::RandomVariable', 'y')])
+    ## position-allocator.h: ns3::Vector ns3::RandomRectanglePositionAllocator::GetNext() const [member function]
+    cls.add_method('GetNext', 
+                   'ns3::Vector', 
+                   [], 
+                   is_const=True, is_virtual=True)
     return
 
 def register_Ns3VectorValue_methods(root_module, cls):
@@ -695,14 +695,14 @@ def register_functions(root_module):
     module.add_function('MakeRectangleChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
-    ## vector.h: extern double ns3::CalculateDistance(ns3::Vector const & a, ns3::Vector const & b) [free function]
-    module.add_function('CalculateDistance', 
-                        'double', 
-                        [param('ns3::Vector const &', 'a'), param('ns3::Vector const &', 'b')])
     ## vector.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeVectorChecker() [free function]
     module.add_function('MakeVectorChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
+    ## vector.h: extern double ns3::CalculateDistance(ns3::Vector const & a, ns3::Vector const & b) [free function]
+    module.add_function('CalculateDistance', 
+                        'double', 
+                        [param('ns3::Vector const &', 'a'), param('ns3::Vector const &', 'b')])
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)

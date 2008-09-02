@@ -314,7 +314,7 @@ public:
   /**
    * \return true if this interface supports a promiscuous mode, false otherwise.
    */
-  virtual bool SupportsPromiscuous (void) const = 0;
+  virtual bool SupportsSendFrom (void) const = 0;
 
 };
 
