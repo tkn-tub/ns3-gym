@@ -224,7 +224,7 @@ NqstaWifiMac::SetLinkDownCallback (Callback<void> linkDown)
 Mac48Address 
 NqstaWifiMac::GetAddress (void) const
 {
-  return m_address;
+  return m_low->GetAddress ();
 }
 Ssid 
 NqstaWifiMac::GetSsid (void) const
@@ -240,7 +240,7 @@ void
 NqstaWifiMac::SetAddress (Mac48Address address)
 {
   NS_LOG_FUNCTION (this << address);
-  m_address = address;
+  m_low->SetAddress (address);
 }
 void 
 NqstaWifiMac::SetSsid (Ssid ssid)
