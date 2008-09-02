@@ -432,14 +432,14 @@ NqapWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
               NS_LOG_DEBUG ("frame for me from="<<hdr->GetAddr2 ());
               ForwardUp (packet, hdr->GetAddr2 (), hdr->GetAddr1 ());
             } 
-          else 
+          else
             {
               NS_LOG_DEBUG ("forwarding frame from="<<hdr->GetAddr2 ()<<", to="<<hdr->GetAddr3 ());
               Ptr<Packet> copy = packet->Copy ();
               ForwardDown (packet,
                            hdr->GetAddr2 (), 
                            hdr->GetAddr3 ());
-              ForwardUp (copy, hdr->GetAddr2 (), hdr->GetAddr1 ());
+              ForwardUp (copy, hdr->GetAddr2 (), hdr->GetAddr3 ());
             }
         } 
       else if (hdr->IsFromDs () &&
