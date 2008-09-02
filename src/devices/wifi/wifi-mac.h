@@ -68,7 +68,7 @@ public:
   /**
    * \param ackTimeout the duration of an ACK timeout.
    */
-  void SetAckTimeout (Time ackTimeout);
+  virtual void SetAckTimeout (Time ackTimeout) = 0;
   /**
    * \param delay the max propagation delay.
    *
@@ -99,7 +99,7 @@ public:
   /**
    * \returns the current ACK timeout duration.
    */
-  Time GetAckTimeout (void) const;
+  virtual Time GetAckTimeout (void) const = 0;
   /**
    * Unused for now.
    */
@@ -180,7 +180,6 @@ private:
 
   Time m_pifs;
   Time m_ctsTimeout;
-  Time m_ackTimeout;
   Time m_maxPropagationDelay;
   uint32_t m_maxMsduSize;
 };

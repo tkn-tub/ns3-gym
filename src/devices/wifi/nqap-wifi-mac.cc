@@ -147,6 +147,11 @@ NqapWifiMac::SetEifsNoDifs (Time eifsNoDifs)
   m_dcfManager->SetEifsNoDifs (eifsNoDifs);
   m_eifsNoDifs = eifsNoDifs;
 }
+void 
+NqapWifiMac::SetAckTimeout (Time ackTimeout)
+{
+  m_low->SetAckTimeout (ackTimeout);
+}
 Time 
 NqapWifiMac::GetSlot (void) const
 {
@@ -162,8 +167,11 @@ NqapWifiMac::GetEifsNoDifs (void) const
 {
   return m_eifsNoDifs;
 }
-
-
+Time 
+NqapWifiMac::GetAckTimeout (void) const
+{
+  return m_low->GetAckTimeout ();
+}
 void 
 NqapWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
 {
@@ -204,7 +212,7 @@ NqapWifiMac::SetLinkDownCallback (Callback<void> linkDown)
 Mac48Address 
 NqapWifiMac::GetAddress (void) const
 {
-  return m_address;
+  return m_low->GetAddress ();
 }
 Ssid 
 NqapWifiMac::GetSsid (void) const
@@ -220,7 +228,7 @@ void
 NqapWifiMac::SetAddress (Mac48Address address)
 {
   NS_LOG_FUNCTION (address);
-  m_address = address;
+  m_low->SetAddress (address);
 }
 void 
 NqapWifiMac::SetSsid (Ssid ssid)

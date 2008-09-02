@@ -284,6 +284,11 @@ public:
 
   Ptr<WifiMac> GetMac (void);
 
+  void SetAddress (Mac48Address ad);
+  void SetAckTimeout (Time ackTimeout);
+  Mac48Address GetAddress (void) const;
+  Time GetAckTimeout (void) const;
+
   /**
    * \param callback the callback which receives every incoming packet.
    *
@@ -349,7 +354,6 @@ private:
   Time GetSifs (void) const;
   Time GetPifs (void) const;
   Time GetSlotTime (void) const;
-  Time GetAckTimeout (void) const;
   Time GetCtsTimeout (void) const;
   uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
   Time NowUs (void) const;
@@ -411,6 +415,8 @@ private:
   WifiMacHeader m_currentHdr;
   MacLowTransmissionParameters m_txParams;
   MacLowTransmissionListener *m_listener;
+  Mac48Address m_self;
+  Time m_ackTimeout;
 
   Time m_lastNavStart;
   Time m_lastNavDuration;

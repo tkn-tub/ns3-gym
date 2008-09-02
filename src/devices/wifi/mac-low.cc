@@ -33,7 +33,7 @@
 NS_LOG_COMPONENT_DEFINE ("MacLow");
 
 #define MY_DEBUG(x) \
-  NS_LOG_DEBUG (m_mac->GetAddress () << " " << x)
+  NS_LOG_DEBUG (m_self << " " << x)
 
 namespace ns3 {
 
@@ -356,6 +356,28 @@ MacLow::GetMac (void)
 {
   return m_mac;
 }
+
+void 
+MacLow::SetAddress (Mac48Address ad)
+{
+  m_self = ad;
+}
+void 
+MacLow::SetAckTimeout (Time ackTimeout)
+{
+  m_ackTimeout = ackTimeout;
+}
+Mac48Address 
+MacLow::GetAddress (void) const
+{
+  return m_self;
+}
+Time 
+MacLow::GetAckTimeout (void) const
+{
+  return m_ackTimeout;
+}
+
 void 
 MacLow::SetRxCallback (Callback<void,Ptr<Packet>,const WifiMacHeader *> callback)
 {
@@ -451,7 +473,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
        * that STA shall not respond to the RTS frame.
        */
       if (isPrevNavZero &&
-          hdr.GetAddr1 () == m_mac->GetAddress ()) 
+          hdr.GetAddr1 () == m_self) 
         {
           MY_DEBUG ("rx RTS from=" << hdr.GetAddr2 () << ", schedule CTS");
           NS_ASSERT (m_sendCtsEvent.IsExpired ());
@@ -470,7 +492,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
         }
     } 
   else if (hdr.IsCts () &&
-           hdr.GetAddr1 () == m_mac->GetAddress () &&
+           hdr.GetAddr1 () == m_self &&
            m_ctsTimeoutEvent.IsRunning () &&
            m_currentPacket != 0) 
     {
@@ -491,7 +513,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
                                              txMode);
     } 
   else if (hdr.IsAck () &&
-           hdr.GetAddr1 () == m_mac->GetAddress () &&
+           hdr.GetAddr1 () == m_self &&
            (m_normalAckTimeoutEvent.IsRunning () || 
             m_fastAckTimeoutEvent.IsRunning () ||
             m_superFastAckTimeoutEvent.IsRunning ()) &&
@@ -530,7 +552,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
     {
       MY_DEBUG ("rx drop " << hdr.GetTypeString ());
     } 
-  else if (hdr.GetAddr1 () == m_mac->GetAddress ()) 
+  else if (hdr.GetAddr1 () == m_self) 
     {
       WifiRemoteStation *station = GetStation (hdr.GetAddr2 ());
       station->ReportRxOk (rxSnr, txMode);
@@ -625,11 +647,6 @@ MacLow::GetPifs (void) const
   return m_mac->GetPifs ();
 }
 Time
-MacLow::GetAckTimeout (void) const
-{
-  return m_mac->GetAckTimeout ();
-}
-Time
 MacLow::GetCtsTimeout (void) const
 {
   return m_mac->GetCtsTimeout ();
@@ -722,7 +739,7 @@ MacLow::NotifyNav (const WifiMacHeader &hdr, WifiMode txMode, WifiPreamble pream
     }
   // XXX Note that we should also handle CF_END specially here
   // but we don't for now because we do not generate them.
-  else if (hdr.GetAddr1 () != m_mac->GetAddress ())
+  else if (hdr.GetAddr1 () != m_self)
     {
       // see section 9.2.5.4 802.11-1999
       bool navUpdated = DoNavStartNow (duration);
@@ -884,7 +901,7 @@ MacLow::SendRtsForPacket (void)
   rts.SetDsNotTo ();
   rts.SetNoMoreFragments ();
   rts.SetAddr1 (m_currentHdr.GetAddr1 ());
-  rts.SetAddr2 (m_mac->GetAddress ());
+  rts.SetAddr2 (m_self);
   WifiMode rtsTxMode = GetRtsTxMode (m_currentPacket, &m_currentHdr);
   Time duration = Seconds (0);
   if (m_txParams.HasDurationId ()) 

@@ -94,6 +94,11 @@ AdhocWifiMac::SetEifsNoDifs (Time eifsNoDifs)
   m_dcfManager->SetEifsNoDifs (eifsNoDifs);
   m_eifsNoDifs = eifsNoDifs;
 }
+void 
+AdhocWifiMac::SetAckTimeout (Time ackTimeout)
+{
+  m_low->SetAckTimeout (ackTimeout);
+}
 Time 
 AdhocWifiMac::GetSlot (void) const
 {
@@ -109,7 +114,11 @@ AdhocWifiMac::GetEifsNoDifs (void) const
 {
   return m_eifsNoDifs;
 }
-
+Time 
+AdhocWifiMac::GetAckTimeout (void) const
+{
+  return m_low->GetAckTimeout ();
+}
 void 
 AdhocWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
 {
@@ -141,7 +150,7 @@ AdhocWifiMac::SetLinkDownCallback (Callback<void> linkDown)
 Mac48Address 
 AdhocWifiMac::GetAddress (void) const
 {
-  return m_address;
+  return m_low->GetAddress ();
 }
 Ssid 
 AdhocWifiMac::GetSsid (void) const
@@ -158,7 +167,7 @@ AdhocWifiMac::GetBssid (void) const
 void 
 AdhocWifiMac::SetAddress (Mac48Address address)
 {
-  m_address = address;
+  m_low->SetAddress (address);
 }
 void 
 AdhocWifiMac::SetSsid (Ssid ssid)

@@ -147,6 +147,11 @@ NqstaWifiMac::SetEifsNoDifs (Time eifsNoDifs)
   m_dcfManager->SetEifsNoDifs (eifsNoDifs);
   m_eifsNoDifs = eifsNoDifs;
 }
+void 
+NqstaWifiMac::SetAckTimeout (Time ackTimeout)
+{
+  m_low->SetAckTimeout (ackTimeout);
+}
 Time 
 NqstaWifiMac::GetSlot (void) const
 {
@@ -162,7 +167,11 @@ NqstaWifiMac::GetEifsNoDifs (void) const
 {
   return m_eifsNoDifs;
 }
-
+Time 
+NqstaWifiMac::GetAckTimeout (void) const
+{
+  return m_low->GetAckTimeout ();
+}
 void 
 NqstaWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
 {

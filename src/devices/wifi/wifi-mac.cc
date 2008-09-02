@@ -79,7 +79,8 @@ WifiMac::GetTypeId (void)
                    MakeTimeChecker ())
     .AddAttribute ("AckTimeout", "When this timeout expires, the DATA/ACK handshake has failed.",
                    TimeValue (GetDefaultCtsAckTimeout ()),
-                   MakeTimeAccessor (&WifiMac::m_ackTimeout),
+                   MakeTimeAccessor (&WifiMac::GetAckTimeout,
+                                     &WifiMac::SetAckTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("Sifs", "The value of the SIFS constant.",
                    TimeValue (GetDefaultSifs ()),
@@ -129,11 +130,6 @@ WifiMac::SetCtsTimeout (Time ctsTimeout)
   m_ctsTimeout = ctsTimeout;
 }
 void 
-WifiMac::SetAckTimeout (Time ackTimeout)
-{
-  m_ackTimeout = ackTimeout;
-}
-void 
 WifiMac::SetMaxPropagationDelay (Time delay)
 {
   m_maxPropagationDelay = delay;
@@ -147,11 +143,6 @@ Time
 WifiMac::GetCtsTimeout (void) const
 {
   return m_ctsTimeout;
-}
-Time
-WifiMac::GetAckTimeout (void) const
-{
-  return m_ackTimeout;
 }
 
 Time
