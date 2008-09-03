@@ -326,6 +326,8 @@ def build(bld):
         return
 
     env = bld.env_of_name('default')
+    curdir = bld.m_curdirnode.abspath()
+
     #Object.register('all-ns3-headers', AllNs3Headers)
     Action.Action('gen-ns3-metaheader', func=gen_ns3_metaheader, color='BLUE')
 
@@ -341,11 +343,14 @@ def build(bld):
     ## may be smaller than the set of all modules, in case a new
     ## ns3 module is being developed which wasn't scanned yet.
     scanned_modules = []
-    for filename in os.listdir(bld.m_curdirnode.abspath()):
+    for filename in os.listdir(curdir):
         m = re.match(r"^ns3_module_(.+)\.py$", filename)
         if m is None:
             continue
-        scanned_modules.append(m.group(1))
+        name = m.group(1)
+        if name.endswith("__local"):
+            continue
+        scanned_modules.append(name)
 
     if env['ENABLE_PYTHON_BINDINGS']:
         bindgen = bld.create_obj('command-output')
@@ -364,6 +369,9 @@ def build(bld):
 
         for module in scanned_modules:
             bindgen.hidden_inputs.append("ns3_module_%s.py" % module)
+            local = "ns3_module_%s__local.py" % module
+            if os.path.exists(os.path.join(curdir, local)):
+                bindgen.hidden_inputs.append(local)
 
         bindgen.hidden_outputs = ['ns3module.h']
         for module in scanned_modules:
