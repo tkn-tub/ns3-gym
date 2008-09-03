@@ -361,11 +361,6 @@ TcpL4Protocol::GetProtocolNumber (void) const
 {
   return PROT_NUMBER;
 }
-int 
-TcpL4Protocol::GetVersion (void) const
-{
-  return 2;
-}
 
 void
 TcpL4Protocol::DoDispose (void)

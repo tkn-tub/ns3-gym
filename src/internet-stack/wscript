@@ -62,7 +62,6 @@ def build(bld):
     obj = bld.create_ns3_module('internet-stack', ['node'])
     obj.source = [
         'internet-stack.cc',
-        'ipv4-l4-demux.cc',
         'ipv4-l4-protocol.cc',
         'udp-header.cc',
         'tcp-header.cc',

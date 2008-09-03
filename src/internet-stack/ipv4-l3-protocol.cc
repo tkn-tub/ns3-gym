@@ -38,7 +38,6 @@
 #include "ipv4-interface.h"
 #include "ipv4-loopback-interface.h"
 #include "arp-ipv4-interface.h"
-#include "ipv4-l4-demux.h"
 
 NS_LOG_COMPONENT_DEFINE ("Ipv4L3Protocol");
 
@@ -92,6 +91,29 @@ Ipv4L3Protocol::~Ipv4L3Protocol ()
 }
 
 void
+Ipv4L3Protocol::Insert(Ptr<Ipv4L4Protocol> protocol)
+{
+  m_protocols.push_back (protocol);
+}
+Ptr<Ipv4L4Protocol>
+Ipv4L3Protocol::GetProtocol(int protocolNumber)
+{
+  for (L4List_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
+    {
+      if ((*i)->GetProtocolNumber () == protocolNumber)
+	{
+	  return *i;
+	}
+    }
+  return 0;
+}
+void
+Ipv4L3Protocol::Remove (Ptr<Ipv4L4Protocol> protocol)
+{
+  m_protocols.remove (protocol);
+}
+
+void
 Ipv4L3Protocol::SetNode (Ptr<Node> node)
 {
   m_node = node;
@@ -102,6 +124,13 @@ void
 Ipv4L3Protocol::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
+  for (L4List_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
+    {
+      (*i)->Dispose ();
+      *i = 0;
+    }
+  m_protocols.clear ();
+
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); ++i)
     {
       Ptr<Ipv4Interface> interface = *i;
@@ -699,8 +728,7 @@ Ipv4L3Protocol::ForwardUp (Ptr<Packet> p, Ipv4Header const&ip,
 {
   NS_LOG_FUNCTION (this << p << &ip);
 
-  Ptr<Ipv4L4Demux> demux = m_node->GetObject<Ipv4L4Demux> ();
-  Ptr<Ipv4L4Protocol> protocol = demux->GetProtocol (ip.GetProtocol ());
+  Ptr<Ipv4L4Protocol> protocol = GetProtocol (ip.GetProtocol ());
   protocol->Receive (p, ip.GetSource (), ip.GetDestination (), incomingInterface);
 }
 

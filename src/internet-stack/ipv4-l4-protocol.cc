@@ -37,10 +37,6 @@ Ipv4L4Protocol::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&Ipv4L4Protocol::GetProtocolNumber),
                    MakeUintegerChecker<int> ())
-    .AddAttribute ("Version", "The version of the protocol.",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&Ipv4L4Protocol::GetVersion),
-                   MakeUintegerChecker<int> ())
     ;
   return tid;
 }

@@ -62,7 +62,6 @@ public:
   void SetNode (Ptr<Node> node);
 
   virtual int GetProtocolNumber (void) const;
-  virtual int GetVersion (void) const;
 
   /**
    * \return A smart Socket pointer to a TcpSocketImpl, allocated by this instance

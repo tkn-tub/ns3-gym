@@ -26,7 +26,6 @@
 #include "tcp-socket-impl.h"
 #include "tcp-l4-protocol.h"
 #include "ipv4-end-point.h"
-#include "ipv4-l4-demux.h"
 #include "ns3/simulation-singleton.h"
 #include "tcp-typedefs.h"
 #include "ns3/simulator.h"

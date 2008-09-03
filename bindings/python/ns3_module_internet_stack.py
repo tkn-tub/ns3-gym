@@ -343,8 +343,6 @@ def register_Ns3TcpHeader_methods(root_module, cls):
 def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
     ## ipv4-l3-protocol.h: ns3::Ipv4L3Protocol::PROT_NUMBER [variable]
     cls.add_static_attribute('PROT_NUMBER', 'uint16_t const', is_const=True)
-    ## ipv4-l3-protocol.h: ns3::Ipv4L3Protocol::Ipv4L3Protocol(ns3::Ipv4L3Protocol const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4L3Protocol const &', 'arg0')])
     ## ipv4-l3-protocol.h: static ns3::TypeId ns3::Ipv4L3Protocol::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -356,6 +354,18 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
     cls.add_method('SetNode', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## ipv4-l3-protocol.h: void ns3::Ipv4L3Protocol::Insert(ns3::Ptr<ns3::Ipv4L4Protocol> protocol) [member function]
+    cls.add_method('Insert', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Ipv4L4Protocol >', 'protocol')])
+    ## ipv4-l3-protocol.h: ns3::Ptr<ns3::Ipv4L4Protocol> ns3::Ipv4L3Protocol::GetProtocol(int protocolNumber) [member function]
+    cls.add_method('GetProtocol', 
+                   'ns3::Ptr< ns3::Ipv4L4Protocol >', 
+                   [param('int', 'protocolNumber')])
+    ## ipv4-l3-protocol.h: void ns3::Ipv4L3Protocol::Remove(ns3::Ptr<ns3::Ipv4L4Protocol> protocol) [member function]
+    cls.add_method('Remove', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Ipv4L4Protocol >', 'protocol')])
     ## ipv4-l3-protocol.h: void ns3::Ipv4L3Protocol::SetDefaultTtl(uint8_t ttl) [member function]
     cls.add_method('SetDefaultTtl', 
                    'void', 

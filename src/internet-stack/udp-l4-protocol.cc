@@ -77,11 +77,6 @@ UdpL4Protocol::GetProtocolNumber (void) const
 {
   return PROT_NUMBER;
 }
-int 
-UdpL4Protocol::GetVersion (void) const
-{
-  return 2;
-}
 
 
 void
