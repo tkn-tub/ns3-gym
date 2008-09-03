@@ -116,6 +116,7 @@ AddNscInternetStack (Ptr<Node> node, const std::string &soname)
   AddNscStack (node, ipv4, soname);
 
   AddIpv4Impl (node, ipv4);
+  node->AggregateObject (ipv4);
 }
 #else
 void
