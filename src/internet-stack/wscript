@@ -105,3 +105,4 @@ def build(bld):
         obj.source.append ('nsc-tcp-l4-protocol.cc')
         obj.source.append ('nsc-tcp-socket-factory-impl.cc')
         obj.source.append ('nsc-sysctl.cc')
+        obj.uselib = 'DL'
