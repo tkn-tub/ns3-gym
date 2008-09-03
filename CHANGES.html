@@ -45,6 +45,31 @@ us a note on ns-developers mailing list.  </p>
 
 <hr>
 <h1>changes from ns-3.1 to ns-3.2</h1>
+
+<h2>new API:</h2>
+
+<li>26-08-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/5aa65b1ea001">5aa65b1ea001</a></li>
+<ul>
+<li>
+Add multithreaded and real-time simulator implementation.  Allows for emulated
+net devices running in threads other than the main simulation thread to schedule
+events.  Allows for pacing the simulation clock at 1x real-time.
+</li>
+</ul>
+</li>
+
+
+<li>26-08-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/c69779f5e51e">c69779f5e51e</a></li>
+<ul>
+<li>
+Add threading and synchronization primitives.  Enabling technology for 
+multithreaded simulator implementation.
+</li>
+</ul>
+</li>
+
 <h2>new API in existing classes:</h2>
 
 <ul>
