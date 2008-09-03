@@ -49,10 +49,6 @@ public:
    * \returns the protocol number of this protocol.
    */
   virtual int GetProtocolNumber (void) const = 0;
-  /**
-   * \returns the version number of this protocol.
-   */
-  virtual int GetVersion (void) const = 0;
 
   /**
    * \param p packet to forward up

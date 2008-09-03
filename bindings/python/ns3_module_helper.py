@@ -168,6 +168,10 @@ def register_Ns3InternetStackHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'void', 
                    [param('ns3::NodeContainer', 'c')])
+    ## internet-stack-helper.h: void ns3::InternetStackHelper::SetNscStack(std::string soname) [member function]
+    cls.add_method('SetNscStack', 
+                   'void', 
+                   [param('std::string', 'soname')])
     ## internet-stack-helper.h: static void ns3::InternetStackHelper::EnablePcapAll(std::string filename) [member function]
     cls.add_method('EnablePcapAll', 
                    'void', 

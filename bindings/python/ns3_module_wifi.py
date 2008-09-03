@@ -675,8 +675,8 @@ def register_Ns3Ssid_methods(root_module, cls):
     cls.add_constructor([param('ns3::Ssid const &', 'arg0')])
     ## ssid.h: ns3::Ssid::Ssid() [constructor]
     cls.add_constructor([])
-    ## ssid.h: ns3::Ssid::Ssid(char const * ssid) [constructor]
-    cls.add_constructor([param('char const *', 'ssid')])
+    ## ssid.h: ns3::Ssid::Ssid(std::string s) [constructor]
+    cls.add_constructor([param('std::string', 's')])
     ## ssid.h: ns3::Ssid::Ssid(char const * ssid, uint8_t length) [constructor]
     cls.add_constructor([param('char const *', 'ssid'), param('uint8_t', 'length')])
     ## ssid.h: ns3::Buffer::Iterator ns3::Ssid::Deserialize(ns3::Buffer::Iterator i) [member function]

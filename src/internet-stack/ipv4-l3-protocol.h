@@ -40,6 +40,7 @@ class Ipv4Address;
 class Ipv4Header;
 class Ipv4Route;
 class Node;
+class Ipv4L4Protocol;
 
 
 /**
@@ -58,6 +59,35 @@ public:
   virtual ~Ipv4L3Protocol ();
 
   void SetNode (Ptr<Node> node);
+
+  /**
+   * \param protocol a template for the protocol to add to this L4 Demux.
+   * \returns the L4Protocol effectively added.
+   *
+   * Invoke Copy on the input template to get a copy of the input
+   * protocol which can be used on the Node on which this L4 Demux 
+   * is running. The new L4Protocol is registered internally as
+   * a working L4 Protocol and returned from this method.
+   * The caller does not get ownership of the returned pointer.
+   */
+  void Insert(Ptr<Ipv4L4Protocol> protocol);
+  /**
+   * \param protocolNumber number of protocol to lookup
+   *        in this L4 Demux
+   * \returns a matching L4 Protocol
+   *
+   * This method is typically called by lower layers
+   * to forward packets up the stack to the right protocol.
+   * It is also called from NodeImpl::GetUdp for example.
+   */
+  Ptr<Ipv4L4Protocol> GetProtocol(int protocolNumber);
+  /**
+   * \param protocol protocol to remove from this demux.
+   *
+   * The input value to this method should be the value
+   * returned from the Ipv4L4Protocol::Insert method.
+   */
+  void Remove (Ptr<Ipv4L4Protocol> protocol);
 
   /**
    * \param ttl default ttl to use
@@ -187,12 +217,16 @@ private:
   void ForwardUp (Ptr<Packet> p, Ipv4Header const&ip, Ptr<Ipv4Interface> incomingInterface);
   uint32_t AddIpv4Interface (Ptr<Ipv4Interface> interface);
   void SetupLoopback (void);
+  Ipv4L3Protocol(const Ipv4L3Protocol &);
+  Ipv4L3Protocol &operator = (const Ipv4L3Protocol &);
 
   typedef std::list<Ptr<Ipv4Interface> > Ipv4InterfaceList;
   typedef std::list<std::pair<Ipv4Address, Ipv4Address> > 
     Ipv4MulticastGroupList;
   typedef std::list< std::pair< int, Ptr<Ipv4RoutingProtocol> > > Ipv4RoutingProtocolList;
 
+  typedef std::list<Ptr<Ipv4L4Protocol> > L4List_t;
+  L4List_t m_protocols;
   Ipv4InterfaceList m_interfaces;
   uint32_t m_nInterfaces;
   uint8_t m_defaultTtl;

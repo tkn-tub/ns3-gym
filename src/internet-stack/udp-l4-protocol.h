@@ -47,7 +47,6 @@ public:
   void SetNode (Ptr<Node> node);
 
   virtual int GetProtocolNumber (void) const;
-  virtual int GetVersion (void) const;
 
   /**
    * \return A smart Socket pointer to a UdpSocket, allocated by this instance

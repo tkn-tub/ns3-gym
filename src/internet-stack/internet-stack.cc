@@ -23,7 +23,6 @@
 #include "ns3/node.h"
 #include "ns3/core-config.h"
 
-#include "ipv4-l4-demux.h"
 #include "udp-l4-protocol.h"
 #include "tcp-l4-protocol.h"
 #include "ipv4-l3-protocol.h"
@@ -48,22 +47,22 @@ AddArpStack (Ptr<Node> node)
 }
 
 static void
-AddUdpStack(Ptr<Node> node, Ptr<Ipv4L4Demux> ipv4L4Demux)
+AddUdpStack(Ptr<Node> node, Ptr<Ipv4L3Protocol> ipv4)
 {
   Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
   udp->SetNode (node);
-  ipv4L4Demux->Insert (udp);
+  ipv4->Insert (udp);
   Ptr<UdpSocketFactoryImpl> udpFactory = CreateObject<UdpSocketFactoryImpl> ();
   udpFactory->SetUdp (udp);
   node->AggregateObject (udpFactory);
 }
 
 static void
-AddTcpStack(Ptr<Node> node, Ptr<Ipv4L4Demux> ipv4L4Demux)
+AddTcpStack(Ptr<Node> node, Ptr<Ipv4L3Protocol> ipv4)
 {
   Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> ();
   tcp->SetNode (node);
-  ipv4L4Demux->Insert (tcp);
+  ipv4->Insert (tcp);
   Ptr<TcpSocketFactoryImpl> tcpFactory = CreateObject<TcpSocketFactoryImpl> ();
   tcpFactory->SetTcp (tcp);
   node->AggregateObject (tcpFactory);
@@ -74,7 +73,6 @@ AddIpv4Impl(Ptr<Node> node, Ptr<Ipv4L3Protocol> ipv4)
 {
   Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> ();
   ipv4Impl->SetIpv4 (ipv4);
-  node->AggregateObject (ipv4);
   node->AggregateObject (ipv4Impl);
 }
 
@@ -85,25 +83,22 @@ AddInternetStack (Ptr<Node> node)
   Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
   ipv4->SetNode (node);
 
-  Ptr<Ipv4L4Demux> ipv4L4Demux = CreateObject<Ipv4L4Demux> ();
-  ipv4L4Demux->SetNode (node);
-
-  AddUdpStack (node, ipv4L4Demux);
-  AddTcpStack (node, ipv4L4Demux);
+  AddUdpStack (node, ipv4);
+  AddTcpStack (node, ipv4);
 
   AddIpv4Impl (node, ipv4);
-  node->AggregateObject (ipv4L4Demux);
+  node->AggregateObject (ipv4);
 }
 
 
 #ifdef NETWORK_SIMULATION_CRADLE
 static void
-AddNscStack(Ptr<Node> node, Ptr<Ipv4L4Demux> ipv4L4Demux, const std::string &soname)
+AddNscStack(Ptr<Node> node, Ptr<Ipv4L3Protocol> ipv4, const std::string &soname)
 {
   Ptr<NscTcpL4Protocol> tcp = CreateObject<NscTcpL4Protocol> ();
   tcp->SetNscLibrary(soname);
   tcp->SetNode (node);
-  ipv4L4Demux->Insert (tcp);
+  ipv4->Insert (tcp);
   Ptr<NscTcpSocketFactoryImpl> tcpFactory = CreateObject<NscTcpSocketFactoryImpl> ();
   tcpFactory->SetTcp (tcp);
   node->AggregateObject (tcpFactory);
@@ -117,14 +112,10 @@ AddNscInternetStack (Ptr<Node> node, const std::string &soname)
   Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
   ipv4->SetNode (node);
 
-  Ptr<Ipv4L4Demux> ipv4L4Demux = CreateObject<Ipv4L4Demux> ();
-  ipv4L4Demux->SetNode (node);
-
-  AddUdpStack (node, ipv4L4Demux);
-  AddNscStack (node, ipv4L4Demux, soname);
+  AddUdpStack (node, ipv4);
+  AddNscStack (node, ipv4, soname);
 
   AddIpv4Impl (node, ipv4);
-  node->AggregateObject (ipv4L4Demux);
 }
 #else
 void
