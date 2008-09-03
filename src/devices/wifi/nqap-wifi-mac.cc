@@ -418,28 +418,38 @@ NqapWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
   NS_LOG_FUNCTION (this << packet << hdr);
 
-  WifiRemoteStation *station = m_stationManager->Lookup (hdr->GetAddr2 ());
+  Mac48Address from = hdr->GetAddr2 ();
+  WifiRemoteStation *fromStation = m_stationManager->Lookup (from);
 
   if (hdr->IsData ()) 
     {
+      Mac48Address bssid = hdr->GetAddr1 ();
       if (!hdr->IsFromDs () && 
           hdr->IsToDs () &&
-          hdr->GetAddr1 () == GetAddress () &&
-          station->IsAssociated ()) 
+          bssid == GetAddress () &&
+          fromStation->IsAssociated ()) 
         {
-          if (hdr->GetAddr3 () == GetAddress ()) 
+          Mac48Address to = hdr->GetAddr3 ();
+          WifiRemoteStation *toStation = m_stationManager->Lookup (to);
+          if (to == GetAddress ()) 
             {
-              NS_LOG_DEBUG ("frame for me from="<<hdr->GetAddr2 ());
-              ForwardUp (packet, hdr->GetAddr2 (), hdr->GetAddr1 ());
+              NS_LOG_DEBUG ("frame for me from="<<from);
+              ForwardUp (packet, from, bssid);
             } 
-          else
+          else if (to.IsBroadcast () || 
+                   to.IsMulticast () ||
+                   toStation->IsAssociated ())
             {
-              NS_LOG_DEBUG ("forwarding frame from="<<hdr->GetAddr2 ()<<", to="<<hdr->GetAddr3 ());
+              NS_LOG_DEBUG ("forwarding frame from="<<from<<", to="<<to);
               Ptr<Packet> copy = packet->Copy ();
               ForwardDown (packet,
-                           hdr->GetAddr2 (), 
-                           hdr->GetAddr3 ());
-              ForwardUp (copy, hdr->GetAddr2 (), hdr->GetAddr3 ());
+                           from, 
+                           to);
+              ForwardUp (copy, from, to);
+            }
+          else
+            {
+              ForwardUp (packet, from, to);
             }
         } 
       else if (hdr->IsFromDs () &&
@@ -496,17 +506,17 @@ NqapWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
                       WifiMode mode = m_phy->GetMode (j);
                       if (rates.IsSupportedRate (mode.GetDataRate ()))
                         {
-                          station->AddSupportedMode (mode);
+                          fromStation->AddSupportedMode (mode);
                         }
                     }
-                  station->RecordWaitAssocTxOk ();
+                  fromStation->RecordWaitAssocTxOk ();
                   // send assoc response with success status.
                   SendAssocResp (hdr->GetAddr2 (), true);
                 }
             } 
           else if (hdr->IsDisassociation ()) 
             {
-              station->RecordDisassociated ();
+              fromStation->RecordDisassociated ();
             } 
           else if (hdr->IsReassocReq ()) 
             {
