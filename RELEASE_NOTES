@@ -20,6 +20,7 @@ New functionality added
   implementation a replaceable component via the 
   "SimulatorImplementationType" global value.
   Hint:  try ./waf --run "udp-echo --PrintGlobals"
+- Added multithreaded and real-time simulator implementation;
 - implement Packet::PeekHeader and Packet::PeekTrailer to avoid evil workarounds when receiving tcp packets. 
 
 Bugs fixed
