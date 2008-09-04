@@ -29,6 +29,9 @@ int main (int argc, char *argv[])
   uint32_t nWifis = 2;
   uint32_t nStas = 2;
   bool sendIp = true;
+
+  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
+
   CommandLine cmd;
   cmd.AddValue ("nWifis", "Number of wifi networks", nWifis);
   cmd.AddValue ("nStas", "Number of stations per wifi network", nStas);

@@ -425,13 +425,16 @@ def build(bld):
     if env['NSC_ENABLED'] == 'yes':
         nsc_build(bld)
 
-def get_command_template():
+def get_command_template(arguments):
     if Params.g_options.valgrind:
         if Params.g_options.command_template:
             Params.fatal("Options --command-template and --valgrind are conflicting")
-        return "valgrind --leak-check=full %s"
+        cmd = "valgrind --leak-check=full %s"
     else:
-        return (Params.g_options.command_template or '%s')
+        cmd = Params.g_options.command_template or '%s'
+    for arg in arguments:
+        cmd = cmd + " " + arg
+    return cmd
 
 
 def shutdown():
@@ -818,7 +821,7 @@ class Regression(object):
         env = Params.g_build.env_of_name('default')
         self.diff = env['DIFF']
 
-    def run_test(self, verbose, generate, refDirName, testName):
+    def run_test(self, verbose, generate, refDirName, testName, *arguments):
         refTestDirName = os.path.join(refDirName, (testName + ".ref"))
 
         if not os.path.exists(refDirName):
@@ -831,7 +834,10 @@ class Regression(object):
                 os.mkdir(refTestDirName)
 
             Params.g_options.cwd_launch = refTestDirName
-            run_program(testName)
+            tmpl = "%s"
+            for arg in arguments:
+                tmpl = tmpl + " " + arg
+            run_program(testName, tmpl)
 
             print "Remember to commit " + refTestDirName
             return 0
@@ -846,7 +852,7 @@ class Regression(object):
             #os.system("./waf --cwd regression/traces --run " +
             #  testName + " > /dev/null 2>&1")
             Params.g_options.cwd_launch = "traces"
-            run_program(testName, command_template=get_command_template())
+            run_program(testName, command_template=get_command_template(arguments))
 
             if verbose:
                 #diffCmd = "diff traces " + refTestDirName + " | head"
