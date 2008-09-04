@@ -10,6 +10,7 @@ import Task
 import pproc as subprocess
 from Params import fatal, warning
 import shutil
+import sys
 
 ## Adjust python path to look for our local copy of pybindgen
 LOCAL_PYBINDGEN_PATH = os.path.join(os.getcwd(), "bindings", "python", "pybindgen")
@@ -89,6 +90,10 @@ def configure(conf):
         return
 
     conf.check_tool('misc')
+
+    if sys.platform == 'cygwin':
+        warning("Python is not supported in CygWin environment.  Try MingW instead.")
+        return
 
     ## Check for Python
     try:
