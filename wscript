@@ -523,10 +523,13 @@ def _get_proc_env(os_env=None):
         pathvar = 'PATH'
     elif sys.platform == 'cygwin':
         pathvar = 'PATH'
+    elif sys.platform.startswith('freebsd'):
+        pathvar = 'LD_LIBRARY_PATH'
     else:
         Params.warning(("Don't know how to configure "
-                        "dynamic library path for the platform '%s'") % (sys.platform,))
-        pathvar = None
+                        "dynamic library path for the platform %r;"
+                        " assuming it's LD_LIBRARY_PATH.") % (sys.platform,))
+        pathvar = 'LD_LIBRARY_PATH'        
 
     proc_env = dict(os.environ)
     if os_env is not None:
