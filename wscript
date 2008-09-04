@@ -425,7 +425,7 @@ def build(bld):
     if env['NSC_ENABLED'] == 'yes':
         nsc_build(bld)
 
-def get_command_template(arguments):
+def get_command_template(*arguments):
     if Params.g_options.valgrind:
         if Params.g_options.command_template:
             Params.fatal("Options --command-template and --valgrind are conflicting")
@@ -855,7 +855,7 @@ class Regression(object):
             #os.system("./waf --cwd regression/traces --run " +
             #  testName + " > /dev/null 2>&1")
             Params.g_options.cwd_launch = "traces"
-            run_program(testName, command_template=get_command_template(arguments))
+            run_program(testName, command_template=get_command_template(*arguments))
 
             if verbose:
                 #diffCmd = "diff traces " + refTestDirName + " | head"
