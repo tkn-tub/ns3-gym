@@ -85,3 +85,8 @@ def build(bld):
     obj.source = 'wifi-ap.cc'
 
     bld.add_subdirs('stats')
+
+    obj = bld.create_ns3_program('wifi-wired-bridging',
+                                 ['core', 'simulator', 'mobility', 'wifi', 
+                                  'csma', 'helper', 'bridge'])
+    obj.source = 'wifi-wired-bridging.cc'

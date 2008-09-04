@@ -36,6 +36,33 @@ public:
   typedef std::vector<Ptr<NetDevice> >::const_iterator Iterator;
 
   /**
+   * Create an empty NetDeviceContainer.
+   */
+  NetDeviceContainer ();
+  /**
+   * \param dev a device to add to the container
+   *
+   * Create a NetDeviceContainer with exactly one device
+   */
+  NetDeviceContainer (Ptr<NetDevice> dev);
+  /**
+   * \param a a device container
+   * \param b another device container
+   *
+   * Create a device container which is a concatenation of the two input
+   * NetDeviceContainers.
+   *
+   * \note A frequently seen idiom that uses these constructors involves the
+   * implicit conversion by constructor of Ptr<NetDevice>.  When used, two 
+   * Ptr<NetDevice> will be passed to this constructor instead of NetDeviceContainer&.
+   * C++ will notice the implicit conversion path that goes through the 
+   * NetDeviceContainer (Ptr<NetDevice> dev) constructor above.  Using this conversion
+   * one may provide optionally provide arguments of Ptr<NetDevice> to these 
+   * constructors.
+   */
+  NetDeviceContainer (const NetDeviceContainer &a, const NetDeviceContainer &b);
+
+  /**
    * \returns an iterator which points to the start of the array of pointers.
    */
   Iterator Begin (void) const;
