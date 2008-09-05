@@ -61,8 +61,6 @@ CsmaNetDevice::GetTypeId (void)
                    EnumValue (LLC),
                    MakeEnumAccessor (&CsmaNetDevice::SetEncapsulationMode),
                    MakeEnumChecker (DIX, "Dix",
-                                    IP_ARP, "IpArp",
-                                    RAW, "Raw",
                                     LLC, "Llc"))
     .AddAttribute ("SendEnable", 
                    "Enable or disable the transmitter section of the device.",
@@ -103,13 +101,16 @@ CsmaNetDevice::CsmaNetDevice ()
   m_tInterframeGap = Seconds (0);
   m_channel = 0; 
 
-  m_encapMode = LLC;
+  // 
+  // We would like to let the attribute system take care of initializing the packet encapsulation stuff, but we also don't want to
+  // get caught up in initialization order changes.  So we'll get the three problem variables into a consistent state here before the
+  // attribute calls, and then depend on the semantics of the setters to preserve a consistent state.  This really doesn't have to be
+  // the same set of values as the initial values set by the attributes, but it does have to be a consistent set.  That is, you can
+  // just change the ddfault encapsulation mode above without having to change it here.  We keep it the same for GP.
+  //
+  m_encapMode = DIX;
   m_frameSize = DEFAULT_FRAME_SIZE;
   m_mtu = MtuFromFrameSize (m_frameSize);
-
-  NS_LOG_LOGIC ("m_encapMode = " << m_encapMode);
-  NS_LOG_LOGIC ("m_frameSize = " << m_frameSize);
-  NS_LOG_LOGIC ("m_mtu = " << m_mtu);
 }
 
 CsmaNetDevice::~CsmaNetDevice()
@@ -134,21 +135,24 @@ CsmaNetDevice::MtuFromFrameSize (uint16_t frameSize)
 
   switch (m_encapMode) 
     {
-    case RAW:
-    case IP_ARP:
     case DIX:
-      return frameSize - 18;
+      return frameSize - ETHERNET_OVERHEAD;
     case LLC: 
       {
         LlcSnapHeader llc;
 
-        NS_ASSERT_MSG ((uint32_t)(frameSize - 18) >= llc.GetSerializedSize (), "CsmaNetDevice::MtuFromFrameSize(): "
-                       "Given frame size too small to support LLC mode");
-        return frameSize - 18 - llc.GetSerializedSize ();
+        NS_ASSERT_MSG ((uint32_t)(frameSize - ETHERNET_OVERHEAD) >= llc.GetSerializedSize (), 
+                       "CsmaNetDevice::MtuFromFrameSize(): Given frame size too small to support LLC mode");
+        return frameSize - ETHERNET_OVERHEAD - llc.GetSerializedSize ();
       }
+    case ILLEGAL:
+    default:
+      NS_FATAL_ERROR ("CsmaNetDevice::MtuFromFrameSize(): Unknown packet encapsulation mode");
+      return 0;
     }
-
-  NS_ASSERT_MSG (false, "CsmaNetDevice::MtuFromFrameSize(): Unexpected encapsulation mode");
+  //
+  // Prevent compiler from complaining
+  //
   return 0;
 }
   
@@ -159,18 +163,22 @@ CsmaNetDevice::FrameSizeFromMtu (uint16_t mtu)
 
   switch (m_encapMode) 
     {
-    case RAW:
-    case IP_ARP:
     case DIX:
-      return mtu + 18;
+      return mtu + ETHERNET_OVERHEAD;
     case LLC: 
       {
         LlcSnapHeader llc;
-        return mtu + 18 + llc.GetSerializedSize ();
+        return mtu + ETHERNET_OVERHEAD + llc.GetSerializedSize ();
       }
+    case ILLEGAL:
+    default:
+      NS_FATAL_ERROR ("CsmaNetDevice::FrameSizeFromMtu(): Unknown packet encapsulation mode");
+      return 0;
     }
 
-  NS_ASSERT_MSG (false, "CsmaNetDevice::FrameSizeFromMtu(): Unexpected encapsulation mode");
+  //
+  // Prevent compiler from complaining
+  //
   return 0;
 }
 
@@ -293,11 +301,6 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address de
 {
   NS_LOG_FUNCTION (p << source << dest << protocolNumber);
 
-  if (m_encapMode == RAW)
-    {
-      return;
-    }
-
   EthernetHeader header (false);
   header.SetSource (source);
   header.SetDestination (dest);
@@ -312,11 +315,10 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address de
   uint16_t lengthType = 0;
   switch (m_encapMode) 
     {
-    case IP_ARP:
     case DIX:
-      NS_LOG_LOGIC ("Encapsulating packet as DIX or IP_ARP (type interpretation)");
+      NS_LOG_LOGIC ("Encapsulating packet as DIX (type interpretation)");
       //
-      // This corresponds to the type interpretation of the lengthType field.
+      // This corresponds to the type interpretation of the lengthType field as in the old Ethernet Blue Book.
       //
       lengthType = protocolNumber;
       break;
@@ -329,7 +331,7 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address de
         p->AddHeader (llc);
         //
         // This corresponds to the length interpretation of the lengthType field,
-        // but with an LLC/SNAP header added to the payload.
+        // but with an LLC/SNAP header added to the payload as in IEEE 802.2
         //      
         lengthType = p->GetSize ();
         NS_ASSERT_MSG (lengthType <= m_frameSize - 18,
@@ -337,8 +339,9 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address de
           "length interpretation must not exceed device frame size minus overhead");
       }
       break;
-    case RAW:
-      NS_ASSERT_MSG (false, "CsmaNetDevice::AddHeader(): RAW packet encapsulation not supported");
+    case ILLEGAL:
+    default:
+      NS_FATAL_ERROR ("CsmaNetDevice::AddHeader(): Unknown packet encapsulation mode");
       break;
     }
 
@@ -354,11 +357,6 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address de
 CsmaNetDevice::ProcessHeader (Ptr<Packet> p, uint16_t & param)
 {
   NS_LOG_FUNCTION (p << param);
-
-  if (m_encapMode == RAW)
-    {
-      return true;
-    }
 
   EthernetTrailer trailer;
       
@@ -377,16 +375,18 @@ CsmaNetDevice::ProcessHeader (Ptr<Packet> p, uint16_t & param)
   switch (m_encapMode)
     {
     case DIX:
-    case IP_ARP:
       param = header.GetLengthType ();
       break;
-    case LLC: {
-      LlcSnapHeader llc;
-      p->RemoveHeader (llc);
-      param = llc.GetType ();
-    } break;
-    case RAW:
-      NS_ASSERT (false);
+    case LLC: 
+      {
+        LlcSnapHeader llc;
+        p->RemoveHeader (llc);
+        param = llc.GetType ();
+      } 
+      break;
+    case ILLEGAL:
+    default:
+      NS_FATAL_ERROR ("CsmaNetDevice::ProcessHeader(): Unknown packet encapsulation mode");
       break;
     }
   return true;
@@ -605,17 +605,6 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
       return;
     }
 
-  if (m_encapMode == RAW)
-    {
-      m_rxTrace (packet);
-      if (!m_promiscRxCallback.IsNull ())
-        {
-          m_promiscRxCallback (this, packet, 0, GetBroadcast (), GetAddress (), PACKET_HOST);
-        }
-      m_rxCallback (this, packet, 0, GetBroadcast ());
-      return;
-    }
-
   //
   // Trace sinks will expect complete packets, not packets without some of the
   // headers.
@@ -647,7 +636,6 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
       switch (m_encapMode)
         {
         case DIX:
-        case IP_ARP:
           protocol = header.GetLengthType ();
           break;
         case LLC: 
@@ -657,8 +645,9 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
             protocol = llc.GetType ();
           } 
           break;
-        case RAW:
-          NS_ASSERT (false);
+        case ILLEGAL:
+        default:
+          NS_FATAL_ERROR ("CsmaNetDevice::Receive(): Unknown packet encapsulation mode");
           break;
         }
 
@@ -916,14 +905,7 @@ CsmaNetDevice::SetNode (Ptr<Node> node)
 CsmaNetDevice::NeedsArp (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if ((m_encapMode == IP_ARP) || (m_encapMode == LLC))
-    {
-      return true;
-    } 
-  else 
-    {
-      return false;
-    }
+  return true;
 }
 
   void 

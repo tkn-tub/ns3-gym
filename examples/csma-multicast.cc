@@ -58,8 +58,8 @@ main (int argc, char *argv[])
   //
   // Set up default values for the simulation.  
   //
-  // Select Ethernet II-style encapsulation (no LLC/Snap header)
-  Config::SetDefault ("ns3::CsmaNetDevice::EncapsulationMode", StringValue ("IpArp"));  
+  // Select DIX/Ethernet II-style encapsulation (no LLC/Snap header)
+  Config::SetDefault ("ns3::CsmaNetDevice::EncapsulationMode", StringValue ("Dix"));  
 
   // Allow the user to override any of the defaults at
   // run-time, via command-line arguments

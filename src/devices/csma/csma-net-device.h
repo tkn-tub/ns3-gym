@@ -64,10 +64,9 @@ public:
    *
    */
   enum EncapsulationMode {
+    ILLEGAL,     /**< Encapsulation mode not set */
     DIX,         /**< DIX II / Ethernet II packet */
-    IP_ARP,      /**< Ethernet packet encapsulates IP/ARP packet */
-    RAW,         /**< Packet that contains no headers */
-    LLC,         /**< LLC packet encapsulation */  
+    LLC,         /**< 802.2 LLC/SNAP Packet*/  
   };
 
   /**
@@ -216,10 +215,10 @@ public:
    * seen in RFC 791.
    *
    * To make this concrete, consider DIX II (Digital Equipment, Intel, Xerox type II) framing, which is used in most TCP/IP 
-   * stacks.  NetWare calls this framing Ethernet II, by the way.  In this framing scheme, a real packet on the wire starts
-   * with the preamble and Start-of-Frame-Delimeter (10101011).  We ignore these bits on this device since it they are not
-   * needed.  In DIX II, the SFD is followed by the MAC (48) destination address (6 bytes), source address (6 bytes), the
-   * EtherType field (2 bytes), payload (0-1500 bytes) and a CRC (4 bytes) -- this corresponds to our entire frame.  The
+   * stacks.  NetWare and Wireshark call this framing Ethernet II, by the way.  In this framing scheme, a real packet on the 
+   * wire starts with the preamble and Start-of-Frame-Delimeter (10101011).  We ignore these bits on this device since it they 
+   * are not  needed.  In DIX II, the SFD is followed by the MAC (48) destination address (6 bytes), source address (6 bytes), 
+   * the EtherType field (2 bytes), payload (0-1500 bytes) and a CRC (4 bytes) -- this corresponds to our entire frame.  The
    * payload of the packet/frame in DIX can be from 0 to 1500 bytes.  It is the maxmimum value of this payload that we call
    * the MTU.  Typically, one sees the MTU set to 1500 bytes and the maximum frame size set to 1518 bytes in Ethernet-based
    * networks.
@@ -685,7 +684,8 @@ private:
   Callback<void> m_linkChangeCallback;
 
   static const uint16_t DEFAULT_FRAME_SIZE = 1518;
-  static const uint16_t DEFAULT_MTU = 1500;
+  static const uint16_t ETHERNET_OVERHEAD = 18;
+  static const uint16_t DEFAULT_MTU = (DEFAULT_FRAME_SIZE - ETHERNET_OVERHEAD);
 
   /**
    * There are two MTU types that are used in this driver.  The MAC-level 
