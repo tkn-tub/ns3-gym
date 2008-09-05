@@ -62,6 +62,7 @@ def dist_hook():
     import tarfile
     shutil.rmtree("doc/html", True)
     shutil.rmtree("doc/latex", True)
+    shutil.rmtree("nsc", True)
 
     if not os.path.exists("bindings/python/pybindgen"):
         Params.fatal("Missing pybindgen checkout; run './waf configure --pybindgen-checkout' first.")
