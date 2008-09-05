@@ -58,7 +58,7 @@ CsmaNetDevice::GetTypeId (void)
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("EncapsulationMode", 
                    "The link-layer encapsulation type to use.",
-                   EnumValue (LLC),
+                   EnumValue (DIX),
                    MakeEnumAccessor (&CsmaNetDevice::SetEncapsulationMode),
                    MakeEnumChecker (DIX, "Dix",
                                     LLC, "Llc"))
