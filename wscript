@@ -197,8 +197,16 @@ def check_compilation_flag(conf, flag):
     if not ok: # if it doesn't accept, remove it again
         conf.env['CXXFLAGS'] = save_CXXFLAGS
     
+def report_optional_feature(conf, name, caption, was_enabled, reason_not_enabled):
+    conf.env.append_value('NS3_OPTIONAL_FEATURES', (name, caption, was_enabled, reason_not_enabled))
 
 def configure(conf):
+    
+    # attach some extra methods
+    conf.check_compilation_flag = types.MethodType(check_compilation_flag, conf)
+    conf.report_optional_feature = types.MethodType(report_optional_feature, conf)
+    conf.env['NS3_OPTIONAL_FEATURES'] = []
+
     conf.env['NS3_BUILDDIR'] = conf.m_blddir
     conf.check_tool('compiler_cxx')
 
@@ -270,6 +278,15 @@ def configure(conf):
 
     ## we cannot run regression tests without diff
     conf.find_program('diff', var='DIFF')
+
+    # Write a summary of optional features status
+    print "---- Summary of optional NS-3 features:"
+    for (name, caption, was_enabled, reason_not_enabled) in conf.env['NS3_OPTIONAL_FEATURES']:
+        if was_enabled:
+            status = 'enabled'
+        else:
+            status = 'not enabled (%s)' % reason_not_enabled
+        print "%-30s: %s" % (caption, status)
 
 
 def create_ns3_program(bld, name, dependencies=('simulator',)):

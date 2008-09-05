@@ -37,6 +37,8 @@ def configure(conf):
         e.run()
 
     if not Params.g_options.nsc:
+        conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
+                                     "--nsc configure option not given")
 	return
 
     check_nsc_buildutils()
@@ -55,6 +57,8 @@ def configure(conf):
         e.run()
         ok = True
     conf.check_message('NSC supported architecture', arch, ok)
+    conf.report_optional_feature("nsc", "Network Simulation Cradle", ok,
+                                 "architecture %r not supported" % arch)
     nsc_fetch()
 
 

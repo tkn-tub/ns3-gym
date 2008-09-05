@@ -7,6 +7,10 @@ def configure(conf):
    e.define = 'SQLITE3'
    e.uselib = 'SQLITE3'
    conf.env['SQLITE_STATS'] = e.run()
+   conf.report_optional_feature("SqliteDataOutput", "SQlite stats data output",
+                                conf.env['SQLITE_STATS'],
+                                "library 'sqlite3' not found")
+
 
 def build(bld):
     obj = bld.create_ns3_module('stats', ['node'])

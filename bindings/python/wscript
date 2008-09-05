@@ -87,11 +87,15 @@ __version__ = %r
 def configure(conf):
     conf.env['ENABLE_PYTHON_BINDINGS'] = False
     if Params.g_options.python_disable:
+        conf.report_optional_feature("python", "Python Bindings", False,
+                                     "disabled by user request")
         return
 
     conf.check_tool('misc')
 
     if sys.platform == 'cygwin':
+        conf.report_optional_feature("python", "Python Bindings", False,
+                                     "unsupported platform 'cygwin'")
         warning("Python is not supported in CygWin environment.  Try MingW instead.")
         return
 
@@ -100,7 +104,8 @@ def configure(conf):
         conf.check_tool('python')
         conf.check_python_version((2,3))
         conf.check_python_headers()
-    except Configure.ConfigurationError:
+    except Configure.ConfigurationError, ex:
+        conf.report_optional_feature("python", "Python Bindings", False, str(ex))
         return
 
     ## Check for pybindgen
@@ -112,6 +117,8 @@ def configure(conf):
     except Configure.ConfigurationError:
         warning("pybindgen missing")
         if not fetch_pybindgen(conf):
+            conf.report_optional_feature("python", "Python Bindings", False,
+                                         "PyBindGen missing and could not be retrieved")
             return
     else:
         out = subprocess.Popen([conf.env['PYTHON'], "-c",
@@ -128,15 +135,20 @@ def configure(conf):
                     (pybindgen_version_str,
                      '.'.join([str(x) for x in REQUIRED_PYBINDGEN_VERSION])))
             if not fetch_pybindgen(conf):
+                conf.report_optional_feature("python", "Python Bindings", False,
+                                             "PyBindGen too old and newer version could not be retrieved")
                 return
 
     ## If all has gone well, we finally enable the Python bindings
     conf.env['ENABLE_PYTHON_BINDINGS'] = True
+    conf.report_optional_feature("python", "Python Bindings", True, None)
 
     ## Check for pygccxml
     try:
         conf.check_python_module('pygccxml')
     except Configure.ConfigurationError:
+        conf.report_optional_feature("pygccxml", "Python API Scanning Support", False,
+                                     "Missing 'pygccxml' Python module")
         return
 
     out = subprocess.Popen([conf.env['PYTHON'], "-c",
@@ -152,6 +164,8 @@ def configure(conf):
                 "automatic scanning of API definitions will not be possible" %
                 (pygccxml_version_str,
                  '.'.join([str(x) for x in REQUIRED_PYGCCXML_VERSION])))
+        conf.report_optional_feature("pygccxml", "Python API Scanning Support", False,
+                                     "pygccxml too old")
         return
     
 
@@ -159,6 +173,8 @@ def configure(conf):
     gccxml = conf.find_program('gccxml', var='GCCXML')
     if not gccxml:
         warning("gccxml missing; automatic scanning of API definitions will not be possible")
+        conf.report_optional_feature("pygccxml", "Python API Scanning Support", False,
+                                     "gccxml missing")
         return
 
     gccxml_version_line = os.popen(gccxml + " --version").readline().strip()
@@ -168,10 +184,13 @@ def configure(conf):
     conf.check_message('gccxml', 'version', True, gccxml_version)
     if not gccxml_version_ok:
         warning("gccxml too old, need version >= 0.9; automatic scanning of API definitions will not be possible")
+        conf.report_optional_feature("pygccxml", "Python API Scanning Support", False,
+                                     "gccxml too old")
         return
     
     ## If we reached
     conf.env['ENABLE_PYTHON_SCANNING'] = True
+    conf.report_optional_feature("pygccxml", "Python API Scanning Support", True, None)
 
 
 prio_headers = {
