@@ -685,26 +685,6 @@ private:
 
   static const uint16_t DEFAULT_FRAME_SIZE = 1518;
   static const uint16_t ETHERNET_OVERHEAD = 18;
-  static const uint16_t DEFAULT_MTU = (DEFAULT_FRAME_SIZE - ETHERNET_OVERHEAD);
-
-  /**
-   * There are two MTU types that are used in this driver.  The MAC-level 
-   * MTU corresponds to the amount of data (payload) an upper layer can 
-   * send across the link.  The PHY-level MTU corresponds to the Type/Length
-   * field in the 802.3 header and corresponds to the maximum amount of data
-   * the underlying packet can accept.  These are not the same thing.  For 
-   * example, if you choose "Llc" as your encapsulation mode, the MAC-level
-   * MTU will be reduced by the eight bytes with respect to the PHY-level
-   * MTU which are consumed by the LLC/SNAP header.
-   *
-   * This method checks the current enacpuslation mode (and any other 
-   * relevent information) and determines if the provided frame size 
-   * and mtu are consistent.
-   *
-   * \param frameSize The proposed new frame size
-   * \param mtu The proposed new MTU
-   */
-  bool CheckMtuConsistency (uint16_t frameSize, uint16_t mtu);
 
   /**
    * The frame size/packet size.  This corresponds to the maximum 

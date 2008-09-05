@@ -50,7 +50,7 @@ CsmaNetDevice::GetTypeId (void)
                    Mac48AddressValue (Mac48Address ("ff:ff:ff:ff:ff:ff")),
                    MakeMac48AddressAccessor (&CsmaNetDevice::m_address),
                    MakeMac48AddressChecker ())
-    .AddAttribute ("FrameLength", 
+    .AddAttribute ("FrameSize", 
                    "The maximum size of a packet sent over this device.",
                    UintegerValue (DEFAULT_FRAME_SIZE),
                    MakeUintegerAccessor (&CsmaNetDevice::SetFrameSize,

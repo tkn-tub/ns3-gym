@@ -14,7 +14,7 @@ def register_types(module):
     ## csma-net-device.h: ns3::CsmaNetDevice [class]
     module.add_class('CsmaNetDevice', parent=root_module['ns3::NetDevice'])
     ## csma-net-device.h: ns3::CsmaNetDevice::EncapsulationMode [enumeration]
-    module.add_enum('EncapsulationMode', ['ETHERNET_V1', 'IP_ARP', 'RAW', 'LLC'], outer_class=root_module['ns3::CsmaNetDevice'])
+    module.add_enum('EncapsulationMode', ['ILLEGAL', 'DIX', 'LLC'], outer_class=root_module['ns3::CsmaNetDevice'])
     
     ## Register a nested module for the namespace internal
     
@@ -256,21 +256,12 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
     cls.add_method('SetAddress', 
                    'void', 
                    [param('ns3::Mac48Address', 'addr')])
-    ## csma-net-device.h: void ns3::CsmaNetDevice::SetMaxPayloadLength(uint16_t maxPayloadLength) [member function]
-    cls.add_method('SetMaxPayloadLength', 
+    ## csma-net-device.h: void ns3::CsmaNetDevice::SetFrameSize(uint16_t frameSize) [member function]
+    cls.add_method('SetFrameSize', 
                    'void', 
-                   [param('uint16_t', 'maxPayloadLength')])
-    ## csma-net-device.h: uint16_t ns3::CsmaNetDevice::GetMaxPayloadLength() const [member function]
-    cls.add_method('GetMaxPayloadLength', 
-                   'uint16_t', 
-                   [], 
-                   is_const=True)
-    ## csma-net-device.h: void ns3::CsmaNetDevice::SetMacMtu(uint16_t mtu) [member function]
-    cls.add_method('SetMacMtu', 
-                   'void', 
-                   [param('uint16_t', 'mtu')])
-    ## csma-net-device.h: uint16_t ns3::CsmaNetDevice::GetMacMtu() const [member function]
-    cls.add_method('GetMacMtu', 
+                   [param('uint16_t', 'frameSize')])
+    ## csma-net-device.h: uint16_t ns3::CsmaNetDevice::GetFrameSize() const [member function]
+    cls.add_method('GetFrameSize', 
                    'uint16_t', 
                    [], 
                    is_const=True)
