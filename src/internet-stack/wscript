@@ -1,15 +1,29 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 import Params
+import Task
 import os
 
 # Mercurial repository of the network simulation cradle
 NETWORK_SIMULATION_CRADLE_REPO = "https://secure.wand.net.nz/mercurial/nsc"
+
+# directory that contains network simulation cradle source
+# note, this path is relative to the project root
+NSC_DIR = "nsc"
+
+
+def set_options(opt):
+    opt.add_option('--nsc',
+                   help=('Enable Network Simulation Cradle to allow the use real-world network stacks'),
+                   action="store_true", default=False,
+                   dest='nsc')
+
+
 def nsc_fetch():
     def nsc_clone():
         print "Retrieving nsc from " + NETWORK_SIMULATION_CRADLE_REPO
         if os.system("hg version > /dev/null 2>&1") != 0:
             Params.fatal("Mercurial not installed, http fallback not yet implemented")
-        if os.system("hg -q clone " + NETWORK_SIMULATION_CRADLE_REPO) != 0:
+        if os.system("hg  clone " + NETWORK_SIMULATION_CRADLE_REPO) != 0:
             Params.fatal("hg -q clone %s failed" % NETWORK_SIMULATION_CRADLE_REPO)
 
     def nsc_update():
@@ -17,7 +31,7 @@ def nsc_fetch():
             Params.warning("Mercurial not installed, not updating nsc source")
 
         print "Pulling nsc updates from " + NETWORK_SIMULATION_CRADLE_REPO
-        if os.system("cd nsc && hg -q pull %s && hg -q update" % NETWORK_SIMULATION_CRADLE_REPO) != 0:
+        if os.system("cd nsc && hg pull %s && hg update" % NETWORK_SIMULATION_CRADLE_REPO) != 0:
             Params.warning("Updating nsc using mercurial failed")
 
     if not os.path.exists("nsc"):
@@ -37,6 +51,8 @@ def configure(conf):
         e.run()
 
     if not Params.g_options.nsc:
+        conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
+                                     "--nsc configure option not given")
 	return
 
     check_nsc_buildutils()
@@ -55,8 +71,42 @@ def configure(conf):
         e.run()
         ok = True
     conf.check_message('NSC supported architecture', arch, ok)
+    conf.report_optional_feature("nsc", "Network Simulation Cradle", ok,
+                                 "architecture %r not supported" % arch)
     nsc_fetch()
 
+
+
+class NscBuildTask(Task.TaskBase):
+    """task that builds nsc
+    """
+    def __init__(self, builddir):
+        self.m_display = 'build-nsc'
+        self.prio = 1000 # build after the rest of ns-3
+        self.builddir = builddir
+        super(NscBuildTask, self).__init__()
+
+    def run(self):
+        # XXX: Detect gcc major version(s) available to build supported stacks
+        kernels = [['linux-2.6.18', 'linux2.6.18'],
+                   ['linux-2.6.26', 'linux2.6.26']]
+        for dir, name in kernels:
+            soname = 'lib' + name + '.so'
+            if not os.path.exists(os.path.join("..", NSC_DIR, dir, soname)):
+                if os.system('cd ../%s && python scons.py %s' % (NSC_DIR, dir)) != 0:
+                    Params.fatal("Building NSC stack failed")
+        builddir = self.builddir
+        if not os.path.exists(builddir + '/nsc'):
+            try:
+                os.symlink('../../' + NSC_DIR, builddir + '/nsc')
+            except:
+                Params.fatal("Error linkink " + builddir + '/nsc')
+        if not os.path.exists(builddir + '/' + soname):
+            try:
+                os.symlink('../../' + NSC_DIR + '/' + dir + '/' + soname, builddir +  '/' + soname)
+            except:
+                Params.fatal("Error linking " + builddir + '/' + soname)
+        
 
 def build(bld):
     obj = bld.create_ns3_module('internet-stack', ['node'])
@@ -106,3 +156,6 @@ def build(bld):
         obj.source.append ('nsc-tcp-socket-factory-impl.cc')
         obj.source.append ('nsc-sysctl.cc')
         obj.uselib = 'DL'
+        
+        builddir = os.path.abspath(os.path.join(bld.env()['NS3_BUILDDIR'], bld.env ().variant()))
+        NscBuildTask(builddir)

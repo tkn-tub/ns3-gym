@@ -55,13 +55,12 @@ REGRESSION_SUFFIX = "-ref-traces"
 #
 TRACEBALL_SUFFIX = ".tar.bz2"
 
-# directory that contains network simulation cradle source
-NSC_DIR = "nsc"
 
 def dist_hook():
     import tarfile
     shutil.rmtree("doc/html", True)
     shutil.rmtree("doc/latex", True)
+    shutil.rmtree("nsc", True)
 
     if not os.path.exists("bindings/python/pybindgen"):
         Params.fatal("Missing pybindgen checkout; run './waf configure --pybindgen-checkout' first.")
@@ -167,14 +166,11 @@ def set_options(opt):
                    help=('For regression testing, only run/generate the indicated regression tests, '
                          'specified as a comma separated list of test names'),
                    dest='regression_tests', type="string")
-    opt.add_option('--nsc',
-                   help=('Enable Network Simulation Cradle to allow the use real-world network stacks'),
-                   action="store_true", default=False,
-                   dest='nsc')
 
     # options provided in a script in a subdirectory named "src"
     opt.sub_options('src')
     opt.sub_options('bindings/python')
+    opt.sub_options('src/internet-stack')
 
 
 def check_compilation_flag(conf, flag):
@@ -197,8 +193,16 @@ def check_compilation_flag(conf, flag):
     if not ok: # if it doesn't accept, remove it again
         conf.env['CXXFLAGS'] = save_CXXFLAGS
     
+def report_optional_feature(conf, name, caption, was_enabled, reason_not_enabled):
+    conf.env.append_value('NS3_OPTIONAL_FEATURES', (name, caption, was_enabled, reason_not_enabled))
 
 def configure(conf):
+    
+    # attach some extra methods
+    conf.check_compilation_flag = types.MethodType(check_compilation_flag, conf)
+    conf.report_optional_feature = types.MethodType(report_optional_feature, conf)
+    conf.env['NS3_OPTIONAL_FEATURES'] = []
+
     conf.env['NS3_BUILDDIR'] = conf.m_blddir
     conf.check_tool('compiler_cxx')
 
@@ -271,6 +275,15 @@ def configure(conf):
     ## we cannot run regression tests without diff
     conf.find_program('diff', var='DIFF')
 
+    # Write a summary of optional features status
+    print "---- Summary of optional NS-3 features:"
+    for (name, caption, was_enabled, reason_not_enabled) in conf.env['NS3_OPTIONAL_FEATURES']:
+        if was_enabled:
+            status = 'enabled'
+        else:
+            status = 'not enabled (%s)' % reason_not_enabled
+        print "%-30s: %s" % (caption, status)
+
 
 def create_ns3_program(bld, name, dependencies=('simulator',)):
     program = bld.create_obj('cpp', 'program')
@@ -310,28 +323,6 @@ def _exec_command_interact_win32(s):
         return stat | 0x80
     return stat >> 8
 
-
-def nsc_build(bld):
-    # XXX: Detect gcc major version(s) available to build supported stacks
-    kernels = [['linux-2.6.18', 'linux2.6.18'],
-               ['linux-2.6.26', 'linux2.6.26']]
-    for dir,name in kernels:
-        soname = 'lib' + name + '.so'
-        tmp = NSC_DIR + '/' + dir +'/' + soname
-        if not os.path.exists(tmp):
-            if os.system('cd ' + NSC_DIR + ' && python scons.py ' + dir) != 0:
-                Params.fatal("Building NSC stack failed")
-        builddir = os.path.abspath(os.path.join(bld.env()['NS3_BUILDDIR'], bld.env ().variant()))
-        if not os.path.exists(builddir + '/nsc'):
-            try:
-                os.symlink('../../' + NSC_DIR, builddir + '/nsc')
-            except:
-                Params.fatal("Error linkink " + builddir + '/nsc')
-        if not os.path.exists(builddir + '/' + soname):
-            try:
-                os.symlink('../../' + NSC_DIR + '/' + dir + '/' + soname, builddir +  '/' + soname)
-            except:
-                Params.fatal("Error linking " + builddir + '/' + soname)
 
 def build(bld):
     if Params.g_options.no_task_lines:
@@ -422,8 +413,6 @@ def build(bld):
 
     bld.add_subdirs('bindings/python')
 
-    if env['NSC_ENABLED'] == 'yes':
-        nsc_build(bld)
 
 def get_command_template(*arguments):
     if Params.g_options.valgrind:
