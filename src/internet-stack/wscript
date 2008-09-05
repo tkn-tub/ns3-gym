@@ -9,7 +9,7 @@ def nsc_fetch():
         print "Retrieving nsc from " + NETWORK_SIMULATION_CRADLE_REPO
         if os.system("hg version > /dev/null 2>&1") != 0:
             Params.fatal("Mercurial not installed, http fallback not yet implemented")
-        if os.system("hg -q clone " + NETWORK_SIMULATION_CRADLE_REPO) != 0:
+        if os.system("hg  clone " + NETWORK_SIMULATION_CRADLE_REPO) != 0:
             Params.fatal("hg -q clone %s failed" % NETWORK_SIMULATION_CRADLE_REPO)
 
     def nsc_update():
@@ -17,7 +17,7 @@ def nsc_fetch():
             Params.warning("Mercurial not installed, not updating nsc source")
 
         print "Pulling nsc updates from " + NETWORK_SIMULATION_CRADLE_REPO
-        if os.system("cd nsc && hg -q pull %s && hg -q update" % NETWORK_SIMULATION_CRADLE_REPO) != 0:
+        if os.system("cd nsc && hg pull %s && hg update" % NETWORK_SIMULATION_CRADLE_REPO) != 0:
             Params.warning("Updating nsc using mercurial failed")
 
     if not os.path.exists("nsc"):
