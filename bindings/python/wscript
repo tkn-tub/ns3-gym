@@ -28,7 +28,7 @@ REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 def set_options(opt):
     opt.tool_options('python')
-    opt.add_option('--python-disable',
+    opt.add_option('--disable-python',
                    help=("Don't build Python bindings."),
                    action="store_true", default=False,
                    dest='python_disable')
