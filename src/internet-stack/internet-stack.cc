@@ -30,11 +30,8 @@
 #include "udp-socket-factory-impl.h"
 #include "tcp-socket-factory-impl.h"
 #include "ipv4-impl.h"
-
-#ifdef NETWORK_SIMULATION_CRADLE
 #include "nsc-tcp-socket-factory-impl.h"
 #include "nsc-tcp-l4-protocol.h"
-#endif
 
 namespace ns3 {
 
@@ -91,7 +88,6 @@ AddInternetStack (Ptr<Node> node)
 }
 
 
-#ifdef NETWORK_SIMULATION_CRADLE
 static void
 AddNscStack(Ptr<Node> node, const std::string &soname)
 {
@@ -115,11 +111,5 @@ AddNscInternetStack (Ptr<Node> node, const std::string &soname)
   AddUdpStack (node);
   AddNscStack (node, soname);
 }
-#else
-void
-AddNscInternetStack (Ptr<Node> node, const std::string &soname)
-{
-  NS_ASSERT_MSG(false, "ERROR: ns-3 was compiled without Network Simulation Cradle support");
-}
-#endif
+
 }//namespace ns3

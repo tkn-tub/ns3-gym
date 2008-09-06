@@ -32,8 +32,6 @@
 #include "sequence-number.h"
 #include "rtt-estimator.h"
 
-#include "nsc/sim/sim_interface.h"
-
 namespace ns3 {
 
 class Ipv4EndPoint;

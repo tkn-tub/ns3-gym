@@ -30,7 +30,7 @@
 #include "tcp-header.h"
 
 #include "ns3/timer.h"
-#include "nsc/sim/sim_interface.h"
+#include "sim_interface.h"
 
 namespace ns3 {
 

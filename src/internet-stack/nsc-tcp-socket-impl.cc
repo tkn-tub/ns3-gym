@@ -39,7 +39,8 @@
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
 
-#include "nsc/sim/sim_errno.h"
+#include "sim_interface.h"
+#include "sim_errno.h"
 
 NS_LOG_COMPONENT_DEFINE ("NscTcpSocketImpl");
 

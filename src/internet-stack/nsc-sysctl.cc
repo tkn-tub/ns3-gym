@@ -19,7 +19,7 @@
 #include "ns3/string.h"
 #include "nsc-sysctl.h"
 
-#include "nsc/sim/sim_interface.h"
+#include "sim_interface.h"
 
 namespace ns3 {
 
