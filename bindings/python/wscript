@@ -404,10 +404,11 @@ def build(bld):
         bindgen.prio = 50
 
         bindgen.os_env = dict(os.environ)
-        if not env['ENABLE_GTK_CONFIG_STORE']:
-            bindgen.os_env['DISABLE_GTK_CONFIG_STORE'] = "1"
-        if not env['SQLITE_STATS']:
-            bindgen.os_env['SQLITE_STATS'] = "1"
+        features = []
+        for (name, caption, was_enabled, reason_not_enabled) in env['NS3_OPTIONAL_FEATURES']:
+            if was_enabled:
+                features.append(name)
+        bindgen.os_env['NS3_ENABLED_FEATURES'] = ','.join(features)
 
 
     ## we build python bindings if either we have the tools to

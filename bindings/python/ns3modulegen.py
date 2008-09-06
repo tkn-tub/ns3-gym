@@ -110,16 +110,17 @@ def main():
         mod = __import__(local_module)
         mod.register_functions(root_module)
 
+    enabled_features = os.environ['NS3_ENABLED_FEATURES'].split(',')
 
     # if GtkConfigStore support is disabled, disable the class wrapper
-    if 'DISABLE_GTK_CONFIG_STORE' in os.environ:
+    if 'GtkConfigStore' not in enabled_features:
         try:
             root_module.classes.remove(root_module['ns3::GtkConfigStore'])
         except KeyError:
             pass
 
     # if no sqlite, the class SqliteDataOutput is disabled
-    if 'SQLITE_STATS' in os.environ:
+    if 'SqliteDataOutput' not in enabled_features:
         try:
             root_module.classes.remove(root_module['ns3::SqliteDataOutput'])
         except KeyError:
