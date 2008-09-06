@@ -429,6 +429,7 @@ WallClockSynchronizer::GetNormalizedRealtime (void)
   return GetRealtime () - m_realtimeOriginNano;
 }
 
+#ifdef CLOCK_REALTIME
   void
 WallClockSynchronizer::NsToTimespec (int64_t ns, struct timespec *ts)
 {
@@ -436,6 +437,7 @@ WallClockSynchronizer::NsToTimespec (int64_t ns, struct timespec *ts)
   ts->tv_sec = ns / NS_PER_SEC;
   ts->tv_nsec = ns % NS_PER_SEC;
 }
+#endif
 
   void
 WallClockSynchronizer::NsToTimeval (int64_t ns, struct timeval *tv)
@@ -445,6 +447,7 @@ WallClockSynchronizer::NsToTimeval (int64_t ns, struct timeval *tv)
   tv->tv_usec = (ns % NS_PER_SEC) / US_PER_NS;
 }
 
+#ifdef CLOCK_REALTIME
   uint64_t
 WallClockSynchronizer::TimespecToNs (struct timespec *ts)
 {
@@ -452,6 +455,7 @@ WallClockSynchronizer::TimespecToNs (struct timespec *ts)
   NS_ASSERT ((nsResult % US_PER_NS) == 0);
   return nsResult;
 }
+#endif
 
   uint64_t
 WallClockSynchronizer::TimevalToNs (struct timeval *tv)
@@ -461,6 +465,7 @@ WallClockSynchronizer::TimevalToNs (struct timeval *tv)
   return nsResult;
 }
 
+#ifdef CLOCK_REALTIME
   void
 WallClockSynchronizer::TimespecAdd (
   struct timespec *ts1, 
@@ -475,6 +480,7 @@ WallClockSynchronizer::TimespecAdd (
       result->tv_nsec %= NS_PER_SEC;
     }
 }
+#endif
 
   void
 WallClockSynchronizer::TimevalAdd (
