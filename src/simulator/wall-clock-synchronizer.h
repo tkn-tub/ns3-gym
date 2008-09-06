@@ -175,16 +175,22 @@ protected:
   uint64_t GetRealtime (void);
   uint64_t GetNormalizedRealtime (void);
 
+#ifdef CLOCK_REALTIME
   void NsToTimespec (int64_t ns, struct timespec *ts);
+#endif
   void NsToTimeval (int64_t ns, struct timeval *tv);
 
+#ifdef CLOCK_REALTIME
   uint64_t TimespecToNs (struct timespec *ts);
+#endif
   uint64_t TimevalToNs (struct timeval *tv);
 
+#ifdef CLOCK_REALTIME
   void TimespecAdd(
     struct timespec *ts1, 
     struct timespec *ts2, 
     struct timespec *result);
+#endif
 
   void TimevalAdd (
     struct timeval *tv1, 
