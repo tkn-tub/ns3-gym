@@ -47,8 +47,9 @@ AddArpStack (Ptr<Node> node)
 }
 
 static void
-AddUdpStack(Ptr<Node> node, Ptr<Ipv4L3Protocol> ipv4)
+AddUdpStack(Ptr<Node> node)
 {
+  Ptr<Ipv4L3Protocol> ipv4 = node->GetObject<Ipv4L3Protocol> ();
   Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
   udp->SetNode (node);
   ipv4->Insert (udp);
@@ -58,8 +59,9 @@ AddUdpStack(Ptr<Node> node, Ptr<Ipv4L3Protocol> ipv4)
 }
 
 static void
-AddTcpStack(Ptr<Node> node, Ptr<Ipv4L3Protocol> ipv4)
+AddTcpStack(Ptr<Node> node)
 {
+  Ptr<Ipv4L3Protocol> ipv4 = node->GetObject<Ipv4L3Protocol> ();
   Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> ();
   tcp->SetNode (node);
   ipv4->Insert (tcp);
@@ -69,8 +71,11 @@ AddTcpStack(Ptr<Node> node, Ptr<Ipv4L3Protocol> ipv4)
 }
 
 static void
-AddIpv4Impl(Ptr<Node> node, Ptr<Ipv4L3Protocol> ipv4)
+AddIpv4Stack(Ptr<Node> node)
 {
+  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
+  ipv4->SetNode (node);
+  node->AggregateObject (ipv4);
   Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> ();
   ipv4Impl->SetIpv4 (ipv4);
   node->AggregateObject (ipv4Impl);
@@ -79,22 +84,18 @@ AddIpv4Impl(Ptr<Node> node, Ptr<Ipv4L3Protocol> ipv4)
 void
 AddInternetStack (Ptr<Node> node)
 {
-  AddArpStack(node);
-  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
-  ipv4->SetNode (node);
-
-  AddUdpStack (node, ipv4);
-  AddTcpStack (node, ipv4);
-
-  AddIpv4Impl (node, ipv4);
-  node->AggregateObject (ipv4);
+  AddArpStack (node);
+  AddIpv4Stack (node);
+  AddUdpStack (node);
+  AddTcpStack (node);
 }
 
 
 #ifdef NETWORK_SIMULATION_CRADLE
 static void
-AddNscStack(Ptr<Node> node, Ptr<Ipv4L3Protocol> ipv4, const std::string &soname)
+AddNscStack(Ptr<Node> node, const std::string &soname)
 {
+  Ptr<Ipv4L3Protocol> ipv4 = node->GetObject<Ipv4L3Protocol> ();
   Ptr<NscTcpL4Protocol> tcp = CreateObject<NscTcpL4Protocol> ();
   tcp->SetNscLibrary(soname);
   tcp->SetNode (node);
@@ -108,15 +109,11 @@ AddNscStack(Ptr<Node> node, Ptr<Ipv4L3Protocol> ipv4, const std::string &soname)
 void
 AddNscInternetStack (Ptr<Node> node, const std::string &soname)
 {
-  AddArpStack(node);
-  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
-  ipv4->SetNode (node);
+  AddArpStack (node);
+  AddIpv4Stack (node);
 
-  AddUdpStack (node, ipv4);
-  AddNscStack (node, ipv4, soname);
-
-  AddIpv4Impl (node, ipv4);
-  node->AggregateObject (ipv4);
+  AddUdpStack (node);
+  AddNscStack (node, soname);
 }
 #else
 void

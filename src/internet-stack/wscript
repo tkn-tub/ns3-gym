@@ -62,7 +62,6 @@ def configure(conf):
     if arch == 'x86_64' or arch == 'i686' or arch == 'i586' or arch == 'i486' or arch == 'i386':
         conf.env['NSC_ENABLED'] = 'yes'
         conf.define('NETWORK_SIMULATION_CRADLE', 1)
-        conf.write_config_header('ns3/core-config.h')
         e = conf.create_library_configurator()
         e.mandatory = True
         e.name = 'dl'
