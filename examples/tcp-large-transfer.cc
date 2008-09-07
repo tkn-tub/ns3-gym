@@ -132,6 +132,7 @@ int main (int argc, char *argv[])
 
   ApplicationContainer apps = sink.Install (n1n2.Get (1));
   apps.Start (Seconds (0.0));
+  apps.Stop (Seconds (3.0));
 
   // Create a source to send packets from n0.  Instead of a full Application
   // and the helper APIs you might see in other example files, this example

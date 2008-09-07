@@ -645,13 +645,15 @@ void TcpSocketImpl::SendEmptyPacket (uint8_t flags)
   m_tcp->SendPacket (p, header, m_endPoint->GetLocalAddress (), 
     m_remoteAddress);
   Time rto = m_rtt->RetransmitTimeout ();
-  if (flags & TcpHeader::SYN)
+  bool hasSyn = flags & TcpHeader::SYN;
+  bool hasFin = flags & TcpHeader::FIN;
+  if (hasSyn)
     {
       rto = m_cnTimeout;
       m_cnTimeout = m_cnTimeout + m_cnTimeout;
       m_cnCount--;
     }
-  if (m_retxEvent.IsExpired () ) //no outstanding timer
+  if (m_retxEvent.IsExpired () && (hasSyn || hasFin) ) //no outstanding timer
   {
     NS_LOG_LOGIC ("Schedule retransmission timeout at time " 
           << Simulator::Now ().GetSeconds () << " to expire at time " 
@@ -745,6 +747,13 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
   switch (a)
   {
+    case ACK_TX:
+      if(tcpHeader.GetFlags() & TcpHeader::FIN)
+      {
+        ++m_nextRxSequence; //bump this to account for the FIN
+      }
+      SendEmptyPacket (TcpHeader::ACK);
+      break;
     case SYN_ACK_TX:
       NS_LOG_LOGIC ("TcpSocketImpl " << this <<" Action SYN_ACK_TX");
 //      m_remotePort = InetSocketAddress::ConvertFrom (fromAddress).GetPort ();
@@ -767,19 +776,20 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
                                   p, tcpHeader,fromAddress);
           return true;
         }
-        // This is the cloned endpoint
-        m_endPoint->SetPeer (m_remoteAddress, m_remotePort);
-        if (ipv4->GetIfIndexForDestination (m_remoteAddress, localIfIndex))
-          {
-            m_localAddress = ipv4->GetAddress (localIfIndex);
-            m_endPoint->SetLocalAddress (m_localAddress);
-            // Leave local addr in the portmap to any, as the path from
-            // remote can change and packets can arrive on different interfaces
-            //m_endPoint->SetLocalAddress (Ipv4Address::GetAny());
-          }
-        // TCP SYN consumes one byte
-        m_nextRxSequence = tcpHeader.GetSequenceNumber() + SequenceNumber(1);
-        SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK);
+      // This is the cloned endpoint
+      NS_ASSERT (m_state == SYN_RCVD);
+      m_endPoint->SetPeer (m_remoteAddress, m_remotePort);
+      if (ipv4->GetIfIndexForDestination (m_remoteAddress, localIfIndex))
+        {
+          m_localAddress = ipv4->GetAddress (localIfIndex);
+          m_endPoint->SetLocalAddress (m_localAddress);
+          // Leave local addr in the portmap to any, as the path from
+          // remote can change and packets can arrive on different interfaces
+          //m_endPoint->SetLocalAddress (Ipv4Address::GetAny());
+        }
+      // TCP SYN consumes one byte
+      m_nextRxSequence = tcpHeader.GetSequenceNumber() + SequenceNumber(1);
+      SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK);
       break;
     case ACK_TX_1:
       NS_LOG_LOGIC ("TcpSocketImpl " << this <<" Action ACK_TX_1");
@@ -844,6 +854,7 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
         {
           NewRx (p, tcpHeader, fromAddress);
         }
+      ++m_nextRxSequence; //bump this to account for the FIN
       States_t saveState = m_state; // Used to see if app responds
       NS_LOG_LOGIC ("TcpSocketImpl " << this 
           << " peer close, state " << m_state);
@@ -878,7 +889,7 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       NotifyNewConnectionCreated (this, fromAddress);
       break;
     default:
-      break;
+      return ProcessAction (a);
   }
   return true;
 }
