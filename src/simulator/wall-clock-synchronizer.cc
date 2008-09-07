@@ -18,7 +18,6 @@
 
 #include <time.h>
 #include <sys/time.h>
-#include <sched.h>
 
 #include "ns3/log.h"
 #include "ns3/system-condition.h"
@@ -67,7 +66,9 @@ WallClockSynchronizer::WallClockSynchronizer ()
 #else
   m_jiffy = 1000000;
 #endif
+
 #if 0
+#include <sched.h>
 //
 // DANGER DANGER WILL ROBINSON
 //
