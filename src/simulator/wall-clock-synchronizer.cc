@@ -66,19 +66,6 @@ WallClockSynchronizer::WallClockSynchronizer ()
 #else
   m_jiffy = 1000000;
 #endif
-
-#if 0
-#include <sched.h>
-//
-// DANGER DANGER WILL ROBINSON
-//
-// Don't enable this code, su root and run a sim unless you really know what
-// you are doing.
-//
-  struct sched_param sp;
-  sp.sched_priority = sched_get_priority_max (SCHED_FIFO);
-  sched_setscheduler (0, SCHED_FIFO, &sp);
-#endif
 }
 
 WallClockSynchronizer::~WallClockSynchronizer ()
@@ -391,34 +378,6 @@ WallClockSynchronizer::DriftCorrect (uint64_t nsNow, uint64_t nsDelay)
   uint64_t
 WallClockSynchronizer::GetRealtime (void)
 {
-//
-// I originally wrote this code to use CLOCK_PROCESS_CPUTIME_ID.  In Linux
-// this is a highly accurate realtime clock.  It turns out, though, that this
-// is a Linux bug.  This is supposed to be (posix says it is) a highly 
-// accurate cumulative running time of the process.  In Linux it is (or at
-// least was -- a bug is filed) a  highly accurate wall-clock time since the
-// process was created.  Posix defines the wall clock you must use as the
-// CLOCK_REALTIME clock.  As you can see in the constructor, the resolution
-// of the CLOCK_REALTIME clock is a jiffy.  This is not fine-grained enough
-// for us.  So, I'm using the gettimeofday clock even though it is an
-// expensive call.
-//
-// I could write some inline assembler here to get to the timestamp counter
-// (RDTSC instruction).  It's not as trivial as it sounds to get right.  
-// Google for "rdtsc cpuid" to see why.  I'm leaving this for another day.
-//
-// N.B. This returns the value of the realtime clock.  This does not return
-// the current normalized realtime that we are attempting to make equal to
-// the simulation clock.  To get that number, use GetNormalizedRealtime ().
-//
-
-#if 0
-  // This will eventually stop working in linux so don't use it
-  struct timespec tsNow;
-  clock_gettime (CLOCK_REALTIME, &tsNow);
-  return TimespecToNs (&tsNow);
-#endif
-
   struct timeval tvNow;
   gettimeofday (&tvNow, NULL);
   return TimevalToNs (&tvNow);
@@ -430,16 +389,6 @@ WallClockSynchronizer::GetNormalizedRealtime (void)
   return GetRealtime () - m_realtimeOriginNano;
 }
 
-#ifdef CLOCK_REALTIME
-  void
-WallClockSynchronizer::NsToTimespec (int64_t ns, struct timespec *ts)
-{
-  NS_ASSERT ((ns % US_PER_NS) == 0);
-  ts->tv_sec = ns / NS_PER_SEC;
-  ts->tv_nsec = ns % NS_PER_SEC;
-}
-#endif
-
   void
 WallClockSynchronizer::NsToTimeval (int64_t ns, struct timeval *tv)
 {
@@ -448,16 +397,6 @@ WallClockSynchronizer::NsToTimeval (int64_t ns, struct timeval *tv)
   tv->tv_usec = (ns % NS_PER_SEC) / US_PER_NS;
 }
 
-#ifdef CLOCK_REALTIME
-  uint64_t
-WallClockSynchronizer::TimespecToNs (struct timespec *ts)
-{
-  uint64_t nsResult = ts->tv_sec * NS_PER_SEC + ts->tv_nsec;
-  NS_ASSERT ((nsResult % US_PER_NS) == 0);
-  return nsResult;
-}
-#endif
-
   uint64_t
 WallClockSynchronizer::TimevalToNs (struct timeval *tv)
 {
@@ -465,23 +404,6 @@ WallClockSynchronizer::TimevalToNs (struct timeval *tv)
   NS_ASSERT ((nsResult % US_PER_NS) == 0);
   return nsResult;
 }
-
-#ifdef CLOCK_REALTIME
-  void
-WallClockSynchronizer::TimespecAdd (
-  struct timespec *ts1, 
-  struct timespec *ts2,
-  struct timespec *result)
-{
-  result->tv_sec = ts1->tv_sec + ts2->tv_sec;
-  result->tv_nsec = ts1->tv_nsec + ts2->tv_nsec;
-  if (result->tv_nsec > (int64_t)NS_PER_SEC)
-    {
-      ++result->tv_sec;
-      result->tv_nsec %= NS_PER_SEC;
-    }
-}
-#endif
 
   void
 WallClockSynchronizer::TimevalAdd (
@@ -499,5 +421,3 @@ WallClockSynchronizer::TimevalAdd (
 }
 
 }; // namespace ns3
-
-
