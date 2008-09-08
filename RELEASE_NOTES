@@ -6,61 +6,90 @@ This file contains ns-3 release notes (most recent releases first).
 Release 3.2 (pending)
 =====================
 
-New functionality added
------------------------
-- Add learning bridge (IEEE 802.1D) implementation: BridgeNetDevice;
-- Python bindings added
-- Kernel thread support (class SystemThread) added;
-- Kernel mutual exclusion support (class SystemMutex) added;
-- Kernel critical section RAII support (class CriticalSection) added;
-- Kernel system condition support (class SystemCondition) added;
-- Move required methods in helper classes to constructors;
-- Change obsolete references to Parameter to Attribute in helpers;
-- Split simulator into interface and implementation pieces, make 
-  implementation a replaceable component via the 
-  "SimulatorImplementationType" global value.
-  Hint:  try ./waf --run "udp-echo --PrintGlobals"
-- Added multithreaded and real-time simulator implementation;
-- implement Packet::PeekHeader and Packet::PeekTrailer to avoid evil workarounds when receiving tcp packets. 
+Availability
+------------
 
-Bugs fixed
-----------
-- add optional support for TCP and UDP checksum (bug 236)
-- close socket upon PacketSink::StopApplication (bug 243)
-- fix build failure with gcc 4.3.x (bug 245)
+This release is immediately available from:
+http://www.nsnam.org/releases/ns-3.2.tar.bz2
 
-API changes from 3.1 to 3.2
----------------------------
-- several helper APIs related to attribute setting (changeset d5f8e5fae1c6, 
-  bug 234); old variants are currently deprecated API and will be removed
-  in a future release
-- remove references to Parameter in helper APIs (changeset 3cdd9d60f7c7,
-  bug 232); old variants are currently deprecated API and will be removed
-  in a future release
-- New NetDevice APIs: SendFrom, SetPromiscRxCallback,
-  SupportsPromiscuous.  These are pure virtual methods, so they need
-  to be implemented by NetDevice subclasses;
+What is ns-3 ?
+--------------
 
-In order to support the learning bridge, some API changes in Node and
-NetDevice were made.
+ns-3 is a new discrete-event network simulator designed for supporting network
+research and education. ns-3 features a solid, well documented C++ core and 
+models for TCP/IP (IPv4), several link types including WiFi, and mobility 
+models.
 
-In NetDevice, devices may optionally implement the virtual methods
-SendFrom, SupportsPromiscuous, and SetPromiscReceiveCallback.  If
-these new methods are not implemented, the code still compiles and
-works, except if they are used in a BridgeNetDevice.
+ns-3 is an open source project released under the GNU GPLv2 license which 
+allows anyone to use ns-3 without having to pay any license fee or royalties. 
+ns-3 is actively seeking new contributors to extend the range of supported 
+models and/or to maintain existing models.
 
-In Node, the signature for protocol handler callbacks (used in
-AddProtocolHandler) has changed.  Now it looks like:
+New user-visible features
+-------------------------
+  a) Learning bridge (IEEE 802.1D)
+    It is now possible to bridge together multiple layer 2 devices to
+    create larger layer 2 networks. The Wifi and Csma models support
+    this new mode of operation. (contributed by Gustavo Carneiro)
 
-  void ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet, 
-    uint16_t protocol, Address const &source, Address const &destination, 
-    PacketType packetType);
+  b) Python bindings
+    It is now possible to write simulation scripts in python using our 
+    python bindings (contributed by Gustavo Carneiro).
 
-The extra parameters 'destination' and 'packetType' are present for
-all protocol handlers, but only have valid values for promiscuous
-protocol handlers.  Protocol handlers are non-promiscuous by default,
-so no action is needed to adapt existing code besides updating the
-callback signature.
+  c) Real-time simulator
+    It is now possible to run simulations synchronized on the real-world
+    wall-clock time (contributed by Craig Dowell).
+
+  d) Network Simulation Craddle
+    It is now possible to use the Network Simulation Craddle 
+    (http://www.wand.net.nz/~stj2/nsc/) in ns-3 and run simulations 
+    using various versions of kernel TCP network stacks. (contributed
+    by Florian Westphal as part of his Google Summer of Code work)
+
+  e) A statistics framework
+    Joseph Kopena contributed a statistics framework which can be used
+    keep track of simulation data in persistent storage across multiple 
+    runs (database and ascii file backends are available).
+    More information on the wiki:
+    http://www.nsnam.org/wiki/index.php/Statistical_Framework_for_Network_Simulation
+
+Where to get more information about ns-3
+----------------------------------------
+
+All the ns-3 documentation, is accessible from the ns-3 website: 
+http://www.nsnam.org
+
+Including, tutorials:
+http://www.nsnam.org/tutorials.html
+
+Supported platforms
+-------------------
+
+ns-3 is regularly tested on the following platforms:
+  - linux x86 gcc 4.2, 4.1, and, 3.4.6.
+  - linux x86_64 gcc 4.1.3, 4.2.1, 3.4.6
+  - MacOS X ppc and x86
+  - cygwin gcc 3.4.4 (debug only)
+
+Known issues
+------------
+
+ns-3 is known to fail on the following platforms:
+  - gcc 3.3 and earlier
+  - optimized builds on gcc 3.4.4 and 3.4.5
+  - optimized builds on linux x86 gcc 4.0.x
+
+The IPv4 API defined in src/node/ipv4.h is expected to undergo major changes 
+in preparation of the merge of the IPv6 API and implementation.
+
+API changes for this release are documented in CHANGES.html
+
+Future releases
+---------------
+
+Our next release, which is expected to happen in 2 to 4 months from now, will
+feature the merging of some of our projects currently in development: IPv6, 
+emulation, and synchronous posix sockets.
 
 Release 3.1 (2008/06/30)
 ========================
