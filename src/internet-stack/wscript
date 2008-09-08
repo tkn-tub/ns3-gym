@@ -135,12 +135,7 @@ def build(bld):
         'pending-data.cc',
         'sequence-number.cc',
         'rtt-estimator.cc',
-        'nsc-tcp-socket-impl.cc',
-        'nsc-tcp-l4-protocol.cc',
-        'nsc-tcp-socket-factory-impl.cc',
-        'nsc-sysctl.cc',
         ]
-    obj.uselib = 'DL'
 
     headers = bld.create_obj('ns3header')
     headers.module = 'internet-stack'
@@ -155,5 +150,10 @@ def build(bld):
         ]
 
     if bld.env()['NSC_ENABLED']:        
+        obj.source.append ('nsc-tcp-socket-impl.cc')
+        obj.source.append ('nsc-tcp-l4-protocol.cc')
+        obj.source.append ('nsc-tcp-socket-factory-impl.cc')
+        obj.source.append ('nsc-sysctl.cc')
+        obj.uselib = 'DL'
         builddir = os.path.abspath(os.path.join(bld.env()['NS3_BUILDDIR'], bld.env ().variant()))
         NscBuildTask(builddir)
