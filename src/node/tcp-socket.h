@@ -59,8 +59,6 @@ private:
   virtual uint32_t GetRcvBufSize (void) const = 0;
   virtual void SetSegSize (uint32_t size) = 0;
   virtual uint32_t GetSegSize (void) const = 0;
-  virtual void SetAdvWin (uint32_t window) = 0;
-  virtual uint32_t GetAdvWin (void) const = 0;
   virtual void SetSSThresh (uint32_t threshold) = 0;
   virtual uint32_t GetSSThresh (void) const = 0;
   virtual void SetInitialCwnd (uint32_t count) = 0;

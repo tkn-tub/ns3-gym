@@ -55,12 +55,6 @@ TcpSocket::GetTypeId (void)
                    MakeUintegerAccessor (&TcpSocket::GetSegSize,
                                          &TcpSocket::SetSegSize),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("AdvertisedWindowSize",
-                   "TCP advertised window size (bytes)",
-                   UintegerValue (0xffff),
-                   MakeUintegerAccessor (&TcpSocket::GetAdvWin,
-                                         &TcpSocket::SetAdvWin),
-                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("SlowStartThreshold",
                    "TCP slow start threshold (bytes)",
                    UintegerValue (0xffff),
