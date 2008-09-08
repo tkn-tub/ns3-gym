@@ -215,6 +215,7 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
 NS_OBJECT_ENSURE_REGISTERED (MgtAssocRequestHeader);
 
 MgtAssocRequestHeader::MgtAssocRequestHeader ()
+  : m_listenInterval (0)
 {}
 MgtAssocRequestHeader::~MgtAssocRequestHeader ()
 {}
