@@ -25,6 +25,7 @@
 #include "ns3/pointer.h"
 #include "ns3/config.h"
 #include "ns3/simulator.h"
+#include <iostream>
 
 namespace ns3 {
 
@@ -154,16 +155,49 @@ MobilityHelper::InstallAll (void)
 {
   Install (NodeContainer::GetGlobal ());
 }
-
+static double
+DoRound (double v)
+{
+  if (v <= 1e-4 && v >= -1e-4)
+    {
+      return 0.0;
+    }
+  else if (v <= 1e-3 && v >= 0)
+    {
+      return 1e-3;
+    }
+  else if (v >= -1e-3 && v <= 0)
+    {
+      return -1e-3;
+    }
+  else
+    {
+      return v;
+    }
+}
 void
 MobilityHelper::CourseChanged (std::ostream *os, Ptr<const MobilityModel> mobility)
 {
   Ptr<Node> node = mobility->GetObject<Node> ();
   *os << "now=" << Simulator::Now ()
-      << " node=" << node->GetId () 
-      << " pos=" << mobility->GetPosition () 
-      << " vel=" << mobility->GetVelocity ()
+      << " node=" << node->GetId ();
+  Vector pos = mobility->GetPosition ();
+  pos.x = DoRound (pos.x);
+  pos.y = DoRound (pos.y);
+  pos.z = DoRound (pos.z);
+  Vector vel = mobility->GetVelocity ();
+  vel.x = DoRound (vel.x);
+  vel.y = DoRound (vel.y);
+  vel.z = DoRound (vel.z);
+  std::streamsize saved_precision = os->precision ();
+  std::ios::fmtflags saved_flags = os->flags ();
+  os->precision (3);
+  os->setf (std::ios::fixed,std::ios::floatfield);
+  *os << " pos=" << pos.x << ":" << pos.y << ":" << pos.z
+      << " vel=" << vel.x << ":" << vel.y << ":" << vel.z
       << std::endl;
+  os->flags (saved_flags);
+  os->precision (saved_precision);
 }
 
 void 
