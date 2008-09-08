@@ -28,6 +28,7 @@
 #include "ns3/ptr.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
+#include "ns3/system-mutex.h"
 
 #include <list>
 #include <fstream>
