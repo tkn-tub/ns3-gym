@@ -917,6 +917,7 @@ MacLow::SendRtsForPacket (void)
   rts.SetType (WIFI_MAC_CTL_RTS);
   rts.SetDsNotFrom ();
   rts.SetDsNotTo ();
+  rts.SetNoRetry ();
   rts.SetNoMoreFragments ();
   rts.SetAddr1 (m_currentHdr.GetAddr1 ());
   rts.SetAddr2 (m_self);
@@ -1064,6 +1065,7 @@ MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiMode rtsTxMode,
   cts.SetDsNotFrom ();
   cts.SetDsNotTo ();
   cts.SetNoMoreFragments ();
+  cts.SetNoRetry ();
   cts.SetAddr1 (source);
   duration -= GetCtsDuration (source, rtsTxMode);
   duration -= GetSifs ();
