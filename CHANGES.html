@@ -217,6 +217,63 @@ Rename all instances method names using "Set..Parameter" to "Set..Attribute"
 
 <h2>changed behavior:</h2>
 <ul>
+
+<li>07-09-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/5d836ab1523b">5d836ab1523b</a></li>
+<ul>
+<li>
+Implement a finite receive buffer for TCP<br>
+The native TCP model in TcpSocketImpl did not support a finite receive buffer.
+This changeset adds the following functionality in this regard:
+<ul>
+<li>
+Being able to set the receiver buffer size through the attributes system.
+</li>
+<li>
+This receiver buffer size is now correctly exported in the TCP header as the
+advertised window.  Prior to this changeset, the TCP header advertised window
+was set to the maximum size of 2^16 bytes.
+window
+</li>
+<li>
+The aforementioned window size is correctly used for flow control, i.e. the
+sending TCP will not send more data than available space in the receiver's
+buffer.
+</li>
+<li>
+In the case of a receiver window collapse, when a advertised zero-window
+packet is received, the sender enters the persist probing state in which
+it sends probe packets with one payload byte at exponentially backed-off
+intervals up to 60s.  The reciever will continue to send advertised 
+zero-window ACKs of the old data so long as the receiver buffer remains full.
+When the receiver window clears up due to an application read, the TCP
+will finally ACK the probe byte, and update its advertised window appropriately.
+</li>
+</ul>
+ 
+See 
+<a href="http://www.nsnam.org/bugzilla/show_bug.cgi?id=239"> bug 239 </a> for
+more.
+</li>
+</ul>
+</li>
+
+<li>07-09-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/7afa66c2b291">7afa66c2b291</a></li>
+<ul>
+<li>
+Add correct FIN exchange behavior during TCP closedown<br>
+The behavior of the native TcpSocketImpl TCP model was such that the final
+FIN exchange was not correct, i.e. calling Socket::Close didn't send a FIN
+packet, and even if it had, the ACK never came back, and even if it had, the
+ACK would have incorrect sequence number.  All these various problems have been
+addressed by this changeset.  See 
+<a href="http://www.nsnam.org/bugzilla/show_bug.cgi?id=242"> bug 242 </a> for
+more.
+</li>
+</ul>
+</li>
+
 <li> 28-07-2008; changeset 
 <a href="http://code.nsnam.org/ns-3-dev/rev/6f68f1044df1">6f68f1044df1</a>
 <ul>
