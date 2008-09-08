@@ -387,8 +387,7 @@ def build(bld):
             bindgen.output_file("ns3module.cc"),
             ]
         bindgen.argv.extend(get_modules_and_headers().iterkeys())
-        bindgen.hidden_inputs = ['everything.h',
-                                 'ns3modulegen_generated.py',
+        bindgen.hidden_inputs = ['ns3modulegen_generated.py',
                                  'ns3modulegen_core_customizations.py']
 
         for module in scanned_modules:
