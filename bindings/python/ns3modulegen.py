@@ -126,6 +126,15 @@ def main():
         except KeyError:
             pass
 
+    if 'Threading' not in enabled_features:
+        for clsname in ['SystemThread', 'SystemMutex', 'SystemCondition', 'CriticalSection']:
+            root_module.classes.remove(root_module['ns3::%s' % clsname])
+
+    if 'RealTime' not in enabled_features:
+        for clsname in ['WallClockSynchronizer', 'RealtimeSimulatorImpl', 'RealtimeEventLock']:
+            root_module.classes.remove(root_module['ns3::%s' % clsname])
+        root_module.enums.remove(root_module['ns3::RealtimeSimulatorImpl::SynchronizationMode'])
+
     root_module.generate(out, '_ns3')
 
     out.close()

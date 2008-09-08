@@ -28,6 +28,15 @@ def configure(conf):
     e.uselib = 'RT'
     e.run()
 
+    e = conf.create_header_configurator()
+    e.mandatory = False
+    e.name = 'pthread.h'
+    e.define = 'HAVE_PTHREAD_H'
+    conf.env['ENABLE_THREADING'] = e.run()
+    conf.report_optional_feature("Threading", "Threading Primitives",
+                                 conf.env['ENABLE_THREADING'],
+                                 "<pthread.h> include not detected")
+
     conf.write_config_header('ns3/core-config.h')
 
 def build(bld):
@@ -66,24 +75,9 @@ def build(bld):
         ]
     core.uselib = 'RT'
 
-    if sys.platform == 'win32':
-        core.source.extend([
-            'win32-system-wall-clock-ms.cc',
-            ])
-    else:
-        core.source.extend([
-            'unix-system-thread.cc',
-            'unix-system-mutex.cc',
-            'unix-system-condition.cc',
-            'unix-system-wall-clock-ms.cc',
-            ])
-    
     headers = bld.create_obj('ns3header')
     headers.module = 'core'
     headers.source = [
-        'system-mutex.h',
-        'system-thread.h',
-        'system-condition.h',
         'system-wall-clock-ms.h',
         'empty.h',
         'callback.h',
@@ -123,4 +117,25 @@ def build(bld):
         'object-vector.h',
         'deprecated.h'
         ]
+
+    if sys.platform == 'win32':
+        core.source.extend([
+            'win32-system-wall-clock-ms.cc',
+            ])
+    else:
+        core.source.extend([
+            'unix-system-wall-clock-ms.cc',
+            ])
+
+    if bld.env()['ENABLE_THREADING']:
+        core.source.extend([
+            'unix-system-thread.cc',
+            'unix-system-mutex.cc',
+            'unix-system-condition.cc',
+            ])
+        headers.source.extend([
+                'system-mutex.h',
+                'system-thread.h',
+                'system-condition.h',
+                ])
 

@@ -21,7 +21,6 @@
 #define EVENT_IMPL_H
 
 #include <stdint.h>
-#include "ns3/system-mutex.h"
 
 namespace ns3 {
 

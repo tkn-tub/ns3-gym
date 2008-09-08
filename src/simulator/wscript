@@ -44,6 +44,9 @@ def configure(conf):
 
     conf.write_config_header('ns3/simulator-config.h')
 
+    conf.report_optional_feature("RealTime", "Real Time Simulator",
+                                 conf.env['ENABLE_THREADING'],
+                                 "threading not enabled")
 
 
 def build(bld):
@@ -59,11 +62,9 @@ def build(bld):
         'event-impl.cc',
         'simulator.cc',
         'default-simulator-impl.cc',
-        'realtime-simulator-impl.cc',
         'timer.cc',
         'watchdog.cc',
         'synchronizer.cc',
-        'wall-clock-synchronizer.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -76,7 +77,6 @@ def build(bld):
         'simulator.h',
         'simulator-impl.h',
         'default-simulator-impl.h',
-        'realtime-simulator-impl.h',
         'scheduler.h',
         'list-scheduler.h',
         'map-scheduler.h',
@@ -86,7 +86,6 @@ def build(bld):
         'timer-impl.h',
         'watchdog.h',
         'synchronizer.h',
-        'wall-clock-synchronizer.h',
         ]
 
     env = bld.env_of_name('default')
@@ -106,4 +105,14 @@ def build(bld):
             'high-precision-128.h',
             'cairo-wideint-private.h',
             ])
+
+    if env['ENABLE_THREADING']:
+        headers.source.extend([
+                'realtime-simulator-impl.h',
+                'wall-clock-synchronizer.h',
+                ])
+        sim.source.extend([
+                'realtime-simulator-impl.cc',
+                'wall-clock-synchronizer.cc',
+                ])
 
