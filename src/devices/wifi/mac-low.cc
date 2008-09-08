@@ -1141,6 +1141,7 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
   ack.SetType (WIFI_MAC_CTL_ACK);
   ack.SetDsNotFrom ();
   ack.SetDsNotTo ();
+  ack.SetNoRetry ();
   ack.SetNoMoreFragments ();
   ack.SetAddr1 (source);
   duration -= GetAckDuration (source, dataTxMode);
