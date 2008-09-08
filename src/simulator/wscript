@@ -44,8 +44,6 @@ def configure(conf):
 
     conf.write_config_header('ns3/simulator-config.h')
 
-
-
 def build(bld):
     sim = bld.create_ns3_module('simulator', ['core'])
     sim.source = [
@@ -59,11 +57,8 @@ def build(bld):
         'event-impl.cc',
         'simulator.cc',
         'default-simulator-impl.cc',
-        'realtime-simulator-impl.cc',
         'timer.cc',
         'watchdog.cc',
-        'synchronizer.cc',
-        'wall-clock-synchronizer.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -88,6 +83,13 @@ def build(bld):
         'synchronizer.h',
         'wall-clock-synchronizer.h',
         ]
+
+    if sys.platform != 'win32':
+        sim.source.extend([
+            'realtime-simulator-impl.cc',
+            'synchronizer.cc',
+            'wall-clock-synchronizer.cc',
+            ])
 
     env = bld.env_of_name('default')
     if env['USE_HIGH_PRECISION_DOUBLE']:
