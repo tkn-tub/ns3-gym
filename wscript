@@ -912,7 +912,7 @@ def run_regression():
         print "Synchronizing reference traces using Mercurial."
         if not os.path.exists(dir_name):
             print "Cloning " + REGRESSION_TRACES_REPO + dir_name + " from repo."
-            subprocess.Popen(["hg", "clone", REGRESSION_TRACES_REPO, dir_name],
+            subprocess.Popen(["hg", "clone", REGRESSION_TRACES_REPO + dir_name, dir_name],
                              stdout=dev_null(), stderr=dev_null()).wait()
         else:
             _dir = os.getcwd()
