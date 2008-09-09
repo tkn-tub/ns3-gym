@@ -472,7 +472,7 @@ def _run_waf_check():
         pass
     else:
         prog = program_obj.path.find_build(ccroot.get_target_name(program_obj)).abspath(env)
-        out = open('doc/introspected-doxygen.h', 'w')
+        out = open(os.path.join('doc', 'introspected-doxygen.h'), 'w')
         if subprocess.Popen([prog], stdout=out, env=proc_env).wait():
             raise SystemExit(1)
         out.close()
@@ -804,6 +804,11 @@ def DistDir(appname, version):
 Scripting.DistDir = DistDir
 
 
+def dev_null():
+    if sys.platform == 'win32':
+        return open("NUL:", "w")
+    else:
+        return open("/dev/null", "w")
 
 
 ### Regression testing
@@ -849,16 +854,14 @@ class Regression(object):
             if verbose:
                 #diffCmd = "diff traces " + refTestDirName + " | head"
                 diffCmd = subprocess.Popen([self.diff, "traces", refTestDirName],
-                                           stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+                                           stderr=dev_null(), stdout=dev_null())
                 headCmd = subprocess.Popen("head", stdin=diffCmd.stdout)
                 rc2 = headCmd.wait()
                 diffCmd.stdout.close()
                 rc1 = diffCmd.wait()
                 rc = rc1 or rc2
             else:
-                diffCmd = self.diff +" traces " + refTestDirName + \
-                    " > /dev/null 2>&1"
-                rc = os.system(diffCmd)
+                rc = subprocess.Popen([self.diff, "traces", refTestDirName], stdout=dev_null()).wait()
             if rc:
                 print "----------"
                 print "Traces differ in test: test-" + testName
@@ -905,17 +908,22 @@ def run_regression():
     print "========== Running Regression Tests =========="
     dir_name = APPNAME + '-' + VERSION + REGRESSION_SUFFIX
 
-    if os.system("hg version > /dev/null 2>&1") == 0:
+    if subprocess.Popen(["hg", "version"], stdout=dev_null(), stderr=dev_null()).wait() == 0:
         print "Synchronizing reference traces using Mercurial."
         if not os.path.exists(dir_name):
             print "Cloning " + REGRESSION_TRACES_REPO + dir_name + " from repo."
-            os.system("hg clone " + REGRESSION_TRACES_REPO + dir_name + " > /dev/null 2>&1")
+            subprocess.Popen(["hg", "clone", REGRESSION_TRACES_REPO, dir_name],
+                             stdout=dev_null(), stderr=dev_null()).wait()
         else:
             _dir = os.getcwd()
             os.chdir(dir_name)
             try:
                 print "Pulling " + REGRESSION_TRACES_REPO + dir_name + " from repo."
-                result = os.system("hg -q pull %s && hg -q update" % (REGRESSION_TRACES_REPO + dir_name))
+                result = subprocess.Popen(["hg", "-q", "pull", REGRESSION_TRACES_REPO + dir_name],
+                                          stdout=dev_null(), stderr=dev_null()).wait()
+                if not result:
+                    result = subprocess.Popen(["hg", "-q", "update"],
+                                              stdout=dev_null(), stderr=dev_null()).wait()
             finally:
                 os.chdir("..")
             if result:
