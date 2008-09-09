@@ -2,9 +2,12 @@
 import Params
 import Task
 import os
+import urllib
 
 # Mercurial repository of the network simulation cradle
-NETWORK_SIMULATION_CRADLE_REPO = "https://secure.wand.net.nz/mercurial/nsc"
+NSC_REPO = "https://secure.wand.net.nz/mercurial/nsc"
+NSC_RELEASE_URL = "http://research.wand.net.nz/software/nsc"
+NSC_RELEASE_NAME = "nsc-0.4.0"
 
 # directory that contains network simulation cradle source
 # note, this path is relative to the project root
@@ -20,21 +23,32 @@ def set_options(opt):
 
 def nsc_fetch():
     def nsc_clone():
-        print "Retrieving nsc from " + NETWORK_SIMULATION_CRADLE_REPO
+        print "Retrieving nsc from " + NSC_REPO
         if os.system("hg version > /dev/null 2>&1") != 0:
             Params.fatal("Mercurial not installed, http fallback not yet implemented")
-        if os.system("hg  clone " + NETWORK_SIMULATION_CRADLE_REPO) != 0:
-            Params.fatal("hg -q clone %s failed" % NETWORK_SIMULATION_CRADLE_REPO)
+        if os.system("hg  clone " + NSC_REPO) != 0:
+            Params.fatal("hg -q clone %s failed" % NSC_REPO)
 
     def nsc_update():
         if os.system("hg version > /dev/null 2>&1") != 0:
             Params.warning("Mercurial not installed, not updating nsc source")
 
-        print "Pulling nsc updates from " + NETWORK_SIMULATION_CRADLE_REPO
-        if os.system("cd nsc && hg pull %s && hg update" % NETWORK_SIMULATION_CRADLE_REPO) != 0:
+        print "Pulling nsc updates from " + NSC_REPO
+        if os.system("cd nsc && hg pull %s && hg update" % NSC_REPO) != 0:
             Params.warning("Updating nsc using mercurial failed")
 
-    if not os.path.exists("nsc"):
+    def nsc_download():
+        local_file = NSC_RELEASE_NAME + ".tar.bz2"
+        remote_file = NSC_RELEASE_URL + "/" + local_file
+        print "Retrieving nsc from " + remote_file
+        urllib.urlretrieve(remote_file, local_file)
+        print "Uncompressing " + local_file
+        os.system("tar -xjf " + local_file)
+        os.system('mv ' + NSC_RELEASE_NAME + ' nsc')
+
+    if not os.path.exists('.hg'):
+        nsc_download ()
+    elif not os.path.exists("nsc"):
         nsc_clone()
     else:
         nsc_update()
