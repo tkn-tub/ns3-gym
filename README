@@ -97,7 +97,7 @@ the following platforms:
 
 The following optional features are known to not work on
 these platforms:
-  - mingw: python bindings, nsc, realtime scheduler
+  - mingw: nsc, realtime scheduler
   - cygwin: python bindings, nsc
 
 Other platforms may or may not work: we welcome patches to 
