@@ -85,6 +85,20 @@ mostly for internal use.
 
 <h2>changes to existing API:</h2>
 
+<li>05-09-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/aa1fb0f43571">aa1fb0f43571</a></li>
+<ul>
+<li>
+Change naming of MTU and packet size attributes in CSMA and Point-to-Point devices<br>
+After much discussion it was decided that the preferred way to think about 
+the different senses of transmission units and encapsulations was to call the 
+MAC MTU simply MTU and to use the overall packet size as the PHY-level attribute
+of interest.  See the Doxygen of CsmaNetDevice::SetFrameSize and 
+PointToPointNetDevice::SetFrameSize for a detailed description.
+</li>
+</ul>
+</li>
+
 <ul>
 <li>25-08-2008; changeset 
 <a href="http://code.nsnam.org/ns-3-dev/rev/e5ab96db540e">e5ab96db540e</a></li>
