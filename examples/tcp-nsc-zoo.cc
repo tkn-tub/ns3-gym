@@ -25,7 +25,7 @@
 //
 // - Pcap traces are saved as tcp-nsc-zoo-$n-0.pcap, where $n represents the node number
 // - TCP flows from n0 to n1, n2, n3, from n1 to n0, n2, n3, etc.
-//  Usage (e.g.): ./waf --run 'tcp-nsc-zoo --Nodes=5'
+//  Usage (e.g.): ./waf --run 'tcp-nsc-zoo --nodes=5'
 
 #include <iostream>
 #include <string>
@@ -45,14 +45,23 @@ int main(int argc, char *argv[])
 {
   CsmaHelper csma;
   unsigned int MaxNodes = 4;
+  unsigned int runtime = 3;
 
-  Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (4096));
-  Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("1Mb/s"));
+  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
+
+  Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (2048));
+  Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("8kbps"));
   CommandLine cmd;
-  // this allows the user to raise the number of nodes using --Nodes=X command-line argument.
-  cmd.AddValue("Nodes", "Number of nodes in the network", MaxNodes);
+  // this allows the user to raise the number of nodes using --nodes=X command-line argument.
+  cmd.AddValue("nodes", "Number of nodes in the network (must be > 1)", MaxNodes);
+  cmd.AddValue("runtime", "How long the applications should send data (default 3 seconds)", runtime);
   cmd.Parse (argc, argv);
 
+  if (MaxNodes < 2)
+    {
+       std::cerr << "--nodes: must be >= 2" << std::endl;
+       return 1;
+    }
   csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate(100 * 1000 * 1000)));
   csma.SetChannelAttribute ("Delay", TimeValue (MicroSeconds (200)));
 
@@ -70,16 +79,24 @@ int main(int argc, char *argv[])
   Config::Set ("/NodeList/1/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_sack", StringValue ("0"));
   Config::Set ("/NodeList/1/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_timestamps", StringValue ("0"));
   Config::Set ("/NodeList/1/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_window_scaling", StringValue ("0"));
-  internetStack.Install (n.Get(2));
-  // the next statement doesn't change anything for the nodes 0, 1, and 2; since they
-  // already have a stack assigned.
-  internetStack.SetNscStack ("liblinux2.6.18.so");
-  // this switches node 3 to NSCs Linux 2.6.18 stack.
-  internetStack.Install (n.Get(3));
-  // and then agains disables sack/timestamps/wscale on node 3.
-  Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.18>/net.ipv4.tcp_sack", StringValue ("0"));
-  Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.18>/net.ipv4.tcp_timestamps", StringValue ("0"));
-  Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.18>/net.ipv4.tcp_window_scaling", StringValue ("0"));
+
+  if (MaxNodes > 2)
+    {
+      internetStack.Install (n.Get(2));
+    }
+
+  if (MaxNodes > 3)
+    {
+      // the next statement doesn't change anything for the nodes 0, 1, and 2; since they
+      // already have a stack assigned.
+      internetStack.SetNscStack ("liblinux2.6.18.so");
+      // this switches node 3 to NSCs Linux 2.6.18 stack.
+      internetStack.Install (n.Get(3));
+      // and then agains disables sack/timestamps/wscale on node 3.
+      Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.18>/net.ipv4.tcp_sack", StringValue ("0"));
+      Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.18>/net.ipv4.tcp_timestamps", StringValue ("0"));
+      Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.18>/net.ipv4.tcp_window_scaling", StringValue ("0"));
+    }
   // the freebsd stack is not yet built by default, so its commented out for now.
   // internetStack.SetNscStack ("libfreebsd5.so");
   for (unsigned int i =4; i < MaxNodes; i++)
@@ -97,7 +114,7 @@ int main(int argc, char *argv[])
   PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), servPort));
   // start a sink client on all nodes
   ApplicationContainer sinkApp = sinkHelper.Install (n);
-  sinkApp.Start (Seconds (1.0));
+  sinkApp.Start (Seconds (0));
   sinkApp.Stop (Seconds (30.0));
 
   // This tells every node on the network to start a flow to all other nodes on the network ...
@@ -116,14 +133,14 @@ int main(int argc, char *argv[])
           clientHelper.SetAttribute 
             ("OffTime", RandomVariableValue (ConstantVariable (0)));
           ApplicationContainer clientApp = clientHelper.Install(n.Get(i));
-          clientApp.Start (Seconds (j + 1.0)); /* delay startup depending on node number */
-          clientApp.Stop (Seconds (j + 10.0));
+          clientApp.Start (Seconds (j)); /* delay startup depending on node number */
+          clientApp.Stop (Seconds (j + runtime));
 	}
     }
 
   CsmaHelper::EnablePcapAll ("tcp-nsc-zoo");
 
-  Simulator::Stop (Seconds(1000));
+  Simulator::Stop (Seconds(100));
   Simulator::Run ();
   Simulator::Destroy ();
 
