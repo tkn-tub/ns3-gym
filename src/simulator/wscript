@@ -16,7 +16,7 @@ def set_options(opt):
 
 def configure(conf):
     if Params.g_options.high_precision_as_double:
-        conf.add_define('USE_HIGH_PRECISION_DOUBLE', 1)
+        conf.define('USE_HIGH_PRECISION_DOUBLE', 1)
         conf.env['USE_HIGH_PRECISION_DOUBLE'] = 1
         highprec = 'long double'
     else:
