@@ -109,11 +109,7 @@ class NscBuildTask(Task.TaskBase):
                 if os.system('cd ../%s && python scons.py %s' % (NSC_DIR, dir)) != 0:
                     Params.fatal("Building NSC stack failed")
         builddir = self.builddir
-        if not os.path.exists(builddir + '/nsc'):
-            try:
-                os.symlink('../../' + NSC_DIR, builddir + '/nsc')
-            except:
-                Params.fatal("Error linkink " + builddir + '/nsc')
+
         if not os.path.exists(builddir + '/' + soname):
             try:
                 os.symlink('../../' + NSC_DIR + '/' + dir + '/' + soname, builddir +  '/' + soname)
