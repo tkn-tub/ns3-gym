@@ -854,7 +854,7 @@ class Regression(object):
             if verbose:
                 #diffCmd = "diff traces " + refTestDirName + " | head"
                 diffCmd = subprocess.Popen([self.diff, "traces", refTestDirName],
-                                           stderr=dev_null(), stdout=dev_null())
+                                           stdout=dev_null())
                 headCmd = subprocess.Popen("head", stdin=diffCmd.stdout)
                 rc2 = headCmd.wait()
                 diffCmd.stdout.close()
@@ -912,18 +912,16 @@ def run_regression():
         print "Synchronizing reference traces using Mercurial."
         if not os.path.exists(dir_name):
             print "Cloning " + REGRESSION_TRACES_REPO + dir_name + " from repo."
-            subprocess.Popen(["hg", "clone", REGRESSION_TRACES_REPO + dir_name, dir_name],
-                             stdout=dev_null(), stderr=dev_null()).wait()
+            argv = ["hg", "clone", REGRESSION_TRACES_REPO + dir_name, dir_name]
+            rv = subprocess.Popen(argv).wait()
         else:
             _dir = os.getcwd()
             os.chdir(dir_name)
             try:
                 print "Pulling " + REGRESSION_TRACES_REPO + dir_name + " from repo."
-                result = subprocess.Popen(["hg", "-q", "pull", REGRESSION_TRACES_REPO + dir_name],
-                                          stdout=dev_null(), stderr=dev_null()).wait()
+                result = subprocess.Popen(["hg", "-q", "pull", REGRESSION_TRACES_REPO + dir_name]).wait()
                 if not result:
-                    result = subprocess.Popen(["hg", "-q", "update"],
-                                              stdout=dev_null(), stderr=dev_null()).wait()
+                    result = subprocess.Popen(["hg", "-q", "update"]).wait()
             finally:
                 os.chdir("..")
             if result:
