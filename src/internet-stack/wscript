@@ -101,6 +101,7 @@ class NscBuildTask(Task.TaskBase):
 
     def run(self):
         # XXX: Detect gcc major version(s) available to build supported stacks
+        builddir = self.builddir
         kernels = [['linux-2.6.18', 'linux2.6.18'],
                    ['linux-2.6.26', 'linux2.6.26']]
         for dir, name in kernels:
@@ -108,14 +109,13 @@ class NscBuildTask(Task.TaskBase):
             if not os.path.exists(os.path.join("..", NSC_DIR, dir, soname)):
                 if os.system('cd ../%s && python scons.py %s' % (NSC_DIR, dir)) != 0:
                     Params.fatal("Building NSC stack failed")
-        builddir = self.builddir
 
-        if not os.path.exists(builddir + '/' + soname):
-            try:
-                os.symlink('../../' + NSC_DIR + '/' + dir + '/' + soname, builddir +  '/' + soname)
-            except:
-                Params.fatal("Error linking " + builddir + '/' + soname)
-        
+            if not os.path.exists(builddir + '/' + soname):
+                try:
+                    os.symlink('../../' + NSC_DIR + '/' + dir + '/' + soname, builddir +  '/' + soname)
+                except:
+                    Params.fatal("Error linking " + builddir + '/' + soname)
+
 
 def build(bld):
     obj = bld.create_ns3_module('internet-stack', ['node'])
