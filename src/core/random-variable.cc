@@ -198,7 +198,10 @@ void RandomVariableBase::GetRandomSeeds(uint32_t seeds[6])
             {
               ssize_t bytes_read = read (RandomVariableBase::devRandom,
                                          &seeds[i], sizeof (seeds[i]));
-              NS_ASSERT (bytes_read == sizeof (seeds[i]));
+              if (bytes_read != sizeof (seeds[i]))
+                {
+                  NS_FATAL_ERROR ("Read from /dev/random failed");
+                }
             }
           if (RngStream::CheckSeed(seeds)) break; // Got a valid one
         }
