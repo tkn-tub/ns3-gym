@@ -277,12 +277,10 @@ LogDistancePropagationLossModel::GetLoss (Ptr<MobilityModel> a,
    *      
    * rx = rx0(tx) - 10 * n * log (d/d0)
    */
-  static Ptr<StaticMobilityModel> zero = 
-    CreateObject<StaticMobilityModel> ("Position", 
-                                       VectorValue (Vector (0.0, 0.0, 0.0)));
-  static Ptr<StaticMobilityModel> reference = 
-    CreateObject<StaticMobilityModel> ("Position", 
-                                       VectorValue (Vector (m_referenceDistance, 0.0, 0.0)));
+  static Ptr<StaticMobilityModel> zero = CreateObject<StaticMobilityModel> ();
+  static Ptr<StaticMobilityModel> reference = CreateObject<StaticMobilityModel> ();
+  zero->SetPosition (Vector (0.0, 0.0, 0.0));
+  reference->SetPosition (Vector (m_referenceDistance, 0.0, 0.0));
   double ref = m_reference->GetLoss (zero, reference);
   double pathLossDb = 10 * m_exponent * log10 (distance / m_referenceDistance);
   double rxc = ref - pathLossDb;
