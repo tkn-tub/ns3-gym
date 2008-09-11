@@ -47,6 +47,7 @@ us a note on ns-developers mailing list.  </p>
 <h1>changes from ns-3.1 to ns-3.2</h1>
 
 <h2>new API:</h2>
+<ul>
 
 <li>26-08-2008; changeset 
 <a href="http://code.nsnam.org/ns-3-dev/rev/5aa65b1ea001">5aa65b1ea001</a></li>
@@ -57,7 +58,6 @@ net devices running in threads other than the main simulation thread to schedule
 events.  Allows for pacing the simulation clock at 1x real-time.
 </li>
 </ul>
-</li>
 
 
 <li>26-08-2008; changeset 
@@ -68,11 +68,11 @@ Add threading and synchronization primitives.  Enabling technology for
 multithreaded simulator implementation.
 </li>
 </ul>
-</li>
 
+</ul>
 <h2>new API in existing classes:</h2>
-
 <ul>
+
 <li>01-08-2008; changeset 
 <a href="http://code.nsnam.org/ns-3-dev/rev/a18520551cdf">a18520551cdf</a></li>
 <ul>
@@ -81,9 +81,10 @@ and a Drop trace.  It also has some new public methods but these are
 mostly for internal use.
 </ul>
 </li>
-</ul>
 
+</ul>
 <h2>changes to existing API:</h2>
+<ul>
 
 <li>05-09-2008; changeset 
 <a href="http://code.nsnam.org/ns-3-dev/rev/aa1fb0f43571">aa1fb0f43571</a></li>
@@ -97,9 +98,7 @@ of interest.  See the Doxygen of CsmaNetDevice::SetFrameSize and
 PointToPointNetDevice::SetFrameSize for a detailed description.
 </li>
 </ul>
-</li>
 
-<ul>
 <li>25-08-2008; changeset 
 <a href="http://code.nsnam.org/ns-3-dev/rev/e5ab96db540e">e5ab96db540e</a></li>
 <ul>
@@ -124,7 +123,6 @@ Users who implement a subclass of the NetDevice base class need to change the si
 of their SetReceiveCallback and SetPromiscReceiveCallback methods.
 </li>
 </ul>
-</li>
 
 
 <li>04-08-2008; changeset 
@@ -144,8 +142,6 @@ Doxygen of CsmaNetDevice::SetMaxPayloadLength for a detailed description of the
 issues and solution.
 </li>
 </ul>
-</li>
-
 
 <li>21-07-2008; changeset 
 <a href="
@@ -174,7 +170,6 @@ To implement this properly, consult the CsmaNetDevice for examples of
 when the m_promiscRxCallback is called.
 </li>
 </ul>
-</li>
 
 
 <li>03-07-2008; changeset 
@@ -205,8 +200,6 @@ ApplicationContainer Install (NodeContainer c);
 </pre>
 </li>
 </ul>
-</li>
-
 
 <li>03-07-2008; changeset 
 <a href="
@@ -227,14 +220,15 @@ Rename all instances method names using "Set..Parameter" to "Set..Attribute"
 </li>
 </ul>
 </li>
-</ul>
 
+</ul>
 <h2>changed behavior:</h2>
 <ul>
 
 <li>07-09-2008; changeset 
 <a href="http://code.nsnam.org/ns-3-dev/rev/5d836ab1523b">5d836ab1523b</a></li>
 <ul>
+
 <li>
 Implement a finite receive buffer for TCP<br>
 The native TCP model in TcpSocketImpl did not support a finite receive buffer.
@@ -264,13 +258,11 @@ When the receiver window clears up due to an application read, the TCP
 will finally ACK the probe byte, and update its advertised window appropriately.
 </li>
 </ul>
- 
 See 
 <a href="http://www.nsnam.org/bugzilla/show_bug.cgi?id=239"> bug 239 </a> for
 more.
 </li>
 </ul>
-</li>
 
 <li>07-09-2008; changeset 
 <a href="http://code.nsnam.org/ns-3-dev/rev/7afa66c2b291">7afa66c2b291</a></li>
@@ -286,7 +278,6 @@ addressed by this changeset.  See
 more.
 </li>
 </ul>
-</li>
 
 <li> 28-07-2008; changeset 
 <a href="http://code.nsnam.org/ns-3-dev/rev/6f68f1044df1">6f68f1044df1</a>
@@ -298,8 +289,8 @@ hold time == refresh time was never intentional, as it leads to
 instability in neighbor detection.
 </ul>
 </li>
-</ul>
 
+</ul>
 
 </body>
 </html>
