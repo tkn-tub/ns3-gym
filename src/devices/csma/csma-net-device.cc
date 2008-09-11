@@ -128,58 +128,64 @@ CsmaNetDevice::DoDispose ()
   NetDevice::DoDispose ();
 }
 
-  uint16_t
-CsmaNetDevice::MtuFromFrameSize (uint16_t frameSize)
+  uint32_t
+CsmaNetDevice::MtuFromFrameSize (uint32_t frameSize)
 {
   NS_LOG_FUNCTION (frameSize);
+
+  NS_ASSERT_MSG (frameSize <= std::numeric_limits<uint16_t>::max (), 
+                 "CsmaNetDevice::MtuFromFrameSize(): Frame size should be derived from 16-bit quantity: " << frameSize);
+
+  uint32_t newSize;
 
   switch (m_encapMode) 
     {
     case DIX:
-      return frameSize - ETHERNET_OVERHEAD;
+      newSize = frameSize - ETHERNET_OVERHEAD;
+      break;
     case LLC: 
       {
         LlcSnapHeader llc;
 
         NS_ASSERT_MSG ((uint32_t)(frameSize - ETHERNET_OVERHEAD) >= llc.GetSerializedSize (), 
                        "CsmaNetDevice::MtuFromFrameSize(): Given frame size too small to support LLC mode");
-        return frameSize - ETHERNET_OVERHEAD - llc.GetSerializedSize ();
+        newSize = frameSize - ETHERNET_OVERHEAD - llc.GetSerializedSize ();
       }
+      break;
     case ILLEGAL:
     default:
       NS_FATAL_ERROR ("CsmaNetDevice::MtuFromFrameSize(): Unknown packet encapsulation mode");
       return 0;
     }
-  //
-  // Prevent compiler from complaining
-  //
-  return 0;
+
+  return newSize;
 }
   
-  uint16_t
-CsmaNetDevice::FrameSizeFromMtu (uint16_t mtu)
+  uint32_t
+CsmaNetDevice::FrameSizeFromMtu (uint32_t mtu)
 {
   NS_LOG_FUNCTION (mtu);
+
+  uint32_t newSize;
 
   switch (m_encapMode) 
     {
     case DIX:
-      return mtu + ETHERNET_OVERHEAD;
+      newSize = mtu + ETHERNET_OVERHEAD;
+      break;
     case LLC: 
       {
         LlcSnapHeader llc;
-        return mtu + ETHERNET_OVERHEAD + llc.GetSerializedSize ();
+        newSize = mtu + ETHERNET_OVERHEAD + llc.GetSerializedSize ();
       }
+      break;
     case ILLEGAL:
     default:
       NS_FATAL_ERROR ("CsmaNetDevice::FrameSizeFromMtu(): Unknown packet encapsulation mode");
       return 0;
     }
 
-  //
-  // Prevent compiler from complaining
-  //
-  return 0;
+  return newSize;
 }
 
   void 
@@ -207,7 +213,15 @@ CsmaNetDevice::SetMtu (uint16_t mtu)
 {
   NS_LOG_FUNCTION (mtu);
 
-  m_frameSize = FrameSizeFromMtu (mtu);
+  uint32_t newFrameSize = FrameSizeFromMtu (mtu);
+
+  if (newFrameSize > std::numeric_limits<uint16_t>::max ())
+    {
+      NS_LOG_WARN ("CsmaNetDevice::SetMtu(): Frame size overflow, MTU not set.");
+      return false;
+    }
+
+  m_frameSize = newFrameSize;
   m_mtu = mtu;
 
   NS_LOG_LOGIC ("m_encapMode = " << m_encapMode);

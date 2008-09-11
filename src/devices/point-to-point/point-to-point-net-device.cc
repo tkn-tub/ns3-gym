@@ -504,20 +504,21 @@ PointToPointNetDevice::GetRemote (void) const
   return Address ();
 }
 
-  uint16_t
-PointToPointNetDevice::MtuFromFrameSize (uint16_t frameSize)
+  uint32_t
+PointToPointNetDevice::MtuFromFrameSize (uint32_t frameSize)
 {
   NS_LOG_FUNCTION (frameSize);
-
+  NS_ASSERT_MSG (frameSize <= std::numeric_limits<uint16_t>::max (), 
+                 "PointToPointNetDevice::MtuFromFrameSize(): Frame size should be derived from 16-bit quantity: " << 
+                 frameSize);
   PppHeader ppp;
-
   NS_ASSERT_MSG ((uint32_t)frameSize >= ppp.GetSerializedSize (), 
                  "PointToPointNetDevice::MtuFromFrameSize(): Given frame size too small to support PPP");
   return frameSize - ppp.GetSerializedSize ();
 }
   
-  uint16_t
-PointToPointNetDevice::FrameSizeFromMtu (uint16_t mtu)
+  uint32_t
+PointToPointNetDevice::FrameSizeFromMtu (uint32_t mtu)
 {
   NS_LOG_FUNCTION (mtu);
 
@@ -548,7 +549,15 @@ PointToPointNetDevice::SetMtu (uint16_t mtu)
 {
   NS_LOG_FUNCTION (mtu);
 
-  m_frameSize = FrameSizeFromMtu (mtu);
+  uint32_t newFrameSize = FrameSizeFromMtu (mtu);
+
+  if (newFrameSize > std::numeric_limits<uint16_t>::max ())
+    {
+      NS_LOG_WARN ("PointToPointNetDevice::SetMtu(): Frame size overflow, MTU not set.");
+      return false;
+    }
+
+  m_frameSize = newFrameSize;
   m_mtu = mtu;
 
   NS_LOG_LOGIC ("m_frameSize = " << m_frameSize);
