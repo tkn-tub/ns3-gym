@@ -196,7 +196,9 @@ void RandomVariableBase::GetRandomSeeds(uint32_t seeds[6])
         {
           for (int i = 0; i < 6; ++i)
             {
-              read(RandomVariableBase::devRandom, &seeds[i], sizeof(seeds[i]));
+              ssize_t bytes_read = read (RandomVariableBase::devRandom,
+                                         &seeds[i], sizeof (seeds[i]));
+              NS_ASSERT (bytes_read == sizeof (seeds[i]));
             }
           if (RngStream::CheckSeed(seeds)) break; // Got a valid one
         }
