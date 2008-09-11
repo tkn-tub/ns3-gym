@@ -815,8 +815,8 @@ def dev_null():
 class Regression(object):
     def __init__(self, testdir):
         self.testdir = testdir
-        env = Params.g_build.env_of_name('default')
-        self.diff = env['DIFF']
+        self.env = Params.g_build.env_of_name('default')
+        self.diff = self.env['DIFF']
 
     def run_test(self, verbose, generate, refDirName, testName, *arguments):
         refTestDirName = os.path.join(refDirName, (testName + ".ref"))
@@ -934,7 +934,7 @@ def run_regression():
     print "Done."
 
     if not os.path.exists(dir_name):
-        print "Reference traces directory does not exist"
+        print "Reference traces directory (%s) does not exist" % dir_name
         return 3
     
     bad = []
