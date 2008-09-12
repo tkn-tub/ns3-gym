@@ -3,6 +3,9 @@
 
 namespace ns3 {
 
+/**
+ * \brief A class that provides a GTK-based front end to ns3::ConfigStore 
+ */
 class GtkConfigStore
 {
 public:
