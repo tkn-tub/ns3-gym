@@ -461,13 +461,13 @@ private:
    * Calculate the value for the MTU that would result from 
    * setting the frame size to the given value.
    */
-  uint16_t MtuFromFrameSize (uint16_t frameSize);
+  uint32_t MtuFromFrameSize (uint32_t frameSize);
 
   /**
    * Calculate the value for the frame size that would be required
    * to be able to set the MTU to the given value.
    */
-  uint16_t FrameSizeFromMtu (uint16_t mtu);
+  uint32_t FrameSizeFromMtu (uint32_t mtu);
 
   /**
    * Start Sending a Packet Down the Wire.

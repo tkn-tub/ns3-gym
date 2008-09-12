@@ -51,8 +51,8 @@ PrintOne (double minTxpower, double maxTxpower, double stepTxpower, double min, 
 int main (int argc, char *argv[])
 {
 
-  Config::SetGlobal ("LogDistancePropagationLossModel::ReferenceDistance", StringValue ("1.0"));
-  Config::SetGlobal ("LogDistancePropagationLossModel::Exponent", StringValue ("4"));
+  Config::SetDefault ("ns3::LogDistancePropagationLossModel::ReferenceDistance", StringValue ("1.0"));
+  Config::SetDefault ("ns3::LogDistancePropagationLossModel::Exponent", StringValue ("4"));
 
   PrintOne (-10, 20, 5, 0, 10000, 2);
 

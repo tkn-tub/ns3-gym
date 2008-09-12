@@ -272,8 +272,11 @@ def configure(conf):
         conf.env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
                                            Params.g_options.enable_modules.split(',')]
 
-    ## we cannot run regression tests without diff
+    # we cannot run regression tests without diff
     conf.find_program('diff', var='DIFF')
+
+    # we cannot pull regression traces without mercurial
+    conf.find_program('hg', var='MERCURIAL')
 
     # Write a summary of optional features status
     print "---- Summary of optional NS-3 features:"
@@ -815,8 +818,7 @@ def dev_null():
 class Regression(object):
     def __init__(self, testdir):
         self.testdir = testdir
-        env = Params.g_build.env_of_name('default')
-        self.diff = env['DIFF']
+        self.env = Params.g_build.env_of_name('default')
 
     def run_test(self, verbose, generate, refDirName, testName, *arguments):
         refTestDirName = os.path.join(refDirName, (testName + ".ref"))
@@ -853,7 +855,7 @@ class Regression(object):
 
             if verbose:
                 #diffCmd = "diff traces " + refTestDirName + " | head"
-                diffCmd = subprocess.Popen([self.diff, "traces", refTestDirName],
+                diffCmd = subprocess.Popen([self.env['DIFF'], "traces", refTestDirName],
                                            stdout=dev_null())
                 headCmd = subprocess.Popen("head", stdin=diffCmd.stdout)
                 rc2 = headCmd.wait()
@@ -861,7 +863,7 @@ class Regression(object):
                 rc1 = diffCmd.wait()
                 rc = rc1 or rc2
             else:
-                rc = subprocess.Popen([self.diff, "traces", refTestDirName], stdout=dev_null()).wait()
+                rc = subprocess.Popen([self.env['DIFF'], "traces", refTestDirName], stdout=dev_null()).wait()
             if rc:
                 print "----------"
                 print "Traces differ in test: test-" + testName
@@ -907,8 +909,8 @@ def run_regression():
 
     print "========== Running Regression Tests =========="
     dir_name = APPNAME + '-' + VERSION + REGRESSION_SUFFIX
-
-    if subprocess.Popen(["hg", "version"], stdout=dev_null(), stderr=dev_null()).wait() == 0:
+    env = Params.g_build.env_of_name('default')
+    if env['MERCURIAL']:
         print "Synchronizing reference traces using Mercurial."
         if not os.path.exists(dir_name):
             print "Cloning " + REGRESSION_TRACES_REPO + dir_name + " from repo."
@@ -934,7 +936,7 @@ def run_regression():
     print "Done."
 
     if not os.path.exists(dir_name):
-        print "Reference traces directory does not exist"
+        print "Reference traces directory (%s) does not exist" % dir_name
         return 3
     
     bad = []
