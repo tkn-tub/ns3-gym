@@ -22,8 +22,6 @@
 // Georgia Tech Network Simulator - Manage 32 bit unsigned sequence numbers
 // George F. Riley.  Georgia Tech, Spring 2002
 
-// Class to manage arithmetic operations on sequence numbers (mod 2^32)
-
 #ifndef __seq_h__
 #define __seq_h__
 
@@ -31,6 +29,11 @@
 
 #define MAX_SEQ ((uint32_t)0xffffffff)
 
+/**
+ * \ingroup tcp
+ *
+ * \brief Class to manage arithmetic operations on sequence numbers (mod 2^32)
+ */
 class SequenceNumber {
 public:
   SequenceNumber () : seq(0) { }

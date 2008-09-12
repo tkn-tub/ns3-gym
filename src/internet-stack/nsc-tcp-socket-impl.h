@@ -40,6 +40,16 @@ class Packet;
 class NscTcpL4Protocol;
 class TcpHeader;
 
+/**
+ * \ingroup socket
+ * \ingroup nsctcp
+ *
+ * \brief Socket logic for the NSC TCP sockets.  
+ * 
+ * Most of the TCP internal
+ * logic is handled by the NSC tcp library itself; this class maps ns3::Socket
+ * calls to the NSC TCP library.
+ */
 class NscTcpSocketImpl : public TcpSocket
 {
 public:

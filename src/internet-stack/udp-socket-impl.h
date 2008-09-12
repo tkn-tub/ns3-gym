@@ -37,6 +37,7 @@ class Packet;
 class UdpL4Protocol;
 
 /**
+ * \ingroup udp
  * \brief A sockets interface to UDP
  * 
  * This class subclasses ns3::UdpSocket, and provides a socket interface

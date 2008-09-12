@@ -44,6 +44,7 @@ class TcpHeader;
 
 /**
  * \ingroup socket
+ * \ingroup tcp
  *
  * \brief An implementation of a stream socket using TCP.
  *

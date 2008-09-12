@@ -40,6 +40,7 @@ class NetDevice;
 class Ipv4Interface;
 
 /**
+ * \ingroup arp
  * \brief An ARP cache
  *
  * A cached lookup table for translating layer 3 addresses to layer 2.

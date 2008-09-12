@@ -38,7 +38,9 @@ class Node;
 class Socket;
 class TcpHeader;
 /**
- * \brief Nsc wrapper glue.
+ * \ingroup nsctcp
+ * 
+ * \brief Nsc wrapper glue, to interface with the Ipv4 protocol underneath.
  */
 class NscTcpL4Protocol : public Ipv4L4Protocol, ISendCallback, IInterruptCallback {
 public:

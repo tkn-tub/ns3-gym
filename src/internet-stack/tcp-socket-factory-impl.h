@@ -28,12 +28,8 @@ namespace ns3 {
 class TcpL4Protocol;
 
 /**
- * \ingroup internetNode
- * \defgroup Tcp Tcp
- */
-/**
- * \ingroup Tcp
- * \section Tcp Overview
+ * \ingroup internetStack
+ * \defgroup tcp Tcp
  *
  * The TCP code in ns3's internet stack is ported from the  
  * <a href="http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/">
@@ -42,6 +38,13 @@ class TcpL4Protocol;
  * Most of the logic is in class ns3::TcpSocketImpl.
  * This class serves to create sockets of the TcpSocketImpl
  * type.  That is, it creates sockets which use the GTNetS Tahoe code.
+ */
+
+/**
+ * \ingroup tcp
+ *
+ * \brief socket factory implementation for native ns-3 TCP
+ *
  */
 class TcpSocketFactoryImpl : public TcpSocketFactory
 {

@@ -33,6 +33,11 @@ namespace ns3
 {
 class Packet;
 
+/**
+ * \ingroup tcp
+ *
+ * \brief class for managing I/O between applications and TCP
+ */
 class PendingData {
 public:
   PendingData ();

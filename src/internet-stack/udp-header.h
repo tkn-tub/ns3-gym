@@ -28,6 +28,7 @@
 
 namespace ns3 {
 /**
+ * \ingroup udp
  * \brief Packet header for UDP packets
  *
  * This class has fields corresponding to those in a network UDP header

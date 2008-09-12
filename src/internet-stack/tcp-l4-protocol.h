@@ -41,6 +41,7 @@ class Socket;
 class TcpHeader;
 
 /**
+ * \ingroup tcp
  * \brief A layer between the sockets interface and IP
  * 
  * This class allocates "endpoint" objects (ns3::Ipv4EndPoint) for TCP,
