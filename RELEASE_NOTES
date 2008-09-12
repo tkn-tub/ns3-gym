@@ -78,6 +78,8 @@ ns-3 is known to fail on the following platforms:
   - gcc 3.3 and earlier
   - optimized builds on gcc 3.4.4 and 3.4.5
   - optimized builds on linux x86 gcc 4.0.x
+  - optimized builds on Ubuntu 8.10 alpha 5 x86 gcc4.3.2
+  - MinGW
 
 The IPv4 API defined in src/node/ipv4.h is expected to undergo major changes 
 in preparation of the merge of the IPv6 API and implementation.
