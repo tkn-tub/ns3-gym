@@ -842,7 +842,7 @@ class Regression(object):
             return 0
         else:
             if not os.path.exists(refTestDirName):
-                print "Cannot locate reference traces"
+                print "Cannot locate reference traces in " + refTestDirName
                 return 1
 
             shutil.rmtree("traces");
@@ -929,11 +929,12 @@ def run_regression():
             if result:
                 Params.fatal("Synchronizing reference traces using Mercurial failed.")
     else:
-        traceball = dir_name + TRACEBALL_SUFFIX
-        print "Retrieving " + traceball + " from web."
-        urllib.urlretrieve(REGRESSION_TRACES_URL + traceball, traceball)
-        os.system("tar -xjf %s -C .." % (traceball))
-    print "Done."
+        if not os.path.exists(dir_name):
+            traceball = dir_name + TRACEBALL_SUFFIX
+            print "Retrieving " + traceball + " from web."
+            urllib.urlretrieve(REGRESSION_TRACES_URL + traceball, traceball)
+            os.system("tar -xjf %s -C .." % (traceball))
+            print "Done."
 
     if not os.path.exists(dir_name):
         print "Reference traces directory (%s) does not exist" % dir_name
