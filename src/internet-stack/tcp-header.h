@@ -31,6 +31,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup tcp
  * \brief Header for the Transmission Control Protocol
  *
  * This class has fields corresponding to those in a network TCP header

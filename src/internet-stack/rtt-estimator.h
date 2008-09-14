@@ -21,7 +21,6 @@
 // Georgia Tech Network Simulator - Round Trip Time Estimation Class
 // George F. Riley.  Georgia Tech, Spring 2002
 
-// Implements several variations of round trip time estimators
 
 #ifndef __rtt_estimator_h__
 #define __rtt_estimator_h__
@@ -33,6 +32,11 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup tcp
+ *
+ * \brief Implements several variations of round trip time estimators
+ */
 class RttHistory {
 public:
   RttHistory (SequenceNumber s, uint32_t c, Time t);

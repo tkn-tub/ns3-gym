@@ -3,27 +3,30 @@
 
 This file contains ns-3 release notes (most recent releases first).
 
+All of the ns-3 documentation is accessible from the ns-3 website: 
+http://www.nsnam.org
+including tutorials:
+http://www.nsnam.org/tutorials.html
+
 Release 3.2 (pending)
 =====================
 
 Availability
 ------------
-
 This release is immediately available from:
 http://www.nsnam.org/releases/ns-3.2.tar.bz2
 
-What is ns-3 ?
---------------
+Supported platforms
+-------------------
+ns-3.2 has been tested on the following platforms:
+  - linux x86 gcc 4.2, 4.1, and, 3.4.6.
+  - linux x86_64 gcc 4.3.2, 4.2.3, 4.2.1, 4.1.3, 3.4.6
+  - MacOS X ppc and x86
+  - cygwin gcc 3.4.4 (debug only)
 
-ns-3 is a new discrete-event network simulator designed for supporting network
-research and education. ns-3 features a solid, well documented C++ core and 
-models for TCP/IP (IPv4), several link types including WiFi, and mobility 
-models.
-
-ns-3 is an open source project released under the GNU GPLv2 license which 
-allows anyone to use ns-3 without having to pay any license fee or royalties. 
-ns-3 is actively seeking new contributors to extend the range of supported 
-models and/or to maintain existing models.
+Not all ns-3 options are available on all platforms; consult the
+wiki for more information:
+http://www.nsnam.org/wiki/index.php/Installation
 
 New user-visible features
 -------------------------
@@ -53,28 +56,13 @@ New user-visible features
     More information on the wiki:
     http://www.nsnam.org/wiki/index.php/Statistical_Framework_for_Network_Simulation
 
-Where to get more information about ns-3
-----------------------------------------
-
-All the ns-3 documentation, is accessible from the ns-3 website: 
-http://www.nsnam.org
-
-Including, tutorials:
-http://www.nsnam.org/tutorials.html
-
-Supported platforms
--------------------
-
-ns-3 is regularly tested on the following platforms:
-  - linux x86 gcc 4.2, 4.1, and, 3.4.6.
-  - linux x86_64 gcc 4.1.3, 4.2.1, 3.4.6
-  - MacOS X ppc and x86
-  - cygwin gcc 3.4.4 (debug only)
+API changes from ns-3.1
+-----------------------
+API changes for this release are documented in the file CHANGES.html
 
 Known issues
 ------------
-
-ns-3 is known to fail on the following platforms:
+ns-3 build is known to fail on the following platforms:
   - gcc 3.3 and earlier
   - optimized builds on gcc 3.4.4 and 3.4.5
   - optimized builds on linux x86 gcc 4.0.x
@@ -84,11 +72,8 @@ ns-3 is known to fail on the following platforms:
 The IPv4 API defined in src/node/ipv4.h is expected to undergo major changes 
 in preparation of the merge of the IPv6 API and implementation.
 
-API changes for this release are documented in CHANGES.html
-
 Future releases
 ---------------
-
 Our next release, which is expected to happen in 2 to 4 months from now, will
 feature the merging of some of our projects currently in development: IPv6, 
 emulation, and synchronous posix sockets.

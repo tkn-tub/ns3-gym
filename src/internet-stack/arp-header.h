@@ -28,6 +28,7 @@
 
 namespace ns3 {
 /**
+ * \ingroup arp
  * \brief The packet header for an ARP packet
  */
 class ArpHeader : public Header 

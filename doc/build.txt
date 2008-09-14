@@ -1,6 +1,10 @@
 The Waf build system is used to build ns-3.  Waf is a Python-based
 build system (http://www.freehackers.org/~tnagy/waf.html)
 
+Note:  We've added a wiki page with more complete build instructions
+than the quick ones you find below:
+http://www.nsnam.org/wiki/index.php/Installation
+
 === Installing Waf ===
 
 The top-level ns-3 directory should contain a current waf script.
@@ -62,7 +66,6 @@ with --enable-gcov)
     The command 'waf dist' can be used to create a distribution tarball.
     It includes all files in the source directory, except some particular
     extensions that are blacklisted, such as back files (ending in ~).
-
 
 === Extending ns-3 ===
 

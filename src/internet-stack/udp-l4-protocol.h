@@ -34,6 +34,7 @@ namespace ns3 {
 class Node;
 class Socket;
 /**
+ * \ingroup udp
  * \brief Implementation of the UDP protocol
  */
 class UdpL4Protocol : public Ipv4L4Protocol {

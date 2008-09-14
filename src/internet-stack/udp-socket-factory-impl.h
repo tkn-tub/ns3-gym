@@ -28,6 +28,23 @@ namespace ns3 {
 class UdpL4Protocol;
 
 /**
+ * \ingroup internetStack
+ * \defgroup udp Udp
+ *
+ * This  is  an  implementation of the User Datagram Protocol described in
+ * RFC 768.  It implements a connectionless,  unreliable  datagram  packet
+ * service.   Packets  may  be reordered or duplicated before they arrive.
+ * UDP generates and checks checksums to catch transmission errors.
+ *
+ * The following options are not presently part of this implementation:
+ * UDP_CORK, MSG_DONTROUTE, path MTU discovery control (e.g. 
+ * IP_MTU_DISCOVER).  MTU handling is also weak in ns-3 for the moment;
+ * it is best to send datagrams that do not exceed 1500 byte MTU (e.g.
+ * 1472 byte UDP datagrams)
+ */
+
+/**
+ * \ingroup udp
  * \brief Object to create UDP socket instances 
  * \internal
  *

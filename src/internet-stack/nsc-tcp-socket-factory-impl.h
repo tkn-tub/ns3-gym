@@ -23,6 +23,24 @@ namespace ns3 {
 
 class NscTcpL4Protocol;
 
+/**
+ * \ingroup internetStack
+ * \defgroup nsctcp NscTcp
+ *
+ * An alternate implementation of TCP for ns-3 is provided by the
+ * Network Simulation Cradle (NSC) project. NSC is a separately linked
+ * library that provides ported TCP stacks from popular operating systems
+ * such as Linux and FreeBSD.  Glue code such as the ns-3 NSC code
+ * allows users to delegate Internet stack processing to the logic
+ * from these operating systems.  This allows a user to reproduce
+ * with high fidelity the behavior of a real TCP stack.
+ */
+
+/**
+ * \ingroup nsctcp
+ *
+ * \brief socket factory implementation for creating instances of NSC TCP
+ */
 class NscTcpSocketFactoryImpl : public TcpSocketFactory
 {
 public:

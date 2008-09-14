@@ -36,6 +36,13 @@ class Node;
 class Packet;
 
 /**
+ * \ingroup internetStack
+ * \defgroup arp Arp
+ *
+ * This is an overview of Arp capabilities (write me).
+ */
+/**
+ * \ingroup arp
  * \brief An implementation of the ARP protocol
  */
 class ArpL3Protocol : public Object

@@ -30,6 +30,7 @@ class Node;
 class ArpCache;
 
 /**
+ * \ingroup arp
  * \brief an Ipv4 Interface which uses ARP
  *
  * If you need to use ARP on top of a specific NetDevice, you

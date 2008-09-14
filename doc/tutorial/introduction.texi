@@ -63,18 +63,36 @@ open  environment for researchers to contribute and share their software.
 @section For ns-2 Users
 
 For those familiar with ns-2, the most visible outward change when moving to 
-@command{ns-3} is the choice of scripting language.  Ns-2 is typically 
-scripted in Tcl and results of simulations can be visualized using the 
-Network Animator @command{nam}.  In @command{ns-3} there is currently no
-visualization module, and Python bindings have been developed (Tcl bindings
-have been prototyped using @uref{http://www.swig.org,,SWIG}, but are not 
-currently supported).  In this tutorial, we will concentrate on scripting 
-directly in C++ and interpreting results via trace files.  
+ns-3 is the choice of scripting language.  Ns-2 is 
+scripted in OTcl and results of simulations can be visualized using the 
+Network Animator @command{nam}.  It is not possible to run a simulation
+in ns-2 purely from C++ (i.e., as a main() program without any OTcl).
+Moreover, some components of ns-2 are written in C++ and others in OTcl.
+In ns-3, the simulator is written entirely in C++, with optional
+Python bindings.  Simulation scripts can therefore be written in C++
+or in Python.  The results of some simulations can be visualized by
+@command{nam}, but new animators are under development.  Since ns-3
+generates pcap packet trace files, other utilities can be used to
+analyze traces as well.
+In this tutorial, we will first concentrate on scripting 
+directly in C++ and interpreting results via ascii trace files.  
 
 But there are similarities as well (both, for example, are based on C++ 
-objects, and some code from ns-2 has already been ported to @command{ns-3}). 
-We will try to highlight differences between ns-2 and @command{ns-3}
+objects, and some code from ns-2 has already been ported to ns-3).
+We will try to highlight differences between ns-2 and ns-3
 as we proceed in this tutorial.
+
+A question that we often hear is "Should I still use ns-2 or move to
+ns-3?"  The answer is that it depends.  ns-3 does not have all of the
+models that ns-2 currently has, but on the other hand, ns-3 does have
+new capabilities (such as handling multiple interfaces on nodes 
+correctly, use of IP addressing and more alignment with Internet
+protocols and designs, more detailed 802.11 models, etc.).  ns-2
+models can usually be ported to ns-3 (a porting guide is under
+development).  There is active development on multiple fronts for ns-3.
+The ns-3 developers believe (and certain early users have proven) that
+ns-3 is ready for active use, and should be an attractive alternative
+for users looking to start new simulation projects.  
 
 @node Contributing
 @section Contributing
@@ -97,8 +115,12 @@ page;
 started with the simulator (please contact @uref{http://www.nsnam.org/people.html,,one of us}).
 @end itemize  
 
-If you are an ns-3 user, please consider providing your feedback, bug fixes, or
-code to the project.  
+We realize that if you are reading this document, contributing back to 
+the project is probably not your foremost concern at this point, but
+we want you to be aware that contributing is in the spirit of the project and
+that even the act of dropping us a note about your early experience 
+with ns-3 (e.g. "this tutorial section was not clear..."), 
+reports of stale documentation, etc. are much appreciated. 
 
 @node Tutorial Organization
 @section Tutorial Organization
