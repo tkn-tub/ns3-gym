@@ -820,7 +820,26 @@ class Regression(object):
         self.testdir = testdir
         self.env = Params.g_build.env_of_name('default')
 
-    def run_test(self, verbose, generate, refDirName, testName, *arguments):
+    def run_test(self, verbose, generate, refDirName, testName, arguments=[], pyscript=None):
+        """
+        @param verbose: enable verbose execution
+
+        @param generate: generate new traces instead of comparing with the reference
+
+        @param refDirName: name of the base directory containing reference traces
+
+        @param testName: name of the test
+
+        @arguments: list of extra parameters to pass to the program to be tested
+
+        @pyscript: if not None, the test is written in Python and this
+        parameter contains the path to the python script, relative to
+        the project root dir
+
+        """
+        if not isinstance(arguments, list):
+            raise TypeError
+        
         refTestDirName = os.path.join(refDirName, (testName + ".ref"))
 
         if not os.path.exists(refDirName):
@@ -832,12 +851,20 @@ class Regression(object):
                 print "creating new " + refTestDirName
                 os.mkdir(refTestDirName)
 
-            Params.g_options.cwd_launch = refTestDirName
-            tmpl = "%s"
-            for arg in arguments:
-                tmpl = tmpl + " " + arg
-            run_program(testName, tmpl)
-
+            if pyscript is None:
+                Params.g_options.cwd_launch = refTestDirName
+                tmpl = "%s"
+                for arg in arguments:
+                    tmpl = tmpl + " " + arg
+                run_program(testName, tmpl)
+            else:
+                argv = [self.env['PYTHON'], os.path.join('..', '..', '..', *os.path.split(pyscript))] + arguments
+                before = os.getcwd()
+                os.chdir(refTestDirName)
+                try:
+                    _run_argv(argv)
+                finally:
+                    os.chdir(before)
             print "Remember to commit " + refTestDirName
             return 0
         else:
@@ -850,13 +877,23 @@ class Regression(object):
 
             #os.system("./waf --cwd regression/traces --run " +
             #  testName + " > /dev/null 2>&1")
-            Params.g_options.cwd_launch = "traces"
-            run_program(testName, command_template=get_command_template(*arguments))
+
+            if pyscript is None:
+                Params.g_options.cwd_launch = "traces"
+                run_program(testName, command_template=get_command_template(*arguments))
+            else:
+                argv = [self.env['PYTHON'], os.path.join('..', '..', *os.path.split(pyscript))] + arguments
+                before = os.getcwd()
+                os.chdir("traces")
+                try:
+                    _run_argv(argv)
+                finally:
+                    os.chdir(before)
 
             if verbose:
                 #diffCmd = "diff traces " + refTestDirName + " | head"
                 diffCmd = subprocess.Popen([self.env['DIFF'], "traces", refTestDirName],
-                                           stdout=dev_null())
+                                           stdout=subprocess.PIPE)
                 headCmd = subprocess.Popen("head", stdin=diffCmd.stdout)
                 rc2 = headCmd.wait()
                 diffCmd.stdout.close()
@@ -943,15 +980,18 @@ def run_regression():
     bad = []
 
     for test in tests:
-        result = _run_regression_test(test)
-        if result == 0:
-            if Params.g_options.regression_generate:
-                print "GENERATE " + test
+        try:
+            result = _run_regression_test(test)
+            if result == 0:
+                if Params.g_options.regression_generate:
+                    print "GENERATE " + test
+                else:
+                    print "PASS " + test
             else:
-                print "PASS " + test
-        else:
-            bad.append(test)
-            print "FAIL " + test
+                bad.append(test)
+                print "FAIL " + test
+        except NotImplementedError:
+                print "SKIP " + test            
 
     return len(bad) > 0
 
