@@ -47,14 +47,14 @@ def main(argv):
     #
     # Explicitly create the nodes required by the topology(shown above).
     #
-    print "Create nodes."
+    #print "Create nodes."
     terminals = ns3.NodeContainer()
     terminals.Create(4)
 
     csmaSwitch = ns3.NodeContainer()
     csmaSwitch.Create(1)
 
-    print "Build Topology"
+    #print "Build Topology"
     csma = ns3.CsmaHelper()
     csma.SetChannelAttribute("DataRate", ns3.DataRateValue(ns3.DataRate(5000000)))
     csma.SetChannelAttribute("Delay", ns3.TimeValue(ns3.MilliSeconds(2)))
@@ -83,7 +83,7 @@ def main(argv):
 
     # We've got the "hardware" in place.  Now we need to add IP addresses.
     #
-    print "Assign IP Addresses."
+    #print "Assign IP Addresses."
     ipv4 = ns3.Ipv4AddressHelper()
     ipv4.SetBase(ns3.Ipv4Address("10.1.1.0"), ns3.Ipv4Mask("255.255.255.0"))
     ipv4.Assign(terminalDevices)
@@ -91,7 +91,7 @@ def main(argv):
     #
     # Create an OnOff application to send UDP datagrams from node zero to node 1.
     #
-    print "Create Applications."
+    #print "Create Applications."
     port = 9   # Discard port(RFC 863)
 
     onoff = ns3.OnOffHelper("ns3::UdpSocketFactory", 
@@ -142,10 +142,10 @@ def main(argv):
     #
     # Now, do the actual simulation.
     #
-    print "Run Simulation."
+    #print "Run Simulation."
     ns3.Simulator.Run()
     ns3.Simulator.Destroy()
-    print "Done."
+    #print "Done."
 
 
 
