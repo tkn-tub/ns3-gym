@@ -9,4 +9,4 @@ import tracediff
 def run(verbose, generate, refDirName):
     """Execute a test."""
 
-    return tracediff.run_test(verbose, generate, refDirName, "wifi-wired-bridging", "--SendIp=0")
+    return tracediff.run_test(verbose, generate, refDirName, "wifi-wired-bridging", ["--SendIp=0"])
