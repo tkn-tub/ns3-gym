@@ -419,6 +419,7 @@ protected:
    * respect the packet type
    *
    * \param p Packet to which header should be added
+   * \param source MAC source address from which packet should be sent
    * \param dest MAC destination address to which packet should be sent
    * \param protocolNumber In some protocols, identifies the type of
    * payload contained in this packet.

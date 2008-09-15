@@ -135,12 +135,23 @@ private:
   /**
    * \param packet the packet to send.
    * \param to the address to which the packet should be sent.
+   * \param from the address from which the packet should be sent.
+   *
+   * The packet should be enqueued in a tx queue, and should be
+   * dequeued as soon as the DCF function determines that
+   * access it granted to this MAC.  The extra parameter "from" allows
+   * this device to operate in a bridged mode, forwarding received
+   * frames without altering the source addresss.
+   */
+  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from) = 0;
+  /**
+   * \param packet the packet to send.
+   * \param to the address to which the packet should be sent.
    *
    * The packet should be enqueued in a tx queue, and should be
    * dequeued as soon as the DCF function determines that
    * access it granted to this MAC.
    */
-  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from) = 0;
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to) = 0;
   virtual bool SupportsSendFrom (void) const = 0;
   /**

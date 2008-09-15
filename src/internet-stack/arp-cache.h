@@ -156,7 +156,7 @@ public:
      */
     Ipv4Address GetIpv4Address (void) const;
     /**
-     * \param The Ipv4Address for this entry
+     * \param destination The Ipv4Address for this entry
      */
     void SetIpv4Address (Ipv4Address destination);
     /**

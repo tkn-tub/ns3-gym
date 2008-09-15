@@ -66,11 +66,11 @@ namespace ns3 {
 class Address 
 {
 public:
+  /**
+   * The maximum size of a byte buffer which
+   * can be stored in an Address instance.
+   */
   enum MaxSize_e {
-    /**
-     * The maximum size of a byte buffer which
-     * can be stored in an Address instance.
-     */
     MAX_SIZE = 30
   };
 

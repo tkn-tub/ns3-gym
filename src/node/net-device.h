@@ -312,7 +312,7 @@ public:
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb) = 0;
 
   /**
-   * \return true if this interface supports a promiscuous mode, false otherwise.
+   * \return true if this interface supports a bridging mode, false otherwise.
    */
   virtual bool SupportsSendFrom (void) const = 0;
 
