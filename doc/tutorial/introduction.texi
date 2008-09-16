@@ -232,7 +232,10 @@ found at @uref{http://freehackers.org/~tnagy/waf.html}.
 @section Development Environment
 
 @cindex C++
-As mentioned above, scripting in ns-3 is done in C++.  A working 
+@cindex Python
+As mentioned above, scripting in ns-3 is done in C++ or Python.
+As of ns-3.2, most of the ns-3 API is available in Python, but the models
+are written in C++ in either case.  A working 
 knowledge of C++ and object-oriented concepts is assumed in this document.
 We will take some time to review some of the more advanced concepts or 
 possibly unfamiliar language features, idioms and design patterns as they 
@@ -243,23 +246,27 @@ in print.
 
 If you are new to C++, you may want to find a tutorial- or cookbook-based
 book or web site and work through at least the basic features of the language
-before proceeding.
+before proceeding.  For instance, 
+@uref{http://www.cplusplus.com/doc/tutorial/,,this tutorial}.
 
 @cindex toolchain
 @cindex GNU
-The @command{ns-3} system uses the GNU ``toolchain'' for development.  A 
+The @command{ns-3} system uses several components of the GNU ``toolchain'' 
+for development.  A 
 software toolchain is the set of programming tools available in the given 
 environment. For a quick review of what is included in the GNU toolchain see,
-@uref{http://en.wikipedia.org/wiki/GNU_toolchain}.
+@uref{http://en.wikipedia.org/wiki/GNU_toolchain}.  ns-3 uses gcc, 
+GNU binutils, and gdb.  However, we do not use the GNU build system,
+either make or autotools, using Waf instead.
 
 @cindex Linux
 Typically an @command{ns-3} author will work in Linux or a Linux-like
 environment.  For those running under Windows, there do exist environments 
 which simulate the Linux environment to various degrees.  The @command{ns-3} 
-project supports development in the Cygwin and the MinGW environments for 
-these users.  See @uref{http://www.cygwin.com/} and 
-@uref{http://www.mingw.org/} for details on downloading and using these
-systems.  Cygwin provides many of the popular Linux system commands.
+project supports development in the Cygwin environment for 
+these users.  See @uref{http://www.cygwin.com/} 
+for details on downloading (MinGW is presently not supported).
+Cygwin provides many of the popular Linux system commands.
 It can, however, sometimes be problematic due to the way it actually does its 
 emulation, and sometimes interactions with other Windows software can cause 
 problems.
@@ -276,7 +283,10 @@ crash creating a sh.exe.stackdump file when I try to compile my source code.''
 Believe it or not, the @code{Logitech Process Monitor} insinuates itself into
 every DLL in the system when it is running.  It can cause your Cygwin or
 MinGW DLLs to die in mysterious ways and often prevents debuggers from 
-running.  Beware of Logitech software.
+running.  Beware of Logitech software when using Cygwin.
+
+Another alternative to Cygwin is to install a virtual machine environment
+such as VMware server and install a Linux virtual machine.
 
 @node Socket Programming
 @section Socket Programming

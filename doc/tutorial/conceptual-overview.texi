@@ -731,10 +731,13 @@ and then build it using waf,
 @verbatim
   ~/repos/ns-3-dev > ./waf
   Entering directory `/home/craigdo/repos/ns-3-dev/build'
-  [432/477] cxx: scratch/first.cc -> build/debug/scratch/first_2.o
-  [475/477] cxx_link: build/debug/scratch/first_2.o ...
-  Compilation finished successfully
-~/repos/ns-3-dev >
+  [467/511] cxx: scratch/first.cc -> build/debug/scratch/first_1.o
+  [468/511] cxx: scratch/multiple-sources/simple-main.cc -> build/debug/scratch/multiple-sources/simple-main_2.o
+  [469/511] cxx: scratch/multiple-sources/simple-simulation.cc -> build/debug/scratch/multiple-sources/simple-simulation_2.o
+  [470/511] cxx: scratch/simple.cc -> build/debug/scratch/simple_3.o
+  [508/511] cxx_link: build/debug/scratch/first_1.o -> build/debug/scratch/first
+  Compilation finished successfully 
+  ~/repos/ns-3-dev >
 @end verbatim
 
 You can now run the example (note that if you build your program in the scratch

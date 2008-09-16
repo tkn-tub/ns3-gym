@@ -812,7 +812,7 @@ usual, you will find the documentation in the ``Classes'' tab of the Doxygen
 documentation.
 
 Now we will return to more familiar ground.  We next create a @code{WifiHelper}
-object and set two default atributes that it will use when creating the actual
+object and set two default attributes that it will use when creating the actual
 devices.
 
 @verbatim
@@ -1240,12 +1240,13 @@ they happen.
 @end verbatim
 
 If you are feeling brave, there is a list of all trace sources in the 
-@command{ns-3} Doxygen which you can find in the ``NS-3 Modules'' section.  
+@uref{http://www.nsnam.org/doxygen-release/index.html,,ns-3 Doxygen}
+which you can find in the ``Modules'' tab.
 Under the ``core'' section, you will find a link to ``The list of all trace 
 sources.''  You may find it interesting to try and hook some of these 
-traces yourself.  Additionally in the ``NS-3 Modules'' documentation, there is
+traces yourself.  Additionally in the ``Modules'' documentation, there is
 a link to ``The list of all attributes.''  You can set the default value of 
-any of these atributes via the command line as we have previously discussed.
+any of these attributes via the command line as we have previously discussed.
 
 We have just scratched the surface of @command{ns-3} in this tutorial, but we 
 hope we have covered enough to get you started doing useful work.
