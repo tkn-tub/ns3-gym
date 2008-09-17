@@ -33,6 +33,9 @@ public:
     }
     virtual void Notify ()
     {
+        PyGILState_STATE __py_gil_state;
+        __py_gil_state = (PyEval_ThreadsInitialized() ? PyGILState_Ensure() : (PyGILState_STATE) 0);
+        
         PyObject *retval = PyObject_CallObject(m_callback, m_args);
         if (retval) {
             if (retval != Py_None) {
@@ -43,6 +46,9 @@ public:
         } else {
              PyErr_Print();
         }
+
+        if (PyEval_ThreadsInitialized())
+            PyGILState_Release(__py_gil_state);
     }
 };
 
