@@ -820,7 +820,7 @@ class Regression(object):
         self.testdir = testdir
         self.env = Params.g_build.env_of_name('default')
 
-    def run_test(self, verbose, generate, refDirName, testName, arguments=[], pyscript=None):
+    def run_test(self, verbose, generate, refDirName, testName, arguments=[], pyscript=None, refTestName=None):
         """
         @param verbose: enable verbose execution
 
@@ -836,11 +836,17 @@ class Regression(object):
         parameter contains the path to the python script, relative to
         the project root dir
 
+        @param refTestName: if not None, this is the name of the directory under refDirName
+        that contains the reference traces. Otherwise "refDirname/testName + .ref" is used.
+
         """
         if not isinstance(arguments, list):
             raise TypeError
         
-        refTestDirName = os.path.join(refDirName, (testName + ".ref"))
+        if refTestName is None:
+            refTestDirName = os.path.join(refDirName, (testName + ".ref"))
+        else:
+            refTestDirName = os.path.join(refDirName, refTestName)
 
         if not os.path.exists(refDirName):
             print"No reference trace repository"

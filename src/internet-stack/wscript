@@ -54,6 +54,8 @@ def nsc_fetch():
         nsc_update()
 
 def configure(conf):
+    conf.env['ENABLE_NSC'] = False
+
     # checks for flex and bison, which is needed to build NSCs globaliser
     def check_nsc_buildutils():
         import flex
@@ -82,6 +84,7 @@ def configure(conf):
         e.define = 'HAVE_DL'
         e.uselib = 'DL'
         e.run()
+        conf.env['ENABLE_NSC'] = True
         ok = True
     conf.check_message('NSC supported architecture', arch, ok)
     conf.report_optional_feature("nsc", "Network Simulation Cradle", ok,
