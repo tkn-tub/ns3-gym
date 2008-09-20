@@ -84,6 +84,7 @@ see @uref{http://www.nsnam.org/docs/manual.pdf}.
 * Packets::
 * Sockets APIs::
 * Node and Internet Stack::
+* TCP::
 * Routing overview::
 * Troubleshooting
 @end menu
@@ -95,6 +96,7 @@ see @uref{http://www.nsnam.org/docs/manual.pdf}.
 @include sockets.texi
 @include node.texi
 @c @include output.texi
+@include tcp.texi
 @include routing.texi
 @c @include other.texi
 @include troubleshoot.texi
