@@ -81,6 +81,7 @@ see @uref{http://www.nsnam.org/docs/manual.pdf}.
 * Random variables::
 * Callbacks::
 * Attributes::
+* RealTime::
 * Packets::
 * Sockets APIs::
 * Node and Internet Stack::
@@ -92,6 +93,7 @@ see @uref{http://www.nsnam.org/docs/manual.pdf}.
 @include random.texi
 @include callbacks.texi
 @include attributes.texi
+@include realtime.texi
 @include packets.texi
 @include sockets.texi
 @include node.texi
