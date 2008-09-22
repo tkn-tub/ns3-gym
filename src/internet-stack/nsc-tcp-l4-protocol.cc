@@ -39,8 +39,8 @@
 #include <dlfcn.h>
 #include <iomanip>
 
-#include <netinet/ip.h>
-#include <netinet/tcp.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 NS_LOG_COMPONENT_DEFINE ("NscTcpL4Protocol");
 
@@ -313,27 +313,31 @@ void NscTcpL4Protocol::SoftInterrupt (void)
 void NscTcpL4Protocol::send_callback(const void* data, int datalen)
 {
   Ptr<Packet> p;
+  uint32_t ipv4Saddr, ipv4Daddr;
 
-  NS_ASSERT(datalen > (int)sizeof(struct iphdr));
+  NS_ASSERT(datalen > 20);
 
-  const uint8_t *rawdata = reinterpret_cast<const uint8_t *>(data);
-  rawdata += sizeof(struct iphdr);
-
-  const struct iphdr *ipHdr = reinterpret_cast<const struct iphdr *>(data);
 
   // create packet, without IP header. The TCP header is not touched.
   // Not using the IP header makes integration easier, but it destroys
   // eg. ECN.
-  p = Create<Packet> (rawdata, datalen - sizeof(struct iphdr));
+  const uint8_t *rawdata = reinterpret_cast<const uint8_t *>(data);
+  rawdata += 20; // skip IP header. IP options aren't supported at this time.
+  datalen -= 20;
+  p = Create<Packet> (rawdata, datalen);
 
-  Ipv4Address saddr(ntohl(ipHdr->saddr));
-  Ipv4Address daddr(ntohl(ipHdr->daddr));
+  // we need the real source/destination ipv4 addresses for Send ().
+  const uint32_t *ipheader = reinterpret_cast<const uint32_t *>(data);
+  ipv4Saddr = *(ipheader+3);
+  ipv4Daddr = *(ipheader+4);
+
+  Ipv4Address saddr(ntohl(ipv4Saddr));
+  Ipv4Address daddr(ntohl(ipv4Daddr));
 
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
-  if (ipv4 != 0)
-    {
-      ipv4->Send (p, saddr, daddr, PROT_NUMBER);
-    }
+  NS_ASSERT_MSG (ipv4, "nsc callback invoked, but node has no ipv4 object");
+
+  ipv4->Send (p, saddr, daddr, PROT_NUMBER);
   m_nscStack->if_send_finish(0);
 }
 
