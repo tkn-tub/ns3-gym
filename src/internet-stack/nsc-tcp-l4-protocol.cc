@@ -86,13 +86,12 @@ NscTcpL4Protocol::NscTcpL4Protocol ()
     m_softTimer (Timer::CANCEL_ON_DESTROY)
 {
   m_dlopenHandle = NULL;
-  NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC("Made a NscTcpL4Protocol "<<this);
 }
 
 NscTcpL4Protocol::~NscTcpL4Protocol ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   dlclose(m_dlopenHandle);
 }
 
@@ -151,7 +150,7 @@ NscTcpL4Protocol::GetVersion (void) const
 void
 NscTcpL4Protocol::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   if (m_endPoints != 0)
     {
       delete m_endPoints;
@@ -164,7 +163,7 @@ NscTcpL4Protocol::DoDispose (void)
 Ptr<Socket>
 NscTcpL4Protocol::CreateSocket (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   if (!m_nscInterfacesSetUp)
   {
     Ptr<Ipv4> ip = m_node->GetObject<Ipv4> ();
@@ -229,7 +228,7 @@ NscTcpL4Protocol::CreateSocket (void)
 Ipv4EndPoint *
 NscTcpL4Protocol::Allocate (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_endPoints->Allocate ();
 }
 
@@ -298,6 +297,7 @@ NscTcpL4Protocol::Receive (Ptr<Packet> packet,
 
   const uint8_t *data = const_cast<uint8_t *>(packet->PeekData());
 
+  NS_ASSERT_MSG (m_nscInterfacesSetUp, "got packet, but no listening sockets (and no interface)");
   // deliver complete packet to the NSC network stack
   m_nscStack->if_receive_packet(0, data, packetSize);
   wakeup ();
@@ -305,7 +305,6 @@ NscTcpL4Protocol::Receive (Ptr<Packet> packet,
 
 void NscTcpL4Protocol::SoftInterrupt (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   m_nscStack->timer_interrupt ();
   m_nscStack->increment_ticks ();
   m_softTimer.Schedule ();
