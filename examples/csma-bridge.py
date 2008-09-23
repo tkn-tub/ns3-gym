@@ -107,19 +107,20 @@ def main(argv):
     # Create an optional packet sink to receive these packets
     sink = ns3.PacketSinkHelper("ns3::UdpSocketFactory",
                                 ns3.Address(ns3.InetSocketAddress(ns3.Ipv4Address.GetAny(), port)))
-    sink.Install(ns3.NodeContainer(terminals.Get(1)))
+    app = sink.Install(ns3.NodeContainer(terminals.Get(1)))
+    app.Start (ns3.Seconds (0.0))
 
     # 
     # Create a similar flow from n3 to n0, starting at time 1.1 seconds
     #
     onoff.SetAttribute("Remote", 
                        ns3.AddressValue(ns3.InetSocketAddress(ns3.Ipv4Address("10.1.1.1"), port)))
-    app2 = onoff.Install(ns3.NodeContainer(terminals.Get(3)))
+    app = onoff.Install(ns3.NodeContainer(terminals.Get(3)))
+    app.Start(ns3.Seconds(1.1))
+    app.Stop(ns3.Seconds(10.0))
 
-    sink.Install(ns3.NodeContainer(terminals.Get(0)))
-
-    app2.Start(ns3.Seconds(1.1))
-    app2.Stop(ns3.Seconds(10.0))
+    app = sink.Install(ns3.NodeContainer(terminals.Get(0)))
+    app.Start (ns3.Seconds (0.0))
 
     #
     # Configure tracing of all enqueue, dequeue, and NetDevice receive events.

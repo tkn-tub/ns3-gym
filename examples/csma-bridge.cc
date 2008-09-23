@@ -127,19 +127,21 @@ main (int argc, char *argv[])
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
                          Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
-  sink.Install (terminals.Get (1));
+  app = sink.Install (terminals.Get (1));
+  app.Start (Seconds (0.0));
 
   // 
   // Create a similar flow from n3 to n0, starting at time 1.1 seconds
   //
   onoff.SetAttribute ("Remote", 
                       AddressValue (InetSocketAddress (Ipv4Address ("10.1.1.1"), port)));
-  ApplicationContainer app2 = onoff.Install (terminals.Get (3));
+  app = onoff.Install (terminals.Get (3));
+  app.Start (Seconds (1.1));
+  app.Stop (Seconds (10.0));
 
-  sink.Install (terminals.Get (0));
+  app = sink.Install (terminals.Get (0));
+  app.Start (Seconds (0.0));
 
-  app2.Start (Seconds (1.1));
-  app2.Stop (Seconds (10.0));
 
   //
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events.
