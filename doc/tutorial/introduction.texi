@@ -213,7 +213,7 @@ on the main @command{ns-3} web site.
 Once you have source code downloaded to your local system, you will need 
 to compile that source to produce usable programs.  Just as in the case of
 source code management, there are many tools available to perform this 
-function.  Probably the most will known of these tools is @code{make}.  Along
+function.  Probably the most well known of these tools is @code{make}.  Along
 with being the most well known, @code{make} is probably the most difficult to
 use in a very large and highly configurable system.  Because of this, many
 alternatives have been developed.  Recently these systems have been developed
