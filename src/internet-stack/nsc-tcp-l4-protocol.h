@@ -109,12 +109,12 @@ private:
   Ipv4EndPointDemux *m_endPoints;
   ObjectFactory m_rttFactory;
 private:
+  void AddInterface (void);
   void SoftInterrupt (void);
   static ObjectFactory GetDefaultRttEstimatorFactory (void);
   friend class NscTcpSocketImpl;
   INetStack* m_nscStack;
   void *m_dlopenHandle;
-  bool m_nscInterfacesSetUp;
   Timer m_softTimer;
 };
 
