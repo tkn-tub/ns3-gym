@@ -55,19 +55,29 @@ def fetch_pybindgen(conf):
         rev = "-rrevno:%i" % REQUIRED_PYBINDGEN_VERSION[3]
     else:
         rev = "-rtag:%s" % '.'.join([str(x) for x in REQUIRED_PYBINDGEN_VERSION])
+        
     if os.path.exists(LOCAL_PYBINDGEN_PATH):
-        print "Trying to update pybindgen; this will fail if no network connection is available."
+        print "Trying to update pybindgen; this will fail if no network connection is available.  Hit Ctrl-C to skip."
 
         cmd = [bzr, "pull", rev, PYBINDGEN_BRANCH]
         print " => ", ' '.join(cmd)
-        if subprocess.Popen(cmd, cwd=LOCAL_PYBINDGEN_PATH).wait():
+        try:
+            if subprocess.Popen(cmd, cwd=LOCAL_PYBINDGEN_PATH).wait():
+                return False
+        except KeyboardInterrupt:
+            print "Interrupted; Python bindings will be disabled."
             return False
         print "Update was successful."
     else:
-        print "Trying to fetch pybindgen; this will fail if no network connection is available."
+        print "Trying to fetch pybindgen; this will fail if no network connection is available.  Hit Ctrl-C to skip."
         cmd = [bzr, "checkout", rev, PYBINDGEN_BRANCH, LOCAL_PYBINDGEN_PATH]
         print " => ", ' '.join(cmd)
-        if subprocess.Popen(cmd).wait():
+        try:
+            if subprocess.Popen(cmd).wait():
+                return False
+        except KeyboardInterrupt:
+            print "Interrupted; Python bindings will be disabled."
+            shutil.rmtree(LOCAL_PYBINDGEN_PATH, True)
             return False
         print "Fetch was successful."
 
