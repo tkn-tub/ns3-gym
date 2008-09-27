@@ -2,6 +2,15 @@
 @chapter Attributes 
 @anchor{chap:Attributes}
 
+@menu
+* Object Overview::
+* Attribute Overview::
+* Extending attributes::
+* Adding new class type::
+* ConfigStore::
+@end menu
+
+
 In ns-3 simulations, there are two main aspects to configuration:
 @itemize @bullet
 @item the simulation topology and how objects are connected 
@@ -48,8 +57,7 @@ Let's review a couple of properties of these objects.
 @node Smart pointers
 @subsection Smart pointers
 
-As introduced above in @ref{Smart Pointers 101}, ns-3 objects 
-are memory managed by a 
+As introduced in the ns-3 tutorial, ns-3 objects are memory managed by a 
 @uref{http://en.wikipedia.org/wiki/Smart_pointer,,reference counting smart pointer implementation}, @code{class ns3::Ptr}. 
 
 Smart pointers are used extensively in the ns-3 APIs, to avoid passing
@@ -496,6 +504,7 @@ None of these mistakes can be detected by the ns-3 codebase so, users
 are advised to check carefully multiple times that they got these right.
 
 
+@node Adding new class type
 @section Adding new class type to the attribute system
 
 From the perspective of the user who writes a new class in the system and
@@ -556,4 +565,159 @@ These stream operators simply convert from a string representation of the
 Rectangle ("xMin|xMax|yMin|yMax") to the underlying Rectangle, and the
 modeler must specify these operators and the string syntactical representation 
 of an instance of the new class.
+
+@node ConfigStore
+@section ConfigStore
+
+@strong{Feedback requested:}  This is an experimental feature of ns-3.
+It is not in the main tree.  If you like this feature and would like
+to provide feedback on it, please email us.
+
+Values for ns-3 attributes can be stored in an ascii text file and
+loaded into a future simulation.  This feature is known as the
+ns-3 ConfigStore.  
+The ConfigStore code is in @code{src/contrib/}.  It is not yet main-tree
+code, because we are seeking some user feedback. 
+
+We can explore this system by using an example.  Copy the @code{csma-bridge.cc}
+file to the scratch directory:
+@verbatim
+  cp examples/csma-bridge.cc scratch/
+  ./waf
+@end verbatim
+
+Let's edit it to add the ConfigStore feature.  First, add an include statement,
+and then add these lines:
+
+@verbatim
+#include "contrib-module.h"
+...
+int main (...)
+{
+  // setup topology
+
+  // Invoke just before entering Simulator::Run ()
+  ConfigStore config;
+  config.Configure ();
+
+  Simulator::Run ();
+}
+@end verbatim
+
+There is an attribute that governs whether the Configure() call either
+stores a simulation configuration in a file and exits, or whether
+it loads a simulation configuration file annd proceeds.  First,
+the @code{LoadFilename} attribute is checked, and if non-empty,
+the program loads the configuration from the filename provided.
+If LoadFilename is empty, and if the @code{StoreFilename} attribute is 
+populated, the configuration will be written to the output filename
+specified.
+
+While it is possible to generate a sample config file and lightly
+edit it to change a couple of values, there are cases where this
+process will not work because the same value on the same object
+can appear multiple times in the same automatically-generated 
+configuration file under different configuration paths.
+
+As such, the best way to use this class is to use it to generate
+an initial configuration file, extract from that configuration
+file only the strictly necessary elements, and move these minimal
+elements to a new configuration file which can then safely
+be edited and loaded in a subsequent simulation run. 
+
+So, let's do that as an example.  We'lll run the program once
+to create a configure file, and look at it. 
+If you are running bash shell, the below command should work (which illustrates
+how to set an attribute from the command line):
+@verbatim
+./build/debug/scratch/csma-bridge --ns3::ConfigStore::StoreFilename=test.config
+@end verbatim
+or, if the above does not work (the above requires rpath support), try this:
+@verbatim
+./waf --command-template="%s --ns3::ConfigStore::StoreFilename=test.config" --run scratch/csma-bridge
+@end verbatim
+
+Running the program should yield a "test.config" output configuration file 
+that looks like this:
+@verbatim
+/$ns3::NodeListPriv/NodeList/0/$ns3::Node/DeviceList/0/$ns3::CsmaNetDevice/Addre
+ss 00:00:00:00:00:01
+/$ns3::NodeListPriv/NodeList/0/$ns3::Node/DeviceList/0/$ns3::CsmaNetDevice/Frame
+Size 1518
+/$ns3::NodeListPriv/NodeList/0/$ns3::Node/DeviceList/0/$ns3::CsmaNetDevice/SendE
+nable true
+/$ns3::NodeListPriv/NodeList/0/$ns3::Node/DeviceList/0/$ns3::CsmaNetDevice/Recei
+veEnable true
+/$ns3::NodeListPriv/NodeList/0/$ns3::Node/DeviceList/0/$ns3::CsmaNetDevice/TxQue
+ue/$ns3::DropTailQueue/MaxPackets 100
+/$ns3::NodeListPriv/NodeList/0/$ns3::Node/DeviceList/0/$ns3::CsmaNetDevice/Mtu 1
+500
+...
+@end verbatim
+
+The above lists, for each object in the script topology, the value of each 
+registered attribute.  The syntax of this file is that the unique name
+of the attribute (in the attribute namespace) is specified on each line,
+followed by a value.  
+
+This file is intended to be a convenient record of the parameters that were 
+used in a given simulation run, and can be stored with simulation
+output files.  Additionally, 
+this file can also be used to parameterize a simulation, instead of
+editing the script or passing in command line arguments.   For instance,
+a person wanting to run the simulation can examine and tweak the values
+in a pre-existing configuration file, and pass the file to the
+program.   In this case, the relevant commands are:
+@verbatim
+./build/debug/scratch/csma-bridge --ns3::ConfigStore::LoadFilename=test.config
+@end verbatim
+or, if the above does not work (the above requires rpath support), try this:
+@verbatim
+./waf --command-template="%s --ns3::ConfigStore::LoadFilename=test.config" --run scratch/csma-bridge
+@end verbatim
+
+@subsection GTK-based ConfigStore
+
+There is a GTK-based front end for the ConfigStore.  This allows users
+to use a GUI to access and change variables.  Screenshots of this
+feature are available in the 
+@uref{http://www.nsnam.org/docs/ns-3-overview.pdf,,ns-3 Overview} presentation.
+
+To use this feature, one must install libgtk and libgtk-dev; an example
+Ubuntu installation command is:
+@verbatim
+sudo apt-get install libgtk2.0-0 libgtk2.0-dev
+@end verbatim
+To check whether it is configured or not, check the output of the
+./waf configure step:
+@verbatim
+---- Summary of optional NS-3 features:
+Threading Primitives          : enabled
+Real Time Simulator           : enabled
+GtkConfigStore                : not enabled (library 'gtk+-2.0 >= 2.12' not found)
+@end verbatim
+
+In the above example, it was not enabled, so it cannot be used until a
+suitable version is installed and ./waf configure; ./waf is rerun.
+
+Usage is almost the same as the non-GTK-based version:
+@verbatim
+  // Invoke just before entering Simulator::Run ()
+  GtkConfigStore config;
+  config.Configure ();
+@end verbatim
+
+Now, when you run the script, a GUI should pop up, allowing you to open
+menus of attributes on different nodes/objects, and then launch the
+simulation execution when you are done.  
+
+@subsection Future work
+There are a couple of possible improvements:
+@itemize bullet
+@item save a unique version number with date and time at start of file
+@item save rng initial seed somewhere.
+@item make each RandomVariable serialize its own initial seed and re-read
+it later
+@item add the default values
+@end itemize
 

@@ -39,8 +39,8 @@
 #include <dlfcn.h>
 #include <iomanip>
 
-#include <netinet/ip.h>
-#include <netinet/tcp.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 NS_LOG_COMPONENT_DEFINE ("NscTcpL4Protocol");
 
@@ -82,17 +82,15 @@ int external_rand()
 NscTcpL4Protocol::NscTcpL4Protocol ()
   : m_endPoints (new Ipv4EndPointDemux ()),
     m_nscStack (0),
-    m_nscInterfacesSetUp(false),
     m_softTimer (Timer::CANCEL_ON_DESTROY)
 {
   m_dlopenHandle = NULL;
-  NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC("Made a NscTcpL4Protocol "<<this);
 }
 
 NscTcpL4Protocol::~NscTcpL4Protocol ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   dlclose(m_dlopenHandle);
 }
 
@@ -135,6 +133,10 @@ NscTcpL4Protocol::SetNode (Ptr<Node> node)
   node->AggregateObject (nscStack);
 
   m_softTimer.Schedule ();
+
+  // its likely no ns-3 interface exits at this point, so
+  // we dealy adding the nsc interface until the start of the simulation.
+  Simulator::ScheduleNow (&NscTcpL4Protocol::AddInterface, this);
 }
 
 int 
@@ -151,7 +153,7 @@ NscTcpL4Protocol::GetVersion (void) const
 void
 NscTcpL4Protocol::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   if (m_endPoints != 0)
     {
       delete m_endPoints;
@@ -164,59 +166,7 @@ NscTcpL4Protocol::DoDispose (void)
 Ptr<Socket>
 NscTcpL4Protocol::CreateSocket (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  if (!m_nscInterfacesSetUp)
-  {
-    Ptr<Ipv4> ip = m_node->GetObject<Ipv4> ();
-
-    const uint32_t nInterfaces = ip->GetNInterfaces ();
-    // start from 1, ignore the loopback interface (HACK)
-
-    NS_ASSERT_MSG (nInterfaces <= 2, "nsc does not support multiple interfaces per node");
-
-    for (uint32_t i = 1; i < nInterfaces; i++)
-    {
-      Ipv4Address addr = ip->GetAddress(i);
-      Ipv4Mask mask = ip->GetNetworkMask(i);
-      uint16_t mtu = ip->GetMtu (i);
-
-      std::ostringstream addrOss, maskOss;
-
-      addr.Print(addrOss);
-      mask.Print(maskOss);
-
-      NS_LOG_LOGIC ("if_attach " << addrOss.str().c_str() << " " << maskOss.str().c_str() << " " << mtu);
-
-      std::string addrStr = addrOss.str();
-      std::string maskStr = maskOss.str();
-      const char* addrCStr = addrStr.c_str();
-      const char* maskCStr = maskStr.c_str();
-      m_nscStack->if_attach(addrCStr, maskCStr, mtu);
-
-      if (i == 1)
-      {
-        // We need to come up with a default gateway here. Can't guarantee this to be
-        // correct really...
-
-        uint8_t addrBytes[4];
-        addr.Serialize(addrBytes);
-
-        // XXX: this is all a bit of a horrible hack
-        //
-        // Just increment the last octet, this gives a decent chance of this being
-        // 'enough'.
-        //
-        // All we need is another address on the same network as the interface. This
-        // will force the stack to output the packet out of the network interface.
-        addrBytes[3]++;
-        addr.Deserialize(addrBytes);
-        addrOss.str("");
-        addr.Print(addrOss);
-        m_nscStack->add_default_gateway(addrOss.str().c_str());
-      }
-    }
-    m_nscInterfacesSetUp = true;
-  }
+  NS_LOG_FUNCTION (this);
 
   Ptr<RttEstimator> rtt = m_rttFactory.Create<RttEstimator> ();
   Ptr<NscTcpSocketImpl> socket = CreateObject<NscTcpSocketImpl> ();
@@ -229,7 +179,7 @@ NscTcpL4Protocol::CreateSocket (void)
 Ipv4EndPoint *
 NscTcpL4Protocol::Allocate (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_endPoints->Allocate ();
 }
 
@@ -305,7 +255,6 @@ NscTcpL4Protocol::Receive (Ptr<Packet> packet,
 
 void NscTcpL4Protocol::SoftInterrupt (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   m_nscStack->timer_interrupt ();
   m_nscStack->increment_ticks ();
   m_softTimer.Schedule ();
@@ -314,27 +263,31 @@ void NscTcpL4Protocol::SoftInterrupt (void)
 void NscTcpL4Protocol::send_callback(const void* data, int datalen)
 {
   Ptr<Packet> p;
+  uint32_t ipv4Saddr, ipv4Daddr;
 
-  NS_ASSERT(datalen > (int)sizeof(struct iphdr));
+  NS_ASSERT(datalen > 20);
 
-  const uint8_t *rawdata = reinterpret_cast<const uint8_t *>(data);
-  rawdata += sizeof(struct iphdr);
-
-  const struct iphdr *ipHdr = reinterpret_cast<const struct iphdr *>(data);
 
   // create packet, without IP header. The TCP header is not touched.
   // Not using the IP header makes integration easier, but it destroys
   // eg. ECN.
-  p = Create<Packet> (rawdata, datalen - sizeof(struct iphdr));
+  const uint8_t *rawdata = reinterpret_cast<const uint8_t *>(data);
+  rawdata += 20; // skip IP header. IP options aren't supported at this time.
+  datalen -= 20;
+  p = Create<Packet> (rawdata, datalen);
 
-  Ipv4Address saddr(ntohl(ipHdr->saddr));
-  Ipv4Address daddr(ntohl(ipHdr->daddr));
+  // we need the real source/destination ipv4 addresses for Send ().
+  const uint32_t *ipheader = reinterpret_cast<const uint32_t *>(data);
+  ipv4Saddr = *(ipheader+3);
+  ipv4Daddr = *(ipheader+4);
+
+  Ipv4Address saddr(ntohl(ipv4Saddr));
+  Ipv4Address daddr(ntohl(ipv4Daddr));
 
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
-  if (ipv4 != 0)
-    {
-      ipv4->Send (p, saddr, daddr, PROT_NUMBER);
-    }
+  NS_ASSERT_MSG (ipv4, "nsc callback invoked, but node has no ipv4 object");
+
+  ipv4->Send (p, saddr, daddr, PROT_NUMBER);
   m_nscStack->if_send_finish(0);
 }
 
@@ -363,6 +316,59 @@ void NscTcpL4Protocol::gettime(unsigned int* sec, unsigned int* usec)
   *usec = us - *sec * (1000*1000);
 }
 
+
+void NscTcpL4Protocol::AddInterface(void)
+{
+  Ptr<Ipv4> ip = m_node->GetObject<Ipv4> ();
+  const uint32_t nInterfaces = ip->GetNInterfaces ();
+
+  NS_ASSERT_MSG (nInterfaces <= 2, "nsc does not support multiple interfaces per node");
+
+  // start from 1, ignore the loopback interface (HACK)
+  // we really don't need the loop, but its here to illustrate
+  // how things _should_ be (once nsc can deal with multiple interfaces...)
+  for (uint32_t i = 1; i < nInterfaces; i++)
+    {
+      Ipv4Address addr = ip->GetAddress(i);
+      Ipv4Mask mask = ip->GetNetworkMask(i);
+      uint16_t mtu = ip->GetMtu (i);
+
+      std::ostringstream addrOss, maskOss;
+
+      addr.Print(addrOss);
+      mask.Print(maskOss);
+
+      NS_LOG_LOGIC ("if_attach " << addrOss.str().c_str() << " " << maskOss.str().c_str() << " " << mtu);
+
+      std::string addrStr = addrOss.str();
+      std::string maskStr = maskOss.str();
+      const char* addrCStr = addrStr.c_str();
+      const char* maskCStr = maskStr.c_str();
+      m_nscStack->if_attach(addrCStr, maskCStr, mtu);
+
+      if (i == 1)
+      {
+        // We need to come up with a default gateway here. Can't guarantee this to be
+        // correct really...
+
+        uint8_t addrBytes[4];
+        addr.Serialize(addrBytes);
+
+        // XXX: this is all a bit of a horrible hack
+        //
+        // Just increment the last octet, this gives a decent chance of this being
+        // 'enough'.
+        //
+        // All we need is another address on the same network as the interface. This
+        // will force the stack to output the packet out of the network interface.
+        addrBytes[3]++;
+        addr.Deserialize(addrBytes);
+        addrOss.str("");
+        addr.Print(addrOss);
+        m_nscStack->add_default_gateway(addrOss.str().c_str());
+      }
+  }
+}
 
 }; // namespace ns3
 

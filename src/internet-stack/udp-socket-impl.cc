@@ -30,6 +30,7 @@
 #include "udp-socket-impl.h"
 #include "udp-l4-protocol.h"
 #include "ipv4-end-point.h"
+#include <limits>
 
 NS_LOG_COMPONENT_DEFINE ("UdpSocketImpl");
 

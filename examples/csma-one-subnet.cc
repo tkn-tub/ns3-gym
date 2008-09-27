@@ -61,8 +61,8 @@ main (int argc, char *argv[])
 // Explicitly create the nodes required by the topology (shown above).
 //
   NS_LOG_INFO ("Create nodes.");
-  NodeContainer c;
-  c.Create (4);
+  NodeContainer nodes;
+  nodes.Create (4);
 
   NS_LOG_INFO ("Build Topology");
   CsmaHelper csma;
@@ -70,24 +70,19 @@ main (int argc, char *argv[])
   csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
 //
 // Now fill out the topology by creating the net devices required to connect
-// the nodes to the channels and hooking them up.  AddIpv4CsmaNetDevice will
-// create a net device, add a MAC address (in memory of the pink flamingo) and
-// connect the net device to a nodes and also to a channel. the 
-// AddIpv4CsmaNetDevice method returns a net device index for the net device
-// created on the node.  Interpret nd0 as the net device we created for node
-// zero.
+// the nodes to the channels and hooking them up.
 //
-  NetDeviceContainer nd0 = csma.Install (c);
+  NetDeviceContainer devices = csma.Install (nodes);
 
   InternetStackHelper internet;
-  internet.Install (c);
+  internet.Install (nodes);
 
 // We've got the "hardware" in place.  Now we need to add IP addresses.
 //
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-  ipv4.Assign (nd0);
+  Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
 
 //
 // Create an OnOff application to send UDP datagrams from node zero to node 1.
@@ -96,11 +91,11 @@ main (int argc, char *argv[])
   uint16_t port = 9;   // Discard port (RFC 863)
 
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
-    Address (InetSocketAddress (Ipv4Address ("10.1.1.2"), port)));
+                     Address (InetSocketAddress (interfaces.GetAddress (1), port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
 
-  ApplicationContainer app = onoff.Install (c.Get (0));
+  ApplicationContainer app = onoff.Install (nodes.Get (0));
   // Start the application
   app.Start (Seconds (1.0));
   app.Stop (Seconds (10.0));
@@ -108,19 +103,21 @@ main (int argc, char *argv[])
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
     Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
-  sink.Install (c.Get (1));
+  app = sink.Install (nodes.Get (1));
+  app.Start (Seconds (0.0));
 
 // 
 // Create a similar flow from n3 to n0, starting at time 1.1 seconds
 //
   onoff.SetAttribute ("Remote", 
-                      AddressValue (InetSocketAddress (Ipv4Address ("10.1.1.1"), port)));
-  ApplicationContainer app2 = onoff.Install (c.Get (3));
+                      AddressValue (InetSocketAddress (interfaces.GetAddress (0), port)));
+  app = onoff.Install (nodes.Get (3));
+  app.Start(Seconds (1.1));
+  app.Stop (Seconds (10.0));
 
-  sink.Install (c.Get (0));
+  app = sink.Install (nodes.Get (0));
+  app.Start (Seconds (0.0));
 
-  app2.Start(Seconds (1.1));
-  app2.Stop (Seconds (10.0));
 //
 // Configure tracing of all enqueue, dequeue, and NetDevice receive events.
 // Trace output will be sent to the file "csma-one-subnet.tr"

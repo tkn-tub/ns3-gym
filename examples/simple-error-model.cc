@@ -134,7 +134,7 @@ main (int argc, char *argv[])
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
     Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
-  apps = sink.Install (c.Get (3));
+  apps = sink.Install (c.Get (2));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 

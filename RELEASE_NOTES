@@ -43,8 +43,8 @@ New user-visible features
     It is now possible to run simulations synchronized on the real-world
     wall-clock time (contributed by Craig Dowell).
 
-  d) Network Simulation Craddle
-    It is now possible to use the Network Simulation Craddle 
+  d) Network Simulation Cradle
+    It is now possible to use the Network Simulation Cradle 
     (http://www.wand.net.nz/~stj2/nsc/) in ns-3 and run simulations 
     using various versions of kernel TCP network stacks. (contributed
     by Florian Westphal as part of his Google Summer of Code work)

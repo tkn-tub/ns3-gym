@@ -33,11 +33,9 @@
 
 #include <algorithm>
 
-#include <sys/socket.h>
-#include <netinet/in.h>
+// for ntohs().
 #include <arpa/inet.h>
-#include <netinet/ip.h>
-#include <netinet/tcp.h>
+#include <netinet/in.h>
 
 #include "sim_interface.h"
 #include "sim_errno.h"
@@ -307,13 +305,11 @@ NscTcpSocketImpl::Connect (const Address & address)
   m_remoteAddress = transport.GetIpv4 ();
   m_remotePort = transport.GetPort ();
 
-  struct in_addr remoteAddr;
-  uint32_t addr32;
+  std::ostringstream ss;
+  m_remoteAddress.Print(ss);
+  std::string ipstring = ss.str ();
 
-  m_remoteAddress.Serialize((uint8_t*)&addr32);
-  remoteAddr.s_addr = addr32;
-
-  m_nscTcpSocket->connect(inet_ntoa(remoteAddr), m_remotePort);
+  m_nscTcpSocket->connect(ipstring.c_str (), m_remotePort);
   m_state = SYN_SENT;
   return 0;
 }
