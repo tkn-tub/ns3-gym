@@ -28,8 +28,14 @@ public:
     }
     virtual ~PythonEventImpl ()
     {
+        PyGILState_STATE __py_gil_state;
+        __py_gil_state = (PyEval_ThreadsInitialized() ? PyGILState_Ensure() : (PyGILState_STATE) 0);
+
         Py_DECREF(m_callback);
         Py_DECREF(m_args);
+
+        if (PyEval_ThreadsInitialized())
+            PyGILState_Release(__py_gil_state);
     }
     virtual void Notify ()
     {
