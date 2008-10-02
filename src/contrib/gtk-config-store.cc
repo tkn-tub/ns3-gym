@@ -452,6 +452,7 @@ exit_clicked_callback (GtkButton *button,
 		       gpointer   user_data)
 {
   gtk_main_quit ();
+  gtk_widget_hide (GTK_WIDGET (user_data));
 }
 
 static gboolean
@@ -460,6 +461,7 @@ delete_event_callback (GtkWidget *widget,
 		       gpointer   user_data)
 {
   gtk_main_quit ();
+  gtk_widget_hide (GTK_WIDGET (user_data));
   return TRUE;
 }
 
@@ -494,9 +496,9 @@ GtkConfigStore::Configure (void)
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (window), "ns-3 Object attributes.");
-  gtk_window_set_default_size (GTK_WINDOW (window), 400, 600);
+  gtk_window_set_default_size (GTK_WINDOW (window), 600, 600);
   
-  g_signal_connect (window, "delete_event", (GCallback)delete_event_callback, 0);
+  g_signal_connect (window, "delete_event", (GCallback)delete_event_callback, window);
 
 
   GtkTreeStore *model = gtk_tree_store_new (COL_LAST, G_TYPE_POINTER);
@@ -519,7 +521,7 @@ GtkConfigStore::Configure (void)
   g_signal_connect (load, "clicked",  (GCallback) load_clicked, window);
   gtk_box_pack_end (GTK_BOX (hbox), load, FALSE, FALSE, 0);
   GtkWidget *exit = gtk_button_new_with_label ("Run Simulation");
-  g_signal_connect (exit, "clicked",  (GCallback) exit_clicked_callback, 0);
+  g_signal_connect (exit, "clicked",  (GCallback) exit_clicked_callback, window);
   gtk_box_pack_end (GTK_BOX (hbox), exit, FALSE, FALSE, 0);
 
   gtk_container_add (GTK_CONTAINER (window), vbox);
