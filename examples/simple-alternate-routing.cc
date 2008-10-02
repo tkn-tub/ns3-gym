@@ -148,7 +148,7 @@ main (int argc, char *argv[])
 
   ApplicationContainer apps = onoff.Install (c.Get (3));
   apps.Start (Seconds (1.1));
-  apps.Start (Seconds (10.0));
+  apps.Stop (Seconds (10.0));
 
   // Create a packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
