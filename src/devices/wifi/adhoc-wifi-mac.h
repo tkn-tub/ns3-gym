@@ -85,6 +85,7 @@ private:
   /* invoked by the MacLows. */
   void ForwardUp (Ptr<Packet> packet, WifiMacHeader const*hdr);
   AdhocWifiMac (const AdhocWifiMac & ctor_arg);
+  AdhocWifiMac &operator = (const AdhocWifiMac &o);
   Mac48Address GetBssid (void) const;
 
   Ptr<DcaTxop> m_dca;

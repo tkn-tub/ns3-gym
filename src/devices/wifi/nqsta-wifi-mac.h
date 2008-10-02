@@ -129,6 +129,7 @@ private:
   Mac48Address GetBssid (void) const;
   virtual void DoDispose (void);
   NqstaWifiMac (const NqstaWifiMac & ctor_arg);
+  NqstaWifiMac &operator = (const NqstaWifiMac & ctor_arg);
 
   enum {
     ASSOCIATED,
