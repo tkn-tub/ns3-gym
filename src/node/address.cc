@@ -1,3 +1,23 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2007 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
+
 #include "ns3/assert.h"
 #include "address.h"
 #include <string.h>
@@ -10,7 +30,7 @@ Address::Address ()
   : m_type (0),
     m_len (0)
 {
-  memset (m_data, 0, m_len);
+  // Buffer left uninitialized    
 }
 
 Address::Address (uint8_t type, const uint8_t *buffer, uint8_t len)
@@ -18,7 +38,6 @@ Address::Address (uint8_t type, const uint8_t *buffer, uint8_t len)
     m_len (len)
 {
   NS_ASSERT (m_len <= MAX_SIZE);
-  memset (m_data, 0, m_len);
   memcpy (m_data, buffer, m_len);
 }
 Address::Address (const Address & address)
@@ -26,7 +45,6 @@ Address::Address (const Address & address)
     m_len (address.m_len)
 {
   NS_ASSERT (m_len <= MAX_SIZE);
-  memset (m_data, 0, m_len);
   memcpy (m_data, address.m_data, m_len);
 }
 Address &
@@ -36,7 +54,6 @@ Address::operator = (const Address &address)
   m_type = address.m_type;
   m_len = address.m_len;
   NS_ASSERT (m_len <= MAX_SIZE);
-  memset (m_data, 0, m_len);
   memcpy (m_data, address.m_data, m_len);
   return *this;
 }
@@ -78,12 +95,13 @@ Address::CopyFrom (const uint8_t *buffer, uint8_t len)
   m_len = len;
   return m_len;
 }
-uint32_t
+    uint32_t
 Address::CopyAllFrom (const uint8_t *buffer, uint8_t len)
 {
   NS_ASSERT (len >= 2);
   m_type = buffer[0];
   m_len = buffer[1];
+
   NS_ASSERT (len >= m_len + 2);
   memcpy (m_data, buffer + 2, m_len);
   return m_len + 2;
