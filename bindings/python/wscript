@@ -353,7 +353,7 @@ class PythonScanTask(Task.TaskBase):
         scan.stdin.close()
         if scan.wait():
             raise SystemExit(1)
-
+        raise SystemExit(0)
 
 def build(bld):
     if Params.g_options.python_disable:
