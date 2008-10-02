@@ -518,7 +518,7 @@ GtkConfigStore::Configure (void)
   GtkWidget *load = gtk_button_new_with_label ("Load");
   g_signal_connect (load, "clicked",  (GCallback) load_clicked, window);
   gtk_box_pack_end (GTK_BOX (hbox), load, FALSE, FALSE, 0);
-  GtkWidget *exit = gtk_button_new_with_label ("Exit");
+  GtkWidget *exit = gtk_button_new_with_label ("Run Simulation");
   g_signal_connect (exit, "clicked",  (GCallback) exit_clicked_callback, 0);
   gtk_box_pack_end (GTK_BOX (hbox), exit, FALSE, FALSE, 0);
 
