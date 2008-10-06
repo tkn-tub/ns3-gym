@@ -79,6 +79,7 @@ def register_Ns3GlobalRouteManager_methods(root_module, cls):
     return
 
 def register_Ns3GlobalRoutingLSA_methods(root_module, cls):
+    cls.add_output_stream_operator()
     ## global-router-interface.h: ns3::GlobalRoutingLSA::GlobalRoutingLSA() [constructor]
     cls.add_constructor([])
     ## global-router-interface.h: ns3::GlobalRoutingLSA::GlobalRoutingLSA(ns3::GlobalRoutingLSA::SPFStatus status, ns3::Ipv4Address linkStateId, ns3::Ipv4Address advertisingRtr) [constructor]
@@ -176,7 +177,6 @@ def register_Ns3GlobalRoutingLSA_methods(root_module, cls):
     cls.add_method('SetStatus', 
                    'void', 
                    [param('ns3::GlobalRoutingLSA::SPFStatus', 'status')])
-    cls.add_output_stream_operator()
     return
 
 def register_Ns3GlobalRoutingLinkRecord_methods(root_module, cls):

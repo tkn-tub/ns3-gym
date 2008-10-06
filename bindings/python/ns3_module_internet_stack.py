@@ -3,14 +3,14 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass
 def register_types(module):
     root_module = module.get_root()
     
-    ## ipv4-interface.h: ns3::Ipv4Interface [class]
-    module.add_class('Ipv4Interface', parent=root_module['ns3::Object'])
-    ## udp-header.h: ns3::UdpHeader [class]
-    module.add_class('UdpHeader', parent=root_module['ns3::Header'])
     ## tcp-header.h: ns3::TcpHeader [class]
     module.add_class('TcpHeader', parent=root_module['ns3::Header'])
     ## tcp-header.h: ns3::TcpHeader::Flags_t [enumeration]
     module.add_enum('Flags_t', ['NONE', 'FIN', 'SYN', 'RST', 'PSH', 'ACK', 'URG'], outer_class=root_module['ns3::TcpHeader'])
+    ## udp-header.h: ns3::UdpHeader [class]
+    module.add_class('UdpHeader', parent=root_module['ns3::Header'])
+    ## ipv4-interface.h: ns3::Ipv4Interface [class]
+    module.add_class('Ipv4Interface', parent=root_module['ns3::Object'])
     ## ipv4-l3-protocol.h: ns3::Ipv4L3Protocol [class]
     module.add_class('Ipv4L3Protocol', parent=root_module['ns3::Object'])
     ## ipv4-static-routing.h: ns3::Ipv4StaticRouting [class]
@@ -57,165 +57,11 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
-    register_Ns3Ipv4Interface_methods(root_module, root_module['ns3::Ipv4Interface'])
-    register_Ns3UdpHeader_methods(root_module, root_module['ns3::UdpHeader'])
     register_Ns3TcpHeader_methods(root_module, root_module['ns3::TcpHeader'])
+    register_Ns3UdpHeader_methods(root_module, root_module['ns3::UdpHeader'])
+    register_Ns3Ipv4Interface_methods(root_module, root_module['ns3::Ipv4Interface'])
     register_Ns3Ipv4L3Protocol_methods(root_module, root_module['ns3::Ipv4L3Protocol'])
     register_Ns3Ipv4StaticRouting_methods(root_module, root_module['ns3::Ipv4StaticRouting'])
-    return
-
-def register_Ns3Ipv4Interface_methods(root_module, cls):
-    ## ipv4-interface.h: ns3::Ipv4Interface::Ipv4Interface(ns3::Ipv4Interface const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4Interface const &', 'arg0')])
-    ## ipv4-interface.h: static ns3::TypeId ns3::Ipv4Interface::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## ipv4-interface.h: ns3::Ipv4Interface::Ipv4Interface() [constructor]
-    cls.add_constructor([])
-    ## ipv4-interface.h: ns3::Ptr<ns3::NetDevice> ns3::Ipv4Interface::GetDevice() const [member function]
-    cls.add_method('GetDevice', 
-                   'ns3::Ptr< ns3::NetDevice >', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## ipv4-interface.h: void ns3::Ipv4Interface::SetAddress(ns3::Ipv4Address a) [member function]
-    cls.add_method('SetAddress', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'a')])
-    ## ipv4-interface.h: void ns3::Ipv4Interface::SetNetworkMask(ns3::Ipv4Mask mask) [member function]
-    cls.add_method('SetNetworkMask', 
-                   'void', 
-                   [param('ns3::Ipv4Mask', 'mask')])
-    ## ipv4-interface.h: ns3::Ipv4Address ns3::Ipv4Interface::GetBroadcast() const [member function]
-    cls.add_method('GetBroadcast', 
-                   'ns3::Ipv4Address', 
-                   [], 
-                   is_const=True)
-    ## ipv4-interface.h: ns3::Ipv4Mask ns3::Ipv4Interface::GetNetworkMask() const [member function]
-    cls.add_method('GetNetworkMask', 
-                   'ns3::Ipv4Mask', 
-                   [], 
-                   is_const=True)
-    ## ipv4-interface.h: void ns3::Ipv4Interface::SetMetric(uint16_t metric) [member function]
-    cls.add_method('SetMetric', 
-                   'void', 
-                   [param('uint16_t', 'metric')])
-    ## ipv4-interface.h: uint16_t ns3::Ipv4Interface::GetMetric() const [member function]
-    cls.add_method('GetMetric', 
-                   'uint16_t', 
-                   [], 
-                   is_const=True)
-    ## ipv4-interface.h: ns3::Ipv4Address ns3::Ipv4Interface::GetAddress() const [member function]
-    cls.add_method('GetAddress', 
-                   'ns3::Ipv4Address', 
-                   [], 
-                   is_const=True)
-    ## ipv4-interface.h: uint16_t ns3::Ipv4Interface::GetMtu() const [member function]
-    cls.add_method('GetMtu', 
-                   'uint16_t', 
-                   [], 
-                   is_const=True)
-    ## ipv4-interface.h: bool ns3::Ipv4Interface::IsUp() const [member function]
-    cls.add_method('IsUp', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ipv4-interface.h: bool ns3::Ipv4Interface::IsDown() const [member function]
-    cls.add_method('IsDown', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ipv4-interface.h: void ns3::Ipv4Interface::SetUp() [member function]
-    cls.add_method('SetUp', 
-                   'void', 
-                   [])
-    ## ipv4-interface.h: void ns3::Ipv4Interface::SetDown() [member function]
-    cls.add_method('SetDown', 
-                   'void', 
-                   [])
-    ## ipv4-interface.h: void ns3::Ipv4Interface::Send(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Address dest) [member function]
-    cls.add_method('Send', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Address', 'dest')])
-    ## ipv4-interface.h: void ns3::Ipv4Interface::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## ipv4-interface.h: void ns3::Ipv4Interface::SendTo(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Address dest) [member function]
-    cls.add_method('SendTo', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Address', 'dest')], 
-                   is_pure_virtual=True, visibility='private', is_virtual=True)
-    return
-
-def register_Ns3UdpHeader_methods(root_module, cls):
-    ## udp-header.h: ns3::UdpHeader::UdpHeader(ns3::UdpHeader const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::UdpHeader const &', 'arg0')])
-    ## udp-header.h: ns3::UdpHeader::UdpHeader() [constructor]
-    cls.add_constructor([])
-    ## udp-header.h: void ns3::UdpHeader::EnableChecksums() [member function]
-    cls.add_method('EnableChecksums', 
-                   'void', 
-                   [])
-    ## udp-header.h: void ns3::UdpHeader::SetDestinationPort(uint16_t port) [member function]
-    cls.add_method('SetDestinationPort', 
-                   'void', 
-                   [param('uint16_t', 'port')])
-    ## udp-header.h: void ns3::UdpHeader::SetSourcePort(uint16_t port) [member function]
-    cls.add_method('SetSourcePort', 
-                   'void', 
-                   [param('uint16_t', 'port')])
-    ## udp-header.h: uint16_t ns3::UdpHeader::GetSourcePort() const [member function]
-    cls.add_method('GetSourcePort', 
-                   'uint16_t', 
-                   [], 
-                   is_const=True)
-    ## udp-header.h: uint16_t ns3::UdpHeader::GetDestinationPort() const [member function]
-    cls.add_method('GetDestinationPort', 
-                   'uint16_t', 
-                   [], 
-                   is_const=True)
-    ## udp-header.h: void ns3::UdpHeader::InitializeChecksum(ns3::Ipv4Address source, ns3::Ipv4Address destination, uint8_t protocol) [member function]
-    cls.add_method('InitializeChecksum', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'destination'), param('uint8_t', 'protocol')])
-    ## udp-header.h: static ns3::TypeId ns3::UdpHeader::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## udp-header.h: ns3::TypeId ns3::UdpHeader::GetInstanceTypeId() const [member function]
-    cls.add_method('GetInstanceTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## udp-header.h: void ns3::UdpHeader::Print(std::ostream & os) const [member function]
-    cls.add_method('Print', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True, is_virtual=True)
-    ## udp-header.h: uint32_t ns3::UdpHeader::GetSerializedSize() const [member function]
-    cls.add_method('GetSerializedSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## udp-header.h: void ns3::UdpHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
-    cls.add_method('Serialize', 
-                   'void', 
-                   [param('ns3::Buffer::Iterator', 'start')], 
-                   is_const=True, is_virtual=True)
-    ## udp-header.h: uint32_t ns3::UdpHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
-    cls.add_method('Deserialize', 
-                   'uint32_t', 
-                   [param('ns3::Buffer::Iterator', 'start')], 
-                   is_virtual=True)
-    ## udp-header.h: bool ns3::UdpHeader::IsChecksumOk() const [member function]
-    cls.add_method('IsChecksumOk', 
-                   'bool', 
-                   [], 
-                   is_const=True)
     return
 
 def register_Ns3TcpHeader_methods(root_module, cls):
@@ -340,6 +186,160 @@ def register_Ns3TcpHeader_methods(root_module, cls):
                    is_const=True)
     return
 
+def register_Ns3UdpHeader_methods(root_module, cls):
+    ## udp-header.h: ns3::UdpHeader::UdpHeader(ns3::UdpHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::UdpHeader const &', 'arg0')])
+    ## udp-header.h: ns3::UdpHeader::UdpHeader() [constructor]
+    cls.add_constructor([])
+    ## udp-header.h: void ns3::UdpHeader::EnableChecksums() [member function]
+    cls.add_method('EnableChecksums', 
+                   'void', 
+                   [])
+    ## udp-header.h: void ns3::UdpHeader::SetDestinationPort(uint16_t port) [member function]
+    cls.add_method('SetDestinationPort', 
+                   'void', 
+                   [param('uint16_t', 'port')])
+    ## udp-header.h: void ns3::UdpHeader::SetSourcePort(uint16_t port) [member function]
+    cls.add_method('SetSourcePort', 
+                   'void', 
+                   [param('uint16_t', 'port')])
+    ## udp-header.h: uint16_t ns3::UdpHeader::GetSourcePort() const [member function]
+    cls.add_method('GetSourcePort', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## udp-header.h: uint16_t ns3::UdpHeader::GetDestinationPort() const [member function]
+    cls.add_method('GetDestinationPort', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## udp-header.h: void ns3::UdpHeader::InitializeChecksum(ns3::Ipv4Address source, ns3::Ipv4Address destination, uint8_t protocol) [member function]
+    cls.add_method('InitializeChecksum', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'destination'), param('uint8_t', 'protocol')])
+    ## udp-header.h: static ns3::TypeId ns3::UdpHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## udp-header.h: ns3::TypeId ns3::UdpHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## udp-header.h: void ns3::UdpHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## udp-header.h: uint32_t ns3::UdpHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## udp-header.h: void ns3::UdpHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## udp-header.h: uint32_t ns3::UdpHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## udp-header.h: bool ns3::UdpHeader::IsChecksumOk() const [member function]
+    cls.add_method('IsChecksumOk', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3Ipv4Interface_methods(root_module, cls):
+    ## ipv4-interface.h: ns3::Ipv4Interface::Ipv4Interface(ns3::Ipv4Interface const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv4Interface const &', 'arg0')])
+    ## ipv4-interface.h: static ns3::TypeId ns3::Ipv4Interface::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ipv4-interface.h: ns3::Ipv4Interface::Ipv4Interface() [constructor]
+    cls.add_constructor([])
+    ## ipv4-interface.h: ns3::Ptr<ns3::NetDevice> ns3::Ipv4Interface::GetDevice() const [member function]
+    cls.add_method('GetDevice', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## ipv4-interface.h: void ns3::Ipv4Interface::SetAddress(ns3::Ipv4Address a) [member function]
+    cls.add_method('SetAddress', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'a')])
+    ## ipv4-interface.h: void ns3::Ipv4Interface::SetNetworkMask(ns3::Ipv4Mask mask) [member function]
+    cls.add_method('SetNetworkMask', 
+                   'void', 
+                   [param('ns3::Ipv4Mask', 'mask')])
+    ## ipv4-interface.h: ns3::Ipv4Address ns3::Ipv4Interface::GetBroadcast() const [member function]
+    cls.add_method('GetBroadcast', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
+    ## ipv4-interface.h: ns3::Ipv4Mask ns3::Ipv4Interface::GetNetworkMask() const [member function]
+    cls.add_method('GetNetworkMask', 
+                   'ns3::Ipv4Mask', 
+                   [], 
+                   is_const=True)
+    ## ipv4-interface.h: void ns3::Ipv4Interface::SetMetric(uint16_t metric) [member function]
+    cls.add_method('SetMetric', 
+                   'void', 
+                   [param('uint16_t', 'metric')])
+    ## ipv4-interface.h: uint16_t ns3::Ipv4Interface::GetMetric() const [member function]
+    cls.add_method('GetMetric', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## ipv4-interface.h: ns3::Ipv4Address ns3::Ipv4Interface::GetAddress() const [member function]
+    cls.add_method('GetAddress', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
+    ## ipv4-interface.h: uint16_t ns3::Ipv4Interface::GetMtu() const [member function]
+    cls.add_method('GetMtu', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## ipv4-interface.h: bool ns3::Ipv4Interface::IsUp() const [member function]
+    cls.add_method('IsUp', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ipv4-interface.h: bool ns3::Ipv4Interface::IsDown() const [member function]
+    cls.add_method('IsDown', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ipv4-interface.h: void ns3::Ipv4Interface::SetUp() [member function]
+    cls.add_method('SetUp', 
+                   'void', 
+                   [])
+    ## ipv4-interface.h: void ns3::Ipv4Interface::SetDown() [member function]
+    cls.add_method('SetDown', 
+                   'void', 
+                   [])
+    ## ipv4-interface.h: void ns3::Ipv4Interface::Send(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Address dest) [member function]
+    cls.add_method('Send', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Address', 'dest')])
+    ## ipv4-interface.h: void ns3::Ipv4Interface::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## ipv4-interface.h: void ns3::Ipv4Interface::SendTo(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Address dest) [member function]
+    cls.add_method('SendTo', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Address', 'dest')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
+    return
+
 def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
     ## ipv4-l3-protocol.h: ns3::Ipv4L3Protocol::PROT_NUMBER [variable]
     cls.add_static_attribute('PROT_NUMBER', 'uint16_t const', is_const=True)
@@ -373,11 +373,11 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
     ## ipv4-l3-protocol.h: ns3::Ptr<ns3::Ipv4Interface> ns3::Ipv4L3Protocol::FindInterfaceForDevice(ns3::Ptr<const ns3::NetDevice> device) [member function]
     cls.add_method('FindInterfaceForDevice', 
                    'ns3::Ptr< ns3::Ipv4Interface >', 
-                   [param('ns3::Ptr< const ns3::NetDevice >', 'device')])
+                   [param('ns3::Ptr< ns3::NetDevice const >', 'device')])
     ## ipv4-l3-protocol.h: void ns3::Ipv4L3Protocol::Receive(ns3::Ptr<ns3::NetDevice> device, ns3::Ptr<const ns3::Packet> p, uint16_t protocol, ns3::Address const & from, ns3::Address const & to, ns3::NetDevice::PacketType packetType) [member function]
     cls.add_method('Receive', 
                    'void', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< const ns3::Packet >', 'p'), param('uint16_t', 'protocol'), param('ns3::Address const &', 'from'), param('ns3::Address const &', 'to'), param('ns3::NetDevice::PacketType', 'packetType')])
+                   [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::Packet const >', 'p'), param('uint16_t', 'protocol'), param('ns3::Address const &', 'from'), param('ns3::Address const &', 'to'), param('ns3::NetDevice::PacketType', 'packetType')])
     ## ipv4-l3-protocol.h: void ns3::Ipv4L3Protocol::Send(ns3::Ptr<ns3::Packet> packet, ns3::Ipv4Address source, ns3::Ipv4Address destination, uint8_t protocol) [member function]
     cls.add_method('Send', 
                    'void', 
@@ -405,7 +405,7 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
     ## ipv4-l3-protocol.h: void ns3::Ipv4L3Protocol::Lookup(ns3::Ipv4Header const & ipHeader, ns3::Ptr<ns3::Packet> packet, ns3::Callback<void,bool,const ns3::Ipv4Route&,ns3::Ptr<ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty> routeReply) [member function]
     cls.add_method('Lookup', 
                    'void', 
-                   [param('ns3::Ipv4Header const &', 'ipHeader'), param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Callback< void, bool, const ns3::Ipv4Route&, ns3::Ptr< ns3::Packet >, const ns3::Ipv4Header&, ns3::empty, ns3::empty >', 'routeReply')])
+                   [param('ns3::Ipv4Header const &', 'ipHeader'), param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Callback< void, bool, ns3::Ipv4Route const &, ns3::Ptr< ns3::Packet >, ns3::Ipv4Header const &, ns3::empty, ns3::empty >', 'routeReply')])
     ## ipv4-l3-protocol.h: uint32_t ns3::Ipv4L3Protocol::GetNRoutes() [member function]
     cls.add_method('GetNRoutes', 
                    'uint32_t', 
@@ -550,7 +550,7 @@ def register_Ns3Ipv4StaticRouting_methods(root_module, cls):
     ## ipv4-static-routing.h: bool ns3::Ipv4StaticRouting::RequestRoute(uint32_t ifIndex, ns3::Ipv4Header const & ipHeader, ns3::Ptr<ns3::Packet> packet, ns3::Callback<void,bool,const ns3::Ipv4Route&,ns3::Ptr<ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty> routeReply) [member function]
     cls.add_method('RequestRoute', 
                    'bool', 
-                   [param('uint32_t', 'ifIndex'), param('ns3::Ipv4Header const &', 'ipHeader'), param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Callback< void, bool, const ns3::Ipv4Route&, ns3::Ptr< ns3::Packet >, const ns3::Ipv4Header&, ns3::empty, ns3::empty >', 'routeReply')], 
+                   [param('uint32_t', 'ifIndex'), param('ns3::Ipv4Header const &', 'ipHeader'), param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Callback< void, bool, ns3::Ipv4Route const &, ns3::Ptr< ns3::Packet >, ns3::Ipv4Header const &, ns3::empty, ns3::empty >', 'routeReply')], 
                    is_virtual=True)
     ## ipv4-static-routing.h: bool ns3::Ipv4StaticRouting::RequestIfIndex(ns3::Ipv4Address destination, uint32_t & ifIndex) [member function]
     cls.add_method('RequestIfIndex', 

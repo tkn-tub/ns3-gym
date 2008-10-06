@@ -42,17 +42,19 @@ class TestSimulator(unittest.TestCase):
         self.assertEqual(self._args_received, "args")
         self.assertEqual(self._cb_time.GetSeconds(), 123.0)
 
-    if 0: # these tests are known to fail for now (pybindgen limitation)
-        def testTime_EQ(self):
-            self.assert_(ns3.Seconds(123) == ns3.Seconds(123))
-        def testTime_GE(self):
-            self.assert_(ns3.Seconds(123) >= ns3.Seconds(123))
-        def testTime_LE(self):
-            self.assert_(ns3.Seconds(123) <= ns3.Seconds(123))
-        def testTime_GT(self):
-            self.assert_(ns3.Seconds(124) > ns3.Seconds(123))
-        def testTime_LT(self):
-            self.assert_(ns3.Seconds(123) < ns3.Seconds(124))
+    def testTimeComparison(self):
+        self.assert_(ns3.Seconds(123) == ns3.Seconds(123))
+        self.assert_(ns3.Seconds(123) >= ns3.Seconds(123))
+        self.assert_(ns3.Seconds(123) <= ns3.Seconds(123))
+        self.assert_(ns3.Seconds(124) > ns3.Seconds(123))
+        self.assert_(ns3.Seconds(123) < ns3.Seconds(124))
+
+    def testTimeNumericOperations(self):
+        self.assertEqual(ns3.Seconds(10) + ns3.Seconds(5), ns3.Seconds(15))
+        self.assertEqual(ns3.Seconds(10) - ns3.Seconds(5), ns3.Seconds(5))
+
+        v1 = ns3.Scalar(5)*ns3.Seconds(10)
+        self.assertEqual(v1, ns3.Seconds(50))
 
     def testConfig(self):
         ns3.Config.Set("ns3::OnOffApplication::PacketSize", ns3.UintegerValue(123))

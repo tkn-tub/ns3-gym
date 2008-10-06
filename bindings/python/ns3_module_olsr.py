@@ -43,40 +43,70 @@ def register_types_ns3_Config(module):
 def register_types_ns3_olsr(module):
     root_module = module.get_root()
     
+    ## olsr-agent.h: ns3::olsr::Agent [class]
+    module.add_class('Agent', parent=root_module['ns3::Object'])
     ## olsr-header.h: ns3::olsr::MessageHeader [class]
     module.add_class('MessageHeader', parent=root_module['ns3::Header'])
     ## olsr-header.h: ns3::olsr::MessageHeader::MessageType [enumeration]
     module.add_enum('MessageType', ['HELLO_MESSAGE', 'TC_MESSAGE', 'MID_MESSAGE', 'HNA_MESSAGE'], outer_class=root_module['ns3::olsr::MessageHeader'])
-    ## olsr-header.h: ns3::olsr::MessageHeader::Mid [struct]
-    module.add_class('Mid', outer_class=root_module['ns3::olsr::MessageHeader'])
     ## olsr-header.h: ns3::olsr::MessageHeader::Hello [struct]
     module.add_class('Hello', outer_class=root_module['ns3::olsr::MessageHeader'])
     ## olsr-header.h: ns3::olsr::MessageHeader::Hello::LinkMessage [struct]
     module.add_class('LinkMessage', outer_class=root_module['ns3::olsr::MessageHeader::Hello'])
-    ## olsr-header.h: ns3::olsr::MessageHeader::Tc [struct]
-    module.add_class('Tc', outer_class=root_module['ns3::olsr::MessageHeader'])
     ## olsr-header.h: ns3::olsr::MessageHeader::Hna [struct]
     module.add_class('Hna', outer_class=root_module['ns3::olsr::MessageHeader'])
     ## olsr-header.h: ns3::olsr::MessageHeader::Hna::Association [struct]
     module.add_class('Association', outer_class=root_module['ns3::olsr::MessageHeader::Hna'])
-    ## olsr-agent.h: ns3::olsr::Agent [class]
-    module.add_class('Agent', parent=root_module['ns3::Object'])
+    ## olsr-header.h: ns3::olsr::MessageHeader::Mid [struct]
+    module.add_class('Mid', outer_class=root_module['ns3::olsr::MessageHeader'])
+    ## olsr-header.h: ns3::olsr::MessageHeader::Tc [struct]
+    module.add_class('Tc', outer_class=root_module['ns3::olsr::MessageHeader'])
     ## olsr-header.h: ns3::olsr::PacketHeader [class]
     module.add_class('PacketHeader', parent=root_module['ns3::Header'])
+    module.add_container('std::vector< ns3::olsr::MessageHeader::Hello::LinkMessage >', 'ns3::olsr::MessageHeader::Hello::LinkMessage', container_type='vector')
+    module.add_container('std::vector< ns3::olsr::MessageHeader::Hna::Association >', 'ns3::olsr::MessageHeader::Hna::Association', container_type='vector')
 
 def register_methods(root_module):
+    register_Ns3OlsrAgent_methods(root_module, root_module['ns3::olsr::Agent'])
     register_Ns3OlsrMessageHeader_methods(root_module, root_module['ns3::olsr::MessageHeader'])
-    register_Ns3OlsrMessageHeaderMid_methods(root_module, root_module['ns3::olsr::MessageHeader::Mid'])
     register_Ns3OlsrMessageHeaderHello_methods(root_module, root_module['ns3::olsr::MessageHeader::Hello'])
     register_Ns3OlsrMessageHeaderHelloLinkMessage_methods(root_module, root_module['ns3::olsr::MessageHeader::Hello::LinkMessage'])
-    register_Ns3OlsrMessageHeaderTc_methods(root_module, root_module['ns3::olsr::MessageHeader::Tc'])
     register_Ns3OlsrMessageHeaderHna_methods(root_module, root_module['ns3::olsr::MessageHeader::Hna'])
     register_Ns3OlsrMessageHeaderHnaAssociation_methods(root_module, root_module['ns3::olsr::MessageHeader::Hna::Association'])
-    register_Ns3OlsrAgent_methods(root_module, root_module['ns3::olsr::Agent'])
+    register_Ns3OlsrMessageHeaderMid_methods(root_module, root_module['ns3::olsr::MessageHeader::Mid'])
+    register_Ns3OlsrMessageHeaderTc_methods(root_module, root_module['ns3::olsr::MessageHeader::Tc'])
     register_Ns3OlsrPacketHeader_methods(root_module, root_module['ns3::olsr::PacketHeader'])
     return
 
+def register_Ns3OlsrAgent_methods(root_module, cls):
+    ## olsr-agent.h: ns3::olsr::Agent::Agent(ns3::olsr::Agent const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::olsr::Agent const &', 'arg0')])
+    ## olsr-agent.h: ns3::olsr::Agent::Agent() [constructor]
+    cls.add_constructor([])
+    ## olsr-agent.h: static ns3::TypeId ns3::olsr::Agent::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## olsr-agent.h: void ns3::olsr::Agent::SetNode(ns3::Ptr<ns3::Node> node) [member function]
+    cls.add_method('SetNode', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## olsr-agent.h: void ns3::olsr::Agent::SetMainInterface(uint32_t interface) [member function]
+    cls.add_method('SetMainInterface', 
+                   'void', 
+                   [param('uint32_t', 'interface')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## olsr-agent.h: void ns3::olsr::Agent::Start() [member function]
+    cls.add_method('Start', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
 def register_Ns3OlsrMessageHeader_methods(root_module, cls):
+    cls.add_output_stream_operator()
     ## olsr-header.h: ns3::olsr::MessageHeader::MessageHeader(ns3::olsr::MessageHeader const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::olsr::MessageHeader const &', 'arg0')])
     ## olsr-header.h: ns3::olsr::MessageHeader::MessageHeader() [constructor]
@@ -201,35 +231,6 @@ def register_Ns3OlsrMessageHeader_methods(root_module, cls):
     cls.add_method('SetVTime', 
                    'void', 
                    [param('ns3::Time', 'time')])
-    cls.add_output_stream_operator()
-    return
-
-def register_Ns3OlsrMessageHeaderMid_methods(root_module, cls):
-    ## olsr-header.h: ns3::olsr::MessageHeader::Mid::Mid() [constructor]
-    cls.add_constructor([])
-    ## olsr-header.h: ns3::olsr::MessageHeader::Mid::Mid(ns3::olsr::MessageHeader::Mid const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::olsr::MessageHeader::Mid const &', 'arg0')])
-    ## olsr-header.h: uint32_t ns3::olsr::MessageHeader::Mid::Deserialize(ns3::Buffer::Iterator start, uint32_t messageSize) [member function]
-    cls.add_method('Deserialize', 
-                   'uint32_t', 
-                   [param('ns3::Buffer::Iterator', 'start'), param('uint32_t', 'messageSize')])
-    ## olsr-header.h: uint32_t ns3::olsr::MessageHeader::Mid::GetSerializedSize() const [member function]
-    cls.add_method('GetSerializedSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## olsr-header.h: void ns3::olsr::MessageHeader::Mid::Print(std::ostream & os) const [member function]
-    cls.add_method('Print', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True)
-    ## olsr-header.h: void ns3::olsr::MessageHeader::Mid::Serialize(ns3::Buffer::Iterator start) const [member function]
-    cls.add_method('Serialize', 
-                   'void', 
-                   [param('ns3::Buffer::Iterator', 'start')], 
-                   is_const=True)
-    ## olsr-header.h: ns3::olsr::MessageHeader::Mid::interfaceAddresses [variable]
-    cls.add_instance_attribute('interfaceAddresses', 'std::vector< ns3::Ipv4Address >', is_const=False)
     return
 
 def register_Ns3OlsrMessageHeaderHello_methods(root_module, cls):
@@ -284,36 +285,6 @@ def register_Ns3OlsrMessageHeaderHelloLinkMessage_methods(root_module, cls):
     cls.add_constructor([])
     return
 
-def register_Ns3OlsrMessageHeaderTc_methods(root_module, cls):
-    ## olsr-header.h: ns3::olsr::MessageHeader::Tc::Tc() [constructor]
-    cls.add_constructor([])
-    ## olsr-header.h: ns3::olsr::MessageHeader::Tc::Tc(ns3::olsr::MessageHeader::Tc const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::olsr::MessageHeader::Tc const &', 'arg0')])
-    ## olsr-header.h: uint32_t ns3::olsr::MessageHeader::Tc::Deserialize(ns3::Buffer::Iterator start, uint32_t messageSize) [member function]
-    cls.add_method('Deserialize', 
-                   'uint32_t', 
-                   [param('ns3::Buffer::Iterator', 'start'), param('uint32_t', 'messageSize')])
-    ## olsr-header.h: uint32_t ns3::olsr::MessageHeader::Tc::GetSerializedSize() const [member function]
-    cls.add_method('GetSerializedSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## olsr-header.h: void ns3::olsr::MessageHeader::Tc::Print(std::ostream & os) const [member function]
-    cls.add_method('Print', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True)
-    ## olsr-header.h: void ns3::olsr::MessageHeader::Tc::Serialize(ns3::Buffer::Iterator start) const [member function]
-    cls.add_method('Serialize', 
-                   'void', 
-                   [param('ns3::Buffer::Iterator', 'start')], 
-                   is_const=True)
-    ## olsr-header.h: ns3::olsr::MessageHeader::Tc::ansn [variable]
-    cls.add_instance_attribute('ansn', 'uint16_t', is_const=False)
-    ## olsr-header.h: ns3::olsr::MessageHeader::Tc::neighborAddresses [variable]
-    cls.add_instance_attribute('neighborAddresses', 'std::vector< ns3::Ipv4Address >', is_const=False)
-    return
-
 def register_Ns3OlsrMessageHeaderHna_methods(root_module, cls):
     ## olsr-header.h: ns3::olsr::MessageHeader::Hna::Hna() [constructor]
     cls.add_constructor([])
@@ -353,34 +324,66 @@ def register_Ns3OlsrMessageHeaderHnaAssociation_methods(root_module, cls):
     cls.add_constructor([])
     return
 
-def register_Ns3OlsrAgent_methods(root_module, cls):
-    ## olsr-agent.h: ns3::olsr::Agent::Agent(ns3::olsr::Agent const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::olsr::Agent const &', 'arg0')])
-    ## olsr-agent.h: ns3::olsr::Agent::Agent() [constructor]
+def register_Ns3OlsrMessageHeaderMid_methods(root_module, cls):
+    ## olsr-header.h: ns3::olsr::MessageHeader::Mid::Mid() [constructor]
     cls.add_constructor([])
-    ## olsr-agent.h: static ns3::TypeId ns3::olsr::Agent::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
+    ## olsr-header.h: ns3::olsr::MessageHeader::Mid::Mid(ns3::olsr::MessageHeader::Mid const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::olsr::MessageHeader::Mid const &', 'arg0')])
+    ## olsr-header.h: uint32_t ns3::olsr::MessageHeader::Mid::Deserialize(ns3::Buffer::Iterator start, uint32_t messageSize) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start'), param('uint32_t', 'messageSize')])
+    ## olsr-header.h: uint32_t ns3::olsr::MessageHeader::Mid::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
                    [], 
-                   is_static=True)
-    ## olsr-agent.h: void ns3::olsr::Agent::SetNode(ns3::Ptr<ns3::Node> node) [member function]
-    cls.add_method('SetNode', 
+                   is_const=True)
+    ## olsr-header.h: void ns3::olsr::MessageHeader::Mid::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## olsr-agent.h: void ns3::olsr::Agent::SetMainInterface(uint32_t interface) [member function]
-    cls.add_method('SetMainInterface', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True)
+    ## olsr-header.h: void ns3::olsr::MessageHeader::Mid::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
                    'void', 
-                   [param('uint32_t', 'interface')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## olsr-agent.h: void ns3::olsr::Agent::Start() [member function]
-    cls.add_method('Start', 
-                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True)
+    ## olsr-header.h: ns3::olsr::MessageHeader::Mid::interfaceAddresses [variable]
+    cls.add_instance_attribute('interfaceAddresses', 'std::vector< ns3::Ipv4Address >', is_const=False)
+    return
+
+def register_Ns3OlsrMessageHeaderTc_methods(root_module, cls):
+    ## olsr-header.h: ns3::olsr::MessageHeader::Tc::Tc() [constructor]
+    cls.add_constructor([])
+    ## olsr-header.h: ns3::olsr::MessageHeader::Tc::Tc(ns3::olsr::MessageHeader::Tc const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::olsr::MessageHeader::Tc const &', 'arg0')])
+    ## olsr-header.h: uint32_t ns3::olsr::MessageHeader::Tc::Deserialize(ns3::Buffer::Iterator start, uint32_t messageSize) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start'), param('uint32_t', 'messageSize')])
+    ## olsr-header.h: uint32_t ns3::olsr::MessageHeader::Tc::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
                    [], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_const=True)
+    ## olsr-header.h: void ns3::olsr::MessageHeader::Tc::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True)
+    ## olsr-header.h: void ns3::olsr::MessageHeader::Tc::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True)
+    ## olsr-header.h: ns3::olsr::MessageHeader::Tc::ansn [variable]
+    cls.add_instance_attribute('ansn', 'uint16_t', is_const=False)
+    ## olsr-header.h: ns3::olsr::MessageHeader::Tc::neighborAddresses [variable]
+    cls.add_instance_attribute('neighborAddresses', 'std::vector< ns3::Ipv4Address >', is_const=False)
     return
 
 def register_Ns3OlsrPacketHeader_methods(root_module, cls):
+    cls.add_output_stream_operator()
     ## olsr-header.h: ns3::olsr::PacketHeader::PacketHeader(ns3::olsr::PacketHeader const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::olsr::PacketHeader const &', 'arg0')])
     ## olsr-header.h: ns3::olsr::PacketHeader::PacketHeader() [constructor]
@@ -433,7 +436,6 @@ def register_Ns3OlsrPacketHeader_methods(root_module, cls):
     cls.add_method('SetPacketSequenceNumber', 
                    'void', 
                    [param('uint16_t', 'seqnum')])
-    cls.add_output_stream_operator()
     return
 
 def register_functions(root_module):

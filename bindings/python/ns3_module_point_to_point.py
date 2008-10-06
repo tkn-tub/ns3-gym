@@ -126,6 +126,15 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
     cls.add_method('SetAddress', 
                    'void', 
                    [param('ns3::Mac48Address', 'addr')])
+    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetFrameSize(uint16_t frameSize) [member function]
+    cls.add_method('SetFrameSize', 
+                   'void', 
+                   [param('uint16_t', 'frameSize')])
+    ## point-to-point-net-device.h: uint16_t ns3::PointToPointNetDevice::GetFrameSize() const [member function]
+    cls.add_method('GetFrameSize', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
     ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetName(std::string const name) [member function]
     cls.add_method('SetName', 
                    'void', 
@@ -234,12 +243,12 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
     ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty> cb) [member function]
     cls.add_method('SetReceiveCallback', 
                    'void', 
-                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const&, ns3::empty, ns3::empty >', 'cb')], 
+                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty >', 'cb')], 
                    is_virtual=True)
     ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetPromiscReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> cb) [member function]
     cls.add_method('SetPromiscReceiveCallback', 
                    'void', 
-                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], 
+                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType >', 'cb')], 
                    is_virtual=True)
     ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::SupportsSendFrom() const [member function]
     cls.add_method('SupportsSendFrom', 

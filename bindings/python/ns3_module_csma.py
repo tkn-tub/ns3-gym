@@ -5,10 +5,10 @@ def register_types(module):
     
     ## csma-channel.h: ns3::WireState [enumeration]
     module.add_enum('WireState', ['IDLE', 'TRANSMITTING', 'PROPAGATING'])
-    ## csma-channel.h: ns3::CsmaDeviceRec [class]
-    module.add_class('CsmaDeviceRec')
     ## backoff.h: ns3::Backoff [class]
     module.add_class('Backoff')
+    ## csma-channel.h: ns3::CsmaDeviceRec [class]
+    module.add_class('CsmaDeviceRec')
     ## csma-channel.h: ns3::CsmaChannel [class]
     module.add_class('CsmaChannel', parent=root_module['ns3::Channel'])
     ## csma-net-device.h: ns3::CsmaNetDevice [class]
@@ -57,27 +57,10 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
-    register_Ns3CsmaDeviceRec_methods(root_module, root_module['ns3::CsmaDeviceRec'])
     register_Ns3Backoff_methods(root_module, root_module['ns3::Backoff'])
+    register_Ns3CsmaDeviceRec_methods(root_module, root_module['ns3::CsmaDeviceRec'])
     register_Ns3CsmaChannel_methods(root_module, root_module['ns3::CsmaChannel'])
     register_Ns3CsmaNetDevice_methods(root_module, root_module['ns3::CsmaNetDevice'])
-    return
-
-def register_Ns3CsmaDeviceRec_methods(root_module, cls):
-    ## csma-channel.h: ns3::CsmaDeviceRec::devicePtr [variable]
-    cls.add_instance_attribute('devicePtr', 'ns3::Ptr< ns3::CsmaNetDevice >', is_const=False)
-    ## csma-channel.h: ns3::CsmaDeviceRec::active [variable]
-    cls.add_instance_attribute('active', 'bool', is_const=False)
-    ## csma-channel.h: ns3::CsmaDeviceRec::CsmaDeviceRec(ns3::CsmaDeviceRec const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::CsmaDeviceRec const &', 'arg0')])
-    ## csma-channel.h: ns3::CsmaDeviceRec::CsmaDeviceRec() [constructor]
-    cls.add_constructor([])
-    ## csma-channel.h: ns3::CsmaDeviceRec::CsmaDeviceRec(ns3::Ptr<ns3::CsmaNetDevice> device) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::CsmaNetDevice >', 'device')])
-    ## csma-channel.h: bool ns3::CsmaDeviceRec::IsActive() [member function]
-    cls.add_method('IsActive', 
-                   'bool', 
-                   [])
     return
 
 def register_Ns3Backoff_methods(root_module, cls):
@@ -112,6 +95,23 @@ def register_Ns3Backoff_methods(root_module, cls):
     ## backoff.h: void ns3::Backoff::IncrNumRetries() [member function]
     cls.add_method('IncrNumRetries', 
                    'void', 
+                   [])
+    return
+
+def register_Ns3CsmaDeviceRec_methods(root_module, cls):
+    ## csma-channel.h: ns3::CsmaDeviceRec::devicePtr [variable]
+    cls.add_instance_attribute('devicePtr', 'ns3::Ptr< ns3::CsmaNetDevice >', is_const=False)
+    ## csma-channel.h: ns3::CsmaDeviceRec::active [variable]
+    cls.add_instance_attribute('active', 'bool', is_const=False)
+    ## csma-channel.h: ns3::CsmaDeviceRec::CsmaDeviceRec(ns3::CsmaDeviceRec const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CsmaDeviceRec const &', 'arg0')])
+    ## csma-channel.h: ns3::CsmaDeviceRec::CsmaDeviceRec() [constructor]
+    cls.add_constructor([])
+    ## csma-channel.h: ns3::CsmaDeviceRec::CsmaDeviceRec(ns3::Ptr<ns3::CsmaNetDevice> device) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::CsmaNetDevice >', 'device')])
+    ## csma-channel.h: bool ns3::CsmaDeviceRec::IsActive() [member function]
+    cls.add_method('IsActive', 
+                   'bool', 
                    [])
     return
 
@@ -381,12 +381,12 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
     ## csma-net-device.h: void ns3::CsmaNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty> cb) [member function]
     cls.add_method('SetReceiveCallback', 
                    'void', 
-                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const&, ns3::empty, ns3::empty >', 'cb')], 
+                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty >', 'cb')], 
                    is_virtual=True)
     ## csma-net-device.h: void ns3::CsmaNetDevice::SetPromiscReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> cb) [member function]
     cls.add_method('SetPromiscReceiveCallback', 
                    'void', 
-                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType >', 'cb')], 
+                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType >', 'cb')], 
                    is_virtual=True)
     ## csma-net-device.h: bool ns3::CsmaNetDevice::SupportsSendFrom() const [member function]
     cls.add_method('SupportsSendFrom', 
