@@ -241,7 +241,10 @@ bool
 Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                          const Address &from, const Address &to, NetDevice::PacketType packetType, bool promiscuous)
 {
-  NS_LOG_FUNCTION(device->GetName ());
+  NS_LOG_DEBUG("Node " << GetId () << " ReceiveFromDevice:  dev "
+               << device->GetIfIndex () << " ("
+               << device->GetName () << " type " << device->GetInstanceTypeId ().GetName ()
+               << ") Packet UID " << packet->GetUid ());
   bool found = false;
 
   for (ProtocolHandlerList::iterator i = m_handlers.begin ();
