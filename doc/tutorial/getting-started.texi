@@ -55,7 +55,7 @@ the @command{ns-3} development team.  The repositories of interest to you will
 be prefixed with ``ns-3''.  The current development snapshot (unreleased)
 of @command{ns-3} may be found at: @uref{http://code.nsnam.org/ns-3-dev/}.
 Official releases of @command{ns-3} will be numbered as @code{ns-3.<release>}
-with any requred  hotfixes added as minor release numbers.  For example, a 
+with any required  hotfixes added as minor release numbers.  For example, a 
 second hotfix to a hypothetical release nine of @command{ns-3} would be
 numbered @code{ns-3.9.2}.
 
