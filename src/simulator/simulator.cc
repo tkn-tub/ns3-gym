@@ -210,7 +210,7 @@ EventId
 Simulator::Schedule (Time const &time, const Ptr<EventImpl> &ev)
 {
   NS_LOG_FUNCTION (time << ev);
-  return GetImpl ()->Schedule (Now () + time, ev);
+  return GetImpl ()->Schedule (time, ev);
 }
 
 EventId

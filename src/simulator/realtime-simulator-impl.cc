@@ -169,47 +169,51 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
   NS_LOG_FUNCTION_NOARGS ();
   //
   // The idea here is to wait until the next event comes due.  In the case of
-  // a simulation not locked to realtime, the next event is due immediately and
-  // we jump time forward -- there is no real time consumed between events.  In
-  // the case of a realtime simulation, we do want real time to be consumed 
-  // between events.  It is the synchronizer that causes real time to be 
-  // consumed.
+  // a realtime simulation, we want real time to be consumed between events.  
+  // It is the realtime synchronizer that causes real time to be consumed by
+  // doing some kind of a wait.
   //
-  // Now, there is a possibility that a wait down in the call to the synchronizer
-  // will be interrupted.  In this case, we need to re-evaluate how long to wait 
-  // until the next event since the interruption may have been caused by an
-  // event inserted before the one that was on the head of the list when we 
-  // started.
+  // We need to be able to have external events (such as a packet reception event)
+  // cause us to re-evaluate our state.  The way this works is that the synchronizer
+  // gets interrupted and returs.  So, there is a possibility that things may change
+  // out from under us dynamically.  In this case, we need to re-evaluate how long to 
+  // wait in a for-loop until we have waited sucessfully (until a timeout) for the 
+  // event at the head of the event list.
   //
-  // m_synchronizer->Synchronize will return true if the wait was completed
-  // without interruption, otherwise it will return false.  So our goal is to
-  // sit in a for loop trying to synchronize until it returns true.  If this 
-  // happens we will have successfully synchronized the execution time of the
-  // next event with the wall clock time of the synchronizer.
+  // m_synchronizer->Synchronize will return true if the wait was completed without 
+  // interruption, otherwise it will return false indicating that something has changed
+  // out from under us.  If we sit in the for-loop trying to synchronize until 
+  // Synchronize() returns true, we will have successfully synchronized the execution 
+  // time of the next event with the wall clock time of the synchronizer.
   //
 
   for (;;) 
     {
       uint64_t tsDelay = 0;
-      uint64_t tsNow = m_currentTs;
       uint64_t tsNext = 0;
+
       //
-      // NextTs peeks into the event list and returns the time stamp of the first 
-      // event in the list.  We need to protect this kind of access with a critical
-      // section.
-      // 
+      // It is important to understand that m_currentTs is interpreted only as the 
+      // timestamp  of the last event we executed.  Current time can a bit of a 
+      // slippery concept in realtime mode.  What we have here is a discrete event 
+      // simulator, so the last event is, by defintion, executed entirely at a single
+      //  discrete time.  This is the definition of m_currentTs.  It really has 
+      // nothing to do with the current real time, except that we are trying to arrange
+      // that at the instant of the beginning of event execution, the current real time
+      // and m_currentTs coincide.
+      //
+      // We use tsNow as the indication of the current real time.
+      //
+      uint64_t tsNow;
+
       { 
         CriticalSection cs (m_mutex);
-
-        NS_ASSERT_MSG (NextTs () >= m_currentTs, 
-          "RealtimeSimulatorImpl::ProcessOneEvent (): "
-          "Next event time earlier than m_currentTs (list order error)");
         //
         // Since we are in realtime mode, the time to delay has got to be the 
         // difference between the current realtime and the timestamp of the next 
         // event.  Since m_currentTs is actually the timestamp of the last event we 
         // executed, it's not particularly meaningful for us here since real time has
-        // since elapsed.  
+        // certainly elapsed since it was last updated.
         //
         // It is possible that the current realtime has drifted past the next event
         // time so we need to be careful about that and not delay in that case.
@@ -217,9 +221,25 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
         NS_ASSERT_MSG (m_synchronizer->Realtime (), 
           "RealtimeSimulatorImpl::ProcessOneEvent (): Synchronizer reports not Realtime ()");
 
+        //
+        // tsNow is set to the normalized current real time.  When the simulation was
+        // started, the current real time was effectively set to zero; so tsNow is
+        // the current "real" simulation time.
+        //
+        // tsNext is the simulation time of the next event we want to execute.
+        //
         tsNow = m_synchronizer->GetCurrentRealtime ();
         tsNext = NextTs ();
 
+        //
+        // tsDelay is therefore the real time we need to delay in order to bring the
+        // real time in sync with the simulation time.  If we wait for this amount of
+        // real time, we will accomplish moving the simulation time at the same rate
+        // as the real time.  This is typically called "pacing" the simulation time.
+        //
+        // We do have to be careful if we are falling behind.  If so, tsDelay must be
+        // zero.  If we're late, don't dawdle.
+        //
         if (tsNext <= tsNow)
           {
             tsDelay = 0;
@@ -229,13 +249,24 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
             tsDelay = tsNext - tsNow;
           }
       
+        //
+        // We've figured out how long we need to delay in order to pace the 
+        // simulation time with the real time.  We're going to sleep, but need
+        // to work with the synchronizer to make sure we're awakened if something 
+        // external happens (like a packet is received).  This next line resets
+        // the synchronizer so that any future event will cause it to interrupt.
+        //
         m_synchronizer->SetCondition (false);
       }
 
       //
-      // So, we have a time to delay.  This time may actually not be valid anymore
-      // since we released the critical section and a Schedule may have snuck in just
-      // after the closing brace above.
+      // We have a time to delay.  This time may actually not be valid anymore
+      // since we released the critical section immediately above, and a real-time
+      // ScheduleReal or ScheduleRealNow may have snuck in, well, between the 
+      // closing brace above and this comment so to speak.  If this is the case, 
+      // that schedule operation will have done a synchronizer Signal() that 
+      // will set the condition variable to true and cause the Synchronize call 
+      // below to return immediately.
       //
       // It's easiest to understand if you just consider a short tsDelay that only
       // requires a SpinWait down in the synchronizer.  What will happen is that 
@@ -247,105 +278,112 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
       // until the condition variable becomes true.  A true condition indicates that
       // the wait should stop.  The condition is set to true by one of the Schedule
       // methods of the simulator; so if we are in a wait down in Synchronize, and
-      // a Simulator::Schedule is done, the wait down in Synchronize will exit and
-      // Synchronize will return (false).
+      // a Simulator::ScheduleReal is done, the wait down in Synchronize will exit and
+      // Synchronize will return false.  This means we have not actually synchronized
+      // to the event expiration time.  If no real-time schedule operation is done
+      // while down in Synchronize, the wait will time out and Synchronize will return 
+      // true.  This indicates that we have synchronized to the event time.
       //
-      // So, we set this condition to false in a critical section.  The code that
-      // sets the condition (Simulator::Schedule) also runs protected by the same
-      // critical section mutex -- there is no race.  We call Synchronize -- if no
-      // Simulator::Schedule is done, the waits (sleep- and spin-wait) will complete
-      // and Synchronize will return true.  If a Schedule is done before we get to 
-      // Synchronize, the Synchronize code will check the condition before going to
-      // sleep.  If a Schedule happens while we are sleeping, we let the kernel wake
-      // us up.
+      // So we need to stay in this for loop, looking for the next event timestamp and 
+      // attempting to sleep until its due.  If we've slept until the timestamp is due, 
+      // Synchronize returns true and we break out of the sync loop.  If an external
+      // event happens that requires a re-schedule, Synchronize returns false and
+      // we re-evaluate our timing by continuing in the loop.  
       //
-      // So the bottom line is that we just stay in this for loop, looking for the
-      // next timestamp and attempting to sleep until its due.  If we've slept until
-      // the timestamp is due, Synchronize() returns true and we break out of the 
-      //sync loop.  If we're interrupted we continue in the loop.  We may find that
-      // the next timestamp is actually earlier than we thought, but we continue 
-      // around the loop and reevaluate and wait for that one correctly.
+      // It is expected that tsDelay become shorter as external events interrupt our
+      // waits.
       //
       if (m_synchronizer->Synchronize (tsNow, tsDelay))
         {
           NS_LOG_LOGIC ("Interrupted ...");
           break;
         }
+ 
+      //
+      // If we get to this point, we have been interrupted during a wait by a real-time
+      // schedule operation.  This means all bets are off regarding tsDelay and we need
+      // to re-evaluate what it is we want to do.  We'll loop back around in the 
+      // for-loop and start again from scratch.
+      //
     }
 
   //
-  // Okay, now more words.  We have slept without interruption until the 
-  // timestamp we found at the head of the event list when we started the sleep.
-  // We are now outside a critical section, so another schedule operation can
-  // sneak in.  What does this mean?  The only thing that can "go wrong" is if
-  // the new event was moved in ahead of the timestamp for which we waited.
-  //
-  // If you think about it, this is not a problem, since the best we can 
-  // possibly do is to execute the event as soon as we can execute it.  We'll
-  // be a little late, but we were late anyway.
-  //
-  // So we just go ahead and pull the first event off of the list, even though
-  // it may be the case that it's not actually the one we waited for.
-  //
-  // One final tidbit is, "what the heck time is it anyway"?  The simulator is
-  // going to want to get a timestamp from the next event and wait until the
-  // wall clock time is equal to the timestamp.  At the point when those times
-  // are the same (roughly) we get to this point and set the m_currentTs below.
-  // That's straightforward here, but you might ask, how does the next event get
-  // the time when it is inserted from an external source?
-  //
-  // The method RealtimeSimulatorImpl::ScheduleNow takes makes an event and 
-  // needs to schedule that event for immediate execution.  If the simulator is 
-  // not locked to a realtime source, the current time is m_currentTs.  If it is
-  // locked to a realtime source, we need to use the real current real time.
-  // This real time is then used to set the event execution time and will be 
-  // read by the next.GetTs below and will set the current simulation time.
+  // If we break out of the for-loop above, we have waited until the time specified
+  // by the event that was at the head of the event list when we started the process.
+  // Since there is a bunch of code that was executed outside a critical section (the
+  // Synchronize call) we cannot be sure that the event at the head of the event list
+  // is the one we think it is.  What we can be sure of is that it is time to execute
+  // whatever event is at the head of this list if the list is in time order.
   //
   EventId next;
 
   { 
     CriticalSection cs (m_mutex);
 
+    // 
+    // We do know we're waiting for an event, so there had better be an event on the 
+    // event queue.  Let's pull it off.  When we release the critical section, the
+    // event we're working on won't be on the list and so subsequent operations won't
+    // mess with us.
+    //
     NS_ASSERT_MSG (m_events->IsEmpty () == false, 
       "RealtimeSimulatorImpl::ProcessOneEvent(): event queue is empty");
-
     next = m_events->RemoveNext ();
     --m_unscheduledEvents;
+
+    //
+    // We cannot make any assumption that "next" is the same event we originally waited 
+    // for.  We can only assume that only that it must be due and cannot cause time 
+    // to move backward.
+    //
+    NS_ASSERT_MSG (next.GetTs () >= m_currentTs,
+                   "RealtimeSimulatorImpl::ProcessOneEvent(): "
+                   "next.GetTs() earlier than m_currentTs (list order error)");
+    NS_LOG_LOGIC ("handle " << next.GetTs ());
+
+    // 
+    // Update the current simulation time to be the timestamp of the event we're 
+    // executing.  From the rest of the simulation's point of view, simulation time
+    // is frozen until the next event is executed.
+    //
+    m_currentTs = next.GetTs ();
+    m_currentUid = next.GetUid ();
+
+    // 
+    // We're about to run the event and we've done our best to synchronize this
+    // event execution time to real time.  Now, if we're in SYNC_HARD_LIMIT mode
+    // we have to decide if we've done a good enough job and if we haven't, we've
+    // been asked to commit ritual suicide.
+    //
+    // We check the simulation time against the current real time to make this
+    // judgement.
+    //
+    if (m_synchronizationMode == SYNC_HARD_LIMIT)
+      {
+        uint64_t tsFinal = m_synchronizer->GetCurrentRealtime ();
+        uint64_t tsJitter;
+
+        if (tsFinal >= m_currentTs)
+          {
+            tsJitter = tsFinal - m_currentTs;
+          }
+        else
+          {
+            tsJitter = m_currentTs - tsFinal;
+          }
+
+        if (tsJitter > static_cast<uint64_t>(m_hardLimit.GetTimeStep ()))
+          {
+            NS_FATAL_ERROR ("RealtimeSimulatorImpl::ProcessOneEvent (): "
+                            "Hard real-time limit exceeded (jitter = " << tsJitter << ")");
+          }
+      }
   }
 
-  NS_ASSERT_MSG (next.GetTs () >= m_currentTs,
-    "RealtimeSimulatorImpl::ProcessOneEvent(): "
-    "next.GetTs() earlier than m_currentTs (list order error)");
-  NS_LOG_LOGIC ("handle " << next.GetTs ());
-  m_currentTs = next.GetTs ();
-  m_currentUid = next.GetUid ();
-
-  // 
-  // We're about to run the event and we've done our best to synchronize this
-  // event execution time to real time.  Now, if we're in SYNC_HARD_LIMIT mode
-  // we have to decide if we've done a good enough job and if we haven't, we've
-  // been asked to commit ritual suicide.
   //
-  if (m_synchronizationMode == SYNC_HARD_LIMIT)
-    {
-      uint64_t tsFinal = m_synchronizer->GetCurrentRealtime ();
-      uint64_t tsJitter;
-
-      if (tsFinal >= m_currentTs)
-        {
-          tsJitter = tsFinal - m_currentTs;
-        }
-      else
-        {
-          tsJitter = m_currentTs - tsFinal;
-        }
-
-      if (tsJitter > static_cast<uint64_t>(m_hardLimit.GetTimeStep ()))
-        {
-          NS_FATAL_ERROR ("RealtimeSimulatorImpl::ProcessOneEvent (): "
-                          "Hard real-time limit exceeded (jitter = " << tsJitter << ")");
-        }
-    }
+  // We have got the event we're about to execute completely disentangled from the 
+  // event list so we can execute it outside a critical section without fear of someone
+  // changing things out from under us.
 
   EventImpl *event = next.PeekEventImpl ();
   m_synchronizer->EventStart ();
@@ -479,15 +517,19 @@ RealtimeSimulatorImpl::Stop (void)
 
 static void Placeholder (void) {}
 
+//
+// Schedule a stop for a _relative_ time in the future.  If the simulation
+// hasn't started yet, this will effectively be an absolute time.
+//
 void 
 RealtimeSimulatorImpl::Stop (Time const &time)
 {
   NS_LOG_FUNCTION (time);
-  NS_ASSERT_MSG (time.IsPositive (),
-    "RealtimeSimulatorImpl::Stop(): Negative time");
 
-  Time absolute = Simulator::Now () + time;
-  m_stopAt = absolute.GetTimeStep ();
+  Time tAbsolute = Simulator::Now () + time;
+  NS_ASSERT (tAbsolute.IsPositive ());
+  NS_ASSERT (tAbsolute >= TimeStep (m_currentTs));
+  m_stopAt = tAbsolute.GetTimeStep ();
   //
   // For the realtime case, we need a real event sitting out at the end of time
   // to keep the simulator running (sleeping) while there are no other events 
@@ -497,11 +539,15 @@ RealtimeSimulatorImpl::Stop (Time const &time)
   //
   // The easiest thing to do is to call back up into the simulator to take 
   // advantage of all of the nice event wrappers.  This will call back down into
-  // RealtimeSimulatorImpl::Schedule to do the work.
+  // RealtimeSimulatorImpl::Schedule to do the work.  This path interprets the 
+  // time as relative, so pass the relative time.
   //
-  Simulator::Schedule (absolute, &Placeholder);
+  Simulator::Schedule (time, &Placeholder);
 }
 
+//
+// Schedule an event for a _relative_ time in the future.
+//
 EventId
 RealtimeSimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &event)
 {
@@ -511,50 +557,10 @@ RealtimeSimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &event)
   // This is a little tricky.  We get a Ptr<EventImpl> passed down to us in some
   // thread context.  This Ptr<EventImpl> is not yet shared in any way.  It is 
   // possible however that the calling context is not the context of the main 
-  // scheduler thread (eg. it is in the context of a separate device thread).  
+  // scheduler thread (e.g. it is in the context of a separate device thread).  
   // It would be bad (TM) if we naively wrapped the EventImpl up in an EventId 
   // that would be accessible from multiple threads without considering thread 
   // safety.
-  //
-  // Having multiple EventId containing Ptr<EventImpl> in different thread
-  // contexts creates a situation where atomic reference count decrements
-  // would be required (think about an event being scheduled with the calling
-  // yielding immediately afterward.  The scheduler could become ready and 
-  // fire the event which would eventually want to release the EventImpl.  If
-  // the calling thread were readied and executed in mid-release, it would also
-  // want to release the EventImpl "at the same time."  If we are careless about
-  // this, multiple deletes are sure to eventually happen as the threads 
-  // separately play with the EventImpl reference counts.
-  // 
-  // The way this all works is that we created an EventImpl in the template 
-  // function that called us, which may be in the context of a thread separate
-  // from the simulator thread.  We are managing the lifetime of the EventImpl
-  // with an intrusive reference count.  The count was initialized to one when
-  // it was created and is still one right now.  We're going to "wrap" this
-  // EventImpl in an EventId in this method.  There's an assignment of our 
-  // Ptr<EventImpl> into another Ptr<EventImpl> inside the EventId which will 
-  // bump the ref count to two.  We're going to return this EventId to the 
-  // caller so the calling thread will hold a reference to the underlying 
-  // EventImpl.  This is what causes the first half of the multithreading issue.
-  //
-  // We are going to call Insert() on the EventId to put the event into the 
-  // scheduler.  Down there, it will do a PeekEventImpl to get the pointer to
-  // the EventImpl and manually increment the reference count (to three).  From 
-  // there, the sheduler works with the EventImpl pointer.  When the EventId 
-  // below goes out of scope, the Ptr<EventImpl> destructor is run and the ref
-  // count is decremented to two.  When this function returns to the calling
-  // template function, the Ptr<EventImpl> there will go out of scope and we'll
-  // decrement the EventImpl ref count leaving it to be the one held by our
-  // scheduler directly.
-  //
-  // The scheduler removes the EventImpl in Remove() or RemoveNext().  In the
-  // case of Remove(), the scheduler is provided an Event reference and locates
-  // the corresponding EventImpl in the event list.  It gets the raw pointer to
-  // the EventImpl, erases the pointer in the list, and manually calls Unref()
-  // on the pointer.  In RemoveNext(), it gets the raw pointer from the list and
-  // assigns it to a Ptr<EventImpl> without bumping the reference count, thereby
-  // transferring ownership to a containing EventId.  This is the second half of
-  // the multithreading issue.
   //
   // It's clear that we cannot have a situation where the EventImpl is "owned" by
   // multiple threads.  The calling thread is free to hold the EventId as long as
@@ -562,26 +568,28 @@ RealtimeSimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &event)
   // wants.  The scheduler is free to do the same; and will eventually release
   // the reference in the context of thread running ProcessOneEvent().  It is 
   // "a bad thing" (TM) if these two threads decide to release the underlying
-  // EventImpl "at the same time."
+  // EventImpl "at the same time" since the result is sure to be multiple frees,
+  // memory leaks or bus errors.
   //
   // The answer is to make the reference counting of the EventImpl thread safe; 
   // which we do.  We don't want to force the event implementation to carry around
   // a mutex, so we "lend" it one using a RealtimeEventLock object (m_eventLock)
-  // in the constructor and take it back in the destructor.
+  // in the constructor of the event and take it back in the destructor.  See the
+  // event code for details.
   //
   EventId id;
-
   {
     CriticalSection cs (m_mutex);
-
-    NS_ASSERT_MSG (time.IsPositive (),
-      "RealtimeSimulatorImpl::Schedule(): Negative time");
-    NS_ASSERT_MSG (
-      time >= TimeStep (m_currentTs),
-      "RealtimeSimulatorImpl::Schedule(): time < m_currentTs");
-
-    uint64_t ts = (uint64_t) time.GetTimeStep ();
-
+    //
+    // This is the reason we had to bring the absolute time calcualtion in from the
+    // simulator.h into the implementation.  Since the implementations may be 
+    // multi-threaded, we need this calculation to be atomic.  You can see it is
+    // here since we are running in a CriticalSection.
+    //
+    Time tAbsolute = Simulator::Now () + time;
+    NS_ASSERT_MSG (tAbsolute.IsPositive (), "RealtimeSimulatorImpl::Schedule(): Negative time");
+    NS_ASSERT_MSG (tAbsolute >= TimeStep (m_currentTs), "RealtimeSimulatorImpl::Schedule(): time < m_currentTs");
+    uint64_t ts = (uint64_t) tAbsolute.GetTimeStep ();
     id = EventId (event, ts, m_uid);
     m_uid++;
     ++m_unscheduledEvents;
@@ -600,8 +608,7 @@ RealtimeSimulatorImpl::ScheduleNow (const Ptr<EventImpl> &event)
   {
     CriticalSection cs (m_mutex);
 
-    id = EventId (event, m_synchronizer->GetCurrentRealtime (), m_uid);
-    
+    id = EventId (event, m_currentTs, m_uid);
     m_uid++;
     ++m_unscheduledEvents;
     m_events->Insert (id);
