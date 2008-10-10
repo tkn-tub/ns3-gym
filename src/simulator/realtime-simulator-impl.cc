@@ -618,6 +618,41 @@ RealtimeSimulatorImpl::ScheduleNow (const Ptr<EventImpl> &event)
   return id;
 }
 
+Time
+RealtimeSimulatorImpl::Now (void) const
+{
+  return TimeStep (m_currentTs);
+}
+
+//
+// Schedule an event for a _relative_ time in the future.
+//
+EventId
+RealtimeSimulatorImpl::ScheduleReal (Time const &time, const Ptr<EventImpl> &event)
+{
+  NS_LOG_FUNCTION (time << event);
+  NS_ASSERT (false);
+  EventId id;
+  return id;
+}
+
+EventId
+RealtimeSimulatorImpl::ScheduleRealNow (const Ptr<EventImpl> &event)
+{
+  NS_LOG_FUNCTION (event);
+  NS_ASSERT (false);
+  EventId id;
+  return id;
+}
+
+Time
+RealtimeSimulatorImpl::RealNow (void) const
+{
+  NS_ASSERT (false);
+  return TimeStep (m_currentTs);
+}
+
+
 EventId
 RealtimeSimulatorImpl::ScheduleDestroy (const Ptr<EventImpl> &event)
 {
@@ -638,12 +673,6 @@ RealtimeSimulatorImpl::ScheduleDestroy (const Ptr<EventImpl> &event)
   }
 
   return id;
-}
-
-Time
-RealtimeSimulatorImpl::Now (void) const
-{
-  return TimeStep (m_currentTs);
 }
 
 Time 

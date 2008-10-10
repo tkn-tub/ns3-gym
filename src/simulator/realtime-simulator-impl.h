@@ -69,13 +69,16 @@ public:
   void Stop (Time const &time);
   EventId Schedule (Time const &time, const Ptr<EventImpl> &event);
   EventId ScheduleNow (const Ptr<EventImpl> &event);
+  EventId ScheduleReal (Time const &time, const Ptr<EventImpl> &event);
+  EventId ScheduleRealNow (const Ptr<EventImpl> &event);
   EventId ScheduleDestroy (const Ptr<EventImpl> &event);
+  Time Now (void) const;
+  Time RealNow (void) const;
   void Remove (const EventId &ev);
   void Cancel (const EventId &ev);
   bool IsExpired (const EventId &ev) const;
   virtual void RunOneEvent (void);
   void Run (void);
-  Time Now (void) const;
   Time GetDelayLeft (const EventId &id) const;
   Time GetMaximumSimulationTime (void) const;
 

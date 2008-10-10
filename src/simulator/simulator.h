@@ -56,6 +56,8 @@ class SimulatorImpl;
  */
 class Simulator 
 {
+  friend class RealtimeSimulatorExtension;
+
 public:
   /**
    * \param impl a new simulator implementation
