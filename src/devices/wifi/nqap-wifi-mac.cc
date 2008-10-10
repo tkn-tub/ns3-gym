@@ -49,7 +49,7 @@ NqapWifiMac::GetTypeId (void)
                                      &NqapWifiMac::SetBeaconInterval),
                    MakeTimeChecker ())
     .AddAttribute ("BeaconGeneration", "Whether or not beacons are generated.",
-                   BooleanValue (false),
+                   BooleanValue (true),
                    MakeBooleanAccessor (&NqapWifiMac::SetBeaconGeneration,
                                         &NqapWifiMac::GetBeaconGeneration),
                    MakeBooleanChecker ())
