@@ -200,7 +200,7 @@ Packet::RemoveHeader (Header &header)
   return deserialized;
 }
 uint32_t
-Packet::PeekHeader (Header &header)
+Packet::PeekHeader (Header &header) const
 {
   NS_LOG_FUNCTION (this << &header);
   uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
