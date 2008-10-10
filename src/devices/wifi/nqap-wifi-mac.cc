@@ -49,7 +49,7 @@ NqapWifiMac::GetTypeId (void)
                                      &NqapWifiMac::SetBeaconInterval),
                    MakeTimeChecker ())
     .AddAttribute ("BeaconGeneration", "Whether or not beacons are generated.",
-                   BooleanValue (false),
+                   BooleanValue (true),
                    MakeBooleanAccessor (&NqapWifiMac::SetBeaconGeneration,
                                         &NqapWifiMac::GetBeaconGeneration),
                    MakeBooleanChecker ())
@@ -250,6 +250,11 @@ NqapWifiMac::SetSsid (Ssid ssid)
 {
   NS_LOG_FUNCTION (ssid);
   m_ssid = ssid;
+}
+Mac48Address 
+NqapWifiMac::GetBssid (void) const
+{
+  return m_low->GetBssid ();
 }
 
 

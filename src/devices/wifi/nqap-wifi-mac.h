@@ -83,7 +83,7 @@ public:
   virtual Ssid GetSsid (void) const;
   virtual void SetAddress (Mac48Address address);
   virtual void SetSsid (Ssid ssid);
-
+  virtual Mac48Address GetBssid (void) const;
 
   /**
    * \param interval the interval between two beacon transmissions.

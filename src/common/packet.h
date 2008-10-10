@@ -210,7 +210,7 @@ public:
    * \param header a reference to the header to read from the internal buffer.
    * \returns the number of bytes read from the packet.
    */  
-  uint32_t PeekHeader (Header &header);
+  uint32_t PeekHeader (Header &header) const;
   /**
    * Add trailer to this packet. This method invokes the
    * Trailer::GetSerializedSize and Trailer::Serialize

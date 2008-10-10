@@ -83,7 +83,7 @@ public:
   virtual Ssid GetSsid (void) const;
   virtual void SetAddress (Mac48Address address);
   virtual void SetSsid (Ssid ssid);
-
+  virtual Mac48Address GetBssid (void) const;
 
   /**
    * \param missed the number of beacons which must be missed
@@ -126,7 +126,6 @@ private:
   void MissedBeacons (void);
   void RestartBeaconWatchdog (Time delay);
   SupportedRates GetSupportedRates (void) const;
-  Mac48Address GetBssid (void) const;
   virtual void DoDispose (void);
   NqstaWifiMac (const NqstaWifiMac & ctor_arg);
   NqstaWifiMac &operator = (const NqstaWifiMac & ctor_arg);

@@ -77,7 +77,7 @@ public:
   virtual Ssid GetSsid (void) const;
   virtual void SetAddress (Mac48Address address);
   virtual void SetSsid (Ssid ssid);
-
+  virtual Mac48Address GetBssid (void) const;
 
 private:
   // inherited from Object base class.
@@ -86,7 +86,6 @@ private:
   void ForwardUp (Ptr<Packet> packet, WifiMacHeader const*hdr);
   AdhocWifiMac (const AdhocWifiMac & ctor_arg);
   AdhocWifiMac &operator = (const AdhocWifiMac &o);
-  Mac48Address GetBssid (void) const;
 
   Ptr<DcaTxop> m_dca;
   Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> m_upCallback;
