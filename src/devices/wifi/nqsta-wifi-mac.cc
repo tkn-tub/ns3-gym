@@ -248,7 +248,6 @@ NqstaWifiMac::SetSsid (Ssid ssid)
   NS_LOG_FUNCTION (this << ssid);
   m_ssid = ssid;
 }
-
 void 
 NqstaWifiMac::SetMaxMissedBeacons (uint32_t missed)
 {

@@ -129,6 +129,10 @@ public:
    * \param ssid the current ssid of this MAC layer.
    */
   virtual void SetSsid (Ssid ssid) = 0;
+  /**
+   * \returns the bssid of the network this device belongs to.
+   */
+  virtual Mac48Address GetBssid (void) const = 0;
 
 private:
   friend class WifiNetDevice;

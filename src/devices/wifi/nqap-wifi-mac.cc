@@ -251,6 +251,11 @@ NqapWifiMac::SetSsid (Ssid ssid)
   NS_LOG_FUNCTION (ssid);
   m_ssid = ssid;
 }
+Mac48Address 
+NqapWifiMac::GetBssid (void) const
+{
+  return m_low->GetBssid ();
+}
 
 
 void 
