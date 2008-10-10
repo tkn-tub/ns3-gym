@@ -548,35 +548,36 @@ RealtimeSimulatorImpl::Stop (Time const &time)
 //
 // Schedule an event for a _relative_ time in the future.
 //
+// A little side-note on events and multthreading:
+//
+// This is a little tricky.  We get a Ptr<EventImpl> passed down to us in some
+// thread context.  This Ptr<EventImpl> is not yet shared in any way.  It is 
+// possible however that the calling context is not the context of the main 
+// scheduler thread (e.g. it is in the context of a separate device thread).  
+// It would be bad (TM) if we naively wrapped the EventImpl up in an EventId 
+// that would be accessible from multiple threads without considering thread 
+// safety.
+//
+// It's clear that we cannot have a situation where the EventImpl is "owned" by
+// multiple threads.  The calling thread is free to hold the EventId as long as
+// it wants and manage the reference counts to the underlying EventImpl all it
+// wants.  The scheduler is free to do the same; and will eventually release
+// the reference in the context of thread running ProcessOneEvent().  It is 
+// "a bad thing" (TM) if these two threads decide to release the underlying
+// EventImpl "at the same time" since the result is sure to be multiple frees,
+// memory leaks or bus errors.
+//
+// The answer is to make the reference counting of the EventImpl thread safe; 
+// which we do.  We don't want to force the event implementation to carry around
+// a mutex, so we "lend" it one using a RealtimeEventLock object (m_eventLock)
+// in the constructor of the event and take it back in the destructor.  See the
+// event code for details.
+//
 EventId
 RealtimeSimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &event)
 {
   NS_LOG_FUNCTION (time << event);
 
-  //
-  // This is a little tricky.  We get a Ptr<EventImpl> passed down to us in some
-  // thread context.  This Ptr<EventImpl> is not yet shared in any way.  It is 
-  // possible however that the calling context is not the context of the main 
-  // scheduler thread (e.g. it is in the context of a separate device thread).  
-  // It would be bad (TM) if we naively wrapped the EventImpl up in an EventId 
-  // that would be accessible from multiple threads without considering thread 
-  // safety.
-  //
-  // It's clear that we cannot have a situation where the EventImpl is "owned" by
-  // multiple threads.  The calling thread is free to hold the EventId as long as
-  // it wants and manage the reference counts to the underlying EventImpl all it
-  // wants.  The scheduler is free to do the same; and will eventually release
-  // the reference in the context of thread running ProcessOneEvent().  It is 
-  // "a bad thing" (TM) if these two threads decide to release the underlying
-  // EventImpl "at the same time" since the result is sure to be multiple frees,
-  // memory leaks or bus errors.
-  //
-  // The answer is to make the reference counting of the EventImpl thread safe; 
-  // which we do.  We don't want to force the event implementation to carry around
-  // a mutex, so we "lend" it one using a RealtimeEventLock object (m_eventLock)
-  // in the constructor of the event and take it back in the destructor.  See the
-  // event code for details.
-  //
   EventId id;
   {
     CriticalSection cs (m_mutex);
@@ -631,27 +632,48 @@ EventId
 RealtimeSimulatorImpl::ScheduleReal (Time const &time, const Ptr<EventImpl> &event)
 {
   NS_LOG_FUNCTION (time << event);
-  NS_ASSERT (false);
+
   EventId id;
+  {
+    CriticalSection cs (m_mutex);
+
+    uint64_t ts = m_synchronizer->GetCurrentRealtime () + time.GetTimeStep ();
+    NS_ASSERT_MSG (ts >= m_currentTs, "RealtimeSimulatorImpl::ScheduleReal(): schedule for time < m_currentTs");
+    id = EventId (event, ts, m_uid);
+    m_uid++;
+    ++m_unscheduledEvents;
+    m_events->Insert (id);
+    m_synchronizer->Signal ();
+  }
+
   return id;
 }
 
 EventId
 RealtimeSimulatorImpl::ScheduleRealNow (const Ptr<EventImpl> &event)
 {
-  NS_LOG_FUNCTION (event);
-  NS_ASSERT (false);
+  NS_LOG_FUNCTION_NOARGS ();
   EventId id;
+  {
+    CriticalSection cs (m_mutex);
+
+    uint64_t ts = m_synchronizer->GetCurrentRealtime ();
+    NS_ASSERT_MSG (ts >= m_currentTs, "RealtimeSimulatorImpl::ScheduleRealNow(): schedule for time < m_currentTs");
+    id = EventId (event, ts, m_uid);
+    m_uid++;
+    ++m_unscheduledEvents;
+    m_events->Insert (id);
+    m_synchronizer->Signal ();
+  }
+
   return id;
 }
 
 Time
 RealtimeSimulatorImpl::RealNow (void) const
 {
-  NS_ASSERT (false);
-  return TimeStep (m_currentTs);
+  return TimeStep (m_synchronizer->GetCurrentRealtime ());
 }
-
 
 EventId
 RealtimeSimulatorImpl::ScheduleDestroy (const Ptr<EventImpl> &event)
