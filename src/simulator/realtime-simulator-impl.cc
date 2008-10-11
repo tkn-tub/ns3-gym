@@ -657,7 +657,11 @@ RealtimeSimulatorImpl::ScheduleRealNow (const Ptr<EventImpl> &event)
   {
     CriticalSection cs (m_mutex);
 
-    uint64_t ts = m_synchronizer->GetCurrentRealtime ();
+    //
+    // If the simulator is running, we're pacing and have a meaningful 
+    // realtime clock.  If we're not, then m_currentTs is were we stopped.
+    // 
+    uint64_t ts = m_running ? m_synchronizer->GetCurrentRealtime () : m_currentTs;
     NS_ASSERT_MSG (ts >= m_currentTs, "RealtimeSimulatorImpl::ScheduleRealNow(): schedule for time < m_currentTs");
     id = EventId (event, ts, m_uid);
     m_uid++;

@@ -126,9 +126,9 @@ test (void)
   FakeNetDevice fnd;
 
   // 
-  // Make sure ScheduleNow works when the system isn't running
+  // Make sure ScheduleRealNow works when the system isn't running
   //
-  Simulator::ScheduleNow(&first_function);
+  RealtimeSimulatorExtension::ScheduleRealNow(&first_function);
 
   // 
   // drive the progression of m_currentTs at a ten millisecond rate
