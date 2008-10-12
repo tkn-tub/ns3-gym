@@ -443,10 +443,11 @@ def register_Ns3Packet_methods(root_module, cls):
                    'uint8_t const *', 
                    [], 
                    is_const=True)
-    ## packet.h: uint32_t ns3::Packet::PeekHeader(ns3::Header & header) [member function]
+    ## packet.h: uint32_t ns3::Packet::PeekHeader(ns3::Header & header) const [member function]
     cls.add_method('PeekHeader', 
                    'uint32_t', 
-                   [param('ns3::Header &', 'header')])
+                   [param('ns3::Header &', 'header')], 
+                   is_const=True)
     ## packet.h: uint32_t ns3::Packet::PeekTrailer(ns3::Trailer & trailer) [member function]
     cls.add_method('PeekTrailer', 
                    'uint32_t', 

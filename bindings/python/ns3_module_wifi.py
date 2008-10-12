@@ -1196,6 +1196,11 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ssid', 'ssid')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## wifi-mac.h: ns3::Mac48Address ns3::WifiMac::GetBssid() const [member function]
+    cls.add_method('GetBssid', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## wifi-mac.h: void ns3::WifiMac::Enqueue(ns3::Ptr<const ns3::Packet> packet, ns3::Mac48Address to, ns3::Mac48Address from) [member function]
     cls.add_method('Enqueue', 
                    'void', 
@@ -1696,6 +1701,11 @@ def register_Ns3AdhocWifiMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ssid', 'ssid')], 
                    is_virtual=True)
+    ## adhoc-wifi-mac.h: ns3::Mac48Address ns3::AdhocWifiMac::GetBssid() const [member function]
+    cls.add_method('GetBssid', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## adhoc-wifi-mac.h: void ns3::AdhocWifiMac::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -2082,6 +2092,11 @@ def register_Ns3NqapWifiMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ssid', 'ssid')], 
                    is_virtual=True)
+    ## nqap-wifi-mac.h: ns3::Mac48Address ns3::NqapWifiMac::GetBssid() const [member function]
+    cls.add_method('GetBssid', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## nqap-wifi-mac.h: void ns3::NqapWifiMac::SetBeaconInterval(ns3::Time interval) [member function]
     cls.add_method('SetBeaconInterval', 
                    'void', 
@@ -2230,6 +2245,11 @@ def register_Ns3NqstaWifiMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ssid', 'ssid')], 
                    is_virtual=True)
+    ## nqsta-wifi-mac.h: ns3::Mac48Address ns3::NqstaWifiMac::GetBssid() const [member function]
+    cls.add_method('GetBssid', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## nqsta-wifi-mac.h: void ns3::NqstaWifiMac::SetMaxMissedBeacons(uint32_t missed) [member function]
     cls.add_method('SetMaxMissedBeacons', 
                    'void', 
