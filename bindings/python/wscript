@@ -22,7 +22,7 @@ else:
     os.environ['PYTHONPATH'] = LOCAL_PYBINDGEN_PATH
 
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 9, 0, 595)
+REQUIRED_PYBINDGEN_VERSION = (0, 9, 0, 598)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 
@@ -414,6 +414,7 @@ def build(bld):
         bindgen.command_is_external = True
         bindgen.stderr = 'ns3modulegen.log'
         bindgen.argv = [
+            #'-m', 'pdb',
             bindgen.input_file("ns3modulegen.py"),
             bindgen.output_file("ns3module.cc"),
             ]
