@@ -46,8 +46,8 @@ HeapScheduler::HeapScheduler ()
   // we purposedly waste an item at the start of
   // the array to make sure the indexes in the
   // array start at one.
-  Scheduler::EventKey emptyKey = {0,0};
-  m_heap.push_back (std::make_pair (static_cast<EventImpl *>(0), emptyKey));
+  Scheduler::Event empty = {0,{0,0}};
+  m_heap.push_back (empty);
 }
 
 HeapScheduler::~HeapScheduler ()
@@ -104,7 +104,7 @@ HeapScheduler::Exch (uint32_t a, uint32_t b)
 {
   NS_ASSERT (b < m_heap.size () && a < m_heap.size ());
   TRACE ("Exch " << a << ", " << b);
-  std::pair<EventImpl*, Scheduler::EventKey> tmp (m_heap[a]);
+  Event tmp (m_heap[a]);
   m_heap[a] = m_heap[b];
   m_heap[b] = tmp;
 }
@@ -112,7 +112,7 @@ HeapScheduler::Exch (uint32_t a, uint32_t b)
 bool
 HeapScheduler::IsLessStrictly (uint32_t a, uint32_t b) const
 {
-  return m_heap[a].second < m_heap[b].second;
+  return m_heap[a] < m_heap[b];
 }
 
 uint32_t 
@@ -175,32 +175,28 @@ HeapScheduler::TopDown (uint32_t start)
 
 
 void
-HeapScheduler::Insert (const EventId &id)
+HeapScheduler::Insert (const Event &ev)
 {
   // acquire single ref
-  EventImpl *event = id.PeekEventImpl ();
-  event->Ref ();
-  Scheduler::EventKey key;
-  key.m_ts = id.GetTs ();
-  key.m_uid = id.GetUid ();
-  m_heap.push_back (std::make_pair (event, key));
+  ev.impl->Ref ();
+  m_heap.push_back (ev);
   BottomUp ();
 }
 
 EventId
 HeapScheduler::PeekNext (void) const
 {
-  std::pair<EventImpl *,Scheduler::EventKey> next = m_heap[Root ()];
-  return EventId (next.first, next.second.m_ts, next.second.m_uid);
+  Event next = m_heap[Root ()];
+  return EventId (next.impl, next.key.m_ts, next.key.m_uid);
 }
 EventId
 HeapScheduler::RemoveNext (void)
 {
-  std::pair<EventImpl *,Scheduler::EventKey> next = m_heap[Root ()];
+  Event next = m_heap[Root ()];
   Exch (Root (), Last ());
   m_heap.pop_back ();
   TopDown (Root ());
-  return EventId (Ptr<EventImpl> (next.first, false), next.second.m_ts, next.second.m_uid);
+  return EventId (Ptr<EventImpl> (next.impl, false), next.key.m_ts, next.key.m_uid);
 }
 
 
@@ -210,12 +206,11 @@ HeapScheduler::Remove (const EventId &id)
   uint32_t uid = id.GetUid ();
   for (uint32_t i = 1; i < m_heap.size (); i++)
     {
-      if (uid == m_heap[i].second.m_uid)
+      if (uid == m_heap[i].key.m_uid)
         {
-          NS_ASSERT (m_heap[i].first == id.PeekEventImpl ());
-          std::pair<EventImpl *,Scheduler::EventKey> next = m_heap[i];
+          NS_ASSERT (m_heap[i].impl == id.PeekEventImpl ());
           // release single ref
-          next.first->Unref ();
+          m_heap[i].impl->Unref ();
           Exch (i, Last ());
           m_heap.pop_back ();
           TopDown (i);
@@ -227,5 +222,5 @@ HeapScheduler::Remove (const EventId &id)
   return false;
 }
 
-}; // namespace ns3
+} // namespace ns3
 

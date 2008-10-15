@@ -43,16 +43,12 @@ MapScheduler::~MapScheduler ()
 {}
 
 void
-MapScheduler::Insert (const EventId &id)
+MapScheduler::Insert (const Event &ev)
 {
   // acquire a single ref
-  EventImpl *event = id.PeekEventImpl ();
-  event->Ref ();
-  Scheduler::EventKey key;
-  key.m_ts = id.GetTs ();
-  key.m_uid = id.GetUid ();
+  ev.impl->Ref ();
   std::pair<EventMapI,bool> result;
-  result = m_list.insert (std::make_pair (key, event));
+  result = m_list.insert (std::make_pair (ev.key, ev.impl));
   NS_ASSERT (result.second);
 }
 
@@ -93,4 +89,4 @@ MapScheduler::Remove (const EventId &id)
   return true;
 }
 
-}; // namespace ns3
+} // namespace ns3

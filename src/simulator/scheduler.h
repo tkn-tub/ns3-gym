@@ -55,15 +55,17 @@ class Scheduler : public Object
       uint64_t m_ts;
       uint32_t m_uid;
   };
+  struct Event {
+    EventImpl *impl;
+    EventKey key;
+  };
 
   virtual ~Scheduler () = 0;
 
   /**
-   * \param id event to store in the event list
-   *
-   * This method takes ownership of the event pointer.
+   * \param ev event to store in the event list
    */
-  virtual void Insert (const EventId &id) = 0;
+  virtual void Insert (const Event &ev) = 0;
   /**
    * \returns true if the event list is empty and false otherwise.
    */
@@ -110,6 +112,11 @@ inline bool operator < (const Scheduler::EventKey &a, const Scheduler::EventKey 
     {
       return false;
     }
+}
+
+inline bool operator < (const Scheduler::Event &a, const Scheduler::Event &b)
+{
+  return a.key < b.key;
 }
 
 

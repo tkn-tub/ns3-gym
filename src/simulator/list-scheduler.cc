@@ -33,23 +33,19 @@ ListScheduler::~ListScheduler ()
 {}
 
 void
-ListScheduler::Insert (const EventId &id)
+ListScheduler::Insert (const Event &ev)
 {
-  Scheduler::EventKey key;
   // acquire refcount on EventImpl
-  EventImpl *event = id.PeekEventImpl ();
-  event->Ref ();
-  key.m_ts = id.GetTs ();
-  key.m_uid = id.GetUid ();
+  ev.impl->Ref ();
   for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
     {
-      if (key < i->second)
+      if (ev.key < i->key)
         {
-          m_events.insert (i, std::make_pair (event, key));
+          m_events.insert (i, ev);
           return;
         }
     }
-  m_events.push_back (std::make_pair (event, key));
+  m_events.push_back (ev);
 }
 bool 
 ListScheduler::IsEmpty (void) const
@@ -59,16 +55,16 @@ ListScheduler::IsEmpty (void) const
 EventId
 ListScheduler::PeekNext (void) const
 {
-  std::pair<EventImpl *, EventKey> next = m_events.front ();
-  return EventId (next.first, next.second.m_ts, next.second.m_uid);
+  Event next = m_events.front ();
+  return EventId (next.impl, next.key.m_ts, next.key.m_uid);
 }
 
 EventId
 ListScheduler::RemoveNext (void)
 {
-  std::pair<EventImpl *, EventKey> next = m_events.front ();
+  Event next = m_events.front ();
   m_events.pop_front ();
-  return EventId (Ptr<EventImpl> (next.first,false), next.second.m_ts, next.second.m_uid);
+  return EventId (Ptr<EventImpl> (next.impl,false), next.key.m_ts, next.key.m_uid);
 }
 
 bool
@@ -76,11 +72,11 @@ ListScheduler::Remove (const EventId &id)
 {
   for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
     {
-      if (i->second.m_uid == id.GetUid ())
+      if (i->key.m_uid == id.GetUid ())
         {
-          NS_ASSERT (id.PeekEventImpl () == i->first);
+          NS_ASSERT (id.PeekEventImpl () == i->impl);
           // release single acquire ref.
-          i->first->Unref ();
+          i->impl->Unref ();
           m_events.erase (i);
           return true;
         }
@@ -89,4 +85,4 @@ ListScheduler::Remove (const EventId &id)
   return false;
 }
 
-}; // namespace ns3
+} // namespace ns3

@@ -18,8 +18,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef SCHEDULER_MAP_H
-#define SCHEDULER_MAP_H
+#ifndef MAP_SCHEDULER_H
+#define MAP_SCHEDULER_H
 
 #include "scheduler.h"
 #include <stdint.h>
@@ -37,12 +37,13 @@ class EventImpl;
  * This class implements the an event scheduler using an std::map 
  * data structure.
  */
-class MapScheduler : public Scheduler {
+class MapScheduler : public Scheduler 
+{
 public:
   MapScheduler ();
   virtual ~MapScheduler ();
 
-  virtual void Insert (const EventId &id);
+  virtual void Insert (const Event &ev);
   virtual bool IsEmpty (void) const;
   virtual EventId PeekNext (void) const;
   virtual EventId RemoveNext (void);
@@ -57,7 +58,6 @@ private:
   EventMap m_list;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
-
-#endif /* SCHEDULER_MAP_H */
+#endif /* MAP_SCHEDULER_H */

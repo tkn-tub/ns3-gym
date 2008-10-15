@@ -18,8 +18,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef SCHEDULER_HEAP_H
-#define SCHEDULER_HEAP_H
+#ifndef HEAP_SCHEDULER_H
+#define HEAP_SCHEDULER_H
 
 #include "scheduler.h"
 #include <stdint.h>
@@ -46,19 +46,20 @@ class EventHolder;
  *  - It uses a slightly non-standard while loop for top-down heapify
  *    to move one if statement out of the loop.
  */
-class HeapScheduler : public Scheduler {
+class HeapScheduler : public Scheduler 
+{
 public:
   HeapScheduler ();
   virtual ~HeapScheduler ();
 
-  virtual void Insert (const EventId &id);
+  virtual void Insert (const Event &ev);
   virtual bool IsEmpty (void) const;
   virtual EventId PeekNext (void) const;
   virtual EventId RemoveNext (void);
   virtual bool Remove (const EventId &ev);
 
 private:
-  typedef std::vector<std::pair<EventImpl *, Scheduler::EventKey> > BinaryHeap;
+  typedef std::vector<Event> BinaryHeap;
 
   inline uint32_t Parent (uint32_t id) const;
   uint32_t Sibling (uint32_t id) const;
@@ -79,7 +80,6 @@ private:
   BinaryHeap m_heap;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
-
-#endif /* SCHEDULER_HEAP_H */
+#endif /* HEAP_SCHEDULER_H */

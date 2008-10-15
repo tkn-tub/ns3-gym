@@ -18,8 +18,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef SCHEDULER_LIST_H
-#define SCHEDULER_LIST_H
+#ifndef LIST_SCHEDULER_H
+#define LIST_SCHEDULER_H
 
 #include "scheduler.h"
 #include "event-id.h"
@@ -38,12 +38,13 @@ class EventImpl;
  * This class implements the an event scheduler using an std::list
  * data structure, that is, a double linked-list.
  */
-class ListScheduler : public Scheduler {
+class ListScheduler : public Scheduler 
+{
  public:
   ListScheduler ();
   virtual ~ListScheduler ();
 
-  virtual void Insert (const EventId &id);
+  virtual void Insert (const Event &ev);
   virtual bool IsEmpty (void) const;
   virtual EventId PeekNext (void) const;
   virtual EventId RemoveNext (void);
@@ -51,12 +52,11 @@ class ListScheduler : public Scheduler {
 
  private:
 
-  typedef std::list<std::pair<EventImpl*, EventKey> > Events;
-  typedef std::list<std::pair<EventImpl*, EventKey> >::iterator EventsI;
+  typedef std::list<Event> Events;
+  typedef std::list<Event>::iterator EventsI;
   Events m_events;
 };
 
 } // namespace ns3
 
-
-#endif /* SCHEDULER_LIST_H */
+#endif /* LIST_SCHEDULER_H */
