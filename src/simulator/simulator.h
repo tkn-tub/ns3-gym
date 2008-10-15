@@ -24,7 +24,6 @@
 #include "event-id.h"
 #include "event-impl.h"
 #include "nstime.h"
-#include "scheduler.h"
 
 #include "ns3/type-traits.h"
 #include "ns3/deprecated.h"
@@ -35,6 +34,7 @@
 namespace ns3 {
 
 class SimulatorImpl;
+class Scheduler;
 
 /**
  * \ingroup simulator
