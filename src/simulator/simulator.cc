@@ -19,8 +19,10 @@
  */
 
 #include "simulator.h"
+#include "realtime-simulator.h"
 #include "simulator-impl.h"
 #include "default-simulator-impl.h"
+#include "realtime-simulator-impl.h"
 #include "scheduler.h"
 #include "map-scheduler.h"
 #include "event-impl.h"
@@ -286,6 +288,49 @@ void
 Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
 {
   NS_FATAL_ERROR ("TODO");
+}
+
+RealtimeSimulatorImpl *
+RealtimeSimulator::GetRealtimeImpl (void)
+{
+  RealtimeSimulatorImpl *impl = dynamic_cast<RealtimeSimulatorImpl *>(Simulator::GetImpl ());
+  NS_ASSERT_MSG (impl, 
+                 "RealtimeSimulator::GetImpl (): Underlying simulator implementation not realtime");
+  return impl;
+}
+
+Time
+RealtimeSimulator::RealtimeNow (void)
+{
+  return GetRealtimeImpl ()->RealtimeNow ();
+}
+
+EventId
+RealtimeSimulator::ScheduleRealtime (Time const &time, const Ptr<EventImpl> &ev)
+{
+  NS_LOG_FUNCTION (time << ev);
+  return GetRealtimeImpl ()->ScheduleRealtime (time, ev);
+}
+
+EventId
+RealtimeSimulator::ScheduleRealtimeNow (const Ptr<EventImpl> &ev)
+{
+  NS_LOG_FUNCTION (ev);
+  return GetRealtimeImpl ()->ScheduleRealtimeNow (ev);
+}
+
+EventId
+RealtimeSimulator::ScheduleRealtime (Time const &time, void (*f) (void))
+{
+  NS_LOG_FUNCTION (time << f);
+  return ScheduleRealtime (time, Simulator::MakeEvent (f));
+}
+
+EventId
+RealtimeSimulator::ScheduleRealtimeNow (void (*f) (void))
+{
+  NS_LOG_FUNCTION (f);
+  return ScheduleRealtimeNow (Simulator::MakeEvent (f));
 }
 
 

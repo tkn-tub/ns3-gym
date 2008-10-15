@@ -61,7 +61,6 @@ def build(bld):
         'heap-scheduler.cc',
         'event-impl.cc',
         'simulator.cc',
-        'realtime-simulator.cc',
         'default-simulator-impl.cc',
         'timer.cc',
         'watchdog.cc',

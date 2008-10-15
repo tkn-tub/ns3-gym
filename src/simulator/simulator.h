@@ -56,7 +56,7 @@ class SimulatorImpl;
  */
 class Simulator 
 {
-  friend class RealtimeSimulatorExtension;
+  friend class RealtimeSimulator;
 
 public:
   /**

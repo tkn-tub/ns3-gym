@@ -629,7 +629,7 @@ RealtimeSimulatorImpl::Now (void) const
 // Schedule an event for a _relative_ time in the future.
 //
 EventId
-RealtimeSimulatorImpl::ScheduleReal (Time const &time, const Ptr<EventImpl> &event)
+RealtimeSimulatorImpl::ScheduleRealtime (Time const &time, const Ptr<EventImpl> &event)
 {
   NS_LOG_FUNCTION (time << event);
 
@@ -638,7 +638,7 @@ RealtimeSimulatorImpl::ScheduleReal (Time const &time, const Ptr<EventImpl> &eve
     CriticalSection cs (m_mutex);
 
     uint64_t ts = m_synchronizer->GetCurrentRealtime () + time.GetTimeStep ();
-    NS_ASSERT_MSG (ts >= m_currentTs, "RealtimeSimulatorImpl::ScheduleReal(): schedule for time < m_currentTs");
+    NS_ASSERT_MSG (ts >= m_currentTs, "RealtimeSimulatorImpl::ScheduleRealtime(): schedule for time < m_currentTs");
     id = EventId (event, ts, m_uid);
     m_uid++;
     ++m_unscheduledEvents;
@@ -650,7 +650,7 @@ RealtimeSimulatorImpl::ScheduleReal (Time const &time, const Ptr<EventImpl> &eve
 }
 
 EventId
-RealtimeSimulatorImpl::ScheduleRealNow (const Ptr<EventImpl> &event)
+RealtimeSimulatorImpl::ScheduleRealtimeNow (const Ptr<EventImpl> &event)
 {
   NS_LOG_FUNCTION_NOARGS ();
   EventId id;
@@ -662,7 +662,7 @@ RealtimeSimulatorImpl::ScheduleRealNow (const Ptr<EventImpl> &event)
     // realtime clock.  If we're not, then m_currentTs is were we stopped.
     // 
     uint64_t ts = m_running ? m_synchronizer->GetCurrentRealtime () : m_currentTs;
-    NS_ASSERT_MSG (ts >= m_currentTs, "RealtimeSimulatorImpl::ScheduleRealNow(): schedule for time < m_currentTs");
+    NS_ASSERT_MSG (ts >= m_currentTs, "RealtimeSimulatorImpl::ScheduleRealrimeNow(): schedule for time < m_currentTs");
     id = EventId (event, ts, m_uid);
     m_uid++;
     ++m_unscheduledEvents;
@@ -674,7 +674,7 @@ RealtimeSimulatorImpl::ScheduleRealNow (const Ptr<EventImpl> &event)
 }
 
 Time
-RealtimeSimulatorImpl::RealNow (void) const
+RealtimeSimulatorImpl::RealtimeNow (void) const
 {
   return TimeStep (m_synchronizer->GetCurrentRealtime ());
 }

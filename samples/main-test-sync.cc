@@ -97,7 +97,7 @@ FakeNetDevice::Doit3 (void)
       //
       // Exercise the realtime relative now path
       //
-      RealtimeSimulatorExtension::ScheduleRealNow (&inserted_function);
+      RealtimeSimulator::ScheduleRealtimeNow (&inserted_function);
       usleep (1000);
     }
 }
@@ -112,7 +112,7 @@ FakeNetDevice::Doit4 (void)
       //
       // Exercise the realtime relative schedule path
       //
-      RealtimeSimulatorExtension::ScheduleReal (Seconds (0), &inserted_function);
+      RealtimeSimulator::ScheduleRealtime (Seconds (0), &inserted_function);
       usleep (1000);
     }
 }
@@ -128,7 +128,7 @@ test (void)
   // 
   // Make sure ScheduleRealNow works when the system isn't running
   //
-  RealtimeSimulatorExtension::ScheduleRealNow(&first_function);
+  RealtimeSimulator::ScheduleRealtimeNow(&first_function);
 
   // 
   // drive the progression of m_currentTs at a ten millisecond rate
