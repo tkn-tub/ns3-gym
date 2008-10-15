@@ -79,8 +79,9 @@ public:
   virtual Time GetMaximumSimulationTime (void) const;
   virtual void SetScheduler (Ptr<Scheduler> scheduler);
   virtual Ptr<Scheduler> GetScheduler (void) const;
-  EventId ScheduleRealtime (Time const &time, const Ptr<EventImpl> &event);
-  EventId ScheduleRealtimeNow (const Ptr<EventImpl> &event);
+  virtual void ScheduleRealtime (Time const &time, EventImpl *event);
+  virtual void ScheduleRealtimeNow (EventImpl *event);
+
   Time RealtimeNow (void) const;
 
   void SetSynchronizationMode (RealtimeSimulatorImpl::SynchronizationMode mode);

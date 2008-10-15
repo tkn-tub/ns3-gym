@@ -320,6 +320,17 @@ DefaultSimulatorImpl::GetMaximumSimulationTime (void) const
   return TimeStep (0x7fffffffffffffffLL);
 }
 
+void 
+DefaultSimulatorImpl::ScheduleRealtime (Time const &time, EventImpl *event)
+{
+  NS_FATAL_ERROR ("not implemented");
+}
+void 
+DefaultSimulatorImpl::ScheduleRealtimeNow (EventImpl *event)
+{
+  NS_FATAL_ERROR ("not implemented");
+}
+
 } // namespace ns3
 
 

@@ -65,6 +65,7 @@ def build(bld):
         'timer.cc',
         'watchdog.cc',
         'synchronizer.cc',
+        'make-event.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -87,6 +88,7 @@ def build(bld):
         'timer-impl.h',
         'watchdog.h',
         'synchronizer.h',
+        'make-event.h',
         ]
 
     env = bld.env_of_name('default')

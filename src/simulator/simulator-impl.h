@@ -21,19 +21,15 @@
 #ifndef SIMULATOR_IMPL_H
 #define SIMULATOR_IMPL_H
 
-#include "scheduler.h"
 #include "event-impl.h"
 #include "event-id.h"
 #include "nstime.h"
-
+#include "ns3/object.h"
 #include "ns3/ptr.h"
-#include "ns3/assert.h"
-#include "ns3/log.h"
-
-#include <list>
-#include <fstream>
 
 namespace ns3 {
+
+class Scheduler;
 
 class SimulatorImpl : public Object
 {
@@ -56,6 +52,8 @@ public:
   virtual Time GetMaximumSimulationTime (void) const = 0;
   virtual void SetScheduler (Ptr<Scheduler> scheduler) = 0;
   virtual Ptr<Scheduler> GetScheduler (void) const = 0;
+  virtual void ScheduleRealtime (Time const &time, EventImpl *event) = 0;
+  virtual void ScheduleRealtimeNow (EventImpl *event) = 0;
 };
 
 } // namespace ns3

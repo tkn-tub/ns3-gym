@@ -49,8 +49,6 @@ GlobalValue g_simTypeImpl = GlobalValue ("SimulatorImplementationType",
   StringValue ("ns3::DefaultSimulatorImpl"),
   MakeStringChecker ());
 
-Ptr<SimulatorImpl> Simulator::m_impl = 0;
-
 #ifdef NS3_LOG_ENABLE
 
 //
@@ -66,23 +64,29 @@ TimePrinter (std::ostream &os)
 
 #endif /* NS3_LOG_ENABLE */
 
-SimulatorImpl *
-Simulator::GetImpl (void)
+static Ptr<SimulatorImpl> *PeekImpl (void)
 {
+  static Ptr<SimulatorImpl> impl = 0;
+  return &impl;
+}
+
+static SimulatorImpl * GetImpl (void)
+{
+  Ptr<SimulatorImpl> &impl = *PeekImpl ();
   /* Please, don't include any calls to logging macros in this function
    * or pay the price, that is, stack explosions.
    */
-  if (m_impl == 0) 
+  if (impl == 0) 
     {
       ObjectFactory factory;
       StringValue s;
 
       g_simTypeImpl.GetValue (s);
       factory.SetTypeId (s.Get ());
-      m_impl = factory.Create<SimulatorImpl> ();
+      impl = factory.Create<SimulatorImpl> ();
 
       Ptr<Scheduler> scheduler = CreateObject<MapScheduler> ();
-      m_impl->SetScheduler (scheduler);
+      impl->SetScheduler (scheduler);
 
 //
 // Note: we call LogSetTimePrinter _after_ creating the implementation
@@ -93,7 +97,7 @@ Simulator::GetImpl (void)
 //
       LogSetTimePrinter (&TimePrinter);
     }
-  return PeekPointer (m_impl);
+  return PeekPointer (impl);
 }
 
 void
@@ -101,7 +105,8 @@ Simulator::Destroy (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  if (m_impl == 0)
+  Ptr<SimulatorImpl> &impl = *PeekImpl (); 
+  if (impl == 0)
     {
       return;
     }
@@ -111,8 +116,8 @@ Simulator::Destroy (void)
    * the stack explodes.
    */
   LogSetTimePrinter (0);
-  m_impl->Destroy ();
-  m_impl = 0;
+  impl->Destroy ();
+  impl = 0;
 }
 
 void
@@ -182,30 +187,6 @@ Simulator::GetDelayLeft (const EventId &id)
 {
   NS_LOG_FUNCTION (&id);
   return GetImpl ()->GetDelayLeft (id);
-}
-
-EventImpl *
-Simulator::MakeEvent (void (*f) (void))
-{
-  NS_LOG_FUNCTION (f);
-  // zero arg version
-  class EventFunctionImpl0 : public EventImpl
-  {
-  public:
-    typedef void (*F)(void);
-      
-    EventFunctionImpl0 (F function) 
-      : m_function (function)
-    {}
-    virtual ~EventFunctionImpl0 () {}
-  protected:
-    virtual void Notify (void) { 
-      (*m_function) (); 
-    }
-  private:
-  	F m_function;
-  } *ev = new EventFunctionImpl0 (f);
-  return ev;
 }
 
 EventId
@@ -306,47 +287,33 @@ Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
   NS_FATAL_ERROR ("TODO");
 }
 
-RealtimeSimulatorImpl *
-RealtimeSimulator::GetRealtimeImpl (void)
-{
-  RealtimeSimulatorImpl *impl = dynamic_cast<RealtimeSimulatorImpl *>(Simulator::GetImpl ());
-  NS_ASSERT_MSG (impl, 
-                 "RealtimeSimulator::GetImpl (): Underlying simulator implementation not realtime");
-  return impl;
-}
 
-Time
-RealtimeSimulator::RealtimeNow (void)
-{
-  return GetRealtimeImpl ()->RealtimeNow ();
-}
-
-EventId
-RealtimeSimulator::ScheduleRealtime (Time const &time, const Ptr<EventImpl> &ev)
+void
+RealtimeSimulator::ScheduleRealtime (Time const &time, EventImpl *ev)
 {
   NS_LOG_FUNCTION (time << ev);
-  return GetRealtimeImpl ()->ScheduleRealtime (time, ev);
+  return GetImpl ()->ScheduleRealtime (time, ev);
 }
 
-EventId
-RealtimeSimulator::ScheduleRealtimeNow (const Ptr<EventImpl> &ev)
+void
+RealtimeSimulator::ScheduleRealtimeNow (EventImpl *ev)
 {
   NS_LOG_FUNCTION (ev);
-  return GetRealtimeImpl ()->ScheduleRealtimeNow (ev);
+  return GetImpl ()->ScheduleRealtimeNow (ev);
 }
 
-EventId
+void
 RealtimeSimulator::ScheduleRealtime (Time const &time, void (*f) (void))
 {
   NS_LOG_FUNCTION (time << f);
-  return ScheduleRealtime (time, Simulator::MakeEvent (f));
+  return ScheduleRealtime (time, MakeEvent (f));
 }
 
-EventId
+void
 RealtimeSimulator::ScheduleRealtimeNow (void (*f) (void))
 {
   NS_LOG_FUNCTION (f);
-  return ScheduleRealtimeNow (Simulator::MakeEvent (f));
+  return ScheduleRealtimeNow (MakeEvent (f));
 }
 
 
