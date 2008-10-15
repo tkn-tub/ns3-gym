@@ -432,9 +432,11 @@ void
 RealtimeSimulatorImpl::Run (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
+
+  NS_ASSERT_MSG (m_running == false, 
+                 "RealtimeSimulatorImpl::Run(): Simulator already running");
+
   m_running = true;
-  NS_ASSERT_MSG (m_currentTs == 0,
-    "RealtimeSimulatorImpl::Run(): The beginning of time is not zero");
   m_synchronizer->SetOrigin (m_currentTs);
 
   for (;;) 
@@ -501,11 +503,48 @@ RealtimeSimulatorImpl::Realtime (void) const
   return m_synchronizer->Realtime ();
 }
 
+//
+// This will run the first event on the queue without considering any realtime
+// synchronization.  It's mainly implemented to allow simulations requiring
+// the multithreaded ScheduleRealtimeNow() functions the possibility of driving
+// the simulation from their own event loop.
+//
+// It is expected that if there are any realtime requirements, the responsibility
+// for synchronizing with real time in an external event loop will be picked up
+// by that loop.  For example, they may call Simulator::Next() to find the 
+// execution time of the next event and wait for that time somehow -- then call
+// RunOneEvent to fire the event.
+// 
 void
 RealtimeSimulatorImpl::RunOneEvent (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_FATAL_ERROR ("DefaultSimulatorImpl::RunOneEvent(): Not allowed in realtime simulations");
+
+  NS_ASSERT_MSG (m_running == false, 
+                 "RealtimeSimulatorImpl::RunOneEvent(): An internal simulator event loop is running");
+
+  EventId next;
+  EventImpl *event = 0;
+
+  //
+  // Run this in a critical section in case there's another thread around that
+  // may be inserting things onto the event list.
+  //
+  {
+    CriticalSection cs (m_mutex);
+
+    next = m_events->RemoveNext ();
+
+    NS_ASSERT (next.GetTs () >= m_currentTs);
+    --m_unscheduledEvents;
+
+    NS_LOG_LOGIC ("handle " << next.GetTs ());
+    m_currentTs = next.GetTs ();
+    m_currentUid = next.GetUid ();
+    event = next.PeekEventImpl ();
+  }
+
+  event->Invoke ();
 }
 
 void 
@@ -530,6 +569,7 @@ RealtimeSimulatorImpl::Stop (Time const &time)
   NS_ASSERT (tAbsolute.IsPositive ());
   NS_ASSERT (tAbsolute >= TimeStep (m_currentTs));
   m_stopAt = tAbsolute.GetTimeStep ();
+
   //
   // For the realtime case, we need a real event sitting out at the end of time
   // to keep the simulator running (sleeping) while there are no other events 
