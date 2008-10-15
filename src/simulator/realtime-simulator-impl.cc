@@ -62,23 +62,10 @@ RealtimeSimulatorImpl::GetTypeId (void)
   return tid;
 }
 
-void
-RealtimeEventLock::Lock (void)
-{
-  m_eventMutex.Lock ();
-}
-
-void
-RealtimeEventLock::Unlock (void)
-{
-  m_eventMutex.Unlock ();
-}
 
 RealtimeSimulatorImpl::RealtimeSimulatorImpl ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-
-  EventImpl::SetEventLock (&m_eventLock);
 
   m_stop = false;
   m_stopAt = 0;
@@ -108,8 +95,6 @@ RealtimeSimulatorImpl::~RealtimeSimulatorImpl ()
     }
   m_events = 0;
   m_synchronizer = 0;
-
-  EventImpl::SetNoEventLock ();
 }
 
 void

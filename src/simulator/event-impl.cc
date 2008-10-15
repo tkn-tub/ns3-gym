@@ -23,8 +23,6 @@
 
 namespace ns3 {
 
-EventLock *EventImpl::m_eventLock = 0;
-
 EventImpl::~EventImpl ()
 {}
 
@@ -32,18 +30,6 @@ EventImpl::EventImpl ()
   : m_cancel (false),
     m_count (1)
 {}
-
-void
-EventImpl::SetEventLock (EventLock *eventLock)
-{
-  m_eventLock = eventLock;
-}
-
-void
-EventImpl::SetNoEventLock (void)
-{
-  m_eventLock = 0;
-}
 
 void 
 EventImpl::Invoke (void)
@@ -66,4 +52,4 @@ EventImpl::IsCancelled (void)
   return m_cancel;
 }
 
-}; // namespace ns3
+} // namespace ns3

@@ -34,15 +34,6 @@
 
 namespace ns3 {
 
-class RealtimeEventLock : public EventLock
-{
-public:
-  void Lock (void);
-  void Unlock (void);
-private:
-  SystemMutex m_eventMutex;
-};
-
 class RealtimeSimulatorImpl : public SimulatorImpl
 {
 public:
@@ -110,7 +101,6 @@ private:
   uint64_t m_currentTs;
 
   mutable SystemMutex m_mutex;
-  RealtimeEventLock m_eventLock;
 
   Ptr<Synchronizer> m_synchronizer;
 

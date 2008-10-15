@@ -48,10 +48,6 @@ DefaultSimulatorImpl::GetTypeId (void)
 
 DefaultSimulatorImpl::DefaultSimulatorImpl ()
 {
-  // No multithreaded stuff here, make sure EventImpl instances don't try and
-  // use any stale locking functions.
-  EventImpl::SetNoEventLock ();
-
   m_stop = false;
   m_stopAt = 0;
   // uids are allocated from 4.
