@@ -180,12 +180,17 @@ DefaultSimulatorImpl::Stop (Time const &time)
   m_stopAt = absolute.GetTimeStep ();
 }
 
+//
+// Schedule an event for a _relative_ time in the future.
+//
 EventId
 DefaultSimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &event)
 {
-  NS_ASSERT (time.IsPositive ());
-  NS_ASSERT (time >= TimeStep (m_currentTs));
-  uint64_t ts = (uint64_t) time.GetTimeStep ();
+  Time tAbsolute = time + Now();
+
+  NS_ASSERT (tAbsolute.IsPositive ());
+  NS_ASSERT (tAbsolute >= TimeStep (m_currentTs));
+  uint64_t ts = (uint64_t) tAbsolute.GetTimeStep ();
   EventId id (event, ts, m_uid);
   m_uid++;
   ++m_unscheduledEvents;

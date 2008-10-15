@@ -75,6 +75,7 @@ def build(bld):
         'event-id.h',
         'event-impl.h',
         'simulator.h',
+        'realtime-simulator.h',
         'simulator-impl.h',
         'default-simulator-impl.h',
         'scheduler.h',

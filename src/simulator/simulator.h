@@ -56,6 +56,8 @@ class SimulatorImpl;
  */
 class Simulator 
 {
+  friend class RealtimeSimulator;
+
 public:
   /**
    * \param impl a new simulator implementation
@@ -138,9 +140,13 @@ public:
   static void Stop (Time const &time);
 
   /**
-   * Schedule an event to expire when the time "now + time" 
-   * is reached. When the event expires, the input method 
-   * will be invoked on the input object.
+   * Schedule an event to expire at the relative time "time"
+   * is reached.  This can be thought of as scheduling an event
+   * for the current simulation time plus the Time passed as a
+   * parameter
+   *
+   * When the event expires (when it becomes due to be run), the 
+   * input method will be invoked on the input object.  
    *
    * @param time the relative expiration time of the event.
    * @param mem_ptr member method pointer to invoke
