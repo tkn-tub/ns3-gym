@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef REALTIME_SIMULATOR_H
-#define REALTIME_SIMULATOR_H
+#ifndef WALLCLOCK_SIMULATOR_H
+#define WALLCLOCK_SIMULATOR_H
 
 #include "simulator.h"
 #include "make-event.h"
@@ -32,7 +32,7 @@ namespace ns3 {
  * events and will schedule events using the current real-time instead of 
  * the current simulation time.
  */
-class RealtimeSimulator 
+class WallclockSimulator 
 {
 public:
   /**
@@ -49,7 +49,7 @@ public:
    * @returns an id for the scheduled event.
    */
   template <typename MEM, typename OBJ>
-  static void ScheduleRealtime (Time const &time, MEM mem_ptr, OBJ obj);
+  static void Schedule (Time const &time, MEM mem_ptr, OBJ obj);
 
   /**
    * @param time the relative expiration time of the event.
@@ -59,7 +59,7 @@ public:
    * @returns an id for the scheduled event.
    */
   template <typename MEM, typename OBJ, typename T1>
-  static void ScheduleRealtime (Time const &time, MEM mem_ptr, OBJ obj, T1 a1);
+  static void Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1);
 
   /**
    * @param time the relative expiration time of the event.
@@ -70,7 +70,7 @@ public:
    * @returns an id for the scheduled event.
    */
   template <typename MEM, typename OBJ, typename T1, typename T2>
-  static void ScheduleRealtime (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2);
+  static void Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2);
 
   /**
    * @param time the relative expiration time of the event.
@@ -83,7 +83,7 @@ public:
    */
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3>
-  static void ScheduleRealtime (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3);
+  static void Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3);
 
   /**
    * @param time the relative expiration time of the event.
@@ -97,7 +97,7 @@ public:
    */
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3, typename T4>
-  static void ScheduleRealtime (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4);
+  static void Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4);
 
   /**
    * @param time the relative expiration time of the event.
@@ -112,14 +112,14 @@ public:
    */
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3, typename T4, typename T5>
-  static void ScheduleRealtime (Time const &time, MEM mem_ptr, OBJ obj, 
+  static void Schedule (Time const &time, MEM mem_ptr, OBJ obj, 
                            T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
   /**
    * @param time the relative expiration time of the event.
    * @param f the function to invoke
    * @returns an id for the scheduled event.
    */
-  static void ScheduleRealtime (Time const &time, void (*f) (void));
+  static void Schedule (Time const &time, void (*f) (void));
 
   /**
    * @param time the relative expiration time of the event.
@@ -128,7 +128,7 @@ public:
    * @returns an id for the scheduled event.
    */
   template <typename U1, typename T1>
-  static void ScheduleRealtime (Time const &time, void (*f) (U1), T1 a1);
+  static void Schedule (Time const &time, void (*f) (U1), T1 a1);
 
   /**
    * @param time the relative expiration time of the event.
@@ -138,7 +138,7 @@ public:
    * @returns an id for the scheduled event.
    */
   template <typename U1, typename U2, typename T1, typename T2>
-  static void ScheduleRealtime (Time const &time, void (*f) (U1,U2), T1 a1, T2 a2);
+  static void Schedule (Time const &time, void (*f) (U1,U2), T1 a1, T2 a2);
 
   /**
    * @param time the relative expiration time of the event.
@@ -149,7 +149,7 @@ public:
    * @returns an id for the scheduled event.
    */
   template <typename U1, typename U2, typename U3, typename T1, typename T2, typename T3>
-  static void ScheduleRealtime (Time const &time, void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3);
+  static void Schedule (Time const &time, void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3);
 
   /**
    * @param time the relative expiration time of the event.
@@ -162,7 +162,7 @@ public:
    */
   template <typename U1, typename U2, typename U3, typename U4, 
             typename T1, typename T2, typename T3, typename T4>
-  static void ScheduleRealtime (Time const &time, void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4);
+  static void Schedule (Time const &time, void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4);
 
   /**
    * @param time the relative expiration time of the event.
@@ -176,7 +176,7 @@ public:
    */
   template <typename U1, typename U2, typename U3, typename U4, typename U5,
             typename T1, typename T2, typename T3, typename T4, typename T5>
-  static void ScheduleRealtime (Time const &time, void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+  static void Schedule (Time const &time, void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
   /**
    * Schedule an event to expire Now. All events scheduled to
@@ -187,7 +187,7 @@ public:
    * @param obj the object on which to invoke the member method
    */
   template <typename MEM, typename OBJ>
-  static void ScheduleRealtimeNow (MEM mem_ptr, OBJ obj);
+  static void ScheduleNow (MEM mem_ptr, OBJ obj);
 
   /**
    * @param mem_ptr member method pointer to invoke
@@ -196,7 +196,7 @@ public:
    */
   template <typename MEM, typename OBJ, 
             typename T1>
-  static void ScheduleRealtimeNow (MEM mem_ptr, OBJ obj, T1 a1);
+  static void ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1);
 
   /**
    * @param mem_ptr member method pointer to invoke
@@ -206,7 +206,7 @@ public:
    */
   template <typename MEM, typename OBJ, 
             typename T1, typename T2>
-  static void ScheduleRealtimeNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2);
+  static void ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2);
 
   /**
    * @param mem_ptr member method pointer to invoke
@@ -217,7 +217,7 @@ public:
    */
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3>
-  static void ScheduleRealtimeNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3);
+  static void ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3);
 
   /**
    * @param mem_ptr member method pointer to invoke
@@ -229,7 +229,7 @@ public:
    */
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3, typename T4>
-  static void ScheduleRealtimeNow (MEM mem_ptr, OBJ obj, 
+  static void ScheduleNow (MEM mem_ptr, OBJ obj, 
                               T1 a1, T2 a2, T3 a3, T4 a4);
   /**
    * @param mem_ptr member method pointer to invoke
@@ -242,12 +242,12 @@ public:
    */
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3, typename T4, typename T5>
-  static void ScheduleRealtimeNow (MEM mem_ptr, OBJ obj, 
+  static void ScheduleNow (MEM mem_ptr, OBJ obj, 
                               T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
   /**
    * @param f the function to invoke
    */
-  static void ScheduleRealtimeNow (void (*f) (void));
+  static void ScheduleNow (void (*f) (void));
 
   /**
    * @param f the function to invoke
@@ -255,7 +255,7 @@ public:
    */
   template <typename U1,
             typename T1>
-  static void ScheduleRealtimeNow (void (*f) (U1), T1 a1);
+  static void ScheduleNow (void (*f) (U1), T1 a1);
 
   /**
    * @param f the function to invoke
@@ -264,7 +264,7 @@ public:
    */
   template <typename U1, typename U2,
             typename T1, typename T2>
-  static void ScheduleRealtimeNow (void (*f) (U1,U2), T1 a1, T2 a2);
+  static void ScheduleNow (void (*f) (U1,U2), T1 a1, T2 a2);
 
   /**
    * @param f the function to invoke
@@ -274,7 +274,7 @@ public:
    */
   template <typename U1, typename U2, typename U3,
             typename T1, typename T2, typename T3>
-  static void ScheduleRealtimeNow (void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3);
+  static void ScheduleNow (void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3);
 
   /**
    * @param f the function to invoke
@@ -285,7 +285,7 @@ public:
    */
   template <typename U1, typename U2, typename U3, typename U4,
             typename T1, typename T2, typename T3, typename T4>
-  static void ScheduleRealtimeNow (void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4);
+  static void ScheduleNow (void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4);
 
   /**
    * @param f the function to invoke
@@ -297,179 +297,179 @@ public:
    */
   template <typename U1, typename U2, typename U3, typename U4, typename U5,
             typename T1, typename T2, typename T3, typename T4, typename T5>
-  static void ScheduleRealtimeNow (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+  static void ScheduleNow (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
 private:
-  RealtimeSimulator ();
-  ~RealtimeSimulator ();
-  static void ScheduleRealtime (const Time &delay, EventImpl *impl);
-  static void ScheduleRealtimeNow (EventImpl *impl);
+  WallclockSimulator ();
+  ~WallclockSimulator ();
+  static void Schedule (const Time &delay, EventImpl *impl);
+  static void ScheduleNow (EventImpl *impl);
 };
 
 template <typename MEM, typename OBJ>
-void RealtimeSimulator::ScheduleRealtime (Time const &time, MEM mem_ptr, OBJ obj) 
+void WallclockSimulator::Schedule (Time const &time, MEM mem_ptr, OBJ obj) 
 {
-  return ScheduleRealtime (time, MakeEvent (mem_ptr, obj));
+  return Schedule (time, MakeEvent (mem_ptr, obj));
 }
 
 template <typename MEM, typename OBJ,
           typename T1>
-void RealtimeScheduleRealtime (Time const &time, MEM mem_ptr, OBJ obj, T1 a1) 
+void Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1) 
 {
-  return ScheduleRealtime (time, MakeEvent (mem_ptr, obj, a1));
+  return Schedule (time, MakeEvent (mem_ptr, obj, a1));
 }
 
 template <typename MEM, typename OBJ, 
           typename T1, typename T2>
-void RealtimeScheduleRealtime (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2)
+void Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2)
 {
-  return ScheduleRealtime (time, MakeEvent (mem_ptr, obj, a1, a2));
+  return Schedule (time, MakeEvent (mem_ptr, obj, a1, a2));
 }
 
 template <typename MEM, typename OBJ,
           typename T1, typename T2, typename T3>
-void RealtimeScheduleRealtime (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3) 
+void Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3) 
 {
-  return ScheduleRealtime (time, MakeEvent (mem_ptr, obj, a1, a2, a3));
+  return Schedule (time, MakeEvent (mem_ptr, obj, a1, a2, a3));
 }
 
 template <typename MEM, typename OBJ, 
           typename T1, typename T2, typename T3, typename T4>
-void RealtimeScheduleRealtime (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4) 
+void Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4) 
 {
-  return ScheduleRealtime (time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
+  return Schedule (time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
 }
 
 template <typename MEM, typename OBJ, 
           typename T1, typename T2, typename T3, typename T4, typename T5>
-void RealtimeScheduleRealtime (Time const &time, MEM mem_ptr, OBJ obj, 
+void Schedule (Time const &time, MEM mem_ptr, OBJ obj, 
                              T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
-  return ScheduleRealtime (time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
+  return Schedule (time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
 }
 
 template <typename U1, typename T1>
-void RealtimeScheduleRealtime (Time const &time, void (*f) (U1), T1 a1) 
+void Schedule (Time const &time, void (*f) (U1), T1 a1) 
 {
-  return ScheduleRealtime (time, MakeEvent (f, a1));
+  return Schedule (time, MakeEvent (f, a1));
 }
 
 template <typename U1, typename U2, 
           typename T1, typename T2>
-void RealtimeScheduleRealtime (Time const &time, void (*f) (U1,U2), T1 a1, T2 a2) 
+void Schedule (Time const &time, void (*f) (U1,U2), T1 a1, T2 a2) 
 {
-  return ScheduleRealtime (time, MakeEvent (f, a1, a2));
+  return Schedule (time, MakeEvent (f, a1, a2));
 }
 
 template <typename U1, typename U2, typename U3,
           typename T1, typename T2, typename T3>
-void RealtimeScheduleRealtime (Time const &time, void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3)
+void Schedule (Time const &time, void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3)
 {
-  return ScheduleRealtime (time, MakeEvent (f, a1, a2, a3));
+  return Schedule (time, MakeEvent (f, a1, a2, a3));
 }
 
 template <typename U1, typename U2, typename U3, typename U4,
           typename T1, typename T2, typename T3, typename T4>
-void RealtimeScheduleRealtime (Time const &time, void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4) 
+void Schedule (Time const &time, void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4) 
 {
-  return ScheduleRealtime (time, MakeEvent (f, a1, a2, a3, a4));
+  return Schedule (time, MakeEvent (f, a1, a2, a3, a4));
 }
 
 template <typename U1, typename U2, typename U3, typename U4, typename U5,
           typename T1, typename T2, typename T3, typename T4, typename T5>
-void RealtimeScheduleRealtime (Time const &time, void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+void Schedule (Time const &time, void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
-  return ScheduleRealtime (time, MakeEvent (f, a1, a2, a3, a4, a5));
+  return Schedule (time, MakeEvent (f, a1, a2, a3, a4, a5));
 }
 
 template <typename MEM, typename OBJ>
 void
-RealtimeScheduleRealtimeNow (MEM mem_ptr, OBJ obj) 
+ScheduleNow (MEM mem_ptr, OBJ obj) 
 {
-  return ScheduleRealtimeNow (MakeEvent (mem_ptr, obj));
+  return ScheduleNow (MakeEvent (mem_ptr, obj));
 }
 
 template <typename MEM, typename OBJ, 
           typename T1>
 void
-RealtimeScheduleRealtimeNow (MEM mem_ptr, OBJ obj, T1 a1) 
+ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1) 
 {
-  return ScheduleRealtimeNow (MakeEvent (mem_ptr, obj, a1));
+  return ScheduleNow (MakeEvent (mem_ptr, obj, a1));
 }
 
 template <typename MEM, typename OBJ, 
           typename T1, typename T2>
 void
-RealtimeScheduleRealtimeNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2) 
+ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2) 
 {
-  return ScheduleRealtimeNow (MakeEvent (mem_ptr, obj, a1, a2));
+  return ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2));
 }
 
 template <typename MEM, typename OBJ, 
           typename T1, typename T2, typename T3>
 void
-RealtimeScheduleRealtimeNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3) 
+ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3) 
 {
-  return ScheduleRealtimeNow (MakeEvent (mem_ptr, obj, a1, a2, a3));
+  return ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3));
 }
 
 template <typename MEM, typename OBJ, 
           typename T1, typename T2, typename T3, typename T4>
 void
-RealtimeScheduleRealtimeNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4) 
+ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4) 
 {
-  return ScheduleRealtimeNow (MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
+  return ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
 }
 
 template <typename MEM, typename OBJ, 
           typename T1, typename T2, typename T3, typename T4, typename T5>
 void
-RealtimeScheduleRealtimeNow (MEM mem_ptr, OBJ obj, 
+ScheduleNow (MEM mem_ptr, OBJ obj, 
                         T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
-  return ScheduleRealtimeNow (MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
+  return ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
 }
 
 template <typename U1,
           typename T1>
 void
-RealtimeScheduleRealtimeNow (void (*f) (U1), T1 a1) 
+ScheduleNow (void (*f) (U1), T1 a1) 
 {
-  return ScheduleRealtimeNow (MakeEvent (f, a1));
+  return ScheduleNow (MakeEvent (f, a1));
 }
 
 template <typename U1, typename U2,
           typename T1, typename T2>
 void
-RealtimeScheduleRealtimeNow (void (*f) (U1,U2), T1 a1, T2 a2) 
+ScheduleNow (void (*f) (U1,U2), T1 a1, T2 a2) 
 {
-  return ScheduleRealtimeNow (MakeEvent (f, a1, a2));
+  return ScheduleNow (MakeEvent (f, a1, a2));
 }
 
 template <typename U1, typename U2, typename U3,
           typename T1, typename T2, typename T3>
 void
-RealtimeScheduleRealtimeNow (void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3)
+ScheduleNow (void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3)
 {
-  return ScheduleRealtimeNow (MakeEvent (f, a1, a2, a3));
+  return ScheduleNow (MakeEvent (f, a1, a2, a3));
 }
 
 template <typename U1, typename U2, typename U3, typename U4,
           typename T1, typename T2, typename T3, typename T4>
 void
-RealtimeScheduleRealtimeNow (void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4) 
+ScheduleNow (void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4) 
 {
-  return ScheduleRealtimeNow (MakeEvent (f, a1, a2, a3, a4));
+  return ScheduleNow (MakeEvent (f, a1, a2, a3, a4));
 }
 
 template <typename U1, typename U2, typename U3, typename U4, typename U5,
           typename T1, typename T2, typename T3, typename T4, typename T5>
 void
-RealtimeScheduleRealtimeNow (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+ScheduleNow (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
-  return ScheduleRealtimeNow (MakeEvent (f, a1, a2, a3, a4, a5));
+  return ScheduleNow (MakeEvent (f, a1, a2, a3, a4, a5));
 }
 
 } // namespace ns3
 
-#endif /* REALTIME_SIMULATOR_H */
+#endif /* WALLCLOCK_SIMULATOR_H */

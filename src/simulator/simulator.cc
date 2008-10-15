@@ -19,7 +19,7 @@
  */
 
 #include "simulator.h"
-#include "realtime-simulator.h"
+#include "wallclock-simulator.h"
 #include "simulator-impl.h"
 #include "default-simulator-impl.h"
 #include "realtime-simulator-impl.h"
@@ -289,31 +289,31 @@ Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
 
 
 void
-RealtimeSimulator::ScheduleRealtime (Time const &time, EventImpl *ev)
+WallclockSimulator::Schedule (Time const &time, EventImpl *ev)
 {
   NS_LOG_FUNCTION (time << ev);
-  return GetImpl ()->ScheduleRealtime (time, ev);
+  return GetImpl ()->ScheduleWallclock (time, ev);
 }
 
 void
-RealtimeSimulator::ScheduleRealtimeNow (EventImpl *ev)
+WallclockSimulator::ScheduleNow (EventImpl *ev)
 {
   NS_LOG_FUNCTION (ev);
-  return GetImpl ()->ScheduleRealtimeNow (ev);
+  return GetImpl ()->ScheduleWallclockNow (ev);
 }
 
 void
-RealtimeSimulator::ScheduleRealtime (Time const &time, void (*f) (void))
+WallclockSimulator::Schedule (Time const &time, void (*f) (void))
 {
   NS_LOG_FUNCTION (time << f);
-  return ScheduleRealtime (time, MakeEvent (f));
+  return WallclockSimulator::Schedule (time, MakeEvent (f));
 }
 
 void
-RealtimeSimulator::ScheduleRealtimeNow (void (*f) (void))
+WallclockSimulator::ScheduleNow (void (*f) (void))
 {
   NS_LOG_FUNCTION (f);
-  return ScheduleRealtimeNow (MakeEvent (f));
+  return WallclockSimulator::ScheduleNow (MakeEvent (f));
 }
 
 

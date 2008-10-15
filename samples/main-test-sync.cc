@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 #include "ns3/simulator.h"
-#include "ns3/realtime-simulator.h"
+#include "ns3/wallclock-simulator.h"
 #include "ns3/nstime.h"
 #include "ns3/log.h"
 #include "ns3/system-thread.h"
@@ -97,7 +97,7 @@ FakeNetDevice::Doit3 (void)
       //
       // Exercise the realtime relative now path
       //
-      RealtimeSimulator::ScheduleRealtimeNow (&inserted_function);
+      WallclockSimulator::ScheduleNow (&inserted_function);
       usleep (1000);
     }
 }
@@ -112,7 +112,7 @@ FakeNetDevice::Doit4 (void)
       //
       // Exercise the realtime relative schedule path
       //
-      RealtimeSimulator::ScheduleRealtime (Seconds (0), &inserted_function);
+      WallclockSimulator::Schedule (Seconds (0), &inserted_function);
       usleep (1000);
     }
 }
@@ -126,9 +126,9 @@ test (void)
   FakeNetDevice fnd;
 
   // 
-  // Make sure ScheduleRealNow works when the system isn't running
+  // Make sure ScheduleNow works when the system isn't running
   //
-  RealtimeSimulator::ScheduleRealtimeNow(&first_function);
+  WallclockSimulator::ScheduleNow(&first_function);
 
   // 
   // drive the progression of m_currentTs at a ten millisecond rate

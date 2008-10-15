@@ -321,12 +321,12 @@ DefaultSimulatorImpl::GetMaximumSimulationTime (void) const
 }
 
 void 
-DefaultSimulatorImpl::ScheduleRealtime (Time const &time, EventImpl *event)
+DefaultSimulatorImpl::ScheduleWallclock (Time const &time, EventImpl *event)
 {
   NS_FATAL_ERROR ("not implemented");
 }
 void 
-DefaultSimulatorImpl::ScheduleRealtimeNow (EventImpl *event)
+DefaultSimulatorImpl::ScheduleWallclockNow (EventImpl *event)
 {
   NS_FATAL_ERROR ("not implemented");
 }
