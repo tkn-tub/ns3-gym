@@ -61,29 +61,27 @@ public:
   RealtimeSimulatorImpl ();
   ~RealtimeSimulatorImpl ();
 
-  void Destroy ();
-
-  bool IsFinished (void) const;
-  Time Next (void) const;
-  void Stop (void);
-  void Stop (Time const &time);
-  EventId Schedule (Time const &time, const Ptr<EventImpl> &event);
-  EventId ScheduleNow (const Ptr<EventImpl> &event);
+  virtual void Destroy ();
+  virtual bool IsFinished (void) const;
+  virtual Time Next (void) const;
+  virtual void Stop (void);
+  virtual void Stop (Time const &time);
+  virtual EventId Schedule (Time const &time, EventImpl *event);
+  virtual EventId ScheduleNow (EventImpl *event);
+  virtual EventId ScheduleDestroy (EventImpl *event);
+  virtual void Remove (const EventId &ev);
+  virtual void Cancel (const EventId &ev);
+  virtual bool IsExpired (const EventId &ev) const;
+  virtual void Run (void);
+  virtual void RunOneEvent (void);
+  virtual Time Now (void) const;
+  virtual Time GetDelayLeft (const EventId &id) const;
+  virtual Time GetMaximumSimulationTime (void) const;
+  virtual void SetScheduler (Ptr<Scheduler> scheduler);
+  virtual Ptr<Scheduler> GetScheduler (void) const;
   EventId ScheduleRealtime (Time const &time, const Ptr<EventImpl> &event);
   EventId ScheduleRealtimeNow (const Ptr<EventImpl> &event);
-  EventId ScheduleDestroy (const Ptr<EventImpl> &event);
-  Time Now (void) const;
   Time RealtimeNow (void) const;
-  void Remove (const EventId &ev);
-  void Cancel (const EventId &ev);
-  bool IsExpired (const EventId &ev) const;
-  virtual void RunOneEvent (void);
-  void Run (void);
-  Time GetDelayLeft (const EventId &id) const;
-  Time GetMaximumSimulationTime (void) const;
-
-  void SetScheduler (Ptr<Scheduler> scheduler);
-  Ptr<Scheduler> GetScheduler (void) const;
 
   void SetSynchronizationMode (RealtimeSimulatorImpl::SynchronizationMode mode);
   RealtimeSimulatorImpl::SynchronizationMode GetSynchronizationMode (void) const;

@@ -299,34 +299,9 @@ public:
             typename T1, typename T2, typename T3, typename T4, typename T5>
   static EventId ScheduleRealtimeNow (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
-  /**
-   * Return the "current normalized real-time".
-   */
-  static Time RealtimeNow (void);
-
-  /**
-   * \param time delay until the event expires
-   * \param event the event to schedule
-   * \returns a unique identifier for the newly-scheduled event.
-   *
-   * This method will be typically used by language bindings
-   * to delegate events to their own subclass of the EventImpl base class.
-   */
-  static EventId ScheduleRealtime (Time const &time, const Ptr<EventImpl> &event);  
-
-  /**
-   * \param event the event to schedule
-   * \returns a unique identifier for the newly-scheduled event.
-   *
-   * This method will be typically used by language bindings
-   * to delegate events to their own subclass of the EventImpl base class.
-   */
-  static EventId ScheduleRealtimeNow (const Ptr<EventImpl> &event);
 private:
   RealtimeSimulator ();
   ~RealtimeSimulator ();
-
-  static RealtimeSimulatorImpl *GetRealtimeImpl (void);
 };
 
 template <typename MEM, typename OBJ>

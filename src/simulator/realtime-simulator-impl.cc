@@ -589,7 +589,7 @@ RealtimeSimulatorImpl::Stop (Time const &time)
 // Schedule an event for a _relative_ time in the future.
 //
 EventId
-RealtimeSimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &impl)
+RealtimeSimulatorImpl::Schedule (Time const &time, EventImpl *impl)
 {
   NS_LOG_FUNCTION (time << impl);
 
@@ -605,7 +605,7 @@ RealtimeSimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &impl)
     Time tAbsolute = Simulator::Now () + time;
     NS_ASSERT_MSG (tAbsolute.IsPositive (), "RealtimeSimulatorImpl::Schedule(): Negative time");
     NS_ASSERT_MSG (tAbsolute >= TimeStep (m_currentTs), "RealtimeSimulatorImpl::Schedule(): time < m_currentTs");
-    ev.impl = GetPointer (impl);
+    ev.impl = impl;
     ev.key.m_ts = (uint64_t) tAbsolute.GetTimeStep ();
     ev.key.m_uid = m_uid;
     m_uid++;
@@ -618,14 +618,14 @@ RealtimeSimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &impl)
 }
 
 EventId
-RealtimeSimulatorImpl::ScheduleNow (const Ptr<EventImpl> &impl)
+RealtimeSimulatorImpl::ScheduleNow (EventImpl *impl)
 {
   NS_LOG_FUNCTION_NOARGS ();
   Scheduler::Event ev;
   {
     CriticalSection cs (m_mutex);
 
-    ev.impl = GetPointer (impl);
+    ev.impl = impl;
     ev.key.m_ts = m_currentTs;
     ev.key.m_uid = m_uid;
     m_uid++;
@@ -702,7 +702,7 @@ RealtimeSimulatorImpl::RealtimeNow (void) const
 }
 
 EventId
-RealtimeSimulatorImpl::ScheduleDestroy (const Ptr<EventImpl> &impl)
+RealtimeSimulatorImpl::ScheduleDestroy (EventImpl *impl)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -715,7 +715,7 @@ RealtimeSimulatorImpl::ScheduleDestroy (const Ptr<EventImpl> &impl)
     // overridden by the uid of 2 which identifies this as an event to be 
     // executed at Simulator::Destroy time.
     //
-    id = EventId (impl, m_currentTs, 2);
+    id = EventId (Ptr<EventImpl> (impl, false), m_currentTs, 2);
     m_destroyEvents.push_back (id);
     m_uid++;
   }

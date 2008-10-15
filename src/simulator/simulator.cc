@@ -184,7 +184,7 @@ Simulator::GetDelayLeft (const EventId &id)
   return GetImpl ()->GetDelayLeft (id);
 }
 
-Ptr<EventImpl>
+EventImpl *
 Simulator::MakeEvent (void (*f) (void))
 {
   NS_LOG_FUNCTION (f);
@@ -205,49 +205,65 @@ Simulator::MakeEvent (void (*f) (void))
   private:
   	F m_function;
   } *ev = new EventFunctionImpl0 (f);
-  return Ptr<EventImpl> (ev, false);
+  return ev;
 }
 
 EventId
 Simulator::Schedule (Time const &time, const Ptr<EventImpl> &ev)
 {
   NS_LOG_FUNCTION (time << ev);
-  return GetImpl ()->Schedule (time, ev);
+  return DoSchedule (time, GetPointer (ev));
 }
 
 EventId
 Simulator::ScheduleNow (const Ptr<EventImpl> &ev)
 {
   NS_LOG_FUNCTION (ev);
-  return GetImpl ()->ScheduleNow (ev);
+  return DoScheduleNow (GetPointer (ev));
 }
 
 EventId
 Simulator::ScheduleDestroy (const Ptr<EventImpl> &ev)
 {
   NS_LOG_FUNCTION (ev);
-  return GetImpl ()->ScheduleDestroy (ev);
-}  
+  return DoScheduleDestroy (GetPointer (ev));
+}
+EventId 
+Simulator::DoSchedule (Time const &time, EventImpl *impl)
+{
+  return GetImpl ()->Schedule (time, impl);
+}
+EventId 
+Simulator::DoScheduleNow (EventImpl *impl)
+{
+  return GetImpl ()->ScheduleNow (impl);
+}
+EventId 
+Simulator::DoScheduleDestroy (EventImpl *impl)
+{
+  return GetImpl ()->ScheduleDestroy (impl);
+}
+
 
 EventId
 Simulator::Schedule (Time const &time, void (*f) (void))
 {
   NS_LOG_FUNCTION (time << f);
-  return Schedule (time, MakeEvent (f));
+  return DoSchedule (time, MakeEvent (f));
 }
 
 EventId
 Simulator::ScheduleNow (void (*f) (void))
 {
   NS_LOG_FUNCTION (f);
-  return ScheduleNow (MakeEvent (f));
+  return DoScheduleNow (MakeEvent (f));
 }
 
 EventId
 Simulator::ScheduleDestroy (void (*f) (void))
 {
   NS_LOG_FUNCTION (f);
-  return ScheduleDestroy (MakeEvent (f));
+  return DoScheduleDestroy (MakeEvent (f));
 }
 
 void

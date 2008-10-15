@@ -185,14 +185,14 @@ DefaultSimulatorImpl::Stop (Time const &time)
 // Schedule an event for a _relative_ time in the future.
 //
 EventId
-DefaultSimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &event)
+DefaultSimulatorImpl::Schedule (Time const &time, EventImpl *event)
 {
   Time tAbsolute = time + Now();
 
   NS_ASSERT (tAbsolute.IsPositive ());
   NS_ASSERT (tAbsolute >= TimeStep (m_currentTs));
   Scheduler::Event ev;
-  ev.impl = GetPointer (event);
+  ev.impl = event;
   ev.key.m_ts = (uint64_t) tAbsolute.GetTimeStep ();
   ev.key.m_uid = m_uid;
   m_uid++;
@@ -202,10 +202,10 @@ DefaultSimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &event)
 }
 
 EventId
-DefaultSimulatorImpl::ScheduleNow (const Ptr<EventImpl> &event)
+DefaultSimulatorImpl::ScheduleNow (EventImpl *event)
 {
   Scheduler::Event ev;
-  ev.impl = GetPointer (event);
+  ev.impl = event;
   ev.key.m_ts = m_currentTs;
   ev.key.m_uid = m_uid;
   m_uid++;
@@ -215,9 +215,9 @@ DefaultSimulatorImpl::ScheduleNow (const Ptr<EventImpl> &event)
 }
 
 EventId
-DefaultSimulatorImpl::ScheduleDestroy (const Ptr<EventImpl> &event)
+DefaultSimulatorImpl::ScheduleDestroy (EventImpl *event)
 {
-  EventId id (event, m_currentTs, 2);
+  EventId id (Ptr<EventImpl> (event, false), m_currentTs, 2);
   m_destroyEvents.push_back (id);
   m_uid++;
   return id;

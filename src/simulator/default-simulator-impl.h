@@ -48,9 +48,9 @@ public:
   virtual Time Next (void) const;
   virtual void Stop (void);
   virtual void Stop (Time const &time);
-  virtual EventId Schedule (Time const &time, const Ptr<EventImpl> &event);
-  virtual EventId ScheduleNow (const Ptr<EventImpl> &event);
-  virtual EventId ScheduleDestroy (const Ptr<EventImpl> &event);
+  virtual EventId Schedule (Time const &time, EventImpl *event);
+  virtual EventId ScheduleNow (EventImpl *event);
+  virtual EventId ScheduleDestroy (EventImpl *event);
   virtual void Remove (const EventId &ev);
   virtual void Cancel (const EventId &ev);
   virtual bool IsExpired (const EventId &ev) const;

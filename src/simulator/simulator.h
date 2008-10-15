@@ -619,40 +619,44 @@ private:
   Simulator ();
   ~Simulator ();
 
+  static EventId DoSchedule (Time const &time, EventImpl *event);  
+  static EventId DoScheduleNow (EventImpl *event);
+  static EventId DoScheduleDestroy (EventImpl *event);
+
   template <typename MEM, typename OBJ>
-  static Ptr<EventImpl> MakeEvent (MEM mem_ptr, OBJ obj);
+  static EventImpl *MakeEvent (MEM mem_ptr, OBJ obj);
   template <typename MEM, typename OBJ, 
             typename T1>
-  static Ptr<EventImpl> MakeEvent (MEM mem_ptr, OBJ obj, T1 a1);
+  static EventImpl *MakeEvent (MEM mem_ptr, OBJ obj, T1 a1);
   template <typename MEM, typename OBJ, 
             typename T1, typename T2>
-  static Ptr<EventImpl> MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2);
+  static EventImpl * MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2);
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3>
-  static Ptr<EventImpl> MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3);
+  static EventImpl * MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3);
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3, typename T4>
-  static Ptr<EventImpl> MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4);
+  static EventImpl * MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4);
   template <typename MEM, typename OBJ, 
             typename T1, typename T2, typename T3, typename T4, typename T5>
-  static Ptr<EventImpl> MakeEvent (MEM mem_ptr, OBJ obj, 
+  static EventImpl * MakeEvent (MEM mem_ptr, OBJ obj, 
                                    T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
-  static Ptr<EventImpl> MakeEvent (void (*f) (void));
+  static EventImpl * MakeEvent (void (*f) (void));
   template <typename U1, 
             typename T1>
-  static Ptr<EventImpl> MakeEvent (void (*f) (U1), T1 a1);
+  static EventImpl * MakeEvent (void (*f) (U1), T1 a1);
   template <typename U1, typename U2, 
             typename T1, typename T2>
-  static Ptr<EventImpl> MakeEvent (void (*f) (U1,U2), T1 a1, T2 a2);
+  static EventImpl * MakeEvent (void (*f) (U1,U2), T1 a1, T2 a2);
   template <typename U1, typename U2, typename U3,
             typename T1, typename T2, typename T3>
-  static Ptr<EventImpl> MakeEvent (void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3);
+  static EventImpl * MakeEvent (void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3);
   template <typename U1, typename U2, typename U3, typename U4,
             typename T1, typename T2, typename T3, typename T4>
-  static Ptr<EventImpl> MakeEvent (void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4);
+  static EventImpl * MakeEvent (void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4);
   template <typename U1, typename U2, typename U3, typename U4, typename U5,
             typename T1, typename T2, typename T3, typename T4, typename T5>
-  static Ptr<EventImpl> MakeEvent (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+  static EventImpl * MakeEvent (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
   static SimulatorImpl *GetImpl (void);
   static Ptr<SimulatorImpl> m_impl;
@@ -673,7 +677,7 @@ private:
  */
 Time Now (void);
 
-}; // namespace ns3
+} // namespace ns3
 
 
 /********************************************************************
@@ -694,7 +698,7 @@ struct EventMemberImplObjTraits<T *>
 };
 
 template <typename MEM, typename OBJ>
-Ptr<EventImpl> Simulator::MakeEvent (MEM mem_ptr, OBJ obj) 
+EventImpl * Simulator::MakeEvent (MEM mem_ptr, OBJ obj) 
 {
   // zero argument version
   class EventMemberImpl0 : public EventImpl {
@@ -711,13 +715,13 @@ Ptr<EventImpl> Simulator::MakeEvent (MEM mem_ptr, OBJ obj)
     OBJ m_obj;
     MEM m_function;
   } * ev = new EventMemberImpl0 (obj, mem_ptr);
-  return Ptr<EventImpl> (ev, false);
+  return ev;
 }
 
 
 template <typename MEM, typename OBJ, 
           typename T1>
-Ptr<EventImpl> Simulator::MakeEvent (MEM mem_ptr, OBJ obj, T1 a1)
+EventImpl * Simulator::MakeEvent (MEM mem_ptr, OBJ obj, T1 a1)
 {
   // one argument version
   class EventMemberImpl1 : public EventImpl {
@@ -737,12 +741,12 @@ Ptr<EventImpl> Simulator::MakeEvent (MEM mem_ptr, OBJ obj, T1 a1)
     MEM m_function;
     typename TypeTraits<T1>::ReferencedType m_a1;
   } *ev = new EventMemberImpl1 (obj, mem_ptr, a1);
-  return Ptr<EventImpl> (ev, false);
+  return ev;
 }
 
 template <typename MEM, typename OBJ, 
           typename T1, typename T2>
-Ptr<EventImpl> Simulator::MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2) 
+EventImpl * Simulator::MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2) 
 {
   // two argument version
   class EventMemberImpl2 : public EventImpl {
@@ -764,12 +768,12 @@ Ptr<EventImpl> Simulator::MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2)
     typename TypeTraits<T1>::ReferencedType m_a1;
     typename TypeTraits<T2>::ReferencedType m_a2;
   } *ev = new EventMemberImpl2 (obj, mem_ptr, a1, a2);
-  return Ptr<EventImpl> (ev, false);
+  return ev;
 }
 
 template <typename MEM, typename OBJ, 
           typename T1, typename T2, typename T3>
-Ptr<EventImpl> Simulator::MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3) 
+EventImpl * Simulator::MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3) 
 {
   // three argument version
   class EventMemberImpl3 : public EventImpl {
@@ -793,12 +797,12 @@ Ptr<EventImpl> Simulator::MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3)
     typename TypeTraits<T2>::ReferencedType m_a2;
     typename TypeTraits<T3>::ReferencedType m_a3;
   } *ev = new EventMemberImpl3 (obj, mem_ptr, a1, a2, a3);
-  return Ptr<EventImpl> (ev, false);
+  return ev;
 }
 
 template <typename MEM, typename OBJ, 
           typename T1, typename T2, typename T3, typename T4>
-Ptr<EventImpl> Simulator::MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4) 
+EventImpl * Simulator::MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4) 
 {
   // four argument version
   class EventMemberImpl4 : public EventImpl {
@@ -824,12 +828,12 @@ Ptr<EventImpl> Simulator::MakeEvent (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, 
     typename TypeTraits<T3>::ReferencedType m_a3;
     typename TypeTraits<T4>::ReferencedType m_a4;
   } *ev = new EventMemberImpl4 (obj, mem_ptr, a1, a2, a3, a4);
-  return Ptr<EventImpl> (ev, false);
+  return ev;
 }
 
 template <typename MEM, typename OBJ, 
           typename T1, typename T2, typename T3, typename T4, typename T5>
-Ptr<EventImpl> Simulator::MakeEvent (MEM mem_ptr, OBJ obj, 
+EventImpl * Simulator::MakeEvent (MEM mem_ptr, OBJ obj, 
                                      T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
   // five argument version
@@ -858,11 +862,11 @@ Ptr<EventImpl> Simulator::MakeEvent (MEM mem_ptr, OBJ obj,
     typename TypeTraits<T4>::ReferencedType m_a4;
     typename TypeTraits<T5>::ReferencedType m_a5;
   } *ev = new EventMemberImpl5 (obj, mem_ptr, a1, a2, a3, a4, a5);
-  return Ptr<EventImpl> (ev, false);
+  return ev;
 }
 
 template <typename U1, typename T1>
-Ptr<EventImpl> Simulator::MakeEvent (void (*f) (U1), T1 a1) 
+EventImpl * Simulator::MakeEvent (void (*f) (U1), T1 a1) 
 {
   // one arg version
   class EventFunctionImpl1 : public EventImpl {
@@ -882,11 +886,11 @@ Ptr<EventImpl> Simulator::MakeEvent (void (*f) (U1), T1 a1)
     F m_function;
     typename TypeTraits<T1>::ReferencedType m_a1;
   } *ev = new EventFunctionImpl1 (f, a1);
-  return Ptr<EventImpl> (ev, false);
+  return ev;
 }
 
 template <typename U1, typename U2, typename T1, typename T2>
-Ptr<EventImpl> Simulator::MakeEvent (void (*f) (U1,U2), T1 a1, T2 a2) 
+EventImpl * Simulator::MakeEvent (void (*f) (U1,U2), T1 a1, T2 a2) 
 {
   // two arg version
   class EventFunctionImpl2 : public EventImpl {
@@ -908,12 +912,12 @@ Ptr<EventImpl> Simulator::MakeEvent (void (*f) (U1,U2), T1 a1, T2 a2)
     typename TypeTraits<T1>::ReferencedType m_a1;
     typename TypeTraits<T2>::ReferencedType m_a2;
   } *ev = new EventFunctionImpl2 (f, a1, a2);
-  return Ptr<EventImpl> (ev, false);
+  return ev;
 }
 
 template <typename U1, typename U2, typename U3,
           typename T1, typename T2, typename T3>
-Ptr<EventImpl> Simulator::MakeEvent (void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3)
+EventImpl * Simulator::MakeEvent (void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3)
 {
   // three arg version
   class EventFunctionImpl3 : public EventImpl {
@@ -937,12 +941,12 @@ Ptr<EventImpl> Simulator::MakeEvent (void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3)
     typename TypeTraits<T2>::ReferencedType m_a2;
     typename TypeTraits<T3>::ReferencedType m_a3;
   } *ev = new EventFunctionImpl3 (f, a1, a2, a3);
-  return Ptr<EventImpl> (ev, false);
+  return ev;
 }
 
 template <typename U1, typename U2, typename U3, typename U4,
           typename T1, typename T2, typename T3, typename T4>
-Ptr<EventImpl> Simulator::MakeEvent (void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4) 
+EventImpl * Simulator::MakeEvent (void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4) 
 {
   // four arg version
   class EventFunctionImpl4 : public EventImpl {
@@ -968,12 +972,12 @@ Ptr<EventImpl> Simulator::MakeEvent (void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a
     typename TypeTraits<T3>::ReferencedType m_a3;
     typename TypeTraits<T4>::ReferencedType m_a4;
   } *ev = new EventFunctionImpl4 (f, a1, a2, a3, a4);
-  return Ptr<EventImpl> (ev, false);
+  return ev;
 }
 
 template <typename U1, typename U2, typename U3, typename U4, typename U5,
           typename T1, typename T2, typename T3, typename T4, typename T5>
-Ptr<EventImpl> Simulator::MakeEvent (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+EventImpl * Simulator::MakeEvent (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
   // five arg version
   class EventFunctionImpl5 : public EventImpl {
@@ -1001,13 +1005,13 @@ Ptr<EventImpl> Simulator::MakeEvent (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T
     typename TypeTraits<T4>::ReferencedType m_a4;
     typename TypeTraits<T5>::ReferencedType m_a5;
   } *ev = new EventFunctionImpl5 (f, a1, a2, a3, a4, a5);
-  return Ptr<EventImpl> (ev, false);
+  return ev;
 }
 
 template <typename MEM, typename OBJ>
 EventId Simulator::Schedule (Time const &time, MEM mem_ptr, OBJ obj) 
 {
-  return Schedule (time, MakeEvent (mem_ptr, obj));
+  return DoSchedule (time, MakeEvent (mem_ptr, obj));
 }
 
 
@@ -1015,28 +1019,28 @@ template <typename MEM, typename OBJ,
           typename T1>
 EventId Simulator::Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1) 
 {
-  return Schedule (time, MakeEvent (mem_ptr, obj, a1));
+  return DoSchedule (time, MakeEvent (mem_ptr, obj, a1));
 }
 
 template <typename MEM, typename OBJ, 
           typename T1, typename T2>
 EventId Simulator::Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2)
 {
-  return Schedule (time, MakeEvent (mem_ptr, obj, a1, a2));
+  return DoSchedule (time, MakeEvent (mem_ptr, obj, a1, a2));
 }
 
 template <typename MEM, typename OBJ,
           typename T1, typename T2, typename T3>
 EventId Simulator::Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3) 
 {
-  return Schedule (time, MakeEvent (mem_ptr, obj, a1, a2, a3));
+  return DoSchedule (time, MakeEvent (mem_ptr, obj, a1, a2, a3));
 }
 
 template <typename MEM, typename OBJ, 
           typename T1, typename T2, typename T3, typename T4>
 EventId Simulator::Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4) 
 {
-  return Schedule (time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
+  return DoSchedule (time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
 }
 
 template <typename MEM, typename OBJ, 
@@ -1044,41 +1048,41 @@ template <typename MEM, typename OBJ,
 EventId Simulator::Schedule (Time const &time, MEM mem_ptr, OBJ obj, 
                              T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
-  return Schedule (time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
+  return DoSchedule (time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
 }
 
 template <typename U1, typename T1>
 EventId Simulator::Schedule (Time const &time, void (*f) (U1), T1 a1) 
 {
-  return Schedule (time, MakeEvent (f, a1));
+  return DoSchedule (time, MakeEvent (f, a1));
 }
 
 template <typename U1, typename U2, 
           typename T1, typename T2>
 EventId Simulator::Schedule (Time const &time, void (*f) (U1,U2), T1 a1, T2 a2) 
 {
-  return Schedule (time, MakeEvent (f, a1, a2));
+  return DoSchedule (time, MakeEvent (f, a1, a2));
 }
 
 template <typename U1, typename U2, typename U3,
           typename T1, typename T2, typename T3>
 EventId Simulator::Schedule (Time const &time, void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3)
 {
-  return Schedule (time, MakeEvent (f, a1, a2, a3));
+  return DoSchedule (time, MakeEvent (f, a1, a2, a3));
 }
 
 template <typename U1, typename U2, typename U3, typename U4,
           typename T1, typename T2, typename T3, typename T4>
 EventId Simulator::Schedule (Time const &time, void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4) 
 {
-  return Schedule (time, MakeEvent (f, a1, a2, a3, a4));
+  return DoSchedule (time, MakeEvent (f, a1, a2, a3, a4));
 }
 
 template <typename U1, typename U2, typename U3, typename U4, typename U5,
           typename T1, typename T2, typename T3, typename T4, typename T5>
 EventId Simulator::Schedule (Time const &time, void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
-  return Schedule (time, MakeEvent (f, a1, a2, a3, a4, a5));
+  return DoSchedule (time, MakeEvent (f, a1, a2, a3, a4, a5));
 }
 
 
@@ -1088,7 +1092,7 @@ template <typename MEM, typename OBJ>
 EventId
 Simulator::ScheduleNow (MEM mem_ptr, OBJ obj) 
 {
-  return ScheduleNow (MakeEvent (mem_ptr, obj));
+  return DoScheduleNow (MakeEvent (mem_ptr, obj));
 }
 
 
@@ -1097,7 +1101,7 @@ template <typename MEM, typename OBJ,
 EventId
 Simulator::ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1) 
 {
-  return ScheduleNow (MakeEvent (mem_ptr, obj, a1));
+  return DoScheduleNow (MakeEvent (mem_ptr, obj, a1));
 }
 
 template <typename MEM, typename OBJ, 
@@ -1105,7 +1109,7 @@ template <typename MEM, typename OBJ,
 EventId
 Simulator::ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2) 
 {
-  return ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2));
+  return DoScheduleNow (MakeEvent (mem_ptr, obj, a1, a2));
 }
 
 template <typename MEM, typename OBJ, 
@@ -1113,7 +1117,7 @@ template <typename MEM, typename OBJ,
 EventId
 Simulator::ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3) 
 {
-  return ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3));
+  return DoScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3));
 }
 
 template <typename MEM, typename OBJ, 
@@ -1121,7 +1125,7 @@ template <typename MEM, typename OBJ,
 EventId
 Simulator::ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4) 
 {
-  return ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
+  return DoScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
 }
 
 template <typename MEM, typename OBJ, 
@@ -1130,7 +1134,7 @@ EventId
 Simulator::ScheduleNow (MEM mem_ptr, OBJ obj, 
                         T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
-  return ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
+  return DoScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
 }
 
 template <typename U1,
@@ -1138,7 +1142,7 @@ template <typename U1,
 EventId
 Simulator::ScheduleNow (void (*f) (U1), T1 a1) 
 {
-  return ScheduleNow (MakeEvent (f, a1));
+  return DoScheduleNow (MakeEvent (f, a1));
 }
 
 template <typename U1, typename U2,
@@ -1146,7 +1150,7 @@ template <typename U1, typename U2,
 EventId
 Simulator::ScheduleNow (void (*f) (U1,U2), T1 a1, T2 a2) 
 {
-  return ScheduleNow (MakeEvent (f, a1, a2));
+  return DoScheduleNow (MakeEvent (f, a1, a2));
 }
 
 template <typename U1, typename U2, typename U3,
@@ -1154,7 +1158,7 @@ template <typename U1, typename U2, typename U3,
 EventId
 Simulator::ScheduleNow (void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3)
 {
-  return ScheduleNow (MakeEvent (f, a1, a2, a3));
+  return DoScheduleNow (MakeEvent (f, a1, a2, a3));
 }
 
 template <typename U1, typename U2, typename U3, typename U4,
@@ -1162,7 +1166,7 @@ template <typename U1, typename U2, typename U3, typename U4,
 EventId
 Simulator::ScheduleNow (void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4) 
 {
-  return ScheduleNow (MakeEvent (f, a1, a2, a3, a4));
+  return DoScheduleNow (MakeEvent (f, a1, a2, a3, a4));
 }
 
 template <typename U1, typename U2, typename U3, typename U4, typename U5,
@@ -1170,7 +1174,7 @@ template <typename U1, typename U2, typename U3, typename U4, typename U5,
 EventId
 Simulator::ScheduleNow (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
-  return ScheduleNow (MakeEvent (f, a1, a2, a3, a4, a5));
+  return DoScheduleNow (MakeEvent (f, a1, a2, a3, a4, a5));
 }
 
 
@@ -1179,7 +1183,7 @@ template <typename MEM, typename OBJ>
 EventId
 Simulator::ScheduleDestroy (MEM mem_ptr, OBJ obj) 
 {
-  return ScheduleDestroy (MakeEvent (mem_ptr, obj));
+  return DoScheduleDestroy (MakeEvent (mem_ptr, obj));
 }
 
 
@@ -1188,7 +1192,7 @@ template <typename MEM, typename OBJ,
 EventId
 Simulator::ScheduleDestroy (MEM mem_ptr, OBJ obj, T1 a1) 
 {
-  return ScheduleDestroy (MakeEvent (mem_ptr, obj, a1));
+  return DoScheduleDestroy (MakeEvent (mem_ptr, obj, a1));
 }
 
 template <typename MEM, typename OBJ, 
@@ -1196,7 +1200,7 @@ template <typename MEM, typename OBJ,
 EventId
 Simulator::ScheduleDestroy (MEM mem_ptr, OBJ obj, T1 a1, T2 a2) 
 {
-  return ScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2));
+  return DoScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2));
 }
 
 template <typename MEM, typename OBJ, 
@@ -1204,7 +1208,7 @@ template <typename MEM, typename OBJ,
 EventId
 Simulator::ScheduleDestroy (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3) 
 {
-  return ScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2, a3));
+  return DoScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2, a3));
 }
 
 template <typename MEM, typename OBJ,
@@ -1212,7 +1216,7 @@ template <typename MEM, typename OBJ,
 EventId
 Simulator::ScheduleDestroy (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4) 
 {
-  return ScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
+  return DoScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
 }
 
 template <typename MEM, typename OBJ, 
@@ -1221,7 +1225,7 @@ EventId
 Simulator::ScheduleDestroy (MEM mem_ptr, OBJ obj, 
                             T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
-  return ScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
+  return DoScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
 }
 
 template <typename U1,
@@ -1229,7 +1233,7 @@ template <typename U1,
 EventId
 Simulator::ScheduleDestroy (void (*f) (U1), T1 a1) 
 {
-  return ScheduleDestroy (MakeEvent (f, a1));
+  return DoScheduleDestroy (MakeEvent (f, a1));
 }
 
 template <typename U1, typename U2,
@@ -1237,7 +1241,7 @@ template <typename U1, typename U2,
 EventId
 Simulator::ScheduleDestroy (void (*f) (U1,U2), T1 a1, T2 a2) 
 {
-  return ScheduleDestroy (MakeEvent (f, a1, a2));
+  return DoScheduleDestroy (MakeEvent (f, a1, a2));
 }
 
 template <typename U1, typename U2, typename U3,
@@ -1245,7 +1249,7 @@ template <typename U1, typename U2, typename U3,
 EventId
 Simulator::ScheduleDestroy (void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3)
 {
-  return ScheduleDestroy (MakeEvent (f, a1, a2, a3));
+  return DoScheduleDestroy (MakeEvent (f, a1, a2, a3));
 }
 
 template <typename U1, typename U2, typename U3, typename U4,
@@ -1253,7 +1257,7 @@ template <typename U1, typename U2, typename U3, typename U4,
 EventId
 Simulator::ScheduleDestroy (void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4) 
 {
-  return ScheduleDestroy (MakeEvent (f, a1, a2, a3, a4));
+  return DoScheduleDestroy (MakeEvent (f, a1, a2, a3, a4));
 }
 
 template <typename U1, typename U2, typename U3, typename U4, typename U5,
@@ -1261,9 +1265,9 @@ template <typename U1, typename U2, typename U3, typename U4, typename U5,
 EventId
 Simulator::ScheduleDestroy (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
-  return ScheduleDestroy (MakeEvent (f, a1, a2, a3, a4, a5));
+  return DoScheduleDestroy (MakeEvent (f, a1, a2, a3, a4, a5));
 }
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* SIMULATOR_H */
