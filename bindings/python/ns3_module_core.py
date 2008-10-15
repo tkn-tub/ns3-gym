@@ -1874,7 +1874,7 @@ def register_functions(root_module):
     module.add_function('TypeNameGet', 
                         'std::string', 
                         [], 
-                        template_parameters=['long'])
+                        template_parameters=['long long'])
     ## type-name.h: extern std::string ns3::TypeNameGet() [free function]
     module.add_function('TypeNameGet', 
                         'std::string', 
@@ -1894,7 +1894,7 @@ def register_functions(root_module):
     module.add_function('TypeNameGet', 
                         'std::string', 
                         [], 
-                        template_parameters=['unsigned long'])
+                        template_parameters=['unsigned long long'])
     ## type-name.h: extern std::string ns3::TypeNameGet() [free function]
     module.add_function('TypeNameGet', 
                         'std::string', 
@@ -1910,20 +1910,12 @@ def register_functions(root_module):
                         'std::string', 
                         [], 
                         template_parameters=['unsigned char'])
+    ## log.h: extern void ns3::LogComponentDisable(char const * name, ns3::LogLevel level) [free function]
+    module.add_function('LogComponentDisable', 
+                        'void', 
+                        [param('char const *', 'name'), param('ns3::LogLevel', 'level')])
     ## string.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeStringChecker() [free function]
     module.add_function('MakeStringChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [])
-    ## enum.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeEnumChecker(int v1, std::string n1, int v2=0, std::string n2="", int v3=0, std::string n3="", int v4=0, std::string n4="", int v5=0, std::string n5="", int v6=0, std::string n6="", int v7=0, std::string n7="", int v8=0, std::string n8="", int v9=0, std::string n9="", int v10=0, std::string n10="", int v11=0, std::string n11="", int v12=0, std::string n12="") [free function]
-    module.add_function('MakeEnumChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [param('int', 'v1'), param('std::string', 'n1'), param('int', 'v2', default_value='0'), param('std::string', 'n2', default_value='""'), param('int', 'v3', default_value='0'), param('std::string', 'n3', default_value='""'), param('int', 'v4', default_value='0'), param('std::string', 'n4', default_value='""'), param('int', 'v5', default_value='0'), param('std::string', 'n5', default_value='""'), param('int', 'v6', default_value='0'), param('std::string', 'n6', default_value='""'), param('int', 'v7', default_value='0'), param('std::string', 'n7', default_value='""'), param('int', 'v8', default_value='0'), param('std::string', 'n8', default_value='""'), param('int', 'v9', default_value='0'), param('std::string', 'n9', default_value='""'), param('int', 'v10', default_value='0'), param('std::string', 'n10', default_value='""'), param('int', 'v11', default_value='0'), param('std::string', 'n11', default_value='""'), param('int', 'v12', default_value='0'), param('std::string', 'n12', default_value='""')])
-    ## log.h: extern void ns3::LogComponentEnableAll(ns3::LogLevel level) [free function]
-    module.add_function('LogComponentEnableAll', 
-                        'void', 
-                        [param('ns3::LogLevel', 'level')])
-    ## type-id.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeTypeIdChecker() [free function]
-    module.add_function('MakeTypeIdChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
     ## ptr.h: extern ns3::Ptr<ns3::PointerValue> ns3::Create() [free function]
@@ -1936,6 +1928,14 @@ def register_functions(root_module):
                         'ns3::Ptr< ns3::ObjectVectorValue >', 
                         [], 
                         template_parameters=['ns3::ObjectVectorValue'])
+    ## log.h: extern void ns3::LogComponentEnableAll(ns3::LogLevel level) [free function]
+    module.add_function('LogComponentEnableAll', 
+                        'void', 
+                        [param('ns3::LogLevel', 'level')])
+    ## type-id.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeTypeIdChecker() [free function]
+    module.add_function('MakeTypeIdChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
     ## object-factory.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeObjectFactoryChecker() [free function]
     module.add_function('MakeObjectFactoryChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
@@ -1952,14 +1952,14 @@ def register_functions(root_module):
     module.add_function('MakeRandomVariableChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
-    ## log.h: extern void ns3::LogComponentDisable(char const * name, ns3::LogLevel level) [free function]
-    module.add_function('LogComponentDisable', 
-                        'void', 
-                        [param('char const *', 'name'), param('ns3::LogLevel', 'level')])
     ## log.h: extern void ns3::LogComponentEnable(char const * name, ns3::LogLevel level) [free function]
     module.add_function('LogComponentEnable', 
                         'void', 
                         [param('char const *', 'name'), param('ns3::LogLevel', 'level')])
+    ## enum.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeEnumChecker(int v1, std::string n1, int v2=0, std::string n2="", int v3=0, std::string n3="", int v4=0, std::string n4="", int v5=0, std::string n5="", int v6=0, std::string n6="", int v7=0, std::string n7="", int v8=0, std::string n8="", int v9=0, std::string n9="", int v10=0, std::string n10="", int v11=0, std::string n11="", int v12=0, std::string n12="") [free function]
+    module.add_function('MakeEnumChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [param('int', 'v1'), param('std::string', 'n1'), param('int', 'v2', default_value='0'), param('std::string', 'n2', default_value='""'), param('int', 'v3', default_value='0'), param('std::string', 'n3', default_value='""'), param('int', 'v4', default_value='0'), param('std::string', 'n4', default_value='""'), param('int', 'v5', default_value='0'), param('std::string', 'n5', default_value='""'), param('int', 'v6', default_value='0'), param('std::string', 'n6', default_value='""'), param('int', 'v7', default_value='0'), param('std::string', 'n7', default_value='""'), param('int', 'v8', default_value='0'), param('std::string', 'n8', default_value='""'), param('int', 'v9', default_value='0'), param('std::string', 'n9', default_value='""'), param('int', 'v10', default_value='0'), param('std::string', 'n10', default_value='""'), param('int', 'v11', default_value='0'), param('std::string', 'n11', default_value='""'), param('int', 'v12', default_value='0'), param('std::string', 'n12', default_value='""')])
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
@@ -2017,6 +2017,10 @@ def register_functions_ns3_Config(module, root_module):
     module.add_function('SetGlobalFailSafe', 
                         'bool', 
                         [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    ## config.h: extern void ns3::Config::Disconnect(std::string path, ns3::CallbackBase const & cb) [free function]
+    module.add_function('Disconnect', 
+                        'void', 
+                        [param('std::string', 'path'), param('ns3::CallbackBase const &', 'cb')])
     ## config.h: extern uint32_t ns3::Config::GetRootNamespaceObjectN() [free function]
     module.add_function('GetRootNamespaceObjectN', 
                         'uint32_t', 
@@ -2033,10 +2037,6 @@ def register_functions_ns3_Config(module, root_module):
     module.add_function('RegisterRootNamespaceObject', 
                         'void', 
                         [param('ns3::Ptr< ns3::Object >', 'obj')])
-    ## config.h: extern void ns3::Config::Disconnect(std::string path, ns3::CallbackBase const & cb) [free function]
-    module.add_function('Disconnect', 
-                        'void', 
-                        [param('std::string', 'path'), param('ns3::CallbackBase const &', 'cb')])
     return
 
 def register_functions_ns3_olsr(module, root_module):
