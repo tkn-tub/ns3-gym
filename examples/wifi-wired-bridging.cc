@@ -10,6 +10,7 @@
 #include <vector>
 #include <stdint.h>
 #include <sstream>
+#include <fstream>
 
 using namespace ns3;
 

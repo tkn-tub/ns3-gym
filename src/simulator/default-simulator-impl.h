@@ -22,7 +22,6 @@
 #define DEFAULT_SIMULATOR_IMPL_H
 
 #include "simulator-impl.h"
-
 #include "scheduler.h"
 #include "event-impl.h"
 
@@ -31,7 +30,6 @@
 #include "ns3/log.h"
 
 #include <list>
-#include <fstream>
 
 namespace ns3 {
 

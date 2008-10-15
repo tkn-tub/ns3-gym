@@ -31,7 +31,6 @@
 #include "ns3/system-mutex.h"
 
 #include <list>
-#include <fstream>
 
 namespace ns3 {
 
