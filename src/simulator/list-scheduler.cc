@@ -35,8 +35,6 @@ ListScheduler::~ListScheduler ()
 void
 ListScheduler::Insert (const Event &ev)
 {
-  // acquire refcount on EventImpl
-  ev.impl->Ref ();
   for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
     {
       if (ev.key < i->key)
@@ -52,37 +50,33 @@ ListScheduler::IsEmpty (void) const
 {
   return m_events.empty ();
 }
-EventId
+Scheduler::Event
 ListScheduler::PeekNext (void) const
 {
-  Event next = m_events.front ();
-  return EventId (next.impl, next.key.m_ts, next.key.m_uid);
+  return m_events.front ();
 }
 
-EventId
+Scheduler::Event
 ListScheduler::RemoveNext (void)
 {
   Event next = m_events.front ();
   m_events.pop_front ();
-  return EventId (Ptr<EventImpl> (next.impl,false), next.key.m_ts, next.key.m_uid);
+  return next;
 }
 
-bool
-ListScheduler::Remove (const EventId &id)
+void
+ListScheduler::Remove (const Event &ev)
 {
   for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
     {
-      if (i->key.m_uid == id.GetUid ())
+      if (i->key.m_uid == ev.key.m_uid)
         {
-          NS_ASSERT (id.PeekEventImpl () == i->impl);
-          // release single acquire ref.
-          i->impl->Unref ();
+          NS_ASSERT (ev.impl == i->impl);
           m_events.erase (i);
-          return true;
+          return;
         }
     }
   NS_ASSERT (false);
-  return false;
 }
 
 } // namespace ns3

@@ -22,10 +22,11 @@
 #define SCHEDULER_H
 
 #include <stdint.h>
-#include "event-id.h"
 #include "ns3/object.h"
 
 namespace ns3 {
+
+class EventImpl;
 
 /**
  * \ingroup simulator
@@ -38,13 +39,16 @@ namespace ns3 {
  * This base class specifies the interface used to maintain the 
  * event list. If you want to provide a new event list scheduler, 
  * you need to create a subclass of this base class and implement 
- * all the pure virtual methods defined here. Namely:
- *   - ns3::Scheduler::Insert
- *   - ns3::Scheduler::IsEmpty
- *   - ns3::Scheduler::PeekNext
- *   - ns3::Scheduler::RemoveNext
- *   - ns3::Scheduler::Remove
+ * all the pure virtual methods defined here.
  *
+ * The only tricky aspect of this API is the memory management of
+ * the EventImpl pointer which is a member of the Event data structure.
+ * The lifetime of this pointer is assumed to always be longer than
+ * the lifetime of the Scheduler class which means that the caller
+ * is responsible for ensuring that this invariant holds through
+ * calling EventImpl::Ref and EventImpl::Unref at the right time.
+ * Typically, ::Ref is called before Insert and ::Unref is called
+ * after a call to one of the Remove methods.
  */
 class Scheduler : public Object
 {
@@ -76,20 +80,18 @@ class Scheduler : public Object
    *
    * This method cannot be invoked if the list is empty.
    */
-  virtual EventId PeekNext (void) const = 0;
+  virtual Event PeekNext (void) const = 0;
   /**
    * This method cannot be invoked if the list is empty.
    * Remove the next earliest event from the event list.
    */
-  virtual EventId RemoveNext (void) = 0;
+  virtual Event RemoveNext (void) = 0;
   /**
    * \param id the id of the event to remove
-   * \returns true if the id was found and removed 
-   *          successfully, false otherwise.
    *
    * This methods cannot be invoked if the list is empty.
    */
-  virtual bool Remove (const EventId &id) = 0;
+  virtual void Remove (const Event &ev) = 0;
 };
 
 /* Note the invariants which this function must provide:

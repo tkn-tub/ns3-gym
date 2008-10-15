@@ -22,7 +22,6 @@
 #define LIST_SCHEDULER_H
 
 #include "scheduler.h"
-#include "event-id.h"
 #include <list>
 #include <utility>
 #include <stdint.h>
@@ -35,7 +34,7 @@ class EventImpl;
  * \ingroup scheduler
  * \brief a std::list event scheduler
  *
- * This class implements the an event scheduler using an std::list
+ * This class implements an event scheduler using an std::list
  * data structure, that is, a double linked-list.
  */
 class ListScheduler : public Scheduler 
@@ -46,9 +45,9 @@ class ListScheduler : public Scheduler
 
   virtual void Insert (const Event &ev);
   virtual bool IsEmpty (void) const;
-  virtual EventId PeekNext (void) const;
-  virtual EventId RemoveNext (void);
-  virtual bool Remove (const EventId &ev);
+  virtual Event PeekNext (void) const;
+  virtual Event RemoveNext (void);
+  virtual void Remove (const Event &ev);
 
  private:
 

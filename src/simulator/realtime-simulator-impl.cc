@@ -103,7 +103,8 @@ RealtimeSimulatorImpl::~RealtimeSimulatorImpl ()
   NS_LOG_FUNCTION_NOARGS ();
   while (m_events->IsEmpty () == false)
     {
-      EventId next = m_events->RemoveNext ();
+      Scheduler::Event next = m_events->RemoveNext ();
+      next.impl->Unref ();
     }
   m_events = 0;
   m_synchronizer = 0;
@@ -148,7 +149,7 @@ RealtimeSimulatorImpl::SetScheduler (Ptr<Scheduler> scheduler)
       {
         while (m_events->IsEmpty () == false)
           {
-            EventId next = m_events->RemoveNext ();
+            Scheduler::Event next = m_events->RemoveNext ();
             scheduler->Insert (next);
           }
       }
@@ -315,7 +316,7 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
   // is the one we think it is.  What we can be sure of is that it is time to execute
   // whatever event is at the head of this list if the list is in time order.
   //
-  EventId next;
+  Scheduler::Event next;
 
   { 
     CriticalSection cs (m_mutex);
@@ -336,18 +337,18 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
     // for.  We can only assume that only that it must be due and cannot cause time 
     // to move backward.
     //
-    NS_ASSERT_MSG (next.GetTs () >= m_currentTs,
+    NS_ASSERT_MSG (next.key.m_ts >= m_currentTs,
                    "RealtimeSimulatorImpl::ProcessOneEvent(): "
                    "next.GetTs() earlier than m_currentTs (list order error)");
-    NS_LOG_LOGIC ("handle " << next.GetTs ());
+    NS_LOG_LOGIC ("handle " << next.key.m_ts);
 
     // 
     // Update the current simulation time to be the timestamp of the event we're 
     // executing.  From the rest of the simulation's point of view, simulation time
     // is frozen until the next event is executed.
     //
-    m_currentTs = next.GetTs ();
-    m_currentUid = next.GetUid ();
+    m_currentTs = next.key.m_ts;
+    m_currentUid = next.key.m_uid;
 
     // 
     // We're about to run the event and we've done our best to synchronize this
@@ -385,10 +386,11 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
   // event list so we can execute it outside a critical section without fear of someone
   // changing things out from under us.
 
-  EventImpl *event = next.PeekEventImpl ();
+  EventImpl *event = next.impl;
   m_synchronizer->EventStart ();
   event->Invoke ();
   m_synchronizer->EventEnd ();
+  event->Unref ();
 }
 
 bool 
@@ -413,9 +415,8 @@ RealtimeSimulatorImpl::NextTs (void) const
   NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT_MSG (m_events->IsEmpty () == false, 
     "RealtimeSimulatorImpl::NextTs(): event queue is empty");
-  EventId id = m_events->PeekNext ();
-
-  return id.GetTs ();
+  Scheduler::Event ev = m_events->PeekNext ();
+  return ev.key.m_ts;
 }
 
 //
@@ -523,7 +524,6 @@ RealtimeSimulatorImpl::RunOneEvent (void)
   NS_ASSERT_MSG (m_running == false, 
                  "RealtimeSimulatorImpl::RunOneEvent(): An internal simulator event loop is running");
 
-  EventId next;
   EventImpl *event = 0;
 
   //
@@ -533,18 +533,18 @@ RealtimeSimulatorImpl::RunOneEvent (void)
   {
     CriticalSection cs (m_mutex);
 
-    next = m_events->RemoveNext ();
+    Scheduler::Event next = m_events->RemoveNext ();
 
-    NS_ASSERT (next.GetTs () >= m_currentTs);
+    NS_ASSERT (next.key.m_ts >= m_currentTs);
     --m_unscheduledEvents;
 
-    NS_LOG_LOGIC ("handle " << next.GetTs ());
-    m_currentTs = next.GetTs ();
-    m_currentUid = next.GetUid ();
-    event = next.PeekEventImpl ();
+    NS_LOG_LOGIC ("handle " << next.key.m_ts);
+    m_currentTs = next.key.m_ts;
+    m_currentUid = next.key.m_ts;
+    event = next.impl;
   }
-
   event->Invoke ();
+  event->Unref ();
 }
 
 void 
@@ -588,37 +588,12 @@ RealtimeSimulatorImpl::Stop (Time const &time)
 //
 // Schedule an event for a _relative_ time in the future.
 //
-// A little side-note on events and multthreading:
-//
-// This is a little tricky.  We get a Ptr<EventImpl> passed down to us in some
-// thread context.  This Ptr<EventImpl> is not yet shared in any way.  It is 
-// possible however that the calling context is not the context of the main 
-// scheduler thread (e.g. it is in the context of a separate device thread).  
-// It would be bad (TM) if we naively wrapped the EventImpl up in an EventId 
-// that would be accessible from multiple threads without considering thread 
-// safety.
-//
-// It's clear that we cannot have a situation where the EventImpl is "owned" by
-// multiple threads.  The calling thread is free to hold the EventId as long as
-// it wants and manage the reference counts to the underlying EventImpl all it
-// wants.  The scheduler is free to do the same; and will eventually release
-// the reference in the context of thread running ProcessOneEvent().  It is 
-// "a bad thing" (TM) if these two threads decide to release the underlying
-// EventImpl "at the same time" since the result is sure to be multiple frees,
-// memory leaks or bus errors.
-//
-// The answer is to make the reference counting of the EventImpl thread safe; 
-// which we do.  We don't want to force the event implementation to carry around
-// a mutex, so we "lend" it one using a RealtimeEventLock object (m_eventLock)
-// in the constructor of the event and take it back in the destructor.  See the
-// event code for details.
-//
 EventId
-RealtimeSimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &event)
+RealtimeSimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &impl)
 {
-  NS_LOG_FUNCTION (time << event);
+  NS_LOG_FUNCTION (time << impl);
 
-  EventId id;
+  Scheduler::Event ev;
   {
     CriticalSection cs (m_mutex);
     //
@@ -630,33 +605,36 @@ RealtimeSimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &event)
     Time tAbsolute = Simulator::Now () + time;
     NS_ASSERT_MSG (tAbsolute.IsPositive (), "RealtimeSimulatorImpl::Schedule(): Negative time");
     NS_ASSERT_MSG (tAbsolute >= TimeStep (m_currentTs), "RealtimeSimulatorImpl::Schedule(): time < m_currentTs");
-    uint64_t ts = (uint64_t) tAbsolute.GetTimeStep ();
-    id = EventId (event, ts, m_uid);
+    ev.impl = GetPointer (impl);
+    ev.key.m_ts = (uint64_t) tAbsolute.GetTimeStep ();
+    ev.key.m_uid = m_uid;
     m_uid++;
     ++m_unscheduledEvents;
-    m_events->Insert (id);
+    m_events->Insert (ev);
     m_synchronizer->Signal ();
   }
 
-  return id;
+  return EventId (impl, ev.key.m_ts, ev.key.m_uid);
 }
 
 EventId
-RealtimeSimulatorImpl::ScheduleNow (const Ptr<EventImpl> &event)
+RealtimeSimulatorImpl::ScheduleNow (const Ptr<EventImpl> &impl)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  EventId id;
+  Scheduler::Event ev;
   {
     CriticalSection cs (m_mutex);
 
-    id = EventId (event, m_currentTs, m_uid);
+    ev.impl = GetPointer (impl);
+    ev.key.m_ts = m_currentTs;
+    ev.key.m_uid = m_uid;
     m_uid++;
     ++m_unscheduledEvents;
-    m_events->Insert (id);
+    m_events->Insert (ev);
     m_synchronizer->Signal ();
   }
 
-  return id;
+  return EventId (impl, ev.key.m_ts, ev.key.m_uid);
 }
 
 Time
@@ -669,31 +647,33 @@ RealtimeSimulatorImpl::Now (void) const
 // Schedule an event for a _relative_ time in the future.
 //
 EventId
-RealtimeSimulatorImpl::ScheduleRealtime (Time const &time, const Ptr<EventImpl> &event)
+RealtimeSimulatorImpl::ScheduleRealtime (Time const &time, const Ptr<EventImpl> &impl)
 {
-  NS_LOG_FUNCTION (time << event);
+  NS_LOG_FUNCTION (time << impl);
 
-  EventId id;
+  Scheduler::Event ev;
   {
     CriticalSection cs (m_mutex);
 
     uint64_t ts = m_synchronizer->GetCurrentRealtime () + time.GetTimeStep ();
     NS_ASSERT_MSG (ts >= m_currentTs, "RealtimeSimulatorImpl::ScheduleRealtime(): schedule for time < m_currentTs");
-    id = EventId (event, ts, m_uid);
+    ev.impl = GetPointer (impl);
+    ev.key.m_ts = ts;
+    ev.key.m_uid = m_uid;
     m_uid++;
     ++m_unscheduledEvents;
-    m_events->Insert (id);
+    m_events->Insert (ev);
     m_synchronizer->Signal ();
   }
 
-  return id;
+  return EventId (impl, ev.key.m_ts, ev.key.m_uid);
 }
 
 EventId
-RealtimeSimulatorImpl::ScheduleRealtimeNow (const Ptr<EventImpl> &event)
+RealtimeSimulatorImpl::ScheduleRealtimeNow (const Ptr<EventImpl> &impl)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  EventId id;
+  Scheduler::Event ev;
   {
     CriticalSection cs (m_mutex);
 
@@ -703,14 +683,16 @@ RealtimeSimulatorImpl::ScheduleRealtimeNow (const Ptr<EventImpl> &event)
     // 
     uint64_t ts = m_running ? m_synchronizer->GetCurrentRealtime () : m_currentTs;
     NS_ASSERT_MSG (ts >= m_currentTs, "RealtimeSimulatorImpl::ScheduleRealrimeNow(): schedule for time < m_currentTs");
-    id = EventId (event, ts, m_uid);
+    ev.impl = GetPointer (impl);
+    ev.key.m_ts = ts;
+    ev.key.m_uid = m_uid;
     m_uid++;
     ++m_unscheduledEvents;
-    m_events->Insert (id);
+    m_events->Insert (ev);
     m_synchronizer->Signal ();
   }
 
-  return id;
+  return EventId (impl, ev.key.m_ts, ev.key.m_uid);
 }
 
 Time
@@ -720,11 +702,11 @@ RealtimeSimulatorImpl::RealtimeNow (void) const
 }
 
 EventId
-RealtimeSimulatorImpl::ScheduleDestroy (const Ptr<EventImpl> &event)
+RealtimeSimulatorImpl::ScheduleDestroy (const Ptr<EventImpl> &impl)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  EventId id;
 
+  EventId id;
   {
     CriticalSection cs (m_mutex);
 
@@ -733,7 +715,7 @@ RealtimeSimulatorImpl::ScheduleDestroy (const Ptr<EventImpl> &event)
     // overridden by the uid of 2 which identifies this as an event to be 
     // executed at Simulator::Destroy time.
     //
-    id = EventId (event, m_currentTs, 2);
+    id = EventId (impl, m_currentTs, 2);
     m_destroyEvents.push_back (id);
     m_uid++;
   }
@@ -757,16 +739,16 @@ RealtimeSimulatorImpl::GetDelayLeft (const EventId &id) const
 }
 
 void
-RealtimeSimulatorImpl::Remove (const EventId &ev)
+RealtimeSimulatorImpl::Remove (const EventId &id)
 {
-  if (ev.GetUid () == 2)
+  if (id.GetUid () == 2)
     {
       // destroy events.
       for (DestroyEvents::iterator i = m_destroyEvents.begin (); 
            i != m_destroyEvents.end (); 
            i++)
         {
-          if (*i == ev)
+          if (*i == id)
             {
               m_destroyEvents.erase (i);
               break;
@@ -774,7 +756,7 @@ RealtimeSimulatorImpl::Remove (const EventId &ev)
          }
       return;
     }
-  if (IsExpired (ev))
+  if (IsExpired (id))
     {
       return;
     }
@@ -782,11 +764,15 @@ RealtimeSimulatorImpl::Remove (const EventId &ev)
   {
     CriticalSection cs (m_mutex);
 
-    m_events->Remove (ev);
+    Scheduler::Event event;
+    event.impl = id.PeekEventImpl ();
+    event.key.m_ts = id.GetTs ();
+    event.key.m_uid = id.GetUid ();
+    
+    m_events->Remove (event);
     --m_unscheduledEvents;
-
-    Cancel (ev);
-
+    event.impl->Cancel ();
+    event.impl->Unref ();
   }
 }
 

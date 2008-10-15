@@ -69,7 +69,8 @@ DefaultSimulatorImpl::~DefaultSimulatorImpl ()
 {
   while (!m_events->IsEmpty ())
     {
-      EventId next = m_events->RemoveNext ();
+      Scheduler::Event next = m_events->RemoveNext ();
+      next.impl->Unref ();
     }
   m_events = 0;
 }
@@ -96,7 +97,7 @@ DefaultSimulatorImpl::SetScheduler (Ptr<Scheduler> scheduler)
     {
       while (!m_events->IsEmpty ())
         {
-          EventId next = m_events->RemoveNext ();
+          Scheduler::Event next = m_events->RemoveNext ();
           scheduler->Insert (next);
         }
     }
@@ -113,16 +114,16 @@ DefaultSimulatorImpl::GetScheduler (void) const
 void
 DefaultSimulatorImpl::ProcessOneEvent (void)
 {
-  EventId next = m_events->RemoveNext ();
+  Scheduler::Event next = m_events->RemoveNext ();
 
-  NS_ASSERT (next.GetTs () >= m_currentTs);
+  NS_ASSERT (next.key.m_ts >= m_currentTs);
   --m_unscheduledEvents;
 
-  NS_LOG_LOGIC ("handle " << next.GetTs ());
-  m_currentTs = next.GetTs ();
-  m_currentUid = next.GetUid ();
-  EventImpl *event = next.PeekEventImpl ();
-  event->Invoke ();
+  NS_LOG_LOGIC ("handle " << next.key.m_ts);
+  m_currentTs = next.key.m_ts;
+  m_currentUid = next.key.m_uid;
+  next.impl->Invoke ();
+  next.impl->Unref ();
 }
 
 bool 
@@ -135,8 +136,8 @@ uint64_t
 DefaultSimulatorImpl::NextTs (void) const
 {
   NS_ASSERT (!m_events->IsEmpty ());
-  EventId id = m_events->PeekNext ();
-  return id.GetTs ();
+  Scheduler::Event ev = m_events->PeekNext ();
+  return ev.key.m_ts;
 }
 
 Time
@@ -190,22 +191,27 @@ DefaultSimulatorImpl::Schedule (Time const &time, const Ptr<EventImpl> &event)
 
   NS_ASSERT (tAbsolute.IsPositive ());
   NS_ASSERT (tAbsolute >= TimeStep (m_currentTs));
-  uint64_t ts = (uint64_t) tAbsolute.GetTimeStep ();
-  EventId id (event, ts, m_uid);
+  Scheduler::Event ev;
+  ev.impl = GetPointer (event);
+  ev.key.m_ts = (uint64_t) tAbsolute.GetTimeStep ();
+  ev.key.m_uid = m_uid;
   m_uid++;
   ++m_unscheduledEvents;
-  m_events->Insert (id);
-  return id;
+  m_events->Insert (ev);
+  return EventId (event, ev.key.m_ts, ev.key.m_uid);
 }
 
 EventId
 DefaultSimulatorImpl::ScheduleNow (const Ptr<EventImpl> &event)
 {
-  EventId id (event, m_currentTs, m_uid);
+  Scheduler::Event ev;
+  ev.impl = GetPointer (event);
+  ev.key.m_ts = m_currentTs;
+  ev.key.m_uid = m_uid;
   m_uid++;
   ++m_unscheduledEvents;
-  m_events->Insert (id);
-  return id;
+  m_events->Insert (ev);
+  return EventId (event, ev.key.m_ts, ev.key.m_uid);
 }
 
 EventId
@@ -237,14 +243,14 @@ DefaultSimulatorImpl::GetDelayLeft (const EventId &id) const
 }
 
 void
-DefaultSimulatorImpl::Remove (const EventId &ev)
+DefaultSimulatorImpl::Remove (const EventId &id)
 {
-  if (ev.GetUid () == 2)
+  if (id.GetUid () == 2)
     {
       // destroy events.
       for (DestroyEvents::iterator i = m_destroyEvents.begin (); i != m_destroyEvents.end (); i++)
         {
-          if (*i == ev)
+          if (*i == id)
             {
               m_destroyEvents.erase (i);
               break;
@@ -252,12 +258,18 @@ DefaultSimulatorImpl::Remove (const EventId &ev)
          }
       return;
     }
-  if (IsExpired (ev))
+  if (IsExpired (id))
     {
       return;
     }
-  m_events->Remove (ev);
-  Cancel (ev);
+  Scheduler::Event event;
+  event.impl = id.PeekEventImpl ();
+  event.key.m_ts = id.GetTs ();
+  event.key.m_uid = id.GetUid ();
+  m_events->Remove (event);
+  event.impl->Cancel ();
+  // whenever we remove an event from the event list, we have to unref it.
+  event.impl->Unref ();
 
   --m_unscheduledEvents;
 }
@@ -308,6 +320,6 @@ DefaultSimulatorImpl::GetMaximumSimulationTime (void) const
   return TimeStep (0x7fffffffffffffffLL);
 }
 
-}; // namespace ns3
+} // namespace ns3
 
 

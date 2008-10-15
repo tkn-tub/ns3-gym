@@ -27,8 +27,6 @@
 
 namespace ns3 {
 
-class EventHolder;
-
 /**
  * \ingroup scheduler
  * \brief a binary heap event scheduler
@@ -54,9 +52,9 @@ public:
 
   virtual void Insert (const Event &ev);
   virtual bool IsEmpty (void) const;
-  virtual EventId PeekNext (void) const;
-  virtual EventId RemoveNext (void);
-  virtual bool Remove (const EventId &ev);
+  virtual Event PeekNext (void) const;
+  virtual Event RemoveNext (void);
+  virtual void Remove (const Event &ev);
 
 private:
   typedef std::vector<Event> BinaryHeap;

@@ -22,18 +22,10 @@
 #include "map-scheduler.h"
 #include "event-impl.h"
 #include "ns3/assert.h"
+#include "ns3/log.h"
 #include <string>
 
-#define noTRACE_MAP 1
-
-#ifdef TRACE_MAP
-#include <iostream>
-# define TRACE(x) \
-std::cout << "MAP TRACE " << x << std::endl;
-#else /* TRACE_MAP */
-# define TRACE(format,...)
-#endif /* TRACE_MAP */
-
+NS_LOG_COMPONENT_DEFINE ("MapScheduler");
 
 namespace ns3 {
 
@@ -45,8 +37,7 @@ MapScheduler::~MapScheduler ()
 void
 MapScheduler::Insert (const Event &ev)
 {
-  // acquire a single ref
-  ev.impl->Ref ();
+  NS_LOG_FUNCTION (this << ev.impl << ev.key.m_ts << ev.key.m_uid);
   std::pair<EventMapI,bool> result;
   result = m_list.insert (std::make_pair (ev.key, ev.impl));
   NS_ASSERT (result.second);
@@ -58,35 +49,41 @@ MapScheduler::IsEmpty (void) const
   return m_list.empty ();
 }
 
-EventId
+Scheduler::Event
 MapScheduler::PeekNext (void) const
 {
+  NS_LOG_FUNCTION (this);
   EventMapCI i = m_list.begin ();
   NS_ASSERT (i != m_list.end ());
   
-  return EventId (i->second, i->first.m_ts, i->first.m_uid);
+  Event ev;
+  ev.impl = i->second;
+  ev.key = i->first;
+  NS_LOG_DEBUG (this << ev.impl << ev.key.m_ts << ev.key.m_uid);
+  return ev;
 }
-EventId
+Scheduler::Event
 MapScheduler::RemoveNext (void)
 {
+  NS_LOG_FUNCTION (this);
   EventMapI i = m_list.begin ();
+  NS_ASSERT (i != m_list.end ());
   std::pair<Scheduler::EventKey, EventImpl*> next = *i;
+  Event ev;
+  ev.impl = i->second;
+  ev.key = i->first;
   m_list.erase (i);
-  return EventId (Ptr<EventImpl> (next.second, false), next.first.m_ts, next.first.m_uid);
+  NS_LOG_DEBUG (this << ev.impl << ev.key.m_ts << ev.key.m_uid);
+  return ev;
 }
 
-bool
-MapScheduler::Remove (const EventId &id)
+void
+MapScheduler::Remove (const Event &ev)
 {
-  Scheduler::EventKey key;
-  key.m_ts = id.GetTs ();
-  key.m_uid = id.GetUid ();
-  EventMapI i = m_list.find (key);
-  NS_ASSERT (i->second == id.PeekEventImpl ());
-  // release single ref.
-  i->second->Unref ();
+  NS_LOG_FUNCTION (this << ev.impl << ev.key.m_ts << ev.key.m_uid);
+  EventMapI i = m_list.find (ev.key);
+  NS_ASSERT (i->second == ev.impl);
   m_list.erase (i);
-  return true;
 }
 
 } // namespace ns3

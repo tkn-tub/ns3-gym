@@ -23,6 +23,7 @@
 
 #include "scheduler.h"
 #include "event-impl.h"
+#include "event-id.h"
 #include "nstime.h"
 
 #include "ns3/ptr.h"

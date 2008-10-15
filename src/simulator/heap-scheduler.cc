@@ -23,20 +23,9 @@
 #include "heap-scheduler.h"
 #include "event-impl.h"
 #include "ns3/assert.h"
+#include "ns3/log.h"
 
-#include <string>
-#define noTRACE_HEAP 1
-
-#ifdef TRACE_HEAP
-#include <iostream>
-# define TRACE(x) \
-std::cout << "HEAP TRACE " << x << std::endl;
-#else /* TRACE_HEAP */
-# define TRACE(format,...)
-#endif /* TRACE_HEAP */
-
-
-
+NS_LOG_COMPONENT_DEFINE ("HeapScheduler");
 
 namespace ns3 {
 
@@ -103,7 +92,7 @@ void
 HeapScheduler::Exch (uint32_t a, uint32_t b) 
 {
   NS_ASSERT (b < m_heap.size () && a < m_heap.size ());
-  TRACE ("Exch " << a << ", " << b);
+  NS_LOG_DEBUG ("Exch " << a << ", " << b);
   Event tmp (m_heap[a]);
   m_heap[a] = m_heap[b];
   m_heap[b] = tmp;
@@ -177,49 +166,42 @@ HeapScheduler::TopDown (uint32_t start)
 void
 HeapScheduler::Insert (const Event &ev)
 {
-  // acquire single ref
-  ev.impl->Ref ();
   m_heap.push_back (ev);
   BottomUp ();
 }
 
-EventId
+Scheduler::Event
 HeapScheduler::PeekNext (void) const
 {
-  Event next = m_heap[Root ()];
-  return EventId (next.impl, next.key.m_ts, next.key.m_uid);
+  return m_heap[Root ()];
 }
-EventId
+Scheduler::Event
 HeapScheduler::RemoveNext (void)
 {
   Event next = m_heap[Root ()];
   Exch (Root (), Last ());
   m_heap.pop_back ();
   TopDown (Root ());
-  return EventId (Ptr<EventImpl> (next.impl, false), next.key.m_ts, next.key.m_uid);
+  return next;
 }
 
 
-bool
-HeapScheduler::Remove (const EventId &id)
+void
+HeapScheduler::Remove (const Event &ev)
 {
-  uint32_t uid = id.GetUid ();
+  uint32_t uid = ev.key.m_uid;
   for (uint32_t i = 1; i < m_heap.size (); i++)
     {
       if (uid == m_heap[i].key.m_uid)
         {
-          NS_ASSERT (m_heap[i].impl == id.PeekEventImpl ());
-          // release single ref
-          m_heap[i].impl->Unref ();
+          NS_ASSERT (m_heap[i].impl == ev.impl);
           Exch (i, Last ());
           m_heap.pop_back ();
           TopDown (i);
-          return true;
+          return;
         }
     }
   NS_ASSERT (false);
-  // quiet compiler
-  return false;
 }
 
 } // namespace ns3
