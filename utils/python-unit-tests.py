@@ -118,5 +118,11 @@ class TestSimulator(unittest.TestCase):
 
         self.assert_(c1 is c2)
 
+    def testTypeId(self):
+        typeId1 = ns3.TypeId.LookupByNameFailSafe("ns3::UdpSocketFactory")
+        self.assertEqual(typeId1.GetName (), "ns3::UdpSocketFactory")
+        
+        self.assertRaises(KeyError, ns3.TypeId.LookupByNameFailSafe, "__InvalidTypeName__")
+
 if __name__ == '__main__':
     unittest.main()
