@@ -314,77 +314,77 @@ void WallclockSimulator::Schedule (Time const &time, MEM mem_ptr, OBJ obj)
 
 template <typename MEM, typename OBJ,
           typename T1>
-void Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1) 
+void WallclockSimulator::Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1) 
 {
   return Schedule (time, MakeEvent (mem_ptr, obj, a1));
 }
 
 template <typename MEM, typename OBJ, 
           typename T1, typename T2>
-void Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2)
+void WallclockSimulator::Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2)
 {
   return Schedule (time, MakeEvent (mem_ptr, obj, a1, a2));
 }
 
 template <typename MEM, typename OBJ,
           typename T1, typename T2, typename T3>
-void Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3) 
+void WallclockSimulator::Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3) 
 {
   return Schedule (time, MakeEvent (mem_ptr, obj, a1, a2, a3));
 }
 
 template <typename MEM, typename OBJ, 
           typename T1, typename T2, typename T3, typename T4>
-void Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4) 
+void WallclockSimulator::Schedule (Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4) 
 {
   return Schedule (time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
 }
 
 template <typename MEM, typename OBJ, 
           typename T1, typename T2, typename T3, typename T4, typename T5>
-void Schedule (Time const &time, MEM mem_ptr, OBJ obj, 
+void WallclockSimulator::Schedule (Time const &time, MEM mem_ptr, OBJ obj, 
                              T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
   return Schedule (time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
 }
 
 template <typename U1, typename T1>
-void Schedule (Time const &time, void (*f) (U1), T1 a1) 
+void WallclockSimulator::Schedule (Time const &time, void (*f) (U1), T1 a1) 
 {
   return Schedule (time, MakeEvent (f, a1));
 }
 
 template <typename U1, typename U2, 
           typename T1, typename T2>
-void Schedule (Time const &time, void (*f) (U1,U2), T1 a1, T2 a2) 
+void WallclockSimulator::Schedule (Time const &time, void (*f) (U1,U2), T1 a1, T2 a2) 
 {
   return Schedule (time, MakeEvent (f, a1, a2));
 }
 
 template <typename U1, typename U2, typename U3,
           typename T1, typename T2, typename T3>
-void Schedule (Time const &time, void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3)
+void WallclockSimulator::Schedule (Time const &time, void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3)
 {
   return Schedule (time, MakeEvent (f, a1, a2, a3));
 }
 
 template <typename U1, typename U2, typename U3, typename U4,
           typename T1, typename T2, typename T3, typename T4>
-void Schedule (Time const &time, void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4) 
+void WallclockSimulator::Schedule (Time const &time, void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4) 
 {
   return Schedule (time, MakeEvent (f, a1, a2, a3, a4));
 }
 
 template <typename U1, typename U2, typename U3, typename U4, typename U5,
           typename T1, typename T2, typename T3, typename T4, typename T5>
-void Schedule (Time const &time, void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+void WallclockSimulator::Schedule (Time const &time, void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
   return Schedule (time, MakeEvent (f, a1, a2, a3, a4, a5));
 }
 
 template <typename MEM, typename OBJ>
 void
-ScheduleNow (MEM mem_ptr, OBJ obj) 
+WallclockSimulator::ScheduleNow (MEM mem_ptr, OBJ obj) 
 {
   return ScheduleNow (MakeEvent (mem_ptr, obj));
 }
@@ -392,7 +392,7 @@ ScheduleNow (MEM mem_ptr, OBJ obj)
 template <typename MEM, typename OBJ, 
           typename T1>
 void
-ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1) 
+WallclockSimulator::ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1) 
 {
   return ScheduleNow (MakeEvent (mem_ptr, obj, a1));
 }
@@ -400,7 +400,7 @@ ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1)
 template <typename MEM, typename OBJ, 
           typename T1, typename T2>
 void
-ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2) 
+WallclockSimulator::ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2) 
 {
   return ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2));
 }
@@ -408,7 +408,7 @@ ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2)
 template <typename MEM, typename OBJ, 
           typename T1, typename T2, typename T3>
 void
-ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3) 
+WallclockSimulator::ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3) 
 {
   return ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3));
 }
@@ -416,7 +416,7 @@ ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3)
 template <typename MEM, typename OBJ, 
           typename T1, typename T2, typename T3, typename T4>
 void
-ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4) 
+WallclockSimulator::ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4) 
 {
   return ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
 }
@@ -424,7 +424,7 @@ ScheduleNow (MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4)
 template <typename MEM, typename OBJ, 
           typename T1, typename T2, typename T3, typename T4, typename T5>
 void
-ScheduleNow (MEM mem_ptr, OBJ obj, 
+WallclockSimulator::ScheduleNow (MEM mem_ptr, OBJ obj, 
                         T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
   return ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
@@ -433,7 +433,7 @@ ScheduleNow (MEM mem_ptr, OBJ obj,
 template <typename U1,
           typename T1>
 void
-ScheduleNow (void (*f) (U1), T1 a1) 
+WallclockSimulator::ScheduleNow (void (*f) (U1), T1 a1) 
 {
   return ScheduleNow (MakeEvent (f, a1));
 }
@@ -441,7 +441,7 @@ ScheduleNow (void (*f) (U1), T1 a1)
 template <typename U1, typename U2,
           typename T1, typename T2>
 void
-ScheduleNow (void (*f) (U1,U2), T1 a1, T2 a2) 
+WallclockSimulator::ScheduleNow (void (*f) (U1,U2), T1 a1, T2 a2) 
 {
   return ScheduleNow (MakeEvent (f, a1, a2));
 }
@@ -449,7 +449,7 @@ ScheduleNow (void (*f) (U1,U2), T1 a1, T2 a2)
 template <typename U1, typename U2, typename U3,
           typename T1, typename T2, typename T3>
 void
-ScheduleNow (void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3)
+WallclockSimulator::ScheduleNow (void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3)
 {
   return ScheduleNow (MakeEvent (f, a1, a2, a3));
 }
@@ -457,7 +457,7 @@ ScheduleNow (void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3)
 template <typename U1, typename U2, typename U3, typename U4,
           typename T1, typename T2, typename T3, typename T4>
 void
-ScheduleNow (void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4) 
+WallclockSimulator::ScheduleNow (void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4) 
 {
   return ScheduleNow (MakeEvent (f, a1, a2, a3, a4));
 }
@@ -465,7 +465,7 @@ ScheduleNow (void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4)
 template <typename U1, typename U2, typename U3, typename U4, typename U5,
           typename T1, typename T2, typename T3, typename T4, typename T5>
 void
-ScheduleNow (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+WallclockSimulator::ScheduleNow (void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
   return ScheduleNow (MakeEvent (f, a1, a2, a3, a4, a5));
 }
