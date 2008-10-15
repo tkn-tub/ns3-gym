@@ -96,9 +96,9 @@ Ipv4L3Protocol::Insert(Ptr<Ipv4L4Protocol> protocol)
   m_protocols.push_back (protocol);
 }
 Ptr<Ipv4L4Protocol>
-Ipv4L3Protocol::GetProtocol(int protocolNumber)
+Ipv4L3Protocol::GetProtocol(int protocolNumber) const
 {
-  for (L4List_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
+  for (L4List_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
       if ((*i)->GetProtocolNumber () == protocolNumber)
 	{

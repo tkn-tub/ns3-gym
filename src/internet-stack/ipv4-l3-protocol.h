@@ -80,7 +80,7 @@ public:
    * to forward packets up the stack to the right protocol.
    * It is also called from NodeImpl::GetUdp for example.
    */
-  Ptr<Ipv4L4Protocol> GetProtocol(int protocolNumber);
+  Ptr<Ipv4L4Protocol> GetProtocol(int protocolNumber) const;
   /**
    * \param protocol protocol to remove from this demux.
    *
