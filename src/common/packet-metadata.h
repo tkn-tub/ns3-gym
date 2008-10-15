@@ -157,8 +157,6 @@ public:
   void Serialize (Buffer::Iterator i, uint32_t size) const;
   uint32_t Deserialize (Buffer::Iterator i);
 
-  static void PrintStats (void);
-
   ItemIterator BeginItem (Buffer buffer) const;
 
 private:
