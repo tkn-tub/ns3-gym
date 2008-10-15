@@ -69,7 +69,6 @@ private:
   uint32_t Last (void) const;
   inline bool IsRoot (uint32_t id) const;
   inline bool IsBottom (uint32_t id) const;
-  inline bool IsLowerStrictly (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const;
   inline bool IsLessStrictly (uint32_t a, uint32_t b) const;
   inline uint32_t Smallest (uint32_t a, uint32_t b) const;
 

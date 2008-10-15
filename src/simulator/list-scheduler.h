@@ -50,14 +50,13 @@ class ListScheduler : public Scheduler {
   virtual bool Remove (const EventId &ev);
 
  private:
-  inline bool IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const;
 
   typedef std::list<std::pair<EventImpl*, EventKey> > Events;
   typedef std::list<std::pair<EventImpl*, EventKey> >::iterator EventsI;
   Events m_events;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 
 #endif /* SCHEDULER_LIST_H */

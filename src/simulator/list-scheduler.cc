@@ -32,24 +32,6 @@ ListScheduler::ListScheduler ()
 ListScheduler::~ListScheduler ()
 {}
 
-bool 
-ListScheduler::IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const
-{
-  if (a->m_ts < b->m_ts)
-    {
-      return true;
-    }
-  else if (a->m_ts == b->m_ts &&
-           a->m_uid < b->m_uid)
-    {
-      return true;
-    }
-  else
-    {
-      return false;
-    }
-}
-
 void
 ListScheduler::Insert (const EventId &id)
 {
@@ -61,7 +43,7 @@ ListScheduler::Insert (const EventId &id)
   key.m_uid = id.GetUid ();
   for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
     {
-      if (IsLower (&key, &i->second))
+      if (key < i->second)
         {
           m_events.insert (i, std::make_pair (event, key));
           return;

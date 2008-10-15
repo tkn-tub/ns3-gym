@@ -42,34 +42,6 @@ MapScheduler::MapScheduler ()
 MapScheduler::~MapScheduler ()
 {}
 
-/* Note the invariants which this function must provide:
- * - irreflexibility: f (x,x) is false)
- * - antisymmetry: f(x,y) = !f(y,x)
- * - transitivity: f(x,y) and f(y,z) => f(x,z)
- */
-bool
-MapScheduler::EventKeyCompare::operator () (struct EventKey const&a, struct EventKey const&b)
-{
-  if (a.m_ts < b.m_ts) 
-    {
-      return true;
-    } 
-  else if (a.m_ts > b.m_ts)
-    {
-      return false;
-    } 
-  else if (a.m_uid < b.m_uid)
-    {
-      return true;
-    }
-  else 
-    {
-      return false;
-    }
-}
-
-
-
 void
 MapScheduler::Insert (const EventId &id)
 {

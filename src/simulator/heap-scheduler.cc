@@ -110,30 +110,9 @@ HeapScheduler::Exch (uint32_t a, uint32_t b)
 }
 
 bool
-HeapScheduler::IsLowerStrictly (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const
-{
-  if (a->m_ts < b->m_ts)
-    {
-      return true;
-    }
-  else if (a->m_ts > b->m_ts)
-    {
-      return false;
-    } 
-  else if (a->m_uid < b->m_uid)
-    {
-      return true;
-    }
-  else
-    {
-      return false;
-    }
-}
-
-bool
 HeapScheduler::IsLessStrictly (uint32_t a, uint32_t b) const
 {
-  return IsLowerStrictly (&m_heap[a].second, &m_heap[b].second);
+  return m_heap[a].second < m_heap[b].second;
 }
 
 uint32_t 

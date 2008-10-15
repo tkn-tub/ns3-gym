@@ -90,7 +90,30 @@ class Scheduler : public Object
   virtual bool Remove (const EventId &id) = 0;
 };
 
-}; // namespace ns3
+/* Note the invariants which this function must provide:
+ * - irreflexibility: f (x,x) is false)
+ * - antisymmetry: f(x,y) = !f(y,x)
+ * - transitivity: f(x,y) and f(y,z) => f(x,z)
+ */
+inline bool operator < (const Scheduler::EventKey &a, const Scheduler::EventKey &b)
+{
+  if (a.m_ts < b.m_ts)
+    {
+      return true;
+    }
+  else if (a.m_ts == b.m_ts &&
+           a.m_uid < b.m_uid)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+
+} // namespace ns3
 
 
 #endif /* SCHEDULER_H */

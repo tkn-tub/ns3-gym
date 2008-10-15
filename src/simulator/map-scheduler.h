@@ -49,14 +49,9 @@ public:
   virtual bool Remove (const EventId &ev);
 private:
 
-  class EventKeyCompare {
-  public:
-    bool operator () (struct EventKey const&a, struct EventKey const&b);
-  };
-
-  typedef std::map<Scheduler::EventKey, EventImpl*, MapScheduler::EventKeyCompare> EventMap;
-  typedef std::map<Scheduler::EventKey, EventImpl*, MapScheduler::EventKeyCompare>::iterator EventMapI;
-  typedef std::map<Scheduler::EventKey, EventImpl*, MapScheduler::EventKeyCompare>::const_iterator EventMapCI;
+  typedef std::map<Scheduler::EventKey, EventImpl*> EventMap;
+  typedef std::map<Scheduler::EventKey, EventImpl*>::iterator EventMapI;
+  typedef std::map<Scheduler::EventKey, EventImpl*>::const_iterator EventMapCI;
 
 
   EventMap m_list;
