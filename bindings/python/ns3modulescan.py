@@ -48,9 +48,6 @@ type_annotations = {
         'decref_method': 'Unref',
         'peekref_method': 'GetReferenceCount',
         },
-    '::ns3::PacketMetadata': {
-        'ignore': None,
-        },
     '::ns3::AttributeChecker': {
         'automatic_type_narrowing': 'true',
         'allow_subclassing': 'false',
