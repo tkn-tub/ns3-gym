@@ -187,8 +187,6 @@ private:
   static Time GetDefaultCtsAckDelay (void);
   static Time GetDefaultCtsAckTimeout (void);
 
-  Time m_pifs;
-  Time m_ctsTimeout;
   Time m_maxPropagationDelay;
   uint32_t m_maxMsduSize;
 };

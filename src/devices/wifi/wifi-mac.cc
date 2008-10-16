@@ -121,30 +121,10 @@ WifiMac::GetTypeId (void)
   return tid;
 }
 
-void
-WifiMac::SetPifs (Time pifs)
-{
-  m_pifs = pifs;
-}
-void 
-WifiMac::SetCtsTimeout (Time ctsTimeout)
-{
-  m_ctsTimeout = ctsTimeout;
-}
 void 
 WifiMac::SetMaxPropagationDelay (Time delay)
 {
   m_maxPropagationDelay = delay;
-}
-Time
-WifiMac::GetPifs (void) const
-{
-  return m_pifs;
-}
-Time
-WifiMac::GetCtsTimeout (void) const
-{
-  return m_ctsTimeout;
 }
 
 Time
