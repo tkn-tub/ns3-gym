@@ -341,6 +341,24 @@ bool operator < (const Ptr<T> &lhs, const Ptr<T> &rhs)
   return PeekPointer<T> (lhs) < PeekPointer<T> (rhs);
 }
 
+template <typename T>
+bool operator <= (const Ptr<T> &lhs, const Ptr<T> &rhs)
+{
+  return PeekPointer<T> (lhs) <= PeekPointer<T> (rhs);
+}
+
+template <typename T>
+bool operator > (const Ptr<T> &lhs, const Ptr<T> &rhs)
+{
+  return PeekPointer<T> (lhs) > PeekPointer<T> (rhs);
+}
+
+template <typename T>
+bool operator >= (const Ptr<T> &lhs, const Ptr<T> &rhs)
+{
+  return PeekPointer<T> (lhs) >= PeekPointer<T> (rhs);
+}
+
 template <typename T1, typename T2>
 Ptr<T1>
 const_pointer_cast (Ptr<T2> const&p)
