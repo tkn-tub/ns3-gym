@@ -1055,7 +1055,7 @@ MacLow::GetStation (Mac48Address ad) const
 void
 MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiMode rtsTxMode, double rtsSnr)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << source << duration << rtsTxMode << rtsSnr);
   /* send a CTS when you receive a RTS 
    * right after SIFS.
    */

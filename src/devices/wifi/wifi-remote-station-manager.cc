@@ -656,6 +656,14 @@ WifiRemoteStation::GetFragmentSize (Ptr<const Packet> packet, uint32_t fragmentN
       return GetManager ()->GetFragmentationThreshold ();
     }
 }
+uint32_t
+WifiRemoteStation::GetFragmentOffset (Ptr<const Packet> packet, uint32_t fragmentNumber)
+{
+  uint32_t nFragment = GetNFragments (packet);
+  NS_ASSERT (fragmentNumber < nFragment);
+  uint32_t fragmentOffset = fragmentNumber * GetManager ()->GetFragmentationThreshold ();
+  return fragmentOffset;
+}
 
 bool
 WifiRemoteStation::IsLastFragment (Ptr<const Packet> packet, uint32_t fragmentNumber) 

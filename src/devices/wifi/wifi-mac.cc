@@ -75,7 +75,8 @@ WifiMac::GetTypeId (void)
     .SetParent<Object> ()
     .AddAttribute ("CtsTimeout", "When this timeout expires, the RTS/CTS handshake has failed.",
                    TimeValue (GetDefaultCtsAckTimeout ()),
-                   MakeTimeAccessor (&WifiMac::m_ctsTimeout),
+                   MakeTimeAccessor (&WifiMac::SetCtsTimeout,
+                                     &WifiMac::GetCtsTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("AckTimeout", "When this timeout expires, the DATA/ACK handshake has failed.",
                    TimeValue (GetDefaultCtsAckTimeout ()),
@@ -120,30 +121,10 @@ WifiMac::GetTypeId (void)
   return tid;
 }
 
-void
-WifiMac::SetPifs (Time pifs)
-{
-  m_pifs = pifs;
-}
-void 
-WifiMac::SetCtsTimeout (Time ctsTimeout)
-{
-  m_ctsTimeout = ctsTimeout;
-}
 void 
 WifiMac::SetMaxPropagationDelay (Time delay)
 {
   m_maxPropagationDelay = delay;
-}
-Time
-WifiMac::GetPifs (void) const
-{
-  return m_pifs;
-}
-Time
-WifiMac::GetCtsTimeout (void) const
-{
-  return m_ctsTimeout;
 }
 
 Time

@@ -228,15 +228,16 @@ public:
   virtual bool NeedFragmentation (Ptr<const Packet> packet);
   /**
    * \param packet the packet to send
-   * \returns the number of fragments which should be used for this packet.
-   */
-  virtual uint32_t GetNFragments (Ptr<const Packet> packet);
-  /**
-   * \param packet the packet to send
    * \param fragmentNumber the fragment index of the next fragment to send (starts at zero).
    * \returns the size of the corresponding fragment.
    */
   virtual uint32_t GetFragmentSize (Ptr<const Packet> packet, uint32_t fragmentNumber);
+  /**
+   * \param packet the packet to send
+   * \param fragmentNumber the fragment index of the next fragment to send (starts at zero).
+   * \returns the offset within the original packet where this fragment starts.
+   */
+  virtual uint32_t GetFragmentOffset (Ptr<const Packet> packet, uint32_t fragmentNumber);
   /**
    * \param packet the packet to send
    * \param fragmentNumber the fragment index of the next fragment to send (starts at zero).
@@ -262,6 +263,7 @@ private:
   virtual Ptr<WifiRemoteStationManager> GetManager (void) const = 0;
   virtual WifiMode DoGetDataMode (uint32_t size) = 0;
   virtual WifiMode DoGetRtsMode (void) = 0;
+  uint32_t GetNFragments (Ptr<const Packet> packet);
 protected:
   virtual void DoReportRtsFailed (void) = 0;
   virtual void DoReportDataFailed (void) = 0;
