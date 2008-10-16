@@ -507,13 +507,13 @@ def register_Ns3WifiRemoteStation_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet')], 
                    is_virtual=True)
-    ## wifi-remote-station-manager.h: uint32_t ns3::WifiRemoteStation::GetNFragments(ns3::Ptr<const ns3::Packet> packet) [member function]
-    cls.add_method('GetNFragments', 
-                   'uint32_t', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet')], 
-                   is_virtual=True)
     ## wifi-remote-station-manager.h: uint32_t ns3::WifiRemoteStation::GetFragmentSize(ns3::Ptr<const ns3::Packet> packet, uint32_t fragmentNumber) [member function]
     cls.add_method('GetFragmentSize', 
+                   'uint32_t', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint32_t', 'fragmentNumber')], 
+                   is_virtual=True)
+    ## wifi-remote-station-manager.h: uint32_t ns3::WifiRemoteStation::GetFragmentOffset(ns3::Ptr<const ns3::Packet> packet, uint32_t fragmentNumber) [member function]
+    cls.add_method('GetFragmentOffset', 
                    'uint32_t', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint32_t', 'fragmentNumber')], 
                    is_virtual=True)

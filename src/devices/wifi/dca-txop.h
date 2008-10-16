@@ -137,9 +137,9 @@ private:
   bool NeedRtsRetransmission (void);
   bool NeedDataRetransmission (void);
   bool NeedFragmentation (void);
-  uint32_t GetNFragments (void);
   uint32_t GetNextFragmentSize (void);
   uint32_t GetFragmentSize (void);
+  uint32_t GetFragmentOffset (void);
   WifiRemoteStation *GetStation (Mac48Address to) const;
   bool IsLastFragment (void);
   void NextFragment (void);
