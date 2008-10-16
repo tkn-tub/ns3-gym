@@ -266,6 +266,10 @@ int main (int argc, char *argv[])
           iss.str (nAscii);
           iss >> n;
         }
+      if (strncmp ("--enable-printing", argv[0], strlen ("--enable-printing")) == 0)
+        {
+          Packet::EnablePrinting ();
+        }
       argc--;
       argv++;
   }
@@ -281,14 +285,6 @@ int main (int argc, char *argv[])
   runBench (&benchB, n, "b");
   runBench (&benchC, n, "c");
   runBench (&benchD, n, "d");
-
-  Packet::EnablePrinting ();
-  runBench (&benchA, n, "meta-a");
-  runBench (&benchB, n, "meta-b");
-  runBench (&benchC, n, "meta-c");
-  runBench (&benchD, n, "meta-d");
-
-
 
   return 0;
 }
