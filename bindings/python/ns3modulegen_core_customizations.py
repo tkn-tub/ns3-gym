@@ -517,3 +517,10 @@ def Attribute_customizations(module):
                             and param.default_value_type is None:
                         param.default_value_type = 'ns3::EmptyAttributeValue'
 
+
+def TypeId_customizations(module):
+    TypeId = module['ns3::TypeId']
+    TypeId.add_custom_method_wrapper("LookupByNameFailSafe", "_wrap_TypeId_LookupByNameFailSafe",
+                                     flags=["METH_VARARGS", "METH_KEYWORDS", "METH_STATIC"])
+    
+

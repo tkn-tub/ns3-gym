@@ -945,11 +945,6 @@ def register_Ns3TypeId_methods(root_module, cls):
                    'ns3::TypeId', 
                    [param('std::string', 'name')], 
                    is_static=True)
-    ## type-id.h: static bool ns3::TypeId::LookupByNameFailSafe(std::string name, ns3::TypeId * tid) [member function]
-    cls.add_method('LookupByNameFailSafe', 
-                   'bool', 
-                   [param('std::string', 'name'), param('ns3::TypeId *', 'tid', transfer_ownership=False)], 
-                   is_static=True)
     ## type-id.h: ns3::Ptr<ns3::TraceSourceAccessor const> ns3::TypeId::LookupTraceSourceByName(std::string name) const [member function]
     cls.add_method('LookupTraceSourceByName', 
                    'ns3::Ptr< ns3::TraceSourceAccessor const >', 
