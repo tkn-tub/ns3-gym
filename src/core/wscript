@@ -72,6 +72,7 @@ def build(bld):
         'traced-callback.cc',
         'trace-source-accessor.cc',
         'config.cc',
+        'callback.cc',
         ]
     core.uselib = 'RT'
 

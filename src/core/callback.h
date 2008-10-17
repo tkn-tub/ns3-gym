@@ -25,6 +25,8 @@
 #include "fatal-error.h"
 #include "empty.h"
 #include "type-traits.h"
+#include "attribute.h"
+#include "attribute-helper.h"
 #include <typeinfo>
 
 namespace ns3 {
@@ -399,7 +401,11 @@ private:
     return static_cast<CallbackImpl<R,T1,T2,T3,T4,T5,T6> *> (PeekPointer (m_impl));
   }
   bool DoCheckType (Ptr<const CallbackImplBase> other) const {
-    if (dynamic_cast<const CallbackImpl<R,T1,T2,T3,T4,T5,T6> *> (PeekPointer (other)) != 0)
+    if (other != 0 && dynamic_cast<const CallbackImpl<R,T1,T2,T3,T4,T5,T6> *> (PeekPointer (other)) != 0)
+      {
+        return true;
+      }
+    else if (other == 0)
       {
         return true;
       }
@@ -753,9 +759,45 @@ Callback<R,T1,T2,T3,T4,T5> MakeBoundCallback (R (*fnPtr) (TX,T1,T2,T3,T4,T5), AR
     Create<BoundFunctorCallbackImpl<R (*) (TX,T1,T2,T3,T4,T5),R,TX,T1,T2,T3,T4,T5> > (fnPtr, a);
   return Callback<R,T1,T2,T3,T4,T5> (impl);
 }
+} // namespace ns3
 
+namespace ns3 {
 
-}; // namespace ns3
+class CallbackValue : public AttributeValue
+{
+public:
+  CallbackValue ();
+  CallbackValue (const CallbackBase &base);
+  virtual ~CallbackValue ();
+  void Set (CallbackBase base);
+  template <typename T>
+  bool GetAccessor (T &value) const;
+  virtual Ptr<AttributeValue> Copy (void) const;
+  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
+private:
+  CallbackBase m_value;
+};
+
+ATTRIBUTE_ACCESSOR_DEFINE(Callback);
+ATTRIBUTE_CHECKER_DEFINE (Callback);
+
+} // namespace ns3
+
+namespace ns3 {
+
+template <typename T>
+bool CallbackValue::GetAccessor (T &value) const
+{
+  if (value.CheckType (m_value))
+    {
+      value.Assign (m_value);
+      return true;
+    }
+  return false;
+}
+
+} // namespace ns3
 
 
 #endif /* CALLBACK_H */

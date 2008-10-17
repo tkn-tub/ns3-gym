@@ -29,6 +29,7 @@
 #include "double.h"
 #include "object-vector.h"
 #include "traced-value.h"
+#include "callback.h"
 #include "trace-source-accessor.h"
 #include "pointer.h"
 
@@ -71,9 +72,13 @@ private:
   void NotifySourceValue (ValueClassTest old, ValueClassTest n) {
     m_gotValue = n;
   }
+  void NotifyCallbackValue (int8_t a) {
+    m_gotCbValue = a;
+  }
   int64_t m_got1;
   double m_got2;
   ValueClassTest m_gotValue;
+  int16_t m_gotCbValue;
 };
 
 class Derived : public Object
@@ -171,6 +176,10 @@ public:
                      PointerValue (),
                      MakePointerAccessor (&AttributeObjectTest::m_ptr),
                      MakePointerChecker<Derived> ())
+      .AddAttribute ("Callback", "help text",
+                     CallbackValue (),
+                     MakeCallbackAccessor (&AttributeObjectTest::m_cbValue),
+                     MakeCallbackChecker ())
       ;
         
     return tid;
@@ -185,6 +194,13 @@ public:
 
   void InvokeCb (double a, int b, float c) {
     m_cb (a,b,c);
+  }
+
+  void InvokeCbValue (int8_t a) {
+    if (!m_cbValue.IsNull ())
+      {
+        m_cbValue (a);
+      }
   }
 
 private:
@@ -224,6 +240,7 @@ private:
   RandomVariable m_random;
   std::vector<Ptr<Derived> > m_vector1;
   std::vector<Ptr<Derived> > m_vector2;
+  Callback<void,int8_t> m_cbValue;
   TracedValue<int8_t> m_intSrc1;
   TracedValue<int8_t> m_intSrc2;
   TracedCallback<double, int, float> m_cb;
@@ -492,6 +509,21 @@ AttributeTest::RunTests (void)
   derived = ptr.Get<Derived> ();
   NS_TEST_ASSERT (derived != 0);
 
+  p = CreateObject<AttributeObjectTest> ();
+  NS_TEST_ASSERT (p != 0);
+  m_gotCbValue = 1;
+  p->InvokeCbValue (2);
+  CallbackValue cbValue = MakeCallback (&AttributeTest::NotifyCallbackValue, this);
+  NS_TEST_ASSERT_EQUAL (m_gotCbValue, 1);
+  NS_TEST_ASSERT (p->SetAttributeFailSafe ("Callback", 
+                                           cbValue));
+  p->InvokeCbValue (2);
+  NS_TEST_ASSERT_EQUAL (m_gotCbValue, 2);
+  NS_TEST_ASSERT (p->SetAttributeFailSafe ("Callback", 
+                                           CallbackValue (MakeNullCallback<void,int8_t> ())));
+  p->InvokeCbValue (3);
+  NS_TEST_ASSERT_EQUAL (m_gotCbValue, 2);
+  
   return result;
 }
 
