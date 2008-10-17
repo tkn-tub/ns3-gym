@@ -297,6 +297,19 @@ Packet::PeekData (void) const
 }
 
 uint32_t 
+Packet::CopyData (uint8_t *buffer, uint32_t size) const
+{
+  Buffer::Iterator i = m_buffer.Begin ();
+  uint32_t cur = 0;
+  while (!i.IsEnd () && cur < size)
+    {
+      buffer[cur] = i.ReadU8 ();
+      cur++;
+    }
+  return cur;
+}
+
+uint32_t 
 Packet::GetUid (void) const
 {
   return m_metadata.GetUid ();
