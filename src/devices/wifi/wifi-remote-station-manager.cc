@@ -659,8 +659,7 @@ WifiRemoteStation::GetFragmentSize (Ptr<const Packet> packet, uint32_t fragmentN
 uint32_t
 WifiRemoteStation::GetFragmentOffset (Ptr<const Packet> packet, uint32_t fragmentNumber)
 {
-  uint32_t nFragment = GetNFragments (packet);
-  NS_ASSERT (fragmentNumber < nFragment);
+  NS_ASSERT (fragmentNumber < GetNFragments (packet));
   uint32_t fragmentOffset = fragmentNumber * GetManager ()->GetFragmentationThreshold ();
   return fragmentOffset;
 }
