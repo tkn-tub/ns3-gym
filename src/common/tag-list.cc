@@ -72,10 +72,8 @@ TagList::Iterator::Next (void)
   struct Item item = Item (TagBuffer (m_current+16, m_end));
   item.tid.SetUid (m_nextTid);
   item.size = m_nextSize;
-  item.start = m_nextStart;
-  item.end = m_nextEnd;
-  item.start = std::max (item.start, m_offsetStart);
-  item.end = std::min (item.end, m_offsetEnd);
+  item.start = std::max (m_nextStart, m_offsetStart);
+  item.end = std::min (m_nextEnd, m_offsetEnd);
   m_current += 4 + 4 + 4 + 4 + item.size;
   item.buf.TrimAtEnd (m_end - m_current);
   PrepareForNext ();
