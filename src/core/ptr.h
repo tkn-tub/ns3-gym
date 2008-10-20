@@ -361,9 +361,16 @@ bool operator >= (const Ptr<T> &lhs, const Ptr<T> &rhs)
 
 template <typename T1, typename T2>
 Ptr<T1>
-const_pointer_cast (Ptr<T2> const&p)
+ConstCast (Ptr<T2> const&p)
 {
   return Ptr<T1> (const_cast<T1 *> (PeekPointer (p)));
+}
+
+template <typename T1, typename T2>
+Ptr<T1>
+DynamicCast (Ptr<T2> const&p)
+{
+  return Ptr<T1> (dynamic_cast<T1 *> (PeekPointer (p)));
 }
 
 

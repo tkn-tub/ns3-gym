@@ -249,8 +249,8 @@ PtrTest::RunTests (void)
     Ptr<NoCount> p4 = CallTestConst (p1);
     Ptr<NoCount const> p5 = p4;
     //p4 = p5; You cannot make a const pointer be a non-const pointer.
-    // but if you use const_pointer_cast, you can.
-    p4 = const_pointer_cast<NoCount> (p5);
+    // but if you use ConstCast, you can.
+    p4 = ConstCast<NoCount> (p5);
     p5 = p1;
     Ptr<NoCount> p;
     if (p == 0)
