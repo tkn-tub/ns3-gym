@@ -424,6 +424,7 @@ static int %(WRAPPER_NAME)s (%(PYSTRUCT)s *self, PyObject *args, PyObject *kwarg
         return -1;
     }
     %(CONSTRUCT_CODE)s
+    PyNs3ObjectBase_wrapper_registry[(void *) self->obj] = (PyObject *) self;
     return 0;
 }
 ''' % dict(WRAPPER_NAME=wrapper_name, PYSTRUCT=cls.pystruct, CLASS_NAME=cls.full_name,
