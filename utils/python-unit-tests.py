@@ -57,7 +57,6 @@ class TestSimulator(unittest.TestCase):
         self.assertEqual(v1, ns3.Seconds(50))
 
     def testConfig(self):
-        ns3.Config.Set("ns3::OnOffApplication::PacketSize", ns3.UintegerValue(123))
         ns3.Config.SetDefault("ns3::OnOffApplication::PacketSize", ns3.UintegerValue(123))
         # hm.. no Config.Get?
 
