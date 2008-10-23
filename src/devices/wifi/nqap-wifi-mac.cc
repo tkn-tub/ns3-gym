@@ -76,6 +76,9 @@ NqapWifiMac::NqapWifiMac ()
   m_dca->SetTxFailedCallback (MakeCallback (&NqapWifiMac::TxFailed, this));
 
   m_beaconDca = CreateObject<DcaTxop> ();
+  m_beaconDca->SetAifsn(1);
+  m_beaconDca->SetMinCw(0);
+  m_beaconDca->SetMaxCw(0);
   m_beaconDca->SetLow (m_low);
   m_beaconDca->SetManager (m_dcfManager);
 }
