@@ -329,6 +329,7 @@ PacketSocket::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
   if (!error)
     {
       NotifyDataSent (p->GetSize ());
+      NotifySend (GetTxAvailable ());
     }
 
   if (error)
