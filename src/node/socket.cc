@@ -71,12 +71,11 @@ Socket::SetAcceptCallback (
   m_newConnectionCreated = newConnectionCreated;
 }
 
-bool 
+void
 Socket::SetDataSentCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_dataSent = dataSent;
-  return true;
 }
 
 void
