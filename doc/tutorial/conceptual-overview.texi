@@ -681,7 +681,7 @@ When we previously called the methods,
 @end verbatim
 
 we actually scheduled events in the simulator at 1.0 seconds, 2.0 seconds and
-10.0 seconds.  When @code{Simulator::Run} is called, the ssytem will begin 
+10.0 seconds.  When @code{Simulator::Run} is called, the system will begin 
 looking through the list of scheduled events and executing them.  First it 
 will run the event at 1.0 seconds, which will enable the echo server 
 application.  Then it will run the event scheduled for t=2.0 seconds which 

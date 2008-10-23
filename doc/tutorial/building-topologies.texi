@@ -63,7 +63,7 @@ off of the right side.  Notice that this is the default network topology
 since you can actually vary the number of nodes created on the LAN.  If you
 set nCsma to one, there will be a total of two nodes on the LAN (CSMA 
 channel) --- one required node and one ``extra'' node.  By default there are
-thee ``extra'' nodes as seen below:
+three ``extra'' nodes as seen below:
 
 @verbatim
 // Default Network Topology
@@ -589,7 +589,7 @@ number of nodes created on the wired and wireless networks.  Just as in the
 number of ``extra'' CSMA nodes.  Similarly, you can set @code{nWifi} to 
 control how many @code{STA} (station) nodes are created in the simulation.
 There will always be one @code{AP} (access point) node on the wireless 
-network.  By default there are thee ``extra'' CSMA nodes and three wireless 
+network.  By default there are three ``extra'' CSMA nodes and three wireless 
 @code{STA} nodes.
 
 The code begins by loading module include files just as was done in the
