@@ -216,7 +216,7 @@ UdpSocketImpl::Connect(const Address & address)
 }
 
 int 
-UdpSocketImpl::Listen (uint32_t queueLimit)
+UdpSocketImpl::Listen (void)
 {
   m_errno = Socket::ERROR_OPNOTSUPP;
   return -1;

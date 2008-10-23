@@ -395,9 +395,9 @@ NscTcpSocketImpl::GetTxAvailable (void) const
 }
 
 int
-NscTcpSocketImpl::Listen (uint32_t q)
+NscTcpSocketImpl::Listen (void)
 {
-  NS_LOG_FUNCTION (this << q);
+  NS_LOG_FUNCTION (this);
   m_nscTcpSocket->listen(m_localPort);
   m_state = LISTEN;
   return 0;

@@ -454,9 +454,9 @@ TcpSocketImpl::GetTxAvailable (void) const
 }
 
 int
-TcpSocketImpl::Listen (uint32_t q)
+TcpSocketImpl::Listen (void)
 {
-  NS_LOG_FUNCTION (this << q);
+  NS_LOG_FUNCTION (this);
   Actions_t action = ProcessEvent (APP_LISTEN);
   ProcessAction (action);
   return 0;
@@ -1915,7 +1915,7 @@ TcpSocketImplTest::SetupDefaultSim ()
   InetSocketAddress serverremoteaddr (Ipv4Address(ipaddr0), port);
 
   listeningSock->Bind(serverlocaladdr);
-  listeningSock->Listen (0);
+  listeningSock->Listen ();
 
   sock1->Connect(serverremoteaddr);
 }

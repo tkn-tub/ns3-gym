@@ -100,12 +100,6 @@ Socket::Send (Ptr<Packet> p)
   return Send (p, 0);
 }
 
-
-int Socket::Listen (uint32_t queueLimit)
-{
-  return 0; //XXX the base class version does nothing
-}
-
 int 
 Socket::Send (const uint8_t* buf, uint32_t size, uint32_t flags)
 {

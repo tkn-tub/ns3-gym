@@ -222,7 +222,7 @@ PacketSocket::Connect(const Address &ad)
   return -1;
 }
 int 
-PacketSocket::Listen(uint32_t queueLimit)
+PacketSocket::Listen(void)
 {
   m_errno = Socket::ERROR_OPNOTSUPP;
   return -1;

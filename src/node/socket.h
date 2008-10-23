@@ -222,7 +222,7 @@ public:
    * \param queueLimit maximum number of incoming request to queue
    * \returns 0 on success, -1 on error (in which case errno is set).
    */
-  virtual int Listen (uint32_t queueLimit) = 0;
+  virtual int Listen (void) = 0;
 
   /**
    * \brief Returns the number of bytes which can be sent in a single call
