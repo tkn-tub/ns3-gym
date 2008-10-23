@@ -62,6 +62,8 @@ TcpSocketImpl::GetTypeId ()
     m_endPoint (0),
     m_node (0),
     m_tcp (0),
+    m_localAddress (Ipv4Address::GetZero ()),
+    m_localPort (0),
     m_errno (ERROR_NOTERROR),
     m_shutdownSend (false),
     m_shutdownRecv (false),
@@ -551,6 +553,14 @@ TcpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
       fromAddress = tag.GetAddress ();
     }
   return packet;
+}
+
+int
+TcpSocketImpl::GetSockName (Address &address) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  address = InetSocketAddress(m_localAddress, m_localPort);
+  return 0;
 }
 
 void

@@ -437,6 +437,21 @@ UdpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
   return packet;
 }
 
+int
+UdpSocketImpl::GetSockName (Address &address) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  if (m_endPoint != 0)
+    {
+      address = InetSocketAddress (m_endPoint->GetLocalAddress (), m_endPoint->GetLocalPort());
+    }
+  else
+    {
+      address = InetSocketAddress(Ipv4Address::GetZero(), 0);
+    }
+  return 0;
+}
+
 void 
 UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
 {

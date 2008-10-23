@@ -487,6 +487,10 @@ public:
    */
   int RecvFrom (uint8_t* buf, uint32_t size, uint32_t flags,
                 Address &fromAddress);
+    /**
+   * \returns the address name  this socket is associated with.
+   */
+  virtual int GetSockName (Address &address) const = 0; 
  
 protected:
   void NotifyConnectionSucceeded (void);

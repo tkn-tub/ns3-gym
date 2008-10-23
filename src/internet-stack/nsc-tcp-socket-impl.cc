@@ -64,6 +64,8 @@ NscTcpSocketImpl::GetTypeId ()
   : m_endPoint (0),
     m_node (0),
     m_tcp (0),
+    m_localAddress (Ipv4Address::GetZero ()),
+    m_localPort (0),
     m_peerAddress ("0.0.0.0", 0),
     m_errno (ERROR_NOTERROR),
     m_shutdownSend (false),
@@ -464,6 +466,14 @@ NscTcpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
       fromAddress = tag.GetAddress ();
     }
   return packet;
+}
+
+int
+NscTcpSocketImpl::GetSockName (Address &address) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  address = InetSocketAddress(m_localAddress, m_localPort);
+  return 0;
 }
 
 uint32_t
