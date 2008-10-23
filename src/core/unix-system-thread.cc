@@ -20,6 +20,7 @@
 
 #include <pthread.h>
 #include <string.h>
+#include <signal.h>
 #include "fatal-error.h"
 #include "system-thread.h"
 #include "log.h"
@@ -61,6 +62,13 @@ SystemThreadImpl::SystemThreadImpl (Callback<void> callback)
   : m_callback (callback)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  // Make sure we have a SIGALRM handler which does not terminate
+  // our process.
+  struct sigaction act;
+  act.sa_flags = 0;
+  sigemptyset (&act.sa_mask);
+  act.sa_handler = SIG_IGN;
+  sigaction (SIGALRM, &act, 0);
 }
 
   void
@@ -83,6 +91,9 @@ SystemThreadImpl::Join (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
+  // send a SIGALRM signal on the target thread to make sure that it
+  // will unblock.
+  pthread_kill (m_thread, SIGALRM);
   void *thread_return;
   int rc = pthread_join (m_thread, &thread_return);
   if (rc) 
