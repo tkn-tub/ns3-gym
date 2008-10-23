@@ -91,6 +91,10 @@ def register_types(module):
     module.add_class('BooleanChecker', parent=root_module['ns3::AttributeChecker'])
     ## boolean.h: ns3::BooleanValue [class]
     module.add_class('BooleanValue', parent=root_module['ns3::AttributeValue'])
+    ## callback.h: ns3::CallbackChecker [class]
+    module.add_class('CallbackChecker', parent=root_module['ns3::AttributeChecker'])
+    ## callback.h: ns3::CallbackValue [class]
+    module.add_class('CallbackValue', parent=root_module['ns3::AttributeValue'])
     ## random-variable.h: ns3::ConstantVariable [class]
     module.add_class('ConstantVariable', parent=root_module['ns3::RandomVariable'])
     ## random-variable.h: ns3::DeterministicVariable [class]
@@ -236,6 +240,8 @@ def register_methods(root_module):
     register_Ns3AttributeValue_methods(root_module, root_module['ns3::AttributeValue'])
     register_Ns3BooleanChecker_methods(root_module, root_module['ns3::BooleanChecker'])
     register_Ns3BooleanValue_methods(root_module, root_module['ns3::BooleanValue'])
+    register_Ns3CallbackChecker_methods(root_module, root_module['ns3::CallbackChecker'])
+    register_Ns3CallbackValue_methods(root_module, root_module['ns3::CallbackValue'])
     register_Ns3ConstantVariable_methods(root_module, root_module['ns3::ConstantVariable'])
     register_Ns3DeterministicVariable_methods(root_module, root_module['ns3::DeterministicVariable'])
     register_Ns3DoubleValue_methods(root_module, root_module['ns3::DoubleValue'])
@@ -1150,6 +1156,41 @@ def register_Ns3BooleanValue_methods(root_module, cls):
                    [param('bool', 'value')])
     return
 
+def register_Ns3CallbackChecker_methods(root_module, cls):
+    ## callback.h: ns3::CallbackChecker::CallbackChecker(ns3::CallbackChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CallbackChecker const &', 'arg0')])
+    ## callback.h: ns3::CallbackChecker::CallbackChecker() [constructor]
+    cls.add_constructor([])
+    return
+
+def register_Ns3CallbackValue_methods(root_module, cls):
+    ## callback.h: ns3::CallbackValue::CallbackValue(ns3::CallbackValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CallbackValue const &', 'arg0')])
+    ## callback.h: ns3::CallbackValue::CallbackValue() [constructor]
+    cls.add_constructor([])
+    ## callback.h: ns3::CallbackValue::CallbackValue(ns3::CallbackBase const & base) [constructor]
+    cls.add_constructor([param('ns3::CallbackBase const &', 'base')])
+    ## callback.h: void ns3::CallbackValue::Set(ns3::CallbackBase base) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::CallbackBase', 'base')])
+    ## callback.h: ns3::Ptr<ns3::AttributeValue> ns3::CallbackValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h: std::string ns3::CallbackValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## callback.h: bool ns3::CallbackValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    return
+
 def register_Ns3ConstantVariable_methods(root_module, cls):
     ## random-variable.h: ns3::ConstantVariable::ConstantVariable(ns3::ConstantVariable const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::ConstantVariable const &', 'arg0')])
@@ -1826,7 +1867,7 @@ def register_Ns3TracedValue__Unsigned_int_methods(root_module, cls):
     cls.add_method('ConnectWithoutContext', 
                    'void', 
                    [param('ns3::CallbackBase const &', 'cb')])
-    ## traced-value.h: void ns3::TracedValue<unsigned int>::Connect(ns3::CallbackBase const & cb, std::string path) [member function]
+    ## traced-value.h: void ns3::TracedValue<unsigned int>::Connect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
     cls.add_method('Connect', 
                    'void', 
                    [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
@@ -1834,7 +1875,7 @@ def register_Ns3TracedValue__Unsigned_int_methods(root_module, cls):
     cls.add_method('DisconnectWithoutContext', 
                    'void', 
                    [param('ns3::CallbackBase const &', 'cb')])
-    ## traced-value.h: void ns3::TracedValue<unsigned int>::Disconnect(ns3::CallbackBase const & cb, std::string path) [member function]
+    ## traced-value.h: void ns3::TracedValue<unsigned int>::Disconnect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
     cls.add_method('Disconnect', 
                    'void', 
                    [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
@@ -1869,7 +1910,7 @@ def register_functions(root_module):
     module.add_function('TypeNameGet', 
                         'std::string', 
                         [], 
-                        template_parameters=['long long'])
+                        template_parameters=['long'])
     ## type-name.h: extern std::string ns3::TypeNameGet() [free function]
     module.add_function('TypeNameGet', 
                         'std::string', 
@@ -1889,7 +1930,7 @@ def register_functions(root_module):
     module.add_function('TypeNameGet', 
                         'std::string', 
                         [], 
-                        template_parameters=['unsigned long long'])
+                        template_parameters=['unsigned long'])
     ## type-name.h: extern std::string ns3::TypeNameGet() [free function]
     module.add_function('TypeNameGet', 
                         'std::string', 
@@ -1905,12 +1946,20 @@ def register_functions(root_module):
                         'std::string', 
                         [], 
                         template_parameters=['unsigned char'])
-    ## log.h: extern void ns3::LogComponentDisable(char const * name, ns3::LogLevel level) [free function]
-    module.add_function('LogComponentDisable', 
-                        'void', 
-                        [param('char const *', 'name'), param('ns3::LogLevel', 'level')])
     ## string.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeStringChecker() [free function]
     module.add_function('MakeStringChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
+    ## enum.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeEnumChecker(int v1, std::string n1, int v2=0, std::string n2="", int v3=0, std::string n3="", int v4=0, std::string n4="", int v5=0, std::string n5="", int v6=0, std::string n6="", int v7=0, std::string n7="", int v8=0, std::string n8="", int v9=0, std::string n9="", int v10=0, std::string n10="", int v11=0, std::string n11="", int v12=0, std::string n12="") [free function]
+    module.add_function('MakeEnumChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [param('int', 'v1'), param('std::string', 'n1'), param('int', 'v2', default_value='0'), param('std::string', 'n2', default_value='""'), param('int', 'v3', default_value='0'), param('std::string', 'n3', default_value='""'), param('int', 'v4', default_value='0'), param('std::string', 'n4', default_value='""'), param('int', 'v5', default_value='0'), param('std::string', 'n5', default_value='""'), param('int', 'v6', default_value='0'), param('std::string', 'n6', default_value='""'), param('int', 'v7', default_value='0'), param('std::string', 'n7', default_value='""'), param('int', 'v8', default_value='0'), param('std::string', 'n8', default_value='""'), param('int', 'v9', default_value='0'), param('std::string', 'n9', default_value='""'), param('int', 'v10', default_value='0'), param('std::string', 'n10', default_value='""'), param('int', 'v11', default_value='0'), param('std::string', 'n11', default_value='""'), param('int', 'v12', default_value='0'), param('std::string', 'n12', default_value='""')])
+    ## log.h: extern void ns3::LogComponentEnableAll(ns3::LogLevel level) [free function]
+    module.add_function('LogComponentEnableAll', 
+                        'void', 
+                        [param('ns3::LogLevel', 'level')])
+    ## type-id.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeTypeIdChecker() [free function]
+    module.add_function('MakeTypeIdChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
     ## ptr.h: extern ns3::Ptr<ns3::PointerValue> ns3::Create() [free function]
@@ -1923,14 +1972,6 @@ def register_functions(root_module):
                         'ns3::Ptr< ns3::ObjectVectorValue >', 
                         [], 
                         template_parameters=['ns3::ObjectVectorValue'])
-    ## log.h: extern void ns3::LogComponentEnableAll(ns3::LogLevel level) [free function]
-    module.add_function('LogComponentEnableAll', 
-                        'void', 
-                        [param('ns3::LogLevel', 'level')])
-    ## type-id.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeTypeIdChecker() [free function]
-    module.add_function('MakeTypeIdChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [])
     ## object-factory.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeObjectFactoryChecker() [free function]
     module.add_function('MakeObjectFactoryChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
@@ -1939,6 +1980,10 @@ def register_functions(root_module):
     module.add_function('LogComponentDisableAll', 
                         'void', 
                         [param('ns3::LogLevel', 'level')])
+    ## callback.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeCallbackChecker() [free function]
+    module.add_function('MakeCallbackChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
     ## breakpoint.h: extern void ns3::BreakpointFallback() [free function]
     module.add_function('BreakpointFallback', 
                         'void', 
@@ -1947,14 +1992,14 @@ def register_functions(root_module):
     module.add_function('MakeRandomVariableChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
+    ## log.h: extern void ns3::LogComponentDisable(char const * name, ns3::LogLevel level) [free function]
+    module.add_function('LogComponentDisable', 
+                        'void', 
+                        [param('char const *', 'name'), param('ns3::LogLevel', 'level')])
     ## log.h: extern void ns3::LogComponentEnable(char const * name, ns3::LogLevel level) [free function]
     module.add_function('LogComponentEnable', 
                         'void', 
                         [param('char const *', 'name'), param('ns3::LogLevel', 'level')])
-    ## enum.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeEnumChecker(int v1, std::string n1, int v2=0, std::string n2="", int v3=0, std::string n3="", int v4=0, std::string n4="", int v5=0, std::string n5="", int v6=0, std::string n6="", int v7=0, std::string n7="", int v8=0, std::string n8="", int v9=0, std::string n9="", int v10=0, std::string n10="", int v11=0, std::string n11="", int v12=0, std::string n12="") [free function]
-    module.add_function('MakeEnumChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [param('int', 'v1'), param('std::string', 'n1'), param('int', 'v2', default_value='0'), param('std::string', 'n2', default_value='""'), param('int', 'v3', default_value='0'), param('std::string', 'n3', default_value='""'), param('int', 'v4', default_value='0'), param('std::string', 'n4', default_value='""'), param('int', 'v5', default_value='0'), param('std::string', 'n5', default_value='""'), param('int', 'v6', default_value='0'), param('std::string', 'n6', default_value='""'), param('int', 'v7', default_value='0'), param('std::string', 'n7', default_value='""'), param('int', 'v8', default_value='0'), param('std::string', 'n8', default_value='""'), param('int', 'v9', default_value='0'), param('std::string', 'n9', default_value='""'), param('int', 'v10', default_value='0'), param('std::string', 'n10', default_value='""'), param('int', 'v11', default_value='0'), param('std::string', 'n11', default_value='""'), param('int', 'v12', default_value='0'), param('std::string', 'n12', default_value='""')])
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
@@ -2012,10 +2057,6 @@ def register_functions_ns3_Config(module, root_module):
     module.add_function('SetGlobalFailSafe', 
                         'bool', 
                         [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
-    ## config.h: extern void ns3::Config::Disconnect(std::string path, ns3::CallbackBase const & cb) [free function]
-    module.add_function('Disconnect', 
-                        'void', 
-                        [param('std::string', 'path'), param('ns3::CallbackBase const &', 'cb')])
     ## config.h: extern uint32_t ns3::Config::GetRootNamespaceObjectN() [free function]
     module.add_function('GetRootNamespaceObjectN', 
                         'uint32_t', 
@@ -2032,6 +2073,10 @@ def register_functions_ns3_Config(module, root_module):
     module.add_function('RegisterRootNamespaceObject', 
                         'void', 
                         [param('ns3::Ptr< ns3::Object >', 'obj')])
+    ## config.h: extern void ns3::Config::Disconnect(std::string path, ns3::CallbackBase const & cb) [free function]
+    module.add_function('Disconnect', 
+                        'void', 
+                        [param('std::string', 'path'), param('ns3::CallbackBase const &', 'cb')])
     return
 
 def register_functions_ns3_olsr(module, root_module):
