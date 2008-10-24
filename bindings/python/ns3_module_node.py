@@ -1356,6 +1356,11 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('RecvFrom', 
                    'int', 
                    [param('uint8_t *', 'buf'), param('uint32_t', 'size'), param('uint32_t', 'flags'), param('ns3::Address &', 'fromAddress')])
+    ## socket.h: int ns3::Socket::GetSockName(ns3::Address & address) const [member function]
+    cls.add_method('GetSockName', 
+                   'int', 
+                   [param('ns3::Address &', 'address')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## socket.h: void ns3::Socket::NotifyConnectionSucceeded() [member function]
     cls.add_method('NotifyConnectionSucceeded', 
                    'void', 

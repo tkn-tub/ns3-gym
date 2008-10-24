@@ -39,9 +39,11 @@ StaticSpeedMobilityModel::~StaticSpeedMobilityModel ()
 {}
 
 void 
-StaticSpeedMobilityModel::SetSpeed (const Vector &speed)
+StaticSpeedMobilityModel::SetVelocity (const Vector &speed)
 {
-  m_helper.SetSpeed (speed);
+  m_helper.Update ();
+  m_helper.SetVelocity (speed);
+  m_helper.Unpause ();
   NotifyCourseChange ();
 }
 
@@ -49,12 +51,13 @@ StaticSpeedMobilityModel::SetSpeed (const Vector &speed)
 Vector
 StaticSpeedMobilityModel::DoGetPosition (void) const
 {
+  m_helper.Update ();
   return m_helper.GetCurrentPosition ();
 }
 void 
 StaticSpeedMobilityModel::DoSetPosition (const Vector &position)
 {
-  m_helper.InitializePosition (position);
+  m_helper.SetPosition (position);
   NotifyCourseChange ();
 }
 Vector

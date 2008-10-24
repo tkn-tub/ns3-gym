@@ -65,14 +65,14 @@ public:
    * in the requested station manager.
    */
   void SetRemoteStationManager (std::string type,
-				std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-				std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-				std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-				std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-				std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-				std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-				std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-				std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+                                std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+                                std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                                std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                                std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                                std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+                                std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+                                std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+                                std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 
   /**
    * \param type the type of ns3::WifiMac to create.
@@ -97,14 +97,14 @@ public:
    * in the requested mac.
    */
   void SetMac (std::string type,
-	       std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-	       std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-	       std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-	       std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-	       std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-	       std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-	       std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-	       std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+               std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+               std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+               std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+               std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+               std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+               std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+               std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+               std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 
   /**
    * \param phyType the type of ns3::WifiPhy to create.
@@ -129,14 +129,14 @@ public:
    * in the requested phy.
    */
   void SetPhy (std::string phyType,
-	       std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-	       std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-	       std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-	       std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-	       std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-	       std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-	       std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-	       std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+               std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+               std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+               std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+               std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+               std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+               std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+               std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+               std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 
 
 

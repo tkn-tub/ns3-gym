@@ -47,15 +47,15 @@ MobilityHelper::SetPositionAllocator (Ptr<PositionAllocator> allocator)
 }
 void 
 MobilityHelper::SetPositionAllocator (std::string type,
-				      std::string n1, const AttributeValue &v1,
-				      std::string n2, const AttributeValue &v2,
-				      std::string n3, const AttributeValue &v3,
-				      std::string n4, const AttributeValue &v4,
-				      std::string n5, const AttributeValue &v5,
-				      std::string n6, const AttributeValue &v6,
-				      std::string n7, const AttributeValue &v7,
-				      std::string n8, const AttributeValue &v8,
-				      std::string n9, const AttributeValue &v9)
+                                      std::string n1, const AttributeValue &v1,
+                                      std::string n2, const AttributeValue &v2,
+                                      std::string n3, const AttributeValue &v3,
+                                      std::string n4, const AttributeValue &v4,
+                                      std::string n5, const AttributeValue &v5,
+                                      std::string n6, const AttributeValue &v6,
+                                      std::string n7, const AttributeValue &v7,
+                                      std::string n8, const AttributeValue &v8,
+                                      std::string n9, const AttributeValue &v9)
 {
   ObjectFactory pos;
   pos.SetTypeId (type);
@@ -73,15 +73,15 @@ MobilityHelper::SetPositionAllocator (std::string type,
 
 void 
 MobilityHelper::SetMobilityModel (std::string type,
-				  std::string n1, const AttributeValue &v1,
-				  std::string n2, const AttributeValue &v2,
-				  std::string n3, const AttributeValue &v3,
-				  std::string n4, const AttributeValue &v4,
-				  std::string n5, const AttributeValue &v5,
-				  std::string n6, const AttributeValue &v6,
-				  std::string n7, const AttributeValue &v7,
-				  std::string n8, const AttributeValue &v8,
-				  std::string n9, const AttributeValue &v9)
+                                  std::string n1, const AttributeValue &v1,
+                                  std::string n2, const AttributeValue &v2,
+                                  std::string n3, const AttributeValue &v3,
+                                  std::string n4, const AttributeValue &v4,
+                                  std::string n5, const AttributeValue &v5,
+                                  std::string n6, const AttributeValue &v6,
+                                  std::string n7, const AttributeValue &v7,
+                                  std::string n8, const AttributeValue &v8,
+                                  std::string n9, const AttributeValue &v9)
 {
   m_mobility.SetTypeId (type);
   m_mobility.Set (n1, v1);
@@ -122,29 +122,29 @@ MobilityHelper::Install (NodeContainer c)
       Ptr<Object> object = *i;
       Ptr<MobilityModel> model = object->GetObject<MobilityModel> ();
       if (model == 0)
-	{
-	  model = m_mobility.Create ()->GetObject<MobilityModel> ();
-	  if (model == 0)
-	    {
-	      NS_FATAL_ERROR ("The requested mobility model is not a mobility model: \""<< 
-			      m_mobility.GetTypeId ().GetName ()<<"\"");
-	    }
-	  if (m_mobilityStack.empty ())
-	    {
-	      NS_LOG_DEBUG ("node="<<object<<", mob="<<model);
-	      object->AggregateObject (model);
-	    }
-	  else
-	    {
-	      // we need to setup a hierarchical mobility model
-	      Ptr<MobilityModel> parent = m_mobilityStack.back ();
-	      Ptr<MobilityModel> hierarchical = 
-		CreateObject<HierarchicalMobilityModel> ("Child", PointerValue (model),
-							 "Parent", PointerValue (parent));
-	      object->AggregateObject (hierarchical);
-	      NS_LOG_DEBUG ("node="<<object<<", mob="<<hierarchical);
-	    }
-	}
+        {
+          model = m_mobility.Create ()->GetObject<MobilityModel> ();
+          if (model == 0)
+            {
+              NS_FATAL_ERROR ("The requested mobility model is not a mobility model: \""<< 
+                              m_mobility.GetTypeId ().GetName ()<<"\"");
+            }
+          if (m_mobilityStack.empty ())
+            {
+              NS_LOG_DEBUG ("node="<<object<<", mob="<<model);
+              object->AggregateObject (model);
+            }
+          else
+            {
+              // we need to setup a hierarchical mobility model
+              Ptr<MobilityModel> parent = m_mobilityStack.back ();
+              Ptr<MobilityModel> hierarchical = 
+                CreateObject<HierarchicalMobilityModel> ("Child", PointerValue (model),
+                                                         "Parent", PointerValue (parent));
+              object->AggregateObject (hierarchical);
+              NS_LOG_DEBUG ("node="<<object<<", mob="<<hierarchical);
+            }
+        }
       Vector position = m_position->GetNext ();
       model->SetPosition (position);
     }

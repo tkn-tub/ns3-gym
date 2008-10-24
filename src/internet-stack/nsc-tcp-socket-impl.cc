@@ -64,6 +64,8 @@ NscTcpSocketImpl::GetTypeId ()
   : m_endPoint (0),
     m_node (0),
     m_tcp (0),
+    m_localAddress (Ipv4Address::GetZero ()),
+    m_localPort (0),
     m_peerAddress ("0.0.0.0", 0),
     m_errno (ERROR_NOTERROR),
     m_shutdownSend (false),
@@ -328,34 +330,19 @@ NscTcpSocketImpl::Send (const Ptr<Packet> p, uint32_t flags)
       return -1;
     }
 
-    bool txEmpty = m_txBuffer.empty();
+    uint32_t sent = p->GetSize ();
     if (m_state == ESTABLISHED)
       {
-        if (txEmpty)
-          {
-            m_txBuffer.push(p);
-            m_txBufferSize += p->GetSize ();
-          }
-        if (!SendPendingData())
-          {
-             if (m_errno == ERROR_AGAIN)
-               {
-                 return txEmpty ? p->GetSize () : -1;
-               }
-             if (txEmpty)
-               {
-                  m_txBuffer.pop ();
-                  m_txBufferSize = 0;
-               }
-             return -1;
-          }
+        m_txBuffer.push(p);
+        m_txBufferSize += sent;
+        SendPendingData();
       }
       else
       {  // SYN_SET -- Queue Data
          m_txBuffer.push(p);
-         m_txBufferSize += p->GetSize ();
+         m_txBufferSize += sent;
       }
-    return p->GetSize ();
+    return sent;
   }
   else
   {
@@ -434,6 +421,7 @@ NscTcpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
   NS_LOG_FUNCTION_NOARGS ();
   if (m_deliveryQueue.empty() )
     {
+      m_errno = ERROR_AGAIN;
       return 0;
     }
   Ptr<Packet> p = m_deliveryQueue.front ();
@@ -444,6 +432,7 @@ NscTcpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
     }
   else
     {
+      m_errno = ERROR_AGAIN;
       p = 0;
     }
   return p;
@@ -464,6 +453,14 @@ NscTcpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
       fromAddress = tag.GetAddress ();
     }
   return packet;
+}
+
+int
+NscTcpSocketImpl::GetSockName (Address &address) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  address = InetSocketAddress(m_localAddress, m_localPort);
+  return 0;
 }
 
 uint32_t
@@ -627,6 +624,7 @@ bool NscTcpSocketImpl::SendPendingData (void)
   size_t size, written = 0;
 
   do {
+    NS_ASSERT (!m_txBuffer.empty ());
     Ptr<Packet> &p = m_txBuffer.front ();
     size = p->GetSize ();
     NS_ASSERT (size > 0);
@@ -635,12 +633,6 @@ bool NscTcpSocketImpl::SendPendingData (void)
     ret = m_nscTcpSocket->send_data((const char *)p->PeekData (), size);
     if (ret <= 0)
       {
-        m_errno = GetNativeNs3Errno(ret);
-        if (m_errno != ERROR_AGAIN)
-          {
-            NS_LOG_WARN ("Error (" << ret << ") " <<
-                         "during send_data, ns-3 errno set to" << m_errno);
-          }
         break;
       }
     written += ret;

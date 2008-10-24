@@ -101,6 +101,7 @@ public:
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
     Address &fromAddress);
+  virtual int GetSockName (Address &address) const; 
 
 private:
   void ForwardUp (Ptr<NetDevice> device, Ptr<const Packet> packet, 

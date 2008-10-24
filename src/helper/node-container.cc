@@ -35,14 +35,14 @@ NodeContainer::NodeContainer (const NodeContainer &a, const NodeContainer &b)
   Add (b);
 }
 NodeContainer::NodeContainer (const NodeContainer &a, const NodeContainer &b, 
-			      const NodeContainer &c)
+                              const NodeContainer &c)
 {
   Add (a);
   Add (b);
   Add (c);
 }
 NodeContainer::NodeContainer (const NodeContainer &a, const NodeContainer &b, 
-			      const NodeContainer &c, const NodeContainer &d)
+                              const NodeContainer &c, const NodeContainer &d)
 {
   Add (a);
   Add (b);
