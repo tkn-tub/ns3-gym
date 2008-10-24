@@ -33,23 +33,21 @@ class StaticSpeedHelper
   StaticSpeedHelper ();
   StaticSpeedHelper (const Vector &position);
   StaticSpeedHelper (const Vector &position,
-		     const Vector &speed);
-  void InitializePosition (const Vector &position);
+		     const Vector &vel);
 
-  void Reset (const Vector &speed);
-  Vector GetCurrentPosition (const Rectangle &bounds) const;
+  void SetPosition (const Vector &position);
   Vector GetCurrentPosition (void) const;
   Vector GetVelocity (void) const;
-  void SetSpeed (const Vector &speed);
+  void SetVelocity (const Vector &vel);
   void Pause (void);
   void Unpause (void);
 
- private:
+  void UpdateWithBounds (const Rectangle &rectangle) const;
   void Update (void) const;
-  void UpdateFull (const Rectangle &rectangle) const;
+ private:
   mutable Time m_lastUpdate;
   mutable Vector m_position;
-  Vector m_speed;
+  Vector m_velocity;
   bool m_paused;
 };
 
