@@ -76,8 +76,9 @@ RandomDirection2dMobilityModel::Start (void)
 void
 RandomDirection2dMobilityModel::BeginPause (void)
 {
-  Time pause = Seconds (m_pause.GetValue ());
+  m_helper.Update ();
   m_helper.Pause ();
+  Time pause = Seconds (m_pause.GetValue ());
   m_event = Simulator::Schedule (pause, &RandomDirection2dMobilityModel::ResetDirectionAndSpeed, this);
   NotifyCourseChange ();
 }
@@ -86,12 +87,14 @@ void
 RandomDirection2dMobilityModel::SetDirectionAndSpeed (double direction)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_helper.UpdateWithBounds (m_bounds);
+  Vector position = m_helper.GetCurrentPosition ();
   double speed = m_speed.GetValue ();
   const Vector vector (std::cos (direction) * speed,
                        std::sin (direction) * speed,
                        0.0);
-  Vector position = m_helper.GetCurrentPosition (m_bounds);
-  m_helper.Reset (vector);
+  m_helper.SetVelocity (vector);
+  m_helper.Unpause ();
   Vector next = m_bounds.CalculateIntersection (position, vector);
   Time delay = Seconds (CalculateDistance (position, next) / speed);
   m_event = Simulator::Schedule (delay,
@@ -103,7 +106,8 @@ RandomDirection2dMobilityModel::ResetDirectionAndSpeed (void)
 {
   double direction = UniformVariable::GetSingleValue (0, PI);
   
-  Vector position = m_helper.GetCurrentPosition (m_bounds);
+  m_helper.UpdateWithBounds (m_bounds);
+  Vector position = m_helper.GetCurrentPosition ();
   switch (m_bounds.GetClosestSide (position))
     {
     case Rectangle::RIGHT:
@@ -124,12 +128,13 @@ RandomDirection2dMobilityModel::ResetDirectionAndSpeed (void)
 Vector
 RandomDirection2dMobilityModel::DoGetPosition (void) const
 {
-  return m_helper.GetCurrentPosition (m_bounds);
+  m_helper.UpdateWithBounds (m_bounds);
+  return m_helper.GetCurrentPosition ();
 }
 void
 RandomDirection2dMobilityModel::DoSetPosition (const Vector &position)
 {
-  m_helper.InitializePosition (position);
+  m_helper.SetPosition (position);
   Simulator::Remove (m_event);
   m_event = Simulator::ScheduleNow (&RandomDirection2dMobilityModel::Start, this);
 }

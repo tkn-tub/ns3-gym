@@ -75,62 +75,65 @@ Ns2MobilityHelper::LayoutObjectStore (const ObjectStore &store) const
   if (file.is_open())
     {
       while (!file.eof() )
-	{
-	  std::string line;
-	  getline (file, line);
-	  std::string::size_type startNodeId = line.find_first_of ("(");
-	  std::string::size_type endNodeId = line.find_first_of (")");
-	  if (startNodeId == std::string::npos ||
-	      endNodeId == std::string::npos)
-	    {
-	      continue;
-	    }
-	  Ptr<StaticSpeedMobilityModel> model = GetMobilityModel (line.substr (startNodeId + 1, 
-									       endNodeId - startNodeId), 
-								  store);
-	  if (model == 0)
-	    {
-	      continue;
-	    }
-	  if (startNodeId == 6)
-	    {
-	      double value = ReadDouble (line.substr (endNodeId + 9, std::string::npos));
-	      std::string coordinate = line.substr (endNodeId + 6, 1);
+        {
+          std::string line;
+          getline (file, line);
+          std::string::size_type startNodeId = line.find_first_of ("(");
+          std::string::size_type endNodeId = line.find_first_of (")");
+          if (startNodeId == std::string::npos ||
+              endNodeId == std::string::npos)
+            {
+              continue;
+            }
+          Ptr<StaticSpeedMobilityModel> model = GetMobilityModel (line.substr (startNodeId + 1, 
+                                                                               endNodeId - startNodeId), 
+                                                                  store);
+          if (model == 0)
+            {
+              continue;
+            }
+          if (startNodeId == 6)
+            {
+              double value = ReadDouble (line.substr (endNodeId + 9, std::string::npos));
+              std::string coordinate = line.substr (endNodeId + 6, 1);
               Vector position = model->GetPosition ();
-	      if (coordinate == "X")
-		{
+              if (coordinate == "X")
+                {
                   position.x = value;
-		  NS_LOG_DEBUG ("X=" << value);
-		}
-	      else if (coordinate == "Y")
-		{
+                  NS_LOG_DEBUG ("X=" << value);
+                }
+              else if (coordinate == "Y")
+                {
                   position.y = value;
-		  NS_LOG_DEBUG ("Y=" << value);
-		}
-	      else if (coordinate == "Z")
-		{
+                  NS_LOG_DEBUG ("Y=" << value);
+                }
+              else if (coordinate == "Z")
+                {
                   position.z = value;
-		  NS_LOG_DEBUG ("Z=" << value);
-		}
+                  NS_LOG_DEBUG ("Z=" << value);
+                }
               else
                 {
                   continue;
                 }
               model->SetPosition (position);
-	    }
-	  else 
-	    {
-	      double at = ReadDouble (line.substr (8, startNodeId - 17));
-	      std::string::size_type xSpeedEnd = line.find_first_of (" ", endNodeId + 10);
-	      std::string::size_type ySpeedEnd = line.find_first_of (" ", xSpeedEnd + 1);
-	      double xSpeed = ReadDouble (line.substr (endNodeId + 10, xSpeedEnd - endNodeId - 10));
-	      double ySpeed = ReadDouble (line.substr (xSpeedEnd + 1, ySpeedEnd - xSpeedEnd - 1));
-	      double zSpeed = ReadDouble (line.substr (ySpeedEnd + 1, std::string::npos));
-	      NS_LOG_DEBUG ("at=" << at << "xSpeed=" << xSpeed << ", ySpeed=" << ySpeed << ", zSpeed=" << zSpeed);
-	      Simulator::Schedule (Seconds (at), &StaticSpeedMobilityModel::SetSpeed, model,
-				   Vector (xSpeed, ySpeed, zSpeed));
-	    }
-	}
+            }
+          else 
+            {
+              std::string::size_type atEnd = line.find_first_of (" ", 8);
+              std::string atStr = line.substr (8, atEnd-8);
+              NS_LOG_DEBUG (atStr);
+              double at = ReadDouble (atStr);
+              std::string::size_type xSpeedEnd = line.find_first_of (" ", endNodeId + 10);
+              std::string::size_type ySpeedEnd = line.find_first_of (" ", xSpeedEnd + 1);
+              double xSpeed = ReadDouble (line.substr (endNodeId + 10, xSpeedEnd - endNodeId - 10));
+              double ySpeed = ReadDouble (line.substr (xSpeedEnd + 1, ySpeedEnd - xSpeedEnd - 1));
+              double zSpeed = ReadDouble (line.substr (ySpeedEnd + 1, std::string::npos));
+              NS_LOG_DEBUG ("at=" << at << "xSpeed=" << xSpeed << ", ySpeed=" << ySpeed << ", zSpeed=" << zSpeed);
+              Simulator::Schedule (Seconds (at), &StaticSpeedMobilityModel::SetVelocity, model,
+                                   Vector (xSpeed, ySpeed, zSpeed));
+            }
+        }
       file.close();
     }
 }

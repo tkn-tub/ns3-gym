@@ -39,10 +39,10 @@ CsmaHelper::CsmaHelper ()
 
 void 
 CsmaHelper::SetQueue (std::string type,
-		      std::string n1, const AttributeValue &v1,
-		      std::string n2, const AttributeValue &v2,
-		      std::string n3, const AttributeValue &v3,
-		      std::string n4, const AttributeValue &v4)
+                      std::string n1, const AttributeValue &v1,
+                      std::string n2, const AttributeValue &v2,
+                      std::string n3, const AttributeValue &v3,
+                      std::string n4, const AttributeValue &v4)
 {
   m_queueFactory.SetTypeId (type);
   m_queueFactory.Set (n1, v1);
@@ -78,6 +78,13 @@ void
 CsmaHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid)
 {
   std::ostringstream oss;
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/";
+  Config::MatchContainer matches = Config::LookupMatches (oss.str ());
+  if (matches.GetN () == 0)
+    {
+      return;
+    }
+  oss.str ("");
   oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
   Ptr<PcapWriter> pcap = Create<PcapWriter> ();
   pcap->Open (oss.str ());
@@ -106,9 +113,9 @@ CsmaHelper::EnablePcap (std::string filename, NodeContainer n)
     {
       Ptr<Node> node = *i;
       for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-	{
-	  devs.Add (node->GetDevice (j));
-	}
+        {
+          devs.Add (node->GetDevice (j));
+        }
     }
   EnablePcap (filename, devs);
 }
@@ -153,9 +160,9 @@ CsmaHelper::EnableAscii (std::ostream &os, NodeContainer n)
     {
       Ptr<Node> node = *i;
       for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-	{
-	  devs.Add (node->GetDevice (j));
-	}
+        {
+          devs.Add (node->GetDevice (j));
+        }
     }
   EnableAscii (os, devs);
 }

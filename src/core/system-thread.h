@@ -84,6 +84,10 @@ public:
    * method provided to do this is Join (). If you call Join() you will block
    * until the SystemThread run method returns.
    *
+   * @warning The SystemThread uses SIGALRM to wake threads that are possibly
+   * blocked on IO.
+   * @see Shutdown
+   *
    * @warning I've made the system thread class look like a normal ns3 object
    * with smart pointers, and living in the heap.  This makes it very easy to
    * manage threads from a single master thread context.  You should be very
@@ -128,9 +132,47 @@ public:
    */
   void Join (void);
 
+  /**
+   * @brief Indicates to a managed thread doing cooperative multithreading that
+   * its managing thread wants it to exit.
+   *
+   * It is often the case that we want a thread to be off doing work until such
+   * time as its job is done (typically when the simulation is done).  We then 
+   * want the thread to exit itself.  This method provides a consistent way for
+   * the managing thread to communicate with the managed thread.  After the
+   * manager thread calls this method, the Break() method will begin returning
+   * true, telling the managed thread to exit.
+   *
+   * This alone isn't really enough to merit these events, but in Unix, if a
+   * worker thread is doing blocking IO, it will need to be woken up from that
+   * read somehow.  This method also provides that functionality, by sending a
+   * SIGALRM signal to the possibly blocked thread.
+   *
+   * @warning Uses SIGALRM to notifiy threads possibly blocked on IO.  Beware
+   * if you are using signals.
+   * @see Break
+   */
+  void Shutdown (void);
+
+  /**
+   * @brief Indicates to a thread doing cooperative multithreading that
+   * its managing thread wants it to exit.
+   *
+   * It is often the case that we want a thread to be off doing work until such
+   * time as its job is done.  We then want the thread to exit itself.  This
+   * method allows a thread to query whether or not it should be running.  
+   * Typically, the worker thread is running in a forever-loop, and will need to
+   * "break" out of that loop to exit -- thus the name.
+   *
+   * @see Shutdown
+   * @returns true if thread is expected to exit (break out of the forever-loop)
+   */
+  bool Break (void);
+
 private:
   SystemThreadImpl * m_impl;
   mutable uint32_t m_count;
+  bool m_break;
 };
 
  void
