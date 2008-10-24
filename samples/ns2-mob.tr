@@ -1,0 +1,7 @@
+
+$node_(0) set X_ 0.0
+$node_(0) set Y_ 25.0
+$node_(0) set Z_ 0.0
+$ns_ at 3.0 "$node_(0) setdest 25 0 0"
+$ns_ at 4.8 "$node_(0) setdest 0 0 0"
+$ns_ at 5.0 "$node_(0) setdest 25 0 0"
