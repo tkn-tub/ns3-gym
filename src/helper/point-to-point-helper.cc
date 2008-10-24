@@ -172,6 +172,7 @@ PointToPointHelper::Install (NodeContainer c)
   NS_ASSERT (c.GetN () == 2);
   return Install (c.Get (0), c.Get (1));
 }
+
 NetDeviceContainer 
 PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
 {
@@ -194,6 +195,18 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
   container.Add (devB);
 
   return container;
+}
+
+void 
+PointToPointHelper::InstallStar (Ptr<Node> hub, NodeContainer spokes, 
+                                 NetDeviceContainer& hubDevices, NetDeviceContainer& spokeDevices)
+{
+  for (uint32_t i = 0; i < spokes.GetN (); ++i)
+    {
+      NetDeviceContainer nd = Install (hub, spokes.Get (i));
+      hubDevices.Add (nd.Get (0));
+      spokeDevices.Add (nd.Get (1));
+    }
 }
 
 void 
