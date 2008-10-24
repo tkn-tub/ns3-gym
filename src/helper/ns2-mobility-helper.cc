@@ -120,14 +120,17 @@ Ns2MobilityHelper::LayoutObjectStore (const ObjectStore &store) const
 	    }
 	  else 
 	    {
-	      double at = ReadDouble (line.substr (8, startNodeId - 17));
+              std::string::size_type atEnd = line.find_first_of (" ", 8);
+              std::string atStr = line.substr (8, atEnd-8);
+              NS_LOG_DEBUG (atStr);
+	      double at = ReadDouble (atStr);
 	      std::string::size_type xSpeedEnd = line.find_first_of (" ", endNodeId + 10);
 	      std::string::size_type ySpeedEnd = line.find_first_of (" ", xSpeedEnd + 1);
 	      double xSpeed = ReadDouble (line.substr (endNodeId + 10, xSpeedEnd - endNodeId - 10));
 	      double ySpeed = ReadDouble (line.substr (xSpeedEnd + 1, ySpeedEnd - xSpeedEnd - 1));
 	      double zSpeed = ReadDouble (line.substr (ySpeedEnd + 1, std::string::npos));
 	      NS_LOG_DEBUG ("at=" << at << "xSpeed=" << xSpeed << ", ySpeed=" << ySpeed << ", zSpeed=" << zSpeed);
-	      Simulator::Schedule (Seconds (at), &StaticSpeedMobilityModel::SetSpeed, model,
+	      Simulator::Schedule (Seconds (at), &StaticSpeedMobilityModel::SetVelocity, model,
 				   Vector (xSpeed, ySpeed, zSpeed));
 	    }
 	}
