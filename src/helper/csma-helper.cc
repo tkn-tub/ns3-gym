@@ -39,10 +39,10 @@ CsmaHelper::CsmaHelper ()
 
 void 
 CsmaHelper::SetQueue (std::string type,
-		      std::string n1, const AttributeValue &v1,
-		      std::string n2, const AttributeValue &v2,
-		      std::string n3, const AttributeValue &v3,
-		      std::string n4, const AttributeValue &v4)
+                      std::string n1, const AttributeValue &v1,
+                      std::string n2, const AttributeValue &v2,
+                      std::string n3, const AttributeValue &v3,
+                      std::string n4, const AttributeValue &v4)
 {
   m_queueFactory.SetTypeId (type);
   m_queueFactory.Set (n1, v1);
@@ -106,9 +106,9 @@ CsmaHelper::EnablePcap (std::string filename, NodeContainer n)
     {
       Ptr<Node> node = *i;
       for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-	{
-	  devs.Add (node->GetDevice (j));
-	}
+        {
+          devs.Add (node->GetDevice (j));
+        }
     }
   EnablePcap (filename, devs);
 }
@@ -153,9 +153,9 @@ CsmaHelper::EnableAscii (std::ostream &os, NodeContainer n)
     {
       Ptr<Node> node = *i;
       for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-	{
-	  devs.Add (node->GetDevice (j));
-	}
+        {
+          devs.Add (node->GetDevice (j));
+        }
     }
   EnableAscii (os, devs);
 }
