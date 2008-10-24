@@ -149,6 +149,13 @@ void
 WifiHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid)
 {
   std::ostringstream oss;
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/";
+  Config::MatchContainer matches = Config::LookupMatches (oss.str ());
+  if (matches.GetN () == 0)
+    {
+      return;
+    }
+  oss.str ("");
   oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
   Ptr<PcapWriter> pcap = Create<PcapWriter> ();
   pcap->Open (oss.str ());
