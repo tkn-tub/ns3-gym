@@ -39,4 +39,8 @@ def build(bld):
                                  ['core', 'simulator', 'mobility', 'wifi'])
     obj.source = 'main-propagation-loss.cc'
 
+    obj = bld.create_ns3_program('main-ns2-mob',
+                                 ['core', 'simulator', 'mobility', 'wifi'])
+    obj.source = 'main-ns2-mob.cc'
+
 
