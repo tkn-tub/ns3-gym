@@ -76,6 +76,10 @@ def build(bld):
                                  ['point-to-point', 'internet-stack'])
     obj.source = 'star.cc'
 
+    obj = bld.create_ns3_program('csma-star',
+                                 ['csma', 'internet-stack'])
+    obj.source = 'csma-star.cc'
+
     obj = bld.create_ns3_program('wifi-adhoc',
                                  ['core', 'simulator', 'mobility', 'wifi'])
     obj.source = 'wifi-adhoc.cc'

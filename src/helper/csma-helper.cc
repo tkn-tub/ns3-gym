@@ -200,6 +200,19 @@ CsmaHelper::Install (const NodeContainer &c, Ptr<CsmaChannel> channel)
 }
 
 void 
+CsmaHelper::InstallStar (Ptr<Node> hub, NodeContainer spokes, 
+                         NetDeviceContainer& hubDevices, NetDeviceContainer& spokeDevices)
+{
+  for (uint32_t i = 0; i < spokes.GetN (); ++i)
+    {
+      NodeContainer nodes (hub, spokes.Get (i));
+      NetDeviceContainer nd = Install (nodes);
+      hubDevices.Add (nd.Get (0));
+      spokeDevices.Add (nd.Get (1));
+    }
+}
+
+void 
 CsmaHelper::EnqueueEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
 {
   writer->WritePacket (packet);
