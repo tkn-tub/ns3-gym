@@ -141,13 +141,8 @@ public:
    * \param dataSent Callback for the event that data is sent from the
    *        underlying transport protocol.  This callback is passed a
    *        pointer to the socket, and the number of bytes sent.
-   * \returns whether or not this socket supports this callback.  Note 
-   *        that this is a non-standard socket call.  Some socket 
-   *        implementations in ns-3 may not support this call, so the
-   *        user should check this return value to confirm that the
-   *        callback is supported.
    */
-  bool SetDataSentCallback (Callback<void, Ptr<Socket>, 
+  void SetDataSentCallback (Callback<void, Ptr<Socket>, 
                             uint32_t> dataSent);
   /**
    * \brief Notify application when space in transmit buffer is added
@@ -222,7 +217,7 @@ public:
    * \param queueLimit maximum number of incoming request to queue
    * \returns 0 on success, -1 on error (in which case errno is set).
    */
-  virtual int Listen (uint32_t queueLimit) = 0;
+  virtual int Listen (void) = 0;
 
   /**
    * \brief Returns the number of bytes which can be sent in a single call
@@ -492,6 +487,10 @@ public:
    */
   int RecvFrom (uint8_t* buf, uint32_t size, uint32_t flags,
                 Address &fromAddress);
+    /**
+   * \returns the address name  this socket is associated with.
+   */
+  virtual int GetSockName (Address &address) const = 0; 
  
 protected:
   void NotifyConnectionSucceeded (void);

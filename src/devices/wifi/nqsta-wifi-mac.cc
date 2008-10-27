@@ -479,7 +479,10 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
     } 
   else if (hdr->IsData ()) 
     {
-      ForwardUp (packet, hdr->GetAddr2 (), hdr->GetAddr1 ());
+      if (hdr->GetAddr3 () != GetAddress ())
+        {
+          ForwardUp (packet, hdr->GetAddr3 (), hdr->GetAddr1 ());
+        }
     } 
   else if (hdr->IsProbeReq () ||
            hdr->IsAssocReq ()) 

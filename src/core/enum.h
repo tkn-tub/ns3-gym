@@ -41,6 +41,8 @@ public:
   EnumValue (int v);
   void Set (int v);
   int Get (void) const;
+  template <typename T>
+  bool GetAccessor (T &v) const;
 
   virtual Ptr<AttributeValue> Copy (void) const;
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
@@ -49,6 +51,13 @@ public:
 private:
   int m_v;
 };
+
+template <typename T>
+bool EnumValue::GetAccessor (T &v) const
+{
+  v = T (m_v);
+  return true;
+}
 
 class EnumChecker : public AttributeChecker
 {

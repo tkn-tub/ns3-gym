@@ -87,7 +87,7 @@ void PacketSink::StartApplication()    // Called at time specified by Start
     {
       m_socket = Socket::CreateSocket (GetNode(), m_tid);
       m_socket->Bind (m_local);
-      m_socket->Listen (0);
+      m_socket->Listen ();
     }
 
   m_socket->SetRecvCallback (MakeCallback(&PacketSink::HandleRead, this));

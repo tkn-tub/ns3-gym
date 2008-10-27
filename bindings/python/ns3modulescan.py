@@ -48,9 +48,6 @@ type_annotations = {
         'decref_method': 'Unref',
         'peekref_method': 'GetReferenceCount',
         },
-    '::ns3::PacketMetadata': {
-        'ignore': None,
-        },
     '::ns3::AttributeChecker': {
         'automatic_type_narrowing': 'true',
         'allow_subclassing': 'false',
@@ -73,7 +70,7 @@ type_annotations = {
         'params': {'info':{'transfer_ownership': 'false'}}
         },
     'static bool ns3::TypeId::LookupByNameFailSafe(std::string name, ns3::TypeId * tid) [member function]': {
-        'params': {'tid': {'transfer_ownership': 'false'}}
+        'ignore': None, # manually wrapped in 
         },
     'bool ns3::TraceSourceAccessor::ConnectWithoutContext(ns3::ObjectBase * obj, ns3::CallbackBase const & cb) const [member function]': {
         'params': {'obj': {'transfer_ownership':'false'}}

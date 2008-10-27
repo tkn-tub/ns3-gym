@@ -281,6 +281,16 @@ public:
   uint8_t const *PeekData (void) const;
 
   /**
+   * \param buffer a pointer to a byte buffer where the packet data 
+   *        should be copied.
+   * \param size the size of the byte buffer. 
+   * \returns the number of bytes read from the packet
+   *
+   * No more than \b size bytes will be copied by this function.
+   */
+  uint32_t CopyData (uint8_t *buffer, uint32_t size) const;
+
+  /**
    * A packet is allocated a new uid when it is created
    * empty or with zero-filled payload.
    *
@@ -437,6 +447,7 @@ std::ostream& operator<< (std::ostream& os, const Packet &packet);
  *   - ns3::Packet::CreateFragment
  *   - ns3::Packet::RemoveAtStart
  *   - ns3::Packet::RemoveAtEnd
+ *   - ns3::Packet::CopyData
  *
  * Dirty operations will always be slower than non-dirty operations,
  * sometimes by several orders of magnitude. However, even the

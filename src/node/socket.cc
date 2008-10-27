@@ -71,12 +71,11 @@ Socket::SetAcceptCallback (
   m_newConnectionCreated = newConnectionCreated;
 }
 
-bool 
+void
 Socket::SetDataSentCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_dataSent = dataSent;
-  return true;
 }
 
 void
@@ -98,12 +97,6 @@ Socket::Send (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION_NOARGS ();
   return Send (p, 0);
-}
-
-
-int Socket::Listen (uint32_t queueLimit)
-{
-  return 0; //XXX the base class version does nothing
 }
 
 int 

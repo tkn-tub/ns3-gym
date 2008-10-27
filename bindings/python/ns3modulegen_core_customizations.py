@@ -424,6 +424,7 @@ static int %(WRAPPER_NAME)s (%(PYSTRUCT)s *self, PyObject *args, PyObject *kwarg
         return -1;
     }
     %(CONSTRUCT_CODE)s
+    PyNs3ObjectBase_wrapper_registry[(void *) self->obj] = (PyObject *) self;
     return 0;
 }
 ''' % dict(WRAPPER_NAME=wrapper_name, PYSTRUCT=cls.pystruct, CLASS_NAME=cls.full_name,
@@ -516,4 +517,11 @@ def Attribute_customizations(module):
                             and param.default_value is not None \
                             and param.default_value_type is None:
                         param.default_value_type = 'ns3::EmptyAttributeValue'
+
+
+def TypeId_customizations(module):
+    TypeId = module['ns3::TypeId']
+    TypeId.add_custom_method_wrapper("LookupByNameFailSafe", "_wrap_TypeId_LookupByNameFailSafe",
+                                     flags=["METH_VARARGS", "METH_KEYWORDS", "METH_STATIC"])
+    
 

@@ -49,7 +49,7 @@ public:
    * Set the current speed now to (dx,dy,dz)
    * Unit is meters/s
    */
-  void SetSpeed (const Vector &speed);
+  void SetVelocity (const Vector &speed);
 private:
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);

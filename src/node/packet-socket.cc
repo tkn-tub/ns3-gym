@@ -57,6 +57,8 @@ PacketSocket::PacketSocket () : m_rxAvailable (0)
   m_shutdownSend = false;
   m_shutdownRecv = false;
   m_errno = ERROR_NOTERROR;
+  m_isSingleDevice = false;
+  m_device = 0;
 }
 
 void 
@@ -222,7 +224,7 @@ PacketSocket::Connect(const Address &ad)
   return -1;
 }
 int 
-PacketSocket::Listen(uint32_t queueLimit)
+PacketSocket::Listen(void)
 {
   m_errno = Socket::ERROR_OPNOTSUPP;
   return -1;
@@ -329,6 +331,7 @@ PacketSocket::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
   if (!error)
     {
       NotifyDataSent (p->GetSize ());
+      NotifySend (GetTxAvailable ());
     }
 
   if (error)
@@ -426,6 +429,29 @@ PacketSocket::RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress)
       fromAddress = tag.GetAddress ();
     }
   return packet;
+}
+
+int
+PacketSocket::GetSockName (Address &address) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  PacketSocketAddress ad = PacketSocketAddress::ConvertFrom(address);
+  
+  ad.SetProtocol (m_protocol);
+  if (m_isSingleDevice)
+    {
+      Ptr<NetDevice> device = m_node->GetDevice (ad.GetSingleDevice ());
+      ad.SetPhysicalAddress(device->GetAddress());      
+      ad.SetSingleDevice (m_device);
+    }
+  else
+    {
+      ad.SetPhysicalAddress(Address());   
+      ad.SetAllDevices ();
+    }  
+  address = ad;
+  
+  return 0;
 }
 
 }//namespace ns3

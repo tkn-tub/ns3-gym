@@ -48,6 +48,12 @@ MakeAccessorHelper (T1 a1, T2 a2);
 
 namespace ns3 {
 
+template <typename T>
+struct AccessorTrait
+{
+  typedef typename TypeTraits<typename TypeTraits<T>::ReferencedType>::NonConstType Result;
+};
+
 template <typename T, typename U>
 class AccessorHelper : public AttributeAccessor
 {
@@ -100,7 +106,13 @@ DoMakeAccessorHelperOne (U T::*memberVariable)
 	{}
     private:
       virtual bool DoSet (T *object, const V *v) const {
-	(object->*m_memberVariable) = U (v->Get ());
+        typename AccessorTrait<U>::Result tmp;
+        bool ok = v->GetAccessor (tmp);
+        if (!ok)
+          {
+            return false;
+          }
+	(object->*m_memberVariable) = tmp;
 	return true;
       }
       virtual bool DoGet (const T *object, V *v) const {
@@ -163,7 +175,13 @@ DoMakeAccessorHelperOne (void (T::*setter) (U))
 	{}
     private:
       virtual bool DoSet (T *object, const V *v) const {
-	(object->*m_setter) (U (v->Get ()));
+        typename AccessorTrait<U>::Result tmp;
+        bool ok = v->GetAccessor (tmp);
+        if (!ok)
+          {
+            return false;
+          }
+	(object->*m_setter) (tmp);
 	return true;
       }
       virtual bool DoGet (const T *object, V *v) const {
@@ -196,7 +214,13 @@ DoMakeAccessorHelperTwo (void (T::*setter) (U),
 	{}
     private:
       virtual bool DoSet (T *object, const W *v) const {
-	(object->*m_setter) (v->Get ());
+        typename AccessorTrait<U>::Result tmp;
+        bool ok = v->GetAccessor (tmp);
+        if (!ok)
+          {
+            return false;
+          }
+	(object->*m_setter) (tmp);
 	return true;
       }
       virtual bool DoGet (const T *object, W *v) const {
@@ -239,7 +263,13 @@ DoMakeAccessorHelperTwo (bool (T::*setter) (U),
 	{}
     private:
       virtual bool DoSet (T *object, const W *v) const {
-	bool ok = (object->*m_setter) (v->Get ());
+        typename AccessorTrait<U>::Result tmp;
+        bool ok = v->GetAccessor (tmp);
+        if (!ok)
+          {
+            return false;
+          }
+	ok = (object->*m_setter) (tmp);
         return ok;
       }
       virtual bool DoGet (const T *object, W *v) const {

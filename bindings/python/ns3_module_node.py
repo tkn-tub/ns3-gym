@@ -1251,9 +1251,9 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('SetAcceptCallback', 
                    'void', 
                    [param('ns3::Callback< bool, ns3::Ptr< ns3::Socket >, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'connectionRequest'), param('ns3::Callback< void, ns3::Ptr< ns3::Socket >, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'newConnectionCreated')])
-    ## socket.h: bool ns3::Socket::SetDataSentCallback(ns3::Callback<void, ns3::Ptr<ns3::Socket>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty> dataSent) [member function]
+    ## socket.h: void ns3::Socket::SetDataSentCallback(ns3::Callback<void, ns3::Ptr<ns3::Socket>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty> dataSent) [member function]
     cls.add_method('SetDataSentCallback', 
-                   'bool', 
+                   'void', 
                    [param('ns3::Callback< void, ns3::Ptr< ns3::Socket >, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'dataSent')])
     ## socket.h: void ns3::Socket::SetSendCallback(ns3::Callback<void, ns3::Ptr<ns3::Socket>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty> sendCb) [member function]
     cls.add_method('SetSendCallback', 
@@ -1293,10 +1293,10 @@ def register_Ns3Socket_methods(root_module, cls):
                    'int', 
                    [param('ns3::Address const &', 'address')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## socket.h: int ns3::Socket::Listen(uint32_t queueLimit) [member function]
+    ## socket.h: int ns3::Socket::Listen() [member function]
     cls.add_method('Listen', 
                    'int', 
-                   [param('uint32_t', 'queueLimit')], 
+                   [], 
                    is_pure_virtual=True, is_virtual=True)
     ## socket.h: uint32_t ns3::Socket::GetTxAvailable() const [member function]
     cls.add_method('GetTxAvailable', 
@@ -1356,6 +1356,11 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('RecvFrom', 
                    'int', 
                    [param('uint8_t *', 'buf'), param('uint32_t', 'size'), param('uint32_t', 'flags'), param('ns3::Address &', 'fromAddress')])
+    ## socket.h: int ns3::Socket::GetSockName(ns3::Address & address) const [member function]
+    cls.add_method('GetSockName', 
+                   'int', 
+                   [param('ns3::Address &', 'address')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## socket.h: void ns3::Socket::NotifyConnectionSucceeded() [member function]
     cls.add_method('NotifyConnectionSucceeded', 
                    'void', 
@@ -2581,18 +2586,10 @@ def register_Ns3SimpleNetDevice_methods(root_module, cls):
 
 def register_functions(root_module):
     module = root_module
-    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Mac48Address & ad) [free function]
-    module.add_function('ReadFrom', 
-                        'void', 
-                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Mac48Address &', 'ad')])
-    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Address & ad, uint32_t len) [free function]
-    module.add_function('ReadFrom', 
-                        'void', 
-                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Address &', 'ad'), param('uint32_t', 'len')])
-    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Ipv4Address & ad) [free function]
-    module.add_function('ReadFrom', 
-                        'void', 
-                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Ipv4Address &', 'ad')])
+    ## mac48-address.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeMac48AddressChecker() [free function]
+    module.add_function('MakeMac48AddressChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
     ## ipv4-address.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeIpv4AddressChecker() [free function]
     module.add_function('MakeIpv4AddressChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
@@ -2617,10 +2614,18 @@ def register_functions(root_module):
     module.add_function('MakeIpv4MaskChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
-    ## mac48-address.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeMac48AddressChecker() [free function]
-    module.add_function('MakeMac48AddressChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [])
+    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Mac48Address & ad) [free function]
+    module.add_function('ReadFrom', 
+                        'void', 
+                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Mac48Address &', 'ad')])
+    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Address & ad, uint32_t len) [free function]
+    module.add_function('ReadFrom', 
+                        'void', 
+                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Address &', 'ad'), param('uint32_t', 'len')])
+    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Ipv4Address & ad) [free function]
+    module.add_function('ReadFrom', 
+                        'void', 
+                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Ipv4Address &', 'ad')])
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)

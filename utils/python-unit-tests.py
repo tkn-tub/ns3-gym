@@ -57,7 +57,6 @@ class TestSimulator(unittest.TestCase):
         self.assertEqual(v1, ns3.Seconds(50))
 
     def testConfig(self):
-        ns3.Config.Set("ns3::OnOffApplication::PacketSize", ns3.UintegerValue(123))
         ns3.Config.SetDefault("ns3::OnOffApplication::PacketSize", ns3.UintegerValue(123))
         # hm.. no Config.Get?
 
@@ -117,6 +116,12 @@ class TestSimulator(unittest.TestCase):
         c2 = csma.GetChannel()
 
         self.assert_(c1 is c2)
+
+    def testTypeId(self):
+        typeId1 = ns3.TypeId.LookupByNameFailSafe("ns3::UdpSocketFactory")
+        self.assertEqual(typeId1.GetName (), "ns3::UdpSocketFactory")
+        
+        self.assertRaises(KeyError, ns3.TypeId.LookupByNameFailSafe, "__InvalidTypeName__")
 
 if __name__ == '__main__':
     unittest.main()

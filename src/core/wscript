@@ -72,6 +72,7 @@ def build(bld):
         'traced-callback.cc',
         'trace-source-accessor.cc',
         'config.cc',
+        'callback.cc',
         ]
     core.uselib = 'RT'
 
@@ -115,7 +116,8 @@ def build(bld):
         'trace-source-accessor.h',
         'config.h',
         'object-vector.h',
-        'deprecated.h'
+        'deprecated.h',
+        'abort.h',
         ]
 
     if sys.platform == 'win32':

@@ -39,7 +39,6 @@ EnumValue::Get (void) const
 {
   return m_v;
 }
-
 Ptr<AttributeValue>
 EnumValue::Copy (void) const
 {

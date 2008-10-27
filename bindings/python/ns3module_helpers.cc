@@ -188,3 +188,35 @@ error:
     return NULL;
 }
 
+
+PyObject *
+_wrap_TypeId_LookupByNameFailSafe(PyNs3TypeId *PYBINDGEN_UNUSED(dummy), PyObject *args, PyObject *kwargs,
+                                  PyObject **return_exception)
+{
+    bool ok;
+    const char *name;
+    Py_ssize_t name_len;
+    ns3::TypeId tid;
+    PyNs3TypeId *py_tid;
+    const char *keywords[] = {"name", NULL};
+    
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, (char *) "s#", (char **) keywords, &name, &name_len)) {
+        PyObject *exc_type, *traceback;
+        PyErr_Fetch(&exc_type, return_exception, &traceback);
+        Py_XDECREF(exc_type);
+        Py_XDECREF(traceback);
+        return NULL;
+    }
+    ok = ns3::TypeId::LookupByNameFailSafe(std::string(name, name_len), &tid);
+    if (!ok)
+    {
+        PyErr_Format(PyExc_KeyError, "The ns3 type with name `%s' is not registered", name);
+        return NULL;
+    }
+
+    py_tid = PyObject_New(PyNs3TypeId, &PyNs3TypeId_Type);
+    py_tid->obj = new ns3::TypeId (tid);
+    PyNs3TypeId_wrapper_registry[(void *) py_tid->obj] = (PyObject *) py_tid;    
+    
+    return (PyObject *) py_tid;
+}

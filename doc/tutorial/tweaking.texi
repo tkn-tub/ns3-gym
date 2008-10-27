@@ -180,7 +180,7 @@ actually a class name, and there is a single colon there instead of a double
 colon to remind you in a relatively subtle way to conceptually separate the 
 logging component name from the class name.
 
-It turns out that in come cases, it can be hard to determine which method
+It turns out that in some cases, it can be hard to determine which method
 actually generates a log message.  If you look in the text above, you may
 wonder where the string ``@code{Received 1024 bytes from 10.1.1.2}'' comes
 from.  You can resolve this by ORing the @code{prefix_func} level into the
@@ -625,7 +625,7 @@ need to hook the value into the parser.  We do this by adding a call to
 start with the following code,
 
 @verbatim
-    int
+  int
   main (int argc, char *argv[])
   {
     uint32_t nPackets = 1;

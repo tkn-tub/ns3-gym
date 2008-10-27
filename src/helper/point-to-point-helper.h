@@ -57,10 +57,10 @@ public:
    * PointToPointNetDevice created through PointToPointHelper::Install.
    */
   void SetQueue (std::string type,
-		 std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-		 std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-		 std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-		 std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue ());
+                 std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                 std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                 std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                 std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue ());
 
   /**
    * \param name the name of the attribute to set
@@ -170,6 +170,7 @@ public:
    * ns3::NetDevice with the ns3::Node and ns3::PointToPointChannel.
    */
   NetDeviceContainer Install (NodeContainer c);
+
   /**
    * \param a first node
    * \param b second node
@@ -177,6 +178,34 @@ public:
    * Saves you from having to construct a temporary NodeContainer.
    */
   NetDeviceContainer Install (Ptr<Node> a, Ptr<Node> b);
+
+  /**
+   * \brief Make a star network topology.
+   *
+   * Given a pointer to a node that  will become the hub of the star, and a 
+   * NodeContainer containing pointers to the nodes that will become the 
+   * spokes; we construct point to point net devices on the hub (corresponding 
+   * to the spokes) and store them in the hubDevices NetDeviceContainer.  We 
+   * add a net device to each spoke node and store them in the spokeDevices 
+   * NetDeviceContainer.  A point-to-point channel is created for each spoke.
+   *
+   * The ordering of the devices in the hubDevices container is according to
+   * the order of the spokes container -- that is, hubDevices[0] will be the
+   * net device used on the hub that talks to spokes[0].  the container entry
+   * spokeDevices[0] will have the device that hubDevices[0] talks to -- those
+   * two devices are the ones that connect hub to spokes[0].
+   *
+   * \param hub The central node of the star network
+   * \param spokes A NodeContainer of the nodes that will be the spoke (leaf)
+   *               nodes
+   * \param hubDevices A NetDeviceContainer that will be filled with pointers
+   *                   to the point-to-point net devices created on the hub.
+   * \param spokeDevices A NetDeviceContainer that will be filled with pointers
+   *                    to the point-to-point net devices created on each of 
+   *                    the spokes.
+   */
+  void InstallStar (Ptr<Node> hub, NodeContainer spokes, 
+                    NetDeviceContainer& hubDevices, NetDeviceContainer& spokeDevices);
 
 private:
   void EnablePcap (Ptr<Node> node, Ptr<NetDevice> device, Ptr<Queue> queue);
