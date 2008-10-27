@@ -298,10 +298,6 @@ int
 TcpSocketImpl::Close (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if (m_state == CLOSED) 
-    {
-      return -1;
-    }
   if (m_pendingData && m_pendingData->Size() != 0)
     { // App close with pending data must wait until all data transmitted
       m_closeOnEmpty = true;
