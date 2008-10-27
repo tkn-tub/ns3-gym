@@ -27,8 +27,6 @@ def register_types(module):
     module.add_enum('State', ['RUNNING', 'EXPIRED', 'SUSPENDED'], outer_class=root_module['ns3::Timer'])
     ## timer-impl.h: ns3::TimerImpl [class]
     module.add_class('TimerImpl', allow_subclassing=True)
-    ## wallclock-simulator.h: ns3::WallclockSimulator [class]
-    module.add_class('WallclockSimulator', is_singleton=True)
     ## watchdog.h: ns3::Watchdog [class]
     module.add_class('Watchdog')
     ## scheduler.h: ns3::Scheduler [class]
@@ -113,7 +111,6 @@ def register_methods(root_module):
     register_Ns3TimeSquare_methods(root_module, root_module['ns3::TimeSquare'])
     register_Ns3Timer_methods(root_module, root_module['ns3::Timer'])
     register_Ns3TimerImpl_methods(root_module, root_module['ns3::TimerImpl'])
-    register_Ns3WallclockSimulator_methods(root_module, root_module['ns3::WallclockSimulator'])
     register_Ns3Watchdog_methods(root_module, root_module['ns3::Watchdog'])
     register_Ns3Scheduler_methods(root_module, root_module['ns3::Scheduler'])
     register_Ns3SchedulerEvent_methods(root_module, root_module['ns3::Scheduler::Event'])
@@ -263,6 +260,11 @@ def register_Ns3Simulator_methods(root_module, cls):
     cls.add_method('SetImplementation', 
                    'void', 
                    [param('ns3::Ptr< ns3::SimulatorImpl >', 'impl')], 
+                   is_static=True)
+    ## simulator.h: static ns3::Ptr<ns3::SimulatorImpl> ns3::Simulator::GetImplementation() [member function]
+    cls.add_method('GetImplementation', 
+                   'ns3::Ptr< ns3::SimulatorImpl >', 
+                   [], 
                    is_static=True)
     ## simulator.h: static void ns3::Simulator::SetScheduler(ns3::Ptr<ns3::Scheduler> scheduler) [member function]
     cls.add_method('SetScheduler', 
@@ -665,21 +667,6 @@ def register_Ns3TimerImpl_methods(root_module, cls):
                    is_pure_virtual=True, is_virtual=True)
     return
 
-def register_Ns3WallclockSimulator_methods(root_module, cls):
-    ## wallclock-simulator.h: ns3::WallclockSimulator::WallclockSimulator(ns3::WallclockSimulator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::WallclockSimulator const &', 'arg0')])
-    ## wallclock-simulator.h: static void ns3::WallclockSimulator::Schedule(ns3::Time const & time, void (*)(  ) * f) [member function]
-    cls.add_method('Schedule', 
-                   'void', 
-                   [param('ns3::Time const &', 'time'), param('void ( * ) (  ) *', 'f')], 
-                   is_static=True)
-    ## wallclock-simulator.h: static void ns3::WallclockSimulator::ScheduleNow(void (*)(  ) * f) [member function]
-    cls.add_method('ScheduleNow', 
-                   'void', 
-                   [param('void ( * ) (  ) *', 'f')], 
-                   is_static=True)
-    return
-
 def register_Ns3Watchdog_methods(root_module, cls):
     ## watchdog.h: ns3::Watchdog::Watchdog(ns3::Watchdog const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Watchdog const &', 'arg0')])
@@ -847,16 +834,6 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    'ns3::Ptr< ns3::Scheduler >', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## simulator-impl.h: void ns3::SimulatorImpl::ScheduleWallclock(ns3::Time const & time, ns3::EventImpl * event) [member function]
-    cls.add_method('ScheduleWallclock', 
-                   'void', 
-                   [param('ns3::Time const &', 'time'), param('ns3::EventImpl *', 'event')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## simulator-impl.h: void ns3::SimulatorImpl::ScheduleWallclockNow(ns3::EventImpl * event) [member function]
-    cls.add_method('ScheduleWallclockNow', 
-                   'void', 
-                   [param('ns3::EventImpl *', 'event')], 
-                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3Synchronizer_methods(root_module, cls):
@@ -1194,16 +1171,6 @@ def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
                    'ns3::Ptr< ns3::Scheduler >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## default-simulator-impl.h: void ns3::DefaultSimulatorImpl::ScheduleWallclock(ns3::Time const & time, ns3::EventImpl * event) [member function]
-    cls.add_method('ScheduleWallclock', 
-                   'void', 
-                   [param('ns3::Time const &', 'time'), param('ns3::EventImpl *', 'event')], 
-                   is_virtual=True)
-    ## default-simulator-impl.h: void ns3::DefaultSimulatorImpl::ScheduleWallclockNow(ns3::EventImpl * event) [member function]
-    cls.add_method('ScheduleWallclockNow', 
-                   'void', 
-                   [param('ns3::EventImpl *', 'event')], 
-                   is_virtual=True)
     return
 
 def register_Ns3HeapScheduler_methods(root_module, cls):
@@ -1402,16 +1369,14 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
                    'ns3::Ptr< ns3::Scheduler >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::ScheduleWallclock(ns3::Time const & time, ns3::EventImpl * event) [member function]
-    cls.add_method('ScheduleWallclock', 
+    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::ScheduleRealtime(ns3::Time const & time, ns3::EventImpl * event) [member function]
+    cls.add_method('ScheduleRealtime', 
                    'void', 
-                   [param('ns3::Time const &', 'time'), param('ns3::EventImpl *', 'event')], 
-                   is_virtual=True)
-    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::ScheduleWallclockNow(ns3::EventImpl * event) [member function]
-    cls.add_method('ScheduleWallclockNow', 
+                   [param('ns3::Time const &', 'time'), param('ns3::EventImpl *', 'event')])
+    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::ScheduleRealtimeNow(ns3::EventImpl * event) [member function]
+    cls.add_method('ScheduleRealtimeNow', 
                    'void', 
-                   [param('ns3::EventImpl *', 'event')], 
-                   is_virtual=True)
+                   [param('ns3::EventImpl *', 'event')])
     ## realtime-simulator-impl.h: ns3::Time ns3::RealtimeSimulatorImpl::RealtimeNow() const [member function]
     cls.add_method('RealtimeNow', 
                    'ns3::Time', 

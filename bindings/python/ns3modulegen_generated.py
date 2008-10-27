@@ -274,6 +274,7 @@ def register_types_ns3_TimeStepPrecision(module):
 def register_types_ns3_Config(module):
     root_module = module.get_root()
     
+    module.add_container('std::vector< std::string >', 'std::string', container_type='vector')
 
 def register_types_ns3_olsr(module):
     root_module = module.get_root()

@@ -4,6 +4,7 @@
 #include "ns3/helper-module.h"
 #include "ns3/mobility-module.h"
 #include <iostream>
+#include <fstream>
 
 using namespace ns3;
 

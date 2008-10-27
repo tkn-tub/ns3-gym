@@ -1,13 +1,14 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 #include "ns3/simulator.h"
-#include "ns3/wallclock-simulator.h"
+#include "ns3/realtime-simulator-impl.h"
 #include "ns3/nstime.h"
 #include "ns3/log.h"
 #include "ns3/system-thread.h"
 #include "ns3/string.h"
 #include "ns3/config.h"
 #include "ns3/global-value.h"
+#include "ns3/ptr.h"
 
 #include <unistd.h>
 #include <sys/time.h>
@@ -18,7 +19,7 @@ NS_LOG_COMPONENT_DEFINE ("TestSync");
 
 bool gFirstRun = false;
 
-  void 
+void 
 inserted_function (void)
 {
   NS_ASSERT (gFirstRun);
@@ -26,7 +27,7 @@ inserted_function (void)
     Simulator::Now ().GetSeconds () << " s");
 }
 
-  void 
+void 
 background_function (void)
 {
   NS_ASSERT (gFirstRun);
@@ -34,7 +35,7 @@ background_function (void)
     Simulator::Now ().GetSeconds () << " s");
 }
 
-  void 
+void 
 first_function (void)
 {
   NS_LOG_UNCOND ("first_function() called at " << 
@@ -46,8 +47,6 @@ class FakeNetDevice
 {
 public:
   FakeNetDevice ();
-  void Doit1 (void);
-  void Doit2 (void);
   void Doit3 (void);
   void Doit4 (void);
 };
@@ -57,37 +56,7 @@ FakeNetDevice::FakeNetDevice ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-  void
-FakeNetDevice::Doit1 (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  sleep (1);
-  for (uint32_t i = 0.001; i < 10000; ++i)
-    {
-      // 
-      // Exercise the relative now path
-      //
-      Simulator::ScheduleNow (&inserted_function);
-      usleep (1000);
-    }
-}
-
-  void
-FakeNetDevice::Doit2 (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  sleep (1);
-  for (uint32_t i = 0.001; i < 10000; ++i)
-    {
-      //
-      // Exercise the relative schedule path
-      //
-      Simulator::Schedule (Seconds (0), &inserted_function);
-      usleep (1000);
-    }
-}
-
-  void
+void
 FakeNetDevice::Doit3 (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -97,12 +66,12 @@ FakeNetDevice::Doit3 (void)
       //
       // Exercise the realtime relative now path
       //
-      WallclockSimulator::ScheduleNow (&inserted_function);
+      DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ())->ScheduleRealtimeNow (MakeEvent (&inserted_function));
       usleep (1000);
     }
 }
 
-  void
+void
 FakeNetDevice::Doit4 (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -112,12 +81,12 @@ FakeNetDevice::Doit4 (void)
       //
       // Exercise the realtime relative schedule path
       //
-      WallclockSimulator::Schedule (Seconds (0), &inserted_function);
+      DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ())->ScheduleRealtime (Seconds (0), MakeEvent (&inserted_function));
       usleep (1000);
     }
 }
 
-  void 
+void 
 test (void)
 {
   GlobalValue::Bind ("SimulatorImplementationType", 
@@ -128,7 +97,7 @@ test (void)
   // 
   // Make sure ScheduleNow works when the system isn't running
   //
-  WallclockSimulator::ScheduleNow(&first_function);
+  DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ())->ScheduleRealtimeNow(MakeEvent (&first_function));
 
   // 
   // drive the progression of m_currentTs at a ten millisecond rate
@@ -137,14 +106,6 @@ test (void)
     {
       Simulator::Schedule (Seconds (d), &background_function);
     }
-
-  Ptr<SystemThread> st1 = Create<SystemThread> (
-    MakeCallback (&FakeNetDevice::Doit1, &fnd));
-  st1->Start ();
-
-  Ptr<SystemThread> st2 = Create<SystemThread> (
-    MakeCallback (&FakeNetDevice::Doit2, &fnd));
-  st2->Start ();
 
   Ptr<SystemThread> st3 = Create<SystemThread> (
     MakeCallback (&FakeNetDevice::Doit3, &fnd));
@@ -156,17 +117,15 @@ test (void)
 
   Simulator::Stop (Seconds (15.0));
   Simulator::Run ();
-  st1->Join ();
-  st2->Join ();
   st3->Join ();
   st4->Join ();
   Simulator::Destroy ();
 }
 
-  int
+int
 main (int argc, char *argv[])
 {
-  for (;;)
+  while (true)
     {
       test ();
     }

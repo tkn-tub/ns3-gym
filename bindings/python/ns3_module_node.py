@@ -2586,10 +2586,18 @@ def register_Ns3SimpleNetDevice_methods(root_module, cls):
 
 def register_functions(root_module):
     module = root_module
-    ## mac48-address.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeMac48AddressChecker() [free function]
-    module.add_function('MakeMac48AddressChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [])
+    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Mac48Address & ad) [free function]
+    module.add_function('ReadFrom', 
+                        'void', 
+                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Mac48Address &', 'ad')])
+    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Address & ad, uint32_t len) [free function]
+    module.add_function('ReadFrom', 
+                        'void', 
+                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Address &', 'ad'), param('uint32_t', 'len')])
+    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Ipv4Address & ad) [free function]
+    module.add_function('ReadFrom', 
+                        'void', 
+                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Ipv4Address &', 'ad')])
     ## ipv4-address.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeIpv4AddressChecker() [free function]
     module.add_function('MakeIpv4AddressChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
@@ -2614,18 +2622,10 @@ def register_functions(root_module):
     module.add_function('MakeIpv4MaskChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
-    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Mac48Address & ad) [free function]
-    module.add_function('ReadFrom', 
-                        'void', 
-                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Mac48Address &', 'ad')])
-    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Address & ad, uint32_t len) [free function]
-    module.add_function('ReadFrom', 
-                        'void', 
-                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Address &', 'ad'), param('uint32_t', 'len')])
-    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Ipv4Address & ad) [free function]
-    module.add_function('ReadFrom', 
-                        'void', 
-                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Ipv4Address &', 'ad')])
+    ## mac48-address.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeMac48AddressChecker() [free function]
+    module.add_function('MakeMac48AddressChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)

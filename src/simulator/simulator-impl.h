@@ -52,8 +52,6 @@ public:
   virtual Time GetMaximumSimulationTime (void) const = 0;
   virtual void SetScheduler (Ptr<Scheduler> scheduler) = 0;
   virtual Ptr<Scheduler> GetScheduler (void) const = 0;
-  virtual void ScheduleWallclock (Time const &time, EventImpl *event) = 0;
-  virtual void ScheduleWallclockNow (EventImpl *event) = 0;
 };
 
 } // namespace ns3

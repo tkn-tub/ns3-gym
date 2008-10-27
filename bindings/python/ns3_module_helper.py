@@ -237,6 +237,10 @@ def register_Ns3CsmaHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
                    [param('ns3::NodeContainer const &', 'c'), param('ns3::Ptr< ns3::CsmaChannel >', 'channel')])
+    ## csma-helper.h: void ns3::CsmaHelper::InstallStar(ns3::Ptr<ns3::Node> hub, ns3::NodeContainer spokes, ns3::NetDeviceContainer & hubDevices, ns3::NetDeviceContainer & spokeDevices) [member function]
+    cls.add_method('InstallStar', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'hub'), param('ns3::NodeContainer', 'spokes'), param('ns3::NetDeviceContainer &', 'hubDevices'), param('ns3::NetDeviceContainer &', 'spokeDevices')])
     return
 
 def register_Ns3InternetStackHelper_methods(root_module, cls):
@@ -287,6 +291,10 @@ def register_Ns3Ipv4InterfaceContainer_methods(root_module, cls):
     cls.add_constructor([param('ns3::Ipv4InterfaceContainer const &', 'arg0')])
     ## ipv4-interface-container.h: ns3::Ipv4InterfaceContainer::Ipv4InterfaceContainer() [constructor]
     cls.add_constructor([])
+    ## ipv4-interface-container.h: void ns3::Ipv4InterfaceContainer::Add(ns3::Ipv4InterfaceContainer other) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('ns3::Ipv4InterfaceContainer', 'other')])
     ## ipv4-interface-container.h: uint32_t ns3::Ipv4InterfaceContainer::GetN() const [member function]
     cls.add_method('GetN', 
                    'uint32_t', 
@@ -604,6 +612,10 @@ def register_Ns3PointToPointHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
                    [param('ns3::Ptr< ns3::Node >', 'a'), param('ns3::Ptr< ns3::Node >', 'b')])
+    ## point-to-point-helper.h: void ns3::PointToPointHelper::InstallStar(ns3::Ptr<ns3::Node> hub, ns3::NodeContainer spokes, ns3::NetDeviceContainer & hubDevices, ns3::NetDeviceContainer & spokeDevices) [member function]
+    cls.add_method('InstallStar', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'hub'), param('ns3::NodeContainer', 'spokes'), param('ns3::NetDeviceContainer &', 'hubDevices'), param('ns3::NetDeviceContainer &', 'spokeDevices')])
     return
 
 def register_Ns3StaticMulticastRouteHelper_methods(root_module, cls):

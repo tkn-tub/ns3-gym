@@ -316,17 +316,6 @@ DefaultSimulatorImpl::GetMaximumSimulationTime (void) const
   return TimeStep (0x7fffffffffffffffLL);
 }
 
-void 
-DefaultSimulatorImpl::ScheduleWallclock (Time const &time, EventImpl *event)
-{
-  NS_FATAL_ERROR ("not implemented");
-}
-void 
-DefaultSimulatorImpl::ScheduleWallclockNow (EventImpl *event)
-{
-  NS_FATAL_ERROR ("not implemented");
-}
-
 } // namespace ns3
 
 

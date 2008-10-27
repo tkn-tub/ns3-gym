@@ -59,8 +59,6 @@ public:
   virtual Time GetMaximumSimulationTime (void) const;
   virtual void SetScheduler (Ptr<Scheduler> scheduler);
   virtual Ptr<Scheduler> GetScheduler (void) const;
-  virtual void ScheduleWallclock (Time const &time, EventImpl *event);
-  virtual void ScheduleWallclockNow (EventImpl *event);
 
 private:
   void ProcessOneEvent (void);

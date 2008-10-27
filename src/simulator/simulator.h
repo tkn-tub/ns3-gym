@@ -71,6 +71,8 @@ public:
    */
   static void SetImplementation (Ptr<SimulatorImpl> impl);
 
+  static Ptr<SimulatorImpl> GetImplementation (void);
+
   /**
    * \param scheduler a new event scheduler
    *

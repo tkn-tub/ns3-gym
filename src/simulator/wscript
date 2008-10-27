@@ -76,7 +76,6 @@ def build(bld):
         'event-id.h',
         'event-impl.h',
         'simulator.h',
-        'wallclock-simulator.h',
         'simulator-impl.h',
         'default-simulator-impl.h',
         'scheduler.h',

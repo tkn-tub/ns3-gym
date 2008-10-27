@@ -19,7 +19,6 @@
  */
 
 #include "simulator.h"
-#include "wallclock-simulator.h"
 #include "simulator-impl.h"
 #include "default-simulator-impl.h"
 #include "realtime-simulator-impl.h"
@@ -286,35 +285,12 @@ Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
 {
   NS_FATAL_ERROR ("TODO");
 }
-
-
-void
-WallclockSimulator::Schedule (Time const &time, EventImpl *ev)
+Ptr<SimulatorImpl>
+Simulator::GetImplementation (void)
 {
-  NS_LOG_FUNCTION (time << ev);
-  return GetImpl ()->ScheduleWallclock (time, ev);
+  return GetImpl ();
 }
 
-void
-WallclockSimulator::ScheduleNow (EventImpl *ev)
-{
-  NS_LOG_FUNCTION (ev);
-  return GetImpl ()->ScheduleWallclockNow (ev);
-}
-
-void
-WallclockSimulator::Schedule (Time const &time, void (*f) (void))
-{
-  NS_LOG_FUNCTION (time << f);
-  return WallclockSimulator::Schedule (time, MakeEvent (f));
-}
-
-void
-WallclockSimulator::ScheduleNow (void (*f) (void))
-{
-  NS_LOG_FUNCTION (f);
-  return WallclockSimulator::ScheduleNow (MakeEvent (f));
-}
 
 
 } // namespace ns3
