@@ -12,6 +12,7 @@ import pproc as subprocess
 import Params
 import Object
 import ccroot
+import Task
 
 Params.g_autoconfig = 1
 
@@ -166,6 +167,10 @@ def set_options(opt):
                    help=('For regression testing, only run/generate the indicated regression tests, '
                          'specified as a comma separated list of test names'),
                    dest='regression_tests', type="string")
+    opt.add_option('--disable-sudo',
+                   help=('Do not attempt to use sudo to setup suid bits on ns3 executables.'),
+                   dest='disable_sudo', action='store_true',
+                   default=False)
 
     # options provided in a script in a subdirectory named "src"
     opt.sub_options('src')
@@ -275,6 +280,9 @@ def configure(conf):
     # we cannot run regression tests without diff
     conf.find_program('diff', var='DIFF')
 
+    # for suid bits
+    conf.find_program('sudo', var='SUDO')
+
     # we cannot pull regression traces without mercurial
     conf.find_program('hg', var='MERCURIAL')
 
@@ -287,6 +295,41 @@ def configure(conf):
             status = 'not enabled (%s)' % reason_not_enabled
         print "%-30s: %s" % (caption, status)
 
+
+class SuidBuildTask(Task.TaskBase):
+    """task that makes a binary Suid
+    """
+    def __init__(self, bld, program):
+        self.m_display = 'build-suid'
+        self.prio = 1000 # build after the rest of ns-3
+        self.__program = program
+        self.__env = bld.env ()
+        super(SuidBuildTask, self).__init__()
+
+    def run(self):
+        try:
+            program_obj = _find_program(self.__program.target, self.__env)
+        except ValueError, ex:
+            Params.fatal(str(ex))
+
+        try:
+            program_node = program_obj.path.find_build(ccroot.get_target_name(program_obj))
+        except AttributeError:
+            Params.fatal("%s does not appear to be a program" % (program_name,))
+
+        filename = program_node.abspath(self.__env)
+        os.system ('sudo chown root ' + filename)
+        os.system ('sudo chmod u+s ' + filename)
+
+def create_suid_program(bld, name):
+    program = bld.create_obj('cpp', 'program')
+    program.is_ns3_program = True
+    program.module_deps = list()
+    program.name = name
+    program.target = name
+    if bld.env ()['SUDO'] and not Params.g_options.disable_sudo:
+        SuidBuildTask (bld, program)
+    return program
 
 def create_ns3_program(bld, name, dependencies=('simulator',)):
     program = bld.create_obj('cpp', 'program')
@@ -340,6 +383,7 @@ def build(bld):
 
     Params.g_cwd_launch = Params.g_build.m_curdirnode.abspath()
     bld.create_ns3_program = types.MethodType(create_ns3_program, bld)
+    bld.create_suid_program = types.MethodType(create_suid_program, bld)
     variant_name = bld.env_of_name('default')['NS3_ACTIVE_VARIANT']
     variant_env = bld.env_of_name(variant_name)
     bld.m_allenvs['default'] = variant_env # switch to the active variant
