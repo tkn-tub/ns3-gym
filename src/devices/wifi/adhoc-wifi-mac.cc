@@ -231,7 +231,7 @@ AdhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 bool 
 AdhocWifiMac::SupportsSendFrom (void) const
 {
-  return true;
+  return false;
 }
 
 void 
