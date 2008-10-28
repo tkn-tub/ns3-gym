@@ -41,30 +41,30 @@ NS_LOG_COMPONENT_DEFINE ("WifiHelper");
 namespace ns3 {
 
 static void PcapPhyTxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet,
-			    WifiMode mode, WifiPreamble preamble, 
-			    uint8_t txLevel)
+                            WifiMode mode, WifiPreamble preamble, 
+                            uint8_t txLevel)
 {
   writer->WritePacket (packet);
 }
 
 static void PcapPhyRxEvent (Ptr<PcapWriter> writer, 
-			    Ptr<const Packet> packet, double snr, WifiMode mode, 
-			    enum WifiPreamble preamble)
+                            Ptr<const Packet> packet, double snr, WifiMode mode, 
+                            enum WifiPreamble preamble)
 {
   writer->WritePacket (packet);
 }
 
 static void AsciiPhyTxEvent (std::ostream *os, std::string context, 
-			     Ptr<const Packet> packet,
-			     WifiMode mode, WifiPreamble preamble, 
-			     uint8_t txLevel)
+                             Ptr<const Packet> packet,
+                             WifiMode mode, WifiPreamble preamble, 
+                             uint8_t txLevel)
 {
   *os << "+ " << Simulator::Now () << " " << context << " " << *packet << std::endl;
 }
 
 static void AsciiPhyRxOkEvent (std::ostream *os, std::string context, 
-			       Ptr<const Packet> packet, double snr, WifiMode mode, 
-			       enum WifiPreamble preamble)
+                               Ptr<const Packet> packet, double snr, WifiMode mode, 
+                               enum WifiPreamble preamble)
 {
   *os << "r " << Simulator::Now () << " " << context << " " << *packet << std::endl;
 }
@@ -78,14 +78,14 @@ WifiHelper::WifiHelper ()
 
 void 
 WifiHelper::SetRemoteStationManager (std::string type,
-				     std::string n0, const AttributeValue &v0,
-				     std::string n1, const AttributeValue &v1,
-				     std::string n2, const AttributeValue &v2,
-				     std::string n3, const AttributeValue &v3,
-				     std::string n4, const AttributeValue &v4,
-				     std::string n5, const AttributeValue &v5,
-				     std::string n6, const AttributeValue &v6,
-				     std::string n7, const AttributeValue &v7)
+                                     std::string n0, const AttributeValue &v0,
+                                     std::string n1, const AttributeValue &v1,
+                                     std::string n2, const AttributeValue &v2,
+                                     std::string n3, const AttributeValue &v3,
+                                     std::string n4, const AttributeValue &v4,
+                                     std::string n5, const AttributeValue &v5,
+                                     std::string n6, const AttributeValue &v6,
+                                     std::string n7, const AttributeValue &v7)
 {
   m_stationManager = ObjectFactory ();
   m_stationManager.SetTypeId (type);
@@ -101,14 +101,14 @@ WifiHelper::SetRemoteStationManager (std::string type,
 
 void 
 WifiHelper::SetMac (std::string type,
-		    std::string n0, const AttributeValue &v0,
-		    std::string n1, const AttributeValue &v1,
-		    std::string n2, const AttributeValue &v2,
-		    std::string n3, const AttributeValue &v3,
-		    std::string n4, const AttributeValue &v4,
-		    std::string n5, const AttributeValue &v5,
-		    std::string n6, const AttributeValue &v6,
-		    std::string n7, const AttributeValue &v7)
+                    std::string n0, const AttributeValue &v0,
+                    std::string n1, const AttributeValue &v1,
+                    std::string n2, const AttributeValue &v2,
+                    std::string n3, const AttributeValue &v3,
+                    std::string n4, const AttributeValue &v4,
+                    std::string n5, const AttributeValue &v5,
+                    std::string n6, const AttributeValue &v6,
+                    std::string n7, const AttributeValue &v7)
 {
   m_mac = ObjectFactory ();
   m_mac.SetTypeId (type);
@@ -132,6 +132,13 @@ void
 WifiHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid)
 {
   std::ostringstream oss;
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/";
+  Config::MatchContainer matches = Config::LookupMatches (oss.str ());
+  if (matches.GetN () == 0)
+    {
+      return;
+    }
+  oss.str ("");
   oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
   Ptr<PcapWriter> pcap = Create<PcapWriter> ();
   pcap->Open (oss.str ());
@@ -160,9 +167,9 @@ WifiHelper::EnablePcap (std::string filename, NodeContainer n)
     {
       Ptr<Node> node = *i;
       for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-	{
-	  devs.Add (node->GetDevice (j));
-	}
+        {
+          devs.Add (node->GetDevice (j));
+        }
     }
   EnablePcap (filename, devs);
 }
@@ -176,7 +183,7 @@ WifiHelper::EnablePcapAll (std::string filename)
 void 
 WifiHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
 {
-    Packet::EnableMetadata ();
+  Packet::EnablePrinting ();
   std::ostringstream oss;
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/RxOk";
   Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyRxOkEvent, &os));
@@ -201,9 +208,9 @@ WifiHelper::EnableAscii (std::ostream &os, NodeContainer n)
     {
       Ptr<Node> node = *i;
       for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-	{
-	  devs.Add (node->GetDevice (j));
-	}
+        {
+          devs.Add (node->GetDevice (j));
+        }
     }
   EnableAscii (os, devs);
 }

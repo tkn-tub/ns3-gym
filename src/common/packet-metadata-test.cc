@@ -752,6 +752,32 @@ PacketMetadataTest::RunTests (void)
   p2 = p->CreateFragment(100, 100);	
   p1->AddAtEnd (p2);
 
+  p = Create<Packet> ();
+  ADD_HEADER (p, 10);
+  p1 = Create<Packet> ();
+  ADD_HEADER (p1, 11);
+  REM_HEADER (p1, 11);
+  p->AddAtEnd (p1);
+
+  p = Create<Packet> (500);
+  CHECK_HISTORY (p, 1, 500);
+  ADD_HEADER (p, 10);
+  CHECK_HISTORY (p, 2, 10, 500);
+  REM_HEADER (p, 10);
+  CHECK_HISTORY (p, 1, 500);
+  p->RemoveAtEnd (10);
+  CHECK_HISTORY (p, 1, 490);
+
+  p = Create<Packet> (500);
+  CHECK_HISTORY (p, 1, 500);
+  ADD_TRAILER (p, 10);
+  CHECK_HISTORY (p, 2, 500, 10);
+  REM_TRAILER (p, 10);
+  CHECK_HISTORY (p, 1, 500);
+  p->RemoveAtStart (10);
+  CHECK_HISTORY (p, 1, 490);
+  
+
   return result;
 }
 

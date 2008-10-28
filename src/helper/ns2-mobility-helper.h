@@ -90,14 +90,14 @@ Ns2MobilityHelper::Install (T begin, T end) const
     MyObjectStore (T begin, T end)
       : m_begin (begin),
       m_end (end)
-	{}
+        {}
     virtual Ptr<Object> Get (uint32_t i) const {
       T iterator = m_begin;
       iterator += i;
       if (iterator >= m_end)
-	{
-	  return 0;
-	}
+        {
+          return 0;
+        }
       return *iterator;
     }
   private:

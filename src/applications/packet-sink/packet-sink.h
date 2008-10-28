@@ -34,6 +34,21 @@ class Socket;
 class Packet;
 
 /**
+ * \ingroup applications 
+ * \defgroup packetsink PacketSink
+ *
+ * This application was written to complement OnOffApplication, but it
+ * is more general so a PacketSink name was selected.  Functionally it is
+ * important to use in multicast situations, so that reception of the layer-2
+ * multicast frames of interest are enabled, but it is also useful for
+ * unicast as an example of how you can write something simple to receive
+ * packets at the application layer.  Also, if an IP stack generates 
+ * ICMP Port Unreachable errors, receiving applications will be needed.
+ */
+
+/**
+ * \ingroup packetsink
+ *
  * \brief Receive and consume traffic generated to an IP address and port
  *
  * This application was written to complement OnOffApplication, but it
@@ -65,11 +80,14 @@ private:
   virtual void StartApplication (void);    // Called at time specified by Start
   virtual void StopApplication (void);     // Called at time specified by Stop
 
-  virtual void HandleRead (Ptr<Socket> socket);
+  void HandleRead (Ptr<Socket> socket);
+  void HandleAccept (Ptr<Socket>, const Address& from);
 
-  virtual void CloseConnection (Ptr<Socket> socket);
+  // In the case of TCP, each socket accept returns a new socket, so the 
+  // listening socket is stored seperately from the accepted sockets
+  Ptr<Socket>     m_socket;       // Listening socket
+  std::list<Ptr<Socket> > m_socketList; //the accepted sockets
 
-  Ptr<Socket>     m_socket;       // Associated socket
   Address         m_local;        // Local address to bind to
   TypeId          m_tid;          // Protocol TypeId
   TracedCallback<Ptr<const Packet>, const Address &> m_rxTrace;

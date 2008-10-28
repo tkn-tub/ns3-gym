@@ -14,8 +14,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef CHANNEL_H
-#define CHANNEL_H
+#ifndef NS3_CHANNEL_H
+#define NS3_CHANNEL_H
 
 #include <string>
 #include <stdint.h>
@@ -44,6 +44,7 @@ public:
 
   Channel ();
   Channel (std::string name);
+  virtual ~Channel ();
 
   void SetName(std::string);
   std::string GetName(void);
@@ -62,11 +63,10 @@ public:
    */
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const = 0;
 
-protected:
-  virtual      ~Channel ();
+private:
   std::string   m_name;
 };
 
 }; // namespace ns3
 
-#endif /* CHANNEL_H */
+#endif /* NS3_CHANNEL_H */

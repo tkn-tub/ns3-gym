@@ -64,7 +64,7 @@ main (int argc, char *argv[])
   //
   RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
 
-  // Set a few parameters
+  // Set a few attributes
   Config::SetDefault ("ns3::RateErrorModel::ErrorRate", DoubleValue (0.01));
   Config::SetDefault ("ns3::RateErrorModel::ErrorUnit", StringValue ("EU_PKT"));
   
@@ -92,14 +92,14 @@ main (int argc, char *argv[])
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
   PointToPointHelper p2p;
-  p2p.SetDeviceParameter ("DataRate", DataRateValue (DataRate (5000000)));
-  p2p.SetChannelParameter ("Delay", TimeValue (MilliSeconds (2)));
+  p2p.SetDeviceAttribute ("DataRate", DataRateValue (DataRate (5000000)));
+  p2p.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
   NetDeviceContainer d0d2 = p2p.Install (n0n2);
 
   NetDeviceContainer d1d2 = p2p.Install (n1n2);
 
-  p2p.SetDeviceParameter ("DataRate", DataRateValue (DataRate (1500000)));
-  p2p.SetChannelParameter ("Delay", TimeValue (MilliSeconds (10)));
+  p2p.SetDeviceAttribute ("DataRate", DataRateValue (DataRate (1500000)));
+  p2p.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (10)));
   NetDeviceContainer d3d2 = p2p.Install (n3n2);
   
   // Later, we add IP addresses.  
@@ -134,7 +134,7 @@ main (int argc, char *argv[])
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
     Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
-  apps = sink.Install (c.Get (3));
+  apps = sink.Install (c.Get (2));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 

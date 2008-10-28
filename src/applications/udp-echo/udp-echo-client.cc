@@ -47,8 +47,8 @@ UdpEchoClient::GetTypeId (void)
                    TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&UdpEchoClient::m_interval),
                    MakeTimeChecker ())
-    .AddAttribute ("RemoteIpv4", 
-                   "The Ipv4Address of the outbound packets",
+    .AddAttribute ("RemoteAddress", 
+                   "The destination Ipv4Address of the outbound packets",
                    Ipv4AddressValue (),
                    MakeIpv4AddressAccessor (&UdpEchoClient::m_peerAddress),
                    MakeIpv4AddressChecker ())
@@ -154,14 +154,9 @@ UdpEchoClient::HandleRead (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
   Ptr<Packet> packet;
-  while (packet = socket->Recv ())
+  Address from;
+  while (packet = socket->RecvFrom (from))
     {
-      SocketRxAddressTag tag;
-      bool found;
-      found  = packet->FindFirstMatchingTag (tag);
-      NS_ASSERT (found);
-      Address from = tag.GetAddress ();
-      // XXX packet->RemoveTag (tag);
       if (InetSocketAddress::IsMatchingType (from))
         {
           InetSocketAddress address = InetSocketAddress::ConvertFrom (from);

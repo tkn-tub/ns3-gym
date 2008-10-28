@@ -42,6 +42,14 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("CsmaPacketSocketExample");
 
+std::ofstream g_os;
+
+static void
+SinkRx (std::string path, Ptr<const Packet> p, const Address &address)
+{
+  g_os << p->GetSize () << std::endl;
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -57,13 +65,15 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
+  g_os.open ("csma-packet-socket-sink.tr");
+
   // Here, we will explicitly create four nodes.
   NS_LOG_INFO ("Create nodes.");
-  NodeContainer c;
-  c.Create (4);
+  NodeContainer nodes;
+  nodes.Create (4);
 
   PacketSocketHelper packetSocket;
-  packetSocket.Install (c);
+  packetSocket.Install (nodes);
 
   // create the shared medium used by all csma devices.
   NS_LOG_INFO ("Create channels.");
@@ -74,8 +84,8 @@ main (int argc, char *argv[])
   // use a helper function to connect our nodes to the shared channel.
   NS_LOG_INFO ("Build Topology.");
   CsmaHelper csma;
-  csma.SetDeviceParameter ("EncapsulationMode", StringValue ("Llc"));
-  NetDeviceContainer devs = csma.Install (c, channel);
+  csma.SetDeviceAttribute ("EncapsulationMode", StringValue ("Llc"));
+  NetDeviceContainer devs = csma.Install (nodes, channel);
 
   NS_LOG_INFO ("Create Applications.");
   // Create the OnOff application to send raw datagrams
@@ -86,19 +96,27 @@ main (int argc, char *argv[])
   OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1.0)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0.0)));
-
-  ApplicationContainer apps = onoff.Install (c.Get (0));
+  ApplicationContainer apps = onoff.Install (nodes.Get (0));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
-  
+
   socket.SetSingleDevice (devs.Get (3)->GetIfIndex ());
   socket.SetPhysicalAddress (devs.Get (0)->GetAddress ());
   socket.SetProtocol (3);
   onoff.SetAttribute ("Remote", AddressValue (socket));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0.0)));
-  apps = onoff.Install (c.Get (3));
+  apps = onoff.Install (nodes.Get (3));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
+
+  PacketSinkHelper sink = PacketSinkHelper ("ns3::PacketSocketFactory",
+                                            socket);
+  apps = sink.Install (nodes.Get (0));
+  apps.Start (Seconds (0.0));
+  apps.Stop (Seconds (20.0));
+
+  Config::Connect ("/NodeList/*/ApplicationList/*/$ns3::PacketSink/Rx",
+                   MakeCallback (&SinkRx));
  
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the csma-packet-socket.tr file
@@ -111,4 +129,8 @@ main (int argc, char *argv[])
   Simulator::Run ();
   Simulator::Destroy ();
   NS_LOG_INFO ("Done.");
+
+  g_os.close ();
+
+  return 0;
 }

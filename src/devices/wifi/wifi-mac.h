@@ -60,15 +60,15 @@ public:
   /**
    * \param pifs the pifs duration.
    */
-  void SetPifs (Time pifs);
+  virtual void SetPifs (Time pifs) = 0;
   /**
    * \param ctsTimeout the duration of a CTS timeout.
    */
-  void SetCtsTimeout (Time ctsTimeout);
+  virtual void SetCtsTimeout (Time ctsTimeout) = 0;
   /**
    * \param ackTimeout the duration of an ACK timeout.
    */
-  void SetAckTimeout (Time ackTimeout);
+  virtual void SetAckTimeout (Time ackTimeout) = 0;
   /**
    * \param delay the max propagation delay.
    *
@@ -79,7 +79,7 @@ public:
   /**
    * \returns the current PIFS duration.
    */
-  Time GetPifs (void) const;
+  virtual Time GetPifs (void) const = 0;
   /**
    * \returns the current SIFS duration.
    */
@@ -95,11 +95,11 @@ public:
   /**
    * \returns the current CTS timeout duration.
    */
-  Time GetCtsTimeout (void) const;
+  virtual Time GetCtsTimeout (void) const = 0;
   /**
    * \returns the current ACK timeout duration.
    */
-  Time GetAckTimeout (void) const;
+  virtual Time GetAckTimeout (void) const = 0;
   /**
    * Unused for now.
    */
@@ -122,14 +122,6 @@ public:
    */
   virtual Ssid GetSsid (void) const = 0;
   /**
-   * \returns the BSSID associated to the current SSID. 
-   *
-   * If we are an AP, this is the address of the AP itself.
-   * If are a STA, this is the address of the AP with which
-   * the STA is associated.
-   */
-  virtual Mac48Address GetBssid (void) const = 0;
-  /**
    * \param address the current address of this MAC layer.
    */
   virtual void SetAddress (Mac48Address address) = 0;
@@ -137,7 +129,23 @@ public:
    * \param ssid the current ssid of this MAC layer.
    */
   virtual void SetSsid (Ssid ssid) = 0;
+  /**
+   * \returns the bssid of the network this device belongs to.
+   */
+  virtual Mac48Address GetBssid (void) const = 0;
 
+  /**
+   * \param packet the packet to send.
+   * \param to the address to which the packet should be sent.
+   * \param from the address from which the packet should be sent.
+   *
+   * The packet should be enqueued in a tx queue, and should be
+   * dequeued as soon as the DCF function determines that
+   * access it granted to this MAC.  The extra parameter "from" allows
+   * this device to operate in a bridged mode, forwarding received
+   * frames without altering the source addresss.
+   */
+  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from) = 0;
   /**
    * \param packet the packet to send.
    * \param to the address to which the packet should be sent.
@@ -147,6 +155,7 @@ public:
    * access it granted to this MAC.
    */
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to) = 0;
+  virtual bool SupportsSendFrom (void) const = 0;
   /**
    * \param phy the physical layer attached to this MAC.
    */
@@ -158,7 +167,7 @@ public:
   /**
    * \param upCallback the callback to invoke when a packet must be forwarded up the stack.
    */
-  virtual void SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address &> upCallback) = 0;
+  virtual void SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback) = 0;
   /**
    * \param linkUp the callback to invoke when the link becomes up.
    */
@@ -178,9 +187,6 @@ private:
   static Time GetDefaultCtsAckDelay (void);
   static Time GetDefaultCtsAckTimeout (void);
 
-  Time m_pifs;
-  Time m_ctsTimeout;
-  Time m_ackTimeout;
   Time m_maxPropagationDelay;
   uint32_t m_maxMsduSize;
 };

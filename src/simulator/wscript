@@ -16,13 +16,13 @@ def set_options(opt):
 
 def configure(conf):
     if Params.g_options.high_precision_as_double:
-        conf.add_define('USE_HIGH_PRECISION_DOUBLE', 1)
+        conf.define('USE_HIGH_PRECISION_DOUBLE', 1)
         conf.env['USE_HIGH_PRECISION_DOUBLE'] = 1
         highprec = 'long double'
     else:
         conf.env['USE_HIGH_PRECISION_DOUBLE'] = 0
         highprec = '128-bit integer'
-    conf.check_message_custom('high precision time', 'implementation', highprec)
+    conf.check_message_custom('high precision time','implementation',highprec)
 
     e = conf.create_header_configurator()
     e.mandatory = False
@@ -44,6 +44,9 @@ def configure(conf):
 
     conf.write_config_header('ns3/simulator-config.h')
 
+    conf.report_optional_feature("RealTime", "Real Time Simulator",
+                                 conf.env['ENABLE_THREADING'],
+                                 "threading not enabled")
 
 
 def build(bld):
@@ -58,8 +61,11 @@ def build(bld):
         'heap-scheduler.cc',
         'event-impl.cc',
         'simulator.cc',
+        'default-simulator-impl.cc',
         'timer.cc',
         'watchdog.cc',
+        'synchronizer.cc',
+        'make-event.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -70,6 +76,8 @@ def build(bld):
         'event-id.h',
         'event-impl.h',
         'simulator.h',
+        'simulator-impl.h',
+        'default-simulator-impl.h',
         'scheduler.h',
         'list-scheduler.h',
         'map-scheduler.h',
@@ -78,6 +86,8 @@ def build(bld):
         'timer.h',
         'timer-impl.h',
         'watchdog.h',
+        'synchronizer.h',
+        'make-event.h',
         ]
 
     env = bld.env_of_name('default')
@@ -97,4 +107,14 @@ def build(bld):
             'high-precision-128.h',
             'cairo-wideint-private.h',
             ])
+
+    if env['ENABLE_THREADING']:
+        headers.source.extend([
+                'realtime-simulator-impl.h',
+                'wall-clock-synchronizer.h',
+                ])
+        sim.source.extend([
+                'realtime-simulator-impl.cc',
+                'wall-clock-synchronizer.cc',
+                ])
 

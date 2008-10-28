@@ -34,6 +34,7 @@ namespace ns3 {
 class Node;
 class Socket;
 /**
+ * \ingroup udp
  * \brief Implementation of the UDP protocol
  */
 class UdpL4Protocol : public Ipv4L4Protocol {
@@ -47,7 +48,6 @@ public:
   void SetNode (Ptr<Node> node);
 
   virtual int GetProtocolNumber (void) const;
-  virtual int GetVersion (void) const;
 
   /**
    * \return A smart Socket pointer to a UdpSocket, allocated by this instance
@@ -93,6 +93,7 @@ protected:
 private:
   Ptr<Node> m_node;
   Ipv4EndPointDemux *m_endPoints;
+  bool m_calcChecksum;
 };
 
 }; // namespace ns3

@@ -13,6 +13,5 @@ def build(bld):
     headers.source = [
         'global-router-interface.h',
         'global-route-manager.h',
-        'candidate-queue.h',
         ]
 

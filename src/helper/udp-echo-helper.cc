@@ -24,15 +24,21 @@
 
 namespace ns3 {
 
-UdpEchoServerHelper::UdpEchoServerHelper ()
-  : m_port (9)
-{}
+UdpEchoServerHelper::UdpEchoServerHelper (uint16_t port)
+{
+  m_factory.SetTypeId (UdpEchoServer::GetTypeId ());
+  SetAttribute ("Port", UintegerValue(port));
+}
 
 void 
-UdpEchoServerHelper::SetPort (uint16_t port)
+UdpEchoServerHelper::SetAttribute (
+  std::string name, 
+  const AttributeValue &value)
 {
-  m_port = port;
+  m_factory.Set (name, value);
 }
+
+
 ApplicationContainer 
 UdpEchoServerHelper::Install (NodeContainer c)
 {
@@ -40,25 +46,24 @@ UdpEchoServerHelper::Install (NodeContainer c)
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
       Ptr<Node> node = *i;
-      Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> ("Port", UintegerValue (m_port));
+      Ptr<UdpEchoServer> server = m_factory.Create<UdpEchoServer> ();
       node->AddApplication (server);
       apps.Add (server);
     }
   return apps;
 }
 
-UdpEchoClientHelper::UdpEchoClientHelper ()
+UdpEchoClientHelper::UdpEchoClientHelper (Ipv4Address address, uint16_t port)
 {
   m_factory.SetTypeId (UdpEchoClient::GetTypeId ());
+  SetAttribute ("RemoteAddress", Ipv4AddressValue (address));
+  SetAttribute ("RemotePort", UintegerValue (port));
 }
+
 void 
-UdpEchoClientHelper::SetRemote (Ipv4Address ip, uint16_t port)
-{
-  m_remoteIp = ip;
-  m_remotePort = port;
-}
-void 
-UdpEchoClientHelper::SetAppAttribute (std::string name, const AttributeValue &value)
+UdpEchoClientHelper::SetAttribute (
+  std::string name, 
+  const AttributeValue &value)
 {
   m_factory.Set (name, value);
 }
@@ -71,13 +76,10 @@ UdpEchoClientHelper::Install (NodeContainer c)
     {
       Ptr<Node> node = *i;
       Ptr<UdpEchoClient> client = m_factory.Create<UdpEchoClient> ();
-      client->SetRemote (m_remoteIp, m_remotePort);
       node->AddApplication (client);
       apps.Add (client);
     }
   return apps;  
 }
-
-
 
 } // namespace ns3

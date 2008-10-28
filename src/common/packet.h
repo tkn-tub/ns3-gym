@@ -30,6 +30,7 @@
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 #include "ns3/ptr.h"
+#include "ns3/deprecated.h"
 
 namespace ns3 {
 
@@ -187,7 +188,7 @@ public:
   uint32_t GetSize (void) const;
   /**
    * Add header to this packet. This method invokes the
-   * GetSerializedSize and Serialize
+   * Header::GetSerializedSize and Header::Serialize
    * methods to reserve space in the buffer and request the 
    * header to serialize itself in the packet buffer.
    *
@@ -196,15 +197,23 @@ public:
   void AddHeader (const Header & header);
   /**
    * Deserialize and remove the header from the internal buffer.
-   * This method invokes Deserialize.
+   * This method invokes Header::Deserialize.
    *
    * \param header a reference to the header to remove from the internal buffer.
    * \returns the number of bytes removed from the packet.
    */
   uint32_t RemoveHeader (Header &header);
   /**
+   * Deserialize but does _not_ remove the header from the internal buffer.
+   * This method invokes Header::Deserialize.
+   *
+   * \param header a reference to the header to read from the internal buffer.
+   * \returns the number of bytes read from the packet.
+   */  
+  uint32_t PeekHeader (Header &header) const;
+  /**
    * Add trailer to this packet. This method invokes the
-   * GetSerializedSize and Serialize
+   * Trailer::GetSerializedSize and Trailer::Serialize
    * methods to reserve space in the buffer and request the trailer 
    * to serialize itself in the packet buffer.
    *
@@ -219,6 +228,14 @@ public:
    * \returns the number of bytes removed from the end of the packet.
    */
   uint32_t RemoveTrailer (Trailer &trailer);
+  /**
+   * Deserialize but does _not_ remove a trailer from the internal buffer.
+   * This method invokes the Trailer::Deserialize method.
+   *
+   * \param trailer a reference to the trailer to read from the internal buffer.
+   * \returns the number of bytes read from the end of the packet.
+   */
+  uint32_t PeekTrailer (Trailer &trailer);
   /**
    * \param os output stream in which the data should be printed.
    *
@@ -264,6 +281,16 @@ public:
   uint8_t const *PeekData (void) const;
 
   /**
+   * \param buffer a pointer to a byte buffer where the packet data 
+   *        should be copied.
+   * \param size the size of the byte buffer. 
+   * \returns the number of bytes read from the packet
+   *
+   * No more than \b size bytes will be copied by this function.
+   */
+  uint32_t CopyData (uint8_t *buffer, uint32_t size) const;
+
+  /**
    * A packet is allocated a new uid when it is created
    * empty or with zero-filled payload.
    *
@@ -294,13 +321,17 @@ public:
 
   PacketMetadata::ItemIterator BeginItem (void) const;
 
+  static void EnableMetadata (void) NS_DEPRECATED;
+
   /**
    * By default, packets do not keep around enough metadata to
    * perform the operations requested by the Print methods. If you
    * want to be able to invoke any of the two ::Print methods, 
    * you need to invoke this method at least once during the 
    * simulation setup and before any packet is created.
-   *
+   */
+  static void EnablePrinting (void);
+  /**
    * The packet metadata is also used to perform extensive
    * sanity checks at runtime when performing operations on a 
    * Packet. For example, this metadata is used to verify that
@@ -308,7 +339,7 @@ public:
    * was actually present at the front of the packet. These
    * errors will be detected and will abort the program.
    */
-  static void EnableMetadata (void);
+  static void EnableChecking (void);
 
   /**
    * \returns a byte buffer
@@ -416,6 +447,7 @@ std::ostream& operator<< (std::ostream& os, const Packet &packet);
  *   - ns3::Packet::CreateFragment
  *   - ns3::Packet::RemoveAtStart
  *   - ns3::Packet::RemoveAtEnd
+ *   - ns3::Packet::CopyData
  *
  * Dirty operations will always be slower than non-dirty operations,
  * sometimes by several orders of magnitude. However, even the

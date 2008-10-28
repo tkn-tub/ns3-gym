@@ -35,7 +35,7 @@ class WifiChannel;
  *
  * This class can help to create a large set of similar
  * WifiNetDevice objects and to configure a large set of
- * their parameters during creation.
+ * their attributes during creation.
  */
 class WifiHelper
 {
@@ -65,14 +65,14 @@ public:
    * in the requested station manager.
    */
   void SetRemoteStationManager (std::string type,
-				std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-				std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-				std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-				std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-				std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-				std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-				std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-				std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+                                std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+                                std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                                std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                                std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                                std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+                                std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+                                std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+                                std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 
   /**
    * \param type the type of ns3::WifiMac to create.
@@ -97,14 +97,14 @@ public:
    * in the requested mac.
    */
   void SetMac (std::string type,
-	       std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-	       std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-	       std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-	       std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-	       std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-	       std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-	       std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-	       std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+               std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+               std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+               std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+               std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+               std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+               std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+               std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+               std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 
   /**
    * \param name the name of the attribute to set

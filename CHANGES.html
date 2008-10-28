@@ -1,0 +1,296 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <title>ns-3 Change Log</title>
+</head>
+<body>
+
+<h1>
+ns-3: API and model change history</h1>
+<!--
+This ChangeLog is updated in the reverse order 
+with the most recent changes coming first.  Date format:  DD-MM-YYYY
+-->
+<p>
+ns-3 is an evolving system and there will be API or behavioral changes
+from time to time.   Users who try to use scripts or models across
+versions of ns-3 may encounter problems at compile time, run time, or
+may see the simulation output change.  </p>
+<p>
+We have adopted the development policy that we are going to try to ease
+the impact of these changes on users by documenting these changes in a
+single place (this file), and not by providing a temporary or permanent
+backward-compatibility software layer.  </p>
+<p>
+The goal is that users who encounter a problem when trying to use older
+code with newer code should be able to consult this file to find
+guidance as to how to fix the problem.  For instance, if a method name
+or signature has changed, it should be stated what the new replacement
+name is. </p>
+<p>
+Note that users who upgrade the simulator across versions, or who work
+directly out of the development tree, may find that simulation output
+changes even when the compilation doesn't break, such as when a
+simulator default value is changed.  Therefore, it is good practice for
+_anyone_ using code across multiple ns-3 releases to consult this file,
+as well as the RELEASE_NOTES, to understand what has changed over time.
+</p>
+<p>
+This file is a best-effort approach to solving this issue; we will do
+our best but can guarantee that there will be things that fall through
+the cracks, unfortunately.  If you, as a user, can suggest improvements
+to this file based on your experience, please contribute a patch or drop
+us a note on ns-developers mailing list.  </p>
+
+<hr>
+<h1>changes from ns-3.1 to ns-3.2</h1>
+
+<h2>new API:</h2>
+<ul>
+
+<li>26-08-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/5aa65b1ea001">5aa65b1ea001</a></li>
+<ul>
+<li>
+Add multithreaded and real-time simulator implementation.  Allows for emulated
+net devices running in threads other than the main simulation thread to schedule
+events.  Allows for pacing the simulation clock at 1x real-time.
+</li>
+</ul>
+
+
+<li>26-08-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/c69779f5e51e">c69779f5e51e</a></li>
+<ul>
+<li>
+Add threading and synchronization primitives.  Enabling technology for 
+multithreaded simulator implementation.
+</li>
+</ul>
+
+</ul>
+<h2>new API in existing classes:</h2>
+<ul>
+
+<li>01-08-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/a18520551cdf">a18520551cdf</a></li>
+<ul>
+<li>class ArpCache has two new attributes:  MaxRetries 
+and a Drop trace.  It also has some new public methods but these are 
+mostly for internal use.
+</ul>
+</li>
+
+</ul>
+<h2>changes to existing API:</h2>
+<ul>
+
+<li>05-09-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/aa1fb0f43571">aa1fb0f43571</a></li>
+<ul>
+<li>
+Change naming of MTU and packet size attributes in CSMA and Point-to-Point devices<br>
+After much discussion it was decided that the preferred way to think about 
+the different senses of transmission units and encapsulations was to call the 
+MAC MTU simply MTU and to use the overall packet size as the PHY-level attribute
+of interest.  See the Doxygen of CsmaNetDevice::SetFrameSize and 
+PointToPointNetDevice::SetFrameSize for a detailed description.
+</li>
+</ul>
+
+<li>25-08-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/e5ab96db540e">e5ab96db540e</a></li>
+<ul>
+<li>
+bug 273: constify packet pointers.<br>
+The normal and the promiscuous receive callbacks of the NetDevice API
+have been changed from:
+<pre>
+Callback<bool,Ptr<NetDevice>,Ptr<Packet>,uint16_t,const Address &>
+Callback<bool,Ptr<NetDevice>, Ptr<Packet>, uint16_t,
+         const Address &, const Address &, enum PacketType >
+</pre>
+to:
+<pre>
+Callback<bool,Ptr<NetDevice>,Ptr<const Packet>,uint16_t,const Address &>
+Callback<bool,Ptr<NetDevice>, Ptr<const Packet>, uint16_t,
+         const Address &, const Address &, enum PacketType >
+</pre>
+to avoid the kind of bugs reported in 
+<a href="http://www.nsnam.org/bugzilla/show_bug.cgi?id=273">bug 273</a>.
+Users who implement a subclass of the NetDevice base class need to change the signature
+of their SetReceiveCallback and SetPromiscReceiveCallback methods.
+</li>
+</ul>
+
+
+<li>04-08-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/cba7b2b80fe8">cba7b2b80fe8</a></li>
+<ul>
+<li>
+Cleanup of MTU confusion and initialization in CsmaNetDevice<br>
+The MTU of the CsmaNetDevice defaulted to 65535.  This did not correspond with
+the expected MTU found in Ethernet-like devices.  Also there was not clear 
+documentation regarding which MTU was being set.  There are two MTU here, one
+at the MAC level and one at the PHY level.  We split out the MTU setting to make
+this more clear and set the default PHY level MTU to 1500 to be more like
+Ethernet.  The encapsulation mode defaults to LLC/SNAP which then puts the
+MAC level MTU at 1492 by default.  We allow users to now set the encapsulation
+mode, MAC MTU and PHY MTU while keeping the three values consistent.  See the
+Doxygen of CsmaNetDevice::SetMaxPayloadLength for a detailed description of the
+issues and solution.
+</li>
+</ul>
+
+<li>21-07-2008; changeset 
+<a href="
+http://code.nsnam.org/ns-3-dev/rev/99698bc858e8">99698bc858e8</a></li>
+<ul>
+<li> class NetDevice has added a pure virtual method that
+must be implemented by all subclasses:
+<pre>
+virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb) = 0;
+</pre>
+All NetDevices must support this method, and must call this callback
+when processing packets in the receive direction (the appropriate place
+to call this is device-dependent).  An approach to stub this out
+temporarily, if you do not care about immediately enabling this
+functionality, would be to add this to your device:
+<pre>
+void
+ExampleNetDevice::SetPromiscReceiveCallback
+(NetDevice::PromiscReceiveCallback cb)
+{ 
+  NS_ASSERT_MSG (false, "No implementation yet for
+SetPromiscReceiveCallback");
+}
+</pre>
+To implement this properly, consult the CsmaNetDevice for examples of
+when the m_promiscRxCallback is called.
+</li>
+</ul>
+
+
+<li>03-07-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/d5f8e5fae1c6">d5f8e5fae1c6</a></li>
+<ul>
+<li>
+Miscellaneous cleanup of Udp Helper API, to fix bug 234
+<pre>
+class UdpEchoServerHelper
+{
+public:
+- UdpEchoServerHelper ();
+- void SetPort (uint16_t port); 
++ UdpEchoServerHelper (uint16_t port);
++ 
++ void SetAttribute (std::string name, const AttributeValue &value);
+ApplicationContainer Install (NodeContainer c);
+
+class UdpEchoClientHelper
+{
+public:
+- UdpEchoClientHelper ();
++ UdpEchoClientHelper (Ipv4Address ip, uint16_t port);
+- void SetRemote (Ipv4Address ip, uint16_t port);
+- void SetAppAttribute (std::string name, const AttributeValue &value);
++ void SetAttribute (std::string name, const AttributeValue &value);
+ApplicationContainer Install (NodeContainer c);
+</pre>
+</li>
+</ul>
+
+<li>03-07-2008; changeset 
+<a href="
+http://code.nsnam.org/ns-3-dev/rev/3cdd9d60f7c7">3cdd9d60f7c7</a></li>
+<ul>
+<li>
+Rename all instances method names using "Set..Parameter" to "Set..Attribute"
+(bug 232)
+</li>
+<li> How to fix your code:  Any use of helper API that was using a method
+"Set...Parameter()" should be changed to read "Set...Attribute()".  e.g.
+<pre>
+- csma.SetChannelParameter ("DataRate", DataRateValue (5000000));
+- csma.SetChannelParameter ("Delay", TimeValue (MilliSeconds (2)));
++ csma.SetChannelAttribute ("DataRate", DataRateValue (5000000));
++ csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
+</pre>
+</li>
+</ul>
+</li>
+
+</ul>
+<h2>changed behavior:</h2>
+<ul>
+
+<li>07-09-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/5d836ab1523b">5d836ab1523b</a></li>
+<ul>
+
+<li>
+Implement a finite receive buffer for TCP<br>
+The native TCP model in TcpSocketImpl did not support a finite receive buffer.
+This changeset adds the following functionality in this regard:
+<ul>
+<li>
+Being able to set the receiver buffer size through the attributes system.
+</li>
+<li>
+This receiver buffer size is now correctly exported in the TCP header as the
+advertised window.  Prior to this changeset, the TCP header advertised window
+was set to the maximum size of 2^16 bytes.
+window
+</li>
+<li>
+The aforementioned window size is correctly used for flow control, i.e. the
+sending TCP will not send more data than available space in the receiver's
+buffer.
+</li>
+<li>
+In the case of a receiver window collapse, when a advertised zero-window
+packet is received, the sender enters the persist probing state in which
+it sends probe packets with one payload byte at exponentially backed-off
+intervals up to 60s.  The reciever will continue to send advertised 
+zero-window ACKs of the old data so long as the receiver buffer remains full.
+When the receiver window clears up due to an application read, the TCP
+will finally ACK the probe byte, and update its advertised window appropriately.
+</li>
+</ul>
+See 
+<a href="http://www.nsnam.org/bugzilla/show_bug.cgi?id=239"> bug 239 </a> for
+more.
+</li>
+</ul>
+
+<li>07-09-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/7afa66c2b291">7afa66c2b291</a></li>
+<ul>
+<li>
+Add correct FIN exchange behavior during TCP closedown<br>
+The behavior of the native TcpSocketImpl TCP model was such that the final
+FIN exchange was not correct, i.e. calling Socket::Close didn't send a FIN
+packet, and even if it had, the ACK never came back, and even if it had, the
+ACK would have incorrect sequence number.  All these various problems have been
+addressed by this changeset.  See 
+<a href="http://www.nsnam.org/bugzilla/show_bug.cgi?id=242"> bug 242 </a> for
+more.
+</li>
+</ul>
+
+<li> 28-07-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/6f68f1044df1">6f68f1044df1</a>
+<ul>
+<li>
+OLSR: HELLO messages hold time changed to 3*hello
+interval from hello interval.  This is an important bug fix as
+hold time == refresh time was never intentional, as it leads to
+instability in neighbor detection.
+</ul>
+</li>
+
+</ul>
+
+</body>
+</html>

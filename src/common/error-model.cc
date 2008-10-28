@@ -178,7 +178,7 @@ bool
 RateErrorModel::DoCorrupt (Ptr<Packet> p) 
 { 
   NS_LOG_FUNCTION_NOARGS ();
-  if (!m_enable)
+  if (!IsEnabled ())
     {
       return false;  
     }
@@ -275,7 +275,7 @@ bool
 ListErrorModel::DoCorrupt (Ptr<Packet> p) 
 { 
   NS_LOG_FUNCTION_NOARGS ();
-  if (!m_enable)
+  if (!IsEnabled ())
     {
       return false;  
     }

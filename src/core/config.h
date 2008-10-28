@@ -22,6 +22,7 @@
 
 #include "ptr.h"
 #include <string>
+#include <vector>
 
 namespace ns3 {
 
@@ -109,6 +110,35 @@ void Connect (std::string path, const CallbackBase &cb);
  * This function undoes the work of Config::ConnectWithContext.
  */
 void Disconnect (std::string path, const CallbackBase &cb);
+
+class MatchContainer
+{
+public:
+  typedef std::vector<Ptr<Object> >::const_iterator Iterator;
+  MatchContainer ();
+  MatchContainer (const std::vector<Ptr<Object> > &objects, 
+                  const std::vector<std::string> &contexts, 
+                  std::string path);
+
+  MatchContainer::Iterator Begin (void) const;
+  MatchContainer::Iterator End (void) const;
+  uint32_t GetN (void) const;
+  Ptr<Object> Get (uint32_t i) const;
+  std::string GetMatchedPath (uint32_t i) const;
+  std::string GetPath (void) const;
+
+  void Set (std::string name, const AttributeValue &value);
+  void Connect (std::string name, const CallbackBase &cb);
+  void ConnectWithoutContext (std::string name, const CallbackBase &cb);
+  void Disconnect (std::string name, const CallbackBase &cb);
+  void DisconnectWithoutContext (std::string name, const CallbackBase &cb);
+private:
+  std::vector<Ptr<Object> > m_objects;
+  std::vector<std::string> m_contexts;
+  std::string m_path;
+};
+
+MatchContainer LookupMatches (std::string path);
 
 /**
  * \param obj a new root object

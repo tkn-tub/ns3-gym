@@ -18,8 +18,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef SCHEDULER_MAP_H
-#define SCHEDULER_MAP_H
+#ifndef MAP_SCHEDULER_H
+#define MAP_SCHEDULER_H
 
 #include "scheduler.h"
 #include <stdint.h>
@@ -28,8 +28,6 @@
 
 namespace ns3 {
 
-class EventImpl;
-
 /**
  * \ingroup scheduler
  * \brief a std::map event scheduler
@@ -37,32 +35,27 @@ class EventImpl;
  * This class implements the an event scheduler using an std::map 
  * data structure.
  */
-class MapScheduler : public Scheduler {
+class MapScheduler : public Scheduler 
+{
 public:
   MapScheduler ();
   virtual ~MapScheduler ();
 
-  virtual void Insert (const EventId &id);
+  virtual void Insert (const Event &ev);
   virtual bool IsEmpty (void) const;
-  virtual EventId PeekNext (void) const;
-  virtual EventId RemoveNext (void);
-  virtual bool Remove (const EventId &ev);
+  virtual Event PeekNext (void) const;
+  virtual Event RemoveNext (void);
+  virtual void Remove (const Event &ev);
 private:
 
-  class EventKeyCompare {
-  public:
-    bool operator () (struct EventKey const&a, struct EventKey const&b);
-  };
-
-  typedef std::map<Scheduler::EventKey, EventImpl*, MapScheduler::EventKeyCompare> EventMap;
-  typedef std::map<Scheduler::EventKey, EventImpl*, MapScheduler::EventKeyCompare>::iterator EventMapI;
-  typedef std::map<Scheduler::EventKey, EventImpl*, MapScheduler::EventKeyCompare>::const_iterator EventMapCI;
+  typedef std::map<Scheduler::EventKey, EventImpl*> EventMap;
+  typedef std::map<Scheduler::EventKey, EventImpl*>::iterator EventMapI;
+  typedef std::map<Scheduler::EventKey, EventImpl*>::const_iterator EventMapCI;
 
 
   EventMap m_list;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
-
-#endif /* SCHEDULER_MAP_H */
+#endif /* MAP_SCHEDULER_H */

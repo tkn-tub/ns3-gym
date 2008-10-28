@@ -1,54 +1,84 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
+    obj = bld.create_ns3_program('hello-simulator')
+    obj.source = 'hello-simulator.cc'
         
     obj = bld.create_ns3_program('mixed-wireless',
-        ['core', 'simulator', 'mobility', 'wifi', 'point-to-point', 'internet-stack'])
+                                 ['core', 'simulator', 'mobility', 'wifi', 'point-to-point', 'internet-stack'])
     obj.source = 'mixed-wireless.cc'
 
     obj = bld.create_ns3_program('simple-global-routing',
-        ['point-to-point', 'internet-stack', 'global-routing'])
+                                 ['point-to-point', 'internet-stack', 'global-routing'])
     obj.source = 'simple-global-routing.cc'
 
     obj = bld.create_ns3_program('simple-alternate-routing',
-        ['point-to-point', 'internet-stack', 'global-routing'])
+                                 ['point-to-point', 'internet-stack', 'global-routing'])
     obj.source = 'simple-alternate-routing.cc'
 
     obj = bld.create_ns3_program('simple-error-model',
-        ['point-to-point', 'internet-stack'])
+                                 ['point-to-point', 'internet-stack'])
     obj.source = 'simple-error-model.cc'
 
     obj = bld.create_ns3_program('csma-one-subnet',
-        ['csma', 'internet-stack'])
+                                 ['csma', 'internet-stack'])
     obj.source = 'csma-one-subnet.cc'
 
+    obj = bld.create_ns3_program('csma-bridge',
+                                 ['bridge', 'csma', 'internet-stack'])
+    obj.source = 'csma-bridge.cc'
+
     obj = bld.create_ns3_program('udp-echo',
-        ['csma', 'internet-stack'])
+                                 ['csma', 'internet-stack'])
     obj.source = 'udp-echo.cc'
 
+    obj = bld.create_ns3_program('realtime-udp-echo',
+                                 ['csma', 'internet-stack'])
+    obj.source = 'realtime-udp-echo.cc'
+
     obj = bld.create_ns3_program('csma-broadcast',
-        ['csma', 'internet-stack'])
+                                 ['csma', 'internet-stack'])
     obj.source = 'csma-broadcast.cc'
 
     obj = bld.create_ns3_program('csma-packet-socket',
-        ['csma', 'internet-stack'])
+                                 ['csma', 'internet-stack'])
     obj.source = 'csma-packet-socket.cc'
 
     obj = bld.create_ns3_program('csma-multicast',
-        ['csma', 'internet-stack'])
+                                 ['csma', 'internet-stack'])
     obj.source = 'csma-multicast.cc'
 
     obj = bld.create_ns3_program( 'mixed-global-routing',
-        ['point-to-point', 'internet-stack', 'global-routing' , 'csma-cd'])
+                                  ['point-to-point', 'internet-stack', 'global-routing' , 'csma-cd'])
     obj.source = 'mixed-global-routing.cc'
 
     obj = bld.create_ns3_program('simple-point-to-point-olsr',
-        ['point-to-point', 'internet-stack', 'olsr'])
+                                 ['point-to-point', 'internet-stack', 'olsr'])
     obj.source = 'simple-point-to-point-olsr.cc'
 
     obj = bld.create_ns3_program('tcp-large-transfer',
-        ['point-to-point', 'internet-stack'])
+                                 ['point-to-point', 'internet-stack'])
     obj.source = 'tcp-large-transfer.cc'
+
+    obj = bld.create_ns3_program('tcp-nsc-lfn',
+                                 ['point-to-point', 'internet-stack'])
+    obj.source = 'tcp-nsc-lfn.cc'
+
+    obj = bld.create_ns3_program('tcp-nsc-zoo',
+                                 ['csma', 'internet-stack'])
+    obj.source = 'tcp-nsc-zoo.cc'
+
+    obj = bld.create_ns3_program('tcp-star-server',
+                                 ['point-to-point', 'internet-stack'])
+    obj.source = 'tcp-star-server.cc'
+
+    obj = bld.create_ns3_program('star',
+                                 ['point-to-point', 'internet-stack'])
+    obj.source = 'star.cc'
+
+    obj = bld.create_ns3_program('csma-star',
+                                 ['csma', 'internet-stack'])
+    obj.source = 'csma-star.cc'
 
     obj = bld.create_ns3_program('wifi-adhoc',
                                  ['core', 'simulator', 'mobility', 'wifi'])
@@ -58,3 +88,9 @@ def build(bld):
                                  ['core', 'simulator', 'mobility', 'wifi'])
     obj.source = 'wifi-ap.cc'
 
+    bld.add_subdirs('stats')
+
+    obj = bld.create_ns3_program('wifi-wired-bridging',
+                                 ['core', 'simulator', 'mobility', 'wifi', 
+                                  'csma', 'helper', 'bridge'])
+    obj.source = 'wifi-wired-bridging.cc'

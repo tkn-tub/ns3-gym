@@ -1,0 +1,358 @@
+@node Node and Internet Stack
+@chapter Node and Internet Stack
+@anchor{chap:Node}
+
+This chapter describes how ns-3 nodes are put together, and provides
+a walk-through of how packets traverse an internet-based Node.
+
+@float Figure,fig:node
+@caption{High-level node architecture.}
+@image{figures/node,5in}
+@end float
+
+In ns-3, nodes are instances of @code{class Node}.  This class
+may be subclassed, but instead, the conceptual model is that 
+we @emph{aggregate} or insert objects to it rather than define 
+subclasses.
+
+One might think of a bare ns-3 node as a shell of a computer,
+to which one may add NetDevices (cards) and other innards including
+the protocols and applications.  @ref{fig:node} illustrates
+that Node objects contain a list of Applications (initially,
+the list is empty), a list of NetDevices (initially, the list
+is empty), a unique integer ID, and a system ID (for
+distributed simulation).
+
+The design tries to avoid putting too many dependencies on the
+base class Node, Application, or NetDevice for the following:
+@itemize @bullet
+@item IP version, or whether IP is at all even used in the Node.
+@item implementation details of the IP stack 
+@end itemize 
+
+From a software perspective, the lower interface of applications
+corresponds to the C-based sockets API.  The upper interface
+of NetDevice objects corresponds to the device independent
+sublayer of the Linux stack.  Everything in between can be
+aggregated and plumbed together as needed.
+
+Let's look more closely at the protocol demultiplexer.  We want
+incoming frames at layer-2 to be delivered to the right layer-3
+protocol such as Ipv4.  The
+function of this demultiplexer is to register callbacks for
+receiving packets.  The callbacks are indexed based on the 
+@uref{http://en.wikipedia.org/wiki/EtherType,,EtherType}
+in the layer-2 frame.   
+
+Many different types of higher-layer protocols may be 
+connected to the NetDevice, such as IPv4, IPv6, ARP,
+MPLS, IEEE 802.1x, and packet sockets.  Therefore, the
+use of a callback-based demultiplexer avoids the need to
+use a common base class for all of these protocols, which
+is problematic because of the different types of objects
+(including packet sockets) expected to be registered there.
+
+Each NetDevice delivers packets to a callback with the following
+signature:
+@verbatim
+  /**
+   * \param device a pointer to the net device which is calling this callback
+   * \param packet the packet received
+   * \param protocol the 16 bit protocol number associated with this packet.
+   *        This protocol number is expected to be the same protocol number
+   *        given to the Send method by the user on the sender side.
+   * \param address the address of the sender
+   * \returns true if the callback could handle the packet successfully, 
+   *        false otherwise.
+   */
+  typedef Callback<bool, Ptr<NetDevice>, Ptr<Packet>, uint16_t,
+    const Address &> ReceiveCallback;
+@end verbatim
+
+There is a function in class Node that matches that signature:
+@verbatim
+private:
+  bool ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet>,
+                          uint16_t protocol, const Address &from);
+@end verbatim
+
+However, users do not need to access this function directly.  Instead,
+when users call @code{uint32_t AddDevice (Ptr<NetDevice> device)}, 
+the implementation of this function sets the callback (and the
+function returns the ifIndex of the NetDevice on that Node).
+
+But what does the ReceiveFromDevice function do?  Here, it looks
+up another callback, in its list of callbacks, corresponding to the
+matching EtherType.  This callback is called a ProtocolHandler, and
+is specified as follows:
+@verbatim
+  typedef Callback<void, Ptr<NetDevice>, Ptr<Packet>, uint16_t,
+    const Address &> ProtocolHandler;
+@end verbatim
+
+Upper-layer protocols or objects are expected to provide such a function.
+and register it with the list of ProtocolHandlers by calling
+@code{Node::RegisterProtocolHandler ();}
+For instance, if Ipv4 is aggregated to a Node, then the Ipv4 receive
+function can be registered with the protocol handler by calling:
+@verbatim
+  RegisterProtocolHandler (
+    MakeCallback (&Ipv4L3Protocol::Receive, ipv4), 
+    Ipv4L3Protocol::PROT_NUMBER, 0);
+@end verbatim
+and likewise for Ipv6, Arp, etc.
+
+@section NodeList
+
+Every Node created is automatically added to the ns-3 @code{NodeList}.
+The NodeList class provides an @code{Add()} method and C++ iterators
+to allow one to walk the node list or fetch a Node pointer by
+its integer identifier.
+
+@section Internet stack aggregation
+
+The above @code{class Node} is not very useful as-is; other objects
+must be aggregated to it to provide useful node functionality.
+
+The ns-3 source code directory @code{src/internet-stack} provides
+implmentation of TCP/IPv4-related components.  These include IPv4,
+ARP, UDP, TCP, and other related protocols.
+
+Internet Nodes are not subclasses of class Node; they are simply Nodes 
+that have had a bunch of IPv4-related
+objects aggregated to them.  They can be put together by hand, or
+via a helper function @code{AddInternetStack ()} which does the 
+following:
+@verbatim
+void AddInternetStack (Ptr<Node> node)
+{
+  // Create layer-3 protocols 
+  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
+  Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> ();
+  ipv4->SetNode (node);
+  arp->SetNode (node);
+
+  // Create an L4 demux 
+  Ptr<Ipv4L4Demux> ipv4L4Demux = CreateObject<Ipv4L4Demux> ();
+
+  // Create transport protocols and insert them into the demux
+  Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
+  Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> ();
+  
+  ipv4L4Demux->SetNode (node);
+  udp->SetNode (node);
+  tcp->SetNode (node);
+  
+  ipv4L4Demux->Insert (udp);
+  ipv4L4Demux->Insert (tcp);
+  
+  // Add factories for instantiating transport protocol sockets
+  Ptr<UdpSocketFactoryImpl> udpFactory = CreateObject<UdpSocketFactoryImpl> ();
+  Ptr<TcpSocketFactoryImpl> tcpFactory = CreateObject<TcpSocketFactoryImpl> ();
+  Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> ();
+  
+  udpFactory->SetUdp (udp);
+  tcpFactory->SetTcp (tcp);
+  ipv4Impl->SetIpv4 (ipv4);
+  
+  // Aggregate all of these new objects to the node
+  node->AggregateObject (ipv4);
+  node->AggregateObject (arp);
+  node->AggregateObject (ipv4Impl);
+  node->AggregateObject (udpFactory);
+  node->AggregateObject (tcpFactory);
+  node->AggregateObject (ipv4L4Demux);
+}
+@end verbatim
+
+@subsection Internet Node structure
+
+The Internet Node (an ns-3 Node augmented by aggregation to have one or more
+IP stacks) has the following internal structure.
+
+@subsubsection Layer-3 protocols
+At the lowest layer, sitting above the NetDevices, are the "layer 3" 
+protocols, including IPv4, IPv6, and ARP.  These protocols provide 
+the following key methods and data members:
+
+@verbatim
+class Ipv4L3Protocol : public Object
+{
+public: 
+  // Add an Ipv4 interface corresponding to the provided NetDevice
+  uint32_t AddInterface (Ptr<NetDevice> device);
+
+  // Receive function that can be bound to a callback, for receiving
+  // packets up the stack
+  void Receive( Ptr<NetDevice> device, Ptr<Packet> p, uint16_t protocol, 
+    const Address &from);
+
+  // Higher-level layers call this method to send a packet
+  // down the stack to the MAC and PHY layers
+  // 
+  void Send (Ptr<Packet> packet, Ipv4Address source,
+             Ipv4Address destination, uint8_t protocol);
+
+private:
+  Ipv4InterfaceList m_interfaces;
+
+  // Protocol handlers
+}
+@end verbatim
+There are many more functions (such as @code{Forward ()}) but we will
+focus on the above four items from an architectural perspective.
+
+First, note that the @code{Receive ()} function has a matching signature
+to the ReceiveCallback in the @code{class Node}.  This function pointer
+is inserted into the the Node's protocol handler when 
+@code{AddInterface ()} is called.  The actual registration is done
+with a statement such as:
+follows:
+@verbatim
+ RegisterProtocolHandler ( MakeCallback (&Ipv4Protocol::Receive, ipv4),
+    Ipv4L3Protocol::PROT_NUMBER, 0);
+@end verbatim
+
+The Ipv4L3Protocol object is aggregated to the Node; there is only one
+such Ipv4L3Protocol object.  Higher-layer protocols that have a packet
+to send down to the Ipv4L3Protocol object can call 
+@code{GetObject<Ipv4L3Protocol> ()} to obtain a pointer, as follows:
+@verbatim
+  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
+  if (ipv4 != 0)
+    {
+      ipv4->Send (packet, saddr, daddr, PROT_NUMBER);
+    }
+@end verbatim
+
+This class nicely demonstrates two techniques we exploit in
+ns-3 to bind objects together:  callbacks, and object aggregation.
+
+Once IPv4 has determined that a packet is for the local node, it 
+forwards it up the stack.  This is done with the following function:
+
+@verbatim
+void
+Ipv4L3Protocol::ForwardUp (Ptr<Packet> p, Ipv4Header const&ip,
+                           Ptr<Ipv4Interface> incomingInterface)
+{
+  NS_LOG_FUNCTION (this << p << &ip);
+
+  Ptr<Ipv4L4Demux> demux = m_node->GetObject<Ipv4L4Demux> ();
+  Ptr<Ipv4L4Protocol> protocol = demux->GetProtocol (ip.GetProtocol ());
+  protocol->Receive (p, ip.GetSource (), ip.GetDestination (), incomingInterface);
+}
+@end verbatim
+
+The first step is to find the aggregated Ipv4L4Demux object.  Then, this
+object is consulted to look up the right Ipv4L4Protocol, based on IP protocol
+number.  For instance, TCP is registered in the demux as protocol number 6.
+Finally, the @code{Receive()} function on the Ipv4L4Protocol (such as
+@code{TcpL4Protocol::Receive} is called.
+
+We have not yet introduced the class Ipv4Interface.  Basically,
+each NetDevice is paired with an IPv4 representation of such device.
+In Linux, this @code{class Ipv4Interface} roughly corresponds to
+the @code{struct in_device}; the main purpose is to provide 
+address-family specific information (addresses) about an interface.
+
+@subsubsection Layer-4 protocols and sockets
+
+We next describe how the transport protocols, sockets, and applications
+tie together.  In summary, each transport protocol implementation is
+a socket factory.  An application that needs a new socket 
+
+For instance, to create a UDP socket, an application would use a code
+snippet such as the following:
+@verbatim
+      Ptr<Udp> udpSocketFactory = GetNode ()->GetObject<Udp> ();
+      Ptr<Socket> m_socket = socketFactory->CreateSocket ();
+      m_socket->Bind (m_local_address);
+      ...
+@end verbatim 
+The above will query the node to get a pointer to its UDP socket
+factory, will create one such socket, and will use the socket with
+an API similar to the C-based sockets API, such as @code{Connect ()}
+and @code{Send ()}.  See the chapter on ns-3 sockets for more information.  
+
+We have described so far a socket factory (e.g. @code{class Udp}) and
+a socket, which may be specialized (e.g., @code{class UdpSocket}).
+There are a few more key objects that relate to the specialized
+task of demultiplexing a packet to one or more receiving sockets.
+The key object in this task is @code{class Ipv4EndPointDemux}.
+This demultiplexer stores objects of @code{class Ipv4EndPoint}.
+This class holds the addressing/port tuple (local port, local address, 
+destination port, destination address) associated with the socket, 
+and a receive callback.  This receive callback has a receive
+function registered by the socket.  The @code{Lookup ()} function to
+Ipv4EndPointDemux returns a list of Ipv4EndPoint objects (there may
+be a list since more than one socket may match the packet).  The
+layer-4 protocol copies the packet to each Ipv4EndPoint and calls
+its @code{ForwardUp ()} method, which then calls the @code{Receive ()}
+function registered by the socket.
+
+An issue that arises when working with the sockets API on real
+systems is the need to manage the reading from a socket, using 
+some type of I/O (e.g., blocking, non-blocking, asynchronous, ...).
+ns-3 implements an asynchronous model for socket I/O; the application
+sets a callback to be notified of received data ready to be read, and the 
+callback is invoked by the transport protocol when data is available.
+This callback is specified as follows:
+@verbatim
+  void Socket::SetRecvCallback (Callback<void, Ptr<Socket>, 
+    Ptr<Packet>, const Address&> receivedData);
+@end verbatim
+The data being received is conveyed in the Packet data buffer.  An example
+usage is in @code{class PacketSink}:
+@verbatim
+  m_socket->SetRecvCallback (MakeCallback(&PacketSink::HandleRead, this));
+@end verbatim
+
+To summarize, internally, the UDP implementation is organized as follows:
+@itemize @bullet
+@item a @code{UdpImpl} class that implements the Udp socket factory
+functionality
+@item a @code{UdpL4Protocol} class that implements the protocol logic
+that is socket-independent 
+@item a @code{UdpSocketImpl} class that implements socket-specific aspects
+of UDP
+@item a class called @code{Ipv4EndPoint} that stores the
+addressing tuple (local port, local address, destination port, destination
+address) associated with the socket, and a receive callback for the socket.
+@end itemize
+
+@subsection Internet Node interfaces
+
+Many of the implementation details, or internal objects themselves, 
+of Internet Node objects are not exposed at the simulator public
+API.  This allows for different implementations; for instance, 
+replacing the native ns-3 models with ported TCP/IP stack code. 
+ 
+The C++ public APIs of all of these objects is found in the
+@code{src/node} directory, including principally:
+@itemize @bullet
+@item @code{socket.h}
+@item @code{tcp.h}
+@item @code{udp.h}
+@item @code{ipv4.h}
+@end itemize 
+These are typically base class objects that implement the default
+values used in the implementation, implement access methods to get/set
+state variables, host attributes, and implement publicly-available methods 
+exposed to clients such as @code{CreateSocket}.
+
+@subsection Example path of a packet
+
+These two figures show an example stack trace of how packets flow
+through the Internet Node objects.
+
+@float Figure,fig:internet-node-send
+@caption{Send path of a packet.}
+@image{figures/internet-node-send,5in}
+@end float
+
+@float Figure,fig:internet-node-recv
+@caption{Receive path of a packet.}
+@image{figures/internet-node-recv,5in}
+@end float
+

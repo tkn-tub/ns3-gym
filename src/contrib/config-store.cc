@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iostream>
 #include <unistd.h>
+#include <stdlib.h>
 
 NS_LOG_COMPONENT_DEFINE ("ConfigStore");
 

@@ -97,17 +97,17 @@ main (int argc, char *argv[])
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
   PointToPointHelper p2p;
-  p2p.SetDeviceParameter ("DataRate", StringValue ("5Mbps"));
-  p2p.SetChannelParameter ("Delay", StringValue ("2ms"));
+  p2p.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+  p2p.SetChannelAttribute ("Delay", StringValue ("2ms"));
   NetDeviceContainer d0d2 = p2p.Install (n0n2);
 
   NetDeviceContainer d1d2 = p2p.Install (n1n2);
 
-  p2p.SetDeviceParameter ("DataRate", StringValue ("1500kbps"));
-  p2p.SetChannelParameter ("Delay", StringValue ("10ms"));
+  p2p.SetDeviceAttribute ("DataRate", StringValue ("1500kbps"));
+  p2p.SetChannelAttribute ("Delay", StringValue ("10ms"));
   NetDeviceContainer d3d2 = p2p.Install (n3n2);
 
-  p2p.SetChannelParameter ("Delay", StringValue ("100ms"));
+  p2p.SetChannelAttribute ("Delay", StringValue ("100ms"));
   NetDeviceContainer d1d3 = p2p.Install (n1n3);
 
   InternetStackHelper internet;
@@ -148,7 +148,7 @@ main (int argc, char *argv[])
 
   ApplicationContainer apps = onoff.Install (c.Get (3));
   apps.Start (Seconds (1.1));
-  apps.Start (Seconds (10.0));
+  apps.Stop (Seconds (10.0));
 
   // Create a packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",

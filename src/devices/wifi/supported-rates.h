@@ -21,6 +21,7 @@
 #define SUPPORTED_RATES_H
 
 #include <stdint.h>
+#include <ostream>
 #include "ns3/buffer.h"
 
 namespace ns3 {

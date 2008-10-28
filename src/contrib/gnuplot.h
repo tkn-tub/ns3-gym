@@ -94,15 +94,6 @@ public:
    * Use this method with error bar style X or Y.
    */
   void Add (double x, double y, double errorDelta);
-  /**
-   * \param x x coord to new data point
-   * \param y y coord to new data point
-   * \param errorDeltaX x delta for the new data point
-   * \param errorDeltaY y delta for the new data point
-   *
-   * Use this method with error bar style XY.
-   */
-  void Add (double x, double y, double errorDeltaX, double errorDeltaY);
 private:
   friend class Gnuplot;
   struct Data {

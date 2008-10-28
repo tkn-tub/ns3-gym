@@ -240,7 +240,6 @@ public:
    */
   virtual double CalculateSnr (WifiMode txMode, double ber) const = 0;
 
-
   virtual Ptr<WifiChannel> GetChannel (void) const = 0;
 
   static WifiMode g_6mba;

@@ -3,8 +3,145 @@
 
 This file contains ns-3 release notes (most recent releases first).
 
-Release 3.0.13 (2008/06/02)
+All of the ns-3 documentation is accessible from the ns-3 website: 
+http://www.nsnam.org
+including tutorials:
+http://www.nsnam.org/tutorials.html
+
+Release 3.2 (pending)
+=====================
+
+Availability
+------------
+This release is immediately available from:
+http://www.nsnam.org/releases/ns-3.2.tar.bz2
+
+Supported platforms
+-------------------
+ns-3.2 has been tested on the following platforms:
+  - linux x86 gcc 4.2, 4.1, and, 3.4.6.
+  - linux x86_64 gcc 4.3.2, 4.2.3, 4.2.1, 4.1.3, 3.4.6
+  - MacOS X ppc and x86
+  - cygwin gcc 3.4.4 (debug only)
+
+Not all ns-3 options are available on all platforms; consult the
+wiki for more information:
+http://www.nsnam.org/wiki/index.php/Installation
+
+New user-visible features
+-------------------------
+  a) Learning bridge (IEEE 802.1D)
+    It is now possible to bridge together multiple layer 2 devices to
+    create larger layer 2 networks. The Wifi and Csma models support
+    this new mode of operation. (contributed by Gustavo Carneiro)
+
+  b) Python bindings
+    It is now possible to write simulation scripts in python using our 
+    python bindings (contributed by Gustavo Carneiro).
+
+  c) Real-time simulator
+    It is now possible to run simulations synchronized on the real-world
+    wall-clock time (contributed by Craig Dowell).
+
+  d) Network Simulation Cradle
+    It is now possible to use the Network Simulation Cradle 
+    (http://www.wand.net.nz/~stj2/nsc/) in ns-3 and run simulations 
+    using various versions of kernel TCP network stacks. (contributed
+    by Florian Westphal as part of his Google Summer of Code work)
+
+  e) A statistics framework
+    Joseph Kopena contributed a statistics framework which can be used
+    keep track of simulation data in persistent storage across multiple 
+    runs (database and ascii file backends are available).
+    More information on the wiki:
+    http://www.nsnam.org/wiki/index.php/Statistical_Framework_for_Network_Simulation
+
+API changes from ns-3.1
+-----------------------
+API changes for this release are documented in the file CHANGES.html
+
+Known issues
+------------
+ns-3 build is known to fail on the following platforms:
+  - gcc 3.3 and earlier
+  - optimized builds on gcc 3.4.4 and 3.4.5
+  - optimized builds on linux x86 gcc 4.0.x
+  - optimized builds on Ubuntu 8.10 alpha 5 x86 gcc4.3.2
+  - MinGW
+
+The IPv4 API defined in src/node/ipv4.h is expected to undergo major changes 
+in preparation of the merge of the IPv6 API and implementation.
+
+Future releases
+---------------
+Our next release, which is expected to happen in 2 to 4 months from now, will
+feature the merging of some of our projects currently in development: IPv6, 
+emulation, and synchronous posix sockets.
+
+Release 3.1 (2008/06/30)
 ========================
+
+The first ns-3 stable release
+-----------------------------
+
+This release is immediately available from:
+http://www.nsnam.org/releases/ns-3.1.tar.bz2
+
+We dedicate this initial ns-3 release to our late contributor and friend, 
+Federico Maguolo.
+
+What is ns-3 ?
+--------------
+
+ns-3 is a new discrete-event network simulator designed for supporting network
+research and education. ns-3 features a solid, well documented C++ core and 
+models for TCP/IP (IPv4), several link types including WiFi, and mobility 
+models.
+
+ns-3 is an open source project released under the GNU GPLv2 license which 
+allows anyone to use ns-3 without having to pay any license fee or royalties. 
+ns-3 is actively seeking new contributors to extend the range of supported 
+models and/or to maintain existing models.
+
+Where to get more information about ns-3
+----------------------------------------
+
+All the ns-3 documentation, is accessible from the ns-3 website: 
+http://www.nsnam.org
+
+Including, tutorials:
+http://www.nsnam.org/tutorials.html
+
+Supported platforms
+-------------------
+
+ns-3 is regularly tested on the following platforms:
+  - linux x86 gcc 4.2, 4.1, and, 3.4.6.
+  - linux x86_64 gcc 4.1.3, 4.2.1, 3.4.6
+  - MacOS X ppc and x86
+  - cygwin gcc 3.4.4 (debug only)
+
+Known issues
+------------
+
+ns-3 is known to fail on the following platforms:
+  - gcc 3.3 and earlier
+  - optimized builds on gcc 3.4.4 and 3.4.5
+  - optimized builds on linux x86 gcc 4.0.x
+
+The IPv4 API defined in src/node/ipv4.h is expected to undergo major changes 
+in preparation of the merge of the IPv6 API and implementation.
+
+Future releases
+---------------
+
+Our next release, which is expected to happen in 2 to 4 months from now, will
+feature the merging of some of our projects currently in development: python 
+scripting, IPv6, emulation, a statistics framework and synchronous posix 
+sockets.
+
+Release 3.0.13 (2008/06/02)
+===========================
 - point to point links generate ppp pcap traces
 - point to point links support asymmetrical data rates.
 - generate doxygen documentation for all attributes and trace sources
@@ -24,7 +161,7 @@ called Simulator::Stop (time), and takes a relative time, instead of
 absolute.
 
 Release 3.0.12 (2008/04/07)
-========================
+===========================
     - Add Attribute support to the TypeId metadata system and add
 attribute support to all in-tree models
     - Add a mid-level helper API to build simulation topologies 
@@ -37,7 +174,7 @@ in the 802.11 model (Federico Maguolo).
     - TCP delayed acknowledgements and multitasking server
 
 Release 3.0.11 (2008/02/15)
-========================
+===========================
     - Initial port of GTNetS TCP implementation (initial version 
 that does not support multitasking or delayed acknowledgments yet, 
 but supports a reliable stream service)
@@ -47,13 +184,13 @@ metadata system
     - tutorial updates
 
 Release 3.0.10 (2008/01/15)
-========================
+===========================
    - Add tutorial document content;
    - Valgrind option for "waf" tool;
    - Doxygen organization changes.
 
 Release 3.0.9 (2007/12/15)
-========================
+==========================
    - A 802.11 model ported from Yans. This model supports:
        * a rather extensive PHY model
        * log-distance and friis propagation model
@@ -67,26 +204,26 @@ Release 3.0.9 (2007/12/15)
    - many bugs fixed
 
 Release 3.0.8 (2007/11/15)
-========================
+==========================
    - A simple error model
    - Source files for ns-3 tutorial
 
 Release 3.0.7 (2007/10/15)
-========================
+==========================
   - OLSR routing protocol
   - A timer class
   - Additional mobility models (random waypoint, random 2D walk)
   - A mobility visualization tool 
 
 Release 3.0.6 (2007/09/15)
-========================
+==========================
   - Static multicast IPv4 routing
   - Logging overhaul (NS_LOG macros)
   - Refactoring of tracing subsystem
   - Tutorial document started
  
 Release 3.0.5 (2007/08/15)
-========================
+==========================
 
   - Refactoring to support win32-based unix environments (Cygwin, mingw)
   - "Packet socket" for allowing applications to access NetDevices directly
@@ -97,7 +234,7 @@ Release 3.0.5 (2007/08/15)
   - Global unicast centralized routing 
 
 Release 3.0.4 (2007/07/15)
-========================
+==========================
 
   - Enable waf as the default build system.
   - Per-packet metadata:  a system to track which headers and trailers 
@@ -105,7 +242,7 @@ Release 3.0.4 (2007/07/15)
   - Simplifications to point-to-point devices and channel
 
 Release 3.0.3 (2007/06/15)
-========================
+==========================
 
   - Enable Waf for release tarballs: users can now build ns-3
     with the "waf" tool. See doc/build-waf.txt.
@@ -118,7 +255,7 @@ Release 3.0.3 (2007/06/15)
   - Many small API cleanups
 
 Release 3.0.2 (2007/05/18)
-========================
+==========================
 
   - Implement a new memory management infrastructure based
     on reference counting and smart pointers (the latter being
@@ -130,7 +267,7 @@ Release 3.0.2 (2007/05/18)
   - Add support for a BSD-style socket API for user applications
 
 Release 3.0.1 (2007/03/31)
-========================
+==========================
 
   - First public release; not yet pre-alpha.
 

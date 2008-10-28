@@ -23,6 +23,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <string.h>
 
 using namespace ns3;
 
@@ -129,7 +130,6 @@ PrintHelp (void)
   std::cout << "      --list: use std::list scheduler"<<std::endl;
   std::cout << "      --map: use std::map cheduler"<<std::endl;
   std::cout << "      --heap: use Binary Heap scheduler"<<std::endl;
-  std::cout << "      --log=filename: log scheduler events for the event replay utility."<<std::endl;
   std::cout << "      --debug: enable some debugging"<<std::endl;
 }
 
@@ -172,11 +172,6 @@ int main (int argc, char *argv[])
         {
           g_debug = true;
         } 
-      else if (strncmp ("--log=", argv[0],strlen ("--log=")) == 0) 
-        {
-          char const *filename = argv[0] + strlen ("--log=");
-          Simulator::EnableLogTo (filename);
-        }
       else if (strncmp ("--total=", argv[0], strlen("--total=")) == 0) 
         {
           total = atoi (argv[0]+strlen ("--total="));

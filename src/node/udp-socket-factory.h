@@ -42,14 +42,6 @@ class UdpSocketFactory : public SocketFactory
 public:
   static TypeId GetTypeId (void);
 
-  /**
-   * \return smart pointer to Socket
-   * 
-   * API for creating socket instances; must be implemented by UDP 
-   * implementations..
-   */
-  virtual Ptr<Socket> CreateSocket (void) = 0;
-
 };
 
 } // namespace ns3

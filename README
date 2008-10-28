@@ -72,8 +72,8 @@ use of these ns-3 libraries.
 
 To build the set of default libraries and the example
 programs included in this package, you need to use the
-tool 'waf'. Detailed information on how to install
-and use waf is included in the file doc/build.txt
+tool 'waf'. Detailed information on how use waf is 
+included in the file doc/build.txt
 
 However, the real quick and dirty way to get started is to
 type the command "./waf" the the directory which contains
@@ -85,6 +85,7 @@ following set of platforms:
   - linux x86 gcc 4.2, 4.1, and, 3.4.6.
   - linux x86_64 gcc 4.1.3, 4.2.1, 3.4.6
   - MacOS X ppc and x86
+  - mingw gcc 3.4.5 (debug only)
   - cygwin gcc 3.4.4 (debug only)
 
 The current codebase is expected to fail to build on
@@ -92,10 +93,15 @@ the following platforms:
   - gcc 3.3 and earlier
   - optimized builds on gcc 3.4.4 and 3.4.5
   - optimized builds on linux x86 gcc 4.0 
+  - msvc
 
-Other platforms may or may not work: we welcome 
-patches to improve the portability of the code to these
-other platforms.
+The following optional features are known to not work on
+these platforms:
+  - mingw: nsc, realtime scheduler
+  - cygwin: python bindings, nsc
+
+Other platforms may or may not work: we welcome patches to 
+improve the portability of the code to these other platforms. 
 
 4) Running ns-3
 ---------------

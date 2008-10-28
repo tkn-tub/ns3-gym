@@ -27,6 +27,7 @@
 #include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
 #include "ns3/csma-channel.h"
+#include "ns3/deprecated.h"
 
 namespace ns3 {
 
@@ -56,28 +57,31 @@ public:
    * CsmaNetDevice created through CsmaHelper::Install.
    */
   void SetQueue (std::string type,
-		 std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-		 std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-		 std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-		 std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue ());
+                 std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                 std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                 std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                 std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue ());
 
   /**
    * \param n1 the name of the attribute to set
    * \param v1 the value of the attribute to set
    *
-   * Set these parameters on each ns3::CsmaNetDevice created
+   * Set these attributes on each ns3::CsmaNetDevice created
    * by CsmaHelper::Install
    */
-  void SetDeviceParameter (std::string n1, const AttributeValue &v1);
+  void SetDeviceAttribute (std::string n1, const AttributeValue &v1);
 
   /**
    * \param n1 the name of the attribute to set
    * \param v1 the value of the attribute to set
    *
-   * Set these parameters on each ns3::CsmaChannel created
+   * Set these attributes on each ns3::CsmaChannel created
    * by CsmaHelper::Install
    */
-  void SetChannelParameter (std::string n1, const AttributeValue &v1);
+  void SetChannelAttribute (std::string n1, const AttributeValue &v1);
+
+  void SetDeviceParameter (std::string n1, const AttributeValue &v1) NS_DEPRECATED;
+  void SetChannelParameter (std::string n1, const AttributeValue &v1) NS_DEPRECATED;
 
   /**
    * \param filename filename prefix to use for pcap files.
@@ -160,7 +164,7 @@ public:
    * \param c a set of nodes
    *
    * This method creates a simple ns3::CsmaChannel with the
-   * attributes configured by CsmaHelper::SetChannelParameter and
+   * attributes configured by CsmaHelper::SetChannelAttribute and
    * then calls CsmaHelper::Install.
    */
   NetDeviceContainer Install (const NodeContainer &c);
@@ -170,10 +174,43 @@ public:
    * \param channel the channel to use as a backbone.
    *
    * For each node in the input container, we create a ns3::CsmaNetDevice with
-   * the requested parameters, a queue for this NetDevice, and associate
+   * the requested attributes, a queue for this NetDevice, and associate
    * the resulting ns3::NetDevice with the ns3::Node and ns3::CsmaChannel.
    */
   NetDeviceContainer Install (const NodeContainer &c, Ptr<CsmaChannel> channel);
+
+  /**
+   * \brief Make a star network topology.
+   *
+   * Given a pointer to a node that  will become the hub of the star, and a 
+   * NodeContainer containing pointers to the nodes that will become the 
+   * spokes; we construct CSMA net devices on the hub (corresponding to the 
+   * spokes) and store them in the hubDevices NetDeviceContainer.  We add a 
+   * net device to each spoke node and store them in the spokeDevices 
+   * NetDeviceContainer.  A CSMA is created for each spoke.
+   *
+   * Usually when one thinks of a star network, one thinks of point-to-point
+   * links.  We're just using a single pair of devices on a multi-point-to-point
+   * network "drops" as the link.  You are free to add any number of other 
+   * devices on the link if you want.
+   *
+   * The ordering of the devices in the hubDevices container is according to
+   * the order of the spokes container -- that is, hubDevices[0] will be the
+   * net device used on the hub that talks to spokes[0].  the container entry
+   * spokeDevices[0] will have the device that hubDevices[0] talks to -- those
+   * two devices are the ones that connect hub to spokes[0].
+   *
+   * \param hub The central node of the star network
+   * \param spokes A NodeContainer of the nodes that will be the spoke (leaf)
+   *               nodes
+   * \param hubDevices A NetDeviceContainer that will be filled with pointers
+   *                   to the point-to-point net devices created on the hub.
+   * \param spokeDevices A NetDeviceContainer that will be filled with pointers
+   *                    to the point-to-point net devices created on each of 
+   *                    the spokes.
+   */
+  void InstallStar (Ptr<Node> hub, NodeContainer spokes, 
+                    NetDeviceContainer& hubDevices, NetDeviceContainer& spokeDevices);
 
 private:
   static void RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);

@@ -154,27 +154,27 @@ private:
   void SetQosControl (uint16_t qos);
   void PrintFrameControl (std::ostream &os) const;
 
-  uint16_t m_ctrlType      : 2;
-  uint16_t m_ctrlSubtype   : 4;
-  uint16_t m_ctrlToDs     : 1;
-  uint16_t m_ctrlFromDs   : 1;
-  uint16_t m_ctrlMoreFrag : 1;
-  uint16_t m_ctrlRetry     : 1;
-  uint16_t m_ctrlPwrMgt   : 1;
-  uint16_t m_ctrlMoreData : 1;
-  uint16_t m_ctrlWep       : 1;
-  uint16_t m_ctrlOrder     : 1;
+  uint8_t m_ctrlType;
+  uint8_t m_ctrlSubtype;
+  uint8_t m_ctrlToDs;
+  uint8_t m_ctrlFromDs;
+  uint8_t m_ctrlMoreFrag;
+  uint8_t m_ctrlRetry;
+  uint8_t m_ctrlPwrMgt;
+  uint8_t m_ctrlMoreData;
+  uint8_t m_ctrlWep;
+  uint8_t m_ctrlOrder;
   uint16_t m_duration;
   Mac48Address m_addr1;
   Mac48Address m_addr2;
   Mac48Address m_addr3;
-  uint16_t m_seqFrag : 4;
-  uint16_t m_seqSeq  : 12;
+  uint8_t m_seqFrag;
+  uint16_t m_seqSeq;
   Mac48Address m_addr4;
-  uint16_t m_qosTid : 4;
-  uint16_t m_qosEosp : 1;
-  uint16_t m_qosAckPolicy : 2;
-  uint16_t m_qosStuff: 8;
+  uint8_t m_qosTid;
+  uint8_t m_qosEosp;
+  uint8_t m_qosAckPolicy;
+  uint16_t m_qosStuff;
 };
 
 } // namespace ns3

@@ -131,7 +131,7 @@ Ptr<Packet> PendingData::CopyFromOffset (uint32_t s, uint32_t o)
   uint32_t s1 = std::min (s, SizeFromOffset (o)); // Insure not beyond end of data
   if (s1 == 0)
     {
-      return 0;   // No data requested
+      return Create<Packet> ();   // No data requested
     }
   if (data.size() != 0)
     { // Actual data exists, make copy and return it

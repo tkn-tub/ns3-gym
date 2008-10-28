@@ -46,9 +46,27 @@ void
 SimpleNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol, 
 			  Mac48Address to, Mac48Address from)
 {
-  if (to == m_address || to == Mac48Address::GetBroadcast ())
+  NetDevice::PacketType packetType;
+  if (to == m_address)
     {
-      m_rxCallback (this, packet, protocol, from);
+      packetType = NetDevice::PACKET_HOST;
+    }
+  else if (to.IsBroadcast ())
+    {
+      packetType = NetDevice::PACKET_HOST;
+    }
+  else if (to.IsMulticast ())
+    {
+      packetType = NetDevice::PACKET_MULTICAST;
+    }
+  else 
+    {
+      packetType = NetDevice::PACKET_OTHERHOST;
+    }
+  m_rxCallback (this, packet, protocol, from);
+  if (!m_promiscCallback.IsNull ())
+    {
+      m_promiscCallback (this, packet, protocol, from, to, packetType);
     }
 }
 
@@ -132,12 +150,12 @@ SimpleNetDevice::IsMulticast (void) const
 Address 
 SimpleNetDevice::GetMulticast (void) const
 {
-  return Mac48Address ("01:00:5e:00:00:00");
+  return Mac48Address::GetMulticastPrefix ();
 }
 Address 
 SimpleNetDevice::MakeMulticastAddress (Ipv4Address multicastGroup) const
 {
-  return Mac48Address ("01:00:5e:00:00:00");
+  return Mac48Address::GetMulticast (multicastGroup);
 }
 bool 
 SimpleNetDevice::IsPointToPoint (void) const
@@ -151,6 +169,15 @@ SimpleNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocol
   m_channel->Send (packet, protocolNumber, to, m_address, this);
   return true;
 }
+bool 
+SimpleNetDevice::SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
+{
+  Mac48Address to = Mac48Address::ConvertFrom (dest);
+  Mac48Address from = Mac48Address::ConvertFrom (source);
+  m_channel->Send (packet, protocolNumber, to, from, this);
+  return true;
+}
+
 Ptr<Node> 
 SimpleNetDevice::GetNode (void) const
 {
@@ -181,5 +208,16 @@ SimpleNetDevice::DoDispose (void)
 }
 
 
+void
+SimpleNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
+{
+  m_promiscCallback = cb;
+}
+
+bool
+SimpleNetDevice::SupportsSendFrom (void) const
+{
+  return true;
+}
 
 } // namespace ns3

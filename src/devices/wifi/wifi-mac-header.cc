@@ -40,7 +40,8 @@ enum {
 };
 
 WifiMacHeader::WifiMacHeader ()
-  : m_ctrlMoreData (0),
+  : m_ctrlPwrMgt (0),
+    m_ctrlMoreData (0),
     m_ctrlWep (0),
     m_ctrlOrder (1)
 {}

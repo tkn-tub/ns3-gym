@@ -21,6 +21,19 @@
 
 namespace ns3 {
 
+NetDeviceContainer::NetDeviceContainer ()
+{}
+NetDeviceContainer::NetDeviceContainer (Ptr<NetDevice> dev)
+{
+  m_devices.push_back (dev);
+}
+NetDeviceContainer::NetDeviceContainer (const NetDeviceContainer &a, const NetDeviceContainer &b)
+{
+  *this = a;
+  Add (b);
+}
+
+
 NetDeviceContainer::Iterator 
 NetDeviceContainer::Begin (void) const
 {

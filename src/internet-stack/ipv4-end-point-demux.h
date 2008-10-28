@@ -30,6 +30,16 @@ namespace ns3 {
 
 class Ipv4EndPoint;
 
+/**
+ * \brief Demultiplexes packets to various transport layer endpoints
+ *
+ * This class serves as a lookup table to match partial or full information
+ * about a four-tuple to an ns3::Ipv4EndPoint.  It internally contains a list
+ * of endpoints, and has APIs to add and find endpoints in this demux.  This
+ * code is shared in common to TCP and UDP protocols in ns3.  This demux
+ * sits between ns3's layer four and the socket layer
+ */
+
 class Ipv4EndPointDemux {
 public:
   typedef std::list<Ipv4EndPoint *> EndPoints;
@@ -38,6 +48,7 @@ public:
   Ipv4EndPointDemux ();
   ~Ipv4EndPointDemux ();
 
+  EndPoints GetAllEndPoints (void);
   bool LookupPortLocal (uint16_t port);
   bool LookupLocal (Ipv4Address addr, uint16_t port);
   EndPoints Lookup (Ipv4Address daddr, 

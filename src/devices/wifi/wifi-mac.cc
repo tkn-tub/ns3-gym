@@ -75,11 +75,13 @@ WifiMac::GetTypeId (void)
     .SetParent<Object> ()
     .AddAttribute ("CtsTimeout", "When this timeout expires, the RTS/CTS handshake has failed.",
                    TimeValue (GetDefaultCtsAckTimeout ()),
-                   MakeTimeAccessor (&WifiMac::m_ctsTimeout),
+                   MakeTimeAccessor (&WifiMac::SetCtsTimeout,
+                                     &WifiMac::GetCtsTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("AckTimeout", "When this timeout expires, the DATA/ACK handshake has failed.",
                    TimeValue (GetDefaultCtsAckTimeout ()),
-                   MakeTimeAccessor (&WifiMac::m_ackTimeout),
+                   MakeTimeAccessor (&WifiMac::GetAckTimeout,
+                                     &WifiMac::SetAckTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("Sifs", "The value of the SIFS constant.",
                    TimeValue (GetDefaultSifs ()),
@@ -98,7 +100,8 @@ WifiMac::GetTypeId (void)
                    MakeTimeChecker ())
     .AddAttribute ("Pifs", "The value of the PIFS constant.",
                    TimeValue (GetDefaultSifs () + GetDefaultSlot ()),
-                   MakeTimeAccessor (&WifiMac::m_pifs),
+                   MakeTimeAccessor (&WifiMac::SetPifs,
+                                     &WifiMac::GetPifs),
                    MakeTimeChecker ())
     .AddAttribute ("MaxPropagationDelay", "The maximum propagation delay. Unused for now.",
                    TimeValue (GetDefaultMaxPropagationDelay ()),
@@ -118,40 +121,10 @@ WifiMac::GetTypeId (void)
   return tid;
 }
 
-void
-WifiMac::SetPifs (Time pifs)
-{
-  m_pifs = pifs;
-}
-void 
-WifiMac::SetCtsTimeout (Time ctsTimeout)
-{
-  m_ctsTimeout = ctsTimeout;
-}
-void 
-WifiMac::SetAckTimeout (Time ackTimeout)
-{
-  m_ackTimeout = ackTimeout;
-}
 void 
 WifiMac::SetMaxPropagationDelay (Time delay)
 {
   m_maxPropagationDelay = delay;
-}
-Time
-WifiMac::GetPifs (void) const
-{
-  return m_pifs;
-}
-Time
-WifiMac::GetCtsTimeout (void) const
-{
-  return m_ctsTimeout;
-}
-Time
-WifiMac::GetAckTimeout (void) const
-{
-  return m_ackTimeout;
 }
 
 Time

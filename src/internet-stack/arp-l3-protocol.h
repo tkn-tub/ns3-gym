@@ -36,6 +36,13 @@ class Node;
 class Packet;
 
 /**
+ * \ingroup internetStack
+ * \defgroup arp Arp
+ *
+ * This is an overview of Arp capabilities (write me).
+ */
+/**
+ * \ingroup arp
  * \brief An implementation of the ARP protocol
  */
 class ArpL3Protocol : public Object
@@ -52,9 +59,10 @@ public:
   Ptr<ArpCache> CreateCache (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface);
 
   /**
-   * \brief Recieve a packet
+   * \brief Receive a packet
    */
-  void Receive(Ptr<NetDevice> device, Ptr<Packet> p, uint16_t protocol, const Address &from);
+  void Receive(Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from, const Address &to,
+               NetDevice::PacketType packetType);
   /**
    * \brief Perform an ARP lookup
    * \param p

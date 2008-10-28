@@ -22,6 +22,7 @@
 #include "ns3/assert.h"
 #include "ns3/packet.h"
 #include "ns3/node.h"
+#include "ns3/boolean.h"
 
 #include "udp-l4-protocol.h"
 #include "udp-header.h"
@@ -45,6 +46,11 @@ UdpL4Protocol::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::UdpL4Protocol")
     .SetParent<Ipv4L4Protocol> ()
     .AddConstructor<UdpL4Protocol> ()
+    .AddAttribute ("CalcChecksum", "If true, we calculate the checksum of outgoing packets"
+                   " and verify the checksum of incoming packets.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&UdpL4Protocol::m_calcChecksum),
+                   MakeBooleanChecker ())
     ;
   return tid;
 }
@@ -70,11 +76,6 @@ int
 UdpL4Protocol::GetProtocolNumber (void) const
 {
   return PROT_NUMBER;
-}
-int 
-UdpL4Protocol::GetVersion (void) const
-{
-  return 2;
 }
 
 
@@ -151,9 +152,22 @@ UdpL4Protocol::Receive(Ptr<Packet> packet,
                        Ptr<Ipv4Interface> interface)
 {
   NS_LOG_FUNCTION (this << packet << source << destination);
-
   UdpHeader udpHeader;
+  if(m_calcChecksum)
+  {
+    udpHeader.EnableChecksums();
+  }
+
+  udpHeader.InitializeChecksum (source, destination, PROT_NUMBER);
+
   packet->RemoveHeader (udpHeader);
+
+  if(!udpHeader.IsChecksumOk ())
+  {
+    NS_LOG_INFO("Bad checksum : dropping packet!");
+    return;
+  }
+
   Ipv4EndPointDemux::EndPoints endPoints =
     m_endPoints->Lookup (destination, udpHeader.GetDestinationPort (),
                          source, udpHeader.GetSourcePort (), interface);
@@ -172,12 +186,15 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
   NS_LOG_FUNCTION (this << packet << saddr << daddr << sport << dport);
 
   UdpHeader udpHeader;
+  if(m_calcChecksum)
+  {
+    udpHeader.EnableChecksums();
+    udpHeader.InitializeChecksum (saddr,
+                                  daddr,
+                                  PROT_NUMBER);
+  }
   udpHeader.SetDestinationPort (dport);
   udpHeader.SetSourcePort (sport);
-  udpHeader.SetPayloadSize (packet->GetSize ());
-  udpHeader.InitializeChecksum (saddr,
-                                daddr,
-                                PROT_NUMBER);
 
   packet->AddHeader (udpHeader);
 

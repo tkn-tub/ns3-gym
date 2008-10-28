@@ -49,13 +49,6 @@ class ErrorModel;
  * TCP stack. The NetDevice takes a raw packet of bytes and creates a
  * protocol specific packet from them. 
  *
- * The Csma net device class takes a packet and adds (or removes) the 
- * headers/trailers that are associated with EthernetV1, EthernetV2, RAW
- * or LLC protocols. The EthernetV1 packet type adds and removes Ethernet
- * destination and source addresses. The LLC packet type adds and
- * removes LLC snap headers. The raw packet type does not add or
- * remove any headers.  
- *
  * Each Csma net device will receive all packets written to the Csma link. 
  * The ProcessHeader function can be used to filter out the packets such that
  * higher level layers only receive packets that are addressed to their
@@ -65,15 +58,15 @@ class CsmaNetDevice : public NetDevice
 {
 public:
   static TypeId GetTypeId (void);
+
   /**
    * Enumeration of the types of packets supported in the class.
    *
    */
-  enum CsmaEncapsulationMode {
-    ETHERNET_V1, /**< Version one ethernet packet, length field */
-    IP_ARP,      /**< Ethernet packet encapsulates IP/ARP packet */
-    RAW,         /**< Packet that contains no headers */
-    LLC,         /**< LLC packet encapsulation */  
+  enum EncapsulationMode {
+    ILLEGAL,     /**< Encapsulation mode not set */
+    DIX,         /**< DIX II / Ethernet II packet */
+    LLC,         /**< 802.2 LLC/SNAP Packet*/  
   };
 
   /**
@@ -103,7 +96,7 @@ public:
    * Set the backoff parameters used to determine the wait to retry
    * transmitting a packet when the channel is busy.
    *
-   * @see Attach ()
+   * \see Attach ()
    * \param slotTime Length of a packet slot (or average packet time)
    * \param minSlots Minimum number of slots to wait
    * \param maxSlots Maximum number of slots to wait
@@ -118,8 +111,8 @@ public:
    *
    * The function Attach is used to add a CsmaNetDevice to a CsmaChannel.
    *
-   * @see SetDataRate ()
-   * @see SetInterframeGap ()
+   * \see SetDataRate ()
+   * \see SetInterframeGap ()
    * \param ch a pointer to the channel to which this object is being attached.
    */
   bool Attach (Ptr<CsmaChannel> ch);
@@ -131,8 +124,8 @@ public:
    * level topology objects to implement a particular queueing method such as
    * DropTail or RED.  
    *
-   * @see Queue
-   * @see DropTailQueue
+   * \see Queue
+   * \see DropTailQueue
    * \param queue a Ptr to the queue for being assigned to the device.
    */
   void SetQueue (Ptr<Queue> queue);
@@ -143,8 +136,8 @@ public:
    * The CsmaNetDevice may optionally include an ErrorModel in
    * the packet receive chain to simulate data errors in during transmission.
    *
-   * @see ErrorModel
-   * @param em a pointer to the ErrorModel 
+   * \see ErrorModel
+   * \param em a pointer to the ErrorModel 
    */
   void SetReceiveErrorModel (Ptr<ErrorModel> em);
 
@@ -156,10 +149,11 @@ public:
    * used by the channel to indicate that the last bit of a packet has 
    * arrived at the device.
    *
-   * @see CsmaChannel
+   * \see CsmaChannel
    * \param p a reference to the received packet
+   * \param sender the CsmaNetDevice that transmitted the packet in the first place
    */
-  void Receive (Ptr<Packet> p);
+  void Receive (Ptr<Packet> p, Ptr<CsmaNetDevice> sender);
 
   /**
    * Is the send side of the network device enabled?
@@ -196,17 +190,130 @@ public:
    */
   void SetAddress (Mac48Address addr);
 
-//
-// The following methods are inherited from NetDevice base class.
-//
+  /**
+   * Set The max frame size of packets sent over this device.
+   *
+   * Okay, that was easy to say, but the details are a bit thorny.  We have a MAC-level MTU that is the payload that higher 
+   * level protocols see.  We have a PHY-level MTU which is the maximum number of bytes we can send over the link 
+   * (cf. 1500 bytes for Ethernet).  We also have a frame size which is some total number of bytes in a packet which could
+   * or could not include any framing and overhead.  There can be a lot of inconsistency in definitions of these terms.  For
+   * example, RFC 1042 asserts that the terms maximum transmission unit and maximum packet size are equivalent.  RFC 791, 
+   * however, defines MTU as the maximum sized IP datagram that can be sent.  Packet size and frame size are sometimes
+   * used interchangeably.
+   *
+   * So, some careful definitions are in order to avoid confusion:
+   *
+   * In real Ethernet, a packet on the wire starts with a preamble of seven bytes of alternating ones and zeroes followed by
+   * a Start-of-Frame-Delimeter (10101011).  This is followed by what is usually called the packet: a MAC destination and 
+   * source, a type field, payload, a possible padding field and a CRC.  To be strictly and pedantically correct the frame 
+   * size is necessarily larger than the packet size on a real Ethernet.  But, this isn't a real Ethernet, it's a simulation
+   * of a device similar to Ethernet, and we have no good reason to add framing bits.  So, in the case of the CSMA device, 
+   * the frame size is equal to the packet size.  Since these two values are equal, there is no danger in assuming they are 
+   * identical.  We do not implement any padding out to a minimum frame size, so padding is a non-issue.  We define packet 
+   * size to be equal to frame size and this excludes the preamble and SFD bytes of a real Ethernet frame.  We define a 
+   * single (MAC-level) MTU that coresponds to the payload size of the packet, which is the IP-centric view of the term as
+   * seen in RFC 791.
+   *
+   * To make this concrete, consider DIX II (Digital Equipment, Intel, Xerox type II) framing, which is used in most TCP/IP 
+   * stacks.  NetWare and Wireshark call this framing Ethernet II, by the way.  In this framing scheme, a real packet on the 
+   * wire starts with the preamble and Start-of-Frame-Delimeter (10101011).  We ignore these bits on this device since it they 
+   * are not  needed.  In DIX II, the SFD is followed by the MAC (48) destination address (6 bytes), source address (6 bytes), 
+   * the EtherType field (2 bytes), payload (0-1500 bytes) and a CRC (4 bytes) -- this corresponds to our entire frame.  The
+   * payload of the packet/frame in DIX can be from 0 to 1500 bytes.  It is the maxmimum value of this payload that we call
+   * the MTU.  Typically, one sees the MTU set to 1500 bytes and the maximum frame size set to 1518 bytes in Ethernet-based
+   * networks.
+   *
+   * Different framing schemes can make for different MTU and frame size relationships.  For example, we support LLC/SNAP
+   * encapsulation which adds eight bytes of header overhead to the usual DIX framing.  In this case, if the maximum frame
+   * size is left at 1518 bytes, we need to export an MTU that reflects the loss of eight bytes for a total of 1492.
+   * 
+   * Another complication is that IEEE 802.1Q adds four bytes to the maximum frame size for VLAN tagging.  In order to 
+   * provide an MTU of 1500 bytes, the frame size would need to increased to 1522 bytes to absorb the additional overhead.
+   *
+   * So, there are really three variables that are not entirely free at work here.  There is the maximum frame size, the
+   * MTU and the framing scheme which we call the encapsulation mode.
+   *
+   * So, what do we do since there are be three values which must always be consistent in the driver?  Which values to we
+   * allow to be changed and how do we ensure the other two are consistent?  We want to actually allow a user to change 
+   * these three variables in flexible ways, but we want the results (even at intermediate stages of her ultimate change) to 
+   * be consistent.  We certainly don't want to require that users must understand the various requirements of an enapsulation
+   * mode in order to set these variables.
+   *
+   * Consider the following situation:  A user wants to set the maximum frame size to 1418 bytes instead of 1518.  This
+   * user shouldn't have to concern herself that the current encapuslation mode is LLC/SNAP and this will consume eight bytes.
+   * She should not have to also figure out that the MTU needs to be set to 1392 bytes, and she should certainly not have to 
+   * do this in some special order to keep intermediate steps consistent.
+   *
+   * Similarly, a user who is interested in setting the MTU to 1400 bytes should not be forced to understand that 
+   * (based on encapsulation mode) the frame size may need to be set to eighteen + eight bytes more than what he wants 
+   * in certain cases (802,3 + LLC/SNAP), twenty-two + zero bytes in others (802.1Q) and other inscrutable combinations
+   *
+   * Now, consider a user who is only interested in changing the encapsulation mode from LLC/SNAP to DIX.  This 
+   * is going to change the relationship between the MTU and the frame size.  We've may have to come up with a new value 
+   * for at least one of the these?  Which one?  There are too many free variables.
+   *
+   * We could play games trying to figure out what the user wants to do, but that is typically a bad plan and programmers
+   * have a long and distinguished history of guessing wrong.  We'll avoid all of that and just define a flexible behavior
+   * that can be worked to get what you want.  Here it is:
+   *
+   * - If the user is changing the encapsulation mode, the PHY MTU will remain fixed and the MAC MTU will change, if required,
+   * to make the three values consistent;
+   *
+   * - If the user is changing the MTU, she is interested in getting that part of the system set, so the frame size
+   * will be changed to make the three values consistent;
+   *
+   * - If the user is changing the frame size, he is interested in getting that part of the system set, so the MTU
+   * will be changed to make the three values consistent;
+   *
+   * - You cannot define the MTU and frame size separately -- they are always tied together by the emulation mode.  This
+   * is not a restriction.  Consider what this means.  Perhaps you want to set the frame size to some large number and the
+   * MTU to some small number.  The largest packet you can send is going to be limited by the MTU, so it is not possible to
+   * send a frame larger than the MTU plus overhead.  The larger frame size is not useful.
+   * 
+   * So, if a user calls SetFrameSize, we assume that the maximum frame size is the interesting thing for that user and
+   * we just adjust the MTU to a new "correct value" based on the current encapsulation mode.  If a user calls SetMtu, we 
+   * assume that the MTU is the interesting property for that user, and we adjust the frame size to a new "correct value" 
+   * for the current encapsulation mode.  If a user calls SetEncapsulationMode, then we take the MTU as the free variable 
+   * and set its value to match the current frame size.
+   *
+   * \param frameSize The max frame size of packets sent over this device.
+   */
+  void SetFrameSize (uint16_t frameSize);
+
+  /**
+   * Get The max frame size of packets sent over this device.
+   *
+   * \returns The max frame size of packets sent over this device.
+   */
+  uint16_t GetFrameSize (void) const;
+
+  /**
+   * Set the encapsulation mode of this device.
+   *
+   * \param mode The encapsulation mode of this device.
+   *
+   * \see SetFrameSize
+   */
+  void SetEncapsulationMode (CsmaNetDevice::EncapsulationMode mode);
+
+  /**
+   * Get the encapsulation mode of this device.
+   *
+   * \returns The encapsulation mode of this device.
+   */
+  CsmaNetDevice::EncapsulationMode  GetEncapsulationMode (void);
+
+  //
+  // The following methods are inherited from NetDevice base class.
+  //
   virtual void SetName (const std::string name);
   virtual std::string GetName (void) const;
   virtual void SetIfIndex (const uint32_t index);
   virtual uint32_t GetIfIndex (void) const;
   virtual Ptr<Channel> GetChannel (void) const;
-  virtual Address GetAddress (void) const;
   virtual bool SetMtu (const uint16_t mtu);
   virtual uint16_t GetMtu (void) const;
+  virtual Address GetAddress (void) const;
   virtual bool IsLinkUp (void) const;
   virtual void SetLinkChangeCallback (Callback<void> callback);
   virtual bool IsBroadcast (void) const;
@@ -215,7 +322,7 @@ public:
   virtual Address GetMulticast (void) const;
 
   /**
-   * @brief Make and return a MAC multicast address using the provided
+   * \brief Make and return a MAC multicast address using the provided
    *        multicast group
    *
    * RFC 1112 says that an Ipv4 host group address is mapped to an Ethernet 
@@ -227,14 +334,14 @@ public:
    * to an EUI-48-based CSMA device.  This MAC address is encapsulated in an
    *  abstract Address to avoid dependencies on the exact address format.
    *
-   * @param multicastGroup The IP address for the multicast group destination
+   * \param multicastGroup The IP address for the multicast group destination
    * of the packet.
-   * @return The MAC multicast Address used to send packets to the provided
+   * \return The MAC multicast Address used to send packets to the provided
    * multicast group.
    *
-   * @see Ipv4Address
-   * @see Mac48Address
-   * @see Address
+   * \see Ipv4Address
+   * \see Mac48Address
+   * \see Address
    */
   virtual Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
 
@@ -249,6 +356,12 @@ public:
    */
   virtual bool Send (Ptr<Packet> packet, const Address& dest, 
     uint16_t protocolNumber);
+
+  /**
+   * Start sending a packet down the channel, with MAC spoofing
+   */
+  virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, 
+                         uint16_t protocolNumber);
 
   /**
    * Get the node to which this device is attached.
@@ -280,6 +393,10 @@ public:
    */
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
 
+
+  virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
+  virtual bool SupportsSendFrom (void) const;
+
 protected:
   /**
    * Perform any object release functionality required to break reference 
@@ -302,11 +419,12 @@ protected:
    * respect the packet type
    *
    * \param p Packet to which header should be added
+   * \param source MAC source address from which packet should be sent
    * \param dest MAC destination address to which packet should be sent
    * \param protocolNumber In some protocols, identifies the type of
    * payload contained in this packet.
    */
-  void AddHeader (Ptr<Packet> p, Mac48Address dest, uint16_t protocolNumber);
+  void AddHeader (Ptr<Packet> p, Mac48Address source, Mac48Address dest, uint16_t protocolNumber);
 
   /**
    * Removes, from a packet of data, all headers and trailers that
@@ -321,6 +439,7 @@ protected:
   bool ProcessHeader (Ptr<Packet> p, uint16_t & param);
 
 private:
+
   /**
    * Operator = is declared but not implemented.  This disables the assigment
    * operator for CsmaNetDevice objects.
@@ -340,6 +459,18 @@ private:
   void Init (bool sendEnable, bool receiveEnable);
 
   /**
+   * Calculate the value for the MTU that would result from 
+   * setting the frame size to the given value.
+   */
+  uint32_t MtuFromFrameSize (uint32_t frameSize);
+
+  /**
+   * Calculate the value for the frame size that would be required
+   * to be able to set the MTU to the given value.
+   */
+  uint32_t FrameSizeFromMtu (uint32_t mtu);
+
+  /**
    * Start Sending a Packet Down the Wire.
    *
    * The TransmitStart method is the method that is used internally in
@@ -353,8 +484,8 @@ private:
    * If the channel is found to be BUSY, this method reschedules itself for
    * execution at a later time (within the backoff period).
    *
-   * @see CsmaChannel::TransmitStart ()
-   * @see TransmitCompleteEvent ()
+   * \see CsmaChannel::TransmitStart ()
+   * \see TransmitCompleteEvent ()
    */
   void TransmitStart ();
 
@@ -371,8 +502,8 @@ private:
    * method, the net device also schedules the TransmitReadyEvent at which
    * time the transmitter becomes ready to send the next packet.
    *
-   * @see CsmaChannel::TransmitEnd ()
-   * @see TransmitReadyEvent ()
+   * \see CsmaChannel::TransmitEnd ()
+   * \see TransmitReadyEvent ()
    */
   void TransmitCompleteEvent (void);
 
@@ -388,7 +519,7 @@ private:
    * If a packet is in the queue, it is extracted for the queue as the
    * next packet to be transmitted by the net device.
    *
-   * @see TransmitStart ()
+   * \see TransmitStart ()
    */
   void TransmitReadyEvent (void);
 
@@ -436,7 +567,7 @@ private:
 
   /**
    * The state of the Net Device transmit state machine.
-   * @see TxMachineState
+   * \see TxMachineState
    */
   TxMachineState m_txMachineState;
   
@@ -445,19 +576,19 @@ private:
    * function and that should be processed by the ProcessHeader
    * function.
    */
-  CsmaEncapsulationMode m_encapMode;
+  EncapsulationMode m_encapMode;
 
   /**
    * The data rate that the Net Device uses to simulate packet transmission
    * timing.
-   * @see class DataRate
+   * \see class DataRate
    */
   DataRate m_bps;
 
   /**
    * The interframe gap that the Net Device uses insert time between packet
    * transmission
-   * @see class Time
+   * \see class Time
    */
   Time m_tInterframeGap;
 
@@ -478,7 +609,7 @@ private:
   /**
    * The CsmaChannel to which this CsmaNetDevice has been
    * attached.
-   * @see class CsmaChannel
+   * \see class CsmaChannel
    */
   Ptr<CsmaChannel> m_channel;
 
@@ -486,8 +617,8 @@ private:
    * The Queue which this CsmaNetDevice uses as a packet source.
    * Management of this Queue has been delegated to the CsmaNetDevice
    * and it has the responsibility for deletion.
-   * @see class Queue
-   * @see class DropTailQueue
+   * \see class Queue
+   * \see class DropTailQueue
    */
   Ptr<Queue> m_queue;
 
@@ -500,7 +631,7 @@ private:
    * The trace source for the packet reception events that the device can
    * fire.
    *
-   * @see class CallBackTraceSource
+   * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_rxTrace;
 
@@ -508,7 +639,7 @@ private:
    * The trace source for the packet drop events that the device can
    * fire.
    *
-   * @see class CallBackTraceSource
+   * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_dropTrace;
 
@@ -526,6 +657,10 @@ private:
    * The callback used to notify higher layers that a packet has been received.
    */
   NetDevice::ReceiveCallback m_rxCallback;
+  /**
+   * The callback used to notify higher layers that a packet has been received in promiscuous mode.
+   */
+  NetDevice::PromiscReceiveCallback m_promiscRxCallback;
 
   /**
    * The interface index (really net evice index) that has been assigned to 
@@ -549,11 +684,23 @@ private:
    */
   Callback<void> m_linkChangeCallback;
 
+  static const uint16_t DEFAULT_FRAME_SIZE = 1518;
+  static const uint16_t ETHERNET_OVERHEAD = 18;
+
   /**
-   * The maximum transmission unit (biggest packet) allowed to be sent or 
-   * received by this network device.
+   * The frame size/packet size.  This corresponds to the maximum 
+   * number of bytes that can be transmitted as a packet without framing.
+   * This corresponds to the 1518 byte packet size often seen on Ethernet.
    */
-  uint16_t m_mtu;
+  uint32_t m_frameSize;
+
+  /**
+   * The Maxmimum Transmission Unit.  This corresponds to the maximum 
+   * number of bytes that can be transmitted as seen from higher layers.
+   * This corresponds to the 1500 byte MTU size often seen on IP over 
+   * Ethernet.
+   */
+  uint32_t m_mtu;
 };
 
 }; // namespace ns3

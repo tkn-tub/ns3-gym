@@ -26,6 +26,10 @@
 #include "ns3/simulator.h"
 #include "ns3/object-vector.h"
 #include "ns3/uinteger.h"
+#include "ns3/log.h"
+#include "ns3/assert.h"
+
+NS_LOG_COMPONENT_DEFINE ("Node");
 
 namespace ns3{
 
@@ -95,13 +99,15 @@ Node::AddDevice (Ptr<NetDevice> device)
   m_devices.push_back (device);
   device->SetNode (this);
   device->SetIfIndex(index);
-  device->SetReceiveCallback (MakeCallback (&Node::ReceiveFromDevice, this));
+  device->SetReceiveCallback (MakeCallback (&Node::NonPromiscReceiveFromDevice, this));
   NotifyDeviceAdded (device);
   return index;
 }
 Ptr<NetDevice>
 Node::GetDevice (uint32_t index) const
 {
+  NS_ASSERT_MSG (index < m_devices.size (), "Device index " << index <<
+                 " is out of range (only have " << m_devices.size () << " devices).");
   return m_devices[index];
 }
 uint32_t 
@@ -121,6 +127,8 @@ Node::AddApplication (Ptr<Application> application)
 Ptr<Application> 
 Node::GetApplication (uint32_t index) const
 {
+  NS_ASSERT_MSG (index < m_applications.size (), "Application index " << index <<
+                 " is out of range (only have " << m_applications.size () << " applications).");
   return m_applications[index];
 }
 uint32_t 
@@ -158,12 +166,44 @@ Node::NotifyDeviceAdded (Ptr<NetDevice> device)
 void
 Node::RegisterProtocolHandler (ProtocolHandler handler, 
                                uint16_t protocolType,
-                               Ptr<NetDevice> device)
+                               Ptr<NetDevice> device,
+                               bool promiscuous)
 {
   struct Node::ProtocolHandlerEntry entry;
   entry.handler = handler;
   entry.protocol = protocolType;
   entry.device = device;
+  entry.promiscuous = promiscuous;
+
+  // On demand enable promiscuous mode in netdevices
+  if (promiscuous)
+    {
+      if (device == 0)
+        {
+          for (std::vector<Ptr<NetDevice> >::iterator i = m_devices.begin ();
+               i != m_devices.end (); i++)
+            {
+              Ptr<NetDevice> dev = *i;
+              if (dev->SupportsSendFrom ())
+                {
+                  dev->SetPromiscReceiveCallback (MakeCallback (&Node::PromiscReceiveFromDevice, this));
+                }
+            }
+        }
+      else
+        {
+          if (device->SupportsSendFrom ())
+            {
+              device->SetPromiscReceiveCallback (MakeCallback (&Node::PromiscReceiveFromDevice, this));
+            }
+          else
+            {
+              NS_LOG_WARN ("Protocol handler request promiscuous mode for a specific netdevice,"
+                           " but netdevice does not support promiscuous mode.");
+            }
+        }
+    }
+
   m_handlers.push_back (entry);
 }
 
@@ -182,14 +222,30 @@ Node::UnregisterProtocolHandler (ProtocolHandler handler)
 }
 
 bool
-Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet, 
-                         uint16_t protocol, const Address &from)
+Node::PromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
+                                const Address &from, const Address &to, NetDevice::PacketType packetType)
 {
+  NS_LOG_FUNCTION(device->GetName ());
+  return ReceiveFromDevice (device, packet, protocol, from, to, packetType, true);
+}
+
+bool
+Node::NonPromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
+                                   const Address &from)
+{
+  NS_LOG_FUNCTION(device->GetName ());
+  return ReceiveFromDevice (device, packet, protocol, from, from, NetDevice::PacketType (0), false);
+}
+
+bool
+Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
+                         const Address &from, const Address &to, NetDevice::PacketType packetType, bool promiscuous)
+{
+  NS_LOG_DEBUG("Node " << GetId () << " ReceiveFromDevice:  dev "
+               << device->GetIfIndex () << " ("
+               << device->GetName () << " type " << device->GetInstanceTypeId ().GetName ()
+               << ") Packet UID " << packet->GetUid ());
   bool found = false;
-  // if there are (potentially) multiple handlers, we need to copy the
-  // packet before passing it to each handler, because handlers may
-  // modify it.
-  bool copyNeeded = (m_handlers.size () > 1);
 
   for (ProtocolHandlerList::iterator i = m_handlers.begin ();
        i != m_handlers.end (); i++)
@@ -200,8 +256,11 @@ Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet,
           if (i->protocol == 0 || 
               i->protocol == protocol)
             {
-              i->handler (device, (copyNeeded ? packet->Copy () : packet), protocol, from);
-              found = true;
+              if (promiscuous == i->promiscuous)
+                {
+                  i->handler (device, packet, protocol, from, to, packetType);
+                  found = true;
+                }
             }
         }
     }

@@ -30,6 +30,15 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup tcp
+ * \brief Header for the Transmission Control Protocol
+ *
+ * This class has fields corresponding to those in a network TCP header
+ * (port numbers, sequence and acknowledgement numbers, flags, etc) as well
+ * as methods for serialization to and deserialization from a byte buffer.
+ */
+
 class TcpHeader : public Header 
 {
 public:
@@ -39,7 +48,7 @@ public:
   /**
    * \brief Enable checksum calculation for TCP (XXX currently has no effect)
    */
-  static void EnableChecksums (void);
+  void EnableChecksums (void);
 //Setters
   /**
    * \param port The source port for this TcpHeader
@@ -69,10 +78,6 @@ public:
    * \param windowSize the window size for this TcpHeader
    */
   void SetWindowSize (uint16_t windowSize);
-  /**
-   * \param checksum the checksum for this TcpHeader
-   */
-  void SetChecksum (uint16_t checksum);
   /**
    * \param urgentPointer the urgent pointer for this TcpHeader
    */
@@ -109,10 +114,6 @@ public:
    */
   uint16_t GetWindowSize () const;
   /**
-   * \return the checksum for this TcpHeader
-   */
-  uint16_t GetChecksum () const;
-  /**
    * \return the urgent pointer for this TcpHeader
    */
   uint16_t GetUrgentPointer () const;
@@ -142,7 +143,14 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
+  /**
+   * \brief Is the TCP checksum correct ?
+   * \returns true if the checksum is correct, false otherwise.
+   */
+  bool IsChecksumOk (void) const;
+
 private:
+  uint16_t CalculateHeaderChecksum (uint16_t size) const;
   uint16_t m_sourcePort;
   uint16_t m_destinationPort;
   uint32_t m_sequenceNumber;
@@ -150,10 +158,15 @@ private:
   uint8_t m_length; // really a uint4_t
   uint8_t m_flags;      // really a uint6_t
   uint16_t m_windowSize;
-  uint16_t m_checksum;
   uint16_t m_urgentPointer;
 
-  static bool m_calcChecksum;
+  Ipv4Address m_source;
+  Ipv4Address m_destination;
+  uint8_t m_protocol;
+
+  uint16_t m_initialChecksum;
+  bool m_calcChecksum;
+  bool m_goodChecksum;
 };
 
 }; // namespace ns3

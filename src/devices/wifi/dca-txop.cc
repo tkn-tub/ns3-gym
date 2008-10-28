@@ -37,7 +37,7 @@
 NS_LOG_COMPONENT_DEFINE ("DcaTxop");
 
 #define MY_DEBUG(x) \
-  NS_LOG_DEBUG (m_low->GetMac ()->GetAddress () << " " << x)
+  NS_LOG_DEBUG (m_low->GetAddress () << " " << x)
 
 
 namespace ns3 {
@@ -305,12 +305,6 @@ DcaTxop::NeedFragmentation (void)
   return station->NeedFragmentation (m_currentPacket);
 }
 
-uint32_t
-DcaTxop::GetNFragments (void)
-{
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->GetNFragments (m_currentPacket);
-}
 void
 DcaTxop::NextFragment (void)
 {
@@ -337,12 +331,19 @@ DcaTxop::GetNextFragmentSize (void)
   return station->GetFragmentSize (m_currentPacket, m_fragmentNumber + 1);
 }
 
+uint32_t
+DcaTxop::GetFragmentOffset (void) 
+{
+  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  return station->GetFragmentOffset (m_currentPacket, m_fragmentNumber);
+}
+
 Ptr<Packet>
 DcaTxop::GetFragmentPacket (WifiMacHeader *hdr)
 {
   *hdr = m_currentHdr;
   hdr->SetFragmentNumber (m_fragmentNumber);
-  uint32_t startOffset = m_fragmentNumber * GetFragmentSize ();
+  uint32_t startOffset = GetFragmentOffset ();
   Ptr<Packet> fragment;
   if (IsLastFragment ()) 
     {

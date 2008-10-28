@@ -63,21 +63,21 @@ typedef enum {
 typedef enum {
   NO_ACT,       // 0
   ACK_TX,       // 1
-  ACK_TX_1,     // ACK response to syn
-  RST_TX,       // 2
-  SYN_TX,       // 3
-  SYN_ACK_TX,   // 4
-  FIN_TX,       // 5
-  FIN_ACK_TX,   // 6
-  NEW_ACK,      // 7
-  NEW_SEQ_RX,   // 8
-  RETX,         // 9
-  TX_DATA,      // 10
-  PEER_CLOSE,   // 11
-  APP_CLOSED,   // 12
-  CANCEL_TM,    // 13
-  APP_NOTIFY,   // 14 - Notify app that connection failed
-  SERV_NOTIFY,  // 15 - Notify server tcp that connection completed
+  ACK_TX_1,     // 2 - ACK response to syn
+  RST_TX,       // 3
+  SYN_TX,       // 4
+  SYN_ACK_TX,   // 5
+  FIN_TX,       // 6
+  FIN_ACK_TX,   // 7
+  NEW_ACK,      // 8
+  NEW_SEQ_RX,   // 9
+  RETX,         // 10
+  TX_DATA,      // 11
+  PEER_CLOSE,   // 12
+  APP_CLOSED,   // 13
+  CANCEL_TM,    // 14
+  APP_NOTIFY,   // 15 - Notify app that connection failed
+  SERV_NOTIFY,  // 16 - Notify server tcp that connection completed
   LAST_ACTION } Actions_t;
 
 class SA  // State/Action pair

@@ -28,12 +28,11 @@
 #include "mac-low.h"
 #include "wifi-phy.h"
 #include "wifi-mac-trailer.h"
-#include "wifi-mac.h"
 
 NS_LOG_COMPONENT_DEFINE ("MacLow");
 
 #define MY_DEBUG(x) \
-  NS_LOG_DEBUG (m_mac->GetAddress () << " " << x)
+  NS_LOG_DEBUG (m_self << " " << x)
 
 namespace ns3 {
 
@@ -273,7 +272,6 @@ MacLow::DoDispose (void)
   NS_LOG_FUNCTION (this);
   CancelAllEvents ();
   m_phy = 0;
-  m_mac = 0;
   m_stationManager = 0;
 }
 
@@ -341,21 +339,83 @@ MacLow::SetPhy (Ptr<WifiPhy> phy)
   m_phy->SetReceiveOkCallback (MakeCallback (&MacLow::ReceiveOk, this));
   m_phy->SetReceiveErrorCallback (MakeCallback (&MacLow::ReceiveError, this));
 }
-void
-MacLow::SetMac (Ptr<WifiMac> mac)
-{
-  m_mac = mac;
-}
 void 
 MacLow::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> manager)
 {
   m_stationManager = manager;
 }
-Ptr<WifiMac> 
-MacLow::GetMac (void)
+
+void 
+MacLow::SetAddress (Mac48Address ad)
 {
-  return m_mac;
+  m_self = ad;
 }
+void 
+MacLow::SetAckTimeout (Time ackTimeout)
+{
+  m_ackTimeout = ackTimeout;
+}
+void 
+MacLow::SetCtsTimeout (Time ctsTimeout)
+{
+  m_ctsTimeout = ctsTimeout;
+}
+void
+MacLow::SetSifs (Time sifs)
+{
+  m_sifs = sifs;
+}
+void 
+MacLow::SetSlotTime (Time slotTime)
+{
+  m_slotTime = slotTime;
+}
+void 
+MacLow::SetPifs (Time pifs)
+{
+  m_pifs = pifs;
+}
+void
+MacLow::SetBssid (Mac48Address bssid)
+{
+  m_bssid = bssid;
+}
+Mac48Address 
+MacLow::GetAddress (void) const
+{
+  return m_self;
+}
+Time 
+MacLow::GetAckTimeout (void) const
+{
+  return m_ackTimeout;
+}
+Time 
+MacLow::GetCtsTimeout (void) const
+{
+  return m_ctsTimeout;
+}
+Time
+MacLow::GetSifs (void) const
+{
+  return m_sifs;
+}
+Time 
+MacLow::GetSlotTime (void) const
+{
+  return m_slotTime;
+}
+Time 
+MacLow::GetPifs (void) const
+{
+  return m_pifs;
+}
+Mac48Address 
+MacLow::GetBssid (void) const
+{
+  return m_bssid;
+}
+
 void 
 MacLow::SetRxCallback (Callback<void,Ptr<Packet>,const WifiMacHeader *> callback)
 {
@@ -451,7 +511,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
        * that STA shall not respond to the RTS frame.
        */
       if (isPrevNavZero &&
-          hdr.GetAddr1 () == m_mac->GetAddress ()) 
+          hdr.GetAddr1 () == m_self) 
         {
           MY_DEBUG ("rx RTS from=" << hdr.GetAddr2 () << ", schedule CTS");
           NS_ASSERT (m_sendCtsEvent.IsExpired ());
@@ -470,7 +530,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
         }
     } 
   else if (hdr.IsCts () &&
-           hdr.GetAddr1 () == m_mac->GetAddress () &&
+           hdr.GetAddr1 () == m_self &&
            m_ctsTimeoutEvent.IsRunning () &&
            m_currentPacket != 0) 
     {
@@ -491,7 +551,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
                                              txMode);
     } 
   else if (hdr.IsAck () &&
-           hdr.GetAddr1 () == m_mac->GetAddress () &&
+           hdr.GetAddr1 () == m_self &&
            (m_normalAckTimeoutEvent.IsRunning () || 
             m_fastAckTimeoutEvent.IsRunning () ||
             m_superFastAckTimeoutEvent.IsRunning ()) &&
@@ -530,7 +590,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
     {
       MY_DEBUG ("rx drop " << hdr.GetTypeString ());
     } 
-  else if (hdr.GetAddr1 () == m_mac->GetAddress ()) 
+  else if (hdr.GetAddr1 () == m_self) 
     {
       WifiRemoteStation *station = GetStation (hdr.GetAddr2 ());
       station->ReportRxOk (rxSnr, txMode);
@@ -608,31 +668,6 @@ MacLow::GetCtsSize (void) const
   WifiMacHeader cts;
   cts.SetType (WIFI_MAC_CTL_CTS);
   return cts.GetSize () + 4;
-}
-Time
-MacLow::GetSifs (void) const
-{
-  return m_mac->GetSifs ();
-}
-Time
-MacLow::GetSlotTime (void) const
-{
-  return m_mac->GetSlot ();
-}
-Time
-MacLow::GetPifs (void) const
-{
-  return m_mac->GetPifs ();
-}
-Time
-MacLow::GetAckTimeout (void) const
-{
-  return m_mac->GetAckTimeout ();
-}
-Time
-MacLow::GetCtsTimeout (void) const
-{
-  return m_mac->GetCtsTimeout ();
 }
 uint32_t 
 MacLow::GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr) const
@@ -714,7 +749,7 @@ MacLow::NotifyNav (const WifiMacHeader &hdr, WifiMode txMode, WifiPreamble pream
   Time duration = hdr.GetDuration ();
 
   if (hdr.IsCfpoll () &&
-      hdr.GetAddr2 () == m_mac->GetBssid ()) 
+      hdr.GetAddr2 () == m_bssid) 
     {
       // see section 9.3.2.2 802.11-1999
       DoNavResetNow (duration);
@@ -722,7 +757,7 @@ MacLow::NotifyNav (const WifiMacHeader &hdr, WifiMode txMode, WifiPreamble pream
     }
   // XXX Note that we should also handle CF_END specially here
   // but we don't for now because we do not generate them.
-  else if (hdr.GetAddr1 () != m_mac->GetAddress ())
+  else if (hdr.GetAddr1 () != m_self)
     {
       // see section 9.2.5.4 802.11-1999
       bool navUpdated = DoNavStartNow (duration);
@@ -882,9 +917,10 @@ MacLow::SendRtsForPacket (void)
   rts.SetType (WIFI_MAC_CTL_RTS);
   rts.SetDsNotFrom ();
   rts.SetDsNotTo ();
+  rts.SetNoRetry ();
   rts.SetNoMoreFragments ();
   rts.SetAddr1 (m_currentHdr.GetAddr1 ());
-  rts.SetAddr2 (m_mac->GetAddress ());
+  rts.SetAddr2 (m_self);
   WifiMode rtsTxMode = GetRtsTxMode (m_currentPacket, &m_currentHdr);
   Time duration = Seconds (0);
   if (m_txParams.HasDurationId ()) 
@@ -1019,7 +1055,7 @@ MacLow::GetStation (Mac48Address ad) const
 void
 MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiMode rtsTxMode, double rtsSnr)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << source << duration << rtsTxMode << rtsSnr);
   /* send a CTS when you receive a RTS 
    * right after SIFS.
    */
@@ -1029,6 +1065,7 @@ MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiMode rtsTxMode,
   cts.SetDsNotFrom ();
   cts.SetDsNotTo ();
   cts.SetNoMoreFragments ();
+  cts.SetNoRetry ();
   cts.SetAddr1 (source);
   duration -= GetCtsDuration (source, rtsTxMode);
   duration -= GetSifs ();
@@ -1106,6 +1143,7 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
   ack.SetType (WIFI_MAC_CTL_ACK);
   ack.SetDsNotFrom ();
   ack.SetDsNotTo ();
+  ack.SetNoRetry ();
   ack.SetNoMoreFragments ();
   ack.SetAddr1 (source);
   duration -= GetAckDuration (source, dataTxMode);

@@ -42,6 +42,27 @@ class Packet;
 class TcpL4Protocol;
 class TcpHeader;
 
+/**
+ * \ingroup socket
+ * \ingroup tcp
+ *
+ * \brief An implementation of a stream socket using TCP.
+ *
+ * This class contains an implementation of TCP Tahoe, as well as a sockets
+ * interface for talking to TCP.  Features include connection orientation,
+ * reliability through cumulative acknowledgements, congestion and flow 
+ * control.  Finite send buffer semantics are modeled, but as of yet, finite
+ * receive buffer modelling is unimplemented.
+ *
+ * The closedown of these sockets is as of yet not compliant with the relevent
+ * RFCs, i.e. the FIN handshaking isn't correct.  While this is visible at the
+ * PCAP tracing level, it has no effect on the statistics users are interested
+ * in, i.e. throughput, delay, etc. of actual payload data.
+ *
+ * Asynchronous callbacks to provide notifications to higher layers that a 
+ * protocol event has occured, such as space freeing up in the send buffer
+ * or new data arriving in the receive buffer.
+ */
 class TcpSocketImpl : public TcpSocket
 {
 public:
@@ -65,14 +86,15 @@ public:
   virtual int ShutdownSend (void);
   virtual int ShutdownRecv (void);
   virtual int Connect(const Address &address);
-  virtual int Send (Ptr<Packet> p);
-  virtual int Send (const uint8_t* buf, uint32_t size);
-  virtual int SendTo(Ptr<Packet> p, const Address &address);
+  virtual int Listen(void);
   virtual uint32_t GetTxAvailable (void) const;
-  virtual int Listen(uint32_t queueLimit);
-
-  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
+  virtual int Send (Ptr<Packet> p, uint32_t flags);
+  virtual int SendTo(Ptr<Packet> p, uint32_t flags, const Address &toAddress);
   virtual uint32_t GetRxAvailable (void) const;
+  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
+  virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
+    Address &fromAddress);
+  virtual int GetSockName (Address &address) const; 
 
 private:
   friend class Tcp;
@@ -101,8 +123,13 @@ private:
   virtual uint32_t  Window();         // Return window size (integer)
   virtual uint32_t  AvailableWindow();// Return unfilled portion of window
 
+  //methods for Rx buffer management
+  uint32_t RxBufferFreeSpace();
+  uint16_t AdvertisedWindowSize();
+
   // Manage data tx/rx
   void NewRx (Ptr<Packet>, const TcpHeader&, const Address&);
+  void RxBufFinishInsert (SequenceNumber);
   // XXX This should be virtual and overridden
   Ptr<TcpSocketImpl> Copy ();
   void NewAck (SequenceNumber seq); 
@@ -111,6 +138,7 @@ private:
   void ReTxTimeout ();
   void DelAckTimeout ();
   void LastAckTimeout ();
+  void PersistTimeout ();
   void Retransmit ();
   void CommonNewAck (SequenceNumber seq, bool skipTimer = false);
 
@@ -121,8 +149,6 @@ private:
   virtual uint32_t GetRcvBufSize (void) const;
   virtual void SetSegSize (uint32_t size);
   virtual uint32_t GetSegSize (void) const;
-  virtual void SetAdvWin (uint32_t window);
-  virtual uint32_t GetAdvWin (void) const;
   virtual void SetSSThresh (uint32_t threshold);
   virtual uint32_t GetSSThresh (void) const;
   virtual void SetInitialCwnd (uint32_t cwnd);
@@ -174,22 +200,32 @@ private:
   SequenceNumber m_lastRxAck;
   
   //sequence info, reciever side
-  SequenceNumber m_nextRxSequence;
+  SequenceNumber m_nextRxSequence; //next expected sequence
 
-  //history data
-  //this is the incoming data buffer which sorts out of sequence data
-  UnAckData_t m_bufferedData;
+  //Rx buffer
+  UnAckData_t m_bufferedData; //buffer which sorts out of sequence data
+  //Rx buffer state
+  uint32_t m_rxAvailable; // amount of data available for reading through Recv
+  uint32_t m_rxBufSize; //size in bytes of the data in the rx buf
+  //note that these two are not the same: rxAvailbale is the number of
+  //contiguous sequenced bytes that can be read, rxBufSize is the TOTAL size
+  //including out of sequence data, such that m_rxAvailable <= m_rxBufSize
+
   //this is kind of the tx buffer
   PendingData* m_pendingData;
   SequenceNumber m_firstPendingSequence;
 
   // Window management
   uint32_t                       m_segmentSize;          //SegmentSize
-  uint32_t                       m_rxWindowSize;
-  uint32_t                       m_advertisedWindowSize; //Window to advertise
+  uint32_t                       m_rxWindowSize;         //Flow control window
   TracedValue<uint32_t>          m_cWnd;                 //Congestion window
   uint32_t                       m_ssThresh;             //Slow Start Threshold
   uint32_t                       m_initialCWnd;          //Initial cWnd value
+
+  //persist timer management
+  Time                           m_persistTime;
+  EventId                        m_persistEvent;
+  
 
   // Round trip time estimation
   Ptr<RttEstimator> m_rtt;
@@ -199,14 +235,9 @@ private:
   Time              m_cnTimeout; 
   uint32_t          m_cnCount;
 
-  // Temporary queue for delivering data to application
-  uint32_t m_rxAvailable;
-
-  bool m_wouldBlock;  // set to true whenever socket would block on send()
-
   // Attributes
   uint32_t m_sndBufSize;   // buffer limit for the outgoing queue
-  uint32_t m_rcvBufSize;   // maximum receive socket buffer size
+  uint32_t m_rxBufMaxSize;   // maximum receive socket buffer size
 };
 
 }//namespace ns3

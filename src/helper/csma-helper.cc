@@ -39,10 +39,10 @@ CsmaHelper::CsmaHelper ()
 
 void 
 CsmaHelper::SetQueue (std::string type,
-		      std::string n1, const AttributeValue &v1,
-		      std::string n2, const AttributeValue &v2,
-		      std::string n3, const AttributeValue &v3,
-		      std::string n4, const AttributeValue &v4)
+                      std::string n1, const AttributeValue &v1,
+                      std::string n2, const AttributeValue &v2,
+                      std::string n3, const AttributeValue &v3,
+                      std::string n4, const AttributeValue &v4)
 {
   m_queueFactory.SetTypeId (type);
   m_queueFactory.Set (n1, v1);
@@ -52,21 +52,39 @@ CsmaHelper::SetQueue (std::string type,
 }
 
 void 
-CsmaHelper::SetDeviceParameter (std::string n1, const AttributeValue &v1)
+CsmaHelper::SetDeviceAttribute (std::string n1, const AttributeValue &v1)
 {
   m_deviceFactory.Set (n1, v1);
 }
 
 void 
-CsmaHelper::SetChannelParameter (std::string n1, const AttributeValue &v1)
+CsmaHelper::SetChannelAttribute (std::string n1, const AttributeValue &v1)
 {
   m_channelFactory.Set (n1, v1);
+}
+
+void 
+CsmaHelper::SetDeviceParameter (std::string n1, const AttributeValue &v1)
+{
+  SetDeviceAttribute (n1, v1);
+}
+void 
+CsmaHelper::SetChannelParameter (std::string n1, const AttributeValue &v1)
+{
+  SetChannelAttribute (n1, v1);
 }
 
 void 
 CsmaHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid)
 {
   std::ostringstream oss;
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/";
+  Config::MatchContainer matches = Config::LookupMatches (oss.str ());
+  if (matches.GetN () == 0)
+    {
+      return;
+    }
+  oss.str ("");
   oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
   Ptr<PcapWriter> pcap = Create<PcapWriter> ();
   pcap->Open (oss.str ());
@@ -95,9 +113,9 @@ CsmaHelper::EnablePcap (std::string filename, NodeContainer n)
     {
       Ptr<Node> node = *i;
       for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-	{
-	  devs.Add (node->GetDevice (j));
-	}
+        {
+          devs.Add (node->GetDevice (j));
+        }
     }
   EnablePcap (filename, devs);
 }
@@ -111,7 +129,7 @@ CsmaHelper::EnablePcapAll (std::string filename)
 void 
 CsmaHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
 {
-  Packet::EnableMetadata ();
+  Packet::EnablePrinting ();
   std::ostringstream oss;
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/Rx";
   Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiRxEvent, &os));
@@ -142,9 +160,9 @@ CsmaHelper::EnableAscii (std::ostream &os, NodeContainer n)
     {
       Ptr<Node> node = *i;
       for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-	{
-	  devs.Add (node->GetDevice (j));
-	}
+        {
+          devs.Add (node->GetDevice (j));
+        }
     }
   EnableAscii (os, devs);
 }
@@ -179,6 +197,19 @@ CsmaHelper::Install (const NodeContainer &c, Ptr<CsmaChannel> channel)
       container.Add (device);
     }
   return container;
+}
+
+void 
+CsmaHelper::InstallStar (Ptr<Node> hub, NodeContainer spokes, 
+                         NetDeviceContainer& hubDevices, NetDeviceContainer& spokeDevices)
+{
+  for (uint32_t i = 0; i < spokes.GetN (); ++i)
+    {
+      NodeContainer nodes (hub, spokes.Get (i));
+      NetDeviceContainer nd = Install (nodes);
+      hubDevices.Add (nd.Get (0));
+      spokeDevices.Add (nd.Get (1));
+    }
 }
 
 void 

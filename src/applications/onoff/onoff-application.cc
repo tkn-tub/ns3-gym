@@ -135,7 +135,7 @@ void OnOffApplication::StartApplication() // Called at time specified by Start
       m_socket->Connect (m_peer);
     }
   // Insure no pending event
-  StopApplication();
+  CancelEvents ();
   // If we are not yet connected, there is nothing to do here
   // The ConnectionComplete upcall will start timers at that time
   //if (!m_connected) return;
@@ -143,6 +143,21 @@ void OnOffApplication::StartApplication() // Called at time specified by Start
 }
 
 void OnOffApplication::StopApplication() // Called at time specified by Stop
+{
+  NS_LOG_FUNCTION_NOARGS ();
+
+  CancelEvents ();
+  if(m_socket != 0)
+    {
+      m_socket->Close ();
+    }
+  else
+    {
+      NS_LOG_WARN("OnOffApplication found null socket to close in StopApplication");
+    }
+}
+
+void OnOffApplication::CancelEvents ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 

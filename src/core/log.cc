@@ -17,13 +17,13 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+#include "log.h"
 
 #ifdef NS3_LOG_ENABLE
 
 #include <list>
 #include <utility>
 #include <iostream>
-#include "log.h"
 #include "assert.h"
 #include "ns3/core-config.h"
 #include "fatal-error.h"
@@ -368,4 +368,34 @@ ParameterLogger::ParameterLogger (std::ostream &os)
 
 } // namespace ns3
 
-#endif // NS3_LOG_ENABLE
+#else // NS3_LOG_ENABLE
+
+namespace ns3 {
+
+void 
+LogComponentEnable (char const *name, enum LogLevel level)
+{
+
+}
+
+void 
+LogComponentEnableAll (enum LogLevel level)
+{
+
+}
+
+void 
+LogComponentDisable (char const *name, enum LogLevel level)
+{
+
+}
+
+void 
+LogComponentDisableAll (enum LogLevel level)
+{
+
+}
+
+} // namespace ns3
+
+#endif

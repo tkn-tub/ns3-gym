@@ -26,11 +26,16 @@
 #include "ns3/packet-socket-factory.h"
 #include "ns3/config.h"
 #include "ns3/simulator.h"
+#include <limits>
 
 namespace ns3 {
 
 std::vector<InternetStackHelper::Trace> InternetStackHelper::m_traces;
 std::string InternetStackHelper::m_pcapBaseFilename;
+
+InternetStackHelper::InternetStackHelper() : m_nscLibrary("")
+{
+}
 
 void
 InternetStackHelper::Cleanup (void)
@@ -47,6 +52,12 @@ InternetStackHelper::Cleanup (void)
   m_traces.clear ();
 }
 
+void
+InternetStackHelper::SetNscStack(const std::string soname)
+{
+  m_nscLibrary = soname;
+}
+
 void 
 InternetStackHelper::Install (NodeContainer c)
 {
@@ -58,8 +69,12 @@ InternetStackHelper::Install (NodeContainer c)
           NS_FATAL_ERROR ("InternetStackHelper::Install(): Aggregating " 
              "an InternetStack to a node with an existing Ipv4 object");
           return;
-        } 
-      AddInternetStack (node);
+        }
+      if (m_nscLibrary != "")
+        AddNscInternetStack (node, m_nscLibrary);
+      else
+        AddInternetStack (node);
+
       Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
       node->AggregateObject (factory);
     }

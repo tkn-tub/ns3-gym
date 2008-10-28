@@ -1,0 +1,108 @@
+\input texinfo  @c -*-texinfo-*-
+@c %**start of header
+@setfilename ns-3.info
+@settitle ns-3 manual
+@c @setchapternewpage odd
+@c %**end of header
+
+@ifinfo
+Primary documentation for the @command{ns-3} project is available in
+four forms:
+@itemize @bullet
+@item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen/Manual}:  Documentation of the public APIs of the simulator
+@item @uref{http://www.nsnam.org/tutorial/index.html,,ns-3 Tutorial}
+@item Reference Manual (this document)
+@item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
+@end itemize
+
+This document is written in GNU Texinfo and is to be maintained in
+revision control on the @command{ns-3} code server.  Both PDF and HTML versions
+should be available on the server.  Changes to 
+the document should be discussed on the ns-developers@@isi.edu mailing list.
+@end ifinfo
+
+@copying
+
+This is an @command{ns-3} reference manual.
+Primary documentation for the @command{ns-3} project is available in
+four forms:
+@itemize @bullet
+@item @uref{http://www.nsnam.org/tutorial/index.html,,ns-3 Tutorial}
+@item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen}:  Documentation of the public APIs of the simulator
+@item Reference Manual (this document)
+@item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
+@end itemize
+ 
+This document is written in GNU Texinfo and is to be maintained in
+revision control on the @command{ns-3} code server.  Both PDF and HTML 
+versions should be available on the server.  Changes to 
+the document should be discussed on the ns-developers@@isi.edu mailing list.
+
+This software is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This software is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see @uref{http://www.gnu.org/licenses/}.
+@end copying
+
+@titlepage
+@title ns-3 Reference Manual
+@author ns-3 project
+@author feedback:  ns-developers@@isi.edu
+@today{}
+
+@c @page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@c So the toc is printed at the start.
+@anchor{Full Table of Contents}
+@contents
+
+@ifnottex
+@node Top, Overview, Full Table of Contents 
+@top ns-3 Manual (html version)
+
+For a pdf version of this manual, 
+see @uref{http://www.nsnam.org/docs/manual.pdf}.
+
+@insertcopying
+@end ifnottex
+
+@menu
+* Random variables::
+* Callbacks::
+* Attributes::
+* RealTime::
+* Packets::
+* Sockets APIs::
+* Node and Internet Stack::
+* TCP::
+* Routing overview::
+* Troubleshooting
+@end menu
+
+@include random.texi
+@include callbacks.texi
+@include attributes.texi
+@include realtime.texi
+@include packets.texi
+@include sockets.texi
+@include node.texi
+@c @include output.texi
+@include tcp.texi
+@include routing.texi
+@c @include other.texi
+@include troubleshoot.texi
+
+@printindex cp
+
+@bye

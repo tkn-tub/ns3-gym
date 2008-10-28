@@ -32,6 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("PacketMetadata");
 namespace ns3 {
 
 bool PacketMetadata::m_enable = false;
+bool PacketMetadata::m_enableChecking = false;
 bool PacketMetadata::m_metadataSkipped = false;
 uint32_t PacketMetadata::m_maxSize = 0;
 uint16_t PacketMetadata::m_chunkUid = 0;
@@ -57,6 +58,13 @@ PacketMetadata::Enable (void)
                  "to call ns3::PacketMetadata::Enable () near the beginning of"
                  " the program, before any packets are sent.");
   m_enable = true;
+}
+
+void 
+PacketMetadata::EnableChecking (void)
+{
+  Enable ();
+  m_enableChecking = true;
 }
 
 void
@@ -630,13 +638,21 @@ PacketMetadata::RemoveHeader (const Header &header, uint32_t size)
   if ((item.typeUid & 0xfffffffe) != uid ||
       item.size != size)
     {
-      NS_FATAL_ERROR ("Removing unexpected header.");
+      if (m_enableChecking)
+        {
+          NS_FATAL_ERROR ("Removing unexpected header.");
+        }
+      return;
     }
   else if (item.typeUid != uid &&
            (extraItem.fragmentStart != 0 ||
             extraItem.fragmentEnd != size))
     {
-      NS_FATAL_ERROR ("Removing incomplete header.");
+      if (m_enableChecking)
+        {
+          NS_FATAL_ERROR ("Removing incomplete header.");
+        }
+      return;
     }
   if (m_head + read == m_used)
     {
@@ -688,13 +704,21 @@ PacketMetadata::RemoveTrailer (const Trailer &trailer, uint32_t size)
   if ((item.typeUid & 0xfffffffe) != uid ||
       item.size != size)
     {
-      NS_FATAL_ERROR ("Removing unexpected trailer.");
+      if (m_enableChecking)
+        {
+          NS_FATAL_ERROR ("Removing unexpected trailer.");
+        }
+      return;
     }
   else if (item.typeUid != uid &&
            (extraItem.fragmentStart != 0 ||
             extraItem.fragmentEnd != size))
     {
-      NS_FATAL_ERROR ("Removing incomplete trailer.");
+      if (m_enableChecking)
+        {
+          NS_FATAL_ERROR ("Removing incomplete trailer.");
+        }
+      return;
     }
   if (m_tail + read == m_used)
     {
@@ -724,6 +748,12 @@ PacketMetadata::AddAtEnd (PacketMetadata const&o)
       // We have no items so 'AddAtEnd' is 
       // equivalent to self-assignment.
       *this = o;
+      return;
+    }
+  if (o.m_head == 0xffff)
+    {
+      NS_ASSERT (o.m_tail == 0xffff);
+      // we have nothing to append.
       return;
     }
   NS_ASSERT (m_head != 0xffff && m_tail != 0xffff);
@@ -824,18 +854,13 @@ PacketMetadata::RemoveAtStart (uint32_t start)
           uint16_t written = fragment.AddBig (0xffff, fragment.m_tail,
                                               &item, &extraItem);
           fragment.UpdateTail (written);
-          current = item.next;
-          while (current != 0xffff)
+          while (current != 0xffff && current != m_tail)
             {
+              current = item.next;
               ReadItems (current, &item, &extraItem);
               written = fragment.AddBig (0xffff, fragment.m_tail,
                                          &item, &extraItem);
               fragment.UpdateTail (written);
-              if (current == m_tail)
-                {
-                  break;
-                }
-              current = item.next;
             }
           *this = fragment;
         }
@@ -892,18 +917,13 @@ PacketMetadata::RemoveAtEnd (uint32_t end)
           uint16_t written = fragment.AddBig (fragment.m_head, 0xffff,
                                               &item, &extraItem);
           fragment.UpdateHead (written);
-          current = item.prev;
-          while (current != 0xffff)
+          while (current != 0xffff && current != m_head)
             {
+              current = item.prev;
               ReadItems (current, &item, &extraItem);
               written = fragment.AddBig (fragment.m_head, 0xffff,
                                          &item, &extraItem);
               fragment.UpdateHead (written);
-              if (current == m_head)
-                {
-                  break;
-                }
-              current = item.prev;
             }
           *this = fragment;
         }
@@ -1005,9 +1025,10 @@ PacketMetadata::ItemIterator::Next (void)
       item.type = PacketMetadata::Item::HEADER;
       if (!item.isFragment)
         {
-          ns3::Buffer::Iterator j = m_buffer.Begin ();
-          j.Next (m_offset);
-          item.current = j;
+          ns3::Buffer tmp = m_buffer;
+          tmp.RemoveAtStart (m_offset);
+          tmp.RemoveAtEnd (tmp.GetSize () - item.currentSize);
+          item.current = tmp.Begin ();
         }
     }
   else if (tid.IsChildOf (Trailer::GetTypeId ()))
@@ -1015,9 +1036,10 @@ PacketMetadata::ItemIterator::Next (void)
       item.type = PacketMetadata::Item::TRAILER;
       if (!item.isFragment)
         {
-          ns3::Buffer::Iterator j = m_buffer.End ();
-          j.Prev (m_buffer.GetSize () - (m_offset + smallItem.size));
-          item.current = j;
+          ns3::Buffer tmp = m_buffer;
+          tmp.RemoveAtEnd (tmp.GetSize () - (m_offset + smallItem.size));
+          tmp.RemoveAtStart (tmp.GetSize () - item.currentSize);
+          item.current = tmp.End ();
         }
     }
   else 

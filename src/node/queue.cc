@@ -107,7 +107,7 @@ Queue::DequeueAll (void)
     }
 }
 
-Ptr<Packet>
+Ptr<const Packet>
 Queue::Peek (void) const
 {
   NS_LOG_FUNCTION (this);

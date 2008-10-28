@@ -47,6 +47,7 @@ public:
   };
 
   InterferenceHelper ();
+  ~InterferenceHelper ();
 
   void Configure80211aParameters (void);
   void SetNoiseFloorW (double noiseFloor);
@@ -83,6 +84,8 @@ private:
   typedef std::vector <NiChange> NiChanges;
   typedef std::list<Ptr<Event> > Events;
 
+  InterferenceHelper (const InterferenceHelper &o);
+  InterferenceHelper &operator = (const InterferenceHelper &o);
   void AppendEvent (Ptr<Event> event);
   double CalculateNoiseInterferenceW (Ptr<Event> event, NiChanges *ni) const;
   double CalculateSnr (double signal, double noiseInterference, WifiMode mode) const;

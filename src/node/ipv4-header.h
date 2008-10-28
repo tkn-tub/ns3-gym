@@ -146,7 +146,6 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 private:
 
-  static uint16_t ChecksumCalculate(Buffer::Iterator &i, uint16_t len);
   enum FlagsE {
     DONT_FRAGMENT = (1<<0),
     MORE_FRAGMENTS = (1<<1)
@@ -163,6 +162,7 @@ private:
   uint16_t m_fragmentOffset : 13;
   Ipv4Address m_source;
   Ipv4Address m_destination;
+  uint16_t m_checksum;
   bool m_goodChecksum;
 };
 

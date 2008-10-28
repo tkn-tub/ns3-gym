@@ -87,7 +87,7 @@ DropTailQueue::DoDequeue (void)
   return p;
 }
 
-Ptr<Packet>
+Ptr<const Packet>
 DropTailQueue::DoPeek (void) const
 {
   NS_LOG_FUNCTION (this);

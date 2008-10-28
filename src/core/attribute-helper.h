@@ -117,6 +117,11 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
     name##Value (const type &value);					\
     void Set (const type &value);					\
     type Get (void) const;						\
+    template <typename T>                                               \
+    bool GetAccessor (T &value) const {                                 \
+      value = T (m_value);                                              \
+      return true;                                                      \
+    }                                                                   \
     virtual Ptr<AttributeValue> Copy (void) const;                      \
     virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const; \
     virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker); \
@@ -220,17 +225,6 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
     return MakeSimpleAttributeChecker<type##Value,type##Checker> (#type "Value", name); \
   }									\
 
-
-/**
- * \ingroup AttributeHelper
- * \param type the name of the class
- *
- * This macro implements the conversion operators to and from
- * instances of type Attribute. Typically invoked from xxx.cc.
- */
-#define ATTRIBUTE_CONVERTER_IMPLEMENT(type)
-
-
 /**
  * \ingroup AttributeHelper
  * \param type the name of the class
@@ -251,7 +245,6 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  */
 #define ATTRIBUTE_HELPER_CPP(type)                                      \
   ATTRIBUTE_CHECKER_IMPLEMENT (type);					\
-  ATTRIBUTE_CONVERTER_IMPLEMENT (type);					\
   ATTRIBUTE_VALUE_IMPLEMENT (type);
 
 

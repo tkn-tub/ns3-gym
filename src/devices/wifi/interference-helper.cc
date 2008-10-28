@@ -3,6 +3,7 @@
 #include "error-rate-model.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
+#include <algorithm>
 
 NS_LOG_COMPONENT_DEFINE ("InterferenceHelper");
 
@@ -106,6 +107,10 @@ InterferenceHelper::InterferenceHelper ()
   : m_80211a (false)
 {
   m_errorRateModel = Create<ErrorRateModel> ();
+}
+InterferenceHelper::~InterferenceHelper ()
+{
+  m_errorRateModel = 0;
 }
 
 Ptr<InterferenceHelper::Event> 

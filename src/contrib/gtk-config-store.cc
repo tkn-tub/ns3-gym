@@ -65,7 +65,7 @@ void
 ModelCreator::Build (GtkTreeStore *treestore)
 {
   m_treestore = treestore;
-  m_iters.push_back (NULL);
+  m_iters.push_back (0);
   Iterate ();
   NS_ASSERT (m_iters.size () == 1);
 }
@@ -177,13 +177,13 @@ cell_data_function_col_1 (GtkTreeViewColumn *col,
     {
       StringValue str;
       node->object->GetAttribute (node->name, str);
-      g_object_set(renderer, "text", str.Get ().c_str (), NULL);
-      g_object_set(renderer, "editable", TRUE, NULL);
+      g_object_set(renderer, "text", str.Get ().c_str (), (char*)0);
+      g_object_set(renderer, "editable", TRUE, (char*)0);
     }
   else
     {
-      g_object_set(renderer, "text", "", NULL);
-      g_object_set(renderer, "editable", FALSE, NULL);
+      g_object_set(renderer, "text", "", (char*)0);
+      g_object_set(renderer, "editable", FALSE, (char*)0);
     }
 }
 
@@ -196,24 +196,24 @@ cell_data_function_col_0 (GtkTreeViewColumn *col,
 {
   ModelNode *node;
   gtk_tree_model_get (model, iter, COL_NODE, &node, -1);
-  g_object_set (renderer, "editable", FALSE, NULL);
+  g_object_set (renderer, "editable", FALSE, (char*)0);
   switch (node->type) {
   case ModelNode::NODE_OBJECT:
-    g_object_set(renderer, "text", node->object->GetInstanceTypeId ().GetName ().c_str (), NULL);
+    g_object_set(renderer, "text", node->object->GetInstanceTypeId ().GetName ().c_str (), (char*)0);
     break;
   case ModelNode::NODE_POINTER:
-    g_object_set(renderer, "text", node->name.c_str (), NULL);
+    g_object_set(renderer, "text", node->name.c_str (), (char*)0);
     break;
   case ModelNode::NODE_VECTOR:
-    g_object_set(renderer, "text", node->name.c_str (), NULL);
+    g_object_set(renderer, "text", node->name.c_str (), (char*)0);
     break;
   case ModelNode::NODE_VECTOR_ITEM: {
     std::stringstream oss;
     oss << node->index;
-    g_object_set(renderer, "text", oss.str ().c_str (), NULL);
+    g_object_set(renderer, "text", oss.str ().c_str (), (char*)0);
   } break;
   case ModelNode::NODE_ATTRIBUTE:
-    g_object_set(renderer, "text", node->name.c_str (), NULL);
+    g_object_set(renderer, "text", node->name.c_str (), (char*)0);
     break;
   }
 }
@@ -239,8 +239,8 @@ get_col_number_from_tree_view_column (GtkTreeViewColumn *col)
 {
   GList *cols;
   int   num;
-  g_return_val_if_fail ( col != NULL, -1 );
-  g_return_val_if_fail ( col->tree_view != NULL, -1 );
+  g_return_val_if_fail ( col != 0, -1 );
+  g_return_val_if_fail ( col->tree_view != 0, -1 );
   cols = gtk_tree_view_get_columns(GTK_TREE_VIEW(col->tree_view));
   num = g_list_index(cols, (gpointer) col);
   g_list_free(cols);
@@ -260,12 +260,12 @@ cell_tooltip_callback (GtkWidget  *widget,
   GtkTreeViewColumn * column;
   if (!gtk_tree_view_get_tooltip_context (GTK_TREE_VIEW (widget), 
 					  &x, &y, keyboard_tip,
-					  &model, NULL, &iter))
+					  &model, 0, &iter))
     {
       return FALSE;
     }
   if (!gtk_tree_view_get_path_at_pos (GTK_TREE_VIEW (widget),
-				      x, y, NULL, &column, NULL, NULL))
+				      x, y, 0, &column, 0, 0))
     {
       return FALSE;
     }  
@@ -349,8 +349,8 @@ create_view (GtkTreeStore *model)
   GtkWidget           *view;
 
   view = gtk_tree_view_new();
-  g_object_set (view, "has-tooltip", TRUE, NULL);
-  g_signal_connect (view, "query-tooltip", (GCallback) cell_tooltip_callback, NULL);
+  g_object_set (view, "has-tooltip", TRUE, (char*)0);
+  g_signal_connect (view, "query-tooltip", (GCallback) cell_tooltip_callback, 0);
   
   gtk_tree_view_set_grid_lines (GTK_TREE_VIEW (view), GTK_TREE_VIEW_GRID_LINES_BOTH);
   gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view), TRUE);
@@ -360,8 +360,8 @@ create_view (GtkTreeStore *model)
   gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
   renderer = gtk_cell_renderer_text_new ();
   gtk_tree_view_column_pack_start(col, renderer, TRUE);
-  gtk_tree_view_column_set_cell_data_func(col, renderer, cell_data_function_col_0, NULL, NULL);
-  g_object_set(renderer, "editable", FALSE, NULL);
+  gtk_tree_view_column_set_cell_data_func(col, renderer, cell_data_function_col_0, 0, 0);
+  g_object_set(renderer, "editable", FALSE, (char*)0);
 
   col = gtk_tree_view_column_new();
   gtk_tree_view_column_set_title(col, "Attribute Value");
@@ -369,7 +369,7 @@ create_view (GtkTreeStore *model)
   renderer = gtk_cell_renderer_text_new();
   g_signal_connect(renderer, "edited", (GCallback) cell_edited_callback, model);
   gtk_tree_view_column_pack_start(col, renderer, TRUE);
-  gtk_tree_view_column_set_cell_data_func(col, renderer, cell_data_function_col_1, NULL, NULL);
+  gtk_tree_view_column_set_cell_data_func(col, renderer, cell_data_function_col_1, 0, 0);
 
 
   gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL (model));
@@ -392,7 +392,7 @@ save_clicked (GtkButton *button,
 					GTK_FILE_CHOOSER_ACTION_SAVE,
 					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 					GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
-					NULL);
+					(char *)0);
   gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER (dialog), TRUE);
 
   gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (dialog), "config.txt");
@@ -426,7 +426,7 @@ load_clicked (GtkButton *button,
 					GTK_FILE_CHOOSER_ACTION_OPEN,
 					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 					GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-					NULL);
+					(char *)0);
 
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
     {
@@ -452,6 +452,7 @@ exit_clicked_callback (GtkButton *button,
 		       gpointer   user_data)
 {
   gtk_main_quit ();
+  gtk_widget_hide (GTK_WIDGET (user_data));
 }
 
 static gboolean
@@ -460,6 +461,7 @@ delete_event_callback (GtkWidget *widget,
 		       gpointer   user_data)
 {
   gtk_main_quit ();
+  gtk_widget_hide (GTK_WIDGET (user_data));
   return TRUE;
 }
 
@@ -475,7 +477,7 @@ clean_model_callback (GtkTreeModel *model,
 		      -1);
   delete node;
   gtk_tree_store_set (GTK_TREE_STORE (model), iter,
-		      COL_NODE, NULL,
+		      COL_NODE, (ModelNode*)0,
 		      -1);
   return FALSE;
 }
@@ -494,9 +496,9 @@ GtkConfigStore::Configure (void)
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (window), "ns-3 Object attributes.");
-  gtk_window_set_default_size (GTK_WINDOW (window), 400, 600);
+  gtk_window_set_default_size (GTK_WINDOW (window), 600, 600);
   
-  g_signal_connect (window, "delete_event", (GCallback)delete_event_callback, NULL);
+  g_signal_connect (window, "delete_event", (GCallback)delete_event_callback, window);
 
 
   GtkTreeStore *model = gtk_tree_store_new (COL_LAST, G_TYPE_POINTER);
@@ -504,7 +506,7 @@ GtkConfigStore::Configure (void)
   creator.Build (model);
 
   view = create_view (model);
-  scroll = gtk_scrolled_window_new (NULL, NULL);
+  scroll = gtk_scrolled_window_new (0, 0);
   gtk_container_add (GTK_CONTAINER (scroll), view);
 
   GtkWidget *vbox = gtk_vbox_new (FALSE, 5);
@@ -518,8 +520,8 @@ GtkConfigStore::Configure (void)
   GtkWidget *load = gtk_button_new_with_label ("Load");
   g_signal_connect (load, "clicked",  (GCallback) load_clicked, window);
   gtk_box_pack_end (GTK_BOX (hbox), load, FALSE, FALSE, 0);
-  GtkWidget *exit = gtk_button_new_with_label ("Exit");
-  g_signal_connect (exit, "clicked",  (GCallback) exit_clicked_callback, NULL);
+  GtkWidget *exit = gtk_button_new_with_label ("Run Simulation");
+  g_signal_connect (exit, "clicked",  (GCallback) exit_clicked_callback, window);
   gtk_box_pack_end (GTK_BOX (hbox), exit, FALSE, FALSE, 0);
 
   gtk_container_add (GTK_CONTAINER (window), vbox);
@@ -530,7 +532,7 @@ GtkConfigStore::Configure (void)
 
   gtk_tree_model_foreach (GTK_TREE_MODEL (model), 
 			  clean_model_callback, 
-			  NULL);
+			  0);
 
   gtk_widget_destroy (window);
 }

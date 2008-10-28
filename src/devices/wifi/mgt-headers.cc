@@ -163,7 +163,7 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
   size += m_capability.GetSerializedSize ();
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
-  size += 3; // ds parameter set
+  //size += 3; // ds parameter set
   // xxx
   return size;
 }
@@ -192,7 +192,7 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_capability.Serialize (i);
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
-  i.Next (3); // ds parameter set.
+  //i.WriteU8 (0, 3); // ds parameter set.
 }
 uint32_t
 MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
@@ -204,7 +204,7 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_capability.Deserialize (i);
   i = m_ssid.Deserialize (i);
   i = m_rates.Deserialize (i);
-  i.Next (3); // ds parameter set
+  //i.Next (3); // ds parameter set
   return i.GetDistanceFrom (start);
 }
 
@@ -215,6 +215,7 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
 NS_OBJECT_ENSURE_REGISTERED (MgtAssocRequestHeader);
 
 MgtAssocRequestHeader::MgtAssocRequestHeader ()
+  : m_listenInterval (0)
 {}
 MgtAssocRequestHeader::~MgtAssocRequestHeader ()
 {}
@@ -307,6 +308,7 @@ MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
 NS_OBJECT_ENSURE_REGISTERED (MgtAssocResponseHeader);
 
 MgtAssocResponseHeader::MgtAssocResponseHeader ()
+  : m_aid (0)
 {}
 MgtAssocResponseHeader::~MgtAssocResponseHeader ()
 {}

@@ -21,8 +21,8 @@
 #include "ns3/net-device.h"
 #include "ns3/callback.h"
 #include "ns3/node.h"
+#include "ns3/core-config.h"
 
-#include "ipv4-l4-demux.h"
 #include "udp-l4-protocol.h"
 #include "tcp-l4-protocol.h"
 #include "ipv4-l3-protocol.h"
@@ -30,42 +30,94 @@
 #include "udp-socket-factory-impl.h"
 #include "tcp-socket-factory-impl.h"
 #include "ipv4-impl.h"
+#ifdef NETWORK_SIMULATION_CRADLE
+#include "nsc-tcp-socket-factory-impl.h"
+#include "nsc-tcp-l4-protocol.h"
+#endif
 
 namespace ns3 {
 
-void 
-AddInternetStack (Ptr<Node> node)
+static void
+AddArpStack (Ptr<Node> node)
 {
-  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
   Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> ();
-  ipv4->SetNode (node);
   arp->SetNode (node);
-
-  Ptr<Ipv4L4Demux> ipv4L4Demux = CreateObject<Ipv4L4Demux> ();
-  Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
-  Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> ();
-
-  ipv4L4Demux->SetNode (node);
-  udp->SetNode (node);
-  tcp->SetNode (node);
-
-  ipv4L4Demux->Insert (udp);
-  ipv4L4Demux->Insert (tcp);
-
-  Ptr<UdpSocketFactoryImpl> udpFactory = CreateObject<UdpSocketFactoryImpl> ();
-  Ptr<TcpSocketFactoryImpl> tcpFactory = CreateObject<TcpSocketFactoryImpl> ();
-  Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> ();
-
-  udpFactory->SetUdp (udp);
-  tcpFactory->SetTcp (tcp);
-  ipv4Impl->SetIpv4 (ipv4);
-
-  node->AggregateObject (ipv4);
   node->AggregateObject (arp);
-  node->AggregateObject (ipv4Impl);
-  node->AggregateObject (udpFactory);
-  node->AggregateObject (tcpFactory);
-  node->AggregateObject (ipv4L4Demux);
 }
 
+static void
+AddUdpStack(Ptr<Node> node)
+{
+  Ptr<Ipv4L3Protocol> ipv4 = node->GetObject<Ipv4L3Protocol> ();
+  Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
+  udp->SetNode (node);
+  ipv4->Insert (udp);
+  Ptr<UdpSocketFactoryImpl> udpFactory = CreateObject<UdpSocketFactoryImpl> ();
+  udpFactory->SetUdp (udp);
+  node->AggregateObject (udpFactory);
+}
+
+static void
+AddTcpStack(Ptr<Node> node)
+{
+  Ptr<Ipv4L3Protocol> ipv4 = node->GetObject<Ipv4L3Protocol> ();
+  Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> ();
+  tcp->SetNode (node);
+  ipv4->Insert (tcp);
+  Ptr<TcpSocketFactoryImpl> tcpFactory = CreateObject<TcpSocketFactoryImpl> ();
+  tcpFactory->SetTcp (tcp);
+  node->AggregateObject (tcpFactory);
+}
+
+static void
+AddIpv4Stack(Ptr<Node> node)
+{
+  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
+  ipv4->SetNode (node);
+  node->AggregateObject (ipv4);
+  Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> ();
+  ipv4Impl->SetIpv4 (ipv4);
+  node->AggregateObject (ipv4Impl);
+}
+
+void
+AddInternetStack (Ptr<Node> node)
+{
+  AddArpStack (node);
+  AddIpv4Stack (node);
+  AddUdpStack (node);
+  AddTcpStack (node);
+}
+
+#ifdef NETWORK_SIMULATION_CRADLE
+static void
+AddNscStack(Ptr<Node> node, const std::string &soname)
+{
+  Ptr<Ipv4L3Protocol> ipv4 = node->GetObject<Ipv4L3Protocol> ();
+  Ptr<NscTcpL4Protocol> tcp = CreateObject<NscTcpL4Protocol> ();
+  tcp->SetNscLibrary(soname);
+  tcp->SetNode (node);
+  ipv4->Insert (tcp);
+  Ptr<NscTcpSocketFactoryImpl> tcpFactory = CreateObject<NscTcpSocketFactoryImpl> ();
+  tcpFactory->SetTcp (tcp);
+  node->AggregateObject (tcpFactory);
+}
+
+
+void
+AddNscInternetStack (Ptr<Node> node, const std::string &soname)
+{
+  AddArpStack (node);
+  AddIpv4Stack (node);
+
+  AddUdpStack (node);
+  AddNscStack (node, soname);
+}
+#else
+void
+AddNscInternetStack (Ptr<Node> node, const std::string &soname)
+{
+  NS_FATAL_ERROR ("NSC Not enabled on this platform.");
+}
+#endif
 }//namespace ns3

@@ -27,6 +27,7 @@
 #include "ns3/traced-callback.h"
 #include "ns3/ptr.h"
 #include "ns3/socket.h"
+#include "ns3/net-device.h"
 
 namespace ns3 {
 
@@ -92,18 +93,20 @@ public:
   virtual int ShutdownSend (void);
   virtual int ShutdownRecv (void);
   virtual int Connect(const Address &address);
-  virtual int Listen(uint32_t queueLimit);
-  virtual int Send (Ptr<Packet> p);
+  virtual int Listen(void);
   virtual uint32_t GetTxAvailable (void) const;
-
-  virtual int SendTo(Ptr<Packet> p, const Address &address);
-
-  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
+  virtual int Send (Ptr<Packet> p, uint32_t flags);
+  virtual int SendTo(Ptr<Packet> p, uint32_t flags, const Address &toAddress);
   virtual uint32_t GetRxAvailable (void) const;
+  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
+  virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
+    Address &fromAddress);
+  virtual int GetSockName (Address &address) const; 
 
 private:
-  void ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet, 
-                  uint16_t protocol, const Address &from);
+  void ForwardUp (Ptr<NetDevice> device, Ptr<const Packet> packet, 
+                  uint16_t protocol, const Address &from, const Address &to,
+                  NetDevice::PacketType packetType);
   int DoBind (const PacketSocketAddress &address);
   uint32_t GetMinMtu (PacketSocketAddress ad) const;
   virtual void DoDispose (void);

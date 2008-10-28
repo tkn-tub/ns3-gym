@@ -56,39 +56,45 @@ public:
   virtual void SetSlot (Time slotTime);
   virtual void SetSifs (Time sifs);
   virtual void SetEifsNoDifs (Time eifsNoDifs);
+  virtual void SetAckTimeout (Time ackTimeout);
+  virtual void SetCtsTimeout (Time ctsTimeout);
+  virtual void SetPifs (Time pifs);
   virtual Time GetSlot (void) const;
   virtual Time GetSifs (void) const;
   virtual Time GetEifsNoDifs (void) const;
+  virtual Time GetAckTimeout (void) const;
+  virtual Time GetCtsTimeout (void) const;
+  virtual Time GetPifs (void) const;
   virtual void SetWifiPhy (Ptr<WifiPhy> phy);
   virtual void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
+  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from);
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to);
-  virtual void SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address &> upCallback);
+  virtual bool SupportsSendFrom (void) const;
+  virtual void SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback);
   virtual void SetLinkUpCallback (Callback<void> linkUp);
   virtual void SetLinkDownCallback (Callback<void> linkDown);
   virtual Mac48Address GetAddress (void) const;
   virtual Ssid GetSsid (void) const;
-  virtual Mac48Address GetBssid (void) const;
   virtual void SetAddress (Mac48Address address);
   virtual void SetSsid (Ssid ssid);
-
+  virtual Mac48Address GetBssid (void) const;
 
 private:
   // inherited from Object base class.
   virtual void DoDispose (void);
   /* invoked by the MacLows. */
   void ForwardUp (Ptr<Packet> packet, WifiMacHeader const*hdr);
+  AdhocWifiMac (const AdhocWifiMac & ctor_arg);
+  AdhocWifiMac &operator = (const AdhocWifiMac &o);
 
   Ptr<DcaTxop> m_dca;
-  Callback<void,Ptr<Packet>,const Mac48Address &> m_upCallback;
+  Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> m_upCallback;
   Ptr<WifiRemoteStationManager> m_stationManager;
   Ptr<WifiPhy> m_phy;
   DcfManager *m_dcfManager;
   MacRxMiddle *m_rxMiddle;
   Ptr<MacLow> m_low;
-  Mac48Address m_address;
   Ssid m_ssid;
-  Time m_slot;
-  Time m_sifs;
   Time m_eifsNoDifs;
 };
 

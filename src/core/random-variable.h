@@ -490,7 +490,6 @@ public:
 class NormalVariable : public RandomVariable
 {
 public:
-   static const double INFINITE_VALUE;
   /**
    * Constructs an normal random variable  with a mean
    * value of 0 and variance of 1.
@@ -498,19 +497,36 @@ public:
   NormalVariable();
 
   /**
+   * \brief Construct a normal random variable with specified mean and variance.
+   * \param m Mean value
+   * \param v Variance
+   */ 
+  NormalVariable(double m, double v);
+
+  /**
    * \brief Construct a normal random variable with specified mean and variance
    * \param m Mean value
    * \param v Variance
-   * \param b Bound.  The NormalVariable is bounded within +-bound.
+   * \param b Bound.  The NormalVariable is bounded symetrically about the mean
+   * [mean-bound,mean+bound]
    */ 
-  NormalVariable(double m, double v, double b = INFINITE_VALUE);
+  NormalVariable(double m, double v, double b);
+
   /**
    * \param m Mean value
    * \param v Variance
-   * \param b Bound.  The NormalVariable is bounded within +-bound.
+   * \return A random number from a distribution specified by m, and v.
+   */ 
+  static double GetSingleValue(double m, double v);
+
+  /**
+   * \param m Mean value
+   * \param v Variance
+   * \param b Bound.  The NormalVariable is bounded symetrically about the mean
+   * [mean-bound,mean+bound]
    * \return A random number from a distribution specified by m,v, and b.
    */ 
-  static double GetSingleValue(double m, double v, double b = INFINITE_VALUE);
+  static double GetSingleValue(double m, double v, double b);
 };
 
 /**

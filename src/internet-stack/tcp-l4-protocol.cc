@@ -21,6 +21,7 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/nstime.h"
+#include "ns3/boolean.h"
 
 #include "ns3/packet.h"
 #include "ns3/node.h"
@@ -328,6 +329,11 @@ TcpL4Protocol::GetTypeId (void)
                    ObjectFactoryValue (GetDefaultRttEstimatorFactory ()),
                    MakeObjectFactoryAccessor (&TcpL4Protocol::m_rttFactory),
                    MakeObjectFactoryChecker ())
+    .AddAttribute ("CalcChecksum", "If true, we calculate the checksum of outgoing packets"
+                   " and verify the checksum of incoming packets.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&TcpL4Protocol::m_calcChecksum),
+                   MakeBooleanChecker ())
     ;
   return tid;
 }
@@ -354,11 +360,6 @@ int
 TcpL4Protocol::GetProtocolNumber (void) const
 {
   return PROT_NUMBER;
-}
-int 
-TcpL4Protocol::GetVersion (void) const
-{
-  return 2;
 }
 
 void
@@ -439,14 +440,26 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
   NS_LOG_FUNCTION (this << packet << source << destination << incomingInterface);
 
   TcpHeader tcpHeader;
-  //these two do a peek, so that the packet can be forwarded up
-  packet->RemoveHeader (tcpHeader);
+  if(m_calcChecksum)
+  {
+    tcpHeader.EnableChecksums();
+    tcpHeader.InitializeChecksum (source, destination, PROT_NUMBER);
+  }
+
+  packet->PeekHeader (tcpHeader);
+
   NS_LOG_LOGIC("TcpL4Protocol " << this
                << " receiving seq " << tcpHeader.GetSequenceNumber()
                << " ack " << tcpHeader.GetAckNumber()
                << " flags "<< std::hex << (int)tcpHeader.GetFlags() << std::dec
                << " data size " << packet->GetSize());
-  packet->AddHeader (tcpHeader); 
+
+  if(!tcpHeader.IsChecksumOk ())
+  {
+    NS_LOG_INFO("Bad checksum, dropping packet!");
+    return;
+  }
+
   NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" received a packet");
   Ipv4EndPointDemux::EndPoints endPoints =
     m_endPoints->Lookup (destination, tcpHeader.GetDestinationPort (),
@@ -478,6 +491,10 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
   TcpHeader tcpHeader;
   tcpHeader.SetDestinationPort (dport);
   tcpHeader.SetSourcePort (sport);
+  if(m_calcChecksum)
+  {
+    tcpHeader.EnableChecksums();
+  }
   tcpHeader.InitializeChecksum (saddr,
                                daddr,
                                PROT_NUMBER);
@@ -507,8 +524,12 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, TcpHeader outgoingHeader,
   // XXX outgoingHeader cannot be logged
 
   outgoingHeader.SetLength (5); //header length in units of 32bit words
-  outgoingHeader.SetChecksum (0);  //XXX
-  outgoingHeader.SetUrgentPointer (0); //XXX
+  /* outgoingHeader.SetUrgentPointer (0); //XXX */
+  if(m_calcChecksum)
+  {
+    outgoingHeader.EnableChecksums();
+  }
+  outgoingHeader.InitializeChecksum(saddr, daddr, PROT_NUMBER);
 
   packet->AddHeader (outgoingHeader);
 

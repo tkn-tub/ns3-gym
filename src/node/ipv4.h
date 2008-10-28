@@ -425,6 +425,11 @@ public:
   /**
    * \param i index of ipv4 interface
    * \returns the address associated to the underlying ipv4 interface
+   *
+   * Note that the broadcast address for this interface may be fetched
+   * from the Ipv4Address object returned here using
+   * Ipv4Address::GetSubnetDirectedBroadcast(mask), where the mask for
+   * the interface may be retrived using Ipv4::GetNetworkMask(i).
    */
   virtual Ipv4Address GetAddress (uint32_t i) const = 0;
 
@@ -432,6 +437,11 @@ public:
    * \param destination The IP address of a hypothetical destination.
    * \returns The IP address assigned to the interface that will be used
    * if we were to send a packet to destination.
+   *
+   * Note that the broadcast address for this interface may be fetched
+   * from the Ipv4Address object returned here using
+   * Ipv4Address::GetSubnetDirectedBroadcast(mask), where the mask for
+   * the interface may be retrived using Ipv4::GetNetworkMask(i).
    */
   virtual Ipv4Address GetSourceAddress (Ipv4Address destination) const = 0;
 

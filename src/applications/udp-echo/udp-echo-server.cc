@@ -95,22 +95,19 @@ void
 UdpEchoServer::HandleRead (Ptr<Socket> socket)
 {
   Ptr<Packet> packet;
-  while (packet = socket->Recv ())
+  Address from;
+  while (packet = socket->RecvFrom (from))
     {
-      SocketRxAddressTag tag;
-      bool found;
-      found = packet->FindFirstMatchingTag (tag); 
-      NS_ASSERT (found);
-      Address from = tag.GetAddress ();
-      // XXX packet->RemoveTag (tag);
       if (InetSocketAddress::IsMatchingType (from))
         {
           InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
           NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
             address.GetIpv4());
 
+          packet->RemoveAllTags ();
+
           NS_LOG_LOGIC ("Echoing packet");
-          socket->SendTo (packet, from);
+          socket->SendTo (packet, 0, from);
         }
     }
 }

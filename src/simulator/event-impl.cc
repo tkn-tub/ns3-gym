@@ -23,7 +23,6 @@
 
 namespace ns3 {
 
-
 EventImpl::~EventImpl ()
 {}
 
@@ -31,6 +30,7 @@ EventImpl::EventImpl ()
   : m_cancel (false),
     m_count (1)
 {}
+
 void 
 EventImpl::Invoke (void)
 {
@@ -39,6 +39,7 @@ EventImpl::Invoke (void)
       Notify ();
     }
 }
+
 void 
 EventImpl::Cancel (void)
 {
@@ -51,4 +52,4 @@ EventImpl::IsCancelled (void)
   return m_cancel;
 }
 
-}; // namespace ns3
+} // namespace ns3

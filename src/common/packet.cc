@@ -199,6 +199,13 @@ Packet::RemoveHeader (Header &header)
   m_metadata.RemoveHeader (header, deserialized);
   return deserialized;
 }
+uint32_t
+Packet::PeekHeader (Header &header) const
+{
+  NS_LOG_FUNCTION (this << &header);
+  uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
+  return deserialized;
+}
 void
 Packet::AddTrailer (const Trailer &trailer)
 {
@@ -222,6 +229,13 @@ Packet::RemoveTrailer (Trailer &trailer)
   uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
   m_buffer.RemoveAtEnd (deserialized);
   m_metadata.RemoveTrailer (trailer, deserialized);
+  return deserialized;
+}
+uint32_t
+Packet::PeekTrailer (Trailer &trailer)
+{
+  NS_LOG_FUNCTION (this << &trailer);
+  uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
   return deserialized;
 }
 
@@ -280,6 +294,19 @@ uint8_t const *
 Packet::PeekData (void) const
 {
   return m_buffer.PeekData ();
+}
+
+uint32_t 
+Packet::CopyData (uint8_t *buffer, uint32_t size) const
+{
+  Buffer::Iterator i = m_buffer.Begin ();
+  uint32_t cur = 0;
+  while (!i.IsEnd () && cur < size)
+    {
+      buffer[cur] = i.ReadU8 ();
+      cur++;
+    }
+  return cur;
 }
 
 uint32_t 
@@ -445,7 +472,21 @@ void
 Packet::EnableMetadata (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  EnableChecking ();
+}
+
+void
+Packet::EnablePrinting (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
   PacketMetadata::Enable ();
+}
+
+void
+Packet::EnableChecking (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  PacketMetadata::EnableChecking ();
 }
 
 Buffer 
@@ -727,10 +768,7 @@ struct Expected
 #define E(a,b,c) a,b,c
 
 #define CHECK(p, n, ...)                                \
-  if (!DoCheck (p, __FILE__, __LINE__, n, __VA_ARGS__)) \
-    {                                                   \
-      result = false;                                   \
-    }
+  NS_TEST_ASSERT (DoCheck (p, __FILE__, __LINE__, n, __VA_ARGS__))
 
 namespace ns3 {
 
@@ -782,6 +820,8 @@ PacketTest::DoCheck (Ptr<const Packet> p, const char *file, int line, uint32_t n
       delete tag;
       j++;
     }
+  NS_TEST_ASSERT (!i.HasNext ());
+  NS_TEST_ASSERT_EQUAL (j, expected.size ());
   return result;
 }
 
@@ -886,6 +926,36 @@ PacketTest::RunTests (void)
     tmp->AddTrailer (ATestTrailer<10> ());
     CHECK (tmp, 1, E (20, 0, 100));
     
+  }
+
+  {
+    Ptr<Packet> tmp = Create<Packet> (0);
+    tmp->AddHeader (ATestHeader<156> ());
+    tmp->AddTag (ATestTag<20> ());
+    CHECK (tmp, 1, E (20, 0, 156));
+    tmp->RemoveAtStart (120);
+    CHECK (tmp, 1, E (20, 0, 36));
+    Ptr<Packet> a = Create<Packet> (0);
+    a->AddAtEnd (tmp);
+    CHECK (a, 1, E (20, 0, 36));
+  }
+
+  {
+    Ptr<Packet> tmp = Create<Packet> (0);
+    tmp->AddTag (ATestTag<20> ());
+    CHECK (tmp, 0, E (20, 0, 0));
+  }
+  {
+    Ptr<Packet> tmp = Create<Packet> (1000);
+    tmp->AddTag (ATestTag<20> ());
+    CHECK (tmp, 1, E (20, 0, 1000));
+    tmp->RemoveAtStart (1000);
+    CHECK (tmp, 0,  E (0,0,0));
+    Ptr<Packet> a = Create<Packet> (10);
+    a->AddTag (ATestTag<10> ());
+    CHECK (a, 1, E (10, 0, 10));
+    tmp->AddAtEnd (a);
+    CHECK (tmp, 1, E (10, 0, 10));
   }
   
 

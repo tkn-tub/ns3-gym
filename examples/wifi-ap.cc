@@ -110,7 +110,7 @@ AdvancePosition (Ptr<Node> node)
 
 int main (int argc, char *argv[])
 {
-  Packet::EnableMetadata ();
+  Packet::EnablePrinting ();
 
   // enable rts cts all the time.
   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("0"));

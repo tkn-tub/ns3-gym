@@ -42,6 +42,8 @@ public:
   BooleanValue (bool value);
   void Set (bool value);
   bool Get (void) const;
+  template <typename T>
+  bool GetAccessor (T &v) const;
   
   operator bool () const;
 
@@ -51,6 +53,13 @@ public:
 private:
   bool m_value;
 };
+
+template <typename T>
+bool BooleanValue::GetAccessor (T &v) const
+{
+  v = T (m_value);
+  return true;
+}
 
 std::ostream & operator << (std::ostream &os, const BooleanValue &value);
 

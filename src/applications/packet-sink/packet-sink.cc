@@ -33,7 +33,7 @@ using namespace std;
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("PacketSinkApplication");
+NS_LOG_COMPONENT_DEFINE ("PacketSink");
 NS_OBJECT_ENSURE_REGISTERED (PacketSink);
 
 TypeId 
@@ -58,15 +58,19 @@ PacketSink::GetTypeId (void)
 
 PacketSink::PacketSink ()
 {
+  NS_LOG_FUNCTION (this);
   m_socket = 0;
 }
 
 PacketSink::~PacketSink()
-{}
+{
+  NS_LOG_FUNCTION (this);
+}
 
 void
 PacketSink::DoDispose (void)
 {
+  NS_LOG_FUNCTION (this);
   m_socket = 0;
 
   // chain up
@@ -77,40 +81,44 @@ PacketSink::DoDispose (void)
 // Application Methods
 void PacketSink::StartApplication()    // Called at time specified by Start
 {
+  NS_LOG_FUNCTION (this);
   // Create the socket if not already
   if (!m_socket)
     {
       m_socket = Socket::CreateSocket (GetNode(), m_tid);
       m_socket->Bind (m_local);
-      m_socket->Listen (0);
+      m_socket->Listen ();
     }
 
   m_socket->SetRecvCallback (MakeCallback(&PacketSink::HandleRead, this));
   m_socket->SetAcceptCallback (
             MakeNullCallback<bool, Ptr<Socket>, const Address &> (),
-            MakeNullCallback<void, Ptr<Socket>, const Address&> (),
-            MakeCallback(&PacketSink::CloseConnection, this) );
+            MakeCallback(&PacketSink::HandleAccept, this));
 }
 
 void PacketSink::StopApplication()     // Called at time specified by Stop
 {
+  NS_LOG_FUNCTION (this);
+  while(!m_socketList.empty()) //these are accepted sockets, close them
+  {
+    Ptr<Socket> acceptedSocket = m_socketList.front();
+    m_socketList.pop_front();
+    acceptedSocket->Close();
+  }
   if (m_socket) 
     {
+      m_socket->Close ();
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
     }
 }
 
 void PacketSink::HandleRead (Ptr<Socket> socket)
 {
+  NS_LOG_FUNCTION (this << socket);
   Ptr<Packet> packet;
-  while (packet = socket->Recv ())
+  Address from;
+  while (packet = socket->RecvFrom (from))
     {
-      SocketRxAddressTag tag;
-      bool found;
-      found = packet->FindFirstMatchingTag (tag);
-      NS_ASSERT (found);
-      Address from = tag.GetAddress ();
-      // XXX packet->RemoveTag (tag);
       if (InetSocketAddress::IsMatchingType (from))
         {
           InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
@@ -122,9 +130,11 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
     }
 }
 
-void PacketSink::CloseConnection (Ptr<Socket> socket)
+void PacketSink::HandleAccept (Ptr<Socket> s, const Address& from)
 {
-  socket->Close ();
+  NS_LOG_FUNCTION (this << s << from);
+  s->SetRecvCallback (MakeCallback(&PacketSink::HandleRead, this));
+  m_socketList.push_back (s);
 }
 
 } // Namespace ns3

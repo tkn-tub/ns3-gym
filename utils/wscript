@@ -24,9 +24,6 @@ def build(bld):
     obj = bld.create_ns3_program('bench-packets', ['common'])
     obj.source = 'bench-packets.cc'
 
-    obj = bld.create_ns3_program('replay-simulation', ['simulator'])
-    obj.source = 'replay-simulation.cc'
-
     obj = bld.create_ns3_program('print-introspected-doxygen',
                                  ['internet-stack', 'csma-cd', 'point-to-point'])
     obj.source = 'print-introspected-doxygen.cc'

@@ -57,6 +57,8 @@ PacketSocket::PacketSocket () : m_rxAvailable (0)
   m_shutdownSend = false;
   m_shutdownRecv = false;
   m_errno = ERROR_NOTERROR;
+  m_isSingleDevice = false;
+  m_device = 0;
 }
 
 void 
@@ -184,7 +186,6 @@ PacketSocket::Close(void)
       return -1;
     }
   m_state = STATE_CLOSED;
-  NotifyCloseCompleted ();
   return 0;
 }
 
@@ -223,14 +224,14 @@ PacketSocket::Connect(const Address &ad)
   return -1;
 }
 int 
-PacketSocket::Listen(uint32_t queueLimit)
+PacketSocket::Listen(void)
 {
   m_errno = Socket::ERROR_OPNOTSUPP;
   return -1;
 }
 
 int
-PacketSocket::Send (Ptr<Packet> p)
+PacketSocket::Send (Ptr<Packet> p, uint32_t flags)
 {
   NS_LOG_FUNCTION_NOARGS ();
   if (m_state == STATE_OPEN ||
@@ -239,7 +240,7 @@ PacketSocket::Send (Ptr<Packet> p)
       m_errno = ERROR_NOTCONN;
       return -1;
     }
-  return SendTo (p, m_destAddr);
+  return SendTo (p, flags, m_destAddr);
 }
 
 uint32_t
@@ -275,7 +276,7 @@ PacketSocket::GetTxAvailable (void) const
 }
 
 int
-PacketSocket::SendTo(Ptr<Packet> p, const Address &address)
+PacketSocket::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
 {
   NS_LOG_FUNCTION_NOARGS ();
   PacketSocketAddress ad;
@@ -330,6 +331,7 @@ PacketSocket::SendTo(Ptr<Packet> p, const Address &address)
   if (!error)
     {
       NotifyDataSent (p->GetSize ());
+      NotifySend (GetTxAvailable ());
     }
 
   if (error)
@@ -345,14 +347,16 @@ PacketSocket::SendTo(Ptr<Packet> p, const Address &address)
 }
 
 void 
-PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet, 
-                         uint16_t protocol, const Address &from)
+PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<const Packet> packet, 
+                         uint16_t protocol, const Address &from,
+                         const Address &to, NetDevice::PacketType packetType)
 {
   NS_LOG_FUNCTION_NOARGS ();
   if (m_shutdownRecv)
     {
       return;
     }
+
 
   PacketSocketAddress address;
   address.SetPhysicalAddress (from);
@@ -361,10 +365,10 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet,
 
   if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufSize)
     {
-      SocketRxAddressTag tag;
+      SocketAddressTag tag;
       tag.SetAddress (address);
       packet->AddTag (tag);
-      m_deliveryQueue.push (packet);
+      m_deliveryQueue.push (packet->Copy ());
       m_rxAvailable += packet->GetSize ();
       NS_LOG_LOGIC ("UID is " << packet->GetUid() << " PacketSocket " << this);
       NotifyDataRecv ();
@@ -379,6 +383,15 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet,
       NS_LOG_WARN ("No receive buffer space available.  Drop.");
       m_dropTrace (packet);
     }
+}
+
+uint32_t
+PacketSocket::GetRxAvailable (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  // We separately maintain this state to avoid walking the queue 
+  // every time this might be called
+  return m_rxAvailable;
 }
 
 Ptr<Packet> 
@@ -402,13 +415,43 @@ PacketSocket::Recv (uint32_t maxSize, uint32_t flags)
   return p;
 }
 
-uint32_t
-PacketSocket::GetRxAvailable (void) const
+Ptr<Packet>
+PacketSocket::RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  // We separately maintain this state to avoid walking the queue 
-  // every time this might be called
-  return m_rxAvailable;
+  Ptr<Packet> packet = Recv (maxSize, flags);
+  if (packet != 0)
+    {
+      SocketAddressTag tag;
+      bool found;
+      found = packet->FindFirstMatchingTag (tag);
+      NS_ASSERT (found);
+      fromAddress = tag.GetAddress ();
+    }
+  return packet;
+}
+
+int
+PacketSocket::GetSockName (Address &address) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  PacketSocketAddress ad = PacketSocketAddress::ConvertFrom(address);
+  
+  ad.SetProtocol (m_protocol);
+  if (m_isSingleDevice)
+    {
+      Ptr<NetDevice> device = m_node->GetDevice (ad.GetSingleDevice ());
+      ad.SetPhysicalAddress(device->GetAddress());      
+      ad.SetSingleDevice (m_device);
+    }
+  else
+    {
+      ad.SetPhysicalAddress(Address());   
+      ad.SetAllDevices ();
+    }  
+  address = ad;
+  
+  return 0;
 }
 
 }//namespace ns3

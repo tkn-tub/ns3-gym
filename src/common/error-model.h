@@ -72,12 +72,6 @@ class ErrorModel : public Object
 {
 public:
   static TypeId GetTypeId (void);
-  /**
-   * A factory method to generate a preconfigured default ErrorModel for use
-   * \return an ErrorModel smart pointer that is the default ErrorModel 
-   * type defined
-   */
-  static Ptr<ErrorModel> CreateDefault (void);
   
   ErrorModel ();
   virtual ~ErrorModel ();
@@ -104,9 +98,6 @@ public:
    */
   bool IsEnabled (void) const;
 
-protected:
-  bool m_enable;
-
 private:
   /*
    * These methods must be implemented by subclasses
@@ -114,6 +105,7 @@ private:
   virtual bool DoCorrupt (Ptr<Packet>) = 0;
   virtual void DoReset (void) = 0;
 
+  bool m_enable;
 };
 
 enum ErrorUnit

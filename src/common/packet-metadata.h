@@ -125,6 +125,7 @@ public:
   };
 
   static void Enable (void);
+  static void EnableChecking (void);
 
   inline PacketMetadata (uint32_t uid, uint32_t size);
   inline PacketMetadata (PacketMetadata const &o);
@@ -137,6 +138,13 @@ public:
   void AddTrailer (Trailer const &trailer, uint32_t size);
   void RemoveTrailer (Trailer const &trailer, uint32_t size);
 
+  /**
+   * \param start the amount of stuff to remove from the start
+   * \param end the amount of stuff to remove from the end
+   *
+   * Calling this method is equivalent to calling RemoveAtStart (start)
+   * and then, RemoveAtEnd (end).
+   */
   PacketMetadata CreateFragment (uint32_t start, uint32_t end) const;
   void AddAtEnd (PacketMetadata const&o);
   void AddPaddingAtEnd (uint32_t end);
@@ -148,8 +156,6 @@ public:
   uint32_t GetSerializedSize (void) const;
   void Serialize (Buffer::Iterator i, uint32_t size) const;
   uint32_t Deserialize (Buffer::Iterator i);
-
-  static void PrintStats (void);
 
   ItemIterator BeginItem (Buffer buffer) const;
 
@@ -272,6 +278,7 @@ private:
   
   static DataFreeList m_freeList;
   static bool m_enable;
+  static bool m_enableChecking;
 
   // set to true when adding metadata to a packet is skipped because
   // m_enable is false; used to detect enabling of metadata in the

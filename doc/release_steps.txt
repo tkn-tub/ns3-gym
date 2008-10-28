@@ -1,50 +1,78 @@
 Steps in doing an ns-3 release
 
-0. check out a clean ns-3-dev somewhere
-1. prepare the source files
+1. check out a clean ns-3-dev somewhere
+2. prepare the source files
    - revise and check in AUTHORS, if needed
    - revise and check in RELEASE_NOTES
-   - update and check in VERSION to the latest release number
+   - DO NOT change VERSION at this time
    - confirm that Doxygen builds cleanly and without warnings
      (./waf check; ./waf --doxygen), and check in any necessary changes 
-2. ./waf configure; ./waf dist
-   - this will create a ns-3.0.x.tar.bz2 tarball
-   - this will also create a ns-3.0.x-ref-traces.tar.bz2 tarball
-3. test tarball on release platforms (waf check and maybe some other scripts)
-4. once you are happy with the tarball, tag ns-3-dev with "release ns-3.0.X"
-   - hg tag "release ns-3.0.x"
+   - ensure no regressions (./waf --regression)
+3. ./waf configure; ./waf dist
+   - this will create an ns-3-dev.tar.bz2 tarball
+   - this will also create a ns-3-dev-ref-traces.tar.bz2 tarball
+4. test dev tarball on release platforms (waf check and maybe some other 
+   scripts)
+5. once you are happy with the tarball, tag ns-3-dev and ns-3-dev-ref-traces
+   - hg tag "ns-3.x"
    - hg push 
-5. clone the tagged ns-3-dev and place it on the repository
+   - cd into regression/ns-3-dev-ref-traces
+   - hg tag "ns-3.x"
+   - hg push 
+6. clone the tagged ns-3-dev and place it on the repository
    - ssh code.nsnam.org; sudo tcsh; su code;
-   - cp -r /home/code/repos/ns-3-dev /home/code/repos/ns-3.0.x
-   - cd /home/code/repos/ns-3.0.x/.hg and edit the hgrc appropriately:
-     "description = ns-3.0.x release
-      name = ns-3.0.x"
-6. Run the regression tests on the new release and update the reference traces
+   - cp -r /home/code/repos/ns-3-dev /home/code/repos/ns-3.1x
+   - cd /home/code/repos/ns-3.x/.hg and edit the hgrc appropriately:
+     "description = ns-3.x release
+      name = ns-3.x"
+   - clone the ns-3-dev-ref-traces and place it on the repository as above
+     but use the name ns-3.x-ref-traces and edit the hgrc appropriately
+7. check out a clean version of the new release (ns-3.x) somewhere
+8. Update the VERSION for this new release
+   - change the string 3-dev in the VERSION file to the real version 
+     (e.g. 3.2)  This must agree with the version name you chose in the clone
+     for the regression tests to work.
+   - hg commit
+   - hg push
+9. Run the regression tests on the new release (debug and optimized)
+   - ./waf -d debug configure
+   - ./waf
+   - ./waf --regression
+   - ./waf --valgrind --regression (for valgrind version)
+   - ./waf -d optimized configure
+   - ./waf
    - ./waf --regression
    - ./waf --valgrind --regression (for valgrind version)
    - There should be no regression errors at this time
-   - tag ns-3-dev-ref-traces with "release ns-3.0.X"
-     hg tag "release ns-3.0.x"
-     hg push
-   - clone the ns-3-dev-ref-traces and place it on the repository as in step
-     5 but use the name ns-3.0.x-ref-traces
-7. Create a reference traces tarball
-   - again, run "./waf dist" 
-8. upload "ns-3.0.x.tar.bz2" to the /var/www/html/releases/ directory on 
+10. Create final tarballs
+   - ./waf configure; ./waf dist
+   - this will create an ns-3.x.tar.bz2 tarball
+   - this will also create a ns-3.x-ref-traces.tar.bz2 tarball
+11. upload "ns-3.x.tar.bz2" to the /var/www/html/releases/ directory on 
    the www.nsnam.org server
    - give it 644 file permissions, and user/group = apache
-9. upload "ns-3.0.x-ref-traces.tar.bz2" to the /var/www/html/releases/ 
+12. upload "ns-3.x-ref-traces.tar.bz2" to the /var/www/html/releases/ 
    directory on the www.nsnam.org server
    - give it 644 file permissions, and user/group = apache
-10. update web pages on www.nsnam.org (source is in the www/ module)
+13. update web pages on www.nsnam.org (source is in the www/ module)
+   - clone the source repo (hg clone http://code.nsnam.org/www)
+   - update index.html
    - add link to news.html
    - update getting_started.html
    - update documents.html
    - update roadmap on wiki
-   - build and update Doxygen directory on the server
+   - commit and push changes
+   - build and update HTML directory on the server
      -- ssh www.nsnam.org; sudo tcsh; su nsnam;
+     -- run ~/bin/update-html
+   - build and update Doxygen directory on the server
      -- edit ~/bin/update-doxygen-release file and change RELEASE variable 
         to the right version number 
      -- run ~/bin/update-doxygen-release
-11. announce to ns-developers, with summary of release notes
+14. Final checks
+   - download tarball from web, build and run regression tests for as many
+     targets as you can
+   - download release from mercurial, build and run regression tests for as
+     many targets as you can
+   - test and verify until you're confident the release is solid.
+15. announce to ns-developers, with summary of release notes

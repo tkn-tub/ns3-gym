@@ -73,7 +73,10 @@ Ipv4LoopbackInterface::SendTo (Ptr<Packet> packet, Ipv4Address dest)
     m_node->GetObject<Ipv4L3Protocol> ();
 
   ipv4->Receive (0, packet, Ipv4L3Protocol::PROT_NUMBER, 
-                 Mac48Address ("ff:ff:ff:ff:ff:ff"));
+                 Mac48Address ("ff:ff:ff:ff:ff:ff"),
+                 Mac48Address ("ff:ff:ff:ff:ff:ff"),
+                 NetDevice::PACKET_HOST // note: linux uses PACKET_LOOPBACK here
+                 );
 }
 
 }//namespace ns3

@@ -24,6 +24,7 @@
 #include <ostream>
 #include "ns3/attribute.h"
 #include "ns3/attribute-helper.h"
+#include "ipv4-address.h"
 
 namespace ns3 {
 
@@ -92,12 +93,25 @@ public:
    * \returns true if this is a multicast address, false otherwise.
    */
   bool IsMulticast (void) const;
+  /**
+   * \returns true if the group bit is set, false otherwise.
+   */
+  bool IsGroup (void) const;
 
   /**
    * \returns the broadcast address
    */
   static Mac48Address GetBroadcast (void);
 
+  /**
+   * \returns a multicast address
+   */
+  static Mac48Address GetMulticast (Ipv4Address address);
+
+  /**
+   * \returns the multicast prefix (01:00:5e:00:00:00).
+   */
+  static Mac48Address GetMulticastPrefix (void);
 private:
   /**
    * \returns a new Address instance

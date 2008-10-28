@@ -1,3 +1,23 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2007 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
+
 #ifndef ADDRESS_H
 #define ADDRESS_H
 
@@ -66,11 +86,11 @@ namespace ns3 {
 class Address 
 {
 public:
-  enum {
-    /**
-     * The maximum size of a byte buffer which
-     * can be stored in an Address instance.
-     */
+  /**
+   * The maximum size of a byte buffer which
+   * can be stored in an Address instance.
+   */
+  enum MaxSize_e {
     MAX_SIZE = 30
   };
 
@@ -115,6 +135,11 @@ public:
    * \param buffer buffer to copy the whole address data structure to
    * \param len the size of the buffer
    * \returns the number of bytes copied.
+   *
+   * Copies the type to buffer[0], the length of the address internal buffer
+   * to buffer[1] and copies the internal buffer starting at buffer[2].  len
+   * must be at least the size of the internal buffer plus a byte for the type
+   * and a byte for the length. 
    */
   uint32_t CopyAllTo (uint8_t *buffer, uint8_t len) const;
   /**
@@ -124,8 +149,8 @@ public:
    * \param len length of buffer
    * \returns the number of bytes copied.
    *
-   * Copy the input buffer to the internal buffer of this address 
-   * instance.
+   * Copy the address bytes from buffer into to the internal buffer of this 
+   * address instance.
    */
   uint32_t CopyFrom (const uint8_t *buffer, uint8_t len);
   /**
@@ -133,6 +158,10 @@ public:
    *        a copy of all the members of this Address class.
    * \param len the length of the buffer
    * \returns the number of bytes copied.
+   *
+   * The inverse of CopyAllTo().  
+   *
+   * \see CopyAllTo
    */
   uint32_t CopyAllFrom (const uint8_t *buffer, uint8_t len);
   /**

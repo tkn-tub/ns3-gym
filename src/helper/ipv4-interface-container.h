@@ -21,6 +21,11 @@ public:
   Ipv4InterfaceContainer ();
 
   /**
+   * Concatenate the entries in the other container with ours.
+   */
+  void Add (Ipv4InterfaceContainer other);
+
+  /**
    * \returns the number of interfaces stored in this Ipv4InterfaceContainer.
    */
   uint32_t GetN (void) const;
@@ -31,7 +36,9 @@ public:
   void Add (Ptr<Ipv4> ipv4, uint32_t interface);
 
  private:
-  std::vector<std::pair<Ptr<Ipv4>,uint32_t> > m_interfaces;
+  
+  typedef std::vector<std::pair<Ptr<Ipv4>,uint32_t> > InterfaceVector;
+  InterfaceVector m_interfaces;
 };
 
 } // namespace ns3

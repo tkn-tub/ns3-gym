@@ -51,6 +51,9 @@ public:
   Ptr<T> Get (void) const;
 
   template <typename T>
+  bool GetAccessor (Ptr<T> &v) const;
+
+  template <typename T>
   operator Ptr<T> () const;
 
   virtual Ptr<AttributeValue> Copy (void) const;
@@ -61,23 +64,6 @@ private:
   Ptr<Object> m_value;
 };
 
-template <typename T, typename U>
-Ptr<const AttributeAccessor>
-MakePointerAccessor (Ptr<U> T::*memberVariable);
-template <typename T, typename U>
-Ptr<const AttributeAccessor>
-MakePointerAccessor (void (T::*setter) (Ptr<U>));
-template <typename T, typename U>
-Ptr<const AttributeAccessor>
-MakePointerAccessor (Ptr<U> (T::*getter) (void) const);
-template <typename T, typename U>
-Ptr<const AttributeAccessor>
-MakePointerAccessor (void (T::*setter) (Ptr<U>),
-		     Ptr<U> (T::*getter) (void) const);
-template <typename T, typename U>
-Ptr<const AttributeAccessor>
-MakePointerAccessor (Ptr<U> (T::*getter) (void) const,
-		     void (T::*setter) (Ptr<U>));
 
 class PointerChecker : public AttributeChecker 
 {
@@ -142,56 +128,7 @@ class APointerChecker : public PointerChecker
   }
 };
 
-/********************************************************
- *              The Accessor associated to 
- *               PointerValue
- ********************************************************/
-
-template <typename T, typename U>
-class PointerAccessor : public AttributeAccessor
-{
-public:
-  virtual ~PointerAccessor () {}
-  virtual bool Set (ObjectBase * object, const AttributeValue &val) const {
-      T *obj = dynamic_cast<T *> (object);
-      if (obj == 0)
-        {
-          return false;
-        }
-      const PointerValue *value = dynamic_cast<const PointerValue *> (&val);
-      if (value == 0)
-        {
-          return false;
-        }
-      Ptr<U> ptr = dynamic_cast<U*> (PeekPointer (value->GetObject ()));
-      if (ptr == 0)
-        {
-          return false;
-        }
-      DoSet (obj, ptr);
-      return true;
-    }
-  virtual bool Get (const ObjectBase * object, AttributeValue &val) const {
-      const T *obj = dynamic_cast<const T *> (object);
-      if (obj == 0)
-        {
-          return false;
-        }
-      PointerValue *value = dynamic_cast<PointerValue *> (&val);
-      if (value == 0)
-        {
-          return false;
-        }
-      value->Set (DoGet (obj));
-      return true;
-    }
-private:
-  virtual void DoSet (T *object, Ptr<U> value) const = 0;
-  virtual Ptr<U> DoGet (const T *object) const = 0;
-};
-
 } // namespace internal
-
 
 template <typename T>
 PointerValue::PointerValue (const Ptr<T> &object)
@@ -220,112 +157,21 @@ PointerValue::operator Ptr<T> () const
   return Get<T> ();
 }
 
-
-template <typename T, typename U>
-Ptr<const AttributeAccessor>
-MakePointerAccessor (Ptr<U> T::*memberVariable)
+template <typename T>
+bool 
+PointerValue::GetAccessor (Ptr<T> &v) const
 {
-  struct MemberVariable : public internal::PointerAccessor<T,U>
-  {
-    Ptr<U> T::*m_memberVariable;
-    virtual void DoSet (T *object, Ptr<U> value) const {
-      (object->*m_memberVariable) = value;
-    }
-    virtual Ptr<U> DoGet (const T *object) const {
-      return object->*m_memberVariable;
-    }
-    virtual bool HasGetter (void) const {
-      return true;
-    }
-    virtual bool HasSetter (void) const {
-      return true;
-    }
-  } *spec = new MemberVariable ();
-  spec->m_memberVariable = memberVariable;
-  return Ptr<const AttributeAccessor> (spec, false);
-}
-
-template <typename T, typename U>
-Ptr<const AttributeAccessor>
-MakePointerAccessor (void (T::*setter) (Ptr<U>))
-{
-  struct MemberMethod : public internal::PointerAccessor<T,U>
-  {
-    void (T::*m_setter) (Ptr<U>);
-    virtual void DoSet (T *object, Ptr<U> value) const {
-      (object->*m_setter) (value);
-    }
-    virtual Ptr<U> DoGet (const T *object) const {
-      return 0;
-      //return (object->*m_getter) ();
-    }
-    virtual bool HasGetter (void) const {
+  Ptr<T> ptr = dynamic_cast<T*> (PeekPointer (m_value));
+  if (ptr == 0)
+    {
       return false;
     }
-    virtual bool HasSetter (void) const {
-      return true;
-    }
-  } *spec = new MemberMethod ();
-  spec->m_setter = setter;
-  return Ptr<const AttributeAccessor> (spec, false);
+  v = ptr;
+  return true;
 }
 
-template <typename T, typename U>
-Ptr<const AttributeAccessor>
-MakePointerAccessor (Ptr<U> (T::*getter) (void) const)
-{
-  struct MemberMethod : public internal::PointerAccessor<T,U>
-  {
-    Ptr<U> (T::*m_getter) (void) const;
-    virtual void DoSet (T *object, Ptr<U> value) const {
-      //(object->*m_setter) (value);
-    }
-    virtual Ptr<U> DoGet (const T *object) const {
-      return (object->*m_getter) ();
-    }
-    virtual bool HasGetter (void) const {
-      return true;
-    }
-    virtual bool HasSetter (void) const {
-      return false;
-    }
-  } *spec = new MemberMethod ();
-  spec->m_getter = getter;
-  return Ptr<const AttributeAccessor> (spec, false);
-}
-template <typename T, typename U>
-Ptr<const AttributeAccessor>
-MakePointerAccessor (void (T::*setter) (Ptr<U>),
-		     Ptr<U> (T::*getter) (void) const)
-{
-  return MakePointerAccessor (getter, setter);
-}
-template <typename T, typename U>
-Ptr<const AttributeAccessor>
-MakePointerAccessor (Ptr<U> (T::*getter) (void) const,
-		     void (T::*setter) (Ptr<U>))
-{
-  struct MemberMethod : public internal::PointerAccessor<T,U>
-  {
-    void (T::*m_setter) (Ptr<U>);
-    Ptr<U> (T::*m_getter) (void) const;
-    virtual void DoSet (T *object, Ptr<U> value) const {
-      (object->*m_setter) (value);
-    }
-    virtual Ptr<U> DoGet (const T *object) const {
-      return (object->*m_getter) ();
-    }
-    virtual bool HasGetter (void) const {
-      return true;
-    }
-    virtual bool HasSetter (void) const {
-      return true;
-    }
-  } *spec = new MemberMethod ();
-  spec->m_setter = setter;
-  spec->m_getter = getter;
-  return Ptr<const AttributeAccessor> (spec, false);
-}
+
+ATTRIBUTE_ACCESSOR_DEFINE (Pointer);
 
 template <typename T>
 Ptr<AttributeChecker>

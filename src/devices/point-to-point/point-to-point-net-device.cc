@@ -23,6 +23,7 @@
 #include "ns3/llc-snap-header.h"
 #include "ns3/error-model.h"
 #include "ns3/trace-source-accessor.h"
+#include "ns3/uinteger.h"
 #include "ns3/pointer.h"
 #include "point-to-point-net-device.h"
 #include "point-to-point-channel.h"
@@ -40,29 +41,43 @@ PointToPointNetDevice::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::PointToPointNetDevice")
     .SetParent<NetDevice> ()
     .AddConstructor<PointToPointNetDevice> ()
-    .AddAttribute ("Address", "The address of this device.",
+    .AddAttribute ("Address", 
+                   "The MAC address of this device.",
                    Mac48AddressValue (Mac48Address ("ff:ff:ff:ff:ff:ff")),
                    MakeMac48AddressAccessor (&PointToPointNetDevice::m_address),
                    MakeMac48AddressChecker ())
-    .AddAttribute ("DataRate", "The default data rate for point to point links",
+    .AddAttribute ("FrameSize", 
+                   "The maximum size of a packet sent over this device.",
+                   UintegerValue (DEFAULT_FRAME_SIZE),
+                   MakeUintegerAccessor (&PointToPointNetDevice::SetFrameSize,
+                                         &PointToPointNetDevice::GetFrameSize),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("DataRate", 
+                   "The default data rate for point to point links",
                    DataRateValue (DataRate ("32768b/s")),
                    MakeDataRateAccessor (&PointToPointNetDevice::m_bps),
                    MakeDataRateChecker ())
-    .AddAttribute ("ReceiveErrorModel", "XXX",
+    .AddAttribute ("ReceiveErrorModel", 
+                   "The receiver error model used to simulate packet loss",
                    PointerValue (),
                    MakePointerAccessor (&PointToPointNetDevice::m_receiveErrorModel),
                    MakePointerChecker<ErrorModel> ())
-    .AddAttribute ("TxQueue", "XXX",
+    .AddAttribute ("TxQueue",
+                   "A queue to use as the transmit queue in the device.",
                    PointerValue (),
                    MakePointerAccessor (&PointToPointNetDevice::m_queue),
                    MakePointerChecker<Queue> ())
-    .AddAttribute ("InterframeGap", "XXX",
+    .AddAttribute ("InterframeGap", 
+                   "The time to wait between packet (frame) transmissions",
                    TimeValue (Seconds (0.0)),
                    MakeTimeAccessor (&PointToPointNetDevice::m_tInterframeGap),
                    MakeTimeChecker ())
-    .AddTraceSource ("Rx", "Receive MAC packet.",
+    .AddTraceSource ("Rx", 
+                     "Trace source to fire on reception of a MAC packet.",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_rxTrace))
-    .AddTraceSource ("Drop", "Drop MAC packet.",
+    .AddTraceSource ("Drop",
+                     "Trace source to fire on when a MAC packet is dropped.",
+
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_dropTrace))
 
     ;
@@ -75,10 +90,19 @@ PointToPointNetDevice::PointToPointNetDevice ()
   m_txMachineState (READY),
   m_channel (0), 
   m_name (""),
-  m_linkUp (false),
-  m_mtu (0xffff)
+  m_linkUp (false)
 {
   NS_LOG_FUNCTION (this);
+
+  //
+  // A quick sanity check to ensure consistent constants.
+  //
+  PppHeader ppp;
+  NS_ASSERT_MSG (PPP_OVERHEAD == ppp.GetSerializedSize (), 
+                 "PointToPointNetDevice::PointToPointNetDevice(): PPP_OVERHEAD inconsistent");
+
+  m_frameSize = DEFAULT_FRAME_SIZE;
+  m_mtu = MtuFromFrameSize (m_frameSize);
 }
 
 PointToPointNetDevice::~PointToPointNetDevice ()
@@ -207,7 +231,7 @@ PointToPointNetDevice::SetQueue (Ptr<Queue> q)
   void
 PointToPointNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
 {
-  NS_LOG_FUNCTION ("(" << em << ")");
+  NS_LOG_FUNCTION (this << em);
   m_receiveErrorModel = em;
 }
 
@@ -233,7 +257,11 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
 //
       m_rxTrace (packet);
       ProcessHeader(packet, protocol);
-      m_rxCallback (this, packet, protocol, GetBroadcast ());
+      m_rxCallback (this, packet, protocol, GetRemote ());
+      if (!m_promiscCallback.IsNull ())
+        {
+          m_promiscCallback (this, packet, protocol, GetRemote (), GetAddress (), NetDevice::PACKET_HOST);
+        }
     }
 }
 
@@ -302,19 +330,6 @@ PointToPointNetDevice::GetAddress (void) const
 }
 
   bool 
-PointToPointNetDevice::SetMtu (const uint16_t mtu)
-{
-  m_mtu = mtu;
-  return true;
-}
-
-  uint16_t 
-PointToPointNetDevice::GetMtu (void) const
-{
-  return m_mtu;
-}
-
-  bool 
 PointToPointNetDevice::IsLinkUp (void) const
 {
   return m_linkUp;
@@ -350,6 +365,7 @@ PointToPointNetDevice::GetBroadcast (void) const
 //
 // We don't deal with multicast here.  It doesn't make sense to include some
 // of the one destinations on the network but exclude some of the others.
+//
   bool 
 PointToPointNetDevice::IsMulticast (void) const
 {
@@ -425,6 +441,15 @@ PointToPointNetDevice::Send(
     }
 }
 
+bool
+PointToPointNetDevice::SendFrom (Ptr<Packet> packet, 
+                                 const Address &source, 
+                                 const Address &dest, 
+                                 uint16_t protocolNumber)
+{
+  return false;
+}
+
   Ptr<Node> 
 PointToPointNetDevice::GetNode (void) const
 {
@@ -448,5 +473,105 @@ PointToPointNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
   m_rxCallback = cb;
 }
+
+void
+PointToPointNetDevice::SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb)
+{
+  NS_FATAL_ERROR ("not implemented");
+  m_promiscCallback = cb;
+}
+
+  bool
+PointToPointNetDevice::SupportsSendFrom (void) const
+{
+  return false;
+}
+
+Address 
+PointToPointNetDevice::GetRemote (void) const
+{
+  NS_ASSERT (m_channel->GetNDevices () == 2);
+  for (uint32_t i = 0; i < m_channel->GetNDevices (); ++i)
+    {
+      Ptr<NetDevice> tmp = m_channel->GetDevice (i);
+      if (tmp != this)
+        {
+          return tmp->GetAddress ();
+        }
+    }
+  NS_ASSERT (false);
+  // quiet compiler.
+  return Address ();
+}
+
+  uint32_t
+PointToPointNetDevice::MtuFromFrameSize (uint32_t frameSize)
+{
+  NS_LOG_FUNCTION (frameSize);
+  NS_ASSERT_MSG (frameSize <= std::numeric_limits<uint16_t>::max (), 
+                 "PointToPointNetDevice::MtuFromFrameSize(): Frame size should be derived from 16-bit quantity: " << 
+                 frameSize);
+  PppHeader ppp;
+  NS_ASSERT_MSG ((uint32_t)frameSize >= ppp.GetSerializedSize (), 
+                 "PointToPointNetDevice::MtuFromFrameSize(): Given frame size too small to support PPP");
+  return frameSize - ppp.GetSerializedSize ();
+}
+  
+  uint32_t
+PointToPointNetDevice::FrameSizeFromMtu (uint32_t mtu)
+{
+  NS_LOG_FUNCTION (mtu);
+
+  PppHeader ppp;
+  return mtu + ppp.GetSerializedSize ();
+}
+
+  void 
+PointToPointNetDevice::SetFrameSize (uint16_t frameSize)
+{
+  NS_LOG_FUNCTION (frameSize);
+
+  m_frameSize = frameSize;
+  m_mtu = MtuFromFrameSize (frameSize);
+
+  NS_LOG_LOGIC ("m_frameSize = " << m_frameSize);
+  NS_LOG_LOGIC ("m_mtu = " << m_mtu);
+}
+
+  uint16_t
+PointToPointNetDevice::GetFrameSize (void) const
+{
+  return m_frameSize;
+}
+
+  bool
+PointToPointNetDevice::SetMtu (uint16_t mtu)
+{
+  NS_LOG_FUNCTION (mtu);
+
+  uint32_t newFrameSize = FrameSizeFromMtu (mtu);
+
+  if (newFrameSize > std::numeric_limits<uint16_t>::max ())
+    {
+      NS_LOG_WARN ("PointToPointNetDevice::SetMtu(): Frame size overflow, MTU not set.");
+      return false;
+    }
+
+  m_frameSize = newFrameSize;
+  m_mtu = mtu;
+
+  NS_LOG_LOGIC ("m_frameSize = " << m_frameSize);
+  NS_LOG_LOGIC ("m_mtu = " << m_mtu);
+
+  return true;
+}
+
+  uint16_t
+PointToPointNetDevice::GetMtu (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_mtu;
+}
+
 
 } // namespace ns3

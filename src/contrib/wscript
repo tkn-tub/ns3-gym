@@ -6,7 +6,11 @@ def configure(conf):
     check.uselib = 'GTK_CONFIG_STORE'
     check.mandatory = False
     conf.env['ENABLE_GTK_CONFIG_STORE'] = check.run()
+    conf.report_optional_feature("GtkConfigStore", "GtkConfigStore",
+                                 conf.env['ENABLE_GTK_CONFIG_STORE'],
+                                 "library 'gtk+-2.0 >= 2.12' not found")
 
+    conf.sub_config('stats')
 
 def build(bld):
     module = bld.create_ns3_module('contrib', ['simulator'])

@@ -134,6 +134,11 @@ public:
   void SetMinDistance (double minDistance);
 
   /**
+   * \returns the minimum distance.
+   */
+  double GetMinDistance (void) const;
+
+  /**
    * \returns the current wavelength (m)
    */
   double GetLambda (void) const;

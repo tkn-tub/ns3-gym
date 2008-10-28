@@ -1,0 +1,24 @@
+@node Logging
+@chapter Logging
+@anchor{chap:Logging}
+
+This chapter is the first in a series of chapters discussing things that
+one can do to modify the input or output of existing ns-3 scripts.
+
+Examples:
+@itemize @bullet
+@item Enable or disable the generation of log messages, with fine granularity
+@item Set default values for configuration values in the system
+@item Generate a report of all configuration values used during a simulation
+run (not yet implemented)
+@item Set or get values of member variables on objects already instantiated
+@item Customizing the tracing output of the script
+@item Generate statistics on  (not yet implemented)
+@item Perform a large number of independent runs of the same simulation
+@end itemize
+
+@node Logging Basics 
+@section Logging Basics
+
+@node Enabling Log Output
+@section Enabling Log Output

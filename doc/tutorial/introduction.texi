@@ -4,209 +4,138 @@
 @c ========================================================================
 
 @c ========================================================================
-@c Tutorial Goals
-@c ========================================================================
-
-@node Tutorial Goals
-@unnumbered Tutorial Goals
-
-@c This is an unnumbered section, like a preface.  Numbering
-@c starts with section 1 (Introduction)
-
-The goal of this ns-3 tutorial is to introduce new users of ns-3 to enough
-of the system to enable them to author simple simulation scripts and extract
-useful information from the simulations.  We begin by introducing some of the
-other important resources that are available to those interested in using or
-writing scripts, models and even those interested in making contributions to
-the core ns-3 system.  We provide an overview of some of the 
-important abstractions, design patterns and idioms used when writing 
-ns-3 scripts, and then dig right in by begining to write simulation 
-scripts, run them and interpret results.
-
-After completing this tutorial, one should be able to:
-@itemize @bullet
-@item Find documentation resources in the distribution and on the web;
-@item Download and compile the ns-3 system;
-@item Understand the key software conventions of ns-3;
-@item Modify configuration parameters of existing scripts;
-@item Change the simulation output (tracing, logging, statistics);
-@item Extend the simulator to use new objects
-@item Write new ns-3 applications;
-@item See how to port code from ns-2;
-@item ... (more to follow)
-@end itemize
-
-@c ========================================================================
 @c PART:  Introduction
 @c ========================================================================
 @c The below chapters are under the major heading "Introduction"
 @c This is similar to the Latex \part command
 @c
 @c ========================================================================
-@c Overview
+@c Introduction
 @c ========================================================================
-@node Overview
-@chapter Overview
+@node Introduction
+@chapter Introduction
 
 @menu
-* For ns-2 users::
+* For ns-2 Users::
 * Contributing::
-* Tutorial organization::
+* Tutorial Organization::
 @end menu
 
-The ns-3 simulator is a discrete-event network
-simulator targeted primarily for research and educational use.  
-The @uref{http://www.nsnam.org,,ns-3 project}, started in 
-2006, is an open-source project.  The goal of the project is to
-build a new network simulator primarily for research and educational use.  
+The @command{ns-3} simulator is a discrete-event network simulator targeted 
+primarily for research and educational use.  The 
+@uref{http://www.nsnam.org,,ns-3 project}, 
+started in 2006, is an open-source project developing ns-3.
 
-Primary documentation for the ns-3 project is available in
-three forms:
+Primary documentation for the @command{ns-3} project is available in four
+forms:
 @itemize @bullet
-@item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen/Manual}:  Documentation of the public APIs of the simulator
+@item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen/Manual}:  
+Documentation of the public APIs of the simulator
 @item Tutorial (this document)
+@item @uref{http://www.nsnam.org/docs/manual.html,,Reference Manual}:  Reference Manual
 @item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
 @end itemize
 
-The purpose of this tutorial is to introduce new ns-3 users to the 
+The purpose of this tutorial is to introduce new @command{ns-3} users to the 
 system in a structured way.  It is sometimes difficult for new users to
 glean essential information from detailed manuals and to convert this
 information into working simulations.  In this tutorial, we will build 
 several example simulations, introducing and explaining key concepts and
 features as we go.
 
-As the tutorial unfolds, we will introduce the full ns-3 
-documentation 
+As the tutorial unfolds, we will introduce the full ns-3 documentation 
 and provide pointers to source code for those interested in delving deeper
 into the workings of the system.
 
 A few key points are worth noting at the onset:
 @itemize @bullet
-@item ns-3 is not an extension of @uref{http://www.isi.edu/nsnam/ns,,ns-2}; 
-it is a new
-simulator.  The two simulators are both written in C++ but ns-3
-is a new simulator that does not support the ns-2 APIs.
-Some models from ns-2 have already been ported from ns-2
-to ns-3. The project will continue to maintain ns-2 while
-ns-3 is being built, and will study transition and
-integration mechanisms.
-@item ns-3 is open-source, and the project strives to maintain
-an open environment for researchers to contribute and share their
-software.  
+@item Ns-3 is not an extension of @uref{http://www.isi.edu/nsnam/ns,,ns-2}; 
+it is a new simulator.  The two simulators are both written in C++ but 
+@command{ns-3} is a new simulator that does not support the ns-2 APIs.  Some 
+models from ns-2 have already been ported from ns-2 to ns-3. The project will
+continue to maintain ns-2 while ns-3 is being built, and will study transition
+and integration mechanisms.
+@item @command{Ns-3} is open-source, and the project strives to maintain an 
+open  environment for researchers to contribute and share their software.  
 @end itemize
  
-@node For ns-2 users
-@section For ns-2 users
+@node For ns-2 Users
+@section For ns-2 Users
 
-For those familiar with ns-2, the most visible outward change 
-when moving to ns-3 is the choice of scripting language.  
-ns-2 is typically scripted in Tcl and results of simulations can
-be visualized using the Network Animator @command{nam}.  In 
-ns-3 there is currently no visualization module, and Python
-bindings have been developed (Tcl bindings have been prototyped
-using @uref{http://www.swig.org,,SWIG}, but are not supported by the 
-current development team).  
-In this tutorial, we will concentrate on 
-scripting directly in C++ and interpreting results via trace files.  
+For those familiar with ns-2, the most visible outward change when moving to 
+ns-3 is the choice of scripting language.  Ns-2 is 
+scripted in OTcl and results of simulations can be visualized using the 
+Network Animator @command{nam}.  It is not possible to run a simulation
+in ns-2 purely from C++ (i.e., as a main() program without any OTcl).
+Moreover, some components of ns-2 are written in C++ and others in OTcl.
+In ns-3, the simulator is written entirely in C++, with optional
+Python bindings.  Simulation scripts can therefore be written in C++
+or in Python.  The results of some simulations can be visualized by
+@command{nam}, but new animators are under development.  Since ns-3
+generates pcap packet trace files, other utilities can be used to
+analyze traces as well.
+In this tutorial, we will first concentrate on scripting 
+directly in C++ and interpreting results via ascii trace files.  
 
-But there are similarities as well (both, for example, are based
-on C++ objects, and some code from ns-2 has already been ported
-to ns-3).  We will try to highlight differences between ns-2 and ns-3
+But there are similarities as well (both, for example, are based on C++ 
+objects, and some code from ns-2 has already been ported to ns-3).
+We will try to highlight differences between ns-2 and ns-3
 as we proceed in this tutorial.
+
+A question that we often hear is "Should I still use ns-2 or move to
+ns-3?"  The answer is that it depends.  ns-3 does not have all of the
+models that ns-2 currently has, but on the other hand, ns-3 does have
+new capabilities (such as handling multiple interfaces on nodes 
+correctly, use of IP addressing and more alignment with Internet
+protocols and designs, more detailed 802.11 models, etc.).  ns-2
+models can usually be ported to ns-3 (a porting guide is under
+development).  There is active development on multiple fronts for ns-3.
+The ns-3 developers believe (and certain early users have proven) that
+ns-3 is ready for active use, and should be an attractive alternative
+for users looking to start new simulation projects.  
 
 @node Contributing
 @section Contributing
 
-@cindex software configuration management
-ns-3 is a research and educational simulator, by and for the
-research community.  It will rely on the ongoing contributions of 
-the community to develop new models, debug or maintain
-existing ones, and share results.  There are a few policies
-that we hope will encourage people to contribute to ns-3 like they
-have for ns-2:
+@cindex contributing
+@command{Ns-3} is a research and educational simulator, by and for the 
+research community.  It will rely on the ongoing contributions of the 
+community to develop new models, debug or maintain existing ones, and share 
+results.  There are a few policies that we hope will encourage people to 
+contribute to @command{ns-3} like they have for ns-2:
 @itemize @bullet
-@item open source licensing based on GNU GPLv2 compatibility
-@item @uref{http://www.nsnam.org/wiki/index.php,,wiki}
+@item Open source licensing based on GNU GPLv2 compatibility;
+@item @uref{http://www.nsnam.org/wiki/index.php,,wiki};
 @item @uref{http://www.nsnam.org/wiki/index.php/Contributed_Code,,Contributed Code} page, similar to ns-2's popular 
 @uref{http://nsnam.isi.edu/nsnam/index.php/Contributed_Code,,Contributed Code} 
-page
-@item @code{src/contrib} directory (we will host your contributed code)
-@item open @uref{http://www.nsnam.org/bugzilla,,bug tracker}
-@item ns-3 developers will gladly help potential contributors to get
-started with the simulator (please contact @uref{http://www.nsnam.org/people.html,,one of us})
+page;
+@item @code{src/contrib} directory (we will host your contributed code);
+@item Open @uref{http://www.nsnam.org/bugzilla,,bug tracker};
+@item @command{Ns-3} developers will gladly help potential contributors to get
+started with the simulator (please contact @uref{http://www.nsnam.org/people.html,,one of us}).
 @end itemize  
 
-If you are an ns user, please consider to provide your feedback,
-bug fixes, or code to the project.  
+We realize that if you are reading this document, contributing back to 
+the project is probably not your foremost concern at this point, but
+we want you to be aware that contributing is in the spirit of the project and
+that even the act of dropping us a note about your early experience 
+with ns-3 (e.g. "this tutorial section was not clear..."), 
+reports of stale documentation, etc. are much appreciated. 
 
-@node Tutorial organization
-@section Tutorial organization
+@node Tutorial Organization
+@section Tutorial Organization
 
-The tutorial assumes that new users might follow a path such as follows:
+The tutorial assumes that new users might initially follow a path such as the
+following:
 
 @itemize @bullet
-@item browse the source code and documentation, to get a feel for 
-the simulator and what it might be like to handle;
-@item try to download and build a copy;
-@item try to run a few sample programs, and perhaps change some configurations;
-@item look at simulation output, and try to adjust it
-@item study the software architecture of the system, to consider hacking it or 
-extending it;
-@item write new models or port existing code to ns-3, and eventually post those
-models back to the community.
+@item Try to download and build a copy;
+@item Try to run a few sample programs;
+@item Look at simulation output, and try to adjust it.
 @end itemize
 
 As a result, we have tried to organize the tutorial along the above
 broad sequences of events.
-
-@c ========================================================================
-@c Browsing ns-3
-@c ========================================================================
-
-@node Browsing
-@chapter Browsing ns-3
-
-@menu
-* Source code::
-* Doxygen::
-* Other documentation::
-@end menu
-
-@node Source code
-@section Source code 
-
-The most recent code can be browsed on our web server at the following link:
-@uref{http://code.nsnam.org/?sort=lastchange}.  If you click on the bold
-repository names on the left of the page, you will see changelogs for
-these repositories, and links to the @emph{manifest}.  From the manifest
-links, one can browse the source tree.
-
-The top-level directory will look something like:
-@verbatim
-  AUTHORS  RELEASE_NOTES  examples/  src/       waf*
-  LICENSE  VERSION        ns3/       tutorial/  waf.bat*
-  README   doc/           samples/   utils/     wscript
-@end verbatim
-The source code is mainly in the @code{src} directory.  Example
-scripts are in the @code{examples} directory.  Both are good directories
-to start browsing some code.
-
-For ns-2 users, who may be familiar with the @code{simple.tcl} example script
-in the ns-2 documentation, an analogous script is found in 
-@code{examples/simple-point-to-point.cc} with a Python equivalent found
-in @emph{(pending Python merge)}. 
-
-@node Doxygen
-@section Doxygen
-
-We document all of APIs using @uref{http://www.stack.nl/~dimitri/doxygen/,,Doxygen}.  Current builds of this documentation are available at:
-@uref{http://www.nsnam.org/doxygen/index.html}, which are worth an initial
-look.  
-
-@node Other documentation
-@section Other documentation
-
-See:  @uref{http://www.nsnam.org/documents.html}.
 
 @c ========================================================================
 @c Resources
@@ -216,38 +145,35 @@ See:  @uref{http://www.nsnam.org/documents.html}.
 @chapter Resources
 
 @menu
-* The-Web::
+* The Web::
 * Mercurial::
 * Waf::
-* Environment-Idioms-Design-Patterns::
-* Socket-Programming::
+* Development Environment::
+* Socket Programming::
 @end menu
 
-@node The-Web
+@node The Web
 @section The Web
 
 @cindex www.nsnam.org
-There are several important resources of which any ns-3 user must be
-aware.  The main web site is located at @uref{http://www.nsnam.org}
-and provides access to basic information about the ns-3 system.  
-Detailed documentation is available through the main web site at
-@uref{http://www.nsnam.org/documents.html}.
-
 @cindex documentation
 @cindex architecture
-You can find documents relating to the system architecture from this page,
-and also gain access to the detailed software documentation.  The software
-system is documented in great detail using 
-@uref{http://www.stack.nl/~dimitri/doxygen/,,Doxygen}.  There is a Wiki that
-complements the main ns-3 web site which you will find at 
-@uref{http://www.nsnam.org/wiki/}.
+There are several important resources of which any @command{ns-3} user must be
+aware.  The main web site is located at @uref{http://www.nsnam.org} and 
+provides access to basic information about the ns-3 system.  Detailed 
+documentation is available through the main web site at
+@uref{http://www.nsnam.org/documents.html}.  You can also find documents 
+relating to the system architecture from this page.
 
-You will find user and developer FAQs there as well as troubleshooting guides, 
-third-party contributed code, papers, etc. The source code may be found 
-and browsed at @uref{http://code.nsnam.org/}. 
+There is a Wiki that complements the main ns-3 web site which you will find at 
+@uref{http://www.nsnam.org/wiki/}.  You will find user and developer FAQs 
+there, as well as troubleshooting guides, third-party contributed code, 
+papers, etc. 
 
-@cindex repository!ns-3-dev
-@cindex repository!releases
+@cindex mercurial repository
+@cindex ns-3-dev repository
+@cindex release repository
+The source code may be found and browsed at @uref{http://code.nsnam.org/}. 
 There you will find the current development tree in the repository named
 @code{ns-3-dev}. Past releases and experimental repositories of the core
 developers may also be found there.
@@ -263,7 +189,7 @@ the most well known.
 
 @cindex software configuration management
 @cindex Mercurial
-The ns-3 project uses Mercurial as its source code management system.
+The @command{ns-3} project uses Mercurial as its source code management system.
 Although you do not need to know much about Mercurial in order to complete
 this tutorial, we recommend becoming familiar with Mercurial and using it 
 to access the source code.  Mercurial has a web site at 
@@ -275,8 +201,8 @@ also provides a tutorial at
 and a QuickStart guide at
 @uref{http://www.selenic.com/mercurial/wiki/index.cgi/QuickStart/}.
 
-You can also find vital information about using Mercurial and ns-3
-on the main ns-3 web site.
+You can also find vital information about using Mercurial and @command{ns-3}
+on the main @command{ns-3} web site.
 
 @node Waf
 @section Waf
@@ -287,26 +213,29 @@ on the main ns-3 web site.
 Once you have source code downloaded to your local system, you will need 
 to compile that source to produce usable programs.  Just as in the case of
 source code management, there are many tools available to perform this 
-function.  Probably the most famous of these tools is @code{make}.  Along
-with being the most famous, @code{make} is probably the most difficult to
+function.  Probably the most well known of these tools is @code{make}.  Along
+with being the most well known, @code{make} is probably the most difficult to
 use in a very large and highly configurable system.  Because of this, many
 alternatives have been developed.  Recently these systems have been developed
 using the Python language.
 
-The build system @code{Waf} is used on the ns-3 project.  It is one 
+The build system @code{Waf} is used on the @command{ns-3} project.  It is one 
 of the new generation of Python-based build systems.  You will not need to 
 understand any Python to build the existing ns-3 system, and will 
 only have to understand a tiny and intuitively obvious subset of Python in 
 order to extend the system in most cases.
 
 For those interested in the gory details of Waf, the main web site can be 
-found at @uref{http://freehackers.org/\~tnagy/waf.html}.
+found at @uref{http://freehackers.org/~tnagy/waf.html}.
 
-@node Environment-Idioms-Design-Patterns
-@section Environment, Idioms, and Design Patterns
+@node Development Environment
+@section Development Environment
 
 @cindex C++
-As mentioned above, scripting in ns-3 is done in C++.  A working 
+@cindex Python
+As mentioned above, scripting in ns-3 is done in C++ or Python.
+As of ns-3.2, most of the ns-3 API is available in Python, but the models
+are written in C++ in either case.  A working 
 knowledge of C++ and object-oriented concepts is assumed in this document.
 We will take some time to review some of the more advanced concepts or 
 possibly unfamiliar language features, idioms and design patterns as they 
@@ -317,28 +246,30 @@ in print.
 
 If you are new to C++, you may want to find a tutorial- or cookbook-based
 book or web site and work through at least the basic features of the language
-before proceeding.
-
-@subsection Environment
+before proceeding.  For instance, 
+@uref{http://www.cplusplus.com/doc/tutorial/,,this tutorial}.
 
 @cindex toolchain
 @cindex GNU
-The ns-3 system uses the GNU ``toolchain'' for development.  
-A software toolchain is the set of programming tools available in the given 
+The @command{ns-3} system uses several components of the GNU ``toolchain'' 
+for development.  A 
+software toolchain is the set of programming tools available in the given 
 environment. For a quick review of what is included in the GNU toolchain see,
-@uref{http://en.wikipedia.org/wiki/GNU_toolchain}.
+@uref{http://en.wikipedia.org/wiki/GNU_toolchain}.  ns-3 uses gcc, 
+GNU binutils, and gdb.  However, we do not use the GNU build system,
+either make or autotools, using Waf instead.
 
 @cindex Linux
-Typically an ns-3 author will work in Linux or a Linux-like
+Typically an @command{ns-3} author will work in Linux or a Linux-like
 environment.  For those running under Windows, there do exist environments 
-which simulate the Linux environment to various degrees.  The ns-3 
-project supports development in the Cygwin and the MinGW environments for 
-these users.  See @uref{http://www.cygwin.com/} and 
-@uref{http://www.mingw.org/} for details on downloading and using these
-systems.  Cygwin provides many of the popular Linux system commands.
-It can, however, sometimes be problematic due to the way it 
-actually does its emulation, and sometimes interactions with other Windows
-software can cause problems.
+which simulate the Linux environment to various degrees.  The @command{ns-3} 
+project supports development in the Cygwin environment for 
+these users.  See @uref{http://www.cygwin.com/} 
+for details on downloading (MinGW is presently not supported).
+Cygwin provides many of the popular Linux system commands.
+It can, however, sometimes be problematic due to the way it actually does its 
+emulation, and sometimes interactions with other Windows software can cause 
+problems.
 
 @cindex Cygwin
 @cindex MinGW
@@ -352,62 +283,12 @@ crash creating a sh.exe.stackdump file when I try to compile my source code.''
 Believe it or not, the @code{Logitech Process Monitor} insinuates itself into
 every DLL in the system when it is running.  It can cause your Cygwin or
 MinGW DLLs to die in mysterious ways and often prevents debuggers from 
-running.  Beware of Logitech.
+running.  Beware of Logitech software when using Cygwin.
 
-@subsection Idioms and Design Patterns
+Another alternative to Cygwin is to install a virtual machine environment
+such as VMware server and install a Linux virtual machine.
 
-@cindex idiom
-In any system, there are a number of problems to be solved that happen 
-repeatedly.  Often the solutions to these problems can be generalized and
-applied in a similar way across the system.  These solutions are called
-Design Patterns.  The ns-3 system relies on several classic design
-patterns.
-
-@cindex design pattern
-Also, in any language, there are constructs that, while they aren't part of the
-language per se, are commonly found and useful.  For example, at the lowest 
-level a C programmer should be able to immediately recognize the purpose and 
-intent  of the following code without having to reflect on the details:
-
-@verbatim
-  for (;;)
-@end verbatim
-
-These low-level constructs, or idioms, extend upward in complexity, eventually
-becoming implementations of design patterns.  As you are exposed to more 
-and more of the ns-3 system, you will begin to recognize and be 
-comfortable with the C++ implementations (idioms) of several important design
-patterns.
-
-@cindex functor
-@cindex callback
-@cindex smart pointer
-The ns-3 code relies heavily on 
-@emph{Generalized Functors, Callbacks, 
-Smart Pointers, Singletons, and Object Factories}.  Although we will 
-not assume any detailed knowledge of the idioms and design patterns used 
-in the ns-3
-system, it will be useful for readers who intend to delve deeply into the
-system to understand some important related concepts.  We recommend two 
-resources: @uref{http://www.amazon.com/Design-Patterns-Object-Oriented-Addison-Wesley-Professional/dp/0201633612/,,Design Patterns: Elements of Reusable Object-Oriented Software, Gamma et. al.} and
-@uref{http://www.amazon.com/exec/obidos/ASIN/0201704315,,Modern C++ Design: Generic Programming and Design Patterns Applied, Alexandrescu}.
-
-Gamma addresses the abstract design patterns, and Alexandrescu addresses the
-C++ idioms you will often see throughout the ns-3 code.
-
-@cindex template
-Almost any use of ns-3 will require some basic knowledge of C++ 
-templates.
-We will discuss the high-level uses in this tutorial.  However, if you venture
-deeply into the source code, you will see fairly heavy use of relatively
-sophisticated C++ templates in some of low-level modules of the system.  The
-You don't have to be a template guru to complete this tutorial but if you
-expect to work in ns-3 within the simulation core, you will have to be 
-somewhat fluent
-with templates.  If you  want to truly grok C++ templates we recommend,
-@uref{http://www.amazon.com/Templates-Complete-Guide-David-Vandevoorde/dp/0201734842/,,C++ Templates: The Complete Guide, Vandevoorde and Josuttis}.
-
-@node Socket-Programming
+@node Socket Programming
 @section Socket Programming
 
 @cindex sockets
@@ -425,1610 +306,5 @@ not have access to a copy of the book, the echo clients and servers shown in
 the website above) you will be in good shape to understand the tutorial.
 There is a similar book on Multicast Sockets,
 @uref{http://www.elsevier.com/wps/product/cws_home/700736,,Multicast Sockets, Makofske and Almeroth}.
-that covers material you may need to understand for the multicast examples.
-
-@c ========================================================================
-@c Downloading and Compiling 
-@c ========================================================================
-
-@node Downloading and Compiling
-@chapter Downloading and Compiling
-
-@cindex Linux
-@cindex Cygwin
-@cindex GNU
-@cindex toolchain
-From this point forward, we are going to assume that the reader is working in
-Linux or a Linux emulation environment (Linux, Cygwin, etc.) and has the GNU
-toolchain installed and verified.  
-
-@cindex Mercurial
-@cindex Waf
-We are going to assume that you have Mercurial and Waf installed and running
-on the target system as described in the Getting Started section of the 
-ns-3 web site: @uref{http://www.nsnam.org/getting_started.html}.
-
-@section Downloading
-@cindex tarball
-The ns-3 code is available in Mercurial repositories on the server
-code.nsnam.org.  You can download a tarball, but we recommend working with
-Mercurial --- it will make your life easier in the long run.
-
-@cindex repository
-If you go to the following link: @uref{http://code.nsnam.org/},
-you will see a number of repositories.  Many are the private repositories of
-the ns-3 development team.  The repositories of interest to you 
-will be
-prefixed with ``ns-3''.  The current development snapshot (unreleased) of
-ns-3 may be found at: @uref{http://code.nsnam.org/ns-3-dev/}.
-
-The developers attempt to keep this repository in a consistent, working state
-but it is a development area with unreleased code present, so you may want to
-consider downloading an official release.
-
-There will be a number of released repositories present at code.nsnam.org.
-These repos will have names like ns-3.0.1 --- which referes to release 3.0.1 
-of the network simulator (or if you like, release 0.1 of ns-3).  
-Since the releases are changing at a rate of one per month, I will stick with 
-the more constant ns-3-dev here, but you can replace the string ns-3-dev with
-your choice of release (e.g., ns-3.0.5) below.  You can find the latest 
-version  of the code either by inspection of the repository list or by going 
-to the ``Getting Started'' web page and looking for the latest release 
-identifier.
-
-One practice is to create a directory called @code{repos} in one's home 
-directory under which one can keep local Mercurial repositories.  
-@emph{Hint:  we will
-assume you do this later in the tutorial.} If you adopt that approach, you 
-can get a copy of any of the development versions of ns-3 by typing 
-the following into your Linux shell (assuming you have installed Mercurial):
-
-@verbatim
-  cd
-  mkdir repos
-  cd !$
-  hg clone http://code.nanam.org/ns-3-dev
-@end verbatim
-
-As the hg command executes, you should see something like the following,
-
-@verbatim
-  destination directory: ns-3-dev
-  requesting all changes
-  adding changesets
-  adding manifests
-  adding file changes
-  added 1513 changesets with 5687 changes to 733 files
-  358 files updated, 0 files merged, 0 files removed, 0 files unresolved
-@end verbatim
-
-After the clone command completes, you should have a directory called 
-ns-3-dev under your @code{~/repos} directory, the contents of which should 
-look something like the following:
-
-@verbatim
-  AUTHORS  RELEASE_NOTES  examples/  src/       waf*
-  LICENSE  VERSION        ns3/       tutorial/  waf.bat*
-  README   doc/           samples/   utils/     wscript
-@end verbatim
-
-You are now ready to build the ns-3 distribution.
-
-@section Building
-@cindex Waf!build
-@cindex Waf!configure
-@cindex Waf!debug
-@cindex Waf!compile
-We use Waf to build the ns-3 project.  The first thing you 
-will need to do is to configure the build.  For reasons that will become clear
-later, we are going to work with debug builds in the tutorial.  To explain to 
-Waf that it should do debug builds you will need to execute the following 
-command,
-
-@verbatim
-  ./waf -d debug configure
-@end verbatim
-
-This runs the copy of Waf in the local directory (which is provided as a 
-convenience for you).  As the build system checks for various dependencies
-you should see output that looks similar to the following,
-
-@verbatim
-  ~/repos/ns-3-dev >./waf -d debug configure
-  Checking for program g++                : ok /usr/bin/g++
-  Checking for program cpp                : ok /usr/bin/cpp
-  Checking for program ar                 : ok /usr/bin/ar
-  Checking for program ranlib             : ok /usr/bin/ranlib
-  Checking for compiler could create programs : ok
-  Checking for compiler could create shared libs : ok
-  Checking for compiler could create static libs : ok
-  Checking for flags -Wall                       : ok
-  Checking for flags -O2                         : ok
-  Checking for flags -g -DDEBUG                  : ok
-  Checking for flags -g3 -O0 -DDEBUG             : ok
-  Checking for g++                               : ok
-  Checking for header stdlib.h                   : ok
-  Checking for header stdlib.h                   : ok
-  Checking for header signal.h                   : ok
-  Checking for high precision time implementation: 128-bit integer
-  Checking for header stdint.h                   : ok
-  Checking for header inttypes.h                 : ok
-  Checking for header sys/inttypes.h             : not found
-  Configuration finished successfully; project is now ready to build.
-  ~/repos/ns-3-dev >
-@end verbatim
-
-The build system is now configured and you can build the debug versions of 
-the ns-3 programs by simply typing,
-
-@verbatim
-  ./waf check
-@end verbatim
-
-You will see many Waf status messages displayed as the system compiles.  The
-most important is the last one,
-
-@verbatim
-  Compilation finished successfully
-@end verbatim
-
-and you will see a number of software unit tests subsequently execute.
-
-@section Running a Script
-@cindex Waf!run
-We typically run scripts under the control of Waf.  This allows the build 
-system to ensure that the shared library paths are set correctly and that
-the libraries are available at run time.  To run a program, simply use the
-@code{run} option in Waf.  Let's run the ns-3 equivalent of the hello
-world program by typing the following:
-
-@verbatim
-  ./waf --run hello-simulator
-@end verbatim
-
-Waf first checks to make sure that the program is built correctly and 
-executes a build if required.  Waf then then executes the program, which 
-produces the following output.
-
-@verbatim
-  Hello Simulator
-@end verbatim
-
-If you want to run programs under another tool such as gdb or valgrind,
-see this @uref{http://www.nsnam.org/wiki/index.php/User_FAQ#How_to_run_NS-3_programs_under_another_tool,,wiki entry}.
-
-@emph{Congratulations.  You are now an ns-3 user.}
-
-@c ========================================================================
-@c Some Prerequisites
-@c ========================================================================
-
-@node Some-Prerequisites
-@chapter Some Prerequisites
-
-The first thing we need to do before actually starting to code is to explain
-a few core concepts, abstractions and idioms in the system.  Much of this may
-appear transparently obvious to some, but we recommend taking the time to read
-through this chapter just to ensure you are starting on a firm foundation.
-
-@section Abstractions
-
-In this section, we'll review some terms that are commonly used in
-networking, but have a specific meaning in ns-3.
-
-@subsection Node
-@cindex Node
-In Internet jargon, a computing device that connects to a network is called
-a @emph{host} or sometimes an @emph{end system}.  Because ns-3 is a 
-@emph{network} simulator, not specifically an @emph{Internet} simulator, we 
-intentionally do not use the term host since it is closely associated with
-the Internet and its protocols.  Instead, we use a more generic term also
-used by other simulators that originates in Graph Theory --- the @emph{node}.
-
-@cindex Node!class
-In ns-3 the basic computing device abstraction is called the 
-node.  This abstraction is represented in C++ by the class @code{Node}.  The 
-@code{Node} class provides methods for managing the representations of 
-computing devices in simulations.  Developers are expected to specialize the 
-@code{Node} in the object-oriented programming sense to create new computing
-device models.  In this tutorial, we will use a specialization of class 
-@code{Node} called @code{InternetNode}.  As you might expect, the
-@code{InternetNode} is a class that represents a host in the Internet sense,
-and automatically provides core IPv4 networking protocols.
-
-You should think of a @code{Node} as a computer to which you will add 
-functionality.  One adds things like applications, protocol stacks and
-peripheral cards with their associated drivers to enable the computer to do
-useful work.  We use the same basic model in ns-3.
-
-@subsection Application
-@cindex Application
-Typically, computer software is divided into two broad classes.  @emph{System
-Software} organizes various computer resources such as memory, processor
-cycles, disk, network, etc., according to some computing model.  System
-software usually does not use those resources to complete tasks that directly
-benefit a user.  A user would typically run an @emph{application} that acquires
-and uses the resources controlled by the system software to accomplish some
-goal.  
-
-@cindex system call
-Often, the line of separation between system and application software is made
-at the privilege level change that happens in operating system traps.
-In ns-3 there is no real concept of operating system and especially
-no concept of privilege levels or system calls.  We do, however, have the
-idea of an application.  Just as software applications run on computers to
-perform tasks in the ``real world,'' ns-3 applications run on
-ns-3 @code{Node}s to drive simulations in the simulated world.
-
-@cindex Application!class
-In ns-3 the basic abstraction for a user program that generates some
-activity to be simulated is the application.  This abstraction is represented 
-in C++ by the class @code{Application}.  The @code{Application} class provides 
-methods for managing the representations of our version of user-level 
-applications in simulations.  Developers are expected to specialize the
-@code{Application} in the object-oriented programming sense to create new
-applications.  In this tutorial, we will use specializations of class 
-@code{Application} called @code{UdpEchoClient} and @code{UdpEchoServer}.
-As you might expect, these applications compose a client/server application set
-used to generate and echo simulated network packets 
-
-@subsection Channel
-@cindex Channel
-
-In the real world, one can connect a computer to a network.  Often the media
-over which data flows in these netowrks are called @emph{channels}.  When
-you connect your Ethernet cable to the plug in the wall, you are connecting 
-your computer to an Ethernet communication channel.  In the simulated world
-of ns-3 one connects a @code{Node} to an object representing a
-communication channel.  Here the basic communication subnetwork abstraction 
-is called the channel and is represented in C++ by the class @code{Channel}.  
-
-The @code{Channel} class provides methods for managing communication 
-subnetwork objects and connecting nodes to them.  They may also be specialized
-by developers in the object oriented programming sense.  A @code{Channel}
-specialization may model something as simple as a wire.  The specialized 
-@code{Channel} can also model things as complicated as a large Ethernet
-switch, or three-dimensional space in the case of wireless networks.
-
-We will use specialized versions of the @code{Channel} called
-@code{CsmaChannel} and @code{PointToPointChannel} in this tutorial.  The
-@code{CsmaChannel}, for example, models a version of a communication subnetwork
-that implements a @emph{carrier sense multiple access} communication medium.
-This gives us Ethernet-like functionality.  
-
-@subsection Net Device
-@cindex NetDevice
-@cindex Ethernet
-
-It used to be the case that if you wanted to connect a computers to a network,
-you had to buy a specific kind of network cable and a hardware device called
-(in PC terminology) a @emph{peripheral card} that needed to be installed in
-your computer.  These cards were called Network Interface Cards, or 
-@emph{NIC}s.  Today most computers come with the network controller hardware
-built in and users don't see these building blocks.
-
-A NIC will not work without a software driver to control the hardware.  In 
-Unix (or Linux), a piece of peripheral hardware is classified as a 
-@emph{device}.  Devices are controlled using @emph{device drivers}, and network
-devices (NICs) are controlled using @emph{network device drivers}
-collectively known as @emph{net devices}.  In Unix and Linux you refer
-to these net devices by names such as @emph{eth0}.
-
-In ns-3 the @emph{net device} abstraction covers both the software 
-driver and the simulated hardware.  A net device is ``attached'' to a 
-@code{Node} in order to enable the @code{Node} to communicate with other 
-@code{Node}s in the simulation via @code{Channel}s.  Just as in a real
-computer, a @code{Node} may be connected to more than one @code{Channel} via
-multiple @code{NetDevice}s.
-
-The net device abstraction is represented in C++ by the class @code{NetDevice}.
-The @code{NetDevice} class provides methods for managing connections to 
-@code{Node} and @code{Channel} objects; and may be specialized by developers
-in the object-oriented programming sense.  We will use the specialized version
-of the @code{NetDevice} called the @code{CsmaNetDevice} in this tutorial.
-Just as an Ethernet NIC is designed to work with an Ethernet network, the
-@code{CsmaNetDevice} is designed to work with a @code{CsmaChannel}.
-
-@subsection Topology Helpers
-In a real network, you will find host computers with added (or built-in)
-NICs.  In ns-3 we would say that you will find @code{Nodes} with 
-attached @code{NetDevices}.  In a large simulated network you will need to 
-arrange many connections between @code{Node}s, @code{NetDevice}s and 
-@code{Channel}s.
-
-Since connecting a @code{NetDevice} to a @code{Node}, and a @code{NetDevice}
-to a @code{Channel} is such a common task in ns-3 we provide what we
-call @emph{topology helpers} to make this as easy as possible.  Topology 
-helpers perform much of the dirty work of creating and connecting net devices.
-For example, it may take several distinct method calls to create a NetDevice,
-add a MAC address, connect the net device to a @code{Node} and configure
-the protocol stack, and then connect the @code{NetDevice} to a @code{Channel}.
-We use topology helper functions to compose those distinct operations into
-an easy to use model.
-
-Topology helper functions use the abstractions (described above) of Network
-Interface Cards and Cables.  When you think of adding a new kind of network,
-you may think of going out to the local computer retailer and buying a kit.
-This kit might include a nework cable and some number of peripheral cards and
-thier associated software drivers.  You can think of topology helpers in 
-roughly the same way.  Instead of buying a kit for a given type of network,
-you will use a topology helper class for a given type of network, to accomplish
-the equivalent of installing the network ``kit.''
-
-@section Important Idioms
-Now that we have identified that there are C++ classes in the system called
-@code{Node} and @code{InternetNode}, we need to understand how to bring
-objects of these classes into existance, and manage their lifetimes.  Let's
-examine this in some detail here.
-
-@cindex InternetNode
-@cindex CreateObject
-@cindex Ptr
-In ns-3, if we want to create an @code{InternetNode} in a 
-script, we will 
-typically do something like the following example:
-
-@verbatim
-  Ptr<Node> p = CreateObject<InternetNode> ();
-@end verbatim
-
-@cindex smart pointer
-To some, it may seem intuitively obvious that we're creating an
-@code{InternetNode} object and assigning responsibility for managing the 
-object to a smart pointer named @code{p}.  For the rest of us, there may be
-a lot in that line that is unfamiliar, so let's look at what this line means 
-in some detail.
-
-@subsection Templates 101
-@cindex template
-If you are familiar with C++ templates, you may skip this section as it is
-just a cursory introduction to function and class templates.
-
-Referring back to the example line of code, reproduced below for your 
-convenience, the angle brackets you see in the code indicate that we are
-using C++ @emph{templates}.  
-
-@verbatim
-  Ptr<Node> p = CreateObject<InternetNode> ();
-@end verbatim
-
-The purpose of templates is to allow a programmer to write one version of code
-that is applicable over multiple types.  Some people consider templates to be
-an enhancement of the C preprocessor macro functionality.  At some level
-this comparison reveal some similarities, but C++ templates are really 
-quite different.
-
-@cindex template!declaration
-@cindex template!definition
-@cindex template!use
-In C++, just as with most language constructs, templates are @emph{declared}, 
-@emph{defined} and @emph{used}.  A declaration of a template might look
-something like,
-
-@verbatim
-  template <typename T> T Add (T first, T second);
-@end verbatim
-
-@cindex template!typename
-This line uses the keyword @code{template} followed by a declaration of a
-type name (in this case @code{T}) in angle brackets.  The angle brackets 
-should indicate to you that a template is being declared, defined or used.
-The type name @code{T} can be thought of as a string that will be substitited
-during the use phase of the template.  For example, the @code{T} may be
-replaced by the word @code{int}.  It is this substitution that leads people
-to compare templates with macros.
-
-Without going into too much more detail, this snippet declares that a piece
-of code exists that will be able to call a function @code{Add} that will
-add arbitrary types together.  The @code{T} will be eventually replaced by
-a C++ data type name.  For example,
-
-@verbatim
-  T Add (T first, T second);
-@end verbatim
-
-might eventually become
-
-@verbatim
-  int Add (int first, int second);
-@end verbatim
-
-If the template has been declared, we need to @emph{define} what that piece of
-code will actually do.  That might look something like,
-
-@verbatim
-  template <typename T> 
-  T Add (T first, T second)
-  {
-    return first + second;
-  }
-@end verbatim
-
-All we've done here is to provide an implementation of the template that 
-adds the two variables together and returns the result.  Note that this
-implementation works for any type that provides an @code{operator+}.
-
-The puzzle all comes together when you understand that @emph{using} a template
-causes the compiler to automatically instantiate code for a specific function 
-according to the given template parameters.  You might use the above template
-like,
-
-@verbatim
-  int x, y, z;
-  z = Add<int> (x, y);
-@end verbatim
-
-@cindex template!instantiate
-When the compiler sees @code{Add<int>} it understands that it needs to make
-sure that code is instantiated (created) to perform the @code{Add} using the
-specified type @code{<int>}.  To a first approximation, the compiler will 
-replace the typename @code{T} with the specified type @code{int} and 
-automagically generate code equivalent to,
-
-@verbatim
-  int Add (int first, int second)
-  {
-    return first + second;
-  }
-@end verbatim
-
-A user of the template definition could just as easily have provided a use
-that assigned the type float.  This would simply be done like,
-
-@verbatim
-  float x, y, z;
-  z = Add<float> (x, y);
-@end verbatim
-
-In this case, the compiler would automatically generate code that looked like,
-
-@verbatim
-  float Add (float first, float second)
-  {
-    return first + second;
-  }
-@end verbatim
-
-@cindex template!function
-This particular kind of template programming uses what are called
-@emph{function templates}.  They are called function templates since you 
-are @emph{templating} function declarations and definitions.
-
-@cindex template!class
-Templates can also be used in conjunction with classes, in which case you are
-said to be using, not too surprisingly, @emph{class templates}.  The syntax and
-use is similar.  To declare a class template you might use something like,
-
-@verbatim
-  template <typename T> 
-  class MyStack
-  {
-    void Push (T data);
-    T Pop (void);
-  };
-@end verbatim
-
-The methods can be defined separately in a method similar to function template
-definitions,
-
-@verbatim
-  template <typename T> void MyStack<T>::Push (T data)
-  {
-    ...
-  };
-@end verbatim
-
-You can then use the new templated class in the following way, 
-
-@verbatim
-  int x, y;
-
-  MyStack<int> stack;
-  stack.Push (x);
-  y = stack.Pop ();
-@end verbatim
-
-Similarly to the function template case, the compiler knows that it has to
-automatically generate code to fill out the class and method declarations
-and definitions using the appropriate type specified by @code{<int>}.
-
-@node Smart Pointers 101
-@subsection Smart Pointers 101
-If you are familiar with C++ smart pointers, you may skip this section as it
-is just a cursory introduction to smart pointers and intrusive reference
-counting.
-
-@cindex smart pointer
-Referring back to the example line of code, partially reproduced below for 
-your convenience below, the left hand side is the declaration and
-initialization of a class template that implements a @emph{smart pointer}.
-
-@verbatim
-  Ptr<Node> p = ...
-@end verbatim
-
-To a first approximation, you can think of @code{Ptr<Node>} as the a new kind
-of declaration of a pointer to a @code{Node} object.  The difference is that
-a smart pointer is a user-defined data type (instantiated via a templated
-class) that @emph{simulates} a classical pointer but provides additional 
-features.  As an aside, you typically pronounce  @code{Ptr<Node>} as 
-``pooter node'' where pooter rhymes with footer.
-
-@cindex memory management
-One of the most important ``additional feature'' provided by smart pointers is
-automatic memory management.  Since you now understand class templates, you
-will understand how the template allows us to write the pointer code once, but
-allows us to point to many different kinds of objects.  Later in the tutorial
-you will see variations such as @code{Ptr<Ipv4>} and @code{Ptr<Channel>}, 
-which are smart pointers to an IP version 4 object and a channel object, 
-respectively.
-
-The use of built-in pointers in C and C++ is a major source of bugs.  Constant
-allocation of, passing of responsibility for, and deallocation of underlying
-data makes it very likely that errors will occur.  In one of these errors,
-the usual problem is that the responsibility for deallocating a memory block
-is misplaced.  This may result in a memory leak or a duplicate deallocation.
-Smart pointers try to prevent this kind of problem by working with the
-@emph{scope} and @emph{extent} rules of the language to make memory 
-deallocation automatic.
-
-The scope of a variable defines where in a program a given variable may be 
-referred to.  The extent of a variable defines when in the program's execution
-the variable has a valid value.  Consider a simple subroutine that contains a
-smart pointer.
-
-@verbatim
-  void SimpleSubroutine (void)
-  {
-    Ptr<Node> p;
-  }
-@end verbatim
-
-@cindex scope
-The variable named @code{p} has a scope limited to the subroutine itself.  The 
-variable is said to @emph{come into scope} as the subroutine is entered during
-execution.  At this time, the constructor of the underlying class is executed
-and a valid variable is available for use.  When the subroutine is done 
-executing, the variable is said to @emph{go out of scope}.  This causes the
-destructor of the underlying class to be executed and the variable no longer
-has a valid value.  This is not a problem since it is no longer valid to refer
-to the parameter.  Smart pointers take advantage of these defined actions at
-points where variables must be valid and become discardable to determine when
-underlying data can be freed.
-
-@cindex reference counting!intrusive
-The ns-3 smart pointer mechanism uses a mechanism called intrusive 
-reference counting to determine when a memory block should be automatically 
-deallocated.  The term ``intrusive'' means that a reference count (a count of
-variables required to have valid data) is stored in the object being managed
-instead of in a proxy object.  This means that each piece of memory managed by
-a ns-3 smart pointer includes a reference count.  When a smart 
-pointer to a reference counted object is created, this reference count is 
-incremented.  This indicates that a new variable requires a valid data object 
-be present.  When a smart pointer to a reference counted object is destroyed
-(for example, when going out of scope) the reference count of the managed 
-object is decremented.  When the reference count goes to zero it means that 
-all smart pointers to the underlying object have gone out of scope and the 
-object is no longer needed by any past ``users'' of the object.  This in turn
-means that the object can be safely deallocated, and this is done 
-automatically for you as the ``last'' smart pointer goes out of scope.
-
-Consider how this might work as you pass a smart pointer to an object down
-a protocol stack.  At each level of the stack, you pass the smart pointer
-by value.  This causes a copy of the smart pointer to be made, which 
-increments the reference count of the underlying object.  When the
-@emph{calling} method is done executing, the calling smart pointer goes out of 
-scope and  the reference count is decremented.  This leaves the single smart 
-pointer in the @emph{called} method with a reference to the underlying object.
-When the smart pointer in the called method goes out of scope, the destructor
-for the smart pointer is called.  The destructor checks the reference count
-of the underlying object and sees that it becomes zero.  This indicates that 
-the object can be deallocated, and the destructor does so.  This results in
-the lifetime management of the underlying object being automatically managed,
-a boon if you have experience with ``manual'' memory management and finding
-memory leaks.
-
-Now, we want to make this feature available as widely as possible to objects
-in the ns-3 system.  The basic operations of the smart pointer class
-are the same across any intrusively reference counted object.  C++ provides a
-mechanism to achieve this kind of generic behavior --- the template.  Let's
-examine the declaration of the smart pointer in more detail.  First consider
-the way you might declare and use a built-in pointer.  For the sake of
-simplicity, just assume that a C++ object of the class @code{MyClass} exists.
-Further assume that @code{MyClass} provides one method called @code{method}.
-Using built-in pointers, you could do something like the following:
-
-@verbatim
-  MyClass *p = ...
-  p->method ();
-@end verbatim
-
-@cindex smart pointer
-One of the key design points of smart pointers is that they should simulate
-built-in pointers.  In C++ this is done by overloading @code{operator->}, 
-@code{operator=} and @code{operator*}.  To implement a smart pointer we need
-to provide a generic class that implements these operators.  This generic 
-class should allow operations that appear as if it were a built-in pointer
-to the reference counted object. Typically this is accomplished via a
-relatively simple C++ class template.  If you are interested in the details
-of how this may be accomplished, see Alexandrescu for a good treatment,
-
-@cindex template
-Taking the template as given, in order to declare a smart pointer you will
-need to create a smart pointer object and provide the template parameter
-needed to instantiate the required code.  This parameter will be the name
-of the reference counted class to which you want to point.  The smart
-pointer class overrides @code{operator=} which allows initialization of the
-smart pointer just as if it were a built-in pointer.  The end result is that
-you use smart pointers just as if they were built-in pointers:
-
-@verbatim
-  SmartPointer<MyClass> p = ...
-  p->method ();
-@end verbatim
-
-@node Object Creation
-@subsection Object Creation
-@cindex CreateObject
-On the right hand side of the line of code we're examining (reproduced below
-for convenience) is the creation of an @code{InternetNode} object.
-
-@verbatim
-  ... = CreateObject<InternetNode> ();
-@end verbatim
-
-@cindex template!function
-This turns out to be an instance of use of a C++ @emph{function template}. The
-definition of the @code{CreateObject<typename T>()} template calls the new 
-operator to create an object of the type T.  It then creates a new smart 
-pointer of the appropriate type (i.e., @code{Ptr<T>}).  This new smart 
-pointer is assigned initial responsibility for the new object which has its 
-reference count set to one.
-
-Since the underlying creation mechanism is via the @code{new} operator, and
-you can pass parameters to the constructor for an object, we provide several
-templates that you can use for passing parameters to the object constructors.
-If the constructor for the object requires a parameter, you simply pass that
-parameter to the @code{Create} function like this,
-
-@verbatim
-  int parm = 1;
-  ... = CreateObject<MyClass> (parm);
-@end verbatim
-
-We provide Create templates with up to seven parameters, so you could 
-conceivably use the @code{Create} template in situations such as,
-
-@verbatim
-  int parm = 1;
-  ... = CreateObject<MyClass> (p1, p2, p3, p4, p5, p6, p7);
-@end verbatim
-
-@subsection Type Safety
-Lets take one final look at the now infamous example line of code that we
-have been examining for some time (again reproduced below).
-
-@verbatim
-  Ptr<Node> p = CreateObject<InternetNode> ();
-@end verbatim
-
-@cindex smart pointer
-@cindex Node
-@cindex Create
-You may have noticed that the smart pointer on the left hand side of the
-assignment is associated with the type @code{Node} and the @code{Create}
-template on the right hand side creates an @code{InternetNode} object and
-returns a @code{Ptr<InternetNode>} smart pointer.  For this assignment of a
-@code{Ptr<InternetNode>} to a @code{Ptr<Node>} to work, there must be some
-kind of type conversion going on.
-
-@cindex implicit conversion
-Many programmers use @code{implicit conversions} without even realizing it
-since they are sometimes so intuitive.  For example, in the following code,
-
-@verbatim
-  int i = 1;
-  double d = 2.;
-  if (n == d) ...
-@end verbatim
-
-@cindex standard conversion
-the integer (1) is implicitly converted to a double (1.) before the comparison
-takes place.  This conversion is performed using what is known as a C++ 
-@emph{standard conversion}.  There are a number of standard conversions defined
-by the C++ standard.  Among them are,
-
-@itemize @bullet
-@item Integral Promotions
-@item Integral Conversions
-@item Floating Conversions
-@item Pointer Conversions
-@item Reference Conversions
-@end itemize
-
-@cindex assignment operator
-@cindex Ptr
-For the case of interest here, we need to know what happens in the 
-assignment operator (@code{operator=}) of our smart pointer @code{Ptr<Node>}.
-This operator takes a reference to a @code{Ptr<Node>} and not a reference to
-a @code{Ptr<InternetNode>}.  The one situation where this works automatically
-in C++ is if the ``destination'' reference is to a visible, unambiguous base
-class of the ``source'' reference.  In this case, the underlying pointer is
-@emph{cast} from one type to the other automatically.
-
-To summarize: The magic happens in the assignment operator.  Class
-@code{InternetNode} inherits from class @code{Node}.  The reference to the
-@code{InternetNode} object in question is, in essence, a pointer to an
-@code{InternetNode} object.  The @code{InternetNode} class inherits from the
-@code{Node} base class in a way that makes @code{Node} visible and unambiguous.
-Therefore, there exists a standard conversion from an @code{InternetNode *} 
-to a @code{Node *} and by extension from an @code{InternetNode &} to a
-@code{Node &}.  This conversion is applied automatically (and invisibly) 
-during paramater passing in the assignment operator we are examining.
-
-@cindex base class
-This is a rather involved way of saying there's an invisible pointer cast
-to a base class happening in the assignment.  That means that
-
-@verbatim
-  Ptr<Node> p = CreateObject<InternetNode> ();
-@end verbatim
-
-or,
-
-@verbatim
-  Ptr<Channel> p = CreateObject<CsmaChannel> ();
-@end verbatim
-
-will work just fine.  Of course, if you try something @emph{bad} (TM), like:
-
-@verbatim
-  Ptr<Node> p = CreateObject<CsmaChannel> ();
-@end verbatim
-
-the compiler will quite appropriately complain that there is no conversion
-between these completely unrelated objects (CsmaChannel and Node).
-
-@subsection Summary
-Going back to our infamous first line of ns-3 code, we said that if 
-we want to create an InternetNode in a script, we will typically do something 
-like:
-
-@verbatim
-  Ptr<Node> p = CreateObject<InternetNode> ();
-@end verbatim
-
-@cindex Create
-@cindex InternetNode
-@cindex smart pointer
-Now we know that this is really a simple statement.  We create an
-@code{InternetNode} object on the heap (indirecly using operator @code{new}
-and passing no parameters to its constructor) and assign responsibility for
-managing the new object's lifetime to a smart pointer.  This smart pointer is 
-a pointer to a @code{Node} object, so there was a hidden cast from 
-@code{InternetNode} to a @code{Node} done via a standard C++ conversion.  
-
-This may have been quite a hurdle to get past that first line of code, but
-we have covered quite a few of the important idioms that you'll encounter in
-this tutorial.
-
-@c ========================================================================
-@c A First ns-3 script
-@c ========================================================================
-
-@node A-First-ns-3-Script
-@chapter A First ns-3 script
-@cindex design pattern
-@cindex idiom
-Lets build a simple network using the ns-3 design patterns, idioms,
-classes and helpers we have just looked at.  If you downloaded the system as
-was suggested above, you will have a release of ns-3 in a directory 
-called @code{repos} under your home directory.  Change into that directory, 
-where you should see a directory structure something like the following.
-
-@verbatim
-  AUTHORS  RELEASE_NOTES  examples/  src/       waf*
-  LICENSE  VERSION        ns3/       tutorial/  waf.bat*
-  README   doc/           samples/   utils/     wscript
-@end verbatim
-
-@cindex hello-simulator.cc
-Change into the tutorial directory.  You should see a file named 
-@code{hello-simulator.cc} located there.  Copy this file into one named
-@code{simple.cc}.  If you open this new file in your favorite editor you will
-see some copyright information and the following C++ code:
-
-@verbatim
-  #include "ns3/log.h"
-
-  NS_LOG_COMPONENT_DEFINE ("HelloSimulator");
-
-  using namespace ns3;
-
-  int 
-  main (int argc, char *argv[])
-  {
-    LogComponentEnable ("HelloSimulator", LOG_LEVEL_INFO);
-
-    NS_LOG_INFO ("Hello Simulator");
-  }
-@end verbatim
-
-This is the ns-3 version of the ubiquitous hello-world program.  It 
-uses the ns-3 Log module to print ``Hello Simulator'' into the
- standard error output stream.
-
-@cindex logging
-Log components are named objects that provide for controlling the verbosity of
-debugging output in the system.  We'll have a lot more to say about logging
-later on, but for now you can just consider the macro @code{NS_LOG_INFO} to be
-a kind of fancy printf to the standard error.
-
-@section A Simple Network
-@cindex InternetNode
-Let's create a simple network of @code{InternetNode} elements.  In order to
-actually create an @code{InternetNode}, you will have to include some header
-files.  Put the following code after the include statement in @code{simple.cc}.
-
-@verbatim
-  #include "ns3/ptr.h"
-  #include "ns3/internet-stack.h"
-@end verbatim
-
-@cindex include files
-The ns-3 build system places the core include files it needs into a 
-directory called @code{ns-3} and so whenever you need to include one of the
-core files you need to explicitly code this.  The file @code{ptr.h} defines
-the generic smart pointer that we use.  The file @code{internet-stack.h}
-defines the class InternetNode which, as described above, represents an IP
-version 4-based computing element in the simulator.
-
-So let's create a few new @code{InternetNode}s by adding the following lines
-of code after the call to @code{NS_LOG_INFO} in the simple.cc file right 
-after the call to @code{NS_LOG_INFO}.
-
-@verbatim
-  Ptr<Node> n0 = CreateObject<InternetNode> ();
-  Ptr<Node> n1 = CreateObject<InternetNode> ();
-  Ptr<Node> n2 = CreateObject<InternetNode> ();
-  Ptr<Node> n3 = CreateObject<InternetNode> ();
-@end verbatim
-
-As we now understand, this will create four @code{InternetNode} objects on
-the heap and create four @code{Ptr<Node>} smart pointer objects on the stack
-to manage them.  You should remember that by using the smart pointers you are 
-freed from the responsibility to delete the objects you assign to them.
-
-@cindex Channel
-@cindex CsmaChannel
-The next step is to create a channel over which these nodes can communicate.
-Let's use the CsmaChannel and create a local area network that will allow us 
-to hook up nodes similarly to an Ethernet.
-
-As usual, we'll need to include the file that provides the appropriate class
-declarations:
-
-@verbatim
-  #include "ns3/csma-channel.h"
-@end verbatim
-
-Next, Add the following line of code (typically done after node creation) to 
-create a channel with a five megabit per second data rate and a two 
-millisecond speed-of-light delay between all nodes.  The idiom for creating
-the channel is similar to that of the node, but the actual @code{Create}
-function is hidden from us in the topology code.  Observe that we are 
-using a Csma topology helper function to free us from the details regarding
-how the Carrier Sense Multiple Access Channel is actually brought into
-existence and initialized.
-
-@verbatim
-  Ptr<CsmaChannel> lan = 
-    CsmaTopology::CreateCsmaChannel (DataRate (5000000), MilliSeconds (2));
-@end verbatim
-
-@cindex idiom!unnamed parameter
-You may be unfamiliar with the @emph{unnamed parameter} idiom used here.
-When added to a list of parameters, the code @code{DataRate (5000000)} 
-constructs a DataRate object on the stack using the appropriate  constructor.
-The resulting object has no name, and therefore cannot be referenced 
-elsewhere, but is passed to the callee method where it has a valid name and
-can be used.  This idiom is essentially a shorthand version of the following:
-
-@verbatim
-  DataRate rate (5000000);
-  Time latency (MilliSeconds (2));
-  Ptr<CsmaChannel> lan = CsmaTopology::CreateCsmaChannel (rate, latency);
-@end verbatim
-
-@cindex constructor
-@cindex constructor!Time
-We should pause for a moment and discuss the constructor to the @code{Time}
-data type.  There are a number of different constructors for these objects, and
-so there are a number of ways that this initialization could have been done.
-There is a constructor that takes a string argument, consisting of expressions
-using the units @code{s, ms, us, ns, ps} or @code{fs}, so this could have been
-written,
-
-@verbatim
-  Time latency ("2ms");
-@end verbatim
-
-There are also helper functions available that create time units (one of these
-was used in the example):
-
-@itemize @bullet
-@item @code{Seconds (double)}
-@item @code{MilliSeconds (uint64_t)}
-@item @code{MicroSeconds (uint64_t)}
-@item @code{NanoSeconds (uint64_t)}
-@item @code{PicoSeconds (uint64_t)}
-@item @code{FemtoSeconds (uint64_t)}
-@end itemize
-
-C++ will attempt to promote parameters appropriately, but you will typically
-see constructions that respect the type corrrectness of the constructor, as
-in @code{Seconds (1.)} and @code{MilliSeconds (2)}.  Notice that the code
-@code{Seconds (1)} will work just as well as @code{Seconds (1.)} since the 
-integer 1 will be automatically promoted to a double 1. in the former code.
-The converse will not work --- i.e., you cannot write code that says 
-@code{MilliSeconds (2.)} since a @emph{type demotion} would be required that 
-could lose information and the compiler will not do such things ``behind your
-back.''  Don't be thrown off by this kind of automatic conversion.
-
-@cindex MAC!address
-Okay, now we have code to create four nodes and a local area network.  The 
-next step is to wire the network together.  We do this by adding net devices 
-to the node.  When we add the net device, we also specify the network to which
-the net device is connected and provide a MAC address appropriate to the 
-device and network types.  Since we're creating an IP version 4 network using 
-a Csma channel, you may expect that we'll be using topology helpers 
-appropriate to those types --- the CsmaIpv4Topology helper.  As you may expect,
-we'll need to include some files to get the appropriate definitions:
-
-@verbatim
-  #include "ns3/mac48-address.h"
-  #include "ns3/csma-net-device.h"
-  #include "ns3/csma-topology.h"
-  #include "ns3/csma-ipv4-topology.h"
-@end verbatim
-
-Now, all that is left is to do the ``wiring'':
-
-@verbatim
-  uint32_t nd0 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n0, lan, 
-    Mac48Address("08:00:2e:00:00:00"));
-@end verbatim
-
-[Note the additional unnamed parameter idiom usage here.]
-
-This code calls the topology helper relating to Csma channels and IP version
-four nodes.  It asks to install a Csma net device ``into'' node zero
-(@code{n0}) connecting the device to the channel named (@code{lan}).  It also 
-assigns a MAC address to the net device.  You can add similar lines of code 
-connecting the other nodes to the lan (remembering to assign new MAC 
-addresses).
-
-@verbatim
-  uint32_t nd1 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n1, lan, 
-    Mac48Address("08:00:2e:00:00:01"));
-
-  uint32_t nd2 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n2, lan, 
-    Mac48Address("08:00:2e:00:00:02"));
-
-  uint32_t nd3 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n3, lan, 
-    Mac48Address("08:00:2e:00:00:03"));
-@end verbatim
-
-@cindex IP!address
-@cindex IP!network mask
-@cindex multihome
-Finally, we need to add IP addresses to our nodes.  The pointers to the 
-nodes are stored in n0, n1, n2 and n3.  We added net devices to each of
-the nodes and remembered the net device index numbers as nd0, nd1, nd2 and
-nd3.  You can add multiple net devices to each node resulting in a situation
-similar to a multi-homed host.  Each time you add a net device, you will get
-a new index.  Since the IP address for a multi-homed host is associated with
-a net device, we need to provide that index (which we have saved) to the
-topology helper.  We provide an IP version four address via the ns-3 
-class @code{Ipv4Address} which takes a dotted decimal string as a constructor 
-parameter.  We also provide a network mask using the ns-3 class
-@code{Ipv4Mask} which also takes a dotted decimal string.  The code to 
-perform the IP address assignment, then, looks like the following:
-
-@verbatim
-  CsmaIpv4Topology::AddIpv4Address (n0, nd0, Ipv4Address ("10.1.1.1"), 
-    Ipv4Mask ("255.255.255.0"));
-
-  CsmaIpv4Topology::AddIpv4Address (n1, nd1, Ipv4Address ("10.1.1.2"), 
-    Ipv4Mask ("255.255.255.0"));
-
-  CsmaIpv4Topology::AddIpv4Address (n2, nd2, Ipv4Address ("10.1.1.3"), 
-    Ipv4Mask ("255.255.255.0"));
-
-  CsmaIpv4Topology::AddIpv4Address (n3, nd3, Ipv4Address ("10.1.1.4"), 
-    Ipv4Mask ("255.255.255.0"));
-@end verbatim
-
-We have now constructed a simulated network.  Your code should now look 
-something like the following,
-
-@verbatim
-  #include "ns3/log.h"
-  #include "ns3/ptr.h"
-  #include "ns3/internet-stack.h"
-  #include "ns3/csma-channel.h"
-  #include "ns3/mac48-address.h"
-  #include "ns3/csma-net-device.h"
-  #include "ns3/csma-topology.h"
-  #include "ns3/csma-ipv4-topology.h"
-
-  NS_LOG_COMPONENT_DEFINE ("HelloSimulator");
-
-  using namespace ns3;
-
-  int 
-  main (int argc, char *argv[])
-  {
-    LogComponentEnable ("HelloSimulator", LOG_LEVEL_INFO);
-
-    NS_LOG_INFO ("Hello Simulator");
-
-    Ptr<Node> n0 = CreateObject<InternetNode> ();
-    Ptr<Node> n1 = CreateObject<InternetNode> ();
-    Ptr<Node> n2 = CreateObject<InternetNode> ();
-    Ptr<Node> n3 = CreateObject<InternetNode> ();
-
-    Ptr<CsmaChannel> lan = 
-      CsmaTopology::CreateCsmaChannel (DataRate (5000000), MilliSeconds (2));
-
-    uint32_t nd0 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n0, lan, 
-      Mac48Address("08:00:2e:00:00:00"));
-
-    uint32_t nd1 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n1, lan, 
-      Mac48Address("08:00:2e:00:00:01"));
-
-    uint32_t nd2 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n2, lan, 
-      Mac48Address("08:00:2e:00:00:02"));
-
-    uint32_t nd3 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n3, lan, 
-      Mac48Address("08:00:2e:00:00:03"));
-
-    CsmaIpv4Topology::AddIpv4Address (n0, nd0, Ipv4Address ("10.1.1.1"), 
-      Ipv4Mask ("255.255.255.0"));
-
-    CsmaIpv4Topology::AddIpv4Address (n1, nd1, Ipv4Address ("10.1.1.2"), 
-      Ipv4Mask ("255.255.255.0"));
-
-    CsmaIpv4Topology::AddIpv4Address (n2, nd2, Ipv4Address ("10.1.1.3"), 
-      Ipv4Mask ("255.255.255.0"));
-
-    CsmaIpv4Topology::AddIpv4Address (n3, nd3, Ipv4Address ("10.1.1.4"), 
-      Ipv4Mask ("255.255.255.0"));
-  }
-@end verbatim
-
-This script won't actually do anything yet.  The next trick will be to 
-convince our nodes to try and send some data over the network.
-
-@section Using Applications
-@cindex Create
-As mentioned above, we use @code{Application}s in ns-3 to generate 
-the data used to drive simulations.  An @code{Application} is added to a 
-ns-3 node conceptually just as if you would add an application to a 
-computer.  When an application is created (using the @code{Create} template) 
-we tell the application which @code{Node} it belongs to (and therefore on 
-which node it is running) by passing a smart pointer to that @code{Node} in 
-the constructor arguments.
-
-@subsection A UDP Echo Client Application
-To use an application, we first have to load the header file in which it is
-defined.  For the UDP echo client, this would mean adding the line,
-
-@verbatim
-#include "ns3/udp-echo-client.h"
-@end verbatim
-
-In order to create the UDP echo client application we will need to add the 
-following code:
-
-@verbatim
-  uint32_t packetSize = 1024;
-  uint16_t port = 7;
-  uint32_t maxPacketCount = 1;
-  Time interPacketInterval = Seconds (1.);
-
-  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, "10.1.1.2", 
-    port, maxPacketCount, interPacketInterval, packetSize);
-@end verbatim
-
-@cindex packet
-The first four lines have broken out the configuration parameters for the 
-application as named parameters for clarity.  We are telling the application
-to generate 1024 byte packets (@code{packetSize = 1024}); and to send these
-packets to port 7 (@code{port = 7;}).  The application is told to send at most
-one packet (@code{maxPacketCount = 1;}); and to delay for one second between
-packet sends (@code{interpacketInterval = Seconds(1.)}) which is not used since
-only one packet is sent.  We will defer addressing the type @code{Time} until
-we discuss the simulator engine.  For now just understand the semantics are
-to wait for one second.
-
-The code to actually create the @code{UdpEchoClient} application uses the
-same creation idiom as we have used previously.  Notice that we have a case
-where the @code{Create} template is used to pass parameters to the constructor
-of the underlying object.  
-
-@cindex implicit conversion sequence
-Notice that a string is passed as the second parameter.  The formal parameter
-to the constructor of the @code{UdpEchoClient} object is actually an
-@code{Ipv4Address}.  We get away with this since C++ allows what are called
-@emph{implicit conversion sequences} to occur between the argument in the
-function call and the corresponding parameter in the function declaration.
-Basically, C++ will try to figure out a way to convert parameters for you
-transparently.
-
-In this case the conversion sequence is based on the constructor for the
-Ipv4Address that takes a @code{char const *} as a parameter.  C++ notices 
-that @code{"10.1.1.2"} refers to a @code{char const *} and knows that it
-needs to get from there to an @code{Ipv4Address}.  The compiler notices that
-there is an @code{Ipv4Address} constructor that takes a @code{char const *} 
-and so it uses that constructor transparently to arrange for the conversion.  
-
-You therefore have several options for passing this value.  You can use an 
-explicit named variable as in the following:
-
-@verbatim
-  Ipv4Address addr ("10.1.1.2");
-  ...
-
-  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, addr, port, 
-    maxPacketCount, interPacketInterval, packetSize);
-@end verbatim
-
-@cindex idiom|unnamed parameter
-You can use the unnamed parameter idiom that we have previously seen:
-
-@verbatim
-  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, 
-    Ipv4Address ("10.1.1.2"), port, maxPacketCount, interPacketInterval, 
-    packetSize);
-@end verbatim
-
-Or you can rely on implicit conversion sequences as we just saw:
-
-@verbatim
-  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, "10.1.1.2", 
-    port, maxPacketCount, interPacketInterval, packetSize);
-@end verbatim
-
-Which approach to take is a matter of style, really, and you will probably
-see all three approaches taken in the ns-3 code.  You should be 
-comfortable seeing and using all three methods.
-
-@subsection A UDP Echo Server Application
-As usual, to use the UDP echo server we need to add a line to define the
-application:
-
-@verbatim
-#include "ns3/udp-echo-server.h"
-@end verbatim
-
-In order to create the UDP echo server application we will need to add the 
-following code:
-
-@verbatim
-  Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> (n1, port);
-@end verbatim
-
-We only need to tell the application which node to reside on and which port
-to listen on for UDP packets.  The code to actually create the
-@code{UdpEchoServer} application uses the now quite familiar ns-3 object
-creation idiom.
-
-@subsection A UDP Echo Client-Server Simulation
-Now we're getting somewhere.  Your code should look something like the
-following (let's change the log component name and program banner from
-``Hello Simulator''to something more descriptive while we're at it).
-
-@verbatim
-  #include "ns3/log.h"
-  #include "ns3/ptr.h"
-  #include "ns3/internet-stack.h"
-  #include "ns3/csma-channel.h"
-  #include "ns3/mac48-address.h"
-  #include "ns3/csma-net-device.h"
-  #include "ns3/csma-topology.h"
-  #include "ns3/csma-ipv4-topology.h"
-  #include "ns3/udp-echo-client.h"
-  #include "ns3/udp-echo-server.h"
-
-  NS_LOG_COMPONENT_DEFINE ("UdpEchoSimulation");
-
-  using namespace ns3;
-
-  int 
-  main (int argc, char *argv[])
-  {
-    LogComponentEnable ("UdpEchoSimulation", LOG_LEVEL_INFO);
-
-    NS_LOG_INFO ("UDP Echo Simulation");
-
-    Ptr<Node> n0 = CreateObject<InternetNode> ();
-    Ptr<Node> n1 = CreateObject<InternetNode> ();
-    Ptr<Node> n2 = CreateObject<InternetNode> ();
-    Ptr<Node> n3 = CreateObject<InternetNode> ();
-
-    Ptr<CsmaChannel> lan = 
-      CsmaTopology::CreateCsmaChannel (DataRate (5000000), MilliSeconds (2));
-
-    uint32_t nd0 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n0, lan, 
-      Mac48Address("08:00:2e:00:00:00"));
-
-    uint32_t nd1 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n1, lan, 
-      Mac48Address("08:00:2e:00:00:01"));
-
-    uint32_t nd2 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n2, lan, 
-      Mac48Address("08:00:2e:00:00:02"));
-
-    uint32_t nd3 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n3, lan, 
-      Mac48Address("08:00:2e:00:00:03"));
-
-    CsmaIpv4Topology::AddIpv4Address (n0, nd0, Ipv4Address ("10.1.1.1"), 
-      Ipv4Mask ("255.255.255.0"));
-
-    CsmaIpv4Topology::AddIpv4Address (n1, nd1, Ipv4Address ("10.1.1.2"), 
-      Ipv4Mask ("255.255.255.0"));
-
-    CsmaIpv4Topology::AddIpv4Address (n2, nd2, Ipv4Address ("10.1.1.3"), 
-      Ipv4Mask ("255.255.255.0"));
-
-    CsmaIpv4Topology::AddIpv4Address (n3, nd3, Ipv4Address ("10.1.1.4"), 
-      Ipv4Mask ("255.255.255.0"));
-
-    uint32_t packetSize = 1024;
-    uint16_t port = 7;
-    uint32_t maxPacketCount = 1;
-    Time interPacketInterval = Seconds (1.);
-
-    Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, "10.1.1.2", 
-      port, maxPacketCount, interPacketInterval, packetSize);
-
-    Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> (n1, port);
-
-  }
-@end verbatim
-
-@section Using the Simulation Engine
-@cindex model
-@cindex simulation executive
-You could say that the heart of the ns-3 system is the 
-@emph{simulation engine} (sometimes called the simulation executive in other 
-systems).
-
-In a computer simulation, a computer @emph{model} of a real world @emph{system}
-is constructed.  This is typically done to minimize cost since you do not have
-to actually buy, install and maintain physical hardware.  In the case of
-ns-3, a model is a representation of a networking component that is
-designed to imitate some number of important behaviors or characteristics of 
-an actual component in a real network.  A system is a collection of models
-arranged for the purpose of analyzing some behavior.
-
-@section Models
-@cindex CsmaNetDevice
-@cindex CsmaChannel
-@cindex InternetNode
-@cindex NIC
-@cindex CSMA
-We have already encountered several ns-3 models without specifically 
-calling them so.  The @code{InternetNode}, @code{CsmaNetDevice} and 
-@code{CsmaChannel} objects are models of an Internet computing node, a CSMA
-network interface card (NIC), and a network cable able to move data to and
-from other CSMA NICs.
-
-@cindex model
-@cindex CSMA/CD
-It is important to note that the @code{Csma} net devices and the @code{Csma}
-channel do not correspond to any real world hardware that you can actually go 
-out and buy.  These models implement an approximation, or subset, of the 
-behaviors that a real CSMA/CD network would have.  In this case, the
-@code{CsmaNetDevice} does not simulate collision detection (CD).  It does 
-implement carrier sense and performs collision @emph{avoidance} using global 
-spatial knowledge available in the channel.  This would be impossible in any
-channel residing in our universe.  
-
-@cindex Ethernet
-No model will fully implement @emph{all} of the behaviors of a piece of
-hardware.  It is important to understand what is being modeled by the 
-ns-3 components you are using and what is not.  For example, the Csma
-components we use in this tutorial model a highly abstract multiple access
-network that is topologically equivalent to an Ethernet.  It is not necessarily
-true that results found in a simulation using the Csma models will apply to
-a real-world Ethernet network.  You must understand what behaviors are 
-simulated in each of the models before trusting that any results can be 
-associated with real-world systems.
-
-@section Time, Events and Callbacks
-@cindex time
-@cindex event
-In a @emph{discrete event simulator} time is not something that @emph{flows},
-nor is it something to be measured --- it is the driving force behind the
-progress of the simulation.  Time is progressed forward by the simulation 
-engine and anything that happens in the simulation is ultimately caused by
-an @emph{event}.  An event is some action in the system that is 
-@emph{scheduled} to happen at a certain time by the simulation engine.  Time 
-does not flow continuously but steps discretely (in possibly large jumps) 
-from one scheduled event to another.
-
-@cindex packet
-For example, to start the flow of a packet through the system, one would have
-to schedule an event with the simulation engine @emph{before} the simulation
-was started.  This is important since the simulation engine only jumps time
-forward if there is a next event to process.  The simulation stops if there
-are no more events, which is equivalent to a state where there is ``nothing 
-more to do.''  Before the simulation starts, one schedules driving events in 
-terms of absolute time.  For example, one could schedule an event to start 
-the flow of a first packet at, say, ten simulated seconds.  In this case, the 
-simulation would start its clock at zero seconds and look for the first event 
-in its @emph{event queue}.  It would immediately jump time forward by ten 
-seconds and @emph{fire} the scheduled event --- that is, make the event happen.
-
-@cindex functor
-@cindex function object
-@cindex callback
-@cindex Callback
-In ns-3 an event is basically a pre-packaged function call called a 
-@emph{functor}.  Functors are also known as @emph{function objects}, which is
-a more descriptive term --- an object (in the object-oriented programming 
-sense) that can be called as if it was a function.  Typically one uses a
-functor to implement @emph{deferred execution} of a function or method.  The
-most commonly encoutered form of deferred execution is in a @emph{callback}
-from an I/O system.  In this case, the goal would be to start an I/O
-operation and return immediately, without having to wait for the operation 
-to complete.  One asks the I/O subsytem to notify you when an operation is
-complete by calling some function you provide.  This provided function is
-known as a callback function.  [Imagine calling someone on the telephone and
-asking them to do something for you.  You also ask them to @emph{call you back}
-when they are done.]  Events in the ns-3 system work conceptually
-the same way, except that instead of an I/O completion driving the process,
-the arrival of some simulated time drives the process.  The ns-3 
-deferred exectution mechanism is via a class called @code{Callback}.
-
-@cindex Time
-@cindex Callback
-The internal details of the classes representing @code{Time} and 
-@code{Callback} abstractions will be introduced as required.  We won't see
-events directly for some time, but you should know that they are happening
-``under the sheets'' of the simulations you will be writing.
-
-@section Driving the Simulation
-@cindex Application
-As mentioned previously, time is the driving force behind the progress of
-a ns-3 simulation.  Events are scheduled to happen at certain times
-by calling methods of the simulation engine, either directly or indirectly
-through, for example, an @code{Application}.
-
-In order to get the simulation engine set up and running in our code, we must
-first include the language definitions required to describe time- and
-simulator-specific classes:
-
-@verbatim
-  #include "ns3/simulator.h"
-  #include "ns3/nstime.h"
-@end verbatim
-
-@cindex Application
-As we have seen, we need to ``seed'' the simulation with at least one event.
-In the case of an @code{Application}, a method to do this is provided.  This
-method must be implemented by each specialization of the class and we must
-call this method in our script before the simulation starts.  We can also
-provide an event (indirectly) to stop the output of the application at a
-certain time.  This is done by adding the following lines to our script:
-
-@verbatim
-  server->Start(Seconds(1.));
-  client->Start(Seconds(2.));
-
-  server->Stop (Seconds(10.));
-  client->Stop (Seconds(10.));
-@end verbatim
-
-@cindex Application
-@cindex time
-@cindex Time
-@cindex socket
-@cindex event
-In the case of the UdpEchoServer, the call to @code{server->Start ()} gives
-the @code{Application} the chance to schedule an event that will perform the
-usual @emph{sockets} server sequence of socket creation, binding and
-recvfrom (see Donahoo's UDPEchoServer.c).
-
-In the case of the UdpEchoClient, the call to @code{client->Start ()} gives
-the @code{Application} the chance to schedule an event that will perform the
-usual @emph{sockets} client sequence of socket creation, sendto and recvfrom
-(see Donahoo's UDPEchoClient.c).  
-
-@cindex event
-Note that the start event for the server is scheduled to happen before the 
-start event of the client, just as you would start a server application before
-you would attempt to start a client application in the real world.
-
-@cindex socket!sendto
-The ns-3 equivalent of the call to @code{sendo} in the client will 
-schedule (immediately) the transmission of a UDP packet over the just created
-socket.  This will cause the packet to percolate down the protocol stack and
-eventually into the channel.  The channel will schedule a reception event in
-the net device on the destination node.  This event will eventually percolate
-up into the server application.  The server application will create a reply
-packet and send it back down its stack and eventually back to the channel.
-The channel will schedule a reception event back in the client and this will
-cause the reply to be sent back up the protocol stack to the client 
-application.  
-
-The calls to @code{Stop ()} for both applications cause the sockets to be
-torn down and therefore the sending and receiving of packets will be stopped
-irrespective of other application settings (such as max packets and interval
-in the client).
-
-Finally, we need to run the simulation and when the simulation run is complete,
-clean up any resources allocated during the run.  This is done by the calling 
-the following static methods:
-
-@verbatim
-  Simulator::Run ();
-  Simulator::Destroy ();
-@end verbatim
-
-We now have the makings of a complete ns-3 network simulation.  The 
-source code for the script should look like the following:
-
-@verbatim
-  #include "ns3/log.h"
-  #include "ns3/ptr.h"
-  #include "ns3/internet-stack.h"
-  #include "ns3/csma-channel.h"
-  #include "ns3/mac48-address.h"
-  #include "ns3/csma-net-device.h"
-  #include "ns3/csma-topology.h"
-  #include "ns3/csma-topology.h"
-  #include "ns3/csma-ipv4-topology.h"
-  #include "ns3/udp-echo-client.h"
-  #include "ns3/udp-echo-server.h"
-  #include "ns3/simulator.h"
-  #include "ns3/nstime.h"
-
-  NS_LOG_COMPONENT_DEFINE ("UdpEchoSimulation");
-
-  using namespace ns3;
-
-  int 
-  main (int argc, char *argv[])
-  {
-    LogComponentEnable ("UdpEchoSimulation", LOG_LEVEL_INFO);
-
-    NS_LOG_INFO ("UDP Echo Simulation");
-
-    Ptr<Node> n0 = CreateObject<InternetNode> ();
-    Ptr<Node> n1 = CreateObject<InternetNode> ();
-    Ptr<Node> n2 = CreateObject<InternetNode> ();
-    Ptr<Node> n3 = CreateObject<InternetNode> ();
-
-    Ptr<CsmaChannel> lan = 
-      CsmaTopology::CreateCsmaChannel (DataRate (5000000), MilliSeconds (2));
-
-    uint32_t nd0 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n0, lan, 
-      Mac48Address("08:00:2e:00:00:00"));
-
-    uint32_t nd1 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n1, lan, 
-      Mac48Address("08:00:2e:00:00:01"));
-
-    uint32_t nd2 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n2, lan, 
-      Mac48Address("08:00:2e:00:00:02"));
-
-    uint32_t nd3 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n3, lan, 
-      Mac48Address("08:00:2e:00:00:03"));
-
-    CsmaIpv4Topology::AddIpv4Address (n0, nd0, Ipv4Address ("10.1.1.1"), 
-      Ipv4Mask ("255.255.255.0"));
-
-    CsmaIpv4Topology::AddIpv4Address (n1, nd1, Ipv4Address ("10.1.1.2"), 
-      Ipv4Mask ("255.255.255.0"));
-
-    CsmaIpv4Topology::AddIpv4Address (n2, nd2, Ipv4Address ("10.1.1.3"), 
-      Ipv4Mask ("255.255.255.0"));
-
-    CsmaIpv4Topology::AddIpv4Address (n3, nd3, Ipv4Address ("10.1.1.4"), 
-      Ipv4Mask ("255.255.255.0"));
-
-    uint32_t packetSize = 1024;
-    uint16_t port = 7;
-    uint32_t maxPacketCount = 1;
-    Time interPacketInterval = Seconds (1.);
-
-    Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, "10.1.1.2", 
-      port, maxPacketCount, interPacketInterval, packetSize);
-
-    Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> (n1, port);
-
-    server->Start(Seconds(1.));
-    client->Start(Seconds(2.));
-
-    server->Stop (Seconds(10.));
-    client->Stop (Seconds(10.));
-
-    Simulator::Run ();
-    Simulator::Destroy ();
-  }
-@end verbatim
-
-@cindex tutorial-csma-echo.cc
-Just to make sure you don't get caught up in debugging typographical errors
-we have provided this source code for you (along with a copyright header) in
-the @code{tutorial} subdirectory of the ns-3 distribution as 
-@code{tutorial-csma-echo.cc}.  We used this opportunity to do some ``clean up''
-of some of our example cases by passing parameters using implicit conversion 
-sequences and removing some of the named parameters. [These were used for
-pedagogic purposes and were not actually necessary.]
-
-@section Building the Script
-@cindex Waf
-C++ is a compiled language, so you know it had to happen.  We have to build
-the script before we run it.  As mentioned before, we use the Waf build system
-which is Python-based.  We have to change gears slightly and switch ourselves
-to Python mode in order to proceed.
-
-In each subdirectory of the ns-3 distribution in which there are
-source files, you will find two files:  one will be named @code{waf} and one
-will be named @code{wscript}.  The former, @code{waf}, is a link that allows
-one to start the build process from any subdirectory.  We can ignore that one.
-The file we need to deal with is @code{wscript}.
-
-@cindex wscript
-Open the file @code{ns-3-dev/tutorial/wscript} in your favorite editor
-[remember I'm assuming that you have the distribution saved in a
-repository under a directory called @code{repos} in you home directory.]
-
-@cindex Python
-You should see the following Python code (after an emacs mode line).
-
-@verbatim
-  def build(bld):
-    obj = bld.create_ns3_program('hello-simulator')
-    obj.source = 'hello-simulator.cc'
-@end verbatim
-
-These are the only instructions required to build a simulation (I told you
-it wasn't going to be too bad).  The line with the method
-@code{bld.create_ns3_program} tells the build system to create an object 
-file that is a program (executable) named @code{hello-simulator}.  The
-following line, with the method @code{obj.source} tells the build system that 
-the source file for the program is the file @code{hello-simulator.cc'} in the
-local directory.  The required libraries are linked for you for free.
-
-All that needed to be done in order to build the new simulation using the new
-source file was to copy the two lines describing the @code{hello-simulator} 
-program and change the names to @code{tutorial-csma-echo}.  You can see these 
-lines in the @code{wscript} file,
-
-@verbatim
-  def build(bld):
-    obj = bld.create_ns3_program('hello-simulator')
-    obj.source = 'hello-simulator.cc'
-
-    obj = bld.create_ns3_program('tutorial-csma-echo')
-    obj.source = 'tutorial-csma-echo.cc'
-
-    ...
-@end verbatim
-
-When you built the system above, you actually already built this new 
-simulation and a number of other examples.  Since you have already configured
-@code{Waf} and built the @code{tutorial-csma-echo} script, you can run the 
-simulation in the same way as you ran the @code{hello-simulator} script using 
-the @code{waf --run} command:
-
-@verbatim
-~/repos/ns-3-dev/tutorial > waf --run tutorial-csma-echo
-Entering directory `~/repos/ns-3-dev/build'
-Compilation finished successfully
-UDP Echo Simulation
-~/repos/ns-3-dev/tutorial >
-@end verbatim
+that covers material you may need to understand if you look at the multicast 
+examples in the distribution.

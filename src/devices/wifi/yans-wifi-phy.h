@@ -117,6 +117,7 @@ private:
   typedef std::vector<WifiMode> Modes;
 
 private:
+  YansWifiPhy (const YansWifiPhy &o);
   virtual void DoDispose (void);
   void Configure80211a (void);
   void ConfigureHolland (void);

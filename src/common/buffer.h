@@ -342,6 +342,27 @@ public:
        * bytes read.
        */
       void Read (uint8_t *buffer, uint32_t size);
+
+      /**
+       * \brief Calculate the checksum.
+       * \param size size of the buffer.
+       * \return checksum
+       */
+      uint16_t CalculateIpChecksum(uint16_t size);
+
+      /**
+       * \brief Calculate the checksum.
+       * \param size size of the buffer.
+       * \param initialChecksum initial value
+       * \return checksum
+       */
+      uint16_t CalculateIpChecksum(uint16_t size, uint32_t initialChecksum);
+
+      /**
+       * \returns the size of the underlying buffer we are iterating
+       */
+      uint32_t GetSize (void) const;
+
   private:
       friend class Buffer;
       Iterator (Buffer const*buffer);
@@ -520,6 +541,7 @@ private:
 #ifdef BUFFER_USE_INLINE
 
 #include "ns3/assert.h"
+#include <string.h>
 
 namespace ns3 {
 

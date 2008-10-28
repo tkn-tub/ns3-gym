@@ -22,6 +22,7 @@
 #include "ns3/assert.h"
 #include <iomanip>
 #include <iostream>
+#include <string.h>
 
 namespace ns3 {
 
@@ -143,6 +144,18 @@ Mac48Address::IsBroadcast (void) const
 bool 
 Mac48Address::IsMulticast (void) const
 {
+  uint8_t mcBuf[6];
+  CopyTo (mcBuf);
+  mcBuf[3] &= 0x80;
+  mcBuf[4] = 0;
+  mcBuf[5] = 0;
+  Mac48Address prefix;
+  prefix.CopyFrom (mcBuf);
+  return prefix == Mac48Address::GetMulticastPrefix ();
+}
+bool 
+Mac48Address::IsGroup (void) const
+{
   return (m_address[0] & 0x01) == 0x01;
 }
 Mac48Address
@@ -150,6 +163,48 @@ Mac48Address::GetBroadcast (void)
 {
   static Mac48Address broadcast = Mac48Address ("ff:ff:ff:ff:ff:ff");
   return broadcast;
+}
+Mac48Address 
+Mac48Address::GetMulticastPrefix (void)
+{
+  static Mac48Address multicast = Mac48Address ("01:00:5e:00:00:00");
+  return multicast;
+}
+Mac48Address 
+Mac48Address::GetMulticast (Ipv4Address multicastGroup)
+{
+  Mac48Address etherAddr = Mac48Address::GetMulticastPrefix ();
+  //
+  // We now have the multicast address in an abstract 48-bit container.  We 
+  // need to pull it out so we can play with it.  When we're done, we have the 
+  // high order bits in etherBuffer[0], etc.
+  //
+  uint8_t etherBuffer[6];
+  etherAddr.CopyTo (etherBuffer);
+
+  //
+  // Now we need to pull the raw bits out of the Ipv4 destination address.
+  //
+  uint8_t ipBuffer[4];
+  multicastGroup.Serialize (ipBuffer);
+
+  //
+  // RFC 1112 says that an Ipv4 host group address is mapped to an EUI-48
+  // multicast address by placing the low-order 23-bits of the IP address into 
+  // the low-order 23 bits of the Ethernet multicast address 
+  // 01-00-5E-00-00-00 (hex). 
+  //
+  etherBuffer[3] |= ipBuffer[1] & 0x7f;
+  etherBuffer[4] = ipBuffer[2];
+  etherBuffer[5] = ipBuffer[3];
+
+  //
+  // Now, etherBuffer has the desired ethernet multicast address.  We have to
+  // suck these bits back into the Mac48Address,
+  //
+  Mac48Address result;
+  result.CopyFrom (etherBuffer);
+  return result;
 }
 
 bool operator == (const Mac48Address &a, const Mac48Address &b)

@@ -32,38 +32,36 @@ class Packet;
 
 class CsmaNetDevice;
 
+/**
+ * \brief CsmaNetDevice Record 
+ *
+ * Stores the information related to each net device that is
+ * connected to the channel. 
+ */
+class CsmaDeviceRec {
+public:
+  Ptr< CsmaNetDevice > devicePtr; /// Pointer to the net device
+  bool                       active;    /// Is net device enabled to TX/RX
+
+  CsmaDeviceRec();
+  CsmaDeviceRec(Ptr< CsmaNetDevice > device);
+
   /**
-   * \brief CsmaNetDevice Record 
-   *
-   * Stores the information related to each net device that is
-   * connected to the channel. 
+   * \return If the net device pointed to by the devicePtr is active
+   * and ready to RX/TX.
    */
-  class CsmaDeviceRec {
-  public:
-    Ptr< CsmaNetDevice > devicePtr; /// Pointer to the net device
-    bool                       active;    /// Is net device enabled to TX/RX
+  bool IsActive();                   
+};
 
-    CsmaDeviceRec();
-    CsmaDeviceRec(Ptr< CsmaNetDevice > device);
-    /*
-     * \return If the net device pointed to by the devicePtr is active
-     * and ready to RX/TX.
-     */
-    bool IsActive();                   
+/**
+ * Current state of the channel
+ */ 
+enum WireState
+  {
+    IDLE,          /**< Channel is IDLE, no packet is being transmitted */
+    TRANSMITTING,  /**< Channel is BUSY, a packet is being written by a net device */
+    PROPAGATING    /**< Channel is BUSY, packet is propagating to all attached net devices */
   };
-
-  /**
-   * Current state of the channel
-   */ 
-  enum WireState
-    {
-      IDLE,          /**< Channel is IDLE, no packet is being
-                        transmitted */
-      TRANSMITTING,  /**< Channel is BUSY, a packet is being written
-                        by a net device */
-      PROPAGATING    /**< Channel is BUSY, packet is propagating to
-                        all attached net devices */
-    };
 
 /**
  * \brief Csma Channel.

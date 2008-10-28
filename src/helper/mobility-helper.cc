@@ -23,6 +23,9 @@
 #include "ns3/hierarchical-mobility-model.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
+#include "ns3/config.h"
+#include "ns3/simulator.h"
+#include <iostream>
 
 namespace ns3 {
 
@@ -44,15 +47,15 @@ MobilityHelper::SetPositionAllocator (Ptr<PositionAllocator> allocator)
 }
 void 
 MobilityHelper::SetPositionAllocator (std::string type,
-				      std::string n1, const AttributeValue &v1,
-				      std::string n2, const AttributeValue &v2,
-				      std::string n3, const AttributeValue &v3,
-				      std::string n4, const AttributeValue &v4,
-				      std::string n5, const AttributeValue &v5,
-				      std::string n6, const AttributeValue &v6,
-				      std::string n7, const AttributeValue &v7,
-				      std::string n8, const AttributeValue &v8,
-				      std::string n9, const AttributeValue &v9)
+                                      std::string n1, const AttributeValue &v1,
+                                      std::string n2, const AttributeValue &v2,
+                                      std::string n3, const AttributeValue &v3,
+                                      std::string n4, const AttributeValue &v4,
+                                      std::string n5, const AttributeValue &v5,
+                                      std::string n6, const AttributeValue &v6,
+                                      std::string n7, const AttributeValue &v7,
+                                      std::string n8, const AttributeValue &v8,
+                                      std::string n9, const AttributeValue &v9)
 {
   ObjectFactory pos;
   pos.SetTypeId (type);
@@ -70,15 +73,15 @@ MobilityHelper::SetPositionAllocator (std::string type,
 
 void 
 MobilityHelper::SetMobilityModel (std::string type,
-				  std::string n1, const AttributeValue &v1,
-				  std::string n2, const AttributeValue &v2,
-				  std::string n3, const AttributeValue &v3,
-				  std::string n4, const AttributeValue &v4,
-				  std::string n5, const AttributeValue &v5,
-				  std::string n6, const AttributeValue &v6,
-				  std::string n7, const AttributeValue &v7,
-				  std::string n8, const AttributeValue &v8,
-				  std::string n9, const AttributeValue &v9)
+                                  std::string n1, const AttributeValue &v1,
+                                  std::string n2, const AttributeValue &v2,
+                                  std::string n3, const AttributeValue &v3,
+                                  std::string n4, const AttributeValue &v4,
+                                  std::string n5, const AttributeValue &v5,
+                                  std::string n6, const AttributeValue &v6,
+                                  std::string n7, const AttributeValue &v7,
+                                  std::string n8, const AttributeValue &v8,
+                                  std::string n9, const AttributeValue &v9)
 {
   m_mobility.SetTypeId (type);
   m_mobility.Set (n1, v1);
@@ -119,29 +122,29 @@ MobilityHelper::Install (NodeContainer c)
       Ptr<Object> object = *i;
       Ptr<MobilityModel> model = object->GetObject<MobilityModel> ();
       if (model == 0)
-	{
-	  model = m_mobility.Create ()->GetObject<MobilityModel> ();
-	  if (model == 0)
-	    {
-	      NS_FATAL_ERROR ("The requested mobility model is not a mobility model: \""<< 
-			      m_mobility.GetTypeId ().GetName ()<<"\"");
-	    }
-	  if (m_mobilityStack.empty ())
-	    {
-	      NS_LOG_DEBUG ("node="<<object<<", mob="<<model);
-	      object->AggregateObject (model);
-	    }
-	  else
-	    {
-	      // we need to setup a hierarchical mobility model
-	      Ptr<MobilityModel> parent = m_mobilityStack.back ();
-	      Ptr<MobilityModel> hierarchical = 
-		CreateObject<HierarchicalMobilityModel> ("Child", PointerValue (model),
-							 "Parent", PointerValue (parent));
-	      object->AggregateObject (hierarchical);
-	      NS_LOG_DEBUG ("node="<<object<<", mob="<<hierarchical);
-	    }
-	}
+        {
+          model = m_mobility.Create ()->GetObject<MobilityModel> ();
+          if (model == 0)
+            {
+              NS_FATAL_ERROR ("The requested mobility model is not a mobility model: \""<< 
+                              m_mobility.GetTypeId ().GetName ()<<"\"");
+            }
+          if (m_mobilityStack.empty ())
+            {
+              NS_LOG_DEBUG ("node="<<object<<", mob="<<model);
+              object->AggregateObject (model);
+            }
+          else
+            {
+              // we need to setup a hierarchical mobility model
+              Ptr<MobilityModel> parent = m_mobilityStack.back ();
+              Ptr<MobilityModel> hierarchical = 
+                CreateObject<HierarchicalMobilityModel> ("Child", PointerValue (model),
+                                                         "Parent", PointerValue (parent));
+              object->AggregateObject (hierarchical);
+              NS_LOG_DEBUG ("node="<<object<<", mob="<<hierarchical);
+            }
+        }
       Vector position = m_position->GetNext ();
       model->SetPosition (position);
     }
@@ -152,5 +155,72 @@ MobilityHelper::InstallAll (void)
 {
   Install (NodeContainer::GetGlobal ());
 }
+static double
+DoRound (double v)
+{
+  if (v <= 1e-4 && v >= -1e-4)
+    {
+      return 0.0;
+    }
+  else if (v <= 1e-3 && v >= 0)
+    {
+      return 1e-3;
+    }
+  else if (v >= -1e-3 && v <= 0)
+    {
+      return -1e-3;
+    }
+  else
+    {
+      return v;
+    }
+}
+void
+MobilityHelper::CourseChanged (std::ostream *os, Ptr<const MobilityModel> mobility)
+{
+  Ptr<Node> node = mobility->GetObject<Node> ();
+  *os << "now=" << Simulator::Now ()
+      << " node=" << node->GetId ();
+  Vector pos = mobility->GetPosition ();
+  pos.x = DoRound (pos.x);
+  pos.y = DoRound (pos.y);
+  pos.z = DoRound (pos.z);
+  Vector vel = mobility->GetVelocity ();
+  vel.x = DoRound (vel.x);
+  vel.y = DoRound (vel.y);
+  vel.z = DoRound (vel.z);
+  std::streamsize saved_precision = os->precision ();
+  std::ios::fmtflags saved_flags = os->flags ();
+  os->precision (3);
+  os->setf (std::ios::fixed,std::ios::floatfield);
+  *os << " pos=" << pos.x << ":" << pos.y << ":" << pos.z
+      << " vel=" << vel.x << ":" << vel.y << ":" << vel.z
+      << std::endl;
+  os->flags (saved_flags);
+  os->precision (saved_precision);
+}
+
+void 
+MobilityHelper::EnableAscii (std::ostream &os, uint32_t nodeid)
+{
+  std::ostringstream oss;
+  oss << "/NodeList/" << nodeid << "/$ns3::MobilityModel/CourseChange";
+  Config::ConnectWithoutContext (oss.str (), 
+                                 MakeBoundCallback (&MobilityHelper::CourseChanged, &os));
+}
+void 
+MobilityHelper::EnableAscii (std::ostream &os, NodeContainer n)
+{
+  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
+    {
+      EnableAscii (os, (*i)->GetId ());
+    }
+}
+void 
+MobilityHelper::EnableAsciiAll (std::ostream &os)
+{
+  EnableAscii (os, NodeContainer::GetGlobal ());
+}
+
 
 } // namespace ns3

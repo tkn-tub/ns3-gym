@@ -97,7 +97,8 @@ FriisPropagationLossModel::GetTypeId (void)
     .AddAttribute ("MinDistance", 
                    "The distance under which the propagation model refuses to give results (m)",
                    DoubleValue (0.5),
-                   MakeDoubleAccessor (&FriisPropagationLossModel::m_minDistance),
+                   MakeDoubleAccessor (&FriisPropagationLossModel::SetMinDistance,
+                                       &FriisPropagationLossModel::GetMinDistance),
                    MakeDoubleChecker<double> ())
     ;
   return tid;
@@ -114,6 +115,16 @@ double
 FriisPropagationLossModel::GetSystemLoss (void) const
 {
   return m_systemLoss;
+}
+void 
+FriisPropagationLossModel::SetMinDistance (double minDistance)
+{
+  m_minDistance = minDistance;
+}
+double 
+FriisPropagationLossModel::GetMinDistance (void) const
+{
+  return m_minDistance;
 }
 void 
 FriisPropagationLossModel::SetLambda (double frequency, double speed)
@@ -266,12 +277,10 @@ LogDistancePropagationLossModel::GetLoss (Ptr<MobilityModel> a,
    *      
    * rx = rx0(tx) - 10 * n * log (d/d0)
    */
-  static Ptr<StaticMobilityModel> zero = 
-    CreateObject<StaticMobilityModel> ("Position", 
-                                       VectorValue (Vector (0.0, 0.0, 0.0)));
-  static Ptr<StaticMobilityModel> reference = 
-    CreateObject<StaticMobilityModel> ("Position", 
-                                       VectorValue (Vector (m_referenceDistance, 0.0, 0.0)));
+  static Ptr<StaticMobilityModel> zero = CreateObject<StaticMobilityModel> ();
+  static Ptr<StaticMobilityModel> reference = CreateObject<StaticMobilityModel> ();
+  zero->SetPosition (Vector (0.0, 0.0, 0.0));
+  reference->SetPosition (Vector (m_referenceDistance, 0.0, 0.0));
   double ref = m_reference->GetLoss (zero, reference);
   double pathLossDb = 10 * m_exponent * log10 (distance / m_referenceDistance);
   double rxc = ref - pathLossDb;

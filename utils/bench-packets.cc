@@ -23,6 +23,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <stdlib.h> // for exit ()
 
 using namespace ns3;
 
@@ -261,7 +262,13 @@ int main (int argc, char *argv[])
       if (strncmp ("--n=", argv[0],strlen ("--n=")) == 0) 
         {
           char const *nAscii = argv[0] + strlen ("--n=");
-          n = atoi (nAscii);
+          std::istringstream iss;
+          iss.str (nAscii);
+          iss >> n;
+        }
+      if (strncmp ("--enable-printing", argv[0], strlen ("--enable-printing")) == 0)
+        {
+          Packet::EnablePrinting ();
         }
       argc--;
       argv++;
@@ -278,14 +285,6 @@ int main (int argc, char *argv[])
   runBench (&benchB, n, "b");
   runBench (&benchC, n, "c");
   runBench (&benchD, n, "d");
-
-  Packet::EnableMetadata ();
-  runBench (&benchA, n, "meta-a");
-  runBench (&benchB, n, "meta-b");
-  runBench (&benchC, n, "meta-c");
-  runBench (&benchD, n, "meta-d");
-
-
 
   return 0;
 }

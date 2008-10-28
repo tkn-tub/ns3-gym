@@ -44,7 +44,7 @@ class TraceSourceAccessor;
 class TypeId
 {
 public:
-  enum {
+  enum AttributeFlag {
     /**
      * The attribute can be read
      */
@@ -96,7 +96,7 @@ public:
    * No two instances can share the same name. The name is expected to be
    * the full c++ typename of associated c++ object.
    */
-  TypeId (const char * name);
+  explicit TypeId (const char * name);
 
   /**
    * \returns the parent of this TypeId

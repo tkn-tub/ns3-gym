@@ -216,6 +216,20 @@ public:
    */
   virtual bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) = 0;
   /**
+   * \param packet packet sent from above down to Network Device
+   * \param source source mac address (so called "MAC spoofing")
+   * \param dest mac address of the destination (already resolved)
+   * \param protocolNumber identifies the type of payload contained in
+   *        this packet. Used to call the right L3Protocol when the packet
+   *        is received.
+   * 
+   *  Called from higher layer to send packet into Network Device
+   *  with the specified source and destination Addresses.
+   * 
+   * \return whether the Send operation succeeded 
+   */
+  virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber) = 0;
+  /**
    * \returns the node base class which contains this network
    *          interface.
    *
@@ -225,6 +239,11 @@ public:
    */
   virtual Ptr<Node> GetNode (void) const = 0;
 
+  /**
+   * \param node the node associated to this netdevice.
+   *
+   * This method is called from ns3::Node::AddDevice.
+   */
   virtual void SetNode (Ptr<Node> node) = 0;
 
   /**
@@ -235,17 +254,27 @@ public:
    */
   virtual bool NeedsArp (void) const = 0;
 
+
+  /** Packet types */
+  enum PacketType
+    {
+      PACKET_HOST = 1,  /* To us                */
+      PACKET_BROADCAST, /* To all               */
+      PACKET_MULTICAST, /* To group             */
+      PACKET_OTHERHOST, /* To someone else      */
+    };
+
   /**
    * \param device a pointer to the net device which is calling this callback
    * \param packet the packet received
    * \param protocol the 16 bit protocol number associated with this packet.
    *        This protocol number is expected to be the same protocol number
    *        given to the Send method by the user on the sender side.
-   * \param address the address of the sender
+   * \param sender the address of the sender
    * \returns true if the callback could handle the packet successfully, false
    *          otherwise.
    */
-  typedef Callback<bool,Ptr<NetDevice>,Ptr<Packet>,uint16_t,const Address &> ReceiveCallback;
+  typedef Callback<bool,Ptr<NetDevice>,Ptr<const Packet>,uint16_t,const Address &> ReceiveCallback;
 
   /**
    * \param cb callback to invoke whenever a packet has been received and must
@@ -253,6 +282,39 @@ public:
    *
    */
   virtual void SetReceiveCallback (ReceiveCallback cb) = 0;
+
+
+  /**
+   * \param device a pointer to the net device which is calling this callback
+   * \param packet the packet received
+   * \param protocol the 16 bit protocol number associated with this packet.
+   *        This protocol number is expected to be the same protocol number
+   *        given to the Send method by the user on the sender side.
+   * \param sender the address of the sender
+   * \param receiver the address of the receiver
+   * \param packetType type of packet received (broadcast/multicast/unicast/otherhost)
+   * \returns true if the callback could handle the packet successfully, false
+   *          otherwise.
+   */
+  typedef Callback< bool, Ptr<NetDevice>, Ptr<const Packet>, uint16_t,
+                    const Address &, const Address &, enum PacketType > PromiscReceiveCallback;
+
+  /**
+   * \param cb callback to invoke whenever a packet has been received in promiscuous mode and must
+   *        be forwarded to the higher layers.
+   * 
+   * Enables netdevice promiscuous mode and sets the callback that
+   * will handle promiscuous mode packets.  Note, promiscuous mode
+   * packets means _all_ packets, including those packets that can be
+   * sensed by the netdevice but which are intended to be received by
+   * other hosts.
+   */
+  virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb) = 0;
+
+  /**
+   * \return true if this interface supports a bridging mode, false otherwise.
+   */
+  virtual bool SupportsSendFrom (void) const = 0;
 
 };
 

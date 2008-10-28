@@ -63,16 +63,20 @@ public:
   virtual Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
   virtual bool IsPointToPoint (void) const;
   virtual bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
+  virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
   virtual Ptr<Node> GetNode (void) const;
   virtual void SetNode (Ptr<Node> node);
   virtual bool NeedsArp (void) const;
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
+  virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
+  virtual bool SupportsSendFrom (void) const;
 
 protected:
   virtual void DoDispose (void);
 private:
   Ptr<SimpleChannel> m_channel;
   NetDevice::ReceiveCallback m_rxCallback;
+  NetDevice::PromiscReceiveCallback m_promiscCallback;
   Ptr<Node> m_node;
   uint16_t m_mtu;
   std::string m_name;

@@ -28,7 +28,12 @@
 
 namespace ns3 {
 /**
+ * \ingroup udp
  * \brief Packet header for UDP packets
+ *
+ * This class has fields corresponding to those in a network UDP header
+ * (port numbers, payload size, checksum) as well as methods for serialization
+ * to and deserialization from a byte buffer.
  */
 class UdpHeader : public Header 
 {
@@ -45,7 +50,7 @@ public:
   /**
    * \brief Enable checksum calculation for UDP (XXX currently has no effect)
    */
-  static void EnableChecksums (void);
+  void EnableChecksums (void);
   /**
    * \param port the destination port for this UdpHeader
    */
@@ -62,10 +67,6 @@ public:
    * \return the destination port for this UdpHeader
    */
   uint16_t GetDestinationPort (void) const;
-  /**
-   * \param size The payload size in bytes
-   */
-  void SetPayloadSize (uint16_t size);
 
   /**
    * \param source the ip source to use in the underlying
@@ -89,13 +90,23 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
+  /**
+   * \brief Is the UDP checksum correct ?
+   * \returns true if the checksum is correct, false otherwise.
+   */
+  bool IsChecksumOk (void) const;
+
 private:
+  uint16_t CalculateHeaderChecksum (uint16_t size) const;
   uint16_t m_sourcePort;
   uint16_t m_destinationPort;
   uint16_t m_payloadSize;
-  uint16_t m_initialChecksum;
 
-  static bool m_calcChecksum;
+  Ipv4Address m_source;
+  Ipv4Address m_destination;
+  uint8_t m_protocol;
+  bool m_calcChecksum;
+  bool m_goodChecksum;
 };
 
 } // namespace ns3

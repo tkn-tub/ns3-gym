@@ -97,7 +97,6 @@ NqstaWifiMac::NqstaWifiMac ()
 
   m_low = CreateObject<MacLow> ();
   m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
-  m_low->SetMac (this);
 
   m_dcfManager = new DcfManager ();
   m_dcfManager->SetupLowListener (m_low);
@@ -131,14 +130,14 @@ NqstaWifiMac::SetSlot (Time slotTime)
 {
   NS_LOG_FUNCTION (this << slotTime);
   m_dcfManager->SetSlot (slotTime);
-  m_slot = slotTime;
+  m_low->SetSlotTime (slotTime);
 }
 void 
 NqstaWifiMac::SetSifs (Time sifs)
 {
   NS_LOG_FUNCTION (this << sifs);
   m_dcfManager->SetSifs (sifs);
-  m_sifs = sifs;
+  m_low->SetSifs (sifs);
 }
 void 
 NqstaWifiMac::SetEifsNoDifs (Time eifsNoDifs)
@@ -147,20 +146,50 @@ NqstaWifiMac::SetEifsNoDifs (Time eifsNoDifs)
   m_dcfManager->SetEifsNoDifs (eifsNoDifs);
   m_eifsNoDifs = eifsNoDifs;
 }
+void 
+NqstaWifiMac::SetAckTimeout (Time ackTimeout)
+{
+  m_low->SetAckTimeout (ackTimeout);
+}
+void 
+NqstaWifiMac::SetCtsTimeout (Time ctsTimeout)
+{
+  m_low->SetCtsTimeout (ctsTimeout);
+}
+void 
+NqstaWifiMac::SetPifs (Time pifs)
+{
+  m_low->SetPifs (pifs);
+}
 Time 
 NqstaWifiMac::GetSlot (void) const
 {
-  return m_slot;
+  return m_low->GetSlotTime ();
 }
 Time 
 NqstaWifiMac::GetSifs (void) const
 {
-  return m_sifs;
+  return m_low->GetSifs ();
 }
 Time 
 NqstaWifiMac::GetEifsNoDifs (void) const
 {
   return m_eifsNoDifs;
+}
+Time 
+NqstaWifiMac::GetAckTimeout (void) const
+{
+  return m_low->GetAckTimeout ();
+}
+Time 
+NqstaWifiMac::GetCtsTimeout (void) const
+{
+  return m_low->GetCtsTimeout ();
+}
+Time 
+NqstaWifiMac::GetPifs (void) const
+{
+  return m_low->GetPifs ();
 }
 
 void 
@@ -178,7 +207,7 @@ NqstaWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> station
   m_low->SetWifiRemoteStationManager (stationManager);
 }
 void 
-NqstaWifiMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address &> upCallback)
+NqstaWifiMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback)
 {
   m_forwardUp = upCallback;
 }
@@ -195,7 +224,7 @@ NqstaWifiMac::SetLinkDownCallback (Callback<void> linkDown)
 Mac48Address 
 NqstaWifiMac::GetAddress (void) const
 {
-  return m_address;
+  return m_low->GetAddress ();
 }
 Ssid 
 NqstaWifiMac::GetSsid (void) const
@@ -205,13 +234,13 @@ NqstaWifiMac::GetSsid (void) const
 Mac48Address 
 NqstaWifiMac::GetBssid (void) const
 {
-  return m_bssid;
+  return m_low->GetBssid ();
 }
 void 
 NqstaWifiMac::SetAddress (Mac48Address address)
 {
   NS_LOG_FUNCTION (this << address);
-  m_address = address;
+  m_low->SetAddress (address);
 }
 void 
 NqstaWifiMac::SetSsid (Ssid ssid)
@@ -219,7 +248,6 @@ NqstaWifiMac::SetSsid (Ssid ssid)
   NS_LOG_FUNCTION (this << ssid);
   m_ssid = ssid;
 }
-
 void 
 NqstaWifiMac::SetMaxMissedBeacons (uint32_t missed)
 {
@@ -256,7 +284,7 @@ void
 NqstaWifiMac::SetBssid (Mac48Address bssid)
 {
   NS_LOG_FUNCTION (this << bssid);
-  m_bssid = bssid;
+  m_low->SetBssid (bssid);
 }
 void 
 NqstaWifiMac::SetActiveProbing (bool enable)
@@ -272,10 +300,10 @@ NqstaWifiMac::SetActiveProbing (bool enable)
     }
 }
 void 
-NqstaWifiMac::ForwardUp (Ptr<Packet> packet, const Mac48Address &address)
+NqstaWifiMac::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to)
 {
-  NS_LOG_FUNCTION (this << packet << address);
-  m_forwardUp (packet, address);
+  NS_LOG_FUNCTION (this << packet << from << to);
+  m_forwardUp (packet, from, to);
 }
 void
 NqstaWifiMac::SendProbeRequest (void)
@@ -409,6 +437,11 @@ NqstaWifiMac::IsAssociated (void)
 }
 
 void 
+NqstaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from)
+{
+  NS_FATAL_ERROR ("Qsta does not support enqueue");
+}
+void 
 NqstaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << to);
@@ -421,12 +454,18 @@ NqstaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
   WifiMacHeader hdr;
   hdr.SetTypeData ();
   hdr.SetAddr1 (GetBssid ());
-  hdr.SetAddr2 (GetAddress ());
+  hdr.SetAddr2 (m_low->GetAddress ());
   hdr.SetAddr3 (to);
   hdr.SetDsNotFrom ();
   hdr.SetDsTo ();
   m_dca->Queue (packet, hdr);
 }
+bool 
+NqstaWifiMac::SupportsSendFrom (void) const
+{
+  return true;
+}  
+
 
 void 
 NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
@@ -440,7 +479,10 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
     } 
   else if (hdr->IsData ()) 
     {
-      ForwardUp (packet, hdr->GetAddr2 ());
+      if (hdr->GetAddr3 () != GetAddress ())
+        {
+          ForwardUp (packet, hdr->GetAddr3 (), hdr->GetAddr1 ());
+        }
     } 
   else if (hdr->IsProbeReq () ||
            hdr->IsAssocReq ()) 

@@ -18,11 +18,10 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef SCHEDULER_LIST_H
-#define SCHEDULER_LIST_H
+#ifndef LIST_SCHEDULER_H
+#define LIST_SCHEDULER_H
 
 #include "scheduler.h"
-#include "event-id.h"
 #include <list>
 #include <utility>
 #include <stdint.h>
@@ -35,29 +34,28 @@ class EventImpl;
  * \ingroup scheduler
  * \brief a std::list event scheduler
  *
- * This class implements the an event scheduler using an std::list
+ * This class implements an event scheduler using an std::list
  * data structure, that is, a double linked-list.
  */
-class ListScheduler : public Scheduler {
+class ListScheduler : public Scheduler 
+{
  public:
   ListScheduler ();
   virtual ~ListScheduler ();
 
-  virtual void Insert (const EventId &id);
+  virtual void Insert (const Event &ev);
   virtual bool IsEmpty (void) const;
-  virtual EventId PeekNext (void) const;
-  virtual EventId RemoveNext (void);
-  virtual bool Remove (const EventId &ev);
+  virtual Event PeekNext (void) const;
+  virtual Event RemoveNext (void);
+  virtual void Remove (const Event &ev);
 
  private:
-  inline bool IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const;
 
-  typedef std::list<std::pair<EventImpl*, EventKey> > Events;
-  typedef std::list<std::pair<EventImpl*, EventKey> >::iterator EventsI;
+  typedef std::list<Event> Events;
+  typedef std::list<Event>::iterator EventsI;
   Events m_events;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
-
-#endif /* SCHEDULER_LIST_H */
+#endif /* LIST_SCHEDULER_H */

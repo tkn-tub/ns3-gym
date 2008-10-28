@@ -21,9 +21,23 @@ def configure(conf):
     e.define = 'HAVE_SIGNAL_H'
     e.run()
 
+    e = conf.create_library_configurator()
+    e.mandatory = False
+    e.name = 'rt'
+    e.define = 'HAVE_RT'
+    e.uselib = 'RT'
+    e.run()
+
+    e = conf.create_header_configurator()
+    e.mandatory = False
+    e.name = 'pthread.h'
+    e.define = 'HAVE_PTHREAD_H'
+    conf.env['ENABLE_THREADING'] = e.run()
+    conf.report_optional_feature("Threading", "Threading Primitives",
+                                 conf.env['ENABLE_THREADING'],
+                                 "<pthread.h> include not detected")
+
     conf.write_config_header('ns3/core-config.h')
-
-
 
 def build(bld):
     core = bld.create_ns3_module('core')
@@ -40,7 +54,6 @@ def build(bld):
         'test.cc',
         'random-variable.cc',
         'rng-stream.cc',
-        'uid-manager.cc',
         'command-line.cc',
         'type-name.cc',
         'type-traits-test.cc',
@@ -59,17 +72,10 @@ def build(bld):
         'traced-callback.cc',
         'trace-source-accessor.cc',
         'config.cc',
+        'callback.cc',
         ]
+    core.uselib = 'RT'
 
-    if sys.platform == 'win32':
-        core.source.extend([
-            'win32-system-wall-clock-ms.cc',
-            ])
-    else:
-        core.source.extend([
-            'unix-system-wall-clock-ms.cc',
-            ])
-    
     headers = bld.create_obj('ns3header')
     headers.module = 'core'
     headers.source = [
@@ -110,5 +116,28 @@ def build(bld):
         'trace-source-accessor.h',
         'config.h',
         'object-vector.h',
+        'deprecated.h',
+        'abort.h',
         ]
+
+    if sys.platform == 'win32':
+        core.source.extend([
+            'win32-system-wall-clock-ms.cc',
+            ])
+    else:
+        core.source.extend([
+            'unix-system-wall-clock-ms.cc',
+            ])
+
+    if bld.env()['ENABLE_THREADING']:
+        core.source.extend([
+            'unix-system-thread.cc',
+            'unix-system-mutex.cc',
+            'unix-system-condition.cc',
+            ])
+        headers.source.extend([
+                'system-mutex.h',
+                'system-thread.h',
+                'system-condition.h',
+                ])
 

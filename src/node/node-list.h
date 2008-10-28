@@ -65,6 +65,10 @@ public:
    * \returns the Node associated to index n.
    */
   static Ptr<Node> GetNode (uint32_t n);
+  /**
+   * \returns the number of nodes currently in the list.
+   */
+  static uint32_t GetNNodes (void);
 };
 
 }//namespace ns3

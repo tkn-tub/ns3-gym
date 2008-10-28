@@ -12,6 +12,9 @@ Please consider contributing tips to either the wiki (yourself) or
 by submitting a patch to this maintained documentation.
 
 - \subpage callbacks
+- \subpage packet-header-trailer
+- \subpage net-device
+- \subpage application
 
 */
 

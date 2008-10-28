@@ -245,12 +245,12 @@ WifiNetDevice::IsMulticast (void) const
 Address 
 WifiNetDevice::GetMulticast (void) const
 {
-  return Mac48Address ("01:00:5e:00:00:00");
+  return Mac48Address::GetMulticastPrefix ();
 }
 Address 
 WifiNetDevice::MakeMulticastAddress (Ipv4Address multicastGroup) const
 {
-  return GetMulticast ();
+  return Mac48Address::GetMulticast (multicastGroup);
 }
 bool 
 WifiNetDevice::IsPointToPoint (void) const
@@ -295,12 +295,36 @@ WifiNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 }
 
 void
-WifiNetDevice::ForwardUp (Ptr<Packet> packet, const Mac48Address &from)
+WifiNetDevice::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to)
 {
   m_rxLogger (packet, from);
   LlcSnapHeader llc;
   packet->RemoveHeader (llc);
-  m_forwardUp (this, packet, llc.GetType (), from);
+  enum NetDevice::PacketType type;
+  if (to.IsBroadcast ())
+    {
+      type = NetDevice::PACKET_BROADCAST;
+    }
+  else if (to.IsMulticast ())
+    {
+      type = NetDevice::PACKET_MULTICAST;
+    }
+  else if (to == m_mac->GetAddress ())
+    {
+      type = NetDevice::PACKET_HOST;
+    }
+  else
+    {
+      type = NetDevice::PACKET_OTHERHOST;
+    }
+  if (type != NetDevice::PACKET_OTHERHOST)
+    {
+      m_forwardUp (this, packet, llc.GetType (), from);
+    }
+  if (!m_promiscRx.IsNull ())
+    {
+      m_promiscRx (this, packet, llc.GetType (), from, to, type);
+    }
 }
 
 void
@@ -320,6 +344,38 @@ WifiNetDevice::LinkDown (void)
     {
       m_linkChange ();
     }
+}
+
+bool
+WifiNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
+{
+  NS_ASSERT (Mac48Address::IsMatchingType (dest));
+  NS_ASSERT (Mac48Address::IsMatchingType (source));
+
+  Mac48Address realTo = Mac48Address::ConvertFrom (dest);
+  Mac48Address realFrom = Mac48Address::ConvertFrom (source);
+
+  LlcSnapHeader llc;
+  llc.SetType (protocolNumber);
+  packet->AddHeader (llc);
+
+  m_txLogger (packet, realTo);
+
+  m_mac->Enqueue (packet, realTo, realFrom);
+
+  return true;
+}
+
+void
+WifiNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
+{
+  m_promiscRx = cb;
+}
+
+bool
+WifiNetDevice::SupportsSendFrom (void) const
+{
+  return m_mac->SupportsSendFrom ();
 }
 
 } // namespace ns3

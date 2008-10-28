@@ -1,0 +1,9 @@
+@node Statistics
+@chapter Statistics
+@anchor{chap:Statistics}
+
+ns-3 does not presently have support for statistics (automatically generated
+statistical output).  This is planned
+for development later in 2008.  If you are interested in contributing,
+please see @uref{http://www.nsnam.org/wiki/index.php/Suggested_Projects,,our suggested projects page} or contact the ns-developers
+list.

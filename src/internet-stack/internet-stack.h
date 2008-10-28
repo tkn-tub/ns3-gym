@@ -27,6 +27,7 @@ namespace ns3 {
 class Node;
 
 void AddInternetStack (Ptr<Node> node);
+void AddNscInternetStack (Ptr<Node> node, const std::string &soname);
 
 }//namespace ns3
 

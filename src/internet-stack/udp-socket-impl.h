@@ -36,6 +36,14 @@ class Node;
 class Packet;
 class UdpL4Protocol;
 
+/**
+ * \ingroup udp
+ * \brief A sockets interface to UDP
+ * 
+ * This class subclasses ns3::UdpSocket, and provides a socket interface
+ * to ns3's implementation of UDP.
+ */
+
 class UdpSocketImpl : public UdpSocket
 {
 public:
@@ -57,13 +65,15 @@ public:
   virtual int ShutdownSend (void);
   virtual int ShutdownRecv (void);
   virtual int Connect(const Address &address);
-  virtual int Listen (uint32_t queueLimit);
-  virtual int Send (Ptr<Packet> p);
-  virtual int SendTo (Ptr<Packet> p, const Address &address);
+  virtual int Listen (void);
   virtual uint32_t GetTxAvailable (void) const;
-
-  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
+  virtual int Send (Ptr<Packet> p, uint32_t flags);
+  virtual int SendTo (Ptr<Packet> p, uint32_t flags, const Address &address);
   virtual uint32_t GetRxAvailable (void) const;
+  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
+  virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
+    Address &fromAddress);
+  virtual int GetSockName (Address &address) const; 
 
 private:
   // Attributes set through UdpSocket base class 

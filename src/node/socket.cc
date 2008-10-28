@@ -25,6 +25,7 @@
 #include "node.h"
 #include "socket.h"
 #include "socket-factory.h"
+#include <limits>
 
 NS_LOG_COMPONENT_DEFINE ("Socket");
 
@@ -40,13 +41,6 @@ Socket::~Socket ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-void
-Socket::SetCloseUnblocksCallback (Callback<void,Ptr<Socket> > closeUnblocks)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_closeUnblocks = closeUnblocks;
-}
-
 Ptr<Socket> 
 Socket::CreateSocket (Ptr<Node> node, TypeId tid)
 {
@@ -58,42 +52,30 @@ Socket::CreateSocket (Ptr<Node> node, TypeId tid)
 }
 
 void 
-Socket::SetCloseCallback (Callback<void,Ptr<Socket> > closeCompleted)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_closeCompleted = closeCompleted;
-}
-
-void 
 Socket::SetConnectCallback (
   Callback<void, Ptr<Socket> > connectionSucceeded,
-  Callback<void, Ptr<Socket> > connectionFailed,
-  Callback<void, Ptr<Socket> > halfClose)
+  Callback<void, Ptr<Socket> > connectionFailed)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_connectionSucceeded = connectionSucceeded;
   m_connectionFailed = connectionFailed;
-  m_halfClose = halfClose;
 }
 
 void 
 Socket::SetAcceptCallback (
   Callback<bool, Ptr<Socket>, const Address &> connectionRequest,
-  Callback<void, Ptr<Socket>, const Address&> newConnectionCreated,
-  Callback<void, Ptr<Socket> > closeRequested)
+  Callback<void, Ptr<Socket>, const Address&> newConnectionCreated)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_connectionRequest = connectionRequest;
   m_newConnectionCreated = newConnectionCreated;
-  m_closeRequested = closeRequested;
 }
 
-bool 
+void
 Socket::SetDataSentCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_dataSent = dataSent;
-  return true;
 }
 
 void
@@ -110,22 +92,15 @@ Socket::SetRecvCallback (Callback<void, Ptr<Socket> > receivedData)
   m_receivedData = receivedData;
 }
 
-void
-Socket::NotifyCloseUnblocks (void)
+int 
+Socket::Send (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if (!m_closeUnblocks.IsNull ())
-  {
-    m_closeUnblocks (this);
-  }
+  return Send (p, 0);
 }
 
-int Socket::Listen (uint32_t queueLimit)
-{
-  return 0; //XXX the base class version does nothing
-}
-
-int Socket::Send (const uint8_t* buf, uint32_t size)
+int 
+Socket::Send (const uint8_t* buf, uint32_t size, uint32_t flags)
 {
   NS_LOG_FUNCTION_NOARGS ();
   Ptr<Packet> p;
@@ -137,24 +112,12 @@ int Socket::Send (const uint8_t* buf, uint32_t size)
     {
       p = Create<Packet> (size);
     }
-  return Send (p);
-}
-
-Ptr<Packet>
-Socket::Recv (void)
-{
-  return Recv (std::numeric_limits<uint32_t>::max(), 0);
+  return Send (p, flags);
 }
 
 int 
-Socket::Recv (uint8_t* buf, uint32_t size, uint32_t flags)
-{
-  Ptr<Packet> p = Recv (size, flags); // read up to "size" bytes
-  memcpy (buf, p->PeekData (), p->GetSize());
-  return p->GetSize ();
-}
-
-int Socket::SendTo (const uint8_t* buf, uint32_t size, const Address &address)
+Socket::SendTo (const uint8_t* buf, uint32_t size, uint32_t flags,
+                const Address &toAddress)
 {
   NS_LOG_FUNCTION_NOARGS ();
   Ptr<Packet> p;
@@ -166,18 +129,50 @@ int Socket::SendTo (const uint8_t* buf, uint32_t size, const Address &address)
     {
       p = Create<Packet> (size);
     }
-  return SendTo (p, address);
+  return SendTo (p, flags, toAddress);
 }
 
-void 
-Socket::NotifyCloseCompleted (void)
+Ptr<Packet>
+Socket::Recv (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if (!m_closeCompleted.IsNull ())
-    {
-      m_closeCompleted (this);
-    }
+  return Recv (std::numeric_limits<uint32_t>::max(), 0);
 }
+
+int 
+Socket::Recv (uint8_t* buf, uint32_t size, uint32_t flags)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  Ptr<Packet> p = Recv (size, flags); // read up to "size" bytes
+  if (p == 0)
+    {
+      return 0;
+    }
+  memcpy (buf, p->PeekData (), p->GetSize());
+  return p->GetSize ();
+}
+
+Ptr<Packet>
+Socket::RecvFrom (Address &fromAddress)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return RecvFrom (std::numeric_limits<uint32_t>::max(), 0, fromAddress);
+}
+
+int 
+Socket::RecvFrom (uint8_t* buf, uint32_t size, uint32_t flags,
+                  Address &fromAddress)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  Ptr<Packet> p = RecvFrom (size, flags, fromAddress); 
+  if (p == 0)
+    {
+      return 0;
+    }
+  memcpy (buf, p->PeekData (), p->GetSize());
+  return p->GetSize ();
+}
+
 
 void 
 Socket::NotifyConnectionSucceeded (void)
@@ -196,16 +191,6 @@ Socket::NotifyConnectionFailed (void)
   if (!m_connectionFailed.IsNull ())
     {
       m_connectionFailed (this);
-    }
-}
-
-void 
-Socket::NotifyHalfClose (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  if (!m_halfClose.IsNull ())
-    {
-      m_halfClose (this);
     }
 }
 
@@ -234,16 +219,6 @@ Socket::NotifyNewConnectionCreated (Ptr<Socket> socket, const Address &from)
   if (!m_newConnectionCreated.IsNull ())
     {
       m_newConnectionCreated (socket, from);
-    }
-}
-
-void 
-Socket::NotifyCloseRequested (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  if (!m_closeRequested.IsNull ())
-    {
-      m_closeRequested (this);
     }
 }
 
@@ -281,54 +256,54 @@ Socket::NotifyDataRecv (void)
  *           Socket Tags
  ***************************************************************/
 
-SocketRxAddressTag::SocketRxAddressTag ()  
+SocketAddressTag::SocketAddressTag ()  
 {
 }
 
 void 
-SocketRxAddressTag::SetAddress (Address addr)
+SocketAddressTag::SetAddress (Address addr)
 {
   m_address = addr;
 }
 
 Address 
-SocketRxAddressTag::GetAddress (void) const
+SocketAddressTag::GetAddress (void) const
 {
   return m_address;
 }
 
 
 TypeId
-SocketRxAddressTag::GetTypeId (void)
+SocketAddressTag::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::SocketRxAddressTag")
+  static TypeId tid = TypeId ("ns3::SocketAddressTag")
     .SetParent<Tag> ()
-    .AddConstructor<SocketRxAddressTag> ()
+    .AddConstructor<SocketAddressTag> ()
     ;
   return tid;
 }
 TypeId
-SocketRxAddressTag::GetInstanceTypeId (void) const
+SocketAddressTag::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
 uint32_t
-SocketRxAddressTag::GetSerializedSize (void) const
+SocketAddressTag::GetSerializedSize (void) const
 {
   return m_address.GetSerializedSize ();
 }
 void
-SocketRxAddressTag::Serialize (TagBuffer i) const
+SocketAddressTag::Serialize (TagBuffer i) const
 {
   m_address.Serialize (i);
 }
 void
-SocketRxAddressTag::Deserialize (TagBuffer i)
+SocketAddressTag::Deserialize (TagBuffer i)
 {
   m_address.Deserialize (i);
 }
 void
-SocketRxAddressTag::Print (std::ostream &os) const
+SocketAddressTag::Print (std::ostream &os) const
 {
   os << "address=" << m_address;
 }
@@ -385,5 +360,6 @@ SocketIpTtlTag::Print (std::ostream &os) const
 {
   os << "Ttl=" << (uint32_t) m_ttl;
 }
+
 
 }//namespace ns3

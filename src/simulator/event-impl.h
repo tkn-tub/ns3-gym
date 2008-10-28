@@ -58,10 +58,11 @@ public:
    * Invoked by the simulation engine before calling Invoke.
    */
   bool IsCancelled (void);
+
 protected:
   virtual void Notify (void) = 0;
+
 private:
-  friend class Event;
   bool m_cancel;
   mutable uint32_t m_count;
 };
@@ -75,11 +76,13 @@ EventImpl::Ref (void) const
 {
   m_count++;
 }
+
 void
 EventImpl::Unref (void) const
 {
-  m_count--;
-  if (m_count == 0)
+  uint32_t c;
+  c = --m_count;
+  if (c == 0)
     {
       delete this;
     }

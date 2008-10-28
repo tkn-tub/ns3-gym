@@ -29,67 +29,56 @@ StaticSpeedHelper::StaticSpeedHelper (const Vector &position)
   : m_position (position)
 {}
 StaticSpeedHelper::StaticSpeedHelper (const Vector &position,
-				      const Vector &speed)
+				      const Vector &vel)
   : m_position (position),
-    m_speed (speed),
+    m_velocity (vel),
     m_paused (true)
 {}
 void 
-StaticSpeedHelper::InitializePosition (const Vector &position)
+StaticSpeedHelper::SetPosition (const Vector &position)
 {
   m_position = position;
-  m_speed.x = 0.0;
-  m_speed.y = 0.0;
-  m_speed.z = 0.0;
+  m_velocity = Vector (0.0, 0.0, 0.0);
   m_lastUpdate = Simulator::Now ();
-  m_paused = true;
 }
 
 Vector
 StaticSpeedHelper::GetCurrentPosition (void) const
 {
-  Update ();
   return m_position;
 }
 
 Vector 
 StaticSpeedHelper::GetVelocity (void) const
 {
-  return m_paused? Vector (0.0, 0.0, 0.0) : m_speed;
+  return m_paused? Vector (0.0, 0.0, 0.0) : m_velocity;
 }
 void 
-StaticSpeedHelper::SetSpeed (const Vector &speed)
+StaticSpeedHelper::SetVelocity (const Vector &vel)
 {
-  Update ();
-  m_speed = speed;
+  m_velocity = vel;
+  m_lastUpdate = Simulator::Now ();
 }
 
 void
 StaticSpeedHelper::Update (void) const
 {
-  if (m_paused)
-    {
-      return;
-    }
   Time now = Simulator::Now ();
   NS_ASSERT (m_lastUpdate <= now);
   Time deltaTime = now - m_lastUpdate;
   m_lastUpdate = now;
+  if (m_paused)
+    {
+      return;
+    }
   double deltaS = deltaTime.GetSeconds ();
-  m_position.x += m_speed.x * deltaS;
-  m_position.y += m_speed.y * deltaS;
-  m_position.z += m_speed.z * deltaS;
+  m_position.x += m_velocity.x * deltaS;
+  m_position.y += m_velocity.y * deltaS;
+  m_position.z += m_velocity.z * deltaS;
 }
 
-void 
-StaticSpeedHelper::Reset (const Vector &speed)
-{
-  Update ();
-  m_speed = speed;
-  Unpause ();
-}
 void
-StaticSpeedHelper::UpdateFull (const Rectangle &bounds) const
+StaticSpeedHelper::UpdateWithBounds (const Rectangle &bounds) const
 {
   Update ();
   m_position.x = std::min (bounds.xMax, m_position.x);
@@ -98,28 +87,16 @@ StaticSpeedHelper::UpdateFull (const Rectangle &bounds) const
   m_position.y = std::max (bounds.yMin, m_position.y);
 }
 
-Vector 
-StaticSpeedHelper::GetCurrentPosition (const Rectangle &bounds) const
-{
-  UpdateFull (bounds);
-  return m_position;
-}
-
 void 
 StaticSpeedHelper::Pause (void)
 {
-  Update ();
   m_paused = true;
 }
 
 void 
 StaticSpeedHelper::Unpause (void)
 {
-  if (m_paused)
-    {
-      m_lastUpdate = Simulator::Now ();
-      m_paused = false;
-    }
+  m_paused = false;
 }
 
 } // namespace ns3

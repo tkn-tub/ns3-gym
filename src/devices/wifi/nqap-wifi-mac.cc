@@ -45,10 +45,11 @@ NqapWifiMac::GetTypeId (void)
     .AddConstructor<NqapWifiMac> ()
     .AddAttribute ("BeaconInterval", "Delay between two beacons",
                    TimeValue (Seconds (0.1)),
-                   MakeTimeAccessor (&NqapWifiMac::m_beaconInterval),
+                   MakeTimeAccessor (&NqapWifiMac::GetBeaconInterval,
+                                     &NqapWifiMac::SetBeaconInterval),
                    MakeTimeChecker ())
     .AddAttribute ("BeaconGeneration", "Whether or not beacons are generated.",
-                   BooleanValue (false),
+                   BooleanValue (true),
                    MakeBooleanAccessor (&NqapWifiMac::SetBeaconGeneration,
                                         &NqapWifiMac::GetBeaconGeneration),
                    MakeBooleanChecker ())
@@ -64,7 +65,6 @@ NqapWifiMac::NqapWifiMac ()
 
   m_low = CreateObject<MacLow> ();
   m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
-  m_low->SetMac (this);
 
   m_dcfManager = new DcfManager ();
   m_dcfManager->SetupLowListener (m_low);
@@ -76,6 +76,9 @@ NqapWifiMac::NqapWifiMac ()
   m_dca->SetTxFailedCallback (MakeCallback (&NqapWifiMac::TxFailed, this));
 
   m_beaconDca = CreateObject<DcaTxop> ();
+  m_beaconDca->SetAifsn(1);
+  m_beaconDca->SetMinCw(0);
+  m_beaconDca->SetMaxCw(0);
   m_beaconDca->SetLow (m_low);
   m_beaconDca->SetManager (m_dcfManager);
 }
@@ -119,20 +122,25 @@ NqapWifiMac::GetBeaconGeneration (void) const
 {
   return m_beaconEvent.IsRunning ();
 }
+Time 
+NqapWifiMac::GetBeaconInterval (void) const
+{
+  return m_beaconInterval;
+}
 
 void 
 NqapWifiMac::SetSlot (Time slotTime)
 {
   NS_LOG_FUNCTION (this << slotTime);
   m_dcfManager->SetSlot (slotTime);
-  m_slot = slotTime;
+  m_low->SetSlotTime (slotTime);
 }
 void 
 NqapWifiMac::SetSifs (Time sifs)
 {
   NS_LOG_FUNCTION (this << sifs);
   m_dcfManager->SetSifs (sifs);
-  m_sifs = sifs;
+  m_low->SetSifs (sifs);
 }
 void 
 NqapWifiMac::SetEifsNoDifs (Time eifsNoDifs)
@@ -141,23 +149,51 @@ NqapWifiMac::SetEifsNoDifs (Time eifsNoDifs)
   m_dcfManager->SetEifsNoDifs (eifsNoDifs);
   m_eifsNoDifs = eifsNoDifs;
 }
+void 
+NqapWifiMac::SetAckTimeout (Time ackTimeout)
+{
+  m_low->SetAckTimeout (ackTimeout);
+}
+void 
+NqapWifiMac::SetCtsTimeout (Time ctsTimeout)
+{
+  m_low->SetCtsTimeout (ctsTimeout);
+}
+void 
+NqapWifiMac::SetPifs (Time pifs)
+{
+  m_low->SetPifs (pifs);
+}
 Time 
 NqapWifiMac::GetSlot (void) const
 {
-  return m_slot;
+  return m_low->GetSlotTime ();
 }
 Time 
 NqapWifiMac::GetSifs (void) const
 {
-  return m_sifs;
+  return m_low->GetSifs ();
 }
 Time 
 NqapWifiMac::GetEifsNoDifs (void) const
 {
   return m_eifsNoDifs;
 }
-
-
+Time 
+NqapWifiMac::GetAckTimeout (void) const
+{
+  return m_low->GetAckTimeout ();
+}
+Time 
+NqapWifiMac::GetCtsTimeout (void) const
+{
+  return m_low->GetCtsTimeout ();
+}
+Time 
+NqapWifiMac::GetPifs (void) const
+{
+  return m_low->GetPifs ();
+}
 void 
 NqapWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
 {
@@ -176,7 +212,7 @@ NqapWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationM
   m_low->SetWifiRemoteStationManager (stationManager);
 }
 void 
-NqapWifiMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address &> upCallback)
+NqapWifiMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback)
 {
   NS_LOG_FUNCTION (this);
   m_upCallback = upCallback;
@@ -198,29 +234,30 @@ NqapWifiMac::SetLinkDownCallback (Callback<void> linkDown)
 Mac48Address 
 NqapWifiMac::GetAddress (void) const
 {
-  return m_address;
+  return m_low->GetAddress ();
 }
 Ssid 
 NqapWifiMac::GetSsid (void) const
 {
   return m_ssid;
 }
-Mac48Address 
-NqapWifiMac::GetBssid (void) const
-{
-  return m_address;
-}
 void 
 NqapWifiMac::SetAddress (Mac48Address address)
 {
   NS_LOG_FUNCTION (address);
-  m_address = address;
+  m_low->SetAddress (address);
+  m_low->SetBssid (address);
 }
 void 
 NqapWifiMac::SetSsid (Ssid ssid)
 {
   NS_LOG_FUNCTION (ssid);
   m_ssid = ssid;
+}
+Mac48Address 
+NqapWifiMac::GetBssid (void) const
+{
+  return m_low->GetBssid ();
 }
 
 
@@ -237,10 +274,10 @@ NqapWifiMac::StartBeaconing (void)
   SendOneBeacon ();
 }
 void 
-NqapWifiMac::ForwardUp (Ptr<Packet> packet, Mac48Address from)
+NqapWifiMac::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << from);
-  m_upCallback (packet, from);
+  m_upCallback (packet, from, to);
 }
 void 
 NqapWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to)
@@ -256,10 +293,21 @@ NqapWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Addr
   m_dca->Queue (packet, hdr);  
 }
 void 
+NqapWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from)
+{
+  NS_LOG_FUNCTION (this << packet << to << from);
+  ForwardDown (packet, from, to);
+}
+void 
 NqapWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << to);
-  ForwardDown (packet, GetAddress (), to);
+  ForwardDown (packet, m_low->GetAddress (), to);
+}
+bool 
+NqapWifiMac::SupportsSendFrom (void) const
+{
+  return true;
 }
 SupportedRates
 NqapWifiMac::GetSupportedRates (void) const
@@ -378,28 +426,38 @@ NqapWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
   NS_LOG_FUNCTION (this << packet << hdr);
 
-  WifiRemoteStation *station = m_stationManager->Lookup (hdr->GetAddr2 ());
+  Mac48Address from = hdr->GetAddr2 ();
+  WifiRemoteStation *fromStation = m_stationManager->Lookup (from);
 
   if (hdr->IsData ()) 
     {
+      Mac48Address bssid = hdr->GetAddr1 ();
       if (!hdr->IsFromDs () && 
           hdr->IsToDs () &&
-          hdr->GetAddr1 () == GetAddress () &&
-          station->IsAssociated ()) 
+          bssid == GetAddress () &&
+          fromStation->IsAssociated ()) 
         {
-          if (hdr->GetAddr3 () == GetAddress ()) 
+          Mac48Address to = hdr->GetAddr3 ();
+          WifiRemoteStation *toStation = m_stationManager->Lookup (to);
+          if (to == GetAddress ()) 
             {
-              NS_LOG_DEBUG ("frame for me from="<<hdr->GetAddr2 ());
-              ForwardUp (packet, hdr->GetAddr2 ());
+              NS_LOG_DEBUG ("frame for me from="<<from);
+              ForwardUp (packet, from, bssid);
             } 
-          else 
+          else if (to.IsBroadcast () || 
+                   to.IsMulticast () ||
+                   toStation->IsAssociated ())
             {
-              NS_LOG_DEBUG ("forwarding frame from="<<hdr->GetAddr2 ()<<", to="<<hdr->GetAddr3 ());
+              NS_LOG_DEBUG ("forwarding frame from="<<from<<", to="<<to);
               Ptr<Packet> copy = packet->Copy ();
               ForwardDown (packet,
-                           hdr->GetAddr2 (), 
-                           hdr->GetAddr3 ());
-              ForwardUp (copy, hdr->GetAddr2 ());
+                           from, 
+                           to);
+              ForwardUp (copy, from, to);
+            }
+          else
+            {
+              ForwardUp (packet, from, to);
             }
         } 
       else if (hdr->IsFromDs () &&
@@ -456,17 +514,17 @@ NqapWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
                       WifiMode mode = m_phy->GetMode (j);
                       if (rates.IsSupportedRate (mode.GetDataRate ()))
                         {
-                          station->AddSupportedMode (mode);
+                          fromStation->AddSupportedMode (mode);
                         }
                     }
-                  station->RecordWaitAssocTxOk ();
+                  fromStation->RecordWaitAssocTxOk ();
                   // send assoc response with success status.
                   SendAssocResp (hdr->GetAddr2 (), true);
                 }
             } 
           else if (hdr->IsDisassociation ()) 
             {
-              station->RecordDisassociated ();
+              fromStation->RecordDisassociated ();
             } 
           else if (hdr->IsReassocReq ()) 
             {

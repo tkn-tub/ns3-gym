@@ -20,11 +20,13 @@
 #include "tag-list.h"
 #include "ns3/log.h"
 #include <vector>
+#include <string.h>
 
 NS_LOG_COMPONENT_DEFINE ("TagList");
 
 #define USE_FREE_LIST 1
 #define FREE_LIST_SIZE 1000
+#define OFFSET_MAX (2147483647)
 
 namespace ns3 {
 
@@ -70,10 +72,8 @@ TagList::Iterator::Next (void)
   struct Item item = Item (TagBuffer (m_current+16, m_end));
   item.tid.SetUid (m_nextTid);
   item.size = m_nextSize;
-  item.start = m_nextStart;
-  item.end = m_nextEnd;
-  item.start = std::max (item.start, m_offsetStart);
-  item.end = std::min (item.end, m_offsetEnd);
+  item.start = std::max (m_nextStart, m_offsetStart);
+  item.end = std::min (m_nextEnd, m_offsetEnd);
   m_current += 4 + 4 + 4 + 4 + item.size;
   item.buf.TrimAtEnd (m_end - m_current);
   PrepareForNext ();
@@ -89,7 +89,7 @@ TagList::Iterator::PrepareForNext (void)
       m_nextSize = buf.ReadU32 ();
       m_nextStart = buf.ReadU32 ();
       m_nextEnd = buf.ReadU32 ();
-      if (m_nextStart > m_offsetEnd || m_nextEnd < m_offsetStart)
+      if (m_nextStart >= m_offsetEnd || m_nextEnd <= m_offsetStart)
 	{
 	  m_current += 4 + 4 + 4 + 4 + m_nextSize;
 	}
@@ -99,7 +99,7 @@ TagList::Iterator::PrepareForNext (void)
 	}
     }
 }
-TagList::Iterator::Iterator (uint8_t *start, uint8_t *end, uint32_t offsetStart, uint32_t offsetEnd)
+TagList::Iterator::Iterator (uint8_t *start, uint8_t *end, int32_t offsetStart, int32_t offsetEnd)
   : m_current (start),
     m_end (end),
     m_offsetStart (offsetStart),
@@ -158,7 +158,7 @@ TagList::~TagList ()
 }
 
 TagBuffer
-TagList::Add (TypeId tid, uint32_t bufferSize, uint32_t start, uint32_t end)
+TagList::Add (TypeId tid, uint32_t bufferSize, int32_t start, int32_t end)
 {
   NS_LOG_FUNCTION (this << tid << bufferSize << start << end);
   uint32_t spaceNeeded = m_used + bufferSize + 4 + 4 + 4 + 4;
@@ -191,7 +191,7 @@ void
 TagList::Add (const TagList &o)
 {
   NS_LOG_FUNCTION (this << &o);
-  TagList::Iterator i = o.Begin (0, 0xffffffff);
+  TagList::Iterator i = o.BeginAll ();
   while (i.HasNext ())
     {
       TagList::Iterator::Item item = i.Next ();
@@ -210,7 +210,16 @@ TagList::RemoveAll (void)
 }
 
 TagList::Iterator 
-TagList::Begin (uint32_t offsetStart, uint32_t offsetEnd) const
+TagList::BeginAll (void) const
+{
+  NS_LOG_FUNCTION (this);
+  // I am not totally sure but I might need to use 
+  // INT32_MIN instead of zero below.
+  return Begin (0, OFFSET_MAX);
+}
+
+TagList::Iterator 
+TagList::Begin (int32_t offsetStart, int32_t offsetEnd) const
 {
   NS_LOG_FUNCTION (this << offsetStart << offsetEnd);
   if (m_data == 0)
@@ -224,10 +233,10 @@ TagList::Begin (uint32_t offsetStart, uint32_t offsetEnd) const
 }
 
 bool 
-TagList::IsDirtyAtEnd (uint32_t appendOffset)
+TagList::IsDirtyAtEnd (int32_t appendOffset)
 {
   NS_LOG_FUNCTION (this << appendOffset);
-  TagList::Iterator i = Begin (0, 0xffffffff);
+  TagList::Iterator i = BeginAll ();
   while (i.HasNext ())
     {
       TagList::Iterator::Item item = i.Next ();
@@ -240,10 +249,10 @@ TagList::IsDirtyAtEnd (uint32_t appendOffset)
 }
 
 bool 
-TagList::IsDirtyAtStart (uint32_t prependOffset)
+TagList::IsDirtyAtStart (int32_t prependOffset)
 {
   NS_LOG_FUNCTION (this << prependOffset);
-  TagList::Iterator i = Begin (0, 0xffffffff);
+  TagList::Iterator i = BeginAll ();
   while (i.HasNext ())
     {
       TagList::Iterator::Item item = i.Next ();
@@ -256,7 +265,7 @@ TagList::IsDirtyAtStart (uint32_t prependOffset)
 }
 
 void 
-TagList::AddAtEnd (int32_t adjustment, uint32_t appendOffset)
+TagList::AddAtEnd (int32_t adjustment, int32_t appendOffset)
 {
   NS_LOG_FUNCTION (this << adjustment << appendOffset);
   if (adjustment == 0 && !IsDirtyAtEnd (appendOffset))
@@ -264,14 +273,14 @@ TagList::AddAtEnd (int32_t adjustment, uint32_t appendOffset)
       return;
     }
   TagList list;
-  TagList::Iterator i = Begin (0, 0xffffffff);
+  TagList::Iterator i = BeginAll ();
   while (i.HasNext ())
     {
       TagList::Iterator::Item item = i.Next ();
       item.start += adjustment;
       item.end += adjustment;
 
-      if (item.start > appendOffset)
+      if (item.start >= appendOffset)
 	{
 	  continue;
 	}
@@ -290,7 +299,7 @@ TagList::AddAtEnd (int32_t adjustment, uint32_t appendOffset)
 }
 
 void 
-TagList::AddAtStart (int32_t adjustment, uint32_t prependOffset)
+TagList::AddAtStart (int32_t adjustment, int32_t prependOffset)
 {
   NS_LOG_FUNCTION (this << adjustment << prependOffset);
   if (adjustment == 0 && !IsDirtyAtStart (prependOffset))
@@ -298,14 +307,14 @@ TagList::AddAtStart (int32_t adjustment, uint32_t prependOffset)
       return;
     }
   TagList list;
-  TagList::Iterator i = Begin (0, 0xffffffff);
+  TagList::Iterator i = BeginAll ();
   while (i.HasNext ())
     {
       TagList::Iterator::Item item = i.Next ();
       item.start += adjustment;
       item.end += adjustment;
 
-      if (item.end < prependOffset)
+      if (item.end <= prependOffset)
 	{
 	  continue;
 	}
