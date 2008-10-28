@@ -20,7 +20,6 @@ CreateChannel (void)
   Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
   channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
   Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
-  log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
   channel->SetPropagationLossModel (log);
   return channel;
 }

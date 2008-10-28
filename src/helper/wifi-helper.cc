@@ -227,7 +227,6 @@ WifiHelper::Install (NodeContainer c) const
   Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
   channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
   Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
-  log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
   channel->SetPropagationLossModel (log);
   return Install (c, channel);
 }

@@ -208,12 +208,7 @@ public:
    */
   double GetPathLossExponent (void) const;
 
-  /**
-   * \param model the reference propagation model
-   */
-  void SetReferenceModel (Ptr<PropagationLossModel> model);
-
-  void SetReferenceDistance (double referenceDistance);
+  void SetReference (double referenceDistance, double referenceLoss);
   
 private:
   LogDistancePropagationLossModel (const LogDistancePropagationLossModel &o);
@@ -224,7 +219,7 @@ private:
 
   double m_exponent;
   double m_referenceDistance;
-  Ptr<PropagationLossModel> m_reference;
+  double m_referenceLoss;
 };
 
 } // namespace ns3

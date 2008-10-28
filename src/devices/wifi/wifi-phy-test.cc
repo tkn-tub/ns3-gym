@@ -81,7 +81,6 @@ PsrExperiment::Run (struct PsrExperiment::Input input)
   Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
   channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
   Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
-  log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
   channel->SetPropagationLossModel (log);
 
   Ptr<WifiPhy> tx = channel->CreatePhy (0, posTx, UnsafeAttributeList ());
@@ -196,7 +195,6 @@ CollisionExperiment::Run (struct CollisionExperiment::Input input)
   Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
   channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
   Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
-  log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
   channel->SetPropagationLossModel (log);
 
   Ptr<MobilityModel> posTxA = CreateObject<StaticMobilityModel> ();

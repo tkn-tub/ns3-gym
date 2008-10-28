@@ -134,7 +134,6 @@ int main (int argc, char *argv[])
   Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
   channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
   Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
-  log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
   channel->SetPropagationLossModel (log);
 
   Ssid ssid = Ssid ("wifi-default");
