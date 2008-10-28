@@ -83,8 +83,6 @@ public:
   JakesPropagationLossModel ();
   virtual ~JakesPropagationLossModel ();
 
-  virtual double GetLoss (Ptr<MobilityModel> a,
-			  Ptr<MobilityModel> b) const;
   /**
    * \param nRays Number of rays per path
    *
@@ -99,27 +97,29 @@ public:
   void SetNOscillators (uint8_t nOscillators);
 
 private:
+  void DoConstruct (void);
+  virtual double DoGetLoss (Ptr<MobilityModel> a,
+			  Ptr<MobilityModel> b) const;
+
+
   class PathCoefficients;
   struct ComplexNumber {
     double real;
     double imag;
   };
   friend class PathCoefficents;
-  
-  static const double PI;
-  ComplexNumber* m_amp;
-  RandomVariable m_variable;
-  double m_fd;
-
   typedef std::vector<PathCoefficients *> DestinationList;
   struct PathsSet {
     Ptr<MobilityModel> sender;
     DestinationList receivers;
   };
   typedef std::vector<PathsSet *> PathsList;
-  
-  void DoConstruct (void);
 
+  
+  static const double PI;
+  ComplexNumber* m_amp;
+  RandomVariable m_variable;
+  double m_fd;  
   mutable PathsList m_paths;
   uint8_t m_nRays;
   uint8_t m_nOscillators;

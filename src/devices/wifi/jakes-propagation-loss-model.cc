@@ -33,7 +33,8 @@ namespace ns3 {
 
 
 
-class JakesPropagationLossModel::PathCoefficients {
+class JakesPropagationLossModel::PathCoefficients 
+{
 public:
   PathCoefficients (Ptr<const JakesPropagationLossModel> jakes,
                     Ptr<MobilityModel> receiver, 
@@ -198,7 +199,7 @@ JakesPropagationLossModel::SetNOscillators (uint8_t nOscillators)
 }
 
 double
-JakesPropagationLossModel::GetLoss (Ptr<MobilityModel> a,
+JakesPropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
 				    Ptr<MobilityModel> b) const
 {
   PathsList::iterator i = m_paths.end ();

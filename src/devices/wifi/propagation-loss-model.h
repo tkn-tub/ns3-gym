@@ -38,14 +38,25 @@ class PropagationLossModel : public Object
 public:
   static TypeId GetTypeId (void);
 
+  PropagationLossModel ();
   virtual ~PropagationLossModel ();
+
+  void SetNext (Ptr<PropagationLossModel> next);
+
   /**
    * \param a the mobility model of the source
    * \param b the mobility model of the destination
    * \returns the attenuation coefficient (dB)
    */
-  virtual double GetLoss (Ptr<MobilityModel> a,
-			  Ptr<MobilityModel> b) const = 0;
+  double GetLoss (Ptr<MobilityModel> a,
+                  Ptr<MobilityModel> b) const;
+private:
+  PropagationLossModel (const PropagationLossModel &o);
+  PropagationLossModel &operator = (const PropagationLossModel &o);
+  virtual double DoGetLoss (Ptr<MobilityModel> a,
+                            Ptr<MobilityModel> b) const = 0;
+
+  Ptr<PropagationLossModel> m_next;
 };
 
 /**
@@ -59,9 +70,9 @@ public:
   RandomPropagationLossModel ();
   virtual ~RandomPropagationLossModel ();
 
-  virtual double GetLoss (Ptr<MobilityModel> a,
-			  Ptr<MobilityModel> b) const;
 private:
+  virtual double DoGetLoss (Ptr<MobilityModel> a,
+			  Ptr<MobilityModel> b) const;
   RandomVariable m_variable;
 };
 
@@ -147,9 +158,9 @@ public:
    */
   double GetSystemLoss (void) const;
 
-  virtual double GetLoss (Ptr<MobilityModel> a,
-			  Ptr<MobilityModel> b) const;
 private:
+  virtual double DoGetLoss (Ptr<MobilityModel> a,
+                            Ptr<MobilityModel> b) const;
   double DbmToW (double dbm) const;
   double DbmFromW (double w) const;
 
@@ -200,9 +211,9 @@ public:
 
   void SetReferenceDistance (double referenceDistance);
   
-  virtual double GetLoss (Ptr<MobilityModel> a,
-			  Ptr<MobilityModel> b) const;
 private:
+  virtual double DoGetLoss (Ptr<MobilityModel> a,
+                            Ptr<MobilityModel> b) const;
   static Ptr<PropagationLossModel> CreateDefaultReference (void);
 
   double m_exponent;

@@ -43,9 +43,25 @@ PropagationLossModel::GetTypeId (void)
   return tid;
 }
 
+PropagationLossModel::PropagationLossModel ()
+  : m_next (0)
+{}
 
 PropagationLossModel::~PropagationLossModel ()
 {}
+
+double 
+PropagationLossModel::GetLoss (Ptr<MobilityModel> a,
+                               Ptr<MobilityModel> b) const
+{
+  double self = DoGetLoss (a, b);
+  if (m_next != 0)
+    {
+      self += m_next->GetLoss (a, b);
+    }
+  return self;
+}
+
 
 NS_OBJECT_ENSURE_REGISTERED (RandomPropagationLossModel);
 
@@ -69,7 +85,7 @@ RandomPropagationLossModel::~RandomPropagationLossModel ()
 {}
 
 double 
-RandomPropagationLossModel::GetLoss (Ptr<MobilityModel> a,
+RandomPropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
 				     Ptr<MobilityModel> b) const
 {
   double rxc = -m_variable.GetValue ();
@@ -158,7 +174,7 @@ FriisPropagationLossModel::DbmFromW (double w) const
 
 
 double 
-FriisPropagationLossModel::GetLoss (Ptr<MobilityModel> a,
+FriisPropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
 				    Ptr<MobilityModel> b) const
 {
   /*
@@ -255,7 +271,7 @@ LogDistancePropagationLossModel::GetPathLossExponent (void) const
 }
   
 double 
-LogDistancePropagationLossModel::GetLoss (Ptr<MobilityModel> a,
+LogDistancePropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
                                           Ptr<MobilityModel> b) const
 {
   double distance = a->GetDistanceFrom (b);
