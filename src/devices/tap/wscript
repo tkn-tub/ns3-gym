@@ -7,7 +7,7 @@ def build(bld):
        'tap-manager.cc',
        ]
 
-    module = bld.create_ns3_module('emutap', ['node'])
+    module = bld.create_ns3_module('tap', ['node'])
     module.uselib = 'CAP'
     module.source = [
     'tap-net-device.cc',
@@ -16,7 +16,7 @@ def build(bld):
     'host-tap-net-device.cc',
     ]
     headers = bld.create_obj('ns3header')
-    headers.module = 'emutap'
+    headers.module = 'tap'
     headers.source = [
     'tap-net-device.h',
     'host-tap-net-device.h',

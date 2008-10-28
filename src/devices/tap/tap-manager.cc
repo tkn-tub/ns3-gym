@@ -1,3 +1,23 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2008 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
+
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -21,6 +41,7 @@
   std::cout << __FILE__ << ":" << __LINE__ << ": Unrecoverable Error: " << x; \
   std::cout << " errno=" << strerror (errno) << std::endl;		\
   exit (err)
+
 #ifdef ENABLE_LOG
 #define LOG(x) \
   std::cout << x << std::endl;
@@ -30,13 +51,13 @@
 
 
 #define CHECK_ARG(el,var) \
-  {						\
-    char start[] = "--"  el  "=";		     \
-    if (strncmp (*argv, start, strlen (start)) == 0) \
-      {						     \
-	var = *argv + strlen (start);		     \
-	LOG ("--" << el << "=" << var);		     \
-      }						     \
+  {							\
+    char start[] = "--"  el  "=";		     	\
+    if (strncmp (*argv, start, strlen (start)) == 0) 	\
+      {						     	\
+	var = *argv + strlen (start);		     	\
+	LOG ("--" << el << "=" << var);		     	\
+      }						     	\
   }
 
 #define ASCII_DOT (0x2e)
@@ -47,6 +68,7 @@
 #define ASCII_Z (0x7a)
 #define ASCII_COLON (0x3a)
 #define ASCII_ZERO (0x30)
+
 static char
 AsciiToLowCase (char c)
 {
@@ -58,6 +80,7 @@ AsciiToLowCase (char c)
     return c;
   }
 }
+
 static uint32_t 
 AsciiToIpv4 (const char *address)
 {
