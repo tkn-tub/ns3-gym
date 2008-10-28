@@ -1042,8 +1042,6 @@ def register_Ns3RandomPropagationDelayModel_methods(root_module, cls):
     return
 
 def register_Ns3RandomPropagationLossModel_methods(root_module, cls):
-    ## propagation-loss-model.h: ns3::RandomPropagationLossModel::RandomPropagationLossModel(ns3::RandomPropagationLossModel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RandomPropagationLossModel const &', 'arg0')])
     ## propagation-loss-model.h: static ns3::TypeId ns3::RandomPropagationLossModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -2031,8 +2029,6 @@ def register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, cls):
     return
 
 def register_Ns3FriisPropagationLossModel_methods(root_module, cls):
-    ## propagation-loss-model.h: ns3::FriisPropagationLossModel::FriisPropagationLossModel(ns3::FriisPropagationLossModel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::FriisPropagationLossModel const &', 'arg0')])
     ## propagation-loss-model.h: static ns3::TypeId ns3::FriisPropagationLossModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -2110,8 +2106,6 @@ def register_Ns3IdealWifiManager_methods(root_module, cls):
     return
 
 def register_Ns3JakesPropagationLossModel_methods(root_module, cls):
-    ## jakes-propagation-loss-model.h: ns3::JakesPropagationLossModel::JakesPropagationLossModel(ns3::JakesPropagationLossModel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::JakesPropagationLossModel const &', 'arg0')])
     ## jakes-propagation-loss-model.h: static ns3::TypeId ns3::JakesPropagationLossModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -2135,8 +2129,6 @@ def register_Ns3JakesPropagationLossModel_methods(root_module, cls):
     return
 
 def register_Ns3LogDistancePropagationLossModel_methods(root_module, cls):
-    ## propagation-loss-model.h: ns3::LogDistancePropagationLossModel::LogDistancePropagationLossModel(ns3::LogDistancePropagationLossModel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::LogDistancePropagationLossModel const &', 'arg0')])
     ## propagation-loss-model.h: static ns3::TypeId ns3::LogDistancePropagationLossModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 

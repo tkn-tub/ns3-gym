@@ -71,8 +71,10 @@ public:
   virtual ~RandomPropagationLossModel ();
 
 private:
+  RandomPropagationLossModel (const RandomPropagationLossModel &o);
+  RandomPropagationLossModel & operator = (const RandomPropagationLossModel &o);
   virtual double DoGetLoss (Ptr<MobilityModel> a,
-			  Ptr<MobilityModel> b) const;
+                            Ptr<MobilityModel> b) const;
   RandomVariable m_variable;
 };
 
@@ -159,6 +161,8 @@ public:
   double GetSystemLoss (void) const;
 
 private:
+  FriisPropagationLossModel (const FriisPropagationLossModel &o);
+  FriisPropagationLossModel & operator = (const FriisPropagationLossModel &o);
   virtual double DoGetLoss (Ptr<MobilityModel> a,
                             Ptr<MobilityModel> b) const;
   double DbmToW (double dbm) const;
@@ -212,6 +216,8 @@ public:
   void SetReferenceDistance (double referenceDistance);
   
 private:
+  LogDistancePropagationLossModel (const LogDistancePropagationLossModel &o);
+  LogDistancePropagationLossModel & operator = (const LogDistancePropagationLossModel &o);
   virtual double DoGetLoss (Ptr<MobilityModel> a,
                             Ptr<MobilityModel> b) const;
   static Ptr<PropagationLossModel> CreateDefaultReference (void);

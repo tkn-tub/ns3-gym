@@ -79,6 +79,7 @@ RandomPropagationLossModel::GetTypeId (void)
   return tid;
 }
 RandomPropagationLossModel::RandomPropagationLossModel ()
+  : PropagationLossModel ()
 {}
 
 RandomPropagationLossModel::~RandomPropagationLossModel ()
@@ -86,7 +87,7 @@ RandomPropagationLossModel::~RandomPropagationLossModel ()
 
 double 
 RandomPropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
-				     Ptr<MobilityModel> b) const
+                                       Ptr<MobilityModel> b) const
 {
   double rxc = -m_variable.GetValue ();
   NS_LOG_DEBUG ("attenuation coefficent="<<rxc<<"Db");

@@ -97,6 +97,8 @@ public:
   void SetNOscillators (uint8_t nOscillators);
 
 private:
+  JakesPropagationLossModel (const JakesPropagationLossModel &o);
+  JakesPropagationLossModel & operator = (const JakesPropagationLossModel &o);
   void DoConstruct (void);
   virtual double DoGetLoss (Ptr<MobilityModel> a,
 			  Ptr<MobilityModel> b) const;
