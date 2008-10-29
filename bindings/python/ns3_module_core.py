@@ -2025,6 +2025,10 @@ def register_functions(root_module):
     module.add_function('MakeStringChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
+    ## type-id.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeTypeIdChecker() [free function]
+    module.add_function('MakeTypeIdChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
     ## ptr.h: extern ns3::Ptr<ns3::PointerValue> ns3::Create() [free function]
     module.add_function('Create', 
                         'ns3::Ptr< ns3::PointerValue >', 
@@ -2039,10 +2043,6 @@ def register_functions(root_module):
     module.add_function('LogComponentEnableAll', 
                         'void', 
                         [param('ns3::LogLevel', 'level')])
-    ## type-id.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeTypeIdChecker() [free function]
-    module.add_function('MakeTypeIdChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [])
     ## object-factory.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeObjectFactoryChecker() [free function]
     module.add_function('MakeObjectFactoryChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 

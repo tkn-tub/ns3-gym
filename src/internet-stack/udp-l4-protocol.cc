@@ -146,6 +146,33 @@ UdpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
 }
 
 void 
+UdpL4Protocol::ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
+                            uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
+                            Ipv4Address payloadSource,Ipv4Address payloadDestination,
+                            const uint8_t payload[8])
+{
+  NS_LOG_FUNCTION (this << icmpSource << icmpTtl << icmpType << icmpCode << icmpInfo 
+                   << payloadSource << payloadDestination);
+  uint16_t src, dst;
+  src = payload[0] << 8;
+  src |= payload[1];
+  dst = payload[2] << 8;
+  dst |= payload[3];
+
+  Ipv4EndPoint *endPoint = m_endPoints->SimpleLookup (payloadSource, src, payloadDestination, dst);
+  if (endPoint != 0)
+    {
+      endPoint->ForwardIcmp (icmpSource, icmpTtl, icmpType, icmpCode, icmpInfo);
+    }
+  else
+    {
+      NS_LOG_DEBUG ("no endpoint found source=" << payloadSource <<
+                    ", destination="<<payloadDestination<<
+                    ", src=" << src << ", dst=" << dst);
+    }
+}
+
+enum Ipv4L4Protocol::RxStatus
 UdpL4Protocol::Receive(Ptr<Packet> packet, 
                        Ipv4Address const &source,
                        Ipv4Address const &destination,
@@ -165,17 +192,22 @@ UdpL4Protocol::Receive(Ptr<Packet> packet,
   if(!udpHeader.IsChecksumOk ())
   {
     NS_LOG_INFO("Bad checksum : dropping packet!");
-    return;
+    return Ipv4L4Protocol::RX_CSUM_FAILED;
   }
 
   Ipv4EndPointDemux::EndPoints endPoints =
     m_endPoints->Lookup (destination, udpHeader.GetDestinationPort (),
                          source, udpHeader.GetSourcePort (), interface);
+  if (endPoints.empty ())
+    {
+      return Ipv4L4Protocol::RX_ENDPOINT_UNREACH;
+    }
   for (Ipv4EndPointDemux::EndPointsI endPoint = endPoints.begin ();
        endPoint != endPoints.end (); endPoint++)
     {
       (*endPoint)->ForwardUp (packet->Copy (), source, udpHeader.GetSourcePort ());
     }
+  return Ipv4L4Protocol::RX_OK;
 }
 
 void

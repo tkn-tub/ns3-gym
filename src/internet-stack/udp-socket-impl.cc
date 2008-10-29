@@ -25,8 +25,6 @@
 #include "ns3/ipv4.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/trace-source-accessor.h"
-#include "ns3/uinteger.h"
-#include "ns3/boolean.h"
 #include "udp-socket-impl.h"
 #include "udp-l4-protocol.h"
 #include "ipv4-end-point.h"
@@ -47,6 +45,10 @@ UdpSocketImpl::GetTypeId (void)
     .AddConstructor<UdpSocketImpl> ()
     .AddTraceSource ("Drop", "Drop UDP packet due to receive buffer overflow",
                      MakeTraceSourceAccessor (&UdpSocketImpl::m_dropTrace))
+    .AddAttribute ("IcmpCallback", "Callback invoked whenever an icmp error is received on this socket.",
+                   CallbackValue (),
+                   MakeCallbackAccessor (&UdpSocketImpl::m_icmpCallback),
+                   MakeCallbackChecker ())
     ;
   return tid;
 }
@@ -134,6 +136,7 @@ UdpSocketImpl::FinishBind (void)
       return -1;
     }
   m_endPoint->SetRxCallback (MakeCallback (&UdpSocketImpl::ForwardUp, Ptr<UdpSocketImpl> (this)));
+  m_endPoint->SetIcmpCallback (MakeCallback (&UdpSocketImpl::ForwardIcmp, Ptr<UdpSocketImpl> (this)));
   m_endPoint->SetDestroyCallback (MakeCallback (&UdpSocketImpl::Destroy, Ptr<UdpSocketImpl> (this)));
   return 0;
 }
@@ -328,6 +331,22 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
       tag.SetTtl (m_ipTtl);
       p->AddTag (tag);
     }
+  {
+    SocketSetDontFragmentTag tag;
+    bool found = p->FindFirstMatchingTag (tag);
+    if (!found)
+      {
+        if (m_mtuDiscover)
+          {
+            tag.Enable ();
+          }
+        else
+          {
+            tag.Disable ();
+          }
+        p->AddTag (tag);
+      }
+  }
   //
   // If dest is sent to the limited broadcast address (all ones),
   // convert it to send a copy of the packet out of every interface
@@ -405,6 +424,7 @@ UdpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
   NS_LOG_FUNCTION (this << maxSize << flags);
   if (m_deliveryQueue.empty() )
     {
+      m_errno = ERROR_AGAIN;
       return 0;
     }
   Ptr<Packet> p = m_deliveryQueue.front ();
@@ -483,6 +503,19 @@ UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
     }
 }
 
+void
+UdpSocketImpl::ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, 
+                            uint8_t icmpType, uint8_t icmpCode,
+                            uint32_t icmpInfo)
+{
+  NS_LOG_FUNCTION (this << icmpSource << (uint32_t)icmpTtl << (uint32_t)icmpType <<
+                   (uint32_t)icmpCode << icmpInfo);
+  if (!m_icmpCallback.IsNull ())
+    {
+      m_icmpCallback (icmpSource, icmpTtl, icmpType, icmpCode, icmpInfo);
+    }
+}
+
 
 void 
 UdpSocketImpl::SetRcvBufSize (uint32_t size)
@@ -519,6 +552,18 @@ UdpSocketImpl::GetIpMulticastTtl (void) const
 {
   return m_ipMulticastTtl;
 }
+
+void 
+UdpSocketImpl::SetMtuDiscover (bool discover)
+{
+  m_mtuDiscover = discover;
+}
+bool 
+UdpSocketImpl::GetMtuDiscover (void) const
+{
+  return m_mtuDiscover;
+}
+
 
 } //namespace ns3
 

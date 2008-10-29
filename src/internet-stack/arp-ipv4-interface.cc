@@ -65,7 +65,6 @@ void
 ArpIpv4Interface::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  m_node = 0;
   m_device = 0;
   m_cache = 0;
   Ipv4Interface::DoDispose ();
@@ -107,6 +106,17 @@ ArpIpv4Interface::SendTo (Ptr<Packet> p, Ipv4Address dest)
   NS_LOG_FUNCTION (this << p << dest);
 
   NS_ASSERT (GetDevice () != 0);
+  if (dest == GetAddress ())
+    {
+      Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
+        
+      ipv4->Receive (0, p, Ipv4L3Protocol::PROT_NUMBER, 
+                     GetDevice ()->GetBroadcast (),
+                     GetDevice ()->GetBroadcast (),
+                     NetDevice::PACKET_HOST // note: linux uses PACKET_LOOPBACK here
+                     );
+      return;
+    }
   if (m_device->NeedsArp ())
     {
       NS_LOG_LOGIC ("Needs ARP");

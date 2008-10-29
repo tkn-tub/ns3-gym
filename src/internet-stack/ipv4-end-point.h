@@ -54,10 +54,19 @@ public:
 
   void SetPeer (Ipv4Address address, uint16_t port);
 
+  // Called from socket implementations to get notified about important events.
   void SetRxCallback (Callback<void,Ptr<Packet>, Ipv4Address, uint16_t> callback);
+  void SetIcmpCallback (Callback<void,Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> callback);
   void SetDestroyCallback (Callback<void> callback);
 
+  // Called from an L4Protocol implementation to notify an endpoint of a
+  // packet reception.
   void ForwardUp (Ptr<Packet> p, Ipv4Address saddr, uint16_t sport);
+  // Called from an L4Protocol implementation to notify an endpoint of
+  // an icmp message reception.
+  void ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, 
+                    uint8_t icmpType, uint8_t icmpCode,
+                    uint32_t icmpInfo);
 
 private:
   Ipv4Address m_localAddr;
@@ -65,6 +74,7 @@ private:
   Ipv4Address m_peerAddr;
   uint16_t m_peerPort;
   Callback<void,Ptr<Packet>, Ipv4Address, uint16_t> m_rxCallback;
+  Callback<void,Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback;
   Callback<void> m_destroyCallback;
 };
 

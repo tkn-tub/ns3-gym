@@ -67,6 +67,8 @@ def register_types(module):
     module.add_class('SocketFactory', parent=root_module['ns3::Object'])
     ## socket.h: ns3::SocketIpTtlTag [class]
     module.add_class('SocketIpTtlTag', parent=root_module['ns3::Tag'])
+    ## socket.h: ns3::SocketSetDontFragmentTag [class]
+    module.add_class('SocketSetDontFragmentTag', parent=root_module['ns3::Tag'])
     ## tcp-socket.h: ns3::TcpSocket [class]
     module.add_class('TcpSocket', parent=root_module['ns3::Socket'])
     ## tcp-socket-factory.h: ns3::TcpSocketFactory [class]
@@ -91,6 +93,8 @@ def register_types(module):
     module.add_class('EthernetTrailer', parent=root_module['ns3::Trailer'])
     ## ipv4.h: ns3::Ipv4 [class]
     module.add_class('Ipv4', parent=root_module['ns3::Object'])
+    ## ipv4-raw-socket-factory.h: ns3::Ipv4RawSocketFactory [class]
+    module.add_class('Ipv4RawSocketFactory', parent=root_module['ns3::SocketFactory'])
     ## ipv4.h: ns3::Ipv4RoutingProtocol [class]
     module.add_class('Ipv4RoutingProtocol', parent=root_module['ns3::Object'])
     ## net-device.h: ns3::NetDevice [class]
@@ -172,6 +176,7 @@ def register_methods(root_module):
     register_Ns3SocketAddressTag_methods(root_module, root_module['ns3::SocketAddressTag'])
     register_Ns3SocketFactory_methods(root_module, root_module['ns3::SocketFactory'])
     register_Ns3SocketIpTtlTag_methods(root_module, root_module['ns3::SocketIpTtlTag'])
+    register_Ns3SocketSetDontFragmentTag_methods(root_module, root_module['ns3::SocketSetDontFragmentTag'])
     register_Ns3TcpSocket_methods(root_module, root_module['ns3::TcpSocket'])
     register_Ns3TcpSocketFactory_methods(root_module, root_module['ns3::TcpSocketFactory'])
     register_Ns3UdpSocket_methods(root_module, root_module['ns3::UdpSocket'])
@@ -184,6 +189,7 @@ def register_methods(root_module):
     register_Ns3EthernetHeader_methods(root_module, root_module['ns3::EthernetHeader'])
     register_Ns3EthernetTrailer_methods(root_module, root_module['ns3::EthernetTrailer'])
     register_Ns3Ipv4_methods(root_module, root_module['ns3::Ipv4'])
+    register_Ns3Ipv4RawSocketFactory_methods(root_module, root_module['ns3::Ipv4RawSocketFactory'])
     register_Ns3Ipv4RoutingProtocol_methods(root_module, root_module['ns3::Ipv4RoutingProtocol'])
     register_Ns3NetDevice_methods(root_module, root_module['ns3::NetDevice'])
     register_Ns3Node_methods(root_module, root_module['ns3::Node'])
@@ -1507,6 +1513,56 @@ def register_Ns3SocketIpTtlTag_methods(root_module, cls):
                    is_const=True, is_virtual=True)
     return
 
+def register_Ns3SocketSetDontFragmentTag_methods(root_module, cls):
+    ## socket.h: ns3::SocketSetDontFragmentTag::SocketSetDontFragmentTag(ns3::SocketSetDontFragmentTag const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::SocketSetDontFragmentTag const &', 'arg0')])
+    ## socket.h: ns3::SocketSetDontFragmentTag::SocketSetDontFragmentTag() [constructor]
+    cls.add_constructor([])
+    ## socket.h: void ns3::SocketSetDontFragmentTag::Enable() [member function]
+    cls.add_method('Enable', 
+                   'void', 
+                   [])
+    ## socket.h: void ns3::SocketSetDontFragmentTag::Disable() [member function]
+    cls.add_method('Disable', 
+                   'void', 
+                   [])
+    ## socket.h: bool ns3::SocketSetDontFragmentTag::IsEnabled() const [member function]
+    cls.add_method('IsEnabled', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## socket.h: static ns3::TypeId ns3::SocketSetDontFragmentTag::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## socket.h: ns3::TypeId ns3::SocketSetDontFragmentTag::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## socket.h: uint32_t ns3::SocketSetDontFragmentTag::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## socket.h: void ns3::SocketSetDontFragmentTag::Serialize(ns3::TagBuffer i) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::TagBuffer', 'i')], 
+                   is_const=True, is_virtual=True)
+    ## socket.h: void ns3::SocketSetDontFragmentTag::Deserialize(ns3::TagBuffer i) [member function]
+    cls.add_method('Deserialize', 
+                   'void', 
+                   [param('ns3::TagBuffer', 'i')], 
+                   is_virtual=True)
+    ## socket.h: void ns3::SocketSetDontFragmentTag::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    return
+
 def register_Ns3TcpSocket_methods(root_module, cls):
     ## tcp-socket.h: ns3::TcpSocket::TcpSocket(ns3::TcpSocket const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::TcpSocket const &', 'arg0')])
@@ -1659,6 +1715,16 @@ def register_Ns3UdpSocket_methods(root_module, cls):
     ## udp-socket.h: uint32_t ns3::UdpSocket::GetIpMulticastTtl() const [member function]
     cls.add_method('GetIpMulticastTtl', 
                    'uint32_t', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    ## udp-socket.h: void ns3::UdpSocket::SetMtuDiscover(bool discover) [member function]
+    cls.add_method('SetMtuDiscover', 
+                   'void', 
+                   [param('bool', 'discover')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
+    ## udp-socket.h: bool ns3::UdpSocket::GetMtuDiscover() const [member function]
+    cls.add_method('GetMtuDiscover', 
+                   'bool', 
                    [], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
     return
@@ -2165,6 +2231,18 @@ def register_Ns3Ipv4_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Ipv4Address', 'addr'), param('ns3::Ipv4Mask', 'mask', default_value='ns3::Ipv4Mask(((const char*)"255.255.255.255"))')], 
                    is_virtual=True)
+    return
+
+def register_Ns3Ipv4RawSocketFactory_methods(root_module, cls):
+    ## ipv4-raw-socket-factory.h: ns3::Ipv4RawSocketFactory::Ipv4RawSocketFactory(ns3::Ipv4RawSocketFactory const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv4RawSocketFactory const &', 'arg0')])
+    ## ipv4-raw-socket-factory.h: ns3::Ipv4RawSocketFactory::Ipv4RawSocketFactory() [constructor]
+    cls.add_constructor([])
+    ## ipv4-raw-socket-factory.h: static ns3::TypeId ns3::Ipv4RawSocketFactory::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     return
 
 def register_Ns3Ipv4RoutingProtocol_methods(root_module, cls):
