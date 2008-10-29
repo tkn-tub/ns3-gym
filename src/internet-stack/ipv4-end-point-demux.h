@@ -57,6 +57,11 @@ public:
                     uint16_t sport,
                     Ptr<Ipv4Interface> incomingInterface);
 
+  Ipv4EndPoint *SimpleLookup (Ipv4Address daddr, 
+                              uint16_t dport, 
+                              Ipv4Address saddr, 
+                              uint16_t sport);
+
   Ipv4EndPoint *Allocate (void);
   Ipv4EndPoint *Allocate (Ipv4Address address);
   Ipv4EndPoint *Allocate (uint16_t port);

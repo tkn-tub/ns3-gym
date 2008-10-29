@@ -44,4 +44,11 @@ Ipv4L4Protocol::GetTypeId (void)
 Ipv4L4Protocol::~Ipv4L4Protocol ()
 {}
 
+void 
+Ipv4L4Protocol::ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
+                             uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
+                             Ipv4Address payloadSource,Ipv4Address payloadDestination,
+                             const uint8_t payload[8])
+{}
+
 }//namespace ns3

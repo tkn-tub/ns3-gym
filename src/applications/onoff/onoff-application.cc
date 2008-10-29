@@ -147,7 +147,14 @@ void OnOffApplication::StopApplication() // Called at time specified by Stop
   NS_LOG_FUNCTION_NOARGS ();
 
   CancelEvents ();
-  m_socket->Close ();
+  if(m_socket != 0)
+    {
+      m_socket->Close ();
+    }
+  else
+    {
+      NS_LOG_WARN("OnOffApplication found null socket to close in StopApplication");
+    }
 }
 
 void OnOffApplication::CancelEvents ()

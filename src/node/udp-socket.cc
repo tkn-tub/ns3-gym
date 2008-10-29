@@ -21,6 +21,7 @@
 #include "ns3/object.h"
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
+#include "ns3/boolean.h"
 #include "ns3/trace-source-accessor.h"
 #include "udp-socket.h"
 
@@ -53,6 +54,11 @@ UdpSocket::GetTypeId (void)
                    MakeUintegerAccessor (&UdpSocket::GetIpMulticastTtl,
                                          &UdpSocket::SetIpMulticastTtl),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("MtuDiscover", "If enabled, every outgoing ip packet will have the DF flag set.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&UdpSocket::SetMtuDiscover,
+                                        &UdpSocket::GetMtuDiscover),
+                   MakeBooleanChecker ())
     ;
   return tid;
 }

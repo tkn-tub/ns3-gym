@@ -1,0 +1,13 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('v4ping', ['node'])
+    module.source = [
+        'v4ping.cc',
+        ]
+    headers = bld.create_obj('ns3header')
+    headers.module = 'v4ping'
+    headers.source = [
+        'v4ping.h',
+        ]
+

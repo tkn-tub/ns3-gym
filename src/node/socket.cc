@@ -362,4 +362,57 @@ SocketIpTtlTag::Print (std::ostream &os) const
 }
 
 
+SocketSetDontFragmentTag::SocketSetDontFragmentTag ()
+{}
+void 
+SocketSetDontFragmentTag::Enable (void)
+{
+  m_dontFragment = true;
+}
+void 
+SocketSetDontFragmentTag::Disable (void)
+{
+  m_dontFragment = false;
+}
+bool 
+SocketSetDontFragmentTag::IsEnabled (void) const
+{
+  return m_dontFragment;
+}
+
+TypeId 
+SocketSetDontFragmentTag::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SocketSetDontFragmentTag")
+    .SetParent<Tag> ()
+    .AddConstructor<SocketSetDontFragmentTag> ()
+    ;
+  return tid;
+}
+TypeId 
+SocketSetDontFragmentTag::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+uint32_t 
+SocketSetDontFragmentTag::GetSerializedSize (void) const
+{
+  return 1;
+}
+void 
+SocketSetDontFragmentTag::Serialize (TagBuffer i) const
+{
+  i.WriteU8 (m_dontFragment?1:0);
+}
+void 
+SocketSetDontFragmentTag::Deserialize (TagBuffer i)
+{
+  m_dontFragment = (i.ReadU8 () == 1)?true:false;
+}
+void 
+SocketSetDontFragmentTag::Print (std::ostream &os) const
+{
+  os << (m_dontFragment?"true":"false");
+}
+
 }//namespace ns3

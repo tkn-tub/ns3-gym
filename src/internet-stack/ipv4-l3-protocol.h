@@ -40,7 +40,11 @@ class Ipv4Address;
 class Ipv4Header;
 class Ipv4Route;
 class Node;
+class Socket;
+class Ipv4RawSocketImpl;
 class Ipv4L4Protocol;
+class Ipv4L4Protocol;
+class Icmpv4L4Protocol;
 
 
 /**
@@ -59,6 +63,9 @@ public:
   virtual ~Ipv4L3Protocol ();
 
   void SetNode (Ptr<Node> node);
+
+  Ptr<Socket> CreateRawSocket (void);
+  void DeleteRawSocket (Ptr<Socket> socket);
 
   /**
    * \param protocol a template for the protocol to add to this L4 Demux.
@@ -201,6 +208,8 @@ protected:
   virtual void DoDispose (void);
 
 private:
+  Ipv4L3Protocol(const Ipv4L3Protocol &);
+  Ipv4L3Protocol &operator = (const Ipv4L3Protocol &);
   void Lookup (uint32_t ifIndex,
                Ipv4Header const &ipHeader,
                Ptr<Packet> packet,
@@ -217,15 +226,19 @@ private:
   void ForwardUp (Ptr<Packet> p, Ipv4Header const&ip, Ptr<Ipv4Interface> incomingInterface);
   uint32_t AddIpv4Interface (Ptr<Ipv4Interface> interface);
   void SetupLoopback (void);
-  Ipv4L3Protocol(const Ipv4L3Protocol &);
-  Ipv4L3Protocol &operator = (const Ipv4L3Protocol &);
+  Ptr<Icmpv4L4Protocol> GetIcmp (void) const;
+  bool IsUnicast (Ipv4Address ad, Ipv4Mask interfaceMask) const;
+  void DoForward (uint32_t ifIndex, 
+                  Ptr<Packet> packet, 
+                  Ipv4Header ipHeader);
+
 
   typedef std::list<Ptr<Ipv4Interface> > Ipv4InterfaceList;
-  typedef std::list<std::pair<Ipv4Address, Ipv4Address> > 
-    Ipv4MulticastGroupList;
+  typedef std::list<std::pair<Ipv4Address, Ipv4Address> > Ipv4MulticastGroupList;
   typedef std::list< std::pair< int, Ptr<Ipv4RoutingProtocol> > > Ipv4RoutingProtocolList;
-
+  typedef std::list<Ptr<Ipv4RawSocketImpl> > SocketList;
   typedef std::list<Ptr<Ipv4L4Protocol> > L4List_t;
+
   L4List_t m_protocols;
   Ipv4InterfaceList m_interfaces;
   uint32_t m_nInterfaces;
@@ -241,6 +254,8 @@ private:
 
   Ptr<Ipv4StaticRouting> m_staticRouting;
   Ipv4MulticastGroupList m_multicastGroups;
+
+  SocketList m_sockets;
 };
 
 } // Namespace ns3

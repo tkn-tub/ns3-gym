@@ -287,6 +287,47 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
   return retval1;  // might be empty if no matches
 }
 
+Ipv4EndPoint *
+Ipv4EndPointDemux::SimpleLookup (Ipv4Address daddr, 
+                                 uint16_t dport, 
+                                 Ipv4Address saddr, 
+                                 uint16_t sport)
+{
+  // this code is a copy/paste version of an old BSD ip stack lookup
+  // function.
+  uint32_t genericity = 3;
+  Ipv4EndPoint *generic = 0;
+  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
+    {
+      if ((*i)->GetLocalPort () != dport) 
+        {
+          continue;
+        }
+      if ((*i)->GetLocalAddress () == daddr &&
+          (*i)->GetPeerPort () == sport &&
+          (*i)->GetPeerAddress () == saddr) 
+        {
+          /* this is an exact match. */
+          return *i;
+        }
+      uint32_t tmp = 0;
+      if ((*i)->GetLocalAddress () == Ipv4Address::GetAny ()) 
+        {
+          tmp ++;
+        }
+      if ((*i)->GetPeerAddress () == Ipv4Address::GetAny ()) 
+        {
+          tmp ++;
+        }
+      if (tmp < genericity) 
+        {
+          generic = (*i);
+          genericity = tmp;
+        }
+    }
+  return generic;
+}
+
 uint16_t
 Ipv4EndPointDemux::AllocateEphemeralPort (void)
 {

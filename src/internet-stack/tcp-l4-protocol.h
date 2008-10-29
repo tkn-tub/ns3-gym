@@ -101,10 +101,10 @@ public:
    * \param destination The destinations Ipv4Address
    * \param incomingInterface The Ipv4Interface it was received on
    */
-  virtual void Receive (Ptr<Packet> p,
-                       Ipv4Address const &source,
-                       Ipv4Address const &destination,
-                       Ptr<Ipv4Interface> incomingInterface);
+  virtual enum Ipv4L4Protocol::RxStatus Receive (Ptr<Packet> p,
+                                                 Ipv4Address const &source,
+                                                 Ipv4Address const &destination,
+                                                 Ptr<Ipv4Interface> incomingInterface);
 
 protected:
   virtual void DoDispose (void);

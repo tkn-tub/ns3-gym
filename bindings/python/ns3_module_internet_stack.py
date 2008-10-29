@@ -3,6 +3,20 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass
 def register_types(module):
     root_module = module.get_root()
     
+    ## icmpv4.h: ns3::Icmpv4DestinationUnreachable [class]
+    module.add_class('Icmpv4DestinationUnreachable', parent=root_module['ns3::Header'])
+    ## icmpv4.h: ns3::Icmpv4DestinationUnreachable [enumeration]
+    module.add_enum('', ['NET_UNREACHABLE', 'HOST_UNREACHABLE', 'PROTOCOL_UNREACHABLE', 'PORT_UNREACHABLE', 'FRAG_NEEDED', 'SOURCE_ROUTE_FAILED'], outer_class=root_module['ns3::Icmpv4DestinationUnreachable'])
+    ## icmpv4.h: ns3::Icmpv4Echo [class]
+    module.add_class('Icmpv4Echo', parent=root_module['ns3::Header'])
+    ## icmpv4.h: ns3::Icmpv4Header [class]
+    module.add_class('Icmpv4Header', parent=root_module['ns3::Header'])
+    ## icmpv4.h: ns3::Icmpv4Header [enumeration]
+    module.add_enum('', ['ECHO_REPLY', 'DEST_UNREACH', 'ECHO', 'TIME_EXCEEDED'], outer_class=root_module['ns3::Icmpv4Header'])
+    ## icmpv4.h: ns3::Icmpv4TimeExceeded [class]
+    module.add_class('Icmpv4TimeExceeded', parent=root_module['ns3::Header'])
+    ## icmpv4.h: ns3::Icmpv4TimeExceeded [enumeration]
+    module.add_enum('', ['TIME_TO_LIVE', 'FRAGMENT_REASSEMBLY'], outer_class=root_module['ns3::Icmpv4TimeExceeded'])
     ## tcp-header.h: ns3::TcpHeader [class]
     module.add_class('TcpHeader', parent=root_module['ns3::Header'])
     ## tcp-header.h: ns3::TcpHeader::Flags_t [enumeration]
@@ -57,11 +71,257 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
+    register_Ns3Icmpv4DestinationUnreachable_methods(root_module, root_module['ns3::Icmpv4DestinationUnreachable'])
+    register_Ns3Icmpv4Echo_methods(root_module, root_module['ns3::Icmpv4Echo'])
+    register_Ns3Icmpv4Header_methods(root_module, root_module['ns3::Icmpv4Header'])
+    register_Ns3Icmpv4TimeExceeded_methods(root_module, root_module['ns3::Icmpv4TimeExceeded'])
     register_Ns3TcpHeader_methods(root_module, root_module['ns3::TcpHeader'])
     register_Ns3UdpHeader_methods(root_module, root_module['ns3::UdpHeader'])
     register_Ns3Ipv4Interface_methods(root_module, root_module['ns3::Ipv4Interface'])
     register_Ns3Ipv4L3Protocol_methods(root_module, root_module['ns3::Ipv4L3Protocol'])
     register_Ns3Ipv4StaticRouting_methods(root_module, root_module['ns3::Ipv4StaticRouting'])
+    return
+
+def register_Ns3Icmpv4DestinationUnreachable_methods(root_module, cls):
+    ## icmpv4.h: ns3::Icmpv4DestinationUnreachable::Icmpv4DestinationUnreachable(ns3::Icmpv4DestinationUnreachable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Icmpv4DestinationUnreachable const &', 'arg0')])
+    ## icmpv4.h: static ns3::TypeId ns3::Icmpv4DestinationUnreachable::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## icmpv4.h: ns3::Icmpv4DestinationUnreachable::Icmpv4DestinationUnreachable() [constructor]
+    cls.add_constructor([])
+    ## icmpv4.h: void ns3::Icmpv4DestinationUnreachable::SetNextHopMtu(uint16_t mtu) [member function]
+    cls.add_method('SetNextHopMtu', 
+                   'void', 
+                   [param('uint16_t', 'mtu')])
+    ## icmpv4.h: uint16_t ns3::Icmpv4DestinationUnreachable::GetNextHopMtu() const [member function]
+    cls.add_method('GetNextHopMtu', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## icmpv4.h: void ns3::Icmpv4DestinationUnreachable::SetData(ns3::Ptr<const ns3::Packet> data) [member function]
+    cls.add_method('SetData', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'data')])
+    ## icmpv4.h: void ns3::Icmpv4DestinationUnreachable::SetHeader(ns3::Ipv4Header header) [member function]
+    cls.add_method('SetHeader', 
+                   'void', 
+                   [param('ns3::Ipv4Header', 'header')])
+    ## icmpv4.h: void ns3::Icmpv4DestinationUnreachable::GetData(uint8_t * payload) const [member function]
+    cls.add_method('GetData', 
+                   'void', 
+                   [param('uint8_t *', 'payload')], 
+                   is_const=True)
+    ## icmpv4.h: ns3::Ipv4Header ns3::Icmpv4DestinationUnreachable::GetHeader() const [member function]
+    cls.add_method('GetHeader', 
+                   'ns3::Ipv4Header', 
+                   [], 
+                   is_const=True)
+    ## icmpv4.h: ns3::TypeId ns3::Icmpv4DestinationUnreachable::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## icmpv4.h: uint32_t ns3::Icmpv4DestinationUnreachable::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## icmpv4.h: void ns3::Icmpv4DestinationUnreachable::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## icmpv4.h: uint32_t ns3::Icmpv4DestinationUnreachable::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   visibility='private', is_virtual=True)
+    ## icmpv4.h: void ns3::Icmpv4DestinationUnreachable::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3Icmpv4Echo_methods(root_module, cls):
+    ## icmpv4.h: ns3::Icmpv4Echo::Icmpv4Echo(ns3::Icmpv4Echo const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Icmpv4Echo const &', 'arg0')])
+    ## icmpv4.h: void ns3::Icmpv4Echo::SetIdentifier(uint16_t id) [member function]
+    cls.add_method('SetIdentifier', 
+                   'void', 
+                   [param('uint16_t', 'id')])
+    ## icmpv4.h: void ns3::Icmpv4Echo::SetSequenceNumber(uint16_t seq) [member function]
+    cls.add_method('SetSequenceNumber', 
+                   'void', 
+                   [param('uint16_t', 'seq')])
+    ## icmpv4.h: void ns3::Icmpv4Echo::SetData(ns3::Ptr<const ns3::Packet> data) [member function]
+    cls.add_method('SetData', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'data')])
+    ## icmpv4.h: uint16_t ns3::Icmpv4Echo::GetIdentifier() const [member function]
+    cls.add_method('GetIdentifier', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## icmpv4.h: uint16_t ns3::Icmpv4Echo::GetSequenceNumber() const [member function]
+    cls.add_method('GetSequenceNumber', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## icmpv4.h: ns3::Ptr<const ns3::Packet> ns3::Icmpv4Echo::GetData() const [member function]
+    cls.add_method('GetData', 
+                   'ns3::Ptr< ns3::Packet const >', 
+                   [], 
+                   is_const=True)
+    ## icmpv4.h: static ns3::TypeId ns3::Icmpv4Echo::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## icmpv4.h: ns3::Icmpv4Echo::Icmpv4Echo() [constructor]
+    cls.add_constructor([])
+    ## icmpv4.h: ns3::TypeId ns3::Icmpv4Echo::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## icmpv4.h: uint32_t ns3::Icmpv4Echo::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## icmpv4.h: void ns3::Icmpv4Echo::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## icmpv4.h: uint32_t ns3::Icmpv4Echo::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## icmpv4.h: void ns3::Icmpv4Echo::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    return
+
+def register_Ns3Icmpv4Header_methods(root_module, cls):
+    ## icmpv4.h: ns3::Icmpv4Header::Icmpv4Header(ns3::Icmpv4Header const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Icmpv4Header const &', 'arg0')])
+    ## icmpv4.h: void ns3::Icmpv4Header::EnableChecksum() [member function]
+    cls.add_method('EnableChecksum', 
+                   'void', 
+                   [])
+    ## icmpv4.h: void ns3::Icmpv4Header::SetType(uint8_t type) [member function]
+    cls.add_method('SetType', 
+                   'void', 
+                   [param('uint8_t', 'type')])
+    ## icmpv4.h: void ns3::Icmpv4Header::SetCode(uint8_t code) [member function]
+    cls.add_method('SetCode', 
+                   'void', 
+                   [param('uint8_t', 'code')])
+    ## icmpv4.h: uint8_t ns3::Icmpv4Header::GetType() const [member function]
+    cls.add_method('GetType', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## icmpv4.h: uint8_t ns3::Icmpv4Header::GetCode() const [member function]
+    cls.add_method('GetCode', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## icmpv4.h: static ns3::TypeId ns3::Icmpv4Header::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## icmpv4.h: ns3::Icmpv4Header::Icmpv4Header() [constructor]
+    cls.add_constructor([])
+    ## icmpv4.h: ns3::TypeId ns3::Icmpv4Header::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## icmpv4.h: uint32_t ns3::Icmpv4Header::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## icmpv4.h: void ns3::Icmpv4Header::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## icmpv4.h: uint32_t ns3::Icmpv4Header::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## icmpv4.h: void ns3::Icmpv4Header::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    return
+
+def register_Ns3Icmpv4TimeExceeded_methods(root_module, cls):
+    ## icmpv4.h: ns3::Icmpv4TimeExceeded::Icmpv4TimeExceeded(ns3::Icmpv4TimeExceeded const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Icmpv4TimeExceeded const &', 'arg0')])
+    ## icmpv4.h: void ns3::Icmpv4TimeExceeded::SetData(ns3::Ptr<const ns3::Packet> data) [member function]
+    cls.add_method('SetData', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'data')])
+    ## icmpv4.h: void ns3::Icmpv4TimeExceeded::SetHeader(ns3::Ipv4Header header) [member function]
+    cls.add_method('SetHeader', 
+                   'void', 
+                   [param('ns3::Ipv4Header', 'header')])
+    ## icmpv4.h: void ns3::Icmpv4TimeExceeded::GetData(uint8_t * payload) const [member function]
+    cls.add_method('GetData', 
+                   'void', 
+                   [param('uint8_t *', 'payload')], 
+                   is_const=True)
+    ## icmpv4.h: ns3::Ipv4Header ns3::Icmpv4TimeExceeded::GetHeader() const [member function]
+    cls.add_method('GetHeader', 
+                   'ns3::Ipv4Header', 
+                   [], 
+                   is_const=True)
+    ## icmpv4.h: static ns3::TypeId ns3::Icmpv4TimeExceeded::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## icmpv4.h: ns3::Icmpv4TimeExceeded::Icmpv4TimeExceeded() [constructor]
+    cls.add_constructor([])
+    ## icmpv4.h: ns3::TypeId ns3::Icmpv4TimeExceeded::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## icmpv4.h: uint32_t ns3::Icmpv4TimeExceeded::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## icmpv4.h: void ns3::Icmpv4TimeExceeded::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## icmpv4.h: uint32_t ns3::Icmpv4TimeExceeded::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## icmpv4.h: void ns3::Icmpv4TimeExceeded::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
     return
 
 def register_Ns3TcpHeader_methods(root_module, cls):
@@ -354,6 +614,14 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
     cls.add_method('SetNode', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## ipv4-l3-protocol.h: ns3::Ptr<ns3::Socket> ns3::Ipv4L3Protocol::CreateRawSocket() [member function]
+    cls.add_method('CreateRawSocket', 
+                   'ns3::Ptr< ns3::Socket >', 
+                   [])
+    ## ipv4-l3-protocol.h: void ns3::Ipv4L3Protocol::DeleteRawSocket(ns3::Ptr<ns3::Socket> socket) [member function]
+    cls.add_method('DeleteRawSocket', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket')])
     ## ipv4-l3-protocol.h: void ns3::Ipv4L3Protocol::Insert(ns3::Ptr<ns3::Ipv4L4Protocol> protocol) [member function]
     cls.add_method('Insert', 
                    'void', 

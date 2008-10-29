@@ -336,9 +336,9 @@ public:
    * not preserved.  
    * 
    * The flags argument is formed by or'ing one or more of the values:     
-   *        MSG_OOB        process out-of-band data
-   *        MSG_PEEK       peek at incoming message
-   * These flags are _unsupported_ as of ns-3.1.  
+   *        MSG_OOB             process out-of-band data
+   *        MSG_PEEK            peek at incoming message
+   * None of these flags are supported for now.
    *
    * Some variants of Recv() are supported as additional API,
    * including RecvFrom(), overloaded Recv() without arguments,
@@ -553,6 +553,29 @@ public:
 
 private:
   uint8_t m_ttl;
+};
+
+
+/**
+ * \brief indicated whether packets should be sent out with
+ * the DF flag set.
+ */
+class SocketSetDontFragmentTag : public Tag
+{
+public:
+  SocketSetDontFragmentTag ();
+  void Enable (void);
+  void Disable (void);
+  bool IsEnabled (void) const;
+
+  static TypeId GetTypeId (void);  
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
+  virtual void Print (std::ostream &os) const;
+private:
+  bool m_dontFragment;
 };
 
 } //namespace ns3

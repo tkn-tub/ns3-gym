@@ -20,6 +20,9 @@
 
 #include "ipv4-end-point.h"
 #include "ns3/packet.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4EndPoint");
 
 namespace ns3 {
 
@@ -76,6 +79,11 @@ Ipv4EndPoint::SetRxCallback (Callback<void,Ptr<Packet>, Ipv4Address, uint16_t> c
 {
   m_rxCallback = callback;
 }
+void 
+Ipv4EndPoint::SetIcmpCallback (Callback<void,Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> callback)
+{
+  m_icmpCallback = callback;
+}
 
 void 
 Ipv4EndPoint::SetDestroyCallback (Callback<void> callback)
@@ -92,6 +100,17 @@ Ipv4EndPoint::ForwardUp (Ptr<Packet> p, Ipv4Address saddr, uint16_t sport)
   }
 }
 
-
+void 
+Ipv4EndPoint::ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, 
+                           uint8_t icmpType, uint8_t icmpCode,
+                           uint32_t icmpInfo)
+{
+  NS_LOG_FUNCTION (this << icmpSource << (uint32_t)icmpTtl << (uint32_t)icmpType <<
+                   (uint32_t)icmpCode << icmpInfo);
+  if (!m_icmpCallback.IsNull ())
+    {
+      m_icmpCallback (icmpSource,icmpTtl,icmpType,icmpCode,icmpInfo);
+    }
+}
 
 }; // namespace ns3

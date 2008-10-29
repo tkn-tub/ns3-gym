@@ -30,6 +30,8 @@
 #include "udp-socket-factory-impl.h"
 #include "tcp-socket-factory-impl.h"
 #include "ipv4-impl.h"
+#include "ipv4-raw-socket-factory-impl.h"
+#include "icmpv4-l4-protocol.h"
 #ifdef NETWORK_SIMULATION_CRADLE
 #include "nsc-tcp-socket-factory-impl.h"
 #include "nsc-tcp-l4-protocol.h"
@@ -58,12 +60,25 @@ AddUdpStack(Ptr<Node> node)
 }
 
 static void
+AddIcmpStack (Ptr<Node> node)
+{
+  Ptr<Ipv4L3Protocol> ipv4 = node->GetObject<Ipv4L3Protocol> ();
+  Ptr<Icmpv4L4Protocol> icmp = CreateObject<Icmpv4L4Protocol> ();
+  icmp->SetNode (node);
+  ipv4->Insert (icmp);
+  Ptr<Ipv4RawSocketFactoryImpl> rawFactory = CreateObject<Ipv4RawSocketFactoryImpl> ();
+  node->AggregateObject (rawFactory);
+}
+
+static void
 AddTcpStack(Ptr<Node> node)
 {
   Ptr<Ipv4L3Protocol> ipv4 = node->GetObject<Ipv4L3Protocol> ();
   Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> ();
   tcp->SetNode (node);
+
   ipv4->Insert (tcp);
+
   Ptr<TcpSocketFactoryImpl> tcpFactory = CreateObject<TcpSocketFactoryImpl> ();
   tcpFactory->SetTcp (tcp);
   node->AggregateObject (tcpFactory);
@@ -85,6 +100,7 @@ AddInternetStack (Ptr<Node> node)
 {
   AddArpStack (node);
   AddIpv4Stack (node);
+  AddIcmpStack (node);
   AddUdpStack (node);
   AddTcpStack (node);
 }
@@ -109,7 +125,7 @@ AddNscInternetStack (Ptr<Node> node, const std::string &soname)
 {
   AddArpStack (node);
   AddIpv4Stack (node);
-
+  AddIcmpStack (node);
   AddUdpStack (node);
   AddNscStack (node, soname);
 }
