@@ -29,6 +29,7 @@ all_modules = (
     'helper',
     'devices/bridge',
     'contrib/stats',
+    'applications/v4ping',
     )
 
 def set_options(opt):
