@@ -61,7 +61,7 @@ FakeNetDevice::Doit3 (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   sleep (1);
-  for (uint32_t i = 0.001; i < 10000; ++i)
+  for (uint32_t i = 0; i < 10000; ++i)
     {
       //
       // Exercise the realtime relative now path
@@ -76,7 +76,7 @@ FakeNetDevice::Doit4 (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   sleep (1);
-  for (uint32_t i = 0.001; i < 10000; ++i)
+  for (uint32_t i = 0; i < 10000; ++i)
     {
       //
       // Exercise the realtime relative schedule path
@@ -100,7 +100,7 @@ test (void)
   DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ())->ScheduleRealtimeNow(MakeEvent (&first_function));
 
   // 
-  // drive the progression of m_currentTs at a ten millisecond rate
+  // drive the progression of m_currentTs at a ten millisecond rate from the main thread
   //
   for (double d = 0.; d < 14.999; d += 0.01)
     {
