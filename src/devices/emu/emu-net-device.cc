@@ -295,7 +295,7 @@ EmuNetDevice::CreateSocket (void)
       // the (now) parent process.
       //
       std::ostringstream oss;
-      oss << "-v -p" << path;
+      oss << "-p" << path;
       NS_LOG_INFO ("Parameters set to \"" << oss.str () << "\"");
 
       //
