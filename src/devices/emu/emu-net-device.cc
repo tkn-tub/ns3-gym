@@ -850,7 +850,17 @@ EmuNetDevice::GetMulticast (void) const
 Address 
 EmuNetDevice::MakeMulticastAddress (Ipv4Address multicastGroup) const
 {
-  return Mac48Address ("01:00:5e:00:00:00");
+  NS_LOG_FUNCTION (multicastGroup);
+
+  Mac48Address addr = Mac48Address::GetMulticast (multicastGroup);
+
+  //
+  // Implicit conversion (operator Address ()) is defined for Mac48Address, so
+  // use it by just returning the EUI-48 address which is automagically converted
+  // to an Address.
+  //
+  NS_LOG_LOGIC ("Multicast address is " << addr);
+  return addr;
 }
 
 bool 
