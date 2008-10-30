@@ -1,0 +1,22 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+
+def build(bld):
+    obj = bld.create_suid_program('emu-sock-creator')
+    obj.source = [
+       'emu-sock-creator.cc',
+       'emu-encode-decode.cc',
+       ]
+
+    module = bld.create_ns3_module('emu', ['node'])
+    module.source = [
+        'emu-net-device.cc',
+        'emu-encode-decode.cc',
+        ]
+
+    headers = bld.create_obj('ns3header')
+    headers.module = 'emu'
+    headers.source = [
+        'emu-net-device.h',
+        ]
+

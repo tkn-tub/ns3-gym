@@ -22,7 +22,7 @@
 #include "ns3/simulator.h"
 #include "ns3/object-factory.h"
 #include "ns3/queue.h"
-#include "ns3/emulated-net-device.h"
+#include "ns3/emu-net-device.h"
 #include "ns3/pcap-writer.h"
 #include "ns3/config.h"
 #include "ns3/packet.h"
@@ -37,7 +37,7 @@ EmuHelper::EmuHelper ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_queueFactory.SetTypeId ("ns3::DropTailQueue");
-  m_deviceFactory.SetTypeId ("ns3::EmulatedNetDevice");
+  m_deviceFactory.SetTypeId ("ns3::EmuNetDevice");
 }
 
   void 
@@ -78,13 +78,13 @@ EmuHelper::EnablePcap (
 
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmulatedNetDevice/Rx";
+    "/$ns3::EmuNetDevice/Rx";
   Config::ConnectWithoutContext (oss.str (), 
     MakeBoundCallback (&EmuHelper::RxEvent, pcap));
 
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmulatedNetDevice/TxQueue/Enqueue";
+    "/$ns3::EmuNetDevice/TxQueue/Enqueue";
   Config::ConnectWithoutContext (oss.str (), 
     MakeBoundCallback (&EmuHelper::EnqueueEvent, pcap));
 }
@@ -131,25 +131,25 @@ EmuHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
   std::ostringstream oss;
 
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmulatedNetDevice/Rx";
+    "/$ns3::EmuNetDevice/Rx";
   Config::Connect (oss.str (), 
     MakeBoundCallback (&EmuHelper::AsciiRxEvent, &os));
 
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmulatedNetDevice/TxQueue/Enqueue";
+    "/$ns3::EmuNetDevice/TxQueue/Enqueue";
   Config::Connect (oss.str (), 
     MakeBoundCallback (&EmuHelper::AsciiEnqueueEvent, &os));
 
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmulatedNetDevice/TxQueue/Dequeue";
+    "/$ns3::EmuNetDevice/TxQueue/Dequeue";
   Config::Connect (oss.str (), 
     MakeBoundCallback (&EmuHelper::AsciiDequeueEvent, &os));
 
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmulatedNetDevice/TxQueue/Drop";
+    "/$ns3::EmuNetDevice/TxQueue/Drop";
   Config::Connect (oss.str (), 
     MakeBoundCallback (&EmuHelper::AsciiDropEvent, &os));
 }
@@ -197,7 +197,7 @@ EmuHelper::Install (const NodeContainer &c)
     {
       Ptr<Node> node = *i;
 
-      Ptr<EmulatedNetDevice> device = m_deviceFactory.Create<EmulatedNetDevice> ();
+      Ptr<EmuNetDevice> device = m_deviceFactory.Create<EmuNetDevice> ();
       //
       // This is a mac address used for ns-3 internal things.  It cannot override the real MAC address on the NIC in
       // question.

@@ -21,7 +21,7 @@ all_modules = (
     'devices/csma',
     'devices/bridge',
     'devices/tap',
-    'devices/emulated',
+    'devices/emu',
     'applications/onoff',
     'applications/packet-sink',
     'applications/udp-echo',

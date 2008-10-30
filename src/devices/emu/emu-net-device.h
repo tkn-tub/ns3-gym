@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef EMULATED_NET_DEVICE_H
-#define EMULATED_NET_DEVICE_H
+#ifndef EMU_NET_DEVICE_H
+#define EMU_NET_DEVICE_H
 
 #include <string.h>
 #include "ns3/address.h"
@@ -38,27 +38,27 @@ namespace ns3 {
 class Queue;
 
 /**
- * \class EmulatedNetDevice
- * \brief A Device for an Emulated Network Link.
+ * \class EmuNetDevice
+ * \brief A Device for an Emu Network Link.
  */
-class EmulatedNetDevice : public NetDevice 
+class EmuNetDevice : public NetDevice 
 {
 public:
   static TypeId GetTypeId (void);
 
   /**
-   * Construct a EmulatedNetDevice
+   * Construct a EmuNetDevice
    *
-   * This is the constructor for the EmulatedNetDevice.  It takes as a
+   * This is the constructor for the EmuNetDevice.  It takes as a
    */
-  EmulatedNetDevice ();
+  EmuNetDevice ();
 
   /**
-   * Destroy a EmulatedNetDevice
+   * Destroy a EmuNetDevice
    *
-   * This is the destructor for the EmulatedNetDevice.
+   * This is the destructor for the EmuNetDevice.
    */
-  virtual ~EmulatedNetDevice ();
+  virtual ~EmuNetDevice ();
 
   /**
    * Set the Data Rate used for transmission of packets.  
@@ -91,9 +91,9 @@ public:
   void Stop (Time tStop);
 
   /**
-   * Attach a queue to the EmulatedNetDevice.
+   * Attach a queue to the EmuNetDevice.
    *
-   * The EmulatedNetDevice "owns" a queue that implements a queueing 
+   * The EmuNetDevice "owns" a queue that implements a queueing 
    * method such as DropTail or RED.  
    *
    * @see Queue
@@ -105,7 +105,7 @@ public:
   /**
    * Receive a packet.
    *
-   * The EmulatedNetDevice receives packets from its socket reader
+   * The EmuNetDevice receives packets from its socket reader
    * and forwards them up the protocol stack.  This is the public method
    * used by the reader to indicate that a packet has arrived at the device.
    *
@@ -168,6 +168,18 @@ private:
   virtual void DoDispose (void);
 
   /**
+   * Call out to a separate process running as suid root in order to get a raw 
+   * socket.  We do this to avoid having the entire simulation running as root.
+   * If this method returns, we'll have a raw socket waiting for us in m_sock.
+   */
+  void CreateSocket (void);
+
+  /**
+   * Figure out where the raw socket creation process lives on the system.
+   */
+  std::string FindCreator (void);
+
+  /**
    * Get a copy of the attached Queue.
    *
    * This method is provided for any derived class that may need to get
@@ -221,8 +233,8 @@ private:
   void NotifyLinkUp (void);
 
   /**
-   * The Queue which this EmulatedNetDevice uses as a packet source.
-   * Management of this Queue has been delegated to the EmulatedNetDevice
+   * The Queue which this EmuNetDevice uses as a packet source.
+   * Management of this Queue has been delegated to the EmuNetDevice
    * and it has the responsibility for deletion.
    * @see class Queue
    * @see class DropTailQueue
@@ -317,5 +329,5 @@ private:
 
 } // namespace ns3
 
-#endif // EMULATED_NET_DEVICE_H
+#endif // EMU_NET_DEVICE_H
 
