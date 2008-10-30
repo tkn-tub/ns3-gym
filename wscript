@@ -167,9 +167,9 @@ def set_options(opt):
                    help=('For regression testing, only run/generate the indicated regression tests, '
                          'specified as a comma separated list of test names'),
                    dest='regression_tests', type="string")
-    opt.add_option('--disable-sudo',
-                   help=('Do not attempt to use sudo to setup suid bits on ns3 executables.'),
-                   dest='disable_sudo', action='store_true',
+    opt.add_option('--enable-sudo',
+                   help=('Use sudo to setup suid bits on ns3 executables.'),
+                   dest='enable_sudo', action='store_true',
                    default=False)
 
     # options provided in a script in a subdirectory named "src"
@@ -327,7 +327,7 @@ def create_suid_program(bld, name):
     program.module_deps = list()
     program.name = name
     program.target = name
-    if bld.env ()['SUDO'] and not Params.g_options.disable_sudo:
+    if bld.env ()['SUDO'] and Params.g_options.enable_sudo:
         SuidBuildTask (bld, program)
     return program
 
