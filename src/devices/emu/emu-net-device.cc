@@ -52,6 +52,8 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (EmuNetDevice);
 
+#define EMU_MAGIC 65867
+
 TypeId 
 EmuNetDevice::GetTypeId (void)
 {
@@ -192,6 +194,25 @@ EmuNetDevice::StartDevice (void)
   rc = bind (m_sock, (struct sockaddr *)&ll, sizeof (ll));
   NS_ASSERT_MSG (rc != -1, "EmuNetDevice::StartDevice(): Can't bind to specified interface");
 
+  rc = ioctl(m_sock, SIOCGIFFLAGS, &ifr);
+  NS_ASSERT_MSG (rc != -1, "EmuNetDevice::StartDevice(): Can't get interface flags");
+  
+  //
+  // This device only works if the underlying interface is up in promiscuous 
+  // mode.  We could have turned it on in the socket creator, but the situation
+  // is that we expect these devices to be used in conjunction with virtual 
+  // machines with connected host-only (simulated) networks, or in a testbed.
+  // There is a lot of setup and configuration happening outside of this one 
+  // issue, and we expect that configuration to include choosing a valid
+  // interface (e.g, "ath1"), ensuring that the device supports promiscuous 
+  // mode, and placing it in promiscuous mode.  We just make sure of the
+  // end result.
+  //
+  if ((ifr.ifr_flags & IFF_PROMISC) == 0)
+    {
+      NS_FATAL_ERROR ("EmuNetDevice::StartDevice(): " << m_deviceName << " is not in promiscuous mode");
+    }
+
   //
   // Now spin up a read thread to read packets.
   //
@@ -236,6 +257,10 @@ EmuNetDevice::CreateSocket (void)
       NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): Could not bind(): errno = " << strerror (errno));
     }
 
+  NS_LOG_INFO ("Created Unix socket");
+  NS_LOG_INFO ("sun_family = " << un.sun_family);
+  NS_LOG_INFO ("sun_path = " << un.sun_path);
+
   //
   // We have a socket here, but we want to get it there -- to the program we're
   // going to exec.  What we'll do is to do a getsockname and then encode the
@@ -250,10 +275,10 @@ EmuNetDevice::CreateSocket (void)
     }
 
   //
-  // Now encode that socket name (endpoint information) as a string
+  // Now encode that socket name (family and path) as a string of hex digits
   //
-  std::string endpoint = EmuBufferToString((uint8_t *)&un, len);
-
+  std::string path = EmuBufferToString((uint8_t *)&un, len);
+  NS_LOG_INFO ("Encoded Unix socket as \"" << path << "\"");
   //
   // Fork and exec the process to create our socket.  If we're us (the parent)
   // we wait for the child (the socket creator) to complete and read the 
@@ -270,7 +295,8 @@ EmuNetDevice::CreateSocket (void)
       // the (now) parent process.
       //
       std::ostringstream oss;
-      oss << "-p " << endpoint;
+      oss << "-v -p" << path;
+      NS_LOG_INFO ("Parameters set to \"" << oss.str () << "\"");
 
       //
       // Execute the socket creation process image.
@@ -386,10 +412,23 @@ EmuNetDevice::CreateSocket (void)
 	  if (cmsg->cmsg_level == SOL_SOCKET &&
 	      cmsg->cmsg_type == SCM_RIGHTS)
 	    {
-	      int *rawSocket = (int*)CMSG_DATA (cmsg);
-	      NS_LOG_INFO ("Got the socket from the socket creator = " << *rawSocket);
-              m_sock = *rawSocket;
-              return;
+              //
+              // This is the type of message we want.  Check to see if the magic 
+              // number is correct and then pull out the socket we care about if
+              // it matches
+              //
+              if (magic == EMU_MAGIC)
+                {
+                  NS_LOG_INFO ("Got SCM_RIGHTS with correct magic " << magic);
+                  int *rawSocket = (int*)CMSG_DATA (cmsg);
+                  NS_LOG_INFO ("Got the socket from the socket creator = " << *rawSocket);
+                  m_sock = *rawSocket;
+                  return;
+                }
+              else
+                {
+                  NS_LOG_INFO ("Got SCM_RIGHTS, but with bad magic " << magic);                  
+                }
 	    }
 	}
       NS_FATAL_ERROR ("Did not get the raw socket from the socket creator");

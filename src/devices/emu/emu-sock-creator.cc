@@ -42,22 +42,21 @@ static int gVerbose = 0;
 #define LOG(msg) \
   if (gVerbose) \
     { \
-      std::cout << msg << std::endl; \
+      std::cout << __FUNCTION__ << "(): " << msg << std::endl;   \
     }
 
-#define ABORT(msg) \
-  std::cout << __FILE__ << __FUNCTION__ <<  ": fatal error at line " << __LINE__ << ": " << msg << std::endl; \
-  exit (-1);
+#define ABORT(msg, printErrno) \
+  std::cout << __FILE__ << ": fatal error at line " << __LINE__ << ": " << __FUNCTION__ << "(): " << msg << std::endl; \
+  if (printErrno) \
+    { \
+      std::cout << "    errno = " << errno << " (" << strerror (errno) << ")" << std::endl; \
+    } \
+  exit (-1); 
 
 #define ABORT_IF(cond, msg, printErrno) \
   if (cond) \
     { \
-      std::cout << __FILE__ << __FUNCTION__ <<  ": fatal error at line " << __LINE__ << ": " << msg << std::endl; \
-      if (printErrno) \
-        { \
-          std::cout << "  errno = " << errno << "(" << strerror (errno) << ")" << std::endl; \
-        } \
-      exit (-1); \
+      ABORT(msg, printErrno); \
     }
 
 /**
@@ -75,9 +74,9 @@ SendSocket (const char *path, int fd)
   // Open a Unix (local interprocess) socket to call back to the emu net
   // device.
   //
-  LOG ("SendSocket(): Create Unix socket");
+  LOG ("Create Unix socket");
   int sock = socket (PF_UNIX, SOCK_DGRAM, 0);
-  ABORT_IF (sock == -1, "SendSocket(): Unable to open socket", 1);
+  ABORT_IF (sock == -1, "Unable to open socket", 1);
   
   //
   // We have this string called path, which is really a hex representation
@@ -89,15 +88,15 @@ SendSocket (const char *path, int fd)
   socklen_t clientAddrLen;
   struct sockaddr_un clientAddr;
 
-  LOG ("SendSocket(): Decode address");
+  LOG ("Decode address " << path);
   bool rc = ns3::EmuStringToBuffer (path, (uint8_t *)&clientAddr, &clientAddrLen);
-  ABORT_IF (rc == false, "SendSocket(): Unable to decode path", 0);
+  ABORT_IF (rc == false, "Unable to decode path", 0);
 
-  LOG ("SendSocket(): Connect");
+  LOG ("Connect");
   int status = connect (sock, (struct sockaddr*)&clientAddr, clientAddrLen);
-  ABORT_IF (status != -1, "SendSocket(): Unable to connect to emu device", 1);
+  ABORT_IF (status == -1, "Unable to connect to emu device", 1);
 
-  LOG ("SendSocket(): Connected");
+  LOG ("Connected");
 
   //
   // This is arcane enough that a few words are worthwhile to explain what's 
@@ -189,7 +188,7 @@ SendSocket (const char *path, int fd)
   ssize_t len = sendmsg(sock, &msg, 0);
   ABORT_IF (len == -1, "Could not send socket back to emu net device", 1);
 
-  LOG ("SendSocket(): sendmsg complete");
+  LOG ("sendmsg complete");
 }
 
   int 
@@ -225,7 +224,7 @@ main (int argc, char *argv[])
   // unless we have that string.
   //
   ABORT_IF (path == NULL, "path is a required argument", 0);
-
+  LOG ("Provided path is \"" << path << "\"");
   //
   // The whole reason for all of the hoops we went through to call out to this
   // program will pay off here.  We created this program to run as suid root
@@ -234,6 +233,7 @@ main (int argc, char *argv[])
   // though.  So all of these hoops are to allow us to exeucte the following
   // single line of code:
   //
+  LOG ("Creating raw socket");
   int sock = socket (PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
   ABORT_IF (sock == -1, "CreateSocket(): Unable to open raw socket", 1);
 
