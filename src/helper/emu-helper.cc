@@ -200,7 +200,8 @@ EmuHelper::Install (const NodeContainer &c)
       Ptr<EmuNetDevice> device = m_deviceFactory.Create<EmuNetDevice> ();
       //
       // This is a mac address used for ns-3 internal things.  It cannot override the real MAC address on the NIC in
-      // question.
+      // question.  We use it to spoof the MAC address so packets flowing over the network from the emu device will
+      // have this address, and our ARP will resolve it.
       //
       device->SetAddress (Mac48Address::Allocate ());
       node->AddDevice (device);
