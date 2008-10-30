@@ -4,9 +4,8 @@
  *
  * \section Emulated Net Device Model
  *
- * The emulated net device allows a simulation node to talk to a real network
- * and send and receive packets that are processed by the corresponding ns-3
- * node.
+ * The emulated net device allows a simulation node to send and receive packets
+ * a real network.
  *
  * The emulated net device relies on a specified interface being in promiscuous
  * mode.  It opens a raw socket and binds to that interface.  We perform MAC
@@ -37,7 +36,7 @@
  * MAC addresses will be generated using the Organizationally Unique Identifier
  * (OUI) 00:00:00 as a base.  This vendor code is not assigned to any 
  * organization and so should not conflict with any real hardware.  
-
+ *
  * It is always up to you to determine that using these MAC addresses is
  * okay on your network and won't conflict with anything else (including another
  * simulation using emu devices) on your network.  If you are using the 
