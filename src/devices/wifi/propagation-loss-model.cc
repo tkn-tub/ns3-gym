@@ -246,7 +246,7 @@ LogDistancePropagationLossModel::GetTypeId (void)
     .AddAttribute ("ReferenceLoss",
                    "The reference loss at reference distance",
                    DoubleValue (46.6777),
-                   MakeDoubleAccessor (&LogDistancePropagationLossModel::m_referenceDistance),
+                   MakeDoubleAccessor (&LogDistancePropagationLossModel::m_referenceLoss),
                    MakeDoubleChecker<double> ())
     ;
   return tid;
