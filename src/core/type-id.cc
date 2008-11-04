@@ -132,7 +132,7 @@ IidManager::AllocateUid (std::string name)
 struct IidManager::IidInformation *
 IidManager::LookupInformation (uint16_t uid) const
 {
-  NS_ASSERT (uid <= m_information.size ());
+  NS_ASSERT (uid <= m_information.size () && uid != 0);
   return const_cast<struct IidInformation *> (&m_information[uid-1]);
 }
 
