@@ -50,6 +50,12 @@ PropagationLossModel::PropagationLossModel ()
 PropagationLossModel::~PropagationLossModel ()
 {}
 
+void 
+PropagationLossModel::SetNext (Ptr<PropagationLossModel> next)
+{
+  m_next = next;
+}
+
 double 
 PropagationLossModel::GetLoss (Ptr<MobilityModel> a,
                                Ptr<MobilityModel> b) const
@@ -238,7 +244,7 @@ LogDistancePropagationLossModel::GetTypeId (void)
                    MakeDoubleAccessor (&LogDistancePropagationLossModel::m_referenceDistance),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("ReferenceLoss",
-                   "The distance at which the reference loss is calculated (m)",
+                   "The reference loss at reference distance",
                    DoubleValue (46.6777),
                    MakeDoubleAccessor (&LogDistancePropagationLossModel::m_referenceDistance),
                    MakeDoubleChecker<double> ())
