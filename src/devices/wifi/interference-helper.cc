@@ -104,10 +104,9 @@ InterferenceHelper::NiChange::operator < (InterferenceHelper::NiChange const &o)
  ****************************************************************/
 
 InterferenceHelper::InterferenceHelper ()
-  : m_80211a (false)
-{
-  m_errorRateModel = Create<ErrorRateModel> ();
-}
+  : m_80211a (false),
+    m_errorRateModel (0)
+{}
 InterferenceHelper::~InterferenceHelper ()
 {
   m_errorRateModel = 0;

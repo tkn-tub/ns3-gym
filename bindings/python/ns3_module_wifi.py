@@ -77,6 +77,8 @@ def register_types(module):
     module.add_class('ConstantRateWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
     ## propagation-delay-model.h: ns3::ConstantSpeedPropagationDelayModel [class]
     module.add_class('ConstantSpeedPropagationDelayModel', parent=root_module['ns3::PropagationDelayModel'])
+    ## error-rate-model.h: ns3::ErrorRateModel [class]
+    module.add_class('ErrorRateModel', parent=root_module['ns3::Object'])
     ## propagation-loss-model.h: ns3::FriisPropagationLossModel [class]
     module.add_class('FriisPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## ideal-wifi-manager.h: ns3::IdealWifiManager [class]
@@ -176,6 +178,7 @@ def register_methods(root_module):
     register_Ns3ArfWifiManager_methods(root_module, root_module['ns3::ArfWifiManager'])
     register_Ns3ConstantRateWifiManager_methods(root_module, root_module['ns3::ConstantRateWifiManager'])
     register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, root_module['ns3::ConstantSpeedPropagationDelayModel'])
+    register_Ns3ErrorRateModel_methods(root_module, root_module['ns3::ErrorRateModel'])
     register_Ns3FriisPropagationLossModel_methods(root_module, root_module['ns3::FriisPropagationLossModel'])
     register_Ns3IdealWifiManager_methods(root_module, root_module['ns3::IdealWifiManager'])
     register_Ns3JakesPropagationLossModel_methods(root_module, root_module['ns3::JakesPropagationLossModel'])
@@ -1647,6 +1650,14 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
     cls.add_method('SetErrorRateModel', 
                    'void', 
                    [param('ns3::Ptr< ns3::ErrorRateModel >', 'rate')])
+    ## yans-wifi-phy.h: void ns3::YansWifiPhy::SetDevice(ns3::Ptr<ns3::Object> device) [member function]
+    cls.add_method('SetDevice', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Object >', 'device')])
+    ## yans-wifi-phy.h: void ns3::YansWifiPhy::SetMobility(ns3::Ptr<ns3::Object> mobility) [member function]
+    cls.add_method('SetMobility', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Object >', 'mobility')])
     ## yans-wifi-phy.h: double ns3::YansWifiPhy::GetRxNoise() const [member function]
     cls.add_method('GetRxNoise', 
                    'double', 
@@ -1677,6 +1688,15 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
                    'ns3::Ptr< ns3::ErrorRateModel >', 
                    [], 
                    is_const=True)
+    ## yans-wifi-phy.h: ns3::Ptr<ns3::Object> ns3::YansWifiPhy::GetDevice() const [member function]
+    cls.add_method('GetDevice', 
+                   'ns3::Ptr< ns3::Object >', 
+                   [], 
+                   is_const=True)
+    ## yans-wifi-phy.h: ns3::Ptr<ns3::Object> ns3::YansWifiPhy::GetMobility() [member function]
+    cls.add_method('GetMobility', 
+                   'ns3::Ptr< ns3::Object >', 
+                   [])
     ## yans-wifi-phy.h: double ns3::YansWifiPhy::GetTxPowerStart() const [member function]
     cls.add_method('GetTxPowerStart', 
                    'double', 
@@ -2028,6 +2048,28 @@ def register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, cls):
                    is_const=True)
     return
 
+def register_Ns3ErrorRateModel_methods(root_module, cls):
+    ## error-rate-model.h: ns3::ErrorRateModel::ErrorRateModel(ns3::ErrorRateModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ErrorRateModel const &', 'arg0')])
+    ## error-rate-model.h: static ns3::TypeId ns3::ErrorRateModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## error-rate-model.h: ns3::ErrorRateModel::ErrorRateModel() [constructor]
+    cls.add_constructor([])
+    ## error-rate-model.h: double ns3::ErrorRateModel::CalculateSnr(ns3::WifiMode txMode, double ber) const [member function]
+    cls.add_method('CalculateSnr', 
+                   'double', 
+                   [param('ns3::WifiMode', 'txMode'), param('double', 'ber')], 
+                   is_const=True)
+    ## error-rate-model.h: double ns3::ErrorRateModel::GetChunkSuccessRate(ns3::WifiMode mode, double snr, uint32_t nbits) const [member function]
+    cls.add_method('GetChunkSuccessRate', 
+                   'double', 
+                   [param('ns3::WifiMode', 'mode'), param('double', 'snr'), param('uint32_t', 'nbits')], 
+                   is_const=True)
+    return
+
 def register_Ns3FriisPropagationLossModel_methods(root_module, cls):
     ## propagation-loss-model.h: static ns3::TypeId ns3::FriisPropagationLossModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
@@ -2145,14 +2187,10 @@ def register_Ns3LogDistancePropagationLossModel_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
-    ## propagation-loss-model.h: void ns3::LogDistancePropagationLossModel::SetReferenceModel(ns3::Ptr<ns3::PropagationLossModel> model) [member function]
-    cls.add_method('SetReferenceModel', 
+    ## propagation-loss-model.h: void ns3::LogDistancePropagationLossModel::SetReference(double referenceDistance, double referenceLoss) [member function]
+    cls.add_method('SetReference', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PropagationLossModel >', 'model')])
-    ## propagation-loss-model.h: void ns3::LogDistancePropagationLossModel::SetReferenceDistance(double referenceDistance) [member function]
-    cls.add_method('SetReferenceDistance', 
-                   'void', 
-                   [param('double', 'referenceDistance')])
+                   [param('double', 'referenceDistance'), param('double', 'referenceLoss')])
     ## propagation-loss-model.h: double ns3::LogDistancePropagationLossModel::DoGetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
     cls.add_method('DoGetLoss', 
                    'double', 
@@ -2527,11 +2565,6 @@ def register_Ns3WifiChannel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## wifi-channel.h: ns3::Ptr<ns3::WifiPhy> ns3::WifiChannel::CreatePhy(ns3::Ptr<ns3::WifiNetDevice> device, ns3::Ptr<ns3::Object> mobility, ns3::UnsafeAttributeList list) [member function]
-    cls.add_method('CreatePhy', 
-                   'ns3::Ptr< ns3::WifiPhy >', 
-                   [param('ns3::Ptr< ns3::WifiNetDevice >', 'device'), param('ns3::Ptr< ns3::Object >', 'mobility'), param('ns3::UnsafeAttributeList', 'list')], 
-                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3WifiNetDevice_methods(root_module, cls):
@@ -2556,10 +2589,6 @@ def register_Ns3WifiNetDevice_methods(root_module, cls):
     cls.add_method('SetRemoteStationManager', 
                    'void', 
                    [param('ns3::Ptr< ns3::WifiRemoteStationManager >', 'manager')])
-    ## wifi-net-device.h: void ns3::WifiNetDevice::SetChannel(ns3::Ptr<ns3::WifiChannel> channel) [member function]
-    cls.add_method('SetChannel', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::WifiChannel >', 'channel')])
     ## wifi-net-device.h: ns3::Ptr<ns3::WifiMac> ns3::WifiNetDevice::GetMac() const [member function]
     cls.add_method('GetMac', 
                    'ns3::Ptr< ns3::WifiMac >', 
@@ -2722,11 +2751,10 @@ def register_Ns3YansWifiChannel_methods(root_module, cls):
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('uint32_t', 'i')], 
                    is_const=True, is_virtual=True)
-    ## yans-wifi-channel.h: ns3::Ptr<ns3::WifiPhy> ns3::YansWifiChannel::CreatePhy(ns3::Ptr<ns3::WifiNetDevice> device, ns3::Ptr<ns3::Object> mobility, ns3::UnsafeAttributeList list) [member function]
-    cls.add_method('CreatePhy', 
-                   'ns3::Ptr< ns3::WifiPhy >', 
-                   [param('ns3::Ptr< ns3::WifiNetDevice >', 'device'), param('ns3::Ptr< ns3::Object >', 'mobility'), param('ns3::UnsafeAttributeList', 'list')], 
-                   is_virtual=True)
+    ## yans-wifi-channel.h: void ns3::YansWifiChannel::Add(ns3::Ptr<ns3::YansWifiPhy> phy) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::YansWifiPhy >', 'phy')])
     ## yans-wifi-channel.h: void ns3::YansWifiChannel::SetPropagationLossModel(ns3::Ptr<ns3::PropagationLossModel> loss) [member function]
     cls.add_method('SetPropagationLossModel', 
                    'void', 

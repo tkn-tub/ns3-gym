@@ -33,6 +33,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/enum.h"
 #include "ns3/pointer.h"
+#include "ns3/net-device.h"
 #include <math.h>
 
 NS_LOG_COMPONENT_DEFINE ("YansWifiPhy");
@@ -130,6 +131,7 @@ YansWifiPhy::DoDispose (void)
   NS_LOG_FUNCTION (this);
   m_channel = 0;
   m_modes.clear ();
+  m_device = 0;
 }
 
 void
@@ -204,6 +206,17 @@ YansWifiPhy::SetErrorRateModel (Ptr<ErrorRateModel> rate)
 {
   m_interference.SetErrorRateModel (rate);
 }
+void 
+YansWifiPhy::SetDevice (Ptr<Object> device)
+{
+  m_device = device;
+}
+void 
+YansWifiPhy::SetMobility (Ptr<Object> mobility)
+{
+  m_mobility = mobility;
+}
+
 double 
 YansWifiPhy::GetRxNoise (void) const
 {
@@ -247,6 +260,16 @@ YansWifiPhy::GetErrorRateModel (void) const
 {
   return m_interference.GetErrorRateModel ();
 }
+Ptr<Object> 
+YansWifiPhy::GetDevice (void) const
+{
+  return m_device;
+}
+Ptr<Object> 
+YansWifiPhy::GetMobility (void)
+{
+  return m_mobility;
+}
 
 double 
 YansWifiPhy::CalculateSnr (WifiMode txMode, double ber) const
@@ -259,11 +282,11 @@ YansWifiPhy::GetChannel (void) const
 {
   return m_channel;
 }
-
 void 
 YansWifiPhy::SetChannel (Ptr<YansWifiChannel> channel)
 {
   m_channel = channel;
+  m_channel->Add (this);
 }
 
 void 

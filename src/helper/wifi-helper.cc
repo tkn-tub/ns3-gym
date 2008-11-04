@@ -29,8 +29,6 @@
 #include "ns3/mobility-model.h"
 #include "ns3/log.h"
 #include "ns3/pcap-writer.h"
-#include "ns3/wifi-mode.h"
-#include "ns3/wifi-preamble.h"
 #include "ns3/config.h"
 #include "ns3/simulator.h"
 
@@ -40,40 +38,20 @@ NS_LOG_COMPONENT_DEFINE ("WifiHelper");
 
 namespace ns3 {
 
-static void PcapPhyTxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet,
-                            WifiMode mode, WifiPreamble preamble, 
-                            uint8_t txLevel)
-{
-  writer->WritePacket (packet);
-}
-
-static void PcapPhyRxEvent (Ptr<PcapWriter> writer, 
-                            Ptr<const Packet> packet, double snr, WifiMode mode, 
-                            enum WifiPreamble preamble)
-{
-  writer->WritePacket (packet);
-}
-
-static void AsciiPhyTxEvent (std::ostream *os, std::string context, 
-                             Ptr<const Packet> packet,
-                             WifiMode mode, WifiPreamble preamble, 
-                             uint8_t txLevel)
-{
-  *os << "+ " << Simulator::Now () << " " << context << " " << *packet << std::endl;
-}
-
-static void AsciiPhyRxOkEvent (std::ostream *os, std::string context, 
-                               Ptr<const Packet> packet, double snr, WifiMode mode, 
-                               enum WifiPreamble preamble)
-{
-  *os << "r " << Simulator::Now () << " " << context << " " << *packet << std::endl;
-}
+WifiPhyHelper::~WifiPhyHelper ()
+{}
 
 
 WifiHelper::WifiHelper ()
+{}
+
+WifiHelper
+WifiHelper::Default (void)
 {
-  m_stationManager.SetTypeId ("ns3::ArfWifiManager");
-  m_mac.SetTypeId ("ns3::AdhocWifiMac");
+  WifiHelper helper;
+  helper.SetRemoteStationManager ("ns3::ArfWifiManager");
+  helper.SetMac ("ns3::AdhocWifiMac");
+  return helper;
 }
 
 void 
@@ -122,135 +100,27 @@ WifiHelper::SetMac (std::string type,
   m_mac.Set (n7, v7);
 }
 
-void 
-WifiHelper::SetPhyAttribute (std::string name, const AttributeValue &value)
-{
-  m_phyAttributes.Set (name, value);
-}
-
-void 
-WifiHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid)
-{
-  std::ostringstream oss;
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/";
-  Config::MatchContainer matches = Config::LookupMatches (oss.str ());
-  if (matches.GetN () == 0)
-    {
-      return;
-    }
-  oss.str ("");
-  oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
-  Ptr<PcapWriter> pcap = Create<PcapWriter> ();
-  pcap->Open (oss.str ());
-  pcap->WriteWifiHeader ();
-  oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/Tx";
-  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapPhyTxEvent, pcap));
-  oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/RxOk";
-  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapPhyRxEvent, pcap));
-}
-void 
-WifiHelper::EnablePcap (std::string filename, NetDeviceContainer d)
-{
-  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
-    {
-      Ptr<NetDevice> dev = *i;
-      EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex ());
-    }
-}
-void
-WifiHelper::EnablePcap (std::string filename, NodeContainer n)
-{
-  NetDeviceContainer devs;
-  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
-    {
-      Ptr<Node> node = *i;
-      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-        {
-          devs.Add (node->GetDevice (j));
-        }
-    }
-  EnablePcap (filename, devs);
-}
-
-void
-WifiHelper::EnablePcapAll (std::string filename)
-{
-  EnablePcap (filename, NodeContainer::GetGlobal ());
-}
-
-void 
-WifiHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
-{
-  Packet::EnablePrinting ();
-  std::ostringstream oss;
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/RxOk";
-  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyRxOkEvent, &os));
-  oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/Tx";
-  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyTxEvent, &os));
-}
-void 
-WifiHelper::EnableAscii (std::ostream &os, NetDeviceContainer d)
-{
-  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
-    {
-      Ptr<NetDevice> dev = *i;
-      EnableAscii (os, dev->GetNode ()->GetId (), dev->GetIfIndex ());
-    }
-}
-void
-WifiHelper::EnableAscii (std::ostream &os, NodeContainer n)
-{
-  NetDeviceContainer devs;
-  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
-    {
-      Ptr<Node> node = *i;
-      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-        {
-          devs.Add (node->GetDevice (j));
-        }
-    }
-  EnableAscii (os, devs);
-}
-
-void
-WifiHelper::EnableAsciiAll (std::ostream &os)
-{
-  EnableAscii (os, NodeContainer::GetGlobal ());
-}
-
-NetDeviceContainer
-WifiHelper::Install (NodeContainer c) const
-{
-  Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
-  channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
-  Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
-  channel->SetPropagationLossModel (log);
-  return Install (c, channel);
-}
-NetDeviceContainer
-WifiHelper::Install (NodeContainer c, Ptr<WifiChannel> channel) const
+NetDeviceContainer 
+WifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
 {
   NetDeviceContainer devices;
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); i++)
+  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
       Ptr<Node> node = *i;
       Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
       Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
       Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
-      Ptr<WifiPhy> phy = channel->CreatePhy (device, node, m_phyAttributes);
+      Ptr<WifiPhy> phy = phyHelper.Create (node, device);
       mac->SetAddress (Mac48Address::Allocate ());
       device->SetMac (mac);
       device->SetPhy (phy);
       device->SetRemoteStationManager (manager);
-      device->SetChannel (channel);
       node->AddDevice (device);
       devices.Add (device);
       NS_LOG_DEBUG ("node="<<node<<", mob="<<node->GetObject<MobilityModel> ());
     }
   return devices;
 }
+
 
 } // namespace ns3

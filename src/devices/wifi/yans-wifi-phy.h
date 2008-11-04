@@ -84,12 +84,16 @@ public:
   void SetEdThreshold (double threshold);
   void SetCcaMode1Threshold (double threshold);
   void SetErrorRateModel (Ptr<ErrorRateModel> rate);
+  void SetDevice (Ptr<Object> device);
+  void SetMobility (Ptr<Object> mobility);
   double GetRxNoise (void) const;
   double GetTxGain (void) const;
   double GetRxGain (void) const;
   double GetEdThreshold (void) const;
   double GetCcaMode1Threshold (void) const;
   Ptr<ErrorRateModel> GetErrorRateModel (void) const;
+  Ptr<Object> GetDevice (void) const;
+  Ptr<Object> GetMobility (void);
 
 
   virtual double GetTxPowerStart (void) const;
@@ -139,6 +143,8 @@ private:
   uint32_t m_nTxPower;
 
   Ptr<YansWifiChannel> m_channel;
+  Ptr<Object> m_device;
+  Ptr<Object> m_mobility;
   Modes m_modes;
   EventId m_endSyncEvent;
   UniformVariable m_random;

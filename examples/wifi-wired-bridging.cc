@@ -14,16 +14,6 @@
 
 using namespace ns3;
 
-Ptr<WifiChannel>
-CreateChannel (void)
-{
-  Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
-  channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
-  Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
-  channel->SetPropagationLossModel (log);
-  return channel;
-}
-
 int main (int argc, char *argv[])
 {
   uint32_t nWifis = 2;
@@ -73,11 +63,12 @@ int main (int argc, char *argv[])
       Ipv4InterfaceContainer apInterface;
       MobilityHelper mobility;
       BridgeHelper bridge;
-      WifiHelper wifi;
-      Ptr<WifiChannel> channel;
+      WifiHelper wifi = WifiHelper::Default ();
+      YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+      YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
+      wifiPhy.SetChannel (wifiChannel.Create ());
 
       sta.Create (nStas);
-      channel = CreateChannel ();
       ip.NewNetwork ();
       mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
 				     "MinX", DoubleValue (wifiX),
@@ -95,7 +86,7 @@ int main (int argc, char *argv[])
 		   "Ssid", SsidValue (ssid),
 		   "BeaconGeneration", BooleanValue (true),
 		   "BeaconInterval", TimeValue (Seconds (2.5)));
-      apDev = wifi.Install (backboneNodes.Get (i), channel);
+      apDev = wifi.Install (wifiPhy, backboneNodes.Get (i));
       apInterface = ip.Assign (apDev);
       bridge.Install (backboneNodes.Get (i), NetDeviceContainer (apDev, backboneDevices.Get (i)));
 
@@ -110,7 +101,7 @@ int main (int argc, char *argv[])
       wifi.SetMac ("ns3::NqstaWifiMac",
 		   "Ssid", SsidValue (ssid),
 		   "ActiveProbing", BooleanValue (false));
-      staDev = wifi.Install (sta, channel);
+      staDev = wifi.Install (wifiPhy, sta);
       staInterface = ip.Assign (staDev);
 
       // save everything in containers.
@@ -149,8 +140,8 @@ int main (int argc, char *argv[])
   apps.Stop (Seconds (3.0));
   
 
-  WifiHelper::EnablePcap ("wifi-wire-bridging", staNodes[1].Get (1));
-  WifiHelper::EnablePcap ("wifi-wire-bridging", staNodes[0].Get (0));
+  YansWifiPhyHelper::EnablePcap ("wifi-wire-bridging", staNodes[1].Get (1));
+  YansWifiPhyHelper::EnablePcap ("wifi-wire-bridging", staNodes[0].Get (0));
   std::ofstream os;
   os.open ("wifi-wire-bridging.mob");
   MobilityHelper::EnableAsciiAll (os);

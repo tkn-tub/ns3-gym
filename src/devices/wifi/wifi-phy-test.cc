@@ -3,6 +3,7 @@
 #include "yans-wifi-phy.h"
 #include "propagation-loss-model.h"
 #include "propagation-delay-model.h"
+#include "error-rate-model.h"
 #include "ns3/ptr.h"
 #include "ns3/mobility-model.h"
 #include "ns3/static-mobility-model.h"
@@ -83,8 +84,16 @@ PsrExperiment::Run (struct PsrExperiment::Input input)
   Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
   channel->SetPropagationLossModel (log);
 
-  Ptr<WifiPhy> tx = channel->CreatePhy (0, posTx, UnsafeAttributeList ());
-  Ptr<WifiPhy> rx = channel->CreatePhy (0, posRx, UnsafeAttributeList ());
+  Ptr<YansWifiPhy> tx = CreateObject<YansWifiPhy> ();
+  Ptr<YansWifiPhy> rx = CreateObject<YansWifiPhy> ();
+  Ptr<ErrorRateModel> error = CreateObject<ErrorRateModel> ();
+  tx->SetErrorRateModel (error);
+  rx->SetErrorRateModel (error);
+  tx->SetChannel (channel);
+  rx->SetChannel (channel);
+  tx->SetMobility (posTx);
+  rx->SetMobility (posRx);
+
   rx->SetReceiveOkCallback (MakeCallback (&PsrExperiment::Receive, this));
 
   for (uint32_t i = 0; i < m_input.nPackets; ++i)
@@ -204,9 +213,22 @@ CollisionExperiment::Run (struct CollisionExperiment::Input input)
   Ptr<MobilityModel> posRx = CreateObject<StaticMobilityModel> ();
   posRx->SetPosition (Vector (0, 0.0, 0.0));
 
-  Ptr<WifiPhy> txA = channel->CreatePhy (0, posTxA, UnsafeAttributeList ());
-  Ptr<WifiPhy> txB = channel->CreatePhy (0, posTxB, UnsafeAttributeList ());
-  Ptr<WifiPhy> rx = channel->CreatePhy (0, posRx, UnsafeAttributeList ());
+  Ptr<YansWifiPhy> txA = CreateObject<YansWifiPhy> ();
+  Ptr<YansWifiPhy> txB = CreateObject<YansWifiPhy> ();
+  Ptr<YansWifiPhy> rx = CreateObject<YansWifiPhy> ();
+
+  Ptr<ErrorRateModel> error = CreateObject<ErrorRateModel> ();
+  txA->SetErrorRateModel (error);
+  txB->SetErrorRateModel (error);
+  rx->SetErrorRateModel (error);
+  txA->SetChannel (channel);
+  txB->SetChannel (channel);
+  rx->SetChannel (channel);
+  txA->SetMobility (posTxA);
+  txB->SetMobility (posTxB);
+  rx->SetMobility (posRx);
+
+
   rx->SetReceiveOkCallback (MakeCallback (&CollisionExperiment::Receive, this));
 
   for (uint32_t i = 0; i < m_input.nPackets; ++i)

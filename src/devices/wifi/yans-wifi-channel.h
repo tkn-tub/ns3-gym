@@ -30,7 +30,6 @@
 namespace ns3 {
 
 class NetDevice;
-class WifiNetDevice;
 class PropagationLossModel;
 class PropagationDelayModel;
 class YansWifiPhy;
@@ -58,10 +57,7 @@ public:
   virtual uint32_t GetNDevices (void) const;
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
 
-  // inherited from WifiChannel
-  virtual Ptr<WifiPhy> CreatePhy (Ptr<WifiNetDevice> device,
-                                  Ptr<Object> mobility,
-                                  UnsafeAttributeList list);
+  void Add (Ptr<YansWifiPhy> phy);
 
   /**
    * \param loss the new propagation loss model.
@@ -86,17 +82,12 @@ public:
              WifiMode wifiMode, WifiPreamble preamble) const;
 
 private:
-  struct Item {
-    Ptr<WifiNetDevice> device;
-    Ptr<YansWifiPhy> phy;
-    Ptr<Object> mobility;
-  };
-  typedef std::vector<struct Item> DeviceList;
+  typedef std::vector<Ptr<YansWifiPhy> > PhyList;
   void Receive (uint32_t i, Ptr<Packet> packet, double rxPowerDbm,
                 WifiMode txMode, WifiPreamble preamble) const;
 
 
-  DeviceList m_deviceList;
+  PhyList m_phyList;
   Ptr<PropagationLossModel> m_loss;
   Ptr<PropagationDelayModel> m_delay;
 };

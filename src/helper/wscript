@@ -21,6 +21,7 @@ def build(bld):
         'ipv4-interface-container.cc',
         'udp-echo-helper.cc',
         'bridge-helper.cc',
+        'yans-wifi-phy-helper.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -44,4 +45,5 @@ def build(bld):
         'ipv4-interface-container.h',
         'udp-echo-helper.h',
         'bridge-helper.h',
+        'yans-wifi-phy-helper.h',
         ]

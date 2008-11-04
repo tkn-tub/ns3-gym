@@ -43,10 +43,6 @@ class WifiChannel : public Channel
 {
 public:
   static TypeId GetTypeId (void);
-
-  virtual Ptr<WifiPhy> CreatePhy (Ptr<WifiNetDevice> device,
-                                  Ptr<Object> mobility,
-                                  UnsafeAttributeList list) = 0;
 };
 
 } // namespace ns3

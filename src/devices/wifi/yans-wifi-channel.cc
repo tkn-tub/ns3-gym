@@ -27,7 +27,6 @@
 #include "ns3/object-factory.h"
 #include "yans-wifi-channel.h"
 #include "yans-wifi-phy.h"
-#include "wifi-net-device.h"
 #include "propagation-loss-model.h"
 #include "propagation-delay-model.h"
 
@@ -57,7 +56,7 @@ YansWifiChannel::YansWifiChannel ()
 {}
 YansWifiChannel::~YansWifiChannel ()
 {
-  m_deviceList.clear ();
+  m_phyList.clear ();
 }
 
 void 
@@ -75,22 +74,14 @@ void
 YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double txPowerDbm,
                        WifiMode wifiMode, WifiPreamble preamble) const
 {
-  Ptr<MobilityModel> senderMobility = 0;
-  for (DeviceList::const_iterator i = m_deviceList.begin (); i != m_deviceList.end (); i++)
-    {
-      if (sender == i->phy)
-        {
-          senderMobility = i->mobility->GetObject<MobilityModel> ();
-          break;
-        }
-    }
+  Ptr<MobilityModel> senderMobility = sender->GetMobility ()->GetObject<MobilityModel> ();
   NS_ASSERT (senderMobility != 0);
   uint32_t j = 0;
-  for (DeviceList::const_iterator i = m_deviceList.begin (); i != m_deviceList.end (); i++)
+  for (PhyList::const_iterator i = m_phyList.begin (); i != m_phyList.end (); i++)
     {
-      if (sender != i->phy)
+      if (sender != (*i))
         {
-          Ptr<MobilityModel> receiverMobility = i->mobility->GetObject<MobilityModel> ();
+          Ptr<MobilityModel> receiverMobility = (*i)->GetMobility ()->GetObject<MobilityModel> ();
           Time delay = m_delay->GetDelay (senderMobility, receiverMobility);
           double rxPowerDbm = txPowerDbm + m_loss->GetLoss (senderMobility, receiverMobility);
           NS_LOG_DEBUG ("propagation: txPower="<<txPowerDbm<<"dbm, rxPower="<<rxPowerDbm<<"dbm, "<<
@@ -105,38 +96,26 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
 
 void
 YansWifiChannel::Receive (uint32_t i, Ptr<Packet> packet, double rxPowerDbm,
-                      WifiMode txMode, WifiPreamble preamble) const
+                          WifiMode txMode, WifiPreamble preamble) const
 {
-  m_deviceList[i].phy->StartReceivePacket (packet, rxPowerDbm, txMode, preamble);
+  m_phyList[i]->StartReceivePacket (packet, rxPowerDbm, txMode, preamble);
 }
 
 uint32_t 
 YansWifiChannel::GetNDevices (void) const
 {
-  return m_deviceList.size ();
+  return m_phyList.size ();
 }
 Ptr<NetDevice> 
 YansWifiChannel::GetDevice (uint32_t i) const
 {
-  return m_deviceList[i].device;
+  return m_phyList[i]->GetDevice ()->GetObject<NetDevice> ();
 }
 
-Ptr<WifiPhy> 
-YansWifiChannel::CreatePhy (Ptr<WifiNetDevice> device,
-                        Ptr<Object> mobility,
-                        UnsafeAttributeList list)
+void 
+YansWifiChannel::Add (Ptr<YansWifiPhy> phy)
 {
-  ObjectFactory factory;
-  factory.SetTypeId ("ns3::YansWifiPhy");
-  factory.Set (list.GetSafe ("ns3::YansWifiPhy"));
-  Ptr<YansWifiPhy> phy = factory.Create<YansWifiPhy> ();
-  phy->SetChannel (this);
-  struct Item item;
-  item.device = device;
-  item.phy = phy;
-  item.mobility = mobility;
-  m_deviceList.push_back (item);
-  return phy;
+  m_phyList.push_back (phy);
 }
 
 } // namespace ns3

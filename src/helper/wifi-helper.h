@@ -28,7 +28,16 @@
 
 namespace ns3 {
 
-class WifiChannel;
+class WifiPhy;
+class WifiNetDevice;
+class Node;
+
+class WifiPhyHelper
+{
+public:
+  virtual ~WifiPhyHelper ();
+  virtual Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const = 0;
+};
 
 /**
  * \brief helps to create WifiNetDevice objects
@@ -41,6 +50,8 @@ class WifiHelper
 {
 public:
   WifiHelper ();
+
+  static WifiHelper Default (void);
 
   /**
    * \param type the type of ns3::WifiRemoteStationManager to create.
@@ -106,125 +117,11 @@ public:
                std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
                std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 
-  /**
-   * \param name the name of the attribute to set
-   * \param value the value of the attribute to set
-   *
-   */
-  void SetPhyAttribute (std::string n0, const AttributeValue &v0);
-
-
-
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param nodeid the id of the node to generate pcap output for.
-   * \param deviceid the id of the device to generate pcap output for.
-   *
-   * Generate a pcap file which contains the link-level data observed
-   * by the specified deviceid within the specified nodeid. The pcap
-   * data is stored in the file prefix-nodeid-deviceid.pcap.
-   *
-   * This method should be invoked after the network topology has 
-   * been fully constructed.
-   */
-  static void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param d container of devices of type ns3::WifiNetDevice
-   *
-   * Enable pcap output on each input device which is of the
-   * ns3::WifiNetDevice type.
-   */
-  static void EnablePcap (std::string filename, NetDeviceContainer d);
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param n container of nodes.
-   *
-   * Enable pcap output on each device which is of the
-   * ns3::WifiNetDevice type and which is located in one of the 
-   * input nodes.
-   */
-  static void EnablePcap (std::string filename, NodeContainer n);
-  /**
-   * \param filename filename prefix to use for pcap files.
-   *
-   * Enable pcap output on each device which is of the
-   * ns3::WifiNetDevice type
-   */
-  static void EnablePcapAll (std::string filename);
-
-  /**
-   * \param os output stream
-   * \param nodeid the id of the node to generate ascii output for.
-   * \param deviceid the id of the device to generate ascii output for.
-   *
-   * Enable ascii output on the specified deviceid within the
-   * specified nodeid if it is of type ns3::WifiNetDevice and dump 
-   * that to the specified stdc++ output stream.
-   */
-  static void EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid);
-  /**
-   * \param os output stream
-   * \param d device container
-   *
-   * Enable ascii output on each device which is of the
-   * ns3::WifiNetDevice type and which is located in the input
-   * device container and dump that to the specified
-   * stdc++ output stream.
-   */
-  static void EnableAscii (std::ostream &os, NetDeviceContainer d);
-  /**
-   * \param os output stream
-   * \param n node container
-   *
-   * Enable ascii output on each device which is of the
-   * ns3::WifiNetDevice type and which is located in one
-   * of the input node and dump that to the specified
-   * stdc++ output stream.
-   */
-  static void EnableAscii (std::ostream &os, NodeContainer n);
-  /**
-   * \param os output stream
-   *
-   * Enable ascii output on each device which is of the
-   * ns3::WifiNetDevice type and dump that to the specified
-   * stdc++ output stream.
-   */
-  static void EnableAsciiAll (std::ostream &os);
-
-  /**
-   * \param c a set of nodes
-   *
-   * This method creates a simple ns3::WifiChannel (with a default
-   * ns3::PropagationLossModel and ns3::PropagationDelayModel) and 
-   * creates, for each of the input nodes, a new ns3::WifiNetDevice 
-   * attached to this shared channel. Each ns3::WifiNetDevice is also
-   * configured with an ns3::WifiRemoteStationManager, ns3::WifiMac, and,
-   * ns3::WifiPhy, all of which are created based on the user-specified
-   * attributes specified in WifiHelper::SetRemoteStationManager, 
-   * WifiHelper::SetMac, and, WifiHelper::SetPhy.
-   */
-  NetDeviceContainer Install (NodeContainer c) const;
-  /**
-   * \param channel a channel to use
-   * \param c a set of nodes
-   *
-   * For each of the input nodes, a new ns3::WifiNetDevice is attached 
-   * to the shared input channel. Each ns3::WifiNetDevice is also
-   * configured with an ns3::WifiRemoteStationManager, ns3::WifiMac, and,
-   * ns3::WifiPhy, all of which are created based on the user-specified
-   * attributes specified in WifiHelper::SetRemoteStationManager, 
-   * WifiHelper::SetMac, and, WifiHelper::SetPhy.
-   *
-   * The user is expected to attach to the input channel a proper 
-   * ns3::PropagationLossModel, and ns3::PropagationDelayModel.
-   */
-  NetDeviceContainer Install (NodeContainer c, Ptr<WifiChannel> channel) const;
+  NetDeviceContainer Install (const WifiPhyHelper &phy, NodeContainer c) const;
 
 private:
   ObjectFactory m_stationManager;
   ObjectFactory m_mac;
-  UnsafeAttributeList m_phyAttributes;
 };
 
 } // namespace ns3

@@ -7,6 +7,7 @@
 #include "arf-wifi-manager.h"
 #include "propagation-delay-model.h"
 #include "propagation-loss-model.h"
+#include "error-rate-model.h"
 #include "ns3/static-mobility-model.h"
 #include "ns3/node.h"
 #include "ns3/simulator.h"
@@ -23,7 +24,7 @@ public:
   virtual bool RunTests (void);
 private:
   void RunOne (void);
-  void CreateOne (Vector pos, Ptr<WifiChannel> channel);
+  void CreateOne (Vector pos, Ptr<YansWifiChannel> channel);
   void SendOnePacket (Ptr<WifiNetDevice> dev);
 
   ObjectFactory m_manager;
@@ -43,14 +44,19 @@ WifiTest::SendOnePacket (Ptr<WifiNetDevice> dev)
 }
 
 void 
-WifiTest::CreateOne (Vector pos, Ptr<WifiChannel> channel)
+WifiTest::CreateOne (Vector pos, Ptr<YansWifiChannel> channel)
 {
   Ptr<Node> node = CreateObject<Node> ();
   Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
 
   Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
   Ptr<StaticMobilityModel> mobility = CreateObject<StaticMobilityModel> ();
-  Ptr<WifiPhy> phy = channel->CreatePhy (dev, mobility, UnsafeAttributeList ());
+  Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
+  Ptr<ErrorRateModel> error = CreateObject<ErrorRateModel> ();
+  phy->SetErrorRateModel (error);
+  phy->SetChannel (channel);
+  phy->SetDevice (dev);
+  phy->SetMobility (node);
   Ptr<WifiRemoteStationManager> manager = m_manager.Create<WifiRemoteStationManager> ();
 
   mobility->SetPosition (pos);
@@ -59,7 +65,6 @@ WifiTest::CreateOne (Vector pos, Ptr<WifiChannel> channel)
   dev->SetMac (mac);
   dev->SetPhy (phy);
   dev->SetRemoteStationManager (manager);
-  dev->SetChannel (channel);
   node->AddDevice (dev);
 
   Simulator::Schedule (Seconds (1.0), &WifiTest::SendOnePacket, this, dev);

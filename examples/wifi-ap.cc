@@ -117,7 +117,7 @@ int main (int argc, char *argv[])
   // disable fragmentation
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
 
-  WifiHelper wifi;
+  WifiHelper wifi = WifiHelper::Default ();
   MobilityHelper mobility;
   NodeContainer stas;
   NodeContainer ap;
@@ -131,23 +131,21 @@ int main (int argc, char *argv[])
   packetSocket.Install (stas);
   packetSocket.Install (ap);
 
-  Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
-  channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
-  Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
-  channel->SetPropagationLossModel (log);
-
+  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+  YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
+  wifiPhy.SetChannel (wifiChannel.Create ());
   Ssid ssid = Ssid ("wifi-default");
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
   // setup stas.
   wifi.SetMac ("ns3::NqstaWifiMac", 
                "Ssid", SsidValue (ssid),
                "ActiveProbing", BooleanValue (false));
-  staDevs = wifi.Install (stas, channel);
+  staDevs = wifi.Install (wifiPhy, stas);
   // setup ap.
   wifi.SetMac ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true),
                "BeaconInterval", TimeValue (Seconds (2.5)));
-  wifi.Install (ap, channel);
+  wifi.Install (wifiPhy, ap);
 
   // mobility.
   mobility.Install (stas);

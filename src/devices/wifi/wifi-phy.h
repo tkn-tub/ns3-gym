@@ -35,6 +35,7 @@
 namespace ns3 {
 
 class WifiChannel;
+class NetDevice;
 
 /**
  * \brief receive notifications about phy events.
@@ -231,12 +232,11 @@ public:
    * \returns the mode whose index is specified.
    */
   virtual WifiMode GetMode (uint32_t mode) const = 0;
-  /* return snr: W/W */
   /**
    * \param txMode the transmission mode
    * \param ber the probability of bit error rate
    * \returns the minimum snr which is required to achieve
-   *          the requested ber for the specified transmission mode.
+   *          the requested ber for the specified transmission mode. (W/W)
    */
   virtual double CalculateSnr (WifiMode txMode, double ber) const = 0;
 

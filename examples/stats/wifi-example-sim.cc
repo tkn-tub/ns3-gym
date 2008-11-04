@@ -129,7 +129,10 @@ int main(int argc, char *argv[]) {
   NS_LOG_INFO("Installing WiFi and Internet stack.");
   WifiHelper wifi;
   wifi.SetMac("ns3::AdhocWifiMac");
-  NetDeviceContainer nodeDevices = wifi.Install(nodes);
+  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+  YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
+  wifiPhy.SetChannel (wifiChannel.Create ());
+  NetDeviceContainer nodeDevices = wifi.Install(wifiPhy, nodes);
 
   InternetStackHelper internet;
   internet.Install(nodes);

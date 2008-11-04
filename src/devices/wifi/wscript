@@ -74,6 +74,7 @@ def build(bld):
         'nqap-wifi-mac.h',
         'wifi-phy.h',
         'supported-rates.h',
+        'error-rate-model.h',
         ]
 
     obj = bld.create_ns3_program('wifi-phy-test',
