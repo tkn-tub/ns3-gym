@@ -139,7 +139,7 @@ ArpIpv4Interface::SendTo (Ptr<Packet> p, Ipv4Address dest)
             "ArpIpv4Interface::SendTo (): Sending multicast packet over "
             "non-multicast device");
 
-          hardwareDestination = GetDevice ()->MakeMulticastAddress(dest);
+          hardwareDestination = GetDevice ()->GetMulticast(dest);
           found = true;
         }
       else

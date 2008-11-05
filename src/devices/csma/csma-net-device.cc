@@ -796,14 +796,7 @@ CsmaNetDevice::IsMulticast (void) const
 }
 
   Address 
-CsmaNetDevice::GetMulticast (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return Mac48Address::GetMulticastPrefix ();
-}
-
-  Address 
-CsmaNetDevice::MakeMulticastAddress (Ipv4Address multicastGroup) const
+CsmaNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
   NS_LOG_FUNCTION (multicastGroup);
 

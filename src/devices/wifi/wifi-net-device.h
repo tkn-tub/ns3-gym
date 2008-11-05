@@ -92,8 +92,7 @@ public:
   virtual bool IsBroadcast (void) const;
   virtual Address GetBroadcast (void) const;
   virtual bool IsMulticast (void) const;
-  virtual Address GetMulticast (void) const;
-  virtual Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
+  virtual Address GetMulticast (Ipv4Address multicastGroup) const;
   virtual bool IsPointToPoint (void) const;
   virtual bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
   virtual Ptr<Node> GetNode (void) const;

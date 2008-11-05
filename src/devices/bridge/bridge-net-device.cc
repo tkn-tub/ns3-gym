@@ -290,16 +290,8 @@ BridgeNetDevice::IsMulticast (void) const
   return true;
 }
 
-
 Address
-BridgeNetDevice::GetMulticast (void) const
-{
-  return Mac48Address ("01:00:5e:00:00:00");
-}
-
-
-Address
-BridgeNetDevice::MakeMulticastAddress (Ipv4Address multicastGroup) const
+BridgeNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
  NS_LOG_FUNCTION (this << multicastGroup);
  Mac48Address multicast = Mac48Address::GetMulticast (multicastGroup);

@@ -249,8 +249,7 @@ public:
   virtual Address GetBroadcast (void) const;
 
   virtual bool IsMulticast (void) const;
-  virtual Address GetMulticast (void) const;
-  virtual Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
+  virtual Address GetMulticast (Ipv4Address multicastGroup) const;
 
   virtual bool IsPointToPoint (void) const;
 

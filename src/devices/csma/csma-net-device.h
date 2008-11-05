@@ -319,7 +319,6 @@ public:
   virtual bool IsBroadcast (void) const;
   virtual Address GetBroadcast (void) const;
   virtual bool IsMulticast (void) const;
-  virtual Address GetMulticast (void) const;
 
   /**
    * \brief Make and return a MAC multicast address using the provided
@@ -343,7 +342,7 @@ public:
    * \see Mac48Address
    * \see Address
    */
-  virtual Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
+  virtual Address GetMulticast (Ipv4Address multicastGroup) const;
 
   /**
    * Is this a point to point link?

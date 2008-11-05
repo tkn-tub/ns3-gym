@@ -372,20 +372,8 @@ PointToPointNetDevice::IsMulticast (void) const
   return false;
 }
 
-//
-// Since we return false in the IsMulticast call, calls to other multicast
-// related methods returns are undefined according to the base class.  So we
-// can freely make something up, which is the base of the MAC multicast
-// address space.
-//
   Address 
-PointToPointNetDevice::GetMulticast (void) const
-{
-  return Mac48Address ("01:00:5e:00:00:00");
-}
-
-  Address 
-PointToPointNetDevice::MakeMulticastAddress (Ipv4Address multicastGroup) const
+PointToPointNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
   return Mac48Address ("01:00:5e:00:00:00");
 }

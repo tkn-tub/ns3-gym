@@ -253,12 +253,7 @@ WifiNetDevice::IsMulticast (void) const
   return false;
 }
 Address 
-WifiNetDevice::GetMulticast (void) const
-{
-  return Mac48Address::GetMulticastPrefix ();
-}
-Address 
-WifiNetDevice::MakeMulticastAddress (Ipv4Address multicastGroup) const
+WifiNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
   return Mac48Address::GetMulticast (multicastGroup);
 }

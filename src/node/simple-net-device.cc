@@ -148,12 +148,7 @@ SimpleNetDevice::IsMulticast (void) const
   return false;
 }
 Address 
-SimpleNetDevice::GetMulticast (void) const
-{
-  return Mac48Address::GetMulticastPrefix ();
-}
-Address 
-SimpleNetDevice::MakeMulticastAddress (Ipv4Address multicastGroup) const
+SimpleNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
   return Mac48Address::GetMulticast (multicastGroup);
 }
