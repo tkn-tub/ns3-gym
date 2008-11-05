@@ -20,7 +20,6 @@ all_modules = (
     'devices/point-to-point',
     'devices/csma',
     'devices/bridge',
-    'devices/tap',
     'devices/emu',
     'applications/onoff',
     'applications/packet-sink',
