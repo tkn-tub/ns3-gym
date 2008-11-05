@@ -33,7 +33,6 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("SqliteDataOutput");
 
-
 //--------------------------------------------------------------
 //----------------------------------------------
 SqliteDataOutput::SqliteDataOutput() :
@@ -232,7 +231,7 @@ SqliteDataOutput::SqliteOutputCallback::OutputSingleton(std::string key,
     m_runLabel << "', '" <<
     key << "', '" <<
     variable << "', " <<
-    val << ")";
+    val.GetTimeStep() << ")";
   m_owner->Exec(sstr.str());
   // end SqliteDataOutput::SqliteOutputCallback::OutputSingleton
 }

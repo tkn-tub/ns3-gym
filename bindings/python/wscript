@@ -118,6 +118,14 @@ def configure(conf):
         conf.report_optional_feature("python", "Python Bindings", False, str(ex))
         return
 
+    # Fix a bug with WAF and g++ 4.3.2 (it does not include "(GCC") in
+    # the output of g++ --version, so the WAF python detection fails
+    # to recognize it is gcc)
+    gcc_version = os.popen("%s --version" % conf.env['CXX']).readline()
+    if '(GCC)' in gcc_version or 'g++' in gcc_version:
+        conf.env.append_value('CXXFLAGS_PYEMBED','-fno-strict-aliasing')
+        conf.env.append_value('CXXFLAGS_PYEXT','-fno-strict-aliasing')
+
     ## Check for pybindgen
     if Params.g_options.pybindgen_checkout:
         fetch_pybindgen(conf)

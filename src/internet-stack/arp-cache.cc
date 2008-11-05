@@ -232,6 +232,11 @@ ArpCache::Flush (void)
       delete (*i).second;
     }
   m_arpCache.erase (m_arpCache.begin (), m_arpCache.end ());
+  if (m_waitReplyTimer.IsRunning ())
+    {
+      NS_LOG_LOGIC ("Stopping WaitReplyTimer at " << Simulator::Now ().GetSeconds () << " due to ArpCache flush");
+      m_waitReplyTimer.Cancel ();
+    }
 }
 
 ArpCache::Entry *
