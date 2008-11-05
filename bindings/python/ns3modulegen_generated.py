@@ -23,8 +23,10 @@ import ns3_module_stats
 import ns3_module_internet_stack
 import ns3_module_wifi
 import ns3_module_csma
+import ns3_module_emu
 import ns3_module_bridge
 import ns3_module_packet_sink
+import ns3_module_v4ping
 import ns3_module_global_routing
 import ns3_module_onoff
 import ns3_module_olsr
@@ -159,6 +161,17 @@ def register_types(module):
         ns3_module_csma__local.register_types(module)
     
     root_module.end_section('ns3_module_csma')
+    root_module.begin_section('ns3_module_emu')
+    ns3_module_emu.register_types(module)
+    
+    try:
+        import ns3_module_emu__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_emu__local.register_types(module)
+    
+    root_module.end_section('ns3_module_emu')
     root_module.begin_section('ns3_module_bridge')
     ns3_module_bridge.register_types(module)
     
@@ -181,6 +194,17 @@ def register_types(module):
         ns3_module_packet_sink__local.register_types(module)
     
     root_module.end_section('ns3_module_packet_sink')
+    root_module.begin_section('ns3_module_v4ping')
+    ns3_module_v4ping.register_types(module)
+    
+    try:
+        import ns3_module_v4ping__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_v4ping__local.register_types(module)
+    
+    root_module.end_section('ns3_module_v4ping')
     root_module.begin_section('ns3_module_global_routing')
     ns3_module_global_routing.register_types(module)
     
@@ -402,6 +426,17 @@ def register_methods(root_module):
         ns3_module_csma__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_csma')
+    root_module.begin_section('ns3_module_emu')
+    ns3_module_emu.register_methods(root_module)
+    
+    try:
+        import ns3_module_emu__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_emu__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_emu')
     root_module.begin_section('ns3_module_bridge')
     ns3_module_bridge.register_methods(root_module)
     
@@ -424,6 +459,17 @@ def register_methods(root_module):
         ns3_module_packet_sink__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_packet_sink')
+    root_module.begin_section('ns3_module_v4ping')
+    ns3_module_v4ping.register_methods(root_module)
+    
+    try:
+        import ns3_module_v4ping__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_v4ping__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_v4ping')
     root_module.begin_section('ns3_module_global_routing')
     ns3_module_global_routing.register_methods(root_module)
     
@@ -604,6 +650,17 @@ def register_functions(root_module):
         ns3_module_csma__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_csma')
+    root_module.begin_section('ns3_module_emu')
+    ns3_module_emu.register_functions(root_module)
+    
+    try:
+        import ns3_module_emu__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_emu__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_emu')
     root_module.begin_section('ns3_module_bridge')
     ns3_module_bridge.register_functions(root_module)
     
@@ -626,6 +683,17 @@ def register_functions(root_module):
         ns3_module_packet_sink__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_packet_sink')
+    root_module.begin_section('ns3_module_v4ping')
+    ns3_module_v4ping.register_functions(root_module)
+    
+    try:
+        import ns3_module_v4ping__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_v4ping__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_v4ping')
     root_module.begin_section('ns3_module_global_routing')
     ns3_module_global_routing.register_functions(root_module)
     

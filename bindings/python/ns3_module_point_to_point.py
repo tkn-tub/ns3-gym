@@ -200,13 +200,8 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## point-to-point-net-device.h: ns3::Address ns3::PointToPointNetDevice::GetMulticast() const [member function]
+    ## point-to-point-net-device.h: ns3::Address ns3::PointToPointNetDevice::GetMulticast(ns3::Ipv4Address multicastGroup) const [member function]
     cls.add_method('GetMulticast', 
-                   'ns3::Address', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## point-to-point-net-device.h: ns3::Address ns3::PointToPointNetDevice::MakeMulticastAddress(ns3::Ipv4Address multicastGroup) const [member function]
-    cls.add_method('MakeMulticastAddress', 
                    'ns3::Address', 
                    [param('ns3::Ipv4Address', 'multicastGroup')], 
                    is_const=True, is_virtual=True)

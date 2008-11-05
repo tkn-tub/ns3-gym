@@ -9,6 +9,8 @@ def register_types(module):
     module.add_class('BridgeHelper', allow_subclassing=False)
     ## csma-helper.h: ns3::CsmaHelper [class]
     module.add_class('CsmaHelper', allow_subclassing=False)
+    ## emu-helper.h: ns3::EmuHelper [class]
+    module.add_class('EmuHelper', allow_subclassing=False)
     ## internet-stack-helper.h: ns3::InternetStackHelper [class]
     module.add_class('InternetStackHelper', allow_subclassing=False)
     ## ipv4-address-helper.h: ns3::Ipv4AddressHelper [class]
@@ -39,6 +41,8 @@ def register_types(module):
     module.add_class('UdpEchoClientHelper', allow_subclassing=False)
     ## udp-echo-helper.h: ns3::UdpEchoServerHelper [class]
     module.add_class('UdpEchoServerHelper', allow_subclassing=False)
+    ## v4ping-helper.h: ns3::V4PingHelper [class]
+    module.add_class('V4PingHelper', allow_subclassing=False)
     ## wifi-helper.h: ns3::WifiHelper [class]
     module.add_class('WifiHelper', allow_subclassing=False)
     
@@ -86,6 +90,7 @@ def register_methods(root_module):
     register_Ns3ApplicationContainer_methods(root_module, root_module['ns3::ApplicationContainer'])
     register_Ns3BridgeHelper_methods(root_module, root_module['ns3::BridgeHelper'])
     register_Ns3CsmaHelper_methods(root_module, root_module['ns3::CsmaHelper'])
+    register_Ns3EmuHelper_methods(root_module, root_module['ns3::EmuHelper'])
     register_Ns3InternetStackHelper_methods(root_module, root_module['ns3::InternetStackHelper'])
     register_Ns3Ipv4AddressHelper_methods(root_module, root_module['ns3::Ipv4AddressHelper'])
     register_Ns3Ipv4InterfaceContainer_methods(root_module, root_module['ns3::Ipv4InterfaceContainer'])
@@ -101,6 +106,7 @@ def register_methods(root_module):
     register_Ns3StaticMulticastRouteHelper_methods(root_module, root_module['ns3::StaticMulticastRouteHelper'])
     register_Ns3UdpEchoClientHelper_methods(root_module, root_module['ns3::UdpEchoClientHelper'])
     register_Ns3UdpEchoServerHelper_methods(root_module, root_module['ns3::UdpEchoServerHelper'])
+    register_Ns3V4PingHelper_methods(root_module, root_module['ns3::V4PingHelper'])
     register_Ns3WifiHelper_methods(root_module, root_module['ns3::WifiHelper'])
     return
 
@@ -241,6 +247,65 @@ def register_Ns3CsmaHelper_methods(root_module, cls):
     cls.add_method('InstallStar', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'hub'), param('ns3::NodeContainer', 'spokes'), param('ns3::NetDeviceContainer &', 'hubDevices'), param('ns3::NetDeviceContainer &', 'spokeDevices')])
+    return
+
+def register_Ns3EmuHelper_methods(root_module, cls):
+    ## emu-helper.h: ns3::EmuHelper::EmuHelper(ns3::EmuHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EmuHelper const &', 'arg0')])
+    ## emu-helper.h: ns3::EmuHelper::EmuHelper() [constructor]
+    cls.add_constructor([])
+    ## emu-helper.h: void ns3::EmuHelper::SetQueue(std::string type, std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue()) [member function]
+    cls.add_method('SetQueue', 
+                   'void', 
+                   [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()')])
+    ## emu-helper.h: void ns3::EmuHelper::SetAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
+    ## emu-helper.h: static void ns3::EmuHelper::EnablePcap(std::string filename, uint32_t nodeid, uint32_t deviceid) [member function]
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
+                   is_static=True)
+    ## emu-helper.h: static void ns3::EmuHelper::EnablePcap(std::string filename, ns3::NetDeviceContainer d) [member function]
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('ns3::NetDeviceContainer', 'd')], 
+                   is_static=True)
+    ## emu-helper.h: static void ns3::EmuHelper::EnablePcap(std::string filename, ns3::NodeContainer n) [member function]
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('ns3::NodeContainer', 'n')], 
+                   is_static=True)
+    ## emu-helper.h: static void ns3::EmuHelper::EnablePcapAll(std::string filename) [member function]
+    cls.add_method('EnablePcapAll', 
+                   'void', 
+                   [param('std::string', 'filename')], 
+                   is_static=True)
+    ## emu-helper.h: static void ns3::EmuHelper::EnableAscii(std::ostream & os, uint32_t nodeid, uint32_t deviceid) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
+                   is_static=True)
+    ## emu-helper.h: static void ns3::EmuHelper::EnableAscii(std::ostream & os, ns3::NetDeviceContainer d) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('ns3::NetDeviceContainer', 'd')], 
+                   is_static=True)
+    ## emu-helper.h: static void ns3::EmuHelper::EnableAscii(std::ostream & os, ns3::NodeContainer n) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('ns3::NodeContainer', 'n')], 
+                   is_static=True)
+    ## emu-helper.h: static void ns3::EmuHelper::EnableAsciiAll(std::ostream & os) [member function]
+    cls.add_method('EnableAsciiAll', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_static=True)
+    ## emu-helper.h: ns3::NetDeviceContainer ns3::EmuHelper::Install(ns3::NodeContainer const & c) [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::NodeContainer const &', 'c')])
     return
 
 def register_Ns3InternetStackHelper_methods(root_module, cls):
@@ -665,6 +730,21 @@ def register_Ns3UdpEchoServerHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
                    [param('ns3::NodeContainer', 'c')])
+    return
+
+def register_Ns3V4PingHelper_methods(root_module, cls):
+    ## v4ping-helper.h: ns3::V4PingHelper::V4PingHelper(ns3::V4PingHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::V4PingHelper const &', 'arg0')])
+    ## v4ping-helper.h: ns3::V4PingHelper::V4PingHelper(ns3::Ipv4Address remote) [constructor]
+    cls.add_constructor([param('ns3::Ipv4Address', 'remote')])
+    ## v4ping-helper.h: void ns3::V4PingHelper::SetAttribute(std::string name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    ## v4ping-helper.h: ns3::ApplicationContainer ns3::V4PingHelper::Install(ns3::NodeContainer nodes) [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::NodeContainer', 'nodes')])
     return
 
 def register_Ns3WifiHelper_methods(root_module, cls):

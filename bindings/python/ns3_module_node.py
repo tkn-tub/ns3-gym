@@ -100,7 +100,7 @@ def register_types(module):
     ## net-device.h: ns3::NetDevice [class]
     module.add_class('NetDevice', parent=root_module['ns3::Object'])
     ## net-device.h: ns3::NetDevice::PacketType [enumeration]
-    module.add_enum('PacketType', ['PACKET_HOST', 'PACKET_BROADCAST', 'PACKET_MULTICAST', 'PACKET_OTHERHOST'], outer_class=root_module['ns3::NetDevice'])
+    module.add_enum('PacketType', ['PACKET_HOST', 'NS3_PACKET_HOST', 'PACKET_BROADCAST', 'NS3_PACKET_BROADCAST', 'PACKET_MULTICAST', 'NS3_PACKET_MULTICAST', 'PACKET_OTHERHOST', 'NS3_PACKET_OTHERHOST'], outer_class=root_module['ns3::NetDevice'])
     ## node.h: ns3::Node [class]
     module.add_class('Node', parent=root_module['ns3::Object'])
     ## packet-socket-factory.h: ns3::PacketSocketFactory [class]
@@ -2339,13 +2339,8 @@ def register_Ns3NetDevice_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## net-device.h: ns3::Address ns3::NetDevice::GetMulticast() const [member function]
+    ## net-device.h: ns3::Address ns3::NetDevice::GetMulticast(ns3::Ipv4Address multicastGroup) const [member function]
     cls.add_method('GetMulticast', 
-                   'ns3::Address', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## net-device.h: ns3::Address ns3::NetDevice::MakeMulticastAddress(ns3::Ipv4Address multicastGroup) const [member function]
-    cls.add_method('MakeMulticastAddress', 
                    'ns3::Address', 
                    [param('ns3::Ipv4Address', 'multicastGroup')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
@@ -2600,13 +2595,8 @@ def register_Ns3SimpleNetDevice_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## simple-net-device.h: ns3::Address ns3::SimpleNetDevice::GetMulticast() const [member function]
+    ## simple-net-device.h: ns3::Address ns3::SimpleNetDevice::GetMulticast(ns3::Ipv4Address multicastGroup) const [member function]
     cls.add_method('GetMulticast', 
-                   'ns3::Address', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## simple-net-device.h: ns3::Address ns3::SimpleNetDevice::MakeMulticastAddress(ns3::Ipv4Address multicastGroup) const [member function]
-    cls.add_method('MakeMulticastAddress', 
                    'ns3::Address', 
                    [param('ns3::Ipv4Address', 'multicastGroup')], 
                    is_const=True, is_virtual=True)
@@ -2664,18 +2654,10 @@ def register_Ns3SimpleNetDevice_methods(root_module, cls):
 
 def register_functions(root_module):
     module = root_module
-    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Mac48Address & ad) [free function]
-    module.add_function('ReadFrom', 
-                        'void', 
-                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Mac48Address &', 'ad')])
-    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Address & ad, uint32_t len) [free function]
-    module.add_function('ReadFrom', 
-                        'void', 
-                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Address &', 'ad'), param('uint32_t', 'len')])
-    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Ipv4Address & ad) [free function]
-    module.add_function('ReadFrom', 
-                        'void', 
-                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Ipv4Address &', 'ad')])
+    ## mac48-address.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeMac48AddressChecker() [free function]
+    module.add_function('MakeMac48AddressChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
     ## ipv4-address.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeIpv4AddressChecker() [free function]
     module.add_function('MakeIpv4AddressChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
@@ -2700,10 +2682,18 @@ def register_functions(root_module):
     module.add_function('MakeIpv4MaskChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
-    ## mac48-address.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeMac48AddressChecker() [free function]
-    module.add_function('MakeMac48AddressChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [])
+    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Mac48Address & ad) [free function]
+    module.add_function('ReadFrom', 
+                        'void', 
+                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Mac48Address &', 'ad')])
+    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Address & ad, uint32_t len) [free function]
+    module.add_function('ReadFrom', 
+                        'void', 
+                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Address &', 'ad'), param('uint32_t', 'len')])
+    ## address-utils.h: extern void ns3::ReadFrom(ns3::Buffer::Iterator & i, ns3::Ipv4Address & ad) [free function]
+    module.add_function('ReadFrom', 
+                        'void', 
+                        [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Ipv4Address &', 'ad')])
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)

@@ -144,9 +144,35 @@ public:
   virtual Address GetBroadcast (void) const;
 
   virtual bool IsMulticast (void) const;
-  virtual Address GetMulticast (void) const;
-  virtual Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
 
+  /**
+   * \brief Make and return a MAC multicast address using the provided
+   *        multicast group
+   *
+   * RFC 1112 says that an Ipv4 host group address is mapped to an Ethernet 
+   * multicast address by placing the low-order 23-bits of the IP address into 
+   * the low-order 23 bits of the Ethernet multicast address 
+   * 01-00-5E-00-00-00 (hex).
+   *
+   * This method performs the multicast address creation function appropriate
+   * to an EUI-48-based CSMA device.  This MAC address is encapsulated in an
+   *  abstract Address to avoid dependencies on the exact address format.
+   *
+   * \param multicastGroup The IP address for the multicast group destination
+   * of the packet.
+   * \return The MAC multicast Address used to send packets to the provided
+   * multicast group.
+   *
+   * \see Ipv4Address
+   * \see Mac48Address
+   * \see Address
+   */
+  virtual Address GetMulticast (Ipv4Address multicastGroup) const;
+
+  /**
+   * Is this a point to point link?
+   * \returns false.
+   */
   virtual bool IsPointToPoint (void) const;
 
   virtual bool Send(Ptr<Packet> packet, const Address &dest, uint16_t protocolNumber);

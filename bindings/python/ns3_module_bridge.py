@@ -158,13 +158,8 @@ def register_Ns3BridgeNetDevice_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## bridge-net-device.h: ns3::Address ns3::BridgeNetDevice::GetMulticast() const [member function]
+    ## bridge-net-device.h: ns3::Address ns3::BridgeNetDevice::GetMulticast(ns3::Ipv4Address multicastGroup) const [member function]
     cls.add_method('GetMulticast', 
-                   'ns3::Address', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## bridge-net-device.h: ns3::Address ns3::BridgeNetDevice::MakeMulticastAddress(ns3::Ipv4Address multicastGroup) const [member function]
-    cls.add_method('MakeMulticastAddress', 
                    'ns3::Address', 
                    [param('ns3::Ipv4Address', 'multicastGroup')], 
                    is_const=True, is_virtual=True)

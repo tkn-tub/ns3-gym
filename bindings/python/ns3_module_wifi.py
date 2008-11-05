@@ -2466,13 +2466,8 @@ def register_Ns3WifiNetDevice_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## wifi-net-device.h: ns3::Address ns3::WifiNetDevice::GetMulticast() const [member function]
+    ## wifi-net-device.h: ns3::Address ns3::WifiNetDevice::GetMulticast(ns3::Ipv4Address multicastGroup) const [member function]
     cls.add_method('GetMulticast', 
-                   'ns3::Address', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## wifi-net-device.h: ns3::Address ns3::WifiNetDevice::MakeMulticastAddress(ns3::Ipv4Address multicastGroup) const [member function]
-    cls.add_method('MakeMulticastAddress', 
                    'ns3::Address', 
                    [param('ns3::Ipv4Address', 'multicastGroup')], 
                    is_const=True, is_virtual=True)

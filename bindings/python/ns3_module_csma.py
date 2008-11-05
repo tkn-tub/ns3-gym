@@ -338,13 +338,8 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## csma-net-device.h: ns3::Address ns3::CsmaNetDevice::GetMulticast() const [member function]
+    ## csma-net-device.h: ns3::Address ns3::CsmaNetDevice::GetMulticast(ns3::Ipv4Address multicastGroup) const [member function]
     cls.add_method('GetMulticast', 
-                   'ns3::Address', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## csma-net-device.h: ns3::Address ns3::CsmaNetDevice::MakeMulticastAddress(ns3::Ipv4Address multicastGroup) const [member function]
-    cls.add_method('MakeMulticastAddress', 
                    'ns3::Address', 
                    [param('ns3::Ipv4Address', 'multicastGroup')], 
                    is_const=True, is_virtual=True)

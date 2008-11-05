@@ -502,44 +502,23 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
   NS_LOG_LOGIC ("Pkt source is " << header.GetSource ());
   NS_LOG_LOGIC ("Pkt destination is " << header.GetDestination ());
 
-  //
-  // An IP host group address is mapped to an Ethernet multicast address
-  // by placing the low-order 23-bits of the IP address into the low-order
-  // 23 bits of the Ethernet multicast address 01-00-5E-00-00-00 (hex).
-  //
-  // We are going to receive all packets destined to any multicast address,
-  // which means clearing the low-order 23 bits the header destination 
-  //
-  Mac48Address mcDest;
-  uint8_t      mcBuf[6];
-
-  header.GetDestination ().CopyTo (mcBuf);
-  mcBuf[3] &= 0x80;
-  mcBuf[4] = 0;
-  mcBuf[5] = 0;
-  mcDest.CopyFrom (mcBuf);
-
-  Mac48Address multicast = Mac48Address::ConvertFrom (GetMulticast ());
-  Mac48Address broadcast = Mac48Address::ConvertFrom (GetBroadcast ());
-  Mac48Address destination = Mac48Address::ConvertFrom (GetAddress ());
-
   LlcSnapHeader llc;
   packet->RemoveHeader (llc);
   uint16_t protocol = llc.GetType ();
 
   PacketType packetType;
       
-  if (header.GetDestination () == broadcast)
+  if (header.GetDestination ().IsBroadcast ())
     {
       NS_LOG_LOGIC ("Pkt destination is PACKET_BROADCAST");
       packetType = NS3_PACKET_BROADCAST;
     }
-  else if (mcDest == multicast)
+  else if (header.GetDestination ().IsMulticast ())
     {
       NS_LOG_LOGIC ("Pkt destination is PACKET_MULTICAST");
       packetType = NS3_PACKET_MULTICAST;
     }
-  else if (header.GetDestination () == destination)
+  else if (header.GetDestination () == m_address)
     {
       NS_LOG_LOGIC ("Pkt destination is PACKET_HOST");
       packetType = NS3_PACKET_HOST;
@@ -841,26 +820,21 @@ EmuNetDevice::IsMulticast (void) const
   return false;
 }
 
-Address 
-EmuNetDevice::GetMulticast (void) const
-{
-  return Mac48Address ("01:00:5e:00:00:00");
-}
-
-Address 
-EmuNetDevice::MakeMulticastAddress (Ipv4Address multicastGroup) const
+  Address 
+EmuNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
   NS_LOG_FUNCTION (multicastGroup);
 
-  Mac48Address addr = Mac48Address::GetMulticast (multicastGroup);
+  Mac48Address ad = Mac48Address::GetMulticast (multicastGroup);
 
   //
   // Implicit conversion (operator Address ()) is defined for Mac48Address, so
   // use it by just returning the EUI-48 address which is automagically converted
   // to an Address.
   //
-  NS_LOG_LOGIC ("Multicast address is " << addr);
-  return addr;
+  NS_LOG_LOGIC ("multicast address is " << ad);
+
+  return ad;
 }
 
 bool 
