@@ -69,14 +69,6 @@ public:
   void SetDataRate (DataRate bps);
 
   /**
-   * Set the inteframe gap used to separate packets.  The interframe gap
-   * defines the minimum space required between packets sent by this device.
-   *
-   * @param t the interframe gap time
-   */
-  void SetInterframeGap (Time t);
-
-  /**
    * Set a start time for the device.
    *
    * @param tStart the start time
@@ -101,17 +93,6 @@ public:
    * @param queue Ptr to the new queue.
    */
   void SetQueue (Ptr<Queue> queue);
-
-  /**
-   * Receive a packet.
-   *
-   * The EmuNetDevice receives packets from its socket reader
-   * and forwards them up the protocol stack.  This is the public method
-   * used by the reader to indicate that a packet has arrived at the device.
-   *
-   * @param p Ptr to the received packet.
-   */
-  void Receive (Ptr<Packet> p);
 
   /**
    * Assign a MAC address to this device.

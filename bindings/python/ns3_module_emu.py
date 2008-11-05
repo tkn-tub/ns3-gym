@@ -64,10 +64,6 @@ def register_Ns3EmuNetDevice_methods(root_module, cls):
     cls.add_method('SetDataRate', 
                    'void', 
                    [param('ns3::DataRate', 'bps')])
-    ## emu-net-device.h: void ns3::EmuNetDevice::SetInterframeGap(ns3::Time t) [member function]
-    cls.add_method('SetInterframeGap', 
-                   'void', 
-                   [param('ns3::Time', 't')])
     ## emu-net-device.h: void ns3::EmuNetDevice::Start(ns3::Time tStart) [member function]
     cls.add_method('Start', 
                    'void', 
@@ -80,10 +76,6 @@ def register_Ns3EmuNetDevice_methods(root_module, cls):
     cls.add_method('SetQueue', 
                    'void', 
                    [param('ns3::Ptr< ns3::Queue >', 'queue')])
-    ## emu-net-device.h: void ns3::EmuNetDevice::Receive(ns3::Ptr<ns3::Packet> p) [member function]
-    cls.add_method('Receive', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p')])
     ## emu-net-device.h: void ns3::EmuNetDevice::SetAddress(ns3::Mac48Address addr) [member function]
     cls.add_method('SetAddress', 
                    'void', 
