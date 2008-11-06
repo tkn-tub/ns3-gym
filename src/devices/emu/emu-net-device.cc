@@ -102,7 +102,7 @@ EmuNetDevice::EmuNetDevice ()
   m_stopEvent (),
   m_sock (-1),
   m_readThread (0),
-  m_ifIndex (-1),
+  m_ifIndex (std::numeric_limits<uint32_t>::max ()),  // absurdly large value
   m_sll_ifindex (-1),
   m_name ("Emu NetDevice")
 {
