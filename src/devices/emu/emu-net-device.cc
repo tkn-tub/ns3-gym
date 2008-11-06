@@ -153,7 +153,10 @@ EmuNetDevice::StartDevice (void)
   //
   // Spin up the emu net device and start receiving packets.
   //
-  NS_ASSERT_MSG (m_sock == -1, "EmuNetDevice::StartDevice(): Device is already started");
+  if (m_sock != -1)
+    {
+      NS_FATAL_ERROR ("EmuNetDevice::StartDevice(): Device is already started");
+    }
 
   NS_LOG_LOGIC ("Creating socket");
   //
@@ -172,7 +175,10 @@ EmuNetDevice::StartDevice (void)
 
   NS_LOG_LOGIC ("Getting interface index");
   int32_t rc = ioctl (m_sock, SIOCGIFINDEX, &ifr);
-  NS_ASSERT_MSG (rc != -1, "EmuNetDevice::StartDevice(): Can't get interface index");
+  if (rc == -1)
+    {
+      NS_FATAL_ERROR ("EmuNetDevice::StartDevice(): Can't get interface index");
+    }
 
   //
   // Save the real interface index for later calls to sendto
@@ -192,10 +198,16 @@ EmuNetDevice::StartDevice (void)
   NS_LOG_LOGIC ("Binding socket to interface");
 
   rc = bind (m_sock, (struct sockaddr *)&ll, sizeof (ll));
-  NS_ASSERT_MSG (rc != -1, "EmuNetDevice::StartDevice(): Can't bind to specified interface");
+  if (rc == -1)
+    {
+      NS_FATAL_ERROR ("EmuNetDevice::StartDevice(): Can't bind to specified interface");
+    }
 
   rc = ioctl(m_sock, SIOCGIFFLAGS, &ifr);
-  NS_ASSERT_MSG (rc != -1, "EmuNetDevice::StartDevice(): Can't get interface flags");
+  if (rc == -1)
+    {
+      NS_FATAL_ERROR ("EmuNetDevice::StartDevice(): Can't get interface flags");
+    }
   
   //
   // This device only works if the underlying interface is up in promiscuous 
@@ -216,7 +228,10 @@ EmuNetDevice::StartDevice (void)
   //
   // Now spin up a read thread to read packets.
   //
-  NS_ASSERT_MSG (m_readThread == 0, "EmuNetDevice::StartDevice(): Receive thread is already running");
+  if (m_readThread != 0)
+    {
+      NS_FATAL_ERROR ("EmuNetDevice::StartDevice(): Receive thread is already running");
+    }
 
   NS_LOG_LOGIC ("Spinning up read thread");
 
@@ -565,7 +580,11 @@ EmuNetDevice::ReadThread (void)
     {
       uint32_t bufferSize = 65536;
       uint8_t *buf = (uint8_t *)malloc (bufferSize);
-      NS_ASSERT_MSG (buf, "EmuNetDevice::ReadThread(): malloc packet buffer failed");
+      if (buf == 0)
+        {
+          NS_FATAL_ERROR ("EmuNetDevice::ReadThread(): malloc packet buffer failed");
+        }
+
       NS_LOG_LOGIC ("Calling recvfrom");
       len = recvfrom (m_sock, buf, bufferSize, 0, (struct sockaddr *)&addr, &addrSize);
 
@@ -636,7 +655,10 @@ EmuNetDevice::SendFrom (Ptr<Packet> packet, const Address &src, const Address &d
 
     NS_LOG_LOGIC ("Getting MAC address");
     int32_t rc = ioctl (m_sock, SIOCGIFHWADDR, &ifr);
-    NS_ASSERT_MSG (rc != -1, "EmuNetDevice::SendFrom(): Can't get MAC address");
+    if (rc == -1)
+      {
+        NS_FATAL_ERROR ("EmuNetDevice::SendFrom(): Can't get MAC address");
+      }
 
     std::ostringstream oss;
     oss << std::hex <<
@@ -694,7 +716,7 @@ void
 EmuNetDevice::SetDataRate(DataRate bps)
 {
   NS_LOG_FUNCTION (this << bps);
-  NS_ASSERT_MSG (false, "EmuNetDevice::SetDataRate():  Unable."); 
+  NS_FATAL_ERROR ("EmuNetDevice::SetDataRate():  Unable."); 
 }
 
 void
@@ -748,7 +770,7 @@ EmuNetDevice::GetIfIndex(void) const
 Ptr<Channel> 
 EmuNetDevice::GetChannel (void) const
 {
-  NS_ASSERT_MSG (false, "EmuNetDevice::GetChannel():  Unable."); 
+  NS_FATAL_ERROR ("EmuNetDevice::GetChannel():  Unable."); 
   return 0;
 }
 
@@ -769,7 +791,7 @@ EmuNetDevice::GetAddress (void) const
 bool 
 EmuNetDevice::SetMtu (const uint16_t mtu)
 {
-  NS_ASSERT_MSG (false, "EmuNetDevice::SetMtu():  Unable."); 
+  NS_FATAL_ERROR ("EmuNetDevice::SetMtu():  Unable."); 
   return false;
 }
 
@@ -782,8 +804,12 @@ EmuNetDevice::GetMtu (void) const
 
   int32_t fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_IP);
 
+
   int32_t rc = ioctl(fd, SIOCGIFMTU, &ifr);
-  NS_ASSERT_MSG (rc != -1, "EmuNetDevice::GetMtu(): Can't ioctl SIOCGIFMTU");
+  if (rc == -1)
+    {
+      NS_FATAL_ERROR ("EmuNetDevice::GetMtu(): Can't ioctl SIOCGIFMTU");
+    }
 
   close (fd);
 
@@ -846,7 +872,7 @@ EmuNetDevice::IsPointToPoint (void) const
 void
 EmuNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 {
-  NS_ASSERT_MSG (false, "EmuNetDevice::SetPromiscReceiveCallback(): Not implemented");
+  NS_FATAL_ERROR ("EmuNetDevice::SetPromiscReceiveCallback(): Not implemented");
 }
 
   bool 
