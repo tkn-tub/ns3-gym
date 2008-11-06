@@ -45,6 +45,8 @@
 #include <netpacket/packet.h>
 #include <arpa/inet.h>
 #include <errno.h>
+#include <limits>
+#include <stdlib.h>
 
 NS_LOG_COMPONENT_DEFINE ("EmuNetDevice");
 
