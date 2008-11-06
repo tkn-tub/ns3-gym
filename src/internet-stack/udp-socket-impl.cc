@@ -157,7 +157,8 @@ UdpSocketImpl::Bind (const Address &address)
   if (!InetSocketAddress::IsMatchingType (address))
     {
       NS_LOG_ERROR ("Not IsMatchingType");
-      return ERROR_INVAL;
+      m_errno = ERROR_INVAL;
+      return -1;
     }
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
