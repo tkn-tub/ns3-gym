@@ -922,19 +922,29 @@ class Regression(object):
                 print "Cannot locate reference traces in " + refTestDirName
                 return 1
 
-            shutil.rmtree("traces");
-            os.mkdir("traces")
+            
+            if refTestName is None:
+                traceDirName = testName + ".ref"
+            else:
+                traceDirName = refTestName
+            traceDirName = os.path.join ('traces', traceDirName)
+
+            try:
+                shutil.rmtree(traceDirName)
+            except OSError:
+                pass
+            os.mkdir(traceDirName)
 
             #os.system("./waf --cwd regression/traces --run " +
             #  testName + " > /dev/null 2>&1")
 
             if pyscript is None:
-                Params.g_options.cwd_launch = "traces"
+                Params.g_options.cwd_launch = traceDirName
                 run_program(testName, command_template=get_command_template(*arguments))
             else:
-                argv = [self.env['PYTHON'], os.path.join('..', '..', *os.path.split(pyscript))] + arguments
+                argv = [self.env['PYTHON'], os.path.join('..', '..', '..', *os.path.split(pyscript))] + arguments
                 before = os.getcwd()
-                os.chdir("traces")
+                os.chdir(traceDirName)
                 try:
                     _run_argv(argv)
                 finally:
@@ -942,7 +952,7 @@ class Regression(object):
 
             if verbose:
                 #diffCmd = "diff traces " + refTestDirName + " | head"
-                diffCmd = subprocess.Popen([self.env['DIFF'], "traces", refTestDirName],
+                diffCmd = subprocess.Popen([self.env['DIFF'], traceDirName, refTestDirName],
                                            stdout=subprocess.PIPE)
                 headCmd = subprocess.Popen("head", stdin=diffCmd.stdout)
                 rc2 = headCmd.wait()
@@ -950,7 +960,7 @@ class Regression(object):
                 rc1 = diffCmd.wait()
                 rc = rc1 or rc2
             else:
-                rc = subprocess.Popen([self.env['DIFF'], "traces", refTestDirName], stdout=dev_null()).wait()
+                rc = subprocess.Popen([self.env['DIFF'], traceDirName, refTestDirName], stdout=dev_null()).wait()
             if rc:
                 print "----------"
                 print "Traces differ in test: test-" + testName
@@ -958,7 +968,7 @@ class Regression(object):
                 print "Traces in directory: traces"
                 print "Rerun regression test as: " + \
                     "\"./waf --regression --regression-tests=test-" + testName + "\""
-                print "Then do \"diff -u regression/" + refTestDirName + " regression/traces" \
+                print "Then do \"diff -u regression/" + refTestDirName + " regression/" + traceDirName +\
                     "\" for details"
                 print "----------"
             return rc
@@ -1052,13 +1062,13 @@ def _run_regression_test(test):
     Arguments:
     test -- the name of the test
     """
+
     if os.path.exists("traces"):
         files = os.listdir("traces")
         for file in files:
             if file == '.' or file == '..':
                 continue
-            path = "traces" + os.sep + file
-            os.remove(path)
+            shutil.rmtree(os.path.join ("traces", file))
     else:
         os.mkdir("traces")
     
