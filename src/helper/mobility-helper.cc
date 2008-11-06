@@ -114,39 +114,45 @@ MobilityHelper::GetMobilityModelType (void) const
   return m_mobility.GetTypeId ().GetName ();
 }
 
+void
+MobilityHelper::Install (Ptr<Node> node) const
+{
+  Ptr<Object> object = node;
+  Ptr<MobilityModel> model = object->GetObject<MobilityModel> ();
+  if (model == 0)
+    {
+      model = m_mobility.Create ()->GetObject<MobilityModel> ();
+      if (model == 0)
+        {
+          NS_FATAL_ERROR ("The requested mobility model is not a mobility model: \""<< 
+                          m_mobility.GetTypeId ().GetName ()<<"\"");
+        }
+      if (m_mobilityStack.empty ())
+        {
+          NS_LOG_DEBUG ("node="<<object<<", mob="<<model);
+          object->AggregateObject (model);
+        }
+      else
+        {
+          // we need to setup a hierarchical mobility model
+          Ptr<MobilityModel> parent = m_mobilityStack.back ();
+          Ptr<MobilityModel> hierarchical = 
+            CreateObject<HierarchicalMobilityModel> ("Child", PointerValue (model),
+                                                     "Parent", PointerValue (parent));
+          object->AggregateObject (hierarchical);
+          NS_LOG_DEBUG ("node="<<object<<", mob="<<hierarchical);
+        }
+    }
+  Vector position = m_position->GetNext ();
+  model->SetPosition (position);
+}
+
 void 
-MobilityHelper::Install (NodeContainer c)
+MobilityHelper::Install (NodeContainer c) const
 {
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
-      Ptr<Object> object = *i;
-      Ptr<MobilityModel> model = object->GetObject<MobilityModel> ();
-      if (model == 0)
-        {
-          model = m_mobility.Create ()->GetObject<MobilityModel> ();
-          if (model == 0)
-            {
-              NS_FATAL_ERROR ("The requested mobility model is not a mobility model: \""<< 
-                              m_mobility.GetTypeId ().GetName ()<<"\"");
-            }
-          if (m_mobilityStack.empty ())
-            {
-              NS_LOG_DEBUG ("node="<<object<<", mob="<<model);
-              object->AggregateObject (model);
-            }
-          else
-            {
-              // we need to setup a hierarchical mobility model
-              Ptr<MobilityModel> parent = m_mobilityStack.back ();
-              Ptr<MobilityModel> hierarchical = 
-                CreateObject<HierarchicalMobilityModel> ("Child", PointerValue (model),
-                                                         "Parent", PointerValue (parent));
-              object->AggregateObject (hierarchical);
-              NS_LOG_DEBUG ("node="<<object<<", mob="<<hierarchical);
-            }
-        }
-      Vector position = m_position->GetNext ();
-      model->SetPosition (position);
+      Install (*i);
     }
 }
 

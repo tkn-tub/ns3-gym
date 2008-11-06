@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef INTERNET_STACK_HELPER_H
 #define INTERNET_STACK_HELPER_H
 
@@ -28,7 +29,7 @@
 namespace ns3 {
 
 /**
- * \brief aggregate ip/tcp/udp functionality to existing Nodes.
+ * \brief aggregate IP/TCP/UDP functionality to existing Nodes.
  */
 class InternetStackHelper
 {
@@ -36,28 +37,43 @@ public:
   InternetStackHelper(void);
 
   /**
-   * \param c the set of nodes
-   *
-   * For each node in the input container, aggregate implementations
-   * of the ns3::Ipv4, ns3::Udp, and, ns3::Tcp classes.  The program
-   * will assert if this method is called on a container with a node
-   * that already has an Ipv4 object aggregated to it.
+   * Aggregate implementations of the ns3::Ipv4, ns3::Udp, and ns3::Tcp classes
+   * onto the provided node.  This method will assert if called on a node that 
+   * already has an Ipv4 object aggregated to it.
    * 
+   * \param node The node on which to install the stack.
    */
-  void Install (NodeContainer c);
+  void Install (Ptr<Node> node) const;
 
   /**
+   * For each node in the input container, aggregate implementations of the 
+   * ns3::Ipv4, ns3::Udp, and, ns3::Tcp classes.  The program will assert 
+   * if this method is called on a container with a node that already has
+   * an Ipv4 object aggregated to it.
+   * 
+   * \param c NodeContainer that holds the set of nodes on which to install the
+   * new stacks.
+   */
+  void Install (NodeContainer c) const;
+
+  /**
+   * \brief Enable or disable use of the Network Simulation Cradle stack.  
+   *
+   * Give the NSC stack a shared library file name to use when creating the 
+   * statck implementation.  By providing a non-empty string as a parameter, you
+   * select the NSC version of the stack.  By providing an empty string, you 
+   * select the ns-3 default version.
+   *
    * \param soname name of the shared library with the nsc tcp stack
-   * to use, e.g. 'liblinux2.6.26.so'. The empty string resets
-   * the InternetStackHelper to use the ns-3 models again.
+   * to use, e.g. 'liblinux2.6.26.so'.
    */
   void SetNscStack(std::string soname);
 
   /**
-   * \param filename filename prefix to use for pcap files.
-   *
    * Enable pcap output on each protocol instance which is of the
    * ns3::Ipv4L3Protocol type.  Both Tx and Rx events will be logged.
+   *
+   * \param filename filename prefix to use for pcap files.
    *
    * \warning If you perform multiple simulations in a single script,
    * each iteration of the simulation will result in the trace files

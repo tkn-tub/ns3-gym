@@ -38,19 +38,31 @@ UdpEchoServerHelper::SetAttribute (
   m_factory.Set (name, value);
 }
 
+ApplicationContainer
+UdpEchoServerHelper::Install (Ptr<Node> node) const
+{
+  return ApplicationContainer (InstallPriv (node));
+}
 
-ApplicationContainer 
-UdpEchoServerHelper::Install (NodeContainer c)
+ApplicationContainer
+UdpEchoServerHelper::Install (NodeContainer c) const
 {
   ApplicationContainer apps;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
-      Ptr<Node> node = *i;
-      Ptr<UdpEchoServer> server = m_factory.Create<UdpEchoServer> ();
-      node->AddApplication (server);
-      apps.Add (server);
+      apps.Add (InstallPriv (*i));
     }
+
   return apps;
+}
+
+Ptr<Application>
+UdpEchoServerHelper::InstallPriv (Ptr<Node> node) const
+{
+  Ptr<Application> app = m_factory.Create<UdpEchoServer> ();
+  node->AddApplication (app);
+  
+  return app;
 }
 
 UdpEchoClientHelper::UdpEchoClientHelper (Ipv4Address address, uint16_t port)
@@ -68,18 +80,31 @@ UdpEchoClientHelper::SetAttribute (
   m_factory.Set (name, value);
 }
 
-ApplicationContainer 
-UdpEchoClientHelper::Install (NodeContainer c)
+ApplicationContainer
+UdpEchoClientHelper::Install (Ptr<Node> node) const
+{
+  return ApplicationContainer (InstallPriv (node));
+}
+
+ApplicationContainer
+UdpEchoClientHelper::Install (NodeContainer c) const
 {
   ApplicationContainer apps;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
-      Ptr<Node> node = *i;
-      Ptr<UdpEchoClient> client = m_factory.Create<UdpEchoClient> ();
-      node->AddApplication (client);
-      apps.Add (client);
+      apps.Add (InstallPriv (*i));
     }
-  return apps;  
+
+  return apps;
+}
+
+Ptr<Application>
+UdpEchoClientHelper::InstallPriv (Ptr<Node> node) const
+{
+  Ptr<Application> app = m_factory.Create<UdpEchoClient> ();
+  node->AddApplication (app);
+  
+  return app;
 }
 
 } // namespace ns3

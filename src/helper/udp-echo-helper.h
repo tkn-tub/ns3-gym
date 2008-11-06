@@ -34,9 +34,13 @@ public:
   UdpEchoServerHelper (uint16_t port);
 
   void SetAttribute (std::string name, const AttributeValue &value);
-  ApplicationContainer Install (NodeContainer c);
 
- private:
+  ApplicationContainer Install (Ptr<Node> node) const;
+  ApplicationContainer Install (NodeContainer c) const;
+
+private:
+  Ptr<Application> InstallPriv (Ptr<Node> node) const;
+
   ObjectFactory m_factory;
 };
 
@@ -46,12 +50,14 @@ public:
   UdpEchoClientHelper (Ipv4Address ip, uint16_t port);
 
   void SetAttribute (std::string name, const AttributeValue &value);
-  ApplicationContainer Install (NodeContainer c);
 
- private:
+  ApplicationContainer Install (Ptr<Node> node) const;
+  ApplicationContainer Install (NodeContainer c) const;
+
+private:
+  Ptr<Application> InstallPriv (Ptr<Node> node) const;
   ObjectFactory m_factory;
 };
-
 
 } // namespace ns3
 

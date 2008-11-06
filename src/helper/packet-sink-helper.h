@@ -34,8 +34,25 @@ public:
 
   void SetAttribute (std::string name, const AttributeValue &value);
 
-  ApplicationContainer Install (NodeContainer c);
+  /**
+   * Install an ns3::PacketSinkApplication on each node of the input container
+   * configured with all the attributes set with SetAttribute.
+   *
+   * \param c NodeContainer of the set of nodes on which a PacketSinkApplication 
+   * will be installed.
+   */
+  ApplicationContainer Install (NodeContainer c) const;
+
+  /**
+   * Install an ns3::PacketSinkApplication on each node of the input container
+   * configured with all the attributes set with SetAttribute.
+   *
+   * \param c The node on which a PacketSinkApplication will be installed.
+   */
+  ApplicationContainer Install (Ptr<Node> node) const;
+
 private:
+  Ptr<Application> InstallPriv (Ptr<Node> node) const;
   ObjectFactory m_factory;
 };
 

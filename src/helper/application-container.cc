@@ -21,6 +21,14 @@
 
 namespace ns3 {
 
+ApplicationContainer::ApplicationContainer ()
+{}
+
+ApplicationContainer::ApplicationContainer (Ptr<Application> app)
+{
+  m_applications.push_back (app);
+}
+
 ApplicationContainer::Iterator 
 ApplicationContainer::Begin (void) const
 {

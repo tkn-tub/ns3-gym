@@ -15,19 +15,31 @@ V4PingHelper::SetAttribute (std::string name, const AttributeValue &value)
   m_factory.Set (name, value);
 }
 
-ApplicationContainer 
-V4PingHelper::Install (NodeContainer nodes)
+ApplicationContainer
+V4PingHelper::Install (Ptr<Node> node) const
+{
+  return ApplicationContainer (InstallPriv (node));
+}
+
+ApplicationContainer
+V4PingHelper::Install (NodeContainer c) const
 {
   ApplicationContainer apps;
-  for (NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i)
+  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
-      Ptr<Node> node = *i;
-      Ptr<V4Ping> ping = m_factory.Create<V4Ping> ();
-      node->AddApplication (ping);
-      apps.Add (ping);
+      apps.Add (InstallPriv (*i));
     }
+
   return apps;
 }
 
+Ptr<Application>
+V4PingHelper::InstallPriv (Ptr<Node> node) const
+{
+  Ptr<V4Ping> app = m_factory.Create<V4Ping> ();
+  node->AddApplication (app);
+
+  return app;
+}
 
 } // namespace ns3

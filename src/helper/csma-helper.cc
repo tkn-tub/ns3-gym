@@ -173,30 +173,51 @@ CsmaHelper::EnableAsciiAll (std::ostream &os)
   EnableAscii (os, NodeContainer::GetGlobal ());
 }
 
-
-NetDeviceContainer 
-CsmaHelper::Install (const NodeContainer &c)
+NetDeviceContainer
+CsmaHelper::Install (Ptr<Node> node) const
 {
   Ptr<CsmaChannel> channel = m_channelFactory.Create ()->GetObject<CsmaChannel> ();
+  return Install (node, channel);
+}
+
+NetDeviceContainer
+CsmaHelper::Install (Ptr<Node> node, Ptr<CsmaChannel> channel) const
+{
+  return NetDeviceContainer (InstallPriv (node, channel));
+}
+
+NetDeviceContainer 
+CsmaHelper::Install (const NodeContainer &c) const
+{
+  Ptr<CsmaChannel> channel = m_channelFactory.Create ()->GetObject<CsmaChannel> ();
+
   return Install (c, channel);
 }
 
 NetDeviceContainer 
-CsmaHelper::Install (const NodeContainer &c, Ptr<CsmaChannel> channel)
+CsmaHelper::Install (const NodeContainer &c, Ptr<CsmaChannel> channel) const
 {
-  NetDeviceContainer container;
+  NetDeviceContainer devs;
+
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); i++)
     {
-      Ptr<Node> node = *i;
-      Ptr<CsmaNetDevice> device = m_deviceFactory.Create<CsmaNetDevice> ();
-      device->SetAddress (Mac48Address::Allocate ());
-      node->AddDevice (device);
-      Ptr<Queue> queue = m_queueFactory.Create<Queue> ();
-      device->SetQueue (queue);
-      device->Attach (channel);
-      container.Add (device);
+      devs.Add (InstallPriv (*i, channel));
     }
-  return container;
+
+  return devs;
+}
+
+Ptr<NetDevice>
+CsmaHelper::InstallPriv (Ptr<Node> node, Ptr<CsmaChannel> channel) const
+{
+  Ptr<CsmaNetDevice> device = m_deviceFactory.Create<CsmaNetDevice> ();
+  device->SetAddress (Mac48Address::Allocate ());
+  node->AddDevice (device);
+  Ptr<Queue> queue = m_queueFactory.Create<Queue> ();
+  device->SetQueue (queue);
+  device->Attach (channel);
+
+  return device;
 }
 
 void 

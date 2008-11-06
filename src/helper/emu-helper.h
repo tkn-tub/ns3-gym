@@ -155,11 +155,26 @@ public:
   static void EnableAsciiAll (std::ostream &os);
 
   /**
-   * \param c a set of nodes
+   * This method creates an ns3::EmuNetDevice with the attributes configured by 
+   * EmuHelper::SetDeviceAttribute and then adds the device to the node.
+   *
+   * \param node The node to install the device in
+   * \returns A containter holding the added net device.
    */
-  NetDeviceContainer Install (const NodeContainer &c);
+  NetDeviceContainer Install (Ptr<Node> node) const;
+
+  /**
+   * For each Ptr<node> in the provided container this method creates an 
+   * ns3::EmuNetDevice (with the attributes configured by 
+   * EmuHelper::SetDeviceAttribute); adds the device to the node.
+   *
+   * \param c The NodeContainer holding the nodes to be changed.
+   * \returns A containter holding the added net devices.
+   */
+  NetDeviceContainer Install (const NodeContainer &c) const;
 
 private:
+  Ptr<NetDevice> InstallPriv (Ptr<Node> node) const;
   static void RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
   static void EnqueueEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
   static void AsciiEnqueueEvent (std::ostream *os, std::string path, 

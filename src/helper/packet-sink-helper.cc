@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #include "packet-sink-helper.h"
 #include "ns3/string.h"
 #include "ns3/inet-socket-address.h"
@@ -52,19 +53,31 @@ PacketSinkHelper::SetTcpLocal (Ipv4Address ip, uint16_t port)
 }
 #endif
 
-ApplicationContainer 
-PacketSinkHelper::Install (NodeContainer c)
+ApplicationContainer
+PacketSinkHelper::Install (Ptr<Node> node) const
+{
+  return ApplicationContainer (InstallPriv (node));
+}
+
+ApplicationContainer
+PacketSinkHelper::Install (NodeContainer c) const
 {
   ApplicationContainer apps;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
-      Ptr<Node> node = *i;
-      Ptr<Application> app = m_factory.Create<Application> ();
-      node->AddApplication (app);
-      apps.Add (app);
+      apps.Add (InstallPriv (*i));
     }
+
   return apps;
 }
 
+Ptr<Application>
+PacketSinkHelper::InstallPriv (Ptr<Node> node) const
+{
+  Ptr<Application> app = m_factory.Create<Application> ();
+  node->AddApplication (app);
+
+  return app;
+}
 
 } // namespace ns3

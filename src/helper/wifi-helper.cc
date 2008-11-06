@@ -239,36 +239,58 @@ WifiHelper::EnableAsciiAll (std::ostream &os)
 }
 
 NetDeviceContainer
-WifiHelper::Install (NodeContainer c) const
+WifiHelper::Install (Ptr<Node> node) const
+{
+  return Install (NodeContainer (node));
+}
+
+NetDeviceContainer
+WifiHelper::Install (Ptr<Node> node, Ptr<WifiChannel> channel) const
+{
+  return NetDeviceContainer (InstallPriv (node, channel));
+}
+
+NetDeviceContainer 
+WifiHelper::Install (const NodeContainer &c) const
 {
   Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
   channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
   Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
   log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
   channel->SetPropagationLossModel (log);
+
   return Install (c, channel);
 }
-NetDeviceContainer
-WifiHelper::Install (NodeContainer c, Ptr<WifiChannel> channel) const
+
+NetDeviceContainer 
+WifiHelper::Install (const NodeContainer &c, Ptr<WifiChannel> channel) const
 {
-  NetDeviceContainer devices;
+  NetDeviceContainer devs;
+
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); i++)
     {
-      Ptr<Node> node = *i;
-      Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
-      Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
-      Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
-      Ptr<WifiPhy> phy = m_phy.Create<WifiPhy> ();
-      mac->SetAddress (Mac48Address::Allocate ());
-      device->SetMac (mac);
-      device->SetPhy (phy);
-      device->SetRemoteStationManager (manager);
-      device->SetChannel (channel);
-      node->AddDevice (device);
-      devices.Add (device);
-      NS_LOG_DEBUG ("node="<<node<<", mob="<<node->GetObject<MobilityModel> ());
+      devs.Add (InstallPriv (*i, channel));
     }
-  return devices;
+
+  return devs;
+}
+
+Ptr<NetDevice>
+WifiHelper::InstallPriv (Ptr<Node> node, Ptr<WifiChannel> channel) const
+{
+  Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
+  Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
+  Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
+  Ptr<WifiPhy> phy = m_phy.Create<WifiPhy> ();
+  mac->SetAddress (Mac48Address::Allocate ());
+  device->SetMac (mac);
+  device->SetPhy (phy);
+  device->SetRemoteStationManager (manager);
+  device->SetChannel (channel);
+  node->AddDevice (device);
+  NS_LOG_DEBUG ("node="<<node<<", mob="<<node->GetObject<MobilityModel> ());
+
+  return device;
 }
 
 } // namespace ns3

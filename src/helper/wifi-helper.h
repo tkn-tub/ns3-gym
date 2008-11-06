@@ -218,35 +218,65 @@ public:
   static void EnableAsciiAll (std::ostream &os);
 
   /**
-   * \param c a set of nodes
+   * This method creates a new ns3::WifiNetDevice that is configured with an 
+   * ns3::WifiRemoteStationManager, ns3::WifiMac and ns3::WifiPhy, all of which 
+   * are created based on the user-specified attributes in 
+   * WifiHelper::SetRemoteStationManager, WifiHelper::SetMac, and 
+   * WifiHelper::SetPhy.  It attaches this new device to the provided node.  It 
+   * also creates a simple ns3::WifiChannel (with a default ns3::PropagationLossModel
+   * and ns3::PropagationDelayModel) and attaches the new channel to the new device. 
    *
-   * This method creates a simple ns3::WifiChannel (with a default
-   * ns3::PropagationLossModel and ns3::PropagationDelayModel) and 
-   * creates, for each of the input nodes, a new ns3::WifiNetDevice 
-   * attached to this shared channel. Each ns3::WifiNetDevice is also
-   * configured with an ns3::WifiRemoteStationManager, ns3::WifiMac, and,
-   * ns3::WifiPhy, all of which are created based on the user-specified
-   * attributes specified in WifiHelper::SetRemoteStationManager, 
-   * WifiHelper::SetMac, and, WifiHelper::SetPhy.
+   * \param node The node to install the device in
+   * \returns A containter holding the added net device.
    */
-  NetDeviceContainer Install (NodeContainer c) const;
+  NetDeviceContainer Install (Ptr<Node> node) const;
+
   /**
-   * \param channel a channel to use
-   * \param c a set of nodes
+   * This method creates a new ns3::WifiNetDevice that is configured with an 
+   * ns3::WifiRemoteStationManager, ns3::WifiMac and ns3::WifiPhy, all of which 
+   * are created based on the user-specified attributes in 
+   * WifiHelper::SetRemoteStationManager, WifiHelper::SetMac, and 
+   * WifiHelper::SetPhy.  It attaches this new device to the provided node and
+   * attaches the new device to the provided channel.
    *
-   * For each of the input nodes, a new ns3::WifiNetDevice is attached 
-   * to the shared input channel. Each ns3::WifiNetDevice is also
-   * configured with an ns3::WifiRemoteStationManager, ns3::WifiMac, and,
-   * ns3::WifiPhy, all of which are created based on the user-specified
-   * attributes specified in WifiHelper::SetRemoteStationManager, 
-   * WifiHelper::SetMac, and, WifiHelper::SetPhy.
-   *
-   * The user is expected to attach to the input channel a proper 
-   * ns3::PropagationLossModel, and ns3::PropagationDelayModel.
+   * \param node The node to install the device in
+   * \param channel The chanel to attach to the device.
+   * \returns A containter holding the added net device.
    */
-  NetDeviceContainer Install (NodeContainer c, Ptr<WifiChannel> channel) const;
+  NetDeviceContainer Install (Ptr<Node> node, Ptr<WifiChannel> channel) const;
+
+  /**
+   * This method creates a simple ns3::WifiChannel (with a default 
+   * ns3::PropagationLossModel and ns3::PropagationDelayModel).  For each 
+   * Ptr<Node> in the provided NodeContainer, this method creates a new 
+   * ns3::WifiNetDevice that is configured with an ns3::WifiRemoteStationManager,
+   * ns3::WifiMac and ns3::WifiPhy, all of which are created based on the 
+   * user-specified attributes in WifiHelper::SetRemoteStationManager, 
+   * WifiHelper::SetMac, and WifiHelper::SetPhy.  It attaches these new devices to
+   * their corresponding nodes and attaches the new devices to the new channel.
+   *
+   * \param c The NodeContainer holding the nodes to be changed.
+   * \returns A containter holding the added net devices.
+   */
+  NetDeviceContainer Install (const NodeContainer &c) const;
+
+  /**
+   * For each Ptr<Node> in the provided NodeContainer, this method creates a new 
+   * ns3::WifiNetDevice that is configured with an ns3::WifiRemoteStationManager,
+   * ns3::WifiMac and ns3::WifiPhy, all of which are created based on the 
+   * user-specified attributes in WifiHelper::SetRemoteStationManager, 
+   * WifiHelper::SetMac, and WifiHelper::SetPhy.  It attaches these new devices to
+   * their corresponding nodes and attaches the new devices to the provided channel.
+   *
+   * \param c The NodeContainer holding the nodes to be changed.
+   * \param channel The channel to attach to the devices.
+   * \returns A containter holding the added net devices.
+   */
+  NetDeviceContainer Install (const NodeContainer &c, Ptr<WifiChannel> channel) const;
 
 private:
+  Ptr<NetDevice> InstallPriv (Ptr<Node> node, Ptr<WifiChannel> channel) const;
+
   ObjectFactory m_stationManager;
   ObjectFactory m_mac;
   ObjectFactory m_phy;

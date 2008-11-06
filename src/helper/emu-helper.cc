@@ -188,29 +188,35 @@ EmuHelper::EnableAsciiAll (std::ostream &os)
   EnableAscii (os, NodeContainer::GetGlobal ());
 }
 
-  NetDeviceContainer 
-EmuHelper::Install (const NodeContainer &c)
+NetDeviceContainer
+EmuHelper::Install (Ptr<Node> node) const
 {
-  NS_LOG_FUNCTION (&c);
-  NetDeviceContainer container;
+  return NetDeviceContainer (InstallPriv (node));
+}
+
+NetDeviceContainer 
+EmuHelper::Install (const NodeContainer &c) const
+{
+  NetDeviceContainer devs;
+
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); i++)
     {
-      Ptr<Node> node = *i;
-
-      Ptr<EmuNetDevice> device = m_deviceFactory.Create<EmuNetDevice> ();
-      //
-      // This is a mac address used for ns-3 internal things.  It cannot override the real MAC address on the NIC in
-      // question.  We use it to spoof the MAC address so packets flowing over the network from the emu device will
-      // have this address, and our ARP will resolve it.
-      //
-      device->SetAddress (Mac48Address::Allocate ());
-      node->AddDevice (device);
-
-      Ptr<Queue> queue = m_queueFactory.Create<Queue> ();
-      device->SetQueue (queue);
-      container.Add (device);
+      devs.Add (InstallPriv (*i));
     }
-  return container;
+
+  return devs;
+}
+
+  Ptr<NetDevice>
+EmuHelper::InstallPriv (Ptr<Node> node) const
+{
+  Ptr<EmuNetDevice> device = m_deviceFactory.Create<EmuNetDevice> ();
+  device->SetAddress (Mac48Address::Allocate ());
+  node->AddDevice (device);
+  Ptr<Queue> queue = m_queueFactory.Create<Queue> ();
+  device->SetQueue (queue);
+
+  return device;
 }
 
   void 
