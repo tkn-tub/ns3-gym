@@ -64,9 +64,6 @@ Ipv4AddressHelper::SetBase (
   NS_ASSERT_MSG((m_network & ~m_mask) == 0,
     "Ipv4AddressHelper::SetBase(): Inconsistent network and mask");
 
-  NS_ASSERT_MSG((m_address & m_mask) == 0,
-    "Ipv4AddressHelper::SetBase(): Inconsistent address and mask");
-
 //
 // Figure out how much to shift network numbers to get them aligned, and what
 // the maximum allowed address is with respect to the current mask.
