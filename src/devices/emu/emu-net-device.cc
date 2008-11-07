@@ -865,6 +865,17 @@ EmuNetDevice::GetMulticast (Ipv4Address multicastGroup) const
   return ad;
 }
 
+Address
+EmuNetDevice::GetMulticast (Ipv6Address addr) const
+{
+  NS_LOG_FUNCTION(this << addr);
+
+  Mac48Address ad = Mac48Address::GetMulticast (addr);
+  NS_LOG_LOGIC("MAC IPv6 multicast address is " << ad);
+
+  return ad;
+}
+
 bool 
 EmuNetDevice::IsPointToPoint (void) const
 {

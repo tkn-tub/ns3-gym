@@ -106,6 +106,7 @@ public:
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
   virtual void SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom () const;
+  virtual Address GetMulticast (Ipv6Address addr) const;
 
 protected:
   virtual void DoDispose (void);

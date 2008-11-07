@@ -378,6 +378,13 @@ PointToPointNetDevice::GetMulticast (Ipv4Address multicastGroup) const
   return Mac48Address ("01:00:5e:00:00:00");
 }
 
+Address
+PointToPointNetDevice::GetMulticast (Ipv6Address addr) const
+{
+  NS_LOG_FUNCTION(this << addr);
+  return Mac48Address ("33:33:00:00:00:00");
+}
+
   bool 
 PointToPointNetDevice::IsPointToPoint (void) const
 {

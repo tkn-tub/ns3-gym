@@ -106,3 +106,7 @@ def build(bld):
     obj = bld.create_ns3_program('csma-ping',
         ['csma', 'internet-stack', 'v4ping'])
     obj.source = 'csma-ping.cc'
+
+    obj = bld.create_ns3_program('test-ipv6',
+      ['point-to-point', 'internet-stack'])
+    obj.source = 'test-ipv6.cc'

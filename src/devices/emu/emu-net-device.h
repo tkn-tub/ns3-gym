@@ -151,6 +151,15 @@ public:
   virtual Address GetMulticast (Ipv4Address multicastGroup) const;
 
   /**
+   * \brief Get the MAC multicast address corresponding
+   * to the IPv6 address provided.
+   * \param addr IPv6 address
+   * \return the MAC multicast address
+   * \warning Calling this method is invalid if IsMulticast returns not true.
+   */
+  virtual Address GetMulticast (Ipv6Address addr) const;
+
+  /**
    * Is this a point to point link?
    * \returns false.
    */

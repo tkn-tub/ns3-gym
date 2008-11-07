@@ -380,6 +380,10 @@ BridgeNetDevice::DoDispose (void)
   NetDevice::DoDispose ();
 }
 
-
+Address BridgeNetDevice::GetMulticast (Ipv6Address addr) const
+{
+  NS_LOG_FUNCTION (this << addr);
+  return Mac48Address::GetMulticast (addr);
+}
 
 } // namespace ns3

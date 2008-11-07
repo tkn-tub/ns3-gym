@@ -600,6 +600,20 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
   NS_LOG_FUNCTION (packet << senderDevice);
   NS_LOG_LOGIC ("UID is " << packet->GetUid ());
 
+  /* IPv6 support*/
+  uint8_t mac[6];
+  Mac48Address multicast6AllNodes("33:33:00:00:00:01");
+  Mac48Address multicast6AllRouters("33:33:00:00:00:02");
+  Mac48Address multicast6AllHosts("33:33:00:00:00:03");
+  Mac48Address multicast6Node; /* multicast address addressed to our MAC address */
+
+  /* generate IPv6 multicast ethernet destination that nodes will accept */
+  GetAddress().CopyTo(mac);
+  mac[0]=0x33;
+  mac[1]=0x33;
+  /* mac[2]=0xff; */
+  multicast6Node.CopyFrom(mac);
+
   //
   // We never forward up packets that we sent. Real devices don't do this since
   // their receivers are disabled during send, so we don't. Drop the packet
@@ -672,7 +686,11 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
           packetType = PACKET_BROADCAST;
           m_rxTrace (originalPacket);
         }
-      else if (header.GetDestination ().IsMulticast ())
+      else if (header.GetDestination ().IsMulticast () ||
+          header.GetDestination() == multicast6Node ||
+          header.GetDestination() == multicast6AllNodes ||
+          header.GetDestination() == multicast6AllRouters ||
+          header.GetDestination() == multicast6AllHosts)
         {
           packetType = PACKET_MULTICAST;          
           m_rxTrace (originalPacket);
@@ -920,6 +938,14 @@ CsmaNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
   NS_LOG_FUNCTION (&cb);
   m_rxCallback = cb;
+}
+
+Address CsmaNetDevice::GetMulticast (Ipv6Address addr) const
+{
+  Mac48Address ad = Mac48Address::GetMulticast (addr);
+
+  NS_LOG_LOGIC("MAC IPv6 multicast address is " << ad);
+  return ad;
 }
 
   void 

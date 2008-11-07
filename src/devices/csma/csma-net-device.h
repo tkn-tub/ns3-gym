@@ -392,6 +392,15 @@ public:
    */
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
 
+  /**
+   * \brief Get the MAC multicast address corresponding
+   * to the IPv6 address provided.
+   * \param addr IPv6 address
+   * \return the MAC multicast address
+   * \warning Calling this method is invalid if IsMulticast returns not true.
+   */
+  virtual Address GetMulticast (Ipv6Address addr) const;
+
 
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom (void) const;

@@ -67,6 +67,9 @@ public:
   virtual void SetNode (Ptr<Node> node);
   virtual bool NeedsArp (void) const;
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
+
+  virtual Address GetMulticast (Ipv6Address addr) const;
+
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom (void) const;
 

@@ -257,6 +257,10 @@ WifiNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
   return Mac48Address::GetMulticast (multicastGroup);
 }
+Address WifiNetDevice::GetMulticast (Ipv6Address addr) const
+{
+  return Mac48Address::GetMulticast (addr);
+}
 bool 
 WifiNetDevice::IsPointToPoint (void) const
 {

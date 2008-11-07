@@ -152,6 +152,12 @@ SimpleNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
   return Mac48Address::GetMulticast (multicastGroup);
 }
+
+Address SimpleNetDevice::GetMulticast (Ipv6Address addr) const
+{
+	return Mac48Address::GetMulticast (addr);
+}
+
 bool 
 SimpleNetDevice::IsPointToPoint (void) const
 {

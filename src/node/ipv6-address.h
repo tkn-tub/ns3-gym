@@ -1,0 +1,427 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2007-2008 Louis Pasteur University
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Sebastien Vincent <vincent@clarinet.u-strasbg.fr>
+ */
+
+#ifndef IPV6_ADDRESS_H
+#define IPV6_ADDRESS_H
+
+#include <stdint.h>
+#include <string.h>
+
+#include <ostream>
+
+#include "address.h"
+#include "ns3/attribute-helper.h"
+
+namespace ns3 { 
+
+class Ipv6Prefix;
+class Mac48Address;
+
+/**
+ * \class Ipv6Address
+ * \brief Describes an IPv6 address.
+ * \see Ipv6Prefix
+ */
+class Ipv6Address
+{
+  public :
+    /**
+     * \brief Default constructor.
+     */
+    Ipv6Address ();
+
+    /**
+     * \brief Constructs an Ipv6Address by parsing the input C-string.
+     * \param address the C-string containing the IPv6 address (e.g. 2001:660:4701::1).
+     */
+    Ipv6Address (char const* address);
+
+    /**
+     * \brief Constructs an Ipv6Address by using the input 16 bytes.
+     * \param address the 128-bit address
+     * \warning the parameter must point on a 16 bytes integer array!
+     */
+    Ipv6Address (uint8_t address[16]);
+
+    /**
+     * \brief Copy constructor.
+     * \param addr Ipv6Address object
+     */
+    Ipv6Address (Ipv6Address const & addr);
+
+    /**
+     * \brief Copy constructor.
+     * \param addr Ipv6Address pointer
+     */
+    Ipv6Address (Ipv6Address const* addr);
+
+    /**
+     * \brief Destructor.
+     */
+    ~Ipv6Address ();
+
+    /**
+     * \brief Sets an Ipv6Address by parsing the input C-string.
+     * \param address the C-string containing the IPv6 address (e.g. 2001:660:4701::1).
+     */
+    void Set (char const* address);
+
+    /**
+     * \brief Set an Ipv6Address by using the input 16 bytes.
+     *
+     * \param address the 128-bit address
+     * \warning the parameter must point on a 16 bytes integer array!
+     */
+    void Set (uint8_t address[16]);
+
+    /**
+     * \brief Comparison operation between two Ipv6Addresses.
+     *
+     * \param other the IPv6 address to which to compare thisaddress
+     * \return true if the addresses are equal, false otherwise
+     */
+    bool IsEqual (const Ipv6Address& other) const;
+
+    /**
+     * \brief Serialize this address to a 16-byte buffer.
+     * \param buf the output buffer to which this address gets overwritter with this
+     * Ipv6Address
+     */
+    void Serialize (uint8_t buf[16]) const;
+
+    /**
+     * \brief Deserialize this address.
+     * \param buf buffer to read address from
+     * \return an Ipv6Address
+     */
+    static Ipv6Address Deserialize (const uint8_t buf[16]);
+
+    /**
+     * \brief Make the solicited IPv6 address.
+     * \param addr the IPv6 address
+     * \return Solicited IPv6 address
+     */
+    static Ipv6Address MakeSolicitedAddress (Ipv6Address addr);
+
+    /**
+     * \brief Make the autoconfigured IPv6 address with Mac48Address.
+     * \param addr the MAC address (48 bits).
+     * \param prefix the IPv6 prefix
+     * \return autoconfigured IPv6 address
+     */
+    static Ipv6Address MakeAutoconfiguredAddress (Mac48Address addr, Ipv6Address prefix);
+
+    /**
+     * \brief Make the autoconfigured link-local IPv6 address with Mac48Address.
+     * \param mac the MAC address (48 bits).
+     * \return autoconfigured link-local IPv6 address
+     */
+    static Ipv6Address MakeAutoconfiguredLinkLocalAddress (Mac48Address mac);
+
+    /**
+     * \brief Print this address to the given output stream.
+     *
+     * The print format is in the typical "2001:660:4701::1".
+     * \param os the output stream to which this Ipv6Address is printed
+     */
+    void Print (std::ostream& os) const;
+
+    /**
+     * \brief If the IPv6 address is localhost (::1).
+     * \return true if localhost, false otherwise
+     */
+    bool IsLocalhost () const;
+
+    /**
+     * \brief If the IPv6 address is multicast (ff00::/8).
+     * \return true if multicast, false otherwise
+     */
+    bool IsMulticast () const;
+
+    /**
+     * \brief If the IPv6 address is "all nodes multicast" (ff02::1/8).
+     * \return true if "all nodes multicast", false otherwise
+     */
+    bool IsAllNodesMulticast () const;
+
+    /**
+     * \brief If the IPv6 address is "all routers multicast" (ff02::2/8).
+     * \return true if "all routers multicast", false otherwise
+     */
+    bool IsAllRoutersMulticast () const;
+
+    /**
+     * \brief If the IPv6 address is "all hosts multicast" (ff02::3/8).
+     * \return true if "all hosts multicast", false otherwise
+     */
+    bool IsAllHostsMulticast () const;
+
+    /**
+     * \brief If the IPv6 address is a link-local address (fe80::/64).
+     * \return true if the address is link-local, false otherwise
+     */
+    bool IsLinkLocal () const;
+
+    /**
+     * \brief If the IPv6 address is a Solicited multicast address.
+     * \return true if it is, false otherwise
+     */
+    bool IsSolicitedMulticast () const;
+
+    /**
+     * \brief If the IPv6 address is the "Any" address.
+     * \return true if it is, false otherwise
+     */
+    bool IsAny () const;
+
+    /**
+     * \brief Combine this address with a prefix.
+     * \param prefix a IPv6 prefix
+     * \return an IPv6 address that is this address combined
+     * (bitwise AND) with a prefix, yielding an IPv6 network address.
+     */
+    Ipv6Address CombinePrefix (Ipv6Prefix const & prefix);
+
+    /**
+     * \brief If the Address matches the type.
+     * \param address other address
+     * \return true if the type matches, false otherwise
+     */
+    static bool IsMatchingType (const Address& address);
+
+    /**
+     * \brief Convert to Address object
+     */
+    operator Address () const;
+
+    /**
+     * \brief Convert the Address object into an Ipv6Address one.
+     * \return an Ipv6Address
+     */
+    static Ipv6Address ConvertFrom (const Address& address);
+
+    /**
+     * \brief Get the 0 (::) Ipv6Address.
+     * \return the :: Ipv6Address representation
+     */
+    static Ipv6Address GetZero ();
+
+    /**
+     * \brief Get the "any" (::) Ipv6Address.
+     * \return the "any" (::) Ipv6Address
+     */
+    static Ipv6Address GetAny ();
+
+    /**
+     * \brief Get the "all nodes multicast" address.
+     * \return the "ff02::2/8" Ipv6Address representation
+     */
+    static Ipv6Address GetAllNodesMulticast ();
+
+    /**
+     * \brief Get the "all routers multicast" address.
+     * \return the "ff02::2/8" Ipv6Address representation
+     */
+    static Ipv6Address GetAllRoutersMulticast ();
+
+    /**
+     * \brief Get the "all hosts multicast" address.
+     * \return the "ff02::3/8" Ipv6Address representation
+     */
+    static Ipv6Address GetAllHostsMulticast ();
+
+    /**
+     * \brief Get the loopback address.
+     * \return the "::1/128" Ipv6Address representation.
+     */
+    static Ipv6Address GetLoopback ();
+
+    /**
+     * \brief Get the bytes corresponding to the address.
+     * \param buf buffer to store the data
+     * \return bytes of the address
+     */
+    void GetBytes (uint8_t buf[16]) const;
+
+  private:
+    /**
+     * \brief convert the IPv6Address object to an Address object.
+     * \return the Address object corresponding to this object.
+     */
+    Address ConvertTo (void) const;
+
+    /**
+     * \brief Return the Type of address.
+     * \return type of address
+     */
+    static uint8_t GetType (void);
+
+    /**
+     * \brief The address representation on 128 bits (16 bytes).
+     */
+    uint8_t m_address[16];
+
+    friend bool operator == (Ipv6Address const &a, Ipv6Address const &b);
+    friend bool operator != (Ipv6Address const &a, Ipv6Address const &b);
+    friend bool operator < (Ipv6Address const &a, Ipv6Address const &b);
+};
+
+/**
+ * \class Ipv6Prefix
+ * \brief Describes an IPv6 prefix. It is just a bitmask like Ipv4Mask.
+ * \see Ipv6Address
+ */
+class Ipv6Prefix
+{
+  public:
+    /**
+     * \brief Default constructor.
+     */
+    Ipv6Prefix ();
+
+    /**
+     * \brief Constructs an Ipv6Prefix by using the input 16 bytes.
+     * \param prefix the 128-bit prefix
+     */
+    Ipv6Prefix (uint8_t prefix[16]);
+
+    /**
+     * \brief Constructs an Ipv6Prefix by using the input string.
+     * \param prefix the 128-bit prefix
+     */
+    Ipv6Prefix (char const* prefix);
+
+    /**
+     * \brief Constructs an Ipv6Prefix by using the input number of bits.
+     * \param prefix number of bits of the prefix (0 - 128)
+     * \note A valid number of bits is between 0 and 128).
+     */
+    Ipv6Prefix (uint8_t prefix);
+
+    /**
+     * \brief Copy constructor.
+     * \param prefix Ipv6Prefix object
+     */
+    Ipv6Prefix (Ipv6Prefix const& prefix);
+
+    /**
+     * \brief Copy constructor.
+     * \param prefix Ipv6Prefix pointer
+     */
+    Ipv6Prefix (Ipv6Prefix const* prefix);
+
+    /**
+     * \brief Destructor.
+     */
+    ~Ipv6Prefix ();
+
+    /**
+     * \brief If the Address match the type.
+     * \param a a first address
+     * \param b a second address
+     * \return true if the type match, false otherwise
+     */
+    bool IsMatch (Ipv6Address a, Ipv6Address b) const;
+
+    /**
+     * \brief Get the bytes corresponding to the prefix.
+     * \param buf buffer to store the data
+     */
+    void GetBytes (uint8_t buf[16]) const;
+
+    /**
+     * \brief Comparison operation between two Ipv6Prefix.
+     * \param other the IPv6 prefix to which to compare this prefix
+     * \return true if the prefixes are equal, false otherwise
+     */
+    bool IsEqual (const Ipv6Prefix& other) const;
+
+    /**
+     * \brief Print this address to the given output stream.
+     *
+     * The print format is in the typicall "2001:660:4701::1".
+     * \param os the output stream to which this Ipv6Address is printed
+     */
+    void Print (std::ostream &os) const;
+
+    /**
+     * \brief Get the loopback prefix ( /128).
+     * \return a Ipv6Prefix corresponding to loopback prefix
+     */
+    static Ipv6Prefix GetLoopback ();
+
+    /**
+     * \brief Get the zero prefix ( /0).
+     * \return an Ipv6Prefix
+     */
+    static Ipv6Prefix GetZero ();
+
+  private:
+    /**
+     * \brief The prefix representation.
+     */
+    uint8_t m_prefix[16];
+};
+
+/**
+ * \class ns3::Ipv6AddressValue
+ * \brief hold objects of type ns3::Ipv6Address
+ */
+ATTRIBUTE_HELPER_HEADER (Ipv6Address);
+
+/**
+ * \class ns3::Ipv6PrefixValue
+ * \brief hold objects of type ns3::Ipv6Prefix
+ */
+ATTRIBUTE_HELPER_HEADER (Ipv6Prefix);
+
+std::ostream& operator << (std::ostream& os, Ipv6Address const& address);
+std::ostream& operator<< (std::ostream& os, Ipv6Prefix const& prefix);
+std::istream & operator >> (std::istream &is, Ipv6Address &address);
+std::istream & operator >> (std::istream &is, Ipv6Prefix &prefix);
+
+inline bool operator == (const Ipv6Address& a, const Ipv6Address& b)
+{
+  return (!memcmp (a.m_address, b.m_address, 16));
+}
+
+inline bool operator != (const Ipv6Address& a, const Ipv6Address& b)
+{
+  return memcmp (a.m_address, b.m_address, 16);
+}
+
+inline bool operator < (const Ipv6Address& a, const Ipv6Address& b)
+{
+  return (memcmp (a.m_address, b.m_address, 16) < 0);
+}
+
+class Ipv6AddressHash : public std::unary_function<Ipv6Address, size_t>
+{
+  public:
+    size_t operator() (Ipv6Address const &x) const;
+};
+
+bool operator == (Ipv6Prefix const &a, Ipv6Prefix const &b);
+bool operator != (Ipv6Prefix const &a, Ipv6Prefix const &b);
+
+} /* namespace ns3 */
+
+#endif /* IPV6_ADDRESS_H */
+

@@ -100,6 +100,8 @@ public:
   virtual bool NeedsArp (void) const;
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
 
+  virtual Address GetMulticast (Ipv6Address addr) const;
+
   virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom (void) const;
