@@ -25,7 +25,7 @@
 /// \brief	Implementation of our routing table.
 ///
 
-#include "routing-table.h"
+#include "olsr-routing-table.h"
 #include "ns3/packet.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/log.h"
@@ -220,6 +220,29 @@ RoutingTable::AddEntry (Ipv4Address const &dest,
   AddEntry (dest, next, 0, distance);
 }
 
+void
+RoutingTable::SetMainAddress (Ipv4Address mainAddress)
+{
+  m_mainAddress = mainAddress;
+}
+
+void
+RoutingTable::SetIpv4 (Ptr<Ipv4> ipv4)
+{
+  m_ipv4 = ipv4;
+}
+
+std::vector<RoutingTableEntry>
+RoutingTable::GetEntries () const
+{
+  std::vector<RoutingTableEntry> retval;
+  for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();
+       iter != m_table.end (); iter++)
+    {
+      retval.push_back (iter->second);
+    }
+  return retval;
+}
 
 ///
 /// \brief Returns the number of entries in the routing table.

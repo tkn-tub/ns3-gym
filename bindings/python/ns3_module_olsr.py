@@ -63,8 +63,13 @@ def register_types_ns3_olsr(module):
     module.add_class('Tc', outer_class=root_module['ns3::olsr::MessageHeader'])
     ## olsr-header.h: ns3::olsr::PacketHeader [class]
     module.add_class('PacketHeader', parent=root_module['ns3::Header'])
+    ## olsr-routing-table.h: ns3::olsr::RoutingTable [class]
+    module.add_class('RoutingTable', parent=root_module['ns3::Ipv4RoutingProtocol'])
+    ## olsr-routing-table.h: ns3::olsr::RoutingTableEntry [struct]
+    module.add_class('RoutingTableEntry')
     module.add_container('std::vector< ns3::olsr::MessageHeader::Hello::LinkMessage >', 'ns3::olsr::MessageHeader::Hello::LinkMessage', container_type='vector')
     module.add_container('std::vector< ns3::olsr::MessageHeader::Hna::Association >', 'ns3::olsr::MessageHeader::Hna::Association', container_type='vector')
+    module.add_container('std::vector< ns3::olsr::RoutingTableEntry >', 'ns3::olsr::RoutingTableEntry', container_type='vector')
 
 def register_methods(root_module):
     register_Ns3OlsrAgent_methods(root_module, root_module['ns3::olsr::Agent'])
@@ -76,6 +81,8 @@ def register_methods(root_module):
     register_Ns3OlsrMessageHeaderMid_methods(root_module, root_module['ns3::olsr::MessageHeader::Mid'])
     register_Ns3OlsrMessageHeaderTc_methods(root_module, root_module['ns3::olsr::MessageHeader::Tc'])
     register_Ns3OlsrPacketHeader_methods(root_module, root_module['ns3::olsr::PacketHeader'])
+    register_Ns3OlsrRoutingTable_methods(root_module, root_module['ns3::olsr::RoutingTable'])
+    register_Ns3OlsrRoutingTableEntry_methods(root_module, root_module['ns3::olsr::RoutingTableEntry'])
     return
 
 def register_Ns3OlsrAgent_methods(root_module, cls):
@@ -103,6 +110,11 @@ def register_Ns3OlsrAgent_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
+    ## olsr-agent.h: ns3::Ptr<const ns3::olsr::RoutingTable> ns3::olsr::Agent::GetRoutingTable() const [member function]
+    cls.add_method('GetRoutingTable', 
+                   'ns3::Ptr< ns3::olsr::RoutingTable const >', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
 def register_Ns3OlsrMessageHeader_methods(root_module, cls):
@@ -436,6 +448,87 @@ def register_Ns3OlsrPacketHeader_methods(root_module, cls):
     cls.add_method('SetPacketSequenceNumber', 
                    'void', 
                    [param('uint16_t', 'seqnum')])
+    return
+
+def register_Ns3OlsrRoutingTable_methods(root_module, cls):
+    ## olsr-routing-table.h: ns3::olsr::RoutingTable::RoutingTable(ns3::olsr::RoutingTable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::olsr::RoutingTable const &', 'arg0')])
+    ## olsr-routing-table.h: ns3::olsr::RoutingTable::RoutingTable() [constructor]
+    cls.add_constructor([])
+    ## olsr-routing-table.h: void ns3::olsr::RoutingTable::SetIpv4(ns3::Ptr<ns3::Ipv4> ipv4) [member function]
+    cls.add_method('SetIpv4', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Ipv4 >', 'ipv4')])
+    ## olsr-routing-table.h: void ns3::olsr::RoutingTable::SetMainAddress(ns3::Ipv4Address mainAddress) [member function]
+    cls.add_method('SetMainAddress', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'mainAddress')])
+    ## olsr-routing-table.h: void ns3::olsr::RoutingTable::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [])
+    ## olsr-routing-table.h: uint32_t ns3::olsr::RoutingTable::GetSize() const [member function]
+    cls.add_method('GetSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## olsr-routing-table.h: std::vector<ns3::olsr::RoutingTableEntry,std::allocator<ns3::olsr::RoutingTableEntry> > ns3::olsr::RoutingTable::GetEntries() const [member function]
+    cls.add_method('GetEntries', 
+                   'std::vector< ns3::olsr::RoutingTableEntry >', 
+                   [], 
+                   is_const=True)
+    ## olsr-routing-table.h: void ns3::olsr::RoutingTable::RemoveEntry(ns3::Ipv4Address const & dest) [member function]
+    cls.add_method('RemoveEntry', 
+                   'void', 
+                   [param('ns3::Ipv4Address const &', 'dest')])
+    ## olsr-routing-table.h: void ns3::olsr::RoutingTable::AddEntry(ns3::Ipv4Address const & dest, ns3::Ipv4Address const & next, uint32_t interface, uint32_t distance) [member function]
+    cls.add_method('AddEntry', 
+                   'void', 
+                   [param('ns3::Ipv4Address const &', 'dest'), param('ns3::Ipv4Address const &', 'next'), param('uint32_t', 'interface'), param('uint32_t', 'distance')])
+    ## olsr-routing-table.h: void ns3::olsr::RoutingTable::AddEntry(ns3::Ipv4Address const & dest, ns3::Ipv4Address const & next, ns3::Ipv4Address const & interfaceAddress, uint32_t distance) [member function]
+    cls.add_method('AddEntry', 
+                   'void', 
+                   [param('ns3::Ipv4Address const &', 'dest'), param('ns3::Ipv4Address const &', 'next'), param('ns3::Ipv4Address const &', 'interfaceAddress'), param('uint32_t', 'distance')])
+    ## olsr-routing-table.h: bool ns3::olsr::RoutingTable::Lookup(ns3::Ipv4Address const & dest, ns3::olsr::RoutingTableEntry & outEntry) const [member function]
+    cls.add_method('Lookup', 
+                   'bool', 
+                   [param('ns3::Ipv4Address const &', 'dest'), param('ns3::olsr::RoutingTableEntry &', 'outEntry')], 
+                   is_const=True)
+    ## olsr-routing-table.h: bool ns3::olsr::RoutingTable::FindSendEntry(ns3::olsr::RoutingTableEntry const & entry, ns3::olsr::RoutingTableEntry & outEntry) const [member function]
+    cls.add_method('FindSendEntry', 
+                   'bool', 
+                   [param('ns3::olsr::RoutingTableEntry const &', 'entry'), param('ns3::olsr::RoutingTableEntry &', 'outEntry')], 
+                   is_const=True)
+    ## olsr-routing-table.h: bool ns3::olsr::RoutingTable::RequestRoute(uint32_t ifIndex, ns3::Ipv4Header const & ipHeader, ns3::Ptr<ns3::Packet> packet, ns3::Callback<void,bool,const ns3::Ipv4Route&,ns3::Ptr<ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty> routeReply) [member function]
+    cls.add_method('RequestRoute', 
+                   'bool', 
+                   [param('uint32_t', 'ifIndex'), param('ns3::Ipv4Header const &', 'ipHeader'), param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Callback< void, bool, ns3::Ipv4Route const &, ns3::Ptr< ns3::Packet >, ns3::Ipv4Header const &, ns3::empty, ns3::empty >', 'routeReply')], 
+                   is_virtual=True)
+    ## olsr-routing-table.h: bool ns3::olsr::RoutingTable::RequestIfIndex(ns3::Ipv4Address destination, uint32_t & ifIndex) [member function]
+    cls.add_method('RequestIfIndex', 
+                   'bool', 
+                   [param('ns3::Ipv4Address', 'destination'), param('uint32_t &', 'ifIndex')], 
+                   is_virtual=True)
+    ## olsr-routing-table.h: void ns3::olsr::RoutingTable::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    return
+
+def register_Ns3OlsrRoutingTableEntry_methods(root_module, cls):
+    ## olsr-routing-table.h: ns3::olsr::RoutingTableEntry::destAddr [variable]
+    cls.add_instance_attribute('destAddr', 'ns3::Ipv4Address', is_const=False)
+    ## olsr-routing-table.h: ns3::olsr::RoutingTableEntry::nextAddr [variable]
+    cls.add_instance_attribute('nextAddr', 'ns3::Ipv4Address', is_const=False)
+    ## olsr-routing-table.h: ns3::olsr::RoutingTableEntry::interface [variable]
+    cls.add_instance_attribute('interface', 'uint32_t', is_const=False)
+    ## olsr-routing-table.h: ns3::olsr::RoutingTableEntry::distance [variable]
+    cls.add_instance_attribute('distance', 'uint32_t', is_const=False)
+    ## olsr-routing-table.h: ns3::olsr::RoutingTableEntry::RoutingTableEntry(ns3::olsr::RoutingTableEntry const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::olsr::RoutingTableEntry const &', 'arg0')])
+    ## olsr-routing-table.h: ns3::olsr::RoutingTableEntry::RoutingTableEntry() [constructor]
+    cls.add_constructor([])
     return
 
 def register_functions(root_module):

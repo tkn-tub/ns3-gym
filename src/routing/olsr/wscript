@@ -6,7 +6,7 @@ def build(bld):
     module.source = [
         'olsr-header.cc',
         'olsr-state.cc',
-        'routing-table.cc',
+        'olsr-routing-table.cc',
         'olsr-agent.cc',
         'olsr-agent-impl.cc',
         ]
@@ -16,5 +16,6 @@ def build(bld):
     headers.source = [
         'olsr-agent.h',
         'olsr-header.h',
+        'olsr-routing-table.h'
         ]
 

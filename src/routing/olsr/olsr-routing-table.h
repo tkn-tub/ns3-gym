@@ -75,13 +75,14 @@ public:
 	
   RoutingTable () {}
 
-  void SetIpv4 (Ptr<Ipv4> ipv4) {m_ipv4 = ipv4;}
-  void SetMainAddress (Ipv4Address mainAddress) {m_mainAddress = mainAddress;}
+  void SetIpv4 (Ptr<Ipv4> ipv4);
+  void SetMainAddress (Ipv4Address mainAddress);
 
   ~RoutingTable () {}
 
   void Clear ();
   uint32_t GetSize () const { return m_table.size (); }
+  std::vector<RoutingTableEntry> GetEntries () const;
   void RemoveEntry (const Ipv4Address &dest);
   void AddEntry (const Ipv4Address &dest,
                  const Ipv4Address &next,
