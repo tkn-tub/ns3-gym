@@ -92,6 +92,29 @@ InternetStackHelper::Install (Ptr<Node> node) const
 }
 
 void
+InternetStackHelper::EnableAscii (std::ostream &os, NodeContainer n)
+{
+  Packet::EnablePrinting ();
+  std::ostringstream oss;
+  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
+    {
+      Ptr<Node> node = *i;
+      oss << "/NodeList/" << node->GetId () << "/$ns3::Ipv4L3Protocol/Drop";
+      Config::Connect (oss.str (), MakeBoundCallback (&InternetStackHelper::AsciiDropEvent, &os));
+      oss.str ("");
+      oss << "/NodeList/" << node->GetId () << "/$ns3::ArpL3Protocol/Drop";
+      Config::Connect (oss.str (), MakeBoundCallback (&InternetStackHelper::AsciiDropEvent, &os));
+      oss.str ("");
+    }
+}
+
+void
+InternetStackHelper::EnableAsciiAll (std::ostream &os)
+{
+  EnableAscii (os, NodeContainer::GetGlobal ());
+}
+
+void
 InternetStackHelper::EnablePcapAll (std::string filename)
 {
   Simulator::ScheduleDestroy (&InternetStackHelper::Cleanup);
@@ -155,6 +178,13 @@ InternetStackHelper::GetStream (uint32_t nodeId, uint32_t interfaceId)
   trace.writer->WriteIpHeader ();
   m_traces.push_back (trace);
   return trace.writer;
+}
+
+void
+InternetStackHelper::AsciiDropEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+{
+  *os << "d " << Simulator::Now ().GetSeconds () << " ";
+  *os << path << " " << *packet << std::endl;
 }
 
 } // namespace ns3

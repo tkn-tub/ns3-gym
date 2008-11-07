@@ -70,6 +70,25 @@ public:
   void SetNscStack(std::string soname);
 
   /**
+   * \param os output stream
+   * \param n node container
+   *
+   * Enable ascii output on these drop traces, for each node in the NodeContainer..
+   * /NodeList/[i]/$ns3ArpL3Protocol/Drop 
+   * /NodeList/[i]/$ns3Ipv4L3Protocol/Drop 
+   */
+  static void EnableAscii (std::ostream &os, NodeContainer n);
+
+  /**
+   * \param os output stream
+   *
+   * Enable ascii output on these drop traces, for all nodes.
+   * /NodeList/[i]/$ns3ArpL3Protocol/Drop 
+   * /NodeList/[i]/$ns3Ipv4L3Protocol/Drop 
+   */
+  static void EnableAsciiAll (std::ostream &os);
+
+  /**
    * Enable pcap output on each protocol instance which is of the
    * ns3::Ipv4L3Protocol type.  Both Tx and Rx events will be logged.
    *
@@ -95,6 +114,7 @@ private:
     uint32_t interfaceId;
     Ptr<PcapWriter> writer;
   };
+  static void AsciiDropEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
   static std::string m_pcapBaseFilename;
   static uint32_t GetNodeIndex (std::string context);
   static std::vector<Trace> m_traces;
