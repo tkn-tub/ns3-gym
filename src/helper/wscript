@@ -10,7 +10,6 @@ def build(bld):
         'static-multicast-route-helper.cc',
         'point-to-point-helper.cc',
         'csma-helper.cc',
-        'emu-helper.cc',
         'mobility-helper.cc',
         'ns2-mobility-helper.cc',
         'ipv4-address-helper.cc',
@@ -35,7 +34,6 @@ def build(bld):
         'static-multicast-route-helper.h',
         'point-to-point-helper.h',
         'csma-helper.h',
-        'emu-helper.h',
         'mobility-helper.h',
         'ns2-mobility-helper.h',
         'ipv4-address-helper.h',
@@ -49,3 +47,13 @@ def build(bld):
         'bridge-helper.h',
         'v4ping-helper.h',
         ]
+
+    env = bld.env_of_name('default')
+    if env['ENABLE_EMU']:
+        helper.source.extend([
+                'emu-helper.cc',
+                ])
+        headers.source.extend([
+                'emu-helper.h',
+                ])
+
