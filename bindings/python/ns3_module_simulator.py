@@ -58,10 +58,10 @@ def register_types(module):
     ## realtime-simulator-impl.h: ns3::RealtimeSimulatorImpl::SynchronizationMode [enumeration]
     module.add_enum('SynchronizationMode', ['SYNC_BEST_EFFORT', 'SYNC_HARD_LIMIT'], outer_class=root_module['ns3::RealtimeSimulatorImpl'])
     
-    ## Register a nested module for the namespace internal
+    ## Register a nested module for the namespace Config
     
-    nested_module = module.add_cpp_namespace('internal')
-    register_types_ns3_internal(nested_module)
+    nested_module = module.add_cpp_namespace('Config')
+    register_types_ns3_Config(nested_module)
     
     
     ## Register a nested module for the namespace TimeStepPrecision
@@ -70,10 +70,10 @@ def register_types(module):
     register_types_ns3_TimeStepPrecision(nested_module)
     
     
-    ## Register a nested module for the namespace Config
+    ## Register a nested module for the namespace internal
     
-    nested_module = module.add_cpp_namespace('Config')
-    register_types_ns3_Config(nested_module)
+    nested_module = module.add_cpp_namespace('internal')
+    register_types_ns3_internal(nested_module)
     
     
     ## Register a nested module for the namespace olsr
@@ -82,7 +82,7 @@ def register_types(module):
     register_types_ns3_olsr(nested_module)
     
 
-def register_types_ns3_internal(module):
+def register_types_ns3_Config(module):
     root_module = module.get_root()
     
 
@@ -92,7 +92,7 @@ def register_types_ns3_TimeStepPrecision(module):
     ## nstime.h: ns3::TimeStepPrecision::precision_t [enumeration]
     module.add_enum('precision_t', ['S', 'MS', 'US', 'NS', 'PS', 'FS'])
 
-def register_types_ns3_Config(module):
+def register_types_ns3_internal(module):
     root_module = module.get_root()
     
 
@@ -1404,79 +1404,79 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
 
 def register_functions(root_module):
     module = root_module
-    ## high-precision.h: extern ns3::HighPrecision ns3::Max(ns3::HighPrecision const & a, ns3::HighPrecision const & b) [free function]
-    module.add_function('Max', 
-                        'ns3::HighPrecision', 
-                        [param('ns3::HighPrecision const &', 'a'), param('ns3::HighPrecision const &', 'b')])
-    ## nstime.h: extern ns3::Time ns3::FemtoSeconds(uint64_t fs) [free function]
-    module.add_function('FemtoSeconds', 
-                        'ns3::Time', 
-                        [param('uint64_t', 'fs')])
-    ## nstime.h: extern ns3::Time ns3::MicroSeconds(uint64_t us) [free function]
-    module.add_function('MicroSeconds', 
-                        'ns3::Time', 
-                        [param('uint64_t', 'us')])
-    ## simulator.h: extern ns3::Time ns3::Now() [free function]
-    module.add_function('Now', 
-                        'ns3::Time', 
-                        [])
-    ## nstime.h: extern ns3::Time ns3::MilliSeconds(uint64_t ms) [free function]
-    module.add_function('MilliSeconds', 
-                        'ns3::Time', 
-                        [param('uint64_t', 'ms')])
-    ## nstime.h: extern ns3::Time ns3::NanoSeconds(uint64_t ns) [free function]
-    module.add_function('NanoSeconds', 
-                        'ns3::Time', 
-                        [param('uint64_t', 'ns')])
     ## high-precision.h: extern ns3::HighPrecision ns3::Abs(ns3::HighPrecision const & value) [free function]
     module.add_function('Abs', 
                         'ns3::HighPrecision', 
                         [param('ns3::HighPrecision const &', 'value')])
-    ## nstime.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeTimeChecker() [free function]
-    module.add_function('MakeTimeChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [])
-    ## nstime.h: extern ns3::Time ns3::Seconds(double seconds) [free function]
-    module.add_function('Seconds', 
+    ## nstime.h: extern ns3::Time ns3::FemtoSeconds(uint64_t fs) [free function]
+    module.add_function('FemtoSeconds', 
                         'ns3::Time', 
-                        [param('double', 'seconds')])
+                        [param('uint64_t', 'fs')])
     ## make-event.h: extern ns3::EventImpl * ns3::MakeEvent(void (*)(  ) * f) [free function]
     module.add_function('MakeEvent', 
                         'ns3::EventImpl *', 
                         [param('void ( * ) (  ) *', 'f')])
-    ## nstime.h: extern ns3::Time ns3::PicoSeconds(uint64_t ps) [free function]
-    module.add_function('PicoSeconds', 
+    ## nstime.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeTimeChecker() [free function]
+    module.add_function('MakeTimeChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
+    ## high-precision.h: extern ns3::HighPrecision ns3::Max(ns3::HighPrecision const & a, ns3::HighPrecision const & b) [free function]
+    module.add_function('Max', 
+                        'ns3::HighPrecision', 
+                        [param('ns3::HighPrecision const &', 'a'), param('ns3::HighPrecision const &', 'b')])
+    ## nstime.h: extern ns3::Time ns3::MicroSeconds(uint64_t us) [free function]
+    module.add_function('MicroSeconds', 
                         'ns3::Time', 
-                        [param('uint64_t', 'ps')])
+                        [param('uint64_t', 'us')])
+    ## nstime.h: extern ns3::Time ns3::MilliSeconds(uint64_t ms) [free function]
+    module.add_function('MilliSeconds', 
+                        'ns3::Time', 
+                        [param('uint64_t', 'ms')])
     ## high-precision.h: extern ns3::HighPrecision ns3::Min(ns3::HighPrecision const & a, ns3::HighPrecision const & b) [free function]
     module.add_function('Min', 
                         'ns3::HighPrecision', 
                         [param('ns3::HighPrecision const &', 'a'), param('ns3::HighPrecision const &', 'b')])
+    ## nstime.h: extern ns3::Time ns3::NanoSeconds(uint64_t ns) [free function]
+    module.add_function('NanoSeconds', 
+                        'ns3::Time', 
+                        [param('uint64_t', 'ns')])
+    ## simulator.h: extern ns3::Time ns3::Now() [free function]
+    module.add_function('Now', 
+                        'ns3::Time', 
+                        [])
+    ## nstime.h: extern ns3::Time ns3::PicoSeconds(uint64_t ps) [free function]
+    module.add_function('PicoSeconds', 
+                        'ns3::Time', 
+                        [param('uint64_t', 'ps')])
+    ## nstime.h: extern ns3::Time ns3::Seconds(double seconds) [free function]
+    module.add_function('Seconds', 
+                        'ns3::Time', 
+                        [param('double', 'seconds')])
     ## nstime.h: extern ns3::Time ns3::TimeStep(uint64_t ts) [free function]
     module.add_function('TimeStep', 
                         'ns3::Time', 
                         [param('uint64_t', 'ts')])
-    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
-    register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
+    register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
+    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
     return
 
-def register_functions_ns3_internal(module, root_module):
+def register_functions_ns3_Config(module, root_module):
     return
 
 def register_functions_ns3_TimeStepPrecision(module, root_module):
-    ## nstime.h: extern void ns3::TimeStepPrecision::Set(ns3::TimeStepPrecision::precision_t precision) [free function]
-    module.add_function('Set', 
-                        'void', 
-                        [param('ns3::TimeStepPrecision::precision_t', 'precision')])
     ## nstime.h: extern ns3::TimeStepPrecision::precision_t ns3::TimeStepPrecision::Get() [free function]
     module.add_function('Get', 
                         'ns3::TimeStepPrecision::precision_t', 
                         [])
+    ## nstime.h: extern void ns3::TimeStepPrecision::Set(ns3::TimeStepPrecision::precision_t precision) [free function]
+    module.add_function('Set', 
+                        'void', 
+                        [param('ns3::TimeStepPrecision::precision_t', 'precision')])
     return
 
-def register_functions_ns3_Config(module, root_module):
+def register_functions_ns3_internal(module, root_module):
     return
 
 def register_functions_ns3_olsr(module, root_module):

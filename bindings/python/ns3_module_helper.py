@@ -46,10 +46,10 @@ def register_types(module):
     ## wifi-helper.h: ns3::WifiHelper [class]
     module.add_class('WifiHelper', allow_subclassing=False)
     
-    ## Register a nested module for the namespace internal
+    ## Register a nested module for the namespace Config
     
-    nested_module = module.add_cpp_namespace('internal')
-    register_types_ns3_internal(nested_module)
+    nested_module = module.add_cpp_namespace('Config')
+    register_types_ns3_Config(nested_module)
     
     
     ## Register a nested module for the namespace TimeStepPrecision
@@ -58,10 +58,10 @@ def register_types(module):
     register_types_ns3_TimeStepPrecision(nested_module)
     
     
-    ## Register a nested module for the namespace Config
+    ## Register a nested module for the namespace internal
     
-    nested_module = module.add_cpp_namespace('Config')
-    register_types_ns3_Config(nested_module)
+    nested_module = module.add_cpp_namespace('internal')
+    register_types_ns3_internal(nested_module)
     
     
     ## Register a nested module for the namespace olsr
@@ -70,7 +70,7 @@ def register_types(module):
     register_types_ns3_olsr(nested_module)
     
 
-def register_types_ns3_internal(module):
+def register_types_ns3_Config(module):
     root_module = module.get_root()
     
 
@@ -78,7 +78,7 @@ def register_types_ns3_TimeStepPrecision(module):
     root_module = module.get_root()
     
 
-def register_types_ns3_Config(module):
+def register_types_ns3_internal(module):
     root_module = module.get_root()
     
 
@@ -115,6 +115,8 @@ def register_Ns3ApplicationContainer_methods(root_module, cls):
     cls.add_constructor([param('ns3::ApplicationContainer const &', 'arg0')])
     ## application-container.h: ns3::ApplicationContainer::ApplicationContainer() [constructor]
     cls.add_constructor([])
+    ## application-container.h: ns3::ApplicationContainer::ApplicationContainer(ns3::Ptr<ns3::Application> application) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::Application >', 'application')])
     ## application-container.h: __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Application>*,std::vector<ns3::Ptr<ns3::Application>, std::allocator<ns3::Ptr<ns3::Application> > > > ns3::ApplicationContainer::Begin() const [member function]
     cls.add_method('Begin', 
                    '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::Application > const, std::vector< ns3::Ptr< ns3::Application > > >', 
@@ -235,14 +237,26 @@ def register_Ns3CsmaHelper_methods(root_module, cls):
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_static=True)
-    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::NodeContainer const & c) [member function]
+    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
-                   [param('ns3::NodeContainer const &', 'c')])
-    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::NodeContainer const & c, ns3::Ptr<ns3::CsmaChannel> channel) [member function]
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
+    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::CsmaChannel> channel) const [member function]
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
-                   [param('ns3::NodeContainer const &', 'c'), param('ns3::Ptr< ns3::CsmaChannel >', 'channel')])
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::CsmaChannel >', 'channel')], 
+                   is_const=True)
+    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::NodeContainer const & c) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::NodeContainer const &', 'c')], 
+                   is_const=True)
+    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::NodeContainer const & c, ns3::Ptr<ns3::CsmaChannel> channel) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::NodeContainer const &', 'c'), param('ns3::Ptr< ns3::CsmaChannel >', 'channel')], 
+                   is_const=True)
     ## csma-helper.h: void ns3::CsmaHelper::InstallStar(ns3::Ptr<ns3::Node> hub, ns3::NodeContainer spokes, ns3::NetDeviceContainer & hubDevices, ns3::NetDeviceContainer & spokeDevices) [member function]
     cls.add_method('InstallStar', 
                    'void', 
@@ -302,10 +316,16 @@ def register_Ns3EmuHelper_methods(root_module, cls):
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_static=True)
-    ## emu-helper.h: ns3::NetDeviceContainer ns3::EmuHelper::Install(ns3::NodeContainer const & c) [member function]
+    ## emu-helper.h: ns3::NetDeviceContainer ns3::EmuHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
-                   [param('ns3::NodeContainer const &', 'c')])
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
+    ## emu-helper.h: ns3::NetDeviceContainer ns3::EmuHelper::Install(ns3::NodeContainer const & c) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::NodeContainer const &', 'c')], 
+                   is_const=True)
     return
 
 def register_Ns3InternetStackHelper_methods(root_module, cls):
@@ -313,10 +333,16 @@ def register_Ns3InternetStackHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::InternetStackHelper const &', 'arg0')])
     ## internet-stack-helper.h: ns3::InternetStackHelper::InternetStackHelper() [constructor]
     cls.add_constructor([])
-    ## internet-stack-helper.h: void ns3::InternetStackHelper::Install(ns3::NodeContainer c) [member function]
+    ## internet-stack-helper.h: void ns3::InternetStackHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Install', 
                    'void', 
-                   [param('ns3::NodeContainer', 'c')])
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
+    ## internet-stack-helper.h: void ns3::InternetStackHelper::Install(ns3::NodeContainer c) const [member function]
+    cls.add_method('Install', 
+                   'void', 
+                   [param('ns3::NodeContainer', 'c')], 
+                   is_const=True)
     ## internet-stack-helper.h: void ns3::InternetStackHelper::SetNscStack(std::string soname) [member function]
     cls.add_method('SetNscStack', 
                    'void', 
@@ -410,10 +436,16 @@ def register_Ns3MobilityHelper_methods(root_module, cls):
                    'std::string', 
                    [], 
                    is_const=True)
-    ## mobility-helper.h: void ns3::MobilityHelper::Install(ns3::NodeContainer container) [member function]
+    ## mobility-helper.h: void ns3::MobilityHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Install', 
                    'void', 
-                   [param('ns3::NodeContainer', 'container')])
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
+    ## mobility-helper.h: void ns3::MobilityHelper::Install(ns3::NodeContainer container) const [member function]
+    cls.add_method('Install', 
+                   'void', 
+                   [param('ns3::NodeContainer', 'container')], 
+                   is_const=True)
     ## mobility-helper.h: void ns3::MobilityHelper::InstallAll() [member function]
     cls.add_method('InstallAll', 
                    'void', 
@@ -570,10 +602,16 @@ def register_Ns3OnOffHelper_methods(root_module, cls):
     cls.add_method('SetAttribute', 
                    'void', 
                    [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
-    ## on-off-helper.h: ns3::ApplicationContainer ns3::OnOffHelper::Install(ns3::NodeContainer c) [member function]
+    ## on-off-helper.h: ns3::ApplicationContainer ns3::OnOffHelper::Install(ns3::NodeContainer c) const [member function]
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
-                   [param('ns3::NodeContainer', 'c')])
+                   [param('ns3::NodeContainer', 'c')], 
+                   is_const=True)
+    ## on-off-helper.h: ns3::ApplicationContainer ns3::OnOffHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
     return
 
 def register_Ns3PacketSinkHelper_methods(root_module, cls):
@@ -585,10 +623,16 @@ def register_Ns3PacketSinkHelper_methods(root_module, cls):
     cls.add_method('SetAttribute', 
                    'void', 
                    [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
-    ## packet-sink-helper.h: ns3::ApplicationContainer ns3::PacketSinkHelper::Install(ns3::NodeContainer c) [member function]
+    ## packet-sink-helper.h: ns3::ApplicationContainer ns3::PacketSinkHelper::Install(ns3::NodeContainer c) const [member function]
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
-                   [param('ns3::NodeContainer', 'c')])
+                   [param('ns3::NodeContainer', 'c')], 
+                   is_const=True)
+    ## packet-sink-helper.h: ns3::ApplicationContainer ns3::PacketSinkHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
     return
 
 def register_Ns3PacketSocketHelper_methods(root_module, cls):
@@ -596,10 +640,16 @@ def register_Ns3PacketSocketHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::PacketSocketHelper const &', 'arg0')])
     ## packet-socket-helper.h: ns3::PacketSocketHelper::PacketSocketHelper() [constructor]
     cls.add_constructor([])
-    ## packet-socket-helper.h: void ns3::PacketSocketHelper::Install(ns3::NodeContainer c) [member function]
+    ## packet-socket-helper.h: void ns3::PacketSocketHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Install', 
                    'void', 
-                   [param('ns3::NodeContainer', 'c')])
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
+    ## packet-socket-helper.h: void ns3::PacketSocketHelper::Install(ns3::NodeContainer c) const [member function]
+    cls.add_method('Install', 
+                   'void', 
+                   [param('ns3::NodeContainer', 'c')], 
+                   is_const=True)
     return
 
 def register_Ns3PointToPointHelper_methods(root_module, cls):
@@ -711,10 +761,16 @@ def register_Ns3UdpEchoClientHelper_methods(root_module, cls):
     cls.add_method('SetAttribute', 
                    'void', 
                    [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
-    ## udp-echo-helper.h: ns3::ApplicationContainer ns3::UdpEchoClientHelper::Install(ns3::NodeContainer c) [member function]
+    ## udp-echo-helper.h: ns3::ApplicationContainer ns3::UdpEchoClientHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
-                   [param('ns3::NodeContainer', 'c')])
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
+    ## udp-echo-helper.h: ns3::ApplicationContainer ns3::UdpEchoClientHelper::Install(ns3::NodeContainer c) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::NodeContainer', 'c')], 
+                   is_const=True)
     return
 
 def register_Ns3UdpEchoServerHelper_methods(root_module, cls):
@@ -726,10 +782,16 @@ def register_Ns3UdpEchoServerHelper_methods(root_module, cls):
     cls.add_method('SetAttribute', 
                    'void', 
                    [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
-    ## udp-echo-helper.h: ns3::ApplicationContainer ns3::UdpEchoServerHelper::Install(ns3::NodeContainer c) [member function]
+    ## udp-echo-helper.h: ns3::ApplicationContainer ns3::UdpEchoServerHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
-                   [param('ns3::NodeContainer', 'c')])
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
+    ## udp-echo-helper.h: ns3::ApplicationContainer ns3::UdpEchoServerHelper::Install(ns3::NodeContainer c) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::NodeContainer', 'c')], 
+                   is_const=True)
     return
 
 def register_Ns3V4PingHelper_methods(root_module, cls):
@@ -741,10 +803,16 @@ def register_Ns3V4PingHelper_methods(root_module, cls):
     cls.add_method('SetAttribute', 
                    'void', 
                    [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
-    ## v4ping-helper.h: ns3::ApplicationContainer ns3::V4PingHelper::Install(ns3::NodeContainer nodes) [member function]
+    ## v4ping-helper.h: ns3::ApplicationContainer ns3::V4PingHelper::Install(ns3::NodeContainer nodes) const [member function]
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
-                   [param('ns3::NodeContainer', 'nodes')])
+                   [param('ns3::NodeContainer', 'nodes')], 
+                   is_const=True)
+    ## v4ping-helper.h: ns3::ApplicationContainer ns3::V4PingHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
     return
 
 def register_Ns3WifiHelper_methods(root_module, cls):
@@ -804,33 +872,43 @@ def register_Ns3WifiHelper_methods(root_module, cls):
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_static=True)
-    ## wifi-helper.h: ns3::NetDeviceContainer ns3::WifiHelper::Install(ns3::NodeContainer c) const [member function]
+    ## wifi-helper.h: ns3::NetDeviceContainer ns3::WifiHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
-                   [param('ns3::NodeContainer', 'c')], 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
                    is_const=True)
-    ## wifi-helper.h: ns3::NetDeviceContainer ns3::WifiHelper::Install(ns3::NodeContainer c, ns3::Ptr<ns3::WifiChannel> channel) const [member function]
+    ## wifi-helper.h: ns3::NetDeviceContainer ns3::WifiHelper::Install(ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::WifiChannel> channel) const [member function]
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
-                   [param('ns3::NodeContainer', 'c'), param('ns3::Ptr< ns3::WifiChannel >', 'channel')], 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::WifiChannel >', 'channel')], 
+                   is_const=True)
+    ## wifi-helper.h: ns3::NetDeviceContainer ns3::WifiHelper::Install(ns3::NodeContainer const & c) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::NodeContainer const &', 'c')], 
+                   is_const=True)
+    ## wifi-helper.h: ns3::NetDeviceContainer ns3::WifiHelper::Install(ns3::NodeContainer const & c, ns3::Ptr<ns3::WifiChannel> channel) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::NodeContainer const &', 'c'), param('ns3::Ptr< ns3::WifiChannel >', 'channel')], 
                    is_const=True)
     return
 
 def register_functions(root_module):
     module = root_module
-    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
-    register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
+    register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
+    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
     return
 
-def register_functions_ns3_internal(module, root_module):
+def register_functions_ns3_Config(module, root_module):
     return
 
 def register_functions_ns3_TimeStepPrecision(module, root_module):
     return
 
-def register_functions_ns3_Config(module, root_module):
+def register_functions_ns3_internal(module, root_module):
     return
 
 def register_functions_ns3_olsr(module, root_module):
