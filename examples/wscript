@@ -32,10 +32,6 @@ def build(bld):
                                  ['csma', 'internet-stack'])
     obj.source = 'udp-echo.cc'
 
-    obj = bld.create_ns3_program('emu-udp-echo',
-                                 ['emu', 'internet-stack'])
-    obj.source = 'emu-udp-echo.cc'
-
     obj = bld.create_ns3_program('realtime-udp-echo',
                                  ['csma', 'internet-stack'])
     obj.source = 'realtime-udp-echo.cc'
@@ -110,3 +106,10 @@ def build(bld):
     obj = bld.create_ns3_program('test-ipv6',
       ['point-to-point', 'internet-stack'])
     obj.source = 'test-ipv6.cc'
+
+    env = bld.env_of_name('default')
+    if env['ENABLE_EMU']:
+        obj = bld.create_ns3_program('emu-udp-echo',
+                                     ['emu', 'internet-stack'])
+        obj.source = 'emu-udp-echo.cc'
+
