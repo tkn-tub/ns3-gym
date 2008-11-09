@@ -158,12 +158,6 @@ class Ipv6Header : public Header
     Ipv6Address GetDestinationAddress (void) const;
 
     /**
-     * \brief Get the name.
-     * \return the name
-     */
-    std::string GetName (void) const;
-
-    /**
      * \brief Print some informations about the packet.
      * \param os output stream
      * \return info about this packet

@@ -1457,11 +1457,6 @@ def register_Ns3Ipv6Header_methods(root_module, cls):
                    'ns3::Ipv6Address', 
                    [], 
                    is_const=True)
-    ## ipv6-header.h: std::string ns3::Ipv6Header::GetName() const [member function]
-    cls.add_method('GetName', 
-                   'std::string', 
-                   [], 
-                   is_const=True)
     ## ipv6-header.h: void ns3::Ipv6Header::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
                    'void', 
