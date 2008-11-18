@@ -315,6 +315,8 @@ def create_ns3_program(bld, name, dependencies=('simulator',)):
 def add_scratch_programs(bld):
     all_modules = [mod[len("ns3-"):] for mod in bld.env()['NS3_MODULES']]
     for filename in os.listdir("scratch"):
+        if filename.startswith('.') or filename == 'CVS':
+	    continue
         if os.path.isdir(os.path.join("scratch", filename)):
             obj = bld.create_ns3_program(filename, all_modules)
             obj.path = obj.path.find_dir('scratch')
@@ -622,7 +624,7 @@ def copytree(src, dst, symlinks=False, excludes=(), build_dir=None):
             elif os.path.isdir(srcname):
                 if name in excludes:
                     continue
-                elif name.startswith('.') or name.startswith(',,') or name.startswith('++'):
+                elif name.startswith('.') or name.startswith(',,') or name.startswith('++') or name.startswith('CVS'):
                     continue
                 elif name == build_dir:
                     continue
