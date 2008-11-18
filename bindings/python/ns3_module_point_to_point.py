@@ -3,6 +3,8 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass
 def register_types(module):
     root_module = module.get_root()
     
+    ## ppp-header.h: ns3::PppHeader [class]
+    module.add_class('PppHeader', parent=root_module['ns3::Header'])
     ## point-to-point-channel.h: ns3::PointToPointChannel [class]
     module.add_class('PointToPointChannel', parent=root_module['ns3::Channel'])
     ## point-to-point-net-device.h: ns3::PointToPointNetDevice [class]
@@ -49,8 +51,46 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
+    register_Ns3PppHeader_methods(root_module, root_module['ns3::PppHeader'])
     register_Ns3PointToPointChannel_methods(root_module, root_module['ns3::PointToPointChannel'])
     register_Ns3PointToPointNetDevice_methods(root_module, root_module['ns3::PointToPointNetDevice'])
+    return
+
+def register_Ns3PppHeader_methods(root_module, cls):
+    ## ppp-header.h: ns3::PppHeader::PppHeader(ns3::PppHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PppHeader const &', 'arg0')])
+    ## ppp-header.h: ns3::PppHeader::PppHeader() [constructor]
+    cls.add_constructor([])
+    ## ppp-header.h: static ns3::TypeId ns3::PppHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ppp-header.h: ns3::TypeId ns3::PppHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ppp-header.h: void ns3::PppHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ppp-header.h: void ns3::PppHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## ppp-header.h: uint32_t ns3::PppHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## ppp-header.h: uint32_t ns3::PppHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
     return
 
 def register_Ns3PointToPointChannel_methods(root_module, cls):

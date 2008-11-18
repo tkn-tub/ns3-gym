@@ -72,7 +72,7 @@ CsmaNetDevice::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&CsmaNetDevice::m_receiveEnable),
                    MakeBooleanChecker ())
-    .AddAttribute ("RxErrorModel", 
+    .AddAttribute ("ReceiveErrorModel", 
                    "The receiver error model used to simulate packet loss",
                    PointerValue (),
                    MakePointerAccessor (&CsmaNetDevice::m_receiveErrorModel),
