@@ -1,0 +1,209 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+// Network topology
+//
+//        n0     n1  
+//        |      | 
+//       -----------
+//       | bridge1 |
+//       -----------
+//           |    
+//           n2   
+//           |
+//       -----------
+//       | bridge2 |
+//       -----------
+//        |      | 
+//        n3     n4  
+//
+// This example shows two broadcast domains, each interconnected by a bridge
+// with a router node (n2) interconnecting the layer-2 broadcast domains
+// 
+// It is meant to mirror somewhat the csma-bridge example but adds another
+// bridged link separated by a router.
+// 
+// - CBR/UDP flows from n0 to n1 and from n3 to n0
+// - DropTail queues 
+// - Global static routing
+// - Tracing of queues and packet receptions to file "csma-bridge-one-hop.tr"
+
+#include <iostream>
+#include <fstream>
+
+#include "ns3/simulator-module.h"
+#include "ns3/node-module.h"
+#include "ns3/core-module.h"
+#include "ns3/helper-module.h"
+#include "ns3/bridge-module.h"
+#include "ns3/global-route-manager.h"
+
+using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("CsmaBridgeOneHopExample");
+
+int 
+main (int argc, char *argv[])
+{
+  //
+  // Users may find it convenient to turn on explicit debugging
+  // for selected modules; the below lines suggest how to do this
+  //
+#if 0 
+  LogComponentEnable ("CsmaBridgeOneHopExample", LOG_LEVEL_INFO);
+#endif
+
+  //
+  // Make the random number generators generate reproducible results.
+  //
+  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
+
+  //
+  // Allow the user to override any of the defaults and the above Bind() at
+  // run-time, via command-line arguments
+  //
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
+
+  //
+  // Explicitly create the nodes required by the topology (shown above).
+  //
+  NS_LOG_INFO ("Create nodes.");
+
+  Ptr<Node> n0 = CreateObject<Node> ();
+  Ptr<Node> n1 = CreateObject<Node> ();
+  Ptr<Node> n2 = CreateObject<Node> ();
+  Ptr<Node> n3 = CreateObject<Node> ();
+  Ptr<Node> n4 = CreateObject<Node> ();
+
+  Ptr<Node> bridge1 = CreateObject<Node> ();
+  Ptr<Node> bridge2 = CreateObject<Node> ();
+
+  NS_LOG_INFO ("Build Topology");
+  CsmaHelper csma;
+  csma.SetChannelAttribute ("DataRate", DataRateValue (5000000));
+  csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
+
+  // Create the csma links, from each terminal to the bridge
+  // This will create six network devices; we'll keep track separately
+  // of the devices on and off the bridge respectively, for later configuration 
+  NetDeviceContainer topLanDevices;
+  NetDeviceContainer topBridgeDevices;
+
+  // It is easier to iterate the nodes in C++ if we put them into a container
+  NodeContainer topLan (n2, n0, n1);
+
+  for (int i = 0; i < 3; i++)
+    {
+      NetDeviceContainer link = csma.Install (NodeContainer (topLan.Get (i), bridge1));
+      topLanDevices.Add (link.Get (0));
+      topBridgeDevices.Add (link.Get (1));
+    }
+
+  // Create the bridge netdevice, which will do the packet switching
+  BridgeHelper bridge;
+  bridge.Install (bridge1, topBridgeDevices);
+
+  // Add internet stack to the topLan nodes
+  InternetStackHelper internet;
+  internet.Install (topLan);
+
+  // Repeat for bottom bridged LAN
+  NetDeviceContainer bottomLanDevices;
+  NetDeviceContainer bottomBridgeDevices;
+  NodeContainer bottomLan (n2, n3, n4);
+  for (int i = 0; i < 3; i++)
+    {
+      NetDeviceContainer link = csma.Install (NodeContainer (bottomLan.Get (i), bridge2));
+      bottomLanDevices.Add (link.Get (0));
+      bottomBridgeDevices.Add (link.Get (1));
+    }
+  bridge.Install (bridge2, bottomBridgeDevices);
+  internet.Install (NodeContainer (n3, n4));
+
+
+  // We've got the "hardware" in place.  Now we need to add IP addresses.
+  //
+  NS_LOG_INFO ("Assign IP Addresses.");
+  Ipv4AddressHelper ipv4;
+  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+  ipv4.Assign (topLanDevices);
+  ipv4.SetBase ("10.1.2.0", "255.255.255.0");
+  ipv4.Assign (bottomLanDevices);
+
+  // Create router nodes, initialize routing database and set up the routing
+  // tables in the nodes.
+  GlobalRouteManager::PopulateRoutingTables ();
+
+  //
+  // Create an OnOff application to send UDP datagrams from node zero to node 1.
+  //
+  NS_LOG_INFO ("Create Applications.");
+  uint16_t port = 9;   // Discard port (RFC 863)
+
+  OnOffHelper onoff ("ns3::UdpSocketFactory", 
+                     Address (InetSocketAddress (Ipv4Address ("10.1.1.3"), port)));
+  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
+  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+
+  ApplicationContainer app = onoff.Install (n0);
+  // Start the application
+  app.Start (Seconds (1.0));
+  app.Stop (Seconds (10.0));
+
+  // Create an optional packet sink to receive these packets
+  PacketSinkHelper sink ("ns3::UdpSocketFactory",
+                         Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
+  sink.Install (n1);
+
+  // 
+  // Create a similar flow from n3 to n0, starting at time 1.1 seconds
+  //
+  onoff.SetAttribute ("Remote", 
+                      AddressValue (InetSocketAddress (Ipv4Address ("10.1.1.2"), port)));
+  ApplicationContainer app2 = onoff.Install (n3);
+
+  sink.Install (n0);
+
+  app2.Start (Seconds (1.1));
+  app2.Stop (Seconds (10.0));
+
+  //
+  // Configure tracing of all enqueue, dequeue, and NetDevice receive events.
+  // Trace output will be sent to the file "csma-bridge-one-hop.tr"
+  //
+  NS_LOG_INFO ("Configure Tracing.");
+  std::ofstream ascii;
+  ascii.open ("csma-bridge-one-hop.tr");
+  CsmaHelper::EnableAsciiAll (ascii);
+
+  //
+  // Also configure some tcpdump traces; each interface will be traced.
+  // The output files will be named:
+  //     csma-bridge.pcap-<nodeId>-<interfaceId>
+  // and can be read by the "tcpdump -r" command (use "-tt" option to
+  // display timestamps correctly)
+  //
+  CsmaHelper::EnablePcapAll ("csma-bridge-one-hop");
+
+  //
+  // Now, do the actual simulation.
+  //
+  NS_LOG_INFO ("Run Simulation.");
+  Simulator::Run ();
+  Simulator::Destroy ();
+  NS_LOG_INFO ("Done.");
+}
