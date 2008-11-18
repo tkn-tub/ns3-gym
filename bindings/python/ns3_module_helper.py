@@ -347,6 +347,16 @@ def register_Ns3InternetStackHelper_methods(root_module, cls):
     cls.add_method('SetNscStack', 
                    'void', 
                    [param('std::string', 'soname')])
+    ## internet-stack-helper.h: static void ns3::InternetStackHelper::EnableAscii(std::ostream & os, ns3::NodeContainer n) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('ns3::NodeContainer', 'n')], 
+                   is_static=True)
+    ## internet-stack-helper.h: static void ns3::InternetStackHelper::EnableAsciiAll(std::ostream & os) [member function]
+    cls.add_method('EnableAsciiAll', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_static=True)
     ## internet-stack-helper.h: static void ns3::InternetStackHelper::EnablePcapAll(std::string filename) [member function]
     cls.add_method('EnablePcapAll', 
                    'void', 
