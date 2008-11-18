@@ -1,8 +1,6 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 import sys
-import shlex
 import shutil
-import urllib
 import types
 import optparse
 import os.path
@@ -14,47 +12,21 @@ import Object
 import ccroot
 import Task
 
+import wutils
+import regression
+
 Params.g_autoconfig = 1
 
 # the following two variables are used by the target "waf dist"
 VERSION = file("VERSION").read().strip()
 APPNAME = 'ns'
 
+wutils.VERSION = VERSION
+wutils.APPNAME = APPNAME
+
 # these variables are mandatory ('/' are converted automatically)
 srcdir = '.'
 blddir = 'build'
-
-#
-# The directory in which the tarball of the reference traces lives.  This is
-# used if Mercurial is not on the system.
-#
-REGRESSION_TRACES_URL = "http://www.nsnam.org/releases/"
-
-#
-# The path to the Mercurial repository used to find the reference traces if
-# we find "hg" on the system.  We expect that the repository will be named
-# identically to refDirName below
-#
-REGRESSION_TRACES_REPO = "http://code.nsnam.org/"
-
-#
-# Name of the local directory where the regression code lives.
-#
-REGRESSION_DIR = "regression"
-
-#
-# The last part of the path name to use to find the regression traces.  The
-# path will be APPNAME + '-' + VERSION + REGRESSION_SUFFIX, e.g.,
-# ns-3-dev-ref-traces
-#
-REGRESSION_SUFFIX = "-ref-traces"
-
-#
-# The last part of the path name to use to find the regression traces tarball.
-# path will be APPNAME + '-' + VERSION + REGRESSION_SUFFIX + TRACEBALL_SUFFIX,
-# e.g., ns-3-dev-ref-traces.tar.bz2
-#
-TRACEBALL_SUFFIX = ".tar.bz2"
 
 
 def dist_hook():
@@ -68,13 +40,13 @@ def dist_hook():
 
     ## build the name of the traces subdirectory.  Will be something like
     ## ns-3-dev-ref-traces
-    traces_name = APPNAME + '-' + VERSION + REGRESSION_SUFFIX
+    traces_name = APPNAME + '-' + VERSION + regression.REGRESSION_SUFFIX
     ## Create a tar.bz2 file with the traces
-    traces_dir = os.path.join(REGRESSION_DIR, traces_name)
+    traces_dir = os.path.join(regression.REGRESSION_DIR, traces_name)
     if not os.path.isdir(traces_dir):
         Params.warning("Not creating traces archive: the %s directory does not exist" % traces_dir)
     else:
-        traceball = traces_name + TRACEBALL_SUFFIX
+        traceball = traces_name + wutils.TRACEBALL_SUFFIX
         tar = tarfile.open(os.path.join("..", traceball), 'w:bz2')
         tar.add(traces_dir)
         tar.close()
@@ -308,14 +280,14 @@ class SuidBuildTask(Task.TaskBase):
 
     def run(self):
         try:
-            program_obj = _find_program(self.__program.target, self.__env)
+            program_obj = wutils.find_program(self.__program.target, self.__env)
         except ValueError, ex:
             Params.fatal(str(ex))
 
         try:
             program_node = program_obj.path.find_build(ccroot.get_target_name(program_obj))
         except AttributeError:
-            Params.fatal("%s does not appear to be a program" % (program_name,))
+            Params.fatal("%s does not appear to be a program" % (self.__program.name,))
 
         filename = program_node.abspath(self.__env)
         os.system ('sudo chown root ' + filename)
@@ -492,7 +464,7 @@ def shutdown():
         _dir = os.getcwd()
         os.chdir("regression")
         try:
-            run_regression()
+            regression.run_regression()
         finally:
             os.chdir(_dir)
 
@@ -500,19 +472,19 @@ def shutdown():
         lcov_report()
 
     if Params.g_options.run:
-        run_program(Params.g_options.run, get_command_template())
+        wutils.run_program(Params.g_options.run, get_command_template())
         raise SystemExit(0)
 
     if Params.g_options.pyrun:
-        run_python_program(Params.g_options.pyrun)
+        wutils.run_python_program(Params.g_options.pyrun)
         raise SystemExit(0)
 
 def _run_waf_check():
     ## generate the trace sources list docs
     env = Params.g_build.env_of_name('default')
-    proc_env = _get_proc_env()
+    proc_env = wutils.get_proc_env()
     try:
-        program_obj = _find_program('print-introspected-doxygen', env)
+        program_obj = wutils.find_program('print-introspected-doxygen', env)
     except ValueError: # could happen if print-introspected-doxygen is
                        # not built because of waf configure
                        # --enable-modules=xxx
@@ -525,145 +497,15 @@ def _run_waf_check():
         out.close()
 
     print "-- Running NS-3 C++ core unit tests..."
-    run_program('run-tests', get_command_template())
+    wutils.run_program('run-tests', get_command_template())
 
     if env['ENABLE_PYTHON_BINDINGS']:
         print "-- Running NS-3 Python bindings unit tests..."
-        _run_argv([env['PYTHON'], os.path.join("utils", "python-unit-tests.py")], proc_env)
+        wutils.run_argv([env['PYTHON'], os.path.join("utils", "python-unit-tests.py")], proc_env)
     else:
         print "-- Skipping NS-3 Python bindings unit tests: Python bindings not enabled."
 
 
-def _find_program(program_name, env):
-    launch_dir = os.path.abspath(Params.g_cwd_launch)
-    found_programs = []
-    for obj in Object.g_allobjs:
-        if not getattr(obj, 'is_ns3_program', False):
-            continue
-
-        ## filter out programs not in the subtree starting at the launch dir
-        if not (obj.path.abspath().startswith(launch_dir)
-                or obj.path.abspath(env).startswith(launch_dir)):
-            continue
-        
-        found_programs.append(obj.target)
-        if obj.target == program_name:
-            return obj
-    raise ValueError("program '%s' not found; available programs are: %r"
-                     % (program_name, found_programs))
-
-def _get_proc_env(os_env=None):
-    env = Params.g_build.env_of_name('default')
-    if sys.platform == 'linux2':
-        pathvar = 'LD_LIBRARY_PATH'
-    elif sys.platform == 'darwin':
-        pathvar = 'DYLD_LIBRARY_PATH'
-    elif sys.platform == 'win32':
-        pathvar = 'PATH'
-    elif sys.platform == 'cygwin':
-        pathvar = 'PATH'
-    elif sys.platform.startswith('freebsd'):
-        pathvar = 'LD_LIBRARY_PATH'
-    else:
-        Params.warning(("Don't know how to configure "
-                        "dynamic library path for the platform %r;"
-                        " assuming it's LD_LIBRARY_PATH.") % (sys.platform,))
-        pathvar = 'LD_LIBRARY_PATH'        
-
-    proc_env = dict(os.environ)
-    if os_env is not None:
-        proc_env.update(os_env)
-
-    if pathvar is not None:
-        if pathvar in proc_env:
-            proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']) + [proc_env[pathvar]])
-        else:
-            proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']))
-
-    pymoddir = Params.g_build.m_curdirnode.find_dir('bindings/python').abspath(env)
-    if 'PYTHONPATH' in proc_env:
-        proc_env['PYTHONPATH'] = os.pathsep.join([pymoddir] + [proc_env['PYTHONPATH']])
-    else:
-        proc_env['PYTHONPATH'] = pymoddir
-
-    return proc_env
-
-def _run_argv(argv, os_env=None):
-    proc_env = _get_proc_env(os_env)
-    env = Params.g_build.env_of_name('default')
-    retval = subprocess.Popen(argv, env=proc_env).wait()
-    if retval:
-        Params.fatal("Command %s exited with code %i" % (argv, retval))
-
-
-def run_program(program_string, command_template=None):
-    """
-    if command_template is not None, then program_string == program
-    name and argv is given by command_template with %s replaced by the
-    full path to the program.  Else, program_string is interpreted as
-    a shell command with first name being the program name.
-    """
-    env = Params.g_build.env_of_name('default')
-
-    if command_template in (None, '%s'):
-        argv = shlex.split(program_string)
-        program_name = argv[0]
-
-        try:
-            program_obj = _find_program(program_name, env)
-        except ValueError, ex:
-            Params.fatal(str(ex))
-
-        try:
-            program_node = program_obj.path.find_build(ccroot.get_target_name(program_obj))
-        except AttributeError:
-            Params.fatal("%s does not appear to be a program" % (program_name,))
-
-        execvec = [program_node.abspath(env)] + argv[1:]
-
-    else:
-
-        program_name = program_string
-        try:
-            program_obj = _find_program(program_name, env)
-        except ValueError, ex:
-            Params.fatal(str(ex))
-        try:
-            program_node = program_obj.path.find_build(ccroot.get_target_name(program_obj))
-        except AttributeError:
-            Params.fatal("%s does not appear to be a program" % (program_name,))
-
-        execvec = shlex.split(command_template % (program_node.abspath(env),))
-
-    former_cwd = os.getcwd()
-    if (Params.g_options.cwd_launch):
-        os.chdir(Params.g_options.cwd_launch)
-    else:
-        os.chdir(Params.g_cwd_launch)
-    try:
-        retval = _run_argv(execvec)
-    finally:
-        os.chdir(former_cwd)
-
-    return retval
-
-
-
-def run_python_program(program_string):
-    env = Params.g_build.env_of_name('default')
-    execvec = shlex.split(program_string)
-
-    former_cwd = os.getcwd()
-    if (Params.g_options.cwd_launch):
-        os.chdir(Params.g_options.cwd_launch)
-    else:
-        os.chdir(Params.g_cwd_launch)
-    try:
-        retval = _run_argv([env['PYTHON']] + execvec)
-    finally:
-        os.chdir(former_cwd)
-
-    return retval
 
 
 def check_shell():
@@ -692,7 +534,7 @@ def run_shell():
         shell = os.environ.get("SHELL", "/bin/sh")
 
     env = Params.g_build.env_of_name('default')
-    _run_argv([shell], {'NS3_MODULE_PATH': os.pathsep.join(env['NS3_MODULE_PATH'])})
+    wutils.run_argv([shell], {'NS3_MODULE_PATH': os.pathsep.join(env['NS3_MODULE_PATH'])})
 
 def doxygen():
     if not os.path.exists('doc/introspected-doxygen.h'):
@@ -851,230 +693,3 @@ def DistDir(appname, version):
 Scripting.DistDir = DistDir
 
 
-def dev_null():
-    if sys.platform == 'win32':
-        return open("NUL:", "w")
-    else:
-        return open("/dev/null", "w")
-
-
-### Regression testing
-class Regression(object):
-    def __init__(self, testdir):
-        self.testdir = testdir
-        self.env = Params.g_build.env_of_name('default')
-
-    def run_test(self, verbose, generate, refDirName, testName, arguments=[], pyscript=None, refTestName=None):
-        """
-        @param verbose: enable verbose execution
-
-        @param generate: generate new traces instead of comparing with the reference
-
-        @param refDirName: name of the base directory containing reference traces
-
-        @param testName: name of the test
-
-        @arguments: list of extra parameters to pass to the program to be tested
-
-        @pyscript: if not None, the test is written in Python and this
-        parameter contains the path to the python script, relative to
-        the project root dir
-
-        @param refTestName: if not None, this is the name of the directory under refDirName
-        that contains the reference traces. Otherwise "refDirname/testName + .ref" is used.
-
-        """
-        if not isinstance(arguments, list):
-            raise TypeError
-        
-        if refTestName is None:
-            refTestDirName = os.path.join(refDirName, (testName + ".ref"))
-        else:
-            refTestDirName = os.path.join(refDirName, refTestName)
-
-        if not os.path.exists(refDirName):
-            print"No reference trace repository"
-            return 1
-
-        if generate:
-            if not os.path.exists(refTestDirName):
-                print "creating new " + refTestDirName
-                os.mkdir(refTestDirName)
-
-            if pyscript is None:
-                Params.g_options.cwd_launch = refTestDirName
-                tmpl = "%s"
-                for arg in arguments:
-                    tmpl = tmpl + " " + arg
-                run_program(testName, tmpl)
-            else:
-                argv = [self.env['PYTHON'], os.path.join('..', '..', '..', *os.path.split(pyscript))] + arguments
-                before = os.getcwd()
-                os.chdir(refTestDirName)
-                try:
-                    _run_argv(argv)
-                finally:
-                    os.chdir(before)
-            print "Remember to commit " + refTestDirName
-            return 0
-        else:
-            if not os.path.exists(refTestDirName):
-                print "Cannot locate reference traces in " + refTestDirName
-                return 1
-
-            
-            if refTestName is None:
-                traceDirName = testName + ".ref"
-            else:
-                traceDirName = refTestName
-            traceDirName = os.path.join ('traces', traceDirName)
-
-            try:
-                shutil.rmtree(traceDirName)
-            except OSError:
-                pass
-            os.mkdir(traceDirName)
-
-            #os.system("./waf --cwd regression/traces --run " +
-            #  testName + " > /dev/null 2>&1")
-
-            if pyscript is None:
-                Params.g_options.cwd_launch = traceDirName
-                run_program(testName, command_template=get_command_template(*arguments))
-            else:
-                argv = [self.env['PYTHON'], os.path.join('..', '..', '..', *os.path.split(pyscript))] + arguments
-                before = os.getcwd()
-                os.chdir(traceDirName)
-                try:
-                    _run_argv(argv)
-                finally:
-                    os.chdir(before)
-
-            if verbose:
-                #diffCmd = "diff traces " + refTestDirName + " | head"
-                diffCmd = subprocess.Popen([self.env['DIFF'], traceDirName, refTestDirName],
-                                           stdout=subprocess.PIPE)
-                headCmd = subprocess.Popen("head", stdin=diffCmd.stdout)
-                rc2 = headCmd.wait()
-                diffCmd.stdout.close()
-                rc1 = diffCmd.wait()
-                rc = rc1 or rc2
-            else:
-                rc = subprocess.Popen([self.env['DIFF'], traceDirName, refTestDirName], stdout=dev_null()).wait()
-            if rc:
-                print "----------"
-                print "Traces differ in test: test-" + testName
-                print "Reference traces in directory: regression/" + refTestDirName
-                print "Traces in directory: traces"
-                print "Rerun regression test as: " + \
-                    "\"./waf --regression --regression-tests=test-" + testName + "\""
-                print "Then do \"diff -u regression/" + refTestDirName + " regression/" + traceDirName +\
-                    "\" for details"
-                print "----------"
-            return rc
-
-def _find_tests(testdir):
-    """Return a list of test modules in the test directory
-
-    Arguments:
-    testdir -- the directory to look in for tests
-    """
-    names = os.listdir(testdir)
-    tests = []
-    for name in names:
-        if name[:5] == "test-" and name[-3:] == ".py":
-            testname = name[:-3]
-            tests.append(testname)
-    tests.sort()
-    return tests
-
-def run_regression():
-    """Execute regression tests."""
-
-    testdir = "tests"
-    if not os.path.exists(testdir):
-        print "Tests directory does not exist"
-        sys.exit(3)
-    
-    sys.path.append(testdir)
-    sys.modules['tracediff'] = Regression(testdir)
-
-    if Params.g_options.regression_tests:
-        tests = Params.g_options.regression_tests.split(',')
-    else:
-        tests = _find_tests(testdir)
-
-    print "========== Running Regression Tests =========="
-    dir_name = APPNAME + '-' + VERSION + REGRESSION_SUFFIX
-    env = Params.g_build.env_of_name('default')
-    if env['MERCURIAL']:
-        print "Synchronizing reference traces using Mercurial."
-        if not os.path.exists(dir_name):
-            print "Cloning " + REGRESSION_TRACES_REPO + dir_name + " from repo."
-            argv = ["hg", "clone", REGRESSION_TRACES_REPO + dir_name, dir_name]
-            rv = subprocess.Popen(argv).wait()
-        else:
-            _dir = os.getcwd()
-            os.chdir(dir_name)
-            try:
-                print "Pulling " + REGRESSION_TRACES_REPO + dir_name + " from repo."
-                result = subprocess.Popen(["hg", "-q", "pull", REGRESSION_TRACES_REPO + dir_name]).wait()
-                if not result:
-                    result = subprocess.Popen(["hg", "-q", "update"]).wait()
-            finally:
-                os.chdir("..")
-            if result:
-                Params.fatal("Synchronizing reference traces using Mercurial failed.")
-    else:
-        if not os.path.exists(dir_name):
-            traceball = dir_name + TRACEBALL_SUFFIX
-            print "Retrieving " + traceball + " from web."
-            urllib.urlretrieve(REGRESSION_TRACES_URL + traceball, traceball)
-            os.system("tar -xjf %s -C .." % (traceball))
-            print "Done."
-
-    if not os.path.exists(dir_name):
-        print "Reference traces directory (%s) does not exist" % dir_name
-        return 3
-    
-    bad = []
-
-    for test in tests:
-        try:
-            result = _run_regression_test(test)
-            if result == 0:
-                if Params.g_options.regression_generate:
-                    print "GENERATE " + test
-                else:
-                    print "PASS " + test
-            else:
-                bad.append(test)
-                print "FAIL " + test
-        except NotImplementedError:
-                print "SKIP " + test            
-
-    return len(bad) > 0
-
-
-def _run_regression_test(test):
-    """Run a single test.
-
-    Arguments:
-    test -- the name of the test
-    """
-
-    if os.path.exists("traces"):
-        files = os.listdir("traces")
-        for file in files:
-            if file == '.' or file == '..':
-                continue
-            shutil.rmtree(os.path.join ("traces", file))
-    else:
-        os.mkdir("traces")
-    
-    dir_name = APPNAME + '-' + VERSION + REGRESSION_SUFFIX
-
-    mod = __import__(test, globals(), locals(), [])
-    return mod.run(verbose=(Params.g_options.verbose > 0),
-                   generate=Params.g_options.regression_generate,
-                   refDirName=dir_name)
