@@ -22,7 +22,7 @@ else:
     os.environ['PYTHONPATH'] = LOCAL_PYBINDGEN_PATH
 
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 9, 0, 603)
+REQUIRED_PYBINDGEN_VERSION = (0, 9, 0, 605)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 
