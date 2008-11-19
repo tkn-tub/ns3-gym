@@ -9,7 +9,7 @@ import tracediff
 import platform
 
 
-def run(verbose, generate, refDirName):
+def run(verbose, generate):
     """Run a Network Simulation Cradle test involving two TCP streams."""
 
     if not tracediff.env['ENABLE_NSC']:
@@ -29,5 +29,5 @@ def run(verbose, generate, refDirName):
         # string might not be the best idea?
         raise "Unknown architecture, not 64 or 32 bit?"
 
-    return tracediff.run_test(verbose, generate, refDirName,
+    return tracediff.run_test(verbose, generate,
         testName, arguments=arguments, refTestName=traceDirName)
