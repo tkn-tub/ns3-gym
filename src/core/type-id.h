@@ -351,8 +351,10 @@ public:
   void SetUid (uint16_t tid);
 
   // construct an invalid TypeId.
-  TypeId ();
-  ~TypeId ();
+  inline TypeId ();
+  inline TypeId (const TypeId &o);
+  inline TypeId &operator = (const TypeId &o);
+  inline ~TypeId ();
 
 private:
   friend class AttributeList;
@@ -377,8 +379,8 @@ private:
 
 std::ostream & operator << (std::ostream &os, TypeId tid);
 std::istream & operator >> (std::istream &is, TypeId &tid);
-bool operator == (TypeId a, TypeId b);
-bool operator != (TypeId a, TypeId b);
+inline bool operator == (TypeId a, TypeId b);
+inline bool operator != (TypeId a, TypeId b);
 bool operator <  (TypeId a, TypeId b);
 
 /**
@@ -392,6 +394,28 @@ ATTRIBUTE_HELPER_HEADER (TypeId);
 } // namespace ns3 
 
 namespace ns3 {
+
+TypeId::TypeId ()
+  : m_tid (0) {}
+TypeId::TypeId (const TypeId &o)
+  : m_tid (o.m_tid) {}
+TypeId &TypeId::operator = (const TypeId &o)
+{
+  m_tid = o.m_tid;
+  return *this;
+}
+TypeId::~TypeId ()
+{}
+inline bool operator == (TypeId a, TypeId b)
+{
+  return a.m_tid == b.m_tid;
+}
+
+inline bool operator != (TypeId a, TypeId b)
+{
+  return a.m_tid != b.m_tid;
+}
+
 
 /*************************************************************************
  *   The TypeId implementation which depends on templates

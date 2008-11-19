@@ -20,7 +20,7 @@
 
 */
 
-#define NSC_VERSION 0x000400
+#define NSC_VERSION 0x000500
 
 struct INetStack
 {
@@ -149,21 +149,10 @@ struct INetStreamSocket
     virtual bool is_connected() = 0;
     virtual bool is_listening() = 0;
 
-    /*
-     * addrspace points to a byte buffer of *addrs_len bytes.
-     * It is filled with a (network order) byte representation of the ip address,
-     * addrs_len is updated to reflect the length (i.e. 4 or eventually 16 for ipv6).
-     * *port is updated with the TCP/SCTP etc. port number.
-     *
-     * The reason that this doesn't use a *struct sockaddr is that the BSDs
-     * have an sa_len member in there, Linux does not, so the struct layout is
-     * different depending on the actual NSC stack and the real host operating
-     * system.
-     */
-    virtual int getpeername(void *addrspace, size_t *addrs_len, int *port) {
+    virtual int getpeername(struct sockaddr *sa, size_t *salen) {
 	    return -1;
     }
-    virtual int getsockname(void *addrspace, size_t *addrs_len, int *port) {
+    virtual int getsockname(struct sockaddr *sa, size_t *salen) {
 	    return -1;
     }
     /* Optional functions used to get and set variables for this TCP
