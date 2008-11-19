@@ -351,8 +351,10 @@ public:
   void SetUid (uint16_t tid);
 
   // construct an invalid TypeId.
-  TypeId ();
-  ~TypeId ();
+  inline TypeId ();
+  inline TypeId (const TypeId &o);
+  inline TypeId &operator = (const TypeId &o);
+  inline ~TypeId ();
 
 private:
   friend class AttributeList;
@@ -392,6 +394,19 @@ ATTRIBUTE_HELPER_HEADER (TypeId);
 } // namespace ns3 
 
 namespace ns3 {
+
+TypeId::TypeId ()
+  : m_tid (0) {}
+TypeId::TypeId (const TypeId &o)
+  : m_tid (o.m_tid) {}
+TypeId &TypeId::operator = (const TypeId &o)
+{
+  m_tid = o.m_tid;
+  return *this;
+}
+TypeId::~TypeId ()
+{}
+
 
 /*************************************************************************
  *   The TypeId implementation which depends on templates

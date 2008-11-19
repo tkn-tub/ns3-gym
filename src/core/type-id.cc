@@ -365,10 +365,6 @@ namespace ns3 {
  *         The TypeId class
  *********************************************************************/
 
-TypeId::TypeId ()
-  : m_tid (0)
-{}
-
 TypeId::TypeId (const char *name)
 {
   uint16_t uid = Singleton<IidManager>::Get ()->AllocateUid (name);
@@ -379,8 +375,6 @@ TypeId::TypeId (const char *name)
 
 TypeId::TypeId (uint16_t tid)
   : m_tid (tid)
-{}
-TypeId::~TypeId ()
 {}
 TypeId 
 TypeId::LookupByName (std::string name)
