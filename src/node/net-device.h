@@ -184,6 +184,15 @@ public:
   virtual Address GetMulticast (Ipv6Address addr) const = 0;
 
   /**
+   * \brief Return true if the net device is acting as a bridge.
+   *
+   * \return value of m_isBridge flag
+   */
+  virtual bool IsBridge (void) const = 0;
+
+  /**
+   * \brief Return true if the net device is on a point-to-point link.
+   *
    * \return value of m_isPointToPoint flag
    */
   virtual bool IsPointToPoint (void) const = 0;

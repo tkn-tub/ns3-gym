@@ -351,6 +351,12 @@ public:
   virtual bool IsPointToPoint (void) const;
 
   /**
+   * Is this a bridge?
+   * \returns false.
+   */
+  virtual bool IsBridge (void) const;
+
+  /**
    * Start sending a packet down the channel.
    */
   virtual bool Send (Ptr<Packet> packet, const Address& dest, 

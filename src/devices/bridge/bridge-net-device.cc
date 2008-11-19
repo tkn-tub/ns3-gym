@@ -305,6 +305,12 @@ BridgeNetDevice::IsPointToPoint (void) const
   return false;
 }
 
+bool 
+BridgeNetDevice::IsBridge (void) const
+{
+  return true;
+}
+
 
 bool 
 BridgeNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)

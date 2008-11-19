@@ -163,6 +163,13 @@ SimpleNetDevice::IsPointToPoint (void) const
 {
   return false;
 }
+
+bool 
+SimpleNetDevice::IsBridge (void) const
+{
+  return false;
+}
+
 bool 
 SimpleNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
