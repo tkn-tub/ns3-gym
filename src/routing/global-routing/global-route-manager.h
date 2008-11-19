@@ -22,6 +22,8 @@
 #ifndef GLOBAL_ROUTE_MANAGER_H
 #define GLOBAL_ROUTE_MANAGER_H
 
+#include "ns3/node-container.h"
+
 namespace ns3 {
 
 /**
@@ -40,7 +42,8 @@ class GlobalRouteManager
 public:
 /**
  * @brief Build a routing database and initialize the routing tables of
- * the nodes in the simulation.
+ * the nodes in the simulation.  Makes all nodes in the simulation into
+ * routers.
  *
  * All this function does is call  BuildGlobalRoutingDatabase () and
  * InitializeRoutes ().
@@ -49,6 +52,19 @@ public:
  * @see InitializeRoutes ();
  */
   static void PopulateRoutingTables ();
+
+/**
+ * @brief Build a routing database and initialize the routing tables of
+ * the nodes in the simulation.  Makes the nodes in the provided container
+ * into routers.
+ *
+ * All this function does is call  BuildGlobalRoutingDatabase () and
+ * InitializeRoutes ().
+ *
+ * @see BuildGlobalRoutingDatabase ();
+ * @see InitializeRoutes ();
+ */
+  static void PopulateRoutingTables (NodeContainer c);
 
 /**
  * @brief Allocate a 32-bit router ID from monotonically increasing counter.
@@ -63,6 +79,14 @@ private:
  *
  */
   static void SelectRouterNodes ();
+
+/**
+ * @brief Select which nodes in the system are to be router nodes and 
+ * aggregate the appropriate interfaces onto those nodes.
+ * @internal
+ *
+ */
+  static void SelectRouterNodes (NodeContainer c);
 
 /**
  * @brief Build the routing database by gathering Link State Advertisements

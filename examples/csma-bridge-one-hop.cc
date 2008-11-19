@@ -16,21 +16,46 @@
 
 // Network topology
 //
+//         bridge1         The node named bridge1 (node 5 in the nodelist)
+//   ------------------        has three CMSA net devices that are bridged
+//   CSMA   CSMA   CSMA        together using a BridgeNetDevice.
+//     |      |      |
+//     |      |      |     The bridge node talks over three CSMA channels
+//     |      |      |
+//   CSMA   CSMA   CSMA    to three other CSMA net devices
+//   ----   ----   ----    
+//    n0     n1     n2     Node two acts as a router and talks to another
+//                 ----        bridge that connects the remaining nodes.
+//                 CSMA
+//                   |
+//    n3     n4      |
+//   ----   ----     |
+//   CSMA   CSMA     |
+//     |      |      |
+//     |      |      |
+//     |      |      |
+//   CSMA   CSMA   CSMA    The node named bridge2 (node 6 in the nodelist)
+//   ------------------        has three CMSA net devices that are bridged
+//        bridge2              together using a BridgeNetDevice.
+//
+// Or, more abstractly, recognizing that bridge 1 and bridge 2 are nodes 
+// with three net devices:
+//
 //        n0     n1  
 //        |      | 
 //       -----------
-//       | bridge1 |
+//       | bridge1 | <- n5
 //       -----------
 //           |    
-//           n2   
+//         router    <- n2
 //           |
 //       -----------
-//       | bridge2 |
+//       | bridge2 | <- n6
 //       -----------
 //        |      | 
 //        n3     n4  
 //
-// This example shows two broadcast domains, each interconnected by a bridge
+// So, this example shows two broadcast domains, each interconnected by a bridge
 // with a router node (n2) interconnecting the layer-2 broadcast domains
 // 
 // It is meant to mirror somewhat the csma-bridge example but adds another
@@ -108,12 +133,17 @@ main (int argc, char *argv[])
 
   for (int i = 0; i < 3; i++)
     {
+      // install a csma channel between the ith toplan node and the bridge node
       NetDeviceContainer link = csma.Install (NodeContainer (topLan.Get (i), bridge1));
       topLanDevices.Add (link.Get (0));
       topBridgeDevices.Add (link.Get (1));
     }
 
-  // Create the bridge netdevice, which will do the packet switching
+  //
+  // Now, Create the bridge netdevice, which will do the packet switching.  The
+  // bridge lives on the node bridge1 and bridges together the topBridgeDevices
+  // which are the three CSMA net devices on the node in the diagram above.
+  //
   BridgeHelper bridge;
   bridge.Install (bridge1, topBridgeDevices);
 
@@ -132,11 +162,11 @@ main (int argc, char *argv[])
       bottomBridgeDevices.Add (link.Get (1));
     }
   bridge.Install (bridge2, bottomBridgeDevices);
+
+  // Add internet stack to the bottomLan nodes
   internet.Install (NodeContainer (n3, n4));
 
-
   // We've got the "hardware" in place.  Now we need to add IP addresses.
-  //
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
@@ -144,9 +174,12 @@ main (int argc, char *argv[])
   ipv4.SetBase ("10.1.2.0", "255.255.255.0");
   ipv4.Assign (bottomLanDevices);
 
+  // 
   // Create router nodes, initialize routing database and set up the routing
   // tables in the nodes.
-  GlobalRouteManager::PopulateRoutingTables ();
+  //
+  NodeContainer routerNodes (n0, n1, n2, n3, n4);
+  GlobalRouteManager::PopulateRoutingTables (routerNodes);
 
   //
   // Create an OnOff application to send UDP datagrams from node zero to node 1.

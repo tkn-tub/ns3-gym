@@ -20,11 +20,14 @@
 
 #include "ns3/log.h"
 #include "ns3/assert.h"
+#include "ns3/abort.h"
 #include "ns3/channel.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
 #include "ns3/ipv4.h"
+#include "ns3/bridge-net-device.h"
 #include "global-router-interface.h"
+#include <vector>
 
 NS_LOG_COMPONENT_DEFINE ("GlobalRouter");
 
@@ -365,8 +368,7 @@ GlobalRoutingLSA::GetAttachedRouter (uint32_t n) const
           return *i;
         }
     }
-  NS_ASSERT_MSG(false, 
-    "GlobalRoutingLSA::GetAttachedRouter (): invalid index");
+  NS_ASSERT_MSG(false, "GlobalRoutingLSA::GetAttachedRouter (): invalid index");
   return Ipv4Address("0.0.0.0");
 }
 
@@ -495,45 +497,108 @@ GlobalRouter::DiscoverLSAs (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   Ptr<Node> node = GetObject<Node> ();
-  NS_LOG_LOGIC("For node " << node->GetId () );
-  NS_ASSERT_MSG(node, 
-    "GlobalRouter::DiscoverLSAs (): <Node> interface not set");
+  NS_ABORT_MSG_UNLESS (node, "GlobalRouter::DiscoverLSAs (): GetObject for <Node> interface failed");
+  NS_LOG_LOGIC ("For node " << node->GetId () );
 
   ClearLSAs ();
-
+//
 // While building the router-LSA, keep a list of those NetDevices for
 // which I am the designated router and need to later build a NetworkLSA
+//
   std::list<Ptr<NetDevice> > listOfDRInterfaces;
 
 //
 // We're aggregated to a node.  We need to ask the node for a pointer to its
 // Ipv4 interface.  This is where the information regarding the attached 
-// interfaces lives.
+// interfaces lives.  If we're a router, we had better have an Ipv4 interface.
 //
   Ptr<Ipv4> ipv4Local = node->GetObject<Ipv4> ();
-  NS_ASSERT_MSG(ipv4Local, 
-    "GlobalRouter::DiscoverLSAs (): QI for <Ipv4> interface failed");
+  NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::DiscoverLSAs (): GetObject for <Ipv4> interface failed");
 //
-// Each node originates a Router-LSA
+// Each node is a router and so originates a Router-LSA
 //
   GlobalRoutingLSA *pLSA = new GlobalRoutingLSA;
   pLSA->SetLSType (GlobalRoutingLSA::RouterLSA);
   pLSA->SetLinkStateId (m_routerId);
   pLSA->SetAdvertisingRouter (m_routerId);
   pLSA->SetStatus (GlobalRoutingLSA::LSA_SPF_NOT_EXPLORED);
+
 //
-// We need to ask the node for the number of net devices attached. This isn't
-// necessarily equal to the number of links to adjacent nodes (other routers)
-// as the number of devices may include those for stub networks (e.g., 
-// ethernets, etc.).  
+// Ask the node for the number of net devices attached. This isn't necessarily 
+// equal to the number of links to adjacent nodes (other routers) as the number
+// of devices may include those for stub networks (e.g., ethernets, etc.) and 
+// bridge devices also take up an "extra" net device.
 //
   uint32_t numDevices = node->GetNDevices();
   NS_LOG_LOGIC ("numDevices = " << numDevices);
+
+//
+// There are two broad classes of devices:  bridges in combination with the
+// devices they bridge and everything else.  We need to first discover all of
+// the "everything else" class of devices.
+//
+// To do this, we wander through all of the devices on the node looking for
+// bridge net devices.  We then add any net devices associated to a bridge
+// to a list of bridged devices.  These devices will not be treated as stand-
+// alone devices later.
+//
+  std::vector<Ptr<NetDevice> > bridgedDevices;
+
+  NS_LOG_LOGIC ("*************************");
+
+  NS_LOG_LOGIC ("numDevices = " << numDevices);
+  for (uint32_t i = 0; i < numDevices; ++i)
+    {
+      Ptr<NetDevice> nd = node->GetDevice(i);
+      if (nd->IsBridge ())
+        {
+          NS_LOG_LOGIC ("**** Net device " << nd << "is a bridge");
+          //
+          // XXX There is only one kind of bridge device so far.  We agreed to
+          // assume that it is Gustavo's learning bridge until there is a need
+          // to deal with another.  At that time, we'll have to break out a
+          // bridge interface.
+          //
+          Ptr<BridgeNetDevice> bnd = nd->GetObject<BridgeNetDevice> ();
+          NS_ABORT_MSG_UNLESS (bnd, "GlobalRouter::DiscoverLSAs (): GetObject for <BridgeNetDevice> failed");
+
+          for (uint32_t j = 0; j < bnd->GetNBridgePorts (); ++j)
+            {
+              NS_LOG_LOGIC ("**** Net device " << bnd << "is a bridged device");
+              bridgedDevices.push_back (bnd->GetBridgePort (j));
+            }
+        }
+    }
+
+  //
+  // Iterate through the devices on the node and walk the channel to see what's
+  // on the other side of the standalone devices..
+  //
   for (uint32_t i = 0; i < numDevices; ++i)
     {
       Ptr<NetDevice> ndLocal = node->GetDevice(i);
+      //
+      // If the device in question is on our list of bridged devices, then we
+      // just ignore it.  It will be dealt with correctly when we probe the 
+      // bridge device it belongs to.  It is the case that the bridge code
+      // assumes that bridged devices must not have IP interfaces, and so it 
+      // may actually sufficient to perform the test for IP interface below, 
+      // but that struck me as too indirect a condition.
+      //
+      for (uint32_t j = 0; j < bridgedDevices.size (); ++j)
+        {
+          if (ndLocal == bridgedDevices[j])
+            {
+              NS_LOG_LOGIC ("**** Skipping Bridged Device");
 
-      // Check if it is an IP interface (could be a pure L2 NetDevice)
+              continue;
+            }
+        }
+
+      //
+      // Check to see if the net device we just got has a corresponding IP 
+      // interface (could be a pure L2 NetDevice).  
+      //
       bool isIp = false;
       for (uint32_t i = 0; i < ipv4Local->GetNInterfaces (); ++i )
         {
@@ -543,26 +608,29 @@ GlobalRouter::DiscoverLSAs (void)
               break;
             }
         }
+
       if (!isIp)
         {
+          NS_LOG_LOGIC ("**** Net device " << ndLocal << "has no IP interface, skipping");
           continue;
         }
 
       if (ndLocal->IsBroadcast () && !ndLocal->IsPointToPoint () )
         {
-          NS_LOG_LOGIC ("Broadcast link");
+          NS_LOG_LOGIC ("**** Broadcast link");
           GlobalRoutingLinkRecord *plr = new GlobalRoutingLinkRecord;
 //
 // We need to determine whether we are on a transit or stub network
 // If we find at least one more router on this channel, we are a transit
-//
+// network.  If we're the only router, we're on a stub.
 //
 // Now, we have to find the Ipv4 interface whose netdevice is the one we 
-// just found.  This is still the IP on the local side of the channel.  There 
-// is a function to do this used down in the guts of the stack, but it's not 
-// exported so we had to whip up an equivalent.
+// just found.  This is still the IP on the local side of the channel.
 //
-          uint32_t ifIndexLocal = FindIfIndexForDevice(node, ndLocal);
+          uint32_t ifIndexLocal;
+          bool rc = FindIfIndexForDevice(node, ndLocal, ifIndexLocal);
+          NS_ABORT_MSG_IF (rc == false, "GlobalRouter::DiscoverLSAs (): No interface index associated with device");
+
           Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
           Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
           NS_LOG_LOGIC ("Working with local address " << addrLocal);
@@ -577,7 +645,7 @@ GlobalRouter::DiscoverLSAs (void)
           if (nDevices == 1)
             {
               // This is a stub broadcast interface
-              NS_LOG_LOGIC("Router-LSA stub broadcast link");
+              NS_LOG_LOGIC("**** Router-LSA stub broadcast link");
               // XXX in future, need to consider if >1 includes other routers
               plr->SetLinkType (GlobalRoutingLinkRecord::StubNetwork);
               // Link ID is IP network number of attached network
@@ -593,7 +661,7 @@ GlobalRouter::DiscoverLSAs (void)
             }
           else
             {
-              NS_LOG_LOGIC ("Router-LSA Broadcast link");
+              NS_LOG_LOGIC ("**** Router-LSA Broadcast link");
               // multiple routers on a broadcast interface
               // lowest IP address is designated router
               plr->SetLinkType (GlobalRoutingLinkRecord::TransitNetwork);
@@ -616,14 +684,16 @@ GlobalRouter::DiscoverLSAs (void)
         }
       else if (ndLocal->IsPointToPoint () )
         {
-          NS_LOG_LOGIC ("Router-LSA Point-to-point device");
+          NS_LOG_LOGIC ("**** Router-LSA Point-to-point device");
 //
 // Now, we have to find the Ipv4 interface whose netdevice is the one we 
 // just found.  This is still the IP on the local side of the channel.  There 
 // is a function to do this used down in the guts of the stack, but it's not 
 // exported so we had to whip up an equivalent.
 //
-          uint32_t ifIndexLocal = FindIfIndexForDevice(node, ndLocal);
+          uint32_t ifIndexLocal;
+          bool rc = FindIfIndexForDevice(node, ndLocal, ifIndexLocal);
+          NS_ABORT_MSG_IF (rc == false, "GlobalRouter::DiscoverLSAs (): No interface index associated with device");
 //
 // Now that we have the Ipv4 interface index, we can get the address and mask
 // we need.
@@ -642,30 +712,43 @@ GlobalRouter::DiscoverLSAs (void)
             {
               continue;
             }
+//
+// Get the net device on the other side of the point-to-point channel.
+//
           Ptr<NetDevice> ndRemote = GetAdjacent(ndLocal, ch);
 //
 // The adjacent net device is aggregated to a node.  We need to ask that net 
-// device for its node, then ask that node for its Ipv4 interface.
+// device for its node, then ask that node for its Ipv4 interface.  Note a
+// requirement that nodes on either side of a point-to-point link must have 
+// internet stacks.
 //
           Ptr<Node> nodeRemote = ndRemote->GetNode();
           Ptr<Ipv4> ipv4Remote = nodeRemote->GetObject<Ipv4> ();
-          NS_ASSERT_MSG(ipv4Remote, 
-            "GlobalRouter::DiscoverLSAs (): QI for remote <Ipv4> failed");
+          NS_ABORT_MSG_UNLESS (ipv4Remote, 
+            "GlobalRouter::DiscoverLSAs (): GetObject for remote <Ipv4> failed");
 //
 // Per the OSPF spec, we're going to need the remote router ID, so we might as
 // well get it now.
 //
-          Ptr<GlobalRouter> srRemote = 
-            nodeRemote->GetObject<GlobalRouter> ();
-          NS_ASSERT_MSG(srRemote, 
-            "GlobalRouter::DiscoverLSAs():QI for remote <GlobalRouter> failed");
+// While we're at it, further note the requirement that nodes on either side of
+// a point-to-point link must participateg in global routing and therefore have
+// a GlobalRouter interface aggregated.
+//
+          Ptr<GlobalRouter> srRemote = nodeRemote->GetObject<GlobalRouter> ();
+          NS_ABORT_MSG_UNLESS(srRemote, 
+            "GlobalRouter::DiscoverLSAs(): GetObject for remote <GlobalRouter> failed");
+
           Ipv4Address rtrIdRemote = srRemote->GetRouterId();
           NS_LOG_LOGIC ("Working with remote router " << rtrIdRemote);
 //
 // Now, just like we did above, we need to get the IP interface index for the 
-// net device on the other end of the point-to-point channel.
+// net device on the other end of the point-to-point channel.  We have yet another
+// assumption that point to point devices are incompatible with bridges and that
+// the remote device must have an associated ip interface.
 //
-          uint32_t ifIndexRemote = FindIfIndexForDevice(nodeRemote, ndRemote);
+          uint32_t ifIndexRemote;
+          rc = FindIfIndexForDevice(nodeRemote, ndRemote, ifIndexRemote);
+          NS_ABORT_MSG_IF (rc == false, "GlobalRouter::DiscoverLSAs (): No interface index associated with remote device");
 //
 // Now that we have the Ipv4 interface, we can get the (remote) address and
 // mask we need.
@@ -698,23 +781,38 @@ GlobalRouter::DiscoverLSAs (void)
         {
           NS_ASSERT_MSG(0, "GlobalRouter::DiscoverLSAs (): unknown link type");
         }
-
     }
 //
 // The LSA goes on a list of LSAs in case we want to begin exporting other
 // kinds of advertisements (than Router LSAs).
+//
   m_LSAs.push_back (pLSA);
   NS_LOG_LOGIC (*pLSA);
 
-// Now, determine whether we need to build a NetworkLSA
+// 
+// Now, determine whether we need to build a NetworkLSA.  This is the case if
+// we found at least one designated router.
+//
   if (listOfDRInterfaces.size () > 0)
     {
       for (std::list<Ptr<NetDevice> >::iterator i = listOfDRInterfaces.begin ();
         i != listOfDRInterfaces.end (); i++)
         {
+//
 // Build one NetworkLSA for each interface that is a DR
+//
           Ptr<NetDevice> ndLocal = *i;
-          uint32_t ifIndexLocal = FindIfIndexForDevice(node, ndLocal);
+
+          //
+          // We are working with a list of net devices off of the local node
+          // on which we found a designated router.  We assume there must be
+          // an associated ipv4 interface index.
+          //
+
+          uint32_t ifIndexLocal;
+          bool rc = FindIfIndexForDevice(node, ndLocal, ifIndexLocal);
+          NS_ABORT_MSG_IF (rc == false, "GlobalRouter::DiscoverLSAs (): No interface index associated with device");
+
           Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
           Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
 
@@ -724,7 +822,13 @@ GlobalRouter::DiscoverLSAs (void)
           pLSA->SetAdvertisingRouter (m_routerId);
           pLSA->SetNetworkLSANetworkMask (maskLocal);
           pLSA->SetStatus (GlobalRoutingLSA::LSA_SPF_NOT_EXPLORED);
-// Build list of AttachedRouters
+//
+// XXX Doesn't deal with bridging
+//
+// Build a list of AttachedRouters by walking the devices in the channel
+// and, if we find an IPv4 interface associated with that device, we
+// call it an attached router.  
+//
           Ptr<Channel> ch = ndLocal->GetChannel();
           uint32_t nDevices = ch->GetNDevices();
           NS_ASSERT (nDevices);
@@ -733,11 +837,16 @@ GlobalRouter::DiscoverLSAs (void)
               Ptr<NetDevice> tempNd = ch->GetDevice (i);
               NS_ASSERT (tempNd);
               Ptr<Node> tempNode = tempNd->GetNode ();
-              uint32_t tempIfIndex = FindIfIndexForDevice (tempNode, tempNd);
-              Ptr<Ipv4> tempIpv4 = tempNode->GetObject<Ipv4> ();
-              NS_ASSERT (tempIpv4);
-              Ipv4Address tempAddr = tempIpv4->GetAddress(tempIfIndex);
-              pLSA->AddAttachedRouter (tempAddr);
+              uint32_t tempIfIndex;
+              if (FindIfIndexForDevice (tempNode, tempNd, tempIfIndex))
+                {
+
+                  Ptr<Ipv4> tempIpv4 = tempNode->GetObject<Ipv4> ();
+                  NS_ASSERT (tempIpv4);
+                  Ipv4Address tempAddr = tempIpv4->GetAddress(tempIfIndex);
+                  pLSA->AddAttachedRouter (tempAddr);
+
+                }
             }
           m_LSAs.push_back (pLSA);
           NS_LOG_LOGIC (*pLSA);
@@ -747,33 +856,80 @@ GlobalRouter::DiscoverLSAs (void)
   return m_LSAs.size ();
 }
 
+//
+// Given a node and an attached net device, we need to walk the channel to which
+// the net device is attached and look for the lowest IP address on all of the
+// devices attached to that channel.  This process is complicated by the fact 
+// there may be bridge devices associated with any of the net devices attached
+// to the channel.
+//
   Ipv4Address
-GlobalRouter::FindDesignatedRouterForLink (Ptr<Node> node, 
-  Ptr<NetDevice> ndLocal) const
+  GlobalRouter::FindDesignatedRouterForLink (Ptr<Node> node, Ptr<NetDevice> ndLocal) const
 {
-  uint32_t ifIndexLocal = FindIfIndexForDevice(node, ndLocal);
+  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_LOGIC("**** For node " << node->GetId () << " for net device " << ndLocal );
+
+  uint32_t ifIndexLocal;
+  bool rc = FindIfIndexForDevice(node, ndLocal, ifIndexLocal);
+  NS_ABORT_MSG_IF (rc == false, "GlobalRouter::DiscoverLSAs (): No interface index associated with device");
+
   Ptr<Ipv4> ipv4Local = GetObject<Ipv4> ();
-  NS_ASSERT (ipv4Local);
+  NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::FindDesignatedRouterForLink(): GetObject for <Ipv4> interface failed"
+                       " on node " << node->GetId ());
+
   Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
   Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
 
   Ptr<Channel> ch = ndLocal->GetChannel();
   uint32_t nDevices = ch->GetNDevices();
   NS_ASSERT (nDevices);
+
+  NS_LOG_LOGIC("**** channel " << ch << " has " << nDevices << " net devices");
+
+  //
+  // We now have the channel associated with the net device in question.  We
+  // need to iterate over all of the net devices attached to that channel.
+  //
+
   Ipv4Address lowest = addrLocal;
-  // iterate all NetDevices and return the lowest numbered IP address 
+
   for (uint32_t i = 0; i < nDevices; i++)
     {
-      Ptr<NetDevice> tempNd = ch->GetDevice (i);
-      NS_ASSERT (tempNd);
-      Ptr<Node> tempNode = tempNd->GetNode ();
-      uint32_t tempIfIndex = FindIfIndexForDevice (tempNode, tempNd);
-      Ptr<Ipv4> tempIpv4 = tempNode->GetObject<Ipv4> ();
-      NS_ASSERT (tempIpv4);
-      Ipv4Address tempAddr = tempIpv4->GetAddress(tempIfIndex);
-      if (tempAddr < addrLocal)
+      Ptr<NetDevice> ndTemp = ch->GetDevice (i);
+      NS_ASSERT_MSG (ndTemp, "GlobalRouter::FindDesignatedRouterForLink(): Null device attached to channel");
+
+      if (ndTemp == ndLocal)
         {
-          addrLocal = tempAddr;
+          continue;
+        }
+
+      Ptr<Node> nodeTemp = ndTemp->GetNode ();
+
+      NS_LOG_LOGIC("**** channel connects to node " << nodeTemp->GetId () << " with net device " << ndTemp);
+
+      //
+      // XXX doesn't admit the possibility of a bridge
+      //
+      // If the remote device doesn't have an ipv4 interface index associated 
+      // with it, it cannot be a designated router.
+      //
+      uint32_t ifIndexTemp;
+      bool rc = FindIfIndexForDevice(nodeTemp, ndTemp, ifIndexTemp);
+      if (rc == false)
+        {
+          continue;
+        }
+
+      Ptr<Ipv4> ipv4Temp = nodeTemp->GetObject<Ipv4> ();
+      NS_ASSERT_MSG (ipv4Temp, "GlobalRouter::FindDesignatedRouterForLink(): GetObject for <Ipv4> interface failed"
+                     " on node " << node->GetId ());
+
+      Ipv4Address addrTemp = ipv4Temp->GetAddress(ifIndexTemp);
+
+      NS_LOG_LOGIC("**** net device " << ndTemp << " has Ipv4Address " << addrTemp);
+      if (addrTemp < addrLocal)
+        {
+          addrLocal = addrTemp;
         }
     }
   return addrLocal;
@@ -852,25 +1008,37 @@ GlobalRouter::GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const
 }
 
 //
-// Given a node and a net device, find the IPV4 interface index that 
-// corresponds to that net device.
+// Given a node and a net device, find an IPV4 interface index that corresponds
+// to that net device.  This function may fail for various reasons.  If a node
+// does not have an internet stack (for example if it is a bridge) we won't have
+// an IPv4 at all.  If the node does have a stack, but the net device in question
+// is bridged, there will not be an interface associated directly with the device.
 //
-  uint32_t
-GlobalRouter::FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd) const
+  bool
+GlobalRouter::FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd, uint32_t &index) const
 {
   NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_LOGIC("For node " << node->GetId () << " for net device " << nd );
+
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-  NS_ASSERT_MSG(ipv4, "QI for <Ipv4> interface failed");
+  if (ipv4 == 0)
+    {
+      NS_LOG_LOGIC ("**** No Ipv4 interface on node " << node->GetId ());
+      return false;
+    }
+
   for (uint32_t i = 0; i < ipv4->GetNInterfaces(); ++i )
     {
       if (ipv4->GetNetDevice(i) == nd) 
         {
-          return i;
+          NS_LOG_LOGIC ("**** Device " << nd << " has associated ipv4 index " << i);
+          index = i;
+          return true;
         }
     }
 
-  NS_ASSERT_MSG(0, "Cannot find interface for device");
-  return 0;
+          NS_LOG_LOGIC ("**** Device " << nd << " has no associated ipv4 index");
+  return false;
 }
 
 } // namespace ns3

@@ -29,6 +29,7 @@
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/node-container.h"
 #include "global-router-interface.h"
 
 namespace ns3 {
@@ -706,6 +707,14 @@ public:
  *
  */
   virtual void SelectRouterNodes ();
+
+/**
+ * @brief Select which nodes in the system are to be router nodes and 
+ * aggregate the appropriate interfaces onto those nodes.
+ * @internal
+ *
+ */
+  virtual void SelectRouterNodes (NodeContainer c);
 
 /**
  * @brief Build the routing database by gathering Link State Advertisements

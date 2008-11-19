@@ -639,7 +639,7 @@ private:
   void ClearLSAs (void);
 
   Ptr<NetDevice> GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const;
-  uint32_t FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd) const;
+  bool FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd, uint32_t &index) const;
   Ipv4Address FindDesignatedRouterForLink (Ptr<Node> node,   
     Ptr<NetDevice> ndLocal) const;
 

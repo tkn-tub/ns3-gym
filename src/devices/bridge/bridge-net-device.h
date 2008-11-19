@@ -82,6 +82,10 @@ public:
    */
   void AddBridgePort (Ptr<NetDevice> bridgePort);
 
+  uint32_t GetNBridgePorts (void) const;
+
+  Ptr<NetDevice> GetBridgePort (uint32_t n) const;
+
   // inherited from NetDevice base class.
   virtual void SetName(const std::string name);
   virtual std::string GetName(void) const;

@@ -21,6 +21,16 @@
 
 #include "fatal-error.h"
 
+#define NS_ABORT_MSG(msg)                                       \
+  do {								\
+    std::cerr << "file=" << __FILE__ <<                         \
+      ", line=" << __LINE__ << ", abort, msg=\"" <<             \
+      msg << "\"" << std::endl;                                 \
+    int *a = 0;                                                 \
+    *a = 0;							\
+  } while (false)
+
+
 #define NS_ABORT_IF(cond)					\
   do {								\
     if (cond)							\

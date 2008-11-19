@@ -57,6 +57,7 @@ BridgeNetDevice::BridgeNetDevice ()
     m_ifIndex (0),
     m_mtu (0xffff)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_channel = CreateObject<BridgeChannel> ();
 }
 
@@ -100,6 +101,7 @@ void
 BridgeNetDevice::ForwardUnicast (Ptr<NetDevice> incomingPort, Ptr<const Packet> packet,
                                  uint16_t protocol, Mac48Address src, Mac48Address dst)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_DEBUG ("LearningBridgeForward (incomingPort=" << incomingPort->GetName ()
                 << ", packet=" << packet << ", protocol="<<protocol
                 << ", src=" << src << ", dst=" << dst << ")");
@@ -133,6 +135,7 @@ void
 BridgeNetDevice::ForwardBroadcast (Ptr<NetDevice> incomingPort, Ptr<const Packet> packet,
                                         uint16_t protocol, Mac48Address src, Mac48Address dst)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_DEBUG ("LearningBridgeForward (incomingPort=" << incomingPort->GetName ()
                 << ", packet=" << packet << ", protocol="<<protocol
                 << ", src=" << src << ", dst=" << dst << ")");
@@ -154,6 +157,7 @@ BridgeNetDevice::ForwardBroadcast (Ptr<NetDevice> incomingPort, Ptr<const Packet
 
 void BridgeNetDevice::Learn (Mac48Address source, Ptr<NetDevice> port)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_enableLearning)
     {
       LearnedState &state = m_learnState[source];
@@ -164,6 +168,7 @@ void BridgeNetDevice::Learn (Mac48Address source, Ptr<NetDevice> port)
 
 Ptr<NetDevice> BridgeNetDevice::GetLearnedState (Mac48Address source)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   if (m_enableLearning)
     {
       Time now = Simulator::Now ();
@@ -185,9 +190,25 @@ Ptr<NetDevice> BridgeNetDevice::GetLearnedState (Mac48Address source)
   return NULL;
 }
 
+uint32_t
+BridgeNetDevice::GetNBridgePorts (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_ports.size ();
+}
+
+
+Ptr<NetDevice>
+BridgeNetDevice::GetBridgePort (uint32_t n) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_ports[n];
+}
+
 void 
 BridgeNetDevice::AddBridgePort (Ptr<NetDevice> bridgePort)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT (bridgePort != this);
   if (!Mac48Address::IsMatchingType (bridgePort->GetAddress ()))
     {
@@ -212,42 +233,49 @@ BridgeNetDevice::AddBridgePort (Ptr<NetDevice> bridgePort)
 void 
 BridgeNetDevice::SetName(const std::string name)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_name = name;
 }
 
 std::string 
 BridgeNetDevice::GetName(void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return m_name;
 }
 
 void 
 BridgeNetDevice::SetIfIndex(const uint32_t index)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_ifIndex = index;
 }
 
 uint32_t 
 BridgeNetDevice::GetIfIndex(void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return m_ifIndex;
 }
 
 Ptr<Channel> 
 BridgeNetDevice::GetChannel (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return m_channel;
 }
 
 Address 
 BridgeNetDevice::GetAddress (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return m_address;
 }
 
 bool 
 BridgeNetDevice::SetMtu (const uint16_t mtu)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_mtu = mtu;
   return true;
 }
@@ -255,6 +283,7 @@ BridgeNetDevice::SetMtu (const uint16_t mtu)
 uint16_t 
 BridgeNetDevice::GetMtu (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return m_mtu;
 }
 
@@ -262,6 +291,7 @@ BridgeNetDevice::GetMtu (void) const
 bool 
 BridgeNetDevice::IsLinkUp (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return true;
 }
 
@@ -274,6 +304,7 @@ BridgeNetDevice::SetLinkChangeCallback (Callback<void> callback)
 bool 
 BridgeNetDevice::IsBroadcast (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return true;
 }
 
@@ -281,12 +312,14 @@ BridgeNetDevice::IsBroadcast (void) const
 Address
 BridgeNetDevice::GetBroadcast (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 
 bool
 BridgeNetDevice::IsMulticast (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return true;
 }
 
@@ -302,12 +335,14 @@ BridgeNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 bool 
 BridgeNetDevice::IsPointToPoint (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return false;
 }
 
 bool 
 BridgeNetDevice::IsBridge (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return true;
 }
 
@@ -315,6 +350,7 @@ BridgeNetDevice::IsBridge (void) const
 bool 
 BridgeNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   for (std::vector< Ptr<NetDevice> >::iterator iter = m_ports.begin ();
          iter != m_ports.end (); iter++)
     {
@@ -328,6 +364,7 @@ BridgeNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protoco
 bool 
 BridgeNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& dest, uint16_t protocolNumber)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   for (std::vector< Ptr<NetDevice> >::iterator iter = m_ports.begin ();
          iter != m_ports.end (); iter++)
     {
@@ -342,6 +379,7 @@ BridgeNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address
 Ptr<Node> 
 BridgeNetDevice::GetNode (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return m_node;
 }
 
@@ -349,6 +387,7 @@ BridgeNetDevice::GetNode (void) const
 void 
 BridgeNetDevice::SetNode (Ptr<Node> node)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_node = node;
 }
 
@@ -356,6 +395,7 @@ BridgeNetDevice::SetNode (Ptr<Node> node)
 bool 
 BridgeNetDevice::NeedsArp (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return true;
 }
 
@@ -363,25 +403,28 @@ BridgeNetDevice::NeedsArp (void) const
 void 
 BridgeNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_rxCallback = cb;
 }
 
 void 
 BridgeNetDevice::SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_promiscRxCallback = cb;
 }
 
 bool
 BridgeNetDevice::SupportsSendFrom () const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return true;
 }
-
 
 void
 BridgeNetDevice::DoDispose (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_node = 0;
   NetDevice::DoDispose ();
 }

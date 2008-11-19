@@ -351,8 +351,7 @@ GlobalRouteManagerImpl::DebugUseLsdb (GlobalRouteManagerLSDB* lsdb)
 
 //
 // In order to build the routing database, we need at least one of the nodes
-// to participate as a router.  Eventually we expect to provide a mechanism
-// for selecting a subset of the nodes to participate; for now, we just make
+// to participate as a router.  This is a convenience function that makes
 // all nodes routers.  We do this by walking the list of nodes in the system
 // and aggregating a Global Router Interface to each of the nodes.
 //
@@ -361,6 +360,21 @@ GlobalRouteManagerImpl::SelectRouterNodes ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
+    {
+      Ptr<Node> node = *i;
+      NS_LOG_LOGIC ("Adding GlobalRouter interface to node " << 
+        node->GetId ());
+
+      Ptr<GlobalRouter> globalRouter = CreateObject<GlobalRouter> ();
+      node->AggregateObject (globalRouter);
+    }
+}
+
+  void
+GlobalRouteManagerImpl::SelectRouterNodes (NodeContainer c) 
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); i++)
     {
       Ptr<Node> node = *i;
       NS_LOG_LOGIC ("Adding GlobalRouter interface to node " << 
