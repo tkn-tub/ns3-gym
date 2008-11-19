@@ -379,8 +379,8 @@ private:
 
 std::ostream & operator << (std::ostream &os, TypeId tid);
 std::istream & operator >> (std::istream &is, TypeId &tid);
-bool operator == (TypeId a, TypeId b);
-bool operator != (TypeId a, TypeId b);
+inline bool operator == (TypeId a, TypeId b);
+inline bool operator != (TypeId a, TypeId b);
 bool operator <  (TypeId a, TypeId b);
 
 /**
@@ -406,6 +406,15 @@ TypeId &TypeId::operator = (const TypeId &o)
 }
 TypeId::~TypeId ()
 {}
+inline bool operator == (TypeId a, TypeId b)
+{
+  return a.m_tid == b.m_tid;
+}
+
+inline bool operator != (TypeId a, TypeId b)
+{
+  return a.m_tid != b.m_tid;
+}
 
 
 /*************************************************************************

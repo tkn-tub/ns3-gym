@@ -686,16 +686,6 @@ std::istream & operator >> (std::istream &is, TypeId &tid)
 
 ATTRIBUTE_HELPER_CPP (TypeId);
 
-bool operator == (TypeId a, TypeId b)
-{
-  return a.m_tid == b.m_tid;
-}
-
-bool operator != (TypeId a, TypeId b)
-{
-  return a.m_tid != b.m_tid;
-}
-
 bool operator < (TypeId a, TypeId b)
 {
   return a.m_tid < b.m_tid;
