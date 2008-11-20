@@ -614,8 +614,23 @@ GlobalRouter::ProcessBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, N
 {
   NS_LOG_FUNCTION (nd << pLSA << &c);
 
+  if (nd->IsBridge ())
+    {
+      ProcessBridgedBroadcastLink (nd, pLSA, c);
+    }
+  else
+    {
+      ProcessSingleBroadcastLink (nd, pLSA, c);
+    }
+}
+
+  void
+GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c)
+{
+  NS_LOG_FUNCTION (nd << pLSA << &c);
+
   GlobalRoutingLinkRecord *plr = new GlobalRoutingLinkRecord;
-  NS_ABORT_MSG_IF (plr == 0, "GlobalRouter::ProcessBroadcastLink(): Can't alloc link record");
+  NS_ABORT_MSG_IF (plr == 0, "GlobalRouter::ProcessSingleBroadcastLink(): Can't alloc link record");
 
   //
   // We have some preliminaries to do to get enough information to proceed.
@@ -628,10 +643,10 @@ GlobalRouter::ProcessBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, N
 
   uint32_t ifIndexLocal;
   bool rc = FindIfIndexForDevice(node, nd, ifIndexLocal);
-  NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessBroadcastLink(): No interface index associated with device");
+  NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessSingleBroadcastLink(): No interface index associated with device");
 
   Ptr<Ipv4> ipv4Local = node->GetObject<Ipv4> ();
-  NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessBroadcastLink (): GetObject for <Ipv4> interface failed");
+  NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessSingleBroadcastLink (): GetObject for <Ipv4> interface failed");
 
   Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
   Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
@@ -684,6 +699,147 @@ GlobalRouter::ProcessBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, N
       // case.
       //
       Ipv4Address desigRtr = FindDesignatedRouterForLink (nd);
+      if (desigRtr == addrLocal) 
+        {
+          c.Add (nd);
+          NS_LOG_LOGIC ("Node " << node->GetId () << " elected a designated router");
+        }
+      plr->SetLinkId (desigRtr);
+      
+      //
+      // OSPF says that the Link Data is this router's own IP address.
+      //
+      plr->SetLinkData (addrLocal);
+      plr->SetMetric (metricLocal);
+      pLSA->AddLinkRecord (plr);
+      plr = 0;
+    }
+}
+
+  void
+GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c)
+{
+  NS_LOG_FUNCTION (nd << pLSA << &c);
+
+  NS_ASSERT_MSG (nd->IsBridge (), "GlobalRouter::ProcessBridgedBroadcastLink(): Called with non-bridge net device");
+
+  Ptr<BridgeNetDevice> bnd = nd->GetObject<BridgeNetDevice> ();
+  NS_ABORT_MSG_UNLESS (bnd, "GlobalRouter::DiscoverLSAs (): GetObject for <BridgeNetDevice> failed");
+
+  //
+  // We need to handle a bridge on the router.  This means that we have been 
+  // given a net device that is a BridgeNetDevice.  It has an associated Ipv4
+  // interface index and address.  Some number of other net devices live "under"
+  // the bridge device as so-called bridge ports.  In a nutshell, what we have
+  // to do is to repeat what is done for a single broadcast link on all of 
+  // those net devices living under the bridge (trolls?)
+  //
+  bool areTransitNetwork = false;
+  Ipv4Address desigRtr ("255.255.255.255");
+
+  for (uint32_t i = 0; i < bnd->GetNBridgePorts (); ++i)
+    {
+      Ptr<NetDevice> ndTemp = bnd->GetBridgePort (i);
+      GlobalRoutingLSA *pLsaTest = new GlobalRoutingLSA;
+      NetDeviceContainer cTest;
+      ProcessSingleBroadcastLink (ndTemp, pLsaTest, cTest);
+
+      //
+      // The GlobalRoutingLSA pLsaTest will now have a link record attached to
+      // it indicating what was found.  If another router is found on any one
+      // of the bridged networks, we need to treat the whole bridge as a transit 
+      // network.
+      //
+      // If the link type is a transit network, then we have got to do some work
+      // to figure out what to do about the other routers on the bridge.
+      //
+      if (pLsaTest->GetLinkRecord (0)->GetLinkType () == GlobalRoutingLinkRecord::TransitNetwork)
+        {
+          areTransitNetwork = true;
+
+          //
+          // If we're going to be a transit network, then we have got to elect
+          // a designated router for the whole bridge.  This means finding the
+          // router with the lowest IP address on the whole bridge.  We ask 
+          // for the lowest address on each segment and pick the lowest of them
+          // all.
+          //
+          Ipv4Address desigRtrTemp = FindDesignatedRouterForLink (ndTemp);
+          if (desigRtrTemp < desigRtr)
+            {
+              desigRtr = desigRtrTemp;
+            }
+        }
+    }
+
+  //
+  // That's all the information we need to put it all together, just like we did
+  // in the case of a single broadcast link.
+  //
+
+  GlobalRoutingLinkRecord *plr = new GlobalRoutingLinkRecord;
+  NS_ABORT_MSG_IF (plr == 0, "GlobalRouter::ProcessBridgedBroadcastLink(): Can't alloc link record");
+
+  //
+  // We have some preliminaries to do to get enough information to proceed.
+  // This information we need comes from the internet stack, so notice that
+  // there is an implied assumption that global routing is only going to 
+  // work with devices attached to the internet stack (have an ipv4 interface
+  // associated to them.
+  //
+  Ptr<Node> node = nd->GetNode ();
+
+  uint32_t ifIndexLocal;
+  bool rc = FindIfIndexForDevice(node, nd, ifIndexLocal);
+  NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessBridgedBroadcastLink(): No interface index associated with device");
+
+  Ptr<Ipv4> ipv4Local = node->GetObject<Ipv4> ();
+  NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessBridgedBroadcastLink (): GetObject for <Ipv4> interface failed");
+
+  Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
+  Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
+  NS_LOG_LOGIC ("Working with local address " << addrLocal);
+  uint16_t metricLocal = ipv4Local->GetMetric (ifIndexLocal);
+
+  if (areTransitNetwork == false)
+    {
+      //
+      // This is a net device connected to a bridge of stub networks
+      //
+      NS_LOG_LOGIC("**** Router-LSA Stub Network");
+      plr->SetLinkType (GlobalRoutingLinkRecord::StubNetwork);
+
+      // 
+      // According to OSPF, the Link ID is the IP network number of 
+      // the attached network.
+      //
+      plr->SetLinkId (addrLocal.CombineMask(maskLocal));
+
+      //
+      // and the Link Data is the network mask; converted to Ipv4Address
+      //
+      Ipv4Address maskLocalAddr;
+      maskLocalAddr.Set(maskLocal.Get ());
+      plr->SetLinkData (maskLocalAddr);
+      plr->SetMetric (metricLocal);
+      pLSA->AddLinkRecord(plr);
+      plr = 0;
+    }
+  else
+    {
+      //
+      // We have multiple routers on a bridged broadcast interface, so this is
+      // a transit network.
+      //
+      NS_LOG_LOGIC ("**** Router-LSA Transit Network");
+      plr->SetLinkType (GlobalRoutingLinkRecord::TransitNetwork);
+
+      // 
+      // By definition, the router with the lowest IP address is the
+      // designated router for the network.  OSPF says that the Link ID
+      // gets the IP interface address of the designated router in this 
+      // case.
+      //
       if (desigRtr == addrLocal) 
         {
           c.Add (nd);

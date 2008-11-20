@@ -644,6 +644,9 @@ private:
   Ipv4Address FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal) const;
   bool AnotherRouterOnLink (Ptr<NetDevice> nd) const;
   void ProcessBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c);
+  void ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c);
+  void ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c);
+
   void ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA *pLSA);
   void BuildNetworkLSAs (NetDeviceContainer c);
   bool IsNetDeviceBridged (Ptr<NetDevice> nd) const;
