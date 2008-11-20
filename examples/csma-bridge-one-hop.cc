@@ -176,7 +176,8 @@ main (int argc, char *argv[])
 
   // 
   // Create router nodes, initialize routing database and set up the routing
-  // tables in the nodes.
+  // tables in the nodes.  We excuse the bridge nodes from having to serve as
+  // routers, since they don't even have internet stacks on them.
   //
   NodeContainer routerNodes (n0, n1, n2, n3, n4);
   GlobalRouteManager::PopulateRoutingTables (routerNodes);

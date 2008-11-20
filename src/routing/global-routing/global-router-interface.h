@@ -640,8 +640,8 @@ private:
 
   Ptr<NetDevice> GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const;
   bool FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd, uint32_t &index) const;
-  Ipv4Address FindDesignatedRouterForLink (Ptr<Node> node,   
-    Ptr<NetDevice> ndLocal) const;
+  Ipv4Address FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal) const;
+  bool AnotherRouterOnLink (Ptr<NetDevice> nd) const;
 
   typedef std::list<GlobalRoutingLSA*> ListOfLSAs_t;
   ListOfLSAs_t m_LSAs;
