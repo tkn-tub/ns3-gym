@@ -399,14 +399,14 @@ GlobalRouteManagerImpl::BuildGlobalRoutingDatabase ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 //
-// Walk the list of nodes looking for the GlobalRouter Interface.
+// Walk the list of nodes looking for the GlobalRouter Interface.  Nodes with
+// global router interfaces are, not too surprisingly, our routers.
 //
   for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
     {
       Ptr<Node> node = *i;
 
-      Ptr<GlobalRouter> rtr = 
-        node->GetObject<GlobalRouter> ();
+      Ptr<GlobalRouter> rtr = node->GetObject<GlobalRouter> ();
 //      
 // Ignore nodes that aren't participating in routing.
 //
