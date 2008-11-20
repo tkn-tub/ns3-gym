@@ -547,7 +547,8 @@ GlobalRouter::DiscoverLSAs (void)
 
       //
       // Check to see if the net device we just got has a corresponding IP 
-      // interface (could be a pure L2 NetDevice).
+      // interface (could be a pure L2 NetDevice) -- for example a net device
+      // associated with a bridge.
       //
       bool isIp = false;
       for (uint32_t i = 0; i < ipv4Local->GetNInterfaces (); ++i )
@@ -659,7 +660,7 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
   // this is a stub network.  If we find another router, then what we have here
   // is a transit network.
   //
-  if (AnotherRouterOnLink (nd) == false)
+  if (AnotherRouterOnLink (nd, true) == false)
     {
       //
       // This is a net device connected to a stub network
@@ -740,20 +741,13 @@ GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *
   for (uint32_t i = 0; i < bnd->GetNBridgePorts (); ++i)
     {
       Ptr<NetDevice> ndTemp = bnd->GetBridgePort (i);
-      GlobalRoutingLSA *pLsaTest = new GlobalRoutingLSA;
-      NetDeviceContainer cTest;
-      ProcessSingleBroadcastLink (ndTemp, pLsaTest, cTest);
 
       //
-      // The GlobalRoutingLSA pLsaTest will now have a link record attached to
-      // it indicating what was found.  If another router is found on any one
-      // of the bridged networks, we need to treat the whole bridge as a transit 
-      // network.
+      // We have to decide if we are a transit network.  This is characterized
+      // by the presence of another router on the network segment.  If we find
+      // another router on any of our bridged links, we are a transit network.
       //
-      // If the link type is a transit network, then we have got to do some work
-      // to figure out what to do about the other routers on the bridge.
-      //
-      if (pLsaTest->GetLinkRecord (0)->GetLinkType () == GlobalRoutingLinkRecord::TransitNetwork)
+      if (AnotherRouterOnLink (ndTemp, true))
         {
           areTransitNetwork = true;
 
@@ -1112,36 +1106,83 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal) const
 //
 // Given a node and an attached net device, take a look off in the channel to 
 // which the net device is attached and look for a node on the other side
-// that has a GlobalRouter interface aggregated.
+// that has a GlobalRouter interface aggregated.  Life gets more complicated
+// when there is a bridged net device on the other side.
 //
   bool
-GlobalRouter::AnotherRouterOnLink (Ptr<NetDevice> nd) const
+GlobalRouter::AnotherRouterOnLink (Ptr<NetDevice> nd, bool allowRecursion) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (nd << allowRecursion);
 
   Ptr<Channel> ch = nd->GetChannel();
   uint32_t nDevices = ch->GetNDevices();
   NS_ASSERT (nDevices);
 
+  //
+  // Look through all of the devices on the channel to which the net device
+  // in questin is attached.
+  //
   for (uint32_t i = 0; i < nDevices; i++)
     {
-      Ptr<NetDevice> ndTemp = ch->GetDevice (i);
-      NS_ASSERT (ndTemp);
+      NS_LOG_LOGIC ("**** Examine device " << i << "on node " << nd->GetNode ()->GetId ());
 
-      if (ndTemp == nd)
+      Ptr<NetDevice> ndOther = ch->GetDevice (i);
+      NS_ASSERT (ndOther);
+
+      // 
+      // Ignore the net device itself.
+      //
+      if (ndOther == nd)
         {
+          NS_LOG_LOGIC ("**** Self");
           continue;
         }
 
-      Ptr<Node> nodeTemp = ndTemp->GetNode ();
+      //
+      // For all other net devices, we need to check and see if a router
+      // is present.  If the net device on the other side is a bridged
+      // device, we need to consider all of the other devices on the 
+      // bridge.
+      //
+      Ptr<BridgeNetDevice> bnd = NetDeviceIsBridged (ndOther);
+      if (bnd)
+        {
+          NS_LOG_LOGIC ("**** Device is bridged");
+          for (uint32_t j = 0; j < bnd->GetNBridgePorts (); ++j)
+            {
+              NS_LOG_LOGIC ("**** Examining bridge port " << j);
+              Ptr<NetDevice> ndBridged = bnd->GetBridgePort (j);
+              if (ndBridged == ndOther)
+                {
+                  NS_LOG_LOGIC ("**** Self");
+                  continue;
+                }
+              if (allowRecursion)
+                {
+                  NS_LOG_LOGIC ("**** Recursing");
+                  if (AnotherRouterOnLink (ndBridged, false))
+                    {
+                      NS_LOG_LOGIC ("**** Return true");
+                      return true;
+                    }
+                }
+            }
+          NS_LOG_LOGIC ("**** Return false");
+          return false;
+        }
+
+      NS_LOG_LOGIC ("**** Device is not bridged");
+      Ptr<Node> nodeTemp = ndOther->GetNode ();
       NS_ASSERT (nodeTemp);
 
       Ptr<GlobalRouter> rtr = nodeTemp->GetObject<GlobalRouter> ();
       if (rtr)
         {
+          NS_LOG_LOGIC ("**** Return true");
           return true;
         }
     }
+  NS_LOG_LOGIC ("**** Return false");
   return false;
 }
 
@@ -1253,9 +1294,11 @@ GlobalRouter::FindIfIndexForDevice (Ptr<Node> node, Ptr<NetDevice> nd, uint32_t 
 //
 // Decide whether or not a given net device is being bridged by a BridgeNetDevice.
 //
-  bool
-GlobalRouter::IsNetDeviceBridged (Ptr<NetDevice> nd) const
+  Ptr<BridgeNetDevice>
+GlobalRouter::NetDeviceIsBridged (Ptr<NetDevice> nd) const
 {
+  NS_LOG_FUNCTION (nd);
+
   Ptr<Node> node = nd->GetNode ();
   uint32_t nDevices = node->GetNDevices();
 
@@ -1267,23 +1310,28 @@ GlobalRouter::IsNetDeviceBridged (Ptr<NetDevice> nd) const
   //
   for (uint32_t i = 0; i < nDevices; ++i)
     {
-      Ptr<NetDevice> nd = node->GetDevice(i);
+      Ptr<NetDevice> ndTest = node->GetDevice(i);
+      NS_LOG_LOGIC ("**** Examine device " << i << " " << ndTest);
 
-      if (nd->IsBridge ())
+      if (ndTest->IsBridge ())
         {
-          Ptr<BridgeNetDevice> bnd = nd->GetObject<BridgeNetDevice> ();
+          NS_LOG_LOGIC ("**** device " << i << " is a bridge net device");
+          Ptr<BridgeNetDevice> bnd = ndTest->GetObject<BridgeNetDevice> ();
           NS_ABORT_MSG_UNLESS (bnd, "GlobalRouter::DiscoverLSAs (): GetObject for <BridgeNetDevice> failed");
 
           for (uint32_t j = 0; j < bnd->GetNBridgePorts (); ++j)
             {
+              NS_LOG_LOGIC ("**** Examine bridge port " << j << " " << bnd->GetBridgePort (j));
               if (bnd->GetBridgePort (j) == nd)
                 {
-                  return true;
+                  NS_LOG_LOGIC ("**** Net device " << nd << " is bridged by " << bnd);
+                  return bnd;
                 }
             }
         }
     }
-  return false;
+  NS_LOG_LOGIC ("**** Net device " << nd << " is not bridged");
+  return 0;
 }
 
 } // namespace ns3

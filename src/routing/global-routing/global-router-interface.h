@@ -30,6 +30,7 @@
 #include "ns3/channel.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/net-device-container.h"
+#include "ns3/bridge-net-device.h"
 #include "ns3/global-route-manager.h"
 
 namespace ns3 {
@@ -642,14 +643,14 @@ private:
   Ptr<NetDevice> GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const;
   bool FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd, uint32_t &index) const;
   Ipv4Address FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal) const;
-  bool AnotherRouterOnLink (Ptr<NetDevice> nd) const;
+  bool AnotherRouterOnLink (Ptr<NetDevice> nd, bool allowRecursion) const;
   void ProcessBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c);
   void ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c);
   void ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c);
 
   void ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA *pLSA);
   void BuildNetworkLSAs (NetDeviceContainer c);
-  bool IsNetDeviceBridged (Ptr<NetDevice> nd) const;
+  Ptr<BridgeNetDevice> NetDeviceIsBridged (Ptr<NetDevice> nd) const;
 
 
   typedef std::list<GlobalRoutingLSA*> ListOfLSAs_t;
