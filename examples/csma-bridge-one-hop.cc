@@ -41,19 +41,19 @@
 // Or, more abstractly, recognizing that bridge 1 and bridge 2 are nodes 
 // with three net devices:
 //
-//        n0     n1  
-//        |      | 
-//       -----------
-//       | bridge1 | <- n5
+//        n0     n1                (n0 = 10.1.1.2)
+//        |      |                 (n1 = 10.1.1.3)  Note odd addressing
+//       -----------               (n2 = 10.1.1.1)
+//       | bridge1 | <- n5  
 //       -----------
 //           |    
 //         router    <- n2
 //           |
 //       -----------
 //       | bridge2 | <- n6
-//       -----------
-//        |      | 
-//        n3     n4  
+//       -----------               (n2 = 10.1.2.1)
+//        |      |                 (n3 = 10.1.2.2)
+//        n3     n4                (n4 = 10.1.2.3)
 //
 // So, this example shows two broadcast domains, each interconnected by a bridge
 // with a router node (n2) interconnecting the layer-2 broadcast domains
@@ -61,7 +61,7 @@
 // It is meant to mirror somewhat the csma-bridge example but adds another
 // bridged link separated by a router.
 // 
-// - CBR/UDP flows from n0 to n1 and from n3 to n0
+// - CBR/UDP flows from n0 (10.1.1.2) to n1 (10.1.1.3) and from n3 (10.1.2.2) to n0 (10.1.1.3)
 // - DropTail queues 
 // - Global static routing
 // - Tracing of queues and packet receptions to file "csma-bridge-one-hop.tr"
@@ -201,7 +201,9 @@ main (int argc, char *argv[])
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
                          Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
-  sink.Install (n1);
+  ApplicationContainer sink1 = sink.Install (n1);
+  sink1.Start (Seconds (1.0));
+  sink1.Stop (Seconds (10.0));
 
   // 
   // Create a similar flow from n3 to n0, starting at time 1.1 seconds
@@ -209,11 +211,12 @@ main (int argc, char *argv[])
   onoff.SetAttribute ("Remote", 
                       AddressValue (InetSocketAddress (Ipv4Address ("10.1.1.2"), port)));
   ApplicationContainer app2 = onoff.Install (n3);
-
-  sink.Install (n0);
-
   app2.Start (Seconds (1.1));
   app2.Stop (Seconds (10.0));
+
+  ApplicationContainer sink2 = sink.Install (n0);
+  sink2.Start (Seconds (1.1));
+  sink2.Stop (Seconds (10.0));
 
   //
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events.

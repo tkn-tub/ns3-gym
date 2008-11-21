@@ -35,6 +35,8 @@
 
 namespace ns3 {
 
+class GlobalRouter;
+
 /**
  * @brief A single link record for a link state advertisement.
  *
@@ -45,6 +47,7 @@ namespace ns3 {
 class GlobalRoutingLinkRecord
 {
 public:
+  friend class GlobalRoutingLSA;
 /**
  * @enum LinkType
  * @brief Enumeration of the possible types of Global Routing Link Records.
@@ -642,7 +645,7 @@ private:
 
   Ptr<NetDevice> GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const;
   bool FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd, uint32_t &index) const;
-  Ipv4Address FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal) const;
+  Ipv4Address FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRecursion) const;
   bool AnotherRouterOnLink (Ptr<NetDevice> nd, bool allowRecursion) const;
   void ProcessBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c);
   void ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c);

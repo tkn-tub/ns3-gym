@@ -383,9 +383,25 @@ GlobalRoutingLSA::SetStatus (GlobalRoutingLSA::SPFStatus status)
   void 
 GlobalRoutingLSA::Print (std::ostream &os) const
 {
-  os << "m_lsType = " << m_lsType << std::endl <<
-        "m_linkStateId = " << m_linkStateId << std::endl <<
-        "m_advertisingRtr = " << m_advertisingRtr << std::endl;
+  os << std::endl;
+  os << "========== Global Routing LSA ==========" << std::endl;
+  os << "m_lsType = " << m_lsType;
+  if (m_lsType == GlobalRoutingLSA::RouterLSA) 
+    {
+      os << " (GlobalRoutingLSA::RouterLSA)";
+    }
+  else if (m_lsType == GlobalRoutingLSA::NetworkLSA) 
+    {
+      os << " (GlobalRoutingLSA::NetworkLSA)";
+    }
+  else
+    {
+      os << "(Unknown LSType)";
+    }
+  os << std::endl;
+
+  os << "m_linkStateId = " << m_linkStateId << " (Router ID)" << std::endl;
+  os << "m_advertisingRtr = " << m_advertisingRtr << " (Router ID)" << std::endl;
 
   if (m_lsType == GlobalRoutingLSA::RouterLSA) 
     {
@@ -394,30 +410,49 @@ GlobalRoutingLSA::Print (std::ostream &os) const
             i++)
         {
           GlobalRoutingLinkRecord *p = *i;
-          os << "----------" << std::endl;
-          os << "m_linkId = " << p->GetLinkId () << std::endl;
-          os << "m_linkData = " << p->GetLinkData () << std::endl;
-          os << "m_metric = " << p->GetMetric () << std::endl;
+
+          os << "---------- RouterLSA Link Record ----------" << std::endl;
+          os << "m_linkType = " << p->m_linkType;
+          if (p->m_linkType == GlobalRoutingLinkRecord::TransitNetwork)
+            {
+              os << " (GlobalRoutingLinkRecord::TransitNetwork)" << std::endl;
+              os << "m_linkId = " << p->m_linkId << " (Designated router for network)" << std::endl;
+              os << "m_linkData = " << p->m_linkData << " (This router's IP address)" << std::endl;
+              os << "m_metric = " << p->m_metric << std::endl;
+            }
+          else if (p->GetLinkType () == GlobalRoutingLinkRecord::StubNetwork)
+            {
+              os << "(GlobalRoutingLinkRecord::StubNetwork)" << std::endl;
+              os << "m_linkId = " << p->m_linkId << " (Network number of attached network)" << std::endl;
+              os << "m_linkData = " << p->m_linkData << " (Network mask of attached network)" << std::endl;
+              os << "m_metric = " << p->m_metric << std::endl;
+            }
+          else
+            {
+              os << "(Unknown LinkType)" << std::endl;
+              os << "m_linkId = " << p->m_linkId << std::endl;
+              os << "m_linkData = " << p->m_linkData << std::endl;
+              os << "m_metric = " << p->m_metric << std::endl;
+            }
+          os << "---------- End RouterLSA Link Record ----------" << std::endl;
         }
     }
   else if (m_lsType == GlobalRoutingLSA::NetworkLSA) 
     {
-      os << "----------" << std::endl;
-      os << "m_networkLSANetworkMask = " << m_networkLSANetworkMask 
-         << std::endl;
-      for ( ListOfAttachedRouters_t::const_iterator i = 
-            m_attachedRouters.begin ();
-            i != m_attachedRouters.end (); 
-            i++)
+      os << "---------- NetworkLSA Link Record ----------" << std::endl;
+      os << "m_networkLSANetworkMask = " << m_networkLSANetworkMask << std::endl;
+      for ( ListOfAttachedRouters_t::const_iterator i = m_attachedRouters.begin (); i != m_attachedRouters.end (); i++)
         {
           Ipv4Address p = *i;
           os << "attachedRouter = " << p << std::endl;
         }
+      os << "---------- End NetworkLSA Link Record ----------" << std::endl;
     }
   else 
     {
       NS_ASSERT_MSG(0, "Illegal LSA LSType: " << m_lsType);
     }
+  os << "========== End Global Routing LSA ==========" << std::endl;
 }
 
 std::ostream& operator<< (std::ostream& os, GlobalRoutingLSA& lsa)
@@ -699,7 +734,7 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
       // gets the IP interface address of the designated router in this 
       // case.
       //
-      Ipv4Address desigRtr = FindDesignatedRouterForLink (nd);
+      Ipv4Address desigRtr = FindDesignatedRouterForLink (nd, true);
       if (desigRtr == addrLocal) 
         {
           c.Add (nd);
@@ -758,7 +793,7 @@ GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *
           // for the lowest address on each segment and pick the lowest of them
           // all.
           //
-          Ipv4Address desigRtrTemp = FindDesignatedRouterForLink (ndTemp);
+          Ipv4Address desigRtrTemp = FindDesignatedRouterForLink (ndTemp, true);
           if (desigRtrTemp < desigRtr)
             {
               desigRtr = desigRtrTemp;
@@ -1041,66 +1076,114 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
 // connecting to the channel becomes the designated router for the link.
 //
   Ipv4Address
-GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal) const
+GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRecursion) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (ndLocal << allowRecursion);
 
   Ptr<Channel> ch = ndLocal->GetChannel();
   uint32_t nDevices = ch->GetNDevices();
   NS_ASSERT (nDevices);
 
-  Ipv4Address addr ("255.255.255.255");
+  NS_LOG_LOGIC ("**** Looking for designated router off of net device " << ndLocal << " on node " << 
+                ndLocal->GetNode ()->GetId ());
 
+  Ipv4Address desigRtr ("255.255.255.255");
+
+  //
+  // Look through all of the devices on the channel to which the net device
+  // in question is attached.
+  //
   for (uint32_t i = 0; i < nDevices; i++)
     {
-      Ptr<NetDevice> currentNd = ch->GetDevice (i);
-      NS_ASSERT (currentNd);
+      Ptr<NetDevice> ndOther = ch->GetDevice (i);
+      NS_ASSERT (ndOther);
 
-      Ptr<Node> currentNode = currentNd->GetNode ();
-      NS_ASSERT (currentNode);
+      Ptr<Node> nodeOther = ndOther->GetNode ();
+
+      NS_LOG_LOGIC ("**** Examine channel device " << i << " on node " << nodeOther->GetId ());
+
       //
-      // We require a designated router to have a GlobalRouter interface and
-      // an internet stack that includes the Ipv4 interface.
+      // For all other net devices, we need to check and see if a router
+      // is present.  If the net device on the other side is a bridged
+      // device, we need to consider all of the other devices on the 
+      // bridge as well (all of the bridge ports.
       //
-      Ptr<GlobalRouter> rtr = currentNode->GetObject<GlobalRouter> ();
-      Ptr<Ipv4> ipv4 = currentNode->GetObject<Ipv4> ();
-      if (rtr == 0 || ipv4 == 0 )
+      NS_LOG_LOGIC ("**** checking to see if the device is bridged");
+      Ptr<BridgeNetDevice> bnd = NetDeviceIsBridged (ndOther);
+      if (bnd)
         {
-          continue;
+          NS_LOG_LOGIC ("**** Device is bridged by BridgeNetDevice " << bnd);
+
+          //
+          // It is possible that the bridge net device is sitting under a
+          // router, so we have to check for the presence of that router
+          // before we run off and follow all the links
+          //
+          // We require a designated router to have a GlobalRouter interface and
+          // an internet stack that includes the Ipv4 interface.  If it doesn't
+          // it can't play router.
+          //
+          NS_LOG_LOGIC ("**** Checking for router on bridge net device " << bnd);
+          Ptr<GlobalRouter> rtr = nodeOther->GetObject<GlobalRouter> ();
+          Ptr<Ipv4> ipv4 = nodeOther->GetObject<Ipv4> ();
+          if (rtr && ipv4)
+            {
+              uint32_t ifIndexOther;
+              if (FindIfIndexForDevice(nodeOther, bnd, ifIndexOther))
+                {
+                  NS_LOG_LOGIC ("**** Found router on bridge net device " << bnd);
+                  Ipv4Address addrOther = ipv4->GetAddress (ifIndexOther);
+                  desigRtr = addrOther < desigRtr ? addrOther : desigRtr;
+                  NS_LOG_LOGIC ("**** designated router now " << desigRtr);
+                }
+            }
+
+          NS_LOG_LOGIC ("**** Looking through bridge ports of bridge net device " << bnd);
+          for (uint32_t j = 0; j < bnd->GetNBridgePorts (); ++j)
+            {
+              Ptr<NetDevice> ndBridged = bnd->GetBridgePort (j);
+              NS_LOG_LOGIC ("**** Examining bridge port " << j << " device " << ndBridged);
+              if (ndBridged == ndOther)
+                {
+                  NS_LOG_LOGIC ("**** That bridge port is me, don't walk backward");
+                  continue;
+                }
+
+              if (allowRecursion)
+                {
+                  NS_LOG_LOGIC ("**** Recursively looking for routers down bridge port " << ndBridged);
+                  Ipv4Address addrOther = FindDesignatedRouterForLink (ndBridged, false);
+                  desigRtr = addrOther < desigRtr ? addrOther : desigRtr;
+                  NS_LOG_LOGIC ("**** designated router now " << desigRtr);
+                }
+            }
         }
-
-      //
-      // This node could be a designated router, so we can check and see if
-      // it has a lower IP address than the one we have.  In order to have
-      // an IP address, it needs to have an interface index.  If it doesen't
-      // have an interface index directly, it's probably part of a bridge
-      // net device XXX which is not yet handled.
-      //
-      uint32_t currentIfIndex;
-      bool rc = FindIfIndexForDevice(currentNode, currentNd, currentIfIndex);
-      if (rc == false)
+      else
         {
-          continue;
-        }
+          NS_LOG_LOGIC ("**** This device is not bridged");
+          Ptr<Node> nodeOther = ndOther->GetNode ();
+          NS_ASSERT (nodeOther);
 
-      //
-      // Okay, get the IP address corresponding to the interface we're 
-      // examining and if it's the lowest so far, remember it.
-      //
-      Ipv4Address currentAddr = ipv4->GetAddress(currentIfIndex);
-
-      if (currentAddr < addr)
-        {
-          addr = currentAddr;
+          //
+          // We require a designated router to have a GlobalRouter interface and
+          // an internet stack that includes the Ipv4 interface.  If it doesn't
+          //
+          Ptr<GlobalRouter> rtr = nodeOther->GetObject<GlobalRouter> ();
+          Ptr<Ipv4> ipv4 = nodeOther->GetObject<Ipv4> ();
+          if (rtr && ipv4)
+            {
+              uint32_t ifIndexOther;
+              if (FindIfIndexForDevice(nodeOther, ndOther, ifIndexOther))
+                {
+                  NS_LOG_LOGIC ("**** Found router on net device " << ndOther);
+                  Ipv4Address addrOther = ipv4->GetAddress (ifIndexOther);
+                  desigRtr = addrOther < desigRtr ? addrOther : desigRtr;
+                  NS_LOG_LOGIC ("**** designated router now " << desigRtr);
+                }
+            }
         }
     }
-
-  //
-  // Return the lowest IP address found, which will become the designated router
-  // for the link.
-  //
-  NS_ASSERT_MSG (addr.IsBroadcast() == false, "GlobalRouter::FindDesignatedRouterForLink(): Bogus address");
-  return addr;
+  return desigRtr;
 }
 
 //
@@ -1118,23 +1201,25 @@ GlobalRouter::AnotherRouterOnLink (Ptr<NetDevice> nd, bool allowRecursion) const
   uint32_t nDevices = ch->GetNDevices();
   NS_ASSERT (nDevices);
 
+  NS_LOG_LOGIC ("**** Looking for routers off of net device " << nd << " on node " << nd->GetNode ()->GetId ());
+
   //
   // Look through all of the devices on the channel to which the net device
-  // in questin is attached.
+  // in question is attached.
   //
   for (uint32_t i = 0; i < nDevices; i++)
     {
-      NS_LOG_LOGIC ("**** Examine device " << i << "on node " << nd->GetNode ()->GetId ());
-
       Ptr<NetDevice> ndOther = ch->GetDevice (i);
       NS_ASSERT (ndOther);
+
+      NS_LOG_LOGIC ("**** Examine channel device " << i << " on node " << ndOther->GetNode ()->GetId ());
 
       // 
       // Ignore the net device itself.
       //
       if (ndOther == nd)
         {
-          NS_LOG_LOGIC ("**** Self");
+          NS_LOG_LOGIC ("**** Myself, skip");
           continue;
         }
 
@@ -1144,45 +1229,52 @@ GlobalRouter::AnotherRouterOnLink (Ptr<NetDevice> nd, bool allowRecursion) const
       // device, we need to consider all of the other devices on the 
       // bridge.
       //
+      NS_LOG_LOGIC ("**** checking to see if device is bridged");
       Ptr<BridgeNetDevice> bnd = NetDeviceIsBridged (ndOther);
       if (bnd)
         {
-          NS_LOG_LOGIC ("**** Device is bridged");
+          NS_LOG_LOGIC ("**** Device is bridged by net device " << bnd);
+          NS_LOG_LOGIC ("**** Looking through bridge ports of bridge net device " << bnd);
           for (uint32_t j = 0; j < bnd->GetNBridgePorts (); ++j)
             {
-              NS_LOG_LOGIC ("**** Examining bridge port " << j);
               Ptr<NetDevice> ndBridged = bnd->GetBridgePort (j);
+              NS_LOG_LOGIC ("**** Examining bridge port " << j << " device " << ndBridged);
               if (ndBridged == ndOther)
                 {
-                  NS_LOG_LOGIC ("**** Self");
+                  NS_LOG_LOGIC ("**** That bridge port is me, skip");
                   continue;
                 }
+
               if (allowRecursion)
                 {
-                  NS_LOG_LOGIC ("**** Recursing");
+                  NS_LOG_LOGIC ("**** Recursively looking for routers on bridge port " << ndBridged);
                   if (AnotherRouterOnLink (ndBridged, false))
                     {
-                      NS_LOG_LOGIC ("**** Return true");
+                      NS_LOG_LOGIC ("**** Found routers on bridge port, return true");
                       return true;
                     }
                 }
             }
-          NS_LOG_LOGIC ("**** Return false");
+          NS_LOG_LOGIC ("**** No routers on bridged net device, return false");
           return false;
         }
 
-      NS_LOG_LOGIC ("**** Device is not bridged");
+      NS_LOG_LOGIC ("**** This device is not bridged");
       Ptr<Node> nodeTemp = ndOther->GetNode ();
       NS_ASSERT (nodeTemp);
 
       Ptr<GlobalRouter> rtr = nodeTemp->GetObject<GlobalRouter> ();
       if (rtr)
         {
-          NS_LOG_LOGIC ("**** Return true");
+          NS_LOG_LOGIC ("**** Found GlobalRouter interface, return true");
           return true;
         }
+      else 
+        {
+          NS_LOG_LOGIC ("**** No GlobalRouter interface on device, continue search");
+        }
     }
-  NS_LOG_LOGIC ("**** Return false");
+  NS_LOG_LOGIC ("**** No routers found, return false");
   return false;
 }
 
