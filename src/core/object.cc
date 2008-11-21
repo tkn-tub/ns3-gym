@@ -111,10 +111,11 @@ Object::DoGetObject (TypeId tid) const
 {
   NS_ASSERT (CheckLoose ());
   const Object *currentObject = this;
+  TypeId objectTid = Object::GetTypeId ();
   do {
     NS_ASSERT (currentObject != 0);
     TypeId cur = currentObject->GetInstanceTypeId ();
-    while (cur != tid && cur != Object::GetTypeId ())
+    while (cur != tid && cur != objectTid)
       {
         cur = cur.GetParent ();
       }

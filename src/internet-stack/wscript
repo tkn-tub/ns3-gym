@@ -7,7 +7,7 @@ import urllib
 # Mercurial repository of the network simulation cradle
 NSC_REPO = "https://secure.wand.net.nz/mercurial/nsc"
 NSC_RELEASE_URL = "http://research.wand.net.nz/software/nsc"
-NSC_RELEASE_NAME = "nsc-0.4.0"
+NSC_RELEASE_NAME = "nsc-0.5.0"
 
 # directory that contains network simulation cradle source
 # note, this path is relative to the project root

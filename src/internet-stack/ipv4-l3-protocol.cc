@@ -669,8 +669,15 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
           else
             {
               NS_ASSERT (packetCopy->GetSize () <= outInterface->GetMtu ());
-              m_txTrace (packetCopy, ifaceIndex);
-              outInterface->Send (packetCopy, destination);
+              if (outInterface->IsUp ())
+                {
+                  m_txTrace (packetCopy, ifaceIndex);
+                  outInterface->Send (packetCopy, destination);
+                }
+              else
+                {
+                  m_dropTrace (packetCopy);
+                }
             }
         }
     }
@@ -732,13 +739,31 @@ Ipv4L3Protocol::SendRealOut (bool found,
       m_txTrace (packet, route.GetInterface ());
       if (route.IsGateway ()) 
         {
-          NS_LOG_LOGIC ("Send to gateway " << route.GetGateway ());
-          outInterface->Send (packet, route.GetGateway ());
+          if (outInterface->IsUp ())
+            {
+              NS_LOG_LOGIC ("Send to gateway " << route.GetGateway ());
+              m_txTrace (packet, route.GetInterface ());
+              outInterface->Send (packet, route.GetGateway ());
+            }
+          else
+            {
+              NS_LOG_LOGIC ("Dropping-- outgoing interface is down: " << route.GetGateway ());
+              m_dropTrace (packet);
+            }
         } 
       else 
         {
-          NS_LOG_LOGIC ("Send to destination " << ipHeader.GetDestination ());
-          outInterface->Send (packet, ipHeader.GetDestination ());
+          if (outInterface->IsUp ())
+            {
+              NS_LOG_LOGIC ("Send to destination " << ipHeader.GetDestination ());
+              m_txTrace (packet, route.GetInterface ());
+              outInterface->Send (packet, ipHeader.GetDestination ());
+            }
+          else
+            {
+              NS_LOG_LOGIC ("Dropping-- outgoing interface is down: " << route.GetGateway ());
+              m_dropTrace (packet);
+            }
         }
     }
 }

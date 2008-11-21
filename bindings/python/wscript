@@ -16,14 +16,23 @@ import sys
 LOCAL_PYBINDGEN_PATH = os.path.join(os.getcwd(), "bindings", "python", "pybindgen")
 #PYBINDGEN_BRANCH = 'lp:pybindgen'
 PYBINDGEN_BRANCH = 'https://launchpad.net/pybindgen'
-if os.environ.get('PYTHONPATH', ''):
-    os.environ['PYTHONPATH'] = LOCAL_PYBINDGEN_PATH + os.pathsep + os.environ.get('PYTHONPATH')
-else:
-    os.environ['PYTHONPATH'] = LOCAL_PYBINDGEN_PATH
 
 ## https://launchpad.net/pybindgen/
 REQUIRED_PYBINDGEN_VERSION = (0, 9, 0, 605)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
+
+
+def add_to_python_path(path):
+    if os.environ.get('PYTHONPATH', ''):
+        os.environ['PYTHONPATH'] = path + os.pathsep + os.environ.get('PYTHONPATH')
+    else:
+        os.environ['PYTHONPATH'] = path
+
+def set_pybindgen_pythonpath(env):
+    if env['WITH_PYBINDGEN']:
+        add_to_python_path(env['WITH_PYBINDGEN'])
+    else:
+        add_to_python_path(LOCAL_PYBINDGEN_PATH)
 
 
 def set_options(opt):
@@ -41,6 +50,10 @@ def set_options(opt):
                          "instead of using the system installed version."),
                    action="store_true", default=False,
                    dest='pybindgen_checkout')
+    opt.add_option('--with-pybindgen',
+                   help=('Path to an existing pybindgen source tree to use.'),
+                   default=None,
+                   dest='with_pybindgen', type="string")
 
 def fetch_pybindgen(conf):
     """
@@ -127,14 +140,22 @@ def configure(conf):
         conf.env.append_value('CXXFLAGS_PYEXT','-fno-strict-aliasing')
 
     ## Check for pybindgen
+
+    no_net = False
+    if Params.g_options.with_pybindgen:
+        conf.env['WITH_PYBINDGEN'] = os.path.abspath(Params.g_options.with_pybindgen)
+        no_net = True
+
     if Params.g_options.pybindgen_checkout:
         fetch_pybindgen(conf)
+
+    set_pybindgen_pythonpath(conf.env)
 
     try:
         conf.check_python_module('pybindgen')
     except Configure.ConfigurationError:
         warning("pybindgen missing")
-        if not fetch_pybindgen(conf):
+        if no_net or not fetch_pybindgen(conf):
             conf.report_optional_feature("python", "Python Bindings", False,
                                          "PyBindGen missing and could not be retrieved")
             return
@@ -152,7 +173,7 @@ def configure(conf):
             warning("pybindgen (found %s) is too old (need %s)" %
                     (pybindgen_version_str,
                      '.'.join([str(x) for x in REQUIRED_PYBINDGEN_VERSION])))
-            if not fetch_pybindgen(conf):
+            if no_net or not fetch_pybindgen(conf):
                 conf.report_optional_feature("python", "Python Bindings", False,
                                              "PyBindGen too old and newer version could not be retrieved")
                 return
@@ -390,6 +411,8 @@ def build(bld):
 
     env = bld.env_of_name('default')
     curdir = bld.m_curdirnode.abspath()
+
+    set_pybindgen_pythonpath(env)
 
     #Object.register('all-ns3-headers', AllNs3Headers)
     Action.Action('gen-ns3-metaheader', func=gen_ns3_metaheader, color='BLUE')

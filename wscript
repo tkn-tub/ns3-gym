@@ -143,6 +143,10 @@ def set_options(opt):
                    help=('Use sudo to setup suid bits on ns3 executables.'),
                    dest='enable_sudo', action='store_true',
                    default=False)
+    opt.add_option('--with-regression-traces',
+                   help=('Path to the regression reference traces directory'),
+                   default=None,
+                   dest='regression_traces', type="string")
 
     # options provided in a script in a subdirectory named "src"
     opt.sub_options('src')
@@ -192,6 +196,11 @@ def configure(conf):
         variant_name = debug_level
 
     variant_env['INCLUDEDIR'] = os.path.join(variant_env['PREFIX'], 'include')
+
+    if Params.g_options.regression_traces is not None:
+        variant_env['REGRESSION_TRACES'] = os.path.join("..", Params.g_options.regression_traces)
+    else:
+        variant_env['REGRESSION_TRACES'] = None
 
     if Params.g_options.enable_gcov:
         variant_name += '-gcov'
@@ -463,10 +472,14 @@ def shutdown():
     if Params.g_options.regression or Params.g_options.regression_generate:
         if not env['DIFF']:
             Params.fatal("Cannot run regression tests: the 'diff' program is not installed.")
+
         _dir = os.getcwd()
         os.chdir("regression")
+        regression_traces = env['REGRESSION_TRACES']
+        if not regression_traces:
+            regression_traces = None
         try:
-            regression.run_regression()
+            regression.run_regression(regression_traces)
         finally:
             os.chdir(_dir)
 
