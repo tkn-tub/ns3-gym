@@ -354,13 +354,6 @@ def _exec_command_interact_win32(s):
 
 
 def build(bld):
-    
-    # When --run'ing a program, tell WAF to only build that program,
-    # nothing more; this greatly speeds up compilation when all you
-    # want to do is run a test program.
-    if Params.g_options.run and not Params.g_options.compile_targets:
-        Params.g_options.compile_targets = Params.g_options.run
-
     if Params.g_options.no_task_lines:
         import Runner
         def null_printout(s):
@@ -449,6 +442,20 @@ def build(bld):
         lib.uselib_local = list(env['NS3_MODULES'])
 
     bld.add_subdirs('bindings/python')
+
+    if Params.g_options.run:
+        # Check that the requested program name is valid
+        try:
+            wutils.find_program(Params.g_options.run, env)
+        except ValueError, ex:
+            Params.fatal(str(ex))
+        
+        # When --run'ing a program, tell WAF to only build that program,
+        # nothing more; this greatly speeds up compilation when all you
+        # want to do is run a test program.
+        if not Params.g_options.compile_targets:
+            Params.g_options.compile_targets = Params.g_options.run
+
 
 
 def get_command_template(*arguments):
