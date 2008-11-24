@@ -28,6 +28,7 @@
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/udp-socket.h"
+#include "icmpv4.h"
 
 namespace ns3 {
 
@@ -83,6 +84,9 @@ private:
   virtual uint32_t GetIpTtl (void) const;
   virtual void SetIpMulticastTtl (uint32_t ipTtl);
   virtual uint32_t GetIpMulticastTtl (void) const;
+  virtual void SetMtuDiscover (bool discover);
+  virtual bool GetMtuDiscover (void) const;
+
 
   friend class UdpSocketFactory;
   // invoked by Udp class
@@ -92,6 +96,9 @@ private:
   int DoSend (Ptr<Packet> p);
   int DoSendTo (Ptr<Packet> p, const Address &daddr);
   int DoSendTo (Ptr<Packet> p, Ipv4Address daddr, uint16_t dport);
+  void ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, 
+                    uint8_t icmpType, uint8_t icmpCode,
+                    uint32_t icmpInfo);
 
   Ipv4EndPoint *m_endPoint;
   Ptr<Node> m_node;
@@ -114,7 +121,8 @@ private:
   uint32_t m_rcvBufSize;
   uint32_t m_ipTtl;
   uint32_t m_ipMulticastTtl;
-
+  bool m_mtuDiscover;
+  Callback<void, Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback;
 };
 
 }//namespace ns3

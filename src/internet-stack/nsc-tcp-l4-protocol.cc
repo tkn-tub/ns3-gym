@@ -220,7 +220,7 @@ NscTcpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
   // NSC m_endPoints->DeAllocate (endPoint);
 }
 
-void
+Ipv4L4Protocol::RxStatus
 NscTcpL4Protocol::Receive (Ptr<Packet> packet,
              Ipv4Address const &source,
              Ipv4Address const &destination,
@@ -251,6 +251,7 @@ NscTcpL4Protocol::Receive (Ptr<Packet> packet,
   // deliver complete packet to the NSC network stack
   m_nscStack->if_receive_packet(0, data, packetSize);
   wakeup ();
+  return Ipv4L4Protocol::RX_OK;
 }
 
 void NscTcpL4Protocol::SoftInterrupt (void)

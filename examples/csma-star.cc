@@ -115,7 +115,8 @@ main (int argc, char *argv[])
   // Assign IPv4 interfaces and IP addresses to the devices we previously
   // created.  Keep track of the resulting addresses, one for the addresses
   // of the hub node, and one for addresses on the spoke nodes.  Despite the
-  // name of the class, what is visible to clients is really the address.
+  // name of the class (Ipv4InterfaceContainer), what is visible to clients 
+  // is really the address not the interface.
   //
   Ipv4InterfaceContainer hubAddresses;
   Ipv4InterfaceContainer spokeAddresses;
@@ -128,6 +129,20 @@ main (int argc, char *argv[])
     address.SetBase (subnet.str ().c_str (), "255.255.255.0");
     hubAddresses.Add (address.Assign (hubDevices.Get (i)));
     spokeAddresses.Add (address.Assign (spokeDevices.Get (i)));
+    //
+    // We assigned addresses to the logical hub and the first "drop" of the 
+    // CSMA network that acts as the spoke, but we also have a number of fill
+    // devices (nFill) also hanging off the CSMA network.  We have got to 
+    // assign addresses to them as well.  We put all of the fill devices into
+    // a single device container, so the first nFill devices are associated
+    // with the channel connected to spokeDevices.Get (0), the second nFill
+    // devices afe associated with the channel connected to spokeDevices.Get (1)
+    // etc.
+    //
+    for (uint32_t j = 0; j < nFill; ++j)
+      {
+        address.Assign (fillDevices.Get (i * nFill + j));
+      }
   }
 
   NS_LOG_INFO ("Create applications.");
@@ -190,7 +205,7 @@ main (int argc, char *argv[])
   //
   // Do pcap tracing on all devices on all nodes.
   //
-  PointToPointHelper::EnablePcapAll ("csma-star");
+  CsmaHelper::EnablePcapAll ("csma-star");
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

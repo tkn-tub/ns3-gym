@@ -22,10 +22,10 @@ def register_types(module):
     ## flow-id-tag.h: ns3::FlowIdTag [class]
     module.add_class('FlowIdTag', parent=root_module['ns3::Tag'])
     
-    ## Register a nested module for the namespace internal
+    ## Register a nested module for the namespace Config
     
-    nested_module = module.add_cpp_namespace('internal')
-    register_types_ns3_internal(nested_module)
+    nested_module = module.add_cpp_namespace('Config')
+    register_types_ns3_Config(nested_module)
     
     
     ## Register a nested module for the namespace TimeStepPrecision
@@ -34,10 +34,10 @@ def register_types(module):
     register_types_ns3_TimeStepPrecision(nested_module)
     
     
-    ## Register a nested module for the namespace Config
+    ## Register a nested module for the namespace internal
     
-    nested_module = module.add_cpp_namespace('Config')
-    register_types_ns3_Config(nested_module)
+    nested_module = module.add_cpp_namespace('internal')
+    register_types_ns3_internal(nested_module)
     
     
     ## Register a nested module for the namespace olsr
@@ -46,7 +46,7 @@ def register_types(module):
     register_types_ns3_olsr(nested_module)
     
 
-def register_types_ns3_internal(module):
+def register_types_ns3_Config(module):
     root_module = module.get_root()
     
 
@@ -54,7 +54,7 @@ def register_types_ns3_TimeStepPrecision(module):
     root_module = module.get_root()
     
 
-def register_types_ns3_Config(module):
+def register_types_ns3_internal(module):
     root_module = module.get_root()
     
 
@@ -240,19 +240,19 @@ def register_Ns3FlowIdTag_methods(root_module, cls):
 
 def register_functions(root_module):
     module = root_module
-    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
-    register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
+    register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
+    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
     return
 
-def register_functions_ns3_internal(module, root_module):
+def register_functions_ns3_Config(module, root_module):
     return
 
 def register_functions_ns3_TimeStepPrecision(module, root_module):
     return
 
-def register_functions_ns3_Config(module, root_module):
+def register_functions_ns3_internal(module, root_module):
     return
 
 def register_functions_ns3_olsr(module, root_module):

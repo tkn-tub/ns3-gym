@@ -22,6 +22,7 @@
 #define OLSR_AGENT_H
 
 #include "ns3/node.h"
+#include "ns3/olsr-routing-table.h"
 
 namespace ns3 {
 namespace olsr {
@@ -72,6 +73,8 @@ public:
    * neighbors, as well start listening to messages from neighbors.
    */
   virtual void Start () = 0;
+
+  virtual Ptr<const olsr::RoutingTable> GetRoutingTable () const = 0;
 };
 
 }} // namespace olsr, ns3

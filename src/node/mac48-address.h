@@ -25,6 +25,7 @@
 #include "ns3/attribute.h"
 #include "ns3/attribute-helper.h"
 #include "ipv4-address.h"
+#include "ipv6-address.h"
 
 namespace ns3 {
 
@@ -109,9 +110,21 @@ public:
   static Mac48Address GetMulticast (Ipv4Address address);
 
   /**
+   * \brief Get multicast address from IPv6 address.
+   * \returns a multicast address
+   */
+  static Mac48Address GetMulticast (Ipv6Address address);
+
+  /**
    * \returns the multicast prefix (01:00:5e:00:00:00).
    */
   static Mac48Address GetMulticastPrefix (void);
+
+  /**
+   * \brief Get the multicast prefix for IPv6 (33:33:00:00:00:00).
+   * \returns a multicast address.
+   */
+  static Mac48Address GetMulticast6Prefix (void);
 private:
   /**
    * \returns a new Address instance

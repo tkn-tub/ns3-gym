@@ -485,13 +485,12 @@ void NscTcpSocketImpl::CompleteFork(void)
   // address <-> Socket handling is done by NSC internally.
   // We only need to add the new ns-3 socket to the list of sockets, so
   // we use plain Allocate() instead of Allocate(m_localAddress, ... )
-  uint8_t buf[4];
-  int port;
-  size_t buflen = sizeof(buf);
+  struct sockaddr_in sin;
+  size_t sin_len = sizeof(sin);
 
-  if (0 == m_nscTcpSocket->getpeername((void *) buf, &buflen, &port)) {
-    m_remotePort = ntohs(port);
-    m_remoteAddress = m_remoteAddress.Deserialize(buf);
+  if (0 == m_nscTcpSocket->getpeername((struct sockaddr*) &sin, &sin_len)) {
+    m_remotePort = ntohs(sin.sin_port);
+    m_remoteAddress = m_remoteAddress.Deserialize((const uint8_t*) &sin.sin_addr);
     m_peerAddress = InetSocketAddress(m_remoteAddress, m_remotePort);
   }
 
@@ -501,9 +500,10 @@ void NscTcpSocketImpl::CompleteFork(void)
   NS_ASSERT(m_state == LISTEN);
   m_state = ESTABLISHED;
 
-  buflen = sizeof(buf);
-  if (0 == m_nscTcpSocket->getsockname((void *) &buf, &buflen, &port))
-    m_localAddress = m_localAddress.Deserialize(buf);
+  sin_len = sizeof(sin);
+
+  if (0 == m_nscTcpSocket->getsockname((struct sockaddr *) &sin, &sin_len))
+    m_localAddress = m_localAddress.Deserialize((const uint8_t*) &sin.sin_addr);
 
   NS_LOG_LOGIC ("NscTcpSocketImpl " << this << " accepted connection from " 
                  << m_remoteAddress << ":" << m_remotePort
@@ -519,13 +519,11 @@ void NscTcpSocketImpl::ConnectionSucceeded()
 { // We would preferred to have scheduled an event directly to
   // NotifyConnectionSucceeded, but (sigh) these are protected
   // and we can get the address of it :(
-
-  uint8_t buf[4];
-  int port;
-  size_t buflen = sizeof(buf);
-  if (0 == m_nscTcpSocket->getsockname((void *) &buf, &buflen, &port)) {
-    m_localAddress = m_localAddress.Deserialize(buf);
-    m_localPort = ntohs(port);
+  struct sockaddr_in sin;
+  size_t sin_len = sizeof(sin);
+  if (0 == m_nscTcpSocket->getsockname((struct sockaddr *) &sin, &sin_len)) {
+    m_localAddress = m_localAddress.Deserialize((const uint8_t*)&sin.sin_addr);
+    m_localPort = ntohs(sin.sin_port);
   }
 
   NS_LOG_LOGIC ("NscTcpSocketImpl " << this << " connected to "

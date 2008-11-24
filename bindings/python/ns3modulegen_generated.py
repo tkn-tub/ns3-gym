@@ -23,8 +23,10 @@ import ns3_module_stats
 import ns3_module_internet_stack
 import ns3_module_wifi
 import ns3_module_csma
+import ns3_module_emu
 import ns3_module_bridge
 import ns3_module_packet_sink
+import ns3_module_v4ping
 import ns3_module_global_routing
 import ns3_module_onoff
 import ns3_module_olsr
@@ -159,6 +161,17 @@ def register_types(module):
         ns3_module_csma__local.register_types(module)
     
     root_module.end_section('ns3_module_csma')
+    root_module.begin_section('ns3_module_emu')
+    ns3_module_emu.register_types(module)
+    
+    try:
+        import ns3_module_emu__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_emu__local.register_types(module)
+    
+    root_module.end_section('ns3_module_emu')
     root_module.begin_section('ns3_module_bridge')
     ns3_module_bridge.register_types(module)
     
@@ -181,6 +194,17 @@ def register_types(module):
         ns3_module_packet_sink__local.register_types(module)
     
     root_module.end_section('ns3_module_packet_sink')
+    root_module.begin_section('ns3_module_v4ping')
+    ns3_module_v4ping.register_types(module)
+    
+    try:
+        import ns3_module_v4ping__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_v4ping__local.register_types(module)
+    
+    root_module.end_section('ns3_module_v4ping')
     root_module.begin_section('ns3_module_global_routing')
     ns3_module_global_routing.register_types(module)
     
@@ -239,10 +263,10 @@ def register_types(module):
     module.add_container('std::vector< unsigned int >', 'unsigned int', container_type='vector')
     module.add_container('std::list< unsigned int >', 'unsigned int', container_type='list')
     
-    ## Register a nested module for the namespace internal
+    ## Register a nested module for the namespace Config
     
-    nested_module = module.add_cpp_namespace('internal')
-    register_types_ns3_internal(nested_module)
+    nested_module = module.add_cpp_namespace('Config')
+    register_types_ns3_Config(nested_module)
     
     
     ## Register a nested module for the namespace TimeStepPrecision
@@ -251,10 +275,10 @@ def register_types(module):
     register_types_ns3_TimeStepPrecision(nested_module)
     
     
-    ## Register a nested module for the namespace Config
+    ## Register a nested module for the namespace internal
     
-    nested_module = module.add_cpp_namespace('Config')
-    register_types_ns3_Config(nested_module)
+    nested_module = module.add_cpp_namespace('internal')
+    register_types_ns3_internal(nested_module)
     
     
     ## Register a nested module for the namespace olsr
@@ -263,18 +287,18 @@ def register_types(module):
     register_types_ns3_olsr(nested_module)
     
 
-def register_types_ns3_internal(module):
+def register_types_ns3_Config(module):
     root_module = module.get_root()
     
+    module.add_container('std::vector< std::string >', 'std::string', container_type='vector')
 
 def register_types_ns3_TimeStepPrecision(module):
     root_module = module.get_root()
     
 
-def register_types_ns3_Config(module):
+def register_types_ns3_internal(module):
     root_module = module.get_root()
     
-    module.add_container('std::vector< std::string >', 'std::string', container_type='vector')
 
 def register_types_ns3_olsr(module):
     root_module = module.get_root()
@@ -402,6 +426,17 @@ def register_methods(root_module):
         ns3_module_csma__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_csma')
+    root_module.begin_section('ns3_module_emu')
+    ns3_module_emu.register_methods(root_module)
+    
+    try:
+        import ns3_module_emu__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_emu__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_emu')
     root_module.begin_section('ns3_module_bridge')
     ns3_module_bridge.register_methods(root_module)
     
@@ -424,6 +459,17 @@ def register_methods(root_module):
         ns3_module_packet_sink__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_packet_sink')
+    root_module.begin_section('ns3_module_v4ping')
+    ns3_module_v4ping.register_methods(root_module)
+    
+    try:
+        import ns3_module_v4ping__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_v4ping__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_v4ping')
     root_module.begin_section('ns3_module_global_routing')
     ns3_module_global_routing.register_methods(root_module)
     
@@ -604,6 +650,17 @@ def register_functions(root_module):
         ns3_module_csma__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_csma')
+    root_module.begin_section('ns3_module_emu')
+    ns3_module_emu.register_functions(root_module)
+    
+    try:
+        import ns3_module_emu__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_emu__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_emu')
     root_module.begin_section('ns3_module_bridge')
     ns3_module_bridge.register_functions(root_module)
     
@@ -626,6 +683,17 @@ def register_functions(root_module):
         ns3_module_packet_sink__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_packet_sink')
+    root_module.begin_section('ns3_module_v4ping')
+    ns3_module_v4ping.register_functions(root_module)
+    
+    try:
+        import ns3_module_v4ping__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_v4ping__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_v4ping')
     root_module.begin_section('ns3_module_global_routing')
     ns3_module_global_routing.register_functions(root_module)
     
@@ -681,19 +749,19 @@ def register_functions(root_module):
         ns3_module_helper__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_helper')
-    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
-    register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
+    register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
+    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
     return
 
-def register_functions_ns3_internal(module, root_module):
+def register_functions_ns3_Config(module, root_module):
     return
 
 def register_functions_ns3_TimeStepPrecision(module, root_module):
     return
 
-def register_functions_ns3_Config(module, root_module):
+def register_functions_ns3_internal(module, root_module):
     return
 
 def register_functions_ns3_olsr(module, root_module):

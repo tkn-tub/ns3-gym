@@ -7,7 +7,7 @@ import urllib
 # Mercurial repository of the network simulation cradle
 NSC_REPO = "https://secure.wand.net.nz/mercurial/nsc"
 NSC_RELEASE_URL = "http://research.wand.net.nz/software/nsc"
-NSC_RELEASE_NAME = "nsc-0.4.0"
+NSC_RELEASE_NAME = "nsc-0.5.0"
 
 # directory that contains network simulation cradle source
 # note, this path is relative to the project root
@@ -148,6 +148,10 @@ def build(bld):
         'pending-data.cc',
         'sequence-number.cc',
         'rtt-estimator.cc',
+        'ipv4-raw-socket-factory-impl.cc',
+        'ipv4-raw-socket-impl.cc',
+        'icmpv4.cc',
+        'icmpv4-l4-protocol.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -160,6 +164,7 @@ def build(bld):
         'ipv4-interface.h',
         'ipv4-l3-protocol.h',
         'ipv4-static-routing.h',
+        'icmpv4.h',
         ]
 
     if bld.env()['NSC_ENABLED']:        

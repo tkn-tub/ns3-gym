@@ -431,7 +431,7 @@ TcpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
   m_endPoints->DeAllocate (endPoint);
 }
 
-void 
+enum Ipv4L4Protocol::RxStatus
 TcpL4Protocol::Receive (Ptr<Packet> packet,
              Ipv4Address const &source,
              Ipv4Address const &destination,
@@ -457,7 +457,7 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
   if(!tcpHeader.IsChecksumOk ())
   {
     NS_LOG_INFO("Bad checksum, dropping packet!");
-    return;
+    return Ipv4L4Protocol::RX_CSUM_FAILED;
   }
 
   NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" received a packet");
@@ -474,11 +474,12 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
     source.Print (oss);
     oss<<" source port: "<<tcpHeader.GetSourcePort ();
     NS_LOG_LOGIC (oss.str ());
-    return;
+    return Ipv4L4Protocol::RX_ENDPOINT_UNREACH;
   }
   NS_ASSERT_MSG (endPoints.size() == 1 , "Demux returned more than one endpoint");
   NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" forwarding up to endpoint/socket");
   (*endPoints.begin ())->ForwardUp (packet, source, tcpHeader.GetSourcePort ());
+  return Ipv4L4Protocol::RX_OK;
 }
 
 void

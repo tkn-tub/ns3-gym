@@ -6,10 +6,10 @@ import os
 import sys
 import tracediff
 
-def run(verbose, generate, refDirName):
+def run(verbose, generate):
     """Execute a test."""
     if tracediff.env['ENABLE_PYTHON_BINDINGS']:
-        return tracediff.run_test(verbose, generate, refDirName,
+        return tracediff.run_test(verbose, generate,
                                   "csma-bridge", pyscript=os.path.join('examples', 'csma-bridge.py'))
     else:
         print >> sys.stderr, "Skipping csma-bridge: Python bindings not available."

@@ -58,7 +58,8 @@ private:
   virtual uint32_t GetIpTtl (void) const = 0;
   virtual void SetIpMulticastTtl (uint32_t ipTtl) = 0;
   virtual uint32_t GetIpMulticastTtl (void) const = 0;
-  
+  virtual void SetMtuDiscover (bool discover) = 0;
+  virtual bool GetMtuDiscover (void) const = 0;
 };
 
 } //namespace ns3

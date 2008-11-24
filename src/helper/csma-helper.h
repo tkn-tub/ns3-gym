@@ -161,23 +161,50 @@ public:
   static void EnableAsciiAll (std::ostream &os);
 
   /**
-   * \param c a set of nodes
+   * This method creates an ns3::CsmaChannel with the attributes configured by
+   * CsmaHelper::SetChannelAttribute, an ns3::CsmaNetDevice with the attributes
+   * configured by CsmaHelper::SetDeviceAttribute and then adds the device
+   * to the node and attaches the channel to the device.
    *
-   * This method creates a simple ns3::CsmaChannel with the
-   * attributes configured by CsmaHelper::SetChannelAttribute and
-   * then calls CsmaHelper::Install.
+   * \param node The node to install the device in
+   * \returns A containter holding the added net device.
    */
-  NetDeviceContainer Install (const NodeContainer &c);
+  NetDeviceContainer Install (Ptr<Node> node) const;
 
   /**
-   * \param c a set of nodes
-   * \param channel the channel to use as a backbone.
+   * This method creates an ns3::CsmaNetDevice with the attributes configured by
+   * CsmaHelper::SetDeviceAttribute and then adds the device to the node and 
+   * attaches the provided channel to the device.
    *
-   * For each node in the input container, we create a ns3::CsmaNetDevice with
-   * the requested attributes, a queue for this NetDevice, and associate
-   * the resulting ns3::NetDevice with the ns3::Node and ns3::CsmaChannel.
+   * \param node The node to install the device in
+   * \param channel The chanel to attach to the device.
+   * \returns A containter holding the added net device.
    */
-  NetDeviceContainer Install (const NodeContainer &c, Ptr<CsmaChannel> channel);
+  NetDeviceContainer Install (Ptr<Node> node, Ptr<CsmaChannel> channel) const;
+
+  /**
+   * This method creates an ns3::CsmaChannel with the attributes configured by
+   * CsmaHelper::SetChannelAttribute.  For each Ptr<node> in the provided
+   * container: it creates an ns3::CsmaNetDevice (with the attributes 
+   * configured by CsmaHelper::SetDeviceAttribute); adds the device to the 
+   * node; and attaches the channel to the device.
+   *
+   * \param c The NodeContainer holding the nodes to be changed.
+   * \returns A containter holding the added net devices.
+   */
+  NetDeviceContainer Install (const NodeContainer &c) const;
+
+  /**
+   * For each Ptr<node> in the provided container, this method creates an 
+   * ns3::CsmaNetDevice (with the attributes configured by 
+   * CsmaHelper::SetDeviceAttribute); adds the device to the node; and attaches 
+   * the provided channel to the device.
+   *
+   * \param c The NodeContainer holding the nodes to be changed.
+   * \param channel The channel to attach to the devices.
+   * \returns A containter holding the added net devices.
+   */
+  NetDeviceContainer Install (const NodeContainer &c, Ptr<CsmaChannel> channel) const;
 
   /**
    * \brief Make a star network topology.
@@ -213,6 +240,8 @@ public:
                     NetDeviceContainer& hubDevices, NetDeviceContainer& spokeDevices);
 
 private:
+  Ptr<NetDevice> InstallPriv (Ptr<Node> node, Ptr<CsmaChannel> channel) const;
+
   static void RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
   static void EnqueueEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
   static void AsciiEnqueueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);

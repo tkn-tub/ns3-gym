@@ -19,6 +19,8 @@ all_modules = (
     'internet-stack',
     'devices/point-to-point',
     'devices/csma',
+    'devices/emu',
+    'devices/bridge',
     'applications/onoff',
     'applications/packet-sink',
     'applications/udp-echo',
@@ -27,8 +29,8 @@ all_modules = (
     'mobility',
     'devices/wifi',
     'helper',
-    'devices/bridge',
     'contrib/stats',
+    'applications/v4ping',
     )
 
 def set_options(opt):
@@ -49,6 +51,7 @@ def set_options(opt):
 def configure(conf):
     conf.sub_config('core')
     conf.sub_config('simulator')
+    conf.sub_config('devices/emu')
     conf.sub_config('contrib')
     conf.sub_config('internet-stack')
 

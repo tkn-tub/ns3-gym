@@ -365,10 +365,6 @@ namespace ns3 {
  *         The TypeId class
  *********************************************************************/
 
-TypeId::TypeId ()
-  : m_tid (0)
-{}
-
 TypeId::TypeId (const char *name)
 {
   uint16_t uid = Singleton<IidManager>::Get ()->AllocateUid (name);
@@ -379,8 +375,6 @@ TypeId::TypeId (const char *name)
 
 TypeId::TypeId (uint16_t tid)
   : m_tid (tid)
-{}
-TypeId::~TypeId ()
 {}
 TypeId 
 TypeId::LookupByName (std::string name)
@@ -691,16 +685,6 @@ std::istream & operator >> (std::istream &is, TypeId &tid)
 
 
 ATTRIBUTE_HELPER_CPP (TypeId);
-
-bool operator == (TypeId a, TypeId b)
-{
-  return a.m_tid == b.m_tid;
-}
-
-bool operator != (TypeId a, TypeId b)
-{
-  return a.m_tid != b.m_tid;
-}
 
 bool operator < (TypeId a, TypeId b)
 {

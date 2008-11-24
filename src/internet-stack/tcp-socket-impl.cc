@@ -250,7 +250,8 @@ TcpSocketImpl::Bind (const Address &address)
   NS_LOG_FUNCTION (this<<address);
   if (!InetSocketAddress::IsMatchingType (address))
     {
-      return ERROR_INVAL;
+      m_errno = ERROR_INVAL;
+      return -1;
     }
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();

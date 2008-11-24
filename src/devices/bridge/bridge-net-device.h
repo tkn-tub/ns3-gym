@@ -96,8 +96,7 @@ public:
   virtual bool IsBroadcast (void) const;
   virtual Address GetBroadcast (void) const;
   virtual bool IsMulticast (void) const;
-  virtual Address GetMulticast (void) const;
-  virtual Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
+  virtual Address GetMulticast (Ipv4Address multicastGroup) const;
   virtual bool IsPointToPoint (void) const;
   virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
   virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
@@ -107,6 +106,7 @@ public:
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
   virtual void SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom () const;
+  virtual Address GetMulticast (Ipv6Address addr) const;
 
 protected:
   virtual void DoDispose (void);

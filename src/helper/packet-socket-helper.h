@@ -1,3 +1,23 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2008 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
+
 #ifndef PACKET_SOCKET_HELPER_H
 #define PACKET_SOCKET_HELPER_H
 
@@ -12,12 +32,21 @@ class PacketSocketHelper
 {
 public:
   /**
-   * \param c container of node pointers
+   * Aggregate an instance of a ns3::PacketSocketFactory onto the provided
+   * node.
    *
-   * For each node in the input container, aggregate a ns3::PacketSocketFactory
-   * object instance.
+   * \param node Node on which to aggregate the ns3::PacketSocketFactory.
    */
-  void Install (NodeContainer c);
+  void Install (Ptr<Node> node) const;
+
+  /**
+   * For each node in the provided container, aggregate an instance of a
+   * ns3::PacketSocketFactory.
+   *
+   * \param c NodeContainer of the set of nodes to aggregate the 
+   * ns3::PacketSocketFactory on.
+   */
+  void Install (NodeContainer c) const;
 };
 
 } // namespace ns3

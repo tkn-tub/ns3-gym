@@ -28,6 +28,7 @@
 #include "ns3/ptr.h"
 #include "address.h"
 #include "ipv4-address.h"
+#include "ipv6-address.h"
 
 namespace ns3 {
 
@@ -142,31 +143,6 @@ public:
   virtual bool IsMulticast (void) const = 0;
 
   /**
-   * \brief Return the MAC multicast base address used when mapping multicast
-   * groups to MAC multicast addresses.
-   *
-   * Typically when one constructs a multicast MAC addresses, some bits from
-   * the IP multicast group are copied into a corresponding MAC multicast 
-   * group.  In EUI-48, for example, the low order 23 bits of the multicast
-   * group are copied to the MAC multicast group base address.
-   *
-   * This method allows access to the underlying MAC multicast group base 
-   * address.  It is expected that in most cases, a net device client will
-   * allow the net device to perform the actual construction of the multicast
-   * address.  Use of this method is discouraged unless you have a good reason
-   * to perform a custom mapping.  You should prefer 
-   * NetDevice::MakeMulticastAddress which will do the RFC-specified mapping
-   * for the net device in question.
-   *
-   * \return The multicast address supported by this net device.
-   *
-   * \warning Calling this method is invalid if IsMulticast returns not true.
-   * The method NS_ASSERTs if the device is not a multicast device.
-   * \see NetDevice::MakeMulticastAddress
-   */
-  virtual Address GetMulticast (void) const = 0;
-  
-  /**
    * \brief Make and return a MAC multicast address using the provided
    *        multicast group
    *
@@ -179,7 +155,7 @@ public:
    * encapsulated in an abstract Address to avoid dependencies on the exact
    * MAC address format.
    *
-   * A default imlementation of MakeMulticastAddress is provided, but this
+   * A default imlementation of GetMulticast is provided, but this
    * method simply NS_ASSERTS.  In the case of net devices that do not support
    * multicast, clients are expected to test NetDevice::IsMulticast and avoid
    * attempting to map multicast packets.  Subclasses of NetDevice that do
@@ -196,8 +172,17 @@ public:
    * \see Address
    * \see NetDevice::IsMulticast
    */
-  virtual Address MakeMulticastAddress (Ipv4Address multicastGroup) const = 0;
+  virtual Address GetMulticast (Ipv4Address multicastGroup) const = 0;
   
+	/**
+   * \brief Get the MAC multicast address corresponding
+   * to the IPv6 address provided.
+   * \param addr IPv6 address
+   * \return the MAC multicast address
+   * \warning Calling this method is invalid if IsMulticast returns not true.
+   */
+  virtual Address GetMulticast (Ipv6Address addr) const = 0;
+
   /**
    * \return value of m_isPointToPoint flag
    */
@@ -255,13 +240,23 @@ public:
   virtual bool NeedsArp (void) const = 0;
 
 
-  /** Packet types */
+  /** 
+   * Packet types are used as they are in Linux.  GCC name resolution on 
+   * typedef enum {} PacketType is broken for the foreseeable future, so
+   * if you need to use ns-3 PacketType in a driver that also uses the 
+   * Linux packet types you're hosed unless we define a shadow type, 
+   * which we do here.
+   */
   enum PacketType
     {
-      PACKET_HOST = 1,  /* To us                */
-      PACKET_BROADCAST, /* To all               */
-      PACKET_MULTICAST, /* To group             */
-      PACKET_OTHERHOST, /* To someone else      */
+      PACKET_HOST = 1, /**< Packet addressed oo us */
+      NS3_PACKET_HOST = PACKET_HOST,
+      PACKET_BROADCAST, /**< Packet addressed to all */
+      NS3_PACKET_BROADCAST = PACKET_BROADCAST,
+      PACKET_MULTICAST, /**< Packet addressed to multicast group */
+      NS3_PACKET_MULTICAST = PACKET_MULTICAST,
+      PACKET_OTHERHOST, /**< Packet addressed to someone else */
+      NS3_PACKET_OTHERHOST = PACKET_OTHERHOST,
     };
 
   /**

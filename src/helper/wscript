@@ -22,6 +22,7 @@ def build(bld):
         'udp-echo-helper.cc',
         'bridge-helper.cc',
         'yans-wifi-phy-helper.cc',
+        'v4ping-helper.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -46,4 +47,15 @@ def build(bld):
         'udp-echo-helper.h',
         'bridge-helper.h',
         'yans-wifi-phy-helper.h',
+        'v4ping-helper.h',
         ]
+
+    env = bld.env_of_name('default')
+    if env['ENABLE_EMU']:
+        helper.source.extend([
+                'emu-helper.cc',
+                ])
+        headers.source.extend([
+                'emu-helper.h',
+                ])
+

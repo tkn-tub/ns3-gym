@@ -166,10 +166,10 @@ def register_types(module):
     ## traced-value.h: ns3::TracedValue<unsigned int> [class]
     root_module['ns3::TracedValue< unsigned int >'].implicitly_converts_to(root_module['ns3::EnumValue'])
     
-    ## Register a nested module for the namespace internal
+    ## Register a nested module for the namespace Config
     
-    nested_module = module.add_cpp_namespace('internal')
-    register_types_ns3_internal(nested_module)
+    nested_module = module.add_cpp_namespace('Config')
+    register_types_ns3_Config(nested_module)
     
     
     ## Register a nested module for the namespace TimeStepPrecision
@@ -178,10 +178,10 @@ def register_types(module):
     register_types_ns3_TimeStepPrecision(nested_module)
     
     
-    ## Register a nested module for the namespace Config
+    ## Register a nested module for the namespace internal
     
-    nested_module = module.add_cpp_namespace('Config')
-    register_types_ns3_Config(nested_module)
+    nested_module = module.add_cpp_namespace('internal')
+    register_types_ns3_internal(nested_module)
     
     
     ## Register a nested module for the namespace olsr
@@ -190,20 +190,20 @@ def register_types(module):
     register_types_ns3_olsr(nested_module)
     
 
-def register_types_ns3_internal(module):
-    root_module = module.get_root()
-    
-
-def register_types_ns3_TimeStepPrecision(module):
-    root_module = module.get_root()
-    
-
 def register_types_ns3_Config(module):
     root_module = module.get_root()
     
     ## config.h: ns3::Config::MatchContainer [class]
     module.add_class('MatchContainer')
     module.add_container('std::vector< ns3::Ptr< ns3::Object > >', 'ns3::Ptr< ns3::Object >', container_type='vector')
+
+def register_types_ns3_TimeStepPrecision(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_internal(module):
+    root_module = module.get_root()
+    
 
 def register_types_ns3_olsr(module):
     root_module = module.get_root()
@@ -828,12 +828,12 @@ def register_Ns3TypeId_methods(root_module, cls):
     cls.add_binary_comparison_operator('<')
     cls.add_output_stream_operator()
     cls.add_binary_comparison_operator('==')
-    ## type-id.h: ns3::TypeId::TypeId(ns3::TypeId const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::TypeId const &', 'arg0')])
     ## type-id.h: ns3::TypeId::TypeId(char const * name) [constructor]
     cls.add_constructor([param('char const *', 'name')])
     ## type-id.h: ns3::TypeId::TypeId() [constructor]
     cls.add_constructor([])
+    ## type-id.h: ns3::TypeId::TypeId(ns3::TypeId const & o) [copy constructor]
+    cls.add_constructor([param('ns3::TypeId const &', 'o')])
     ## type-id.h: ns3::TypeId ns3::TypeId::AddAttribute(std::string name, std::string help, ns3::AttributeValue const & initialValue, ns3::Ptr<ns3::AttributeAccessor const> accessor, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
     cls.add_method('AddAttribute', 
                    'ns3::TypeId', 
@@ -1986,8 +1986,62 @@ def register_Ns3ConfigMatchContainer_methods(root_module, cls):
 
 def register_functions(root_module):
     module = root_module
+    ## breakpoint.h: extern void ns3::BreakpointFallback() [free function]
+    module.add_function('BreakpointFallback', 
+                        'void', 
+                        [])
+    ## ptr.h: extern ns3::Ptr<ns3::ObjectVectorValue> ns3::Create() [free function]
+    module.add_function('Create', 
+                        'ns3::Ptr< ns3::ObjectVectorValue >', 
+                        [], 
+                        template_parameters=['ns3::ObjectVectorValue'])
+    ## ptr.h: extern ns3::Ptr<ns3::PointerValue> ns3::Create() [free function]
+    module.add_function('Create', 
+                        'ns3::Ptr< ns3::PointerValue >', 
+                        [], 
+                        template_parameters=['ns3::PointerValue'])
+    ## log.h: extern void ns3::LogComponentDisable(char const * name, ns3::LogLevel level) [free function]
+    module.add_function('LogComponentDisable', 
+                        'void', 
+                        [param('char const *', 'name'), param('ns3::LogLevel', 'level')])
+    ## log.h: extern void ns3::LogComponentDisableAll(ns3::LogLevel level) [free function]
+    module.add_function('LogComponentDisableAll', 
+                        'void', 
+                        [param('ns3::LogLevel', 'level')])
+    ## log.h: extern void ns3::LogComponentEnable(char const * name, ns3::LogLevel level) [free function]
+    module.add_function('LogComponentEnable', 
+                        'void', 
+                        [param('char const *', 'name'), param('ns3::LogLevel', 'level')])
+    ## log.h: extern void ns3::LogComponentEnableAll(ns3::LogLevel level) [free function]
+    module.add_function('LogComponentEnableAll', 
+                        'void', 
+                        [param('ns3::LogLevel', 'level')])
     ## boolean.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeBooleanChecker() [free function]
     module.add_function('MakeBooleanChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
+    ## callback.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeCallbackChecker() [free function]
+    module.add_function('MakeCallbackChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
+    ## enum.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeEnumChecker(int v1, std::string n1, int v2=0, std::string n2="", int v3=0, std::string n3="", int v4=0, std::string n4="", int v5=0, std::string n5="", int v6=0, std::string n6="", int v7=0, std::string n7="", int v8=0, std::string n8="", int v9=0, std::string n9="", int v10=0, std::string n10="", int v11=0, std::string n11="", int v12=0, std::string n12="") [free function]
+    module.add_function('MakeEnumChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [param('int', 'v1'), param('std::string', 'n1'), param('int', 'v2', default_value='0'), param('std::string', 'n2', default_value='""'), param('int', 'v3', default_value='0'), param('std::string', 'n3', default_value='""'), param('int', 'v4', default_value='0'), param('std::string', 'n4', default_value='""'), param('int', 'v5', default_value='0'), param('std::string', 'n5', default_value='""'), param('int', 'v6', default_value='0'), param('std::string', 'n6', default_value='""'), param('int', 'v7', default_value='0'), param('std::string', 'n7', default_value='""'), param('int', 'v8', default_value='0'), param('std::string', 'n8', default_value='""'), param('int', 'v9', default_value='0'), param('std::string', 'n9', default_value='""'), param('int', 'v10', default_value='0'), param('std::string', 'n10', default_value='""'), param('int', 'v11', default_value='0'), param('std::string', 'n11', default_value='""'), param('int', 'v12', default_value='0'), param('std::string', 'n12', default_value='""')])
+    ## object-factory.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeObjectFactoryChecker() [free function]
+    module.add_function('MakeObjectFactoryChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
+    ## random-variable.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeRandomVariableChecker() [free function]
+    module.add_function('MakeRandomVariableChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
+    ## string.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeStringChecker() [free function]
+    module.add_function('MakeStringChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
+    ## type-id.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeTypeIdChecker() [free function]
+    module.add_function('MakeTypeIdChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
     ## type-name.h: extern std::string ns3::TypeNameGet() [free function]
@@ -2040,141 +2094,87 @@ def register_functions(root_module):
                         'std::string', 
                         [], 
                         template_parameters=['unsigned char'])
-    ## log.h: extern void ns3::LogComponentDisable(char const * name, ns3::LogLevel level) [free function]
-    module.add_function('LogComponentDisable', 
-                        'void', 
-                        [param('char const *', 'name'), param('ns3::LogLevel', 'level')])
-    ## string.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeStringChecker() [free function]
-    module.add_function('MakeStringChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [])
-    ## ptr.h: extern ns3::Ptr<ns3::PointerValue> ns3::Create() [free function]
-    module.add_function('Create', 
-                        'ns3::Ptr< ns3::PointerValue >', 
-                        [], 
-                        template_parameters=['ns3::PointerValue'])
-    ## ptr.h: extern ns3::Ptr<ns3::ObjectVectorValue> ns3::Create() [free function]
-    module.add_function('Create', 
-                        'ns3::Ptr< ns3::ObjectVectorValue >', 
-                        [], 
-                        template_parameters=['ns3::ObjectVectorValue'])
-    ## log.h: extern void ns3::LogComponentEnableAll(ns3::LogLevel level) [free function]
-    module.add_function('LogComponentEnableAll', 
-                        'void', 
-                        [param('ns3::LogLevel', 'level')])
-    ## type-id.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeTypeIdChecker() [free function]
-    module.add_function('MakeTypeIdChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [])
-    ## object-factory.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeObjectFactoryChecker() [free function]
-    module.add_function('MakeObjectFactoryChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [])
-    ## log.h: extern void ns3::LogComponentDisableAll(ns3::LogLevel level) [free function]
-    module.add_function('LogComponentDisableAll', 
-                        'void', 
-                        [param('ns3::LogLevel', 'level')])
-    ## callback.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeCallbackChecker() [free function]
-    module.add_function('MakeCallbackChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [])
-    ## breakpoint.h: extern void ns3::BreakpointFallback() [free function]
-    module.add_function('BreakpointFallback', 
-                        'void', 
-                        [])
-    ## random-variable.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeRandomVariableChecker() [free function]
-    module.add_function('MakeRandomVariableChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [])
-    ## log.h: extern void ns3::LogComponentEnable(char const * name, ns3::LogLevel level) [free function]
-    module.add_function('LogComponentEnable', 
-                        'void', 
-                        [param('char const *', 'name'), param('ns3::LogLevel', 'level')])
-    ## enum.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeEnumChecker(int v1, std::string n1, int v2=0, std::string n2="", int v3=0, std::string n3="", int v4=0, std::string n4="", int v5=0, std::string n5="", int v6=0, std::string n6="", int v7=0, std::string n7="", int v8=0, std::string n8="", int v9=0, std::string n9="", int v10=0, std::string n10="", int v11=0, std::string n11="", int v12=0, std::string n12="") [free function]
-    module.add_function('MakeEnumChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [param('int', 'v1'), param('std::string', 'n1'), param('int', 'v2', default_value='0'), param('std::string', 'n2', default_value='""'), param('int', 'v3', default_value='0'), param('std::string', 'n3', default_value='""'), param('int', 'v4', default_value='0'), param('std::string', 'n4', default_value='""'), param('int', 'v5', default_value='0'), param('std::string', 'n5', default_value='""'), param('int', 'v6', default_value='0'), param('std::string', 'n6', default_value='""'), param('int', 'v7', default_value='0'), param('std::string', 'n7', default_value='""'), param('int', 'v8', default_value='0'), param('std::string', 'n8', default_value='""'), param('int', 'v9', default_value='0'), param('std::string', 'n9', default_value='""'), param('int', 'v10', default_value='0'), param('std::string', 'n10', default_value='""'), param('int', 'v11', default_value='0'), param('std::string', 'n11', default_value='""'), param('int', 'v12', default_value='0'), param('std::string', 'n12', default_value='""')])
-    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
-    register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
+    register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
+    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
     return
 
-def register_functions_ns3_internal(module, root_module):
-    ## uinteger.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::internal::MakeUintegerChecker(uint64_t min, uint64_t max, std::string name) [free function]
-    module.add_function('MakeUintegerChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [param('uint64_t', 'min'), param('uint64_t', 'max'), param('std::string', 'name')])
-    ## integer.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::internal::MakeIntegerChecker(int64_t min, int64_t max, std::string name) [free function]
-    module.add_function('MakeIntegerChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [param('int64_t', 'min'), param('int64_t', 'max'), param('std::string', 'name')])
-    ## double.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::internal::MakeDoubleChecker(double min, double max, std::string name) [free function]
-    module.add_function('MakeDoubleChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [param('double', 'min'), param('double', 'max'), param('std::string', 'name')])
-    return
-
-def register_functions_ns3_TimeStepPrecision(module, root_module):
-    return
-
 def register_functions_ns3_Config(module, root_module):
-    ## config.h: extern bool ns3::Config::SetDefaultFailSafe(std::string name, ns3::AttributeValue const & value) [free function]
-    module.add_function('SetDefaultFailSafe', 
-                        'bool', 
-                        [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
-    ## config.h: extern void ns3::Config::DisconnectWithoutContext(std::string path, ns3::CallbackBase const & cb) [free function]
-    module.add_function('DisconnectWithoutContext', 
-                        'void', 
-                        [param('std::string', 'path'), param('ns3::CallbackBase const &', 'cb')])
-    ## config.h: extern void ns3::Config::SetDefault(std::string name, ns3::AttributeValue const & value) [free function]
-    module.add_function('SetDefault', 
-                        'void', 
-                        [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
-    ## config.h: extern ns3::Config::MatchContainer ns3::Config::LookupMatches(std::string path) [free function]
-    module.add_function('LookupMatches', 
-                        'ns3::Config::MatchContainer', 
-                        [param('std::string', 'path')])
     ## config.h: extern void ns3::Config::Connect(std::string path, ns3::CallbackBase const & cb) [free function]
     module.add_function('Connect', 
+                        'void', 
+                        [param('std::string', 'path'), param('ns3::CallbackBase const &', 'cb')])
+    ## config.h: extern void ns3::Config::ConnectWithoutContext(std::string path, ns3::CallbackBase const & cb) [free function]
+    module.add_function('ConnectWithoutContext', 
+                        'void', 
+                        [param('std::string', 'path'), param('ns3::CallbackBase const &', 'cb')])
+    ## config.h: extern void ns3::Config::Disconnect(std::string path, ns3::CallbackBase const & cb) [free function]
+    module.add_function('Disconnect', 
+                        'void', 
+                        [param('std::string', 'path'), param('ns3::CallbackBase const &', 'cb')])
+    ## config.h: extern void ns3::Config::DisconnectWithoutContext(std::string path, ns3::CallbackBase const & cb) [free function]
+    module.add_function('DisconnectWithoutContext', 
                         'void', 
                         [param('std::string', 'path'), param('ns3::CallbackBase const &', 'cb')])
     ## config.h: extern ns3::Ptr<ns3::Object> ns3::Config::GetRootNamespaceObject(uint32_t i) [free function]
     module.add_function('GetRootNamespaceObject', 
                         'ns3::Ptr< ns3::Object >', 
                         [param('uint32_t', 'i')])
-    ## config.h: extern void ns3::Config::ConnectWithoutContext(std::string path, ns3::CallbackBase const & cb) [free function]
-    module.add_function('ConnectWithoutContext', 
-                        'void', 
-                        [param('std::string', 'path'), param('ns3::CallbackBase const &', 'cb')])
-    ## config.h: extern void ns3::Config::UnregisterRootNamespaceObject(ns3::Ptr<ns3::Object> obj) [free function]
-    module.add_function('UnregisterRootNamespaceObject', 
-                        'void', 
-                        [param('ns3::Ptr< ns3::Object >', 'obj')])
-    ## config.h: extern bool ns3::Config::SetGlobalFailSafe(std::string name, ns3::AttributeValue const & value) [free function]
-    module.add_function('SetGlobalFailSafe', 
-                        'bool', 
-                        [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
-    ## config.h: extern void ns3::Config::Disconnect(std::string path, ns3::CallbackBase const & cb) [free function]
-    module.add_function('Disconnect', 
-                        'void', 
-                        [param('std::string', 'path'), param('ns3::CallbackBase const &', 'cb')])
     ## config.h: extern uint32_t ns3::Config::GetRootNamespaceObjectN() [free function]
     module.add_function('GetRootNamespaceObjectN', 
                         'uint32_t', 
                         [])
-    ## config.h: extern void ns3::Config::Set(std::string path, ns3::AttributeValue const & value) [free function]
-    module.add_function('Set', 
-                        'void', 
-                        [param('std::string', 'path'), param('ns3::AttributeValue const &', 'value')])
-    ## config.h: extern void ns3::Config::SetGlobal(std::string name, ns3::AttributeValue const & value) [free function]
-    module.add_function('SetGlobal', 
-                        'void', 
-                        [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    ## config.h: extern ns3::Config::MatchContainer ns3::Config::LookupMatches(std::string path) [free function]
+    module.add_function('LookupMatches', 
+                        'ns3::Config::MatchContainer', 
+                        [param('std::string', 'path')])
     ## config.h: extern void ns3::Config::RegisterRootNamespaceObject(ns3::Ptr<ns3::Object> obj) [free function]
     module.add_function('RegisterRootNamespaceObject', 
                         'void', 
                         [param('ns3::Ptr< ns3::Object >', 'obj')])
+    ## config.h: extern void ns3::Config::Set(std::string path, ns3::AttributeValue const & value) [free function]
+    module.add_function('Set', 
+                        'void', 
+                        [param('std::string', 'path'), param('ns3::AttributeValue const &', 'value')])
+    ## config.h: extern void ns3::Config::SetDefault(std::string name, ns3::AttributeValue const & value) [free function]
+    module.add_function('SetDefault', 
+                        'void', 
+                        [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    ## config.h: extern bool ns3::Config::SetDefaultFailSafe(std::string name, ns3::AttributeValue const & value) [free function]
+    module.add_function('SetDefaultFailSafe', 
+                        'bool', 
+                        [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    ## config.h: extern void ns3::Config::SetGlobal(std::string name, ns3::AttributeValue const & value) [free function]
+    module.add_function('SetGlobal', 
+                        'void', 
+                        [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    ## config.h: extern bool ns3::Config::SetGlobalFailSafe(std::string name, ns3::AttributeValue const & value) [free function]
+    module.add_function('SetGlobalFailSafe', 
+                        'bool', 
+                        [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    ## config.h: extern void ns3::Config::UnregisterRootNamespaceObject(ns3::Ptr<ns3::Object> obj) [free function]
+    module.add_function('UnregisterRootNamespaceObject', 
+                        'void', 
+                        [param('ns3::Ptr< ns3::Object >', 'obj')])
+    return
+
+def register_functions_ns3_TimeStepPrecision(module, root_module):
+    return
+
+def register_functions_ns3_internal(module, root_module):
+    ## double.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::internal::MakeDoubleChecker(double min, double max, std::string name) [free function]
+    module.add_function('MakeDoubleChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [param('double', 'min'), param('double', 'max'), param('std::string', 'name')])
+    ## integer.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::internal::MakeIntegerChecker(int64_t min, int64_t max, std::string name) [free function]
+    module.add_function('MakeIntegerChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [param('int64_t', 'min'), param('int64_t', 'max'), param('std::string', 'name')])
+    ## uinteger.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::internal::MakeUintegerChecker(uint64_t min, uint64_t max, std::string name) [free function]
+    module.add_function('MakeUintegerChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [param('uint64_t', 'min'), param('uint64_t', 'max'), param('std::string', 'name')])
     return
 
 def register_functions_ns3_olsr(module, root_module):

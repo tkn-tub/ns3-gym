@@ -94,3 +94,22 @@ def build(bld):
                                  ['core', 'simulator', 'mobility', 'wifi', 
                                   'csma', 'helper', 'bridge'])
     obj.source = 'wifi-wired-bridging.cc'
+
+    obj = bld.create_ns3_program('csma-raw-ip-socket',
+        ['csma', 'internet-stack'])
+    obj.source = 'csma-raw-ip-socket.cc'
+
+    obj = bld.create_ns3_program('csma-ping',
+        ['csma', 'internet-stack', 'v4ping'])
+    obj.source = 'csma-ping.cc'
+
+    obj = bld.create_ns3_program('test-ipv6',
+      ['point-to-point', 'internet-stack'])
+    obj.source = 'test-ipv6.cc'
+
+    env = bld.env_of_name('default')
+    if env['ENABLE_EMU']:
+        obj = bld.create_ns3_program('emu-udp-echo',
+                                     ['emu', 'internet-stack'])
+        obj.source = 'emu-udp-echo.cc'
+

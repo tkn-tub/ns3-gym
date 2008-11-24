@@ -319,7 +319,6 @@ public:
   virtual bool IsBroadcast (void) const;
   virtual Address GetBroadcast (void) const;
   virtual bool IsMulticast (void) const;
-  virtual Address GetMulticast (void) const;
 
   /**
    * \brief Make and return a MAC multicast address using the provided
@@ -343,7 +342,7 @@ public:
    * \see Mac48Address
    * \see Address
    */
-  virtual Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
+  virtual Address GetMulticast (Ipv4Address multicastGroup) const;
 
   /**
    * Is this a point to point link?
@@ -392,6 +391,15 @@ public:
    * \param cb The callback.
    */
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
+
+  /**
+   * \brief Get the MAC multicast address corresponding
+   * to the IPv6 address provided.
+   * \param addr IPv6 address
+   * \return the MAC multicast address
+   * \warning Calling this method is invalid if IsMulticast returns not true.
+   */
+  virtual Address GetMulticast (Ipv6Address addr) const;
 
 
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);

@@ -221,7 +221,7 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination,
             } 
           else if (entry->IsWaitReply ()) 
             {
-              NS_FATAL_ERROR ("Test for possibly unreachable code-- please file a bug report if this is ever hit");
+              NS_FATAL_ERROR ("Test for possibly unreachable code-- please file a bug report, with a test case, if this is ever hit");
             }
         } 
       else 

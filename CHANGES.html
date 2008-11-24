@@ -44,6 +44,69 @@ to this file based on your experience, please contribute a patch or drop
 us a note on ns-developers mailing list.  </p>
 
 <hr>
+<h1>changes from ns-3.2 to ns-3.3</h1>
+
+<h2>new API:</h2>
+<ul>
+
+<li>17-11-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/4c1c3f6bcd03">4c1c3f6bcd03</a></li>
+<ul>
+<li>
+The PppHeader previously defined in the point-to-point-net-device code has been 
+made public.
+</li>
+</ul>
+
+<li>17-11-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/16c2970a0344">16c2970a0344</a></li>
+<ul>
+<li>
+An emulated net device has been added as enabling technology for ns-3 emulation
+scenarios.  See src/devices/emu and examples/emu-udp-echo.cc for details.
+</li>
+</ul>
+
+</ul>
+<h2>new API in existing classes:</h2>
+<ul>
+
+<li>17-11-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/4222173d1e6d">4222173d1e6d</a></li>
+<ul>
+<li>
+Added method InternetStackHelper::EnableAsciiChange to allow allow a user to 
+hook ascii trace to the drop trace events in Ipv4L3Protocol and ArpL3Protocol.
+</li>
+</ul>
+
+</ul>
+<h2>changes to existing API:</h2>
+<ul>
+
+<li>17-11-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/dacfd1f07538">dacfd1f07538</a></li>
+<ul>
+<li>
+Change attribute "RxErrorModel" to "ReceiveErrorModel" in CsmaNetDevice for 
+consistency between devices.
+</li>
+</ul>
+
+</ul>
+<h2>changed behavior:</h2>
+<ul>
+
+<li>17-11-2008; changeset 
+<a href="http://code.nsnam.org/ns-3-dev/rev/ed0dfce40459">ed0dfce40459</a></li>
+<ul>
+<li>
+Relax reasonableness testing in Ipv4AddressHelper::SetBase to allow the 
+assignment of /32 addresses.
+</li>
+</ul>
+
+<hr>
 <h1>changes from ns-3.1 to ns-3.2</h1>
 
 <h2>new API:</h2>
@@ -170,7 +233,6 @@ To implement this properly, consult the CsmaNetDevice for examples of
 when the m_promiscRxCallback is called.
 </li>
 </ul>
-
 
 <li>03-07-2008; changeset 
 <a href="http://code.nsnam.org/ns-3-dev/rev/d5f8e5fae1c6">d5f8e5fae1c6</a></li>

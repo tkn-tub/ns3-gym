@@ -33,6 +33,18 @@ namespace ns3 {
 class ApplicationContainer
 {
 public:
+  /**
+   * Create an empty ApplicationContainer.
+   */
+  ApplicationContainer ();
+
+  /**
+   * Create an ApplicationContainer with exactly one application
+   *
+   * \param node a node to add to the container
+   */
+  ApplicationContainer (Ptr<Application> application);
+
   typedef std::vector<Ptr<Application> >::const_iterator Iterator;
 
   /**

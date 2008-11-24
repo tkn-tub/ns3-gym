@@ -84,10 +84,15 @@ public:
    * \param interface the interface from which the packet is coming.
    */
   // inherited from Ipv4L4Protocol
-  virtual void Receive(Ptr<Packet> p, 
-                       Ipv4Address const &source,
-                       Ipv4Address const &destination,
+  virtual enum Ipv4L4Protocol::RxStatus Receive(Ptr<Packet> p, 
+                                                Ipv4Address const &source,
+                                                Ipv4Address const &destination,
                        Ptr<Ipv4Interface> interface);
+
+  virtual void ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
+                            uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
+                            Ipv4Address payloadSource,Ipv4Address payloadDestination,
+                            const uint8_t payload[8]);
 protected:
   virtual void DoDispose (void);
 private:

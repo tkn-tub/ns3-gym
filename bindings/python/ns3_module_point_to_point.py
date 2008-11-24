@@ -3,15 +3,17 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass
 def register_types(module):
     root_module = module.get_root()
     
+    ## ppp-header.h: ns3::PppHeader [class]
+    module.add_class('PppHeader', parent=root_module['ns3::Header'])
     ## point-to-point-channel.h: ns3::PointToPointChannel [class]
     module.add_class('PointToPointChannel', parent=root_module['ns3::Channel'])
     ## point-to-point-net-device.h: ns3::PointToPointNetDevice [class]
     module.add_class('PointToPointNetDevice', parent=root_module['ns3::NetDevice'])
     
-    ## Register a nested module for the namespace internal
+    ## Register a nested module for the namespace Config
     
-    nested_module = module.add_cpp_namespace('internal')
-    register_types_ns3_internal(nested_module)
+    nested_module = module.add_cpp_namespace('Config')
+    register_types_ns3_Config(nested_module)
     
     
     ## Register a nested module for the namespace TimeStepPrecision
@@ -20,10 +22,10 @@ def register_types(module):
     register_types_ns3_TimeStepPrecision(nested_module)
     
     
-    ## Register a nested module for the namespace Config
+    ## Register a nested module for the namespace internal
     
-    nested_module = module.add_cpp_namespace('Config')
-    register_types_ns3_Config(nested_module)
+    nested_module = module.add_cpp_namespace('internal')
+    register_types_ns3_internal(nested_module)
     
     
     ## Register a nested module for the namespace olsr
@@ -32,7 +34,7 @@ def register_types(module):
     register_types_ns3_olsr(nested_module)
     
 
-def register_types_ns3_internal(module):
+def register_types_ns3_Config(module):
     root_module = module.get_root()
     
 
@@ -40,7 +42,7 @@ def register_types_ns3_TimeStepPrecision(module):
     root_module = module.get_root()
     
 
-def register_types_ns3_Config(module):
+def register_types_ns3_internal(module):
     root_module = module.get_root()
     
 
@@ -49,8 +51,46 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
+    register_Ns3PppHeader_methods(root_module, root_module['ns3::PppHeader'])
     register_Ns3PointToPointChannel_methods(root_module, root_module['ns3::PointToPointChannel'])
     register_Ns3PointToPointNetDevice_methods(root_module, root_module['ns3::PointToPointNetDevice'])
+    return
+
+def register_Ns3PppHeader_methods(root_module, cls):
+    ## ppp-header.h: ns3::PppHeader::PppHeader(ns3::PppHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PppHeader const &', 'arg0')])
+    ## ppp-header.h: ns3::PppHeader::PppHeader() [constructor]
+    cls.add_constructor([])
+    ## ppp-header.h: static ns3::TypeId ns3::PppHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ppp-header.h: ns3::TypeId ns3::PppHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ppp-header.h: void ns3::PppHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ppp-header.h: void ns3::PppHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## ppp-header.h: uint32_t ns3::PppHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## ppp-header.h: uint32_t ns3::PppHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
     return
 
 def register_Ns3PointToPointChannel_methods(root_module, cls):
@@ -200,13 +240,8 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## point-to-point-net-device.h: ns3::Address ns3::PointToPointNetDevice::GetMulticast() const [member function]
+    ## point-to-point-net-device.h: ns3::Address ns3::PointToPointNetDevice::GetMulticast(ns3::Ipv4Address multicastGroup) const [member function]
     cls.add_method('GetMulticast', 
-                   'ns3::Address', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## point-to-point-net-device.h: ns3::Address ns3::PointToPointNetDevice::MakeMulticastAddress(ns3::Ipv4Address multicastGroup) const [member function]
-    cls.add_method('MakeMulticastAddress', 
                    'ns3::Address', 
                    [param('ns3::Ipv4Address', 'multicastGroup')], 
                    is_const=True, is_virtual=True)
@@ -245,6 +280,11 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'void', 
                    [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty >', 'cb')], 
                    is_virtual=True)
+    ## point-to-point-net-device.h: ns3::Address ns3::PointToPointNetDevice::GetMulticast(ns3::Ipv6Address addr) const [member function]
+    cls.add_method('GetMulticast', 
+                   'ns3::Address', 
+                   [param('ns3::Ipv6Address', 'addr')], 
+                   is_const=True, is_virtual=True)
     ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetPromiscReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType> cb) [member function]
     cls.add_method('SetPromiscReceiveCallback', 
                    'void', 
@@ -264,19 +304,19 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
 
 def register_functions(root_module):
     module = root_module
-    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
-    register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
+    register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
+    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
     return
 
-def register_functions_ns3_internal(module, root_module):
+def register_functions_ns3_Config(module, root_module):
     return
 
 def register_functions_ns3_TimeStepPrecision(module, root_module):
     return
 
-def register_functions_ns3_Config(module, root_module):
+def register_functions_ns3_internal(module, root_module):
     return
 
 def register_functions_ns3_olsr(module, root_module):

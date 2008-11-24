@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef MOBILITY_HELPER_H
 #define MOBILITY_HELPER_H
 
@@ -43,10 +44,10 @@ public:
   ~MobilityHelper ();
 
   /**
-   * \param allocator allocate initial node positions
+   * Set the position allocator which will be used to allocate the initial 
+   * position of every node initialized during MobilityModel::Install.
    *
-   * Set the position allocator which will be used to allocate
-   * the initial position of every node in MobilityModel::Install.
+   * \param allocator allocate initial node positions
    */
   void SetPositionAllocator (Ptr<PositionAllocator> allocator);
 
@@ -149,14 +150,31 @@ public:
   std::string GetMobilityModelType (void) const;
 
   /**
-   * \param container the set of nodes to layout.
+   * \brief "Layout" a single node according to the current position allocator
+   * type.
    *
-   * For each input node, this method creates an instance of a ns3::MobilityModel
-   * subclass (the type of which was set with MobilityHelper::SetMobilityModel), 
-   * aggregates it to the mode, and sets an initial position based on the current 
+   * This method creates an instance of a ns3::MobilityModel subclass (the 
+   * type of which was set with MobilityHelper::SetMobilityModel), aggregates
+   * it to the provided node, and sets an initial position based on the current
    * position allocator (set through MobilityHelper::SetPositionAllocator). 
+   *
+   * \param node The node to "layout."
    */
-  void Install (NodeContainer container);
+  void Install (Ptr<Node> node) const;
+
+  /**
+   * \brief Layout a collection of nodes according to the current position allocator
+   * type.
+   *
+   * For each node in the provided NodeContainer, this method creates an instance 
+   * of a ns3::MobilityModel subclass (the type of which was set with 
+   * MobilityHelper::SetMobilityModel), aggregates it to the node, and sets an 
+   * initial position based on the current position allocator (set through 
+   * MobilityHelper::SetPositionAllocator). 
+   *
+   * \param container The set of nodes to layout.
+   */
+  void Install (NodeContainer container) const;
 
   /**
    * Perform the work of MobilityHelper::Install on _all_ nodes which

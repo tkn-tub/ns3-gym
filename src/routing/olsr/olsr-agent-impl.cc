@@ -2435,7 +2435,11 @@ AgentImpl::IfaceAssocTupleTimerExpire (Ipv4Address ifaceAddr)
     }
 }
 
-
+Ptr<const olsr::RoutingTable>
+AgentImpl::GetRoutingTable () const
+{
+  return m_routingTable;
+}
 
 }} // namespace olsr, ns3
 

@@ -30,7 +30,7 @@
 #include "olsr-header.h"
 #include "olsr-state.h"
 
-#include "routing-table.h"
+#include "olsr-routing-table.h"
 #include "repositories.h"
 
 #include "ns3/object.h"
@@ -58,6 +58,7 @@ public:
 
   virtual void Start ();
   virtual void SetMainInterface (uint32_t interface);
+  virtual Ptr<const olsr::RoutingTable> GetRoutingTable () const;
 
 private:
   EventGarbageCollector m_events;

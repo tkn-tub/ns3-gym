@@ -25,6 +25,12 @@ void WriteTo (Buffer::Iterator &i, Ipv4Address ad)
 {
   i.WriteHtonU32 (ad.Get ());
 }
+void WriteTo (Buffer::Iterator &i, Ipv6Address ad)
+{
+  uint8_t buf[16];
+  ad.GetBytes(buf);
+  i.Write(buf, 16);
+}
 void WriteTo (Buffer::Iterator &i, const Address &ad)
 {
   uint8_t mac[Address::MAX_SIZE];
@@ -41,6 +47,12 @@ void WriteTo (Buffer::Iterator &i, Mac48Address ad)
 void ReadFrom (Buffer::Iterator &i, Ipv4Address &ad)
 {
   ad.Set (i.ReadNtohU32 ());
+}
+void ReadFrom (Buffer::Iterator &i, Ipv6Address &ad)
+{
+  uint8_t ipv6[16];
+  i.Read(ipv6, 16);
+  ad.Set (ipv6);
 }
 void ReadFrom (Buffer::Iterator &i, Address &ad, uint32_t len)
 {

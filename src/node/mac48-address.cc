@@ -170,6 +170,12 @@ Mac48Address::GetMulticastPrefix (void)
   static Mac48Address multicast = Mac48Address ("01:00:5e:00:00:00");
   return multicast;
 }
+Mac48Address
+Mac48Address::GetMulticast6Prefix (void)
+{
+  static Mac48Address multicast = Mac48Address ("33:33:00:00:00:00");
+  return multicast;
+}
 Mac48Address 
 Mac48Address::GetMulticast (Ipv4Address multicastGroup)
 {
@@ -205,6 +211,26 @@ Mac48Address::GetMulticast (Ipv4Address multicastGroup)
   Mac48Address result;
   result.CopyFrom (etherBuffer);
   return result;
+}
+Mac48Address Mac48Address::GetMulticast(Ipv6Address addr)
+{
+  Mac48Address etherAddr = Mac48Address::GetMulticast6Prefix();
+  uint8_t etherBuffer[6];
+  uint8_t ipBuffer[16];
+
+  /* a MAC multicast IPv6 address is like 33:33 and the four low bytes */
+  /* for 2001:db8::2fff:fe11:ac10 => 33:33:FE:11:AC:10 */
+  etherAddr.CopyTo (etherBuffer);
+  addr.Serialize (ipBuffer);
+
+  etherBuffer[2] = ipBuffer[12];
+  etherBuffer[3] = ipBuffer[13];
+  etherBuffer[4] = ipBuffer[14];
+  etherBuffer[5] = ipBuffer[15];
+
+  etherAddr.CopyFrom (etherBuffer);
+
+  return etherAddr;
 }
 
 bool operator == (const Mac48Address &a, const Mac48Address &b)

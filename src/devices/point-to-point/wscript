@@ -14,5 +14,6 @@ def build(bld):
     headers.source = [
         'point-to-point-net-device.h',
         'point-to-point-channel.h',
+        'ppp-header.h',
         ]
 

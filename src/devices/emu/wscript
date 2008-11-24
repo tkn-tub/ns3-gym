@@ -1,0 +1,39 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def configure(conf):
+    e = conf.create_header_configurator()
+    e.mandatory = False
+    e.name = 'linux/if_ether.h'
+    e.define = 'HAVE_IF_ETHER_H'
+    conf.env['ENABLE_EMU'] = e.run()
+    conf.report_optional_feature("Low Level Ethernet Defintions", "Emulated Net Device",
+                                 conf.env['ENABLE_EMU'],
+                                 "<linux/if_ether.h> include not detected")
+
+def build(bld):
+    module = bld.create_ns3_module('emu', ['node'])
+    module.source = [
+        ]
+    headers = bld.create_obj('ns3header')
+    headers.module = 'emu'
+    headers.source = [
+        'emu.h',
+        ]
+
+    env = bld.env_of_name('default')
+    if env['ENABLE_EMU']:
+        module.source.extend([
+                'emu-net-device.cc',
+                'emu-encode-decode.cc',
+                ])
+        headers.source.extend([
+                'emu-net-device.h',
+                ])
+
+        obj = bld.create_suid_program('emu-sock-creator')
+        obj.source = [
+            'emu-sock-creator.cc',
+            'emu-encode-decode.cc',
+            ]
+
+
