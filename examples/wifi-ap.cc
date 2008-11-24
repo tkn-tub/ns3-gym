@@ -117,7 +117,7 @@ int main (int argc, char *argv[])
   // disable fragmentation
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
 
-  WifiHelper wifi;
+  WifiHelper wifi = WifiHelper::Default ();
   MobilityHelper mobility;
   NodeContainer stas;
   NodeContainer ap;
@@ -131,25 +131,21 @@ int main (int argc, char *argv[])
   packetSocket.Install (stas);
   packetSocket.Install (ap);
 
-  Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
-  channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
-  Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
-  log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
-  channel->SetPropagationLossModel (log);
-
+  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+  YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
+  wifiPhy.SetChannel (wifiChannel.Create ());
   Ssid ssid = Ssid ("wifi-default");
-  wifi.SetPhy ("ns3::WifiPhy");
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
   // setup stas.
   wifi.SetMac ("ns3::NqstaWifiMac", 
                "Ssid", SsidValue (ssid),
                "ActiveProbing", BooleanValue (false));
-  staDevs = wifi.Install (stas, channel);
+  staDevs = wifi.Install (wifiPhy, stas);
   // setup ap.
   wifi.SetMac ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true),
                "BeaconInterval", TimeValue (Seconds (2.5)));
-  wifi.Install (ap, channel);
+  wifi.Install (wifiPhy, ap);
 
   // mobility.
   mobility.Install (stas);
@@ -174,10 +170,10 @@ int main (int argc, char *argv[])
 
   Config::Connect ("/NodeList/*/DeviceList/*/Tx", MakeCallback (&DevTxTrace));
   Config::Connect ("/NodeList/*/DeviceList/*/Rx", MakeCallback (&DevRxTrace));
-  Config::Connect ("/NodeList/*/DeviceList/*/Phy/RxOk", MakeCallback (&PhyRxOkTrace));
-  Config::Connect ("/NodeList/*/DeviceList/*/Phy/RxError", MakeCallback (&PhyRxErrorTrace));
-  Config::Connect ("/NodeList/*/DeviceList/*/Phy/Tx", MakeCallback (&PhyTxTrace));
-  Config::Connect ("/NodeList/*/DeviceList/*/Phy/State", MakeCallback (&PhyStateTrace));
+  Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/RxOk", MakeCallback (&PhyRxOkTrace));
+  Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/RxError", MakeCallback (&PhyRxErrorTrace));
+  Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/Tx", MakeCallback (&PhyTxTrace));
+  Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/State", MakeCallback (&PhyStateTrace));
 
   Simulator::Run ();
 

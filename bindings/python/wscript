@@ -269,6 +269,14 @@ def gen_ns3_metaheader(task):
 
     header_files.sort(sort_func)
 
+    print >> outfile, """
+
+/* http://www.nsnam.org/bugzilla/show_bug.cgi?id=413 */
+#ifdef ECHO
+# undef ECHO
+#endif
+
+"""
     for header in header_files:
         print >> outfile, "#include \"ns3/%s\"" % (header,)
 

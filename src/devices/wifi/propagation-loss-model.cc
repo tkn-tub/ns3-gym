@@ -43,9 +43,31 @@ PropagationLossModel::GetTypeId (void)
   return tid;
 }
 
+PropagationLossModel::PropagationLossModel ()
+  : m_next (0)
+{}
 
 PropagationLossModel::~PropagationLossModel ()
 {}
+
+void 
+PropagationLossModel::SetNext (Ptr<PropagationLossModel> next)
+{
+  m_next = next;
+}
+
+double 
+PropagationLossModel::GetLoss (Ptr<MobilityModel> a,
+                               Ptr<MobilityModel> b) const
+{
+  double self = DoGetLoss (a, b);
+  if (m_next != 0)
+    {
+      self += m_next->GetLoss (a, b);
+    }
+  return self;
+}
+
 
 NS_OBJECT_ENSURE_REGISTERED (RandomPropagationLossModel);
 
@@ -63,14 +85,15 @@ RandomPropagationLossModel::GetTypeId (void)
   return tid;
 }
 RandomPropagationLossModel::RandomPropagationLossModel ()
+  : PropagationLossModel ()
 {}
 
 RandomPropagationLossModel::~RandomPropagationLossModel ()
 {}
 
 double 
-RandomPropagationLossModel::GetLoss (Ptr<MobilityModel> a,
-				     Ptr<MobilityModel> b) const
+RandomPropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
+                                       Ptr<MobilityModel> b) const
 {
   double rxc = -m_variable.GetValue ();
   NS_LOG_DEBUG ("attenuation coefficent="<<rxc<<"Db");
@@ -158,7 +181,7 @@ FriisPropagationLossModel::DbmFromW (double w) const
 
 
 double 
-FriisPropagationLossModel::GetLoss (Ptr<MobilityModel> a,
+FriisPropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
 				    Ptr<MobilityModel> b) const
 {
   /*
@@ -220,11 +243,11 @@ LogDistancePropagationLossModel::GetTypeId (void)
                    DoubleValue (1.0),
                    MakeDoubleAccessor (&LogDistancePropagationLossModel::m_referenceDistance),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("ReferenceModel",
-                   "The reference model at the reference distance.",
-                   PointerValue (),
-                   MakePointerAccessor (&LogDistancePropagationLossModel::m_reference),
-                   MakePointerChecker<PropagationLossModel> ())
+    .AddAttribute ("ReferenceLoss",
+                   "The reference loss at reference distance",
+                   DoubleValue (46.6777),
+                   MakeDoubleAccessor (&LogDistancePropagationLossModel::m_referenceLoss),
+                   MakeDoubleChecker<double> ())
     ;
   return tid;
                    
@@ -239,14 +262,10 @@ LogDistancePropagationLossModel::SetPathLossExponent (double n)
   m_exponent = n;
 }
 void 
-LogDistancePropagationLossModel::SetReferenceDistance (double referenceDistance)
+LogDistancePropagationLossModel::SetReference (double referenceDistance, double referenceLoss)
 {
   m_referenceDistance = referenceDistance;
-}
-void 
-LogDistancePropagationLossModel::SetReferenceModel (Ptr<PropagationLossModel> model)
-{
-  m_reference = model;
+  m_referenceLoss = referenceLoss;
 }
 double 
 LogDistancePropagationLossModel::GetPathLossExponent (void) const
@@ -255,7 +274,7 @@ LogDistancePropagationLossModel::GetPathLossExponent (void) const
 }
   
 double 
-LogDistancePropagationLossModel::GetLoss (Ptr<MobilityModel> a,
+LogDistancePropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
                                           Ptr<MobilityModel> b) const
 {
   double distance = a->GetDistanceFrom (b);
@@ -277,15 +296,10 @@ LogDistancePropagationLossModel::GetLoss (Ptr<MobilityModel> a,
    *      
    * rx = rx0(tx) - 10 * n * log (d/d0)
    */
-  static Ptr<StaticMobilityModel> zero = CreateObject<StaticMobilityModel> ();
-  static Ptr<StaticMobilityModel> reference = CreateObject<StaticMobilityModel> ();
-  zero->SetPosition (Vector (0.0, 0.0, 0.0));
-  reference->SetPosition (Vector (m_referenceDistance, 0.0, 0.0));
-  double ref = m_reference->GetLoss (zero, reference);
   double pathLossDb = 10 * m_exponent * log10 (distance / m_referenceDistance);
-  double rxc = ref - pathLossDb;
-  NS_LOG_DEBUG ("distance="<<distance<<"m, reference-attenuation="<<ref<<"dB, "<<
-		"attenuation coefficient="<<rxc<<"dbm");
+  double rxc = -m_referenceLoss - pathLossDb;
+  NS_LOG_DEBUG ("distance="<<distance<<"m, reference-attenuation="<<-m_referenceLoss<<"dB, "<<
+		"attenuation coefficient="<<rxc<<"db");
   return rxc;
 }
 

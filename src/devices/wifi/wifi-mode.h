@@ -106,7 +106,7 @@ class WifiMode
    * its initialization.
    */
   WifiMode ();
-
+  WifiMode (std::string name);
 private:
   friend class WifiModeFactory;
   WifiMode (uint32_t uid);

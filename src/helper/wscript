@@ -21,6 +21,7 @@ def build(bld):
         'ipv4-interface-container.cc',
         'udp-echo-helper.cc',
         'bridge-helper.cc',
+        'yans-wifi-phy-helper.cc',
         'v4ping-helper.cc',
         ]
 
@@ -45,6 +46,7 @@ def build(bld):
         'ipv4-interface-container.h',
         'udp-echo-helper.h',
         'bridge-helper.h',
+        'yans-wifi-phy-helper.h',
         'v4ping-helper.h',
         ]
 

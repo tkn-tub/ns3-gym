@@ -20,6 +20,7 @@ def build(bld):
         'delay-jitter-estimation.cc',
         'attribute-iterator.cc',
         'config-store.cc',
+        'flow-id-tag.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -29,6 +30,7 @@ def build(bld):
         'gnuplot.h',
         'delay-jitter-estimation.h',
         'config-store.h',
+        'flow-id-tag.h',
         ]
 
     if bld.env()['ENABLE_GTK_CONFIG_STORE']:

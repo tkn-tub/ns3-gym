@@ -5,12 +5,16 @@ def build(bld):
     obj.source = [
         'propagation-delay-model.cc',
         'propagation-loss-model.cc',
-        'composite-propagation-loss-model.cc',
         'jakes-propagation-loss-model.cc',
         'wifi-channel.cc',
         'wifi-mode.cc',
         'ssid.cc',
         'wifi-phy.cc',
+        'wifi-phy-state-helper.cc',
+        'error-rate-model.cc',
+        'interference-helper.cc',
+        'yans-wifi-phy.cc',
+        'yans-wifi-channel.cc',
         'wifi-mac-header.cc',
         'wifi-mac-trailer.cc',
         'mac-low.cc',
@@ -45,7 +49,6 @@ def build(bld):
     headers.source = [
         'propagation-delay-model.h',
         'propagation-loss-model.h',
-        'composite-propagation-loss-model.h',
         'jakes-propagation-loss-model.h',
         'wifi-net-device.h',
         'wifi-channel.h',
@@ -53,7 +56,10 @@ def build(bld):
         'ssid.h',
         'wifi-preamble.h',
 	'wifi-phy-standard.h',
+        'yans-wifi-phy.h',
+        'yans-wifi-channel.h',
         'wifi-phy.h',
+        'interference-helper.h',
         'wifi-remote-station-manager.h',
         'arf-wifi-manager.h',
         'aarf-wifi-manager.h',
@@ -68,4 +74,9 @@ def build(bld):
         'nqap-wifi-mac.h',
         'wifi-phy.h',
         'supported-rates.h',
+        'error-rate-model.h',
         ]
+
+    obj = bld.create_ns3_program('wifi-phy-test',
+        ['core', 'simulator', 'mobility', 'node', 'wifi'])
+    obj.source = 'wifi-phy-test.cc'

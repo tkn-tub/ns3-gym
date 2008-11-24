@@ -180,8 +180,8 @@ public:
   virtual void NotifyTxStart (Time duration) {
     m_dcf->NotifyTxStartNow (duration);
   }
-  virtual void NotifyCcaBusyStart (Time duration) {
-    m_dcf->NotifyCcaBusyStartNow (duration);
+  virtual void NotifyMaybeCcaBusyStart (Time duration) {
+    m_dcf->NotifyMaybeCcaBusyStartNow (duration);
   }
 private:
   ns3::DcfManager *m_dcf;
@@ -528,7 +528,7 @@ DcfManager::NotifyTxStartNow (Time duration)
   m_lastTxDuration = duration;
 }
 void 
-DcfManager::NotifyCcaBusyStartNow (Time duration)
+DcfManager::NotifyMaybeCcaBusyStartNow (Time duration)
 {
   MY_DEBUG ("busy start for "<<duration);
   UpdateBackoff ();

@@ -45,6 +45,12 @@ def register_types(module):
     module.add_class('V4PingHelper', allow_subclassing=False)
     ## wifi-helper.h: ns3::WifiHelper [class]
     module.add_class('WifiHelper', allow_subclassing=False)
+    ## wifi-helper.h: ns3::WifiPhyHelper [class]
+    module.add_class('WifiPhyHelper', allow_subclassing=False)
+    ## yans-wifi-phy-helper.h: ns3::YansWifiChannelHelper [class]
+    module.add_class('YansWifiChannelHelper', allow_subclassing=False)
+    ## yans-wifi-phy-helper.h: ns3::YansWifiPhyHelper [class]
+    module.add_class('YansWifiPhyHelper', allow_subclassing=False, parent=root_module['ns3::WifiPhyHelper'])
     
     ## Register a nested module for the namespace Config
     
@@ -108,6 +114,9 @@ def register_methods(root_module):
     register_Ns3UdpEchoServerHelper_methods(root_module, root_module['ns3::UdpEchoServerHelper'])
     register_Ns3V4PingHelper_methods(root_module, root_module['ns3::V4PingHelper'])
     register_Ns3WifiHelper_methods(root_module, root_module['ns3::WifiHelper'])
+    register_Ns3WifiPhyHelper_methods(root_module, root_module['ns3::WifiPhyHelper'])
+    register_Ns3YansWifiChannelHelper_methods(root_module, root_module['ns3::YansWifiChannelHelper'])
+    register_Ns3YansWifiPhyHelper_methods(root_module, root_module['ns3::YansWifiPhyHelper'])
     return
 
 def register_Ns3ApplicationContainer_methods(root_module, cls):
@@ -830,6 +839,11 @@ def register_Ns3WifiHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::WifiHelper const &', 'arg0')])
     ## wifi-helper.h: ns3::WifiHelper::WifiHelper() [constructor]
     cls.add_constructor([])
+    ## wifi-helper.h: static ns3::WifiHelper ns3::WifiHelper::Default() [member function]
+    cls.add_method('Default', 
+                   'ns3::WifiHelper', 
+                   [], 
+                   is_static=True)
     ## wifi-helper.h: void ns3::WifiHelper::SetRemoteStationManager(std::string type, std::string n0="", ns3::AttributeValue const & v0=ns3::EmptyAttributeValue(), std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue()) [member function]
     cls.add_method('SetRemoteStationManager', 
                    'void', 
@@ -838,70 +852,122 @@ def register_Ns3WifiHelper_methods(root_module, cls):
     cls.add_method('SetMac', 
                    'void', 
                    [param('std::string', 'type'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue const &', 'v0', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()')])
-    ## wifi-helper.h: void ns3::WifiHelper::SetPhy(std::string phyType, std::string n0="", ns3::AttributeValue const & v0=ns3::EmptyAttributeValue(), std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue()) [member function]
-    cls.add_method('SetPhy', 
+    ## wifi-helper.h: ns3::NetDeviceContainer ns3::WifiHelper::Install(ns3::WifiPhyHelper const & phy, ns3::NodeContainer c) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::WifiPhyHelper const &', 'phy'), param('ns3::NodeContainer', 'c')], 
+                   is_const=True)
+    ## wifi-helper.h: ns3::NetDeviceContainer ns3::WifiHelper::Install(ns3::WifiPhyHelper const & phy, ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::WifiPhyHelper const &', 'phy'), param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
+    return
+
+def register_Ns3WifiPhyHelper_methods(root_module, cls):
+    ## wifi-helper.h: ns3::WifiPhyHelper::WifiPhyHelper(ns3::WifiPhyHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WifiPhyHelper const &', 'arg0')])
+    ## wifi-helper.h: ns3::WifiPhyHelper::WifiPhyHelper() [constructor]
+    cls.add_constructor([])
+    ## wifi-helper.h: ns3::Ptr<ns3::WifiPhy> ns3::WifiPhyHelper::Create(ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::WifiNetDevice> device) const [member function]
+    cls.add_method('Create', 
+                   'ns3::Ptr< ns3::WifiPhy >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::WifiNetDevice >', 'device')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
+def register_Ns3YansWifiChannelHelper_methods(root_module, cls):
+    ## yans-wifi-phy-helper.h: ns3::YansWifiChannelHelper::YansWifiChannelHelper(ns3::YansWifiChannelHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::YansWifiChannelHelper const &', 'arg0')])
+    ## yans-wifi-phy-helper.h: ns3::YansWifiChannelHelper::YansWifiChannelHelper() [constructor]
+    cls.add_constructor([])
+    ## yans-wifi-phy-helper.h: static ns3::YansWifiChannelHelper ns3::YansWifiChannelHelper::Default() [member function]
+    cls.add_method('Default', 
+                   'ns3::YansWifiChannelHelper', 
+                   [], 
+                   is_static=True)
+    ## yans-wifi-phy-helper.h: void ns3::YansWifiChannelHelper::AddPropagationLoss(std::string name, std::string n0="", ns3::AttributeValue const & v0=ns3::EmptyAttributeValue(), std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue()) [member function]
+    cls.add_method('AddPropagationLoss', 
                    'void', 
-                   [param('std::string', 'phyType'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue const &', 'v0', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()')])
-    ## wifi-helper.h: static void ns3::WifiHelper::EnablePcap(std::string filename, uint32_t nodeid, uint32_t deviceid) [member function]
+                   [param('std::string', 'name'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue const &', 'v0', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()')])
+    ## yans-wifi-phy-helper.h: void ns3::YansWifiChannelHelper::SetPropagationDelay(std::string name, std::string n0="", ns3::AttributeValue const & v0=ns3::EmptyAttributeValue(), std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue()) [member function]
+    cls.add_method('SetPropagationDelay', 
+                   'void', 
+                   [param('std::string', 'name'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue const &', 'v0', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()')])
+    ## yans-wifi-phy-helper.h: ns3::Ptr<ns3::YansWifiChannel> ns3::YansWifiChannelHelper::Create() const [member function]
+    cls.add_method('Create', 
+                   'ns3::Ptr< ns3::YansWifiChannel >', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3YansWifiPhyHelper_methods(root_module, cls):
+    ## yans-wifi-phy-helper.h: ns3::YansWifiPhyHelper::YansWifiPhyHelper(ns3::YansWifiPhyHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::YansWifiPhyHelper const &', 'arg0')])
+    ## yans-wifi-phy-helper.h: ns3::YansWifiPhyHelper::YansWifiPhyHelper() [constructor]
+    cls.add_constructor([])
+    ## yans-wifi-phy-helper.h: static ns3::YansWifiPhyHelper ns3::YansWifiPhyHelper::Default() [member function]
+    cls.add_method('Default', 
+                   'ns3::YansWifiPhyHelper', 
+                   [], 
+                   is_static=True)
+    ## yans-wifi-phy-helper.h: void ns3::YansWifiPhyHelper::SetChannel(ns3::Ptr<ns3::YansWifiChannel> channel) [member function]
+    cls.add_method('SetChannel', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::YansWifiChannel >', 'channel')])
+    ## yans-wifi-phy-helper.h: void ns3::YansWifiPhyHelper::Set(std::string name, ns3::AttributeValue const & v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'v')])
+    ## yans-wifi-phy-helper.h: void ns3::YansWifiPhyHelper::SetErrorRateModel(std::string name, std::string n0="", ns3::AttributeValue const & v0=ns3::EmptyAttributeValue(), std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue()) [member function]
+    cls.add_method('SetErrorRateModel', 
+                   'void', 
+                   [param('std::string', 'name'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue const &', 'v0', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()')])
+    ## yans-wifi-phy-helper.h: ns3::Ptr<ns3::WifiPhy> ns3::YansWifiPhyHelper::Create(ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::WifiNetDevice> device) const [member function]
+    cls.add_method('Create', 
+                   'ns3::Ptr< ns3::WifiPhy >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::WifiNetDevice >', 'device')], 
+                   is_const=True, is_virtual=True)
+    ## yans-wifi-phy-helper.h: static void ns3::YansWifiPhyHelper::EnablePcap(std::string filename, uint32_t nodeid, uint32_t deviceid) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
                    [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
                    is_static=True)
-    ## wifi-helper.h: static void ns3::WifiHelper::EnablePcap(std::string filename, ns3::NetDeviceContainer d) [member function]
+    ## yans-wifi-phy-helper.h: static void ns3::YansWifiPhyHelper::EnablePcap(std::string filename, ns3::NetDeviceContainer d) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
                    [param('std::string', 'filename'), param('ns3::NetDeviceContainer', 'd')], 
                    is_static=True)
-    ## wifi-helper.h: static void ns3::WifiHelper::EnablePcap(std::string filename, ns3::NodeContainer n) [member function]
+    ## yans-wifi-phy-helper.h: static void ns3::YansWifiPhyHelper::EnablePcap(std::string filename, ns3::NodeContainer n) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
                    [param('std::string', 'filename'), param('ns3::NodeContainer', 'n')], 
                    is_static=True)
-    ## wifi-helper.h: static void ns3::WifiHelper::EnablePcapAll(std::string filename) [member function]
+    ## yans-wifi-phy-helper.h: static void ns3::YansWifiPhyHelper::EnablePcapAll(std::string filename) [member function]
     cls.add_method('EnablePcapAll', 
                    'void', 
                    [param('std::string', 'filename')], 
                    is_static=True)
-    ## wifi-helper.h: static void ns3::WifiHelper::EnableAscii(std::ostream & os, uint32_t nodeid, uint32_t deviceid) [member function]
+    ## yans-wifi-phy-helper.h: static void ns3::YansWifiPhyHelper::EnableAscii(std::ostream & os, uint32_t nodeid, uint32_t deviceid) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
                    [param('std::ostream &', 'os'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
                    is_static=True)
-    ## wifi-helper.h: static void ns3::WifiHelper::EnableAscii(std::ostream & os, ns3::NetDeviceContainer d) [member function]
+    ## yans-wifi-phy-helper.h: static void ns3::YansWifiPhyHelper::EnableAscii(std::ostream & os, ns3::NetDeviceContainer d) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
                    [param('std::ostream &', 'os'), param('ns3::NetDeviceContainer', 'd')], 
                    is_static=True)
-    ## wifi-helper.h: static void ns3::WifiHelper::EnableAscii(std::ostream & os, ns3::NodeContainer n) [member function]
+    ## yans-wifi-phy-helper.h: static void ns3::YansWifiPhyHelper::EnableAscii(std::ostream & os, ns3::NodeContainer n) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
                    [param('std::ostream &', 'os'), param('ns3::NodeContainer', 'n')], 
                    is_static=True)
-    ## wifi-helper.h: static void ns3::WifiHelper::EnableAsciiAll(std::ostream & os) [member function]
+    ## yans-wifi-phy-helper.h: static void ns3::YansWifiPhyHelper::EnableAsciiAll(std::ostream & os) [member function]
     cls.add_method('EnableAsciiAll', 
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_static=True)
-    ## wifi-helper.h: ns3::NetDeviceContainer ns3::WifiHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')], 
-                   is_const=True)
-    ## wifi-helper.h: ns3::NetDeviceContainer ns3::WifiHelper::Install(ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::WifiChannel> channel) const [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::WifiChannel >', 'channel')], 
-                   is_const=True)
-    ## wifi-helper.h: ns3::NetDeviceContainer ns3::WifiHelper::Install(ns3::NodeContainer const & c) const [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('ns3::NodeContainer const &', 'c')], 
-                   is_const=True)
-    ## wifi-helper.h: ns3::NetDeviceContainer ns3::WifiHelper::Install(ns3::NodeContainer const & c, ns3::Ptr<ns3::WifiChannel> channel) const [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('ns3::NodeContainer const &', 'c'), param('ns3::Ptr< ns3::WifiChannel >', 'channel')], 
-                   is_const=True)
     return
 
 def register_functions(root_module):

@@ -24,7 +24,10 @@
 #include "ns3/node.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
+#include "ns3/object-factory.h"
 #include "wifi-channel.h"
+#include "wifi-net-device.h"
+#include "yans-wifi-phy.h"
 #include "propagation-loss-model.h"
 #include "propagation-delay-model.h"
 
@@ -37,90 +40,8 @@ WifiChannel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiChannel")
     .SetParent<Channel> ()
-    .AddConstructor<WifiChannel> ()
-    .AddAttribute ("PropagationLossModel", "A pointer to the propagation loss model attached to this channel.",
-                   PointerValue (),
-                   MakePointerAccessor (&WifiChannel::m_loss),
-                   MakePointerChecker<PropagationLossModel> ())
-    .AddAttribute ("PropagationDelayModel", "A pointer to the propagation delay model attached to this channel.",
-                   PointerValue (),
-                   MakePointerAccessor (&WifiChannel::m_delay),
-                   MakePointerChecker<PropagationDelayModel> ())
     ;
   return tid;
-}
-
-WifiChannel::WifiChannel ()
-{}
-WifiChannel::~WifiChannel ()
-{
-  m_deviceList.clear ();
-}
-
-void 
-WifiChannel::SetPropagationLossModel (Ptr<PropagationLossModel> loss)
-{
-  m_loss = loss;
-}
-void 
-WifiChannel::SetPropagationDelayModel (Ptr<PropagationDelayModel> delay)
-{
-  m_delay = delay;
-}
-
-void 
-WifiChannel::Add (Ptr<NetDevice> device, Ptr<WifiPhy> phy)
-{
-  m_deviceList.push_back (std::make_pair (device, phy));
-}
-void 
-WifiChannel::Send (Ptr<WifiPhy> sender, Ptr<const Packet> packet, double txPowerDbm,
-                   WifiMode wifiMode, WifiPreamble preamble) const
-{
-  Ptr<MobilityModel> senderMobility = 0;
-  for (DeviceList::const_iterator i = m_deviceList.begin (); i != m_deviceList.end (); i++)
-    {
-      if (sender == i->second)
-        {
-          senderMobility = i->first->GetNode ()->GetObject<MobilityModel> ();
-          break;
-        }
-    }
-  NS_ASSERT (senderMobility != 0);
-  uint32_t j = 0;
-  for (DeviceList::const_iterator i = m_deviceList.begin (); i != m_deviceList.end (); i++)
-    {
-      if (sender != i->second)
-        {
-          Ptr<MobilityModel> receiverMobility = i->first->GetNode ()->GetObject<MobilityModel> ();
-          Time delay = m_delay->GetDelay (senderMobility, receiverMobility);
-          double rxPowerDbm = txPowerDbm + m_loss->GetLoss (senderMobility, receiverMobility);
-          NS_LOG_DEBUG ("propagation: txPower="<<txPowerDbm<<"dbm, rxPower="<<rxPowerDbm<<"dbm, "<<
-                        "distance="<<senderMobility->GetDistanceFrom (receiverMobility)<<"m, delay="<<delay);
-          Ptr<Packet> copy = packet->Copy ();
-          Simulator::Schedule (delay, &WifiChannel::Receive, this, 
-                               j, copy, rxPowerDbm, wifiMode, preamble);
-        }
-      j++;
-    }
-}
-
-void
-WifiChannel::Receive (uint32_t i, Ptr<Packet> packet, double rxPowerDbm,
-                      WifiMode txMode, WifiPreamble preamble) const
-{
-  m_deviceList[i].second->StartReceivePacket (packet, rxPowerDbm, txMode, preamble);
-}
-
-uint32_t 
-WifiChannel::GetNDevices (void) const
-{
-  return m_deviceList.size ();
-}
-Ptr<NetDevice> 
-WifiChannel::GetDevice (uint32_t i) const
-{
-  return m_deviceList[i].first;
 }
 
 } // namespace ns3

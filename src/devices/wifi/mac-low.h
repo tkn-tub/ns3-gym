@@ -36,7 +36,6 @@
 
 namespace ns3 {
 
-class WifiNetDevice;
 class WifiPhy;
 class WifiMac;
 
@@ -352,7 +351,7 @@ public:
    * This method is typically invoked by the lower PHY layer to notify
    * the MAC layer that a packet was unsuccessfully received.
    */
-  void ReceiveError (Ptr<Packet> packet, double rxSnr);
+  void ReceiveError (Ptr<const Packet> packet, double rxSnr);
 private:
   void CancelAllEvents (void);
   uint32_t GetAckSize (void) const;

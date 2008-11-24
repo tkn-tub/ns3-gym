@@ -40,8 +40,7 @@ WifiNetDevice::GetTypeId (void)
     .SetParent<NetDevice> ()
     .AddAttribute ("Channel", "The channel attached to this device",
                    PointerValue (),
-                   MakePointerAccessor (&WifiNetDevice::DoGetChannel,
-                                        &WifiNetDevice::SetChannel),
+                   MakePointerAccessor (&WifiNetDevice::DoGetChannel),
                    MakePointerChecker<WifiChannel> ())
     .AddAttribute ("Phy", "The PHY layer attached to this device.",
                    PointerValue (),
@@ -67,7 +66,8 @@ WifiNetDevice::GetTypeId (void)
 }
 
 WifiNetDevice::WifiNetDevice ()
-  : m_mtu (0)
+  : m_mtu (0),
+    m_configComplete (false)
 {}
 WifiNetDevice::~WifiNetDevice ()
 {}
@@ -81,77 +81,48 @@ WifiNetDevice::DoDispose (void)
   m_stationManager->Dispose ();
   m_mac = 0;
   m_phy = 0;
-  m_channel = 0;
   m_stationManager = 0;
   // chain up.
   NetDevice::DoDispose ();
+}
+
+void
+WifiNetDevice::CompleteConfig (void)
+{
+  if (m_mac == 0 || 
+      m_phy == 0 || 
+      m_stationManager == 0 ||
+      m_node == 0 ||
+      m_configComplete)
+    {
+      return;
+    }
+  m_mac->SetWifiRemoteStationManager (m_stationManager);
+  m_mac->SetWifiPhy (m_phy);
+  m_mac->SetForwardUpCallback (MakeCallback (&WifiNetDevice::ForwardUp, this));
+  m_mac->SetLinkUpCallback (MakeCallback (&WifiNetDevice::LinkUp, this));
+  m_mac->SetLinkDownCallback (MakeCallback (&WifiNetDevice::LinkDown, this));
+  m_stationManager->SetupPhy (m_phy);
+  m_configComplete = true;
 }
   
 void 
 WifiNetDevice::SetMac (Ptr<WifiMac> mac)
 {
   m_mac = mac;
-  if (m_mac != 0)
-    {
-      if (m_stationManager != 0)
-        {
-          m_mac->SetWifiRemoteStationManager (m_stationManager);
-        }
-      if (m_phy != 0)
-        {
-          m_mac->SetWifiPhy (m_phy);
-        }
-      m_mac->SetForwardUpCallback (MakeCallback (&WifiNetDevice::ForwardUp, this));
-      m_mac->SetLinkUpCallback (MakeCallback (&WifiNetDevice::LinkUp, this));
-      m_mac->SetLinkDownCallback (MakeCallback (&WifiNetDevice::LinkDown, this));
-    }
+  CompleteConfig ();
 }
 void 
 WifiNetDevice::SetPhy (Ptr<WifiPhy> phy)
 {
   m_phy = phy;
-  if (m_phy != 0)
-    {
-      if (m_channel != 0)
-        {
-          m_channel->Add (this, m_phy);
-          m_phy->SetChannel (m_channel);
-        }
-      if (m_stationManager != 0)
-        {
-          m_stationManager->SetupPhy (m_phy);
-        }
-      if (m_mac != 0)
-        {
-          m_mac->SetWifiPhy (m_phy);
-        }
-    }
+  CompleteConfig ();
 }
 void 
 WifiNetDevice::SetRemoteStationManager (Ptr<WifiRemoteStationManager> manager)
 {
   m_stationManager = manager;
-  if (m_stationManager != 0)
-    {
-      if (m_phy != 0)
-        {
-          m_stationManager->SetupPhy (m_phy);
-        }
-      if (m_mac != 0)
-        {
-          m_mac->SetWifiRemoteStationManager (m_stationManager);
-        }
-    }
-}
-void 
-WifiNetDevice::SetChannel (Ptr<WifiChannel> channel)
-{
-  m_channel = channel;
-  if (m_channel != 0 && m_phy != 0)
-    {
-      m_channel->Add (this, m_phy);
-      m_phy->SetChannel (m_channel);
-    }
+  CompleteConfig ();
 }
 Ptr<WifiMac> 
 WifiNetDevice::GetMac (void) const
@@ -192,12 +163,12 @@ WifiNetDevice::GetIfIndex(void) const
 Ptr<Channel> 
 WifiNetDevice::GetChannel (void) const
 {
-  return m_channel;
+  return m_phy->GetChannel ();
 }
 Ptr<WifiChannel> 
 WifiNetDevice::DoGetChannel (void) const
 {
-  return m_channel;
+  return m_phy->GetChannel ();
 }
 Address 
 WifiNetDevice::GetAddress (void) const
@@ -296,6 +267,7 @@ void
 WifiNetDevice::SetNode (Ptr<Node> node)
 {
   m_node = node;
+  CompleteConfig ();
 }
 bool 
 WifiNetDevice::NeedsArp (void) const

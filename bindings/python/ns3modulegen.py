@@ -131,6 +131,11 @@ def main():
         for clsname in ['SystemThread', 'SystemMutex', 'SystemCondition', 'CriticalSection']:
             root_module.classes.remove(root_module['ns3::%s' % clsname])
 
+
+    if 'EmuNetDevice' not in enabled_features:
+        for clsname in ['EmuNetDevice', 'EmuHelper']:
+            root_module.classes.remove(root_module['ns3::%s' % clsname])
+
     if 'RealTime' not in enabled_features:
         for clsname in ['WallClockSynchronizer', 'RealtimeSimulatorImpl', 'RealtimeEventLock']:
             root_module.classes.remove(root_module['ns3::%s' % clsname])

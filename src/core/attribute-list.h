@@ -108,6 +108,21 @@ private:
   Attrs m_attributes;
 };
 
+class UnsafeAttributeList
+{
+public:
+  UnsafeAttributeList ();
+  UnsafeAttributeList (const UnsafeAttributeList &o);
+  UnsafeAttributeList &operator = (const UnsafeAttributeList &o);
+  ~UnsafeAttributeList ();
+  
+  void Set (std::string name, const AttributeValue &param);
+
+  AttributeList GetSafe (std::string name) const;
+private:
+  std::vector<std::pair<std::string,Ptr<AttributeValue> > > m_attributes;
+};
+
 } // namespace ns3
 
 #endif /* ATTRIBUTE_LIST_H */

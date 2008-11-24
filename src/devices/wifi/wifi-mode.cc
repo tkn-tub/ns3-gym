@@ -107,6 +107,13 @@ WifiMode::WifiMode ()
 WifiMode::WifiMode (uint32_t uid)
   : m_uid (uid)
 {}
+WifiMode::WifiMode (std::string name)
+{
+  if (!WifiModeFactory::GetFactory ()->Search (name, this))
+    {
+      NS_FATAL_ERROR ("Invalid requested wifi mode: " << name);
+    }
+}
 
 ATTRIBUTE_HELPER_CPP (WifiMode);
 

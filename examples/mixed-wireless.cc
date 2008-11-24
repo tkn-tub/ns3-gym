@@ -132,10 +132,12 @@ main (int argc, char *argv[])
   // Create the backbone wifi net devices and install them into the nodes in 
   // our container
   //
+  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+  YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
+  wifiPhy.SetChannel (wifiChannel.Create ());
   WifiHelper wifi;
   wifi.SetMac ("ns3::AdhocWifiMac");
-  wifi.SetPhy ("ns3::WifiPhy");
-  NetDeviceContainer backboneDevices = wifi.Install (backbone);
+  NetDeviceContainer backboneDevices = wifi.Install (wifiPhy, backbone);
   //
   // Add the IPv4 protocol stack to the nodes in our container
   //
@@ -244,8 +246,8 @@ main (int argc, char *argv[])
       //
       WifiHelper wifiInfra;
       wifiInfra.SetMac ("ns3::AdhocWifiMac");
-      wifiInfra.SetPhy ("ns3::WifiPhy");
-      NetDeviceContainer infraDevices = wifiInfra.Install (infra);
+      wifiPhy.SetChannel (wifiChannel.Create ());
+      NetDeviceContainer infraDevices = wifiInfra.Install (wifiPhy, infra);
 
       // Add the IPv4 protocol stack to the nodes in our container
       //
@@ -332,14 +334,14 @@ main (int argc, char *argv[])
   //
   std::ofstream ascii;
   ascii.open ("mixed-wireless.tr");
-  WifiHelper::EnableAsciiAll (ascii);
+  YansWifiPhyHelper::EnableAsciiAll (ascii);
   CsmaHelper::EnableAsciiAll (ascii);
   // Look at nodes 11, 13 only
   //WifiHelper::EnableAscii (ascii, 11, 0); 
   //WifiHelper::EnableAscii (ascii, 13, 0); 
 
   // Let's do a pcap trace on the backbone devices
-  WifiHelper::EnablePcap ("mixed-wireless", backboneDevices); 
+  YansWifiPhyHelper::EnablePcap ("mixed-wireless", backboneDevices); 
   // Let's additionally trace the application Sink, ifIndex 0
   CsmaHelper::EnablePcap ("mixed-wireless", appSink->GetId (), 0);
 

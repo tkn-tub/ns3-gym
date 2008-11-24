@@ -38,14 +38,25 @@ class PropagationLossModel : public Object
 public:
   static TypeId GetTypeId (void);
 
+  PropagationLossModel ();
   virtual ~PropagationLossModel ();
+
+  void SetNext (Ptr<PropagationLossModel> next);
+
   /**
    * \param a the mobility model of the source
    * \param b the mobility model of the destination
    * \returns the attenuation coefficient (dB)
    */
-  virtual double GetLoss (Ptr<MobilityModel> a,
-			  Ptr<MobilityModel> b) const = 0;
+  double GetLoss (Ptr<MobilityModel> a,
+                  Ptr<MobilityModel> b) const;
+private:
+  PropagationLossModel (const PropagationLossModel &o);
+  PropagationLossModel &operator = (const PropagationLossModel &o);
+  virtual double DoGetLoss (Ptr<MobilityModel> a,
+                            Ptr<MobilityModel> b) const = 0;
+
+  Ptr<PropagationLossModel> m_next;
 };
 
 /**
@@ -59,9 +70,11 @@ public:
   RandomPropagationLossModel ();
   virtual ~RandomPropagationLossModel ();
 
-  virtual double GetLoss (Ptr<MobilityModel> a,
-			  Ptr<MobilityModel> b) const;
 private:
+  RandomPropagationLossModel (const RandomPropagationLossModel &o);
+  RandomPropagationLossModel & operator = (const RandomPropagationLossModel &o);
+  virtual double DoGetLoss (Ptr<MobilityModel> a,
+                            Ptr<MobilityModel> b) const;
   RandomVariable m_variable;
 };
 
@@ -147,9 +160,11 @@ public:
    */
   double GetSystemLoss (void) const;
 
-  virtual double GetLoss (Ptr<MobilityModel> a,
-			  Ptr<MobilityModel> b) const;
 private:
+  FriisPropagationLossModel (const FriisPropagationLossModel &o);
+  FriisPropagationLossModel & operator = (const FriisPropagationLossModel &o);
+  virtual double DoGetLoss (Ptr<MobilityModel> a,
+                            Ptr<MobilityModel> b) const;
   double DbmToW (double dbm) const;
   double DbmFromW (double w) const;
 
@@ -193,21 +208,18 @@ public:
    */
   double GetPathLossExponent (void) const;
 
-  /**
-   * \param model the reference propagation model
-   */
-  void SetReferenceModel (Ptr<PropagationLossModel> model);
-
-  void SetReferenceDistance (double referenceDistance);
+  void SetReference (double referenceDistance, double referenceLoss);
   
-  virtual double GetLoss (Ptr<MobilityModel> a,
-			  Ptr<MobilityModel> b) const;
 private:
+  LogDistancePropagationLossModel (const LogDistancePropagationLossModel &o);
+  LogDistancePropagationLossModel & operator = (const LogDistancePropagationLossModel &o);
+  virtual double DoGetLoss (Ptr<MobilityModel> a,
+                            Ptr<MobilityModel> b) const;
   static Ptr<PropagationLossModel> CreateDefaultReference (void);
 
   double m_exponent;
   double m_referenceDistance;
-  Ptr<PropagationLossModel> m_reference;
+  double m_referenceLoss;
 };
 
 } // namespace ns3
