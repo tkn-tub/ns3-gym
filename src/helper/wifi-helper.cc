@@ -121,6 +121,11 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
     }
   return devices;
 }
+NetDeviceContainer 
+WifiHelper::Install (const WifiPhyHelper &phy, Ptr<Node> node) const
+{
+  return Install (phy, NodeContainer (node));
+}
 
 
 } // namespace ns3

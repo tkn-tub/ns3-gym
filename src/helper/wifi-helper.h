@@ -118,6 +118,7 @@ public:
                std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 
   NetDeviceContainer Install (const WifiPhyHelper &phy, NodeContainer c) const;
+  NetDeviceContainer Install (const WifiPhyHelper &phy, Ptr<Node> node) const;
 
 private:
   ObjectFactory m_stationManager;

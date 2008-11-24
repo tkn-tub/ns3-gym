@@ -857,6 +857,11 @@ def register_Ns3WifiHelper_methods(root_module, cls):
                    'ns3::NetDeviceContainer', 
                    [param('ns3::WifiPhyHelper const &', 'phy'), param('ns3::NodeContainer', 'c')], 
                    is_const=True)
+    ## wifi-helper.h: ns3::NetDeviceContainer ns3::WifiHelper::Install(ns3::WifiPhyHelper const & phy, ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::WifiPhyHelper const &', 'phy'), param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
     return
 
 def register_Ns3WifiPhyHelper_methods(root_module, cls):
