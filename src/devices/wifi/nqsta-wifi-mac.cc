@@ -475,10 +475,25 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
   if (hdr->GetAddr1 () != GetAddress () &&
       !hdr->GetAddr1 ().IsBroadcast ()) 
     {
-      // packet is not for us
+      NS_LOG_LOGIC ("packet is not for us");
     } 
   else if (hdr->IsData ()) 
     {
+      if (!IsAssociated ())
+        {
+          NS_LOG_LOGIC ("Received data frame while not associated: ignore");
+          return;
+        }
+      if (!(hdr->IsFromDs () && !hdr->IsToDs ()))
+        {
+          NS_LOG_LOGIC ("Received data frame not from the DS: ignore");
+          return;
+        }
+      if (hdr->GetAddr2 () != GetBssid ())
+        {
+          NS_LOG_LOGIC ("Received data frame not from the the BSS we are associated with: ignore");
+          return;
+        }
       if (hdr->GetAddr3 () != GetAddress ())
         {
           ForwardUp (packet, hdr->GetAddr3 (), hdr->GetAddr1 ());
@@ -499,12 +514,16 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
       if (GetSsid ().IsBroadcast () ||
           beacon.GetSsid ().IsEqual (GetSsid ()))
         {
-          Time delay = MicroSeconds (beacon.GetBeaconIntervalUs () * m_maxMissedBeacons);
-          RestartBeaconWatchdog (delay);
           goodBeacon = true;
         }
-      if (goodBeacon) 
+      if (IsAssociated () && hdr->GetAddr3 () != GetBssid ())
         {
+          goodBeacon = false;
+        }
+      if (goodBeacon)
+        {
+          Time delay = MicroSeconds (beacon.GetBeaconIntervalUs () * m_maxMissedBeacons);
+          RestartBeaconWatchdog (delay);
           SetBssid (hdr->GetAddr3 ());
         }
       if (goodBeacon && m_state == BEACON_MISSED) 
