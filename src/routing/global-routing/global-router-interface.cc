@@ -581,9 +581,23 @@ GlobalRouter::DiscoverLSAs (void)
       Ptr<NetDevice> ndLocal = node->GetDevice(i);
 
       //
+      // There is an assumption that bridge ports must never have an IP address 
+      // associated with them.  This turns out to be a very convenient place to
+      // check and make sure that this is the case.
+      //
+      if (NetDeviceIsBridged (ndLocal))
+        {
+          uint32_t ifIndexBridge;
+          bool rc = FindIfIndexForDevice(node, ndLocal, ifIndexBridge);
+          NS_ABORT_MSG_IF (rc, "GlobalRouter::ProcessBridgedBroadcastLink(): "
+                               "Bridge ports must not have an IPv4 interface index");
+        }
+
+      //
       // Check to see if the net device we just got has a corresponding IP 
       // interface (could be a pure L2 NetDevice) -- for example a net device
-      // associated with a bridge.
+      // associated with a bridge.  We are only going to involve devices with 
+      // IP addresses in routing.
       //
       bool isIp = false;
       for (uint32_t i = 0; i < ipv4Local->GetNInterfaces (); ++i )
@@ -735,6 +749,18 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
       // case.
       //
       Ipv4Address desigRtr = FindDesignatedRouterForLink (nd, true);
+
+      //
+      // Let's double-check that any designated router we find out on our
+      // network is really on our network.
+      //
+      if (desigRtr != "255.255.255.255")
+        {
+          Ipv4Address networkHere = addrLocal.CombineMask (maskLocal);
+          Ipv4Address networkThere = desigRtr.CombineMask (maskLocal);
+          NS_ABORT_MSG_UNLESS (networkHere == networkThere, 
+                               "GlobalRouter::ProcessSingleBroadcastLink(): Network number confusion");
+        }
       if (desigRtr == addrLocal) 
         {
           c.Add (nd);
@@ -761,6 +787,27 @@ GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *
 
   Ptr<BridgeNetDevice> bnd = nd->GetObject<BridgeNetDevice> ();
   NS_ABORT_MSG_UNLESS (bnd, "GlobalRouter::DiscoverLSAs (): GetObject for <BridgeNetDevice> failed");
+
+  //
+  // We have some preliminaries to do to get enough information to proceed.
+  // This information we need comes from the internet stack, so notice that
+  // there is an implied assumption that global routing is only going to 
+  // work with devices attached to the internet stack (have an ipv4 interface
+  // associated to them.
+  //
+  Ptr<Node> node = nd->GetNode ();
+
+  uint32_t ifIndexLocal;
+  bool rc = FindIfIndexForDevice(node, nd, ifIndexLocal);
+  NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessBridgedBroadcastLink(): No interface index associated with device");
+
+  Ptr<Ipv4> ipv4Local = node->GetObject<Ipv4> ();
+  NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessBridgedBroadcastLink (): GetObject for <Ipv4> interface failed");
+
+  Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
+  Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
+  NS_LOG_LOGIC ("Working with local address " << addrLocal);
+  uint16_t metricLocal = ipv4Local->GetMetric (ifIndexLocal);
 
   //
   // We need to handle a bridge on the router.  This means that we have been 
@@ -794,13 +841,24 @@ GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *
           // all.
           //
           Ipv4Address desigRtrTemp = FindDesignatedRouterForLink (ndTemp, true);
+
+          //
+          // Let's double-check that any designated router we find out on our
+          // network is really on our network.
+          //
+          if (desigRtrTemp != "255.255.255.255")
+            {
+              Ipv4Address networkHere = addrLocal.CombineMask (maskLocal);
+              Ipv4Address networkThere = desigRtrTemp.CombineMask (maskLocal);
+              NS_ABORT_MSG_UNLESS (networkHere == networkThere, 
+                                   "GlobalRouter::ProcessSingleBroadcastLink(): Network number confusion");
+            }
           if (desigRtrTemp < desigRtr)
             {
               desigRtr = desigRtrTemp;
             }
         }
     }
-
   //
   // That's all the information we need to put it all together, just like we did
   // in the case of a single broadcast link.
@@ -808,27 +866,6 @@ GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *
 
   GlobalRoutingLinkRecord *plr = new GlobalRoutingLinkRecord;
   NS_ABORT_MSG_IF (plr == 0, "GlobalRouter::ProcessBridgedBroadcastLink(): Can't alloc link record");
-
-  //
-  // We have some preliminaries to do to get enough information to proceed.
-  // This information we need comes from the internet stack, so notice that
-  // there is an implied assumption that global routing is only going to 
-  // work with devices attached to the internet stack (have an ipv4 interface
-  // associated to them.
-  //
-  Ptr<Node> node = nd->GetNode ();
-
-  uint32_t ifIndexLocal;
-  bool rc = FindIfIndexForDevice(node, nd, ifIndexLocal);
-  NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessBridgedBroadcastLink(): No interface index associated with device");
-
-  Ptr<Ipv4> ipv4Local = node->GetObject<Ipv4> ();
-  NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessBridgedBroadcastLink (): GetObject for <Ipv4> interface failed");
-
-  Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
-  Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
-  NS_LOG_LOGIC ("Working with local address " << addrLocal);
-  uint16_t metricLocal = ipv4Local->GetMetric (ifIndexLocal);
 
   if (areTransitNetwork == false)
     {

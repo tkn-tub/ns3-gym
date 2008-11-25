@@ -1,4 +1,44 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+// Default network topology
+//
+//      +-----+      +-----+            +-----+      +-----+
+//      | sta |      | sta |            | sta |      | sta | 
+//      +-----+      +-----+            +-----+      +-----+
+//    192.168.1.2  192.168.1.3        192.168.2.2  192.168.2.3
+//      --------     --------           --------     --------
+//      WIFI STA     WIFI STA           WIFI STA     WIFI STA
+//      --------     --------     |     --------     --------
+//        ((*))       ((*))       |      ((*))        ((*))
+//                                |   
+//              ((*))             |            ((*))
+//             -------            |           -------
+//    ######## WIFI AP                        WIFI AP #########
+//    #        -------                        -------         #
+//  B #      102.168.1.1                    102.168.2.1       # B
+//  R #     +----------+                   +----------+       # R
+//  I #     | backbone |                   | backbone |       # I
+//  D #     +----------+                   +----------+       # D
+//  G #      192.168.0.1                    192.168.0.2       # G
+//  E #          ----                           ----          # E
+//    ########## CSMA                           CSMA ##########    
+//                |                              |      
+//                ================================
+//
 
 #include "ns3/core-module.h"
 #include "ns3/simulator-module.h"
