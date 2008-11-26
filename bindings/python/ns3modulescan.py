@@ -56,6 +56,11 @@ type_annotations = {
         'automatic_type_narrowing': 'true',
         'allow_subclassing': 'false',
         },
+
+    '::ns3::CommandLine': {
+        'allow_subclassing': 'true', # needed so that AddValue is able to set attributes on the object
+        },
+
     'ns3::RandomVariable::RandomVariable(ns3::RandomVariableBase const & variable) [constructor]': {
         'ignore': None,
         },

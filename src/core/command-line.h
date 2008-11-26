@@ -24,6 +24,8 @@
 #include <sstream>
 #include <list>
 
+#include "ns3/callback.h"
+
 namespace ns3 {
 
 /**
@@ -56,6 +58,17 @@ public:
 		 const std::string &help,
 		 T &value);
 
+
+  /**
+   * \param name the name of the user-supplied argument
+   * \param help some help text used by --PrintHelp
+   * \param callback a callback function that will be invoked to parse
+   * and collect the value.  This normally used by language bindings.
+   */
+  void AddValue (const std::string &name,
+		 const std::string &help,
+                 Callback<bool, std::string> callback);
+
   /**
    * \param argc the 'argc' variable: number of arguments (including the
    *        main program name as first element).
@@ -82,6 +95,13 @@ private:
     virtual bool Parse (std::string value);
     T *m_valuePtr;
   };
+  class CallbackItem : public Item
+  {
+  public:
+    virtual bool Parse (std::string value);
+    Callback<bool, std::string> m_callback;
+  };
+
   void HandleArgument (std::string name, std::string value) const;
   void PrintHelp (void) const;
   void PrintGlobals (void) const;

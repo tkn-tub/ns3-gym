@@ -1,3 +1,4 @@
+#include "ns3/ref-count-base.h"
 #include "ns3module.h"
 
 
@@ -220,3 +221,61 @@ _wrap_TypeId_LookupByNameFailSafe(PyNs3TypeId *PYBINDGEN_UNUSED(dummy), PyObject
     
     return (PyObject *) py_tid;
 }
+
+
+class CommandLinePythonValueSetter : public ns3::RefCountBase
+{
+    PyObject *m_namespace;
+    std::string m_variable;
+public:
+    CommandLinePythonValueSetter (PyObject *ns, std::string const &variable) {
+        Py_INCREF(ns);
+        m_namespace = ns;
+        m_variable = variable;
+    }
+    bool Parse (std::string value) {
+        PyObject *pyvalue = PyString_FromStringAndSize (value.data(), value.size());
+        PyObject_SetAttrString (m_namespace, m_variable.c_str(), pyvalue);
+        if (PyErr_Occurred()) {
+            PyErr_Print();
+            return false;
+        }
+        return true;
+    }
+    virtual ~CommandLinePythonValueSetter () {
+        Py_DECREF (m_namespace);
+        m_namespace = NULL;
+    }
+    
+};
+
+PyObject *
+_wrap_CommandLine_AddValue(PyNs3CommandLine *self, PyObject *args, PyObject *kwargs,
+                           PyObject **return_exception)
+{
+    const char *name, *help, *variable = NULL;
+    PyObject *py_namespace = NULL;
+    const char *keywords[] = {"name", "help", "variable", "namespace", NULL};
+    
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, (char *) "ss|sO", (char **) keywords, &name, &help, &variable, &py_namespace)) {
+        PyObject *exc_type, *traceback;
+        PyErr_Fetch(&exc_type, return_exception, &traceback);
+        Py_XDECREF(exc_type);
+        Py_XDECREF(traceback);
+        return NULL;
+    }
+    
+    if (variable == NULL) {
+        variable = name;
+    }
+    if (py_namespace == NULL) {
+        py_namespace = (PyObject *) self;
+    }
+
+    ns3::Ptr<CommandLinePythonValueSetter> setter = ns3::Create<CommandLinePythonValueSetter> (py_namespace, variable);
+    self->obj->AddValue (name, help, ns3::MakeCallback (&CommandLinePythonValueSetter::Parse, setter));
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+

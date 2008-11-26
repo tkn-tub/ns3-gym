@@ -309,6 +309,7 @@ __dummy_function_to_force_template_instantiation_v2 ()
    t1 > t2;
 }
 
+
 }
 """
     outfile.close()

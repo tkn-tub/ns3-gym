@@ -123,5 +123,26 @@ class TestSimulator(unittest.TestCase):
         
         self.assertRaises(KeyError, ns3.TypeId.LookupByNameFailSafe, "__InvalidTypeName__")
 
+    def testCommandLine(self):
+        cmd = ns3.CommandLine()
+        cmd.AddValue("Test1", "this is a test option")
+        cmd.AddValue("Test2", "this is a test option")
+        cmd.AddValue("Test3", "this is a test option", variable="test_xxx")
+        cmd.Test1 = None
+        cmd.Test2 = None
+        cmd.test_xxx = None
+        class Foo:
+            pass
+        foo = Foo()
+        foo.test_foo = None
+        cmd.AddValue("Test4", "this is a test option", variable="test_foo", namespace=foo)
+        
+        cmd.Parse(["python", "--Test1=value1", "--Test2=value2", "--Test3=123", "--Test4=xpto"])
+
+        self.assertEqual(cmd.Test1, "value1")
+        self.assertEqual(cmd.Test2, "value2")
+        self.assertEqual(cmd.test_xxx, "123")
+        self.assertEqual(foo.test_foo, "xpto")
+
 if __name__ == '__main__':
     unittest.main()
