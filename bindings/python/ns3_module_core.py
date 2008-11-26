@@ -12,7 +12,7 @@ def register_types(module):
     ## callback.h: ns3::CallbackImplBase [class]
     module.add_class('CallbackImplBase', allow_subclassing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## command-line.h: ns3::CommandLine [class]
-    module.add_class('CommandLine')
+    module.add_class('CommandLine', allow_subclassing=True)
     ## system-mutex.h: ns3::CriticalSection [class]
     module.add_class('CriticalSection')
     ## global-value.h: ns3::GlobalValue [class]
@@ -350,6 +350,10 @@ def register_Ns3CommandLine_methods(root_module, cls):
     cls.add_constructor([param('ns3::CommandLine const &', 'arg0')])
     ## command-line.h: ns3::CommandLine::CommandLine() [constructor]
     cls.add_constructor([])
+    ## command-line.h: void ns3::CommandLine::AddValue(std::string const & name, std::string const & help, ns3::Callback<bool, std::string, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('AddValue', 
+                   'void', 
+                   [param('std::string const &', 'name'), param('std::string const &', 'help'), param('ns3::Callback< bool, std::string, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
     return
 
 def register_Ns3CriticalSection_methods(root_module, cls):

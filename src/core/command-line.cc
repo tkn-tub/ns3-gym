@@ -253,6 +253,27 @@ CommandLine::HandleArgument (std::string name, std::string value) const
     }
 }
 
+bool
+CommandLine::CallbackItem::Parse (std::string value)
+{
+  NS_LOG_DEBUG ("CommandLine::CallbackItem::Parse \"" << value << "\"");
+  return m_callback (value);
+}
+
+void
+CommandLine::AddValue (const std::string &name,
+                       const std::string &help,
+                       Callback<bool, std::string> callback)
+{
+  NS_LOG_FUNCTION (this << name << help << "callback");
+  CallbackItem *item = new CallbackItem ();
+  item->m_name = name;
+  item->m_help = help;
+  item->m_callback = callback;
+  m_items.push_back (item);
+}
+
+
 } // namespace ns3
 
 #ifdef RUN_SELF_TESTS
