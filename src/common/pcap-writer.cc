@@ -25,10 +25,14 @@
 
 #include <fstream>
 
+#include "ns3/log.h"
+#include "ns3/assert.h"
+#include "ns3/abort.h"
 #include "ns3/simulator.h"
 #include "pcap-writer.h"
 #include "packet.h"
 
+NS_LOG_COMPONENT_DEFINE ("PcapWriter");
 
 namespace ns3 {
 
@@ -41,53 +45,87 @@ enum {
 
 PcapWriter::PcapWriter ()
 {
+  NS_LOG_FUNCTION (this);
+  NS_LOG_LOGIC ("m_writer = 0");
   m_writer = 0;
 }
 
 PcapWriter::~PcapWriter ()
 {
+  NS_LOG_FUNCTION (this);
+
   if (m_writer != 0)
     {
-      m_writer->close ();
+      NS_LOG_LOGIC ("m_writer nonzero " << m_writer);
+      if (m_writer->is_open ())
+        {
+          NS_LOG_LOGIC ("m_writer open.  Closing " << m_writer);
+          m_writer->close ();
+        }
+
+      NS_LOG_LOGIC ("Deleting writer " << m_writer);
+      delete m_writer;
+
+      NS_LOG_LOGIC ("m_writer = 0");
+      m_writer = 0;
     }
-  delete m_writer;
-  m_writer = 0;
+  else
+    {
+      NS_LOG_LOGIC ("m_writer == 0");
+    }
 }
 
 void
 PcapWriter::Open (std::string const &name)
 {
+  NS_LOG_FUNCTION (this << name);
+  NS_ABORT_MSG_UNLESS (m_writer == 0, "PcapWriter::Open(): m_writer already allocated (std::ofstream leak detected)");
+
   m_writer = new std::ofstream ();
+  NS_ABORT_MSG_UNLESS (m_writer, "PcapWriter::Open(): Cannot allocate m_writer");
+
+  NS_LOG_LOGIC ("Created writer " << m_writer);
+
   m_writer->open (name.c_str ());
+  NS_ABORT_MSG_IF (m_writer->fail (), "PcapWriter::Open(): m_writer->open(" << name.c_str () << ") failed");
+
+  NS_ASSERT_MSG (m_writer->is_open (), "PcapWriter::Open(): m_writer not open");
+
+  NS_LOG_LOGIC ("Writer opened successfully");
 }
 
 void 
 PcapWriter::WriteEthernetHeader (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   WriteHeader (PCAP_ETHERNET);
 }
 
 void 
 PcapWriter::WriteIpHeader (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   WriteHeader (PCAP_RAW_IP);
 }
 
 void
 PcapWriter::WriteWifiHeader (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   WriteHeader (PCAP_80211);
 }
 
 void 
 PcapWriter::WritePppHeader (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   WriteHeader (PCAP_PPP);
 }
 
 void 
 PcapWriter::WriteHeader (uint32_t network)
 {
+  NS_LOG_FUNCTION (this << network);
   Write32 (0xa1b2c3d4);
   Write16 (2);
   Write16 (4);
