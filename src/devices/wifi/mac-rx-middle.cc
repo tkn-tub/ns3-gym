@@ -260,56 +260,44 @@ void
 MacRxMiddle::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
   NS_LOG_FUNCTION (packet << hdr);
+  NS_ASSERT (hdr->IsData () || hdr->IsMgt ());
   OriginatorRxStatus *originator = Lookup (hdr);
-  if (hdr->IsData ()) 
+  /**
+   * The check below is really uneeded because it can fail in a lot of
+   * normal cases. Specifically, it is possible for sequence numbers to 
+   * loop back to zero once they reach 0xfff0 and to go up to 0xf7f0 in 
+   * which case the check below will report the two sequence numbers to 
+   * not have the correct order relationship.
+   * So, this check cannot be used to discard old duplicate frames. It is
+   * thus here only for documentation purposes.
+   */
+  if (!SequenceControlSmaller (originator->GetLastSequenceControl (), 
+                               hdr->GetSequenceControl ()))
     {
-      /**
-       * Note that the check below is not deterministic: it is possible
-       * for sequence numbers to loop back to zero once they reach 0xfff0
-       * and to go up to 0xf7f0 in which case the check below will report the
-       * two sequence numbers to not have the correct order relationship.
-       * This is why this check generates a warning only.
-       */
-      if (!SequenceControlSmaller (originator->GetLastSequenceControl (), 
-                                   hdr->GetSequenceControl ()))
-        {
-          NS_LOG_UNCOND ("Sequence numbers have looped back. last recorded="<<originator->GetLastSequenceControl ()<<
-                         " currently seen="<< hdr->GetSequenceControl ());
-        }
-      // filter duplicates.
-      if (IsDuplicate (hdr, originator)) 
-        {
-          NS_LOG_DEBUG ("duplicate from="<<hdr->GetAddr2 ()<<
-                 ", seq="<<hdr->GetSequenceNumber ()<<
-                 ", frag="<<hdr->GetFragmentNumber ());
-          return;
-        }
-      Ptr<Packet> agregate = HandleFragments (packet, hdr, originator);
-      if (agregate == 0) 
-        {
-          return;
-        }
-      NS_LOG_DEBUG ("forwarding data from="<<hdr->GetAddr2 ()<<
-             ", seq="<<hdr->GetSequenceNumber ()<<
-             ", frag="<<hdr->GetFragmentNumber ());
-      if (!hdr->GetAddr1 ().IsBroadcast ())
-        {
-          originator->SetSequenceControl (hdr->GetSequenceControl ());
-        }
-      m_callback (agregate, hdr);
-    } 
-  else 
-    {
-      NS_LOG_DEBUG ("forwarding "<<hdr->GetTypeString ()<<
-             ", from="<<hdr->GetAddr2 ()<<
-             ", seq="<<hdr->GetSequenceNumber ()<<
-             ", frag="<<hdr->GetFragmentNumber ());
-      if (!hdr->GetAddr1 ().IsBroadcast ())
-        {
-          originator->SetSequenceControl (hdr->GetSequenceControl ());
-        }
-      m_callback (packet, hdr);
+      NS_LOG_DEBUG ("Sequence numbers have looped back. last recorded="<<originator->GetLastSequenceControl ()<<
+                    " currently seen="<< hdr->GetSequenceControl ());
     }
+  // filter duplicates.
+  if (IsDuplicate (hdr, originator)) 
+    {
+      NS_LOG_DEBUG ("duplicate from="<<hdr->GetAddr2 ()<<
+                    ", seq="<<hdr->GetSequenceNumber ()<<
+                    ", frag="<<hdr->GetFragmentNumber ());
+      return;
+    }
+  Ptr<Packet> agregate = HandleFragments (packet, hdr, originator);
+  if (agregate == 0) 
+    {
+      return;
+    }
+  NS_LOG_DEBUG ("forwarding data from="<<hdr->GetAddr2 ()<<
+                ", seq="<<hdr->GetSequenceNumber ()<<
+                ", frag="<<hdr->GetFragmentNumber ());
+  if (!hdr->GetAddr1 ().IsBroadcast ())
+    {
+      originator->SetSequenceControl (hdr->GetSequenceControl ());
+    }
+  m_callback (agregate, hdr);
 }
 
 } // namespace ns3
