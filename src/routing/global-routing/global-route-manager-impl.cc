@@ -214,7 +214,7 @@ SPFVertex::GetChild (uint32_t n) const
           return *i;
         }
     }
-  NS_ASSERT_MSG(false, "Index <n> out of range.");
+  NS_ASSERT_MSG (false, "Index <n> out of range.");
   return 0;
 }
 
@@ -726,7 +726,7 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
 /*
   if (w->GetVertexType () == SPFVertex::VertexNetwork && l)
     {
-        NS_ASSERT_MSG(0, "Error:  SPFNexthopCalculation parameter problem");
+        NS_ASSERT_MSG (0, "Error:  SPFNexthopCalculation parameter problem");
     }
 */
 
@@ -778,7 +778,7 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
 // return the link record describing the link from <w> to <v>.  Think of it as
 // SPFGetLink.
 //
-          NS_ASSERT(l);
+          NS_ASSERT (l);
           GlobalRoutingLinkRecord *linkRemote = 0;
           linkRemote = SPFGetNextLink (w, v, linkRemote);
 // 
@@ -792,7 +792,7 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
 // from the root node to the host represented by vertex <w>, you have to send
 // the packet to the next hop address specified in w->m_nextHop.
 //
-          w->SetNextHop(linkRemote->GetLinkData ());
+          w->SetNextHop (linkRemote->GetLinkData ());
 // 
 // Now find the outgoing interface corresponding to the point to point link
 // from the perspective of <v> -- remember that <l> is the link "from"
@@ -846,7 +846,7 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
  * use can then be derived from the next hop IP address (or 
  * it can be inherited from the parent network).
  */
-                w->SetNextHop(linkRemote->GetLinkData ());
+                w->SetNextHop (linkRemote->GetLinkData ());
                 w->SetOutgoingTypeId (v->GetOutgoingTypeId ());
                 NS_LOG_LOGIC ("Next hop from " << 
                   v->GetVertexId () << " to " << w->GetVertexId () << 
@@ -1001,7 +1001,7 @@ GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
 // of the tree.  Initially, this queue is empty.
 //
   CandidateQueue candidate;
-  NS_ASSERT(candidate.Size () == 0);
+  NS_ASSERT (candidate.Size () == 0);
 //
 // Initialize the shortest-path tree to only contain the router doing the 
 // calculation.  Each router (and corresponding network) is a vertex in the
@@ -1108,7 +1108,7 @@ GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
         }
       else
         {
-          NS_ASSERT_MSG(0, "illegal SPFVertex type");
+          NS_ASSERT_MSG (0, "illegal SPFVertex type");
         }
 //
 // RFC2328 16.1. (5). 

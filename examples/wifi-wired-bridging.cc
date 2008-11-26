@@ -14,30 +14,32 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// Default network topology
+// Default network topology includes some number of AP nodes specified by
+// the variable nWifis (defaults to two).  Off of each AP node, there are some
+// number of STA nodes specified by the variable nStas (defaults to two).
+// Each AP talks to its associated STA nodes.  There are bridge net devices
+// on each AP node that bridge the whole thing into one network.
 //
 //      +-----+      +-----+            +-----+      +-----+
-//      | sta |      | sta |            | sta |      | sta | 
+//      | STA |      | STA |            | STA |      | STA | 
 //      +-----+      +-----+            +-----+      +-----+
-//    192.168.1.2  192.168.1.3        192.168.2.2  192.168.2.3
+//    192.168.0.3  192.168.0.4        192.168.0.5  192.168.0.6
 //      --------     --------           --------     --------
 //      WIFI STA     WIFI STA           WIFI STA     WIFI STA
-//      --------     --------     |     --------     --------
+//      --------     --------           --------     --------
 //        ((*))       ((*))       |      ((*))        ((*))
 //                                |   
-//              ((*))             |            ((*))
-//             -------            |           -------
-//    ######## WIFI AP                        WIFI AP #########
-//    #        -------                        -------         #
-//  B #      102.168.1.1                    102.168.2.1       # B
-//  R #     +----------+                   +----------+       # R
-//  I #     | backbone |                   | backbone |       # I
-//  D #     +----------+                   +----------+       # D
-//  G #      192.168.0.1                    192.168.0.2       # G
-//  E #          ----                           ----          # E
-//    ########## CSMA                           CSMA ##########    
-//                |                              |      
-//                ================================
+//              ((*))             |             ((*))
+//             -------                         -------
+//             WIFI AP   CSMA ========= CSMA   WIFI AP 
+//             -------   ----           ----   -------
+//             ##############           ##############
+//                 BRIDGE                   BRIDGE
+//             ##############           ############## 
+//               192.168.0.1              192.168.0.2
+//               +---------+              +---------+  
+//               | AP Node |              | AP Node |
+//               +---------+              +---------+  
 //
 
 #include "ns3/core-module.h"
@@ -86,7 +88,6 @@ int main (int argc, char *argv[])
   stack.Install (backboneNodes);
 
   backboneDevices = csma.Install (backboneNodes);
-  backboneInterfaces = ip.Assign (backboneDevices);
 
   double wifiX = 0.0;
   for (uint32_t i = 0; i < nWifis; ++i)
@@ -109,7 +110,6 @@ int main (int argc, char *argv[])
       wifiPhy.SetChannel (wifiChannel.Create ());
 
       sta.Create (nStas);
-      ip.NewNetwork ();
       mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
 				     "MinX", DoubleValue (wifiX),
 				     "MinY", DoubleValue (0.0),
@@ -127,8 +127,12 @@ int main (int argc, char *argv[])
 		   "BeaconGeneration", BooleanValue (true),
 		   "BeaconInterval", TimeValue (Seconds (2.5)));
       apDev = wifi.Install (wifiPhy, backboneNodes.Get (i));
-      apInterface = ip.Assign (apDev);
-      bridge.Install (backboneNodes.Get (i), NetDeviceContainer (apDev, backboneDevices.Get (i)));
+
+      NetDeviceContainer bridgeDev;
+      bridgeDev = bridge.Install (backboneNodes.Get (i), NetDeviceContainer (apDev, backboneDevices.Get (i)));
+
+      // assign AP IP address to bridge, not wifi
+      apInterface = ip.Assign (bridgeDev);
 
       // setup the STAs
       stack.Install (sta);

@@ -589,8 +589,7 @@ GlobalRouter::DiscoverLSAs (void)
         {
           uint32_t ifIndexBridge;
           bool rc = FindIfIndexForDevice(node, ndLocal, ifIndexBridge);
-          NS_ABORT_MSG_IF (rc, "GlobalRouter::ProcessBridgedBroadcastLink(): "
-                               "Bridge ports must not have an IPv4 interface index");
+          NS_ABORT_MSG_IF (rc, "GlobalRouter::DiscoverLSAs(): Bridge ports must not have an IPv4 interface index");
         }
 
       //
@@ -782,8 +781,18 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
 GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c)
 {
   NS_LOG_FUNCTION (nd << pLSA << &c);
-
   NS_ASSERT_MSG (nd->IsBridge (), "GlobalRouter::ProcessBridgedBroadcastLink(): Called with non-bridge net device");
+
+#if 0
+  //
+  // It is possible to admit the possibility that a bridge device on a node
+  // can also participate in routing.  This would surprise people who don't
+  // come from Microsoft-land where they do use such a construct.  Based on
+  // the principle of least-surprise, we will leave the relatively simple
+  // code in place to do this, but not enable it until someone really wants
+  // the capability.  Even then, we will not enable this code as a default
+  // but rather something you will have to go and turn on.
+  //
 
   Ptr<BridgeNetDevice> bnd = nd->GetObject<BridgeNetDevice> ();
   NS_ABORT_MSG_UNLESS (bnd, "GlobalRouter::DiscoverLSAs (): GetObject for <BridgeNetDevice> failed");
@@ -817,6 +826,7 @@ GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *
   // to do is to repeat what is done for a single broadcast link on all of 
   // those net devices living under the bridge (trolls?)
   //
+
   bool areTransitNetwork = false;
   Ipv4Address desigRtr ("255.255.255.255");
 
@@ -921,6 +931,7 @@ GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *
       pLSA->AddLinkRecord (plr);
       plr = 0;
     }
+#endif
 }
 
   void
