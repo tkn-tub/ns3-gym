@@ -58,6 +58,7 @@ Application::DoDispose (void)
   m_node = 0;
   Simulator::Cancel(m_startEvent);
   Simulator::Cancel(m_stopEvent);
+  Object::DoDispose ();
 }  
    
 void Application::Start(const Time& startTime)
