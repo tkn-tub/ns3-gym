@@ -292,6 +292,8 @@ def CommandLine_customizations(module):
     CommandLine = module['ns3::CommandLine']
     CommandLine.add_method('Parse', None, [ArgvParam(None, 'argv')],
                            is_static=False)
+    CommandLine.add_custom_method_wrapper("AddValue", "_wrap_CommandLine_AddValue",
+                                          flags=["METH_VARARGS", "METH_KEYWORDS"])
 
 
 def Object_customizations(module):
@@ -523,5 +525,5 @@ def TypeId_customizations(module):
     TypeId = module['ns3::TypeId']
     TypeId.add_custom_method_wrapper("LookupByNameFailSafe", "_wrap_TypeId_LookupByNameFailSafe",
                                      flags=["METH_VARARGS", "METH_KEYWORDS", "METH_STATIC"])
-    
+
 

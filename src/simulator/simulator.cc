@@ -58,7 +58,7 @@ GlobalValue g_simTypeImpl = GlobalValue ("SimulatorImplementationType",
 static void
 TimePrinter (std::ostream &os)
 {
-  os << Simulator::Now ();
+  os << Simulator::Now ().GetSeconds () << "s";
 }
 
 #endif /* NS3_LOG_ENABLE */

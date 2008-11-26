@@ -331,11 +331,13 @@ def add_scratch_programs(bld):
             obj.path = obj.path.find_dir('scratch')
             obj.find_sources_in_dirs(filename)
             obj.target = os.path.join(filename, filename)
+            obj.name = obj.target
         elif filename.endswith(".cc"):
             name = filename[:-len(".cc")]
             obj = bld.create_ns3_program(name, all_modules)
             obj.source = "scratch/%s" % filename
             obj.target = "scratch/%s" % name
+            obj.name = obj.target
 
 
 ##
@@ -445,16 +447,13 @@ def build(bld):
 
     if Params.g_options.run:
         # Check that the requested program name is valid
-        try:
-            wutils.find_program(Params.g_options.run, env)
-        except ValueError, ex:
-            Params.fatal(str(ex))
-        
+        program_name, dummy_program_argv = wutils.get_run_program(Params.g_options.run, get_command_template())
+
         # When --run'ing a program, tell WAF to only build that program,
         # nothing more; this greatly speeds up compilation when all you
         # want to do is run a test program.
         if not Params.g_options.compile_targets:
-            Params.g_options.compile_targets = Params.g_options.run
+            Params.g_options.compile_targets = program_name
 
 
 

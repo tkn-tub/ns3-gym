@@ -24,9 +24,11 @@
 namespace ns3 {
 
 StaticSpeedHelper::StaticSpeedHelper ()
+  : m_paused (true)
 {}
 StaticSpeedHelper::StaticSpeedHelper (const Vector &position)
-  : m_position (position)
+  : m_position (position),
+    m_paused (true)
 {}
 StaticSpeedHelper::StaticSpeedHelper (const Vector &position,
 				      const Vector &vel)
