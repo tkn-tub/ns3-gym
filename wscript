@@ -331,11 +331,13 @@ def add_scratch_programs(bld):
             obj.path = obj.path.find_dir('scratch')
             obj.find_sources_in_dirs(filename)
             obj.target = os.path.join(filename, filename)
+            obj.name = obj.target
         elif filename.endswith(".cc"):
             name = filename[:-len(".cc")]
             obj = bld.create_ns3_program(name, all_modules)
             obj.source = "scratch/%s" % filename
             obj.target = "scratch/%s" % name
+            obj.name = obj.target
 
 
 ##
