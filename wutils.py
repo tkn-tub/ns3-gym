@@ -94,13 +94,12 @@ def run_argv(argv, os_env=None):
         Params.fatal("Command %s exited with code %i" % (argv, retval))
     return retval
 
-def run_program(program_string, command_template=None):
+def get_run_program(program_string, command_template=None):
     """
-    if command_template is not None, then program_string == program
-    name and argv is given by command_template with %s replaced by the
-    full path to the program.  Else, program_string is interpreted as
-    a shell command with first name being the program name.
+    Return the program name and argv of the process that would be executed by
+    run_program(program_string, command_template).
     """
+    #print "get_run_program_argv(program_string=%r, command_template=%r)" % (program_string, command_template)
     env = Params.g_build.env_of_name('default')
 
     if command_template in (None, '%s'):
@@ -132,7 +131,16 @@ def run_program(program_string, command_template=None):
             Params.fatal("%s does not appear to be a program" % (program_name,))
 
         execvec = shlex.split(command_template % (program_node.abspath(env),))
+    return program_name, execvec
 
+def run_program(program_string, command_template=None):
+    """
+    if command_template is not None, then program_string == program
+    name and argv is given by command_template with %s replaced by the
+    full path to the program.  Else, program_string is interpreted as
+    a shell command with first name being the program name.
+    """
+    dummy_program_name, execvec = get_run_program(program_string, command_template)
     former_cwd = os.getcwd()
     if (Params.g_options.cwd_launch):
         os.chdir(Params.g_options.cwd_launch)
