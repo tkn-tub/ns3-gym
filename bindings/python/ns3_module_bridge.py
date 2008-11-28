@@ -54,8 +54,6 @@ def register_methods(root_module):
     return
 
 def register_Ns3BridgeChannel_methods(root_module, cls):
-    ## bridge-channel.h: ns3::BridgeChannel::BridgeChannel(ns3::BridgeChannel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::BridgeChannel const &', 'arg0')])
     ## bridge-channel.h: static ns3::TypeId ns3::BridgeChannel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -77,11 +75,10 @@ def register_Ns3BridgeChannel_methods(root_module, cls):
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('uint32_t', 'i')], 
                    is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3BridgeNetDevice_methods(root_module, cls):
-    ## bridge-net-device.h: ns3::BridgeNetDevice::BridgeNetDevice(ns3::BridgeNetDevice const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::BridgeNetDevice const &', 'arg0')])
     ## bridge-net-device.h: static ns3::TypeId ns3::BridgeNetDevice::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -93,6 +90,16 @@ def register_Ns3BridgeNetDevice_methods(root_module, cls):
     cls.add_method('AddBridgePort', 
                    'void', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'bridgePort')])
+    ## bridge-net-device.h: uint32_t ns3::BridgeNetDevice::GetNBridgePorts() const [member function]
+    cls.add_method('GetNBridgePorts', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## bridge-net-device.h: ns3::Ptr<ns3::NetDevice> ns3::BridgeNetDevice::GetBridgePort(uint32_t n) const [member function]
+    cls.add_method('GetBridgePort', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('uint32_t', 'n')], 
+                   is_const=True)
     ## bridge-net-device.h: void ns3::BridgeNetDevice::SetName(std::string const name) [member function]
     cls.add_method('SetName', 
                    'void', 
@@ -165,6 +172,11 @@ def register_Ns3BridgeNetDevice_methods(root_module, cls):
                    is_const=True, is_virtual=True)
     ## bridge-net-device.h: bool ns3::BridgeNetDevice::IsPointToPoint() const [member function]
     cls.add_method('IsPointToPoint', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## bridge-net-device.h: bool ns3::BridgeNetDevice::IsBridge() const [member function]
+    cls.add_method('IsBridge', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
@@ -243,6 +255,7 @@ def register_Ns3BridgeNetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('ns3::Mac48Address', 'source')], 
                    visibility='protected')
+    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):

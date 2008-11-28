@@ -71,6 +71,11 @@ def register_Ns3GlobalRouteManager_methods(root_module, cls):
                    'void', 
                    [], 
                    is_static=True)
+    ## global-route-manager.h: static void ns3::GlobalRouteManager::PopulateRoutingTables(ns3::NodeContainer c) [member function]
+    cls.add_method('PopulateRoutingTables', 
+                   'void', 
+                   [param('ns3::NodeContainer', 'c')], 
+                   is_static=True)
     ## global-route-manager.h: static uint32_t ns3::GlobalRouteManager::AllocateRouterId() [member function]
     cls.add_method('AllocateRouterId', 
                    'uint32_t', 
@@ -180,8 +185,6 @@ def register_Ns3GlobalRoutingLSA_methods(root_module, cls):
     return
 
 def register_Ns3GlobalRoutingLinkRecord_methods(root_module, cls):
-    ## global-router-interface.h: ns3::GlobalRoutingLinkRecord::GlobalRoutingLinkRecord(ns3::GlobalRoutingLinkRecord const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::GlobalRoutingLinkRecord const &', 'arg0')])
     ## global-router-interface.h: ns3::GlobalRoutingLinkRecord::GlobalRoutingLinkRecord() [constructor]
     cls.add_constructor([])
     ## global-router-interface.h: ns3::GlobalRoutingLinkRecord::GlobalRoutingLinkRecord(ns3::GlobalRoutingLinkRecord::LinkType linkType, ns3::Ipv4Address linkId, ns3::Ipv4Address linkData, uint16_t metric) [constructor]
@@ -222,6 +225,7 @@ def register_Ns3GlobalRoutingLinkRecord_methods(root_module, cls):
     cls.add_method('SetMetric', 
                    'void', 
                    [param('uint16_t', 'metric')])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3GlobalRouter_methods(root_module, cls):
