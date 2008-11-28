@@ -852,6 +852,7 @@ Ipv4L3Protocol::DoForward (uint32_t ifIndex,
           Ptr<Icmpv4L4Protocol> icmp = GetIcmp ();
           icmp->SendTimeExceededTtl (ipHeader, packet);
         }
+      NS_LOG_WARN ("TTL exceeded.  Drop.");
       m_dropTrace (packet);
       return;
     }  

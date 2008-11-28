@@ -349,8 +349,13 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
       }
   }
   //
-  // If dest is sent to the limited broadcast address (all ones),
-  // convert it to send a copy of the packet out of every interface
+  // If dest is set to the limited broadcast address (all ones),
+  // convert it to send a copy of the packet out of every 
+  // interface as a subnet-directed broadcast.
+  // Exception:  if the interface has a /32 address, there is no
+  // valid subnet-directed broadcast, so send it as limited broadcast
+  // Note also that some systems will only send limited broadcast packets
+  // out of the "default" interface; here we send it out all interfaces
   //
   if (dest.IsBroadcast ())
     {
@@ -359,13 +364,27 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
         {
           Ipv4Address addri = ipv4->GetAddress (i);
           Ipv4Mask maski = ipv4->GetNetworkMask (i);
-          Ipv4Address bcast = addri.GetSubnetDirectedBroadcast (maski);
-          NS_LOG_LOGIC ("Sending one copy from " << addri << " to " << bcast
-                        << " (mask is " << maski << ")");
-          m_udp->Send (p->Copy (), addri, bcast,
-                       m_endPoint->GetLocalPort (), port);
-          NotifyDataSent (p->GetSize ());
-          NotifySend (GetTxAvailable ());
+          if (maski == Ipv4Mask::GetOnes ())
+            {
+              // if the network mask is 255.255.255.255, do not convert dest
+              NS_LOG_LOGIC ("Sending one copy from " << addri << " to " << dest
+                            << " (mask is " << maski << ")");
+              m_udp->Send (p->Copy (), addri, dest,
+                           m_endPoint->GetLocalPort (), port);
+              NotifyDataSent (p->GetSize ());
+              NotifySend (GetTxAvailable ());
+            }
+          else
+            {
+              // Convert to subnet-directed broadcast
+              Ipv4Address bcast = addri.GetSubnetDirectedBroadcast (maski);
+              NS_LOG_LOGIC ("Sending one copy from " << addri << " to " << bcast
+                            << " (mask is " << maski << ")");
+              m_udp->Send (p->Copy (), addri, bcast,
+                           m_endPoint->GetLocalPort (), port);
+              NotifyDataSent (p->GetSize ());
+              NotifySend (GetTxAvailable ());
+            }
         }
       NS_LOG_LOGIC ("Limited broadcast end.");
       return p->GetSize();

@@ -91,7 +91,7 @@ public:
   void Serialize (uint8_t buf[4]) const;
   /**
    * \param buf buffer to read address from
-   * \returns an Ipv4Address
+   * \return an Ipv4Address
    * 
    * The input address is expected to be in network byte order format.
    */
@@ -103,8 +103,13 @@ public:
    * \param os The output stream to which this Ipv4Address is printed
    */
   void Print (std::ostream &os) const;
-
+  /**
+    * \return true if address is 255.255.255.255; false otherwise
+    */
   bool IsBroadcast (void) const;
+  /**
+    * \return true only if address is in the range 224.0.0.0 - 239.255.255.255
+    */
   bool IsMulticast (void) const;
   /**
    * \brief Combine this address with a network mask
@@ -120,20 +125,63 @@ public:
    * \brief Generate subnet-directed broadcast address corresponding to mask
    *
    * The subnet-directed broadcast address has the host bits set to all
-   * ones.
+   * ones.  If this method is called with a mask of 255.255.255.255,
+   * (i.e., the address is a /32 address), the program will assert, since
+   * there is no subnet associated with a /32 address.
    *
    * \param mask a network mask 
    */
   Ipv4Address GetSubnetDirectedBroadcast (Ipv4Mask const &mask) const;
+  /**
+   * \brief Generate subnet-directed broadcast address corresponding to mask
+   * 
+   * The subnet-directed broadcast address has the host bits set to all
+   * ones.  If this method is called with a mask of 255.255.255.255,
+   * (i.e., the address is a /32 address), the program will assert, since
+   * there is no subnet associated with a /32 address.
+   *
+   * \param mask a network mask 
+   * \return true if the address, when combined with the input mask, has all
+   * of its host bits set to one
+   */
   bool IsSubnetDirectedBroadcast (Ipv4Mask const &mask) const;
-
+  /**
+   * \param address an address to compare type with
+   *
+   * \return true if the type of the address stored internally
+   * is compatible with the type of the input address, false otherwise.
+   */
   static bool IsMatchingType (const Address &address);
+  /**
+   * Convert an instance of this class to a polymorphic Address instance.
+   *
+   * \return a new Address instance
+   */
   operator Address () const;
+  /**
+   * \param address a polymorphic address
+   * \return a new Ipv4Address from the polymorphic address
+   *
+   * This function performs a type check and asserts if the
+   * type of the input address is not compatible with an
+   * Ipv4Address.
+   */
   static Ipv4Address ConvertFrom (const Address &address);
-
+  /**
+   * \return the 0.0.0.0 address
+   */
   static Ipv4Address GetZero (void);
+  /**
+   * \return the 0.0.0.0 address
+   */
   static Ipv4Address GetAny (void);
+  /**
+   * \return the 255.255.255.255 address
+   */
   static Ipv4Address GetBroadcast (void);
+  /**
+   * \return the 127.0.0.1 address
+   */
   static Ipv4Address GetLoopback (void);
 
 private:
@@ -156,9 +204,17 @@ public:
   Ipv4Mask ();
   Ipv4Mask (uint32_t mask);
   Ipv4Mask (char const *mask);
-
+  /**
+   * \param a first address to compare
+   * \param b second address to compare
+   * \return true if both addresses are equal in their masked bits, 
+   * corresponding to this mask
+   */
   bool IsMatch (Ipv4Address a, Ipv4Address b) const;
-
+  /**
+   * \param other a mask to compare 
+   * \return true if the mask equals the mask passed as input parameter
+   */
   bool IsEqual (Ipv4Mask other) const;
   /** 
    * Get the host-order 32-bit IP mask
@@ -174,11 +230,25 @@ public:
    * \brief Return the inverse mask in host order. 
    */
   uint32_t GetInverse (void) const;
-
+  /**
+   * \brief Print this mask to the given output stream
+   *
+   * The print format is in the typical "255.255.255.0"
+   * \param os The output stream to which this Ipv4Address is printed
+   */
   void Print (std::ostream &os) const;
-
+  /**
+   * \return the 255.0.0.0 mask corresponding to a typical loopback address
+   */
   static Ipv4Mask GetLoopback (void);
+  /**
+   * \return the 0.0.0.0 mask
+   */
   static Ipv4Mask GetZero (void);
+  /**
+   * \return the 255.255.255.255 mask
+   */
+  static Ipv4Mask GetOnes (void);
 
 private:
   uint32_t m_mask;

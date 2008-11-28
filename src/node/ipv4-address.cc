@@ -77,7 +77,6 @@ Ipv4Mask::IsEqual (Ipv4Mask other) const
   }
 }
 
-
 bool 
 Ipv4Mask::IsMatch (Ipv4Address a, Ipv4Address b) const
 {
@@ -126,6 +125,12 @@ Ipv4Mask::GetZero (void)
   static Ipv4Mask zero = Ipv4Mask ("0.0.0.0");
   return zero;
 }
+Ipv4Mask
+Ipv4Mask::GetOnes (void)
+{
+  static Ipv4Mask ones = Ipv4Mask ("255.255.255.255");
+  return ones;
+}
 
 Ipv4Address::Ipv4Address ()
   : m_address (0x66666666)
@@ -164,12 +169,22 @@ Ipv4Address::CombineMask (Ipv4Mask const &mask) const
 Ipv4Address 
 Ipv4Address::GetSubnetDirectedBroadcast (Ipv4Mask const &mask) const
 {
+  if (mask == Ipv4Mask::GetOnes ())
+    {
+      NS_ASSERT_MSG (false, "Trying to get subnet-directed broadcast address with an all-ones netmask");
+    }
   return Ipv4Address (Get () | mask.GetInverse ());
 }
 
 bool
 Ipv4Address::IsSubnetDirectedBroadcast (Ipv4Mask const &mask) const
 {
+  if (mask == Ipv4Mask::GetOnes ())
+    {
+      // If the mask is 255.255.255.255, there is no subnet directed
+      // broadcast for this address.
+      return false;
+    }
   return ( (Get () | mask.GetInverse ()) == Get () );
 }
 
