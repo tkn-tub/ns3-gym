@@ -81,10 +81,6 @@ def register_methods(root_module):
     return
 
 def register_Ns3DataOutputCallback_methods(root_module, cls):
-    ## data-output-interface.h: ns3::DataOutputCallback::DataOutputCallback(ns3::DataOutputCallback const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::DataOutputCallback const &', 'arg0')])
-    ## data-output-interface.h: ns3::DataOutputCallback::DataOutputCallback() [constructor]
-    cls.add_constructor([])
     ## data-output-interface.h: void ns3::DataOutputCallback::OutputSingleton(std::string key, std::string variable, int val) [member function]
     cls.add_method('OutputSingleton', 
                    'void', 
@@ -110,11 +106,11 @@ def register_Ns3DataOutputCallback_methods(root_module, cls):
                    'void', 
                    [param('std::string', 'key'), param('std::string', 'variable'), param('ns3::Time', 'val')], 
                    is_pure_virtual=True, is_virtual=True)
+    cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3DataCalculator_methods(root_module, cls):
-    ## data-calculator.h: ns3::DataCalculator::DataCalculator(ns3::DataCalculator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::DataCalculator const &', 'arg0')])
     ## data-calculator.h: ns3::DataCalculator::DataCalculator() [constructor]
     cls.add_constructor([])
     ## data-calculator.h: bool ns3::DataCalculator::GetEnabled() const [member function]
@@ -159,11 +155,10 @@ def register_Ns3DataCalculator_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3DataCollector_methods(root_module, cls):
-    ## data-collector.h: ns3::DataCollector::DataCollector(ns3::DataCollector const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::DataCollector const &', 'arg0')])
     ## data-collector.h: ns3::DataCollector::DataCollector() [constructor]
     cls.add_constructor([])
     ## data-collector.h: void ns3::DataCollector::DescribeRun(std::string experiment, std::string strategy, std::string input, std::string runID, std::string description="") [member function]
@@ -232,11 +227,10 @@ def register_Ns3DataCollector_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3DataOutputInterface_methods(root_module, cls):
-    ## data-output-interface.h: ns3::DataOutputInterface::DataOutputInterface(ns3::DataOutputInterface const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::DataOutputInterface const &', 'arg0')])
     ## data-output-interface.h: ns3::DataOutputInterface::DataOutputInterface() [constructor]
     cls.add_constructor([])
     ## data-output-interface.h: void ns3::DataOutputInterface::Output(ns3::DataCollector & dc) [member function]
@@ -249,11 +243,10 @@ def register_Ns3DataOutputInterface_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3MinMaxAvgTotalCalculator__Unsigned_int_methods(root_module, cls):
-    ## basic-data-calculators.h: ns3::MinMaxAvgTotalCalculator<unsigned int>::MinMaxAvgTotalCalculator(ns3::MinMaxAvgTotalCalculator<unsigned int> const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::MinMaxAvgTotalCalculator< unsigned int > const &', 'arg0')])
     ## basic-data-calculators.h: ns3::MinMaxAvgTotalCalculator<unsigned int>::MinMaxAvgTotalCalculator() [constructor]
     cls.add_constructor([])
     ## basic-data-calculators.h: void ns3::MinMaxAvgTotalCalculator<unsigned int>::Update(unsigned int const i) [member function]
@@ -270,11 +263,10 @@ def register_Ns3MinMaxAvgTotalCalculator__Unsigned_int_methods(root_module, cls)
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3OmnetDataOutput_methods(root_module, cls):
-    ## omnet-data-output.h: ns3::OmnetDataOutput::OmnetDataOutput(ns3::OmnetDataOutput const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::OmnetDataOutput const &', 'arg0')])
     ## omnet-data-output.h: ns3::OmnetDataOutput::OmnetDataOutput() [constructor]
     cls.add_constructor([])
     ## omnet-data-output.h: void ns3::OmnetDataOutput::Output(ns3::DataCollector & dc) [member function]
@@ -296,11 +288,10 @@ def register_Ns3OmnetDataOutput_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3PacketSizeMinMaxAvgTotalCalculator_methods(root_module, cls):
-    ## packet-data-calculators.h: ns3::PacketSizeMinMaxAvgTotalCalculator::PacketSizeMinMaxAvgTotalCalculator(ns3::PacketSizeMinMaxAvgTotalCalculator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PacketSizeMinMaxAvgTotalCalculator const &', 'arg0')])
     ## packet-data-calculators.h: ns3::PacketSizeMinMaxAvgTotalCalculator::PacketSizeMinMaxAvgTotalCalculator() [constructor]
     cls.add_constructor([])
     ## packet-data-calculators.h: void ns3::PacketSizeMinMaxAvgTotalCalculator::PacketUpdate(std::string path, ns3::Ptr<const ns3::Packet> packet) [member function]
@@ -316,11 +307,10 @@ def register_Ns3PacketSizeMinMaxAvgTotalCalculator_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3SqliteDataOutput_methods(root_module, cls):
-    ## sqlite-data-output.h: ns3::SqliteDataOutput::SqliteDataOutput(ns3::SqliteDataOutput const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::SqliteDataOutput const &', 'arg0')])
     ## sqlite-data-output.h: ns3::SqliteDataOutput::SqliteDataOutput() [constructor]
     cls.add_constructor([])
     ## sqlite-data-output.h: void ns3::SqliteDataOutput::Output(ns3::DataCollector & dc) [member function]
@@ -342,11 +332,10 @@ def register_Ns3SqliteDataOutput_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3TimeMinMaxAvgTotalCalculator_methods(root_module, cls):
-    ## time-data-calculators.h: ns3::TimeMinMaxAvgTotalCalculator::TimeMinMaxAvgTotalCalculator(ns3::TimeMinMaxAvgTotalCalculator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::TimeMinMaxAvgTotalCalculator const &', 'arg0')])
     ## time-data-calculators.h: ns3::TimeMinMaxAvgTotalCalculator::TimeMinMaxAvgTotalCalculator() [constructor]
     cls.add_constructor([])
     ## time-data-calculators.h: void ns3::TimeMinMaxAvgTotalCalculator::Update(ns3::Time const i) [member function]
@@ -363,11 +352,10 @@ def register_Ns3TimeMinMaxAvgTotalCalculator_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3CounterCalculator__Unsigned_int_methods(root_module, cls):
-    ## basic-data-calculators.h: ns3::CounterCalculator<unsigned int>::CounterCalculator(ns3::CounterCalculator<unsigned int> const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::CounterCalculator< unsigned int > const &', 'arg0')])
     ## basic-data-calculators.h: ns3::CounterCalculator<unsigned int>::CounterCalculator() [constructor]
     cls.add_constructor([])
     ## basic-data-calculators.h: void ns3::CounterCalculator<unsigned int>::Update() [member function]
@@ -393,11 +381,10 @@ def register_Ns3CounterCalculator__Unsigned_int_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3PacketCounterCalculator_methods(root_module, cls):
-    ## packet-data-calculators.h: ns3::PacketCounterCalculator::PacketCounterCalculator(ns3::PacketCounterCalculator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PacketCounterCalculator const &', 'arg0')])
     ## packet-data-calculators.h: ns3::PacketCounterCalculator::PacketCounterCalculator() [constructor]
     cls.add_constructor([])
     ## packet-data-calculators.h: void ns3::PacketCounterCalculator::PacketUpdate(std::string path, ns3::Ptr<const ns3::Packet> packet) [member function]
@@ -413,6 +400,7 @@ def register_Ns3PacketCounterCalculator_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):

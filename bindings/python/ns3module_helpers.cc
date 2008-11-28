@@ -235,7 +235,7 @@ public:
     }
     bool Parse (std::string value) {
         PyObject *pyvalue = PyString_FromStringAndSize (value.data(), value.size());
-        PyObject_SetAttrString (m_namespace, m_variable.c_str(), pyvalue);
+        PyObject_SetAttrString (m_namespace, (char *) m_variable.c_str(), pyvalue);
         if (PyErr_Occurred()) {
             PyErr_Print();
             return false;

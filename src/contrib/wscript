@@ -13,7 +13,7 @@ def configure(conf):
     conf.sub_config('stats')
 
 def build(bld):
-    module = bld.create_ns3_module('contrib', ['simulator'])
+    module = bld.create_ns3_module('contrib', ['simulator', 'common'])
     module.source = [
         'event-garbage-collector.cc',
         'gnuplot.cc',
