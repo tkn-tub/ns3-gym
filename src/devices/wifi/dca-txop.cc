@@ -475,6 +475,10 @@ DcaTxop::MissedCts (void)
       MY_DEBUG ("Cts Fail");
       WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
       station->ReportFinalRtsFailed ();
+      if (!m_txFailedCallback.IsNull ()) 
+        {
+          m_txFailedCallback (m_currentHdr);
+        }
       // to reset the dcf.
       m_currentPacket = 0;
       m_dcf->ResetCw ();
@@ -522,7 +526,11 @@ DcaTxop::MissedAck (void)
       MY_DEBUG ("Ack Fail");
       WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
       station->ReportFinalDataFailed ();
-      // to reset the dcf.    
+      if (!m_txFailedCallback.IsNull ()) 
+        {
+          m_txFailedCallback (m_currentHdr);
+        }
+      // to reset the dcf.
       m_currentPacket = 0;
       m_dcf->ResetCw ();
     } 
@@ -530,10 +538,6 @@ DcaTxop::MissedAck (void)
     {
       MY_DEBUG ("Retransmit");
       m_currentHdr.SetRetry ();
-      if (!m_txFailedCallback.IsNull ()) 
-        {
-          m_txFailedCallback (m_currentHdr);
-        }
       m_dcf->UpdateFailedCw ();
     }
   m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
