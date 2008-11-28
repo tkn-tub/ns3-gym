@@ -113,8 +113,6 @@ def register_types(module):
     module.add_class('EthernetHeader', parent=root_module['ns3::Header'])
     ## ethernet-trailer.h: ns3::EthernetTrailer [class]
     module.add_class('EthernetTrailer', parent=root_module['ns3::Trailer'])
-    ## icmp-socket.h: ns3::IcmpSocket [class]
-    module.add_class('IcmpSocket', parent=root_module['ns3::Socket'])
     ## ipv4.h: ns3::Ipv4 [class]
     module.add_class('Ipv4', parent=root_module['ns3::Object'])
     ## ipv4-raw-socket-factory.h: ns3::Ipv4RawSocketFactory [class]
@@ -220,7 +218,6 @@ def register_methods(root_module):
     register_Ns3DropTailQueue_methods(root_module, root_module['ns3::DropTailQueue'])
     register_Ns3EthernetHeader_methods(root_module, root_module['ns3::EthernetHeader'])
     register_Ns3EthernetTrailer_methods(root_module, root_module['ns3::EthernetTrailer'])
-    register_Ns3IcmpSocket_methods(root_module, root_module['ns3::IcmpSocket'])
     register_Ns3Ipv4_methods(root_module, root_module['ns3::Ipv4'])
     register_Ns3Ipv4RawSocketFactory_methods(root_module, root_module['ns3::Ipv4RawSocketFactory'])
     register_Ns3Ipv4RoutingProtocol_methods(root_module, root_module['ns3::Ipv4RoutingProtocol'])
@@ -2502,98 +2499,6 @@ def register_Ns3EthernetTrailer_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'end')], 
                    is_virtual=True)
-    return
-
-def register_Ns3IcmpSocket_methods(root_module, cls):
-    ## icmp-socket.h: ns3::IcmpSocket::IcmpSocket(ns3::IcmpSocket const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::IcmpSocket const &', 'arg0')])
-    ## icmp-socket.h: static ns3::TypeId ns3::IcmpSocket::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## icmp-socket.h: ns3::IcmpSocket::IcmpSocket() [constructor]
-    cls.add_constructor([])
-    ## icmp-socket.h: ns3::Socket::SocketErrno ns3::IcmpSocket::GetErrno() const [member function]
-    cls.add_method('GetErrno', 
-                   'ns3::Socket::SocketErrno', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## icmp-socket.h: ns3::Ptr<ns3::Node> ns3::IcmpSocket::GetNode() const [member function]
-    cls.add_method('GetNode', 
-                   'ns3::Ptr< ns3::Node >', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## icmp-socket.h: int ns3::IcmpSocket::Bind() [member function]
-    cls.add_method('Bind', 
-                   'int', 
-                   [], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## icmp-socket.h: int ns3::IcmpSocket::Bind(ns3::Address const & addr) [member function]
-    cls.add_method('Bind', 
-                   'int', 
-                   [param('ns3::Address const &', 'addr')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## icmp-socket.h: int ns3::IcmpSocket::Close() [member function]
-    cls.add_method('Close', 
-                   'int', 
-                   [], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## icmp-socket.h: int ns3::IcmpSocket::ShutdownSend() [member function]
-    cls.add_method('ShutdownSend', 
-                   'int', 
-                   [], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## icmp-socket.h: int ns3::IcmpSocket::ShutdownRecv() [member function]
-    cls.add_method('ShutdownRecv', 
-                   'int', 
-                   [], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## icmp-socket.h: int ns3::IcmpSocket::Connect(ns3::Address const & addr) [member function]
-    cls.add_method('Connect', 
-                   'int', 
-                   [param('ns3::Address const &', 'addr')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## icmp-socket.h: int ns3::IcmpSocket::Send(ns3::Ptr<ns3::Packet> p, uint32_t flags) [member function]
-    cls.add_method('Send', 
-                   'int', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint32_t', 'flags')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## icmp-socket.h: uint32_t ns3::IcmpSocket::GetTxAvailable() const [member function]
-    cls.add_method('GetTxAvailable', 
-                   'uint32_t', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## icmp-socket.h: int ns3::IcmpSocket::SendTo(ns3::Ptr<ns3::Packet> p, uint32_t flags, ns3::Address const & addr) [member function]
-    cls.add_method('SendTo', 
-                   'int', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint32_t', 'flags'), param('ns3::Address const &', 'addr')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## icmp-socket.h: ns3::Ptr<ns3::Packet> ns3::IcmpSocket::Recv(uint32_t maxSize, uint32_t flags) [member function]
-    cls.add_method('Recv', 
-                   'ns3::Ptr< ns3::Packet >', 
-                   [param('uint32_t', 'maxSize'), param('uint32_t', 'flags')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## icmp-socket.h: ns3::Ptr<ns3::Packet> ns3::IcmpSocket::RecvFrom(uint32_t maxSize, uint32_t flags, ns3::Address & fromAddress) [member function]
-    cls.add_method('RecvFrom', 
-                   'ns3::Ptr< ns3::Packet >', 
-                   [param('uint32_t', 'maxSize'), param('uint32_t', 'flags'), param('ns3::Address &', 'fromAddress')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## icmp-socket.h: uint32_t ns3::IcmpSocket::GetRxAvailable() const [member function]
-    cls.add_method('GetRxAvailable', 
-                   'uint32_t', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## icmp-socket.h: uint32_t ns3::IcmpSocket::GetRcvBufSize() const [member function]
-    cls.add_method('GetRcvBufSize', 
-                   'uint32_t', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
-    ## icmp-socket.h: void ns3::IcmpSocket::SetRcvBufSize(uint32_t rcvBufSize) [member function]
-    cls.add_method('SetRcvBufSize', 
-                   'void', 
-                   [param('uint32_t', 'rcvBufSize')], 
-                   is_pure_virtual=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3Ipv4_methods(root_module, cls):
