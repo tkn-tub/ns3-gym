@@ -28,6 +28,10 @@ def build(bld):
                                  ['bridge', 'csma', 'internet-stack'])
     obj.source = 'csma-bridge.cc'
 
+    obj = bld.create_ns3_program('csma-bridge-one-hop',
+                                 ['bridge', 'csma', 'internet-stack'])
+    obj.source = 'csma-bridge-one-hop.cc'
+
     obj = bld.create_ns3_program('udp-echo',
                                  ['csma', 'internet-stack'])
     obj.source = 'udp-echo.cc'

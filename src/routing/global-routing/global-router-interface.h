@@ -29,9 +29,13 @@
 #include "ns3/node.h"
 #include "ns3/channel.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/net-device-container.h"
+#include "ns3/bridge-net-device.h"
 #include "ns3/global-route-manager.h"
 
 namespace ns3 {
+
+class GlobalRouter;
 
 /**
  * @brief A single link record for a link state advertisement.
@@ -43,6 +47,7 @@ namespace ns3 {
 class GlobalRoutingLinkRecord
 {
 public:
+  friend class GlobalRoutingLSA;
 /**
  * @enum LinkType
  * @brief Enumeration of the possible types of Global Routing Link Records.
@@ -639,9 +644,17 @@ private:
   void ClearLSAs (void);
 
   Ptr<NetDevice> GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const;
-  uint32_t FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd) const;
-  Ipv4Address FindDesignatedRouterForLink (Ptr<Node> node,   
-    Ptr<NetDevice> ndLocal) const;
+  bool FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd, uint32_t &index) const;
+  Ipv4Address FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRecursion) const;
+  bool AnotherRouterOnLink (Ptr<NetDevice> nd, bool allowRecursion) const;
+  void ProcessBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c);
+  void ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c);
+  void ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c);
+
+  void ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA *pLSA);
+  void BuildNetworkLSAs (NetDeviceContainer c);
+  Ptr<BridgeNetDevice> NetDeviceIsBridged (Ptr<NetDevice> nd) const;
+
 
   typedef std::list<GlobalRoutingLSA*> ListOfLSAs_t;
   ListOfLSAs_t m_LSAs;

@@ -392,6 +392,12 @@ PointToPointNetDevice::IsPointToPoint (void) const
 }
 
   bool 
+PointToPointNetDevice::IsBridge (void) const
+{
+  return false;
+}
+
+  bool 
 PointToPointNetDevice::Send(
   Ptr<Packet> packet, 
   const Address &dest, 

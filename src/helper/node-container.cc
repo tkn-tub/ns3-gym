@@ -50,6 +50,17 @@ NodeContainer::NodeContainer (const NodeContainer &a, const NodeContainer &b,
   Add (d);
 }
 
+NodeContainer::NodeContainer (const NodeContainer &a, const NodeContainer &b, 
+                              const NodeContainer &c, const NodeContainer &d,
+                              const NodeContainer &e)
+{
+  Add (a);
+  Add (b);
+  Add (c);
+  Add (d);
+  Add (e);
+}
+
 NodeContainer::Iterator 
 NodeContainer::Begin (void) const
 {

@@ -149,6 +149,7 @@ void
 V4Ping::StopApplication (void)
 {
   NS_LOG_FUNCTION (this);
+  m_socket->Close ();
 }
 
 

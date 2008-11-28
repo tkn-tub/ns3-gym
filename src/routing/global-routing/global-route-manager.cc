@@ -21,6 +21,7 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/simulation-singleton.h"
+#include "ns3/node-container.h"
 #include "global-route-manager.h"
 #include "global-route-manager-impl.h"
 
@@ -33,7 +34,7 @@ namespace ns3 {
 // ---------------------------------------------------------------------------
 
   void
-GlobalRouteManager::PopulateRoutingTables () 
+GlobalRouteManager::PopulateRoutingTables (void) 
 {
   SelectRouterNodes ();
   BuildGlobalRoutingDatabase ();
@@ -41,28 +42,43 @@ GlobalRouteManager::PopulateRoutingTables ()
 }
 
   void
-GlobalRouteManager::SelectRouterNodes () 
+GlobalRouteManager::PopulateRoutingTables (NodeContainer c) 
+{
+  SelectRouterNodes (c);
+  BuildGlobalRoutingDatabase ();
+  InitializeRoutes ();
+}
+
+  void
+GlobalRouteManager::SelectRouterNodes (void) 
 {
   SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
     SelectRouterNodes ();
 }
 
   void
-GlobalRouteManager::BuildGlobalRoutingDatabase () 
+GlobalRouteManager::SelectRouterNodes (NodeContainer c) 
+{
+  SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
+    SelectRouterNodes (c);
+}
+
+  void
+GlobalRouteManager::BuildGlobalRoutingDatabase (void) 
 {
   SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
     BuildGlobalRoutingDatabase ();
 }
 
   void
-GlobalRouteManager::InitializeRoutes ()
+GlobalRouteManager::InitializeRoutes (void)
 {
   SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
     InitializeRoutes ();
 }
 
   uint32_t
-GlobalRouteManager::AllocateRouterId ()
+GlobalRouteManager::AllocateRouterId (void)
 {
   static uint32_t routerId = 0;
   return routerId++;

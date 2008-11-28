@@ -165,6 +165,12 @@ public:
    */
   virtual bool IsPointToPoint (void) const;
 
+  /**
+   * Is this a bridge?
+   * \returns false.
+   */
+  virtual bool IsBridge (void) const;
+
   virtual bool Send(Ptr<Packet> packet, const Address &dest, uint16_t protocolNumber);
 
   virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);

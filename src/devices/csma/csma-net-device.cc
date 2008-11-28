@@ -837,6 +837,13 @@ CsmaNetDevice::IsPointToPoint (void) const
   return false;
 }
 
+  bool 
+CsmaNetDevice::IsBridge (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return false;
+}
+
   bool
 CsmaNetDevice::Send (Ptr<Packet> packet,const Address& dest, uint16_t protocolNumber)
 {

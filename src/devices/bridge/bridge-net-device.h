@@ -82,6 +82,10 @@ public:
    */
   void AddBridgePort (Ptr<NetDevice> bridgePort);
 
+  uint32_t GetNBridgePorts (void) const;
+
+  Ptr<NetDevice> GetBridgePort (uint32_t n) const;
+
   // inherited from NetDevice base class.
   virtual void SetName(const std::string name);
   virtual std::string GetName(void) const;
@@ -98,6 +102,7 @@ public:
   virtual bool IsMulticast (void) const;
   virtual Address GetMulticast (Ipv4Address multicastGroup) const;
   virtual bool IsPointToPoint (void) const;
+  virtual bool IsBridge (void) const;
   virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
   virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
   virtual Ptr<Node> GetNode (void) const;

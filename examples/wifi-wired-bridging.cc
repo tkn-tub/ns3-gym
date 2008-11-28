@@ -1,4 +1,46 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+// Default network topology includes some number of AP nodes specified by
+// the variable nWifis (defaults to two).  Off of each AP node, there are some
+// number of STA nodes specified by the variable nStas (defaults to two).
+// Each AP talks to its associated STA nodes.  There are bridge net devices
+// on each AP node that bridge the whole thing into one network.
+//
+//      +-----+      +-----+            +-----+      +-----+
+//      | STA |      | STA |            | STA |      | STA | 
+//      +-----+      +-----+            +-----+      +-----+
+//    192.168.0.3  192.168.0.4        192.168.0.5  192.168.0.6
+//      --------     --------           --------     --------
+//      WIFI STA     WIFI STA           WIFI STA     WIFI STA
+//      --------     --------           --------     --------
+//        ((*))       ((*))       |      ((*))        ((*))
+//                                |   
+//              ((*))             |             ((*))
+//             -------                         -------
+//             WIFI AP   CSMA ========= CSMA   WIFI AP 
+//             -------   ----           ----   -------
+//             ##############           ##############
+//                 BRIDGE                   BRIDGE
+//             ##############           ############## 
+//               192.168.0.1              192.168.0.2
+//               +---------+              +---------+  
+//               | AP Node |              | AP Node |
+//               +---------+              +---------+  
+//
 
 #include "ns3/core-module.h"
 #include "ns3/simulator-module.h"
@@ -46,7 +88,6 @@ int main (int argc, char *argv[])
   stack.Install (backboneNodes);
 
   backboneDevices = csma.Install (backboneNodes);
-  backboneInterfaces = ip.Assign (backboneDevices);
 
   double wifiX = 0.0;
   for (uint32_t i = 0; i < nWifis; ++i)
@@ -69,7 +110,6 @@ int main (int argc, char *argv[])
       wifiPhy.SetChannel (wifiChannel.Create ());
 
       sta.Create (nStas);
-      ip.NewNetwork ();
       mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
 				     "MinX", DoubleValue (wifiX),
 				     "MinY", DoubleValue (0.0),
@@ -87,8 +127,12 @@ int main (int argc, char *argv[])
 		   "BeaconGeneration", BooleanValue (true),
 		   "BeaconInterval", TimeValue (Seconds (2.5)));
       apDev = wifi.Install (wifiPhy, backboneNodes.Get (i));
-      apInterface = ip.Assign (apDev);
-      bridge.Install (backboneNodes.Get (i), NetDeviceContainer (apDev, backboneDevices.Get (i)));
+
+      NetDeviceContainer bridgeDev;
+      bridgeDev = bridge.Install (backboneNodes.Get (i), NetDeviceContainer (apDev, backboneDevices.Get (i)));
+
+      // assign AP IP address to bridge, not wifi
+      apInterface = ip.Assign (bridgeDev);
 
       // setup the STAs
       stack.Install (sta);

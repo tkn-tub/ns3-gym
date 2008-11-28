@@ -238,6 +238,11 @@ WifiNetDevice::IsPointToPoint (void) const
   return false;
 }
 bool 
+WifiNetDevice::IsBridge (void) const
+{
+  return false;
+}
+bool 
 WifiNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
   NS_ASSERT (Mac48Address::IsMatchingType (dest));

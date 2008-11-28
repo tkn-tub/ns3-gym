@@ -882,6 +882,12 @@ EmuNetDevice::IsPointToPoint (void) const
   return false;
 }
 
+bool 
+EmuNetDevice::IsBridge (void) const
+{
+  return false;
+}
+
 void
 EmuNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 {

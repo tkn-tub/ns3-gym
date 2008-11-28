@@ -447,16 +447,13 @@ def build(bld):
 
     if Params.g_options.run:
         # Check that the requested program name is valid
-        try:
-            wutils.find_program(Params.g_options.run, env)
-        except ValueError, ex:
-            Params.fatal(str(ex))
-        
+        program_name, dummy_program_argv = wutils.get_run_program(Params.g_options.run, get_command_template())
+
         # When --run'ing a program, tell WAF to only build that program,
         # nothing more; this greatly speeds up compilation when all you
         # want to do is run a test program.
         if not Params.g_options.compile_targets:
-            Params.g_options.compile_targets = Params.g_options.run
+            Params.g_options.compile_targets = program_name
 
 
 
