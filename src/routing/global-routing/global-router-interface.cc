@@ -413,23 +413,30 @@ GlobalRoutingLSA::Print (std::ostream &os) const
 
           os << "---------- RouterLSA Link Record ----------" << std::endl;
           os << "m_linkType = " << p->m_linkType;
-          if (p->m_linkType == GlobalRoutingLinkRecord::TransitNetwork)
+          if (p->m_linkType == GlobalRoutingLinkRecord::PointToPoint)
+            {
+              os << " (GlobalRoutingLinkRecord::PointToPoint)" << std::endl;
+              os << "m_linkId = " << p->m_linkId << std::endl;
+              os << "m_linkData = " << p->m_linkData << std::endl;
+              os << "m_metric = " << p->m_metric << std::endl;
+            }
+          else if (p->m_linkType == GlobalRoutingLinkRecord::TransitNetwork)
             {
               os << " (GlobalRoutingLinkRecord::TransitNetwork)" << std::endl;
               os << "m_linkId = " << p->m_linkId << " (Designated router for network)" << std::endl;
               os << "m_linkData = " << p->m_linkData << " (This router's IP address)" << std::endl;
               os << "m_metric = " << p->m_metric << std::endl;
             }
-          else if (p->GetLinkType () == GlobalRoutingLinkRecord::StubNetwork)
+          else if (p->m_linkType == GlobalRoutingLinkRecord::StubNetwork)
             {
-              os << "(GlobalRoutingLinkRecord::StubNetwork)" << std::endl;
+              os << " (GlobalRoutingLinkRecord::StubNetwork)" << std::endl;
               os << "m_linkId = " << p->m_linkId << " (Network number of attached network)" << std::endl;
               os << "m_linkData = " << p->m_linkData << " (Network mask of attached network)" << std::endl;
               os << "m_metric = " << p->m_metric << std::endl;
             }
           else
             {
-              os << "(Unknown LinkType)" << std::endl;
+              os << " (Unknown LinkType)" << std::endl;
               os << "m_linkId = " << p->m_linkId << std::endl;
               os << "m_linkData = " << p->m_linkData << std::endl;
               os << "m_metric = " << p->m_metric << std::endl;
@@ -621,7 +628,7 @@ GlobalRouter::DiscoverLSAs (void)
       // the segment.  We add the appropriate link record to the LSA.
       //
       // If the device is a point to point link, we treat it separately.  In
-      // that case, there always two link records added.
+      // that case, there may be one or two link records added.
       //
       if (ndLocal->IsBroadcast () && !ndLocal->IsPointToPoint () )
         {
@@ -1007,12 +1014,6 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   rc = FindIfIndexForDevice(nodeRemote, ndRemote, ifIndexRemote);
   NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessPointToPointLinks(): No interface index associated with remote device");
 
-  if (!ipv4Remote->IsUp (ifIndexRemote))
-    {
-      NS_LOG_LOGIC ("Remote side interface " << ifIndexRemote << " not up");
-      return;
-    }
- 
   //
   // Now that we have the Ipv4 interface, we can get the (remote) address and
   // mask we need.
@@ -1026,15 +1027,22 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   // link records; the first is a point-to-point record describing the link and
   // the second is a stub network record with the network number.
   //
-  GlobalRoutingLinkRecord *plr = new GlobalRoutingLinkRecord;
-  NS_ABORT_MSG_IF (plr == 0, "GlobalRouter::ProcessPointToPointLink(): Can't alloc link record");
-  plr->SetLinkType (GlobalRoutingLinkRecord::PointToPoint);
-  plr->SetLinkId (rtrIdRemote);
-  plr->SetLinkData (addrLocal);
-  plr->SetMetric (metricLocal);
-  pLSA->AddLinkRecord (plr);
-  plr = 0;
+  GlobalRoutingLinkRecord *plr;
+  if (ipv4Remote->IsUp (ifIndexRemote))
+    {
+      NS_LOG_LOGIC ("Remote side interface " << ifIndexRemote << " is up-- add a type 1 link");
+ 
+      plr  = new GlobalRoutingLinkRecord;
+      NS_ABORT_MSG_IF (plr == 0, "GlobalRouter::ProcessPointToPointLink(): Can't alloc link record");
+      plr->SetLinkType (GlobalRoutingLinkRecord::PointToPoint);
+      plr->SetLinkId (rtrIdRemote);
+      plr->SetLinkData (addrLocal);
+      plr->SetMetric (metricLocal);
+      pLSA->AddLinkRecord (plr);
+      plr = 0;
+    }
 
+  // Regardless of state of peer, add a type 3 link (RFC 2328: 12.4.1.1)
   plr = new GlobalRoutingLinkRecord;
   NS_ABORT_MSG_IF (plr == 0, "GlobalRouter::ProcessPointToPointLink(): Can't alloc link record");
   plr->SetLinkType (GlobalRoutingLinkRecord::StubNetwork);

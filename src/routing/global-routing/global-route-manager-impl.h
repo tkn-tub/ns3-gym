@@ -547,6 +547,23 @@ public:
  */
   uint32_t AddChild (SPFVertex* child);
 
+  /**
+   * @brief Set the value of the VertexProcessed flag
+   *
+   * Flag to note whether vertex has been processed in stage two of 
+   * SPF computation
+   * @param value boolean value to set the flag
+   */ 
+  void SetVertexProcessed (bool value);
+
+  /**
+   * @brief Check the value of the VertexProcessed flag
+   *
+   * Flag to note whether vertex has been processed in stage two of 
+   * SPF computation
+   * @returns value of underlying flag
+   */ 
+  bool IsVertexProcessed (void) const;
 private:
   VertexType m_vertexType;
   Ipv4Address m_vertexId;
@@ -557,6 +574,7 @@ private:
   SPFVertex* m_parent;
   typedef std::list<SPFVertex*> ListOfSPFVertex_t;
   ListOfSPFVertex_t m_children;
+  bool m_vertexProcessed; 
 
 /**
  * @brief The SPFVertex copy construction is disallowed.  There's no need for
@@ -771,6 +789,7 @@ private:
   SPFVertex* m_spfroot;
   GlobalRouteManagerLSDB* m_lsdb;
   void SPFCalculate (Ipv4Address root);
+  void SPFProcessStubs (SPFVertex* v);
   void SPFNext (SPFVertex*, CandidateQueue&);
   int SPFNexthopCalculation (SPFVertex* v, SPFVertex* w, 
     GlobalRoutingLinkRecord* l, uint32_t distance);
@@ -779,6 +798,7 @@ private:
     GlobalRoutingLinkRecord* prev_link);
   void SPFIntraAddRouter (SPFVertex* v);
   void SPFIntraAddTransit (SPFVertex* v);
+  void SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* v);
   uint32_t FindOutgoingTypeId (Ipv4Address a, 
     Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
 
