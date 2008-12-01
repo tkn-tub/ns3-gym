@@ -37,6 +37,7 @@ namespace ns3 {
 const uint32_t SPF_INFINITY = 0xffffffff;
 
 class CandidateQueue;
+class Ipv4GlobalRouting;
 
 /**
  * @brief Vertex used in shortest path first (SPF) computations. See RFC 2328,
@@ -701,6 +702,16 @@ public:
   GlobalRouteManagerImpl ();
   virtual ~GlobalRouteManagerImpl ();
 /**
+ * @brief Delete all static routes on all nodes that have a
+ * GlobalRouterInterface
+ *
+ * TODO:  separate manually assigned static routes from static routes that
+ * the global routing code injects, and only delete the latter
+ * @internal
+ *
+ */
+  virtual void DeleteGlobalRoutes ();
+/**
  * @brief Select which nodes in the system are to be router nodes and 
  * aggregate the appropriate interfaces onto those nodes.
  * @internal
@@ -770,6 +781,12 @@ private:
   void SPFIntraAddTransit (SPFVertex* v);
   uint32_t FindOutgoingTypeId (Ipv4Address a, 
     Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
+
+  // Local cache of the Ipv4GlobalRouting objects, indexed by nodeId
+  typedef std::list< std::pair< uint32_t, Ptr<Ipv4GlobalRouting> > > Ipv4GlobalRoutingList;
+  void AddGlobalRoutingProtocol (uint32_t nodeId, Ptr<Ipv4GlobalRouting> proto);
+  Ptr<Ipv4GlobalRouting> GetGlobalRoutingProtocol (uint32_t nodeId);
+  Ipv4GlobalRoutingList m_routingProtocols;
 };
 
 } // namespace ns3

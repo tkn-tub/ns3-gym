@@ -45,13 +45,32 @@ public:
  * the nodes in the simulation.  Makes all nodes in the simulation into
  * routers.
  *
- * All this function does is call  BuildGlobalRoutingDatabase () and
+ * All this function does is call the three private functions
+ * SelectRouterNodes (), BuildGlobalRoutingDatabase (), and
  * InitializeRoutes ().
  *
+ * @see SelectRouterNodes ();
  * @see BuildGlobalRoutingDatabase ();
  * @see InitializeRoutes ();
  */
   static void PopulateRoutingTables ();
+
+ /**
+  *@brief Remove all routes that were previously installed in a prior call
+ * to either PopulateRoutingTables() or RecomputeRoutingTables(), and 
+ * add a new set of routes.  
+ * 
+ * This method does not change the set of nodes
+ * over which GlobalRouting is being used, but it will dynamically update
+ * its representation of the global topology before recomputing routes.
+ * Users must first call PopulateRoutingTables() and then may subsequently
+ * call RecomputeRoutingTables() at any later time in the simulation.
+ *
+ * @see DeleteGlobalRoutes ();
+ * @see BuildGlobalRoutingDatabase ();
+ * @see InitializeRoutes ();
+ */
+ static void RecomputeRoutingTables ();
 
 /**
  * @brief Build a routing database and initialize the routing tables of
@@ -72,6 +91,17 @@ public:
   static uint32_t AllocateRouterId ();
 
 private:
+
+/**
+ * @brief Delete all static routes on all nodes that have a 
+ * GlobalRouterInterface
+ *
+ * TODO:  separate manually assigned static routes from static routes that
+ * the global routing code injects, and only delete the latter
+ * @internal
+ */
+  static void DeleteGlobalRoutes ();
+
 /**
  * @brief Select which nodes in the system are to be router nodes and 
  * aggregate the appropriate interfaces onto those nodes.

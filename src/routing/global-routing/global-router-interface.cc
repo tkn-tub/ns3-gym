@@ -513,7 +513,7 @@ GlobalRouter::ClearLSAs ()
 
       *i = 0;
     }
-  NS_LOG_LOGIC ("Clear list");
+  NS_LOG_LOGIC ("Clear list of LSAs");
   m_LSAs.clear();
 }
 
@@ -599,9 +599,9 @@ GlobalRouter::DiscoverLSAs (void)
       // IP addresses in routing.
       //
       bool isIp = false;
-      for (uint32_t i = 0; i < ipv4Local->GetNInterfaces (); ++i )
+      for (uint32_t j = 0; j < ipv4Local->GetNInterfaces (); ++j )
         {
-          if (ipv4Local->GetNetDevice (i) == ndLocal) 
+          if (ipv4Local->GetNetDevice (j) == ndLocal && ipv4Local->IsUp (j)) 
             {
               isIp = true;
               break;
@@ -1007,6 +1007,12 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   rc = FindIfIndexForDevice(nodeRemote, ndRemote, ifIndexRemote);
   NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessPointToPointLinks(): No interface index associated with remote device");
 
+  if (!ipv4Remote->IsUp (ifIndexRemote))
+    {
+      NS_LOG_LOGIC ("Remote side interface " << ifIndexRemote << " not up");
+      return;
+    }
+ 
   //
   // Now that we have the Ipv4 interface, we can get the (remote) address and
   // mask we need.
@@ -1108,8 +1114,15 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
             {
               Ptr<Ipv4> tempIpv4 = tempNode->GetObject<Ipv4> ();
               NS_ASSERT (tempIpv4);
-              Ipv4Address tempAddr = tempIpv4->GetAddress(tempIfIndex);
-              pLSA->AddAttachedRouter (tempAddr);
+              if (!tempIpv4->IsUp (tempIfIndex))
+                {
+                  NS_LOG_LOGIC ("Remote side interface " << tempIfIndex << " not up");
+                }
+              else 
+                {
+                  Ipv4Address tempAddr = tempIpv4->GetAddress(tempIfIndex);
+                  pLSA->AddAttachedRouter (tempAddr);
+                }
             }
         }
       m_LSAs.push_back (pLSA);
@@ -1180,6 +1193,11 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRec
               if (FindIfIndexForDevice(nodeOther, bnd, ifIndexOther))
                 {
                   NS_LOG_LOGIC ("Found router on bridge net device " << bnd);
+                  if (!ipv4->IsUp (ifIndexOther))
+                    {
+                      NS_LOG_LOGIC ("Remote side interface " << ifIndexOther << " not up");
+                      continue;
+                    }
                   Ipv4Address addrOther = ipv4->GetAddress (ifIndexOther);
                   desigRtr = addrOther < desigRtr ? addrOther : desigRtr;
                   NS_LOG_LOGIC ("designated router now " << desigRtr);
@@ -1223,6 +1241,11 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRec
               uint32_t ifIndexOther;
               if (FindIfIndexForDevice(nodeOther, ndOther, ifIndexOther))
                 {
+                  if (!ipv4->IsUp (ifIndexOther))
+                    {
+                      NS_LOG_LOGIC ("Remote side interface " << ifIndexOther << " not up");
+                      continue;
+                    }
                   NS_LOG_LOGIC ("Found router on net device " << ndOther);
                   Ipv4Address addrOther = ipv4->GetAddress (ifIndexOther);
                   desigRtr = addrOther < desigRtr ? addrOther : desigRtr;
