@@ -8,8 +8,65 @@ http://www.nsnam.org
 including tutorials:
 http://www.nsnam.org/tutorials.html
 
-Release 3.2 (pending)
+Release 3.3 (pending)
 =====================
+
+Availability
+------------
+This release is immediately available from:
+http://www.nsnam.org/releases/ns-3.3.tar.bz2
+
+Supported platforms
+-------------------
+ns-3.2 has been tested on the following platforms:
+  - linux x86 gcc 4.2, 4.1, and, 3.4.6.
+  - linux x86_64 gcc 4.3.2, 4.2.3, 4.2.1, 4.1.3, 3.4.6
+  - MacOS X ppc and x86
+  - cygwin gcc 3.4.4 (debug only)
+
+Not all ns-3 options are available on all platforms; consult the
+wiki for more information:
+http://www.nsnam.org/wiki/index.php/Installation
+
+New user-visible features
+-------------------------
+  a) Emulated Net Device
+     A new net device has been added as enabling technology for ns-3 emulation
+     scenarios.  See src/devices/emu and examples/emu-udp-echo.cc for details.
+
+  b) ICMP Support
+     Support for several ICMP messages has been added to ns-3.  See 
+     src/internet-stack/icmpv4.h for details.
+
+  c) IPv6 Address Support
+     New clases to support IPv6 addresses has been added to the system.  This
+     is enabling technology for fuller IPv6 support scheduled for ns-3.4.
+
+API changes from ns-3.2
+-----------------------
+API changes for this release are documented in the file CHANGES.html
+
+Known issues
+------------
+ns-3 build is known to fail on the following platforms:
+  - gcc 3.3 and earlier
+  - optimized builds on gcc 3.4.4 and 3.4.5
+  - optimized builds on linux x86 gcc 4.0.x
+  - optimized builds on Ubuntu 8.10 alpha 5 x86 gcc4.3.2
+  - MinGW
+
+The IPv4 API defined in src/node/ipv4.h is expected to undergo major changes 
+in preparation of the merge of the IPv6 API and implementation.
+
+Future releases
+---------------
+Our next release, which is expected to happen in 2 to 4 months from now, will
+feature the merging of some of our projects currently in development including
+fuller IPv6 support, and IPv4 and routing protocol refactoring, and some smaller
+features such as an object naming facility and a new Global ARP package.
+
+Release 3.2
+===========
 
 Availability
 ------------
