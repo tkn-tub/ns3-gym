@@ -1317,11 +1317,9 @@ GlobalRouteManagerImpl::SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* 
 // Link Records corresponding to links off of that vertex / node.  We're going
 // to be interested in the records corresponding to point-to-point links.
 //
-          GlobalRoutingLSA *lsa = v->GetLSA ();
-          NS_ASSERT_MSG (lsa, 
+          NS_ASSERT_MSG (v->GetLSA (), 
             "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
             "Expected valid LSA in SPFVertex* v");
-          //Address tempaddr = Address (l->GetLinkData);
           Ipv4Mask tempmask ("255.255.255.0");
           Ipv4Address tempip = l->GetLinkId ();
           tempip = tempip.CombineMask (tempmask);
