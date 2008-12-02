@@ -190,6 +190,8 @@ def register_Ns3Buffer_methods(root_module, cls):
     return
 
 def register_Ns3BufferIterator_methods(root_module, cls):
+    ## buffer.h: ns3::Buffer::Iterator::Iterator(ns3::Buffer::Iterator const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Buffer::Iterator const &', 'arg0')])
     ## buffer.h: ns3::Buffer::Iterator::Iterator() [constructor]
     cls.add_constructor([])
     ## buffer.h: void ns3::Buffer::Iterator::Next() [member function]
@@ -332,7 +334,6 @@ def register_Ns3BufferIterator_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3DataRate_methods(root_module, cls):
@@ -595,11 +596,15 @@ def register_Ns3PacketMetadataItem_methods(root_module, cls):
     cls.add_instance_attribute('currentTrimedFromEnd', 'uint32_t', is_const=False)
     ## packet-metadata.h: ns3::PacketMetadata::Item::current [variable]
     cls.add_instance_attribute('current', 'ns3::Buffer::Iterator', is_const=False)
+    ## packet-metadata.h: ns3::PacketMetadata::Item::Item(ns3::PacketMetadata::Item const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PacketMetadata::Item const &', 'arg0')])
+    ## packet-metadata.h: ns3::PacketMetadata::Item::Item() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3PacketMetadataItemIterator_methods(root_module, cls):
+    ## packet-metadata.h: ns3::PacketMetadata::ItemIterator::ItemIterator(ns3::PacketMetadata::ItemIterator const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PacketMetadata::ItemIterator const &', 'arg0')])
     ## packet-metadata.h: ns3::PacketMetadata::ItemIterator::ItemIterator(ns3::PacketMetadata const * metadata, ns3::Buffer buffer) [constructor]
     cls.add_constructor([param('ns3::PacketMetadata const *', 'metadata'), param('ns3::Buffer', 'buffer')])
     ## packet-metadata.h: bool ns3::PacketMetadata::ItemIterator::HasNext() const [member function]
@@ -611,10 +616,13 @@ def register_Ns3PacketMetadataItemIterator_methods(root_module, cls):
     cls.add_method('Next', 
                    'ns3::PacketMetadata::Item', 
                    [])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3Tag_methods(root_module, cls):
+    ## tag.h: ns3::Tag::Tag(ns3::Tag const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Tag const &', 'arg0')])
+    ## tag.h: ns3::Tag::Tag() [constructor]
+    cls.add_constructor([])
     ## tag.h: static ns3::TypeId ns3::Tag::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -640,11 +648,11 @@ def register_Ns3Tag_methods(root_module, cls):
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3TagBuffer_methods(root_module, cls):
+    ## tag-buffer.h: ns3::TagBuffer::TagBuffer(ns3::TagBuffer const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TagBuffer const &', 'arg0')])
     ## tag-buffer.h: ns3::TagBuffer::TagBuffer(uint8_t * start, uint8_t * end) [constructor]
     cls.add_constructor([param('uint8_t *', 'start'), param('uint8_t *', 'end')])
     ## tag-buffer.h: void ns3::TagBuffer::TrimAtEnd(uint32_t trim) [member function]
@@ -703,10 +711,11 @@ def register_Ns3TagBuffer_methods(root_module, cls):
     cls.add_method('Read', 
                    'void', 
                    [param('uint8_t *', 'buffer'), param('uint32_t', 'size')])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3TagIterator_methods(root_module, cls):
+    ## packet.h: ns3::TagIterator::TagIterator(ns3::TagIterator const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TagIterator const &', 'arg0')])
     ## packet.h: bool ns3::TagIterator::HasNext() const [member function]
     cls.add_method('HasNext', 
                    'bool', 
@@ -719,6 +728,8 @@ def register_Ns3TagIterator_methods(root_module, cls):
     return
 
 def register_Ns3TagIteratorItem_methods(root_module, cls):
+    ## packet.h: ns3::TagIterator::Item::Item(ns3::TagIterator::Item const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TagIterator::Item const &', 'arg0')])
     ## packet.h: ns3::TypeId ns3::TagIterator::Item::GetTypeId() const [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -739,7 +750,6 @@ def register_Ns3TagIteratorItem_methods(root_module, cls):
                    'void', 
                    [param('ns3::Tag &', 'tag')], 
                    is_const=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3TagList_methods(root_module, cls):
@@ -775,6 +785,8 @@ def register_Ns3TagList_methods(root_module, cls):
     return
 
 def register_Ns3TagListIterator_methods(root_module, cls):
+    ## tag-list.h: ns3::TagList::Iterator::Iterator(ns3::TagList::Iterator const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TagList::Iterator const &', 'arg0')])
     ## tag-list.h: bool ns3::TagList::Iterator::HasNext() const [member function]
     cls.add_method('HasNext', 
                    'bool', 
@@ -789,7 +801,6 @@ def register_Ns3TagListIterator_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3TagListIteratorItem_methods(root_module, cls):
@@ -803,16 +814,17 @@ def register_Ns3TagListIteratorItem_methods(root_module, cls):
     cls.add_instance_attribute('end', 'int32_t', is_const=False)
     ## tag-list.h: ns3::TagList::Iterator::Item::buf [variable]
     cls.add_instance_attribute('buf', 'ns3::TagBuffer', is_const=False)
+    ## tag-list.h: ns3::TagList::Iterator::Item::Item(ns3::TagList::Iterator::Item const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TagList::Iterator::Item const &', 'arg0')])
     ## tag-list.h: ns3::TagList::Iterator::Item::Item(ns3::TagBuffer buf) [constructor]
     cls.add_constructor([param('ns3::TagBuffer', 'buf')])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3Chunk_methods(root_module, cls):
-    ## chunk.h: ns3::Chunk::Chunk() [constructor]
-    cls.add_constructor([])
     ## chunk.h: ns3::Chunk::Chunk(ns3::Chunk const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Chunk const &', 'arg0')])
+    ## chunk.h: ns3::Chunk::Chunk() [constructor]
+    cls.add_constructor([])
     ## chunk.h: static ns3::TypeId ns3::Chunk::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -831,11 +843,15 @@ def register_Ns3Chunk_methods(root_module, cls):
     return
 
 def register_Ns3DataRateChecker_methods(root_module, cls):
+    ## data-rate.h: ns3::DataRateChecker::DataRateChecker(ns3::DataRateChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DataRateChecker const &', 'arg0')])
+    ## data-rate.h: ns3::DataRateChecker::DataRateChecker() [constructor]
     cls.add_constructor([])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3DataRateValue_methods(root_module, cls):
+    ## data-rate.h: ns3::DataRateValue::DataRateValue(ns3::DataRateValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DataRateValue const &', 'arg0')])
     ## data-rate.h: ns3::DataRateValue::DataRateValue() [constructor]
     cls.add_constructor([])
     ## data-rate.h: ns3::DataRateValue::DataRateValue(ns3::DataRate const & value) [constructor]
@@ -864,7 +880,6 @@ def register_Ns3DataRateValue_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3Header_methods(root_module, cls):
@@ -901,6 +916,8 @@ def register_Ns3Header_methods(root_module, cls):
     return
 
 def register_Ns3PcapWriter_methods(root_module, cls):
+    ## pcap-writer.h: ns3::PcapWriter::PcapWriter(ns3::PcapWriter const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PcapWriter const &', 'arg0')])
     ## pcap-writer.h: ns3::PcapWriter::PcapWriter() [constructor]
     cls.add_constructor([])
     ## pcap-writer.h: void ns3::PcapWriter::Open(std::string const & name) [member function]
@@ -927,7 +944,6 @@ def register_Ns3PcapWriter_methods(root_module, cls):
     cls.add_method('WritePacket', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3Trailer_methods(root_module, cls):
@@ -964,6 +980,8 @@ def register_Ns3Trailer_methods(root_module, cls):
     return
 
 def register_Ns3ErrorModel_methods(root_module, cls):
+    ## error-model.h: ns3::ErrorModel::ErrorModel(ns3::ErrorModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ErrorModel const &', 'arg0')])
     ## error-model.h: static ns3::TypeId ns3::ErrorModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -1002,10 +1020,11 @@ def register_Ns3ErrorModel_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3ListErrorModel_methods(root_module, cls):
+    ## error-model.h: ns3::ListErrorModel::ListErrorModel(ns3::ListErrorModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ListErrorModel const &', 'arg0')])
     ## error-model.h: static ns3::TypeId ns3::ListErrorModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -1032,10 +1051,11 @@ def register_Ns3ListErrorModel_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3RateErrorModel_methods(root_module, cls):
+    ## error-model.h: ns3::RateErrorModel::RateErrorModel(ns3::RateErrorModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RateErrorModel const &', 'arg0')])
     ## error-model.h: static ns3::TypeId ns3::RateErrorModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -1090,7 +1110,6 @@ def register_Ns3RateErrorModel_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):

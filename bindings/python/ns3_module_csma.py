@@ -74,6 +74,8 @@ def register_Ns3Backoff_methods(root_module, cls):
     cls.add_instance_attribute('m_maxRetries', 'uint32_t', is_const=False)
     ## backoff.h: ns3::Backoff::m_slotTime [variable]
     cls.add_instance_attribute('m_slotTime', 'ns3::Time', is_const=False)
+    ## backoff.h: ns3::Backoff::Backoff(ns3::Backoff const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Backoff const &', 'arg0')])
     ## backoff.h: ns3::Backoff::Backoff() [constructor]
     cls.add_constructor([])
     ## backoff.h: ns3::Backoff::Backoff(ns3::Time slotTime, uint32_t minSlots, uint32_t maxSlots, uint32_t ceiling, uint32_t maxRetries) [constructor]
@@ -94,7 +96,6 @@ def register_Ns3Backoff_methods(root_module, cls):
     cls.add_method('IncrNumRetries', 
                    'void', 
                    [])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3CsmaDeviceRec_methods(root_module, cls):
@@ -102,6 +103,8 @@ def register_Ns3CsmaDeviceRec_methods(root_module, cls):
     cls.add_instance_attribute('devicePtr', 'ns3::Ptr< ns3::CsmaNetDevice >', is_const=False)
     ## csma-channel.h: ns3::CsmaDeviceRec::active [variable]
     cls.add_instance_attribute('active', 'bool', is_const=False)
+    ## csma-channel.h: ns3::CsmaDeviceRec::CsmaDeviceRec(ns3::CsmaDeviceRec const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CsmaDeviceRec const &', 'arg0')])
     ## csma-channel.h: ns3::CsmaDeviceRec::CsmaDeviceRec() [constructor]
     cls.add_constructor([])
     ## csma-channel.h: ns3::CsmaDeviceRec::CsmaDeviceRec(ns3::Ptr<ns3::CsmaNetDevice> device) [constructor]
@@ -110,10 +113,11 @@ def register_Ns3CsmaDeviceRec_methods(root_module, cls):
     cls.add_method('IsActive', 
                    'bool', 
                    [])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3CsmaChannel_methods(root_module, cls):
+    ## csma-channel.h: ns3::CsmaChannel::CsmaChannel(ns3::CsmaChannel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CsmaChannel const &', 'arg0')])
     ## csma-channel.h: static ns3::TypeId ns3::CsmaChannel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -198,7 +202,6 @@ def register_Ns3CsmaChannel_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_virtual=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3CsmaNetDevice_methods(root_module, cls):

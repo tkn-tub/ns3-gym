@@ -16,8 +16,8 @@ import ns3_module_core
 import ns3_module_simulator
 import ns3_module_mobility
 import ns3_module_common
-import ns3_module_contrib
 import ns3_module_node
+import ns3_module_contrib
 import ns3_module_point_to_point
 import ns3_module_stats
 import ns3_module_internet_stack
@@ -84,17 +84,6 @@ def register_types(module):
         ns3_module_common__local.register_types(module)
     
     root_module.end_section('ns3_module_common')
-    root_module.begin_section('ns3_module_contrib')
-    ns3_module_contrib.register_types(module)
-    
-    try:
-        import ns3_module_contrib__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_contrib__local.register_types(module)
-    
-    root_module.end_section('ns3_module_contrib')
     root_module.begin_section('ns3_module_node')
     ns3_module_node.register_types(module)
     
@@ -106,6 +95,17 @@ def register_types(module):
         ns3_module_node__local.register_types(module)
     
     root_module.end_section('ns3_module_node')
+    root_module.begin_section('ns3_module_contrib')
+    ns3_module_contrib.register_types(module)
+    
+    try:
+        import ns3_module_contrib__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_contrib__local.register_types(module)
+    
+    root_module.end_section('ns3_module_contrib')
     root_module.begin_section('ns3_module_point_to_point')
     ns3_module_point_to_point.register_types(module)
     
@@ -349,17 +349,6 @@ def register_methods(root_module):
         ns3_module_common__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_common')
-    root_module.begin_section('ns3_module_contrib')
-    ns3_module_contrib.register_methods(root_module)
-    
-    try:
-        import ns3_module_contrib__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_contrib__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_contrib')
     root_module.begin_section('ns3_module_node')
     ns3_module_node.register_methods(root_module)
     
@@ -371,6 +360,17 @@ def register_methods(root_module):
         ns3_module_node__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_node')
+    root_module.begin_section('ns3_module_contrib')
+    ns3_module_contrib.register_methods(root_module)
+    
+    try:
+        import ns3_module_contrib__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_contrib__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_contrib')
     root_module.begin_section('ns3_module_point_to_point')
     ns3_module_point_to_point.register_methods(root_module)
     
@@ -573,17 +573,6 @@ def register_functions(root_module):
         ns3_module_common__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_common')
-    root_module.begin_section('ns3_module_contrib')
-    ns3_module_contrib.register_functions(root_module)
-    
-    try:
-        import ns3_module_contrib__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_contrib__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_contrib')
     root_module.begin_section('ns3_module_node')
     ns3_module_node.register_functions(root_module)
     
@@ -595,6 +584,17 @@ def register_functions(root_module):
         ns3_module_node__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_node')
+    root_module.begin_section('ns3_module_contrib')
+    ns3_module_contrib.register_functions(root_module)
+    
+    try:
+        import ns3_module_contrib__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_contrib__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_contrib')
     root_module.begin_section('ns3_module_point_to_point')
     ns3_module_point_to_point.register_functions(root_module)
     
