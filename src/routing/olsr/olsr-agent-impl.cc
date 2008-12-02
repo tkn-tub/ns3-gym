@@ -29,6 +29,10 @@
 /// implemented here.
 ///
 
+#define NS_LOG_APPEND_CONTEXT                                   \
+  if (GetObject<Node> ()) { std::clog << "[node " << GetObject<Node> ()->GetId () << "] "; }
+
+
 #include "olsr-agent-impl.h"
 #include "ns3/socket-factory.h"
 #include "ns3/udp-socket-factory.h"
@@ -343,8 +347,6 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket)
 
   m_rxPacketTrace (olsrPacketHeader, messages);
 
-  m_state.SetModified (false);
-
   for (MessageList::const_iterator messageIter = messages.begin ();
        messageIter != messages.end (); messageIter++)
     {
@@ -441,11 +443,7 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket)
     }
 
   // After processing all OLSR messages, we must recompute the routing table
-  if (m_state.GetModified ())
-    {
-      RoutingTableComputation ();
-      m_state.SetModified (false);
-    }
+  RoutingTableComputation ();
 }
 
 ///
@@ -464,7 +462,7 @@ AgentImpl::Degree (NeighborTuple const &tuple)
       TwoHopNeighborTuple const &nb2hop_tuple = *it;
       if (nb2hop_tuple.neighborMainAddr == tuple.neighborMainAddr)
         {
-          NeighborTuple *nb_tuple =
+          const NeighborTuple *nb_tuple =
             m_state.FindNeighborTuple (nb2hop_tuple.neighborMainAddr);
           if (nb_tuple == NULL)
             degree++;
@@ -479,6 +477,8 @@ AgentImpl::Degree (NeighborTuple const &tuple)
 void
 AgentImpl::MprComputation()
 {
+  NS_LOG_FUNCTION (this);
+  
   // MPR computation should be done for each interface. See section 8.3.1
   // (RFC 3626) for details.
   MprSet mprSet;
@@ -556,6 +556,8 @@ AgentImpl::MprComputation()
           N2.push_back (*twoHopNeigh);
         }
     }
+
+  NS_LOG_DEBUG ("Size of N2: " << N2.size ());  
 
   // 1. Start with an MPR set made of all members of N with
   // N_willingness equal to WILL_ALWAYS
@@ -714,8 +716,25 @@ AgentImpl::MprComputation()
         }
     }
 
-  m_state.SetMprSet (mprSet);
+#ifdef NS3_LOG_ENABLE
+  {
+    std::ostringstream os;
+    os << "[";
+    for (MprSet::const_iterator iter = mprSet.begin ();
+         iter != mprSet.end (); iter++)
+      {
+        MprSet::const_iterator next = iter;
+        next++;
+        os << *iter;
+        if (next != mprSet.end ())
+          os << ", ";
+      }
+    os << "]";
+    NS_LOG_DEBUG ("Computed MPR set for node " << m_mainAddress << ": " << os.str ());
+  }
+#endif
 
+  m_state.SetMprSet (mprSet);
 }
 
 ///
@@ -1056,7 +1075,7 @@ AgentImpl::ProcessTc (const olsr::MessageHeader &msg,
 	
   // 1. If the sender interface of this message is not in the symmetric
   // 1-hop neighborhood of this node, the message MUST be discarded.
-  LinkTuple *link_tuple = m_state.FindSymLinkTuple (senderIface, now);
+  const LinkTuple *link_tuple = m_state.FindSymLinkTuple (senderIface, now);
   if (link_tuple == NULL)
     return;
 	
@@ -1065,7 +1084,7 @@ AgentImpl::ProcessTc (const olsr::MessageHeader &msg,
   // 	T_seq       >  ANSN,
   // then further processing of this TC message MUST NOT be
   // performed.
-  TopologyTuple *topologyTuple =
+  const TopologyTuple *topologyTuple =
     m_state.FindNewerTopologyTuple (msg.GetOriginatorAddress (), tc.ansn);
   if (topologyTuple != NULL)
     return;
@@ -1152,7 +1171,7 @@ AgentImpl::ProcessMid (const olsr::MessageHeader &msg,
   NS_LOG_DEBUG ("Node " << m_mainAddress << " ProcessMid from " << senderIface);
   // 1. If the sender interface of this message is not in the symmetric
   // 1-hop neighborhood of this node, the message MUST be discarded.
-  LinkTuple *linkTuple = m_state.FindSymLinkTuple (senderIface, now);
+  const LinkTuple *linkTuple = m_state.FindSymLinkTuple (senderIface, now);
   if (linkTuple == NULL)
     {
       NS_LOG_LOGIC ("Node " << m_mainAddress <<
@@ -1234,7 +1253,7 @@ AgentImpl::ForwardDefault (olsr::MessageHeader olsrMessage,
   
   // If the sender interface address is not in the symmetric
   // 1-hop neighborhood the message must not be forwarded
-  LinkTuple *linkTuple = m_state.FindSymLinkTuple (senderAddress, now);
+  const LinkTuple *linkTuple = m_state.FindSymLinkTuple (senderAddress, now);
   if (linkTuple == NULL)
     return;
 
@@ -1253,7 +1272,7 @@ AgentImpl::ForwardDefault (olsr::MessageHeader olsrMessage,
   bool retransmitted = false;
   if (olsrMessage.GetTimeToLive () > 1)
     {
-      MprSelectorTuple *mprselTuple =
+      const MprSelectorTuple *mprselTuple =
         m_state.FindMprSelectorTuple (GetMainAddress (senderAddress));
       if (mprselTuple != NULL)
         {
@@ -1378,6 +1397,8 @@ AgentImpl::SendQueuedMessages ()
 void
 AgentImpl::SendHello ()
 {
+  NS_LOG_FUNCTION (this);
+  
   olsr::MessageHeader msg;
   Time now = Simulator::Now ();
 
@@ -1423,6 +1444,8 @@ AgentImpl::SendHello ()
       if (m_state.FindMprAddress (GetMainAddress (link_tuple->neighborIfaceAddr)))
         {
           nb_type = OLSR_MPR_NEIGH;
+          NS_LOG_DEBUG ("I consider neighbor " << GetMainAddress (link_tuple->neighborIfaceAddr)
+                        << " to be MPR_NEIGH.");
         }
       else
         {
@@ -1435,11 +1458,15 @@ AgentImpl::SendHello ()
                 {
                   if (nb_tuple->status == NeighborTuple::STATUS_SYM)
                     {
+                      NS_LOG_DEBUG ("I consider neighbor " << GetMainAddress (link_tuple->neighborIfaceAddr)
+                                    << " to be SYM_NEIGH.");
                       nb_type = OLSR_SYM_NEIGH;
                     }
                   else if (nb_tuple->status == NeighborTuple::STATUS_NOT_SYM)
                     {
                       nb_type = OLSR_NOT_NEIGH;
+                      NS_LOG_DEBUG ("I consider neighbor " << GetMainAddress (link_tuple->neighborIfaceAddr)
+                                    << " to be NOT_NEIGH.");
                     }
                   else
                     {
@@ -1451,6 +1478,7 @@ AgentImpl::SendHello ()
             }
           if (!ok)
             {
+              NS_LOG_WARN ("I don't know the neighbor " << GetMainAddress (link_tuple->neighborIfaceAddr) << "!!!");
               continue;
             }
         }
@@ -1480,6 +1508,8 @@ AgentImpl::SendHello ()
 void
 AgentImpl::SendTc ()
 {
+  NS_LOG_FUNCTION (this);
+  
   olsr::MessageHeader msg;
 
   msg.SetVTime (OLSR_TOP_HOLD_TIME);
@@ -1662,7 +1692,7 @@ AgentImpl::LinkSensing (const olsr::MessageHeader &msg,
 
   if (updated)
     {
-      LinkTupleUpdated (*link_tuple);
+      LinkTupleUpdated (*link_tuple, hello.willingness);
     }
 
   // Schedules link tuple deletion
@@ -1686,7 +1716,9 @@ AgentImpl::PopulateNeighborSet (const olsr::MessageHeader &msg,
 {
   NeighborTuple *nb_tuple = m_state.FindNeighborTuple (msg.GetOriginatorAddress ());
   if (nb_tuple != NULL)
-    nb_tuple->willingness = hello.willingness;
+    {
+      nb_tuple->willingness = hello.willingness;
+    }
 }
 
 
@@ -1809,6 +1841,8 @@ void
 AgentImpl::PopulateMprSelectorSet (const olsr::MessageHeader &msg,
                                        const olsr::MessageHeader::Hello &hello)
 {
+  NS_LOG_FUNCTION (this);
+  
   Time now = Simulator::Now ();
 	
   typedef std::vector<olsr::MessageHeader::Hello::LinkMessage> LinkMessageVec;
@@ -1819,6 +1853,8 @@ AgentImpl::PopulateMprSelectorSet (const olsr::MessageHeader &msg,
       int nt = linkMessage->linkCode >> 2;
       if (nt == OLSR_MPR_NEIGH)
         {
+          NS_LOG_DEBUG ("Processing a link message with neighbor type MPR_NEIGH");
+          
           for (std::vector<Ipv4Address>::const_iterator nb_iface_addr =
                  linkMessage->neighborInterfaceAddresses.begin ();
                nb_iface_addr != linkMessage->neighborInterfaceAddresses.end ();
@@ -1826,6 +1862,8 @@ AgentImpl::PopulateMprSelectorSet (const olsr::MessageHeader &msg,
             {
               if (GetMainAddress (*nb_iface_addr) == m_mainAddress)
                 {
+                  NS_LOG_DEBUG ("Adding entry to mpr selector set for neighbor " << *nb_iface_addr);
+                  
                   // We must create a new entry into the mpr selector set
                   MprSelectorTuple *existing_mprsel_tuple =
                     m_state.FindMprSelectorTuple (msg.GetOriginatorAddress ());
@@ -1851,6 +1889,7 @@ AgentImpl::PopulateMprSelectorSet (const olsr::MessageHeader &msg,
             }
         }
     }
+  NS_LOG_DEBUG ("Computed MPR selector set for node " << m_mainAddress << ": " << m_state.PrintMprSelectorSet ());
 }
 
 
@@ -1904,7 +1943,7 @@ AgentImpl::NeighborLoss (const LinkTuple &tuple)
   NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
                 << "s: OLSR Node " << m_mainAddress
                 << " LinkTuple " << tuple.neighborIfaceAddr << " -> neighbor loss.");
-  LinkTupleUpdated (tuple);
+  LinkTupleUpdated (tuple, OLSR_WILL_DEFAULT);
   m_state.EraseTwoHopNeighborTuples (GetMainAddress (tuple.neighborIfaceAddr));
   m_state.EraseMprSelectorTuples (GetMainAddress (tuple.neighborIfaceAddr));
   
@@ -1988,7 +2027,7 @@ AgentImpl::RemoveLinkTuple (const LinkTuple &tuple)
 /// \param tuple the link tuple which has been updated.
 ///
 void
-AgentImpl::LinkTupleUpdated (const LinkTuple &tuple)
+AgentImpl::LinkTupleUpdated (const LinkTuple &tuple, uint8_t willingness)
 {
   // Each time a link tuple changes, the associated neighbor tuple must be recomputed
 
@@ -1998,6 +2037,12 @@ AgentImpl::LinkTupleUpdated (const LinkTuple &tuple)
 
   NeighborTuple *nb_tuple =
     m_state.FindNeighborTuple (GetMainAddress (tuple.neighborIfaceAddr));
+  
+  if (nb_tuple == NULL)
+    {
+      LinkTupleAdded (tuple, willingness);
+      nb_tuple = m_state.FindNeighborTuple (GetMainAddress (tuple.neighborIfaceAddr));
+    }
 
   if (nb_tuple != NULL)
     {
@@ -2016,6 +2061,10 @@ AgentImpl::LinkTupleUpdated (const LinkTuple &tuple)
           NS_LOG_DEBUG (*nb_tuple << "->status = STATUS_NOT_SYM; changed:"
                         << int (statusBefore != nb_tuple->status));
         }
+    }
+  else
+    {
+      NS_LOG_WARN ("ERROR! Wanted to update a NeighborTuple but none was found!");
     }
 }
 
@@ -2239,6 +2288,10 @@ AgentImpl::TcTimerExpire ()
   if (m_state.GetMprSelectors ().size () > 0)
     {
       SendTc ();
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Not sending any TC, no one selected me as MPR.");
     }
   m_tcTimer.Schedule (m_tcInterval);
 }

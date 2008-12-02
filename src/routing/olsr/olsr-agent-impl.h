@@ -144,7 +144,7 @@ protected:
   void RemoveDuplicateTuple (const DuplicateTuple &tuple);
   void LinkTupleAdded (const LinkTuple &tuple, uint8_t willingness);
   void RemoveLinkTuple (const LinkTuple &tuple);
-  void LinkTupleUpdated (const LinkTuple &tuple);
+  void LinkTupleUpdated (const LinkTuple &tuple, uint8_t willingness);
   void AddNeighborTuple (const NeighborTuple &tuple);
   void RemoveNeighborTuple (const NeighborTuple &tuple);
   void AddTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple);

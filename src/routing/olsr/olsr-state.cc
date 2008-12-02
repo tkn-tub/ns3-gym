@@ -83,6 +83,25 @@ OlsrState::InsertMprSelectorTuple (MprSelectorTuple const &tuple)
   m_mprSelectorSet.push_back (tuple);
 }
 
+std::string
+OlsrState::PrintMprSelectorSet () const
+{
+  std::ostringstream os;
+  os << "[";
+  for (MprSelectorSet::const_iterator iter = m_mprSelectorSet.begin ();
+       iter != m_mprSelectorSet.end (); iter++)
+    {
+      MprSelectorSet::const_iterator next = iter;
+      next++;
+      os << iter->mainAddr;
+      if (next != m_mprSelectorSet.end ())
+        os << ", ";
+    }
+  os << "]";
+  return os.str ();
+}
+  
+
 /********** Neighbor Set Manipulation **********/
 
 NeighborTuple*
@@ -130,7 +149,6 @@ OlsrState::EraseNeighborTuple (const NeighborTuple &tuple)
       if (*it == tuple)
         {
           m_neighborSet.erase (it);
-          m_modified = true;
           break;
         }
     }
@@ -145,7 +163,6 @@ OlsrState::EraseNeighborTuple (const Ipv4Address &mainAddr)
       if (it->neighborMainAddr == mainAddr)
         {
           it = m_neighborSet.erase (it);
-          m_modified = true;
           break;
         }
     }
@@ -161,7 +178,6 @@ OlsrState::InsertNeighborTuple (NeighborTuple const &tuple)
         {
           // Update it
           *it = tuple;
-          m_modified = true;
           return;
         }
     }
@@ -195,7 +211,6 @@ OlsrState::EraseTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
       if (*it == tuple)
         {
           m_twoHopNeighborSet.erase(it);
-          m_modified = true;
           break;
         }
     }
@@ -212,7 +227,6 @@ OlsrState::EraseTwoHopNeighborTuples (const Ipv4Address &neighborMainAddr,
           && it->twoHopNeighborAddr == twoHopNeighborAddr)
         {
           it = m_twoHopNeighborSet.erase (it);
-          m_modified = true;
         }
       else
         {
@@ -230,7 +244,6 @@ OlsrState::EraseTwoHopNeighborTuples (const Ipv4Address &neighborMainAddr)
       if (it->neighborMainAddr == neighborMainAddr)
         {
           it = m_twoHopNeighborSet.erase (it);
-          m_modified = true;
         }
       else
         {
@@ -243,7 +256,6 @@ void
 OlsrState::InsertTwoHopNeighborTuple (TwoHopNeighborTuple const &tuple)
 {
   m_twoHopNeighborSet.push_back (tuple);
-  m_modified = true;
 }
 
 /********** MPR Set Manipulation **********/
@@ -335,7 +347,6 @@ OlsrState::EraseLinkTuple (const LinkTuple &tuple)
       if (*it == tuple)
         {
           m_linkSet.erase (it);
-          m_modified = true;
           break;
         }
     }
@@ -345,7 +356,6 @@ LinkTuple&
 OlsrState::InsertLinkTuple (LinkTuple const &tuple)
 {
   m_linkSet.push_back (tuple);
-  m_modified = true;
   return m_linkSet.back ();
 }
 
@@ -385,7 +395,6 @@ OlsrState::EraseTopologyTuple(const TopologyTuple &tuple)
       if (*it == tuple)
         {
           m_topologySet.erase (it);
-          m_modified = true;
           break;
         }
     }
@@ -400,7 +409,6 @@ OlsrState::EraseOlderTopologyTuples (const Ipv4Address &lastAddr, uint16_t ansn)
       if (it->lastAddr == lastAddr && it->sequenceNumber < ansn)
         {
           it = m_topologySet.erase (it);
-          m_modified = true;
         }
       else
         {
@@ -413,7 +421,6 @@ void
 OlsrState::InsertTopologyTuple (TopologyTuple const &tuple)
 {
   m_topologySet.push_back (tuple);
-  m_modified = true;
 }
 
 /********** Interface Association Set Manipulation **********/
@@ -451,7 +458,6 @@ OlsrState::EraseIfaceAssocTuple (const IfaceAssocTuple &tuple)
       if (*it == tuple)
         {
           m_ifaceAssocSet.erase (it);
-          m_modified = true;
           break;
         }
     }
@@ -461,7 +467,6 @@ void
 OlsrState::InsertIfaceAssocTuple (const IfaceAssocTuple &tuple)
 {
   m_ifaceAssocSet.push_back (tuple);
-  m_modified = true;
 }
 
 std::vector<Ipv4Address>
