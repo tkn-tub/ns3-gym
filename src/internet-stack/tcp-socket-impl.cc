@@ -456,6 +456,12 @@ int
 TcpSocketImpl::Listen (void)
 {
   NS_LOG_FUNCTION (this);
+  // Linux quits EINVAL if we're not closed, so match what they do
+  if (m_state != CLOSED)
+    {
+      m_errno = ERROR_INVAL;
+      return -1;
+    }
   Actions_t action = ProcessEvent (APP_LISTEN);
   ProcessAction (action);
   return 0;
