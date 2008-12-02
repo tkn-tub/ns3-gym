@@ -413,23 +413,30 @@ GlobalRoutingLSA::Print (std::ostream &os) const
 
           os << "---------- RouterLSA Link Record ----------" << std::endl;
           os << "m_linkType = " << p->m_linkType;
-          if (p->m_linkType == GlobalRoutingLinkRecord::TransitNetwork)
+          if (p->m_linkType == GlobalRoutingLinkRecord::PointToPoint)
+            {
+              os << " (GlobalRoutingLinkRecord::PointToPoint)" << std::endl;
+              os << "m_linkId = " << p->m_linkId << std::endl;
+              os << "m_linkData = " << p->m_linkData << std::endl;
+              os << "m_metric = " << p->m_metric << std::endl;
+            }
+          else if (p->m_linkType == GlobalRoutingLinkRecord::TransitNetwork)
             {
               os << " (GlobalRoutingLinkRecord::TransitNetwork)" << std::endl;
               os << "m_linkId = " << p->m_linkId << " (Designated router for network)" << std::endl;
               os << "m_linkData = " << p->m_linkData << " (This router's IP address)" << std::endl;
               os << "m_metric = " << p->m_metric << std::endl;
             }
-          else if (p->GetLinkType () == GlobalRoutingLinkRecord::StubNetwork)
+          else if (p->m_linkType == GlobalRoutingLinkRecord::StubNetwork)
             {
-              os << "(GlobalRoutingLinkRecord::StubNetwork)" << std::endl;
+              os << " (GlobalRoutingLinkRecord::StubNetwork)" << std::endl;
               os << "m_linkId = " << p->m_linkId << " (Network number of attached network)" << std::endl;
               os << "m_linkData = " << p->m_linkData << " (Network mask of attached network)" << std::endl;
               os << "m_metric = " << p->m_metric << std::endl;
             }
           else
             {
-              os << "(Unknown LinkType)" << std::endl;
+              os << " (Unknown LinkType)" << std::endl;
               os << "m_linkId = " << p->m_linkId << std::endl;
               os << "m_linkData = " << p->m_linkData << std::endl;
               os << "m_metric = " << p->m_metric << std::endl;
@@ -513,7 +520,7 @@ GlobalRouter::ClearLSAs ()
 
       *i = 0;
     }
-  NS_LOG_LOGIC ("Clear list");
+  NS_LOG_LOGIC ("Clear list of LSAs");
   m_LSAs.clear();
 }
 
@@ -599,9 +606,9 @@ GlobalRouter::DiscoverLSAs (void)
       // IP addresses in routing.
       //
       bool isIp = false;
-      for (uint32_t i = 0; i < ipv4Local->GetNInterfaces (); ++i )
+      for (uint32_t j = 0; j < ipv4Local->GetNInterfaces (); ++j )
         {
-          if (ipv4Local->GetNetDevice (i) == ndLocal) 
+          if (ipv4Local->GetNetDevice (j) == ndLocal && ipv4Local->IsUp (j)) 
             {
               isIp = true;
               break;
@@ -621,7 +628,7 @@ GlobalRouter::DiscoverLSAs (void)
       // the segment.  We add the appropriate link record to the LSA.
       //
       // If the device is a point to point link, we treat it separately.  In
-      // that case, there always two link records added.
+      // that case, there may be one or two link records added.
       //
       if (ndLocal->IsBroadcast () && !ndLocal->IsPointToPoint () )
         {
@@ -1020,15 +1027,22 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   // link records; the first is a point-to-point record describing the link and
   // the second is a stub network record with the network number.
   //
-  GlobalRoutingLinkRecord *plr = new GlobalRoutingLinkRecord;
-  NS_ABORT_MSG_IF (plr == 0, "GlobalRouter::ProcessPointToPointLink(): Can't alloc link record");
-  plr->SetLinkType (GlobalRoutingLinkRecord::PointToPoint);
-  plr->SetLinkId (rtrIdRemote);
-  plr->SetLinkData (addrLocal);
-  plr->SetMetric (metricLocal);
-  pLSA->AddLinkRecord (plr);
-  plr = 0;
+  GlobalRoutingLinkRecord *plr;
+  if (ipv4Remote->IsUp (ifIndexRemote))
+    {
+      NS_LOG_LOGIC ("Remote side interface " << ifIndexRemote << " is up-- add a type 1 link");
+ 
+      plr  = new GlobalRoutingLinkRecord;
+      NS_ABORT_MSG_IF (plr == 0, "GlobalRouter::ProcessPointToPointLink(): Can't alloc link record");
+      plr->SetLinkType (GlobalRoutingLinkRecord::PointToPoint);
+      plr->SetLinkId (rtrIdRemote);
+      plr->SetLinkData (addrLocal);
+      plr->SetMetric (metricLocal);
+      pLSA->AddLinkRecord (plr);
+      plr = 0;
+    }
 
+  // Regardless of state of peer, add a type 3 link (RFC 2328: 12.4.1.1)
   plr = new GlobalRoutingLinkRecord;
   NS_ABORT_MSG_IF (plr == 0, "GlobalRouter::ProcessPointToPointLink(): Can't alloc link record");
   plr->SetLinkType (GlobalRoutingLinkRecord::StubNetwork);
@@ -1108,8 +1122,15 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
             {
               Ptr<Ipv4> tempIpv4 = tempNode->GetObject<Ipv4> ();
               NS_ASSERT (tempIpv4);
-              Ipv4Address tempAddr = tempIpv4->GetAddress(tempIfIndex);
-              pLSA->AddAttachedRouter (tempAddr);
+              if (!tempIpv4->IsUp (tempIfIndex))
+                {
+                  NS_LOG_LOGIC ("Remote side interface " << tempIfIndex << " not up");
+                }
+              else 
+                {
+                  Ipv4Address tempAddr = tempIpv4->GetAddress(tempIfIndex);
+                  pLSA->AddAttachedRouter (tempAddr);
+                }
             }
         }
       m_LSAs.push_back (pLSA);
@@ -1180,6 +1201,11 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRec
               if (FindIfIndexForDevice(nodeOther, bnd, ifIndexOther))
                 {
                   NS_LOG_LOGIC ("Found router on bridge net device " << bnd);
+                  if (!ipv4->IsUp (ifIndexOther))
+                    {
+                      NS_LOG_LOGIC ("Remote side interface " << ifIndexOther << " not up");
+                      continue;
+                    }
                   Ipv4Address addrOther = ipv4->GetAddress (ifIndexOther);
                   desigRtr = addrOther < desigRtr ? addrOther : desigRtr;
                   NS_LOG_LOGIC ("designated router now " << desigRtr);
@@ -1223,6 +1249,11 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRec
               uint32_t ifIndexOther;
               if (FindIfIndexForDevice(nodeOther, ndOther, ifIndexOther))
                 {
+                  if (!ipv4->IsUp (ifIndexOther))
+                    {
+                      NS_LOG_LOGIC ("Remote side interface " << ifIndexOther << " not up");
+                      continue;
+                    }
                   NS_LOG_LOGIC ("Found router on net device " << ndOther);
                   Ipv4Address addrOther = ipv4->GetAddress (ifIndexOther);
                   desigRtr = addrOther < desigRtr ? addrOther : desigRtr;

@@ -30,6 +30,7 @@
 #include "ns3/log.h"
 #include "ns3/node-list.h"
 #include "ns3/ipv4.h"
+#include "ns3/ipv4-global-routing.h"
 #include "global-router-interface.h"
 #include "global-route-manager-impl.h"
 #include "candidate-queue.h"
@@ -52,7 +53,8 @@ SPFVertex::SPFVertex () :
   m_rootOif (SPF_INFINITY),
   m_nextHop ("0.0.0.0"),
   m_parent (0),
-  m_children ()
+  m_children (),
+  m_vertexProcessed (false)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -64,7 +66,8 @@ SPFVertex::SPFVertex (GlobalRoutingLSA* lsa) :
   m_rootOif (SPF_INFINITY),
   m_nextHop ("0.0.0.0"),
   m_parent (0),
-  m_children ()
+  m_children (),
+  m_vertexProcessed (false)
 {
   NS_LOG_FUNCTION_NOARGS ();
   if (lsa->GetLSType () == GlobalRoutingLSA::RouterLSA) 
@@ -226,6 +229,19 @@ SPFVertex::AddChild (SPFVertex* child)
   return m_children.size ();
 }
 
+void 
+SPFVertex::SetVertexProcessed (bool value)
+{
+  m_vertexProcessed = value;
+}
+
+bool 
+SPFVertex::IsVertexProcessed (void) const
+{
+  return m_vertexProcessed;
+}
+
+
 // ---------------------------------------------------------------------------
 //
 // GlobalRouteManagerLSDB Implementation
@@ -349,6 +365,35 @@ GlobalRouteManagerImpl::DebugUseLsdb (GlobalRouteManagerLSDB* lsdb)
   m_lsdb = lsdb;
 }
 
+  void
+GlobalRouteManagerImpl::DeleteGlobalRoutes ()
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
+    {
+      Ptr<Node> node = *i;
+      Ptr<Ipv4GlobalRouting> gr = GetGlobalRoutingProtocol (node->GetId ());
+      uint32_t j = 0;
+      uint32_t nRoutes = gr->GetNRoutes ();
+      NS_LOG_LOGIC ("Deleting " << gr->GetNRoutes ()<< " routes from node " << node->GetId ());
+      // Each time we delete route 0, the route index shifts downward
+      // We can delete all routes if we delete the route numbered 0
+      // nRoutes times
+      for (j = 0; j < nRoutes; j++)
+        {
+          NS_LOG_LOGIC ("Deleting global route " << j << " from node " << node->GetId ());
+          gr->RemoveRoute (0);        
+        }
+      NS_LOG_LOGIC ("Deleted " << j << " global routes from node "<< node->GetId ());
+    }
+  if (m_lsdb)
+    {
+      NS_LOG_LOGIC ("Deleting LSDB, creating new one");
+      delete m_lsdb;
+      m_lsdb = new GlobalRouteManagerLSDB ();
+    }
+}
+
 //
 // In order to build the routing database, we need at least one of the nodes
 // to participate as a router.  This is a convenience function that makes
@@ -362,11 +407,25 @@ GlobalRouteManagerImpl::SelectRouterNodes ()
   for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
     {
       Ptr<Node> node = *i;
-      NS_LOG_LOGIC ("Adding GlobalRouter interface to node " << 
-        node->GetId ());
+      NS_LOG_LOGIC ("Adding GlobalRouter interface to node " << node->GetId ());
 
       Ptr<GlobalRouter> globalRouter = CreateObject<GlobalRouter> ();
       node->AggregateObject (globalRouter);
+
+      NS_LOG_LOGIC ("Adding GlobalRouting Protocol to node " << node->GetId ());
+      Ptr<Ipv4GlobalRouting> globalRouting = CreateObject<Ipv4GlobalRouting> ();
+      // This is the object that will keep the global routes.  We insert it
+      // at slightly higher priority than static routing (which is at zero).
+      // This means that global routes (e.g. host routes) will be consulted
+      // before static routes
+      Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+      NS_ASSERT_MSG (ipv4, "GlobalRouteManagerImpl::SelectRouterNodes (): "
+        "GetObject for <Ipv4> interface failed");
+      // XXX make the below  priority value an attribute
+      ipv4->AddRoutingProtocol (globalRouting, 3);  
+      // Locally cache the globalRouting pointer; we'll need it later
+      // when we add routes
+      AddGlobalRoutingProtocol (node->GetId (), globalRouting);
     }
 }
 
@@ -382,6 +441,21 @@ GlobalRouteManagerImpl::SelectRouterNodes (NodeContainer c)
 
       Ptr<GlobalRouter> globalRouter = CreateObject<GlobalRouter> ();
       node->AggregateObject (globalRouter);
+
+      NS_LOG_LOGIC ("Adding GlobalRouting Protocol to node " << node->GetId ());
+      Ptr<Ipv4GlobalRouting> globalRouting = CreateObject<Ipv4GlobalRouting> ();
+      // This is the object that will keep the global routes.  We insert it
+      // at slightly higher priority than static routing (which is at zero).
+      // This means that global routes (e.g. host routes) will be consulted
+      // before static routes
+      Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+      NS_ASSERT_MSG (ipv4, "GlobalRouteManagerImpl::SelectRouterNodes (): "
+        "GetObject for <Ipv4> interface failed");
+      // XXX make the below  priority value an attribute
+      ipv4->AddRoutingProtocol (globalRouting, 3);  
+      // Locally cache the globalRouting pointer; we'll need it later
+      // when we add routes
+      AddGlobalRoutingProtocol (node->GetId (), globalRouting);
     }
 }
 
@@ -1115,11 +1189,11 @@ GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
 //
 // Iterate the algorithm by returning to Step 2 until there are no more
 // candidate vertices.
-//
-    }
-//
-// Second stage of SPF calculation procedure's  
-// NOTYET:  ospf_spf_process_stubs (area, area->spf, new_table);
+
+    }  // end for loop
+
+// Second stage of SPF calculation procedure  
+  SPFProcessStubs (m_spfroot);
 //
 // We're all done setting the routing information for the node at the root of
 // the SPF tree.  Delete all of the vertices and corresponding resources.  Go
@@ -1127,6 +1201,155 @@ GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
 //
   delete m_spfroot;
   m_spfroot = 0;
+}
+
+// Processing logic from RFC 2328, page 166 and quagga ospf_spf_process_stubs ()
+// stub link records will exist for point-to-point interfaces and for
+// broadcast interfaces for which no neighboring router can be found
+void
+GlobalRouteManagerImpl::SPFProcessStubs (SPFVertex* v)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_LOGIC ("Processing stubs for " << v->GetVertexId ());
+  if (v->GetVertexType () == SPFVertex::VertexRouter)
+    {
+      GlobalRoutingLSA *rlsa = v->GetLSA ();
+      NS_LOG_LOGIC ("Processing router LSA with id " << rlsa->GetLinkStateId ());
+      for (uint32_t i = 0; i < rlsa->GetNLinkRecords (); i++)
+        {
+          NS_LOG_LOGIC ("Examining link " << i << " of " << 
+            v->GetVertexId () << "'s " <<
+            v->GetLSA ()->GetNLinkRecords () << " link records");
+          GlobalRoutingLinkRecord *l = v->GetLSA ()->GetLinkRecord (i);
+          if (l->GetLinkType () == GlobalRoutingLinkRecord::StubNetwork)
+            {
+              NS_LOG_LOGIC ("Found a Stub record to " << l->GetLinkId ());
+              SPFIntraAddStub (l, v);
+              continue;
+            }
+        }
+    }
+    for (uint32_t i = 0; i < v->GetNChildren (); i++)
+      {
+        if (!v->GetChild (i)->IsVertexProcessed ())
+          {
+            SPFProcessStubs (v->GetChild (i));
+            v->GetChild (i)->SetVertexProcessed (true);
+          }
+      }
+}
+
+// RFC2328 16.1. second stage. 
+void
+GlobalRouteManagerImpl::SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* v)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+
+  NS_ASSERT_MSG (m_spfroot, 
+    "GlobalRouteManagerImpl::SPFIntraAddStub (): Root pointer not set");
+
+  // XXX simplifed logic for the moment.  There are two cases to consider:
+  // 1) the stub network is on this router; do nothing for now
+  //    (already handled above)
+  // 2) the stub network is on a remote router, so I should use the
+  // same next hop that I use to get to vertex v
+  if (v->GetVertexId () == m_spfroot->GetVertexId ())
+    {
+      NS_LOG_LOGIC ("Stub is on local host: " << v->GetVertexId () << "; returning");
+      return;
+    }
+      NS_LOG_LOGIC ("Stub is on remote host: " << v->GetVertexId () << "; installing");
+//
+// The root of the Shortest Path First tree is the router to which we are 
+// going to write the actual routing table entries.  The vertex corresponding
+// to this router has a vertex ID which is the router ID of that node.  We're
+// going to use this ID to discover which node it is that we're actually going
+// to update.
+//
+  Ipv4Address routerId = m_spfroot->GetVertexId ();
+
+  NS_LOG_LOGIC ("Vertex ID = " << routerId);
+//
+// We need to walk the list of nodes looking for the one that has the router
+// ID corresponding to the root vertex.  This is the one we're going to write
+// the routing information to.
+//
+  NodeList::Iterator i = NodeList::Begin (); 
+  for (; i != NodeList::End (); i++)
+    {
+      Ptr<Node> node = *i;
+//
+// The router ID is accessible through the GlobalRouter interface, so we need
+// to QI for that interface.  If there's no GlobalRouter interface, the node
+// in question cannot be the router we want, so we continue.
+// 
+      Ptr<GlobalRouter> rtr = 
+        node->GetObject<GlobalRouter> ();
+
+      if (rtr == 0)
+        {
+          NS_LOG_LOGIC ("No GlobalRouter interface on node " << 
+            node->GetId ());
+          continue;
+        }
+//
+// If the router ID of the current node is equal to the router ID of the 
+// root of the SPF tree, then this node is the one for which we need to 
+// write the routing tables.
+//
+      NS_LOG_LOGIC ("Considering router " << rtr->GetRouterId ());
+
+      if (rtr->GetRouterId () == routerId)
+        {
+          NS_LOG_LOGIC ("Setting routes for node " << node->GetId ());
+//
+// Routing information is updated using the Ipv4 interface.  We need to QI
+// for that interface.  If the node is acting as an IP version 4 router, it
+// should absolutely have an Ipv4 interface.
+//
+          Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+          NS_ASSERT_MSG (ipv4, 
+            "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
+            "QI for <Ipv4> interface failed");
+//
+// Get the Global Router Link State Advertisement from the vertex we're
+// adding the routes to.  The LSA will have a number of attached Global Router
+// Link Records corresponding to links off of that vertex / node.  We're going
+// to be interested in the records corresponding to point-to-point links.
+//
+          GlobalRoutingLSA *lsa = v->GetLSA ();
+          NS_ASSERT_MSG (lsa, 
+            "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
+            "Expected valid LSA in SPFVertex* v");
+          //Address tempaddr = Address (l->GetLinkData);
+          Ipv4Mask tempmask ("255.255.255.0");
+          Ipv4Address tempip = l->GetLinkId ();
+          tempip = tempip.CombineMask (tempmask);
+
+          NS_LOG_LOGIC (" Node " << node->GetId () <<
+            " add route to " << tempip <<
+            " with mask " << tempmask <<
+            " using next hop " << v->GetNextHop () <<
+            " via interface " << v->GetOutgoingTypeId ());
+//
+// Here's why we did all of that work.  We're going to add a host route to the
+// host address found in the m_linkData field of the point-to-point link
+// record.  In the case of a point-to-point link, this is the local IP address
+// of the node connected to the link.  Each of these point-to-point links
+// will correspond to a local interface that has an IP address to which
+// the node at the root of the SPF tree can send packets.  The vertex <v> 
+// (corresponding to the node that has these links and interfaces) has 
+// an m_nextHop address precalculated for us that is the address to which the
+// root node should send packets to be forwarded to these IP addresses.
+// Similarly, the vertex <v> has an m_rootOif (outbound interface index) to
+// which the packets should be send for forwarding.
+//
+          Ptr<Ipv4GlobalRouting> gr = GetGlobalRoutingProtocol (node->GetId ());
+          NS_ASSERT (gr);
+          gr->AddNetworkRouteTo (tempip, tempmask, v->GetNextHop (), v->GetOutgoingTypeId ());
+          return;
+        } // if
+    } // for
 }
 
 //
@@ -1289,6 +1512,8 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 // the local side of the point-to-point links found on the node described by
 // the vertex <v>.
 //
+          NS_LOG_LOGIC (" Node " << node->GetId () <<
+             " found " << nLinkRecords << " link records in LSA " << lsa << "with LinkStateId "<< lsa->GetLinkStateId ());
           for (uint32_t j = 0; j < nLinkRecords; ++j)
             {
 //
@@ -1317,7 +1542,9 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 // Similarly, the vertex <v> has an m_rootOif (outbound interface index) to
 // which the packets should be send for forwarding.
 //
-              ipv4->AddHostRouteTo (lr->GetLinkData (), v->GetNextHop (),
+              Ptr<Ipv4GlobalRouting> gr = GetGlobalRoutingProtocol (node->GetId ());
+              NS_ASSERT (gr);
+              gr->AddHostRouteTo (lr->GetLinkData (), v->GetNextHop (),
                 v->GetOutgoingTypeId ());
             }
 //
@@ -1399,7 +1626,9 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
           Ipv4Mask tempmask = lsa->GetNetworkLSANetworkMask ();
           Ipv4Address tempip = lsa->GetLinkStateId ();
           tempip = tempip.CombineMask (tempmask);
-          ipv4->AddNetworkRouteTo (tempip, tempmask, v->GetNextHop (),
+          Ptr<Ipv4GlobalRouting> gr = GetGlobalRoutingProtocol (node->GetId ());
+          NS_ASSERT (gr);
+          gr->AddNetworkRouteTo (tempip, tempmask, v->GetNextHop (),
             v->GetOutgoingTypeId ());
           NS_LOG_LOGIC ("Node " << node->GetId () <<
             " add network route to " << tempip <<
@@ -1426,6 +1655,29 @@ GlobalRouteManagerImpl::SPFVertexAddParent (SPFVertex* v)
   NS_LOG_FUNCTION (v);
   v->GetParent ()->AddChild (v);
 }
+
+  void 
+GlobalRouteManagerImpl::AddGlobalRoutingProtocol (uint32_t nodeId, Ptr<Ipv4GlobalRouting> proto)
+{
+  NS_LOG_FUNCTION (nodeId);
+  m_routingProtocols.push_back
+    (std::pair<uint32_t, Ptr<Ipv4GlobalRouting> > (nodeId, proto));
+  m_routingProtocols.sort ();
+}
+
+  Ptr<Ipv4GlobalRouting>
+GlobalRouteManagerImpl::GetGlobalRoutingProtocol (uint32_t nodeId)
+{
+  for (Ipv4GlobalRoutingList::const_iterator rprotoIter = m_routingProtocols.begin (); rprotoIter != m_routingProtocols.end (); rprotoIter++)
+    {
+      if ((*rprotoIter).first == nodeId)
+        {
+          return (*rprotoIter).second;
+        }
+    }
+  return 0;
+}
+
 
 } // namespace ns3
 

@@ -522,8 +522,17 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
       ipv4Interface = *i;
       if (ipv4Interface->GetDevice () == device)
         {
-          m_rxTrace (packet, index);
-          break;
+          if (ipv4Interface->IsUp ())
+            {
+              m_rxTrace (packet, index);
+              break;
+            } 
+          else
+            {
+              NS_LOG_LOGIC ("Dropping received packet-- interface is down");
+              m_dropTrace (packet);
+              return;
+            }
         }
       index++;
     }
@@ -1074,7 +1083,7 @@ Ipv4L3Protocol::SetDown (uint32_t ifaceIndex)
   Ptr<Ipv4Interface> interface = GetInterface (ifaceIndex);
   interface->SetDown ();
 
-  // Remove all routes that are going through this interface
+  // Remove all static routes that are going through this interface
   bool modified = true;
   while (modified)
     {

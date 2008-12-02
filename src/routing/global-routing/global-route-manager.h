@@ -45,9 +45,11 @@ public:
  * the nodes in the simulation.  Makes all nodes in the simulation into
  * routers.
  *
- * All this function does is call  BuildGlobalRoutingDatabase () and
+ * All this function does is call the three functions
+ * SelectRouterNodes (), BuildGlobalRoutingDatabase (), and
  * InitializeRoutes ().
  *
+ * @see SelectRouterNodes ();
  * @see BuildGlobalRoutingDatabase ();
  * @see InitializeRoutes ();
  */
@@ -58,20 +60,40 @@ public:
  * the nodes in the simulation.  Makes the nodes in the provided container
  * into routers.
  *
- * All this function does is call  BuildGlobalRoutingDatabase () and
+ * All this function does is call the three functions
+ * SelectRouterNodes (), BuildGlobalRoutingDatabase (), and
  * InitializeRoutes ().
  *
+ * @see SelectRouterNodes (Node Container c);
  * @see BuildGlobalRoutingDatabase ();
  * @see InitializeRoutes ();
  */
   static void PopulateRoutingTables (NodeContainer c);
 
-/**
- * @brief Allocate a 32-bit router ID from monotonically increasing counter.
+ /**
+  *@brief Remove all routes that were previously installed in a prior call
+ * to either PopulateRoutingTables() or RecomputeRoutingTables(), and 
+ * add a new set of routes.  
+ * 
+ * This method does not change the set of nodes
+ * over which GlobalRouting is being used, but it will dynamically update
+ * its representation of the global topology before recomputing routes.
+ * Users must first call PopulateRoutingTables() and then may subsequently
+ * call RecomputeRoutingTables() at any later time in the simulation.
+ *
+ * @see DeleteGlobalRoutes ();
+ * @see BuildGlobalRoutingDatabase ();
+ * @see InitializeRoutes ();
  */
-  static uint32_t AllocateRouterId ();
+ static void RecomputeRoutingTables ();
 
-private:
+/**
+ * @brief Delete all static routes on all nodes that have a 
+ * GlobalRouterInterface
+ *
+ */
+  static void DeleteGlobalRoutes ();
+
 /**
  * @brief Select which nodes in the system are to be router nodes and 
  * aggregate the appropriate interfaces onto those nodes.
@@ -87,6 +109,13 @@ private:
  *
  */
   static void SelectRouterNodes (NodeContainer c);
+
+/**
+ * @brief Allocate a 32-bit router ID from monotonically increasing counter.
+ */
+  static uint32_t AllocateRouterId ();
+
+private:
 
 /**
  * @brief Build the routing database by gathering Link State Advertisements

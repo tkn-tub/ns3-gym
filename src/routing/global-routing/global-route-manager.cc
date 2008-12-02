@@ -50,6 +50,21 @@ GlobalRouteManager::PopulateRoutingTables (NodeContainer c)
 }
 
   void
+GlobalRouteManager::RecomputeRoutingTables ()
+{
+  DeleteGlobalRoutes ();
+  BuildGlobalRoutingDatabase ();
+  InitializeRoutes ();
+}
+
+  void
+GlobalRouteManager::DeleteGlobalRoutes ()
+{
+  SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
+    DeleteGlobalRoutes ();
+}
+
+  void
 GlobalRouteManager::SelectRouterNodes (void) 
 {
   SimulationSingleton<GlobalRouteManagerImpl>::Get ()->

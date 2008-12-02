@@ -37,6 +37,7 @@ namespace ns3 {
 const uint32_t SPF_INFINITY = 0xffffffff;
 
 class CandidateQueue;
+class Ipv4GlobalRouting;
 
 /**
  * @brief Vertex used in shortest path first (SPF) computations. See RFC 2328,
@@ -546,6 +547,23 @@ public:
  */
   uint32_t AddChild (SPFVertex* child);
 
+  /**
+   * @brief Set the value of the VertexProcessed flag
+   *
+   * Flag to note whether vertex has been processed in stage two of 
+   * SPF computation
+   * @param value boolean value to set the flag
+   */ 
+  void SetVertexProcessed (bool value);
+
+  /**
+   * @brief Check the value of the VertexProcessed flag
+   *
+   * Flag to note whether vertex has been processed in stage two of 
+   * SPF computation
+   * @returns value of underlying flag
+   */ 
+  bool IsVertexProcessed (void) const;
 private:
   VertexType m_vertexType;
   Ipv4Address m_vertexId;
@@ -556,6 +574,7 @@ private:
   SPFVertex* m_parent;
   typedef std::list<SPFVertex*> ListOfSPFVertex_t;
   ListOfSPFVertex_t m_children;
+  bool m_vertexProcessed; 
 
 /**
  * @brief The SPFVertex copy construction is disallowed.  There's no need for
@@ -701,6 +720,16 @@ public:
   GlobalRouteManagerImpl ();
   virtual ~GlobalRouteManagerImpl ();
 /**
+ * @brief Delete all static routes on all nodes that have a
+ * GlobalRouterInterface
+ *
+ * TODO:  separate manually assigned static routes from static routes that
+ * the global routing code injects, and only delete the latter
+ * @internal
+ *
+ */
+  virtual void DeleteGlobalRoutes ();
+/**
  * @brief Select which nodes in the system are to be router nodes and 
  * aggregate the appropriate interfaces onto those nodes.
  * @internal
@@ -760,6 +789,7 @@ private:
   SPFVertex* m_spfroot;
   GlobalRouteManagerLSDB* m_lsdb;
   void SPFCalculate (Ipv4Address root);
+  void SPFProcessStubs (SPFVertex* v);
   void SPFNext (SPFVertex*, CandidateQueue&);
   int SPFNexthopCalculation (SPFVertex* v, SPFVertex* w, 
     GlobalRoutingLinkRecord* l, uint32_t distance);
@@ -768,8 +798,15 @@ private:
     GlobalRoutingLinkRecord* prev_link);
   void SPFIntraAddRouter (SPFVertex* v);
   void SPFIntraAddTransit (SPFVertex* v);
+  void SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* v);
   uint32_t FindOutgoingTypeId (Ipv4Address a, 
     Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
+
+  // Local cache of the Ipv4GlobalRouting objects, indexed by nodeId
+  typedef std::list< std::pair< uint32_t, Ptr<Ipv4GlobalRouting> > > Ipv4GlobalRoutingList;
+  void AddGlobalRoutingProtocol (uint32_t nodeId, Ptr<Ipv4GlobalRouting> proto);
+  Ptr<Ipv4GlobalRouting> GetGlobalRoutingProtocol (uint32_t nodeId);
+  Ipv4GlobalRoutingList m_routingProtocols;
 };
 
 } // namespace ns3
