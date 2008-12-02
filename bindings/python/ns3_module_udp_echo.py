@@ -54,8 +54,6 @@ def register_methods(root_module):
     return
 
 def register_Ns3UdpEchoClient_methods(root_module, cls):
-    ## udp-echo-client.h: ns3::UdpEchoClient::UdpEchoClient(ns3::UdpEchoClient const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::UdpEchoClient const &', 'arg0')])
     ## udp-echo-client.h: static ns3::TypeId ns3::UdpEchoClient::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -82,11 +80,10 @@ def register_Ns3UdpEchoClient_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3UdpEchoServer_methods(root_module, cls):
-    ## udp-echo-server.h: ns3::UdpEchoServer::UdpEchoServer(ns3::UdpEchoServer const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::UdpEchoServer const &', 'arg0')])
     ## udp-echo-server.h: static ns3::TypeId ns3::UdpEchoServer::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -109,6 +106,7 @@ def register_Ns3UdpEchoServer_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):

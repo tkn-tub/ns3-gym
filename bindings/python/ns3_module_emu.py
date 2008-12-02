@@ -51,8 +51,6 @@ def register_methods(root_module):
     return
 
 def register_Ns3EmuNetDevice_methods(root_module, cls):
-    ## emu-net-device.h: ns3::EmuNetDevice::EmuNetDevice(ns3::EmuNetDevice const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::EmuNetDevice const &', 'arg0')])
     ## emu-net-device.h: static ns3::TypeId ns3::EmuNetDevice::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -160,6 +158,11 @@ def register_Ns3EmuNetDevice_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## emu-net-device.h: bool ns3::EmuNetDevice::IsBridge() const [member function]
+    cls.add_method('IsBridge', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## emu-net-device.h: bool ns3::EmuNetDevice::Send(ns3::Ptr<ns3::Packet> packet, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Send', 
                    'bool', 
@@ -205,6 +208,7 @@ def register_Ns3EmuNetDevice_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):
