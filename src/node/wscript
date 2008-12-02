@@ -37,7 +37,6 @@ def build(bld):
         'inet6-socket-address.cc',
         'ipv6-address.cc',
         'ipv6-header.cc',
-        'icmp-socket.cc',
         'ipv4-raw-socket-factory.cc',
         ]
 
@@ -77,6 +76,5 @@ def build(bld):
         'inet6-socket-address.h',
         'ipv6-address.h',
         'ipv6-header.h',
-        'icmp-socket.h',
         'ipv4-raw-socket-factory.h',
         ]
