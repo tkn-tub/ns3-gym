@@ -61,6 +61,25 @@ BridgeNetDevice::BridgeNetDevice ()
   m_channel = CreateObject<BridgeChannel> ();
 }
 
+BridgeNetDevice::~BridgeNetDevice()
+{
+  NS_LOG_FUNCTION_NOARGS ();
+}
+
+  void 
+BridgeNetDevice::DoDispose ()
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  for (std::vector< Ptr<NetDevice> >::iterator iter = m_ports.begin (); iter != m_ports.end (); iter++)
+    {
+      *iter = 0;
+    }
+  m_ports.clear ();
+  m_channel = 0;
+  m_node = 0;
+  NetDevice::DoDispose ();
+}
+
 void
 BridgeNetDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packet> packet, uint16_t protocol,
                                     Address const &src, Address const &dst, PacketType packetType)
@@ -419,14 +438,6 @@ BridgeNetDevice::SupportsSendFrom () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return true;
-}
-
-void
-BridgeNetDevice::DoDispose (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_node = 0;
-  NetDevice::DoDispose ();
 }
 
 Address BridgeNetDevice::GetMulticast (Ipv6Address addr) const

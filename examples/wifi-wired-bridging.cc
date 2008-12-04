@@ -14,6 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+//
 // Default network topology includes some number of AP nodes specified by
 // the variable nWifis (defaults to two).  Off of each AP node, there are some
 // number of STA nodes specified by the variable nStas (defaults to two).
@@ -176,6 +177,7 @@ int main (int argc, char *argv[])
       dest = tmp;
       protocol = "ns3::PacketSocketFactory";
     }
+
   OnOffHelper onoff = OnOffHelper (protocol, dest);
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
@@ -183,11 +185,10 @@ int main (int argc, char *argv[])
   apps.Start (Seconds (0.5));
   apps.Stop (Seconds (3.0));
   
-
-  YansWifiPhyHelper::EnablePcap ("wifi-wire-bridging", staNodes[1].Get (1));
-  YansWifiPhyHelper::EnablePcap ("wifi-wire-bridging", staNodes[0].Get (0));
+  YansWifiPhyHelper::EnablePcap ("wifi-wired-bridging", staNodes[1].Get (1));
+  YansWifiPhyHelper::EnablePcap ("wifi-wired-bridging", staNodes[0].Get (0));
   std::ofstream os;
-  os.open ("wifi-wire-bridging.mob");
+  os.open ("wifi-wired-bridging.mob");
   MobilityHelper::EnableAsciiAll (os);
 
   Simulator::Stop (Seconds (100.0));

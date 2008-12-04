@@ -68,6 +68,7 @@ class BridgeNetDevice : public NetDevice
 public:
   static TypeId GetTypeId (void);
   BridgeNetDevice ();
+  virtual ~BridgeNetDevice ();
 
   /** \brief Add a 'port' to a bridge device
    *
