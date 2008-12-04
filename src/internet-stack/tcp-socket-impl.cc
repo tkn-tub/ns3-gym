@@ -1266,7 +1266,10 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
   }
   else
   {
-    m_delAckEvent = Simulator::Schedule (m_delAckTimeout, &TcpSocketImpl::DelAckTimeout, this);
+    if (m_delAckEvent.IsExpired())
+    {
+      m_delAckEvent = Simulator::Schedule (m_delAckTimeout, &TcpSocketImpl::DelAckTimeout, this);
+    }
   }
 }
 
