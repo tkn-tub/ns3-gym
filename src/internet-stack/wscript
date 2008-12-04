@@ -97,10 +97,10 @@ class NscBuildTask(Task.TaskBase):
     """task that builds nsc
     """
     def __init__(self, builddir):
-        self.m_display = 'build-nsc'
         self.prio = 1000 # build after the rest of ns-3
         self.builddir = builddir
         super(NscBuildTask, self).__init__()
+        self.m_display = 'build-nsc\n'
 
     def run(self):
         # XXX: Detect gcc major version(s) available to build supported stacks

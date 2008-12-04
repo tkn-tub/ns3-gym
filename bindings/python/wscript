@@ -392,11 +392,11 @@ class PythonScanTask(Task.TaskBase):
     """Uses gccxml to scan the file 'everything.h' and extract API definitions.
     """
     def __init__(self, curdirnode, env):
-        self.m_display = 'python-scan'
         self.prio = 5 # everything.h has prio 4
         super(PythonScanTask, self).__init__()
         self.curdirnode = curdirnode
         self.env = env
+        self.m_display = 'python-scan\n'
 
     def run(self):
         #print "Rescanning the python bindings..."
