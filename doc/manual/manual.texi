@@ -94,6 +94,7 @@ see @uref{http://www.nsnam.org/docs/manual.pdf}.
 @include callbacks.texi
 @include attributes.texi
 @include realtime.texi
+@include emulation.texi
 @include packets.texi
 @include sockets.texi
 @include node.texi

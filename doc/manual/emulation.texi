@@ -2,27 +2,76 @@
 @chapter Emulation
 @anchor{chap:Emulation}
 
-ns-3 has been designed 
+ns-3 has been designed for integration into testbed and virtual machine
+environments.  These two environments require distinct approaches.  An
+architecture for the first approach, used in testbeds, is shown in the
+following figure.
 
 @float Figure,fig:testbed
 @caption{Implementation overview of testbed.}
 @image{figures/testbed}
 @end float
 
+You can see that there are separate hosts, each running a subset of a
+simulation.  Instead of an ns-3 channel connecting the hosts, we use real
+hardware provided by the testbed.  This allows ns-3 applications and protocol
+stacks attached to a simulation node to communicate over real hardware.
+
+We expect the primary use for this configuration will be to analyze experimental
+applications and protocols in a real network environment that includes all of 
+the ns-3 tracing, loging, visualization and statistics gathering tools.
+
+A concrete example of a testbed environment is the ORBIT testbed which provides
+a rectangular array of hosts with various types of WiFi cards and other radios.
+We integrate with ORBIT in that we can load and run ns-3 simulations on the ORBIT
+array and use our simulator to drive the hardware in the testbed and accumulate
+results either using the ns-3 tracing and logging functions, or the native ORBIT
+data gathering techniques.
+
+In what is essentially an inverse configuration, we allow virtual machines 
+running native applications and protocol stacks to communicate over an ns-3
+simulated channel.  This type of scenario is shown in the following figure.
+
 @float Figure,fig:emulated-channel
 @caption{Implementation overview of emulated channel.}
 @image{figures/emulated-channel}
 @end float
 
+In this figure, you will see that there is a single host with a number of
+virtual machines running on it.  An ns-3 simulation is shown running in the 
+center virtual machine.  This simulation has a number of nodes with associated 
+ns-3 applications and protocol stacks that are talking to an ns-3 channel 
+through ns-3 net devices.
+
+There are also two virtual machines shown at the far left and far right of the 
+figure.  These VMs are running native applications and native protocol stacks,
+and are connected into the simulation by a Tap net device.  The user-mode handler
+for the Tap device is instantiated in the simulation and attached to a proxy node
+that represents the native VM in the simulation.
+
+The nodes at either end of the simulation VM have only a Tap handler and net 
+device associated with them.  These handlers allow the Tap devices on the native
+VMs to behave as an ns-3 net device in the simulation VM.  This, in turn, allows
+the native software and protocol suites in the native VMs to believe that they
+are connected to a real network represented by the simulation.
+
+We expect the typical use case for this environment will be to analyze the 
+behavior of native applications and protocol suites in the presence of large 
+simulated ns-3 networks.  For example, the channel in the simulation VM could
+be an ns-3 Wifi channel and could also be connected to any ns-3 topology.  This
+would allow native applications or protocol suites to be analyzed in the presence
+of very complex simulated networks.
+
 @section Behavior
 
-Blah, blah.
+TBD
 
 @section Usage
 
-Yadda yadda
+TBD
 
 @section Implementation
 
-Mumble blah
+TBD
+
 
