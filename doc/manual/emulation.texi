@@ -1,0 +1,28 @@
+@node Emulation
+@chapter Emulation
+@anchor{chap:Emulation}
+
+ns-3 has been designed 
+
+@float Figure,fig:testbed
+@caption{Implementation overview of testbed.}
+@image{figures/testbed}
+@end float
+
+@float Figure,fig:emulated-channel
+@caption{Implementation overview of emulated channel.}
+@image{figures/emulated-channel}
+@end float
+
+@section Behavior
+
+Blah, blah.
+
+@section Usage
+
+Yadda yadda
+
+@section Implementation
+
+Mumble blah
+

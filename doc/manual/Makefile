@@ -6,7 +6,16 @@ CONVERT = convert
 CSS = --css-include=manual.css
 SPLIT = --split section
 
-DIA_SOURCES = internet-node-send.dia internet-node-recv.dia packet.dia node.dia buffer.dia sockets-overview.dia
+DIA_SOURCES = \
+	internet-node-send.dia \
+	internet-node-recv.dia \
+	packet.dia \
+	node.dia \
+	buffer.dia \
+	sockets-overview.dia \
+	testbed.dia \
+	emulated-channel.dia
+
 DIA_EPS = ${DIA_SOURCES:.dia=.eps}
 DIA_PNG = ${DIA_SOURCES:.dia=.png}
 DIA_PDF = ${DIA_SOURCES:.dia=.pdf}
