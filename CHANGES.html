@@ -48,6 +48,11 @@ us a note on ns-developers mailing list.  </p>
 
 <h2>new API:</h2>
 <ul>
+<li> ns-3 ABORT macros in src/core/abort.h</li>
+<li> Config::MatchContainer </li>
+<li> ConstCast and DynamicCast helper functions for Ptr casting</li>
+<li> StarTopology added to several topology helpers </li>
+<li> NetDevice::IsBridge () </li>
 
 <li>17-11-2008; changeset 
 <a href="http://code.nsnam.org/ns-3-dev/rev/4c1c3f6bcd03">4c1c3f6bcd03</a></li>
@@ -67,10 +72,6 @@ scenarios.  See src/devices/emu and examples/emu-udp-echo.cc for details.
 </li>
 </ul>
 
-</ul>
-<h2>new API in existing classes:</h2>
-<ul>
-
 <li>17-11-2008; changeset 
 <a href="http://code.nsnam.org/ns-3-dev/rev/4222173d1e6d">4222173d1e6d</a></li>
 <ul>
@@ -83,6 +84,38 @@ hook ascii trace to the drop trace events in Ipv4L3Protocol and ArpL3Protocol.
 </ul>
 <h2>changes to existing API:</h2>
 <ul>
+
+<li> NetDevice::MakeMulticastAddress() was renamed to NetDevice::GetMulticast()
+and the original GetMulticast() removed </li>
+
+<li> Socket API changes:
+<ul>
+<li> return type of SetDataSentCallback () changed from bool to void </li>
+<li> Socket::Listen() no longer takes a queueLimit argument</li>
+</ul>
+
+<li> As part of the Wifi Phy rework, there have been several API changes
+at the low level and helper API level.  </li>
+<ul>
+<li>  At the helper API level, the WifiHelper was split to three classes: 
+a WifiHelper, a YansWifiChannel helper, and a YansWifiPhy helper.  Some
+functions like Ascii and Pcap tracing functions were moved from class
+WifiHelper to class YansWifiPhyHelper. 
+<li>  At the low-level API, there have been a number of changes to
+make the Phy more modular:</li>
+<ul>
+<li> composite-propagation-loss-model.h is removed</li>
+<li> DcfManager::NotifyCcaBusyStartNow() has changed name</li>
+<li> fragmentation related functions (e.g. DcaTxop::GetNFragments()) have
+changed API to account for some implementation changes</li>
+<li> Interference helper and error rate model added </li>
+<li> JakesPropagationLossModel::GetLoss() moved to PropagationLoss() class</li>
+<li> base class WifiChannel made abstract </li>
+<li> WifiNetDevice::SetChannel() removed </li>
+<li> a WifiPhyState helper class added </li>
+<li> addition of the YansWifiChannel and YansWifiPhy classes </li>
+</ul>
+</ul>
 
 <li>17-11-2008; changeset 
 <a href="http://code.nsnam.org/ns-3-dev/rev/dacfd1f07538">dacfd1f07538</a></li>
@@ -112,6 +145,7 @@ assignment of /32 addresses.
 <li>
 Global routing supports bridge devices.
 </li>
+</ul>
 </ul>
 
 <hr>

@@ -42,6 +42,16 @@ New user-visible features
      New clases to support IPv6 addresses has been added to the system.  This
      is enabling technology for fuller IPv6 support scheduled for ns-3.4.
 
+  d) A flow-id tag has been added to the contributed code section
+
+  e) Star topologies can be created from the topology helper functions
+
+  f) The global routing code has been made dynamic (not just limited to
+     (pre-simulation computation) and supports stub network interfaces and 
+     bridge net devices 
+
+  g) A MatchContainer has been added to the configuration subsystem
+
 API changes from ns-3.2
 -----------------------
 API changes for this release are documented in the file CHANGES.html

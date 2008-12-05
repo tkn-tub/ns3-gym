@@ -5,19 +5,21 @@
 Table of Contents:
 ------------------
 
-1) An Open Source project
-2) An overview of the ns-3 project
-3) Building ns-3
-4) Running ns-3
-5) Getting access to the ns-3 documentation
-6) Working with the development version of ns-3
+1) An overview
+2) Building ns-3
+3) Running ns-3
+4) Getting access to the ns-3 documentation
+5) Working with the development version of ns-3
 
+Note:  Much more substantial information about ns-3 can be found at
+http://www.nsnam.org
 
 1) An Open Source project
 -------------------------
 
-ns-3 is an Open Source project.   We intend to make this
-project a successful collaborative project: we hope that 
+ns-3 is a free open source project aiming to build a discrete-event
+network simulator targeted for simulation research and education.   
+This is a collaborative project; we hope that
 the missing pieces of the models we have not yet implemented
 will be contributed by the community in an open collaboration
 process.
@@ -31,38 +33,7 @@ Despite this lack of a formal process, there are a number of
 steps which naturally stem from the open-source roots of the
 project.  These steps are described in doc/contributing.txt
 
-2) An overview of the ns-3 project
-----------------------------------
-
-This package contains the latest version of ns-3 which aims 
-at being a replacement for ns-2. Currently, ns-3 provides a 
-number of simple network simulation models:
-  - an ipv4 and tcp and udp stack
-  - arp support at the bottom of the stack
-  - static global and OLSR unicast routing
-  - point-to-point, CSMA, and Wifi links
-  - mobility
-  - OnOff traffic generator
-
-Our focus to date has been on getting an overall software
-framework in place.  The framework is there to make adding 
-new models as simple as possible:
-
-  - an extensive callback-based tracing system 
-
-  - simple file trace serialization support is included
-    to both text and pcap files.
-
-  - an attribute system for configuring parameters in the 
-    models
-
-  - adding new MAC-level models simply requires subclassing
-    the pair of classes NetDevice and Channel.
-
-  - adding new traffic generation algorithms is also very 
-    simple through the Application and the Socket classes.
-
-3) Building ns-3
+2) Building ns-3
 ----------------
 
 The code for the framework and the default models provided
@@ -76,34 +47,17 @@ tool 'waf'. Detailed information on how use waf is
 included in the file doc/build.txt
 
 However, the real quick and dirty way to get started is to
-type the command "./waf" the the directory which contains
+type the command "./waf configure; ./waf" the the directory which contains
 this README file. The files built will be copied in the
 build/debug or build/optimized.
 
 The current codebase is expected to build and run on the
-following set of platforms:
-  - linux x86 gcc 4.2, 4.1, and, 3.4.6.
-  - linux x86_64 gcc 4.1.3, 4.2.1, 3.4.6
-  - MacOS X ppc and x86
-  - mingw gcc 3.4.5 (debug only)
-  - cygwin gcc 3.4.4 (debug only)
-
-The current codebase is expected to fail to build on
-the following platforms:
-  - gcc 3.3 and earlier
-  - optimized builds on gcc 3.4.4 and 3.4.5
-  - optimized builds on linux x86 gcc 4.0 
-  - msvc
-
-The following optional features are known to not work on
-these platforms:
-  - mingw: nsc, realtime scheduler
-  - cygwin: python bindings, nsc
+set of platforms listed in the RELEASE_NOTES file.
 
 Other platforms may or may not work: we welcome patches to 
 improve the portability of the code to these other platforms. 
 
-4) Running ns-3
+3) Running ns-3
 ---------------
 
 On recent Linux systems, once you have built ns-3, it 
@@ -116,7 +70,7 @@ That program should generate a simple-global-routing.tr text
 trace file and a set of simple-global-routing-xx-xx.pcap binary
 pcap trace files, which can be read by tcpdump -tt -r filename.pcap
 
-5) Getting access to the ns-3 documentation
+4) Getting access to the ns-3 documentation
 -------------------------------------------
 
 Once you have verified that your build of ns-3 works by running
@@ -131,6 +85,8 @@ include some of it in this release for ease of use.
 This documentation includes:
 
   - a tutorial
+ 
+  - a manual
 
   - a wiki for user-contributed tips: http://www.nsnam.org/wiki/
 
@@ -139,7 +95,7 @@ This documentation includes:
     as introductory text:
     http://www.nsnam.org/doxygen/index.html
 
-6) Working with the development version of ns-3
+5) Working with the development version of ns-3
 -----------------------------------------------
 
 If you want to download and use the development version 
