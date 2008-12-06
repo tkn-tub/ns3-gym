@@ -6,38 +6,59 @@ CONVERT = convert
 CSS = --css-include=manual.css
 SPLIT = --split section
 
-DIA_SOURCES = \
-	internet-node-send.dia \
-	internet-node-recv.dia \
-	packet.dia \
-	node.dia \
-	buffer.dia \
-	sockets-overview.dia \
-	testbed.dia \
-	emulated-channel.dia
+FIGURES = figures
+VPATH = $(FIGURES)
 
-DIA_EPS = ${DIA_SOURCES:.dia=.eps}
-DIA_PNG = ${DIA_SOURCES:.dia=.png}
-DIA_PDF = ${DIA_SOURCES:.dia=.pdf}
+IMAGES_EPS = \
+	$(FIGURES)/internet-node-send.eps \
+	$(FIGURES)/internet-node-recv.eps \
+	$(FIGURES)/packet.eps \
+	$(FIGURES)/node.eps \
+	$(FIGURES)/buffer.eps \
+	$(FIGURES)/sockets-overview.eps \
+	$(FIGURES)/testbed.eps \
+	$(FIGURES)/emulated-channel.eps
 
-all:  images html split-html pdf
+IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
+IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
 
-images:
-	cd figures/; $(DIA) -t png $(DIA_SOURCES) 
-	cd figures/; $(DIA) -t eps $(DIA_SOURCES) 
-	cd figures/; $(foreach FILE,$(DIA_EPS),$(EPSTOPDF) $(FILE);)
+IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 
-html: images
-	$(TEXI2HTML) ${CSS} manual.texi
+CHAPTERS = \
+	manual.texi \
+	attributes.texi \
+	callbacks.texi \
+	emulation.texi \
+	node.texi \
+	objects.texi \
+	other.texi \
+	output.texi \
+	packets.texi \
+	random.texi \
+	realtime.texi \
+	routing.texi \
+	sockets.texi \
+	statistics.texi \
+	troubleshoot.texi
 
-split-html: images
-	$(TEXI2HTML) ${CSS} ${SPLIT} manual.texi
+%.eps : %.dia; $(DIA) -t eps $< -e $@
+%.png : %.dia; $(DIA) -t png $< -e $@
+%.pdf : %.eps; $(EPSTOPDF) $< -o=$@
 
-pdf: images
+all:  $(IMAGES) manual.pdf manual.html manual/manual.html
+
+manual.pdf: $(IMAGES) $(CHAPTERS)
 	$(TEXI2PDF) manual.texi
 
-figures-clean:
-	cd figures/; rm -rf $(DIA_EPS); rm -rf $(DIA_PNG); rm -rf $(DIA_PDF)
+manual.html: $(IMAGES) $(CHAPTERS)
+	$(TEXI2HTML) ${CSS} manual.texi
 
-clean: figures-clean
-	rm -rf manual.aux manual.cp manual.cps manual.fn manual.ky manual.pg manual.tp manual.vr manual.toc manual.log manual.pdf manual.html manual/ 
+manual/manual.html: $(IMAGES) $(CHAPTERS)
+	$(TEXI2HTML) ${CSS} ${SPLIT} manual.texi
+
+figures-clean:
+	rm -rf $(IMAGES)
+
+clean: 	figures-clean
+	rm -rf manual.aux manual.cp manual.cps manual.fn manual.ky manual.pg 
+	rm -rf manual.tp manual.vr manual.toc manual.log manual.pdf manual.html manual/ 
