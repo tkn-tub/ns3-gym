@@ -1,0 +1,281 @@
+@c ========================================================================
+@c ns-3 Object model
+@c ========================================================================
+
+@node Object model
+@chapter Object model
+
+@command{ns-3} is fundamentally a C++ object system.  Objects can
+be declared and instantiated as usual, per C++ rules.  ns-3 also
+adds some features to traditional C++ objects, as described below,
+to provide greater functionality and features.  This manual chapter
+is intended to introduce the reader to the ns-3 object model.
+
+This section describes the C++ class design for ns-3 objects.  In brief,
+several design patterns in use include classic object-oriented design
+(polymorphic interfaces and implementations), separation of interface
+and implementation, the non-virtual public interface design pattern,
+an object aggregation facility, and reference counting
+for memory management.  Those familiar with component models such
+as COM or Bonobo will recognize elements of the design in the 
+ns-3 object aggregation model, although
+the ns-3 design is not strictly in accordance with either.
+
+@node Object-oriented behavior
+@section Object-oriented behavior
+
+C++ objects, in general, provide common object-oriented capabilities 
+(abstraction, encapsulation, inheritance, and polymorphism) that are part 
+of classic object-oriented design.  ns-3 objects make use of these 
+properties; for instance:
+
+@verbatim
+class Address
+{
+public:
+  Address ();
+  Address (uint8_t type, const uint8_t *buffer, uint8_t len);
+  Address (const Address & address);
+  Address &operator = (const Address &address);
+  ...
+private:
+  uint8_t m_type;
+  uint8_t m_len;
+  ...
+};
+@end verbatim
+
+@node Object base classes
+@section Object base classes
+
+There are two special base classes used in ns-3.  Classes that inherit
+from these base classes can instantiate objects with special properties.
+These base classes are:
+@itemize @bullet
+@item @code{class Object}
+@item @code{class ObjectBase}
+@item @code{class RefCountBase}
+@end itemize
+It is not required that ns-3 objects inherit from these class, but 
+those that do get special properties.  Classes deriving from 
+@code{class Object} get the following properties.
+@itemize @bullet
+@item the ns-3 type and attribute system (see @ref{Attributes})
+@item a smart-pointer reference counting system (class Ptr)
+@item an object aggregation system
+@end itemize
+
+Classes that derive from @code{class ObjectBase} get the first two
+properties above, but do not get smart pointers.  Classes that
+derive from @code{class RefCountBase} get only the smart-pointer
+reference counting system.
+
+In practice, @code{class Object} is the variant of the three above that
+the ns-3 developer will most commonly encounter.
+
+@node Memory management and class Ptr
+@section Memory management and class Ptr
+
+Memory management in a C++ program is a complex process, and is
+often done incorrectly or inconsistently.  We have settled on 
+a reference counting design described as follows.
+
+All objects using reference counting maintain an internal reference
+count to determine when an object can safely delete itself.  
+Each time that a pointer is obtained to an interface, the object's
+reference count is incremented by calling @code{Ref()}.
+It is the obligation of the
+user of the pointer to explicitly @code{Unref()} the pointer when done.
+When the reference count falls to zero, the object is deleted.
+
+@itemize @bullet
+@item When the client code obtains a pointer from the object itself
+through object creation, or via QueryInterface, it does not have
+to increment the reference count.   
+@item When client code obtains a pointer from another source (e.g.,
+copying a pointer) it must call @code{Ref()} to increment the
+reference count.
+@item All users of the object pointer must call @code{Unref()} to
+release the reference.
+@end itemize
+
+The burden for calling @code{Unref()} is somewhat relieved by the
+use of the reference counting smart pointer class described below. 
+
+Users using a low-level API who wish to explicitly allocate
+non-reference-counted objects on the heap, using operator new, 
+are responsible for deleting such objects.
+
+Packet objects are handled differently (without reference
+counting); their design is described in @ref{Packets}.
+
+@subsection Reference counting smart pointer (Ptr)
+
+Calling @code{Ref()} and @code{Unref()} all the time would be cumbersome,
+so ns-3 provides a smart pointer @code{class Ptr} similar to 
+@code{Boost::intrusive_ptr}.
+This smart-pointer class assumes that the underlying type provides 
+a pair of Ref and Unref methods that are expected to increment and 
+decrement the internal refcount of the object instance.  
+
+This implementation allows you to manipulate the smart pointer
+as if it was a normal pointer: you can compare it with zero,
+compare it against other pointers, assign zero to it, etc.
+
+It is possible to extract the raw pointer from this
+smart pointer with the GetPointer and PeekPointer methods.
+
+If you want to store a newed object into a smart pointer,
+we recommend you to use the CreateObject template functions
+to create the object and store it in a smart pointer to avoid
+memory leaks. These functions are really small convenience
+functions and their goal is just is save you a small
+bit of typing.
+
+@node CreateObject and Create
+@subsection CreateObject and Create
+
+Objects in C++ may be statically, dynamically, or automatically created.
+This holds true for ns-3 also, but some objects in the system 
+have some additional frameworks
+available.  Specifically, reference counted objects are usually
+allocated using a templated Create or CreateObject method, as follows.
+
+For objects deriving from @code{class Object}:
+@verbatim
+ Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
+@end verbatim
+
+For objects deriving from @code{class RefCountBase}, or other
+objects that support usage of smart pointer (e.g., the ns-3 Packet class),
+a templated helper function is available and recommended to be used:
+@verbatim
+  ns3::Ptr<B> b = ns3::Create<B> ();
+@end verbatim  
+This is simply a wrapper around operator new that correctly handles
+the reference counting system.
+
+@node Aggregation
+@subsection Aggregation
+
+The ns-3 object aggregation system is motivated in strong part by 
+a recognition that a common use case for ns-2 has been the use of 
+inheritance and polymorphism to extend protocol models.  For instance, 
+specialized versions of TCP such as RenoTcpAgent derive from (and override 
+functions from) class TcpAgent.  
+
+However, two problems that have arisen in the ns-2 model are downcasts
+and ``weak base class.''  Downcasting refers to the procedure of using
+a base class pointer to an object and querying it at run time to
+find out type information, used to explicitly cast the pointer to 
+a subclass pointer so that the subclass API can be used.
+Weak base class refers to the problems that arise when a class
+cannot be effectively reused (derived from) because it lacks necessary
+functionality, leading the developer to have to modify the
+base class and causing proliferation of base class API calls, some
+of which may not be semantically correct for all subclasses.
+
+ns-3 is using a version of the query interface design pattern
+to avoid these problems.  This design is based on elements of the 
+@uref{http://en.wikipedia.org/wiki/Component_Object_Model,,Component Object Model} 
+and @uref{http://en.wikipedia.org/wiki/Bonobo_(component_model),,GNOME Bonobo}
+although full binary-level compatibility of replaceable components
+is not supported and we have tried to simplify the syntax and impact
+on model developers.  
+
+@subsubsection Aggregation example
+
+@code{class Node} is a good example of the use of aggregation in ns-3.
+Note that there are not derived classes of Nodes in ns-3 such as
+class InternetNode.  Instead, components (protocols) are aggregated to 
+a node.  Let's look at how some Ipv4 protocols are added to a node.
+
+@verbatim
+static void
+AddIpv4Stack(Ptr<Node> node)
+{
+  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
+  ipv4->SetNode (node);
+  node->AggregateObject (ipv4);
+  Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> ();
+  ipv4Impl->SetIpv4 (ipv4);
+  node->AggregateObject (ipv4Impl);
+}
+@end verbatim
+
+Note that the Ipv4 protocols are created using @code{CreateObject()}.  
+Then, they are aggregated to the node.  In this manner, the Node base
+class does not need to be edited to allow users with a base class Node
+pointer to access the Ipv4 interface; users may ask the node for a pointer
+to its Ipv4 interface at runtime.  How this is done is seen in the next
+subsection.
+
+@subsubsection GetObject example
+GetObject is a type-safe way to achieve a safe downcasting 
+and to allow interfaces to be found on an object.  
+
+Consider a node pointer @code{m_node} that points to a Node object 
+with an implementation of IPv4.  The client code wishes to configure
+a default route.  To do so, it must access an object within
+the node that has an interface to the IP forwarding configuration.
+It performs the following:
+@verbatim
+  Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
+@end verbatim
+
+If the node in fact does not have an Ipv4 object aggregated to it, then
+the method will return null.  Therefore, it is good practice to check
+the return value from such a function call.  If successful, the user can
+now use the Ptr to the Ipv4 object that was previously aggregated to
+the node.
+
+@subsubsection Summary
+To summarize, two benefits that we expect to leverage from this are as follows:
+@itemize @bullet
+@item @strong{Encapsulation:} By separating interface from implementation, 
+it permits
+implementors to replace elements of the protocol stack while remaining
+compliant with client code that supports the same interface.  For
+example, one type of node may include native ns-3 models of protocols,
+while another may be a port of a Linux stack, and both may be accessed
+by the same base class node pointer.
+@item @strong{Aggregation:} AggregateObject allows for aggregation of 
+objects at
+run time.  For instance, an existing Node object may have an ``Energy Model''
+object aggregated to it at run time (without modifying
+and recompiling the node class).  An existing model (such as a wireless
+net device) can then later "GetObject" for the energy model and act 
+appropriately if the interface has been either built in to the underlying
+Node object or aggregated to it at run time.
+@end itemize
+
+We hope that this mode of programming will require much less 
+need for developers to modify the @code base classes or libraries.
+
+@node Downcasting
+@section Downcasting
+
+A question that has arisen several times is, "If I have a base class
+pointer (Ptr) to an object and I want the derived class pointer, should
+I downcast (via C++ dynamic cast) to get the derived pointer, or should
+I use the object aggregation system to @code{GetObject<> ()} to find
+a Ptr to the interface to the subclass API?"
+
+The answer to this is that in many situations, both techniques will work.
+ns-3 provides a templated function for making the syntax of Object
+dynamic casting much more user friendly:
+@verbatim
+template <typename T1, typename T2>
+Ptr<T1>
+DynamicCast (Ptr<T2> const&p)
+{
+  return Ptr<T1> (dynamic_cast<T1 *> (PeekPointer (p)));
+}
+@end verbatim
+
+DynamicCast works when the programmer has a base type pointer and is
+testing against a subclass pointer.  GetObject works when looking for
+different objects aggregated, but also works with subclasses, in the same
+way as DynamicCast.  If unsure, the programmer should use GetObject, as it
+works in all cases.   If the programmer knows the class hierarchy of the
+object under consideration, it is more direct to just use DynamicCast.

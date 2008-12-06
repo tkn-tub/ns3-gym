@@ -81,18 +81,21 @@ see @uref{http://www.nsnam.org/docs/manual.pdf}.
 * Random variables::
 * Callbacks::
 * Attributes::
+* Object model::
 * RealTime::
+* Emulation::
 * Packets::
 * Sockets APIs::
 * Node and Internet Stack::
 * TCP::
 * Routing overview::
-* Troubleshooting
+* Troubleshooting::
 @end menu
 
 @include random.texi
 @include callbacks.texi
 @include attributes.texi
+@include objects.texi
 @include realtime.texi
 @include emulation.texi
 @include packets.texi
