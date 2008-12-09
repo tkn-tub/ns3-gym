@@ -177,13 +177,15 @@ void OnOffApplication::StartSending()
   NS_LOG_FUNCTION_NOARGS ();
 
   ScheduleNextTx();  // Schedule the send packet event
+  ScheduleStopEvent();
 }
 
 void OnOffApplication::StopSending()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  CancelEvents();
 
-  Simulator::Cancel(m_sendEvent);
+  ScheduleStartEvent();
 }
 
 // Private helpers
@@ -222,7 +224,7 @@ void OnOffApplication::ScheduleStopEvent()
 
   Time onInterval = Seconds(m_onTime.GetValue());
   NS_LOG_LOGIC ("stop at " << onInterval);
-  Simulator::Schedule(onInterval, &OnOffApplication::StopSending, this);
+  m_startStopEvent = Simulator::Schedule(onInterval, &OnOffApplication::StopSending, this);
 }
 
   
