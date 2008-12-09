@@ -163,10 +163,19 @@ point-to-point nodes.
 We mentioned above that you were going to see a helper for CSMA devices and
 channels, and the next lines introduce them.  The @code{CsmaHelper} works just
 like a @code{PointToPointHelper}, but it creates and connects CSMA devices and
-channels.
+channels.  In the case of a CSMA device and channel pair, notice that the data
+rate is specified by a @em{channel} attribute instead of a device attribute.
+This is because a real CSMA network does not allow one to mix, for example, 
+10Base-T and 100Base-T devices on a given channel.  We first set the data rate
+to 100 megabits per second, and then set the speed-of-light delay of the channel
+to 6560 nano-seconds (arbitrarily chosen as 1 nanosecond per foot over a 100
+meter segment).  Notice that you can set an attribute using its native data 
+type.
 
 @verbatim
   CsmaHelper csma;
+  csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
+  csma.SetChannelAttribute ("Delay", TimeValue (NanoSeconds (6560)));
 
   NetDeviceContainer csmaDevices;
   csmaDevices = csma.Install (csmaNodes);
@@ -698,12 +707,15 @@ that will get CSMA devices.  The node in question is going to end up with a
 point-to-point device and a CSMA device.  We then create a number of ``extra''
 nodes that compose the remainder of the CSMA network.
 
-We then instantiate a @code{CsmaHelper} and a @code{NetDeviceContainer} to 
-keep track of the CSMA net devices.  Then we @code{Install} CSMA devices on 
-the selected nodes.
+We then instantiate a @code{CsmaHelper} and set its attributes as we did in
+the previous example.  We create a @code{NetDeviceContainer} to keep track of
+the created CSMA net devices and then we @code{Install} CSMA devices on the 
+selected nodes.
 
 @verbatim
   CsmaHelper csma;
+  csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
+  csma.SetChannelAttribute ("Delay", TimeValue (NanoSeconds (6560)));
 
   NetDeviceContainer csmaDevices;
   csmaDevices = csma.Install (csmaNodes);

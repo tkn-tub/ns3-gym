@@ -65,6 +65,8 @@ main (int argc, char *argv[])
   csmaNodes.Create (nCsma);
 
   CsmaHelper csma;
+  csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
+  csma.SetChannelAttribute ("Delay", TimeValue (NanoSeconds (6560)));
 
   NetDeviceContainer csmaDevices;
   csmaDevices = csma.Install (csmaNodes);

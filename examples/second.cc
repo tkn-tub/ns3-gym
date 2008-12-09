@@ -59,6 +59,8 @@ main (int argc, char *argv[])
   p2pDevices = pointToPoint.Install (p2pNodes);
 
   CsmaHelper csma;
+  csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
+  csma.SetChannelAttribute ("Delay", TimeValue (NanoSeconds (6560)));
 
   NetDeviceContainer csmaDevices;
   csmaDevices = csma.Install (csmaNodes);
