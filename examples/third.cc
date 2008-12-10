@@ -75,20 +75,12 @@ main (int argc, char *argv[])
   wifiStaNodes.Create (nWifi);
   NodeContainer wifiApNode = p2pNodes.Get (0);
 
-  Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
 
-  channel->SetPropagationDelayModel (
-    CreateObject<ConstantSpeedPropagationDelayModel> ());
-
-  Ptr<LogDistancePropagationLossModel> log = 
-    CreateObject<LogDistancePropagationLossModel> ();
-
-  log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
-
-  channel->SetPropagationLossModel (log);
+  YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
+  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  phy.SetChannel (channel.Create ());
 
   WifiHelper wifi;
-  wifi.SetPhy ("ns3::WifiPhy");
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
 
   Ssid ssid = Ssid ("ns-3-ssid");
@@ -97,7 +89,7 @@ main (int argc, char *argv[])
     "ActiveProbing", BooleanValue (false));
 
   NetDeviceContainer staDevices;
-  staDevices = wifi.Install (wifiStaNodes, channel);
+  staDevices = wifi.Install (phy, wifiStaNodes);
 
   wifi.SetMac ("ns3::NqapWifiMac", 
     "Ssid", SsidValue (ssid),
@@ -105,7 +97,7 @@ main (int argc, char *argv[])
     "BeaconInterval", TimeValue (Seconds (2.5)));
 
   NetDeviceContainer apDevices;
-  apDevices = wifi.Install (wifiApNode, channel);
+  apDevices = wifi.Install (phy, wifiApNode);
 
   MobilityHelper mobility;
 
@@ -163,7 +155,7 @@ main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (10.0));
 
-  WifiHelper::EnablePcap ("third", 
+  YansWifiPhyHelper::EnablePcap ("third", 
     wifiStaNodes.Get (nWifi - 1)->GetId (), 0);
   CsmaHelper::EnablePcap ("third", 
     csmaNodes.Get (nCsma)->GetId (), 0);
