@@ -48,6 +48,25 @@ namespace ns3 {
  * \endcode
  * This class also supports the regular comparison operators <, >, <=, >=, ==,
  * and !=
+ *
+ * Conventions used:
+ * "b" stands for bits, "B" for bytes (8 bits) \n
+ * "k" stands for 1000, "K" also stands for 1000, "Ki" stands for 1024 \n
+ * "M" stand for 1000000, "Mib" stands for 1024 kibibits, or 1048576 bits \n
+ * "G" stand for 10^9, "Gib" stands for 1024 mebibits \n
+ * whitespace is allowed but not required between the numeric value and units
+ *
+ * Supported unit strings:
+ * bps, b/s, Bps, B/s \n
+ * kbps, kb/s, Kbps, Kb/s, kBps, kB/s, KBps, KB/s, Kib/s, KiB/s \n
+ * Mbps, Mb/s, MBps, MB/s, Mib/s, MiB/s \n
+ * Gbps, Gb/s, GBps, GB/s, Gib/s, GiB/s \n
+ * 
+ * Examples:
+ * "56kbps" = 56,000 bits/s \n
+ * "128 kb/s" = 128,000 bits/s \n
+ * "8Kib/s" = 1 KiB/s = 8192 bits/s \n
+ * "1kB/s" = 8000 bits/s 
  */
 class DataRate
 {
