@@ -87,8 +87,19 @@ public:
   virtual enum Ipv4L4Protocol::RxStatus Receive(Ptr<Packet> p, 
                                                 Ipv4Address const &source,
                                                 Ipv4Address const &destination,
-                       Ptr<Ipv4Interface> interface);
+                                                Ptr<Ipv4Interface> interface);
 
+  /**
+   * \brief Receive an ICMP packet
+   * \param icmpSource The IP address of the source of the packet.
+   * \param icmpTtl The time to live from the IP header
+   * \param icmpType The type of the message from the ICMP header
+   * \param icmpCode The message code from the ICMP header
+   * \param icmpInfo 32-bit integer carrying informational value of varying semantics.
+   * \param payloadSource The IP source addresss from the IP header of the packet
+   * \param payloadDestination The IP destination address from the IP header of the packet
+   * \param payload Payload of the ICMP packet
+   */
   virtual void ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
                             uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
                             Ipv4Address payloadSource,Ipv4Address payloadDestination,

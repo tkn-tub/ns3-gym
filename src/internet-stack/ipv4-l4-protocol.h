@@ -72,7 +72,7 @@ public:
                                 Ptr<Ipv4Interface> incomingInterface) = 0;
 
   /**
-   * \param icmpSouce the source address of the icmp message
+   * \param icmpSource the source address of the icmp message
    * \param icmpTtl the ttl of the icmp message
    * \param icmpType the 'type' field of the icmp message
    * \param icmpCode the 'code' field of the icmp message

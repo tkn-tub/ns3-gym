@@ -214,7 +214,6 @@ public:
     
   /**
    * \brief Listen for incoming connections.
-   * \param queueLimit maximum number of incoming request to queue
    * \returns 0 on success, -1 on error (in which case errno is set).
    */
   virtual int Listen (void) = 0;

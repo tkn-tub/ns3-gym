@@ -59,18 +59,27 @@ public:
    *
    * \param c NodeContainer of the set of nodes on which an OnOffApplication 
    * will be installed.
+   * \returns Container of Ptr to the applications installed.
    */
   ApplicationContainer Install (NodeContainer c) const;
 
   /**
-   * Install an ns3::OnOffApplication on each node of the input container
-   * configured with all the attributes set with SetAttribute.
+   * Install an ns3::OnOffApplication on the node configured with all the 
+   * attributes set with SetAttribute.
    *
-   * \param c The node on which an OnOffApplication will be installed.
+   * \param node The node on which an OnOffApplication will be installed.
+   * \returns Container of Ptr to the applications installed.
    */
   ApplicationContainer Install (Ptr<Node> node) const;
 
 private:
+  /**
+   * Install an ns3::OnOffApplication on the node configured with all the 
+   * attributes set with SetAttribute.
+   *
+   * \param node The node on which an OnOffApplication will be installed.
+   * \returns Ptr to the application installed.
+   */
   Ptr<Application> InstallPriv (Ptr<Node> node) const;
   std::string m_protocol;
   Address m_remote;

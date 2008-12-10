@@ -87,7 +87,7 @@ class Scheduler : public Object
    */
   virtual Event RemoveNext (void) = 0;
   /**
-   * \param id the id of the event to remove
+   * \param ev the event to remove
    *
    * This methods cannot be invoked if the list is empty.
    */

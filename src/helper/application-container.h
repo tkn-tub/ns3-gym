@@ -41,7 +41,7 @@ public:
   /**
    * Create an ApplicationContainer with exactly one application
    *
-   * \param node a node to add to the container
+   * \param application The application to add to the container
    */
   ApplicationContainer (Ptr<Application> application);
 

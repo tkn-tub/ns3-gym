@@ -44,23 +44,14 @@ class TraceSourceAccessor;
 class TypeId
 {
 public:
+  /**
+   * Flags describing when a given attribute can be read or written
+   */
   enum AttributeFlag {
-    /**
-     * The attribute can be read
-     */
-    ATTR_GET = 1<<0,
-    /**
-     * The attribute can be written
-     */
-    ATTR_SET = 1<<1,
-    /**
-     * The attribute can be written at construction-time.
-     */
-    ATTR_CONSTRUCT = 1<<2,
-    /**
-     * The attribute can be read, and written at any time.
-     */
-    ATTR_SGC = ATTR_GET | ATTR_SET | ATTR_CONSTRUCT,
+    ATTR_GET = 1<<0, /**< The attribute can be read */
+    ATTR_SET = 1<<1, /**< The attribute can be written */
+    ATTR_CONSTRUCT = 1<<2, /**< The attribute can be written at construction-time */
+    ATTR_SGC = ATTR_GET | ATTR_SET | ATTR_CONSTRUCT, /** The attribute can be read, and written at any time */
   };
 
   /**
