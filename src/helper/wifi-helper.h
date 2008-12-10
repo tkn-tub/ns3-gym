@@ -32,10 +32,24 @@ class WifiPhy;
 class WifiNetDevice;
 class Node;
 
+/**
+ * \brief create PHY objects
+ *
+ * This base class must be implemented by new PHY implementation which wish to integrate
+ * with the \ref ns3::WifiHelper class.
+ */
 class WifiPhyHelper
 {
 public:
   virtual ~WifiPhyHelper ();
+  /**
+   * \param node the node on which the PHY object will reside
+   * \param device the device within which the PHY object will reside
+   * \returns a new PHY object.
+   *
+   * Subclasses must implement this method to allow the ns3::WifiHelper class
+   * to create PHY objects from ns3::WifiHelper::Install.
+   */
   virtual Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const = 0;
 };
 
@@ -49,8 +63,18 @@ public:
 class WifiHelper
 {
 public:
+  /**
+   * Create a Wifi helper in an empty state: all its parameters
+   * must be set before calling ns3::WifiHelper::Install
+   */
   WifiHelper ();
 
+  /**
+   * \returns a new WifiHelper in a default state
+   *
+   * The default state is defined as being an Adhoc MAC layer with an ARF rate control algorithm
+   * and both objects using their default attribute values.
+   */
   static WifiHelper Default (void);
 
   /**
@@ -117,7 +141,17 @@ public:
                std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
                std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 
+  /**
+   * \param phy the PHY helper to create PHY objects
+   * \param c the set of nodes on which a wifi device must be created
+   * \returns a device container which contains all the devices created by this method.
+   */
   NetDeviceContainer Install (const WifiPhyHelper &phy, NodeContainer c) const;
+  /**
+   * \param phy the PHY helper to create PHY objects
+   * \param node the node on which a wifi device must be created
+   * \returns a device container which contains all the devices created by this method.
+   */
   NetDeviceContainer Install (const WifiPhyHelper &phy, Ptr<Node> node) const;
 
 private:
