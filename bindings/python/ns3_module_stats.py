@@ -17,8 +17,6 @@ def register_types(module):
     module.add_class('OmnetDataOutput', parent=root_module['ns3::DataOutputInterface'])
     ## packet-data-calculators.h: ns3::PacketSizeMinMaxAvgTotalCalculator [class]
     module.add_class('PacketSizeMinMaxAvgTotalCalculator', parent=root_module['ns3::MinMaxAvgTotalCalculator< unsigned int >'])
-    ## sqlite-data-output.h: ns3::SqliteDataOutput [class]
-    module.add_class('SqliteDataOutput', parent=root_module['ns3::DataOutputInterface'])
     ## time-data-calculators.h: ns3::TimeMinMaxAvgTotalCalculator [class]
     module.add_class('TimeMinMaxAvgTotalCalculator', parent=root_module['ns3::DataCalculator'])
     ## basic-data-calculators.h: ns3::CounterCalculator<unsigned int> [class]
@@ -74,7 +72,6 @@ def register_methods(root_module):
     register_Ns3MinMaxAvgTotalCalculator__Unsigned_int_methods(root_module, root_module['ns3::MinMaxAvgTotalCalculator< unsigned int >'])
     register_Ns3OmnetDataOutput_methods(root_module, root_module['ns3::OmnetDataOutput'])
     register_Ns3PacketSizeMinMaxAvgTotalCalculator_methods(root_module, root_module['ns3::PacketSizeMinMaxAvgTotalCalculator'])
-    register_Ns3SqliteDataOutput_methods(root_module, root_module['ns3::SqliteDataOutput'])
     register_Ns3TimeMinMaxAvgTotalCalculator_methods(root_module, root_module['ns3::TimeMinMaxAvgTotalCalculator'])
     register_Ns3CounterCalculator__Unsigned_int_methods(root_module, root_module['ns3::CounterCalculator< unsigned int >'])
     register_Ns3PacketCounterCalculator_methods(root_module, root_module['ns3::PacketCounterCalculator'])
@@ -312,32 +309,6 @@ def register_Ns3PacketSizeMinMaxAvgTotalCalculator_methods(root_module, cls):
                    'void', 
                    [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'realto')])
     ## packet-data-calculators.h: void ns3::PacketSizeMinMaxAvgTotalCalculator::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    return
-
-def register_Ns3SqliteDataOutput_methods(root_module, cls):
-    ## sqlite-data-output.h: ns3::SqliteDataOutput::SqliteDataOutput(ns3::SqliteDataOutput const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::SqliteDataOutput const &', 'arg0')])
-    ## sqlite-data-output.h: ns3::SqliteDataOutput::SqliteDataOutput() [constructor]
-    cls.add_constructor([])
-    ## sqlite-data-output.h: void ns3::SqliteDataOutput::Output(ns3::DataCollector & dc) [member function]
-    cls.add_method('Output', 
-                   'void', 
-                   [param('ns3::DataCollector &', 'dc')], 
-                   is_virtual=True)
-    ## sqlite-data-output.h: void ns3::SqliteDataOutput::SetDBFile(std::string const file) [member function]
-    cls.add_method('SetDBFile', 
-                   'void', 
-                   [param('std::string const', 'file')])
-    ## sqlite-data-output.h: std::string ns3::SqliteDataOutput::GetDBFile() const [member function]
-    cls.add_method('GetDBFile', 
-                   'std::string', 
-                   [], 
-                   is_const=True)
-    ## sqlite-data-output.h: void ns3::SqliteDataOutput::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
