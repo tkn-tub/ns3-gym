@@ -75,13 +75,12 @@ main (int argc, char *argv[])
   wifiStaNodes.Create (nWifi);
   NodeContainer wifiApNode = p2pNodes.Get (0);
 
-
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
   phy.SetChannel (channel.Create ());
 
-  WifiHelper wifi;
-  wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
+  WifiHelper wifi = WifiHelper::Default ();
+  wifi.SetRemoteStationManager ("ns3::AarfWifiManager");
 
   Ssid ssid = Ssid ("ns-3-ssid");
   wifi.SetMac ("ns3::NqstaWifiMac", 
