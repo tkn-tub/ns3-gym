@@ -732,118 +732,42 @@ point-to-point link as the node for the access point.
   NodeContainer wifiApNode = p2pNodes.Get (0);
 @end verbatim
 
-The next bit of code is going to be quite different from the helper-based
-topology generation we've seen so far, so we're going to take it line-by-line
-for a while.  The next line of code you will see is:
+The next bit of code constructs the wifi devices and the interconnection
+channel between these wifi nodes. First, we configure the PHY and channel
+helpers:
 
 @verbatim
-  Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
+  YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
+  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
 @end verbatim
 
-Now, I'm not going to explain at this stage @emph{precisely} what this all
-means, but hopefully with a very short digression I can give you enough 
-information so that this makes sense.
-
-C++ is an object oriented programming language.  @command{Ns-3} extends the
-basic C++ object model to implement a number of nifty features.  We have seen
-the @code{Attribute} system which is one of the major extensions we have 
-implemented.  Another extension is to provide for relatively automatic memory 
-management.  Like many systems, @command{ns-3} creates a base class called 
-@code{Object} that provides our extensions ``for free'' to other classes that
- inherit from our @code{class Object}.  
-
-In the code snippet above, the right hand side of the expression is a 
-call to a templated C++ function called @code{CreateObject}.  The 
-@emph{template parameter} inside the angle brackets basically tells the 
-compiler what class it is we want to instantiate.  Our system returns a
-@emph{smart pointer} to the object of the class that was created and assigns
-it to the smart pointer named @code{channel} that is declared on the left 
-hand side of the assignment.
-
-The @command{ns-3} smart pointer is also template-based.  Here you see that 
-we declare a smart pointer to a @code{WifiChannel} which is the type of object
-that was created in the @code{CreateObject} call.  The feature of immediate 
-interest here is that we are never going to have to delete the underlying C++
-object.  It is handled automatically for us.  Nice, eh?
-
-The idea to take away from this discussion is that this line of code creates
-an @command{ns-3} @code{Object} that will automatically bring you the benefits
-of the @command{ns-3} @code{Attribute} system we've seen previously.  The 
-resulting smart pointer works with the @code{Object} to perform memory 
-management automatically for you.  If you are interested in more details about
-low level ns-3 code and exactly what it is doing, you are encouraged to 
-explore the ns-3 manual and our ``how-to'' documents.
-
-Now, back to the example.  The line of code above has created a wireless
-@code{Wifi} channel.  This channel model requires that we create and attach 
-other models that describe various behaviors.  This provides an accomplished
-user with even more opportunity to change the way the wireless network behaves
-without changing the core code.
-
-The first opportunity we have to change the behavior of the wireless network is
-by providing a propagation delay model.  Again, I don't want to devolve this
-tutorial into a manual on @code{Wifi}, but this model describes how the 
-electromagnetic signals are going to propagate.  We are going to create the 
-simplest model, the @code{ConstantSpeedPropagationDelayModel} that, by default,
-has the signals propagating at a constant speed --- approximately that of the 
-speed of light in air.
-
-Recall that we created the @code{WifiChannel} and assigned it to a smart 
-pointer.  One of the features of a smart pointer is that you can use it
-just as you would a ``normal'' C++ pointer.  The next line of code will
-create a @code{ConstantSpeedPropagationDelayModel} using the 
-@code{CreateObject} template function and pass the resulting smart pointer
-to the chanel model as an unnamed parameter of the 
-@code{WifiChannel SetPropagationDelayModel} method.  In English, we create
-a model for propagation speed of electromagnetic signals and tell the 
-wireless channel to use it.
+For simplicity, this code uses the default PHY layer configuration and
+channel models which are documented in the API doxygen documentation for
+the @code{YansWifiChannelHelper::Default} and @code{YAnsWifiPhyHelper::Default}
+methods. Once these objects are created, we create a channel object
+and associate it to our PHY layer object manager to make sure
+that all the PHY objects created layer by the @code{YansWifiPhyHelper}
+all share the same underlying channel, that is, they share the same
+wireless medium and can communication and interfere:
 
 @verbatim
-  channel->SetPropagationDelayModel (
-    CreateObject<ConstantSpeedPropagationDelayModel> ());
+  phy.SetChannel (channel.Create ());
 @end verbatim
 
-The next lines of code use similar low-level @command{ns-3} methods to create
-and set a ``propagation loss model'' for the channel.  
+Once the PHY helper is configured, we can focus on the MAC layer:
 
 @verbatim
-  Ptr<LogDistancePropagationLossModel> log =
-    CreateObject<LogDistancePropagationLossModel> ();
-
-  log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
-
-  channel->SetPropagationLossModel (log);
+  WifiHelper wifi = WifiHelper::Default ();
+  wifi.SetRemoteStationManager ("ns3::AarfWifiManager");
 @end verbatim
 
-This snippet is used to tell the channel how it should calculate signal 
-attenuation of waves flowing in the channel.  The details of these calcuations
-are beyond the scope of a tutorial.  You are encouraged to explore the Doxygen
-documentation of classes @code{LogDistancePropagationLossModel} and
-@code{FriisPropagationLossModel} if you are interested in the details.  As
-usual, you will find the documentation in the ``Classes'' tab of the Doxygen 
-documentation.
-
-Now we will return to more familiar ground.  We next create a @code{WifiHelper}
-object and set two default attributes that it will use when creating the actual
-devices.
-
-@verbatim
-  WifiHelper wifi;
-  wifi.SetPhy ("ns3::WifiPhy");
-  wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
-@end verbatim
-
-The @code{SetPhy} method tells the helper the type of physical layer class
-we want it to instantiate when building @code{Wifi} devices.  In this case,  
-the script is asking for physical layer models based on the YANS 802.11a 
-model.  Again, details are avialable in Doxygen.
 
 The @code{SetRemoteStationManager} method tells the helper the type of 
 rate control algorithm to use.  Here, it is asking the helper to use the AARF
-algorithm --- details are, of course, avialable in Doxygen.
+algorithm --- details are, of course, available in Doxygen.
 
-Just as we can vary attributes describing the physical layer, we can do the
-same for the MAC layer.
+Next, we configure the SSID of the infrastructure network we want to setup
+and make sure that our stations don't perform active probing:
 
 @verbatim
   Ssid ssid = Ssid ("ns-3-ssid");
@@ -860,15 +784,13 @@ the MAC will use a ``non-QoS station'' (nqsta) state machine.  Finally, the
 ``ActiveProbing'' attribute is set to false.  This means that probe requests
 will not be sent by MACs created by this helper.
 
-Again, for the next lines of code we are back on familiar ground.  This code
-will @code{Install} Wifi net devices on the nodes we have created as STA nodes
-and will tie them to the @code{WifiChannel}.  Since we created the 
-@code{channel} manually rather than having the helper do it for us, we have to
-pass it into the helper when we call the @code{Install} method.
+Once all the station-specific parameters are fully configured, both at the
+MAC and PHY layers, we can invoke our now-familiar @code{Install} method to 
+create the wifi devices of these stations:
 
 @verbatim
   NetDeviceContainer staDevices;
-  staDevices = wifi.Install (wifiStaNodes, channel);
+  staDevices = wifi.Install (phy, wifiStaNodes);
 @end verbatim
 
 We have configured Wifi for all of our STA nodes, and now we need to 
@@ -888,12 +810,12 @@ In this case, the @code{WifiHelper} is going to create MAC layers of the
 ``BeaconGeneration'' attribute to true and also set an interval between 
 beacons of 2.5 seconds.
 
-The next lines create the single AP and connect it to the channel in a
-familiar way.
+The next lines create the single AP which shares the same set of PHY-level
+attributes (and channel) as the stations:
 
 @verbatim
   NetDeviceContainer apDevices;
-  apDevices = wifi.Install (wifiApNode, channel);
+  apDevices = wifi.Install (phy, wifiApNode);
 @end verbatim
 
 Now, we are going to add mobility models.  We want the STA nodes to be mobile,
