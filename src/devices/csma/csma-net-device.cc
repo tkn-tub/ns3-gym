@@ -83,10 +83,10 @@ CsmaNetDevice::GetTypeId (void)
                    MakePointerAccessor (&CsmaNetDevice::m_queue),
                    MakePointerChecker<Queue> ())
     .AddTraceSource ("Rx", 
-                     "The trace source to fire on reception of a MAC packet.",
+                     "Trace source indicating reception of packet destined for broadcast, multicast or local address.",
                      MakeTraceSourceAccessor (&CsmaNetDevice::m_rxTrace))
     .AddTraceSource ("Drop", 
-                     "Trace source to fire on when a MAC packet is dropped.",
+                     "Trace source indicating packet discarded due to receiver disabled or error model decision.",
                      MakeTraceSourceAccessor (&CsmaNetDevice::m_dropTrace))
     ;
   return tid;

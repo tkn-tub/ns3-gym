@@ -1,8 +1,8 @@
 /**
  * \ingroup devices
- * \defgroup Emulated Emulated Net Device Model
+ * \defgroup EmuModel Emulated Net Device Model
  *
- * \section Emulated Net Device Model
+ * \section EmuModelOverview Emulated Net Device Model Overview
  *
  * The emulated net device allows a simulation node to send and receive packets
  * a real network.
@@ -57,4 +57,58 @@
  * implication this has for static global routing.  The global router module
  * attempts to walk the channels looking for adjacent networks.  Since there 
  * is no channel, the global router will be unable to do this.
+ *
+ * \section EmuTracingModel Emulated Net Device Tracing Model
+ *
+ * Like all ns-3 devices, the Emu Model provides a number of trace sources.
+ * These trace sources can be hooked using your own custom trace code, or you
+ * can use our helper functions to arrange for tracing to be enabled on devices
+ * you specify.
+ *
+ * \subsection EmuTracingModelUpperHooks Upper-Level (MAC) Hooks
+ *
+ * From the point of view of tracing in the net device, there are several 
+ * interesting points to insert trace hooks.  A convention inherited from other
+ * simulators is that packets destined for transmission onto attached networks
+ * pass through a single "transmit queue" in the net device.  We provide trace 
+ * hooks at this point in packet flow, which corresponds (abstractly) only to a 
+ * transition from the network to data link layer, and call them collectively
+ * the device MAC hooks.
+ *
+ * When a packet is sent to the Emu net device for transmission it always 
+ * passes through the transmit queue.  The transmit queue in the EmuNetDevice
+ * inherits from Queue, and therefore inherits three trace sources:
+ *
+ * - An Enqueue operation source (see Queue::m_traceEnqueue);
+ * - A Dequeue operation source (see Queue::m_traceDequeue);
+ * - A Drop operation source (see Queue::m_traceDrop).
+ *
+ * The upper-level (MAC) trace hooks for the EmuNetDevice are, in fact, 
+ * exactly these three trace sources on the single transmit queue of the device.  
+ *
+ * The m_traceEnqueue event is triggered when a packet is placed on the transmit
+ * queue.  This happens at the time that ns3::EmuNetDevice::Send or 
+ * ns3::EmuNetDevice::SendFrom is called by a higher layer to queue a packet for 
+ * transmission.
+ *
+ * The m_traceDequeue event is triggered when a packet is removed from the
+ * transmit queue.  Dequeues from the transmit queue happen immediately after
+ * the packet was enqueued and only indicate that the packet is about to be
+ * sent to an underlying raw socket.  The actual time at which the packet is
+ * sent out on the wire is not available.
+ *
+ * \subsection EmuTracingModelUpperHooks Lower-Level (PHY) Hooks
+ *
+ * Similar to the upper level trace hooks, there are trace hooks available at
+ * the lower levels of the net device.  We call these the PHY hooks.  These 
+ * events fire from the device methods that talk directly to the underlying
+ * raw socket.
+ *
+ * The trace source m_dropTrace is not used in the Emu net device since that
+ * is really the business of the underlying "real" device driver.
+ *
+ * The other low-level trace source fires on reception of an accepted packet
+ * (see ns3::EmuNetDevice::m_rxTrace).  A packet is accepted if it is destined
+ * for the broadcast address, a multicast address, or to the MAC address 
+ * assigned to the Emu net device.
  */

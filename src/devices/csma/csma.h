@@ -23,7 +23,7 @@
  * There are a number of conventions in use for describing layered 
  * communications architectures in the literature and in textbooks.  The most
  * common layering  model is the ISO seven layer reference model.  In this view
- * the CsmaNetDevice and CsmaChannel pair occupies the lowest two 
+ * the ns3::CsmaNetDevice and ns3::CsmaChannel pair occupies the lowest two 
  * layers -- at the physical (layer one), and data link (layer two) positions.
  * Another important reference model is that specified by RFC 1122, 
  * "Requirements for Internet Hosts -- Communication Layers."  In this view the
@@ -43,7 +43,7 @@
  *
  * The "top" of the CSMA device defines the transition from the network layer
  * to the data link layer.  This transition is performed by higher layers by 
- * calling either CsmaNetDevice::Send or CsmaNetDevice::SendFrom.
+ * calling either ns3::CsmaNetDevice::Send or ns3::CsmaNetDevice::SendFrom.
  *
  * In contrast to the IEEE 802.3 standards, there is no precisely specified
  * PHY in the CSMA model in the sense of wire types, signals or pinouts.  The
@@ -55,25 +55,25 @@
  *
  * The CsmaNetDevice calls the CsmaChannel through a media independent
  * interface.  There is a method defined to tell the channel when to start 
- * "wiggling the wires" using the method CsmaChannel::TransmitStart, and 
+ * "wiggling the wires" using the method ns3::CsmaChannel::TransmitStart, and 
  * a method to tell the channel when the transmission process is done and
  * the channel should begin propagating the last bit across the "wire":
- * CsmaChannel::TransmitEnd.
+ * ns3::CsmaChannel::TransmitEnd.
  *
  * When the TransmitEnd method is executed, the channel will model a single 
  * uniform signal propagation delay in the medium and deliver copes of the packet
  * to each of the devices attached to the packet via the 
- * CsmaNetDevice::Receive method.
+ * ns3::CsmaNetDevice::Receive method.
  *
  * There is a "pin" in the device media independent interface corresponding to 
  * "COL" (collision).  The state of the channel may be sensed by calling 
- * CsmaChannel::GetState.  Each device will look at this "pin" before 
+ * ns3::CsmaChannel::GetState.  Each device will look at this "pin" before 
  * starting a send and will perform appropriate backoff operations if required.
  *
  * Properly received packets are forwarded up to higher levels from the 
  * CsmaNetDevice via a callback mechanism.  The callback function is
  * initialized by the higher layer (when the net device is attached) using
- * CsmaNetDevice::SetReceiveCallback and is invoked upon "proper"
+ * ns3::CsmaNetDevice::SetReceiveCallback and is invoked upon "proper"
  *  reception of a packet by the net device in order to forward the packet up
  * the protocol stack.
  *
@@ -116,9 +116,9 @@
  * the wire to the "far end."  
  *
  * The transition to the TRANSMITTING state is  driven by a call to 
- * CsmaChannel::TransmitStart which is called by the net device that 
+ * ns3::CsmaChannel::TransmitStart which is called by the net device that 
  * transmits the packet.  It is the responsibility of that device to end the
- * transmission with a call to CsmaChannel::TransmitEnd at the appropriate
+ * transmission with a call to ns3::CsmaChannel::TransmitEnd at the appropriate
  * simulation time that reflects the time elapsed to put all of the packet bits
  * on the wire.  When TransmitEnd is called, the channel schedules an event
  * corresponding to a single speed-of-light delay.  This delay applies to all
@@ -199,7 +199,7 @@
  * the device MAC hooks.
  *
  * When a packet is sent to the CSMA net device for transmission it always 
- * passed through the transmit queue.  The transmit queue in the 
+ * passes through the transmit queue.  The transmit queue in the 
  * CsmaNetDevice inherits from Queue, and therefore inherits three 
  * trace sources:
  *
@@ -211,8 +211,8 @@
  * exactly these three trace sources on the single transmit queue of the device.  
  *
  * The m_traceEnqueue event is triggered when a packet is placed on the transmit
- * queue.  This happens at the time that CsmaNetDevice::Send or 
- * CsmaNetDevice::SendFrom is called by a higher layer to queue a packet for 
+ * queue.  This happens at the time that ns3::CsmaNetDevice::Send or 
+ * ns3::CsmaNetDevice::SendFrom is called by a higher layer to queue a packet for 
  * transmission.
  *
  * The m_traceDequeue event is triggered when a packet is removed from the
@@ -244,16 +244,16 @@
 
  * The trace source m_dropTrace is called to indicate a packet that is dropped
  * by the device.  This happens in two cases:  First, if the receive side of 
- * the net device is not enabled (see CsmaNetDevice::m_receiveEnable and the 
+ * the net device is not enabled (see ns3::CsmaNetDevice::m_receiveEnable and the 
  * associated attribute "ReceiveEnable").
  *
  * The m_dropTrace is also used to indicate that a packet was discarded as 
  * corrupt if a receive error model is used (see 
- * CsmaNetDevice::m_receiveErrorModel and the associated attribute 
+ * ns3::CsmaNetDevice::m_receiveErrorModel and the associated attribute 
  * "ReceiveErrorModel").
  *
  * The other low-level trace source fires on reception of an accepted packet
- * (see CsmaNetDevice::m_rxTrace).  A packet is accepted if it is destined
+ * (see ns3::CsmaNetDevice::m_rxTrace).  A packet is accepted if it is destined
  * for the broadcast address, a multicast address, or to the MAC address 
  * assigned to the net device.
  *
