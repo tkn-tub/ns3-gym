@@ -8,6 +8,18 @@ def build(bld):
                                  ['core', 'simulator', 'mobility', 'wifi', 'point-to-point', 'internet-stack'])
     obj.source = 'mixed-wireless.cc'
 
+    obj = bld.create_ns3_program('dynamic-global-routing',
+                                 ['point-to-point', 'csma', 'internet-stack', 'global-routing'])
+    obj.source = 'dynamic-global-routing.cc'
+
+    obj = bld.create_ns3_program('static-routing-slash32',
+                                 ['point-to-point', 'internet-stack', 'global-routing'])
+    obj.source = 'static-routing-slash32.cc'
+
+    obj = bld.create_ns3_program('global-routing-slash32',
+                                 ['point-to-point', 'internet-stack', 'global-routing'])
+    obj.source = 'global-routing-slash32.cc'
+
     obj = bld.create_ns3_program('simple-global-routing',
                                  ['point-to-point', 'internet-stack', 'global-routing'])
     obj.source = 'simple-global-routing.cc'
