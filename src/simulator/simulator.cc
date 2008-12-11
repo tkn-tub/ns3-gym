@@ -169,7 +169,7 @@ void
 Simulator::Stop (Time const &time)
 {
   NS_LOG_FUNCTION (time);
-  GetImpl ()->Stop (time);
+  Simulator::Schedule (time, &Simulator::Stop);
 }
 
 Time

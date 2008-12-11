@@ -38,7 +38,6 @@ public:
   virtual bool IsFinished (void) const = 0;
   virtual Time Next (void) const = 0;
   virtual void Stop (void) = 0;
-  virtual void Stop (Time const &time) = 0;
   virtual EventId Schedule (Time const &time, EventImpl *event) = 0;
   virtual EventId ScheduleNow (EventImpl *event) = 0;
   virtual EventId ScheduleDestroy (EventImpl *event) = 0;

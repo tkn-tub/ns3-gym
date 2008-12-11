@@ -45,7 +45,6 @@ public:
   virtual bool IsFinished (void) const;
   virtual Time Next (void) const;
   virtual void Stop (void);
-  virtual void Stop (Time const &time);
   virtual EventId Schedule (Time const &time, EventImpl *event);
   virtual EventId ScheduleNow (EventImpl *event);
   virtual EventId ScheduleDestroy (EventImpl *event);
@@ -66,7 +65,6 @@ private:
 
   typedef std::list<EventId> DestroyEvents;
   DestroyEvents m_destroyEvents;
-  uint64_t m_stopAt;
   bool m_stop;
   Ptr<Scheduler> m_events;
   uint32_t m_uid;
