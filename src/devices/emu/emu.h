@@ -97,7 +97,7 @@
  * sent to an underlying raw socket.  The actual time at which the packet is
  * sent out on the wire is not available.
  *
- * \subsection EmuTracingModelUpperHooks Lower-Level (PHY) Hooks
+ * \subsection EmuTracingModelLowerHooks Lower-Level (PHY) Hooks
  *
  * Similar to the upper level trace hooks, there are trace hooks available at
  * the lower levels of the net device.  We call these the PHY hooks.  These 

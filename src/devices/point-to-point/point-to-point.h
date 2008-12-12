@@ -111,7 +111,7 @@
  * the lower levels of the net device.  We call these the PHY hooks.  These 
  * events fire from the device methods that talk directly to the 
  * PointToPointChannel.
-
+ *
  * The trace source m_dropTrace is called to indicate a packet that is dropped
  * by the device.  This happens when a packet is discarded as corrupt due to a 
  * receive error model indication (see ns3::ErrorModel and the associated 
