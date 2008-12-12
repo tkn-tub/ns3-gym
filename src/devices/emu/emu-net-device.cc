@@ -88,11 +88,8 @@ EmuNetDevice::GetTypeId (void)
                    MakePointerAccessor (&EmuNetDevice::m_queue),
                    MakePointerChecker<Queue> ())
     .AddTraceSource ("Rx", 
-                     "Trace source to fire on reception of a MAC packet.",
+                     "Trace source indicating recvfrom of packet destined for broadcast, multicast or local address.",
                      MakeTraceSourceAccessor (&EmuNetDevice::m_rxTrace))
-    .AddTraceSource ("Drop", 
-                     "Trace source to fire on when a MAC packet is dropped.",
-                     MakeTraceSourceAccessor (&EmuNetDevice::m_dropTrace))
     ;
   return tid;
 }

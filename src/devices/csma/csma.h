@@ -161,19 +161,21 @@
  * queueing strategies.
  *
  * Also configurable by attribute is the encapsulation method used by the
- * device.  Every packet gets an EthernetHeader that includes the 
- * destination and source MAC addresses, and a length/type field.  Every packet
- * also gets an EthernetTrailer which includes the FCS.  Data in the
- * packet may be encapsulated in different ways.  By default, or by setting
- * the "EncapsulationMode" attribute to "Llc", the encapsulation is by 
+ * device.  By default, or by setting the "EncapsulationMode" attribute to 
+ * "Dix", the encapsulation is according to the DEC, Intel, Xerox standard.
+ * This is sometimes called EthernetII framing and is the familiar destination
+ * MAC, source MAC, EtherType, Data, CRC format.
+ *
+ * If the "EncapsulationMode" attribute is set to "Llc", the encapsulation is by 
  * LLC SNAP.  In this case, a SNAP header is added that contains the EtherType
- * (IP or ARP).  The other implemented encapsulation modes are IP_ARP (set
- * "EncapsulationMode" to "IpArp") in which the length type of the Ethernet 
- * header receives the protocol number of the packet; or ETHERNET_V1 (set
- * "EncapsulationMode" to "EthernetV1") in which the length type of the 
- * Ethernet header receives the length of the packet.  A "Raw" encapsulation
- * mode is defined but not implemented -- use of the RAW mode results in an
- * assert firing.
+ * (IP or ARP).  
+ *
+ * The other implemented encapsulation modes are IP_ARP (set "EncapsulationMode"
+ * to "IpArp") in which the length type of the Ethernet header receives the 
+ * protocol number of the packet; or ETHERNET_V1 (set "EncapsulationMode" to 
+ * "EthernetV1") in which the length type of the Ethernet header receives the 
+ * length of the packet.  A "Raw" encapsulation mode is defined but not 
+ * implemented -- use of the RAW mode results in an assertion.
  *
  * The CsmaNetDevice implements a random exponential backoff algorithm 
  * that is executed if the channel is determined to be busy (TRANSMITTING or
@@ -241,7 +243,7 @@
  * Similar to the upper level trace hooks, there are trace hooks available at
  * the lower levels of the net device.  We call these the PHY hooks.  These 
  * events fire from the device methods that talk directly to the CsmaChannel.
-
+ *
  * The trace source m_dropTrace is called to indicate a packet that is dropped
  * by the device.  This happens in two cases:  First, if the receive side of 
  * the net device is not enabled (see ns3::CsmaNetDevice::m_receiveEnable and the 
