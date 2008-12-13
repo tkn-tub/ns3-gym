@@ -42,29 +42,29 @@
 //  At time 1s, start CBR traffic flow from n1 to n6
 //  At time 2s, set the n1 point-to-point interface to down.  Packets
 //    will start to be dropped 
-//  At time 3s, call RecomputeGlobalRoutes() and traffic will
+//  At time 3s, call RecomputeRoutingTables() and traffic will
 //    start flowing again on the alternate path
 //  At time 4s, re-enable the n1/n6 interface to up.  Will not change routing
-//  At time 5s, call RecomputeGlobalRoutes() and traffic will start flowing 
+//  At time 5s, call RecomputeRoutingTables() and traffic will start flowing 
 //    again on the original path
 //  At time 6s, set the n6-n1 point-to-point Ipv4 interface to down (note, this
 //    keeps the point-to-point link "up" from n1's perspective).  Packets
 //    will traverse the link and be dropped at n6 upon receipt.  These drops
 //    are not visible in the pcap trace but in the ascii trace.
-//  At time 7s, call RecomputeGlobalRoutes() and traffic will flow again
+//  At time 7s, call RecomputeRoutingTables() and traffic will flow again
 //    through the path n1-n2-n5-n6
 //  At time 8s, bring the interface back up.
-//  At time 9s, call RecomputeGlobalRoutes() and traffic will flow again
+//  At time 9s, call RecomputeRoutingTables() and traffic will flow again
 //    through the path n1-n6
 //  At time 10s, stop the first flow.  
 //  At time 11s, start a new flow, but to n6's other IP address (the one
 //    on the n1/n6 p2p link)
 //  At time 12s, bring the n1 interface down between n1 and n6.  Packets
 //    will start to be dropped 
-//  At time 13s, call RecomputeGlobalRoutes() and traffic will
+//  At time 13s, call RecomputeRoutingTables() and traffic will
 //    start flowing again on the alternate path
 //  At time 14s, re-enable the n1/n6 interface to up.  Will not change routing
-//  At time 15s, call RecomputeGlobalRoutes() and traffic will start flowing 
+//  At time 15s, call RecomputeRoutingTables() and traffic will start flowing 
 //    again on the original path
 //  At time 16s, stop the second flow.  
 

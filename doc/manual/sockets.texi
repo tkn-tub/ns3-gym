@@ -194,7 +194,7 @@ a real (zero'ed) buffer on the spot, and the efficiency will be lost there.
 @section POSIX-like sockets API 
 
 @emph{this capability is under development and is scheduled for
-inclusion in August 2008 timeframe; see the repository
+inclusion in the ns-3.5 releasetimeframe; see the repository
 http://code.nsnam.org/mathieu/ns-3-simu for details}
 
 The below is excerpted from Mathieu's post to ns-developers list

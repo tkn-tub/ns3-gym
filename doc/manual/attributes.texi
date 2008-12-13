@@ -713,7 +713,7 @@ simulation execution when you are done.
 
 @subsection Future work
 There are a couple of possible improvements:
-@itemize bullet
+@itemize @bullet
 @item save a unique version number with date and time at start of file
 @item save rng initial seed somewhere.
 @item make each RandomVariable serialize its own initial seed and re-read
