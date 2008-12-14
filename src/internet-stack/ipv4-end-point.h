@@ -69,6 +69,10 @@ public:
                     uint32_t icmpInfo);
 
 private:
+  void DoForwardUp (Ptr<Packet> p, Ipv4Address saddr, uint16_t sport);
+  void DoForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, 
+                      uint8_t icmpType, uint8_t icmpCode,
+                      uint32_t icmpInfo);
   Ipv4Address m_localAddr;
   uint16_t m_localPort;
   Ipv4Address m_peerAddr;

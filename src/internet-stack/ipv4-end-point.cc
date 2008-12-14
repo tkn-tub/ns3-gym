@@ -21,6 +21,7 @@
 #include "ipv4-end-point.h"
 #include "ns3/packet.h"
 #include "ns3/log.h"
+#include "ns3/simulator.h"
 
 NS_LOG_COMPONENT_DEFINE ("Ipv4EndPoint");
 
@@ -95,9 +96,14 @@ void
 Ipv4EndPoint::ForwardUp (Ptr<Packet> p, Ipv4Address saddr, uint16_t sport)
 {
   if (!m_rxCallback.IsNull ())
-  {
-    m_rxCallback (p, saddr, sport);
-  }
+    {
+      Simulator::ScheduleNow (&Ipv4EndPoint::DoForwardUp, this, p, saddr, sport);
+    }
+}
+void 
+Ipv4EndPoint::DoForwardUp (Ptr<Packet> p, Ipv4Address saddr, uint16_t sport)
+{
+  m_rxCallback (p, saddr, sport);
 }
 
 void 
@@ -109,8 +115,16 @@ Ipv4EndPoint::ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
                    (uint32_t)icmpCode << icmpInfo);
   if (!m_icmpCallback.IsNull ())
     {
-      m_icmpCallback (icmpSource,icmpTtl,icmpType,icmpCode,icmpInfo);
+      Simulator::ScheduleNow (&Ipv4EndPoint::DoForwardIcmp, this, 
+                              icmpSource, icmpTtl, icmpType, icmpCode, icmpInfo);
     }
+}
+void 
+Ipv4EndPoint::DoForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, 
+                             uint8_t icmpType, uint8_t icmpCode,
+                             uint32_t icmpInfo)
+{
+  m_icmpCallback (icmpSource,icmpTtl,icmpType,icmpCode,icmpInfo);
 }
 
 }; // namespace ns3
