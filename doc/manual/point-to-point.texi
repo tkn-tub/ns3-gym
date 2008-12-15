@@ -71,6 +71,7 @@ The PointToPointChannel provides following Attributes:
 @itemize @bullet
 @item Delay:  An ns3::Time specifying the speed of light transmission delay for
 the channel.
+@end itemize
 
 @node Using the PointToPointNetDevice
 @section Using the PointToPointNetDevice
@@ -132,14 +133,14 @@ the device MAC hooks.
 
 When a packet is sent to the Point-to-Point net device for transmission it 
 always passes through the transmit queue.  The transmit queue in the 
-PoiintToPointNetDevice inherits from Queue, and therefore inherits three 
+PointToPointNetDevice inherits from Queue, and therefore inherits three 
 trace sources:
 
-@itemize @bulleg
+@itemize @bullet
 @item An Enqueue operation source (see ns3::Queue::m_traceEnqueue);
 @item A Dequeue operation source (see ns3::Queue::m_traceDequeue);
 @item A Drop operation source (see ns3::Queue::m_traceDrop).
-@item
+@end itemize
 
 The upper-level (MAC) trace hooks for the PointToPointNetDevice are, in fact, 
 exactly these three trace sources on the single transmit queue of the device.  

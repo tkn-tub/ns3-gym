@@ -1,0 +1,359 @@
+@node Wifi NetDevice
+@chapter Wifi NetDevice
+@anchor{chap:wifi}
+
+ns-3 nodes can contain a collection of NetDevice objects, much like an actual 
+computer contains separate interface cards for Ethernet, Wifi, Bluetooth, etc.  This chapter describes the ns-3 WifiNetDevice and related models.  By
+adding WifiNetDevice objects to ns-3 nodes, one can create models of
+802.11-based infrastructure and ad hoc networks.
+
+@menu
+* Overview of the model::
+* Using the WifiNetDevice::
+* The WifiChannel and WifiPhy models::
+* The MAC model::
+* Wifi Attributes::
+* Wifi Tracing::
+@end menu
+
+@node Overview of the model
+@section Overview of the model
+
+@strong{Note:}  This overview is taken largely from the Doxygen for the
+WifiNetDevice module.
+
+The set of 802.11 models provided in ns-3 attempts to provide
+an accurate MAC-level implementation of the 802.11 specification
+and to provide a not-so-slow PHY-level model of the 802.11a
+specification.
+
+The current implementation provides roughly four levels of models:
+@itemize @bullet
+@item the @strong{PHY layer models}
+@item the so-called @strong{MAC low models}: they implement DCF
+@item the so-called @strong{MAC high models}: they implement the MAC-level
+beacon generation, probing, and association state machines, and
+@item a set of @strong{Rate control algorithms} used by the MAC low models
+@end itemize
+
+There are presently three @strong{MAC high models}:
+@enumerate
+@item a simple adhoc state machine that does not perform any
+kind of beacon generation, probing, or association. This
+state machine is implemented by the @code{ns3::AdhocWifiNetDevice}
+and @code{ns3::MacHighAdhoc} classes.
+@item  an active probing and association state machine that handles
+automatic re-association whenever too many beacons are missed
+is implemented by the @code{ns3::NqstaWifiNetDevice} and
+@code{ns3::MacHighNqsta} classes.
+@item an access point that generates periodic beacons, and that
+accepts every attempt to associate. This AP state machine
+is implemented by the @code{ns3::NqapWifiNetDevice} and
+@code{ns3::MacHighNqap} classes.
+@end enumerate 
+
+The @strong{MAC low layer} is split into three components:
+@enumerate
+@item @code{ns3::MacLow} which takes care of RTS/CTS/DATA/ACK transactions.
+@item @code{ns3::DcfManager} and @code{ns3::DcfState} which implements the DCF function.
+@item @code{ns3::DcaTxop} which handles the packet queue, packet fragmentation,
+and packet retransmissions if they are needed.
+@end enumerate
+
+There are also several @strong{rate control algorithms} that can be used by the Mac low layer:
+@itemize @bullet
+@item @code{ns3::ArfMacStations}
+@item @code{ns3::AArfMacStations}
+@item @code{ns3::IdealMacStations}
+@item @code{ns3::CrMacStations}
+@item @code{ns3::OnoeMacStations}
+@item @code{ns3::AmrrMacStations}
+@end itemize
+
+The PHY layer implements a single model in the 
+@code{ns3::WifiPhy class}: the
+physical layer model implemented there is described fully in a paper 
+entitled @uref{http://cutebugs.net/files/wns2-yans.pdf,,"Yet Another Network Simulator"}. 
+
+In ns-3, nodes can have multiple WifiNetDevices on separate channels,
+and the WifiNetDevice can coexist with other device types; this removes
+an architectural limitation found in ns-2.  Presently, however, there
+is no model for cross-channel interference or coupling.
+
+The source code for the Wifi NetDevice lives in the directory
+@code{src/devices/wifi}.
+
+@node Using the WifiNetDevice
+@section Using the WifiNetDevice
+
+Users who use the low-level ns-3 API and who wish to add a WifiNetDevice
+to their node must create an instance of a WifiNetDevice, plus 
+a number of consitutent objects, and bind them together appropriately
+(the WifiNetDevice is very modular in this regard, for future
+extensibility).  At the low-level API, this can be done
+with about 20 lines of code (see @code{ns3::WifiHelper::Install} and
+@code{ns3::YansWifiPhyHelper::Create}).  They also must create,
+at some point, a WifiChannel, which also contains a number of
+constituent objects (see @code{ns3::YansWifiChannelHelper::Create}).
+
+However, a few helpers are available for users to add these devices
+and channels with only a few lines of code, if they are willing to
+use defaults, and the helpers provide additional API to allow the
+passing of attribute values to change default values.  The scripts
+in @code{src/examples} can be browsed to see how this is done.
+
+@subsection YansWifiChannelHelper
+
+The YansWifiChannelHelper has an unusual name.  Readers may wonder why
+it is named this way.  The reference is to the 
+@uref{http://cutebugs.net/files/wns2-yans.pdf,,yans simulator},
+from which this model is taken.  The helper can be used to create
+a WifiChannel with a default PropagationLoss and PropagationDelay model.  
+Specifically, the default is a channel model
+with a propagation delay equal to a constant, the speed of light,
+and a propagation loss based on a log distance model with a reference 
+loss of 46.6777 dB at reference distance of 1m.
+
+Users will typically type code such as:
+@verbatim
+  YansWifiChannelHelper wifiChannelHelper = YansWifiChannelHelper::Default ();
+  Ptr<WifiChannel> wifiChannel = wifiChannelHelper.Create ();
+@end verbatim
+to get the defaults.  Note the distinction above in creating a helper
+object vs. an actual simulation object.
+In ns-3, helper objects (used at the helper API only) are created on the
+stack (they could also be created with operator new and later deleted).
+However, the actual ns-3 objects typically inherit from 
+@code{class ns3::Object} and are assigned to a smart pointer.  See the
+chapter on 
+@uref{Object model} for a discussion of the ns-3 object model, if you
+are not familiar with it.
+
+@emph{Todo:  Add notes about how to configure attributes with this helper API}
+
+@subsection YansWifiPhyHelper
+
+Physical devices (base class @code{ns3::Phy}) connect to 
+@code{ns3::Channel} models in ns-3.  We need to create Phy objects appropriate
+for the YansWifiChannel; here the @code{YansWifiPhyHelper} will
+do the work.
+
+The YansWifiPhyHelper class configures an object factory to create instances
+of a @code{YansWifiPhy} and
+adds some other objects to it, including possibly a supplemental 
+ErrorRateModel and a pointer to a MobilityModel.  The user code is
+typically:
+@verbatim
+  YansWifiPhyHelper wifiPhyHelper = YansWifiPhyHelper::Default ();
+  wifiPhyHelper.SetChannel (wifiChannel);
+@end verbatim
+Note that we haven't actually created any WifiPhy objects yet; we've 
+just prepared the YansWifiPhyHelper by telling it which channel it is 
+connected to.  The phy objects are created in the next step.
+
+@subsection WifiHelper
+
+We're now ready to create WifiNetDevices.  First, let's create
+a WifiHelper with default settings:
+@verbatim
+  WifiHelper wifiHelper = WifiHelper::Default ();
+@end verbatim
+What does this do?  It sets the RemoteStationManager to
+@code{ns3::ArfWifiManager} and the upper MAC to @code{ns3::AdhocWifiMac}
+by default (which can be overridden by other arguments).
+Now, let's use the wifiPhyHelper created above to install WifiNetDevices
+on a set of nodes in a NodeContainer "c":
+@verbatim
+  NetDeviceContainer wifiContainer = WifiHelper::Install (wifiPhyHelper, c);
+@end verbatim
+This creates the WifiNetDevice which includes also a WifiRemoteStationManager,
+a WifiMac, and a WifiPhy (connected to the matching WifiChannel).
+
+There are many ns-3 @uref{Attributes} that can be set on the above
+helpers to deviate from the default behavior; the example scripts
+show how to do some of this reconfiguration.
+
+@subsection AdHoc WifiNetDevice configuration 
+This is a typical example of how a user might configure an adhoc network.
+
+@emph{Write me}
+
+@subsection Infrastructure (Access Point and clients) WifiNetDevice configuration 
+This is a typical example of how a user might configure an access point and a set of clients. 
+
+@emph{Write me}
+
+@node The WifiChannel and WifiPhy models
+@section The WifiChannel and WifiPhy models
+
+The WifiChannel subclass can be used to connect together a set of
+@code{ns3::WifiNetDevice} network interfaces. The class @code{ns3::WifiPhy}
+is the
+object within the WifiNetDevice that receives bits from the channel.
+A WifiChannel contains
+a @code{ns3::PropagationLossModel} and a @code{ns3::PropagationDelayModel} 
+which can
+be overridden by the WifiChannel::SetPropagationLossModel
+and the WifiChannel::SetPropagationDelayModel methods. By default,
+no propagation models are set.
+
+The WifiPhy models an 802.11a channel, in terms of frequency, modulation,
+and bit rates, and interacts with the PropagationLossModel and 
+PropagationDelayModel found in the channel.  
+
+This section summarizes
+the description of the BER calculations found in the yans paper
+taking into account the
+Forward Error Correction present in 802.11a and describes
+the algorithm we implemented to decide whether or not a 
+packet can be successfully received.  See @uref{http://cutebugs.net/files/wns2-yans.pdf,,"Yet Another Network Simulator"} for more details.
+
+The PHY layer can be in one of three states:
+@enumerate
+@item TX: the PHY is currently transmitting a signal
+on behalf of its associated MAC
+@item RX: the PHY is synchronized on a signal and
+is waiting until it has received its last bit to forward
+it to the MAC.
+@item IDLE: the PHY is not in the TX or RX states.
+@end enumerate
+
+When the first bit of a new packet is received while
+the PHY is not IDLE (that is, it is already synchronized
+on the reception of another earlier packet or it is
+sending data itself), the received packet is dropped. 
+Otherwise, if the PHY is IDLE, we calculate the received
+energy of the first bit of this new signal and compare it 
+against our Energy Detection threshold (as defined 
+by the Clear Channel Assessment function mode 1). 
+If the energy of the packet k is higher, then the PHY moves 
+to RX state and schedules an event when the last bit of 
+the packet is expected to be received. Otherwise, the 
+PHY stays in IDLE state and drops the packet.
+
+The energy of the received signal is assumed
+to be zero outside of the reception interval of packet k and
+is calculated from the transmission power with a path-loss 
+propagation model in the reception interval.
+where the path loss exponent, @math{n}, is chosen equal to 3, 
+the reference distance, @math{d_0} is choosen equal to 
+@math{1.0m} and 
+the reference energy is based based on a Friis
+propagation model.
+
+When the last bit of the packet upon which the PHY is 
+synchronized is received, we need to calculate the 
+probability that the packet is received with any error
+to decide whether or not 
+the packet on which we were synchronized could
+be successfully received or not: a random number 
+is drawn from a uniform distribution and is compared against
+the probability of error.
+
+To evaluate the probability of error, we start from the piecewise linear 
+functions shown in Figure @ref{fig:snir} and calculate the 
+SNIR function. 
+
+@float Figure,fig:snir
+@caption{SNIR function over time}
+@image{figures/snir,,3in} 
+@end float 
+
+From the SNIR function we can derive bit error rates for BPSK and QAM
+modulations.  Then, for each interval l where BER is
+constant, we define the upper bound of a probability that an error is
+present in the chunk of bits located in the interval l for packet k.
+If we assume an AWGN channel, 
+binary convolutional coding (which is the case in 802.11a)
+and hard-decision Viterbi decoding, the error rate is thus derived,
+and the packet error probability for packet k can be computed.. 
+
+@subsection WifiChannel configuration
+
+WifiChannel models include both a PropagationDelayModel and a 
+PropagationLossModel.  The following PropagationDelayModels are available:
+@itemize @bullet
+@item ConstantSpeedPropagationDelayModel
+@item RandomPropagationDelayModel
+@end itemize
+
+The following PropagationLossModels are available:
+@itemize @bullet
+@item RandomPropagationLossModel
+@item FriisPropagationLossModel
+@item LogDistancePropagationLossModel
+@item JakesPropagationLossModel
+@item CompositePropagationLossModel
+@end itemize
+
+@node The MAC model
+@section The MAC model
+
+The 802.11 Distributed Coordination Function is used to
+calculate when to grant access to the transmission medium. While
+implementing the DCF would have been particularly easy if we
+had used a recurring timer that expired every slot, we
+chose to use the method described in @emph{(missing reference here from
+Yans paper)}
+where the backoff timer duration is lazily calculated whenever
+needed since it is claimed to have much better performance than
+the simpler recurring timer solution.
+
+The higher-level MAC functions are implemented in a set of other
+C++ classes and deal with:
+@itemize @bullet
+@item packet fragmentation and defragmentation,
+@item use of the rts/cts protocol,
+@item rate control algorithm,
+@item connection and disconnection to and from an Access Point,
+@item the MAC transmission queue,
+@item beacon generation,
+@item etc.
+@end itemize
+
+@node Wifi Attributes
+@section Wifi Attributes
+
+The WifiNetDevice makes heavy use of the ns-3 @ref{Attributes} subsystem for
+configuration and default value management.  Presently, approximately
+100 values are stored in this system.
+
+For instance, class @code{ns-3::WifiMac} exports these attributes:
+@itemize @bullet
+@item CtsTimeout: When this timeout expires, the RTS/CTS handshake has failed.
+@item AckTimeout: When this timeout expires, the DATA/ACK handshake has failed.
+@item Sifs: The value of the SIFS constant.
+@item EifsNoDifs: The value of EIFS-DIFS
+@item Slot: The duration of a Slot.
+@item Pifs: The value of the PIFS constant.
+@item MaxPropagationDelay: The maximum propagation delay. Unused for now.
+@item MaxMsduSize: The maximum size of an MSDU accepted by the MAC layer.This value conforms to the specification.
+@item Ssid: The ssid we want to belong to.
+@end itemize
+
+@node Wifi Tracing
+@section Wifi Tracing
+
+@emph{This needs revised/updating based on the latest Doxygen}
+
+ns-3 has a sophisticated tracing infrastructure that allows users to hook
+into existing trace sources, or to define and export new ones.  
+
+Wifi-related trace sources that are available by default include:
+@itemize @bullet
+@item @code{ns3::WifiNetDevice}
+@itemize @bullet
+@item Rx: Received payload from the MAC layer.
+@item Tx: Send payload to the MAC layer.
+@end itemize
+@item @code{ns3::WifiPhy}
+@itemize @bullet
+@item State: The WifiPhy state
+@item RxOk: A packet has been received successfully.
+@item RxError: A packet has been received unsuccessfully.
+@item Tx: Packet transmission is starting.
+@end itemize
+@end itemize
+Briefly, this means, for example, that a user can hook a processing 
+function to the "State" tracing hook above and be notified whenever the
+WifiPhy model changes state.

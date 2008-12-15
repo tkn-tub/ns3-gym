@@ -313,7 +313,7 @@ For instance, this scheduling call will cause the tables to be rebuilt
 at time 5 seconds:
 @verbatim
   Simulator::Schedule (Seconds (5),&GlobalRouteManager::RecomputeRoutingTables);
-@end verbatimT
+@end verbatim
 
 @node Global Routing Implementation
 @section Global Routing Implementation
