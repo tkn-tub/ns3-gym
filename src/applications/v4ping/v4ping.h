@@ -18,6 +18,8 @@ public:
   virtual ~V4Ping ();
 
 private:
+  void Write32 (uint8_t *buffer, uint32_t data);
+
   // inherited from Application base class.
   virtual void StartApplication (void);
   virtual void StopApplication (void);
