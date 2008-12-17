@@ -105,6 +105,13 @@ familiar to you so far.
     LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
 @end verbatim
 
+A fixed seed is provided to the random number generators so that they will
+generate repeatable results.
+
+@verbatim
+  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
+@end verbatim
+
 Next, you will see some familiar code that will allow you to change the number
 of devices on the CSMA network via command line argument.  We did something
 similar when we allowed the number of packets sent to be changed in the section
@@ -655,6 +662,13 @@ the simulation.
   {
     LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
     LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
+@end verbatim
+
+A fixed seed is provided to the random number generators so that they will
+generate repeatable results.
+
+@verbatim
+  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
 @end verbatim
 
 Next, you will see more familiar code that will allow you to change the number

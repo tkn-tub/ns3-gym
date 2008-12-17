@@ -362,6 +362,21 @@ enable on each component.  These two lines of code enable debug logging at the
 INFO level for echo clients and servers.  This will result in the application
 printing out messages as packets are sent and received during the simulation.
 
+The next line of code is used to give a fixed seed to the random number 
+generators so that they will generate repeatable results.  In the example
+programs, it allows us to thouroughly document the output of the trace files
+in a consistent way.  Having a fixed seed also allows us to use the examples 
+in our regression testing framework.
+
+@verbatim
+  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
+@end verbatim
+
+Random variables are very important in understanding how to get repeatable
+results, so you are encouraged to read the Doxygen and manual sections to
+understand what is going on there.  For us, the main concern is in making 
+random backoff algorithms consistent across runs.
+
 Now we will get directly to the business of creating a topology and running 
 a simulation.  We use the topology helper objects to make this job as
 easy as possible.
