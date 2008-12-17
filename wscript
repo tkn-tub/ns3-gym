@@ -492,9 +492,11 @@ def shutdown():
         if not regression_traces:
             regression_traces = None
         try:
-            regression.run_regression(regression_traces)
+            retval = regression.run_regression(regression_traces)
         finally:
             os.chdir(_dir)
+        if retval:
+            sys.exit(retval)
 
     if Params.g_options.lcov_report:
         lcov_report()
