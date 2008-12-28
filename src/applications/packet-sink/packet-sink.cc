@@ -119,6 +119,10 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
   Address from;
   while (packet = socket->RecvFrom (from))
     {
+      if (packet->GetSize() == 0)
+        { //EOF
+	  break;
+        }
       if (InetSocketAddress::IsMatchingType (from))
         {
           InetSocketAddress address = InetSocketAddress::ConvertFrom (from);

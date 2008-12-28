@@ -165,7 +165,8 @@ void OnOffApplication::CancelEvents ()
     { // Cancel the pending send packet event
       // Calculate residual bits since last packet sent
       Time delta(Simulator::Now() - m_lastStartTime);
-      m_residualBits += (uint32_t)(m_cbrRate.GetBitRate() * delta.GetSeconds());
+      Scalar bits = delta * Scalar (m_cbrRate.GetBitRate ()) / Seconds (1.0);
+      m_residualBits += (uint32_t)bits.GetDouble ();
     }
   Simulator::Cancel(m_sendEvent);
   Simulator::Cancel(m_startStopEvent);
@@ -177,13 +178,15 @@ void OnOffApplication::StartSending()
   NS_LOG_FUNCTION_NOARGS ();
 
   ScheduleNextTx();  // Schedule the send packet event
+  ScheduleStopEvent();
 }
 
 void OnOffApplication::StopSending()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  CancelEvents();
 
-  Simulator::Cancel(m_sendEvent);
+  ScheduleStartEvent();
 }
 
 // Private helpers
@@ -222,7 +225,7 @@ void OnOffApplication::ScheduleStopEvent()
 
   Time onInterval = Seconds(m_onTime.GetValue());
   NS_LOG_LOGIC ("stop at " << onInterval);
-  Simulator::Schedule(onInterval, &OnOffApplication::StopSending, this);
+  m_startStopEvent = Simulator::Schedule(onInterval, &OnOffApplication::StopSending, this);
 }
 
   

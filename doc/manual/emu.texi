@@ -1,0 +1,183 @@
+@node Emu NetDevice
+@chapter Emu NetDevice
+
+This is the introduction to Emu NetDevice chapter, to complement the
+Emu model doxygen.
+
+@menu
+* Overview of the model::
+* Using the EmuNetDevice::
+* Emu Tracing::
+@end menu
+
+@node Overview of the model
+@section Overview of the model
+
+The emulated net device allows a simulation node to send and receive packets
+a real network.
+
+The Emu net device is not a complete net device and channel combination as is
+typical in ns-3.  The Emu device can be thought of as a proxy for a real
+device that resides in an ns-3 simulation.  The Emu net device talks to that
+real device using raw sockets and binds to the device via the Linux interface.
+There is no related Emu channel since other devices will most likely reside on
+different computers running entirely separate simulations.
+
+The Emu net device relies on a specified interface (``eth1, for example) being
+in promiscuous mode.  It opens a raw socket and binds to that interface.  We 
+perform MAC spoofing to separate simulation network traffic from other network
+traffic that may be flowing to and from the host.
+
+Normally, the use case for emulated net devices is in collections of
+small simulations that connect to the outside world through specific 
+interfaces.  For example, one could construct a number of virtual
+machines and connect them via a host-only network.  To use the emulated
+net device, you would need to set all of the host-only interfaces in
+promiscuous mode and provide an appropriate device name, "eth1" for example.
+
+One could also use the emulated net device in a testbed situation
+where the host on which the simulation is running has a specific interface
+of interest which drives the testbed hardware.  You would also need to set 
+this specific interface into promiscuous mode and provide an appropriate 
+device name to the ns-3 emulated net device.
+
+The emulated net device only works if the underlying interface is up in 
+promiscuous mode.  We could just turn it on, but the situation is that we 
+expect the other considerations listed above to have been dealt with.
+To verify that these issues are dealt with, we just make sure that the end 
+result of that process has taken place and that the specified interface is
+in promiscuous mode.
+
+@subsection Address Concerns
+
+Packets will be sent out over the device, but as mentioned, we use MAC spoofing.
+By default in the simulation, the MAC addresses will be generated using the 
+Organizationally Unique Identifier (OUI) 00:00:00 as a base.  This vendor code
+is not assigned to any organization and so should not conflict with any real 
+hardware.  
+
+It is always up to you to determine that using these MAC addresses is
+okay on your network and won't conflict with anything else (including another
+simulation using emu devices) on your network.  If you are using the 
+emulated net device in separate simulations you must consider global MAC 
+address assignment issues and ensure that MAC addresses are unique across
+all simulations.  The emulated net device respects the MAC address provided
+in the SetAddress method so you can do this manually.  For larger simulations,
+you may want to set the OUI in the MAC address allocation function.
+
+IP addresses corresponding to the emulated net devices are the addresses 
+generated in the simulation, which are generated in the usual way via helper
+functions.
+
+@subsection Attributes
+
+The Emu network device appears to the ns-3 system just as any other device and
+can be controlled through the attribute system, and traced through conventional
+trace hooks.  The EmuNetDevice provides following Attributes:
+
+@itemize @bullet
+@item Address:  The Mac48Address of the device;
+@item DeviceName: The name of the underlying real device (e.g., ``eth1'');
+@item Start:  The simualtion time at which to enable the underlying socket;
+@item Stop:  The simualtion time at which to stop receiving from the underlying socket;
+@item TxQueue:  The trasmit queue used by the device;
+@item InterframeGap:  The optional time to wait between "frames";
+@item Rx:  A trace source for received packets;
+@end itemize
+
+Packets sent over the EmuNetDevice are always routed through the 
+transmit queue to provide a trace hook for packets sent out over the 
+network.  This transmit queue can be set (via attribute) to model different
+queueing strategies.
+
+@node Using the EmuNetDevice
+@section Using the EmuNetDevice
+
+The emulated net device comes with a helper function as all ns-3 devices do.
+One unique aspect is that there is no channel associated with the underlying
+medium.  We really have no idea what this medium is, and so have not made an
+effort to model it abstractly.  The primary thing to be aware of is the 
+implication this has for static global routing.  The global router module
+attempts to walk the channels looking for adjacent networks.  Since there 
+is no channel, the global router will be unable to do this.
+
+The Emu net devices are typically created and configured using the associated 
+@code{EmuHelper} object.  The various ns3 device helpers generatlly work in a
+simlar way, and their use is seen in many of our example programs.
+
+The conceptual model of interest is that of a bare computer ``husk'' into which 
+you plug net devices.  The bare computers are created using a @code{NodeContainer}
+helper.  You just ask this helper to create as many computers (we call them
+@code{Nodes}) as you need on your network:
+
+@verbatim
+  NodeContainer nodes;
+  nodes.Create (nEmuNodes);
+@end verbatim
+
+Once you have your nodes, you need to instantiate a @code{EmuHelper} and set
+any attributes you may want to change.
+
+@verbatim
+  EmuHelper emu;
+  csma.SetAttribute ("DeviceName", StringValue ("eth1"));
+@end verbatim
+ 
+Once the attributes are set, all that remains is to create the devices
+and install them on the required nodes.  When we create the net devices, 
+we add them to a container to allow you to use them in the future.  This 
+all takes just one line of code.
+
+@verbatim
+  NetDeviceContainer emuDevices = emu.Install (nodes);
+@end verbatim
+
+@node Emu Tracing
+@section Emu Tracing
+
+Like all ns-3 devices, the Emu Model provides a number of trace sources.
+These trace sources can be hooked using your own custom trace code, or you
+can use our helper functions to arrange for tracing to be enabled on devices
+you specify.
+
+@subsection Upper-Level (MAC) Hooks
+
+From the point of view of tracing in the net device, there are several 
+interesting points to insert trace hooks.  A convention inherited from other
+simulators is that packets destined for transmission onto attached networks
+pass through a single "transmit queue" in the net device.  We provide trace 
+hooks at this point in packet flow, which corresponds (abstractly) only to a 
+transition from the network to data link layer, and call them collectively
+the device MAC hooks.
+
+When a packet is sent to the Emu net device for transmission it always 
+passes through the transmit queue.  The transmit queue in the 
+EmuNetDevice inherits from Queue, and therefore inherits three 
+trace sources:
+
+@itemize @bullet
+@item An Enqueue operation source (see Queue::m_traceEnqueue);
+@item A Dequeue operation source (see Queue::m_traceDequeue);
+@item A Drop operation source (see Queue::m_traceDrop).
+@end itemize
+
+The upper-level (MAC) trace hooks for the EmuNetDevice are, in fact, 
+exactly these three trace sources on the single transmit queue of the device.  
+
+The m_traceEnqueue event is triggered when a packet is placed on the transmit
+queue.  This happens at the time that EmuNetDevice::Send or 
+EmuNetDevice::SendFrom is called by a higher layer to queue a packet for 
+transmission.
+
+The m_traceDequeue event is triggered when a packet is removed from the
+transmit queue.  Dequeues from the transmit queue happen immediately after
+the Enqueue event and just prior to the packet being sent to the underlying
+socket.  This means that the transmit queue really only exists to fire on
+enqueue and dequeue operations so the Emu device bhaves like other ns-3
+devices in this repect.
+
+@subsection Lower-Level (PHY) Hooks
+
+There are no lower level trace hooks implemented in the Emu net device since
+we rely on the underlying OS implementation of the raw socket to perform
+the low level operations required to send and receive packets.

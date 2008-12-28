@@ -49,7 +49,6 @@ DefaultSimulatorImpl::GetTypeId (void)
 DefaultSimulatorImpl::DefaultSimulatorImpl ()
 {
   m_stop = false;
-  m_stopAt = 0;
   // uids are allocated from 4.
   // uid 0 is "invalid" events
   // uid 1 is "now" events
@@ -146,8 +145,7 @@ void
 DefaultSimulatorImpl::Run (void)
 {
 
-  while (!m_events->IsEmpty () && !m_stop && 
-         (m_stopAt == 0 || m_stopAt > NextTs ())) 
+  while (!m_events->IsEmpty () && !m_stop) 
     {
       ProcessOneEvent ();
     }
@@ -169,13 +167,6 @@ DefaultSimulatorImpl::Stop (void)
   m_stop = true;
 }
 
-void 
-DefaultSimulatorImpl::Stop (Time const &time)
-{
-  NS_ASSERT (time.IsPositive ());
-  Time absolute = Simulator::Now () + time;
-  m_stopAt = absolute.GetTimeStep ();
-}
 
 //
 // Schedule an event for a _relative_ time in the future.

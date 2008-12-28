@@ -36,6 +36,9 @@
 
 NS_LOG_COMPONENT_DEFINE ("NqstaWifiMac");
 
+#undef NS_LOG_APPEND_CONTEXT
+#define NS_LOG_APPEND_CONTEXT if (m_low != 0) {std::clog << "[mac=" << m_low->GetAddress () << "] ";}
+
 /*
  * The state machine for this NQSTA is:
  --------------                                          -----------

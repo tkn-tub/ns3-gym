@@ -36,63 +36,103 @@ DoParse (const std::string s, uint64_t *v)
     std::string trailer = s.substr(n, std::string::npos);
     if (trailer == "bps")
       {
-        // Bit/s
+        // bit/s
         *v = (uint64_t)r;
       }
     else if (trailer == "b/s")
       {
-        // Bit/s
+        // bit/s
         *v = (uint64_t)r;
       }
     else if (trailer == "Bps")
       {
-        // Byte/s
+        // byte/s
         *v = (uint64_t)(r * 8);
       }
     else if (trailer == "B/s") 
       {
-        // Byte/s
+        // byte/s
         *v = (uint64_t)(r * 8);
       }
     else if (trailer == "kbps")
       {
-        // KiloBit/s
+        // kilobits/s
         *v = (uint64_t)(r * 1000);
       }
     else if (trailer == "kb/s")
       {
-        // KiloBit/s
+        // kilobits/s
+        *v = (uint64_t)(r * 1000);
+      }
+    else if (trailer == "Kbps")
+      {
+        // kilobits/s
+        *v = (uint64_t)(r * 1000);
+      }
+    else if (trailer == "Kb/s")
+      {
+        // kilobits/s
         *v = (uint64_t)(r * 1000);
       }
     else if (trailer == "kBps")
       {
-        // KiloBit/s
-        *v = (uint64_t)(r * 1000);
+        // kiloByte/s
+        *v = (uint64_t)(r * 8000);
       }
     else if (trailer == "kB/s")
       {
-        // KiloBit/s
-        *v = (uint64_t)(r * 1000);
+        // KiloByte/s
+        *v = (uint64_t)(r * 8000);
+      }
+    else if (trailer == "KBps")
+      {
+        // kiloByte/s
+        *v = (uint64_t)(r * 8000);
+      }
+    else if (trailer == "KB/s")
+      {
+        // KiloByte/s
+        *v = (uint64_t)(r * 8000);
+      }
+    else if (trailer == "Kib/s")
+      {
+        // kibibit/s
+        *v = (uint64_t)(r * 1024);
+      }
+    else if (trailer == "KiB/s")
+      {
+        // kibibyte/s
+        *v = (uint64_t)(r * 8192);
       }
     else if (trailer == "Mbps")
       {
-        // MegaBit/s
+        // MegaBits/s
         *v = (uint64_t)(r * 1000000);
       }
     else if (trailer == "Mb/s")
       {
-        // MegaBit/s
+        // MegaBits/s
         *v = (uint64_t)(r * 1000000);
       }
     else if (trailer == "MBps")
       {
-        // MegaByte/s
+        // MegaBytes/s
         *v = (uint64_t)(r * 8000000);
       }
     else if (trailer == "MB/s")
       {
-        // MegaByte/s
+        // MegaBytes/s
         *v = (uint64_t)(r * 8000000);
+      }
+    else if (trailer == "Mib/s")
+      {
+        // MebiBits/s
+        *v = (uint64_t)(r * 1048576);
+      }
+    else if (trailer == "MiB/s")
+      {
+        // MebiByte/s
+        *v = (uint64_t)(r * 1048576 * 8);
       }
     else if (trailer == "Gbps")
       {
@@ -113,6 +153,16 @@ DoParse (const std::string s, uint64_t *v)
       {
         // GigaByte/s
         *v = (uint64_t)(r * 8*1000000000);
+      }
+    else if (trailer == "Gib/s")
+      {
+        // GibiBits/s
+        *v = (uint64_t)(r * 1048576 * 1024);
+      }
+    else if (trailer == "GiB/s")
+      {
+        // GibiByte/s
+        *v = (uint64_t)(r * 1048576 * 1024 * 8);
       }
     else
       {

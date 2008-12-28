@@ -17,7 +17,8 @@ IMAGES_EPS = \
 	$(FIGURES)/buffer.eps \
 	$(FIGURES)/sockets-overview.eps \
 	$(FIGURES)/testbed.eps \
-	$(FIGURES)/emulated-channel.eps
+	$(FIGURES)/emulated-channel.eps \
+	$(FIGURES)/snir.eps
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
@@ -28,18 +29,21 @@ CHAPTERS = \
 	manual.texi \
 	attributes.texi \
 	callbacks.texi \
+	csma.texi \
 	emulation.texi \
 	node.texi \
 	objects.texi \
 	other.texi \
 	output.texi \
 	packets.texi \
+	point-to-point.texi \
 	random.texi \
 	realtime.texi \
 	routing.texi \
 	sockets.texi \
 	statistics.texi \
-	troubleshoot.texi
+	troubleshoot.texi \
+	wifi.texi
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@

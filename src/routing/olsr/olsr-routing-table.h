@@ -21,7 +21,7 @@
  */
 
 ///
-/// \file	OLSR_rtable.h
+/// \file	olsr-routing-table.h
 /// \brief	Header file for routing table's related stuff.
 ///
 

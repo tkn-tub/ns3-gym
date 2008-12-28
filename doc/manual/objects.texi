@@ -48,7 +48,7 @@ private:
 @node Object base classes
 @section Object base classes
 
-There are two special base classes used in ns-3.  Classes that inherit
+There are three special base classes used in ns-3.  Classes that inherit
 from these base classes can instantiate objects with special properties.
 These base classes are:
 @itemize @bullet
@@ -61,8 +61,8 @@ those that do get special properties.  Classes deriving from
 @code{class Object} get the following properties.
 @itemize @bullet
 @item the ns-3 type and attribute system (see @ref{Attributes})
-@item a smart-pointer reference counting system (class Ptr)
 @item an object aggregation system
+@item a smart-pointer reference counting system (class Ptr)
 @end itemize
 
 Classes that derive from @code{class ObjectBase} get the first two
@@ -106,9 +106,6 @@ Users using a low-level API who wish to explicitly allocate
 non-reference-counted objects on the heap, using operator new, 
 are responsible for deleting such objects.
 
-Packet objects are handled differently (without reference
-counting); their design is described in @ref{Packets}.
-
 @subsection Reference counting smart pointer (Ptr)
 
 Calling @code{Ref()} and @code{Unref()} all the time would be cumbersome,
@@ -145,12 +142,15 @@ For objects deriving from @code{class Object}:
 @verbatim
  Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
 @end verbatim
+Please do not create such objects using @code{operator new}; create them
+using @code{CreateObject()} instead.
 
 For objects deriving from @code{class RefCountBase}, or other
-objects that support usage of smart pointer (e.g., the ns-3 Packet class),
+objects that support usage of the smart pointer class
+(in particular, the ns-3 Packet class),
 a templated helper function is available and recommended to be used:
 @verbatim
-  ns3::Ptr<B> b = ns3::Create<B> ();
+  Ptr<B> b = Create<B> ();
 @end verbatim  
 This is simply a wrapper around operator new that correctly handles
 the reference counting system.
@@ -207,15 +207,20 @@ Note that the Ipv4 protocols are created using @code{CreateObject()}.
 Then, they are aggregated to the node.  In this manner, the Node base
 class does not need to be edited to allow users with a base class Node
 pointer to access the Ipv4 interface; users may ask the node for a pointer
-to its Ipv4 interface at runtime.  How this is done is seen in the next
-subsection.
+to its Ipv4 interface at runtime.  How the user asks the node is described
+in the next subsection.
+
+Note that it is a programming error to aggregate more than one object of
+the same type to an ns3::Object.  So, for instance, aggregation is not
+an option for storing all of the active sockets of a node.
 
 @subsubsection GetObject example
 GetObject is a type-safe way to achieve a safe downcasting 
 and to allow interfaces to be found on an object.  
 
 Consider a node pointer @code{m_node} that points to a Node object 
-with an implementation of IPv4.  The client code wishes to configure
+that has an implementation of IPv4 previously aggregated to it.  The 
+client code wishes to configure
 a default route.  To do so, it must access an object within
 the node that has an interface to the IP forwarding configuration.
 It performs the following:
@@ -229,28 +234,18 @@ the return value from such a function call.  If successful, the user can
 now use the Ptr to the Ipv4 object that was previously aggregated to
 the node.
 
-@subsubsection Summary
-To summarize, two benefits that we expect to leverage from this are as follows:
-@itemize @bullet
-@item @strong{Encapsulation:} By separating interface from implementation, 
-it permits
-implementors to replace elements of the protocol stack while remaining
-compliant with client code that supports the same interface.  For
-example, one type of node may include native ns-3 models of protocols,
-while another may be a port of a Linux stack, and both may be accessed
-by the same base class node pointer.
-@item @strong{Aggregation:} AggregateObject allows for aggregation of 
-objects at
-run time.  For instance, an existing Node object may have an ``Energy Model''
+Another example of how one might use aggregation is to add optional
+models to objects.  For in
+For instance, an existing Node object may have an ``Energy Model''
 object aggregated to it at run time (without modifying
 and recompiling the node class).  An existing model (such as a wireless
 net device) can then later "GetObject" for the energy model and act 
 appropriately if the interface has been either built in to the underlying
-Node object or aggregated to it at run time.
-@end itemize
+Node object or aggregated to it at run time.  However, other nodes need
+not know anything about energy models.
 
 We hope that this mode of programming will require much less 
-need for developers to modify the @code base classes or libraries.
+need for developers to modify the base classes.
 
 @node Downcasting
 @section Downcasting

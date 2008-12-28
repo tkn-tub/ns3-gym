@@ -89,6 +89,9 @@ see @uref{http://www.nsnam.org/docs/manual.pdf}.
 * Node and Internet Stack::
 * TCP::
 * Routing overview::
+* Wifi NetDevice::
+* CSMA NetDevice::
+* PointToPoint NetDevice::
 * Troubleshooting::
 @end menu
 
@@ -104,6 +107,9 @@ see @uref{http://www.nsnam.org/docs/manual.pdf}.
 @c @include output.texi
 @include tcp.texi
 @include routing.texi
+@include wifi.texi
+@include csma.texi
+@include point-to-point.texi
 @c @include other.texi
 @include troubleshoot.texi
 

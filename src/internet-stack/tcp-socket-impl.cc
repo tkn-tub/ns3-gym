@@ -145,9 +145,19 @@ TcpSocketImpl::TcpSocketImpl(const TcpSocketImpl& sock)
     {
       m_rtt = sock.m_rtt->Copy();
     }
-  //null out the socket base class recvcallback,
+  //null out the socket base class callbacks,
   //make user of the socket register this explicitly
-  SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > () );
+  Callback<void, Ptr< Socket > > vPS =
+      MakeNullCallback<void, Ptr<Socket> > ();
+  Callback<void, Ptr<Socket>, const Address &> vPSA =
+      MakeNullCallback<void, Ptr<Socket>, const Address &> ();
+  Callback<void, Ptr<Socket>, uint32_t> vPSUI =
+      MakeNullCallback<void, Ptr<Socket>, uint32_t> ();
+
+  SetConnectCallback (vPS, vPS);
+  SetDataSentCallback (vPSUI);
+  SetSendCallback (vPSUI);
+  SetRecvCallback (vPS);
   //can't "copy" the endpoint just yes, must do this when we know the peer info
   //too; this is in SYN_ACK_TX
 }
@@ -473,6 +483,11 @@ TcpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
   NS_LOG_FUNCTION_NOARGS ();
   if(m_bufferedData.empty())
     {
+      if(m_state == CLOSE_WAIT) //means EOF
+        {
+          return Create<Packet>();
+        }
+      //else, means nothing to read
       return 0;
     }
   UnAckData_t out; //serves as buffer to return up to the user
@@ -547,7 +562,8 @@ TcpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
 {
   NS_LOG_FUNCTION (this << maxSize << flags);
   Ptr<Packet> packet = Recv (maxSize, flags);
-  if (packet != 0)
+  //Null packet means no data to read, and an empty packet indicates EOF
+  if (packet != 0 && packet->GetSize() != 0)
     {
       SocketAddressTag tag;
       bool found;

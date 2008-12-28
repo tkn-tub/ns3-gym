@@ -39,6 +39,8 @@ main (int argc, char *argv[])
   LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
   LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
 
+  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
+
   uint32_t nCsma = 3;
   CommandLine cmd;
   cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
@@ -59,6 +61,8 @@ main (int argc, char *argv[])
   p2pDevices = pointToPoint.Install (p2pNodes);
 
   CsmaHelper csma;
+  csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
+  csma.SetChannelAttribute ("Delay", TimeValue (NanoSeconds (6560)));
 
   NetDeviceContainer csmaDevices;
   csmaDevices = csma.Install (csmaNodes);

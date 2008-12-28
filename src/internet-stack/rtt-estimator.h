@@ -76,6 +76,7 @@ private:
   double m_maxMultiplier;
 public:
   Time       est;     // Current estimate
+  Time       minrto; // minimum value of the timeout
   uint32_t      nSamples;// Number of samples
   double       multiplier;   // RTO Multiplier
 };

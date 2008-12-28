@@ -301,6 +301,20 @@ forwarding tables entered automatically by the GlobalRouteManager:
 @emph{Note:} A reminder that the wifi NetDevice is not yet supported
 (only CSMA and PointToPoint).
 
+It is possible to call this function again in the midst of a simulation
+using the following additional public function:
+@verbatim
+  GlobalRouteManager::RecomputeRoutingTables ();
+@end verbatim
+which flushes the old tables, queries the nodes for new interface information,
+and rebuilds the routes.
+
+For instance, this scheduling call will cause the tables to be rebuilt
+at time 5 seconds:
+@verbatim
+  Simulator::Schedule (Seconds (5),&GlobalRouteManager::RecomputeRoutingTables);
+@end verbatim
+
 @node Global Routing Implementation
 @section Global Routing Implementation
 

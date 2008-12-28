@@ -68,7 +68,6 @@ RealtimeSimulatorImpl::RealtimeSimulatorImpl ()
   NS_LOG_FUNCTION_NOARGS ();
 
   m_stop = false;
-  m_stopAt = 0;
   m_running = false;
   // uids are allocated from 4.
   // uid 0 is "invalid" events
@@ -441,16 +440,6 @@ RealtimeSimulatorImpl::Run (void)
           {
             done = true;
           }
-        //
-        // We also want to stop the simulator at some time even if there are events 
-        // that have been scheduled out in the future.  If we're in realtime mode, we 
-        // actually have time passing, so we must look at the realtime clock to see if 
-        // we're past the end time.
-        //
-        if (m_stopAt && m_stopAt <= m_synchronizer->GetCurrentRealtime ())
-          {
-            done = true;
-          }
       }
 
       if (done)
@@ -537,37 +526,6 @@ RealtimeSimulatorImpl::Stop (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_stop = true;
-}
-
-static void Placeholder (void) {}
-
-//
-// Schedule a stop for a _relative_ time in the future.  If the simulation
-// hasn't started yet, this will effectively be an absolute time.
-//
-void 
-RealtimeSimulatorImpl::Stop (Time const &time)
-{
-  NS_LOG_FUNCTION (time);
-
-  Time tAbsolute = Simulator::Now () + time;
-  NS_ASSERT (tAbsolute.IsPositive ());
-  NS_ASSERT (tAbsolute >= TimeStep (m_currentTs));
-  m_stopAt = tAbsolute.GetTimeStep ();
-
-  //
-  // For the realtime case, we need a real event sitting out at the end of time
-  // to keep the simulator running (sleeping) while there are no other events 
-  // present.  If an "external" device in another thread decides to schedule an
-  // event, the sleeping synchronizer will be awakened and the new event will
-  // be run.
-  //
-  // The easiest thing to do is to call back up into the simulator to take 
-  // advantage of all of the nice event wrappers.  This will call back down into
-  // RealtimeSimulatorImpl::Schedule to do the work.  This path interprets the 
-  // time as relative, so pass the relative time.
-  //
-  Simulator::Schedule (time, &Placeholder);
 }
 
 //

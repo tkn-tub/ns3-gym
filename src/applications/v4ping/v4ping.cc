@@ -108,6 +108,15 @@ V4Ping::Receive (Ptr<Socket> socket)
     }
 }
 
+void
+V4Ping::Write32 (uint8_t *buffer, uint32_t data)
+{
+  buffer[0] = (data >> 0) & 0xff;
+  buffer[1] = (data >> 8) & 0xff;
+  buffer[2] = (data >> 16) & 0xff;
+  buffer[3] = (data >> 24) & 0xff;
+}
+
 void 
 V4Ping::StartApplication (void)
 {
@@ -128,13 +137,28 @@ V4Ping::StartApplication (void)
   echo.SetSequenceNumber (m_seq);
   m_seq++;
   echo.SetIdentifier (0);
-  uint32_t data[4];
-  data[0] = GetNode ()->GetId ();
-  data[1] = GetApplicationId ();
+
+  //
+  // We must write quantities out in some form of network order.  Since there
+  // isn't an htonl to work with we just follow the convention in pcap traces
+  // (where any difference would show up anyway) and borrow that code.  Don't
+  // be too surprised when you see that this is a little endian convention.
+  //
+  uint8_t data[4 * sizeof(uint32_t)];
+  uint32_t tmp = GetNode ()->GetId ();
+  Write32 (&data[0 * sizeof(uint32_t)], tmp);
+
+  tmp = GetApplicationId ();
+  Write32 (&data[1 * sizeof(uint32_t)], tmp);
+
   int64_t now = Simulator::Now ().GetTimeStep ();
-  data[2] = now & 0xffffffff;
+  tmp = now & 0xffffffff;
+  Write32 (&data[2 * sizeof(uint32_t)], tmp);
+
   now >>= 32;
-  data[3] = now & 0xffffffff;
+  tmp = now & 0xffffffff;
+  Write32 (&data[3 * sizeof(uint32_t)], tmp);
+
   Ptr<Packet> dataPacket = Create<Packet> ((uint8_t *) &data, 16);
   echo.SetData (dataPacket);
   p->AddHeader (echo);

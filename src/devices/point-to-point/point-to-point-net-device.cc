@@ -73,11 +73,10 @@ PointToPointNetDevice::GetTypeId (void)
                    MakeTimeAccessor (&PointToPointNetDevice::m_tInterframeGap),
                    MakeTimeChecker ())
     .AddTraceSource ("Rx", 
-                     "Trace source to fire on reception of a MAC packet.",
+                     "Trace source indicating reception of packet from the PointToPointChannel.",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_rxTrace))
     .AddTraceSource ("Drop",
-                     "Trace source to fire on when a MAC packet is dropped.",
-
+                     "Trace source indicating a packet was discarded due to a ReceiveErrorModel decision.",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_dropTrace))
 
     ;

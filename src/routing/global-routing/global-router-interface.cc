@@ -1277,6 +1277,11 @@ GlobalRouter::AnotherRouterOnLink (Ptr<NetDevice> nd, bool allowRecursion) const
   NS_LOG_FUNCTION (nd << allowRecursion);
 
   Ptr<Channel> ch = nd->GetChannel();
+  if (!ch)
+    {
+      // It may be that this net device is a stub device, without a channel
+      return false;
+    }
   uint32_t nDevices = ch->GetNDevices();
   NS_ASSERT (nDevices);
 

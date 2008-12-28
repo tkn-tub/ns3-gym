@@ -82,7 +82,7 @@ network packets
 @cindex Channel
 
 In the real world, one can connect a computer to a network.  Often the media
-over which data flows in these netowrks are called @emph{channels}.  When
+over which data flows in these networks are called @emph{channels}.  When
 you connect your Ethernet cable to the plug in the wall, you are connecting 
 your computer to an Ethernet communication channel.  In the simulated world
 of @command{ns-3}, one connects a @code{Node} to an object representing a
@@ -362,6 +362,21 @@ enable on each component.  These two lines of code enable debug logging at the
 INFO level for echo clients and servers.  This will result in the application
 printing out messages as packets are sent and received during the simulation.
 
+The next line of code is used to give a fixed seed to the random number 
+generators so that they will generate repeatable results.  In the example
+programs, it allows us to thouroughly document the output of the trace files
+in a consistent way.  Having a fixed seed also allows us to use the examples 
+in our regression testing framework.
+
+@verbatim
+  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
+@end verbatim
+
+Random variables are very important in understanding how to get repeatable
+results, so you are encouraged to read the Doxygen and manual sections to
+understand what is going on there.  For us, the main concern is in making 
+random backoff algorithms consistent across runs.
+
 Now we will get directly to the business of creating a topology and running 
 a simulation.  We use the topology helper objects to make this job as
 easy as possible.
@@ -490,7 +505,7 @@ the two @code{PointToPointNetDevices} are attached.  When objects are created
 by the @code{PointToPointHelper}, the attributes previously set in the helper
 are used to initialize the corresponding attributes in the created objects.
 
-After executing the the @code{pointToPoint.Install (nodes)} call we will have
+After executing the @code{pointToPoint.Install (nodes)} call we will have
 two nodes, each with an installed point-to-point net device and a 
 point-to-point channel between them.  Both devices will be configured to 
 transmit data at five megabits per second over the channel which has a two 
@@ -643,9 +658,9 @@ helper constructors.
 
 Recall that we used an @code{Ipv4InterfaceContainer} to keep track of the IP 
 addresses we assigned to our devices.  The zeroth interface in the 
-@code{interfaces} container is going to coorespond to the IP address of the 
+@code{interfaces} container is going to correspond to the IP address of the 
 zeroth node in the @code{nodes} container.  The first interface in the 
-@code{interfaces} container cooresponds to the IP address of the first node 
+@code{interfaces} container corresponds to the IP address of the first node 
 in the @code{nodes} container.  So, in the first line of code (from above), we
 are creating the helper and telling it so set the remote address of the client
 to be  the IP address assigned to the node on which the server resides.  We 
@@ -741,7 +756,7 @@ and then build it using waf,
 @end verbatim
 
 You can now run the example (note that if you build your program in the scratch
-directory you must run it out of the scratch direcory):
+directory you must run it out of the scratch directory):
 
 @verbatim
   ~/repos/ns-3-dev > ./waf --run scratch/first

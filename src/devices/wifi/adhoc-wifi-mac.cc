@@ -33,6 +33,9 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (AdhocWifiMac);
 
+#undef NS_LOG_APPEND_CONTEXT
+#define NS_LOG_APPEND_CONTEXT if (m_low != 0) {std::clog << "[mac=" << m_low->GetAddress () << "] ";}
+
 TypeId 
 AdhocWifiMac::GetTypeId (void)
 {

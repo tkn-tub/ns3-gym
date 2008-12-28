@@ -17,7 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "yans-wifi-phy-helper.h"
+#include "yans-wifi-helper.h"
 #include "ns3/error-rate-model.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/propagation-delay-model.h"

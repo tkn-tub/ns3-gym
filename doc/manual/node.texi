@@ -204,7 +204,7 @@ focus on the above four items from an architectural perspective.
 
 First, note that the @code{Receive ()} function has a matching signature
 to the ReceiveCallback in the @code{class Node}.  This function pointer
-is inserted into the the Node's protocol handler when 
+is inserted into the Node's protocol handler when 
 @code{AddInterface ()} is called.  The actual registration is done
 with a statement such as:
 follows:

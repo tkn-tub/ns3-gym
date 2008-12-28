@@ -764,11 +764,6 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
-    ## simulator-impl.h: void ns3::SimulatorImpl::Stop(ns3::Time const & time) [member function]
-    cls.add_method('Stop', 
-                   'void', 
-                   [param('ns3::Time const &', 'time')], 
-                   is_pure_virtual=True, is_virtual=True)
     ## simulator-impl.h: ns3::EventId ns3::SimulatorImpl::Schedule(ns3::Time const & time, ns3::EventImpl * event) [member function]
     cls.add_method('Schedule', 
                    'ns3::EventId', 
@@ -1101,11 +1096,6 @@ def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## default-simulator-impl.h: void ns3::DefaultSimulatorImpl::Stop(ns3::Time const & time) [member function]
-    cls.add_method('Stop', 
-                   'void', 
-                   [param('ns3::Time const &', 'time')], 
-                   is_virtual=True)
     ## default-simulator-impl.h: ns3::EventId ns3::DefaultSimulatorImpl::Schedule(ns3::Time const & time, ns3::EventImpl * event) [member function]
     cls.add_method('Schedule', 
                    'ns3::EventId', 
@@ -1298,11 +1288,6 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
     cls.add_method('Stop', 
                    'void', 
                    [], 
-                   is_virtual=True)
-    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::Stop(ns3::Time const & time) [member function]
-    cls.add_method('Stop', 
-                   'void', 
-                   [param('ns3::Time const &', 'time')], 
                    is_virtual=True)
     ## realtime-simulator-impl.h: ns3::EventId ns3::RealtimeSimulatorImpl::Schedule(ns3::Time const & time, ns3::EventImpl * event) [member function]
     cls.add_method('Schedule', 

@@ -51,6 +51,11 @@ RttEstimator::GetTypeId (void)
                    TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&RttEstimator::est),
                    MakeTimeChecker ())
+    .AddAttribute ("MinRTO", 
+                   "Minimum retransmit timeout value",
+                   TimeValue (Seconds (0.2)),
+                   MakeTimeAccessor (&RttEstimator::minrto),
+                   MakeTimeChecker ())
     ;
   return tid;
 }
@@ -217,9 +222,17 @@ Time RttMeanDeviation::RetransmitTimeout ()
 {
   // If not enough samples, justjust return 2 times estimate   
   //if (nSamples < 2) return est * 2;
+  Time retval;
   if (variance < est / Scalar (4.0))
-    return est * Scalar (2 * multiplier);            // At least twice current est
-  return (est + Scalar (4) * variance) * Scalar (multiplier); // As suggested by Jacobson
+    {
+      retval = est * Scalar (2 * multiplier);            // At least twice current est
+    }
+  else
+    {
+      retval = (est + Scalar (4) * variance) * Scalar (multiplier); // As suggested by Jacobson
+    }
+  retval = Max (retval, minrto);
+  return retval;
 }
 
 Ptr<RttEstimator> RttMeanDeviation::Copy () const
