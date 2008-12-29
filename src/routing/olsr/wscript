@@ -11,7 +11,7 @@ def build(bld):
         'olsr-agent-impl.cc',
         ]
 
-    headers = bld.create_obj('ns3header')
+    headers = bld.new_task_gen('ns3header')
     headers.module = 'olsr'
     headers.source = [
         'olsr-agent.h',

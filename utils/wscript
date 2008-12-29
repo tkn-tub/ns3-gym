@@ -2,18 +2,15 @@
 import os.path
 
 def configure(conf):
-    check = conf.create_pkgconfig_configurator()
-    check.name = 'goocanvas gthread-2.0'
-    check.uselib = 'MOBILITY_VISUALIZER'
-    check.mandatory = False
-    conf.env['ENABLE_MOBILITY_VISUALIZER'] = check.run()
+    conf.env['ENABLE_MOBILITY_VISUALIZER'] = conf.pkg_check_modules(
+        'MOBILITY_VISUALIZER', 'goocanvas gthread-2.0', mandatory=False)
     
 
 def build(bld):
-    env = bld.env_of_name('default')
+    env = bld.env
 
     unit_tests = bld.create_ns3_program('run-tests', ['common'])
-    unit_tests.inst_var  = 0 # do not install
+    unit_tests.install_path = None # do not install
     unit_tests.source = 'run-tests.cc'
     ## link unit test program with all ns3 modules
     unit_tests.uselib_local = 'ns3'

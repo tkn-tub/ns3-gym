@@ -1,12 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def configure(conf):
-   e = conf.create_library_configurator()
-   e.mandatory = False
-   e.name = 'sqlite3'
-   e.define = 'SQLITE3'
-   e.uselib = 'SQLITE3'
-   conf.env['SQLITE_STATS'] = e.run()
+   conf.env['SQLITE_STATS'] = conf.check(lib='sqlite3', define_name='SQLITE3', uselib='SQLITE3')
    conf.report_optional_feature("SqliteDataOutput", "SQlite stats data output",
                                 conf.env['SQLITE_STATS'],
                                 "library 'sqlite3' not found")
@@ -22,7 +17,7 @@ def build(bld):
         'omnet-data-output.cc',
         'data-collector.cc',
         ]
-    headers = bld.create_obj('ns3header')
+    headers = bld.new_task_gen('ns3header')
     headers.module = 'stats'
     headers.source = [
         'data-calculator.h',
@@ -34,7 +29,7 @@ def build(bld):
         'data-collector.h',
         ]
 
-    if bld.env()['SQLITE_STATS']:
+    if bld.env['SQLITE_STATS']:
         headers.source.append('sqlite-data-output.h')
         obj.source.append('sqlite-data-output.cc')
         obj.uselib = 'SQLITE3'

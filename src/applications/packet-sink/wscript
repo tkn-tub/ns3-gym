@@ -5,7 +5,7 @@ def build(bld):
     module.source = [
         'packet-sink.cc',
         ]
-    headers = bld.create_obj('ns3header')
+    headers = bld.new_task_gen('ns3header')
     headers.module = 'packet-sink'
     headers.source = [
         'packet-sink.h',

@@ -7,7 +7,7 @@ def build(bld):
         'csma-net-device.cc',
         'csma-channel.cc',
         ]
-    headers = bld.create_obj('ns3header')
+    headers = bld.new_task_gen('ns3header')
     headers.module = 'csma'
     headers.source = [
         'backoff.h',

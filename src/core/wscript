@@ -3,36 +3,16 @@ import sys
 
 
 def configure(conf):
-    e = conf.create_header_configurator()
-    e.mandatory = False
-    e.name = 'stdlib.h'
-    e.define = 'HAVE_STDLIB_H'
-    e.run()
+    if conf.check(header_name='stdlib.h'):
+        conf.define('HAVE_STDLIB_H', 1)
+        conf.define('HAVE_GETENV', 1)
 
-    e = conf.create_header_configurator()
-    e.mandatory = False
-    e.name = 'stdlib.h'
-    e.define = 'HAVE_GETENV'
-    e.run()
+    conf.check(header_name='signal.h', define_name='HAVE_SIGNAL_H')
 
-    e = conf.create_header_configurator()
-    e.mandatory = False
-    e.name = 'signal.h'
-    e.define = 'HAVE_SIGNAL_H'
-    e.run()
+    conf.check(lib='rt', uselib='RT', define_name='HAVE_RT')
 
-    e = conf.create_library_configurator()
-    e.mandatory = False
-    e.name = 'rt'
-    e.define = 'HAVE_RT'
-    e.uselib = 'RT'
-    e.run()
+    conf.env['ENABLE_THREADING'] = conf.check(header_name='pthread.h', define_name='HAVE_PTHREAD_H')
 
-    e = conf.create_header_configurator()
-    e.mandatory = False
-    e.name = 'pthread.h'
-    e.define = 'HAVE_PTHREAD_H'
-    conf.env['ENABLE_THREADING'] = e.run()
     conf.report_optional_feature("Threading", "Threading Primitives",
                                  conf.env['ENABLE_THREADING'],
                                  "<pthread.h> include not detected")
@@ -76,7 +56,7 @@ def build(bld):
         ]
     core.uselib = 'RT'
 
-    headers = bld.create_obj('ns3header')
+    headers = bld.new_task_gen('ns3header')
     headers.module = 'core'
     headers.source = [
         'system-wall-clock-ms.h',
@@ -129,7 +109,7 @@ def build(bld):
             'unix-system-wall-clock-ms.cc',
             ])
 
-    if bld.env()['ENABLE_THREADING']:
+    if bld.env['ENABLE_THREADING']:
         core.source.extend([
             'unix-system-thread.cc',
             'unix-system-mutex.cc',

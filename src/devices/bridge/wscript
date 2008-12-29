@@ -6,7 +6,7 @@ def build(bld):
         'bridge-net-device.cc',
         'bridge-channel.cc',
         ]
-    headers = bld.create_obj('ns3header')
+    headers = bld.new_task_gen('ns3header')
     headers.module = 'bridge'
     headers.source = [
         'bridge-net-device.h',

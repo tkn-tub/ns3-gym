@@ -16,7 +16,7 @@ def build(bld):
         'random-direction-2d-mobility-model.cc',
         ]
 
-    headers = bld.create_obj('ns3header')
+    headers = bld.new_task_gen('ns3header')
     headers.module = 'mobility'
     headers.source = [
         'vector.h',

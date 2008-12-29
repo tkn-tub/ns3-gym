@@ -1,11 +1,8 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def configure(conf):
-    e = conf.create_header_configurator()
-    e.mandatory = False
-    e.name = 'linux/if_ether.h'
-    e.define = 'HAVE_IF_ETHER_H'
-    conf.env['ENABLE_EMU'] = e.run()
+    conf.env['ENABLE_EMU'] = conf.check(header_name='linux/if_ether.h',
+                                        define_name='HAVE_IF_ETHER_H')
     conf.report_optional_feature("EmuNetDevice", "Emulated Net Device",
                                  conf.env['ENABLE_EMU'],
                                  "<linux/if_ether.h> include not detected")
@@ -14,7 +11,7 @@ def build(bld):
     module = bld.create_ns3_module('emu', ['node'])
     module.source = [
         ]
-    headers = bld.create_obj('ns3header')
+    headers = bld.new_task_gen('ns3header')
     headers.module = 'emu'
     headers.source = [
         'emu.h',

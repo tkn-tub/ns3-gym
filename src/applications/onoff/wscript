@@ -5,7 +5,7 @@ def build(bld):
     module.source = [
         'onoff-application.cc',
         ]
-    headers = bld.create_obj('ns3header')
+    headers = bld.new_task_gen('ns3header')
     headers.module = 'onoff'
     headers.source = [
         'onoff-application.h',

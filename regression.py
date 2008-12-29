@@ -1,11 +1,18 @@
+# python lib modules
 import os
 import sys
-import Params
 import shutil
 import pproc as subprocess
 import urllib
 
+# WAF modules
+import Build
+import Options
+import Utils
+
+# local modules
 import wutils
+
 
 #
 # The directory in which the tarball of the reference traces lives.  This is
@@ -45,7 +52,7 @@ class Regression(object):
     def __init__(self, testdir, reference_traces):
         self.testdir = testdir
         self.reference_traces = reference_traces
-        self.env = Params.g_build.env_of_name('default')
+        self.env = Build.bld.env
 
     def run_test(self, verbose, generate, testName, arguments=[], pyscript=None, refTestName=None):
         """
@@ -83,13 +90,13 @@ class Regression(object):
                 os.mkdir(refTestDirName)
 
             if pyscript is None:
-                Params.g_options.cwd_launch = refTestDirName
+                Options.options.cwd_launch = refTestDirName
                 tmpl = "%s"
                 for arg in arguments:
                     tmpl = tmpl + " " + arg
                 wutils.run_program(testName, tmpl)
             else:
-                argv = [self.env['PYTHON'], os.path.join(Params.g_cwd_launch, *os.path.split(pyscript))] + arguments
+                argv = [self.env['PYTHON'], os.path.join(Options.cwd_launch, *os.path.split(pyscript))] + arguments
                 before = os.getcwd()
                 os.chdir(refTestDirName)
                 try:
@@ -120,7 +127,7 @@ class Regression(object):
             #  testName + " > /dev/null 2>&1")
 
             if pyscript is None:
-                Params.g_options.cwd_launch = traceDirName
+                Options.options.cwd_launch = traceDirName
                 wutils.run_program(testName, command_template=wutils.get_command_template(*arguments))
             else:
                 argv = [self.env['PYTHON'], os.path.join('..', '..', '..', *os.path.split(pyscript))] + arguments
@@ -191,13 +198,13 @@ def run_regression(reference_traces):
     sys.path.append(testdir)
     sys.modules['tracediff'] = Regression(testdir, reference_traces)
 
-    if Params.g_options.regression_tests:
-        tests = Params.g_options.regression_tests.split(',')
+    if Options.options.regression_tests:
+        tests = Options.options.regression_tests.split(',')
     else:
         tests = _find_tests(testdir)
 
     print "========== Running Regression Tests =========="
-    env = Params.g_build.env_of_name('default')
+    env = Build.bld.env
     if not no_net:
         if env['MERCURIAL']:
             print "Synchronizing reference traces using Mercurial."
@@ -216,7 +223,7 @@ def run_regression(reference_traces):
                 finally:
                     os.chdir("..")
                 if result:
-                    Params.fatal("Synchronizing reference traces using Mercurial failed.")
+                    raise Utils.WafError("Synchronizing reference traces using Mercurial failed.")
         else:
             if not os.path.exists(reference_traces):
                 traceball = dir_name + wutils.TRACEBALL_SUFFIX
@@ -235,7 +242,7 @@ def run_regression(reference_traces):
         try:
             result = _run_regression_test(test)
             if result == 0:
-                if Params.g_options.regression_generate:
+                if Options.options.regression_generate:
                     print "GENERATE " + test
                 else:
                     print "PASS " + test
@@ -243,7 +250,7 @@ def run_regression(reference_traces):
                 bad.append(test)
                 print "FAIL " + test
         except NotImplementedError:
-                print "SKIP " + test            
+            print "SKIP " + test            
 
     return len(bad) > 0
 
@@ -265,6 +272,6 @@ def _run_regression_test(test):
         os.mkdir("traces")
     
     mod = __import__(test, globals(), locals(), [])
-    return mod.run(verbose=(Params.g_options.verbose > 0),
-                   generate=Params.g_options.regression_generate)
+    return mod.run(verbose=(Options.options.verbose > 0),
+                   generate=Options.options.regression_generate)
 

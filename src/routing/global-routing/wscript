@@ -8,7 +8,7 @@ def build(bld):
         'global-route-manager-impl.cc',
         'candidate-queue.cc',
         ]
-    headers = bld.create_obj('ns3header')
+    headers = bld.new_task_gen('ns3header')
     headers.module = 'global-routing'
     headers.source = [
         'global-router-interface.h',

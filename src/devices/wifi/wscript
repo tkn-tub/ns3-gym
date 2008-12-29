@@ -44,7 +44,7 @@ def build(bld):
         'constant-rate-wifi-manager.cc',
         'wifi-test.cc',
         ]
-    headers = bld.create_obj('ns3header')
+    headers = bld.new_task_gen('ns3header')
     headers.module = 'wifi'
     headers.source = [
         'propagation-delay-model.h',

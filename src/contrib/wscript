@@ -1,11 +1,8 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def configure(conf):
-    check = conf.create_pkgconfig_configurator()
-    check.name = 'gtk+-2.0 >= 2.12'
-    check.uselib = 'GTK_CONFIG_STORE'
-    check.mandatory = False
-    conf.env['ENABLE_GTK_CONFIG_STORE'] = check.run()
+    have_it = conf.pkg_check_modules('GTK_CONFIG_STORE', 'gtk+-2.0 >= 2.12', mandatory=False)
+    conf.env['ENABLE_GTK_CONFIG_STORE'] = have_it
     conf.report_optional_feature("GtkConfigStore", "GtkConfigStore",
                                  conf.env['ENABLE_GTK_CONFIG_STORE'],
                                  "library 'gtk+-2.0 >= 2.12' not found")
@@ -23,7 +20,7 @@ def build(bld):
         'flow-id-tag.cc',
         ]
 
-    headers = bld.create_obj('ns3header')
+    headers = bld.new_task_gen('ns3header')
     headers.module = 'contrib'
     headers.source = [
         'event-garbage-collector.h',
@@ -33,7 +30,7 @@ def build(bld):
         'flow-id-tag.h',
         ]
 
-    if bld.env()['ENABLE_GTK_CONFIG_STORE']:
+    if bld.env['ENABLE_GTK_CONFIG_STORE']:
         headers.source.append ('gtk-config-store.h')
         module.source.append ('gtk-config-store.cc')
         module.uselib = 'GTK_CONFIG_STORE'

@@ -5,7 +5,7 @@ def build(bld):
     module.source = [
         'v4ping.cc',
         ]
-    headers = bld.create_obj('ns3header')
+    headers = bld.new_task_gen('ns3header')
     headers.module = 'v4ping'
     headers.source = [
         'v4ping.h',

@@ -18,7 +18,7 @@ def build(bld):
         'tag-buffer.cc',
         ]
 
-    headers = bld.create_obj('ns3header')
+    headers = bld.new_task_gen('ns3header')
     headers.module = 'common'
     headers.source = [
         'buffer.h',

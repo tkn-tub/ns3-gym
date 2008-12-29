@@ -9,6 +9,12 @@ http://www.nsnam.org/wiki/index.php/Installation
 
 The top-level ns-3 directory should contain a current waf script.
 
+Note: we're using a WAF version based on WAF 1.5.x.  The source code
+can be retrieved from the followin URL:
+
+    https://code.launchpad.net/~gjc/waf/cmd
+
+
 === Building with Waf ===
 
 To build ns-3 with waf type the commands from the top-level directory:

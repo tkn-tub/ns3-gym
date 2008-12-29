@@ -1,16 +1,17 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 import re
-import Params
-import Configure
-import Object
-import Action
 import os
-import Task
 import pproc as subprocess
-from Params import fatal, warning
 import shutil
 import sys
+
+import Task
+import Options
+import Configure
+import TaskGen
+import Logs
+import Build
 
 ## Adjust python path to look for our local copy of pybindgen
 LOCAL_PYBINDGEN_PATH = os.path.join(os.getcwd(), "bindings", "python", "pybindgen")
@@ -109,7 +110,7 @@ __version__ = %r
 
 def configure(conf):
     conf.env['ENABLE_PYTHON_BINDINGS'] = False
-    if Params.g_options.python_disable:
+    if Options.options.python_disable:
         conf.report_optional_feature("python", "Python Bindings", False,
                                      "disabled by user request")
         return
@@ -119,7 +120,7 @@ def configure(conf):
     if sys.platform == 'cygwin':
         conf.report_optional_feature("python", "Python Bindings", False,
                                      "unsupported platform 'cygwin'")
-        warning("Python is not supported in CygWin environment.  Try MingW instead.")
+        Logs.warn("Python is not supported in CygWin environment.  Try MingW instead.")
         return
 
     ## Check for Python
@@ -142,11 +143,11 @@ def configure(conf):
     ## Check for pybindgen
 
     no_net = False
-    if Params.g_options.with_pybindgen:
-        conf.env['WITH_PYBINDGEN'] = os.path.abspath(Params.g_options.with_pybindgen)
+    if Options.options.with_pybindgen:
+        conf.env['WITH_PYBINDGEN'] = os.path.abspath(Options.options.with_pybindgen)
         no_net = True
 
-    if Params.g_options.pybindgen_checkout:
+    if Options.options.pybindgen_checkout:
         fetch_pybindgen(conf)
 
     set_pybindgen_pythonpath(conf.env)
@@ -258,29 +259,32 @@ def calc_header_include(path):
         return os.path.join (calc_header_include (head), tail)
 
 
-def gen_ns3_metaheader(task):
-    assert len(task.m_outputs) == 1
+class gen_everything_h_task(Task.Task):
+    before = 'cc cxx'
 
-    header_files = [calc_header_include(node.abspath(task.m_env)) for node in task.m_inputs]
-    outfile = file(task.m_outputs[0].bldpath(task.m_env), "w")
+    def run(self):
+        assert len(self.outputs) == 1
 
-    def sort_func(h1, h2):
-        return cmp((get_header_prio(h1), h1), (get_header_prio(h1), h2))
+        header_files = [calc_header_include(node.abspath(self.env)) for node in self.inputs]
+        outfile = file(self.outputs[0].bldpath(self.env), "w")
 
-    header_files.sort(sort_func)
+        def sort_func(h1, h2):
+            return cmp((get_header_prio(h1), h1), (get_header_prio(h1), h2))
 
-    print >> outfile, """
+        header_files.sort(sort_func)
+
+        print >> outfile, """
 
 /* http://www.nsnam.org/bugzilla/show_bug.cgi?id=413 */
 #ifdef ECHO
 # undef ECHO
 #endif
 
-"""
-    for header in header_files:
-        print >> outfile, "#include \"ns3/%s\"" % (header,)
+    """
+        for header in header_files:
+            print >> outfile, "#include \"ns3/%s\"" % (header,)
 
-    print >> outfile, """
+        print >> outfile, """
 namespace ns3 {
 static inline Ptr<Object>
 __dummy_function_to_force_template_instantiation (Ptr<Object> obj, TypeId typeId)
@@ -312,34 +316,34 @@ __dummy_function_to_force_template_instantiation_v2 ()
 
 }
 """
-    outfile.close()
-    return 0
+        outfile.close()
+        return 0
 
 
 
-class all_ns3_headers_taskgen(Object.task_gen):
+class all_ns3_headers_taskgen(TaskGen.task_gen):
     """Generates a 'everything.h' header file that includes some/all public ns3 headers.
     This single header file is to be parsed only once by gccxml, for greater efficiency.
     """
-    def __init__(self, *features):
-        Object.task_gen.__init__(self, *features)
-        self.inst_var = 0#'INCLUDEDIR'
+    def __init__(self, *args, **kwargs):
+        super(all_ns3_headers_taskgen, self).__init__(*args, **kwargs)
+        self.install_path = None
         #self.inst_dir = 'ns3'
 
     def apply(self):
         ## get all of the ns3 headers
-        ns3_dir_node = Params.g_build.m_srcnode.find_dir("ns3")
+        ns3_dir_node = Build.bld.path.find_dir("ns3")
         all_headers_inputs = []
 
         for filename in self.to_list(self.source):
-            src_node = ns3_dir_node.find_build(filename)
+            src_node = ns3_dir_node.find_or_declare(filename)
             if src_node is None:
-                Params.fatal("source ns3 header file %s not found" % (filename,))
+                raise Utils.WafError("source ns3 header file %s not found" % (filename,))
             all_headers_inputs.append(src_node)
 
         ## if self.source was empty, include all ns3 headers in enabled modules
         if not all_headers_inputs:
-            for ns3headers in Object.g_allobjs:
+            for ns3headers in Build.bld.all_task_gen:
                 if type(ns3headers).__name__ == 'ns3header_taskgen': # XXX: find less hackish way to compare
                     ## skip headers not part of enabled modules
                     if self.env['NS3_ENABLED_MODULES']:
@@ -348,13 +352,13 @@ class all_ns3_headers_taskgen(Object.task_gen):
 
                     for source in ns3headers.to_list(ns3headers.source):
                         #source = os.path.basename(source)
-                        node = ns3_dir_node.find_build(source)
+                        node = ns3_dir_node.find_or_declare(source)
                         if node is None:
                             fatal("missing header file %s" % (source,))
                         all_headers_inputs.append(node)
         assert all_headers_inputs
-        all_headers_outputs = [self.path.find_build("everything.h")]
-        task = self.create_task('gen-ns3-metaheader', self.env, 4)
+        all_headers_outputs = [self.path.find_or_declare("everything.h")]
+        task = self.create_task('gen_everything_h', self.env)
         task.set_inputs(all_headers_inputs)
         task.set_outputs(all_headers_outputs)
 
@@ -370,13 +374,13 @@ def get_modules_and_headers():
     """
 
     retval = {}
-    for module in Object.g_allobjs:
+    for module in Build.bld.all_task_gen:
         if not module.name.startswith('ns3-'):
             continue
         module_name = module.name[4:] # strip the ns3- prefix
         ## find the headers object for this module
         headers = []
-        for ns3headers in Object.g_allobjs:
+        for ns3headers in Build.bld.all_task_gen:
             if type(ns3headers).__name__ != 'ns3header_taskgen': # XXX: find less hackish way to compare
                 continue
             if ns3headers.module != module_name:
@@ -388,15 +392,15 @@ def get_modules_and_headers():
 
 
 
-class PythonScanTask(Task.TaskBase):
+class python_scan_task(Task.TaskBase):
     """Uses gccxml to scan the file 'everything.h' and extract API definitions.
     """
+    after = 'gen_everything_h'
     def __init__(self, curdirnode, env):
-        self.prio = 5 # everything.h has prio 4
-        super(PythonScanTask, self).__init__()
+        super(python_scan_task, self).__init__()
         self.curdirnode = curdirnode
         self.env = env
-        self.m_display = 'python-scan\n'
+        self.display = 'python-scan\n'
 
     def run(self):
         #print "Rescanning the python bindings..."
@@ -404,7 +408,7 @@ class PythonScanTask(Task.TaskBase):
             self.env['PYTHON'],
             os.path.join(self.curdirnode.abspath(), 'ns3modulescan.py'), # scanning script
             self.curdirnode.find_dir('../..').abspath(self.env), # include path (where the ns3 include dir is)
-            self.curdirnode.find_build('everything.h').abspath(self.env),
+            self.curdirnode.find_or_declare('everything.h').abspath(self.env),
             os.path.join(self.curdirnode.abspath(), 'ns3modulegen_generated.py'), # output file
             ]
         scan = subprocess.Popen(argv, stdin=subprocess.PIPE)
@@ -415,24 +419,24 @@ class PythonScanTask(Task.TaskBase):
         raise SystemExit(0)
 
 def build(bld):
-    if Params.g_options.python_disable:
+    if Options.options.python_disable:
         return
 
-    env = bld.env_of_name('default')
-    curdir = bld.m_curdirnode.abspath()
+    env = bld.env
+    curdir = bld.path.abspath()
 
     set_pybindgen_pythonpath(env)
 
     #Object.register('all-ns3-headers', AllNs3Headers)
-    Action.Action('gen-ns3-metaheader', func=gen_ns3_metaheader, color='BLUE')
+    #Action.Action('gen-ns3-metaheader', func=gen_ns3_metaheader, color='BLUE')
 
     if env['ENABLE_PYTHON_BINDINGS']:
-        obj = bld.create_obj('all_ns3_headers')
+        obj = bld.new_task_gen('all_ns3_headers')
 
-    if Params.g_options.python_scan:
+    if Options.options.python_scan:
         if not env['ENABLE_PYTHON_SCANNING']:
-            Params.fatal("Cannot re-scan python bindings: (py)gccxml not available")
-        PythonScanTask(bld.m_curdirnode, env)
+            raise Utils.WafError("Cannot re-scan python bindings: (py)gccxml not available")
+        PythonScanTask(bld.path, env)
 
     ## Get a list of scanned modules; the set of scanned modules
     ## may be smaller than the set of all modules, in case a new
@@ -448,46 +452,62 @@ def build(bld):
         scanned_modules.append(name)
 
     if env['ENABLE_PYTHON_BINDINGS']:
-        bindgen = bld.create_obj('command-output')
-        bindgen.name = 'pybindgen'
-        bindgen.command = env['PYTHON']
-        bindgen.command_is_external = True
-        bindgen.stderr = 'ns3modulegen.log'
-        bindgen.argv = [
-            #'-m', 'pdb',
-            bindgen.input_file("ns3modulegen.py"),
-            bindgen.output_file("ns3module.cc"),
+        source = [
+            'ns3modulegen.py',
+            'ns3modulegen_generated.py',
+            'ns3modulegen_core_customizations.py',
             ]
-        bindgen.argv.extend(get_modules_and_headers().iterkeys())
-        bindgen.hidden_inputs = ['ns3modulegen_generated.py',
-                                 'ns3modulegen_core_customizations.py']
+        target = [
+            'ns3module.cc',
+            'ns3module.h',
+            'ns3modulegen.log',
+            ]
+        argv = ['NS3_ENABLED_FEATURES=${FEATURES}', '${PYTHON}', '${SRC[0]}', '${TGT[0]}']
+        argv.extend(get_modules_and_headers().iterkeys())
+
+        #bindgen.name = 'pybindgen'
+        #bindgen.command = env['PYTHON']
+        #bindgen.command_is_external = True
+        #bindgen.stderr = 'ns3modulegen.log'
+        #bindgen.argv = [
+            #'-m', 'pdb',
+        #    bindgen.input_file("ns3modulegen.py"),
+        #    bindgen.output_file("ns3module.cc"),
+        #    ]
+        #bindgen.hidden_inputs = ['ns3modulegen_generated.py',
+        #                         'ns3modulegen_core_customizations.py']
 
         for module in scanned_modules:
-            bindgen.hidden_inputs.append("ns3_module_%s.py" % module)
+            source.append("ns3_module_%s.py" % module)
             local = "ns3_module_%s__local.py" % module
             if os.path.exists(os.path.join(curdir, local)):
-                bindgen.hidden_inputs.append(local)
+                source.append(local)
 
-        bindgen.hidden_outputs = ['ns3module.h']
+        argv.extend(['2>', '${TGT[2]}']) # 2> ns3modulegen.log
+
+        #bindgen.hidden_outputs = ['ns3module.h']
         for module in scanned_modules:
-            bindgen.hidden_outputs.append("ns3_module_%s.cc" % module)
+            target.append("ns3_module_%s.cc" % module)
 
-        bindgen.prio = 50
+        #bindgen.prio = 50
 
-        bindgen.os_env = dict(os.environ)
+        #bindgen.os_env = dict(os.environ)
         features = []
         for (name, caption, was_enabled, reason_not_enabled) in env['NS3_OPTIONAL_FEATURES']:
             if was_enabled:
                 features.append(name)
-        bindgen.os_env['NS3_ENABLED_FEATURES'] = ','.join(features)
+        #bindgen.os_env['NS3_ENABLED_FEATURES'] = ','.join(features)
+
+        bindgen = bld.new_task_gen('command', source=source, target=target,
+                                   command=argv, variables=dict(FEATURES=(','.join(features))))
 
 
     ## we build python bindings if either we have the tools to
     ## generate them or if the pregenerated source file is already
     ## present in the source dir.
     if env['ENABLE_PYTHON_BINDINGS'] \
-            or os.path.exists(os.path.join(bld.m_curdirnode.abspath(), 'ns3module.cc')):
-        pymod = bld.create_obj('cpp', 'shlib', 'pyext')
+            or os.path.exists(os.path.join(bld.path.abspath(), 'ns3module.cc')):
+        pymod = bld.new_task_gen('cxx', 'shlib', 'pyext')
         pymod.source = ['ns3module.cc', 'ns3module_helpers.cc']
         pymod.includes = '.'
         for module in scanned_modules:
@@ -497,10 +517,10 @@ def build(bld):
         pymod.uselib_local = "ns3"
         pymod.env.append_value('CXXDEFINES', ['NS_DEPRECATED=""', 'NS3_DEPRECATED_H'])
 
-        # copy the __init__.py file to the build dir waf can't handle
+        # copy the __init__.py file to the build dir. waf can't handle
         # this, it's against waf's principles to have build dir files
         # with the same name as source dir files, apparently.
-        dirnode = bld.m_curdirnode.find_dir('ns3')
+        dirnode = bld.path.find_dir('ns3')
         src = os.path.join(dirnode.abspath(), '__init__.py')
         dst = os.path.join(dirnode.abspath(env), '__init__.py')
         try:

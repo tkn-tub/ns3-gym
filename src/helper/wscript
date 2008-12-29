@@ -25,7 +25,7 @@ def build(bld):
         'v4ping-helper.cc',
         ]
 
-    headers = bld.create_obj('ns3header')
+    headers = bld.new_task_gen('ns3header')
     headers.module = 'helper'
     headers.source = [
         'node-container.h',
