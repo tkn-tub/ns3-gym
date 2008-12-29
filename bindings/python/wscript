@@ -12,6 +12,7 @@ import Configure
 import TaskGen
 import Logs
 import Build
+import Utils
 
 ## Adjust python path to look for our local copy of pybindgen
 LOCAL_PYBINDGEN_PATH = os.path.join(os.getcwd(), "bindings", "python", "pybindgen")
@@ -395,12 +396,15 @@ def get_modules_and_headers():
 class python_scan_task(Task.TaskBase):
     """Uses gccxml to scan the file 'everything.h' and extract API definitions.
     """
-    after = 'gen_everything_h'
+    after = 'gen_everything_h_task'
+    before = 'cc cxx'
     def __init__(self, curdirnode, env):
         super(python_scan_task, self).__init__()
         self.curdirnode = curdirnode
         self.env = env
-        self.display = 'python-scan\n'
+
+    def display(self):
+        return 'python-scan\n'
 
     def run(self):
         #print "Rescanning the python bindings..."
@@ -414,9 +418,16 @@ class python_scan_task(Task.TaskBase):
         scan = subprocess.Popen(argv, stdin=subprocess.PIPE)
         scan.stdin.write(repr(get_modules_and_headers()))
         scan.stdin.close()
-        if scan.wait():
-            raise SystemExit(1)
-        raise SystemExit(0)
+        retval = scan.wait()
+        print "Scan finished with exit code", retval
+        if retval:
+            return retval
+        # signal stop (we generated files into the source dir and WAF
+        # can't cope with it, so we have to force the user to restart
+        # WAF)
+        Build.bld.generator.stop = 1
+        return 0
+
 
 def build(bld):
     if Options.options.python_disable:
@@ -427,16 +438,14 @@ def build(bld):
 
     set_pybindgen_pythonpath(env)
 
-    #Object.register('all-ns3-headers', AllNs3Headers)
-    #Action.Action('gen-ns3-metaheader', func=gen_ns3_metaheader, color='BLUE')
-
     if env['ENABLE_PYTHON_BINDINGS']:
         obj = bld.new_task_gen('all_ns3_headers')
 
     if Options.options.python_scan:
         if not env['ENABLE_PYTHON_SCANNING']:
             raise Utils.WafError("Cannot re-scan python bindings: (py)gccxml not available")
-        PythonScanTask(bld.path, env)
+        python_scan_task(bld.path, env)
+        return
 
     ## Get a list of scanned modules; the set of scanned modules
     ## may be smaller than the set of all modules, in case a new
@@ -464,19 +473,6 @@ def build(bld):
             ]
         argv = ['NS3_ENABLED_FEATURES=${FEATURES}', '${PYTHON}', '${SRC[0]}', '${TGT[0]}']
         argv.extend(get_modules_and_headers().iterkeys())
-
-        #bindgen.name = 'pybindgen'
-        #bindgen.command = env['PYTHON']
-        #bindgen.command_is_external = True
-        #bindgen.stderr = 'ns3modulegen.log'
-        #bindgen.argv = [
-            #'-m', 'pdb',
-        #    bindgen.input_file("ns3modulegen.py"),
-        #    bindgen.output_file("ns3module.cc"),
-        #    ]
-        #bindgen.hidden_inputs = ['ns3modulegen_generated.py',
-        #                         'ns3modulegen_core_customizations.py']
-
         for module in scanned_modules:
             source.append("ns3_module_%s.py" % module)
             local = "ns3_module_%s__local.py" % module
@@ -485,18 +481,13 @@ def build(bld):
 
         argv.extend(['2>', '${TGT[2]}']) # 2> ns3modulegen.log
 
-        #bindgen.hidden_outputs = ['ns3module.h']
         for module in scanned_modules:
             target.append("ns3_module_%s.cc" % module)
 
-        #bindgen.prio = 50
-
-        #bindgen.os_env = dict(os.environ)
         features = []
         for (name, caption, was_enabled, reason_not_enabled) in env['NS3_OPTIONAL_FEATURES']:
             if was_enabled:
                 features.append(name)
-        #bindgen.os_env['NS3_ENABLED_FEATURES'] = ','.join(features)
 
         bindgen = bld.new_task_gen('command', source=source, target=target,
                                    command=argv, variables=dict(FEATURES=(','.join(features))))
