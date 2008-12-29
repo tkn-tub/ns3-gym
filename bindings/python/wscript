@@ -64,7 +64,7 @@ def fetch_pybindgen(conf):
     """
     bzr = conf.find_program("bzr")
     if not bzr:
-        warning("the program 'bzr' is needed in order to fetch pybindgen")
+        Logs.warn("the program 'bzr' is needed in order to fetch pybindgen")
         return False
     if len(REQUIRED_PYBINDGEN_VERSION) == 4:
         rev = "-rrevno:%i" % REQUIRED_PYBINDGEN_VERSION[3]
@@ -156,7 +156,7 @@ def configure(conf):
     try:
         conf.check_python_module('pybindgen')
     except Configure.ConfigurationError:
-        warning("pybindgen missing")
+        Logs.warn("pybindgen missing")
         if no_net or not fetch_pybindgen(conf):
             conf.report_optional_feature("python", "Python Bindings", False,
                                          "PyBindGen missing and could not be retrieved")
@@ -172,7 +172,7 @@ def configure(conf):
                            (pybindgen_version >= REQUIRED_PYBINDGEN_VERSION),
                            pybindgen_version_str)
         if not (pybindgen_version >= REQUIRED_PYBINDGEN_VERSION):
-            warning("pybindgen (found %s) is too old (need %s)" %
+            Logs.warn("pybindgen (found %s) is too old (need %s)" %
                     (pybindgen_version_str,
                      '.'.join([str(x) for x in REQUIRED_PYBINDGEN_VERSION])))
             if no_net or not fetch_pybindgen(conf):
@@ -201,7 +201,7 @@ def configure(conf):
                        (pygccxml_version >= REQUIRED_PYGCCXML_VERSION),
                        pygccxml_version_str)
     if not (pygccxml_version >= REQUIRED_PYGCCXML_VERSION):
-        warning("pygccxml (found %s) is too old (need %s) => "
+        Logs.warn("pygccxml (found %s) is too old (need %s) => "
                 "automatic scanning of API definitions will not be possible" %
                 (pygccxml_version_str,
                  '.'.join([str(x) for x in REQUIRED_PYGCCXML_VERSION])))
@@ -213,7 +213,7 @@ def configure(conf):
     ## Check gccxml version
     gccxml = conf.find_program('gccxml', var='GCCXML')
     if not gccxml:
-        warning("gccxml missing; automatic scanning of API definitions will not be possible")
+        Logs.warn("gccxml missing; automatic scanning of API definitions will not be possible")
         conf.report_optional_feature("pygccxml", "Python API Scanning Support", False,
                                      "gccxml missing")
         return
@@ -224,7 +224,7 @@ def configure(conf):
     gccxml_version_ok = ([int(s) for s in gccxml_version.split('.')] >= [0, 9])
     conf.check_message('gccxml', 'version', True, gccxml_version)
     if not gccxml_version_ok:
-        warning("gccxml too old, need version >= 0.9; automatic scanning of API definitions will not be possible")
+        Logs.warn("gccxml too old, need version >= 0.9; automatic scanning of API definitions will not be possible")
         conf.report_optional_feature("pygccxml", "Python API Scanning Support", False,
                                      "gccxml too old")
         return
@@ -355,7 +355,7 @@ class all_ns3_headers_taskgen(TaskGen.task_gen):
                         #source = os.path.basename(source)
                         node = ns3_dir_node.find_or_declare(source)
                         if node is None:
-                            fatal("missing header file %s" % (source,))
+                            raise Utils.WafError("missing header file %s" % (source,))
                         all_headers_inputs.append(node)
         assert all_headers_inputs
         all_headers_outputs = [self.path.find_or_declare("everything.h")]
