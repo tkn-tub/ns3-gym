@@ -744,7 +744,7 @@ out interesting parts of the received packet.
 
 The rationale for this explicit division is to allow users to attach new
 types of sinks to existing tracing sources, without requiring editing and 
-recompilation of the the core of the simulator.  Thus, in the example above, 
+recompilation of the core of the simulator.  Thus, in the example above, 
 a user could define a new tracing sink in her script and attach it to an 
 existing tracing source defined in the simulation core by editing only the 
 user script.
@@ -885,7 +885,7 @@ operation happened on the transmit queue of the device.  This is reflected in
 the final segments of the ``trace path'' which are @code{TxQueue/Enqueue}.
 
 The remaining lines in the trace should be fairly intuitive.  References 03-04
-indicate that the packet is encapulated in the point-to-point protocol.  
+indicate that the packet is encapsulated in the point-to-point protocol.  
 References 05-07 show that the packet has an IP version four header and has
 originated from IP address 10.1.1.1 and is destined for 10.1.1.2.  References
 08-09 show that this packet has a UDP header and, finally, reference 10 shows
@@ -952,7 +952,7 @@ file names will be built using the prefix, the node number, the device number
 
 In our example script, we will eventually see files named ``first-0-0.pcap'' 
 and ``first.1-0.pcap'' which are the pcap traces for node 0-device 0 and 
-node 1-device 1, respectively.
+node 1-device 0, respectively.
 
 Once you have added the line of code to enable pcap tracing, you can run the
 script in the usual way:

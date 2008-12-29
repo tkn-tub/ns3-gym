@@ -133,7 +133,7 @@ done in @code{first.cc}.
   p2pNodes.Create (2);
 @end verbatim
 
-Next, we delare another @code{NodeContainer} to hold the nodes that will be
+Next, we declare another @code{NodeContainer} to hold the nodes that will be
 part of the bus (CSMA) network.  First, we just instantiate the container
 object itself.  
 
@@ -171,7 +171,7 @@ We mentioned above that you were going to see a helper for CSMA devices and
 channels, and the next lines introduce them.  The @code{CsmaHelper} works just
 like a @code{PointToPointHelper}, but it creates and connects CSMA devices and
 channels.  In the case of a CSMA device and channel pair, notice that the data
-rate is specified by a @em{channel} attribute instead of a device attribute.
+rate is specified by a @emph{channel} attribute instead of a device attribute.
 This is because a real CSMA network does not allow one to mix, for example, 
 10Base-T and 100Base-T devices on a given channel.  We first set the data rate
 to 100 megabits per second, and then set the speed-of-light delay of the channel
@@ -260,9 +260,9 @@ the constructor.
 Recall that the @code{csmaNodes NodeContainer} contains one of the 
 nodes created for the point-to-point network and @code{nCsma} ``extra'' nodes. 
 What we want to get at is the last of the ``extra'' nodes.  The zeroth entry of
-the @code{csmaNodes} container will the the point-to-point node.  The easy
+the @code{csmaNodes} container will be the point-to-point node.  The easy
 way to think of this, then, is if we create one ``extra'' CSMA node, then it
-will be be at index one of the @code{csmaNodes} container.  By induction,
+will be at index one of the @code{csmaNodes} container.  By induction,
 if we create @code{nCsma} ``extra'' nodes the last one will be at index 
 @code{nCsma}.  You see this exhibited in the @code{Get} of the first line of 
 code.
@@ -367,7 +367,7 @@ only trace from that node.
 
 Now look at @code{second-1-0.pcap} and @code{second-1-1.pcap}.  The former is
 the pcap trace for device zero on node one and the latter is the trace file 
-for device one on node one.  If you refer back to the topology illustrration at
+for device one on node one.  If you refer back to the topology illustration at
 the start of the section, you will see that node one is the node that has
 both a point-to-point device and a CSMA device, so we should expect two pcap
 traces for that node.
@@ -416,7 +416,7 @@ ultimate destination.  Let's then look at second-1-1.pcap and see if its there.
   ~/repos/ns-3-dev >
 @end verbatim
 
-As you can see, the link type is now ``Ethernet.''  Something new has appeared,
+As you can see, the link type is now ``Ethernet''.  Something new has appeared,
 though.  The bus network needs @code{ARP}, the Address Resolution Protocol.
 The node knows it needs to send the packet to IP address 10.1.2.4, but it
 doesn't know the MAC address of the corresponding node.  It broadcasts on the
@@ -445,7 +445,7 @@ echo server,
   ~/repos/ns-3-dev >
 @end verbatim
 
-Again, you see that the link type is ``Ethernet.''  The first two entries are
+Again, you see that the link type is ``Ethernet''.  The first two entries are
 the ARP exchange we just explained.  The third packet is the echo packet 
 being delivered to its final destination.
 
@@ -706,7 +706,7 @@ on the nodes and the channel between them.
   p2pDevices = pointToPoint.Install (p2pNodes);
 @end verbatim
 
-Next, we delare another @code{NodeContainer} to hold the nodes that will be
+Next, we declare another @code{NodeContainer} to hold the nodes that will be
 part of the bus (CSMA) network.
 
 @verbatim
@@ -835,7 +835,7 @@ attributes (and channel) as the stations:
 Now, we are going to add mobility models.  We want the STA nodes to be mobile,
 wandering around inside a bounding box, and we want to make the AP node 
 stationary.  We use the @code{MobilityHelper} to make this easy for us.
-First, we instantiate a @code{MobilityHelper} obejct and set some attributes
+First, we instantiate a @code{MobilityHelper} object and set some attributes
 controlling the ``position allocator'' functionality.
 
 @verbatim
@@ -854,7 +854,7 @@ This code tells the mobility helper to use a two-dimensional grid to initially
 place the STA nodes.  Feel free to explore the Doxygen for class 
 @code{ns3::GridPositionAllocator} to see exactly what is being done.
 
-We have aranged our nodes on an initial grid, but now we need to tell them
+We have arranged our nodes on an initial grid, but now we need to tell them
 how to move.  We choose the @code{RandomWalk2dMobilityModel} which has the 
 nodes move in a random direction at a random speed around inside a bounding 
 box.
@@ -896,7 +896,7 @@ Just as in the @code{second.cc} example script, we are going to use the
 @code{Ipv4AddressHelper} to assign IP addresses to our device interfaces.
 First we use the network 10.1.1.0 to create the two addresses needed for our
 two point-to-point devices.  Then we use network 10.1.2.0 to assign addresses
-the the CSMA network and then we assign addresses from network 10.1.3.0 to
+to the CSMA network and then we assign addresses from network 10.1.3.0 to
 both the STA devices and the AP on the wireless network.
 
 @verbatim
@@ -941,7 +941,7 @@ the server on the CSMA network.  We have also seen similar operations before.
   clientApps.Stop (Seconds (10.0));
 @end verbatim
 
-Since we have built an internetwork here, we need enable internetwork routing
+Since we have built an internetwork here, we need to enable internetwork routing
 just as we did in the @code{second.cc} example script.
 
 @verbatim

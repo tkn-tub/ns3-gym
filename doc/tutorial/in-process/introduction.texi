@@ -676,7 +676,7 @@ used to generate and echo simulated network packets
 @cindex Channel
 
 In the real world, one can connect a computer to a network.  Often the media
-over which data flows in these netowrks are called @emph{channels}.  When
+over which data flows in these networks are called @emph{channels}.  When
 you connect your Ethernet cable to the plug in the wall, you are connecting 
 your computer to an Ethernet communication channel.  In the simulated world
 of ns-3 one connects a @code{Node} to an object representing a
