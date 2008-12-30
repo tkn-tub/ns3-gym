@@ -160,9 +160,25 @@ public:
      */
     void SetIpv4Address (Ipv4Address destination);
     /**
-     * \return True if this entry has timedout; false otherwise.
+     * \return True if this entry has timed out; false otherwise.
+     *
+     * This function returns true if the time elapsed strictly exceeds
+     * the timeout value (i.e., is not less than or equal to the timeout).
+     * Differs from IsExpiring() only in the boundary condition 
+     * delta == timeout.
+     * \see IsExpiring
      */
-    bool IsExpired (void);
+    bool IsExpired (void) const;
+    /**
+     * \return True if this entry is timing out or has already timed out; 
+     * false otherwise.
+     *
+     * This function returns true if the time elapsed is equal to or exceeds
+     * the timeout value.  Differs from IsExpired() only in the boundary 
+     * condition delta == timeout.
+     * \see IsExpired
+     */
+    bool IsExpiring (void) const;
 
     /**
      * \returns 0 is no packet is pending, the next packet to send if 
@@ -191,6 +207,7 @@ public:
     };
 
     void UpdateSeen (void);
+    Time GetTimeout (void) const;
     ArpCache *m_arp;
     ArpCacheEntryState_e m_state;
     Time m_lastSeen;

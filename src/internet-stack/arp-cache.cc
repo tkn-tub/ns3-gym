@@ -185,7 +185,7 @@ ArpCache::HandleWaitReplyTimeout (void)
   for (CacheI i = m_arpCache.begin (); i != m_arpCache.end (); i++) 
     {
       entry = (*i).second;
-      if (entry != 0 && entry->IsWaitReply () && entry->IsExpired ())
+      if (entry != 0 && entry->IsWaitReply () && entry->IsExpiring () )
           {
           if (entry->GetRetries () < m_maxRetries)
             {
@@ -358,37 +358,47 @@ ArpCache::Entry::SetIpv4Address (Ipv4Address destination)
   NS_LOG_FUNCTION (this << destination);
   m_ipv4Address = destination;
 }
-
-bool 
-ArpCache::Entry::IsExpired (void)
+Time
+ArpCache::Entry::GetTimeout (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  Time timeout;
   switch (m_state) {
   case ArpCache::Entry::WAIT_REPLY:
-    timeout = m_arp->GetWaitReplyTimeout ();
-    break;
+    return m_arp->GetWaitReplyTimeout ();
   case ArpCache::Entry::DEAD:
-    timeout = m_arp->GetDeadTimeout ();
-    break;
+    return m_arp->GetDeadTimeout ();
   case ArpCache::Entry::ALIVE:
-    timeout = m_arp->GetAliveTimeout ();
-    break;
+    return m_arp->GetAliveTimeout ();
   default:
     NS_ASSERT (false);
-    timeout = Seconds (0);
+    return Seconds (0);
     /* NOTREACHED */
-    break;
   }
+}
+bool
+ArpCache::Entry::IsExpiring (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  Time timeout = GetTimeout ();
   Time delta = Simulator::Now () - m_lastSeen;
-  if (delta >= timeout) 
+  NS_LOG_DEBUG ("delta=" << delta.GetSeconds () << "s");
+  if (delta >= timeout)
+    {
+      return true;
+    }
+  return false;
+}
+bool 
+ArpCache::Entry::IsExpired (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  Time timeout = GetTimeout ();
+  Time delta = Simulator::Now () - m_lastSeen;
+  NS_LOG_DEBUG ("delta=" << delta.GetSeconds () << "s");
+  if (delta > timeout) 
     {
       return true;
     } 
-  else 
-    {
-      return false;
-    }
+  return false;
 }
 Ptr<Packet> 
 ArpCache::Entry::DequeuePending (void)
@@ -408,13 +418,13 @@ ArpCache::Entry::DequeuePending (void)
 void 
 ArpCache::Entry::UpdateSeen (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (m_macAddress << m_ipv4Address);
   m_lastSeen = Simulator::Now ();
 }
 uint32_t
 ArpCache::Entry::GetRetries (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (m_macAddress << m_ipv4Address);
   return m_retries;
 }
 void
