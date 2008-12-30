@@ -132,11 +132,13 @@ main (int argc, char *argv[])
   // Create the backbone wifi net devices and install them into the nodes in 
   // our container
   //
+  WifiHelper wifi;
+  wifi.SetMac ("ns3::AdhocWifiMac");
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
+                                "DataMode", StringValue ("wifia-54mbs"));
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
-  WifiHelper wifi;
-  wifi.SetMac ("ns3::AdhocWifiMac");
   NetDeviceContainer backboneDevices = wifi.Install (wifiPhy, backbone);
   //
   // Add the IPv4 protocol stack to the nodes in our container
@@ -244,8 +246,7 @@ main (int argc, char *argv[])
       //
       // Create another ad hoc network and devices
       //
-      WifiHelper wifiInfra;
-      wifiInfra.SetMac ("ns3::AdhocWifiMac");
+      WifiHelper wifiInfra = WifiHelper::Default ();
       wifiPhy.SetChannel (wifiChannel.Create ());
       NetDeviceContainer infraDevices = wifiInfra.Install (wifiPhy, infra);
 
