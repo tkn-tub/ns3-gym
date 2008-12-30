@@ -69,16 +69,15 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("MixedWireless");
 
 //
-// This function will be used below as a trace sink
+// This function will be used below as a trace sink, if the command-line
+// argument or default value "useCourseChangeCallback" is set to true
 // 
-#ifdef ENABLE_FOR_TRACING_EXAMPLE
 static void
 CourseChangeCallback (std::string path, Ptr<const MobilityModel> model)
 {
   Vector position = model->GetPosition ();
   std::cout << "CourseChange " << path << " x=" << position.x << ", y=" << position.y << ", z=" << position.z << std::endl;
 }
-#endif
 
 int 
 main (int argc, char *argv[])
@@ -91,6 +90,7 @@ main (int argc, char *argv[])
   uint32_t infraNodes = 5;
   uint32_t lanNodes = 5;
   uint32_t stopTime = 10;
+  bool useCourseChangeCallback = false;
 
   //
   // Simulation defaults are typically set next, before command line
@@ -109,6 +109,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("infraNodes", "number of leaf nodes", infraNodes);
   cmd.AddValue("lanNodes", "number of LAN nodes", lanNodes);
   cmd.AddValue("stopTime", "simulation stop time (seconds)", stopTime);
+  cmd.AddValue("useCourseChangeCallback", "whether to enable course change tracing", useCourseChangeCallback);
 
   //
   // The system global variables and the local values added to the argument
@@ -346,11 +347,10 @@ main (int argc, char *argv[])
   // Let's additionally trace the application Sink, ifIndex 0
   CsmaHelper::EnablePcap ("mixed-wireless", appSink->GetId (), 0);
 
-#ifdef ENABLE_FOR_TRACING_EXAMPLE
-  Config::Connect ("/NodeList/*/$MobilityModel/CourseChange",
-    MakeCallback (&CourseChangeCallback));
-#endif
-
+  if (useCourseChangeCallback == true)
+    {
+      Config::Connect ("/NodeList/*/$ns3::MobilityModel/CourseChange", MakeCallback (&CourseChangeCallback));
+    }
 
   /////////////////////////////////////////////////////////////////////////// 
   //                                                                       //
