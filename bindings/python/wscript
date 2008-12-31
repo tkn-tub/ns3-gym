@@ -262,6 +262,8 @@ def calc_header_include(path):
 
 class gen_everything_h_task(Task.Task):
     before = 'cc cxx'
+    after = 'ns3header_task'
+    color = 'BLUE'
 
     def run(self):
         assert len(self.outputs) == 1
