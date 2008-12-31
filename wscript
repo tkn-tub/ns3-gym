@@ -18,6 +18,14 @@ import Utils
 import Build
 import Configure
 
+import cflags # override the build profiles from waf
+cflags.profiles = {
+	# profile name: [optimization_level, warnings_level, debug_level]
+	'debug':     [0, 2, 3],
+	'optimized': [3, 2, 1],
+	}
+cflags.default_profile = 'debug'
+
 # local modules
 import wutils
 import regression
@@ -61,27 +69,9 @@ def dist_hook():
         shutil.rmtree(traces_dir, True)
 
 def set_options(opt):
-
-    def debug_option_callback(option, opt, value, parser):
-        if value == 'debug':
-            setattr(parser.values, option.dest, 'ultradebug')
-        elif value == 'optimized':
-            setattr(parser.values, option.dest, 'optimized')
-        else:
-            raise optparse.OptionValueError("allowed --debug-level values"
-                                            " are debug, optimized.")
-
-    opt.add_option('-d', '--debug-level',
-                   action='callback',
-                   type="string", dest='debug_level', default='ultradebug',
-                   help=('Specify the debug level, does nothing if CFLAGS is set'
-                         ' in the environment. [Allowed Values: debug, optimized].'
-                         ' WARNING: this option only has effect '
-                         'with the configure command.'),
-                   callback=debug_option_callback)
-    
     # options provided by the modules
     opt.tool_options('compiler_cxx')
+    opt.tool_options('cflags')
 
     opt.add_option('--cwd',
                    help=('Set the working directory for a program.'),
@@ -178,13 +168,13 @@ def check_compilation_flag(conf, flag):
     else:
         ok = (retval == 0)
     conf.check_message_custom(flag, 'support', (ok and 'yes' or 'no'))
+    return ok
 
     
 def report_optional_feature(conf, name, caption, was_enabled, reason_not_enabled):
     conf.env.append_value('NS3_OPTIONAL_FEATURES', (name, caption, was_enabled, reason_not_enabled))
 
 def configure(conf):
-    
     # attach some extra methods
     conf.check_compilation_flag = types.MethodType(check_compilation_flag, conf)
     conf.report_optional_feature = types.MethodType(report_optional_feature, conf)
@@ -192,17 +182,14 @@ def configure(conf):
 
     conf.env['NS3_BUILDDIR'] = conf.blddir
     conf.check_tool('compiler_cxx')
+    conf.check_tool('cflags')
     conf.check_tool('pkgconfig')
     conf.check_tool('command')
 
     # create the second environment, set the variant and set its name
     variant_env = conf.env.copy()
-    debug_level = Options.options.debug_level.lower()
-    if debug_level == 'ultradebug':
-        variant_name = 'debug'
-    else:
-        variant_name = debug_level
-
+    #debug_level = Options.options.debug_level.lower()
+    variant_name = Options.options.build_profile
     variant_env['INCLUDEDIR'] = os.path.join(variant_env['PREFIX'], 'include')
 
     if Options.options.regression_traces is not None:
@@ -223,40 +210,21 @@ def configure(conf):
     variant_env.set_variant(variant_name)
     conf.set_env_name(variant_name, variant_env)
     conf.setenv(variant_name)
+    env = variant_env
 
-    variant_env.append_value('CXXDEFINES', 'RUN_SELF_TESTS')
+    env.append_value('CXXDEFINES', 'RUN_SELF_TESTS')
     
-    if (os.path.basename(conf.env['CXX']).startswith("g++")
-        and 'CXXFLAGS' not in os.environ):
-
-        variant_env.append_value('CXXFLAGS', '-Werror')
-
-        check_compilation_flag(conf, '-Wno-error=deprecated-declarations')
-
+    if env['COMPILER_CXX'] == 'g++' and 'CXXFLAGS' not in os.environ:
+        if check_compilation_flag(conf, '-Wno-error=deprecated-declarations'):
+            env.append_value('CXXFLAGS', '-Wno-error=deprecated-declarations')
         
-    if 'debug' in Options.options.debug_level.lower():
-        variant_env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
-        variant_env.append_value('CXXDEFINES', 'NS3_LOG_ENABLE')
-
-    ## In optimized builds we still want debugging symbols, e.g. for
-    ## profiling, and at least partially usable stack traces.
-    if ('optimized' in Options.options.debug_level.lower() 
-        and 'CXXFLAGS' not in os.environ):
-        for flag in variant_env['CXXFLAGS_DEBUG']:
-            ## this probably doesn't work for MSVC
-            if flag.startswith('-g'):
-                variant_env.append_value('CXXFLAGS', flag)
-
-    ## in optimized builds, replace -O2 with -O3
-    if 'optimized' in Options.options.debug_level.lower():
-        lst = variant_env['CXXFLAGS']
-        for i, flag in enumerate(lst):
-            if flag == '-O2':
-                lst[i] = '-O3'
+    if Options.options.build_profile == 'debug':
+        env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
+        env.append_value('CXXDEFINES', 'NS3_LOG_ENABLE')
 
     if sys.platform == 'win32':
-        if os.path.basename(conf.env['CXX']).startswith("g++"):
-            variant_env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
+        if env['COMPILER_CXX'] == 'g++':
+            env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
 
     conf.sub_config('src')
     conf.sub_config('utils')
@@ -481,13 +449,6 @@ def get_command_template(*arguments):
 
 
 def shutdown():
-    #import UnitTest
-    #ut = UnitTest.unit_test()
-    #ut.change_to_testfile_dir = True
-    #ut.want_to_see_test_output = True
-    #ut.want_to_see_test_error = True
-    #ut.run()
-    #ut.print_results()
     env = Build.bld.env
 
     if Options.commands['check']:
