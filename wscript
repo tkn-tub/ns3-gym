@@ -30,7 +30,7 @@ cflags.default_profile = 'debug'
 import wutils
 import regression
 
-Options.autoconfig = 1
+Configure.autoconfig = 1
 
 # the following two variables are used by the target "waf dist"
 VERSION = file("VERSION", "rt").read().strip()
