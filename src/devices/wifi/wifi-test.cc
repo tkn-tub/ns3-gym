@@ -8,6 +8,7 @@
 #include "propagation-delay-model.h"
 #include "propagation-loss-model.h"
 #include "error-rate-model.h"
+#include "yans-error-rate-model.h"
 #include "ns3/static-mobility-model.h"
 #include "ns3/node.h"
 #include "ns3/simulator.h"
@@ -52,7 +53,7 @@ WifiTest::CreateOne (Vector pos, Ptr<YansWifiChannel> channel)
   Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
   Ptr<StaticMobilityModel> mobility = CreateObject<StaticMobilityModel> ();
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
-  Ptr<ErrorRateModel> error = CreateObject<ErrorRateModel> ();
+  Ptr<ErrorRateModel> error = CreateObject<YansErrorRateModel> ();
   phy->SetErrorRateModel (error);
   phy->SetChannel (channel);
   phy->SetDevice (dev);

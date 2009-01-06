@@ -4,6 +4,7 @@
 #include "propagation-loss-model.h"
 #include "propagation-delay-model.h"
 #include "error-rate-model.h"
+#include "yans-error-rate-model.h"
 #include "ns3/ptr.h"
 #include "ns3/mobility-model.h"
 #include "ns3/static-mobility-model.h"
@@ -86,7 +87,7 @@ PsrExperiment::Run (struct PsrExperiment::Input input)
 
   Ptr<YansWifiPhy> tx = CreateObject<YansWifiPhy> ();
   Ptr<YansWifiPhy> rx = CreateObject<YansWifiPhy> ();
-  Ptr<ErrorRateModel> error = CreateObject<ErrorRateModel> ();
+  Ptr<ErrorRateModel> error = CreateObject<YansErrorRateModel> ();
   tx->SetErrorRateModel (error);
   rx->SetErrorRateModel (error);
   tx->SetChannel (channel);
@@ -217,7 +218,7 @@ CollisionExperiment::Run (struct CollisionExperiment::Input input)
   Ptr<YansWifiPhy> txB = CreateObject<YansWifiPhy> ();
   Ptr<YansWifiPhy> rx = CreateObject<YansWifiPhy> ();
 
-  Ptr<ErrorRateModel> error = CreateObject<ErrorRateModel> ();
+  Ptr<ErrorRateModel> error = CreateObject<YansErrorRateModel> ();
   txA->SetErrorRateModel (error);
   txB->SetErrorRateModel (error);
   rx->SetErrorRateModel (error);

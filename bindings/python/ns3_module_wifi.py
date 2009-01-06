@@ -99,6 +99,8 @@ def register_types(module):
     module.add_class('WifiChannel', parent=root_module['ns3::Channel'])
     ## wifi-net-device.h: ns3::WifiNetDevice [class]
     module.add_class('WifiNetDevice', parent=root_module['ns3::NetDevice'])
+    ## yans-error-rate-model.h: ns3::YansErrorRateModel [class]
+    module.add_class('YansErrorRateModel', parent=root_module['ns3::ErrorRateModel'])
     ## yans-wifi-channel.h: ns3::YansWifiChannel [class]
     module.add_class('YansWifiChannel', parent=root_module['ns3::WifiChannel'])
     ## aarf-wifi-manager.h: ns3::AarfWifiManager [class]
@@ -189,6 +191,7 @@ def register_methods(root_module):
     register_Ns3RraaWifiManager_methods(root_module, root_module['ns3::RraaWifiManager'])
     register_Ns3WifiChannel_methods(root_module, root_module['ns3::WifiChannel'])
     register_Ns3WifiNetDevice_methods(root_module, root_module['ns3::WifiNetDevice'])
+    register_Ns3YansErrorRateModel_methods(root_module, root_module['ns3::YansErrorRateModel'])
     register_Ns3YansWifiChannel_methods(root_module, root_module['ns3::YansWifiChannel'])
     register_Ns3AarfWifiManager_methods(root_module, root_module['ns3::AarfWifiManager'])
     return
@@ -2051,13 +2054,13 @@ def register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, cls):
 def register_Ns3ErrorRateModel_methods(root_module, cls):
     ## error-rate-model.h: ns3::ErrorRateModel::ErrorRateModel(ns3::ErrorRateModel const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::ErrorRateModel const &', 'arg0')])
+    ## error-rate-model.h: ns3::ErrorRateModel::ErrorRateModel() [constructor]
+    cls.add_constructor([])
     ## error-rate-model.h: static ns3::TypeId ns3::ErrorRateModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## error-rate-model.h: ns3::ErrorRateModel::ErrorRateModel() [constructor]
-    cls.add_constructor([])
     ## error-rate-model.h: double ns3::ErrorRateModel::CalculateSnr(ns3::WifiMode txMode, double ber) const [member function]
     cls.add_method('CalculateSnr', 
                    'double', 
@@ -2067,7 +2070,7 @@ def register_Ns3ErrorRateModel_methods(root_module, cls):
     cls.add_method('GetChunkSuccessRate', 
                    'double', 
                    [param('ns3::WifiMode', 'mode'), param('double', 'snr'), param('uint32_t', 'nbits')], 
-                   is_const=True)
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
 def register_Ns3FriisPropagationLossModel_methods(root_module, cls):
@@ -2734,6 +2737,23 @@ def register_Ns3WifiNetDevice_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    return
+
+def register_Ns3YansErrorRateModel_methods(root_module, cls):
+    ## yans-error-rate-model.h: ns3::YansErrorRateModel::YansErrorRateModel(ns3::YansErrorRateModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::YansErrorRateModel const &', 'arg0')])
+    ## yans-error-rate-model.h: static ns3::TypeId ns3::YansErrorRateModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## yans-error-rate-model.h: ns3::YansErrorRateModel::YansErrorRateModel() [constructor]
+    cls.add_constructor([])
+    ## yans-error-rate-model.h: double ns3::YansErrorRateModel::GetChunkSuccessRate(ns3::WifiMode mode, double snr, uint32_t nbits) const [member function]
+    cls.add_method('GetChunkSuccessRate', 
+                   'double', 
+                   [param('ns3::WifiMode', 'mode'), param('double', 'snr'), param('uint32_t', 'nbits')], 
+                   is_const=True, is_virtual=True)
     return
 
 def register_Ns3YansWifiChannel_methods(root_module, cls):
