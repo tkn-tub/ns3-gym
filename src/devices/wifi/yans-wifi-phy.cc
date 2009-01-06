@@ -416,14 +416,14 @@ YansWifiPhy::Configure80211a (void)
 {
   NS_LOG_FUNCTION (this);
   m_interference.Configure80211aParameters ();
-  m_modes.push_back (g_6mba);
-  m_modes.push_back (g_9mba);
-  m_modes.push_back (g_12mba);
-  m_modes.push_back (g_18mba);
-  m_modes.push_back (g_24mba);
-  m_modes.push_back (g_36mba);
-  m_modes.push_back (g_48mba);
-  m_modes.push_back (g_54mba);
+  m_modes.push_back (WifiPhy::Get6mba ());
+  m_modes.push_back (WifiPhy::Get9mba ());
+  m_modes.push_back (WifiPhy::Get12mba ());
+  m_modes.push_back (WifiPhy::Get18mba ());
+  m_modes.push_back (WifiPhy::Get24mba ());
+  m_modes.push_back (WifiPhy::Get36mba ());
+  m_modes.push_back (WifiPhy::Get48mba ());
+  m_modes.push_back (WifiPhy::Get54mba ());
 }
 
 void
@@ -431,11 +431,11 @@ YansWifiPhy::ConfigureHolland (void)
 {
   NS_LOG_FUNCTION (this);
   m_interference.Configure80211aParameters ();
-  m_modes.push_back (g_6mba);
-  m_modes.push_back (g_12mba);
-  m_modes.push_back (g_18mba);
-  m_modes.push_back (g_36mba);
-  m_modes.push_back (g_54mba);
+  m_modes.push_back (WifiPhy::Get6mba ());
+  m_modes.push_back (WifiPhy::Get12mba ());
+  m_modes.push_back (WifiPhy::Get18mba ());
+  m_modes.push_back (WifiPhy::Get36mba ());
+  m_modes.push_back (WifiPhy::Get54mba ());
 }
 
 void 

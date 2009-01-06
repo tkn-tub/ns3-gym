@@ -224,11 +224,11 @@ InterferenceHelper::Configure80211aParameters (void)
   m_80211a = true;
   m_plcpLongPreambleDelayUs = 16;
   m_plcpShortPreambleDelayUs = 16;
-  m_longPlcpHeaderMode = WifiPhy::g_6mba;
-  m_shortPlcpHeaderMode = WifiPhy::g_6mba;
+  m_longPlcpHeaderMode = WifiPhy::Get6mba ();
+  m_shortPlcpHeaderMode = WifiPhy::Get6mba ();
   m_plcpHeaderLength = 4 + 1 + 12 + 1 + 6;
   /* 4095 bytes at a 6Mb/s rate with a 1/2 coding rate. */
-  m_maxPacketDuration = CalculateTxDuration (4095, WifiPhy::g_6mba, WIFI_PREAMBLE_LONG);
+  m_maxPacketDuration = CalculateTxDuration (4095, WifiPhy::Get6mba (), WIFI_PREAMBLE_LONG);
 }
 
 void 

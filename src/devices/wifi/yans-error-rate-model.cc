@@ -171,7 +171,7 @@ YansErrorRateModel::GetFecQamBer (double snr, uint32_t nbits,
 double 
 YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const
 {
-  if (mode == WifiPhy::g_6mba)
+  if (mode == WifiPhy::Get6mba ())
     {
       return GetFecBpskBer (snr, 
                             nbits,
@@ -181,7 +181,7 @@ YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
                             11 // adFree
                             );      
     }
-  else if (mode == WifiPhy::g_9mba)
+  else if (mode == WifiPhy::Get9mba ())
     {
       return GetFecBpskBer (snr, 
                             nbits,
@@ -191,7 +191,7 @@ YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
                             8 // adFree
                             );
     }
-  else if (mode == WifiPhy::g_12mba)
+  else if (mode == WifiPhy::Get12mba ())
     {
       return GetFecQamBer (snr, 
                            nbits,
@@ -203,7 +203,7 @@ YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
                            0   // adFreePlusOne
                            );
     }
-  else if (mode == WifiPhy::g_18mba)
+  else if (mode == WifiPhy::Get18mba ())
     {
       return GetFecQamBer (snr, 
                            nbits,
@@ -215,7 +215,7 @@ YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
                            31 // adFreePlusOne
                            );
     }
-  else if (mode == WifiPhy::g_24mba)
+  else if (mode == WifiPhy::Get24mba ())
     {
       return GetFecQamBer (snr, 
                            nbits,
@@ -227,7 +227,7 @@ YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
                            0   // adFreePlusOne
                            );
     }
-  else if (mode == WifiPhy::g_36mba)
+  else if (mode == WifiPhy::Get36mba ())
     {
       return GetFecQamBer (snr, 
                            nbits,
@@ -239,7 +239,7 @@ YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
                            31  // adFreePlusOne
                            );
     }
-  else if (mode == WifiPhy::g_48mba)
+  else if (mode == WifiPhy::Get48mba ())
     {
       return GetFecQamBer (snr, 
                            nbits,
@@ -251,7 +251,7 @@ YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbi
                            16  // adFreePlusOne
                            );
     }
-  else if (mode == WifiPhy::g_54mba)
+  else if (mode == WifiPhy::Get54mba ())
     {
       return GetFecQamBer (snr, 
                            nbits,
