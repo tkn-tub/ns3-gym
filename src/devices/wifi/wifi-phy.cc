@@ -81,8 +81,8 @@ WifiMode
 WifiPhy::Get9mba (void)
 {
   static WifiMode mode = WifiModeFactory::CreateBpsk ("wifia-9mbs",
-                                               false,
-                                               20000000, 9000000, 12000000);
+                                                      false,
+                                                      20000000, 9000000, 12000000);
   return mode;
 }
 WifiMode 
@@ -137,3 +137,21 @@ WifiPhy::Get54mba (void)
 }
 
 } // namespace ns3
+
+namespace {
+
+static class Constructor
+{
+public:
+  Constructor () {
+    ns3::WifiPhy::Get6mba ();
+    ns3::WifiPhy::Get9mba ();
+    ns3::WifiPhy::Get12mba ();
+    ns3::WifiPhy::Get18mba ();
+    ns3::WifiPhy::Get24mba ();
+    ns3::WifiPhy::Get36mba ();
+    ns3::WifiPhy::Get48mba ();
+    ns3::WifiPhy::Get54mba ();
+  }
+} g_constructor;
+}
