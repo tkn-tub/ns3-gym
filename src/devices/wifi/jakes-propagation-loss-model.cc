@@ -141,7 +141,7 @@ JakesPropagationLossModel::GetTypeId (void)
 		   MakeUintegerAccessor (&JakesPropagationLossModel::m_nOscillators),
 		   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("DopplerFreq",
-                   "The doppler frequency in Hz (f_d = v / lambda = v * f / c, the defualt is 0)",
+                   "The doppler frequency in Hz (f_d = v / lambda = v * f / c), the default is 0)",
                    DoubleValue (0.0),
 		   MakeDoubleAccessor (&JakesPropagationLossModel::m_fd),
 		   MakeDoubleChecker<double> ())
