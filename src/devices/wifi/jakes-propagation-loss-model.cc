@@ -216,14 +216,14 @@ JakesPropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
     {
       i--;
       PathsSet *ps = *i;
-      if (PeekPointer (ps->sender) == PeekPointer(a)) 
+      if (ps->sender == a) 
         {
           m_paths.erase (i);
           m_paths.push_back (ps);
           for (DestinationList::iterator r = ps->receivers.begin (); r != ps->receivers.end (); r++) 
             {
               PathCoefficients *pc = *r;
-              if (PeekPointer (pc->GetReceiver ()) == PeekPointer (b)) 
+              if (pc->GetReceiver () == b) 
                 {
                   ps->receivers.erase (r);
                   ps->receivers.push_back (pc);
