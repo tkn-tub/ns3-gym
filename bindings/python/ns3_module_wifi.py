@@ -1361,22 +1361,6 @@ def register_Ns3WifiModeValue_methods(root_module, cls):
     return
 
 def register_Ns3WifiPhy_methods(root_module, cls):
-    ## wifi-phy.h: ns3::WifiPhy::g_6mba [variable]
-    cls.add_static_attribute('g_6mba', 'ns3::WifiMode', is_const=False)
-    ## wifi-phy.h: ns3::WifiPhy::g_9mba [variable]
-    cls.add_static_attribute('g_9mba', 'ns3::WifiMode', is_const=False)
-    ## wifi-phy.h: ns3::WifiPhy::g_12mba [variable]
-    cls.add_static_attribute('g_12mba', 'ns3::WifiMode', is_const=False)
-    ## wifi-phy.h: ns3::WifiPhy::g_18mba [variable]
-    cls.add_static_attribute('g_18mba', 'ns3::WifiMode', is_const=False)
-    ## wifi-phy.h: ns3::WifiPhy::g_24mba [variable]
-    cls.add_static_attribute('g_24mba', 'ns3::WifiMode', is_const=False)
-    ## wifi-phy.h: ns3::WifiPhy::g_36mba [variable]
-    cls.add_static_attribute('g_36mba', 'ns3::WifiMode', is_const=False)
-    ## wifi-phy.h: ns3::WifiPhy::g_48mba [variable]
-    cls.add_static_attribute('g_48mba', 'ns3::WifiMode', is_const=False)
-    ## wifi-phy.h: ns3::WifiPhy::g_54mba [variable]
-    cls.add_static_attribute('g_54mba', 'ns3::WifiMode', is_const=False)
     ## wifi-phy.h: ns3::WifiPhy::WifiPhy(ns3::WifiPhy const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::WifiPhy const &', 'arg0')])
     ## wifi-phy.h: static ns3::TypeId ns3::WifiPhy::GetTypeId() [member function]
@@ -1486,6 +1470,46 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'ns3::Ptr< ns3::WifiChannel >', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get6mba() [member function]
+    cls.add_method('Get6mba', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get9mba() [member function]
+    cls.add_method('Get9mba', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get12mba() [member function]
+    cls.add_method('Get12mba', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get18mba() [member function]
+    cls.add_method('Get18mba', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get24mba() [member function]
+    cls.add_method('Get24mba', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get36mba() [member function]
+    cls.add_method('Get36mba', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get48mba() [member function]
+    cls.add_method('Get48mba', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get54mba() [member function]
+    cls.add_method('Get54mba', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
     return
 
 def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
