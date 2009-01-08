@@ -229,6 +229,7 @@ Scheduler::Event
 CalendarScheduler::PeekNext (void) const
 {
   NS_LOG_FUNCTION (this);
+  NS_ASSERT (!IsEmpty ());
   return m_calendar->PeekNext ();
 }
 
@@ -236,7 +237,7 @@ Scheduler::Event
 CalendarScheduler::RemoveNext (void)
 {
   NS_LOG_FUNCTION (this);
-
+  NS_ASSERT (!IsEmpty ());
   Scheduler::Event ev = m_calendar->RemoveNext ();
   m_qSize--;
   ResizeDown ();
@@ -248,7 +249,7 @@ void
 CalendarScheduler::Remove (const Event &ev)
 {
   NS_LOG_FUNCTION (this << ev.impl << ev.key.m_ts << ev.key.m_uid);
-
+  NS_ASSERT (!IsEmpty ());
   m_calendar->Remove (ev);
   m_qSize--;
   ResizeDown ();
