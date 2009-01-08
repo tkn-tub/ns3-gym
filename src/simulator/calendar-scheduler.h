@@ -23,7 +23,6 @@
 
 #include "scheduler.h"
 #include <stdint.h>
-#include <list>
 
 namespace ns3 {
 
@@ -49,7 +48,7 @@ private:
   void ResizeUp (void);
   void ResizeDown (void);
   void Resize (uint32_t newSize);
-  uint32_t CalculateNewWidth (std::list<Scheduler::Event> *dequeued);
+  uint32_t CalculateNewWidth (void);
 
   Calendar *m_calendar;
   uint32_t m_qSize;
