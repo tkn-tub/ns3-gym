@@ -37,7 +37,9 @@ public:
             uint64_t newWidth);
   ~Calendar ();
 
+  void InsertAll (const Calendar *calendar);
   void Insert (const Scheduler::Event &ev);
+  void InsertMin (const Scheduler::Event &ev);
   Scheduler::Event PeekNext (void) const;
   Scheduler::Event RemoveNext (void);
   void Remove (const Scheduler::Event &ev);
@@ -79,6 +81,26 @@ uint32_t
 Calendar::GetNBuckets (void) const
 {
   return m_nBuckets;
+}
+void 
+Calendar::InsertAll (const Calendar *calendar)
+{
+  for (uint32_t i = 0; i < calendar->m_nBuckets; i++)
+    {
+      Bucket::iterator end = calendar->m_buckets[i].end ();
+      for (Bucket::iterator j = calendar->m_buckets[i].begin (); j != end; ++j) 
+        {
+          Insert (*j);
+        }
+    }
+}
+void 
+Calendar::InsertMin (const Scheduler::Event &ev)
+{
+  uint32_t bucket = (ev.key.m_ts / m_width) % m_nBuckets;
+  m_lastBucket = bucket;
+  m_bucketTop = (m_lastBucket + 1) * m_width;
+  Insert (ev);
 }
 void
 Calendar::Insert (const Scheduler::Event &ev)
@@ -297,7 +319,6 @@ CalendarScheduler::CalculateNewWidth (std::list<Scheduler::Event> *dequeued)
     {
       dequeued->push_back (m_calendar->RemoveNext ());
     }
-  m_qSize -= nSamples;
   
   uint64_t totalSeparation = 0;
   std::list<Scheduler::Event>::const_iterator end = dequeued->end ();
@@ -341,18 +362,20 @@ CalendarScheduler::Resize (uint32_t newSize)
   
   Calendar *calendar = new Calendar (newSize, newWidth);
 
-  for (uint32_t i = 0; i < m_qSize; i++)
-    {
-      Scheduler::Event ev = m_calendar->RemoveNext ();
-      calendar->Insert (ev);
-    }
+  calendar->InsertAll (m_calendar);
   std::list<Scheduler::Event>::const_iterator end = dequeued.end ();
   for (std::list<Scheduler::Event>::const_iterator i = dequeued.begin ();
        i != end; ++i)
     {
-      calendar->Insert (*i);
+      if (i == dequeued.begin ())
+        {
+          calendar->InsertMin (*i);
+        }
+      else
+        {
+          calendar->Insert (*i);
+        }
     }
-  m_qSize += dequeued.size ();
 
   delete m_calendar;
   m_calendar = calendar;
