@@ -23,11 +23,11 @@
 
 #include "scheduler.h"
 #include <stdint.h>
+#include <list>
 
 namespace ns3 {
 
 class EventImpl;
-class Calendar;
 
 /**
  * \ingroup scheduler
@@ -49,8 +49,28 @@ private:
   void ResizeDown (void);
   void Resize (uint32_t newSize);
   uint32_t CalculateNewWidth (void);
+  void Init (uint32_t nBuckets, 
+             uint64_t width,
+             uint64_t startPrio);
+  inline uint32_t Hash (uint64_t key) const;
+  void PrintInfo (void);
+  void DoResize (uint32_t newSize, uint32_t newWidth);
+  Scheduler::Event DoRemoveNext (void);
+  void DoInsert (const Event &ev);
 
-  Calendar *m_calendar;
+  typedef std::list<Scheduler::Event> Bucket;
+  Bucket *m_buckets;
+  // number of buckets in array
+  uint32_t m_nBuckets;
+  // duration of a bucket
+  uint64_t m_width;
+  // bucket index from which the last event was dequeued
+  uint32_t m_lastBucket;
+  // priority at the top of the bucket from which last event was dequeued
+  uint64_t m_bucketTop;
+  // the priority of the last event removed
+  uint64_t m_lastPrio;
+  // number of events in queue
   uint32_t m_qSize;
 };
 
