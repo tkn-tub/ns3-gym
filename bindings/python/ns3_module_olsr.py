@@ -499,10 +499,10 @@ def register_Ns3OlsrRoutingTable_methods(root_module, cls):
                    'bool', 
                    [param('ns3::olsr::RoutingTableEntry const &', 'entry'), param('ns3::olsr::RoutingTableEntry &', 'outEntry')], 
                    is_const=True)
-    ## olsr-routing-table.h: bool ns3::olsr::RoutingTable::RequestRoute(uint32_t ifIndex, ns3::Ipv4Header const & ipHeader, ns3::Ptr<ns3::Packet> packet, ns3::Callback<void,bool,const ns3::Ipv4Route&,ns3::Ptr<ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty> routeReply) [member function]
+    ## olsr-routing-table.h: bool ns3::olsr::RoutingTable::RequestRoute(uint32_t ifIndex, ns3::Ipv4Header const & ipHeader, ns3::Ptr<ns3::Packet> packet, ns3::Callback<void,bool,const ns3::Ipv4Route&,ns3::Ptr<ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> routeReply) [member function]
     cls.add_method('RequestRoute', 
                    'bool', 
-                   [param('uint32_t', 'ifIndex'), param('ns3::Ipv4Header const &', 'ipHeader'), param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Callback< void, bool, ns3::Ipv4Route const &, ns3::Ptr< ns3::Packet >, ns3::Ipv4Header const &, ns3::empty, ns3::empty >', 'routeReply')], 
+                   [param('uint32_t', 'ifIndex'), param('ns3::Ipv4Header const &', 'ipHeader'), param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Callback< void, bool, ns3::Ipv4Route const &, ns3::Ptr< ns3::Packet >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'routeReply')], 
                    is_virtual=True)
     ## olsr-routing-table.h: bool ns3::olsr::RoutingTable::RequestIfIndex(ns3::Ipv4Address destination, uint32_t & ifIndex) [member function]
     cls.add_method('RequestIfIndex', 
