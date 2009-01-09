@@ -144,7 +144,7 @@ DefaultSimulatorImpl::Next (void) const
 void
 DefaultSimulatorImpl::Run (void)
 {
-
+  m_stop = false;
   while (!m_events->IsEmpty () && !m_stop) 
     {
       ProcessOneEvent ();

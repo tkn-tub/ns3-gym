@@ -421,6 +421,7 @@ RealtimeSimulatorImpl::Run (void)
   NS_ASSERT_MSG (m_running == false, 
                  "RealtimeSimulatorImpl::Run(): Simulator already running");
 
+  m_stop = false;
   m_running = true;
   m_synchronizer->SetOrigin (m_currentTs);
 
