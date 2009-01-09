@@ -18,6 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "high-precision-128.h"
+#include "ns3/test.h"
 #include <math.h>
 #include <iostream>
 
@@ -160,10 +161,24 @@ HighPrecision::Div (HighPrecision const &o)
   HP128INC (m_ndivs++);
   EnsureSlow ();
   const_cast<HighPrecision &> (o).EnsureSlow ();
-  cairo_int128_t div = _cairo_int128_rsa (o.m_slowValue, 64);
   cairo_quorem128_t qr;
-  qr = _cairo_int128_divrem (m_slowValue, div);
-  m_slowValue = qr.quo;
+  qr = _cairo_int128_divrem (m_slowValue, o.m_slowValue);
+  m_slowValue = _cairo_int128_lsl (qr.quo, 64);
+  // Now, manage the remainder
+  cairo_int128_t div = o.m_slowValue;
+  cairo_int128_t tmp;
+  tmp = _cairo_int128_rsa (qr.rem, 64);
+  cairo_int128_t zero = _cairo_int64_to_int128 (0);
+  if (_cairo_int128_eq (tmp, zero))
+    {
+      qr.rem = _cairo_int128_lsl (qr.rem, 64);
+    }
+  else
+    {
+      div = _cairo_int128_rsa (div, 64);
+    }
+  qr = _cairo_int128_divrem (qr.rem, div);
+  m_slowValue = _cairo_int128_add (m_slowValue, qr.quo);
   return false;
 }
 int 
@@ -207,14 +222,15 @@ HighPrecision128Tests::HighPrecision128Tests ()
 HighPrecision128Tests::~HighPrecision128Tests ()
 {}
 
-#define CHECK_EXPECTED(v,expected) \
-{ \
-  if (v.GetInteger () != expected) \
-    { \
-      Failure () << "file="<<__FILE__<<", line="<<__LINE__<<", expected: "<<expected<<", got: "<< v.GetInteger ()<<std::endl; \
-      ok = false; \
-    } \
-}
+#define CHECK_EXPECTED(v,expected)                                      \
+  {                                                                     \
+    if (v.GetInteger () != expected)                                    \
+      {                                                                 \
+        Failure () << "file="<<__FILE__<<", line="<<__LINE__<<          \
+          ", expected: "<<expected<<", got: "<< v.GetInteger ()<<std::endl; \
+        result = false;                                                 \
+      }                                                                 \
+  }
 
 #define V(v) \
   HighPrecision (v, false)
@@ -222,7 +238,7 @@ HighPrecision128Tests::~HighPrecision128Tests ()
 bool
 HighPrecision128Tests::RunTests (void)
 {
-  bool ok = true;
+  bool result = true;
 
   HighPrecision a, b;
   a = HighPrecision (1, false);
@@ -331,15 +347,17 @@ HighPrecision128Tests::RunTests (void)
   a.Mul (V(3));
   CHECK_EXPECTED (a, 1999999999);
   
+  // Bug 455
+  a = HighPrecision (0.1);
+  a.Div (HighPrecision (1.25));
+  NS_TEST_ASSERT_EQUAL (a.GetDouble (), 0.08);
 
 
-
-  return ok;
+  return result;
 }
 
 static HighPrecision128Tests g_int128Tests;
 
-
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* RUN_SELF_TESTS */

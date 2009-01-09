@@ -36,7 +36,7 @@ class Experiment
 public:
   Experiment ();
   Experiment (std::string name);
-  GnuplotDataset Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy, const YansWifiChannelHelper &wifiChannel);
+  Gnuplot2dDataset Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy, const YansWifiChannelHelper &wifiChannel);
 private:
   void ReceivePacket (Ptr<Socket> socket);
   void SetPosition (Ptr<Node> node, Vector position);
@@ -45,17 +45,16 @@ private:
   Ptr<Socket> SetupPacketReceive (Ptr<Node> node);
 
   uint32_t m_bytesTotal;
-  GnuplotDataset m_output;
+  Gnuplot2dDataset m_output;
 };
 
 Experiment::Experiment ()
-  : m_output ()
 {}
 
 Experiment::Experiment (std::string name)
   : m_output (name)
 {
-  m_output.SetStyle (GnuplotDataset::LINES);
+  m_output.SetStyle (Gnuplot2dDataset::LINES);
 }
 
 void
@@ -109,7 +108,7 @@ Experiment::SetupPacketReceive (Ptr<Node> node)
   return sink;
 }
 
-GnuplotDataset
+Gnuplot2dDataset
 Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy, const YansWifiChannelHelper &wifiChannel)
 {
   m_bytesTotal = 0;
@@ -173,7 +172,7 @@ int main (int argc, char *argv[])
   WifiHelper wifi = WifiHelper::Default ();
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
-  GnuplotDataset dataset;
+  Gnuplot2dDataset dataset;
 
   wifi.SetMac ("ns3::AdhocWifiMac");
 

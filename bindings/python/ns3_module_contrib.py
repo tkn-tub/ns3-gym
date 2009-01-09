@@ -9,18 +9,28 @@ def register_types(module):
     module.add_class('EventGarbageCollector')
     ## gnuplot.h: ns3::Gnuplot [class]
     module.add_class('Gnuplot')
+    ## gnuplot.h: ns3::GnuplotCollection [class]
+    module.add_class('GnuplotCollection')
     ## gnuplot.h: ns3::GnuplotDataset [class]
     module.add_class('GnuplotDataset')
-    ## gnuplot.h: ns3::GnuplotDataset::Style [enumeration]
-    module.add_enum('Style', ['LINES', 'POINTS', 'LINES_POINTS', 'DOTS', 'IMPULSES', 'STEPS', 'FSTEPS', 'HISTEPS'], outer_class=root_module['ns3::GnuplotDataset'])
-    ## gnuplot.h: ns3::GnuplotDataset::ErrorBars [enumeration]
-    module.add_enum('ErrorBars', ['NONE', 'X', 'Y', 'XY'], outer_class=root_module['ns3::GnuplotDataset'])
     ## gtk-config-store.h: ns3::GtkConfigStore [class]
     module.add_class('GtkConfigStore')
     ## config-store.h: ns3::ConfigStore [class]
     module.add_class('ConfigStore', parent=root_module['ns3::ObjectBase'])
     ## flow-id-tag.h: ns3::FlowIdTag [class]
     module.add_class('FlowIdTag', parent=root_module['ns3::Tag'])
+    ## gnuplot.h: ns3::Gnuplot2dDataset [class]
+    module.add_class('Gnuplot2dDataset', parent=root_module['ns3::GnuplotDataset'])
+    ## gnuplot.h: ns3::Gnuplot2dDataset::Style [enumeration]
+    module.add_enum('Style', ['LINES', 'POINTS', 'LINES_POINTS', 'DOTS', 'IMPULSES', 'STEPS', 'FSTEPS', 'HISTEPS'], outer_class=root_module['ns3::Gnuplot2dDataset'])
+    ## gnuplot.h: ns3::Gnuplot2dDataset::ErrorBars [enumeration]
+    module.add_enum('ErrorBars', ['NONE', 'X', 'Y', 'XY'], outer_class=root_module['ns3::Gnuplot2dDataset'])
+    ## gnuplot.h: ns3::Gnuplot2dFunction [class]
+    module.add_class('Gnuplot2dFunction', parent=root_module['ns3::GnuplotDataset'])
+    ## gnuplot.h: ns3::Gnuplot3dDataset [class]
+    module.add_class('Gnuplot3dDataset', parent=root_module['ns3::GnuplotDataset'])
+    ## gnuplot.h: ns3::Gnuplot3dFunction [class]
+    module.add_class('Gnuplot3dFunction', parent=root_module['ns3::GnuplotDataset'])
     
     ## Register a nested module for the namespace Config
     
@@ -66,10 +76,15 @@ def register_methods(root_module):
     register_Ns3DelayJitterEstimation_methods(root_module, root_module['ns3::DelayJitterEstimation'])
     register_Ns3EventGarbageCollector_methods(root_module, root_module['ns3::EventGarbageCollector'])
     register_Ns3Gnuplot_methods(root_module, root_module['ns3::Gnuplot'])
+    register_Ns3GnuplotCollection_methods(root_module, root_module['ns3::GnuplotCollection'])
     register_Ns3GnuplotDataset_methods(root_module, root_module['ns3::GnuplotDataset'])
     register_Ns3GtkConfigStore_methods(root_module, root_module['ns3::GtkConfigStore'])
     register_Ns3ConfigStore_methods(root_module, root_module['ns3::ConfigStore'])
     register_Ns3FlowIdTag_methods(root_module, root_module['ns3::FlowIdTag'])
+    register_Ns3Gnuplot2dDataset_methods(root_module, root_module['ns3::Gnuplot2dDataset'])
+    register_Ns3Gnuplot2dFunction_methods(root_module, root_module['ns3::Gnuplot2dFunction'])
+    register_Ns3Gnuplot3dDataset_methods(root_module, root_module['ns3::Gnuplot3dDataset'])
+    register_Ns3Gnuplot3dFunction_methods(root_module, root_module['ns3::Gnuplot3dFunction'])
     return
 
 def register_Ns3DelayJitterEstimation_methods(root_module, cls):
@@ -112,45 +127,87 @@ def register_Ns3EventGarbageCollector_methods(root_module, cls):
 def register_Ns3Gnuplot_methods(root_module, cls):
     ## gnuplot.h: ns3::Gnuplot::Gnuplot(ns3::Gnuplot const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Gnuplot const &', 'arg0')])
-    ## gnuplot.h: ns3::Gnuplot::Gnuplot(std::string pngFilename) [constructor]
-    cls.add_constructor([param('std::string', 'pngFilename')])
-    ## gnuplot.h: void ns3::Gnuplot::SetLegend(std::string xLegend, std::string yLegend) [member function]
+    ## gnuplot.h: ns3::Gnuplot::Gnuplot(std::string const & outputFilename="", std::string const & title="") [constructor]
+    cls.add_constructor([param('std::string const &', 'outputFilename', default_value='""'), param('std::string const &', 'title', default_value='""')])
+    ## gnuplot.h: static std::string ns3::Gnuplot::DetectTerminal(std::string const & filename) [member function]
+    cls.add_method('DetectTerminal', 
+                   'std::string', 
+                   [param('std::string const &', 'filename')], 
+                   is_static=True)
+    ## gnuplot.h: void ns3::Gnuplot::SetTerminal(std::string const & terminal) [member function]
+    cls.add_method('SetTerminal', 
+                   'void', 
+                   [param('std::string const &', 'terminal')])
+    ## gnuplot.h: void ns3::Gnuplot::SetTitle(std::string const & title) [member function]
+    cls.add_method('SetTitle', 
+                   'void', 
+                   [param('std::string const &', 'title')])
+    ## gnuplot.h: void ns3::Gnuplot::SetLegend(std::string const & xLegend, std::string const & yLegend) [member function]
     cls.add_method('SetLegend', 
                    'void', 
-                   [param('std::string', 'xLegend'), param('std::string', 'yLegend')])
+                   [param('std::string const &', 'xLegend'), param('std::string const &', 'yLegend')])
+    ## gnuplot.h: void ns3::Gnuplot::SetExtra(std::string const & extra) [member function]
+    cls.add_method('SetExtra', 
+                   'void', 
+                   [param('std::string const &', 'extra')])
+    ## gnuplot.h: void ns3::Gnuplot::AppendExtra(std::string const & extra) [member function]
+    cls.add_method('AppendExtra', 
+                   'void', 
+                   [param('std::string const &', 'extra')])
     ## gnuplot.h: void ns3::Gnuplot::AddDataset(ns3::GnuplotDataset const & dataset) [member function]
     cls.add_method('AddDataset', 
                    'void', 
                    [param('ns3::GnuplotDataset const &', 'dataset')])
-    ## gnuplot.h: void ns3::Gnuplot::GenerateOutput(std::ostream & os) [member function]
+    ## gnuplot.h: void ns3::Gnuplot::GenerateOutput(std::ostream & os) const [member function]
     cls.add_method('GenerateOutput', 
                    'void', 
-                   [param('std::ostream &', 'os')])
+                   [param('std::ostream &', 'os')], 
+                   is_const=True)
+    return
+
+def register_Ns3GnuplotCollection_methods(root_module, cls):
+    ## gnuplot.h: ns3::GnuplotCollection::GnuplotCollection(ns3::GnuplotCollection const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::GnuplotCollection const &', 'arg0')])
+    ## gnuplot.h: ns3::GnuplotCollection::GnuplotCollection(std::string const & outputFilename) [constructor]
+    cls.add_constructor([param('std::string const &', 'outputFilename')])
+    ## gnuplot.h: void ns3::GnuplotCollection::SetTerminal(std::string const & terminal) [member function]
+    cls.add_method('SetTerminal', 
+                   'void', 
+                   [param('std::string const &', 'terminal')])
+    ## gnuplot.h: void ns3::GnuplotCollection::AddPlot(ns3::Gnuplot const & plot) [member function]
+    cls.add_method('AddPlot', 
+                   'void', 
+                   [param('ns3::Gnuplot const &', 'plot')])
+    ## gnuplot.h: ns3::Gnuplot & ns3::GnuplotCollection::GetPlot(unsigned int id) [member function]
+    cls.add_method('GetPlot', 
+                   'ns3::Gnuplot &', 
+                   [param('unsigned int', 'id')])
+    ## gnuplot.h: void ns3::GnuplotCollection::GenerateOutput(std::ostream & os) const [member function]
+    cls.add_method('GenerateOutput', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True)
     return
 
 def register_Ns3GnuplotDataset_methods(root_module, cls):
-    ## gnuplot.h: ns3::GnuplotDataset::GnuplotDataset(ns3::GnuplotDataset const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::GnuplotDataset const &', 'arg0')])
-    ## gnuplot.h: ns3::GnuplotDataset::GnuplotDataset() [constructor]
-    cls.add_constructor([])
-    ## gnuplot.h: ns3::GnuplotDataset::GnuplotDataset(std::string title) [constructor]
-    cls.add_constructor([param('std::string', 'title')])
-    ## gnuplot.h: void ns3::GnuplotDataset::SetStyle(ns3::GnuplotDataset::Style style) [member function]
-    cls.add_method('SetStyle', 
+    ## gnuplot.h: ns3::GnuplotDataset::GnuplotDataset(ns3::GnuplotDataset const & original) [copy constructor]
+    cls.add_constructor([param('ns3::GnuplotDataset const &', 'original')])
+    ## gnuplot.h: void ns3::GnuplotDataset::SetTitle(std::string const & title) [member function]
+    cls.add_method('SetTitle', 
                    'void', 
-                   [param('ns3::GnuplotDataset::Style', 'style')])
-    ## gnuplot.h: void ns3::GnuplotDataset::SetErrorBars(ns3::GnuplotDataset::ErrorBars errorBars) [member function]
-    cls.add_method('SetErrorBars', 
+                   [param('std::string const &', 'title')])
+    ## gnuplot.h: static void ns3::GnuplotDataset::SetDefaultExtra(std::string const & extra) [member function]
+    cls.add_method('SetDefaultExtra', 
                    'void', 
-                   [param('ns3::GnuplotDataset::ErrorBars', 'errorBars')])
-    ## gnuplot.h: void ns3::GnuplotDataset::Add(double x, double y) [member function]
-    cls.add_method('Add', 
+                   [param('std::string const &', 'extra')], 
+                   is_static=True)
+    ## gnuplot.h: void ns3::GnuplotDataset::SetExtra(std::string const & extra) [member function]
+    cls.add_method('SetExtra', 
                    'void', 
-                   [param('double', 'x'), param('double', 'y')])
-    ## gnuplot.h: void ns3::GnuplotDataset::Add(double x, double y, double errorDelta) [member function]
-    cls.add_method('Add', 
-                   'void', 
-                   [param('double', 'x'), param('double', 'y'), param('double', 'errorDelta')])
+                   [param('std::string const &', 'extra')])
+    ## gnuplot.h: ns3::GnuplotDataset::GnuplotDataset(ns3::GnuplotDataset::Data * data) [constructor]
+    cls.add_constructor([param('ns3::GnuplotDataset::Data *', 'data')], 
+                        visibility='protected')
     return
 
 def register_Ns3GtkConfigStore_methods(root_module, cls):
@@ -236,6 +293,93 @@ def register_Ns3FlowIdTag_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_static=True)
+    return
+
+def register_Ns3Gnuplot2dDataset_methods(root_module, cls):
+    ## gnuplot.h: ns3::Gnuplot2dDataset::Gnuplot2dDataset(ns3::Gnuplot2dDataset const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Gnuplot2dDataset const &', 'arg0')])
+    ## gnuplot.h: ns3::Gnuplot2dDataset::Gnuplot2dDataset(std::string const & title="Untitled") [constructor]
+    cls.add_constructor([param('std::string const &', 'title', default_value='"Untitled"')])
+    ## gnuplot.h: static void ns3::Gnuplot2dDataset::SetDefaultStyle(ns3::Gnuplot2dDataset::Style style) [member function]
+    cls.add_method('SetDefaultStyle', 
+                   'void', 
+                   [param('ns3::Gnuplot2dDataset::Style', 'style')], 
+                   is_static=True)
+    ## gnuplot.h: void ns3::Gnuplot2dDataset::SetStyle(ns3::Gnuplot2dDataset::Style style) [member function]
+    cls.add_method('SetStyle', 
+                   'void', 
+                   [param('ns3::Gnuplot2dDataset::Style', 'style')])
+    ## gnuplot.h: static void ns3::Gnuplot2dDataset::SetDefaultErrorBars(ns3::Gnuplot2dDataset::ErrorBars errorBars) [member function]
+    cls.add_method('SetDefaultErrorBars', 
+                   'void', 
+                   [param('ns3::Gnuplot2dDataset::ErrorBars', 'errorBars')], 
+                   is_static=True)
+    ## gnuplot.h: void ns3::Gnuplot2dDataset::SetErrorBars(ns3::Gnuplot2dDataset::ErrorBars errorBars) [member function]
+    cls.add_method('SetErrorBars', 
+                   'void', 
+                   [param('ns3::Gnuplot2dDataset::ErrorBars', 'errorBars')])
+    ## gnuplot.h: void ns3::Gnuplot2dDataset::Add(double x, double y) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('double', 'x'), param('double', 'y')])
+    ## gnuplot.h: void ns3::Gnuplot2dDataset::Add(double x, double y, double errorDelta) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('double', 'x'), param('double', 'y'), param('double', 'errorDelta')])
+    ## gnuplot.h: void ns3::Gnuplot2dDataset::Add(double x, double y, double minY, double maxY) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('double', 'x'), param('double', 'y'), param('double', 'minY'), param('double', 'maxY')])
+    ## gnuplot.h: void ns3::Gnuplot2dDataset::AddEmptyLine() [member function]
+    cls.add_method('AddEmptyLine', 
+                   'void', 
+                   [])
+    return
+
+def register_Ns3Gnuplot2dFunction_methods(root_module, cls):
+    ## gnuplot.h: ns3::Gnuplot2dFunction::Gnuplot2dFunction(ns3::Gnuplot2dFunction const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Gnuplot2dFunction const &', 'arg0')])
+    ## gnuplot.h: ns3::Gnuplot2dFunction::Gnuplot2dFunction(std::string const & title="Untitled", std::string const & function="") [constructor]
+    cls.add_constructor([param('std::string const &', 'title', default_value='"Untitled"'), param('std::string const &', 'function', default_value='""')])
+    ## gnuplot.h: void ns3::Gnuplot2dFunction::SetFunction(std::string const & function) [member function]
+    cls.add_method('SetFunction', 
+                   'void', 
+                   [param('std::string const &', 'function')])
+    return
+
+def register_Ns3Gnuplot3dDataset_methods(root_module, cls):
+    ## gnuplot.h: ns3::Gnuplot3dDataset::Gnuplot3dDataset(ns3::Gnuplot3dDataset const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Gnuplot3dDataset const &', 'arg0')])
+    ## gnuplot.h: ns3::Gnuplot3dDataset::Gnuplot3dDataset(std::string const & title="Untitled") [constructor]
+    cls.add_constructor([param('std::string const &', 'title', default_value='"Untitled"')])
+    ## gnuplot.h: static void ns3::Gnuplot3dDataset::SetDefaultStyle(std::string const & style) [member function]
+    cls.add_method('SetDefaultStyle', 
+                   'void', 
+                   [param('std::string const &', 'style')], 
+                   is_static=True)
+    ## gnuplot.h: void ns3::Gnuplot3dDataset::SetStyle(std::string const & style) [member function]
+    cls.add_method('SetStyle', 
+                   'void', 
+                   [param('std::string const &', 'style')])
+    ## gnuplot.h: void ns3::Gnuplot3dDataset::Add(double x, double y, double z) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('double', 'x'), param('double', 'y'), param('double', 'z')])
+    ## gnuplot.h: void ns3::Gnuplot3dDataset::AddEmptyLine() [member function]
+    cls.add_method('AddEmptyLine', 
+                   'void', 
+                   [])
+    return
+
+def register_Ns3Gnuplot3dFunction_methods(root_module, cls):
+    ## gnuplot.h: ns3::Gnuplot3dFunction::Gnuplot3dFunction(ns3::Gnuplot3dFunction const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Gnuplot3dFunction const &', 'arg0')])
+    ## gnuplot.h: ns3::Gnuplot3dFunction::Gnuplot3dFunction(std::string const & title="Untitled", std::string const & function="") [constructor]
+    cls.add_constructor([param('std::string const &', 'title', default_value='"Untitled"'), param('std::string const &', 'function', default_value='""')])
+    ## gnuplot.h: void ns3::Gnuplot3dFunction::SetFunction(std::string const & function) [member function]
+    cls.add_method('SetFunction', 
+                   'void', 
+                   [param('std::string const &', 'function')])
     return
 
 def register_functions(root_module):

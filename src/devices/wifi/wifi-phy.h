@@ -242,14 +242,14 @@ public:
 
   virtual Ptr<WifiChannel> GetChannel (void) const = 0;
 
-  static WifiMode g_6mba;
-  static WifiMode g_9mba;
-  static WifiMode g_12mba;
-  static WifiMode g_18mba;
-  static WifiMode g_24mba;
-  static WifiMode g_36mba;
-  static WifiMode g_48mba;
-  static WifiMode g_54mba;
+  static WifiMode Get6mba (void);
+  static WifiMode Get9mba (void);
+  static WifiMode Get12mba (void);
+  static WifiMode Get18mba (void);
+  static WifiMode Get24mba (void);
+  static WifiMode Get36mba (void);
+  static WifiMode Get48mba (void);
+  static WifiMode Get54mba (void);
 };
 
 } // namespace ns3

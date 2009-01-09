@@ -70,6 +70,10 @@ ListPositionAllocator::GetNext (void) const
 {
   Vector v = *m_current;
   m_current++;
+  if (m_current == m_positions.end()) 
+    {
+      m_current = m_positions.begin ();
+    }
   return v;
 }
 

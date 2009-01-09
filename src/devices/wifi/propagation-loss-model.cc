@@ -16,21 +16,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Contributions: Timo Bingmann <timo.bingmann@student.kit.edu>
  */
+
 #include "propagation-loss-model.h"
 #include "ns3/log.h"
 #include "ns3/mobility-model.h"
 #include "ns3/static-mobility-model.h"
+#include "ns3/boolean.h"
 #include "ns3/double.h"
-#include "ns3/pointer.h"
 #include <math.h>
 
 NS_LOG_COMPONENT_DEFINE ("PropagationLossModel");
 
 namespace ns3 {
 
-
-const double FriisPropagationLossModel::PI = 3.1415;
+// ------------------------------------------------------------------------- //
 
 NS_OBJECT_ENSURE_REGISTERED (PropagationLossModel);
 
@@ -57,17 +58,19 @@ PropagationLossModel::SetNext (Ptr<PropagationLossModel> next)
 }
 
 double 
-PropagationLossModel::GetLoss (Ptr<MobilityModel> a,
-                               Ptr<MobilityModel> b) const
+PropagationLossModel::CalcRxPower (double txPowerDbm,
+                                   Ptr<MobilityModel> a,
+                                   Ptr<MobilityModel> b) const
 {
-  double self = DoGetLoss (a, b);
+  double self = DoCalcRxPower (txPowerDbm, a, b);
   if (m_next != 0)
     {
-      self += m_next->GetLoss (a, b);
+      self = m_next->CalcRxPower (self, a, b);
     }
   return self;
 }
 
+// ------------------------------------------------------------------------- //
 
 NS_OBJECT_ENSURE_REGISTERED (RandomPropagationLossModel);
 
@@ -77,7 +80,7 @@ RandomPropagationLossModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::RandomPropagationLossModel")
     .SetParent<PropagationLossModel> ()
     .AddConstructor<RandomPropagationLossModel> ()
-    .AddAttribute ("Variable", "The random variable used to pick a loss everytime GetLoss is invoked.",
+    .AddAttribute ("Variable", "The random variable used to pick a loss everytime CalcRxPower is invoked.",
                    RandomVariableValue (ConstantVariable (1.0)),
                    MakeRandomVariableAccessor (&RandomPropagationLossModel::m_variable),
                    MakeRandomVariableChecker ())
@@ -92,15 +95,20 @@ RandomPropagationLossModel::~RandomPropagationLossModel ()
 {}
 
 double 
-RandomPropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
-                                       Ptr<MobilityModel> b) const
+RandomPropagationLossModel::DoCalcRxPower (double txPowerDbm,
+                                           Ptr<MobilityModel> a,
+                                           Ptr<MobilityModel> b) const
 {
   double rxc = -m_variable.GetValue ();
   NS_LOG_DEBUG ("attenuation coefficent="<<rxc<<"Db");
-  return rxc;
+  return txPowerDbm + rxc;
 }
 
+// ------------------------------------------------------------------------- //
+
 NS_OBJECT_ENSURE_REGISTERED (FriisPropagationLossModel);
+
+const double FriisPropagationLossModel::PI = 3.1415;
 
 TypeId 
 FriisPropagationLossModel::GetTypeId (void)
@@ -179,10 +187,10 @@ FriisPropagationLossModel::DbmFromW (double w) const
   return dbm;
 }
 
-
 double 
-FriisPropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
-				    Ptr<MobilityModel> b) const
+FriisPropagationLossModel::DoCalcRxPower (double txPowerDbm,
+                                          Ptr<MobilityModel> a,
+                                          Ptr<MobilityModel> b) const
 {
   /*
    * Friis free space equation:
@@ -201,29 +209,31 @@ FriisPropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
    * lambda: wavelength (m)
    *
    * Here, we ignore tx and rx gain and the input and output values 
-   * are in dbm:
+   * are in dB or dBm:
    *
    *                           lambda^2
    * rx = tx +  10 log10 (-------------------)
    *                       (4 * pi * d)^2 * L
    *
-   * rx: rx power (dbm)
-   * tx: tx power (dbm)
+   * rx: rx power (dB)
+   * tx: tx power (dB)
    * d: distance (m)
-   * L: system loss
+   * L: system loss (unit-less)
    * lambda: wavelength (m)
    */
   double distance = a->GetDistanceFrom (b);
   if (distance <= m_minDistance)
     {
-      return 0.0;
+      return txPowerDbm;
     }
   double numerator = m_lambda * m_lambda;
   double denominator = 16 * PI * PI * distance * distance * m_systemLoss;
   double pr = 10 * log10 (numerator / denominator);
   NS_LOG_DEBUG ("distance="<<distance<<"m, attenuation coefficient="<<pr<<"dB");
-  return pr;
+  return txPowerDbm + pr;
 }
+
+// ------------------------------------------------------------------------- //
 
 NS_OBJECT_ENSURE_REGISTERED (LogDistancePropagationLossModel);
 
@@ -244,7 +254,7 @@ LogDistancePropagationLossModel::GetTypeId (void)
                    MakeDoubleAccessor (&LogDistancePropagationLossModel::m_referenceDistance),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("ReferenceLoss",
-                   "The reference loss at reference distance",
+                   "The reference loss at reference distance (dB). (Default is Friis at 1m with 5.15 GHz)",
                    DoubleValue (46.6777),
                    MakeDoubleAccessor (&LogDistancePropagationLossModel::m_referenceLoss),
                    MakeDoubleChecker<double> ())
@@ -274,13 +284,14 @@ LogDistancePropagationLossModel::GetPathLossExponent (void) const
 }
   
 double 
-LogDistancePropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
-                                          Ptr<MobilityModel> b) const
+LogDistancePropagationLossModel::DoCalcRxPower (double txPowerDbm,
+                                                Ptr<MobilityModel> a,
+                                                Ptr<MobilityModel> b) const
 {
   double distance = a->GetDistanceFrom (b);
   if (distance <= m_referenceDistance)
     {
-      return 0.0;
+      return txPowerDbm;
     }
   /**
    * The formula is:
@@ -289,18 +300,114 @@ LogDistancePropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
    * Pr0: rx power at reference distance d0 (W)
    * d0: reference distance: 1.0 (m)
    * d: distance (m)
-   * tx: tx power (db)
-   * rx: db
+   * tx: tx power (dB)
+   * rx: dB
    *
    * Which, in our case is:
-   *      
+   *
    * rx = rx0(tx) - 10 * n * log (d/d0)
    */
   double pathLossDb = 10 * m_exponent * log10 (distance / m_referenceDistance);
   double rxc = -m_referenceLoss - pathLossDb;
   NS_LOG_DEBUG ("distance="<<distance<<"m, reference-attenuation="<<-m_referenceLoss<<"dB, "<<
 		"attenuation coefficient="<<rxc<<"db");
-  return rxc;
+  return txPowerDbm + rxc;
 }
+
+// ------------------------------------------------------------------------- //
+
+NS_OBJECT_ENSURE_REGISTERED (ThreeLogDistancePropagationLossModel);
+
+TypeId
+ThreeLogDistancePropagationLossModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::ThreeLogDistancePropagationLossModel")
+    .SetParent<PropagationLossModel> ()
+    .AddConstructor<ThreeLogDistancePropagationLossModel> ()
+    .AddAttribute ("Distance0",
+                   "Beginning of the first (near) distance field",
+                   DoubleValue (1.0),
+                   MakeDoubleAccessor (&ThreeLogDistancePropagationLossModel::m_distance0),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("Distance1",
+                   "Beginning of the second (middle) distance field.",
+                   DoubleValue (200.0),
+                   MakeDoubleAccessor (&ThreeLogDistancePropagationLossModel::m_distance1),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("Distance2",
+                   "Beginning of the third (far) distance field.",
+                   DoubleValue (500.0),
+                   MakeDoubleAccessor (&ThreeLogDistancePropagationLossModel::m_distance2),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("Exponent0",
+                   "The exponent for the first field.",
+                   DoubleValue (1.9),
+                   MakeDoubleAccessor (&ThreeLogDistancePropagationLossModel::m_exponent0),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("Exponent1",
+                   "The exponent for the second field.",
+                   DoubleValue (3.8),
+                   MakeDoubleAccessor (&ThreeLogDistancePropagationLossModel::m_exponent1),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("Exponent2",
+                   "The exponent for the third field.",
+                   DoubleValue (3.8),
+                   MakeDoubleAccessor (&ThreeLogDistancePropagationLossModel::m_exponent2),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("ReferenceLoss",
+                   "The reference loss at distance d0 (dB). (Default is Friis at 1m with 5.15 GHz)",
+                   DoubleValue (46.6777),
+                   MakeDoubleAccessor (&ThreeLogDistancePropagationLossModel::m_referenceLoss),
+                   MakeDoubleChecker<double> ())
+    ;
+  return tid;
+                   
+}
+
+ThreeLogDistancePropagationLossModel::ThreeLogDistancePropagationLossModel ()
+{
+}
+
+double 
+ThreeLogDistancePropagationLossModel::DoCalcRxPower (double txPowerDbm,
+                                                     Ptr<MobilityModel> a,
+                                                     Ptr<MobilityModel> b) const
+{
+  double distance = a->GetDistanceFrom (b);
+  NS_ASSERT(distance >= 0);
+
+  // See doxygen comments for the formula and explanation
+
+  double pathLossDb;
+
+  if (distance < m_distance0)
+    {
+      pathLossDb = 0;
+    }
+  else if (distance < m_distance1)
+    {
+      pathLossDb = m_referenceLoss
+        + 10 * m_exponent0 * log10(distance / m_distance0);
+    }
+  else if (distance < m_distance2)
+    {
+      pathLossDb = m_referenceLoss
+        + 10 * m_exponent0 * log10(m_distance1 / m_distance0)
+        + 10 * m_exponent1 * log10(distance / m_distance1);
+    }
+  else
+    {
+      pathLossDb = m_referenceLoss
+        + 10 * m_exponent0 * log10(m_distance1 / m_distance0)
+        + 10 * m_exponent1 * log10(m_distance2 / m_distance1)
+        + 10 * m_exponent2 * log10(distance / m_distance2);
+    }
+
+  NS_LOG_DEBUG ("ThreeLogDistance distance=" << distance << "m, " <<
+                "attenuation=" << pathLossDb << "dB");
+
+  return txPowerDbm - pathLossDb;
+}
+
 
 } // namespace ns3

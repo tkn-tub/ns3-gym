@@ -16,7 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Contributions: Timo Bingmann <timo.bingmann@student.kit.edu>
  */
+
 #ifndef PROPAGATION_LOSS_MODEL_H
 #define PROPAGATION_LOSS_MODEL_H
 
@@ -30,8 +32,8 @@ class MobilityModel;
 /**
  * \brief Modelize the propagation loss through a transmission medium
  *
- * Calculate the receive power (dbm) from a transmit power (dbm),
- * and, a mobility model for the source and destination positions.
+ * Calculate the receive power (dbm) from a transmit power (dbm)
+ * and a mobility model for the source and destination positions.
  */
 class PropagationLossModel : public Object
 {
@@ -44,23 +46,26 @@ public:
   void SetNext (Ptr<PropagationLossModel> next);
 
   /**
+   * \param txPowerDbm current transmission power (in dBm)
    * \param a the mobility model of the source
    * \param b the mobility model of the destination
-   * \returns the attenuation coefficient (dB)
+   * \returns the reception power after adding/multiplying propagation loss (in dBm)
    */
-  double GetLoss (Ptr<MobilityModel> a,
-                  Ptr<MobilityModel> b) const;
+  double CalcRxPower (double txPowerDbm,
+                      Ptr<MobilityModel> a,
+                      Ptr<MobilityModel> b) const;
 private:
   PropagationLossModel (const PropagationLossModel &o);
   PropagationLossModel &operator = (const PropagationLossModel &o);
-  virtual double DoGetLoss (Ptr<MobilityModel> a,
-                            Ptr<MobilityModel> b) const = 0;
+  virtual double DoCalcRxPower (double txPowerDbm,
+                                Ptr<MobilityModel> a,
+                                Ptr<MobilityModel> b) const = 0;
 
   Ptr<PropagationLossModel> m_next;
 };
 
 /**
- * \brief The propagation loss is random
+ * \brief The propagation loss follows a random distribution.
  */ 
 class RandomPropagationLossModel : public PropagationLossModel
 {
@@ -73,8 +78,9 @@ public:
 private:
   RandomPropagationLossModel (const RandomPropagationLossModel &o);
   RandomPropagationLossModel & operator = (const RandomPropagationLossModel &o);
-  virtual double DoGetLoss (Ptr<MobilityModel> a,
-                            Ptr<MobilityModel> b) const;
+  virtual double DoCalcRxPower (double txPowerDbm,
+                                Ptr<MobilityModel> a,
+                                Ptr<MobilityModel> b) const;
   RandomVariable m_variable;
 };
 
@@ -163,8 +169,9 @@ public:
 private:
   FriisPropagationLossModel (const FriisPropagationLossModel &o);
   FriisPropagationLossModel & operator = (const FriisPropagationLossModel &o);
-  virtual double DoGetLoss (Ptr<MobilityModel> a,
-                            Ptr<MobilityModel> b) const;
+  virtual double DoCalcRxPower (double txPowerDbm,
+                                Ptr<MobilityModel> a,
+                                Ptr<MobilityModel> b) const;
   double DbmToW (double dbm) const;
   double DbmFromW (double w) const;
 
@@ -213,12 +220,79 @@ public:
 private:
   LogDistancePropagationLossModel (const LogDistancePropagationLossModel &o);
   LogDistancePropagationLossModel & operator = (const LogDistancePropagationLossModel &o);
-  virtual double DoGetLoss (Ptr<MobilityModel> a,
-                            Ptr<MobilityModel> b) const;
+  virtual double DoCalcRxPower (double txPowerDbm,
+                                Ptr<MobilityModel> a,
+                                Ptr<MobilityModel> b) const;
   static Ptr<PropagationLossModel> CreateDefaultReference (void);
 
   double m_exponent;
   double m_referenceDistance;
+  double m_referenceLoss;
+};
+
+/**
+ * \brief A log distance path loss propagation model with three distance
+ * fields. This model is the same as ns3::LogDistancePropagationLossModel
+ * except that it has three distance fields: near, middle and far with
+ * different exponents.
+ *
+ * Within each field the reception power is calculated using the log-distance
+ * propagation equation:
+ * \f[ L = L_0 + 10 \cdot n_0 log_{10}(\frac{d}{d_0})\f]
+ * Each field begins where the previous ends and all together form a continuous function.
+ *
+ * There are three valid distance fields: near, middle, far. Actually four: the
+ * first from 0 to the reference distance is invalid and returns txPowerDbm.
+ *
+ * \f[ \underbrace{0 \cdots\cdots}_{=0} \underbrace{d_0 \cdots\cdots}_{n_0} \underbrace{d_1 \cdots\cdots}_{n_1} \underbrace{d_2 \cdots\cdots}_{n_2} \infty \f]
+ *
+ * Complete formula for the path loss in dB:
+ *
+ * \f[\displaystyle L =
+\begin{cases}
+0 & d < d_0 \\
+L_0 + 10 \cdot n_0 \log_{10}(\frac{d}{d_0}) & d_0 \leq d < d_1 \\
+L_0 + 10 \cdot n_0 \log_{10}(\frac{d_1}{d_0}) + 10 \cdot n_1 \log_{10}(\frac{d}{d_1}) & d_1 \leq d < d_2 \\
+L_0 + 10 \cdot n_0 \log_{10}(\frac{d_1}{d_0}) + 10 \cdot n_1 \log_{10}(\frac{d_2}{d_1}) + 10 \cdot n_2 \log_{10}(\frac{d}{d_2})& d_2 \leq d
+\end{cases}\f]
+ *
+ * where:
+ *  - \f$ L \f$ : resulting path loss (dB)
+ *  - \f$ d \f$ : distance (m)
+ *  - \f$ d_0, d_1, d_2 \f$ : three distance fields (m)
+ *  - \f$ n_0, n_1, n_2 \f$ : path loss distance exponent for each field (unitless)
+ *  - \f$ L_0 \f$ : path loss at reference distance (dB)
+ *
+ * When the path loss is requested at a distance smaller than the reference
+ * distance \f$ d_0 \f$, the tx power (with no path loss) is returned. The
+ * reference distance defaults to 1m and reference loss defaults to
+ * ns3::FriisPropagationLossModel with 5.15 GHz and is thus \f$ L_0 \f$ = 46.67 dB.
+ */
+
+class ThreeLogDistancePropagationLossModel : public PropagationLossModel
+{
+public:
+  static TypeId GetTypeId (void);
+  ThreeLogDistancePropagationLossModel ();
+
+  // Parameters are all accessible via attributes.
+
+private:
+  ThreeLogDistancePropagationLossModel (const ThreeLogDistancePropagationLossModel& o);
+  ThreeLogDistancePropagationLossModel& operator= (const ThreeLogDistancePropagationLossModel& o);
+
+  virtual double DoCalcRxPower (double txPowerDbm,
+                                Ptr<MobilityModel> a,
+                                Ptr<MobilityModel> b) const;
+
+  double m_distance0;
+  double m_distance1;
+  double m_distance2;
+
+  double m_exponent0;
+  double m_exponent1;
+  double m_exponent2;
+
   double m_referenceLoss;
 };
 

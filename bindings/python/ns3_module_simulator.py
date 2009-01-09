@@ -45,6 +45,8 @@ def register_types(module):
     module.add_class('TimeValue', parent=root_module['ns3::AttributeValue'])
     ## wall-clock-synchronizer.h: ns3::WallClockSynchronizer [class]
     module.add_class('WallClockSynchronizer', parent=root_module['ns3::Synchronizer'])
+    ## calendar-scheduler.h: ns3::CalendarScheduler [class]
+    module.add_class('CalendarScheduler', parent=root_module['ns3::Scheduler'])
     ## default-simulator-impl.h: ns3::DefaultSimulatorImpl [class]
     module.add_class('DefaultSimulatorImpl', parent=root_module['ns3::SimulatorImpl'])
     ## heap-scheduler.h: ns3::HeapScheduler [class]
@@ -120,6 +122,7 @@ def register_methods(root_module):
     register_Ns3TimeChecker_methods(root_module, root_module['ns3::TimeChecker'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
     register_Ns3WallClockSynchronizer_methods(root_module, root_module['ns3::WallClockSynchronizer'])
+    register_Ns3CalendarScheduler_methods(root_module, root_module['ns3::CalendarScheduler'])
     register_Ns3DefaultSimulatorImpl_methods(root_module, root_module['ns3::DefaultSimulatorImpl'])
     register_Ns3HeapScheduler_methods(root_module, root_module['ns3::HeapScheduler'])
     register_Ns3ListScheduler_methods(root_module, root_module['ns3::ListScheduler'])
@@ -1066,6 +1069,43 @@ def register_Ns3WallClockSynchronizer_methods(root_module, cls):
                    visibility='protected')
     return
 
+def register_Ns3CalendarScheduler_methods(root_module, cls):
+    ## calendar-scheduler.h: ns3::CalendarScheduler::CalendarScheduler(ns3::CalendarScheduler const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CalendarScheduler const &', 'arg0')])
+    ## calendar-scheduler.h: static ns3::TypeId ns3::CalendarScheduler::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## calendar-scheduler.h: ns3::CalendarScheduler::CalendarScheduler() [constructor]
+    cls.add_constructor([])
+    ## calendar-scheduler.h: void ns3::CalendarScheduler::Insert(ns3::Scheduler::Event const & ev) [member function]
+    cls.add_method('Insert', 
+                   'void', 
+                   [param('ns3::Scheduler::Event const &', 'ev')], 
+                   is_virtual=True)
+    ## calendar-scheduler.h: bool ns3::CalendarScheduler::IsEmpty() const [member function]
+    cls.add_method('IsEmpty', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## calendar-scheduler.h: ns3::Scheduler::Event ns3::CalendarScheduler::PeekNext() const [member function]
+    cls.add_method('PeekNext', 
+                   'ns3::Scheduler::Event', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## calendar-scheduler.h: ns3::Scheduler::Event ns3::CalendarScheduler::RemoveNext() [member function]
+    cls.add_method('RemoveNext', 
+                   'ns3::Scheduler::Event', 
+                   [], 
+                   is_virtual=True)
+    ## calendar-scheduler.h: void ns3::CalendarScheduler::Remove(ns3::Scheduler::Event const & ev) [member function]
+    cls.add_method('Remove', 
+                   'void', 
+                   [param('ns3::Scheduler::Event const &', 'ev')], 
+                   is_virtual=True)
+    return
+
 def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
     ## default-simulator-impl.h: ns3::DefaultSimulatorImpl::DefaultSimulatorImpl(ns3::DefaultSimulatorImpl const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::DefaultSimulatorImpl const &', 'arg0')])
@@ -1166,6 +1206,11 @@ def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
 def register_Ns3HeapScheduler_methods(root_module, cls):
     ## heap-scheduler.h: ns3::HeapScheduler::HeapScheduler(ns3::HeapScheduler const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::HeapScheduler const &', 'arg0')])
+    ## heap-scheduler.h: static ns3::TypeId ns3::HeapScheduler::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## heap-scheduler.h: ns3::HeapScheduler::HeapScheduler() [constructor]
     cls.add_constructor([])
     ## heap-scheduler.h: void ns3::HeapScheduler::Insert(ns3::Scheduler::Event const & ev) [member function]
@@ -1198,6 +1243,11 @@ def register_Ns3HeapScheduler_methods(root_module, cls):
 def register_Ns3ListScheduler_methods(root_module, cls):
     ## list-scheduler.h: ns3::ListScheduler::ListScheduler(ns3::ListScheduler const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::ListScheduler const &', 'arg0')])
+    ## list-scheduler.h: static ns3::TypeId ns3::ListScheduler::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## list-scheduler.h: ns3::ListScheduler::ListScheduler() [constructor]
     cls.add_constructor([])
     ## list-scheduler.h: void ns3::ListScheduler::Insert(ns3::Scheduler::Event const & ev) [member function]
@@ -1230,6 +1280,11 @@ def register_Ns3ListScheduler_methods(root_module, cls):
 def register_Ns3MapScheduler_methods(root_module, cls):
     ## map-scheduler.h: ns3::MapScheduler::MapScheduler(ns3::MapScheduler const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::MapScheduler const &', 'arg0')])
+    ## map-scheduler.h: static ns3::TypeId ns3::MapScheduler::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## map-scheduler.h: ns3::MapScheduler::MapScheduler() [constructor]
     cls.add_constructor([])
     ## map-scheduler.h: void ns3::MapScheduler::Insert(ns3::Scheduler::Event const & ev) [member function]

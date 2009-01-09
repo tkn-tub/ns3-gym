@@ -38,6 +38,8 @@ namespace ns3 {
 class MapScheduler : public Scheduler 
 {
 public:
+  static TypeId GetTypeId (void);
+
   MapScheduler ();
   virtual ~MapScheduler ();
 

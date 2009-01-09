@@ -83,7 +83,7 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
         {
           Ptr<MobilityModel> receiverMobility = (*i)->GetMobility ()->GetObject<MobilityModel> ();
           Time delay = m_delay->GetDelay (senderMobility, receiverMobility);
-          double rxPowerDbm = txPowerDbm + m_loss->GetLoss (senderMobility, receiverMobility);
+          double rxPowerDbm = m_loss->CalcRxPower (txPowerDbm, senderMobility, receiverMobility);
           NS_LOG_DEBUG ("propagation: txPower="<<txPowerDbm<<"dbm, rxPower="<<rxPowerDbm<<"dbm, "<<
                         "distance="<<senderMobility->GetDistanceFrom (receiverMobility)<<"m, delay="<<delay);
           Ptr<Packet> copy = packet->Copy ();

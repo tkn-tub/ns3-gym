@@ -168,6 +168,10 @@ int main (int argc, char *argv[])
         {
           Simulator::SetScheduler (CreateObject<MapScheduler> ());
         } 
+      else if (strcmp ("--calendar", argv[0]) == 0)
+        {
+          Simulator::SetScheduler (CreateObject<CalendarScheduler> ());
+        }
       else if (strcmp ("--debug", argv[0]) == 0) 
         {
           g_debug = true;

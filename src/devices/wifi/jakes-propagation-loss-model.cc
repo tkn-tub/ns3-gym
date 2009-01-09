@@ -31,8 +31,6 @@ NS_LOG_COMPONENT_DEFINE ("Jakes");
 
 namespace ns3 {
 
-
-
 class JakesPropagationLossModel::PathCoefficients 
 {
 public:
@@ -68,9 +66,10 @@ JakesPropagationLossModel::PathCoefficients::PathCoefficients (Ptr<const JakesPr
 
 JakesPropagationLossModel::PathCoefficients::~PathCoefficients ()
 {
-  for (uint8_t i = 0; i < m_nRays; i++) {
-    delete [] m_phases[i];
-  }
+  for (uint8_t i = 0; i < m_nRays; i++) 
+    {
+      delete [] m_phases[i];
+    }
   delete [] m_phases;
 }
 
@@ -78,12 +77,14 @@ void
 JakesPropagationLossModel::PathCoefficients::DoConstruct ()
 {
   m_phases = new double*[m_nRays];
-  for (uint8_t i = 0; i < m_nRays; i++) {
-    m_phases[i] = new double[m_nOscillators + 1];
-    for (uint8_t j = 0; j <= m_nOscillators; j++) {
-      m_phases[i][j] = 2.0 * JakesPropagationLossModel::PI * m_jakes->m_variable.GetValue ();
+  for (uint8_t i = 0; i < m_nRays; i++) 
+    {
+      m_phases[i] = new double[m_nOscillators + 1];
+      for (uint8_t j = 0; j <= m_nOscillators; j++) 
+        {
+          m_phases[i][j] = 2.0 * JakesPropagationLossModel::PI * m_jakes->m_variable.GetValue ();
+        }
     }
-  }
   m_lastUpdate = Simulator::Now ();
 }
 
@@ -101,19 +102,23 @@ JakesPropagationLossModel::PathCoefficients::GetLoss (void)
   ComplexNumber coef= {0.0, 0.0};
   ComplexNumber fading;
   double norm = 0.0;
-  for (uint8_t i = 0; i < m_nRays; i++) {
-    fading.real = 0.0;
-    fading.imag = 0.0;
-    for (uint8_t j = 0; j <= m_nOscillators; j++) {
-      m_phases[i][j] += 2.0 * JakesPropagationLossModel::PI * cos (2.0 * JakesPropagationLossModel::PI * j / N) * m_jakes->m_fd * interval.GetSeconds ();
-      m_phases[i][j] -= 2.0 * JakesPropagationLossModel::PI * floor (m_phases[i][j] / 2.0 / JakesPropagationLossModel::PI);
-      fading.real += m_jakes->m_amp[j].real * cos (m_phases[i][j]);
-      fading.imag += m_jakes->m_amp[j].imag * cos (m_phases[i][j]);
-      norm += sqrt(pow (m_jakes->m_amp[j].real, 2) + pow(m_jakes->m_amp[j].imag, 2));
-    }
+  for (uint8_t i = 0; i < m_nRays; i++) 
+    {
+      fading.real = 0.0;
+      fading.imag = 0.0;
+      for (uint8_t j = 0; j <= m_nOscillators; j++) 
+        {
+          m_phases[i][j] += 2.0 * JakesPropagationLossModel::PI * 
+            cos (2.0 * JakesPropagationLossModel::PI * j / N) * m_jakes->m_fd * interval.GetSeconds ();
+          m_phases[i][j] -= 2.0 * JakesPropagationLossModel::PI * 
+            floor (m_phases[i][j] / 2.0 / JakesPropagationLossModel::PI);
+          fading.real += m_jakes->m_amp[j].real * cos (m_phases[i][j]);
+          fading.imag += m_jakes->m_amp[j].imag * cos (m_phases[i][j]);
+          norm += sqrt(pow (m_jakes->m_amp[j].real, 2) + pow(m_jakes->m_amp[j].imag, 2));
+        }
     coef.real += fading.real;
     coef.imag += fading.imag;
-  }
+    }
   m_lastUpdate = Simulator::Now ();
   double k = sqrt (pow (coef.real, 2) + pow (coef.imag, 2)) / norm;
   NS_LOG_DEBUG ("Jakes coef "<< k << " (" << 10 * log10 (k) << "dB)");
@@ -136,12 +141,13 @@ JakesPropagationLossModel::GetTypeId (void)
 		   MakeUintegerAccessor (&JakesPropagationLossModel::m_nRays),
 		   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("NumberOfOscillatorsPerRay",
-                   "The number of oscillators to use by default for compute the coeficent for a given ray of a given path (default is 4)",
+                   "The number of oscillators to use by default for compute the coeficent for a given ray of a given "
+                   "path (default is 4)",
                    UintegerValue (4),
 		   MakeUintegerAccessor (&JakesPropagationLossModel::m_nOscillators),
 		   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("DopplerFreq",
-                   "The doppler frequency in Hz (f_d = v / lambda = v * f / c, the defualt is 0)",
+                   "The doppler frequency in Hz (f_d = v / lambda = v * f / c), the default is 0)",
                    DoubleValue (0.0),
 		   MakeDoubleAccessor (&JakesPropagationLossModel::m_fd),
 		   MakeDoubleChecker<double> ())
@@ -162,14 +168,16 @@ JakesPropagationLossModel::JakesPropagationLossModel ()
 JakesPropagationLossModel::~JakesPropagationLossModel ()
 {
   delete [] m_amp;
-  for (PathsList::iterator i = m_paths.end (); i != m_paths.begin (); i--) {
-    PathsSet *ps = *i;
-    for (DestinationList::iterator r = ps->receivers.begin (); r != ps->receivers.end (); r++) {
-      PathCoefficients *pc = *r;
-      delete pc;
+  for (PathsList::iterator i = m_paths.end (); i != m_paths.begin (); i--) 
+    {
+      PathsSet *ps = *i;
+      for (DestinationList::iterator r = ps->receivers.begin (); r != ps->receivers.end (); r++) 
+        {
+          PathCoefficients *pc = *r;
+          delete pc;
+        }
+      delete ps;
     }
-    delete ps;
-  }
 }
 
 void
@@ -179,11 +187,12 @@ JakesPropagationLossModel::DoConstruct ()
   m_amp = new ComplexNumber[m_nOscillators + 1];
   m_amp[0].real = 2.0 * sqrt(2.0 / N) * cos (PI / 4.0);
   m_amp[0].imag = 2.0 * sqrt(2.0 / N) * sin (PI / 4.0);
-  for (uint8_t i = 1; i <= m_nOscillators; i++) {
-    double beta = PI * (double)i / m_nOscillators;
-    m_amp[i].real = 4.0 * cos (beta) / sqrt(N);
-    m_amp[i].imag = 4.0 * sin (beta) / sqrt(N);
-  }
+  for (uint8_t i = 1; i <= m_nOscillators; i++) 
+    {
+      double beta = PI * (double)i / m_nOscillators;
+      m_amp[i].real = 4.0 * cos (beta) / sqrt(N);
+      m_amp[i].imag = 4.0 * sin (beta) / sqrt(N);
+    }
 }
 
 void
@@ -198,38 +207,42 @@ JakesPropagationLossModel::SetNOscillators (uint8_t nOscillators)
   m_nOscillators = nOscillators;
 }
 
-double
-JakesPropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
-				    Ptr<MobilityModel> b) const
+double 
+JakesPropagationLossModel::DoCalcRxPower (double txPowerDbm,
+                                          Ptr<MobilityModel> a,
+                                          Ptr<MobilityModel> b) const
 {
   PathsList::iterator i = m_paths.end ();
-  while (i != m_paths.begin ()) {
-    i--;
-    PathsSet *ps = *i;
-    if (PeekPointer (ps->sender) == PeekPointer(a)) {
-      m_paths.erase (i);
-      m_paths.push_back (ps);
-      for (DestinationList::iterator r = ps->receivers.begin (); r != ps->receivers.end (); r++) {
-        PathCoefficients *pc = *r;
-      	if (PeekPointer (pc->GetReceiver ()) == PeekPointer (b)) {
-          ps->receivers.erase (r);
-	  ps->receivers.push_back (pc);
-	  return pc->GetLoss ();
-	}
-      }
-      PathCoefficients *pc = new PathCoefficients (this, b, m_nRays, m_nOscillators);
-      ps->receivers.push_back (pc);
-      return pc->GetLoss ();
+  while (i != m_paths.begin ()) 
+    {
+      i--;
+      PathsSet *ps = *i;
+      if (ps->sender == a) 
+        {
+          m_paths.erase (i);
+          m_paths.push_back (ps);
+          for (DestinationList::iterator r = ps->receivers.begin (); r != ps->receivers.end (); r++) 
+            {
+              PathCoefficients *pc = *r;
+              if (pc->GetReceiver () == b) 
+                {
+                  ps->receivers.erase (r);
+                  ps->receivers.push_back (pc);
+                  return txPowerDbm + pc->GetLoss ();
+                }
+            }
+          PathCoefficients *pc = new PathCoefficients (this, b, m_nRays, m_nOscillators);
+          ps->receivers.push_back (pc);
+          return txPowerDbm + pc->GetLoss ();
+        }
     }
-  }
   PathsSet *ps = new PathsSet;
   ps->sender = a;
   PathCoefficients *pc = new PathCoefficients (this, b, m_nRays, m_nOscillators);
   ps->receivers.push_back (pc);
   m_paths.push_back (ps);
-  return pc->GetLoss ();
+  return txPowerDbm + pc->GetLoss ();
 }
-
 
 } // namespace ns3
 

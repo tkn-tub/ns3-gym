@@ -47,6 +47,8 @@ namespace ns3 {
 class HeapScheduler : public Scheduler 
 {
 public:
+  static TypeId GetTypeId (void);
+
   HeapScheduler ();
   virtual ~HeapScheduler ();
 

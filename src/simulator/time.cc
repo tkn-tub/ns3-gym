@@ -698,11 +698,14 @@ void TimeTests::CheckOperations(Time t0, Time t1, bool *ok, bool verbose)
   itu3 = tu3.GetHighPrecision().GetInteger()/(1e27);
 }
 
-void TimeTests::CheckConversions(uint64_t tval, bool *ok, bool verbose) {
+void TimeTests::CheckConversions(uint64_t tval, bool *ok, bool verbose) 
+{
   Time t_sec, t_ms, t_us, t_ns, t_ps, t_fs;
 
   if (verbose) 
-    std::cout << std::endl << "Check conversions: " << tval << std::endl;
+    {
+      std::cout << std::endl << "Check conversions: " << tval << std::endl;
+    }
 
   // First check the seconds
   t_sec = Seconds((double)tval);
@@ -764,15 +767,18 @@ void TimeTests::CheckConversions(uint64_t tval, bool *ok, bool verbose) {
 }
 
 void TimeTests::CheckPrecision(TimeStepPrecision::precision_t prec, uint64_t val, bool *ok, 
-                               bool verbose) {
-  if (verbose) {
-    std::cout << "check precision 10^-" << prec << std::endl;
-  }
+                               bool verbose) 
+{
+  if (verbose) 
+    {
+      std::cout << "check precision 10^-" << prec << std::endl;
+    }
 
   TimeStepPrecision::Set (prec);
-  if (TimeStepPrecision::Get () != prec) {
-    ok = false;
-  }
+  if (TimeStepPrecision::Get () != prec) 
+    {
+      ok = false;
+    }
 
   /* These still need to be fixed.
   // The smallest value that can be stored is 1x10^(-prec)
@@ -802,20 +808,24 @@ void TimeTests::CheckTimeSec (std::string test_id, double actual,
                               bool verbose)
 {
   double prec = pow(10,-((double)(ns3::TimeStepPrecision::Get ()))) * precMultFactor;
-  if ((actual < (expected-prec)) || (actual > (expected+prec))) {
-    std::cout << "FAIL " << test_id 
-              << " Expected:" << expected 
-              << " Actual: " << actual
-              << " Precision: " << prec << std::endl;
-    *flag = false;
-  } else {
-    if (verbose) {
-      std::cout << "PASS " << test_id 
+  if ((actual < (expected-prec)) || (actual > (expected+prec))) 
+    {
+      std::cout << "FAIL " << test_id 
                 << " Expected:" << expected 
                 << " Actual: " << actual
                 << " Precision: " << prec << std::endl;
+      *flag = false;
+    } 
+  else 
+    {
+      if (verbose) 
+        {
+          std::cout << "PASS " << test_id 
+                    << " Expected:" << expected 
+                    << " Actual: " << actual
+                    << " Precision: " << prec << std::endl;
+        }
     }
-  }
 }
 
 void TimeTests::CheckTime (std::string test_id, int64_t actual, 
@@ -823,25 +833,29 @@ void TimeTests::CheckTime (std::string test_id, int64_t actual,
                            bool verbose)
 {
   double prec = pow(10,-((double)(ns3::TimeStepPrecision::Get ()))) * precMultFactor;
-  if ((actual < (expected-prec)) || (actual > (expected+prec))) {
-    std::cout << "FAIL " << test_id 
-              << " Expected:" << expected 
-              << " Actual: " << actual
-              << " Precision: " << prec << std::endl;
-    *flag = false;
-  } else {
-    if (verbose) {
-      std::cout << "PASS " << test_id 
+  if ((actual < (expected-prec)) || (actual > (expected+prec))) 
+    {
+      std::cout << "FAIL " << test_id 
                 << " Expected:" << expected 
-                << " Actual: " << actual 
+                << " Actual: " << actual
                 << " Precision: " << prec << std::endl;
+      *flag = false;
+    } 
+  else 
+    {
+      if (verbose) 
+        {
+          std::cout << "PASS " << test_id 
+                    << " Expected:" << expected 
+                    << " Actual: " << actual 
+                    << " Precision: " << prec << std::endl;
+        }
     }
-  }
 }
 
 
 static TimeTests g_time_tests;
   
-};
+}
 
 #endif /* RUN_SELF_TESTS */

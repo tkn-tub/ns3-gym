@@ -29,6 +29,17 @@ NS_LOG_COMPONENT_DEFINE ("HeapScheduler");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (HeapScheduler);
+
+TypeId 
+HeapScheduler::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::HeapScheduler")
+    .SetParent<Scheduler> ()
+    .AddConstructor<HeapScheduler> ()
+    ;
+  return tid;
+}
 
 HeapScheduler::HeapScheduler ()
 {

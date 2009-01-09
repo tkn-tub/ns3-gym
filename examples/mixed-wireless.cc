@@ -47,12 +47,19 @@
 //                   |                                        |
 //          +----------------+                       +----------------+
 //          |     802.11     |                       |     802.11     |
-//          |      net       |                       |       net      |
+//          |   infra net    |                       |   infra net    |
 //          |   K-1 hosts    |                       |   K-1 hosts    |
 //          +----------------+                       +----------------+
 //
+// We'll send data from the first wired LAN node on the first wired LAN
+// to the last wireless STA on the last infrastructure net, thereby
+// causing packets to traverse CSMA to adhoc to infrastructure links
+// 
+// Note that certain mobility patterns may cause packet forwarding
+// to fail (if nodes become disconnected) 
 
 #include <fstream>
+#include <string>
 #include "ns3/core-module.h"
 #include "ns3/common-module.h"
 #include "ns3/node-module.h"
@@ -60,6 +67,7 @@
 #include "ns3/mobility-module.h"
 #include "ns3/contrib-module.h"
 #include "ns3/wifi-module.h"
+#include "ns3/global-route-manager.h"
 
 using namespace ns3;
 
@@ -69,16 +77,15 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("MixedWireless");
 
 //
-// This function will be used below as a trace sink
+// This function will be used below as a trace sink, if the command-line
+// argument or default value "useCourseChangeCallback" is set to true
 // 
-#ifdef ENABLE_FOR_TRACING_EXAMPLE
 static void
 CourseChangeCallback (std::string path, Ptr<const MobilityModel> model)
 {
   Vector position = model->GetPosition ();
   std::cout << "CourseChange " << path << " x=" << position.x << ", y=" << position.y << ", z=" << position.z << std::endl;
 }
-#endif
 
 int 
 main (int argc, char *argv[])
@@ -91,13 +98,15 @@ main (int argc, char *argv[])
   uint32_t infraNodes = 5;
   uint32_t lanNodes = 5;
   uint32_t stopTime = 10;
+  bool useCourseChangeCallback = false;
+  bool enableTracing = false;
 
   //
   // Simulation defaults are typically set next, before command line
   // arguments are parsed.
   //
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", StringValue ("210"));
-  Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("448kb/s"));
+  Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("10kb/s"));
 
   //
   // For convenience, we add the local variables to the command line argument
@@ -109,6 +118,8 @@ main (int argc, char *argv[])
   cmd.AddValue ("infraNodes", "number of leaf nodes", infraNodes);
   cmd.AddValue("lanNodes", "number of LAN nodes", lanNodes);
   cmd.AddValue("stopTime", "simulation stop time (seconds)", stopTime);
+  cmd.AddValue("useCourseChangeCallback", "whether to enable course change tracing", useCourseChangeCallback);
+  cmd.AddValue("enableTracing", "enable tracing", enableTracing);
 
   //
   // The system global variables and the local values added to the argument
@@ -132,11 +143,13 @@ main (int argc, char *argv[])
   // Create the backbone wifi net devices and install them into the nodes in 
   // our container
   //
+  WifiHelper wifi;
+  wifi.SetMac ("ns3::AdhocWifiMac");
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
+                                "DataMode", StringValue ("wifia-54mbs"));
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
-  WifiHelper wifi;
-  wifi.SetMac ("ns3::AdhocWifiMac");
   NetDeviceContainer backboneDevices = wifi.Install (wifiPhy, backbone);
   //
   // Add the IPv4 protocol stack to the nodes in our container
@@ -166,8 +179,8 @@ main (int argc, char *argv[])
     }
   mobility.SetPositionAllocator (positionAlloc);
   mobility.SetMobilityModel ("ns3::RandomDirection2dMobilityModel",
-                             "Bounds", RectangleValue (Rectangle (0, 1000, 0, 1000)),
-                             "Speed", RandomVariableValue (ConstantVariable (2000)),
+                             "Bounds", RectangleValue (Rectangle (0, 20, 0, 20)),
+                             "Speed", RandomVariableValue (ConstantVariable (2)),
                              "Pause", RandomVariableValue (ConstantVariable (0.2)));
   mobility.Install (backbone);
 
@@ -237,21 +250,38 @@ main (int argc, char *argv[])
       // two containers here; one with all of the new nodes, and one
       // with all of the nodes including new and existing nodes
       //
-      NodeContainer newInfraNodes;
-      newInfraNodes.Create (infraNodes - 1);
+      NodeContainer stas;
+      stas.Create (infraNodes - 1);
       // Now, create the container with all nodes on this link
-      NodeContainer infra (backbone.Get (i), newInfraNodes);
+      NodeContainer infra (backbone.Get (i), stas);
       //
-      // Create another ad hoc network and devices
+      // Create an infrastructure network
       //
-      WifiHelper wifiInfra;
-      wifiInfra.SetMac ("ns3::AdhocWifiMac");
+      WifiHelper wifiInfra = WifiHelper::Default ();
       wifiPhy.SetChannel (wifiChannel.Create ());
-      NetDeviceContainer infraDevices = wifiInfra.Install (wifiPhy, infra);
+      // Create unique ssids for these networks
+      std::string ssidString("wifi-infra");
+      std::stringstream ss;
+      ss << i;
+      ssidString += ss.str();
+      Ssid ssid = Ssid (ssidString);
+      wifiInfra.SetRemoteStationManager ("ns3::ArfWifiManager");
+      // setup stas
+      wifiInfra.SetMac ("ns3::NqstaWifiMac",
+               "Ssid", SsidValue (ssid),
+               "ActiveProbing", BooleanValue (false));
+      NetDeviceContainer staDevices = wifiInfra.Install (wifiPhy, stas);
+      // setup ap.
+      wifiInfra.SetMac ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid),
+               "BeaconGeneration", BooleanValue (true),
+               "BeaconInterval", TimeValue (Seconds (2.5)));
+      NetDeviceContainer apDevices = wifiInfra.Install (wifiPhy, backbone.Get (i));
+      // Collect all of these new devices
+      NetDeviceContainer infraDevices (apDevices, staDevices);
 
       // Add the IPv4 protocol stack to the nodes in our container
       //
-      internet.Install (newInfraNodes);
+      internet.Install (stas);
       //
       // Assign IPv4 addresses to the device drivers (actually to the associated
       // IPv4 interfaces) we just created.
@@ -275,8 +305,8 @@ main (int argc, char *argv[])
       mobility.PushReferenceMobilityModel (backbone.Get (i));
       mobility.SetPositionAllocator (subnetAlloc);
       mobility.SetMobilityModel ("ns3::RandomDirection2dMobilityModel",
-                                 "Bounds", RectangleValue (Rectangle (-25, 25, -25, 25)),
-                                 "Speed", RandomVariableValue (ConstantVariable (30)),
+                                 "Bounds", RectangleValue (Rectangle (-10, 10, -10, 10)),
+                                 "Speed", RandomVariableValue (ConstantVariable (3)),
                                  "Pause", RandomVariableValue (ConstantVariable (0.4)));
       mobility.Install (infra);
     }
@@ -286,6 +316,14 @@ main (int argc, char *argv[])
   //                                                                       //
   /////////////////////////////////////////////////////////////////////////// 
 
+  // The below global routing does not take into account wireless effects.
+  // However, it is useful for setting default routes for all of the nodes
+  // such as the LAN nodes.  
+  NS_LOG_INFO ("Enabling global routing on all nodes");
+  GlobalRouteManager::PopulateRoutingTables ();
+
+  // We enable OLSR (which will be consulted at a higher priority than
+  // the global routing above) on the backbone ad hoc nodes
   NS_LOG_INFO ("Enabling OLSR routing on all backbone nodes");
   OlsrHelper olsr;
   olsr.Install (backbone);
@@ -297,16 +335,25 @@ main (int argc, char *argv[])
   /////////////////////////////////////////////////////////////////////////// 
 
   // Create the OnOff application to send UDP datagrams of size
-  // 210 bytes at a rate of 448 Kb/s, between two nodes
+  // 210 bytes at a rate of 10 Kb/s, between two nodes
+  // We'll send data from the first wired LAN node on the first wired LAN
+  // to the last wireless STA on the last infrastructure net, thereby
+  // causing packets to traverse CSMA to adhoc to infrastructure links
+
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
 
-  // Let's make sure that the user does not define too few LAN nodes
-  // to make this example work.  We need lanNodes >= 5
-  NS_ASSERT (lanNodes >= 5);
-  Ptr<Node> appSource = NodeList::GetNode (11);  
-  Ptr<Node> appSink = NodeList::GetNode (13);  
-  Ipv4Address remoteAddr = Ipv4Address ("172.16.0.5");
+  // Let's make sure that the user does not define too few nodes
+  // to make this example work.  We need lanNodes > 1  and infraNodes > 1
+  NS_ASSERT (lanNodes > 1 && infraNodes > 1);
+  // We want the source to be the first node created outside of the backbone
+  // Conveniently, the variable "backboneNodes" holds this node index value
+  Ptr<Node> appSource = NodeList::GetNode (backboneNodes);  
+  // We want the sink to be the last node created in the topology.  
+  uint32_t lastNodeIndex = backboneNodes + backboneNodes*(lanNodes - 1) + backboneNodes*(infraNodes - 1) - 1;
+  Ptr<Node> appSink = NodeList::GetNode (lastNodeIndex);  
+  // Let's fetch the IP address of the last node, which is on Ipv4Interface 1
+  Ipv4Address remoteAddr = appSink->GetObject<Ipv4> ()->GetAddress(1);
 
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
                      Address (InetSocketAddress (remoteAddr, port)));
@@ -329,27 +376,28 @@ main (int argc, char *argv[])
   /////////////////////////////////////////////////////////////////////////// 
 
   NS_LOG_INFO ("Configure Tracing.");
-  //
-  // Let's set up some ns-2-like ascii traces, using another helper class
-  //
   std::ofstream ascii;
-  ascii.open ("mixed-wireless.tr");
-  YansWifiPhyHelper::EnableAsciiAll (ascii);
-  CsmaHelper::EnableAsciiAll (ascii);
-  // Look at nodes 11, 13 only
-  //WifiHelper::EnableAscii (ascii, 11, 0); 
-  //WifiHelper::EnableAscii (ascii, 13, 0); 
+  if (enableTracing == true)
+   {
+      //
+      // Let's set up some ns-2-like ascii traces, using another helper class
+      //
+      ascii.open ("mixed-wireless.tr");
+      YansWifiPhyHelper::EnableAsciiAll (ascii);
+      CsmaHelper::EnableAsciiAll (ascii);
+      InternetStackHelper::EnableAsciiAll (ascii);
 
-  // Let's do a pcap trace on the backbone devices
-  YansWifiPhyHelper::EnablePcap ("mixed-wireless", backboneDevices); 
-  // Let's additionally trace the application Sink, ifIndex 0
-  CsmaHelper::EnablePcap ("mixed-wireless", appSink->GetId (), 0);
+      // Let's do a pcap trace on the application source and sink, ifIndex 0
+      CsmaHelper::EnablePcap ("mixed-wireless", appSource->GetId (), 0);
+      YansWifiPhyHelper::EnablePcap ("mixed-wireless", appSink->GetId (), 0);
+      YansWifiPhyHelper::EnablePcap ("mixed-wireless", 9, 2);
+      YansWifiPhyHelper::EnablePcap ("mixed-wireless", 9, 0);
+    }
 
-#ifdef ENABLE_FOR_TRACING_EXAMPLE
-  Config::Connect ("/NodeList/*/$MobilityModel/CourseChange",
-    MakeCallback (&CourseChangeCallback));
-#endif
-
+  if (useCourseChangeCallback == true)
+    {
+      Config::Connect ("/NodeList/*/$ns3::MobilityModel/CourseChange", MakeCallback (&CourseChangeCallback));
+    }
 
   /////////////////////////////////////////////////////////////////////////// 
   //                                                                       //
