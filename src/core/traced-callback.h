@@ -37,7 +37,9 @@ namespace ns3 {
  * the chain of callbacks.
  */
 template<typename T1 = empty, typename T2 = empty, 
-         typename T3 = empty, typename T4 = empty>
+         typename T3 = empty, typename T4 = empty,
+         typename T5 = empty, typename T6 = empty,
+         typename T7 = empty, typename T8 = empty>
 class TracedCallback 
 {
 public:
@@ -81,9 +83,13 @@ public:
   void operator() (T1 a1, T2 a2) const;
   void operator() (T1 a1, T2 a2, T3 a3) const;
   void operator() (T1 a1, T2 a2, T3 a3, T4 a4) const;
+  void operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) const;
+  void operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6) const;
+  void operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7) const;
+  void operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8) const;
 
 private:  
-  typedef std::list<Callback<void,T1,T2,T3,T4> > CallbackList;
+  typedef std::list<Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> > CallbackList;
   CallbackList m_callbackList;
 };
 
@@ -94,33 +100,41 @@ private:
 namespace ns3 {
 
 template<typename T1, typename T2, 
-         typename T3, typename T4>
-TracedCallback<T1,T2,T3,T4>::TracedCallback ()
+         typename T3, typename T4,
+         typename T5, typename T6,
+         typename T7, typename T8>
+TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::TracedCallback ()
   : m_callbackList () 
 {}
 template<typename T1, typename T2, 
-         typename T3, typename T4>
+         typename T3, typename T4,
+         typename T5, typename T6,
+         typename T7, typename T8>
 void 
-TracedCallback<T1,T2,T3,T4>::ConnectWithoutContext (const CallbackBase & callback)
+TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::ConnectWithoutContext (const CallbackBase & callback)
 {
-  Callback<void,T1,T2,T3,T4> cb;
+  Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> cb;
   cb.Assign (callback);
   m_callbackList.push_back (cb);
 }
 template<typename T1, typename T2, 
-         typename T3, typename T4>
+         typename T3, typename T4,
+         typename T5, typename T6,
+         typename T7, typename T8>
 void 
-TracedCallback<T1,T2,T3,T4>::Connect (const CallbackBase & callback, std::string path)
+TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::Connect (const CallbackBase & callback, std::string path)
 {
-  Callback<void,std::string,T1,T2,T3,T4> cb;
+  Callback<void,std::string,T1,T2,T3,T4,T5,T6,T7,T8> cb;
   cb.Assign (callback);
-  Callback<void,T1,T2,T3,T4> realCb = cb.Bind (path);
+  Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> realCb = cb.Bind (path);
   m_callbackList.push_back (realCb);
 }
 template<typename T1, typename T2, 
-         typename T3, typename T4>
+         typename T3, typename T4,
+         typename T5, typename T6,
+         typename T7, typename T8>
 void 
-TracedCallback<T1,T2,T3,T4>::DisconnectWithoutContext (const CallbackBase & callback)
+TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::DisconnectWithoutContext (const CallbackBase & callback)
 {
   for (typename CallbackList::iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); /* empty */)
@@ -136,19 +150,23 @@ TracedCallback<T1,T2,T3,T4>::DisconnectWithoutContext (const CallbackBase & call
     }
 }
 template<typename T1, typename T2, 
-         typename T3, typename T4>
+         typename T3, typename T4,
+         typename T5, typename T6,
+         typename T7, typename T8>
 void 
-TracedCallback<T1,T2,T3,T4>::Disconnect (const CallbackBase & callback, std::string path)
+TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::Disconnect (const CallbackBase & callback, std::string path)
 {
-  Callback<void,std::string,T1,T2,T3,T4> cb;
+  Callback<void,std::string,T1,T2,T3,T4,T5,T6,T7,T8> cb;
   cb.Assign (callback);
-  Callback<void,T1,T2,T3,T4> realCb = cb.Bind (path);
+  Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> realCb = cb.Bind (path);
   DisconnectWithoutContext (realCb);
 }
 template<typename T1, typename T2, 
-         typename T3, typename T4>
+         typename T3, typename T4,
+         typename T5, typename T6,
+         typename T7, typename T8>
 void 
-TracedCallback<T1,T2,T3,T4>::operator() (void) const
+TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (void) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
@@ -157,9 +175,11 @@ TracedCallback<T1,T2,T3,T4>::operator() (void) const
     }
 }
 template<typename T1, typename T2, 
-         typename T3, typename T4>
+         typename T3, typename T4,
+         typename T5, typename T6,
+         typename T7, typename T8>
 void 
-TracedCallback<T1,T2,T3,T4>::operator() (T1 a1) const
+TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
@@ -168,9 +188,11 @@ TracedCallback<T1,T2,T3,T4>::operator() (T1 a1) const
     }
 }
 template<typename T1, typename T2, 
-         typename T3, typename T4>
+         typename T3, typename T4,
+         typename T5, typename T6,
+         typename T7, typename T8>
 void 
-TracedCallback<T1,T2,T3,T4>::operator() (T1 a1, T2 a2) const
+TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
@@ -179,9 +201,11 @@ TracedCallback<T1,T2,T3,T4>::operator() (T1 a1, T2 a2) const
     }
 }
 template<typename T1, typename T2, 
-         typename T3, typename T4>
+         typename T3, typename T4,
+         typename T5, typename T6,
+         typename T7, typename T8>
 void 
-TracedCallback<T1,T2,T3,T4>::operator() (T1 a1, T2 a2, T3 a3) const
+TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
@@ -190,14 +214,68 @@ TracedCallback<T1,T2,T3,T4>::operator() (T1 a1, T2 a2, T3 a3) const
     }
 }
 template<typename T1, typename T2, 
-         typename T3, typename T4>
+         typename T3, typename T4,
+         typename T5, typename T6,
+         typename T7, typename T8>
 void 
-TracedCallback<T1,T2,T3,T4>::operator() (T1 a1, T2 a2, T3 a3, T4 a4) const
+TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
     {
       (*i) (a1, a2, a3, a4);
+    }
+}
+template<typename T1, typename T2, 
+         typename T3, typename T4,
+         typename T5, typename T6,
+         typename T7, typename T8>
+void 
+TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) const
+{
+  for (typename CallbackList::const_iterator i = m_callbackList.begin ();
+       i != m_callbackList.end (); i++)
+    {
+      (*i) (a1, a2, a3, a4, a5);
+    }
+}
+template<typename T1, typename T2, 
+         typename T3, typename T4,
+         typename T5, typename T6,
+         typename T7, typename T8>
+void 
+TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6) const
+{
+  for (typename CallbackList::const_iterator i = m_callbackList.begin ();
+       i != m_callbackList.end (); i++)
+    {
+      (*i) (a1, a2, a3, a4, a5, a6);
+    }
+}
+template<typename T1, typename T2, 
+         typename T3, typename T4,
+         typename T5, typename T6,
+         typename T7, typename T8>
+void 
+TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7) const
+{
+  for (typename CallbackList::const_iterator i = m_callbackList.begin ();
+       i != m_callbackList.end (); i++)
+    {
+      (*i) (a1, a2, a3, a4, a5, a6, a7);
+    }
+}
+template<typename T1, typename T2, 
+         typename T3, typename T4,
+         typename T5, typename T6,
+         typename T7, typename T8>
+void 
+TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8) const
+{
+  for (typename CallbackList::const_iterator i = m_callbackList.begin ();
+       i != m_callbackList.end (); i++)
+    {
+      (*i) (a1, a2, a3, a4, a5, a6, a7, a8);
     }
 }
 
