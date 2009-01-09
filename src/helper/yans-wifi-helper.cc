@@ -131,12 +131,12 @@ YansWifiChannelHelper::Create (void) const
       if (prev != 0)
 	{
 	  prev->SetNext (cur);
-	  prev = cur;
 	}
       if (m_propagationLoss.begin () == i)
 	{
 	  channel->SetPropagationLossModel (cur);
 	}
+      prev = cur;
     }
   Ptr<PropagationDelayModel> delay = m_propagationDelay.Create<PropagationDelayModel> ();
   channel->SetPropagationDelayModel (delay);
