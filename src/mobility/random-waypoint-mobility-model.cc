@@ -56,7 +56,7 @@ RandomWaypointMobilityModel::GetTypeId (void)
 
 RandomWaypointMobilityModel::RandomWaypointMobilityModel ()
 {
-  Simulator::ScheduleNow (&RandomWaypointMobilityModel::Start, this);
+  m_event = Simulator::ScheduleNow (&RandomWaypointMobilityModel::Start, this);
 }
 
 void
@@ -72,6 +72,7 @@ RandomWaypointMobilityModel::BeginWalk (void)
   double k = speed / std::sqrt (dx*dx + dy*dy + dz*dz);
 
   m_helper.SetVelocity (Vector (k*dx, k*dy, k*dz));
+  m_helper.Unpause ();
   Time travelDelay = Seconds (CalculateDistance (destination, m_current) / speed);
   m_event = Simulator::Schedule (travelDelay,
 				 &RandomWaypointMobilityModel::Start, this);
@@ -99,7 +100,7 @@ RandomWaypointMobilityModel::DoSetPosition (const Vector &position)
 {
   m_helper.SetPosition (position);
   Simulator::Remove (m_event);
-  Simulator::ScheduleNow (&RandomWaypointMobilityModel::Start, this);
+  m_event = Simulator::ScheduleNow (&RandomWaypointMobilityModel::Start, this);
 }
 Vector
 RandomWaypointMobilityModel::DoGetVelocity (void) const
