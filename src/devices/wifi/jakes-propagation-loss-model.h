@@ -100,9 +100,9 @@ private:
   JakesPropagationLossModel (const JakesPropagationLossModel &o);
   JakesPropagationLossModel & operator = (const JakesPropagationLossModel &o);
   void DoConstruct (void);
-  virtual double DoGetLoss (Ptr<MobilityModel> a,
-			  Ptr<MobilityModel> b) const;
-
+  virtual double DoCalcRxPower (double txPowerDbm,
+                                Ptr<MobilityModel> a,
+                                Ptr<MobilityModel> b) const;
 
   class PathCoefficients;
   struct ComplexNumber {

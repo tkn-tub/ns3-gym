@@ -207,9 +207,10 @@ JakesPropagationLossModel::SetNOscillators (uint8_t nOscillators)
   m_nOscillators = nOscillators;
 }
 
-double
-JakesPropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
-				    Ptr<MobilityModel> b) const
+double 
+JakesPropagationLossModel::DoCalcRxPower (double txPowerDbm,
+                                          Ptr<MobilityModel> a,
+                                          Ptr<MobilityModel> b) const
 {
   PathsList::iterator i = m_paths.end ();
   while (i != m_paths.begin ()) 
@@ -227,12 +228,12 @@ JakesPropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
                 {
                   ps->receivers.erase (r);
                   ps->receivers.push_back (pc);
-                  return pc->GetLoss ();
+                  return txPowerDbm + pc->GetLoss ();
                 }
             }
           PathCoefficients *pc = new PathCoefficients (this, b, m_nRays, m_nOscillators);
           ps->receivers.push_back (pc);
-          return pc->GetLoss ();
+          return txPowerDbm + pc->GetLoss ();
         }
     }
   PathsSet *ps = new PathsSet;
@@ -240,7 +241,7 @@ JakesPropagationLossModel::DoGetLoss (Ptr<MobilityModel> a,
   PathCoefficients *pc = new PathCoefficients (this, b, m_nRays, m_nOscillators);
   ps->receivers.push_back (pc);
   m_paths.push_back (ps);
-  return pc->GetLoss ();
+  return txPowerDbm + pc->GetLoss ();
 }
 
 } // namespace ns3
