@@ -27,6 +27,18 @@
 namespace ns3 {
 
 
+NS_OBJECT_ENSURE_REGISTERED (ListScheduler);
+
+TypeId 
+ListScheduler::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::ListScheduler")
+    .SetParent<Scheduler> ()
+    .AddConstructor<ListScheduler> ()
+    ;
+  return tid;
+}
+
 ListScheduler::ListScheduler ()
 {}
 ListScheduler::~ListScheduler ()

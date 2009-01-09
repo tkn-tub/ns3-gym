@@ -40,6 +40,8 @@ class EventImpl;
 class ListScheduler : public Scheduler 
 {
  public:
+  static TypeId GetTypeId (void);
+
   ListScheduler ();
   virtual ~ListScheduler ();
 

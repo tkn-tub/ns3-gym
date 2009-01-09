@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2005 INRIA
+ * Copyright (c) 2009 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -29,6 +29,18 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("CalendarScheduler");
+
+NS_OBJECT_ENSURE_REGISTERED (CalendarScheduler);
+
+TypeId 
+CalendarScheduler::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::CalendarScheduler")
+    .SetParent<Scheduler> ()
+    .AddConstructor<CalendarScheduler> ()
+    ;
+  return tid;
+}
 
 CalendarScheduler::CalendarScheduler ()
 {

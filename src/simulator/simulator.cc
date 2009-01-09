@@ -23,7 +23,6 @@
 #include "default-simulator-impl.h"
 #include "realtime-simulator-impl.h"
 #include "scheduler.h"
-#include "map-scheduler.h"
 #include "event-impl.h"
 
 #include "ns3/ptr.h"
@@ -47,6 +46,12 @@ GlobalValue g_simTypeImpl = GlobalValue ("SimulatorImplementationType",
   "The object class to use as the simulator implementation",
   StringValue ("ns3::DefaultSimulatorImpl"),
   MakeStringChecker ());
+
+GlobalValue g_schedTypeImpl = GlobalValue ("SchedulerType", 
+  "The object class to use as the scheduler implementation",
+  StringValue ("ns3::MapScheduler"),
+  MakeStringChecker ());
+
 
 #ifdef NS3_LOG_ENABLE
 
@@ -77,15 +82,21 @@ static SimulatorImpl * GetImpl (void)
    */
   if (impl == 0) 
     {
-      ObjectFactory factory;
-      StringValue s;
-
-      g_simTypeImpl.GetValue (s);
-      factory.SetTypeId (s.Get ());
-      impl = factory.Create<SimulatorImpl> ();
-
-      Ptr<Scheduler> scheduler = CreateObject<MapScheduler> ();
-      impl->SetScheduler (scheduler);
+      {
+        ObjectFactory factory;
+        StringValue s;
+        
+        g_simTypeImpl.GetValue (s);
+        factory.SetTypeId (s.Get ());
+        impl = factory.Create<SimulatorImpl> ();
+      }
+      {
+        ObjectFactory factory;
+        StringValue s;
+        g_schedTypeImpl.GetValue (s);
+        factory.SetTypeId (s.Get ());
+        impl->SetScheduler (factory.Create<Scheduler> ());
+      }
 
 //
 // Note: we call LogSetTimePrinter _after_ creating the implementation
@@ -302,6 +313,7 @@ Simulator::GetImplementation (void)
 #include "ns3/ptr.h"
 #include "list-scheduler.h"
 #include "heap-scheduler.h"
+#include "map-scheduler.h"
 
 namespace ns3 {
 

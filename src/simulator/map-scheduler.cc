@@ -29,6 +29,18 @@ NS_LOG_COMPONENT_DEFINE ("MapScheduler");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (MapScheduler);
+
+TypeId 
+MapScheduler::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::MapScheduler")
+    .SetParent<Scheduler> ()
+    .AddConstructor<MapScheduler> ()
+    ;
+  return tid;
+}
+
 MapScheduler::MapScheduler ()
 {}
 MapScheduler::~MapScheduler ()

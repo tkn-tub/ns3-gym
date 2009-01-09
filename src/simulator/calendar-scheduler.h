@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2005 INRIA
+ * Copyright (c) 2009 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -31,10 +31,24 @@ class EventImpl;
 
 /**
  * \ingroup scheduler
+ * \brief a calendar queue event scheduler
+ *
+ * This event scheduler is a direct implementation of the algorithm known as a calendar queue.
+ * first published in 1988 in "Calendar Queues: A Fast O(1) Priority Queue Implementation for
+ * the Simulation Event Set Problem" by Randy Brown. There are many refinements published
+ * later but this class implements the original algorithm (to the best of my knowledge).
+ *
+ * Note: This queue is much slower than I expected (much slower than the std::map queue)
+ * and this seems to be because the original resizing policy is horribly bad. This is
+ * most likely the reason why there have been so many variations published which all
+ * slightly tweak the resizing heuristics to obtain a better distribution of events
+ * across buckets.
  */
 class CalendarScheduler : public Scheduler 
 {
 public:
+  static TypeId GetTypeId (void);
+
   CalendarScheduler ();
   virtual ~CalendarScheduler ();
 
