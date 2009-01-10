@@ -183,7 +183,10 @@ def configure(conf):
     conf.env['NS3_BUILDDIR'] = conf.blddir
     conf.check_tool('compiler_cxx')
     conf.check_tool('cflags')
-    conf.check_tool('pkgconfig')
+    try:
+        conf.check_tool('pkgconfig')
+    except Configure.ConfigurationError:
+        pass
     conf.check_tool('command')
 
     # create the second environment, set the variant and set its name
