@@ -98,6 +98,13 @@ def configure(conf):
     if not Options.options.with_nsc:
         nsc_fetch()
 
+    # append the NSC kernel dirs to the module path so that these dirs
+    # will end up in the LD_LIBRARY_PATH, thus allowing the NSC NS-3
+    # module to find the necessary NSC shared libraries.
+    for nsc_module in ['linux-2.6.18', 'linux-2.6.26']:
+        conf.env.append_value('NS3_MODULE_PATH',
+                              os.path.abspath(os.path.join(conf.env['WITH_NSC'], nsc_module)))
+
 
 
 class NscBuildTask(Task.TaskBase):
