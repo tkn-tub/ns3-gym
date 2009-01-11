@@ -148,11 +148,9 @@ def configure(conf):
     try:
         conf.check_python_module('pybindgen')
     except Configure.ConfigurationError:
-        Logs.warn("pybindgen missing")
-        if no_net or not fetch_pybindgen(conf):
-            conf.report_optional_feature("python", "Python Bindings", False,
-                                         "PyBindGen missing and could not be retrieved")
-            return
+        Logs.warn("pybindgen missing => no python bindings")
+        conf.report_optional_feature("python", "Python Bindings", False,
+                                     "PyBindGen missing")
     else:
         out = subprocess.Popen([conf.env['PYTHON'], "-c",
                                 "import pybindgen.version; "

@@ -7,79 +7,30 @@ import Logs
 import Utils
 import Task
 
-# Mercurial repository of the network simulation cradle
-NSC_REPO = "https://secure.wand.net.nz/mercurial/nsc"
-NSC_RELEASE_URL = "http://research.wand.net.nz/software/nsc"
-NSC_RELEASE_NAME = "nsc-0.5.0"
-
-# directory that contains network simulation cradle source
-# note, this path is relative to the project root
-NSC_DIR = "nsc"
-
-
 def set_options(opt):
-    opt.add_option('--enable-nsc',
-                   help=('[deprecated option] Enable Network Simulation Cradle to allow the use real-world network stacks'),
-                   action="store_true", default=False,
-                   dest='enable_nsc')
     opt.add_option('--with-nsc',
                    help=('Use Network Simulation Cradle, given by the indicated path,'
                          ' to allow the use of real-world network stacks'),
                    default='', dest='with_nsc')
 
 
-def nsc_fetch():
-    def nsc_clone():
-        print "Retrieving nsc from " + NSC_REPO
-        if os.system("hg version > /dev/null 2>&1") != 0:
-            raise Utils.WafError("Mercurial not installed, http fallback not yet implemented")
-        if os.system("hg  clone " + NSC_REPO) != 0:
-            raise Utils.WafError("hg -q clone %s failed" % NSC_REPO)
-
-    def nsc_update():
-        if os.system("hg version > /dev/null 2>&1") != 0:
-            Logs.warn("Mercurial not installed, not updating nsc source")
-
-        print "Pulling nsc updates from " + NSC_REPO
-        if os.system("cd nsc && hg pull %s && hg update" % NSC_REPO) != 0:
-            Logs.warn("Updating nsc using mercurial failed")
-
-    def nsc_download():
-        local_file = NSC_RELEASE_NAME + ".tar.bz2"
-        remote_file = NSC_RELEASE_URL + "/" + local_file
-        print "Retrieving nsc from " + remote_file
-        urllib.urlretrieve(remote_file, local_file)
-        print "Uncompressing " + local_file
-        os.system("tar -xjf " + local_file)
-        os.system('mv ' + NSC_RELEASE_NAME + ' nsc')
-
-    if not os.path.exists('.hg'):
-        nsc_download ()
-    elif not os.path.exists("nsc"):
-        nsc_clone()
-    else:
-        nsc_update()
-
 def configure(conf):
     conf.env['ENABLE_NSC'] = False
 
     # checks for flex and bison, which is needed to build NSCs globaliser
-    def check_nsc_buildutils():
-        import flex
-        import bison
-        conf.check_tool('flex bison')
-        conf.check(lib='fl', mandatory=True)
+    # TODO: how to move these checks into the allinone scripts?
+    #def check_nsc_buildutils():
+    #    import flex
+    #    import bison
+    #    conf.check_tool('flex bison')
+    #    conf.check(lib='fl', mandatory=True)
 
-    if not (Options.options.enable_nsc or Options.options.with_nsc):
+    if not Options.options.with_nsc:
         conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
-                                     "--with/enable-nsc configure option not given")
+                                     "--with-nsc configure option not given")
 	return
 
-    check_nsc_buildutils()
-    if Options.options.enable_nsc:
-        Logs.warn("--enable-nsc is a deprecated option; use --with-nsc instead")
-        conf.env['WITH_NSC'] = 'nsc'
-
+    #check_nsc_buildutils()
     if Options.options.with_nsc:
         if not os.path.isdir(Options.options.with_nsc):
             raise Utils.WafError("--with-nsc nsc path %r does not exist" % Options.options.with_nsc)
@@ -95,8 +46,6 @@ def configure(conf):
     conf.check_message('NSC supported architecture', arch, ok)
     conf.report_optional_feature("nsc", "Network Simulation Cradle", ok,
                                  "architecture %r not supported" % arch)
-    if not Options.options.with_nsc:
-        nsc_fetch()
 
     # append the NSC kernel dirs to the module path so that these dirs
     # will end up in the LD_LIBRARY_PATH, thus allowing the NSC NS-3
@@ -105,37 +54,6 @@ def configure(conf):
         conf.env.append_value('NS3_MODULE_PATH',
                               os.path.abspath(os.path.join(conf.env['WITH_NSC'], nsc_module)))
 
-
-
-class NscBuildTask(Task.TaskBase):
-    """task that builds nsc
-    """
-    after = 'cc_link cxx_link' # build after the rest of ns-3
-    def __init__(self, builddir, nsc_dir, env):
-        super(NscBuildTask, self).__init__()
-        self.builddir = builddir
-        self.env = env
-        self.nsc_dir = nsc_dir
-
-    def display(self):
-        return 'build-nsc\n'
-
-    def run(self):
-        # XXX: Detect gcc major version(s) available to build supported stacks
-        builddir = self.builddir
-        kernels = [['linux-2.6.18', 'linux2.6.18'],
-                   ['linux-2.6.26', 'linux2.6.26']]
-        for dir, name in kernels:
-            soname = 'lib' + name + '.so'
-            if not os.path.exists(os.path.join("..", self.nsc_dir, dir, soname)):
-                if os.system('cd ../%s && python scons.py %s' % (self.nsc_dir, dir)) != 0:
-                    raise Utils.WafError("Building NSC stack failed")
-
-            if not os.path.exists(builddir + '/' + soname):
-                try:
-                    os.symlink('../../' + self.nsc_dir + '/' + dir + '/' + soname, builddir +  '/' + soname)
-                except:
-                    raise Utils.WafError("Error linking " + builddir + '/' + soname)
 
 
 def build(bld):
@@ -193,5 +111,3 @@ def build(bld):
         obj.source.append ('nsc-tcp-socket-factory-impl.cc')
         obj.source.append ('nsc-sysctl.cc')
         obj.uselib = 'DL'
-        builddir = os.path.abspath(os.path.join(bld.env['NS3_BUILDDIR'], bld.env.variant()))
-        NscBuildTask(builddir, bld.env['WITH_NSC'], bld.env)
