@@ -12,7 +12,10 @@ import pproc as subprocess
 import Options
 import Logs
 import TaskGen
+
 import ccroot
+ccroot.USE_TOP_LEVEL = True
+
 import Task
 import Utils
 import Build

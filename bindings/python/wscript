@@ -133,14 +133,6 @@ def configure(conf):
         conf.report_optional_feature("python", "Python Bindings", False, str(ex))
         return
 
-    # Fix a bug with WAF and g++ 4.3.2 (it does not include "(GCC") in
-    # the output of g++ --version, so the WAF python detection fails
-    # to recognize it is gcc)
-    gcc_version = os.popen("%s --version" % conf.env['CXX']).readline()
-    if '(GCC)' in gcc_version or 'g++' in gcc_version:
-        conf.env.append_value('CXXFLAGS_PYEMBED','-fno-strict-aliasing')
-        conf.env.append_value('CXXFLAGS_PYEXT','-fno-strict-aliasing')
-
     ## Check for pybindgen
 
     no_net = False
@@ -508,7 +500,7 @@ def build(bld):
         pymod.target = 'ns3/_ns3'
         pymod.name = 'ns3module'
         pymod.uselib_local = "ns3"
-        pymod.env.append_value('CXXDEFINES', ['NS_DEPRECATED=""', 'NS3_DEPRECATED_H'])
+        pymod.env.append_value('CXXDEFINES', ['NS_DEPRECATED=', 'NS3_DEPRECATED_H'])
 
         # copy the __init__.py file to the build dir. waf can't handle
         # this, it's against waf's principles to have build dir files
