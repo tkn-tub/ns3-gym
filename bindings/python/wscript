@@ -151,6 +151,7 @@ def configure(conf):
         Logs.warn("pybindgen missing => no python bindings")
         conf.report_optional_feature("python", "Python Bindings", False,
                                      "PyBindGen missing")
+        return
     else:
         out = subprocess.Popen([conf.env['PYTHON'], "-c",
                                 "import pybindgen.version; "
