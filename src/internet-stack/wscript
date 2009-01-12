@@ -7,6 +7,10 @@ import Logs
 import Utils
 import Task
 
+# Required NSC version
+NSC_RELEASE_NAME = "nsc-0.5.0"
+
+
 def set_options(opt):
     opt.add_option('--with-nsc',
                    help=('Use Network Simulation Cradle, given by the indicated path,'
