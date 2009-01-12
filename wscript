@@ -194,9 +194,7 @@ def configure(conf):
 
     # create the second environment, set the variant and set its name
     variant_env = conf.env.copy()
-    #debug_level = Options.options.debug_level.lower()
     variant_name = Options.options.build_profile
-    variant_env['INCLUDEDIR'] = os.path.join(variant_env['PREFIX'], 'include')
 
     if Options.options.regression_traces is not None:
         variant_env['REGRESSION_TRACES'] = os.path.join("..", Options.options.regression_traces)
