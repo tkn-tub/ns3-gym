@@ -157,7 +157,7 @@ MacRxMiddle::Lookup (WifiMacHeader const *hdr)
   OriginatorRxStatus *originator;
   Mac48Address source = hdr->GetAddr2 ();
   if (hdr->IsQosData () &&
-      !hdr->GetAddr2 ().IsBroadcast ()) 
+      !hdr->GetAddr2 ().IsGroup ()) 
     {
       /* only for qos data non-broadcast frames */
       originator = m_qosOriginatorStatus[std::make_pair(source, hdr->GetQosTid ())];
@@ -293,7 +293,7 @@ MacRxMiddle::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
   NS_LOG_DEBUG ("forwarding data from="<<hdr->GetAddr2 ()<<
                 ", seq="<<hdr->GetSequenceNumber ()<<
                 ", frag="<<hdr->GetFragmentNumber ());
-  if (!hdr->GetAddr1 ().IsBroadcast ())
+  if (!hdr->GetAddr1 ().IsGroup ())
     {
       originator->SetSequenceControl (hdr->GetSequenceControl ());
     }

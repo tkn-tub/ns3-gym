@@ -227,8 +227,7 @@ WifiRemoteStationManager::SetFragmentationThreshold (uint32_t threshold)
 WifiRemoteStation *
 WifiRemoteStationManager::Lookup (Mac48Address address)
 {
-  if (address.IsBroadcast () ||
-      address.IsMulticast ())
+  if (address.IsGroup ())
     {
       return m_nonUnicast;
     }

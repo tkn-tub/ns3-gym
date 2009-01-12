@@ -221,7 +221,7 @@ WifiNetDevice::GetBroadcast (void) const
 bool 
 WifiNetDevice::IsMulticast (void) const
 {
-  return false;
+  return true;
 }
 Address 
 WifiNetDevice::GetMulticast (Ipv4Address multicastGroup) const
@@ -291,7 +291,7 @@ WifiNetDevice::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to
     {
       type = NetDevice::PACKET_BROADCAST;
     }
-  else if (to.IsMulticast ())
+  else if (to.IsGroup ())
     {
       type = NetDevice::PACKET_MULTICAST;
     }

@@ -613,18 +613,18 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
         }
       goto rxPacket;
     } 
-  else if (hdr.GetAddr1 ().IsBroadcast ()) 
+  else if (hdr.GetAddr1 ().IsGroup ())
     {
-      if (hdr.IsData () || hdr.IsMgt ()) 
+      if (hdr.IsData () || hdr.IsMgt ())
         {
-          NS_LOG_DEBUG ("rx broadcast from=" << hdr.GetAddr2 ());
+          NS_LOG_DEBUG ("rx group from=" << hdr.GetAddr2 ());
           goto rxPacket;
-        } 
-      else 
-        {
-          // DROP.
         }
-    } 
+      else
+        {
+          // DROP
+        }
+    }
   else 
     {
       //NS_LOG_DEBUG_VERBOSE ("rx not-for-me from %d", GetSource (packet));

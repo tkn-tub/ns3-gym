@@ -475,8 +475,12 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
   NS_LOG_FUNCTION (this << packet << hdr);
   NS_ASSERT (!hdr->IsCtl ());
-  if (hdr->GetAddr1 () != GetAddress () &&
-      !hdr->GetAddr1 ().IsBroadcast ()) 
+  if (hdr->GetAddr3 () == GetAddress ())
+    {
+      NS_LOG_LOGIC ("packet sent by us.");
+    }
+  else if (hdr->GetAddr1 () != GetAddress () &&
+           !hdr->GetAddr1 ().IsGroup ()) 
     {
       NS_LOG_LOGIC ("packet is not for us");
     } 
@@ -497,10 +501,7 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
           NS_LOG_LOGIC ("Received data frame not from the the BSS we are associated with: ignore");
           return;
         }
-      if (hdr->GetAddr3 () != GetAddress ())
-        {
-          ForwardUp (packet, hdr->GetAddr3 (), hdr->GetAddr1 ());
-        }
+      ForwardUp (packet, hdr->GetAddr3 (), hdr->GetAddr1 ());
     } 
   else if (hdr->IsProbeReq () ||
            hdr->IsAssocReq ()) 

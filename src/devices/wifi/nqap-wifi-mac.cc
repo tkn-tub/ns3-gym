@@ -447,8 +447,7 @@ NqapWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
               NS_LOG_DEBUG ("frame for me from="<<from);
               ForwardUp (packet, from, bssid);
             } 
-          else if (to.IsBroadcast () || 
-                   to.IsMulticast () ||
+          else if (to.IsGroup () ||
                    toStation->IsAssociated ())
             {
               NS_LOG_DEBUG ("forwarding frame from="<<from<<", to="<<to);

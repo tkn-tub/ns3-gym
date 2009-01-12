@@ -39,7 +39,7 @@ MacTxMiddle::GetNextSequenceNumberfor (const WifiMacHeader *hdr)
 {
   uint16_t retval;
   if (hdr->IsQosData () &&
-      !hdr->GetAddr1 ().IsBroadcast ()) 
+      !hdr->GetAddr1 ().IsGroup ()) 
     {
       uint8_t tid = hdr->GetQosTid ();
       NS_ASSERT (tid < 16);
