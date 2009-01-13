@@ -287,6 +287,9 @@ def Simulator_customizations(module):
     Simulator.add_custom_method_wrapper("ScheduleDestroy", "_wrap_Simulator_ScheduleDestroy",
                                         flags=["METH_VARARGS", "METH_KEYWORDS", "METH_STATIC"])
 
+    Simulator.add_custom_method_wrapper("Run", "_wrap_Simulator_Run",
+                                        flags=["METH_VARARGS", "METH_KEYWORDS", "METH_STATIC"])
+
 
 def CommandLine_customizations(module):
     CommandLine = module['ns3::CommandLine']

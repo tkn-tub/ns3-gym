@@ -279,3 +279,50 @@ _wrap_CommandLine_AddValue(PyNs3CommandLine *self, PyObject *args, PyObject *kwa
     return Py_None;
 }
 
+
+PyObject *
+_wrap_Simulator_Run(PyNs3Simulator *PYBINDGEN_UNUSED(dummy), PyObject *args, PyObject *kwargs,
+                    PyObject **return_exception)
+{
+    const char *keywords[] = {"signal_check_frequency", NULL};
+    int signal_check_frequency = 100;
+    
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, (char *) "|i", (char **) keywords, &signal_check_frequency)) {
+        PyObject *exc_type, *traceback;
+        PyErr_Fetch(&exc_type, return_exception, &traceback);
+        Py_XDECREF(exc_type);
+        Py_XDECREF(traceback);
+        return NULL;
+    }
+
+    PyThreadState *py_thread_state = NULL;
+
+    if (signal_check_frequency == -1)
+    {
+        if (PyEval_ThreadsInitialized ())
+            py_thread_state = PyEval_SaveThread();
+        ns3::Simulator::Run();
+        if (py_thread_state)
+            PyEval_RestoreThread(py_thread_state);
+    } else {
+        while (!ns3::Simulator::IsFinished())
+        {        
+            if (PyEval_ThreadsInitialized())
+                py_thread_state = PyEval_SaveThread();
+
+            for (int n = signal_check_frequency; n > 0 && !ns3::Simulator::IsFinished(); --n)
+            {        
+                ns3::Simulator::RunOneEvent();
+            }
+            
+            if (py_thread_state)
+                PyEval_RestoreThread(py_thread_state);
+            PyErr_CheckSignals();
+            if (PyErr_Occurred())
+                return NULL;
+        }
+    }
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+

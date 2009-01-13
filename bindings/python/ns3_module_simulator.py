@@ -291,11 +291,6 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_static=True)
-    ## simulator.h: static void ns3::Simulator::Run() [member function]
-    cls.add_method('Run', 
-                   'void', 
-                   [], 
-                   is_static=True, unblock_threads=True)
     ## simulator.h: static void ns3::Simulator::RunOneEvent() [member function]
     cls.add_method('RunOneEvent', 
                    'void', 

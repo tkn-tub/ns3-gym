@@ -97,8 +97,9 @@ public:
   static void Destroy (void);
 
   /**
-   * If there any any events lefts to be scheduled, return
-   * true. Return false otherwise.
+   * If there any any events lefts to be scheduled and simulation time
+   * has not yet reached the "stop time" (see Simulator::Stop()),
+   * return true. Return false otherwise.
    */
   static bool IsFinished (void);
   /**
