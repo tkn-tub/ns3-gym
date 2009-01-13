@@ -40,8 +40,8 @@ main (int argc, char *argv[])
   //
   // Make the random number generators generate reproducible results.
   //
-  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
-
+  uint32_t seed[6] = {1, 1, 2, 3, 5, 8};
+  SeedManager::SetSeed(seed);
   //
   // Allow the user to override any of the defaults and the above Bind() at
   // run-time, via command-line arguments

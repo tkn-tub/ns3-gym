@@ -64,7 +64,8 @@ Backoff::GetBackoffTime (void)
       maxSlot = m_maxSlots;
     }
 
-  uint32_t backoffSlots = (uint32_t)UniformVariable::GetSingleValue(minSlot, maxSlot);
+  UniformVariable rng;
+  uint32_t backoffSlots = (uint32_t)rng.GetValue(minSlot, maxSlot);
 
   backoff = Scalar(backoffSlots) * m_slotTime;
   return (backoff);

@@ -39,7 +39,8 @@ main (int argc, char *argv[])
   LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
   LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
 
-  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
+  uint32_t seed[6] = {1, 1, 2, 3, 5, 8};
+  SeedManager::SetSeed(seed);
 
   uint32_t nCsma = 3;
   CommandLine cmd;

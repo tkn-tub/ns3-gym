@@ -64,7 +64,8 @@ main (int argc, char *argv[])
   //
   // Make the random number generators generate reproducible results.
   //
-  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
+  uint32_t seed[6] = {1, 1, 2, 3, 5, 8};
+  SeedManager::SetSeed(seed);
 
   // Set up some default values for the simulation.  Use the 
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));

@@ -35,7 +35,8 @@ def main(argv):
     #
     # Make the random number generators generate reproducible results.
     #
-    ns3.RandomVariable.UseGlobalSeed(1, 1, 2, 3, 5, 8)
+    seed = array([1, 1, 2, 3, 5, 8]);
+    ns3.SeedManager.SetSeed(seed)
 
     #
     # Allow the user to override any of the defaults and the above Bind() at

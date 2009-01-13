@@ -54,8 +54,6 @@ def register_methods(root_module):
     return
 
 def register_Ns3BridgeChannel_methods(root_module, cls):
-    ## bridge-channel.h: ns3::BridgeChannel::BridgeChannel(ns3::BridgeChannel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::BridgeChannel const &', 'arg0')])
     ## bridge-channel.h: static ns3::TypeId ns3::BridgeChannel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -77,11 +75,10 @@ def register_Ns3BridgeChannel_methods(root_module, cls):
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('uint32_t', 'i')], 
                    is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3BridgeNetDevice_methods(root_module, cls):
-    ## bridge-net-device.h: ns3::BridgeNetDevice::BridgeNetDevice(ns3::BridgeNetDevice const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::BridgeNetDevice const &', 'arg0')])
     ## bridge-net-device.h: static ns3::TypeId ns3::BridgeNetDevice::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -258,6 +255,7 @@ def register_Ns3BridgeNetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('ns3::Mac48Address', 'source')], 
                    visibility='protected')
+    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):

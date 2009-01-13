@@ -47,7 +47,8 @@ int main(int argc, char *argv[])
   unsigned int MaxNodes = 4;
   unsigned int runtime = 3;
 
-  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
+  uint32_t seed[6] = {1, 1, 2, 3, 5, 8};
+  SeedManager::SetSeed(seed);
 
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (2048));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("8kbps"));

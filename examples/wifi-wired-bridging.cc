@@ -63,7 +63,8 @@ int main (int argc, char *argv[])
   uint32_t nStas = 2;
   bool sendIp = true;
 
-  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
+  uint32_t seed[6] = {1, 1, 2, 3, 5, 8};
+  SeedManager::SetSeed(seed);
 
   CommandLine cmd;
   cmd.AddValue ("nWifis", "Number of wifi networks", nWifis);

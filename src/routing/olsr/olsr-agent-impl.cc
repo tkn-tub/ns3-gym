@@ -120,7 +120,7 @@
 /// Maximum allowed sequence number.
 #define OLSR_MAX_SEQ_NUM	65535
 /// Random number between [0-OLSR_MAXJITTER] used to jitter OLSR packet transmission.
-#define JITTER (Seconds (UniformVariable::GetSingleValue (0, OLSR_MAXJITTER)))
+#define JITTER (Seconds (UniformVariable().GetValue (0, OLSR_MAXJITTER)))
 
 
 #define OLSR_PORT_NUMBER 698
