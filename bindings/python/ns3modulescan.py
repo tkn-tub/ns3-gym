@@ -150,11 +150,11 @@ def pre_scan_hook(dummy_module_parser,
             and pygccxml_definition.name.startswith('Schedule'):
         global_annotations['ignore'] = None
 
-    # unblock python threads for Simulator::Run
+    # manually wrapped
     if isinstance(pygccxml_definition, member_function_t) \
             and pygccxml_definition.parent.name == 'Simulator' \
             and pygccxml_definition.name == 'Run':
-        global_annotations['unblock_threads'] = True
+        global_annotations['ignore'] = True
 
 
     ## classes
