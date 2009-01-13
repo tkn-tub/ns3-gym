@@ -384,7 +384,7 @@ RealtimeSimulatorImpl::IsFinished (void) const
   bool rc;
   {
     CriticalSection cs (m_mutex);
-    rc = m_events->IsEmpty ();
+    rc = m_events->IsEmpty () || m_stop;
   }
 
   return rc;
