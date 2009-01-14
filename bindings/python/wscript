@@ -484,7 +484,8 @@ def build(bld):
 
         bindgen = bld.new_task_gen('command', source=source, target=target,
                                    command=argv, variables=dict(FEATURES=(','.join(features))))
-
+        bindgen.before = 'cxx'
+        bindgen.after = 'gen_everything_h_task'
 
     ## we build python bindings if either we have the tools to
     ## generate them or if the pregenerated source file is already
