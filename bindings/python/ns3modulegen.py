@@ -137,7 +137,7 @@ def main():
             root_module.classes.remove(root_module['ns3::%s' % clsname])
 
     if 'RealTime' not in enabled_features:
-        for clsname in ['WallClockSynchronizer', 'RealtimeSimulatorImpl', 'RealtimeEventLock']:
+        for clsname in ['WallClockSynchronizer', 'RealtimeSimulatorImpl']:
             root_module.classes.remove(root_module['ns3::%s' % clsname])
         root_module.enums.remove(root_module['ns3::RealtimeSimulatorImpl::SynchronizationMode'])
 
