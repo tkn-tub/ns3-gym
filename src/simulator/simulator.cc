@@ -17,11 +17,13 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-
+#include "ns3/core-config.h"
 #include "simulator.h"
 #include "simulator-impl.h"
 #include "default-simulator-impl.h"
-#include "realtime-simulator-impl.h"
+#ifdef HAVE_PTHREAD_H
+# include "realtime-simulator-impl.h"
+#endif
 #include "scheduler.h"
 #include "event-impl.h"
 
