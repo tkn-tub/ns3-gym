@@ -115,6 +115,28 @@ inline bool operator < (const Scheduler::EventKey &a, const Scheduler::EventKey 
       return false;
     }
 }
+inline bool operator != (const Scheduler::EventKey &a, const Scheduler::EventKey &b)
+{
+  return a.m_uid != b.m_uid;
+}
+inline bool operator > (const Scheduler::EventKey &a, const Scheduler::EventKey &b)
+{
+  if (a.m_ts > b.m_ts)
+    {
+      return true;
+    }
+  else if (a.m_ts == b.m_ts &&
+           a.m_uid > b.m_uid)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+
 
 inline bool operator < (const Scheduler::Event &a, const Scheduler::Event &b)
 {
