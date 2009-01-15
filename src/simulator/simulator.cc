@@ -316,6 +316,8 @@ Simulator::GetImplementation (void)
 #include "list-scheduler.h"
 #include "heap-scheduler.h"
 #include "map-scheduler.h"
+#include "calendar-scheduler.h"
+#include "ns2-calendar-scheduler.h"
 
 namespace ns3 {
 
@@ -736,6 +738,20 @@ SimulatorTests::RunTests (void)
     }
   Simulator::Destroy ();
   Simulator::SetScheduler (CreateObject<MapScheduler> ());
+  if (!RunOneTest ()) 
+    {
+      result = false;
+    }
+  Simulator::Destroy ();
+
+  Simulator::SetScheduler (CreateObject<CalendarScheduler> ());
+  if (!RunOneTest ()) 
+    {
+      result = false;
+    }
+  Simulator::Destroy ();
+
+  Simulator::SetScheduler (CreateObject<Ns2CalendarScheduler> ());
   if (!RunOneTest ()) 
     {
       result = false;
