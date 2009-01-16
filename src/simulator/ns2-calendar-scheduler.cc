@@ -24,6 +24,7 @@
 #include "ns3/log.h"
 #include <cassert>
 #include <math.h>
+#include <string.h>
 
 namespace ns3 {
 
