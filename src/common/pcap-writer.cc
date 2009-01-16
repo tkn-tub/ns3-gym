@@ -86,7 +86,7 @@ PcapWriter::Open (std::string const &name)
 
   NS_LOG_LOGIC ("Created writer " << m_writer);
 
-  m_writer->open (name.c_str ());
+  m_writer->open (name.c_str (), std::ios_base::binary | std::ios_base::out);
   NS_ABORT_MSG_IF (m_writer->fail (), "PcapWriter::Open(): m_writer->open(" << name.c_str () << ") failed");
 
   NS_ASSERT_MSG (m_writer->is_open (), "PcapWriter::Open(): m_writer not open");
