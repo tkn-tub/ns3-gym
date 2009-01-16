@@ -53,9 +53,6 @@ def dist_hook():
     shutil.rmtree("doc/latex", True)
     shutil.rmtree("nsc", True)
 
-    if not os.path.exists("bindings/python/pybindgen"):
-        raise Utils.WafError("Missing pybindgen checkout; run './waf configure --pybindgen-checkout' first.")
-
     ## build the name of the traces subdirectory.  Will be something like
     ## ns-3-dev-ref-traces
     traces_name = APPNAME + '-' + VERSION + regression.REGRESSION_SUFFIX
