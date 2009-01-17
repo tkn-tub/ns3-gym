@@ -146,5 +146,14 @@ def main():
     out.close()
 
 if __name__ == '__main__':
-    main()
+    if 0:
+        try:
+            import cProfile as profile
+        except ImportError:
+            main()
+        else:
+            print >> sys.stderr, "** running under profiler"
+            profile.run('main()', 'ns3modulegen.pstat')
+    else:
+        main()
 
