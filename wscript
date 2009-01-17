@@ -318,31 +318,12 @@ def add_scratch_programs(bld):
             obj.name = obj.target
 
 
-##
-## This replacement spawn function increases the maximum command line length to 32k
-##
-def _exec_command_interact_win32(s):
-    if Params.g_verbose:
-        print s
-    startupinfo = subprocess.STARTUPINFO()
-    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-    proc = subprocess.Popen(s, shell=False, startupinfo=startupinfo)
-    stat = proc.wait()
-    if stat & 0xff:
-        return stat | 0x80
-    return stat >> 8
-
-
 def build(bld):
     if Options.options.no_task_lines:
         import Runner
         def null_printout(s):
             pass
         Runner.printout = null_printout
-
-    if sys.platform == 'win32':
-        import Runner
-        Runner.exec_command = _exec_command_interact_win32
 
     Options.cwd_launch = bld.path.abspath()
     bld.create_ns3_program = types.MethodType(create_ns3_program, bld)
