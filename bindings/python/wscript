@@ -434,7 +434,15 @@ def build(bld):
         pymod.target = 'ns3/_ns3'
         pymod.name = 'ns3module'
         pymod.uselib_local = "ns3"
-        pymod.env.append_value('CXXDEFINES', ['NS_DEPRECATED=', 'NS3_DEPRECATED_H'])
+
+        defines = list(pymod.env['CXXDEFINES'])
+        defines.extend(['NS_DEPRECATED=', 'NS3_DEPRECATED_H'])
+        if Options.platform == 'win32':
+            try:
+                defines.remove('_DEBUG') # causes undefined symbols on win32
+            except ValueError:
+                pass
+        pymod.env['CXXDEFINES'] = defines
 
         # copy the __init__.py file to the build dir. waf can't handle
         # this, it's against waf's principles to have build dir files
