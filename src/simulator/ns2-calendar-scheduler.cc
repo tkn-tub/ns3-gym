@@ -58,7 +58,7 @@ Ns2CalendarScheduler::Ns2CalendarScheduler ()
 	round_num_ = 0; 
 	time_to_newwidth_ = adjust_new_width_interval_;
 	cal_clock_ = Scheduler::EventKey ();
-	reinit(4, 1.0, cal_clock_);
+	reinit(4, 1, cal_clock_);
 }
 Ns2CalendarScheduler::~Ns2CalendarScheduler ()
 {
@@ -358,12 +358,12 @@ Ns2CalendarScheduler::reinit(int nbuck, uint64_t bwidth, Scheduler::EventKey sta
 void 
 Ns2CalendarScheduler::resize(int newsize, Scheduler::EventKey start)
 {
-	double bwidth;
+	uint64_t bwidth;
 	if (newsize == nbuckets_) {
 		/* we resize for bwidth*/
 		if (head_search_) bwidth = head_search_; else bwidth = 1;
 		if (insert_search_) bwidth = bwidth / insert_search_;
-		bwidth = sqrt (bwidth) * width_;
+		bwidth = static_cast<uint64_t> (sqrt (bwidth) * width_);
 		if (bwidth < min_bin_width_) {
 			if (time_to_newwidth_>0) {
 				time_to_newwidth_ --;
@@ -469,7 +469,7 @@ Ns2CalendarScheduler::newwidth(int newsize)
 {
 	if (adjust_new_width_interval_) {
 		time_to_newwidth_ = adjust_new_width_interval_;
-		if (avg_gap_ > 0) return avg_gap_*4.0;
+		if (avg_gap_ > 0) return avg_gap_*4;
 	}
 	int i;
 	int max_bucket = 0; // index of the fullest bucket
@@ -481,11 +481,10 @@ Ns2CalendarScheduler::newwidth(int newsize)
 
 	if (nsamples <= 4) return width_;
 	
-	uint64_t nw = buckets_[max_bucket].list_->prev_->event.key.m_ts 
-		- buckets_[max_bucket].list_->event.key.m_ts;
+	uint64_t nw = (buckets_[max_bucket].list_->prev_->event.key.m_ts 
+		       - buckets_[max_bucket].list_->event.key.m_ts) * 4;
 	
 	nw /= ((newsize < nsamples) ? newsize : nsamples); // min (newsize, nsamples)
-	nw *= 4.0;
 
 	nw = std::max (nw, min_bin_width_);
 	

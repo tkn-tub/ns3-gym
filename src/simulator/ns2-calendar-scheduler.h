@@ -80,7 +80,7 @@ private:
   int round_num_;
   long int gap_num_;		//the number of gap samples in this window (in process of calculation)
   uint64_t last_time_;		//the departure time of first event in this window
-  double avg_gap_;		//the average gap in last window (finished calculation)
+  int64_t avg_gap_;		//the average gap in last window (finished calculation)
 
   uint64_t width_;
   uint64_t diff0_, diff1_, diff2_; /* wrap-around checks */
