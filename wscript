@@ -306,15 +306,16 @@ def add_scratch_programs(bld):
 	    continue
         if os.path.isdir(os.path.join("scratch", filename)):
             obj = bld.create_ns3_program(filename, all_modules)
-            obj.path = obj.path.find_dir('scratch')
-            obj.find_sources_in_dirs(filename)
-            obj.target = os.path.join(filename, filename)
+            obj.path = obj.path.find_dir('scratch').find_dir(filename)
+            obj.find_sources_in_dirs('.')
+            obj.target = filename
             obj.name = obj.target
         elif filename.endswith(".cc"):
             name = filename[:-len(".cc")]
             obj = bld.create_ns3_program(name, all_modules)
-            obj.source = "scratch/%s" % filename
-            obj.target = "scratch/%s" % name
+            obj.path = obj.path.find_dir('scratch')
+            obj.source = filename
+            obj.target = name
             obj.name = obj.target
 
 
@@ -414,7 +415,7 @@ def build(bld):
         # nothing more; this greatly speeds up compilation when all you
         # want to do is run a test program.
         if not Options.options.compile_targets:
-            Options.options.compile_targets = program_name
+            Options.options.compile_targets = os.path.basename(program_name)
 
 
 

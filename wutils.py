@@ -38,9 +38,30 @@ def get_command_template(*arguments):
     return cmd
 
 
+if hasattr(os.path, "relpath"):
+    relpath = os.path.relpath # since Python 2.6
+else:
+    def relpath(path, start=os.path.curdir):
+        """Return a relative version of a path"""
+
+        if not path:
+            raise ValueError("no path specified")
+
+        start_list = os.path.abspath(start).split(os.path.sep)
+        path_list = os.path.abspath(path).split(os.path.sep)
+
+        # Work out how much of the filepath is shared by start and path.
+        i = len(os.path.commonprefix([start_list, path_list]))
+
+        rel_list = [os.path.pardir] * (len(start_list)-i) + path_list[i:]
+        if not rel_list:
+            return os.path.curdir
+        return os.path.join(*rel_list)
+
 
 def find_program(program_name, env):
     launch_dir = os.path.abspath(Options.cwd_launch)
+    top_dir = os.path.abspath(Options.launch_dir)
     found_programs = []
     for obj in Build.bld.all_task_gen:
         if not getattr(obj, 'is_ns3_program', False):
@@ -51,8 +72,11 @@ def find_program(program_name, env):
                 or obj.path.abspath(env).startswith(launch_dir)):
             continue
         
-        found_programs.append(obj.target)
-        if obj.target == program_name:
+        name1 = obj.target
+        name2 = os.path.join(relpath(obj.path.abspath(), top_dir), obj.target)
+        names = [name1, name2]
+        found_programs.extend(names)
+        if program_name in names:
             return obj
     raise ValueError("program '%s' not found; available programs are: %r"
                      % (program_name, found_programs))
