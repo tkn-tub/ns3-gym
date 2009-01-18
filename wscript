@@ -194,9 +194,7 @@ def configure(conf):
     variant_name = Options.options.build_profile
 
     if Options.options.regression_traces is not None:
-        variant_env['REGRESSION_TRACES'] = os.path.join("..", Options.options.regression_traces)
-    else:
-        variant_env['REGRESSION_TRACES'] = None
+        variant_env['REGRESSION_TRACES'] = os.path.abspath(Options.options.regression_traces)
 
     if Options.options.enable_gcov:
         variant_name += '-gcov'
@@ -441,16 +439,11 @@ def shutdown():
         if not env['DIFF']:
             raise Utils.WafError("Cannot run regression tests: the 'diff' program is not installed.")
 
-        _dir = os.getcwd()
-        os.chdir("regression")
         regression_traces = env['REGRESSION_TRACES']
         if not regression_traces:
             raise Utils.WafError("Cannot run regression tests: reference traces directory not given"
                                  " (--with-regression-traces configure option)")
-        try:
-            retval = regression.run_regression(regression_traces)
-        finally:
-            os.chdir(_dir)
+        retval = regression.run_regression(regression_traces)
         if retval:
             sys.exit(retval)
 

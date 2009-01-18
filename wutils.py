@@ -117,10 +117,10 @@ def get_proc_env(os_env=None):
 
     return proc_env
 
-def run_argv(argv, os_env=None):
+def run_argv(argv, os_env=None, cwd=None):
     proc_env = get_proc_env(os_env)
     #env = Build.bld.env
-    retval = subprocess.Popen(argv, env=proc_env).wait()
+    retval = subprocess.Popen(argv, env=proc_env, cwd=cwd).wait()
     if retval:
         raise Utils.WafError("Command %s exited with code %i" % (argv, retval))
     return retval
@@ -167,7 +167,7 @@ def get_run_program(program_string, command_template=None):
         execvec = shlex.split(command_template % (program_node.abspath(env),))
     return program_name, execvec
 
-def run_program(program_string, command_template=None):
+def run_program(program_string, command_template=None, cwd=None):
     """
     if command_template is not None, then program_string == program
     name and argv is given by command_template with %s replaced by the
@@ -175,34 +175,23 @@ def run_program(program_string, command_template=None):
     a shell command with first name being the program name.
     """
     dummy_program_name, execvec = get_run_program(program_string, command_template)
-    former_cwd = os.getcwd()
-    if (Options.options.cwd_launch):
-        os.chdir(Options.options.cwd_launch)
-    else:
-        os.chdir(Options.cwd_launch)
-    try:
-        retval = run_argv(execvec)
-    finally:
-        os.chdir(former_cwd)
-
-    return retval
+    if cwd is None:
+        if (Options.options.cwd_launch):
+            cwd = Options.options.cwd_launch
+        else:
+            cwd = Options.cwd_launch
+    return run_argv(execvec, cwd=cwd)
 
 
 
 def run_python_program(program_string):
     env = Build.bld.env
     execvec = shlex.split(program_string)
-
-    former_cwd = os.getcwd()
-    if (Options.options.cwd_launch):
-        os.chdir(Options.options.cwd_launch)
-    else:
-        os.chdir(Options.cwd_launch)
-    try:
-        retval = run_argv([env['PYTHON']] + execvec)
-    finally:
-        os.chdir(former_cwd)
-
-    return retval
+    if cwd is None:
+        if (Options.options.cwd_launch):
+            cwd = Options.options.cwd_launch
+        else:
+            cwd = Options.cwd_launch
+    return run_argv([env['PYTHON']] + execvec, cwd=cwd)
 
 

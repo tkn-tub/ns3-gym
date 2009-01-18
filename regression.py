@@ -64,19 +64,13 @@ class Regression(object):
                 os.mkdir(refTestDirName)
 
             if pyscript is None:
-                Options.options.cwd_launch = refTestDirName
                 tmpl = "%s"
                 for arg in arguments:
                     tmpl = tmpl + " " + arg
-                wutils.run_program(testName, tmpl)
+                wutils.run_program(testName, tmpl, cwd=refTestDirName)
             else:
                 argv = [self.env['PYTHON'], os.path.join(Options.cwd_launch, *os.path.split(pyscript))] + arguments
-                before = os.getcwd()
-                os.chdir(refTestDirName)
-                try:
-                    wutils.run_argv(argv)
-                finally:
-                    os.chdir(before)
+                wutils.run_argv(argv, cwd=refTestDirName)
             print "Remember to commit " + refTestDirName
             return 0
         else:
@@ -84,12 +78,11 @@ class Regression(object):
                 print "Cannot locate reference traces in " + refTestDirName
                 return 1
 
-            
             if refTestName is None:
                 traceDirName = testName + ".ref"
             else:
                 traceDirName = refTestName
-            traceDirName = os.path.join ('traces', traceDirName)
+            traceDirName = os.path.join('regression', 'traces', traceDirName)
 
             try:
                 shutil.rmtree(traceDirName)
@@ -97,20 +90,13 @@ class Regression(object):
                 pass
             os.mkdir(traceDirName)
 
-            #os.system("./waf --cwd regression/traces --run " +
-            #  testName + " > /dev/null 2>&1")
-
             if pyscript is None:
-                Options.options.cwd_launch = traceDirName
-                wutils.run_program(testName, command_template=wutils.get_command_template(*arguments))
+                wutils.run_program(testName,
+                                   command_template=wutils.get_command_template(*arguments),
+                                   cwd=traceDirName)
             else:
                 argv = [self.env['PYTHON'], os.path.join('..', '..', '..', *os.path.split(pyscript))] + arguments
-                before = os.getcwd()
-                os.chdir(traceDirName)
-                try:
-                    wutils.run_argv(argv)
-                finally:
-                    os.chdir(before)
+                wutils.run_argv(argv, cwd=traceDirName)
 
             if verbose:
                 #diffCmd = "diff traces " + refTestDirName + " | head"
@@ -157,7 +143,7 @@ def run_regression(reference_traces):
 
     """
 
-    testdir = "tests"
+    testdir = os.path.join("regression", "tests")
     if not os.path.exists(testdir):
         print "Tests directory does not exist"
         sys.exit(3)
@@ -193,7 +179,7 @@ def run_regression(reference_traces):
         except NotImplementedError:
             print "SKIP " + test            
 
-    return len(bad) > 0
+    return (len(bad) > 0)
 
 
 def _run_regression_test(test):
@@ -202,15 +188,15 @@ def _run_regression_test(test):
     Arguments:
     test -- the name of the test
     """
-
-    if os.path.exists("traces"):
-        files = os.listdir("traces")
+    traces_dir = os.path.join("regression", "traces")
+    if os.path.exists(traces_dir):
+        files = os.listdir(traces_dir)
         for file in files:
             if file == '.' or file == '..':
                 continue
             shutil.rmtree(os.path.join("traces", file), ignore_errors=True)
     else:
-        os.mkdir("traces")
+        os.mkdir(traces_dir)
     
     mod = __import__(test, globals(), locals(), [])
     return mod.run(verbose=(Options.options.verbose > 0),
