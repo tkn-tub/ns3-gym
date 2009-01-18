@@ -445,7 +445,8 @@ def shutdown():
         os.chdir("regression")
         regression_traces = env['REGRESSION_TRACES']
         if not regression_traces:
-            regression_traces = None
+            raise Utils.WafError("Cannot run regression tests: reference traces directory not given"
+                                 " (--with-regression-traces configure option)")
         try:
             retval = regression.run_regression(regression_traces)
         finally:

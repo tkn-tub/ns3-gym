@@ -14,32 +14,6 @@ import Utils
 import wutils
 
 
-#
-# The directory in which the tarball of the reference traces lives.  This is
-# used if Mercurial is not on the system.
-#
-REGRESSION_TRACES_URL = "http://www.nsnam.org/releases/"
-
-#
-# The path to the Mercurial repository used to find the reference traces if
-# we find "hg" on the system.  We expect that the repository will be named
-# identically to refDirName below
-#
-REGRESSION_TRACES_REPO = "http://code.nsnam.org/"
-
-#
-# Name of the local directory where the regression code lives.
-#
-REGRESSION_DIR = "regression"
-
-#
-# The last part of the path name to use to find the regression traces.  The
-# path will be APPNAME + '-' + VERSION + REGRESSION_SUFFIX, e.g.,
-# ns-3-dev-ref-traces
-#
-REGRESSION_SUFFIX = "-ref-traces"
-
-
 def dev_null():
     if sys.platform == 'win32':
         return open("NUL:", "w")
@@ -179,7 +153,7 @@ def _find_tests(testdir):
 def run_regression(reference_traces):
     """Execute regression tests.  Called with cwd set to the 'regression' subdir of ns-3.
 
-    @param reference_traces: reference traces directory, or None for default.
+    @param reference_traces: reference traces directory.
 
     """
 
@@ -188,13 +162,6 @@ def run_regression(reference_traces):
         print "Tests directory does not exist"
         sys.exit(3)
 
-    dir_name = (wutils.APPNAME + '-' + wutils.VERSION + REGRESSION_SUFFIX)
-    if reference_traces is None:
-        reference_traces = dir_name
-        no_net = False
-    else:
-        no_net = True
-    
     sys.path.append(testdir)
     sys.modules['tracediff'] = Regression(testdir, reference_traces)
 
@@ -205,32 +172,6 @@ def run_regression(reference_traces):
 
     print "========== Running Regression Tests =========="
     env = Build.bld.env
-    if not no_net:
-        if env['MERCURIAL']:
-            print "Synchronizing reference traces using Mercurial."
-            if not os.path.exists(reference_traces):
-                print "Cloning " + REGRESSION_TRACES_REPO + dir_name + " from repo."
-                argv = ["hg", "clone", REGRESSION_TRACES_REPO + dir_name, reference_traces]
-                rv = subprocess.Popen(argv).wait()
-            else:
-                _dir = os.getcwd()
-                os.chdir(reference_traces)
-                try:
-                    print "Pulling " + REGRESSION_TRACES_REPO + dir_name + " from repo."
-                    result = subprocess.Popen(["hg", "-q", "pull", REGRESSION_TRACES_REPO + dir_name]).wait()
-                    if not result:
-                        result = subprocess.Popen(["hg", "-q", "update"]).wait()
-                finally:
-                    os.chdir("..")
-                if result:
-                    raise Utils.WafError("Synchronizing reference traces using Mercurial failed.")
-        else:
-            if not os.path.exists(reference_traces):
-                traceball = dir_name + wutils.TRACEBALL_SUFFIX
-                print "Retrieving " + traceball + " from web."
-                urllib.urlretrieve(REGRESSION_TRACES_URL + traceball, traceball)
-                os.system("tar -xjf %s -C .." % (traceball))
-                print "Done."
 
     if not os.path.exists(reference_traces):
         print "Reference traces directory (%s) does not exist" % reference_traces
