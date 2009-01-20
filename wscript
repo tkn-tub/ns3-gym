@@ -53,9 +53,6 @@ def dist_hook():
     shutil.rmtree("doc/latex", True)
     shutil.rmtree("nsc", True)
 
-    if not os.path.exists("bindings/python/pybindgen"):
-        raise Utils.WafError("Missing pybindgen checkout; run './waf configure --pybindgen-checkout' first.")
-
     ## build the name of the traces subdirectory.  Will be something like
     ## ns-3-dev-ref-traces
     traces_name = APPNAME + '-' + VERSION + regression.REGRESSION_SUFFIX
@@ -197,9 +194,7 @@ def configure(conf):
     variant_name = Options.options.build_profile
 
     if Options.options.regression_traces is not None:
-        variant_env['REGRESSION_TRACES'] = os.path.join("..", Options.options.regression_traces)
-    else:
-        variant_env['REGRESSION_TRACES'] = None
+        variant_env['REGRESSION_TRACES'] = os.path.abspath(Options.options.regression_traces)
 
     if Options.options.enable_gcov:
         variant_name += '-gcov'
@@ -309,31 +304,17 @@ def add_scratch_programs(bld):
 	    continue
         if os.path.isdir(os.path.join("scratch", filename)):
             obj = bld.create_ns3_program(filename, all_modules)
-            obj.path = obj.path.find_dir('scratch')
-            obj.find_sources_in_dirs(filename)
-            obj.target = os.path.join(filename, filename)
+            obj.path = obj.path.find_dir('scratch').find_dir(filename)
+            obj.find_sources_in_dirs('.')
+            obj.target = filename
             obj.name = obj.target
         elif filename.endswith(".cc"):
             name = filename[:-len(".cc")]
             obj = bld.create_ns3_program(name, all_modules)
-            obj.source = "scratch/%s" % filename
-            obj.target = "scratch/%s" % name
+            obj.path = obj.path.find_dir('scratch')
+            obj.source = filename
+            obj.target = name
             obj.name = obj.target
-
-
-##
-## This replacement spawn function increases the maximum command line length to 32k
-##
-def _exec_command_interact_win32(s):
-    if Params.g_verbose:
-        print s
-    startupinfo = subprocess.STARTUPINFO()
-    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-    proc = subprocess.Popen(s, shell=False, startupinfo=startupinfo)
-    stat = proc.wait()
-    if stat & 0xff:
-        return stat | 0x80
-    return stat >> 8
 
 
 def build(bld):
@@ -342,10 +323,6 @@ def build(bld):
         def null_printout(s):
             pass
         Runner.printout = null_printout
-
-    if sys.platform == 'win32':
-        import Runner
-        Runner.exec_command = _exec_command_interact_win32
 
     Options.cwd_launch = bld.path.abspath()
     bld.create_ns3_program = types.MethodType(create_ns3_program, bld)
@@ -436,7 +413,7 @@ def build(bld):
         # nothing more; this greatly speeds up compilation when all you
         # want to do is run a test program.
         if not Options.options.compile_targets:
-            Options.options.compile_targets = program_name
+            Options.options.compile_targets = os.path.basename(program_name)
 
 
 
@@ -462,15 +439,11 @@ def shutdown():
         if not env['DIFF']:
             raise Utils.WafError("Cannot run regression tests: the 'diff' program is not installed.")
 
-        _dir = os.getcwd()
-        os.chdir("regression")
         regression_traces = env['REGRESSION_TRACES']
         if not regression_traces:
-            regression_traces = None
-        try:
-            retval = regression.run_regression(regression_traces)
-        finally:
-            os.chdir(_dir)
+            raise Utils.WafError("Cannot run regression tests: reference traces directory not given"
+                                 " (--with-regression-traces configure option)")
+        retval = regression.run_regression(regression_traces)
         if retval:
             sys.exit(retval)
 

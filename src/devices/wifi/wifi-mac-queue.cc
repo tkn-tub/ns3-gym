@@ -28,6 +28,9 @@ using namespace std;
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (WifiMacQueue);
+
+
 WifiMacQueue::Item::Item (Ptr<const Packet> packet, 
                           WifiMacHeader const &hdr, 
                           Time tstamp)
@@ -37,7 +40,7 @@ WifiMacQueue::Item::Item (Ptr<const Packet> packet,
 TypeId 
 WifiMacQueue::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("WifiMacQueue")
+  static TypeId tid = TypeId ("ns3::WifiMacQueue")
     .SetParent<Object> ()
     .AddConstructor<WifiMacQueue> ()
     .AddAttribute ("MaxPacketNumber", "If a packet arrives when there are already this number of packets, it is dropped.",

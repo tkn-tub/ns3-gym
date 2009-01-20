@@ -38,9 +38,30 @@ def get_command_template(*arguments):
     return cmd
 
 
+if hasattr(os.path, "relpath"):
+    relpath = os.path.relpath # since Python 2.6
+else:
+    def relpath(path, start=os.path.curdir):
+        """Return a relative version of a path"""
+
+        if not path:
+            raise ValueError("no path specified")
+
+        start_list = os.path.abspath(start).split(os.path.sep)
+        path_list = os.path.abspath(path).split(os.path.sep)
+
+        # Work out how much of the filepath is shared by start and path.
+        i = len(os.path.commonprefix([start_list, path_list]))
+
+        rel_list = [os.path.pardir] * (len(start_list)-i) + path_list[i:]
+        if not rel_list:
+            return os.path.curdir
+        return os.path.join(*rel_list)
+
 
 def find_program(program_name, env):
     launch_dir = os.path.abspath(Options.cwd_launch)
+    top_dir = os.path.abspath(Options.launch_dir)
     found_programs = []
     for obj in Build.bld.all_task_gen:
         if not getattr(obj, 'is_ns3_program', False):
@@ -51,8 +72,11 @@ def find_program(program_name, env):
                 or obj.path.abspath(env).startswith(launch_dir)):
             continue
         
-        found_programs.append(obj.target)
-        if obj.target == program_name:
+        name1 = obj.target
+        name2 = os.path.join(relpath(obj.path.abspath(), top_dir), obj.target)
+        names = [name1, name2]
+        found_programs.extend(names)
+        if program_name in names:
             return obj
     raise ValueError("program '%s' not found; available programs are: %r"
                      % (program_name, found_programs))
@@ -93,10 +117,10 @@ def get_proc_env(os_env=None):
 
     return proc_env
 
-def run_argv(argv, os_env=None):
+def run_argv(argv, os_env=None, cwd=None):
     proc_env = get_proc_env(os_env)
     #env = Build.bld.env
-    retval = subprocess.Popen(argv, env=proc_env).wait()
+    retval = subprocess.Popen(argv, env=proc_env, cwd=cwd).wait()
     if retval:
         raise Utils.WafError("Command %s exited with code %i" % (argv, retval))
     return retval
@@ -143,7 +167,7 @@ def get_run_program(program_string, command_template=None):
         execvec = shlex.split(command_template % (program_node.abspath(env),))
     return program_name, execvec
 
-def run_program(program_string, command_template=None):
+def run_program(program_string, command_template=None, cwd=None):
     """
     if command_template is not None, then program_string == program
     name and argv is given by command_template with %s replaced by the
@@ -151,34 +175,23 @@ def run_program(program_string, command_template=None):
     a shell command with first name being the program name.
     """
     dummy_program_name, execvec = get_run_program(program_string, command_template)
-    former_cwd = os.getcwd()
-    if (Options.options.cwd_launch):
-        os.chdir(Options.options.cwd_launch)
-    else:
-        os.chdir(Options.cwd_launch)
-    try:
-        retval = run_argv(execvec)
-    finally:
-        os.chdir(former_cwd)
-
-    return retval
+    if cwd is None:
+        if (Options.options.cwd_launch):
+            cwd = Options.options.cwd_launch
+        else:
+            cwd = Options.cwd_launch
+    return run_argv(execvec, cwd=cwd)
 
 
 
 def run_python_program(program_string):
     env = Build.bld.env
     execvec = shlex.split(program_string)
-
-    former_cwd = os.getcwd()
-    if (Options.options.cwd_launch):
-        os.chdir(Options.options.cwd_launch)
-    else:
-        os.chdir(Options.cwd_launch)
-    try:
-        retval = run_argv([env['PYTHON']] + execvec)
-    finally:
-        os.chdir(former_cwd)
-
-    return retval
+    if cwd is None:
+        if (Options.options.cwd_launch):
+            cwd = Options.options.cwd_launch
+        else:
+            cwd = Options.cwd_launch
+    return run_argv([env['PYTHON']] + execvec, cwd=cwd)
 
 

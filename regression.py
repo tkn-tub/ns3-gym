@@ -14,32 +14,6 @@ import Utils
 import wutils
 
 
-#
-# The directory in which the tarball of the reference traces lives.  This is
-# used if Mercurial is not on the system.
-#
-REGRESSION_TRACES_URL = "http://www.nsnam.org/releases/"
-
-#
-# The path to the Mercurial repository used to find the reference traces if
-# we find "hg" on the system.  We expect that the repository will be named
-# identically to refDirName below
-#
-REGRESSION_TRACES_REPO = "http://code.nsnam.org/"
-
-#
-# Name of the local directory where the regression code lives.
-#
-REGRESSION_DIR = "regression"
-
-#
-# The last part of the path name to use to find the regression traces.  The
-# path will be APPNAME + '-' + VERSION + REGRESSION_SUFFIX, e.g.,
-# ns-3-dev-ref-traces
-#
-REGRESSION_SUFFIX = "-ref-traces"
-
-
 def dev_null():
     if sys.platform == 'win32':
         return open("NUL:", "w")
@@ -90,19 +64,13 @@ class Regression(object):
                 os.mkdir(refTestDirName)
 
             if pyscript is None:
-                Options.options.cwd_launch = refTestDirName
                 tmpl = "%s"
                 for arg in arguments:
                     tmpl = tmpl + " " + arg
-                wutils.run_program(testName, tmpl)
+                wutils.run_program(testName, tmpl, cwd=refTestDirName)
             else:
                 argv = [self.env['PYTHON'], os.path.join(Options.cwd_launch, *os.path.split(pyscript))] + arguments
-                before = os.getcwd()
-                os.chdir(refTestDirName)
-                try:
-                    wutils.run_argv(argv)
-                finally:
-                    os.chdir(before)
+                wutils.run_argv(argv, cwd=refTestDirName)
             print "Remember to commit " + refTestDirName
             return 0
         else:
@@ -110,12 +78,11 @@ class Regression(object):
                 print "Cannot locate reference traces in " + refTestDirName
                 return 1
 
-            
             if refTestName is None:
                 traceDirName = testName + ".ref"
             else:
                 traceDirName = refTestName
-            traceDirName = os.path.join ('traces', traceDirName)
+            traceDirName = os.path.join('regression', 'traces', traceDirName)
 
             try:
                 shutil.rmtree(traceDirName)
@@ -123,20 +90,13 @@ class Regression(object):
                 pass
             os.mkdir(traceDirName)
 
-            #os.system("./waf --cwd regression/traces --run " +
-            #  testName + " > /dev/null 2>&1")
-
             if pyscript is None:
-                Options.options.cwd_launch = traceDirName
-                wutils.run_program(testName, command_template=wutils.get_command_template(*arguments))
+                wutils.run_program(testName,
+                                   command_template=wutils.get_command_template(*arguments),
+                                   cwd=traceDirName)
             else:
                 argv = [self.env['PYTHON'], os.path.join('..', '..', '..', *os.path.split(pyscript))] + arguments
-                before = os.getcwd()
-                os.chdir(traceDirName)
-                try:
-                    wutils.run_argv(argv)
-                finally:
-                    os.chdir(before)
+                wutils.run_argv(argv, cwd=traceDirName)
 
             if verbose:
                 #diffCmd = "diff traces " + refTestDirName + " | head"
@@ -179,22 +139,15 @@ def _find_tests(testdir):
 def run_regression(reference_traces):
     """Execute regression tests.  Called with cwd set to the 'regression' subdir of ns-3.
 
-    @param reference_traces: reference traces directory, or None for default.
+    @param reference_traces: reference traces directory.
 
     """
 
-    testdir = "tests"
+    testdir = os.path.join("regression", "tests")
     if not os.path.exists(testdir):
         print "Tests directory does not exist"
         sys.exit(3)
 
-    dir_name = (wutils.APPNAME + '-' + wutils.VERSION + REGRESSION_SUFFIX)
-    if reference_traces is None:
-        reference_traces = dir_name
-        no_net = False
-    else:
-        no_net = True
-    
     sys.path.append(testdir)
     sys.modules['tracediff'] = Regression(testdir, reference_traces)
 
@@ -205,32 +158,6 @@ def run_regression(reference_traces):
 
     print "========== Running Regression Tests =========="
     env = Build.bld.env
-    if not no_net:
-        if env['MERCURIAL']:
-            print "Synchronizing reference traces using Mercurial."
-            if not os.path.exists(reference_traces):
-                print "Cloning " + REGRESSION_TRACES_REPO + dir_name + " from repo."
-                argv = ["hg", "clone", REGRESSION_TRACES_REPO + dir_name, reference_traces]
-                rv = subprocess.Popen(argv).wait()
-            else:
-                _dir = os.getcwd()
-                os.chdir(reference_traces)
-                try:
-                    print "Pulling " + REGRESSION_TRACES_REPO + dir_name + " from repo."
-                    result = subprocess.Popen(["hg", "-q", "pull", REGRESSION_TRACES_REPO + dir_name]).wait()
-                    if not result:
-                        result = subprocess.Popen(["hg", "-q", "update"]).wait()
-                finally:
-                    os.chdir("..")
-                if result:
-                    raise Utils.WafError("Synchronizing reference traces using Mercurial failed.")
-        else:
-            if not os.path.exists(reference_traces):
-                traceball = dir_name + wutils.TRACEBALL_SUFFIX
-                print "Retrieving " + traceball + " from web."
-                urllib.urlretrieve(REGRESSION_TRACES_URL + traceball, traceball)
-                os.system("tar -xjf %s -C .." % (traceball))
-                print "Done."
 
     if not os.path.exists(reference_traces):
         print "Reference traces directory (%s) does not exist" % reference_traces
@@ -252,7 +179,7 @@ def run_regression(reference_traces):
         except NotImplementedError:
             print "SKIP " + test            
 
-    return len(bad) > 0
+    return (len(bad) > 0)
 
 
 def _run_regression_test(test):
@@ -261,15 +188,15 @@ def _run_regression_test(test):
     Arguments:
     test -- the name of the test
     """
-
-    if os.path.exists("traces"):
-        files = os.listdir("traces")
+    traces_dir = os.path.join("regression", "traces")
+    if os.path.exists(traces_dir):
+        files = os.listdir(traces_dir)
         for file in files:
             if file == '.' or file == '..':
                 continue
             shutil.rmtree(os.path.join("traces", file), ignore_errors=True)
     else:
-        os.mkdir("traces")
+        os.mkdir(traces_dir)
     
     mod = __import__(test, globals(), locals(), [])
     return mod.run(verbose=(Options.options.verbose > 0),

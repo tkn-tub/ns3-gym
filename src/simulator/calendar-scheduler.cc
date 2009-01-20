@@ -331,6 +331,7 @@ CalendarScheduler::DoResize (uint32_t newSize, uint32_t newWidth)
           DoInsert (*j);
         }
     }
+  delete [] oldBuckets;
 }
 void 
 CalendarScheduler::Resize (uint32_t newSize)

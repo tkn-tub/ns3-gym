@@ -17,11 +17,13 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-
+#include "ns3/core-config.h"
 #include "simulator.h"
 #include "simulator-impl.h"
 #include "default-simulator-impl.h"
-#include "realtime-simulator-impl.h"
+#ifdef HAVE_PTHREAD_H
+# include "realtime-simulator-impl.h"
+#endif
 #include "scheduler.h"
 #include "event-impl.h"
 
@@ -314,6 +316,8 @@ Simulator::GetImplementation (void)
 #include "list-scheduler.h"
 #include "heap-scheduler.h"
 #include "map-scheduler.h"
+#include "calendar-scheduler.h"
+#include "ns2-calendar-scheduler.h"
 
 namespace ns3 {
 
@@ -734,6 +738,20 @@ SimulatorTests::RunTests (void)
     }
   Simulator::Destroy ();
   Simulator::SetScheduler (CreateObject<MapScheduler> ());
+  if (!RunOneTest ()) 
+    {
+      result = false;
+    }
+  Simulator::Destroy ();
+
+  Simulator::SetScheduler (CreateObject<CalendarScheduler> ());
+  if (!RunOneTest ()) 
+    {
+      result = false;
+    }
+  Simulator::Destroy ();
+
+  Simulator::SetScheduler (CreateObject<Ns2CalendarScheduler> ());
   if (!RunOneTest ()) 
     {
       result = false;
