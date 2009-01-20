@@ -906,6 +906,9 @@ RandomVariableBase* NormalVariableImpl::Copy() const
 NormalVariable::NormalVariable()
   : RandomVariable (NormalVariableImpl ())
 {}
+NormalVariable::NormalVariable(double m, double v)
+  : RandomVariable (NormalVariableImpl (m, v))
+{}
 NormalVariable::NormalVariable(double m, double v, double b)
   : RandomVariable (NormalVariableImpl (m, v, b))
 {}

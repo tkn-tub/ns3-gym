@@ -1424,12 +1424,12 @@ def register_Ns3LogNormalVariable_methods(root_module, cls):
     return
 
 def register_Ns3NormalVariable_methods(root_module, cls):
-    ## random-variable.h: ns3::NormalVariable::INFINITE_VALUE [variable]
-    cls.add_static_attribute('INFINITE_VALUE', 'double const', is_const=True)
     ## random-variable.h: ns3::NormalVariable::NormalVariable() [constructor]
     cls.add_constructor([])
-    ## random-variable.h: ns3::NormalVariable::NormalVariable(double m, double v, double b=ns3::NormalVariable::INFINITE_VALUE) [constructor]
-    cls.add_constructor([param('double', 'm'), param('double', 'v'), param('double', 'b', default_value='ns3::NormalVariable::INFINITE_VALUE')])
+    ## random-variable.h: ns3::NormalVariable::NormalVariable(double m, double v) [constructor]
+    cls.add_constructor([param('double', 'm'), param('double', 'v')])
+    ## random-variable.h: ns3::NormalVariable::NormalVariable(double m, double v, double b) [constructor]
+    cls.add_constructor([param('double', 'm'), param('double', 'v'), param('double', 'b')])
     cls.add_copy_constructor()
     return
 
