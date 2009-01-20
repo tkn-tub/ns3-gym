@@ -21,6 +21,8 @@
 #include <cstdlib>
 #include <iostream>
 #include "rng-stream.h"
+#include "global-value.h"
+#include "integer.h"
 using namespace std;
 
 namespace
@@ -199,7 +201,14 @@ void MatPowModM (const double A[3][3], double B[3][3], double m, int32_t n)
     }
 }
 
-
+static ns3::GlobalValue g_rngSeed ("RngSeed", 
+                                   "The global seed of all rng streams",
+                                   ns3::IntegerValue (1),
+                                   ns3::MakeIntegerChecker<uint32_t> ());
+static ns3::GlobalValue g_rngRun ("RngRun", 
+                                  "The run number used to modify the global seed",
+                                  ns3::IntegerValue (1),
+                                  ns3::MakeIntegerChecker<uint32_t> ());
 
 } // end of anonymous namespace
 
@@ -291,7 +300,61 @@ bool RngStream::CheckSeed (const uint32_t seed[6])
     return true;
 }
 
-
+void 
+RngStream::EnsureGlobalInitialized (void)
+{
+  static bool initialized = false;
+  if (!initialized)
+    {
+      initialized = true;
+      uint32_t seed;
+      uint32_t run;
+      // First, initialize ourselves from the global value.
+      {
+        IntegerValue value;
+        g_rngSeed.GetValue (value);
+        seed = value.Get ();
+        g_rngRun.GetValue (value);
+        run = value.Get ();
+      }
+      // then, in case we have NS_RNG set, override the global 
+      // value from the env var.
+      char *tmp = getenv ("NS_RNG");
+      if (tmp != 0)
+        {
+          std::string var = std::string (getenv ("NS_RNG"));
+          std::string::size_type colon = var.find (":");
+          if (colon != std::string::npos)
+            {
+              {
+                std::string seedString = var.substr (0, colon);
+                std::istringstream iss;
+                iss.str (seedString);
+                iss >> seed;
+              }
+              {
+                std::string runString = var.substr (colon+1,var.size ()-colon-1);
+                std::istringstream iss;
+                iss.str (runString);
+                iss >> run;
+              }
+            }
+          else
+            {
+              {
+                std::istringstream iss;
+                iss.str (var);
+                iss >> seed;
+              }
+            }
+        }
+      // finally, actually use these values to do something.
+      uint32_t seedArray [] = {seed, seed, seed, seed, seed, seed};
+      SetPackageSeed (seedArray);
+      // set to the chosen substream (run)
+      ResetNthSubstream (run);
+    }
+}
 
 //*************************************************************************
 // Public members of the class start here
@@ -311,6 +374,7 @@ double RngStream::nextSeed[6] =
 //
 RngStream::RngStream ()
 {
+  EnsureGlobalInitialized ();
    anti = false;
    incPrec = false;
    // Stream initialization moved to separate method.

@@ -60,6 +60,7 @@ private: //members
   bool anti, incPrec;
   double U01 ();
   double U01d ();
+  static void EnsureGlobalInitialized (void);
 private: //static data
   static double nextSeed[6];
 };
