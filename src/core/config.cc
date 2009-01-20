@@ -22,6 +22,7 @@
 #include "object.h"
 #include "global-value.h"
 #include "object-vector.h"
+#include "object-names.h"
 #include "pointer.h"
 #include "log.h"
 #include <sstream>
@@ -294,6 +295,45 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
   std::string item = path.substr (1, next-1);
   std::string pathLeft = path.substr (next, path.size ()-next);
 
+  //
+  // If root is zero, we're beginning to see if we can use the object name 
+  // service to resolve this path.  In this case, we must see the name space 
+  // "/Names" on the front of this path.  There is no object associated with 
+  // the root of the "/Names" namespace, so we just ignore it and move on to 
+  // the next segment.
+  //
+  if (root == 0)
+    {
+      std::string::size_type offset = path.find ("/Names");
+      if (offset == 0)
+        {
+          m_workStack.push_back (item);
+          DoResolve (pathLeft, root);
+          m_workStack.pop_back ();
+          return;
+        }
+    }
+
+  //
+  // We have an item (possibly a segment of a namespace path.  Check to see if
+  // we can determine that this segment refers to a named object.  If root is
+  // zero, this means to look in the root of the "/Names" name space, otherwise
+  // it refers to a name space context (level).
+  //
+  Ptr<Object> namedObject = Names::FindObjectFromShortName<Object> (root, item);
+  if (namedObject)
+    {
+      NS_LOG_DEBUG ("Name system resolved item = " << item << " to " << namedObject);
+      m_workStack.push_back (item);
+      DoResolve (pathLeft, namedObject);
+      m_workStack.pop_back ();
+      return;
+    }
+
+  //
+  // We're done with the object name service hooks, so proceed down the path
+  // of types and attributes.
+  //
   std::string::size_type dollarPos = item.find ("$");
   if (dollarPos == 0)
     {
@@ -480,6 +520,14 @@ ConfigImpl::LookupMatches (std::string path)
     {
       resolver.Resolve (*i);
     }
+
+  //
+  // See if we can do something with the object name service.  Starting with
+  // the root pointer zeroed indicates to the resolver that it should start
+  // looking at the root of the "/Names" namespace during this go.
+  //
+  resolver.Resolve (0);
+
   return Config::MatchContainer (resolver.m_objects, resolver.m_contexts, path);
 }
 
