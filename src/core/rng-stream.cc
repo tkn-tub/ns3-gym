@@ -351,8 +351,7 @@ RngStream::EnsureGlobalInitialized (void)
       // finally, actually use these values to do something.
       uint32_t seedArray [] = {seed, seed, seed, seed, seed, seed};
       SetPackageSeed (seedArray);
-      // set to the chosen substream (run)
-      ResetNthSubstream (run);
+      //XXX set the run number
     }
 }
 
