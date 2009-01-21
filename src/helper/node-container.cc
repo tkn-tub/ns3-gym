@@ -19,6 +19,7 @@
  */
 #include "node-container.h"
 #include "ns3/node-list.h"
+#include "ns3/object-names.h"
 
 namespace ns3 {
 
@@ -27,6 +28,11 @@ NodeContainer::NodeContainer ()
 
 NodeContainer::NodeContainer (Ptr<Node> node)
 {
+  m_nodes.push_back (node);
+}
+NodeContainer::NodeContainer (std::string nodeName)
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
   m_nodes.push_back (node);
 }
 NodeContainer::NodeContainer (const NodeContainer &a, const NodeContainer &b)
@@ -101,6 +107,12 @@ NodeContainer::Add (NodeContainer other)
 void 
 NodeContainer::Add (Ptr<Node> node)
 {
+  m_nodes.push_back (node);
+}
+void 
+NodeContainer::Add (std::string nodeName)
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
   m_nodes.push_back (node);
 }
 

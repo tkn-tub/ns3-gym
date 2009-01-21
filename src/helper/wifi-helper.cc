@@ -31,8 +31,7 @@
 #include "ns3/pcap-writer.h"
 #include "ns3/config.h"
 #include "ns3/simulator.h"
-
-
+#include "ns3/object-names.h"
 
 NS_LOG_COMPONENT_DEFINE ("WifiHelper");
 
@@ -126,6 +125,11 @@ WifiHelper::Install (const WifiPhyHelper &phy, Ptr<Node> node) const
 {
   return Install (phy, NodeContainer (node));
 }
-
+NetDeviceContainer 
+WifiHelper::Install (const WifiPhyHelper &phy, std::string nodeName) const
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
+  return Install (phy, NodeContainer (node));
+}
 
 } // namespace ns3

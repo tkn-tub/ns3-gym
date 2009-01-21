@@ -25,7 +25,7 @@
 #include "ns3/pcap-writer.h"
 #include "ns3/config.h"
 #include "ns3/packet.h"
-
+#include "ns3/object-names.h"
 
 namespace ns3 {
 
@@ -204,6 +204,28 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
   return container;
 }
 
+NetDeviceContainer 
+PointToPointHelper::Install (Ptr<Node> a, std::string bName)
+{
+  Ptr<Node> b = Names::Find<Node> (bName);
+  return Install (a, b);
+}
+
+NetDeviceContainer 
+PointToPointHelper::Install (std::string aName, Ptr<Node> b)
+{
+  Ptr<Node> a = Names::Find<Node> (aName);
+  return Install (a, b);
+}
+
+NetDeviceContainer 
+PointToPointHelper::Install (std::string aName, std::string bName)
+{
+  Ptr<Node> a = Names::Find<Node> (aName);
+  Ptr<Node> b = Names::Find<Node> (bName);
+  return Install (a, b);
+}
+
 void 
 PointToPointHelper::InstallStar (Ptr<Node> hub, NodeContainer spokes, 
                                  NetDeviceContainer& hubDevices, NetDeviceContainer& spokeDevices)
@@ -214,6 +236,14 @@ PointToPointHelper::InstallStar (Ptr<Node> hub, NodeContainer spokes,
       hubDevices.Add (nd.Get (0));
       spokeDevices.Add (nd.Get (1));
     }
+}
+
+void 
+PointToPointHelper::InstallStar (std::string hubName, NodeContainer spokes, 
+                                 NetDeviceContainer& hubDevices, NetDeviceContainer& spokeDevices)
+{
+  Ptr<Node> hub = Names::Find<Node> (hubName);
+  InstallStar (hub, spokes, hubDevices, spokeDevices);
 }
 
 void 

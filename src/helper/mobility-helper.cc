@@ -25,6 +25,7 @@
 #include "ns3/pointer.h"
 #include "ns3/config.h"
 #include "ns3/simulator.h"
+#include "ns3/object-names.h"
 #include <iostream>
 
 namespace ns3 {
@@ -43,6 +44,12 @@ MobilityHelper::~MobilityHelper ()
 void 
 MobilityHelper::SetPositionAllocator (Ptr<PositionAllocator> allocator)
 {
+  m_position = allocator;
+}
+void 
+MobilityHelper::SetPositionAllocator (std::string allocatorName)
+{
+  Ptr<PositionAllocator> allocator = Names::Find<PositionAllocator> (allocatorName);
   m_position = allocator;
 }
 void 
@@ -101,6 +108,14 @@ MobilityHelper::PushReferenceMobilityModel (Ptr<Object> reference)
   Ptr<MobilityModel> mobility = reference->GetObject<MobilityModel> ();
   m_mobilityStack.push_back (mobility);
 }
+
+void 
+MobilityHelper::PushReferenceMobilityModel (std::string referenceName)
+{
+  Ptr<MobilityModel> mobility = Names::Find<MobilityModel> (referenceName);
+  m_mobilityStack.push_back (mobility);
+}
+
 void 
 MobilityHelper::PopReferenceMobilityModel (void)
 {
@@ -147,6 +162,12 @@ MobilityHelper::Install (Ptr<Node> node) const
   model->SetPosition (position);
 }
 
+void
+MobilityHelper::Install (std::string nodeName) const
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
+  Install (node);
+}
 void 
 MobilityHelper::Install (NodeContainer c) const
 {

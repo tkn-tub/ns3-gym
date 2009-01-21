@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef APPLICATION_CONTAINER_H
 #define APPLICATION_CONTAINER_H
 
@@ -45,6 +46,13 @@ public:
    */
   ApplicationContainer (Ptr<Application> application);
 
+  /**
+   * Create an ApplicationContainer with exactly one application
+   *
+   * \param name The name of the application object to add to the container
+   */
+  ApplicationContainer (std::string name);
+
   typedef std::vector<Ptr<Application> >::const_iterator Iterator;
 
   /**
@@ -57,27 +65,33 @@ public:
   Iterator End (void) const;
 
   /**
-   * \returns the number of netdevice pointers stored in this container.
+   * \returns the number of application pointers stored in this container.
    */
   uint32_t GetN (void) const;
   /**
-   * \param i the index of the requested netdevice pointer.
-   * \returns the requested netdevice pointer.
+   * \param i the index of the requested application pointer.
+   * \returns the requested application pointer.
    */
   Ptr<Application> Get (uint32_t i) const;
 
   /**
-   * \param other another netdevice container
-   *
    * Append to the end of this container the other input container.
+   *
+   * \param other another application container
    */
   void Add (ApplicationContainer other);
   /**
-   * \param application another netdevice pointer.
+   * Append to the end of this container the input application pointer.
    *
-   * Append to the end of this container the input netdevice pointer.
+   * \param application another netdevice pointer.
    */
   void Add (Ptr<Application> application);
+  /**
+   * Append to the end of this container the application specified by the name.
+   *
+   * \param name The name of the application object to add to the container.
+   */
+  void Add (std::string name);
 
   void Start (Time start);
   void Stop (Time stop);

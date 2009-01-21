@@ -164,6 +164,15 @@ public:
   NetDeviceContainer Install (Ptr<Node> node) const;
 
   /**
+   * This method creates an ns3::EmuNetDevice with the attributes configured by 
+   * EmuHelper::SetDeviceAttribute and then adds the device to the node.
+   *
+   * \param nodeName The name of the node to install the device in
+   * \returns A containter holding the added net device.
+   */
+  NetDeviceContainer Install (std::string nodeName) const;
+
+  /**
    * For each Ptr<node> in the provided container this method creates an 
    * ns3::EmuNetDevice (with the attributes configured by 
    * EmuHelper::SetDeviceAttribute); adds the device to the node.

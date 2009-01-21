@@ -20,6 +20,7 @@
 
 #include "packet-socket-helper.h"
 #include "ns3/packet-socket-factory.h"
+#include "ns3/object-names.h"
 
 namespace ns3 {
 
@@ -35,8 +36,15 @@ PacketSocketHelper::Install (NodeContainer c) const
 void
 PacketSocketHelper::Install (Ptr<Node> node) const
 {
-    Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
-    node->AggregateObject (factory);
+  Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
+  node->AggregateObject (factory);
+}
+
+void
+PacketSocketHelper::Install (std::string nodeName) const
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
+  Install (node);
 }
 
 } // namespace ns3

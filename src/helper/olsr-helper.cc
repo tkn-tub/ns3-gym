@@ -20,6 +20,7 @@
 #include "olsr-helper.h"
 #include "ns3/olsr-agent.h"
 #include "ns3/node-list.h"
+#include "ns3/object-names.h"
 
 namespace ns3 {
 
@@ -72,6 +73,12 @@ OlsrHelper::Install (Ptr<Node> node)
   agent->SetNode (node);
   node->AggregateObject (agent);
   agent->Start ();
+}
+void 
+OlsrHelper::Install (std::string nodeName)
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
+  Install (node);
 }
 void 
 OlsrHelper::InstallAll (void)

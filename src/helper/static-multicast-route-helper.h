@@ -34,13 +34,22 @@ class StaticMulticastRouteHelper
 public:
   StaticMulticastRouteHelper ();
 
-  void AddMulticastRoute (Ptr<Node>, Ipv4Address source, Ipv4Address group,  
+  void AddMulticastRoute (Ptr<Node> n, Ipv4Address source, Ipv4Address group,  
     Ptr<NetDevice> input, NetDeviceContainer output);
+  void AddMulticastRoute (std::string n, Ipv4Address source, Ipv4Address group,  
+    Ptr<NetDevice> input, NetDeviceContainer output);
+  void AddMulticastRoute (Ptr<Node> n, Ipv4Address source, Ipv4Address group,  
+    std::string inputName, NetDeviceContainer output);
+  void AddMulticastRoute (std::string nName, Ipv4Address source, Ipv4Address group,  
+    std::string inputName, NetDeviceContainer output);
 
   void SetDefaultMulticastRoute (Ptr<Node> n, Ptr<NetDevice> nd);
+  void SetDefaultMulticastRoute (Ptr<Node> n, std::string ndName);
+  void SetDefaultMulticastRoute (std::string nName, Ptr<NetDevice> nd);
+  void SetDefaultMulticastRoute (std::string nName, std::string ndName);
 
   void JoinMulticastGroup (Ptr<Node> n, Ipv4Address source, Ipv4Address group);
-
+  void JoinMulticastGroup (std::string nName, Ipv4Address source, Ipv4Address group);
 };
 
 } // namespace ns3

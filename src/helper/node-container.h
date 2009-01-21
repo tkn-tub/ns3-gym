@@ -46,6 +46,12 @@ public:
    */
   NodeContainer (Ptr<Node> node);
   /**
+   * \param nodeName The name of a node to add to the container
+   *
+   * Create a NodeContainer with exactly one node.
+   */
+  NodeContainer (std::string nodeName);
+  /**
    * \param a a node container
    * \param b another node container
    *
@@ -105,6 +111,12 @@ public:
    * Append the input node pointer at the end of this NodeContainer.
    */
   void Add (Ptr<Node> node);
+  /**
+   * \param nodeName The name of a node
+   *
+   * Append the input node pointer at the end of this NodeContainer.
+   */
+  void Add (std::string nodeName);
 
   /**
    * \returns a container which contains a list of _all_ nodes

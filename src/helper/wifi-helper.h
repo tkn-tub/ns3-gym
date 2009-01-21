@@ -153,6 +153,12 @@ public:
    * \returns a device container which contains all the devices created by this method.
    */
   NetDeviceContainer Install (const WifiPhyHelper &phy, Ptr<Node> node) const;
+  /**
+   * \param phy the PHY helper to create PHY objects
+   * \param nodeName the name of node on which a wifi device must be created
+   * \returns a device container which contains all the devices created by this method.
+   */
+  NetDeviceContainer Install (const WifiPhyHelper &phy, std::string nodeName) const;
 
 private:
   ObjectFactory m_stationManager;

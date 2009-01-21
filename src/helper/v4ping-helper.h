@@ -16,6 +16,7 @@ public:
 
   ApplicationContainer Install (NodeContainer nodes) const;
   ApplicationContainer Install (Ptr<Node> node) const;
+  ApplicationContainer Install (std::string nodeName) const;
 
 private:
   Ptr<Application> InstallPriv (Ptr<Node> node) const;

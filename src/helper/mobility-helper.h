@@ -50,6 +50,13 @@ public:
    * \param allocator allocate initial node positions
    */
   void SetPositionAllocator (Ptr<PositionAllocator> allocator);
+  /**
+   * Set the position allocator which will be used to allocate the initial 
+   * position of every node initialized during MobilityModel::Install.
+   *
+   * \param allocator allocate initial node positions
+   */
+  void SetPositionAllocator (std::string allocatorName);
 
   /**
    * \param type the type of mobility model to use.
@@ -138,6 +145,25 @@ public:
    */
   void PushReferenceMobilityModel (Ptr<Object> reference);
   /**
+   * \param reference item to push.
+   *
+   * Push an item on the top of the stack of "reference mobility models".
+   * The input item should be a node instance to which a mobility model
+   * has already been aggregated (usually by a call to Install).
+   *
+   * If this this stack is not empty when MobilityHelper::Install
+   * is called, the model from the top of the stack is used
+   * to create a ns3::HierarchicalMobilityModel to make the
+   * newly-created models define their positions relative to that
+   * of the parent mobility model.
+   *
+   * This method is typically used to create hierarchical mobility
+   * patterns and positions by starting with the large-scale mobility
+   * features, and, then, defining the smaller-scale movements relative
+   * to a few reference points in the large-scale model.
+   */
+  void PushReferenceMobilityModel (std::string referenceName);
+  /**
    * Remove the top item from the top of the stack of
    * "reference mobility models".
    */
@@ -161,6 +187,18 @@ public:
    * \param node The node to "layout."
    */
   void Install (Ptr<Node> node) const;
+  /**
+   * \brief "Layout" a single node according to the current position allocator
+   * type.
+   *
+   * This method creates an instance of a ns3::MobilityModel subclass (the 
+   * type of which was set with MobilityHelper::SetMobilityModel), aggregates
+   * it to the provided node, and sets an initial position based on the current
+   * position allocator (set through MobilityHelper::SetPositionAllocator). 
+   *
+   * \param nodeName The name of the node to "layout."
+   */
+  void Install (std::string nodeName) const;
 
   /**
    * \brief Layout a collection of nodes according to the current position allocator

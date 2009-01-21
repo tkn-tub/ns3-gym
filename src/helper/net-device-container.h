@@ -46,6 +46,12 @@ public:
    */
   NetDeviceContainer (Ptr<NetDevice> dev);
   /**
+   * \param devName The name of a device to add to the container
+   *
+   * Create a NetDeviceContainer with exactly one device
+   */
+  NetDeviceContainer (std::string devName);
+  /**
    * \param a a device container
    * \param b another device container
    *
@@ -93,6 +99,12 @@ public:
    * Append to the end of this container the input netdevice pointer.
    */
   void Add (Ptr<NetDevice> device);
+  /**
+   * \param deviceName The name of another netdevice to add.
+   *
+   * Append to the end of this container the input netdevice pointer.
+   */
+  void Add (std::string deviceName);
 
 private:
   std::vector<Ptr<NetDevice> > m_devices;

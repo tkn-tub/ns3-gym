@@ -16,6 +16,7 @@ public:
   BridgeHelper ();
   void SetDeviceAttribute (std::string n1, const AttributeValue &v1);
   NetDeviceContainer Install (Ptr<Node> node, NetDeviceContainer c);
+  NetDeviceContainer Install (std::string nodeName, NetDeviceContainer c);
 private:
   ObjectFactory m_deviceFactory;
 };

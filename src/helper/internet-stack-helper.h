@@ -41,6 +41,15 @@ public:
    * onto the provided node.  This method will assert if called on a node that 
    * already has an Ipv4 object aggregated to it.
    * 
+   * \param nodeName The name of the node on which to install the stack.
+   */
+  void Install (std::string nodeName) const;
+
+  /**
+   * Aggregate implementations of the ns3::Ipv4, ns3::Udp, and ns3::Tcp classes
+   * onto the provided node.  This method will assert if called on a node that 
+   * already has an Ipv4 object aggregated to it.
+   * 
    * \param node The node on which to install the stack.
    */
   void Install (Ptr<Node> node) const;

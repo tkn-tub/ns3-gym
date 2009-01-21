@@ -155,6 +155,12 @@ public:
    */
   void SetChannel (Ptr<YansWifiChannel> channel);
   /**
+   * \param channelName The name of the channel to associate to this helper
+   *
+   * Every PHY created by a call to Install is associated to this channel.
+   */
+  void SetChannel (std::string channelName);
+  /**
    * \param name the name of the attribute to set
    * \param v the value of the attribute
    *
