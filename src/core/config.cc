@@ -931,7 +931,12 @@ ConfigTest::RunTests (void)
   d1->SetAttribute ("Source", IntegerValue (-4));
   NS_TEST_ASSERT_EQUAL (m_traceNotification, 0);
 
-
+  //
+  // The Config system is intertwined with the Names system.  In the process
+  // of parsing the paths above, we also created a NamesPriv singleton.  In
+  // order to get a valgrind-clean run we need to clean up that singleton.
+  //
+  Names::Delete ();
 
   return result;
 }

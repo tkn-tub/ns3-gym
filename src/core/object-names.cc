@@ -17,12 +17,12 @@
  */
 
 #include <map>
-#include "ns3/object.h"
-#include "ns3/log.h"
-#include "ns3/assert.h"
-#include "ns3/abort.h"
-#include "ns3/simulator.h"
+#include "object.h"
+#include "log.h"
+#include "assert.h"
+#include "abort.h"
 #include "object-names.h"
+#include "ns3/simulator.h"
 
 namespace ns3 {
 
@@ -92,10 +92,9 @@ public:
   Ptr<Object> FindObjectFromShortName (Ptr<Object> context, std::string name);
 
   static NamesPriv *Get (void);
-  
+  static void Delete (void);
 private:
   static NamesPriv **DoGet (void);
-  static void Delete (void);
 
   NameNode *IsNamed (Ptr<Object>);
   bool IsDuplicateName (NameNode *node, std::string name);
@@ -156,6 +155,10 @@ NamesPriv::~NamesPriv ()
       delete i->second;
       i->second = 0;
     }
+
+  m_root.m_parent = 0;
+  m_root.m_name = "";
+  m_root.m_object = 0;
 }
 
 bool
@@ -442,6 +445,12 @@ NamesPriv::IsDuplicateName (NameNode *node, std::string name)
       NS_LOG_LOGIC ("Name exists in name map");
       return true;
     }
+}
+
+void
+Names::Delete (void)
+{
+  NamesPriv::Delete ();
 }
 
 bool
