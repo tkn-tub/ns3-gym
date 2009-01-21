@@ -287,9 +287,21 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
   tmp = path.find ("/");
   NS_ASSERT (tmp == 0);
   std::string::size_type next = path.find ("/", 1);
+
   if (next == std::string::npos)
     {
-      DoResolveOne (root);
+      //
+      // If root is zero, we're beginning to see if we can use the object name 
+      // service to resolve this path.  It is impossible to have a object name 
+      // associated with the root of the object name service since that root
+      // is not an object.  This path must be referring to something in another
+      // namespace and it will have been found already since the name service
+      // is always consulted last.
+      // 
+      if (root)
+        {
+          DoResolveOne (root);
+        }
       return;
     }
   std::string item = path.substr (1, next-1);
