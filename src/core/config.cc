@@ -332,8 +332,15 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
 
   //
   // We're done with the object name service hooks, so proceed down the path
-  // of types and attributes.
+  // of types and attributes; but only if root is nonzero.  If root is zero
+  // and we find ourselves here, we are trying to check in the namespace for
+  // a path that is not in the "/Names" namespace.  We will have previously
+  // found any matches, so we just bail out.
   //
+  if (root == 0)
+    {
+      return;
+    }
   std::string::size_type dollarPos = item.find ("$");
   if (dollarPos == 0)
     {
