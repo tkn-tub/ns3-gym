@@ -56,8 +56,8 @@ main (int argc, char *argv[])
   // as the destination, so these will go into the name system as "/Names/client"
   // and "/Names/server".  
   //
-  Names::Add ("/Names", "client", n.Get (0));
-  Names::Add ("/Names", "server", n.Get (1));
+  Names::Add ("/Names/client", n.Get (0));
+  Names::Add ("/Names/server", n.Get (1));
 
   InternetStackHelper internet;
   internet.Install (n);
@@ -72,12 +72,12 @@ main (int argc, char *argv[])
   // Add some human readable names for the devices we'll be interested in.
   // We add the names to the name space "under" the nodes we created above.
   // This has the effect of making "/Names/client/eth0" and "/Names/server/eth0"
-  // Note that the first parameter must reference a previously named object,
+  // Note that the first part of the path must reference a previously named object,
   // and we have, in fact, already named objects "/Names/client" and
   // "/Names/server"
   //
-  Names::Add ("/Names/client", "eth0", d.Get (0));
-  Names::Add ("/Names/server", "eth0", d.Get (1));
+  Names::Add ("/Names/client/eth0", d.Get (0));
+  Names::Add ("/Names/server/eth0", d.Get (1));
 
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");

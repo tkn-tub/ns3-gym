@@ -161,7 +161,55 @@ NamesPriv::~NamesPriv ()
 bool
 NamesPriv::Add (std::string name, Ptr<Object> object)
 {
-  return Add (Ptr<Object> (0, false), name, object);
+  NS_LOG_FUNCTION (name << object);
+  //
+  // This is the simple, easy to use version of Add, so we want it to be flexible.
+  //
+  // If we are provided a name that doesn't begin with "/Names", we assume 
+  // that the caller has given us a shortname that she wants added to the root
+  // namespace.  This results in a call to the "real" Add with context set to 
+  // zero, indicating what we want to do.
+  //
+  // If we are given a name that begins with "/Names/" we assume that this is a
+  // fullname to the object we want to create.  We split the fullname into a 
+  // context string and and a final segment and then call the "Real" Add.
+  //
+  std::string namespaceName = "/Names";
+  std::string::size_type offset = name.find (namespaceName);
+  if (offset == 0)
+    {
+      //
+      // This must be a fully qualified longname.  All fully qualified names begin
+      // with "/Names".  We have to split off the final segment which will become
+      // the shortname of the object.
+      //
+      std::string::size_type i = name.rfind ("/");
+      NS_ASSERT_MSG (i != std::string::npos, "NamesPriv::Add(): Internal error.  Can't find '/' in name");
+
+      //
+      // The slash we found cannot be the slash at the start of the namespaceName.
+      // This would indicate there is no shortname in the path at all.
+      //
+      NS_ASSERT_MSG (i != 0, "NamesPriv::Add(): Can't find a shortname in the name string");
+
+      //
+      // We now know where the context string starts and ends, and where the
+      // shortname starts and ends.  All we have to do is to call our available
+      // function for creating addubg a shortname under a context string.
+      //
+      return Add (name.substr (0, i), name.substr (i + 1), object);
+    }
+  else
+    {
+      //
+      // This must be a shortname.  Shortnames can't have ANY '/' characters in
+      // them since they are interpreted as a final segment of a fullname.  A 
+      // shortname in this context means creating a name in the root namespace.
+      // We indicate this by passing a zero context to the "real" add.
+      //
+      NS_ASSERT_MSG (offset == std::string::npos, "NamesPriv::Add(): Unexpected '/' in shortname");
+      return Add (Ptr<Object> (0, false), name, object);
+    }
 }
 
 bool
@@ -204,7 +252,7 @@ NamesPriv::Add (std::string context, std::string name, Ptr<Object> object)
 {
   if (context == "/Names")
     {
-      return Add (name, object);
+      return Add (Ptr<Object> (0, false), name, object);
     }
   return Add (FindObjectFromFullName (context), name, object);
 }
@@ -589,11 +637,11 @@ NamesTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (foundObject, serverEth0);
 
   //
-  // We also have some syntactical sugary methods, so make sure they do what
+  // We also have some syntactically sugary methods, so make sure they do what
   // they should as well.
   //
   Ptr<TestObject> bridge = CreateObject<TestObject> ();
-  result = Names::Add ("/Names", "Bridge", client);
+  result = Names::Add ("/Names", "Bridge", bridge);
   NS_TEST_ASSERT_EQUAL (result, true);
 
   Ptr<TestObject> bridgeEth0 = CreateObject<TestObject> ();
@@ -605,6 +653,20 @@ NamesTest::RunTests (void)
 
   foundObject = Names::Find<TestObject> ("/Names/Bridge/eth0");
   NS_TEST_ASSERT_EQUAL (foundObject, bridgeEth0);
+
+  Ptr<TestObject> wireless = CreateObject<TestObject> ();
+  result = Names::Add ("/Names/Wireless", wireless);
+  NS_TEST_ASSERT_EQUAL (result, true);
+
+  Ptr<TestObject> wirelessAth0 = CreateObject<TestObject> ();
+  result = Names::Add ("/Names/Wireless/ath0", wirelessAth0);
+  NS_TEST_ASSERT_EQUAL (result, true);
+
+  foundObject = Names::Find<TestObject> ("/Names/Wireless");
+  NS_TEST_ASSERT_EQUAL (foundObject, wireless);
+
+  foundObject = Names::Find<TestObject> ("/Names/Wireless/ath0");
+  NS_TEST_ASSERT_EQUAL (foundObject, wirelessAth0);
 
   //
   // Run the simulator and destroy it to get the Destroy method called on the
