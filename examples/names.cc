@@ -79,6 +79,23 @@ main (int argc, char *argv[])
   Names::Add ("/Names/client/eth0", d.Get (0));
   Names::Add ("/Names/server/eth0", d.Get (1));
 
+  //
+  // You can use the object names that you've assigned in calls to the Config
+  // system to set Object Attributes.  For example, you can set the Mtu 
+  // Attribute of a Csma devices using the object naming service.
+  //
+  Config::Set ("/Names/client/eth0/Mtu", UintegerValue (1234));
+
+  //
+  // You can mix and match names and Attributes in calls to the Config system.
+  // For example, if "eth0" is a named object, you can get to its parent through
+  // a different namespace.  For example, you could use the NodeList namespace
+  // to get to the server node, and then continue seamlessly adding named objects
+  // in the path. This is not nearly as readable as the previous version, but it
+  // illustrates how you can mix and match object names and Attribute names.
+  //
+  Config::Set ("/NodeList/1/eth0/Mtu", UintegerValue (1234));
+
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer i = ipv4.Assign (d);
@@ -109,8 +126,8 @@ main (int argc, char *argv[])
   apps.Stop (Seconds (10.0));
 
   //
-  // Use the config system to connect a trace source using the object name
-  // system to specify the path.
+  // Use the Config system to connect a trace source using the object name
+  // service to specify the path.
   //
   Config::Connect ("/Names/client/eth0/Rx", MakeCallback (&RxEvent));
 
