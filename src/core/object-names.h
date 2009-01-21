@@ -55,6 +55,8 @@ public:
    *                name to be defined.
    * \param name The name of the object you want to associate.
    * \param obj A smart pointer to the object itself.
+   *
+   * \returns true if the association was successfully completed, false otherwise
    */
   static bool Add (Ptr<Object> context, std::string name, Ptr<Object> object);
 
@@ -69,6 +71,8 @@ public:
    *                under which you want this name to be defined.
    * \param name The name of the object you want to associate.
    * \param obj A smart pointer to the object itself.
+   *
+   * \returns true if the association was successfully completed, false otherwise
    */
   static bool Add (std::string context, std::string name, Ptr<Object> object);
 
@@ -87,6 +91,8 @@ public:
    *
    * \param object A spart pointer to an object for which you want to find
    *               its shortname.
+   *
+   * \returns a string containing the shortname of the object.
    */
   static std::string FindShortName (Ptr<Object> object);
 
@@ -106,6 +112,8 @@ public:
    *
    * \param object A spart pointer to an object for which you want to find
    *               its fullname.
+   *
+   * \returns a string containing the fullname of the object.
    */
   static std::string FindFullName (Ptr<Object> object);
 
@@ -121,6 +129,9 @@ public:
    *
    * \param name A string containing a fully qualified name space name 
    *             used to locate the object.
+   *
+   * \returns a smart pointer to the named object converted to the requested
+   *          type.
    */
   template <typename T>
   static Ptr<T> FindObjectFromFullName (std::string name);
@@ -137,6 +148,10 @@ public:
    *
    * \param name A string containing a fully qualified name space name 
    *             used to locate the object.
+   *
+   *
+   * \returns a smart pointer to the named object converted to the requested
+   *          type.
    *
    * @comment This method is identical to FindObjectFromFullName, but has a
    * short signature since it is a common use and we want it to be easy to 
@@ -167,6 +182,9 @@ public:
    * \param context A spart pointer to an object under which you want to look 
    *                for the provided name.
    * \param name A string containing a shortname to look for.
+   *
+   * \returns a smart pointer to the named object converted to the requested
+   *          type.
    */
   template <typename T>
   static Ptr<T> FindObjectFromShortName (Ptr<Object> context, std::string name);
@@ -185,6 +203,8 @@ private:
    * \brief Non-templated internal version of FindObjectFromLongName
    *
    * \param name A string containing a longname to look for.
+   *
+   * \returns a smart pointer to the named object.
    */
   static Ptr<Object> FindObjectFromFullNameInternal (std::string name);
 
@@ -196,6 +216,8 @@ private:
    * \param context A spart pointer to an object under which you want to look 
    *                for the provided name.
    * \param name A string containing a shortname to look for.
+   *
+   * \returns a smart pointer to the named object.
    */
   static Ptr<Object> FindObjectFromShortNameInternal (Ptr<Object> context, std::string name);
 };
