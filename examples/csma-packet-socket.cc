@@ -57,11 +57,6 @@ main (int argc, char *argv[])
   LogComponentEnable ("CsmaPacketSocketExample", LOG_LEVEL_INFO);
 #endif
 
-  //
-  // Make the random number generators generate reproducible results.
-  //
-  uint32_t seed[6] = {1, 1, 2, 3, 5, 8};
-  SeedManager::SetSeed(seed);
   CommandLine cmd;
   cmd.Parse (argc, argv);
 

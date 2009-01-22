@@ -43,9 +43,6 @@ main (int argc, char *argv[])
   LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
   LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
 
-  uint32_t seed[6] = {1, 1, 2, 3, 5, 8};
-  SeedManager::SetSeed(seed);
-
   uint32_t nCsma = 3;
   uint32_t nWifi = 3;
   CommandLine cmd;

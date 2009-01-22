@@ -46,8 +46,6 @@ NS_LOG_COMPONENT_DEFINE ("TcpNscLfn");
 
 int main (int argc, char *argv[])
 {
-  uint32_t seed[6] = {1, 1, 2, 3, 5, 8};
-  SeedManager::SetSeed(seed);
 
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (4096));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("6Mbps"));
