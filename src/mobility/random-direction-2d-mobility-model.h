@@ -58,6 +58,7 @@ class RandomDirection2dMobilityModel : public MobilityModel
   virtual Vector DoGetVelocity (void) const;
 
   static const double PI;
+  UniformVariable m_direction;
   Rectangle m_bounds;
   RandomVariable m_speed;
   RandomVariable m_pause;

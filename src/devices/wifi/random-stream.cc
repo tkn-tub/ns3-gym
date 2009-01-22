@@ -18,7 +18,6 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "random-stream.h"
-#include "ns3/rng-stream.h"
 #include "ns3/assert.h"
 
 namespace ns3 {
@@ -28,13 +27,12 @@ RandomStream::~RandomStream ()
 
 
 RealRandomStream::RealRandomStream ()
-{
-  m_stream.InitializeStream();
-}
+  : m_stream (UniformVariable ())
+{}
 uint32_t 
 RealRandomStream::GetNext (uint32_t min, uint32_t max)
 {
-  return m_stream.RandInt (min, max);
+  return m_stream.GetValue (min, max);
 }
 
 

@@ -69,7 +69,7 @@ RandomDirection2dMobilityModel::DoDispose (void)
 void
 RandomDirection2dMobilityModel::Start (void)
 {
-  double direction = UniformVariable().GetValue (0, 2 * PI);
+  double direction = m_direction.GetValue (0, 2 * PI);
   SetDirectionAndSpeed (direction);
 }
 
@@ -104,7 +104,7 @@ RandomDirection2dMobilityModel::SetDirectionAndSpeed (double direction)
 void
 RandomDirection2dMobilityModel::ResetDirectionAndSpeed (void)
 {
-  double direction = UniformVariable().GetValue (0, PI);
+  double direction = m_direction.GetValue (0, PI);
   
   m_helper.UpdateWithBounds (m_bounds);
   Vector position = m_helper.GetCurrentPosition ();
