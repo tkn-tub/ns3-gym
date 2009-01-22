@@ -42,50 +42,45 @@ class RandomVariableBase;
 
 class SeedManager
 {
-private:
- static uint32_t runNumber;
- static bool seedSet;
- static uint32_t seed_[6];
- 
 public:
 	  
-	 /**
-	 * \brief set the seed
-	 * it will duplicate the seed value 6 times
-	 * \code
-	 * SeedManger::SetSeed(15);
-	 * UniformVariable x(2,3);     //these will give the same output everytime
-	 * ExponentialVariable y(120); //as long as the seed stays the same
-	 * \endcode
-	 * \param seed
-	 */ 
-	static void SetSeed (uint32_t seed);
+  /**
+   * \brief set the seed
+   * it will duplicate the seed value 6 times
+   * \code
+   * SeedManger::SetSeed(15);
+   * UniformVariable x(2,3);     //these will give the same output everytime
+   * ExponentialVariable y(120); //as long as the seed stays the same
+   * \endcode
+   * \param seed
+   */ 
+  static void SetSeed (uint32_t seed);
  
-	 /**
-	  * \brief Get the seed value
-	  * \return seed value
-	  */
- 	static uint32_t GetSeed ();
+   /**
+    * \brief Get the seed value
+    * \return seed value
+    */
+   static uint32_t GetSeed ();
  
-	 /**
-	 * \brief set the seed
-	 * \code
-	 * uint32_t seed[6]={10,5,2,3,5,11};
-	 * SeedManger::SetSeed(seed);
-	 * UniformVariable x(2,3);     //these will give the same output everytime
-	 * ExponentialVariable y(120); //as long as the seed stays the same
-	 * \endcode
-	 * \param seed
-	 */ 
- 	static void SetSeed (uint32_t seed[6]);
+   /**
+   * \brief set the seed
+   * \code
+   * uint32_t seed[6]={10,5,2,3,5,11};
+   * SeedManger::SetSeed(seed);
+   * UniformVariable x(2,3);     //these will give the same output everytime
+   * ExponentialVariable y(120); //as long as the seed stays the same
+   * \endcode
+   * \param seed
+   */ 
+   static void SetSeed (uint32_t seed[6]);
  
-	/**
-	 * \brief Get the seed value
-	 * \param array of size 6 which will hold returned seed values
-	 */
- 	static void GetSeed (uint32_t seed[6]);
+  /**
+   * \brief Get the seed value
+   * \param array of size 6 which will hold returned seed values
+   */
+   static void GetSeed (uint32_t seed[6]);
  
- 	/**
+   /**
     * \brief Set the run number of simulation
     *
     * \code
@@ -106,25 +101,24 @@ public:
     * ...Results for run 1:...
     * \endcode
     */
-	static void SetRun (uint32_t run);
-
-	/**
-	 * \brief Get the run number
-	 * \return run number
-	 */
-	static uint32_t GetRun ();
-	
-	/**
-	 * \brief Check if seed value is valid if wanted to be used as seed
-	 * \return true if valid and false if invalid
-	 */
-	static bool CheckSeed (uint32_t seed);
-	
-    /**
-     * \brief Checks if seed array has valid values if wanted to be used as further seed
-     * \return true if valid and false if invalid
-     */
-	static bool CheckSeed (uint32_t seed[6]);
+  static void SetRun (uint32_t run);
+  /**
+   * \returns the current run number
+   * @sa SetRun
+   */
+  static uint32_t GetRun (void);
+  
+  /**
+   * \brief Check if seed value is valid if wanted to be used as seed
+   * \return true if valid and false if invalid
+   */
+  static bool CheckSeed (uint32_t seed);
+  
+  /**
+   * \brief Checks if seed array has valid values if wanted to be used as further seed
+   * \return true if valid and false if invalid
+   */
+  static bool CheckSeed (uint32_t seed[6]);
 };
 
 

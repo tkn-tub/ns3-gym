@@ -53,14 +53,19 @@ public:  //public api
   double RandU01 ();
   int32_t RandInt (int32_t i, int32_t j);
 public: //public static api
+  static bool SetPackageSeed (uint32_t seed);
   static bool SetPackageSeed (const uint32_t seed[6]);
+  static void GetPackageSeed (uint32_t seed[6]);
+  static void SetPackageRun (uint32_t run);
+  static uint32_t GetPackageRun (void);
   static bool CheckSeed(const uint32_t seed[6]);
+  static bool CheckSeed(uint32_t seed);
 private: //members
   double Cg[6], Bg[6], Ig[6];
   bool anti, incPrec;
   double U01 ();
   double U01d ();
-  static void EnsureGlobalInitialized (void);
+  static uint32_t EnsureGlobalInitialized (void);
 private: //static data
   static double nextSeed[6];
 };

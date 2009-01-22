@@ -300,15 +300,15 @@ bool RngStream::CheckSeed (const uint32_t seed[6])
     return true;
 }
 
-void 
+uint32_t
 RngStream::EnsureGlobalInitialized (void)
 {
   static bool initialized = false;
+  static uint32_t run = 0;
   if (!initialized)
     {
       initialized = true;
       uint32_t seed;
-      uint32_t run;
       // First, initialize ourselves from the global value.
       {
         IntegerValue value;
@@ -351,8 +351,8 @@ RngStream::EnsureGlobalInitialized (void)
       // finally, actually use these values to do something.
       uint32_t seedArray [] = {seed, seed, seed, seed, seed, seed};
       SetPackageSeed (seedArray);
-      //XXX set the run number
     }
+  return run;
 }
 
 //*************************************************************************
@@ -365,7 +365,7 @@ RngStream::EnsureGlobalInitialized (void)
 //
 double RngStream::nextSeed[6] =
 {
-   12345.0, 12345.0, 12345.0, 12345.0, 12345.0, 12345.0
+  12345.0, 12345.0, 12345.0, 12345.0, 12345.0, 12345.0
 };
 
 //-------------------------------------------------------------------------
@@ -373,21 +373,23 @@ double RngStream::nextSeed[6] =
 //
 RngStream::RngStream ()
 {
-  EnsureGlobalInitialized ();
-   anti = false;
-   incPrec = false;
-   // Stream initialization moved to separate method.
+  uint32_t run = EnsureGlobalInitialized ();
+  anti = false;
+  incPrec = false;
+  // Stream initialization moved to separate method.
+  InitializeStream ();
+  ResetNthSubstream (run);
 }
 
 RngStream::RngStream(const RngStream& r)
 {
-   anti = r.anti;
-   incPrec = r.incPrec;
-   for (int i = 0; i < 6; ++i) {
-      Cg[i] = r.Cg[i];
-      Bg[i] = r.Bg[i];
-      Ig[i] = r.Ig[i];
-   }
+  anti = r.anti;
+  incPrec = r.incPrec;
+  for (int i = 0; i < 6; ++i) {
+    Cg[i] = r.Cg[i];
+    Bg[i] = r.Bg[i];
+    Ig[i] = r.Ig[i];
+  }
 }
       
 
@@ -395,19 +397,19 @@ void RngStream::InitializeStream()
 { // Moved from the RngStream constructor above to allow seeding
   // AFTER the global package seed has been set in the Random
   // object constructor.
-   /* Information on a stream. The arrays {Cg, Bg, Ig} contain the current
-   state of the stream, the starting state of the current SubStream, and the
-   starting state of the stream. This stream generates antithetic variates
-   if anti = true. It also generates numbers with extended precision (53
-   bits if machine follows IEEE 754 standard) if incPrec = true. nextSeed
-   will be the seed of the next declared RngStream. */
+  /* Information on a stream. The arrays {Cg, Bg, Ig} contain the current
+     state of the stream, the starting state of the current SubStream, and the
+     starting state of the stream. This stream generates antithetic variates
+     if anti = true. It also generates numbers with extended precision (53
+     bits if machine follows IEEE 754 standard) if incPrec = true. nextSeed
+     will be the seed of the next declared RngStream. */
 
-   for (int i = 0; i < 6; ++i) {
-      Bg[i] = Cg[i] = Ig[i] = nextSeed[i];
-   }
+  for (int i = 0; i < 6; ++i) {
+    Bg[i] = Cg[i] = Ig[i] = nextSeed[i];
+  }
 
-   MatVecModM (A1p127, nextSeed, nextSeed, m1);
-   MatVecModM (A2p127, &nextSeed[3], &nextSeed[3], m2);
+  MatVecModM (A1p127, nextSeed, nextSeed, m1);
+  MatVecModM (A2p127, &nextSeed[3], &nextSeed[3], m2);
 }
 
 //-------------------------------------------------------------------------
@@ -415,8 +417,8 @@ void RngStream::InitializeStream()
 //
 void RngStream::ResetStartStream ()
 {
-   for (int i = 0; i < 6; ++i)
-      Cg[i] = Bg[i] = Ig[i];
+  for (int i = 0; i < 6; ++i)
+    Cg[i] = Bg[i] = Ig[i];
 }
 
 
@@ -425,8 +427,8 @@ void RngStream::ResetStartStream ()
 //
 void RngStream::ResetStartSubstream ()
 {
-   for (int i = 0; i < 6; ++i)
-      Cg[i] = Bg[i];
+  for (int i = 0; i < 6; ++i)
+    Cg[i] = Bg[i];
 }
 
 
@@ -435,10 +437,10 @@ void RngStream::ResetStartSubstream ()
 //
 void RngStream::ResetNextSubstream ()
 {
-   MatVecModM(A1p76, Bg, Bg, m1);
-   MatVecModM(A2p76, &Bg[3], &Bg[3], m2);
-   for (int i = 0; i < 6; ++i)
-       Cg[i] = Bg[i];
+  MatVecModM(A1p76, Bg, Bg, m1);
+  MatVecModM(A2p76, &Bg[3], &Bg[3], m2);
+  for (int i = 0; i < 6; ++i)
+    Cg[i] = Bg[i];
 }
 
 //-------------------------------------------------------------------------
@@ -446,32 +448,70 @@ void RngStream::ResetNextSubstream ()
 //
 void RngStream::ResetNthSubstream (uint32_t N)
 {
-   if(N==0) return;
-   for(uint32_t i=0;i<N;++i) {
-      MatVecModM(A1p76, Bg, Bg, m1);
-      MatVecModM(A2p76, &Bg[3], &Bg[3], m2);
-   }
-   for (int i = 0; i < 6; ++i)
-       Cg[i] = Bg[i];
+  if(N==0) return;
+  for(uint32_t i=0;i<N;++i) {
+    MatVecModM(A1p76, Bg, Bg, m1);
+    MatVecModM(A2p76, &Bg[3], &Bg[3], m2);
+  }
+  for (int i = 0; i < 6; ++i)
+    Cg[i] = Bg[i];
 }
 
 //-------------------------------------------------------------------------
 bool RngStream::SetPackageSeed (const uint32_t seed[6])
 {
-  if (!CheckSeed (seed)) return false;
+  EnsureGlobalInitialized ();
+  if (!CheckSeed (seed))
+    {
+      return false;
+    }
   for (int i = 0; i < 6; ++i)
     nextSeed[i] = seed[i];
   return true;
 }
+bool 
+RngStream::SetPackageSeed (uint32_t seed)
+{
+  uint32_t seeds[6] = {seed, seed, seed, seed, seed, seed};
+  return SetPackageSeed (seeds);
+}
+void 
+RngStream::GetPackageSeed (uint32_t seed[6])
+{
+  EnsureGlobalInitialized ();
+  for (int i = 0; i < 6; i++)
+    {
+      seed[i] = nextSeed[i];
+    }
+}
+void 
+RngStream::SetPackageRun (uint32_t run)
+{
+  g_rngRun.SetValue (IntegerValue (run));
+}
+uint32_t 
+RngStream::GetPackageRun (void)
+{
+  IntegerValue run;
+  g_rngRun.GetValue (run);
+  return run.Get ();
+}
+bool 
+RngStream::CheckSeed(uint32_t seed)
+{
+  uint32_t seeds[6] = {seed, seed, seed, seed, seed, seed};
+  return CheckSeed (seeds);
+}
+
 
 
 //-------------------------------------------------------------------------
 bool RngStream::SetSeeds (const uint32_t seed[6])
 {
   if (!CheckSeed (seed)) return false;
-   for (int i = 0; i < 6; ++i)
-      Cg[i] = Bg[i] = Ig[i] = seed[i];
-   return true;
+  for (int i = 0; i < 6; ++i)
+    Cg[i] = Bg[i] = Ig[i] = seed[i];
+  return true;
 }
 
 

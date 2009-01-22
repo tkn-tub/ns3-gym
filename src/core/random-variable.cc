@@ -45,72 +45,39 @@ namespace ns3{
 // Seed Manager
 //-----------------------------------------------------------------------------
 
-uint32_t SeedManager::seed_[6]={1,2,3,4,5,6};
-bool     SeedManager::seedSet=false;
-uint32_t SeedManager::runNumber=0;
-
 void SeedManager::SetSeed(uint32_t seed[6])
 {
-	  if (SeedManager::seedSet)
-	  {
-	      cerr << "Seed Manager already set!" << endl;
-	      cerr << "Call to SeedManager::SetSeed(...) ignored" << endl;
-	      return;
-	  }
-	  SeedManager::seed_[0]=seed[0];
-	  SeedManager::seed_[1]=seed[1];
-	  SeedManager::seed_[2]=seed[2];
-	  SeedManager::seed_[3]=seed[3];
-	  SeedManager::seed_[4]=seed[4];
-	  SeedManager::seed_[5]=seed[5];
-	  if (!RngStream::CheckSeed(SeedManager::seed_))
-	    NS_FATAL_ERROR("Invalid seed");
-	  
-	  SeedManager::seedSet = true;
+  RngStream::SetPackageSeed (seed);
 }
 
 void SeedManager::GetSeed(uint32_t seed[6])
 {
-    for (int i=0; i<6; i++) 
-    {
-            seed[i] = seed_[i];
-    }
+  RngStream::GetPackageSeed (seed);
 }
 
 void SeedManager::SetSeed(uint32_t seed)
 {
-	uint32_t s[6];
-	s[0]=s[1]=s[2]=s[3]=s[4]=s[5]=seed;
-	SetSeed(s);
-}
-
-uint32_t SeedManager::GetSeed()
-{
-	uint32_t s[6];
-	GetSeed(s);
-	return s[0];
+  RngStream::SetPackageSeed (seed);
 }
 
 void SeedManager::SetRun(uint32_t run)
 {
-	runNumber=run;
+  RngStream::SetPackageRun (run);
 }
 
 uint32_t SeedManager::GetRun()
 {
-	return runNumber; 
+  return RngStream::GetPackageRun ();
 }
 
 bool SeedManager::CheckSeed (uint32_t seed)
 {
-	uint32_t s[6]; 
-	s[0]=s[1]=s[2]=s[3]=s[4]=s[5]=seed;
-	return RngStream::CheckSeed(s);
+  return RngStream::CheckSeed(seed);
 }
 
 bool SeedManager::CheckSeed (uint32_t seed[6])
 {
-	return RngStream::CheckSeed(seed);
+  return RngStream::CheckSeed(seed);
 }
 
 //-----------------------------------------------------------------------------
@@ -129,31 +96,21 @@ public:
   virtual RandomVariableBase*   Copy(void) const = 0;
 
 protected:
-  static void Initialize();    // Initialize  the RNG system
-  static bool initialized;     // True if package seed is set 
   RngStream* m_generator;  //underlying generator being wrapped
 };
-
-bool          RandomVariableBase::initialized = false;   // True if RngStream seed set 
-
 
 RandomVariableBase::RandomVariableBase() 
   : m_generator(NULL)
 {
-	 // it's better to be initialzed first and then set run number, 
-	 // it happens in GetValue() automatically
-	 //m_generator = new RngStream();
-     //m_generator->InitializeStream();
-     //m_generator->ResetNthSubstream(SeedManager::GetRun());
 }
 
 RandomVariableBase::RandomVariableBase(const RandomVariableBase& r)
   :m_generator(0)
 {
-  if(r.m_generator)
-  {
-    m_generator = new RngStream(*r.m_generator);
-  }
+  if (r.m_generator)
+    {
+      m_generator = new RngStream(*r.m_generator);
+    }
 }
 
 RandomVariableBase::~RandomVariableBase()
@@ -164,15 +121,6 @@ RandomVariableBase::~RandomVariableBase()
 uint32_t RandomVariableBase::GetInteger() 
 {
   return (uint32_t)GetValue();
-}
-
-void RandomVariableBase::Initialize()
-{ 
-  uint32_t s[6];
-  if (RandomVariableBase::initialized) return; // Already initialized and seeded
-  RandomVariableBase::initialized = true;
-  SeedManager::GetSeed(s);
-  RngStream::SetPackageSeed(s);
 }
 
 //-------------------------------------------------------
@@ -287,32 +235,20 @@ UniformVariableImpl::GetMax (void) const
 
 double UniformVariableImpl::GetValue()
 {
-  if(!RandomVariableBase::initialized)
-  {
-    RandomVariableBase::Initialize();
-  }
   if(!m_generator)
-  {
-    m_generator = new RngStream();
-    m_generator->InitializeStream();
-    m_generator->ResetNthSubstream(SeedManager::GetRun());
-  }
+    {
+      m_generator = new RngStream();
+    }
   return m_min + m_generator->RandU01() * (m_max - m_min);
 }
 
 double UniformVariableImpl::GetValue(double s, double l) 
 {
-	  if(!RandomVariableBase::initialized)
-	  {
-	    RandomVariableBase::Initialize();
-	  }
-	  if(!m_generator)
-	  {
-	    m_generator = new RngStream();
-	    m_generator->InitializeStream();
-	    m_generator->ResetNthSubstream(SeedManager::GetRun());
-	  }
-	  return s + m_generator->RandU01() * (l-s); 
+  if(!m_generator)
+    {
+      m_generator = new RngStream();
+    }
+    return s + m_generator->RandU01() * (l-s); 
 }
 
 RandomVariableBase* UniformVariableImpl::Copy() const
@@ -329,7 +265,7 @@ UniformVariable::UniformVariable(double s, double l)
 
 double UniformVariable::GetValue()
 {
-	return Peek()->GetValue();
+  return Peek()->GetValue();
 }
 
 double UniformVariable::GetValue(double s, double l)
@@ -567,18 +503,15 @@ ExponentialVariableImpl::ExponentialVariableImpl(const ExponentialVariableImpl& 
 
 double ExponentialVariableImpl::GetValue()
 {
-  if(!RandomVariableBase::initialized)
-  {
-    RandomVariableBase::Initialize();
-  }
   if(!m_generator)
-  {
-    m_generator = new RngStream();
-    m_generator->InitializeStream();
-    m_generator->ResetNthSubstream(SeedManager::GetRun());
-  }
+    {
+      m_generator = new RngStream();
+    }
   double r = -m_mean*log(m_generator->RandU01());
-  if (m_bound != 0 && r > m_bound) return m_bound;
+  if (m_bound != 0 && r > m_bound) 
+    {
+      return m_bound;
+    }
   return r;
 }
 
@@ -669,19 +602,16 @@ ParetoVariableImpl::ParetoVariableImpl(const ParetoVariableImpl& c)
 
 double ParetoVariableImpl::GetValue()
 {
-  if(!RandomVariableBase::initialized)
-  {
-    RandomVariableBase::Initialize();
-  }
   if(!m_generator)
-  {
-    m_generator = new RngStream();
-    m_generator->InitializeStream();
-    m_generator->ResetNthSubstream(SeedManager::GetRun());
-  }
+    {
+      m_generator = new RngStream();
+    }
   double scale = m_mean * ( m_shape - 1.0) / m_shape;
   double r = (scale * ( 1.0 / pow(m_generator->RandU01(), 1.0 / m_shape)));
-  if (m_bound != 0 && r > m_bound) return m_bound;
+  if (m_bound != 0 && r > m_bound) 
+    {
+      return m_bound;
+    }
   return r;
 }
 
@@ -771,19 +701,16 @@ WeibullVariableImpl::WeibullVariableImpl(const WeibullVariableImpl& c)
 
 double WeibullVariableImpl::GetValue()
 {
-  if(!RandomVariableBase::initialized)
-  {
-    RandomVariableBase::Initialize();
-  }
   if(!m_generator)
-  {
-    m_generator = new RngStream();
-    m_generator->InitializeStream();
-    m_generator->ResetNthSubstream(SeedManager::GetRun());
-  }
+    {
+      m_generator = new RngStream();
+    }
   double exponent = 1.0 / m_alpha;
   double r = m_mean * pow( -log(m_generator->RandU01()), exponent);
-  if (m_bound != 0 && r > m_bound) return m_bound;
+  if (m_bound != 0 && r > m_bound) 
+    {
+      return m_bound;
+    }
   return r;
 }
 
@@ -861,16 +788,10 @@ NormalVariableImpl::NormalVariableImpl(const NormalVariableImpl& c)
 
 double NormalVariableImpl::GetValue()
 {
-  if(!RandomVariableBase::initialized)
-  {
-    RandomVariableBase::Initialize();
-  }
   if(!m_generator)
-  {
-    m_generator = new RngStream();
-    m_generator->InitializeStream();
-    m_generator->ResetNthSubstream(SeedManager::GetRun());
-  }
+    {
+      m_generator = new RngStream();
+    }
   if (m_nextValid)
     { // use previously generated
       m_nextValid = false;
@@ -889,10 +810,16 @@ double NormalVariableImpl::GetValue()
         { // Got good pair
           double y = sqrt((-2 * log(w))/w);
           m_next = m_mean + v2 * y * sqrt(m_variance);
-          if (fabs(m_next) > m_bound) m_next = m_bound * (m_next)/fabs(m_next);
+          if (fabs(m_next) > m_bound) 
+            {
+              m_next = m_bound * (m_next)/fabs(m_next);
+            }
           m_nextValid = true;
           double x1 = m_mean + v1 * y * sqrt(m_variance);
-          if (fabs(x1) > m_bound) x1 = m_bound * (x1)/fabs(x1);
+          if (fabs(x1) > m_bound)
+            {
+              x1 = m_bound * (x1)/fabs(x1);
+            }
           return x1;
         }
     }
@@ -974,21 +901,27 @@ EmpiricalVariableImpl::~EmpiricalVariableImpl() { }
 double EmpiricalVariableImpl::GetValue()
 { // Return a value from the empirical distribution
   // This code based (loosely) on code by Bruce Mah (Thanks Bruce!)
-  if(!RandomVariableBase::initialized)
-  {
-    RandomVariableBase::Initialize();
-  }
   if(!m_generator)
-  {
-    m_generator = new RngStream();
-    m_generator->InitializeStream();
-    m_generator->ResetNthSubstream(SeedManager::GetRun());
-  }
-  if (emp.size() == 0) return 0.0; // HuH? No empirical data
-  if (!validated) Validate();      // Insure in non-decreasing
+    {
+      m_generator = new RngStream();
+    }
+  if (emp.size() == 0) 
+    {
+      return 0.0; // HuH? No empirical data
+    }
+  if (!validated) 
+    {
+      Validate();      // Insure in non-decreasing
+    }
   double r = m_generator->RandU01();
-  if (r <= emp.front().cdf)return emp.front().value; // Less than first
-  if (r >= emp.back().cdf) return emp.back().value;  // Greater than last
+  if (r <= emp.front().cdf)
+    {
+      return emp.front().value; // Less than first
+    }
+  if (r >= emp.back().cdf) 
+    { 
+      return emp.back().value;  // Greater than last
+    }
   // Binary search
   std::vector<ValueCDF>::size_type bottom = 0;
   std::vector<ValueCDF>::size_type top = emp.size() - 1;
@@ -1002,8 +935,14 @@ double EmpiricalVariableImpl::GetValue()
                              r);
         }
       // Not here, adjust bounds
-      if (r < emp[c].cdf) top    = c - 1;
-      else                bottom = c + 1;
+      if (r < emp[c].cdf)
+        {
+          top    = c - 1;
+        }
+      else
+        {
+          bottom = c + 1;
+        }
     }
 }
 
@@ -1140,7 +1079,10 @@ DeterministicVariableImpl::~DeterministicVariableImpl() { }
   
 double DeterministicVariableImpl::GetValue()
 {
-  if (next == count) next = 0;
+  if (next == count) 
+    {
+      next = 0;
+    }
   return data[next++];
 }
 
@@ -1215,16 +1157,10 @@ LogNormalVariableImpl::LogNormalVariableImpl (double mu, double sigma)
 double
 LogNormalVariableImpl::GetValue ()
 {
-  if(!RandomVariableBase::initialized)
-  {
-    RandomVariableBase::Initialize();
-  }
   if(!m_generator)
-  {
-    m_generator = new RngStream();
-    m_generator->InitializeStream();
-    m_generator->ResetNthSubstream(SeedManager::GetRun());
-  }
+    {
+      m_generator = new RngStream();
+    }
   double u, v, r2, normal, z;
 
   do
@@ -1296,21 +1232,19 @@ TriangularVariableImpl::TriangularVariableImpl(const TriangularVariableImpl& c)
 
 double TriangularVariableImpl::GetValue()
 {
-  if(!RandomVariableBase::initialized)
-  {
-    RandomVariableBase::Initialize();
-  }
   if(!m_generator)
-  {
-    m_generator = new RngStream();
-    m_generator->InitializeStream();
-    m_generator->ResetNthSubstream(SeedManager::GetRun());
-  }
+    {
+      m_generator = new RngStream();
+    }
   double u = m_generator->RandU01();
   if(u <= (m_mode - m_min) / (m_max - m_min) )
-    return m_min + sqrt(u * (m_max - m_min) * (m_mode - m_min) );
+    {
+      return m_min + sqrt(u * (m_max - m_min) * (m_mode - m_min) );
+    }
   else
-    return m_max - sqrt( (1-u) * (m_max - m_min) * (m_max - m_mode) );
+    {
+      return m_max - sqrt( (1-u) * (m_max - m_min) * (m_max - m_mode) );
+    }
 }
 
 RandomVariableBase* TriangularVariableImpl::Copy() const
