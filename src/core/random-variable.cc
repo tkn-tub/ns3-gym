@@ -507,12 +507,12 @@ double ExponentialVariableImpl::GetValue()
     {
       m_generator = new RngStream();
     }
-  double r = -m_mean*log(m_generator->RandU01());
-  if (m_bound != 0 && r > m_bound) 
+  while(1)
     {
-      return m_bound;
+      double r = -m_mean*log(m_generator->RandU01());
+      if (m_bound == 0 || r <= m_bound) return r;
+      //otherwise, try again
     }
-  return r;
 }
 
 RandomVariableBase* ExponentialVariableImpl::Copy() const
@@ -607,12 +607,12 @@ double ParetoVariableImpl::GetValue()
       m_generator = new RngStream();
     }
   double scale = m_mean * ( m_shape - 1.0) / m_shape;
-  double r = (scale * ( 1.0 / pow(m_generator->RandU01(), 1.0 / m_shape)));
-  if (m_bound != 0 && r > m_bound) 
+  while(1)
     {
-      return m_bound;
+      double r = (scale * ( 1.0 / pow(m_generator->RandU01(), 1.0 / m_shape)));
+      if (m_bound == 0 || r <= m_bound) return r;
+      //otherwise, try again
     }
-  return r;
 }
 
 RandomVariableBase* ParetoVariableImpl::Copy() const
@@ -706,12 +706,12 @@ double WeibullVariableImpl::GetValue()
       m_generator = new RngStream();
     }
   double exponent = 1.0 / m_alpha;
-  double r = m_mean * pow( -log(m_generator->RandU01()), exponent);
-  if (m_bound != 0 && r > m_bound) 
+  while(1)
     {
-      return m_bound;
+      double r = m_mean * pow( -log(m_generator->RandU01()), exponent);
+      if (m_bound == 0 || r <= m_bound) return r;
+      //otherwise, try again
     }
-  return r;
 }
 
 RandomVariableBase* WeibullVariableImpl::Copy() const
@@ -750,7 +750,7 @@ public:
    * \brief Construct a normal random variable with specified mean and variance
    * \param m Mean value
    * \param v Variance
-   * \param b Bound.  The NormalVariableImpl is bounded within +-bound.
+   * \param b Bound.  The NormalVariableImpl is bounded within +-bound of the mean.
    */ 
   NormalVariableImpl(double m, double v, double b = INFINITE_VALUE);
 
@@ -765,7 +765,7 @@ public:
 private:
   double m_mean;      // Mean value of RV
   double m_variance;  // Mean value of RV
-  double m_bound;     // Bound on value (absolute value)
+  double m_bound;     // Bound on value's difference from the mean (absolute value)
   bool   m_nextValid; // True if next valid
   double m_next;      // The algorithm produces two values at a time
   static bool   m_static_nextValid;
@@ -810,17 +810,21 @@ double NormalVariableImpl::GetValue()
         { // Got good pair
           double y = sqrt((-2 * log(w))/w);
           m_next = m_mean + v2 * y * sqrt(m_variance);
-          if (fabs(m_next) > m_bound) 
-            {
-              m_next = m_bound * (m_next)/fabs(m_next);
-            }
-          m_nextValid = true;
+          //if next is in bounds, it is valid
+          m_nextValid = fabs(m_next-m_mean) <= m_bound;
           double x1 = m_mean + v1 * y * sqrt(m_variance);
-          if (fabs(x1) > m_bound)
+          //if x1 is in bounds, return it
+          if (fabs(x1-m_mean) <= m_bound)
             {
-              x1 = m_bound * (x1)/fabs(x1);
+              return x1;
             }
-          return x1;
+          //otherwise try and return m_next if it is valid
+          else if (m_nextValid)
+	    {
+	      m_nextValid = false;
+	      return m_next;
+	    }
+          //otherwise, just run this loop again
         }
     }
 }
