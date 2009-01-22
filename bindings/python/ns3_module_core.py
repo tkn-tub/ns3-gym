@@ -624,15 +624,40 @@ def register_Ns3RngStream_methods(root_module, cls):
     cls.add_method('RandInt', 
                    'int32_t', 
                    [param('int32_t', 'i'), param('int32_t', 'j')])
+    ## rng-stream.h: static bool ns3::RngStream::SetPackageSeed(uint32_t seed) [member function]
+    cls.add_method('SetPackageSeed', 
+                   'bool', 
+                   [param('uint32_t', 'seed')], 
+                   is_static=True)
     ## rng-stream.h: static bool ns3::RngStream::SetPackageSeed(uint32_t const * seed) [member function]
     cls.add_method('SetPackageSeed', 
                    'bool', 
                    [param('uint32_t const *', 'seed')], 
                    is_static=True)
+    ## rng-stream.h: static void ns3::RngStream::GetPackageSeed(uint32_t * seed) [member function]
+    cls.add_method('GetPackageSeed', 
+                   'void', 
+                   [param('uint32_t *', 'seed')], 
+                   is_static=True)
+    ## rng-stream.h: static void ns3::RngStream::SetPackageRun(uint32_t run) [member function]
+    cls.add_method('SetPackageRun', 
+                   'void', 
+                   [param('uint32_t', 'run')], 
+                   is_static=True)
+    ## rng-stream.h: static uint32_t ns3::RngStream::GetPackageRun() [member function]
+    cls.add_method('GetPackageRun', 
+                   'uint32_t', 
+                   [], 
+                   is_static=True)
     ## rng-stream.h: static bool ns3::RngStream::CheckSeed(uint32_t const * seed) [member function]
     cls.add_method('CheckSeed', 
                    'bool', 
                    [param('uint32_t const *', 'seed')], 
+                   is_static=True)
+    ## rng-stream.h: static bool ns3::RngStream::CheckSeed(uint32_t seed) [member function]
+    cls.add_method('CheckSeed', 
+                   'bool', 
+                   [param('uint32_t', 'seed')], 
                    is_static=True)
     return
 
