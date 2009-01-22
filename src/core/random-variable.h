@@ -55,13 +55,7 @@ public:
    * \param seed
    */ 
   static void SetSeed (uint32_t seed);
- 
-   /**
-    * \brief Get the seed value
-    * \return seed value
-    */
-   static uint32_t GetSeed ();
- 
+
    /**
    * \brief set the seed
    * \code
