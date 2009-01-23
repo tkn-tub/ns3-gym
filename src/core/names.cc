@@ -216,6 +216,16 @@ NamesPriv::Add (std::string name, Ptr<Object> object)
 }
 
 bool
+NamesPriv::Add (std::string context, std::string name, Ptr<Object> object)
+{
+  if (context == "/Names")
+    {
+      return Add (Ptr<Object> (0, false), name, object);
+    }
+  return Add (FindObjectFromFullName (context), name, object);
+}
+
+bool
 NamesPriv::Add (Ptr<Object> context, std::string name, Ptr<Object> object)
 {
   NS_LOG_FUNCTION (context << name << object);
@@ -248,16 +258,6 @@ NamesPriv::Add (Ptr<Object> context, std::string name, Ptr<Object> object)
   m_objectMap[object] = newNode;
 
   return true;
-}
-
-bool
-NamesPriv::Add (std::string context, std::string name, Ptr<Object> object)
-{
-  if (context == "/Names")
-    {
-      return Add (Ptr<Object> (0, false), name, object);
-    }
-  return Add (FindObjectFromFullName (context), name, object);
 }
 
 std::string
