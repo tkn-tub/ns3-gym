@@ -105,4 +105,7 @@
  * Finally, we provide access to the per-remote-station SLRC couter that
  * indications the number of retransmissions of data.  Changes to this 
  * counter are traced using the ns3::WifiRemoteStation::m_slrc source.
+ *
+ * \subsection wifil2stack Layer 2 Stack Overview
+ * \image html WifiArchitecture.png "Overview of the Wifi L2 sublayers traversed for transmitting and receiving a packet"
  */
