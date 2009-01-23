@@ -27,7 +27,7 @@
 #include "ns3/pcap-writer.h"
 #include "ns3/simulator.h"
 #include "ns3/config.h"
-#include "ns3/object-names.h"
+#include "ns3/names.h"
 
 namespace ns3 {
 

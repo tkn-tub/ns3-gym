@@ -20,7 +20,7 @@
 #include "olsr-helper.h"
 #include "ns3/olsr-agent.h"
 #include "ns3/node-list.h"
-#include "ns3/object-names.h"
+#include "ns3/names.h"
 
 namespace ns3 {
 

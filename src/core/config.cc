@@ -22,7 +22,7 @@
 #include "object.h"
 #include "global-value.h"
 #include "object-vector.h"
-#include "object-names.h"
+#include "names.h"
 #include "pointer.h"
 #include "log.h"
 #include <sstream>

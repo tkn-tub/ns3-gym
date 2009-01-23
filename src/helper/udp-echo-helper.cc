@@ -21,7 +21,7 @@
 #include "ns3/udp-echo-server.h"
 #include "ns3/udp-echo-client.h"
 #include "ns3/uinteger.h"
-#include "ns3/object-names.h"
+#include "ns3/names.h"
 
 namespace ns3 {
 

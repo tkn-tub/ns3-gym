@@ -18,7 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/object-names.h"
+#include "ns3/names.h"
 #include "application-container.h"
 
 namespace ns3 {

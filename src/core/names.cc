@@ -21,7 +21,7 @@
 #include "log.h"
 #include "assert.h"
 #include "abort.h"
-#include "object-names.h"
+#include "names.h"
 #include "ns3/simulator.h"
 
 namespace ns3 {

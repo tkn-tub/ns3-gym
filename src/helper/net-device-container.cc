@@ -19,7 +19,7 @@
  */
 
 #include "net-device-container.h"
-#include "ns3/object-names.h"
+#include "ns3/names.h"
 
 namespace ns3 {
 

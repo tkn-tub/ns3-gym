@@ -20,7 +20,7 @@
 
 #include "v4ping-helper.h"
 #include "ns3/v4ping.h"
-#include "ns3/object-names.h"
+#include "ns3/names.h"
 
 namespace ns3 {
 

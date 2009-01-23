@@ -20,7 +20,7 @@
 
 #include "packet-socket-helper.h"
 #include "ns3/packet-socket-factory.h"
-#include "ns3/object-names.h"
+#include "ns3/names.h"
 
 namespace ns3 {
 

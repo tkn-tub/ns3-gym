@@ -25,7 +25,7 @@
 #include "ns3/pointer.h"
 #include "ns3/config.h"
 #include "ns3/simulator.h"
-#include "ns3/object-names.h"
+#include "ns3/names.h"
 #include <iostream>
 
 namespace ns3 {

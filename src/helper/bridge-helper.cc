@@ -20,7 +20,7 @@
 #include "ns3/log.h"
 #include "ns3/bridge-net-device.h"
 #include "ns3/node.h"
-#include "ns3/object-names.h"
+#include "ns3/names.h"
 
 NS_LOG_COMPONENT_DEFINE ("BridgeHelper");
 

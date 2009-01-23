@@ -1,6 +1,6 @@
 #include "ipv4-interface-container.h"
 #include "ns3/node-list.h"
-#include "ns3/object-names.h"
+#include "ns3/names.h"
 
 namespace ns3 {
 

@@ -21,7 +21,7 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/object.h"
-#include "ns3/object-names.h"
+#include "ns3/names.h"
 #include "ns3/ipv4.h"
 #include "internet-stack-helper.h"
 #include "ns3/internet-stack.h"

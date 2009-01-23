@@ -23,7 +23,7 @@
 #include "ns3/assert.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv4.h"
-#include "ns3/object-names.h"
+#include "ns3/names.h"
 #include "static-multicast-route-helper.h"
 
 namespace ns3 {
