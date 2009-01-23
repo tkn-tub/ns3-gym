@@ -309,21 +309,43 @@ NamesPriv::FindFullName (Ptr<Object> object)
 Ptr<Object>
 NamesPriv::FindObjectFromFullName (std::string name)
 {
+  //
+  // This is hooked in from simple, easy to use version of Find, so we want it
+  // to be flexible.
+  //
+  // If we are provided a name that doesn't begin with "/Names", we assume 
+  // that the caller has simply given us a path starting with a shortname that
+  // is in the root namespace.  This allows peole to omit the "/Names" prefix.
+  // and simply do a Find ("Client/eth0") instead of having to always do a
+  // Find ("/Names/Client/eth0");
+  //
+  // So, if we are given a name that begins with "/Names/" the upshot is that we
+  // just remove that prefix and treat the rest of the string as starting with a 
+  // shortname in the root namespace.
+  //
   std::string namespaceName = "/Names/";
+  std::string remaining;
+
   std::string::size_type offset = name.find (namespaceName);
-  if (offset == std::string::npos)
+  if (offset == 0)
     {
-      NS_LOG_LOGIC (name << " is not in the " << namespaceName << " name space");
-      return 0;
+      NS_LOG_LOGIC (name << " is a fully qualified name");
+      remaining = name.substr (namespaceName.size ());
+    }
+  else
+    {
+      NS_LOG_LOGIC (name << " begins with a relative shortname");
+      remaining = name;
     }
 
-  std::string remaining = name.substr (namespaceName.size ());
   NameNode *node = &m_root;
 
   //
-  // remaining is now composed entirely of path segments in the /Names name space.
-  // and we have eaten the leading slash. e.g., remaining = "ClientNode/eth0"
-  // The start of the search is at the root of the name space.
+  // The string <remaining> is now composed entirely of path segments in the
+  // /Names name space and we have eaten the leading slash. e.g., 
+  // remaining = "ClientNode/eth0"
+  //
+  // The start of the search is always at the root of the name space.
   //
   for (;;)
     {
@@ -643,6 +665,21 @@ NamesTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (foundObject, clientEth0);
 
   foundObject = Names::Find<TestObject> ("/Names/Server/eth0");
+  NS_TEST_ASSERT_EQUAL (foundObject, serverEth0);
+
+  // 
+  // We should be able to omit the root of the namespace from the full names
+  //
+  foundObject = Names::Find<TestObject> ("Client");
+  NS_TEST_ASSERT_EQUAL (foundObject, client);
+
+  foundObject = Names::Find<TestObject> ("Server");
+  NS_TEST_ASSERT_EQUAL (foundObject, server);
+
+  foundObject = Names::Find<TestObject> ("Client/eth0");
+  NS_TEST_ASSERT_EQUAL (foundObject, clientEth0);
+
+  foundObject = Names::Find<TestObject> ("Server/eth0");
   NS_TEST_ASSERT_EQUAL (foundObject, serverEth0);
 
   //
