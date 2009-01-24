@@ -125,7 +125,7 @@ class regression_test_task(Task.TaskBase):
             wutils.run_argv(argv, cwd=trace_output_path)
         else:
             wutils.run_program(program,
-                               command_template=wutils.get_command_template(*arguments),
+                               command_template=wutils.get_command_template(self.env, arguments),
                                cwd=trace_output_path)
 
         if Options.options.verbose:
@@ -157,7 +157,7 @@ class regression_test_task(Task.TaskBase):
             retval = wutils.run_argv(argv, cwd=trace_output_path)
         else:
             retval = wutils.run_program(program,
-                                        command_template=wutils.get_command_template(*arguments),
+                                        command_template=wutils.get_command_template(self.env, arguments),
                                         cwd=trace_output_path)
         return retval
 

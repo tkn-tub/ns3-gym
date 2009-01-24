@@ -261,6 +261,8 @@ def configure(conf):
     # we cannot pull regression traces without mercurial
     conf.find_program('hg', var='MERCURIAL')
 
+    conf.find_program('valgrind', var='VALGRIND')
+
     # Write a summary of optional features status
     print "---- Summary of optional NS-3 features:"
     for (name, caption, was_enabled, reason_not_enabled) in conf.env['NS3_OPTIONAL_FEATURES']:
@@ -426,7 +428,7 @@ def build(bld):
 
     if Options.options.run:
         # Check that the requested program name is valid
-        program_name, dummy_program_argv = wutils.get_run_program(Options.options.run, get_command_template())
+        program_name, dummy_program_argv = wutils.get_run_program(Options.options.run, wutils.get_command_template(env))
 
         # When --run'ing a program, tell WAF to only build that program,
         # nothing more; this greatly speeds up compilation when all you
@@ -445,18 +447,6 @@ def build(bld):
         regression.run_regression(bld, regression_traces)
 
 
-def get_command_template(*arguments):
-    if Options.options.valgrind:
-        if Options.options.command_template:
-            raise Utils.WafError("Options --command-template and --valgrind are conflicting")
-        cmd = "valgrind --leak-check=full --error-exitcode=1 %s"
-    else:
-        cmd = Options.options.command_template or '%s'
-    for arg in arguments:
-        cmd = cmd + " " + arg
-    return cmd
-
-
 def shutdown():
     env = Build.bld.env
 
@@ -467,7 +457,7 @@ def shutdown():
         lcov_report()
 
     if Options.options.run:
-        wutils.run_program(Options.options.run, get_command_template())
+        wutils.run_program(Options.options.run, wutils.get_command_template(env))
         raise SystemExit(0)
 
     if Options.options.pyrun:
@@ -492,7 +482,7 @@ def _run_waf_check():
         out.close()
 
     print "-- Running NS-3 C++ core unit tests..."
-    wutils.run_program('run-tests', get_command_template())
+    wutils.run_program('run-tests', wutils.get_command_template(env))
 
     if env['ENABLE_PYTHON_BINDINGS']:
         print "-- Running NS-3 Python bindings unit tests..."
