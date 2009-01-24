@@ -42,6 +42,14 @@ APPNAME = 'ns'
 wutils.VERSION = VERSION
 wutils.APPNAME = APPNAME
 
+#
+# The last part of the path name to use to find the regression traces.  The
+# path will be APPNAME + '-' + VERSION + REGRESSION_SUFFIX, e.g.,
+# ns-3-dev-ref-traces
+#
+REGRESSION_SUFFIX = "-ref-traces"
+
+
 # these variables are mandatory ('/' are converted automatically)
 srcdir = '.'
 blddir = 'build'
@@ -193,8 +201,19 @@ def configure(conf):
     variant_env = conf.env.copy()
     variant_name = Options.options.build_profile
 
+    # Check for the location of regression reference traces
     if Options.options.regression_traces is not None:
-        variant_env['REGRESSION_TRACES'] = os.path.abspath(Options.options.regression_traces)
+        if os.path.isdir(Options.options.regression_traces):
+            conf.check_message("regression traces location", '', True, ("%s (given)" % Options.options.regression_traces))
+            variant_env['REGRESSION_TRACES'] = os.path.abspath(Options.options.regression_traces)
+    else:
+        traces = os.path.join('..', "%s-%s%s" % (APPNAME, VERSION, REGRESSION_SUFFIX))
+        if os.path.isdir(traces):
+            conf.check_message("regression reference traces", '', True, ("%s (guessed)" % traces))
+            variant_env['REGRESSION_TRACES'] = os.path.abspath(traces)
+        del traces
+    if not variant_env['REGRESSION_TRACES']:
+        conf.check_message("regression reference traces", '', False)
 
     if Options.options.enable_gcov:
         variant_name += '-gcov'
