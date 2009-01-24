@@ -70,12 +70,21 @@ def configure(conf):
         conf.report_optional_feature("python", "Python Bindings", False, str(ex))
         return
 
-    ## Check for pybindgen
+    # Check for the location of pybindgen
+    if Options.options.with_pybindgen is not None:
+        if os.path.isdir(Options.options.with_pybindgen):
+            conf.check_message("pybindgen location", '', True, ("%s (given)" % Options.options.with_pybindgen))
+            conf.env['WITH_PYBINDGEN'] = os.path.abspath(Options.options.with_pybindgen)
+    else:
+        pybindgen_dir = os.path.join('..', "pybindgen")
+        if os.path.isdir(pybindgen_dir):
+            conf.check_message("pybindgen location", '', True, ("%s (guessed)" % pybindgen_dir))
+            conf.env['WITH_PYBINDGEN'] = os.path.abspath(pybindgen_dir)
+        del pybindgen_dir
+    if not conf.env['WITH_PYBINDGEN']:
+        conf.check_message("pybindgen location", '', False)
 
-    no_net = False
-    if Options.options.with_pybindgen:
-        conf.env['WITH_PYBINDGEN'] = os.path.abspath(Options.options.with_pybindgen)
-        no_net = True
+    # Check for pybindgen
 
     set_pybindgen_pythonpath(conf.env)
 
@@ -100,10 +109,9 @@ def configure(conf):
             Logs.warn("pybindgen (found %s) is too old (need %s)" %
                     (pybindgen_version_str,
                      '.'.join([str(x) for x in REQUIRED_PYBINDGEN_VERSION])))
-            if no_net or not fetch_pybindgen(conf):
-                conf.report_optional_feature("python", "Python Bindings", False,
-                                             "PyBindGen too old and newer version could not be retrieved")
-                return
+            conf.report_optional_feature("python", "Python Bindings", False,
+                                         "PyBindGen too old and newer version could not be retrieved")
+            return
 
     ## If all has gone well, we finally enable the Python bindings
     conf.env['ENABLE_PYTHON_BINDINGS'] = True
