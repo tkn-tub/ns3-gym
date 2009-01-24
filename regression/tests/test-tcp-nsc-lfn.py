@@ -2,32 +2,25 @@
 
 """Trace-comparison-type regression test for the Network Simulation Cradle."""
 
-import os
-import shutil
-import sys
-import tracediff
 import platform
 
 
-def run(verbose, generate):
-    """Run a Network Simulation Cradle test involving two TCP streams."""
-
-    if not tracediff.env['ENABLE_NSC']:
-        print >>sys.stderr, "Skipping tcp-nsc-lfn: NSC not available."
-        raise NotImplementedError
-
-    testName = "tcp-nsc-lfn"
-    arguments = ["--ns3::OnOffApplication::DataRate=40000", "--runtime=20"]
-    platform_bits = platform.architecture()[0]
-    
-    if platform_bits == "64bit":
-        traceDirName = testName + "_64bit.ref"
-    elif platform_bits == "32bit":
-        traceDirName = testName + "_32bit.ref"
+def may_run(env):
+    if not env['NSC_ENABLED']:
+        return "NSC not available"
     else:
-        # Something unexpected. How should we signal an error here? Rasing a
-        # string might not be the best idea?
-        raise "Unknown architecture, not 64 or 32 bit?"
+        return 0
 
-    return tracediff.run_test(verbose, generate,
-        testName, arguments=arguments, refTestName=traceDirName)
+
+platform_bits = platform.architecture()[0]
+if platform_bits == "64bit":
+    trace_dir_name = "tcp-nsc-lfn_64bit.ref"
+elif platform_bits == "32bit":
+    trace_dir_name = "tcp-nsc-lfn_32bit.ref"
+else:
+    raise AssertionError("Unknown architecture, not 64 or 32 bit?")
+del platform_bits
+
+arguments = ["--ns3::OnOffApplication::DataRate=40000", "--runtime=20"]
+
+

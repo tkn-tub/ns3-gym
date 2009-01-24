@@ -415,6 +415,15 @@ def build(bld):
         if not Options.options.compile_targets:
             Options.options.compile_targets = os.path.basename(program_name)
 
+    if Options.options.regression or Options.options.regression_generate:
+        if not env['DIFF']:
+            raise Utils.WafError("Cannot run regression tests: the 'diff' program is not installed.")
+
+        regression_traces = env['REGRESSION_TRACES']
+        if not regression_traces:
+            raise Utils.WafError("Cannot run regression tests: reference traces directory not given"
+                                 " (--with-regression-traces configure option)")
+        regression.run_regression(bld, regression_traces)
 
 
 def get_command_template(*arguments):
@@ -434,18 +443,6 @@ def shutdown():
 
     if Options.commands['check']:
         _run_waf_check()
-
-    if Options.options.regression or Options.options.regression_generate:
-        if not env['DIFF']:
-            raise Utils.WafError("Cannot run regression tests: the 'diff' program is not installed.")
-
-        regression_traces = env['REGRESSION_TRACES']
-        if not regression_traces:
-            raise Utils.WafError("Cannot run regression tests: reference traces directory not given"
-                                 " (--with-regression-traces configure option)")
-        retval = regression.run_regression(regression_traces)
-        if retval:
-            sys.exit(retval)
 
     if Options.options.lcov_report:
         lcov_report()

@@ -2,15 +2,13 @@
 
 """Generic trace-comparison-type regression test."""
 
-import os
-import sys
-import tracediff
+import os.path
 
-def run(verbose, generate):
-    """Execute a test."""
-    if tracediff.env['ENABLE_PYTHON_BINDINGS']:
-        return tracediff.run_test(verbose, generate,
-                                  "csma-bridge", pyscript=os.path.join('examples', 'csma-bridge.py'))
+def may_run(env):
+    """Returns 0 when it can run, return non-zero or string (reason) when it cannot run"""
+    if env['ENABLE_PYTHON_BINDINGS']:
+        return 0
     else:
-        print >> sys.stderr, "Skipping csma-bridge: Python bindings not available."
-        raise NotImplementedError
+        return "Python bindings not available."
+
+pyscript = os.path.join('examples', 'csma-bridge.py')
