@@ -9,8 +9,6 @@ def configure(conf):
 
     conf.check(header_name='signal.h', define_name='HAVE_SIGNAL_H')
 
-    conf.check(lib='rt', uselib='RT', define_name='HAVE_RT')
-
     conf.env['ENABLE_THREADING'] = conf.check(header_name='pthread.h', define_name='HAVE_PTHREAD_H')
 
     conf.report_optional_feature("Threading", "Threading Primitives",
@@ -54,7 +52,6 @@ def build(bld):
         'config.cc',
         'callback.cc',
         ]
-    core.uselib = 'RT'
 
     headers = bld.new_task_gen('ns3header')
     headers.module = 'core'
