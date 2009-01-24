@@ -9,7 +9,30 @@ def configure(conf):
 
     conf.check(header_name='signal.h', define_name='HAVE_SIGNAL_H')
 
-    conf.env['ENABLE_THREADING'] = conf.check(header_name='pthread.h', define_name='HAVE_PTHREAD_H')
+    # Check for POSIX threads
+    test_env = conf.env.copy()
+    test_env.append_value('LINKFLAGS', '-pthread')
+    test_env.append_value('CXXFLAGS', '-pthread')
+    test_env.append_value('CCFLAGS', '-pthread')
+    fragment = """
+#include <pthread.h>
+int main ()
+{
+   pthread_mutex_t m;
+   pthread_mutex_init (&m, NULL);
+   return 0;
+}
+    """
+    have_pthread = conf.check(header_name='pthread.h', define_name='HAVE_PTHREAD_H',
+                              env=test_env, fragment=fragment,
+                              errmsg='Could not find pthread support (build/config.log for details)',
+                              mandatory=False)
+    if have_pthread:
+        conf.env['CXXFLAGS_PTHREAD'] = '-pthread'
+        conf.env['CCFLAGS_PTHREAD'] = '-pthread'
+        conf.env['LINKFLAGS_PTHREAD'] = '-pthread'
+
+    conf.env['ENABLE_THREADING'] = have_pthread
 
     conf.report_optional_feature("Threading", "Threading Primitives",
                                  conf.env['ENABLE_THREADING'],
@@ -112,6 +135,7 @@ def build(bld):
             'unix-system-mutex.cc',
             'unix-system-condition.cc',
             ])
+        core.uselib = 'PTHREAD'
         headers.source.extend([
                 'system-mutex.h',
                 'system-thread.h',
