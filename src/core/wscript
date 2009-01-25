@@ -14,7 +14,7 @@ def configure(conf):
     test_env.append_value('LINKFLAGS', '-pthread')
     test_env.append_value('CXXFLAGS', '-pthread')
     test_env.append_value('CCFLAGS', '-pthread')
-    fragment = """
+    fragment = r"""
 #include <pthread.h>
 int main ()
 {
@@ -22,7 +22,7 @@ int main ()
    pthread_mutex_init (&m, NULL);
    return 0;
 }
-    """
+"""
     have_pthread = conf.check(header_name='pthread.h', define_name='HAVE_PTHREAD_H',
                               env=test_env, fragment=fragment,
                               errmsg='Could not find pthread support (build/config.log for details)',
