@@ -9,10 +9,7 @@ import TaskGen
 import Task
 import Options
 import Build
-#import Action
-#import Common
-#import Object
-#import Params
+from Utils import md5
 
 
 all_modules = (
@@ -176,6 +173,21 @@ class gen_ns3_module_header_task(Task.Task):
 
         outfile.close()
         return 0
+
+    def sig_explicit_deps(self):
+        m = md5()
+        m.update('\n'.join([node.abspath(self.env) for node in self.inputs]))
+        return m.digest()
+
+    def unique_id(self):
+        try:
+            return self.uid
+        except AttributeError:
+            "this is not a real hot zone, but we want to avoid surprizes here"
+            m = md5()
+            m.update("ns-3-module-header-%s" % self.module)
+            self.uid = m.digest()
+            return self.uid
 
 
 class ns3moduleheader_taskgen(TaskGen.task_gen):
