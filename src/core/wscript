@@ -1,6 +1,6 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 import sys
-
+import Options
 
 def configure(conf):
     if conf.check(header_name='stdlib.h'):
@@ -11,9 +11,10 @@ def configure(conf):
 
     # Check for POSIX threads
     test_env = conf.env.copy()
-    test_env.append_value('LINKFLAGS', '-pthread')
-    test_env.append_value('CXXFLAGS', '-pthread')
-    test_env.append_value('CCFLAGS', '-pthread')
+    if Options.platform != 'darwin':
+        test_env.append_value('LINKFLAGS', '-pthread')
+        test_env.append_value('CXXFLAGS', '-pthread')
+        test_env.append_value('CCFLAGS', '-pthread')
     fragment = r"""
 #include <pthread.h>
 int main ()
@@ -28,9 +29,11 @@ int main ()
                               errmsg='Could not find pthread support (build/config.log for details)',
                               mandatory=False)
     if have_pthread:
-        conf.env['CXXFLAGS_PTHREAD'] = '-pthread'
-        conf.env['CCFLAGS_PTHREAD'] = '-pthread'
-        conf.env['LINKFLAGS_PTHREAD'] = '-pthread'
+        # darwin accepts -pthread but prints a warning saying it is ignored
+        if Options.platform != 'darwin':
+            conf.env['CXXFLAGS_PTHREAD'] = '-pthread'
+            conf.env['CCFLAGS_PTHREAD'] = '-pthread'
+            conf.env['LINKFLAGS_PTHREAD'] = '-pthread'
 
     conf.env['ENABLE_THREADING'] = have_pthread
 
