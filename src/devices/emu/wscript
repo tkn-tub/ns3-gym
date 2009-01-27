@@ -1,11 +1,16 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def configure(conf):
-    conf.env['ENABLE_EMU'] = conf.check(header_name='linux/if_ether.h',
-                                        define_name='HAVE_IF_ETHER_H')
-    conf.report_optional_feature("EmuNetDevice", "Emulated Net Device",
-                                 conf.env['ENABLE_EMU'],
-                                 "<linux/if_ether.h> include not detected")
+    if conf.env['ENABLE_THREADING']:
+        conf.env['ENABLE_EMU'] = conf.check(header_name='linux/if_ether.h',
+                                            define_name='HAVE_IF_ETHER_H')
+        conf.report_optional_feature("EmuNetDevice", "Emulated Net Device",
+                                     conf.env['ENABLE_EMU'],
+                                     "<linux/if_ether.h> include not detected")
+    else:
+        conf.report_optional_feature("EmuNetDevice", "Emulated Net Device",
+                                     False,
+                                     "needs threading support which is not available")
 
 def build(bld):
     module = bld.create_ns3_module('emu', ['node'])

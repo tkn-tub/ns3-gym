@@ -33,9 +33,14 @@ def configure(conf):
 
     conf.write_config_header('ns3/simulator-config.h')
 
-    conf.report_optional_feature("RealTime", "Real Time Simulator",
-                                 conf.env['ENABLE_THREADING'],
-                                 "threading not enabled")
+    if not conf.check(lib='rt', uselib='RT', define_name='HAVE_RT'):
+        conf.report_optional_feature("RealTime", "Real Time Simulator",
+                                     False, "librt is not available")
+    else:
+        conf.report_optional_feature("RealTime", "Real Time Simulator",
+                                     conf.env['ENABLE_THREADING'],
+                                     "threading not enabled")
+        conf.env["ENABLE_REAL_TIME"] = conf.env['ENABLE_THREADING']
 
 
 def build(bld):
@@ -101,7 +106,7 @@ def build(bld):
             'cairo-wideint-private.h',
             ])
 
-    if env['ENABLE_THREADING']:
+    if env['ENABLE_REAL_TIME']:
         headers.source.extend([
                 'realtime-simulator-impl.h',
                 'wall-clock-synchronizer.h',
@@ -110,4 +115,6 @@ def build(bld):
                 'realtime-simulator-impl.cc',
                 'wall-clock-synchronizer.cc',
                 ])
+        sim.uselib = 'RT'
+
 

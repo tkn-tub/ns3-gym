@@ -7,6 +7,7 @@ CSS = --css-include=manual.css
 SPLIT = --split section
 
 FIGURES = figures
+DOC_FIGURES = ..
 VPATH = $(FIGURES)
 
 IMAGES_EPS = \
@@ -18,7 +19,8 @@ IMAGES_EPS = \
 	$(FIGURES)/sockets-overview.eps \
 	$(FIGURES)/testbed.eps \
 	$(FIGURES)/emulated-channel.eps \
-	$(FIGURES)/snir.eps
+	$(FIGURES)/snir.eps \
+	$(DOC_FIGURES)/WifiArchitecture.eps
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}

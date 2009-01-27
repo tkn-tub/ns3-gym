@@ -26,11 +26,13 @@ TRACEBALL_SUFFIX = ".tar.bz2"
 
 
 
-def get_command_template(*arguments):
+def get_command_template(env, arguments=()):
     if Options.options.valgrind:
         if Options.options.command_template:
             raise Utils.WafError("Options --command-template and --valgrind are conflicting")
-        cmd = "valgrind --leak-check=full %s"
+        if not env['VALGRIND']:
+            raise Utils.WafError("valgrind is not installed")
+        cmd = env['VALGRIND'] + " --leak-check=full --error-exitcode=1 %s"
     else:
         cmd = Options.options.command_template or '%s'
     for arg in arguments:

@@ -29,16 +29,22 @@ def configure(conf):
     #    conf.check_tool('flex bison')
     #    conf.check(lib='fl', mandatory=True)
 
-    if not Options.options.with_nsc:
-        conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
-                                     "--with-nsc configure option not given")
-	return
-
-    #check_nsc_buildutils()
+    # Check for the location of NSC
     if Options.options.with_nsc:
-        if not os.path.isdir(Options.options.with_nsc):
-            raise Utils.WafError("--with-nsc nsc path %r does not exist" % Options.options.with_nsc)
-        conf.env['WITH_NSC'] = Options.options.with_nsc
+        if os.path.isdir(Options.options.with_nsc):
+            conf.check_message("NSC location", '', True, ("%s (given)" % Options.options.with_nsc))
+            conf.env['WITH_NSC'] = os.path.abspath(Options.options.with_nsc)
+    else:
+        nsc_dir = os.path.join('..', "nsc")
+        if os.path.isdir(nsc_dir):
+            conf.check_message("NSC location", '', True, ("%s (guessed)" % nsc_dir))
+            conf.env['WITH_NSC'] = os.path.abspath(nsc_dir)
+        del nsc_dir
+    if not conf.env['WITH_NSC']:
+        conf.check_message("NSC location", '', False)
+        conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
+                                     "NSC not found (see option --with-nsc)")
+	return
 
     arch = os.uname()[4]
     ok = False

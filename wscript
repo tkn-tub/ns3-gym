@@ -42,6 +42,14 @@ APPNAME = 'ns'
 wutils.VERSION = VERSION
 wutils.APPNAME = APPNAME
 
+#
+# The last part of the path name to use to find the regression traces.  The
+# path will be APPNAME + '-' + VERSION + REGRESSION_SUFFIX, e.g.,
+# ns-3-dev-ref-traces
+#
+REGRESSION_SUFFIX = "-ref-traces"
+
+
 # these variables are mandatory ('/' are converted automatically)
 srcdir = '.'
 blddir = 'build'
@@ -193,8 +201,19 @@ def configure(conf):
     variant_env = conf.env.copy()
     variant_name = Options.options.build_profile
 
+    # Check for the location of regression reference traces
     if Options.options.regression_traces is not None:
-        variant_env['REGRESSION_TRACES'] = os.path.abspath(Options.options.regression_traces)
+        if os.path.isdir(Options.options.regression_traces):
+            conf.check_message("regression traces location", '', True, ("%s (given)" % Options.options.regression_traces))
+            variant_env['REGRESSION_TRACES'] = os.path.abspath(Options.options.regression_traces)
+    else:
+        traces = os.path.join('..', "%s-%s%s" % (APPNAME, VERSION, REGRESSION_SUFFIX))
+        if os.path.isdir(traces):
+            conf.check_message("regression reference traces", '', True, ("%s (guessed)" % traces))
+            variant_env['REGRESSION_TRACES'] = os.path.abspath(traces)
+        del traces
+    if not variant_env['REGRESSION_TRACES']:
+        conf.check_message("regression reference traces", '', False)
 
     if Options.options.enable_gcov:
         variant_name += '-gcov'
@@ -241,6 +260,8 @@ def configure(conf):
 
     # we cannot pull regression traces without mercurial
     conf.find_program('hg', var='MERCURIAL')
+
+    conf.find_program('valgrind', var='VALGRIND')
 
     # Write a summary of optional features status
     print "---- Summary of optional NS-3 features:"
@@ -407,33 +428,13 @@ def build(bld):
 
     if Options.options.run:
         # Check that the requested program name is valid
-        program_name, dummy_program_argv = wutils.get_run_program(Options.options.run, get_command_template())
+        program_name, dummy_program_argv = wutils.get_run_program(Options.options.run, wutils.get_command_template(env))
 
         # When --run'ing a program, tell WAF to only build that program,
         # nothing more; this greatly speeds up compilation when all you
         # want to do is run a test program.
         if not Options.options.compile_targets:
             Options.options.compile_targets = os.path.basename(program_name)
-
-
-
-def get_command_template(*arguments):
-    if Options.options.valgrind:
-        if Options.options.command_template:
-            raise Utils.WafError("Options --command-template and --valgrind are conflicting")
-        cmd = "valgrind --leak-check=full %s"
-    else:
-        cmd = Options.options.command_template or '%s'
-    for arg in arguments:
-        cmd = cmd + " " + arg
-    return cmd
-
-
-def shutdown():
-    env = Build.bld.env
-
-    if Options.commands['check']:
-        _run_waf_check()
 
     if Options.options.regression or Options.options.regression_generate:
         if not env['DIFF']:
@@ -443,15 +444,20 @@ def shutdown():
         if not regression_traces:
             raise Utils.WafError("Cannot run regression tests: reference traces directory not given"
                                  " (--with-regression-traces configure option)")
-        retval = regression.run_regression(regression_traces)
-        if retval:
-            sys.exit(retval)
+        regression.run_regression(bld, regression_traces)
+
+
+def shutdown():
+    env = Build.bld.env
+
+    if Options.commands['check']:
+        _run_waf_check()
 
     if Options.options.lcov_report:
         lcov_report()
 
     if Options.options.run:
-        wutils.run_program(Options.options.run, get_command_template())
+        wutils.run_program(Options.options.run, wutils.get_command_template(env))
         raise SystemExit(0)
 
     if Options.options.pyrun:
@@ -476,7 +482,7 @@ def _run_waf_check():
         out.close()
 
     print "-- Running NS-3 C++ core unit tests..."
-    wutils.run_program('run-tests', get_command_template())
+    wutils.run_program('run-tests', wutils.get_command_template(env))
 
     if env['ENABLE_PYTHON_BINDINGS']:
         print "-- Running NS-3 Python bindings unit tests..."
