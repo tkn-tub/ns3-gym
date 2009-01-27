@@ -1,0 +1,41 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def configure(conf):
+    if conf.env['ENABLE_THREADING']:
+        conf.env['ENABLE_TAP'] = conf.check(header_name='linux/if_ether.h',
+                                            define_name='HAVE_IF_ETHER_H')
+        conf.report_optional_feature("TapBridge", "Tap Bridge",
+                                     conf.env['ENABLE_TAP'],
+                                     "<linux/if_ether.h> include not detected")
+    else:
+        conf.report_optional_feature("TapBridge", "Tap Bridge",
+                                     False,
+                                     "needs threading support which is not available")
+
+def build(bld):
+    module = bld.create_ns3_module('tap-bridge', ['node'])
+    module.source = [
+        ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'tap-bridge'
+    headers.source = [
+        'tap.h',
+        ]
+
+    env = bld.env_of_name('default')
+    if env['ENABLE_TAP']:
+        module.source.extend([
+                'tap-bridge.cc',
+                'tap-encode-decode.cc',
+                ])
+        headers.source.extend([
+                'tap-bridge.h',
+                ])
+
+        obj = bld.create_suid_program('tap-sock-creator')
+        obj.source = [
+            'tap-sock-creator.cc',
+            'tap-encode-decode.cc',
+            ]
+
+
