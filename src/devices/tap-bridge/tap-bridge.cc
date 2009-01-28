@@ -22,9 +22,14 @@
 #include "ns3/node.h"
 #include "ns3/channel.h"
 #include "ns3/packet.h"
+#include "ns3/ethernet-header.h"
+#include "ns3/ethernet-trailer.h"
 #include "ns3/log.h"
 #include "ns3/boolean.h"
+#include "ns3/string.h"
 #include "ns3/simulator.h"
+#include "ns3/realtime-simulator-impl.h"
+#include "ns3/system-thread.h"
 
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -54,17 +59,56 @@ TapBridge::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::TapBridge")
     .SetParent<NetDevice> ()
     .AddConstructor<TapBridge> ()
+    .AddAttribute ("DeviceName", 
+                   "The name of the tap device to create.",
+                   StringValue (""),
+                   MakeStringAccessor (&TapBridge::m_tapDeviceName),
+                   MakeStringChecker ())
+    .AddAttribute ("TapGateway", 
+                   "The IP address of the default gateway to assign to the tap device.",
+                   StringValue (""),
+                   MakeStringAccessor (&TapBridge::m_tapGateway),
+                   MakeStringChecker ())
+    .AddAttribute ("TapIp", 
+                   "The IP address to assign to the tap device.",
+                   StringValue (""),
+                   MakeStringAccessor (&TapBridge::m_tapIp),
+                   MakeStringChecker ())
+    .AddAttribute ("TapMac", 
+                   "The MAC address to assign to the tap device.",
+                   StringValue (""),
+                   MakeStringAccessor (&TapBridge::m_tapMac),
+                   MakeStringChecker ())
+    .AddAttribute ("TapNetmask", 
+                   "The network mask to assign to the tap device.",
+                   StringValue (""),
+                   MakeStringAccessor (&TapBridge::m_tapMac),
+                   MakeStringChecker ())
+    .AddAttribute ("Start", 
+                   "The simulation time at which to spin up the tap device read thread.",
+                   TimeValue (Seconds (0.)),
+                   MakeTimeAccessor (&TapBridge::m_tStart),
+                   MakeTimeChecker ())
+    .AddAttribute ("Stop", 
+                   "The simulation time at which to tear down the tap device read thread.",
+                   TimeValue (Seconds (0.)),
+                   MakeTimeAccessor (&TapBridge::m_tStop),
+                   MakeTimeChecker ())
     ;
   return tid;
 }
 
 TapBridge::TapBridge ()
-  : m_node (0),
-    m_ifIndex (0),
-    m_mtu (0),
-    m_sock (-1)
+: m_node (0),
+  m_ifIndex (0),
+  m_mtu (0),
+  m_sock (-1),
+  m_startEvent (),
+  m_stopEvent (),
+  m_readThread (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  Start (m_tStart);
 }
 
 TapBridge::~TapBridge()
@@ -77,6 +121,82 @@ TapBridge::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   NetDevice::DoDispose ();
+}
+
+void
+TapBridge::Start (Time tStart)
+{
+  NS_LOG_FUNCTION (tStart);
+
+  //
+  // Cancel any pending start event and schedule a new one at some relative time in the future.
+  //
+  Simulator::Cancel (m_startEvent);
+  m_startEvent = Simulator::Schedule (tStart, &TapBridge::StartTapDevice, this);
+}
+
+  void
+TapBridge::Stop (Time tStop)
+{
+  NS_LOG_FUNCTION (tStop);
+  //
+  // Cancel any pending stop event and schedule a new one at some relative time in the future.
+  //
+  Simulator::Cancel (m_stopEvent);
+  m_startEvent = Simulator::Schedule (tStop, &TapBridge::StopTapDevice, this);
+}
+
+  void
+TapBridge::StartTapDevice (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+
+  //
+  // Spin up the tap bridge and start receiving packets.
+  //
+  if (m_sock != -1)
+    {
+      NS_FATAL_ERROR ("TapBridge::StartTapDevice(): Tap is already started");
+    }
+
+  NS_LOG_LOGIC ("Creating tap device");
+
+  //
+  // Call out to a separate process running as suid root in order to get the 
+  // tap device allocated and set up.  We do this to avoid having the entire 
+  // simulation running as root.  If this method returns, we'll have a socket
+  // waiting for us in m_sock that we can use to talk to the newly created 
+  // tap device.
+  //
+  CreateTap ();
+
+  //
+  // Now spin up a read thread to read packets from the tap device.
+  //
+  if (m_readThread != 0)
+    {
+      NS_FATAL_ERROR ("TapBridge::StartTapDevice(): Receive thread is already running");
+    }
+
+  NS_LOG_LOGIC ("Spinning up read thread");
+
+  m_readThread = Create<SystemThread> (MakeCallback (&TapBridge::ReadThread, this));
+  m_readThread->Start ();
+}
+
+void
+TapBridge::StopTapDevice (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+
+  close (m_sock);
+  m_sock = -1;
+
+  NS_ASSERT_MSG (m_readThread != 0, "TapBridge::StopTapDevice(): Receive thread is not running");
+
+  NS_LOG_LOGIC ("Joining read thread");
+  m_readThread->Join ();
+  m_readThread = 0;
 }
 
 void
@@ -321,6 +441,79 @@ TapBridge::FindCreator (void)
   return ""; // quiet compiler
 }
 
+void
+TapBridge::ReadThread (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+
+  //
+  // It's important to remember that we're in a completely different thread than the simulator is running in.  We
+  // need to synchronize with that other thread to get the packet up into ns-3.  What we will need to do is to schedule 
+  // a method to deal with the packet using the multithreaded simulator we are most certainly running.  However, I just 
+  // said it -- we are talking about two threads here, so it is very, very dangerous to do any kind of reference couning
+  // on a shared object.  Just don't do it.  So what we're going to do is to allocate a buffer on the heap and pass that
+  // buffer into the ns-3 context thread where it will create the packet.
+  //
+  int32_t len = -1;
+
+  for (;;) 
+    {
+      uint32_t bufferSize = 65536;
+      uint8_t *buf = (uint8_t *)malloc (bufferSize);
+      if (buf == 0)
+        {
+          NS_FATAL_ERROR ("TapBridge::ReadThread(): malloc packet buffer failed");
+        }
+
+      NS_LOG_LOGIC ("Calling read on tap device socket fd");
+      len = read (m_sock, buf, bufferSize);
+
+      if (len == -1)
+        {
+          free (buf);
+          buf = 0;
+          return;
+        }
+
+      NS_LOG_INFO ("TapBridge::ReadThread(): Received packet");
+      NS_LOG_INFO ("TapBridge::ReadThread(): Scheduling handler");
+      DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ())->ScheduleRealtimeNow (
+        MakeEvent (&TapBridge::ForwardToBridgedDevice, this, buf, len));
+      buf = 0;
+    }
+}
+
+void
+TapBridge::ForwardToBridgedDevice (uint8_t *buf, uint32_t len)
+{
+  NS_LOG_FUNCTION (buf << len);
+
+  //
+  // Create a packet out of the buffer we received and free that buffer.
+  //
+  Ptr<Packet> packet = Create<Packet> (reinterpret_cast<const uint8_t *> (buf), len);
+  free (buf);
+  buf = 0;
+
+  //
+  // Checksum the packet
+  //
+  EthernetTrailer trailer;
+  packet->RemoveTrailer (trailer);
+  trailer.CheckFcs (packet);
+
+  //
+  // Get rid of the MAC header
+  //
+  EthernetHeader header (false);
+  packet->RemoveHeader (header);
+
+  NS_LOG_LOGIC ("Pkt source is " << header.GetSource ());
+  NS_LOG_LOGIC ("Pkt destination is " << header.GetDestination ());
+
+  m_bridgedDevice->SendFrom (packet, header.GetSource (), header.GetDestination (), protocol);
+}
+
 void 
 TapBridge::SetBridgedDevice (Ptr<NetDevice> bridgedDevice)
 {
@@ -361,15 +554,26 @@ TapBridge::ReceiveFromBridgedDevice (
   
   NS_LOG_DEBUG ("Packet UID is " << packet->GetUid ());
 
-  Mac48Address src48 = Mac48Address::ConvertFrom (src);
-  Mac48Address dst48 = Mac48Address::ConvertFrom (dst);
+  Mac48Address from = Mac48Address::ConvertFrom (src);
+  Mac48Address to = Mac48Address::ConvertFrom (dst);
 
   //
   // We have received a packet from the ns-3 net device that has been associated
   // with this bridge.  We want to take these bits and send them off to the 
-  // Tap device on the Linux host.
+  // Tap device on the Linux host.  Once we do this, the bits in the packet will
+  // percolate up through the stack on the Linux host.
   //
-  NS_LOG_LOGIC ("TapBridge::ReceiveFromDevice: Not implemented");
+  // The ns-3 net device that is the source of these bits has removed the MAC 
+  // header, so we have to put one back on.
+  //
+  Ptr<Packet> p = packet->Copy ();
+  EthernetHeader header = EthernetHeader (false);
+  header.SetSource (from);
+  header.SetDestination (to);
+  header.SetLengthType (protocolNumber);
+  p->AddHeader (header);
+
+  write (m_sock, p->PeekData (), p->GetSize ());
 }
 
 void 

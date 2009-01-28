@@ -19,9 +19,19 @@
 #ifndef TAP_BRIDGE_H
 #define TAP_BRIDGE_H
 
+#include <string.h>
+#include "ns3/address.h"
 #include "ns3/net-device.h"
-#include "ns3/mac48-address.h"
+#include "ns3/node.h"
+#include "ns3/callback.h"
+#include "ns3/packet.h"
+#include "ns3/traced-callback.h"
+#include "ns3/event-id.h"
 #include "ns3/nstime.h"
+#include "ns3/data-rate.h"
+#include "ns3/ptr.h"
+#include "ns3/mac48-address.h"
+#include "ns3/system-thread.h"
 
 namespace ns3 {
 
@@ -77,6 +87,20 @@ public:
    */
   void SetBridgedDevice (Ptr<NetDevice> bridgedDevice);
 
+  /**
+   * Set a start time for the device.
+   *
+   * @param tStart the start time
+   */
+  void Start (Time tStart);
+
+  /**
+   * Set a stop time for the device.
+   *
+   * @param tStop the stop time
+   */
+  void Stop (Time tStop);
+
   // inherited from NetDevice base class.
   virtual void SetName(const std::string name);
   virtual std::string GetName(void) const;
@@ -109,7 +133,6 @@ protected:
 
   void ReceiveFromBridgedDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                                  Address const &src, Address const &dst, PacketType packetType);
-
 private:
 
   /**
@@ -125,16 +148,45 @@ private:
    */
   std::string FindCreator (void);
 
+  /**
+   * Spin up the device
+   */
+  void StartTapDevice (void);
+
+  /**
+   * Tear down the device
+   */
+  void StopTapDevice (void);
+
+  /**
+   * Loop to read and process packets
+   */
+  void ReadThread (void);
+
+  void ForwardToBridgedDevice (uint8_t *buf, uint32_t len);
+
   NetDevice::ReceiveCallback m_rxCallback;
   NetDevice::PromiscReceiveCallback m_promiscRxCallback;
 
-  Mac48Address m_address;
   Ptr<Node> m_node;
   std::string m_name;
   uint32_t m_ifIndex;
   uint16_t m_mtu;
-
   int32_t m_sock;
+  EventId m_startEvent;
+  EventId m_stopEvent;
+  Ptr<SystemThread> m_readThread;
+  Mac48Address m_address;
+
+  /**
+   * Time to start spinning up the device
+   */
+  Time m_tStart;
+
+  /**
+   * Time to start tearing down the device
+   */
+  Time m_tStop;
 
   std::string m_tapDeviceName;
   std::string m_tapGateway;
