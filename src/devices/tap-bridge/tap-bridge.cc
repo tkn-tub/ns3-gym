@@ -511,7 +511,7 @@ TapBridge::ForwardToBridgedDevice (uint8_t *buf, uint32_t len)
   NS_LOG_LOGIC ("Pkt source is " << header.GetSource ());
   NS_LOG_LOGIC ("Pkt destination is " << header.GetDestination ());
 
-  m_bridgedDevice->SendFrom (packet, header.GetSource (), header.GetDestination (), protocol);
+  m_bridgedDevice->SendFrom (packet, header.GetSource (), header.GetDestination (), 0x800);
 }
 
 void 
@@ -570,7 +570,7 @@ TapBridge::ReceiveFromBridgedDevice (
   EthernetHeader header = EthernetHeader (false);
   header.SetSource (from);
   header.SetDestination (to);
-  header.SetLengthType (protocolNumber);
+  header.SetLengthType (0x800);
   p->AddHeader (header);
 
   write (m_sock, p->PeekData (), p->GetSize ());
