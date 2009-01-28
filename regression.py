@@ -122,11 +122,19 @@ class regression_test_task(Task.TaskBase):
         if is_pyscript:
             script = os.path.abspath(os.path.join('..', *os.path.split(program)))
             argv = [self.env['PYTHON'], script] + arguments
-            wutils.run_argv(argv, cwd=trace_output_path)
+            try:
+                wutils.run_argv(argv, cwd=trace_output_path)
+            except Utils.WafError, ex:
+                print >> sys.stderr, ex
+                return 1
         else:
-            wutils.run_program(program,
-                               command_template=wutils.get_command_template(self.env, arguments),
-                               cwd=trace_output_path)
+            try:
+                wutils.run_program(program,
+                                   command_template=wutils.get_command_template(self.env, arguments),
+                                   cwd=trace_output_path)
+            except Utils.WafError, ex:
+                print >> sys.stderr, ex
+                return 1
 
         if Options.options.verbose:
             #diffCmd = "diff traces " + refTestDirName + " | head"
@@ -154,11 +162,19 @@ class regression_test_task(Task.TaskBase):
         if is_pyscript:
             script = os.path.abspath(os.path.join('..', *os.path.split(program)))
             argv = [self.env['PYTHON'], script] + arguments
-            retval = wutils.run_argv(argv, cwd=trace_output_path)
+            try:
+                retval = wutils.run_argv(argv, cwd=trace_output_path)
+            except Utils.WafError, ex:
+                print >> sys.stderr, ex
+                return 1
         else:
-            retval = wutils.run_program(program,
-                                        command_template=wutils.get_command_template(self.env, arguments),
-                                        cwd=trace_output_path)
+            try:
+                retval = wutils.run_program(program,
+                                            command_template=wutils.get_command_template(self.env, arguments),
+                                            cwd=trace_output_path)
+            except Utils.WafError, ex:
+                print >> sys.stderr, ex
+                return 1
         return retval
 
 
