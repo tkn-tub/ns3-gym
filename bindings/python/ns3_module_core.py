@@ -667,11 +667,6 @@ def register_Ns3SeedManager_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'seed')], 
                    is_static=True)
-    ## random-variable.h: static uint32_t ns3::SeedManager::GetSeed() [member function]
-    cls.add_method('GetSeed', 
-                   'uint32_t', 
-                   [], 
-                   is_static=True)
     ## random-variable.h: static void ns3::SeedManager::SetSeed(uint32_t * seed) [member function]
     cls.add_method('SetSeed', 
                    'void', 
