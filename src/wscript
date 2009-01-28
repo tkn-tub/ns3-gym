@@ -45,11 +45,10 @@ def set_options(opt):
                          " --run and --shell; moreover, only works in some"
                          " specific platforms, such as Linux and Solaris)"),
                    action="store_true", dest='enable_rpath', default=False)
-
+    
     opt.add_option('--enable-modules',
                    help=("Build only these modules (and dependencies)"),
                    dest='enable_modules')
-
 
 def configure(conf):
     conf.sub_config('core')

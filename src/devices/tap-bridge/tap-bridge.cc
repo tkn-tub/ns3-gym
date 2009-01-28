@@ -17,6 +17,8 @@
  */
 
 #include "tap-bridge.h"
+#include "tap-encode-decode.h"
+
 #include "ns3/node.h"
 #include "ns3/channel.h"
 #include "ns3/packet.h"
@@ -24,9 +26,25 @@
 #include "ns3/boolean.h"
 #include "ns3/simulator.h"
 
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <sys/ioctl.h>
+#include <net/ethernet.h>
+#include <net/if.h>
+#include <netinet/in.h>
+#include <netpacket/packet.h>
+#include <arpa/inet.h>
+#include <errno.h>
+#include <limits>
+#include <stdlib.h>
+
 NS_LOG_COMPONENT_DEFINE ("TapBridge");
 
 namespace ns3 {
+
+#define TAP_MAGIC 95549
 
 NS_OBJECT_ENSURE_REGISTERED (TapBridge);
 
@@ -40,10 +58,11 @@ TapBridge::GetTypeId (void)
   return tid;
 }
 
-
 TapBridge::TapBridge ()
   : m_node (0),
-    m_ifIndex (0)
+    m_ifIndex (0),
+    m_mtu (0),
+    m_sock (-1)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -58,6 +77,248 @@ TapBridge::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   NetDevice::DoDispose ();
+}
+
+void
+TapBridge::CreateTap (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  //
+  // We want to create a tap device on the host.  Unfortunately for us
+  // you have to have root privileges to do that.  Instead of running the 
+  // entire simulation as root, we decided to make a small program who's whole
+  // reason for being is to run as suid root and do what it takes to create the
+  // tap.  We're going to fork and exec that program soon, but we need to have 
+  // a socket to talk to it with.  So we create a local interprocess (Unix) 
+  // socket for that purpose.
+  //
+  int sock = socket (PF_UNIX, SOCK_DGRAM, 0);
+  if (sock == -1)
+    {
+      NS_FATAL_ERROR ("TapBridge::CreateTap(): Unix socket creation error, errno = " << strerror (errno));
+    }
+
+  //
+  // Bind to that socket and let the kernel allocate an endpoint
+  //
+  struct sockaddr_un un;
+  memset (&un, 0, sizeof (un));
+  un.sun_family = AF_UNIX;
+  int status = bind (sock, (struct sockaddr*)&un, sizeof (sa_family_t));
+  if (status == -1)
+    {
+      NS_FATAL_ERROR ("TapBridge::CreateTap(): Could not bind(): errno = " << strerror (errno));
+    }
+
+  NS_LOG_INFO ("Created Unix socket");
+  NS_LOG_INFO ("sun_family = " << un.sun_family);
+  NS_LOG_INFO ("sun_path = " << un.sun_path);
+
+  //
+  // We have a socket here, but we want to get it there -- to the program we're
+  // going to exec.  What we'll do is to do a getsockname and then encode the
+  // resulting address information as a string, and then send the string to the
+  // program as an argument.  So we need to get the sock name.
+  //
+  socklen_t len = sizeof (un);
+  status = getsockname (sock, (struct sockaddr*)&un, &len);
+  if (status == -1)
+    {
+      NS_FATAL_ERROR ("TapBridge::CreateTap(): Could not getsockname(): errno = " << strerror (errno));
+    }
+
+  //
+  // Now encode that socket name (family and path) as a string of hex digits
+  //
+  std::string path = TapBufferToString((uint8_t *)&un, len);
+  NS_LOG_INFO ("Encoded Unix socket as \"" << path << "\"");
+  //
+  // Fork and exec the process to create our socket.  If we're us (the parent)
+  // we wait for the child (the creator) to complete and read the  socket it created using the ancillary data mechanism.
+  //
+  pid_t pid = ::fork ();
+  if (pid == 0)
+    {
+      NS_LOG_DEBUG ("Child process");
+
+      //
+      // build a command line argument from the encoded endpoint string that 
+      // the socket creation process will use to figure out how to respond to
+      // the (now) parent process.  We're going to have to give this program
+      // quite a bit of information and we use program arguments to do so.
+      //
+      // -d<device-name> The name of the tap device we want to create;
+      // -g<gateway-address> The IP address to use as the default gateway;
+      // -i<IP-address> The IP address to assign to the new tap device;
+      // -m<MAC-address> The MAC-48 address to assign to the new tap device;
+      // -n<network-mask> The network mask to assign to the new tap device;
+      // -p<path> the path to the unix socket described above.
+      //
+      // Example tap-sock-creator -dnewdev -g1.2.3.2 -i1.2.3.1 -m08:00:2e:00:01:23 -n255.255.255.0 -pblah
+      //
+      std::ostringstream oss;
+      oss << "-d" << m_tapDeviceName << " -g" << m_tapGateway << " -i" << m_tapIp << " -m" << m_tapMac
+          << " -n" << m_tapNetmask << " -p" << path;
+      NS_LOG_INFO ("creator arguments set to \"" << oss.str () << "\"");
+
+      //
+      // Execute the socket creation process image.
+      //
+      status = ::execl (FindCreator ().c_str (), "tap-sock-creator", oss.str ().c_str (), (char *)NULL);
+
+      //
+      // If the execl successfully completes, it never returns.  If it returns it failed or the OS is
+      // broken.  In either case, we bail.
+      //
+      NS_FATAL_ERROR ("TapBridge::CreateTap(): Back from execl(), errno = " << ::strerror (errno));
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Parent process");
+      //
+      // We're the process running the emu net device.  We need to wait for the
+      // socket creator process to finish its job.
+      //
+      int st;
+      pid_t waited = waitpid (pid, &st, 0);
+      if (waited == -1)
+	{
+	  NS_FATAL_ERROR ("TapBridge::CreateTap(): waitpid() fails, errno = " << strerror (errno));
+	}
+      NS_ASSERT_MSG (pid == waited, "TapBridge::CreateTap(): pid mismatch");
+
+      //
+      // Check to see if the socket creator exited normally and then take a 
+      // look at the exit code.  If it bailed, so should we.  If it didn't
+      // even exit normally, we bail too.
+      //
+      if (WIFEXITED (st))
+	{
+          int exitStatus = WEXITSTATUS (st);
+          if (exitStatus != 0)
+            {
+              NS_FATAL_ERROR ("TapBridge::CreateTap(): socket creator exited normally with status " << exitStatus);
+            }
+	}
+      else 
+	{
+          NS_FATAL_ERROR ("TapBridge::CreateTap(): socket creator exited abnormally");
+	}
+
+      //
+      // At this point, the socket creator has run successfully and should 
+      // have created our tap device, initialized it with the information we
+      // passed and sent it back to the socket address we provided.  A socket
+      // (fd) we can use to talk to this tap device should be waiting on the 
+      // Unix socket we set up to receive information back from the creator
+      // program.  We've got to do a bunch of grunt work to get at it, though.
+      //
+      // The struct iovec below is part of a scatter-gather list.  It describes a
+      // buffer.  In this case, it describes a buffer (an integer) that will
+      // get the data that comes back from the socket creator process.  It will
+      // be a magic number that we use as a consistency/sanity check.
+      // 
+      struct iovec iov;
+      uint32_t magic;
+      iov.iov_base = &magic;
+      iov.iov_len = sizeof(magic);
+
+      //
+      // The CMSG macros you'll see below are used to create and access control 
+      // messages (which is another name for ancillary data).  The ancillary 
+      // data is made up of pairs of struct cmsghdr structures and associated
+      // data arrays.
+      //
+      // First, we're going to allocate a buffer on the stack to receive our 
+      // data array (that contains the socket).  Sometimes you'll see this called
+      // an "ancillary element" but the msghdr uses the control message termimology
+      // so we call it "control."
+      //
+      size_t msg_size = sizeof(int);
+      char control[CMSG_SPACE(msg_size)];
+
+      //
+      // There is a msghdr that is used to minimize the number of parameters
+      // passed to recvmsg (which we will use to receive our ancillary data).  
+      // This structure uses terminology corresponding to control messages, so
+      // you'll see msg_control, which is the pointer to the ancillary data and 
+      // controllen which is the size of the ancillary data array.
+      //
+      // So, initialize the message header that describes the ancillary/control
+      // data we expect to receive and point it to buffer.
+      //
+      struct msghdr msg;
+      msg.msg_name = 0;
+      msg.msg_namelen = 0;
+      msg.msg_iov = &iov;
+      msg.msg_iovlen = 1;
+      msg.msg_control = control;
+      msg.msg_controllen = sizeof (control);
+      msg.msg_flags = 0;
+
+      //
+      // Now we can actually receive the interesting bits from the tap
+      // creator process.
+      //
+      ssize_t bytesRead = recvmsg (sock, &msg, 0);
+      if (bytesRead != sizeof(int))
+	{
+          NS_FATAL_ERROR ("TapBridge::CreateTap(): Wrong byte count from socket creator");
+	}
+
+      //
+      // There may be a number of message headers/ancillary data arrays coming in.
+      // Let's look for the one with a type SCM_RIGHTS which indicates it' the
+      // one we're interested in.
+      //
+      struct cmsghdr *cmsg;
+      for (cmsg = CMSG_FIRSTHDR(&msg); cmsg != NULL; cmsg = CMSG_NXTHDR(&msg, cmsg)) 
+	{
+	  if (cmsg->cmsg_level == SOL_SOCKET &&
+	      cmsg->cmsg_type == SCM_RIGHTS)
+	    {
+              //
+              // This is the type of message we want.  Check to see if the magic 
+              // number is correct and then pull out the socket we care about if
+              // it matches
+              //
+              if (magic == TAP_MAGIC)
+                {
+                  NS_LOG_INFO ("Got SCM_RIGHTS with correct magic " << magic);
+                  int *rawSocket = (int*)CMSG_DATA (cmsg);
+                  NS_LOG_INFO ("Got the socket from the socket creator = " << *rawSocket);
+                  m_sock = *rawSocket;
+                  return;
+                }
+              else
+                {
+                  NS_LOG_INFO ("Got SCM_RIGHTS, but with bad magic " << magic);                  
+                }
+	    }
+	}
+      NS_FATAL_ERROR ("Did not get the raw socket from the socket creator");
+    }
+}
+
+std::string
+TapBridge::FindCreator (void)
+{
+  struct stat st;
+  std::string debug = "./build/debug/src/devices/tap-bridge/tap-sock-creator";
+  std::string optimized = "./build/optimized/src/devices/tap-bridge/tap-sock-creator";
+
+  if (::stat (debug.c_str (), &st) == 0)
+    {
+      return debug;
+    }
+
+  if (::stat (optimized.c_str (), &st) == 0)
+    {
+      return optimized;
+    }
+
+  NS_FATAL_ERROR ("TapBridge::FindCreator(): Couldn't find creator");
+  return ""; // quiet compiler
 }
 
 void 

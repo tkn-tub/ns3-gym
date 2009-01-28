@@ -277,7 +277,7 @@ SendSocket (const char *path, int fd)
 }
 
   static int
-CreateTap (const char *dev, const char *gw, const char *ip, const char *netmask, const char *mac)
+CreateTap (const char *dev, const char *gw, const char *ip, const char *mac, const char *netmask)
 {
   //
   // Creation and management of Tap devices is done via the tun device
@@ -343,7 +343,7 @@ CreateTap (const char *dev, const char *gw, const char *ip, const char *netmask,
 main (int argc, char *argv[])
 {
   int c;
-  char *dev = NULL;
+  char *dev = (char *)"";
   char *gw = NULL;
   char *ip = NULL;
   char *mac = NULL;
@@ -383,9 +383,9 @@ main (int argc, char *argv[])
   //
   // We have got to be able to coordinate the name of the tap device we are
   // going to create and or open with the device that an external Linux host
-  // will use.  THis name is given in dev
+  // will use.  If this name is provided we use it.  If not we let the system
+  // create the device for us.  This name is given in dev
   //
-  ABORT_IF (dev == NULL, "Device Name is a required argument", 0);
   LOG ("Provided Device Name is \"" << dev << "\"");
 
   //
@@ -394,7 +394,7 @@ main (int argc, char *argv[])
   // gw.
   //
   ABORT_IF (gw == NULL, "Gateway Address is a required argument", 0);
-  LOG ("Provided Gateway Address is \"" << dev << "\"");
+  LOG ("Provided Gateway Address is \"" << gw << "\"");
 
   //
   // We have got to be able to assign an IP address to the tap device we are
@@ -446,6 +446,14 @@ main (int argc, char *argv[])
   LOG ("Creating Tap");
   int sock = CreateTap (dev, gw, ip, mac, netmask);
   ABORT_IF (sock == -1, "main(): Unable to create tap socket", 1);
+
+#if 1
+  for (;;)
+    {
+      LOG ("z");
+      sleep (1);
+    }
+#endif
 
   //
   // Send the socket back to the tap net device so it can go about its business

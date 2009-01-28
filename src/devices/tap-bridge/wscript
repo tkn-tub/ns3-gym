@@ -32,9 +32,9 @@ def build(bld):
                 'tap-bridge.h',
                 ])
 
-        obj = bld.create_suid_program('tap-sock-creator')
+        obj = bld.create_suid_program('tap-creator')
         obj.source = [
-            'tap-sock-creator.cc',
+            'tap-creator.cc',
             'tap-encode-decode.cc',
             ]
 

@@ -111,6 +111,20 @@ protected:
                                  Address const &src, Address const &dst, PacketType packetType);
 
 private:
+
+  /**
+   * Call out to a separate process running as suid root in order to get our
+   * tap device created.  We do this to avoid having the entire simulation 
+   * running as root.  If this method returns, we'll have a socket waiting 
+   * for us in m_sock that we can use to talk to the tap device.
+   */
+  void CreateTap (void);
+
+  /**
+   * Figure out where the tap creation program lives on the system.
+   */
+  std::string FindCreator (void);
+
   NetDevice::ReceiveCallback m_rxCallback;
   NetDevice::PromiscReceiveCallback m_promiscRxCallback;
 
@@ -119,6 +133,14 @@ private:
   std::string m_name;
   uint32_t m_ifIndex;
   uint16_t m_mtu;
+
+  int32_t m_sock;
+
+  std::string m_tapDeviceName;
+  std::string m_tapGateway;
+  std::string m_tapIp;
+  std::string m_tapMac;
+  std::string m_tapNetmask;
 
   Ptr<NetDevice> m_bridgedDevice;
 };

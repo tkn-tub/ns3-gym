@@ -133,7 +133,10 @@ def set_options(opt):
                    help=('Run a shell with an environment suitably modified to run locally built programs'),
                    action="store_true", default=False,
                    dest='shell')
-
+    opt.add_option('--enable-sudo',
+                   help=('Use sudo to setup suid bits on ns3 executables.'),
+                   dest='enable_sudo', action='store_true',
+                   default=False)
     opt.add_option('--regression',
                    help=("Enable regression testing; only used for the 'check' target"),
                    default=False, dest='regression', action="store_true")
@@ -144,10 +147,6 @@ def set_options(opt):
                    help=('For regression testing, only run/generate the indicated regression tests, '
                          'specified as a comma separated list of test names'),
                    dest='regression_tests', type="string")
-    opt.add_option('--enable-sudo',
-                   help=('Use sudo to setup suid bits on ns3 executables.'),
-                   dest='enable_sudo', action='store_true',
-                   default=False)
     opt.add_option('--with-regression-traces',
                    help=('Path to the regression reference traces directory'),
                    default=None,
@@ -280,7 +279,7 @@ class SuidBuildTask(Task.TaskBase):
     def __init__(self, bld, program):
         self.m_display = 'build-suid'
         self.__program = program
-        self.__env = bld.env ()
+        self.__env = bld.env.copy ()
         super(SuidBuildTask, self).__init__()
 
     def run(self):
@@ -305,6 +304,7 @@ def create_suid_program(bld, name):
     program.module_deps = list()
     program.name = name
     program.target = name
+
     if bld.env['SUDO'] and Options.options.enable_sudo:
         SuidBuildTask(bld, program)
     return program
