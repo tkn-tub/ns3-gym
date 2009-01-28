@@ -5,10 +5,12 @@
 import platform
 
 
-def may_run(env):
+def may_run(env, options):
     if not env['NSC_ENABLED']:
         return "NSC not available"
     else:
+        if options.valgrind:
+            return "NSC does not get along with valgrind"
         return 0
 
 

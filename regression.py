@@ -84,7 +84,7 @@ class regression_test_task(Task.TaskBase):
             program = getattr(mod, "program", short_name)
 
         if hasattr(mod, 'may_run'):
-            reason_cannot_run = mod.may_run(self.env)
+            reason_cannot_run = mod.may_run(self.env, Options.options)
         else:
             reason_cannot_run = None
         if reason_cannot_run:

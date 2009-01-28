@@ -4,7 +4,7 @@
 
 import os.path
 
-def may_run(env):
+def may_run(env, options):
     """Returns 0 when it can run, return non-zero or string (reason) when it cannot run"""
     if env['ENABLE_PYTHON_BINDINGS']:
         return 0
