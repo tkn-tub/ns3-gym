@@ -367,6 +367,10 @@ double RngStream::nextSeed[6] =
 {
   12345.0, 12345.0, 12345.0, 12345.0, 12345.0, 12345.0
 };
+double RngStream::packageSeed[6] =
+{
+  12345.0, 12345.0, 12345.0, 12345.0, 12345.0, 12345.0
+};
 
 //-------------------------------------------------------------------------
 // constructor
@@ -466,7 +470,7 @@ bool RngStream::SetPackageSeed (const uint32_t seed[6])
       return false;
     }
   for (int i = 0; i < 6; ++i)
-    nextSeed[i] = seed[i];
+    packageSeed[i] = nextSeed[i] = seed[i];
   return true;
 }
 bool 
@@ -481,7 +485,7 @@ RngStream::GetPackageSeed (uint32_t seed[6])
   EnsureGlobalInitialized ();
   for (int i = 0; i < 6; i++)
     {
-      seed[i] = nextSeed[i];
+      seed[i] = static_cast<uint32_t> (packageSeed[i]);
     }
 }
 void 
