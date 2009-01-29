@@ -31,8 +31,8 @@ class AttributeValue;
 class TapBridgeHelper
 {
 public:
-  TapBridgeHelper ();
-  void SetDeviceAttribute (std::string n1, const AttributeValue &v1);
+  TapBridgeHelper (Ipv4Address gateway);
+  void SetAttribute (std::string n1, const AttributeValue &v1);
   Ptr<NetDevice> Install (Ptr<Node> node, Ptr<NetDevice> nd);
 private:
   ObjectFactory m_deviceFactory;

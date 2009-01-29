@@ -27,6 +27,7 @@
 #include "ns3/log.h"
 #include "ns3/boolean.h"
 #include "ns3/string.h"
+#include "ns3/ipv4.h"
 #include "ns3/simulator.h"
 #include "ns3/realtime-simulator-impl.h"
 #include "ns3/system-thread.h"
@@ -64,26 +65,26 @@ TapBridge::GetTypeId (void)
                    StringValue (""),
                    MakeStringAccessor (&TapBridge::m_tapDeviceName),
                    MakeStringChecker ())
-    .AddAttribute ("TapGateway", 
+    .AddAttribute ("Gateway", 
                    "The IP address of the default gateway to assign to the tap device.",
-                   StringValue (""),
-                   MakeStringAccessor (&TapBridge::m_tapGateway),
-                   MakeStringChecker ())
-    .AddAttribute ("TapIp", 
+                   Ipv4AddressValue ("255.255.255.255"),
+                   MakeIpv4AddressAccessor (&TapBridge::m_tapGateway),
+                   MakeIpv4AddressChecker ())
+    .AddAttribute ("IpAddress", 
                    "The IP address to assign to the tap device.",
-                   StringValue (""),
-                   MakeStringAccessor (&TapBridge::m_tapIp),
-                   MakeStringChecker ())
-    .AddAttribute ("TapMac", 
+                   Ipv4AddressValue ("255.255.255.255"),
+                   MakeIpv4AddressAccessor (&TapBridge::m_tapIp),
+                   MakeIpv4AddressChecker ())
+    .AddAttribute ("MacAddress", 
                    "The MAC address to assign to the tap device.",
-                   StringValue (""),
-                   MakeStringAccessor (&TapBridge::m_tapMac),
-                   MakeStringChecker ())
-    .AddAttribute ("TapNetmask", 
+                   Mac48AddressValue (Mac48Address ("ff:ff:ff:ff:ff:ff")),
+                   MakeMac48AddressAccessor (&TapBridge::m_tapMac),
+                   MakeMac48AddressChecker ())
+    .AddAttribute ("Netmask", 
                    "The network mask to assign to the tap device.",
-                   StringValue (""),
-                   MakeStringAccessor (&TapBridge::m_tapMac),
-                   MakeStringChecker ())
+                   Ipv4MaskValue ("255.255.255.255"),
+                   MakeIpv4MaskAccessor (&TapBridge::m_tapNetmask),
+                   MakeIpv4MaskChecker ())
     .AddAttribute ("Start", 
                    "The simulation time at which to spin up the tap device read thread.",
                    TimeValue (Seconds (0.)),
@@ -114,6 +115,7 @@ TapBridge::TapBridge ()
 TapBridge::~TapBridge()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_bridgedDevice = 0;
 }
 
   void 
@@ -265,7 +267,7 @@ TapBridge::CreateTap (void)
       // build a command line argument from the encoded endpoint string that 
       // the socket creation process will use to figure out how to respond to
       // the (now) parent process.  We're going to have to give this program
-      // quite a bit of information and we use program arguments to do so.
+      // quite a bit of information.
       //
       // -d<device-name> The name of the tap device we want to create;
       // -g<gateway-address> The IP address to use as the default gateway;
@@ -276,9 +278,81 @@ TapBridge::CreateTap (void)
       //
       // Example tap-sock-creator -dnewdev -g1.2.3.2 -i1.2.3.1 -m08:00:2e:00:01:23 -n255.255.255.0 -pblah
       //
+      // We want to get as much of this stuff automagically as possible.
+      //
+      // <IP-address> is the IP address we are going to set in the newly 
+      // created Tap device on the Linux host.  At the point in the simulation
+      // where devices are coming up, we should have all of our IP addresses
+      // assigned.  That means that we can find the IP address to assign to 
+      // the new Tap device from the IP address associated with the bridged
+      // net device.
+      //
+      Ptr<NetDevice> nd = GetBridgedNetDevice ();
+      Ptr<Node> n = nd->GetNode ();
+      Ptr<Ipv4> ipv4 = n->GetObject<Ipv4> ();
+      uint32_t index = ipv4->FindInterfaceForDevice (nd);
+      Ipv4Address ipv4Address = ipv4->GetAddress (index);
+
+      //
+      // The net mask is sitting right there next to the ipv4 address.
+      //
+      Ipv4Mask ipv4Mask = ipv4->GetNetworkMask (index);
+
+      //
+      // The MAC address should also already be assigned and waiting for us in
+      // the bridged net device.
+      //
+      Address address = nd->GetAddress ();
+      Mac48Address mac48Address = Mac48Address::ConvertFrom (address);
+
+      //
+      // The device-name is something we may want the system to make up in 
+      // every case.  We also rely on it being configured via an Attribute 
+      // through the helper.  By default, it is set to the empty string 
+      // which tells the system to make up a device name such as "tap123".
+      //
       std::ostringstream oss;
-      oss << "-d" << m_tapDeviceName << " -g" << m_tapGateway << " -i" << m_tapIp << " -m" << m_tapMac
-          << " -n" << m_tapNetmask << " -p" << path;
+      oss << "-d" << m_tapDeviceName;
+
+      //
+      // The gateway-address is something we can't derive, so we rely on it
+      // being configured via an Attribute through the helper.
+      //
+      oss << " -g" << m_tapGateway;
+
+      //
+      // For flexibility, we do allow a client to override any of the values
+      // above via attributes, so only use our found values if the Attribute
+      // is not equal to its default value (empty string or broadcast address). 
+      //
+      if (m_tapIp.IsBroadcast ())
+        {
+          oss << " -i" << ipv4Address;
+        }
+      else
+        {
+          oss << " -i" << m_tapIp;
+        }
+
+      if (m_tapMac.IsBroadcast ())
+        {
+          oss << " -m" << mac48Address;
+        }
+      else
+        {
+          oss << " -m" << m_tapMac;
+        }
+
+      if (m_tapNetmask.IsEqual (Ipv4Mask::GetOnes ()))
+        {
+          oss << " -n" << ipv4Mask;
+        }
+      else
+        {
+          oss << " -n" << m_tapNetmask;
+        }
+
+      oss << " -p" << path;
       NS_LOG_INFO ("creator arguments set to \"" << oss.str () << "\"");
 
       //
@@ -514,8 +588,15 @@ TapBridge::ForwardToBridgedDevice (uint8_t *buf, uint32_t len)
   m_bridgedDevice->SendFrom (packet, header.GetSource (), header.GetDestination (), 0x800);
 }
 
+Ptr<NetDevice>
+TapBridge::GetBridgedNetDevice (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_bridgedDevice;
+}
+
 void 
-TapBridge::SetBridgedDevice (Ptr<NetDevice> bridgedDevice)
+TapBridge::SetBridgedNetDevice (Ptr<NetDevice> bridgedDevice)
 {
   NS_LOG_FUNCTION_NOARGS ();
 

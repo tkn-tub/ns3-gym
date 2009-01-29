@@ -20,6 +20,7 @@
 //  | external |                           | external |  
 //  |  Linux   |                           |  Linux   |  
 //  |   Host   |                           |   Host   |  
+//  |  "left"  |                           | "right"  |  
 //  +----------+                           +----------+
 //       |           n0             n3           |
 //       |       +--------+     +--------+       |
@@ -91,34 +92,59 @@ main (int argc, char *argv[])
   internet.Install (nodes);
 
   //
-  // Add the tap bridges to nodes zero and one to enable external Linux 
-  // processes to talk to the CSMA devices.
-  //
-  TapBridgeHelper bridge;
-  NetDeviceContainer bridgeDevices;
-  bridgeDevices.Add (bridge.Install (nodes.Get (0), devices.Get (0)));
-  bridgeDevices.Add (bridge.Install (nodes.Get (3), devices.Get (3)));
-
-  //
-  // We've got the "hardware" in place.  Now add IP addresses.  We mjust not
-  // add IP addresses to the devices that we bridged using the TapBridgeHelper
-  // above.  The IP addresses are added to the bridge itself and are propagated
-  // to the tap device on the host.  We do need to add IP addresses to the CSMA
-  // devices that are attached to the nodes that are entirely contained within
-  // the simulation (not connected to any other external host).
+  // We've got the "hardware" in place.  Now add IP addresses.
   //
   NS_LOG_INFO ("Assign IP Addresses.");
-  NetDeviceContainer ndc;
-  ndc.Add (bridgeDevices.Get (0));
-  ndc.Add (devices.Get (1));
-  ndc.Add (devices.Get (2));
-  ndc.Add (bridgeDevices.Get (0));
-          
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer interfaces = ipv4.Assign (ndc);
+  Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
 
-#if 1
+  //
+  // The Tap bridge is going to use the address information we just created
+  // when it makes a Tap device on the Linux host.  This actually happens
+  // when the simulation is started, so there is no dependence on ordering
+  // of the IP and MAC address assignment in the initialization phase of
+  // the simulation.
+  //
+  // The Tap bridge will suck the MAC address out of the bridged device, and 
+  // the IP address and net mask out of the Ipv4Interface which is associated 
+  // with the bridged device.  It will use these found values unless we 
+  // configure Attribute to provide alternate values.  There are two 
+  // configuration Attributes we always need to pay some attention to.
+  //
+  // The "Gateway" Attribute is the IP address of the default gateway that 
+  // will be set on the newly created Tap devices on the Linux hosts.  We
+  // can't derive this address, so it must be set.  Following standard 
+  // practice in helpers, this Attribute is a construction parameter for
+  // the Helper.  Here, we pick the interface corresponding to the 
+  // CSMA device on node one as the default gateway.  You can change this
+  // at a later time by setting the "Gateway" Attribute in the helper.
+  //
+  TapBridgeHelper bridge (interfaces.GetAddress (1));
+
+  //
+  // The "DeviceName" is the name of the Tap device that will be created on
+  // the Linux host.  If we leave this Attribute set to the default value,
+  // the Linux system will create on of the name /dev/tapx where x will be 
+  // a number from 0 to 255.  In a simulation where you have some number of
+  // Tap devices, it is convenient to assign a name.  Referring back to the 
+  // topology illustration, we assign the name "left" to the tap device on
+  // the host to the left of the diagram, and "right" to the host on the right.
+  //
+  // Create a tap-bridge on node zero, create a Tap device called "left" on the
+  // Linux host and bridge that Linux device to the CSMA device on node zero.
+  //
+  bridge.SetAttribute ("DeviceName", StringValue ("left"));
+  bridge.Install (nodes.Get (0), devices.Get (0));
+
+  //
+  // Create a tap-bridge on node three, create a Tap device called "right" on the
+  // Linux host and bridge that Linux device to the CSMA device on node three.
+  //
+  bridge.SetAttribute ("DeviceName", StringValue ("right"));
+  bridge.Install (nodes.Get (3), devices.Get (3));
+
+#if 0
   //
   // Testing only -- send a packet from an internal node to an external node
   //

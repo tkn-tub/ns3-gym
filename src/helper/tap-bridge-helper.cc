@@ -25,14 +25,15 @@ NS_LOG_COMPONENT_DEFINE ("TapBridgeHelper");
 
 namespace ns3 {
 
-TapBridgeHelper::TapBridgeHelper ()
+TapBridgeHelper::TapBridgeHelper (Ipv4Address gateway)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_deviceFactory.SetTypeId ("ns3::TapBridge");
+  SetAttribute ("Gateway", Ipv4AddressValue (gateway));
 }
 
 void 
-TapBridgeHelper::SetDeviceAttribute (std::string n1, const AttributeValue &v1)
+TapBridgeHelper::SetAttribute (std::string n1, const AttributeValue &v1)
 {
   NS_LOG_FUNCTION (n1 << &v1);
   m_deviceFactory.Set (n1, v1);
@@ -46,7 +47,7 @@ TapBridgeHelper::Install (Ptr<Node> node, Ptr<NetDevice> nd)
 
   Ptr<TapBridge> bridge = m_deviceFactory.Create<TapBridge> ();
   node->AddDevice (bridge);
-  bridge->SetBridgedDevice (nd);
+  bridge->SetBridgedNetDevice (nd);
 
   return bridge;
 }

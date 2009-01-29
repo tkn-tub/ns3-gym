@@ -77,7 +77,12 @@ public:
   TapBridge ();
   virtual ~TapBridge ();
 
-  /** \brief Set the device to bridge.
+  /** \brief Get the bridged net device.
+   * \returns the bridged net device.
+   */
+  Ptr<NetDevice> GetBridgedNetDevice (void);
+
+  /** \brief Set the ns-3 net device to bridge.
    *
    * This method tells the bridge which ns-3 net device it should use to connect
    * the simulation side of the bridge.  
@@ -85,7 +90,7 @@ public:
    * \attention The ns-3 net device that is being set as the device must not 
    * have an IP address.  This address is a property of the host Linux device.
    */
-  void SetBridgedDevice (Ptr<NetDevice> bridgedDevice);
+  void SetBridgedNetDevice (Ptr<NetDevice> bridgedDevice);
 
   /**
    * Set a start time for the device.
@@ -189,10 +194,10 @@ private:
   Time m_tStop;
 
   std::string m_tapDeviceName;
-  std::string m_tapGateway;
-  std::string m_tapIp;
-  std::string m_tapMac;
-  std::string m_tapNetmask;
+  Ipv4Address m_tapGateway;
+  Ipv4Address m_tapIp;
+  Mac48Address m_tapMac;
+  Ipv4Mask m_tapNetmask;
 
   Ptr<NetDevice> m_bridgedDevice;
 };
