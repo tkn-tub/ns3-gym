@@ -20,6 +20,8 @@
 #include "random-stream.h"
 #include "ns3/assert.h"
 
+#include <cmath>
+
 namespace ns3 {
 
 RandomStream::~RandomStream ()
@@ -32,7 +34,7 @@ RealRandomStream::RealRandomStream ()
 uint32_t 
 RealRandomStream::GetNext (uint32_t min, uint32_t max)
 {
-  return m_stream.GetValue (min, max);
+  return static_cast<uint32_t> (round (m_stream.GetValue (min, max)));
 }
 
 
