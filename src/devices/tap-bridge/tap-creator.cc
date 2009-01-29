@@ -352,13 +352,12 @@ main (int argc, char *argv[])
 
   opterr = 0;
 
+  gVerbose = true;
+
   while ((c = getopt (argc, argv, "vd:g:i:m:n:p:")) != -1)
     {
       switch (c)
         {
-        case 'v':
-          gVerbose = true;
-          break;
         case 'd':
           dev = optarg;     // name of the new tap device
           break;
@@ -376,6 +375,9 @@ main (int argc, char *argv[])
           break;
         case 'p':
           path = optarg;    // path back to the tap bridge
+          break;
+        case 'v':
+          gVerbose = true;
           break;
         }
     }
@@ -447,7 +449,7 @@ main (int argc, char *argv[])
   int sock = CreateTap (dev, gw, ip, mac, netmask);
   ABORT_IF (sock == -1, "main(): Unable to create tap socket", 1);
 
-#if 1
+#if 0
   for (;;)
     {
       LOG ("z");

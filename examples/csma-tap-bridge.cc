@@ -71,6 +71,9 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
+  GlobalValue::Bind ("SimulatorImplementationType", 
+    StringValue ("ns3::RealtimeSimulatorImpl"));
+
   //
   // Create the nodes required by the topology (shown above).
   //

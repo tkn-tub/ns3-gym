@@ -276,7 +276,7 @@ TapBridge::CreateTap (void)
       // -n<network-mask> The network mask to assign to the new tap device;
       // -p<path> the path to the unix socket described above.
       //
-      // Example tap-sock-creator -dnewdev -g1.2.3.2 -i1.2.3.1 -m08:00:2e:00:01:23 -n255.255.255.0 -pblah
+      // Example tap-creator -dnewdev -g1.2.3.2 -i1.2.3.1 -m08:00:2e:00:01:23 -n255.255.255.0 -pblah
       //
       // We want to get as much of this stuff automagically as possible.
       //
@@ -311,54 +311,65 @@ TapBridge::CreateTap (void)
       // through the helper.  By default, it is set to the empty string 
       // which tells the system to make up a device name such as "tap123".
       //
-      std::ostringstream oss;
-      oss << "-d" << m_tapDeviceName;
+      std::ostringstream ossDeviceName;
+      ossDeviceName << "-d" << m_tapDeviceName;
 
       //
       // The gateway-address is something we can't derive, so we rely on it
       // being configured via an Attribute through the helper.
       //
-      oss << " -g" << m_tapGateway;
+      std::ostringstream ossGateway;
+      ossGateway << "-g" << m_tapGateway;
 
       //
       // For flexibility, we do allow a client to override any of the values
       // above via attributes, so only use our found values if the Attribute
       // is not equal to its default value (empty string or broadcast address). 
       //
+      std::ostringstream ossIp;
       if (m_tapIp.IsBroadcast ())
         {
-          oss << " -i" << ipv4Address;
+          ossIp << "-i" << ipv4Address;
         }
       else
         {
-          oss << " -i" << m_tapIp;
+          ossIp << "-i" << m_tapIp;
         }
 
+      std::ostringstream ossMac;
       if (m_tapMac.IsBroadcast ())
         {
-          oss << " -m" << mac48Address;
+          ossMac << "-m" << mac48Address;
         }
       else
         {
-          oss << " -m" << m_tapMac;
+          ossMac << "-m" << m_tapMac;
         }
 
+      std::ostringstream ossNetmask;
       if (m_tapNetmask.IsEqual (Ipv4Mask::GetOnes ()))
         {
-          oss << " -n" << ipv4Mask;
+          ossNetmask << "-n" << ipv4Mask;
         }
       else
         {
-          oss << " -n" << m_tapNetmask;
+          ossNetmask << "-n" << m_tapNetmask;
         }
 
-      oss << " -p" << path;
-      NS_LOG_INFO ("creator arguments set to \"" << oss.str () << "\"");
-
+      std::ostringstream ossPath;
+      ossPath << "-p" << path;
       //
       // Execute the socket creation process image.
       //
-      status = ::execl (FindCreator ().c_str (), "tap-sock-creator", oss.str ().c_str (), (char *)NULL);
+      status = ::execl (FindCreator ("tap-creator").c_str (), 
+                        FindCreator ("tap-creator").c_str (), // argv[0] (filename)
+                        ossDeviceName.str ().c_str (),        // argv[1] (-d<device name>)
+                        ossGateway.str ().c_str (),           // argv[2] (-g<gateway>)
+                        ossIp.str ().c_str (),                // argv[3] (-i<IP address>)
+                        ossMac.str ().c_str (),               // argv[4] (-m<MAC address>)
+                        ossNetmask.str ().c_str (),           // argv[5] (-n<net mask>)
+                        ossPath.str ().c_str (),              // argv[6] (-p<path>)
+                        (char *)NULL);
 
       //
       // If the execl successfully completes, it never returns.  If it returns it failed or the OS is
@@ -495,20 +506,37 @@ TapBridge::CreateTap (void)
 }
 
 std::string
-TapBridge::FindCreator (void)
+TapBridge::FindCreator (std::string creatorName)
 {
-  struct stat st;
-  std::string debug = "./build/debug/src/devices/tap-bridge/tap-sock-creator";
-  std::string optimized = "./build/optimized/src/devices/tap-bridge/tap-sock-creator";
+  NS_LOG_FUNCTION (creatorName);
 
-  if (::stat (debug.c_str (), &st) == 0)
-    {
-      return debug;
-    }
+  std::list<std::string> locations;
 
-  if (::stat (optimized.c_str (), &st) == 0)
+  // in repo
+  locations.push_back ("./build/optimized/src/devices/tap-bridge/");
+  locations.push_back ("./build/debug/src/devices/tap-bridge/");
+
+  // in src
+  locations.push_back ("../build/optimized/src/devices/tap-bridge/");
+  locations.push_back ("../build/debug/src/devices/tap-bridge/");
+
+  // in src/devices
+  locations.push_back ("../../build/optimized/src/devices/tap-bridge/");
+  locations.push_back ("../../build/debug/src/devices/tap-bridge/");
+
+  // in src/devices/tap-bridge
+  locations.push_back ("../../../build/optimized/src/devices/tap-bridge/");
+  locations.push_back ("../../../build/debug/src/devices/tap-bridge/");
+
+  for (std::list<std::string>::const_iterator i = locations.begin (); i != locations.end (); ++i)
     {
-      return optimized;
+      struct stat st;
+
+      if (::stat ((*i + creatorName).c_str (), &st) == 0)
+	{
+          NS_LOG_INFO ("Found Creator " << *i + creatorName);                  
+	  return *i + creatorName;
+	}
     }
 
   NS_FATAL_ERROR ("TapBridge::FindCreator(): Couldn't find creator");

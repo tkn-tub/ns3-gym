@@ -151,7 +151,7 @@ private:
   /**
    * Figure out where the tap creation program lives on the system.
    */
-  std::string FindCreator (void);
+  std::string FindCreator (std::string creatorName);
 
   /**
    * Spin up the device
