@@ -71,8 +71,20 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
-  GlobalValue::Bind ("SimulatorImplementationType", 
-    StringValue ("ns3::RealtimeSimulatorImpl"));
+  //
+  // We need to enable the real-time simulator since we are going to be
+  // talking to the "real world."
+  GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
+
+  // 
+  // Also, since the whole point of this exercise is to exchange packets
+  // with hosts running in the real world, we are going to need to enable
+  // checksums.
+  //
+  Config::SetDefault ("ns3::Ipv4L3Protocol::CalcChecksum", BooleanValue (true)); 
+  Config::SetDefault ("ns3::Icmpv4L4Protocol::CalcChecksum", BooleanValue (true)); 
+  Config::SetDefault ("ns3::TcpL4Protocol::CalcChecksum", BooleanValue (true)); 
+  Config::SetDefault ("ns3::UdpL4Protocol::CalcChecksum", BooleanValue (true)); 
 
   //
   // Create the nodes required by the topology (shown above).

@@ -124,9 +124,24 @@ ArpL3Protocol::Receive(Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
 
   Ptr<Packet> packet = p->Copy ();
 
+  NS_LOG_LOGIC ("ARP: received packet of size "<< packet->GetSize ());
+
   Ptr<ArpCache> cache = FindCache (device);
+
+  // 
+  // If we're connected to a real world network, then some of the fields sizes 
+  // in an ARP packet can vary in ways not seen in simulations.  We need to be
+  // able to detect ARP packets with headers we don't recongnize and not process
+  // them instead of crashing.  The ArpHeader will return 0 if it can't deal
+  // with the received header.
+  //
   ArpHeader arp;
-  packet->RemoveHeader (arp);
+  uint32_t size = packet->RemoveHeader (arp);
+  if (size == 0)
+    {
+      NS_LOG_LOGIC ("ARP: Cannot remove ARP header");
+      return;
+    }
   
   NS_LOG_LOGIC ("ARP: received "<< (arp.IsRequest ()? "request" : "reply") <<
             " node="<<m_node->GetId ()<<", got request from " <<

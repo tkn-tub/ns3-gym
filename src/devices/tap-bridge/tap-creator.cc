@@ -352,8 +352,6 @@ main (int argc, char *argv[])
 
   opterr = 0;
 
-  gVerbose = true;
-
   while ((c = getopt (argc, argv, "vd:g:i:m:n:p:")) != -1)
     {
       switch (c)

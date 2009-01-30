@@ -656,27 +656,22 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
     }
   else
     {
+      uint16_t protocol;
       //
-      // variable <protocol> must be initialized to avoid a compiler warning in the RAW case that breaks the optimized build.
+      // If the length/type is less than 1500, it corresponds to a length 
+      // interpretation packet.  In this case, it is an 802.3 packet and 
+      // will also have an 802.2 LLC header.  If greater than 1500, we
+      // find the protocol number (Ethernet type) directly.
       //
-      uint16_t protocol = 0;
-
-      switch (m_encapMode)
+      if (header.GetLengthType () <= 1500)
         {
-        case DIX:
+          LlcSnapHeader llc;
+          packet->RemoveHeader (llc);
+          protocol = llc.GetType ();
+        }
+      else
+        {
           protocol = header.GetLengthType ();
-          break;
-        case LLC: 
-          {
-            LlcSnapHeader llc;
-            packet->RemoveHeader (llc);
-            protocol = llc.GetType ();
-          } 
-          break;
-        case ILLEGAL:
-        default:
-          NS_FATAL_ERROR ("CsmaNetDevice::Receive(): Unknown packet encapsulation mode");
-          break;
         }
 
       PacketType packetType;

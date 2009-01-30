@@ -23,7 +23,6 @@
 #include "ns3/channel.h"
 #include "ns3/packet.h"
 #include "ns3/ethernet-header.h"
-#include "ns3/ethernet-trailer.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/log.h"
 #include "ns3/boolean.h"
@@ -633,19 +632,8 @@ TapBridge::Filter (Ptr<Packet> p, Address *src, Address *dst, uint16_t *type)
   //
   // We have a candidate packet for injection into ns-3.  We expect that since
   // it came over a socket that provides Ethernet packets, it sould be big 
-  // enough to hold an EthernetTrailer.  If it can't, we signify the packet 
+  // enough to hold an EthernetHeader.  If it can't, we signify the packet 
   // should be filtered out by returning 0.
-  //
-  pktSize = p->GetSize ();
-  EthernetTrailer trailer;
-  if (pktSize < trailer.GetSerializedSize ())
-    {
-      return 0;
-    }
-  p->RemoveTrailer (trailer);
-
-  //
-  // We also expect that it will have an Ethernet header on it.
   //
   pktSize = p->GetSize ();
   EthernetHeader header (false);
@@ -689,8 +677,9 @@ TapBridge::Filter (Ptr<Packet> p, Address *src, Address *dst, uint16_t *type)
     }
 
   //
-  // What we give back is a packet without the Ethernet header and trailer
-  // on it, that is fit to give directly to the bridged net device.
+  // What we give back is a packet without the Ethernet header (nor the 
+  // possible llc/snap header) on it.  We think it is ready to send on
+  // out the bridged net device.
   //
   return p;
 }
@@ -722,7 +711,8 @@ TapBridge::SetBridgedNetDevice (Ptr<NetDevice> bridgedDevice)
     }
 
   //
-  // Tell the bridged device to forward its received packets here.
+  // Tell the bridged device to forward its received packets here.  We use the 
+  // promiscuous mode hook to get both the source and destination addresses.
   //
   m_node->RegisterProtocolHandler (MakeCallback (&TapBridge::ReceiveFromBridgedDevice, this), 0, bridgedDevice, true);
   m_bridgedDevice = bridgedDevice;
@@ -746,6 +736,18 @@ TapBridge::ReceiveFromBridgedDevice (
   Mac48Address to = Mac48Address::ConvertFrom (dst);
 
   //
+  // We hooked the promiscuous mode protocol handler so we could get the 
+  // destination address of the actual packet.  This means we will be getting
+  // PACKET_OTHERHOST packets (not broadcast, not multicast, not unicast to 
+  // this device, but to some other address).  We don't want to forward those
+  // PACKET_OTHERHOST packets so just ignore them
+  //
+  if (packetType == PACKET_OTHERHOST)
+    {
+      return;
+    }
+
+  //
   // We have received a packet from the ns-3 net device that has been associated
   // with this bridge.  We want to take these bits and send them off to the 
   // Tap device on the Linux host.  Once we do this, the bits in the packet will
@@ -755,11 +757,19 @@ TapBridge::ReceiveFromBridgedDevice (
   // header, so we have to put one back on.
   //
   Ptr<Packet> p = packet->Copy ();
+
+
   EthernetHeader header = EthernetHeader (false);
   header.SetSource (from);
   header.SetDestination (to);
-  header.SetLengthType (0x800);
+  header.SetLengthType (protocol);
   p->AddHeader (header);
+
+  NS_LOG_LOGIC ("Writing packet to Linux host");
+  NS_LOG_LOGIC ("Pkt source is " << header.GetSource ());
+  NS_LOG_LOGIC ("Pkt destination is " << header.GetDestination ());
+  NS_LOG_LOGIC ("Pkt LengthType is " << header.GetLengthType ());
+  NS_LOG_LOGIC ("Pkt size is " << p->GetSize ());
 
   write (m_sock, p->PeekData (), p->GetSize ());
 }
