@@ -168,7 +168,18 @@ private:
    */
   void ReadThread (void);
 
+  /*
+   * Forward a packet received from the tap device to the bridged ns-3 
+   * device
+   */
   void ForwardToBridgedDevice (uint8_t *buf, uint32_t len);
+
+  /**
+   * The host we are bridged to is in the evil real world.  Do some sanity
+   * checking on a received packet to make sure it isn't too evil for our
+   * poor naive virginal simulator to handle.
+   */
+  Ptr<Packet> Filter (Ptr<Packet> packet, Address *src, Address *dst, uint16_t *type);
 
   NetDevice::ReceiveCallback m_rxCallback;
   NetDevice::PromiscReceiveCallback m_promiscRxCallback;

@@ -24,6 +24,7 @@
 #include "ns3/packet.h"
 #include "ns3/ethernet-header.h"
 #include "ns3/ethernet-trailer.h"
+#include "ns3/llc-snap-header.h"
 #include "ns3/log.h"
 #include "ns3/boolean.h"
 #include "ns3/string.h"
@@ -598,22 +599,100 @@ TapBridge::ForwardToBridgedDevice (uint8_t *buf, uint32_t len)
   buf = 0;
 
   //
-  // Checksum the packet
+  // Make sure the packet we received is reasonable enough for the rest of the 
+  // system to handle and get it ready to be injected directly into an ns-3
+  // device.  What should come back is a packet with the Ethernet header 
+  // (and possibly an LLC header as well) stripped off.
   //
-  EthernetTrailer trailer;
-  packet->RemoveTrailer (trailer);
-  trailer.CheckFcs (packet);
+  Address src, dst;
+  uint16_t type;
+
+  NS_LOG_LOGIC ("Received packet from tap device");
+
+  Ptr<Packet> p = Filter (packet, &src, &dst, &type);
+  if (p == 0)
+    {
+      NS_LOG_LOGIC ("Discarding packet as unfit for ns-3 consumption");
+      return;
+    }
+
+  NS_LOG_LOGIC ("Pkt source is " << src);
+  NS_LOG_LOGIC ("Pkt destination is " << dst);
+  NS_LOG_LOGIC ("Pkt LengthType is " << type);
+
+  NS_LOG_LOGIC ("Forwarding packet");
+  m_bridgedDevice->SendFrom (packet, src, dst, type);
+}
+
+Ptr<Packet>
+TapBridge::Filter (Ptr<Packet> p, Address *src, Address *dst, uint16_t *type)
+{
+  NS_LOG_FUNCTION (p);
+  uint32_t pktSize;
 
   //
-  // Get rid of the MAC header
+  // We have a candidate packet for injection into ns-3.  We expect that since
+  // it came over a socket that provides Ethernet packets, it sould be big 
+  // enough to hold an EthernetTrailer.  If it can't, we signify the packet 
+  // should be filtered out by returning 0.
   //
+  pktSize = p->GetSize ();
+  EthernetTrailer trailer;
+  if (pktSize < trailer.GetSerializedSize ())
+    {
+      return 0;
+    }
+  p->RemoveTrailer (trailer);
+
+  //
+  // We also expect that it will have an Ethernet header on it.
+  //
+  pktSize = p->GetSize ();
   EthernetHeader header (false);
-  packet->RemoveHeader (header);
+  if (pktSize < header.GetSerializedSize ())
+    {
+      return 0;
+    }
+
+  p->RemoveHeader (header);
 
   NS_LOG_LOGIC ("Pkt source is " << header.GetSource ());
   NS_LOG_LOGIC ("Pkt destination is " << header.GetDestination ());
+  NS_LOG_LOGIC ("Pkt LengthType is " << header.GetLengthType ());
 
-  m_bridgedDevice->SendFrom (packet, header.GetSource (), header.GetDestination (), 0x800);
+  //
+  // If the length/type is less than 1500, it corresponds to a length 
+  // interpretation packet.  In this case, it is an 802.3 packet and 
+  // will also have an 802.2 LLC header.  If greater than 1500, we
+  // find the protocol number (Ethernet type) directly.
+  //
+  if (header.GetLengthType () <= 1500)
+    {
+      *src = header.GetSource ();
+      *dst = header.GetDestination ();
+
+      pktSize = p->GetSize ();
+      LlcSnapHeader llc;
+      if (pktSize < llc.GetSerializedSize ())
+        {
+          return 0;
+        }
+
+        p->RemoveHeader (llc);
+        *type = llc.GetType ();
+    }
+  else
+    {
+      *src = header.GetSource ();
+      *dst = header.GetDestination ();
+      *type = header.GetLengthType ();
+    }
+
+  //
+  // What we give back is a packet without the Ethernet header and trailer
+  // on it, that is fit to give directly to the bridged net device.
+  //
+  return p;
 }
 
 Ptr<NetDevice>
@@ -626,7 +705,7 @@ TapBridge::GetBridgedNetDevice (void)
 void 
 TapBridge::SetBridgedNetDevice (Ptr<NetDevice> bridgedDevice)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (bridgedDevice);
 
   NS_ASSERT_MSG (m_node != 0, "TapBridge::SetBridgedDevice:  Bridge not installed in a node");
   NS_ASSERT_MSG (bridgedDevice != this, "TapBridge::SetBridgedDevice:  Cannot bridge to self");

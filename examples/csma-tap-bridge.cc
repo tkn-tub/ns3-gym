@@ -147,38 +147,17 @@ main (int argc, char *argv[])
   bridge.SetAttribute ("DeviceName", StringValue ("right"));
   bridge.Install (nodes.Get (3), devices.Get (3));
 
-#if 0
-  //
-  // Testing only -- send a packet from an internal node to an external node
-  //
-  uint32_t packetSize = 1024;
-  uint32_t maxPacketCount = 100;
-  Time interPacketInterval = Seconds (1.);
-  UdpEchoClientHelper client (interfaces.GetAddress (0), 9);
-  client.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
-  client.SetAttribute ("Interval", TimeValue (interPacketInterval));
-  client.SetAttribute ("PacketSize", UintegerValue (packetSize));
-  ApplicationContainer apps = client.Install (nodes.Get (1));
-  apps.Start (Seconds (2.0));
-  apps.Stop (Seconds (10.0));
-#endif
-
   //
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events.
   //
-#if 0
   NS_LOG_INFO ("Configure Tracing.");
-  std::ofstream ascii;
-  ascii.open ("csma-tap-bridge.tr");
-  CsmaHelper::EnableAsciiAll (ascii);
   CsmaHelper::EnablePcapAll ("csma-tap-bridge");
-#endif
 
   //
   // Now, do the actual simulation.  Run for a few minutes to allow the user a chance
   // to run some applications on the Linux hosts.
   //
-  Simulator::Stop (Seconds (3. * 60.));
+  Simulator::Stop (Seconds (60.));
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();
   Simulator::Destroy ();
