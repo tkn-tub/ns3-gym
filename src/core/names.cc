@@ -84,8 +84,8 @@ public:
   ~NamesPriv ();
 
   bool Add (std::string name, Ptr<Object> obj);
-  bool Add (Ptr<Object> context, std::string name, Ptr<Object> object);
   bool Add (std::string context, std::string name, Ptr<Object> object);
+  bool Add (Ptr<Object> context, std::string name, Ptr<Object> object);
   std::string FindShortName (Ptr<Object> object);
   std::string FindFullName (Ptr<Object> object);
   Ptr<Object> FindObjectFromFullName (std::string name);
@@ -167,11 +167,14 @@ NamesPriv::Add (std::string name, Ptr<Object> object)
   NS_LOG_FUNCTION (name << object);
   //
   // This is the simple, easy to use version of Add, so we want it to be flexible.
+  // We don't want to force a user to always type the fully qualified namespace 
+  // name, so we allow the namespace name to be omitted.  For example, calling
+  // Add ("Client/ath0", obj) should result in exactly the same behavior as
+  // Add ("/Names/Client/ath0", obj).  Calling Add ("Client", obj) should have
+  // the same effect as Add ("Names/Client", obj)
   //
-  // If we are provided a name that doesn't begin with "/Names", we assume 
-  // that the caller has given us a shortname that she wants added to the root
-  // namespace.  This results in a call to the "real" Add with context set to 
-  // zero, indicating what we want to do.
+  // The first thing to do, then, is to "canonicalize" the input string to always
+  // be a fully qualified name.
   //
   // If we are given a name that begins with "/Names/" we assume that this is a
   // fullname to the object we want to create.  We split the fullname into a 
@@ -179,40 +182,45 @@ NamesPriv::Add (std::string name, Ptr<Object> object)
   //
   std::string namespaceName = "/Names";
   std::string::size_type offset = name.find (namespaceName);
-  if (offset == 0)
+  if (offset != 0)
     {
       //
-      // This must be a fully qualified longname.  All fully qualified names begin
-      // with "/Names".  We have to split off the final segment which will become
-      // the shortname of the object.
+      // This must be a name that has the "/Names" namespace prefix omitted.  
+      // Do some reasonableness checking on the rest of the name.
       //
-      std::string::size_type i = name.rfind ("/");
-      NS_ASSERT_MSG (i != std::string::npos, "NamesPriv::Add(): Internal error.  Can't find '/' in name");
+      offset = name.find ("/");
+      if (offset == 0)
+        {
+          NS_ASSERT_MSG (false, "NamesPriv::Add(): Name begins with '/' but not \"/Names\"");
+          return false;
+        }
 
-      //
-      // The slash we found cannot be the slash at the start of the namespaceName.
-      // This would indicate there is no shortname in the path at all.
-      //
-      NS_ASSERT_MSG (i != 0, "NamesPriv::Add(): Can't find a shortname in the name string");
+      name = "/Names/" + name;
+    }
+  
+  //
+  // There must now be a fully qualified longname in the string.  All fully 
+  // qualified names begin with "/Names".  We have to split off the final 
+  // segment which will become the shortname of the object.  A '/' that
+  // separates the context from the final segment had better be there since
+  // we just made sure that at least the namespace name was there.
+  //
+  std::string::size_type i = name.rfind ("/");
+  NS_ASSERT_MSG (i != std::string::npos, "NamesPriv::Add(): Internal error.  Can't find '/' in name");
 
-      //
-      // We now know where the context string starts and ends, and where the
-      // shortname starts and ends.  All we have to do is to call our available
-      // function for creating addubg a shortname under a context string.
-      //
-      return Add (name.substr (0, i), name.substr (i + 1), object);
-    }
-  else
-    {
-      //
-      // This must be a shortname.  Shortnames can't have ANY '/' characters in
-      // them since they are interpreted as a final segment of a fullname.  A 
-      // shortname in this context means creating a name in the root namespace.
-      // We indicate this by passing a zero context to the "real" add.
-      //
-      NS_ASSERT_MSG (offset == std::string::npos, "NamesPriv::Add(): Unexpected '/' in shortname");
-      return Add (Ptr<Object> (0, false), name, object);
-    }
+  //
+  // The slash we found cannot be the slash at the start of the namespaceName.
+  // This would indicate there is no shortname in the path at all.  It can be
+  // any other index.
+  //
+  NS_ASSERT_MSG (i != 0, "NamesPriv::Add(): Can't find a shortname in the name string");
+
+  //
+  // We now know where the context string starts and ends, and where the
+  // shortname starts and ends.  All we have to do is to call our available
+  // function for creating addubg a shortname under a context string.
+  //
+  return Add (name.substr (0, i), name.substr (i + 1), object);
 }
 
 bool
@@ -681,6 +689,65 @@ NamesTest::RunTests (void)
 
   foundObject = Names::Find<TestObject> ("Server/eth0");
   NS_TEST_ASSERT_EQUAL (foundObject, serverEth0);
+
+  //
+  // We should be able to add objects while including the root of the namespace
+  // in the name.
+  //
+  Ptr<TestObject> router1 = CreateObject<TestObject> ();
+  result = Names::Add ("/Names/Router1", router1);
+  NS_TEST_ASSERT_EQUAL (result, true);
+
+  //
+  // We should be able to add objects while not including the root of the namespace
+  // in the name.
+  //
+  Ptr<TestObject> router2 = CreateObject<TestObject> ();
+  result = Names::Add ("Router2", router2);
+  NS_TEST_ASSERT_EQUAL (result, true);
+
+  //
+  // We should be able to add sub-objects while including the root of the namespace
+  // in the name.
+  //
+  Ptr<TestObject> router1Eth0 = CreateObject<TestObject> ();
+  result = Names::Add ("/Names/Router1/eth0", router1Eth0);
+  NS_TEST_ASSERT_EQUAL (result, true);
+
+  //
+  // We should be able to add sub-objects while not including the root of the namespace
+  // in the name.
+  //
+  Ptr<TestObject> router2Eth0 = CreateObject<TestObject> ();
+  result = Names::Add ("Router2/eth0", router2Eth0);
+  NS_TEST_ASSERT_EQUAL (result, true);
+
+  //
+  // We should be able to find these objects in the same two ways
+  //
+  foundObject = Names::Find<TestObject> ("/Names/Router1");
+  NS_TEST_ASSERT_EQUAL (foundObject, router1);
+
+  foundObject = Names::Find<TestObject> ("Router1");
+  NS_TEST_ASSERT_EQUAL (foundObject, router1);
+
+  foundObject = Names::Find<TestObject> ("/Names/Router2");
+  NS_TEST_ASSERT_EQUAL (foundObject, router2);
+
+  foundObject = Names::Find<TestObject> ("Router2");
+  NS_TEST_ASSERT_EQUAL (foundObject, router2);
+
+  foundObject = Names::Find<TestObject> ("/Names/Router1/eth0");
+  NS_TEST_ASSERT_EQUAL (foundObject, router1Eth0);
+
+  foundObject = Names::Find<TestObject> ("Router1/eth0");
+  NS_TEST_ASSERT_EQUAL (foundObject, router1Eth0);
+
+  foundObject = Names::Find<TestObject> ("/Names/Router2/eth0");
+  NS_TEST_ASSERT_EQUAL (foundObject, router2Eth0);
+
+  foundObject = Names::Find<TestObject> ("Router2/eth0");
+  NS_TEST_ASSERT_EQUAL (foundObject, router2Eth0);
 
   //
   // We also have some syntactically sugary methods, so make sure they do what

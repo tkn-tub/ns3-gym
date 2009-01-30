@@ -52,11 +52,17 @@ main (int argc, char *argv[])
   //
   // We're going to use the zeroth node in the container as the client, and
   // the first node as the server.  Add some "human readable" names for these
-  // nodes.  The first parameter specifies the root of the "/Names" name space
-  // as the destination, so these will go into the name system as "/Names/client"
-  // and "/Names/server".  
+  // nodes.  The names below will go into the name system as "/Names/client"
+  // and "/Names/server", but note that the Add function assumes that if you
+  // omit the leading "/Names/" the remaining string is assumed to be rooted
+  // in the "/Names" namespace. The following calls,
   //
-  Names::Add ("/Names/client", n.Get (0));
+  //  Names::Add ("client", n.Get (0));
+  //  Names::Add ("/Names/client", n.Get (0));
+  //
+  // will produce identical results.
+  //
+  Names::Add ("client", n.Get (0));
   Names::Add ("/Names/server", n.Get (1));
 
   InternetStackHelper internet;
@@ -71,13 +77,12 @@ main (int argc, char *argv[])
   //
   // Add some human readable names for the devices we'll be interested in.
   // We add the names to the name space "under" the nodes we created above.
-  // This has the effect of making "/Names/client/eth0" and "/Names/server/eth0"
-  // Note that the first part of the path must reference a previously named object,
-  // and we have, in fact, already named objects "/Names/client" and
-  // "/Names/server"
+  // This has the effect of making "/Names/client/eth0" and "/Names/server/eth0".
+  // In this case, we again omit the "/Names/" prefix on one call to illustrate
+  // the shortcut.
   //
   Names::Add ("/Names/client/eth0", d.Get (0));
-  Names::Add ("/Names/server/eth0", d.Get (1));
+  Names::Add ("server/eth0", d.Get (1));
 
   //
   // You can use the object names that you've assigned in calls to the Config
@@ -127,7 +132,9 @@ main (int argc, char *argv[])
 
   //
   // Use the Config system to connect a trace source using the object name
-  // service to specify the path.
+  // service to specify the path.  Note that in this case, the "/Names"
+  // prefix is always required since the _Config_ system always expects to 
+  // see a fully qualified path name 
   //
   Config::Connect ("/Names/client/eth0/Rx", MakeCallback (&RxEvent));
 
