@@ -87,7 +87,9 @@ main (int argc, char *argv[])
   //
   // You can use the object names that you've assigned in calls to the Config
   // system to set Object Attributes.  For example, you can set the Mtu 
-  // Attribute of a Csma devices using the object naming service.
+  // Attribute of a Csma devices using the object naming service.  Note that 
+  // in this case, the "/Names" prefix is always required since the _Config_ 
+  // system always expects to see a fully qualified path name.
   //
   Config::Set ("/Names/client/eth0/Mtu", UintegerValue (1234));
 
@@ -98,6 +100,8 @@ main (int argc, char *argv[])
   // to get to the server node, and then continue seamlessly adding named objects
   // in the path. This is not nearly as readable as the previous version, but it
   // illustrates how you can mix and match object names and Attribute names.
+  // Note that the config path now begins with a path in the "/NodeList" 
+  // namespace.
   //
   Config::Set ("/NodeList/1/eth0/Mtu", UintegerValue (1234));
 
