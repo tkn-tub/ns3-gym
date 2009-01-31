@@ -33,16 +33,82 @@ class Names
 public:
 
   /**
-   * Add the association between the string "name" and the Ptr<Object> obj
-   * at the root of the "/Names" name space.  This can be seen as equivalent
-   * to adding a Pointer Attribute called "name" to the to the root name 
-   * space object and then assigning the value obj to that attribute.  The 
-   * config facility will see it that way.
+   * \brief Add the association between the string "name" and the Ptr<Object> obj.
+   *
+   * The name may begin either with "/Names" to explicitly call out the fact 
+   * that the name provided is installed under the root of the name space, 
+   * or it may begin with the short name of the first obejct in the path.
+   * For example, Add ("/Names/client", obj) and Add ("client", obj) accomplish
+   * exactly the same thing.  Names at a given level in the name space must be
+   * unique.  It would be illegal to try and associate a different object with
+   * the same name: "client."
+   *
+   * As well as providing a single shortname, the name parameter can contain a 
+   * path that qualifies the shortname.  For example, you could make the call
+   * Add ("/Names/client/eth0", obj) if you had previously associated a name 
+   * "client" in the root of the name space.  Note that Add ("client/eth0", obj)
+   * would accomplish exactly the same thing.
    *
    * \param name The name of the object you want to associate.
    * \param obj A smart pointer to the object itself.
    */
   static bool Add (std::string name, Ptr<Object> obj);
+
+  /**
+   * \brief Rename a previously associated name.
+   *
+   * The name may begin either with "/Names" to explicitly call out the fact 
+   * that the name provided is installed under the root of the name space, 
+   * or it may begin with the short name of the first obejct in the path.
+   * For example, Rename ("/Names/client", "newname") and 
+   * Rename ("client", "newname") will accomplish exactly the same thing --
+   * to find an object at the root of the name space called "client" and change
+   * its name to "newname".  Names at a given level in the name space must be
+   * unique.  It would be illegal to try and rename the association to another
+   * name that already exists at the namespace level indicated by the path.
+   *
+   * As well as providing a single shortname, the name parameter can contain a 
+   * path that qualifies the shortname you want to change.  For example, you 
+   * could make the call Rename ("/Names/client/eth0", "ath0") if "ath0" has
+   * not been previously used at this level (under "client").  Note that 
+   * Rename ("client/eth0", "ath0") would accomplish exactly the same thing.
+   *
+   * \param oldname The current name of the object you want to change.
+   * \param newname The new name of the object you want to change.
+   *
+   * \returns true if the name change was successfully completed, false otherwise
+   */
+  static bool Rename (std::string oldname, std::string newname);
+
+  /**
+   * \brief An intermediate form of Add allowing you to provide a context in the 
+   * form of a name string.
+   *
+   * \see Add (Ptr<Object> context, std::string name, Ptr<Object> object);
+   *
+   * \param context A fully qualified name describing a previously named object.
+   *                under which you want this name to be defined.
+   * \param name The name of the object you want to associate.
+   * \param obj A smart pointer to the object itself.
+   *
+   * \returns true if the association was successfully completed, false otherwise
+   */
+  static bool Add (std::string context, std::string name, Ptr<Object> object);
+
+  /**
+   * \brief An intermediate form of Rename allowing you to provide a context in
+   * the form of a name string.
+   *
+   * \see Rename (Ptr<Object> context, std::string oldname, std::string newname);
+   *
+   * \param context A fully qualified name describing a previously named object.
+   *                under which you want this name to be changed.
+   * \param oldname The current shortname of the object you want to change.
+   * \param newname The new shortname of the object you want to change.
+   *
+   * \returns true if the name change was successfully completed, false otherwise
+   */
+  static bool Rename (std::string context, std::string oldname, std::string newname);
 
   /**
    * Add the association between the string "name" and the Ptr<Object> obj
@@ -61,20 +127,25 @@ public:
   static bool Add (Ptr<Object> context, std::string name, Ptr<Object> object);
 
   /**
-   * Syntactic sugar around the Object context Name method.  Allows you to 
-   * specify the context with a string instead of the pointer.  If the first
-   * parameter (context) is "/Names" this turns into a call into Name at the
-   * root of the name space.  Otherwise it does a FindObjectFromFullNameInternal
-   * on the context and adds the name to a subspace.
+   * \brief Rename a previously associated shortname.
    *
-   * \param context A fully qualified name describing a previously named object.
-   *                under which you want this name to be defined.
-   * \param name The name of the object you want to associate.
-   * \param obj A smart pointer to the object itself.
+   * The context for the name -- the namespace level must be provided by passing
+   * a context object.  The oldname is then interpreted as a shortname which is
+   * defined "under" this context.  For example, if you have previously done an
+   * Add ("/Names/client", obj), you have associated the object obj with the
+   * name "client."  If you create an "eth0" under "client", then the obj that
+   * you associated with "client" becomes the context for "eth0" object.  If 
+   * you want to rename "eth0", you would provide that obj as the context for
+   * the Rename.  This would look like Rename (obj, "eth0", "ath0").
    *
-   * \returns true if the association was successfully completed, false otherwise
+   * \param context A spart pointer to an object under which to look for the
+   *                oldname.
+   * \param oldname The current shortname of the object you want to change.
+   * \param newname The new shortname of the object you want to change.
+   *
+   * \returns true if the name change was successfully completed, false otherwise
    */
-  static bool Add (std::string context, std::string name, Ptr<Object> object);
+  static bool Rename (Ptr<Object> context, std::string oldname, std::string newname);
 
   /**
    * Given a pointer to an object, look to see if that object has a name

@@ -52,18 +52,29 @@ main (int argc, char *argv[])
   //
   // We're going to use the zeroth node in the container as the client, and
   // the first node as the server.  Add some "human readable" names for these
-  // nodes.  The names below will go into the name system as "/Names/client"
+  // nodes.  The names below will go into the name system as "/Names/clientZero"
   // and "/Names/server", but note that the Add function assumes that if you
   // omit the leading "/Names/" the remaining string is assumed to be rooted
   // in the "/Names" namespace. The following calls,
   //
-  //  Names::Add ("client", n.Get (0));
-  //  Names::Add ("/Names/client", n.Get (0));
+  //  Names::Add ("clientZero", n.Get (0));
+  //  Names::Add ("/Names/clientZero", n.Get (0));
   //
   // will produce identical results.
   //
-  Names::Add ("client", n.Get (0));
+  Names::Add ("clientZero", n.Get (0));
   Names::Add ("/Names/server", n.Get (1));
+
+  //
+  // It is possible to rename a node that has been previously named.  This is
+  // useful in automatic name generation.  You can automatically generate node
+  // names such as, "node-0", "node-1", etc., and then go back and change
+  // the name of some distinguished node to another value --  "access-point" 
+  // for example.  We illustrate this by just changing the client's name.
+  // As is typical of the object name service, you can either provide or elide
+  // the "/Names" prefix as you choose.
+  //
+  Names::Rename ("clientZero", "client");
 
   InternetStackHelper internet;
   internet.Install (n);
