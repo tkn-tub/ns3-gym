@@ -257,6 +257,18 @@ def configure(conf):
     # for suid bits
     conf.find_program('sudo', var='SUDO')
 
+    why_not_sudo = "because we like it"
+    if Options.options.enable_sudo and conf.env['SUDO']:
+        env['ENABLE_SUDO'] = True
+    else:
+        env['ENABLE_SUDO'] = False
+        if Options.options.enable_sudo:
+            why_not_sudo = "program sudo not found"
+        else:
+            why_not_sudo = "option --enable-sudo not selected"
+
+    conf.report_optional_feature("ENABLE_SUDO", "Use sudo to set suid bit", env['ENABLE_SUDO'], why_not_sudo)
+
     # we cannot pull regression traces without mercurial
     conf.find_program('hg', var='MERCURIAL')
 
@@ -295,8 +307,12 @@ class SuidBuildTask(Task.TaskBase):
         #    raise Utils.WafError("%s does not appear to be a program" % (self.__program.name,))
 
         filename = program_node.abspath(self.__env)
-        os.system ('sudo chown root ' + filename)
-        os.system ('sudo chmod u+s ' + filename)
+        print 'setting suid bit on executable ' + filename
+
+        if subprocess.Popen('sudo chown root ' + filename, shell=True).wait():
+            raise SystemExit(1)
+        if subprocess.Popen('sudo chmod u+s ' + filename, shell=True).wait():
+            raise SystemExit(1)
 
 def create_suid_program(bld, name):
     program = bld.new_task_gen('cxx', 'program')
@@ -305,8 +321,9 @@ def create_suid_program(bld, name):
     program.name = name
     program.target = name
 
-    if bld.env['SUDO'] and Options.options.enable_sudo:
+    if bld.env['ENABLE_SUDO']:
         SuidBuildTask(bld, program)
+
     return program
 
 def create_ns3_program(bld, name, dependencies=('simulator',)):
