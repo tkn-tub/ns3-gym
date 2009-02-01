@@ -885,7 +885,13 @@ bool
 TapBridge::IsBridge (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  return true;
+  //
+  // Returning false from IsBridge in a device called TapBridge may seem odd
+  // at first glance, but this test is for a device that bridges ns-3 devices
+  // together.  The Tap bridge doesn't do that -- it bridges an ns-3 device to
+  // a Linux device.  This is a completely different story.
+  // 
+  return false;
 }
 
 bool 
