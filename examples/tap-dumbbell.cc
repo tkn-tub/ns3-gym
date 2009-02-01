@@ -35,6 +35,46 @@
 //                   |     |   |    |                       |     |   |    |
 //                   ================                       ================
 //                    CSMA LAN 10.1.1                        CSMA LAN 10.1.2
+//
+// The CSMA device on node zero is:  10.1.1.1
+// The CSMA device on node one is:   10.1.1.2
+// The CSMA device on node two is:   10.1.1.3
+// The CSMA device on node three is: 10.1.1.4
+// The P2P device on node three is:  10.1.2.1
+// The P2P device on node four is:   10.1.2.2
+// The CSMA device on node four is:  10.1.3.1
+// The CSMA device on node five is:  10.1.3.2
+// The CSMA device on node six is:   10.1.3.3
+// The CSMA device on node seven is: 10.1.3.4
+//
+// Some simple things to do:
+//
+// 1) Ping one of the simulated nodes on the left side of the topology.
+//
+//    ./waf --run tap-dumbbell&
+//    ping 10.1.1.3
+//
+//    Take a look at the pcap traces and note that the timing of the packet
+//    movement reflects the delay configured on the CSMA lan.
+//
+// 2) Configure a route in the linux host and ping once of the nodes on the 
+//    right, across the point-to-point link.
+//
+//    ./waf --run tap-dumbbell&
+//    sudo route add -net 10.1.3.0 netmask 255.255.255.0 dev left gw 10.1.1.2
+//    ping 10.1.3.4
+//
+//    Take a look at the pcap traces and note that the timing reflects the 
+//    addition of the significant delay and low bandwidth configured on the 
+//    point-to-point link.
+//
+// 3) Fiddle with the background CBR traffic across the point-to-point 
+//    link and watch the ping timing change.
+//
+//    ./waf --run "tap-dumbbell --ns3::OnOffApplication::DataRate=500kb/s"&
+//    sudo route add -net 10.1.3.0 netmask 255.255.255.0 dev left gw 10.1.1.2
+//    ping 10.1.3.4
+//
 
 #include <iostream>
 #include <fstream>
@@ -111,7 +151,7 @@ main (int argc, char *argv[])
   // Stick in the point-to-point line between the sides.
   //
   PointToPointHelper p2p;
-  p2p.SetDeviceAttribute ("DataRate", StringValue ("1500kbps"));
+  p2p.SetDeviceAttribute ("DataRate", StringValue ("512kbps"));
   p2p.SetChannelAttribute ("Delay", StringValue ("10ms"));
 
   NodeContainer nodes = NodeContainer (nodesLeft.Get(3), nodesRight.Get (0));
@@ -120,6 +160,27 @@ main (int argc, char *argv[])
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.2.0", "255.255.255.192");
   Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
+
+  //
+  // Simulate some CBR traffic over the point-to-point link
+  //
+  uint16_t port = 9;   // Discard port (RFC 863)
+  OnOffHelper onoff ("ns3::UdpSocketFactory", InetSocketAddress (interfaces.GetAddress (1), port));
+  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
+  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onoff.SetAttribute ("DataRate", StringValue ("256kb/s"));
+  onoff.SetAttribute ("PacketSize", UintegerValue (512));
+
+  ApplicationContainer apps = onoff.Install (nodesLeft.Get (3));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
+
+  // Create a packet sink to receive these packets
+  PacketSinkHelper sink ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), port));
+
+  apps = sink.Install (nodesRight.Get (0));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
 
   CsmaHelper::EnablePcapAll ("tap-dumbbell");
   GlobalRouteManager::PopulateRoutingTables ();
