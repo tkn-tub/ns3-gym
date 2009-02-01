@@ -301,18 +301,12 @@ class SuidBuildTask(Task.TaskBase):
             raise Utils.WafError(str(ex))
 
         program_node = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj))
-        #try:
-        #    program_node = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj))
-        #except AttributeError:
-        #    raise Utils.WafError("%s does not appear to be a program" % (self.__program.name,))
-
         filename = program_node.abspath(self.__env)
         print 'setting suid bit on executable ' + filename
-
-        if subprocess.Popen('sudo chown root ' + filename, shell=True).wait():
-            raise SystemExit(1)
-        if subprocess.Popen('sudo chmod u+s ' + filename, shell=True).wait():
-            raise SystemExit(1)
+        p = subprocess.Popen('sudo chown root ' + filename, shell=True)
+        os.waitpid(p.pid, 0)
+        p = subprocess.Popen('sudo chmod u+s ' + filename, shell=True)
+        os.waitpid(p.pid, 0)
 
 def create_suid_program(bld, name):
     program = bld.new_task_gen('cxx', 'program')
