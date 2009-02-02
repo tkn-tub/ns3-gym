@@ -61,7 +61,7 @@ static int gVerbose = 0;
     }
 
 //
-// Thanks, Mathieu, for the beginning of these functions
+// Lots of the following helper code taken from corresponding functions in src/node.
 //
 #define ASCII_DOT (0x2e)
 #define ASCII_ZERO (0x30)
@@ -146,14 +146,6 @@ SetInetAddress (sockaddr *ad, uint32_t networkOrder)
   sin->sin_addr.s_addr = htonl (networkOrder);
 }
 
-/**
- * \brief Send the socket file descriptor we created back to the tap bridge, 
- * which will read it as soon as we're done.
- *
- * \param path The socket address information from the Unix socket we use
- * to send the created socket back to.
- * \param fd The socket we're going to send. 
- */
   static void
 SendSocket (const char *path, int fd)
 {
@@ -446,14 +438,6 @@ main (int argc, char *argv[])
   LOG ("Creating Tap");
   int sock = CreateTap (dev, gw, ip, mac, netmask);
   ABORT_IF (sock == -1, "main(): Unable to create tap socket", 1);
-
-#if 0
-  for (;;)
-    {
-      LOG ("z");
-      sleep (1);
-    }
-#endif
 
   //
   // Send the socket back to the tap net device so it can go about its business
