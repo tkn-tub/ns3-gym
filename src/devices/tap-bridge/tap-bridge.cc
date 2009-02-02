@@ -620,7 +620,11 @@ TapBridge::ForwardToBridgedDevice (uint8_t *buf, uint32_t len)
   NS_LOG_LOGIC ("Pkt LengthType is " << type);
 
   NS_LOG_LOGIC ("Forwarding packet");
+#if 0
   m_bridgedDevice->SendFrom (packet, src, dst, type);
+#else
+  m_bridgedDevice->Send (packet, dst, type);
+#endif
 }
 
 Ptr<Packet>
