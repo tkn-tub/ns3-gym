@@ -27,20 +27,20 @@
 //       +-------|  tap   |     |            |     |            |
 //               | bridge | ... |            |     |            |
 //               +--------+     +------------+     +------------+
-//               |  CSMA  |     | CSMA | P2P |-----| P2P | CSMA |
+//               |  Wifi  |     | Wifi | P2P |-----| P2P | CSMA |
 //               +--------+     +------+-----+     +-----+------+
 //                   |              |           ^           |
-//                   |              |           |           |         
-//                   |              |    P2P Link 10.1.2    |         
-//                   |    n1  n2    |                       |    n5  n6   n7
-//                   |     |   |    |                       |     |   |    |
-//                   ================                       ================
-//                    CSMA LAN 10.1.1                        CSMA LAN 10.1.3
+//                 ((*))          ((*))         |           |         
+//                                          P2P 10.1.2      |         
+//                 ((*))          ((*))                     |    n5  n6   n7
+//                   |              |                       |     |   |    |
+//                  n1             n2                       ================
+//                     Wifi 10.1.1                           CSMA LAN 10.1.3
 //
-// The CSMA device on node zero is:  10.1.1.1
-// The CSMA device on node one is:   10.1.1.2
-// The CSMA device on node two is:   10.1.1.3
-// The CSMA device on node three is: 10.1.1.4
+// The Wifi device on node zero is:  10.1.1.1
+// The Wifi device on node one is:   10.1.1.2
+// The Wifi device on node two is:   10.1.1.3
+// The Wifi device on node three is: 10.1.1.4
 // The P2P device on node three is:  10.1.2.1
 // The P2P device on node four is:   10.1.2.2
 // The CSMA device on node four is:  10.1.3.1
@@ -52,7 +52,7 @@
 //
 // 1) Ping one of the simulated nodes on the left side of the topology.
 //
-//    ./waf --run tap-dumbbell&
+//    ./waf --run tap-wifi-dumbbell&
 //    ping 10.1.1.3
 //
 //    Take a look at the pcap traces and note that the timing of the packet
@@ -63,7 +63,7 @@
 //    delays due to CBR background traffic on the point-to-point (see next
 //    item).
 //
-//    ./waf --run tap-dumbbell&
+//    ./waf --run tap-wifi-dumbbell&
 //    sudo route add -net 10.1.3.0 netmask 255.255.255.0 dev left gw 10.1.1.2
 //    ping 10.1.3.4
 //
@@ -79,7 +79,7 @@
 //    reflected in large delays seen by ping.  You can crank down the CBR 
 //    traffic data rate and watch the ping timing change dramatically.
 //
-//    ./waf --run "tap-dumbbell --ns3::OnOffApplication::DataRate=100kb/s"&
+//    ./waf --run "tap-wifi-dumbbell --ns3::OnOffApplication::DataRate=100kb/s"&
 //    sudo route add -net 10.1.3.0 netmask 255.255.255.0 dev left gw 10.1.1.2
 //    ping 10.1.3.4
 //
@@ -90,6 +90,7 @@
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
 #include "ns3/core-module.h"
+#include "ns3/wifi-module.h"
 #include "ns3/helper-module.h"
 #include "ns3/global-routing-module.h"
 
@@ -113,17 +114,34 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::UdpL4Protocol::CalcChecksum", BooleanValue (true)); 
 
   //
-  // The topology is symmetric around the point-to-point link.  First, create
-  // the left side.
+  // The topology has a Wifi network of four nodes on the left side.  We'll make
+  // node zero the AP and have the other three will be the STAs.
   //
   NodeContainer nodesLeft;
   nodesLeft.Create (4);
 
-  CsmaHelper csmaLeft;
-  csmaLeft.SetChannelAttribute ("DataRate", DataRateValue (5000000));
-  csmaLeft.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
+  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+  YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
+  wifiPhy.SetChannel (wifiChannel.Create ());
 
-  NetDeviceContainer devicesLeft = csmaLeft.Install (nodesLeft);
+  Ssid ssid = Ssid ("left");
+  WifiHelper wifi = WifiHelper::Default ();
+  wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
+
+  wifi.SetMac ("ns3::NqapWifiMac", 
+               "Ssid", SsidValue (ssid), 
+               "BeaconGeneration", BooleanValue (true), 
+               "BeaconInterval", TimeValue (Seconds (2.5)));
+  NetDeviceContainer devicesLeft = wifi.Install (wifiPhy, nodesLeft.Get (0));
+
+
+  wifi.SetMac ("ns3::NqstaWifiMac", 
+               "Ssid", SsidValue (ssid), 
+               "ActiveProbing", BooleanValue (false));
+  devicesLeft.Add (wifi.Install (wifiPhy, NodeContainer (nodesLeft.Get (1), nodesLeft.Get (2), nodesLeft.Get (3))));
+
+  MobilityHelper mobility;
+  mobility.Install (nodesLeft);
 
   InternetStackHelper internetLeft;
   internetLeft.Install (nodesLeft);
