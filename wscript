@@ -17,6 +17,7 @@ import ccroot
 ccroot.USE_TOP_LEVEL = True
 
 import Task
+import Constants
 import Utils
 import Build
 import Configure
@@ -287,26 +288,37 @@ def configure(conf):
 class SuidBuildTask(Task.TaskBase):
     """task that makes a binary Suid
     """
-    after = 'link'
+    after = 'cxx_link cc_link'
+    maxjobs = 1
     def __init__(self, bld, program):
         self.m_display = 'build-suid'
         self.__program = program
         self.__env = bld.env.copy ()
         super(SuidBuildTask, self).__init__()
-
-    def run(self):
         try:
             program_obj = wutils.find_program(self.__program.target, self.__env)
         except ValueError, ex:
             raise Utils.WafError(str(ex))
-
         program_node = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj))
-        filename = program_node.abspath(self.__env)
-        print 'setting suid bit on executable ' + filename
-        p = subprocess.Popen('sudo chown root ' + filename, shell=True)
-        os.waitpid(p.pid, 0)
-        p = subprocess.Popen('sudo chmod u+s ' + filename, shell=True)
-        os.waitpid(p.pid, 0)
+        self.filename = program_node.abspath(self.__env)
+
+
+    def run(self):
+        print >> sys.stderr, 'setting suid bit on executable ' + self.filename
+        if subprocess.Popen(['sudo', 'chown', 'root', self.filename]).wait():
+            return 1
+        if subprocess.Popen(['sudo', 'chmod', 'u+s', self.filename]).wait():
+            return 1
+        return 0
+
+    def runnable_status(self):
+        "RUN_ME SKIP_ME or ASK_LATER"
+        st = os.stat(self.filename)
+        if st.st_uid == 0:
+            return Constants.SKIP_ME
+        else:
+            return Constants.RUN_ME
+
 
 def create_suid_program(bld, name):
     program = bld.new_task_gen('cxx', 'program')

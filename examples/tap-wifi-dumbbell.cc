@@ -55,9 +55,6 @@
 //    ./waf --run tap-wifi-dumbbell&
 //    ping 10.1.1.3
 //
-//    Take a look at the pcap traces and note that the timing of the packet
-//    movement reflects the delay configured on the CSMA lan.
-//
 // 2) Configure a route in the linux host and ping once of the nodes on the 
 //    right, across the point-to-point link.  You will see relatively large
 //    delays due to CBR background traffic on the point-to-point (see next

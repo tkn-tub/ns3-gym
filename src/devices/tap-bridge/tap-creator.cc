@@ -19,6 +19,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <string>
+#include <string.h> // for strerror
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -38,7 +39,7 @@
 
 #define TAP_MAGIC 95549
 
-static int gVerbose = 0;
+static int gVerbose = 0; // Set to true to turn on logging messages.
 
 #define LOG(msg) \
   if (gVerbose) \
