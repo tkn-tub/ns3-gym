@@ -92,6 +92,7 @@ see @uref{http://www.nsnam.org/docs/manual.pdf}.
 * Wifi NetDevice::
 * CSMA NetDevice::
 * PointToPoint NetDevice::
+* Creating a new ns-3 model::
 * Troubleshooting::
 @end menu
 
@@ -111,6 +112,7 @@ see @uref{http://www.nsnam.org/docs/manual.pdf}.
 @include csma.texi
 @include point-to-point.texi
 @c @include other.texi
+@include new-models.texi
 @include troubleshoot.texi
 
 @printindex cp

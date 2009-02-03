@@ -3,12 +3,16 @@
 """Trace-comparison-type regression test for the Network Simulation Cradle."""
 
 import platform
+import sys
 
-
-def may_run(env):
+def may_run(env, options):
     if not env['NSC_ENABLED']:
         return "NSC not available"
     else:
+        if options.valgrind:
+            return "NSC does not get along with valgrind"
+        if sys.platform != 'linux2':
+            return "NSC is not well supported on non-Linux platforms"
         return 0
 
 

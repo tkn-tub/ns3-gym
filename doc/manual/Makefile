@@ -33,6 +33,7 @@ CHAPTERS = \
 	callbacks.texi \
 	csma.texi \
 	emulation.texi \
+	new-models.texi \
 	node.texi \
 	objects.texi \
 	other.texi \
