@@ -58,10 +58,25 @@ class Node;
  * The upshot is that the Tap Bridge appears to bridge a tap device on a Linux host 
  * in the "real world" to an ns-3 net device in the simulation.  In order to do this
  * we need a "ghost node" in the simulation to hold the bridged ns-3 net device and 
- * this Tap Bridge.  It won't actually do anything else in the simulation.  You will
- * be able to perform typical ns-3 operations on that node, but they will have no
- * effect other than to set up, tear down and configure the net devices and bridges
- * mentioned above.
+ * this Tap Bridge.  This node will not be able to actually do anything else in the 
+ * simulation with respect to the Tap Bridge and its bridged net device.  This is 
+ * because:
+ *
+ * - Bits sent to the Tap Bridge using its Send() method are completely ignored.  
+ *   The Tap Bridge is not, itself, connected to any network.
+ * - The bridged ns-3 net device is has had its receive callback disconnected from
+ *   the ns-3 node and reconnected to the Tap Bridge.  All data received by a 
+ *   bridged device will be sent to the Linux host and will not be received by the
+ *   node.  You can send but you cannot ever receive.
+ * 
+ * You will be able to perform typical ns-3 operations on the ghost node if you so
+ * desire.  The internet stack, for example, must be there and functional on that
+ * node in order to participate in IP address assignment and global routing.
+ * However, interfaces talking any Tap Bridge or associated bridged net devices 
+ * will not work completely.  If you understand exactly what you are doing, you 
+ * can set up other interfaces and devices on the ghost node and use them; but we 
+ * generally recommend that you treat this node as a ghost of the Linux host and 
+ * leave it alone.
  */
 
 /**
@@ -90,8 +105,9 @@ public:
    * This method tells the bridge which ns-3 net device it should use to connect
    * the simulation side of the bridge.  
    *
-   * \attention The ns-3 net device that is being set as the device must not 
-   * have an IP address.  This address is a property of the host Linux device.
+   * \attention The ns-3 net device that is being set as the device must have an
+   * an IP address assigned to it before the simulation is run.  This address 
+   * will be used to set the hardware address of the host Linux device.
    */
   void SetBridgedNetDevice (Ptr<NetDevice> bridgedDevice);
 
