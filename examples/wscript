@@ -16,9 +16,9 @@ def build(bld):
                                  ['core', 'simulator', 'point-to-point', 'csma', 'wifi', 'internet-stack'])
     obj.source = 'third.cc'
         
-    obj = bld.create_ns3_program('names',
+    obj = bld.create_ns3_program('object-names',
                                  ['core', 'simulator', 'csma', 'internet-stack'])
-    obj.source = 'names.cc'
+    obj.source = 'object-names.cc'
         
     obj = bld.create_ns3_program('mixed-wireless',
                                  ['core', 'simulator', 'mobility', 'wifi', 'point-to-point', 'internet-stack'])
