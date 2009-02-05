@@ -48,10 +48,6 @@ def build(bld):
                                  ['csma', 'internet-stack'])
     obj.source = 'csma-one-subnet.cc'
 
-    obj = bld.create_ns3_program('tap-dumbbell',
-                                 ['csma', 'point-to-point', 'tap-bridge', 'internet-stack'])
-    obj.source = 'tap-dumbbell.cc'
-
     obj = bld.create_ns3_program('tap-wifi-dumbbell',
                                  ['wifi', 'csma', 'point-to-point', 'tap-bridge', 'internet-stack'])
     obj.source = 'tap-wifi-dumbbell.cc'
