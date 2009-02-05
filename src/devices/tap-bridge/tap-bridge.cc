@@ -770,7 +770,8 @@ TapBridge::ReceiveFromBridgedDevice (
   NS_LOG_LOGIC ("Pkt LengthType is " << header.GetLengthType ());
   NS_LOG_LOGIC ("Pkt size is " << p->GetSize ());
 
-  write (m_sock, p->PeekData (), p->GetSize ());
+  int32_t result __attribute__ ((unused));
+  result = write (m_sock, p->PeekData (), p->GetSize ());
 }
 
 void 

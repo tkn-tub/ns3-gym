@@ -148,12 +148,11 @@ uint32_t
 ArpHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  uint32_t hardwareType = i.ReadNtohU16 ();      // Read HRD
+  uint32_t hardwareType __attribute__ ((unused)) = i.ReadNtohU16 (); // Read HRD
   uint32_t protocolType = i.ReadNtohU16 ();      // Read PRO
   uint32_t hardwareAddressLen = i.ReadU8 ();     // Read HLN
   uint32_t protocolAddressLen = i.ReadU8 ();     // Read PLN
 
-  hardwareType = hardwareType;
   //
   // It is implicit here that we have a protocol type of 0x800 (IP).
   // It is also implicit here that we are using Ipv4 (PLN == 4).
