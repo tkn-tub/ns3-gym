@@ -28,7 +28,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("NamesExample");
+NS_LOG_COMPONENT_DEFINE ("ObjectNamesExample");
 
 void 
 RxEvent (std::string context, Ptr<const Packet> packet)
@@ -40,7 +40,7 @@ int
 main (int argc, char *argv[])
 {
 #if 1
-  LogComponentEnable ("NamesExample", LOG_LEVEL_INFO);
+  LogComponentEnable ("ObjectNamesExample", LOG_LEVEL_INFO);
 #endif
 
   CommandLine cmd;
