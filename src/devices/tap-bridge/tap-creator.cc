@@ -29,10 +29,17 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#if 0
 #include <linux/un.h>
 #include <linux/if.h>
 #include <linux/if_tun.h>
 #include <linux/route.h>
+#else
+#include <sys/un.h>
+#include <net/if.h>
+#include <linux/if_tun.h>
+#include <net/route.h>
+#endif
 #include <netinet/in.h>
 
 #include "tap-encode-decode.h"

@@ -2,11 +2,11 @@
 
 def configure(conf):
     if conf.env['ENABLE_THREADING']:
-        conf.env['ENABLE_TAP'] = conf.check(header_name='linux/if_ether.h',
-                                            define_name='HAVE_IF_ETHER_H')
+        conf.env['ENABLE_TAP'] = conf.check(header_name='linux/if_tun.h',
+                                            define_name='HAVE_IF_TUN_H')
         conf.report_optional_feature("TapBridge", "Tap Bridge",
                                      conf.env['ENABLE_TAP'],
-                                     "<linux/if_ether.h> include not detected")
+                                     "<linux/if_tun.h> include not detected")
     else:
         conf.report_optional_feature("TapBridge", "Tap Bridge",
                                      False,
