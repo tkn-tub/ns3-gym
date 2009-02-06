@@ -25,6 +25,7 @@
 #include "ns3/ethernet-header.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/log.h"
+#include "ns3/abort.h"
 #include "ns3/boolean.h"
 #include "ns3/string.h"
 #include "ns3/ipv4.h"
@@ -153,14 +154,11 @@ TapBridge::StartTapDevice (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
+  NS_ABORT_MSG_IF (m_sock != -1, "TapBridge::StartTapDevice(): Tap is already started");
+
   //
   // Spin up the tap bridge and start receiving packets.
   //
-  if (m_sock != -1)
-    {
-      NS_FATAL_ERROR ("TapBridge::StartTapDevice(): Tap is already started");
-    }
-
   NS_LOG_LOGIC ("Creating tap device");
 
   //
@@ -175,11 +173,7 @@ TapBridge::StartTapDevice (void)
   //
   // Now spin up a read thread to read packets from the tap device.
   //
-  if (m_readThread != 0)
-    {
-      NS_FATAL_ERROR ("TapBridge::StartTapDevice(): Receive thread is already running");
-    }
-
+  NS_ABORT_MSG_IF (m_readThread != 0,"TapBridge::StartTapDevice(): Receive thread is already running");
   NS_LOG_LOGIC ("Spinning up read thread");
 
   m_readThread = Create<SystemThread> (MakeCallback (&TapBridge::ReadThread, this));
@@ -215,10 +209,7 @@ TapBridge::CreateTap (void)
   // socket for that purpose.
   //
   int sock = socket (PF_UNIX, SOCK_DGRAM, 0);
-  if (sock == -1)
-    {
-      NS_FATAL_ERROR ("TapBridge::CreateTap(): Unix socket creation error, errno = " << strerror (errno));
-    }
+  NS_ABORT_MSG_IF (sock == -1, "TapBridge::CreateTap(): Unix socket creation error, errno = " << strerror (errno));
 
   //
   // Bind to that socket and let the kernel allocate an endpoint
@@ -227,11 +218,7 @@ TapBridge::CreateTap (void)
   memset (&un, 0, sizeof (un));
   un.sun_family = AF_UNIX;
   int status = bind (sock, (struct sockaddr*)&un, sizeof (sa_family_t));
-  if (status == -1)
-    {
-      NS_FATAL_ERROR ("TapBridge::CreateTap(): Could not bind(): errno = " << strerror (errno));
-    }
-
+  NS_ABORT_MSG_IF (status == -1, "TapBridge::CreateTap(): Could not bind(): errno = " << strerror (errno));
   NS_LOG_INFO ("Created Unix socket");
   NS_LOG_INFO ("sun_family = " << un.sun_family);
   NS_LOG_INFO ("sun_path = " << un.sun_path);
@@ -244,10 +231,7 @@ TapBridge::CreateTap (void)
   //
   socklen_t len = sizeof (un);
   status = getsockname (sock, (struct sockaddr*)&un, &len);
-  if (status == -1)
-    {
-      NS_FATAL_ERROR ("TapBridge::CreateTap(): Could not getsockname(): errno = " << strerror (errno));
-    }
+  NS_ABORT_MSG_IF (status == -1, "TapBridge::CreateTap(): Could not getsockname(): errno = " << strerror (errno));
 
   //
   // Now encode that socket name (family and path) as a string of hex digits
@@ -386,10 +370,7 @@ TapBridge::CreateTap (void)
       //
       int st;
       pid_t waited = waitpid (pid, &st, 0);
-      if (waited == -1)
-	{
-	  NS_FATAL_ERROR ("TapBridge::CreateTap(): waitpid() fails, errno = " << strerror (errno));
-	}
+      NS_ABORT_MSG_IF (waited == -1, "TapBridge::CreateTap(): waitpid() fails, errno = " << strerror (errno));
       NS_ASSERT_MSG (pid == waited, "TapBridge::CreateTap(): pid mismatch");
 
       //
@@ -400,10 +381,8 @@ TapBridge::CreateTap (void)
       if (WIFEXITED (st))
 	{
           int exitStatus = WEXITSTATUS (st);
-          if (exitStatus != 0)
-            {
-              NS_FATAL_ERROR ("TapBridge::CreateTap(): socket creator exited normally with status " << exitStatus);
-            }
+          NS_ABORT_MSG_IF (exitStatus != 0, 
+                           "TapBridge::CreateTap(): socket creator exited normally with status " << exitStatus);
 	}
       else 
 	{
@@ -466,10 +445,7 @@ TapBridge::CreateTap (void)
       // creator process.
       //
       ssize_t bytesRead = recvmsg (sock, &msg, 0);
-      if (bytesRead != sizeof(int))
-	{
-          NS_FATAL_ERROR ("TapBridge::CreateTap(): Wrong byte count from socket creator");
-	}
+      NS_ABORT_MSG_IF (bytesRead != sizeof(int), "TapBridge::CreateTap(): Wrong byte count from socket creator");
 
       //
       // There may be a number of message headers/ancillary data arrays coming in.
@@ -562,11 +538,7 @@ TapBridge::ReadThread (void)
     {
       uint32_t bufferSize = 65536;
       uint8_t *buf = (uint8_t *)malloc (bufferSize);
-      if (buf == 0)
-        {
-          NS_FATAL_ERROR ("TapBridge::ReadThread(): malloc packet buffer failed");
-        }
-
+      NS_ABORT_MSG_IF (buf == 0, "TapBridge::ReadThread(): malloc packet buffer failed");
       NS_LOG_LOGIC ("Calling read on tap device socket fd");
       len = read (m_sock, buf, bufferSize);
 
@@ -770,8 +742,8 @@ TapBridge::ReceiveFromBridgedDevice (
   NS_LOG_LOGIC ("Pkt LengthType is " << header.GetLengthType ());
   NS_LOG_LOGIC ("Pkt size is " << p->GetSize ());
 
-  int32_t result __attribute__ ((unused));
-  result = write (m_sock, p->PeekData (), p->GetSize ());
+  uint32_t bytesWritten = write (m_sock, p->PeekData (), p->GetSize ());
+  NS_ABORT_MSG_IF (bytesWritten != p->GetSize (), "TapBridge::ReceiveFromBridgedDevice(): Write error.");
 }
 
 void 

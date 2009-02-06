@@ -17,6 +17,7 @@
  */
 
 #include <iostream>
+#include "ns3/abort.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/header.h"
@@ -73,9 +74,8 @@ PppHeader::Serialize (Buffer::Iterator start) const
   uint32_t
 PppHeader::Deserialize (Buffer::Iterator start)
 {
-  uint16_t __attribute__((unused))data = start.ReadNtohU16 ();
-  NS_ASSERT_MSG (data == 0x0021, "MyHeader::Deserialize(): "
-    "expected protocol 0x0021");
+  uint16_t data = start.ReadNtohU16 ();
+  NS_ABORT_MSG_UNLESS (data == 0x0021, "MyHeader::Deserialize(): expected protocol 0x0021");
   return 2;
 }
 

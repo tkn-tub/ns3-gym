@@ -17,6 +17,7 @@
  */
 
 #include <list>
+#include "ns3/abort.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/simulation-singleton.h"
@@ -137,17 +138,14 @@ Ipv4AddressGeneratorImpl::Init (
 // We're going to be playing with the actual bits in the network and mask so
 // pull them out into ints.
 //
-  uint32_t maskBits __attribute__((unused)) = mask.Get ();
+  uint32_t maskBits = mask.Get ();
   uint32_t netBits = net.Get ();
   uint32_t addrBits = addr.Get ();
 //
 // Some quick reasonableness testing.
 //
-  NS_ASSERT_MSG((netBits & ~maskBits) == 0,
-    "Ipv4AddressGeneratorImpl::Init (): Inconsistent network and mask");
-
-  NS_ASSERT_MSG((addrBits & maskBits) == 0,
-    "Ipv4AddressGeneratorImpl::Init (): Inconsistent address and mask");
+  NS_ABORT_MSG_UNLESS ((netBits & ~maskBits) == 0, "Ipv4AddressGeneratorImpl::Init (): Inconsistent network and mask");
+  NS_ABORT_MSG_UNLESS ((addrBits & maskBits) == 0, "Ipv4AddressGeneratorImpl::Init (): Inconsistent address and mask");
 
 //
 // Convert the network mask into an index into the network number table.
@@ -158,10 +156,7 @@ Ipv4AddressGeneratorImpl::Init (
   uint32_t index = MaskToIndex (mask);
 
   m_netTable[index].network = netBits >> m_netTable[index].shift;
-
-  NS_ASSERT_MSG (addrBits <= m_netTable[index].addrMax,
-    "Ipv4AddressGeneratorImpl::Init(): Address overflow");
-
+  NS_ABORT_MSG_UNLESS (addrBits <= m_netTable[index].addrMax, "Ipv4AddressGeneratorImpl::Init(): Address overflow");
   m_netTable[index].addr = addrBits;
   return;
 }
@@ -205,9 +200,7 @@ Ipv4AddressGeneratorImpl::InitAddress (
   uint32_t index = MaskToIndex (mask);
   uint32_t addrBits = addr.Get ();
 
-  NS_ASSERT_MSG (addrBits <= m_netTable[index].addrMax,
-    "Ipv4AddressGeneratorImpl::InitAddress(): Address overflow");
-
+  NS_ABORT_MSG_UNLESS (addrBits <= m_netTable[index].addrMax, "Ipv4AddressGeneratorImpl::InitAddress(): Address overflow");
   m_netTable[index].addr = addrBits;
 }
 
@@ -237,8 +230,8 @@ Ipv4AddressGeneratorImpl::NextAddress (const Ipv4Mask mask)
 //
   uint32_t index = MaskToIndex (mask);
 
-  NS_ASSERT_MSG (m_netTable[index].addr <= m_netTable[index].addrMax,
-    "Ipv4AddressGeneratorImpl::NextAddress(): Address overflow");
+  NS_ABORT_MSG_UNLESS (m_netTable[index].addr <= m_netTable[index].addrMax,
+                       "Ipv4AddressGeneratorImpl::NextAddress(): Address overflow");
 
   Ipv4Address addr = Ipv4Address (
     (m_netTable[index].network << m_netTable[index].shift) |
@@ -260,8 +253,7 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
 
   uint32_t addr = address.Get ();
 
-  NS_ASSERT_MSG (addr, "Ipv4AddressGeneratorImpl::Add(): "
-    "Allocating the broadcast address is not a good idea"); 
+  NS_ABORT_MSG_UNLESS (addr, "Ipv4AddressGeneratorImpl::Add(): Allocating the broadcast address is not a good idea"); 
  
   std::list<Entry>::iterator i;
 
@@ -275,12 +267,10 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
 //
       if (addr >= (*i).addrLow && addr <= (*i).addrHigh)
         {
-          NS_LOG_LOGIC ("Ipv4AddressGeneratorImpl::Add(): "
-            "Address Collision: " << Ipv4Address (addr)); 
+          NS_LOG_LOGIC ("Ipv4AddressGeneratorImpl::Add(): Address Collision: " << Ipv4Address (addr)); 
           if (!m_test) 
             {
-              NS_ASSERT_MSG (0, "Ipv4AddressGeneratorImpl::Add(): "
-                "Address Collision: " << Ipv4Address (addr)); 
+              NS_FATAL_ERROR ("Ipv4AddressGeneratorImpl::Add(): Address Collision: " << Ipv4Address (addr));
             }
           return false;
        }
@@ -313,9 +303,7 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
                     "Address Collision: " << Ipv4Address (addr)); 
                   if (!m_test)
                     {
-                      NS_ASSERT_MSG (0, 
-                        "Ipv4AddressGeneratorImpl::Add(): "
-                     "Address Collision: " << Ipv4Address (addr));
+                      NS_FATAL_ERROR ("Ipv4AddressGeneratorImpl::Add(): Address Collision: " << Ipv4Address (addr));
                     }
                   return false;
                 }
@@ -374,10 +362,7 @@ Ipv4AddressGeneratorImpl::MaskToIndex (Ipv4Mask mask) const
       if (maskBits & 1)
         {
           uint32_t index = N_BITS - i;
-
-          NS_ASSERT_MSG (index > 0 && index < N_BITS,
-            "Ipv4AddressGenerator::MaskToIndex(): Illegal Mask");
-
+          NS_ABORT_MSG_UNLESS (index > 0 && index < N_BITS, "Ipv4AddressGenerator::MaskToIndex(): Illegal Mask");
           return index;
         }
       maskBits >>= 1;

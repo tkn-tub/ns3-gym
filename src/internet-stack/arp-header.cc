@@ -148,7 +148,7 @@ uint32_t
 ArpHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  uint32_t hardwareType __attribute__ ((unused)) = i.ReadNtohU16 (); // Read HRD
+  i.Next (2);                                    // Skip HRD
   uint32_t protocolType = i.ReadNtohU16 ();      // Read PRO
   uint32_t hardwareAddressLen = i.ReadU8 ();     // Read HLN
   uint32_t protocolAddressLen = i.ReadU8 ();     // Read PLN
