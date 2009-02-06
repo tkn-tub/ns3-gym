@@ -2,11 +2,14 @@
 
 def configure(conf):
     if conf.env['ENABLE_THREADING']:
-        conf.env['ENABLE_EMU'] = True
-        conf.report_optional_feature("EmuNetDevice", "Emulated Net Device", True, 
-                                     "")
+        conf.env['ENABLE_EMU'] = conf.check(header_name='netpacket/packet.h',
+                                            define_name='HAVE_PACKET_H')
+        conf.report_optional_feature("EmuNetDevice", "Emulated Net Device",
+                                     conf.env['ENABLE_EMU'],
+                                     "<netpacket/packet.h> include not detected")
     else:
-        conf.report_optional_feature("EmuNetDevice", "Emulated Net Device", False,
+        conf.report_optional_feature("EmuNetDevice", "Emulated Net Device",
+                                     False,
                                      "needs threading support which is not available")
 
 def build(bld):
