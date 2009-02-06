@@ -21,7 +21,6 @@ def build(bld):
         'ipv4-interface-container.cc',
         'udp-echo-helper.cc',
         'bridge-helper.cc',
-        'tap-bridge-helper.cc',
         'yans-wifi-helper.cc',
         'v4ping-helper.cc',
         ]
@@ -47,7 +46,6 @@ def build(bld):
         'ipv4-interface-container.h',
         'udp-echo-helper.h',
         'bridge-helper.h',
-        'tap-bridge-helper.h',
         'yans-wifi-helper.h',
         'v4ping-helper.h',
         ]
@@ -59,5 +57,12 @@ def build(bld):
                 ])
         headers.source.extend([
                 'emu-helper.h',
+                ])
+    if env['ENABLE_TAP']:
+        helper.source.extend([
+                'tap-bridge-helper.cc',
+                ])
+        headers.source.extend([
+                'tap-bridge-helper.h',
                 ])
 
