@@ -190,7 +190,7 @@ public:
 
   /**
    * Given a fullname string, look to see if there's an object in the system
-   * with a that associated with it.  If there is, do a QueryObject on the 
+   * with a that associated with it.  If there is, do a GetObject on the 
    * resulting object to convert it to the requested typename.  
    * 
    * The fullname of an object is a fully qualified namespace name, for example
@@ -209,7 +209,7 @@ public:
 
   /**
    * Given a fullname string, look to see if there's an object in the system
-   * with a that associated with it.  If there is, do a QueryObject on the 
+   * with a that associated with it.  If there is, do a GetObject on the 
    * resulting object to convert it to the requested typename.  
    * 
    * The fullname of an object is a fully qualified namespace name, for example
