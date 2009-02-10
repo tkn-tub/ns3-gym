@@ -84,13 +84,16 @@ public:
   ~NamesPriv ();
 
   bool Add (std::string name, Ptr<Object> obj);
-  bool Rename (std::string oldname, std::string newname);
-  bool Add (std::string context, std::string name, Ptr<Object> object);
-  bool Rename (std::string context, std::string oldname, std::string newname);
+  bool Add (std::string path, std::string name, Ptr<Object> object);
   bool Add (Ptr<Object> context, std::string name, Ptr<Object> object);
+
+  bool Rename (std::string oldpath, std::string newname);
+  bool Rename (std::string path, std::string oldname, std::string newname);
   bool Rename (Ptr<Object> context, std::string oldname, std::string newname);
+
   std::string FindName (Ptr<Object> object);
   std::string FindPath (Ptr<Object> object);
+
   Ptr<Object> Find (std::string name);
   Ptr<Object> Find (std::string path, std::string name);
   Ptr<Object> Find (Ptr<Object> context, std::string name);
@@ -181,8 +184,8 @@ NamesPriv::Add (std::string name, Ptr<Object> object)
   // be a fully qualified name.
   //
   // If we are given a name that begins with "/Names/" we assume that this is a
-  // fullname to the object we want to create.  We split the fullname into a 
-  // context string and and a final segment and then call the "Real" Add.
+  // fully qualified path name to the object we want to create.  We split the name
+  // into a path string and and a final segment (name) and then call the "Real" Add.
   //
   std::string namespaceName = "/Names";
   std::string::size_type offset = name.find (namespaceName);
@@ -203,10 +206,10 @@ NamesPriv::Add (std::string name, Ptr<Object> object)
     }
   
   //
-  // There must now be a fully qualified longname in the string.  All fully 
+  // There must now be a fully qualified path in the string.  All fully 
   // qualified names begin with "/Names".  We have to split off the final 
-  // segment which will become the shortname of the object.  A '/' that
-  // separates the context from the final segment had better be there since
+  // segment which will become the name of the object.  A '/' that
+  // separates the path from the final segment had better be there since
   // we just made sure that at least the namespace name was there.
   //
   std::string::size_type i = name.rfind ("/");
@@ -214,80 +217,17 @@ NamesPriv::Add (std::string name, Ptr<Object> object)
 
   //
   // The slash we found cannot be the slash at the start of the namespaceName.
-  // This would indicate there is no shortname in the path at all.  It can be
+  // This would indicate there is no name in the path at all.  It can be
   // any other index.
   //
-  NS_ASSERT_MSG (i != 0, "NamesPriv::Add(): Can't find a shortname in the name string");
+  NS_ASSERT_MSG (i != 0, "NamesPriv::Add(): Can't find a name in the path string");
 
   //
-  // We now know where the context string starts and ends, and where the
-  // shortname starts and ends.  All we have to do is to call our available
-  // function for creating addubg a shortname under a context string.
+  // We now know where the path string starts and ends, and where the
+  // name starts and ends.  All we have to do is to call our available
+  // function for adding a name under a path string.
   //
   return Add (name.substr (0, i), name.substr (i + 1), object);
-}
-
-bool
-NamesPriv::Rename (std::string oldname, std::string newname)
-{
-  NS_LOG_FUNCTION (oldname << newname);
-  //
-  // This is the simple, easy to use version of Rename, so we want it to be 
-  // flexible.   We don't want to force a user to always type the fully 
-  // qualified namespace name, so we allow the namespace name to be omitted.
-  // For example, calling Rename ("Client/ath0", "eth0") should result in 
-  // exactly the same behavior as Rename ("/Names/Client/ath0", "eth0").
-  // Calling Rename ("Client", "Router") should have the same effect as 
-  // Rename ("Names/Client", "Router")
-  //
-  // The first thing to do, then, is to "canonicalize" the input string to always
-  // be a fully qualified name.
-  //
-  // If we are given a name that begins with "/Names/" we assume that this is a
-  // fullname to the object we want to change.  We split the fullname into a 
-  // context string and and a final segment and then call the "Real" Rename.
-  //
-  std::string namespaceName = "/Names";
-  std::string::size_type offset = oldname.find (namespaceName);
-  if (offset != 0)
-    {
-      //
-      // This must be a name that has the "/Names" namespace prefix omitted.  
-      // Do some reasonableness checking on the rest of the name.
-      //
-      offset = oldname.find ("/");
-      if (offset == 0)
-        {
-          NS_ASSERT_MSG (false, "NamesPriv::Add(): Name begins with '/' but not \"/Names\"");
-          return false;
-        }
-
-      oldname = "/Names/" + oldname;
-    }
-  
-  //
-  // There must now be a fully qualified longname in the oldname string.  All 
-  // fully qualified names begin with "/Names".  We have to split off the final 
-  // segment which will become the shortname we want to rename.  A '/' that
-  // separates the context from the final segment had better be there since
-  // we just made sure that at least the namespace name was there.
-  //
-  std::string::size_type i = oldname.rfind ("/");
-  NS_ASSERT_MSG (i != std::string::npos, "NamesPriv::Add(): Internal error.  Can't find '/' in name");
-
-  //
-  // The slash we found cannot be the slash at the start of the namespaceName.
-  // This would indicate there is no shortname in the path at all.  It can be
-  // any other index.
-  //
-  NS_ASSERT_MSG (i != 0, "NamesPriv::Add(): Can't find a shortname in the name string");
-
-  //
-  // We now know where the context string starts and ends, and where the
-  // shortname starts and ends.  All we have to do is to call our available
-  // function for creating addubg a shortname under a context string.
-  //
-  return Rename (oldname.substr (0, i), oldname.substr (i + 1), newname);
 }
 
 bool
@@ -298,16 +238,6 @@ NamesPriv::Add (std::string path, std::string name, Ptr<Object> object)
       return Add (Ptr<Object> (0, false), name, object);
     }
   return Add (Find (path), name, object);
-}
-
-bool
-NamesPriv::Rename (std::string path, std::string oldname, std::string newname)
-{
-  if (path == "/Names")
-    {
-      return Rename (Ptr<Object> (0, false), oldname, newname);
-    }
-  return Rename (Find (path), oldname, newname);
 }
 
 bool
@@ -343,6 +273,80 @@ NamesPriv::Add (Ptr<Object> context, std::string name, Ptr<Object> object)
   m_objectMap[object] = newNode;
 
   return true;
+}
+
+bool
+NamesPriv::Rename (std::string oldpath, std::string newname)
+{
+  NS_LOG_FUNCTION (oldpath << newname);
+  //
+  // This is the simple, easy to use version of Rename, so we want it to be 
+  // flexible.   We don't want to force a user to always type the fully 
+  // qualified namespace name, so we allow the namespace name to be omitted.
+  // For example, calling Rename ("Client/ath0", "eth0") should result in 
+  // exactly the same behavior as Rename ("/Names/Client/ath0", "eth0").
+  // Calling Rename ("Client", "Router") should have the same effect as 
+  // Rename ("Names/Client", "Router")
+  //
+  // The first thing to do, then, is to "canonicalize" the input string to always
+  // be a fully qualified path.
+  //
+  // If we are given a name that begins with "/Names/" we assume that this is a
+  // fully qualified path to the object we want to change.  We split the path into 
+  // path string (cf directory) and and a final segment (cf filename) and then call
+  // the "Real" Rename.
+  //
+  std::string namespaceName = "/Names";
+  std::string::size_type offset = oldpath.find (namespaceName);
+  if (offset != 0)
+    {
+      //
+      // This must be a name that has the "/Names" namespace prefix omitted.  
+      // Do some reasonableness checking on the rest of the name.
+      //
+      offset = oldpath.find ("/");
+      if (offset == 0)
+        {
+          NS_ASSERT_MSG (false, "NamesPriv::Add(): Name begins with '/' but not \"/Names\"");
+          return false;
+        }
+
+      oldpath = "/Names/" + oldpath;
+    }
+  
+  //
+  // There must now be a fully qualified path in the oldpath string.  All 
+  // fully qualified names begin with "/Names".  We have to split off the final 
+  // segment which will become the name we want to rename.  A '/' that
+  // separates the path from the final segment (name) had better be there since
+  // we just made sure that at least the namespace name was there.
+  //
+  std::string::size_type i = oldpath.rfind ("/");
+  NS_ASSERT_MSG (i != std::string::npos, "NamesPriv::Add(): Internal error.  Can't find '/' in name");
+
+  //
+  // The slash we found cannot be the slash at the start of the namespaceName.
+  // This would indicate there is no name in the path at all.  It can be
+  // any other index.
+  //
+  NS_ASSERT_MSG (i != 0, "NamesPriv::Add(): Can't find a name in the path string");
+
+  //
+  // We now know where the path part of the string starts and ends, and where the
+  // name part starts and ends.  All we have to do is to call our available
+  // function for creating adding a name under a path string.
+  //
+  return Rename (oldpath.substr (0, i), oldpath.substr (i + 1), newname);
+}
+
+bool
+NamesPriv::Rename (std::string path, std::string oldname, std::string newname)
+{
+  if (path == "/Names")
+    {
+      return Rename (Ptr<Object> (0, false), oldname, newname);
+    }
+  return Rename (Find (path), oldname, newname);
 }
 
 bool
@@ -466,7 +470,7 @@ NamesPriv::Find (std::string path)
     }
   else
     {
-      NS_LOG_LOGIC (path << " begins with a relative shortname");
+      NS_LOG_LOGIC (path << " begins with a relative name");
       remaining = path;
     }
 
@@ -626,9 +630,9 @@ Names::Add (std::string name, Ptr<Object> object)
 }
 
 bool
-Names::Rename (std::string oldname, std::string newname)
+Names::Rename (std::string oldpath, std::string newname)
 {
-  return NamesPriv::Get ()->Rename (oldname, newname);
+  return NamesPriv::Get ()->Rename (oldpath, newname);
 }
 
 bool
@@ -804,9 +808,9 @@ NamesTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (found, "/Names/Server/eth0");
 
   // 
-  // We should be able to find the objects from the short names.  Note that
-  // the Ptr<Object> (0, false) below is to differentiate a null object pointer
-  // from a null string pointer -- not normally needed in real use-cases.
+  // We should be able to find the objects from a context and name combination.
+  // Note that the Ptr<Object> (0, false) below is to differentiate a null object
+  // pointer from a null string pointer -- not normally needed in real use-cases.
   // 
   //
   Ptr<TestObject> foundObject;
@@ -821,6 +825,23 @@ NamesTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (foundObject, clientEth0);
 
   foundObject = Names::Find<TestObject> (server, "eth0");
+  NS_TEST_ASSERT_EQUAL (foundObject, serverEth0);
+
+  //
+  // We should be able to do the same thing by providing path strings instead
+  // of context objects.
+  //
+
+  foundObject = Names::Find<TestObject> ("/Names", "Client");
+  NS_TEST_ASSERT_EQUAL (foundObject, client);
+
+  foundObject = Names::Find<TestObject> ("/Names", "Server");
+  NS_TEST_ASSERT_EQUAL (foundObject, server);
+
+  foundObject = Names::Find<TestObject> ("/Names/Client", "eth0");
+  NS_TEST_ASSERT_EQUAL (foundObject, clientEth0);
+
+  foundObject = Names::Find<TestObject> ("/Names/Server", "eth0");
   NS_TEST_ASSERT_EQUAL (foundObject, serverEth0);
 
   // 

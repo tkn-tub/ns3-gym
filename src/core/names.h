@@ -81,14 +81,14 @@ public:
    * Note that Names::Rename ("server/csma", "eth0") would accomplish exactly the 
    * same thing.
    *
-   * \param oldname The current name of the object you want to change.
+   * \param oldpath The current path name to the object you want to change.
    * \param newname The new name of the object you want to change.
    *
    * \returns true if the name change was successfully completed, false otherwise
    *
    * \see Names::Add (std::string name, Ptr<Object> obj)
    */
-  static bool Rename (std::string oldname, std::string newname);
+  static bool Rename (std::string oldpath, std::string newname);
 
   /**
    * \brief An intermediate form of Names::Add allowing you to provide a path to
@@ -378,6 +378,24 @@ Ptr<T>
 Names::Find (std::string name)
 {
   Ptr<Object> obj = FindInternal (name);
+  if (obj)
+    {
+      return obj->GetObject<T> ();
+    }
+  else
+    {
+      return 0;
+    }
+}
+
+/**
+ * \brief Template definition of corresponding template declaration found in class Names.
+ */
+template <typename T>
+Ptr<T> 
+Names::Find (std::string path, std::string name)
+{
+  Ptr<Object> obj = FindInternal (path, name);
   if (obj)
     {
       return obj->GetObject<T> ();
