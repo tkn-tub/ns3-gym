@@ -53,11 +53,105 @@ public:
    * Note that Names::Add ("client/eth0", obj) would accomplish exactly the same 
    * thing.
    *
+   * Duplicate names are not allowed at the same level in a path, however you may
+   * associate similar names with different paths.  For example, if you define
+   * "/Names/Client", you may not define another "/Names/Client" just as you may
+   * not have two files with the same name in a classical filesystem.  However,
+   * you may have "/Names/Client/eth0" and "/Names/Server/eth0" defined at the 
+   * same time just as you might have different files of the same name under 
+   * different directories.
+   *
    * \param name The name of the object you want to associate; which may be 
    *             prepended with a path to that object.
    * \param obj A smart pointer to the object itself.
    */
   static bool Add (std::string name, Ptr<Object> obj);
+
+  /**
+   * \brief An intermediate form of Names::Add allowing you to provide a path to
+   * the parent object (under which you want this name to be defined) in the form
+   * of a name path string.
+   *
+   * In some cases, it is desirable to break up the path used to describe an item
+   * in the names namespace into a path and a name.  This is analogous to a
+   * file system operation in which you provide a directory name and a file name.
+   *
+   * For example, consider a situation where you have previously named an object
+   * "/Names/server".  If you further want to create an association for between a 
+   * Ptr<Object> object that you want to live "under" the server in the name space
+   * -- perhaps "eth0" -- you could do this in two ways, depending on which was 
+   * more convenient: Names::Add ("/Names/server/eth0", object) or, using the split
+   * path and name approach, Names::Add ("/Names/server", "eth0", object).
+   *
+   * Duplicate names are not allowed at the same level in a path, however you may
+   * associate similar names with different paths.  For example, if you define
+   * "/Names/Client", you may not define another "/Names/Client" just as you may
+   * not have two files with the same name in a classical filesystem.  However,
+   * you may have "/Names/Client/eth0" and "/Names/Server/eth0" defined at the 
+   * same time just as you might have different files of the same name under 
+   * different directories.
+   *
+   * \param path A path name describing a previously named object under which 
+   *             you want this new name to be defined.
+   * \param name The name of the object you want to associate.
+   * \param obj A smart pointer to the object itself.
+   *
+   * \returns true if the association was successfully completed, false otherwise
+   *
+   * \see Names::Add (Ptr<Object> context, std::string name, Ptr<Object> object);
+   */
+  static bool Add (std::string path, std::string name, Ptr<Object> object);
+
+  /**
+   * \brief A low-level form of Names::Add allowing you to specify the path to
+   * the parent object (under which you want this name to be defined) in the form
+   * of a previously named object.
+   *
+   * In some use cases, it is desirable to break up the path in the names name
+   * space into a path and a name.  This is analogous to a file system operation 
+   * in which you provide a directory name and a file name.  Recall that the path
+   * string actually refers to a previously named object, "under" which you want
+   * to accomplish some naming action.
+   * 
+   * However, the path is sometimes not avialable, and you only have the object 
+   * that is represented by the path in the names name space.  To support this 
+   * use-case in a reasonably high-performance way, the path string is can be 
+   * replaced by the object pointer to which that path would refer.  In the spirit
+   * of the Config code where this use-case is most prominent, we refer to this
+   * object as the "context" for the names operation.
+   *
+   * You can think of the context roughly as the inode number of a directory file
+   * in Unix.  The inode number can be used to look up the directory file which 
+   * contains the list of file names defined at that directory level.  Similarly
+   * the context is used to look up an internal name service entry which contains
+   * the names defined for that context.
+   *
+   * For example, consider a situation where you have previously named an object
+   * "/Names/server".  If you further want to create an association for between a 
+   * Ptr<Object> object that you want to live "under" the server in the name space
+   * -- perhaps "eth0" -- you could do this by providing a complete path to the 
+   * new name: Names::Add ("/Names/server/eth0", object).  If, however, somewhere
+   * in your code you only had a pointer to the server, say Ptr<Node> node, and 
+   * not a handy path string,  you could also accomplish this by 
+   * Names::Add (node, "eth0", object).
+   *
+   * Duplicate names are not allowed at the same level in a path.  In the case
+   * of this method, the context object gives the same information as a path
+   * string.  You may associate similar names with different paths.  For example,
+   *  if you define"/Names/Client", you may not define another "/Names/Client" 
+   * just as you may not have two files with the same name in a classical filesystem.
+   * However, you may have "/Names/Client/eth0" and "/Names/Server/eth0" defined at 
+   * the same time just as you might have different files of the same name under 
+   * different directories.
+   *
+   * \param context A smart pointer to an object that is used in place of the path
+   *                under which you want this new name to be defined.
+   * \param name The name of the object you want to associate.
+   * \param obj A smart pointer to the object itself.
+   *
+   * \returns true if the association was successfully completed, false otherwise
+   */
+  static bool Add (Ptr<Object> context, std::string name, Ptr<Object> object);
 
   /**
    * \brief Rename a previously associated name.
@@ -91,33 +185,6 @@ public:
   static bool Rename (std::string oldpath, std::string newname);
 
   /**
-   * \brief An intermediate form of Names::Add allowing you to provide a path to
-   * the parent object (under which you want this name to be defined) in the form
-   * of a name path string.
-   *
-   * In some cases, it is desirable to break up the path used to describe an item
-   * in the names namespace into a path and a name.  This is analogous to a
-   * file system operation in which you provide a directory name and a file name.
-   *
-   * For example, consider a situation where you have previously named an object
-   * "/Names/server".  If you further want to create an association for between a 
-   * Ptr<Object> object that you want to live "under" the server in the name space
-   * -- perhaps "eth0" -- you could do this in two ways, depending on which was 
-   * more convenient: Names::Add ("/Names/server/eth0", object) or, using the split
-   * path and name approach, Names::Add ("/Names/server", "eth0", object).
-   *
-   * \param path A path name describing a previously named object under which 
-   *             you want this new name to be defined.
-   * \param name The name of the object you want to associate.
-   * \param obj A smart pointer to the object itself.
-   *
-   * \returns true if the association was successfully completed, false otherwise
-   *
-   * \see Names::Add (Ptr<Object> context, std::string name, Ptr<Object> object);
-   */
-  static bool Add (std::string path, std::string name, Ptr<Object> object);
-
-  /**
    * \brief An intermediate form of Names::Rename allowing you to provide a path to
    * the parent object (under which you want this name to be changed) in the form
    * of a name path string.
@@ -142,42 +209,6 @@ public:
   static bool Rename (std::string path, std::string oldname, std::string newname);
 
   /**
-   * \brief A low-level form of Names::Add allowing you to specify the path to
-   * the parent object (under which you want this name to be defined) in the form
-   * of a previously named object.
-   *
-   * In some use cases, it is desirable to break up the path in the names name
-   * space into a path and a name.  This is analogous to a file system operation 
-   * in which you provide a directory name and a file name.  Recall that the path
-   * string actually refers to a previously named object, "under" which you want
-   * to accomplish some naming action.
-   * 
-   * However, the path is sometimes not avialable, and you only have the object 
-   * that is represented by the path in the names name space.  To support this 
-   * use-case in a reasonably high-performance way, the path string is can be 
-   * replaced by the object pointer to which that path would refer.  In the spirit
-   * of the Config code where this use-case is most prominent, we refer to this
-   * object as the "context" for the names operation.
-   *
-   * For example, consider a situation where you have previously named an object
-   * "/Names/server".  If you further want to create an association for between a 
-   * Ptr<Object> object that you want to live "under" the server in the name space
-   * -- perhaps "eth0" -- you could do this by providing a complete path to the 
-   * new name: Names::Add ("/Names/server/eth0", object).  If, however, somewhere
-   * in your code you only had a pointer to the server, say Ptr<Node> node, and 
-   * not a handy path string,  you could also accomplish this by 
-   * Names::Add (node, "eth0", object).
-   *
-   * \param context A smart pointer to an object that is used in place of the path
-   *                under which you want this new name to be defined.
-   * \param name The name of the object you want to associate.
-   * \param obj A smart pointer to the object itself.
-   *
-   * \returns true if the association was successfully completed, false otherwise
-   */
-  static bool Add (Ptr<Object> context, std::string name, Ptr<Object> object);
-
-  /**
    * \brief A low-level form of Names::Rename allowing you to specify the path to
    * the parent object (under which you want this name to be changed) in the form
    * of a previously named object.
@@ -194,6 +225,12 @@ public:
    * replaced by the object pointer to which that path would refer.  In the spirit
    * of the Config code where this use-case is most prominent, we refer to this
    * object as the "context" for the names operation.
+   *
+   * You can think of the context roughly as the inode number of a directory file
+   * in Unix.  The inode number can be used to look up the directory file which 
+   * contains the list of file names defined at that directory level.  Similarly
+   * the context is used to look up an internal name service entry which contains
+   * the names defined for that context.
    *
    * For example, consider a situation where you have previously named an object
    * "/Names/server/csma".  If you later decide to rename the csma object to say
@@ -314,6 +351,12 @@ public:
    * replaced by the object pointer to which that path would refer.  In the spirit
    * of the Config code where this use-case is most prominent, we refer to this
    * object as the "context" for the names operation.
+   *
+   * You can think of the context roughly as the inode number of a directory file
+   * in Unix.  The inode number can be used to look up the directory file which 
+   * contains the list of file names defined at that directory level.  Similarly
+   * the context is used to look up an internal name service entry which contains
+   * the names defined for that context.
    *
    * \param context A smart pointer to an object that is used in place of the path
    *                under which you want this new name to be defined.
