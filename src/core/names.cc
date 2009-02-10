@@ -89,10 +89,11 @@ public:
   bool Rename (std::string context, std::string oldname, std::string newname);
   bool Add (Ptr<Object> context, std::string name, Ptr<Object> object);
   bool Rename (Ptr<Object> context, std::string oldname, std::string newname);
-  std::string FindShortName (Ptr<Object> object);
-  std::string FindFullName (Ptr<Object> object);
-  Ptr<Object> FindObjectFromFullName (std::string name);
-  Ptr<Object> FindObjectFromShortName (Ptr<Object> context, std::string name);
+  std::string FindName (Ptr<Object> object);
+  std::string FindPath (Ptr<Object> object);
+  Ptr<Object> Find (std::string name);
+  Ptr<Object> Find (std::string path, std::string name);
+  Ptr<Object> Find (Ptr<Object> context, std::string name);
 
   static NamesPriv *Get (void);
   static void Delete (void);
@@ -290,23 +291,23 @@ NamesPriv::Rename (std::string oldname, std::string newname)
 }
 
 bool
-NamesPriv::Add (std::string context, std::string name, Ptr<Object> object)
+NamesPriv::Add (std::string path, std::string name, Ptr<Object> object)
 {
-  if (context == "/Names")
+  if (path == "/Names")
     {
       return Add (Ptr<Object> (0, false), name, object);
     }
-  return Add (FindObjectFromFullName (context), name, object);
+  return Add (Find (path), name, object);
 }
 
 bool
-NamesPriv::Rename (std::string context, std::string oldname, std::string newname)
+NamesPriv::Rename (std::string path, std::string oldname, std::string newname)
 {
-  if (context == "/Names")
+  if (path == "/Names")
     {
       return Rename (Ptr<Object> (0, false), oldname, newname);
     }
-  return Rename (FindObjectFromFullName (context), oldname, newname);
+  return Rename (Find (path), oldname, newname);
 }
 
 bool
@@ -392,7 +393,7 @@ NamesPriv::Rename (Ptr<Object> context, std::string oldname, std::string newname
 }
 
 std::string
-NamesPriv::FindShortName (Ptr<Object> object)
+NamesPriv::FindName (Ptr<Object> object)
 {
   NS_LOG_FUNCTION (object);
 
@@ -410,7 +411,7 @@ NamesPriv::FindShortName (Ptr<Object> object)
 }
 
 std::string
-NamesPriv::FindFullName (Ptr<Object> object)
+NamesPriv::FindPath (Ptr<Object> object)
 {
   NS_LOG_FUNCTION (object);
 
@@ -424,49 +425,49 @@ NamesPriv::FindFullName (Ptr<Object> object)
   NameNode *p = i->second;
   NS_ASSERT_MSG (p, "NamesPriv::FindFullName(): Internal error: Invalid NameNode pointer from map");
 
-  std::string fullname;
+  std::string path;
 
   do
     {
-      fullname = "/" + p->m_name + fullname;
-      NS_LOG_LOGIC ("fullname is " << fullname);
+      path = "/" + p->m_name + path;
+      NS_LOG_LOGIC ("path is " << path);
     }
   while ((p = p->m_parent) != 0);
 
-  return fullname;
+  return path;
 }
 
 
 Ptr<Object>
-NamesPriv::FindObjectFromFullName (std::string name)
+NamesPriv::Find (std::string path)
 {
   //
   // This is hooked in from simple, easy to use version of Find, so we want it
   // to be flexible.
   //
-  // If we are provided a name that doesn't begin with "/Names", we assume 
-  // that the caller has simply given us a path starting with a shortname that
+  // If we are provided a path that doesn't begin with "/Names", we assume 
+  // that the caller has simply given us a path starting with a name that
   // is in the root namespace.  This allows peole to omit the "/Names" prefix.
   // and simply do a Find ("Client/eth0") instead of having to always do a
   // Find ("/Names/Client/eth0");
   //
   // So, if we are given a name that begins with "/Names/" the upshot is that we
   // just remove that prefix and treat the rest of the string as starting with a 
-  // shortname in the root namespace.
+  // name in the root namespace.
   //
   std::string namespaceName = "/Names/";
   std::string remaining;
 
-  std::string::size_type offset = name.find (namespaceName);
+  std::string::size_type offset = path.find (namespaceName);
   if (offset == 0)
     {
-      NS_LOG_LOGIC (name << " is a fully qualified name");
-      remaining = name.substr (namespaceName.size ());
+      NS_LOG_LOGIC (path << " is a fully qualified name");
+      remaining = path.substr (namespaceName.size ());
     }
   else
     {
-      NS_LOG_LOGIC (name << " begins with a relative shortname");
-      remaining = name;
+      NS_LOG_LOGIC (path << " begins with a relative shortname");
+      remaining = path;
     }
 
   NameNode *node = &m_root;
@@ -525,12 +526,24 @@ NamesPriv::FindObjectFromFullName (std::string name)
         }
     }
 
-  NS_ASSERT_MSG (node, "NamesPriv::FindObjectFromFullName(): Internal error:  this can't happen");
+  NS_ASSERT_MSG (node, "NamesPriv::Find(): Internal error:  this can't happen");
   return 0;
 }
 
 Ptr<Object>
-NamesPriv::FindObjectFromShortName (Ptr<Object> context, std::string name)
+NamesPriv::Find (std::string path, std::string name)
+{
+  NS_LOG_FUNCTION (path << name);
+
+  if (path == "/Names")
+    {
+      return Find (Ptr<Object> (0, false), name);
+    }
+  return Find (Find (path), name);
+}
+
+Ptr<Object>
+NamesPriv::Find (Ptr<Object> context, std::string name)
 {
   NS_LOG_FUNCTION (context << name);
 
@@ -619,6 +632,18 @@ Names::Rename (std::string oldname, std::string newname)
 }
 
 bool
+Names::Add (std::string path, std::string name, Ptr<Object> object)
+{
+  return NamesPriv::Get ()->Add (path, name, object);
+}
+
+bool
+Names::Rename (std::string path, std::string oldname, std::string newname)
+{
+  return NamesPriv::Get ()->Rename (path, oldname, newname);
+}
+
+bool
 Names::Add (Ptr<Object> context, std::string name, Ptr<Object> object)
 {
   return NamesPriv::Get ()->Add (context, name, object);
@@ -630,40 +655,34 @@ Names::Rename (Ptr<Object> context, std::string oldname, std::string newname)
   return NamesPriv::Get ()->Rename (context, oldname, newname);
 }
 
-bool
-Names::Add (std::string context, std::string name, Ptr<Object> object)
+std::string
+Names::FindName (Ptr<Object> object)
 {
-  return NamesPriv::Get ()->Add (context, name, object);
-}
-
-bool
-Names::Rename (std::string context, std::string oldname, std::string newname)
-{
-  return NamesPriv::Get ()->Rename (context, oldname, newname);
+  return NamesPriv::Get ()->FindName (object);
 }
 
 std::string
-Names::FindShortName (Ptr<Object> object)
+Names::FindPath (Ptr<Object> object)
 {
-  return NamesPriv::Get ()->FindShortName (object);
-}
-
-std::string
-Names::FindFullName (Ptr<Object> object)
-{
-  return NamesPriv::Get ()->FindFullName (object);
+  return NamesPriv::Get ()->FindPath (object);
 }
 
 Ptr<Object>
-Names::FindObjectFromFullNameInternal (std::string name)
+Names::FindInternal (std::string name)
 {
-  return NamesPriv::Get ()->FindObjectFromFullName (name);
+  return NamesPriv::Get ()->Find (name);
 }
 
 Ptr<Object>
-Names::FindObjectFromShortNameInternal (Ptr<Object> context, std::string name)
+Names::FindInternal (std::string path, std::string name)
 {
-  return NamesPriv::Get ()->FindObjectFromShortName (context, name);
+  return NamesPriv::Get ()->Find (path, name);
+}
+
+Ptr<Object>
+Names::FindInternal (Ptr<Object> context, std::string name)
+{
+  return NamesPriv::Get ()->Find (context, name);
 }
 
 } //namespace ns3
@@ -757,52 +776,55 @@ NamesTest::RunTests (void)
   //
   std::string found;
 
-  found = Names::FindShortName (client);
+  found = Names::FindName (client);
   NS_TEST_ASSERT_EQUAL (found, "Client");
 
-  found = Names::FindShortName (server);
+  found = Names::FindName (server);
   NS_TEST_ASSERT_EQUAL (found, "Server");
 
-  found = Names::FindShortName (clientEth0);
+  found = Names::FindName (clientEth0);
   NS_TEST_ASSERT_EQUAL (found, "eth0");
 
-  found = Names::FindShortName (serverEth0);
+  found = Names::FindName (serverEth0);
   NS_TEST_ASSERT_EQUAL (found, "eth0");
 
   //
   // We should be able to find the full names for the objects we created
   //
-  found = Names::FindFullName (client);
+  found = Names::FindPath (client);
   NS_TEST_ASSERT_EQUAL (found, "/Names/Client");
 
-  found = Names::FindFullName (server);
+  found = Names::FindPath (server);
   NS_TEST_ASSERT_EQUAL (found, "/Names/Server");
 
-  found = Names::FindFullName (clientEth0);
+  found = Names::FindPath (clientEth0);
   NS_TEST_ASSERT_EQUAL (found, "/Names/Client/eth0");
 
-  found = Names::FindFullName (serverEth0);
+  found = Names::FindPath (serverEth0);
   NS_TEST_ASSERT_EQUAL (found, "/Names/Server/eth0");
 
   // 
-  // We should be able to find the objects from the short names
+  // We should be able to find the objects from the short names.  Note that
+  // the Ptr<Object> (0, false) below is to differentiate a null object pointer
+  // from a null string pointer -- not normally needed in real use-cases.
+  // 
   //
   Ptr<TestObject> foundObject;
 
-  foundObject = Names::FindObjectFromShortName<TestObject> (0, "Client");
+  foundObject = Names::Find<TestObject> (Ptr<Object> (0, false), "Client");
   NS_TEST_ASSERT_EQUAL (foundObject, client);
 
-  foundObject = Names::FindObjectFromShortName<TestObject> (0, "Server");
+  foundObject = Names::Find<TestObject> (Ptr<Object> (0, false), "Server");
   NS_TEST_ASSERT_EQUAL (foundObject, server);
 
-  foundObject = Names::FindObjectFromShortName<TestObject> (client, "eth0");
+  foundObject = Names::Find<TestObject> (client, "eth0");
   NS_TEST_ASSERT_EQUAL (foundObject, clientEth0);
 
-  foundObject = Names::FindObjectFromShortName<TestObject> (server, "eth0");
+  foundObject = Names::Find<TestObject> (server, "eth0");
   NS_TEST_ASSERT_EQUAL (foundObject, serverEth0);
 
   // 
-  // We should be able to find the objects from their full names
+  // We should be able to find the objects from their full path names
   //
   foundObject = Names::Find<TestObject> ("/Names/Client");
   NS_TEST_ASSERT_EQUAL (foundObject, client);
@@ -817,7 +839,7 @@ NamesTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (foundObject, serverEth0);
 
   // 
-  // We should be able to omit the root of the namespace from the full names
+  // We should be able to omit the root of the namespace from the full path names
   //
   foundObject = Names::Find<TestObject> ("Client");
   NS_TEST_ASSERT_EQUAL (foundObject, client);
@@ -889,38 +911,6 @@ NamesTest::RunTests (void)
 
   foundObject = Names::Find<TestObject> ("Router2/eth0");
   NS_TEST_ASSERT_EQUAL (foundObject, router2Eth0);
-
-  //
-  // We also have some syntactically sugary methods, so make sure they do what
-  // they should as well.
-  //
-  Ptr<TestObject> bridge = CreateObject<TestObject> ();
-  result = Names::Add ("/Names", "Bridge", bridge);
-  NS_TEST_ASSERT_EQUAL (result, true);
-
-  Ptr<TestObject> bridgeEth0 = CreateObject<TestObject> ();
-  result = Names::Add ("/Names/Bridge", "eth0", bridgeEth0);
-  NS_TEST_ASSERT_EQUAL (result, true);
-
-  foundObject = Names::Find<TestObject> ("/Names/Bridge");
-  NS_TEST_ASSERT_EQUAL (foundObject, bridge);
-
-  foundObject = Names::Find<TestObject> ("/Names/Bridge/eth0");
-  NS_TEST_ASSERT_EQUAL (foundObject, bridgeEth0);
-
-  Ptr<TestObject> wireless = CreateObject<TestObject> ();
-  result = Names::Add ("/Names/Wireless", wireless);
-  NS_TEST_ASSERT_EQUAL (result, true);
-
-  Ptr<TestObject> wirelessAth0 = CreateObject<TestObject> ();
-  result = Names::Add ("/Names/Wireless/ath0", wirelessAth0);
-  NS_TEST_ASSERT_EQUAL (result, true);
-
-  foundObject = Names::Find<TestObject> ("/Names/Wireless");
-  NS_TEST_ASSERT_EQUAL (foundObject, wireless);
-
-  foundObject = Names::Find<TestObject> ("/Names/Wireless/ath0");
-  NS_TEST_ASSERT_EQUAL (foundObject, wirelessAth0);
 
   //
   // We have a pile of names defined.  We should be able to rename them in the

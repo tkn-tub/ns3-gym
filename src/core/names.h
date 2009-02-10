@@ -37,19 +37,24 @@ public:
    *
    * The name may begin either with "/Names" to explicitly call out the fact 
    * that the name provided is installed under the root of the name space, 
-   * or it may begin with the short name of the first obejct in the path.
-   * For example, Add ("/Names/client", obj) and Add ("client", obj) accomplish
-   * exactly the same thing.  Names at a given level in the name space must be
-   * unique.  It would be illegal to try and associate a different object with
-   * the same name: "client."
+   * or it may begin with the name of the first object in the path.  For example, 
+   * Names::Add ("/Names/client", obj) and Names::Add ("client", obj) accomplish 
+   * exactly the same thing.  A name at a given level in the name space path must
+   * be unique.  In the case of the example above, it would be illegal to try and
+   * associate a different object with the same name: "client" at the same level 
+   * ("/Names") in the path.
    *
-   * As well as providing a single shortname, the name parameter can contain a 
-   * path that qualifies the shortname.  For example, you could make the call
-   * Add ("/Names/client/eth0", obj) if you had previously associated a name 
-   * "client" in the root of the name space.  Note that Add ("client/eth0", obj)
-   * would accomplish exactly the same thing.
+   * As well as specifying a name at the root of the "/Names" namespace, the 
+   * the <name> parameter can contain a path that fully qualifies the name to 
+   * be added.  For example, if you previously have named an object "client"
+   * in the root namespace as above, you could name an object "under" that
+   * name by making a call like Names::Add ("/Names/client/eth0", obj).  This 
+   * will define the name "eth0" and make it reachable using the path specified.
+   * Note that Names::Add ("client/eth0", obj) would accomplish exactly the same 
+   * thing.
    *
-   * \param name The name of the object you want to associate.
+   * \param name The name of the object you want to associate; which may be 
+   *             prepended with a path to that object.
    * \param obj A smart pointer to the object itself.
    */
   static bool Add (std::string name, Ptr<Object> obj);
@@ -59,66 +64,112 @@ public:
    *
    * The name may begin either with "/Names" to explicitly call out the fact 
    * that the name provided is installed under the root of the name space, 
-   * or it may begin with the short name of the first obejct in the path.
-   * For example, Rename ("/Names/client", "newname") and 
-   * Rename ("client", "newname") will accomplish exactly the same thing --
-   * to find an object at the root of the name space called "client" and change
-   * its name to "newname".  Names at a given level in the name space must be
-   * unique.  It would be illegal to try and rename the association to another
-   * name that already exists at the namespace level indicated by the path.
+   * or it may begin with the name of the first object in the path.  For example, 
+   * Names::Rename ("/Names/client", "server") and Names::Rename ("client", "server") 
+   * accomplish exactly the same thing.  Names at a given level in the name space
+   * path must be unique. In the case of the example above, it would be illegal 
+   * to try and rename a different object to the same name: "server" at the same 
+   * level ("/Names") in the path.
    *
-   * As well as providing a single shortname, the name parameter can contain a 
-   * path that qualifies the shortname you want to change.  For example, you 
-   * could make the call Rename ("/Names/client/eth0", "ath0") if "ath0" has
-   * not been previously used at this level (under "client").  Note that 
-   * Rename ("client/eth0", "ath0") would accomplish exactly the same thing.
+   * As well as specifying a name at the root of the "/Names" namespace, the 
+   * the <name> parameter can contain a path that fully qualifies the name to 
+   * be changed.  For example, if you previously have (re)named an object 
+   * "server" in the root namespace as above, you could then rename an object 
+   * "under" that name by making a call like Names::Rename ("/Names/server/csma", "eth0").
+   * This will rename the object previously associated with "/Names/server/csma" 
+   * to "eth0" and make leave it reachable using the path "/Names/server/eth0".
+   * Note that Names::Rename ("server/csma", "eth0") would accomplish exactly the 
+   * same thing.
    *
    * \param oldname The current name of the object you want to change.
    * \param newname The new name of the object you want to change.
    *
    * \returns true if the name change was successfully completed, false otherwise
+   *
+   * \see Names::Add (std::string name, Ptr<Object> obj)
    */
   static bool Rename (std::string oldname, std::string newname);
 
   /**
-   * \brief An intermediate form of Add allowing you to provide a context in the 
-   * form of a name string.
+   * \brief An intermediate form of Names::Add allowing you to provide a path to
+   * the parent object (under which you want this name to be defined) in the form
+   * of a name path string.
    *
-   * \see Add (Ptr<Object> context, std::string name, Ptr<Object> object);
+   * In some cases, it is desirable to break up the path used to describe an item
+   * in the names namespace into a path and a name.  This is analogous to a
+   * file system operation in which you provide a directory name and a file name.
    *
-   * \param context A fully qualified name describing a previously named object.
-   *                under which you want this name to be defined.
+   * For example, consider a situation where you have previously named an object
+   * "/Names/server".  If you further want to create an association for between a 
+   * Ptr<Object> object that you want to live "under" the server in the name space
+   * -- perhaps "eth0" -- you could do this in two ways, depending on which was 
+   * more convenient: Names::Add ("/Names/server/eth0", object) or, using the split
+   * path and name approach, Names::Add ("/Names/server", "eth0", object).
+   *
+   * \param path A path name describing a previously named object under which 
+   *             you want this new name to be defined.
    * \param name The name of the object you want to associate.
    * \param obj A smart pointer to the object itself.
    *
    * \returns true if the association was successfully completed, false otherwise
+   *
+   * \see Names::Add (Ptr<Object> context, std::string name, Ptr<Object> object);
    */
-  static bool Add (std::string context, std::string name, Ptr<Object> object);
+  static bool Add (std::string path, std::string name, Ptr<Object> object);
 
   /**
-   * \brief An intermediate form of Rename allowing you to provide a context in
-   * the form of a name string.
+   * \brief An intermediate form of Names::Rename allowing you to provide a path to
+   * the parent object (under which you want this name to be changed) in the form
+   * of a name path string.
    *
-   * \see Rename (Ptr<Object> context, std::string oldname, std::string newname);
+   * In some cases, it is desirable to break up the path used to describe an item
+   * in the names namespace into a path and a name.  This is analogous to a
+   * file system operation in which you provide a directory name and a file name.
    *
-   * \param context A fully qualified name describing a previously named object.
-   *                under which you want this name to be changed.
-   * \param oldname The current shortname of the object you want to change.
-   * \param newname The new shortname of the object you want to change.
+   * For example, consider a situation where you have previously named an object
+   * "/Names/server/csma".  If you want to change the name "csma" to "eth0", you
+   * could do this in two ways, depending on which was more convenient: 
+   * Names::Rename ("/Names/server/csma", "eth0") or, using the split
+   * path and name approach, Names::Rename ("/Names/server", "csma", "eth0").
+   *
+   * \param path A path name describing a previously named object under which 
+   *             you want this name change to occur (cf. directory).
+   * \param oldname The currently defined name of the object.
+   * \param newname The new name you want the object to have.
    *
    * \returns true if the name change was successfully completed, false otherwise
    */
-  static bool Rename (std::string context, std::string oldname, std::string newname);
+  static bool Rename (std::string path, std::string oldname, std::string newname);
 
   /**
-   * Add the association between the string "name" and the Ptr<Object> obj
-   * in the object context given by the Ptr<Object> context.  This can be
-   * seen as equivalent to adding a Pointer Attribute called "name" to the 
-   * object given by "context" and then assigning the value obj to that
-   * attribute.  The config facility will see it that way.
+   * \brief A low-level form of Names::Add allowing you to specify the path to
+   * the parent object (under which you want this name to be defined) in the form
+   * of a previously named object.
    *
-   * \param context A spart pointer to an object under which you want this
-   *                name to be defined.
+   * In some use cases, it is desirable to break up the path in the names name
+   * space into a path and a name.  This is analogous to a file system operation 
+   * in which you provide a directory name and a file name.  Recall that the path
+   * string actually refers to a previously named object, "under" which you want
+   * to accomplish some naming action.
+   * 
+   * However, the path is sometimes not avialable, and you only have the object 
+   * that is represented by the path in the names name space.  To support this 
+   * use-case in a reasonably high-performance way, the path string is can be 
+   * replaced by the object pointer to which that path would refer.  In the spirit
+   * of the Config code where this use-case is most prominent, we refer to this
+   * object as the "context" for the names operation.
+   *
+   * For example, consider a situation where you have previously named an object
+   * "/Names/server".  If you further want to create an association for between a 
+   * Ptr<Object> object that you want to live "under" the server in the name space
+   * -- perhaps "eth0" -- you could do this by providing a complete path to the 
+   * new name: Names::Add ("/Names/server/eth0", object).  If, however, somewhere
+   * in your code you only had a pointer to the server, say Ptr<Node> node, and 
+   * not a handy path string,  you could also accomplish this by 
+   * Names::Add (node, "eth0", object).
+   *
+   * \param context A smart pointer to an object that is used in place of the path
+   *                under which you want this new name to be defined.
    * \param name The name of the object you want to associate.
    * \param obj A smart pointer to the object itself.
    *
@@ -127,19 +178,33 @@ public:
   static bool Add (Ptr<Object> context, std::string name, Ptr<Object> object);
 
   /**
-   * \brief Rename a previously associated shortname.
+   * \brief A low-level form of Names::Rename allowing you to specify the path to
+   * the parent object (under which you want this name to be changed) in the form
+   * of a previously named object.
    *
-   * The context for the name -- the namespace level must be provided by passing
-   * a context object.  The oldname is then interpreted as a shortname which is
-   * defined "under" this context.  For example, if you have previously done an
-   * Add ("/Names/client", obj), you have associated the object obj with the
-   * name "client."  If you create an "eth0" under "client", then the obj that
-   * you associated with "client" becomes the context for "eth0" object.  If 
-   * you want to rename "eth0", you would provide that obj as the context for
-   * the Rename.  This would look like Rename (obj, "eth0", "ath0").
+   * In some use cases, it is desirable to break up the path in the names name
+   * space into a path and a name.  This is analogous to a file system operation 
+   * in which you provide a directory name and a file name.  Recall that the path
+   * string actually refers to a previously named object, "under" which you want
+   * to accomplish some naming action.
+   * 
+   * However, the path is sometimes not avialable, and you only have the object 
+   * that is represented by the path in the names name space.  To support this 
+   * use-case in a reasonably high-performance way, the path string is can be 
+   * replaced by the object pointer to which that path would refer.  In the spirit
+   * of the Config code where this use-case is most prominent, we refer to this
+   * object as the "context" for the names operation.
    *
-   * \param context A spart pointer to an object under which to look for the
-   *                oldname.
+   * For example, consider a situation where you have previously named an object
+   * "/Names/server/csma".  If you later decide to rename the csma object to say
+   * "eth0" -- you could do this by providing a complete path as in
+   * Names::Rename ("/Names/server/csma", "eth0").  If, however, somewhere
+   * in your code you only had a pointer to the server, and not a handy path 
+   * string, say Ptr<Node> node, you could also accomplish this by 
+   * Names::Rename (node, "csma", "eth0").
+   *
+   * \param context A smart pointer to an object that is used in place of the path
+   *                under which you want this new name to be defined.
    * \param oldname The current shortname of the object you want to change.
    * \param newname The new shortname of the object you want to change.
    *
@@ -149,116 +214,116 @@ public:
 
   /**
    * Given a pointer to an object, look to see if that object has a name
-   * associated with it and return the shortname for the object.
+   * associated with it and, if so, return the name of the object otherwise
+   * return an empty string.
    *
-   * The fullname of an object is a fully qualified namespace name, for example
-   * if you have a device that you have previously named "eth0" under a node
-   * you have named "client", the fullname of the device will then be
-   * "/Names/client/eth0".
+   * An object can be referred to in two ways.  Either you can talk about it
+   * using its fully qualified path name, for example, "/Names/client/eth0"
+   * or you can refer to it by its name, in this case "eth0".
    *
-   * The shortname of an object is the name of the object in its parent name
-   * space.  Using the example above, asking for the shortname of the device
-   * will result in "eth0" being returned.
+   * This method returns the name of the object, e.g., "eth0".
    *
    * \param object A spart pointer to an object for which you want to find
-   *               its shortname.
+   *               its name.
    *
-   * \returns a string containing the shortname of the object.
+   * \returns a string containing the name of the object if found, otherwise
+   *          the empty string.
    */
-  static std::string FindShortName (Ptr<Object> object);
+  static std::string FindName (Ptr<Object> object);
 
   /**
    * Given a pointer to an object, look to see if that object has a name
-   * associated with it and return the fully qualified namespace name
-   * for the object.
+   * associated with it and return the fully qualified name path of the 
+   * object otherwise return an empty string.
    *
-   * The fullname of an object is a fully qualified namespace name, for example
-   * if you have a device that you have previously named "eth0" under a node
-   * you have named "client", the fullname of the device will then be
-   * "/Names/client/eth0".
+   * An object can be referred to in two ways.  Either you can talk about it
+   * using its fully qualified path name, for example, "/Names/client/eth0"
+   * or you can refer to it by its name, in this case "eth0".
    *
-   * The shortname of an object is the name of the object in its parent name
-   * space.  Using the example above, asking for the shortname of the device
-   * will result in "eth0" being returned.
+   * This method returns the name path of the object, e.g., "Names/client/eth0".
    *
    * \param object A spart pointer to an object for which you want to find
    *               its fullname.
    *
-   * \returns a string containing the fullname of the object.
+   * \returns a string containing the name path of the object, otherwise
+   *          the empty string.
    */
-  static std::string FindFullName (Ptr<Object> object);
+  static std::string FindPath (Ptr<Object> object);
 
   /**
-   * Given a fullname string, look to see if there's an object in the system
-   * with a that associated with it.  If there is, do a GetObject on the 
-   * resulting object to convert it to the requested typename.  
+   * Given a name path string, look to see if there's an object in the system
+   * with that associated to it.  If there is, do a GetObject on the resulting
+   * object to convert it to the requested typename and return it.
    * 
-   * The fullname of an object is a fully qualified namespace name, for example
-   * if you have a device that you have previously named "eth0" under a node
-   * you have named "client", the fullname of the device will then be
-   * "/Names/client/eth0".
+   * An object can be referred to in two ways.  Either you can talk about it
+   * using its fully qualified path name, for example, "/Names/client/eth0"
+   * or you can refer to it by its name, in this case "eth0".
    *
-   * \param name A string containing a fully qualified name space name 
-   *             used to locate the object.
+   * This method requires that the name path of the object be provided, e.g., 
+   * "Names/client/eth0".
+   *
+   * \param path A string containing a name space path used to locate the object.
    *
    * \returns a smart pointer to the named object converted to the requested
    *          type.
    */
   template <typename T>
-  static Ptr<T> FindObjectFromFullName (std::string name);
+  static Ptr<T> Find (std::string path);
 
   /**
-   * Given a fullname string, look to see if there's an object in the system
-   * with a that associated with it.  If there is, do a GetObject on the 
-   * resulting object to convert it to the requested typename.  
-   * 
-   * The fullname of an object is a fully qualified namespace name, for example
-   * if you have a device that you have previously named "eth0" under a node
-   * you have named "client", the fullname of the device will then be
-   * "/Names/client/eth0".
+   * Given a path to an object and an object name, look through the names defined
+   * under the path to see if there's an object there with the given name.
    *
-   * \param name A string containing a fully qualified name space name 
-   *             used to locate the object.
+   * In some cases, it is desirable to break up the path used to describe an item
+   * in the names namespace into a path and a name.  This is analogous to a
+   * file system operation in which you provide a directory name and a file name.
    *
+   * For example, consider a situation where you have previously named an object
+   * "/Names/server/eth0".  If you want to discover the object which you associated
+   * with this path, you could do this in two ways, depending on which was more 
+   * convenient: Names::Find ("/Names/server/eth0") or, using the split path and 
+   * name approach, Names::Find ("/Names/server", "eth0").
+   *
+   * \param path A path name describing a previously named object under which 
+   *             you want to look for the specified name.
+   * \param name A string containing a name to search for.
    *
    * \returns a smart pointer to the named object converted to the requested
    *          type.
-   *
-   * @comment This method is identical to FindObjectFromFullName, but has a
-   * short signature since it is a common use and we want it to be easy to 
-   * type.
    */
   template <typename T>
-  static Ptr<T> Find (std::string name);
+  static Ptr<T> Find (std::string path, std::string name);
 
   /**
-   * Given an object context and a shortname string, look through the names 
-   * associated with the namespace defined by the context object to see if 
-   * there's an object there with the given shortname.
+   * Given a path to an object and an object name, look through the names defined
+   * under the path to see if there's an object there with the given name.
    *
-   * The fullname of an object is a fully qualified namespace name, for example
-   * if you have a device that you have previously named "eth0" under a node
-   * you have named "client", the fullname of the device will then be
-   * "/Names/client/eth0".
+   * In some cases, it is desirable to break up the path used to describe an item
+   * in the names namespace into a path and a name.  This is analogous to a
+   * file system operation in which you provide a directory name and a file name.
    *
-   * The shortname of an object is the name of the object in its parent name
-   * space.  Using the example above, asking for the shortname of the device
-   * will result in "eth0" being returned.
+   * For example, consider a situation where you have previously named an object
+   * "/Names/server/eth0".  If you want to discover the object which you associated
+   * with this path, you could do this in two ways, depending on which was more 
+   * convenient: Names::Find ("/Names/server/eth0") or, using the split path and 
+   * name approach, Names::Find ("/Names/server", "eth0").
    *
-   * The context object provides a namespace context, in the case of the example
-   * it would be the "client" object under which we look for the short name.
-   * In the example above, the context pointer would be the Ptr<Object> to the 
-   * client node, and the name would be the shortname "eth0"  
+   * However, the path is sometimes not avialable, and you only have the object 
+   * that is represented by the path in the names name space.  To support this 
+   * use-case in a reasonably high-performance way, the path string is can be 
+   * replaced by the object pointer to which that path would refer.  In the spirit
+   * of the Config code where this use-case is most prominent, we refer to this
+   * object as the "context" for the names operation.
    *
-   * \param context A spart pointer to an object under which you want to look 
-   *                for the provided name.
-   * \param name A string containing a shortname to look for.
+   * \param context A smart pointer to an object that is used in place of the path
+   *                under which you want this new name to be defined.
+   * \param name A string containing a name to search for.
    *
    * \returns a smart pointer to the named object converted to the requested
    *          type.
    */
   template <typename T>
-  static Ptr<T> FindObjectFromShortName (Ptr<Object> context, std::string name);
+  static Ptr<T> Find (Ptr<Object> context, std::string name);
 
   /**
    * Clean up all of the data structures of the implementation and delete the
@@ -271,26 +336,38 @@ private:
   /**
    * \internal
    *
-   * \brief Non-templated internal version of FindObjectFromLongName
+   * \brief Non-templated internal version of Names::Find
    *
-   * \param name A string containing a longname to look for.
+   * \param name A string containing the path of the object to look for.
    *
    * \returns a smart pointer to the named object.
    */
-  static Ptr<Object> FindObjectFromFullNameInternal (std::string name);
+  static Ptr<Object> FindInternal (std::string path);
 
   /**
    * \internal
    *
-   * \brief Non-templated internal version of FindObjectFromShortName
+   * \brief Non-templated internal version of Names::Find
    *
-   * \param context A spart pointer to an object under which you want to look 
-   *                for the provided name.
-   * \param name A string containing a shortname to look for.
+   * \param context A string containing the path to search for the object in.
+   * \param name A string containing the name of the object to look for.
    *
    * \returns a smart pointer to the named object.
    */
-  static Ptr<Object> FindObjectFromShortNameInternal (Ptr<Object> context, std::string name);
+  static Ptr<Object> FindInternal (std::string path, std::string name);
+
+  /**
+   * \internal
+   *
+   * \brief Non-templated internal version of Names::Find
+   *
+   * \param context A spart pointer to an object under which you want to look 
+   *                for the provided name.
+   * \param name A string containing the name to look for.
+   *
+   * \returns a smart pointer to the named object.
+   */
+  static Ptr<Object> FindInternal (Ptr<Object> context, std::string name);
 };
 
 /**
@@ -300,17 +377,7 @@ template <typename T>
 Ptr<T> 
 Names::Find (std::string name)
 {
-  return FindObjectFromFullName<T> (name);
-}
-
-/**
- * \brief Template definition of corresponding template declaration found in class Names.
- */
-template <typename T>
-Ptr<T> 
-Names::FindObjectFromFullName (std::string name)
-{
-  Ptr<Object> obj = FindObjectFromFullNameInternal (name);
+  Ptr<Object> obj = FindInternal (name);
   if (obj)
     {
       return obj->GetObject<T> ();
@@ -326,9 +393,9 @@ Names::FindObjectFromFullName (std::string name)
  */
 template <typename T>
 Ptr<T> 
-Names::FindObjectFromShortName (Ptr<Object> context, std::string name)
+Names::Find (Ptr<Object> context, std::string name)
 {
-  Ptr<Object> obj = FindObjectFromShortNameInternal (context, name);
+  Ptr<Object> obj = FindInternal (context, name);
   if (obj)
     {
       return obj->GetObject<T> ();

@@ -332,7 +332,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
   // zero, this means to look in the root of the "/Names" name space, otherwise
   // it refers to a name space context (level).
   //
-  Ptr<Object> namedObject = Names::FindObjectFromShortName<Object> (root, item);
+  Ptr<Object> namedObject = Names::Find<Object> (root, item);
   if (namedObject)
     {
       NS_LOG_DEBUG ("Name system resolved item = " << item << " to " << namedObject);
