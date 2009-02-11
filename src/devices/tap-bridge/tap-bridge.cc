@@ -37,12 +37,6 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <sys/ioctl.h>
-#include <net/ethernet.h>
-#include <net/if.h>
-#include <netinet/in.h>
-#include <netpacket/packet.h>
-#include <arpa/inet.h>
 #include <errno.h>
 #include <limits>
 #include <stdlib.h>
