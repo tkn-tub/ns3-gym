@@ -189,11 +189,10 @@ def run_program(program_string, command_template=None, cwd=None):
 def run_python_program(program_string):
     env = Build.bld.env
     execvec = shlex.split(program_string)
-    if cwd is None:
-        if (Options.options.cwd_launch):
-            cwd = Options.options.cwd_launch
-        else:
-            cwd = Options.cwd_launch
+    if (Options.options.cwd_launch):
+        cwd = Options.options.cwd_launch
+    else:
+        cwd = Options.cwd_launch
     return run_argv([env['PYTHON']] + execvec, cwd=cwd)
 
 

@@ -129,7 +129,7 @@ TagBuffer::ReadU64 (void)
   uint8_t byte5 = ReadU8 ();
   uint8_t byte6 = ReadU8 ();
   uint8_t byte7 = ReadU8 ();
-  uint32_t data = byte7;
+  uint64_t data = byte7;
   data <<= 8;
   data |= byte6;
   data <<= 8;
