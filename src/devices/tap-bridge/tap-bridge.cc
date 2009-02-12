@@ -41,6 +41,12 @@
 #include <limits>
 #include <stdlib.h>
 
+// #define NO_CREATOR
+
+#ifdef NO_CREATOR
+#include <fcntl.h>
+#endif
+
 NS_LOG_COMPONENT_DEFINE ("TapBridge");
 
 namespace ns3 {
@@ -193,6 +199,19 @@ void
 TapBridge::CreateTap (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
+
+#ifdef NO_CREATOR
+  //
+  // In come cases, can you say FreeBSD, the tap-creator just gets in the way.
+  // in this case, just define NO_CREATOR, manually set up your tap device and
+  // just open and use it.
+  //
+  std::string tapDeviceName = "/dev/" + m_tapDeviceName;
+  m_sock = open (tapDeviceName.c_str (), O_RDWR);
+  NS_ABORT_MSG_IF (m_sock == -1, "TapBridge::CreateTap(): could not open device " << tapDeviceName << 
+                   ", errno " << strerror (errno));
+#else // use the tap-creator
+
   //
   // We want to create a tap device on the host.  Unfortunately for us
   // you have to have root privileges to do that.  Instead of running the 
@@ -473,6 +492,7 @@ TapBridge::CreateTap (void)
 	}
       NS_FATAL_ERROR ("Did not get the raw socket from the socket creator");
     }
+#endif // use the tap-creator
 }
 
 std::string

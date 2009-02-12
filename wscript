@@ -240,6 +240,8 @@ def configure(conf):
         env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
         env.append_value('CXXDEFINES', 'NS3_LOG_ENABLE')
 
+    env['PLATFORM'] = sys.platform
+
     if sys.platform == 'win32':
         if env['COMPILER_CXX'] == 'g++':
             env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")

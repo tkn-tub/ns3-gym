@@ -32,10 +32,12 @@ def build(bld):
                 'tap-bridge.h',
                 ])
 
-        obj = bld.create_suid_program('tap-creator')
-        obj.source = [
-            'tap-creator.cc',
-            'tap-encode-decode.cc',
-            ]
+
+        if not env['PLATFORM'].startswith('freebsd'):
+            obj = bld.create_suid_program('tap-creator')
+            obj.source = [
+                'tap-creator.cc',
+                'tap-encode-decode.cc',
+                ]
 
 
