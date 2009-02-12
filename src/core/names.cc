@@ -101,7 +101,7 @@ public:
   static NamesPriv *Get (void);
   static void Delete (void);
 private:
-  static NamesPriv **DoGet (void);
+  static NamesPriv **DoGet (bool doCreate);
 
   NameNode *IsNamed (Ptr<Object>);
   bool IsDuplicateName (NameNode *node, std::string name);
@@ -113,15 +113,15 @@ private:
 NamesPriv *
 NamesPriv::Get (void)
 {
-  return *(DoGet ());
+  return *(DoGet (true));
 }
 
 NamesPriv **
-NamesPriv::DoGet (void)
+NamesPriv::DoGet (bool doCreate)
 {
   static NamesPriv *ptr = 0;
 
-  if (ptr == 0)
+  if (ptr == 0 && doCreate)
     {
       ptr = new NamesPriv;
       Simulator::ScheduleDestroy (&NamesPriv::Delete);
@@ -135,7 +135,7 @@ NamesPriv::Delete (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  NamesPriv **ptr = DoGet ();
+  NamesPriv **ptr = DoGet (false);
   delete *ptr;
   *ptr = 0;
 }
@@ -966,14 +966,7 @@ NamesTest::RunTests (void)
   result = Names::Rename ("/Names/RouterX", "RouterY");
   NS_TEST_ASSERT_EQUAL (result, false);
 
-  //
-  // Run the simulator and destroy it to get the Destroy method called on the
-  // private implementation object.  We depend on seeing a valgrind-clean run of
-  // the unit tests to really determine if the clean up was really successful.
-  //
-  Simulator::Run ();
-  Simulator::Destroy ();
-  
+  Names::Delete ();
   return true;
 }
 
