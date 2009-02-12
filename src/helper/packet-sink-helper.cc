@@ -21,6 +21,7 @@
 #include "packet-sink-helper.h"
 #include "ns3/string.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/names.h"
 
 namespace ns3 {
 
@@ -56,6 +57,13 @@ PacketSinkHelper::SetTcpLocal (Ipv4Address ip, uint16_t port)
 ApplicationContainer
 PacketSinkHelper::Install (Ptr<Node> node) const
 {
+  return ApplicationContainer (InstallPriv (node));
+}
+
+ApplicationContainer
+PacketSinkHelper::Install (std::string nodeName) const
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
   return ApplicationContainer (InstallPriv (node));
 }
 

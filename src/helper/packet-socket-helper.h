@@ -40,6 +40,14 @@ public:
   void Install (Ptr<Node> node) const;
 
   /**
+   * Aggregate an instance of a ns3::PacketSocketFactory onto the provided
+   * node.
+   *
+   * \param nodeName The name of the node on which to aggregate the ns3::PacketSocketFactory.
+   */
+  void Install (std::string nodeName) const;
+
+  /**
    * For each node in the provided container, aggregate an instance of a
    * ns3::PacketSocketFactory.
    *

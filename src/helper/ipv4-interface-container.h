@@ -34,6 +34,7 @@ public:
   void SetMetric (uint32_t i, uint16_t metric);
 
   void Add (Ptr<Ipv4> ipv4, uint32_t interface);
+  void Add (std::string ipv4Name, uint32_t interface);
 
  private:
   

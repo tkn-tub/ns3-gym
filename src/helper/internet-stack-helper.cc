@@ -21,6 +21,7 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/object.h"
+#include "ns3/names.h"
 #include "ns3/ipv4.h"
 #include "internet-stack-helper.h"
 #include "ns3/internet-stack.h"
@@ -91,6 +92,12 @@ InternetStackHelper::Install (Ptr<Node> node) const
   node->AggregateObject (factory);
 }
 
+void
+InternetStackHelper::Install (std::string nodeName) const
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
+  Install (node);
+}
 void
 InternetStackHelper::EnableAscii (std::ostream &os, NodeContainer n)
 {

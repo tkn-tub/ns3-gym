@@ -180,6 +180,30 @@ public:
   NetDeviceContainer Install (Ptr<Node> a, Ptr<Node> b);
 
   /**
+   * \param a first node
+   * \param bName name of second node
+   *
+   * Saves you from having to construct a temporary NodeContainer.
+   */
+  NetDeviceContainer Install (Ptr<Node> a, std::string bName);
+
+  /**
+   * \param aName Name of first node
+   * \param b second node
+   *
+   * Saves you from having to construct a temporary NodeContainer.
+   */
+  NetDeviceContainer Install (std::string aName, Ptr<Node> b);
+
+  /**
+   * \param aName Name of first node
+   * \param bName Name of second node
+   *
+   * Saves you from having to construct a temporary NodeContainer.
+   */
+  NetDeviceContainer Install (std::string aNode, std::string bNode);
+
+  /**
    * \brief Make a star network topology.
    *
    * Given a pointer to a node that  will become the hub of the star, and a 
@@ -205,6 +229,34 @@ public:
    *                    the spokes.
    */
   void InstallStar (Ptr<Node> hub, NodeContainer spokes, 
+                    NetDeviceContainer& hubDevices, NetDeviceContainer& spokeDevices);
+
+  /**
+   * \brief Make a star network topology.
+   *
+   * Given a pointer to a node that  will become the hub of the star, and a 
+   * NodeContainer containing pointers to the nodes that will become the 
+   * spokes; we construct point to point net devices on the hub (corresponding 
+   * to the spokes) and store them in the hubDevices NetDeviceContainer.  We 
+   * add a net device to each spoke node and store them in the spokeDevices 
+   * NetDeviceContainer.  A point-to-point channel is created for each spoke.
+   *
+   * The ordering of the devices in the hubDevices container is according to
+   * the order of the spokes container -- that is, hubDevices[0] will be the
+   * net device used on the hub that talks to spokes[0].  the container entry
+   * spokeDevices[0] will have the device that hubDevices[0] talks to -- those
+   * two devices are the ones that connect hub to spokes[0].
+   *
+   * \param hubName The name of the central node of the star network
+   * \param spokes A NodeContainer of the nodes that will be the spoke (leaf)
+   *               nodes
+   * \param hubDevices A NetDeviceContainer that will be filled with pointers
+   *                   to the point-to-point net devices created on the hub.
+   * \param spokeDevices A NetDeviceContainer that will be filled with pointers
+   *                    to the point-to-point net devices created on each of 
+   *                    the spokes.
+   */
+  void InstallStar (std::string hubName, NodeContainer spokes, 
                     NetDeviceContainer& hubDevices, NetDeviceContainer& spokeDevices);
 
 private:

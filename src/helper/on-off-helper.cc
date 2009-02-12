@@ -21,6 +21,7 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/packet-socket-address.h"
 #include "ns3/string.h"
+#include "ns3/names.h"
 
 namespace ns3 {
 
@@ -40,6 +41,13 @@ OnOffHelper::SetAttribute (std::string name, const AttributeValue &value)
 ApplicationContainer
 OnOffHelper::Install (Ptr<Node> node) const
 {
+  return ApplicationContainer (InstallPriv (node));
+}
+
+ApplicationContainer
+OnOffHelper::Install (std::string nodeName) const
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
   return ApplicationContainer (InstallPriv (node));
 }
 

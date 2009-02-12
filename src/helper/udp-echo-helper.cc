@@ -21,6 +21,7 @@
 #include "ns3/udp-echo-server.h"
 #include "ns3/udp-echo-client.h"
 #include "ns3/uinteger.h"
+#include "ns3/names.h"
 
 namespace ns3 {
 
@@ -41,6 +42,13 @@ UdpEchoServerHelper::SetAttribute (
 ApplicationContainer
 UdpEchoServerHelper::Install (Ptr<Node> node) const
 {
+  return ApplicationContainer (InstallPriv (node));
+}
+
+ApplicationContainer
+UdpEchoServerHelper::Install (std::string nodeName) const
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
   return ApplicationContainer (InstallPriv (node));
 }
 
@@ -83,6 +91,13 @@ UdpEchoClientHelper::SetAttribute (
 ApplicationContainer
 UdpEchoClientHelper::Install (Ptr<Node> node) const
 {
+  return ApplicationContainer (InstallPriv (node));
+}
+
+ApplicationContainer
+UdpEchoClientHelper::Install (std::string nodeName) const
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
   return ApplicationContainer (InstallPriv (node));
 }
 

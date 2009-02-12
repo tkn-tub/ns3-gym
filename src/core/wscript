@@ -77,6 +77,7 @@ def build(bld):
         'trace-source-accessor.cc',
         'config.cc',
         'callback.cc',
+        'names.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -121,6 +122,7 @@ def build(bld):
         'object-vector.h',
         'deprecated.h',
         'abort.h',
+        'names.h',
         ]
 
     if sys.platform == 'win32':

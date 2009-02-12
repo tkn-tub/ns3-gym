@@ -27,6 +27,7 @@
 #include "ns3/pcap-writer.h"
 #include "ns3/simulator.h"
 #include "ns3/config.h"
+#include "ns3/names.h"
 
 namespace ns3 {
 
@@ -164,6 +165,12 @@ YansWifiPhyHelper::SetChannel (Ptr<YansWifiChannel> channel)
   m_channel = channel;
 }
 void 
+YansWifiPhyHelper::SetChannel (std::string channelName)
+{
+  Ptr<YansWifiChannel> channel = Names::Find<YansWifiChannel> (channelName);
+  m_channel = channel;
+}
+void 
 YansWifiPhyHelper::Set (std::string name, const AttributeValue &v)
 {
   m_phy.Set (name, v);
@@ -191,7 +198,6 @@ YansWifiPhyHelper::SetErrorRateModel (std::string name,
   m_errorRateModel.Set (n6, v6);
   m_errorRateModel.Set (n7, v7);
 }
-
 
 Ptr<WifiPhy> 
 YansWifiPhyHelper::Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const

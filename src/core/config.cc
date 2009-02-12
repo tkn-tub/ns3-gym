@@ -22,6 +22,7 @@
 #include "object.h"
 #include "global-value.h"
 #include "object-vector.h"
+#include "names.h"
 #include "pointer.h"
 #include "log.h"
 #include <sstream>
@@ -286,14 +287,72 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
   tmp = path.find ("/");
   NS_ASSERT (tmp == 0);
   std::string::size_type next = path.find ("/", 1);
+
   if (next == std::string::npos)
     {
-      DoResolveOne (root);
+      //
+      // If root is zero, we're beginning to see if we can use the object name 
+      // service to resolve this path.  It is impossible to have a object name 
+      // associated with the root of the object name service since that root
+      // is not an object.  This path must be referring to something in another
+      // namespace and it will have been found already since the name service
+      // is always consulted last.
+      // 
+      if (root)
+        {
+          DoResolveOne (root);
+        }
       return;
     }
   std::string item = path.substr (1, next-1);
   std::string pathLeft = path.substr (next, path.size ()-next);
 
+  //
+  // If root is zero, we're beginning to see if we can use the object name 
+  // service to resolve this path.  In this case, we must see the name space 
+  // "/Names" on the front of this path.  There is no object associated with 
+  // the root of the "/Names" namespace, so we just ignore it and move on to 
+  // the next segment.
+  //
+  if (root == 0)
+    {
+      std::string::size_type offset = path.find ("/Names");
+      if (offset == 0)
+        {
+          m_workStack.push_back (item);
+          DoResolve (pathLeft, root);
+          m_workStack.pop_back ();
+          return;
+        }
+    }
+
+  //
+  // We have an item (possibly a segment of a namespace path.  Check to see if
+  // we can determine that this segment refers to a named object.  If root is
+  // zero, this means to look in the root of the "/Names" name space, otherwise
+  // it refers to a name space context (level).
+  //
+  Ptr<Object> namedObject = Names::Find<Object> (root, item);
+  if (namedObject)
+    {
+      NS_LOG_DEBUG ("Name system resolved item = " << item << " to " << namedObject);
+      m_workStack.push_back (item);
+      DoResolve (pathLeft, namedObject);
+      m_workStack.pop_back ();
+      return;
+    }
+
+  //
+  // We're done with the object name service hooks, so proceed down the path
+  // of types and attributes; but only if root is nonzero.  If root is zero
+  // and we find ourselves here, we are trying to check in the namespace for
+  // a path that is not in the "/Names" namespace.  We will have previously
+  // found any matches, so we just bail out.
+  //
+  if (root == 0)
+    {
+      return;
+    }
   std::string::size_type dollarPos = item.find ("$");
   if (dollarPos == 0)
     {
@@ -480,6 +539,14 @@ ConfigImpl::LookupMatches (std::string path)
     {
       resolver.Resolve (*i);
     }
+
+  //
+  // See if we can do something with the object name service.  Starting with
+  // the root pointer zeroed indicates to the resolver that it should start
+  // looking at the root of the "/Names" namespace during this go.
+  //
+  resolver.Resolve (0);
+
   return Config::MatchContainer (resolver.m_objects, resolver.m_contexts, path);
 }
 
@@ -864,7 +931,12 @@ ConfigTest::RunTests (void)
   d1->SetAttribute ("Source", IntegerValue (-4));
   NS_TEST_ASSERT_EQUAL (m_traceNotification, 0);
 
-
+  //
+  // The Config system is intertwined with the Names system.  In the process
+  // of parsing the paths above, we also created a NamesPriv singleton.  In
+  // order to get a valgrind-clean run we need to clean up that singleton.
+  //
+  Names::Delete ();
 
   return result;
 }

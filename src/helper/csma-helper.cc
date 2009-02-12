@@ -26,6 +26,7 @@
 #include "ns3/pcap-writer.h"
 #include "ns3/config.h"
 #include "ns3/packet.h"
+#include "ns3/names.h"
 #include <string>
 
 namespace ns3 {
@@ -181,8 +182,37 @@ CsmaHelper::Install (Ptr<Node> node) const
 }
 
 NetDeviceContainer
+CsmaHelper::Install (std::string nodeName) const
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
+  return Install (node);
+}
+
+NetDeviceContainer
 CsmaHelper::Install (Ptr<Node> node, Ptr<CsmaChannel> channel) const
 {
+  return NetDeviceContainer (InstallPriv (node, channel));
+}
+
+NetDeviceContainer
+CsmaHelper::Install (Ptr<Node> node, std::string channelName) const
+{
+  Ptr<CsmaChannel> channel = Names::Find<CsmaChannel> (channelName);
+  return NetDeviceContainer (InstallPriv (node, channel));
+}
+
+NetDeviceContainer
+CsmaHelper::Install (std::string nodeName, Ptr<CsmaChannel> channel) const
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
+  return NetDeviceContainer (InstallPriv (node, channel));
+}
+
+NetDeviceContainer
+CsmaHelper::Install (std::string nodeName, std::string channelName) const
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
+  Ptr<CsmaChannel> channel = Names::Find<CsmaChannel> (channelName);
   return NetDeviceContainer (InstallPriv (node, channel));
 }
 
@@ -205,6 +235,13 @@ CsmaHelper::Install (const NodeContainer &c, Ptr<CsmaChannel> channel) const
     }
 
   return devs;
+}
+
+NetDeviceContainer 
+CsmaHelper::Install (const NodeContainer &c, std::string channelName) const
+{
+  Ptr<CsmaChannel> channel = Names::Find<CsmaChannel> (channelName);
+  return Install (c, channel);
 }
 
 Ptr<NetDevice>
@@ -231,6 +268,14 @@ CsmaHelper::InstallStar (Ptr<Node> hub, NodeContainer spokes,
       hubDevices.Add (nd.Get (0));
       spokeDevices.Add (nd.Get (1));
     }
+}
+
+void 
+CsmaHelper::InstallStar (std::string hubName, NodeContainer spokes, 
+                         NetDeviceContainer& hubDevices, NetDeviceContainer& spokeDevices)
+{
+  Ptr<Node> hub = Names::Find<Node> (hubName);
+  InstallStar (hub, spokes, hubDevices, spokeDevices);
 }
 
 void 

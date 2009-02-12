@@ -36,6 +36,7 @@ public:
   void SetAttribute (std::string name, const AttributeValue &value);
 
   ApplicationContainer Install (Ptr<Node> node) const;
+  ApplicationContainer Install (std::string nodeName) const;
   ApplicationContainer Install (NodeContainer c) const;
 
 private:
@@ -52,6 +53,7 @@ public:
   void SetAttribute (std::string name, const AttributeValue &value);
 
   ApplicationContainer Install (Ptr<Node> node) const;
+  ApplicationContainer Install (std::string nodeName) const;
   ApplicationContainer Install (NodeContainer c) const;
 
 private:

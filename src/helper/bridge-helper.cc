@@ -20,6 +20,7 @@
 #include "ns3/log.h"
 #include "ns3/bridge-net-device.h"
 #include "ns3/node.h"
+#include "ns3/names.h"
 
 NS_LOG_COMPONENT_DEFINE ("BridgeHelper");
 
@@ -55,6 +56,14 @@ BridgeHelper::Install (Ptr<Node> node, NetDeviceContainer c)
       dev->AddBridgePort (*i);
     }
   return devs;
+}
+
+NetDeviceContainer
+BridgeHelper::Install (std::string nodeName, NetDeviceContainer c)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  Ptr<Node> node = Names::Find<Node> (nodeName);
+  return Install (node, c);
 }
 
 } // namespace ns3

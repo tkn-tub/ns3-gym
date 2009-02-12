@@ -23,6 +23,7 @@
 #include "ns3/assert.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv4.h"
+#include "ns3/names.h"
 #include "static-multicast-route-helper.h"
 
 namespace ns3 {
@@ -53,6 +54,43 @@ StaticMulticastRouteHelper::AddMulticastRoute (
   ipv4->AddMulticastRoute (source, group, iifIndex, outputInterfaces);
 }
 
+void  
+StaticMulticastRouteHelper::AddMulticastRoute (
+  Ptr<Node> n,
+  Ipv4Address source, 
+  Ipv4Address group,  
+  std::string inputName, 
+  NetDeviceContainer output)
+{
+  Ptr<NetDevice> input = Names::Find<NetDevice> (inputName);
+  AddMulticastRoute (n, source, group, input, output);
+}
+
+void  
+StaticMulticastRouteHelper::AddMulticastRoute (
+  std::string nName,
+  Ipv4Address source, 
+  Ipv4Address group,  
+  Ptr<NetDevice> input, 
+  NetDeviceContainer output)
+{
+  Ptr<Node> n = Names::Find<Node> (nName);
+  AddMulticastRoute (n, source, group, input, output);
+}
+
+void  
+StaticMulticastRouteHelper::AddMulticastRoute (
+  std::string nName,
+  Ipv4Address source, 
+  Ipv4Address group,  
+  std::string inputName, 
+  NetDeviceContainer output)
+{
+  Ptr<NetDevice> input = Names::Find<NetDevice> (inputName);
+  Ptr<Node> n = Names::Find<Node> (nName);
+  AddMulticastRoute (n, source, group, input, output);
+}
+
 void
 StaticMulticastRouteHelper::SetDefaultMulticastRoute (
   Ptr<Node> n, 
@@ -64,6 +102,34 @@ StaticMulticastRouteHelper::SetDefaultMulticastRoute (
 }
 
 void
+StaticMulticastRouteHelper::SetDefaultMulticastRoute (
+  Ptr<Node> n, 
+  std::string ndName)
+{
+  Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
+  SetDefaultMulticastRoute (n, nd);
+}
+
+void
+StaticMulticastRouteHelper::SetDefaultMulticastRoute (
+  std::string nName, 
+  Ptr<NetDevice> nd)
+{
+  Ptr<Node> n = Names::Find<Node> (nName);
+  SetDefaultMulticastRoute (n, nd);
+}
+
+void
+StaticMulticastRouteHelper::SetDefaultMulticastRoute (
+  std::string nName, 
+  std::string ndName)
+{
+  Ptr<Node> n = Names::Find<Node> (nName);
+  Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
+  SetDefaultMulticastRoute (n, nd);
+}
+
+void
 StaticMulticastRouteHelper::JoinMulticastGroup (
   Ptr<Node> n, 
   Ipv4Address source, 
@@ -71,6 +137,16 @@ StaticMulticastRouteHelper::JoinMulticastGroup (
 {
   Ptr<Ipv4> ipv4 = n->GetObject<Ipv4> ();
   ipv4->JoinMulticastGroup (source, group);
+}
+
+void
+StaticMulticastRouteHelper::JoinMulticastGroup (
+  std::string nName, 
+  Ipv4Address source, 
+  Ipv4Address group)
+{
+  Ptr<Node> n = Names::Find<Node> (nName);
+  JoinMulticastGroup (n, source, group);
 }
 
 } // namespace ns3

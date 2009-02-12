@@ -21,6 +21,7 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/object-factory.h"
+#include "ns3/names.h"
 #include "ns3/queue.h"
 #include "ns3/emu-net-device.h"
 #include "ns3/pcap-writer.h"
@@ -191,6 +192,13 @@ EmuHelper::EnableAsciiAll (std::ostream &os)
 NetDeviceContainer
 EmuHelper::Install (Ptr<Node> node) const
 {
+  return NetDeviceContainer (InstallPriv (node));
+}
+
+NetDeviceContainer
+EmuHelper::Install (std::string nodeName) const
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
   return NetDeviceContainer (InstallPriv (node));
 }
 

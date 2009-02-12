@@ -56,6 +56,10 @@ public:
    */
   void Install (Ptr<Node> node);
   /**
+   * \brief Enable OLSR routing for a single node
+   */
+  void Install (std::string nodeName);
+  /**
    * \brief Enable OLSR routing for all nodes
    */
   void InstallAll (void);

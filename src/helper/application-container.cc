@@ -17,6 +17,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
+#include "ns3/names.h"
 #include "application-container.h"
 
 namespace ns3 {
@@ -28,6 +30,13 @@ ApplicationContainer::ApplicationContainer (Ptr<Application> app)
 {
   m_applications.push_back (app);
 }
+
+ApplicationContainer::ApplicationContainer (std::string name)
+{
+  Ptr<Application> app = Names::Find<Application> (name);
+  m_applications.push_back (app);
+}
+
 
 ApplicationContainer::Iterator 
 ApplicationContainer::Begin (void) const
@@ -61,6 +70,12 @@ ApplicationContainer::Add (ApplicationContainer other)
 void 
 ApplicationContainer::Add (Ptr<Application> application)
 {
+  m_applications.push_back (application);
+}
+void 
+ApplicationContainer::Add (std::string name)
+{
+  Ptr<Application> application = Names::Find<Application> (name);
   m_applications.push_back (application);
 }
 
