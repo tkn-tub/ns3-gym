@@ -2,11 +2,11 @@
 
 def configure(conf):
     if conf.env['ENABLE_THREADING']:
-        conf.env['ENABLE_EMU'] = conf.check(header_name='linux/if_ether.h',
-                                            define_name='HAVE_IF_ETHER_H')
+        conf.env['ENABLE_EMU'] = conf.check(header_name='netpacket/packet.h',
+                                            define_name='HAVE_PACKET_H')
         conf.report_optional_feature("EmuNetDevice", "Emulated Net Device",
                                      conf.env['ENABLE_EMU'],
-                                     "<linux/if_ether.h> include not detected")
+                                     "<netpacket/packet.h> include not detected")
     else:
         conf.report_optional_feature("EmuNetDevice", "Emulated Net Device",
                                      False,

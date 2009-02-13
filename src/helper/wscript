@@ -58,4 +58,11 @@ def build(bld):
         headers.source.extend([
                 'emu-helper.h',
                 ])
+    if env['ENABLE_TAP']:
+        helper.source.extend([
+                'tap-bridge-helper.cc',
+                ])
+        headers.source.extend([
+                'tap-bridge-helper.h',
+                ])
 

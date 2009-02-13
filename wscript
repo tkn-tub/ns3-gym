@@ -17,6 +17,7 @@ import ccroot
 ccroot.USE_TOP_LEVEL = True
 
 import Task
+import Constants
 import Utils
 import Build
 import Configure
@@ -133,7 +134,10 @@ def set_options(opt):
                    help=('Run a shell with an environment suitably modified to run locally built programs'),
                    action="store_true", default=False,
                    dest='shell')
-
+    opt.add_option('--enable-sudo',
+                   help=('Use sudo to setup suid bits on ns3 executables.'),
+                   dest='enable_sudo', action='store_true',
+                   default=False)
     opt.add_option('--regression',
                    help=("Enable regression testing; only used for the 'check' target"),
                    default=False, dest='regression', action="store_true")
@@ -144,10 +148,6 @@ def set_options(opt):
                    help=('For regression testing, only run/generate the indicated regression tests, '
                          'specified as a comma separated list of test names'),
                    dest='regression_tests', type="string")
-    opt.add_option('--enable-sudo',
-                   help=('Use sudo to setup suid bits on ns3 executables.'),
-                   dest='enable_sudo', action='store_true',
-                   default=False)
     opt.add_option('--with-regression-traces',
                    help=('Path to the regression reference traces directory'),
                    default=None,
@@ -240,6 +240,8 @@ def configure(conf):
         env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
         env.append_value('CXXDEFINES', 'NS3_LOG_ENABLE')
 
+    env['PLATFORM'] = sys.platform
+
     if sys.platform == 'win32':
         if env['COMPILER_CXX'] == 'g++':
             env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
@@ -257,6 +259,18 @@ def configure(conf):
 
     # for suid bits
     conf.find_program('sudo', var='SUDO')
+
+    why_not_sudo = "because we like it"
+    if Options.options.enable_sudo and conf.env['SUDO']:
+        env['ENABLE_SUDO'] = True
+    else:
+        env['ENABLE_SUDO'] = False
+        if Options.options.enable_sudo:
+            why_not_sudo = "program sudo not found"
+        else:
+            why_not_sudo = "option --enable-sudo not selected"
+
+    conf.report_optional_feature("ENABLE_SUDO", "Use sudo to set suid bit", env['ENABLE_SUDO'], why_not_sudo)
 
     # we cannot pull regression traces without mercurial
     conf.find_program('hg', var='MERCURIAL')
@@ -276,28 +290,37 @@ def configure(conf):
 class SuidBuildTask(Task.TaskBase):
     """task that makes a binary Suid
     """
-    after = 'link'
+    after = 'cxx_link cc_link'
+    maxjobs = 1
     def __init__(self, bld, program):
         self.m_display = 'build-suid'
         self.__program = program
-        self.__env = bld.env ()
+        self.__env = bld.env.copy ()
         super(SuidBuildTask, self).__init__()
-
-    def run(self):
         try:
             program_obj = wutils.find_program(self.__program.target, self.__env)
         except ValueError, ex:
             raise Utils.WafError(str(ex))
-
         program_node = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj))
-        #try:
-        #    program_node = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj))
-        #except AttributeError:
-        #    raise Utils.WafError("%s does not appear to be a program" % (self.__program.name,))
+        self.filename = program_node.abspath(self.__env)
 
-        filename = program_node.abspath(self.__env)
-        os.system ('sudo chown root ' + filename)
-        os.system ('sudo chmod u+s ' + filename)
+
+    def run(self):
+        print >> sys.stderr, 'setting suid bit on executable ' + self.filename
+        if subprocess.Popen(['sudo', 'chown', 'root', self.filename]).wait():
+            return 1
+        if subprocess.Popen(['sudo', 'chmod', 'u+s', self.filename]).wait():
+            return 1
+        return 0
+
+    def runnable_status(self):
+        "RUN_ME SKIP_ME or ASK_LATER"
+        st = os.stat(self.filename)
+        if st.st_uid == 0:
+            return Constants.SKIP_ME
+        else:
+            return Constants.RUN_ME
+
 
 def create_suid_program(bld, name):
     program = bld.new_task_gen('cxx', 'program')
@@ -305,8 +328,10 @@ def create_suid_program(bld, name):
     program.module_deps = list()
     program.name = name
     program.target = name
-    if bld.env['SUDO'] and Options.options.enable_sudo:
+
+    if bld.env['ENABLE_SUDO']:
         SuidBuildTask(bld, program)
+
     return program
 
 def create_ns3_program(bld, name, dependencies=('simulator',)):

@@ -143,18 +143,32 @@ ArpHeader::Serialize (Buffer::Iterator start) const
   WriteTo (i, m_macDest);
   WriteTo (i, m_ipv4Dest);
 }
+
 uint32_t
 ArpHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  i.Next (2+2);
-  uint32_t hardwareAddressLen = i.ReadU8 ();
-  i.Next (1);
-  m_type = i.ReadNtohU16 ();
-  ReadFrom (i, m_macSource, hardwareAddressLen);
-  ReadFrom (i, m_ipv4Source);
-  ReadFrom (i, m_macDest, hardwareAddressLen);
-  ReadFrom (i, m_ipv4Dest);
+  i.Next (2);                                    // Skip HRD
+  uint32_t protocolType = i.ReadNtohU16 ();      // Read PRO
+  uint32_t hardwareAddressLen = i.ReadU8 ();     // Read HLN
+  uint32_t protocolAddressLen = i.ReadU8 ();     // Read PLN
+
+  //
+  // It is implicit here that we have a protocol type of 0x800 (IP).
+  // It is also implicit here that we are using Ipv4 (PLN == 4).
+  // If this isn't the case, we need to return an error since we don't want to 
+  // be too fragile if we get connected to real networks.
+  //
+  if (protocolType != 0x800 || protocolAddressLen != 4)
+    {
+      return 0;
+    }
+
+  m_type = i.ReadNtohU16 ();                     // Read OP
+  ReadFrom (i, m_macSource, hardwareAddressLen); // Read SHA (size HLN)
+  ReadFrom (i, m_ipv4Source);                    // Read SPA (size PLN == 4)
+  ReadFrom (i, m_macDest, hardwareAddressLen);   // Read THA (size HLN)
+  ReadFrom (i, m_ipv4Dest);                      // Read TPA (size PLN == 4)
   return GetSerializedSize ();
 }
 
