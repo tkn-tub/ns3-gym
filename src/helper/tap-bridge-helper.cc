@@ -19,6 +19,7 @@
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/tap-bridge.h"
+#include "ns3/names.h"
 #include "tap-bridge-helper.h"
 
 NS_LOG_COMPONENT_DEFINE ("TapBridgeHelper");
@@ -39,6 +40,7 @@ TapBridgeHelper::SetAttribute (std::string n1, const AttributeValue &v1)
   m_deviceFactory.Set (n1, v1);
 }
 
+
   Ptr<NetDevice>
 TapBridgeHelper::Install (Ptr<Node> node, Ptr<NetDevice> nd)
 {
@@ -50,6 +52,28 @@ TapBridgeHelper::Install (Ptr<Node> node, Ptr<NetDevice> nd)
   bridge->SetBridgedNetDevice (nd);
 
   return bridge;
+}
+
+Ptr<NetDevice>
+TapBridgeHelper::Install (std::string nodeName, Ptr<NetDevice> nd)
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
+  return Install (node, nd);
+}
+
+Ptr<NetDevice>
+TapBridgeHelper::Install (Ptr<Node> node, std::string ndName)
+{
+  Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
+  return Install (node, nd);
+}
+
+Ptr<NetDevice>
+TapBridgeHelper::Install (std::string nodeName, std::string ndName)
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
+  Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
+  return Install (node, nd);
 }
 
 } // namespace ns3

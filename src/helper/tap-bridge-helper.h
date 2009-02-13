@@ -34,6 +34,9 @@ public:
   TapBridgeHelper (Ipv4Address gateway);
   void SetAttribute (std::string n1, const AttributeValue &v1);
   Ptr<NetDevice> Install (Ptr<Node> node, Ptr<NetDevice> nd);
+  Ptr<NetDevice> Install (std::string nodeName, Ptr<NetDevice> nd);
+  Ptr<NetDevice> Install (Ptr<Node> node, std::string ndName);
+  Ptr<NetDevice> Install (std::string nodeName, std::string ndName);
 private:
   ObjectFactory m_deviceFactory;
 };
