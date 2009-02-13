@@ -53,7 +53,7 @@
 //   sudo ifconfig tap0 10.1.1.1 netmask 255.255.255.0 up
 //
 
-#define NO_CREATOR
+// #define NO_CREATOR
 
 #ifdef NO_CREATOR
 #include <fcntl.h>
