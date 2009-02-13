@@ -41,10 +41,25 @@
 #include <limits>
 #include <stdlib.h>
 
-// #define NO_CREATOR
+//
+// Sometimes having a tap-creator is actually more trouble than solution.  In 
+// these cases you can uncomment the define of TAP_CREATOR below and the 
+// simulation will just use a device you have preconfigured.  This is useful
+// if you are running in an environment where you have got to run as root,
+// such as ORBIT or CORE.
+//
+//   sudo tunctl -t tap0
+//   sudo ifconfig tap0 hw ether 00:00:00:00:00:01
+//   sudo ifconfig tap0 10.1.1.1 netmask 255.255.255.0 up
+//
+
+#define NO_CREATOR
 
 #ifdef NO_CREATOR
 #include <fcntl.h>
+#include <net/if.h>
+#include <linux/if_tun.h>
+#include <sys/ioctl.h>
 #endif
 
 NS_LOG_COMPONENT_DEFINE ("TapBridge");
@@ -206,10 +221,24 @@ TapBridge::CreateTap (void)
   // in this case, just define NO_CREATOR, manually set up your tap device and
   // just open and use it.
   //
-  std::string tapDeviceName = "/dev/" + m_tapDeviceName;
-  m_sock = open (tapDeviceName.c_str (), O_RDWR);
-  NS_ABORT_MSG_IF (m_sock == -1, "TapBridge::CreateTap(): could not open device " << tapDeviceName << 
-                   ", errno " << strerror (errno));
+  //
+  // Creation and management of Tap devices is done via the tun device
+  //
+  m_sock = open ("/dev/net/tun", O_RDWR);
+  NS_ABORT_MSG_IF (m_sock == -1, "TapBridge::CreateTap(): could not open /dev/net/tun: " << strerror (errno));
+
+  //
+  // Allocate a tap device, making sure that it will not send the tun_pi header.
+  // If we provide a null name to the ifr.ifr_name, we tell the kernel to pick
+  // a name for us (i.e., tapn where n = 0..255
+  //
+  struct ifreq ifr;
+  ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
+  strcpy (ifr.ifr_name, m_tapDeviceName.c_str ());
+  int status = ioctl (m_sock, TUNSETIFF, (void *) &ifr);
+  NS_ABORT_MSG_IF (status == -1, "TapBridge::CreateTap(): could not open device " << m_tapDeviceName << 
+                   ": " << strerror (errno));
+
 #else // use the tap-creator
 
   //
