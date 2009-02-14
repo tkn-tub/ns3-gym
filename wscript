@@ -12,12 +12,14 @@ import pproc as subprocess
 import Options
 import Logs
 import TaskGen
+import Constants
 
 import ccroot
 ccroot.USE_TOP_LEVEL = True
 
 import Task
-import Constants
+Task.algotype = Constants.JOBCONTROL # so that Task.maxjobs=1 takes effect
+
 import Utils
 import Build
 import Configure
