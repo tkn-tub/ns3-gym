@@ -57,10 +57,6 @@ main (int argc, char *argv[])
   LogComponentEnable("GlobalRouter", LOG_LOGIC);
 #endif
 
-  //
-  // Make the random number generators generate reproducible results.
-  //
-  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
 
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("300b/s"));

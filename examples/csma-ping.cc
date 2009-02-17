@@ -56,10 +56,6 @@ static void PingRtt (std::string context, Time rtt)
 int
 main (int argc, char *argv[])
 {
-  //
-  // Make the random number generators generate reproducible results.
-  //
-  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
 
   CommandLine cmd;
   cmd.Parse (argc, argv);

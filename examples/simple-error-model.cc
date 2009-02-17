@@ -59,10 +59,6 @@ main (int argc, char *argv[])
   LogComponentEnable ("SimplePointToPointExample", LOG_LEVEL_INFO);
 #endif
 
-  //
-  // Make the random number generators generate reproducible results.
-  //
-  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
 
   // Set a few attributes
   Config::SetDefault ("ns3::RateErrorModel::ErrorRate", DoubleValue (0.01));

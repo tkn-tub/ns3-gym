@@ -68,10 +68,6 @@ main (int argc, char *argv[])
   //LogComponentEnable ("TcpL4Protocol", LOG_LEVEL_ALL);
   //LogComponentEnable ("TcpSocketImpl", LOG_LEVEL_ALL);
   //LogComponentEnable ("PacketSink", LOG_LEVEL_ALL);
-  //
-  // Make the random number generators generate reproducible results.
-  //
-  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
 
   // Set up some default values for the simulation.
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (250));

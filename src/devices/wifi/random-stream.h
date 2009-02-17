@@ -22,7 +22,7 @@
 
 #include <stdint.h>
 #include <list>
-#include "ns3/rng-stream.h"
+#include "ns3/random-variable.h"
 
 namespace ns3 {
 
@@ -43,7 +43,7 @@ public:
   RealRandomStream ();
   virtual uint32_t GetNext (uint32_t min, uint32_t max);
 private:
-  RngStream m_stream;
+  UniformVariable m_stream;
 };
 
 class TestRandomStream : public RandomStream

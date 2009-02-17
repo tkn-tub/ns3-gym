@@ -32,10 +32,6 @@ import ns3
 
 
 def main(argv):
-    #
-    # Make the random number generators generate reproducible results.
-    #
-    ns3.RandomVariable.UseGlobalSeed(1, 1, 2, 3, 5, 8)
 
     #
     # Allow the user to override any of the defaults and the above Bind() at

@@ -16,10 +16,11 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // Author: Rajib Bhattacharjea<raj.b@gatech.edu>
+// Author: Hadi Arbabi<marbabi@cs.odu.edu>
 //
 
-#ifndef __random_variable_h__
-#define __random_variable_h__
+#ifndef __random_variable_h
+#define __random_variable_h
 
 #include <vector>
 #include <algorithm>
@@ -38,6 +39,82 @@
 namespace ns3{
 
 class RandomVariableBase;
+
+class SeedManager
+{
+public:
+	  
+  /**
+   * \brief set the seed
+   * it will duplicate the seed value 6 times
+   * \code
+   * SeedManger::SetSeed(15);
+   * UniformVariable x(2,3);     //these will give the same output everytime
+   * ExponentialVariable y(120); //as long as the seed stays the same
+   * \endcode
+   * \param seed
+   */ 
+  static void SetSeed (uint32_t seed);
+
+   /**
+   * \brief set the seed
+   * \code
+   * uint32_t seed[6]={10,5,2,3,5,11};
+   * SeedManger::SetSeed(seed);
+   * UniformVariable x(2,3);     //these will give the same output everytime
+   * ExponentialVariable y(120); //as long as the seed stays the same
+   * \endcode
+   * \param seed
+   */ 
+   static void SetSeed (uint32_t seed[6]);
+ 
+  /**
+   * \brief Get the seed value
+   * \param array of size 6 which will hold returned seed values
+   */
+   static void GetSeed (uint32_t seed[6]);
+ 
+   /**
+    * \brief Set the run number of simulation
+    *
+    * \code
+    * SeedManager::SetSeed(12);
+    * int N = atol(argv[1]); //read in run number from command line
+    * SeedManager::SetRun(N);
+    * UniformVariable x(0,10);
+    * ExponentialVariable y(2902);
+    * \endcode
+    * In this example, N could successivly be equal to 1,2,3, etc. and the user
+    * would continue to get independent runs out of the single simulation.  For
+    * this simple example, the following might work:
+    * \code
+    * ./simulation 0
+    * ...Results for run 0:...
+    *
+    * ./simulation 1
+    * ...Results for run 1:...
+    * \endcode
+    */
+  static void SetRun (uint32_t run);
+  /**
+   * \returns the current run number
+   * @sa SetRun
+   */
+  static uint32_t GetRun (void);
+  
+  /**
+   * \brief Check if seed value is valid if wanted to be used as seed
+   * \return true if valid and false if invalid
+   */
+  static bool CheckSeed (uint32_t seed);
+  
+  /**
+   * \brief Checks if seed array has valid values if wanted to be used as further seed
+   * \return true if valid and false if invalid
+   */
+  static bool CheckSeed (uint32_t seed[6]);
+};
+
 
 /**
  * \brief The basic RNG for NS-3.
@@ -73,95 +150,6 @@ public:
    * \return  Integer cast of ::GetValue()
    */
   uint32_t GetInteger (void) const;
-  
-  /**
-   * \brief Get the internal state of the RNG
-   *
-   * This function is for power users who understand the inner workings
-   * of the underlying RngStream method used.  It returns the internal
-   * state of the RNG via the input parameter.
-   * \param seed Output parameter; gets overwritten with the internal state of
-   * of the RNG.
-   */
-  void GetSeed(uint32_t seed[6]) const;
-  
-  /**
-   * \brief Set seeding behavior
-   * 
-   * Specify whether the POSIX device /dev/random is to
-   * be used for seeding.  When this is used, the underlying
-   * generator is seeded with data from /dev/random instead of
-   * being seeded based upon the time of day.  For this to be effective,
-   * it must be called before the creation of the first instance of a 
-   * RandomVariable or subclass.  Example:
-   * \code
-   * RandomVariable::UseDevRandom();
-   * UniformVariable x(2,3);  //these are seeded randomly
-   * ExponentialVariable y(120); //etc
-   * \endcode
-   * \param udr True if /dev/random desired.
-   */
-  static  void UseDevRandom(bool udr = true);
-
-   /**
-   * \brief Use the global seed to force precisely reproducible results.
-   *
-   * It is often desirable to create a simulation that uses random
-   * numbers, while at the same time is completely reproducible.
-   * Specifying this set of six random seeds initializes the
-   * random number generator with the specified seed.
-   * Once this is set, all generators will produce fixed output
-   * from run to run.  This is because each time a new generator is created,
-   * the underlying RngStream deterministically creates a new seed based upon
-   * the old one, hence a "stream" of RNGs.  Example:
-   * \code
-   * RandomVariable::UseGlobalSeed(...);
-   * UniformVariable x(2,3);     //these will give the same output everytime
-   * ExponentialVariable y(120); //as long as the seed stays the same
-   * \endcode
-   * \param s0
-   * \param s1
-   * \param s2
-   * \param s3
-   * \param s4
-   * \param s5
-   * \return True if seed is valid.
-   */ 
-  static void UseGlobalSeed(uint32_t s0, uint32_t s1, uint32_t s2, 
-                            uint32_t s3, uint32_t s4, uint32_t s5);
-  
-  /**
-   * \brief Set the run number of this simulation
-   *
-   * These RNGs have the ability to give independent sets of trials for a fixed
-   * global seed.  For example, suppose one sets up a simulation with
-   * RandomVariables with a given global seed.  Suppose the user wanted to
-   * retry the same simulation with different random values for validity,
-   * statistical rigor, etc.  The user could either change the global seed and
-   * re-run the simulation, or could use this facility to increment all of the
-   * RNGs to a next substream state.  This predictably advances the internal
-   * state of all RandomVariables n steps.  This should be called immediately
-   * after the global seed is set, and before the creation of any
-   * RandomVariables.  For example:
-   * \code
-   * RandomVariable::UseGlobalSeed(1,2,3,4,5,6);
-   * int N = atol(argv[1]); //read in run number from command line
-   * RandomVariable::SetRunNumber(N);
-   * UniformVariable x(0,10);
-   * ExponentialVariable y(2902);
-   * \endcode
-   * In this example, N could successivly be equal to 1,2,3, etc. and the user
-   * would continue to get independent runs out of the single simulation.  For
-   * this simple example, the following might work:
-   * \code
-   * ./simulation 0
-   * ...Results for run 0:...
-   *
-   * ./simulation 1
-   * ...Results for run 1:...
-   * \endcode
-   */
-  static void SetRunNumber(uint32_t n);
 
 private:
   friend std::ostream &operator << (std::ostream &os, const RandomVariable &var);
@@ -204,13 +192,21 @@ public:
    * \param l High end of the range
    */
   UniformVariable(double s, double l);
-public:
+
   /**
-   * \param s Low end of the range
-   * \param l High end of the range
-   * \return A uniformly distributed random number between s and l
-   */
-  static double GetSingleValue(double s, double l);
+  * \brief Returns a random double with the specified range given by constructor
+  * \return A floating point random value
+  */
+  double GetValue();
+  
+  /**
+  * \brief Returns a random double with the specified range
+  * \param s Low end of the range
+  * \param l High end of the range
+  * \return A floating point random value
+  */
+  double GetValue(double s, double l);
+
 };
 
 /**
@@ -334,12 +330,6 @@ public:
    */
   ExponentialVariable(double m, double b);
 
-  /**
-   * \param m The mean of the distribution from which the return value is drawn
-   * \param b The upper bound value desired, beyond which values get clipped
-   * \return A random number from an exponential distribution with mean m
-   */
-  static double GetSingleValue(double m, double b=0);
 };
 
 /**
@@ -402,16 +392,6 @@ public:
    */
   ParetoVariable(double m, double s, double b);
 
-  /**
-   * \param m The mean value of the distribution from which the return value
-   * is drawn.
-   * \param s The shape parameter of the distribution from which the return
-   * value is drawn.
-   * \param b The upper bound to which to restrict return values
-   * \return A random number from a Pareto distribution with mean m and shape
-   * parameter s.
-   */
-  static double GetSingleValue(double m, double s, double b=0);
 };
 
 /**
@@ -464,13 +444,7 @@ public:
    * \param b Upper limit on returned values
    */
   WeibullVariable(double m, double s, double b);
-  /**
-   * \param m Mean value for the distribution.
-   * \param s Shape (alpha) parameter for the distribution.
-   * \param b Upper limit on returned values
-   * \return Random number from a distribution specified by m,s, and b
-   */
-  static double GetSingleValue(double m, double s, double b=0);
+
 };
 
 /**
@@ -511,22 +485,6 @@ public:
    * [mean-bound,mean+bound]
    */ 
   NormalVariable(double m, double v, double b);
-
-  /**
-   * \param m Mean value
-   * \param v Variance
-   * \return A random number from a distribution specified by m, and v.
-   */ 
-  static double GetSingleValue(double m, double v);
-
-  /**
-   * \param m Mean value
-   * \param v Variance
-   * \param b Bound.  The NormalVariable is bounded symetrically about the mean
-   * [mean-bound,mean+bound]
-   * \return A random number from a distribution specified by m,v, and b.
-   */ 
-  static double GetSingleValue(double m, double v, double b);
 };
 
 /**
@@ -633,13 +591,6 @@ public:
    * \param sigma sigma parameter of the lognormal distribution
    */
   LogNormalVariable (double mu, double sigma);
-
-  /**
-   * \param mu mu parameter of the underlying normal distribution
-   * \param sigma sigma parameter of the underlying normal distribution
-   * \return A random number from the distribution specified by mu and sigma
-   */
-  static double GetSingleValue(double mu, double sigma);
 };
 
 /**
@@ -666,13 +617,7 @@ public:
    * \param mean mean of the distribution
    */
   TriangularVariable(double s, double l, double mean);
-  /**
-   * \param s Low end of the range
-   * \param l High end of the range
-   * \param mean mean of the distribution
-   * \return A triangularly distributed random number between s and l
-   */
-  static double GetSingleValue(double s, double l, double mean);
+
 };
 
 std::ostream &operator << (std::ostream &os, const RandomVariable &var);

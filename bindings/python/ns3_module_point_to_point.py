@@ -57,8 +57,6 @@ def register_methods(root_module):
     return
 
 def register_Ns3PppHeader_methods(root_module, cls):
-    ## ppp-header.h: ns3::PppHeader::PppHeader(ns3::PppHeader const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PppHeader const &', 'arg0')])
     ## ppp-header.h: ns3::PppHeader::PppHeader() [constructor]
     cls.add_constructor([])
     ## ppp-header.h: static ns3::TypeId ns3::PppHeader::GetTypeId() [member function]
@@ -91,11 +89,10 @@ def register_Ns3PppHeader_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3PointToPointChannel_methods(root_module, cls):
-    ## point-to-point-channel.h: ns3::PointToPointChannel::PointToPointChannel(ns3::PointToPointChannel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PointToPointChannel const &', 'arg0')])
     ## point-to-point-channel.h: static ns3::TypeId ns3::PointToPointChannel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -126,11 +123,10 @@ def register_Ns3PointToPointChannel_methods(root_module, cls):
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('uint32_t', 'i')], 
                    is_const=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3PointToPointNetDevice_methods(root_module, cls):
-    ## point-to-point-net-device.h: ns3::PointToPointNetDevice::PointToPointNetDevice(ns3::PointToPointNetDevice const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PointToPointNetDevice const &', 'arg0')])
     ## point-to-point-net-device.h: static ns3::TypeId ns3::PointToPointNetDevice::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -305,6 +301,7 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):
