@@ -154,9 +154,13 @@ def main(argv):
   #   Config::Connect ("/NodeList/*/DeviceList/*/Phy/Tx", MakeCallback (&PhyTxTrace));
   #   Config::Connect ("/NodeList/*/DeviceList/*/Phy/State", MakeCallback (&PhyStateTrace));
 
+    ascii = ns3.ofstream("wifi-ap.tr")
+    ns3.YansWifiPhyHelper.EnableAsciiAll(ascii)
+
     ns3.Simulator.Run()
 
     ns3.Simulator.Destroy()
+    ascii.close()
 
     return 0
 

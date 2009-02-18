@@ -86,6 +86,7 @@ def main():
     ns3modulegen_core_customizations.Simulator_customizations(root_module)
     ns3modulegen_core_customizations.CommandLine_customizations(root_module)
     ns3modulegen_core_customizations.TypeId_customizations(root_module)
+    ns3modulegen_core_customizations.add_std_ofstream(root_module)
 
 
     for local_module in LOCAL_MODULES:
