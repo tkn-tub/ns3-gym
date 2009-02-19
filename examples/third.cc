@@ -40,8 +40,8 @@ NS_LOG_COMPONENT_DEFINE ("ThirdScriptExample");
 int 
 main (int argc, char *argv[])
 {
-  LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
-  LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
+
+  bool verbose = true;
 
   RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
 
@@ -50,7 +50,15 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
   cmd.AddValue ("nWifi", "Number of wifi STA devices", nWifi);
+  cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
+
   cmd.Parse (argc,argv);
+
+  if (verbose)
+    {
+      LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
+      LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
+    }
 
   NodeContainer p2pNodes;
   p2pNodes.Create (2);
