@@ -20,17 +20,18 @@ import ns3_module_node
 import ns3_module_contrib
 import ns3_module_point_to_point
 import ns3_module_stats
+import ns3_module_tap_bridge
 import ns3_module_internet_stack
 import ns3_module_wifi
 import ns3_module_csma
 import ns3_module_emu
 import ns3_module_bridge
+import ns3_module_onoff
 import ns3_module_packet_sink
 import ns3_module_v4ping
 import ns3_module_global_routing
-import ns3_module_onoff
-import ns3_module_olsr
 import ns3_module_udp_echo
+import ns3_module_olsr
 import ns3_module_helper
 
 def module_init():
@@ -128,6 +129,17 @@ def register_types(module):
         ns3_module_stats__local.register_types(module)
     
     root_module.end_section('ns3_module_stats')
+    root_module.begin_section('ns3_module_tap_bridge')
+    ns3_module_tap_bridge.register_types(module)
+    
+    try:
+        import ns3_module_tap_bridge__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_tap_bridge__local.register_types(module)
+    
+    root_module.end_section('ns3_module_tap_bridge')
     root_module.begin_section('ns3_module_internet_stack')
     ns3_module_internet_stack.register_types(module)
     
@@ -183,6 +195,17 @@ def register_types(module):
         ns3_module_bridge__local.register_types(module)
     
     root_module.end_section('ns3_module_bridge')
+    root_module.begin_section('ns3_module_onoff')
+    ns3_module_onoff.register_types(module)
+    
+    try:
+        import ns3_module_onoff__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_onoff__local.register_types(module)
+    
+    root_module.end_section('ns3_module_onoff')
     root_module.begin_section('ns3_module_packet_sink')
     ns3_module_packet_sink.register_types(module)
     
@@ -216,28 +239,6 @@ def register_types(module):
         ns3_module_global_routing__local.register_types(module)
     
     root_module.end_section('ns3_module_global_routing')
-    root_module.begin_section('ns3_module_onoff')
-    ns3_module_onoff.register_types(module)
-    
-    try:
-        import ns3_module_onoff__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_onoff__local.register_types(module)
-    
-    root_module.end_section('ns3_module_onoff')
-    root_module.begin_section('ns3_module_olsr')
-    ns3_module_olsr.register_types(module)
-    
-    try:
-        import ns3_module_olsr__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_olsr__local.register_types(module)
-    
-    root_module.end_section('ns3_module_olsr')
     root_module.begin_section('ns3_module_udp_echo')
     ns3_module_udp_echo.register_types(module)
     
@@ -249,6 +250,17 @@ def register_types(module):
         ns3_module_udp_echo__local.register_types(module)
     
     root_module.end_section('ns3_module_udp_echo')
+    root_module.begin_section('ns3_module_olsr')
+    ns3_module_olsr.register_types(module)
+    
+    try:
+        import ns3_module_olsr__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_olsr__local.register_types(module)
+    
+    root_module.end_section('ns3_module_olsr')
     root_module.begin_section('ns3_module_helper')
     ns3_module_helper.register_types(module)
     
@@ -393,6 +405,17 @@ def register_methods(root_module):
         ns3_module_stats__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_stats')
+    root_module.begin_section('ns3_module_tap_bridge')
+    ns3_module_tap_bridge.register_methods(root_module)
+    
+    try:
+        import ns3_module_tap_bridge__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_tap_bridge__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_tap_bridge')
     root_module.begin_section('ns3_module_internet_stack')
     ns3_module_internet_stack.register_methods(root_module)
     
@@ -448,6 +471,17 @@ def register_methods(root_module):
         ns3_module_bridge__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_bridge')
+    root_module.begin_section('ns3_module_onoff')
+    ns3_module_onoff.register_methods(root_module)
+    
+    try:
+        import ns3_module_onoff__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_onoff__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_onoff')
     root_module.begin_section('ns3_module_packet_sink')
     ns3_module_packet_sink.register_methods(root_module)
     
@@ -481,28 +515,6 @@ def register_methods(root_module):
         ns3_module_global_routing__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_global_routing')
-    root_module.begin_section('ns3_module_onoff')
-    ns3_module_onoff.register_methods(root_module)
-    
-    try:
-        import ns3_module_onoff__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_onoff__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_onoff')
-    root_module.begin_section('ns3_module_olsr')
-    ns3_module_olsr.register_methods(root_module)
-    
-    try:
-        import ns3_module_olsr__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_olsr__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_olsr')
     root_module.begin_section('ns3_module_udp_echo')
     ns3_module_udp_echo.register_methods(root_module)
     
@@ -514,6 +526,17 @@ def register_methods(root_module):
         ns3_module_udp_echo__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_udp_echo')
+    root_module.begin_section('ns3_module_olsr')
+    ns3_module_olsr.register_methods(root_module)
+    
+    try:
+        import ns3_module_olsr__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_olsr__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_olsr')
     root_module.begin_section('ns3_module_helper')
     ns3_module_helper.register_methods(root_module)
     
@@ -617,6 +640,17 @@ def register_functions(root_module):
         ns3_module_stats__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_stats')
+    root_module.begin_section('ns3_module_tap_bridge')
+    ns3_module_tap_bridge.register_functions(root_module)
+    
+    try:
+        import ns3_module_tap_bridge__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_tap_bridge__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_tap_bridge')
     root_module.begin_section('ns3_module_internet_stack')
     ns3_module_internet_stack.register_functions(root_module)
     
@@ -672,6 +706,17 @@ def register_functions(root_module):
         ns3_module_bridge__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_bridge')
+    root_module.begin_section('ns3_module_onoff')
+    ns3_module_onoff.register_functions(root_module)
+    
+    try:
+        import ns3_module_onoff__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_onoff__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_onoff')
     root_module.begin_section('ns3_module_packet_sink')
     ns3_module_packet_sink.register_functions(root_module)
     
@@ -705,28 +750,6 @@ def register_functions(root_module):
         ns3_module_global_routing__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_global_routing')
-    root_module.begin_section('ns3_module_onoff')
-    ns3_module_onoff.register_functions(root_module)
-    
-    try:
-        import ns3_module_onoff__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_onoff__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_onoff')
-    root_module.begin_section('ns3_module_olsr')
-    ns3_module_olsr.register_functions(root_module)
-    
-    try:
-        import ns3_module_olsr__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_olsr__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_olsr')
     root_module.begin_section('ns3_module_udp_echo')
     ns3_module_udp_echo.register_functions(root_module)
     
@@ -738,6 +761,17 @@ def register_functions(root_module):
         ns3_module_udp_echo__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_udp_echo')
+    root_module.begin_section('ns3_module_olsr')
+    ns3_module_olsr.register_functions(root_module)
+    
+    try:
+        import ns3_module_olsr__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_olsr__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_olsr')
     root_module.begin_section('ns3_module_helper')
     ns3_module_helper.register_functions(root_module)
     

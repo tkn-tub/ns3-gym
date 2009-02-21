@@ -45,6 +45,8 @@ def register_types(module):
     module.add_class('IntToType', template_parameters=['6'])
     ## int-to-type.h: ns3::IntToType<6>::v_e [enumeration]
     module.add_enum('v_e', ['value'], outer_class=root_module['ns3::IntToType< 6 >'])
+    ## names.h: ns3::Names [class]
+    module.add_class('Names')
     ## object-base.h: ns3::ObjectBase [class]
     module.add_class('ObjectBase', allow_subclassing=True)
     ## object-factory.h: ns3::ObjectFactory [class]
@@ -223,6 +225,7 @@ def register_methods(root_module):
     register_Ns3IntToType__4_methods(root_module, root_module['ns3::IntToType< 4 >'])
     register_Ns3IntToType__5_methods(root_module, root_module['ns3::IntToType< 5 >'])
     register_Ns3IntToType__6_methods(root_module, root_module['ns3::IntToType< 6 >'])
+    register_Ns3Names_methods(root_module, root_module['ns3::Names'])
     register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
     register_Ns3ObjectFactory_methods(root_module, root_module['ns3::ObjectFactory'])
     register_Ns3RandomVariable_methods(root_module, root_module['ns3::RandomVariable'])
@@ -461,6 +464,58 @@ def register_Ns3IntToType__6_methods(root_module, cls):
     cls.add_constructor([param('ns3::IntToType< 6 > const &', 'arg0')])
     ## int-to-type.h: ns3::IntToType<6>::IntToType() [constructor]
     cls.add_constructor([])
+    return
+
+def register_Ns3Names_methods(root_module, cls):
+    ## names.h: ns3::Names::Names(ns3::Names const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Names const &', 'arg0')])
+    ## names.h: ns3::Names::Names() [constructor]
+    cls.add_constructor([])
+    ## names.h: static bool ns3::Names::Add(std::string name, ns3::Ptr<ns3::Object> obj) [member function]
+    cls.add_method('Add', 
+                   'bool', 
+                   [param('std::string', 'name'), param('ns3::Ptr< ns3::Object >', 'obj')], 
+                   is_static=True)
+    ## names.h: static bool ns3::Names::Add(std::string path, std::string name, ns3::Ptr<ns3::Object> object) [member function]
+    cls.add_method('Add', 
+                   'bool', 
+                   [param('std::string', 'path'), param('std::string', 'name'), param('ns3::Ptr< ns3::Object >', 'object')], 
+                   is_static=True)
+    ## names.h: static bool ns3::Names::Add(ns3::Ptr<ns3::Object> context, std::string name, ns3::Ptr<ns3::Object> object) [member function]
+    cls.add_method('Add', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Object >', 'context'), param('std::string', 'name'), param('ns3::Ptr< ns3::Object >', 'object')], 
+                   is_static=True)
+    ## names.h: static bool ns3::Names::Rename(std::string oldpath, std::string newname) [member function]
+    cls.add_method('Rename', 
+                   'bool', 
+                   [param('std::string', 'oldpath'), param('std::string', 'newname')], 
+                   is_static=True)
+    ## names.h: static bool ns3::Names::Rename(std::string path, std::string oldname, std::string newname) [member function]
+    cls.add_method('Rename', 
+                   'bool', 
+                   [param('std::string', 'path'), param('std::string', 'oldname'), param('std::string', 'newname')], 
+                   is_static=True)
+    ## names.h: static bool ns3::Names::Rename(ns3::Ptr<ns3::Object> context, std::string oldname, std::string newname) [member function]
+    cls.add_method('Rename', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Object >', 'context'), param('std::string', 'oldname'), param('std::string', 'newname')], 
+                   is_static=True)
+    ## names.h: static std::string ns3::Names::FindName(ns3::Ptr<ns3::Object> object) [member function]
+    cls.add_method('FindName', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::Object >', 'object')], 
+                   is_static=True)
+    ## names.h: static std::string ns3::Names::FindPath(ns3::Ptr<ns3::Object> object) [member function]
+    cls.add_method('FindPath', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::Object >', 'object')], 
+                   is_static=True)
+    ## names.h: static void ns3::Names::Delete() [member function]
+    cls.add_method('Delete', 
+                   'void', 
+                   [], 
+                   is_static=True)
     return
 
 def register_Ns3ObjectBase_methods(root_module, cls):
@@ -2062,7 +2117,7 @@ def register_functions(root_module):
     module.add_function('TypeNameGet', 
                         'std::string', 
                         [], 
-                        template_parameters=['long long'])
+                        template_parameters=['long'])
     ## type-name.h: extern std::string ns3::TypeNameGet() [free function]
     module.add_function('TypeNameGet', 
                         'std::string', 
@@ -2082,7 +2137,7 @@ def register_functions(root_module):
     module.add_function('TypeNameGet', 
                         'std::string', 
                         [], 
-                        template_parameters=['unsigned long long'])
+                        template_parameters=['unsigned long'])
     ## type-name.h: extern std::string ns3::TypeNameGet() [free function]
     module.add_function('TypeNameGet', 
                         'std::string', 

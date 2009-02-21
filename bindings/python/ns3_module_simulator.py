@@ -55,6 +55,8 @@ def register_types(module):
     module.add_class('ListScheduler', parent=root_module['ns3::Scheduler'])
     ## map-scheduler.h: ns3::MapScheduler [class]
     module.add_class('MapScheduler', parent=root_module['ns3::Scheduler'])
+    ## ns2-calendar-scheduler.h: ns3::Ns2CalendarScheduler [class]
+    module.add_class('Ns2CalendarScheduler', parent=root_module['ns3::Scheduler'])
     ## realtime-simulator-impl.h: ns3::RealtimeSimulatorImpl [class]
     module.add_class('RealtimeSimulatorImpl', parent=root_module['ns3::SimulatorImpl'])
     ## realtime-simulator-impl.h: ns3::RealtimeSimulatorImpl::SynchronizationMode [enumeration]
@@ -127,6 +129,7 @@ def register_methods(root_module):
     register_Ns3HeapScheduler_methods(root_module, root_module['ns3::HeapScheduler'])
     register_Ns3ListScheduler_methods(root_module, root_module['ns3::ListScheduler'])
     register_Ns3MapScheduler_methods(root_module, root_module['ns3::MapScheduler'])
+    register_Ns3Ns2CalendarScheduler_methods(root_module, root_module['ns3::Ns2CalendarScheduler'])
     register_Ns3RealtimeSimulatorImpl_methods(root_module, root_module['ns3::RealtimeSimulatorImpl'])
     return
 
@@ -726,7 +729,9 @@ def register_Ns3SchedulerEvent_methods(root_module, cls):
     return
 
 def register_Ns3SchedulerEventKey_methods(root_module, cls):
+    cls.add_binary_comparison_operator('!=')
     cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('>')
     ## scheduler.h: ns3::Scheduler::EventKey::EventKey() [constructor]
     cls.add_constructor([])
     ## scheduler.h: ns3::Scheduler::EventKey::EventKey(ns3::Scheduler::EventKey const & arg0) [copy constructor]
@@ -1303,6 +1308,43 @@ def register_Ns3MapScheduler_methods(root_module, cls):
                    [], 
                    is_virtual=True)
     ## map-scheduler.h: void ns3::MapScheduler::Remove(ns3::Scheduler::Event const & ev) [member function]
+    cls.add_method('Remove', 
+                   'void', 
+                   [param('ns3::Scheduler::Event const &', 'ev')], 
+                   is_virtual=True)
+    return
+
+def register_Ns3Ns2CalendarScheduler_methods(root_module, cls):
+    ## ns2-calendar-scheduler.h: ns3::Ns2CalendarScheduler::Ns2CalendarScheduler(ns3::Ns2CalendarScheduler const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ns2CalendarScheduler const &', 'arg0')])
+    ## ns2-calendar-scheduler.h: static ns3::TypeId ns3::Ns2CalendarScheduler::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ns2-calendar-scheduler.h: ns3::Ns2CalendarScheduler::Ns2CalendarScheduler() [constructor]
+    cls.add_constructor([])
+    ## ns2-calendar-scheduler.h: void ns3::Ns2CalendarScheduler::Insert(ns3::Scheduler::Event const & ev) [member function]
+    cls.add_method('Insert', 
+                   'void', 
+                   [param('ns3::Scheduler::Event const &', 'ev')], 
+                   is_virtual=True)
+    ## ns2-calendar-scheduler.h: bool ns3::Ns2CalendarScheduler::IsEmpty() const [member function]
+    cls.add_method('IsEmpty', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ns2-calendar-scheduler.h: ns3::Scheduler::Event ns3::Ns2CalendarScheduler::PeekNext() const [member function]
+    cls.add_method('PeekNext', 
+                   'ns3::Scheduler::Event', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ns2-calendar-scheduler.h: ns3::Scheduler::Event ns3::Ns2CalendarScheduler::RemoveNext() [member function]
+    cls.add_method('RemoveNext', 
+                   'ns3::Scheduler::Event', 
+                   [], 
+                   is_virtual=True)
+    ## ns2-calendar-scheduler.h: void ns3::Ns2CalendarScheduler::Remove(ns3::Scheduler::Event const & ev) [member function]
     cls.add_method('Remove', 
                    'void', 
                    [param('ns3::Scheduler::Event const &', 'ev')], 
