@@ -370,22 +370,30 @@ bool
 BridgeNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  for (std::vector< Ptr<NetDevice> >::iterator iter = m_ports.begin ();
-         iter != m_ports.end (); iter++)
-    {
-      Ptr<NetDevice> port = *iter;
-      port->SendFrom (packet, m_address, dest, protocolNumber);
-    }
-
-  return true;
+  return SendFrom (packet, m_address, dest, protocolNumber);
 }
 
 bool 
 BridgeNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  Mac48Address dst = Mac48Address::ConvertFrom (dest); 
+
+  // try to use the learned state if data is unicast
+  if (!dst.IsGroup ())
+    {
+      Ptr<NetDevice> outPort = GetLearnedState (dst);
+      if (outPort != NULL) 
+        {
+          outPort->SendFrom (packet, src, dest, protocolNumber);
+          return true;
+        }
+    }
+
+  // data was not unicast or no state has been learned for that mac
+  // address => flood through all ports.
   for (std::vector< Ptr<NetDevice> >::iterator iter = m_ports.begin ();
-         iter != m_ports.end (); iter++)
+       iter != m_ports.end (); iter++)
     {
       Ptr<NetDevice> port = *iter;
       port->SendFrom (packet, src, dest, protocolNumber);
