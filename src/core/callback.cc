@@ -35,4 +35,54 @@ CallbackValue::DeserializeFromString (std::string value, Ptr<const AttributeChec
 
 ATTRIBUTE_CHECKER_IMPLEMENT (Callback);
 
+#if (__GNUC__ >= 3)
+
+#include <cxxabi.h>
+#include "log.h"
+
+std::string
+CallbackBase::Demangle(const std::string& mangled)
+{
+    int status;
+    char* demangled = abi::__cxa_demangle(mangled.c_str(),
+                                          NULL, NULL, &status);
+
+    std::string ret;
+    if (status == 0) {
+        NS_ASSERT(demangled);
+        ret = demangled;
+    }
+    else if (status == -1) {
+        NS_LOG_UNCOND("Callback demangling failed: Memory allocation failure occured.");
+        ret = mangled;
+    }
+    else if (status == -2) {
+        NS_LOG_UNCOND("Callback demangling failed: Mangled name is not a valid under the C++ ABI mangling rules.");
+        ret = mangled;
+    }
+    else if (status == -3) {
+        NS_LOG_UNCOND("Callback demangling failed: One of the arguments is invalid.");
+        ret = mangled;
+    }
+    else {
+        NS_LOG_UNCOND("Callback demangling failed: status " << status);
+        ret = mangled;
+    }
+
+    if (demangled) {
+        free(demangled);
+    }
+    return ret;
+}
+
+#else
+
+std::string
+CallbackBase::Demangle(const std::string& mangled)
+{
+    return mangled;
+}
+
+#endif
+
 } // namespace ns3
