@@ -142,6 +142,10 @@ def main():
             root_module.classes.remove(root_module['ns3::%s' % clsname])
         root_module.enums.remove(root_module['ns3::RealtimeSimulatorImpl::SynchronizationMode'])
 
+    if 'TapBridge' not in enabled_features:
+        for clsname in ['TapBridge', 'TapBridgeHelper']:
+            root_module.classes.remove(root_module['ns3::%s' % clsname])
+
     root_module.generate(out, '_ns3')
 
     out.close()
