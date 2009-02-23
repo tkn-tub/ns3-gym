@@ -37,6 +37,7 @@ ATTRIBUTE_CHECKER_IMPLEMENT (Callback);
 
 #if (__GNUC__ >= 3)
 
+#include <stdlib.h>
 #include <cxxabi.h>
 #include "log.h"
 
