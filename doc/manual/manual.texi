@@ -10,7 +10,7 @@ Primary documentation for the @command{ns-3} project is available in
 four forms:
 @itemize @bullet
 @item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen/Manual}:  Documentation of the public APIs of the simulator
-@item @uref{http://www.nsnam.org/tutorial/index.html,,ns-3 Tutorial}
+@item @uref{http://www.nsnam.org/docs/tutorial/tutorial.html,,ns-3 Tutorial}
 @item Reference Manual (this document)
 @item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
 @end itemize
@@ -27,7 +27,7 @@ This is an @command{ns-3} reference manual.
 Primary documentation for the @command{ns-3} project is available in
 four forms:
 @itemize @bullet
-@item @uref{http://www.nsnam.org/tutorial/index.html,,ns-3 Tutorial}
+@item @uref{http://www.nsnam.org/docs/tutorial/tutorial.html,,ns-3 Tutorial}
 @item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen}:  Documentation of the public APIs of the simulator
 @item Reference Manual (this document)
 @item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}

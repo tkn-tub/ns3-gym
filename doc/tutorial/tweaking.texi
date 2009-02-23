@@ -272,21 +272,19 @@ If you run the script now, you should see the following output:
   ~/repos/ns-3-dev > ./waf --run scratch/first
   Entering directory `/home/craigdo/repos/ns-3-dev/build'
   Compilation finished successfully
-  0ns UdpEchoServerApplication:UdpEchoServer()
-  0ns UdpEchoClientApplication:UdpEchoClient()
-  1000000000ns UdpEchoServerApplication:StartApplication()
-  2000000000ns UdpEchoClientApplication:StartApplication()
-  2000000000ns UdpEchoClientApplication:ScheduleTransmit()
-  2000000000ns UdpEchoClientApplication:Send()
-  2000000000ns UdpEchoClientApplication:Send(): Sent 1024 bytes to 10.1.1.2
-  2003686400ns UdpEchoServerApplication:HandleRead(): Received 1024 bytes 
-    from 10.1.1.1
-  2003686400ns UdpEchoServerApplication:HandleRead(): Echoing packet
-  2007372800ns UdpEchoClientApplication:HandleRead(0x62c8c0, 0x62d020)
-  2007372800ns UdpEchoClientApplication:HandleRead(): Received 1024 bytes 
-    from 10.1.1.2
-  10000000000ns UdpEchoServerApplication:StopApplication()
-  10000000000ns UdpEchoClientApplication:StopApplication()
+  0s UdpEchoServerApplication:UdpEchoServer()
+  0s UdpEchoClientApplication:UdpEchoClient()
+  1s UdpEchoServerApplication:StartApplication()
+  2s UdpEchoClientApplication:StartApplication()
+  2s UdpEchoClientApplication:ScheduleTransmit()
+  2s UdpEchoClientApplication:Send()
+  2s UdpEchoClientApplication:Send(): Sent 1024 bytes to 10.1.1.2
+  2.00369s UdpEchoServerApplication:HandleRead(): Received 1024 bytes from 10.1.1.1
+  2.00369s UdpEchoServerApplication:HandleRead(): Echoing packet
+  2.00737s UdpEchoClientApplication:HandleRead(0x62c8c0, 0x62d020)
+  2.00737s UdpEchoClientApplication:HandleRead(): Received 1024 bytes from 10.1.1.2
+  10s UdpEchoServerApplication:StopApplication()
+  10s UdpEchoClientApplication:StopApplication()
   UdpEchoClientApplication:DoDispose()
   UdpEchoServerApplication:DoDispose()
   UdpEchoClientApplication:~UdpEchoClient()
@@ -295,7 +293,7 @@ If you run the script now, you should see the following output:
 @end verbatim
 
 You can see that the constructor for the UdpEchoServer was called at a 
-simulation time of 0 nanoseconds.  This is actually happening before the 
+simulation time of 0 seconds.  This is actually happening before the 
 simulation starts.  The same for the UdpEchoClient constructor.
 
 Recall that the @code{first.cc} script started the echo server application at
