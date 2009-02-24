@@ -400,7 +400,7 @@ RraaWifiManager::GetThresholds (WifiMode mode) const
     return mode6;
   } break;
   }
-  NS_ASSERT("Thresholds for an unknown mode are asked");
+  NS_ASSERT_MSG(false, "Thresholds for an unknown mode are asked");
   return ThresholdsItem ();
 }
 

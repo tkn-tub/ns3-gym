@@ -32,11 +32,11 @@ namespace ns3 {
 
 namespace TimeStepPrecision {
 
-static const uint64_t MS_FACTOR = (uint64_t)pow(10,3);
-static const uint64_t US_FACTOR = (uint64_t)pow(10,6);
-static const uint64_t NS_FACTOR = (uint64_t)pow(10,9);
-static const uint64_t PS_FACTOR = (uint64_t)pow(10,12);
-static const uint64_t FS_FACTOR = (uint64_t)pow(10,15);
+static const uint64_t MS_FACTOR = (uint64_t)1000;
+static const uint64_t US_FACTOR = (uint64_t)1000000;
+static const uint64_t NS_FACTOR = (uint64_t)1000000 * (uint64_t)1000;
+static const uint64_t PS_FACTOR = (uint64_t)1000000 * (uint64_t)1000000;
+static const uint64_t FS_FACTOR = (uint64_t)1000000 * (uint64_t)1000000 * (uint64_t)1000;
 static uint64_t g_tsPrecFactor = NS_FACTOR;
 
 static GlobalValue g_precisionDefaultValue ("TimeStepPrecision", 

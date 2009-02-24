@@ -178,7 +178,6 @@ class HistoryTrailer : public HistoryTrailerBase
 {
 public:
   HistoryTrailer ();
-  bool IsOk (void) const;
 
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;

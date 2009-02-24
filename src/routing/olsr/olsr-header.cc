@@ -303,7 +303,6 @@ MessageHeader::Mid::Deserialize (Buffer::Iterator start, uint32_t messageSize)
   Buffer::Iterator i = start;
 
   this->interfaceAddresses.clear ();
-  NS_ASSERT (messageSize >= 0);
   NS_ASSERT (messageSize % IPV4_ADDRESS_SIZE == 0);
   
   int numAddresses = messageSize / IPV4_ADDRESS_SIZE;

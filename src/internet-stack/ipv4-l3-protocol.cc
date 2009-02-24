@@ -1068,7 +1068,7 @@ Ipv4L3Protocol::SetUp (uint32_t i)
   // If interface address and network mask have been set, add a route
   // to the network of the interface (like e.g. ifconfig does on a
   // Linux box)
-  if ((interface->GetAddress ()) != (Ipv4Address ())
+  if (((interface->GetAddress ()) != (Ipv4Address ()))
       && (interface->GetNetworkMask ()) != (Ipv4Mask ()))
     {
       AddNetworkRouteTo (interface->GetAddress ().CombineMask (interface->GetNetworkMask ()),
