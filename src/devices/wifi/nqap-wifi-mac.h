@@ -113,6 +113,7 @@ private:
   virtual void DoDispose (void);
   NqapWifiMac (const NqapWifiMac & ctor_arg);
   NqapWifiMac &operator = (const NqapWifiMac &o);
+  Ptr<DcaTxop> DoGetDcaTxop(void) const;
 
   Ptr<DcaTxop> m_dca;
   Ptr<DcaTxop> m_beaconDca;

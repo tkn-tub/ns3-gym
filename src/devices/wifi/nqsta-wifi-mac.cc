@@ -33,6 +33,8 @@
 #include "mac-low.h"
 #include "dcf-manager.h"
 #include "mac-rx-middle.h"
+#include "ns3/trace-source-accessor.h"
+#include "ns3/pointer.h"
 
 NS_LOG_COMPONENT_DEFINE ("NqstaWifiMac");
 
@@ -83,6 +85,10 @@ NqstaWifiMac::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&NqstaWifiMac::SetActiveProbing),
                    MakeBooleanChecker ())
+    .AddAttribute ("DcaTxop", "The DcaTxop object",
+                   PointerValue (),
+                   MakePointerAccessor (&NqstaWifiMac::DoGetDcaTxop),
+                   MakePointerChecker<DcaTxop> ()) 
     ;
   return tid;
 }
@@ -194,7 +200,11 @@ NqstaWifiMac::GetPifs (void) const
 {
   return m_low->GetPifs ();
 }
-
+Ptr<DcaTxop>
+NqstaWifiMac::DoGetDcaTxop(void) const
+{
+  return m_dca;
+}
 void 
 NqstaWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
 {

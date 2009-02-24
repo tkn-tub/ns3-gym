@@ -30,6 +30,7 @@
 #include "dcf-manager.h"
 #include "mac-rx-middle.h"
 #include "mac-low.h"
+#include "ns3/pointer.h"
 
 NS_LOG_COMPONENT_DEFINE ("NqapWifiMac");
 
@@ -56,6 +57,10 @@ NqapWifiMac::GetTypeId (void)
                    MakeBooleanAccessor (&NqapWifiMac::SetBeaconGeneration,
                                         &NqapWifiMac::GetBeaconGeneration),
                    MakeBooleanChecker ())
+    .AddAttribute ("DcaTxop", "The DcaTxop object",
+                   PointerValue (),
+                   MakePointerAccessor (&NqapWifiMac::DoGetDcaTxop),
+                   MakePointerChecker<DcaTxop> ()) 
     ;
   return tid;
 }
@@ -553,6 +558,11 @@ NqapWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
      */
       NS_ASSERT (false);
     }  
+}
+Ptr<DcaTxop>
+NqapWifiMac::DoGetDcaTxop(void) const
+{
+  return m_dca;
 }
 
 } // namespace ns3

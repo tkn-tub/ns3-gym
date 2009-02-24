@@ -129,6 +129,7 @@ private:
   virtual void DoDispose (void);
   NqstaWifiMac (const NqstaWifiMac & ctor_arg);
   NqstaWifiMac &operator = (const NqstaWifiMac & ctor_arg);
+  Ptr<DcaTxop> DoGetDcaTxop(void) const;
 
   enum {
     ASSOCIATED,

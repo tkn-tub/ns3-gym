@@ -24,6 +24,7 @@
 #include "mac-rx-middle.h"
 #include "wifi-phy.h"
 #include "dcf-manager.h"
+#include "ns3/pointer.h"
 #include "ns3/packet.h"
 #include "ns3/log.h"
 
@@ -42,6 +43,10 @@ AdhocWifiMac::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::AdhocWifiMac")
     .SetParent<WifiMac> ()
     .AddConstructor<AdhocWifiMac> ()
+    .AddAttribute ("DcaTxop", "The DcaTxop object",
+                   PointerValue (),
+                   MakePointerAccessor (&AdhocWifiMac::DoGetDcaTxop),
+                   MakePointerChecker<DcaTxop> ()) 
     ;
   return tid;
 }
@@ -242,6 +247,11 @@ AdhocWifiMac::ForwardUp (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
   NS_LOG_DEBUG ("received size="<<packet->GetSize ()<<", from="<<hdr->GetAddr2 ());
   m_upCallback (packet, hdr->GetAddr2 (), hdr->GetAddr1 ());
+}
+Ptr<DcaTxop>
+AdhocWifiMac::DoGetDcaTxop(void) const
+{
+  return m_dca;
 }
 
 } // namespace ns3

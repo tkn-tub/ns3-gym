@@ -86,6 +86,7 @@ private:
   void ForwardUp (Ptr<Packet> packet, WifiMacHeader const*hdr);
   AdhocWifiMac (const AdhocWifiMac & ctor_arg);
   AdhocWifiMac &operator = (const AdhocWifiMac &o);
+  Ptr<DcaTxop> DoGetDcaTxop(void) const;
 
   Ptr<DcaTxop> m_dca;
   Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> m_upCallback;
