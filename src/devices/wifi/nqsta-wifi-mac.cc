@@ -24,6 +24,7 @@
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/uinteger.h"
+#include "ns3/trace-source-accessor.h"
 
 #include "nqsta-wifi-mac.h"
 #include "wifi-mac-header.h"
@@ -89,6 +90,10 @@ NqstaWifiMac::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&NqstaWifiMac::DoGetDcaTxop),
                    MakePointerChecker<DcaTxop> ()) 
+    .AddTraceSource ("Assoc", "Associated with an access point.",
+                     MakeTraceSourceAccessor (&NqstaWifiMac::m_assocLogger))
+    .AddTraceSource ("DeAssoc", "Association with an access point lost.",
+                     MakeTraceSourceAccessor (&NqstaWifiMac::m_deAssocLogger))
     ;
   return tid;
 }
@@ -384,7 +389,7 @@ NqstaWifiMac::TryToEnsureAssociated (void)
      * We try to initiate a probe request now.
      */
     m_linkDown ();
-    m_state = WAIT_PROBE_RESP;
+    SetState (WAIT_PROBE_RESP);
     SendProbeRequest ();
     break;
   case WAIT_ASSOC_RESP:
@@ -407,14 +412,14 @@ void
 NqstaWifiMac::AssocRequestTimeout (void)
 {
   NS_LOG_FUNCTION (this);
-  m_state = WAIT_ASSOC_RESP;
+  SetState (WAIT_ASSOC_RESP);
   SendAssociationRequest ();
 }
 void
 NqstaWifiMac::ProbeRequestTimeout (void)
 {
   NS_LOG_FUNCTION (this);
-  m_state = WAIT_PROBE_RESP;
+  SetState (WAIT_PROBE_RESP);
   SendProbeRequest ();
 }
 void 
@@ -428,7 +433,7 @@ NqstaWifiMac::MissedBeacons (void)
       return;
     }
   NS_LOG_DEBUG ("beacon missed");
-  m_state = BEACON_MISSED;
+  SetState (BEACON_MISSED);
   TryToEnsureAssociated ();
 }
 void 
@@ -542,7 +547,7 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
         }
       if (goodBeacon && m_state == BEACON_MISSED) 
         {
-          m_state = WAIT_ASSOC_RESP;
+          SetState (WAIT_ASSOC_RESP);
           SendAssociationRequest ();
         }
   } 
@@ -564,7 +569,7 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
             {
               m_probeRequestEvent.Cancel ();
             }
-          m_state = WAIT_ASSOC_RESP;
+          SetState (WAIT_ASSOC_RESP);
           SendAssociationRequest ();
         }
     } 
@@ -580,7 +585,7 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
             }
           if (assocResp.GetStatusCode ().IsSuccess ()) 
             {
-              m_state = ASSOCIATED;
+              SetState (ASSOCIATED);
               NS_LOG_DEBUG ("assoc completed"); 
               SupportedRates rates = assocResp.GetSupportedRates ();
               WifiRemoteStation *ap = m_stationManager->Lookup (hdr->GetAddr2 ());
@@ -604,7 +609,7 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
           else 
             {
               NS_LOG_DEBUG ("assoc refused");
-              m_state = REFUSED;
+              SetState (REFUSED);
             }
         }
     }
@@ -620,6 +625,22 @@ NqstaWifiMac::GetSupportedRates (void) const
       rates.AddSupportedRate (mode.GetDataRate ());
     }
   return rates;
+}
+
+void
+NqstaWifiMac::SetState (MacState value)
+{
+  if (value == ASSOCIATED && 
+      m_state != ASSOCIATED) 
+    {
+      m_assocLogger (GetBssid ());
+    }
+  else if (value != ASSOCIATED && 
+           m_state == ASSOCIATED) 
+    {
+      m_deAssocLogger (GetBssid ());
+    }
+  m_state = value;
 }
 
 } // namespace ns3

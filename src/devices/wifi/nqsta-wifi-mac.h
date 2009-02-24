@@ -27,6 +27,7 @@
 #include "ns3/event-id.h"
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
+#include "ns3/traced-callback.h"
 
 #include "wifi-mac.h"
 #include "supported-rates.h"
@@ -111,6 +112,13 @@ public:
   void StartActiveAssociation (void);
 
 private:
+  enum MacState{
+    ASSOCIATED,
+    WAIT_PROBE_RESP,
+    WAIT_ASSOC_RESP,
+    BEACON_MISSED,
+    REFUSED
+  };
   void SetBssid (Mac48Address bssid);
   void SetActiveProbing (bool enable);
   bool GetActiveProbing (void) const;
@@ -130,14 +138,9 @@ private:
   NqstaWifiMac (const NqstaWifiMac & ctor_arg);
   NqstaWifiMac &operator = (const NqstaWifiMac & ctor_arg);
   Ptr<DcaTxop> DoGetDcaTxop(void) const;
+  void SetState (enum MacState value);
 
-  enum {
-    ASSOCIATED,
-    WAIT_PROBE_RESP,
-    WAIT_ASSOC_RESP,
-    BEACON_MISSED,
-    REFUSED
-  } m_state;
+  enum MacState m_state;
   Time m_probeRequestTimeout;
   Time m_assocRequestTimeout;
   EventId m_probeRequestEvent;
@@ -157,6 +160,9 @@ private:
   Ptr<MacLow> m_low;
   Ssid m_ssid;
   Time m_eifsNoDifs;
+
+  TracedCallback<Mac48Address> m_assocLogger;
+  TracedCallback<Mac48Address> m_deAssocLogger;
 };
 
 } // namespace ns3
