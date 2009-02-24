@@ -72,7 +72,6 @@ GlobalValue::InitializeFromEnv (void)
         }
       cur = next + 1;
     }
-
 #endif /* HAVE_GETENV */
 }
 
