@@ -37,6 +37,30 @@ def _find_tests(testdir):
     tests.sort()
     return tests
 
+def diff(dir1, dir2, verbose):
+    import filecmp
+    comp = filecmp.dircmp(dir1, dir2)
+    differ = (comp.left_only or comp.right_only or comp.diff_files)
+    if differ:
+        if verbose:
+            comp.report()
+            import difflib
+            for diff_fname in comp.diff_files:
+                if not (diff_fname.endswith(".tr") or diff_fname.endswith(".mob")):
+                    print "The different file %r does not sound like a text file, not compared." % (diff_fname,)
+                diff_file1 = open(os.path.join(dir1, diff_fname), "rt").readlines()
+                diff_file2 = open(os.path.join(dir2, diff_fname), "rt").readlines()
+                diff = difflib.unified_diff(diff_file1, diff_file2)
+                count = 0
+                print "Differences in file %r" % (diff_fname,)
+                for line in diff:
+                    print line
+                    count += 1
+                    if count > 100:
+                        break
+        return 1
+    else:
+        return 0
 
 class regression_test_task(Task.TaskBase):
     after = 'cc cxx cc_link cxx_link'
@@ -136,17 +160,7 @@ class regression_test_task(Task.TaskBase):
                 print >> sys.stderr, ex
                 return 1
 
-        if Options.options.verbose:
-            #diffCmd = "diff traces " + refTestDirName + " | head"
-            diffCmd = subprocess.Popen([self.env['DIFF'], trace_output_path, reference_traces_path],
-                                       stdout=subprocess.PIPE)
-            headCmd = subprocess.Popen("head", stdin=diffCmd.stdout)
-            rc2 = headCmd.wait()
-            diffCmd.stdout.close()
-            rc1 = diffCmd.wait()
-            rc = rc1 or rc2
-        else:
-            rc = subprocess.Popen([self.env['DIFF'], trace_output_path, reference_traces_path], stdout=dev_null()).wait()
+        rc = diff(trace_output_path, reference_traces_path, Options.options.verbose)
         if rc:
             print "----------"
             print "Traces differ in test: ", self.test_name
@@ -154,6 +168,8 @@ class regression_test_task(Task.TaskBase):
             print "Traces in directory: " + trace_output_path
             print "Run the following command for details:"
             print "\tdiff -u %s %s" % (reference_traces_path, trace_output_path)
+            if not Options.options.verbose:
+                print "Or re-run regression testing with option -v"
             print "----------"
         return rc
 

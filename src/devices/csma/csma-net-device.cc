@@ -411,10 +411,15 @@ CsmaNetDevice::TransmitStart ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
+  //
+  // This function is called to start the process of transmitting a packet.  We 
+  // expect that a Ptr to the packet to be transmitted has been placed in 
+  // m_currentPkt.
+
   NS_LOG_LOGIC ("m_currentPkt=" << m_currentPkt);
   NS_LOG_LOGIC ("UID is " << m_currentPkt->GetUid ());
+
   //
-  // This function is called to start the process of transmitting a packet.
   // We need to tell the channel that we've started wiggling the wire and
   // schedule an event that will be executed when it's time to tell the 
   // channel that we're done wiggling the wire.
@@ -487,20 +492,43 @@ CsmaNetDevice::TransmitAbort (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
+  //
+  // When we started transmitting the current packet, it was placed in 
+  // m_currentPkt.  So we had better find one there.
+  //
+  NS_ASSERT_MSG (m_currentPkt != 0, "CsmaNetDevice::TransmitAbort(): m_currentPkt zero");
+  NS_LOG_LOGIC ("m_currentPkt=" << m_currentPkt);
   NS_LOG_LOGIC ("Pkt UID is " << m_currentPkt->GetUid () << ")");
 
   //
-  // Since we were transmitting a packet, that packet had better be on the transmit queue.
+  // Hit the drop trace source.
   //
-  m_currentPkt = m_queue->Dequeue ();
-  NS_ASSERT_MSG (m_currentPkt != 0, "No Packet on queue during CsmaNetDevice::TransmitAbort()");
+  // XXX Should there be a separate transmit drop trace?
+  //
+  m_dropTrace (m_currentPkt);
 
-  //
-  // The last one failed.  Let's try to transmit the next one (if there)
+  // 
+  // We're done with that one, so reset the backoff algorithm and ready the
+  // transmit state machine.
   //
   m_backoff.ResetBackoffTime ();
   m_txMachineState = READY;
-  TransmitStart ();
+
+  //
+  // If there is another packet on the input queue, we need to start trying to 
+  // get that out.  If the queue is empty we just wait until someone puts one
+  // in.
+  //
+  if (m_queue->IsEmpty ())
+    {
+      return;
+    }
+  else
+    {
+      m_currentPkt = m_queue->Dequeue ();
+      NS_ASSERT_MSG (m_currentPkt != 0, "CsmaNetDevice::TransmitAbort(): IsEmpty false but no Packet on queue?");
+      TransmitStart ();
+    }
 }
 
   void
@@ -514,11 +542,18 @@ CsmaNetDevice::TransmitCompleteEvent (void)
   // schedule an event that will be executed when it's time to re-enable
   // the transmitter after the interframe gap.
   //
-  NS_ASSERT_MSG (m_txMachineState == BUSY, "Must be BUSY if transmitting");
+  NS_ASSERT_MSG (m_txMachineState == BUSY, "CsmaNetDevice::transmitCompleteEvent(): Must be BUSY if transmitting");
   NS_ASSERT (m_channel->GetState () == TRANSMITTING);
   m_txMachineState = GAP;
 
+  //
+  // When we started transmitting the current packet, it was placed in 
+  // m_currentPkt.  So we had better find one there.
+  //
+  NS_ASSERT_MSG (m_currentPkt != 0, "CsmaNetDevice::TransmitCompleteEvent(): m_currentPkt zero");
+  NS_LOG_LOGIC ("m_currentPkt=" << m_currentPkt);
   NS_LOG_LOGIC ("Pkt UID is " << m_currentPkt->GetUid () << ")");
+
   m_channel->TransmitEnd (); 
 
   NS_LOG_LOGIC ("Schedule TransmitReadyEvent in " << m_tInterframeGap.GetSeconds () << "sec");
@@ -536,8 +571,16 @@ CsmaNetDevice::TransmitReadyEvent (void)
   // gap has passed.  If there are pending transmissions, we use this opportunity
   // to start the next transmit.
   //
-  NS_ASSERT_MSG (m_txMachineState == GAP, "Must be in interframe gap");
+  NS_ASSERT_MSG (m_txMachineState == GAP, "CsmaNetDevice::TransmitReadyEvent(): Must be in interframe gap");
   m_txMachineState = READY;
+
+  //
+  // When we started transmitting the current packet, it was placed in 
+  // m_currentPkt.  So we had better find one there.
+  //
+  NS_ASSERT_MSG (m_currentPkt != 0, "CsmaNetDevice::TransmitCompleteEvent(): m_currentPkt zero");
+  NS_LOG_LOGIC ("m_currentPkt=" << m_currentPkt);
+  NS_LOG_LOGIC ("Pkt UID is " << m_currentPkt->GetUid () << ")");
 
   //
   // Get the next packet from the queue for transmitting

@@ -50,13 +50,6 @@ public:
    * \param allocator allocate initial node positions
    */
   void SetPositionAllocator (Ptr<PositionAllocator> allocator);
-  /**
-   * Set the position allocator which will be used to allocate the initial 
-   * position of every node initialized during MobilityModel::Install.
-   *
-   * \param allocator allocate initial node positions
-   */
-  void SetPositionAllocator (std::string allocatorName);
 
   /**
    * \param type the type of mobility model to use.

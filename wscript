@@ -256,9 +256,6 @@ def configure(conf):
         conf.env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
                                            Options.options.enable_modules.split(',')]
 
-    # we cannot run regression tests without diff
-    conf.find_program('diff', var='DIFF')
-
     # for suid bits
     conf.find_program('sudo', var='SUDO')
 
@@ -464,9 +461,6 @@ def build(bld):
             Options.options.compile_targets = os.path.basename(program_name)
 
     if Options.options.regression or Options.options.regression_generate:
-        if not env['DIFF']:
-            raise Utils.WafError("Cannot run regression tests: the 'diff' program is not installed.")
-
         regression_traces = env['REGRESSION_TRACES']
         if not regression_traces:
             raise Utils.WafError("Cannot run regression tests: reference traces directory not given"

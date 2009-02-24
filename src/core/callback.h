@@ -340,6 +340,8 @@ public:
 protected:
   CallbackBase (Ptr<CallbackImplBase> impl) : m_impl (impl) {}
   Ptr<CallbackImplBase> m_impl;
+
+  static std::string Demangle(const std::string& mangled);
 };
 
 /**
@@ -476,9 +478,9 @@ private:
   void DoAssign (Ptr<const CallbackImplBase> other) {
     if (!DoCheckType (other))
       {
-        NS_FATAL_ERROR ("Incompatible types. (feed to \"c++filt -t\")"
-                        " got=" << typeid (*other).name () << 
-                        ", expected=" << typeid (CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> *).name ());
+        NS_FATAL_ERROR ("Incompatible types. (feed to \"c++filt -t\" if needed)" << std::endl <<
+                        "got=" << Demangle ( typeid (*other).name () ) << std::endl <<
+                        "expected=" << Demangle ( typeid (CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> *).name () ));
       }
     m_impl = const_cast<CallbackImplBase *> (PeekPointer (other));
   }

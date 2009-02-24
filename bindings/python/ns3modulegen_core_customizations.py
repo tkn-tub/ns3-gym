@@ -530,3 +530,20 @@ def TypeId_customizations(module):
                                      flags=["METH_VARARGS", "METH_KEYWORDS", "METH_STATIC"])
 
 
+def add_std_ofstream(module):
+    module.add_include('<fstream>')
+    ostream = module.add_class('ostream', foreign_cpp_namespace='::std')
+    ostream.set_cannot_be_constructed("abstract base class")
+    ofstream = module.add_class('ofstream', foreign_cpp_namespace='::std', parent=ostream)
+    ofstream.add_enum('openmode', [
+            ('app', 'std::ios_base::app'),
+            ('ate', 'std::ios_base::ate'),
+            ('binary', 'std::ios_base::binary'),
+            ('in', 'std::ios_base::in'),
+            ('out', 'std::ios_base::out'),
+            ('trunc', 'std::ios_base::trunc'),
+            ])
+    ofstream.add_constructor([Parameter.new("const char *", 'filename'),
+                              Parameter.new("::std::ofstream::openmode", 'mode', default_value="std::ios_base::out")])
+    ofstream.add_method('close', None, [])
+

@@ -1,4 +1,6 @@
 #! /usr/bin/env python
 
-"""Generic trace-comparison-type regression test."""
+"""Compare that Second generates correct traces."""
+
+arguments = ["--verbose=0"]
 

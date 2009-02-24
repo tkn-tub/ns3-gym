@@ -86,6 +86,7 @@ def main():
     ns3modulegen_core_customizations.Simulator_customizations(root_module)
     ns3modulegen_core_customizations.CommandLine_customizations(root_module)
     ns3modulegen_core_customizations.TypeId_customizations(root_module)
+    ns3modulegen_core_customizations.add_std_ofstream(root_module)
 
 
     for local_module in LOCAL_MODULES:
@@ -140,6 +141,10 @@ def main():
         for clsname in ['WallClockSynchronizer', 'RealtimeSimulatorImpl']:
             root_module.classes.remove(root_module['ns3::%s' % clsname])
         root_module.enums.remove(root_module['ns3::RealtimeSimulatorImpl::SynchronizationMode'])
+
+    if 'TapBridge' not in enabled_features:
+        for clsname in ['TapBridge', 'TapBridgeHelper']:
+            root_module.classes.remove(root_module['ns3::%s' % clsname])
 
     root_module.generate(out, '_ns3')
 

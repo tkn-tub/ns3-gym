@@ -109,6 +109,8 @@ def register_types(module):
     module.add_class('Channel', parent=root_module['ns3::Object'])
     ## drop-tail-queue.h: ns3::DropTailQueue [class]
     module.add_class('DropTailQueue', parent=root_module['ns3::Queue'])
+    ## drop-tail-queue.h: ns3::DropTailQueue::Mode [enumeration]
+    module.add_enum('Mode', ['ILLEGAL', 'PACKETS', 'BYTES'], outer_class=root_module['ns3::DropTailQueue'])
     ## ethernet-header.h: ns3::EthernetHeader [class]
     module.add_class('EthernetHeader', parent=root_module['ns3::Header'])
     ## ethernet-trailer.h: ns3::EthernetTrailer [class]
@@ -2296,6 +2298,14 @@ def register_Ns3DropTailQueue_methods(root_module, cls):
                    is_static=True)
     ## drop-tail-queue.h: ns3::DropTailQueue::DropTailQueue() [constructor]
     cls.add_constructor([])
+    ## drop-tail-queue.h: void ns3::DropTailQueue::SetMode(ns3::DropTailQueue::Mode mode) [member function]
+    cls.add_method('SetMode', 
+                   'void', 
+                   [param('ns3::DropTailQueue::Mode', 'mode')])
+    ## drop-tail-queue.h: ns3::DropTailQueue::Mode ns3::DropTailQueue::GetMode() [member function]
+    cls.add_method('GetMode', 
+                   'ns3::DropTailQueue::Mode', 
+                   [])
     ## drop-tail-queue.h: bool ns3::DropTailQueue::DoEnqueue(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DoEnqueue', 
                    'bool', 

@@ -36,13 +36,20 @@ NS_LOG_COMPONENT_DEFINE ("SecondScriptExample");
 int 
 main (int argc, char *argv[])
 {
-  LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
-  LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
+  bool verbose = true;
 
   uint32_t nCsma = 3;
   CommandLine cmd;
   cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
+  cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
+
   cmd.Parse (argc,argv);
+
+  if (verbose)
+    {
+      LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
+      LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
+    }
 
   NodeContainer p2pNodes;
   p2pNodes.Create (2);

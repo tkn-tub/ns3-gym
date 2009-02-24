@@ -46,12 +46,7 @@ MobilityHelper::SetPositionAllocator (Ptr<PositionAllocator> allocator)
 {
   m_position = allocator;
 }
-void 
-MobilityHelper::SetPositionAllocator (std::string allocatorName)
-{
-  Ptr<PositionAllocator> allocator = Names::Find<PositionAllocator> (allocatorName);
-  m_position = allocator;
-}
+
 void 
 MobilityHelper::SetPositionAllocator (std::string type,
                                       std::string n1, const AttributeValue &v1,
