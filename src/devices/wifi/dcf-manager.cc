@@ -74,10 +74,8 @@ DcfState::ResetCw (void)
 void 
 DcfState::UpdateFailedCw (void)
 {
-  uint32_t cw = m_cw;
-  cw *= 2;
-  cw = std::min (m_cwMax, cw);
-  m_cw = cw;
+  // see 802.11-2007, section 9.9.1.5
+  m_cw = std::min ( 2 * (m_cw + 1) - 1, m_cwMax);
 }
 void 
 DcfState::UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound)
