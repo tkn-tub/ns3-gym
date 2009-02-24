@@ -55,24 +55,12 @@ public:
    * \param seed
    */ 
   static void SetSeed (uint32_t seed);
-
-   /**
-   * \brief set the seed
-   * \code
-   * uint32_t seed[6]={10,5,2,3,5,11};
-   * SeedManger::SetSeed(seed);
-   * UniformVariable x(2,3);     //these will give the same output everytime
-   * ExponentialVariable y(120); //as long as the seed stays the same
-   * \endcode
-   * \param seed
-   */ 
-   static void SetSeed (uint32_t seed[6]);
  
   /**
    * \brief Get the seed value
-   * \param array of size 6 which will hold returned seed values
+   * \return the seed value
    */
-   static void GetSeed (uint32_t seed[6]);
+   static uint32_t GetSeed ();
  
    /**
     * \brief Set the run number of simulation

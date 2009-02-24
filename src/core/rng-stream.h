@@ -67,7 +67,6 @@ private: //members
   double U01d ();
   static uint32_t EnsureGlobalInitialized (void);
 private: //static data
-  static double packageSeed[6];
   static double nextSeed[6];
 };
 

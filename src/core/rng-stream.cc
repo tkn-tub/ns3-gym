@@ -203,12 +203,56 @@ void MatPowModM (const double A[3][3], double B[3][3], double m, int32_t n)
 
 static ns3::GlobalValue g_rngSeed ("RngSeed", 
                                    "The global seed of all rng streams",
-                                   ns3::IntegerValue (1),
+                                   (getenv ("NS_RNG") !=0) ? GetSeedFromEnv() : ns3::IntegerValue (1),
                                    ns3::MakeIntegerChecker<uint32_t> ());
 static ns3::GlobalValue g_rngRun ("RngRun", 
                                   "The run number used to modify the global seed",
-                                  ns3::IntegerValue (1),
+                                  (getenv ("NS_RNG") !=0) ? GetRunFromEnv() : ns3::IntegerValue (1),
                                   ns3::MakeIntegerChecker<uint32_t> ());
+
+ns3::IntegerValue GetSeedFromEnv ()
+{
+  uint32_t seed;
+  char *tmp = getenv ("NS_RNG");
+  // NS_RNG should be set
+  NS_ASSERT(tmp != 0);
+  std::string var = std::string (tmp);
+  std::string::size_type colon = var.find (":");
+  if (colon != std::string::npos)
+  {
+    std::string seedString = var.substr (0, colon);
+    std::istringstream iss;
+    iss.str (seedString);
+    iss >> seed;
+  }
+  else
+  {
+    std::istringstream iss;
+    iss.str (var);
+    iss >> seed;
+  }
+  // finally, actually use these values to do something.
+  return ns3::IntegerValue(seed);
+}
+
+ns3::IntegerValue GetRunFromEnv ()
+{
+  uint32_t run = 0;
+  char *tmp = getenv ("NS_RNG");
+  if (tmp != 0)
+  {
+    std::string var = std::string (tmp);
+    std::string::size_type colon = var.find (":");
+    if (colon != std::string::npos)
+    {
+      std::string runString = var.substr (colon+1,var.size ()-colon-1);
+      std::istringstream iss;
+      iss.str (runString);
+      iss >> run;
+    }
+  }
+  return run;  
+}
 
 } // end of anonymous namespace
 
@@ -360,14 +404,11 @@ RngStream::EnsureGlobalInitialized (void)
 
 
 //-------------------------------------------------------------------------
-// The default seed of the package; will be the seed of the first
-// declared RngStream, unless SetPackageSeed is called.
+// The default seed of the package; at run time, this will be overwritten
+// by the g_rngSeed value the first time RngStream::RngStream is visited;
+// so the value 12345 is for debugging
 //
 double RngStream::nextSeed[6] =
-{
-  12345.0, 12345.0, 12345.0, 12345.0, 12345.0, 12345.0
-};
-double RngStream::packageSeed[6] =
 {
   12345.0, 12345.0, 12345.0, 12345.0, 12345.0, 12345.0
 };
@@ -377,11 +418,24 @@ double RngStream::packageSeed[6] =
 //
 RngStream::RngStream ()
 {
-  uint32_t run = EnsureGlobalInitialized ();
+  static bool globalSeedInitialized = false;
+  //get the global seed and initialize the RngStream system with it
+  IntegerValue tmp;
+  if (!globalSeedInitialized)
+  {
+    g_rngSeed.GetValue (tmp);
+    SetPackageSeed (tmp.Get());
+    initialized = true;
+  }
+  //get the global run number
+  g_rngRun.GetValue (value);
+  uint32_t run = value.Get ();
+  
   anti = false;
   incPrec = false;
   // Stream initialization moved to separate method.
   InitializeStream ();
+  //move the state of this stream up
   ResetNthSubstream (run);
 }
 
@@ -464,13 +518,12 @@ void RngStream::ResetNthSubstream (uint32_t N)
 //-------------------------------------------------------------------------
 bool RngStream::SetPackageSeed (const uint32_t seed[6])
 {
-  EnsureGlobalInitialized ();
   if (!CheckSeed (seed))
     {
       return false;
     }
   for (int i = 0; i < 6; ++i)
-    packageSeed[i] = nextSeed[i] = seed[i];
+    nextSeed[i] = seed[i];
   return true;
 }
 bool 
@@ -482,10 +535,12 @@ RngStream::SetPackageSeed (uint32_t seed)
 void 
 RngStream::GetPackageSeed (uint32_t seed[6])
 {
-  EnsureGlobalInitialized ();
+  IntegerValue value;
+  g_rngSeed.GetValue (value);
+  uint32_t theSeed = value.Get ();
   for (int i = 0; i < 6; i++)
     {
-      seed[i] = static_cast<uint32_t> (packageSeed[i]);
+      seed[i] = static_cast<uint32_t> (theSeed);
     }
 }
 void 

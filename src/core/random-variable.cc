@@ -33,6 +33,7 @@
 
 
 #include "assert.h"
+#include "integer.h"
 #include "random-variable.h"
 #include "rng-stream.h"
 #include "fatal-error.h"
@@ -45,24 +46,30 @@ namespace ns3{
 // Seed Manager
 //-----------------------------------------------------------------------------
 
-void SeedManager::SetSeed(uint32_t seed[6])
+uint32_t SeedManager::GetSeed()
 {
-  RngStream::SetPackageSeed (seed);
-}
-
-void SeedManager::GetSeed(uint32_t seed[6])
-{
-  RngStream::GetPackageSeed (seed);
+  uint32_t s[6];
+  RngStream::GetPackageSeed (s);
+  NS_ASSERT(
+              s[0] == s[1] &&
+              s[0] == s[2] &&
+              s[0] == s[3] &&
+              s[0] == s[4] &&
+              s[0] == s[5]    
+            );
+  return s[0];
 }
 
 void SeedManager::SetSeed(uint32_t seed)
 {
-  RngStream::SetPackageSeed (seed);
+  IntegerValue seedValue(seed);
+  g_rngSeed.SetValue(seedValue);
 }
 
 void SeedManager::SetRun(uint32_t run)
 {
-  RngStream::SetPackageRun (run);
+  IntegerValue runValue(run);
+  g_rngRun.SetValue(runValue);
 }
 
 uint32_t SeedManager::GetRun()
