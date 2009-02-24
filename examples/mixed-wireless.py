@@ -115,8 +115,12 @@ def main(argv):
     # 
     wifi = ns3.WifiHelper()
     wifi.SetMac("ns3::AdhocWifiMac")
-    wifi.SetPhy("ns3::WifiPhy")
-    backboneDevices = wifi.Install(backbone)
+    wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
+                                  "DataMode", ns3.StringValue ("wifia-54mbs"))
+    wifiPhy = ns3.YansWifiPhyHelper.Default ()
+    wifiChannel = ns3.YansWifiChannelHelper.Default ()
+    wifiPhy.SetChannel (wifiChannel.Create ())
+    backboneDevices = wifi.Install(wifiPhy, backbone)
     # 
     #  Add the IPv4 protocol stack to the nodes in our container
     # 
@@ -208,21 +212,33 @@ def main(argv):
         #  two containers here; one with all of the new nodes, and one
         #  with all of the nodes including new and existing nodes
         # 
-        newInfraNodes = ns3.NodeContainer()
-        newInfraNodes.Create(infraNodes - 1)
+        stas = ns3.NodeContainer()
+        stas.Create(infraNodes - 1)
         #  Now, create the container with all nodes on this link
-        infra = ns3.NodeContainer(ns3.NodeContainer(backbone.Get(i)), newInfraNodes)
+        infra = ns3.NodeContainer(ns3.NodeContainer(backbone.Get(i)), stas)
         # 
         #  Create another ad hoc network and devices
         # 
-        wifiInfra = ns3.WifiHelper()
-        wifiInfra.SetMac("ns3::AdhocWifiMac")
-        wifiInfra.SetPhy("ns3::WifiPhy")
-        infraDevices = wifiInfra.Install(infra)
+        ssid = ns3.Ssid ('wifi-infra' + str(i))
+        wifiInfra = ns3.WifiHelper.Default ()
+        wifiPhy.SetChannel (wifiChannel.Create ())
+        wifiInfra.SetRemoteStationManager ('ns3::ArfWifiManager')
+        # setup stas
+        wifiInfra.SetMac ("ns3::NqstaWifiMac",
+                          "Ssid", ns3.SsidValue (ssid),
+                          "ActiveProbing", ns3.BooleanValue (False))
+        staDevices = wifiInfra.Install (wifiPhy, stas)
+        # setup ap.
+        wifiInfra.SetMac ("ns3::NqapWifiMac", "Ssid", ns3.SsidValue (ssid),
+                          "BeaconGeneration", ns3.BooleanValue (True),
+                          "BeaconInterval", ns3.TimeValue (ns3.Seconds (2.5)))
+        apDevices = wifiInfra.Install (wifiPhy, backbone.Get (i))
+        # Collect all of these new devices
+        infraDevices = ns3.NetDeviceContainer (apDevices, staDevices)
 
         #  Add the IPv4 protocol stack to the nodes in our container
         # 
-        internet.Install(newInfraNodes)
+        internet.Install(stas)
         # 
         #  Assign IPv4 addresses to the device drivers(actually to the associated
         #  IPv4 interfaces) we just created.
@@ -311,7 +327,7 @@ def main(argv):
     # WifiHelper.EnableAscii(ascii, 13, 0); 
 
     #  Let's do a pcap trace on the backbone devices
-    ns3.WifiHelper.EnablePcap("mixed-wireless", backboneDevices)
+    ns3.YansWifiPhyHelper.EnablePcap("mixed-wireless", backboneDevices)
     #  Let's additionally trace the application Sink, ifIndex 0
     ns3.CsmaHelper.EnablePcap("mixed-wireless", appSink.GetId(), 0)
 
