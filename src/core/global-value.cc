@@ -34,7 +34,7 @@ GlobalValue::GlobalValue (std::string name, std::string help,
 {
   if (m_checker == 0)
     {
-      NS_FATAL_ERROR ("Checker should no be zero.");
+      NS_FATAL_ERROR ("Checker should not be zero.");
     }
   GetVector ()->push_back (this);
 }
