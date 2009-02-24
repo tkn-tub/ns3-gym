@@ -26,8 +26,6 @@
 int main (int argc, char *argv[])
 {
 #ifdef RUN_SELF_TESTS
-  uint32_t rngSeed[6] = {1,2,3,4,5,6};
-  ns3::SeedManager::SetSeed(rngSeed);
   ns3::PacketMetadata::Enable ();
   ns3::TestManager::EnableVerbose ();
   bool success = ns3::TestManager::RunTests ();

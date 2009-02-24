@@ -201,15 +201,7 @@ void MatPowModM (const double A[3][3], double B[3][3], double m, int32_t n)
     }
 }
 
-static ns3::GlobalValue g_rngSeed ("RngSeed", 
-                                   "The global seed of all rng streams",
-                                   (getenv ("NS_RNG") !=0) ? GetSeedFromEnv() : ns3::IntegerValue (1),
-                                   ns3::MakeIntegerChecker<uint32_t> ());
-static ns3::GlobalValue g_rngRun ("RngRun", 
-                                  "The run number used to modify the global seed",
-                                  (getenv ("NS_RNG") !=0) ? GetRunFromEnv() : ns3::IntegerValue (1),
-                                  ns3::MakeIntegerChecker<uint32_t> ());
-
+//two seeding methods follow
 ns3::IntegerValue GetSeedFromEnv ()
 {
   uint32_t seed;
@@ -253,6 +245,15 @@ ns3::IntegerValue GetRunFromEnv ()
   }
   return run;  
 }
+
+static ns3::GlobalValue g_rngSeed ("RngSeed", 
+                                   "The global seed of all rng streams",
+                                   (getenv ("NS_RNG") !=0) ? GetSeedFromEnv() : ns3::IntegerValue (1),
+                                   ns3::MakeIntegerChecker<uint32_t> ());
+static ns3::GlobalValue g_rngRun ("RngRun", 
+                                  "The run number used to modify the global seed",
+                                  (getenv ("NS_RNG") !=0) ? GetRunFromEnv() : ns3::IntegerValue (1),
+                                  ns3::MakeIntegerChecker<uint32_t> ());
 
 } // end of anonymous namespace
 
@@ -425,11 +426,11 @@ RngStream::RngStream ()
   {
     g_rngSeed.GetValue (tmp);
     SetPackageSeed (tmp.Get());
-    initialized = true;
+    globalSeedInitialized = true;
   }
   //get the global run number
-  g_rngRun.GetValue (value);
-  uint32_t run = value.Get ();
+  g_rngRun.GetValue (tmp);
+  uint32_t run = tmp.Get ();
   
   anti = false;
   incPrec = false;

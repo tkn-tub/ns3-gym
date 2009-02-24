@@ -33,6 +33,7 @@
 
 
 #include "assert.h"
+#include "config.h"
 #include "integer.h"
 #include "random-variable.h"
 #include "rng-stream.h"
@@ -62,14 +63,12 @@ uint32_t SeedManager::GetSeed()
 
 void SeedManager::SetSeed(uint32_t seed)
 {
-  IntegerValue seedValue(seed);
-  g_rngSeed.SetValue(seedValue);
+  Config::SetGlobal("RngSeed", IntegerValue(seed));
 }
 
 void SeedManager::SetRun(uint32_t run)
 {
-  IntegerValue runValue(run);
-  g_rngRun.SetValue(runValue);
+  Config::SetGlobal("RngRun", IntegerValue(run));
 }
 
 uint32_t SeedManager::GetRun()
