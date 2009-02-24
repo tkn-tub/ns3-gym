@@ -109,6 +109,7 @@ public:
 private:
   friend class GlobalValueTests;
   static Vector *GetVector (void);
+  void InitializeFromEnv (void);
   std::string m_name;
   std::string m_help;
   Ptr<AttributeValue> m_initialValue;

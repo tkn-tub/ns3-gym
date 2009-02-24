@@ -21,6 +21,10 @@
 #include "fatal-error.h"
 #include "attribute.h"
 #include "string.h"
+#include "ns3/core-config.h"
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
 
 namespace ns3 {
 
@@ -37,6 +41,39 @@ GlobalValue::GlobalValue (std::string name, std::string help,
       NS_FATAL_ERROR ("Checker should not be zero.");
     }
   GetVector ()->push_back (this);
+  InitializeFromEnv ();
+}
+
+void
+GlobalValue::InitializeFromEnv (void)
+{
+#ifdef HAVE_GETENV
+  char *envVar = getenv ("NS_GLOBAL_VALUE");
+  if (envVar == 0)
+    {
+      return;
+    }
+  std::string env = std::string (envVar);
+  std::string::size_type cur = 0;
+  std::string::size_type next = 0;
+  while (next != std::string::npos)
+    {
+      next = env.find (";", cur);
+      std::string tmp = std::string (env, cur, next-cur);
+      std::string::size_type equal = tmp.find ("=");
+      if (equal != std::string::npos)
+        {
+          std::string name = tmp.substr (0, equal);
+          std::string value = tmp.substr (equal+1, tmp.size () - equal - 1);
+          if (name == m_name)
+            {
+              SetValue (StringValue (value));
+            }
+        }
+      cur = next + 1;
+    }
+
+#endif /* HAVE_GETENV */
 }
 
 std::string 
