@@ -335,6 +335,11 @@ def register_Ns3CallbackBase_methods(root_module, cls):
     ## callback.h: ns3::CallbackBase::CallbackBase(ns3::Ptr<ns3::CallbackImplBase> impl) [constructor]
     cls.add_constructor([param('ns3::Ptr< ns3::CallbackImplBase >', 'impl')], 
                         visibility='protected')
+    ## callback.h: static std::string ns3::CallbackBase::Demangle(std::string const & mangled) [member function]
+    cls.add_method('Demangle', 
+                   'std::string', 
+                   [param('std::string const &', 'mangled')], 
+                   is_static=True, visibility='protected')
     cls.add_copy_constructor()
     return
 
@@ -450,10 +455,6 @@ def register_Ns3IntToType__6_methods(root_module, cls):
     return
 
 def register_Ns3Names_methods(root_module, cls):
-    ## names.h: ns3::Names::Names(ns3::Names const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Names const &', 'arg0')])
-    ## names.h: ns3::Names::Names() [constructor]
-    cls.add_constructor([])
     ## names.h: static bool ns3::Names::Add(std::string name, ns3::Ptr<ns3::Object> obj) [member function]
     cls.add_method('Add', 
                    'bool', 
@@ -499,6 +500,8 @@ def register_Ns3Names_methods(root_module, cls):
                    'void', 
                    [], 
                    is_static=True)
+    cls.add_constructor([])
+    cls.add_copy_constructor()
     return
 
 def register_Ns3ObjectBase_methods(root_module, cls):
@@ -722,15 +725,10 @@ def register_Ns3SeedManager_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'seed')], 
                    is_static=True)
-    ## random-variable.h: static void ns3::SeedManager::SetSeed(uint32_t * seed) [member function]
-    cls.add_method('SetSeed', 
-                   'void', 
-                   [param('uint32_t *', 'seed')], 
-                   is_static=True)
-    ## random-variable.h: static void ns3::SeedManager::GetSeed(uint32_t * seed) [member function]
+    ## random-variable.h: static uint32_t ns3::SeedManager::GetSeed() [member function]
     cls.add_method('GetSeed', 
-                   'void', 
-                   [param('uint32_t *', 'seed')], 
+                   'uint32_t', 
+                   [], 
                    is_static=True)
     ## random-variable.h: static void ns3::SeedManager::SetRun(uint32_t run) [member function]
     cls.add_method('SetRun', 
@@ -2059,7 +2057,7 @@ def register_functions(root_module):
     module.add_function('TypeNameGet', 
                         'std::string', 
                         [], 
-                        template_parameters=['long'])
+                        template_parameters=['long long'])
     ## type-name.h: extern std::string ns3::TypeNameGet() [free function]
     module.add_function('TypeNameGet', 
                         'std::string', 
@@ -2079,7 +2077,7 @@ def register_functions(root_module):
     module.add_function('TypeNameGet', 
                         'std::string', 
                         [], 
-                        template_parameters=['unsigned long'])
+                        template_parameters=['unsigned long long'])
     ## type-name.h: extern std::string ns3::TypeNameGet() [free function]
     module.add_function('TypeNameGet', 
                         'std::string', 

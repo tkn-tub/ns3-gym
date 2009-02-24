@@ -183,6 +183,10 @@ def register_Ns3BridgeHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
                    [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::NetDeviceContainer', 'c')])
+    ## bridge-helper.h: ns3::NetDeviceContainer ns3::BridgeHelper::Install(std::string nodeName, ns3::NetDeviceContainer c) [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('std::string', 'nodeName'), param('ns3::NetDeviceContainer', 'c')])
     cls.add_copy_constructor()
     return
 
@@ -300,6 +304,10 @@ def register_Ns3CsmaHelper_methods(root_module, cls):
     cls.add_method('InstallStar', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'hub'), param('ns3::NodeContainer', 'spokes'), param('ns3::NetDeviceContainer &', 'hubDevices'), param('ns3::NetDeviceContainer &', 'spokeDevices')])
+    ## csma-helper.h: void ns3::CsmaHelper::InstallStar(std::string hubName, ns3::NodeContainer spokes, ns3::NetDeviceContainer & hubDevices, ns3::NetDeviceContainer & spokeDevices) [member function]
+    cls.add_method('InstallStar', 
+                   'void', 
+                   [param('std::string', 'hubName'), param('ns3::NodeContainer', 'spokes'), param('ns3::NetDeviceContainer &', 'hubDevices'), param('ns3::NetDeviceContainer &', 'spokeDevices')])
     cls.add_copy_constructor()
     return
 
@@ -459,6 +467,10 @@ def register_Ns3Ipv4InterfaceContainer_methods(root_module, cls):
     cls.add_method('Add', 
                    'void', 
                    [param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')])
+    ## ipv4-interface-container.h: void ns3::Ipv4InterfaceContainer::Add(std::string ipv4Name, uint32_t interface) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('std::string', 'ipv4Name'), param('uint32_t', 'interface')])
     cls.add_copy_constructor()
     return
 
@@ -568,6 +580,10 @@ def register_Ns3NetDeviceContainer_methods(root_module, cls):
     cls.add_method('Add', 
                    'void', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'device')])
+    ## net-device-container.h: void ns3::NetDeviceContainer::Add(std::string deviceName) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('std::string', 'deviceName')])
     cls.add_copy_constructor()
     return
 
@@ -684,6 +700,11 @@ def register_Ns3OnOffHelper_methods(root_module, cls):
                    'ns3::ApplicationContainer', 
                    [param('ns3::Ptr< ns3::Node >', 'node')], 
                    is_const=True)
+    ## on-off-helper.h: ns3::ApplicationContainer ns3::OnOffHelper::Install(std::string nodeName) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('std::string', 'nodeName')], 
+                   is_const=True)
     cls.add_copy_constructor()
     return
 
@@ -703,6 +724,11 @@ def register_Ns3PacketSinkHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
                    [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
+    ## packet-sink-helper.h: ns3::ApplicationContainer ns3::PacketSinkHelper::Install(std::string nodeName) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('std::string', 'nodeName')], 
                    is_const=True)
     cls.add_copy_constructor()
     return
@@ -816,6 +842,10 @@ def register_Ns3PointToPointHelper_methods(root_module, cls):
     cls.add_method('InstallStar', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'hub'), param('ns3::NodeContainer', 'spokes'), param('ns3::NetDeviceContainer &', 'hubDevices'), param('ns3::NetDeviceContainer &', 'spokeDevices')])
+    ## point-to-point-helper.h: void ns3::PointToPointHelper::InstallStar(std::string hubName, ns3::NodeContainer spokes, ns3::NetDeviceContainer & hubDevices, ns3::NetDeviceContainer & spokeDevices) [member function]
+    cls.add_method('InstallStar', 
+                   'void', 
+                   [param('std::string', 'hubName'), param('ns3::NodeContainer', 'spokes'), param('ns3::NetDeviceContainer &', 'hubDevices'), param('ns3::NetDeviceContainer &', 'spokeDevices')])
     cls.add_copy_constructor()
     return
 
@@ -858,6 +888,36 @@ def register_Ns3StaticMulticastRouteHelper_methods(root_module, cls):
     cls.add_method('JoinMulticastGroup', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'n'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group')])
+    ## static-multicast-route-helper.h: void ns3::StaticMulticastRouteHelper::JoinMulticastGroup(std::string nName, ns3::Ipv4Address source, ns3::Ipv4Address group) [member function]
+    cls.add_method('JoinMulticastGroup', 
+                   'void', 
+                   [param('std::string', 'nName'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group')])
+    cls.add_copy_constructor()
+    return
+
+def register_Ns3TapBridgeHelper_methods(root_module, cls):
+    ## tap-bridge-helper.h: ns3::TapBridgeHelper::TapBridgeHelper(ns3::Ipv4Address gateway) [constructor]
+    cls.add_constructor([param('ns3::Ipv4Address', 'gateway')])
+    ## tap-bridge-helper.h: void ns3::TapBridgeHelper::SetAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
+    ## tap-bridge-helper.h: ns3::Ptr<ns3::NetDevice> ns3::TapBridgeHelper::Install(ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::NetDevice> nd) [member function]
+    cls.add_method('Install', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::NetDevice >', 'nd')])
+    ## tap-bridge-helper.h: ns3::Ptr<ns3::NetDevice> ns3::TapBridgeHelper::Install(std::string nodeName, ns3::Ptr<ns3::NetDevice> nd) [member function]
+    cls.add_method('Install', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('std::string', 'nodeName'), param('ns3::Ptr< ns3::NetDevice >', 'nd')])
+    ## tap-bridge-helper.h: ns3::Ptr<ns3::NetDevice> ns3::TapBridgeHelper::Install(ns3::Ptr<ns3::Node> node, std::string ndName) [member function]
+    cls.add_method('Install', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('std::string', 'ndName')])
+    ## tap-bridge-helper.h: ns3::Ptr<ns3::NetDevice> ns3::TapBridgeHelper::Install(std::string nodeName, std::string ndName) [member function]
+    cls.add_method('Install', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('std::string', 'nodeName'), param('std::string', 'ndName')])
     cls.add_copy_constructor()
     return
 
@@ -928,6 +988,11 @@ def register_Ns3V4PingHelper_methods(root_module, cls):
                    'ns3::ApplicationContainer', 
                    [param('ns3::Ptr< ns3::Node >', 'node')], 
                    is_const=True)
+    ## v4ping-helper.h: ns3::ApplicationContainer ns3::V4PingHelper::Install(std::string nodeName) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('std::string', 'nodeName')], 
+                   is_const=True)
     cls.add_copy_constructor()
     return
 
@@ -956,6 +1021,11 @@ def register_Ns3WifiHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
                    [param('ns3::WifiPhyHelper const &', 'phy'), param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
+    ## wifi-helper.h: ns3::NetDeviceContainer ns3::WifiHelper::Install(ns3::WifiPhyHelper const & phy, std::string nodeName) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::WifiPhyHelper const &', 'phy'), param('std::string', 'nodeName')], 
                    is_const=True)
     cls.add_copy_constructor()
     return
