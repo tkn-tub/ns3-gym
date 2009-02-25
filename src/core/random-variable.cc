@@ -81,11 +81,6 @@ bool SeedManager::CheckSeed (uint32_t seed)
   return RngStream::CheckSeed(seed);
 }
 
-bool SeedManager::CheckSeed (uint32_t seed[6])
-{
-  return RngStream::CheckSeed(seed);
-}
-
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // RandomVariableBase methods

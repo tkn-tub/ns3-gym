@@ -95,12 +95,6 @@ public:
    * \return true if valid and false if invalid
    */
   static bool CheckSeed (uint32_t seed);
-  
-  /**
-   * \brief Checks if seed array has valid values if wanted to be used as further seed
-   * \return true if valid and false if invalid
-   */
-  static bool CheckSeed (uint32_t seed[6]);
 };
 
 
