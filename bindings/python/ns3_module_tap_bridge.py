@@ -51,6 +51,8 @@ def register_methods(root_module):
     return
 
 def register_Ns3TapBridge_methods(root_module, cls):
+    ## tap-bridge.h: ns3::TapBridge::TapBridge(ns3::TapBridge const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TapBridge const &', 'arg0')])
     ## tap-bridge.h: static ns3::TypeId ns3::TapBridge::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -209,7 +211,6 @@ def register_Ns3TapBridge_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint16_t', 'protocol'), param('ns3::Address const &', 'src'), param('ns3::Address const &', 'dst'), param('ns3::NetDevice::PacketType', 'packetType')], 
                    visibility='protected')
-    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):

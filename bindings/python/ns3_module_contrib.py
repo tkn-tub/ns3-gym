@@ -88,6 +88,8 @@ def register_methods(root_module):
     return
 
 def register_Ns3DelayJitterEstimation_methods(root_module, cls):
+    ## delay-jitter-estimation.h: ns3::DelayJitterEstimation::DelayJitterEstimation(ns3::DelayJitterEstimation const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DelayJitterEstimation const &', 'arg0')])
     ## delay-jitter-estimation.h: ns3::DelayJitterEstimation::DelayJitterEstimation() [constructor]
     cls.add_constructor([])
     ## delay-jitter-estimation.h: static void ns3::DelayJitterEstimation::PrepareTx(ns3::Ptr<const ns3::Packet> packet) [member function]
@@ -109,20 +111,22 @@ def register_Ns3DelayJitterEstimation_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3EventGarbageCollector_methods(root_module, cls):
+    ## event-garbage-collector.h: ns3::EventGarbageCollector::EventGarbageCollector(ns3::EventGarbageCollector const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EventGarbageCollector const &', 'arg0')])
     ## event-garbage-collector.h: ns3::EventGarbageCollector::EventGarbageCollector() [constructor]
     cls.add_constructor([])
     ## event-garbage-collector.h: void ns3::EventGarbageCollector::Track(ns3::EventId event) [member function]
     cls.add_method('Track', 
                    'void', 
                    [param('ns3::EventId', 'event')])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3Gnuplot_methods(root_module, cls):
+    ## gnuplot.h: ns3::Gnuplot::Gnuplot(ns3::Gnuplot const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Gnuplot const &', 'arg0')])
     ## gnuplot.h: ns3::Gnuplot::Gnuplot(std::string const & outputFilename="", std::string const & title="") [constructor]
     cls.add_constructor([param('std::string const &', 'outputFilename', default_value='""'), param('std::string const &', 'title', default_value='""')])
     ## gnuplot.h: static std::string ns3::Gnuplot::DetectTerminal(std::string const & filename) [member function]
@@ -159,10 +163,11 @@ def register_Ns3Gnuplot_methods(root_module, cls):
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_const=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3GnuplotCollection_methods(root_module, cls):
+    ## gnuplot.h: ns3::GnuplotCollection::GnuplotCollection(ns3::GnuplotCollection const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::GnuplotCollection const &', 'arg0')])
     ## gnuplot.h: ns3::GnuplotCollection::GnuplotCollection(std::string const & outputFilename) [constructor]
     cls.add_constructor([param('std::string const &', 'outputFilename')])
     ## gnuplot.h: void ns3::GnuplotCollection::SetTerminal(std::string const & terminal) [member function]
@@ -182,7 +187,6 @@ def register_Ns3GnuplotCollection_methods(root_module, cls):
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_const=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3GnuplotDataset_methods(root_module, cls):
@@ -207,16 +211,19 @@ def register_Ns3GnuplotDataset_methods(root_module, cls):
     return
 
 def register_Ns3GtkConfigStore_methods(root_module, cls):
+    ## gtk-config-store.h: ns3::GtkConfigStore::GtkConfigStore(ns3::GtkConfigStore const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::GtkConfigStore const &', 'arg0')])
     ## gtk-config-store.h: ns3::GtkConfigStore::GtkConfigStore() [constructor]
     cls.add_constructor([])
     ## gtk-config-store.h: void ns3::GtkConfigStore::Configure() [member function]
     cls.add_method('Configure', 
                    'void', 
                    [])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3ConfigStore_methods(root_module, cls):
+    ## config-store.h: ns3::ConfigStore::ConfigStore(ns3::ConfigStore const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ConfigStore const &', 'arg0')])
     ## config-store.h: static ns3::TypeId ns3::ConfigStore::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -233,10 +240,11 @@ def register_Ns3ConfigStore_methods(root_module, cls):
     cls.add_method('Configure', 
                    'void', 
                    [])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3FlowIdTag_methods(root_module, cls):
+    ## flow-id-tag.h: ns3::FlowIdTag::FlowIdTag(ns3::FlowIdTag const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::FlowIdTag const &', 'arg0')])
     ## flow-id-tag.h: static ns3::TypeId ns3::FlowIdTag::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -285,10 +293,11 @@ def register_Ns3FlowIdTag_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_static=True)
-    cls.add_copy_constructor()
     return
 
 def register_Ns3Gnuplot2dDataset_methods(root_module, cls):
+    ## gnuplot.h: ns3::Gnuplot2dDataset::Gnuplot2dDataset(ns3::Gnuplot2dDataset const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Gnuplot2dDataset const &', 'arg0')])
     ## gnuplot.h: ns3::Gnuplot2dDataset::Gnuplot2dDataset(std::string const & title="Untitled") [constructor]
     cls.add_constructor([param('std::string const &', 'title', default_value='"Untitled"')])
     ## gnuplot.h: static void ns3::Gnuplot2dDataset::SetDefaultStyle(ns3::Gnuplot2dDataset::Style style) [member function]
@@ -325,20 +334,22 @@ def register_Ns3Gnuplot2dDataset_methods(root_module, cls):
     cls.add_method('AddEmptyLine', 
                    'void', 
                    [])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3Gnuplot2dFunction_methods(root_module, cls):
+    ## gnuplot.h: ns3::Gnuplot2dFunction::Gnuplot2dFunction(ns3::Gnuplot2dFunction const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Gnuplot2dFunction const &', 'arg0')])
     ## gnuplot.h: ns3::Gnuplot2dFunction::Gnuplot2dFunction(std::string const & title="Untitled", std::string const & function="") [constructor]
     cls.add_constructor([param('std::string const &', 'title', default_value='"Untitled"'), param('std::string const &', 'function', default_value='""')])
     ## gnuplot.h: void ns3::Gnuplot2dFunction::SetFunction(std::string const & function) [member function]
     cls.add_method('SetFunction', 
                    'void', 
                    [param('std::string const &', 'function')])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3Gnuplot3dDataset_methods(root_module, cls):
+    ## gnuplot.h: ns3::Gnuplot3dDataset::Gnuplot3dDataset(ns3::Gnuplot3dDataset const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Gnuplot3dDataset const &', 'arg0')])
     ## gnuplot.h: ns3::Gnuplot3dDataset::Gnuplot3dDataset(std::string const & title="Untitled") [constructor]
     cls.add_constructor([param('std::string const &', 'title', default_value='"Untitled"')])
     ## gnuplot.h: static void ns3::Gnuplot3dDataset::SetDefaultStyle(std::string const & style) [member function]
@@ -358,17 +369,17 @@ def register_Ns3Gnuplot3dDataset_methods(root_module, cls):
     cls.add_method('AddEmptyLine', 
                    'void', 
                    [])
-    cls.add_copy_constructor()
     return
 
 def register_Ns3Gnuplot3dFunction_methods(root_module, cls):
+    ## gnuplot.h: ns3::Gnuplot3dFunction::Gnuplot3dFunction(ns3::Gnuplot3dFunction const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Gnuplot3dFunction const &', 'arg0')])
     ## gnuplot.h: ns3::Gnuplot3dFunction::Gnuplot3dFunction(std::string const & title="Untitled", std::string const & function="") [constructor]
     cls.add_constructor([param('std::string const &', 'title', default_value='"Untitled"'), param('std::string const &', 'function', default_value='""')])
     ## gnuplot.h: void ns3::Gnuplot3dFunction::SetFunction(std::string const & function) [member function]
     cls.add_method('SetFunction', 
                    'void', 
                    [param('std::string const &', 'function')])
-    cls.add_copy_constructor()
     return
 
 def register_functions(root_module):
