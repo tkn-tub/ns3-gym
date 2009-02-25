@@ -60,11 +60,6 @@ main (int argc, char *argv[])
   LogComponentEnable ("SimpleGlobalRoutingExample", LOG_LEVEL_INFO);
 #endif
 
-  //
-  // Make the random number generators generate reproducible results.
-  //
-  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
-
   // Set up some default values for the simulation.  Use the 
 
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));

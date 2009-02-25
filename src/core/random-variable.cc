@@ -16,6 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // Author: Rajib Bhattacharjea<raj.b@gatech.edu>
+// Author: Hadi Arbabi<marbabi@cs.odu.edu>
 //
 
 #include <iostream>
@@ -32,6 +33,8 @@
 
 
 #include "assert.h"
+#include "config.h"
+#include "integer.h"
 #include "random-variable.h"
 #include "rng-stream.h"
 #include "fatal-error.h"
@@ -39,6 +42,49 @@
 using namespace std;
 
 namespace ns3{
+
+//-----------------------------------------------------------------------------
+// Seed Manager
+//-----------------------------------------------------------------------------
+
+uint32_t SeedManager::GetSeed()
+{
+  uint32_t s[6];
+  RngStream::GetPackageSeed (s);
+  NS_ASSERT(
+              s[0] == s[1] &&
+              s[0] == s[2] &&
+              s[0] == s[3] &&
+              s[0] == s[4] &&
+              s[0] == s[5]    
+            );
+  return s[0];
+}
+
+void SeedManager::SetSeed(uint32_t seed)
+{
+  Config::SetGlobal("RngSeed", IntegerValue(seed));
+}
+
+void SeedManager::SetRun(uint32_t run)
+{
+  Config::SetGlobal("RngRun", IntegerValue(run));
+}
+
+uint32_t SeedManager::GetRun()
+{
+  return RngStream::GetPackageRun ();
+}
+
+bool SeedManager::CheckSeed (uint32_t seed)
+{
+  return RngStream::CheckSeed(seed);
+}
+
+bool SeedManager::CheckSeed (uint32_t seed[6])
+{
+  return RngStream::CheckSeed(seed);
+}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -54,72 +100,23 @@ public:
   virtual double  GetValue() = 0;
   virtual uint32_t GetInteger();
   virtual RandomVariableBase*   Copy(void) const = 0;
-  virtual void GetSeed(uint32_t seed[6]);
 
-  static  void UseDevRandom(bool udr = true);
-  static void UseGlobalSeed(uint32_t s0, uint32_t s1, uint32_t s2, 
-                            uint32_t s3, uint32_t s4, uint32_t s5);
-  static void SetRunNumber(uint32_t n);
-private:
-  static void GetRandomSeeds(uint32_t seeds[6]);
-private:
-  static bool useDevRandom;    // True if using /dev/random desired
-  static bool globalSeedSet;   // True if global seed has been specified
-  static int  devRandom;       // File handle for /dev/random
-  static uint32_t globalSeed[6]; // The global seed to use
-  friend class RandomVariableInitializer;
 protected:
-  static unsigned long heuristic_sequence;
-  static RngStream* m_static_generator;
-  static uint32_t runNumber;
-  static void Initialize();    // Initialize  the RNG system
-  static bool initialized;     // True if package seed is set 
   RngStream* m_generator;  //underlying generator being wrapped
 };
-
-
-
-bool          RandomVariableBase::initialized = false;   // True if RngStream seed set 
-bool          RandomVariableBase::useDevRandom = false;  // True if use /dev/random
-bool          RandomVariableBase::globalSeedSet = false; // True if GlobalSeed called
-int           RandomVariableBase::devRandom = -1;
-uint32_t      RandomVariableBase::globalSeed[6];
-unsigned long RandomVariableBase::heuristic_sequence;
-RngStream*    RandomVariableBase::m_static_generator = 0;
-uint32_t      RandomVariableBase::runNumber = 0;
-
-//the static object random_variable_initializer initializes the static members
-//of RandomVariable
-static class RandomVariableInitializer
-{
-  public:
-  RandomVariableInitializer()
-  {
-//     RandomVariableBase::Initialize(); // sets the static package seed
-//     RandomVariableBase::m_static_generator = new RngStream();
-//     RandomVariableBase::m_static_generator->InitializeStream();
-  }
-  ~RandomVariableInitializer()
-  {
-    delete RandomVariableBase::m_static_generator;
-  }
-} random_variable_initializer;
 
 RandomVariableBase::RandomVariableBase() 
   : m_generator(NULL)
 {
-//   m_generator = new RngStream();
-//   m_generator->InitializeStream();
-//   m_generator->ResetNthSubstream(RandomVariableBase::runNumber);
 }
 
 RandomVariableBase::RandomVariableBase(const RandomVariableBase& r)
   :m_generator(0)
 {
-  if(r.m_generator)
-  {
-    m_generator = new RngStream(*r.m_generator);
-  }
+  if (r.m_generator)
+    {
+      m_generator = new RngStream(*r.m_generator);
+    }
 }
 
 RandomVariableBase::~RandomVariableBase()
@@ -132,115 +129,7 @@ uint32_t RandomVariableBase::GetInteger()
   return (uint32_t)GetValue();
 }
 
-void RandomVariableBase::UseDevRandom(bool udr) 
-{
-  RandomVariableBase::useDevRandom = udr;
-}
-
-void RandomVariableBase::GetSeed(uint32_t seed[6])
-{
-  if(!m_generator)
-  {
-    m_generator = new RngStream();
-    m_generator->InitializeStream();
-    m_generator->ResetNthSubstream(RandomVariableBase::runNumber);
-  }
-  m_generator->GetState(seed);
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-// RandomVariableBase static methods
-void RandomVariableBase::UseGlobalSeed(uint32_t s0, uint32_t s1, uint32_t s2, 
-                                   uint32_t s3, uint32_t s4, uint32_t s5)
-{
-  if (RandomVariableBase::globalSeedSet)
-    {
-      NS_FATAL_ERROR ("Random number generator already initialized! "
-                      "Call to RandomVariableBase::UseGlobalSeed() ignored");
-    }
-  RandomVariableBase::globalSeed[0] = s0;
-  RandomVariableBase::globalSeed[1] = s1;
-  RandomVariableBase::globalSeed[2] = s2;
-  RandomVariableBase::globalSeed[3] = s3;
-  RandomVariableBase::globalSeed[4] = s4;
-  RandomVariableBase::globalSeed[5] = s5;
-  if (!RngStream::CheckSeed(RandomVariableBase::globalSeed))
-    NS_FATAL_ERROR("Invalid seed");
-  
-  RandomVariableBase::globalSeedSet = true;
-}
-
-void RandomVariableBase::Initialize()
-{ 
-  if (RandomVariableBase::initialized) return; // Already initialized and seeded
-  RandomVariableBase::initialized = true;
-  if (!RandomVariableBase::globalSeedSet)
-    { // No global seed, try a random one
-      GetRandomSeeds(globalSeed);
-    }
-  // Seed the RngStream package
-  RngStream::SetPackageSeed(globalSeed);
-}
-
-void RandomVariableBase::GetRandomSeeds(uint32_t seeds[6])
-{
-  // Check if /dev/random exists
-  if (RandomVariableBase::useDevRandom && RandomVariableBase::devRandom < 0)
-    {
-      RandomVariableBase::devRandom = open("/dev/random", O_RDONLY);
-    }
-  if (RandomVariableBase::devRandom > 0)
-    { // Use /dev/random
-      while(true)
-        {
-          for (int i = 0; i < 6; ++i)
-            {
-              ssize_t bytes_read = read (RandomVariableBase::devRandom,
-                                         &seeds[i], sizeof (seeds[i]));
-              if (bytes_read != sizeof (seeds[i]))
-                {
-                  NS_FATAL_ERROR ("Read from /dev/random failed");
-                }
-            }
-          if (RngStream::CheckSeed(seeds)) break; // Got a valid one
-        }
-    }
-  else
-    { // Seed from time of day (code borrowed from ns2 random seeding)
-      // Thanks to John Heidemann for this technique
-      while(true)
-        {
-          timeval tv;
-          gettimeofday(&tv, 0);
-          seeds[0] = (tv.tv_sec^tv.tv_usec^(++heuristic_sequence <<8))
-              & 0x7fffffff;
-          gettimeofday(&tv, 0);
-          seeds[1] = (tv.tv_sec^tv.tv_usec^(++heuristic_sequence <<8))
-              & 0x7fffffff;
-          gettimeofday(&tv, 0);
-          seeds[2] = (tv.tv_sec^tv.tv_usec^(++heuristic_sequence <<8))
-              & 0x7fffffff;
-          gettimeofday(&tv, 0);
-          seeds[3] = (tv.tv_sec^tv.tv_usec^(++heuristic_sequence <<8))
-              & 0x7fffffff;
-          gettimeofday(&tv, 0);
-          seeds[4] = (tv.tv_sec^tv.tv_usec^(++heuristic_sequence <<8))
-              & 0x7fffffff;
-          gettimeofday(&tv, 0);
-          seeds[5] = (tv.tv_sec^tv.tv_usec^(++heuristic_sequence <<8))
-              & 0x7fffffff;
-          if (RngStream::CheckSeed(seeds)) break; // Got a valid one
-        }
-    }
-}
-
-void RandomVariableBase::SetRunNumber(uint32_t n)
-{
-  runNumber = n;
-}
-
-
+//-------------------------------------------------------
 
 RandomVariable::RandomVariable()
   : m_variable (0)
@@ -277,32 +166,13 @@ RandomVariable::GetInteger (void) const
 {
   return m_variable->GetInteger ();
 }
-void 
-RandomVariable::GetSeed(uint32_t seed[6]) const
-{
-  return m_variable->GetSeed (seed);
-}
-void 
-RandomVariable::UseDevRandom(bool udr)
-{
-  RandomVariableBase::UseDevRandom (udr);
-}
-void 
-RandomVariable::UseGlobalSeed(uint32_t s0, uint32_t s1, uint32_t s2, 
-                              uint32_t s3, uint32_t s4, uint32_t s5)
-{
-  RandomVariableBase::UseGlobalSeed (s0, s1, s2, s3, s4, s5);
-}
-void 
-RandomVariable::SetRunNumber(uint32_t n)
-{
-  RandomVariableBase::SetRunNumber (n);
-}
+
 RandomVariableBase *
 RandomVariable::Peek (void) const
 {
   return m_variable;
 }
+
 
 ATTRIBUTE_VALUE_IMPLEMENT (RandomVariable);
 ATTRIBUTE_CHECKER_IMPLEMENT (RandomVariable);
@@ -335,15 +205,14 @@ public:
    * \return A value between low and high values specified by the constructor
    */
   virtual double GetValue();
+
+  /**
+   * \return A value between low and high values specified by parameters
+   */
+  virtual double GetValue(double s, double l);
+  
   virtual RandomVariableBase*  Copy(void) const;
 
-public:
-  /**
-   * \param s Low end of the range
-   * \param l High end of the range
-   * \return A uniformly distributed random number between s and l
-   */
-  static double GetSingleValue(double s, double l);
 private:
   double m_min;
   double m_max;
@@ -372,33 +241,25 @@ UniformVariableImpl::GetMax (void) const
 
 double UniformVariableImpl::GetValue()
 {
-  if(!RandomVariableBase::initialized)
-  {
-    RandomVariableBase::Initialize();
-  }
   if(!m_generator)
-  {
-    m_generator = new RngStream();
-    m_generator->InitializeStream();
-    m_generator->ResetNthSubstream(RandomVariableBase::runNumber);
-  }
+    {
+      m_generator = new RngStream();
+    }
   return m_min + m_generator->RandU01() * (m_max - m_min);
+}
+
+double UniformVariableImpl::GetValue(double s, double l) 
+{
+  if(!m_generator)
+    {
+      m_generator = new RngStream();
+    }
+    return s + m_generator->RandU01() * (l-s); 
 }
 
 RandomVariableBase* UniformVariableImpl::Copy() const
 {
   return new UniformVariableImpl(*this);
-}
-
-double UniformVariableImpl::GetSingleValue(double s, double l)
-{
-  if(!RandomVariableBase::m_static_generator)
-  {
-    RandomVariableBase::Initialize(); // sets the static package seed
-    RandomVariableBase::m_static_generator = new RngStream();
-    RandomVariableBase::m_static_generator->InitializeStream();
-  }
-  return s + m_static_generator->RandU01() * (l - s);;
 }
 
 UniformVariable::UniformVariable()
@@ -407,10 +268,15 @@ UniformVariable::UniformVariable()
 UniformVariable::UniformVariable(double s, double l)
   : RandomVariable (UniformVariableImpl (s, l))
 {}
-double 
-UniformVariable::GetSingleValue(double s, double l)
+
+double UniformVariable::GetValue()
 {
-  return UniformVariableImpl::GetSingleValue (s, l);
+  return Peek()->GetValue();
+}
+
+double UniformVariable::GetValue(double s, double l)
+{
+  return ((UniformVariableImpl*)Peek())->GetValue(s,l);
 }
 
 
@@ -623,13 +489,7 @@ public:
    */
   virtual double GetValue();
   virtual RandomVariableBase* Copy(void) const;
-public:
-  /**
-   * \param m The mean of the distribution from which the return value is drawn
-   * \param b The upper bound value desired, beyond which values get clipped
-   * \return A random number from an exponential distribution with mean m
-   */
-  static double GetSingleValue(double m, double b=0);
+
 private:
   double m_mean;  // Mean value of RV
   double m_bound; // Upper bound on value (if non-zero)
@@ -649,36 +509,21 @@ ExponentialVariableImpl::ExponentialVariableImpl(const ExponentialVariableImpl& 
 
 double ExponentialVariableImpl::GetValue()
 {
-  if(!RandomVariableBase::initialized)
-  {
-    RandomVariableBase::Initialize();
-  }
   if(!m_generator)
-  {
-    m_generator = new RngStream();
-    m_generator->InitializeStream();
-    m_generator->ResetNthSubstream(RandomVariableBase::runNumber);
-  }
-  double r = -m_mean*log(m_generator->RandU01());
-  if (m_bound != 0 && r > m_bound) return m_bound;
-  return r;
+    {
+      m_generator = new RngStream();
+    }
+  while(1)
+    {
+      double r = -m_mean*log(m_generator->RandU01());
+      if (m_bound == 0 || r <= m_bound) return r;
+      //otherwise, try again
+    }
 }
 
 RandomVariableBase* ExponentialVariableImpl::Copy() const
 {
   return new ExponentialVariableImpl(*this);
-}
-double ExponentialVariableImpl::GetSingleValue(double m, double b/*=0*/)
-{
-  if(!RandomVariableBase::m_static_generator)
-  {
-    RandomVariableBase::Initialize(); // sets the static package seed
-    RandomVariableBase::m_static_generator = new RngStream();
-    RandomVariableBase::m_static_generator->InitializeStream();
-  }
-  double r = -m*log(m_static_generator->RandU01());
-  if (b != 0 && r > b) return b;
-  return r;
 }
 
 ExponentialVariable::ExponentialVariable()
@@ -690,11 +535,6 @@ ExponentialVariable::ExponentialVariable(double m)
 ExponentialVariable::ExponentialVariable(double m, double b)
   : RandomVariable (ExponentialVariableImpl (m, b))
 {}
-double 
-ExponentialVariable::GetSingleValue(double m, double b)
-{
-  return ExponentialVariableImpl::GetSingleValue (m, b);
-}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -743,17 +583,7 @@ public:
    */
   virtual double GetValue();
   virtual RandomVariableBase* Copy() const;
-public:
-  /**
-   * \param m The mean value of the distribution from which the return value
-   * is drawn.
-   * \param s The shape parameter of the distribution from which the return
-   * value is drawn.
-   * \param b The upper bound to which to restrict return values
-   * \return A random number from a Pareto distribution with mean m and shape
-   * parameter s.
-   */
-  static double GetSingleValue(double m, double s, double b=0);
+
 private:
   double m_mean;  // Mean value of RV
   double m_shape; // Shape parameter
@@ -778,39 +608,22 @@ ParetoVariableImpl::ParetoVariableImpl(const ParetoVariableImpl& c)
 
 double ParetoVariableImpl::GetValue()
 {
-  if(!RandomVariableBase::initialized)
-  {
-    RandomVariableBase::Initialize();
-  }
   if(!m_generator)
-  {
-    m_generator = new RngStream();
-    m_generator->InitializeStream();
-    m_generator->ResetNthSubstream(RandomVariableBase::runNumber);
-  }
+    {
+      m_generator = new RngStream();
+    }
   double scale = m_mean * ( m_shape - 1.0) / m_shape;
-  double r = (scale * ( 1.0 / pow(m_generator->RandU01(), 1.0 / m_shape)));
-  if (m_bound != 0 && r > m_bound) return m_bound;
-  return r;
+  while(1)
+    {
+      double r = (scale * ( 1.0 / pow(m_generator->RandU01(), 1.0 / m_shape)));
+      if (m_bound == 0 || r <= m_bound) return r;
+      //otherwise, try again
+    }
 }
 
 RandomVariableBase* ParetoVariableImpl::Copy() const
 {
   return new ParetoVariableImpl(*this);
-}
-
-double ParetoVariableImpl::GetSingleValue(double m, double s, double b/*=0*/)
-{
-  if(!RandomVariableBase::m_static_generator)
-  {
-    RandomVariableBase::Initialize(); // sets the static package seed
-    RandomVariableBase::m_static_generator = new RngStream();
-    RandomVariableBase::m_static_generator->InitializeStream();
-  }
-  double scale = m * ( s - 1.0) / s;
-  double r = (scale * ( 1.0 / pow(m_static_generator->RandU01(), 1.0 / s)));
-  if (b != 0 && r > b) return b;
-  return r;
 }
 
 ParetoVariable::ParetoVariable ()
@@ -825,11 +638,6 @@ ParetoVariable::ParetoVariable(double m, double s)
 ParetoVariable::ParetoVariable(double m, double s, double b)
   : RandomVariable (ParetoVariableImpl (m, s, b))
 {}
-double 
-ParetoVariable::GetSingleValue(double m, double s, double b)
-{
-  return ParetoVariableImpl::GetSingleValue (m, s, b);
-}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -879,14 +687,7 @@ public:
    */
   virtual double GetValue();
   virtual RandomVariableBase* Copy(void) const;
-public:
-  /**
-   * \param m Mean value for the distribution.
-   * \param s Shape (alpha) parameter for the distribution.
-   * \param b Upper limit on returned values
-   * \return Random number from a distribution specified by m,s, and b
-   */
-  static double GetSingleValue(double m, double s, double b=0);
+
 private:
   double m_mean;  // Mean value of RV
   double m_alpha; // Shape parameter
@@ -906,39 +707,22 @@ WeibullVariableImpl::WeibullVariableImpl(const WeibullVariableImpl& c)
 
 double WeibullVariableImpl::GetValue()
 {
-  if(!RandomVariableBase::initialized)
-  {
-    RandomVariableBase::Initialize();
-  }
   if(!m_generator)
-  {
-    m_generator = new RngStream();
-    m_generator->InitializeStream();
-    m_generator->ResetNthSubstream(RandomVariableBase::runNumber);
-  }
+    {
+      m_generator = new RngStream();
+    }
   double exponent = 1.0 / m_alpha;
-  double r = m_mean * pow( -log(m_generator->RandU01()), exponent);
-  if (m_bound != 0 && r > m_bound) return m_bound;
-  return r;
+  while(1)
+    {
+      double r = m_mean * pow( -log(m_generator->RandU01()), exponent);
+      if (m_bound == 0 || r <= m_bound) return r;
+      //otherwise, try again
+    }
 }
 
 RandomVariableBase* WeibullVariableImpl::Copy() const
 {
   return new WeibullVariableImpl(*this);
-}
-
-double WeibullVariableImpl::GetSingleValue(double m, double s, double b/*=0*/)
-{
-  if(!RandomVariableBase::m_static_generator)
-  {
-    RandomVariableBase::Initialize(); // sets the static package seed
-    RandomVariableBase::m_static_generator = new RngStream();
-    RandomVariableBase::m_static_generator->InitializeStream();
-  }
-  double exponent = 1.0 / s;
-  double r = m * pow( -log(m_static_generator->RandU01()), exponent);
-  if (b != 0 && r > b) return b;
-  return r;
 }
 
 WeibullVariable::WeibullVariable()
@@ -953,11 +737,7 @@ WeibullVariable::WeibullVariable(double m, double s)
 WeibullVariable::WeibullVariable(double m, double s, double b)
   : RandomVariable (WeibullVariableImpl (m, s, b))
 {}
-double 
-WeibullVariable::GetSingleValue(double m, double s, double b)
-{
-  return WeibullVariableImpl::GetSingleValue (m, s, b);
-}
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // NormalVariableImpl methods
@@ -976,7 +756,7 @@ public:
    * \brief Construct a normal random variable with specified mean and variance
    * \param m Mean value
    * \param v Variance
-   * \param b Bound.  The NormalVariableImpl is bounded within +-bound.
+   * \param b Bound.  The NormalVariableImpl is bounded within +-bound of the mean.
    */ 
   NormalVariableImpl(double m, double v, double b = INFINITE_VALUE);
 
@@ -987,18 +767,11 @@ public:
    */
   virtual double GetValue();
   virtual RandomVariableBase* Copy(void) const;
-public:
-  /**
-   * \param m Mean value
-   * \param v Variance
-   * \param b Bound.  The NormalVariableImpl is bounded within +-bound.
-   * \return A random number from a distribution specified by m,v, and b.
-   */ 
-  static double GetSingleValue(double m, double v, double b = INFINITE_VALUE);
+
 private:
   double m_mean;      // Mean value of RV
   double m_variance;  // Mean value of RV
-  double m_bound;     // Bound on value (absolute value)
+  double m_bound;     // Bound on value's difference from the mean (absolute value)
   bool   m_nextValid; // True if next valid
   double m_next;      // The algorithm produces two values at a time
   static bool   m_static_nextValid;
@@ -1017,20 +790,14 @@ NormalVariableImpl::NormalVariableImpl(double m, double v, double b/*=INFINITE_V
 
 NormalVariableImpl::NormalVariableImpl(const NormalVariableImpl& c)
   : RandomVariableBase(c), m_mean(c.m_mean), m_variance(c.m_variance),
-    m_bound(c.m_bound), m_nextValid(false) { }
+    m_bound(c.m_bound) { }
 
 double NormalVariableImpl::GetValue()
 {
-  if(!RandomVariableBase::initialized)
-  {
-    RandomVariableBase::Initialize();
-  }
   if(!m_generator)
-  {
-    m_generator = new RngStream();
-    m_generator->InitializeStream();
-    m_generator->ResetNthSubstream(RandomVariableBase::runNumber);
-  }
+    {
+      m_generator = new RngStream();
+    }
   if (m_nextValid)
     { // use previously generated
       m_nextValid = false;
@@ -1054,15 +821,15 @@ double NormalVariableImpl::GetValue()
           double x1 = m_mean + v1 * y * sqrt(m_variance);
           //if x1 is in bounds, return it
           if (fabs(x1-m_mean) <= m_bound)
-          {
-            return x1;
-          }
+            {
+              return x1;
+            }
           //otherwise try and return m_next if it is valid
           else if (m_nextValid)
-          {
-            m_nextValid = false;
-            return m_next;
-          }
+	    {
+	      m_nextValid = false;
+	      return m_next;
+	    }
           //otherwise, just run this loop again
         }
     }
@@ -1071,51 +838,6 @@ double NormalVariableImpl::GetValue()
 RandomVariableBase* NormalVariableImpl::Copy() const
 {
   return new NormalVariableImpl(*this);
-}
-
-double NormalVariableImpl::GetSingleValue(double m, double v, double b)
-{
-  if(!RandomVariableBase::m_static_generator)
-  {
-    RandomVariableBase::Initialize(); // sets the static package seed
-    RandomVariableBase::m_static_generator = new RngStream();
-    RandomVariableBase::m_static_generator->InitializeStream();
-  }
-  if (m_static_nextValid)
-    { // use previously generated
-      m_static_nextValid = false;
-      return m_static_next;
-    }
-  while(1)
-    { // See Simulation Modeling and Analysis p. 466 (Averill Law)
-      // for algorithm; basically a Box-Muller transform:
-      // http://en.wikipedia.org/wiki/Box-Muller_transform
-      double u1 = m_static_generator->RandU01();
-      double u2 = m_static_generator->RandU01();;
-      double v1 = 2 * u1 - 1;
-      double v2 = 2 * u2 - 1;
-      double w = v1 * v1 + v2 * v2;
-      if (w <= 1.0)
-        { // Got good pair
-          double y = sqrt((-2 * log(w))/w);
-          m_static_next = m + v2 * y * sqrt(v);
-          //if next is in bounds, it is valid
-          m_static_nextValid = fabs(m_static_next-m) <= b;;
-          double x1 = m + v1 * y * sqrt(v);
-          //if x1 is in bounds, return it
-          if (fabs(x1-m) <= b)
-          {
-            return x1;
-          }
-          //otherwise try and return m_next if it is valid
-          else if (m_static_nextValid)
-          {
-            m_static_nextValid = false;
-            return m_static_next;
-          }
-          //otherwise, just run this loop again
-        }
-    }
 }
 
 NormalVariable::NormalVariable()
@@ -1127,17 +849,6 @@ NormalVariable::NormalVariable(double m, double v)
 NormalVariable::NormalVariable(double m, double v, double b)
   : RandomVariable (NormalVariableImpl (m, v, b))
 {}
-double 
-NormalVariable::GetSingleValue(double m, double v)
-{
-  return NormalVariableImpl::GetSingleValue (m, v);
-}
-double 
-NormalVariable::GetSingleValue(double m, double v, double b)
-{
-  return NormalVariableImpl::GetSingleValue (m, v, b);
-}
-
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1200,21 +911,27 @@ EmpiricalVariableImpl::~EmpiricalVariableImpl() { }
 double EmpiricalVariableImpl::GetValue()
 { // Return a value from the empirical distribution
   // This code based (loosely) on code by Bruce Mah (Thanks Bruce!)
-  if(!RandomVariableBase::initialized)
-  {
-    RandomVariableBase::Initialize();
-  }
   if(!m_generator)
-  {
-    m_generator = new RngStream();
-    m_generator->InitializeStream();
-    m_generator->ResetNthSubstream(RandomVariableBase::runNumber);
-  }
-  if (emp.size() == 0) return 0.0; // HuH? No empirical data
-  if (!validated) Validate();      // Insure in non-decreasing
+    {
+      m_generator = new RngStream();
+    }
+  if (emp.size() == 0) 
+    {
+      return 0.0; // HuH? No empirical data
+    }
+  if (!validated) 
+    {
+      Validate();      // Insure in non-decreasing
+    }
   double r = m_generator->RandU01();
-  if (r <= emp.front().cdf)return emp.front().value; // Less than first
-  if (r >= emp.back().cdf) return emp.back().value;  // Greater than last
+  if (r <= emp.front().cdf)
+    {
+      return emp.front().value; // Less than first
+    }
+  if (r >= emp.back().cdf) 
+    { 
+      return emp.back().value;  // Greater than last
+    }
   // Binary search
   std::vector<ValueCDF>::size_type bottom = 0;
   std::vector<ValueCDF>::size_type top = emp.size() - 1;
@@ -1228,8 +945,14 @@ double EmpiricalVariableImpl::GetValue()
                              r);
         }
       // Not here, adjust bounds
-      if (r < emp[c].cdf) top    = c - 1;
-      else                bottom = c + 1;
+      if (r < emp[c].cdf)
+        {
+          top    = c - 1;
+        }
+      else
+        {
+          bottom = c + 1;
+        }
     }
 }
 
@@ -1366,7 +1089,10 @@ DeterministicVariableImpl::~DeterministicVariableImpl() { }
   
 double DeterministicVariableImpl::GetValue()
 {
-  if (next == count) next = 0;
+  if (next == count) 
+    {
+      next = 0;
+    }
   return data[next++];
 }
 
@@ -1395,13 +1121,7 @@ public:
    */
   virtual double GetValue ();
   virtual RandomVariableBase* Copy(void) const;
-public:
-  /**
-   * \param mu mu parameter of the underlying normal distribution
-   * \param sigma sigma parameter of the underlying normal distribution
-   * \return A random number from the distribution specified by mu and sigma
-   */
-  static double GetSingleValue(double mu, double sigma);
+
 private:
   double m_mu;
   double m_sigma;
@@ -1447,16 +1167,10 @@ LogNormalVariableImpl::LogNormalVariableImpl (double mu, double sigma)
 double
 LogNormalVariableImpl::GetValue ()
 {
-  if(!RandomVariableBase::initialized)
-  {
-    RandomVariableBase::Initialize();
-  }
   if(!m_generator)
-  {
-    m_generator = new RngStream();
-    m_generator->InitializeStream();
-    m_generator->ResetNthSubstream(RandomVariableBase::runNumber);
-  }
+    {
+      m_generator = new RngStream();
+    }
   double u, v, r2, normal, z;
 
   do
@@ -1478,42 +1192,9 @@ LogNormalVariableImpl::GetValue ()
   return z;
 }
 
-double LogNormalVariableImpl::GetSingleValue (double mu, double sigma)
-{
-  if(!RandomVariableBase::m_static_generator)
-  {
-    RandomVariableBase::Initialize(); // sets the static package seed
-    RandomVariableBase::m_static_generator = new RngStream();
-    RandomVariableBase::m_static_generator->InitializeStream();
-  }
-  double u, v, r2, normal, z;
-  do
-    {
-      /* choose x,y in uniform square (-1,-1) to (+1,+1) */
-      u = -1 + 2 * m_static_generator->RandU01 ();
-      v = -1 + 2 * m_static_generator->RandU01 ();
-
-      /* see if it is in the unit circle */
-      r2 = u * u + v * v;
-    }
-  while (r2 > 1.0 || r2 == 0);
-
-  normal = u * sqrt (-2.0 * log (r2) / r2);
-
-  z =  exp (sigma * normal + mu);
-
-  return z;
-}
-
 LogNormalVariable::LogNormalVariable (double mu, double sigma)
   : RandomVariable (LogNormalVariableImpl (mu, sigma))
 {}
-double 
-LogNormalVariable::GetSingleValue(double mu, double sigma)
-{
-  return LogNormalVariableImpl::GetSingleValue (mu, sigma);
-}
-
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1542,14 +1223,7 @@ public:
    */
   virtual double GetValue();
   virtual RandomVariableBase*  Copy(void) const;
-public:
-  /**
-   * \param s Low end of the range
-   * \param l High end of the range
-   * \param mean mean of the distribution
-   * \return A triangularly distributed random number between s and l
-   */
-  static double GetSingleValue(double s, double l, double mean);
+
 private:
   double m_min;
   double m_max;
@@ -1568,42 +1242,24 @@ TriangularVariableImpl::TriangularVariableImpl(const TriangularVariableImpl& c)
 
 double TriangularVariableImpl::GetValue()
 {
-  if(!RandomVariableBase::initialized)
-  {
-    RandomVariableBase::Initialize();
-  }
   if(!m_generator)
-  {
-    m_generator = new RngStream();
-    m_generator->InitializeStream();
-    m_generator->ResetNthSubstream(RandomVariableBase::runNumber);
-  }
+    {
+      m_generator = new RngStream();
+    }
   double u = m_generator->RandU01();
   if(u <= (m_mode - m_min) / (m_max - m_min) )
-    return m_min + sqrt(u * (m_max - m_min) * (m_mode - m_min) );
+    {
+      return m_min + sqrt(u * (m_max - m_min) * (m_mode - m_min) );
+    }
   else
-    return m_max - sqrt( (1-u) * (m_max - m_min) * (m_max - m_mode) );
+    {
+      return m_max - sqrt( (1-u) * (m_max - m_min) * (m_max - m_mode) );
+    }
 }
 
 RandomVariableBase* TriangularVariableImpl::Copy() const
 {
   return new TriangularVariableImpl(*this);
-}
-
-double TriangularVariableImpl::GetSingleValue(double s, double l, double mean)
-{
-  if(!RandomVariableBase::m_static_generator)
-  {
-    RandomVariableBase::Initialize(); // sets the static package seed
-    RandomVariableBase::m_static_generator = new RngStream();
-    RandomVariableBase::m_static_generator->InitializeStream();
-  }
-  double mode = 3.0*mean-s-l;
-  double u = m_static_generator->RandU01();
-  if(u <= (mode - s) / (l - s) )
-    return s + sqrt(u * (l - s) * (mode - s) );
-  else
-    return l - sqrt( (1-u) * (l - s) * (l - mode) );
 }
 
 TriangularVariable::TriangularVariable()
@@ -1612,11 +1268,6 @@ TriangularVariable::TriangularVariable()
 TriangularVariable::TriangularVariable(double s, double l, double mean)
   : RandomVariable (TriangularVariableImpl (s,l,mean))
 {}
-double 
-TriangularVariable::GetSingleValue(double s, double l, double mean)
-{
-  return TriangularVariableImpl::GetSingleValue (s,l,mean);
-}
 
 
 std::ostream &operator << (std::ostream &os, const RandomVariable &var)
@@ -1691,112 +1342,3 @@ std::istream &operator >> (std::istream &is, RandomVariable &var)
 
 }//namespace ns3
 
-
-#ifdef RUN_SELF_TESTS
-#include "test.h"
-#include <vector>
-
-namespace ns3 {
-
-
-class RandomVariableTest : public Test
-{
-public:
-  RandomVariableTest () : Test ("RandomVariable") {}
-  virtual bool RunTests (void)
-  {
-    bool result = true;
-    const double desired_mean = 1.0;
-    const double desired_stddev = 1.0;
-    double tmp = log (1 + (desired_stddev/desired_mean)*(desired_stddev/desired_mean));
-    double sigma = sqrt (tmp);
-    double mu = log (desired_mean) - 0.5*tmp;
-
-    // Test a custom lognormal instance
-    {
-      LogNormalVariable lognormal (mu, sigma);
-      vector<double> samples;
-      const int NSAMPLES = 10000;
-      double sum = 0;
-      for (int n = NSAMPLES; n; --n)
-        {
-          double value = lognormal.GetValue ();
-          sum += value;
-          samples.push_back (value);
-        }
-      double obtained_mean = sum / NSAMPLES;
-      sum = 0;
-      for (vector<double>::iterator iter = samples.begin (); iter != samples.end (); iter++)
-        {
-          double tmp = (*iter - obtained_mean);
-          sum += tmp*tmp;
-        }
-      double obtained_stddev = sqrt (sum / (NSAMPLES - 1));
-
-      if (not (obtained_mean/desired_mean > 0.90 and obtained_mean/desired_mean < 1.10))
-        {
-          result = false;
-          Failure () << "Obtained lognormal mean value " << obtained_mean << ", expected " << desired_mean << std::endl;
-        }
-
-      if (not (obtained_stddev/desired_stddev > 0.90 and obtained_stddev/desired_stddev < 1.10))
-        {
-          result = false;
-          Failure () << "Obtained lognormal stddev value " << obtained_stddev <<
-            ", expected " << desired_stddev << std::endl;
-        }
-    }
-
-    // Test GetSingleValue
-    {
-      vector<double> samples;
-      const int NSAMPLES = 10000;
-      double sum = 0;
-      for (int n = NSAMPLES; n; --n)
-        {
-          double value = LogNormalVariable::GetSingleValue (mu, sigma);
-          sum += value;
-          samples.push_back (value);
-        }
-      double obtained_mean = sum / NSAMPLES;
-      sum = 0;
-      for (vector<double>::iterator iter = samples.begin (); iter != samples.end (); iter++)
-        {
-          double tmp = (*iter - obtained_mean);
-          sum += tmp*tmp;
-        }
-      double obtained_stddev = sqrt (sum / (NSAMPLES - 1));
-
-      if (not (obtained_mean/desired_mean > 0.90 and obtained_mean/desired_mean < 1.10))
-        {
-          result = false;
-          Failure () << "Obtained LogNormalVariable::GetSingleValue mean value " << obtained_mean
-                     << ", expected " << desired_mean << std::endl;
-        }
-
-      if (not (obtained_stddev/desired_stddev > 0.90 and obtained_stddev/desired_stddev < 1.10))
-        {
-          result = false;
-          Failure () << "Obtained LogNormalVariable::GetSingleValue stddev value " << obtained_stddev <<
-            ", expected " << desired_stddev << std::endl;
-        }
-    }
-
-    // Test attribute serialization
-    {
-      RandomVariableValue val;
-      val.DeserializeFromString ("Uniform:0.1:0.2", MakeRandomVariableChecker ());
-      RandomVariable rng = val.Get ();
-      NS_TEST_ASSERT_EQUAL (val.SerializeToString (MakeRandomVariableChecker ()), "Uniform:0.1:0.2");
-    }
-
-    return result;
-  }
-};
-
-
-static RandomVariableTest g_random_variable_tests;
-
-}//namespace ns3
-
-#endif /* RUN_SELF_TESTS */

@@ -43,8 +43,6 @@ main (int argc, char *argv[])
 
   bool verbose = true;
 
-  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
-
   uint32_t nCsma = 3;
   uint32_t nWifi = 3;
   CommandLine cmd;

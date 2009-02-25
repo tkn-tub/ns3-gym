@@ -47,10 +47,6 @@ NS_LOG_COMPONENT_DEFINE ("CsmaStar");
 int 
 main (int argc, char *argv[])
 {
-  //
-  // Make the random number generators generate reproducible results.
-  //
-  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
 
   //
   // Set up some default values for the simulation.

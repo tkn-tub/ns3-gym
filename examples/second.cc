@@ -38,8 +38,6 @@ main (int argc, char *argv[])
 {
   bool verbose = true;
 
-  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
-
   uint32_t nCsma = 3;
   CommandLine cmd;
   cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);

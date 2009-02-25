@@ -51,11 +51,6 @@ main (int argc, char *argv[])
   // LogComponentEnable ("CsmaMulticastExample", LOG_LEVEL_INFO);
 
   //
-  // Make the random number generators generate reproducible results.
-  //
-  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
-
-  //
   // Set up default values for the simulation.  
   //
   // Select DIX/Ethernet II-style encapsulation (no LLC/Snap header)

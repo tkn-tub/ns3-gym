@@ -93,9 +93,10 @@ private:
    * Number of times that the transmitter has tried to unsuccessfully transmit the current packet.
    */
   uint32_t m_numBackoffRetries;
+  UniformVariable m_rng;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif // BACKOFF_H
 
