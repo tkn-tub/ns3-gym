@@ -201,58 +201,14 @@ void MatPowModM (const double A[3][3], double B[3][3], double m, int32_t n)
     }
 }
 
-//two seeding methods follow
-ns3::IntegerValue GetSeedFromEnv ()
-{
-  uint32_t seed;
-  char *tmp = getenv ("NS_RNG");
-  // NS_RNG should be set
-  NS_ASSERT(tmp != 0);
-  std::string var = std::string (tmp);
-  std::string::size_type colon = var.find (":");
-  if (colon != std::string::npos)
-  {
-    std::string seedString = var.substr (0, colon);
-    std::istringstream iss;
-    iss.str (seedString);
-    iss >> seed;
-  }
-  else
-  {
-    std::istringstream iss;
-    iss.str (var);
-    iss >> seed;
-  }
-  // finally, actually use these values to do something.
-  return ns3::IntegerValue(seed);
-}
-
-ns3::IntegerValue GetRunFromEnv ()
-{
-  uint32_t run = 0;
-  char *tmp = getenv ("NS_RNG");
-  if (tmp != 0)
-  {
-    std::string var = std::string (tmp);
-    std::string::size_type colon = var.find (":");
-    if (colon != std::string::npos)
-    {
-      std::string runString = var.substr (colon+1,var.size ()-colon-1);
-      std::istringstream iss;
-      iss.str (runString);
-      iss >> run;
-    }
-  }
-  return run;  
-}
 
 static ns3::GlobalValue g_rngSeed ("RngSeed", 
                                    "The global seed of all rng streams",
-                                   (getenv ("NS_RNG") !=0) ? GetSeedFromEnv() : ns3::IntegerValue (1),
+                                   ns3::IntegerValue (1),
                                    ns3::MakeIntegerChecker<uint32_t> ());
 static ns3::GlobalValue g_rngRun ("RngRun", 
                                   "The run number used to modify the global seed",
-                                  (getenv ("NS_RNG") !=0) ? GetRunFromEnv() : ns3::IntegerValue (1),
+                                  ns3::IntegerValue (1),
                                   ns3::MakeIntegerChecker<uint32_t> ());
 
 } // end of anonymous namespace
@@ -354,48 +310,12 @@ RngStream::EnsureGlobalInitialized (void)
     {
       initialized = true;
       uint32_t seed;
-      // First, initialize ourselves from the global value.
-      {
-        IntegerValue value;
-        g_rngSeed.GetValue (value);
-        seed = value.Get ();
-        g_rngRun.GetValue (value);
-        run = value.Get ();
-      }
-      // then, in case we have NS_RNG set, override the global 
-      // value from the env var.
-      char *tmp = getenv ("NS_RNG");
-      if (tmp != 0)
-        {
-          std::string var = std::string (getenv ("NS_RNG"));
-          std::string::size_type colon = var.find (":");
-          if (colon != std::string::npos)
-            {
-              {
-                std::string seedString = var.substr (0, colon);
-                std::istringstream iss;
-                iss.str (seedString);
-                iss >> seed;
-              }
-              {
-                std::string runString = var.substr (colon+1,var.size ()-colon-1);
-                std::istringstream iss;
-                iss.str (runString);
-                iss >> run;
-              }
-            }
-          else
-            {
-              {
-                std::istringstream iss;
-                iss.str (var);
-                iss >> seed;
-              }
-            }
-        }
-      // finally, actually use these values to do something.
-      uint32_t seedArray [] = {seed, seed, seed, seed, seed, seed};
-      SetPackageSeed (seedArray);
+      IntegerValue value;
+      g_rngSeed.GetValue (value);
+      seed = value.Get ();
+      g_rngRun.GetValue (value);
+      run = value.Get ();
+      SetPackageSeed (seed);
     }
   return run;
 }
@@ -419,18 +339,7 @@ double RngStream::nextSeed[6] =
 //
 RngStream::RngStream ()
 {
-  static bool globalSeedInitialized = false;
-  //get the global seed and initialize the RngStream system with it
-  IntegerValue tmp;
-  if (!globalSeedInitialized)
-  {
-    g_rngSeed.GetValue (tmp);
-    SetPackageSeed (tmp.Get());
-    globalSeedInitialized = true;
-  }
-  //get the global run number
-  g_rngRun.GetValue (tmp);
-  uint32_t run = tmp.Get ();
+  uint32_t run = EnsureGlobalInitialized ();
   
   anti = false;
   incPrec = false;
