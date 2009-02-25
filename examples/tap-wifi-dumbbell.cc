@@ -98,8 +98,6 @@ NS_LOG_COMPONENT_DEFINE ("TapDumbbellExample");
 int 
 main (int argc, char *argv[])
 {
-  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
-
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
