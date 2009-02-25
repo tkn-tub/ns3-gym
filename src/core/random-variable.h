@@ -176,10 +176,15 @@ public:
   UniformVariable(double s, double l);
 
   /**
-  * \brief Returns a random double with the specified range given by constructor
+  * \brief call RandomVariable::GetValue
   * \return A floating point random value
+  *
+  * Note: we have to re-implement this method here because the method is 
+  * overloaded below for the two-argument variant and the c++ name resolution
+  * rules don't work well with overloads split between parent and child 
+  * classes.
   */
-  double GetValue();
+  double GetValue (void) const;
   
   /**
   * \brief Returns a random double with the specified range

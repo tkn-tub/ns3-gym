@@ -264,9 +264,9 @@ UniformVariable::UniformVariable(double s, double l)
   : RandomVariable (UniformVariableImpl (s, l))
 {}
 
-double UniformVariable::GetValue()
+double UniformVariable::GetValue(void) const
 {
-  return Peek()->GetValue();
+  return this->RandomVariable::GetValue ();
 }
 
 double UniformVariable::GetValue(double s, double l)
