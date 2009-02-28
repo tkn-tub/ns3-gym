@@ -3,6 +3,7 @@
 def build(bld):
     obj = bld.create_ns3_module('wifi', ['node'])
     obj.source = [
+        'tx-statistics.cc',
         'propagation-delay-model.cc',
         'propagation-loss-model.cc',
         'jakes-propagation-loss-model.cc',
@@ -35,6 +36,16 @@ def build(bld):
         'adhoc-wifi-mac.cc',
         'nqap-wifi-mac.cc',
         'nqsta-wifi-mac.cc',
+        'mesh-wifi-mac.cc',
+        'mesh-configuration-element.cc',
+        'mesh-wifi-beacon-timing-element.cc',
+        'dot11s-peer-management-element.cc',
+        'mesh-mgt-headers.cc',
+        'mesh-wifi-peer-manager.cc',
+        'mesh-wifi-rann-information-element.cc',
+        'mesh-wifi-preq-information-element.cc',
+        'mesh-wifi-perr-information-element.cc',
+        'mesh-wifi-prep-information-element.cc',
         'wifi-net-device.cc',
         'arf-wifi-manager.cc',
         'aarf-wifi-manager.cc',
@@ -44,10 +55,12 @@ def build(bld):
         'rraa-wifi-manager.cc',
         'constant-rate-wifi-manager.cc',
         'wifi-test.cc',
+        'dot11s-parameters.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'wifi'
     headers.source = [
+        'tx-statistics.h',
         'propagation-delay-model.h',
         'propagation-loss-model.h',
         'jakes-propagation-loss-model.h',
@@ -73,10 +86,25 @@ def build(bld):
         'adhoc-wifi-mac.h',
         'nqsta-wifi-mac.h',
         'nqap-wifi-mac.h',
+        'mesh-wifi-mac.h',
         'wifi-phy.h',
         'supported-rates.h',
+        'mgt-headers.h',
+        'status-code.h',
+        'capability-information.h',
+        'mesh-configuration-element.h',
+        'mesh-wifi-beacon-timing-element.h',
+        'dot11s-peer-management-element.h',
+        'mesh-mgt-headers.h', 
+        'mesh-wifi-peer-manager.h',
+        'mesh-wifi-rann-information-element.h',
+        'mesh-wifi-preq-information-element.h',
+        'mesh-wifi-perr-information-element.h',
+        'mesh-wifi-prep-information-element.h',
         'error-rate-model.h',
         'yans-error-rate-model.h',
+        'dot11s-codes.h',
+        'dot11s-parameters.h',
         ]
 
     obj = bld.create_ns3_program('wifi-phy-test',

@@ -26,6 +26,7 @@
 #include "ns3/packet.h"
 #include "ns3/object.h"
 #include "ns3/traced-value.h"
+#include "ns3/tx-statistics.h"
 #include "wifi-mode.h"
 
 namespace ns3 {
@@ -257,6 +258,8 @@ public:
    *          handshake.
    */
   WifiMode GetAckMode (WifiMode dataMode);
+  WifiTxStatistics::TX_STATISTICS GetTxStat();
+  void ResetTxStat();
 
 private:
   typedef std::vector<WifiMode> SupportedModes;
@@ -286,6 +289,7 @@ private:
   SupportedModes m_modes;
   TracedValue<uint32_t> m_ssrc;
   TracedValue<uint32_t> m_slrc;
+  Ptr<WifiTxStatistics> m_txStat;
 };
 
 } // namespace ns3 

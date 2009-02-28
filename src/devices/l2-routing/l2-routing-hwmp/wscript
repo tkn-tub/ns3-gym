@@ -1,0 +1,16 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    obj = bld.create_ns3_module('l2-routing-hwmp', ['node', 'l2-routing-main'])
+    obj.source = [
+	'hwmp-rtable.cc',
+	'hwmp-state.cc',
+	'hwmp.cc',
+        ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'l2-routing-hwmp'
+    headers.source = [
+	'hwmp-rtable.h',
+	'hwmp-state.h',
+	'hwmp.h',
+        ]

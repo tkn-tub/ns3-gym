@@ -120,6 +120,10 @@ def build(bld):
                                  ['core', 'simulator', 'mobility', 'wifi'])
     obj.source = 'wifi-ap.cc'
 
+    obj = bld.create_ns3_program('mesh',
+                                 ['core', 'simulator', 'mobility', 'wifi'])
+    obj.source = 'mesh.cc'
+
     bld.add_subdirs('stats')
 
     obj = bld.create_ns3_program('wifi-wired-bridging',

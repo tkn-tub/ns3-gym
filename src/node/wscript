@@ -38,6 +38,7 @@ def build(bld):
         'ipv6-address.cc',
         'ipv6-header.cc',
         'ipv4-raw-socket-factory.cc',
+        'l2-routing-protocol.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -77,4 +78,5 @@ def build(bld):
         'ipv6-address.h',
         'ipv6-header.h',
         'ipv4-raw-socket-factory.h',
+        'l2-routing-protocol.h',
         ]

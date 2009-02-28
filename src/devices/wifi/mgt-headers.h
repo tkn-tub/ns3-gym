@@ -21,11 +21,14 @@
 #define MGT_HEADERS_H
 
 #include <stdint.h>
+#include <vector>
 
 #include "ns3/header.h"
 #include "status-code.h"
 #include "capability-information.h"
 #include "supported-rates.h"
+#include "mesh-configuration-element.h"
+#include "mesh-wifi-beacon-timing-element.h"
 #include "ssid.h"
 
 namespace ns3 {
@@ -117,6 +120,8 @@ public:
   void SetBeaconIntervalUs (uint64_t us);
   void SetSupportedRates (SupportedRates rates);
 
+  uint64_t GetTimestamp();
+
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -125,6 +130,7 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
 private:
+  uint64_t m_timestamp;
   Ssid m_ssid;
   uint64_t m_beaconInterval;
   SupportedRates m_rates;
@@ -132,6 +138,22 @@ private:
 };
 
 class MgtBeaconHeader : public MgtProbeResponseHeader {};
+class MgtMeshBeaconHeader : public MgtBeaconHeader
+{
+	public:
+		void				SetMeshConfigurationElement(MeshConfigurationElement mesh_config);
+		void				SetWifiBeaconTimingElement(WifiBeaconTimingElement wifi_timing);
+		MeshConfigurationElement	GetMeshConfigurationElement();
+		WifiBeaconTimingElement		GetWifiBeaconTimingElement();
+		virtual uint32_t		GetSerializedSize (void) const;
+		virtual void			Serialize (Buffer::Iterator start) const;
+		virtual uint32_t		Deserialize (Buffer::Iterator start);
+
+	private:
+		MeshConfigurationElement	m_meshConfig;
+		WifiBeaconTimingElement		m_meshTiming;
+
+};
 
 
 } // namespace ns3
