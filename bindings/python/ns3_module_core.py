@@ -1115,10 +1115,11 @@ def register_Ns3UniformVariable_methods(root_module, cls):
     cls.add_constructor([])
     ## random-variable.h: ns3::UniformVariable::UniformVariable(double s, double l) [constructor]
     cls.add_constructor([param('double', 's'), param('double', 'l')])
-    ## random-variable.h: double ns3::UniformVariable::GetValue() [member function]
+    ## random-variable.h: double ns3::UniformVariable::GetValue() const [member function]
     cls.add_method('GetValue', 
                    'double', 
-                   [])
+                   [], 
+                   is_const=True)
     ## random-variable.h: double ns3::UniformVariable::GetValue(double s, double l) [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -2130,7 +2131,7 @@ def register_functions(root_module):
     module.add_function('TypeNameGet', 
                         'std::string', 
                         [], 
-                        template_parameters=['long long'])
+                        template_parameters=['long'])
     ## type-name.h: extern std::string ns3::TypeNameGet() [free function]
     module.add_function('TypeNameGet', 
                         'std::string', 
@@ -2150,7 +2151,7 @@ def register_functions(root_module):
     module.add_function('TypeNameGet', 
                         'std::string', 
                         [], 
-                        template_parameters=['unsigned long long'])
+                        template_parameters=['unsigned long'])
     ## type-name.h: extern std::string ns3::TypeNameGet() [free function]
     module.add_function('TypeNameGet', 
                         'std::string', 
