@@ -115,8 +115,7 @@ class WifiPreqInformationElement : public Header
 		uint32_t	m_originatorSeqNumber;
 		uint32_t	m_lifetime;
 		uint32_t	m_metric;
-		uint8_t	m_destCount;
-#define DEF_MAX_SIZE	32
+		uint8_t		m_destCount;
 };
 
 } //namespace ns3

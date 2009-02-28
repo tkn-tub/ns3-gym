@@ -116,7 +116,7 @@ WifiPreqInformationElement::WifiPreqInformationElement()
 	m_originatorSeqNumber = 0;
 	m_metric = 0;
 	m_destCount = 0;
-	m_maxSize = DEF_MAX_SIZE;
+	m_maxSize = 32;
 }
 void
 WifiPreqInformationElement::SetUnicastPreq()

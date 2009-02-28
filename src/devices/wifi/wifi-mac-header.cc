@@ -1073,20 +1073,20 @@ WifiMeshHeader::SetAddressExt (uint8_t num_of_addresses)
 {
 	if (num_of_addresses > 3)
 		return;
-	m_meshFlags = MESH_AE_MASK| (num_of_addresses << MESH_AE_SHIFT);
+	m_meshFlags = 0xc0 | (num_of_addresses << 6);
 }
 
 uint8_t
 WifiMeshHeader::GetAddressExt ()
 {
-	return ((MESH_AE_MASK & m_meshFlags) >> MESH_AE_SHIFT);
+	return ((0xc0 & m_meshFlags) >> 6);
 }
 
 
 uint32_t
 WifiMeshHeader::GetSerializedSize (void) const
 {
-	return 6 + ((MESH_AE_MASK & m_meshFlags) >> MESH_AE_SHIFT)*6;
+	return 6 + ((0xc0 & m_meshFlags) >> 6)*6;
 }
 
 void
@@ -1096,7 +1096,7 @@ WifiMeshHeader::Serialize (Buffer::Iterator start) const
 	i.WriteU8(m_meshFlags);
 	i.WriteU8(m_meshTtl);
 	i.WriteU32(m_meshSeqno);
-	uint8_t addresses_to_add = (m_meshFlags & MESH_AE_MASK) >> MESH_AE_SHIFT;
+	uint8_t addresses_to_add = (m_meshFlags & 0xc0) >> 6;
 	//Writing Address extensions:
 	if(addresses_to_add > 0)
 		WriteTo (i, m_addr5);
@@ -1114,7 +1114,7 @@ WifiMeshHeader::Deserialize (Buffer::Iterator start)
 	m_meshFlags = i.ReadU8();
 	m_meshTtl = i.ReadU8();
 	m_meshSeqno = i.ReadU32();
-	addresses_to_read = (m_meshFlags & MESH_AE_MASK) >> MESH_AE_SHIFT;
+	addresses_to_read = (m_meshFlags & 0xc0) >> 6;
 	if(addresses_to_read > 0)
 		ReadFrom (i, m_addr5);
 	if(addresses_to_read > 1)

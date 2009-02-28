@@ -202,8 +202,6 @@ class WifiMeshHeader : public Header //7.1.3.5b
 		void			SetMeshTtl (uint8_t TTL);
 		uint8_t		GetMeshTtl ();
 
-#define MESH_AE_MASK	0xc0
-#define MESH_AE_SHIFT	6
 		void			SetAddressExt (uint8_t num_of_addresses);
 		uint8_t		GetAddressExt ();
 
