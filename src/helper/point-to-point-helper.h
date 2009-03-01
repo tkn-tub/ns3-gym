@@ -261,13 +261,14 @@ public:
 
 private:
   void EnablePcap (Ptr<Node> node, Ptr<NetDevice> device, Ptr<Queue> queue);
+  static void SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
+
   void EnableAscii (Ptr<Node> node, Ptr<NetDevice> device);
-  static void RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
-  static void EnqueueEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
+  static void AsciiRxEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
   static void AsciiEnqueueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
   static void AsciiDequeueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
   static void AsciiDropEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
-  static void AsciiRxEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
+
   ObjectFactory m_queueFactory;
   ObjectFactory m_channelFactory;
   ObjectFactory m_deviceFactory;

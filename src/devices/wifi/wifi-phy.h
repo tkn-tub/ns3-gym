@@ -30,6 +30,7 @@
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
 #include "wifi-phy-standard.h"
+#include "ns3/traced-callback.h"
 
 
 namespace ns3 {
@@ -79,6 +80,7 @@ public:
    * unless they have received a cca busy report.
    */
   virtual void NotifyTxStart (Time duration) = 0;
+
   /**
    * \param duration the expected busy duration.
    *
@@ -173,6 +175,13 @@ public:
   virtual void SendPacket (Ptr<const Packet> packet, WifiMode mode, enum WifiPreamble preamble, uint8_t txPowerLevel) = 0;
 
   /**
+   * \param packet the packet that was sent
+   *
+   * Tell the PHY-level that MAC low believes it should have just completed the send.
+   */
+  virtual void SendDone (Ptr<const Packet> packet) = 0;
+
+  /**
    * \param listener the new listener
    *
    * Add the input listener to the list of objects to be notified of
@@ -250,6 +259,74 @@ public:
   static WifiMode Get36mba (void);
   static WifiMode Get48mba (void);
   static WifiMode Get54mba (void);
+
+protected:
+  /**
+   * The trace source fired when a packet starts the transmission process on
+   * the medium.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyTxStartTrace;
+
+  /**
+   * The trace source fired when a packet ends the transmission process on
+   * the medium.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyTxTrace;
+
+  /**
+   * The trace source fired when the phy layer drops a packet as it tries
+   * to transmit it.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyTxDropTrace;
+
+  /**
+   * The trace source fired when a packet starts the reception process from
+   * the medium.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyRxStartTrace;
+
+  /**
+   * The trace source fired when a packet ends the reception process from
+   * the medium.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyRxTrace;
+
+  /**
+   * The trace source fired when the phy layer drops a packet it has received.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyRxDropTrace;
+
+  /**
+   * A trace source that emulates a promiscuous mode protocol sniffer connected
+   * to the device.  This trace source fire on packets destined for any host
+   * just like your average everyday packet sniffer.
+   *
+   * On the transmit size, this trace hook will fire after a packet is dequeued
+   * from the device queue for transmission.  In Linux, for example, this would
+   * correspond to the point just before a device hard_start_xmit where 
+   * dev_queue_xmit_nit is called to dispatch the packet to the PF_PACKET 
+   * ETH_P_ALL handlers.
+   *
+   * On the receive side, this trace hook will fire when a packet is received,
+   * just before the receive callback is executed.  In Linux, for example, 
+   * this would correspond to the point at which the packet is dispatched to 
+   * packet sniffers in netif_receive_skb.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_promiscSnifferTrace;
 };
 
 } // namespace ns3

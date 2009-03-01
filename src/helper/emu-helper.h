@@ -184,16 +184,12 @@ public:
 
 private:
   Ptr<NetDevice> InstallPriv (Ptr<Node> node) const;
-  static void RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
-  static void EnqueueEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
-  static void AsciiEnqueueEvent (std::ostream *os, std::string path, 
-    Ptr<const Packet> packet);
-  static void AsciiDequeueEvent (std::ostream *os, std::string path, 
-    Ptr<const Packet> packet);
-  static void AsciiDropEvent (std::ostream *os, std::string path, 
-    Ptr<const Packet> packet);
-  static void AsciiRxEvent (std::ostream *os, std::string path, 
-    Ptr<const Packet> packet);
+  static void SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
+
+  static void AsciiRxEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
+  static void AsciiEnqueueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
+  static void AsciiDequeueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
+  static void AsciiDropEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
 
   ObjectFactory m_queueFactory;
   ObjectFactory m_deviceFactory;

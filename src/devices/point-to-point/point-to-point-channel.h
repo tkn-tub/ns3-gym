@@ -62,13 +62,13 @@ public:
   void Attach (Ptr<PointToPointNetDevice> device);
 
   /**
-   * \brief Attach a given netdevice to this channel
+   * \brief Transmit a packet over this channel
    * \param p Packet to transmit
    * \param src Source PointToPointNetDevice
    * \param txTime Transmit time to apply
+   * \returns true if successful (currently always true)
    */
-  bool TransmitStart (Ptr<Packet> p, Ptr<PointToPointNetDevice> src,
-    Time txTime);
+  bool TransmitStart (Ptr<Packet> p, Ptr<PointToPointNetDevice> src, Time txTime);
 
   /**
    * \brief Get number of devices on this channel

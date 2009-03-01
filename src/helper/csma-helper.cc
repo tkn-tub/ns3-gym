@@ -69,6 +69,7 @@ CsmaHelper::SetDeviceParameter (std::string n1, const AttributeValue &v1)
 {
   SetDeviceAttribute (n1, v1);
 }
+
 void 
 CsmaHelper::SetChannelParameter (std::string n1, const AttributeValue &v1)
 {
@@ -91,12 +92,10 @@ CsmaHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid
   pcap->Open (oss.str ());
   pcap->WriteEthernetHeader ();
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/Rx";
-  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&CsmaHelper::RxEvent, pcap));
-  oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/TxQueue/Enqueue";
-  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&CsmaHelper::EnqueueEvent, pcap));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/Sniffer";
+  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&CsmaHelper::SniffEvent, pcap));
 }
+
 void 
 CsmaHelper::EnablePcap (std::string filename, NetDeviceContainer d)
 {
@@ -132,7 +131,7 @@ CsmaHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
 {
   Packet::EnablePrinting ();
   std::ostringstream oss;
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/Rx";
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/MacRx";
   Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiRxEvent, &os));
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/TxQueue/Enqueue";
@@ -279,15 +278,11 @@ CsmaHelper::InstallStar (std::string hubName, NodeContainer spokes,
 }
 
 void 
-CsmaHelper::EnqueueEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
+CsmaHelper::SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
 {
   writer->WritePacket (packet);
 }
-void 
-CsmaHelper::RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
-{
-  writer->WritePacket (packet);
-}
+
 void 
 CsmaHelper::AsciiEnqueueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
 {

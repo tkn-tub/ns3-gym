@@ -78,16 +78,8 @@ EmuHelper::EnablePcap (
   pcap->WriteEthernetHeader ();
 
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmuNetDevice/Rx";
-  Config::ConnectWithoutContext (oss.str (), 
-    MakeBoundCallback (&EmuHelper::RxEvent, pcap));
-
-  oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmuNetDevice/TxQueue/Enqueue";
-  Config::ConnectWithoutContext (oss.str (), 
-    MakeBoundCallback (&EmuHelper::EnqueueEvent, pcap));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/Sniffer";
+  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&EmuHelper::SniffEvent, pcap));
 }
 
   void 
@@ -131,28 +123,20 @@ EmuHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
   Packet::EnablePrinting ();
   std::ostringstream oss;
 
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmuNetDevice/Rx";
-  Config::Connect (oss.str (), 
-    MakeBoundCallback (&EmuHelper::AsciiRxEvent, &os));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/MacRx";
+  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiRxEvent, &os));
 
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmuNetDevice/TxQueue/Enqueue";
-  Config::Connect (oss.str (), 
-    MakeBoundCallback (&EmuHelper::AsciiEnqueueEvent, &os));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/TxQueue/Enqueue";
+  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiEnqueueEvent, &os));
 
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmuNetDevice/TxQueue/Dequeue";
-  Config::Connect (oss.str (), 
-    MakeBoundCallback (&EmuHelper::AsciiDequeueEvent, &os));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/TxQueue/Dequeue";
+  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiDequeueEvent, &os));
 
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmuNetDevice/TxQueue/Drop";
-  Config::Connect (oss.str (), 
-    MakeBoundCallback (&EmuHelper::AsciiDropEvent, &os));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/TxQueue/Drop";
+  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiDropEvent, &os));
 }
 
   void 
@@ -228,14 +212,7 @@ EmuHelper::InstallPriv (Ptr<Node> node) const
 }
 
   void 
-EmuHelper::EnqueueEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
-{
-  NS_LOG_FUNCTION (writer << packet);
-  writer->WritePacket (packet);
-}
-
-  void 
-EmuHelper::RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
+EmuHelper::SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
 {
   NS_LOG_FUNCTION (writer << packet);
   writer->WritePacket (packet);

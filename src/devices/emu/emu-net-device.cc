@@ -22,17 +22,18 @@
 #include "ns3/log.h"
 #include "ns3/queue.h"
 #include "ns3/simulator.h"
-#include "ns3/realtime-simulator-impl.h"
-#include "ns3/mac48-address.h"
 #include "ns3/ethernet-header.h"
 #include "ns3/ethernet-trailer.h"
 #include "ns3/llc-snap-header.h"
-#include "ns3/trace-source-accessor.h"
+#include "ns3/boolean.h"
+#include "ns3/uinteger.h"
 #include "ns3/pointer.h"
+#include "ns3/string.h"
+#include "ns3/trace-source-accessor.h"
 #include "ns3/channel.h"
 #include "ns3/system-thread.h"
-#include "ns3/string.h"
-#include "ns3/boolean.h"
+#include "ns3/realtime-simulator-impl.h"
+#include "ns3/mac48-address.h"
 
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -82,14 +83,72 @@ EmuNetDevice::GetTypeId (void)
                    TimeValue (Seconds (0.)),
                    MakeTimeAccessor (&EmuNetDevice::m_tStop),
                    MakeTimeChecker ())
+
+    //
+    // Transmit queueing discipline for the device which includes its own set
+    // of trace hooks.  Note that this is really going to run "on top of" the 
+    // queueing discipline that will most likely be present in the devices of
+    // the underlying operating system.
+    //
     .AddAttribute ("TxQueue", 
                    "A queue to use as the transmit queue in the device.",
                    PointerValue (),
                    MakePointerAccessor (&EmuNetDevice::m_queue),
                    MakePointerChecker<Queue> ())
-    .AddTraceSource ("Rx", 
-                     "Trace source indicating recvfrom of packet destined for broadcast, multicast or local address.",
-                     MakeTraceSourceAccessor (&EmuNetDevice::m_rxTrace))
+
+    //
+    // Trace sources at the "top" of the net device, where packets transition
+    // to/from higher layers.  These points do not really correspond to the 
+    // MAC layer of the underlying operating system, but exist to provide 
+    // a consitent tracing environment.  These trace hooks should really be
+    // interpreted as the points at which a packet leaves the ns-3 environment
+    // destined for the underlying operating system or vice-versa.
+    //
+    .AddTraceSource ("MacTx", 
+                     "Trace source indicating a packet has arrived for transmission by this device",
+                     MakeTraceSourceAccessor (&EmuNetDevice::m_macTxTrace))
+    .AddTraceSource ("MacTxDrop", 
+                     "Trace source indicating a packet has been dropped by the device before transmission",
+                     MakeTraceSourceAccessor (&EmuNetDevice::m_macTxDropTrace))
+    .AddTraceSource ("MacRx", 
+                     "Trace source indicating a packet has been received by this device and is being forwarded up the stack",
+                     MakeTraceSourceAccessor (&EmuNetDevice::m_macRxTrace))
+    //
+    // In normal ns-3 net devices, these trace souces correspond to the "bottom"
+    // of the net device, where packets transition to/from the channel.  In 
+    // the case of the emu device, there is no physical layer access and so
+    // these are duplicates of the MAC-level hooks.  Intepret these points
+    // also as the points at which a packet leaves the ns-3 environment
+    // destined for the underlying operating system or vice-versa.
+    //
+    .AddTraceSource ("PhyTxStart", 
+                     "Trace source indicating a packet has begun transmitting over the channel",
+                     MakeTraceSourceAccessor (&EmuNetDevice::m_phyTxStartTrace))
+    .AddTraceSource ("PhyTx", 
+                     "Trace source indicating a packet has been completely transmitted over the channel",
+                     MakeTraceSourceAccessor (&EmuNetDevice::m_phyTxTrace))
+    .AddTraceSource ("PhyTxDrop", 
+                     "Trace source indicating a packet has been dropped by the device during transmission",
+                     MakeTraceSourceAccessor (&EmuNetDevice::m_phyTxDropTrace))
+    .AddTraceSource ("PhyRxStart", 
+                     "Trace source indicating a packet has begun being received by the device",
+                     MakeTraceSourceAccessor (&EmuNetDevice::m_phyRxStartTrace))
+    .AddTraceSource ("PhyRx", 
+                     "Trace source indicating a packet has been completely received by the device",
+                     MakeTraceSourceAccessor (&EmuNetDevice::m_phyRxTrace))
+    .AddTraceSource ("PhyRxDrop", 
+                     "Trace source indicating a packet has been dropped by the device during reception",
+                     MakeTraceSourceAccessor (&EmuNetDevice::m_phyRxDropTrace))
+
+    //
+    // Trace sources designed to simulate a packet sniffer facility (tcpdump). 
+    //
+    .AddTraceSource ("Sniffer", 
+                     "Trace source simulating a non-promiscuous packet sniffer attached to the device",
+                     MakeTraceSourceAccessor (&EmuNetDevice::m_snifferTrace))
+    .AddTraceSource ("PromiscSniffer", 
+                     "Trace source simulating a promiscuous packet sniffer attached to the device",
+                     MakeTraceSourceAccessor (&EmuNetDevice::m_promiscSnifferTrace))
     ;
   return tid;
 }
@@ -490,6 +549,19 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
 {
   NS_LOG_FUNCTION (buf << len);
 
+  /* IPv6 support*/
+  uint8_t mac[6];
+  Mac48Address multicast6AllNodes("33:33:00:00:00:01");
+  Mac48Address multicast6AllRouters("33:33:00:00:00:02");
+  Mac48Address multicast6AllHosts("33:33:00:00:00:03");
+  Mac48Address multicast6Node; /* multicast address addressed to our MAC address */
+
+  /* generate IPv6 multicast ethernet destination that nodes will accept */
+  GetAddress().CopyTo(mac);
+  mac[0]=0x33;
+  mac[1]=0x33;
+  multicast6Node.CopyFrom(mac);
+
   //
   // Create a packet out of the buffer we received and free that buffer.
   //
@@ -504,6 +576,13 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
   Ptr<Packet> originalPacket = packet->Copy ();
 
   //
+  // Hit the trace hook.  This trace will fire on all packets received from the
+  // OS (promiscuous).  Packets are received instantaneously.
+  //
+  m_phyRxStartTrace (packet);
+  m_phyRxTrace (packet);
+
+  //
   // Checksum the packet
   //
   EthernetTrailer trailer;
@@ -516,43 +595,68 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
   NS_LOG_LOGIC ("Pkt source is " << header.GetSource ());
   NS_LOG_LOGIC ("Pkt destination is " << header.GetDestination ());
 
-  LlcSnapHeader llc;
-  packet->RemoveHeader (llc);
-  uint16_t protocol = llc.GetType ();
+  uint16_t protocol;
+  
+  //
+  // If the length/type is less than 1500, it corresponds to a length 
+  // interpretation packet.  In this case, it is an 802.3 packet and 
+  // will also have an 802.2 LLC header.  If greater than 1500, we
+  // find the protocol number (Ethernet type) directly.
+  //
+  if (header.GetLengthType () <= 1500)
+    {
+      LlcSnapHeader llc;
+      packet->RemoveHeader (llc);
+      protocol = llc.GetType ();
+    }
+  else
+    {
+      protocol = header.GetLengthType ();
+    }
 
   PacketType packetType;
       
   if (header.GetDestination ().IsBroadcast ())
     {
-      NS_LOG_LOGIC ("Pkt destination is PACKET_BROADCAST");
       packetType = NS3_PACKET_BROADCAST;
     }
-  else if (header.GetDestination ().IsMulticast ())
+  else if (header.GetDestination ().IsMulticast () ||
+           header.GetDestination() == multicast6Node ||
+           header.GetDestination() == multicast6AllNodes ||
+           header.GetDestination() == multicast6AllRouters ||
+           header.GetDestination() == multicast6AllHosts)
     {
-      NS_LOG_LOGIC ("Pkt destination is PACKET_MULTICAST");
-      packetType = NS3_PACKET_MULTICAST;
+      packetType = NS3_PACKET_MULTICAST;          
     }
   else if (header.GetDestination () == m_address)
     {
-      NS_LOG_LOGIC ("Pkt destination is PACKET_HOST");
       packetType = NS3_PACKET_HOST;
     }
   else
     {
-      NS_LOG_LOGIC ("Pkt destination is PACKET_OTHERHOST");
       packetType = NS3_PACKET_OTHERHOST;
     }
 
+  // 
+  // For all kinds of packetType we receive, we hit the promiscuous sniffer
+  // hook and pass a copy up to the promiscuous callback.  Pass a copy to 
+  // make sure that nobody messes with our packet.
+  //
+  m_promiscSnifferTrace (originalPacket);
   if (!m_promiscRxCallback.IsNull ())
     {
-      NS_LOG_LOGIC ("calling m_promiscRxCallback");
       m_promiscRxCallback (this, packet->Copy (), protocol, header.GetSource (), header.GetDestination (), packetType);
     }
 
+  //
+  // If this packet is not destined for some other host, it must be for us
+  // as either a broadcast, multicast or unicast.  We need to hit the mac
+  // packet received trace hook and forward the packet up the stack.
+  //
   if (packetType != NS3_PACKET_OTHERHOST)
     {
-      m_rxTrace (originalPacket);
-      NS_LOG_LOGIC ("calling m_rxCallback");
+      m_snifferTrace (originalPacket);
+      m_macRxTrace (originalPacket);
       m_rxCallback (this, packet, protocol, header.GetSource ());
     }
 }
@@ -632,10 +736,12 @@ bool
 EmuNetDevice::SendFrom (Ptr<Packet> packet, const Address &src, const Address &dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (packet << src << dest << protocolNumber);
+  NS_LOG_LOGIC ("packet =" << packet);
+  NS_LOG_LOGIC ("UID is " << packet->GetUid () << ")");
 
   if (IsLinkUp () == false)
     {
-      NS_LOG_LOGIC ("Link is down, returning");
+      m_macTxDropTrace (packet);
       return false;
     }
 
@@ -646,34 +752,11 @@ EmuNetDevice::SendFrom (Ptr<Packet> packet, const Address &src, const Address &d
   NS_LOG_LOGIC ("Transmit packet from " << source);
   NS_LOG_LOGIC ("Transmit packet to " << destination);
 
-#if 0
-  {
-    struct ifreq ifr;
-    bzero (&ifr, sizeof(ifr));
-    strncpy ((char *)ifr.ifr_name, m_deviceName.c_str (), IFNAMSIZ);
-
-    NS_LOG_LOGIC ("Getting MAC address");
-    int32_t rc = ioctl (m_sock, SIOCGIFHWADDR, &ifr);
-    if (rc == -1)
-      {
-        NS_FATAL_ERROR ("EmuNetDevice::SendFrom(): Can't get MAC address");
-      }
-
-    std::ostringstream oss;
-    oss << std::hex <<
-      (ifr.ifr_hwaddr.sa_data[0] & 0xff) << ":" <<
-      (ifr.ifr_hwaddr.sa_data[1] & 0xff) << ":" <<
-      (ifr.ifr_hwaddr.sa_data[2] & 0xff) << ":" <<
-      (ifr.ifr_hwaddr.sa_data[3] & 0xff) << ":" <<
-      (ifr.ifr_hwaddr.sa_data[4] & 0xff) << ":" <<
-      (ifr.ifr_hwaddr.sa_data[5] & 0xff) << std::dec;
-
-    NS_LOG_LOGIC ("Fixup source to HW MAC " << oss.str ());
-    source = Mac48Address (oss.str ().c_str ());
-    NS_LOG_LOGIC ("source now " << source);
-  }
-#endif
-
+  //
+  // We've got to pick either DIX (Ethernet) or LLC/SNAP (IEEE 802.3) as a 
+  // packet format.  IEEE 802.3 is slightly more formally correct, so we 
+  // go that route.
+  //
   LlcSnapHeader llc;
   llc.SetType (protocolNumber);
   packet->AddHeader (llc);
@@ -688,11 +771,23 @@ EmuNetDevice::SendFrom (Ptr<Packet> packet, const Address &src, const Address &d
   trailer.CalcFcs (packet);
   packet->AddTrailer (trailer);
 
+  //
+  // there's not much meaning associated with the different layers in this
+  // device, so don't be surprised when they're all stacked together in 
+  // essentially one place.  We do this for trace consistency across devices.
+  //
+  m_macTxTrace (packet);
+
   // 
-  // Enqueue and dequeue the packet to hit the tracing hooks.
+  // Enqueue and dequeue the packet to hit the queue tracing hooks.
   //
   m_queue->Enqueue (packet);
   packet = m_queue->Dequeue ();
+  NS_ASSERT_MSG (packet, "EmuNetDevice::SendFrom(): packet zero from queue");
+
+  m_promiscSnifferTrace (packet);
+  m_snifferTrace (packet);
+
 
   struct sockaddr_ll ll;
   bzero (&ll, sizeof (ll));
@@ -703,10 +798,13 @@ EmuNetDevice::SendFrom (Ptr<Packet> packet, const Address &src, const Address &d
 
   NS_LOG_LOGIC ("calling sendto");
 
+  m_phyTxStartTrace (packet);
+
   int32_t rc;
   rc = sendto (m_sock, packet->PeekData (), packet->GetSize (), 0, reinterpret_cast<struct sockaddr *> (&ll), sizeof (ll));
-
   NS_LOG_LOGIC ("sendto returns " << rc);
+
+  m_phyTxTrace (packet);
 
   return rc == -1 ? false : true;
 }

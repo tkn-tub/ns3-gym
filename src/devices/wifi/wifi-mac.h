@@ -176,10 +176,14 @@ public:
    * \param linkDown the callback to invoke when the link becomes down.
    */
   virtual void SetLinkDownCallback (Callback<void> linkDown) = 0;
+
+  /*
+   * Let the net device hit a trace hook.  This is done to group the high-level
+   * trace sources all in one place for ease of use.
+   */
+  void SnifferTrace (Ptr<const Packet> packet);
+
 private:
-
-
-
   static Time GetDefaultMaxPropagationDelay (void);
   static Time GetDefaultSlot (void);
   static Time GetDefaultSifs (void);
@@ -189,6 +193,61 @@ private:
 
   Time m_maxPropagationDelay;
   uint32_t m_maxMsduSize;
+
+protected:
+
+  /**
+   * The trace source fired when packets come into the "top" of the device
+   * at the L3/L2 transition, before being queued for transmission.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_macTxTrace;
+
+  /**
+   * The trace source fired when packets coming into the "top" of the device
+   * are dropped at the MAC layer during transmission.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_macTxDropTrace;
+
+  /**
+   * The trace source fired for packets successfully received by the device
+   * immediately before being forwarded up to higher layers (at the L2/L3 
+   * transition).
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_macRxTrace;
+
+  /**
+   * The trace source fired when packets coming into the "top" of the device
+   * are dropped at the MAC layer during reception.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_macRxDropTrace;
+
+  /**
+   * A trace source that emulates a non-promiscuous protocol sniffer connected 
+   * to the device.  Unlike your average everyday sniffer, this trace source 
+   * will not fire on PACKET_OTHERHOST events.
+   *
+   * On the transmit size, this trace hook will fire after a packet is dequeued
+   * from the device queue for transmission.  In Linux, for example, this would
+   * correspond to the point just before a device hard_start_xmit where 
+   * dev_queue_xmit_nit is called to dispatch the packet to the PF_PACKET 
+   * ETH_P_ALL handlers.
+   *
+   * On the receive side, this trace hook will fire when a packet is received,
+   * just before the receive callback is executed.  In Linux, for example, 
+   * this would correspond to the point at which the packet is dispatched to 
+   * packet sniffers in netif_receive_skb.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_snifferTrace;
 };
 
 } // namespace ns3

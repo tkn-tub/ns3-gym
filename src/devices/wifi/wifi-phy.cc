@@ -55,6 +55,27 @@ WifiPhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiPhy")
     .SetParent<Object> ()
+    .AddTraceSource ("PhyTxStart", 
+                     "Trace source indicating a packet has begun transmitting over the channel medium",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyTxStartTrace))
+    .AddTraceSource ("PhyTx", 
+                     "Trace source indicating a packet has been completely transmitted over the channel",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyTxTrace))
+    .AddTraceSource ("PhyTxDrop", 
+                     "Trace source indicating a packet has been dropped by the device during transmission",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyTxDropTrace))
+    .AddTraceSource ("PhyRxStart", 
+                     "Trace source indicating a packet has begun being received from the channel medium by the device",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyRxStartTrace))
+    .AddTraceSource ("PhyRx", 
+                     "Trace source indicating a packet has been completely received from the channel medium by the device",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyRxTrace))
+    .AddTraceSource ("PhyRxDrop", 
+                     "Trace source indicating a packet has been dropped by the device during reception",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyRxDropTrace))
+    .AddTraceSource ("PromiscSniffer", 
+                     "Trace source simulating a promiscuous packet sniffer attached to the device",
+                     MakeTraceSourceAccessor (&WifiPhy::m_promiscSnifferTrace))
     ;
   return tid;
 }

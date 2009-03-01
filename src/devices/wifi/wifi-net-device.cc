@@ -23,6 +23,8 @@
 #include "wifi-remote-station-manager.h"
 #include "wifi-channel.h"
 #include "ns3/llc-snap-header.h"
+#include "ns3/ethernet-header.h"
+#include "ns3/ethernet-trailer.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
 #include "ns3/pointer.h"
@@ -57,10 +59,6 @@ WifiNetDevice::GetTypeId (void)
                    MakePointerAccessor (&WifiNetDevice::SetRemoteStationManager,
                                         &WifiNetDevice::GetRemoteStationManager),
                    MakePointerChecker<WifiRemoteStationManager> ())
-    .AddTraceSource ("Rx", "Received payload from the MAC layer.",
-                     MakeTraceSourceAccessor (&WifiNetDevice::m_rxLogger))
-    .AddTraceSource ("Tx", "Send payload to the MAC layer.",
-                     MakeTraceSourceAccessor (&WifiNetDevice::m_txLogger))
     ;
   return tid;
 }
@@ -243,11 +241,14 @@ WifiNetDevice::IsBridge (void) const
   return false;
 }
 bool 
-WifiNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
+WifiNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
   NS_ASSERT (Mac48Address::IsMatchingType (dest));
 
   Mac48Address realTo = Mac48Address::ConvertFrom (dest);
+  Mac48Address realFrom = Mac48Address::ConvertFrom (GetAddress ());
+
+  SniffPacket (packet, realTo, realFrom, protocolNumber);
 
   LlcSnapHeader llc;
   llc.SetType (protocolNumber);
@@ -303,13 +304,16 @@ WifiNetDevice::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to
     {
       type = NetDevice::PACKET_OTHERHOST;
     }
+
   if (type != NetDevice::PACKET_OTHERHOST)
     {
+      SniffPacket (packet, to, from, llc.GetType ());
       m_forwardUp (this, packet, llc.GetType (), from);
     }
+
   if (!m_promiscRx.IsNull ())
     {
-      m_promiscRx (this, packet, llc.GetType (), from, to, type);
+      m_promiscRx (this, packet->Copy (), llc.GetType (), from, to, type);
     }
 }
 
@@ -341,6 +345,8 @@ WifiNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Addres
   Mac48Address realTo = Mac48Address::ConvertFrom (dest);
   Mac48Address realFrom = Mac48Address::ConvertFrom (source);
 
+  SniffPacket (packet, realTo, realFrom, protocolNumber);
+
   LlcSnapHeader llc;
   llc.SetType (protocolNumber);
   packet->AddHeader (llc);
@@ -362,6 +368,27 @@ bool
 WifiNetDevice::SupportsSendFrom (void) const
 {
   return m_mac->SupportsSendFrom ();
+}
+
+void
+WifiNetDevice::SniffPacket (Ptr<const Packet> packet, Mac48Address to, Mac48Address from, uint16_t type)
+{
+  Ptr<Packet> copy = packet->Copy ();
+  EthernetHeader header (false);
+  header.SetSource (from);
+  header.SetDestination (to);
+
+  LlcSnapHeader llc;
+  llc.SetType (type);
+  copy->AddHeader (llc);
+
+  header.SetLengthType (copy->GetSize ());
+  copy->AddHeader (header);
+
+  EthernetTrailer trailer;
+  trailer.CalcFcs (copy);
+  copy->AddTrailer (trailer);
+  m_mac->SnifferTrace (copy);
 }
 
 } // namespace ns3

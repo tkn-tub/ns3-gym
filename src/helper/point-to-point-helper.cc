@@ -90,11 +90,8 @@ PointToPointHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t 
   pcap->Open (oss.str ());
   pcap->WritePppHeader ();
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/Rx";
-  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PointToPointHelper::RxEvent, pcap));
-  oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Enqueue";
-  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PointToPointHelper::EnqueueEvent, pcap));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/Sniffer";
+  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PointToPointHelper::SniffEvent, pcap));
 }
 void 
 PointToPointHelper::EnablePcap (std::string filename, NetDeviceContainer d)
@@ -131,7 +128,7 @@ PointToPointHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t dev
 {
   Packet::EnablePrinting ();
   std::ostringstream oss;
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/Rx";
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/MacRx";
   Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiRxEvent, &os));
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Enqueue";
@@ -247,12 +244,7 @@ PointToPointHelper::InstallStar (std::string hubName, NodeContainer spokes,
 }
 
 void 
-PointToPointHelper::EnqueueEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
-{
-  writer->WritePacket (packet);
-}
-void 
-PointToPointHelper::RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
+PointToPointHelper::SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
 {
   writer->WritePacket (packet);
 }

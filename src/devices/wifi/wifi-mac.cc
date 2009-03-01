@@ -19,6 +19,7 @@
  */
 #include "wifi-mac.h"
 #include "ns3/uinteger.h"
+#include "ns3/trace-source-accessor.h"
 
 namespace ns3 {
 
@@ -117,7 +118,26 @@ WifiMac::GetTypeId (void)
 		   MakeSsidAccessor (&WifiMac::GetSsid,
 				     &WifiMac::SetSsid),
 		   MakeSsidChecker ())
+    .AddTraceSource ("MacTx", 
+                     "A packet has been received from higher layers and is being processed in preparation for "
+                     "queueing for transmission.",
+                     MakeTraceSourceAccessor (&WifiMac::m_macTxTrace))
+    .AddTraceSource ("MacTxDrop", 
+                     "A packet has been dropped in the MAC layer before being queued for transmission.",
+                     MakeTraceSourceAccessor (&WifiMac::m_macTxDropTrace))
+    .AddTraceSource ("MacRx", 
+                     "A packet has been received by this device, has been passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.",
+                     MakeTraceSourceAccessor (&WifiMac::m_macRxTrace))
+    .AddTraceSource ("MacRxDrop", 
+                     "A packet has been dropped in the MAC layer after it has been passed up from the physical "
+                     "layer.",
+                     MakeTraceSourceAccessor (&WifiMac::m_macRxDropTrace))
+    .AddTraceSource ("Sniffer", 
+                     "Trace source simulating a non-promiscuous packet sniffer attached to the device",
+                     MakeTraceSourceAccessor (&WifiMac::m_snifferTrace))
     ;
+
   return tid;
 }
 
@@ -142,6 +162,12 @@ uint32_t
 WifiMac::GetMaxMsduSize (void) const
 {
   return m_maxMsduSize;
+}
+
+void
+WifiMac::SnifferTrace (Ptr<const Packet> packet)
+{
+  m_snifferTrace (packet);
 }
 
 

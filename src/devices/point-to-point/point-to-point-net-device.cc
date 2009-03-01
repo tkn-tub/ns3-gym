@@ -62,23 +62,67 @@ PointToPointNetDevice::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&PointToPointNetDevice::m_receiveErrorModel),
                    MakePointerChecker<ErrorModel> ())
-    .AddAttribute ("TxQueue",
-                   "A queue to use as the transmit queue in the device.",
-                   PointerValue (),
-                   MakePointerAccessor (&PointToPointNetDevice::m_queue),
-                   MakePointerChecker<Queue> ())
     .AddAttribute ("InterframeGap", 
                    "The time to wait between packet (frame) transmissions",
                    TimeValue (Seconds (0.0)),
                    MakeTimeAccessor (&PointToPointNetDevice::m_tInterframeGap),
                    MakeTimeChecker ())
-    .AddTraceSource ("Rx", 
-                     "Trace source indicating reception of packet from the PointToPointChannel.",
-                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_rxTrace))
-    .AddTraceSource ("Drop",
-                     "Trace source indicating a packet was discarded due to a ReceiveErrorModel decision.",
-                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_dropTrace))
 
+    //
+    // Transmit queueing discipline for the device which includes its own set
+    // of trace hooks.
+    //
+    .AddAttribute ("TxQueue", 
+                   "A queue to use as the transmit queue in the device.",
+                   PointerValue (),
+                   MakePointerAccessor (&PointToPointNetDevice::m_queue),
+                   MakePointerChecker<Queue> ())
+
+    //
+    // Trace sources at the "top" of the net device, where packets transition
+    // to/from higher layers.
+    //
+    .AddTraceSource ("MacTx", 
+                     "Trace source indicating a packet has arrived for transmission by this device",
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_macTxTrace))
+    .AddTraceSource ("MacTxDrop", 
+                     "Trace source indicating a packet has been dropped by the device before transmission",
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_macTxDropTrace))
+    .AddTraceSource ("MacRx", 
+                     "Trace source indicating a packet has been received by this device and is being forwarded up the stack",
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_macRxTrace))
+    //
+    // Trace souces at the "bottom" of the net device, where packets transition
+    // to/from the channel.
+    //
+    .AddTraceSource ("PhyTxStart", 
+                     "Trace source indicating a packet has begun transmitting over the channel",
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyTxStartTrace))
+    .AddTraceSource ("PhyTx", 
+                     "Trace source indicating a packet has been completely transmitted over the channel",
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyTxTrace))
+    .AddTraceSource ("PhyTxDrop", 
+                     "Trace source indicating a packet has been dropped by the device during transmission",
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyTxDropTrace))
+    .AddTraceSource ("PhyRxStart", 
+                     "Trace source indicating a packet has begun being received by the device",
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyRxStartTrace))
+    .AddTraceSource ("PhyRx", 
+                     "Trace source indicating a packet has been completely received by the device",
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyRxTrace))
+    .AddTraceSource ("PhyRxDrop", 
+                     "Trace source indicating a packet has been dropped by the device during reception",
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyRxDropTrace))
+
+    //
+    // Trace sources designed to simulate a packet sniffer facility (tcpdump).
+    //
+    .AddTraceSource ("Sniffer", 
+                     "Trace source simulating a non-promiscuous packet sniffer attached to the device",
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_snifferTrace))
+    .AddTraceSource ("PromiscSniffer", 
+                     "Trace source simulating a promiscuous packet sniffer attached to the device",
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_promiscSnifferTrace))
     ;
   return tid;
 }
@@ -89,7 +133,8 @@ PointToPointNetDevice::PointToPointNetDevice ()
   m_txMachineState (READY),
   m_channel (0), 
   m_name (""),
-  m_linkUp (false)
+  m_linkUp (false),
+  m_currentPkt (0)
 {
   NS_LOG_FUNCTION (this);
 
@@ -112,8 +157,7 @@ PointToPointNetDevice::~PointToPointNetDevice ()
 PointToPointNetDevice::AddHeader(Ptr<Packet> p, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_ASSERT_MSG (protocolNumber == 0x800,
-    "PointToPointNetDevice::AddHeader(): protocolNumber must be 0x800");
+  NS_ASSERT_MSG (protocolNumber == 0x800, "PointToPointNetDevice::AddHeader(): protocolNumber must be 0x800");
   PppHeader ppp;
   p->AddHeader (ppp);
 }
@@ -135,6 +179,7 @@ PointToPointNetDevice::DoDispose()
   m_node = 0;
   m_channel = 0;
   m_receiveErrorModel = 0;
+  m_currentPkt = 0;
   NetDevice::DoDispose ();
 }
 
@@ -157,48 +202,63 @@ PointToPointNetDevice::TransmitStart (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p);
   NS_LOG_LOGIC ("UID is " << p->GetUid () << ")");
-//
-// This function is called to start the process of transmitting a packet.
-// We need to tell the channel that we've started wiggling the wire and
-// schedule an event that will be executed when the transmission is complete.
-//
+
+  //
+  // This function is called to start the process of transmitting a packet.
+  // We need to tell the channel that we've started wiggling the wire and
+  // schedule an event that will be executed when the transmission is complete.
+  //
   NS_ASSERT_MSG(m_txMachineState == READY, "Must be READY to transmit");
   m_txMachineState = BUSY;
+  m_phyTxTrace (m_currentPkt);
+  m_currentPkt = p;
+
   Time txTime = Seconds (m_bps.CalculateTxTime(p->GetSize()));
   Time txCompleteTime = txTime + m_tInterframeGap;
 
-  NS_LOG_LOGIC ("Schedule TransmitCompleteEvent in " << 
-    txCompleteTime.GetSeconds () << "sec");
+  NS_LOG_LOGIC ("Schedule TransmitCompleteEvent in " << txCompleteTime.GetSeconds () << "sec");
+  Simulator::Schedule (txCompleteTime, &PointToPointNetDevice::TransmitComplete, this);
 
-  Simulator::Schedule (txCompleteTime, 
-    &PointToPointNetDevice::TransmitComplete, this);
-
-  return m_channel->TransmitStart(p, this, txTime); 
+  bool result = m_channel->TransmitStart(p, this, txTime); 
+  if (result == false)
+    {
+      m_phyTxDropTrace (p);
+    }
+  return result;
 }
 
   void 
 PointToPointNetDevice::TransmitComplete (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-//
-// This function is called to when we're all done transmitting a packet.
-// We try and pull another packet off of the transmit queue.  If the queue
-// is empty, we are done, otherwise we need to start transmitting the
-// next packet.
-//
+
+  //
+  // This function is called to when we're all done transmitting a packet.
+  // We try and pull another packet off of the transmit queue.  If the queue
+  // is empty, we are done, otherwise we need to start transmitting the
+  // next packet.
+  //
   NS_ASSERT_MSG(m_txMachineState == BUSY, "Must be BUSY if transmitting");
   m_txMachineState = READY;
+
+  NS_ASSERT_MSG (m_currentPkt != 0, "PointToPointNetDevice::TransmitComplete(): m_currentPkt zero");
+
+  m_phyTxTrace (m_currentPkt);
+  m_currentPkt = 0;
+
   Ptr<Packet> p = m_queue->Dequeue ();
   if (p == 0)
     {
-//
-// No packet was on the queue, so we just exit.
-//
+      //
+      // No packet was on the queue, so we just exit.
+      //
       return;
     }
-//
-// Got another packet off of the queue, so start the transmit process agin.
-//
+
+  //
+  // Got another packet off of the queue, so start the transmit process agin.
+  //
+  m_snifferTrace (p);
   TransmitStart(p);
 }
 
@@ -211,11 +271,11 @@ PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 
   m_channel->Attach(this);
 
-//
-// This device is up whenever it is attached to a channel.  A better plan
-// would be to have the link come up when both devices are attached, but this
-// is not done for now.
-//
+  //
+  // This device is up whenever it is attached to a channel.  A better plan
+  // would be to have the link come up when both devices are attached, but this
+  // is not done for now.
+  //
   NotifyLinkUp ();
   return true;
 }
@@ -242,25 +302,37 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
 
   if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) ) 
     {
-// 
-// If we have an error model and it indicates that it is time to lose a
-// corrupted packet, don't forward this packet up, let it go.
-//
-      m_dropTrace (packet);
+      // 
+      // If we have an error model and it indicates that it is time to lose a
+      // corrupted packet, don't forward this packet up, let it go.
+      //
+      m_phyRxDropTrace (packet);
     }
   else 
     {
-// 
-// Hit the receive trace hook, strip off the point-to-point protocol header
-// and forward this packet up the protocol stack.
-//
-      m_rxTrace (packet);
+      // 
+      // Hit the trace hooks.  All of these hooks are in the same place in this 
+      // device becuase it is so simple, but this is not usually the case.  
+      //
+      m_snifferTrace (packet);
+      m_phyRxTrace (packet);
+      m_macRxTrace (packet);
+
+      //
+      // Strip off the point-to-point protocol header and forward this packet
+      // up the protocol stack.  Since this is a simple point-to-point link,
+      // there is no difference in what the promisc callback sees and what the
+      // normal receive callback sees.
+      //
       ProcessHeader(packet, protocol);
-      m_rxCallback (this, packet, protocol, GetRemote ());
+
       if (!m_promiscCallback.IsNull ())
         {
-          m_promiscCallback (this, packet, protocol, GetRemote (), GetAddress (), NetDevice::PACKET_HOST);
+          Ptr<Packet> pktCopy = packet->Copy ();
+          m_promiscCallback (this, pktCopy, protocol, GetRemote (), GetAddress (), NetDevice::PACKET_HOST);
         }
+
+      m_rxCallback (this, packet, protocol, GetRemote ());
     }
 }
 
@@ -406,33 +478,37 @@ PointToPointNetDevice::Send(
   NS_LOG_LOGIC ("p=" << packet << ", dest=" << &dest);
   NS_LOG_LOGIC ("UID is " << packet->GetUid ());
 
-//
-// If IsLinkUp() is false it means there is no channel to send any packet 
-// over so we just return an error.
-//
+  //
+  // If IsLinkUp() is false it means there is no channel to send any packet 
+  // over so we just hit the drop trace on the packet and return an error.
+  //
   if (IsLinkUp () == false)
     {
+      m_macTxDropTrace (packet);
       return false;
     }
 
-//
-// Stick a point to point protocol header on the packet in preparation for
-// shoving it out the door.
-//
+  //
+  // Stick a point to point protocol header on the packet in preparation for
+  // shoving it out the door.
+  //
   AddHeader(packet, protocolNumber);
 
-//
-// If there's a transmission in progress, we enque the packet for later
-// transmission; otherwise we send it now.
-//
+  m_macTxTrace (packet);
+
+  //
+  // If there's a transmission in progress, we enque the packet for later
+  // transmission; otherwise we send it now.
+  //
   if (m_txMachineState == READY) 
     {
-// 
-// Even if the transmitter is immediately available, we still enqueue and 
-// dequeue the packet to hit the tracing hooks.
-//
+      // 
+      // Even if the transmitter is immediately available, we still enqueue and
+      // dequeue the packet to hit the tracing hooks.
+      //
       m_queue->Enqueue (packet);
       packet = m_queue->Dequeue ();
+      m_snifferTrace (packet);
       return TransmitStart (packet);
     }
   else

@@ -37,6 +37,61 @@ NS_LOG_COMPONENT_DEFINE ("WifiHelper");
 
 namespace ns3 {
 
+static void PcapSnifferEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
+{
+  writer->WritePacket (packet);
+}
+
+void 
+WifiHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid)
+{
+  std::ostringstream oss;
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Mac/";
+  Config::MatchContainer matches = Config::LookupMatches (oss.str ());
+  if (matches.GetN () == 0)
+    {
+      return;
+    }
+  oss.str ("");
+  oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
+  Ptr<PcapWriter> pcap = Create<PcapWriter> ();
+  pcap->Open (oss.str ());
+  pcap->WriteEthernetHeader ();
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Mac/Sniffer";
+  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapSnifferEvent, pcap));
+}
+
+void 
+WifiHelper::EnablePcap (std::string filename, NetDeviceContainer d)
+{
+  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
+    {
+      Ptr<NetDevice> dev = *i;
+      EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex ());
+    }
+}
+void
+WifiHelper::EnablePcap (std::string filename, NodeContainer n)
+{
+  NetDeviceContainer devs;
+  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
+    {
+      Ptr<Node> node = *i;
+      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
+        {
+          devs.Add (node->GetDevice (j));
+        }
+    }
+  EnablePcap (filename, devs);
+}
+
+void
+WifiHelper::EnablePcapAll (std::string filename)
+{
+  EnablePcap (filename, NodeContainer::GetGlobal ());
+}
+
 WifiPhyHelper::~WifiPhyHelper ()
 {}
 

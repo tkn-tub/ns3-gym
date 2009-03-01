@@ -24,6 +24,7 @@
 #include "mac-rx-middle.h"
 #include "wifi-phy.h"
 #include "dcf-manager.h"
+#include "wifi-mac-trailer.h"
 #include "ns3/pointer.h"
 #include "ns3/packet.h"
 #include "ns3/log.h"
@@ -234,6 +235,7 @@ AdhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
       destination->RecordDisassociated ();
     }
 
+  m_macTxTrace (packet);
   m_dca->Queue (packet, hdr);
 }
 bool 
@@ -246,6 +248,7 @@ void
 AdhocWifiMac::ForwardUp (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
   NS_LOG_DEBUG ("received size="<<packet->GetSize ()<<", from="<<hdr->GetAddr2 ());
+  m_macRxTrace (packet);
   m_upCallback (packet, hdr->GetAddr2 (), hdr->GetAddr1 ());
 }
 Ptr<DcaTxop>

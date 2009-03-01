@@ -637,25 +637,132 @@ private:
   Ptr<Queue> m_queue;
 
   /**
-   * Error model for receive packet events
+   * Error model for receive packet events.  When active this model will be
+   * used to model transmission errors by marking some of the packets 
+   * received as corrupt.
    */
   Ptr<ErrorModel> m_receiveErrorModel;
 
   /**
-   * The trace source for the packet reception events that the device can
-   * fire.
+   * The trace source fired when packets come into the "top" of the device
+   * at the L3/L2 transition, before being queued for transmission.
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_rxTrace;
+  TracedCallback<Ptr<const Packet> > m_macTxTrace;
 
   /**
-   * The trace source for the packet drop events that the device can
-   * fire.
+   * The trace source fired when packets coming into the "top" of the device
+   * at the L3/L2 transition are dropped before being queued for transmission.
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_dropTrace;
+  TracedCallback<Ptr<const Packet> > m_macTxDropTrace;
+
+  /**
+   * The trace source fired for packets successfully received by the device
+   * immediately before being forwarded up to higher layers (at the L2/L3 
+   * transition).
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_macRxTrace;
+
+  /**
+   * The trace source fired when a packet starts the transmission process on
+   * the medium.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyTxStartTrace;
+
+  /**
+   * The trace source fired when a packet ends the transmission process on
+   * the medium.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyTxTrace;
+
+  /**
+   * The trace source fired when the phy layer drops a packet as it tries
+   * to transmit it.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyTxDropTrace;
+
+  /**
+   * The trace source fired when a packet ends the reception process from
+   * the medium.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyRxTrace;
+
+  /**
+   * The trace source fired when a packet ends the reception process from
+   * the medium.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyRxStartTrace;
+
+  /**
+   * The trace source fired when the phy layer drops a packet it has received.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyRxDropTrace;
+
+  /**
+   * The trace source fired when the phy layer is forced to begin the backoff
+   * process for a packet.  This can happen a number of times as the backoff
+   * sequence is repeated with increasing delays.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyTxBackoffTrace;
+
+  /**
+   * A trace source that emulates a non-promiscuous protocol sniffer connected 
+   * to the device.  Unlike your average everyday sniffer, this trace source 
+   * will not fire on PACKET_OTHERHOST events.
+   *
+   * On the transmit size, this trace hook will fire after a packet is dequeued
+   * from the device queue for transmission.  In Linux, for example, this would
+   * correspond to the point just before a device hard_start_xmit where 
+   * dev_queue_xmit_nit is called to dispatch the packet to the PF_PACKET 
+   * ETH_P_ALL handlers.
+   *
+   * On the receive side, this trace hook will fire when a packet is received,
+   * just before the receive callback is executed.  In Linux, for example, 
+   * this would correspond to the point at which the packet is dispatched to 
+   * packet sniffers in netif_receive_skb.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_snifferTrace;
+
+  /**
+   * A trace source that emulates a promiscuous mode protocol sniffer connected
+   * to the device.  This trace source fire on packets destined for any host
+   * just like your average everyday packet sniffer.
+   *
+   * On the transmit size, this trace hook will fire after a packet is dequeued
+   * from the device queue for transmission.  In Linux, for example, this would
+   * correspond to the point just before a device hard_start_xmit where 
+   * dev_queue_xmit_nit is called to dispatch the packet to the PF_PACKET 
+   * ETH_P_ALL handlers.
+   *
+   * On the receive side, this trace hook will fire when a packet is received,
+   * just before the receive callback is executed.  In Linux, for example, 
+   * this would correspond to the point at which the packet is dispatched to 
+   * packet sniffers in netif_receive_skb.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_promiscSnifferTrace;
 
   /**
    * The Node to which this device is attached.
@@ -671,6 +778,7 @@ private:
    * The callback used to notify higher layers that a packet has been received.
    */
   NetDevice::ReceiveCallback m_rxCallback;
+
   /**
    * The callback used to notify higher layers that a packet has been received in promiscuous mode.
    */
