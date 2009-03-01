@@ -1,6 +1,6 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 import os
-import urllib
+import sys
 
 import Options
 import Logs
@@ -45,8 +45,11 @@ def configure(conf):
         conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
                                      "NSC not found (see option --with-nsc)")
 	return
-
-    arch = os.uname()[4]
+    
+    if sys.platform in ['linux2']:
+        arch = os.uname()[4]
+    else:
+        arch = None
     ok = False
     if arch == 'x86_64' or arch == 'i686' or arch == 'i586' or arch == 'i486' or arch == 'i386':
         conf.env['NSC_ENABLED'] = 'yes'
@@ -115,7 +118,7 @@ def build(bld):
         'icmpv4.h',
         ]
 
-    if bld.env['WITH_NSC']:        
+    if bld.env['NSC_ENABLED']:
         obj.source.append ('nsc-tcp-socket-impl.cc')
         obj.source.append ('nsc-tcp-l4-protocol.cc')
         obj.source.append ('nsc-tcp-socket-factory-impl.cc')
