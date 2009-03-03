@@ -208,50 +208,51 @@ AttributeList::DeserializeFromString (std::string str)
 
   std::string::size_type cur;
   cur = 0;
-  do {
-    std::string::size_type equal = str.find ("=", cur);
-    if (equal == std::string::npos)
-      {
-        NS_FATAL_ERROR ("Error while parsing serialized attribute: \"" << str << "\"");
-        break;
-      }
-    else
-      {
-        std::string name = str.substr (cur, equal-cur);
-        struct TypeId::AttributeInfo info;
-        if (!TypeId::LookupAttributeByFullName (name, &info))
-          {
-            NS_FATAL_ERROR ("Error while parsing serialized attribute: name does not exist: \"" << name << "\"");
-            break;
-          }
-        else
-          {
-            std::string::size_type next = str.find ("|", cur);
-            std::string value;
-            if (next == std::string::npos)
-              {
-                value = str.substr (equal+1, str.size () - (equal+1));
-                cur = str.size ();
-              }
-            else
-              {
-                value = str.substr (equal+1, next - (equal+1));
-                cur++;
-              }
-            Ptr<AttributeValue> val = info.checker->Create ();
-            bool ok = val->DeserializeFromString (value, info.checker);
-            if (!ok)
-              {
-                NS_FATAL_ERROR ("Error while parsing serialized attribute: value invalid: \"" << value << "\"");
-                break;
-              }
-            else
-              {
-                DoSetOne (info.checker, *val);
-              }
-          }
-      }
-  } while (cur != str.size ());
+  while (cur != str.size ())
+    {
+      std::string::size_type equal = str.find ("=", cur);
+      if (equal == std::string::npos)
+        {
+          NS_FATAL_ERROR ("Error while parsing serialized attribute: \"" << str << "\"");
+          break;
+        }
+      else
+        {
+          std::string name = str.substr (cur, equal-cur);
+          struct TypeId::AttributeInfo info;
+          if (!TypeId::LookupAttributeByFullName (name, &info))
+            {
+              NS_FATAL_ERROR ("Error while parsing serialized attribute: name does not exist: \"" << name << "\"");
+              break;
+            }
+          else
+            {
+              std::string::size_type next = str.find ("|", cur);
+              std::string value;
+              if (next == std::string::npos)
+                {
+                  value = str.substr (equal+1, str.size () - (equal+1));
+                  cur = str.size ();
+                }
+              else
+                {
+                  value = str.substr (equal+1, next - (equal+1));
+                  cur++;
+                }
+              Ptr<AttributeValue> val = info.checker->Create ();
+              bool ok = val->DeserializeFromString (value, info.checker);
+              if (!ok)
+                {
+                  NS_FATAL_ERROR ("Error while parsing serialized attribute: value invalid: \"" << value << "\"");
+                  break;
+                }
+              else
+                {
+                  DoSetOne (info.checker, *val);
+                }
+            }
+        }
+    }
 
   return true;
 }

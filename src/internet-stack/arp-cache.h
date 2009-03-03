@@ -164,22 +164,8 @@ public:
      *
      * This function returns true if the time elapsed strictly exceeds
      * the timeout value (i.e., is not less than or equal to the timeout).
-     * Differs from IsExpiring() only in the boundary condition 
-     * delta == timeout.
-     * \see IsExpiring
      */
     bool IsExpired (void) const;
-    /**
-     * \return True if this entry is timing out or has already timed out; 
-     * false otherwise.
-     *
-     * This function returns true if the time elapsed is equal to or exceeds
-     * the timeout value.  Differs from IsExpired() only in the boundary 
-     * condition delta == timeout.
-     * \see IsExpired
-     */
-    bool IsExpiring (void) const;
-
     /**
      * \returns 0 is no packet is pending, the next packet to send if 
      *            packets are pending.
