@@ -200,6 +200,13 @@ public:
   */
   double GetValue(double s, double l);
 
+  /**
+   * \brief Returns a random unsigned integer from the interval [s,l] including both ends.
+   * \param s Low end of the range
+   * \param l High end of the range
+   * \return A random unsigned integer value.
+   */
+  uint32_t GetInteger (uint32_t s, uint32_t l);
 };
 
 /**

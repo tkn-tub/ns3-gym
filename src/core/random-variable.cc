@@ -274,6 +274,11 @@ double UniformVariable::GetValue(double s, double l)
   return ((UniformVariableImpl*)Peek())->GetValue(s,l);
 }
 
+uint32_t UniformVariable::GetInteger (uint32_t s, uint32_t l)
+{
+  NS_ASSERT(s <= l);
+  return static_cast<uint32_t>( GetValue(s, l+1) );
+}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

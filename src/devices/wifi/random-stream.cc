@@ -34,7 +34,7 @@ RealRandomStream::RealRandomStream ()
 uint32_t 
 RealRandomStream::GetNext (uint32_t min, uint32_t max)
 {
-  return static_cast<uint32_t> (round (m_stream.GetValue (min, max)));
+  return m_stream.GetInteger (min, max);
 }
 
 
