@@ -11,7 +11,8 @@ class GtkConfigStore
 public:
   GtkConfigStore ();
 
-  void Configure (void);
+  void ConfigureEarly (void);
+  void ConfigureLate (void);
 };
 
 

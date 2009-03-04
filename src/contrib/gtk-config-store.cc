@@ -1,5 +1,6 @@
 #include "gtk-config-store.h"
 #include "attribute-iterator.h"
+#include "raw-text-config.h"
 #include "ns3/config.h"
 #include "ns3/string.h"
 #include "ns3/pointer.h"
@@ -403,11 +404,9 @@ save_clicked (GtkButton *button,
       char *filename;
 
       filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
-      std::ofstream os;
-      os.open (filename);
-      TextFileAttributeIterator file = TextFileAttributeIterator (os);
-      file.Save ();
-      os.close ();
+      RawTextConfigSave config;
+      config.SetFilename (filename);
+      config.Attributes ();
       g_free (filename);
     }
 
@@ -433,15 +432,9 @@ load_clicked (GtkButton *button,
       char *filename;
 
       filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
-      std::ifstream is;
-      is.open (filename, std::ios::in);
-      std::string path, value;
-      while (is.good())
-	{
-	  is >> path >> value;
-	  Config::Set (path, StringValue (value));
-	}
-      g_free (filename);
+      RawTextConfigLoad config;
+      config.SetFilename (filename);
+      config.Attributes ();
     }
 
   gtk_widget_destroy (dialog);
@@ -486,7 +479,11 @@ GtkConfigStore::GtkConfigStore ()
 {}
 
 void 
-GtkConfigStore::Configure (void)
+GtkConfigStore::ConfigureEarly (void)
+{}
+
+void 
+GtkConfigStore::ConfigureLate (void)
 {
   GtkWidget *window;
   GtkWidget *view;

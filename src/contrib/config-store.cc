@@ -1,18 +1,23 @@
 #include "config-store.h"
-#include "attribute-iterator.h"
+#include "xml-config.h"
+#include "raw-text-config.h"
 #include "ns3/string.h"
 #include "ns3/log.h"
+#include "ns3/simulator.h"
+#include "ns3/enum.h"
 #include "ns3/attribute-list.h"
-#include "ns3/config.h"
+
 #include <string>
 #include <fstream>
 #include <iostream>
 #include <unistd.h>
 #include <stdlib.h>
 
+
 NS_LOG_COMPONENT_DEFINE ("ConfigStore");
 
 namespace ns3 {
+
 
 NS_OBJECT_ENSURE_REGISTERED (ConfigStore);
 
@@ -21,16 +26,24 @@ ConfigStore::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ConfigStore")
     .SetParent<ObjectBase> ()
-    .AddAttribute ("LoadFilename", 
-		   "The file where the configuration should be loaded from.",
+    .AddAttribute ("Mode", 
+		   "Configuration mode",
+		   EnumValue (ConfigStore::NONE),
+		   MakeEnumAccessor (&ConfigStore::SetMode),
+		   MakeEnumChecker (ConfigStore::NONE, "None",
+				    ConfigStore::LOAD, "Load",
+				    ConfigStore::SAVE, "Save"))
+    .AddAttribute ("Filename", 
+		   "The file where the configuration should be saved to or loaded from.",
 		   StringValue (""),
-		   MakeStringAccessor (&ConfigStore::m_loadFilename),
+		   MakeStringAccessor (&ConfigStore::SetFilename),
 		   MakeStringChecker ())
-    .AddAttribute ("StoreFilename", 
-		   "The file where the configuration should be stored to.",
-		   StringValue (""),
-		   MakeStringAccessor (&ConfigStore::m_storeFilename),
-		   MakeStringChecker ())
+    .AddAttribute ("FileFormat",
+		   "Type of file format",
+		   EnumValue (ConfigStore::RAW_TEXT),
+		   MakeEnumAccessor (&ConfigStore::SetFileFormat),
+		   MakeEnumChecker (ConfigStore::RAW_TEXT, "RawText",
+				    ConfigStore::XML, "Xml"))
     ;
   return tid;
 }
@@ -44,44 +57,80 @@ ConfigStore::GetInstanceTypeId (void) const
 ConfigStore::ConfigStore ()
 {
   ObjectBase::ConstructSelf (AttributeList ());
+
+  if (m_fileFormat == ConfigStore::XML)
+    {
+      if (m_mode == ConfigStore::SAVE)
+	{
+	  m_file = new XmlConfigSave ();
+	}
+      else if (m_mode == ConfigStore::LOAD)
+	{
+	  m_file = new XmlConfigLoad ();
+	}
+      else 
+	{
+	  m_file = new NoneFileConfig ();
+	}
+    }
+  else if (m_fileFormat == ConfigStore::RAW_TEXT)
+    {
+      if (m_mode == ConfigStore::SAVE)
+	{
+	  m_file = new RawTextConfigSave ();
+	}
+      else if (m_mode == ConfigStore::LOAD)
+	{
+	  m_file = new RawTextConfigLoad ();
+	}
+      else
+	{
+	  m_file = new NoneFileConfig ();
+	}
+    }
+  m_file->SetFilename (m_filename);
+}
+
+ConfigStore::~ConfigStore ()
+{
+  delete m_file;
+  m_file = 0;
 }
 
 void 
-ConfigStore::LoadFrom (std::string filename)
+ConfigStore::SetMode (enum Mode mode)
 {
-  std::ifstream is;
-  is.open (filename.c_str (), std::ios::in);
-  std::string path, value;
-  while (is.good())
-    {
-      is >> path >> value;
-      NS_LOG_DEBUG (path << " " << value);
-      Config::Set (path, StringValue (value));
-    }
+  m_mode = mode;
 }
 void 
-ConfigStore::StoreTo (std::string filename)
+ConfigStore::SetFileFormat (enum FileFormat format)
 {
-
-  std::ofstream os;
-  os.open (filename.c_str (), std::ios::out);
-  TextFileAttributeIterator iter = TextFileAttributeIterator (os);
-  iter.Save ();
-  os.close ();
-  exit (0);
+  m_fileFormat = format;
+}
+void 
+ConfigStore::SetFilename (std::string filename)
+{
+  m_filename = filename;
 }
 
 void 
-ConfigStore::Configure (void)
+ConfigStore::ConfigureLate (void)
 {
-  if (m_loadFilename != "")
+  m_file->Attributes ();
+  if (m_mode == ConfigStore::SAVE)
     {
-      LoadFrom (m_loadFilename);
+      delete m_file;
+      m_file = 0;
+      Simulator::Destroy ();
+      exit (0);
     }
-  if (m_storeFilename != "")
-    {
-      StoreTo (m_storeFilename);
-    }
+}
+
+void 
+ConfigStore::ConfigureEarly (void)
+{
+  m_file->Default ();
+  m_file->Global ();
 }
 
 } // namespace ns3

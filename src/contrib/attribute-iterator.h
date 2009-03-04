@@ -49,17 +49,6 @@ private:
   std::vector<std::string> m_currentPath;
 };
 
-class TextFileAttributeIterator : public AttributeIterator
-{
-public:
-  TextFileAttributeIterator (std::ostream &os);
-  void Save (void);
-private:
-  virtual void DoVisitAttribute (Ptr<Object> object, std::string name);
-  std::ostream &m_os;
-};
-
-
 } // namespace ns3
 
 #endif /* ATTRIBUTE_ITERATOR_H */
