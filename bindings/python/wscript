@@ -71,9 +71,8 @@ def configure(conf):
         return
 
     # -fvisibility=hidden optimization
-    if conf.env['CXX_NAME'] == 'gcc' and conf.env['CC_VERSION'] >= (4,0,0):
+    if conf.env['CXX_NAME'] == 'gcc' and conf.check_compilation_flag('-fvisibility=hidden'):
         conf.env.append_value('CXXFLAGS_PYEXT', '-fvisibility=hidden')
-    if conf.env['CC_NAME'] == 'gcc' and conf.env['CC_VERSION'] >= (4,0,0):
         conf.env.append_value('CCFLAGS_PYEXT', '-fvisibility=hidden')
 
     # Check for the location of pybindgen
