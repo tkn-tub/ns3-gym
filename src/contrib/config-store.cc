@@ -120,7 +120,7 @@ ConfigStore::SetFilename (std::string filename)
 }
 
 void 
-ConfigStore::ConfigureLate (void)
+ConfigStore::ConfigureAttributes (void)
 {
   m_file->Attributes ();
   if (m_mode == ConfigStore::SAVE)
@@ -133,7 +133,7 @@ ConfigStore::ConfigureLate (void)
 }
 
 void 
-ConfigStore::ConfigureEarly (void)
+ConfigStore::ConfigureDefaults (void)
 {
   m_file->Default ();
   m_file->Global ();

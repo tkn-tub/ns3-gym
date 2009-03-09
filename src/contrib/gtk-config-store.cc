@@ -479,11 +479,11 @@ GtkConfigStore::GtkConfigStore ()
 {}
 
 void 
-GtkConfigStore::ConfigureEarly (void)
+GtkConfigStore::ConfigureDefaults (void)
 {}
 
 void 
-GtkConfigStore::ConfigureLate (void)
+GtkConfigStore::ConfigureAttributes (void)
 {
   GtkWidget *window;
   GtkWidget *view;

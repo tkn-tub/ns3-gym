@@ -46,8 +46,8 @@ public:
   void SetFileFormat (enum FileFormat format);
   void SetFilename (std::string filename);
 
-  void ConfigureEarly (void);
-  void ConfigureLate (void);
+  void ConfigureDefaults (void);
+  void ConfigureAttributes (void);
 
 private:
   enum Mode m_mode;
