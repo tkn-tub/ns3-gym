@@ -6,7 +6,7 @@ def configure(conf):
     conf.report_optional_feature("GtkConfigStore", "GtkConfigStore",
                                  conf.env['ENABLE_GTK_CONFIG_STORE'],
                                  "library 'gtk+-2.0 >= 2.12' not found")
-    have_libxml2 = conf.pkg_check_modules('LIBXML2', 'libxml-2.0 >= 2.7', mandatory=False)
+    have_libxml2 = conf.pkg_check_modules('LIBXML2', 'libxml-2.0 >= 2.6', mandatory=False)
     if have_libxml2:
         conf.define('HAVE_LIBXML2', 1)
 
