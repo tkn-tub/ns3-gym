@@ -123,13 +123,6 @@ void
 ConfigStore::ConfigureAttributes (void)
 {
   m_file->Attributes ();
-  if (m_mode == ConfigStore::SAVE)
-    {
-      delete m_file;
-      m_file = 0;
-      Simulator::Destroy ();
-      exit (0);
-    }
 }
 
 void 
