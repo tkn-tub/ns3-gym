@@ -1,11 +1,14 @@
 #include "config-store.h"
-#include "xml-config.h"
 #include "raw-text-config.h"
 #include "ns3/string.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/enum.h"
 #include "ns3/attribute-list.h"
+#include "ns3/contrib-config.h"
+#ifdef HAVE_LIBXML2
+#include "xml-config.h"
+#endif
 
 #include <string>
 #include <fstream>
@@ -58,6 +61,7 @@ ConfigStore::ConfigStore ()
 {
   ObjectBase::ConstructSelf (AttributeList ());
 
+#ifdef HAVE_LIBXML2
   if (m_fileFormat == ConfigStore::XML)
     {
       if (m_mode == ConfigStore::SAVE)
@@ -73,7 +77,9 @@ ConfigStore::ConfigStore ()
 	  m_file = new NoneFileConfig ();
 	}
     }
-  else if (m_fileFormat == ConfigStore::RAW_TEXT)
+  else 
+#endif /* HAVE_LIBXML2 */
+  if (m_fileFormat == ConfigStore::RAW_TEXT)
     {
       if (m_mode == ConfigStore::SAVE)
 	{
