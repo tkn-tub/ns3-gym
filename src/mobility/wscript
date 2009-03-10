@@ -14,6 +14,7 @@ def build(bld):
         'random-waypoint-mobility-model.cc',
         'random-walk-2d-mobility-model.cc',
         'random-direction-2d-mobility-model.cc',
+        'constant-acceleration-mobility-model.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -30,4 +31,5 @@ def build(bld):
         'random-waypoint-mobility-model.h',
         'random-walk-2d-mobility-model.h',
         'random-direction-2d-mobility-model.h',
+        'constant-acceleration-mobility-model.h',
         ]
