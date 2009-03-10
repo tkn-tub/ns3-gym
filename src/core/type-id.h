@@ -323,6 +323,15 @@ public:
    */
   Ptr<const TraceSourceAccessor> LookupTraceSourceByName (std::string name) const;
 
+
+  /**
+   * \param fullName the full name of the requested attribute
+   * \param info a pointer to the TypeId::AttributeInfo data structure
+   *        where the result value of this method will be stored.
+   * \returns the Accessor associated to the requested attribute
+   */
+  static bool LookupAttributeByFullName (std::string fullName, struct AttributeInfo *info);
+
   /**
    * \returns the internal integer which uniquely identifies this
    *          TypeId.
@@ -353,14 +362,6 @@ private:
   friend bool operator != (TypeId a, TypeId b);
   friend bool operator <  (TypeId a, TypeId b);
 
-
-  /**
-   * \param fullName the full name of the requested attribute
-   * \param info a pointer to the TypeId::AttributeInfo data structure
-   *        where the result value of this method will be stored.
-   * \returns the Accessor associated to the requested attribute
-   */
-  static bool LookupAttributeByFullName (std::string fullName, struct AttributeInfo *info);
 
   explicit TypeId (uint16_t tid);
   void DoAddConstructor (Callback<ObjectBase *> callback);

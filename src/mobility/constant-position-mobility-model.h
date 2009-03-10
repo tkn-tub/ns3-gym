@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2006, 2007 INRIA
+ * Copyright (c) 2006,2007 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -17,47 +17,37 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef STATIC_SPEED_MOBILITY_MODEL_H
-#define STATIC_SPEED_MOBILITY_MODEL_H
+#ifndef CONSTANT_POSITION_MOBILITY_MODEL_H
+#define CONSTANT_POSITION_MOBILITY_MODEL_H
 
-#include <stdint.h>
 #include "mobility-model.h"
-#include "ns3/nstime.h"
-#include "static-speed-helper.h"
+#include "vector.h"
 
 namespace ns3 {
 
 /**
- * \brief a position model for which the current speed does not
+ * \brief a position model for which the current position does not
  *        change once it has been set and until it is set again 
  *        explicitely to a new value.
  */
-class StaticSpeedMobilityModel : public MobilityModel 
+class ConstantPositionMobilityModel : public MobilityModel 
 {
 public:
   static TypeId GetTypeId (void);
   /**
-   * Create position located at coordinates (0,0,0) with
-   * speed (0,0,0).
+   * Create a position located at coordinates (0,0,0)
    */
-  StaticSpeedMobilityModel ();
-  virtual ~StaticSpeedMobilityModel ();
+  ConstantPositionMobilityModel ();
+  virtual ~ConstantPositionMobilityModel ();
 
-  /**
-   * \param speed the new speed to set.
-   *
-   * Set the current speed now to (dx,dy,dz)
-   * Unit is meters/s
-   */
-  void SetVelocity (const Vector &speed);
 private:
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
-  void Update (void) const;
-  StaticSpeedHelper m_helper;
+
+  Vector m_position;
 };
 
 }; // namespace ns3
 
-#endif /* STATIC_SPEED_POSITION */
+#endif /* CONSTANT_POSITION_MOBILITY_MODEL_H */

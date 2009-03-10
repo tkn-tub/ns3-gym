@@ -26,7 +26,7 @@
 #include "ns3/rectangle.h"
 #include "ns3/random-variable.h"
 #include "mobility-model.h"
-#include "static-speed-helper.h"
+#include "constant-velocity-helper.h"
 
 namespace ns3 {
 
@@ -63,7 +63,7 @@ class RandomWalk2dMobilityModel : public MobilityModel
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
 
-  StaticSpeedHelper m_helper;
+  ConstantVelocityHelper m_helper;
   EventId m_event;
   enum Mode m_mode;
   double m_modeDistance;

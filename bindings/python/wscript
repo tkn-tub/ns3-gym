@@ -15,7 +15,7 @@ import Build
 import Utils
 
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 10, 0, 626)
+REQUIRED_PYBINDGEN_VERSION = (0, 10, 0, 630)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 
@@ -69,6 +69,11 @@ def configure(conf):
     except Configure.ConfigurationError, ex:
         conf.report_optional_feature("python", "Python Bindings", False, str(ex))
         return
+
+    # -fvisibility=hidden optimization
+    if conf.env['CXX_NAME'] == 'gcc' and conf.check_compilation_flag('-fvisibility=hidden'):
+        conf.env.append_value('CXXFLAGS_PYEXT', '-fvisibility=hidden')
+        conf.env.append_value('CCFLAGS_PYEXT', '-fvisibility=hidden')
 
     # Check for the location of pybindgen
     if Options.options.with_pybindgen is not None:

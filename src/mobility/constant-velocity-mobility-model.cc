@@ -17,29 +17,29 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "static-speed-mobility-model.h"
+#include "constant-velocity-mobility-model.h"
 #include "ns3/simulator.h"
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (StaticSpeedMobilityModel);
+NS_OBJECT_ENSURE_REGISTERED (ConstantVelocityMobilityModel);
 
-TypeId StaticSpeedMobilityModel::GetTypeId (void)
+TypeId ConstantVelocityMobilityModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::StaticSpeedMobilityModel")
+  static TypeId tid = TypeId ("ns3::ConstantVelocityMobilityModel")
     .SetParent<MobilityModel> ()
-    .AddConstructor<StaticSpeedMobilityModel> ();
+    .AddConstructor<ConstantVelocityMobilityModel> ();
   return tid;
 }
 
-StaticSpeedMobilityModel::StaticSpeedMobilityModel ()
+ConstantVelocityMobilityModel::ConstantVelocityMobilityModel ()
 {}
 
-StaticSpeedMobilityModel::~StaticSpeedMobilityModel ()
+ConstantVelocityMobilityModel::~ConstantVelocityMobilityModel ()
 {}
 
 void 
-StaticSpeedMobilityModel::SetVelocity (const Vector &speed)
+ConstantVelocityMobilityModel::SetVelocity (const Vector &speed)
 {
   m_helper.Update ();
   m_helper.SetVelocity (speed);
@@ -49,19 +49,19 @@ StaticSpeedMobilityModel::SetVelocity (const Vector &speed)
 
 
 Vector
-StaticSpeedMobilityModel::DoGetPosition (void) const
+ConstantVelocityMobilityModel::DoGetPosition (void) const
 {
   m_helper.Update ();
   return m_helper.GetCurrentPosition ();
 }
 void 
-StaticSpeedMobilityModel::DoSetPosition (const Vector &position)
+ConstantVelocityMobilityModel::DoSetPosition (const Vector &position)
 {
   m_helper.SetPosition (position);
   NotifyCourseChange ();
 }
 Vector
-StaticSpeedMobilityModel::DoGetVelocity (void) const
+ConstantVelocityMobilityModel::DoGetVelocity (void) const
 {
   return m_helper.GetVelocity ();
 }

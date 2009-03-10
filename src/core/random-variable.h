@@ -53,12 +53,18 @@ public:
    * ExponentialVariable y(120); //as long as the seed stays the same
    * \endcode
    * \param seed
+   *
+   * Note, while the underlying RNG takes six integer values as a seed;
+   * it is sufficient to set these all to the same integer, so we provide
+   * a simpler interface here that just takes one integer.
    */ 
   static void SetSeed (uint32_t seed);
  
   /**
    * \brief Get the seed value
    * \return the seed value
+   *
+   * Note:  returns the first of the six seed values used in the underlying RNG
    */
    static uint32_t GetSeed ();
  
@@ -194,6 +200,13 @@ public:
   */
   double GetValue(double s, double l);
 
+  /**
+   * \brief Returns a random unsigned integer from the interval [s,l] including both ends.
+   * \param s Low end of the range
+   * \param l High end of the range
+   * \return A random unsigned integer value.
+   */
+  uint32_t GetInteger (uint32_t s, uint32_t l);
 };
 
 /**

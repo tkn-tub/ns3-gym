@@ -18,7 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "ns3/propagation-loss-model.h"
-#include "ns3/static-mobility-model.h"
+#include "ns3/constant-position-mobility-model.h"
 #include "ns3/config.h"
 #include "ns3/string.h"
 
@@ -27,8 +27,8 @@ using namespace ns3;
 static void
 PrintOne (double minTxpower, double maxTxpower, double stepTxpower, double min, double max, double step)
 {
-  Ptr<StaticMobilityModel> a = CreateObject<StaticMobilityModel> ();
-  Ptr<StaticMobilityModel> b = CreateObject<StaticMobilityModel> ();
+  Ptr<ConstantPositionMobilityModel> a = CreateObject<ConstantPositionMobilityModel> ();
+  Ptr<ConstantPositionMobilityModel> b = CreateObject<ConstantPositionMobilityModel> ();
   Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
 
   Ptr<PropagationLossModel> model = log;

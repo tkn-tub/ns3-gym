@@ -27,7 +27,7 @@
 #include "ns3/rectangle.h"
 #include "ns3/random-variable.h"
 #include "mobility-model.h"
-#include "static-speed-helper.h"
+#include "constant-velocity-helper.h"
 
 namespace ns3 {
 
@@ -63,7 +63,7 @@ class RandomDirection2dMobilityModel : public MobilityModel
   RandomVariable m_speed;
   RandomVariable m_pause;
   EventId m_event;
-  StaticSpeedHelper m_helper;
+  ConstantVelocityHelper m_helper;
 };
 
 } // namespace ns3

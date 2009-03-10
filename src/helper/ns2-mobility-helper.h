@@ -27,7 +27,7 @@
 
 namespace ns3 {
 
-class StaticSpeedMobilityModel;
+class ConstantVelocityMobilityModel;
 
 /**
  * \brief a topology object which can read ns2's movement files
@@ -71,7 +71,7 @@ private:
     virtual Ptr<Object> Get (uint32_t i) const = 0;
   };
   void LayoutObjectStore (const ObjectStore &store) const;
-  Ptr<StaticSpeedMobilityModel> GetMobilityModel (std::string idString, const ObjectStore &store) const;
+  Ptr<ConstantVelocityMobilityModel> GetMobilityModel (std::string idString, const ObjectStore &store) const;
   double ReadDouble (std::string valueString) const;
   std::string m_filename;
 };

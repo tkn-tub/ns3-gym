@@ -20,7 +20,7 @@
 #ifndef RANDOM_WAYPOINT_MOBILITY_MODEL_H
 #define RANDOM_WAYPOINT_MOBILITY_MODEL_H
 
-#include "static-speed-helper.h"
+#include "constant-velocity-helper.h"
 #include "mobility-model.h"
 #include "position-allocator.h"
 #include "ns3/ptr.h"
@@ -53,7 +53,7 @@ private:
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
 
-  StaticSpeedHelper m_helper;
+  ConstantVelocityHelper m_helper;
   Ptr<PositionAllocator> m_position;
   RandomVariable m_speed;
   RandomVariable m_pause;

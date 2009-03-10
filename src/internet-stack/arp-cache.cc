@@ -185,7 +185,7 @@ ArpCache::HandleWaitReplyTimeout (void)
   for (CacheI i = m_arpCache.begin (); i != m_arpCache.end (); i++) 
     {
       entry = (*i).second;
-      if (entry != 0 && entry->IsWaitReply () && entry->IsExpiring () )
+      if (entry != 0 && entry->IsWaitReply ())
           {
           if (entry->GetRetries () < m_maxRetries)
             {
@@ -373,19 +373,6 @@ ArpCache::Entry::GetTimeout (void) const
     return Seconds (0);
     /* NOTREACHED */
   }
-}
-bool
-ArpCache::Entry::IsExpiring (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  Time timeout = GetTimeout ();
-  Time delta = Simulator::Now () - m_lastSeen;
-  NS_LOG_DEBUG ("delta=" << delta.GetSeconds () << "s");
-  if (delta >= timeout)
-    {
-      return true;
-    }
-  return false;
 }
 bool 
 ArpCache::Entry::IsExpired (void) const
