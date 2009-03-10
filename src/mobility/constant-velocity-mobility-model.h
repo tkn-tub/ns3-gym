@@ -17,13 +17,13 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef STATIC_SPEED_MOBILITY_MODEL_H
-#define STATIC_SPEED_MOBILITY_MODEL_H
+#ifndef CONSTANT_VELOCITY_MOBILITY_MODEL_H
+#define CONSTANT_VELOCITY_MOBILITY_MODEL_H
 
 #include <stdint.h>
 #include "mobility-model.h"
 #include "ns3/nstime.h"
-#include "static-speed-helper.h"
+#include "constant-velocity-helper.h"
 
 namespace ns3 {
 
@@ -55,9 +55,9 @@ private:
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
   void Update (void) const;
-  StaticSpeedHelper m_helper;
+  ConstantVelocityHelper m_helper;
 };
 
 }; // namespace ns3
 
-#endif /* STATIC_SPEED_POSITION */
+#endif /* CONSTANT_VELOCITY_POSITION */
