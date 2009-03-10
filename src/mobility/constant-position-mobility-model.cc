@@ -17,40 +17,40 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "static-mobility-model.h"
+#include "constant-position-mobility-model.h"
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (StaticMobilityModel);
+NS_OBJECT_ENSURE_REGISTERED (ConstantPositionMobilityModel);
 
 TypeId
-StaticMobilityModel::GetTypeId (void)
+ConstantPositionMobilityModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::StaticMobilityModel")
+  static TypeId tid = TypeId ("ns3::ConstantPositionMobilityModel")
     .SetParent<MobilityModel> ()
-    .AddConstructor<StaticMobilityModel> ()
+    .AddConstructor<ConstantPositionMobilityModel> ()
     ;
   return tid;
 }
   
-StaticMobilityModel::StaticMobilityModel ()
+ConstantPositionMobilityModel::ConstantPositionMobilityModel ()
 {}
-StaticMobilityModel::~StaticMobilityModel ()
+ConstantPositionMobilityModel::~ConstantPositionMobilityModel ()
 {}
 
 Vector
-StaticMobilityModel::DoGetPosition (void) const
+ConstantPositionMobilityModel::DoGetPosition (void) const
 {
   return m_position;
 }
 void 
-StaticMobilityModel::DoSetPosition (const Vector &position)
+ConstantPositionMobilityModel::DoSetPosition (const Vector &position)
 {
   m_position = position;
   NotifyCourseChange ();
 }
 Vector
-StaticMobilityModel::DoGetVelocity (void) const
+ConstantPositionMobilityModel::DoGetVelocity (void) const
 {
   return Vector (0.0, 0.0, 0.0);
 }

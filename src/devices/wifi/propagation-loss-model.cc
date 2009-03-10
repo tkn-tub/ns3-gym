@@ -22,7 +22,6 @@
 #include "propagation-loss-model.h"
 #include "ns3/log.h"
 #include "ns3/mobility-model.h"
-#include "ns3/static-mobility-model.h"
 #include "ns3/boolean.h"
 #include "ns3/double.h"
 #include <math.h>

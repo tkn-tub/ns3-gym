@@ -30,15 +30,15 @@ namespace ns3 {
  *        change once it has been set and until it is set again 
  *        explicitely to a new value.
  */
-class StaticMobilityModel : public MobilityModel 
+class ConstantPositionMobilityModel : public MobilityModel 
 {
 public:
   static TypeId GetTypeId (void);
   /**
    * Create a position located at coordinates (0,0,0)
    */
-  StaticMobilityModel ();
-  virtual ~StaticMobilityModel ();
+  ConstantPositionMobilityModel ();
+  virtual ~ConstantPositionMobilityModel ();
 
 private:
   virtual Vector DoGetPosition (void) const;

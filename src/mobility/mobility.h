@@ -9,10 +9,10 @@
  *    listeners to the course changes of a mobility model
  *
  * The mobility models themselves are:
- *   - ns3::StaticMobilityModel: a model which maintains a constant position
+ *   - ns3::ConstantPositionMobilityModel: a model which maintains a constant position
  *     until it is changed by the user.
  *
- *   - ns3::StaticSpeedMobilityModel: a model which maintains a constant speed
+ *   - ns3::ConstantVelocityMobilityModel: a model which maintains a constant speed
  *     until it is changed by the user.
  *
  *   - ns3::HierarchicalMobilityModel: a model which calculates the current 

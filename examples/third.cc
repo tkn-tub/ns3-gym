@@ -120,7 +120,7 @@ main (int argc, char *argv[])
     "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)));
   mobility.Install (wifiStaNodes);
 
-  mobility.SetMobilityModel ("ns3::StaticMobilityModel");
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (wifiApNode);
 
   InternetStackHelper stack;

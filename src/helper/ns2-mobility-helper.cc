@@ -23,7 +23,7 @@
 #include "ns3/simulator.h"
 #include "ns3/node-list.h"
 #include "ns3/node.h"
-#include "ns3/static-speed-mobility-model.h"
+#include "ns3/constant-velocity-mobility-model.h"
 #include "ns2-mobility-helper.h"
 
 NS_LOG_COMPONENT_DEFINE ("Ns2MobilityHelper");
@@ -37,7 +37,7 @@ Ns2MobilityHelper::Ns2MobilityHelper (std::string filename)
 
 
 
-Ptr<StaticSpeedMobilityModel>
+Ptr<ConstantVelocityMobilityModel>
 Ns2MobilityHelper::GetMobilityModel (std::string idString, const ObjectStore &store) const
 {
   std::istringstream iss;
@@ -49,10 +49,10 @@ Ns2MobilityHelper::GetMobilityModel (std::string idString, const ObjectStore &st
     {
       return 0;
     }
-  Ptr<StaticSpeedMobilityModel> model = object->GetObject<StaticSpeedMobilityModel> ();
+  Ptr<ConstantVelocityMobilityModel> model = object->GetObject<ConstantVelocityMobilityModel> ();
   if (model == 0)
     {
-      model = CreateObject<StaticSpeedMobilityModel> ();
+      model = CreateObject<ConstantVelocityMobilityModel> ();
       object->AggregateObject (model);
     }
   return model;
@@ -85,7 +85,7 @@ Ns2MobilityHelper::LayoutObjectStore (const ObjectStore &store) const
             {
               continue;
             }
-          Ptr<StaticSpeedMobilityModel> model = GetMobilityModel (line.substr (startNodeId + 1, 
+          Ptr<ConstantVelocityMobilityModel> model = GetMobilityModel (line.substr (startNodeId + 1, 
                                                                                endNodeId - startNodeId), 
                                                                   store);
           if (model == 0)
@@ -130,7 +130,7 @@ Ns2MobilityHelper::LayoutObjectStore (const ObjectStore &store) const
               double ySpeed = ReadDouble (line.substr (xSpeedEnd + 1, ySpeedEnd - xSpeedEnd - 1));
               double zSpeed = ReadDouble (line.substr (ySpeedEnd + 1, std::string::npos));
               NS_LOG_DEBUG ("at=" << at << "xSpeed=" << xSpeed << ", ySpeed=" << ySpeed << ", zSpeed=" << zSpeed);
-              Simulator::Schedule (Seconds (at), &StaticSpeedMobilityModel::SetVelocity, model,
+              Simulator::Schedule (Seconds (at), &ConstantVelocityMobilityModel::SetVelocity, model,
                                    Vector (xSpeed, ySpeed, zSpeed));
             }
         }

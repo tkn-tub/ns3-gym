@@ -7,7 +7,7 @@
 #include "yans-error-rate-model.h"
 #include "ns3/ptr.h"
 #include "ns3/mobility-model.h"
-#include "ns3/static-mobility-model.h"
+#include "ns3/constant-position-mobility-model.h"
 #include "ns3/vector.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
@@ -75,9 +75,9 @@ PsrExperiment::Run (struct PsrExperiment::Input input)
   m_output.received = 0;
   m_input = input;
 
-  Ptr<MobilityModel> posTx = CreateObject<StaticMobilityModel> ();
+  Ptr<MobilityModel> posTx = CreateObject<ConstantPositionMobilityModel> ();
   posTx->SetPosition (Vector (0.0, 0.0, 0.0));
-  Ptr<MobilityModel> posRx = CreateObject<StaticMobilityModel> ();
+  Ptr<MobilityModel> posRx = CreateObject<ConstantPositionMobilityModel> ();
   posRx->SetPosition (Vector (m_input.distance, 0.0, 0.0));
 
   Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
@@ -207,11 +207,11 @@ CollisionExperiment::Run (struct CollisionExperiment::Input input)
   Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
   channel->SetPropagationLossModel (log);
 
-  Ptr<MobilityModel> posTxA = CreateObject<StaticMobilityModel> ();
+  Ptr<MobilityModel> posTxA = CreateObject<ConstantPositionMobilityModel> ();
   posTxA->SetPosition (Vector (input.xA, 0.0, 0.0));
-  Ptr<MobilityModel> posTxB = CreateObject<StaticMobilityModel> ();
+  Ptr<MobilityModel> posTxB = CreateObject<ConstantPositionMobilityModel> ();
   posTxB->SetPosition (Vector (input.xB, 0.0, 0.0));
-  Ptr<MobilityModel> posRx = CreateObject<StaticMobilityModel> ();
+  Ptr<MobilityModel> posRx = CreateObject<ConstantPositionMobilityModel> ();
   posRx->SetPosition (Vector (0, 0.0, 0.0));
 
   Ptr<YansWifiPhy> txA = CreateObject<YansWifiPhy> ();

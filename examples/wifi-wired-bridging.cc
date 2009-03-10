@@ -119,7 +119,7 @@ int main (int argc, char *argv[])
 
 
       // setup the AP.
-      mobility.SetMobilityModel ("ns3::StaticMobilityModel");
+      mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
       mobility.Install (backboneNodes.Get (i));
       wifi.SetMac ("ns3::NqapWifiMac",
 		   "Ssid", SsidValue (ssid),

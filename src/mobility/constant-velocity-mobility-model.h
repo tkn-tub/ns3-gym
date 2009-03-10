@@ -32,7 +32,7 @@ namespace ns3 {
  *        change once it has been set and until it is set again 
  *        explicitely to a new value.
  */
-class StaticSpeedMobilityModel : public MobilityModel 
+class ConstantVelocityMobilityModel : public MobilityModel 
 {
 public:
   static TypeId GetTypeId (void);
@@ -40,8 +40,8 @@ public:
    * Create position located at coordinates (0,0,0) with
    * speed (0,0,0).
    */
-  StaticSpeedMobilityModel ();
-  virtual ~StaticSpeedMobilityModel ();
+  ConstantVelocityMobilityModel ();
+  virtual ~ConstantVelocityMobilityModel ();
 
   /**
    * \param speed the new speed to set.
