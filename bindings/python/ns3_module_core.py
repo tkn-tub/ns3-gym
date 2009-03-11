@@ -1059,6 +1059,11 @@ def register_Ns3TypeId_methods(root_module, cls):
                    'bool', 
                    [param('ns3::TypeId', 'other')], 
                    is_const=True)
+    ## type-id.h: static bool ns3::TypeId::LookupAttributeByFullName(std::string fullName, ns3::TypeId::AttributeInfo * info) [member function]
+    cls.add_method('LookupAttributeByFullName', 
+                   'bool', 
+                   [param('std::string', 'fullName'), param('ns3::TypeId::AttributeInfo *', 'info')], 
+                   is_static=True)
     ## type-id.h: bool ns3::TypeId::LookupAttributeByName(std::string name, ns3::TypeId::AttributeInfo * info) const [member function]
     cls.add_method('LookupAttributeByName', 
                    'bool', 
@@ -1124,6 +1129,10 @@ def register_Ns3UniformVariable_methods(root_module, cls):
     cls.add_method('GetValue', 
                    'double', 
                    [param('double', 's'), param('double', 'l')])
+    ## random-variable.h: uint32_t ns3::UniformVariable::GetInteger(uint32_t s, uint32_t l) [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [param('uint32_t', 's'), param('uint32_t', 'l')])
     return
 
 def register_Ns3UnsafeAttributeList_methods(root_module, cls):
