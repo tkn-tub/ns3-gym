@@ -77,7 +77,7 @@ CsmaHelper::SetChannelParameter (std::string n1, const AttributeValue &v1)
 }
 
 void 
-CsmaHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid)
+CsmaHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid, bool promiscuous)
 {
   std::ostringstream oss;
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/";
@@ -92,21 +92,43 @@ CsmaHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid
   pcap->Open (oss.str ());
   pcap->WriteEthernetHeader ();
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/Sniffer";
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid;
+  if (promiscuous)
+    {
+      oss << "/$ns3::CsmaNetDevice/PromiscSniffer";
+    }
+  else
+    {
+      oss << "/$ns3::CsmaNetDevice/Sniffer";
+    }
   Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&CsmaHelper::SniffEvent, pcap));
 }
 
 void 
-CsmaHelper::EnablePcap (std::string filename, NetDeviceContainer d)
+CsmaHelper::EnablePcap (std::string filename, NetDeviceContainer d, bool promiscuous)
 {
   for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
     {
       Ptr<NetDevice> dev = *i;
-      EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex ());
+      EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex (), promiscuous);
     }
 }
+
+void 
+CsmaHelper::EnablePcap (std::string filename, Ptr<NetDevice> nd, bool promiscuous)
+{
+  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex (), promiscuous);
+}
+
+void 
+CsmaHelper::EnablePcap (std::string filename, std::string ndName, bool promiscuous)
+{
+  Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
+  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex (), promiscuous);
+}
+
 void
-CsmaHelper::EnablePcap (std::string filename, NodeContainer n)
+CsmaHelper::EnablePcap (std::string filename, NodeContainer n, bool promiscuous)
 {
   NetDeviceContainer devs;
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
@@ -117,13 +139,13 @@ CsmaHelper::EnablePcap (std::string filename, NodeContainer n)
           devs.Add (node->GetDevice (j));
         }
     }
-  EnablePcap (filename, devs);
+  EnablePcap (filename, devs, promiscuous);
 }
 
 void
-CsmaHelper::EnablePcapAll (std::string filename)
+CsmaHelper::EnablePcapAll (std::string filename, bool promiscuous)
 {
-  EnablePcap (filename, NodeContainer::GetGlobal ());
+  EnablePcap (filename, NodeContainer::GetGlobal (), promiscuous);
 }
 
 void 

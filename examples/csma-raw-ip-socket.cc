@@ -101,8 +101,8 @@ main (int argc, char *argv[])
   apps.Stop (Seconds (11.0));
 
   NS_LOG_INFO ("Configure Tracing.");
-  // first, pcap tracing.
-  csma.EnablePcapAll ("csma-raw-ip-socket");
+  // first, pcap tracing in non-promiscuous mode
+  csma.EnablePcapAll ("csma-raw-ip-socket", false);
   // then, print what the packet sink receives.
   Config::ConnectWithoutContext ("/NodeList/3/ApplicationList/0/$ns3::PacketSink/Rx", 
                                  MakeCallback (&SinkRx));

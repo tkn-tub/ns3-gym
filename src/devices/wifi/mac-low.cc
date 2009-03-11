@@ -840,10 +840,6 @@ MacLow::ForwardDown (Ptr<const Packet> packet, WifiMacHeader const* hdr,
    */
   Time txDuration = m_phy->CalculateTxDuration (packet->GetSize (), txMode, WIFI_PREAMBLE_LONG);
   Simulator::Schedule (txDuration, &MacLow::NotifyNav, this, *hdr, txMode, WIFI_PREAMBLE_LONG);
-  /*
-   * Tell the phy when we expect the packet has completely been sent -- for tracing
-   */
-  Simulator::Schedule (txDuration, &WifiPhy::SendDone, m_phy, packet);
 }
 
 void

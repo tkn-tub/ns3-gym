@@ -127,7 +127,7 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("udp-echo.tr");
-  CsmaHelper::EnablePcapAll ("udp-echo");
+  CsmaHelper::EnablePcapAll ("udp-echo", false);
   CsmaHelper::EnableAsciiAll (ascii);
 
 //

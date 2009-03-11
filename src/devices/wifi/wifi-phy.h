@@ -175,13 +175,6 @@ public:
   virtual void SendPacket (Ptr<const Packet> packet, WifiMode mode, enum WifiPreamble preamble, uint8_t txPowerLevel) = 0;
 
   /**
-   * \param packet the packet that was sent
-   *
-   * Tell the PHY-level that MAC low believes it should have just completed the send.
-   */
-  virtual void SendDone (Ptr<const Packet> packet) = 0;
-
-  /**
    * \param listener the new listener
    *
    * Add the input listener to the list of objects to be notified of
@@ -260,14 +253,56 @@ public:
   static WifiMode Get48mba (void);
   static WifiMode Get54mba (void);
 
-protected:
   /**
-   * The trace source fired when a packet starts the transmission process on
+   * Public method used to fire a PhyTxBegin trace.  Implemented for encapsulation 
+   * purposes.
+   */
+  void NotifyTxBegin (Ptr<const Packet> packet);
+
+  /**
+   * Public method used to fire a PhyTxEnd trace.  Implemented for encapsulation 
+   * purposes.
+   */
+  void NotifyTxEnd (Ptr<const Packet> packet);
+
+  /**
+   * Public method used to fire a PhyTxDrop trace.  Implemented for encapsulation 
+   * purposes.
+   */
+  void NotifyTxDrop (Ptr<const Packet> packet);
+
+  /**
+   * Public method used to fire a PhyRxBegin trace.  Implemented for encapsulation 
+   * purposes.
+   */
+  void NotifyRxBegin (Ptr<const Packet> packet);
+
+  /**
+   * Public method used to fire a PhyRxEnd trace.  Implemented for encapsulation 
+   * purposes.
+   */
+  void NotifyRxEnd (Ptr<const Packet> packet);
+
+  /**
+   * Public method used to fire a PhyRxDrop trace.  Implemented for encapsulation 
+   * purposes.
+   */
+  void NotifyRxDrop (Ptr<const Packet> packet);
+
+  /**
+   * Public method used to fire a PromiscSniffer trace.  Implemented for encapsulation 
+   * purposes.
+   */
+  void NotifyPromiscSniff (Ptr<const Packet> packet);
+
+private:
+  /**
+   * The trace source fired when a packet begins the transmission process on
    * the medium.
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_phyTxStartTrace;
+  TracedCallback<Ptr<const Packet> > m_phyTxBeginTrace;
 
   /**
    * The trace source fired when a packet ends the transmission process on
@@ -275,7 +310,7 @@ protected:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_phyTxTrace;
+  TracedCallback<Ptr<const Packet> > m_phyTxEndTrace;
 
   /**
    * The trace source fired when the phy layer drops a packet as it tries
@@ -286,12 +321,12 @@ protected:
   TracedCallback<Ptr<const Packet> > m_phyTxDropTrace;
 
   /**
-   * The trace source fired when a packet starts the reception process from
+   * The trace source fired when a packet begins the reception process from
    * the medium.
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_phyRxStartTrace;
+  TracedCallback<Ptr<const Packet> > m_phyRxBeginTrace;
 
   /**
    * The trace source fired when a packet ends the reception process from
@@ -299,7 +334,7 @@ protected:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_phyRxTrace;
+  TracedCallback<Ptr<const Packet> > m_phyRxEndTrace;
 
   /**
    * The trace source fired when the phy layer drops a packet it has received.
@@ -326,7 +361,7 @@ protected:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_promiscSnifferTrace;
+  TracedCallback<Ptr<const Packet> > m_phyPromiscSnifferTrace;
 };
 
 } // namespace ns3

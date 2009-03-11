@@ -19,25 +19,25 @@
  */
 #include "ns3/simulator.h"
 #include "ns3/rectangle.h"
-#include "static-speed-helper.h"
+#include "constant-velocity-helper.h"
 
 namespace ns3 {
 
-StaticSpeedHelper::StaticSpeedHelper ()
+ConstantVelocityHelper::ConstantVelocityHelper ()
   : m_paused (true)
 {}
-StaticSpeedHelper::StaticSpeedHelper (const Vector &position)
+ConstantVelocityHelper::ConstantVelocityHelper (const Vector &position)
   : m_position (position),
     m_paused (true)
 {}
-StaticSpeedHelper::StaticSpeedHelper (const Vector &position,
+ConstantVelocityHelper::ConstantVelocityHelper (const Vector &position,
 				      const Vector &vel)
   : m_position (position),
     m_velocity (vel),
     m_paused (true)
 {}
 void 
-StaticSpeedHelper::SetPosition (const Vector &position)
+ConstantVelocityHelper::SetPosition (const Vector &position)
 {
   m_position = position;
   m_velocity = Vector (0.0, 0.0, 0.0);
@@ -45,25 +45,25 @@ StaticSpeedHelper::SetPosition (const Vector &position)
 }
 
 Vector
-StaticSpeedHelper::GetCurrentPosition (void) const
+ConstantVelocityHelper::GetCurrentPosition (void) const
 {
   return m_position;
 }
 
 Vector 
-StaticSpeedHelper::GetVelocity (void) const
+ConstantVelocityHelper::GetVelocity (void) const
 {
   return m_paused? Vector (0.0, 0.0, 0.0) : m_velocity;
 }
 void 
-StaticSpeedHelper::SetVelocity (const Vector &vel)
+ConstantVelocityHelper::SetVelocity (const Vector &vel)
 {
   m_velocity = vel;
   m_lastUpdate = Simulator::Now ();
 }
 
 void
-StaticSpeedHelper::Update (void) const
+ConstantVelocityHelper::Update (void) const
 {
   Time now = Simulator::Now ();
   NS_ASSERT (m_lastUpdate <= now);
@@ -80,7 +80,7 @@ StaticSpeedHelper::Update (void) const
 }
 
 void
-StaticSpeedHelper::UpdateWithBounds (const Rectangle &bounds) const
+ConstantVelocityHelper::UpdateWithBounds (const Rectangle &bounds) const
 {
   Update ();
   m_position.x = std::min (bounds.xMax, m_position.x);
@@ -90,13 +90,13 @@ StaticSpeedHelper::UpdateWithBounds (const Rectangle &bounds) const
 }
 
 void 
-StaticSpeedHelper::Pause (void)
+ConstantVelocityHelper::Pause (void)
 {
   m_paused = true;
 }
 
 void 
-StaticSpeedHelper::Unpause (void)
+ConstantVelocityHelper::Unpause (void)
 {
   m_paused = false;
 }

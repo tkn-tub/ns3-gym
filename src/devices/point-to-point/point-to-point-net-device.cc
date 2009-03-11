@@ -91,31 +91,42 @@ PointToPointNetDevice::GetTypeId (void)
     .AddTraceSource ("MacRx", 
                      "Trace source indicating a packet has been received by this device and is being forwarded up the stack",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_macRxTrace))
+#if 0
+    // Not currently implemented for this device
+    .AddTraceSource ("MacRxDrop", 
+                     "Trace source indicating a packet was dropped before being forwarded up the stack",
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_macRxDropTrace))
+#endif
     //
     // Trace souces at the "bottom" of the net device, where packets transition
     // to/from the channel.
     //
-    .AddTraceSource ("PhyTxStart", 
+    .AddTraceSource ("PhyTxBegin", 
                      "Trace source indicating a packet has begun transmitting over the channel",
-                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyTxStartTrace))
-    .AddTraceSource ("PhyTx", 
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyTxBeginTrace))
+    .AddTraceSource ("PhyTxEnd", 
                      "Trace source indicating a packet has been completely transmitted over the channel",
-                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyTxTrace))
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyTxEndTrace))
     .AddTraceSource ("PhyTxDrop", 
                      "Trace source indicating a packet has been dropped by the device during transmission",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyTxDropTrace))
-    .AddTraceSource ("PhyRxStart", 
+#if 0
+    // Not currently implemented for this device
+    .AddTraceSource ("PhyRxBegin", 
                      "Trace source indicating a packet has begun being received by the device",
-                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyRxStartTrace))
-    .AddTraceSource ("PhyRx", 
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyRxBeginTrace))
+#endif
+    .AddTraceSource ("PhyRxEnd", 
                      "Trace source indicating a packet has been completely received by the device",
-                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyRxTrace))
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyRxEndTrace))
     .AddTraceSource ("PhyRxDrop", 
                      "Trace source indicating a packet has been dropped by the device during reception",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_phyRxDropTrace))
 
     //
     // Trace sources designed to simulate a packet sniffer facility (tcpdump).
+    // Note that there is really no difference between promiscuous and 
+    // non-promiscuous traces in a point-to-point link.
     //
     .AddTraceSource ("Sniffer", 
                      "Trace source simulating a non-promiscuous packet sniffer attached to the device",
@@ -210,7 +221,7 @@ PointToPointNetDevice::TransmitStart (Ptr<Packet> p)
   //
   NS_ASSERT_MSG(m_txMachineState == READY, "Must be READY to transmit");
   m_txMachineState = BUSY;
-  m_phyTxTrace (m_currentPkt);
+  m_phyTxBeginTrace (m_currentPkt);
   m_currentPkt = p;
 
   Time txTime = Seconds (m_bps.CalculateTxTime(p->GetSize()));
@@ -243,7 +254,7 @@ PointToPointNetDevice::TransmitComplete (void)
 
   NS_ASSERT_MSG (m_currentPkt != 0, "PointToPointNetDevice::TransmitComplete(): m_currentPkt zero");
 
-  m_phyTxTrace (m_currentPkt);
+  m_phyTxEndTrace (m_currentPkt);
   m_currentPkt = 0;
 
   Ptr<Packet> p = m_queue->Dequeue ();
@@ -259,6 +270,7 @@ PointToPointNetDevice::TransmitComplete (void)
   // Got another packet off of the queue, so start the transmit process agin.
   //
   m_snifferTrace (p);
+  m_promiscSnifferTrace (p);
   TransmitStart(p);
 }
 
@@ -315,7 +327,8 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
       // device becuase it is so simple, but this is not usually the case.  
       //
       m_snifferTrace (packet);
-      m_phyRxTrace (packet);
+      m_promiscSnifferTrace (packet);
+      m_phyRxEndTrace (packet);
       m_macRxTrace (packet);
 
       //
@@ -509,6 +522,7 @@ PointToPointNetDevice::Send(
       m_queue->Enqueue (packet);
       packet = m_queue->Dequeue ();
       m_snifferTrace (packet);
+      m_promiscSnifferTrace (packet);
       return TransmitStart (packet);
     }
   else

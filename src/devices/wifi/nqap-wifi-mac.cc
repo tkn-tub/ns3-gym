@@ -286,7 +286,7 @@ void
 NqapWifiMac::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << from);
-  m_macRxTrace (packet);
+  NotifyRx (packet);
   m_upCallback (packet, from, to);
 }
 
@@ -302,7 +302,7 @@ NqapWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Addr
   hdr.SetDsFrom ();
   hdr.SetDsNotTo ();
 
-  m_macTxTrace (packet);
+  NotifyTx (packet);
   m_dca->Queue (packet, hdr);  
 }
 void 
@@ -477,13 +477,13 @@ NqapWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
         {
           // this is an AP-to-AP frame
           // we ignore for now.
-          m_macRxDropTrace (packet);
+          NotifyRxDrop (packet);
         } 
       else 
         {
           // we can ignore these frames since 
           // they are not targeted at the AP
-          m_macRxDropTrace (packet);
+          NotifyRxDrop (packet);
         }
     } 
   else if (hdr->IsMgt ()) 

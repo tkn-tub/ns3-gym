@@ -113,33 +113,40 @@ EmuNetDevice::GetTypeId (void)
     .AddTraceSource ("MacRx", 
                      "Trace source indicating a packet has been received by this device and is being forwarded up the stack",
                      MakeTraceSourceAccessor (&EmuNetDevice::m_macRxTrace))
+#if 0
+    // Not currently implemented for this device
+    .AddTraceSource ("MacRxDrop", 
+                     "Trace source indicating a packet was dropped before being forwarded up the stack",
+                     MakeTraceSourceAccessor (&EmuNetDevice::m_macRxDropTrace))
+#endif
     //
     // In normal ns-3 net devices, these trace souces correspond to the "bottom"
     // of the net device, where packets transition to/from the channel.  In 
-    // the case of the emu device, there is no physical layer access and so
-    // these are duplicates of the MAC-level hooks.  Intepret these points
-    // also as the points at which a packet leaves the ns-3 environment
-    // destined for the underlying operating system or vice-versa.
+    // the case of the emu device, there is no physical layer access -- all we
+    // do is to send packets to another device that is really at a "real" MAC
+    // level.  Since it could be misleading to call anything here PHY, we do not
+    // implement these trace sources.
     //
-    .AddTraceSource ("PhyTxStart", 
+#if 0
+    .AddTraceSource ("PhyTxBegin", 
                      "Trace source indicating a packet has begun transmitting over the channel",
-                     MakeTraceSourceAccessor (&EmuNetDevice::m_phyTxStartTrace))
-    .AddTraceSource ("PhyTx", 
+                     MakeTraceSourceAccessor (&EmuNetDevice::m_phyTxBeginTrace))
+    .AddTraceSource ("PhyTxEnd", 
                      "Trace source indicating a packet has been completely transmitted over the channel",
-                     MakeTraceSourceAccessor (&EmuNetDevice::m_phyTxTrace))
+                     MakeTraceSourceAccessor (&EmuNetDevice::m_phyTxEndTrace))
     .AddTraceSource ("PhyTxDrop", 
                      "Trace source indicating a packet has been dropped by the device during transmission",
                      MakeTraceSourceAccessor (&EmuNetDevice::m_phyTxDropTrace))
-    .AddTraceSource ("PhyRxStart", 
+    .AddTraceSource ("PhyRxBegin", 
                      "Trace source indicating a packet has begun being received by the device",
-                     MakeTraceSourceAccessor (&EmuNetDevice::m_phyRxStartTrace))
-    .AddTraceSource ("PhyRx", 
+                     MakeTraceSourceAccessor (&EmuNetDevice::m_phyRxBeginTrace))
+    .AddTraceSource ("PhyRxEnd", 
                      "Trace source indicating a packet has been completely received by the device",
-                     MakeTraceSourceAccessor (&EmuNetDevice::m_phyRxTrace))
+                     MakeTraceSourceAccessor (&EmuNetDevice::m_phyRxEndTrace))
     .AddTraceSource ("PhyRxDrop", 
                      "Trace source indicating a packet has been dropped by the device during reception",
                      MakeTraceSourceAccessor (&EmuNetDevice::m_phyRxDropTrace))
-
+#endif
     //
     // Trace sources designed to simulate a packet sniffer facility (tcpdump). 
     //
@@ -576,13 +583,6 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
   Ptr<Packet> originalPacket = packet->Copy ();
 
   //
-  // Hit the trace hook.  This trace will fire on all packets received from the
-  // OS (promiscuous).  Packets are received instantaneously.
-  //
-  m_phyRxStartTrace (packet);
-  m_phyRxTrace (packet);
-
-  //
   // Checksum the packet
   //
   EthernetTrailer trailer;
@@ -643,6 +643,7 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
   // make sure that nobody messes with our packet.
   //
   m_promiscSnifferTrace (originalPacket);
+
   if (!m_promiscRxCallback.IsNull ())
     {
       m_promiscRxCallback (this, packet->Copy (), protocol, header.GetSource (), header.GetDestination (), packetType);
@@ -798,13 +799,9 @@ EmuNetDevice::SendFrom (Ptr<Packet> packet, const Address &src, const Address &d
 
   NS_LOG_LOGIC ("calling sendto");
 
-  m_phyTxStartTrace (packet);
-
   int32_t rc;
   rc = sendto (m_sock, packet->PeekData (), packet->GetSize (), 0, reinterpret_cast<struct sockaddr *> (&ll), sizeof (ll));
   NS_LOG_LOGIC ("sendto returns " << rc);
-
-  m_phyTxTrace (packet);
 
   return rc == -1 ? false : true;
 }

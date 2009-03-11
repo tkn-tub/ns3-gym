@@ -17,8 +17,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef STATIC_SPEED_HELPER_H
-#define STATIC_SPEED_HELPER_H
+#ifndef CONSTANT_VELOCITY_HELPER_H
+#define CONSTANT_VELOCITY_HELPER_H
 
 #include "ns3/nstime.h"
 #include "vector.h"
@@ -27,12 +27,12 @@ namespace ns3 {
 
 class Rectangle;
 
-class StaticSpeedHelper
+class ConstantVelocityHelper
 {
  public:
-  StaticSpeedHelper ();
-  StaticSpeedHelper (const Vector &position);
-  StaticSpeedHelper (const Vector &position,
+  ConstantVelocityHelper ();
+  ConstantVelocityHelper (const Vector &position);
+  ConstantVelocityHelper (const Vector &position,
 		     const Vector &vel);
 
   void SetPosition (const Vector &position);
@@ -53,4 +53,4 @@ class StaticSpeedHelper
 
 } // namespace ns3
 
-#endif /* STATIC_SPEED_HELPER_H */
+#endif /* CONSTANT_VELOCITY_HELPER_H */

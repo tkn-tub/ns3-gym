@@ -55,27 +55,27 @@ WifiPhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiPhy")
     .SetParent<Object> ()
-    .AddTraceSource ("PhyTxStart", 
+    .AddTraceSource ("PhyTxBegin", 
                      "Trace source indicating a packet has begun transmitting over the channel medium",
-                     MakeTraceSourceAccessor (&WifiPhy::m_phyTxStartTrace))
-    .AddTraceSource ("PhyTx", 
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyTxBeginTrace))
+    .AddTraceSource ("PhyTxEnd", 
                      "Trace source indicating a packet has been completely transmitted over the channel",
-                     MakeTraceSourceAccessor (&WifiPhy::m_phyTxTrace))
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyTxEndTrace))
     .AddTraceSource ("PhyTxDrop", 
                      "Trace source indicating a packet has been dropped by the device during transmission",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyTxDropTrace))
-    .AddTraceSource ("PhyRxStart", 
+    .AddTraceSource ("PhyRxBegin", 
                      "Trace source indicating a packet has begun being received from the channel medium by the device",
-                     MakeTraceSourceAccessor (&WifiPhy::m_phyRxStartTrace))
-    .AddTraceSource ("PhyRx", 
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyRxBeginTrace))
+    .AddTraceSource ("PhyRxEnd", 
                      "Trace source indicating a packet has been completely received from the channel medium by the device",
-                     MakeTraceSourceAccessor (&WifiPhy::m_phyRxTrace))
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyRxEndTrace))
     .AddTraceSource ("PhyRxDrop", 
                      "Trace source indicating a packet has been dropped by the device during reception",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyRxDropTrace))
     .AddTraceSource ("PromiscSniffer", 
                      "Trace source simulating a promiscuous packet sniffer attached to the device",
-                     MakeTraceSourceAccessor (&WifiPhy::m_promiscSnifferTrace))
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyPromiscSnifferTrace))
     ;
   return tid;
 }
@@ -155,6 +155,48 @@ WifiPhy::Get54mba (void)
                                                       false,
                                                       20000000, 54000000, 72000000);
   return mode;
+}
+
+void 
+WifiPhy::NotifyTxBegin (Ptr<const Packet> packet)
+{
+  m_phyTxBeginTrace (packet);
+}
+
+void 
+WifiPhy::NotifyTxEnd (Ptr<const Packet> packet)
+{
+  m_phyTxEndTrace (packet);
+}
+
+void 
+WifiPhy::NotifyTxDrop (Ptr<const Packet> packet) 
+{
+  m_phyTxDropTrace (packet);
+}
+
+void 
+WifiPhy::NotifyRxBegin (Ptr<const Packet> packet) 
+{
+  m_phyRxBeginTrace (packet);
+}
+
+void 
+WifiPhy::NotifyRxEnd (Ptr<const Packet> packet) 
+{
+  m_phyRxEndTrace (packet);
+}
+
+void 
+WifiPhy::NotifyRxDrop (Ptr<const Packet> packet) 
+{
+  m_phyRxDropTrace (packet);
+}
+
+void 
+WifiPhy::NotifyPromiscSniff (Ptr<const Packet> packet) 
+{
+  m_phyPromiscSnifferTrace (packet);
 }
 
 } // namespace ns3

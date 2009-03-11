@@ -12,10 +12,19 @@ to decide whether it is sufficient for his or her research use.
 
 ns-3 random numbers are provided via instances of @code{class RandomVariable}.
 @itemize @bullet
-@item @strong{by default, ns-3 simulations use a random seed}; if there is any 
-randomness in the simulation, each run of the program will yield different results.  To use a fixed seed, users must call 
-@code{RandomVariable::UseGlobalSeed ()} at the beginning of the program;
-see section @xref{Seeding and independent replications}
+@item @strong{by default, ns-3 simulations use a fixed seed}; if there is any 
+randomness in the simulation, each run of the program will yield identical
+results uniess the seed and/or run number is changed.  
+@itemize @bullet
+@item @strong{in ns-3.3 and earlier, ns-3 simulations used a random seed by 
+default; this marks a change in policy starting with ns-3.4}
+@end itemize
+@item to obtain randomness across multiple simulation runs, you must either
+set the seed differently or set the run number differently.  To set a seed, call
+@code{SeedManager::SetSeed(uint32_t)} at the beginning of the program;
+to set a run number with the same seed, call
+@code{SeedManager::SetRun (uint32_t)} at the beginning of the program;
+@xref{Seeding and independent replications}
 @item each RandomVariable used in ns-3 has a virtual random number 
 generator associated with it; all random variables use either a fixed
 or random seed based on the use of the global seed (previous bullet);
@@ -100,27 +109,24 @@ random results.  If the ns-3 simulation is configured to use
 a fixed, deterministic seed with the same run number, it should give 
 the same output each time it is run.
 
-By default, ns-3 simulations use random seeds where the seeding
-is drawn from @code{/dev/random} (if it is available) or else from
-the time of day.  A user who wants to fix the initial seeding
-of the PRNG must call the following static method during simulation
-configuration:
-@verbatim
-RandomVariable::UseGlobalSeed (uint32_t s0, s1, s2, s3, s4, s5);
-@end verbatim
-where the six parameters are each of type uint32_t.
+By default, ns-3 simulations use a fixed seed and run number.
+These values are stored in two @code{ns3::GlobalValue} instances:
+@code{g_rngSeed} and @code{g_rngRun}.
 
 A typical use case is to run a simulation as a sequence of independent
 trials, so as to compute statistics on a large number of independent
 runs.  The user can either change the global seed and rerun the 
-simulation, or can advance the substream state of the RNG.  
+simulation, or can advance the substream state of the RNG, which is
+referred to as incrementing the run number.  
+
+A class @code{ns3::SeedManager ()} provides an API to control
+the seeding and run number behavior.
 This seeding and substream state setting must be called before any 
 random variables are created; e.g.
 
 @verbatim
-  RandomVariable::UseGlobalSeed(1,2,3,4,5,6);
-  int N = atol(argv[1]); //read in run number from command line
-  RandomVariable::SetRunNumber(N);
+  SeedManager::SetSeed (3);  // Changes seed from default of 1 to 3
+  SeedManager::SetRun (7);  // Changes run number from default of 1 to 7
   // Now, create random variables
   UniformVariable x(0,10);
   ExponentialVariable y(2902);
@@ -135,11 +141,28 @@ capability provided by the RNG implementation.
 @strong{Therefore, use the substream capability to produce
 multiple independent runs of the same simulation.}
 In other words, the more statistically rigorous way to configure
-multiple independent replications is not to simply ignore the
-seeding (and use /dev/random to seed the generator each time) but
-instead to use a fixed seed and to iterate the run number.
-This implementation allows for a maximum of
+multiple independent replications is to use a fixed seed and to
+advance the run number.  This implementation allows for a maximum of
 2.3x10^15 independent replications using the substreams. 
+
+For ease of use, it is not necessary to control the seed and run number
+from within the program; the user can set the 
+@code{NS_GLOBAL_VALUE} environment variable as follows:
+@verbatim
+  NS_GLOBAL_VALUE="RngRun=3" ./waf --run program-name
+@end verbatim
+
+Another way to control this is by passing a command-line argument; since
+this is an ns3 GlobalValue instance, it is equivalently done such as follows:
+@verbatim
+  ./waf --command-template="%s --RngRun=3" --run program-name
+@end verbatim
+or, if you are running programs directly outside of waf:
+@verbatim
+  ./build/optimized/scratch/program-name --RngRun=3
+@end verbatim
+The above command-line variants make it easy to run lots of different
+runs from a shell script by just passing a different RngRun index.
 
 @node class RandomVariable
 @section class RandomVariable

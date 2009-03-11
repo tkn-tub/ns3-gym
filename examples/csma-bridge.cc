@@ -150,11 +150,11 @@ main (int argc, char *argv[])
   //
   // Also configure some tcpdump traces; each interface will be traced.
   // The output files will be named:
-  //     csma-bridge.pcap-<nodeId>-<interfaceId>
+  //     csma-bridge-<nodeId>-<interfaceId>.pcap
   // and can be read by the "tcpdump -r" command (use "-tt" option to
   // display timestamps correctly)
   //
-  CsmaHelper::EnablePcapAll ("csma-bridge");
+  CsmaHelper::EnablePcapAll ("csma-bridge", false);
 
   //
   // Now, do the actual simulation.

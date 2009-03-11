@@ -101,32 +101,40 @@ CsmaNetDevice::GetTypeId (void)
     .AddTraceSource ("MacRx", 
                      "Trace source indicating a packet has been received by this device and is being forwarded up the stack",
                      MakeTraceSourceAccessor (&CsmaNetDevice::m_macRxTrace))
+#if 0
+    // Not currently implemented in this device
+    .AddTraceSource ("MacRxDrop", 
+                     "Trace source indicating a packet was received, but dropped before being forwarded up the stack",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_macRxDropTrace))
+#endif
+    .AddTraceSource ("MacTxBackoff", 
+                     "Trace source indicating a packet has been delayed by the CSMA backoff process",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_macTxBackoffTrace))
     //
     // Trace souces at the "bottom" of the net device, where packets transition
     // to/from the channel.
     //
-    .AddTraceSource ("PhyTxStart", 
+    .AddTraceSource ("PhyTxBegin", 
                      "Trace source indicating a packet has begun transmitting over the channel",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyTxStartTrace))
-    .AddTraceSource ("PhyTx", 
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyTxBeginTrace))
+    .AddTraceSource ("PhyTxEnd", 
                      "Trace source indicating a packet has been completely transmitted over the channel",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyTxTrace))
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyTxEndTrace))
     .AddTraceSource ("PhyTxDrop", 
                      "Trace source indicating a packet has been dropped by the device during transmission",
                      MakeTraceSourceAccessor (&CsmaNetDevice::m_phyTxDropTrace))
-    .AddTraceSource ("PhyRxStart", 
+#if 0
+    // Not currently implemented in this device
+    .AddTraceSource ("PhyRxBegin", 
                      "Trace source indicating a packet has begun being received by the device",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyRxStartTrace))
-    .AddTraceSource ("PhyRx", 
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyRxBeginTrace))
+#endif
+    .AddTraceSource ("PhyRxEnd", 
                      "Trace source indicating a packet has been completely received by the device",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyRxTrace))
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyRxEndTrace))
     .AddTraceSource ("PhyRxDrop", 
                      "Trace source indicating a packet has been dropped by the device during reception",
                      MakeTraceSourceAccessor (&CsmaNetDevice::m_phyRxDropTrace))
-    .AddTraceSource ("PhyTxBackoff", 
-                     "Trace source indicating a packet has been delayed by the CSMA backoff process",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyTxBackoffTrace))
-
     //
     // Trace sources designed to simulate a packet sniffer facility (tcpdump). 
     //
@@ -513,7 +521,7 @@ CsmaNetDevice::TransmitStart (void)
         } 
       else 
         {
-          m_phyTxBackoffTrace (m_currentPkt);
+          m_macTxBackoffTrace (m_currentPkt);
 
           m_backoff.IncrNumRetries ();
           Time backoffTime = m_backoff.GetBackoffTime ();
@@ -543,7 +551,7 @@ CsmaNetDevice::TransmitStart (void)
           //
           m_backoff.ResetBackoffTime ();
           m_txMachineState = BUSY;
-          m_phyTxStartTrace (m_currentPkt);
+          m_phyTxBeginTrace (m_currentPkt);
 
           Time tEvent = Seconds (m_bps.CalculateTxTime (m_currentPkt->GetSize ()));
           NS_LOG_LOGIC ("Schedule TransmitCompleteEvent in " << tEvent.GetSeconds () << "sec");
@@ -620,7 +628,7 @@ CsmaNetDevice::TransmitCompleteEvent (void)
   NS_LOG_LOGIC ("Pkt UID is " << m_currentPkt->GetUid () << ")");
 
   m_channel->TransmitEnd (); 
-  m_phyTxTrace (m_currentPkt);
+  m_phyTxEndTrace (m_currentPkt);
   m_currentPkt = 0;
 
   NS_LOG_LOGIC ("Schedule TransmitReadyEvent in " << m_tInterframeGap.GetSeconds () << "sec");
@@ -737,7 +745,7 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
   // Hit the trace hook.  This trace will fire on all packets received from the
   // channel except those originated by this device.
   //
-  m_phyRxTrace (packet);
+  m_phyRxEndTrace (packet);
 
   // 
   // Only receive if the send side of net device is enabled

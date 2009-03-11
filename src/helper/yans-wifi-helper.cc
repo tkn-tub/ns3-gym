@@ -220,9 +220,11 @@ YansWifiPhyHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t d
   pcap->Open (oss.str ());
   pcap->WriteWifiHeader ();
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/PromiscSniffer";
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid;
+  oss << "/$ns3::WifiNetDevice/Phy/PromiscSniffer";
   Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapSnifferEvent, pcap));
 }
+
 void 
 YansWifiPhyHelper::EnablePcap (std::string filename, NetDeviceContainer d)
 {
@@ -232,6 +234,20 @@ YansWifiPhyHelper::EnablePcap (std::string filename, NetDeviceContainer d)
       EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex ());
     }
 }
+
+void 
+YansWifiPhyHelper::EnablePcap (std::string filename, Ptr<NetDevice> nd)
+{
+  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex ());
+}
+
+void 
+YansWifiPhyHelper::EnablePcap (std::string filename, std::string ndName)
+{
+  Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
+  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex ());
+}
+
 void
 YansWifiPhyHelper::EnablePcap (std::string filename, NodeContainer n)
 {
@@ -293,7 +309,5 @@ YansWifiPhyHelper::EnableAsciiAll (std::ostream &os)
 {
   EnableAscii (os, NodeContainer::GetGlobal ());
 }
-
-
 
 } // namespace ns3

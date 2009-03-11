@@ -136,7 +136,7 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Enable pcap tracing.");
   //
-  // Do pcap tracing on all devices on all nodes.
+  // Do pcap tracing on all point-to-point devices on all nodes.
   //
   PointToPointHelper::EnablePcapAll ("star");
 

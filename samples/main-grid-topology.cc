@@ -32,7 +32,7 @@ int main (int argc, char *argv[])
   // each object will be attached a static position.
   // i.e., once set by the "position allocator", the
   // position will never change.
-  mobility.SetMobilityModel ("ns3::StaticMobilityModel");
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
 
   // finalize the setup by attaching to each object
   // in the input array a position and initializing

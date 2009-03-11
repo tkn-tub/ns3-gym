@@ -102,7 +102,6 @@ public:
   virtual void SetReceiveOkCallback (WifiPhy::SyncOkCallback callback);
   virtual void SetReceiveErrorCallback (WifiPhy::SyncErrorCallback callback);
   virtual void SendPacket (Ptr<const Packet> packet, WifiMode mode, enum WifiPreamble preamble, uint8_t txPowerLevel);
-  virtual void SendDone (Ptr<const Packet> packet);
   virtual void RegisterListener (WifiPhyListener *listener);
   virtual bool IsStateCcaBusy (void);
   virtual bool IsStateIdle (void);
@@ -133,54 +132,6 @@ private:
   double RatioToDb (double ratio) const;
   double GetPowerDbm (uint8_t power) const;
   void EndSync (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event);
-
-private:
-  /**
-   * The trace source fired when a packet starts the transmission process on
-   * the medium.
-   *
-   * \see class CallBackTraceSource
-   */
-  TracedCallback<Ptr<const Packet> > m_phyTxStartTrace;
-
-  /**
-   * The trace source fired when a packet ends the transmission process on
-   * the medium.
-   *
-   * \see class CallBackTraceSource
-   */
-  TracedCallback<Ptr<const Packet> > m_phyTxTrace;
-
-  /**
-   * The trace source fired when the phy layer drops a packet as it tries
-   * to transmit it.
-   *
-   * \see class CallBackTraceSource
-   */
-  TracedCallback<Ptr<const Packet> > m_phyTxDropTrace;
-
-  /**
-   * The trace source fired when a packet ends the reception process from
-   * the medium.
-   *
-   * \see class CallBackTraceSource
-   */
-  TracedCallback<Ptr<const Packet> > m_phyRxTrace;
-
-  /**
-   * The trace source fired when a packet ends the reception process from
-   * the medium.
-   *
-   * \see class CallBackTraceSource
-   */
-  TracedCallback<Ptr<const Packet> > m_phyRxStartTrace;
-
-  /**
-   * The trace source fired when the phy layer drops a packet it has received.
-   *
-   * \see class CallBackTraceSource
-   */
-  TracedCallback<Ptr<const Packet> > m_phyRxDropTrace;
 
 private:
   double   m_edThresholdW;

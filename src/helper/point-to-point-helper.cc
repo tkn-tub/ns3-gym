@@ -90,9 +90,24 @@ PointToPointHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t 
   pcap->Open (oss.str ());
   pcap->WritePppHeader ();
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/Sniffer";
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid;
+  oss << "/$ns3::PointToPointNetDevice/PromiscSniffer";
   Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PointToPointHelper::SniffEvent, pcap));
 }
+
+void 
+PointToPointHelper::EnablePcap (std::string filename, Ptr<NetDevice> nd)
+{
+  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex ());
+}
+
+void 
+PointToPointHelper::EnablePcap (std::string filename, std::string ndName)
+{
+  Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
+  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex ());
+}
+
 void 
 PointToPointHelper::EnablePcap (std::string filename, NetDeviceContainer d)
 {
@@ -102,6 +117,7 @@ PointToPointHelper::EnablePcap (std::string filename, NetDeviceContainer d)
       EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex ());
     }
 }
+
 void
 PointToPointHelper::EnablePcap (std::string filename, NodeContainer n)
 {
@@ -140,6 +156,7 @@ PointToPointHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t dev
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Drop";
   Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiDropEvent, &os));
 }
+
 void 
 PointToPointHelper::EnableAscii (std::ostream &os, NetDeviceContainer d)
 {
@@ -149,6 +166,7 @@ PointToPointHelper::EnableAscii (std::ostream &os, NetDeviceContainer d)
       EnableAscii (os, dev->GetNode ()->GetId (), dev->GetIfIndex ());
     }
 }
+
 void
 PointToPointHelper::EnableAscii (std::ostream &os, NodeContainer n)
 {
@@ -248,30 +266,33 @@ PointToPointHelper::SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet
 {
   writer->WritePacket (packet);
 }
+
 void 
 PointToPointHelper::AsciiEnqueueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
 {
   *os << "+ " << Simulator::Now ().GetSeconds () << " ";
   *os << path << " " << *packet << std::endl;
 }
+
 void 
 PointToPointHelper::AsciiDequeueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
 {
   *os << "- " << Simulator::Now ().GetSeconds () << " ";
   *os << path << " " << *packet << std::endl;
 }
+
 void 
 PointToPointHelper::AsciiDropEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
 {
   *os << "d " << Simulator::Now ().GetSeconds () << " ";
   *os << path << " " << *packet << std::endl;
 }
+
 void 
 PointToPointHelper::AsciiRxEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
 {
   *os << "r " << Simulator::Now ().GetSeconds () << " ";
   *os << path << " " << *packet << std::endl;
 }
-
 
 } // namespace ns3

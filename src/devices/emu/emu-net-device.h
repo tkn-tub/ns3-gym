@@ -289,12 +289,21 @@ private:
   TracedCallback<Ptr<const Packet> > m_macRxTrace;
 
   /**
-   * The trace source fired when a packet starts the transmission process on
+   * The trace source fired for packets successfully received by the device
+   * but which are dropped before being forwarded up to higher layers (at the 
+   * L2/L3 transition).
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_macRxDropTrace;
+
+  /**
+   * The trace source fired when a packet begins the transmission process on
    * the medium.
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_phyTxStartTrace;
+  TracedCallback<Ptr<const Packet> > m_phyTxBeginTrace;
 
   /**
    * The trace source fired when a packet ends the transmission process on
@@ -302,7 +311,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_phyTxTrace;
+  TracedCallback<Ptr<const Packet> > m_phyTxEndTrace;
 
   /**
    * The trace source fired when the phy layer drops a packet as it tries
@@ -321,12 +330,20 @@ private:
   TracedCallback<Ptr<const Packet> > m_phyRxTrace;
 
   /**
-   * The trace source fired when a packet starts the reception process from
+   * The trace source fired when a packet begins the reception process from
    * the medium.
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_phyRxStartTrace;
+  TracedCallback<Ptr<const Packet> > m_phyRxBeginTrace;
+
+  /**
+   * The trace source fired when a packet begins the reception process from
+   * the medium.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyRxEndTrace;
 
   /**
    * The trace source fired when the phy layer drops a packet it has received.

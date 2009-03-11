@@ -37,7 +37,7 @@ MobilityHelper::MobilityHelper ()
   m_position = CreateObject<RandomRectanglePositionAllocator> 
     ("X", RandomVariableValue (ConstantVariable (0.0)),
      "Y", RandomVariableValue (ConstantVariable (0.0)));
-  m_mobility.SetTypeId ("ns3::StaticMobilityModel");
+  m_mobility.SetTypeId ("ns3::ConstantPositionMobilityModel");
 }
 MobilityHelper::~MobilityHelper ()
 {}

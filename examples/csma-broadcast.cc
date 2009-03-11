@@ -107,9 +107,9 @@ main (int argc, char *argv[])
 
   // Also configure some tcpdump traces; each interface will be traced
   // The output files will be named 
-  // csma-broadcast.pcap-<nodeId>-<interfaceId>
+  // csma-broadcast-<nodeId>-<interfaceId>.pcap
   // and can be read by the "tcpdump -tt -r" command 
-  CsmaHelper::EnablePcapAll ("csma-broadcast");
+  CsmaHelper::EnablePcapAll ("csma-broadcast", false);
   std::ofstream ascii;
   ascii.open ("csma-broadcast.tr");
   CsmaHelper::EnableAsciiAll (ascii);

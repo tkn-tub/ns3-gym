@@ -68,7 +68,6 @@ WifiMac::GetDefaultCtsAckTimeout (void)
   return ctsTimeout;
 }
 
-
 TypeId 
 WifiMac::GetTypeId (void)
 {
@@ -133,9 +132,12 @@ WifiMac::GetTypeId (void)
                      "A packet has been dropped in the MAC layer after it has been passed up from the physical "
                      "layer.",
                      MakeTraceSourceAccessor (&WifiMac::m_macRxDropTrace))
+#if 0
+    // Not currently implemented in this device
     .AddTraceSource ("Sniffer", 
                      "Trace source simulating a non-promiscuous packet sniffer attached to the device",
                      MakeTraceSourceAccessor (&WifiMac::m_snifferTrace))
+#endif
     ;
 
   return tid;
@@ -164,11 +166,28 @@ WifiMac::GetMaxMsduSize (void) const
   return m_maxMsduSize;
 }
 
-void
-WifiMac::SnifferTrace (Ptr<const Packet> packet)
+void 
+WifiMac::NotifyTx (Ptr<const Packet> packet)
 {
-  m_snifferTrace (packet);
+  m_macTxTrace (packet);
 }
 
+void 
+WifiMac::NotifyTxDrop (Ptr<const Packet> packet) 
+{
+  m_macTxDropTrace (packet);
+}
+
+void 
+WifiMac::NotifyRx (Ptr<const Packet> packet) 
+{
+  m_macRxTrace (packet);
+}
+
+void 
+WifiMac::NotifyRxDrop (Ptr<const Packet> packet) 
+{
+  m_macRxDropTrace (packet);
+}
 
 } // namespace ns3

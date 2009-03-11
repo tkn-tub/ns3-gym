@@ -199,7 +199,7 @@ main (int argc, char *argv[])
   apps = sink.Install (nodesRight.Get (0));
   apps.Start (Seconds (1.0));
 
-  CsmaHelper::EnablePcapAll ("tap-dumbbell");
+  CsmaHelper::EnablePcapAll ("tap-dumbbell", false);
   GlobalRouteManager::PopulateRoutingTables ();
 
   Simulator::Stop (Seconds (60.));

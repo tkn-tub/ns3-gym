@@ -155,7 +155,6 @@ int main (int argc, char *argv[])
   std::ofstream ascii;
   ascii.open ("tcp-large-transfer.tr");
   PointToPointHelper::EnableAsciiAll (ascii);
-
   PointToPointHelper::EnablePcapAll ("tcp-large-transfer");
 
   // Finally, set up the simulator to run.  The 1000 second hard limit is a

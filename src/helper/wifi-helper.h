@@ -159,43 +159,6 @@ public:
    * \returns a device container which contains all the devices created by this method.
    */
   NetDeviceContainer Install (const WifiPhyHelper &phy, std::string nodeName) const;
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param nodeid the id of the node to generate pcap output for.
-   * \param deviceid the id of the device to generate pcap output for.
-   *
-   * Generate a pcap file which contains the link-level data observed
-   * by the specified deviceid within the specified nodeid. The pcap
-   * data is stored in the file prefix-nodeid-deviceid.pcap.
-   *
-   * This method should be invoked after the network topology has 
-   * been fully constructed.
-   */
-  static void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param d container of devices of type ns3::WifiNetDevice
-   *
-   * Enable pcap output on each input device which is of the
-   * ns3::WifiNetDevice type.
-   */
-  static void EnablePcap (std::string filename, NetDeviceContainer d);
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param n container of nodes.
-   *
-   * Enable pcap output on each device which is of the
-   * ns3::WifiNetDevice type and which is located in one of the 
-   * input nodes.
-   */
-  static void EnablePcap (std::string filename, NodeContainer n);
-  /**
-   * \param filename filename prefix to use for pcap files.
-   *
-   * Enable pcap output on each device which is of the
-   * ns3::WifiNetDevice type
-   */
-  static void EnablePcapAll (std::string filename);
 
 private:
   ObjectFactory m_stationManager;

@@ -128,7 +128,7 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy, const
   positionAlloc->Add (Vector (0.0, 0.0, 0.0));
   positionAlloc->Add (Vector (5.0, 0.0, 0.0));
   mobility.SetPositionAllocator (positionAlloc);
-  mobility.SetMobilityModel ("ns3::StaticMobilityModel");
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
 
   mobility.Install (c);
 
