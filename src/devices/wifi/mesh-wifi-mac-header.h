@@ -1,5 +1,5 @@
-#ifndef WIFI_MAC_HEADER_H
-#define WIFI_MAC_HEADER_H
+#ifndef MESH_WIFI_MAC_HEADER_H
+#define MESH_WIFI_MAC_HEADER_H
 
 #include "ns3/header.h"
 #include "ns3/mac48-address.h"
@@ -121,4 +121,4 @@ class WifiMeshMultihopActionHeader : public Header //7.2.3.14
 		uint8_t	m_actionValue;
 };
 } // namespace ns3
-#endif /* WIFI_MAC_HEADER_H */
+#endif /* MESH_WIFI_MAC_HEADER_H */

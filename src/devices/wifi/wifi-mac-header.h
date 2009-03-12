@@ -180,5 +180,9 @@ private:
   uint8_t m_qosAckPolicy;
   uint16_t m_qosStuff;
 };
+
 } // namespace ns3
+
+
+
 #endif /* WIFI_MAC_HEADER_H */

@@ -25,9 +25,77 @@
 #include "ns3/address-utils.h"
 #include "ns3/simulator.h"
 #include "ns3/assert.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE("MeshMgtHeaders");
+
 
 namespace ns3
+{/***********************************************************
+ *          Mesh Beacon
+ ***********************************************************/
+void
+MgtMeshBeaconHeader::SetMeshConfigurationElement(MeshConfigurationElement mesh_config)
 {
+	m_meshConfig = mesh_config;
+}
+
+void
+MgtMeshBeaconHeader::SetWifiBeaconTimingElement(WifiBeaconTimingElement wifi_timing)
+{
+	m_meshTiming = wifi_timing;
+}
+
+MeshConfigurationElement
+MgtMeshBeaconHeader::GetMeshConfigurationElement()
+{
+	return m_meshConfig;
+}
+
+WifiBeaconTimingElement
+MgtMeshBeaconHeader::GetWifiBeaconTimingElement()
+{
+	return m_meshTiming;
+}
+
+uint32_t
+MgtMeshBeaconHeader::GetSerializedSize (void) const
+{
+	uint32_t size = (
+			  MgtBeaconHeader::GetSerializedSize()
+			+ m_meshConfig.GetSerializedSize()
+			+ m_meshTiming.GetSerializedSize()
+			+ 9 //MSCIE
+			);
+        return size;
+}
+void
+MgtMeshBeaconHeader::Serialize (Buffer::Iterator start) const
+{
+	//First we pack Beacon:
+  NS_LOG_DEBUG("Serialization beacon");
+	Buffer::Iterator i = start;
+	MgtBeaconHeader::Serialize(i);
+	i.Next(MgtBeaconHeader::GetSerializedSize());
+	i = m_meshConfig.Serialize(i);
+	i = m_meshTiming.Serialize(i);
+	i.Next(9); //MSCIE
+}
+
+uint32_t
+MgtMeshBeaconHeader::Deserialize (Buffer::Iterator start)
+{
+        NS_LOG_DEBUG("Deserialization beacon");
+	Buffer::Iterator i = start;
+	MgtBeaconHeader::Deserialize(start);
+	i.Next(MgtBeaconHeader::GetSerializedSize());
+	i = m_meshConfig.Deserialize(i);
+	i = m_meshTiming.Deserialize(i);
+	i.Next(9); //MSCIE
+	return i.GetDistanceFrom (start);
+}
+
+
 /***********************************************************
 *          PeerLinkOpen frame:
 ************************************************************/
