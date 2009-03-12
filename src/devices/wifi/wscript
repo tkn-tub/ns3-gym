@@ -18,6 +18,7 @@ def build(bld):
         'yans-wifi-phy.cc',
         'yans-wifi-channel.cc',
         'wifi-mac-header.cc',
+        'mesh-wifi-mac-header.cc',
         'wifi-mac-trailer.cc',
         'mac-low.cc',
         'wifi-mac-queue.cc',

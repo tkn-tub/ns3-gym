@@ -30,6 +30,7 @@
 #include "mesh-wifi-mac.h"
 #include "dca-txop.h"
 #include "wifi-mac-header.h"
+#include "mesh-wifi-mac-header.h"
 #include "mgt-headers.h"
 #include "wifi-phy.h"
 #include "dcf-manager.h"
