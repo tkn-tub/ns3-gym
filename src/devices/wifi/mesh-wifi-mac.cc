@@ -305,17 +305,20 @@ MeshWifiMac::SetBeaconInterval (Time interval)
 void
 MeshWifiMac::DoDispose (void)
 {
+	NS_LOG_FUNCTION (this);
 	delete m_rxMiddle;
 	delete m_dcfManager;
 	//Delete smart pointers:
-	m_beaconSendEvent.Cancel ();
-	m_beaconFormEvent.Cancel ();
+	m_rxMiddle = 0;
 	m_low = 0;
+	m_dcfManager = 0;
+	m_phy = 0;
 	m_BE = 0;
 	m_VO = 0;
+	m_peerManager = 0;
+	m_beaconSendEvent.Cancel ();
+	m_beaconFormEvent.Cancel ();
 	m_beaconDca = 0;
-	m_phy = 0;
-        m_peerManager=0;
 	WifiMac::DoDispose ();
 }
 

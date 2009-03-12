@@ -180,7 +180,7 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c, uint8_
 	{
 		Ptr<Node> node = *i;
 		Ptr<L2RoutingNetDevice> virtualDevice = m_deviceFactory.Create<L2RoutingNetDevice> ();
-		Ptr<WifiPeerManager>pPeer = m_peerManager.Create<WifiPeerManager > ();
+		Ptr<WifiPeerManager> pPeer = m_peerManager.Create<WifiPeerManager > ();
 		devices.Add (virtualDevice);
 		std::vector<Ptr<WifiNetDevice> > nodeDevices;
 		for (uint8_t k=0; k<numOfPorts; k++)
@@ -193,7 +193,6 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c, uint8_
 			device->SetMac (mac);
 			device->SetPhy (phy);
 			device->SetRemoteStationManager (manager);
-			//mac ->SetPeerLinkManager (pPeer);
 			//create L2RoutingNetDevice and add WifiNetDevice to it
 			node->AddDevice(device);
 			nodeDevices.push_back(device);
