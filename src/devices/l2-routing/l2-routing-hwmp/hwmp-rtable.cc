@@ -70,10 +70,10 @@ HwmpRtable::AddReactivePath(
 		uint32_t	seqnum
 		)
 {
-	std::map<Mac48Address, struct ReactiveRoute, addrcmp>::iterator i = m_routes.find(destination);
+	std::map<Mac48Address, ReactiveRoute, addrcmp>::iterator i = m_routes.find(destination);
 	if(i == m_routes.end())
 	{
-		struct ReactiveRoute newroute;
+		ReactiveRoute newroute;
 		m_routes[destination] = newroute;
 	}
 	else
@@ -119,9 +119,9 @@ HwmpRtable::AddProactivePath(
 		uint32_t	seqnum
 		)
 {
-	struct ProactiveRoute newroute;
+	ProactiveRoute newroute;
 	m_roots[port] = newroute;
-	std::map<uint32_t,struct ProactiveRoute>::iterator i = m_roots.find(port);
+	std::map<uint32_t,ProactiveRoute>::iterator i = m_roots.find(port);
 	NS_ASSERT(i != m_roots.end());
 	i->second.root = root;
 	i->second.retransmitter = retransmitter;
@@ -135,7 +135,7 @@ void
 HwmpRtable::AddPrecursor(Mac48Address destination, uint32_t port, Mac48Address precursor)
 {
 	bool should_add = true;
-	std::map<Mac48Address, struct ReactiveRoute, addrcmp>::iterator i = m_routes.find(destination);
+	std::map<Mac48Address, ReactiveRoute, addrcmp>::iterator i = m_routes.find(destination);
 	if((i != m_routes.end()) && (i->second.port == port))
 	{
 		for(unsigned int j = 0 ; j < i->second.precursors.size(); j ++)
@@ -147,7 +147,7 @@ HwmpRtable::AddPrecursor(Mac48Address destination, uint32_t port, Mac48Address p
 		if(should_add)
 			i->second.precursors.push_back(precursor);
 	}
-	std::map<uint32_t,struct ProactiveRoute>::iterator k = m_roots.find(port);
+	std::map<uint32_t,ProactiveRoute>::iterator k = m_roots.find(port);
 	if(k!= m_roots.end())
 	{
 		for(unsigned int j = 0 ; j < k->second.precursors.size(); j ++)
@@ -161,7 +161,7 @@ HwmpRtable::AddPrecursor(Mac48Address destination, uint32_t port, Mac48Address p
 void
 HwmpRtable::DeleteProactivePath(uint32_t port)
 {
-	std::map<uint32_t,struct ProactiveRoute>::iterator j = m_roots.find(port);
+	std::map<uint32_t,ProactiveRoute>::iterator j = m_roots.find(port);
 	if(j != m_roots.end())
 		m_roots.erase(j);
 
@@ -169,7 +169,7 @@ HwmpRtable::DeleteProactivePath(uint32_t port)
 void
 HwmpRtable::DeleteProactivePath(Mac48Address root, uint32_t port)
 {
-	std::map<uint32_t,struct ProactiveRoute>::iterator j = m_roots.find(port);
+	std::map<uint32_t,ProactiveRoute>::iterator j = m_roots.find(port);
 	if((j != m_roots.end())&&(j->second.root == root))
 		m_roots.erase(j);
 
@@ -178,21 +178,21 @@ HwmpRtable::DeleteProactivePath(Mac48Address root, uint32_t port)
 void
 HwmpRtable::DeleteReactivePath(Mac48Address destination, uint32_t port)
 {
-	std::map<Mac48Address, struct ReactiveRoute, addrcmp>::iterator i = m_routes.find(destination);
+	std::map<Mac48Address, ReactiveRoute, addrcmp>::iterator i = m_routes.find(destination);
 	if(i != m_routes.end())
 		if(i->second.port ==  port)
 			m_routes.erase(i);
 }
 
-struct HwmpRtable::LookupResult
+HwmpRtable::LookupResult
 HwmpRtable::LookupReactive(Mac48Address destination)
 {
-	struct LookupResult result;
+	LookupResult result;
 	result.retransmitter = Mac48Address::GetBroadcast();
 	result.metric = MAX_METRIC;
 	result.ifIndex = PORT_ANY;
 	
-	std::map<Mac48Address, struct ReactiveRoute, addrcmp>::iterator i = m_routes.find(destination);
+	std::map<Mac48Address, ReactiveRoute, addrcmp>::iterator i = m_routes.find(destination);
 	if(i == m_routes.end())
 		return result;
 	result.ifIndex = i->second.port;
@@ -206,14 +206,14 @@ HwmpRtable::LookupReactive(Mac48Address destination)
 	return result;
 }
 
-struct HwmpRtable::LookupResult
+HwmpRtable::LookupResult
 HwmpRtable::LookupProactive(uint32_t port)
 {
-	struct LookupResult result;
+	LookupResult result;
 	result.retransmitter = Mac48Address::GetBroadcast();
 	result.metric = MAX_METRIC;
 	result.ifIndex = PORT_ANY;
-	std::map<uint32_t, struct ProactiveRoute, addrcmp>::iterator i = m_roots.find(port);
+	std::map<uint32_t, ProactiveRoute, addrcmp>::iterator i = m_roots.find(port);
 	if(i == m_roots.end())
 		return result;
 	result.ifIndex = i->first;
@@ -225,14 +225,14 @@ HwmpRtable::LookupProactive(uint32_t port)
 	return result;
 }
 
-std::vector<struct HwmpRtable::FailedDestination>
+std::vector<HwmpRtable::FailedDestination>
 HwmpRtable::GetUnreachableDestinations(Mac48Address peerAddress, uint32_t port)
 {
-	std::vector<struct FailedDestination> retval;
-	for(std::map<Mac48Address, struct ReactiveRoute, addrcmp>::iterator i = m_routes.begin(); i!= m_routes.end(); i++)
+	std::vector<FailedDestination> retval;
+	for(std::map<Mac48Address, ReactiveRoute, addrcmp>::iterator i = m_routes.begin(); i!= m_routes.end(); i++)
 		if((i->second.retransmitter == peerAddress)&&(i->second.port == port))
 		{
-			struct FailedDestination dst;
+			FailedDestination dst;
 			dst.destination = i->first;
 			i->second.seqnum ++;
 			dst.seqnum = i->second.seqnum;
@@ -241,10 +241,10 @@ HwmpRtable::GetUnreachableDestinations(Mac48Address peerAddress, uint32_t port)
 	/**
 	 * Lookup a path to root
 	 */
-	std::map<uint32_t, struct ProactiveRoute, addrcmp>::iterator i = m_roots.find(port);
+	std::map<uint32_t, ProactiveRoute, addrcmp>::iterator i = m_roots.find(port);
 	if((i != m_roots.end())&&(i->second.retransmitter == peerAddress))
 	{
-		struct FailedDestination dst;
+		FailedDestination dst;
 		dst.destination = i->second.root;
 		dst.seqnum = i->second.seqnum;
 		retval.push_back(dst);
@@ -254,7 +254,7 @@ HwmpRtable::GetUnreachableDestinations(Mac48Address peerAddress, uint32_t port)
 uint32_t
 HwmpRtable::RequestSeqnum(Mac48Address destination)
 {
-	std::map<Mac48Address, struct ReactiveRoute, addrcmp>::iterator i = m_routes.find(destination);
+	std::map<Mac48Address, ReactiveRoute, addrcmp>::iterator i = m_routes.find(destination);
 	if(i == m_routes.end())
 		return 0;
 	return i->second.seqnum;
@@ -264,13 +264,13 @@ std::vector<Mac48Address>
 HwmpRtable::GetPrecursors(Mac48Address destination, uint32_t port)
 {
 	std::vector<Mac48Address> retval;
-	std::map<uint32_t, struct ProactiveRoute, addrcmp>::iterator root = m_roots.find(port);
+	std::map<uint32_t, ProactiveRoute, addrcmp>::iterator root = m_roots.find(port);
 	if((root != m_roots.end()) &&(root->second.root == destination))
 	{
 		for(unsigned int i = 0; i < root->second.precursors.size(); i ++)
 			retval.push_back(root->second.precursors[i]);
 	}
-	std::map<Mac48Address, struct ReactiveRoute, addrcmp>::iterator route = m_routes.find(destination);
+	std::map<Mac48Address, ReactiveRoute, addrcmp>::iterator route = m_routes.find(destination);
 	if( (route != m_routes.end()) && (route->second.port == port) )
 	{
 		for(unsigned int i = 0; i < route->second.precursors.size(); i ++)

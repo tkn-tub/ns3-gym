@@ -180,7 +180,7 @@ Hwmp::DoDispose()
 	 * clear routing queue:
 	 */
 	for(
-			std::map<Mac48Address, std::queue<struct QueuedPacket> >::iterator i =  m_rqueue.begin();
+			std::map<Mac48Address, std::queue<QueuedPacket> >::iterator i =  m_rqueue.begin();
 			i != m_rqueue.end();
 			i++
 	   )
@@ -211,7 +211,7 @@ Hwmp::RequestRoute(
 		L2RoutingProtocol::RouteReplyCallback routeReply
 		)
 {
-	struct HwmpRtable::LookupResult result;
+	HwmpRtable::LookupResult result;
 	HwmpTag tag;
 	if(sourceIface == m_interface)
 	{
@@ -269,14 +269,14 @@ Hwmp::RequestRoute(
 		{
 			//Start path error procedure:
 			NS_LOG_DEBUG("Must Send PERR");
-			std::vector<struct HwmpRtable::FailedDestination> destinations;
-			struct HwmpRtable::FailedDestination dst;
+			std::vector<HwmpRtable::FailedDestination> destinations;
+			HwmpRtable::FailedDestination dst;
 			dst.seqnum = m_rtable->RequestSeqnum(destination);
 			dst.destination = destination;
 			destinations.push_back(dst);
 			StartPathErrorProcedure(destinations, result.ifIndex);
 		}
-		struct L2RoutingProtocol::QueuedPacket pkt;
+		L2RoutingProtocol::QueuedPacket pkt;
 		packet->RemoveAllTags();
 		packet->AddTag(tag);
 		pkt.pkt = packet;
@@ -527,12 +527,12 @@ Hwmp::ObtainRoutingInformation(
 		 */
 		{
 			NS_LOG_DEBUG("Failed peer"<<info.destination);
-			std::vector<struct HwmpRtable::FailedDestination> failedDestinations = 
+			std::vector<HwmpRtable::FailedDestination> failedDestinations = 
 				m_rtable->GetUnreachableDestinations(info.destination, info.outPort);
 			/**
 			 * Entry about peer does not contain seqnum
 			 */
-			struct HwmpRtable::FailedDestination peer;
+			HwmpRtable::FailedDestination peer;
 			peer.destination = info.destination;
 			peer.seqnum = 0;
 			failedDestinations.push_back(peer);
@@ -544,20 +544,20 @@ Hwmp::ObtainRoutingInformation(
 	}
 }
 
-struct HwmpRtable::LookupResult
+HwmpRtable::LookupResult
 Hwmp::RequestRouteForAddress(const Mac48Address& dst)
 {
 	return m_rtable->LookupReactive(dst);
 }
 
-struct	HwmpRtable::LookupResult
+HwmpRtable::LookupResult
 Hwmp::RequestRootPathForPort(uint32_t port)
 {
 	return m_rtable->LookupProactive(port);
 }
 
 void
-Hwmp::StartPathErrorProcedure(std::vector<struct HwmpRtable::FailedDestination> destinations, uint32_t port)
+Hwmp::StartPathErrorProcedure(std::vector<HwmpRtable::FailedDestination> destinations, uint32_t port)
 {
 	NS_LOG_DEBUG("START PERR");
 	for(unsigned int i  = 0; i < m_hwmpStates.size(); i++)
@@ -565,7 +565,7 @@ Hwmp::StartPathErrorProcedure(std::vector<struct HwmpRtable::FailedDestination> 
 			m_pathErrorCallback[i](destinations);
 }
 std::vector<Mac48Address>
-Hwmp::GetRetransmittersForFailedDestinations(std::vector<struct HwmpRtable::FailedDestination> failedDest, uint32_t port)
+Hwmp::GetRetransmittersForFailedDestinations(std::vector<HwmpRtable::FailedDestination> failedDest, uint32_t port)
 {
 	std::vector<Mac48Address> retransmitters;
 	if(m_broadcastPerr)
@@ -597,7 +597,7 @@ Hwmp::SetMaxQueueSize(int maxPacketsPerDestination)
 }
 
 bool
-Hwmp::QueuePacket(struct L2RoutingProtocol::QueuedPacket packet)
+Hwmp::QueuePacket(L2RoutingProtocol::QueuedPacket packet)
 {
 	if((int)m_rqueue[packet.dst].size() > m_maxQueueSize)
 		return false;
@@ -605,13 +605,13 @@ Hwmp::QueuePacket(struct L2RoutingProtocol::QueuedPacket packet)
 	return true;
 }
 
-struct L2RoutingProtocol::QueuedPacket
+L2RoutingProtocol::QueuedPacket
 Hwmp::DequeuePacket(Mac48Address dst)
 {
-	struct L2RoutingProtocol::QueuedPacket retval;
+	L2RoutingProtocol::QueuedPacket retval;
 	retval.pkt = NULL;
 	//Ptr<Packet> in this structure is NULL when queue is empty
-	std::map<Mac48Address, std::queue<struct QueuedPacket>, addrcmp>:: iterator i = m_rqueue.find(dst);
+	std::map<Mac48Address, std::queue<QueuedPacket>, addrcmp>:: iterator i = m_rqueue.find(dst);
 	if(i == m_rqueue.end())
 		return retval;
 	if((int)m_rqueue[dst].size() == 0)
@@ -629,8 +629,8 @@ Hwmp::DequeuePacket(Mac48Address dst)
 void
 Hwmp::SendAllPossiblePackets(Mac48Address dst)
 {
-	struct HwmpRtable::LookupResult result = m_rtable->LookupReactive(dst);
-	struct L2RoutingProtocol::QueuedPacket packet;
+	HwmpRtable::LookupResult result = m_rtable->LookupReactive(dst);
+	L2RoutingProtocol::QueuedPacket packet;
 		while(1)
 		       
 		{
@@ -664,7 +664,7 @@ Hwmp::ShouldSendPreq(Mac48Address dst)
 void
 Hwmp::RetryPathDiscovery(Mac48Address dst, uint8_t numOfRetry)
 {
-	struct HwmpRtable::LookupResult result = m_rtable->LookupReactive(dst);
+	HwmpRtable::LookupResult result = m_rtable->LookupReactive(dst);
 	if(result.retransmitter != Mac48Address::GetBroadcast())
 	{
 		std::map<Mac48Address, EventId, addrcmp>::iterator i = m_timeoutDatabase.find(dst);
@@ -675,7 +675,7 @@ Hwmp::RetryPathDiscovery(Mac48Address dst, uint8_t numOfRetry)
 	numOfRetry++;
 	if(numOfRetry > dot11sParameters::dot11MeshHWMPmaxPREQretries)
 	{
-		struct L2RoutingProtocol::QueuedPacket packet;
+		L2RoutingProtocol::QueuedPacket packet;
 		//purge queue and delete entry from retryDatabase
 		while(1)
 		{

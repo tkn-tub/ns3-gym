@@ -967,7 +967,7 @@ WifiPeerManager::GetNextBeaconShift(
 			coefficientSign = 1;
 		UniformVariable randomShift(1, 15);
 		//So, the shift is a random integer variable uniformly distributed in [-15;-1] U [1;15]
-		int beaconShift = randomShift.GetInteger() * coefficientSign;
+		int beaconShift = randomShift.GetInteger(1,15) * coefficientSign;
 		NS_LOG_DEBUG("Shift value = " << beaconShift << " beacon TUs");
 		//We need the result not in Time Units, but in microseconds
 		return MicroSeconds(beaconShift * 1024);

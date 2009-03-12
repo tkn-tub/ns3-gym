@@ -47,14 +47,14 @@ HwmpState::HwmpState()
 }
 void
 HwmpState::SetRequestRouteCallback(
-		Callback<struct HwmpRtable::LookupResult, const Mac48Address&> cb)
+		Callback<HwmpRtable::LookupResult, const Mac48Address&> cb)
 {
 	m_requestRouteCallback = cb;
 }
 
 void
 HwmpState::SetRequestRootPathCallback(
-		Callback<struct HwmpRtable::LookupResult, uint32_t> cb)
+		Callback<HwmpRtable::LookupResult, uint32_t> cb)
 {
 	m_requestRootPathCallback = cb;
 }
@@ -87,7 +87,7 @@ HwmpState::SetRoutingInfoCallback(
 
 void
 HwmpState::SetRetransmittersOfPerrCallback(
-		Callback<std::vector<Mac48Address>, std::vector<struct HwmpRtable::FailedDestination>, uint32_t> cb)
+		Callback<std::vector<Mac48Address>, std::vector<HwmpRtable::FailedDestination>, uint32_t> cb)
 {
 	m_retransmittersOfPerrCallback = cb;
 }
@@ -133,7 +133,7 @@ HwmpState::RequestDestination(Mac48Address dst)
 	}
 }
 void
-HwmpState::SendPathError(std::vector<struct HwmpRtable::FailedDestination> destinations)
+HwmpState::SendPathError(std::vector<HwmpRtable::FailedDestination> destinations)
 {
 	std::vector<Mac48Address> receivers =  m_retransmittersOfPerrCallback(destinations, m_ifIndex);
 	NS_LOG_DEBUG("SendPathError started");
@@ -272,7 +272,7 @@ HwmpState::ReceivePreq(WifiPreqInformationElement& preq,  const Mac48Address& fr
 			continue;
 		}
 		//check if can answer:
-		struct HwmpRtable::LookupResult result = m_requestRouteCallback((*i)->GetDestinationAddress());
+		HwmpRtable::LookupResult result = m_requestRouteCallback((*i)->GetDestinationAddress());
 		if((!((*i)->IsDo())) && (result.retransmitter!=Mac48Address::GetBroadcast()))
 		{
 			//have a valid information and acn answer
@@ -328,7 +328,7 @@ HwmpState::ReceivePrep(WifiPrepInformationElement& prep, const Mac48Address& fro
 		if(i->second > prep.GetDestinationSeqNumber())
 			return;
 	//update routing info
-	struct HwmpRtable::LookupResult result = m_requestRouteCallback(prep.GetDestinationAddress());
+	HwmpRtable::LookupResult result = m_requestRouteCallback(prep.GetDestinationAddress());
 	if(result.retransmitter == Mac48Address::GetBroadcast())
 		//try to look for default route
 		result = m_requestRootPathCallback(m_ifIndex);
@@ -371,7 +371,7 @@ HwmpState::ReceivePerr(WifiPerrInformationElement& perr, const Mac48Address& fro
 		/**
 		 * Lookup for a valid routing information
 		 */
-	struct HwmpRtable::LookupResult result = m_requestRouteCallback(destinations[i].destination);
+	HwmpRtable::LookupResult result = m_requestRouteCallback(destinations[i].destination);
 	if(
 			(result.retransmitter != from)
 			||(result.seqnum >= destinations[i].seqnum)

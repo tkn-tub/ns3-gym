@@ -80,9 +80,10 @@ main(int argc, char *argv[])
                  "DeltaY", DoubleValue (step),
 		 "GridWidth", UintegerValue (xSize),
 		 "LayoutType", StringValue("RowFirst"));
-	mobility.SetMobilityModel ("ns3::StaticMobilityModel");
+	NS_LOG_UNCOND("Mobility");
+	mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
 	mobility.Install (nodes);
-
+	NS_LOG_UNCOND("Mobility installed");
 	// Setting Internet Stack:
 	InternetStackHelper stack;
 	stack.Install(nodes);
