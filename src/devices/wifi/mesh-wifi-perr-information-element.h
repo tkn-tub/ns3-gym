@@ -51,13 +51,13 @@ class WifiPerrInformationElement : public Header
 		uint8_t			GetNumOfDest();
 
 		void			AddAddressUnit(struct HwmpRtable::FailedDestination unit);
-		std::vector<struct HwmpRtable::FailedDestination>
+		std::vector<HwmpRtable::FailedDestination>
 					GetAddressUnitVector();
 		void			DeleteAddressUnit(Mac48Address address);
 		void			ResetPerr();
 	private:
 		uint8_t			m_numOfDest;
-		std::vector<struct HwmpRtable::FailedDestination>
+		std::vector<HwmpRtable::FailedDestination>
 					m_addressUnits;
 };
 

@@ -105,18 +105,18 @@ WifiPreqInformationElement::GetInstanceTypeId(void) const
 	return GetTypeId();
 }
 
-WifiPreqInformationElement::WifiPreqInformationElement()
+WifiPreqInformationElement::WifiPreqInformationElement():
+	m_maxSize(32),
+	m_flags(0),
+	m_hopCount(0),
+	m_ttl(0),
+	m_preqId(0),
+	m_originatorAddress(Mac48Address::GetBroadcast()),
+	m_originatorSeqNumber(0),
+	m_lifetime(0),
+	m_metric(0),
+	m_destCount(0)
 {
-	m_flags = 0;
-        m_hopCount = 0;
-	m_ttl = 0;
-	m_preqId = 0;
-	m_lifetime = 0;
-	m_originatorAddress = Mac48Address::GetBroadcast();
-	m_originatorSeqNumber = 0;
-	m_metric = 0;
-	m_destCount = 0;
-	m_maxSize = 32;
 }
 void
 WifiPreqInformationElement::SetUnicastPreq()

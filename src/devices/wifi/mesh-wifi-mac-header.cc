@@ -18,8 +18,8 @@ WifiMeshHeader::GetTypeId (void)
 }
 
 WifiMeshHeader::WifiMeshHeader()
+	:m_meshFlags(0)
 {
-	m_meshFlags = 0;
 }
 
 WifiMeshHeader::~WifiMeshHeader()

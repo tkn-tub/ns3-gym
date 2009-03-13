@@ -54,9 +54,9 @@ namespace ns3 {
 			 * information
 			 */
 			void	SetRequestRouteCallback(
-					Callback<struct HwmpRtable::LookupResult, const Mac48Address&> cb);
+					Callback<HwmpRtable::LookupResult, const Mac48Address&> cb);
 			void	SetRequestRootPathCallback(
-					Callback<struct HwmpRtable::LookupResult, uint32_t> cb);
+					Callback<HwmpRtable::LookupResult, uint32_t> cb);
 
 			enum InfoType {
 				INFO_PREQ,
@@ -84,9 +84,9 @@ namespace ns3 {
 					Callback<void, INFO> cb
 					);
 			void	SetRetransmittersOfPerrCallback(
-					Callback<std::vector<Mac48Address>, std::vector<struct HwmpRtable::FailedDestination>, uint32_t> cb);
+					Callback<std::vector<Mac48Address>, std::vector<HwmpRtable::FailedDestination>, uint32_t> cb);
 			void	RequestDestination(Mac48Address dest);
-			void	SendPathError(std::vector<struct HwmpRtable::FailedDestination> destinations);
+			void	SendPathError(std::vector<HwmpRtable::FailedDestination> destinations);
 			void	SetAssociatedIfaceId(uint32_t interface);
 			uint32_t
 				GetAssociatedIfaceId();
@@ -144,11 +144,11 @@ namespace ns3 {
 			//HWMP interaction callbacks:
 			Callback<void, INFO>
 					m_routingInfoCallback;
-			Callback<std::vector<Mac48Address>, std::vector<struct HwmpRtable::FailedDestination>, uint32_t>
+			Callback<std::vector<Mac48Address>, std::vector<HwmpRtable::FailedDestination>, uint32_t>
 					m_retransmittersOfPerrCallback;
-			Callback<struct HwmpRtable::LookupResult, const Mac48Address&>
+			Callback<HwmpRtable::LookupResult, const Mac48Address&>
 					m_requestRouteCallback;
-			Callback<struct HwmpRtable::LookupResult, uint32_t>
+			Callback<HwmpRtable::LookupResult, uint32_t>
 					m_requestRootPathCallback;
 			//Mac interaction callbacks:
 			Callback<void, const WifiPreqInformationElement&>
@@ -161,22 +161,9 @@ namespace ns3 {
 			uint32_t	m_preqId;
 			uint32_t	m_myDsn;
 			//Seqno and metric database
-			struct addrcmp
-			{
-				bool operator()(const Mac48Address addr1, Mac48Address addr2) const
-				{
-					uint8_t s1[6], s2[6];
-					addr1.CopyTo(s1);
-					addr2.CopyTo(s2);
-					for(int i = 0; i < 6; i ++)
-						if(s1[i] > s2[i])
-							return true;
-					return false;
-				}
-			};
-			std::map<Mac48Address, uint32_t, addrcmp>
+			std::map<Mac48Address, uint32_t, mac48addrComparator>
 					m_dsnDatabase;
-			std::map<Mac48Address, uint32_t, addrcmp>
+			std::map<Mac48Address, uint32_t, mac48addrComparator>
 					m_preqMetricDatabase;
 			//Disable/enable functionality
 			bool		m_disabled;

@@ -156,11 +156,11 @@ Hwmp::GetTypeId (void)
                 .AddConstructor<Hwmp>();
 	return tid;
 }
-Hwmp::Hwmp()
+Hwmp::Hwmp():
+	m_rtable(CreateObject<HwmpRtable> ()),
+	m_maxTtl(32),
+	m_broadcastPerr(false)
 {
-	m_maxTtl = 32;
-	m_broadcastPerr = false;
-	m_rtable = CreateObject<HwmpRtable> ();
 }
 
 Hwmp::~Hwmp()
@@ -170,7 +170,7 @@ Hwmp::~Hwmp()
 void
 Hwmp::DoDispose()
 {
-	for(std::map<Mac48Address, EventId, addrcmp>::iterator i = m_timeoutDatabase.begin(); i != m_timeoutDatabase.end(); i ++)
+	for(std::map<Mac48Address, EventId, mac48addrComparator>::iterator i = m_timeoutDatabase.begin(); i != m_timeoutDatabase.end(); i ++)
 		i->second.Cancel();
 	m_timeoutDatabase.clear();
 	m_seqnoDatabase.clear();
@@ -230,7 +230,7 @@ Hwmp::RequestRoute(
 		//check seqno!
 		if(destination == Mac48Address::GetBroadcast())
 		{
-			std::map<Mac48Address, uint32_t, addrcmp>::iterator i = m_seqnoDatabase.find(source);
+			std::map<Mac48Address, uint32_t, mac48addrComparator>::iterator i = m_seqnoDatabase.find(source);
 			if(i == m_seqnoDatabase.end())
 				m_seqnoDatabase[source] = tag.GetSeqno();
 			else
@@ -611,7 +611,7 @@ Hwmp::DequeuePacket(Mac48Address dst)
 	L2RoutingProtocol::QueuedPacket retval;
 	retval.pkt = NULL;
 	//Ptr<Packet> in this structure is NULL when queue is empty
-	std::map<Mac48Address, std::queue<QueuedPacket>, addrcmp>:: iterator i = m_rqueue.find(dst);
+	std::map<Mac48Address, std::queue<QueuedPacket>, mac48addrComparator>:: iterator i = m_rqueue.find(dst);
 	if(i == m_rqueue.end())
 		return retval;
 	if((int)m_rqueue[dst].size() == 0)
@@ -651,7 +651,7 @@ Hwmp::SendAllPossiblePackets(Mac48Address dst)
 bool
 Hwmp::ShouldSendPreq(Mac48Address dst)
 {
-	std::map<Mac48Address, EventId, addrcmp>::iterator i = m_timeoutDatabase.find(dst);
+	std::map<Mac48Address, EventId, mac48addrComparator>::iterator i = m_timeoutDatabase.find(dst);
 	if(i == m_timeoutDatabase.end())
 	{
 		m_timeoutDatabase[dst] = Simulator::Schedule(
@@ -667,7 +667,7 @@ Hwmp::RetryPathDiscovery(Mac48Address dst, uint8_t numOfRetry)
 	HwmpRtable::LookupResult result = m_rtable->LookupReactive(dst);
 	if(result.retransmitter != Mac48Address::GetBroadcast())
 	{
-		std::map<Mac48Address, EventId, addrcmp>::iterator i = m_timeoutDatabase.find(dst);
+		std::map<Mac48Address, EventId, mac48addrComparator>::iterator i = m_timeoutDatabase.find(dst);
 		NS_ASSERT(i!=  m_timeoutDatabase.end());
 		m_timeoutDatabase.erase(i);
 		return;
@@ -684,7 +684,7 @@ Hwmp::RetryPathDiscovery(Mac48Address dst, uint8_t numOfRetry)
 				break;
 			packet.reply(false, packet.pkt, packet.src, packet.dst, packet.protocol, HwmpRtable::MAX_METRIC);
 		}
-		std::map<Mac48Address, EventId, addrcmp>::iterator i = m_timeoutDatabase.find(dst);
+		std::map<Mac48Address, EventId, mac48addrComparator>::iterator i = m_timeoutDatabase.find(dst);
 		NS_ASSERT(i!=  m_timeoutDatabase.end());
 		m_timeoutDatabase.erase(i);
 		return;

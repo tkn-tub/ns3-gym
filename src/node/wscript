@@ -45,6 +45,7 @@ def build(bld):
     headers.module = 'node'
     headers.source = [
         'address.h',
+	'mac48-address-comparator.h',
         'mac48-address.h',
         'mac64-address.h',
         'inet-socket-address.h',

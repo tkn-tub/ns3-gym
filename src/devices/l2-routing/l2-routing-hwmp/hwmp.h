@@ -27,6 +27,7 @@
 #include "ns3/tag.h"
 #include "ns3/object.h"
 #include "ns3/mac48-address.h"
+#include "ns3/mac48-address-comparator.h"
 #include "ns3/l2-routing-protocol.h"
 #include "ns3/packet.h"
 #include "ns3/ptr.h"
@@ -167,24 +168,11 @@ namespace ns3 {
 			//protocol:
 			void		SetMaxQueueSize(int maxPacketsPerDestination);
 			int		m_maxQueueSize;
-			bool		QueuePacket(struct L2RoutingProtocol::QueuedPacket packet);
-			struct		L2RoutingProtocol::QueuedPacket
+			bool		QueuePacket(L2RoutingProtocol::QueuedPacket packet);
+			L2RoutingProtocol::QueuedPacket
 					DequeuePacket(Mac48Address dst);
 			void		SendAllPossiblePackets(Mac48Address dst);
-			struct addrcmp
-			{
-				bool operator()(const Mac48Address addr1, Mac48Address addr2) const
-				{
-					uint8_t s1[6], s2[6];
-					addr1.CopyTo(s1);
-					addr2.CopyTo(s2);
-					for(int i = 0; i < 6; i ++)
-						if(s1[i] > s2[i])
-							return true;
-					return false;
-				}
-			};
-			std::map<Mac48Address, std::queue<struct QueuedPacket> > 
+			std::map<Mac48Address, std::queue<QueuedPacket> > 
 					m_rqueue;
 			//devices and HWMP states:
 			enum DeviceState {
@@ -236,10 +224,10 @@ namespace ns3 {
 			 * \param std::vector<Mac48Address> is
 			 * receivers of PERR
 			 */
-			std::vector<Callback<void,std::vector<struct HwmpRtable::FailedDestination> > >
+			std::vector<Callback<void,std::vector<HwmpRtable::FailedDestination> > >
 					m_pathErrorCallback;
 			void	StartPathErrorProcedure(
-					std::vector<struct HwmpRtable::FailedDestination> destinations,
+					std::vector<HwmpRtable::FailedDestination> destinations,
 					uint32_t port);
 			/**
 			 * \brief HwmpState need to know where to
@@ -249,7 +237,7 @@ namespace ns3 {
 			 */
 			std::vector<Mac48Address>
 					GetRetransmittersForFailedDestinations(
-							std::vector<struct HwmpRtable::FailedDestination> failedDest,
+							std::vector<HwmpRtable::FailedDestination> failedDest,
 							uint32_t port);
 			/**
 			 * \brief Needed by HwmpState to find routes in case
@@ -257,9 +245,9 @@ namespace ns3 {
 			 * better route
 			 * 
 			 */
-			struct	HwmpRtable::LookupResult
+			HwmpRtable::LookupResult
 					RequestRouteForAddress(const Mac48Address& destination);
-			struct	HwmpRtable::LookupResult
+			HwmpRtable::LookupResult
 					RequestRootPathForPort(uint32_t port);
 
 			/**
@@ -271,7 +259,7 @@ namespace ns3 {
 			 * \attention mesh seqno is processed at HWMP
 			 */
 			uint32_t	m_seqno;
-			std::map<Mac48Address, uint32_t, addrcmp>
+			std::map<Mac48Address, uint32_t, mac48addrComparator>
 					m_seqnoDatabase;
 			//Timers:
 			/**
@@ -291,7 +279,7 @@ namespace ns3 {
 			 * Keeps PREQ retry timers for every
 			 * destination
 			 */
-			std::map<Mac48Address, EventId, addrcmp>
+			std::map<Mac48Address, EventId, mac48addrComparator>
 					m_timeoutDatabase;
 			/**
 			 * Configurable parameters:

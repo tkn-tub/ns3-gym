@@ -26,6 +26,7 @@
 #include <stdint.h>
 #include <map>
 #include "ns3/mac48-address.h"
+#include "ns3/mac48-address-comparator.h"
 #include "mgt-headers.h"
 #include "mesh-mgt-headers.h"
 #include "ns3/callback.h"
@@ -375,21 +376,7 @@ namespace ns3 {
 			 * \brief metric calculation parameters
 			 */
 			uint32_t			CalculateMetric(Mac48Address peerAddress);
-			struct addrcmp
-			{
-				bool operator()(const Mac48Address addr1, Mac48Address addr2) const
-				{
-					uint8_t s1[6], s2[6];
-					addr1.CopyTo(s1);
-					addr2.CopyTo(s2);
-					for(int i = 0; i < 6; i ++)
-						if(s1[i] > s2[i])
-							return true;
-					return false;
-				}
-			};
-
-			std::map<Mac48Address, uint32_t, addrcmp>
+			std::map<Mac48Address, uint32_t, mac48addrComparator>
 							m_metricDatabase;
 	};
 

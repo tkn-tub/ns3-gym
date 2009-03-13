@@ -37,13 +37,13 @@ HwmpState::GetTypeId (void)
 	return tid;
 }
 
-HwmpState::HwmpState()
+HwmpState::HwmpState():
+	m_myPreq(m_preqQueue.end()),
+	m_preqId(1),
+	m_myDsn(1),
+	m_disabled(false),
+	m_maxTtl(10)
 {
-	m_myPreq = m_preqQueue.end();
-	m_preqId = 1;
-	m_myDsn = 1;
-	m_maxTtl = 10;
-	m_disabled = false;
 }
 void
 HwmpState::SetRequestRouteCallback(
@@ -184,7 +184,7 @@ HwmpState::ReceivePreq(WifiPreqInformationElement& preq,  const Mac48Address& fr
 	if(preq.GetTtl() == 0)
 		return;
 	//acceptance cretirea:
-	std::map<Mac48Address, uint32_t, addrcmp>::iterator i = m_dsnDatabase.find(preq.GetOriginatorAddress());
+	std::map<Mac48Address, uint32_t, mac48addrComparator>::iterator i = m_dsnDatabase.find(preq.GetOriginatorAddress());
 	if(i == m_dsnDatabase.end())
 	{
 		m_dsnDatabase[preq.GetOriginatorAddress()] = preq.GetOriginatorSeqNumber();
@@ -197,7 +197,7 @@ HwmpState::ReceivePreq(WifiPreqInformationElement& preq,  const Mac48Address& fr
 		if(i->second == preq.GetOriginatorSeqNumber())
 		{
 			//find metric
-			std::map<Mac48Address, uint32_t, addrcmp>::iterator j = 
+			std::map<Mac48Address, uint32_t, mac48addrComparator>::iterator j = 
 				m_preqMetricDatabase.find(preq.GetOriginatorAddress());
 			NS_ASSERT(j != m_dsnDatabase.end());
 			if(j->second <= preq.GetMetric())
@@ -319,7 +319,7 @@ HwmpState::ReceivePrep(WifiPrepInformationElement& prep, const Mac48Address& fro
 	prep.DecrementTtl();
 	prep.IncrementMetric(metric);
 	//acceptance cretirea:
-	std::map<Mac48Address, uint32_t, addrcmp>::iterator i = m_dsnDatabase.find(prep.GetDestinationAddress());
+	std::map<Mac48Address, uint32_t, mac48addrComparator>::iterator i = m_dsnDatabase.find(prep.GetDestinationAddress());
 	if(i == m_dsnDatabase.end())
 	{
 		m_dsnDatabase[prep.GetDestinationAddress()] = prep.GetDestinationSeqNumber();

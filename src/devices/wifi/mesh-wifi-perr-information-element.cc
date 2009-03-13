@@ -46,9 +46,9 @@ WifiPerrInformationElement::GetInstanceTypeId(void) const
 {
 	return GetTypeId();
 }
-WifiPerrInformationElement::WifiPerrInformationElement()
+WifiPerrInformationElement::WifiPerrInformationElement():
+	m_numOfDest(0)
 {
-	m_numOfDest = 0;
 }
 uint8_t
 WifiPerrInformationElement::GetNumOfDest()
@@ -83,7 +83,7 @@ WifiPerrInformationElement::Deserialize(Buffer::Iterator start)
 	length = 0; //to avoid compiler warning in optimized builds
 	for(unsigned int j = 0; j < m_numOfDest; j++)
 	{
-		struct HwmpRtable::FailedDestination unit;
+		HwmpRtable::FailedDestination unit;
 		ReadFrom(i,unit.destination);
 		unit.seqnum = i.ReadNtohU32();
 		m_addressUnits.push_back(unit);
@@ -105,7 +105,7 @@ WifiPerrInformationElement::GetSerializedSize() const
 }
 
 void
-WifiPerrInformationElement::AddAddressUnit(struct HwmpRtable::FailedDestination unit)
+WifiPerrInformationElement::AddAddressUnit(HwmpRtable::FailedDestination unit)
 {
 	for(unsigned int i = 0; i < m_addressUnits.size(); i ++)
 		if(m_addressUnits[i].destination == unit.destination)
@@ -114,7 +114,7 @@ WifiPerrInformationElement::AddAddressUnit(struct HwmpRtable::FailedDestination 
 	m_numOfDest++;
 }
 
-std::vector<struct HwmpRtable::FailedDestination>
+std::vector<HwmpRtable::FailedDestination>
 WifiPerrInformationElement::GetAddressUnitVector()
 {
 	return m_addressUnits;
@@ -122,7 +122,7 @@ WifiPerrInformationElement::GetAddressUnitVector()
 void
 WifiPerrInformationElement::DeleteAddressUnit(Mac48Address address)
 {
-	for(std::vector<struct HwmpRtable::FailedDestination>::iterator i = m_addressUnits.begin(); i != m_addressUnits.end(); i ++)
+	for(std::vector<HwmpRtable::FailedDestination>::iterator i = m_addressUnits.begin(); i != m_addressUnits.end(); i ++)
 		if((*i).destination == address)
 		{
 			m_numOfDest --;

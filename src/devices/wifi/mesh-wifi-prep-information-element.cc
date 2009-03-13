@@ -49,16 +49,17 @@ WifiPrepInformationElement::GetInstanceTypeId(void) const
 {
 	return GetTypeId();
 }
-WifiPrepInformationElement::WifiPrepInformationElement()
+WifiPrepInformationElement::WifiPrepInformationElement():
+	m_flags(0),
+	m_hopcount(0),
+	m_ttl(0),
+	m_destinationAddress(Mac48Address::GetBroadcast()),
+	m_destSeqNumber(0),
+	m_lifetime(0),
+	m_metric(0),
+	m_originatorAddress(Mac48Address::GetBroadcast()),
+	m_originatorSeqNumber(0)
 {
-	m_flags = 0;
-        m_hopcount = 0;
-	m_ttl = 0;
-	m_destSeqNumber = 0;
-	m_lifetime = 0;
-	m_destinationAddress = Mac48Address::GetBroadcast();
-	m_metric = 0;
-	m_originatorSeqNumber = 0;
 }
 void
 WifiPrepInformationElement::SetFlags(uint8_t flags)

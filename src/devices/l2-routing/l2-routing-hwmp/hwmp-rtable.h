@@ -26,6 +26,7 @@
 #include <map>
 #include "ns3/nstime.h"
 #include "ns3/mac48-address.h"
+#include "ns3/mac48-address-comparator.h"
 #include "ns3/net-device.h"
 #include "ns3/event-id.h"
 #include "ns3/packet.h"
@@ -66,9 +67,9 @@ namespace ns3 {
 				uint32_t	metric;
 				uint32_t	seqnum;
 			};
-			struct LookupResult
+			LookupResult
 				LookupReactive(Mac48Address destination);
-			struct LookupResult
+			LookupResult
 				LookupProactive(uint32_t port);
 			//path error routines:
 			struct FailedDestination
@@ -76,7 +77,7 @@ namespace ns3 {
 				Mac48Address	destination;
 				uint32_t	seqnum;
 			};
-			std::vector<struct FailedDestination>
+			std::vector<FailedDestination>
 				GetUnreachableDestinations(Mac48Address peerAddress, uint32_t port);
 			uint32_t
 				RequestSeqnum(Mac48Address dst);
@@ -103,22 +104,9 @@ namespace ns3 {
 				uint32_t seqnum;
 				std::vector<Mac48Address> precursors;
 			};
-			struct addrcmp
-			{
-				bool operator()(const Mac48Address addr1, const Mac48Address addr2) const
-					    {
-						    uint8_t s1[6], s2[6];
-						    addr1.CopyTo(s1);
-						    addr2.CopyTo(s2);
-						    for(int i = 0; i < 6; i ++)
-							    if(s1[i] > s2[i])
-								    return true;
-						    return false;
-					    }
-			};
-			std::map<Mac48Address, struct ReactiveRoute, addrcmp>
+			std::map<Mac48Address, ReactiveRoute, mac48addrComparator>
 				m_routes;
-			std::map<uint32_t, struct ProactiveRoute>
+			std::map<uint32_t, ProactiveRoute>
 				m_roots;
 	};
 } //namespace ns3

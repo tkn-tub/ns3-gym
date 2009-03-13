@@ -269,7 +269,7 @@ namespace ns3
       typedef std::map<Mac48Address, std::vector<Ptr<WifiPeerLinkDescriptor> >, std::less<Mac48Address> >
         PeerDescriptorsMap;
     	typedef std::map<Mac48Address, Ptr<MeshWifiMac>,std::less<Mac48Address> > MeshMacMap;
-			typedef std::map<Mac48Address, struct BeaconInfo, std::less<Mac48Address> > BeaconInfoMap;
+			typedef std::map<Mac48Address, BeaconInfo, std::less<Mac48Address> > BeaconInfoMap;
 
 			//Ptr<MeshWifiMac> m_mac;
 			//Maximum peers that may be opened:

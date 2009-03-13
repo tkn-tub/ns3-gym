@@ -102,10 +102,8 @@ class WifiPreqInformationElement : public Header
 		void		IncrementMetric(uint32_t metric);
 
 	private:
-		std::vector<Ptr<DestinationAddressUnit> >
-				m_destinations;
 		//how many destinations we support
-		uint8_t	m_maxSize;
+		uint8_t	m_maxSize; //TODO: make as an attrubute
 		//Fields:
 		uint8_t	m_flags;
 		uint8_t	m_hopCount;
@@ -116,6 +114,9 @@ class WifiPreqInformationElement : public Header
 		uint32_t	m_lifetime;
 		uint32_t	m_metric;
 		uint8_t		m_destCount;
+		std::vector<Ptr<DestinationAddressUnit> >
+				m_destinations;
+
 };
 
 } //namespace ns3
