@@ -3,7 +3,7 @@
  * Copyright (c) 2008,2009 IITP RAS
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -20,18 +20,17 @@
  */
 
 
-#ifndef	MESH_CONFIGURATION_H
-#define	MESH_CONFIGURATION_H
+#ifndef MESH_CONFIGURATION_H
+#define MESH_CONFIGURATION_H
 
-#include	<stdint.h>
-#include	"ns3/buffer.h"
+#include <stdint.h>
+#include "ns3/buffer.h"
 #include "dot11s-codes.h"
 
-namespace ns3
-{
-  /**
-   * \ingroup mesh
-   */
+namespace ns3 {
+/**
+ * \ingroup mesh
+ */
 enum dot11sPathSelectionProtocol
 {
   PROTOCOL_HWMP = 0x000fac00,
@@ -56,7 +55,7 @@ enum dot11sCongestionControlMode
 /**
  * \ingroup mesh
  */
-enum dot11sChannelPrecedence 
+enum dot11sChannelPrecedence
 {
   CHANNEL_PRECEDENCE_OFF = 0x000fac00,
 };
@@ -66,18 +65,18 @@ enum dot11sChannelPrecedence
  */
 class dot11sMeshCapability
 {
-  public:
+public:
   dot11sMeshCapability();
-  uint32_t		GetSerializedSize () const;
-	Buffer::Iterator	Serialize (Buffer::Iterator i) const;
-	Buffer::Iterator	Deserialize (Buffer::Iterator i);
+  uint32_t  GetSerializedSize () const;
+  Buffer::Iterator Serialize (Buffer::Iterator i) const;
+  Buffer::Iterator Deserialize (Buffer::Iterator i);
   bool acceptPeerLinks;
   bool MDAEnabled;
   bool forwarding;
   bool beaconTimingReport;
   bool TBTTAdjustment;
   bool powerSaveLevel;
-  private:
+private:
   bool Is(uint16_t cap,uint8_t n) const;
 };
 
@@ -86,31 +85,33 @@ class dot11sMeshCapability
  */
 class MeshConfigurationElement
 {
-	public:
-	MeshConfigurationElement();
-	void			SetRouting(dot11sPathSelectionProtocol routingId);
-	void			SetMetric(dot11sPathSelectionMetric metricId);
-	bool			IsHWMP();
-	bool			IsAirtime();
+public:
+  MeshConfigurationElement();
+  void   SetRouting(dot11sPathSelectionProtocol routingId);
+  void   SetMetric(dot11sPathSelectionMetric metricId);
+  bool   IsHWMP();
+  bool   IsAirtime();
 
   dot11sMeshCapability const& MeshCapability();
 
-	uint32_t		GetSerializedSize () const;
-	Buffer::Iterator	Serialize (Buffer::Iterator i) const;
-	Buffer::Iterator	Deserialize (Buffer::Iterator i);
-	// TODO: Release and fill other fields in configuration
-	// element
-	private:
-		static uint8_t ElementId() { return (uint8_t)IE11S_MESH_CONFIGURATION; }
-		/** Active Path Selection Protocol ID */
-		dot11sPathSelectionProtocol	m_APSId;
-		/** Active Path Metric ID */
-		dot11sPathSelectionMetric	  m_APSMId;
-		/** Congestion Control Mode ID */
-		dot11sCongestionControlMode	m_CCMId;
-		/* Channel Precedence */
-		dot11sChannelPrecedence	m_CP;
-		dot11sMeshCapability	m_meshCap;
+  uint32_t  GetSerializedSize () const;
+  Buffer::Iterator Serialize (Buffer::Iterator i) const;
+  Buffer::Iterator Deserialize (Buffer::Iterator i);
+  // TODO: Release and fill other fields in configuration
+  // element
+private:
+  static uint8_t ElementId() {
+    return (uint8_t)IE11S_MESH_CONFIGURATION;
+  }
+  /** Active Path Selection Protocol ID */
+  dot11sPathSelectionProtocol m_APSId;
+  /** Active Path Metric ID */
+  dot11sPathSelectionMetric   m_APSMId;
+  /** Congestion Control Mode ID */
+  dot11sCongestionControlMode m_CCMId;
+  /* Channel Precedence */
+  dot11sChannelPrecedence m_CP;
+  dot11sMeshCapability m_meshCap;
 };
 } //name space NS3
 #endif

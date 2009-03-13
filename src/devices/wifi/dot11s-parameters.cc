@@ -3,7 +3,7 @@
  * Copyright (c) 2008,2009 IITP RAS
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,8 +22,7 @@
 
 #include "ns3/dot11s-parameters.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 uint8_t dot11sParameters::dot11MeshMaxRetries      = 4;
 Time    dot11sParameters::dot11MeshRetryTimeout    = TU_TO_TIME(40);

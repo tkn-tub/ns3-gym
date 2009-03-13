@@ -3,7 +3,7 @@
  * Copyright (c) 2008,2009 IITP RAS
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -32,9 +32,9 @@ NS_OBJECT_ENSURE_REGISTERED (L2RoutingProtocol);
 TypeId
 L2RoutingProtocol::GetTypeId (void)
 {
-	static TypeId tid = TypeId ("ns3::L2RoutingProtocol")
-		.SetParent<Object> ();
-	return tid;
+  static TypeId tid = TypeId ("ns3::L2RoutingProtocol")
+                      .SetParent<Object> ();
+  return tid;
 }
 
 L2RoutingProtocol::~L2RoutingProtocol ()
