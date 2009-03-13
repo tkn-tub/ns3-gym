@@ -32,6 +32,9 @@
 
 namespace ns3
 {
+/**
+ * \ingroup mesh
+ */
 class WifiRannInformationElement
 {
 	public:

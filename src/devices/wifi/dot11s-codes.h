@@ -25,6 +25,9 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup mesh
+ */
 enum dot11sElementID {
 	MESH_CONFIGURATION = 18,
 	MESH_ID,
@@ -52,6 +55,9 @@ enum dot11sElementID {
 	MSAIE,
 };
 
+/**
+ * \ingroup mesh
+ */
 enum dot11sReasonCode {
 	PEER_LINK_CANCELLED,
 	MESH_MAX_PEERS,
@@ -69,6 +75,9 @@ enum dot11sReasonCode {
 	DOT11S_REASON_RESERVED,
 };
 
+/**
+ * \ingroup mesh
+ */
 enum dot11sStatusCode {
 	PEAR_LINK_ESTABLISHED,
 	PEAR_LINK_CLOSED,

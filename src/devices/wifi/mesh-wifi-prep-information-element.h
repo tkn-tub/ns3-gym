@@ -31,6 +31,9 @@
 #include	"ns3/header.h"
 namespace ns3
 {
+/**
+ * \ingroup mesh
+ */
 class WifiPrepInformationElement : public Header
 {
 	public:

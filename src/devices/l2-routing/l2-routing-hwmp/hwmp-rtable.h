@@ -32,7 +32,9 @@
 #include "ns3/packet.h"
 namespace ns3 {
 
-
+/**
+ * \ingroup mesh
+ */
 	class HwmpRtable : public Object
 	{
 		public:

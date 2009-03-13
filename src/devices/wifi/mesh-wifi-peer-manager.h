@@ -39,6 +39,9 @@
 namespace ns3
 {
 	class MeshWifiMac;
+	/**
+	 * \ingroup mesh
+	 */
 	class WifiPeerLinkDescriptor : public RefCountBase
 	{
 		public:
@@ -191,7 +194,9 @@ namespace ns3
 			Callback<void, Mac48Address, Mac48Address, bool>
 					m_linkStatusCallback;
 	};
-
+	/**
+	 * \ingroup mesh
+	 */
 	class WifiPeerManager : public Object
 	{
 		public:

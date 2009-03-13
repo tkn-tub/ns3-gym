@@ -31,6 +31,9 @@ namespace ns3
 #define TU_TO_TIME(x)	MicroSeconds(x*1024)
 #define TIME_TO_TU(x)	x.GetMicroSeconds()/1024
 
+/**
+  * \ingroup mesh
+*/
 struct dot11sParameters
 {
 	/** Peer Link  */

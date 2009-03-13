@@ -42,6 +42,9 @@
 #include "ssid.h"
 
 namespace ns3 {
+/**
+ * \ingroup mesh
+ */
 class MgtMeshBeaconHeader : public MgtBeaconHeader
 {
 	public:
@@ -59,6 +62,9 @@ class MgtMeshBeaconHeader : public MgtBeaconHeader
 
 };
 
+/**
+ * \ingroup mesh
+ */
 class MeshMgtPeerLinkManFrame :	public Header
 {
 	public:
