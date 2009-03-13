@@ -15,9 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: Kirill Andreev <andreev@iitp.ru>
- *          Evgeny Khorov <horov@frtk.ru>
+ * Author: Kirill Andreev <andreev@iitp.ru>
  */
+
+
 #ifndef MAC_HIGH_MESH_H
 #define MAC_HIGH_MESH_H
 
@@ -384,4 +385,3 @@ namespace ns3 {
 
 
 #endif /* MAC_HIGH_MESH_H */
-/*@}*/

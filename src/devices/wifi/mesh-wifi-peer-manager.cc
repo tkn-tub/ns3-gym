@@ -17,8 +17,6 @@
  *
  * Authors: Kirill Andreev <andreev@iitp.ru>
  *          Aleksey Kovalenko <kovalenko@iitp.ru>
- *          Ivan Pustogarov <chinsa1@rambler.ru>
- *          Evgeny Khorov <horov@frtk.ru>
  */
 
 

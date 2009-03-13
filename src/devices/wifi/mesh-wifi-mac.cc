@@ -15,9 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: Kirill Andreev <andreev@iitp.ru>
- *          Ivan Pustogarov <chinsa1@rambler.ru>
- *          Evgeny Khorov <horov@frtk.ru>
+ * Author: Kirill Andreev <andreev@iitp.ru>
  */
 
 
