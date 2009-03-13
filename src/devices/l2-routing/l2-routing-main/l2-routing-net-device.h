@@ -32,17 +32,16 @@
 namespace ns3 {
 	class Node;
 	/**
-	 * \ingroup devices
-	 * \defgroup L2RoutingNetDevice L2routingNetDevice
-	 */
-	/**
-	 * \ingroup L2RoutingNetDevice
+	 * \ingroup mesh
+	 * 
 	 * \brief a virtual net device that may forward packets
 	 * between real network devices using routing protocols of
 	 * MAC-layer
+	 * 
 	 * \details This is a virtual netdevice, which aggreagates
 	 * real netdevices and uses interface of L2RoutingProtocol to
 	 * forward packets
+	 * 
 	 * \attention The idea of L2RoutingNetDevice is similar to
 	 * BridgeNetDevice, but the packets, which going through
 	 * L2RoutingNetDevice may be changed (because routing protocol

@@ -34,7 +34,10 @@
 #include "ns3/dot11s-parameters.h"
 namespace ns3 {
 	/**
+	 * \ingroup mesh
+	 * 
 	 * \brief Handles HWMP state machine at each real interface
+	 * 
 	 * \details Implements the following:
 	 * 	1. Keep it's own DSN,
 	 * 	2. Keep PREQ and PREP timers adn send this frames in

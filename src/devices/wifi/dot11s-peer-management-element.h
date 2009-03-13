@@ -29,6 +29,9 @@
 
 namespace ns3
 {
+/**
+ * \ingroup mesh
+ */
 class PeerLinkManagementElement
 {
 	public:

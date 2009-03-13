@@ -29,6 +29,9 @@
 #include "dot11s-codes.h"
 namespace ns3
 {
+/**
+ * \ingroup mesh
+ */
 class WifiBeaconTimingElementUnit : public RefCountBase
 {
 	public:
@@ -49,10 +52,20 @@ class WifiBeaconTimingElementUnit : public RefCountBase
 		//Beacon interval of remote mesh point:
 		uint16_t	BeaconInterval;
 };
-//This type is a list of timing elements obtained from neigbours with their beacons:
+/**
+ * \ingroup mesh
+ * This type is a list of timing elements obtained from neigbours with their beacons:
+ */
 typedef Ptr<WifiBeaconTimingElementUnit>		WifiBeaconTimingElementPointer;
+
+/**
+ * \ingroup mesh
+ */
 typedef std::list<WifiBeaconTimingElementPointer>	NeighboursTimingUnitsList;
 
+/**
+ * \ingroup mesh
+ */
 class WifiBeaconTimingElement
 {
 	public:

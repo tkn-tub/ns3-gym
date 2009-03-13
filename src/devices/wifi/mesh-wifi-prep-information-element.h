@@ -32,6 +32,9 @@
 #include	"dot11s-codes.h"
 namespace ns3
 {
+/**
+ * \ingroup mesh
+ */
 class WifiPrepInformationElement : public Header
 {
 	public:

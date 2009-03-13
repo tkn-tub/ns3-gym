@@ -7,7 +7,9 @@
 #include <stdint.h>
 
 namespace ns3 {
-
+/**
+ * \ingroup mesh
+ */
 class WifiMeshHeader : public Header //7.1.3.5b
 {
 	public:
@@ -44,6 +46,10 @@ class WifiMeshHeader : public Header //7.1.3.5b
 		Mac48Address	m_addr6;
 		Mac48Address	m_addr7;
 };
+
+/**
+ * \ingroup mesh
+ */
 class WifiMeshMultihopActionHeader : public Header //7.2.3.14
 {
 	//Multichop action frame consists of Mesh header, Action, and

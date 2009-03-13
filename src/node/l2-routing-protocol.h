@@ -34,11 +34,7 @@ namespace ns3 {
 
 class Packet;
 /**
- * \ingroup node
- * \defgroup L2RoutingProtocol L2routingProtocol
- */
-/**
- * \ingroup L2RoutingProtocol
+ * \ingroup mesh
  *
  * \brief Base class for Layer 2 routing protocols
  *

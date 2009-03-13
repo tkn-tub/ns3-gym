@@ -33,7 +33,9 @@
 
 namespace ns3
 {
-
+/**
+ * \ingroup mesh
+ */
 class WifiPerrInformationElement : public Header
 {
 	public:

@@ -35,8 +35,11 @@
 namespace ns3 {
 	class HwmpState;
 	/**
+	 * \ingroup mesh
+	 * 
 	 * \brief Hwmp tag implements interaction between HWMP
 	 * protocol and MeshWifiMac
+	 * 
 	 * \details Hwmp tag keeps the following:
 	 * 1. When packet is passed from Hwmp to 11sMAC:
 	 * 	- retransmitter address,
@@ -75,6 +78,9 @@ namespace ns3 {
 			uint32_t	m_metric;
 			uint32_t	m_seqno;
 	};
+	/**
+	 * \ingroup mesh
+	 */
 	class Hwmp : public L2RoutingProtocol
 	{
 		public:

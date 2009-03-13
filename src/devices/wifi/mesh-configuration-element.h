@@ -29,31 +29,41 @@
 
 namespace ns3
 {
-
+  /**
+   * \ingroup mesh
+   */
 enum dot11sPathSelectionProtocol
 {
   PROTOCOL_HWMP = 0x000fac00,
   PROTOCOL_NULL = 0x000facff,
 };
-
+/**
+ * \ingroup mesh
+ */
 enum dot11sPathSelectionMetric
 {
   METRIC_AIRTIME = 0x000fac00,
   METRIC_NULL    = 0x000facff,
 };
-
+/**
+ * \ingroup mesh
+ */
 enum dot11sCongestionControlMode
 {
   CONGESTION_DEFAULT = 0x000fac00,
   CONGESTION_NULL    = 0x000facff,
 };
-
+/**
+ * \ingroup mesh
+ */
 enum dot11sChannelPrecedence 
 {
   CHANNEL_PRECEDENCE_OFF = 0x000fac00,
 };
 
-
+/**
+ * \ingroup mesh
+ */
 class dot11sMeshCapability
 {
   public:
@@ -71,6 +81,9 @@ class dot11sMeshCapability
   bool Is(uint16_t cap,uint8_t n) const;
 };
 
+/**
+ * \ingroup mesh
+ */
 class MeshConfigurationElement
 {
 	public:

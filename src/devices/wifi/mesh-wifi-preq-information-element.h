@@ -32,6 +32,9 @@
 #include 	"dot11s-codes.h"
 namespace ns3
 {
+/**
+ * \ingroup mesh
+ */
 class DestinationAddressUnit : public RefCountBase
 {
 	public:
@@ -51,7 +54,9 @@ class DestinationAddressUnit : public RefCountBase
 		Mac48Address m_destinationAddress;
 		uint32_t m_destSeqNumber;
 };	
-
+/**
+ * \ingroup mesh
+ */
 class WifiPreqInformationElement : public Header
 {
 	public:

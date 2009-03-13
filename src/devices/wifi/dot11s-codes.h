@@ -25,6 +25,9 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup mesh
+ */
 enum dot11sElementID {
 	IE11S_MESH_CONFIGURATION = 18,
 	IE11S_MESH_ID,
@@ -52,6 +55,9 @@ enum dot11sElementID {
 	IE11S_MSAIE,
 };
 
+/**
+ * \ingroup mesh
+ */
 enum dot11sReasonCode {
 	REASON11S_PEER_LINK_CANCELLED,
 	REASON11S_MESH_MAX_PEERS,
@@ -69,6 +75,9 @@ enum dot11sReasonCode {
 	REASON11S_RESERVED,
 };
 
+/**
+ * \ingroup mesh
+ */
 enum dot11sStatusCode {
 	STATUS11S_PEAR_LINK_ESTABLISHED,
 	STATUS11S_PEAR_LINK_CLOSED,
