@@ -23,7 +23,6 @@
 #include "mesh-wifi-rann-information-element.h"
 #include "ns3/assert.h"
 #include "ns3/address-utils.h"
-#define ELEMENT_ID (20)
 
 namespace ns3{
 
@@ -46,15 +45,14 @@ WifiRannInformationElement::Print(std::ostream &os)const
 {
 	// FILL
 }
-WifiRannInformationElement::WifiRannInformationElement()
-{	m_flags = 0;
-	m_hopcount = 0;
-	m_ttl = 0;
-	m_destSeqNumber = 0;
-	m_metric = 0;
-	m_originatorAddress = Mac48Address::GetBroadcast();
-	m_destSeqNumber = 0;
-	
+WifiRannInformationElement::WifiRannInformationElement():
+	m_flags(0),
+	m_hopcount(0),
+	m_ttl(0),
+	m_originatorAddress(Mac48Address::GetBroadcast()),
+	m_destSeqNumber(0),
+	m_metric(0)
+{
 }
 void
 WifiRannInformationElement::SetFlags(uint8_t flags)
@@ -120,7 +118,7 @@ WifiRannInformationElement::GetOriginatorAddress()
 void
 WifiRannInformationElement::Serialize(Buffer::Iterator i) const
 {
-	i.WriteU8 (ELEMENT_ID);
+	i.WriteU8 (ElementId());
 	i.WriteU8 (21);//length = 21
 	i.WriteU8 (m_flags);
 	i.WriteU8 (m_hopcount);
@@ -133,9 +131,7 @@ uint32_t
 WifiRannInformationElement::Deserialize(Buffer::Iterator start)
 {
 	Buffer::Iterator i = start;
-	uint8_t ElementId;
-        ElementId = i.ReadU8();
-	NS_ASSERT (ElementId == ELEMENT_ID);
+	NS_ASSERT (ElementId() == i.ReadU8());
         i.Next(1);// length is constant
 	m_flags = i.ReadU8();
 	m_hopcount = i.ReadU8();

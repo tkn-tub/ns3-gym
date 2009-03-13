@@ -22,7 +22,6 @@
 
 #include "mesh-configuration-element.h"
 #include "ns3/assert.h"
-#include "dot11s-codes.h"
 
 //NS_LOG_COMPONENT_DEFINE ("MeshConfigurationElement");
 
@@ -104,7 +103,7 @@ Buffer::Iterator
 MeshConfigurationElement::Serialize (Buffer::Iterator i) const
 {
 
-	i.WriteU8 (MESH_CONFIGURATION);
+	i.WriteU8 (ElementId());
 	i.WriteU8 (GetSerializedSize());	// Length
 	i.WriteU8 (1);	//Version
 	// Active Path Selection Protocol ID:
@@ -123,12 +122,12 @@ Buffer::Iterator
 MeshConfigurationElement::Deserialize (Buffer::Iterator i)
 {
 
-	uint8_t	elementId;
+	//uint8_t	elementId;
 	uint8_t 	size;
 	uint8_t	version;
-	elementId	= i.ReadU8 ();
+	//elementId	= i.ReadU8 ();
 	
-	NS_ASSERT (elementId == MESH_CONFIGURATION);
+	NS_ASSERT (ElementId() == i.ReadU8());
 	
 	size		= i.ReadU8 ();
 	version		= i.ReadU8();

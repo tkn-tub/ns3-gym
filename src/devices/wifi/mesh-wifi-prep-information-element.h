@@ -29,6 +29,7 @@
 #include	"ns3/buffer.h"
 #include	"ns3/mac48-address.h"
 #include	"ns3/header.h"
+#include	"dot11s-codes.h"
 namespace ns3
 {
 class WifiPrepInformationElement : public Header
@@ -65,7 +66,7 @@ class WifiPrepInformationElement : public Header
 		void		DecrementTtl();
 		void		IncrementMetric(uint32_t metric);
 	private:
-
+		static uint8_t ElementId() { return (uint8_t)PATH_REPLY; }
 		uint8_t		m_flags;
 		uint8_t		m_hopcount;
 		uint8_t		m_ttl;

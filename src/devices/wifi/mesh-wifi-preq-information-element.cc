@@ -23,7 +23,6 @@
 #include "mesh-wifi-preq-information-element.h"
 #include "ns3/address-utils.h"
 #include "ns3/assert.h"
-#define ELEMENT_ID (22)
 namespace ns3{
 /*************************
  * DestinationAddressUnit
@@ -250,7 +249,7 @@ WifiPreqInformationElement::IncrementMetric(uint32_t metric)
 void
 WifiPreqInformationElement::Serialize(Buffer::Iterator i) const
 {
-	i.WriteU8 (ELEMENT_ID);
+	i.WriteU8 (ElementId());
 	//TODO:Check maxsize
 	uint8_t length = m_destCount*11+28;
 	if(m_destCount> m_maxSize)
@@ -286,9 +285,7 @@ uint32_t
 WifiPreqInformationElement::Deserialize(Buffer::Iterator start)
 {
 	Buffer::Iterator i = start;
-	uint8_t ElementId;
-	ElementId = i.ReadU8();
-	NS_ASSERT (ElementId == ELEMENT_ID);
+	NS_ASSERT (ElementId() == i.ReadU8());
 	uint8_t length;
 	length = i.ReadU8();
 	m_flags = i.ReadU8();

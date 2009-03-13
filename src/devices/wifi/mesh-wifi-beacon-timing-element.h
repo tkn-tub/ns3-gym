@@ -26,6 +26,7 @@
 #include	"ns3/buffer.h"
 #include	"ns3/nstime.h"
 #include	<list>
+#include "dot11s-codes.h"
 namespace ns3
 {
 class WifiBeaconTimingElementUnit : public RefCountBase
@@ -93,6 +94,7 @@ class WifiBeaconTimingElement
 		Buffer::Iterator	Serialize (Buffer::Iterator i) const;
 		Buffer::Iterator	Deserialize (Buffer::Iterator i);
 	private:
+		static uint8_t ElementId() { return (uint8_t)BEACON_TIMING; }
 		NeighboursTimingUnitsList		m_neighbours;
 		//The maximum size of this element:
 		const static uint16_t	DEFAULT_MAX_SIZE = 255*5 +2;

@@ -20,7 +20,6 @@
 
 
 #include "mesh-wifi-beacon-timing-element.h"
-#define ELEMENT_ID (19)
 namespace ns3 {
 /*******************************************
  * WifiBeaconTimingElementUnit
@@ -153,7 +152,7 @@ WifiBeaconTimingElement::Serialize (Buffer::Iterator i) const
 {
 	uint8_t can_be_written = (2+5*m_numOfUnits > m_maxSize) ? ((m_maxSize-2)/5) : m_numOfUnits;
 	int actually_written = 0;
-	i.WriteU8 (ELEMENT_ID);
+	i.WriteU8 (ElementId());
 	i.WriteU8 (can_be_written);
 	for(NeighboursTimingUnitsList::const_iterator j = m_neighbours.begin(); j!= m_neighbours.end(); j++)
 	{
@@ -176,13 +175,9 @@ WifiBeaconTimingElement::Serialize (Buffer::Iterator i) const
 Buffer::Iterator
 WifiBeaconTimingElement::Deserialize (Buffer::Iterator i)
 {
-	uint8_t elementId;
-	uint8_t num_to_read = 0;
-	int j;
-	elementId = i.ReadU8();
-	NS_ASSERT(elementId == ELEMENT_ID);
-	num_to_read = i.ReadU8();
-	for(j=0;j<num_to_read; j++)
+	NS_ASSERT(ElementId() == i.ReadU8());
+	uint8_t num_to_read = i.ReadU8();
+	for(int j = 0; j < num_to_read; j ++)
 	{		
 		Ptr<WifiBeaconTimingElementUnit> new_element = Create<WifiBeaconTimingElementUnit>();
 		new_element->SetAID(i.ReadU8());

@@ -55,6 +55,7 @@ class PeerLinkManagementElement
 		Buffer::Iterator	Serialize (Buffer::Iterator i) const;
 		Buffer::Iterator	Deserialize (Buffer::Iterator i);
 	private:
+		static uint8_t ElementId() { return (uint8_t)PEER_LINK_MANAGEMENT; }
 		uint8_t			m_length;
 		uint8_t			m_subtype;
 		uint16_t		m_localLinkId;	//always is present
@@ -63,4 +64,3 @@ class PeerLinkManagementElement
 };
 } //namespace NS3
 #endif
-		  

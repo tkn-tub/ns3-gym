@@ -29,6 +29,7 @@
 #include	"ns3/mac48-address.h"
 #include	"ns3/header.h"
 #include	<vector>
+#include 	"dot11s-codes.h"
 namespace ns3
 {
 class DestinationAddressUnit : public RefCountBase
@@ -102,6 +103,7 @@ class WifiPreqInformationElement : public Header
 		void		IncrementMetric(uint32_t metric);
 
 	private:
+		static uint8_t ElementId() { return (uint8_t)PATH_REQUEST; }
 		//how many destinations we support
 		uint8_t	m_maxSize; //TODO: make as an attrubute
 		//Fields:

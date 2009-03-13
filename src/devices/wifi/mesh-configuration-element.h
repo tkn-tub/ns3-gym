@@ -25,6 +25,7 @@
 
 #include	<stdint.h>
 #include	"ns3/buffer.h"
+#include "dot11s-codes.h"
 
 namespace ns3
 {
@@ -87,6 +88,7 @@ class MeshConfigurationElement
 	// TODO: Release and fill other fields in configuration
 	// element
 	private:
+		static uint8_t ElementId() { return (uint8_t)MESH_CONFIGURATION; }
 		/** Active Path Selection Protocol ID */
 		dot11sPathSelectionProtocol	m_APSId;
 		/** Active Path Metric ID */
