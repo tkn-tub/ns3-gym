@@ -49,7 +49,7 @@ class WifiPrepInformationElement : public Header
 		void SetOriginatorAddress(Mac48Address originator_address);
 		void SetOriginatorSeqNumber(uint32_t originator_seg_number);
 		virtual void Serialize(Buffer::Iterator i) const;
-		virtual uint32_t Deserialize(Buffer::Iterator i);
+		virtual uint32_t Deserialize(Buffer::Iterator start);
 		virtual uint32_t GetSerializedSize() const; 
 
 		uint8_t GetFlags() const;
