@@ -19,7 +19,10 @@
  *          Evgeny Khorov <horov@frtk.ru>
  */
 
-
+/**
+ * \addtogroup mesh
+ * \{
+ */
 #ifndef MAC_HIGH_MESH_H
 #define MAC_HIGH_MESH_H
 
@@ -47,6 +50,7 @@ namespace ns3 {
 	class MacLow;
 	class WifiPeerManager;
 	/**
+	 * \ingroup mesh
 	 * \brief Implements MAC-layer of mesh point: beaconing and
 	 * peer link management.
 	 *
@@ -384,3 +388,4 @@ namespace ns3 {
 
 
 #endif /* MAC_HIGH_MESH_H */
+//\}
