@@ -22,7 +22,6 @@
 
 #include "mesh-wifi-perr-information-element.h"
 #include "ns3/address-utils.h"
-#define ELEMENT_ID (21)
 
 namespace ns3 {
 WifiPerrInformationElement::~WifiPerrInformationElement()
@@ -58,7 +57,7 @@ WifiPerrInformationElement::GetNumOfDest()
 void
 WifiPerrInformationElement::Serialize(Buffer::Iterator i)const
 {
-	i.WriteU8 (ELEMENT_ID);
+	i.WriteU8 (ElementId());
 	i.WriteU8 (2+10*m_numOfDest);
 	i.WriteU8(0);
 	i.WriteU8 (m_numOfDest);
@@ -73,9 +72,7 @@ uint32_t
 WifiPerrInformationElement::Deserialize(Buffer::Iterator start)
 {
 	Buffer::Iterator i = start;
-	uint8_t ElementId;
-	ElementId = i.ReadU8();
-	NS_ASSERT (ElementId = ELEMENT_ID);
+	NS_ASSERT (ElementId() == i.ReadU8());
 	int length = i.ReadU8();
 	i.Next(1); //Mode flags is not used now
 	m_numOfDest = i.ReadU8();

@@ -29,6 +29,7 @@
 #include	"ns3/mac48-address.h"
 #include	"ns3/hwmp-rtable.h"
 #include	"ns3/header.h"
+#include	"dot11s-codes.h"
 
 namespace ns3
 {
@@ -59,6 +60,7 @@ class WifiPerrInformationElement : public Header
 		void			DeleteAddressUnit(Mac48Address address);
 		void			ResetPerr();
 	private:
+		static uint8_t ElementId() { return (uint8_t)PATH_ERROR; }
 		uint8_t			m_numOfDest;
 		std::vector<HwmpRtable::FailedDestination>
 					m_addressUnits;

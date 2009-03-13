@@ -106,7 +106,7 @@ PeerLinkManagementElement::SubtypeIsConfirm() const
 Buffer::Iterator
 PeerLinkManagementElement::Serialize (Buffer::Iterator i) const
 {
-	i.WriteU8(PEER_LINK_MANAGEMENT);
+	i.WriteU8(ElementId());
 	i.WriteU8(m_length);
 	i.WriteU8(m_subtype);
 	i.WriteHtonU16(m_localLinkId);
@@ -119,9 +119,7 @@ PeerLinkManagementElement::Serialize (Buffer::Iterator i) const
 Buffer::Iterator
 PeerLinkManagementElement::Deserialize (Buffer::Iterator i)
 {
-	dot11sElementID		ElementId;
-	ElementId	= (dot11sElementID)i.ReadU8();
-	NS_ASSERT(ElementId == PEER_LINK_MANAGEMENT);
+	NS_ASSERT(ElementId() == i.ReadU8());
 	m_length		= i.ReadU8();
 	m_subtype		= i.ReadU8();
 	m_localLinkId 	= i.ReadNtohU16();

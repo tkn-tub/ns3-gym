@@ -29,6 +29,7 @@
 #include	"ns3/mac48-address.h"
 #include	"ns3/node.h"
 #include	"ns3/header.h"
+#include	"dot11s-codes.h"
 
 namespace ns3
 {
@@ -63,6 +64,7 @@ class WifiRannInformationElement
 		void IncrementMetric(uint32_t metric);
 
 	private:
+		static uint8_t ElementId() { return (uint8_t)ROOT_ANNOUCEMENT; }
 		uint8_t m_flags;
 		uint8_t m_hopcount;
 		uint8_t m_ttl;

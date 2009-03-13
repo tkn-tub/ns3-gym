@@ -23,7 +23,6 @@
 #include "mesh-wifi-prep-information-element.h"
 #include "ns3/address-utils.h"
 #include "ns3/assert.h"
-#define ELEMENT_ID (30)
 namespace ns3{ 
 /********************************
  * WifiPrepInformationElement
@@ -167,7 +166,7 @@ WifiPrepInformationElement::IncrementMetric(uint32_t metric)
 void
 WifiPrepInformationElement::Serialize(Buffer::Iterator i) const
 {
-	i.WriteU8 (ELEMENT_ID);
+	i.WriteU8 (ElementId());
 	i.WriteU8 (32);//length = 32
 	i.WriteU8 (m_flags);
 	i.WriteU8 (m_hopcount);
@@ -183,9 +182,7 @@ uint32_t
 WifiPrepInformationElement::Deserialize(Buffer::Iterator start)
 {
 	Buffer::Iterator i = start;
-	uint8_t ElementId;
-	ElementId = i.ReadU8();
-	NS_ASSERT (ElementId == ELEMENT_ID);
+	NS_ASSERT (ElementId() == i.ReadU8());
 	i.Next(1); // length is constatnt
 	m_flags = i.ReadU8();
 	m_hopcount = i.ReadU8();
