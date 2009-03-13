@@ -32,6 +32,7 @@
 
 namespace ns3
 {
+
 class WifiPerrInformationElement : public Header
 {
 	public:
