@@ -59,7 +59,7 @@ MgtMeshBeaconHeader::GetWifiBeaconTimingElement()
 }
 
 uint32_t
-MgtMeshBeaconHeader::GetSerializedSize (void) const
+MgtMeshBeaconHeader::GetSerializedSize () const
 {
 	uint32_t size = (
 			  MgtBeaconHeader::GetSerializedSize()
@@ -178,7 +178,7 @@ MeshMgtPeerLinkManFrame::GetPeerLinkManagementElement()
 }
 
 TypeId
-MeshMgtPeerLinkManFrame::GetTypeId(void)
+MeshMgtPeerLinkManFrame::GetTypeId()
 {
 	static TypeId tid = 
 		TypeId ("ns3::MeshMgtPeerLinkManFrame")
@@ -189,7 +189,7 @@ MeshMgtPeerLinkManFrame::GetTypeId(void)
 }
 
 TypeId
-MeshMgtPeerLinkManFrame::GetInstanceTypeId(void) const
+MeshMgtPeerLinkManFrame::GetInstanceTypeId() const
 {
 	return GetTypeId();
 }
@@ -201,7 +201,7 @@ MeshMgtPeerLinkManFrame::Print(std::ostream &os) const
 }
 
 uint32_t
-MeshMgtPeerLinkManFrame::GetSerializedSize(void) const
+MeshMgtPeerLinkManFrame::GetSerializedSize() const
 {
 	uint32_t size = 1; //Subtype
 	if(MESH_MGT_HEADER_PEER_CONFIRM == Subtype)

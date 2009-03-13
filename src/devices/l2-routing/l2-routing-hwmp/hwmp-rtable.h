@@ -36,7 +36,7 @@ namespace ns3 {
 	class HwmpRtable : public Object
 	{
 		public:
-			static TypeId	GetTypeId	(void);
+			static TypeId	GetTypeId	();
 			HwmpRtable();
 			~HwmpRtable();
 			void	DoDispose();

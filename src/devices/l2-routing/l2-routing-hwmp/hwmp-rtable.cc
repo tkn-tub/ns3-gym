@@ -34,7 +34,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (HwmpRtable);
 
 TypeId
-HwmpRtable::GetTypeId(void)
+HwmpRtable::GetTypeId()
 {
 	static TypeId tid = TypeId ("ns3::HwmpRtable")
 		.SetParent<Object> ()

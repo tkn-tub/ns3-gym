@@ -28,7 +28,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("HwmpState");
 TypeId
-HwmpState::GetTypeId (void)
+HwmpState::GetTypeId ()
 {
 	static TypeId tid = TypeId ("ns3::HwmpState")
 		.SetParent<Object> ()

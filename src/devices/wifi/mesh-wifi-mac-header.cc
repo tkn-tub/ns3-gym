@@ -8,7 +8,7 @@ namespace ns3 {
  * 	Here Mesh Mac Header functionality is defined.
  ***********************************************************/
 TypeId 
-WifiMeshHeader::GetTypeId (void)
+WifiMeshHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiMeshHeader")
     .SetParent<Header> ()
@@ -27,7 +27,7 @@ WifiMeshHeader::~WifiMeshHeader()
 }
 
 TypeId 
-WifiMeshHeader::GetInstanceTypeId (void) const
+WifiMeshHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -108,7 +108,7 @@ WifiMeshHeader::GetAddressExt ()
 
 
 uint32_t
-WifiMeshHeader::GetSerializedSize (void) const
+WifiMeshHeader::GetSerializedSize () const
 {
 	return 6 + ((0xc0 & m_meshFlags) >> 6)*6;
 }
@@ -296,7 +296,7 @@ WifiMeshMultihopActionHeader::GetAction()
 }
 
 TypeId
-WifiMeshMultihopActionHeader::GetTypeId (void)
+WifiMeshMultihopActionHeader::GetTypeId ()
 {
 	static TypeId tid = TypeId ("ns3::WifiMeshMultihopActionHeader")
 		.SetParent<Header> ()
@@ -306,7 +306,7 @@ WifiMeshMultihopActionHeader::GetTypeId (void)
 }
 
 TypeId
-WifiMeshMultihopActionHeader::GetInstanceTypeId (void) const
+WifiMeshMultihopActionHeader::GetInstanceTypeId () const
 {
 	return GetTypeId();
 }
@@ -317,7 +317,7 @@ WifiMeshMultihopActionHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-WifiMeshMultihopActionHeader::GetSerializedSize (void) const
+WifiMeshMultihopActionHeader::GetSerializedSize () const
 {
 	return 2;
 }

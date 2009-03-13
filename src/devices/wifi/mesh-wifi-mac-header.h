@@ -13,8 +13,8 @@ class WifiMeshHeader : public Header //7.1.3.5b
 	public:
 		WifiMeshHeader ();
 		~WifiMeshHeader ();
-		static TypeId GetTypeId (void);
-		virtual TypeId GetInstanceTypeId (void) const;
+		static TypeId GetTypeId ();
+		virtual TypeId GetInstanceTypeId () const;
 		virtual void Print (std::ostream &os) const;
 
 		void			SetAddr5 (Mac48Address address);
@@ -33,7 +33,7 @@ class WifiMeshHeader : public Header //7.1.3.5b
 		void			SetAddressExt (uint8_t num_of_addresses);
 		uint8_t		GetAddressExt ();
 
-		virtual uint32_t	GetSerializedSize (void) const;
+		virtual uint32_t	GetSerializedSize () const;
 		virtual void		Serialize (Buffer::Iterator start) const;
 		virtual uint32_t	Deserialize (Buffer::Iterator start);
 	private:
@@ -110,10 +110,10 @@ class WifiMeshMultihopActionHeader : public Header //7.2.3.14
 		void			SetAction(enum CategoryValue type,ACTION_VALUE action);
 		enum CategoryValue	GetCategory();
 		ACTION_VALUE		GetAction();
-		static TypeId		GetTypeId (void);
-		virtual	TypeId		GetInstanceTypeId (void) const;
+		static TypeId		GetTypeId ();
+		virtual	TypeId		GetInstanceTypeId () const;
 		virtual void		Print (std::ostream &os) const;
-		virtual uint32_t	GetSerializedSize (void) const;
+		virtual uint32_t	GetSerializedSize () const;
 		virtual void		Serialize (Buffer::Iterator start) const;
 		virtual uint32_t	Deserialize (Buffer::Iterator start);
 	private:

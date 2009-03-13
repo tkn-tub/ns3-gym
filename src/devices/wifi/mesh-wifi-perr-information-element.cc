@@ -41,7 +41,7 @@ WifiPerrInformationElement::Print(std::ostream &os) const
 	// FILL
 }
 TypeId
-WifiPerrInformationElement::GetInstanceTypeId(void) const
+WifiPerrInformationElement::GetInstanceTypeId() const
 {
 	return GetTypeId();
 }

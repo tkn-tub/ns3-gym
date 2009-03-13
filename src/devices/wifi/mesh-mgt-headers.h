@@ -49,7 +49,7 @@ class MgtMeshBeaconHeader : public MgtBeaconHeader
 		void				SetWifiBeaconTimingElement(WifiBeaconTimingElement wifi_timing);
 		MeshConfigurationElement	GetMeshConfigurationElement();
 		WifiBeaconTimingElement		GetWifiBeaconTimingElement();
-		virtual uint32_t		GetSerializedSize (void) const;
+		virtual uint32_t		GetSerializedSize () const;
 		virtual void			Serialize (Buffer::Iterator start) const;
 		virtual uint32_t		Deserialize (Buffer::Iterator start);
 
@@ -77,10 +77,10 @@ class MeshMgtPeerLinkManFrame :	public Header
 		MeshConfigurationElement	GetMeshConfigurationElement();
 		PeerLinkManagementElement	GetPeerLinkManagementElement();
 
-		static TypeId			GetTypeId(void);
-		virtual TypeId			GetInstanceTypeId(void) const;
+		static TypeId			GetTypeId();
+		virtual TypeId			GetInstanceTypeId() const;
 		virtual void			Print(std::ostream &os) const;
-		virtual uint32_t		GetSerializedSize(void) const;
+		virtual uint32_t		GetSerializedSize() const;
 		virtual void			Serialize(Buffer::Iterator start) const;
 		virtual uint32_t		Deserialize(Buffer::Iterator start);
 		//Subtype defining methods:

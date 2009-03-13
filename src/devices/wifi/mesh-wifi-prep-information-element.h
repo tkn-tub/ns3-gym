@@ -37,8 +37,8 @@ class WifiPrepInformationElement : public Header
 	public:
 		WifiPrepInformationElement();
 		~WifiPrepInformationElement();
-		static TypeId GetTypeId(void);
-		virtual TypeId GetInstanceTypeId(void) const;
+		static TypeId GetTypeId();
+		virtual TypeId GetInstanceTypeId() const;
 		virtual void Print(std::ostream &os) const;
 	        void SetFlags(uint8_t flags);
 		void SetHopcount(uint8_t hopcount);
@@ -66,7 +66,7 @@ class WifiPrepInformationElement : public Header
 		void		DecrementTtl();
 		void		IncrementMetric(uint32_t metric);
 	private:
-		static uint8_t ElementId() { return (uint8_t)PATH_REPLY; }
+		static uint8_t ElementId() { return (uint8_t)IE11S_PREP; }
 		uint8_t		m_flags;
 		uint8_t		m_hopcount;
 		uint8_t		m_ttl;

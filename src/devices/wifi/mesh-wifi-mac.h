@@ -67,7 +67,7 @@ namespace ns3 {
 	class MeshWifiMac : public WifiMac
 	{
 		public:
-			static TypeId		GetTypeId (void);
+			static TypeId		GetTypeId ();
 
 			MeshWifiMac ();
 			~MeshWifiMac ();
@@ -78,23 +78,23 @@ namespace ns3 {
   			virtual void		SetCtsTimeout (Time ctsTimeout);
   			virtual void		SetAckTimeout (Time ackTimeout);
 			virtual void		SetEifsNoDifs (Time eifsNoDifs);
-			virtual Time		GetSlot (void) const;
-			virtual Time		GetSifs (void) const;
-			virtual Time		GetPifs (void) const;
-  			virtual Time		GetCtsTimeout (void) const;
-  			virtual Time		GetAckTimeout (void) const;
-			virtual Time		GetEifsNoDifs (void) const;
+			virtual Time		GetSlot () const;
+			virtual Time		GetSifs () const;
+			virtual Time		GetPifs () const;
+  			virtual Time		GetCtsTimeout () const;
+  			virtual Time		GetAckTimeout () const;
+			virtual Time		GetEifsNoDifs () const;
 			virtual void		SetWifiPhy (Ptr<WifiPhy> phy);
 			virtual void		SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
   			virtual void		Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from);
 			virtual void		Enqueue (Ptr<const Packet> packet, Mac48Address to);
-  			virtual bool		SupportsSendFrom (void) const;
+  			virtual bool		SupportsSendFrom () const;
   			virtual void		SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback);
 			virtual void		SetLinkUpCallback (Callback<void> linkUp);
 			virtual void		SetLinkDownCallback (Callback<void> linkDown);
-			virtual	Mac48Address	GetAddress (void) const;
-			virtual Mac48Address	GetBssid (void) const;
-			virtual Ssid		GetSsid (void) const;
+			virtual	Mac48Address	GetAddress () const;
+			virtual Mac48Address	GetBssid () const;
+			virtual Ssid		GetSsid () const;
 			virtual void		SetAddress (Mac48Address address);
 			virtual void		SetSsid (Ssid ssid);
 			/**
@@ -105,7 +105,7 @@ namespace ns3 {
 			/**
 			 * \returns interval between two beacons
 			 */
-			Time			GetBeaconInterval (void) const;
+			Time			GetBeaconInterval () const;
 			/**
 			 * \param delay is the maximum software delay.
 			 *
@@ -285,7 +285,7 @@ namespace ns3 {
 			 * beacon frame body. Then calculates software
 			 * delay and schedules QueueOneBeacon
 			 */
-			void		SendOneBeacon (void);
+			void		SendOneBeacon ();
 			/**
 			 * \brief Puts a formed beacon to the output
 			 * queue. SendOneBeacon forms a beacon and
@@ -313,9 +313,9 @@ namespace ns3 {
 			 */
 			void		QueuePathSelectionFrame(Ptr<Packet> packet, const WifiMacHeader hdr);
 			void		SetBeaconGeneration (bool enable);
-			bool		GetBeaconGeneration (void) const;
-			SupportedRates	GetSupportedRates (void) const;
-			virtual void	DoDispose (void);
+			bool		GetBeaconGeneration () const;
+			SupportedRates	GetSupportedRates () const;
+			virtual void	DoDispose ();
 
 			Ptr<DcaTxop>			m_BE;
 			Ptr<DcaTxop>			m_BK;

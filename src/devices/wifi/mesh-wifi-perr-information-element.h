@@ -39,8 +39,8 @@ class WifiPerrInformationElement : public Header
 	public:
 		WifiPerrInformationElement();
 		~WifiPerrInformationElement();
-		static TypeId		GetTypeId(void);
-		virtual TypeId		GetInstanceTypeId(void) const;
+		static TypeId		GetTypeId();
+		virtual TypeId		GetInstanceTypeId() const;
 		virtual void		Print(std::ostream &os) const;
 		virtual void		Serialize(Buffer::Iterator i) const;
 		virtual uint32_t	Deserialize(Buffer::Iterator start);
@@ -58,7 +58,7 @@ class WifiPerrInformationElement : public Header
 		void			DeleteAddressUnit(Mac48Address address);
 		void			ResetPerr();
 	private:
-		static uint8_t ElementId() { return (uint8_t)PATH_ERROR; }
+		static uint8_t ElementId() { return (uint8_t)IE11S_PERR; }
 		uint8_t			m_numOfDest;
 		std::vector<HwmpRtable::FailedDestination>
 					m_addressUnits;

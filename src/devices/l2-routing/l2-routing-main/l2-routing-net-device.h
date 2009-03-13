@@ -51,7 +51,7 @@ namespace ns3 {
 	class L2RoutingNetDevice : public NetDevice
 	{
 		public:
-			static TypeId GetTypeId (void);
+			static TypeId GetTypeId ();
 			L2RoutingNetDevice ();
 			virtual ~L2RoutingNetDevice ();
 			/**
@@ -71,7 +71,7 @@ namespace ns3 {
 			 * \returns number of ports attached to
 			 * L2RoutingNetDevice
 			 */
-			uint32_t GetNPorts (void) const;
+			uint32_t GetNPorts () const;
 			/**
 			 * \returns a pointer to netdevice
 			 * \param n is device ID to be returned
@@ -79,31 +79,31 @@ namespace ns3 {
 			Ptr<NetDevice> GetPort (uint32_t n) const;
 			//inherited from netdevice:
 			virtual void SetName(const std::string name);
-			virtual std::string GetName(void) const;
+			virtual std::string GetName() const;
 			virtual void SetIfIndex(const uint32_t index);
-			virtual uint32_t GetIfIndex(void) const;
-			virtual Ptr<Channel> GetChannel (void) const;
-			virtual Address GetAddress (void) const;
+			virtual uint32_t GetIfIndex() const;
+			virtual Ptr<Channel> GetChannel () const;
+			virtual Address GetAddress () const;
 			virtual bool SetMtu (const uint16_t mtu);
-			virtual uint16_t GetMtu (void) const;
-			virtual bool IsLinkUp (void) const;
+			virtual uint16_t GetMtu () const;
+			virtual bool IsLinkUp () const;
 			virtual void SetLinkChangeCallback (Callback<void> callback);
-			virtual bool IsBroadcast (void) const;
-			virtual Address GetBroadcast (void) const;
-			virtual bool IsMulticast (void) const;
+			virtual bool IsBroadcast () const;
+			virtual Address GetBroadcast () const;
+			virtual bool IsMulticast () const;
 			virtual Address GetMulticast (Ipv4Address multicastGroup) const;
-			virtual bool IsPointToPoint (void) const;
-			virtual bool IsBridge (void) const;
+			virtual bool IsPointToPoint () const;
+			virtual bool IsBridge () const;
 			virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
 			virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
-			virtual Ptr<Node> GetNode (void) const;
+			virtual Ptr<Node> GetNode () const;
 			virtual void SetNode (Ptr<Node> node);
-			virtual bool NeedsArp (void) const;
+			virtual bool NeedsArp () const;
 			virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
 			virtual void SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb);
 			virtual bool SupportsSendFrom () const;
 			virtual Address GetMulticast (Ipv6Address addr) const;
-			virtual void DoDispose (void);
+			virtual void DoDispose ();
 			/**
 			 * \brief Attaches protocol to a given virtual
 			 * device

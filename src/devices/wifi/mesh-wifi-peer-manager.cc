@@ -156,7 +156,7 @@ void  WifiPeerLinkDescriptor::MLMEActivePeerLinkOpen()
 }
 void WifiPeerLinkDescriptor::MLMEPeeringRequestReject()
 {
-	StateMachine(REQ_RJCT, PEER_LINK_CANCELLED);
+	StateMachine(REQ_RJCT, REASON11S_PEER_LINK_CANCELLED);
 }
 #if 0
 void  WifiPeerLinkDescriptor::MLMEBindSecurityAssociation()
@@ -303,7 +303,7 @@ WifiPeerLinkDescriptor::StateMachine(PeerEvent event,dot11sReasonCode reasoncode
 				case CLS_ACPT:
 					m_state = HOLDING;
 					ClearRetryTimer();
-					SendPeerLinkClose(MESH_CLOSE_RCVD);
+					SendPeerLinkClose(REASON11S_MESH_CLOSE_RCVD);
 					SetHoldingTimer();
 					break;
 				case OPN_RJCT:
@@ -316,13 +316,13 @@ WifiPeerLinkDescriptor::StateMachine(PeerEvent event,dot11sReasonCode reasoncode
 				case TOR2:
 					m_state = HOLDING;
 					ClearRetryTimer();
-					SendPeerLinkClose(MESH_MAX_RETRIES);
+					SendPeerLinkClose(REASON11S_MESH_MAX_RETRIES);
 					SetHoldingTimer();
 					break;
 				case CNCL:
 					m_state = HOLDING;
 					ClearRetryTimer();
-					SendPeerLinkClose(PEER_LINK_CANCELLED);
+					SendPeerLinkClose(REASON11S_PEER_LINK_CANCELLED);
 					SetHoldingTimer();
 					break;
 				default:{}
@@ -344,7 +344,7 @@ NS_LOG_DEBUG("I am "<<m_localAddress<<", established link with "<<m_peerAddress<
 				case CLS_ACPT:
 					m_state = HOLDING;
 					ClearConfirmTimer();
-					SendPeerLinkClose(MESH_CLOSE_RCVD);
+					SendPeerLinkClose(REASON11S_MESH_CLOSE_RCVD);
 					SetHoldingTimer();
 					break;
 				case CNF_RJCT:
@@ -357,12 +357,12 @@ NS_LOG_DEBUG("I am "<<m_localAddress<<", established link with "<<m_peerAddress<
 				case CNCL:
 					m_state = HOLDING;
 					ClearConfirmTimer();
-					SendPeerLinkClose(PEER_LINK_CANCELLED);
+					SendPeerLinkClose(REASON11S_PEER_LINK_CANCELLED);
 					SetHoldingTimer();
 					break;
 				case TOC:
 					m_state = HOLDING;
-					SendPeerLinkClose(MESH_CONFIRM_TIMEOUT);
+					SendPeerLinkClose(REASON11S_MESH_CONFIRM_TIMEOUT);
 					SetHoldingTimer();
 					break;
 				default:{}
@@ -386,7 +386,7 @@ NS_LOG_DEBUG("I am "<<m_localAddress<<", established link with "<<m_peerAddress<
 				case CLS_ACPT:
 					m_state = HOLDING;
 					ClearRetryTimer();
-					SendPeerLinkClose(MESH_CLOSE_RCVD);
+					SendPeerLinkClose(REASON11S_MESH_CLOSE_RCVD);
 					SetHoldingTimer();
 					break;
 				case OPN_RJCT:
@@ -399,13 +399,13 @@ NS_LOG_DEBUG("I am "<<m_localAddress<<", established link with "<<m_peerAddress<
 				case TOR2:
 					m_state = HOLDING;
 					ClearRetryTimer();
-					SendPeerLinkClose(MESH_MAX_RETRIES);
+					SendPeerLinkClose(REASON11S_MESH_MAX_RETRIES);
 					SetHoldingTimer();
 					break;
 				case CNCL:
 					m_state = HOLDING;
 					ClearRetryTimer();
-					SendPeerLinkClose(PEER_LINK_CANCELLED);
+					SendPeerLinkClose(REASON11S_PEER_LINK_CANCELLED);
 					SetHoldingTimer();
 					break;
 				default:{}
@@ -427,7 +427,7 @@ NS_LOG_DEBUG("I am "<<m_localAddress<<", established link with "<<m_peerAddress<
 				case CLS_ACPT:
 NS_LOG_DEBUG("I am "<<m_localAddress<<", CLOSED link with "<<m_peerAddress<<", at "<<Simulator::Now()<<" Close received");
 					m_state = HOLDING;
-					SendPeerLinkClose(MESH_CLOSE_RCVD);
+					SendPeerLinkClose(REASON11S_MESH_CLOSE_RCVD);
 					SetHoldingTimer();
 					m_linkStatusCallback(m_localAddress, m_peerAddress, false);
 					break;
@@ -443,7 +443,7 @@ NS_LOG_DEBUG("I am "<<m_localAddress<<", CLOSED link with "<<m_peerAddress<<", a
 				case CNCL:
 NS_LOG_DEBUG("I am "<<m_localAddress<<", CLOSED link with "<<m_peerAddress<<", at "<<Simulator::Now()<<" Link cancelled");
 					m_state = HOLDING;
-					SendPeerLinkClose(PEER_LINK_CANCELLED);
+					SendPeerLinkClose(REASON11S_PEER_LINK_CANCELLED);
 					SetHoldingTimer();
 					m_linkStatusCallback(m_localAddress, m_peerAddress, false);
 					break;
@@ -463,7 +463,7 @@ NS_LOG_DEBUG("I am "<<m_localAddress<<", CLOSED link with "<<m_peerAddress<<", a
 				case CNF_ACPT:
 					m_state = HOLDING;
 					// reason not spec in D2.0
-					SendPeerLinkClose(PEER_LINK_CANCELLED);
+					SendPeerLinkClose(REASON11S_PEER_LINK_CANCELLED);
 					break;
 				case OPN_RJCT:
 				case CNF_RJCT:
@@ -759,7 +759,7 @@ WifiPeerManager::ConfigurationMismatch(
 	for(std::vector<Ptr<WifiPeerLinkDescriptor> >::iterator i = port->second.begin(); i!= port->second.end(); i++)
 		if((*i)->GetPeerAddress() == peerAddress)
 		{
-			(*i)->MLMECancelPeerLink(MESH_CONFIGURATION_POLICY_VIOLATION);
+			(*i)->MLMECancelPeerLink(REASON11S_MESH_CONFIGURATION_POLICY_VIOLATION);
 			return;
 		}
 
@@ -890,7 +890,7 @@ WifiPeerManager::ShouldAcceptOpen(Mac48Address portAddress, Mac48Address peerAdd
 {
 	if(m_numberOfActivePeers > m_maxNumberOfPeerLinks)
 	{
-		reasonCode = MESH_MAX_PEERS;
+		reasonCode = REASON11S_MESH_MAX_PEERS;
 		return false;
 	}
 	return true;

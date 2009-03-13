@@ -38,8 +38,8 @@ class WifiRannInformationElement
 	public:
 		WifiRannInformationElement();
 		virtual ~WifiRannInformationElement();
-		static TypeId GetTypeId(void);
-		virtual TypeId GetInstanceTypeId(void) const;
+		static TypeId GetTypeId();
+		virtual TypeId GetInstanceTypeId() const;
 		virtual void Print(std::ostream &os) const;
 		void SetFlags(uint8_t flags);
 		void SetHopcount(uint8_t hopcount);
@@ -61,7 +61,7 @@ class WifiRannInformationElement
 		void IncrementMetric(uint32_t metric);
 
 	private:
-		static uint8_t ElementId() { return (uint8_t)ROOT_ANNOUCEMENT; }
+		static uint8_t ElementId() { return (uint8_t)IE11S_RANN; }
 		uint8_t m_flags;
 		uint8_t m_hopcount;
 		uint8_t m_ttl;

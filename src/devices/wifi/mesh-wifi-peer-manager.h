@@ -140,7 +140,7 @@ namespace ns3
 				TOH,
 			};
 		private:
-			void	StateMachine(PeerEvent event,dot11sReasonCode = DOT11S_REASON_RESERVED);
+			void	StateMachine(PeerEvent event,dot11sReasonCode = REASON11S_RESERVED);
 			/** Events handlers */
 			void	ClearRetryTimer();
 			void	ClearConfirmTimer();
@@ -198,7 +198,7 @@ namespace ns3
 			WifiPeerManager();
 			WifiPeerManager(Ptr<MeshWifiMac> mac_pointer);
 			~WifiPeerManager();
-			static	TypeId GetTypeId (void);
+			static	TypeId GetTypeId ();
 			//Returns a beacon timing element stored for remote station:
 			WifiBeaconTimingElement
 				GetWifiBeaconTimingElementForAddress(Mac48Address portAddress, Mac48Address addr);

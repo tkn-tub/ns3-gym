@@ -44,7 +44,7 @@ WifiPrepInformationElement::Print(std::ostream &os) const
 	//TODO:fill this method
 }
 TypeId
-WifiPrepInformationElement::GetInstanceTypeId(void) const
+WifiPrepInformationElement::GetInstanceTypeId() const
 {
 	return GetTypeId();
 }

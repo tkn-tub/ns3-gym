@@ -36,7 +36,7 @@ WifiRannInformationElement::GetTypeId()
 	return tid;
 }
 TypeId
-WifiRannInformationElement::GetInstanceTypeId(void) const
+WifiRannInformationElement::GetInstanceTypeId() const
 {
 	return GetTypeId();
 }

@@ -87,7 +87,7 @@ HwmpTag::GetSeqno()
 }
 
 TypeId
-HwmpTag::GetTypeId (void)
+HwmpTag::GetTypeId ()
 {
 	static TypeId tid = TypeId ("ns3::HwmpTag")
 		.SetParent<Tag> ()
@@ -97,13 +97,13 @@ HwmpTag::GetTypeId (void)
 }
 
 TypeId
-HwmpTag::GetInstanceTypeId(void) const
+HwmpTag::GetInstanceTypeId() const
 {
 	return GetTypeId();
 }
 
 uint32_t
-HwmpTag::GetSerializedSize(void) const
+HwmpTag::GetSerializedSize() const
 {
 
 	return 6	//address
@@ -149,7 +149,7 @@ HwmpTag::DecrementTtl()
 }
 //Class HWMP:
 TypeId
-Hwmp::GetTypeId (void)
+Hwmp::GetTypeId ()
 {
 	static TypeId tid = TypeId ("ns3::Hwmp")
 		.SetParent<L2RoutingProtocol> ()

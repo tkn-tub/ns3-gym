@@ -33,7 +33,7 @@ PeerLinkManagementElement::PeerLinkManagementElement ():
   m_subtype(PEER_OPEN),
 	m_localLinkId(0),
 	m_peerLinkId(0),
-	m_reasonCode(DOT11S_REASON_RESERVED)
+	m_reasonCode(REASON11S_RESERVED)
 {}
 
 

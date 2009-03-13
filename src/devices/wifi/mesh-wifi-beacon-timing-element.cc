@@ -143,7 +143,7 @@ WifiBeaconTimingElement::ClearTimingElement()
 }
 
 uint32_t
-WifiBeaconTimingElement::GetSerializedSize (void) const
+WifiBeaconTimingElement::GetSerializedSize () const
 {
 	return (2+5*m_numOfUnits > m_maxSize) ? 2+((m_maxSize-2)/5)*5 : 2+5*m_numOfUnits;
 }

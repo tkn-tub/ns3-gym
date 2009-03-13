@@ -36,7 +36,7 @@ dot11sMeshCapability::dot11sMeshCapability():
   powerSaveLevel(false)
 {}
 
-uint32_t	dot11sMeshCapability::GetSerializedSize (void) const
+uint32_t	dot11sMeshCapability::GetSerializedSize () const
 {
   return 2;
 }
@@ -86,7 +86,7 @@ MeshConfigurationElement::MeshConfigurationElement ():
 {}
 
 uint32_t
-MeshConfigurationElement::GetSerializedSize (void) const
+MeshConfigurationElement::GetSerializedSize () const
 {
 	return  1 // ID
 		+ 1 // Length
@@ -158,13 +158,13 @@ MeshConfigurationElement::SetMetric(dot11sPathSelectionMetric metricId)
 }
 
 bool
-MeshConfigurationElement::IsHWMP(void)
+MeshConfigurationElement::IsHWMP()
 {
 	return (m_APSId == PROTOCOL_HWMP);
 }
 
 bool
-MeshConfigurationElement::IsAirtime(void)
+MeshConfigurationElement::IsAirtime()
 {
 	return (m_APSMId  == METRIC_AIRTIME);
 }

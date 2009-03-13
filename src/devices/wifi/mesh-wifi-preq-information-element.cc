@@ -99,7 +99,7 @@ WifiPreqInformationElement::Print(std::ostream &os) const
 }
 
 TypeId
-WifiPreqInformationElement::GetInstanceTypeId(void) const
+WifiPreqInformationElement::GetInstanceTypeId() const
 {
 	return GetTypeId();
 }

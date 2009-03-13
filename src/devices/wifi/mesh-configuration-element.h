@@ -58,7 +58,7 @@ class dot11sMeshCapability
 {
   public:
   dot11sMeshCapability();
-  uint32_t		GetSerializedSize (void) const;
+  uint32_t		GetSerializedSize () const;
 	Buffer::Iterator	Serialize (Buffer::Iterator i) const;
 	Buffer::Iterator	Deserialize (Buffer::Iterator i);
   bool acceptPeerLinks;
@@ -77,18 +77,18 @@ class MeshConfigurationElement
 	MeshConfigurationElement();
 	void			SetRouting(dot11sPathSelectionProtocol routingId);
 	void			SetMetric(dot11sPathSelectionMetric metricId);
-	bool			IsHWMP(void);
-	bool			IsAirtime(void);
+	bool			IsHWMP();
+	bool			IsAirtime();
 
   dot11sMeshCapability const& MeshCapability();
 
-	uint32_t		GetSerializedSize (void) const;
+	uint32_t		GetSerializedSize () const;
 	Buffer::Iterator	Serialize (Buffer::Iterator i) const;
 	Buffer::Iterator	Deserialize (Buffer::Iterator i);
 	// TODO: Release and fill other fields in configuration
 	// element
 	private:
-		static uint8_t ElementId() { return (uint8_t)MESH_CONFIGURATION; }
+		static uint8_t ElementId() { return (uint8_t)IE11S_MESH_CONFIGURATION; }
 		/** Active Path Selection Protocol ID */
 		dot11sPathSelectionProtocol	m_APSId;
 		/** Active Path Metric ID */

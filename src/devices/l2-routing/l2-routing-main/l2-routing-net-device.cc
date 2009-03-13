@@ -35,7 +35,7 @@ NS_OBJECT_ENSURE_REGISTERED (L2RoutingNetDevice);
 
 
 TypeId
-L2RoutingNetDevice::GetTypeId (void)
+L2RoutingNetDevice::GetTypeId ()
 {
 	static TypeId tid = TypeId ("ns3::L2RoutingNetDevice")
 		.SetParent<NetDevice> ()
@@ -103,7 +103,7 @@ L2RoutingNetDevice::Forward (Ptr<NetDevice> inport, Ptr<Packet> packet,
 }
 
 uint32_t
-L2RoutingNetDevice::GetNPorts (void) const
+L2RoutingNetDevice::GetNPorts () const
 {
 	NS_LOG_FUNCTION_NOARGS ();
 	return m_ports.size ();
@@ -141,7 +141,7 @@ L2RoutingNetDevice::SetName(const std::string name)
 }
 
 std::string
-L2RoutingNetDevice::GetName(void) const
+L2RoutingNetDevice::GetName() const
 {
 	NS_LOG_FUNCTION_NOARGS ();
 	return m_name;
@@ -155,21 +155,21 @@ L2RoutingNetDevice::SetIfIndex(const uint32_t index)
 }
 
 uint32_t
-L2RoutingNetDevice::GetIfIndex(void) const
+L2RoutingNetDevice::GetIfIndex() const
 {
 	NS_LOG_FUNCTION_NOARGS ();
 	return m_ifIndex;
 }
 
 Ptr<Channel>
-L2RoutingNetDevice::GetChannel (void) const
+L2RoutingNetDevice::GetChannel () const
 {
 	NS_LOG_FUNCTION_NOARGS ();
 	return m_channel;
 }
 
 Address
-L2RoutingNetDevice::GetAddress (void) const
+L2RoutingNetDevice::GetAddress () const
 {
 	NS_LOG_FUNCTION_NOARGS ();
 	return m_address;
@@ -184,7 +184,7 @@ L2RoutingNetDevice::SetMtu (const uint16_t mtu)
 }
 
 uint16_t
-L2RoutingNetDevice::GetMtu (void) const
+L2RoutingNetDevice::GetMtu () const
 {
 	NS_LOG_FUNCTION_NOARGS ();
 	return 1500;
@@ -192,7 +192,7 @@ L2RoutingNetDevice::GetMtu (void) const
 
 
 bool
-L2RoutingNetDevice::IsLinkUp (void) const
+L2RoutingNetDevice::IsLinkUp () const
 {
 	NS_LOG_FUNCTION_NOARGS ();
 	return true;
@@ -204,7 +204,7 @@ L2RoutingNetDevice::SetLinkChangeCallback (Callback<void> callback)
 {}
 
 bool
-L2RoutingNetDevice::IsBroadcast (void) const
+L2RoutingNetDevice::IsBroadcast () const
 {
 	NS_LOG_FUNCTION_NOARGS ();
 	return true;
@@ -212,14 +212,14 @@ L2RoutingNetDevice::IsBroadcast (void) const
 
 
 Address
-L2RoutingNetDevice::GetBroadcast (void) const
+L2RoutingNetDevice::GetBroadcast () const
 {
 	NS_LOG_FUNCTION_NOARGS ();
 	return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 
 bool
-L2RoutingNetDevice::IsMulticast (void) const
+L2RoutingNetDevice::IsMulticast () const
 {
 	NS_LOG_FUNCTION_NOARGS ();
 	return true;
@@ -235,14 +235,14 @@ L2RoutingNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 
 
 bool
-L2RoutingNetDevice::IsPointToPoint (void) const
+L2RoutingNetDevice::IsPointToPoint () const
 {
 	NS_LOG_FUNCTION_NOARGS ();
 	return false;
 }
 
 bool
-L2RoutingNetDevice::IsBridge (void) const
+L2RoutingNetDevice::IsBridge () const
 {
 	NS_LOG_FUNCTION_NOARGS ();
 	return false;
@@ -267,7 +267,7 @@ L2RoutingNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Addr
 
 
 Ptr<Node>
-L2RoutingNetDevice::GetNode (void) const
+L2RoutingNetDevice::GetNode () const
 {
 	NS_LOG_FUNCTION_NOARGS ();
 	return m_node;
@@ -283,7 +283,7 @@ L2RoutingNetDevice::SetNode (Ptr<Node> node)
 
 
 bool
-L2RoutingNetDevice::NeedsArp (void) const
+L2RoutingNetDevice::NeedsArp () const
 {
 	NS_LOG_FUNCTION_NOARGS ();
 	return true;

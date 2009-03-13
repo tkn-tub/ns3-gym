@@ -46,7 +46,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (MeshWifiMac);
 
 TypeId
-MeshWifiMac::GetTypeId (void)
+MeshWifiMac::GetTypeId ()
 {
 	static TypeId tid = TypeId ("ns3::MeshWifiMac")
 		.SetParent<WifiMac> ()
@@ -160,37 +160,37 @@ MeshWifiMac::SetEifsNoDifs (Time eifsNoDifs)
 }
 
 Time 
-MeshWifiMac::GetSlot (void) const
+MeshWifiMac::GetSlot () const
 {
 	return m_slot;
 }
 
 Time 
-MeshWifiMac::GetSifs (void) const
+MeshWifiMac::GetSifs () const
 {
 	return m_sifs;
 }
 
 Time 
-MeshWifiMac::GetEifsNoDifs (void) const
+MeshWifiMac::GetEifsNoDifs () const
 {
 	return m_eifsNoDifs;
 }
 
 Time 
-MeshWifiMac::GetAckTimeout (void) const
+MeshWifiMac::GetAckTimeout () const
 {
 	return m_low->GetAckTimeout ();
 }
 
 Time 
-MeshWifiMac::GetCtsTimeout (void) const
+MeshWifiMac::GetCtsTimeout () const
 {
 	return m_low->GetCtsTimeout ();
 }
 
 Time 
-MeshWifiMac::GetPifs (void) const
+MeshWifiMac::GetPifs () const
 {
 	return m_low->GetPifs ();
 }
@@ -236,7 +236,7 @@ MeshWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 }
 
 bool 
-MeshWifiMac::SupportsSendFrom (void) const
+MeshWifiMac::SupportsSendFrom () const
 {
 	return true;
 }
@@ -265,18 +265,18 @@ MeshWifiMac::SetLinkDownCallback (Callback<void> linkDown)
 }
 
 Mac48Address 
-MeshWifiMac::GetAddress (void) const
+MeshWifiMac::GetAddress () const
 {
 	return m_address;
 }
 Mac48Address
-MeshWifiMac::GetBssid (void) const
+MeshWifiMac::GetBssid () const
 {
 	return m_address;
 }
 
 Ssid 
-MeshWifiMac::GetSsid (void) const
+MeshWifiMac::GetSsid () const
 {
 	return m_MeshId;
 }
@@ -304,7 +304,7 @@ MeshWifiMac::SetBeaconInterval (Time interval)
 }
 
 void
-MeshWifiMac::DoDispose (void)
+MeshWifiMac::DoDispose ()
 {
 	NS_LOG_FUNCTION (this);
 	delete m_rxMiddle;
@@ -378,7 +378,7 @@ MeshWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Addr
 }
 
 SupportedRates
-MeshWifiMac::GetSupportedRates (void) const
+MeshWifiMac::GetSupportedRates () const
 {
 	// send the set of supported rates and make sure that we indicate
 	// the Basic Rate set in this set of supported rates.
@@ -398,7 +398,7 @@ MeshWifiMac::GetSupportedRates (void) const
 }
 
 void
-MeshWifiMac::SendOneBeacon (void)
+MeshWifiMac::SendOneBeacon ()
 {
 	NS_LOG_FUNCTION (this);
 	NS_LOG_DEBUG(GetAddress()<<" is sending beacon");
@@ -466,7 +466,7 @@ MeshWifiMac::SetBeaconGeneration (bool enable)
 }
 
 bool
-MeshWifiMac::GetBeaconGeneration (void) const
+MeshWifiMac::GetBeaconGeneration () const
 {
 	return m_beaconFormEvent.IsRunning ();
 }
