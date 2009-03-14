@@ -31,31 +31,32 @@
  * \verbatim
  *     +--------+
  *     |  Linux |
- *     |  host  |            +----------+
- *     | ------ |            |   ghost  |
- *     |  apps  |            |   node   |
- *     | ------ |            | -------- |
- *     |  stack |            |    IP    |     +----------+
- *     | ------ |            |   stack  |     |   node   |
- *     |  TAP   |            |==========|     | -------- |
- *     | device | <-- IPC -> |   tap    |     |    IP    |
- *     +--------+            |  bridge  |     |   stack  |
- *                           | -------- |     | -------- |
- *                           |   ns-3   |     |   ns-3   |
- *                           |   net    |     |   net    |
- *                           |  device  |     |  device  |
- *                           +----------+     +----------+
- *                                ||               ||
- *                           +---------------------------+
- *                           |        ns-3 channel       |
- *                           +---------------------------+
+ *     |  host  |                    +----------+
+ *     | ------ |                    |   ghost  |
+ *     |  apps  |                    |   node   |
+ *     | ------ |                    | -------- |
+ *     |  stack |                    |    IP    |     +----------+
+ *     | ------ |                    |   stack  |     |   node   |
+ *     |  TAP   |                    |==========|     | -------- |
+ *     | device | <-- IPC Bridge --> |   tap    |     |    IP    |
+ *     +--------+                    |  bridge  |     |   stack  |
+ *                                   | -------- |     | -------- |
+ *                                   |   ns-3   |     |   ns-3   |
+ *                                   |   net    |     |   net    |
+ *                                   |  device  |     |  device  |
+ *                                   +----------+     +----------+
+ *                                        ||               ||
+ *                                   +---------------------------+
+ *                                   |        ns-3 channel       |
+ *                                   +---------------------------+
  *\endverbatim
  *
  * In this case, the ns-3 net device in the ghost node appears as if it were 
  * actually replacing the TAP device in the Linux host.  The ns-3 process 
  * configures the IP address and MAC address of the TAP device to match the
  * values assigned to the ns-3 net device.  The IPC link is via the network 
- * tap mechanism in the underlying OS.
+ * tap mechanism in the underlying OS and acts as a bridge; but a bridge 
+ * between devices that happen to have the same shared MAC address.
  *
  * The LocalDevice mode is the default operating mode of the Tap Bridge.
  *
@@ -75,37 +76,39 @@
  * \verbatim
  *     +---------+
  *     |  Linux  |
- *     |   VM    |                       +----------+
- *     | ------- |                       |   ghost  |
- *     |  apps   |                       |   node   |
- *     | ------- |                       | -------- |
- *     |  stack  |                       |    IP    |     +----------+
- *     | ------- | +--------+            |   stack  |     |   node   |
- *     | Virtual | |  TAP   |            |==========|     | -------- |
- *     | device  | | device | <-- IPC -> |   tap    |     |    IP    |
- *     +---------+ +--------+            |  bridge  |     |   stack  |
- *         ||          ||                | -------- |     | -------- |
- *     +--------------------+            |   ns-3   |     |   ns-3   |
- *     | OS (brctl) Bridge  |            |   net    |     |   net    |
- *     +--------------------+            |  device  |     |  device  |
- *                                       +----------+     +----------+
- *                                            ||               ||
- *                                       +---------------------------+
- *                                       |        ns-3 channel       |
- *                                       +---------------------------+
+ *     |   VM    |                             +----------+
+ *     | ------- |                             |   ghost  |
+ *     |  apps   |                             |   node   |
+ *     | ------- |                             | -------- |
+ *     |  stack  |                             |    IP    |     +----------+
+ *     | ------- | +--------+                  |   stack  |     |   node   |
+ *     | Virtual | |  TAP   |                  |==========|     | -------- |
+ *     | Device  | | Device | <-- IPC Bridge-> |   tap    |     |    IP    |
+ *     +---------+ +--------+                  |  bridge  |     |   stack  |
+ *         ||          ||                      | -------- |     | -------- |
+ *     +--------------------+                  |   ns-3   |     |   ns-3   |
+ *     | OS (brctl) Bridge  |                  |   net    |     |   net    |
+ *     +--------------------+                  |  device  |     |  device  |
+ *                                             +----------+     +----------+
+ *                                                  ||               ||
+ *                                             +---------------------------+
+ *                                             |        ns-3 channel       |
+ *                                             +---------------------------+
  *\endverbatim
  *
- * In this case, the ns-3 net device in the ghost node appears as a TAP device 
- * in the collection of virtual machines.  The idea is that some existing 
- * configuration of virtual machines is created using an external mechanism 
- * such as OpenVZ or VMware.  It is desired to have some subset of these VMs be
- * connected to an ns-3 simulation.  To accomplish this, there must be a TAP 
- * device created for each connection and the appropriate VM virtual network 
- * device bridged to the TAP device.  The ns-3 simulation determines which TAP
- * to associate with which ns-3 net device via the name of the TAP which is
- * provided via ns-3 Attribute.  Clearly there is considerably more 
- * manual configuration which needs to be done here, but the result is much
- * more flexible.
+ * In this case, a collection of virtual machines with associated Virtual
+ * Devices is created in the virtualization environment (for exampe, OpenVZ
+ * or VMware).  A TAP device is then created for each Virtual Device that is
+ * desired to be bridged into the ns-3 simulation.  The created TAP devices are 
+ * then bridged together with the Virtual Devices using a native OS bridge
+ * mechanism shown as "OS (brctl) Bridge" in the illustration above..
+ *
+ * In the ns-3 simulation a Tap Bridge is created for each TAP Device.  The
+ * name of the TAP Device is assigned to the Tap Bridge using the "DeviceName"
+ * attribute.  The Tap Bridge then opens a network tap to the TAP Device and
+ * extends the bridge to encompass the ns-3 net device.  This makes it appear
+ * as if an ns-3 simulated net device is a member of the "OS (brctl) Bridge"
+ * and allows the Virtual Machines to communicate with the ns-3 simulation..
  *
  * \subsection TapBridgeLocalDeviceMode TapBridge LocalDevice Mode
  * 
@@ -170,14 +173,19 @@
  * The upshot is that the Tap Bridge appears to bridge a tap device on a
  * Linux host in the "real world" to an ns-3 net device in the simulation
  * and make is appear that a ns-3 net device is actually installed in the
- * Linux host.  In order to do this on the ns-3 side, we need a "ghost
- * node" in the simulation to hold the bridged ns-3 net device and the
- * TapBridge.  This node should not actually do anything else in the
- * simulation since its job is simply to make the net device appear in
- * Linux.  This is not just arbitrary policy, it is because:
+ * Linux host.  The network tap used as IPC acts as a network bridge between
+ * two devices that happen to have the same MAC address.  This is okay since
+ * the two fact that there are two devices with the same address is not known
+ * outside of the pair.
+ *
+ * In order to implement this on the ns-3 side, we need a "ghost node" in the
+ * simulation to hold the bridged ns-3 net device and the TapBridge.  This node
+ * should not actually do anything else in the simulation since its job is 
+ * simply to make the net device appear in Linux.  This is not just arbitrary 
+ * policy, it is because:
  *
  * - Bits sent to the Tap Bridge from higher layers in the ghost node (using
- *   the TapBridge Send() method) are completely ignored.  The Tap Bridge is 
+ *   the TapBridge Send method) are completely ignored.  The Tap Bridge is 
  *   not, itself, connected to any network, neither in Linux nor in ns-3.  You
  *   can never send nor receive data over a Tap Bridge from the ghost node.
  *
@@ -218,10 +226,12 @@
  * "BridgedDevice" and specifying the name of the pre-configured TAP device,
  * both via ns-3 Attributes of the TapBridge.
  *
- * Functionally, the primary difference between modes is due to the fact that
- * MAC addresses of the TAPs will be pre-configured and will therefore be 
- * different than those in the bridged device.  This necessitates spoofing
- * MAC addresses in the ns-3 to TAP direction.
+ * The primary difference between modes is due to the fact that in BridgedDevice
+ * mode the MAC addresses of the TAPs will be pre-configured and will therefore
+ * be different than those in the bridged device.  As in LocalDevice mode, the
+ * Tap Bridge functions as IPC bridge between the TAP device and the ns-3 net 
+ * device, but in BridgedDevice configurations the two devices will have 
+ * different MAC addresses.
  *
  * \subsection TapBridgeBridgedDeviceModeOperation TapBridge BridgedDevice Mode Operation
  *
@@ -240,9 +250,14 @@
  * addressing information on the packet.  In LocalDevice mode, the TapBridge 
  * adds back the MAC address that it found in the ns-3 bridged net device 
  * configuration.  In the BridgedDevice mode, it needs to add back the MAC 
- * address of the TAP device.  So the main difference is that the TapBridge
- * learns the MAC address of the TAP device from received packets instead of 
- * learning it from the ns-3 device configuration.
+ * address of the TAP device.
+ *
+ * There is no functional difference between modes at this level, even though
+ * the configuration and conceptual models regarding what is going on are quite
+ * different -- the Tap Bridge is just a bridge.  In the LocalDevice model, the
+ * bridge is between devices having the same MAC address and in the 
+ * BridgedDevice model the bridge is between devices having different MAC 
+ * addresses.
  * 
  * \section TapBridgeChannelModel Tap Bridge Channel Model
  *
