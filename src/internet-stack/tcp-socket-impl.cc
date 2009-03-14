@@ -680,6 +680,11 @@ void TcpSocketImpl::SendEmptyPacket (uint8_t flags)
   Ptr<Packet> p = Create<Packet> ();
   TcpHeader header;
 
+  if (flags & TcpHeader::FIN)
+    {
+      flags |= TcpHeader::ACK;
+    }
+
   header.SetFlags (flags);
   header.SetSequenceNumber (m_nextTxSequence);
   header.SetAckNumber (m_nextRxSequence);
