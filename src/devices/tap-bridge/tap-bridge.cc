@@ -643,33 +643,51 @@ TapBridge::ForwardToBridgedDevice (uint8_t *buf, uint32_t len)
   NS_LOG_LOGIC ("Pkt LengthType is " << type);
 
   //
-  // If we are in BridgedDevice mode, the MAC addresses of the bridged device
-  // and the TAP device will be different.  If this is a unicast packet, we
-  // need to remember the source MAC address for the trip back the other way.
-  // Only remember the first such address and error out if we find another
-  // one since "that can't happen."  We use the variable m_tapMac for 
-  // remembering this (set by the Attribute "MacAddress") which allows a 
-  // user to override the remembered address.
+  // If we are operating in BRIDGED_DEVICE mode, we have the situation described
+  // below:
   //
-  Mac48Address mac48Source = Mac48Address::ConvertFrom (src);
-  if (m_mode == BRIDGED_DEVICE)
-    {
-      if (mac48Source.IsBroadcast () == false && mac48Source.IsMulticast () == false)
-        {
-          if (m_tapMac.IsBroadcast ())
-            {
-              m_tapMac = mac48Source;
-            }
-          else
-            {
-              NS_ABORT_MSG_UNLESS (mac48Source == m_tapMac, "TapBridge::ForwardToBridgedDevice(): "
-                                   "Multiple distinct source addresses appearing from network tap unexpectedly");
-            }
-        }
-    }
+  //  Other Device  <-->  Tap Device  <--> ns3 device
+  //   Mac Addr A         Mac Addr B       Mac Addr C
+  //
+  // In Linux, "Other Device" and "Tap Device" are bridged together.  This
+  // means that (modulo learning behavior) packets sent from "Other Device"
+  // are also sent out to "Tap Device" (i.e., in ns-3 lingo, "Tap Device"
+  // would call SendFrom on the "Tap Device" with the from address set to the 
+  // original "Other Device" address.   Packets received by "Tap Device" are 
+  // (modulo learning behavior) sent out to "Other Device."  This makes it 
+  // appear as if both devices are on a single subnet.
+  //
+  // In BRIDGED_DEVICE mode, we want to logically extend this Linux behavior
+  // to the ns3 device and make it appear as if it is connected to the Linux
+  // subnet.  As you may expect, this means that we need to act like a real
+  // bridge and do what is described above.  The code here will do the 
+  // equivalent of a SendFrom on "ns3 Device" of the bits received on
+  // "Tap Device"
+  //
+  // If we are operating in LOCAL_DEVICE mode, we simply simply take all packets
+  // that come from "Tap Device" and ask "ns3 Device" to send them down its 
+  // directly connected network.  To to this, we just need to remove the
+  // Ethernet header (which was done for us by the Filter () method), and then 
+  // just call SendFrom on the bridged device ("ns3 Device") to ship the packet
+  // out.  If you think about it, this is also a bridging operation, but the 
+  // bridged devices happen to have the same MAC address.  
+  //
+  // The bottom line is that at this point, the code does exactly the same thing
+  // even though they seem quite different at first glance.  The only issue is
+  // what to do if the bridged device does not support SendFrom, which will be
+  // the case for Wifi STA nodes.
+  //
 
   NS_LOG_LOGIC ("Forwarding packet");
-  m_bridgedDevice->Send (packet, dst, type);
+
+  if (m_bridgedDevice->SupportsSendFrom ())
+    {
+      m_bridgedDevice->SendFrom (packet, src, dst, type);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("TapBridge::ForwardToBridgedDevice(): Bridged device does not support SendFrom");
+    }
 }
 
 Ptr<Packet>
@@ -785,20 +803,48 @@ TapBridge::ReceiveFromBridgedDevice (
   Mac48Address to = Mac48Address::ConvertFrom (dst);
 
   //
-  // We hooked the promiscuous mode protocol handler so we could get the 
-  // destination address of the actual packet.  This means we will be getting
-  // PACKET_OTHERHOST packets (not broadcast, not multicast, not unicast to 
-  // this device, but to some other address).  We don't want to forward those
-  // PACKET_OTHERHOST packets so just ignore them.
-  // 
-  // In the BRIDGED_DEVICE case, as far as the ns-3 device knows, there is no
-  // other device involved.  As far as other devices on the ns-3 side of things
-  // are concerned, there is no other device involved, so a PACKET_OTHERHOST
-  // here carries the same meaning as in any other device.  THey are packets
-  // we can safely ignore.
+  // If we are operating in BRIDGED_DEVICE mode, we have the situation described
+  // below:
   //
-  if (packetType == PACKET_OTHERHOST)
+  //  Other Device  <-->  Tap Device  <--> ns3 device
+  //   Mac Addr A         Mac Addr B       Mac Addr C
+  //
+  // In Linux, "Other Device" and "Tap Device" are bridged together.  This
+  // means that (modulo learning behavior) packets sent from "Other Device"
+  // are also sent out to "Tap Device" (i.e., in ns-3 lingo, "Tap Device"
+  // would call SendFrom on the "Tap Device" with the from address set to the 
+  // original "Other Device" address.   Packets received by "Tap Device" are 
+  // (modulo learning behavior) sent out to "Other Device."  This makes it 
+  // appear as if both devices are on a single subnet.
+  //
+  // In BRIDGED_DEVICE mode, we want to logically extend this Linux behavior
+  // to the ns3 device and make it appear as if it is connected to the Linux
+  // subnet.  As you may expect, this means that we need to act like a real
+  // bridge and do what is described above.  The code here will do the 
+  // equivalent of a SendFrom on the "Tap Device" of the bits received on the
+  // ns-3 device.
+  //
+  // If we are operating in LOCAL_DEVICE mode, we simply simply take all packets
+  // that would normally be received by the device and forward them to the TAP
+  // device as if the ns-3 net device was never there.  To to this, we just need
+  // to reconstruct an Ethernet header and add the original source and 
+  // destination MAC addresses.  If you think about it, this is also a bridging 
+  // operation, but the bridged devices happen to have the same MAC address.  
+  //
+  // The bottom line is that at this point, the code does exactly the same thing
+  // even though they seem quite different at first glance.
+  //
+
+  if (m_mode == LOCAL_DEVICE && packetType == PACKET_OTHERHOST)
     {
+      // We hooked the promiscuous mode protocol handler so we could get the 
+      // destination address of the actual packet.  This means we will be 
+      // getting PACKET_OTHERHOST packets (not broadcast, not multicast, not 
+      // unicast to the ns-3 net device, but to some other address).  In 
+      // LOCAL_DEVICE mode we are not interested in these packets since they 
+      // don't refer to the single MAC address shared by the ns-3 device and 
+      // the TAP device.  If, however, we are in BRIDGED_DEVICE mode, we want
+      // to act like a bridge and forward these PACKET_OTHERHOST packets.
       return;
     }
 
@@ -815,33 +861,7 @@ TapBridge::ReceiveFromBridgedDevice (
 
   EthernetHeader header = EthernetHeader (false);
   header.SetSource (from);
-
-  //
-  // We have to be careful here when we're running in BRIDGED_DEVICE mode.
-  // In this case, the user will have configured the network tap and it will 
-  // have its own MAC address that is distinct from the ns-3 device from which
-  // we just got the packet.  We learn what this address is when we receive
-  // packets from the tap.  All we have to do is to spoof the packet by
-  // substituting the learned address in here as the source address.  However,
-  // until we get that address we don't know what to do and so we just ignore 
-  // the packet.  N.B. This means that bridging will not start until the 
-  // network tap sends its first packet across the bridge.
-  //
-  if (m_mode == BRIDGED_DEVICE)
-    {
-      if (m_tapMac.IsBroadcast ())
-        {
-          return;
-        }
-      else
-        {
-          header.SetDestination (m_tapMac);
-        }
-    }
-  else
-    {
-      header.SetDestination (to);
-    }
+  header.SetDestination (to);
 
   header.SetLengthType (protocol);
   p->AddHeader (header);
