@@ -38,56 +38,76 @@ namespace ns3 {
 class Node;
 
 /**
- * \ingroup devices
- * \defgroup tap-bridge TapBridge
- * 
- * \brief A bridge to make it appear that a host is connected to an ns-3 net device.
- *
- * The Tap Bridge lives in a kind of a gray world somewhere between a Linux host and
- * an ns-3 bridge device.  From the Linux perspective, this code appears as the user
- * mode handler for a Tap net device.  That is, when the Linux host writes to the
- * /dev/tap device that we create for it, the write is redirected into the TapBridge
- * and from that perspective, becomes a read.  The TapBridge then redirects the data
- * written (by the Linux host) to the tap device on out the ns-3 net device to which
- * we are bridged.  When a packet comes in from the ns-3 world to the ns-3 net device
- * we are bridging, it appears via a callback from that net device.  Our job is to
- * take those bits and write them back to the host using the user mode handler for
- * /dev/tapx.  This write to the device will then appear to the Linux host as if a 
- * packet has arrived on its device.
- *
- * The upshot is that the Tap Bridge appears to bridge a tap device on a Linux host 
- * in the "real world" to an ns-3 net device in the simulation.  In order to do this
- * we need a "ghost node" in the simulation to hold the bridged ns-3 net device and 
- * this Tap Bridge.  This node will not be able to actually do anything else in the 
- * simulation with respect to the Tap Bridge and its bridged net device.  This is 
- * because:
- *
- * - Bits sent to the Tap Bridge using its Send() method are completely ignored.  
- *   The Tap Bridge is not, itself, connected to any network.
- * - The bridged ns-3 net device is has had its receive callback disconnected from
- *   the ns-3 node and reconnected to the Tap Bridge.  All data received by a 
- *   bridged device will be sent to the Linux host and will not be received by the
- *   node.  You can send but you cannot ever receive.
- * 
- * You will be able to perform typical ns-3 operations on the ghost node if you so
- * desire.  The internet stack, for example, must be there and functional on that
- * node in order to participate in IP address assignment and global routing.
- * However, interfaces talking any Tap Bridge or associated bridged net devices 
- * will not work completely.  If you understand exactly what you are doing, you 
- * can set up other interfaces and devices on the ghost node and use them; but we 
- * generally recommend that you treat this node as a ghost of the Linux host and 
- * leave it alone.
- */
-
-/**
  * \ingroup tap-bridge
- * \brief A bridge to make it appear that a host is connected to an ns-3 net device.
+ * 
+ * \brief A bridge to make it appear that a real host process is connected to 
+ * an ns-3 net device.
+ *
+ * The Tap Bridge lives in a kind of a gray world somewhere between a
+ * Linux host and an ns-3 bridge device.  From the Linux perspective,
+ * this code appears as the user mode handler for a Tap net device.  That
+ * is, when the Linux host writes to a /dev/tap device (that is either
+ * manually or automatically created depending on basic operating mode 
+ * -- more on this later), the write is redirected into the TapBridge that
+ * lives in the ns-3 world; and from this perspective, becomes a read.
+ * In other words, a Linux process writes a packet to a tap device and
+ * this packet is redirected to an ns-3 process where it is received by
+ * the TapBridge as a result of a read operation there.  The TapBridge
+ * then sends the packet to the ns-3 net device to which it is bridged.
+ * In the other direction, a packet received by an ns-3 net device is
+ * bridged to the TapBridge (it appears via a callback from that net
+ * device.  The TapBridge then takes that packet and writes it back to
+ * the host using the Linux TAP mechanism.  This write to the device will
+ * then appear to the Linux host as if a packet has arrived on its
+ * device.
+ * 
+ * The upshot is that the Tap Bridge appears to bridge a tap device on a
+ * Linux host in the "real world" to an ns-3 net device in the simulation
+ * and make is appear that a ns-3 net device is actually installed in the
+ * Linux host.  In order to do this on the ns-3 side, we need a "ghost
+ * node" in the simulation to hold the bridged ns-3 net device and the
+ * TapBridge.  This node should not actually do anything else in the
+ * simulation since its job is simply to make the net device appear in
+ * Linux.  This is not just arbitrary policy, it is because:
+ *
+ * - Bits sent to the Tap Bridge from higher layers in the ghost node (using
+ *   the TapBridge Send() method) are completely ignored.  The Tap Bridge is 
+ *   not, itself, connected to any network, neither in Linux nor in ns-3;
+ * - The bridged ns-3 net device is has had its receive callback disconnected
+ *   from the ns-3 node and reconnected to the Tap Bridge.  All data received 
+ *   by a bridged device will be sent to the Linux host and will not be 
+ *   received by the node.  From the perspective of the ghost node, you can 
+ *   send over this device but you cannot ever receive.
+ *
+ * Of course, if you understand all of the issues you can take control of
+ * your own destiny and do whatever you want -- we do not actively
+ * prevent you from using the ghost node for anything you decide.  You
+ * will be able to perform typical ns-3 operations on the ghost node if
+ * you so desire.  The internet stack, for example, must be there and
+ * functional on that node in order to participate in IP address
+ * assignment and global routing.  However, as mentioned above,
+ * interfaces talking any Tap Bridge or associated bridged net devices
+ * will not work completely.  If you understand exactly what you are
+ * doing, you can set up other interfaces and devices on the ghost node
+ * and use them; or take advantage of the operational send side of the
+ * bridged devices to create traffic generators.  We generally recommend
+ * that you treat this node as a ghost of the Linux host and leave it to
+ * itself, though.
  */
-
 class TapBridge : public NetDevice
 {
 public:
   static TypeId GetTypeId (void);
+
+  /**
+   * Enumeration of the operating modes supported in the class.
+   *
+   */
+  enum Mode {
+    ILLEGAL,         /**< mode not set */
+    LOCAL_DEVICE,   /**< ns-3 creates and configures TAP device */
+    BRIDGED_DEVICE, /**< user creates and configures TAP */  
+  };
 
   TapBridge ();
   virtual ~TapBridge ();
@@ -133,6 +153,20 @@ public:
    * \see TapBridge::Start
    */
   void Stop (Time tStop);
+
+  /**
+   * Set the operating mode of this device.
+   *
+   * \param mode The operating mode of this device.
+   */
+  void SetMode (TapBridge::Mode mode);
+
+  /**
+   * Get the operating mode of this device.
+   *
+   * \returns The operating mode of this device.
+   */
+  TapBridge::Mode  GetMode (void);
 
   //
   // The following methods are inherited from NetDevice base class and are
@@ -338,13 +372,19 @@ private:
 
   /**
    * \internal
+   *     
+   * The operating mode of the bridge.  Tells basically who creates and
+   * configures the underlying network tap.
+   */
+  Mode m_mode;
+
+  /**
+   * \internal
    *
    * The (unused) MAC address of the TapBridge net device.  Since the TapBridge
    * is implemented as a ns-3 net device, it is required to implement certain
    * functionality.  In this case, the TapBridge is automatically assigned a
-   * MAC address, but it is not used.  The MAC address assigned to the internet
-   * host actually comes from the bridged (N.B. the "ed") device and not from 
-   * the bridge device.
+   * MAC address, but it is not used.
    */
   Mac48Address m_address;
 
@@ -386,7 +426,18 @@ private:
   /**
    * \internal
    *
-   * The MAC address to use as the hardware address on the host.
+   * The MAC address to use as the hardware address on the host.  This can
+   * come from one of two places depending on the operating mode.  
+   *
+   * If the TapBridge is in LocalDevice mode, this value comes from the MAC
+   * address assigned to the bridged ns-3 net device and matches the MAC 
+   * address of the underlying network TAP which we configured to have the 
+   * same value.
+   * 
+   * If the TapBridge is in BridgedDevice mode, this value is learned from
+   * from the packets received by the underlying netowrk TAP.  This is
+   * because we did not configure the TAP, but have got to spoof packets
+   * destined for there.
    */
   Mac48Address m_tapMac;
 

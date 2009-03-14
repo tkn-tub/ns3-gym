@@ -29,17 +29,10 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#if 0
-#include <linux/un.h>
-#include <linux/if.h>
-#include <linux/if_tun.h>
-#include <linux/route.h>
-#else
 #include <sys/un.h>
 #include <net/if.h>
 #include <linux/if_tun.h>
 #include <net/route.h>
-#endif
 #include <netinet/in.h>
 
 #include "tap-encode-decode.h"
@@ -277,7 +270,7 @@ SendSocket (const char *path, int fd)
 }
 
   static int
-CreateTap (const char *dev, const char *gw, const char *ip, const char *mac, const char *netmask)
+CreateTap (const char *dev, const char *gw, const char *ip, const char *mac, const char *mode, const char *netmask)
 {
   //
   // Creation and management of Tap devices is done via the tun device
@@ -288,7 +281,9 @@ CreateTap (const char *dev, const char *gw, const char *ip, const char *mac, con
   //
   // Allocate a tap device, making sure that it will not send the tun_pi header.
   // If we provide a null name to the ifr.ifr_name, we tell the kernel to pick
-  // a name for us (i.e., tapn where n = 0..255
+  // a name for us (i.e., tapn where n = 0..255.
+  //
+  // If the device does not already exist, the system will create one.
   //
   struct ifreq ifr;
   ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
@@ -298,6 +293,17 @@ CreateTap (const char *dev, const char *gw, const char *ip, const char *mac, con
 
   std::string tapDeviceName = (char *)ifr.ifr_name;
   LOG ("Allocated TAP device " << tapDeviceName);
+
+  //
+  // Operating mode "2" corresponds to BRIDGED_DEVICE mode.  This means that
+  // we expect that the user will have named, created and configured a network
+  // tap that we are just going to use.  So don't mess up his hard work by
+  // changing anything, just return the tap fd.
+  //
+  if (strcmp (mode, "2") == 0)
+    {
+      return tap;
+    }
 
   //
   // Set the hardware (MAC) address of the new device
@@ -348,31 +354,35 @@ main (int argc, char *argv[])
   char *ip = NULL;
   char *mac = NULL;
   char *netmask = NULL;
+  char *operatingMode = NULL;
   char *path = NULL;
 
   opterr = 0;
 
-  while ((c = getopt (argc, argv, "vd:g:i:m:n:p:")) != -1)
+  while ((c = getopt (argc, argv, "vd:g:i:m:n:o:p:")) != -1)
     {
       switch (c)
         {
         case 'd':
-          dev = optarg;     // name of the new tap device
+          dev = optarg;           // name of the new tap device
           break;
         case 'g':
-          gw = optarg;      // gateway address for the new device
+          gw = optarg;            // gateway address for the new device
           break;
         case 'i':
-          ip = optarg;      // ip address of the new device
+          ip = optarg;            // ip address of the new device
           break;
         case 'm':
-          mac = optarg;     // mac address of the new device
+          mac = optarg;           // mac address of the new device
           break;
         case 'n':
-          netmask = optarg; // net mask for the new device
+          netmask = optarg;       // net mask for the new device
+          break;
+        case 'o':
+          operatingMode = optarg; // operating mode of tap bridge
           break;
         case 'p':
-          path = optarg;    // path back to the tap bridge
+          path = optarg;          // path back to the tap bridge
           break;
         case 'v':
           gVerbose = true;
@@ -422,6 +432,12 @@ main (int argc, char *argv[])
   LOG ("Provided Net Mask is \"" << netmask << "\"");
 
   //
+  // We have got to know whether or not to create the TAP.
+  //
+  ABORT_IF (operatingMode == NULL, "Operating Mode is a required argument", 0);
+  LOG ("Provided Operating Mode is \"" << operatingMode << "\"");
+
+  //
   // This program is spawned by a tap bridge running in a simulation.  It
   // wants to create a socket as described below.  We are going to do the
   // work here since we're running suid root.  Once we create the socket,
@@ -444,7 +460,7 @@ main (int argc, char *argv[])
   // us to exeucte the following code:
   //
   LOG ("Creating Tap");
-  int sock = CreateTap (dev, gw, ip, mac, netmask);
+  int sock = CreateTap (dev, gw, ip, mac, operatingMode, netmask);
   ABORT_IF (sock == -1, "main(): Unable to create tap socket", 1);
 
   //
