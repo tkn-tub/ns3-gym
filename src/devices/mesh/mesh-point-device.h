@@ -30,53 +30,63 @@
 #include "ns3/l2-routing-protocol.h"
 
 namespace ns3 {
+  
 class Node;
 /**
  * \ingroup mesh
  *
- * \brief a virtual net device that may forward packets
- * between real network devices using routing protocols of
- * MAC-layer
+ * \brief Virtual net device modeling mesh point. 
  *
- * \details This is a virtual netdevice, which aggreagates
- * real netdevices and uses interface of L2RoutingProtocol to
- * forward packets
+ * Mesh point is a virtual net device which is responsible for
+ *   - Aggreagating and coordinating 1..* real devices -- mesh interfaces, see MeshInterfaceDevice class. 
+ *   - Hosting all mesh-related level 2 protocols. 
+ * 
+ * One of hosted L2 protocols must inplement L2RoutingProtocol interface and is used for packets forwarding.
  *
- * \attention The idea of L2RoutingNetDevice is similar to
- * BridgeNetDevice, but the packets, which going through
- * L2RoutingNetDevice may be changed (because routing protocol
- * may require its own headers or tags).
+ * From the level 3 point of view MeshPointDevice is similar to BridgeNetDevice, but the packets, 
+ * which going through may be changed (because L2 protocols may require their own headers or tags).
+ * 
+ * Attributes: TODO
  */
-class L2RoutingNetDevice : public NetDevice
+class MeshPointDevice : public NetDevice
 {
 public:
+  /// Object type ID for NS3 object system
   static TypeId GetTypeId ();
-  L2RoutingNetDevice ();
-  virtual ~L2RoutingNetDevice ();
+  /// C-tor create empty (without interfaces and protocols) mesh point
+  MeshPointDevice ();
+  /// D-tor
+  virtual ~MeshPointDevice ();
+  
+  ///\name Interfaces 
+  //\{
   /**
-   * \brief Attaches a 'port' to a virtual
-   * L2RoutingNetDevice, and this port is handled
-   * by L2RoutingProtocol.
-   * \attention Like in a bridge,
-   * L2RoutingNetDevice's ports must not have IP
-   * addresses, and only L2RoutingNetDevice
-   * itself may have an IP address.
-   *
-   * \attention L2RoutingNetDevice may be a port
-   * of BridgeNetDevice.
+   * Attach new interface to the station. Interface must support 48-bit MAC address and SendFrom method.
+   * 
+   * \attention Only MeshPointDevice can have IP address, but not individual interfaces. 
    */
-  void AddPort (Ptr<NetDevice> port);
+  void AddInterface (Ptr<NetDevice> port);
   /**
-   * \returns number of ports attached to
-   * L2RoutingNetDevice
+   * \return number of interfaces
    */
-  uint32_t GetNPorts () const;
+  uint32_t GetNInterfaces () const;
   /**
-   * \returns a pointer to netdevice
-   * \param n is device ID to be returned
+   * \return interface device by its index (aka ID)
+   * \param id is interface id, 0 <= id < GetNInterfaces
    */
-  Ptr<NetDevice> GetPort (uint32_t n) const;
-  //inherited from netdevice:
+  Ptr<NetDevice> GetInterface (uint32_t id) const;
+  //\}
+  
+  ///\name Protocols
+  //\{
+  /**
+   * Register routing protocol to be used \return true on success
+   */
+  virtual bool SetRoutingProtocol(Ptr<L2RoutingProtocol> protocol);
+  //\}
+  
+  ///\name NetDevice interface for upper layers
+  //\{
   virtual void SetName(const std::string name);
   virtual std::string GetName() const;
   virtual void SetIfIndex(const uint32_t index);
@@ -103,48 +113,48 @@ public:
   virtual bool SupportsSendFrom () const;
   virtual Address GetMulticast (Ipv6Address addr) const;
   virtual void DoDispose ();
-  /**
-   * \brief Attaches protocol to a given virtual
-   * device
-   * \returns true if success
-   */
-  virtual bool AttachProtocol(Ptr<L2RoutingProtocol> protocol);
-protected:
-  /**
-   * \brief This is similar to BridgeNetDevice
-   * method
-   */
+  //\}
+  
+private:
+  /// Receive packet from interface
   void ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                           Address const &source, Address const &destination, PacketType packetType);
-  /**
-   * \brief This is similar to BridgeNetDevice
-   * method
-   */
+  /// Forward packet down to interfaces 
   void Forward (Ptr<NetDevice> incomingPort, Ptr<Packet> packet,
                 uint16_t protocol, const Mac48Address src, const Mac48Address dst);
   /**
-   * \brief This is a function, which should be
-   * passed to L2RoutingProtocol as response
-   * callback (see L2RoutingProtocol).
+   * Response callback for L2 routing protocol. This will be executed when routing information is ready.
+   * 
+   * \param success     True is route found. TODO: diagnose routing errors
+   * \param packet      Packet to send
+   * \param src         Source MAC address
+   * \param dst         Destination MAC address
+   * \param protocol    Protocol ID
+   * \param outIface    Interface to use (ID) for send (decided by routing protocol). All interfaces will be used if outIface = 0xffffffff
    */
-  virtual void ProtocolResponse(
-    bool success,
-    Ptr<Packet>,
-    Mac48Address src,
-    Mac48Address dst,
-    uint16_t protocol,
-    uint32_t outPort
-  );
+  virtual void DoSend(bool success, Ptr<Packet> packet, Mac48Address src, Mac48Address dst, uint16_t protocol, uint32_t iface);
+  
 private:
+  /// Receive action
   NetDevice::ReceiveCallback   m_rxCallback;
+  /// Promisc receive action
   NetDevice::PromiscReceiveCallback  m_promiscRxCallback;
+  /// Mesh point MAC address, supposed to be the address of the first added interface
   Mac48Address m_address;
+  /// Parent node
   Ptr<Node> m_node;
+  /// Station name
   std::string m_name;
-  std::vector< Ptr<NetDevice> >  m_ports;
+  /// List of interfaces
+  std::vector< Ptr<NetDevice> > m_ifaces;
+  /// If index 
   uint32_t m_ifIndex;
+  /// MTU in bytes
   uint16_t m_mtu;
-  Ptr<BridgeChannel>  m_channel;
+  /// Virtual channel for upper layers
+  Ptr<BridgeChannel> m_channel;
+  
+  /// Routing request callback
   Callback<bool,
            uint32_t,
            Mac48Address,
@@ -152,7 +162,8 @@ private:
            Ptr<Packet>,
            uint16_t,
            L2RoutingProtocol::RouteReplyCallback>  m_requestRoute;
-  //What we give to L2Routing
+  
+  /// Routing response callback, this is supplied to mesh routing protocol
   L2RoutingProtocol::RouteReplyCallback  m_myResponse;
 };
 } //namespace ns3

@@ -172,12 +172,12 @@ MeshWifiHelper::SetPeerLinkManager (std::string type,
 
 NetDeviceContainer
 MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c, uint8_t numOfPorts) const
-  {
+{
     NetDeviceContainer devices;
     for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
       {
         Ptr<Node> node = *i;
-        Ptr<L2RoutingNetDevice> virtualDevice = m_deviceFactory.Create<L2RoutingNetDevice> ();
+        Ptr<MeshPointDevice> virtualDevice = m_deviceFactory.Create<MeshPointDevice> ();
         Ptr<WifiPeerManager> pPeer = m_peerManager.Create<WifiPeerManager > ();
         devices.Add (virtualDevice);
         std::vector<Ptr<WifiNetDevice> > nodeDevices;
@@ -197,21 +197,21 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c, uint8_
           }
         node -> AddDevice(virtualDevice);
         for (std::vector<Ptr<WifiNetDevice> > ::iterator iter=nodeDevices.begin();iter!=nodeDevices.end(); ++iter)
-          virtualDevice->AddPort(*iter);
+          virtualDevice->AddInterface(*iter);
         // nodeDevice.pop_back()
         pPeer->AttachPorts(nodeDevices);
         Ptr<L2RoutingProtocol> routingProtocol = m_routingProtocol.Create <L2RoutingProtocol>();
-        virtualDevice->AttachProtocol(routingProtocol);
+        virtualDevice->SetRoutingProtocol(routingProtocol);
         //hwmp->SetRoot(device->GetIfIndex(), Seconds(5));
         nodeDevices.clear();
       }
     return devices;
-  }
+}
 
 NetDeviceContainer
 MeshWifiHelper::Install (const WifiPhyHelper &phy, Ptr<Node> node, uint8_t numOfPorts) const
-  {
-    return Install (phy, NodeContainer (node), numOfPorts);
-  }
+{
+  return Install (phy, NodeContainer (node), numOfPorts);
+}
 
 } //namespace ns3

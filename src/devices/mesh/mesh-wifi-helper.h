@@ -30,8 +30,13 @@
 #include "ns3/wifi-helper.h"
 
 namespace ns3 {
+  
 class WifiChannel;
 
+/** 
+ * \ingroup mesh 
+ * 
+ */
 class MeshWifiHelper
 {
 public:
