@@ -769,10 +769,10 @@ TapBridge::ReceiveFromBridgedDevice (
   // percolate up through the stack on the Linux host.
   //
   // The ns-3 net device that is the source of these bits has removed the MAC 
-  // header, so we have to put one back on.
+  // header, so we have to put one back on.  This is a callback and by convention
+  // uses Ptr<const Packet>, so we have to muck with a copy.
   //
   Ptr<Packet> p = packet->Copy ();
-
   EthernetHeader header = EthernetHeader (false);
   header.SetSource (from);
   header.SetDestination (to);

@@ -122,14 +122,6 @@ private:
   TracedCallback<Ptr<const Packet>, Mac48Address> m_rxLogger;
   TracedCallback<Ptr<const Packet>, Mac48Address> m_txLogger;
 
-  /**
-   * At the top of the MAC level, we do what many folks do and make the wifi 
-   * packets look like Ethernet packets coming in and out of the "driver."  If
-   * you are interested in seeing all of the wifi details, you should use the
-   * much lower level PHY promiscuous sniffer trace.
-   */
-  void SniffPacket (Ptr<const Packet> packet, Mac48Address to, Mac48Address from, uint16_t type);
-
   uint32_t m_ifIndex;
   std::string m_name;
   bool m_linkUp;

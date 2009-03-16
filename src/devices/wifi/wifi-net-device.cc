@@ -23,8 +23,6 @@
 #include "wifi-remote-station-manager.h"
 #include "wifi-channel.h"
 #include "ns3/llc-snap-header.h"
-#include "ns3/ethernet-header.h"
-#include "ns3/ethernet-trailer.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
 #include "ns3/pointer.h"
@@ -310,7 +308,7 @@ WifiNetDevice::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to
 
   if (!m_promiscRx.IsNull ())
     {
-      m_promiscRx (this, packet->Copy (), llc.GetType (), from, to, type);
+      m_promiscRx (this, packet, llc.GetType (), from, to, type);
     }
 }
 

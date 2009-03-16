@@ -831,7 +831,7 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
       m_promiscSnifferTrace (originalPacket);
       if (!m_promiscRxCallback.IsNull ())
         {
-          m_promiscRxCallback (this, packet->Copy (), protocol, header.GetSource (), header.GetDestination (), packetType);
+          m_promiscRxCallback (this, packet, protocol, header.GetSource (), header.GetDestination (), packetType);
         }
 
       //

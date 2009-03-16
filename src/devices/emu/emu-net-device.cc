@@ -646,7 +646,7 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
 
   if (!m_promiscRxCallback.IsNull ())
     {
-      m_promiscRxCallback (this, packet->Copy (), protocol, header.GetSource (), header.GetDestination (), packetType);
+      m_promiscRxCallback (this, packet, protocol, header.GetSource (), header.GetDestination (), packetType);
     }
 
   //

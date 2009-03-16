@@ -341,8 +341,7 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
 
       if (!m_promiscCallback.IsNull ())
         {
-          Ptr<Packet> pktCopy = packet->Copy ();
-          m_promiscCallback (this, pktCopy, protocol, GetRemote (), GetAddress (), NetDevice::PACKET_HOST);
+          m_promiscCallback (this, packet, protocol, GetRemote (), GetAddress (), NetDevice::PACKET_HOST);
         }
 
       m_rxCallback (this, packet, protocol, GetRemote ());
@@ -567,7 +566,7 @@ PointToPointNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 void
 PointToPointNetDevice::SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb)
 {
-  NS_FATAL_ERROR ("not implemented");
+  NS_FATAL_ERROR ("PointToPointNetDevice::SetPromiscReceiveCallback(): Not implemented");
   m_promiscCallback = cb;
 }
 
