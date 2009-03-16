@@ -25,6 +25,7 @@
 #include "ns3/helper-module.h"
 #include "ns3/global-routing-module.h"
 #include "ns3/wifi-module.h"
+#include "ns3/mesh-module.h"
 #include "ns3/mobility-module.h"
 
 using namespace ns3;

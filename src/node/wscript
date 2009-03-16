@@ -38,14 +38,12 @@ def build(bld):
         'ipv6-address.cc',
         'ipv6-header.cc',
         'ipv4-raw-socket-factory.cc',
-        'l2-routing-protocol.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
     headers.module = 'node'
     headers.source = [
         'address.h',
-	'mac48-address-comparator.h',
         'mac48-address.h',
         'mac64-address.h',
         'inet-socket-address.h',
@@ -79,5 +77,4 @@ def build(bld):
         'ipv6-address.h',
         'ipv6-header.h',
         'ipv4-raw-socket-factory.h',
-        'l2-routing-protocol.h',
         ]

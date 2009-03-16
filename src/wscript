@@ -34,8 +34,7 @@ all_modules = (
     'helper',
     'contrib/stats',
     'applications/v4ping',
-    'devices/l2-routing/l2-routing-main',
-    'devices/l2-routing/l2-routing-hwmp',
+    'devices/mesh',
     )
 
 def set_options(opt):

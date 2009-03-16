@@ -23,8 +23,6 @@ def build(bld):
         'bridge-helper.cc',
         'yans-wifi-helper.cc',
         'v4ping-helper.cc',
-        'mesh-wifi-helper.cc',
-        'hwmp-helper.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -50,8 +48,6 @@ def build(bld):
         'bridge-helper.h',
         'yans-wifi-helper.h',
         'v4ping-helper.h',
-        'mesh-wifi-helper.h',
-        'hwmp-helper.h',
         ]
 
     env = bld.env_of_name('default')
