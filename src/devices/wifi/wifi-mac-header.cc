@@ -125,6 +125,13 @@ WifiMacHeader::SetTypeData (void)
   m_ctrlType = TYPE_DATA;
   m_ctrlSubtype = 0;
 }
+void
+WifiMacHeader::SetMultihopAction (void)
+{
+ m_ctrlType = TYPE_MGT;
+ m_ctrlSubtype = 15;
+}
+
 void 
 WifiMacHeader::SetType (enum WifiMacType_e type)
 {
@@ -188,6 +195,9 @@ WifiMacHeader::SetType (enum WifiMacType_e type)
   case WIFI_MAC_MGT_DEAUTHENTICATION:
     m_ctrlType = TYPE_MGT;
     m_ctrlSubtype = 12;
+  case WIFI_MAC_MGT_MULTIHOP_ACTION:
+    m_ctrlType = TYPE_MGT;
+    m_ctrlSubtype = 15;
     break;
 
   case WIFI_MAC_DATA:
@@ -359,6 +369,9 @@ WifiMacHeader::GetType (void) const
       break;
     case 12:
       return WIFI_MAC_MGT_DEAUTHENTICATION;
+      break;
+   case 15:
+      return WIFI_MAC_MGT_MULTIHOP_ACTION;
       break;
 
     }
@@ -552,6 +565,11 @@ bool
 WifiMacHeader::IsDeauthentication (void) const
 {
   return (GetType () == WIFI_MAC_MGT_DEAUTHENTICATION)?true:false;
+}
+bool
+WifiMacHeader::IsMultihopAction (void) const
+{
+  return (GetType () == WIFI_MAC_MGT_MULTIHOP_ACTION)?true:false;
 }
 
 
@@ -861,6 +879,7 @@ WifiMacHeader::Print (std::ostream &os) const
     case WIFI_MAC_QOSDATA_NULL:
     case WIFI_MAC_QOSDATA_NULL_CFPOLL:
     case WIFI_MAC_QOSDATA_NULL_CFACK_CFPOLL:
+    case WIFI_MAC_MGT_MULTIHOP_ACTION:
       break;
     }
 }

@@ -109,6 +109,11 @@ MgtProbeResponseHeader::MgtProbeResponseHeader ()
 MgtProbeResponseHeader::~MgtProbeResponseHeader ()
 {}
 
+uint64_t
+MgtProbeResponseHeader::GetTimestamp()
+{
+	return m_timestamp;
+}
 Ssid 
 MgtProbeResponseHeader::GetSsid (void) const
 {
@@ -198,7 +203,7 @@ uint32_t
 MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  i.Next (8); // timestamp
+  m_timestamp = i.ReadNtohU64();
   m_beaconInterval = i.ReadNtohU16 ();
   m_beaconInterval *= 1024;
   i = m_capability.Deserialize (i);
