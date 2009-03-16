@@ -33,94 +33,84 @@
 namespace ns3 {
 
 class Packet;
+class MeshPointDevice;
+
 /**
  * \ingroup mesh
  *
- * \brief Base class for Layer 2 routing protocols
+ * \brief Interface for L2 mesh routing protocol and mesh point communication. 
  *
- * \details Yhis class is an internal part of L2RoutingNetDevice class
- * and this class implements interface between L2RoutingNetDevice and
- * any protocol of MAC layer. This interface is similar to ipv4
- * routiong protocol base class.
+ * Every mesh routing protocol must implement this interface. Each mesh point (MeshPointDevice) is supposed
+ * to know single L2RoutingProtocol to work with, see MeshPointDevice::SetRoutingProtocol().  
+ * 
+ * This interface is similar to ipv4 routiong protocol base class.
  */
 class L2RoutingProtocol : public Object
 {
 public:
+  /// Support NS3 object model
   static TypeId GetTypeId();
+  /// virtual D-tor
   virtual ~L2RoutingProtocol();
+  
   /**
-   * \brief Callback to be invoked when route discovery
-   * procedure is completed
-   * \param bool flag indicating whether a route was
-   * actually found and all needed information is added
-   * to the packet succesfully
-   * \param Ptr<Packet> is packet, for which the route
-   * was resolved
-   * \attention All needed information for MAC layer
-   * must be stored in proper tags (like in case of
-   * HWMP, when WifiMacHeader needs address of next
-   * hop), or must be added as a packet header(if MAC
-   * does not need any additional information). So, the
-   * packet is returned back to L2RoutingNetDevice looks
-   * like a pure packet with ethernet header (i.e data
-   * +src +dst + protocol). All information needed to
-   * L2RoutingNetDevice is outgoing port ID.
-   * \param Mac48Address Source address of the packet
-   * \param Mac48Address Destiation address of the
-   * packet
-   * \param uint16_t Ethernet 'Protocol' field - stored
-   * in protocol, needed to form a proper MAC-layer
-   * header.
-   * \param uint32_t Output port
+   * Callback to be invoked when route discovery  procedure is completed.
+   * 
+   * \param flag        indicating whether a route was actually found and all needed information is 
+   *                    added to the packet succesfully
+   *                    
+   * \param packet      for which the route was resolved. All routing information for MAC layer
+   *                    must be stored in proper tags (like in case of HWMP, when WifiMacHeader 
+   *                    needs address of next hop), or must be added as a packet header (if MAC
+   *                    does not need any additional information). So, the packet is returned back 
+   *                    to MeshPointDevice looks like a pure packet with ethernet header 
+   *                    (i.e data + src +dst + protocol). The only special information addressed
+   *                    to MeshPointDevice is an outcoming interface ID.
+   *                    
+   * \param src         source address of the packet
+   * 
+   * \param dst         destiation address of the packet
+   * 
+   * \param protocol    ethernet 'Protocol' field, needed to form a proper MAC-layer header
+   * 
+   * \param uint32_t    outcoming interface to use or 0xffffffff if packet should be sent by ALL interfaces
    */
-  typedef Callback<void,
-                   bool,
-                   Ptr<Packet>,
-                   Mac48Address,
-                   Mac48Address,
-                   uint16_t,
-                   uint32_t >   RouteReplyCallback;
+  typedef Callback<void,                /* return type */
+                   bool,                /* flag */
+                   Ptr<Packet>,         /* packet */
+                   Mac48Address,        /* src */
+                   Mac48Address,        /* dst */
+                   uint16_t,            /* protocol */
+                   uint32_t             /* out interface ID */ 
+          > RouteReplyCallback;
   /**
-   * \brief All packets must go through RequestRoute
-   * \returns Can the route be discovered or not
-   * \param sourceIface The incoming interface of the
-   * packet
-   * \param source Source address of the packet
-   * \param destination Destination address of the
-   * packet
-   * \param packet The packet to be resolved (needed the
-   * whole packet, because we can add tags or headers).
-   * \param protocolType The protocol ID (must be stored
-   * for route discovery time to form a proper MAC-layer
-   * header).
-   * \param routeReply Callback to be invoked after route
-   * discovery procedure.
+   * Request routing information, all packets must go through this request.
+   * 
+   * Note that route discobery works async. -- RequestRoute returns immediately, while
+   * reply callback will be called when routing information will be avaliable.
+   *  
+   * \return true if valid route is already known
+   * 
+   * \param sourceIface         the incoming interface of the packet
+   * 
+   * \param source              source address
+   * 
+   * \param destination         destination address
+   * 
+   * \param packet              the packet to be resolved (needed the whole packet, because routing information 
+   *                            is added as tags or headers). The packet will be retutned to reply callback. 
+   *                            
+   * \param protocolType        protocol ID, needed to form a proper MAC-layer header
+   * 
+   * \param routeReply          callback to be invoked after route discovery procedure, supposed to really send packet using routing information.
    */
-  virtual bool RequestRoute(
-    uint32_t  sourceIface,
-    const Mac48Address source,
-    const Mac48Address destination,
-    Ptr<Packet>  packet,
-    uint16_t  protocolType,
-    RouteReplyCallback routeReply
-  ) = 0;
+  virtual bool RequestRoute(uint32_t sourceIface, const Mac48Address source, const Mac48Address destination, 
+                            Ptr<Packet> packet, uint16_t  protocolType, RouteReplyCallback routeReply ) = 0;
   /**
-   * \brief Attaches ports to the L2RoutingProtocols,
-   * \returns False if there are not proper devices (like
-   * HWMP, which requires only WifiNetDevice and works
-   * only above MeshWifiMac).
-   * \param ports The array of ports.
+   * Set host mesh point, analog of SetNode(...) methods for upper layer protocols
    */
-  virtual bool AttachPorts(std::vector<Ptr<NetDevice> > ports) = 0;
-  /**
-   * \brief L2Routing protocol must know the
-   * L2RoutingNetDevice ID to determine packets as 'came
-   * from upper layer' and 'received from network' (for
-   * example, to manage TTL).
-   * \param interface The interface ID of
-   * L2RoutingNetDevice
-   */
-  virtual void SetIfIndex(uint32_t interface) = 0;
+  virtual void SetMeshPoint(MeshPointDevice * mp) = 0;
+  
 protected:
   struct QueuedPacket {
     Ptr<Packet> pkt;
