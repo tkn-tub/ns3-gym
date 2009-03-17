@@ -30,6 +30,7 @@
 #include "ns3/mac48-address.h"
 #include "ns3/header.h"
 #include "ns3/dot11s-codes.h"
+#include "ns3/wifi-information-element.h"
 
 namespace ns3 {
 /**
@@ -57,7 +58,7 @@ private:
 /**
  * \ingroup mesh
  */
-class WifiPreqInformationElement : public Header
+class WifiPreqInformationElement : public WifiInformationElement
 {
 public:
   WifiPreqInformationElement();
@@ -89,10 +90,6 @@ public:
   void SetMetric(uint32_t metric);
   void SetDestCount(uint8_t dest_count);
 
-  virtual void Serialize(Buffer::Iterator i) const;
-  virtual uint32_t Deserialize(Buffer::Iterator i);
-  virtual uint32_t GetSerializedSize() const;
-
   //uint8_t  GetFlags() const ;
   bool  IsUnicastPreq() const;
   bool  IsNeedNotPrep() const;
@@ -106,11 +103,16 @@ public:
   uint8_t  GetDestCount() const;
   void  DecrementTtl();
   void  IncrementMetric(uint32_t metric);
-
-private:
-  static uint8_t ElementId() {
-    return (uint8_t)IE11S_PREQ;
+protected:
+  WifiElementId ElementId () const{
+    return IE11S_PREQ;
   }
+  void SerializeInformation(Buffer::Iterator i) const;
+  uint16_t DeserializeInformation(Buffer::Iterator i, uint8_t length);
+  uint16_t GetInformationSize() const;
+  uint8_t GetLengthField() const;
+  void PrintInformation(std::ostream& os) const;
+private:
   //how many destinations we support
   uint8_t m_maxSize; //TODO: make as an attrubute
   //Fields:

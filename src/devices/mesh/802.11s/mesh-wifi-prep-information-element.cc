@@ -163,10 +163,8 @@ WifiPrepInformationElement::IncrementMetric(uint32_t metric)
 
 
 void
-WifiPrepInformationElement::Serialize(Buffer::Iterator i) const
+WifiPrepInformationElement::SerializeInformation(Buffer::Iterator i) const
   {
-    i.WriteU8 (ElementId());
-    i.WriteU8 (32);//length = 32
     i.WriteU8 (m_flags);
     i.WriteU8 (m_hopcount);
     i.WriteU8 (m_ttl);
@@ -177,12 +175,10 @@ WifiPrepInformationElement::Serialize(Buffer::Iterator i) const
     WriteTo (i, m_originatorAddress);
     i.WriteHtonU32 (m_originatorSeqNumber);
   }
-uint32_t
-WifiPrepInformationElement::Deserialize(Buffer::Iterator start)
+uint16_t
+WifiPrepInformationElement::DeserializeInformation(Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
-  NS_ASSERT (ElementId() == i.ReadU8());
-  i.Next (1); // length is constatnt
   m_flags = i.ReadU8();
   m_hopcount = i.ReadU8();
   m_ttl = i.ReadU8();
@@ -194,8 +190,8 @@ WifiPrepInformationElement::Deserialize(Buffer::Iterator start)
   m_originatorSeqNumber = i.ReadNtohU32();
   return i.GetDistanceFrom(start);
 }
-uint32_t
-WifiPrepInformationElement::GetSerializedSize() const
+uint16_t
+WifiPrepInformationElement::GetInformationSize() const
   {
     uint32_t retval =
        1 //Element ID
@@ -213,4 +209,14 @@ WifiPrepInformationElement::GetSerializedSize() const
     return retval;
 
   };
+uint8_t
+WifiPrepInformationElement::GetLengthField() const
+{
+  return 32;
+}
+void
+WifiPrepInformationElement::PrintInformation(std::ostream& os) const
+{
+  //TODO
+}
 } //namespace ns3

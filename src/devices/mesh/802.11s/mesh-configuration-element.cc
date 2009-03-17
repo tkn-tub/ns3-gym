@@ -129,7 +129,7 @@ MeshConfigurationElement::SerializeInformation (Buffer::Iterator i) const
     m_meshCap.Serialize (i);
 }
 
-uint8_t
+uint16_t
 MeshConfigurationElement::DeserializeInformation (Buffer::Iterator i, uint8_t length)
 {
   Buffer::Iterator start = i;

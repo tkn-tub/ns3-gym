@@ -247,14 +247,8 @@ WifiPreqInformationElement::IncrementMetric(uint32_t metric)
 }
 
 void
-WifiPreqInformationElement::Serialize(Buffer::Iterator i) const
+WifiPreqInformationElement::SerializeInformation(Buffer::Iterator i) const
   {
-    i.WriteU8 (ElementId());
-    //TODO:Check maxsize
-    uint8_t length = m_destCount*11+28;
-    if (m_destCount> m_maxSize)
-      length -=(m_destCount-m_maxSize)*11;
-    i.WriteU8 (length);
     i.WriteU8 (m_flags);
     i.WriteU8 (m_hopCount);
     i.WriteU8 (m_ttl);
@@ -281,13 +275,10 @@ WifiPreqInformationElement::Serialize(Buffer::Iterator i) const
       }
   }
 
-uint32_t
-WifiPreqInformationElement::Deserialize(Buffer::Iterator start)
+uint16_t
+WifiPreqInformationElement::DeserializeInformation(Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
-  NS_ASSERT (ElementId() == i.ReadU8());
-  uint8_t length;
-  length = i.ReadU8 ();
   m_flags = i.ReadU8 ();
   m_hopCount = i.ReadU8 ();
   m_ttl = i.ReadU8 ();
@@ -320,27 +311,40 @@ WifiPreqInformationElement::Deserialize(Buffer::Iterator start)
     }
   return i.GetDistanceFrom(start);
 }
-uint32_t
-WifiPreqInformationElement::GetSerializedSize() const
-  {
-    uint32_t retval =
-       1 //Element ID
-      +1 //Length
-      +1 //Flags
-      +1 //Hopcount
-      +1 //TTL
-      +4 //PREQ ID
-      +6 //Source address (originator)
-      +4 //Originator seqno
-      +4 //Lifetime
-      +4 //metric
-      +1; //destination count
-    if (m_destCount > m_maxSize)
-      retval+=(m_maxSize*11);
-    else
-      retval +=(m_destCount*11);
-    return retval;
-  }
+uint16_t
+WifiPreqInformationElement::GetInformationSize() const
+{
+  uint32_t retval =
+    1 //Flags
+    +1 //Hopcount
+    +1 //TTL
+    +4 //PREQ ID
+    +6 //Source address (originator)
+    +4 //Originator seqno
+    +4 //Lifetime
+    +4 //metric
+    +1; //destination count
+  if (m_destCount > m_maxSize)
+     retval+=(m_maxSize*11);
+  else
+     retval +=(m_destCount*11);
+  return retval;
+}
+uint8_t
+WifiPreqInformationElement::GetLengthField() const
+{
+  uint8_t length = m_destCount*11+28;
+  if (m_destCount> m_maxSize)
+    length -=(m_destCount-m_maxSize)*11;
+  return length;
+
+}
+
+void
+WifiPreqInformationElement::PrintInformation(std::ostream& os) const
+{
+  //TODO
+}
 std::vector<Ptr<DestinationAddressUnit> >
 WifiPreqInformationElement::GetDestinationList()
 {

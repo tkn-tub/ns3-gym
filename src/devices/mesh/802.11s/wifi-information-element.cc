@@ -43,7 +43,7 @@ uint32_t WifiInformationElement::GetSerializedSize () const
 void WifiInformationElement::Serialize (Buffer::Iterator i) const
 {
   i.WriteU8 (ElementId());
-  i.WriteU8 (GetInformationSize());
+  i.WriteU8 (GetLengthField());
   
   SerializeInformation(i);
 }

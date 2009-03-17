@@ -29,12 +29,13 @@
 #include "ns3/mac48-address.h"
 #include "ns3/header.h"
 #include "ns3/dot11s-codes.h"
+#include "ns3/wifi-information-element.h"
 
 namespace ns3 {
 /**
  * \ingroup mesh
  */
-class WifiPrepInformationElement : public Header
+class WifiPrepInformationElement : public WifiInformationElement
 {
 public:
   WifiPrepInformationElement();
@@ -51,10 +52,7 @@ public:
   void SetMetric(uint32_t metric);
   void SetOriginatorAddress(Mac48Address originator_address);
   void SetOriginatorSeqNumber(uint32_t originator_seg_number);
-  virtual void Serialize(Buffer::Iterator i) const;
-  virtual uint32_t Deserialize(Buffer::Iterator start);
-  virtual uint32_t GetSerializedSize() const;
-
+ 
   uint8_t GetFlags() const;
   uint8_t GetHopcount() const;
   uint32_t GetTTL() const;
@@ -67,10 +65,16 @@ public:
 
   void  DecrementTtl();
   void  IncrementMetric(uint32_t metric);
-private:
-  static uint8_t ElementId() {
-    return (uint8_t)IE11S_PREP;
+protected:
+  WifiElementId ElementId() const{
+    return IE11S_PREP;
   }
+  void SerializeInformation(Buffer::Iterator i) const;
+  uint16_t DeserializeInformation(Buffer::Iterator start, uint8_t length);
+  uint16_t GetInformationSize() const;
+  uint8_t GetLengthField() const;
+  void PrintInformation(std::ostream& os) const;
+private:
   uint8_t  m_flags;
   uint8_t  m_hopcount;
   uint8_t  m_ttl;
