@@ -7,6 +7,7 @@ def build(bld):
         'mesh-point-device.cc',
         'mesh-l2-routing-protocol.cc',
         'wifi-information-element.cc',
+        'mesh-wifi-beacon.cc',
         # Not refactored
         'mesh-wifi-helper.cc',
         'mesh-wifi-mac-header.cc',
@@ -33,6 +34,7 @@ def build(bld):
         'mesh-point-device.h',
         'mesh-l2-routing-protocol.h',
         'wifi-information-element.h',
+        'mesh-wifi-beacon.h',
         # Dirty
         'dot11s-codes.h',
         'mesh-wifi-rann-information-element.h',

@@ -57,6 +57,12 @@ void WifiInformationElement::Print (std::ostream &os) const
   PrintInformation(os);
   os << "</information_element>\n";
 }
+
+bool operator<(WifiInformationElement const & a, WifiInformationElement const & b)
+{
+  return (a.ElementId() < b.ElementId());
+}
+
   
 }
 
