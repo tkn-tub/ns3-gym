@@ -15,19 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Kirill Andreev <andreev@iitp.ru>
+ * Authors: Kirill Andreev <andreev@iitp.ru>
+ *          Pavel Boyko <boyko@iitp.ru>
  */
 
+#ifndef MESH_L2_ROUTING_PROTOCOL_H
+#define MESH_L2_ROUTING_PROTOCOL_H
 
-#ifndef L2_ROUTING_PROTOCOL_H
-#define L2_ROUTING_PROTOCOL_H
-
-#include <list>
-#include <vector>
-#include <ostream>
-#include "ns3/nstime.h"
+#include "ns3/object.h"
 #include "ns3/mac48-address.h"
-#include "ns3/net-device.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {
@@ -45,14 +41,13 @@ class MeshPointDevice;
  * 
  * This interface is similar to ipv4 routiong protocol base class.
  */
-class L2RoutingProtocol : public Object
+class MeshL2RoutingProtocol : public Object
 {
 public:
-  /// Support NS3 object model
+  /// Never forget to support NS3 object model
   static TypeId GetTypeId();
-  /// virtual D-tor
-  virtual ~L2RoutingProtocol();
-  
+  /// virtual D-tor for subclasses
+  virtual ~MeshL2RoutingProtocol();
   /**
    * Callback to be invoked when route discovery  procedure is completed.
    * 
@@ -106,44 +101,53 @@ public:
    */
   virtual bool RequestRoute(uint32_t sourceIface, const Mac48Address source, const Mac48Address destination, 
                             Ptr<Packet> packet, uint16_t  protocolType, RouteReplyCallback routeReply ) = 0;
-  /**
-   * Set host mesh point, analog of SetNode(...) methods for upper layer protocols
-   */
-  virtual void SetMeshPoint(MeshPointDevice * mp) = 0;
+  
+  /// Set host mesh point, analog of SetNode(...) methods for upper layer protocols.
+  void SetMeshPoint(Ptr<MeshPointDevice> mp);
+  /// Each mesh protocol must be installed on the mesh point to work.
+  Ptr<MeshPointDevice> GetMeshPoint() const; 
   
 protected:
+  
+  ///\name Route request queue API, supposed to be implemented in subclasses
+  //\{
+  
+  /// Packet waiting its routing inforamation, supposed to be used by all implementations to correctly implement timeouts.
   struct QueuedPacket {
-    Ptr<Packet> pkt;
-    Mac48Address dst;
-    Mac48Address src;
-    uint16_t protocol;
-    uint32_t inPort;
-    RouteReplyCallback reply;
+    Ptr<Packet> pkt;            ///< the packet
+    Mac48Address src;           ///< src address
+    Mac48Address dst;           ///< dst address
+    uint16_t protocol;          ///< protocol number
+    uint32_t inPort;            ///< incoming device interface ID (= mesh point IfID for packets from level 3 and mesh interface ID for packets to forward) 
+    RouteReplyCallback reply;   ///< how to reply
   };
   /**
-   * \brief Set Max queue size per destinztion
-   * \details Routing Queue is implemented inside the
-   * routing protocol and keeps one queue per
-   * destination (to make it easier to find resolved and
-   * timed out packets).
-   * \param maxPacketsPerDestination Packets per
-   * destination that can be stored inside protocol.
+   * \brief Set maximum route request queue size per destination
+   * 
+   * Routing Queue is implemented inside the routing protocol and keeps one queue per
+   * destination (to make it easier to find resolved and timed out packets).
+   * 
+   * \param maxPacketsPerDestination    Packets per destination that can be stored inside protocol.
    */
   virtual void SetMaxQueueSize(int maxPacketsPerDestination) = 0;
   /**
-   * \brief Queue packet with 'Ethernet header'
-   * \returns false if the queue is full.
+   * \brief Queue route request packet with 'Ethernet header' \return false if the queue is full.
    */
   virtual bool QueuePacket(struct QueuedPacket packet) = 0;
   /**
-   * \brief Deques packet with 'Ethernet header'
-   * \returns Ptr<packet> (NULL if queue is empty), src,
-   * dst, protocol ID, incoming port ID, and reply
-   * callback
-   * \param destination The destination address, which
-   * identifyes queue.
+   * \brief Deque packet with 'Ethernet header'
+   * 
+   * \param destination The destination address, which identifyes queue.
+   * 
+   * \return Ptr<packet> (0 if queue is empty), src, dst, protocol ID, incoming port ID, and reply callback
    */
   virtual struct QueuedPacket DequeuePacket(Mac48Address destination) = 0;
+  
+  //\}
+  
+protected:
+  /// Host mesh point
+  Ptr<MeshPointDevice> m_mp;
 };
 }//namespace ns3
 #endif

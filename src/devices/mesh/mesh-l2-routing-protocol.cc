@@ -15,29 +15,41 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Kirill Andreev <andreev@iitp.ru>
+ * Authors: Kirill Andreev <andreev@iitp.ru>
+ *          Pavel Boyko <boyko@iitp.ru>
  */
 
-
-#include "ns3/object.h"
 #include "ns3/log.h"
-#include "ns3/l2-routing-protocol.h"
+#include "ns3/mesh-l2-routing-protocol.h"
+#include "ns3/mesh-point-device.h"
 
-NS_LOG_COMPONENT_DEFINE ("L2RoutingProtocol");
+NS_LOG_COMPONENT_DEFINE ("MeshL2RoutingProtocol");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (L2RoutingProtocol);
+NS_OBJECT_ENSURE_REGISTERED (MeshL2RoutingProtocol);
 
 TypeId
-L2RoutingProtocol::GetTypeId (void)
+MeshL2RoutingProtocol::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::L2RoutingProtocol")
+  static TypeId tid = TypeId ("ns3::MeshL2RoutingProtocol")
                       .SetParent<Object> ();
   return tid;
 }
 
-L2RoutingProtocol::~L2RoutingProtocol ()
-{}
+MeshL2RoutingProtocol::~MeshL2RoutingProtocol()
+{
+}
+
+void
+MeshL2RoutingProtocol::SetMeshPoint(Ptr<MeshPointDevice> mp)
+{
+  m_mp = mp;
+}
+
+Ptr<MeshPointDevice> MeshL2RoutingProtocol::GetMeshPoint() const
+{
+  return m_mp;
+}
 
 } // namespace ns3

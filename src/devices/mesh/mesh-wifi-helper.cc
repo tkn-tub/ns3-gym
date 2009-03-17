@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Kirill Andreev <andreev@iitp.ru>
+ *         Pavel Boyko <boyko@iitp.ru>
  */
 
 
@@ -177,9 +178,9 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c, uint8_
     for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
       {
         Ptr<Node> node = *i;
-        Ptr<MeshPointDevice> virtualDevice = m_deviceFactory.Create<MeshPointDevice> ();
+        Ptr<MeshPointDevice> mp = m_deviceFactory.Create<MeshPointDevice> ();
         Ptr<WifiPeerManager> pPeer = m_peerManager.Create<WifiPeerManager > ();
-        devices.Add (virtualDevice);
+        devices.Add (mp);
         std::vector<Ptr<WifiNetDevice> > nodeDevices;
         for (uint8_t k=0; k<numOfPorts; k++)
           {
@@ -195,13 +196,17 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c, uint8_
             node->AddDevice(device);
             nodeDevices.push_back(device);
           }
-        node -> AddDevice(virtualDevice);
+        node -> AddDevice(mp);
         for (std::vector<Ptr<WifiNetDevice> > ::iterator iter=nodeDevices.begin();iter!=nodeDevices.end(); ++iter)
-          virtualDevice->AddInterface(*iter);
+          mp->AddInterface(*iter);
         // nodeDevice.pop_back()
         pPeer->AttachPorts(nodeDevices);
-        Ptr<L2RoutingProtocol> routingProtocol = m_routingProtocol.Create <L2RoutingProtocol>();
-        virtualDevice->SetRoutingProtocol(routingProtocol);
+        
+        // Install routing protocol
+        Ptr<MeshL2RoutingProtocol> routing = m_routingProtocol.Create <MeshL2RoutingProtocol>();
+        routing->SetMeshPoint(mp);
+        mp->SetRoutingProtocol(routing);
+        
         //hwmp->SetRoot(device->GetIfIndex(), Seconds(5));
         nodeDevices.clear();
       }

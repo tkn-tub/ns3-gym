@@ -17,14 +17,17 @@
  *
  * Authors: Kirill Andreev <andreev@iitp.ru>
  *          Aleksey Kovalenko <kovalenko@iitp.ru>
+ *          Pavel Boyko <boyko@iitp.ru>
  */
 
 
 #include "ns3/hwmp.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
+#include "ns3/mesh-point-device.h"
 
 NS_LOG_COMPONENT_DEFINE ("Hwmp");
+
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (Hwmp);
@@ -104,12 +107,11 @@ HwmpTag::GetInstanceTypeId() const
 
 uint32_t
 HwmpTag::GetSerializedSize() const
-  {
-
-    return  6 //address
-           +1 //ttl
-           +4; //metric
-  }
+{
+  return  6 //address
+         +1 //ttl
+         +4; //metric
+}
 
 void
 HwmpTag::Serialize(TagBuffer i) const
@@ -152,7 +154,7 @@ TypeId
 Hwmp::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Hwmp")
-                      .SetParent<L2RoutingProtocol> ()
+                      .SetParent<MeshL2RoutingProtocol> ()
                       .AddConstructor<Hwmp>();
   return tid;
 }
@@ -208,12 +210,13 @@ Hwmp::RequestRoute(
   const Mac48Address destination,
   Ptr<Packet> packet,
   uint16_t protocolType, //ethrnet 'Protocol' field
-  L2RoutingProtocol::RouteReplyCallback routeReply
+  MeshL2RoutingProtocol::RouteReplyCallback routeReply
 )
 {
   HwmpRtable::LookupResult result;
   HwmpTag tag;
-  if (sourceIface == m_interface)
+  if (sourceIface == GetMeshPoint()->GetIfIndex())
+    // packet from level 3
     {
       if (destination == Mac48Address::GetBroadcast())
         {
@@ -225,6 +228,7 @@ Hwmp::RequestRoute(
       tag.SetTtl(m_maxTtl);
     }
   else
+    // packet from own interface
     {
       NS_ASSERT(packet->FindFirstMatchingTag(tag));
       //check seqno!
@@ -265,7 +269,7 @@ Hwmp::RequestRoute(
     {
       //no actual route exists, queue packet and start route
       //discover procedure
-      if (sourceIface != m_interface)
+      if (sourceIface != GetMeshPoint()->GetIfIndex())
         {
           //Start path error procedure:
           NS_LOG_DEBUG("Must Send PERR");
@@ -276,7 +280,7 @@ Hwmp::RequestRoute(
           destinations.push_back(dst);
           StartPathErrorProcedure(destinations, result.ifIndex);
         }
-      L2RoutingProtocol::QueuedPacket pkt;
+      MeshL2RoutingProtocol::QueuedPacket pkt;
       packet->RemoveAllTags();
       packet->AddTag(tag);
       pkt.pkt = packet;
@@ -371,12 +375,6 @@ Hwmp::AttachPorts(std::vector<Ptr<NetDevice> > ports)
       m_modes.push_back(mode);
     }
   return true;
-}
-
-void
-Hwmp::SetIfIndex(uint32_t interface)
-{
-  m_interface = interface;
 }
 
 void
@@ -596,7 +594,7 @@ Hwmp::SetMaxQueueSize(int maxPacketsPerDestination)
 }
 
 bool
-Hwmp::QueuePacket(L2RoutingProtocol::QueuedPacket packet)
+Hwmp::QueuePacket(MeshL2RoutingProtocol::QueuedPacket packet)
 {
   if ((int)m_rqueue[packet.dst].size() > m_maxQueueSize)
     return false;
@@ -604,10 +602,10 @@ Hwmp::QueuePacket(L2RoutingProtocol::QueuedPacket packet)
   return true;
 }
 
-L2RoutingProtocol::QueuedPacket
+MeshL2RoutingProtocol::QueuedPacket
 Hwmp::DequeuePacket(Mac48Address dst)
 {
-  L2RoutingProtocol::QueuedPacket retval;
+  MeshL2RoutingProtocol::QueuedPacket retval;
   retval.pkt = NULL;
   //Ptr<Packet> in this structure is NULL when queue is empty
   std::map<Mac48Address, std::queue<QueuedPacket>, mac48addrComparator>:: iterator i = m_rqueue.find(dst);
@@ -629,7 +627,7 @@ void
 Hwmp::SendAllPossiblePackets(Mac48Address dst)
 {
   HwmpRtable::LookupResult result = m_rtable->LookupReactive(dst);
-  L2RoutingProtocol::QueuedPacket packet;
+  MeshL2RoutingProtocol::QueuedPacket packet;
   while (1)
 
     {
@@ -674,7 +672,7 @@ Hwmp::RetryPathDiscovery(Mac48Address dst, uint8_t numOfRetry)
   numOfRetry++;
   if (numOfRetry > dot11sParameters::dot11MeshHWMPmaxPREQretries)
     {
-      L2RoutingProtocol::QueuedPacket packet;
+      MeshL2RoutingProtocol::QueuedPacket packet;
       //purge queue and delete entry from retryDatabase
       while (1)
         {

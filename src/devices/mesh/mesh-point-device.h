@@ -15,7 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Kirill Andreev <andreev@iitp.ru>
+ * Authors: Kirill Andreev <andreev@iitp.ru>
+ *          Pavel Boyko <boyko@iitp.ru>
  */
 
 
@@ -27,7 +28,7 @@
 #include "ns3/nstime.h"
 #include "ns3/bridge-net-device.h"
 #include "ns3/bridge-channel.h"
-#include "ns3/l2-routing-protocol.h"
+#include "ns3/mesh-l2-routing-protocol.h"
 
 namespace ns3 {
   
@@ -61,7 +62,7 @@ public:
   ///\name Interfaces 
   //\{
   /**
-   * Attach new interface to the station. Interface must support 48-bit MAC address and SendFrom method.
+   * \brief Attach new interface to the station. Interface must support 48-bit MAC address and SendFrom method.
    * 
    * \attention Only MeshPointDevice can have IP address, but not individual interfaces. 
    */
@@ -80,9 +81,9 @@ public:
   ///\name Protocols
   //\{
   /**
-   * Register routing protocol to be used \return true on success
+   * \brief Register routing protocol to be used. Protocol must be alredy installed on this mesh point.
    */
-  virtual bool SetRoutingProtocol(Ptr<L2RoutingProtocol> protocol);
+  void SetRoutingProtocol(Ptr<MeshL2RoutingProtocol> protocol);
   //\}
   
   ///\name NetDevice interface for upper layers
@@ -132,7 +133,7 @@ private:
    * \param protocol    Protocol ID
    * \param outIface    Interface to use (ID) for send (decided by routing protocol). All interfaces will be used if outIface = 0xffffffff
    */
-  virtual void DoSend(bool success, Ptr<Packet> packet, Mac48Address src, Mac48Address dst, uint16_t protocol, uint32_t iface);
+  void DoSend(bool success, Ptr<Packet> packet, Mac48Address src, Mac48Address dst, uint16_t protocol, uint32_t iface);
   
 private:
   /// Receive action
@@ -161,10 +162,10 @@ private:
            Mac48Address,
            Ptr<Packet>,
            uint16_t,
-           L2RoutingProtocol::RouteReplyCallback>  m_requestRoute;
+           MeshL2RoutingProtocol::RouteReplyCallback>  m_requestRoute;
   
   /// Routing response callback, this is supplied to mesh routing protocol
-  L2RoutingProtocol::RouteReplyCallback  m_myResponse;
+  MeshL2RoutingProtocol::RouteReplyCallback  m_myResponse;
 };
 } //namespace ns3
 #endif

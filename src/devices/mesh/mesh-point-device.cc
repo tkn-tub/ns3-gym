@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Kirill Andreev <andreev@iitp.ru>
+ *         Pavel Boyko <boyko@iitp.ru>
  */
 
 
@@ -25,7 +26,7 @@
 #include "ns3/log.h"
 #include "ns3/boolean.h"
 #include "ns3/simulator.h"
-#include "ns3/l2-routing-net-device.h"
+#include "ns3/mesh-point-device.h"
 
 NS_LOG_COMPONENT_DEFINE ("MeshPointDevice");
 
@@ -323,16 +324,17 @@ MeshPointDevice::AddInterface (Ptr<NetDevice> iface)
 // Protocols
 //-----------------------------------------------------------------------------
 
-bool
-MeshPointDevice::SetRoutingProtocol(Ptr<L2RoutingProtocol> protocol)
+void
+MeshPointDevice::SetRoutingProtocol(Ptr<MeshL2RoutingProtocol> protocol)
 {
   NS_LOG_FUNCTION_NOARGS ();
   
-  m_requestRoute = MakeCallback(&L2RoutingProtocol::RequestRoute, protocol);
+  NS_ASSERT_MSG(PeekPointer(protocol->GetMeshPoint()) == this, "Routing protocol must be installed on mesh point to be usefull.");
+  
+  m_requestRoute = MakeCallback(&MeshL2RoutingProtocol::RequestRoute, protocol);
   m_myResponse = MakeCallback(&MeshPointDevice::DoSend, this);
-  protocol->SetIfIndex(m_ifIndex);
-  // TODO don't install protocol on ifaces here, this must be done separately. Just set callbacks.
-  return protocol->AttachPorts(m_ifaces);       
+  
+  return;
 }
 
 void

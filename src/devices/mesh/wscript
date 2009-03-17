@@ -3,14 +3,16 @@
 def build(bld):
     obj = bld.create_ns3_module('mesh', ['wifi'])
     obj.source = [
+        # Refactored
+        'mesh-point-device.cc',
+        'mesh-l2-routing-protocol.cc',
+        # Not refactored
         'mesh-wifi-helper.cc',
         'mesh-wifi-mac-header.cc',
         'mesh-wifi-peer-manager.cc',
         'tx-statistics.cc',
-        'l2-routing-protocol.cc',
         'mesh-wifi-beacon-timing-element.cc',
         'hwmp-rtable.cc',
-        'l2-routing-net-device.cc',
         'dot11s-parameters.cc',
         'mesh-wifi-perr-information-element.cc',
         'hwmp.cc',
@@ -26,10 +28,12 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'mesh'
     headers.source = [
-        'l2-routing-protocol.h',
+        # Refactored
+        'mesh-point-device.h',
+        'mesh-l2-routing-protocol.h',
+        # Dirty
         'dot11s-codes.h',
         'mesh-wifi-rann-information-element.h',
-        'l2-routing-net-device.h',
         'hwmp-state.h',
         'mesh-wifi-beacon-timing-element.h',
         'dot11s-parameters.h',

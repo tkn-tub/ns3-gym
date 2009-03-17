@@ -17,6 +17,7 @@
  *
  * Authors: Kirill Andreev <andreev@iitp.ru>
  *          Aleksey Kovalenko <kovalenko@iitp.ru>
+ *          Pavel Boyko <boyko@iitp.ru>
  */
 
 
@@ -28,7 +29,7 @@
 #include "ns3/object.h"
 #include "ns3/mac48-address.h"
 #include "ns3/mac48-address-comparator.h"
-#include "ns3/l2-routing-protocol.h"
+#include "ns3/mesh-l2-routing-protocol.h"
 #include "ns3/packet.h"
 #include "ns3/ptr.h"
 #include "ns3/hwmp-state.h"
@@ -81,7 +82,7 @@ private:
 /**
  * \ingroup mesh
  */
-class Hwmp : public L2RoutingProtocol
+class Hwmp : public MeshL2RoutingProtocol
 {
 public:
   static TypeId GetTypeId();
@@ -112,10 +113,9 @@ public:
     const Mac48Address destination,
     Ptr<Packet>  packet,
     uint16_t  protocolType,
-    L2RoutingProtocol::RouteReplyCallback  routeReply
+    MeshL2RoutingProtocol::RouteReplyCallback  routeReply
   );
   bool AttachPorts(std::vector<Ptr<NetDevice> >);
-  void SetIfIndex(uint32_t interface);
   /**
    * \brief Disables port by index.
    * \details Needed for external modules like
@@ -172,8 +172,8 @@ private:
   //protocol:
   void  SetMaxQueueSize(int maxPacketsPerDestination);
   int  m_maxQueueSize;
-  bool  QueuePacket(L2RoutingProtocol::QueuedPacket packet);
-  L2RoutingProtocol::QueuedPacket  DequeuePacket(Mac48Address dst);
+  bool  QueuePacket(MeshL2RoutingProtocol::QueuedPacket packet);
+  MeshL2RoutingProtocol::QueuedPacket  DequeuePacket(Mac48Address dst);
   void  SendAllPossiblePackets(Mac48Address dst);
   std::map<Mac48Address, std::queue<QueuedPacket> >  m_rqueue;
   //devices and HWMP states:
@@ -245,11 +245,6 @@ private:
   HwmpRtable::LookupResult  RequestRouteForAddress(const Mac48Address& destination);
   HwmpRtable::LookupResult  RequestRootPathForPort(uint32_t port);
 
-  /**
-   * \brief interface which is the HWMP attached to
-   * (Virtual netdevice)
-   */
-  uint32_t m_interface;
   /**
    * \attention mesh seqno is processed at HWMP
    */
