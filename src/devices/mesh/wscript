@@ -1,30 +1,23 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_module('mesh', ['wifi'])
+    obj = bld.create_ns3_module('mesh', ['wifi', '802.11s'])
     obj.source = [
         # Refactored
         'mesh-point-device.cc',
         'mesh-l2-routing-protocol.cc',
-        'wifi-information-element.cc',
         # Not refactored
         'mesh-wifi-helper.cc',
         'mesh-wifi-mac-header.cc',
         'mesh-wifi-peer-manager.cc',
         'tx-statistics.cc',
-        'mesh-wifi-beacon-timing-element.cc',
         'hwmp-rtable.cc',
         'dot11s-parameters.cc',
-        'mesh-wifi-perr-information-element.cc',
         'hwmp.cc',
-        'mesh-wifi-prep-information-element.cc',
         'mesh-wifi-mac.cc',
         'hwmp-state.cc',
-        'mesh-configuration-element.cc',
         'dot11s-peer-management-element.cc',
         'mesh-mgt-headers.cc',
-        'mesh-wifi-rann-information-element.cc',
-        'mesh-wifi-preq-information-element.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'mesh'
@@ -32,27 +25,20 @@ def build(bld):
         # Refactored
         'mesh-point-device.h',
         'mesh-l2-routing-protocol.h',
-        'wifi-information-element.h',
         # Dirty
         'dot11s-codes.h',
-        'mesh-wifi-rann-information-element.h',
         'hwmp-state.h',
-        'mesh-wifi-beacon-timing-element.h',
         'dot11s-parameters.h',
         'mesh-mgt-headers.h',
         'hwmp.h',
         'tx-statistics.h',
         'dot11s-peer-management-element.h',
         'mac48-address-comparator.h',
-        'mesh-wifi-preq-information-element.h',
         'hwmp-rtable.h',
         'mesh-wifi-peer-manager.h',
         'mesh-wifi-mac-header.h',
         'mesh-wifi-mac.h',
-        'mesh-configuration-element.h',
-        'mesh-wifi-perr-information-element.h',
         'mesh-wifi-helper.h',
-        'mesh-wifi-prep-information-element.h',
         ]
 
 #    obj = bld.create_ns3_program('wifi-phy-test',
