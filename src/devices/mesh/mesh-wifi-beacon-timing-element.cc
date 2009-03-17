@@ -92,15 +92,15 @@ WifiBeaconTimingElement::AddNeighboursTimingElementUnit(
   //Firs we lookup if this element already exists
   for (NeighboursTimingUnitsList::iterator i = m_neighbours.begin(); i!= m_neighbours.end(); i++)
     if (
-      ((*i)->GetAID() == AID_TO_U8(aid))
-      && ((*i)->GetLastBeacon() == TIMESTAMP_TO_U16(last_beacon))
-      && ((*i)->GetBeaconInterval() == BEACON_INTERVAL_TO_U16(beacon_interval))
+      ((*i)->GetAID() == AidToU8(aid))
+      && ((*i)->GetLastBeacon() == TimestampToU16(last_beacon))
+      && ((*i)->GetBeaconInterval() == BeaconIntervalToU16(beacon_interval))
     )
       return;
   Ptr<WifiBeaconTimingElementUnit>new_element = Create<WifiBeaconTimingElementUnit>();
-  new_element->SetAID(AID_TO_U8(aid));
-  new_element->SetLastBeacon(TIMESTAMP_TO_U16(last_beacon));
-  new_element->SetBeaconInterval(BEACON_INTERVAL_TO_U16(beacon_interval));
+  new_element->SetAID(AidToU8(aid));
+  new_element->SetLastBeacon(TimestampToU16(last_beacon));
+  new_element->SetBeaconInterval(BeaconIntervalToU16(beacon_interval));
   m_neighbours.push_back(new_element);
   m_numOfUnits++;
 }
@@ -114,9 +114,9 @@ WifiBeaconTimingElement::DelNeighboursTimingElementUnit(
 {
   for (NeighboursTimingUnitsList::iterator i = m_neighbours.begin(); i!= m_neighbours.end(); i++)
     if (
-      ((*i)->GetAID() == AID_TO_U8(aid))
-      && ((*i)->GetLastBeacon() == TIMESTAMP_TO_U16(last_beacon))
-      && ((*i)->GetBeaconInterval() == BEACON_INTERVAL_TO_U16(beacon_interval))
+      ((*i)->GetAID() == AidToU8(aid))
+      && ((*i)->GetLastBeacon() == TimestampToU16(last_beacon))
+      && ((*i)->GetBeaconInterval() == BeaconIntervalToU16(beacon_interval))
     )
       {
         m_neighbours.erase(i);
@@ -186,5 +186,23 @@ WifiBeaconTimingElement::Deserialize (Buffer::Iterator i)
       m_neighbours.push_back(new_element);
     }
   return i;
+};
+
+uint16_t
+WifiBeaconTimingElement::TimestampToU16(Time x)
+{
+  return ((uint16_t)((x.GetMicroSeconds() >> 8)&0xffff));
+};
+
+uint16_t 
+WifiBeaconTimingElement::BeaconIntervalToU16(Time x)
+{
+  return ((uint16_t)(x.GetMicroSeconds() >>10)&0xffff);
+};
+
+uint8_t
+WifiBeaconTimingElement::AidToU8(uint16_t x)
+{
+  return (uint8_t)(x&0xff);
 };
 } //namespace ns3

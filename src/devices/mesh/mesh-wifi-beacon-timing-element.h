@@ -89,18 +89,6 @@ public:
     Time  beacon_interval //MicroSeconds!
   );
   void   ClearTimingElement();
-  uint16_t TIMESTAMP_TO_U16(Time x)
-  {
-    return ((uint16_t)((x.GetMicroSeconds() >> 8)&0xffff));
-  };
-  uint16_t BEACON_INTERVAL_TO_U16(Time x)
-  {
-    return ((uint16_t)(x.GetMicroSeconds() >>10)&0xffff);
-  };
-  uint8_t AID_TO_U8(uint16_t x)
-  {
-    return (uint8_t)(x&0xff);
-  };
   //Serialize-deserialize methods:
   uint32_t  GetSerializedSize () const;
   Buffer::Iterator Serialize (Buffer::Iterator i) const;
@@ -109,6 +97,9 @@ private:
   static uint8_t ElementId() {
     return (uint8_t)IE11S_BEACON_TIMING;
   }
+  static uint16_t TimestampToU16(Time x);
+  static uint16_t BeaconIntervalToU16(Time x);
+  static uint8_t AidToU8(uint16_t x);
   NeighboursTimingUnitsList  m_neighbours;
   //The maximum size of this element:
   const static uint16_t DEFAULT_MAX_SIZE = 255*5 +2;
