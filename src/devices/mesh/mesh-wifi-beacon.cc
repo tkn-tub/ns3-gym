@@ -35,11 +35,22 @@ void MeshWifiBeacon::AddInformationElement(const WifiInformationElement * ie)
   m_elements.push_back(ie);
 }
 
+namespace {
+/// aux sorter
+struct IEComparator
+{
+  bool operator()(const WifiInformationElement * a, const WifiInformationElement * b) const
+  {
+    return (*a < *b);
+  }
+};
+}
+
 Ptr<Packet> MeshWifiBeacon::CreatePacket()
 {
   Ptr<Packet> packet = Create<Packet> ();
   
-  std::sort(m_elements.begin(), m_elements.end());
+  std::sort(m_elements.begin(), m_elements.end(), IEComparator());
   
   std::vector<const WifiInformationElement *>::const_reverse_iterator i;
   for(i = m_elements.rbegin(); i != m_elements.rend(); ++i)
