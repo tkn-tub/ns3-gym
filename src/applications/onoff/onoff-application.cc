@@ -176,7 +176,7 @@ void OnOffApplication::CancelEvents ()
 void OnOffApplication::StartSending()
 {
   NS_LOG_FUNCTION_NOARGS ();
-
+  m_lastStartTime = Simulator::Now();
   ScheduleNextTx();  // Schedule the send packet event
   ScheduleStopEvent();
 }

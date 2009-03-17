@@ -64,6 +64,22 @@ class Socket;
  * variables. During the "Off" state, no traffic is generated.
  * During the "On" state, cbr traffic is generated. This cbr traffic is
  * characterized by the specified "data rate" and "packet size".
+ *
+ * Note:  When an application is started, the first packet transmission
+ * occurs _after_ a delay equal to (packet size/bit rate).  Note also,
+ * when an application transitions into an off state in between packet
+ * transmissions, the remaining time until when the next transmission
+ * would have occurred is cached and is used when the application starts
+ * up again.  Example:  packet size = 1000 bits, bit rate = 500 bits/sec.
+ * If the application is started at time 3 seconds, the first packet
+ * transmission will be scheduled for time 5 seconds (3 + 1000/500)
+ * and subsequent transmissions at 2 second intervals.  If the above
+ * application were instead stopped at time 4 seconds, and restarted at
+ * time 5.5 seconds, then the first packet would be sent at time 6.5 seconds,
+ * because when it was stopped at 4 seconds, there was only 1 second remaining
+ * until the originally scheduled transmission, and this time remaining
+ * information is cached and used to schedule the next transmission
+ * upon restarting.
  */
 class OnOffApplication : public Application 
 {
