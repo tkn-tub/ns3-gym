@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Kirill Andreev <andreev@iitp.ru>
+ *         Pavel Boyko <boyko@iitp.ru>
  */
-
 
 #ifndef MAC_HIGH_MESH_H
 #define MAC_HIGH_MESH_H
@@ -48,18 +48,12 @@ class WifiPeerManager;
 /**
  * \ingroup mesh
  *
- * \brief Implements MAC-layer of mesh point: beaconing and
- * peer link management.
- *
- * \details Handles sending and receiving beacons. Tells all
- * needed information about beacons to MeshWifiPeerManager class, which
- * handles peer link management state machine. Asks
- * WifiPeerManager wether
- * receive or discard frame obtained from neighbour.
+ * \brief Implements basic MAC layer of mesh point interface. Basic function is extendable through plugins mechanism.
+ * 
  * Now only three output queues are used:
- * one for beacons (PIFS and no backoff),
- * one for background traffic,
- * one for management and priority traffic.
+ *  - beacons (PIFS and no backoff),
+ *  - background traffic,
+ *  - management and priority traffic.
  */
 class MeshWifiMac : public WifiMac
 {
