@@ -98,16 +98,21 @@ MeshConfigurationElement::GetInstanceTypeId () const
 {
   return GetTypeId();
 }
-uint8_t
+uint16_t
 MeshConfigurationElement::GetInformationSize () const
-  {
+{
     return 1 // Version
       + 4 // APSPId
       + 4 // APSMId
       + 4 // CCMId
       + 4 // CP
       + m_meshCap.GetSerializedSize();
-  }
+}
+uint8_t
+MeshConfigurationElement::GetLengthField () const
+{
+  return GetInformationSize();
+}
 
 void
 MeshConfigurationElement::SerializeInformation (Buffer::Iterator i) const

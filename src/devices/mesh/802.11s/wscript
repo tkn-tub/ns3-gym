@@ -4,11 +4,11 @@ def build(bld):
     obj = bld.create_ns3_module('802.11s', ['wifi'])
     obj.source = [
         'wifi-information-element.cc',
+        'mesh-configuration-element.cc',
         # Not refactored
         'mesh-wifi-beacon-timing-element.cc',
         'mesh-wifi-perr-information-element.cc',
         'mesh-wifi-prep-information-element.cc',
-        'mesh-configuration-element.cc',
         'mesh-wifi-rann-information-element.cc',
         'mesh-wifi-preq-information-element.cc',
         ]
@@ -17,11 +17,11 @@ def build(bld):
     headers.source = [
         # Refactored
         'wifi-information-element.h',
+        'mesh-configuration-element.h',
         # Dirty
         'mesh-wifi-rann-information-element.h',
         'mesh-wifi-beacon-timing-element.h',
         'mesh-wifi-preq-information-element.h',
-        'mesh-configuration-element.h',
         'mesh-wifi-perr-information-element.h',
         'mesh-wifi-prep-information-element.h',
         ]

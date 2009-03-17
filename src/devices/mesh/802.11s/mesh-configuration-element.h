@@ -103,7 +103,8 @@ protected:
     return IE11S_MESH_CONFIGURATION;
   }
 
-  uint8_t  GetInformationSize () const;
+  uint16_t  GetInformationSize () const;
+  uint8_t GetLengthField () const;
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
   void PrintInformation(std::ostream& os) const;
