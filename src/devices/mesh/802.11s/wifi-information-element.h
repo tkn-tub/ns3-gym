@@ -75,6 +75,7 @@ class WifiInformationElement : public Header
 public:
   /// Support object system
   static TypeId GetTypeId ();
+  TypeId GetInstanceTypeId() const;
   
   /// virtual d-tor for subclasses
   virtual ~WifiInformationElement() {}
@@ -137,7 +138,7 @@ protected:
   /// Serialize information
   virtual void SerializeInformation (Buffer::Iterator start) const = 0;
   /// Deserialize information
-  virtual uint32_t DeserializeInformation (Buffer::Iterator start, uint32_t length) = 0;
+  virtual uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length) = 0;
   /// Print information
   virtual void PrintInformation (std::ostream &os) const = 0;
   //\}

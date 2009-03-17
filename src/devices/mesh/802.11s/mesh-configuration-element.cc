@@ -36,7 +36,7 @@ dot11sMeshCapability::dot11sMeshCapability():
     powerSaveLevel(false)
 {}
 
-uint32_t dot11sMeshCapability::GetSerializedSize () const
+uint8_t dot11sMeshCapability::GetSerializedSize () const
   {
     return 2;
   }
@@ -85,25 +85,33 @@ MeshConfigurationElement::MeshConfigurationElement ():
     m_CP(CHANNEL_PRECEDENCE_OFF)
 {}
 
-uint32_t
-MeshConfigurationElement::GetSerializedSize () const
+TypeId
+MeshConfigurationElement::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::MeshConfigurationElement")
+    .SetParent<WifiInformationElement> ();
+  return tid;
+}
+
+TypeId
+MeshConfigurationElement::GetInstanceTypeId () const
+{
+  return GetTypeId();
+}
+uint8_t
+MeshConfigurationElement::GetInformationSize () const
   {
-    return    1 // ID
-            + 1 // Length
-            + 1 // Version
-            + 4 // APSPId
-            + 4 // APSMId
-            + 4 // CCMId
-            + 4 // CP
-            + m_meshCap.GetSerializedSize();
+    return 1 // Version
+      + 4 // APSPId
+      + 4 // APSMId
+      + 4 // CCMId
+      + 4 // CP
+      + m_meshCap.GetSerializedSize();
   }
 
-Buffer::Iterator
-MeshConfigurationElement::Serialize (Buffer::Iterator i) const
-  {
-
-    i.WriteU8 (ElementId());
-    i.WriteU8 (GetSerializedSize()); // Length
+void
+MeshConfigurationElement::SerializeInformation (Buffer::Iterator i) const
+{
     i.WriteU8 (1); //Version
     // Active Path Selection Protocol ID:
     i.WriteHtonU32 (m_APSId);
@@ -113,22 +121,14 @@ MeshConfigurationElement::Serialize (Buffer::Iterator i) const
     i.WriteU32 (m_CCMId);
     // Channel Precedence:
     i.WriteU32 (m_CP);
-    i = m_meshCap.Serialize (i);
-    return i;
-  }
+    m_meshCap.Serialize (i);
+}
 
-Buffer::Iterator
-MeshConfigurationElement::Deserialize (Buffer::Iterator i)
+uint8_t
+MeshConfigurationElement::DeserializeInformation (Buffer::Iterator i, uint8_t length)
 {
-
-  //uint8_t elementId;
-  uint8_t size;
+  Buffer::Iterator start = i;
   uint8_t version;
-  //elementId = i.ReadU8 ();
-
-  NS_ASSERT (ElementId() == i.ReadU8());
-
-  size     = i.ReadU8 ();
   version  = i.ReadU8 ();
   // Active Path Selection Protocol ID:
   m_APSId  = (dot11sPathSelectionProtocol)i.ReadNtohU32 ();
@@ -139,11 +139,13 @@ MeshConfigurationElement::Deserialize (Buffer::Iterator i)
   // Channel Precedence:
   m_CP     = (dot11sChannelPrecedence)i.ReadU32 ();
   i = m_meshCap.Deserialize (i);
-  return i;
-
-
+  return i.GetDistanceFrom(start);
 }
-
+void
+MeshConfigurationElement::PrintInformation(std::ostream& os) const
+{
+  //TODO: print
+}
 void
 MeshConfigurationElement::SetRouting(dot11sPathSelectionProtocol routingId)
 {

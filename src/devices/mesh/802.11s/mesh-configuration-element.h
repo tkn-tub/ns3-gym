@@ -26,6 +26,7 @@
 #include <stdint.h>
 #include "ns3/buffer.h"
 #include "ns3/dot11s-codes.h"
+#include "ns3/wifi-information-element.h"
 
 namespace ns3 {
 /**
@@ -67,7 +68,7 @@ class dot11sMeshCapability
 {
 public:
   dot11sMeshCapability();
-  uint32_t  GetSerializedSize () const;
+  uint8_t  GetSerializedSize () const;
   Buffer::Iterator Serialize (Buffer::Iterator i) const;
   Buffer::Iterator Deserialize (Buffer::Iterator i);
   bool acceptPeerLinks;
@@ -83,9 +84,12 @@ private:
 /**
  * \ingroup mesh
  */
-class MeshConfigurationElement
+class MeshConfigurationElement : public WifiInformationElement
 {
 public:
+  static TypeId GetTypeId ();
+  TypeId GetInstanceTypeId () const;
+
   MeshConfigurationElement();
   void   SetRouting(dot11sPathSelectionProtocol routingId);
   void   SetMetric(dot11sPathSelectionMetric metricId);
@@ -93,16 +97,19 @@ public:
   bool   IsAirtime();
 
   dot11sMeshCapability const& MeshCapability();
+protected:
+  WifiElementId ElementId () const
+  {
+    return IE11S_MESH_CONFIGURATION;
+  }
 
-  uint32_t  GetSerializedSize () const;
-  Buffer::Iterator Serialize (Buffer::Iterator i) const;
-  Buffer::Iterator Deserialize (Buffer::Iterator i);
+  uint8_t  GetInformationSize () const;
+  void SerializeInformation (Buffer::Iterator i) const;
+  uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
+  void PrintInformation(std::ostream& os) const;
   // TODO: Release and fill other fields in configuration
   // element
 private:
-  static uint8_t ElementId() {
-    return (uint8_t)IE11S_MESH_CONFIGURATION;
-  }
   /** Active Path Selection Protocol ID */
   dot11sPathSelectionProtocol m_APSId;
   /** Active Path Metric ID */
