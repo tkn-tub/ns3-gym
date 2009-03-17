@@ -69,7 +69,7 @@ main(int argc, char *argv[])
               );
   wifi.SetPeerLinkManager ("ns3::WifiPeerManager");
   wifi.SetL2RoutingProtocol ("ns3::Hwmp");
-  wifi.SetL2RoutingNetDevice ("ns3::L2RoutingNetDevice");
+  wifi.SetL2RoutingNetDevice ("ns3::MeshPointDevice");
   meshDevices = wifi.Install (wifiPhy,nodes,1);
   // Installing Mobility.
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",

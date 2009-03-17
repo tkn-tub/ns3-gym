@@ -30,6 +30,11 @@ WifiInformationElement::GetTypeId()
   return tid;
 }
 
+TypeId
+WifiInformationElement::GetInstanceTypeId () const
+{
+  return GetTypeId ();
+}
 uint32_t WifiInformationElement::GetSerializedSize () const
 {
   return (GetInformationSize() + 2);

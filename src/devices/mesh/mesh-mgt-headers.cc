@@ -76,7 +76,8 @@ MgtMeshBeaconHeader::Serialize (Buffer::Iterator start) const
     Buffer::Iterator i = start;
     MgtBeaconHeader::Serialize(i);
     i.Next (MgtBeaconHeader::GetSerializedSize());
-    i = m_meshConfig.Serialize(i);
+    m_meshConfig.Serialize(i);
+    i.Next(m_meshConfig.GetSerializedSize());
     i = m_meshTiming.Serialize(i);
     i.Next (9); //MSCIE
   }
@@ -88,7 +89,8 @@ MgtMeshBeaconHeader::Deserialize (Buffer::Iterator start)
   Buffer::Iterator i = start;
   MgtBeaconHeader::Deserialize(start);
   i.Next (MgtBeaconHeader::GetSerializedSize());
-  i = m_meshConfig.Deserialize(i);
+  m_meshConfig.Deserialize(i);
+  i.Next(m_meshConfig.GetSerializedSize());
   i = m_meshTiming.Deserialize(i);
   i.Next (9); //MSCIE
   return i.GetDistanceFrom (start);
@@ -230,7 +232,8 @@ MeshMgtPeerLinkManFrame::Serialize(Buffer::Iterator start) const
         //now QoS capabilities
         i.WriteHtonU16 (QoS);
         i = MeshId.Serialize (i);
-        i = MeshConfig.Serialize (i);
+        MeshConfig.Serialize (i);
+        i.Next(MeshConfig.GetSerializedSize());
       }
     i = PeerLinkMan.Serialize (i);
   }
@@ -247,7 +250,8 @@ MeshMgtPeerLinkManFrame::Deserialize(Buffer::Iterator start)
       i = Rates.Deserialize (i);
       QoS = i.ReadNtohU16 ();
       i = MeshId.Deserialize (i);
-      i = MeshConfig.Deserialize (i);
+      MeshConfig.Deserialize (i);
+      i.Next(MeshConfig.GetSerializedSize());
     }
   i = PeerLinkMan.Deserialize (i);
   return i.GetDistanceFrom (start);

@@ -35,6 +35,7 @@ all_modules = (
     'contrib/stats',
     'applications/v4ping',
     'devices/mesh',
+    'devices/mesh/802.11s',
     )
 
 def set_options(opt):
