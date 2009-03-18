@@ -23,9 +23,6 @@
 #ifndef MESH_CONFIGURATION_H
 #define MESH_CONFIGURATION_H
 
-#include <stdint.h>
-#include "ns3/buffer.h"
-#include "ns3/dot11s-codes.h"
 #include "ns3/wifi-information-element.h"
 
 namespace ns3 {
@@ -102,10 +99,9 @@ protected:
   {
     return IE11S_MESH_CONFIGURATION;
   }
-
-  uint16_t  GetInformationSize () const;
+  uint8_t  GetInformationSize () const;
   void SerializeInformation (Buffer::Iterator i) const;
-  uint16_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
+  uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
   void PrintInformation(std::ostream& os) const;
   // TODO: Release and fill other fields in configuration
   // element

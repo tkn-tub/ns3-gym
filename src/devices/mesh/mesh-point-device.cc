@@ -21,11 +21,8 @@
 
 
 #include "ns3/node.h"
-#include "ns3/channel.h"
 #include "ns3/packet.h"
 #include "ns3/log.h"
-#include "ns3/boolean.h"
-#include "ns3/simulator.h"
 #include "ns3/mesh-point-device.h"
 
 NS_LOG_COMPONENT_DEFINE ("MeshPointDevice");

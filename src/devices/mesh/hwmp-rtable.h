@@ -26,7 +26,6 @@
 #include <map>
 #include "ns3/nstime.h"
 #include "ns3/mac48-address.h"
-#include "ns3/mac48-address-comparator.h"
 #include "ns3/net-device.h"
 #include "ns3/event-id.h"
 #include "ns3/packet.h"
@@ -101,7 +100,7 @@ private:
     uint32_t seqnum;
     std::vector<Mac48Address> precursors;
   };
-  std::map<Mac48Address, ReactiveRoute, mac48addrComparator>  m_routes;
+  std::map<Mac48Address, ReactiveRoute>  m_routes;
   std::map<uint32_t, ProactiveRoute>  m_roots;
 };
 } //namespace ns3

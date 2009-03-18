@@ -21,6 +21,7 @@
 
 #include "ns3/ie-dot11s-perr.h"
 #include "ns3/address-utils.h"
+#include "ns3/node.h"
 
 namespace ns3 {
 IeDot11sPerr::~IeDot11sPerr()
@@ -65,7 +66,7 @@ IeDot11sPerr::SerializeInformation(Buffer::Iterator i)const
         i.WriteHtonU32 (m_addressUnits[j].seqnum);
       }
   }
-uint16_t
+uint8_t
 IeDot11sPerr::DeserializeInformation(Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
@@ -83,10 +84,10 @@ IeDot11sPerr::DeserializeInformation(Buffer::Iterator start, uint8_t length)
   return i.GetDistanceFrom(start);
 }
 
-uint16_t
+uint8_t
 IeDot11sPerr::GetInformationSize() const
   {
-    uint16_t retval =
+    uint8_t retval =
        1 //ModeFlags
       +1 //NumOfDests
       +6*m_numOfDest

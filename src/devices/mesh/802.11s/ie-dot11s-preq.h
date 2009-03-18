@@ -22,13 +22,9 @@
 #ifndef WIFI_PREQ_INFORMATION_ELEMENT_H
 #define WIFI_PREQ_INFORMATION_ELEMENT_H
 
-#include <stdint.h>
 #include <vector>
 
-#include "ns3/node.h"
-#include "ns3/buffer.h"
 #include "ns3/mac48-address.h"
-#include "ns3/header.h"
 #include "ns3/dot11s-codes.h"
 #include "ns3/wifi-information-element.h"
 
@@ -108,8 +104,8 @@ protected:
     return IE11S_PREQ;
   }
   void SerializeInformation(Buffer::Iterator i) const;
-  uint16_t DeserializeInformation(Buffer::Iterator i, uint8_t length);
-  uint16_t GetInformationSize() const;
+  uint8_t DeserializeInformation(Buffer::Iterator i, uint8_t length);
+  uint8_t GetInformationSize() const;
   void PrintInformation(std::ostream& os) const;
 private:
   //how many destinations we support

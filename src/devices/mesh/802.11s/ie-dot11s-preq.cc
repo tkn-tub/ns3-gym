@@ -21,6 +21,7 @@
 
 #include "ns3/ie-dot11s-preq.h"
 #include "ns3/address-utils.h"
+#include "ns3/node.h"
 #include "ns3/assert.h"
 
 namespace ns3 {
@@ -275,7 +276,7 @@ IeDot11sPreq::SerializeInformation(Buffer::Iterator i) const
       }
   }
 
-uint16_t
+uint8_t
 IeDot11sPreq::DeserializeInformation(Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
@@ -311,10 +312,10 @@ IeDot11sPreq::DeserializeInformation(Buffer::Iterator start, uint8_t length)
     }
   return i.GetDistanceFrom(start);
 }
-uint16_t
+uint8_t
 IeDot11sPreq::GetInformationSize() const
 {
-  uint32_t retval =
+  uint8_t retval =
     1 //Flags
     +1 //Hopcount
     +1 //TTL

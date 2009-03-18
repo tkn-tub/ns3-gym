@@ -22,16 +22,14 @@
 #ifndef HWMP_STATE_H
 #define HWMP_STATE_H
 #include <map>
-#include "ns3/event-id.h"
-#include "ns3/ptr.h"
 #include "ns3/hwmp-rtable.h"
 #include "ns3/packet.h"
-#include "ns3/wifi-net-device.h"
 #include "ns3/mesh-wifi-mac.h"
 #include "ns3/ie-dot11s-preq.h"
 #include "ns3/ie-dot11s-prep.h"
 #include "ns3/ie-dot11s-perr.h"
 #include "ns3/dot11s-parameters.h"
+#include "ns3/wifi-net-device.h"
 namespace ns3 {
 /**
  * \ingroup mesh
@@ -161,8 +159,8 @@ private:
   uint32_t m_preqId;
   uint32_t m_myDsn;
   //Seqno and metric database
-  std::map<Mac48Address, uint32_t, mac48addrComparator>  m_dsnDatabase;
-  std::map<Mac48Address, uint32_t, mac48addrComparator>  m_preqMetricDatabase;
+  std::map<Mac48Address, uint32_t>  m_dsnDatabase;
+  std::map<Mac48Address, uint32_t>  m_preqMetricDatabase;
   //Disable/enable functionality
   bool  m_disabled;
   //Proactive PREQ mechanism:

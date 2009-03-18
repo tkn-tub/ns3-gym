@@ -498,14 +498,14 @@ void WifiPeerLinkDescriptor::ClearHoldingTimer()
 
 void WifiPeerLinkDescriptor::SendPeerLinkClose(dot11sReasonCode reasoncode)
 {
-  PeerLinkManagementElement peerElement;
+  IeDot11sPeerManagement peerElement;
   peerElement.SetPeerClose(m_localLinkId, m_peerLinkId, reasoncode);
   m_mac->SendPeerLinkClose(peerElement,m_peerAddress);
 }
 
 void WifiPeerLinkDescriptor::SendPeerLinkOpen()
 {
-  PeerLinkManagementElement peerElement;
+  IeDot11sPeerManagement peerElement;
   peerElement.SetPeerOpen(m_localLinkId);
   NS_ASSERT(m_mac != NULL);
   m_mac->SendPeerLinkOpen(peerElement, m_peerAddress);
@@ -513,7 +513,7 @@ void WifiPeerLinkDescriptor::SendPeerLinkOpen()
 
 void WifiPeerLinkDescriptor::SendPeerLinkConfirm()
 {
-  PeerLinkManagementElement peerElement;
+  IeDot11sPeerManagement peerElement;
   peerElement.SetPeerConfirm(m_localLinkId, m_peerLinkId);
   m_mac->SendPeerLinkConfirm(peerElement, m_peerAddress, m_assocId);
 }
@@ -694,7 +694,7 @@ void
 WifiPeerManager::SetOpenReceived(
   Mac48Address portAddress,
   Mac48Address peerAddress,
-  PeerLinkManagementElement peerMan,
+  IeDot11sPeerManagement peerMan,
   IeDot11sConfiguration conf
 )
 {
@@ -724,7 +724,7 @@ WifiPeerManager::SetConfirmReceived(
   Mac48Address portAddress,
   Mac48Address peerAddress,
   uint16_t peerAid,
-  PeerLinkManagementElement peerMan,
+  IeDot11sPeerManagement peerMan,
   IeDot11sConfiguration meshConfig
 )
 {
@@ -739,7 +739,7 @@ void
 WifiPeerManager::SetCloseReceived(
   Mac48Address portAddress,
   Mac48Address peerAddress,
-  PeerLinkManagementElement peerMan
+  IeDot11sPeerManagement peerMan
 )
 {
   PeerDescriptorsMap::iterator port = m_peerDescriptors.find(portAddress);

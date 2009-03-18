@@ -23,16 +23,9 @@
 #ifndef MESH_MGT_HEADERS_H
 #define MESH_MGT_HEADERS_H
 
-#include <stdint.h>
-
 #include "ns3/header.h"
-#include "ns3/status-code.h"
-#include "ns3/dot11s-peer-management-element.h"
 #include "ns3/supported-rates.h"
-#include "ns3/ie-dot11s-preq.h"
-#include "ns3/ie-dot11s-prep.h"
-#include "ns3/ie-dot11s-perr.h"
-#include "ns3/ie-dot11s-rann.h"
+#include "ns3/ie-dot11s-peer-management.h"
 #include "ns3/ie-dot11s-configuration.h"
 #include "ns3/ie-dot11s-beacon-timing.h"
 #include "ns3/mgt-headers.h"
@@ -70,14 +63,14 @@ public:
   void    SetQosField(uint16_t qos);
   void    SetMeshId(Ssid Id);
   void    SetIeDot11sConfiguration(IeDot11sConfiguration MeshConf);
-  void    SetPeerLinkManagementElement(PeerLinkManagementElement MeshPeerElement);
+  void    SetIeDot11sPeerManagement(IeDot11sPeerManagement meshPeerElement);
 
   uint16_t         GetAid();
   SupportedRates   GetSupportedRates();
   uint16_t         GetQosField();
   Ssid             GetMeshId();
   IeDot11sConfiguration  GetIeDot11sConfiguration();
-  PeerLinkManagementElement GetPeerLinkManagementElement();
+  IeDot11sPeerManagement GetIeDot11sPeerManagement();
 
   static  TypeId   GetTypeId();
   virtual TypeId   GetInstanceTypeId() const;
@@ -101,14 +94,14 @@ private:
   static const uint8_t MESH_MGT_HEADER_PEER_CLOSE = 3;
   // Standart is also requires a ReasonCode to be within
   // PeerLinkClose frame format, but it is present within
-  // PeerLinkManagementElement, so we did not duplicate
+  // IeDot11sPeerManagement, so we did not duplicate
   // it.
   uint16_t   Aid;  //only in Confirm
   SupportedRates   Rates;  //only in Open and Confirm
   uint16_t   QoS;  //only in Open and Confirm
   Ssid    MeshId;  //only in Open and Confirm
   IeDot11sConfiguration MeshConfig; //only in Open and Confirm
-  PeerLinkManagementElement PeerLinkMan; //in all types of frames
+  IeDot11sPeerManagement PeerLinkMan; //in all types of frames
 };
 
 }//namespace NS3

@@ -21,6 +21,7 @@
 
 #include "ns3/ie-dot11s-prep.h"
 #include "ns3/address-utils.h"
+#include "ns3/node.h"
 #include "ns3/assert.h"
 namespace ns3 {
 /********************************
@@ -175,7 +176,7 @@ IeDot11sPrep::SerializeInformation(Buffer::Iterator i) const
     WriteTo (i, m_originatorAddress);
     i.WriteHtonU32 (m_originatorSeqNumber);
   }
-uint16_t
+uint8_t
 IeDot11sPrep::DeserializeInformation(Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
@@ -190,7 +191,7 @@ IeDot11sPrep::DeserializeInformation(Buffer::Iterator start, uint8_t length)
   m_originatorSeqNumber = i.ReadNtohU32();
   return i.GetDistanceFrom(start);
 }
-uint16_t
+uint8_t
 IeDot11sPrep::GetInformationSize() const
   {
     uint32_t retval =

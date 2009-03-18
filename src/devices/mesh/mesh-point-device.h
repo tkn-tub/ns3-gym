@@ -25,8 +25,6 @@
 
 #include "ns3/net-device.h"
 #include "ns3/mac48-address.h"
-#include "ns3/nstime.h"
-#include "ns3/bridge-net-device.h"
 #include "ns3/bridge-channel.h"
 #include "ns3/mesh-l2-routing-protocol.h"
 

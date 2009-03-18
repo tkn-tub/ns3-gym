@@ -19,7 +19,6 @@ def build(bld):
         'hwmp.cc',
         'mesh-wifi-mac.cc',
         'hwmp-state.cc',
-        'dot11s-peer-management-element.cc',
         'mesh-mgt-headers.cc',
         ]
     headers = bld.new_task_gen('ns3header')
@@ -39,8 +38,6 @@ def build(bld):
         'mesh-mgt-headers.h',
         'hwmp.h',
         'tx-statistics.h',
-        'dot11s-peer-management-element.h',
-        'mac48-address-comparator.h',
         'hwmp-rtable.h',
         'mesh-wifi-peer-manager.h',
         'mesh-wifi-mac-header.h',

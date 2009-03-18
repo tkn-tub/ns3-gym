@@ -5,6 +5,7 @@ def build(bld):
     obj.source = [
         'ie-dot11s-beacon-timing.cc',
         'ie-dot11s-configuration.cc',
+        'ie-dot11s-peer-management.cc',
         'ie-dot11s-preq.cc',
         'ie-dot11s-prep.cc',
         'ie-dot11s-perr.cc',
@@ -15,6 +16,7 @@ def build(bld):
     headers.source = [
         'ie-dot11s-beacon-timing.h',
         'ie-dot11s-configuration.h',
+        'ie-dot11s-peer-management.h',
         'ie-dot11s-preq.h',
         'ie-dot11s-prep.h',
         'ie-dot11s-perr.h',

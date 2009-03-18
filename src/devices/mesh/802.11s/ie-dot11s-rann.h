@@ -22,12 +22,7 @@
 #ifndef RANN_INFORMATION_ELEMENT_H
 #define RANN_INFORMATION_ELEMENT_H
 
-#include <stdint.h>
-
-#include "ns3/buffer.h"
 #include "ns3/mac48-address.h"
-#include "ns3/node.h"
-#include "ns3/header.h"
 #include "ns3/dot11s-codes.h"
 #include "ns3/wifi-information-element.h"
 
@@ -62,8 +57,8 @@ protected:
     return IE11S_RANN;
   }
   void SerializeInformation(Buffer::Iterator i) const;
-  uint16_t DeserializeInformation(Buffer::Iterator start, uint8_t length);
-  uint16_t GetInformationSize() const;
+  uint8_t DeserializeInformation(Buffer::Iterator start, uint8_t length);
+  uint8_t GetInformationSize() const;
 private:
   uint8_t m_flags;
   uint8_t m_hopcount;

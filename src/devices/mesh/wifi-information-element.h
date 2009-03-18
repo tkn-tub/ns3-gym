@@ -136,11 +136,11 @@ protected:
   /// Own unique Element ID
   virtual WifiElementId ElementId () const = 0;
   /// Length of serialized information
-  virtual uint16_t GetInformationSize () const = 0;
+  virtual uint8_t GetInformationSize () const = 0;
   /// Serialize information
   virtual void SerializeInformation (Buffer::Iterator start) const = 0;
   /// Deserialize information
-  virtual uint16_t DeserializeInformation (Buffer::Iterator start, uint8_t length) = 0;
+  virtual uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length) = 0;
   /// Print information
   virtual void PrintInformation (std::ostream &os) const = 0;
   //\}

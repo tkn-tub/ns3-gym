@@ -90,9 +90,9 @@ protected:
     return IE11S_BEACON_TIMING;
   }
   //Serialize-deserialize methods:
-  uint16_t  GetInformationSize () const;
+  uint8_t  GetInformationSize () const;
   void SerializeInformation (Buffer::Iterator i) const;
-  uint16_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
+  uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
   void PrintInformation(std::ostream& os) const; 
 private:
   static uint16_t TimestampToU16(Time x);

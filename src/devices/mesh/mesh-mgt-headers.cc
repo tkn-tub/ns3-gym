@@ -22,12 +22,7 @@
 
 #include "ns3/mesh-mgt-headers.h"
 #include "ns3/address-utils.h"
-#include "ns3/simulator.h"
 #include "ns3/assert.h"
-#include "ns3/log.h"
-
-NS_LOG_COMPONENT_DEFINE("MeshMgtHeaders");
-
 
 namespace ns3 {
 /***********************************************************
@@ -72,7 +67,6 @@ void
 MgtMeshBeaconHeader::Serialize (Buffer::Iterator start) const
   {
     //First we pack Beacon:
-    NS_LOG_DEBUG("Serialization beacon");
     Buffer::Iterator i = start;
     MgtBeaconHeader::Serialize(i);
     i.Next (MgtBeaconHeader::GetSerializedSize());
@@ -86,7 +80,6 @@ MgtMeshBeaconHeader::Serialize (Buffer::Iterator start) const
 uint32_t
 MgtMeshBeaconHeader::Deserialize (Buffer::Iterator start)
 {
-  NS_LOG_DEBUG("Deserialization beacon");
   Buffer::Iterator i = start;
   MgtBeaconHeader::Deserialize(start);
   i.Next (MgtBeaconHeader::GetSerializedSize());
@@ -138,9 +131,9 @@ MeshMgtPeerLinkManFrame::SetIeDot11sConfiguration(IeDot11sConfiguration MeshConf
 }
 
 void
-MeshMgtPeerLinkManFrame::SetPeerLinkManagementElement(PeerLinkManagementElement MeshPeerElement)
+MeshMgtPeerLinkManFrame::SetIeDot11sPeerManagement(IeDot11sPeerManagement meshPeerElement)
 {
-  PeerLinkMan = MeshPeerElement;
+  PeerLinkMan = meshPeerElement;
 }
 
 uint16_t
@@ -173,8 +166,8 @@ MeshMgtPeerLinkManFrame::GetIeDot11sConfiguration()
   return MeshConfig;
 }
 
-PeerLinkManagementElement
-MeshMgtPeerLinkManFrame::GetPeerLinkManagementElement()
+IeDot11sPeerManagement
+MeshMgtPeerLinkManFrame::GetIeDot11sPeerManagement()
 {
   return PeerLinkMan;
 }
@@ -236,7 +229,8 @@ MeshMgtPeerLinkManFrame::Serialize(Buffer::Iterator start) const
         MeshConfig.Serialize (i);
         i.Next(MeshConfig.GetSerializedSize());
       }
-    i = PeerLinkMan.Serialize (i);
+    PeerLinkMan.Serialize (i);
+    i.Next(PeerLinkMan.GetSerializedSize());
   }
 
 uint32_t
@@ -254,7 +248,8 @@ MeshMgtPeerLinkManFrame::Deserialize(Buffer::Iterator start)
       MeshConfig.Deserialize (i);
       i.Next(MeshConfig.GetSerializedSize());
     }
-  i = PeerLinkMan.Deserialize (i);
+  PeerLinkMan.Deserialize (i);
+  i.Next(PeerLinkMan.GetSerializedSize());
   return i.GetDistanceFrom (start);
 }
 void
