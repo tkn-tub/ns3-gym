@@ -62,31 +62,31 @@ public:
   MeshWifiMac ();
   ~MeshWifiMac ();
   // inherited from WifiMac.
-  virtual void  SetSlot (Time slotTime);
-  virtual void  SetSifs (Time sifs);
-  virtual void  SetPifs (Time pifs);
-  virtual void  SetCtsTimeout (Time ctsTimeout);
-  virtual void  SetAckTimeout (Time ackTimeout);
-  virtual void  SetEifsNoDifs (Time eifsNoDifs);
+  void  SetSlot (Time slotTime);
+  void  SetSifs (Time sifs);
+  void  SetPifs (Time pifs);
+  void  SetCtsTimeout (Time ctsTimeout);
+  void  SetAckTimeout (Time ackTimeout);
+  void  SetEifsNoDifs (Time eifsNoDifs);
   virtual Time  GetSlot () const;
   virtual Time  GetSifs () const;
   virtual Time  GetPifs () const;
   virtual Time  GetCtsTimeout () const;
   virtual Time  GetAckTimeout () const;
   virtual Time  GetEifsNoDifs () const;
-  virtual void  SetWifiPhy (Ptr<WifiPhy> phy);
-  virtual void  SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
-  virtual void  Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from);
-  virtual void  Enqueue (Ptr<const Packet> packet, Mac48Address to);
+  void  SetWifiPhy (Ptr<WifiPhy> phy);
+  void  SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
+  void  Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from);
+  void  Enqueue (Ptr<const Packet> packet, Mac48Address to);
   virtual bool  SupportsSendFrom () const;
-  virtual void  SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback);
-  virtual void  SetLinkUpCallback (Callback<void> linkUp);
-  virtual void  SetLinkDownCallback (Callback<void> linkDown);
+  void  SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback);
+  void  SetLinkUpCallback (Callback<void> linkUp);
+  void  SetLinkDownCallback (Callback<void> linkDown);
   virtual Mac48Address GetAddress () const;
   virtual Mac48Address GetBssid () const;
   virtual Ssid  GetSsid () const;
-  virtual void  SetAddress (Mac48Address address);
-  virtual void  SetSsid (Ssid ssid);
+  void  SetAddress (Mac48Address address);
+  void  SetSsid (Ssid ssid);
   /**
    * \param interval is an interval between two
    * successive beacons
@@ -130,7 +130,7 @@ public:
    * a given peer manager
    */
   void          SetPeerLinkManager(Ptr<WifiPeerManager> manager);
-  virtual void  SetPreqReceivedCallback(
+  void  SetPreqReceivedCallback(
     Callback<void, IeDot11sPreq&, const Mac48Address&, const uint32_t&> cb);
   /**
    * \brief this callback is set by Hwmp routing
@@ -139,7 +139,7 @@ public:
    * \param cb is a callback to be executed when
    * receiving PREP.
    */
-  virtual void  SetPrepReceivedCallback(
+  void  SetPrepReceivedCallback(
     Callback<void, IeDot11sPrep&, const Mac48Address&, const uint32_t&> cb);
   /**
    * \brief this callback is set by Hwmp routing
@@ -148,7 +148,7 @@ public:
    * \param cb is a callback to be executed when
    * receiving PERR.
    */
-  virtual void  SetPerrReceivedCallback(
+  void  SetPerrReceivedCallback(
     Callback<void, IeDot11sPerr&, const Mac48Address&> cb);
 
   /**
@@ -158,7 +158,7 @@ public:
    * \param cb is a callback to be executed when
    * peer failure has ben detected
    */
-  virtual void            SetPeerStatusCallback(
+  void            SetPeerStatusCallback(
     Callback<void, Mac48Address, bool, uint32_t> cb);
   /**
    * \brief Sends a PREQ frame.
@@ -168,7 +168,7 @@ public:
    * \attention This method is public, because
    * HWMP makes a callback using this method
    */
-  virtual void  SendPreq(const IeDot11sPreq& preq);
+  void  SendPreq(const IeDot11sPreq& preq);
   /**
    * \brief Sends a PREP frame.
    * \param prep is prep information element
@@ -180,7 +180,7 @@ public:
    * HWMP makes a callback using this method
    */
 
-  virtual void  SendPrep(const IeDot11sPrep& prep, const Mac48Address& to);
+  void  SendPrep(const IeDot11sPrep& prep, const Mac48Address& to);
   /**
    * \brief Sends a PERR frame.
    * \param perr is perr information element
@@ -191,7 +191,7 @@ public:
    * \attention This method is public, because
    * HWMP makes a callback using this method
    */
-  virtual void  SendPerr(const IeDot11sPerr& perr, std::vector<Mac48Address> receivers);
+  void  SendPerr(const IeDot11sPerr& perr, std::vector<Mac48Address> receivers);
   /**
    * \brief Sends PeerLinkOpen frame to a given
    * address. Mac only forms a proper
@@ -242,7 +242,7 @@ public:
    * \param peerAddress is the address of
    * destination of given frame
    */
-  virtual void  PeerLinkStatus(Mac48Address peerAddress, bool status);
+  void  PeerLinkStatus(Mac48Address peerAddress, bool status);
 
   /**
    * \brief Peer Manager notifyes MAC about new
@@ -261,7 +261,7 @@ public:
   );
 private:
   void  Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
-  virtual void ForwardUp (Ptr<Packet> packet, Mac48Address src, Mac48Address dst);
+  void ForwardUp (Ptr<Packet> packet, Mac48Address src, Mac48Address dst);
   void  ForwardDown(
     Ptr<const Packet> packet,
     Mac48Address from,
@@ -305,7 +305,7 @@ private:
   void  SetBeaconGeneration (bool enable);
   bool  GetBeaconGeneration () const;
   SupportedRates GetSupportedRates () const;
-  virtual void DoDispose ();
+  void DoDispose ();
 
   Ptr<DcaTxop>   m_BE;
   Ptr<DcaTxop>   m_BK;
