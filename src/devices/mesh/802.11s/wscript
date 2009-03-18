@@ -3,7 +3,6 @@
 def build(bld):
     obj = bld.create_ns3_module('802.11s', ['wifi'])
     obj.source = [
-        'wifi-information-element.cc',
         'ie-dot11s-beacon-timing.cc',
         'ie-dot11s-configuration.cc',
         'ie-dot11s-preq.cc',
@@ -14,7 +13,6 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = '802.11s'
     headers.source = [
-        'wifi-information-element.h',
         'ie-dot11s-beacon-timing.h',
         'ie-dot11s-configuration.h',
         'ie-dot11s-preq.h',
