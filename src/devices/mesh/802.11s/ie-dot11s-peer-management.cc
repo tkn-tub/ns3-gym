@@ -118,6 +118,13 @@ IeDot11sPeerManagement::DeserializeInformation (Buffer::Iterator start, uint8_t 
 {
   Buffer::Iterator i = start;
   m_subtype  = i.ReadU8();
+  m_length = length;
+  if (m_subtype == PEER_OPEN)
+    NS_ASSERT(length == 3);
+  if (m_subtype == PEER_CONFIRM)
+    NS_ASSERT(length == 5);
+  if (m_subtype == PEER_CLOSE)
+    NS_ASSERT(length == 7);
   m_localLinkId  = i.ReadNtohU16();
   if (m_length > 3)
     m_peerLinkId = i.ReadNtohU16();
