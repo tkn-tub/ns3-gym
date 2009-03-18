@@ -29,7 +29,7 @@
 
 namespace ns3 {
 /**
- * \ingroup mesh
+ * \ingroup dot11s
  * \brief See 7.3.2.98 of 802.11s draft 2.07
  */
 class IeDot11sPerr : public WifiInformationElement

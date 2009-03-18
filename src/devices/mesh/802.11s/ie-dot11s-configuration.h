@@ -27,7 +27,7 @@
 
 namespace ns3 {
 /**
- * \ingroup mesh
+ * \ingroup dot11s
  * \brief See 7.3.2.81.1 in 802.11s draft 2.07
  */
 enum dot11sPathSelectionProtocol
@@ -36,7 +36,7 @@ enum dot11sPathSelectionProtocol
   PROTOCOL_NULL = 0x000facff,
 };
 /**
- * \ingroup mesh
+ * \ingroup dot11s
  * \brief See 7.3.2.81.2 in 802.11s draft 2.07
  */
 enum dot11sPathSelectionMetric
@@ -45,7 +45,7 @@ enum dot11sPathSelectionMetric
   METRIC_NULL    = 0x000facff,
 };
 /**
- * \ingroup mesh
+ * \ingroup dot11s
  * \brief See 7.3.2.81.3 in 802.11s draft 2.07
  */
 enum dot11sCongestionControlMode
@@ -54,7 +54,7 @@ enum dot11sCongestionControlMode
   CONGESTION_NULL    = 0x000facff,
 };
 /**
- * \ingroup mesh
+ * \ingroup dot11s
  * \brief See 7.3.2.81.4 in 802.11s draft 2.07
  */
 enum dot11sChannelPrecedence
@@ -63,7 +63,7 @@ enum dot11sChannelPrecedence
 };
 
 /**
- * \ingroup mesh
+ * \ingroup dot11s
  * \brief See 7.3.2.81.5 in 802.11s draft 2.07
  */
 class dot11sMeshCapability
@@ -84,7 +84,7 @@ public:
 };
 
 /**
- * \ingroup mesh
+ * \ingroup dot11s
  * \brief Describes Mesh Configuration Element 
  * see 7.3.2.81 of 802.11s draft 2.07
  */

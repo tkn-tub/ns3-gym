@@ -28,7 +28,7 @@
 
 namespace ns3 {
 /**
- * \ingroup mesh
+ * \ingroup dot11s
  * \brief See 7.3.2.85 of draft 2.07
  */
 class IeDot11sPeerManagement : public WifiInformationElement

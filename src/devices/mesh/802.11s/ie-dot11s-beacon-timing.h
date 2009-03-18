@@ -30,7 +30,7 @@
 #include "ns3/wifi-information-element.h"
 namespace ns3 {
 /**
- * \ingroup mesh
+ * \ingroup dot11s
  * \brief Describes one unit of beacon timing element
  */
 class IeDot11sBeaconTimingUnit : public RefCountBase
@@ -60,14 +60,14 @@ public:
 };
 
 /**
- * \ingroup mesh
+ * \ingroup dot11s
  * \brief See 7.3.2.89 of 802.11s draft 2.07
  */
 class IeDot11sBeaconTiming : public WifiInformationElement
 {
 public:
   /**
-   * \ingroup mesh
+   * \ingroup dot11s
    * This type is a list of timing elements obtained from neigbours with their beacons:
    */
   typedef std::list< Ptr<IeDot11sBeaconTimingUnit> > NeighboursTimingUnitsList;
