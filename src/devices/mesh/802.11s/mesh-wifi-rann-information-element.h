@@ -29,6 +29,7 @@
 #include "ns3/node.h"
 #include "ns3/header.h"
 #include "ns3/dot11s-codes.h"
+#include "ns3/wifi-information-element.h"
 
 namespace ns3 {
 /**
@@ -48,23 +49,23 @@ public:
   void SetOriginatorAddress(Mac48Address originator_address);
   void SetDestSeqNumber(uint32_t dest_seq_number);
   void SetMetric(uint32_t metric);
-  virtual void Serialize(Buffer::Iterator i) const;
-  virtual uint32_t Deserialize(Buffer::Iterator start);
-  virtual uint32_t GetSerializedSize() const;
   uint8_t GetFlags();
   uint8_t GetHopcount();
   uint8_t GetTTL();
   Mac48Address GetOriginatorAddress();
   uint32_t GetDestSeqNumber();
   uint32_t GetMetric();
-
   void DecrementTtl();
   void IncrementMetric(uint32_t metric);
-
-private:
-  static uint8_t ElementId() {
-    return (uint8_t)IE11S_RANN;
+protected:
+  WifiElementId ElementId() const{
+    return IE11S_RANN;
   }
+  void SerializeInformation(Buffer::Iterator i) const;
+  uint16_t DeserializeInformation(Buffer::Iterator start, uint8_t length);
+  uint16_t GetInformationSize() const;
+  uint8_t GetLengthField() const;
+private:
   uint8_t m_flags;
   uint8_t m_hopcount;
   uint8_t m_ttl;

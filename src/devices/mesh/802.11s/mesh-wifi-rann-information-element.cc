@@ -115,10 +115,8 @@ WifiRannInformationElement::GetOriginatorAddress()
   return m_originatorAddress;
 }
 void
-WifiRannInformationElement::Serialize(Buffer::Iterator i) const
+WifiRannInformationElement::SerializeInformation(Buffer::Iterator i) const
   {
-    i.WriteU8 (ElementId());
-    i.WriteU8 (21);//length = 21
     i.WriteU8 (m_flags);
     i.WriteU8 (m_hopcount);
     i.WriteU8 (m_ttl);
@@ -126,12 +124,10 @@ WifiRannInformationElement::Serialize(Buffer::Iterator i) const
     i.WriteHtonU32 (m_destSeqNumber);
     i.WriteHtonU32 (m_metric);
   }
-uint32_t
-WifiRannInformationElement::Deserialize(Buffer::Iterator start)
+uint16_t
+WifiRannInformationElement::DeserializeInformation(Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
-  NS_ASSERT (ElementId() == i.ReadU8());
-  i.Next (1);// length is constant
   m_flags = i.ReadU8();
   m_hopcount = i.ReadU8();
   m_ttl = i.ReadU8();
@@ -140,20 +136,23 @@ WifiRannInformationElement::Deserialize(Buffer::Iterator start)
   m_metric = i.ReadNtohU32();
   return i.GetDistanceFrom(start);
 }
-uint32_t
-WifiRannInformationElement::GetSerializedSize() const
+uint16_t
+WifiRannInformationElement::GetInformationSize() const
   {
-    uint32_t retval =
-       1//ElementId
-      +1//Length
-      +1//Flags
+    uint16_t retval =
+      1//Flags
       +1//Hopcount
       +1//TTL
       +6//OriginatorAddress
       +4//DestSeqNumber
       +4;//Metric
     return retval;
-  };
+  }
 
+uint8_t
+WifiRannInformationElement::GetLengthField() const
+{
+  return GetInformationSize();
+}
 }
 

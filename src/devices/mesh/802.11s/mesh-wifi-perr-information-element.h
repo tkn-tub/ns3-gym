@@ -29,22 +29,19 @@
 #include "ns3/hwmp-rtable.h"
 #include "ns3/header.h"
 #include "ns3/dot11s-codes.h"
+#include "ns3/wifi-information-element.h"
 
 namespace ns3 {
 /**
  * \ingroup mesh
  */
-class WifiPerrInformationElement : public Header
+class WifiPerrInformationElement : public WifiInformationElement
 {
 public:
   WifiPerrInformationElement();
   ~WifiPerrInformationElement();
   static  TypeId   GetTypeId();
   virtual TypeId   GetInstanceTypeId() const;
-  virtual void     Print(std::ostream &os) const;
-  virtual void     Serialize(Buffer::Iterator i) const;
-  virtual uint32_t Deserialize(Buffer::Iterator start);
-  virtual uint32_t GetSerializedSize() const;
 #if 0
   //RESERVED in D2.07
   uint8_t   GetModeFlags();
@@ -57,10 +54,16 @@ public:
   GetAddressUnitVector();
   void   DeleteAddressUnit(Mac48Address address);
   void   ResetPerr();
+protected:
+  WifiElementId ElementId() const{
+    return IE11S_PERR;
+  };
+  void  SerializeInformation(Buffer::Iterator i) const;
+  uint16_t  DeserializeInformation(Buffer::Iterator start, uint8_t length);
+  void PrintInformation(std::ostream& os) const;
+  uint16_t  GetInformationSize() const;
+  uint8_t GetLengthField() const;
 private:
-  static uint8_t ElementId() {
-    return (uint8_t)IE11S_PERR;
-  }
   uint8_t   m_numOfDest;
   std::vector<HwmpRtable::FailedDestination>
   m_addressUnits;

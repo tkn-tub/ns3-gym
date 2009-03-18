@@ -35,7 +35,7 @@ WifiPerrInformationElement::GetTypeId()
   return tid;
 }
 void
-WifiPerrInformationElement::Print(std::ostream &os) const
+WifiPerrInformationElement::PrintInformation(std::ostream &os) const
   {
     // FILL
   }
@@ -54,10 +54,8 @@ WifiPerrInformationElement::GetNumOfDest()
   return m_numOfDest;
 }
 void
-WifiPerrInformationElement::Serialize(Buffer::Iterator i)const
+WifiPerrInformationElement::SerializeInformation(Buffer::Iterator i)const
   {
-    i.WriteU8 (ElementId());
-    i.WriteU8 (2+10*m_numOfDest);
     i.WriteU8 (0);
     i.WriteU8 (m_numOfDest);
     NS_ASSERT (m_numOfDest == m_addressUnits.size());
@@ -67,12 +65,10 @@ WifiPerrInformationElement::Serialize(Buffer::Iterator i)const
         i.WriteHtonU32 (m_addressUnits[j].seqnum);
       }
   }
-uint32_t
-WifiPerrInformationElement::Deserialize(Buffer::Iterator start)
+uint16_t
+WifiPerrInformationElement::DeserializeInformation(Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
-  NS_ASSERT (ElementId() == i.ReadU8());
-  int length = i.ReadU8();
   i.Next (1); //Mode flags is not used now
   m_numOfDest = i.ReadU8();
   NS_ASSERT ((2+10*m_numOfDest) == length);
@@ -87,19 +83,21 @@ WifiPerrInformationElement::Deserialize(Buffer::Iterator start)
   return i.GetDistanceFrom(start);
 }
 
-uint32_t
-WifiPerrInformationElement::GetSerializedSize() const
+uint16_t
+WifiPerrInformationElement::GetInformationSize() const
   {
-    uint32_t retval =
-       1 //Element Id
-      +1 //Length
-      +1 //ModeFlags
+    uint16_t retval =
+       1 //ModeFlags
       +1 //NumOfDests
       +6*m_numOfDest
       +4*m_numOfDest;
     return retval;
   }
-
+uint8_t
+WifiPerrInformationElement::GetLengthField() const
+{
+  return 2+10*m_numOfDest;
+}
 void
 WifiPerrInformationElement::AddAddressUnit(HwmpRtable::FailedDestination unit)
 {
