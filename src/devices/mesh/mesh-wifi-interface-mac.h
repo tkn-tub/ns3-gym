@@ -25,13 +25,12 @@
 #include <stdint.h>
 #include <map>
 #include "ns3/mac48-address.h"
-#include "ns3/mac48-address-comparator.h"
 #include "ns3/mgt-headers.h"
 #include "ns3/mesh-mgt-headers.h"
 #include "ns3/callback.h"
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
-#include "ns3/mesh-wifi-beacon-timing-element.h"
+#include "ns3/ie-dot11s-beacon-timing.h"
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/mesh-wifi-peer-manager.h"
 #include "ns3/wifi-mac.h"
@@ -205,7 +204,7 @@ private:
   DcfManager* m_dcfManager;
   /// Middle MAC sublayer
   MacRxMiddle* m_rxMiddle;
-  /// Low MAX sublayer
+  /// Low MAC sublayer
   Ptr<MacLow> m_low;
   /// My address
   Mac48Address m_address;
@@ -221,7 +220,5 @@ private:
 };
 
 } // namespace ns3
-
-
 
 #endif /* MESHWIFIINTERFACEMAC_H_ */
