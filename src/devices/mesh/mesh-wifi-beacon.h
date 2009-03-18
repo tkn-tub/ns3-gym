@@ -51,7 +51,7 @@ public:
   /// Read standard Wifi beacon header
   MgtBeaconHeader Header () const { return m_header; }
   /// Add information element
-  void AddInformationElement (const WifiInformationElement * ie);
+  void AddInformationElement (Ptr<WifiInformationElement> ie);
   /// Create frame = { header + all information elements sorted by ElementId() }
   Ptr<Packet> CreatePacket (); 
   
@@ -59,7 +59,7 @@ private:
   /// Beacon header
   MgtBeaconHeader m_header;
   /// List of information elements added 
-  std::vector<const WifiInformationElement *> m_elements;
+  std::vector< Ptr<WifiInformationElement> > m_elements;
 };
 
 }

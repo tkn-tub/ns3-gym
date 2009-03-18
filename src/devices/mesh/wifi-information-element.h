@@ -22,6 +22,7 @@
 #define WIFIINFORMATIONELEMENT_H_
 
 #include "ns3/header.h"
+#include "ns3/ref-count-base.h"
 
 namespace ns3 {
 
@@ -70,7 +71,8 @@ enum WifiElementId {
  * Element ID as defined in this standard. The Length field specifies the number of octets in the Information
  * field. 
  */
-class WifiInformationElement : public Header 
+class WifiInformationElement : public Header, 
+                               public RefCountBase     // need this to use Ptr<WifiInformationElement> 
 {
 public:
   /// Support object system
