@@ -62,9 +62,15 @@ protected:
 private:
   uint8_t   m_length;
   uint8_t   m_subtype;
-  uint16_t  m_localLinkId; //always is present
-  uint16_t  m_peerLinkId; //only in confirm and may be present in close frame
-  dot11sReasonCode m_reasonCode; //only in close frame
+  uint16_t  m_localLinkId;
+  /**
+   * Present within confirm and may be present in close
+   */
+  uint16_t  m_peerLinkId;
+  /**
+   * Present only within close frame
+   */
+  dot11sReasonCode m_reasonCode;
 };
 } //namespace NS3
 #endif

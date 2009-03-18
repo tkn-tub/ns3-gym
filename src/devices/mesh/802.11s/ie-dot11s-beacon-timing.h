@@ -44,12 +44,18 @@ public:
   uint16_t GetLastBeacon();
   uint16_t GetBeaconInterval();
 private:
-  //Least significant octet of AID:
+  /**
+   * Least significant octet of AID:
+   */
   uint8_t AID;
-  //Last time we received a beacon in accordance with a
-  //local TSF measured in 256 microseconds unit:
+  /**
+   * Last time we received a beacon in accordance with a
+   * local TSF measured in 256 microseconds unit:
+   */
   uint16_t LastBeacon;
-  //Beacon interval of remote mesh point:
+  /**
+   * Beacon interval of remote mesh point:
+   */
   uint16_t BeaconInterval;
 };
 
@@ -66,30 +72,26 @@ public:
   typedef std::list< Ptr<IeDot11sBeaconTimingUnit> > NeighboursTimingUnitsList;
 
   IeDot11sBeaconTiming();
-  //This methods are needed for beacon collision
-  //avoidance module:
+  /**
+   * This methods are needed for beacon collision
+   * avoidance module:
+   */
   NeighboursTimingUnitsList GetNeighboursTimingElementsList();
-  //The arguments of the following methods are different
-  //from internalBeaconTimingElementUnint. This was made
-  //for better communication with peer manager.
-  //BeaconTimingElement class should convert it into
-  //proper types:
   void AddNeighboursTimingElementUnit(
     uint16_t aid,
-    Time last_beacon, //MicroSeconds!
-    Time beacon_interval //MicroSeconds!
+    Time last_beacon,
+    Time beacon_interval
   );
   void   DelNeighboursTimingElementUnit(
     uint16_t aid,
-    Time  last_beacon, //MicroSeconds!
-    Time  beacon_interval //MicroSeconds!
+    Time  last_beacon,
+    Time  beacon_interval
   );
   void   ClearTimingElement();
 protected:
   WifiElementId ElementId() const {
     return IE11S_BEACON_TIMING;
   }
-  //Serialize-deserialize methods:
   uint8_t  GetInformationSize () const;
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
@@ -99,8 +101,6 @@ private:
   static uint16_t BeaconIntervalToU16(Time x);
   static uint8_t AidToU8(uint16_t x);
   NeighboursTimingUnitsList  m_neighbours;
-  //The maximum size of this element:
-  const static uint16_t DEFAULT_MAX_SIZE = 255*5 +2;
   uint16_t  m_maxSize;
   uint16_t  m_numOfUnits;
 };

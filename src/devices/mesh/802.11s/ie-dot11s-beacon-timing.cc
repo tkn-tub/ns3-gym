@@ -71,10 +71,9 @@ IeDot11sBeaconTimingUnit::GetBeaconInterval()
 /*******************************************
  * IeDot11sBeaconTiming
  *******************************************/
-IeDot11sBeaconTiming::IeDot11sBeaconTiming()
+IeDot11sBeaconTiming::IeDot11sBeaconTiming():
+  m_numOfUnits(0)
 {
-  m_maxSize = DEFAULT_MAX_SIZE;
-  m_numOfUnits = 0;
 }
 
 IeDot11sBeaconTiming::NeighboursTimingUnitsList

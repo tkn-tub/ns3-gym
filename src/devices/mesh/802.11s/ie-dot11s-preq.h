@@ -37,7 +37,6 @@ class DestinationAddressUnit : public RefCountBase
 public:
   DestinationAddressUnit();
   void SetFlags(bool doFlag, bool rfflag);
-  //void SetPerDestFlags(uint8_t per_dest_flags);
   void SetDestinationAddress(Mac48Address dest_address);
   void SetDestSeqNumber(uint32_t dest_seq_number);
   bool IsDo();
@@ -71,7 +70,6 @@ public:
   void DelDestinationAddressElement(Mac48Address dest_address);
   void ClearDestinationAddressElement();
   std::vector<Ptr<DestinationAddressUnit> > GetDestinationList ();
-  //void SetFlags(uint8_t flags);
   void SetUnicastPreq();
   /*
    * \brief In proactive case: need we send PREP
@@ -86,7 +84,6 @@ public:
   void SetMetric(uint32_t metric);
   void SetDestCount(uint8_t dest_count);
 
-  //uint8_t  GetFlags() const ;
   bool  IsUnicastPreq() const;
   bool  IsNeedNotPrep() const;
   uint8_t  GetHopCount() const;
@@ -108,9 +105,13 @@ protected:
   uint8_t GetInformationSize() const;
   void PrintInformation(std::ostream& os) const;
 private:
-  //how many destinations we support
+  /**
+   * how many destinations we support
+   */
   uint8_t m_maxSize; //TODO: make as an attrubute
-  //Fields:
+  /**
+   * Fields of information element:
+   */
   uint8_t m_flags;
   uint8_t m_hopCount;
   uint8_t m_ttl;
