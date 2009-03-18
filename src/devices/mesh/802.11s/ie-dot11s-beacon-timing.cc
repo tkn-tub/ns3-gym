@@ -19,7 +19,7 @@
  */
 
 
-#include "ns3/mesh-wifi-beacon-timing-element.h"
+#include "ns3/ie-dot11s-beacon-timing.h"
 namespace ns3 {
 /*******************************************
  * WifiBeaconTimingElementUnit

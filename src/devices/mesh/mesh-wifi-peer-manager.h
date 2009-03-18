@@ -30,7 +30,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/dot11s-peer-management-element.h"
-#include "ns3/mesh-wifi-beacon-timing-element.h"
+#include "ns3/ie-dot11s-beacon-timing.h"
 #include "ns3/mesh-wifi-mac.h"
 
 #include <list>

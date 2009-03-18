@@ -28,9 +28,9 @@
 #include "ns3/packet.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/mesh-wifi-mac.h"
-#include "ns3/mesh-wifi-preq-information-element.h"
-#include "ns3/mesh-wifi-prep-information-element.h"
-#include "ns3/mesh-wifi-perr-information-element.h"
+#include "ns3/ie-dot11s-preq.h"
+#include "ns3/ie-dot11s-prep.h"
+#include "ns3/ie-dot11s-perr.h"
 #include "ns3/dot11s-parameters.h"
 namespace ns3 {
 /**

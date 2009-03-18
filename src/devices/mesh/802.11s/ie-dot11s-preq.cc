@@ -19,7 +19,7 @@
  */
 
 
-#include "ns3/mesh-wifi-preq-information-element.h"
+#include "ns3/ie-dot11s-preq.h"
 #include "ns3/address-utils.h"
 #include "ns3/assert.h"
 

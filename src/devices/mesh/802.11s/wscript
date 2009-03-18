@@ -4,23 +4,23 @@ def build(bld):
     obj = bld.create_ns3_module('802.11s', ['wifi'])
     obj.source = [
         'wifi-information-element.cc',
-        'mesh-wifi-beacon-timing-element.cc',
-        'mesh-configuration-element.cc',
-        'mesh-wifi-preq-information-element.cc',
-        'mesh-wifi-prep-information-element.cc',
-        'mesh-wifi-perr-information-element.cc',
-        'mesh-wifi-rann-information-element.cc',
+        'ie-dot11s-beacon-timing.cc',
+        'ie-dot11s-configuration.cc',
+        'ie-dot11s-preq.cc',
+        'ie-dot11s-prep.cc',
+        'ie-dot11s-perr.cc',
+        'ie-dot11s-rann.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = '802.11s'
     headers.source = [
         'wifi-information-element.h',
-        'mesh-wifi-beacon-timing-element.h',
-        'mesh-configuration-element.h',
-        'mesh-wifi-preq-information-element.h',
-        'mesh-wifi-prep-information-element.h',
-        'mesh-wifi-perr-information-element.h',
-        'mesh-wifi-rann-information-element.h',
+        'ie-dot11s-beacon-timing.h',
+        'ie-dot11s-configuration.h',
+        'ie-dot11s-preq.h',
+        'ie-dot11s-prep.h',
+        'ie-dot11s-perr.h',
+        'ie-dot11s-rann.h',
         ]
 
 #    obj = bld.create_ns3_program('wifi-phy-test',

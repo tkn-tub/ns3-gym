@@ -20,7 +20,7 @@
  */
 
 
-#include "ns3/mesh-configuration-element.h"
+#include "ns3/ie-dot11s-configuration.h"
 #include "ns3/assert.h"
 
 //NS_LOG_COMPONENT_DEFINE ("MeshConfigurationElement");

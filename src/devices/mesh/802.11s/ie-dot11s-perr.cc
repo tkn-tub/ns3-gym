@@ -19,7 +19,7 @@
  */
 
 
-#include "ns3/mesh-wifi-perr-information-element.h"
+#include "ns3/ie-dot11s-perr.h"
 #include "ns3/address-utils.h"
 
 namespace ns3 {
