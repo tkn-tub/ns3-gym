@@ -37,7 +37,6 @@ def build(bld):
         'hwmp.h',
         'tx-statistics.h',
         'dot11s-peer-management-element.h',
-        'mac48-address-comparator.h',
         'hwmp-rtable.h',
         'mesh-wifi-peer-manager.h',
         'mesh-wifi-mac-header.h',

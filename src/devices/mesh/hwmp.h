@@ -28,7 +28,6 @@
 #include "ns3/tag.h"
 #include "ns3/object.h"
 #include "ns3/mac48-address.h"
-#include "ns3/mac48-address-comparator.h"
 #include "ns3/mesh-l2-routing-protocol.h"
 #include "ns3/packet.h"
 #include "ns3/ptr.h"
@@ -249,7 +248,7 @@ private:
    * \attention mesh seqno is processed at HWMP
    */
   uint32_t m_seqno;
-  std::map<Mac48Address, uint32_t/*, mac48addrComparator*/>
+  std::map<Mac48Address, uint32_t/**/>
   m_seqnoDatabase;
   //Timers:
   /**
@@ -269,7 +268,7 @@ private:
    * Keeps PREQ retry timers for every
    * destination
    */
-  std::map<Mac48Address, EventId, mac48addrComparator>
+  std::map<Mac48Address, EventId>
   m_timeoutDatabase;
   /**
    * Configurable parameters:

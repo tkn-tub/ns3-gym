@@ -161,8 +161,8 @@ private:
   uint32_t m_preqId;
   uint32_t m_myDsn;
   //Seqno and metric database
-  std::map<Mac48Address, uint32_t, mac48addrComparator>  m_dsnDatabase;
-  std::map<Mac48Address, uint32_t, mac48addrComparator>  m_preqMetricDatabase;
+  std::map<Mac48Address, uint32_t>  m_dsnDatabase;
+  std::map<Mac48Address, uint32_t>  m_preqMetricDatabase;
   //Disable/enable functionality
   bool  m_disabled;
   //Proactive PREQ mechanism:

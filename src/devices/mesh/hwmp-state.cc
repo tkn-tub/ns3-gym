@@ -184,7 +184,7 @@ HwmpState::ReceivePreq(IeDot11sPreq& preq,  const Mac48Address& from, const uint
   if (preq.GetTtl() == 0)
     return;
   //acceptance cretirea:
-  std::map<Mac48Address, uint32_t, mac48addrComparator>::iterator i = m_dsnDatabase.find(preq.GetOriginatorAddress());
+  std::map<Mac48Address, uint32_t>::iterator i = m_dsnDatabase.find(preq.GetOriginatorAddress());
   if (i == m_dsnDatabase.end())
     {
       m_dsnDatabase[preq.GetOriginatorAddress()] = preq.GetOriginatorSeqNumber();
@@ -197,7 +197,7 @@ HwmpState::ReceivePreq(IeDot11sPreq& preq,  const Mac48Address& from, const uint
       if (i->second == preq.GetOriginatorSeqNumber())
         {
           //find metric
-          std::map<Mac48Address, uint32_t, mac48addrComparator>::iterator j =
+          std::map<Mac48Address, uint32_t>::iterator j =
             m_preqMetricDatabase.find(preq.GetOriginatorAddress());
           NS_ASSERT(j != m_dsnDatabase.end());
           if (j->second <= preq.GetMetric())
@@ -319,7 +319,7 @@ HwmpState::ReceivePrep(IeDot11sPrep& prep, const Mac48Address& from, const uint3
   prep.DecrementTtl();
   prep.IncrementMetric(metric);
   //acceptance cretirea:
-  std::map<Mac48Address, uint32_t, mac48addrComparator>::iterator i = m_dsnDatabase.find(prep.GetDestinationAddress());
+  std::map<Mac48Address, uint32_t>::iterator i = m_dsnDatabase.find(prep.GetDestinationAddress());
   if (i == m_dsnDatabase.end())
     {
       m_dsnDatabase[prep.GetDestinationAddress()] = prep.GetDestinationSeqNumber();

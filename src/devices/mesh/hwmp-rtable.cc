@@ -70,7 +70,7 @@ HwmpRtable::AddReactivePath(
   uint32_t seqnum
 )
 {
-  std::map<Mac48Address, ReactiveRoute, mac48addrComparator>::iterator i = m_routes.find(destination);
+  std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find(destination);
   if (i == m_routes.end())
     {
       ReactiveRoute newroute;
@@ -135,7 +135,7 @@ void
 HwmpRtable::AddPrecursor(Mac48Address destination, uint32_t port, Mac48Address precursor)
 {
   bool should_add = true;
-  std::map<Mac48Address, ReactiveRoute, mac48addrComparator>::iterator i = m_routes.find(destination);
+  std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find(destination);
   if ((i != m_routes.end()) && (i->second.port == port))
     {
       for (unsigned int j = 0 ; j < i->second.precursors.size(); j ++)
@@ -178,7 +178,7 @@ HwmpRtable::DeleteProactivePath(Mac48Address root, uint32_t port)
 void
 HwmpRtable::DeleteReactivePath(Mac48Address destination, uint32_t port)
 {
-  std::map<Mac48Address, ReactiveRoute, mac48addrComparator>::iterator i = m_routes.find(destination);
+  std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find(destination);
   if (i != m_routes.end())
     if (i->second.port ==  port)
       m_routes.erase(i);
@@ -192,7 +192,7 @@ HwmpRtable::LookupReactive(Mac48Address destination)
   result.metric = MAX_METRIC;
   result.ifIndex = PORT_ANY;
 
-  std::map<Mac48Address, ReactiveRoute, mac48addrComparator>::iterator i = m_routes.find(destination);
+  std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find(destination);
   if (i == m_routes.end())
     return result;
   result.ifIndex = i->second.port;
@@ -213,7 +213,7 @@ HwmpRtable::LookupProactive(uint32_t port)
   result.retransmitter = Mac48Address::GetBroadcast();
   result.metric = MAX_METRIC;
   result.ifIndex = PORT_ANY;
-  std::map<uint32_t, ProactiveRoute, mac48addrComparator>::iterator i = m_roots.find(port);
+  std::map<uint32_t, ProactiveRoute>::iterator i = m_roots.find(port);
   if (i == m_roots.end())
     return result;
   result.ifIndex = i->first;
@@ -229,7 +229,7 @@ std::vector<HwmpRtable::FailedDestination>
 HwmpRtable::GetUnreachableDestinations(Mac48Address peerAddress, uint32_t port)
 {
   std::vector<FailedDestination> retval;
-  for (std::map<Mac48Address, ReactiveRoute, mac48addrComparator>::iterator i = m_routes.begin(); i!= m_routes.end(); i++)
+  for (std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.begin(); i!= m_routes.end(); i++)
     if ((i->second.retransmitter == peerAddress)&&(i->second.port == port))
       {
         FailedDestination dst;
@@ -241,7 +241,7 @@ HwmpRtable::GetUnreachableDestinations(Mac48Address peerAddress, uint32_t port)
   /**
    * Lookup a path to root
    */
-  std::map<uint32_t, ProactiveRoute, mac48addrComparator>::iterator i = m_roots.find(port);
+  std::map<uint32_t, ProactiveRoute>::iterator i = m_roots.find(port);
   if ((i != m_roots.end())&&(i->second.retransmitter == peerAddress))
     {
       FailedDestination dst;
@@ -254,7 +254,7 @@ HwmpRtable::GetUnreachableDestinations(Mac48Address peerAddress, uint32_t port)
 uint32_t
 HwmpRtable::RequestSeqnum(Mac48Address destination)
 {
-  std::map<Mac48Address, ReactiveRoute, mac48addrComparator>::iterator i = m_routes.find(destination);
+  std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find(destination);
   if (i == m_routes.end())
     return 0;
   return i->second.seqnum;
@@ -264,13 +264,13 @@ std::vector<Mac48Address>
 HwmpRtable::GetPrecursors(Mac48Address destination, uint32_t port)
 {
   std::vector<Mac48Address> retval;
-  std::map<uint32_t, ProactiveRoute, mac48addrComparator>::iterator root = m_roots.find(port);
+  std::map<uint32_t, ProactiveRoute>::iterator root = m_roots.find(port);
   if ((root != m_roots.end()) &&(root->second.root == destination))
     {
       for (unsigned int i = 0; i < root->second.precursors.size(); i ++)
         retval.push_back(root->second.precursors[i]);
     }
-  std::map<Mac48Address, ReactiveRoute, mac48addrComparator>::iterator route = m_routes.find(destination);
+  std::map<Mac48Address, ReactiveRoute>::iterator route = m_routes.find(destination);
   if ( (route != m_routes.end()) && (route->second.port == port) )
     {
       for (unsigned int i = 0; i < route->second.precursors.size(); i ++)
