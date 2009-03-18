@@ -31,6 +31,7 @@ def build(bld):
         'mesh-l2-routing-protocol.h',
         'mesh-wifi-beacon.h',
         'mesh-wifi-interface-mac.h',
+        'mesh-wifi-interface-mac-plugin.h',
         # Dirty
         'dot11s-codes.h',
         'hwmp-state.h',

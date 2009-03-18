@@ -35,6 +35,7 @@
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/mesh-wifi-peer-manager.h"
 #include "ns3/wifi-mac.h"
+#include "ns3/mesh-wifi-interface-mac-plugin.h"
 
 namespace ns3 {
 
@@ -137,7 +138,8 @@ public:
   
   ///\name Plugins
   //\{
-  // TODO
+  /// Install plugin. TODO return unique ID to allow unregister plugins
+  void InstallPlugin(Ptr<MeshWifiInterfaceMacPlugin> plugin);
   //\}
   
 private:
@@ -212,6 +214,10 @@ private:
   
   /// "Timer" for the next beacon 
   EventId m_beaconSendEvent;
+  
+  typedef std::vector< Ptr<MeshWifiInterfaceMacPlugin> > PluginList; 
+  /// List of all installed plugins
+  PluginList m_plugins;
 };
 
 } // namespace ns3

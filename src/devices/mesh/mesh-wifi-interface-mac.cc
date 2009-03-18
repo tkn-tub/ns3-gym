@@ -300,6 +300,16 @@ MeshWifiInterfaceMac::DoDispose ()
 }
 
 //-----------------------------------------------------------------------------
+// Plugins
+//-----------------------------------------------------------------------------
+void 
+MeshWifiInterfaceMac::InstallPlugin( Ptr<MeshWifiInterfaceMacPlugin> plugin)
+{
+  plugin->SetParent(this);
+  m_plugins.push_back(plugin);
+}
+
+//-----------------------------------------------------------------------------
 // Forward frame up/down
 //-----------------------------------------------------------------------------
 void
@@ -310,51 +320,33 @@ MeshWifiInterfaceMac::ForwardUp (Ptr<Packet> packet, Mac48Address src, Mac48Addr
 }
 
 void
-MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to)
+MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address from, Mac48Address to)
 {
-  // 1. Create and add mesh header using routing information
+  // copy packet to allow modifications
+  Ptr<Packet> packet = const_packet->Copy();
+  
   WifiMacHeader hdr;
-  Ptr<Packet> packet_to_send = packet->Copy();
-  
-  /*
-   TODO:
-  for all plugins {
-    plugin.UpdateOutcomingPacket....(packet, from, to);
-  }
-  */
-  
-  /*
-  WifiMeshHeader meshHdr;
-  
-  // TODO: Address 1 we receive from HWMP tag
-  HwmpTag tag;
-  NS_ASSERT(packet->FindFirstMatchingTag(tag));
-  meshHdr.SetMeshTtl(tag.GetTtl());
-  meshHdr.SetMeshSeqno(tag.GetSeqno());
-#if 0
-  NS_LOG_DEBUG(
-    "TX Packet sa = "<<from<<
-    ", da = "<<to<<
-    ", ra = "<<tag.GetAddress()<<
-    ", I am "<<GetAddress()<<
-    ", ttl = "<<(int)meshHdr.GetMeshTtl()
-  );
-#endif
-  if (to!= Mac48Address::GetBroadcast())
-    NS_ASSERT(tag.GetAddress()!=Mac48Address::GetBroadcast());
-  
   hdr.SetTypeData ();
-  hdr.SetAddr1 (tag.GetAddress());
   hdr.SetAddr2 (GetAddress ());
   hdr.SetAddr3 (to);
   hdr.SetAddr4 (from);
   hdr.SetDsFrom ();
   hdr.SetDsTo ();
   
-  packet_to_send->AddHeader(meshHdr);
-  */
+  // Address 1 is unknwon here. Routing plugin is responsible to correctly set it.
+  hdr.SetAddr1 (Mac48Address ());
   
-  // 2. Queue frame
+  // Filter packet through all installed plugins
+  for(PluginList::const_iterator i = m_plugins.begin(); i != m_plugins.end(); ++i)
+    {
+      bool drop = !((*i)->UpdateOutcomingFrame(packet, hdr, from, to));
+      if (drop) return; // plugin drops frame
+    }
+  
+  // Assert that address1 is set. Assert will fail e.g. if there is no installed routing plugin.
+  NS_ASSERT(hdr.GetAddr1() != Mac48Address() );
+  
+  // Queue frame
   WifiRemoteStation *destination = m_stationManager->Lookup (to);
 
   if (destination->IsBrandNew ())
@@ -367,7 +359,7 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, 
         }
       destination->RecordDisassociated ();
     }
-  m_BE->Queue (packet_to_send, hdr);
+  m_BE->Queue (packet, hdr);
 }
 
 SupportedRates
@@ -476,7 +468,6 @@ void MeshWifiInterfaceMac::ShiftTBTT(Time shift)
   m_beaconSendEvent = Simulator::Schedule (GetTBTT(), &MeshWifiInterfaceMac::SendBeacon, this);
 }
 
-
 void 
 MeshWifiInterfaceMac::ScheduleNextBeacon()
 {
@@ -496,205 +487,60 @@ MeshWifiInterfaceMac::SendBeacon ()
   // Form & send beacon
   MeshWifiBeacon beacon(GetSsid (), GetSupportedRates (), m_beaconInterval.GetMicroSeconds ());
   
-  /*
-    TODO ask all plugins to add smth. to beacon
-   for all plugins {
-     plugin.UpdateBeacon(beacon);
-   }
-  */
+  // Ask all plugins to add their specific information elements to beacon
+  for(PluginList::const_iterator i = m_plugins.begin(); i != m_plugins.end(); ++i)
+    (*i)->UpdateBeacon(beacon);
   
   m_beaconDca->Queue(beacon.CreatePacket(), beacon.CreateHeader(GetAddress()));
   
   ScheduleNextBeacon();
 }
 
-
 void
 MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
-  /* TODO
+  // Process beacon
   if (hdr->IsBeacon ())
     {
-      MgtMeshBeaconHeader beacon;
+      MgtBeaconHeader beacon_hdr;
       Mac48Address from = hdr->GetAddr2();
-      packet->RemoveHeader (beacon);
+      
+      packet->PeekHeader (beacon_hdr);
+      
       NS_LOG_DEBUG("Beacon received from "<<hdr->GetAddr2()<<
                    " to "<<GetAddress()<<
                    " at "<<Simulator::Now ().GetMicroSeconds ()<<
                    " microseconds");
-#if 0
-      NeighboursTimingUnitsList neighbours;
-      neighbours = beacon.GetWifiBeaconTimingElement().GetNeighboursTimingElementsList();
-      for (NeighboursTimingUnitsList::const_iterator j = neighbours.begin(); j!= neighbours.end(); j++)
-        fprintf(
-          stderr,
-          "neigbours:\nAID=%u, last_beacon=%u ,beacon_interval=%u\n",
-          (*j)->GetAID(),
-          (*j)->GetLastBeacon(),
-          (*j)->GetBeaconInterval()
-        );
-#endif
-      m_peerManager->SetReceivedBeaconTimers(
-        GetAddress(),
-        from,
-        Simulator::Now (),
-        MicroSeconds(beacon.GetBeaconIntervalUs()),
-        beacon.GetWifiBeaconTimingElement()
-      );
-      if (!beacon.GetSsid().IsEqual(GetSsid()))
-        return;
-      SupportedRates rates = beacon.GetSupportedRates ();
-      WifiRemoteStation *peerSta = m_stationManager->Lookup (hdr->GetAddr2 ());
-      for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
+      
+      // update supported rates
+      if (beacon_hdr.GetSsid().IsEqual(GetSsid()))
         {
-          WifiMode mode = m_phy->GetMode (i);
-          if (rates.IsSupportedRate (mode.GetDataRate ()))
-            {
-              peerSta->AddSupportedMode (mode);
-              if (rates.IsBasicRate (mode.GetDataRate ()))
-                {
+          SupportedRates rates = beacon_hdr.GetSupportedRates ();
+          WifiRemoteStation * peerSta = m_stationManager->Lookup (hdr->GetAddr2 ());
+      
+          for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
+          {
+            WifiMode mode = m_phy->GetMode (i);
+            if (rates.IsSupportedRate (mode.GetDataRate ()))
+              {
+                peerSta->AddSupportedMode (mode);
+                if (rates.IsBasicRate (mode.GetDataRate ()))
                   m_stationManager->AddBasicMode (mode);
-                }
-            }
+              }
+          }
         }
-      // TODO:Chack MeshConfigurationElement(now is nothing
-      // to be checked)
-      m_peerManager->AskIfOpenNeeded(GetAddress(), from);
-      return;
     }
-  if (hdr->IsMultihopAction())
+  
+  // Filter frame through all installed plugins
+  for (PluginList::iterator i = m_plugins.begin(); i != m_plugins.end(); ++i)
     {
-      WifiMeshHeader meshHdr;
-      //no mesh header parameters are needed here:
-      //TODO: check TTL
-      packet->RemoveHeader(meshHdr);
-      WifiMeshMultihopActionHeader multihopHdr;
-      //parse multihop action header:
-      packet->RemoveHeader(multihopHdr);
-      WifiMeshMultihopActionHeader::ACTION_VALUE
-      actionValue = multihopHdr.GetAction();
-      switch (multihopHdr.GetCategory())
-        {
-        case WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT:
-        {
-          Mac48Address peerAddress;
-          MeshMgtPeerLinkManFrame peer_frame;
-          if (hdr->GetAddr1 () != GetAddress ())
-            return;
-          peerAddress = hdr->GetAddr2();
-          packet->RemoveHeader (peer_frame);
-          if (actionValue.peerLink != WifiMeshMultihopActionHeader::PEER_LINK_CLOSE)
-            {
-              //check Supported Rates
-              SupportedRates rates = peer_frame.GetSupportedRates();
-              for (uint32_t i = 0; i < m_stationManager->GetNBasicModes (); i++)
-                {
-                  WifiMode mode = m_stationManager->GetBasicMode (i);
-                  if (!rates.IsSupportedRate (mode.GetDataRate ()))
-                    {
-                      m_peerManager->ConfigurationMismatch(GetAddress(), peerAddress);
-                      return;
-                    }
-                }
-              //Check SSID
-              if (!peer_frame.GetMeshId().IsEqual(GetSsid()))
-                {
-                  m_peerManager->ConfigurationMismatch(GetAddress(), peerAddress);
-                  return;
-                }
-            }
-          switch (actionValue.peerLink)
-            {
-            case WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM:
-              m_peerManager->SetConfirmReceived(
-                GetAddress(),
-                peerAddress,
-                peer_frame.GetAid(),
-                peer_frame.GetPeerLinkManagementElement(),
-                m_meshConfig
-              );
-              return;
-            case WifiMeshMultihopActionHeader::PEER_LINK_OPEN:
-              m_peerManager->SetOpenReceived(
-                GetAddress(),
-                peerAddress,
-                peer_frame.GetPeerLinkManagementElement(),
-                m_meshConfig
-              );
-              return;
-            case WifiMeshMultihopActionHeader::PEER_LINK_CLOSE:
-              m_peerManager->SetCloseReceived(
-                GetAddress(),
-                peerAddress,
-                peer_frame.GetPeerLinkManagementElement()
-              );
-              return;
-            default:
-              return;
-            }
-          break;
-        }
-        case WifiMeshMultihopActionHeader::MESH_PATH_SELECTION:
-        {
-          if (!m_peerManager->IsActiveLink(GetAddress(), hdr->GetAddr2()))
-            return;
-          switch (actionValue.pathSelection)
-            {
-            case WifiMeshMultihopActionHeader::PATH_REQUEST:
-            {
-              WifiPreqInformationElement preq;
-              packet->RemoveHeader(preq);
-              //TODO:recalculate
-              //metric
-              m_preqReceived(preq, hdr->GetAddr2(), CalculateMetric(hdr->GetAddr2()));
-              return;
-            }
-            case WifiMeshMultihopActionHeader::PATH_REPLY:
-            {
-              WifiPrepInformationElement prep;
-              packet->RemoveHeader(prep);
-              m_prepReceived(prep, hdr->GetAddr2(), CalculateMetric(hdr->GetAddr2()));
-            }
-            return;
-            case WifiMeshMultihopActionHeader::PATH_ERROR:
-            {
-              WifiPerrInformationElement perr;
-              packet->RemoveHeader(perr);
-              m_perrReceived(perr, hdr->GetAddr2());
-            }
-            return;
-            case WifiMeshMultihopActionHeader::ROOT_ANNOUNCEMENT:
-              return;
-            }
-        }
-        default:
-          break;
-        }
+      bool drop = !((*i)->Receive(packet, *hdr));
+      if (drop) return; // plugin drops frame
     }
+    
+  // Forward data up
   if (hdr->IsData())
-    {
-      NS_ASSERT((hdr->IsFromDs()) && (hdr->IsToDs()));
-      NS_ASSERT(hdr->GetAddr4()!=Mac48Address::GetBroadcast());
-      //check seqno
-      WifiMeshHeader meshHdr;
-      packet->RemoveHeader(meshHdr);
-      NS_LOG_DEBUG(
-        "DATA TA="<< hdr->GetAddr2()<<
-        ", da="<<hdr->GetAddr3()<<
-        ", sa="<<hdr->GetAddr4()<<
-        ", TTL="<<(int)meshHdr.GetMeshTtl());
-      HwmpTag tag;
-      //mesh header is present within DATA and multihop action frames, so it must be done within MAC
-      tag.SetSeqno(meshHdr.GetMeshSeqno());
-      tag.SetAddress(hdr->GetAddr2());
-      tag.SetTtl(meshHdr.GetMeshTtl());
-      //metric should be later
-      packet->RemoveAllTags();
-      packet->AddTag(tag);
-      if (m_peerManager->IsActiveLink(GetAddress(), hdr->GetAddr2()))
-        ForwardUp(packet, hdr->GetAddr4(), hdr->GetAddr3());
-    }
-    */
+      ForwardUp(packet, hdr->GetAddr4(), hdr->GetAddr3());
 }
   
 } // namespace ns3
