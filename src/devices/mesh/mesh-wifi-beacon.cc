@@ -30,18 +30,18 @@ MeshWifiBeacon::MeshWifiBeacon(Ssid ssid, SupportedRates rates, uint64_t us)
   m_header.SetBeaconIntervalUs (us);
 }
 
-void MeshWifiBeacon::AddInformationElement(const WifiInformationElement * ie)
+void MeshWifiBeacon::AddInformationElement(Ptr<WifiInformationElement> ie)
 {
   m_elements.push_back(ie);
 }
 
 namespace {
-/// aux sorter
-struct IEComparator
+/// aux sorter for Ptr<WifiInformationElement>
+struct PIEComparator
 {
-  bool operator()(const WifiInformationElement * a, const WifiInformationElement * b) const
+  bool operator() (Ptr<WifiInformationElement> a, Ptr<WifiInformationElement> b) const
   {
-    return (*a < *b);
+    return ((*PeekPointer(a)) < (*PeekPointer(b)));
   }
 };
 }
@@ -50,17 +50,31 @@ Ptr<Packet> MeshWifiBeacon::CreatePacket()
 {
   Ptr<Packet> packet = Create<Packet> ();
   
-  std::sort(m_elements.begin(), m_elements.end(), IEComparator());
+  std::sort(m_elements.begin(), m_elements.end(), PIEComparator());
   
-  std::vector<const WifiInformationElement *>::const_reverse_iterator i;
+  std::vector< Ptr<WifiInformationElement> >::const_reverse_iterator i;
   for(i = m_elements.rbegin(); i != m_elements.rend(); ++i)
   {
     packet->AddHeader(**i);
   }
   
-  packet->AddHeader(Header());
+  packet->AddHeader(BeaconHeader());
   
   return packet;
+}
+
+WifiMacHeader MeshWifiBeacon::CreateHeader (Mac48Address address)
+{
+  WifiMacHeader hdr;
+    
+  hdr.SetBeacon ();
+  hdr.SetAddr1 (Mac48Address::GetBroadcast ());
+  hdr.SetAddr2 (address);
+  hdr.SetAddr3 (address);
+  hdr.SetDsNotFrom ();
+  hdr.SetDsNotTo ();
+  
+  return hdr;
 }
   
 } // namespace 
