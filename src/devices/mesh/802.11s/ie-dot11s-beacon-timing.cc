@@ -20,6 +20,7 @@
 
 
 #include "ns3/ie-dot11s-beacon-timing.h"
+#include "ns3/log.h"
 namespace ns3 {
 /*******************************************
  * WifiBeaconTimingElementUnit
@@ -89,7 +90,7 @@ WifiBeaconTimingElement::AddNeighboursTimingElementUnit(
   Time  beacon_interval //MicroSeconds!
 )
 {
-  if(m_numOfUnits == 255)
+  if(m_numOfUnits == 50)
     return;
   //Firs we lookup if this element already exists
   for (NeighboursTimingUnitsList::iterator i = m_neighbours.begin(); i!= m_neighbours.end(); i++)
@@ -147,7 +148,7 @@ WifiBeaconTimingElement::ClearTimingElement()
 uint16_t
 WifiBeaconTimingElement::GetInformationSize () const
 {
-  return (2+5*m_numOfUnits > m_maxSize) ? 2+((m_maxSize-2)/5)*5 : 2+5*m_numOfUnits;
+  return (5*m_numOfUnits);
 }
 
 void
@@ -170,7 +171,8 @@ uint16_t
 WifiBeaconTimingElement::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
-  for (int j = 0; j < length; j ++)
+  m_numOfUnits = length/5;
+  for (int j = 0; j < m_numOfUnits; j ++)
     {
       Ptr<WifiBeaconTimingElementUnit> new_element = Create<WifiBeaconTimingElementUnit>();
       new_element->SetAID(i.ReadU8());
