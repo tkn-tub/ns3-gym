@@ -28,6 +28,7 @@
 namespace ns3 {
 /**
  * \ingroup mesh
+ * \brief See 7.3.2.81.1 in 802.11s draft 2.07
  */
 enum dot11sPathSelectionProtocol
 {
@@ -36,6 +37,7 @@ enum dot11sPathSelectionProtocol
 };
 /**
  * \ingroup mesh
+ * \brief See 7.3.2.81.2 in 802.11s draft 2.07
  */
 enum dot11sPathSelectionMetric
 {
@@ -44,6 +46,7 @@ enum dot11sPathSelectionMetric
 };
 /**
  * \ingroup mesh
+ * \brief See 7.3.2.81.3 in 802.11s draft 2.07
  */
 enum dot11sCongestionControlMode
 {
@@ -52,6 +55,7 @@ enum dot11sCongestionControlMode
 };
 /**
  * \ingroup mesh
+ * \brief See 7.3.2.81.4 in 802.11s draft 2.07
  */
 enum dot11sChannelPrecedence
 {
@@ -60,6 +64,7 @@ enum dot11sChannelPrecedence
 
 /**
  * \ingroup mesh
+ * \brief See 7.3.2.81.5 in 802.11s draft 2.07
  */
 class dot11sMeshCapability
 {
@@ -74,12 +79,14 @@ public:
   bool beaconTimingReport;
   bool TBTTAdjustment;
   bool powerSaveLevel;
-private:
+
   bool Is(uint16_t cap,uint8_t n) const;
 };
 
 /**
  * \ingroup mesh
+ * \brief Describes Mesh Configuration Element 
+ * see 7.3.2.81 of 802.11s draft 2.07
  */
 class IeDot11sConfiguration : public WifiInformationElement
 {
@@ -94,7 +101,7 @@ public:
   bool   IsAirtime();
 
   dot11sMeshCapability const& MeshCapability();
-protected:
+private:
   WifiElementId ElementId () const
   {
     return IE11S_MESH_CONFIGURATION;
@@ -103,9 +110,6 @@ protected:
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
   void PrintInformation(std::ostream& os) const;
-  // TODO: Release and fill other fields in configuration
-  // element
-private:
   /** Active Path Selection Protocol ID */
   dot11sPathSelectionProtocol m_APSId;
   /** Active Path Metric ID */

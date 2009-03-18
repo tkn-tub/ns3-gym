@@ -31,36 +31,37 @@
 namespace ns3 {
 /**
  * \ingroup mesh
+ * \brief Describes one unit of beacon timing element
  */
 class IeDot11sBeaconTimingUnit : public RefCountBase
 {
 public:
   IeDot11sBeaconTimingUnit();
-  void SetAID(uint8_t aid);
+  void SetAid(uint8_t aid);
   void SetLastBeacon(uint16_t last_beacon);
   void SetBeaconInterval(uint16_t beacon_interval);
 
-  uint8_t GetAID();
+  uint8_t GetAid();
   uint16_t GetLastBeacon();
   uint16_t GetBeaconInterval();
-private:
   /**
-   * Least significant octet of AID:
+   * \brief Least significant octet of AID:
    */
-  uint8_t AID;
+  uint8_t m_aid;
   /**
-   * Last time we received a beacon in accordance with a
+   * \brief Last time we received a beacon in accordance with a
    * local TSF measured in 256 microseconds unit:
    */
-  uint16_t LastBeacon;
+  uint16_t m_lastBeacon;
   /**
-   * Beacon interval of remote mesh point:
+   * \brief Beacon interval of remote mesh point:
    */
-  uint16_t BeaconInterval;
+  uint16_t m_beaconInterval;
 };
 
 /**
  * \ingroup mesh
+ * \brief See 7.3.2.89 of 802.11s draft 2.07
  */
 class IeDot11sBeaconTiming : public WifiInformationElement
 {
@@ -88,7 +89,7 @@ public:
     Time  beacon_interval
   );
   void   ClearTimingElement();
-protected:
+private:
   WifiElementId ElementId() const {
     return IE11S_BEACON_TIMING;
   }
@@ -96,12 +97,17 @@ protected:
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
   void PrintInformation(std::ostream& os) const; 
-private:
+  /**
+   * Converters:
+   */
   static uint16_t TimestampToU16(Time x);
   static uint16_t BeaconIntervalToU16(Time x);
   static uint8_t AidToU8(uint16_t x);
+
   NeighboursTimingUnitsList  m_neighbours;
-  uint16_t  m_maxSize;
+  /**
+   * Timing element parameters:
+   */
   uint16_t  m_numOfUnits;
 };
 }//namespace ns3

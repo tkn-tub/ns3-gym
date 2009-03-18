@@ -30,6 +30,7 @@
 namespace ns3 {
 /**
  * \ingroup mesh
+ * \brief See 7.3.2.97 of 802.11s draft 2.07
  */
 class IeDot11sPrep : public WifiInformationElement
 {
@@ -61,7 +62,7 @@ public:
 
   void  DecrementTtl();
   void  IncrementMetric(uint32_t metric);
-protected:
+private:
   WifiElementId ElementId() const{
     return IE11S_PREP;
   }
@@ -69,7 +70,6 @@ protected:
   uint8_t DeserializeInformation(Buffer::Iterator start, uint8_t length);
   uint8_t GetInformationSize() const;
   void PrintInformation(std::ostream& os) const;
-private:
   uint8_t  m_flags;
   uint8_t  m_hopcount;
   uint8_t  m_ttl;

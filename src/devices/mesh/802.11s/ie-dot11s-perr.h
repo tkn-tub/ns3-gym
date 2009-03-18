@@ -30,6 +30,7 @@
 namespace ns3 {
 /**
  * \ingroup mesh
+ * \brief See 7.3.2.98 of 802.11s draft 2.07
  */
 class IeDot11sPerr : public WifiInformationElement
 {
@@ -50,7 +51,7 @@ public:
   GetAddressUnitVector();
   void   DeleteAddressUnit(Mac48Address address);
   void   ResetPerr();
-protected:
+private:
   WifiElementId ElementId() const{
     return IE11S_PERR;
   };
@@ -58,10 +59,8 @@ protected:
   uint8_t  DeserializeInformation(Buffer::Iterator start, uint8_t length);
   void PrintInformation(std::ostream& os) const;
   uint8_t  GetInformationSize() const;
-private:
   uint8_t   m_numOfDest;
-  std::vector<HwmpRtable::FailedDestination>
-  m_addressUnits;
+  std::vector<HwmpRtable::FailedDestination> m_addressUnits;
 };
 
 }

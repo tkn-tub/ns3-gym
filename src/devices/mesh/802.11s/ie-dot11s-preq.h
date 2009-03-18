@@ -31,6 +31,8 @@
 namespace ns3 {
 /**
  * \ingroup mesh
+ * \brief Describes an address unit in PREQ information element
+ * See 7.3.2.96 for more details
  */
 class DestinationAddressUnit : public RefCountBase
 {
@@ -52,6 +54,7 @@ private:
 };
 /**
  * \ingroup mesh
+ * \brief See 7.3.2.96 of 802.11s draft 2.07
  */
 class IeDot11sPreq : public WifiInformationElement
 {
@@ -96,7 +99,7 @@ public:
   uint8_t  GetDestCount() const;
   void  DecrementTtl();
   void  IncrementMetric(uint32_t metric);
-protected:
+private:
   WifiElementId ElementId () const{
     return IE11S_PREQ;
   }
@@ -104,7 +107,6 @@ protected:
   uint8_t DeserializeInformation(Buffer::Iterator i, uint8_t length);
   uint8_t GetInformationSize() const;
   void PrintInformation(std::ostream& os) const;
-private:
   /**
    * how many destinations we support
    */

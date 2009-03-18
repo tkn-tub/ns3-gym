@@ -29,6 +29,7 @@
 namespace ns3 {
 /**
  * \ingroup mesh
+ * \brief See 7.3.2.85 of draft 2.07
  */
 class IeDot11sPeerManagement : public WifiInformationElement
 {
@@ -38,7 +39,6 @@ public:
     PEER_CLOSE   = 1,
     PEER_CONFIRM = 2,
   };
-public:
   IeDot11sPeerManagement ();
 
   void   SetPeerOpen(uint16_t localLinkId);
@@ -51,7 +51,7 @@ public:
   bool   SubtypeIsOpen() const;
   bool   SubtypeIsClose() const;
   bool   SubtypeIsConfirm() const ;
-protected:
+private:
   WifiElementId ElementId() const{
     return IE11S_PEER_LINK_MANAGEMENT;
   }
@@ -59,7 +59,6 @@ protected:
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
   void PrintInformation(std::ostream& os) const;
-private:
   uint8_t   m_length;
   uint8_t   m_subtype;
   uint16_t  m_localLinkId;
