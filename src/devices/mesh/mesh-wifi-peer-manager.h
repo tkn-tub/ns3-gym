@@ -29,7 +29,7 @@
 #include "ns3/mac48-address.h"
 #include "ns3/uinteger.h"
 #include "ns3/wifi-net-device.h"
-#include "ns3/dot11s-peer-management-element.h"
+#include "ns3/ie-dot11s-peer-management.h"
 #include "ns3/ie-dot11s-beacon-timing.h"
 #include "ns3/mesh-wifi-mac.h"
 
@@ -69,7 +69,7 @@ public:
   void  SetPeerAid(uint16_t aid);
   void  SetBeaconTimingElement(IeDot11sBeaconTiming beaconTiming);
   void  SetPeerLinkDescriptorElement(
-    PeerLinkManagementElement peerLinkElement
+    IeDot11sPeerManagement peerLinkElement
   );
   Mac48Address GetPeerAddress()const;
   /**
@@ -81,7 +81,7 @@ public:
   Time  GetBeaconInterval()const;
   IeDot11sBeaconTiming
   GetBeaconTimingElement()const;
-  PeerLinkManagementElement
+  IeDot11sPeerManagement
   GetPeerLinkDescriptorElement()const;
   void  ClearTimingElement();
   /* MLME */
@@ -232,7 +232,7 @@ public:
   void SetOpenReceived(
     Mac48Address portAddress,
     Mac48Address peerAddress,
-    PeerLinkManagementElement
+    IeDot11sPeerManagement
     peerMan,
     IeDot11sConfiguration conf
   );
@@ -240,14 +240,14 @@ public:
     Mac48Address portAddress,
     Mac48Address peerAddress,
     uint16_t peerAid,
-    PeerLinkManagementElement
+    IeDot11sPeerManagement
     peerMan,
     IeDot11sConfiguration meshConfig
   );
   void SetCloseReceived(
     Mac48Address portAddress,
     Mac48Address peerAddress,
-    PeerLinkManagementElement peerMan
+    IeDot11sPeerManagement peerMan
   );
   //Using this function MAC
   void ConfigurationMismatch(

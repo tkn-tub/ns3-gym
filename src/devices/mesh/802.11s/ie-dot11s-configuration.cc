@@ -98,7 +98,7 @@ IeDot11sConfiguration::GetInstanceTypeId () const
 {
   return GetTypeId();
 }
-uint16_t
+uint8_t
 IeDot11sConfiguration::GetInformationSize () const
 {
     return 1 // Version
@@ -124,7 +124,7 @@ IeDot11sConfiguration::SerializeInformation (Buffer::Iterator i) const
     m_meshCap.Serialize (i);
 }
 
-uint16_t
+uint8_t
 IeDot11sConfiguration::DeserializeInformation (Buffer::Iterator i, uint8_t length)
 {
   Buffer::Iterator start = i;

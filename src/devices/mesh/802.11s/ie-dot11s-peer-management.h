@@ -26,12 +26,13 @@
 #include <stdint.h>
 #include "ns3/buffer.h"
 #include "ns3/dot11s-codes.h"
+#include "ns3/wifi-information-element.h"
 
 namespace ns3 {
 /**
  * \ingroup mesh
  */
-class PeerLinkManagementElement
+class IeDot11sPeerManagement : public WifiInformationElement
 {
 public:
   enum Subtype {
@@ -40,7 +41,7 @@ public:
     PEER_CONFIRM = 2,
   };
 public:
-  PeerLinkManagementElement ();
+  IeDot11sPeerManagement ();
 
   void   SetPeerOpen(uint16_t localLinkId);
   void   SetPeerClose(uint16_t localLinkID, uint16_t peerLinkId, dot11sReasonCode reasonCode);
@@ -52,14 +53,15 @@ public:
   bool   SubtypeIsOpen() const;
   bool   SubtypeIsClose() const;
   bool   SubtypeIsConfirm() const ;
-
-  uint32_t  GetSerializedSize (void) const;
-  Buffer::Iterator Serialize (Buffer::Iterator i) const;
-  Buffer::Iterator Deserialize (Buffer::Iterator i);
-private:
-  static uint8_t ElementId() {
-    return (uint8_t)IE11S_PEER_LINK_MANAGEMENT;
+protected:
+  WifiElementId ElementId() const{
+    return IE11S_PEER_LINK_MANAGEMENT;
   }
+  uint8_t  GetInformationSize (void) const;
+  void SerializeInformation (Buffer::Iterator i) const;
+  uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
+  void PrintInformation(std::ostream& os) const;
+private:
   uint8_t   m_length;
   uint8_t   m_subtype;
   uint16_t  m_localLinkId; //always is present

@@ -578,7 +578,7 @@ MeshWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
                 GetAddress(),
                 peerAddress,
                 peer_frame.GetAid(),
-                peer_frame.GetPeerLinkManagementElement(),
+                peer_frame.GetIeDot11sPeerManagement(),
                 m_meshConfig
               );
               return;
@@ -586,7 +586,7 @@ MeshWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
               m_peerManager->SetOpenReceived(
                 GetAddress(),
                 peerAddress,
-                peer_frame.GetPeerLinkManagementElement(),
+                peer_frame.GetIeDot11sPeerManagement(),
                 m_meshConfig
               );
               return;
@@ -594,7 +594,7 @@ MeshWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
               m_peerManager->SetCloseReceived(
                 GetAddress(),
                 peerAddress,
-                peer_frame.GetPeerLinkManagementElement()
+                peer_frame.GetIeDot11sPeerManagement()
               );
               return;
             default:
@@ -677,34 +677,34 @@ MeshWifiMac::CalcSwDelay()
 }
 
 void
-MeshWifiMac::SendPeerLinkOpen(PeerLinkManagementElement peer_element, Mac48Address peerAddress)
+MeshWifiMac::SendPeerLinkOpen(IeDot11sPeerManagement peer_element, Mac48Address peerAddress)
 {
   MeshMgtPeerLinkManFrame open;
   open.SetOpen();
   open.SetIeDot11sConfiguration(m_meshConfig);
-  open.SetPeerLinkManagementElement(peer_element);
+  open.SetIeDot11sPeerManagement(peer_element);
   Simulator::Schedule(CalcSwDelay() ,&MeshWifiMac::QueuePeerLinkFrame, this, open, peerAddress);
 }
 
 void
-MeshWifiMac::SendPeerLinkConfirm(PeerLinkManagementElement peer_element, Mac48Address peerAddress, uint16_t aid)
+MeshWifiMac::SendPeerLinkConfirm(IeDot11sPeerManagement peer_element, Mac48Address peerAddress, uint16_t aid)
 {
   MeshMgtPeerLinkManFrame confirm;
   confirm.SetConfirm();
   confirm.SetIeDot11sConfiguration(m_meshConfig);
-  confirm.SetPeerLinkManagementElement(peer_element);
+  confirm.SetIeDot11sPeerManagement(peer_element);
   confirm.SetAid(aid);
   Simulator::Schedule(CalcSwDelay() ,&MeshWifiMac::QueuePeerLinkFrame, this, confirm, peerAddress);
 
 }
 
 void
-MeshWifiMac::SendPeerLinkClose(PeerLinkManagementElement peer_element, Mac48Address peerAddress)
+MeshWifiMac::SendPeerLinkClose(IeDot11sPeerManagement peer_element, Mac48Address peerAddress)
 {
   MeshMgtPeerLinkManFrame close;
   close.SetClose();
   close.SetIeDot11sConfiguration(m_meshConfig);
-  close.SetPeerLinkManagementElement(peer_element);
+  close.SetIeDot11sPeerManagement(peer_element);
   Simulator::Schedule(CalcSwDelay() ,&MeshWifiMac::QueuePeerLinkFrame, this, close, peerAddress);
 
 }

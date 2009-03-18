@@ -62,8 +62,8 @@ protected:
     return IE11S_RANN;
   }
   void SerializeInformation(Buffer::Iterator i) const;
-  uint16_t DeserializeInformation(Buffer::Iterator start, uint8_t length);
-  uint16_t GetInformationSize() const;
+  uint8_t DeserializeInformation(Buffer::Iterator start, uint8_t length);
+  uint8_t GetInformationSize() const;
 private:
   uint8_t m_flags;
   uint8_t m_hopcount;

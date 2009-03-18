@@ -124,7 +124,7 @@ IeDot11sRann::SerializeInformation(Buffer::Iterator i) const
     i.WriteHtonU32 (m_destSeqNumber);
     i.WriteHtonU32 (m_metric);
   }
-uint16_t
+uint8_t
 IeDot11sRann::DeserializeInformation(Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
@@ -136,10 +136,10 @@ IeDot11sRann::DeserializeInformation(Buffer::Iterator start, uint8_t length)
   m_metric = i.ReadNtohU32();
   return i.GetDistanceFrom(start);
 }
-uint16_t
+uint8_t
 IeDot11sRann::GetInformationSize() const
   {
-    uint16_t retval =
+    uint8_t retval =
       1//Flags
       +1//Hopcount
       +1//TTL

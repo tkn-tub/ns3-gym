@@ -145,7 +145,7 @@ IeDot11sBeaconTiming::ClearTimingElement()
 
 }
 
-uint16_t
+uint8_t
 IeDot11sBeaconTiming::GetInformationSize () const
 {
   return (5*m_numOfUnits);
@@ -167,7 +167,7 @@ IeDot11sBeaconTiming::SerializeInformation (Buffer::Iterator i) const
     i.WriteHtonU16 ((*j)->GetBeaconInterval());
   }
 }
-uint16_t 
+uint8_t 
 IeDot11sBeaconTiming::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;

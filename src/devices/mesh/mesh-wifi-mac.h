@@ -202,7 +202,7 @@ public:
    * destination of given frame
    */
   void   SendPeerLinkOpen(
-    PeerLinkManagementElement peer_element,
+    IeDot11sPeerManagement peer_element,
     Mac48Address peerAddress
   );
   /**
@@ -217,7 +217,7 @@ public:
    * peer manager
    */
   void   SendPeerLinkConfirm(
-    PeerLinkManagementElement peer_element,
+    IeDot11sPeerManagement peer_element,
     Mac48Address peerAddress,
     uint16_t aid
   );
@@ -231,7 +231,7 @@ public:
    * destination of given frame
    */
   void   SendPeerLinkClose(
-    PeerLinkManagementElement peer_element,
+    IeDot11sPeerManagement peer_element,
     Mac48Address peerAddress
   );
   /**

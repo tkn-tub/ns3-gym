@@ -20,7 +20,7 @@
  */
 
 
-#include "ns3/dot11s-peer-management-element.h"
+#include "ns3/ie-dot11s-peer-management.h"
 #include "ns3/assert.h"
 
 
@@ -28,7 +28,7 @@
 
 namespace ns3 {
 
-PeerLinkManagementElement::PeerLinkManagementElement ():
+IeDot11sPeerManagement::IeDot11sPeerManagement ():
     m_length(0),
     m_subtype(PEER_OPEN),
     m_localLinkId(0),
@@ -38,14 +38,14 @@ PeerLinkManagementElement::PeerLinkManagementElement ():
 
 
 void
-PeerLinkManagementElement::SetPeerOpen(uint16_t localLinkId)
+IeDot11sPeerManagement::SetPeerOpen(uint16_t localLinkId)
 {
   m_length = 3;
   m_subtype = PEER_OPEN;
   m_localLinkId = localLinkId;
 }
 void
-PeerLinkManagementElement::SetPeerClose(uint16_t localLinkId, uint16_t peerLinkId, dot11sReasonCode reasonCode)
+IeDot11sPeerManagement::SetPeerClose(uint16_t localLinkId, uint16_t peerLinkId, dot11sReasonCode reasonCode)
 {
   m_length = 7;
   m_subtype = PEER_CLOSE;
@@ -55,7 +55,7 @@ PeerLinkManagementElement::SetPeerClose(uint16_t localLinkId, uint16_t peerLinkI
 }
 
 void
-PeerLinkManagementElement::SetPeerConfirm(uint16_t localLinkId, uint16_t peerLinkId)
+IeDot11sPeerManagement::SetPeerConfirm(uint16_t localLinkId, uint16_t peerLinkId)
 {
   m_length = 5;
   m_subtype = PEER_CONFIRM;
@@ -64,69 +64,70 @@ PeerLinkManagementElement::SetPeerConfirm(uint16_t localLinkId, uint16_t peerLin
 }
 
 dot11sReasonCode
-PeerLinkManagementElement::GetReasonCode() const
+IeDot11sPeerManagement::GetReasonCode() const
   {
     return m_reasonCode;
   }
 
 uint16_t
-PeerLinkManagementElement::GetLocalLinkId() const
+IeDot11sPeerManagement::GetLocalLinkId() const
   {
     return m_localLinkId;
   }
 
 uint16_t
-PeerLinkManagementElement::GetPeerLinkId() const
+IeDot11sPeerManagement::GetPeerLinkId() const
   {
     return m_peerLinkId;
   }
 
-uint32_t
-PeerLinkManagementElement::GetSerializedSize (void) const
+uint8_t
+IeDot11sPeerManagement::GetInformationSize (void) const
   {
-    return m_length+2;
+    return m_length;
   }
 
 bool
-PeerLinkManagementElement::SubtypeIsOpen() const
+IeDot11sPeerManagement::SubtypeIsOpen() const
   {
     return (m_subtype == PEER_OPEN);
   }
 bool
-PeerLinkManagementElement::SubtypeIsClose() const
+IeDot11sPeerManagement::SubtypeIsClose() const
   {
     return (m_subtype == PEER_CLOSE);
   }
 bool
-PeerLinkManagementElement::SubtypeIsConfirm() const
+IeDot11sPeerManagement::SubtypeIsConfirm() const
   {
     return (m_subtype == PEER_CONFIRM);
   }
 
-Buffer::Iterator
-PeerLinkManagementElement::Serialize (Buffer::Iterator i) const
+void
+IeDot11sPeerManagement::SerializeInformation (Buffer::Iterator i) const
   {
-    i.WriteU8(ElementId());
-    i.WriteU8(m_length);
     i.WriteU8(m_subtype);
     i.WriteHtonU16(m_localLinkId);
     if (m_length > 3)
       i.WriteHtonU16(m_peerLinkId);
     if (m_length > 5)
       i.WriteHtonU16(m_reasonCode);
-    return i;
   }
-Buffer::Iterator
-PeerLinkManagementElement::Deserialize (Buffer::Iterator i)
+uint8_t
+IeDot11sPeerManagement::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 {
-  NS_ASSERT(ElementId() == i.ReadU8());
-  m_length   = i.ReadU8();
+  Buffer::Iterator i = start;
   m_subtype  = i.ReadU8();
   m_localLinkId  = i.ReadNtohU16();
   if (m_length > 3)
     m_peerLinkId = i.ReadNtohU16();
   if (m_length > 5)
     m_reasonCode = (dot11sReasonCode)i.ReadNtohU16();
-  return i;
+  return i.GetDistanceFrom(start);
+}
+void
+IeDot11sPeerManagement::PrintInformation(std::ostream& os) const
+{
+  //TODO
 }
 } //namespace NS3

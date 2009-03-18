@@ -138,7 +138,7 @@ MeshMgtPeerLinkManFrame::SetIeDot11sConfiguration(IeDot11sConfiguration MeshConf
 }
 
 void
-MeshMgtPeerLinkManFrame::SetPeerLinkManagementElement(PeerLinkManagementElement MeshPeerElement)
+MeshMgtPeerLinkManFrame::SetIeDot11sPeerManagement(IeDot11sPeerManagement MeshPeerElement)
 {
   PeerLinkMan = MeshPeerElement;
 }
@@ -173,8 +173,8 @@ MeshMgtPeerLinkManFrame::GetIeDot11sConfiguration()
   return MeshConfig;
 }
 
-PeerLinkManagementElement
-MeshMgtPeerLinkManFrame::GetPeerLinkManagementElement()
+IeDot11sPeerManagement
+MeshMgtPeerLinkManFrame::GetIeDot11sPeerManagement()
 {
   return PeerLinkMan;
 }
@@ -236,7 +236,8 @@ MeshMgtPeerLinkManFrame::Serialize(Buffer::Iterator start) const
         MeshConfig.Serialize (i);
         i.Next(MeshConfig.GetSerializedSize());
       }
-    i = PeerLinkMan.Serialize (i);
+    PeerLinkMan.Serialize (i);
+    i.Next(PeerLinkMan.GetSerializedSize());
   }
 
 uint32_t
@@ -254,7 +255,8 @@ MeshMgtPeerLinkManFrame::Deserialize(Buffer::Iterator start)
       MeshConfig.Deserialize (i);
       i.Next(MeshConfig.GetSerializedSize());
     }
-  i = PeerLinkMan.Deserialize (i);
+  PeerLinkMan.Deserialize (i);
+  i.Next(PeerLinkMan.GetSerializedSize());
   return i.GetDistanceFrom (start);
 }
 void
