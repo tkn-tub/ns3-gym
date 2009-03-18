@@ -76,7 +76,7 @@ WifiBeaconTimingElement::WifiBeaconTimingElement()
   m_numOfUnits = 0;
 }
 
-NeighboursTimingUnitsList
+WifiBeaconTimingElement::NeighboursTimingUnitsList
 WifiBeaconTimingElement::GetNeighboursTimingElementsList()
 {
   return m_neighbours;
@@ -89,6 +89,8 @@ WifiBeaconTimingElement::AddNeighboursTimingElementUnit(
   Time  beacon_interval //MicroSeconds!
 )
 {
+  if(m_numOfUnits == 255)
+    return;
   //Firs we lookup if this element already exists
   for (NeighboursTimingUnitsList::iterator i = m_neighbours.begin(); i!= m_neighbours.end(); i++)
     if (
@@ -142,42 +144,38 @@ WifiBeaconTimingElement::ClearTimingElement()
 
 }
 
-uint32_t
-WifiBeaconTimingElement::GetSerializedSize () const
-  {
-    return (2+5*m_numOfUnits > m_maxSize) ? 2+((m_maxSize-2)/5)*5 : 2+5*m_numOfUnits;
-  }
-Buffer::Iterator
-WifiBeaconTimingElement::Serialize (Buffer::Iterator i) const
-  {
-    uint8_t can_be_written = (2+5*m_numOfUnits > m_maxSize) ? ((m_maxSize-2)/5) : m_numOfUnits;
-    int actually_written = 0;
-    i.WriteU8 (ElementId());
-    i.WriteU8 (can_be_written);
-    for (NeighboursTimingUnitsList::const_iterator j = m_neighbours.begin(); j!= m_neighbours.end(); j++)
-      {
-        i.WriteU8 ((*j)->GetAID());
-        i.WriteHtonU16 ((*j)->GetLastBeacon());
-        i.WriteHtonU16 ((*j)->GetBeaconInterval());
-        actually_written++;
-        if (actually_written > can_be_written)
-          break;
-      }
-    if (can_be_written < m_numOfUnits)
-      {
-        //move written units to the end of our list, so they
-        //can be sent in timing element with next beacon
-        //TODO:swap elements
-
-      }
-    return i;
-  }
-Buffer::Iterator
-WifiBeaconTimingElement::Deserialize (Buffer::Iterator i)
+uint16_t
+WifiBeaconTimingElement::GetInformationSize () const
 {
-  NS_ASSERT(ElementId() == i.ReadU8());
-  uint8_t num_to_read = i.ReadU8();
-  for (int j = 0; j < num_to_read; j ++)
+  return (2+5*m_numOfUnits > m_maxSize) ? 2+((m_maxSize-2)/5)*5 : 2+5*m_numOfUnits;
+}
+uint8_t
+WifiBeaconTimingElement::GetLengthField() const
+{
+  return m_numOfUnits;
+}
+
+void
+WifiBeaconTimingElement::PrintInformation(std::ostream& os) const
+{
+  //TODO
+}
+
+void
+WifiBeaconTimingElement::SerializeInformation (Buffer::Iterator i) const
+{
+  for (NeighboursTimingUnitsList::const_iterator j = m_neighbours.begin(); j!= m_neighbours.end(); j++)
+  {
+    i.WriteU8 ((*j)->GetAID());
+    i.WriteHtonU16 ((*j)->GetLastBeacon());
+    i.WriteHtonU16 ((*j)->GetBeaconInterval());
+  }
+}
+uint16_t 
+WifiBeaconTimingElement::DeserializeInformation (Buffer::Iterator start, uint8_t length)
+{
+  Buffer::Iterator i = start;
+  for (int j = 0; j < length; j ++)
     {
       Ptr<WifiBeaconTimingElementUnit> new_element = Create<WifiBeaconTimingElementUnit>();
       new_element->SetAID(i.ReadU8());
@@ -185,7 +183,7 @@ WifiBeaconTimingElement::Deserialize (Buffer::Iterator i)
       new_element->SetBeaconInterval(i.ReadNtohU16());
       m_neighbours.push_back(new_element);
     }
-  return i;
+  return i.GetDistanceFrom(start);
 };
 
 uint16_t

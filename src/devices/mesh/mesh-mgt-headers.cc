@@ -78,7 +78,8 @@ MgtMeshBeaconHeader::Serialize (Buffer::Iterator start) const
     i.Next (MgtBeaconHeader::GetSerializedSize());
     m_meshConfig.Serialize(i);
     i.Next(m_meshConfig.GetSerializedSize());
-    i = m_meshTiming.Serialize(i);
+    m_meshTiming.Serialize(i);
+    i.Next(m_meshTiming.GetSerializedSize());
     i.Next (9); //MSCIE
   }
 
@@ -91,7 +92,7 @@ MgtMeshBeaconHeader::Deserialize (Buffer::Iterator start)
   i.Next (MgtBeaconHeader::GetSerializedSize());
   m_meshConfig.Deserialize(i);
   i.Next(m_meshConfig.GetSerializedSize());
-  i = m_meshTiming.Deserialize(i);
+  i.Next(m_meshTiming.Deserialize(i));
   i.Next (9); //MSCIE
   return i.GetDistanceFrom (start);
 }

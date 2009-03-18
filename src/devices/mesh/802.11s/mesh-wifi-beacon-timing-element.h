@@ -27,6 +27,7 @@
 #include "ns3/buffer.h"
 #include "ns3/nstime.h"
 #include "ns3/dot11s-codes.h"
+#include "ns3/wifi-information-element.h"
 namespace ns3 {
 /**
  * \ingroup mesh
@@ -51,37 +52,32 @@ private:
   //Beacon interval of remote mesh point:
   uint16_t BeaconInterval;
 };
-/**
- * \ingroup mesh
- * This type is a list of timing elements obtained from neigbours with their beacons:
- */
-typedef Ptr<WifiBeaconTimingElementUnit>  WifiBeaconTimingElementPointer;
 
 /**
  * \ingroup mesh
  */
-typedef std::list<WifiBeaconTimingElementPointer> NeighboursTimingUnitsList;
-
-/**
- * \ingroup mesh
- */
-class WifiBeaconTimingElement
+class WifiBeaconTimingElement : public WifiInformationElement
 {
 public:
+  /**
+   * \ingroup mesh
+   * This type is a list of timing elements obtained from neigbours with their beacons:
+   */
+  typedef std::list< Ptr<WifiBeaconTimingElementUnit> > NeighboursTimingUnitsList;
+
   WifiBeaconTimingElement();
   //This methods are needed for beacon collision
   //avoidance module:
-  NeighboursTimingUnitsList
-  GetNeighboursTimingElementsList();
+  NeighboursTimingUnitsList GetNeighboursTimingElementsList();
   //The arguments of the following methods are different
   //from internalBeaconTimingElementUnint. This was made
   //for better communication with peer manager.
   //BeaconTimingElement class should convert it into
   //proper types:
-  void   AddNeighboursTimingElementUnit(
+  void AddNeighboursTimingElementUnit(
     uint16_t aid,
-    Time  last_beacon, //MicroSeconds!
-    Time  beacon_interval //MicroSeconds!
+    Time last_beacon, //MicroSeconds!
+    Time beacon_interval //MicroSeconds!
   );
   void   DelNeighboursTimingElementUnit(
     uint16_t aid,
@@ -89,14 +85,17 @@ public:
     Time  beacon_interval //MicroSeconds!
   );
   void   ClearTimingElement();
-  //Serialize-deserialize methods:
-  uint32_t  GetSerializedSize () const;
-  Buffer::Iterator Serialize (Buffer::Iterator i) const;
-  Buffer::Iterator Deserialize (Buffer::Iterator i);
-private:
-  static uint8_t ElementId() {
-    return (uint8_t)IE11S_BEACON_TIMING;
+protected:
+  WifiElementId ElementId() const {
+    return IE11S_BEACON_TIMING;
   }
+  //Serialize-deserialize methods:
+  uint16_t  GetInformationSize () const;
+  uint8_t GetLengthField() const;
+  void SerializeInformation (Buffer::Iterator i) const;
+  uint16_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
+  void PrintInformation(std::ostream& os) const; 
+private:
   static uint16_t TimestampToU16(Time x);
   static uint16_t BeaconIntervalToU16(Time x);
   static uint8_t AidToU8(uint16_t x);

@@ -918,10 +918,10 @@ WifiPeerManager::GetNextBeaconShift(
   NS_ASSERT(myBeacon!=m_myBeaconInfo.end());
   for (std::vector<Ptr<WifiPeerLinkDescriptor> >::iterator i = port->second.begin(); i!= port->second.end(); i++)
     {
-      NeighboursTimingUnitsList neighbours;
+      WifiBeaconTimingElement::NeighboursTimingUnitsList neighbours;
       neighbours = (*i)->GetBeaconTimingElement().GetNeighboursTimingElementsList();
       //first let's form the list of all kown TBTTs
-      for (NeighboursTimingUnitsList::const_iterator j = neighbours.begin(); j!= neighbours.end(); j++)
+      for (WifiBeaconTimingElement::NeighboursTimingUnitsList::const_iterator j = neighbours.begin(); j!= neighbours.end(); j++)
         {
           uint16_t beaconIntervalTimeUnits;
           beaconIntervalTimeUnits = (*j)->GetBeaconInterval();
