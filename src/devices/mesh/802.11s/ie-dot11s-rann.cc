@@ -25,26 +25,26 @@
 
 namespace ns3 {
 
-WifiRannInformationElement::~WifiRannInformationElement()
+IeDot11sRann::~IeDot11sRann()
 {
 }
 TypeId
-WifiRannInformationElement::GetTypeId()
+IeDot11sRann::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::WifiRannInformationElement").SetParent<Object> ();
+  static TypeId tid = TypeId ("ns3::IeDot11sRann").SetParent<Object> ();
   return tid;
 }
 TypeId
-WifiRannInformationElement::GetInstanceTypeId() const
+IeDot11sRann::GetInstanceTypeId() const
   {
     return GetTypeId();
   }
 void
-WifiRannInformationElement::Print(std::ostream &os)const
+IeDot11sRann::Print(std::ostream &os)const
   {
     // FILL
   }
-WifiRannInformationElement::WifiRannInformationElement():
+IeDot11sRann::IeDot11sRann():
     m_flags(0),
     m_hopcount(0),
     m_ttl(0),
@@ -54,68 +54,68 @@ WifiRannInformationElement::WifiRannInformationElement():
 {
 }
 void
-WifiRannInformationElement::SetFlags(uint8_t flags)
+IeDot11sRann::SetFlags(uint8_t flags)
 {
   m_flags = flags;
 }
 void
-WifiRannInformationElement::SetHopcount(uint8_t hopcount)
+IeDot11sRann::SetHopcount(uint8_t hopcount)
 {
   m_hopcount = hopcount;
 }
 void
-WifiRannInformationElement::SetTTL(uint8_t ttl)
+IeDot11sRann::SetTTL(uint8_t ttl)
 {
   m_ttl = ttl;
 }
 void
-WifiRannInformationElement::SetDestSeqNumber(uint32_t dest_seq_number)
+IeDot11sRann::SetDestSeqNumber(uint32_t dest_seq_number)
 {
   m_destSeqNumber = dest_seq_number;
 }
 void
-WifiRannInformationElement::SetMetric(uint32_t metric)
+IeDot11sRann::SetMetric(uint32_t metric)
 {
   m_metric = metric;
 }
 void
-WifiRannInformationElement::SetOriginatorAddress(Mac48Address originator_address)
+IeDot11sRann::SetOriginatorAddress(Mac48Address originator_address)
 {
   m_originatorAddress = originator_address;
 }
 
 uint8_t
-WifiRannInformationElement::GetFlags()
+IeDot11sRann::GetFlags()
 {
   return m_flags;
 }
 uint8_t
-WifiRannInformationElement::GetHopcount()
+IeDot11sRann::GetHopcount()
 {
   return m_hopcount;
 }
 uint8_t
-WifiRannInformationElement::GetTTL()
+IeDot11sRann::GetTTL()
 {
   return m_ttl;
 }
 uint32_t
-WifiRannInformationElement::GetDestSeqNumber()
+IeDot11sRann::GetDestSeqNumber()
 {
   return m_destSeqNumber;
 }
 uint32_t
-WifiRannInformationElement::GetMetric()
+IeDot11sRann::GetMetric()
 {
   return m_metric;
 }
 Mac48Address
-WifiRannInformationElement::GetOriginatorAddress()
+IeDot11sRann::GetOriginatorAddress()
 {
   return m_originatorAddress;
 }
 void
-WifiRannInformationElement::SerializeInformation(Buffer::Iterator i) const
+IeDot11sRann::SerializeInformation(Buffer::Iterator i) const
   {
     i.WriteU8 (m_flags);
     i.WriteU8 (m_hopcount);
@@ -125,7 +125,7 @@ WifiRannInformationElement::SerializeInformation(Buffer::Iterator i) const
     i.WriteHtonU32 (m_metric);
   }
 uint16_t
-WifiRannInformationElement::DeserializeInformation(Buffer::Iterator start, uint8_t length)
+IeDot11sRann::DeserializeInformation(Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   m_flags = i.ReadU8();
@@ -137,7 +137,7 @@ WifiRannInformationElement::DeserializeInformation(Buffer::Iterator start, uint8
   return i.GetDistanceFrom(start);
 }
 uint16_t
-WifiRannInformationElement::GetInformationSize() const
+IeDot11sRann::GetInformationSize() const
   {
     uint16_t retval =
       1//Flags

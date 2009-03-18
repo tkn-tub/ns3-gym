@@ -23,38 +23,38 @@
 #include "ns3/address-utils.h"
 
 namespace ns3 {
-WifiPerrInformationElement::~WifiPerrInformationElement()
+IeDot11sPerr::~IeDot11sPerr()
 {
 }
 
 TypeId
-WifiPerrInformationElement::GetTypeId()
+IeDot11sPerr::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::WifiPerrInformationElement")
+  static TypeId tid = TypeId ("ns3::IeDot11sPerr")
                       .SetParent<Object> ();
   return tid;
 }
 void
-WifiPerrInformationElement::PrintInformation(std::ostream &os) const
+IeDot11sPerr::PrintInformation(std::ostream &os) const
   {
     // FILL
   }
 TypeId
-WifiPerrInformationElement::GetInstanceTypeId() const
+IeDot11sPerr::GetInstanceTypeId() const
   {
     return GetTypeId();
   }
-WifiPerrInformationElement::WifiPerrInformationElement():
+IeDot11sPerr::IeDot11sPerr():
     m_numOfDest(0)
 {
 }
 uint8_t
-WifiPerrInformationElement::GetNumOfDest()
+IeDot11sPerr::GetNumOfDest()
 {
   return m_numOfDest;
 }
 void
-WifiPerrInformationElement::SerializeInformation(Buffer::Iterator i)const
+IeDot11sPerr::SerializeInformation(Buffer::Iterator i)const
   {
     i.WriteU8 (0);
     i.WriteU8 (m_numOfDest);
@@ -66,7 +66,7 @@ WifiPerrInformationElement::SerializeInformation(Buffer::Iterator i)const
       }
   }
 uint16_t
-WifiPerrInformationElement::DeserializeInformation(Buffer::Iterator start, uint8_t length)
+IeDot11sPerr::DeserializeInformation(Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   i.Next (1); //Mode flags is not used now
@@ -84,7 +84,7 @@ WifiPerrInformationElement::DeserializeInformation(Buffer::Iterator start, uint8
 }
 
 uint16_t
-WifiPerrInformationElement::GetInformationSize() const
+IeDot11sPerr::GetInformationSize() const
   {
     uint16_t retval =
        1 //ModeFlags
@@ -95,7 +95,7 @@ WifiPerrInformationElement::GetInformationSize() const
   }
 
 void
-WifiPerrInformationElement::AddAddressUnit(HwmpRtable::FailedDestination unit)
+IeDot11sPerr::AddAddressUnit(HwmpRtable::FailedDestination unit)
 {
   for (unsigned int i = 0; i < m_addressUnits.size(); i ++)
     if (m_addressUnits[i].destination == unit.destination)
@@ -105,12 +105,12 @@ WifiPerrInformationElement::AddAddressUnit(HwmpRtable::FailedDestination unit)
 }
 
 std::vector<HwmpRtable::FailedDestination>
-WifiPerrInformationElement::GetAddressUnitVector()
+IeDot11sPerr::GetAddressUnitVector()
 {
   return m_addressUnits;
 }
 void
-WifiPerrInformationElement::DeleteAddressUnit(Mac48Address address)
+IeDot11sPerr::DeleteAddressUnit(Mac48Address address)
 {
   for (std::vector<HwmpRtable::FailedDestination>::iterator i = m_addressUnits.begin(); i != m_addressUnits.end(); i ++)
     if ((*i).destination == address)
@@ -122,7 +122,7 @@ WifiPerrInformationElement::DeleteAddressUnit(Mac48Address address)
 }
 
 void
-WifiPerrInformationElement::ResetPerr()
+IeDot11sPerr::ResetPerr()
 {
   m_numOfDest = 0;
   m_addressUnits.clear();

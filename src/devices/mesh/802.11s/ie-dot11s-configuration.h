@@ -84,13 +84,13 @@ private:
 /**
  * \ingroup mesh
  */
-class MeshConfigurationElement : public WifiInformationElement
+class IeDot11sConfiguration : public WifiInformationElement
 {
 public:
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
 
-  MeshConfigurationElement();
+  IeDot11sConfiguration();
   void   SetRouting(dot11sPathSelectionProtocol routingId);
   void   SetMetric(dot11sPathSelectionMetric metricId);
   bool   IsHWMP();

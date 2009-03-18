@@ -35,11 +35,11 @@ namespace ns3 {
 /**
  * \ingroup mesh
  */
-class WifiPerrInformationElement : public WifiInformationElement
+class IeDot11sPerr : public WifiInformationElement
 {
 public:
-  WifiPerrInformationElement();
-  ~WifiPerrInformationElement();
+  IeDot11sPerr();
+  ~IeDot11sPerr();
   static  TypeId   GetTypeId();
   virtual TypeId   GetInstanceTypeId() const;
 #if 0

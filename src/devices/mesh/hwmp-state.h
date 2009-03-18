@@ -94,14 +94,14 @@ public:
   //Mac interaction:
   void SetMac(Ptr<MeshWifiMac> mac);
   void SetSendPreqCallback(
-    Callback<void, const WifiPreqInformationElement&> cb);
+    Callback<void, const IeDot11sPreq&> cb);
   void SetSendPrepCallback(
-    Callback<void, const WifiPrepInformationElement&> cb);
+    Callback<void, const IeDot11sPrep&> cb);
   void SetSendPerrCallback(
-    Callback<void, const WifiPerrInformationElement&, std::vector<Mac48Address> > cb);
-  void ReceivePreq(WifiPreqInformationElement&, const Mac48Address& from, const uint32_t& metric);
-  void ReceivePrep(WifiPrepInformationElement&, const Mac48Address& from, const uint32_t& metric);
-  void ReceivePerr(WifiPerrInformationElement&, const Mac48Address& from);
+    Callback<void, const IeDot11sPerr&, std::vector<Mac48Address> > cb);
+  void ReceivePreq(IeDot11sPreq&, const Mac48Address& from, const uint32_t& metric);
+  void ReceivePrep(IeDot11sPrep&, const Mac48Address& from, const uint32_t& metric);
+  void ReceivePerr(IeDot11sPerr&, const Mac48Address& from);
   void PeerStatus(
     const Mac48Address peerAddress,
     const bool status,
@@ -125,7 +125,7 @@ private:
   //timers for PREQ and PREP:
   EventId  m_preqTimer;
   void  SendOnePreq();
-  std::vector<WifiPreqInformationElement>
+  std::vector<IeDot11sPreq>
   m_preqQueue;
   //true means that we can add a destination to
   //existing PREQ element
@@ -140,7 +140,7 @@ private:
     uint32_t originatorDsn, //taken from rtable or as m_myDsn ++;
     uint32_t lifetime //taken from PREQ
   );
-  std::vector<WifiPreqInformationElement>::iterator
+  std::vector<IeDot11sPreq>::iterator
   m_myPreq;
   //HWMP interaction callbacks:
   Callback<void, INFO>
@@ -152,10 +152,10 @@ private:
   Callback<HwmpRtable::LookupResult, uint32_t>
   m_requestRootPathCallback;
   //Mac interaction callbacks:
-  Callback<void, const WifiPreqInformationElement&>  m_preqCallback;
-  Callback<void, const WifiPrepInformationElement&, const Mac48Address&>
+  Callback<void, const IeDot11sPreq&>  m_preqCallback;
+  Callback<void, const IeDot11sPrep&, const Mac48Address&>
   m_prepCallback;
-  Callback<void, const WifiPerrInformationElement&, std::vector<Mac48Address> >
+  Callback<void, const IeDot11sPerr&, std::vector<Mac48Address> >
   m_perrCallback;
   //HwmpCounters:
   uint32_t m_preqId;
@@ -177,7 +177,7 @@ private:
    * should send PERR, and PERR element should
    * be cleared
    */
-  WifiPerrInformationElement  m_myPerr;
+  IeDot11sPerr  m_myPerr;
   std::vector<Mac48Address>   m_myPerrReceivers;
   void  AddPerrReceiver(Mac48Address receiver);
   EventId  m_perrTimer;

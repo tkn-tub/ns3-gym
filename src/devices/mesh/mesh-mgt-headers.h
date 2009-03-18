@@ -45,17 +45,17 @@ namespace ns3 {
 class MgtMeshBeaconHeader : public MgtBeaconHeader
 {
 public:
-  void    SetMeshConfigurationElement(MeshConfigurationElement mesh_config);
-  void    SetWifiBeaconTimingElement(WifiBeaconTimingElement wifi_timing);
-  MeshConfigurationElement GetMeshConfigurationElement();
-  WifiBeaconTimingElement  GetWifiBeaconTimingElement();
+  void    SetIeDot11sConfiguration(IeDot11sConfiguration mesh_config);
+  void    SetIeDot11sBeaconTiming(IeDot11sBeaconTiming wifi_timing);
+  IeDot11sConfiguration GetIeDot11sConfiguration();
+  IeDot11sBeaconTiming  GetIeDot11sBeaconTiming();
   virtual uint32_t  GetSerializedSize () const;
   virtual void   Serialize (Buffer::Iterator start) const;
   virtual uint32_t  Deserialize (Buffer::Iterator start);
 
 private:
-  MeshConfigurationElement m_meshConfig;
-  WifiBeaconTimingElement  m_meshTiming;
+  IeDot11sConfiguration m_meshConfig;
+  IeDot11sBeaconTiming  m_meshTiming;
 };
 
 /**
@@ -69,14 +69,14 @@ public:
   void    SetSupportedRates(SupportedRates rates);
   void    SetQosField(uint16_t qos);
   void    SetMeshId(Ssid Id);
-  void    SetMeshConfigurationElement(MeshConfigurationElement MeshConf);
+  void    SetIeDot11sConfiguration(IeDot11sConfiguration MeshConf);
   void    SetPeerLinkManagementElement(PeerLinkManagementElement MeshPeerElement);
 
   uint16_t         GetAid();
   SupportedRates   GetSupportedRates();
   uint16_t         GetQosField();
   Ssid             GetMeshId();
-  MeshConfigurationElement  GetMeshConfigurationElement();
+  IeDot11sConfiguration  GetIeDot11sConfiguration();
   PeerLinkManagementElement GetPeerLinkManagementElement();
 
   static  TypeId   GetTypeId();
@@ -107,7 +107,7 @@ private:
   SupportedRates   Rates;  //only in Open and Confirm
   uint16_t   QoS;  //only in Open and Confirm
   Ssid    MeshId;  //only in Open and Confirm
-  MeshConfigurationElement MeshConfig; //only in Open and Confirm
+  IeDot11sConfiguration MeshConfig; //only in Open and Confirm
   PeerLinkManagementElement PeerLinkMan; //in all types of frames
 };
 

@@ -79,32 +79,32 @@ DestinationAddressUnit::GetDestinationAddress() const
     return m_destinationAddress;
   }
 /********************************
- * WifiPreqInformationElement
+ * IeDot11sPreq
  *******************************/
-WifiPreqInformationElement::~WifiPreqInformationElement()
+IeDot11sPreq::~IeDot11sPreq()
 {
 }
 
 TypeId
-WifiPreqInformationElement::GetTypeId()
+IeDot11sPreq::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::WifiPreqInformationElement")
+  static TypeId tid = TypeId ("ns3::IeDot11sPreq")
                       .SetParent<Object> ();
   return tid;
 }
 void
-WifiPreqInformationElement::Print(std::ostream &os) const
+IeDot11sPreq::Print(std::ostream &os) const
   {
     //TODO:fill this method
   }
 
 TypeId
-WifiPreqInformationElement::GetInstanceTypeId() const
+IeDot11sPreq::GetInstanceTypeId() const
   {
     return GetTypeId();
   }
 
-WifiPreqInformationElement::WifiPreqInformationElement():
+IeDot11sPreq::IeDot11sPreq():
     m_maxSize(32),
     m_flags(0),
     m_hopCount(0),
@@ -118,136 +118,136 @@ WifiPreqInformationElement::WifiPreqInformationElement():
 {
 }
 void
-WifiPreqInformationElement::SetUnicastPreq()
+IeDot11sPreq::SetUnicastPreq()
 {
   m_flags |= 1<<1;
 }
 
 void
-WifiPreqInformationElement::SetNeedNotPrep()
+IeDot11sPreq::SetNeedNotPrep()
 {
   m_flags |= 1<<2;
 }
 //void
-//WifiPreqInformationElement::SetFlags(uint8_t flags)
+//IeDot11sPreq::SetFlags(uint8_t flags)
 //{
 // m_flags = flags;
 //}
 void
-WifiPreqInformationElement::SetHopcount(uint8_t hopcount)
+IeDot11sPreq::SetHopcount(uint8_t hopcount)
 {
   m_hopCount = hopcount;
 }
 void
-WifiPreqInformationElement::SetTTL(uint8_t ttl)
+IeDot11sPreq::SetTTL(uint8_t ttl)
 {
   m_ttl = ttl;
 }
 void
-WifiPreqInformationElement::SetPreqID(uint32_t preq_id)
+IeDot11sPreq::SetPreqID(uint32_t preq_id)
 {
   m_preqId = preq_id;
 }
 void
-WifiPreqInformationElement::SetMetric(uint32_t metric)
+IeDot11sPreq::SetMetric(uint32_t metric)
 {
   m_metric = metric;
 }
 void
-WifiPreqInformationElement::SetOriginatorAddress(Mac48Address originator_address)
+IeDot11sPreq::SetOriginatorAddress(Mac48Address originator_address)
 {
   m_originatorAddress = originator_address;
 }
 void
-WifiPreqInformationElement::SetOriginatorSeqNumber(uint32_t originator_seq_number)
+IeDot11sPreq::SetOriginatorSeqNumber(uint32_t originator_seq_number)
 {
   m_originatorSeqNumber = originator_seq_number;
 }
 void
-WifiPreqInformationElement::SetLifetime(uint32_t lifetime)
+IeDot11sPreq::SetLifetime(uint32_t lifetime)
 {
   m_lifetime = lifetime;
 }
 void
-WifiPreqInformationElement::SetDestCount(uint8_t dest_count)
+IeDot11sPreq::SetDestCount(uint8_t dest_count)
 {
   m_destCount = dest_count;
 }
 
 //uint8_t
-//WifiPreqInformationElement::GetFlags() const
+//IeDot11sPreq::GetFlags() const
 //{
 // return m_flags;
 //}
 bool
-WifiPreqInformationElement::IsUnicastPreq() const
+IeDot11sPreq::IsUnicastPreq() const
   {
     return (m_flags & (1<<1));
   }
 
 bool
-WifiPreqInformationElement::IsNeedNotPrep() const
+IeDot11sPreq::IsNeedNotPrep() const
   {
     return (m_flags & (1<<2));
   }
 
 uint8_t
-WifiPreqInformationElement::GetHopCount() const
+IeDot11sPreq::GetHopCount() const
   {
     return m_hopCount;
   }
 uint8_t
-WifiPreqInformationElement::GetTtl() const
+IeDot11sPreq::GetTtl() const
   {
     return m_ttl;
   }
 uint32_t
-WifiPreqInformationElement::GetPreqID() const
+IeDot11sPreq::GetPreqID() const
   {
     return m_preqId;
   }
 uint32_t
-WifiPreqInformationElement::GetMetric() const
+IeDot11sPreq::GetMetric() const
   {
     return m_metric;
   }
 Mac48Address
-WifiPreqInformationElement::GetOriginatorAddress() const
+IeDot11sPreq::GetOriginatorAddress() const
   {
     return m_originatorAddress;
   }
 uint32_t
-WifiPreqInformationElement::GetOriginatorSeqNumber() const
+IeDot11sPreq::GetOriginatorSeqNumber() const
   {
     return m_originatorSeqNumber;
   }
 uint32_t
-WifiPreqInformationElement::GetLifetime() const
+IeDot11sPreq::GetLifetime() const
   {
     return m_lifetime;
   }
 
 uint8_t
-WifiPreqInformationElement::GetDestCount() const
+IeDot11sPreq::GetDestCount() const
   {
     return m_destCount;
   }
 
 void
-WifiPreqInformationElement::DecrementTtl()
+IeDot11sPreq::DecrementTtl()
 {
   m_ttl --;
   m_hopCount ++;
 }
 
 void
-WifiPreqInformationElement::IncrementMetric(uint32_t metric)
+IeDot11sPreq::IncrementMetric(uint32_t metric)
 {
   m_metric +=metric;
 }
 
 void
-WifiPreqInformationElement::SerializeInformation(Buffer::Iterator i) const
+IeDot11sPreq::SerializeInformation(Buffer::Iterator i) const
   {
     i.WriteU8 (m_flags);
     i.WriteU8 (m_hopCount);
@@ -276,7 +276,7 @@ WifiPreqInformationElement::SerializeInformation(Buffer::Iterator i) const
   }
 
 uint16_t
-WifiPreqInformationElement::DeserializeInformation(Buffer::Iterator start, uint8_t length)
+IeDot11sPreq::DeserializeInformation(Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   m_flags = i.ReadU8 ();
@@ -312,7 +312,7 @@ WifiPreqInformationElement::DeserializeInformation(Buffer::Iterator start, uint8
   return i.GetDistanceFrom(start);
 }
 uint16_t
-WifiPreqInformationElement::GetInformationSize() const
+IeDot11sPreq::GetInformationSize() const
 {
   uint32_t retval =
     1 //Flags
@@ -332,17 +332,17 @@ WifiPreqInformationElement::GetInformationSize() const
 }
 
 void
-WifiPreqInformationElement::PrintInformation(std::ostream& os) const
+IeDot11sPreq::PrintInformation(std::ostream& os) const
 {
   //TODO
 }
 std::vector<Ptr<DestinationAddressUnit> >
-WifiPreqInformationElement::GetDestinationList()
+IeDot11sPreq::GetDestinationList()
 {
   return m_destinations;
 }
 void
-WifiPreqInformationElement::AddDestinationAddressElement(
+IeDot11sPreq::AddDestinationAddressElement(
   bool doFlag, bool rfFlag,
   Mac48Address dest_address,
   uint32_t dest_seq_number
@@ -360,7 +360,7 @@ WifiPreqInformationElement::AddDestinationAddressElement(
 }
 
 void
-WifiPreqInformationElement::DelDestinationAddressElement(Mac48Address dest_address)
+IeDot11sPreq::DelDestinationAddressElement(Mac48Address dest_address)
 {
   for (std::vector<Ptr<DestinationAddressUnit> >::iterator i = m_destinations.begin(); i!=m_destinations.end(); i++)
     if ((*i)->GetDestinationAddress() == dest_address)
@@ -372,7 +372,7 @@ WifiPreqInformationElement::DelDestinationAddressElement(Mac48Address dest_addre
 }
 
 void
-WifiPreqInformationElement::ClearDestinationAddressElement()
+IeDot11sPreq::ClearDestinationAddressElement()
 {
   int i;
   for (std::vector<Ptr<DestinationAddressUnit> >::iterator j = m_destinations.begin(); j!= m_destinations.end(); j++)

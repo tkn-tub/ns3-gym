@@ -32,10 +32,10 @@ namespace ns3 {
 /**
  * \ingroup mesh
  */
-class WifiBeaconTimingElementUnit : public RefCountBase
+class IeDot11sBeaconTimingUnit : public RefCountBase
 {
 public:
-  WifiBeaconTimingElementUnit();
+  IeDot11sBeaconTimingUnit();
   void SetAID(uint8_t aid);
   void SetLastBeacon(uint16_t last_beacon);
   void SetBeaconInterval(uint16_t beacon_interval);
@@ -56,16 +56,16 @@ private:
 /**
  * \ingroup mesh
  */
-class WifiBeaconTimingElement : public WifiInformationElement
+class IeDot11sBeaconTiming : public WifiInformationElement
 {
 public:
   /**
    * \ingroup mesh
    * This type is a list of timing elements obtained from neigbours with their beacons:
    */
-  typedef std::list< Ptr<WifiBeaconTimingElementUnit> > NeighboursTimingUnitsList;
+  typedef std::list< Ptr<IeDot11sBeaconTimingUnit> > NeighboursTimingUnitsList;
 
-  WifiBeaconTimingElement();
+  IeDot11sBeaconTiming();
   //This methods are needed for beacon collision
   //avoidance module:
   NeighboursTimingUnitsList GetNeighboursTimingElementsList();

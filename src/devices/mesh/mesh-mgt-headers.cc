@@ -34,25 +34,25 @@ namespace ns3 {
  *          Mesh Beacon
  ***********************************************************/
 void
-MgtMeshBeaconHeader::SetMeshConfigurationElement(MeshConfigurationElement mesh_config)
+MgtMeshBeaconHeader::SetIeDot11sConfiguration(IeDot11sConfiguration mesh_config)
 {
   m_meshConfig = mesh_config;
 }
 
 void
-MgtMeshBeaconHeader::SetWifiBeaconTimingElement(WifiBeaconTimingElement wifi_timing)
+MgtMeshBeaconHeader::SetIeDot11sBeaconTiming(IeDot11sBeaconTiming wifi_timing)
 {
   m_meshTiming = wifi_timing;
 }
 
-MeshConfigurationElement
-MgtMeshBeaconHeader::GetMeshConfigurationElement()
+IeDot11sConfiguration
+MgtMeshBeaconHeader::GetIeDot11sConfiguration()
 {
   return m_meshConfig;
 }
 
-WifiBeaconTimingElement
-MgtMeshBeaconHeader::GetWifiBeaconTimingElement()
+IeDot11sBeaconTiming
+MgtMeshBeaconHeader::GetIeDot11sBeaconTiming()
 {
   return m_meshTiming;
 }
@@ -132,7 +132,7 @@ MeshMgtPeerLinkManFrame::SetMeshId(Ssid Id)
 }
 
 void
-MeshMgtPeerLinkManFrame::SetMeshConfigurationElement(MeshConfigurationElement MeshConf)
+MeshMgtPeerLinkManFrame::SetIeDot11sConfiguration(IeDot11sConfiguration MeshConf)
 {
   MeshConfig = MeshConf;
 }
@@ -167,8 +167,8 @@ MeshMgtPeerLinkManFrame::GetMeshId()
   return MeshId;
 }
 
-MeshConfigurationElement
-MeshMgtPeerLinkManFrame::GetMeshConfigurationElement()
+IeDot11sConfiguration
+MeshMgtPeerLinkManFrame::GetIeDot11sConfiguration()
 {
   return MeshConfig;
 }

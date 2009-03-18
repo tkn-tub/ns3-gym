@@ -23,9 +23,9 @@
 #include "ns3/log.h"
 namespace ns3 {
 /*******************************************
- * WifiBeaconTimingElementUnit
+ * IeDot11sBeaconTimingUnit
  *******************************************/
-WifiBeaconTimingElementUnit::WifiBeaconTimingElementUnit()
+IeDot11sBeaconTimingUnit::IeDot11sBeaconTimingUnit()
 {
   AID = 0;
   LastBeacon = 0;
@@ -33,58 +33,58 @@ WifiBeaconTimingElementUnit::WifiBeaconTimingElementUnit()
 }
 
 void
-WifiBeaconTimingElementUnit::SetAID(uint8_t aid)
+IeDot11sBeaconTimingUnit::SetAID(uint8_t aid)
 {
   AID = aid;
 }
 
 void
-WifiBeaconTimingElementUnit::SetLastBeacon(uint16_t last_beacon)
+IeDot11sBeaconTimingUnit::SetLastBeacon(uint16_t last_beacon)
 {
   LastBeacon = last_beacon;
 }
 
 void
-WifiBeaconTimingElementUnit::SetBeaconInterval(uint16_t beacon_interval)
+IeDot11sBeaconTimingUnit::SetBeaconInterval(uint16_t beacon_interval)
 {
   BeaconInterval = beacon_interval;
 }
 
 uint8_t
-WifiBeaconTimingElementUnit::GetAID()
+IeDot11sBeaconTimingUnit::GetAID()
 {
   return AID;
 }
 
 uint16_t
-WifiBeaconTimingElementUnit::GetLastBeacon()
+IeDot11sBeaconTimingUnit::GetLastBeacon()
 {
   return LastBeacon;
 }
 
 uint16_t
-WifiBeaconTimingElementUnit::GetBeaconInterval()
+IeDot11sBeaconTimingUnit::GetBeaconInterval()
 {
   return BeaconInterval;
 }
 
 /*******************************************
- * WifiBeaconTimingElement
+ * IeDot11sBeaconTiming
  *******************************************/
-WifiBeaconTimingElement::WifiBeaconTimingElement()
+IeDot11sBeaconTiming::IeDot11sBeaconTiming()
 {
   m_maxSize = DEFAULT_MAX_SIZE;
   m_numOfUnits = 0;
 }
 
-WifiBeaconTimingElement::NeighboursTimingUnitsList
-WifiBeaconTimingElement::GetNeighboursTimingElementsList()
+IeDot11sBeaconTiming::NeighboursTimingUnitsList
+IeDot11sBeaconTiming::GetNeighboursTimingElementsList()
 {
   return m_neighbours;
 }
 
 void
-WifiBeaconTimingElement::AddNeighboursTimingElementUnit(
+IeDot11sBeaconTiming::AddNeighboursTimingElementUnit(
   uint16_t aid,
   Time  last_beacon, //MicroSeconds!
   Time  beacon_interval //MicroSeconds!
@@ -100,7 +100,7 @@ WifiBeaconTimingElement::AddNeighboursTimingElementUnit(
       && ((*i)->GetBeaconInterval() == BeaconIntervalToU16(beacon_interval))
     )
       return;
-  Ptr<WifiBeaconTimingElementUnit>new_element = Create<WifiBeaconTimingElementUnit>();
+  Ptr<IeDot11sBeaconTimingUnit>new_element = Create<IeDot11sBeaconTimingUnit>();
   new_element->SetAID(AidToU8(aid));
   new_element->SetLastBeacon(TimestampToU16(last_beacon));
   new_element->SetBeaconInterval(BeaconIntervalToU16(beacon_interval));
@@ -109,7 +109,7 @@ WifiBeaconTimingElement::AddNeighboursTimingElementUnit(
 }
 
 void
-WifiBeaconTimingElement::DelNeighboursTimingElementUnit(
+IeDot11sBeaconTiming::DelNeighboursTimingElementUnit(
   uint16_t aid,
   Time  last_beacon, //MicroSeconds!
   Time  beacon_interval //MicroSeconds!
@@ -130,7 +130,7 @@ WifiBeaconTimingElement::DelNeighboursTimingElementUnit(
 }
 
 void
-WifiBeaconTimingElement::ClearTimingElement()
+IeDot11sBeaconTiming::ClearTimingElement()
 {
   uint16_t to_delete = 0;
   uint16_t i;
@@ -146,19 +146,19 @@ WifiBeaconTimingElement::ClearTimingElement()
 }
 
 uint16_t
-WifiBeaconTimingElement::GetInformationSize () const
+IeDot11sBeaconTiming::GetInformationSize () const
 {
   return (5*m_numOfUnits);
 }
 
 void
-WifiBeaconTimingElement::PrintInformation(std::ostream& os) const
+IeDot11sBeaconTiming::PrintInformation(std::ostream& os) const
 {
   //TODO
 }
 
 void
-WifiBeaconTimingElement::SerializeInformation (Buffer::Iterator i) const
+IeDot11sBeaconTiming::SerializeInformation (Buffer::Iterator i) const
 {
   for (NeighboursTimingUnitsList::const_iterator j = m_neighbours.begin(); j!= m_neighbours.end(); j++)
   {
@@ -168,13 +168,13 @@ WifiBeaconTimingElement::SerializeInformation (Buffer::Iterator i) const
   }
 }
 uint16_t 
-WifiBeaconTimingElement::DeserializeInformation (Buffer::Iterator start, uint8_t length)
+IeDot11sBeaconTiming::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   m_numOfUnits = length/5;
   for (int j = 0; j < m_numOfUnits; j ++)
     {
-      Ptr<WifiBeaconTimingElementUnit> new_element = Create<WifiBeaconTimingElementUnit>();
+      Ptr<IeDot11sBeaconTimingUnit> new_element = Create<IeDot11sBeaconTimingUnit>();
       new_element->SetAID(i.ReadU8());
       new_element->SetLastBeacon(i.ReadNtohU16());
       new_element->SetBeaconInterval(i.ReadNtohU16());
@@ -184,19 +184,19 @@ WifiBeaconTimingElement::DeserializeInformation (Buffer::Iterator start, uint8_t
 };
 
 uint16_t
-WifiBeaconTimingElement::TimestampToU16(Time x)
+IeDot11sBeaconTiming::TimestampToU16(Time x)
 {
   return ((uint16_t)((x.GetMicroSeconds() >> 8)&0xffff));
 };
 
 uint16_t 
-WifiBeaconTimingElement::BeaconIntervalToU16(Time x)
+IeDot11sBeaconTiming::BeaconIntervalToU16(Time x)
 {
   return ((uint16_t)(x.GetMicroSeconds() >>10)&0xffff);
 };
 
 uint8_t
-WifiBeaconTimingElement::AidToU8(uint16_t x)
+IeDot11sBeaconTiming::AidToU8(uint16_t x)
 {
   return (uint8_t)(x&0xff);
 };

@@ -97,7 +97,7 @@ HwmpState::RequestDestination(Mac48Address dst)
 {
   if (m_preqQueue.end() == m_myPreq)
     {
-      WifiPreqInformationElement preq;
+      IeDot11sPreq preq;
       //fill PREQ:
       preq.SetHopcount(0);
       preq.SetTTL(m_maxTtl);
@@ -173,7 +173,7 @@ HwmpState::GetAssociatedIfaceId()
 
 //Interaction with MAC:
 void
-HwmpState::ReceivePreq(WifiPreqInformationElement& preq,  const Mac48Address& from, const uint32_t& metric)
+HwmpState::ReceivePreq(IeDot11sPreq& preq,  const Mac48Address& from, const uint32_t& metric)
 {
   if (m_disabled)
     return;
@@ -312,7 +312,7 @@ HwmpState::ReceivePreq(WifiPreqInformationElement& preq,  const Mac48Address& fr
 }
 
 void
-HwmpState::ReceivePrep(WifiPrepInformationElement& prep, const Mac48Address& from, const uint32_t& metric)
+HwmpState::ReceivePrep(IeDot11sPrep& prep, const Mac48Address& from, const uint32_t& metric)
 {
   if (m_disabled)
     return;
@@ -357,7 +357,7 @@ HwmpState::ReceivePrep(WifiPrepInformationElement& prep, const Mac48Address& fro
 }
 
 void
-HwmpState::ReceivePerr(WifiPerrInformationElement& perr, const Mac48Address& from)
+HwmpState::ReceivePerr(IeDot11sPerr& perr, const Mac48Address& from)
 {
   if (m_disabled)
     return;
@@ -420,7 +420,7 @@ void
 HwmpState::SendProactivePreq()
 {
   NS_LOG_DEBUG("Sending proactive PREQ");
-  WifiPreqInformationElement preq;
+  IeDot11sPreq preq;
   //By default: must answer
   preq.SetHopcount(0);
   preq.SetTTL(m_maxTtl);
@@ -492,7 +492,7 @@ HwmpState::SendOnePreq()
     return;
   if (m_myPreq == m_preqQueue.begin())
     m_myPreq == m_preqQueue.end();
-  WifiPreqInformationElement preq = m_preqQueue[0];
+  IeDot11sPreq preq = m_preqQueue[0];
   NS_LOG_DEBUG(
     "Sending PREQ from "<<preq.GetOriginatorAddress() <<
     " destinations are  "<<(int)preq.GetDestCount()<<
@@ -516,7 +516,7 @@ HwmpState::SendPrep(Mac48Address dst,
                     uint32_t originatorDsn,
                     uint32_t lifetime)
 {
-  WifiPrepInformationElement prep;
+  IeDot11sPrep prep;
   prep.SetHopcount(0);
   prep.SetTTL(m_maxTtl);
   prep.SetDestinationAddress(dst);

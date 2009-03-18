@@ -67,7 +67,7 @@ public:
   void  SetPeerLinkId(uint16_t id);
   void  SetLocalAid(uint16_t aid);
   void  SetPeerAid(uint16_t aid);
-  void  SetBeaconTimingElement(WifiBeaconTimingElement beaconTiming);
+  void  SetBeaconTimingElement(IeDot11sBeaconTiming beaconTiming);
   void  SetPeerLinkDescriptorElement(
     PeerLinkManagementElement peerLinkElement
   );
@@ -79,7 +79,7 @@ public:
   uint16_t GetLocalAid()const;
   Time  GetLastBeacon()const;
   Time  GetBeaconInterval()const;
-  WifiBeaconTimingElement
+  IeDot11sBeaconTiming
   GetBeaconTimingElement()const;
   PeerLinkManagementElement
   GetPeerLinkDescriptorElement()const;
@@ -94,18 +94,18 @@ public:
 #endif
   void  SetMac(Ptr<MeshWifiMac> mac);
   void  PeerLinkClose(uint16_t localLinkID,uint16_t peerLinkID, dot11sReasonCode reason);
-  void  PeerLinkOpenAccept(uint16_t localLinkId, MeshConfigurationElement  conf);
-  void  PeerLinkOpenReject(uint16_t localLinkId, MeshConfigurationElement  conf,dot11sReasonCode reason);
+  void  PeerLinkOpenAccept(uint16_t localLinkId, IeDot11sConfiguration  conf);
+  void  PeerLinkOpenReject(uint16_t localLinkId, IeDot11sConfiguration  conf,dot11sReasonCode reason);
   void  PeerLinkConfirmAccept(
     uint16_t localLinkId,
     uint16_t peerLinkId,
     uint16_t peerAid,
-    MeshConfigurationElement  conf
+    IeDot11sConfiguration  conf
   );
   void  PeerLinkConfirmReject(
     uint16_t localLinkId,
     uint16_t peerLinkId,
-    MeshConfigurationElement  conf,
+    IeDot11sConfiguration  conf,
     dot11sReasonCode reason
   );
   bool  LinkIsEstab() const;
@@ -171,11 +171,11 @@ private:
   //State of our peer Link:
   PeerState m_state;
 
-  MeshConfigurationElement
+  IeDot11sConfiguration
   m_configuration;
   // State is a bitfield as defined as follows:
   // This are states for a given
-  WifiBeaconTimingElement
+  IeDot11sBeaconTiming
   m_beaconTiming;
 
   EventId  m_retryTimer;
@@ -203,8 +203,8 @@ public:
   ~WifiPeerManager();
   static TypeId GetTypeId ();
   //Returns a beacon timing element stored for remote station:
-  WifiBeaconTimingElement
-  GetWifiBeaconTimingElementForAddress(Mac48Address portAddress, Mac48Address addr);
+  IeDot11sBeaconTiming
+  GetIeDot11sBeaconTimingForAddress(Mac48Address portAddress, Mac48Address addr);
   //Returns a list of all addresses, which beacons can be decoded:
   std::vector<Mac48Address>
   GetNeighbourAddressList(Mac48Address portAddress, Mac48Address peerAddress);
@@ -226,7 +226,7 @@ public:
     Mac48Address peerAddress,
     Time  lastBeacon,
     Time  beaconInterval,
-    WifiBeaconTimingElement
+    IeDot11sBeaconTiming
     beaconTiming
   );
   void SetOpenReceived(
@@ -234,7 +234,7 @@ public:
     Mac48Address peerAddress,
     PeerLinkManagementElement
     peerMan,
-    MeshConfigurationElement conf
+    IeDot11sConfiguration conf
   );
   void SetConfirmReceived(
     Mac48Address portAddress,
@@ -242,7 +242,7 @@ public:
     uint16_t peerAid,
     PeerLinkManagementElement
     peerMan,
-    MeshConfigurationElement meshConfig
+    IeDot11sConfiguration meshConfig
   );
   void SetCloseReceived(
     Mac48Address portAddress,
@@ -255,8 +255,8 @@ public:
     Mac48Address peerAddress
   );
   //Returns a beacon timing element to added into my beacon:
-  WifiBeaconTimingElement
-  GetWifiBeaconTimingElementForMyBeacon(
+  IeDot11sBeaconTiming
+  GetIeDot11sBeaconTimingForMyBeacon(
     Mac48Address portAddress
   );
   bool IsActiveLink(

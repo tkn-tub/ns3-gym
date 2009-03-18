@@ -58,11 +58,11 @@ private:
 /**
  * \ingroup mesh
  */
-class WifiPreqInformationElement : public WifiInformationElement
+class IeDot11sPreq : public WifiInformationElement
 {
 public:
-  WifiPreqInformationElement();
-  ~WifiPreqInformationElement ();
+  IeDot11sPreq();
+  ~IeDot11sPreq ();
   static TypeId GetTypeId ();
   virtual TypeId GetInstanceTypeId() const;
   virtual void Print(std::ostream &os) const;

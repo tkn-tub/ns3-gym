@@ -132,7 +132,7 @@ public:
    */
   void          SetPeerLinkManager(Ptr<WifiPeerManager> manager);
   virtual void  SetPreqReceivedCallback(
-    Callback<void, WifiPreqInformationElement&, const Mac48Address&, const uint32_t&> cb);
+    Callback<void, IeDot11sPreq&, const Mac48Address&, const uint32_t&> cb);
   /**
    * \brief this callback is set by Hwmp routing
    * protocol and executed when MAC has received
@@ -141,7 +141,7 @@ public:
    * receiving PREP.
    */
   virtual void  SetPrepReceivedCallback(
-    Callback<void, WifiPrepInformationElement&, const Mac48Address&, const uint32_t&> cb);
+    Callback<void, IeDot11sPrep&, const Mac48Address&, const uint32_t&> cb);
   /**
    * \brief this callback is set by Hwmp routing
    * protocol and executed when MAC has received
@@ -150,7 +150,7 @@ public:
    * receiving PERR.
    */
   virtual void  SetPerrReceivedCallback(
-    Callback<void, WifiPerrInformationElement&, const Mac48Address&> cb);
+    Callback<void, IeDot11sPerr&, const Mac48Address&> cb);
 
   /**
    * \brief this callback is set by Hwmp routing
@@ -169,7 +169,7 @@ public:
    * \attention This method is public, because
    * HWMP makes a callback using this method
    */
-  virtual void  SendPreq(const WifiPreqInformationElement& preq);
+  virtual void  SendPreq(const IeDot11sPreq& preq);
   /**
    * \brief Sends a PREP frame.
    * \param prep is prep information element
@@ -181,7 +181,7 @@ public:
    * HWMP makes a callback using this method
    */
 
-  virtual void  SendPrep(const WifiPrepInformationElement& prep, const Mac48Address& to);
+  virtual void  SendPrep(const IeDot11sPrep& prep, const Mac48Address& to);
   /**
    * \brief Sends a PERR frame.
    * \param perr is perr information element
@@ -192,7 +192,7 @@ public:
    * \attention This method is public, because
    * HWMP makes a callback using this method
    */
-  virtual void  SendPerr(const WifiPerrInformationElement& perr, std::vector<Mac48Address> receivers);
+  virtual void  SendPerr(const IeDot11sPerr& perr, std::vector<Mac48Address> receivers);
   /**
    * \brief Sends PeerLinkOpen frame to a given
    * address. Mac only forms a proper
@@ -333,7 +333,7 @@ private:
   Time    m_ctsTimeout;
 
   Time    m_eifsNoDifs;
-  MeshConfigurationElement m_meshConfig; //Stores my configuration;
+  IeDot11sConfiguration m_meshConfig; //Stores my configuration;
   //Peer Descriptor pointer:
   Ptr<WifiPeerManager>   m_peerManager;
   Time    m_softwareDelay;
@@ -358,11 +358,11 @@ private:
    * distributed between 0 and given value
    */
   Time    m_beaconFormingRandomDelay;
-  Callback<void, WifiPreqInformationElement&, const Mac48Address&, const uint32_t&>
+  Callback<void, IeDot11sPreq&, const Mac48Address&, const uint32_t&>
   m_preqReceived;
-  Callback<void, WifiPrepInformationElement&, const Mac48Address&, const uint32_t&>
+  Callback<void, IeDot11sPrep&, const Mac48Address&, const uint32_t&>
   m_prepReceived;
-  Callback<void, WifiPerrInformationElement&, const Mac48Address&>
+  Callback<void, IeDot11sPerr&, const Mac48Address&>
   m_perrReceived;
   Callback<void, Mac48Address, bool, uint32_t>
   m_peerStatusCallback;

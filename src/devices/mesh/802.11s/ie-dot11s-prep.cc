@@ -24,30 +24,30 @@
 #include "ns3/assert.h"
 namespace ns3 {
 /********************************
- * WifiPrepInformationElement
+ * IeDot11sPrep
  *******************************/
-WifiPrepInformationElement::~WifiPrepInformationElement()
+IeDot11sPrep::~IeDot11sPrep()
 {
 }
 
 TypeId
-WifiPrepInformationElement::GetTypeId()
+IeDot11sPrep::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::WifiPrepInformationElement")
+  static TypeId tid = TypeId ("ns3::IeDot11sPrep")
                       .SetParent<Object> ();
   return tid;
 }
 void
-WifiPrepInformationElement::Print(std::ostream &os) const
+IeDot11sPrep::Print(std::ostream &os) const
   {
     //TODO:fill this method
   }
 TypeId
-WifiPrepInformationElement::GetInstanceTypeId() const
+IeDot11sPrep::GetInstanceTypeId() const
   {
     return GetTypeId();
   }
-WifiPrepInformationElement::WifiPrepInformationElement():
+IeDot11sPrep::IeDot11sPrep():
     m_flags(0),
     m_hopcount(0),
     m_ttl(0),
@@ -60,110 +60,110 @@ WifiPrepInformationElement::WifiPrepInformationElement():
 {
 }
 void
-WifiPrepInformationElement::SetFlags(uint8_t flags)
+IeDot11sPrep::SetFlags(uint8_t flags)
 {
   m_flags = flags;
 }
 void
-WifiPrepInformationElement::SetHopcount(uint8_t hopcount)
+IeDot11sPrep::SetHopcount(uint8_t hopcount)
 {
   m_hopcount = hopcount;
 }
 void
-WifiPrepInformationElement::SetTTL(uint8_t ttl)
+IeDot11sPrep::SetTTL(uint8_t ttl)
 {
   m_ttl = ttl;
 }
 void
-WifiPrepInformationElement::SetDestinationSeqNumber(uint32_t dest_seq_number)
+IeDot11sPrep::SetDestinationSeqNumber(uint32_t dest_seq_number)
 {
   m_destSeqNumber = dest_seq_number;
 }
 void
-WifiPrepInformationElement::SetDestinationAddress(Mac48Address dest_address)
+IeDot11sPrep::SetDestinationAddress(Mac48Address dest_address)
 {
   m_destinationAddress = dest_address;
 }
 void
-WifiPrepInformationElement::SetMetric(uint32_t metric)
+IeDot11sPrep::SetMetric(uint32_t metric)
 {
   m_metric = metric;
 }
 void
-WifiPrepInformationElement::SetOriginatorAddress(Mac48Address originator_address)
+IeDot11sPrep::SetOriginatorAddress(Mac48Address originator_address)
 {
   m_originatorAddress = originator_address;
 }
 void
-WifiPrepInformationElement::SetOriginatorSeqNumber(uint32_t originator_seq_number)
+IeDot11sPrep::SetOriginatorSeqNumber(uint32_t originator_seq_number)
 {
   m_originatorSeqNumber = originator_seq_number;
 }
 void
-WifiPrepInformationElement::SetLifetime(uint32_t lifetime)
+IeDot11sPrep::SetLifetime(uint32_t lifetime)
 {
   m_lifetime = lifetime;
 }
 uint8_t
-WifiPrepInformationElement::GetFlags() const
+IeDot11sPrep::GetFlags() const
   {
     return m_flags;
   }
 uint8_t
-WifiPrepInformationElement::GetHopcount() const
+IeDot11sPrep::GetHopcount() const
   {
     return m_hopcount;
   }
 uint32_t
-WifiPrepInformationElement::GetTTL() const
+IeDot11sPrep::GetTTL() const
   {
     return m_ttl;
   }
 uint32_t
-WifiPrepInformationElement::GetDestinationSeqNumber() const
+IeDot11sPrep::GetDestinationSeqNumber() const
   {
     return m_destSeqNumber;
   }
 Mac48Address
-WifiPrepInformationElement::GetDestinationAddress() const
+IeDot11sPrep::GetDestinationAddress() const
   {
     return m_destinationAddress;
   }
 uint32_t
-WifiPrepInformationElement::GetMetric() const
+IeDot11sPrep::GetMetric() const
   {
     return m_metric;
   }
 Mac48Address
-WifiPrepInformationElement::GetOriginatorAddress() const
+IeDot11sPrep::GetOriginatorAddress() const
   {
     return m_originatorAddress;
   }
 uint32_t
-WifiPrepInformationElement::GetOriginatorSeqNumber() const
+IeDot11sPrep::GetOriginatorSeqNumber() const
   {
     return m_originatorSeqNumber;
   }
 uint32_t
-WifiPrepInformationElement::GetLifetime() const
+IeDot11sPrep::GetLifetime() const
   {
     return m_lifetime;
   }
 void
-WifiPrepInformationElement::DecrementTtl()
+IeDot11sPrep::DecrementTtl()
 {
   m_ttl --;
 }
 
 void
-WifiPrepInformationElement::IncrementMetric(uint32_t metric)
+IeDot11sPrep::IncrementMetric(uint32_t metric)
 {
   m_metric +=metric;
 }
 
 
 void
-WifiPrepInformationElement::SerializeInformation(Buffer::Iterator i) const
+IeDot11sPrep::SerializeInformation(Buffer::Iterator i) const
   {
     i.WriteU8 (m_flags);
     i.WriteU8 (m_hopcount);
@@ -176,7 +176,7 @@ WifiPrepInformationElement::SerializeInformation(Buffer::Iterator i) const
     i.WriteHtonU32 (m_originatorSeqNumber);
   }
 uint16_t
-WifiPrepInformationElement::DeserializeInformation(Buffer::Iterator start, uint8_t length)
+IeDot11sPrep::DeserializeInformation(Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   m_flags = i.ReadU8();
@@ -191,7 +191,7 @@ WifiPrepInformationElement::DeserializeInformation(Buffer::Iterator start, uint8
   return i.GetDistanceFrom(start);
 }
 uint16_t
-WifiPrepInformationElement::GetInformationSize() const
+IeDot11sPrep::GetInformationSize() const
   {
     uint32_t retval =
        1 //Element ID
@@ -211,7 +211,7 @@ WifiPrepInformationElement::GetInformationSize() const
   };
 
 void
-WifiPrepInformationElement::PrintInformation(std::ostream& os) const
+IeDot11sPrep::PrintInformation(std::ostream& os) const
 {
   //TODO
 }

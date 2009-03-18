@@ -35,11 +35,11 @@ namespace ns3 {
 /**
  * \ingroup mesh
  */
-class WifiRannInformationElement
+class IeDot11sRann
 {
 public:
-  WifiRannInformationElement();
-  virtual ~WifiRannInformationElement();
+  IeDot11sRann();
+  virtual ~IeDot11sRann();
   static TypeId GetTypeId();
   virtual TypeId GetInstanceTypeId() const;
   virtual void Print(std::ostream &os) const;

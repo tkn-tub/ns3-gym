@@ -23,7 +23,7 @@
 #include "ns3/ie-dot11s-configuration.h"
 #include "ns3/assert.h"
 
-//NS_LOG_COMPONENT_DEFINE ("MeshConfigurationElement");
+//NS_LOG_COMPONENT_DEFINE ("IeDot11sConfiguration");
 
 namespace ns3 {
 
@@ -78,7 +78,7 @@ bool dot11sMeshCapability::Is(uint16_t cap, uint8_t n) const
     return (cap & mask) == mask;
   }
 
-MeshConfigurationElement::MeshConfigurationElement ():
+IeDot11sConfiguration::IeDot11sConfiguration ():
     m_APSId(PROTOCOL_HWMP),
     m_APSMId(METRIC_AIRTIME),
     m_CCMId(CONGESTION_DEFAULT),
@@ -86,20 +86,20 @@ MeshConfigurationElement::MeshConfigurationElement ():
 {}
 
 TypeId
-MeshConfigurationElement::GetTypeId ()
+IeDot11sConfiguration::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::MeshConfigurationElement")
+  static TypeId tid = TypeId ("ns3::IeDot11sConfiguration")
     .SetParent<WifiInformationElement> ();
   return tid;
 }
 
 TypeId
-MeshConfigurationElement::GetInstanceTypeId () const
+IeDot11sConfiguration::GetInstanceTypeId () const
 {
   return GetTypeId();
 }
 uint16_t
-MeshConfigurationElement::GetInformationSize () const
+IeDot11sConfiguration::GetInformationSize () const
 {
     return 1 // Version
       + 4 // APSPId
@@ -110,7 +110,7 @@ MeshConfigurationElement::GetInformationSize () const
 }
 
 void
-MeshConfigurationElement::SerializeInformation (Buffer::Iterator i) const
+IeDot11sConfiguration::SerializeInformation (Buffer::Iterator i) const
 {
     i.WriteU8 (1); //Version
     // Active Path Selection Protocol ID:
@@ -125,7 +125,7 @@ MeshConfigurationElement::SerializeInformation (Buffer::Iterator i) const
 }
 
 uint16_t
-MeshConfigurationElement::DeserializeInformation (Buffer::Iterator i, uint8_t length)
+IeDot11sConfiguration::DeserializeInformation (Buffer::Iterator i, uint8_t length)
 {
   Buffer::Iterator start = i;
   uint8_t version;
@@ -142,35 +142,35 @@ MeshConfigurationElement::DeserializeInformation (Buffer::Iterator i, uint8_t le
   return i.GetDistanceFrom(start);
 }
 void
-MeshConfigurationElement::PrintInformation(std::ostream& os) const
+IeDot11sConfiguration::PrintInformation(std::ostream& os) const
 {
   //TODO: print
 }
 void
-MeshConfigurationElement::SetRouting(dot11sPathSelectionProtocol routingId)
+IeDot11sConfiguration::SetRouting(dot11sPathSelectionProtocol routingId)
 {
   m_APSId  =  routingId;
 }
 
 void
-MeshConfigurationElement::SetMetric(dot11sPathSelectionMetric metricId)
+IeDot11sConfiguration::SetMetric(dot11sPathSelectionMetric metricId)
 {
   m_APSMId =  metricId;
 }
 
 bool
-MeshConfigurationElement::IsHWMP()
+IeDot11sConfiguration::IsHWMP()
 {
   return (m_APSId == PROTOCOL_HWMP);
 }
 
 bool
-MeshConfigurationElement::IsAirtime()
+IeDot11sConfiguration::IsAirtime()
 {
   return (m_APSMId  == METRIC_AIRTIME);
 }
 
-dot11sMeshCapability const& MeshConfigurationElement::MeshCapability()
+dot11sMeshCapability const& IeDot11sConfiguration::MeshCapability()
 {
   return m_meshCap;
 }

@@ -90,7 +90,7 @@ WifiPeerLinkDescriptor::BeaconLoss()
 }
 
 void
-WifiPeerLinkDescriptor::SetBeaconTimingElement(WifiBeaconTimingElement beaconTiming)
+WifiPeerLinkDescriptor::SetBeaconTimingElement(IeDot11sBeaconTiming beaconTiming)
 {
   m_beaconTiming = beaconTiming;
 }
@@ -125,7 +125,7 @@ WifiPeerLinkDescriptor::GetBeaconInterval() const
   {
     return m_beaconInterval;
   }
-WifiBeaconTimingElement
+IeDot11sBeaconTiming
 WifiPeerLinkDescriptor::GetBeaconTimingElement() const
   {
     return m_beaconTiming;
@@ -178,7 +178,7 @@ void WifiPeerLinkDescriptor::PeerLinkClose(uint16_t localLinkId,uint16_t peerLin
   StateMachine(CLS_ACPT, reason);
 }
 
-void WifiPeerLinkDescriptor::PeerLinkOpenAccept(uint16_t localLinkId, MeshConfigurationElement  conf)
+void WifiPeerLinkDescriptor::PeerLinkOpenAccept(uint16_t localLinkId, IeDot11sConfiguration  conf)
 {
   if (m_peerLinkId == 0)
     m_peerLinkId = localLinkId;
@@ -186,7 +186,7 @@ void WifiPeerLinkDescriptor::PeerLinkOpenAccept(uint16_t localLinkId, MeshConfig
   StateMachine(OPN_ACPT);
 }
 
-void WifiPeerLinkDescriptor::PeerLinkOpenReject(uint16_t localLinkId, MeshConfigurationElement  conf,dot11sReasonCode reason)
+void WifiPeerLinkDescriptor::PeerLinkOpenReject(uint16_t localLinkId, IeDot11sConfiguration  conf,dot11sReasonCode reason)
 {
   if ( m_peerLinkId == 0)
     m_peerLinkId = localLinkId;
@@ -195,7 +195,7 @@ void WifiPeerLinkDescriptor::PeerLinkOpenReject(uint16_t localLinkId, MeshConfig
 }
 
 void
-WifiPeerLinkDescriptor::PeerLinkConfirmAccept(uint16_t localLinkId,uint16_t peerLinkId, uint16_t peerAid, MeshConfigurationElement  conf)
+WifiPeerLinkDescriptor::PeerLinkConfirmAccept(uint16_t localLinkId,uint16_t peerLinkId, uint16_t peerAid, IeDot11sConfiguration  conf)
 {
   if ( m_localLinkId != peerLinkId)
     return;
@@ -209,7 +209,7 @@ WifiPeerLinkDescriptor::PeerLinkConfirmAccept(uint16_t localLinkId,uint16_t peer
 }
 
 void   WifiPeerLinkDescriptor:: PeerLinkConfirmReject(uint16_t localLinkId, uint16_t peerLinkId,
-    MeshConfigurationElement  conf,dot11sReasonCode reason)
+    IeDot11sConfiguration  conf,dot11sReasonCode reason)
 {
   if (m_localLinkId != peerLinkId)
     return;
@@ -636,7 +636,7 @@ WifiPeerManager::SetReceivedBeaconTimers(
   Mac48Address peerAddress,
   Time lastBeacon,
   Time beaconInterval,
-  WifiBeaconTimingElement beaconTiming
+  IeDot11sBeaconTiming beaconTiming
 )
 {
   PeerDescriptorsMap::iterator port = m_peerDescriptors.find(portAddress);
@@ -695,7 +695,7 @@ WifiPeerManager::SetOpenReceived(
   Mac48Address portAddress,
   Mac48Address peerAddress,
   PeerLinkManagementElement peerMan,
-  MeshConfigurationElement conf
+  IeDot11sConfiguration conf
 )
 {
   dot11sReasonCode reasonCode;
@@ -725,7 +725,7 @@ WifiPeerManager::SetConfirmReceived(
   Mac48Address peerAddress,
   uint16_t peerAid,
   PeerLinkManagementElement peerMan,
-  MeshConfigurationElement meshConfig
+  IeDot11sConfiguration meshConfig
 )
 {
   PeerDescriptorsMap::iterator port = m_peerDescriptors.find(portAddress);
@@ -769,12 +769,12 @@ WifiPeerManager::ConfigurationMismatch(
 
 }
 
-WifiBeaconTimingElement
-WifiPeerManager::GetWifiBeaconTimingElementForMyBeacon(Mac48Address portAddress)
+IeDot11sBeaconTiming
+WifiPeerManager::GetIeDot11sBeaconTimingForMyBeacon(Mac48Address portAddress)
 {
   PeerDescriptorsMap::iterator port = m_peerDescriptors.find(portAddress);
   NS_ASSERT(port!= m_peerDescriptors.end());
-  WifiBeaconTimingElement return_val;
+  IeDot11sBeaconTiming return_val;
   for (std::vector<Ptr<WifiPeerLinkDescriptor> >::iterator i = port->second.begin(); i!= port->second.end(); i++)
     {
       //Just go through all neighbor entries and add it to timing element:
@@ -787,14 +787,14 @@ WifiPeerManager::GetWifiBeaconTimingElementForMyBeacon(Mac48Address portAddress)
   return return_val;
 
 }
-WifiBeaconTimingElement
-WifiPeerManager::GetWifiBeaconTimingElementForAddress(
+IeDot11sBeaconTiming
+WifiPeerManager::GetIeDot11sBeaconTimingForAddress(
   Mac48Address portAddress,
   Mac48Address addr)
 {
   PeerDescriptorsMap::iterator port = m_peerDescriptors.find(portAddress);
   NS_ASSERT(port != m_peerDescriptors.end());
-  WifiBeaconTimingElement return_val;
+  IeDot11sBeaconTiming return_val;
   for (std::vector<Ptr<WifiPeerLinkDescriptor> >::iterator i = port->second.begin(); i != port->second.end(); i++)
     if ((*i)->GetPeerAddress() == addr)
       return_val =  (*i)->GetBeaconTimingElement();
@@ -918,10 +918,10 @@ WifiPeerManager::GetNextBeaconShift(
   NS_ASSERT(myBeacon!=m_myBeaconInfo.end());
   for (std::vector<Ptr<WifiPeerLinkDescriptor> >::iterator i = port->second.begin(); i!= port->second.end(); i++)
     {
-      WifiBeaconTimingElement::NeighboursTimingUnitsList neighbours;
+      IeDot11sBeaconTiming::NeighboursTimingUnitsList neighbours;
       neighbours = (*i)->GetBeaconTimingElement().GetNeighboursTimingElementsList();
       //first let's form the list of all kown TBTTs
-      for (WifiBeaconTimingElement::NeighboursTimingUnitsList::const_iterator j = neighbours.begin(); j!= neighbours.end(); j++)
+      for (IeDot11sBeaconTiming::NeighboursTimingUnitsList::const_iterator j = neighbours.begin(); j!= neighbours.end(); j++)
         {
           uint16_t beaconIntervalTimeUnits;
           beaconIntervalTimeUnits = (*j)->GetBeaconInterval();
