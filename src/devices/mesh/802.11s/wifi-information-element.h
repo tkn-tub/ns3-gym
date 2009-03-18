@@ -135,9 +135,6 @@ protected:
   virtual WifiElementId ElementId () const = 0;
   /// Length of serialized information
   virtual uint16_t GetInformationSize () const = 0;
-  //returns the length value, because may differ from real length in
-  //bytes
-  virtual uint8_t GetLengthField () const = 0;
   /// Serialize information
   virtual void SerializeInformation (Buffer::Iterator start) const = 0;
   /// Deserialize information

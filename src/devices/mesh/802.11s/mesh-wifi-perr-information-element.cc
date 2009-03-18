@@ -93,11 +93,7 @@ WifiPerrInformationElement::GetInformationSize() const
       +4*m_numOfDest;
     return retval;
   }
-uint8_t
-WifiPerrInformationElement::GetLengthField() const
-{
-  return 2+10*m_numOfDest;
-}
+
 void
 WifiPerrInformationElement::AddAddressUnit(HwmpRtable::FailedDestination unit)
 {

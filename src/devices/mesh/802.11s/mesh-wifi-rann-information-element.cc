@@ -149,10 +149,5 @@ WifiRannInformationElement::GetInformationSize() const
     return retval;
   }
 
-uint8_t
-WifiRannInformationElement::GetLengthField() const
-{
-  return GetInformationSize();
-}
 }
 

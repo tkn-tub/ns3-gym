@@ -72,7 +72,6 @@ protected:
   void SerializeInformation(Buffer::Iterator i) const;
   uint16_t DeserializeInformation(Buffer::Iterator start, uint8_t length);
   uint16_t GetInformationSize() const;
-  uint8_t GetLengthField() const;
   void PrintInformation(std::ostream& os) const;
 private:
   uint8_t  m_flags;

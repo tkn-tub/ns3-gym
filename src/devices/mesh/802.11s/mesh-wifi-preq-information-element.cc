@@ -330,15 +330,6 @@ WifiPreqInformationElement::GetInformationSize() const
      retval +=(m_destCount*11);
   return retval;
 }
-uint8_t
-WifiPreqInformationElement::GetLengthField() const
-{
-  uint8_t length = m_destCount*11+28;
-  if (m_destCount> m_maxSize)
-    length -=(m_destCount-m_maxSize)*11;
-  return length;
-
-}
 
 void
 WifiPreqInformationElement::PrintInformation(std::ostream& os) const

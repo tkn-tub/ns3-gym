@@ -62,7 +62,6 @@ protected:
   uint16_t  DeserializeInformation(Buffer::Iterator start, uint8_t length);
   void PrintInformation(std::ostream& os) const;
   uint16_t  GetInformationSize() const;
-  uint8_t GetLengthField() const;
 private:
   uint8_t   m_numOfDest;
   std::vector<HwmpRtable::FailedDestination>

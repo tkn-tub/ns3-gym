@@ -149,11 +149,6 @@ WifiBeaconTimingElement::GetInformationSize () const
 {
   return (2+5*m_numOfUnits > m_maxSize) ? 2+((m_maxSize-2)/5)*5 : 2+5*m_numOfUnits;
 }
-uint8_t
-WifiBeaconTimingElement::GetLengthField() const
-{
-  return m_numOfUnits;
-}
 
 void
 WifiBeaconTimingElement::PrintInformation(std::ostream& os) const

@@ -209,11 +209,7 @@ WifiPrepInformationElement::GetInformationSize() const
     return retval;
 
   };
-uint8_t
-WifiPrepInformationElement::GetLengthField() const
-{
-  return 32;
-}
+
 void
 WifiPrepInformationElement::PrintInformation(std::ostream& os) const
 {

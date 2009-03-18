@@ -91,7 +91,6 @@ protected:
   }
   //Serialize-deserialize methods:
   uint16_t  GetInformationSize () const;
-  uint8_t GetLengthField() const;
   void SerializeInformation (Buffer::Iterator i) const;
   uint16_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
   void PrintInformation(std::ostream& os) const; 

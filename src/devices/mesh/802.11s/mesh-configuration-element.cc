@@ -108,11 +108,6 @@ MeshConfigurationElement::GetInformationSize () const
       + 4 // CP
       + m_meshCap.GetSerializedSize();
 }
-uint8_t
-MeshConfigurationElement::GetLengthField () const
-{
-  return GetInformationSize();
-}
 
 void
 MeshConfigurationElement::SerializeInformation (Buffer::Iterator i) const
