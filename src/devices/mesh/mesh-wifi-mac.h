@@ -22,18 +22,13 @@
 #ifndef MAC_HIGH_MESH_H
 #define MAC_HIGH_MESH_H
 
-#include <stdint.h>
 #include <map>
 #include "ns3/mac48-address.h"
-#include "ns3/mgt-headers.h"
 #include "ns3/mesh-mgt-headers.h"
-#include "ns3/callback.h"
-#include "ns3/packet.h"
-#include "ns3/nstime.h"
-#include "ns3/ie-dot11s-beacon-timing.h"
-#include "ns3/wifi-remote-station-manager.h"
-#include "ns3/mesh-wifi-peer-manager.h"
 #include "ns3/wifi-mac.h"
+#include "ns3/ie-dot11s-preq.h"
+#include "ns3/ie-dot11s-prep.h"
+#include "ns3/ie-dot11s-perr.h"
 
 namespace ns3 {
 
@@ -68,23 +63,23 @@ public:
   void  SetCtsTimeout (Time ctsTimeout);
   void  SetAckTimeout (Time ackTimeout);
   void  SetEifsNoDifs (Time eifsNoDifs);
-  virtual Time  GetSlot () const;
-  virtual Time  GetSifs () const;
-  virtual Time  GetPifs () const;
-  virtual Time  GetCtsTimeout () const;
-  virtual Time  GetAckTimeout () const;
-  virtual Time  GetEifsNoDifs () const;
+  Time  GetSlot () const;
+  Time  GetSifs () const;
+  Time  GetPifs () const;
+  Time  GetCtsTimeout () const;
+  Time  GetAckTimeout () const;
+  Time  GetEifsNoDifs () const;
   void  SetWifiPhy (Ptr<WifiPhy> phy);
   void  SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
   void  Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from);
   void  Enqueue (Ptr<const Packet> packet, Mac48Address to);
-  virtual bool  SupportsSendFrom () const;
+  bool  SupportsSendFrom () const;
   void  SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback);
   void  SetLinkUpCallback (Callback<void> linkUp);
   void  SetLinkDownCallback (Callback<void> linkDown);
-  virtual Mac48Address GetAddress () const;
-  virtual Mac48Address GetBssid () const;
-  virtual Ssid  GetSsid () const;
+  Mac48Address GetAddress () const;
+  Mac48Address GetBssid () const;
+  Ssid  GetSsid () const;
   void  SetAddress (Mac48Address address);
   void  SetSsid (Ssid ssid);
   /**

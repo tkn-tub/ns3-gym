@@ -22,12 +22,7 @@
 
 #include "ns3/mesh-mgt-headers.h"
 #include "ns3/address-utils.h"
-#include "ns3/simulator.h"
 #include "ns3/assert.h"
-#include "ns3/log.h"
-
-NS_LOG_COMPONENT_DEFINE("MeshMgtHeaders");
-
 
 namespace ns3 {
 /***********************************************************
@@ -72,7 +67,6 @@ void
 MgtMeshBeaconHeader::Serialize (Buffer::Iterator start) const
   {
     //First we pack Beacon:
-    NS_LOG_DEBUG("Serialization beacon");
     Buffer::Iterator i = start;
     MgtBeaconHeader::Serialize(i);
     i.Next (MgtBeaconHeader::GetSerializedSize());
@@ -86,7 +80,6 @@ MgtMeshBeaconHeader::Serialize (Buffer::Iterator start) const
 uint32_t
 MgtMeshBeaconHeader::Deserialize (Buffer::Iterator start)
 {
-  NS_LOG_DEBUG("Deserialization beacon");
   Buffer::Iterator i = start;
   MgtBeaconHeader::Deserialize(start);
   i.Next (MgtBeaconHeader::GetSerializedSize());
@@ -138,9 +131,9 @@ MeshMgtPeerLinkManFrame::SetIeDot11sConfiguration(IeDot11sConfiguration MeshConf
 }
 
 void
-MeshMgtPeerLinkManFrame::SetIeDot11sPeerManagement(IeDot11sPeerManagement MeshPeerElement)
+MeshMgtPeerLinkManFrame::SetIeDot11sPeerManagement(IeDot11sPeerManagement meshPeerElement)
 {
-  PeerLinkMan = MeshPeerElement;
+  PeerLinkMan = meshPeerElement;
 }
 
 uint16_t

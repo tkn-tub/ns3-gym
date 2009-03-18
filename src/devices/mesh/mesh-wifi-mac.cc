@@ -35,6 +35,10 @@
 #include "ns3/mac-low.h"
 #include "ns3/tx-statistics.h"
 #include "ns3/hwmp.h"
+#include "ns3/ie-dot11s-beacon-timing.h"
+#include "ns3/mgt-headers.h"
+#include "ns3/wifi-remote-station-manager.h"
+#include "ns3/mesh-wifi-peer-manager.h"
 
 NS_LOG_COMPONENT_DEFINE ("MeshWifiMac");
 

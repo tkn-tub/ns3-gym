@@ -23,11 +23,7 @@
 #ifndef WIFI_PEER_MAN_H
 #define WIFI_PEER_MAN_H
 
-#include "ns3/event-id.h"
-#include "ns3/ptr.h"
-#include "ns3/nstime.h"
 #include "ns3/mac48-address.h"
-#include "ns3/uinteger.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/ie-dot11s-peer-management.h"
 #include "ns3/ie-dot11s-beacon-timing.h"

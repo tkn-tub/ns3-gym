@@ -22,6 +22,7 @@
 #include "ns3/ie-dot11s-rann.h"
 #include "ns3/assert.h"
 #include "ns3/address-utils.h"
+#include "ns3/node.h"
 
 namespace ns3 {
 

@@ -22,16 +22,14 @@
 #ifndef HWMP_STATE_H
 #define HWMP_STATE_H
 #include <map>
-#include "ns3/event-id.h"
-#include "ns3/ptr.h"
 #include "ns3/hwmp-rtable.h"
 #include "ns3/packet.h"
-#include "ns3/wifi-net-device.h"
 #include "ns3/mesh-wifi-mac.h"
 #include "ns3/ie-dot11s-preq.h"
 #include "ns3/ie-dot11s-prep.h"
 #include "ns3/ie-dot11s-perr.h"
 #include "ns3/dot11s-parameters.h"
+#include "ns3/wifi-net-device.h"
 namespace ns3 {
 /**
  * \ingroup mesh

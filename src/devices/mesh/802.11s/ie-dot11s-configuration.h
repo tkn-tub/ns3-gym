@@ -23,9 +23,6 @@
 #ifndef MESH_CONFIGURATION_H
 #define MESH_CONFIGURATION_H
 
-#include <stdint.h>
-#include "ns3/buffer.h"
-#include "ns3/dot11s-codes.h"
 #include "ns3/wifi-information-element.h"
 
 namespace ns3 {

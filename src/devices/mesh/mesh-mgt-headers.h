@@ -23,16 +23,9 @@
 #ifndef MESH_MGT_HEADERS_H
 #define MESH_MGT_HEADERS_H
 
-#include <stdint.h>
-
 #include "ns3/header.h"
-#include "ns3/status-code.h"
 #include "ns3/supported-rates.h"
 #include "ns3/ie-dot11s-peer-management.h"
-#include "ns3/ie-dot11s-preq.h"
-#include "ns3/ie-dot11s-prep.h"
-#include "ns3/ie-dot11s-perr.h"
-#include "ns3/ie-dot11s-rann.h"
 #include "ns3/ie-dot11s-configuration.h"
 #include "ns3/ie-dot11s-beacon-timing.h"
 #include "ns3/mgt-headers.h"
@@ -70,7 +63,7 @@ public:
   void    SetQosField(uint16_t qos);
   void    SetMeshId(Ssid Id);
   void    SetIeDot11sConfiguration(IeDot11sConfiguration MeshConf);
-  void    SetIeDot11sPeerManagement(IeDot11sPeerManagement MeshPeerElement);
+  void    SetIeDot11sPeerManagement(IeDot11sPeerManagement meshPeerElement);
 
   uint16_t         GetAid();
   SupportedRates   GetSupportedRates();

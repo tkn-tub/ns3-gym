@@ -23,8 +23,6 @@
 #ifndef MESH_PEER_MAN_ELEMENT
 #define MESH_PEER_MAN_ELEMENT
 
-#include <stdint.h>
-#include "ns3/buffer.h"
 #include "ns3/dot11s-codes.h"
 #include "ns3/wifi-information-element.h"
 

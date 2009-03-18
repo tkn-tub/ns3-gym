@@ -23,6 +23,7 @@
 
 #ifndef HWMP_H
 #define HWMP_H
+
 #include <map>
 #include <queue>
 #include "ns3/tag.h"
@@ -30,7 +31,6 @@
 #include "ns3/mac48-address.h"
 #include "ns3/mesh-l2-routing-protocol.h"
 #include "ns3/packet.h"
-#include "ns3/ptr.h"
 #include "ns3/hwmp-state.h"
 namespace ns3 {
 class HwmpState;
