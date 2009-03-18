@@ -25,7 +25,7 @@
 #include "ns3/packet.h"
 #include "ns3/wifi-information-element.h"
 #include "ns3/mgt-headers.h"        // from wifi module
-#include "ns3/ssid.h"
+#include "ns3/wifi-mac-header.h"
 
 #include <vector>
 
@@ -49,11 +49,14 @@ public:
    */
   MeshWifiBeacon(Ssid ssid, SupportedRates rates, uint64_t us);
   /// Read standard Wifi beacon header
-  MgtBeaconHeader Header () const { return m_header; }
+  MgtBeaconHeader BeaconHeader () const { return m_header; }
   /// Add information element
   void AddInformationElement (Ptr<WifiInformationElement> ie);
-  /// Create frame = { header + all information elements sorted by ElementId() }
-  Ptr<Packet> CreatePacket (); 
+  
+  /// Create wifi header for beacon frame. \param address is sender address
+  WifiMacHeader CreateHeader (Mac48Address address);
+  /// Create frame = { beacon header + all information elements sorted by ElementId() }
+  Ptr<Packet> CreatePacket ();
   
 private:
   /// Beacon header

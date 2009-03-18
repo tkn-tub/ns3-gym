@@ -58,9 +58,23 @@ Ptr<Packet> MeshWifiBeacon::CreatePacket()
     packet->AddHeader(**i);
   }
   
-  packet->AddHeader(Header());
+  packet->AddHeader(BeaconHeader());
   
   return packet;
+}
+
+WifiMacHeader MeshWifiBeacon::CreateHeader (Mac48Address address)
+{
+  WifiMacHeader hdr;
+    
+  hdr.SetBeacon ();
+  hdr.SetAddr1 (Mac48Address::GetBroadcast ());
+  hdr.SetAddr2 (address);
+  hdr.SetAddr3 (address);
+  hdr.SetDsNotFrom ();
+  hdr.SetDsNotTo ();
+  
+  return hdr;
 }
   
 } // namespace 
