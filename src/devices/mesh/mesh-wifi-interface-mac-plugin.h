@@ -42,32 +42,32 @@ class MeshWifiInterfaceMacPlugin : public RefCountBase
 {
 public:
   /// C-tor creates unplugged plugin
-  MeshWifiInterfaceMacPlugin() { /*do nothing*/}
+  MeshWifiInterfaceMacPlugin () { /*do nothing*/}
   /// This is for subclasses
-  virtual ~MeshWifiInterfaceMacPlugin() { /*do nothing*/ }
+  virtual ~MeshWifiInterfaceMacPlugin () { /*do nothing*/ }
   
   /// Each plugin must be installed on interface to work 
-  virtual void SetParent(MeshWifiInterfaceMac * parent) = 0; 
+  virtual void SetParent (MeshWifiInterfaceMac * parent) = 0; 
   /** 
    * \brief Process received frame
    * 
    * \return false if (and only if) frame should be dropped
    * TODO define when MAC call this
    */
-  virtual bool Receive(Ptr<Packet> packet, const WifiMacHeader & header) = 0;
+  virtual bool Receive (Ptr<Packet> packet, const WifiMacHeader & header) = 0;
   /**
    * \brief Update frame before it will be forwarded down
    * 
    * \return false if (and only if) frame should be dropped
    * TODO define when MAC call this, preconditions & postconditions
    */
-  virtual bool UpdateOutcomingFrame(Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const = 0;
+  virtual bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const = 0;
   /**
    * \brief Update beacon before it will be formed and sent
    *  
    * TODO define when MAC call this
    */
-  virtual void UpdateBeacon(MeshWifiBeacon & beacon) const;
+  virtual void UpdateBeacon (MeshWifiBeacon & beacon) const;
 };
 
 } // namespace ns3

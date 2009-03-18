@@ -36,14 +36,14 @@ namespace ns3 {
 class IeDot11sBeaconTimingUnit : public RefCountBase
 {
 public:
-  IeDot11sBeaconTimingUnit();
-  void SetAid(uint8_t aid);
-  void SetLastBeacon(uint16_t last_beacon);
-  void SetBeaconInterval(uint16_t beacon_interval);
+  IeDot11sBeaconTimingUnit ();
+  void SetAid (uint8_t aid);
+  void SetLastBeacon (uint16_t last_beacon);
+  void SetBeaconInterval (uint16_t beacon_interval);
 
-  uint8_t GetAid();
-  uint16_t GetLastBeacon();
-  uint16_t GetBeaconInterval();
+  uint8_t GetAid ();
+  uint16_t GetLastBeacon ();
+  uint16_t GetBeaconInterval ();
   /**
    * \brief Least significant octet of AID:
    */
@@ -72,37 +72,37 @@ public:
    */
   typedef std::list< Ptr<IeDot11sBeaconTimingUnit> > NeighboursTimingUnitsList;
 
-  IeDot11sBeaconTiming();
+  IeDot11sBeaconTiming ();
   /**
    * This methods are needed for beacon collision
    * avoidance module:
    */
-  NeighboursTimingUnitsList GetNeighboursTimingElementsList();
-  void AddNeighboursTimingElementUnit(
+  NeighboursTimingUnitsList GetNeighboursTimingElementsList ();
+  void AddNeighboursTimingElementUnit (
     uint16_t aid,
     Time last_beacon,
     Time beacon_interval
   );
-  void   DelNeighboursTimingElementUnit(
+  void   DelNeighboursTimingElementUnit (
     uint16_t aid,
     Time  last_beacon,
     Time  beacon_interval
   );
-  void   ClearTimingElement();
+  void   ClearTimingElement ();
 private:
-  WifiElementId ElementId() const {
+  WifiElementId ElementId () const {
     return IE11S_BEACON_TIMING;
   }
   uint8_t  GetInformationSize () const;
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
-  void PrintInformation(std::ostream& os) const; 
+  void PrintInformation (std::ostream& os) const; 
   /**
    * Converters:
    */
-  static uint16_t TimestampToU16(Time x);
-  static uint16_t BeaconIntervalToU16(Time x);
-  static uint8_t AidToU8(uint16_t x);
+  static uint16_t TimestampToU16 (Time x);
+  static uint16_t BeaconIntervalToU16 (Time x);
+  static uint8_t AidToU8 (uint16_t x);
 
   NeighboursTimingUnitsList  m_neighbours;
   /**

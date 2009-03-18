@@ -36,7 +36,7 @@ class MeshPointDevice;
  * \brief Interface for L2 mesh routing protocol and mesh point communication. 
  *
  * Every mesh routing protocol must implement this interface. Each mesh point (MeshPointDevice) is supposed
- * to know single L2RoutingProtocol to work with, see MeshPointDevice::SetRoutingProtocol().  
+ * to know single L2RoutingProtocol to work with, see MeshPointDevice::SetRoutingProtocol ().  
  * 
  * This interface is similar to ipv4 routiong protocol base class.
  */
@@ -44,9 +44,9 @@ class MeshL2RoutingProtocol : public Object
 {
 public:
   /// Never forget to support NS3 object model
-  static TypeId GetTypeId();
+  static TypeId GetTypeId ();
   /// virtual D-tor for subclasses
-  virtual ~MeshL2RoutingProtocol();
+  virtual ~MeshL2RoutingProtocol ();
   /**
    * Callback to be invoked when route discovery  procedure is completed.
    * 
@@ -98,13 +98,13 @@ public:
    * 
    * \param routeReply          callback to be invoked after route discovery procedure, supposed to really send packet using routing information.
    */
-  virtual bool RequestRoute(uint32_t sourceIface, const Mac48Address source, const Mac48Address destination, 
+  virtual bool RequestRoute (uint32_t sourceIface, const Mac48Address source, const Mac48Address destination, 
                             Ptr<Packet> packet, uint16_t  protocolType, RouteReplyCallback routeReply ) = 0;
   
-  /// Set host mesh point, analog of SetNode(...) methods for upper layer protocols.
-  void SetMeshPoint(Ptr<MeshPointDevice> mp);
+  /// Set host mesh point, analog of SetNode (...) methods for upper layer protocols.
+  void SetMeshPoint (Ptr<MeshPointDevice> mp);
   /// Each mesh protocol must be installed on the mesh point to work.
-  Ptr<MeshPointDevice> GetMeshPoint() const; 
+  Ptr<MeshPointDevice> GetMeshPoint () const; 
   
 protected:
   
@@ -128,11 +128,11 @@ protected:
    * 
    * \param maxPacketsPerDestination    Packets per destination that can be stored inside protocol.
    */
-  virtual void SetMaxQueueSize(int maxPacketsPerDestination) = 0;
+  virtual void SetMaxQueueSize (int maxPacketsPerDestination) = 0;
   /**
    * \brief Queue route request packet with 'Ethernet header' \return false if the queue is full.
    */
-  virtual bool QueuePacket(struct QueuedPacket packet) = 0;
+  virtual bool QueuePacket (struct QueuedPacket packet) = 0;
   /**
    * \brief Deque packet with 'Ethernet header'
    * 
@@ -140,7 +140,7 @@ protected:
    * 
    * \return Ptr<packet> (0 if queue is empty), src, dst, protocol ID, incoming port ID, and reply callback
    */
-  virtual struct QueuedPacket DequeuePacket(Mac48Address destination) = 0;
+  virtual struct QueuedPacket DequeuePacket (Mac48Address destination) = 0;
   
   //\}
   

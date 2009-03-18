@@ -23,42 +23,42 @@
 
 namespace ns3 {
   
-MeshWifiBeacon::MeshWifiBeacon(Ssid ssid, SupportedRates rates, uint64_t us)
+MeshWifiBeacon::MeshWifiBeacon (Ssid ssid, SupportedRates rates, uint64_t us)
 {
   m_header.SetSsid (ssid);
   m_header.SetSupportedRates (rates);
   m_header.SetBeaconIntervalUs (us);
 }
 
-void MeshWifiBeacon::AddInformationElement(Ptr<WifiInformationElement> ie)
+void MeshWifiBeacon::AddInformationElement (Ptr<WifiInformationElement> ie)
 {
-  m_elements.push_back(ie);
+  m_elements.push_back (ie);
 }
 
 namespace {
 /// aux sorter for Ptr<WifiInformationElement>
 struct PIEComparator
 {
-  bool operator() (Ptr<WifiInformationElement> a, Ptr<WifiInformationElement> b) const
+  bool operator () (Ptr<WifiInformationElement> a, Ptr<WifiInformationElement> b) const
   {
-    return ((*PeekPointer(a)) < (*PeekPointer(b)));
+    return ((*PeekPointer (a)) < (*PeekPointer(b)));
   }
 };
 }
 
-Ptr<Packet> MeshWifiBeacon::CreatePacket()
+Ptr<Packet> MeshWifiBeacon::CreatePacket ()
 {
   Ptr<Packet> packet = Create<Packet> ();
   
-  std::sort(m_elements.begin(), m_elements.end(), PIEComparator());
+  std::sort (m_elements.begin(), m_elements.end(), PIEComparator());
   
   std::vector< Ptr<WifiInformationElement> >::const_reverse_iterator i;
-  for(i = m_elements.rbegin(); i != m_elements.rend(); ++i)
+  for (i = m_elements.rbegin(); i != m_elements.rend(); ++i)
   {
-    packet->AddHeader(**i);
+    packet->AddHeader (**i);
   }
   
-  packet->AddHeader(BeaconHeader());
+  packet->AddHeader (BeaconHeader());
   
   return packet;
 }
@@ -76,6 +76,6 @@ WifiMacHeader MeshWifiBeacon::CreateHeader (Mac48Address address)
   
   return hdr;
 }
-  
+
 } // namespace 
 

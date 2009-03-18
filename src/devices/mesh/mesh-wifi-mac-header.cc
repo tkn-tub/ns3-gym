@@ -38,20 +38,20 @@ WifiMeshHeader::GetTypeId ()
   return tid;
 }
 
-WifiMeshHeader::WifiMeshHeader()
-    :m_meshFlags(0)
+WifiMeshHeader::WifiMeshHeader ()
+    :m_meshFlags (0)
 {
 }
 
-WifiMeshHeader::~WifiMeshHeader()
+WifiMeshHeader::~WifiMeshHeader ()
 {
 }
 
 TypeId
 WifiMeshHeader::GetInstanceTypeId () const
-  {
-    return GetTypeId ();
-  }
+{
+  return GetTypeId ();
+}
 
 void
 WifiMeshHeader::SetAddr5 (Mac48Address address)
@@ -130,35 +130,35 @@ WifiMeshHeader::GetAddressExt ()
 
 uint32_t
 WifiMeshHeader::GetSerializedSize () const
-  {
-    return 6 + ((0xc0 & m_meshFlags) >> 6)*6;
-  }
+{
+  return 6 + ((0xc0 & m_meshFlags) >> 6)*6;
+}
 
 void
 WifiMeshHeader::Serialize (Buffer::Iterator start) const
-  {
-    Buffer::Iterator i = start;
-    i.WriteU8 (m_meshFlags);
-    i.WriteU8 (m_meshTtl);
-    i.WriteU32 (m_meshSeqno);
-    uint8_t addresses_to_add = (m_meshFlags & 0xc0) >> 6;
-    //Writing Address extensions:
-    if (addresses_to_add > 0)
-      WriteTo (i, m_addr5);
-    if (addresses_to_add > 1)
-      WriteTo (i, m_addr6);
-    if (addresses_to_add > 2)
-      WriteTo (i, m_addr7);
-  }
+{
+  Buffer::Iterator i = start;
+  i.WriteU8 (m_meshFlags);
+  i.WriteU8 (m_meshTtl);
+  i.WriteU32 (m_meshSeqno);
+  uint8_t addresses_to_add = (m_meshFlags & 0xc0) >> 6;
+  //Writing Address extensions:
+  if (addresses_to_add > 0)
+    WriteTo (i, m_addr5);
+  if (addresses_to_add > 1)
+    WriteTo (i, m_addr6);
+  if (addresses_to_add > 2)
+    WriteTo (i, m_addr7);
+}
 
 uint32_t
 WifiMeshHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   uint8_t addresses_to_read = 0;
-  m_meshFlags = i.ReadU8();
-  m_meshTtl = i.ReadU8();
-  m_meshSeqno = i.ReadU32();
+  m_meshFlags = i.ReadU8 ();
+  m_meshTtl = i.ReadU8 ();
+  m_meshSeqno = i.ReadU32 ();
   addresses_to_read = (m_meshFlags & 0xc0) >> 6;
   if (addresses_to_read > 0)
     ReadFrom (i, m_addr5);
@@ -166,15 +166,15 @@ WifiMeshHeader::Deserialize (Buffer::Iterator start)
     ReadFrom (i, m_addr6);
   if (addresses_to_read > 2)
     ReadFrom (i, m_addr7);
-  return i.GetDistanceFrom(start);
+  return i.GetDistanceFrom (start);
 }
 void
 WifiMeshHeader::Print (std::ostream &os) const
-  {
-    os << "flags" << m_meshFlags
-    << "ttl" << m_meshTtl
-    << "seqno" << m_meshSeqno;
-  }
+{
+  os << "flags" << m_meshFlags
+  << "ttl" << m_meshTtl
+  << "seqno" << m_meshSeqno;
+}
 /**********************************************************
  *   MultihopActionFrame
  **********************************************************/
@@ -187,7 +187,7 @@ WifiMeshMultihopActionHeader::~WifiMeshMultihopActionHeader ()
 }
 
 void
-WifiMeshMultihopActionHeader::SetAction(
+WifiMeshMultihopActionHeader::SetAction (
   enum WifiMeshMultihopActionHeader::CategoryValue type,
   WifiMeshMultihopActionHeader::ACTION_VALUE action)
 {
@@ -239,7 +239,7 @@ WifiMeshMultihopActionHeader::SetAction(
 }
 
 enum WifiMeshMultihopActionHeader::CategoryValue
-WifiMeshMultihopActionHeader::GetCategory()
+WifiMeshMultihopActionHeader::GetCategory ()
 {
   switch (m_category)
     {
@@ -254,13 +254,13 @@ WifiMeshMultihopActionHeader::GetCategory()
     case 8:
       return MESH_RESOURCE_COORDINATION;
     default:
-      NS_ASSERT(false);
+      NS_ASSERT (false);
       return MESH_PEER_LINK_MGT;
     }
 }
 
 WifiMeshMultihopActionHeader::ACTION_VALUE
-WifiMeshMultihopActionHeader::GetAction()
+WifiMeshMultihopActionHeader::GetAction ()
 {
   ACTION_VALUE retval;
   switch (m_category)
@@ -279,7 +279,7 @@ WifiMeshMultihopActionHeader::GetAction()
           retval.peerLink = PEER_LINK_CLOSE;
           return retval;
         default:
-          NS_ASSERT(false);
+          NS_ASSERT (false);
           return retval;
 
         }
@@ -302,7 +302,7 @@ WifiMeshMultihopActionHeader::GetAction()
           retval.pathSelection = ROOT_ANNOUNCEMENT;
           return retval;
         default:
-          NS_ASSERT(false);
+          NS_ASSERT (false);
           return retval;
         }
 
@@ -311,7 +311,7 @@ WifiMeshMultihopActionHeader::GetAction()
     case 8:
       //MESH_RESOURCE_COORDINATION;
     default:
-      NS_ASSERT(false);
+      NS_ASSERT (false);
       return retval;
     }
 }
@@ -328,27 +328,27 @@ WifiMeshMultihopActionHeader::GetTypeId ()
 
 TypeId
 WifiMeshMultihopActionHeader::GetInstanceTypeId () const
-  {
-    return GetTypeId();
-  }
+{
+  return GetTypeId ();
+}
 
 void
 WifiMeshMultihopActionHeader::Print (std::ostream &os) const
-  {
-  }
+{
+}
 
 uint32_t
 WifiMeshMultihopActionHeader::GetSerializedSize () const
-  {
-    return 2;
-  }
+{
+  return 2;
+}
 
 void
 WifiMeshMultihopActionHeader::Serialize (Buffer::Iterator start) const
-  {
-    start.WriteU8(m_category);
-    start.WriteU8(m_actionValue);
-  }
+{
+  start.WriteU8 (m_category);
+  start.WriteU8 (m_actionValue);
+}
 
 uint32_t
 WifiMeshMultihopActionHeader::Deserialize (Buffer::Iterator start)

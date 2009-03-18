@@ -37,14 +37,14 @@ namespace ns3 {
 class DestinationAddressUnit : public RefCountBase
 {
 public:
-  DestinationAddressUnit();
-  void SetFlags(bool doFlag, bool rfflag);
-  void SetDestinationAddress(Mac48Address dest_address);
-  void SetDestSeqNumber(uint32_t dest_seq_number);
-  bool IsDo();
-  bool IsRf();
-  Mac48Address GetDestinationAddress() const;
-  uint32_t GetDestSeqNumber() const;
+  DestinationAddressUnit ();
+  void SetFlags (bool doFlag, bool rfflag);
+  void SetDestinationAddress (Mac48Address dest_address);
+  void SetDestSeqNumber (uint32_t dest_seq_number);
+  bool IsDo ();
+  bool IsRf ();
+  Mac48Address GetDestinationAddress () const;
+  uint32_t GetDestSeqNumber () const;
 
 private:
   bool m_do;
@@ -59,54 +59,54 @@ private:
 class IeDot11sPreq : public WifiInformationElement
 {
 public:
-  IeDot11sPreq();
+  IeDot11sPreq ();
   ~IeDot11sPreq ();
   static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId() const;
-  virtual void Print(std::ostream &os) const;
-  void AddDestinationAddressElement(
+  virtual TypeId GetInstanceTypeId () const;
+  virtual void Print (std::ostream &os) const;
+  void AddDestinationAddressElement (
     bool doFlag,
     bool rfFlag,
     Mac48Address dest_address,
     uint32_t dest_seq_number
   );
-  void DelDestinationAddressElement(Mac48Address dest_address);
-  void ClearDestinationAddressElement();
+  void DelDestinationAddressElement (Mac48Address dest_address);
+  void ClearDestinationAddressElement ();
   std::vector<Ptr<DestinationAddressUnit> > GetDestinationList ();
-  void SetUnicastPreq();
+  void SetUnicastPreq ();
   /*
    * \brief In proactive case: need we send PREP
    */
-  void SetNeedNotPrep();
-  void SetHopcount(uint8_t hopcount);
-  void SetTTL(uint8_t ttl);
-  void SetPreqID(uint32_t id);
-  void SetOriginatorAddress(Mac48Address originator_address);
-  void SetOriginatorSeqNumber(uint32_t originator_seq_number);
-  void SetLifetime(uint32_t lifetime);
-  void SetMetric(uint32_t metric);
-  void SetDestCount(uint8_t dest_count);
+  void SetNeedNotPrep ();
+  void SetHopcount (uint8_t hopcount);
+  void SetTTL (uint8_t ttl);
+  void SetPreqID (uint32_t id);
+  void SetOriginatorAddress (Mac48Address originator_address);
+  void SetOriginatorSeqNumber (uint32_t originator_seq_number);
+  void SetLifetime (uint32_t lifetime);
+  void SetMetric (uint32_t metric);
+  void SetDestCount (uint8_t dest_count);
 
-  bool  IsUnicastPreq() const;
-  bool  IsNeedNotPrep() const;
-  uint8_t  GetHopCount() const;
-  uint8_t  GetTtl()const ;
-  uint32_t GetPreqID() const;
-  Mac48Address GetOriginatorAddress() const;
-  uint32_t GetOriginatorSeqNumber() const;
-  uint32_t GetLifetime() const;
-  uint32_t GetMetric() const;
-  uint8_t  GetDestCount() const;
-  void  DecrementTtl();
-  void  IncrementMetric(uint32_t metric);
+  bool  IsUnicastPreq () const;
+  bool  IsNeedNotPrep () const;
+  uint8_t  GetHopCount () const;
+  uint8_t  GetTtl ()const ;
+  uint32_t GetPreqID () const;
+  Mac48Address GetOriginatorAddress () const;
+  uint32_t GetOriginatorSeqNumber () const;
+  uint32_t GetLifetime () const;
+  uint32_t GetMetric () const;
+  uint8_t  GetDestCount () const;
+  void  DecrementTtl ();
+  void  IncrementMetric (uint32_t metric);
 private:
   WifiElementId ElementId () const{
     return IE11S_PREQ;
   }
-  void SerializeInformation(Buffer::Iterator i) const;
-  uint8_t DeserializeInformation(Buffer::Iterator i, uint8_t length);
-  uint8_t GetInformationSize() const;
-  void PrintInformation(std::ostream& os) const;
+  void SerializeInformation (Buffer::Iterator i) const;
+  uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
+  uint8_t GetInformationSize () const;
+  void PrintInformation (std::ostream& os) const;
   /**
    * how many destinations we support
    */

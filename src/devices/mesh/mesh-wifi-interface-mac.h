@@ -61,9 +61,9 @@ public:
   /// Never forget to support typeid
   static TypeId  GetTypeId ();
   /// C-tor
-  MeshWifiInterfaceMac();
+  MeshWifiInterfaceMac ();
   /// D-tor
-  virtual ~MeshWifiInterfaceMac();
+  virtual ~MeshWifiInterfaceMac ();
   
   ///\name Inherited from WifiMac
   //\{
@@ -106,15 +106,15 @@ public:
    * 
    * This is supposed to be used by any entity managing beacon collision avoidance (e.g. Peer management protocol in 802.11s)
    */ 
-  Time GetTBTT() const;
+  Time GetTBTT () const;
   /**
    * \brief Shift TBTT.
    * 
    * This is supposed to be used by any entity managing beacon collision avoidance (e.g. Peer management protocol in 802.11s)
    * 
-   * \attention User of ShiftTBTT() must take care to not shift it to the past. 
+   * \attention User of ShiftTBTT () must take care to not shift it to the past. 
    */
-  void ShiftTBTT(Time shift);
+  void ShiftTBTT (Time shift);
   /**
    * \brief Set maximum software delay. Maximum software delay must be smaller than beacon interval.
    *
@@ -129,16 +129,16 @@ public:
    * 
    * \param delay is the maximum software delay.
    */
-  void SetSoftwareDelay(Time delay);
+  void SetSoftwareDelay (Time delay);
   /// \return Maximum software delay
-  Time GetSoftwareDelay();
+  Time GetSoftwareDelay ();
 
   //\}
   
   ///\name Plugins
   //\{
   /// Install plugin. TODO return unique ID to allow unregister plugins
-  void InstallPlugin(Ptr<MeshWifiInterfaceMacPlugin> plugin);
+  void InstallPlugin (Ptr<MeshWifiInterfaceMacPlugin> plugin);
   //\}
   
 private:
@@ -147,9 +147,9 @@ private:
   /// Forward frame to mesh point
   virtual void ForwardUp (Ptr<Packet> packet, Mac48Address src, Mac48Address dst);
   /// Send frame. Frame is supposed to be tagged by routing information. TODO: clarify this point 
-  void  ForwardDown(Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
-  /// Calc software delay value uniformely distributed between 0 and m_softwareDealy, see SetSoftwareDelay().
-  Time CalcSwDelay();
+  void  ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
+  /// Calc software delay value uniformely distributed between 0 and m_softwareDealy, see SetSoftwareDelay ().
+  Time CalcSwDelay ();
   /// Send beacon
   void SendBeacon ();
   /// Schedule next beacon

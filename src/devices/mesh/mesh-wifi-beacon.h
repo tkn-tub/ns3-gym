@@ -47,7 +47,7 @@ public:
    * \param rates is a set of supported rates
    * \param us beacon interval in microseconds
    */
-  MeshWifiBeacon(Ssid ssid, SupportedRates rates, uint64_t us);
+  MeshWifiBeacon (Ssid ssid, SupportedRates rates, uint64_t us);
   /// Read standard Wifi beacon header
   MgtBeaconHeader BeaconHeader () const { return m_header; }
   /// Add information element
@@ -55,7 +55,7 @@ public:
   
   /// Create wifi header for beacon frame. \param address is sender address
   WifiMacHeader CreateHeader (Mac48Address address);
-  /// Create frame = { beacon header + all information elements sorted by ElementId() }
+  /// Create frame = { beacon header + all information elements sorted by ElementId () }
   Ptr<Packet> CreatePacket ();
   
 private:

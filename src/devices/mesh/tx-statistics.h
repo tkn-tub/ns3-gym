@@ -35,9 +35,9 @@ namespace ns3 {
 class WifiTxStatistics : public Object
 {
 public:
-  static TypeId  GetTypeId(void);
-  WifiTxStatistics();
-  ~WifiTxStatistics();
+  static TypeId  GetTypeId (void);
+  WifiTxStatistics ();
+  ~WifiTxStatistics ();
 
   struct TxStat
   {
@@ -67,33 +67,33 @@ public:
 #endif
   typedef std::map<uint16_t, RATE_STAT> RATE_LENGTH_STAT;
 
-  void   SetLengthDivisionParams(uint16_t maxLength, uint8_t numOfGroups);
+  void   SetLengthDivisionParams (uint16_t maxLength, uint8_t numOfGroups);
 
-  void   NotifyDataSent(uint16_t length, uint32_t dataRate);
-  void   NotifyDataFailed();
-  void   NotifyGotAck(uint32_t retryCounter);
+  void   NotifyDataSent (uint16_t length, uint32_t dataRate);
+  void   NotifyDataFailed ();
+  void   NotifyGotAck (uint32_t retryCounter);
 
-  void   NotifyRtsSend(uint32_t rtsRate, uint32_t dataLength);
-  void   NotifyRtsRetried();
-  void   NotifyRtsFailed();
-  void   NotifyRtsSuccess(uint32_t retryCounter);
+  void   NotifyRtsSend (uint32_t rtsRate, uint32_t dataLength);
+  void   NotifyRtsRetried ();
+  void   NotifyRtsFailed ();
+  void   NotifyRtsSuccess (uint32_t retryCounter);
 
-  void   ResetStatistics();
+  void   ResetStatistics ();
 #if 0
-  SIMPLE_STAT  GetTxStatCommon();
-  RATE_STAT  GetTxStatRate();
-  LENGTH_STAT  GetTxStatLength();
+  SIMPLE_STAT  GetTxStatCommon ();
+  RATE_STAT  GetTxStatRate ();
+  LENGTH_STAT  GetTxStatLength ();
 #endif
   typedef struct {
     RATE_LENGTH_STAT statistics;
     uint16_t  lengthInterval;
     uint16_t  maxLength;
   } TX_STATISTICS;
-  TX_STATISTICS  GetTxStatRateLength();
+  TX_STATISTICS  GetTxStatRateLength ();
 private:
-  RATE_STAT::iterator FillCurrentStatPosition(uint16_t length, uint32_t dataRate);
+  RATE_STAT::iterator FillCurrentStatPosition (uint16_t length, uint32_t dataRate);
   //DEBUG PURPOSE
-  //void   Print();
+  //void   Print ();
   RATE_LENGTH_STAT m_stats;
   bool   m_isTx;
   uint8_t   m_numOfGroups;

@@ -69,7 +69,7 @@ enum dot11sChannelPrecedence
 class dot11sMeshCapability
 {
 public:
-  dot11sMeshCapability();
+  dot11sMeshCapability ();
   uint8_t  GetSerializedSize () const;
   Buffer::Iterator Serialize (Buffer::Iterator i) const;
   Buffer::Iterator Deserialize (Buffer::Iterator i);
@@ -80,7 +80,7 @@ public:
   bool TBTTAdjustment;
   bool powerSaveLevel;
 
-  bool Is(uint16_t cap,uint8_t n) const;
+  bool Is (uint16_t cap,uint8_t n) const;
 };
 
 /**
@@ -94,13 +94,13 @@ public:
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
 
-  IeDot11sConfiguration();
-  void   SetRouting(dot11sPathSelectionProtocol routingId);
-  void   SetMetric(dot11sPathSelectionMetric metricId);
-  bool   IsHWMP();
-  bool   IsAirtime();
+  IeDot11sConfiguration ();
+  void   SetRouting (dot11sPathSelectionProtocol routingId);
+  void   SetMetric (dot11sPathSelectionMetric metricId);
+  bool   IsHWMP ();
+  bool   IsAirtime ();
 
-  dot11sMeshCapability const& MeshCapability();
+  dot11sMeshCapability const& MeshCapability ();
 private:
   WifiElementId ElementId () const
   {
@@ -109,7 +109,7 @@ private:
   uint8_t  GetInformationSize () const;
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
-  void PrintInformation(std::ostream& os) const;
+  void PrintInformation (std::ostream& os) const;
   /** Active Path Selection Protocol ID */
   dot11sPathSelectionProtocol m_APSId;
   /** Active Path Metric ID */

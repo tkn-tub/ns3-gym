@@ -45,18 +45,18 @@ namespace ns3 {
  */
 class HwmpState : public Object {
 public:
-  static TypeId GetTypeId();
-  HwmpState();
-  ~HwmpState();
+  static TypeId GetTypeId ();
+  HwmpState ();
+  ~HwmpState ();
 
   /**
    * \brief Interface with HWMP - Hwmp can only
    * request address and collect routing
    * information
    */
-  void SetRequestRouteCallback(
+  void SetRequestRouteCallback (
     Callback<HwmpRtable::LookupResult, const Mac48Address&> cb);
-  void SetRequestRootPathCallback(
+  void SetRequestRootPathCallback (
     Callback<HwmpRtable::LookupResult, uint32_t> cb);
 
   enum InfoType {
@@ -80,39 +80,39 @@ public:
     Time  lifetime;
     enum InfoType type;
   } INFO;
-  void SetRoutingInfoCallback(
+  void SetRoutingInfoCallback (
     Callback<void, INFO> cb
   );
-  void SetRetransmittersOfPerrCallback(
+  void SetRetransmittersOfPerrCallback (
     Callback<std::vector<Mac48Address>, std::vector<HwmpRtable::FailedDestination>, uint32_t> cb);
-  void RequestDestination(Mac48Address dest);
-  void SendPathError(std::vector<HwmpRtable::FailedDestination> destinations);
-  void SetAssociatedIfaceId(uint32_t interface);
-  uint32_t  GetAssociatedIfaceId();
+  void RequestDestination (Mac48Address dest);
+  void SendPathError (std::vector<HwmpRtable::FailedDestination> destinations);
+  void SetAssociatedIfaceId (uint32_t interface);
+  uint32_t  GetAssociatedIfaceId ();
   //Mac interaction:
-  void SetMac(Ptr<MeshWifiMac> mac);
-  void SetSendPreqCallback(
+  void SetMac (Ptr<MeshWifiMac> mac);
+  void SetSendPreqCallback (
     Callback<void, const IeDot11sPreq&> cb);
-  void SetSendPrepCallback(
+  void SetSendPrepCallback (
     Callback<void, const IeDot11sPrep&> cb);
-  void SetSendPerrCallback(
+  void SetSendPerrCallback (
     Callback<void, const IeDot11sPerr&, std::vector<Mac48Address> > cb);
-  void ReceivePreq(IeDot11sPreq&, const Mac48Address& from, const uint32_t& metric);
-  void ReceivePrep(IeDot11sPrep&, const Mac48Address& from, const uint32_t& metric);
-  void ReceivePerr(IeDot11sPerr&, const Mac48Address& from);
-  void PeerStatus(
+  void ReceivePreq (IeDot11sPreq&, const Mac48Address& from, const uint32_t& metric);
+  void ReceivePrep (IeDot11sPrep&, const Mac48Address& from, const uint32_t& metric);
+  void ReceivePerr (IeDot11sPerr&, const Mac48Address& from);
+  void PeerStatus (
     const Mac48Address peerAddress,
     const bool status,
     const uint32_t metric
   );
   //Proactive mode routines:
-  bool SetRoot();
-  void UnSetRoot();
+  bool SetRoot ();
+  void UnSetRoot ();
   //external handling:
-  void Disable();
-  void Enable();
+  void Disable ();
+  void Enable ();
   //DEBUG purpose:
-  Mac48Address GetAddress();
+  Mac48Address GetAddress ();
 private:
   static const uint32_t MAX_PREQ_ID = 0xffffffff;
   static const uint32_t MAX_DSN = 0xffffffff;
@@ -122,14 +122,14 @@ private:
   uint32_t m_ifIndex;
   //timers for PREQ and PREP:
   EventId  m_preqTimer;
-  void  SendOnePreq();
+  void  SendOnePreq ();
   std::vector<IeDot11sPreq>
   m_preqQueue;
   //true means that we can add a destination to
   //existing PREQ element
   //False means that we must send
   EventId  m_prepTimer;
-  void  SendPrep(
+  void  SendPrep (
     Mac48Address dst, //dst is PREQ's originator address
     Mac48Address src, //src is PREQ's destination address
     Mac48Address retransmitter,
@@ -165,7 +165,7 @@ private:
   bool  m_disabled;
   //Proactive PREQ mechanism:
   EventId  m_proactivePreqTimer;
-  void  SendProactivePreq();
+  void  SendProactivePreq ();
   /**
    * \brief Two PERRs may not be sent closer to
    * each other than
@@ -177,9 +177,9 @@ private:
    */
   IeDot11sPerr  m_myPerr;
   std::vector<Mac48Address>   m_myPerrReceivers;
-  void  AddPerrReceiver(Mac48Address receiver);
+  void  AddPerrReceiver (Mac48Address receiver);
   EventId  m_perrTimer;
-  void  SendOnePerr();
+  void  SendOnePerr ();
   //Configurable parameters:
   uint8_t  m_maxTtl;
 };

@@ -37,17 +37,17 @@ MeshL2RoutingProtocol::GetTypeId (void)
   return tid;
 }
 
-MeshL2RoutingProtocol::~MeshL2RoutingProtocol()
+MeshL2RoutingProtocol::~MeshL2RoutingProtocol ()
 {
 }
 
 void
-MeshL2RoutingProtocol::SetMeshPoint(Ptr<MeshPointDevice> mp)
+MeshL2RoutingProtocol::SetMeshPoint (Ptr<MeshPointDevice> mp)
 {
   m_mp = mp;
 }
 
-Ptr<MeshPointDevice> MeshL2RoutingProtocol::GetMeshPoint() const
+Ptr<MeshPointDevice> MeshL2RoutingProtocol::GetMeshPoint () const
 {
   return m_mp;
 }

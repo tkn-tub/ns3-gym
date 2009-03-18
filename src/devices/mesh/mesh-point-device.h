@@ -81,15 +81,15 @@ public:
   /**
    * \brief Register routing protocol to be used. Protocol must be alredy installed on this mesh point.
    */
-  void SetRoutingProtocol(Ptr<MeshL2RoutingProtocol> protocol);
+  void SetRoutingProtocol (Ptr<MeshL2RoutingProtocol> protocol);
   //\}
   
   ///\name NetDevice interface for upper layers
   //\{
-  virtual void SetName(const std::string name);
-  virtual std::string GetName() const;
-  virtual void SetIfIndex(const uint32_t index);
-  virtual uint32_t GetIfIndex() const;
+  virtual void SetName (const std::string name);
+  virtual std::string GetName () const;
+  virtual void SetIfIndex (const uint32_t index);
+  virtual uint32_t GetIfIndex () const;
   virtual Ptr<Channel> GetChannel () const;
   virtual Address GetAddress () const;
   virtual bool SetMtu (const uint16_t mtu);
@@ -131,7 +131,7 @@ private:
    * \param protocol    Protocol ID
    * \param outIface    Interface to use (ID) for send (decided by routing protocol). All interfaces will be used if outIface = 0xffffffff
    */
-  void DoSend(bool success, Ptr<Packet> packet, Mac48Address src, Mac48Address dst, uint16_t protocol, uint32_t iface);
+  void DoSend (bool success, Ptr<Packet> packet, Mac48Address src, Mac48Address dst, uint16_t protocol, uint32_t iface);
   
 private:
   /// Receive action

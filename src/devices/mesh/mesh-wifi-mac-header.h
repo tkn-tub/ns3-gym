@@ -132,9 +132,9 @@ public:
     enum InterworkActionValue  interwork;
     enum ResourceCoordinationActionValue resourceCoordination;
   } ACTION_VALUE;
-  void   SetAction(enum CategoryValue type,ACTION_VALUE action);
-  enum CategoryValue GetCategory();
-  ACTION_VALUE  GetAction();
+  void   SetAction (enum CategoryValue type,ACTION_VALUE action);
+  enum CategoryValue GetCategory ();
+  ACTION_VALUE  GetAction ();
   static TypeId  GetTypeId ();
   virtual TypeId  GetInstanceTypeId () const;
   virtual void  Print (std::ostream &os) const;

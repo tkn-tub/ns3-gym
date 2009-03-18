@@ -34,32 +34,32 @@ namespace ns3 {
 class IeDot11sRann
 {
 public:
-  IeDot11sRann();
-  virtual ~IeDot11sRann();
-  static TypeId GetTypeId();
-  virtual TypeId GetInstanceTypeId() const;
-  virtual void Print(std::ostream &os) const;
-  void SetFlags(uint8_t flags);
-  void SetHopcount(uint8_t hopcount);
-  void SetTTL(uint8_t ttl);
-  void SetOriginatorAddress(Mac48Address originator_address);
-  void SetDestSeqNumber(uint32_t dest_seq_number);
-  void SetMetric(uint32_t metric);
-  uint8_t GetFlags();
-  uint8_t GetHopcount();
-  uint8_t GetTTL();
-  Mac48Address GetOriginatorAddress();
-  uint32_t GetDestSeqNumber();
-  uint32_t GetMetric();
-  void DecrementTtl();
-  void IncrementMetric(uint32_t metric);
+  IeDot11sRann ();
+  virtual ~IeDot11sRann ();
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
+  virtual void Print (std::ostream &os) const;
+  void SetFlags (uint8_t flags);
+  void SetHopcount (uint8_t hopcount);
+  void SetTTL (uint8_t ttl);
+  void SetOriginatorAddress (Mac48Address originator_address);
+  void SetDestSeqNumber (uint32_t dest_seq_number);
+  void SetMetric (uint32_t metric);
+  uint8_t GetFlags ();
+  uint8_t GetHopcount ();
+  uint8_t GetTTL ();
+  Mac48Address GetOriginatorAddress ();
+  uint32_t GetDestSeqNumber ();
+  uint32_t GetMetric ();
+  void DecrementTtl ();
+  void IncrementMetric (uint32_t metric);
 private:
-  WifiElementId ElementId() const{
+  WifiElementId ElementId () const{
     return IE11S_RANN;
   }
-  void SerializeInformation(Buffer::Iterator i) const;
-  uint8_t DeserializeInformation(Buffer::Iterator start, uint8_t length);
-  uint8_t GetInformationSize() const;
+  void SerializeInformation (Buffer::Iterator i) const;
+  uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
+  uint8_t GetInformationSize () const;
   uint8_t m_flags;
   uint8_t m_hopcount;
   uint8_t m_ttl;

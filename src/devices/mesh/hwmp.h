@@ -54,17 +54,17 @@ class HwmpState;
 class HwmpTag : public Tag
 {
 public:
-  HwmpTag();
-  ~HwmpTag();
-  void  SetAddress(Mac48Address retransmitter);
-  Mac48Address GetAddress();
-  void  SetTtl(uint8_t ttl);
-  uint8_t GetTtl();
-  void  SetMetric(uint32_t metric);
-  uint32_t GetMetric();
-  void  SetSeqno(uint32_t seqno);
-  uint32_t GetSeqno();
-  void  DecrementTtl();
+  HwmpTag ();
+  ~HwmpTag ();
+  void  SetAddress (Mac48Address retransmitter);
+  Mac48Address GetAddress ();
+  void  SetTtl (uint8_t ttl);
+  uint8_t GetTtl ();
+  void  SetMetric (uint32_t metric);
+  uint32_t GetMetric ();
+  void  SetSeqno (uint32_t seqno);
+  uint32_t GetSeqno ();
+  void  DecrementTtl ();
 
   static  TypeId  GetTypeId ();
   virtual TypeId  GetInstanceTypeId () const;
@@ -84,10 +84,10 @@ private:
 class Hwmp : public MeshL2RoutingProtocol
 {
 public:
-  static TypeId GetTypeId();
-  Hwmp();
-  ~Hwmp();
-  void DoDispose();
+  static TypeId GetTypeId ();
+  Hwmp ();
+  ~Hwmp ();
+  void DoDispose ();
   //intheritedfrom L2RoutingProtocol
   /**
    * \brief L2Routing protocol base class metod
@@ -106,7 +106,7 @@ public:
    * \bug Now packet is sent to the 'best root'
    * rather than to the best root at each port
    */
-  bool RequestRoute(
+  bool RequestRoute (
     uint32_t  sourceIface,
     const Mac48Address source,
     const Mac48Address destination,
@@ -114,17 +114,17 @@ public:
     uint16_t  protocolType,
     MeshL2RoutingProtocol::RouteReplyCallback  routeReply
   );
-  bool AttachPorts(std::vector<Ptr<NetDevice> >);
+  bool AttachPorts (std::vector<Ptr<NetDevice> >);
   /**
    * \brief Disables port by index.
    * \details Needed for external modules like
    * clusterization.
    */
-  void DisablePort(uint32_t port);
+  void DisablePort (uint32_t port);
   /**
    * \brief enables port
    */
-  void EnablePort(uint32_t port);
+  void EnablePort (uint32_t port);
   /**
    * \brief Setting proative mode.
    * \details To enable proactive mode you must
@@ -143,18 +143,18 @@ public:
    * \param port is the port where proactive
    * mode should be activated
    */
-  void SetRoot(uint32_t port);
+  void SetRoot (uint32_t port);
   /**
    * \brief Disable root functionality at a
    * given port
    */
-  void UnSetRoot(uint32_t port);
+  void UnSetRoot (uint32_t port);
   /**
    * \brief HwmpState retrns to Hwmp class all
    * routing information obtained from all HWMP
    * action frames
    */
-  void ObtainRoutingInformation(
+  void ObtainRoutingInformation (
     HwmpState::INFO info
   );
   /**
@@ -162,18 +162,18 @@ public:
    * is dissapeared. Hwmp state knows about peer
    * failure from MAC
    */
-  void PeerFailure(Mac48Address peerAddress);
-  void SetMaxTtl(uint8_t ttl);
-  uint8_t  GetMaxTtl();
+  void PeerFailure (Mac48Address peerAddress);
+  void SetMaxTtl (uint8_t ttl);
+  uint8_t  GetMaxTtl ();
 private:
   static const uint32_t MAX_SEQNO = 0xffffffff;
   //candidate queue is implemented inside the
   //protocol:
-  void  SetMaxQueueSize(int maxPacketsPerDestination);
+  void  SetMaxQueueSize (int maxPacketsPerDestination);
   int  m_maxQueueSize;
-  bool  QueuePacket(MeshL2RoutingProtocol::QueuedPacket packet);
-  MeshL2RoutingProtocol::QueuedPacket  DequeuePacket(Mac48Address dst);
-  void  SendAllPossiblePackets(Mac48Address dst);
+  bool  QueuePacket (MeshL2RoutingProtocol::QueuedPacket packet);
+  MeshL2RoutingProtocol::QueuedPacket  DequeuePacket (Mac48Address dst);
+  void  SendAllPossiblePackets (Mac48Address dst);
   std::map<Mac48Address, std::queue<QueuedPacket> >  m_rqueue;
   //devices and HWMP states:
   enum DeviceState {
@@ -197,13 +197,13 @@ private:
    * when proatcive PREQ with a valid
    * information was received.
    */
-  void  SetProactive(uint32_t port);
+  void  SetProactive (uint32_t port);
   /**
    * \brief Checks if the port is root, if true
    * - no default routes must be used at this
    * port
    */
-  bool  IsRoot(uint32_t port);
+  bool  IsRoot (uint32_t port);
   /**
    * \brief Interaction with HwmpState class -
    * request for starting routing discover
@@ -222,7 +222,7 @@ private:
    */
   std::vector<Callback<void,std::vector<HwmpRtable::FailedDestination> > >
   m_pathErrorCallback;
-  void StartPathErrorProcedure(
+  void StartPathErrorProcedure (
     std::vector<HwmpRtable::FailedDestination> destinations,
     uint32_t port);
   /**
@@ -232,7 +232,7 @@ private:
    * HWMP has accessto routing table
    */
   std::vector<Mac48Address>
-  GetRetransmittersForFailedDestinations(
+  GetRetransmittersForFailedDestinations (
     std::vector<HwmpRtable::FailedDestination> failedDest,
     uint32_t port);
   /**
@@ -241,8 +241,8 @@ private:
    * better route
    *
    */
-  HwmpRtable::LookupResult  RequestRouteForAddress(const Mac48Address& destination);
-  HwmpRtable::LookupResult  RequestRootPathForPort(uint32_t port);
+  HwmpRtable::LookupResult  RequestRouteForAddress (const Mac48Address& destination);
+  HwmpRtable::LookupResult  RequestRootPathForPort (uint32_t port);
 
   /**
    * \attention mesh seqno is processed at HWMP
@@ -255,7 +255,7 @@ private:
    * /brief checks when last preq was initiated, returns
    * false when retry has not expired
    */
-  bool  ShouldSendPreq(Mac48Address dst);
+  bool  ShouldSendPreq (Mac48Address dst);
   /**
    * \brief Generates PREQ retry when route is
    * still unresolved after first PREQ
@@ -263,7 +263,7 @@ private:
    * dot11sParameters::dot11MeshHWMPmaxPREQretries,
    * we return all packets to upper layers
    */
-  void  RetryPathDiscovery(Mac48Address dst, uint8_t numOfRetry);
+  void  RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry);
   /**
    * Keeps PREQ retry timers for every
    * destination

@@ -38,10 +38,10 @@ namespace ns3 {
 class MgtMeshBeaconHeader : public MgtBeaconHeader
 {
 public:
-  void    SetIeDot11sConfiguration(IeDot11sConfiguration mesh_config);
-  void    SetIeDot11sBeaconTiming(IeDot11sBeaconTiming wifi_timing);
-  IeDot11sConfiguration GetIeDot11sConfiguration();
-  IeDot11sBeaconTiming  GetIeDot11sBeaconTiming();
+  void    SetIeDot11sConfiguration (IeDot11sConfiguration mesh_config);
+  void    SetIeDot11sBeaconTiming (IeDot11sBeaconTiming wifi_timing);
+  IeDot11sConfiguration GetIeDot11sConfiguration ();
+  IeDot11sBeaconTiming  GetIeDot11sBeaconTiming ();
   virtual uint32_t  GetSerializedSize () const;
   virtual void   Serialize (Buffer::Iterator start) const;
   virtual uint32_t  Deserialize (Buffer::Iterator start);
@@ -58,34 +58,34 @@ class MeshMgtPeerLinkManFrame : public Header
 {
 public:
   MeshMgtPeerLinkManFrame ();
-  void    SetAid(uint16_t aid);
-  void    SetSupportedRates(SupportedRates rates);
-  void    SetQosField(uint16_t qos);
-  void    SetMeshId(Ssid Id);
-  void    SetIeDot11sConfiguration(IeDot11sConfiguration MeshConf);
-  void    SetIeDot11sPeerManagement(IeDot11sPeerManagement meshPeerElement);
+  void    SetAid (uint16_t aid);
+  void    SetSupportedRates (SupportedRates rates);
+  void    SetQosField (uint16_t qos);
+  void    SetMeshId (Ssid Id);
+  void    SetIeDot11sConfiguration (IeDot11sConfiguration MeshConf);
+  void    SetIeDot11sPeerManagement (IeDot11sPeerManagement meshPeerElement);
 
-  uint16_t         GetAid();
-  SupportedRates   GetSupportedRates();
-  uint16_t         GetQosField();
-  Ssid             GetMeshId();
-  IeDot11sConfiguration  GetIeDot11sConfiguration();
-  IeDot11sPeerManagement GetIeDot11sPeerManagement();
+  uint16_t         GetAid ();
+  SupportedRates   GetSupportedRates ();
+  uint16_t         GetQosField ();
+  Ssid             GetMeshId ();
+  IeDot11sConfiguration  GetIeDot11sConfiguration ();
+  IeDot11sPeerManagement GetIeDot11sPeerManagement ();
 
-  static  TypeId   GetTypeId();
-  virtual TypeId   GetInstanceTypeId() const;
-  virtual void     Print(std::ostream &os) const;
-  virtual uint32_t GetSerializedSize() const;
-  virtual void     Serialize(Buffer::Iterator start) const;
-  virtual uint32_t Deserialize(Buffer::Iterator start);
+  static  TypeId   GetTypeId ();
+  virtual TypeId   GetInstanceTypeId () const;
+  virtual void     Print (std::ostream &os) const;
+  virtual uint32_t GetSerializedSize () const;
+  virtual void     Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
   //Subtype defining methods:
-  void    SetOpen();
-  void    SetConfirm();
-  void    SetClose();
+  void    SetOpen ();
+  void    SetConfirm ();
+  void    SetClose ();
 
-  bool    IsOpen();
-  bool    IsConfirm();
-  bool    IsClose();
+  bool    IsOpen ();
+  bool    IsConfirm ();
+  bool    IsClose ();
 
 private:
   uint8_t   Subtype;

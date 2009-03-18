@@ -35,41 +35,41 @@ namespace ns3 {
 class IeDot11sPrep : public WifiInformationElement
 {
 public:
-  IeDot11sPrep();
-  ~IeDot11sPrep();
-  static TypeId GetTypeId();
-  virtual TypeId GetInstanceTypeId() const;
-  virtual void Print(std::ostream &os) const;
-  void SetFlags(uint8_t flags);
-  void SetHopcount(uint8_t hopcount);
-  void SetTTL(uint8_t ttl);
-  void SetDestinationAddress(Mac48Address dest_address);
-  void SetDestinationSeqNumber(uint32_t dest_seq_number);
-  void SetLifetime(uint32_t lifetime);
-  void SetMetric(uint32_t metric);
-  void SetOriginatorAddress(Mac48Address originator_address);
-  void SetOriginatorSeqNumber(uint32_t originator_seg_number);
+  IeDot11sPrep ();
+  ~IeDot11sPrep ();
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
+  virtual void Print (std::ostream &os) const;
+  void SetFlags (uint8_t flags);
+  void SetHopcount (uint8_t hopcount);
+  void SetTTL (uint8_t ttl);
+  void SetDestinationAddress (Mac48Address dest_address);
+  void SetDestinationSeqNumber (uint32_t dest_seq_number);
+  void SetLifetime (uint32_t lifetime);
+  void SetMetric (uint32_t metric);
+  void SetOriginatorAddress (Mac48Address originator_address);
+  void SetOriginatorSeqNumber (uint32_t originator_seg_number);
  
-  uint8_t GetFlags() const;
-  uint8_t GetHopcount() const;
-  uint32_t GetTTL() const;
-  Mac48Address GetDestinationAddress() const;
-  uint32_t GetDestinationSeqNumber() const;
-  uint32_t GetLifetime() const;
-  uint32_t GetMetric() const;
-  Mac48Address GetOriginatorAddress() const;
-  uint32_t GetOriginatorSeqNumber()const ;
+  uint8_t GetFlags () const;
+  uint8_t GetHopcount () const;
+  uint32_t GetTTL () const;
+  Mac48Address GetDestinationAddress () const;
+  uint32_t GetDestinationSeqNumber () const;
+  uint32_t GetLifetime () const;
+  uint32_t GetMetric () const;
+  Mac48Address GetOriginatorAddress () const;
+  uint32_t GetOriginatorSeqNumber ()const ;
 
-  void  DecrementTtl();
-  void  IncrementMetric(uint32_t metric);
+  void  DecrementTtl ();
+  void  IncrementMetric (uint32_t metric);
 private:
-  WifiElementId ElementId() const{
+  WifiElementId ElementId () const{
     return IE11S_PREP;
   }
-  void SerializeInformation(Buffer::Iterator i) const;
-  uint8_t DeserializeInformation(Buffer::Iterator start, uint8_t length);
-  uint8_t GetInformationSize() const;
-  void PrintInformation(std::ostream& os) const;
+  void SerializeInformation (Buffer::Iterator i) const;
+  uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
+  uint8_t GetInformationSize () const;
+  void PrintInformation (std::ostream& os) const;
   uint8_t  m_flags;
   uint8_t  m_hopcount;
   uint8_t  m_ttl;

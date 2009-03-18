@@ -42,13 +42,13 @@ MeshPointDevice::GetTypeId ()
   return tid;
 }
 
-MeshPointDevice::MeshPointDevice () : m_ifIndex(0), m_mtu(1500)
+MeshPointDevice::MeshPointDevice () : m_ifIndex (0), m_mtu(1500)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_channel = CreateObject<BridgeChannel> ();
 }
 
-MeshPointDevice::~MeshPointDevice()
+MeshPointDevice::~MeshPointDevice ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -89,7 +89,7 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
     case PACKET_MULTICAST:
       m_rxCallback (this, packet, protocol, src);
     case PACKET_OTHERHOST:
-      Forward (incomingPort, packet->Copy(), protocol, src48, dst48);
+      Forward (incomingPort, packet->Copy (), protocol, src48, dst48);
       break;
     }
 }
@@ -99,32 +99,32 @@ MeshPointDevice::Forward (Ptr<NetDevice> inport, Ptr<Packet> packet,
                              uint16_t protocol, const Mac48Address src, const Mac48Address dst)
 {
   // pass through routing protocol
-  m_requestRoute(inport->GetIfIndex(), src, dst, packet, protocol, m_myResponse);
+  m_requestRoute (inport->GetIfIndex(), src, dst, packet, protocol, m_myResponse);
 }
 
 void
-MeshPointDevice::SetName(const std::string name)
+MeshPointDevice::SetName (const std::string name)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_name = name;
 }
 
 std::string
-MeshPointDevice::GetName() const
+MeshPointDevice::GetName () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_name;
 }
 
 void
-MeshPointDevice::SetIfIndex(const uint32_t index)
+MeshPointDevice::SetIfIndex (const uint32_t index)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_ifIndex = index;
 }
 
 uint32_t
-MeshPointDevice::GetIfIndex() const
+MeshPointDevice::GetIfIndex () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_ifIndex;
@@ -220,7 +220,7 @@ bool
 MeshPointDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
   const Mac48Address dst48 = Mac48Address::ConvertFrom (dest);
-  return m_requestRoute(m_ifIndex, m_address, dst48, packet, protocolNumber, m_myResponse);
+  return m_requestRoute (m_ifIndex, m_address, dst48, packet, protocolNumber, m_myResponse);
 }
 
 bool
@@ -228,7 +228,7 @@ MeshPointDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address
 {
   const Mac48Address src48 = Mac48Address::ConvertFrom (src);
   const Mac48Address dst48 = Mac48Address::ConvertFrom (dest);
-  return m_requestRoute(m_ifIndex, src48, dst48, packet, protocolNumber, m_myResponse);
+  return m_requestRoute (m_ifIndex, src48, dst48, packet, protocolNumber, m_myResponse);
 }
 
 Ptr<Node>
@@ -293,7 +293,7 @@ MeshPointDevice::GetNInterfaces () const
 Ptr<NetDevice>
 MeshPointDevice::GetInterface (uint32_t n) const
 {
-  NS_ASSERT(m_ifaces.size () > n);
+  NS_ASSERT (m_ifaces.size () > n);
   return m_ifaces[n];
 }
 
@@ -322,24 +322,24 @@ MeshPointDevice::AddInterface (Ptr<NetDevice> iface)
 //-----------------------------------------------------------------------------
 
 void
-MeshPointDevice::SetRoutingProtocol(Ptr<MeshL2RoutingProtocol> protocol)
+MeshPointDevice::SetRoutingProtocol (Ptr<MeshL2RoutingProtocol> protocol)
 {
   NS_LOG_FUNCTION_NOARGS ();
   
-  NS_ASSERT_MSG(PeekPointer(protocol->GetMeshPoint()) == this, "Routing protocol must be installed on mesh point to be usefull.");
+  NS_ASSERT_MSG (PeekPointer(protocol->GetMeshPoint()) == this, "Routing protocol must be installed on mesh point to be usefull.");
   
-  m_requestRoute = MakeCallback(&MeshL2RoutingProtocol::RequestRoute, protocol);
-  m_myResponse = MakeCallback(&MeshPointDevice::DoSend, this);
+  m_requestRoute = MakeCallback (&MeshL2RoutingProtocol::RequestRoute, protocol);
+  m_myResponse = MakeCallback (&MeshPointDevice::DoSend, this);
   
   return;
 }
 
 void
-MeshPointDevice::DoSend(bool success, Ptr<Packet> packet, Mac48Address src, Mac48Address dst, uint16_t protocol, uint32_t outIface)
+MeshPointDevice::DoSend (bool success, Ptr<Packet> packet, Mac48Address src, Mac48Address dst, uint16_t protocol, uint32_t outIface)
 {
   if (!success)
     {
-      NS_LOG_UNCOND("Resolve failed");
+      NS_LOG_UNCOND ("Resolve failed");
       //TODO: SendError callback
       return;
     }
@@ -347,10 +347,10 @@ MeshPointDevice::DoSend(bool success, Ptr<Packet> packet, Mac48Address src, Mac4
   // Ok, now I know the route, just SendFrom
   
   if (outIface != 0xffffffff)
-    GetInterface(outIface)->SendFrom(packet, src, dst, protocol);
+    GetInterface (outIface)->SendFrom(packet, src, dst, protocol);
   else
-    for (std::vector<Ptr<NetDevice> >::iterator i = m_ifaces.begin(); i != m_ifaces.end(); i++)
-      (*i) -> SendFrom(packet, src, dst, protocol);
+    for (std::vector<Ptr<NetDevice> >::iterator i = m_ifaces.begin (); i != m_ifaces.end(); i++)
+      (*i) -> SendFrom (packet, src, dst, protocol);
 }
 
 } // namespace ns3

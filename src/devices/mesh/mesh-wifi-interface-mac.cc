@@ -86,7 +86,7 @@ MeshWifiInterfaceMac::MeshWifiInterfaceMac ()
   m_beaconDca->SetLow (m_low);
   m_beaconDca->SetMinCw (0);
   m_beaconDca->SetMaxCw (0);
-  m_beaconDca->SetAifsn(1);
+  m_beaconDca->SetAifsn (1);
   m_beaconDca->SetManager (m_dcfManager);
 
   m_VO = CreateObject<DcaTxop> ();
@@ -151,39 +151,39 @@ MeshWifiInterfaceMac::SetEifsNoDifs (Time eifsNoDifs)
 
 Time
 MeshWifiInterfaceMac::GetSlot () const
-  {
-    return m_slot;
-  }
+{
+  return m_slot;
+}
 
 Time
 MeshWifiInterfaceMac::GetSifs () const
-  {
-    return m_sifs;
-  }
+{
+  return m_sifs;
+}
 
 Time
 MeshWifiInterfaceMac::GetEifsNoDifs () const
-  {
-    return m_eifsNoDifs;
-  }
+{
+  return m_eifsNoDifs;
+}
 
 Time
 MeshWifiInterfaceMac::GetAckTimeout () const
-  {
-    return m_low->GetAckTimeout ();
-  }
+{
+  return m_low->GetAckTimeout ();
+}
 
 Time
 MeshWifiInterfaceMac::GetCtsTimeout () const
-  {
-    return m_low->GetCtsTimeout ();
-  }
+{
+  return m_low->GetCtsTimeout ();
+}
 
 Time
 MeshWifiInterfaceMac::GetPifs () const
-  {
-    return m_low->GetPifs ();
-  }
+{
+  return m_low->GetPifs ();
+}
 
 void
 MeshWifiInterfaceMac::SetWifiPhy (Ptr<WifiPhy> phy)
@@ -221,9 +221,9 @@ MeshWifiInterfaceMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 
 bool
 MeshWifiInterfaceMac::SupportsSendFrom () const
-  {
-    return true;
-  }
+{
+  return true;
+}
 
 void
 MeshWifiInterfaceMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback)
@@ -250,26 +250,26 @@ MeshWifiInterfaceMac::SetLinkDownCallback (Callback<void> linkDown)
 
 Mac48Address
 MeshWifiInterfaceMac::GetAddress () const
-  {
-    return m_address;
-  }
+{
+  return m_address;
+}
 Mac48Address
 MeshWifiInterfaceMac::GetBssid () const
-  {
-    return m_address;
-  }
+{
+  return m_address;
+}
 
 Ssid
 MeshWifiInterfaceMac::GetSsid () const
-  {
-    return m_MeshId;
-  }
+{
+  return m_MeshId;
+}
 
 void
 MeshWifiInterfaceMac::SetAddress (Mac48Address address)
 {
   NS_LOG_FUNCTION (address);
-  m_low->SetAddress(address);
+  m_low->SetAddress (address);
   m_address = address;
 }
 
@@ -303,10 +303,10 @@ MeshWifiInterfaceMac::DoDispose ()
 // Plugins
 //-----------------------------------------------------------------------------
 void 
-MeshWifiInterfaceMac::InstallPlugin( Ptr<MeshWifiInterfaceMacPlugin> plugin)
+MeshWifiInterfaceMac::InstallPlugin ( Ptr<MeshWifiInterfaceMacPlugin> plugin)
 {
-  plugin->SetParent(this);
-  m_plugins.push_back(plugin);
+  plugin->SetParent (this);
+  m_plugins.push_back (plugin);
 }
 
 //-----------------------------------------------------------------------------
@@ -323,7 +323,7 @@ void
 MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address from, Mac48Address to)
 {
   // copy packet to allow modifications
-  Ptr<Packet> packet = const_packet->Copy();
+  Ptr<Packet> packet = const_packet->Copy ();
   
   WifiMacHeader hdr;
   hdr.SetTypeData ();
@@ -337,14 +337,14 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
   hdr.SetAddr1 (Mac48Address ());
   
   // Filter packet through all installed plugins
-  for(PluginList::const_iterator i = m_plugins.begin(); i != m_plugins.end(); ++i)
+  for (PluginList::const_iterator i = m_plugins.begin(); i != m_plugins.end(); ++i)
     {
-      bool drop = !((*i)->UpdateOutcomingFrame(packet, hdr, from, to));
+      bool drop = ! ((*i)->UpdateOutcomingFrame(packet, hdr, from, to));
       if (drop) return; // plugin drops frame
     }
   
   // Assert that address1 is set. Assert will fail e.g. if there is no installed routing plugin.
-  NS_ASSERT(hdr.GetAddr1() != Mac48Address() );
+  NS_ASSERT (hdr.GetAddr1() != Mac48Address() );
   
   // Queue frame
   WifiRemoteStation *destination = m_stationManager->Lookup (to);
@@ -386,30 +386,30 @@ MeshWifiInterfaceMac::GetSupportedRates () const
 // Beacons
 //-----------------------------------------------------------------------------
 void
-MeshWifiInterfaceMac::SetSoftwareDelay(Time delay)
+MeshWifiInterfaceMac::SetSoftwareDelay (Time delay)
 {
-  NS_ASSERT(delay < m_beaconInterval);
+  NS_ASSERT (delay < m_beaconInterval);
   m_softwareDelay = delay;
 }
 
 Time
-MeshWifiInterfaceMac::GetSoftwareDelay()
+MeshWifiInterfaceMac::GetSoftwareDelay ()
 {
   return m_softwareDelay;
 }
 
 Time
-MeshWifiInterfaceMac::CalcSwDelay()
+MeshWifiInterfaceMac::CalcSwDelay ()
 {
-  UniformVariable coefficient(0.0, m_softwareDelay.GetSeconds());
+  UniformVariable coefficient (0.0, m_softwareDelay.GetSeconds());
   
   // Be sure that frames don't change order due to different software delays
-  Time delay = Seconds(coefficient.GetValue());
-  if (delay.GetSeconds() + Simulator::Now().GetSeconds() < m_lastMgtFrame.GetSeconds())
-    delay = Seconds(m_lastMgtFrame.GetSeconds() - Simulator::Now().GetSeconds());
-  m_lastMgtFrame = Seconds(Simulator::Now().GetSeconds() + delay.GetSeconds());
+  Time delay = Seconds (coefficient.GetValue());
+  if (delay.GetSeconds () + Simulator::Now().GetSeconds() < m_lastMgtFrame.GetSeconds())
+    delay = Seconds (m_lastMgtFrame.GetSeconds() - Simulator::Now().GetSeconds());
+  m_lastMgtFrame = Seconds (Simulator::Now().GetSeconds() + delay.GetSeconds());
 
-  NS_ASSERT(delay.GetSeconds() >= 0);
+  NS_ASSERT (delay.GetSeconds() >= 0);
   return delay;
 }
 
@@ -419,11 +419,11 @@ MeshWifiInterfaceMac::SetBeaconInterval (Time interval)
   NS_LOG_FUNCTION (this << interval);
   m_beaconInterval = interval;
   
-  NS_ASSERT(m_beaconInterval > m_softwareDelay);
+  NS_ASSERT (m_beaconInterval > m_softwareDelay);
 }
 
 Time 
-MeshWifiInterfaceMac::GetBeaconInterval() const
+MeshWifiInterfaceMac::GetBeaconInterval () const
 {
   return m_beaconInterval;
 }
@@ -435,8 +435,8 @@ MeshWifiInterfaceMac::SetBeaconGeneration (bool enable)
   if (enable)
     {
       // Now start sending beacons after some random delay (to avoid collisions)
-      UniformVariable coefficient(0.0, m_randomStart.GetSeconds());
-      Time randomStart = Seconds(coefficient.GetValue());
+      UniformVariable coefficient (0.0, m_randomStart.GetSeconds());
+      Time randomStart = Seconds (coefficient.GetValue());
       
       m_beaconSendEvent = Simulator::Schedule (randomStart, &MeshWifiInterfaceMac::SendBeacon, this);
     }
@@ -452,48 +452,48 @@ MeshWifiInterfaceMac::GetBeaconGeneration () const
 }
 
 Time
-MeshWifiInterfaceMac::GetTBTT() const
+MeshWifiInterfaceMac::GetTBTT () const
 {
   return m_tbtt;
 }
 
-void MeshWifiInterfaceMac::ShiftTBTT(Time shift)
+void MeshWifiInterfaceMac::ShiftTBTT (Time shift)
 {
-  // User of ShiftTBTT() must take care don't shift it to the past
-  NS_ASSERT(GetTBTT() + shift > Simulator::Now());
+  // User of ShiftTBTT () must take care don't shift it to the past
+  NS_ASSERT (GetTBTT() + shift > Simulator::Now());
   
   m_tbtt += shift;
   // Shift scheduled event
   Simulator::Cancel (m_beaconSendEvent);
-  m_beaconSendEvent = Simulator::Schedule (GetTBTT(), &MeshWifiInterfaceMac::SendBeacon, this);
+  m_beaconSendEvent = Simulator::Schedule (GetTBTT (), &MeshWifiInterfaceMac::SendBeacon, this);
 }
 
 void 
-MeshWifiInterfaceMac::ScheduleNextBeacon()
+MeshWifiInterfaceMac::ScheduleNextBeacon ()
 {
-  m_tbtt += GetBeaconInterval();
-  m_beaconSendEvent = Simulator::Schedule (GetTBTT(), &MeshWifiInterfaceMac::SendBeacon, this);
+  m_tbtt += GetBeaconInterval ();
+  m_beaconSendEvent = Simulator::Schedule (GetTBTT (), &MeshWifiInterfaceMac::SendBeacon, this);
 }
 
 void
 MeshWifiInterfaceMac::SendBeacon ()
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG(GetAddress() <<" is sending beacon");
+  NS_LOG_DEBUG (GetAddress() <<" is sending beacon");
   
-  NS_ASSERT(! m_beaconSendEvent.IsRunning());
-  NS_ASSERT(Simulator::Now() == GetTBTT());     // assert that beacon is just on time
+  NS_ASSERT (! m_beaconSendEvent.IsRunning());
+  NS_ASSERT (Simulator::Now() == GetTBTT());     // assert that beacon is just on time
    
   // Form & send beacon
-  MeshWifiBeacon beacon(GetSsid (), GetSupportedRates (), m_beaconInterval.GetMicroSeconds ());
+  MeshWifiBeacon beacon (GetSsid (), GetSupportedRates (), m_beaconInterval.GetMicroSeconds ());
   
   // Ask all plugins to add their specific information elements to beacon
-  for(PluginList::const_iterator i = m_plugins.begin(); i != m_plugins.end(); ++i)
-    (*i)->UpdateBeacon(beacon);
+  for (PluginList::const_iterator i = m_plugins.begin(); i != m_plugins.end(); ++i)
+    (*i)->UpdateBeacon (beacon);
   
-  m_beaconDca->Queue(beacon.CreatePacket(), beacon.CreateHeader(GetAddress()));
+  m_beaconDca->Queue (beacon.CreatePacket(), beacon.CreateHeader(GetAddress()));
   
-  ScheduleNextBeacon();
+  ScheduleNextBeacon ();
 }
 
 void
@@ -503,17 +503,17 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
   if (hdr->IsBeacon ())
     {
       MgtBeaconHeader beacon_hdr;
-      Mac48Address from = hdr->GetAddr2();
+      Mac48Address from = hdr->GetAddr2 ();
       
       packet->PeekHeader (beacon_hdr);
       
-      NS_LOG_DEBUG("Beacon received from "<<hdr->GetAddr2()<<
-                   " to "<<GetAddress()<<
+      NS_LOG_DEBUG ("Beacon received from "<<hdr->GetAddr2()<<
+                   " to "<<GetAddress ()<<
                    " at "<<Simulator::Now ().GetMicroSeconds ()<<
                    " microseconds");
       
       // update supported rates
-      if (beacon_hdr.GetSsid().IsEqual(GetSsid()))
+      if (beacon_hdr.GetSsid ().IsEqual(GetSsid()))
         {
           SupportedRates rates = beacon_hdr.GetSupportedRates ();
           WifiRemoteStation * peerSta = m_stationManager->Lookup (hdr->GetAddr2 ());
@@ -532,17 +532,17 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
     }
   
   // Filter frame through all installed plugins
-  for (PluginList::iterator i = m_plugins.begin(); i != m_plugins.end(); ++i)
+  for (PluginList::iterator i = m_plugins.begin (); i != m_plugins.end(); ++i)
     {
-      bool drop = !((*i)->Receive(packet, *hdr));
+      bool drop = ! ((*i)->Receive(packet, *hdr));
       if (drop) return; // plugin drops frame
     }
     
   // Forward data up
-  if (hdr->IsData())
-      ForwardUp(packet, hdr->GetAddr4(), hdr->GetAddr3());
+  if (hdr->IsData ())
+      ForwardUp (packet, hdr->GetAddr4(), hdr->GetAddr3());
 }
-  
+
 } // namespace ns3
 
 

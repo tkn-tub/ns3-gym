@@ -95,7 +95,7 @@ MeshWifiHelper::SetMac (std::string type,
 }
 
 void
-MeshWifiHelper::SetL2RoutingProtocol(std::string type,
+MeshWifiHelper::SetL2RoutingProtocol (std::string type,
                                      std::string n0, const AttributeValue &v0,
                                      std::string n1, const AttributeValue &v1,
                                      std::string n2, const AttributeValue &v2,
@@ -120,7 +120,7 @@ MeshWifiHelper::SetL2RoutingProtocol(std::string type,
 }
 
 void
-MeshWifiHelper::SetL2RoutingNetDevice(std::string type,
+MeshWifiHelper::SetL2RoutingNetDevice (std::string type,
                                       std::string n0, const AttributeValue &v0,
                                       std::string n1, const AttributeValue &v1,
                                       std::string n2, const AttributeValue &v2,
@@ -182,7 +182,7 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c, uint8_
         Ptr<WifiPeerManager> pPeer = m_peerManager.Create<WifiPeerManager > ();
         devices.Add (mp);
         std::vector<Ptr<WifiNetDevice> > nodeDevices;
-        for (uint8_t k=0; k<numOfPorts; k++)
+        for (uint8_t k = 0; k < numOfPorts; k++)
           {
             Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
             Ptr<MeshWifiMac> mac = m_meshMac.Create<MeshWifiMac> ();
@@ -193,22 +193,22 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c, uint8_
             device->SetPhy (phy);
             device->SetRemoteStationManager (manager);
             //create L2RoutingNetDevice and add WifiNetDevice to it
-            node->AddDevice(device);
-            nodeDevices.push_back(device);
+            node->AddDevice (device);
+            nodeDevices.push_back (device);
           }
-        node -> AddDevice(mp);
-        for (std::vector<Ptr<WifiNetDevice> > ::iterator iter=nodeDevices.begin();iter!=nodeDevices.end(); ++iter)
-          mp->AddInterface(*iter);
-        // nodeDevice.pop_back()
-        pPeer->AttachPorts(nodeDevices);
+        node -> AddDevice (mp);
+        for (std::vector<Ptr<WifiNetDevice> > ::iterator iter=nodeDevices.begin ();iter != nodeDevices.end(); ++iter)
+          mp->AddInterface (*iter);
+        // nodeDevice.pop_back ()
+        pPeer->AttachPorts (nodeDevices);
         
         // Install routing protocol
-        Ptr<MeshL2RoutingProtocol> routing = m_routingProtocol.Create <MeshL2RoutingProtocol>();
-        routing->SetMeshPoint(mp);
-        mp->SetRoutingProtocol(routing);
+        Ptr<MeshL2RoutingProtocol> routing = m_routingProtocol.Create <MeshL2RoutingProtocol> ();
+        routing->SetMeshPoint (mp);
+        mp->SetRoutingProtocol (routing);
         
-        //hwmp->SetRoot(device->GetIfIndex(), Seconds(5));
-        nodeDevices.clear();
+        //hwmp->SetRoot (device->GetIfIndex(), Seconds(5));
+        nodeDevices.clear ();
       }
     return devices;
 }

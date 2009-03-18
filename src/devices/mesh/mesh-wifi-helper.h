@@ -89,7 +89,7 @@ public:
                            std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue (),
                            std::string n8 = "", const AttributeValue &v8 = EmptyAttributeValue (),
                            std::string n9 = "", const AttributeValue &v9 = EmptyAttributeValue ());
-  void SetL2RoutingProtocol(std::string type,
+  void SetL2RoutingProtocol (std::string type,
                             std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
                             std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
                             std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
@@ -101,7 +101,7 @@ public:
                             std::string n8 = "", const AttributeValue &v8 = EmptyAttributeValue (),
                             std::string n9 = "", const AttributeValue &v9 = EmptyAttributeValue ());
 
-  void SetL2RoutingNetDevice(std::string type,
+  void SetL2RoutingNetDevice (std::string type,
                              std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
                              std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
                              std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),

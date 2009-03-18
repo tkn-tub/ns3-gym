@@ -77,10 +77,10 @@ class WifiInformationElement : public Header,
 public:
   /// Support object system
   static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId() const;
+  TypeId GetInstanceTypeId () const;
   
   /// virtual d-tor for subclasses
-  virtual ~WifiInformationElement() {}
+  virtual ~WifiInformationElement () {}
   
   ///\name Inherited from Header
   //\{
@@ -146,11 +146,11 @@ protected:
   //\}
   
   /// Compare information elements using Element ID
-  friend bool operator<(WifiInformationElement const & a, WifiInformationElement const & b);
+  friend bool operator< (WifiInformationElement const & a, WifiInformationElement const & b);
 };
 
 /// Compare information elements using Element ID
-bool operator<(WifiInformationElement const & a, WifiInformationElement const & b);
+bool operator< (WifiInformationElement const & a, WifiInformationElement const & b);
  
 }  // namespace ns3
 #endif /* WIFIINFORMATIONELEMENT_H_ */

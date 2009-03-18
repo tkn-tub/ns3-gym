@@ -106,11 +106,11 @@ public:
    * to be independent from traffic intensity.
    *
    */
-  void   SetSoftwareDelay(Time delay);
+  void   SetSoftwareDelay (Time delay);
   /**
    * \returns software delay parameter
    */
-  Time   GetSoftwareDelay();
+  Time   GetSoftwareDelay ();
   /**
    * \param manager is pointer to the
    * WifiPeerManager class, which implements
@@ -124,8 +124,8 @@ public:
    * This funcion sets all needed callbacks to
    * a given peer manager
    */
-  void          SetPeerLinkManager(Ptr<WifiPeerManager> manager);
-  void  SetPreqReceivedCallback(
+  void          SetPeerLinkManager (Ptr<WifiPeerManager> manager);
+  void  SetPreqReceivedCallback (
     Callback<void, IeDot11sPreq&, const Mac48Address&, const uint32_t&> cb);
   /**
    * \brief this callback is set by Hwmp routing
@@ -134,7 +134,7 @@ public:
    * \param cb is a callback to be executed when
    * receiving PREP.
    */
-  void  SetPrepReceivedCallback(
+  void  SetPrepReceivedCallback (
     Callback<void, IeDot11sPrep&, const Mac48Address&, const uint32_t&> cb);
   /**
    * \brief this callback is set by Hwmp routing
@@ -143,7 +143,7 @@ public:
    * \param cb is a callback to be executed when
    * receiving PERR.
    */
-  void  SetPerrReceivedCallback(
+  void  SetPerrReceivedCallback (
     Callback<void, IeDot11sPerr&, const Mac48Address&> cb);
 
   /**
@@ -153,7 +153,7 @@ public:
    * \param cb is a callback to be executed when
    * peer failure has ben detected
    */
-  void            SetPeerStatusCallback(
+  void            SetPeerStatusCallback (
     Callback<void, Mac48Address, bool, uint32_t> cb);
   /**
    * \brief Sends a PREQ frame.
@@ -163,7 +163,7 @@ public:
    * \attention This method is public, because
    * HWMP makes a callback using this method
    */
-  void  SendPreq(const IeDot11sPreq& preq);
+  void  SendPreq (const IeDot11sPreq& preq);
   /**
    * \brief Sends a PREP frame.
    * \param prep is prep information element
@@ -175,7 +175,7 @@ public:
    * HWMP makes a callback using this method
    */
 
-  void  SendPrep(const IeDot11sPrep& prep, const Mac48Address& to);
+  void  SendPrep (const IeDot11sPrep& prep, const Mac48Address& to);
   /**
    * \brief Sends a PERR frame.
    * \param perr is perr information element
@@ -186,7 +186,7 @@ public:
    * \attention This method is public, because
    * HWMP makes a callback using this method
    */
-  void  SendPerr(const IeDot11sPerr& perr, std::vector<Mac48Address> receivers);
+  void  SendPerr (const IeDot11sPerr& perr, std::vector<Mac48Address> receivers);
   /**
    * \brief Sends PeerLinkOpen frame to a given
    * address. Mac only forms a proper
@@ -196,7 +196,7 @@ public:
    * \param peerAddress is the address of
    * destination of given frame
    */
-  void   SendPeerLinkOpen(
+  void   SendPeerLinkOpen (
     IeDot11sPeerManagement peer_element,
     Mac48Address peerAddress
   );
@@ -211,7 +211,7 @@ public:
    * \param aid is the assocciation ID stored in
    * peer manager
    */
-  void   SendPeerLinkConfirm(
+  void   SendPeerLinkConfirm (
     IeDot11sPeerManagement peer_element,
     Mac48Address peerAddress,
     uint16_t aid
@@ -225,7 +225,7 @@ public:
    * \param peerAddress is the address of
    * destination of given frame
    */
-  void   SendPeerLinkClose(
+  void   SendPeerLinkClose (
     IeDot11sPeerManagement peer_element,
     Mac48Address peerAddress
   );
@@ -237,7 +237,7 @@ public:
    * \param peerAddress is the address of
    * destination of given frame
    */
-  void  PeerLinkStatus(Mac48Address peerAddress, bool status);
+  void  PeerLinkStatus (Mac48Address peerAddress, bool status);
 
   /**
    * \brief Peer Manager notifyes MAC about new
@@ -250,14 +250,14 @@ public:
    * \param status If true - new peer link, perr
    * link failure otherwise
    */
-  void   PeerEvent(
+  void   PeerEvent (
     Mac48Address peerAddress,
     bool  status
   );
 private:
   void  Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
   void ForwardUp (Ptr<Packet> packet, Mac48Address src, Mac48Address dst);
-  void  ForwardDown(
+  void  ForwardDown (
     Ptr<const Packet> packet,
     Mac48Address from,
     Mac48Address to
@@ -288,7 +288,7 @@ private:
    * \param peerAddress the address of
    * destination.
    */
-  void  QueuePeerLinkFrame(MeshMgtPeerLinkManFrame peer_frame, Mac48Address peerAddress);
+  void  QueuePeerLinkFrame (MeshMgtPeerLinkManFrame peer_frame, Mac48Address peerAddress);
   /**
    * \brief Executed after software delay by
    * SendPreq/Prep/Perr frames and
@@ -296,7 +296,7 @@ private:
    * \param packet is packet body,
    * \param hdr is WifiMacHeader
    */
-  void  QueuePathSelectionFrame(Ptr<Packet> packet, const WifiMacHeader hdr);
+  void  QueuePathSelectionFrame (Ptr<Packet> packet, const WifiMacHeader hdr);
   void  SetBeaconGeneration (bool enable);
   bool  GetBeaconGeneration () const;
   SupportedRates GetSupportedRates () const;
@@ -345,7 +345,7 @@ private:
    * m_softwareDealy (initiated by
    * SetSoftwareDelay method).
    */
-  Time    CalcSwDelay();
+  Time    CalcSwDelay ();
   /**
    * \brief keeps delay for sending first
    * beacon. this delay is uniformely
@@ -363,7 +363,7 @@ private:
   /**
    * \brief metric calculation parameters
    */
-  uint32_t   CalculateMetric(Mac48Address peerAddress);
+  uint32_t   CalculateMetric (Mac48Address peerAddress);
   std::map<Mac48Address, uint32_t>
   m_metricDatabase;
 };

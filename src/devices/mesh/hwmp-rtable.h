@@ -38,10 +38,10 @@ class HwmpRtable : public Object
 {
 public:
   static TypeId GetTypeId ();
-  HwmpRtable();
-  ~HwmpRtable();
-  void DoDispose();
-  void AddReactivePath(
+  HwmpRtable ();
+  ~HwmpRtable ();
+  void DoDispose ();
+  void AddReactivePath (
     Mac48Address destination,
     Mac48Address retransmitter,
     uint32_t port,
@@ -49,7 +49,7 @@ public:
     Time  lifetime,
     uint32_t seqnum
   );
-  void AddProactivePath(
+  void AddProactivePath (
     uint32_t metric,
     Mac48Address root,
     Mac48Address retransmitter,
@@ -57,10 +57,10 @@ public:
     Time  lifetime,
     uint32_t seqnum
   );
-  void AddPrecursor(Mac48Address destination, uint32_t port, Mac48Address precursor);
-  void DeleteProactivePath(uint32_t port);
-  void DeleteProactivePath(Mac48Address root, uint32_t port);
-  void DeleteReactivePath(Mac48Address destination, uint32_t port);
+  void AddPrecursor (Mac48Address destination, uint32_t port, Mac48Address precursor);
+  void DeleteProactivePath (uint32_t port);
+  void DeleteProactivePath (Mac48Address root, uint32_t port);
+  void DeleteReactivePath (Mac48Address destination, uint32_t port);
   struct LookupResult
   {
     Mac48Address retransmitter;
@@ -68,17 +68,17 @@ public:
     uint32_t metric;
     uint32_t seqnum;
   };
-  LookupResult  LookupReactive(Mac48Address destination);
-  LookupResult  LookupProactive(uint32_t port);
+  LookupResult  LookupReactive (Mac48Address destination);
+  LookupResult  LookupProactive (uint32_t port);
   //path error routines:
   struct FailedDestination
   {
     Mac48Address destination;
     uint32_t seqnum;
   };
-  std::vector<FailedDestination>  GetUnreachableDestinations(Mac48Address peerAddress, uint32_t port);
-  uint32_t  RequestSeqnum(Mac48Address dst);
-  std::vector<Mac48Address>  GetPrecursors(Mac48Address destination, uint32_t port);
+  std::vector<FailedDestination>  GetUnreachableDestinations (Mac48Address peerAddress, uint32_t port);
+  uint32_t  RequestSeqnum (Mac48Address dst);
+  std::vector<Mac48Address>  GetPrecursors (Mac48Address destination, uint32_t port);
   const static uint32_t PORT_ANY = 0xffffffff;
   const static uint32_t MAX_METRIC = 0xffffffff;
 private:

@@ -39,73 +39,73 @@ class MeshWifiMac;
 class WifiPeerLinkDescriptor : public RefCountBase
 {
 public:
-  WifiPeerLinkDescriptor();
+  WifiPeerLinkDescriptor ();
   /**
    * Beacon loss processing:
    */
-  void  SetBeaconInformation(Time lastBeacon, Time BeaconInterval);
-  void  SetMaxBeaconLoss(uint8_t maxBeaconLoss);
+  void  SetBeaconInformation (Time lastBeacon, Time BeaconInterval);
+  void  SetMaxBeaconLoss (uint8_t maxBeaconLoss);
   /**
    * \brief Methods used to detecet peer link changes
    * \param bool if true - opened new link, if
    * false - link closed
    */
-  void  SetLinkStatusCallback(Callback<void, Mac48Address, Mac48Address, bool> cb);
+  void  SetLinkStatusCallback (Callback<void, Mac48Address, Mac48Address, bool> cb);
   /**
    * Peer link geeters/setters
    */
-  void  SetPeerAddress(Mac48Address macaddr);
+  void  SetPeerAddress (Mac48Address macaddr);
   /**
    * Debug purpose
    */
-  void  SetLocalAddress(Mac48Address macaddr);
-  void  SetLocalLinkId(uint16_t id);
-  void  SetPeerLinkId(uint16_t id);
-  void  SetLocalAid(uint16_t aid);
-  void  SetPeerAid(uint16_t aid);
-  void  SetBeaconTimingElement(IeDot11sBeaconTiming beaconTiming);
-  void  SetPeerLinkDescriptorElement(
+  void  SetLocalAddress (Mac48Address macaddr);
+  void  SetLocalLinkId (uint16_t id);
+  void  SetPeerLinkId (uint16_t id);
+  void  SetLocalAid (uint16_t aid);
+  void  SetPeerAid (uint16_t aid);
+  void  SetBeaconTimingElement (IeDot11sBeaconTiming beaconTiming);
+  void  SetPeerLinkDescriptorElement (
     IeDot11sPeerManagement peerLinkElement
   );
-  Mac48Address GetPeerAddress()const;
+  Mac48Address GetPeerAddress ()const;
   /**
    * Debug purpose
    */
-  Mac48Address GetLocalAddress()const;
-  uint16_t GetLocalAid()const;
-  Time  GetLastBeacon()const;
-  Time  GetBeaconInterval()const;
+  Mac48Address GetLocalAddress ()const;
+  uint16_t GetLocalAid ()const;
+  Time  GetLastBeacon ()const;
+  Time  GetBeaconInterval ()const;
   IeDot11sBeaconTiming
-  GetBeaconTimingElement()const;
+  GetBeaconTimingElement ()const;
   IeDot11sPeerManagement
-  GetPeerLinkDescriptorElement()const;
-  void  ClearTimingElement();
+  GetPeerLinkDescriptorElement ()const;
+  void  ClearTimingElement ();
   /* MLME */
-  void  MLMECancelPeerLink(dot11sReasonCode reason);
-  void  MLMEPassivePeerLinkOpen();
-  void  MLMEActivePeerLinkOpen();
-  void  MLMEPeeringRequestReject();
+  void  MLMECancelPeerLink (dot11sReasonCode reason);
+  void  MLMEPassivePeerLinkOpen ();
+  void  MLMEActivePeerLinkOpen ();
+  void  MLMEPeeringRequestReject ();
 #if 0
-  void  MLMEBindSecurityAssociation();
+  void  MLMEBindSecurityAssociation ();
 #endif
-  void  SetMac(Ptr<MeshWifiMac> mac);
-  void  PeerLinkClose(uint16_t localLinkID,uint16_t peerLinkID, dot11sReasonCode reason);
-  void  PeerLinkOpenAccept(uint16_t localLinkId, IeDot11sConfiguration  conf);
-  void  PeerLinkOpenReject(uint16_t localLinkId, IeDot11sConfiguration  conf,dot11sReasonCode reason);
-  void  PeerLinkConfirmAccept(
+  void  SetMac (Ptr<MeshWifiMac> mac);
+  void  PeerLinkClose (uint16_t localLinkID,uint16_t peerLinkID, dot11sReasonCode reason);
+  void  PeerLinkOpenAccept (uint16_t localLinkId, IeDot11sConfiguration  conf);
+  void  PeerLinkOpenReject (uint16_t localLinkId, IeDot11sConfiguration  conf,dot11sReasonCode reason);
+  void  PeerLinkConfirmAccept (
     uint16_t localLinkId,
     uint16_t peerLinkId,
     uint16_t peerAid,
     IeDot11sConfiguration  conf
   );
-  void  PeerLinkConfirmReject(
+  void  PeerLinkConfirmReject (
     uint16_t localLinkId,
     uint16_t peerLinkId,
     IeDot11sConfiguration  conf,
     dot11sReasonCode reason
   );
-  bool  LinkIsEstab() const;
-  bool  LinkIsIdle() const;
+  bool  LinkIsEstab () const;
+  bool  LinkIsIdle () const;
 private:
   enum  PeerState {
     IDLE,
@@ -137,22 +137,22 @@ private:
     TOH,
   };
 private:
-  void StateMachine(PeerEvent event,dot11sReasonCode = REASON11S_RESERVED);
+  void StateMachine (PeerEvent event,dot11sReasonCode = REASON11S_RESERVED);
   /** Events handlers */
-  void ClearRetryTimer();
-  void ClearConfirmTimer();
-  void ClearHoldingTimer();
-  void SetHoldingTimer();
-  void SetRetryTimer();
-  void SetConfirmTimer();
+  void ClearRetryTimer ();
+  void ClearConfirmTimer ();
+  void ClearHoldingTimer ();
+  void SetHoldingTimer ();
+  void SetRetryTimer ();
+  void SetConfirmTimer ();
 
-  void SendPeerLinkClose(dot11sReasonCode reasoncode );
-  void SendPeerLinkOpen();
-  void SendPeerLinkConfirm();
+  void SendPeerLinkClose (dot11sReasonCode reasoncode );
+  void SendPeerLinkOpen ();
+  void SendPeerLinkConfirm ();
   /** Private Event */
-  void HoldingTimeout();
-  void RetryTimeout();
-  void ConfirmTimeout();
+  void HoldingTimeout ();
+  void RetryTimeout ();
+  void ConfirmTimeout ();
 private:
   Mac48Address m_peerAddress;
   Mac48Address m_localAddress;
@@ -183,7 +183,7 @@ private:
    */
   EventId  m_beaconLossTimer;
   uint8_t  m_maxBeaconLoss;
-  void  BeaconLoss();
+  void  BeaconLoss ();
   Ptr<MeshWifiMac> m_mac;
   Callback<void, Mac48Address, Mac48Address, bool>
   m_linkStatusCallback;
@@ -194,30 +194,30 @@ private:
 class WifiPeerManager : public Object
 {
 public:
-  WifiPeerManager();
-  WifiPeerManager(Ptr<MeshWifiMac> mac_pointer);
-  ~WifiPeerManager();
+  WifiPeerManager ();
+  WifiPeerManager (Ptr<MeshWifiMac> mac_pointer);
+  ~WifiPeerManager ();
   static TypeId GetTypeId ();
   //Returns a beacon timing element stored for remote station:
   IeDot11sBeaconTiming
-  GetIeDot11sBeaconTimingForAddress(Mac48Address portAddress, Mac48Address addr);
+  GetIeDot11sBeaconTimingForAddress (Mac48Address portAddress, Mac48Address addr);
   //Returns a list of all addresses, which beacons can be decoded:
   std::vector<Mac48Address>
-  GetNeighbourAddressList(Mac48Address portAddress, Mac48Address peerAddress);
-  bool AttachPorts(std::vector<Ptr<WifiNetDevice> >);
-  //void SetMac(Ptr<MeshWifiMac> mac);
-  Time GetNextBeaconShift(Mac48Address portAddress, Time myNextTBTT);
+  GetNeighbourAddressList (Mac48Address portAddress, Mac48Address peerAddress);
+  bool AttachPorts (std::vector<Ptr<WifiNetDevice> >);
+  //void SetMac (Ptr<MeshWifiMac> mac);
+  Time GetNextBeaconShift (Mac48Address portAddress, Time myNextTBTT);
 
-  void SetSentBeaconTimers(
+  void SetSentBeaconTimers (
     Mac48Address portAddress,
     Time  ReferenceTBTT,
     Time  BeaconInterval
   );
-  void AskIfOpenNeeded(
+  void AskIfOpenNeeded (
     Mac48Address portAddress,
     Mac48Address peerAddress
   );
-  void SetReceivedBeaconTimers(
+  void SetReceivedBeaconTimers (
     Mac48Address portAddress,
     Mac48Address peerAddress,
     Time  lastBeacon,
@@ -225,14 +225,14 @@ public:
     IeDot11sBeaconTiming
     beaconTiming
   );
-  void SetOpenReceived(
+  void SetOpenReceived (
     Mac48Address portAddress,
     Mac48Address peerAddress,
     IeDot11sPeerManagement
     peerMan,
     IeDot11sConfiguration conf
   );
-  void SetConfirmReceived(
+  void SetConfirmReceived (
     Mac48Address portAddress,
     Mac48Address peerAddress,
     uint16_t peerAid,
@@ -240,22 +240,22 @@ public:
     peerMan,
     IeDot11sConfiguration meshConfig
   );
-  void SetCloseReceived(
+  void SetCloseReceived (
     Mac48Address portAddress,
     Mac48Address peerAddress,
     IeDot11sPeerManagement peerMan
   );
   //Using this function MAC
-  void ConfigurationMismatch(
+  void ConfigurationMismatch (
     Mac48Address portAddress,
     Mac48Address peerAddress
   );
   //Returns a beacon timing element to added into my beacon:
   IeDot11sBeaconTiming
-  GetIeDot11sBeaconTimingForMyBeacon(
+  GetIeDot11sBeaconTimingForMyBeacon (
     Mac48Address portAddress
   );
-  bool IsActiveLink(
+  bool IsActiveLink (
     Mac48Address portAddress,
     Mac48Address peerAddress
   );
@@ -296,16 +296,16 @@ private:
   Time  m_peerLinkCleanupPeriod;
   EventId  m_cleanupEvent;
   Ptr<WifiPeerLinkDescriptor>
-  AddDescriptor(
+  AddDescriptor (
     Mac48Address portAddress,
     Mac48Address peerAddress,
     Time lastBeacon,
     Time beaconInterval
   );
-  void  PeerCleanup();
+  void  PeerCleanup ();
   //Mechanism of choosing PEERs:
-  bool  ShouldSendOpen(Mac48Address portAddress, Mac48Address peerAddress);
-  bool  ShouldAcceptOpen(
+  bool  ShouldSendOpen (Mac48Address portAddress, Mac48Address peerAddress);
+  bool  ShouldAcceptOpen (
     Mac48Address portAddress,
     Mac48Address peerAddress,
     dot11sReasonCode & reasonCode
@@ -321,7 +321,7 @@ private:
    * \param status true - peer link opened, peer
    * link closed otherwise
    */
-  void PeerLinkStatus(Mac48Address portAddress, Mac48Address peerAddress, bool status);
+  void PeerLinkStatus (Mac48Address portAddress, Mac48Address peerAddress, bool status);
 };
 
 } //namespace ns3

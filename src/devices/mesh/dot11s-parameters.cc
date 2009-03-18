@@ -25,18 +25,18 @@
 namespace ns3 {
 
 uint8_t dot11sParameters::dot11MeshMaxRetries      = 4;
-Time    dot11sParameters::dot11MeshRetryTimeout    = TU_TO_TIME(40);
-Time    dot11sParameters::dot11MeshHoldingTimeout  = TU_TO_TIME(40);
-Time    dot11sParameters::dot11MeshConfirmTimeout  = TU_TO_TIME(40);
+Time    dot11sParameters::dot11MeshRetryTimeout    = TU_TO_TIME (40);
+Time    dot11sParameters::dot11MeshHoldingTimeout  = TU_TO_TIME (40);
+Time    dot11sParameters::dot11MeshConfirmTimeout  = TU_TO_TIME (40);
 
 
 uint8_t dot11sParameters::dot11MeshHWMPmaxPREQretries           = 3;
-Time    dot11sParameters::dot11MeshHWMPnetDiameterTraversalTime = TU_TO_TIME(10);
-Time    dot11sParameters::dot11MeshHWMPpreqMinInterval          = TU_TO_TIME(100);
-Time    dot11sParameters::dot11MeshHWMPperrMinInterval          = TU_TO_TIME(100);
-Time    dot11sParameters::dot11MeshHWMPactiveRootTimeout        = TU_TO_TIME(5000);
-Time    dot11sParameters::dot11MeshHWMPactivePathTimeout        = TU_TO_TIME(5000);
-Time    dot11sParameters::dot11MeshHWMPpathToRootInterval       = TU_TO_TIME(5000);
-Time    dot11sParameters::dot11MeshHWMPrannInterval             = TU_TO_TIME(1000);
+Time    dot11sParameters::dot11MeshHWMPnetDiameterTraversalTime = TU_TO_TIME (10);
+Time    dot11sParameters::dot11MeshHWMPpreqMinInterval          = TU_TO_TIME (100);
+Time    dot11sParameters::dot11MeshHWMPperrMinInterval          = TU_TO_TIME (100);
+Time    dot11sParameters::dot11MeshHWMPactiveRootTimeout        = TU_TO_TIME (5000);
+Time    dot11sParameters::dot11MeshHWMPactivePathTimeout        = TU_TO_TIME (5000);
+Time    dot11sParameters::dot11MeshHWMPpathToRootInterval       = TU_TO_TIME (5000);
+Time    dot11sParameters::dot11MeshHWMPrannInterval             = TU_TO_TIME (1000);
 
 }

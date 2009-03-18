@@ -41,24 +41,24 @@ public:
   };
   IeDot11sPeerManagement ();
 
-  void   SetPeerOpen(uint16_t localLinkId);
-  void   SetPeerClose(uint16_t localLinkID, uint16_t peerLinkId, dot11sReasonCode reasonCode);
-  void   SetPeerConfirm(uint16_t localLinkID, uint16_t peerLinkId);
+  void   SetPeerOpen (uint16_t localLinkId);
+  void   SetPeerClose (uint16_t localLinkID, uint16_t peerLinkId, dot11sReasonCode reasonCode);
+  void   SetPeerConfirm (uint16_t localLinkID, uint16_t peerLinkId);
 
-  dot11sReasonCode GetReasonCode() const;
-  uint16_t  GetLocalLinkId() const;
-  uint16_t  GetPeerLinkId() const;
-  bool   SubtypeIsOpen() const;
-  bool   SubtypeIsClose() const;
-  bool   SubtypeIsConfirm() const ;
+  dot11sReasonCode GetReasonCode () const;
+  uint16_t  GetLocalLinkId () const;
+  uint16_t  GetPeerLinkId () const;
+  bool   SubtypeIsOpen () const;
+  bool   SubtypeIsClose () const;
+  bool   SubtypeIsConfirm () const ;
 private:
-  WifiElementId ElementId() const{
+  WifiElementId ElementId () const{
     return IE11S_PEER_LINK_MANAGEMENT;
   }
   uint8_t  GetInformationSize (void) const;
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
-  void PrintInformation(std::ostream& os) const;
+  void PrintInformation (std::ostream& os) const;
   uint8_t   m_length;
   uint8_t   m_subtype;
   uint16_t  m_localLinkId;

@@ -23,7 +23,7 @@
 namespace ns3 {
 
 TypeId
-WifiInformationElement::GetTypeId()
+WifiInformationElement::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiInformationElement")
                       .SetParent<Header> ();
@@ -37,37 +37,37 @@ WifiInformationElement::GetInstanceTypeId () const
 }
 uint32_t WifiInformationElement::GetSerializedSize () const
 {
-  return (GetInformationSize() + 2);
+  return (GetInformationSize () + 2);
 }
 
 void WifiInformationElement::Serialize (Buffer::Iterator i) const
 {
-  i.WriteU8 (ElementId());
-  i.WriteU8 (GetInformationSize());
-  SerializeInformation(i);
+  i.WriteU8 (ElementId ());
+  i.WriteU8 (GetInformationSize ());
+  SerializeInformation (i);
 }
 
 uint32_t WifiInformationElement::Deserialize (Buffer::Iterator i)
 {
-  NS_ASSERT (i.ReadU8() == ElementId());
+  NS_ASSERT (i.ReadU8 () == ElementId());
   uint8_t length = i.ReadU8 ();
   
-  return (DeserializeInformation(i, length) + 2);
+  return (DeserializeInformation (i, length) + 2);
 }
 
 void WifiInformationElement::Print (std::ostream &os) const
 {
-  os << "<information_element id=" << ElementId() << ">\n";
-  PrintInformation(os);
+  os << "<information_element id=" << ElementId () << ">\n";
+  PrintInformation (os);
   os << "</information_element>\n";
 }
 
-bool operator<(WifiInformationElement const & a, WifiInformationElement const & b)
+bool operator< (WifiInformationElement const & a, WifiInformationElement const & b)
 {
-  return (a.ElementId() < b.ElementId());
+  return (a.ElementId () < b.ElementId());
 }
 
-  
+
 }
 
 

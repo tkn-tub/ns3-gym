@@ -29,63 +29,63 @@ namespace ns3 {
  *          Mesh Beacon
  ***********************************************************/
 void
-MgtMeshBeaconHeader::SetIeDot11sConfiguration(IeDot11sConfiguration mesh_config)
+MgtMeshBeaconHeader::SetIeDot11sConfiguration (IeDot11sConfiguration mesh_config)
 {
   m_meshConfig = mesh_config;
 }
 
 void
-MgtMeshBeaconHeader::SetIeDot11sBeaconTiming(IeDot11sBeaconTiming wifi_timing)
+MgtMeshBeaconHeader::SetIeDot11sBeaconTiming (IeDot11sBeaconTiming wifi_timing)
 {
   m_meshTiming = wifi_timing;
 }
 
 IeDot11sConfiguration
-MgtMeshBeaconHeader::GetIeDot11sConfiguration()
+MgtMeshBeaconHeader::GetIeDot11sConfiguration ()
 {
   return m_meshConfig;
 }
 
 IeDot11sBeaconTiming
-MgtMeshBeaconHeader::GetIeDot11sBeaconTiming()
+MgtMeshBeaconHeader::GetIeDot11sBeaconTiming ()
 {
   return m_meshTiming;
 }
 
 uint32_t
 MgtMeshBeaconHeader::GetSerializedSize () const
-  {
-    uint32_t size = (
-                      MgtBeaconHeader::GetSerializedSize()
-                      + m_meshConfig.GetSerializedSize()
-                      + m_meshTiming.GetSerializedSize()
-                      + 9 //MSCIE
-                    );
-    return size;
-  }
+{
+  uint32_t size = (
+                    MgtBeaconHeader::GetSerializedSize ()
+                    + m_meshConfig.GetSerializedSize ()
+                    + m_meshTiming.GetSerializedSize ()
+                    + 9 //MSCIE
+                  );
+  return size;
+}
 void
 MgtMeshBeaconHeader::Serialize (Buffer::Iterator start) const
-  {
-    //First we pack Beacon:
-    Buffer::Iterator i = start;
-    MgtBeaconHeader::Serialize(i);
-    i.Next (MgtBeaconHeader::GetSerializedSize());
-    m_meshConfig.Serialize(i);
-    i.Next(m_meshConfig.GetSerializedSize());
-    m_meshTiming.Serialize(i);
-    i.Next(m_meshTiming.GetSerializedSize());
-    i.Next (9); //MSCIE
-  }
+{
+  //First we pack Beacon:
+  Buffer::Iterator i = start;
+  MgtBeaconHeader::Serialize (i);
+  i.Next (MgtBeaconHeader::GetSerializedSize ());
+  m_meshConfig.Serialize (i);
+  i.Next (m_meshConfig.GetSerializedSize());
+  m_meshTiming.Serialize (i);
+  i.Next (m_meshTiming.GetSerializedSize());
+  i.Next (9); //MSCIE
+}
 
 uint32_t
 MgtMeshBeaconHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  MgtBeaconHeader::Deserialize(start);
-  i.Next (MgtBeaconHeader::GetSerializedSize());
-  m_meshConfig.Deserialize(i);
-  i.Next(m_meshConfig.GetSerializedSize());
-  i.Next(m_meshTiming.Deserialize(i));
+  MgtBeaconHeader::Deserialize (start);
+  i.Next (MgtBeaconHeader::GetSerializedSize ());
+  m_meshConfig.Deserialize (i);
+  i.Next (m_meshConfig.GetSerializedSize());
+  i.Next (m_meshTiming.Deserialize(i));
   i.Next (9); //MSCIE
   return i.GetDistanceFrom (start);
 }
@@ -96,84 +96,84 @@ MgtMeshBeaconHeader::Deserialize (Buffer::Iterator start)
 ************************************************************/
 NS_OBJECT_ENSURE_REGISTERED (MeshMgtPeerLinkManFrame);
 
-MeshMgtPeerLinkManFrame::MeshMgtPeerLinkManFrame()
+MeshMgtPeerLinkManFrame::MeshMgtPeerLinkManFrame ()
 {
 }
 
 void
-MeshMgtPeerLinkManFrame::SetAid(uint16_t aid)
+MeshMgtPeerLinkManFrame::SetAid (uint16_t aid)
 {
   Aid = aid;
 }
 
 void
-MeshMgtPeerLinkManFrame::SetSupportedRates(SupportedRates rates)
+MeshMgtPeerLinkManFrame::SetSupportedRates (SupportedRates rates)
 {
   Rates = rates;
 }
 
 void
-MeshMgtPeerLinkManFrame::SetQosField(uint16_t qos)
+MeshMgtPeerLinkManFrame::SetQosField (uint16_t qos)
 {
   QoS = qos;
 }
 
 void
-MeshMgtPeerLinkManFrame::SetMeshId(Ssid Id)
+MeshMgtPeerLinkManFrame::SetMeshId (Ssid Id)
 {
   MeshId = Id;
 }
 
 void
-MeshMgtPeerLinkManFrame::SetIeDot11sConfiguration(IeDot11sConfiguration MeshConf)
+MeshMgtPeerLinkManFrame::SetIeDot11sConfiguration (IeDot11sConfiguration MeshConf)
 {
   MeshConfig = MeshConf;
 }
 
 void
-MeshMgtPeerLinkManFrame::SetIeDot11sPeerManagement(IeDot11sPeerManagement meshPeerElement)
+MeshMgtPeerLinkManFrame::SetIeDot11sPeerManagement (IeDot11sPeerManagement meshPeerElement)
 {
   PeerLinkMan = meshPeerElement;
 }
 
 uint16_t
-MeshMgtPeerLinkManFrame::GetAid()
+MeshMgtPeerLinkManFrame::GetAid ()
 {
   return Aid;
 }
 
 SupportedRates
-MeshMgtPeerLinkManFrame::GetSupportedRates()
+MeshMgtPeerLinkManFrame::GetSupportedRates ()
 {
   return Rates;
 }
 
 uint16_t
-MeshMgtPeerLinkManFrame::GetQosField()
+MeshMgtPeerLinkManFrame::GetQosField ()
 {
   return QoS;
 }
 
 Ssid
-MeshMgtPeerLinkManFrame::GetMeshId()
+MeshMgtPeerLinkManFrame::GetMeshId ()
 {
   return MeshId;
 }
 
 IeDot11sConfiguration
-MeshMgtPeerLinkManFrame::GetIeDot11sConfiguration()
+MeshMgtPeerLinkManFrame::GetIeDot11sConfiguration ()
 {
   return MeshConfig;
 }
 
 IeDot11sPeerManagement
-MeshMgtPeerLinkManFrame::GetIeDot11sPeerManagement()
+MeshMgtPeerLinkManFrame::GetIeDot11sPeerManagement ()
 {
   return PeerLinkMan;
 }
 
 TypeId
-MeshMgtPeerLinkManFrame::GetTypeId()
+MeshMgtPeerLinkManFrame::GetTypeId ()
 {
   static TypeId tid =
     TypeId ("ns3::MeshMgtPeerLinkManFrame")
@@ -184,57 +184,57 @@ MeshMgtPeerLinkManFrame::GetTypeId()
 }
 
 TypeId
-MeshMgtPeerLinkManFrame::GetInstanceTypeId() const
-  {
-    return GetTypeId();
-  }
+MeshMgtPeerLinkManFrame::GetInstanceTypeId () const
+{
+  return GetTypeId ();
+}
 
 void
-MeshMgtPeerLinkManFrame::Print(std::ostream &os) const
-  {
-    //TODO:fill this method
-  }
+MeshMgtPeerLinkManFrame::Print (std::ostream &os) const
+{
+  //TODO:fill this method
+}
 
 uint32_t
-MeshMgtPeerLinkManFrame::GetSerializedSize() const
-  {
-    uint32_t size = 1; //Subtype
-    if (MESH_MGT_HEADER_PEER_CONFIRM == Subtype)
-      size += 2; //AID of remote peer
-    if (MESH_MGT_HEADER_PEER_CLOSE != Subtype)
-      {
-        size += Rates.GetSerializedSize ();
-        size += 2;
-        size += MeshId.GetSerializedSize ();
-        size += MeshConfig.GetSerializedSize ();
-      }
-    size += PeerLinkMan.GetSerializedSize ();
-    return size;
-  }
+MeshMgtPeerLinkManFrame::GetSerializedSize () const
+{
+  uint32_t size = 1; //Subtype
+  if (MESH_MGT_HEADER_PEER_CONFIRM == Subtype)
+    size += 2; //AID of remote peer
+  if (MESH_MGT_HEADER_PEER_CLOSE != Subtype)
+    {
+      size += Rates.GetSerializedSize ();
+      size += 2;
+      size += MeshId.GetSerializedSize ();
+      size += MeshConfig.GetSerializedSize ();
+    }
+  size += PeerLinkMan.GetSerializedSize ();
+  return size;
+}
 
 void
-MeshMgtPeerLinkManFrame::Serialize(Buffer::Iterator start) const
-  {
-    Buffer::Iterator i = start;
-    i.WriteU8(Subtype); //Like a Category in Standart
-    if (MESH_MGT_HEADER_PEER_CONFIRM == Subtype)
+MeshMgtPeerLinkManFrame::Serialize (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+  i.WriteU8 (Subtype); //Like a Category in Standart
+  if (MESH_MGT_HEADER_PEER_CONFIRM == Subtype)
 
-      i.WriteHtonU16(Aid);
-    if (MESH_MGT_HEADER_PEER_CLOSE != Subtype)
-      {
-        i = Rates.Serialize (i);
-        //now QoS capabilities
-        i.WriteHtonU16 (QoS);
-        i = MeshId.Serialize (i);
-        MeshConfig.Serialize (i);
-        i.Next(MeshConfig.GetSerializedSize());
-      }
-    PeerLinkMan.Serialize (i);
-    i.Next(PeerLinkMan.GetSerializedSize());
-  }
+    i.WriteHtonU16 (Aid);
+  if (MESH_MGT_HEADER_PEER_CLOSE != Subtype)
+    {
+      i = Rates.Serialize (i);
+      //now QoS capabilities
+      i.WriteHtonU16 (QoS);
+      i = MeshId.Serialize (i);
+      MeshConfig.Serialize (i);
+      i.Next (MeshConfig.GetSerializedSize());
+    }
+  PeerLinkMan.Serialize (i);
+  i.Next (PeerLinkMan.GetSerializedSize());
+}
 
 uint32_t
-MeshMgtPeerLinkManFrame::Deserialize(Buffer::Iterator start)
+MeshMgtPeerLinkManFrame::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   Subtype = i.ReadU8 ();
@@ -246,44 +246,44 @@ MeshMgtPeerLinkManFrame::Deserialize(Buffer::Iterator start)
       QoS = i.ReadNtohU16 ();
       i = MeshId.Deserialize (i);
       MeshConfig.Deserialize (i);
-      i.Next(MeshConfig.GetSerializedSize());
+      i.Next (MeshConfig.GetSerializedSize());
     }
   PeerLinkMan.Deserialize (i);
-  i.Next(PeerLinkMan.GetSerializedSize());
+  i.Next (PeerLinkMan.GetSerializedSize());
   return i.GetDistanceFrom (start);
 }
 void
-MeshMgtPeerLinkManFrame::SetOpen()
+MeshMgtPeerLinkManFrame::SetOpen ()
 {
   Subtype = MESH_MGT_HEADER_PEER_OPEN;
 }
 
 void
-MeshMgtPeerLinkManFrame::SetConfirm()
+MeshMgtPeerLinkManFrame::SetConfirm ()
 {
   Subtype = MESH_MGT_HEADER_PEER_CONFIRM;
 }
 
 void
-MeshMgtPeerLinkManFrame::SetClose()
+MeshMgtPeerLinkManFrame::SetClose ()
 {
   Subtype = MESH_MGT_HEADER_PEER_CLOSE;
 }
 
 bool
-MeshMgtPeerLinkManFrame::IsOpen()
+MeshMgtPeerLinkManFrame::IsOpen ()
 {
   return (Subtype == MESH_MGT_HEADER_PEER_OPEN);
 }
 
 bool
-MeshMgtPeerLinkManFrame::IsConfirm()
+MeshMgtPeerLinkManFrame::IsConfirm ()
 {
   return (Subtype == MESH_MGT_HEADER_PEER_CONFIRM);
 }
 
 bool
-MeshMgtPeerLinkManFrame::IsClose()
+MeshMgtPeerLinkManFrame::IsClose ()
 {
   return (Subtype == MESH_MGT_HEADER_PEER_CLOSE);
 }

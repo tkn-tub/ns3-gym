@@ -94,7 +94,7 @@ MeshWifiMac::MeshWifiMac ()
   m_beaconDca->SetLow (m_low);
   m_beaconDca->SetMinCw (0);
   m_beaconDca->SetMaxCw (0);
-  m_beaconDca->SetAifsn(1);
+  m_beaconDca->SetAifsn (1);
   m_beaconDca->SetManager (m_dcfManager);
 
   m_VO = CreateObject<DcaTxop> ();
@@ -162,39 +162,39 @@ MeshWifiMac::SetEifsNoDifs (Time eifsNoDifs)
 
 Time
 MeshWifiMac::GetSlot () const
-  {
-    return m_slot;
-  }
+{
+  return m_slot;
+}
 
 Time
 MeshWifiMac::GetSifs () const
-  {
-    return m_sifs;
-  }
+{
+  return m_sifs;
+}
 
 Time
 MeshWifiMac::GetEifsNoDifs () const
-  {
-    return m_eifsNoDifs;
-  }
+{
+  return m_eifsNoDifs;
+}
 
 Time
 MeshWifiMac::GetAckTimeout () const
-  {
-    return m_low->GetAckTimeout ();
-  }
+{
+  return m_low->GetAckTimeout ();
+}
 
 Time
 MeshWifiMac::GetCtsTimeout () const
-  {
-    return m_low->GetCtsTimeout ();
-  }
+{
+  return m_low->GetCtsTimeout ();
+}
 
 Time
 MeshWifiMac::GetPifs () const
-  {
-    return m_low->GetPifs ();
-  }
+{
+  return m_low->GetPifs ();
+}
 
 void
 MeshWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
@@ -238,9 +238,9 @@ MeshWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 
 bool
 MeshWifiMac::SupportsSendFrom () const
-  {
-    return true;
-  }
+{
+  return true;
+}
 
 void
 MeshWifiMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback)
@@ -267,26 +267,26 @@ MeshWifiMac::SetLinkDownCallback (Callback<void> linkDown)
 
 Mac48Address
 MeshWifiMac::GetAddress () const
-  {
-    return m_address;
-  }
+{
+  return m_address;
+}
 Mac48Address
 MeshWifiMac::GetBssid () const
-  {
-    return m_address;
-  }
+{
+  return m_address;
+}
 
 Ssid
 MeshWifiMac::GetSsid () const
-  {
-    return m_MeshId;
-  }
+{
+  return m_MeshId;
+}
 
 void
 MeshWifiMac::SetAddress (Mac48Address address)
 {
   NS_LOG_FUNCTION (address);
-  m_low->SetAddress(address);
+  m_low->SetAddress (address);
   m_address = address;
 }
 
@@ -336,33 +336,33 @@ MeshWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Addr
 {
   //TODO:Classify and queue
   WifiMacHeader hdr;
-  Ptr<Packet> packet_to_send = packet->Copy();
+  Ptr<Packet> packet_to_send = packet->Copy ();
   WifiMeshHeader meshHdr;
   //Address 1 we receive from HWMP tag
   HwmpTag tag;
-  NS_ASSERT(packet->FindFirstMatchingTag(tag));
-  meshHdr.SetMeshTtl(tag.GetTtl());
-  meshHdr.SetMeshSeqno(tag.GetSeqno());
+  NS_ASSERT (packet->FindFirstMatchingTag(tag));
+  meshHdr.SetMeshTtl (tag.GetTtl());
+  meshHdr.SetMeshSeqno (tag.GetSeqno());
 #if 0
-  NS_LOG_DEBUG(
+  NS_LOG_DEBUG (
     "TX Packet sa = "<<from<<
     ", da = "<<to<<
-    ", ra = "<<tag.GetAddress()<<
-    ", I am "<<GetAddress()<<
-    ", ttl = "<<(int)meshHdr.GetMeshTtl()
+    ", ra = "<<tag.GetAddress ()<<
+    ", I am "<<GetAddress ()<<
+    ", ttl = "<< (int)meshHdr.GetMeshTtl()
   );
 #endif
-  if (to!= Mac48Address::GetBroadcast())
-    NS_ASSERT(tag.GetAddress()!=Mac48Address::GetBroadcast());
+  if (to != Mac48Address::GetBroadcast ())
+    NS_ASSERT (tag.GetAddress() != Mac48Address::GetBroadcast());
   hdr.SetTypeData ();
-  hdr.SetAddr1 (tag.GetAddress());
+  hdr.SetAddr1 (tag.GetAddress ());
   hdr.SetAddr2 (GetAddress ());
   hdr.SetAddr3 (to);
-  hdr.SetAddr4(from);
+  hdr.SetAddr4 (from);
   hdr.SetDsFrom ();
   hdr.SetDsTo ();
   //TODO: classify should be fixed!
-  packet_to_send->AddHeader(meshHdr);
+  packet_to_send->AddHeader (meshHdr);
   WifiRemoteStation *destination = m_stationManager->Lookup (to);
 
   if (destination->IsBrandNew ())
@@ -380,51 +380,51 @@ MeshWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Addr
 
 SupportedRates
 MeshWifiMac::GetSupportedRates () const
-  {
-    // send the set of supported rates and make sure that we indicate
-    // the Basic Rate set in this set of supported rates.
-    SupportedRates rates;
-    for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
-      {
-        WifiMode mode = m_phy->GetMode (i);
-        rates.AddSupportedRate (mode.GetDataRate ());
-      }
-    // set the basic rates
-    for (uint32_t j = 0; j < m_stationManager->GetNBasicModes (); j++)
-      {
-        WifiMode mode = m_stationManager->GetBasicMode (j);
-        rates.SetBasicRate (mode.GetDataRate ());
-      }
-    return rates;
-  }
+{
+  // send the set of supported rates and make sure that we indicate
+  // the Basic Rate set in this set of supported rates.
+  SupportedRates rates;
+  for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
+    {
+      WifiMode mode = m_phy->GetMode (i);
+      rates.AddSupportedRate (mode.GetDataRate ());
+    }
+  // set the basic rates
+  for (uint32_t j = 0; j < m_stationManager->GetNBasicModes (); j++)
+    {
+      WifiMode mode = m_stationManager->GetBasicMode (j);
+      rates.SetBasicRate (mode.GetDataRate ());
+    }
+  return rates;
+}
 
 void
 MeshWifiMac::SendOneBeacon ()
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG(GetAddress()<<" is sending beacon");
+  NS_LOG_DEBUG (GetAddress()<<" is sending beacon");
   //Software delay should never be bigger than beacon interval!
-  NS_ASSERT(!m_beaconSendEvent.IsRunning());
+  NS_ASSERT (!m_beaconSendEvent.IsRunning());
   Time last_software_delay = m_beaconFormingRandomDelay;
   MgtMeshBeaconHeader beacon;
   beacon.SetSsid (GetSsid ());
   beacon.SetSupportedRates (GetSupportedRates ());
   beacon.SetBeaconIntervalUs (m_beaconInterval.GetMicroSeconds ());
-  beacon.SetIeDot11sBeaconTiming(m_peerManager->GetIeDot11sBeaconTimingForMyBeacon(GetAddress()));
-  m_beaconSendEvent = Simulator::Schedule(
+  beacon.SetIeDot11sBeaconTiming (m_peerManager->GetIeDot11sBeaconTimingForMyBeacon(GetAddress()));
+  m_beaconSendEvent = Simulator::Schedule (
                         m_beaconFormingRandomDelay,
                         &MeshWifiMac::QueueOneBeacon,
                         this,
                         beacon);
-  UniformVariable coefficient(0.0, m_beaconFormingRandomDelay.GetSeconds());
-  m_beaconFormingRandomDelay = Seconds(coefficient.GetValue());
+  UniformVariable coefficient (0.0, m_beaconFormingRandomDelay.GetSeconds());
+  m_beaconFormingRandomDelay = Seconds (coefficient.GetValue());
 
   //MBCA functionality, TODO: add the switch off/on MBCA mechanism capability
   //Let's find when we send the next beacon
   Time myNextTBTT = Simulator::Now ()+m_beaconInterval+last_software_delay;
   //The mext function compares my TBTT with neighbor's TBTTs using timing elemnt
   //and returns time shift for the next beacon if future collision is detected
-  Time nextBeaconShift = m_peerManager->GetNextBeaconShift(GetAddress(), myNextTBTT);
+  Time nextBeaconShift = m_peerManager->GetNextBeaconShift (GetAddress(), myNextTBTT);
 
   m_beaconFormEvent = Simulator::Schedule (m_beaconInterval-m_beaconFormingRandomDelay+last_software_delay+nextBeaconShift, &MeshWifiMac::SendOneBeacon, this);
 }
@@ -442,11 +442,11 @@ MeshWifiMac::QueueOneBeacon (MgtMeshBeaconHeader beacon_hdr)
   Ptr<Packet> packet = Create<Packet> ();
 
   packet->AddHeader (beacon_hdr);
-  m_beaconDca->Queue(packet, hdr);
-  m_peerManager->SetSentBeaconTimers(
-    GetAddress(),
+  m_beaconDca->Queue (packet, hdr);
+  m_peerManager->SetSentBeaconTimers (
+    GetAddress (),
     Simulator::Now (),
-    MicroSeconds(beacon_hdr.GetBeaconIntervalUs())
+    MicroSeconds (beacon_hdr.GetBeaconIntervalUs())
   );
 
 }
@@ -456,8 +456,8 @@ MeshWifiMac::SetBeaconGeneration (bool enable)
   NS_LOG_FUNCTION (this << enable);
   if (enable)
     {
-      UniformVariable coefficient(0.0, m_randomStart.GetSeconds());
-      Time randomStart = Seconds(coefficient.GetValue());
+      UniformVariable coefficient (0.0, m_randomStart.GetSeconds());
+      Time randomStart = Seconds (coefficient.GetValue());
       // Beacons must be sent with a random delay,
       // otherwise, they will all be broken
       m_beaconFormEvent = Simulator::Schedule (randomStart, &MeshWifiMac::SendOneBeacon, this);
@@ -468,9 +468,9 @@ MeshWifiMac::SetBeaconGeneration (bool enable)
 
 bool
 MeshWifiMac::GetBeaconGeneration () const
-  {
-    return m_beaconFormEvent.IsRunning ();
-  }
+{
+  return m_beaconFormEvent.IsRunning ();
+}
 
 void
 MeshWifiMac::TxOk (WifiMacHeader const &hdr)
@@ -488,32 +488,32 @@ MeshWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
   if (hdr->IsBeacon ())
     {
       MgtMeshBeaconHeader beacon;
-      Mac48Address from = hdr->GetAddr2();
+      Mac48Address from = hdr->GetAddr2 ();
       packet->RemoveHeader (beacon);
-      NS_LOG_DEBUG("Beacon received from "<<hdr->GetAddr2()<<
-                   " to "<<GetAddress()<<
+      NS_LOG_DEBUG ("Beacon received from "<<hdr->GetAddr2()<<
+                   " to "<<GetAddress ()<<
                    " at "<<Simulator::Now ().GetMicroSeconds ()<<
                    " microseconds");
 #if 0
       NeighboursTimingUnitsList neighbours;
-      neighbours = beacon.GetIeDot11sBeaconTiming().GetNeighboursTimingElementsList();
-      for (NeighboursTimingUnitsList::const_iterator j = neighbours.begin(); j!= neighbours.end(); j++)
-        fprintf(
+      neighbours = beacon.GetIeDot11sBeaconTiming ().GetNeighboursTimingElementsList();
+      for (NeighboursTimingUnitsList::const_iterator j = neighbours.begin (); j != neighbours.end(); j++)
+        fprintf (
           stderr,
           "neigbours:\nAID=%u, last_beacon=%u ,beacon_interval=%u\n",
-          (*j)->GetAID(),
-          (*j)->GetLastBeacon(),
-          (*j)->GetBeaconInterval()
+          (*j)->GetAID (),
+          (*j)->GetLastBeacon (),
+          (*j)->GetBeaconInterval ()
         );
 #endif
-      m_peerManager->SetReceivedBeaconTimers(
-        GetAddress(),
+      m_peerManager->SetReceivedBeaconTimers (
+        GetAddress (),
         from,
         Simulator::Now (),
-        MicroSeconds(beacon.GetBeaconIntervalUs()),
-        beacon.GetIeDot11sBeaconTiming()
+        MicroSeconds (beacon.GetBeaconIntervalUs()),
+        beacon.GetIeDot11sBeaconTiming ()
       );
-      if (!beacon.GetSsid().IsEqual(GetSsid()))
+      if (!beacon.GetSsid ().IsEqual(GetSsid()))
         return;
       SupportedRates rates = beacon.GetSupportedRates ();
       WifiRemoteStation *peerSta = m_stationManager->Lookup (hdr->GetAddr2 ());
@@ -529,23 +529,23 @@ MeshWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
                 }
             }
         }
-      // TODO:Chack IeDot11sConfiguration(now is nothing
+      // TODO:Chack IeDot11sConfiguration (now is nothing
       // to be checked)
-      m_peerManager->AskIfOpenNeeded(GetAddress(), from);
+      m_peerManager->AskIfOpenNeeded (GetAddress(), from);
       return;
     }
-  if (hdr->IsMultihopAction())
+  if (hdr->IsMultihopAction ())
     {
       WifiMeshHeader meshHdr;
       //no mesh header parameters are needed here:
       //TODO: check TTL
-      packet->RemoveHeader(meshHdr);
+      packet->RemoveHeader (meshHdr);
       WifiMeshMultihopActionHeader multihopHdr;
       //parse multihop action header:
-      packet->RemoveHeader(multihopHdr);
+      packet->RemoveHeader (multihopHdr);
       WifiMeshMultihopActionHeader::ACTION_VALUE
-      actionValue = multihopHdr.GetAction();
-      switch (multihopHdr.GetCategory())
+      actionValue = multihopHdr.GetAction ();
+      switch (multihopHdr.GetCategory ())
         {
         case WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT:
         {
@@ -553,52 +553,52 @@ MeshWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
           MeshMgtPeerLinkManFrame peer_frame;
           if (hdr->GetAddr1 () != GetAddress ())
             return;
-          peerAddress = hdr->GetAddr2();
+          peerAddress = hdr->GetAddr2 ();
           packet->RemoveHeader (peer_frame);
           if (actionValue.peerLink != WifiMeshMultihopActionHeader::PEER_LINK_CLOSE)
             {
               //check Supported Rates
-              SupportedRates rates = peer_frame.GetSupportedRates();
+              SupportedRates rates = peer_frame.GetSupportedRates ();
               for (uint32_t i = 0; i < m_stationManager->GetNBasicModes (); i++)
                 {
                   WifiMode mode = m_stationManager->GetBasicMode (i);
                   if (!rates.IsSupportedRate (mode.GetDataRate ()))
                     {
-                      m_peerManager->ConfigurationMismatch(GetAddress(), peerAddress);
+                      m_peerManager->ConfigurationMismatch (GetAddress(), peerAddress);
                       return;
                     }
                 }
               //Check SSID
-              if (!peer_frame.GetMeshId().IsEqual(GetSsid()))
+              if (!peer_frame.GetMeshId ().IsEqual(GetSsid()))
                 {
-                  m_peerManager->ConfigurationMismatch(GetAddress(), peerAddress);
+                  m_peerManager->ConfigurationMismatch (GetAddress(), peerAddress);
                   return;
                 }
             }
           switch (actionValue.peerLink)
             {
             case WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM:
-              m_peerManager->SetConfirmReceived(
-                GetAddress(),
+              m_peerManager->SetConfirmReceived (
+                GetAddress (),
                 peerAddress,
-                peer_frame.GetAid(),
-                peer_frame.GetIeDot11sPeerManagement(),
+                peer_frame.GetAid (),
+                peer_frame.GetIeDot11sPeerManagement (),
                 m_meshConfig
               );
               return;
             case WifiMeshMultihopActionHeader::PEER_LINK_OPEN:
-              m_peerManager->SetOpenReceived(
-                GetAddress(),
+              m_peerManager->SetOpenReceived (
+                GetAddress (),
                 peerAddress,
-                peer_frame.GetIeDot11sPeerManagement(),
+                peer_frame.GetIeDot11sPeerManagement (),
                 m_meshConfig
               );
               return;
             case WifiMeshMultihopActionHeader::PEER_LINK_CLOSE:
-              m_peerManager->SetCloseReceived(
-                GetAddress(),
+              m_peerManager->SetCloseReceived (
+                GetAddress (),
                 peerAddress,
-                peer_frame.GetIeDot11sPeerManagement()
+                peer_frame.GetIeDot11sPeerManagement ()
               );
               return;
             default:
@@ -608,31 +608,31 @@ MeshWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
         }
         case WifiMeshMultihopActionHeader::MESH_PATH_SELECTION:
         {
-          if (!m_peerManager->IsActiveLink(GetAddress(), hdr->GetAddr2()))
+          if (!m_peerManager->IsActiveLink (GetAddress(), hdr->GetAddr2()))
             return;
           switch (actionValue.pathSelection)
             {
             case WifiMeshMultihopActionHeader::PATH_REQUEST:
             {
               IeDot11sPreq preq;
-              packet->RemoveHeader(preq);
+              packet->RemoveHeader (preq);
               //TODO:recalculate
               //metric
-              m_preqReceived(preq, hdr->GetAddr2(), CalculateMetric(hdr->GetAddr2()));
+              m_preqReceived (preq, hdr->GetAddr2(), CalculateMetric(hdr->GetAddr2()));
               return;
             }
             case WifiMeshMultihopActionHeader::PATH_REPLY:
             {
               IeDot11sPrep prep;
-              packet->RemoveHeader(prep);
-              m_prepReceived(prep, hdr->GetAddr2(), CalculateMetric(hdr->GetAddr2()));
+              packet->RemoveHeader (prep);
+              m_prepReceived (prep, hdr->GetAddr2(), CalculateMetric(hdr->GetAddr2()));
             }
             return;
             case WifiMeshMultihopActionHeader::PATH_ERROR:
             {
               IeDot11sPerr perr;
-              packet->RemoveHeader(perr);
-              m_perrReceived(perr, hdr->GetAddr2());
+              packet->RemoveHeader (perr);
+              m_perrReceived (perr, hdr->GetAddr2());
             }
             return;
             case WifiMeshMultihopActionHeader::ROOT_ANNOUNCEMENT:
@@ -643,319 +643,319 @@ MeshWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
           break;
         }
     }
-  if (hdr->IsData())
+  if (hdr->IsData ())
     {
-      NS_ASSERT((hdr->IsFromDs()) && (hdr->IsToDs()));
-      NS_ASSERT(hdr->GetAddr4()!=Mac48Address::GetBroadcast());
+      NS_ASSERT ((hdr->IsFromDs()) && (hdr->IsToDs()));
+      NS_ASSERT (hdr->GetAddr4() != Mac48Address::GetBroadcast());
       //check seqno
       WifiMeshHeader meshHdr;
-      packet->RemoveHeader(meshHdr);
-      NS_LOG_DEBUG(
-        "DATA TA="<< hdr->GetAddr2()<<
-        ", da="<<hdr->GetAddr3()<<
-        ", sa="<<hdr->GetAddr4()<<
-        ", TTL="<<(int)meshHdr.GetMeshTtl());
+      packet->RemoveHeader (meshHdr);
+      NS_LOG_DEBUG (
+        "DATA TA="<< hdr->GetAddr2 ()<<
+        ", da="<<hdr->GetAddr3 ()<<
+        ", sa="<<hdr->GetAddr4 ()<<
+        ", TTL="<< (int)meshHdr.GetMeshTtl());
       HwmpTag tag;
       //mesh header is present within DATA and multihop action frames, so it must be done within MAC
-      tag.SetSeqno(meshHdr.GetMeshSeqno());
-      tag.SetAddress(hdr->GetAddr2());
-      tag.SetTtl(meshHdr.GetMeshTtl());
+      tag.SetSeqno (meshHdr.GetMeshSeqno());
+      tag.SetAddress (hdr->GetAddr2());
+      tag.SetTtl (meshHdr.GetMeshTtl());
       //metric should be later
-      packet->RemoveAllTags();
-      packet->AddTag(tag);
-      if (m_peerManager->IsActiveLink(GetAddress(), hdr->GetAddr2()))
-        ForwardUp(packet, hdr->GetAddr4(), hdr->GetAddr3());
+      packet->RemoveAllTags ();
+      packet->AddTag (tag);
+      if (m_peerManager->IsActiveLink (GetAddress(), hdr->GetAddr2()))
+        ForwardUp (packet, hdr->GetAddr4(), hdr->GetAddr3());
     }
 }
 
 Time
-MeshWifiMac::CalcSwDelay()
+MeshWifiMac::CalcSwDelay ()
 {
-  UniformVariable coefficient(0.0, m_softwareDelay.GetSeconds());
-  Time delay = Seconds(coefficient.GetValue());
-  if (delay.GetSeconds() + Simulator::Now().GetSeconds() < m_lastMgtFrame.GetSeconds())
-    delay = Seconds(m_lastMgtFrame.GetSeconds() - Simulator::Now().GetSeconds());
-  m_lastMgtFrame = Seconds(Simulator::Now().GetSeconds()+delay.GetSeconds());
-  NS_ASSERT(delay.GetSeconds() >= 0);
+  UniformVariable coefficient (0.0, m_softwareDelay.GetSeconds());
+  Time delay = Seconds (coefficient.GetValue());
+  if (delay.GetSeconds () + Simulator::Now().GetSeconds() < m_lastMgtFrame.GetSeconds())
+    delay = Seconds (m_lastMgtFrame.GetSeconds() - Simulator::Now().GetSeconds());
+  m_lastMgtFrame = Seconds (Simulator::Now().GetSeconds()+delay.GetSeconds());
+  NS_ASSERT (delay.GetSeconds() >= 0);
   return delay;
 }
 
 void
-MeshWifiMac::SendPeerLinkOpen(IeDot11sPeerManagement peer_element, Mac48Address peerAddress)
+MeshWifiMac::SendPeerLinkOpen (IeDot11sPeerManagement peer_element, Mac48Address peerAddress)
 {
   MeshMgtPeerLinkManFrame open;
-  open.SetOpen();
-  open.SetIeDot11sConfiguration(m_meshConfig);
-  open.SetIeDot11sPeerManagement(peer_element);
-  Simulator::Schedule(CalcSwDelay() ,&MeshWifiMac::QueuePeerLinkFrame, this, open, peerAddress);
+  open.SetOpen ();
+  open.SetIeDot11sConfiguration (m_meshConfig);
+  open.SetIeDot11sPeerManagement (peer_element);
+  Simulator::Schedule (CalcSwDelay() ,&MeshWifiMac::QueuePeerLinkFrame, this, open, peerAddress);
 }
 
 void
-MeshWifiMac::SendPeerLinkConfirm(IeDot11sPeerManagement peer_element, Mac48Address peerAddress, uint16_t aid)
+MeshWifiMac::SendPeerLinkConfirm (IeDot11sPeerManagement peer_element, Mac48Address peerAddress, uint16_t aid)
 {
   MeshMgtPeerLinkManFrame confirm;
-  confirm.SetConfirm();
-  confirm.SetIeDot11sConfiguration(m_meshConfig);
-  confirm.SetIeDot11sPeerManagement(peer_element);
-  confirm.SetAid(aid);
-  Simulator::Schedule(CalcSwDelay() ,&MeshWifiMac::QueuePeerLinkFrame, this, confirm, peerAddress);
+  confirm.SetConfirm ();
+  confirm.SetIeDot11sConfiguration (m_meshConfig);
+  confirm.SetIeDot11sPeerManagement (peer_element);
+  confirm.SetAid (aid);
+  Simulator::Schedule (CalcSwDelay() ,&MeshWifiMac::QueuePeerLinkFrame, this, confirm, peerAddress);
 
 }
 
 void
-MeshWifiMac::SendPeerLinkClose(IeDot11sPeerManagement peer_element, Mac48Address peerAddress)
+MeshWifiMac::SendPeerLinkClose (IeDot11sPeerManagement peer_element, Mac48Address peerAddress)
 {
   MeshMgtPeerLinkManFrame close;
-  close.SetClose();
-  close.SetIeDot11sConfiguration(m_meshConfig);
-  close.SetIeDot11sPeerManagement(peer_element);
-  Simulator::Schedule(CalcSwDelay() ,&MeshWifiMac::QueuePeerLinkFrame, this, close, peerAddress);
+  close.SetClose ();
+  close.SetIeDot11sConfiguration (m_meshConfig);
+  close.SetIeDot11sPeerManagement (peer_element);
+  Simulator::Schedule (CalcSwDelay() ,&MeshWifiMac::QueuePeerLinkFrame, this, close, peerAddress);
 
 }
 
 void
-MeshWifiMac::PeerLinkStatus(Mac48Address peerAddress, bool status)
+MeshWifiMac::PeerLinkStatus (Mac48Address peerAddress, bool status)
 {
   //pass information to HwmpState
-  m_peerStatusCallback(peerAddress, status, CalculateMetric(peerAddress));
+  m_peerStatusCallback (peerAddress, status, CalculateMetric(peerAddress));
 }
 void
-MeshWifiMac::QueuePeerLinkFrame(MeshMgtPeerLinkManFrame peer_frame, Mac48Address peerAddress)
+MeshWifiMac::QueuePeerLinkFrame (MeshMgtPeerLinkManFrame peer_frame, Mac48Address peerAddress)
 {
   Ptr<Packet> packet = Create<Packet> ();
   //Setting peer frame:
-  peer_frame.SetSupportedRates(GetSupportedRates ());
-  peer_frame.SetQosField(0);
-  peer_frame.SetMeshId(GetSsid());
+  peer_frame.SetSupportedRates (GetSupportedRates ());
+  peer_frame.SetQosField (0);
+  peer_frame.SetMeshId (GetSsid());
   packet->AddHeader (peer_frame);
   //multihop header:
   WifiMeshMultihopActionHeader multihopHdr;
-  if (peer_frame.IsOpen())
+  if (peer_frame.IsOpen ())
     {
       WifiMeshMultihopActionHeader::ACTION_VALUE action;
       action.peerLink = WifiMeshMultihopActionHeader::PEER_LINK_OPEN;
-      multihopHdr.SetAction(WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT, action);
+      multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT, action);
     }
-  if (peer_frame.IsConfirm())
+  if (peer_frame.IsConfirm ())
     {
       WifiMeshMultihopActionHeader::ACTION_VALUE action;
       action.peerLink = WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM;
-      multihopHdr.SetAction(WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT, action);
+      multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT, action);
     }
-  if (peer_frame.IsClose())
+  if (peer_frame.IsClose ())
     {
       WifiMeshMultihopActionHeader::ACTION_VALUE action;
       action.peerLink = WifiMeshMultihopActionHeader::PEER_LINK_CLOSE;
-      multihopHdr.SetAction(WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT, action);
+      multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT, action);
     }
-  packet->AddHeader(multihopHdr);
+  packet->AddHeader (multihopHdr);
   //mesh header:
   WifiMeshHeader meshHdr;
-  meshHdr.SetMeshTtl(1);
-  meshHdr.SetMeshSeqno(0);
-  packet->AddHeader(meshHdr);
+  meshHdr.SetMeshTtl (1);
+  meshHdr.SetMeshSeqno (0);
+  packet->AddHeader (meshHdr);
   //Wifi Mac header:
   WifiMacHeader hdr;
-  hdr.SetMultihopAction();
+  hdr.SetMultihopAction ();
   hdr.SetAddr1 (peerAddress);
   hdr.SetAddr2 (GetAddress ());
   hdr.SetAddr3 (GetAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   //queue:
-  m_VO->Queue(packet,hdr);
+  m_VO->Queue (packet,hdr);
 }
 
 void
-MeshWifiMac::SetSoftwareDelay(Time delay)
+MeshWifiMac::SetSoftwareDelay (Time delay)
 {
   m_softwareDelay = delay;
 }
 
 Time
-MeshWifiMac::GetSoftwareDelay()
+MeshWifiMac::GetSoftwareDelay ()
 {
   return m_softwareDelay;
 }
 
 void
-MeshWifiMac::SendPreq(const IeDot11sPreq& preq)
+MeshWifiMac::SendPreq (const IeDot11sPreq& preq)
 {
   //Add a PREQ
   Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader(preq);
+  packet->AddHeader (preq);
   //Add a Action values:
   WifiMeshMultihopActionHeader multihopHdr;
   WifiMeshMultihopActionHeader::ACTION_VALUE action;
   action.pathSelection = WifiMeshMultihopActionHeader::PATH_REQUEST;
-  multihopHdr.SetAction(WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
-  packet->AddHeader(multihopHdr);
+  multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
+  packet->AddHeader (multihopHdr);
   //Add a mesh Header
   WifiMeshHeader meshHdr;
   //TODO: normal seqno!
-  meshHdr.SetMeshTtl(1);
-  meshHdr.SetMeshSeqno(0);
-  packet->AddHeader(meshHdr);
+  meshHdr.SetMeshTtl (1);
+  meshHdr.SetMeshSeqno (0);
+  packet->AddHeader (meshHdr);
   //Add a wifi header:
   WifiMacHeader hdr;
-  hdr.SetMultihopAction();
+  hdr.SetMultihopAction ();
   hdr.SetAddr1 (Mac48Address::GetBroadcast ());
   hdr.SetAddr2 (GetAddress ());
-  hdr.SetAddr3 (Mac48Address("00:00:00:00:00:00"));
+  hdr.SetAddr3 (Mac48Address ("00:00:00:00:00:00"));
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
-  Simulator::Schedule(CalcSwDelay() ,&MeshWifiMac::QueuePathSelectionFrame, this, packet, hdr);
-  //m_VO->Queue(packet,hdr);
+  Simulator::Schedule (CalcSwDelay() ,&MeshWifiMac::QueuePathSelectionFrame, this, packet, hdr);
+  //m_VO->Queue (packet,hdr);
 
 }
 
 void
-MeshWifiMac::SendPrep(const IeDot11sPrep& prep, const Mac48Address& to)
+MeshWifiMac::SendPrep (const IeDot11sPrep& prep, const Mac48Address& to)
 {
-  if (!m_peerManager->IsActiveLink(GetAddress(), to))
+  if (!m_peerManager->IsActiveLink (GetAddress(), to))
     return;
   Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader(prep);
+  packet->AddHeader (prep);
   //Add a Action values:
   WifiMeshMultihopActionHeader multihopHdr;
   WifiMeshMultihopActionHeader::ACTION_VALUE action;
   action.pathSelection = WifiMeshMultihopActionHeader::PATH_REPLY;
-  multihopHdr.SetAction(WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
-  packet->AddHeader(multihopHdr);
+  multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
+  packet->AddHeader (multihopHdr);
   //Add a mesh Header
   WifiMeshHeader meshHdr;
   //TODO: normal seqno!
-  meshHdr.SetMeshTtl(1);
-  meshHdr.SetMeshSeqno(0);
-  packet->AddHeader(meshHdr);
+  meshHdr.SetMeshTtl (1);
+  meshHdr.SetMeshSeqno (0);
+  packet->AddHeader (meshHdr);
   //Add a wifi header:
   WifiMacHeader hdr;
-  hdr.SetMultihopAction();
-  hdr.SetDsNotTo();
-  hdr.SetDsNotFrom();
-  hdr.SetAddr1(to);
-  hdr.SetAddr2(GetAddress());
-  hdr.SetAddr3(Mac48Address("00:00:00:00:00:00"));
-  //m_VO->Queue(packet,hdr);
-  Simulator::Schedule(CalcSwDelay() ,&MeshWifiMac::QueuePathSelectionFrame, this, packet, hdr);
+  hdr.SetMultihopAction ();
+  hdr.SetDsNotTo ();
+  hdr.SetDsNotFrom ();
+  hdr.SetAddr1 (to);
+  hdr.SetAddr2 (GetAddress());
+  hdr.SetAddr3 (Mac48Address("00:00:00:00:00:00"));
+  //m_VO->Queue (packet,hdr);
+  Simulator::Schedule (CalcSwDelay() ,&MeshWifiMac::QueuePathSelectionFrame, this, packet, hdr);
 }
 
 void
-MeshWifiMac::SendPerr(const IeDot11sPerr& perr, std::vector<Mac48Address> receivers)
+MeshWifiMac::SendPerr (const IeDot11sPerr& perr, std::vector<Mac48Address> receivers)
 {
-  NS_ASSERT(receivers.size()!=0);
+  NS_ASSERT (receivers.size() != 0);
   Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader(perr);
+  packet->AddHeader (perr);
   //Add a Action values:
   WifiMeshMultihopActionHeader multihopHdr;
   WifiMeshMultihopActionHeader::ACTION_VALUE action;
   action.pathSelection = WifiMeshMultihopActionHeader::PATH_ERROR;
-  multihopHdr.SetAction(WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
-  packet->AddHeader(multihopHdr);
+  multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
+  packet->AddHeader (multihopHdr);
   //Add a mesh Header
   WifiMeshHeader meshHdr;
   //TODO: normal seqno!
-  meshHdr.SetMeshTtl(1);
-  meshHdr.SetMeshSeqno(0);
-  packet->AddHeader(meshHdr);
+  meshHdr.SetMeshTtl (1);
+  meshHdr.SetMeshSeqno (0);
+  packet->AddHeader (meshHdr);
   //Add a wifi header:
   WifiMacHeader hdr;
-  hdr.SetMultihopAction();
-  hdr.SetDsNotTo();
-  hdr.SetDsNotFrom();
-  hdr.SetAddr2(GetAddress());
-  hdr.SetAddr3(Mac48Address("00:00:00:00:00:00"));
-  //m_VO->Queue(packet,hdr);
-  for (unsigned int i = 0; i < receivers.size(); i ++)
+  hdr.SetMultihopAction ();
+  hdr.SetDsNotTo ();
+  hdr.SetDsNotFrom ();
+  hdr.SetAddr2 (GetAddress());
+  hdr.SetAddr3 (Mac48Address("00:00:00:00:00:00"));
+  //m_VO->Queue (packet,hdr);
+  for (unsigned int i = 0; i < receivers.size (); i ++)
     {
-      NS_LOG_DEBUG(GetAddress()<<" is sending PERR to "<<receivers[i]);
-      hdr.SetAddr1(receivers[i]);
-      Simulator::Schedule(CalcSwDelay() ,&MeshWifiMac::QueuePathSelectionFrame, this, packet, hdr);
+      NS_LOG_DEBUG (GetAddress()<<" is sending PERR to "<<receivers[i]);
+      hdr.SetAddr1 (receivers[i]);
+      Simulator::Schedule (CalcSwDelay() ,&MeshWifiMac::QueuePathSelectionFrame, this, packet, hdr);
     }
 }
 void
-MeshWifiMac::QueuePathSelectionFrame(Ptr<Packet> packet, const WifiMacHeader hdr)
+MeshWifiMac::QueuePathSelectionFrame (Ptr<Packet> packet, const WifiMacHeader hdr)
 {
-  m_VO->Queue(packet, hdr);
+  m_VO->Queue (packet, hdr);
 }
 void
-MeshWifiMac::SetPreqReceivedCallback(
+MeshWifiMac::SetPreqReceivedCallback (
   Callback<void, IeDot11sPreq&, const Mac48Address&, const uint32_t&> cb)
 {
   m_preqReceived = cb;
 }
 
 void
-MeshWifiMac::SetPrepReceivedCallback(
+MeshWifiMac::SetPrepReceivedCallback (
   Callback<void, IeDot11sPrep&, const Mac48Address&, const uint32_t&> cb)
 {
   m_prepReceived = cb;
 }
 
 void
-MeshWifiMac::SetPerrReceivedCallback(
+MeshWifiMac::SetPerrReceivedCallback (
   Callback<void, IeDot11sPerr&, const Mac48Address&> cb)
 {
   m_perrReceived = cb;
 }
 
 void
-MeshWifiMac::SetPeerStatusCallback(
+MeshWifiMac::SetPeerStatusCallback (
   Callback<void, Mac48Address, bool, uint32_t> cb)
 {
   m_peerStatusCallback = cb;
 }
 
 uint32_t
-MeshWifiMac::CalculateMetric(Mac48Address peerAddress)
+MeshWifiMac::CalculateMetric (Mac48Address peerAddress)
 {
   //suppose Bt == 1000 bytes;
   uint32_t testLength = 1000;
   WifiRemoteStation *peerSta = m_stationManager->Lookup (peerAddress);
-  WifiTxStatistics::RATE_LENGTH_STAT stats = peerSta->GetTxStat().statistics;
-  Time overhead = m_sifs  + MicroSeconds(32) + MicroSeconds(8);
-  uint32_t metric = (uint32_t)((double)overhead.GetNanoSeconds()/102.4);
+  WifiTxStatistics::RATE_LENGTH_STAT stats = peerSta->GetTxStat ().statistics;
+  Time overhead = m_sifs  + MicroSeconds (32) + MicroSeconds(8);
+  uint32_t metric = (uint32_t) ((double)overhead.GetNanoSeconds()/102.4);
   uint32_t maxRate = 0;
   uint32_t packet_sent = 0;
-  for (WifiTxStatistics::RATE_LENGTH_STAT::iterator lengthPos = stats.begin(); lengthPos !=stats.end(); lengthPos++)
+  for (WifiTxStatistics::RATE_LENGTH_STAT::iterator lengthPos = stats.begin (); lengthPos != stats.end(); lengthPos++)
     {
       if (lengthPos->first > testLength)
         continue;
       for (
-        WifiTxStatistics::RATE_STAT::iterator ratePos = lengthPos->second.begin();
-        ratePos != lengthPos->second.end();
+        WifiTxStatistics::RATE_STAT::iterator ratePos = lengthPos->second.begin ();
+        ratePos != lengthPos->second.end ();
         ratePos ++
       )
         {
 #if 0
-          NS_LOG_DEBUG("Rate is "<<ratePos->first
+          NS_LOG_DEBUG ("Rate is "<<ratePos->first
                        <<": SUCCESS = "<<ratePos->second.packetsAcked
                        <<", RRETRY = " <<ratePos->second.packetsRetried
                        <<", FAILURE = "<<ratePos->second.packetsFailed);
 #endif
           double coefficient =
-            (double)(
+            (double) (
               ratePos->second.packetsRetried
               + ratePos->second.packetsAcked
-            )/((double)ratePos->second.packetsAcked);
+            )/ ((double)ratePos->second.packetsAcked);
           uint16_t avgLength = 0;
           if (ratePos->second.packetsAcked == 0)
             avgLength = lengthPos->first;
           else
             avgLength = ratePos->second.bytesAcked/ratePos->second.packetsAcked;
-          uint32_t payload = (uint32_t)((double)avgLength / ((double)ratePos->first)*1e9);
+          uint32_t payload = (uint32_t) ((double)avgLength / ((double)ratePos->first)*1e9);
           if (packet_sent < ratePos->second.packetsAcked)
             {
-              metric = (uint32_t)(coefficient*((double)overhead.GetNanoSeconds() + (double)payload)/10240);
+              metric = (uint32_t) (coefficient*((double)overhead.GetNanoSeconds() + (double)payload)/10240);
               packet_sent = ratePos->second.packetsAcked;
               maxRate = ratePos->first;
             }
         }
     }
 
-  //NS_LOG_DEBUG("RATE is "<<maxRate<<" metric is "<<metric);
-  //peerSta->ResetTxStat();
-  NS_ASSERT(metric !=0);
+  //NS_LOG_DEBUG ("RATE is "<<maxRate<<" metric is "<<metric);
+  //peerSta->ResetTxStat ();
+  NS_ASSERT (metric != 0);
   return metric;
 }
 

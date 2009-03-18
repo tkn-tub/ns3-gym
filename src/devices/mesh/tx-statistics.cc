@@ -28,51 +28,51 @@ NS_LOG_COMPONENT_DEFINE ("WifiTxStatistics");
 namespace ns3 {
 
 TypeId
-WifiTxStatistics::GetTypeId(void)
+WifiTxStatistics::GetTypeId (void)
 {
-  static TypeId tid = TypeId("ns3::WifiTxStatistics")
+  static TypeId tid = TypeId ("ns3::WifiTxStatistics")
                       .SetParent<Object> ()
                       .AddConstructor<WifiTxStatistics> ();
   return tid;
 }
-WifiTxStatistics::WifiTxStatistics():
-    m_numOfGroups(10),
-    m_maxLength(2500)
+WifiTxStatistics::WifiTxStatistics ():
+    m_numOfGroups (10),
+    m_maxLength (2500)
 {
 }
-WifiTxStatistics::~WifiTxStatistics()
+WifiTxStatistics::~WifiTxStatistics ()
 {
 }
 void
-WifiTxStatistics::SetLengthDivisionParams(uint16_t maxLength, uint8_t numOfGroups)
+WifiTxStatistics::SetLengthDivisionParams (uint16_t maxLength, uint8_t numOfGroups)
 {
 
 }
 void
-WifiTxStatistics::NotifyDataSent(uint16_t length, uint32_t dataRate)
+WifiTxStatistics::NotifyDataSent (uint16_t length, uint32_t dataRate)
 {
   m_currentSize = length;
   m_currentRate = dataRate;
 }
 
 WifiTxStatistics::RATE_STAT::iterator
-WifiTxStatistics::FillCurrentStatPosition(uint16_t length, uint32_t dataRate)
+WifiTxStatistics::FillCurrentStatPosition (uint16_t length, uint32_t dataRate)
 {
-  uint16_t group = (length/(m_maxLength/m_numOfGroups)+1)* (m_maxLength/m_numOfGroups);
+  uint16_t group = (length/ (m_maxLength/m_numOfGroups)+1)* (m_maxLength/m_numOfGroups);
 #if 0
-  for (RATE_LENGTH_STAT::iterator i = m_stats.begin(); i != m_stats.end(); i ++)
+  for (RATE_LENGTH_STAT::iterator i = m_stats.begin (); i != m_stats.end(); i ++)
     if (i->first == )
 #endif
-      RATE_LENGTH_STAT::iterator lengthPos = m_stats.find(group);
-  if (lengthPos == m_stats.end())
+      RATE_LENGTH_STAT::iterator lengthPos = m_stats.find (group);
+  if (lengthPos == m_stats.end ())
     {
       RATE_STAT newStat;
       m_stats[group] = newStat;
     }
-  lengthPos = m_stats.find(group);
-  NS_ASSERT(lengthPos != m_stats.end());
-  RATE_STAT::iterator ratePos = lengthPos->second.find(dataRate);
-  if (ratePos == lengthPos->second.end())
+  lengthPos = m_stats.find (group);
+  NS_ASSERT (lengthPos != m_stats.end());
+  RATE_STAT::iterator ratePos = lengthPos->second.find (dataRate);
+  if (ratePos == lengthPos->second.end ())
     {
       SIMPLE_STAT newStat;
       newStat.packetsFailed =0;
@@ -86,23 +86,23 @@ WifiTxStatistics::FillCurrentStatPosition(uint16_t length, uint32_t dataRate)
       newStat.bytesAcked = 0;
       lengthPos->second[dataRate] = newStat;
     }
-  ratePos = lengthPos->second.find(dataRate);
-  NS_ASSERT(ratePos != lengthPos->second.end());
+  ratePos = lengthPos->second.find (dataRate);
+  NS_ASSERT (ratePos != lengthPos->second.end());
   return  ratePos;
 }
 
 void
-WifiTxStatistics::NotifyDataFailed()
+WifiTxStatistics::NotifyDataFailed ()
 {
-  RATE_STAT::iterator ratePos =  FillCurrentStatPosition(m_currentSize, m_currentRate);
+  RATE_STAT::iterator ratePos =  FillCurrentStatPosition (m_currentSize, m_currentRate);
   ratePos->second.packetsFailed++;
   ratePos->second.bytesFailed += m_currentSize;
 }
 
 void
-WifiTxStatistics::NotifyGotAck(uint32_t retryCounter)
+WifiTxStatistics::NotifyGotAck (uint32_t retryCounter)
 {
-  RATE_STAT::iterator ratePos =  FillCurrentStatPosition(m_currentSize, m_currentRate);
+  RATE_STAT::iterator ratePos =  FillCurrentStatPosition (m_currentSize, m_currentRate);
   ratePos->second.packetsAcked++;
   ratePos->second.packetsRetried += retryCounter;
   ratePos->second.bytesAcked+= m_currentSize;
@@ -110,24 +110,24 @@ WifiTxStatistics::NotifyGotAck(uint32_t retryCounter)
 }
 
 void
-WifiTxStatistics::NotifyRtsSend(uint32_t rtsRate, uint32_t dataLength)
+WifiTxStatistics::NotifyRtsSend (uint32_t rtsRate, uint32_t dataLength)
 {
   m_currentSize = dataLength;
   m_currentRate = rtsRate;
 }
 
 void
-WifiTxStatistics::NotifyRtsFailed()
+WifiTxStatistics::NotifyRtsFailed ()
 {
-  RATE_STAT::iterator ratePos =  FillCurrentStatPosition(m_currentSize, m_currentRate);
+  RATE_STAT::iterator ratePos =  FillCurrentStatPosition (m_currentSize, m_currentRate);
   ratePos->second.rtsFailed++;
   ratePos->second.bytesFailed += m_currentSize;
 }
 
 void
-WifiTxStatistics::NotifyRtsSuccess(uint32_t retryCounter)
+WifiTxStatistics::NotifyRtsSuccess (uint32_t retryCounter)
 {
-  RATE_STAT::iterator ratePos =  FillCurrentStatPosition(m_currentSize, m_currentRate);
+  RATE_STAT::iterator ratePos =  FillCurrentStatPosition (m_currentSize, m_currentRate);
   ratePos->second.rtsAcked++;
   ratePos->second.rtsRetried += retryCounter;
   ratePos->second.bytesAcked += m_currentSize;
@@ -135,29 +135,29 @@ WifiTxStatistics::NotifyRtsSuccess(uint32_t retryCounter)
 }
 
 void
-WifiTxStatistics::ResetStatistics()
+WifiTxStatistics::ResetStatistics ()
 {
-  for (RATE_LENGTH_STAT::iterator lengthPos = m_stats.begin(); lengthPos != m_stats.end(); lengthPos++)
-    lengthPos->second.clear();
+  for (RATE_LENGTH_STAT::iterator lengthPos = m_stats.begin (); lengthPos != m_stats.end(); lengthPos++)
+    lengthPos->second.clear ();
 }
 #if 0
 WifiTxStatistics::SIMPLE_STAT
-WifiTxStatistics::GetTxStatCommon()
+WifiTxStatistics::GetTxStatCommon ()
 {
 }
 
 WifiTxStatistics::RATE_STAT
-WifiTxStatistics::GetTxStatRate()
+WifiTxStatistics::GetTxStatRate ()
 {
 }
 
 WifiTxStatistics::LENGTH_STAT
-WifiTxStatistics::GetTxStatLength()
+WifiTxStatistics::GetTxStatLength ()
 {
 }
 #endif
 WifiTxStatistics::TX_STATISTICS
-WifiTxStatistics::GetTxStatRateLength()
+WifiTxStatistics::GetTxStatRateLength ()
 {
   TX_STATISTICS retval;
   retval.statistics = m_stats;
@@ -167,14 +167,14 @@ WifiTxStatistics::GetTxStatRateLength()
 }
 #if 0
 void
-WifiTxStatistics::Print()
+WifiTxStatistics::Print ()
 {
-  for (RATE_LENGTH_STAT::iterator lengthPos = m_stats.begin(); lengthPos != m_stats.end(); lengthPos++)
+  for (RATE_LENGTH_STAT::iterator lengthPos = m_stats.begin (); lengthPos != m_stats.end(); lengthPos++)
     {
-      NS_LOG_UNCOND("\tGROUP = " <<lengthPos->first);
-      for (RATE_STAT::iterator ratePos = lengthPos->second.begin(); ratePos != lengthPos->second.end(); ratePos ++)
+      NS_LOG_UNCOND ("\tGROUP = " <<lengthPos->first);
+      for (RATE_STAT::iterator ratePos = lengthPos->second.begin (); ratePos != lengthPos->second.end(); ratePos ++)
         {
-          NS_LOG_UNCOND("Rate is "<<ratePos->first
+          NS_LOG_UNCOND ("Rate is "<<ratePos->first
                         <<": SUCCESS = "<<ratePos->second.packetsAcked
                         <<", RRETRY = " <<ratePos->second.packetsRetried
                         <<", FAILURE = "<<ratePos->second.packetsFailed);

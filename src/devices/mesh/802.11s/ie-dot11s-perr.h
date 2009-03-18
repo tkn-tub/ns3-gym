@@ -35,30 +35,30 @@ namespace ns3 {
 class IeDot11sPerr : public WifiInformationElement
 {
 public:
-  IeDot11sPerr();
-  ~IeDot11sPerr();
-  static  TypeId   GetTypeId();
-  virtual TypeId   GetInstanceTypeId() const;
+  IeDot11sPerr ();
+  ~IeDot11sPerr ();
+  static  TypeId   GetTypeId ();
+  virtual TypeId   GetInstanceTypeId () const;
 #if 0
   //RESERVED in D2.07
-  uint8_t   GetModeFlags();
-  void   SetModeFlags(uint8_t flags);
+  uint8_t   GetModeFlags ();
+  void   SetModeFlags (uint8_t flags);
 #endif
-  uint8_t   GetNumOfDest();
+  uint8_t   GetNumOfDest ();
 
-  void   AddAddressUnit(struct HwmpRtable::FailedDestination unit);
+  void   AddAddressUnit (struct HwmpRtable::FailedDestination unit);
   std::vector<HwmpRtable::FailedDestination>
-  GetAddressUnitVector();
-  void   DeleteAddressUnit(Mac48Address address);
-  void   ResetPerr();
+  GetAddressUnitVector ();
+  void   DeleteAddressUnit (Mac48Address address);
+  void   ResetPerr ();
 private:
-  WifiElementId ElementId() const{
+  WifiElementId ElementId () const{
     return IE11S_PERR;
   };
-  void  SerializeInformation(Buffer::Iterator i) const;
-  uint8_t  DeserializeInformation(Buffer::Iterator start, uint8_t length);
-  void PrintInformation(std::ostream& os) const;
-  uint8_t  GetInformationSize() const;
+  void  SerializeInformation (Buffer::Iterator i) const;
+  uint8_t  DeserializeInformation (Buffer::Iterator start, uint8_t length);
+  void PrintInformation (std::ostream& os) const;
+  uint8_t  GetInformationSize () const;
   uint8_t   m_numOfDest;
   std::vector<HwmpRtable::FailedDestination> m_addressUnits;
 };
