@@ -1348,6 +1348,10 @@ def register_Ns3WifiMac_methods(root_module, cls):
     cls.add_method('NotifyRx', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-mac.h: void ns3::WifiMac::NotifyPromiscRx(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyPromiscRx', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
     ## wifi-mac.h: void ns3::WifiMac::NotifyRxDrop(ns3::Ptr<const ns3::Packet> packet) [member function]
     cls.add_method('NotifyRxDrop', 
                    'void', 
