@@ -63,14 +63,12 @@ main (int argc, char *argv[])
   //wifi.SetPhy ("ns3::WifiPhy");
   wifi.SetRemoteStationManager ("ns3::AarfWifiManager");
   Ssid ssid = Ssid ("MyMeSH");
-  wifi.SetMac ("ns3::MeshWifiMac",
+  wifi.SetMac ("ns3::MeshWifiInterfaceMac",
                "Ssid", SsidValue (ssid),
                "RandomStart", TimeValue (Seconds (randomStart))
               );
-  wifi.SetPeerLinkManager ("ns3::WifiPeerManager");
-  wifi.SetL2RoutingProtocol ("ns3::Hwmp");
   wifi.SetL2RoutingNetDevice ("ns3::MeshPointDevice");
-  meshDevices = wifi.Install (wifiPhy,nodes,1);
+  meshDevices = wifi.Install (wifiPhy,nodes);
   // Installing Mobility.
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
                                  "MinX", DoubleValue (0.0),
@@ -81,6 +79,7 @@ main (int argc, char *argv[])
                                  "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (nodes);
+#if 0
   // Setting Internet Stack:
   InternetStackHelper stack;
   stack.Install (nodes);
@@ -99,6 +98,7 @@ main (int argc, char *argv[])
   clientApps.Start (Seconds (2.0));
   clientApps.Stop (Seconds (10.0));
   //end
+#endif
   Simulator::Stop (Seconds (10.0));
   Simulator::Run ();
   Simulator::Destroy ();

@@ -106,7 +106,7 @@ public:
    * 
    * This is supposed to be used by any entity managing beacon collision avoidance (e.g. Peer management protocol in 802.11s)
    */ 
-  Time GetTBTT () const;
+  Time GetTbtt () const;
   /**
    * \brief Shift TBTT.
    * 

@@ -401,6 +401,7 @@ MeshWifiInterfaceMac::GetSoftwareDelay ()
 Time
 MeshWifiInterfaceMac::CalcSwDelay ()
 {
+#if 0
   UniformVariable coefficient (0.0, m_softwareDelay.GetSeconds());
   
   // Be sure that frames don't change order due to different software delays
@@ -411,6 +412,8 @@ MeshWifiInterfaceMac::CalcSwDelay ()
 
   NS_ASSERT (delay.GetSeconds() >= 0);
   return delay;
+#endif
+  return MicroSeconds(0);
 }
 
 void
@@ -439,6 +442,7 @@ MeshWifiInterfaceMac::SetBeaconGeneration (bool enable)
       Time randomStart = Seconds (coefficient.GetValue());
       
       m_beaconSendEvent = Simulator::Schedule (randomStart, &MeshWifiInterfaceMac::SendBeacon, this);
+      m_tbtt = Simulator::Now() + randomStart;
     }
   else
     // stop sending beacons
@@ -452,7 +456,7 @@ MeshWifiInterfaceMac::GetBeaconGeneration () const
 }
 
 Time
-MeshWifiInterfaceMac::GetTBTT () const
+MeshWifiInterfaceMac::GetTbtt () const
 {
   return m_tbtt;
 }
@@ -460,19 +464,19 @@ MeshWifiInterfaceMac::GetTBTT () const
 void MeshWifiInterfaceMac::ShiftTBTT (Time shift)
 {
   // User of ShiftTBTT () must take care don't shift it to the past
-  NS_ASSERT (GetTBTT() + shift > Simulator::Now());
+  NS_ASSERT (GetTbtt() + shift > Simulator::Now());
   
   m_tbtt += shift;
   // Shift scheduled event
   Simulator::Cancel (m_beaconSendEvent);
-  m_beaconSendEvent = Simulator::Schedule (GetTBTT (), &MeshWifiInterfaceMac::SendBeacon, this);
+  m_beaconSendEvent = Simulator::Schedule (GetTbtt () - Simulator::Now(), &MeshWifiInterfaceMac::SendBeacon, this);
 }
 
 void 
 MeshWifiInterfaceMac::ScheduleNextBeacon ()
 {
   m_tbtt += GetBeaconInterval ();
-  m_beaconSendEvent = Simulator::Schedule (GetTBTT (), &MeshWifiInterfaceMac::SendBeacon, this);
+  m_beaconSendEvent = Simulator::Schedule (GetBeaconInterval(), &MeshWifiInterfaceMac::SendBeacon, this);
 }
 
 void
@@ -482,7 +486,7 @@ MeshWifiInterfaceMac::SendBeacon ()
   NS_LOG_DEBUG (GetAddress() <<" is sending beacon");
   
   NS_ASSERT (! m_beaconSendEvent.IsRunning());
-  NS_ASSERT (Simulator::Now() == GetTBTT());     // assert that beacon is just on time
+  NS_ASSERT (Simulator::Now().GetMicroSeconds() == GetTbtt().GetMicroSeconds());     // assert that beacon is just on time
    
   // Form & send beacon
   MeshWifiBeacon beacon (GetSsid (), GetSupportedRates (), m_beaconInterval.GetMicroSeconds ());
@@ -507,7 +511,7 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
       
       packet->PeekHeader (beacon_hdr);
       
-      NS_LOG_DEBUG ("Beacon received from "<<hdr->GetAddr2()<<
+      NS_LOG_UNCOND ("Beacon received from "<<hdr->GetAddr2()<<
                    " to "<<GetAddress ()<<
                    " at "<<Simulator::Now ().GetMicroSeconds ()<<
                    " microseconds");
