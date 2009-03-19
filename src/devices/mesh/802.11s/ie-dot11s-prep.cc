@@ -195,9 +195,7 @@ uint8_t
 IeDot11sPrep::GetInformationSize () const
 {
   uint32_t retval =
-     1 //Element ID
-    +1 //Length
-    +1 //Flags
+     1 //Flags
     +1 //Hopcount
     +1 //TTL
     +6 //Dest address

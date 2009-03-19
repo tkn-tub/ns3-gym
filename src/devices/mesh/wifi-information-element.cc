@@ -68,18 +68,19 @@ bool WifiInformationElement::FindMyInformationElement(Ptr<Packet> packet)
 {
   const uint8_t * data = packet->PeekData();
   uint32_t position = 0;
-  while(position <= packet->GetSize ())
+  while(position < packet->GetSize ())
   {
     if(data[position] == ElementId())
     {
+
       return true;
     }
     else
     {
-      NS_LOG_UNCOND("not found"<<(uint16_t)data[position+1]);
-      position +=data[position+1];
-      if(data[position + 1] == 0)
-        return false;
+      NS_LOG_UNCOND("not found"<<(uint16_t)data[position]);
+      position +=data[position+1]+2;
+      //if(data[position + 1] == 0)
+      //  return false;
     }
   }
   return false;

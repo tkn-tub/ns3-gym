@@ -84,6 +84,8 @@ Dot11sPeerManagerMacPlugin::UpdateBeacon (MeshWifiBeacon & beacon) const
   NS_LOG_UNCOND("I am sending a beacon");
   Ptr<IeDot11sPreq>  beaconTiming = Create<IeDot11sPreq> ();
   beacon.AddInformationElement(beaconTiming);
+  Ptr<IeDot11sPrep>  prep = Create<IeDot11sPrep> ();
+  beacon.AddInformationElement(prep);
 }
 bool
 Dot11sPeerManagerMacPlugin::BindWithProtocol(Ptr<Dot11sPeerManagerProtocol> protocol)
