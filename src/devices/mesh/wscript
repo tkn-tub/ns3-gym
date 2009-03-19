@@ -9,6 +9,7 @@ def build(bld):
         'mesh-l2-routing-protocol.cc',
         'mesh-wifi-beacon.cc',
         'mesh-wifi-interface-mac.cc',
+        'peer-manager-plugin.cc',
         # Not refactored
         'mesh-wifi-helper.cc',
         'mesh-wifi-mac-header.cc',
@@ -31,6 +32,7 @@ def build(bld):
         'mesh-wifi-beacon.h',
         'mesh-wifi-interface-mac.h',
         'mesh-wifi-interface-mac-plugin.h',
+        'peer-manager-plugin.h',
         # Dirty
         'dot11s-codes.h',
         'hwmp-state.h',

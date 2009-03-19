@@ -41,13 +41,13 @@ class MeshWifiInterfaceMac;
 class MeshWifiInterfaceMacPlugin : public RefCountBase
 {
 public:
-  /// C-tor creates unplugged plugin
-  MeshWifiInterfaceMacPlugin () { /*do nothing*/}
+#if 0
+  MeshWifiInterfaceMacPlugin ();
   /// This is for subclasses
-  virtual ~MeshWifiInterfaceMacPlugin () { /*do nothing*/ }
-  
+  virtual ~MeshWifiInterfaceMacPlugin ();
+#endif
   /// Each plugin must be installed on interface to work 
-  virtual void SetParent (MeshWifiInterfaceMac * parent) = 0; 
+  virtual void SetParent (Ptr<MeshWifiInterfaceMac> parent) = 0; 
   /** 
    * \brief Process received frame
    * 
@@ -67,7 +67,7 @@ public:
    *  
    * TODO define when MAC call this
    */
-  virtual void UpdateBeacon (MeshWifiBeacon & beacon) const;
+  virtual void UpdateBeacon (MeshWifiBeacon & beacon) const = 0;
 };
 
 } // namespace ns3

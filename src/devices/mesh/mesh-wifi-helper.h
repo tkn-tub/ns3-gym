@@ -81,7 +81,7 @@ class MeshWifiHelper
         std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
         std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
         std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-        std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue (),
+        std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ()
         );
     NetDeviceContainer Install (const WifiPhyHelper &phyHelper, NodeContainer c) const;
     NetDeviceContainer Install (const WifiPhyHelper &phy, Ptr<Node> node) const;

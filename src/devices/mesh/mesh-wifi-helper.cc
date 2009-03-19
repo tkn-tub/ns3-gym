@@ -92,9 +92,8 @@ MeshWifiHelper::SetL2RoutingNetDevice (std::string type,
     std::string n4, const AttributeValue &v4,
     std::string n5, const AttributeValue &v5,
     std::string n6, const AttributeValue &v6,
-    std::string n7, const AttributeValue &v7,
-    std::string n8, const AttributeValue &v8,
-    std::string n9, const AttributeValue &v9)
+    std::string n7, const AttributeValue &v7
+    )
 {
   m_deviceFactory = ObjectFactory ();
   m_deviceFactory.SetTypeId (type);
