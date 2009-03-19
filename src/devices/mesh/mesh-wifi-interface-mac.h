@@ -112,9 +112,9 @@ public:
    * 
    * This is supposed to be used by any entity managing beacon collision avoidance (e.g. Peer management protocol in 802.11s)
    * 
-   * \attention User of ShiftTBTT () must take care to not shift it to the past. 
+   * \attention User of ShiftTbtt () must take care to not shift it to the past. 
    */
-  void ShiftTBTT (Time shift);
+  void ShiftTbtt (Time shift);
   /**
    * \brief Set maximum software delay. Maximum software delay must be smaller than beacon interval.
    *

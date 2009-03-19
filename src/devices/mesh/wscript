@@ -13,7 +13,7 @@ def build(bld):
         # Not refactored
         'mesh-wifi-helper.cc',
         'mesh-wifi-mac-header.cc',
-        'mesh-wifi-peer-manager.cc',
+        'peer-manager-protocol.cc',
         'tx-statistics.cc',
         'hwmp-rtable.cc',
         'dot11s-parameters.cc',
@@ -21,6 +21,7 @@ def build(bld):
         'mesh-wifi-mac.cc',
         'hwmp-state.cc',
         'mesh-mgt-headers.cc',
+        'mesh-wifi-peer-manager.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'mesh'
@@ -41,9 +42,10 @@ def build(bld):
         'hwmp.h',
         'tx-statistics.h',
         'hwmp-rtable.h',
-        'mesh-wifi-peer-manager.h',
+        'peer-manager-protocol.h',
         'mesh-wifi-mac-header.h',
         'mesh-wifi-mac.h',
+        'mesh-wifi-peer-manager.h',
         'mesh-wifi-helper.h',
         ]
 

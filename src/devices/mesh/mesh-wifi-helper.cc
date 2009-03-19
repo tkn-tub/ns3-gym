@@ -27,6 +27,7 @@
 #include "ns3/wifi-channel.h"
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/mesh-wifi-interface-mac.h"
+#include "ns3/peer-manager-plugin.h"
 
 namespace ns3 {
 
@@ -118,6 +119,8 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
     std::vector<Ptr<WifiNetDevice> > nodeDevices;
     Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
     Ptr<MeshWifiInterfaceMac> mac = m_meshMac.Create<MeshWifiInterfaceMac> ();
+    Ptr<Dot11sPeerManagerMacPlugin> peer_plugin = Create<Dot11sPeerManagerMacPlugin>();
+    mac->InstallPlugin(peer_plugin);
     Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
     Ptr<WifiPhy> phy = phyHelper.Create (node, device);
     mac->SetAddress (Mac48Address::Allocate ());

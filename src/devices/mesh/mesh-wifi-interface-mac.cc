@@ -461,9 +461,9 @@ MeshWifiInterfaceMac::GetTbtt () const
   return m_tbtt;
 }
 
-void MeshWifiInterfaceMac::ShiftTBTT (Time shift)
+void MeshWifiInterfaceMac::ShiftTbtt (Time shift)
 {
-  // User of ShiftTBTT () must take care don't shift it to the past
+  // User of ShiftTbtt () must take care don't shift it to the past
   NS_ASSERT (GetTbtt() + shift > Simulator::Now());
   
   m_tbtt += shift;

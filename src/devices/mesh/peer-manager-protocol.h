@@ -27,19 +27,20 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/ie-dot11s-peer-management.h"
 #include "ns3/ie-dot11s-beacon-timing.h"
-#include "ns3/mesh-wifi-mac.h"
+#include "ns3/peer-manager-plugin.h"
+#include "ns3/ie-dot11s-configuration.h"
+#include "ns3/event-id.h"
 
 #include <list>
-
 namespace ns3 {
-class MeshWifiMac;
+class EventId;
 /**
  * \ingroup mesh
  */
-class WifiPeerLinkDescriptorDUP : public RefCountBase
+class WifiPeerLinkDescriptor : public RefCountBase
 {
 public:
-  WifiPeerLinkDescriptorDUP ();
+  WifiPeerLinkDescriptor ();
   /**
    * Beacon loss processing:
    */
@@ -64,7 +65,7 @@ public:
   void  SetLocalAid     (uint16_t aid);
   void  SetPeerAid      (uint16_t aid);
   void  SetBeaconTimingElement (IeDot11sBeaconTiming beaconTiming);
-  void  SetPeerLinkDescriptorDUPElement (IeDot11sPeerManagement peerLinkElement);
+  void  SetPeerLinkDescriptorElement (IeDot11sPeerManagement peerLinkElement);
   Mac48Address GetPeerAddress () const;
   /**
    * Debug purpose
@@ -74,7 +75,7 @@ public:
   Time  GetLastBeacon () const;
   Time  GetBeaconInterval () const;
   IeDot11sBeaconTiming    GetBeaconTimingElement () const;
-  IeDot11sPeerManagement  GetPeerLinkDescriptorDUPElement () const;
+  IeDot11sPeerManagement  GetPeerLinkDescriptorElement () const;
   void  ClearTimingElement ();
   /* MLME */
   void  MLMECancelPeerLink (dot11sReasonCode reason);
@@ -84,7 +85,6 @@ public:
 #if 0
   void  MLMEBindSecurityAssociation ();
 #endif
-  void  SetMac (Ptr<MeshWifiMac> mac);
   void  PeerLinkClose (uint16_t localLinkID,uint16_t peerLinkID, dot11sReasonCode reason);
   void  PeerLinkOpenAccept (uint16_t localLinkId, IeDot11sConfiguration  conf);
   void  PeerLinkOpenReject (uint16_t localLinkId, IeDot11sConfiguration  conf, dot11sReasonCode reason);
@@ -178,86 +178,91 @@ private:
   EventId  m_beaconLossTimer;
   uint8_t  m_maxBeaconLoss;
   void  BeaconLoss ();
-  Ptr<MeshWifiMac> m_mac;
   Callback<void, Mac48Address, Mac48Address, bool>  m_linkStatusCallback;
 };
 /**
  * \ingroup mesh
  */
-class WifiPeerManager : public Object
+class Dot11sPeerManagerProtocol : public Object
 {
 public:
-  WifiPeerManager ();
-  WifiPeerManager (Ptr<MeshWifiMac> mac_pointer);
-  ~WifiPeerManager ();
+  Dot11sPeerManagerProtocol ();
+  ~Dot11sPeerManagerProtocol ();
   static TypeId GetTypeId ();
-  //Returns a beacon timing element stored for remote station:
-  IeDot11sBeaconTiming  GetIeDot11sBeaconTimingForAddress (Mac48Address portAddress, Mac48Address addr);
-  //Returns a list of all addresses, which beacons can be decoded:
-  std::vector<Mac48Address>  GetNeighbourAddressList (Mac48Address portAddress, Mac48Address peerAddress);
-  bool AttachPorts (std::vector<Ptr<WifiNetDevice> >);
-  //void SetMac (Ptr<MeshWifiMac> mac);
-  Time GetNextBeaconShift (Mac48Address portAddress, Time myNextTBTT);
-
-  void SetSentBeaconTimers (
-    Mac48Address portAddress,
-    Time  ReferenceTBTT,
-    Time  BeaconInterval
-  );
-  void AskIfOpenNeeded (
-    Mac48Address portAddress,
-    Mac48Address peerAddress
-  );
-  void SetReceivedBeaconTimers (
-    Mac48Address portAddress,
-    Mac48Address peerAddress,
-    Time  lastBeacon,
-    Time  beaconInterval,
-    IeDot11sBeaconTiming  beaconTiming
-  );
-  void SetOpenReceived (
-    Mac48Address portAddress,
-    Mac48Address peerAddress,
-    IeDot11sPeerManagement peerMan,
-    IeDot11sConfiguration conf
-  );
-  void SetConfirmReceived (
-    Mac48Address portAddress,
-    Mac48Address peerAddress,
-    uint16_t peerAid,
-    IeDot11sPeerManagement  peerMan,
-    IeDot11sConfiguration meshConfig
-  );
-  void SetCloseReceived (
-    Mac48Address portAddress,
-    Mac48Address peerAddress,
-    IeDot11sPeerManagement peerMan
-  );
-  //Using this function MAC
-  void ConfigurationMismatch (
-    Mac48Address portAddress,
-    Mac48Address peerAddress
-  );
-  //Returns a beacon timing element to added into my beacon:
-  IeDot11sBeaconTiming
-  GetIeDot11sBeaconTimingForMyBeacon (
-    Mac48Address portAddress
-  );
-  bool IsActiveLink (
-    Mac48Address portAddress,
-    Mac48Address peerAddress
-  );
+  /** \brief Methods that handle beacon sending/receiving procedure.
+   * This methods interact with MAC_layer plug-in
+   * \{
+   */
+  /**
+   * \brief When we are sending a beacon - we add a timing element to 
+   * it and remember the time, when we sent a beacon (for BCA)
+   * \param IeDot11sBeaconTiming is a beacon timing element that
+   * should be present in beacon
+   * \param port is a port sending a beacon
+   * \param currentTbtt is a time of beacon sending
+   * \param beaconInterval is a beacon interval on this port
+   */
+  IeDot11sBeaconTiming SendBeacon(uint32_t port, Time currentTbtt, Time beaconInterval);
+  /**
+   * \brief When we receive a beacon from peer-station, we remember
+   * its beacon timing element (needed for peer choosing mechanism),
+   * and remember beacon timers - last beacon and beacon interval to
+   * detect beacon loss and cancel links
+   * \param port is a port on which beacon was received
+   * \param timingElement is a timing element of remote beacon
+   */
+  void ReceiveBeacon(uint32_t port, IeDot11sBeaconTiming timingElement, Mac48Address peerAddress, Time receivingTime, Time beaconInterval);
+  /**
+   * \}
+   */
+  /**
+   * \brief Methods that handle Peer link management frames
+   * interaction:
+   * \{
+   */
+  /**
+   * Deliver Peer link management information to the protocol-part
+   * \param void is returning value - we pass a frame and forget
+   * about it
+   * \param uint32_t - is a port ID of a given MAC (portID rather
+   * than MAC address, beacause many ports may have the same MAC)
+   * \param Mac48Address is address of peer
+   * \param uint16_t is association ID, which peer has assigned to
+   * us
+   * \param IeDot11sConfiguration is mesh configuration element
+   * taken from the peer management frame
+   * \param IeDot11sPeerManagement is peer link management element
+   */
+  void ReceivePeerLinkFrame(
+      uint32_t port,
+      Mac48Address peerAddress,
+      uint16_t aid,
+      IeDot11sConfiguration meshConfig,
+      IeDot11sPeerManagement peerManagementElement
+      );
+  /**
+   * \}
+   */
 private:
+  /**
+   * All private structures:
+   * * peer link descriptors;
+   * * information about received beacons
+   * * pointers to proper plugins
+   * \{
+   */
   struct BeaconInfo
   {
     Time referenceTbtt; //When one of my station's beacons was put into a beacon queue;
     Time beaconInterval; //Beacon interval of my station;
   };
-  typedef std::map<Mac48Address, std::vector<Ptr<WifiPeerLinkDescriptorDUP> >, std::less<Mac48Address> >  PeerDescriptorsMap;
-  typedef std::map<Mac48Address, Ptr<MeshWifiMac>,std::less<Mac48Address> > MeshMacMap;
-  typedef std::map<Mac48Address, BeaconInfo, std::less<Mac48Address> > BeaconInfoMap;
-
-  //Ptr<MeshWifiMac> m_mac;
+  typedef std::map<uint32_t, std::vector<Ptr<WifiPeerLinkDescriptor> >, std::less<Mac48Address> >  PeerDescriptorsMap;
+  typedef std::map<uint32_t, BeaconInfo, std::less<Mac48Address> > BeaconInfoMap;
+  typedef std::map<uint32_t, Ptr<Dot11sPeerManagerMacPlugin>,std::less<Mac48Address> > MeshMacMap;
+  /**
+   * \}
+   */
+#if 0
   //Maximum peers that may be opened:
   uint8_t  m_maxNumberOfPeerLinks;
   /**
@@ -282,7 +287,7 @@ private:
   //and check if the too many  beacons were lost:
   Time  m_peerLinkCleanupPeriod;
   EventId  m_cleanupEvent;
-  Ptr<WifiPeerLinkDescriptorDUP> AddDescriptor (
+  Ptr<WifiPeerLinkDescriptor> AddDescriptor (
     Mac48Address portAddress,
     Mac48Address peerAddress,
     Time lastBeacon,
@@ -308,7 +313,7 @@ private:
    * link closed otherwise
    */
   void PeerLinkStatus (Mac48Address portAddress, Mac48Address peerAddress, bool status);
+#endif
 };
-
 } //namespace ns3
 #endif

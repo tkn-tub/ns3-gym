@@ -41,11 +41,8 @@ class MeshWifiInterfaceMac;
 class MeshWifiInterfaceMacPlugin : public RefCountBase
 {
 public:
-#if 0
-  MeshWifiInterfaceMacPlugin ();
   /// This is for subclasses
-  virtual ~MeshWifiInterfaceMacPlugin ();
-#endif
+  virtual ~MeshWifiInterfaceMacPlugin (){};
   /// Each plugin must be installed on interface to work 
   virtual void SetParent (Ptr<MeshWifiInterfaceMac> parent) = 0; 
   /** 
