@@ -123,8 +123,7 @@ private:
   //timers for PREQ and PREP:
   EventId  m_preqTimer;
   void  SendOnePreq ();
-  std::vector<IeDot11sPreq>
-  m_preqQueue;
+  std::vector<IeDot11sPreq>  m_preqQueue;
   //true means that we can add a destination to
   //existing PREQ element
   //False means that we must send
@@ -138,23 +137,16 @@ private:
     uint32_t originatorDsn, //taken from rtable or as m_myDsn ++;
     uint32_t lifetime //taken from PREQ
   );
-  std::vector<IeDot11sPreq>::iterator
-  m_myPreq;
+  std::vector<IeDot11sPreq>::iterator  m_myPreq;
   //HWMP interaction callbacks:
-  Callback<void, INFO>
-  m_routingInfoCallback;
-  Callback<std::vector<Mac48Address>, std::vector<HwmpRtable::FailedDestination>, uint32_t>
-  m_retransmittersOfPerrCallback;
-  Callback<HwmpRtable::LookupResult, const Mac48Address&>
-  m_requestRouteCallback;
-  Callback<HwmpRtable::LookupResult, uint32_t>
-  m_requestRootPathCallback;
+  Callback<void, INFO>  m_routingInfoCallback;
+  Callback<std::vector<Mac48Address>, std::vector<HwmpRtable::FailedDestination>, uint32_t>  m_retransmittersOfPerrCallback;
+  Callback<HwmpRtable::LookupResult, const Mac48Address&>          m_requestRouteCallback;
+  Callback<HwmpRtable::LookupResult, uint32_t>                     m_requestRootPathCallback;
   //Mac interaction callbacks:
-  Callback<void, const IeDot11sPreq&>  m_preqCallback;
-  Callback<void, const IeDot11sPrep&, const Mac48Address&>
-  m_prepCallback;
-  Callback<void, const IeDot11sPerr&, std::vector<Mac48Address> >
-  m_perrCallback;
+  Callback<void, const IeDot11sPreq&>                              m_preqCallback;
+  Callback<void, const IeDot11sPrep&, const Mac48Address&>         m_prepCallback;
+  Callback<void, const IeDot11sPerr&, std::vector<Mac48Address> >  m_perrCallback;
   //HwmpCounters:
   uint32_t m_preqId;
   uint32_t m_myDsn;

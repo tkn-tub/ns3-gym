@@ -352,20 +352,15 @@ private:
    * distributed between 0 and given value
    */
   Time    m_beaconFormingRandomDelay;
-  Callback<void, IeDot11sPreq&, const Mac48Address&, const uint32_t&>
-  m_preqReceived;
-  Callback<void, IeDot11sPrep&, const Mac48Address&, const uint32_t&>
-  m_prepReceived;
-  Callback<void, IeDot11sPerr&, const Mac48Address&>
-  m_perrReceived;
-  Callback<void, Mac48Address, bool, uint32_t>
-  m_peerStatusCallback;
+  Callback<void, IeDot11sPreq&, const Mac48Address&, const uint32_t&>  m_preqReceived;
+  Callback<void, IeDot11sPrep&, const Mac48Address&, const uint32_t&>  m_prepReceived;
+  Callback<void, IeDot11sPerr&, const Mac48Address&>                   m_perrReceived;
+  Callback<void, Mac48Address, bool, uint32_t>                         m_peerStatusCallback;
   /**
    * \brief metric calculation parameters
    */
   uint32_t   CalculateMetric (Mac48Address peerAddress);
-  std::map<Mac48Address, uint32_t>
-  m_metricDatabase;
+  std::map<Mac48Address, uint32_t>  m_metricDatabase;
 };
 
 } // namespace ns3

@@ -123,8 +123,7 @@ private:
   uint32_t m_lifetime;
   uint32_t m_metric;
   uint8_t  m_destCount;
-  std::vector<Ptr<DestinationAddressUnit> >
-  m_destinations;
+  std::vector<Ptr<DestinationAddressUnit> >  m_destinations;
 };
 
 } //namespace ns3

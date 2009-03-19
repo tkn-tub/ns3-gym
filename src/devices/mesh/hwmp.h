@@ -220,8 +220,7 @@ private:
    * \param std::vector<Mac48Address> is
    * receivers of PERR
    */
-  std::vector<Callback<void,std::vector<HwmpRtable::FailedDestination> > >
-  m_pathErrorCallback;
+  std::vector<Callback<void,std::vector<HwmpRtable::FailedDestination> > >  m_pathErrorCallback;
   void StartPathErrorProcedure (
     std::vector<HwmpRtable::FailedDestination> destinations,
     uint32_t port);
@@ -231,8 +230,7 @@ private:
    * retransmit it (broadcast/unicast) and only
    * HWMP has accessto routing table
    */
-  std::vector<Mac48Address>
-  GetRetransmittersForFailedDestinations (
+  std::vector<Mac48Address>  GetRetransmittersForFailedDestinations (
     std::vector<HwmpRtable::FailedDestination> failedDest,
     uint32_t port);
   /**
@@ -248,8 +246,7 @@ private:
    * \attention mesh seqno is processed at HWMP
    */
   uint32_t m_seqno;
-  std::map<Mac48Address, uint32_t/**/>
-  m_seqnoDatabase;
+  std::map<Mac48Address, uint32_t/**/>  m_seqnoDatabase;
   //Timers:
   /**
    * /brief checks when last preq was initiated, returns
@@ -268,8 +265,7 @@ private:
    * Keeps PREQ retry timers for every
    * destination
    */
-  std::map<Mac48Address, EventId>
-  m_timeoutDatabase;
+  std::map<Mac48Address, EventId>  m_timeoutDatabase;
   /**
    * Configurable parameters:
    */

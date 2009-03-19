@@ -47,8 +47,7 @@ public:
   uint8_t   GetNumOfDest ();
 
   void   AddAddressUnit (struct HwmpRtable::FailedDestination unit);
-  std::vector<HwmpRtable::FailedDestination>
-  GetAddressUnitVector ();
+  std::vector<HwmpRtable::FailedDestination>  GetAddressUnitVector ();
   void   DeleteAddressUnit (Mac48Address address);
   void   ResetPerr ();
 private:

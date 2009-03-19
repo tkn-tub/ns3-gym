@@ -59,26 +59,22 @@ public:
    * Debug purpose
    */
   void  SetLocalAddress (Mac48Address macaddr);
-  void  SetLocalLinkId (uint16_t id);
-  void  SetPeerLinkId (uint16_t id);
-  void  SetLocalAid (uint16_t aid);
-  void  SetPeerAid (uint16_t aid);
+  void  SetLocalLinkId  (uint16_t id);
+  void  SetPeerLinkId   (uint16_t id);
+  void  SetLocalAid     (uint16_t aid);
+  void  SetPeerAid      (uint16_t aid);
   void  SetBeaconTimingElement (IeDot11sBeaconTiming beaconTiming);
-  void  SetPeerLinkDescriptorElement (
-    IeDot11sPeerManagement peerLinkElement
-  );
-  Mac48Address GetPeerAddress ()const;
+  void  SetPeerLinkDescriptorElement (IeDot11sPeerManagement peerLinkElement);
+  Mac48Address GetPeerAddress () const;
   /**
    * Debug purpose
    */
-  Mac48Address GetLocalAddress ()const;
-  uint16_t GetLocalAid ()const;
-  Time  GetLastBeacon ()const;
-  Time  GetBeaconInterval ()const;
-  IeDot11sBeaconTiming
-  GetBeaconTimingElement ()const;
-  IeDot11sPeerManagement
-  GetPeerLinkDescriptorElement ()const;
+  Mac48Address GetLocalAddress () const;
+  uint16_t GetLocalAid () const;
+  Time  GetLastBeacon () const;
+  Time  GetBeaconInterval () const;
+  IeDot11sBeaconTiming    GetBeaconTimingElement () const;
+  IeDot11sPeerManagement  GetPeerLinkDescriptorElement () const;
   void  ClearTimingElement ();
   /* MLME */
   void  MLMECancelPeerLink (dot11sReasonCode reason);
@@ -91,7 +87,7 @@ public:
   void  SetMac (Ptr<MeshWifiMac> mac);
   void  PeerLinkClose (uint16_t localLinkID,uint16_t peerLinkID, dot11sReasonCode reason);
   void  PeerLinkOpenAccept (uint16_t localLinkId, IeDot11sConfiguration  conf);
-  void  PeerLinkOpenReject (uint16_t localLinkId, IeDot11sConfiguration  conf,dot11sReasonCode reason);
+  void  PeerLinkOpenReject (uint16_t localLinkId, IeDot11sConfiguration  conf, dot11sReasonCode reason);
   void  PeerLinkConfirmAccept (
     uint16_t localLinkId,
     uint16_t peerLinkId,
@@ -105,7 +101,7 @@ public:
     dot11sReasonCode reason
   );
   bool  LinkIsEstab () const;
-  bool  LinkIsIdle () const;
+  bool  LinkIsIdle  () const;
 private:
   enum  PeerState {
     IDLE,
@@ -139,19 +135,19 @@ private:
 private:
   void StateMachine (PeerEvent event,dot11sReasonCode = REASON11S_RESERVED);
   /** Events handlers */
-  void ClearRetryTimer ();
+  void ClearRetryTimer   ();
   void ClearConfirmTimer ();
   void ClearHoldingTimer ();
-  void SetHoldingTimer ();
-  void SetRetryTimer ();
-  void SetConfirmTimer ();
+  void SetHoldingTimer   ();
+  void SetRetryTimer     ();
+  void SetConfirmTimer   ();
 
-  void SendPeerLinkClose (dot11sReasonCode reasoncode );
+  void SendPeerLinkClose (dot11sReasonCode reasoncode);
   void SendPeerLinkOpen ();
   void SendPeerLinkConfirm ();
   /** Private Event */
   void HoldingTimeout ();
-  void RetryTimeout ();
+  void RetryTimeout   ();
   void ConfirmTimeout ();
 private:
   Mac48Address m_peerAddress;
@@ -167,12 +163,10 @@ private:
   //State of our peer Link:
   PeerState m_state;
 
-  IeDot11sConfiguration
-  m_configuration;
+  IeDot11sConfiguration  m_configuration;
   // State is a bitfield as defined as follows:
   // This are states for a given
-  IeDot11sBeaconTiming
-  m_beaconTiming;
+  IeDot11sBeaconTiming  m_beaconTiming;
 
   EventId  m_retryTimer;
   EventId  m_holdingTimer;
@@ -185,8 +179,7 @@ private:
   uint8_t  m_maxBeaconLoss;
   void  BeaconLoss ();
   Ptr<MeshWifiMac> m_mac;
-  Callback<void, Mac48Address, Mac48Address, bool>
-  m_linkStatusCallback;
+  Callback<void, Mac48Address, Mac48Address, bool>  m_linkStatusCallback;
 };
 /**
  * \ingroup mesh
@@ -199,11 +192,9 @@ public:
   ~WifiPeerManager ();
   static TypeId GetTypeId ();
   //Returns a beacon timing element stored for remote station:
-  IeDot11sBeaconTiming
-  GetIeDot11sBeaconTimingForAddress (Mac48Address portAddress, Mac48Address addr);
+  IeDot11sBeaconTiming  GetIeDot11sBeaconTimingForAddress (Mac48Address portAddress, Mac48Address addr);
   //Returns a list of all addresses, which beacons can be decoded:
-  std::vector<Mac48Address>
-  GetNeighbourAddressList (Mac48Address portAddress, Mac48Address peerAddress);
+  std::vector<Mac48Address>  GetNeighbourAddressList (Mac48Address portAddress, Mac48Address peerAddress);
   bool AttachPorts (std::vector<Ptr<WifiNetDevice> >);
   //void SetMac (Ptr<MeshWifiMac> mac);
   Time GetNextBeaconShift (Mac48Address portAddress, Time myNextTBTT);
@@ -222,22 +213,19 @@ public:
     Mac48Address peerAddress,
     Time  lastBeacon,
     Time  beaconInterval,
-    IeDot11sBeaconTiming
-    beaconTiming
+    IeDot11sBeaconTiming  beaconTiming
   );
   void SetOpenReceived (
     Mac48Address portAddress,
     Mac48Address peerAddress,
-    IeDot11sPeerManagement
-    peerMan,
+    IeDot11sPeerManagement peerMan,
     IeDot11sConfiguration conf
   );
   void SetConfirmReceived (
     Mac48Address portAddress,
     Mac48Address peerAddress,
     uint16_t peerAid,
-    IeDot11sPeerManagement
-    peerMan,
+    IeDot11sPeerManagement  peerMan,
     IeDot11sConfiguration meshConfig
   );
   void SetCloseReceived (
@@ -265,8 +253,7 @@ private:
     Time referenceTbtt; //When one of my station's beacons was put into a beacon queue;
     Time beaconInterval; //Beacon interval of my station;
   };
-  typedef std::map<Mac48Address, std::vector<Ptr<WifiPeerLinkDescriptor> >, std::less<Mac48Address> >
-  PeerDescriptorsMap;
+  typedef std::map<Mac48Address, std::vector<Ptr<WifiPeerLinkDescriptor> >, std::less<Mac48Address> >  PeerDescriptorsMap;
   typedef std::map<Mac48Address, Ptr<MeshWifiMac>,std::less<Mac48Address> > MeshMacMap;
   typedef std::map<Mac48Address, BeaconInfo, std::less<Mac48Address> > BeaconInfoMap;
 
@@ -295,8 +282,7 @@ private:
   //and check if the too many  beacons were lost:
   Time  m_peerLinkCleanupPeriod;
   EventId  m_cleanupEvent;
-  Ptr<WifiPeerLinkDescriptor>
-  AddDescriptor (
+  Ptr<WifiPeerLinkDescriptor> AddDescriptor (
     Mac48Address portAddress,
     Mac48Address peerAddress,
     Time lastBeacon,
