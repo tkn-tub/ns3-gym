@@ -22,6 +22,7 @@
 #ifndef _MESHWIFIHELPER_H
 #define _MESHWIFIHELPER_H
 #include "wifi-helper.h"
+#include "ns3/peer-manager-protocol.h"
 
 namespace ns3 {
 
@@ -73,6 +74,17 @@ class MeshWifiHelper
         std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
         std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ()
         );
+    void SetPeerManager (std::string type,
+        std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+        std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+        std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+        std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+        std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+        std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+        std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+        std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ()
+        );
+
     void SetL2RoutingNetDevice (std::string type,
         std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
         std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
@@ -88,6 +100,7 @@ class MeshWifiHelper
   private:
     ObjectFactory m_stationManager;
     ObjectFactory m_meshMac;
+    ObjectFactory m_peerMan;
     ObjectFactory m_deviceFactory;
 };
 }//namespace ns3

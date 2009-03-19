@@ -18,11 +18,11 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  */
 
-#include "ns3/peer-manager-plugin.h"
 #include "ns3/ie-dot11s-configuration.h"
 #include "ns3/ie-dot11s-peer-management.h"
 #include "ns3/mesh-wifi-interface-mac.h"
 
+#include "ns3/peer-manager-plugin.h"
 #include "ns3/log.h"
 NS_LOG_COMPONENT_DEFINE("PeerManager");
 namespace ns3 {
@@ -48,8 +48,16 @@ Dot11sPeerManagerMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & h
   if(header.IsBeacon())
   {
     NS_LOG_UNCOND("Beacon recevied by PM from"<<header.GetAddr2 ());
+    IeDot11sBeaconTiming beaconTiming;
     Mac48Address peerAddress = header.GetAddr2 ();
-    Ptr<Packet> myBeacon = packet->Copy ();
+    Ptr<Packet> myBeacon = packet->Copy();
+    MgtBeaconHeader beacon_hdr;
+    myBeacon->RemoveHeader(beacon_hdr);
+    if(myBeacon->GetSize () == 0)
+      NS_LOG_UNCOND("Empty");
+    if(beaconTiming.FindMyInformationElement(myBeacon))
+      NS_LOG_UNCOND("BEACON TIMING");
+
 #if 0
       packet->RemoveHeader (beacon);
       m_peerManager->SetReceivedBeaconTimers (
@@ -74,5 +82,14 @@ void
 Dot11sPeerManagerMacPlugin::UpdateBeacon (MeshWifiBeacon & beacon) const
 {
   NS_LOG_UNCOND("I am sending a beacon");
+  Ptr<IeDot11sPreq>  beaconTiming = Create<IeDot11sPreq> ();
+  beacon.AddInformationElement(beaconTiming);
 }
+bool
+Dot11sPeerManagerMacPlugin::BindWithProtocol(Ptr<Dot11sPeerManagerProtocol> protocol)
+{
+  m_protocol = protocol;
+  return true;
+}
+
 }//namespace ns3

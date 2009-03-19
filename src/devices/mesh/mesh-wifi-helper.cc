@@ -27,7 +27,7 @@
 #include "ns3/wifi-channel.h"
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/mesh-wifi-interface-mac.h"
-#include "ns3/peer-manager-plugin.h"
+//#include "ns3/peer-manager-plugin.h"
 
 namespace ns3 {
 
@@ -84,6 +84,29 @@ MeshWifiHelper::SetMac (std::string type,
   m_meshMac.Set (n6, v6);
   m_meshMac.Set (n7, v7);
 }
+void
+MeshWifiHelper::SetPeerManager (std::string type,
+    std::string n0, const AttributeValue &v0,
+    std::string n1, const AttributeValue &v1,
+    std::string n2, const AttributeValue &v2,
+    std::string n3, const AttributeValue &v3,
+    std::string n4, const AttributeValue &v4,
+    std::string n5, const AttributeValue &v5,
+    std::string n6, const AttributeValue &v6,
+    std::string n7, const AttributeValue &v7)
+{
+  m_peerMan = ObjectFactory ();
+  m_peerMan.SetTypeId (type);
+  m_peerMan.Set (n0, v0);
+  m_peerMan.Set (n1, v1);
+  m_peerMan.Set (n2, v2);
+  m_peerMan.Set (n3, v3);
+  m_peerMan.Set (n4, v4);
+  m_peerMan.Set (n5, v5);
+  m_peerMan.Set (n6, v6);
+  m_peerMan.Set (n7, v7);
+}
+
   void
 MeshWifiHelper::SetL2RoutingNetDevice (std::string type,
     std::string n0, const AttributeValue &v0,
@@ -115,17 +138,21 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
   {
     Ptr<Node> node = *i;
     Ptr<MeshPointDevice> mp = m_deviceFactory.Create<MeshPointDevice> ();
+    std::vector<Ptr<WifiNetDevice> >ports;
     devices.Add (mp);
     std::vector<Ptr<WifiNetDevice> > nodeDevices;
     Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
+    ports.push_back(device);
     Ptr<MeshWifiInterfaceMac> mac = m_meshMac.Create<MeshWifiInterfaceMac> ();
-    Ptr<Dot11sPeerManagerMacPlugin> peer_plugin = Create<Dot11sPeerManagerMacPlugin>();
-    mac->InstallPlugin(peer_plugin);
+   // Ptr<Dot11sPeerManagerMacPlugin> peer_plugin = Create<Dot11sPeerManagerMacPlugin>();
+   // mac->InstallPlugin(peer_plugin);
     Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
     Ptr<WifiPhy> phy = phyHelper.Create (node, device);
     mac->SetAddress (Mac48Address::Allocate ());
     device->SetMac (mac);
     device->SetPhy (phy);
+    Ptr<Dot11sPeerManagerProtocol> peerMan = m_peerMan.Create<Dot11sPeerManagerProtocol> ();
+    NS_ASSERT(peerMan->AttachPorts(ports));
     device->SetRemoteStationManager (manager);
     node->AddDevice (device);
     nodeDevices.push_back (device);

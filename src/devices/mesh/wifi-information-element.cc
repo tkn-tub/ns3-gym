@@ -19,6 +19,8 @@
  */
 
 #include "ns3/wifi-information-element.h"
+#include "ns3/packet.h"
+#include "ns3/log.h"
 
 namespace ns3 {
 
@@ -49,7 +51,8 @@ void WifiInformationElement::Serialize (Buffer::Iterator i) const
 
 uint32_t WifiInformationElement::Deserialize (Buffer::Iterator i)
 {
-  NS_ASSERT (i.ReadU8 () == ElementId());
+  if(i.ReadU8 () != ElementId())
+    return 0;
   uint8_t length = i.ReadU8 ();
   
   return (DeserializeInformation (i, length) + 2);
@@ -60,6 +63,26 @@ void WifiInformationElement::Print (std::ostream &os) const
   os << "<information_element id=" << ElementId () << ">\n";
   PrintInformation (os);
   os << "</information_element>\n";
+}
+bool WifiInformationElement::FindMyInformationElement(Ptr<Packet> packet)
+{
+  const uint8_t * data = packet->PeekData();
+  uint32_t position = 0;
+  while(position <= packet->GetSize ())
+  {
+    if(data[position] == ElementId())
+    {
+      return true;
+    }
+    else
+    {
+      NS_LOG_UNCOND("not found"<<(uint16_t)data[position+1]);
+      position +=data[position+1];
+      if(data[position + 1] == 0)
+        return false;
+    }
+  }
+  return false;
 }
 
 bool operator< (WifiInformationElement const & a, WifiInformationElement const & b)

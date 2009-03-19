@@ -25,7 +25,7 @@
 #include "ns3/ref-count-base.h"
 
 namespace ns3 {
-
+class Packet;
 /**
  * \ingroup mesh
  * 
@@ -128,6 +128,11 @@ public:
    * i.e.: (field1 val1 field2 val2 field3 val3) field4 val4 field5 val5
    */
   virtual void Print (std::ostream &os) const;
+  /**
+   * This method takes a packet which must be a list of information
+   * elements and looks for an information element of MINE Element ID
+   */
+  bool FindMyInformationElement(Ptr<Packet> packet);
   //\}
     
 protected:

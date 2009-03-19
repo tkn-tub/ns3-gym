@@ -20,20 +20,20 @@
  */
 
 
-#ifndef WIFI_PEER_MAN_H
-#define WIFI_PEER_MAN_H
+#ifndef DOT11S_PEER_MAN_H
+#define DOT11S_PEER_MAN_H
 
 #include "ns3/mac48-address.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/ie-dot11s-peer-management.h"
 #include "ns3/ie-dot11s-beacon-timing.h"
-#include "ns3/peer-manager-plugin.h"
 #include "ns3/ie-dot11s-configuration.h"
 #include "ns3/event-id.h"
+#include "ns3/peer-manager-plugin.h"
 
 #include <list>
 namespace ns3 {
-class EventId;
+class Dot11sPeerManagerMacPlugin;
 /**
  * \ingroup mesh
  */
@@ -189,6 +189,7 @@ public:
   Dot11sPeerManagerProtocol ();
   ~Dot11sPeerManagerProtocol ();
   static TypeId GetTypeId ();
+  bool AttachPorts(std::vector<Ptr<WifiNetDevice> >);
   /** \brief Methods that handle beacon sending/receiving procedure.
    * This methods interact with MAC_layer plug-in
    * \{
@@ -251,14 +252,15 @@ private:
    * * pointers to proper plugins
    * \{
    */
-  struct BeaconInfo
-  {
-    Time referenceTbtt; //When one of my station's beacons was put into a beacon queue;
-    Time beaconInterval; //Beacon interval of my station;
-  };
-  typedef std::map<uint32_t, std::vector<Ptr<WifiPeerLinkDescriptor> >, std::less<Mac48Address> >  PeerDescriptorsMap;
-  typedef std::map<uint32_t, BeaconInfo, std::less<Mac48Address> > BeaconInfoMap;
-  typedef std::map<uint32_t, Ptr<Dot11sPeerManagerMacPlugin>,std::less<Mac48Address> > MeshMacMap;
+//  struct BeaconInfo
+//  {
+//    Time referenceTbtt; //When one of my station's beacons was put into a beacon queue;
+//    Time beaconInterval; //Beacon interval of my station;
+ //   uint16_t aid; //Assoc ID
+  //};
+  typedef std::map<uint32_t, std::vector<Ptr<WifiPeerLinkDescriptor> > >  PeerDescriptorsMap;
+//  typedef std::map<uint32_t, BeaconInfo> BeaconInfoMap;
+  typedef std::map<uint32_t, Ptr<Dot11sPeerManagerMacPlugin> > PeerManagerPluginMap;
   /**
    * \}
    */

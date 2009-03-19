@@ -26,6 +26,7 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/random-variable.h"
+#include "ns3/mesh-wifi-interface-mac.h"
 NS_LOG_COMPONENT_DEFINE ("Dot11sPeerManagerProtocol");
 namespace ns3 {
 /***************************************************
@@ -544,7 +545,7 @@ void WifiPeerLinkDescriptor::ConfirmTimeout ()
 /***************************************************
  * PeerManager
  ***************************************************/
-//NS_OBJECT_ENSURE_REGISTERED (Dot11sPeerManagerProtocol);
+NS_OBJECT_ENSURE_REGISTERED (Dot11sPeerManagerProtocol);
 
 TypeId
 Dot11sPeerManagerProtocol::GetTypeId (void)
@@ -609,6 +610,53 @@ Dot11sPeerManagerProtocol::~Dot11sPeerManagerProtocol ()
   m_peerDescriptors.clear ();
 #endif
 }
+//-----------------------------------------------------
+//          UNFINISHED
+//-----------------------------------------------------
+bool
+Dot11sPeerManagerProtocol::AttachPorts(std::vector<Ptr<WifiNetDevice> > ports)
+{
+  NS_LOG_UNCOND("Peer manager attach ports started!");
+  for(std::vector<Ptr<WifiNetDevice> >::iterator i = ports.begin(); i != ports.end(); i ++)
+  {
+    MeshWifiInterfaceMac * mac = dynamic_cast<MeshWifiInterfaceMac *> (PeekPointer ((*i)->GetMac ()));
+    if (mac == NULL)
+      return false;
+    Ptr<Dot11sPeerManagerMacPlugin> peerPlugin = Create<Dot11sPeerManagerMacPlugin>();
+    mac->InstallPlugin(peerPlugin);
+    NS_ASSERT(peerPlugin->BindWithProtocol(this));
+  }
+  return true;
+}
+
+IeDot11sBeaconTiming
+Dot11sPeerManagerProtocol::SendBeacon(uint32_t port, Time currentTbtt, Time beaconInterval)
+{
+  IeDot11sBeaconTiming retval;
+  return retval;
+}
+
+void
+Dot11sPeerManagerProtocol::ReceiveBeacon(
+    uint32_t port,
+    IeDot11sBeaconTiming timingElement,
+    Mac48Address peerAddress,
+    Time receivingTime,
+    Time beaconInterval)
+{
+}
+
+void
+Dot11sPeerManagerProtocol::ReceivePeerLinkFrame(
+    uint32_t port,
+    Mac48Address peerAddress,
+    uint16_t aid,
+    IeDot11sConfiguration meshConfig,
+    IeDot11sPeerManagement peerManagementElement
+      )
+{
+}
+
 #if 0
 void
 Dot11sPeerManagerProtocol::SetSentBeaconTimers (

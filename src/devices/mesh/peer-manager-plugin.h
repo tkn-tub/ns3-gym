@@ -22,6 +22,7 @@
 #define PEER_MANAGER_MAC_PLUGIN_H_
 
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
+#include "ns3/peer-manager-protocol.h"
 
 namespace ns3 {
 class MeshWifiInterfaceMac;
@@ -52,6 +53,7 @@ class Dot11sPeerManagerMacPlugin : public MeshWifiInterfaceMacPlugin
     /**
      * \}
      */
+    bool BindWithProtocol(Ptr<Dot11sPeerManagerProtocol>);
     void SetPeerManagerProtcol(Ptr<Dot11sPeerManagerProtocol> protocol);
     /**
      * Deliver Peer link management information to the protocol-part
@@ -78,6 +80,7 @@ class Dot11sPeerManagerMacPlugin : public MeshWifiInterfaceMacPlugin
     Callback<void, uint32_t, Mac48Address, uint16_t, IeDot11sConfiguration, IeDot11sPeerManagement> m_deliverPeerManFrame;
     Callback<void> m_beaconCallback;
     Ptr<MeshWifiInterfaceMac> m_parent;
+    Ptr<Dot11sPeerManagerProtocol> m_protocol;
     /**
      * Create peer link management frames:
      * \{
