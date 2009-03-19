@@ -282,7 +282,16 @@ private:
   /**
    * The trace source fired for packets successfully received by the device
    * immediately before being forwarded up to higher layers (at the L2/L3 
-   * transition).
+   * transition).  This is a promiscuous trace.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_macPromiscRxTrace;
+
+  /**
+   * The trace source fired for packets successfully received by the device
+   * immediately before being forwarded up to higher layers (at the L2/L3 
+   * transition).  This is a non-promiscuous trace.
    *
    * \see class CallBackTraceSource
    */

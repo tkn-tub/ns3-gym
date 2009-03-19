@@ -98,8 +98,13 @@ CsmaNetDevice::GetTypeId (void)
     .AddTraceSource ("MacTxDrop", 
                      "Trace source indicating a packet has been dropped by the device before transmission",
                      MakeTraceSourceAccessor (&CsmaNetDevice::m_macTxDropTrace))
+    .AddTraceSource ("MacPromiscRx", 
+                     "A packet has been received by this device, has been passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.  This is a promiscuous trace,",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_macPromiscRxTrace))
     .AddTraceSource ("MacRx", 
-                     "Trace source indicating a packet has been received by this device and is being forwarded up the stack",
+                     "A packet has been received by this device, has been passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.  This is a non-promiscuous trace,",
                      MakeTraceSourceAccessor (&CsmaNetDevice::m_macRxTrace))
 #if 0
     // Not currently implemented in this device
@@ -831,6 +836,7 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
       m_promiscSnifferTrace (originalPacket);
       if (!m_promiscRxCallback.IsNull ())
         {
+          m_macPromiscRxTrace (originalPacket);
           m_promiscRxCallback (this, packet, protocol, header.GetSource (), header.GetDestination (), packetType);
         }
 

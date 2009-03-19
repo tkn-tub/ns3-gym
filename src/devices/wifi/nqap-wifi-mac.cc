@@ -286,7 +286,6 @@ void
 NqapWifiMac::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << from);
-  NotifyRx (packet);
   m_upCallback (packet, from, to);
 }
 
@@ -302,7 +301,6 @@ NqapWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Addr
   hdr.SetDsFrom ();
   hdr.SetDsNotTo ();
 
-  NotifyTx (packet);
   m_dca->Queue (packet, hdr);  
 }
 void 

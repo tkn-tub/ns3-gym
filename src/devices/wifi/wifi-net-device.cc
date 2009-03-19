@@ -250,8 +250,7 @@ WifiNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolN
   llc.SetType (protocolNumber);
   packet->AddHeader (llc);
 
-  m_txLogger (packet, realTo);
-
+  m_mac->NotifyTx (packet);
   m_mac->Enqueue (packet, realTo);
   return true;
 }
@@ -280,7 +279,6 @@ WifiNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 void
 WifiNetDevice::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to)
 {
-  m_rxLogger (packet, from);
   LlcSnapHeader llc;
   packet->RemoveHeader (llc);
   enum NetDevice::PacketType type;
@@ -303,11 +301,13 @@ WifiNetDevice::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to
 
   if (type != NetDevice::PACKET_OTHERHOST)
     {
+      m_mac->NotifyRx (packet);
       m_forwardUp (this, packet, llc.GetType (), from);
     }
 
   if (!m_promiscRx.IsNull ())
     {
+      m_mac->NotifyPromiscRx (packet);
       m_promiscRx (this, packet, llc.GetType (), from, to, type);
     }
 }
@@ -344,8 +344,7 @@ WifiNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Addres
   llc.SetType (protocolNumber);
   packet->AddHeader (llc);
 
-  m_txLogger (packet, realTo);
-
+  m_mac->NotifyTx (packet);
   m_mac->Enqueue (packet, realTo, realFrom);
 
   return true;

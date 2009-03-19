@@ -88,8 +88,13 @@ PointToPointNetDevice::GetTypeId (void)
     .AddTraceSource ("MacTxDrop", 
                      "Trace source indicating a packet has been dropped by the device before transmission",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_macTxDropTrace))
+    .AddTraceSource ("MacPromiscRx", 
+                     "A packet has been received by this device, has been passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.  This is a promiscuous trace,",
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_macPromiscRxTrace))
     .AddTraceSource ("MacRx", 
-                     "Trace source indicating a packet has been received by this device and is being forwarded up the stack",
+                     "A packet has been received by this device, has been passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.  This is a non-promiscuous trace,",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_macRxTrace))
 #if 0
     // Not currently implemented for this device
@@ -324,12 +329,12 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
     {
       // 
       // Hit the trace hooks.  All of these hooks are in the same place in this 
-      // device becuase it is so simple, but this is not usually the case.  
+      // device becuase it is so simple, but this is not usually the case in 
+      // more complicated devices.
       //
       m_snifferTrace (packet);
       m_promiscSnifferTrace (packet);
       m_phyRxEndTrace (packet);
-      m_macRxTrace (packet);
 
       //
       // Strip off the point-to-point protocol header and forward this packet
@@ -341,9 +346,11 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
 
       if (!m_promiscCallback.IsNull ())
         {
+          m_macPromiscRxTrace (packet);
           m_promiscCallback (this, packet, protocol, GetRemote (), GetAddress (), NetDevice::PACKET_HOST);
         }
 
+      m_macRxTrace (packet);
       m_rxCallback (this, packet, protocol, GetRemote ());
     }
 }

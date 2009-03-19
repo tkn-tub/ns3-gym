@@ -235,7 +235,6 @@ AdhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
       destination->RecordDisassociated ();
     }
 
-  NotifyTx (packet);
   m_dca->Queue (packet, hdr);
 }
 bool 
@@ -248,7 +247,6 @@ void
 AdhocWifiMac::ForwardUp (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
   NS_LOG_DEBUG ("received size="<<packet->GetSize ()<<", from="<<hdr->GetAddr2 ());
-  NotifyRx (packet);
   m_upCallback (packet, hdr->GetAddr2 (), hdr->GetAddr1 ());
 }
 Ptr<DcaTxop>

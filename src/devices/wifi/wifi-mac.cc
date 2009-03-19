@@ -124,9 +124,13 @@ WifiMac::GetTypeId (void)
     .AddTraceSource ("MacTxDrop", 
                      "A packet has been dropped in the MAC layer before being queued for transmission.",
                      MakeTraceSourceAccessor (&WifiMac::m_macTxDropTrace))
+    .AddTraceSource ("MacPromiscRx", 
+                     "A packet has been received by this device, has been passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.  This is a promiscuous trace,",
+                     MakeTraceSourceAccessor (&WifiMac::m_macPromiscRxTrace))
     .AddTraceSource ("MacRx", 
                      "A packet has been received by this device, has been passed up from the physical layer "
-                     "and is being forwarded up the local protocol stack.",
+                     "and is being forwarded up the local protocol stack.  This is a non-promiscuous trace,",
                      MakeTraceSourceAccessor (&WifiMac::m_macRxTrace))
     .AddTraceSource ("MacRxDrop", 
                      "A packet has been dropped in the MAC layer after it has been passed up from the physical "
@@ -182,6 +186,12 @@ void
 WifiMac::NotifyRx (Ptr<const Packet> packet) 
 {
   m_macRxTrace (packet);
+}
+
+void 
+WifiMac::NotifyPromiscRx (Ptr<const Packet> packet) 
+{
+  m_macPromiscRxTrace (packet);
 }
 
 void 

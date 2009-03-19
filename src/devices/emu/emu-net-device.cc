@@ -110,8 +110,13 @@ EmuNetDevice::GetTypeId (void)
     .AddTraceSource ("MacTxDrop", 
                      "Trace source indicating a packet has been dropped by the device before transmission",
                      MakeTraceSourceAccessor (&EmuNetDevice::m_macTxDropTrace))
+    .AddTraceSource ("MacPromiscRx", 
+                     "A packet has been received by this device, has been passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.  This is a promiscuous trace,",
+                     MakeTraceSourceAccessor (&EmuNetDevice::m_macPromiscRxTrace))
     .AddTraceSource ("MacRx", 
-                     "Trace source indicating a packet has been received by this device and is being forwarded up the stack",
+                     "A packet has been received by this device, has been passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.  This is a non-promiscuous trace,",
                      MakeTraceSourceAccessor (&EmuNetDevice::m_macRxTrace))
 #if 0
     // Not currently implemented for this device
@@ -646,6 +651,7 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
 
   if (!m_promiscRxCallback.IsNull ())
     {
+      m_macPromiscRxTrace (originalPacket);
       m_promiscRxCallback (this, packet, protocol, header.GetSource (), header.GetDestination (), packetType);
     }
 
