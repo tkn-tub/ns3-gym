@@ -11,7 +11,8 @@ class GtkConfigStore
 public:
   GtkConfigStore ();
 
-  void Configure (void);
+  void ConfigureDefaults (void);
+  void ConfigureAttributes (void);
 };
 
 
