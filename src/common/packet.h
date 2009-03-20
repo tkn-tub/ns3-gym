@@ -103,20 +103,46 @@ private:
   TagList::Iterator m_current;
 };
 
+/**
+ * \ingroup packet
+ * \brief Iterator over the set of 'packet' tags in a packet
+ *
+ * This is a java-style iterator.
+ */
 class PacketTagIterator
 {
 public:
+  /**
+   * Identifies a tag within a packet.
+   */
   class Item 
   {
   public:
+    /**
+     * \returns the ns3::TypeId associated to this tag.
+     */
     TypeId GetTypeId (void) const;
+    /**
+     * \param tag the user tag to which the data should be copied.
+     *
+     * Read the requested tag and store it in the user-provided
+     * tag instance. This method will crash if the type of the
+     * tag provided by the user does not match the type of
+     * the underlying tag.
+     */
     void GetTag (Tag &tag) const;
   private:
     friend class PacketTagIterator;
     Item (const struct PacketTagList::TagData *data);
     const struct PacketTagList::TagData *m_data;
   };
+  /**
+   * \returns true if calling Next is safe, false otherwise.
+   */
   bool HasNext (void) const;
+  /**
+   * \returns the next item found and prepare for the next one.
+   */
   Item Next (void);
 private:
   friend class Packet;

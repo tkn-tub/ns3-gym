@@ -58,8 +58,6 @@ public:
 
   const struct PacketTagList::TagData *Head (void) const;
 
-  void Print (std::ostream &os, std::string separator) const;
-
 private:
 
   bool Remove (TypeId tid);
