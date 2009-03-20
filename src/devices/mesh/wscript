@@ -9,11 +9,8 @@ def build(bld):
         'mesh-l2-routing-protocol.cc',
         'mesh-wifi-beacon.cc',
         'mesh-wifi-interface-mac.cc',
-        'peer-manager-plugin.cc',
         # Not refactored
-        'mesh-wifi-helper.cc',
         'mesh-wifi-mac-header.cc',
-        'peer-manager-protocol.cc',
         'tx-statistics.cc',
         'hwmp-rtable.cc',
         'dot11s-parameters.cc',
@@ -33,7 +30,6 @@ def build(bld):
         'mesh-wifi-beacon.h',
         'mesh-wifi-interface-mac.h',
         'mesh-wifi-interface-mac-plugin.h',
-        'peer-manager-plugin.h',
         # Dirty
         'dot11s-codes.h',
         'hwmp-state.h',
@@ -42,11 +38,9 @@ def build(bld):
         'hwmp.h',
         'tx-statistics.h',
         'hwmp-rtable.h',
-        'peer-manager-protocol.h',
         'mesh-wifi-mac-header.h',
         'mesh-wifi-mac.h',
         'mesh-wifi-peer-manager.h',
-        'mesh-wifi-helper.h',
         ]
 
 #    obj = bld.create_ns3_program('wifi-phy-test',

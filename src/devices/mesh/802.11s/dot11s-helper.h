@@ -21,7 +21,7 @@
 
 #ifndef _MESHWIFIHELPER_H
 #define _MESHWIFIHELPER_H
-#include "wifi-helper.h"
+#include "ns3/wifi-helper.h"
 #include "ns3/peer-manager-protocol.h"
 
 namespace ns3 {
@@ -29,7 +29,7 @@ namespace ns3 {
 class WifiChannel;
 
 /** 
- * \ingroup mesh 
+ * \ingroup dot11s
  * 
  */
 class MeshWifiHelper

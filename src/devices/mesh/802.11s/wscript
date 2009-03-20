@@ -10,6 +10,9 @@ def build(bld):
         'ie-dot11s-prep.cc',
         'ie-dot11s-perr.cc',
         'ie-dot11s-rann.cc',
+        'peer-manager-plugin.cc',
+        'peer-manager-protocol.cc',
+        'dot11s-helper.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = '802.11s'
@@ -21,6 +24,9 @@ def build(bld):
         'ie-dot11s-prep.h',
         'ie-dot11s-perr.h',
         'ie-dot11s-rann.h',
+        'peer-manager-protocol.h',
+        'peer-manager-plugin.h',
+        'dot11s-helper.h',
         ]
 
 #    obj = bld.create_ns3_program('wifi-phy-test',

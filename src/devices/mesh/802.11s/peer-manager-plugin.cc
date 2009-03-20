@@ -18,12 +18,12 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  */
 
-#include "ns3/ie-dot11s-configuration.h"
-#include "ns3/ie-dot11s-peer-management.h"
 #include "ns3/mesh-wifi-interface-mac.h"
-
-#include "ns3/peer-manager-plugin.h"
+#include "ie-dot11s-configuration.h"
+#include "ie-dot11s-peer-management.h"
+#include "peer-manager-plugin.h"
 #include "ns3/log.h"
+
 NS_LOG_COMPONENT_DEFINE("PeerManager");
 namespace ns3 {
 Dot11sPeerManagerMacPlugin::Dot11sPeerManagerMacPlugin ()

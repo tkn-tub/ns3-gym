@@ -28,6 +28,8 @@
 #include "ns3/mesh-module.h"
 #include "ns3/mobility-module.h"
 
+#include "ns3/dot11s-helper.h"
+
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TestMeshScript");

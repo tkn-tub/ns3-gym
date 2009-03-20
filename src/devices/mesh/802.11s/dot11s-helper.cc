@@ -20,7 +20,8 @@
  */
 
 
-#include "ns3/mesh-wifi-helper.h"
+#include "dot11s-helper.h"
+
 #include "ns3/mesh-point-device.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-phy.h"
@@ -151,7 +152,7 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
     mac->SetAddress (Mac48Address::Allocate ());
     device->SetMac (mac);
     device->SetPhy (phy);
-    Ptr<Dot11sPeerManagerProtocol> peerMan = m_peerMan.Create<Dot11sPeerManagerProtocol> ();
+    Ptr<Dot11sPeerManagerProtocol> peerMan = m_peerMan.Create<Dot11sPeerManagerProtocol> ();    
     NS_ASSERT(peerMan->AttachPorts(ports));
     device->SetRemoteStationManager (manager);
     node->AddDevice (device);

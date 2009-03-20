@@ -20,13 +20,15 @@
  */
 
 
-#include "ns3/peer-manager-protocol.h"
+#include "peer-manager-protocol.h"
+
 #include "ns3/dot11s-parameters.h"
 #include "ns3/simulator.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/random-variable.h"
 #include "ns3/mesh-wifi-interface-mac.h"
+
 NS_LOG_COMPONENT_DEFINE ("Dot11sPeerManagerProtocol");
 namespace ns3 {
 /***************************************************

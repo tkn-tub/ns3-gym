@@ -29,13 +29,14 @@
 #include "ns3/ie-dot11s-beacon-timing.h"
 #include "ns3/ie-dot11s-configuration.h"
 #include "ns3/event-id.h"
-#include "ns3/peer-manager-plugin.h"
+
+#include "peer-manager-plugin.h"
 
 #include <list>
 namespace ns3 {
 class Dot11sPeerManagerMacPlugin;
 /**
- * \ingroup mesh
+ * \ingroup dot11s
  */
 class WifiPeerLinkDescriptor : public RefCountBase
 {
@@ -181,7 +182,7 @@ private:
   Callback<void, Mac48Address, Mac48Address, bool>  m_linkStatusCallback;
 };
 /**
- * \ingroup mesh
+ * \ingroup dot11s
  */
 class Dot11sPeerManagerProtocol : public Object
 {
