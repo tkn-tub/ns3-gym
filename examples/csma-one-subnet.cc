@@ -125,11 +125,11 @@ main (int argc, char *argv[])
 //
 // Also configure some tcpdump traces; each interface will be traced.
 // The output files will be named:
-//     csma-one-subnet.pcap-<nodeId>-<interfaceId>
+//     csma-one-subnet-<nodeId>-<interfaceId>.pcap
 // and can be read by the "tcpdump -r" command (use "-tt" option to
 // display timestamps correctly)
 //
-  CsmaHelper::EnablePcapAll ("csma-one-subnet");
+  CsmaHelper::EnablePcapAll ("csma-one-subnet", false);
 //
 // Now, do the actual simulation.
 //

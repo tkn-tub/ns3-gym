@@ -51,7 +51,30 @@ us a note on ns-developers mailing list.  </p>
 <li>ConstantAccelerationMobilityModel in src/mobility/constant-acceleration-mobility-model.h</li>
 </ul>
 
+<ul>
+<li>A new emulation mode is supported with the TapBridge net device (see</li>
+<li>src/devices/tap-bridge)</li>
+</ul>
+
+<ul>
+<li>A new facility for naming ns-3 Objects is included (see</li>
+<li>src/core/names.{cc,h})</li>
+</ul>
+
 <h2>changes to existing API:</h2>
+
+<ul>
+<li>The trace sources in the various NetDevice classes has been completely</li>
+<li>reworked to allow for a consistent set of trace sources across the</li>
+<li>devices.  The names of the trace sources have been changed to provide</li>
+<li>some context with respect to the level at which the trace occurred.</li>
+<li>A new set of trace sources has been added which emulates the behavior</li>
+<li>of packet sniffers.  These sources have been used to implement tcpdump-</li>
+<li>like functionality and are plumbed up into the helper classes.  The </li>
+<li>user-visible changes are the trace source name changes and the ability </li>
+<li>to do promiscuous-mode pcap tracing via helpers.  For further information</li>
+<li>regarding these changes, please see the ns-3 manual</li>
+</ul>
 
 <ul>
 <li>StaticMobilityModel has been renamed ConstantPositionMobilityModel</li>

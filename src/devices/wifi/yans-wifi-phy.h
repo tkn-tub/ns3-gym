@@ -151,6 +151,7 @@ private:
   WifiPhyStandard m_standard;
   Ptr<WifiPhyStateHelper> m_state;
   InterferenceHelper m_interference;
+
 };
 
 } // namespace ns3

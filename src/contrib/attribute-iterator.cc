@@ -252,23 +252,5 @@ AttributeIterator::DoIterate (Ptr<Object> object)
     }
 }
 
-TextFileAttributeIterator::TextFileAttributeIterator (std::ostream &os)
-  : m_os (os)
-{}
-void 
-TextFileAttributeIterator::DoVisitAttribute (Ptr<Object> object, std::string name)
-{
-  StringValue str;
-  object->GetAttribute (name, str);
-  m_os << GetCurrentPath () << " " << str.Get () << std::endl;
-}
-
-void 
-TextFileAttributeIterator::Save (void)
-{
-  Iterate ();
-}
-
-
 
 } // namespace ns3

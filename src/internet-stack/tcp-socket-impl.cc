@@ -680,6 +680,11 @@ void TcpSocketImpl::SendEmptyPacket (uint8_t flags)
   Ptr<Packet> p = Create<Packet> ();
   TcpHeader header;
 
+  if (flags & TcpHeader::FIN)
+    {
+      flags |= TcpHeader::ACK;
+    }
+
   header.SetFlags (flags);
   header.SetSequenceNumber (m_nextTxSequence);
   header.SetAckNumber (m_nextRxSequence);
@@ -759,7 +764,7 @@ bool TcpSocketImpl::ProcessAction (Actions_t a)
       break;
     case TX_DATA:
       NS_LOG_LOGIC ("TcpSocketImpl " << this <<" Action TX_DATA");
-      SendPendingData ();
+      SendPendingData (m_connected);
       break;
     case PEER_CLOSE:
       NS_ASSERT (false); // This should be processed in ProcessPacketAction
@@ -855,10 +860,21 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
             NotifySend (GetTxAvailable ());
           }
       }
-      SendPendingData ();
+      SendPendingData (m_connected); //send acks if we are connected
       break;
     case NEW_ACK:
       NS_LOG_LOGIC ("TcpSocketImpl " << this <<" Action NEW_ACK_TX");
+      //check to see of the ACK had data with it; if so, pass it along
+      //to NEW_SEQ_RX
+      if(p->GetSize () > 0)
+        {
+          Simulator::ScheduleNow(&TcpSocketImpl::ProcessPacketAction,
+                                 this,
+                                 NEW_SEQ_RX,
+                                 p,
+                                 tcpHeader,
+                                 fromAddress);
+        }
       if (tcpHeader.GetAckNumber () < m_highestRxAck) //old ack, do nothing
       {
         break;
@@ -1001,10 +1017,6 @@ bool TcpSocketImpl::SendPendingData (bool withAck)
                    << " s " << s 
                    << " datasize " << p->GetSize() );
       uint8_t flags = 0;
-      if (withAck)
-        {
-          flags |= TcpHeader::ACK;
-        }
       uint32_t sz = p->GetSize (); // Size of packet
       uint32_t remainingData = m_pendingData->SizeFromSeq(
           m_firstPendingSequence,
@@ -1014,7 +1026,10 @@ bool TcpSocketImpl::SendPendingData (bool withAck)
           flags = TcpHeader::FIN;
           m_state = FIN_WAIT_1;
         }
-
+      if (withAck)
+        {
+          flags |= TcpHeader::ACK;
+        }
       TcpHeader header;
       header.SetFlags (flags);
       header.SetSequenceNumber (m_nextTxSequence);
@@ -1386,7 +1401,7 @@ void TcpSocketImpl::CommonNewAck (SequenceNumber ack, bool skipTimer)
         }
     }
   // Try to send more data
-  SendPendingData();
+  SendPendingData (m_connected);
 }
 
 Ptr<TcpSocketImpl> TcpSocketImpl::Copy ()
@@ -1440,7 +1455,7 @@ void TcpSocketImpl::DupAck (const TcpHeader& t, uint32_t count)
     m_cWnd = m_segmentSize; // Collapse cwnd (re-enter slowstart)
     // For Tahoe, we also reset nextTxSeq
     m_nextTxSequence = m_highestRxAck;
-    SendPendingData ();
+    SendPendingData (m_connected);
   }
 }
 

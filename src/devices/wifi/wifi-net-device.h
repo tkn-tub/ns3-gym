@@ -118,8 +118,10 @@ private:
   Ptr<WifiRemoteStationManager> m_stationManager;
   NetDevice::ReceiveCallback m_forwardUp;
   NetDevice::PromiscReceiveCallback m_promiscRx;
+
   TracedCallback<Ptr<const Packet>, Mac48Address> m_rxLogger;
   TracedCallback<Ptr<const Packet>, Mac48Address> m_txLogger;
+
   uint32_t m_ifIndex;
   std::string m_name;
   bool m_linkUp;

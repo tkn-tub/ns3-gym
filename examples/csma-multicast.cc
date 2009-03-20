@@ -171,10 +171,10 @@ main (int argc, char *argv[])
 
   // Also configure some tcpdump traces; each interface will be traced.
   // The output files will be named:
-  //     csma-multicast.pcap-<nodeId>-<interfaceId>
+  //     csma-multicast-<nodeId>-<interfaceId>.pcap
   // and can be read by the "tcpdump -r" command (use "-tt" option to
   // display timestamps correctly)
-  CsmaHelper::EnablePcapAll ("csma-multicast");
+  CsmaHelper::EnablePcapAll ("csma-multicast", false);
   //
   // Now, do the actual simulation.
   //

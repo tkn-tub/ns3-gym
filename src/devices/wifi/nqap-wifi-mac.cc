@@ -30,6 +30,7 @@
 #include "dcf-manager.h"
 #include "mac-rx-middle.h"
 #include "mac-low.h"
+#include "wifi-mac-trailer.h"
 #include "ns3/pointer.h"
 
 NS_LOG_COMPONENT_DEFINE ("NqapWifiMac");
@@ -287,6 +288,7 @@ NqapWifiMac::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to)
   NS_LOG_FUNCTION (this << packet << from);
   m_upCallback (packet, from, to);
 }
+
 void 
 NqapWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to)
 {
@@ -298,6 +300,7 @@ NqapWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Addr
   hdr.SetAddr3 (from);
   hdr.SetDsFrom ();
   hdr.SetDsNotTo ();
+
   m_dca->Queue (packet, hdr);  
 }
 void 
@@ -472,11 +475,13 @@ NqapWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
         {
           // this is an AP-to-AP frame
           // we ignore for now.
+          NotifyRxDrop (packet);
         } 
       else 
         {
           // we can ignore these frames since 
           // they are not targeted at the AP
+          NotifyRxDrop (packet);
         }
     } 
   else if (hdr->IsMgt ()) 

@@ -34,6 +34,7 @@
 #include "ns3/enum.h"
 #include "ns3/pointer.h"
 #include "ns3/net-device.h"
+#include "ns3/trace-source-accessor.h"
 #include <math.h>
 
 NS_LOG_COMPONENT_DEFINE ("YansWifiPhy");
@@ -322,6 +323,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
   case YansWifiPhy::SYNC:
     NS_LOG_DEBUG ("drop packet because already in Sync (power="<<
                   rxPowerW<<"W)");
+    NotifyRxDrop (packet);
     if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ()) 
       {
         // that packet will be noise _after_ the reception of the
@@ -332,6 +334,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
   case YansWifiPhy::TX:
     NS_LOG_DEBUG ("drop packet because already in Tx (power="<<
                   rxPowerW<<"W)");
+    NotifyRxDrop (packet);
     if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ()) 
       {
         // that packet will be noise _after_ the transmission of the
@@ -347,6 +350,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
         // sync to signal
         m_state->SwitchToSync (rxDuration);
         NS_ASSERT (m_endSyncEvent.IsExpired ());
+        NotifyRxBegin (packet);
         m_endSyncEvent = Simulator::Schedule (rxDuration, &YansWifiPhy::EndSync, this, 
                                               packet,
                                               event);
@@ -355,6 +359,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
       {
         NS_LOG_DEBUG ("drop packet because signal power too Small ("<<
                       rxPowerW<<"<"<<m_edThresholdW<<")");
+        NotifyRxDrop (packet);
         goto maybeCcaBusy;
       }
     break;
@@ -374,6 +379,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
       m_state->SwitchMaybeToCcaBusy (delayUntilCcaEnd);
     }
 }
+
 void 
 YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble preamble, uint8_t txPower)
 {
@@ -391,6 +397,8 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble
     {
       m_endSyncEvent.Cancel ();
     }
+  NotifyTxBegin (packet);
+  NotifyPromiscSniff (packet);
   m_state->SwitchToTx (txDuration, packet, txMode, preamble, txPower);
   m_channel->Send (this, packet, GetPowerDbm (txPower) + m_txGainDb, txMode, preamble);
 }
@@ -550,16 +558,16 @@ YansWifiPhy::EndSync (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event)
   
   if (m_random.GetValue () > snrPer.per) 
     {
+      NotifyRxEnd (packet);
+      NotifyPromiscSniff (packet);
       m_state->SwitchFromSyncEndOk (packet, snrPer.snr, event->GetPayloadMode (), event->GetPreambleType ());
     } 
   else 
     {
       /* failure. */
+      NotifyRxDrop (packet);
       m_state->SwitchFromSyncEndError (packet, snrPer.snr);
     }
 }
-
-
-
 
 } // namespace ns3

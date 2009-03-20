@@ -219,25 +219,35 @@ def register_Ns3CsmaHelper_methods(root_module, cls):
                    'void', 
                    [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')], 
                    deprecated=True)
-    ## csma-helper.h: static void ns3::CsmaHelper::EnablePcap(std::string filename, uint32_t nodeid, uint32_t deviceid) [member function]
+    ## csma-helper.h: static void ns3::CsmaHelper::EnablePcap(std::string filename, uint32_t nodeid, uint32_t deviceid, bool promiscuous) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
-                   [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
+                   [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid'), param('bool', 'promiscuous')], 
                    is_static=True)
-    ## csma-helper.h: static void ns3::CsmaHelper::EnablePcap(std::string filename, ns3::NetDeviceContainer d) [member function]
+    ## csma-helper.h: static void ns3::CsmaHelper::EnablePcap(std::string filename, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
-                   [param('std::string', 'filename'), param('ns3::NetDeviceContainer', 'd')], 
+                   [param('std::string', 'filename'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'promiscuous')], 
                    is_static=True)
-    ## csma-helper.h: static void ns3::CsmaHelper::EnablePcap(std::string filename, ns3::NodeContainer n) [member function]
+    ## csma-helper.h: static void ns3::CsmaHelper::EnablePcap(std::string filename, std::string ndName, bool promiscuous) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
-                   [param('std::string', 'filename'), param('ns3::NodeContainer', 'n')], 
+                   [param('std::string', 'filename'), param('std::string', 'ndName'), param('bool', 'promiscuous')], 
                    is_static=True)
-    ## csma-helper.h: static void ns3::CsmaHelper::EnablePcapAll(std::string filename) [member function]
+    ## csma-helper.h: static void ns3::CsmaHelper::EnablePcap(std::string filename, ns3::NetDeviceContainer d, bool promiscuous) [member function]
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('ns3::NetDeviceContainer', 'd'), param('bool', 'promiscuous')], 
+                   is_static=True)
+    ## csma-helper.h: static void ns3::CsmaHelper::EnablePcap(std::string filename, ns3::NodeContainer n, bool promiscuous) [member function]
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('ns3::NodeContainer', 'n'), param('bool', 'promiscuous')], 
+                   is_static=True)
+    ## csma-helper.h: static void ns3::CsmaHelper::EnablePcapAll(std::string filename, bool promiscuous) [member function]
     cls.add_method('EnablePcapAll', 
                    'void', 
-                   [param('std::string', 'filename')], 
+                   [param('std::string', 'filename'), param('bool', 'promiscuous')], 
                    is_static=True)
     ## csma-helper.h: static void ns3::CsmaHelper::EnableAscii(std::ostream & os, uint32_t nodeid, uint32_t deviceid) [member function]
     cls.add_method('EnableAscii', 
@@ -327,25 +337,35 @@ def register_Ns3EmuHelper_methods(root_module, cls):
     cls.add_method('SetAttribute', 
                    'void', 
                    [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
-    ## emu-helper.h: static void ns3::EmuHelper::EnablePcap(std::string filename, uint32_t nodeid, uint32_t deviceid) [member function]
+    ## emu-helper.h: static void ns3::EmuHelper::EnablePcap(std::string filename, uint32_t nodeid, uint32_t deviceid, bool promiscuous) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
-                   [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
+                   [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid'), param('bool', 'promiscuous')], 
                    is_static=True)
-    ## emu-helper.h: static void ns3::EmuHelper::EnablePcap(std::string filename, ns3::NetDeviceContainer d) [member function]
+    ## emu-helper.h: static void ns3::EmuHelper::EnablePcap(std::string filename, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
-                   [param('std::string', 'filename'), param('ns3::NetDeviceContainer', 'd')], 
+                   [param('std::string', 'filename'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'promiscuous')], 
                    is_static=True)
-    ## emu-helper.h: static void ns3::EmuHelper::EnablePcap(std::string filename, ns3::NodeContainer n) [member function]
+    ## emu-helper.h: static void ns3::EmuHelper::EnablePcap(std::string filename, std::string ndName, bool promiscuous) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
-                   [param('std::string', 'filename'), param('ns3::NodeContainer', 'n')], 
+                   [param('std::string', 'filename'), param('std::string', 'ndName'), param('bool', 'promiscuous')], 
                    is_static=True)
-    ## emu-helper.h: static void ns3::EmuHelper::EnablePcapAll(std::string filename) [member function]
+    ## emu-helper.h: static void ns3::EmuHelper::EnablePcap(std::string filename, ns3::NetDeviceContainer d, bool promiscuous) [member function]
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('ns3::NetDeviceContainer', 'd'), param('bool', 'promiscuous')], 
+                   is_static=True)
+    ## emu-helper.h: static void ns3::EmuHelper::EnablePcap(std::string filename, ns3::NodeContainer n, bool promiscuous) [member function]
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('ns3::NodeContainer', 'n'), param('bool', 'promiscuous')], 
+                   is_static=True)
+    ## emu-helper.h: static void ns3::EmuHelper::EnablePcapAll(std::string filename, bool promiscuous) [member function]
     cls.add_method('EnablePcapAll', 
                    'void', 
-                   [param('std::string', 'filename')], 
+                   [param('std::string', 'filename'), param('bool', 'promiscuous')], 
                    is_static=True)
     ## emu-helper.h: static void ns3::EmuHelper::EnableAscii(std::ostream & os, uint32_t nodeid, uint32_t deviceid) [member function]
     cls.add_method('EnableAscii', 
@@ -801,6 +821,16 @@ def register_Ns3PointToPointHelper_methods(root_module, cls):
                    'void', 
                    [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
                    is_static=True)
+    ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnablePcap(std::string filename, ns3::Ptr<ns3::NetDevice> nd) [member function]
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
+                   is_static=True)
+    ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnablePcap(std::string filename, std::string ndName) [member function]
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('std::string', 'ndName')], 
+                   is_static=True)
     ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnablePcap(std::string filename, ns3::NetDeviceContainer d) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
@@ -1120,6 +1150,16 @@ def register_Ns3YansWifiPhyHelper_methods(root_module, cls):
     cls.add_method('EnablePcap', 
                    'void', 
                    [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
+                   is_static=True)
+    ## yans-wifi-helper.h: static void ns3::YansWifiPhyHelper::EnablePcap(std::string filename, ns3::Ptr<ns3::NetDevice> nd) [member function]
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
+                   is_static=True)
+    ## yans-wifi-helper.h: static void ns3::YansWifiPhyHelper::EnablePcap(std::string filename, std::string ndName) [member function]
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'filename'), param('std::string', 'ndName')], 
                    is_static=True)
     ## yans-wifi-helper.h: static void ns3::YansWifiPhyHelper::EnablePcap(std::string filename, ns3::NetDeviceContainer d) [member function]
     cls.add_method('EnablePcap', 

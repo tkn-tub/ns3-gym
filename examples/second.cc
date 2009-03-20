@@ -102,8 +102,8 @@ main (int argc, char *argv[])
 
   GlobalRouteManager::PopulateRoutingTables ();
 
-  PointToPointHelper::EnablePcapAll ("second");
-  CsmaHelper::EnablePcapAll ("second");
+  PointToPointHelper::EnablePcap ("second", p2pDevices.Get (1));
+  CsmaHelper::EnablePcap ("second", csmaDevices.Get (0), true);
 
   Simulator::Run ();
   Simulator::Destroy ();

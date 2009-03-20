@@ -2,6 +2,7 @@
 #define CONFIG_STORE_H
 
 #include "ns3/object-base.h"
+#include "file-config.h"
 
 namespace ns3 {
 
@@ -26,24 +27,33 @@ namespace ns3 {
 class ConfigStore : public ObjectBase
 {
 public:
+  enum Mode {
+    LOAD,
+    SAVE,
+    NONE
+  };
+  enum FileFormat {
+    XML,
+    RAW_TEXT
+  };
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
 
   ConfigStore ();
+  ~ConfigStore ();
 
-  /**
-   * Depending on which attribute was set:
-   *  - Store simulation configuration in file and exit
-   *  - Load simulation configuration from file and proceed.
-   */
-  void Configure (void);
+  void SetMode (enum Mode mode);
+  void SetFileFormat (enum FileFormat format);
+  void SetFilename (std::string filename);
+
+  void ConfigureDefaults (void);
+  void ConfigureAttributes (void);
 
 private:
-  void LoadFrom (std::string filename);
-  void StoreTo (std::string filename);
-
-  std::string m_loadFilename;
-  std::string m_storeFilename;
+  enum Mode m_mode;
+  enum FileFormat m_fileFormat;
+  std::string m_filename;
+  FileConfig *m_file;
 };
 
 }  // namespace ns3
