@@ -103,6 +103,27 @@ private:
   TagList::Iterator m_current;
 };
 
+class PacketTagIterator
+{
+public:
+  class Item 
+  {
+  public:
+    TypeId GetTypeId (void) const;
+    void GetTag (Tag &tag) const;
+  private:
+    friend class PacketTagIterator;
+    Item (const struct PacketTagList::TagData *data);
+    const struct PacketTagList::TagData *m_data;
+  };
+  bool HasNext (void) const;
+  Item Next (void);
+private:
+  friend class Packet;
+  PacketTagIterator (const struct PacketTagList::TagData *head);
+  const struct PacketTagList::TagData *m_current;
+};
+
 /**
  * \ingroup packet
  * \brief network packets
@@ -446,6 +467,8 @@ public:
   void RemoveAllPacketTags (void);
 
   void PrintPacketTags (std::ostream &os) const;
+
+  PacketTagIterator GetPacketTagIterator (void) const;
 
 private:
   Packet (const Buffer &buffer, const TagList &tagList, 

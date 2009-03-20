@@ -89,7 +89,7 @@ PacketTagList::Remove (Tag &tag)
       if (cur->tid == tid) 
         {
           found = true;
-          tag.Deserialize (TagBuffer (cur->data, cur->data+PacketTagList::SIZE));
+          tag.Deserialize (TagBuffer (cur->data, cur->data+PACKET_TAG_MAX_SIZE));
         }
     }
   if (!found) 
@@ -114,7 +114,7 @@ PacketTagList::Remove (Tag &tag)
       copy->tid = cur->tid;
       copy->count = 1;
       copy->next = 0;
-      memcpy (copy->data, cur->data, PacketTagList::SIZE);
+      memcpy (copy->data, cur->data, PACKET_TAG_MAX_SIZE);
       *prevNext = copy;
       prevNext = &copy->next;
     }
@@ -122,27 +122,6 @@ PacketTagList::Remove (Tag &tag)
   RemoveAll ();
   m_next = start;
   return true;
-}
-
-void 
-PacketTagList::Print (std::ostream &os, std::string separator) const
-{
-  for (struct TagData *cur = m_next; cur != 0; cur = cur->next) 
-    {
-      NS_ASSERT (cur->tid.HasConstructor ());
-      Callback<ObjectBase *> constructor = cur->tid.GetConstructor ();
-      NS_ASSERT (!constructor.IsNull ());
-      ObjectBase *instance = constructor ();
-      Tag *tag = dynamic_cast<Tag *> (instance);
-      NS_ASSERT (tag != 0);
-      tag->Deserialize (TagBuffer (cur->data, cur->data+PacketTagList::SIZE));
-      tag->Print (os);
-      delete tag;
-      if (cur->next != 0)
-        {
-          os << separator;
-        }
-    }
 }
 
 void 
@@ -158,7 +137,7 @@ PacketTagList::Add (const Tag &tag) const
   head->next = 0;
   head->tid = tag.GetInstanceTypeId ();
   head->next = m_next;
-  NS_ASSERT (tag.GetSerializedSize () < PacketTagList::SIZE);
+  NS_ASSERT (tag.GetSerializedSize () < PACKET_TAG_MAX_SIZE);
   tag.Serialize (TagBuffer (head->data, head->data+tag.GetSerializedSize ()));
 
   const_cast<PacketTagList *> (this)->m_next = head;
@@ -173,12 +152,18 @@ PacketTagList::Peek (Tag &tag) const
       if (cur->tid == tid) 
         {
           /* found tag */
-          tag.Deserialize (TagBuffer (cur->data, cur->data+PacketTagList::SIZE));
+          tag.Deserialize (TagBuffer (cur->data, cur->data+PACKET_TAG_MAX_SIZE));
           return true;
         }
     }
   /* no tag found */
   return false;
+}
+
+const struct PacketTagList::TagData *
+PacketTagList::Head (void) const
+{
+  return m_next;
 }
 
 } // namespace ns3

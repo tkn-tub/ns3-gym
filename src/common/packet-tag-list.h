@@ -17,8 +17,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef TAGS_H
-#define TAGS_H
+#ifndef PACKET_TAG_LIST_H
+#define PACKET_TAG_LIST_H
 
 #include <stdint.h>
 #include <ostream>
@@ -34,10 +34,18 @@ class Tag;
  * The maximum size (in bytes) of a Tag is stored
  * in this constant.
  */
-#define TAGS_MAX_SIZE 16
+#define PACKET_TAG_MAX_SIZE 16
 
-class PacketTagList {
+class PacketTagList 
+{
 public:
+  struct TagData {
+    uint8_t data[PACKET_TAG_MAX_SIZE];
+    struct TagData *next;
+    TypeId tid;
+    uint32_t count;
+  };
+
   inline PacketTagList ();
   inline PacketTagList (PacketTagList const &o);
   inline PacketTagList &operator = (PacketTagList const &o);
@@ -48,19 +56,11 @@ public:
   bool Peek (Tag &tag) const;
   inline void RemoveAll (void);
 
+  const struct PacketTagList::TagData *Head (void) const;
+
   void Print (std::ostream &os, std::string separator) const;
 
-
-  enum {
-    SIZE = TAGS_MAX_SIZE
-  };
 private:
-  struct TagData {
-    uint8_t data[PacketTagList::SIZE];
-    struct TagData *next;
-    TypeId tid;
-    uint32_t count;
-  };
 
   bool Remove (TypeId tid);
   struct PacketTagList::TagData *AllocData (void) const;
@@ -74,7 +74,9 @@ private:
 
 } // namespace ns3
 
-
+/****************************************************
+ *  Implementation of inline methods for performance
+ ****************************************************/
 
 namespace ns3 {
 
@@ -139,4 +141,4 @@ PacketTagList::RemoveAll (void)
 
 } // namespace ns3
 
-#endif /* TAGS_H */
+#endif /* PACKET_TAG_LIST_H */

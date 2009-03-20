@@ -76,6 +76,39 @@ TagIterator::TagIterator (TagList::Iterator i)
 {}
 
 
+PacketTagIterator::PacketTagIterator (const struct PacketTagList::TagData *head)
+  : m_current (head)
+{}
+bool 
+PacketTagIterator::HasNext (void) const
+{
+  return m_current != 0;
+}
+PacketTagIterator::Item 
+PacketTagIterator::Next (void)
+{
+  NS_ASSERT (HasNext ());
+  const struct PacketTagList::TagData *prev = m_current;
+  m_current = m_current->next;
+  return PacketTagIterator::Item (prev);
+}
+
+PacketTagIterator::Item::Item (const struct PacketTagList::TagData *data)
+  : m_data (data)
+{}
+TypeId 
+PacketTagIterator::Item::GetTypeId (void) const
+{
+  return m_data->tid;
+}
+void 
+PacketTagIterator::Item::GetTag (Tag &tag) const
+{
+  NS_ASSERT (tag.GetInstanceTypeId () == m_data->tid);
+  tag.Deserialize (TagBuffer ((uint8_t*)m_data->data, (uint8_t*)m_data->data+PACKET_TAG_MAX_SIZE));
+}
+
+
 void 
 Packet::Ref (void) const
 {
@@ -609,7 +642,30 @@ Packet::RemoveAllPacketTags (void)
 void 
 Packet::PrintPacketTags (std::ostream &os) const
 {
-  m_packetTagList.Print (os, " ");
+  PacketTagIterator i = GetPacketTagIterator ();
+  while (i.HasNext ())
+    {
+      PacketTagIterator::Item item = i.Next ();
+      NS_ASSERT (item.GetTypeId ().HasConstructor ());
+      Callback<ObjectBase *> constructor = item.GetTypeId ().GetConstructor ();
+      NS_ASSERT (!constructor.IsNull ());
+      ObjectBase *instance = constructor ();
+      Tag *tag = dynamic_cast<Tag *> (instance);
+      NS_ASSERT (tag != 0);
+      item.GetTag (*tag);
+      tag->Print (os);
+      delete tag;
+      if (i.HasNext ())
+        {
+          os << " ";
+        }
+    }
+}
+
+PacketTagIterator 
+Packet::GetPacketTagIterator (void) const
+{
+  return PacketTagIterator (m_packetTagList.Head ());
 }
 
 
