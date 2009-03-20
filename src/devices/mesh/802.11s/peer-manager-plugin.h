@@ -29,6 +29,7 @@ class MeshWifiInterfaceMac;
 class IeDot11sConfiguration;
 class IeDot11sPeerManagement;
 class Dot11sPeerManagerProtocol;
+class Dot11sPeerManagerProtocol;
 /**
  * \ingroup dot11s
  * 
@@ -41,7 +42,7 @@ class Dot11sPeerManagerProtocol;
 class Dot11sPeerManagerMacPlugin : public MeshWifiInterfaceMacPlugin
 {
 public:
-  Dot11sPeerManagerMacPlugin ();
+  Dot11sPeerManagerMacPlugin (uint32_t interface, Ptr<Dot11sPeerManagerProtocol> protocol);
   ~Dot11sPeerManagerMacPlugin ();
   /**
    * \brief Inherited from plugin abstract class
@@ -54,34 +55,25 @@ public:
   /**
    * \}
    */
-  bool BindWithProtocol(Ptr<Dot11sPeerManagerProtocol>);
   void SetPeerManagerProtcol(Ptr<Dot11sPeerManagerProtocol> protocol);
-  /**
-   * Deliver Peer link management information to the protocol-part
-   * \param void is returning value - we pass a frame and forget
-   * about it
-   * \param uint32_t - is a port ID of a given MAC (portID rather
-   * than MAC address, beacause many ports may have the same MAC)
-   * \param Mac48Address is address of peer
-   * \param uint16_t is association ID, which peer has assigned to
-   * us
-   * \param IeDot11sConfiguration is mesh configuration element
-   * taken from the peer management frame
-   * \param IeDot11sPeerManagement is peer link management element
-   */
-  void SetDeliverPeerLinkFrameCallbback (
-      Callback<void, uint32_t, Mac48Address, uint16_t, IeDot11sConfiguration, IeDot11sPeerManagement>
+  void SendPeerLinkManagementFrame(
+      Mac48Address peerAddress,
+      uint16_t aid,
+      IeDot11sPeerManagement peerElement,
+      IeDot11sConfiguration meshConfig
       );
-  /**
-   * \brief Forms and sends peer link management frame.
-   */
-  void SendPeerLinkManagementFrame(Mac48Address peerAddress, uint16_t aid, IeDot11sPeerManagement peerElement, IeDot11sConfiguration meshConfig);
   IeDot11sConfiguration AskPeerLinkManagementElement();
 private:
-  Callback<void, uint32_t, Mac48Address, uint16_t, IeDot11sConfiguration, IeDot11sPeerManagement> m_deliverPeerManFrame;
-  Callback<void> m_beaconCallback;
+  /**
+   * Information about MAC and protocol:
+   * \{
+   */
   Ptr<MeshWifiInterfaceMac> m_parent;
+  uint32_t m_ifIndex;
   Ptr<Dot11sPeerManagerProtocol> m_protocol;
+  /**
+   * \}
+   */
   /**
    * Create peer link management frames:
    * \{

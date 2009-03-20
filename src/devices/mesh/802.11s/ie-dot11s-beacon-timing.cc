@@ -152,7 +152,9 @@ IeDot11sBeaconTiming::GetInformationSize () const
 void
 IeDot11sBeaconTiming::PrintInformation (std::ostream& os) const
 {
-  //TODO
+  for (NeighboursTimingUnitsList::const_iterator j = m_neighbours.begin (); j != m_neighbours.end(); j++)
+    os << "AID=" << (*j)->GetAid () << ", Last beacon was at "
+      << (*j)->GetLastBeacon ()<<", with beacon interval " << (*j)->GetBeaconInterval () << "\n";
 }
 
 void
