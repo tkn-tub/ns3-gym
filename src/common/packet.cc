@@ -103,6 +103,7 @@ Packet::Copy (void) const
 Packet::Packet ()
   : m_buffer (),
     m_tagList (),
+    m_packetTagList (),
     m_metadata (m_globalUid, 0),
     m_refCount (1)
 {
@@ -112,6 +113,7 @@ Packet::Packet ()
 Packet::Packet (const Packet &o)
   : m_buffer (o.m_buffer),
     m_tagList (o.m_tagList),
+    m_packetTagList (o.m_packetTagList),
     m_metadata (o.m_metadata),
     m_refCount (1)
 {}
@@ -125,6 +127,7 @@ Packet::operator = (const Packet &o)
     }
   m_buffer = o.m_buffer;
   m_tagList = o.m_tagList;
+  m_packetTagList = o.m_packetTagList;
   m_metadata = o.m_metadata;
   return *this;
 }
@@ -132,6 +135,7 @@ Packet::operator = (const Packet &o)
 Packet::Packet (uint32_t size)
   : m_buffer (size),
     m_tagList (),
+    m_packetTagList (),
     m_metadata (m_globalUid, size),
     m_refCount (1)
 {
@@ -140,6 +144,7 @@ Packet::Packet (uint32_t size)
 Packet::Packet (uint8_t const*buffer, uint32_t size)
   : m_buffer (),
     m_tagList (),
+    m_packetTagList (),
     m_metadata (m_globalUid, size),
     m_refCount (1)
 {
@@ -149,9 +154,11 @@ Packet::Packet (uint8_t const*buffer, uint32_t size)
   i.Write (buffer, size);
 }
 
-Packet::Packet (const Buffer &buffer,  const TagList &tagList, const PacketMetadata &metadata)
+Packet::Packet (const Buffer &buffer,  const TagList &tagList, 
+                const PacketTagList &packetTagList, const PacketMetadata &metadata)
   : m_buffer (buffer),
     m_tagList (tagList),
+    m_packetTagList (packetTagList),
     m_metadata (metadata),
     m_refCount (1)
 {}
@@ -166,7 +173,7 @@ Packet::CreateFragment (uint32_t start, uint32_t length) const
   PacketMetadata metadata = m_metadata.CreateFragment (start, end);
   // again, call the constructor directly rather than
   // through Create because it is private.
-  return Ptr<Packet> (new Packet (buffer, m_tagList, metadata), false);
+  return Ptr<Packet> (new Packet (buffer, m_tagList, m_packetTagList, metadata), false);
 }
 
 uint32_t 
@@ -576,6 +583,36 @@ Packet::FindFirstMatchingTag (Tag &tag) const
   return false;
 }
 
+void 
+Packet::AddPacketTag (const Tag &tag) const
+{
+  m_packetTagList.Add (tag);
+}
+bool 
+Packet::RemovePacketTag (Tag &tag)
+{
+  bool found = m_packetTagList.Remove (tag);
+  return found;
+}
+bool 
+Packet::PeekPacketTag (Tag &tag) const
+{
+  bool found = m_packetTagList.Peek (tag);
+  return found;
+}
+void 
+Packet::RemoveAllPacketTags (void)
+{
+  m_packetTagList.RemoveAll ();
+}
+
+void 
+Packet::PrintPacketTags (std::ostream &os) const
+{
+  m_packetTagList.Print (os, " ");
+}
+
+
 std::ostream& operator<< (std::ostream& os, const Packet &packet)
 {
   packet.Print (os);
@@ -584,8 +621,6 @@ std::ostream& operator<< (std::ostream& os, const Packet &packet)
 
 
 } // namespace ns3
-
-
 
 #ifdef RUN_SELF_TESTS
 
@@ -773,14 +808,14 @@ struct Expected
 namespace ns3 {
 
 
-class PacketTest: public Test 
+static class PacketTest: public Test 
 {
 public:
   PacketTest ();
   virtual bool RunTests (void);
 private:
   bool DoCheck (Ptr<const Packet> p, const char *file, int line, uint32_t n, ...);
-};
+} g_packetTest;
 
 
 PacketTest::PacketTest ()
@@ -957,14 +992,41 @@ PacketTest::RunTests (void)
     tmp->AddAtEnd (a);
     CHECK (tmp, 1, E (10, 0, 10));
   }
-  
+
+  {
+    Packet p;
+    ATestTag<10> a;
+    p.AddPacketTag (a);
+    NS_TEST_ASSERT (p.PeekPacketTag (a));
+    ATestTag<11> b;
+    p.AddPacketTag (b);
+    NS_TEST_ASSERT (p.PeekPacketTag (b));
+    NS_TEST_ASSERT (p.PeekPacketTag (a));
+    Packet copy = p;
+    NS_TEST_ASSERT (copy.PeekPacketTag (b));
+    NS_TEST_ASSERT (copy.PeekPacketTag (a));
+    ATestTag<12> c;
+    NS_TEST_ASSERT (!copy.PeekPacketTag (c));
+    copy.AddPacketTag (c);
+    NS_TEST_ASSERT (copy.PeekPacketTag (c));
+    NS_TEST_ASSERT (copy.PeekPacketTag (b));
+    NS_TEST_ASSERT (copy.PeekPacketTag (a));
+    NS_TEST_ASSERT (!p.PeekPacketTag (c));
+    copy.RemovePacketTag (b);
+    NS_TEST_ASSERT (!copy.PeekPacketTag (b));
+    NS_TEST_ASSERT (p.PeekPacketTag (b));
+    p.RemovePacketTag (a);
+    NS_TEST_ASSERT (!p.PeekPacketTag (a));
+    NS_TEST_ASSERT (copy.PeekPacketTag (a));
+    NS_TEST_ASSERT (!p.PeekPacketTag (c));
+    NS_TEST_ASSERT (copy.PeekPacketTag (c));
+    p.RemoveAllPacketTags ();
+    NS_TEST_ASSERT (!p.PeekPacketTag (b));
+  }
 
   return result;
 }
 
-
-static PacketTest g_packetTest;
-
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* RUN_SELF_TESTS */

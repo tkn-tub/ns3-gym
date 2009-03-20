@@ -27,6 +27,7 @@
 #include "packet-metadata.h"
 #include "tag.h"
 #include "tag-list.h"
+#include "packet-tag-list.h"
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 #include "ns3/ptr.h"
@@ -409,10 +410,49 @@ public:
    */
   void RemoveAllTags (void);
 
+  /**
+   * \param tag the tag to store in this packet
+   *
+   * Add a tag to this packet. This method calls the
+   * Tag::GetSerializedSize and, then, Tag::Serialize.
+   *
+   * Note that this method is const, that is, it does not
+   * modify the state of this packet, which is fairly
+   * un-intuitive.
+   *
+   * \sa AddTag
+   */
+  void AddPacketTag (const Tag &tag) const;
+  /**
+   * \param tag the tag to remove from this packet
+   * \returns true if the requested tag is found, false
+   *          otherwise.
+   *
+   * Remove a tag from this packet. This method calls
+   * Tag::Deserialize if the tag is found.
+   */
+  bool RemovePacketTag (Tag &tag);
+  /**
+   * \param tag the tag to search in this packet
+   * \returns true if the requested tag is found, false
+   *          otherwise.
+   *
+   * Search a matching tag and call Tag::Deserialize if it is found.
+   */
+  bool PeekPacketTag (Tag &tag) const;
+  /**
+   * Remove all packet tags.
+   */
+  void RemoveAllPacketTags (void);
+
+  void PrintPacketTags (std::ostream &os) const;
+
 private:
-  Packet (const Buffer &buffer, const TagList &tagList, const PacketMetadata &metadata);
+  Packet (const Buffer &buffer, const TagList &tagList, 
+          const PacketTagList &packetTagList, const PacketMetadata &metadata);
   Buffer m_buffer;
   TagList m_tagList;
+  PacketTagList m_packetTagList;
   PacketMetadata m_metadata;
   mutable uint32_t m_refCount;
   static uint32_t m_globalUid;
@@ -437,11 +477,14 @@ std::ostream& operator<< (std::ostream& os, const Packet &packet);
  *   - ns3::Packet::AddHeader
  *   - ns3::Packet::AddTrailer
  *   - both versions of ns3::Packet::AddAtEnd
+ *   - ns3::Packet::RemovePacketTag
  *
  * Non-dirty operations:
  *   - ns3::Packet::AddTag
  *   - ns3::Packet::RemoveAllTags
  *   - ns3::Packet::PeekTag
+ *   - ns3::Packet::RemoveAllPacketTags
+ *   - ns3::Packet::PeekPacketTag
  *   - ns3::Packet::RemoveHeader
  *   - ns3::Packet::RemoveTrailer
  *   - ns3::Packet::CreateFragment

@@ -16,6 +16,7 @@ def build(bld):
         'tag.cc',
         'tag-list.cc',
         'tag-buffer.cc',
+        'packet-tag-list.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -33,4 +34,5 @@ def build(bld):
         'tag.h',
         'tag-list.h',
         'tag-buffer.h',
+        'packet-tag-list.h',
         ]
