@@ -28,6 +28,7 @@
 #include "ns3/nstime.h"
 #include "ns3/dot11s-codes.h"
 #include "ns3/wifi-information-element.h"
+
 namespace ns3 {
 /**
  * \ingroup dot11s
