@@ -22,12 +22,15 @@
 #include "ie-dot11s-configuration.h"
 #include "ie-dot11s-peer-management.h"
 #include "peer-manager-plugin.h"
+#include "ns3/simulator.h"
 #include "ns3/log.h"
 
 NS_LOG_COMPONENT_DEFINE("PeerManager");
 namespace ns3 {
-Dot11sPeerManagerMacPlugin::Dot11sPeerManagerMacPlugin ()
+Dot11sPeerManagerMacPlugin::Dot11sPeerManagerMacPlugin (uint32_t interface, Ptr<Dot11sPeerManagerProtocol> protocol)
 {
+  m_ifIndex = interface;
+  m_protocol = protocol;
 }
 
 Dot11sPeerManagerMacPlugin::~Dot11sPeerManagerMacPlugin ()
@@ -49,14 +52,22 @@ Dot11sPeerManagerMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & h
   {
     NS_LOG_UNCOND("Beacon recevied by PM from"<<header.GetAddr2 ());
     IeDot11sBeaconTiming beaconTiming;
-    Mac48Address peerAddress = header.GetAddr2 ();
     Ptr<Packet> myBeacon = packet->Copy();
     MgtBeaconHeader beacon_hdr;
     myBeacon->RemoveHeader(beacon_hdr);
     if(myBeacon->GetSize () == 0)
       NS_LOG_UNCOND("Empty");
+    bool meshBeacon = false;
     if(beaconTiming.FindMyInformationElement(myBeacon))
-      NS_LOG_UNCOND("BEACON TIMING");
+      meshBeacon = true;
+    m_protocol->ReceiveBeacon(
+        m_ifIndex,
+        meshBeacon,
+        beaconTiming,
+        header.GetAddr2(),
+        Simulator::Now(),
+        MicroSeconds(beacon_hdr.GetBeaconIntervalUs())
+        );
 
 #if 0
       packet->RemoveHeader (beacon);
@@ -81,17 +92,15 @@ Dot11sPeerManagerMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHea
 void
 Dot11sPeerManagerMacPlugin::UpdateBeacon (MeshWifiBeacon & beacon) const
 {
+#if 0
   NS_LOG_UNCOND("I am sending a beacon");
-  Ptr<IeDot11sPreq>  beaconTiming = Create<IeDot11sPreq> ();
-  beacon.AddInformationElement(beaconTiming);
   Ptr<IeDot11sPrep>  prep = Create<IeDot11sPrep> ();
-  beacon.AddInformationElement(prep);
+#endif
+  Ptr<IeDot11sBeaconTiming>  beaconTiming = 
+    m_protocol->SendBeacon(
+        m_ifIndex,
+        Simulator::Now(),
+        MicroSeconds(beacon.BeaconHeader().GetBeaconIntervalUs()));
+  beacon.AddInformationElement(beaconTiming);
 }
-bool
-Dot11sPeerManagerMacPlugin::BindWithProtocol(Ptr<Dot11sPeerManagerProtocol> protocol)
-{
-  m_protocol = protocol;
-  return true;
-}
-
 }//namespace ns3

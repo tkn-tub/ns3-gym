@@ -200,20 +200,27 @@ public:
    * it and remember the time, when we sent a beacon (for BCA)
    * \param IeDot11sBeaconTiming is a beacon timing element that
    * should be present in beacon
-   * \param port is a port sending a beacon
+   * \param interface is a interface sending a beacon
    * \param currentTbtt is a time of beacon sending
-   * \param beaconInterval is a beacon interval on this port
+   * \param beaconInterval is a beacon interval on this interface
    */
-  IeDot11sBeaconTiming SendBeacon(uint32_t port, Time currentTbtt, Time beaconInterval);
+  Ptr<IeDot11sBeaconTiming> SendBeacon(uint32_t interface, Time currentTbtt, Time beaconInterval);
   /**
    * \brief When we receive a beacon from peer-station, we remember
    * its beacon timing element (needed for peer choosing mechanism),
    * and remember beacon timers - last beacon and beacon interval to
    * detect beacon loss and cancel links
-   * \param port is a port on which beacon was received
+   * \param interface is a interface on which beacon was received
    * \param timingElement is a timing element of remote beacon
    */
-  void ReceiveBeacon(uint32_t port, IeDot11sBeaconTiming timingElement, Mac48Address peerAddress, Time receivingTime, Time beaconInterval);
+  void ReceiveBeacon(
+      uint32_t interface,
+      bool meshBeacon,
+      IeDot11sBeaconTiming timingElement,
+      Mac48Address peerAddress,
+      Time receivingTime,
+      Time beaconInterval
+      );
   /**
    * \}
    */
@@ -226,8 +233,8 @@ public:
    * Deliver Peer link management information to the protocol-part
    * \param void is returning value - we pass a frame and forget
    * about it
-   * \param uint32_t - is a port ID of a given MAC (portID rather
-   * than MAC address, beacause many ports may have the same MAC)
+   * \param uint32_t - is a interface ID of a given MAC (interfaceID rather
+   * than MAC address, beacause many interfaces may have the same MAC)
    * \param Mac48Address is address of peer
    * \param uint16_t is association ID, which peer has assigned to
    * us
@@ -236,11 +243,11 @@ public:
    * \param IeDot11sPeerManagement is peer link management element
    */
   void ReceivePeerLinkFrame(
-      uint32_t port,
+      uint32_t interface,
       Mac48Address peerAddress,
       uint16_t aid,
-      IeDot11sConfiguration meshConfig,
-      IeDot11sPeerManagement peerManagementElement
+      IeDot11sPeerManagement peerManagementElement,
+      IeDot11sConfiguration meshConfig
       );
   /**
    * \}
@@ -253,18 +260,30 @@ private:
    * * pointers to proper plugins
    * \{
    */
-//  struct BeaconInfo
-//  {
-//    Time referenceTbtt; //When one of my station's beacons was put into a beacon queue;
-//    Time beaconInterval; //Beacon interval of my station;
- //   uint16_t aid; //Assoc ID
-  //};
+  struct BeaconInfo
+  {
+    uint16_t aid; //Assoc ID
+    Time referenceTbtt; //When one of my station's beacons was put into a beacon queue;
+    Time beaconInterval; //Beacon interval of my station;
+  };
   typedef std::map<uint32_t, std::vector<Ptr<WifiPeerLinkDescriptor> > >  PeerDescriptorsMap;
-//  typedef std::map<uint32_t, BeaconInfo> BeaconInfoMap;
+  typedef std::map<Mac48Address, BeaconInfo>  BeaconInterfaceInfoMap;
+  typedef std::map<uint32_t, BeaconInterfaceInfoMap> BeaconInfoMap;
   typedef std::map<uint32_t, Ptr<Dot11sPeerManagerMacPlugin> > PeerManagerPluginMap;
+
+  PeerManagerPluginMap m_plugins;
+  /**
+   * Information related to beacons:
+   * \{
+   */
+  BeaconInfoMap m_neighbourBeacons;
+  static const uint8_t m_maxBeaconLoss = 3;
   /**
    * \}
+   * \}
    */
+  uint16_t m_lastAssocId;
+  uint16_t m_lastLocalLinkId;
 #if 0
   //Maximum peers that may be opened:
   uint8_t  m_maxNumberOfPeerLinks;
@@ -291,16 +310,16 @@ private:
   Time  m_peerLinkCleanupPeriod;
   EventId  m_cleanupEvent;
   Ptr<WifiPeerLinkDescriptor> AddDescriptor (
-    Mac48Address portAddress,
+    Mac48Address interfaceAddress,
     Mac48Address peerAddress,
     Time lastBeacon,
     Time beaconInterval
   );
   void  PeerCleanup ();
   //Mechanism of choosing PEERs:
-  bool  ShouldSendOpen (Mac48Address portAddress, Mac48Address peerAddress);
+  bool  ShouldSendOpen (Mac48Address interfaceAddress, Mac48Address peerAddress);
   bool  ShouldAcceptOpen (
-    Mac48Address portAddress,
+    Mac48Address interfaceAddress,
     Mac48Address peerAddress,
     dot11sReasonCode & reasonCode
   );
@@ -315,7 +334,7 @@ private:
    * \param status true - peer link opened, peer
    * link closed otherwise
    */
-  void PeerLinkStatus (Mac48Address portAddress, Mac48Address peerAddress, bool status);
+  void PeerLinkStatus (Mac48Address interfaceAddress, Mac48Address peerAddress, bool status);
 #endif
 };
 } //namespace ns3

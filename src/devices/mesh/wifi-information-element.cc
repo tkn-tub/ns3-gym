@@ -64,6 +64,7 @@ void WifiInformationElement::Print (std::ostream &os) const
   PrintInformation (os);
   os << "</information_element>\n";
 }
+
 bool WifiInformationElement::FindMyInformationElement(Ptr<Packet> packet)
 {
   const uint8_t * data = packet->PeekData();
@@ -72,15 +73,16 @@ bool WifiInformationElement::FindMyInformationElement(Ptr<Packet> packet)
   {
     if(data[position] == ElementId())
     {
-
+      Ptr<Packet> myIe = packet->CreateFragment(position, data[position+1]+2);
+      NS_ASSERT(myIe->GetSize() == (uint32_t)(data[position+1]+2));
+      myIe->RemoveHeader(*this);
       return true;
     }
     else
     {
-      NS_LOG_UNCOND("not found"<<(uint16_t)data[position]);
+      if(data[position] > ElementId())
+        return false;
       position +=data[position+1]+2;
-      //if(data[position + 1] == 0)
-      //  return false;
     }
   }
   return false;
