@@ -50,4 +50,7 @@ def build(bld):
 
     if bld.env['ENABLE_LIBXML2']:
         module.source.append ('xml-config.cc')
-        module.uselib = module.uselib + ' LIBXML2'
+        if bld.env['ENABLE_GTK_CONFIG_STORE']:
+            module.uselib = module.uselib + ' LIBXML2'
+        else:
+            module.uselib = 'LIBXML2'
