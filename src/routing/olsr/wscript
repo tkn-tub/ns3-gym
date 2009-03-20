@@ -6,16 +6,15 @@ def build(bld):
     module.source = [
         'olsr-header.cc',
         'olsr-state.cc',
-        'olsr-routing-table.cc',
-        'olsr-agent.cc',
         'olsr-agent-impl.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
     headers.module = 'olsr'
     headers.source = [
-        'olsr-agent.h',
+        'olsr-agent-impl.h',
         'olsr-header.h',
-        'olsr-routing-table.h'
+        'olsr-state.h',
+        'olsr-repositories.h',
         ]
 

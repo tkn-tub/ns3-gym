@@ -44,6 +44,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/enum.h"
 #include "ns3/trace-source-accessor.h"
+#include "ns3/ipv4-header.h"
 
 /********** Useful macros **********/
 
@@ -148,7 +149,7 @@ TypeId
 AgentImpl::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::olsr::AgentImpl")
-    .SetParent<Agent> ()
+    .SetParent<Ipv4RoutingProtocol> ()
     .AddConstructor<AgentImpl> ()
     .AddAttribute ("HelloInterval", "HELLO messages emission interval.",
                    TimeValue (Seconds (2)),
@@ -221,13 +222,7 @@ void AgentImpl::DoDispose ()
     }
   m_socketAddresses.clear ();
 
-  if (m_routingTable)
-    {
-      m_routingTable->Dispose ();
-      m_routingTable = 0;
-    }
-
-  Object::DoDispose ();
+  Ipv4RoutingProtocol::DoDispose ();
 }
 
 void AgentImpl::Start ()
@@ -250,13 +245,6 @@ void AgentImpl::Start ()
 
   NS_LOG_DEBUG ("Starting OLSR on node " << m_mainAddress);
 
-  m_routingTable = CreateObject<RoutingTable> ();
-  m_routingTable->SetIpv4 (m_ipv4);
-  m_routingTable->SetMainAddress (m_mainAddress);
-  // Add OLSR as routing protocol, with slightly higher priority than
-  // static routing.
-  m_ipv4->AddRoutingProtocol (m_routingTable, 10);
-  
   Ipv4Address loopback ("127.0.0.1");
   for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
     {
@@ -765,7 +753,7 @@ AgentImpl::RoutingTableComputation ()
                 << ": RoutingTableComputation begin...");
 
   // 1. All the entries from the routing table are removed.
-  m_routingTable->Clear ();
+  Clear ();
 	
   // 2. The new routing entries are added starting with the
   // symmetric neighbors (h=1) as the destination nodes.
@@ -792,10 +780,10 @@ AgentImpl::RoutingTableComputation ()
                   NS_LOG_LOGIC ("Link tuple matches neighbor " << nb_tuple.neighborMainAddr
                                 << " => adding routing table entry to neighbor");
                   lt = &link_tuple;
-                  m_routingTable->AddEntry (link_tuple.neighborIfaceAddr,
-                                            link_tuple.neighborIfaceAddr,
-                                            link_tuple.localIfaceAddr,
-                                            1);
+                  AddEntry (link_tuple.neighborIfaceAddr,
+                            link_tuple.neighborIfaceAddr,
+                            link_tuple.localIfaceAddr,
+                            1);
                   if (link_tuple.neighborIfaceAddr == nb_tuple.neighborMainAddr)
                     {
                       nb_main_addr = true;
@@ -823,10 +811,10 @@ AgentImpl::RoutingTableComputation ()
             {
               NS_LOG_LOGIC ("no R_dest_addr is equal to the main address of the neighbor "
                             "=> adding additional routing entry");
-              m_routingTable->AddEntry(nb_tuple.neighborMainAddr,
-                                       lt->neighborIfaceAddr,
-                                       lt->localIfaceAddr,
-                                       1);
+              AddEntry(nb_tuple.neighborMainAddr,
+                       lt->neighborIfaceAddr,
+                       lt->localIfaceAddr,
+                       1);
             }
         }
     }
@@ -892,11 +880,11 @@ AgentImpl::RoutingTableComputation ()
       //                                   R_dest_addr == N_neighbor_main_addr
       //                                                  of the 2-hop tuple;
       RoutingTableEntry entry;
-      bool foundEntry = m_routingTable->Lookup (nb2hop_tuple.neighborMainAddr, entry);
+      bool foundEntry = Lookup (nb2hop_tuple.neighborMainAddr, entry);
       if (foundEntry)
         {
           NS_LOG_LOGIC ("Adding routing entry for two-hop neighbor.");
-          m_routingTable->AddEntry (nb2hop_tuple.twoHopNeighborAddr,
+          AddEntry (nb2hop_tuple.twoHopNeighborAddr,
                                     entry.nextAddr,
                                     entry.interface,
                                     2);
@@ -927,8 +915,8 @@ AgentImpl::RoutingTableComputation ()
           NS_LOG_LOGIC ("Looking at topology tuple: " << topology_tuple);
 
           RoutingTableEntry destAddrEntry, lastAddrEntry;
-          bool have_destAddrEntry = m_routingTable->Lookup (topology_tuple.destAddr, destAddrEntry);
-          bool have_lastAddrEntry = m_routingTable->Lookup (topology_tuple.lastAddr, lastAddrEntry);
+          bool have_destAddrEntry = Lookup (topology_tuple.destAddr, destAddrEntry);
+          bool have_lastAddrEntry = Lookup (topology_tuple.lastAddr, lastAddrEntry);
           if (!have_destAddrEntry && have_lastAddrEntry && lastAddrEntry.distance == h)
             {
               NS_LOG_LOGIC ("Adding routing table entry based on the topology tuple.");
@@ -942,10 +930,10 @@ AgentImpl::RoutingTableComputation ()
               //                     R_iface_addr = R_iface_addr of the recorded
               //                                    route entry where:
               //                                       R_dest_addr == T_last_addr.
-              m_routingTable->AddEntry (topology_tuple.destAddr,
-                                        lastAddrEntry.nextAddr,
-                                        lastAddrEntry.interface,
-                                        h + 1);
+              AddEntry (topology_tuple.destAddr,
+                        lastAddrEntry.nextAddr,
+                        lastAddrEntry.interface,
+                        h + 1);
               added = true;
             }
           else
@@ -973,8 +961,8 @@ AgentImpl::RoutingTableComputation ()
     {
       IfaceAssocTuple const &tuple = *it;
       RoutingTableEntry entry1, entry2;
-      bool have_entry1 = m_routingTable->Lookup (tuple.mainAddr, entry1);
-      bool have_entry2 = m_routingTable->Lookup (tuple.ifaceAddr, entry2);
+      bool have_entry1 = Lookup (tuple.mainAddr, entry1);
+      bool have_entry2 = Lookup (tuple.ifaceAddr, entry2);
       if (have_entry1 && !have_entry2)
         {
           // then a route entry is created in the routing table with:
@@ -983,15 +971,15 @@ AgentImpl::RoutingTableComputation ()
           //       R_next_addr  =  R_next_addr  (of the recorded route entry)
           //       R_dist       =  R_dist       (of the recorded route entry)
           //       R_iface_addr =  R_iface_addr (of the recorded route entry).
-          m_routingTable->AddEntry (tuple.ifaceAddr,
-                                    entry1.nextAddr,
-                                    entry1.interface,
-                                    entry1.distance);
+          AddEntry (tuple.ifaceAddr,
+                    entry1.nextAddr,
+                    entry1.interface,
+                    entry1.distance);
         }
     }
 
   NS_LOG_DEBUG ("Node " << m_mainAddress << ": RoutingTableComputation end.");
-  m_routingTableChanged (m_routingTable->GetSize ());
+  m_routingTableChanged (GetSize ());
 }
 
 
@@ -2488,11 +2476,205 @@ AgentImpl::IfaceAssocTupleTimerExpire (Ipv4Address ifaceAddr)
     }
 }
 
-Ptr<const olsr::RoutingTable>
-AgentImpl::GetRoutingTable () const
+///
+/// \brief Clears the routing table and frees the memory assigned to each one of its entries.
+///
+void
+AgentImpl::Clear ()
 {
-  return m_routingTable;
+  NS_LOG_FUNCTION_NOARGS ();
+  m_table.clear ();
 }
+
+///
+/// \brief Deletes the entry whose destination address is given.
+/// \param dest	address of the destination node.
+///
+void
+AgentImpl::RemoveEntry (Ipv4Address const &dest)
+{
+  m_table.erase (dest);
+}
+
+///
+/// \brief Looks up an entry for the specified destination address.
+/// \param dest	destination address.
+/// \param outEntry output parameter to hold the routing entry result, if fuond
+/// \return	true if found, false if not found
+///
+bool
+AgentImpl::Lookup (Ipv4Address const &dest,
+                      RoutingTableEntry &outEntry) const
+{
+  // Get the iterator at "dest" position
+  std::map<Ipv4Address, RoutingTableEntry>::const_iterator it =
+    m_table.find (dest);
+  // If there is no route to "dest", return NULL
+  if (it == m_table.end ())
+    return false;
+  outEntry = it->second;
+  return true;
+}
+
+///
+/// \brief	Finds the appropiate entry which must be used in order to forward
+///		a data packet to a next hop (given a destination).
+///
+/// Imagine a routing table like this: [A,B] [B,C] [C,C]; being each pair of the
+/// form [dest addr,next-hop addr]. In this case, if this function is invoked with
+/// [A,B] then pair [C,C] is returned because C is the next hop that must be used
+/// to forward a data packet destined to A. That is, C is a neighbor of this node,
+/// but B isn't. This function finds the appropiate neighbor for forwarding a packet.
+///
+/// \param entry	the routing table entry which indicates the destination node
+///			we are interested in.
+/// \return		the appropiate routing table entry which indicates the next
+///			hop which must be used for forwarding a data packet, or NULL
+///			if there is no such entry.
+///
+bool
+AgentImpl::FindSendEntry (RoutingTableEntry const &entry,
+                             RoutingTableEntry &outEntry) const
+{
+  outEntry = entry;
+  while (outEntry.destAddr != outEntry.nextAddr)
+    {
+      if (not Lookup(outEntry.nextAddr, outEntry))
+        return false;
+    }
+  return true;
+}
+
+
+bool
+AgentImpl::RequestRoute (uint32_t ifIndex,
+                            const Ipv4Header &ipHeader,
+                            Ptr<Packet> packet,
+                            RouteReplyCallback routeReply)
+{
+  RoutingTableEntry entry1, entry2;
+  if (Lookup (ipHeader.GetDestination (), entry1))
+    {
+      bool foundSendEntry = FindSendEntry (entry1, entry2);
+      if (!foundSendEntry)
+        NS_FATAL_ERROR ("FindSendEntry failure");
+
+      Ipv4Route route = Ipv4Route::CreateHostRouteTo
+        (ipHeader.GetDestination (), entry2.nextAddr, entry2.interface);
+
+      NS_LOG_DEBUG ("Olsr node " << m_mainAddress
+                    << ": RouteRequest for dest=" << ipHeader.GetDestination ()
+                    << " --> nestHop=" << entry2.nextAddr
+                    << " interface=" << entry2.interface);
+      
+      routeReply (true, route, packet, ipHeader);
+      return true;
+    }
+  else
+    {
+#ifdef NS3_LOG_ENABLE
+      NS_LOG_DEBUG ("Olsr node " << m_mainAddress
+                    << ": RouteRequest for dest=" << ipHeader.GetDestination ()
+                    << " --> NOT FOUND; ** Dumping routing table...");
+      for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();
+           iter != m_table.end (); iter++)
+        {
+          NS_LOG_DEBUG ("dest=" << iter->first << " --> next=" << iter->second.nextAddr
+                        << " via interface " << iter->second.interface);
+        }
+
+      NS_LOG_DEBUG ("** Routing table dump end.");
+#endif
+      return false;
+    }
+}
+
+bool
+AgentImpl::RequestIfIndex (Ipv4Address destination,
+                              uint32_t& ifIndex)
+{
+  RoutingTableEntry entry1, entry2;
+  if (Lookup (destination, entry1))
+    {
+      bool foundSendEntry = FindSendEntry (entry1, entry2);
+      if (!foundSendEntry)
+        NS_FATAL_ERROR ("FindSendEntry failure");
+      ifIndex = entry2.interface;
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+
+///
+/// \brief Adds a new entry into the routing table.
+///
+/// If an entry for the given destination existed, it is deleted and freed.
+///
+/// \param dest		address of the destination node.
+/// \param next		address of the next hop node.
+/// \param iface	address of the local interface.
+/// \param dist		distance to the destination node.
+///
+void
+AgentImpl::AddEntry (Ipv4Address const &dest,
+                        Ipv4Address const &next,
+                        uint32_t interface,
+                        uint32_t distance)
+{
+  NS_LOG_FUNCTION (this << dest << next << interface << distance << m_mainAddress);
+
+  NS_ASSERT (distance > 0);
+
+  // Creates a new rt entry with specified values
+  RoutingTableEntry &entry = m_table[dest];
+
+  entry.destAddr = dest;
+  entry.nextAddr = next;
+  entry.interface = interface;
+  entry.distance = distance;
+}
+
+void
+AgentImpl::AddEntry (Ipv4Address const &dest,
+                        Ipv4Address const &next,
+                        Ipv4Address const &interfaceAddress,
+                        uint32_t distance)
+{
+  NS_LOG_FUNCTION (this << dest << next << interfaceAddress << distance << m_mainAddress);
+
+  NS_ASSERT (distance > 0);
+  NS_ASSERT (m_ipv4);
+
+  RoutingTableEntry entry;
+  for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
+    {
+      if (m_ipv4->GetAddress (i) == interfaceAddress)
+        {
+          AddEntry (dest, next, i, distance);
+          return;
+        }
+    }
+  NS_ASSERT (false); // should not be reached
+  AddEntry (dest, next, 0, distance);
+}
+
+
+std::vector<RoutingTableEntry>
+AgentImpl::GetEntries () const
+{
+  std::vector<RoutingTableEntry> retval;
+  for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();
+       iter != m_table.end (); iter++)
+    {
+      retval.push_back (iter->second);
+    }
+  return retval;
+}
+
 
 }} // namespace olsr, ns3
 
