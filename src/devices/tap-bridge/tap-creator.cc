@@ -39,7 +39,7 @@
 
 #define TAP_MAGIC 95549
 
-static int gVerbose = 0; // Set to true to turn on logging messages.
+static int gVerbose = 1; // Set to true to turn on logging messages.
 
 #define LOG(msg) \
   if (gVerbose) \
@@ -295,13 +295,15 @@ CreateTap (const char *dev, const char *gw, const char *ip, const char *mac, con
   LOG ("Allocated TAP device " << tapDeviceName);
 
   //
-  // Operating mode "2" corresponds to BRIDGED_DEVICE mode.  This means that
+  // Operating mode "2" corresponds to USE_LOCAL and "3" to USE_BRIDGE mode.  
+  // This means that
   // we expect that the user will have named, created and configured a network
   // tap that we are just going to use.  So don't mess up his hard work by
   // changing anything, just return the tap fd.
   //
-  if (strcmp (mode, "2") == 0)
+  if (strcmp (mode, "2") == 0 || strcmp (mode, "3") == 0)
     {
+      LOG ("Returning precreated tap ");
       return tap;
     }
 

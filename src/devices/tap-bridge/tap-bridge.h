@@ -105,8 +105,9 @@ public:
    */
   enum Mode {
     ILLEGAL,         /**< mode not set */
-    LOCAL_DEVICE,   /**< ns-3 creates and configures TAP device */
-    BRIDGED_DEVICE, /**< user creates and configures TAP */  
+    CONFIGURE_LOCAL, /**< ns-3 creates and configures tap device */
+    USE_LOCAL,       /**< ns-3 uses a pre-created tap, without configuring it */
+    USE_BRIDGE, /**< ns-3 uses a pre-created tap, and bridges to a bridging net device */
   };
 
   TapBridge ();
@@ -209,7 +210,7 @@ protected:
    */
   virtual void DoDispose (void);
 
-  void ReceiveFromBridgedDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
+  void ReceiveFromSimDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                                  Address const &src, Address const &dst, PacketType packetType);
 private:
 
@@ -264,7 +265,7 @@ private:
    *            received from the host.
    * \param buf The length of the buffer.
    */
-  void ForwardToBridgedDevice (uint8_t *buf, uint32_t len);
+  void ForwardToSimDevice (uint8_t *buf, uint32_t len);
 
   /**
    * \internal
@@ -426,18 +427,11 @@ private:
   /**
    * \internal
    *
-   * The MAC address to use as the hardware address on the host.  This can
-   * come from one of two places depending on the operating mode.  
-   *
-   * If the TapBridge is in LocalDevice mode, this value comes from the MAC
+   * The MAC address to use as the hardware address on the host; only used
+   * in UseLocal mode.  This value comes from the MAC  
    * address assigned to the bridged ns-3 net device and matches the MAC 
    * address of the underlying network TAP which we configured to have the 
    * same value.
-   * 
-   * If the TapBridge is in BridgedDevice mode, this value is learned from
-   * from the packets received by the underlying netowrk TAP.  This is
-   * because we did not configure the TAP, but have got to spoof packets
-   * destined for there.
    */
   Mac48Address m_tapMac;
 
@@ -454,6 +448,17 @@ private:
    * The ns-3 net device to which we are bridging.
    */
   Ptr<NetDevice> m_bridgedDevice;
+  /**
+   * \internal
+   *
+   * The MAC address of the local tap device is stored in this variable.
+   * When in UseLocal mode, this address is added back to the destination 
+   * Mac address for frames destined to the tap device.  It is learned from
+   * the first frame sent from the host to the TapBridge device.  In the
+   * other modes of this device, this value is unused.  
+   */
+  Mac48Address m_learnedMac;
+
 };
 
 } // namespace ns3

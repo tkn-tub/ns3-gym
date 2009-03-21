@@ -80,22 +80,22 @@ TapBridge::GetTypeId (void)
                    MakeStringAccessor (&TapBridge::m_tapDeviceName),
                    MakeStringChecker ())
     .AddAttribute ("Gateway", 
-                   "The IP address of the default gateway to assign to the tap device.",
+                   "The IP address of the default gateway to assign to the host machine, when in ConfigureLocal mode.",
                    Ipv4AddressValue ("255.255.255.255"),
                    MakeIpv4AddressAccessor (&TapBridge::m_tapGateway),
                    MakeIpv4AddressChecker ())
     .AddAttribute ("IpAddress", 
-                   "The IP address to assign to the tap device.",
+                   "The IP address to assign to the tap device, when in ConfigureLocal mode.",
                    Ipv4AddressValue ("255.255.255.255"),
                    MakeIpv4AddressAccessor (&TapBridge::m_tapIp),
                    MakeIpv4AddressChecker ())
     .AddAttribute ("MacAddress", 
-                   "The MAC address to assign to the tap device.",
+                   "The MAC address to assign to the tap device, when in ConfigureLocal mode.",
                    Mac48AddressValue (Mac48Address ("ff:ff:ff:ff:ff:ff")),
                    MakeMac48AddressAccessor (&TapBridge::m_tapMac),
                    MakeMac48AddressChecker ())
     .AddAttribute ("Netmask", 
-                   "The network mask to assign to the tap device.",
+                   "The network mask to assign to the tap device, when in ConfigureLocal mode.",
                    Ipv4MaskValue ("255.255.255.255"),
                    MakeIpv4MaskAccessor (&TapBridge::m_tapNetmask),
                    MakeIpv4MaskChecker ())
@@ -110,11 +110,12 @@ TapBridge::GetTypeId (void)
                    MakeTimeAccessor (&TapBridge::m_tStop),
                    MakeTimeChecker ())
     .AddAttribute ("Mode", 
-                   "The operating and configuration mode (LocalDevice or BridgedDevice) to use.",
-                   EnumValue (LOCAL_DEVICE),
+                   "The operating and configuration mode to use.",
+                   EnumValue (USE_LOCAL),
                    MakeEnumAccessor (&TapBridge::SetMode),
-                   MakeEnumChecker (LOCAL_DEVICE, "LocalDevice",
-                                    BRIDGED_DEVICE, "BridgedDevice"))
+                   MakeEnumChecker (CONFIGURE_LOCAL, "ConfigureLocal",
+                                    USE_LOCAL, "UseLocal",
+                                    USE_BRIDGE, "UseBridge"))
     ;
   return tid;
 }
@@ -126,7 +127,8 @@ TapBridge::TapBridge ()
   m_sock (-1),
   m_startEvent (),
   m_stopEvent (),
-  m_readThread (0)
+  m_readThread (0),
+  m_learnedMac (Mac48Address ("ff:ff:ff:ff:ff:ff"))
 {
   NS_LOG_FUNCTION_NOARGS ();
   Start (m_tStart);
@@ -222,20 +224,20 @@ TapBridge::CreateTap (void)
   // 
   // The TapBridge has two distinct operating modes.  The difference revolves
   // around who is responsible for creating and configuring the underlying 
-  // network tap that we use.  In LocalDevice mode, the TapBridge has the
+  // network tap that we use.  In ConfigureLocal mode, the TapBridge has the
   // responsibility for creating and configuring the TAP.
   //
-  // In BridgedDevice mode, the user will provide us a configuration and we have
+  // In UseBridge mode, the user will provide us a configuration and we have
   // to adapt to it.  For example, the user will do something like:
   //
   //   sudo tunctl -t tap0
   //   sudo ifconfig tap0 hw ether 00:00:00:00:00:01
   //   sudo ifconfig tap0 10.1.1.1 netmask 255.255.255.0 up
   //
-  // set the "Mode" Attribute to "BridgedDevice" and the "DeviceName" Attribute
+  // set the "Mode" Attribute to "UseBridge" and the "DeviceName" Attribute
   // to "tap0" in this case.
   //
-  // In LocalDevice mode, we will do the configuration and create a TAP with
+  // In ConfigureLocal mode, we will do the configuration and create a TAP with
   // the provided "DeviceName" with which the user can later do what she wants.
   //
   // We want to either create or use a tap device on the host.  Unfortunately for
@@ -296,7 +298,7 @@ TapBridge::CreateTap (void)
       // -i<IP-address> The IP address to assign to the new tap device;
       // -m<MAC-address> The MAC-48 address to assign to the new tap device;
       // -n<network-mask> The network mask to assign to the new tap device;
-      // -o<operating mode> The operating mode of the bridge (1=LocalDevice, 2=BridgedDevice)
+      // -o<operating mode> The operating mode of the bridge (1=ConfigureLocal, 2=UseLocal, 3=UseBridge)
       // -p<path> the path to the unix socket described above.
       //
       // Example tap-creator -dnewdev -g1.2.3.2 -i1.2.3.1 -m08:00:2e:00:01:23 -n255.255.255.0 -o1 -pblah
@@ -381,13 +383,17 @@ TapBridge::CreateTap (void)
 
       std::ostringstream ossMode;
       ossMode << "-o";
-      if (m_mode == LOCAL_DEVICE)
+      if (m_mode == CONFIGURE_LOCAL)
         {
           ossMode << "1";
         }
-      else
+      else if (m_mode == USE_LOCAL)
         {
           ossMode << "2";
+        }
+      else
+        {
+          ossMode << "3";
         }
 
       std::ostringstream ossPath;
@@ -590,11 +596,12 @@ TapBridge::ReadThread (void)
       uint32_t bufferSize = 65536;
       uint8_t *buf = (uint8_t *)malloc (bufferSize);
       NS_ABORT_MSG_IF (buf == 0, "TapBridge::ReadThread(): malloc packet buffer failed");
-      NS_LOG_LOGIC ("Calling read on tap device socket fd");
+      NS_LOG_LOGIC ("Calling read on tap device socket fd " << m_sock);
       len = read (m_sock, buf, bufferSize);
 
       if (len == -1)
         {
+          NS_LOG_INFO ("TapBridge::ReadThread(): Returning");
           free (buf);
           buf = 0;
           return;
@@ -603,13 +610,13 @@ TapBridge::ReadThread (void)
       NS_LOG_INFO ("TapBridge::ReadThread(): Received packet");
       NS_LOG_INFO ("TapBridge::ReadThread(): Scheduling handler");
       DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ())->ScheduleRealtimeNow (
-        MakeEvent (&TapBridge::ForwardToBridgedDevice, this, buf, len));
+        MakeEvent (&TapBridge::ForwardToSimDevice, this, buf, len));
       buf = 0;
     }
 }
 
 void
-TapBridge::ForwardToBridgedDevice (uint8_t *buf, uint32_t len)
+TapBridge::ForwardToSimDevice (uint8_t *buf, uint32_t len)
 {
   NS_LOG_FUNCTION (buf << len);
 
@@ -641,10 +648,22 @@ TapBridge::ForwardToBridgedDevice (uint8_t *buf, uint32_t len)
   NS_LOG_LOGIC ("Pkt source is " << src);
   NS_LOG_LOGIC ("Pkt destination is " << dst);
   NS_LOG_LOGIC ("Pkt LengthType is " << type);
+  if (m_mode == USE_LOCAL)
+    {
+      // Should not be a broadcast src
+      NS_ASSERT_MSG (Mac48Address::ConvertFrom (src) != Mac48Address ("ff:ff:ff:ff:ff:ff"), "TapBridge::ForwardToSimDevice:  Source addr is broadcast");
+      m_learnedMac = Mac48Address::ConvertFrom (src);
+      NS_LOG_LOGIC ("Learned MacAddr is " << m_learnedMac);
+      // If we are operating in USE_LOCAL mode, we may be attached to an ns-3
+      // bridging or non-bridging NetDevice.  We use the generic Send() method.
+      NS_LOG_LOGIC ("Forwarding packet");
+      m_bridgedDevice->Send (packet, dst, type);
+      return;
+    }
 
   //
-  // If we are operating in BRIDGED_DEVICE mode, we have the situation described
-  // below:
+  // If we are operating in USE_BRIDGE mode, we have the 
+  // situation described below:
   //
   //  Other Device  <-->  Tap Device  <--> ns3 device
   //   Mac Addr A         Mac Addr B       Mac Addr C
@@ -657,14 +676,14 @@ TapBridge::ForwardToBridgedDevice (uint8_t *buf, uint32_t len)
   // (modulo learning behavior) sent out to "Other Device."  This makes it 
   // appear as if both devices are on a single subnet.
   //
-  // In BRIDGED_DEVICE mode, we want to logically extend this Linux behavior
+  // In USE_BRIDGE mode, we want to logically extend this Linux behavior
   // to the ns3 device and make it appear as if it is connected to the Linux
   // subnet.  As you may expect, this means that we need to act like a real
   // bridge and do what is described above.  The code here will do the 
   // equivalent of a SendFrom on "ns3 Device" of the bits received on
   // "Tap Device"
   //
-  // If we are operating in LOCAL_DEVICE mode, we simply simply take all packets
+  // If we are operating in CONFIGURE_LOCAL mode, we simply simply take all packets
   // that come from "Tap Device" and ask "ns3 Device" to send them down its 
   // directly connected network.  To to this, we just need to remove the
   // Ethernet header (which was done for us by the Filter () method), and then 
@@ -677,16 +696,15 @@ TapBridge::ForwardToBridgedDevice (uint8_t *buf, uint32_t len)
   // what to do if the bridged device does not support SendFrom, which will be
   // the case for Wifi STA nodes.
   //
-
   NS_LOG_LOGIC ("Forwarding packet");
 
-  if (m_bridgedDevice->SupportsSendFrom ())
+  if (m_mode == USE_BRIDGE)
     {
       m_bridgedDevice->SendFrom (packet, src, dst, type);
     }
   else
     {
-      NS_FATAL_ERROR ("TapBridge::ForwardToBridgedDevice(): Bridged device does not support SendFrom");
+      m_bridgedDevice->Send (packet, dst, type);
     }
 }
 
@@ -698,7 +716,7 @@ TapBridge::Filter (Ptr<Packet> p, Address *src, Address *dst, uint16_t *type)
 
   //
   // We have a candidate packet for injection into ns-3.  We expect that since
-  // it came over a socket that provides Ethernet packets, it sould be big 
+  // it came over a socket that provides Ethernet packets, it should be big 
   // enough to hold an EthernetHeader.  If it can't, we signify the packet 
   // should be filtered out by returning 0.
   //
@@ -772,7 +790,7 @@ TapBridge::SetBridgedNetDevice (Ptr<NetDevice> bridgedDevice)
       NS_FATAL_ERROR ("TapBridge::SetBridgedDevice: Device does not support eui 48 addresses: cannot be added to bridge.");
     }
   
-  if (!bridgedDevice->SupportsSendFrom ())
+  if (m_mode == USE_BRIDGE && !bridgedDevice->SupportsSendFrom ())
     {
       NS_FATAL_ERROR ("TapBridge::SetBridgedDevice: Device does not support SendFrom: cannot be added to bridge.");
     }
@@ -781,12 +799,12 @@ TapBridge::SetBridgedNetDevice (Ptr<NetDevice> bridgedDevice)
   // Tell the bridged device to forward its received packets here.  We use the 
   // promiscuous mode hook to get both the source and destination addresses.
   //
-  m_node->RegisterProtocolHandler (MakeCallback (&TapBridge::ReceiveFromBridgedDevice, this), 0, bridgedDevice, true);
+  m_node->RegisterProtocolHandler (MakeCallback (&TapBridge::ReceiveFromSimDevice, this), 0, bridgedDevice, true);
   m_bridgedDevice = bridgedDevice;
 }
 
 void
-TapBridge::ReceiveFromBridgedDevice (
+TapBridge::ReceiveFromSimDevice (
   Ptr<NetDevice> device, 
   Ptr<const Packet> packet, 
   uint16_t protocol,
@@ -799,11 +817,33 @@ TapBridge::ReceiveFromBridgedDevice (
   
   NS_LOG_DEBUG ("Packet UID is " << packet->GetUid ());
 
+  if (m_mode == CONFIGURE_LOCAL && packetType == PACKET_OTHERHOST)
+    {
+      // We hooked the promiscuous mode protocol handler so we could get the 
+      // destination address of the actual packet.  This means we will be 
+      // getting PACKET_OTHERHOST packets (not broadcast, not multicast, not 
+      // unicast to the ns-3 net device, but to some other address).  In 
+      // CONFIGURE_LOCAL mode we are not interested in these packets since they 
+      // don't refer to the single MAC address shared by the ns-3 device and 
+      // the TAP device.  If, however, we are in USE_LOCAL or USE_BRIDGE mode, 
+      // we want to act like a bridge and forward these 
+      // PACKET_OTHERHOST packets.
+      return;
+    }
+
   Mac48Address from = Mac48Address::ConvertFrom (src);
-  Mac48Address to = Mac48Address::ConvertFrom (dst);
+  Mac48Address to;
+  if (m_mode == USE_LOCAL)
+    {
+      to = Mac48Address::ConvertFrom (m_learnedMac);
+    }
+  else 
+    {
+      to = Mac48Address::ConvertFrom (dst);
+    }
 
   //
-  // If we are operating in BRIDGED_DEVICE mode, we have the situation described
+  // If we are operating in USE_BRIDGE mode, we have the situation described
   // below:
   //
   //  Other Device  <-->  Tap Device  <--> ns3 device
@@ -817,14 +857,14 @@ TapBridge::ReceiveFromBridgedDevice (
   // (modulo learning behavior) sent out to "Other Device."  This makes it 
   // appear as if both devices are on a single subnet.
   //
-  // In BRIDGED_DEVICE mode, we want to logically extend this Linux behavior
+  // In USE_BRIDGE mode, we want to logically extend this Linux behavior
   // to the ns3 device and make it appear as if it is connected to the Linux
   // subnet.  As you may expect, this means that we need to act like a real
   // bridge and do what is described above.  The code here will do the 
   // equivalent of a SendFrom on the "Tap Device" of the bits received on the
   // ns-3 device.
   //
-  // If we are operating in LOCAL_DEVICE mode, we simply simply take all packets
+  // If we are operating in CONFIGURE_LOCAL mode, we simply simply take all packets
   // that would normally be received by the device and forward them to the TAP
   // device as if the ns-3 net device was never there.  To to this, we just need
   // to reconstruct an Ethernet header and add the original source and 
@@ -834,19 +874,6 @@ TapBridge::ReceiveFromBridgedDevice (
   // The bottom line is that at this point, the code does exactly the same thing
   // even though they seem quite different at first glance.
   //
-
-  if (m_mode == LOCAL_DEVICE && packetType == PACKET_OTHERHOST)
-    {
-      // We hooked the promiscuous mode protocol handler so we could get the 
-      // destination address of the actual packet.  This means we will be 
-      // getting PACKET_OTHERHOST packets (not broadcast, not multicast, not 
-      // unicast to the ns-3 net device, but to some other address).  In 
-      // LOCAL_DEVICE mode we are not interested in these packets since they 
-      // don't refer to the single MAC address shared by the ns-3 device and 
-      // the TAP device.  If, however, we are in BRIDGED_DEVICE mode, we want
-      // to act like a bridge and forward these PACKET_OTHERHOST packets.
-      return;
-    }
 
   //
   // We have received a packet from the ns-3 net device that has been associated
@@ -873,7 +900,7 @@ TapBridge::ReceiveFromBridgedDevice (
   NS_LOG_LOGIC ("Pkt size is " << p->GetSize ());
 
   uint32_t bytesWritten = write (m_sock, p->PeekData (), p->GetSize ());
-  NS_ABORT_MSG_IF (bytesWritten != p->GetSize (), "TapBridge::ReceiveFromBridgedDevice(): Write error.");
+  NS_ABORT_MSG_IF (bytesWritten != p->GetSize (), "TapBridge::ReceiveFromSimDevice(): Write error.");
 }
 
 void 
