@@ -255,6 +255,7 @@ PeerLink::SetMacPlugin(Ptr<Dot11sPeerManagerMacPlugin> plugin)
 void
 PeerLink::StateMachine (PeerEvent event,dot11sReasonCode reasoncode)
 {
+  NS_LOG_UNCOND("state = "<<m_state<<", event = "<<event);
   switch (m_state)
     {
     case IDLE:
