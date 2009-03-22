@@ -22,6 +22,7 @@
 #include "ie-dot11s-configuration.h"
 #include "ie-dot11s-peer-management.h"
 #include "peer-manager-plugin.h"
+#include "ns3/mesh-wifi-mac-header.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 
@@ -80,6 +81,81 @@ Dot11sPeerManagerMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & h
       );
 #endif
   }
+  if(header.IsMultihopAction())
+  {
+    WifiMeshHeader meshHdr;
+    packet->RemoveHeader (meshHdr);
+    WifiMeshMultihopActionHeader multihopHdr;
+      
+    //parse multihop action header:
+      
+    packet->RemoveHeader (multihopHdr);
+      
+    WifiMeshMultihopActionHeader::ACTION_VALUE actionValue = multihopHdr.GetAction ();
+    if(multihopHdr.GetCategory () != WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT)
+      return false;
+#if 0
+        {
+        case WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT:
+        {
+          Mac48Address peerAddress;
+          MeshMgtPeerLinkManFrame peer_frame;
+          if (hdr->GetAddr1 () != GetAddress ())
+            return;
+          peerAddress = hdr->GetAddr2 ();
+          packet->RemoveHeader (peer_frame);
+          if (actionValue.peerLink != WifiMeshMultihopActionHeader::PEER_LINK_CLOSE)
+            {
+              //check Supported Rates
+              SupportedRates rates = peer_frame.GetSupportedRates ();
+              for (uint32_t i = 0; i < m_stationManager->GetNBasicModes (); i++)
+                {
+                  WifiMode mode = m_stationManager->GetBasicMode (i);
+                  if (!rates.IsSupportedRate (mode.GetDataRate ()))
+                    {
+                      m_peerManager->ConfigurationMismatch (GetAddress(), peerAddress);
+                      return;
+                    }
+                }
+              //Check SSID
+              if (!peer_frame.GetMeshId ().IsEqual(GetSsid()))
+                {
+                  m_peerManager->ConfigurationMismatch (GetAddress(), peerAddress);
+                  return;
+                }
+            }
+          switch (actionValue.peerLink)
+            {
+            case WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM:
+              m_peerManager->SetConfirmReceived (
+                GetAddress (),
+                peerAddress,
+                peer_frame.GetAid (),
+                peer_frame.GetIeDot11sPeerManagement (),
+                m_meshConfig
+              );
+              return;
+            case WifiMeshMultihopActionHeader::PEER_LINK_OPEN:
+              m_peerManager->SetOpenReceived (
+                GetAddress (),
+                peerAddress,
+                peer_frame.GetIeDot11sPeerManagement (),
+                m_meshConfig
+              );
+              return;
+            case WifiMeshMultihopActionHeader::PEER_LINK_CLOSE:
+              m_peerManager->SetCloseReceived (
+                GetAddress (),
+                peerAddress,
+                peer_frame.GetIeDot11sPeerManagement ()
+              );
+              return;
+            default:
+              return;
+            }
+          break;
+#endif
+        }
   return false;
 }
 

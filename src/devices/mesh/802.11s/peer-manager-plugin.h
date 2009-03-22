@@ -82,6 +82,21 @@ private:
   Ptr<Packet> CreatePeerLinkConfirmFrame();
   Ptr<Packet> CreatePeerLinkCloseFrame();
   /**
+   * This structure keeps all fields in peer link management frame,
+   * which are not subclasses of WifiInformationElement
+   */
+  struct PlinkFrameStart {
+    uint8_t subtype;
+    uint16_t aid;
+    SupportedRates rates;
+    uint16_t qos;
+  };
+  /**
+   * \brief Parses the start of the frame, where there are no
+   * WifiInformationElements exist
+   */
+  PlinkFrameStart ParsePlinkFrame(Ptr<const Packet> packet);
+  /**
    * \}
    */
 };

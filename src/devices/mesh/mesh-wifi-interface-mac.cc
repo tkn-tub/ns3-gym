@@ -262,7 +262,7 @@ MeshWifiInterfaceMac::GetBssid () const
 Ssid
 MeshWifiInterfaceMac::GetSsid () const
 {
-  return m_MeshId;
+  return m_meshId;
 }
 
 void
@@ -277,7 +277,7 @@ void
 MeshWifiInterfaceMac::SetSsid (Ssid ssid)
 {
   NS_LOG_FUNCTION (ssid);
-  m_MeshId = ssid;
+  m_meshId = ssid;
 }
 
 void
@@ -362,6 +362,12 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
   m_BE->Queue (packet, hdr);
 }
 
+void
+MeshWifiInterfaceMac::SendManagementFrame (Ptr<Packet> packet, const WifiMacHeader& hdr)
+{
+  m_VO->Queue (packet, hdr);
+}
+
 SupportedRates
 MeshWifiInterfaceMac::GetSupportedRates () const
 {
@@ -380,6 +386,22 @@ MeshWifiInterfaceMac::GetSupportedRates () const
       rates.SetBasicRate (mode.GetDataRate ());
     }
   return rates;
+}
+bool
+MeshWifiInterfaceMac::CheckMeshId(Ssid meshId) const
+{
+  return true;
+}
+bool
+MeshWifiInterfaceMac::CheckSupportedRates(SupportedRates rates) const
+{
+  for (uint32_t i = 0; i < m_stationManager->GetNBasicModes (); i++)
+  {
+    WifiMode mode = m_stationManager->GetBasicMode (i);
+    if (!rates.IsSupportedRate (mode.GetDataRate ()))
+      return false;
+  }
+  return true;
 }
 
 //-----------------------------------------------------------------------------

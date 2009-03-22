@@ -140,7 +140,13 @@ public:
   /// Install plugin. TODO return unique ID to allow unregister plugins
   void InstallPlugin (Ptr<MeshWifiInterfaceMacPlugin> plugin);
   //\}
-  
+  ///\name Management frame sender:
+  //\{
+  void SendManagementFrame(Ptr<Packet> frame, const WifiMacHeader& hdr);
+  //\}
+  bool CheckMeshId(Ssid meshId) const;
+  bool CheckSupportedRates(SupportedRates rates) const;
+  SupportedRates GetSupportedRates () const;
 private:
   /// Frame receive handler
   void  Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
@@ -158,8 +164,6 @@ private:
   void SetBeaconGeneration (bool enable);
   /// Get current beaconing status
   bool GetBeaconGeneration () const;
-  /// Get list of supported bitrates
-  SupportedRates GetSupportedRates () const;
   /// Real d-tor
   virtual void DoDispose ();
   
@@ -209,7 +213,7 @@ private:
   /// My address
   Mac48Address m_address;
   /// SSID
-  Ssid m_MeshId;
+  Ssid m_meshId;
   
   /// "Timer" for the next beacon 
   EventId m_beaconSendEvent;

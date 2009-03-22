@@ -35,152 +35,7 @@
 #include <list>
 namespace ns3 {
 class Dot11sPeerManagerMacPlugin;
-/**
- * \ingroup dot11s
- */
-class WifiPeerLinkDescriptor : public RefCountBase
-{
-public:
-  WifiPeerLinkDescriptor ();
-  /**
-   * Beacon loss processing:
-   */
-  void  SetBeaconInformation (Time lastBeacon, Time BeaconInterval);
-  void  SetMaxBeaconLoss (uint8_t maxBeaconLoss);
-  /**
-   * \brief Methods used to detecet peer link changes
-   * \param bool if true - opened new link, if
-   * false - link closed
-   */
-  void  SetLinkStatusCallback (Callback<void, Mac48Address, Mac48Address, bool> cb);
-  /**
-   * Peer link geeters/setters
-   */
-  void  SetPeerAddress (Mac48Address macaddr);
-  /**
-   * Debug purpose
-   */
-  void  SetLocalAddress (Mac48Address macaddr);
-  void  SetLocalLinkId  (uint16_t id);
-  void  SetPeerLinkId   (uint16_t id);
-  void  SetLocalAid     (uint16_t aid);
-  void  SetPeerAid      (uint16_t aid);
-  void  SetBeaconTimingElement (IeDot11sBeaconTiming beaconTiming);
-  void  SetPeerLinkDescriptorElement (IeDot11sPeerManagement peerLinkElement);
-  Mac48Address GetPeerAddress () const;
-  /**
-   * Debug purpose
-   */
-  Mac48Address GetLocalAddress () const;
-  uint16_t GetLocalAid () const;
-  Time  GetLastBeacon () const;
-  Time  GetBeaconInterval () const;
-  IeDot11sBeaconTiming    GetBeaconTimingElement () const;
-  IeDot11sPeerManagement  GetPeerLinkDescriptorElement () const;
-  void  ClearTimingElement ();
-  /* MLME */
-  void  MLMECancelPeerLink (dot11sReasonCode reason);
-  void  MLMEPassivePeerLinkOpen ();
-  void  MLMEActivePeerLinkOpen ();
-  void  MLMEPeeringRequestReject ();
-#if 0
-  void  MLMEBindSecurityAssociation ();
-#endif
-  void  PeerLinkClose (uint16_t localLinkID,uint16_t peerLinkID, dot11sReasonCode reason);
-  void  PeerLinkOpenAccept (uint16_t localLinkId, IeDot11sConfiguration  conf);
-  void  PeerLinkOpenReject (uint16_t localLinkId, IeDot11sConfiguration  conf, dot11sReasonCode reason);
-  void  PeerLinkConfirmAccept (
-    uint16_t localLinkId,
-    uint16_t peerLinkId,
-    uint16_t peerAid,
-    IeDot11sConfiguration  conf
-  );
-  void  PeerLinkConfirmReject (
-    uint16_t localLinkId,
-    uint16_t peerLinkId,
-    IeDot11sConfiguration  conf,
-    dot11sReasonCode reason
-  );
-  bool  LinkIsEstab () const;
-  bool  LinkIsIdle  () const;
-private:
-  enum  PeerState {
-    IDLE,
-    LISTEN,
-    OPN_SNT,
-    CNF_RCVD,
-    OPN_RCVD,
-    ESTAB,
-    HOLDING,
-  };
-  enum  PeerEvent
-  {
-    CNCL,  /** MLME-CancelPeerLink */
-    PASOPN,  /** MLME-PassivePeerLinkOpen */
-    ACTOPN,  /** MLME-ActivePeerLinkOpen */
-    //BNDSA,     /** MLME-BindSecurityAssociation */
-    CLS_ACPT, /** PeerLinkClose_Accept */
-    //CLS_IGNR, /** PeerLinkClose_Ignore */
-    OPN_ACPT, /** PeerLinkOpen_Accept */
-    //OPN_IGNR, /** PeerLinkOpen_Ignore */
-    OPN_RJCT, /** PeerLinkOpen_Reject */
-    REQ_RJCT, /** PeerLinkOpenReject by internal reason */
-    CNF_ACPT, /** PeerLinkConfirm_Accept */
-    //CNF_IGNR, /** PeerLinkConfirm_Ignore */
-    CNF_RJCT, /** PeerLinkConfirm_Reject */
-    TOR1,
-    TOR2,
-    TOC,
-    TOH,
-  };
-private:
-  void StateMachine (PeerEvent event,dot11sReasonCode = REASON11S_RESERVED);
-  /** Events handlers */
-  void ClearRetryTimer   ();
-  void ClearConfirmTimer ();
-  void ClearHoldingTimer ();
-  void SetHoldingTimer   ();
-  void SetRetryTimer     ();
-  void SetConfirmTimer   ();
-
-  void SendPeerLinkClose (dot11sReasonCode reasoncode);
-  void SendPeerLinkOpen ();
-  void SendPeerLinkConfirm ();
-  /** Private Event */
-  void HoldingTimeout ();
-  void RetryTimeout   ();
-  void ConfirmTimeout ();
-private:
-  Mac48Address m_peerAddress;
-  Mac48Address m_localAddress;
-  uint16_t m_localLinkId;
-  uint16_t m_peerLinkId;
-  // Used for beacon timing:
-  // All values are stored in microseconds!
-  Time  m_lastBeacon;
-  Time  m_beaconInterval;
-  uint16_t m_assocId; //Assigned Assoc ID
-  uint16_t m_peerAssocId; //Assoc Id assigned to me by peer
-  //State of our peer Link:
-  PeerState m_state;
-
-  IeDot11sConfiguration  m_configuration;
-  // State is a bitfield as defined as follows:
-  // This are states for a given
-  IeDot11sBeaconTiming  m_beaconTiming;
-
-  EventId  m_retryTimer;
-  EventId  m_holdingTimer;
-  EventId  m_confirmTimer;
-  uint16_t m_retryCounter;
-  /**
-   * Beacon loss timers:
-   */
-  EventId  m_beaconLossTimer;
-  uint8_t  m_maxBeaconLoss;
-  void  BeaconLoss ();
-  Callback<void, Mac48Address, Mac48Address, bool>  m_linkStatusCallback;
-};
+class PeerLink;
 /**
  * \ingroup dot11s
  */
@@ -244,6 +99,7 @@ public:
    */
   void ReceivePeerLinkFrame(
       uint32_t interface,
+      bool dropeed,
       Mac48Address peerAddress,
       uint16_t aid,
       IeDot11sPeerManagement peerManagementElement,
@@ -266,7 +122,7 @@ private:
     Time referenceTbtt; //When one of my station's beacons was put into a beacon queue;
     Time beaconInterval; //Beacon interval of my station;
   };
-  typedef std::map<uint32_t, std::vector<Ptr<WifiPeerLinkDescriptor> > >  PeerDescriptorsMap;
+  typedef std::map<uint32_t, std::vector<Ptr<PeerLink> > >  PeerDescriptorsMap;
   typedef std::map<Mac48Address, BeaconInfo>  BeaconInterfaceInfoMap;
   typedef std::map<uint32_t, BeaconInterfaceInfoMap> BeaconInfoMap;
   typedef std::map<uint32_t, Ptr<Dot11sPeerManagerMacPlugin> > PeerManagerPluginMap;
