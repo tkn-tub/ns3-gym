@@ -34,13 +34,12 @@ namespace ns3 {
 class IeDot11sPeerManagement : public WifiInformationElement
 {
 public:
-  enum Subtype {
-    PEER_OPEN    = 0,
-    PEER_CLOSE   = 1,
-    PEER_CONFIRM = 2,
-  };
-  IeDot11sPeerManagement ();
-
+    IeDot11sPeerManagement ();
+    enum Subtype {
+      PEER_OPEN    = 0,
+      PEER_CLOSE   = 1,
+      PEER_CONFIRM = 2,
+    };
   void   SetPeerOpen (uint16_t localLinkId);
   void   SetPeerClose (uint16_t localLinkID, uint16_t peerLinkId, dot11sReasonCode reasonCode);
   void   SetPeerConfirm (uint16_t localLinkID, uint16_t peerLinkId);
@@ -51,6 +50,7 @@ public:
   bool   SubtypeIsOpen () const;
   bool   SubtypeIsClose () const;
   bool   SubtypeIsConfirm () const ;
+  uint8_t GetSubtype() const { return m_subtype;};
 private:
   WifiElementId ElementId () const{
     return IE11S_PEER_LINK_MANAGEMENT;
@@ -59,6 +59,7 @@ private:
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
   void PrintInformation (std::ostream& os) const;
+private:
   uint8_t   m_length;
   uint8_t   m_subtype;
   uint16_t  m_localLinkId;

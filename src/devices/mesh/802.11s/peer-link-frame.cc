@@ -25,7 +25,7 @@ NS_OBJECT_ENSURE_REGISTERED (PeerLinkFrameStart);
 
 PeerLinkFrameStart::PeerLinkFrameStart ()
 {
-  m_fields.subtype = PEER_LINK_OPEN;
+  m_fields.subtype = IeDot11sPeerManagement::PEER_OPEN;
   m_fields.aid = 0;
   m_fields.rates = SupportedRates();
   m_fields.meshId = Ssid();
@@ -37,7 +37,7 @@ PeerLinkFrameStart::SetPlinkFrameStart(PeerLinkFrameStart::PlinkFrameStartFields
 }
 
 PeerLinkFrameStart::PlinkFrameStartFields
-PeerLinkFrameStart::GetPlinkFrameStart ()
+PeerLinkFrameStart::GetFields ()
 {
   return m_fields;
 }
@@ -79,9 +79,9 @@ uint32_t
 PeerLinkFrameStart::GetSerializedSize () const
 {
   uint32_t size = 1; //Subtype
-  if (PEER_LINK_CONFIRM == m_fields.subtype)
+  if (IeDot11sPeerManagement::PEER_CONFIRM == m_fields.subtype)
     size += 2; //AID of remote peer
-  if (PEER_LINK_CLOSE != m_fields.subtype)
+  if (IeDot11sPeerManagement::PEER_CLOSE != m_fields.subtype)
     {
       size += m_fields.rates.GetSerializedSize ();
       size += 2;
@@ -95,9 +95,9 @@ PeerLinkFrameStart::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   i.WriteU8 (m_fields.subtype); //Like a Category in Standart
-  if (PEER_LINK_CONFIRM == m_fields.subtype)
+  if (IeDot11sPeerManagement::PEER_CONFIRM == m_fields.subtype)
     i.WriteHtonU16 (m_fields.aid);
-  if (PEER_LINK_CLOSE != m_fields.subtype)
+  if (IeDot11sPeerManagement::PEER_CLOSE != m_fields.subtype)
     {
       i = m_fields.rates.Serialize (i);
       i.Next(2); //QoS
@@ -109,10 +109,10 @@ uint32_t
 PeerLinkFrameStart::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  m_fields.subtype = (PeerLinkSubtype)i.ReadU8 ();
-  if (PEER_LINK_CONFIRM == m_fields.subtype)
+  m_fields.subtype = (IeDot11sPeerManagement::Subtype)i.ReadU8 ();
+  if (IeDot11sPeerManagement::PEER_CONFIRM == m_fields.subtype)
     m_fields.aid = i.ReadNtohU16 ();
-  if (PEER_LINK_CLOSE != m_fields.subtype)
+  if (IeDot11sPeerManagement::PEER_CLOSE != m_fields.subtype)
     {
       i = m_fields.rates.Deserialize (i);
       i.Next(2);  //QoS

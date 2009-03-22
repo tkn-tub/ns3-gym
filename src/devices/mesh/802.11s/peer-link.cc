@@ -82,12 +82,6 @@ PeerLink::SetPeerAddress (Mac48Address macaddr)
 }
 
 void
-PeerLink::SetLocalAddress (Mac48Address macaddr)
-{
-  m_localAddress = macaddr;
-}
-
-void
 PeerLink::SetLocalLinkId (uint16_t id)
 {
   m_localLinkId = id;
@@ -134,12 +128,6 @@ PeerLink::GetPeerAddress () const
   return m_peerAddress;
 }
 
-Mac48Address
-PeerLink::GetLocalAddress () const
-{
-  return m_localAddress;
-}
-
 uint16_t
 PeerLink::GetLocalAid () const
 {
@@ -182,6 +170,7 @@ void PeerLink::MLMEPassivePeerLinkOpen ()
 
 void PeerLink::MLMEActivePeerLinkOpen ()
 {
+  NS_LOG_UNCOND("Sending OPEN");
   StateMachine (ACTOPN);
 }
 
@@ -255,6 +244,11 @@ bool
 PeerLink::LinkIsIdle () const
 {
   return (m_state == IDLE);
+}
+void
+PeerLink::SetMacPlugin(Ptr<Dot11sPeerManagerMacPlugin> plugin)
+{
+  m_macPlugin = plugin;
 }
 //-----------------------------------------------------------------------------
 // Private
@@ -358,10 +352,9 @@ PeerLink::StateMachine (PeerEvent event,dot11sReasonCode reasoncode)
           break;
         case OPN_ACPT:
           m_state = ESTAB;
-          NS_LOG_DEBUG ("I am "<<m_localAddress<<", established link with "<<m_peerAddress<<", at "<<Simulator::Now());
           ClearConfirmTimer ();
           SendPeerLinkConfirm ();
-          m_linkStatusCallback (m_localAddress, m_peerAddress, true);
+          m_linkStatusCallback (m_interface, m_peerAddress, true);
           // TODO Callback MLME-SignalPeerLinkStatus
           break;
         case CLS_ACPT:
@@ -401,10 +394,9 @@ PeerLink::StateMachine (PeerEvent event,dot11sReasonCode reasoncode)
           SetRetryTimer ();
           break;
         case CNF_ACPT:
-          NS_LOG_DEBUG ("I am "<<m_localAddress<<", established link with "<<m_peerAddress<<", at "<<Simulator::Now());
           m_state = ESTAB;
           ClearRetryTimer ();
-          m_linkStatusCallback (m_localAddress, m_peerAddress, true);
+          m_linkStatusCallback (m_interface, m_peerAddress, true);
           // TODO Callback MLME-SignalPeerLinkStatus
           break;
         case CLS_ACPT:
@@ -443,27 +435,24 @@ PeerLink::StateMachine (PeerEvent event,dot11sReasonCode reasoncode)
           SendPeerLinkConfirm ();
           break;
         case CLS_ACPT:
-          NS_LOG_DEBUG ("I am "<<m_localAddress<<", CLOSED link with "<<m_peerAddress<<", at "<<Simulator::Now()<<" Close received");
           m_state = HOLDING;
           SendPeerLinkClose (REASON11S_MESH_CLOSE_RCVD);
           SetHoldingTimer ();
-          m_linkStatusCallback (m_localAddress, m_peerAddress, false);
+          m_linkStatusCallback (m_interface, m_peerAddress, false);
           break;
         case OPN_RJCT:
         case CNF_RJCT:
-          NS_LOG_DEBUG ("I am "<<m_localAddress<<", CLOSED link with "<<m_peerAddress<<", at "<<Simulator::Now()<<" Rejected open or confirm");
           m_state = HOLDING;
           ClearRetryTimer ();
           SendPeerLinkClose (reasoncode);
           SetHoldingTimer ();
-          m_linkStatusCallback (m_localAddress, m_peerAddress, false);
+          m_linkStatusCallback (m_interface, m_peerAddress, false);
           break;
         case CNCL:
-          NS_LOG_DEBUG ("I am "<<m_localAddress<<", CLOSED link with "<<m_peerAddress<<", at "<<Simulator::Now()<<" Link cancelled");
           m_state = HOLDING;
           SendPeerLinkClose (REASON11S_PEER_LINK_CANCELLED);
           SetHoldingTimer ();
-          m_linkStatusCallback (m_localAddress, m_peerAddress, false);
+          m_linkStatusCallback (m_interface, m_peerAddress, false);
           break;
         default:
         {}
@@ -522,8 +511,9 @@ void PeerLink::SendPeerLinkOpen ()
 {
   IeDot11sPeerManagement peerElement;
   peerElement.SetPeerOpen (m_localLinkId);
-  //NS_ASSERT (m_mac != NULL);
-  //m_mac->SendPeerLinkOpen (peerElement, m_peerAddress);
+  NS_LOG_UNCOND("sending peer link open");
+  NS_ASSERT (m_macPlugin != NULL);
+  m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_assocId, peerElement, m_configuration);
 }
 
 void PeerLink::SendPeerLinkConfirm ()

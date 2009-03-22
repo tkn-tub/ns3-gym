@@ -23,27 +23,22 @@
 #include "ns3/header.h"
 #include "ns3/supported-rates.h"
 #include "ns3/ssid.h"
+#include "ns3/ie-dot11s-peer-management.h"
 namespace ns3 {
 class MeshWifiInterfaceMac;
 class PeerLinkFrameStart : public Header
 {
 public:
-  enum PeerLinkSubtype
-  {
-    PEER_LINK_OPEN = 0,
-    PEER_LINK_CONFIRM,
-    PEER_LINK_CLOSE
-  };
   PeerLinkFrameStart ();
   struct PlinkFrameStartFields
   {
-    PeerLinkSubtype subtype;
+    uint8_t subtype;
     uint16_t aid;
     SupportedRates rates;
     Ssid meshId;
   };
   void SetPlinkFrameStart(PlinkFrameStartFields);
-  PlinkFrameStartFields GetPlinkFrameStart ();
+  PlinkFrameStartFields GetFields ();
   bool CheckPlinkFrameStart(Ptr<MeshWifiInterfaceMac> mac);
   /** Inherited from header:
    * \{

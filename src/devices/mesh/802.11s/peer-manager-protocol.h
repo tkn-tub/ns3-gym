@@ -29,10 +29,11 @@
 #include "ns3/ie-dot11s-beacon-timing.h"
 #include "ns3/ie-dot11s-configuration.h"
 #include "ns3/event-id.h"
-
+//#include "ns3/peer-link.h"
 #include "peer-manager-plugin.h"
 
 #include <list>
+#include <map>
 namespace ns3 {
 class Dot11sPeerManagerMacPlugin;
 class PeerLink;
@@ -109,6 +110,12 @@ public:
    * \}
    */
 private:
+  Ptr<PeerLink> InitiateLink (uint32_t interface, Mac48Address peerAddress, Time lastBeacon, Time beaconInterval);
+  /**
+   * External peer-chooser
+   */
+  bool ShouldSendOpen(uint32_t interface, Mac48Address peerAddress);
+private:
   /**
    * All private structures:
    * * peer link descriptors;
@@ -122,9 +129,10 @@ private:
     Time referenceTbtt; //When one of my station's beacons was put into a beacon queue;
     Time beaconInterval; //Beacon interval of my station;
   };
-  typedef std::map<uint32_t, std::vector<Ptr<PeerLink> > >  PeerDescriptorsMap;
-  typedef std::map<Mac48Address, BeaconInfo>  BeaconInterfaceInfoMap;
-  typedef std::map<uint32_t, BeaconInterfaceInfoMap> BeaconInfoMap;
+  typedef std::vector<Ptr<PeerLink> > PeerLinksOnInterface;
+  typedef std::map<uint32_t, PeerLinksOnInterface>  PeerLinksMap;
+  typedef std::map<Mac48Address, BeaconInfo>  BeaconsOnInterface;
+  typedef std::map<uint32_t, BeaconsOnInterface> BeaconInfoMap;
   typedef std::map<uint32_t, Ptr<Dot11sPeerManagerMacPlugin> > PeerManagerPluginMap;
 
   PeerManagerPluginMap m_plugins;
@@ -140,9 +148,18 @@ private:
    */
   uint16_t m_lastAssocId;
   uint16_t m_lastLocalLinkId;
+  uint8_t m_numberOfActivePeers; //number of established peer links
+  uint8_t m_maxNumberOfPeerLinks;
+  /**
+   * Peer Links
+   * \{
+   */
+  PeerLinksMap m_peerLinks;
+  /**
+   * \}
+   */
 #if 0
   //Maximum peers that may be opened:
-  uint8_t  m_maxNumberOfPeerLinks;
   /**
    * Peer manager identify interface by address
    * of MAC. So, for every interface we store
@@ -154,7 +171,6 @@ private:
    * mac
    */
   MeshMacMap m_macPointers;
-  uint8_t  m_numberOfActivePeers; //number of established peer links
   uint16_t m_assocId;  //last stored assoc ID
   uint16_t m_localLinkId;  //last stored local link ID
   //This Variables used in beacon miss auto-cleanup:
@@ -165,15 +181,8 @@ private:
   //and check if the too many  beacons were lost:
   Time  m_peerLinkCleanupPeriod;
   EventId  m_cleanupEvent;
-  Ptr<WifiPeerLinkDescriptor> AddDescriptor (
-    Mac48Address interfaceAddress,
-    Mac48Address peerAddress,
-    Time lastBeacon,
-    Time beaconInterval
-  );
   void  PeerCleanup ();
   //Mechanism of choosing PEERs:
-  bool  ShouldSendOpen (Mac48Address interfaceAddress, Mac48Address peerAddress);
   bool  ShouldAcceptOpen (
     Mac48Address interfaceAddress,
     Mac48Address peerAddress,

@@ -30,6 +30,7 @@
 #include "ie-dot11s-beacon-timing.h"
 #include "ie-dot11s-peer-management.h"
 #include "ie-dot11s-configuration.h"
+#include "peer-manager-plugin.h"
 
 namespace ns3 {
 /**
@@ -58,7 +59,6 @@ public:
    * \{
    */
   void  SetPeerAddress (Mac48Address macaddr);
-  void  SetLocalAddress (Mac48Address macaddr);
   void  SetLocalLinkId (uint16_t id);
   void  SetPeerLinkId (uint16_t id);
   void  SetLocalAid (uint16_t aid);
@@ -66,7 +66,6 @@ public:
   void  SetBeaconTimingElement (IeDot11sBeaconTiming beaconTiming);
   void  SetPeerLinkDescriptorElement (IeDot11sPeerManagement peerLinkElement);
   Mac48Address GetPeerAddress () const;
-  Mac48Address GetLocalAddress () const;
   uint16_t GetLocalAid () const;
   Time  GetLastBeacon () const;
   Time  GetBeaconInterval () const;
@@ -88,7 +87,7 @@ public:
   /// MLME-PeeringRequestReject
   void MLMEPeeringRequestReject ();
   /// Callback type for MLME-SignalPeerLinkStatus event
-  typedef Callback<void, Mac48Address, Mac48Address, bool> SignalStatusCallback; 
+  typedef Callback<void, uint32_t, Mac48Address, bool> SignalStatusCallback; 
   /// Set callback
   void MLMESetSignalStatusCallback (SignalStatusCallback);
   //\}
@@ -129,7 +128,11 @@ public:
   bool  LinkIsEstab () const;
   /// True if link is idle. Link can be deleted in this state 
   bool  LinkIsIdle () const;
-  
+  /**
+   * Set pointer to MAC-plugin, which is responsible for sending peer
+   * link management frames
+   */
+  void SetMacPlugin(Ptr<Dot11sPeerManagerMacPlugin> plugin);
 private:
   /// Peer link states, see 802.11s draft 11B.3.3.1
   enum  PeerState {
@@ -194,10 +197,12 @@ private:
   //\}
   
 private:
+  ///The number of interface I am associated with
+  uint32_t m_interface;
+  /// pointer to mac plugin, which is responsible for peer management
+  Ptr<Dot11sPeerManagerMacPlugin> m_macPlugin;
   /// Peer address
   Mac48Address m_peerAddress;
-  /// My own address
-  Mac48Address m_localAddress;
   /// My ID of this link
   uint16_t m_localLinkId;
   /// Peer ID of this link
