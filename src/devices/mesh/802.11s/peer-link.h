@@ -53,7 +53,7 @@ public:
    * 
    * \param bool if true - opened new link, if false - link closed
    */
-  void  SetLinkStatusCallback (Callback<void, Mac48Address, Mac48Address, bool> cb);
+  void  SetLinkStatusCallback (Callback<void, uint32_t, Mac48Address, bool> cb);
   /**
    * \name Peer link geeters/setters
    * \{

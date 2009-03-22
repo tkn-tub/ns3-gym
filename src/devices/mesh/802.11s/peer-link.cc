@@ -170,7 +170,6 @@ void PeerLink::MLMEPassivePeerLinkOpen ()
 
 void PeerLink::MLMEActivePeerLinkOpen ()
 {
-  NS_LOG_UNCOND("Sending OPEN");
   StateMachine (ACTOPN);
 }
 
@@ -504,14 +503,13 @@ void PeerLink::SendPeerLinkClose (dot11sReasonCode reasoncode)
 {
   IeDot11sPeerManagement peerElement;
   peerElement.SetPeerClose (m_localLinkId, m_peerLinkId, reasoncode);
-  //m_mac->SendPeerLinkClose (peerElement,m_peerAddress);
+  m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_assocId, peerElement, m_configuration);
 }
 
 void PeerLink::SendPeerLinkOpen ()
 {
   IeDot11sPeerManagement peerElement;
   peerElement.SetPeerOpen (m_localLinkId);
-  NS_LOG_UNCOND("sending peer link open");
   NS_ASSERT (m_macPlugin != NULL);
   m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_assocId, peerElement, m_configuration);
 }
@@ -520,11 +518,12 @@ void PeerLink::SendPeerLinkConfirm ()
 {
   IeDot11sPeerManagement peerElement;
   peerElement.SetPeerConfirm (m_localLinkId, m_peerLinkId);
-  //m_mac->SendPeerLinkConfirm (peerElement, m_peerAddress, m_assocId);
+  m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_assocId, peerElement, m_configuration);
 }
 
 void PeerLink::SetHoldingTimer ()
 {
+  NS_ASSERT(m_holdingTimeout.GetMicroSeconds() !=0);
   m_holdingTimer = Simulator::Schedule (m_holdingTimeout, &PeerLink::HoldingTimeout, this);
 }
 
@@ -535,6 +534,7 @@ void PeerLink::HoldingTimeout ()
 
 void PeerLink::SetRetryTimer ()
 {
+  NS_ASSERT(m_retryTimeout.GetMicroSeconds() !=0);
   m_retryTimer = Simulator::Schedule (m_retryTimeout, &PeerLink::RetryTimeout, this);
 }
 
@@ -548,6 +548,7 @@ void PeerLink::RetryTimeout ()
 
 void PeerLink::SetConfirmTimer ()
 {
+  NS_ASSERT(m_confirmTimeout.GetMicroSeconds() !=0);
   m_confirmTimer = Simulator::Schedule (m_confirmTimeout, &PeerLink::ConfirmTimeout, this);
 }
 

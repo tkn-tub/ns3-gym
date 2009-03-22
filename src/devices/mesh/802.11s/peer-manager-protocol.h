@@ -100,21 +100,19 @@ public:
    */
   void ReceivePeerLinkFrame(
       uint32_t interface,
-      bool dropeed,
       Mac48Address peerAddress,
       uint16_t aid,
       IeDot11sPeerManagement peerManagementElement,
       IeDot11sConfiguration meshConfig
       );
   /**
+   * Cancell peer link due to broken configuration (SSID or Supported
+   * rates)
+   */
+  void ConfigurationMismatch (uint32_t interface, Mac48Address peerAddress);
+  /**
    * \}
    */
-private:
-  Ptr<PeerLink> InitiateLink (uint32_t interface, Mac48Address peerAddress, Time lastBeacon, Time beaconInterval);
-  /**
-   * External peer-chooser
-   */
-  bool ShouldSendOpen(uint32_t interface, Mac48Address peerAddress);
 private:
   /**
    * All private structures:
@@ -134,7 +132,25 @@ private:
   typedef std::map<Mac48Address, BeaconInfo>  BeaconsOnInterface;
   typedef std::map<uint32_t, BeaconsOnInterface> BeaconInfoMap;
   typedef std::map<uint32_t, Ptr<Dot11sPeerManagerMacPlugin> > PeerManagerPluginMap;
+private:
+  /**
+   * Return a position in beacon-storage for a given remote station
+   */
+  void FillBeaconInfo(uint32_t interface, Mac48Address peerAddress, Time receivingTime, Time beaconInterval);
+  Ptr<PeerLink> InitiateLink (uint32_t interface, Mac48Address peerAddress, Time lastBeacon, Time beaconInterval);
+  /**
+   * External peer-chooser
+   * \{
+   */
+  bool ShouldSendOpen (uint32_t interface, Mac48Address peerAddress);
+  bool ShouldAcceptOpen (uint32_t interface, Mac48Address peerAddress, dot11sReasonCode & reasonCode);
+  /**
+   * \}
+   * \brief Indicates changes in peer links
+   */
+  void PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, bool status);
 
+private:
   PeerManagerPluginMap m_plugins;
   /**
    * Information related to beacons:
@@ -165,14 +181,6 @@ private:
    * of MAC. So, for every interface we store
    * list of peer descriptors.
    */
-  PeerDescriptorsMap m_peerDescriptors;
-  /**
-   * List of MAC pointers - to iteract with each
-   * mac
-   */
-  MeshMacMap m_macPointers;
-  uint16_t m_assocId;  //last stored assoc ID
-  uint16_t m_localLinkId;  //last stored local link ID
   //This Variables used in beacon miss auto-cleanup:
   //How many beacons may we lose before the link is
   //considered to be broken:

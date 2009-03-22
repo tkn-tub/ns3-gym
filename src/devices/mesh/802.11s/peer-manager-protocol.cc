@@ -83,7 +83,7 @@ Dot11sPeerManagerProtocol::~Dot11sPeerManagerProtocol ()
   m_cleanupEvent.Cancel ();
   //TODO: delete a list of descriptors
   for (
-    PeerDescriptorsMap::iterator j = m_peerLinks.begin ();
+    PeerLinksMap::iterator j = m_peerLinks.begin ();
     j != m_peerLinks.end ();
     j++)
     {
@@ -144,6 +144,38 @@ Dot11sPeerManagerProtocol::SendBeacon(uint32_t interface, Time currentTbtt, Time
   }
   return retval;
 }
+void
+Dot11sPeerManagerProtocol::FillBeaconInfo(uint32_t interface, Mac48Address peerAddress, Time receivingTime, Time beaconInterval)
+{
+  NS_LOG_UNCOND("FILL started!");
+  BeaconInfoMap::iterator i = m_neighbourBeacons.find(interface);
+  if(i == m_neighbourBeacons.end())
+  {
+     NS_LOG_UNCOND("First beacon from this interface");
+     BeaconsOnInterface newMap;
+     m_neighbourBeacons[interface] = newMap;
+  }
+  i = m_neighbourBeacons.find(interface);
+  BeaconsOnInterface::iterator j = i->second.find(peerAddress);
+  if(j == i->second.end())
+  {
+    NS_LOG_UNCOND("first beacon from this station");
+    BeaconInfo newInfo;
+    newInfo.referenceTbtt = receivingTime;
+    newInfo.beaconInterval = beaconInterval;
+    newInfo.aid = m_lastAssocId++;
+    if(m_lastAssocId == 0xff)
+      m_lastAssocId = 0;
+    i->second[peerAddress] = newInfo;
+  }
+  else
+  {
+    NS_LOG_UNCOND("last beacon was at"<<j->second.referenceTbtt);
+    j->second.referenceTbtt = receivingTime;
+    NS_LOG_UNCOND("now  beacon is at"<<j->second.referenceTbtt);
+    j->second.beaconInterval = beaconInterval;
+  }
+}
 
 void
 Dot11sPeerManagerProtocol::ReceiveBeacon(
@@ -157,6 +189,7 @@ Dot11sPeerManagerProtocol::ReceiveBeacon(
   NS_LOG_UNCOND("Beacon received from "<<peerAddress);
   NS_LOG_UNCOND(timingElement);
   //find beacon entry and write there a new one
+#if 0
   {
     BeaconInfoMap::iterator i = m_neighbourBeacons.find(interface);
    if(i == m_neighbourBeacons.end())
@@ -185,9 +218,11 @@ Dot11sPeerManagerProtocol::ReceiveBeacon(
      NS_LOG_UNCOND("now  beacon is at"<<j->second.referenceTbtt);
      j->second.beaconInterval = beaconInterval;
    }
+  }
+#endif
+  FillBeaconInfo(interface, peerAddress, receivingTime, beaconInterval);
    if(!meshBeacon)
      return;
-  }
   //PM STATE Machine
   {
    PeerLinksMap::iterator iface = m_peerLinks.find (interface);
@@ -210,123 +245,77 @@ Dot11sPeerManagerProtocol::ReceiveBeacon(
 }
 
 void
-Dot11sPeerManagerProtocol::ReceivePeerLinkFrame(
+Dot11sPeerManagerProtocol::ReceivePeerLinkFrame (
     uint32_t interface,
-    bool dropped,
     Mac48Address peerAddress,
     uint16_t aid,
     IeDot11sPeerManagement peerManagementElement,
     IeDot11sConfiguration meshConfig
       )
 {
+  NS_LOG_UNCOND("Receive Peer Link Frame");
+  if (peerManagementElement.SubtypeIsOpen ())
+  {
+    NS_LOG_UNCOND("OPEN");
+    dot11sReasonCode reasonCode;
+    bool reject = ! (ShouldAcceptOpen (interface, peerAddress,reasonCode));
+    PeerLinksMap::iterator iface = m_peerLinks.find (interface);
+    NS_ASSERT (iface != m_peerLinks.end());
+    for (PeerLinksOnInterface::iterator i = iface->second.begin (); i != iface->second.end(); i++)
+      if ((*i)->GetPeerAddress () == peerAddress)
+        if (!ShouldAcceptOpen (interface, peerAddress,reasonCode))
+        {
+          if(!reject)
+          {
+            //Drop from INIT state:
+            //(*i)->MLMEPassivePeerLinkOpen ();
+            (*i)->OpenAccept (peerManagementElement.GetLocalLinkId(), meshConfig);
+          }
+          else
+            (*i)->OpenReject (peerManagementElement.GetLocalLinkId(), meshConfig, reasonCode);
+          return;
+        }
+    Ptr<PeerLink> new_link = InitiateLink (
+        interface,
+        peerAddress,
+        Simulator::Now (),
+        Seconds(1.0)
+      );
+    if(!reject)
+    {
+      //Drop from INIT state:
+      new_link->MLMEPassivePeerLinkOpen ();
+      new_link->OpenAccept (peerManagementElement.GetLocalLinkId(), meshConfig);
+    }
+    else
+      new_link->OpenReject (peerManagementElement.GetLocalLinkId(), meshConfig, reasonCode);
+    return;
+  }
+  PeerLinksMap::iterator iface = m_peerLinks.find (interface);
+  NS_ASSERT (iface != m_peerLinks.end());
+  for (std::vector<Ptr<PeerLink> >::iterator i = iface->second.begin (); i != iface->second.end(); i++)
+    
+    if ((*i)->GetPeerAddress () == peerAddress)
+    {
+      if(peerManagementElement.SubtypeIsConfirm ())
+      {
+        (*i)->ConfirmAccept (peerManagementElement.GetLocalLinkId(), peerManagementElement.GetPeerLinkId(), aid, meshConfig);
+        return;
+      }
+      if(peerManagementElement.SubtypeIsClose ())
+      {
+        (*i)->Close (
+            peerManagementElement.GetLocalLinkId(),
+            peerManagementElement.GetPeerLinkId(),
+            peerManagementElement.GetReasonCode());
+        return;
+      }
+    }
+  return;
+  NS_ASSERT (false);
 }
 
 #if 0
-void
-Dot11sPeerManagerProtocol::SetSentBeaconTimers (
-  Mac48Address interfaceAddress,
-  Time ReferenceTbtt,
-  Time BeaconInterval
-)
-{
-  BeaconInfoMap::iterator myBeacon = m_myBeaconInfo.find (interfaceAddress);
-  NS_ASSERT (myBeacon != m_myBeaconInfo.end());
-  myBeacon->second.referenceTbtt = ReferenceTbtt;
-  myBeacon->second.beaconInterval = BeaconInterval;
-
-}
-
-void
-Dot11sPeerManagerProtocol::SetReceivedBeaconTimers (
-  Mac48Address interfaceAddress,
-  Mac48Address peerAddress,
-  Time lastBeacon,
-  Time beaconInterval,
-  IeDot11sBeaconTiming beaconTiming
-)
-{
-  PeerDescriptorsMap::iterator interface = m_peerLinks.find (interfaceAddress);
-  NS_ASSERT (interface != m_peerLinks.end());
-  for (std::vector<Ptr<PeerLink> >::iterator i = interface->second.begin (); i != interface->second.end(); i++)
-    {
-      if ((*i)->GetPeerAddress () == peerAddress)
-        {
-          (*i)->SetBeaconTimingElement (beaconTiming);
-          (*i)->SetBeaconInformation (lastBeacon, beaconInterval);
-          return;
-        }
-    }
-  Ptr<PeerLink> new_link =
-    AddDescriptor (interfaceAddress, peerAddress, Simulator::Now(), beaconInterval);
-  new_link->SetBeaconTimingElement (beaconTiming);
-}
-
-bool
-Dot11sPeerManagerProtocol::AttachPorts (std::vector<Ptr<WifiNetDevice> > interfaces)
-{
-  NS_ASSERT (interfaces.size() != 0);
-  for (std::vector<Ptr<WifiNetDevice> >::iterator i = interfaces.begin (); i != interfaces.end(); i++)
-    {
-      MeshWifiMac * meshWifiMac = dynamic_cast<MeshWifiMac *> (PeekPointer ((*i)->GetMac ()));
-      if (meshWifiMac == NULL)
-        return false;
-      meshWifiMac->SetPeerLinkManager (this);
-      //Add a mac pointer:
-      m_macPointers[meshWifiMac->GetAddress ()] = meshWifiMac;
-      //Add descriptor array:
-      std::vector<Ptr<PeerLink> > descriptors;
-      m_peerLinks[meshWifiMac->GetAddress ()] = descriptors;
-      //Add beacon timers:
-      struct BeaconInfo myBeacon;
-      m_myBeaconInfo[meshWifiMac->GetAddress ()] = myBeacon;
-    }
-  return true;
-}
-
-void
-Dot11sPeerManagerProtocol::SetOpenReceived (
-  Mac48Address interfaceAddress,
-  Mac48Address peerAddress,
-  IeDot11sPeerManagement peerMan,
-  IeDot11sConfiguration conf
-)
-{
-  dot11sReasonCode reasonCode;
-  if (!ShouldAcceptOpen (interfaceAddress, peerAddress,reasonCode))
-    return;
-  PeerDescriptorsMap::iterator interface = m_peerLinks.find (interfaceAddress);
-  NS_ASSERT (interface != m_peerLinks.end());
-  for (std::vector<Ptr<PeerLink> >::iterator i = interface->second.begin (); i != interface->second.end(); i++)
-    if ((*i)->GetPeerAddress () == peerAddress)
-      {
-        (*i)->PeerLinkOpenAccept (peerMan.GetLocalLinkId(), conf);
-        return;
-      }
-  BeaconInfoMap::iterator myBeacon =  m_myBeaconInfo.find (interfaceAddress);
-  NS_ASSERT (myBeacon != m_myBeaconInfo.end());
-  Ptr<PeerLink>new_link = AddDescriptor (
-        interfaceAddress,
-        peerAddress,
-        Simulator::Now (),
-        myBeacon->second.beaconInterval
-      );
-  new_link->PeerLinkOpenAccept (peerMan.GetLocalLinkId(), conf);
-}
-void
-Dot11sPeerManagerProtocol::SetConfirmReceived (
-  Mac48Address interfaceAddress,
-  Mac48Address peerAddress,
-  uint16_t peerAid,
-  IeDot11sPeerManagement peerMan,
-  IeDot11sConfiguration meshConfig
-)
-{
-  PeerDescriptorsMap::iterator interface = m_peerLinks.find (interfaceAddress);
-  NS_ASSERT (interface != m_peerLinks.end());
-  for (std::vector<Ptr<PeerLink> >::iterator i = interface->second.begin (); i != interface->second.end(); i++)
-    if ((*i)->GetPeerAddress () == peerAddress)
-      (*i)->PeerLinkConfirmAccept (peerMan.GetLocalLinkId(), peerMan.GetPeerLinkId(), peerAid, meshConfig);
-}
 
 void
 Dot11sPeerManagerProtocol::SetCloseReceived (
@@ -335,7 +324,7 @@ Dot11sPeerManagerProtocol::SetCloseReceived (
   IeDot11sPeerManagement peerMan
 )
 {
-  PeerDescriptorsMap::iterator interface = m_peerLinks.find (interfaceAddress);
+  PeerLinksMap::iterator interface = m_peerLinks.find (interfaceAddress);
   NS_ASSERT (interface != m_peerLinks.end());
   for (std::vector<Ptr<PeerLink> >::iterator i = interface->second.begin (); i != interface->second.end(); i++)
     if ((*i)->GetPeerAddress () == peerAddress)
@@ -344,56 +333,25 @@ Dot11sPeerManagerProtocol::SetCloseReceived (
         return;
       }
 }
-
+#endif
 void
 Dot11sPeerManagerProtocol::ConfigurationMismatch (
-  Mac48Address interfaceAddress,
+  uint32_t interface,
   Mac48Address peerAddress
 )
 {
-  PeerDescriptorsMap::iterator interface = m_peerLinks.find (interfaceAddress);
-  NS_ASSERT (interface != m_peerLinks.end());
-  for (std::vector<Ptr<PeerLink> >::iterator i = interface->second.begin (); i != interface->second.end(); i++)
+  PeerLinksMap::iterator iface = m_peerLinks.find (interface);
+   
+  NS_ASSERT (iface != m_peerLinks.end());
+   
+  for (PeerLinksOnInterface::iterator i = iface->second.begin (); i != iface->second.end(); i++)
     if ((*i)->GetPeerAddress () == peerAddress)
-      {
-        (*i)->MLMECancelPeerLink (REASON11S_MESH_CONFIGURATION_POLICY_VIOLATION);
-        return;
-      }
-
-}
-
-IeDot11sBeaconTiming
-Dot11sPeerManagerProtocol::GetIeDot11sBeaconTimingForMyBeacon (Mac48Address interfaceAddress)
-{
-  PeerDescriptorsMap::iterator interface = m_peerLinks.find (interfaceAddress);
-  NS_ASSERT (interface != m_peerLinks.end());
-  IeDot11sBeaconTiming return_val;
-  for (std::vector<Ptr<PeerLink> >::iterator i = interface->second.begin (); i != interface->second.end(); i++)
     {
-      //Just go through all neighbor entries and add it to timing element:
-      return_val.AddNeighboursTimingElementUnit (
-        (*i)->GetLocalAid (),
-        (*i)->GetLastBeacon (),
-        (*i)->GetBeaconInterval ()
-      );
+      (*i)->MLMECancelPeerLink (REASON11S_MESH_CONFIGURATION_POLICY_VIOLATION);
+      return;
     }
-  return return_val;
+}
 
-}
-IeDot11sBeaconTiming
-Dot11sPeerManagerProtocol::GetIeDot11sBeaconTimingForAddress (
-  Mac48Address interfaceAddress,
-  Mac48Address addr)
-{
-  PeerDescriptorsMap::iterator interface = m_peerLinks.find (interfaceAddress);
-  NS_ASSERT (interface != m_peerLinks.end());
-  IeDot11sBeaconTiming return_val;
-  for (std::vector<Ptr<PeerLink> >::iterator i = interface->second.begin (); i != interface->second.end(); i++)
-    if ((*i)->GetPeerAddress () == addr)
-      return_val =  (*i)->GetBeaconTimingElement ();
-  return return_val;
-}
-#endif
 Ptr<PeerLink>
 Dot11sPeerManagerProtocol::InitiateLink (
   uint32_t interface,
@@ -401,14 +359,17 @@ Dot11sPeerManagerProtocol::InitiateLink (
   Time lastBeacon,
   Time beaconInterval)
 {
+  NS_LOG_UNCOND("INIT");
   Ptr<PeerLink> new_link = CreateObject<PeerLink> ();
   if (m_lastLocalLinkId == 0xff)
     m_lastLocalLinkId = 0;
   //the entry about beacon must exist in beacon map
   BeaconInfoMap::iterator beaconsOnInterface = m_neighbourBeacons.find (interface);
-  NS_ASSERT(beaconsOnInterface != m_neighbourBeacons.end());
+  if(beaconsOnInterface == m_neighbourBeacons.end())
+    FillBeaconInfo(interface, peerAddress, lastBeacon, beaconInterval);
   BeaconsOnInterface::iterator beacon = beaconsOnInterface->second.find (peerAddress);
-  NS_ASSERT(beacon != beaconsOnInterface->second.end ());
+  if(beacon == beaconsOnInterface->second.end ())
+    FillBeaconInfo(interface, peerAddress, lastBeacon, beaconInterval);
   PeerManagerPluginMap::iterator plugin = m_plugins.find (interface);
   NS_ASSERT(plugin != m_plugins.end ());
 
@@ -418,7 +379,7 @@ Dot11sPeerManagerProtocol::InitiateLink (
   new_link->SetPeerAddress (peerAddress);
   new_link->SetBeaconInformation (lastBeacon, beaconInterval);
   new_link->SetMacPlugin (plugin->second);
-  //new_link->SetLinkStatusCallback (MakeCallback(&Dot11sPeerManagerProtocol::PeerLinkStatus, this));
+  new_link->MLMESetSignalStatusCallback (MakeCallback(&Dot11sPeerManagerProtocol::PeerLinkStatus, this));
   m_peerLinks[interface].push_back (new_link);  
   return new_link;
 }
@@ -427,7 +388,7 @@ void
 Dot11sPeerManagerProtocol::PeerCleanup ()
 {
   for (
-    PeerDescriptorsMap::iterator j = m_peerLinks.begin ();
+    PeerLinksMap::iterator j = m_peerLinks.begin ();
     j != m_peerLinks.end ();
     j++)
     {
@@ -451,7 +412,7 @@ Dot11sPeerManagerProtocol::PeerCleanup ()
 std::vector<Mac48Address>
 Dot11sPeerManagerProtocol::GetNeighbourAddressList (Mac48Address interfaceAddress, Mac48Address peerAddress)
 {
-  PeerDescriptorsMap::iterator interface = m_peerLinks.find (interfaceAddress);
+  PeerLinksMap::iterator interface = m_peerLinks.find (interfaceAddress);
   NS_ASSERT (interface != m_peerLinks.end());
   std::vector<Mac48Address> return_value;
   for (std::vector<Ptr<PeerLink> >::iterator i = interface->second.begin (); i != interface->second.end(); i++)
@@ -462,7 +423,7 @@ Dot11sPeerManagerProtocol::GetNeighbourAddressList (Mac48Address interfaceAddres
 bool
 Dot11sPeerManagerProtocol::IsActiveLink (Mac48Address interfaceAddress, Mac48Address peerAddress)
 {
-  PeerDescriptorsMap::iterator interface = m_peerLinks.find (interfaceAddress);
+  PeerLinksMap::iterator interface = m_peerLinks.find (interfaceAddress);
   NS_ASSERT (interface != m_peerLinks.end());
   for (std::vector<Ptr<PeerLink> >::iterator i = interface->second.begin (); i != interface->second.end(); i++)
     if ((*i)->GetPeerAddress () == peerAddress)
@@ -477,9 +438,8 @@ Dot11sPeerManagerProtocol::ShouldSendOpen (uint32_t interface, Mac48Address peer
     return false;
   return true;
 }
-#if 0
 bool
-Dot11sPeerManagerProtocol::ShouldAcceptOpen (Mac48Address interfaceAddress, Mac48Address peerAddress,dot11sReasonCode & reasonCode)
+Dot11sPeerManagerProtocol::ShouldAcceptOpen (uint32_t interface, Mac48Address peerAddress, dot11sReasonCode & reasonCode)
 {
   if (m_numberOfActivePeers > m_maxNumberOfPeerLinks)
     {
@@ -488,7 +448,7 @@ Dot11sPeerManagerProtocol::ShouldAcceptOpen (Mac48Address interfaceAddress, Mac4
     }
   return true;
 }
-
+#if 0
 Time
 Dot11sPeerManagerProtocol::GetNextBeaconShift (
   Mac48Address interfaceAddress,
@@ -503,7 +463,7 @@ Dot11sPeerManagerProtocol::GetNextBeaconShift (
   uint32_t myNextTBTTInTimeUnits = 0;
   uint32_t futureBeaconInTimeUnits = 0;
   //Going through all my timing elements and detecting future beacon collisions
-  PeerDescriptorsMap::iterator interface = m_peerLinks.find (interfaceAddress);
+  PeerLinksMap::iterator interface = m_peerLinks.find (interfaceAddress);
   NS_ASSERT (interface != m_peerLinks.end());
   BeaconInfoMap::iterator myBeacon = m_myBeaconInfo.find (interfaceAddress);
   NS_ASSERT (myBeacon != m_myBeaconInfo.end());
@@ -571,12 +531,12 @@ Dot11sPeerManagerProtocol::GetNextBeaconShift (
     return MicroSeconds (0);
 }
 
+#endif
 void
 Dot11sPeerManagerProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, bool status)
 {
-  MeshMacMap::iterator pos = m_macPointers.find (interfaceAddress);
-  NS_ASSERT (pos != m_macPointers.end());
-  pos->second->PeerLinkStatus (peerAddress, status);
+  if(status)
+    NS_LOG_UNCOND("LINK established");
+  NS_ASSERT(false);
 }
-#endif
 } //namespace NS3

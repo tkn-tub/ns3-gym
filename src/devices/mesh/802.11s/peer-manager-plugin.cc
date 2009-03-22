@@ -97,31 +97,38 @@ Dot11sPeerManagerMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & h
     {
       if(!(m_parent->CheckSupportedRates(fields.rates)))
       {
-        NS_ASSERT(false);
-        //m_peerManager->ConfigurationMismatch (GetAddress(), peerAddress);
+        m_protocol->ConfigurationMismatch (m_ifIndex, peerAddress);
         return true;
       }
       if (!fields.meshId.IsEqual(m_parent->GetSsid()))
       {
-        NS_ASSERT(false);
-        //m_peerManager->ConfigurationMismatch (GetAddress(), peerAddress);
+        m_protocol->ConfigurationMismatch (m_ifIndex, peerAddress);
         return true;
       }
     }
-  
+    //link management element:
+    IeDot11sConfiguration meshConfig;
+    if(fields.subtype != IeDot11sPeerManagement::PEER_CLOSE)
+    packet->RemoveHeader(meshConfig);
+    IeDot11sPeerManagement peerElement;
+    packet->RemoveHeader(peerElement);
+
     switch (actionValue.peerLink)
     {
       case WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM:
-        return true;
+        NS_ASSERT(fields.subtype == IeDot11sPeerManagement::PEER_CONFIRM);
+        break;
       case WifiMeshMultihopActionHeader::PEER_LINK_OPEN:
-        NS_LOG_UNCOND("OPEN RECEIVED");
-        NS_ASSERT(false);
-        return true;
+        NS_ASSERT(fields.subtype == IeDot11sPeerManagement::PEER_OPEN);
+        break;
       case WifiMeshMultihopActionHeader::PEER_LINK_CLOSE:
-        return true;
+        NS_ASSERT(fields.subtype == IeDot11sPeerManagement::PEER_CLOSE);
+        break;
       default:
         return false;
     }
+    //Deliver Peer link management frame to protocol:
+    m_protocol->ReceivePeerLinkFrame(m_ifIndex, peerAddress, fields.aid, peerElement, meshConfig);
   } 
   return false;
 }
@@ -154,11 +161,11 @@ Dot11sPeerManagerMacPlugin::SendPeerLinkManagementFrame(
       IeDot11sConfiguration meshConfig
       )
 {
-  NS_LOG_UNCOND("sending open");
   //Create a packet:
   Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader(peerElement);
-  packet->AddHeader(meshConfig);
+  packet->AddHeader (peerElement);
+  if(!peerElement.SubtypeIsClose())
+    packet->AddHeader (meshConfig);
   PeerLinkFrameStart::PlinkFrameStartFields fields;
   fields.subtype = peerElement.GetSubtype();
   fields.aid = aid;
@@ -166,7 +173,7 @@ Dot11sPeerManagerMacPlugin::SendPeerLinkManagementFrame(
   fields.meshId = m_parent->GetSsid ();
   PeerLinkFrameStart plinkFrame;
   plinkFrame.SetPlinkFrameStart(fields);
-  packet->AddHeader(plinkFrame);
+  packet->AddHeader (plinkFrame);
   //Create an 802.11 frame header:
   //Send management frame to MAC:
   WifiMeshMultihopActionHeader multihopHdr;
