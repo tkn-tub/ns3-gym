@@ -533,8 +533,8 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
       
       packet->PeekHeader (beacon_hdr);
       
-      NS_LOG_UNCOND ("Beacon received from "<<hdr->GetAddr2()<<
-                   " to "<<GetAddress ()<<
+      NS_LOG_DEBUG ("Beacon received from "<<hdr->GetAddr2()<<
+                   " I am "<<GetAddress ()<<
                    " at "<<Simulator::Now ().GetMicroSeconds ()<<
                    " microseconds");
       

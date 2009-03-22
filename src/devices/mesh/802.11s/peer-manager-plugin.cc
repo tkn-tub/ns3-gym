@@ -44,26 +44,25 @@ Dot11sPeerManagerMacPlugin::~Dot11sPeerManagerMacPlugin ()
 void
 Dot11sPeerManagerMacPlugin::SetParent (Ptr<MeshWifiInterfaceMac> parent)
 {
-  NS_LOG_UNCOND("ADD PARENT");
   m_parent = parent;
 }
 
 bool
-Dot11sPeerManagerMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
+Dot11sPeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & header)
 {
-  NS_LOG_UNCOND("received a frame");
+  Ptr<Packet> packet = const_packet->Copy();
   if(header.IsBeacon())
   {
-    NS_LOG_UNCOND("Beacon recevied by PM from"<<header.GetAddr2 ());
     IeDot11sBeaconTiming beaconTiming;
     Ptr<Packet> myBeacon = packet->Copy();
     MgtBeaconHeader beacon_hdr;
     myBeacon->RemoveHeader(beacon_hdr);
-    if(myBeacon->GetSize () == 0)
-      NS_LOG_UNCOND("Empty");
     bool meshBeacon = false;
     if(beaconTiming.FindMyInformationElement(myBeacon))
+    {
+      NS_LOG_DEBUG("Beacon timing:"<<beaconTiming);
       meshBeacon = true;
+    }
     m_protocol->ReceiveBeacon(
         m_ifIndex,
         meshBeacon,
@@ -142,10 +141,6 @@ Dot11sPeerManagerMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHea
 void
 Dot11sPeerManagerMacPlugin::UpdateBeacon (MeshWifiBeacon & beacon) const
 {
-#if 0
-  NS_LOG_UNCOND("I am sending a beacon");
-  Ptr<IeDot11sPrep>  prep = Create<IeDot11sPrep> ();
-#endif
   Ptr<IeDot11sBeaconTiming>  beaconTiming = 
     m_protocol->SendBeacon(
         m_ifIndex,
@@ -210,5 +205,12 @@ Dot11sPeerManagerMacPlugin::SendPeerLinkManagementFrame(
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   m_parent->SendManagementFrame(packet, hdr);
+}
+Mac48Address
+Dot11sPeerManagerMacPlugin::GetAddress () const
+{
+  if(m_parent !=  0)
+    return m_parent->GetAddress ();
+  else return Mac48Address::Mac48Address();
 }
 }//namespace ns3

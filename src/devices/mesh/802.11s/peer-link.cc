@@ -82,6 +82,11 @@ PeerLink::SetPeerAddress (Mac48Address macaddr)
 }
 
 void
+PeerLink::SetInterface (uint32_t interface)
+{
+  m_interface = interface;
+}
+void
 PeerLink::SetLocalLinkId (uint16_t id)
 {
   m_localLinkId = id;
@@ -255,7 +260,6 @@ PeerLink::SetMacPlugin(Ptr<Dot11sPeerManagerMacPlugin> plugin)
 void
 PeerLink::StateMachine (PeerEvent event,dot11sReasonCode reasoncode)
 {
-  NS_LOG_UNCOND("state = "<<m_state<<", event = "<<event);
   switch (m_state)
     {
     case IDLE:

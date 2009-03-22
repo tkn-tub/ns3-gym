@@ -192,7 +192,6 @@ Dot11sPeerManagerProtocol::ReceiveBeacon(
           return;
         }
     }
-   NS_LOG_UNCOND("NOT found"<<__LINE__);
    PeerManagerPluginMap::iterator plugin = m_plugins.find (interface);
    NS_ASSERT(plugin != m_plugins.end());
    Ptr<PeerLink> new_link = InitiateLink (interface, peerAddress, receivingTime, beaconInterval);
@@ -230,7 +229,6 @@ Dot11sPeerManagerProtocol::ReceivePeerLinkFrame (
           (*i)->OpenReject (peerManagementElement.GetLocalLinkId(), meshConfig, reasonCode);
         return;
       }
-   NS_LOG_UNCOND("NOT found"<<__LINE__);
     Ptr<PeerLink> new_link = InitiateLink (
         interface,
         peerAddress,
@@ -240,7 +238,6 @@ Dot11sPeerManagerProtocol::ReceivePeerLinkFrame (
     if(!reject)
     {
       //Drop from INIT state:
-      NS_LOG_UNCOND("new link with "<<peerAddress<<", port = "<<interface);
       new_link->MLMEPassivePeerLinkOpen ();
       new_link->OpenAccept (peerManagementElement.GetLocalLinkId(), meshConfig);
     }
@@ -340,12 +337,12 @@ Dot11sPeerManagerProtocol::InitiateLink (
   NS_ASSERT(plugin != m_plugins.end ());
 
   new_link->SetLocalAid (beacon->second.aid);
+  new_link->SetInterface (interface);
   new_link->SetLocalLinkId (m_lastLocalLinkId++);
   new_link->SetPeerAddress (peerAddress);
   new_link->SetBeaconInformation (lastBeacon, beaconInterval);
   new_link->SetMacPlugin (plugin->second);
   new_link->MLMESetSignalStatusCallback (MakeCallback(&Dot11sPeerManagerProtocol::PeerLinkStatus, this));
-  NS_LOG_UNCOND("pushed");
   iface->second.push_back (new_link);  
   return new_link;
 }
@@ -501,8 +498,13 @@ Dot11sPeerManagerProtocol::GetNextBeaconShift (
 void
 Dot11sPeerManagerProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, bool status)
 {
-  if(status)
-    NS_LOG_UNCOND("LINK established");
-  NS_ASSERT(false);
+   PeerManagerPluginMap::iterator plugin = m_plugins.find (interface);
+   NS_LOG_UNCOND(interface);
+   NS_ASSERT(plugin != m_plugins.end());
+   NS_LOG_UNCOND("LINK between me:"<<plugin->second->GetAddress() <<" and peer:"<<peerAddress<<", at interface "<<interface);
+   if(status)
+     NS_LOG_UNCOND("Established");
+   else
+     NS_LOG_UNCOND("Closed");
 }
 } //namespace NS3

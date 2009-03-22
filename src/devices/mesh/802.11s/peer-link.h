@@ -59,6 +59,7 @@ public:
    * \{
    */
   void  SetPeerAddress (Mac48Address macaddr);
+  void  SetInterface (uint32_t interface);
   void  SetLocalLinkId (uint16_t id);
   void  SetPeerLinkId (uint16_t id);
   void  SetLocalAid (uint16_t aid);

@@ -62,7 +62,11 @@ public:
       IeDot11sPeerManagement peerElement,
       IeDot11sConfiguration meshConfig
       );
-  IeDot11sConfiguration AskPeerLinkManagementElement();
+  //IeDot11sConfiguration AskPeerLinkManagementElement();
+  /**
+   * \brief DUBUG only
+   */
+  Mac48Address GetAddress () const;
 private:
   /**
    * Information about MAC and protocol:
