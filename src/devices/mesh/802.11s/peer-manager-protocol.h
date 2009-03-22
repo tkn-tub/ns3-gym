@@ -111,6 +111,10 @@ public:
    */
   void ConfigurationMismatch (uint32_t interface, Mac48Address peerAddress);
   /**
+   * Checks if there is established link
+   */
+  bool IsActiveLink (uint32_t interface, Mac48Address peerAddress);
+  /**
    * \}
    */
 private:
@@ -149,7 +153,10 @@ private:
    * \brief Indicates changes in peer links
    */
   void PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, bool status);
-
+  /**
+   * Removes all links which are idle
+   */
+  void  PeerCleanup ();
 private:
   PeerManagerPluginMap m_plugins;
   /**
@@ -174,41 +181,16 @@ private:
   /**
    * \}
    */
-#if 0
-  //Maximum peers that may be opened:
   /**
-   * Peer manager identify interface by address
-   * of MAC. So, for every interface we store
-   * list of peer descriptors.
+   * Periodically we scan the peer manager list of peers
+   * and check if the too many  beacons were lost:
+   * \{
    */
-  //This Variables used in beacon miss auto-cleanup:
-  //How many beacons may we lose before the link is
-  //considered to be broken:
-  uint8_t  m_maxBeaconLoss;
-  //Periodically we scan the peer manager list of peers
-  //and check if the too many  beacons were lost:
   Time  m_peerLinkCleanupPeriod;
   EventId  m_cleanupEvent;
-  void  PeerCleanup ();
-  //Mechanism of choosing PEERs:
-  bool  ShouldAcceptOpen (
-    Mac48Address interfaceAddress,
-    Mac48Address peerAddress,
-    dot11sReasonCode & reasonCode
-  );
-  //Needed for Beacon Collision Avoidance module:
-  BeaconInfoMap m_myBeaconInfo;
   /**
-   * Peer link Open/Close callbacks: We need to
-   * inform MAC about this events.
-   * \brief Interaction with peer link
-   * descriptor - notify that peer link was
-   * opened or closed
-   * \param status true - peer link opened, peer
-   * link closed otherwise
+   * \}
    */
-  void PeerLinkStatus (Mac48Address interfaceAddress, Mac48Address peerAddress, bool status);
-#endif
 };
 } //namespace ns3
 #endif
