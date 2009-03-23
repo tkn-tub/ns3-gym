@@ -499,6 +499,7 @@ protected:
   void NotifyDataSent (uint32_t size);
   void NotifySend (uint32_t spaceAvailable);
   void NotifyDataRecv (void);
+  virtual void DoDispose (void);
 private:
   Callback<void, Ptr<Socket> >   m_connectionSucceeded;
   Callback<void, Ptr<Socket> >   m_connectionFailed;
