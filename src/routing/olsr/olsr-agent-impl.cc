@@ -218,7 +218,7 @@ void AgentImpl::DoDispose ()
   for (std::map< Ptr<Socket>, Ipv4Address >::iterator iter = m_socketAddresses.begin ();
        iter != m_socketAddresses.end (); iter++)
     {
-      iter->first->Dispose ();
+      iter->first->Close ();
     }
   m_socketAddresses.clear ();
 
