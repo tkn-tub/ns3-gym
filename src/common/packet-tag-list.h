@@ -34,7 +34,7 @@ class Tag;
  * The maximum size (in bytes) of a Tag is stored
  * in this constant.
  */
-#define PACKET_TAG_MAX_SIZE 16
+#define PACKET_TAG_MAX_SIZE 20
 
 class PacketTagList 
 {
