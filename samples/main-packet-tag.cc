@@ -101,19 +101,19 @@ int main (int argc, char *argv[])
 
   // store the tag in a packet.
   Ptr<Packet> p = Create<Packet> (100);
-  p->AddTag (tag);
+  p->AddPacketTag (tag);
 
   // create a copy of the packet
   Ptr<Packet> aCopy = p->Copy ();
 
   // read the tag from the packet copy
   MyTag tagCopy;
-  p->FindFirstMatchingTag (tagCopy);
+  p->PeekPacketTag (tagCopy);
 
   // the copy and the original are the same !
   NS_ASSERT (tagCopy.GetSimpleValue () == tag.GetSimpleValue ());
 
-  aCopy->PrintTags (std::cout);
+  aCopy->PrintPacketTags (std::cout);
   std::cout << std::endl;
 
   return 0;
