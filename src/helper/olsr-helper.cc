@@ -18,7 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "olsr-helper.h"
-#include "ns3/olsr-agent-impl.h"
+#include "ns3/olsr-routing-protocol.h"
 #include "ns3/node-list.h"
 #include "ns3/names.h"
 
@@ -26,7 +26,7 @@ namespace ns3 {
 
 OlsrHelper::OlsrHelper ()
 {
-  m_agentFactory.SetTypeId ("ns3::olsr::AgentImpl");
+  m_agentFactory.SetTypeId ("ns3::olsr::RoutingProtocol");
 }
 
 void 
@@ -63,13 +63,13 @@ OlsrHelper::Install (NodeContainer container)
 void 
 OlsrHelper::Install (Ptr<Node> node)
 {
-  if (node->GetObject<olsr::AgentImpl> () != 0)
+  if (node->GetObject<olsr::RoutingProtocol> () != 0)
     {
       NS_FATAL_ERROR ("OlsrHelper::Install(): Aggregating "
-         "an Olsr Agent to a node with an existing Olsr Agent");
+         "an Olsr Agent to a node with an existing Olsr RoutingProtocol");
       return;
     }
-  Ptr<olsr::AgentImpl> agent = m_agentFactory.Create<olsr::AgentImpl> ();
+  Ptr<olsr::RoutingProtocol> agent = m_agentFactory.Create<olsr::RoutingProtocol> ();
   node->AggregateObject (agent);
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   ipv4->AddRoutingProtocol (agent, 10);

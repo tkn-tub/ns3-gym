@@ -59,13 +59,13 @@ struct RoutingTableEntry
 };
 
 
-class AgentImpl : public Ipv4RoutingProtocol
+class RoutingProtocol : public Ipv4RoutingProtocol
 {
 public:
   static TypeId GetTypeId (void);
 
-  AgentImpl ();
-  virtual ~AgentImpl ();
+  RoutingProtocol ();
+  virtual ~RoutingProtocol ();
 
   void SetNode (Ptr<Node> node);
 
