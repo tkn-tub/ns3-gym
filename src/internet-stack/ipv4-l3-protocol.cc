@@ -161,6 +161,7 @@ Ipv4L3Protocol::DoDispose (void)
       *i = 0;
     }
   m_interfaces.clear ();
+  m_routingProtocols.clear ();
   m_node = 0;
   m_staticRouting->Dispose ();
   m_staticRouting = 0;
