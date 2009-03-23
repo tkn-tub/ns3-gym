@@ -154,8 +154,8 @@ private:
  * \ingroup packet
  * \brief network packets
  *
- * Each network packet contains a byte buffer, a set of tags, and
- * metadata.
+ * Each network packet contains a byte buffer, a set of byte tags, a set of
+ * packet tags, and metadata.
  *
  * - The byte buffer stores the serialized content of the headers and trailers 
  * added to a packet. The serialized representation of these headers is expected
@@ -163,16 +163,22 @@ private:
  * forces you to do this) which means that the content of a packet buffer
  * is expected to be that of a real packet.
  *
- * - Each tag tags a subset of the bytes in the packet byte buffer with the 
- * information stored in the tag. A classic example of a tag is a FlowIdTag 
- * which contains a flow id: the set of bytes tagged by this tag implicitely 
- * belong to the attached flow id.
- *
  * - The metadata describes the type of the headers and trailers which
  * were serialized in the byte buffer. The maintenance of metadata is
  * optional and disabled by default. To enable it, you must call
  * Packet::EnableMetadata and this will allow you to get non-empty
  * output from Packet::Print and Packet::Print.
+ *
+ * - The set of tags contain simulation-specific information which cannot
+ * be stored in the packet byte buffer because the protocol headers or trailers
+ * have no standard-conformant field for this information. So-called
+ * 'byte' tags are used to tag a subset of the bytes in the packet byte buffer
+ * while 'packet' tags are used to tag the packet itself. The main difference
+ * between these two kinds of tags is what happens when packets are copied,
+ * fragmented, and reassembled: 'byte' tags follow bytes while 'packet' tags
+ * follow packets. A classic example of a 'byte' tag is a FlowIdTag 
+ * which contains a flow id: the set of bytes tagged by this tag implicitely 
+ * belong to the attached flow id.
  *
  * Implementing a new type of Header or Trailer for a new protocol is 
  * pretty easy and is a matter of creating a subclass of the ns3::Header 
@@ -433,7 +439,7 @@ public:
    */
   void AddByteTag (const Tag &tag) const;
   /**
-   * \returns an iterator over the set of tags included in this packet.
+   * \returns an iterator over the set of byte tags included in this packet.
    */
   ByteTagIterator GetByteTagIterator (void) const;
   /**
@@ -493,8 +499,20 @@ public:
    */
   void RemoveAllPacketTags (void);
 
+  /**
+   * \param os the stream in which we want to print data.
+   *
+   * Print the list of 'packet' tags.
+   *
+   * \sa Packet::AddPacketTag, Packet::RemovePacketTag, Packet::PeekPacketTag,
+   *  Packet::RemoveAllPacketTags
+   */
   void PrintPacketTags (std::ostream &os) const;
 
+  /**
+   * \returns an object which can be used to iterate over the list of
+   *  packet tags.
+   */
   PacketTagIterator GetPacketTagIterator (void) const;
 
 private:
