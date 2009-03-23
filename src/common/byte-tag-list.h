@@ -17,8 +17,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef TAG_LIST_H
-#define TAG_LIST_H
+#ifndef BYTE_TAG_LIST_H
+#define BYTE_TAG_LIST_H
 
 #include <stdint.h>
 #include "ns3/type-id.h"
@@ -167,4 +167,4 @@ private:
 
 } // namespace ns3
 
-#endif /* TAG_LIST_H */
+#endif /* BYTE_TAG_LIST_H */
