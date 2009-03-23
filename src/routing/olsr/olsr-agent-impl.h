@@ -24,14 +24,9 @@
 #ifndef __OLSR_AGENT_IMPL_H__
 #define __OLSR_AGENT_IMPL_H__
 
-#include <vector>
-
-#include "olsr-agent.h"
 #include "olsr-header.h"
 #include "olsr-state.h"
-
-#include "olsr-routing-table.h"
-#include "repositories.h"
+#include "olsr-repositories.h"
 
 #include "ns3/object.h"
 #include "ns3/packet.h"
@@ -40,13 +35,31 @@
 #include "ns3/event-garbage-collector.h"
 #include "ns3/timer.h"
 #include "ns3/traced-callback.h"
+#include "ns3/ipv4.h"
+
+#include <vector>
+#include <map>
 
 
 namespace ns3 {
 namespace olsr {
 
 
-class AgentImpl : public Agent
+/// An %OLSR's routing table entry.
+struct RoutingTableEntry
+{
+  Ipv4Address destAddr;	///< Address of the destination node.
+  Ipv4Address nextAddr;	///< Address of the next hop.
+  uint32_t interface; ///< Interface index
+  uint32_t distance; ///< Distance in hops to the destination.
+
+  RoutingTableEntry () : // default values
+    destAddr (), nextAddr (),
+    interface (0), distance (0) {};
+};
+
+
+class AgentImpl : public Ipv4RoutingProtocol
 {
 public:
   static TypeId GetTypeId (void);
@@ -54,13 +67,14 @@ public:
   AgentImpl ();
   virtual ~AgentImpl ();
 
-  virtual void SetNode (Ptr<Node> node);
+  void SetNode (Ptr<Node> node);
 
-  virtual void Start ();
-  virtual void SetMainInterface (uint32_t interface);
-  virtual Ptr<const olsr::RoutingTable> GetRoutingTable () const;
+  void Start ();
+  void SetMainInterface (uint32_t interface);
 
 private:
+  std::map<Ipv4Address, RoutingTableEntry> m_table; ///< Data structure for the routing table.
+
   EventGarbageCollector m_events;
 
   /// Address of the routing agent.
@@ -82,14 +96,39 @@ private:
   /// Willingness for forwarding packets on behalf of other nodes.
   uint8_t m_willingness;
 	
-  /// Routing table.
-  Ptr<RoutingTable> m_routingTable;
   /// Internal state with all needed data structs.
   OlsrState m_state;
 
   Ptr<Ipv4> m_ipv4;
 	
-protected:
+private:
+
+  void Clear ();
+  uint32_t GetSize () const { return m_table.size (); }
+  std::vector<RoutingTableEntry> GetEntries () const;
+  void RemoveEntry (const Ipv4Address &dest);
+  void AddEntry (const Ipv4Address &dest,
+                 const Ipv4Address &next,
+                 uint32_t interface,
+                 uint32_t distance);
+  void AddEntry (const Ipv4Address &dest,
+                 const Ipv4Address &next,
+                 const Ipv4Address &interfaceAddress,
+                 uint32_t distance);
+  bool Lookup (const Ipv4Address &dest,
+               RoutingTableEntry &outEntry) const;
+  bool FindSendEntry (const RoutingTableEntry &entry,
+                      RoutingTableEntry &outEntry) const;
+
+  // From Ipv4RoutingProtocol
+  virtual bool RequestRoute (uint32_t ifIndex,
+                             const Ipv4Header &ipHeader,
+                             Ptr<Packet> packet,
+                             RouteReplyCallback routeReply);
+  virtual bool RequestIfIndex (Ipv4Address destination, 
+                               uint32_t& ifIndex);
+
+
   void DoDispose ();
 
   void SendPacket (Ptr<Packet> packet, const MessageList &containedMessages);

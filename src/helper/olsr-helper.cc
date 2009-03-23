@@ -18,7 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "olsr-helper.h"
-#include "ns3/olsr-agent.h"
+#include "ns3/olsr-agent-impl.h"
 #include "ns3/node-list.h"
 #include "ns3/names.h"
 
@@ -63,15 +63,17 @@ OlsrHelper::Install (NodeContainer container)
 void 
 OlsrHelper::Install (Ptr<Node> node)
 {
-  if (node->GetObject<olsr::Agent> () != 0)
+  if (node->GetObject<olsr::AgentImpl> () != 0)
     {
       NS_FATAL_ERROR ("OlsrHelper::Install(): Aggregating "
          "an Olsr Agent to a node with an existing Olsr Agent");
       return;
     }
-  Ptr<olsr::Agent> agent = m_agentFactory.Create<olsr::Agent> ();
-  agent->SetNode (node);
+  Ptr<olsr::AgentImpl> agent = m_agentFactory.Create<olsr::AgentImpl> ();
   node->AggregateObject (agent);
+  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+  ipv4->AddRoutingProtocol (agent, 10);
+  agent->SetNode (node);
   agent->Start ();
 }
 void 

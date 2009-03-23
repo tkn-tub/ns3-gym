@@ -133,6 +133,8 @@ def register_types(module):
     module.add_class('SimpleChannel', parent=root_module['ns3::Channel'])
     ## simple-net-device.h: ns3::SimpleNetDevice [class]
     module.add_class('SimpleNetDevice', parent=root_module['ns3::NetDevice'])
+    module.add_container('ns3::olsr::MprSet', 'ns3::Ipv4Address', container_type='set')
+    module.add_container('std::vector< ns3::Ipv4Address >', 'ns3::Ipv4Address', container_type='vector')
     
     ## Register a nested module for the namespace Config
     
@@ -173,7 +175,6 @@ def register_types_ns3_internal(module):
 def register_types_ns3_olsr(module):
     root_module = module.get_root()
     
-    module.add_container('std::vector< ns3::Ipv4Address >', 'ns3::Ipv4Address', container_type='vector')
 
 def register_methods(root_module):
     register_Ns3Address_methods(root_module, root_module['ns3::Address'])
