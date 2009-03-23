@@ -28,22 +28,22 @@ namespace ns3 {
 uint32_t Packet::m_globalUid = 0;
 
 TypeId 
-TagIterator::Item::GetTypeId (void) const
+ByteTagIterator::Item::GetTypeId (void) const
 {
   return m_tid;
 }
 uint32_t 
-TagIterator::Item::GetStart (void) const
+ByteTagIterator::Item::GetStart (void) const
 {
   return m_start;
 }
 uint32_t 
-TagIterator::Item::GetEnd (void) const
+ByteTagIterator::Item::GetEnd (void) const
 {
   return m_end;
 }
 void 
-TagIterator::Item::GetTag (Tag &tag) const
+ByteTagIterator::Item::GetTag (Tag &tag) const
 {
   if (tag.GetInstanceTypeId () != GetTypeId ())
     {
@@ -51,27 +51,27 @@ TagIterator::Item::GetTag (Tag &tag) const
     }
   tag.Deserialize (m_buffer);
 }
-TagIterator::Item::Item (TypeId tid, uint32_t start, uint32_t end, TagBuffer buffer)
+ByteTagIterator::Item::Item (TypeId tid, uint32_t start, uint32_t end, TagBuffer buffer)
   : m_tid (tid),
     m_start (start),
     m_end (end),
     m_buffer (buffer)
 {}
 bool 
-TagIterator::HasNext (void) const
+ByteTagIterator::HasNext (void) const
 {
   return m_current.HasNext ();
 }
-TagIterator::Item 
-TagIterator::Next (void)
+ByteTagIterator::Item 
+ByteTagIterator::Next (void)
 {
-  TagList::Iterator::Item i = m_current.Next ();
-  return TagIterator::Item (i.tid, 
-                            i.start-m_current.GetOffsetStart (), 
-                            i.end-m_current.GetOffsetStart (), 
-                            i.buf);
+  ByteTagList::Iterator::Item i = m_current.Next ();
+  return ByteTagIterator::Item (i.tid, 
+                                i.start-m_current.GetOffsetStart (), 
+                                i.end-m_current.GetOffsetStart (), 
+                                i.buf);
 }
-TagIterator::TagIterator (TagList::Iterator i)
+ByteTagIterator::ByteTagIterator (ByteTagList::Iterator i)
   : m_current (i)
 {}
 
@@ -135,7 +135,7 @@ Packet::Copy (void) const
 
 Packet::Packet ()
   : m_buffer (),
-    m_tagList (),
+    m_byteTagList (),
     m_packetTagList (),
     m_metadata (m_globalUid, 0),
     m_refCount (1)
@@ -145,7 +145,7 @@ Packet::Packet ()
 
 Packet::Packet (const Packet &o)
   : m_buffer (o.m_buffer),
-    m_tagList (o.m_tagList),
+    m_byteTagList (o.m_byteTagList),
     m_packetTagList (o.m_packetTagList),
     m_metadata (o.m_metadata),
     m_refCount (1)
@@ -159,7 +159,7 @@ Packet::operator = (const Packet &o)
       return *this;
     }
   m_buffer = o.m_buffer;
-  m_tagList = o.m_tagList;
+  m_byteTagList = o.m_byteTagList;
   m_packetTagList = o.m_packetTagList;
   m_metadata = o.m_metadata;
   return *this;
@@ -167,7 +167,7 @@ Packet::operator = (const Packet &o)
 
 Packet::Packet (uint32_t size)
   : m_buffer (size),
-    m_tagList (),
+    m_byteTagList (),
     m_packetTagList (),
     m_metadata (m_globalUid, size),
     m_refCount (1)
@@ -176,7 +176,7 @@ Packet::Packet (uint32_t size)
 }
 Packet::Packet (uint8_t const*buffer, uint32_t size)
   : m_buffer (),
-    m_tagList (),
+    m_byteTagList (),
     m_packetTagList (),
     m_metadata (m_globalUid, size),
     m_refCount (1)
@@ -187,10 +187,10 @@ Packet::Packet (uint8_t const*buffer, uint32_t size)
   i.Write (buffer, size);
 }
 
-Packet::Packet (const Buffer &buffer,  const TagList &tagList, 
+Packet::Packet (const Buffer &buffer,  const ByteTagList &byteTagList, 
                 const PacketTagList &packetTagList, const PacketMetadata &metadata)
   : m_buffer (buffer),
-    m_tagList (tagList),
+    m_byteTagList (byteTagList),
     m_packetTagList (packetTagList),
     m_metadata (metadata),
     m_refCount (1)
@@ -206,7 +206,7 @@ Packet::CreateFragment (uint32_t start, uint32_t length) const
   PacketMetadata metadata = m_metadata.CreateFragment (start, end);
   // again, call the constructor directly rather than
   // through Create because it is private.
-  return Ptr<Packet> (new Packet (buffer, m_tagList, m_packetTagList, metadata), false);
+  return Ptr<Packet> (new Packet (buffer, m_byteTagList, m_packetTagList, metadata), false);
 }
 
 uint32_t 
@@ -224,8 +224,8 @@ Packet::AddHeader (const Header &header)
   bool resized = m_buffer.AddAtStart (size);
   if (resized)
     {
-      m_tagList.AddAtStart (m_buffer.GetCurrentStartOffset () + size - orgStart,
-                            m_buffer.GetCurrentStartOffset () + size);
+      m_byteTagList.AddAtStart (m_buffer.GetCurrentStartOffset () + size - orgStart,
+                                m_buffer.GetCurrentStartOffset () + size);
     }
   header.Serialize (m_buffer.Begin ());
   m_metadata.AddHeader (header, size);
@@ -255,8 +255,8 @@ Packet::AddTrailer (const Trailer &trailer)
   bool resized = m_buffer.AddAtEnd (size);
   if (resized)
     {
-      m_tagList.AddAtEnd (m_buffer.GetCurrentStartOffset () - orgStart,
-                          m_buffer.GetCurrentEndOffset () - size);
+      m_byteTagList.AddAtEnd (m_buffer.GetCurrentStartOffset () - orgStart,
+                              m_buffer.GetCurrentEndOffset () - size);
     }
   Buffer::Iterator end = m_buffer.End ();
   trailer.Serialize (end);
@@ -287,12 +287,12 @@ Packet::AddAtEnd (Ptr<const Packet> packet)
   uint32_t bEnd = packet->m_buffer.GetCurrentEndOffset ();
   m_buffer.AddAtEnd (packet->m_buffer);
   uint32_t appendPrependOffset = m_buffer.GetCurrentEndOffset () - packet->m_buffer.GetSize ();
-  m_tagList.AddAtEnd (m_buffer.GetCurrentStartOffset () - aStart, 
-                      appendPrependOffset);
-  TagList copy = packet->m_tagList;
+  m_byteTagList.AddAtEnd (m_buffer.GetCurrentStartOffset () - aStart, 
+                          appendPrependOffset);
+  ByteTagList copy = packet->m_byteTagList;
   copy.AddAtStart (m_buffer.GetCurrentEndOffset () - bEnd,
                    appendPrependOffset);
-  m_tagList.Add (copy);
+  m_byteTagList.Add (copy);
   m_metadata.AddAtEnd (packet->m_metadata);
 }
 void
@@ -303,8 +303,8 @@ Packet::AddPaddingAtEnd (uint32_t size)
   bool resized = m_buffer.AddAtEnd (size);
   if (resized)
     {
-      m_tagList.AddAtEnd (m_buffer.GetCurrentEndOffset () - orgEnd,
-                          m_buffer.GetCurrentEndOffset () - size);
+      m_byteTagList.AddAtEnd (m_buffer.GetCurrentEndOffset () - orgEnd,
+                              m_buffer.GetCurrentEndOffset () - size);
     }
   m_metadata.AddPaddingAtEnd (size);
 }
@@ -324,10 +324,10 @@ Packet::RemoveAtStart (uint32_t size)
 }
 
 void 
-Packet::RemoveAllTags (void)
+Packet::RemoveAllByteTags (void)
 {
   NS_LOG_FUNCTION (this);
-  m_tagList.RemoveAll ();
+  m_byteTagList.RemoveAll ();
 }
 
 uint8_t const *
@@ -356,12 +356,12 @@ Packet::GetUid (void) const
 }
 
 void 
-Packet::PrintTags (std::ostream &os) const
+Packet::PrintByteTags (std::ostream &os) const
 {
-  TagIterator i = GetTagIterator ();
+  ByteTagIterator i = GetByteTagIterator ();
   while (i.HasNext ())
     {
-      TagIterator::Item item = i.Next ();
+      ByteTagIterator::Item item = i.Next ();
       os << item.GetTypeId ().GetName () << " [" << item.GetStart () << "-" << item.GetEnd () << "]";
       Callback<ObjectBase *> constructor = item.GetTypeId ().GetConstructor ();
       if (constructor.IsNull ())
@@ -584,29 +584,29 @@ Packet::Deserialize (Buffer buffer)
 }
 
 void 
-Packet::AddTag (const Tag &tag) const
+Packet::AddByteTag (const Tag &tag) const
 {
   NS_LOG_FUNCTION (this << &tag);
-  TagList *list = const_cast<TagList *> (&m_tagList);
+  ByteTagList *list = const_cast<ByteTagList *> (&m_byteTagList);
   TagBuffer buffer = list->Add (tag.GetInstanceTypeId (), tag.GetSerializedSize (), 
-                                 m_buffer.GetCurrentStartOffset (),
-                                 m_buffer.GetCurrentEndOffset ());
+                                m_buffer.GetCurrentStartOffset (),
+                                m_buffer.GetCurrentEndOffset ());
   tag.Serialize (buffer);
 }
-TagIterator 
-Packet::GetTagIterator (void) const
+ByteTagIterator 
+Packet::GetByteTagIterator (void) const
 {
-  return TagIterator (m_tagList.Begin (m_buffer.GetCurrentStartOffset (), m_buffer.GetCurrentEndOffset ()));
+  return ByteTagIterator (m_byteTagList.Begin (m_buffer.GetCurrentStartOffset (), m_buffer.GetCurrentEndOffset ()));
 }
 
 bool 
-Packet::FindFirstMatchingTag (Tag &tag) const
+Packet::FindFirstMatchingByteTag (Tag &tag) const
 {
   TypeId tid = tag.GetInstanceTypeId ();
-  TagIterator i = GetTagIterator ();
+  ByteTagIterator i = GetByteTagIterator ();
   while (i.HasNext ())
     {
-      TagIterator::Item item = i.Next ();
+      ByteTagIterator::Item item = i.Next ();
       if (tid == item.GetTypeId ())
         {
           item.GetTag (tag);
@@ -893,11 +893,11 @@ PacketTest::DoCheck (Ptr<const Packet> p, const char *file, int line, uint32_t n
     }
   va_end (ap);
 
-  TagIterator i = p->GetTagIterator ();
+  ByteTagIterator i = p->GetByteTagIterator ();
   uint32_t j = 0;
   while (i.HasNext () && j < expected.size ())
     {
-      TagIterator::Item item = i.Next ();
+      ByteTagIterator::Item item = i.Next ();
       struct Expected e = expected[j];
       std::ostringstream oss;
       oss << "anon::ATestTag<" << e.n << ">";
@@ -936,12 +936,12 @@ PacketTest::RunTests (void)
 
   Ptr<const Packet> p = Create<Packet> (1000);
 
-  p->AddTag (ATestTag<1> ());
+  p->AddByteTag (ATestTag<1> ());
   CHECK (p, 1, E (1, 0, 1000));
   Ptr<const Packet> copy = p->Copy ();
   CHECK (copy, 1, E (1, 0, 1000));
 
-  p->AddTag (ATestTag<2> ());
+  p->AddByteTag (ATestTag<2> ());
   CHECK (p, 2, E (1, 0, 1000), E(2, 0, 1000));
   CHECK (copy, 1, E (1, 0, 1000));
 
@@ -952,7 +952,7 @@ PacketTest::RunTests (void)
     CHECK (&c0, 1, E (1, 0, 1000));
     CHECK (&c1, 1, E (1, 0, 1000));
     CHECK (copy, 1, E (1, 0, 1000));
-    c0.AddTag (ATestTag<10> ());
+    c0.AddByteTag (ATestTag<10> ());
     CHECK (&c0, 2, E (1, 0, 1000), E (10, 0, 1000));
     CHECK (&c1, 1, E (1, 0, 1000));
     CHECK (copy, 1, E (1, 0, 1000));
@@ -961,11 +961,11 @@ PacketTest::RunTests (void)
   Ptr<Packet> frag0 = p->CreateFragment (0, 10);
   Ptr<Packet> frag1 = p->CreateFragment (10, 90);
   Ptr<const Packet> frag2 = p->CreateFragment (100, 900);
-  frag0->AddTag (ATestTag<3> ());
+  frag0->AddByteTag (ATestTag<3> ());
   CHECK (frag0, 3, E (1, 0, 10), E(2, 0, 10), E (3, 0, 10));
-  frag1->AddTag (ATestTag<4> ());
+  frag1->AddByteTag (ATestTag<4> ());
   CHECK (frag1, 3, E (1, 0, 90), E(2, 0, 90), E (4, 0, 90));
-  frag2->AddTag (ATestTag<5> ());
+  frag2->AddByteTag (ATestTag<5> ());
   CHECK (frag2, 3, E (1, 0, 900), E(2, 0, 900), E (5, 0, 900));
 
   frag1->AddAtEnd (frag2);
@@ -985,7 +985,7 @@ PacketTest::RunTests (void)
   frag0 = 0;
 
   p = Create<Packet> (1000);
-  p->AddTag (ATestTag<20> ());
+  p->AddByteTag (ATestTag<20> ());
   CHECK (p, 1, E (20, 0, 1000));
   frag0 = p->CreateFragment (10, 90);
   CHECK (p, 1, E (20, 0, 1000));
@@ -996,7 +996,7 @@ PacketTest::RunTests (void)
 
   {
     Ptr<Packet> tmp = Create<Packet> (100);
-    tmp->AddTag (ATestTag<20> ());
+    tmp->AddByteTag (ATestTag<20> ());
     CHECK (tmp, 1, E (20, 0, 100));
     tmp->AddHeader (ATestHeader<10> ());
     CHECK (tmp, 1, E (20, 10, 110));
@@ -1007,7 +1007,7 @@ PacketTest::RunTests (void)
     CHECK (tmp, 1, E (20, 10, 110));
 
     tmp = Create<Packet> (100);
-    tmp->AddTag (ATestTag<20> ());
+    tmp->AddByteTag (ATestTag<20> ());
     CHECK (tmp, 1, E (20, 0, 100));
     tmp->AddTrailer (ATestTrailer<10> ());
     CHECK (tmp, 1, E (20, 0, 100));
@@ -1022,7 +1022,7 @@ PacketTest::RunTests (void)
   {
     Ptr<Packet> tmp = Create<Packet> (0);
     tmp->AddHeader (ATestHeader<156> ());
-    tmp->AddTag (ATestTag<20> ());
+    tmp->AddByteTag (ATestTag<20> ());
     CHECK (tmp, 1, E (20, 0, 156));
     tmp->RemoveAtStart (120);
     CHECK (tmp, 1, E (20, 0, 36));
@@ -1033,17 +1033,17 @@ PacketTest::RunTests (void)
 
   {
     Ptr<Packet> tmp = Create<Packet> (0);
-    tmp->AddTag (ATestTag<20> ());
+    tmp->AddByteTag (ATestTag<20> ());
     CHECK (tmp, 0, E (20, 0, 0));
   }
   {
     Ptr<Packet> tmp = Create<Packet> (1000);
-    tmp->AddTag (ATestTag<20> ());
+    tmp->AddByteTag (ATestTag<20> ());
     CHECK (tmp, 1, E (20, 0, 1000));
     tmp->RemoveAtStart (1000);
     CHECK (tmp, 0,  E (0,0,0));
     Ptr<Packet> a = Create<Packet> (10);
-    a->AddTag (ATestTag<10> ());
+    a->AddByteTag (ATestTag<10> ());
     CHECK (a, 1, E (10, 0, 10));
     tmp->AddAtEnd (a);
     CHECK (tmp, 1, E (10, 0, 10));

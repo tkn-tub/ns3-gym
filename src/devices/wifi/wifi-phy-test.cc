@@ -148,7 +148,7 @@ void
 CollisionExperiment::SendA (void) const
 {
   Ptr<Packet> p = Create<Packet> (m_input.packetSizeA);
-  p->AddTag (FlowIdTag (m_flowIdA));
+  p->AddByteTag (FlowIdTag (m_flowIdA));
   m_txA->SendPacket (p, WifiMode (m_input.txModeA), 
 		     WIFI_PREAMBLE_SHORT, m_input.txPowerLevelA);
 }
@@ -157,7 +157,7 @@ void
 CollisionExperiment::SendB (void) const
 {
   Ptr<Packet> p = Create<Packet> (m_input.packetSizeB);
-  p->AddTag (FlowIdTag (m_flowIdB));
+  p->AddByteTag (FlowIdTag (m_flowIdB));
   m_txB->SendPacket (p, WifiMode (m_input.txModeB), 
 		     WIFI_PREAMBLE_SHORT, m_input.txPowerLevelB);
 }
@@ -166,7 +166,7 @@ void
 CollisionExperiment::Receive (Ptr<Packet> p, double snr, WifiMode mode, enum WifiPreamble preamble)
 {
   FlowIdTag tag;
-  p->FindFirstMatchingTag (tag);
+  p->FindFirstMatchingByteTag (tag);
   if (tag.GetFlowId () == m_flowIdA)
     {
       m_output.receivedA++;

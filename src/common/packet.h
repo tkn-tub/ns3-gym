@@ -26,7 +26,7 @@
 #include "trailer.h"
 #include "packet-metadata.h"
 #include "tag.h"
-#include "tag-list.h"
+#include "byte-tag-list.h"
 #include "packet-tag-list.h"
 #include "ns3/callback.h"
 #include "ns3/assert.h"
@@ -46,7 +46,7 @@ namespace ns3 {
  *
  * This is a java-style iterator.
  */
-class TagIterator
+class ByteTagIterator
 {
 public:
   /**
@@ -82,7 +82,7 @@ public:
      */
     void GetTag (Tag &tag) const;
   private:
-    friend class TagIterator;
+    friend class ByteTagIterator;
     Item (TypeId tid, uint32_t start, uint32_t end, TagBuffer buffer);
     TypeId m_tid;
     uint32_t m_start;
@@ -99,8 +99,8 @@ public:
   Item Next (void);
 private:
   friend class Packet;
-  TagIterator (TagList::Iterator i);
-  TagList::Iterator m_current;
+  ByteTagIterator (ByteTagList::Iterator i);
+  ByteTagList::Iterator m_current;
 };
 
 /**
@@ -284,13 +284,6 @@ public:
    * \returns the number of bytes read from the end of the packet.
    */
   uint32_t PeekTrailer (Trailer &trailer);
-  /**
-   * \param os output stream in which the data should be printed.
-   *
-   * Iterate over the tags present in this packet, and
-   * invoke the Print method of each tag stored in the packet.
-   */
-  void PrintTags (std::ostream &os) const;
 
   /**
    * Concatenate the input packet at the end of the current
@@ -438,11 +431,11 @@ public:
    * totally evil to allow a trace sink to modify the content of a
    * packet).
    */
-  void AddTag (const Tag &tag) const;
+  void AddByteTag (const Tag &tag) const;
   /**
    * \returns an iterator over the set of tags included in this packet.
    */
-  TagIterator GetTagIterator (void) const;
+  ByteTagIterator GetByteTagIterator (void) const;
   /**
    * \param tag the tag to search in this packet
    * \returns true if the requested tag type was found, false otherwise.
@@ -450,12 +443,20 @@ public:
    * If the requested tag type is found, it is copied in the user's 
    * provided tag instance.
    */
-  bool FindFirstMatchingTag (Tag &tag) const;
+  bool FindFirstMatchingByteTag (Tag &tag) const;
 
   /**
    * Remove all the tags stored in this packet.
    */
-  void RemoveAllTags (void);
+  void RemoveAllByteTags (void);
+
+  /**
+   * \param os output stream in which the data should be printed.
+   *
+   * Iterate over the tags present in this packet, and
+   * invoke the Print method of each tag stored in the packet.
+   */
+  void PrintByteTags (std::ostream &os) const;
 
   /**
    * \param tag the tag to store in this packet
@@ -497,10 +498,10 @@ public:
   PacketTagIterator GetPacketTagIterator (void) const;
 
 private:
-  Packet (const Buffer &buffer, const TagList &tagList, 
+  Packet (const Buffer &buffer, const ByteTagList &byteTagList, 
           const PacketTagList &packetTagList, const PacketMetadata &metadata);
   Buffer m_buffer;
-  TagList m_tagList;
+  ByteTagList m_byteTagList;
   PacketTagList m_packetTagList;
   PacketMetadata m_metadata;
   mutable uint32_t m_refCount;
