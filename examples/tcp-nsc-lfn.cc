@@ -43,6 +43,11 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpNscLfn");
 
+static void 
+CwndTracer (uint32_t oldval, uint32_t newval)
+{
+  NS_LOG_INFO ("Moving cwnd from " << oldval << " to " << newval);
+}
 
 int main (int argc, char *argv[])
 {
@@ -132,6 +137,10 @@ int main (int argc, char *argv[])
       clientApp.Start (Seconds (1.0 + i));
       clientApp.Stop (Seconds (runtime + 1.0 + i));
     }
+
+  // Trace changes to the congestion window
+  Config::ConnectWithoutContext ("/NodeList/1/$ns3::NscTcpL4Protocol/SocketList/0/CongestionWindow", 
+                                 MakeCallback (&CwndTracer));
 
   // This tells ns-3 to generate pcap traces.
   PointToPointHelper::EnablePcapAll ("tcp-nsc-lfn");

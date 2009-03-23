@@ -31,6 +31,7 @@
 
 #include "ns3/timer.h"
 #include "sim_interface.h"
+#include "nsc-tcp-socket-impl.h"
 
 namespace ns3 {
 
@@ -116,6 +117,7 @@ private:
   INetStack* m_nscStack;
   void *m_dlopenHandle;
   Timer m_softTimer;
+  std::vector<Ptr<NscTcpSocketImpl> > m_sockets;
 };
 
 }; // namespace ns3

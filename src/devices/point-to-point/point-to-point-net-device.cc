@@ -167,6 +167,7 @@ PointToPointNetDevice::PointToPointNetDevice ()
 
 PointToPointNetDevice::~PointToPointNetDevice ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
   void 
@@ -226,8 +227,8 @@ PointToPointNetDevice::TransmitStart (Ptr<Packet> p)
   //
   NS_ASSERT_MSG(m_txMachineState == READY, "Must be READY to transmit");
   m_txMachineState = BUSY;
-  m_phyTxBeginTrace (m_currentPkt);
   m_currentPkt = p;
+  m_phyTxBeginTrace (m_currentPkt);
 
   Time txTime = Seconds (m_bps.CalculateTxTime(p->GetSize()));
   Time txCompleteTime = txTime + m_tInterframeGap;

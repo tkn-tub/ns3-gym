@@ -24,12 +24,13 @@
 #include "ns3/packet.h"
 #include "ns3/node.h"
 
+#include "ns3/object-vector.h"
+
 #include "tcp-header.h"
 #include "ipv4-end-point-demux.h"
 #include "ipv4-end-point.h"
 #include "ipv4-l3-protocol.h"
 #include "nsc-tcp-l4-protocol.h"
-#include "nsc-tcp-socket-impl.h"
 #include "nsc-sysctl.h"
 
 #include "tcp-typedefs.h"
@@ -70,6 +71,10 @@ NscTcpL4Protocol::GetTypeId (void)
                    ObjectFactoryValue (GetDefaultRttEstimatorFactory ()),
                    MakeObjectFactoryAccessor (&NscTcpL4Protocol::m_rttFactory),
                    MakeObjectFactoryChecker ())
+    .AddAttribute ("SocketList", "The list of sockets associated to this protocol.",
+                   ObjectVectorValue (),
+                   MakeObjectVectorAccessor (&NscTcpL4Protocol::m_sockets),
+                   MakeObjectVectorChecker<NscTcpSocketImpl> ())
     ;
   return tid;
 }
@@ -154,6 +159,14 @@ void
 NscTcpL4Protocol::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
+
+  for (std::vector<Ptr<NscTcpSocketImpl> >::iterator i = m_sockets.begin (); i != m_sockets.end (); i++)
+    {
+      *i = 0;
+    }
+  m_sockets.clear ();
+
+
   if (m_endPoints != 0)
     {
       delete m_endPoints;
@@ -173,6 +186,7 @@ NscTcpL4Protocol::CreateSocket (void)
   socket->SetNode (m_node);
   socket->SetTcp (this);
   socket->SetRtt (rtt);
+  m_sockets.push_back (socket);
   return socket;
 }
 
