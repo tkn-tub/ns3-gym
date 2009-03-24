@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_module('802.11s', ['wifi'])
+    obj = bld.create_ns3_module('dot11s', ['wifi'])
     obj.source = [
         'ie-dot11s-beacon-timing.cc',
         'ie-dot11s-configuration.cc',
@@ -17,7 +17,7 @@ def build(bld):
         'peer-link.cc',
         ]
     headers = bld.new_task_gen('ns3header')
-    headers.module = '802.11s'
+    headers.module = 'dot11s'
     headers.source = [
         'ie-dot11s-beacon-timing.h',
         'ie-dot11s-configuration.h',
