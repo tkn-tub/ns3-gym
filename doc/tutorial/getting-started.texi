@@ -53,9 +53,9 @@ release.
 @cindex repository
 The simplest way to get started using Mercurial repositories is to use the
 @code{ns-3-allinone} environment.  This is a set of scripts that manages the 
-downloading and building of various subystems of ns-3 for you.  We recommend
-that you begin your @command{ns-3} adventures in this environment as it can
-really simplify your life at this point.
+downloading and building of various subystems of @command{ns-3} for you.  We 
+recommend that you begin your @command{ns-3} adventures in this environment
+as it can really simplify your life at this point.
 
 @subsection Downloading ns-3 Using Mercurial
 One practice is to create a directory called @code{repos} in one's home 
@@ -133,7 +133,7 @@ Started'' web page and looking for the latest release identifier.
 
 Go ahead and change into the @code{ns-3-allinone} directory you created when
 you cloned that repository.  We are now going to use the @code{download.py} 
-script to pull down the various pieces of @code{ns-3} you will be using/
+script to pull down the various pieces of @command{ns-3} you will be using/
 
 Go ahead and type the following into your shell (remember you can substitute
 the name of your chosen release number instead of @code{ns-3-dev} -- like
@@ -240,7 +240,7 @@ directory.  You should see something like the following there:
 You are now ready to build the @command{ns-3} distribution.
 
 @subsection Downloading ns-3 Using a Tarball
-The process for downloading @code{ns-3} via tarball is simpler than the
+The process for downloading @command{ns-3} via tarball is simpler than the
 Mercurial process since all of the pieces are pre-packaged for you.  You just
 have to pick a release, download it and decompress it.
 
@@ -470,30 +470,33 @@ This command is typically run by @code{users} to quickly verify that an
 @cindex regression tests
 You can also run our regression test suite to ensure that your distribution and
 tool chain have produced binaries that generate output that is identical to
-reference output files stored in a central location.  To run the regression 
-tests, you provide Waf with the regression flag.
+known-good reference output files.  You downloaded these reference traces to 
+your machine during the download process above.  (Warning:  The @code{ns-3.2} 
+and @code{ns-3.3} releases do not use the @code{ns-3-allinone} environment
+and require you to be online when you run regression tests because they
+dynamically synchronize the reference traces directory with an online
+repository immediately prior to the run).
+
+During regression testing Waf will run a number of tests that generate what we
+call trace files.  The content of these trace files are compared with the 
+reference traces.  If they are identical, the regression tests report a PASS 
+status.  If a regression test fails you will see a FAIL indication along with a
+pointer to the offending trace file and its associated reference trace file
+along with a suggestion on diff parameters and options in order to see what 
+has gone awry.  If the error was discovered in a pcap file, it will be useful
+to convert the pcap files to text using tcpdump prior to comparison.
+
+Some regression tests wmay be SKIPped if the required support
+is not present.
+
+To run the regression tests, you provide Waf with the regression flag.
 
 @verbatim
   ./waf --regression
 @end verbatim
 
-Waf will verify that the current files in the @command{ns-3} distribution are
-built and will then look for trace files in the aforementioned centralized 
-location.  If your tool chain includes Mercurial, the regression tests will 
-be downloaded from a repository at @code{code.nsnam.org}.  If you do not have 
-Mercurial installed, the reference traces will be downloaded from a tarball 
-located in the releases section of @code{www.nsnam.org}.  The particular name 
-of the reference trace location is built from the @command{ns-3} version 
-located in the VERSION file, so don't change that string yourself unless you 
-know what you are doing.  (Warning:  The ns-3.2 release requires you
-to be online when you run regression tests because it synchronizes the
-trace directory with an online repository).
-
-Once the reference traces are downloaded to your local machine, Waf will run
-a number of tests that generate what we call trace files.  The content of 
-these trace files are compared with the reference traces just downloaded.  If 
-they are identical, the regression tests report a PASS status.  If the 
-regression tests pass, you should see something like,
+You should see messages indicating that many tests are being run and are
+passing.
 
 @verbatim
   Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
@@ -510,11 +513,23 @@ regression tests pass, you should see something like,
   Build finished successfully (00:00:23)
 @end verbatim
 
-If a regression tests fails you will see a FAIL indication along with a
-pointer to the offending trace file and its associated reference trace file
-along with a suggestion on diff parameters and options in order to see what 
-has gone awry.  Some regression tests wmay be SKIPped if the required support
-is not present.
+If you want to take a look at an example of what might be checked during
+a regression test, you can do the following:
+
+@verbatim
+  cd build/debug/regression/traces/second.ref
+  tcpdump -nn -tt -r second-1-1.pcap
+@end verbatim
+
+The output should be clear to anyone who is familiar with tcpdump or net
+sniffers.  We'll have much more to say on pcap files later in this tutorial.
+
+Remember to cd back into the top-level @command{ns-3} directory
+after you are done:
+
+@verbatim
+  cd ../../../../..
+@end verbatim
 
 @c ========================================================================
 @c Running a Script

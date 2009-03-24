@@ -24,7 +24,7 @@
 The @command{ns-3} simulator is a discrete-event network simulator targeted 
 primarily for research and educational use.  The 
 @uref{http://www.nsnam.org,,ns-3 project}, 
-started in 2006, is an open-source project developing ns-3.
+started in 2006, is an open-source project developing @command{ns-3}.
 
 Primary documentation for the @command{ns-3} project is available in four
 forms:
@@ -43,7 +43,7 @@ information into working simulations.  In this tutorial, we will build
 several example simulations, introducing and explaining key concepts and
 features as we go.
 
-As the tutorial unfolds, we will introduce the full ns-3 documentation 
+As the tutorial unfolds, we will introduce the full @command{ns-3} documentation 
 and provide pointers to source code for those interested in delving deeper
 into the workings of the system.
 
@@ -52,9 +52,9 @@ A few key points are worth noting at the onset:
 @item Ns-3 is not an extension of @uref{http://www.isi.edu/nsnam/ns,,ns-2}; 
 it is a new simulator.  The two simulators are both written in C++ but 
 @command{ns-3} is a new simulator that does not support the ns-2 APIs.  Some 
-models from ns-2 have already been ported from ns-2 to ns-3. The project will
-continue to maintain ns-2 while ns-3 is being built, and will study transition
-and integration mechanisms.
+models from ns-2 have already been ported from ns-2 to @command{ns-3}. The 
+project will continue to maintain ns-2 while @command{ns-3} is being built,
+and will study transition and integration mechanisms.
 @item @command{Ns-3} is open-source, and the project strives to maintain an 
 open  environment for researchers to contribute and share their software.  
 @end itemize
@@ -63,36 +63,36 @@ open  environment for researchers to contribute and share their software.
 @section For ns-2 Users
 
 For those familiar with ns-2, the most visible outward change when moving to 
-ns-3 is the choice of scripting language.  Ns-2 is 
+@command{ns-3} is the choice of scripting language.  Ns-2 is 
 scripted in OTcl and results of simulations can be visualized using the 
 Network Animator @command{nam}.  It is not possible to run a simulation
 in ns-2 purely from C++ (i.e., as a main() program without any OTcl).
 Moreover, some components of ns-2 are written in C++ and others in OTcl.
-In ns-3, the simulator is written entirely in C++, with optional
+In @command{ns-3}, the simulator is written entirely in C++, with optional
 Python bindings.  Simulation scripts can therefore be written in C++
 or in Python.  The results of some simulations can be visualized by
-@command{nam}, but new animators are under development.  Since ns-3
+@command{nam}, but new animators are under development.  Since @command{ns-3}
 generates pcap packet trace files, other utilities can be used to
 analyze traces as well.
 In this tutorial, we will first concentrate on scripting 
 directly in C++ and interpreting results via ascii trace files.  
 
 But there are similarities as well (both, for example, are based on C++ 
-objects, and some code from ns-2 has already been ported to ns-3).
-We will try to highlight differences between ns-2 and ns-3
+objects, and some code from ns-2 has already been ported to @command{ns-3}).
+We will try to highlight differences between ns-2 and @command{ns-3}
 as we proceed in this tutorial.
 
 A question that we often hear is "Should I still use ns-2 or move to
-ns-3?"  The answer is that it depends.  ns-3 does not have all of the
-models that ns-2 currently has, but on the other hand, ns-3 does have
-new capabilities (such as handling multiple interfaces on nodes 
+@command{ns-3}?"  The answer is that it depends.  @command{ns-3} does not have
+all of the models that ns-2 currently has, but on the other hand, @command{ns-3}
+does have new capabilities (such as handling multiple interfaces on nodes 
 correctly, use of IP addressing and more alignment with Internet
 protocols and designs, more detailed 802.11 models, etc.).  ns-2
-models can usually be ported to ns-3 (a porting guide is under
-development).  There is active development on multiple fronts for ns-3.
-The ns-3 developers believe (and certain early users have proven) that
-ns-3 is ready for active use, and should be an attractive alternative
-for users looking to start new simulation projects.  
+models can usually be ported to @command{ns-3} (a porting guide is under
+development).  There is active development on multiple fronts for 
+@command{ns-3}.  The @command{ns-3} developers believe (and certain early users
+have proven) that @command{ns-3} is ready for active use, and should be an 
+attractive alternative for users looking to start new simulation projects.  
 
 @node Contributing
 @section Contributing
@@ -119,7 +119,7 @@ We realize that if you are reading this document, contributing back to
 the project is probably not your foremost concern at this point, but
 we want you to be aware that contributing is in the spirit of the project and
 that even the act of dropping us a note about your early experience 
-with ns-3 (e.g. "this tutorial section was not clear..."), 
+with @command{ns-3} (e.g. "this tutorial section was not clear..."), 
 reports of stale documentation, etc. are much appreciated. 
 
 @node Tutorial Organization
@@ -160,14 +160,14 @@ broad sequences of events.
 @cindex architecture
 There are several important resources of which any @command{ns-3} user must be
 aware.  The main web site is located at @uref{http://www.nsnam.org} and 
-provides access to basic information about the ns-3 system.  Detailed 
+provides access to basic information about the @command{ns-3} system.  Detailed 
 documentation is available through the main web site at
 @uref{http://www.nsnam.org/documents.html}.  You can also find documents 
 relating to the system architecture from this page.
 
-There is a Wiki that complements the main ns-3 web site which you will find at 
-@uref{http://www.nsnam.org/wiki/}.  You will find user and developer FAQs 
-there, as well as troubleshooting guides, third-party contributed code, 
+There is a Wiki that complements the main @command{ns-3} web site which you will
+find at @uref{http://www.nsnam.org/wiki/}.  You will find user and developer 
+FAQs there, as well as troubleshooting guides, third-party contributed code, 
 papers, etc. 
 
 @cindex mercurial repository
@@ -221,7 +221,7 @@ using the Python language.
 
 The build system @code{Waf} is used on the @command{ns-3} project.  It is one 
 of the new generation of Python-based build systems.  You will not need to 
-understand any Python to build the existing ns-3 system, and will 
+understand any Python to build the existing @command{ns-3} system, and will 
 only have to understand a tiny and intuitively obvious subset of Python in 
 order to extend the system in most cases.
 
@@ -233,9 +233,9 @@ found at @uref{http://freehackers.org/~tnagy/waf.html}.
 
 @cindex C++
 @cindex Python
-As mentioned above, scripting in ns-3 is done in C++ or Python.
-As of ns-3.2, most of the ns-3 API is available in Python, but the models
-are written in C++ in either case.  A working 
+As mentioned above, scripting in @command{ns-3} is done in C++ or Python.
+As of ns-3.2, most of the @command{ns-3} API is available in Python, but the 
+models are written in C++ in either case.  A working 
 knowledge of C++ and object-oriented concepts is assumed in this document.
 We will take some time to review some of the more advanced concepts or 
 possibly unfamiliar language features, idioms and design patterns as they 
@@ -255,7 +255,7 @@ The @command{ns-3} system uses several components of the GNU ``toolchain''
 for development.  A 
 software toolchain is the set of programming tools available in the given 
 environment. For a quick review of what is included in the GNU toolchain see,
-@uref{http://en.wikipedia.org/wiki/GNU_toolchain}.  ns-3 uses gcc, 
+@uref{http://en.wikipedia.org/wiki/GNU_toolchain}.  @command{ns-3} uses gcc, 
 GNU binutils, and gdb.  However, we do not use the GNU build system,
 either make or autotools, using Waf instead.
 
