@@ -26,9 +26,9 @@
 
 namespace ns3 {
 class MeshWifiInterfaceMac;
+namespace dot11s {
 class IeDot11sConfiguration;
 class IeDot11sPeerManagement;
-class Dot11sPeerManagerProtocol;
 class Dot11sPeerManagerProtocol;
 /**
  * \ingroup dot11s
@@ -104,6 +104,8 @@ private:
    * \}
    */
 };
+  
+} // namespace dot11s
 } //namespace ns3
 #endif
 

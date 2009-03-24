@@ -22,6 +22,7 @@
 #include "ns3/ie-dot11s-beacon-timing.h"
 #include "ns3/log.h"
 namespace ns3 {
+namespace dot11s {
 /*******************************************
  * IeDot11sBeaconTimingUnit
  *******************************************/
@@ -200,4 +201,7 @@ IeDot11sBeaconTiming::AidToU8 (uint16_t x)
 {
   return (uint8_t) (x&0xff);
 };
+  
+} // namespace dot11s
 } //namespace ns3
+

@@ -22,11 +22,12 @@
 
 #include "peer-link.h"
 #include "ns3/log.h"
-#include "ns3/uinteger.h"
+#include "ns3/simulator.h"
 
 NS_LOG_COMPONENT_DEFINE ("Dot11sPeerManagementProtocol");
 
 namespace ns3 {
+namespace dot11s {
 
 NS_OBJECT_ENSURE_REGISTERED(PeerLink);
 
@@ -561,5 +562,7 @@ void PeerLink::ConfirmTimeout ()
 {
   StateMachine (TOC);
 }
+  
+} // namespace dot11s
+} //namespace ns3
 
-}

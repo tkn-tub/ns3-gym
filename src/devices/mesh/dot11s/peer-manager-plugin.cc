@@ -31,6 +31,7 @@
 
 NS_LOG_COMPONENT_DEFINE("PeerManager");
 namespace ns3 {
+namespace dot11s {
 Dot11sPeerManagerMacPlugin::Dot11sPeerManagerMacPlugin (uint32_t interface, Ptr<Dot11sPeerManagerProtocol> protocol)
 {
   m_ifIndex = interface;
@@ -213,4 +214,7 @@ Dot11sPeerManagerMacPlugin::GetAddress () const
     return m_parent->GetAddress ();
   else return Mac48Address::Mac48Address();
 }
-}//namespace ns3
+  
+} // namespace dot11s
+} //namespace ns3
+

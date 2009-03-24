@@ -25,6 +25,7 @@
 #include "ns3/assert.h"
 
 namespace ns3 {
+namespace dot11s {
 /*************************
  * DestinationAddressUnit
  ************************/
@@ -382,5 +383,7 @@ IeDot11sPreq::ClearDestinationAddressElement ()
     m_destinations.pop_back ();
   m_destinations.clear ();
 };
+  
+} // namespace dot11s
+} //namespace ns3
 
-}

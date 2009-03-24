@@ -27,6 +27,7 @@
 #include "ns3/wifi-information-element.h"
 
 namespace ns3 {
+namespace dot11s {
 /**
  * \ingroup dot11s
  * \brief See 7.3.2.85 of draft 2.07
@@ -72,5 +73,7 @@ private:
    */
   dot11sReasonCode m_reasonCode;
 };
-} //namespace NS3
+
+} // namespace dot11s
+} //namespace ns3
 #endif

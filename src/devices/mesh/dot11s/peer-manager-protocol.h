@@ -29,12 +29,11 @@
 #include "ns3/ie-dot11s-beacon-timing.h"
 #include "ns3/ie-dot11s-configuration.h"
 #include "ns3/event-id.h"
-//#include "ns3/peer-link.h"
-#include "peer-manager-plugin.h"
 
 #include <list>
 #include <map>
 namespace ns3 {
+namespace dot11s {
 class Dot11sPeerManagerMacPlugin;
 class PeerLink;
 /**
@@ -192,5 +191,7 @@ private:
    * \}
    */
 };
+  
+} // namespace dot11s
 } //namespace ns3
 #endif

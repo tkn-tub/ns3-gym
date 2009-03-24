@@ -12,13 +12,13 @@ def build(bld):
         # Not refactored
         'mesh-wifi-mac-header.cc',
         'tx-statistics.cc',
-        'hwmp-rtable.cc',
+        #'hwmp-rtable.cc',
         'dot11s-parameters.cc',
-        'hwmp.cc',
-        'mesh-wifi-mac.cc',
-        'hwmp-state.cc',
-        'mesh-mgt-headers.cc',
-        'mesh-wifi-peer-manager.cc',
+        #'hwmp.cc',
+        #'mesh-wifi-mac.cc',
+        #'hwmp-state.cc',
+        #'mesh-mgt-headers.cc',
+        #'mesh-wifi-peer-manager.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'mesh'
@@ -32,15 +32,15 @@ def build(bld):
         'mesh-wifi-interface-mac-plugin.h',
         # Dirty
         'dot11s-codes.h',
-        'hwmp-state.h',
+        #'hwmp-state.h',
         'dot11s-parameters.h',
-        'mesh-mgt-headers.h',
-        'hwmp.h',
+        #'mesh-mgt-headers.h',
+        #'hwmp.h',
         'tx-statistics.h',
-        'hwmp-rtable.h',
+        #'hwmp-rtable.h',
         'mesh-wifi-mac-header.h',
-        'mesh-wifi-mac.h',
-        'mesh-wifi-peer-manager.h',
+        #'mesh-wifi-mac.h',
+        #'mesh-wifi-peer-manager.h',
         ]
 
 #    obj = bld.create_ns3_program('wifi-phy-test',

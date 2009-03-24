@@ -26,6 +26,7 @@
 #include "ns3/ie-dot11s-peer-management.h"
 namespace ns3 {
 class MeshWifiInterfaceMac;
+namespace dot11s {
 class PeerLinkFrameStart : public Header
 {
 public:
@@ -55,5 +56,7 @@ public:
 private:
   PlinkFrameStartFields m_fields;
 };
+
+} //namespace dot11s
 } //namespace ns3
 #endif

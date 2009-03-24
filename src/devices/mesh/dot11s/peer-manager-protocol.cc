@@ -28,10 +28,14 @@
 #include "ns3/log.h"
 #include "ns3/random-variable.h"
 #include "ns3/mesh-wifi-interface-mac.h"
+#include "ns3/mesh-wifi-interface-mac-plugin.h"
 #include "ns3/peer-link.h"
+#include "peer-manager-plugin.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("Dot11sPeerManagerProtocol");
 namespace ns3 {
+namespace dot11s {
 /***************************************************
  * PeerManager
  ***************************************************/
@@ -471,4 +475,7 @@ Dot11sPeerManagerProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peer
    else
      NS_LOG_UNCOND("Closed");
 }
-} //namespace NS3
+  
+} // namespace dot11s
+} //namespace ns3
+

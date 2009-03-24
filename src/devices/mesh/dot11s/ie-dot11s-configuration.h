@@ -26,6 +26,7 @@
 #include "ns3/wifi-information-element.h"
 
 namespace ns3 {
+namespace dot11s {
 /**
  * \ingroup dot11s
  * \brief See 7.3.2.81.1 in 802.11s draft 2.07
@@ -120,5 +121,7 @@ private:
   dot11sChannelPrecedence m_CP;
   dot11sMeshCapability m_meshCap;
 };
-} //name space NS3
+  
+} // namespace dot11s
+} //namespace ns3
 #endif

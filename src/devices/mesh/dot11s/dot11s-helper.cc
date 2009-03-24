@@ -31,6 +31,7 @@
 //#include "ns3/peer-manager-plugin.h"
 
 namespace ns3 {
+namespace dot11s {
 
 MeshWifiHelper::MeshWifiHelper ()
 {
@@ -170,5 +171,7 @@ MeshWifiHelper::Install (const WifiPhyHelper &phy, Ptr<Node> node) const
 {
   return Install (phy, NodeContainer (node));
 }
-
+  
+} // namespace dot11s
 } //namespace ns3
+

@@ -21,6 +21,7 @@
 #include "ns3/peer-link-frame.h"
 #include "ns3/mesh-wifi-interface-mac.h"
 namespace ns3 {
+namespace dot11s {
 NS_OBJECT_ENSURE_REGISTERED (PeerLinkFrameStart);
 
 PeerLinkFrameStart::PeerLinkFrameStart ()
@@ -120,4 +121,7 @@ PeerLinkFrameStart::Deserialize (Buffer::Iterator start)
     }
   return i.GetDistanceFrom (start);
 }
+  
+} // namespace dot11s
 } //namespace ns3
+

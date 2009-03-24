@@ -27,6 +27,7 @@
 #include "ns3/wifi-information-element.h"
 
 namespace ns3 {
+namespace dot11s {
 /**
  * \ingroup dot11s
  * \brief See 7.3.2.95 of 802.11s draft 2.07
@@ -67,6 +68,7 @@ private:
   uint32_t m_destSeqNumber;
   uint32_t m_metric;
 };
-
-}
+  
+} // namespace dot11s
+} //namespace ns3
 #endif

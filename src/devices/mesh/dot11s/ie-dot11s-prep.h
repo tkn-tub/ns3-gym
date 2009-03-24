@@ -28,6 +28,7 @@
 #include "ns3/wifi-information-element.h"
 
 namespace ns3 {
+namespace dot11s {
 /**
  * \ingroup dot11s
  * \brief See 7.3.2.97 of 802.11s draft 2.07
@@ -80,6 +81,8 @@ private:
   Mac48Address m_originatorAddress;
   uint32_t m_originatorSeqNumber;
 };
-}//namespace ns3
+  
+} // namespace dot11s
+} //namespace ns3
 #endif
 

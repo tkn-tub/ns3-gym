@@ -25,6 +25,7 @@
 #include "ns3/node.h"
 
 namespace ns3 {
+namespace dot11s {
 
 IeDot11sRann::~IeDot11sRann ()
 {
@@ -149,6 +150,8 @@ IeDot11sRann::GetInformationSize () const
     +4;//Metric
   return retval;
 }
+  
+} // namespace dot11s
+} //namespace ns3
 
-}
 

@@ -23,6 +23,7 @@
 #include "ns3/ie-dot11s-configuration.h"
 
 namespace ns3 {
+namespace dot11s {
 
 dot11sMeshCapability::dot11sMeshCapability ():
     acceptPeerLinks (true),
@@ -171,5 +172,7 @@ dot11sMeshCapability const& IeDot11sConfiguration::MeshCapability ()
 {
   return m_meshCap;
 }
+  
+} // namespace dot11s
+} //namespace ns3
 
-} //namespace NS3

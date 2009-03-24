@@ -22,14 +22,13 @@
 #ifndef WIFI_TIMING_ELEMENT_H
 #define WIFI_TIMING_ELEMENT_H
 
-#include <stdint.h>
 #include <list>
-#include "ns3/buffer.h"
 #include "ns3/nstime.h"
 #include "ns3/dot11s-codes.h"
 #include "ns3/wifi-information-element.h"
 
 namespace ns3 {
+namespace dot11s {
 /**
  * \ingroup dot11s
  * \brief Describes one unit of beacon timing element
@@ -111,5 +110,7 @@ private:
    */
   uint16_t  m_numOfUnits;
 };
-}//namespace ns3
+  
+} // namespace dot11s
+} //namespace ns3
 #endif

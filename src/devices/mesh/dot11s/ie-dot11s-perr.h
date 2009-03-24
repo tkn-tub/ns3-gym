@@ -23,11 +23,11 @@
 #define PERR_INFORMATION_ELEMENT_H
 
 #include "ns3/mac48-address.h"
-#include "ns3/hwmp-rtable.h"
 #include "ns3/dot11s-codes.h"
 #include "ns3/wifi-information-element.h"
 
 namespace ns3 {
+namespace dot11s {
 /**
  * \ingroup dot11s
  * \brief See 7.3.2.98 of 802.11s draft 2.07
@@ -39,15 +39,15 @@ public:
   ~IeDot11sPerr ();
   static  TypeId   GetTypeId ();
   virtual TypeId   GetInstanceTypeId () const;
-#if 0
-  //RESERVED in D2.07
-  uint8_t   GetModeFlags ();
-  void   SetModeFlags (uint8_t flags);
-#endif
+  struct FailedDestination
+  {
+    Mac48Address destination;
+    uint32_t seqnum;
+  };
   uint8_t   GetNumOfDest ();
 
-  void   AddAddressUnit (struct HwmpRtable::FailedDestination unit);
-  std::vector<HwmpRtable::FailedDestination>  GetAddressUnitVector ();
+  void   AddAddressUnit (struct FailedDestination unit);
+  std::vector<FailedDestination>  GetAddressUnitVector ();
   void   DeleteAddressUnit (Mac48Address address);
   void   ResetPerr ();
 private:
@@ -59,8 +59,9 @@ private:
   void PrintInformation (std::ostream& os) const;
   uint8_t  GetInformationSize () const;
   uint8_t   m_numOfDest;
-  std::vector<HwmpRtable::FailedDestination> m_addressUnits;
+  std::vector<FailedDestination> m_addressUnits;
 };
-
-}
+  
+} // namespace dot11s
+} //namespace ns3
 #endif

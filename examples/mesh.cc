@@ -31,6 +31,7 @@
 #include "ns3/dot11s-helper.h"
 
 using namespace ns3;
+using namespace dot11s;
 
 NS_LOG_COMPONENT_DEFINE ("TestMeshScript");
 

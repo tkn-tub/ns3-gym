@@ -22,17 +22,15 @@
 #ifndef PEERLLINK_H_
 #define PEERLLINK_H_
 
-#include "ns3/object.h"
 #include "ns3/nstime.h"
 #include "ns3/callback.h"
 #include "ns3/mac48-address.h"
-#include "ns3/simulator.h"
 #include "ie-dot11s-beacon-timing.h"
 #include "ie-dot11s-peer-management.h"
 #include "ie-dot11s-configuration.h"
 #include "peer-manager-plugin.h"
-
 namespace ns3 {
+namespace dot11s {
 /**
  * \ingroup dot11s
  * 
@@ -250,6 +248,6 @@ private:
   SignalStatusCallback m_linkStatusCallback;
 };
   
-}
-
+} // namespace dot11s
+} //namespace ns3
 #endif /* PEERLLINK_H_ */

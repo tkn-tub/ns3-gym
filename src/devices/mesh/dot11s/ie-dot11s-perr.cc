@@ -24,6 +24,7 @@
 #include "ns3/node.h"
 
 namespace ns3 {
+namespace dot11s {
 IeDot11sPerr::~IeDot11sPerr ()
 {
 }
@@ -76,7 +77,7 @@ IeDot11sPerr::DeserializeInformation (Buffer::Iterator start, uint8_t length)
   length = 0; //to avoid compiler warning in optimized builds
   for (unsigned int j = 0; j < m_numOfDest; j++)
     {
-      HwmpRtable::FailedDestination unit;
+      FailedDestination unit;
       ReadFrom (i,unit.destination);
       unit.seqnum = i.ReadNtohU32 ();
       m_addressUnits.push_back (unit);
@@ -96,7 +97,7 @@ IeDot11sPerr::GetInformationSize () const
 }
 
 void
-IeDot11sPerr::AddAddressUnit (HwmpRtable::FailedDestination unit)
+IeDot11sPerr::AddAddressUnit (FailedDestination unit)
 {
   for (unsigned int i = 0; i < m_addressUnits.size (); i ++)
     if (m_addressUnits[i].destination == unit.destination)
@@ -105,7 +106,7 @@ IeDot11sPerr::AddAddressUnit (HwmpRtable::FailedDestination unit)
   m_numOfDest++;
 }
 
-std::vector<HwmpRtable::FailedDestination>
+std::vector<IeDot11sPerr::FailedDestination>
 IeDot11sPerr::GetAddressUnitVector ()
 {
   return m_addressUnits;
@@ -113,7 +114,7 @@ IeDot11sPerr::GetAddressUnitVector ()
 void
 IeDot11sPerr::DeleteAddressUnit (Mac48Address address)
 {
-  for (std::vector<HwmpRtable::FailedDestination>::iterator i = m_addressUnits.begin (); i != m_addressUnits.end(); i ++)
+  for (std::vector<FailedDestination>::iterator i = m_addressUnits.begin (); i != m_addressUnits.end(); i ++)
     if ((*i).destination == address)
       {
         m_numOfDest --;
@@ -128,5 +129,8 @@ IeDot11sPerr::ResetPerr ()
   m_numOfDest = 0;
   m_addressUnits.clear ();
 }
-}//namespace ns3
+
+} // namespace dot11s
+} //namespace ns3
+
 

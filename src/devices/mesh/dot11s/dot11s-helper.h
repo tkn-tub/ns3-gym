@@ -25,6 +25,7 @@
 #include "ns3/peer-manager-protocol.h"
 
 namespace ns3 {
+namespace dot11s {
 
 class WifiChannel;
 
@@ -103,6 +104,8 @@ class MeshWifiHelper
     ObjectFactory m_peerMan;
     ObjectFactory m_deviceFactory;
 };
-}//namespace ns3
+} // namespace dot11s
+} //namespace ns3
+
 #endif /* _MESHWIFIHELPER_H */
 

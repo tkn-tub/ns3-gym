@@ -27,6 +27,7 @@
 //NS_LOG_COMPONENT_DEFINE ("MeshPeerLinkManagementelement");
 
 namespace ns3 {
+namespace dot11s {
 
 IeDot11sPeerManagement::IeDot11sPeerManagement ():
     m_length (0),
@@ -137,4 +138,7 @@ IeDot11sPeerManagement::PrintInformation (std::ostream& os) const
 {
   //TODO
 }
-} //namespace NS3
+  
+} // namespace dot11s
+} //namespace ns3
+

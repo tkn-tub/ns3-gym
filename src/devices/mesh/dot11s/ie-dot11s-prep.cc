@@ -24,6 +24,7 @@
 #include "ns3/node.h"
 #include "ns3/assert.h"
 namespace ns3 {
+namespace dot11s {
 /********************************
  * IeDot11sPrep
  *******************************/
@@ -213,4 +214,7 @@ IeDot11sPrep::PrintInformation (std::ostream& os) const
 {
   //TODO
 }
+  
+} // namespace dot11s
 } //namespace ns3
+

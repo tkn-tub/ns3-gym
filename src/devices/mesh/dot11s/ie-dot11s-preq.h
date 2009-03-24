@@ -29,6 +29,7 @@
 #include "ns3/wifi-information-element.h"
 
 namespace ns3 {
+namespace dot11s {
 /**
  * \ingroup dot11s
  * \brief Describes an address unit in PREQ information element
@@ -125,7 +126,8 @@ private:
   uint8_t  m_destCount;
   std::vector<Ptr<DestinationAddressUnit> >  m_destinations;
 };
-
+  
+} // namespace dot11s
 } //namespace ns3
 #endif
 
