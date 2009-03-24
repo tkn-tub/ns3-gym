@@ -210,7 +210,7 @@ protected:
    */
   virtual void DoDispose (void);
 
-  void ReceiveFromSimDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
+  void ReceiveFromBridgedDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                                  Address const &src, Address const &dst, PacketType packetType);
 private:
 
@@ -265,7 +265,7 @@ private:
    *            received from the host.
    * \param buf The length of the buffer.
    */
-  void ForwardToSimDevice (uint8_t *buf, uint32_t len);
+  void ForwardToBridgedDevice (uint8_t *buf, uint32_t len);
 
   /**
    * \internal

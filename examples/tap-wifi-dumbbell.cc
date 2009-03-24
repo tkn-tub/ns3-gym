@@ -20,7 +20,8 @@
 //  | external |                                                                  
 //  |  Linux   |                                                                  
 //  |   Host   |                                                                  
-//  |  "left"  |                                                                  
+//  |          |
+//  | "mytap"  |                                                                  
 //  +----------+                                                                  
 //       |           n0                n3                n4
 //       |       +--------+     +------------+     +------------+
@@ -61,7 +62,7 @@
 //    item).
 //
 //    ./waf --run tap-wifi-dumbbell&
-//    sudo route add -net 10.1.3.0 netmask 255.255.255.0 dev left gw 10.1.1.2
+//    sudo route add -net 10.1.3.0 netmask 255.255.255.0 dev thetap gw 10.1.1.2
 //    ping 10.1.3.4
 //
 //    Take a look at the pcap traces and note that the timing reflects the 
@@ -77,9 +78,33 @@
 //    traffic data rate and watch the ping timing change dramatically.
 //
 //    ./waf --run "tap-wifi-dumbbell --ns3::OnOffApplication::DataRate=100kb/s"&
-//    sudo route add -net 10.1.3.0 netmask 255.255.255.0 dev left gw 10.1.1.2
+//    sudo route add -net 10.1.3.0 netmask 255.255.255.0 dev thetap gw 10.1.1.2
 //    ping 10.1.3.4
 //
+// 4) Try to run this in UseLocal mode.  This allows you to provide an existing
+//    pre-configured tap device to the simulation.  The IP address and MAC 
+//    address in this mode do not have to match those of the ns-3 device.
+//
+//    sudo tunctl -t mytap
+//    sudo ifconfig mytap hw ether 08:00:2e:00:00:01
+//    sudo ifconfig mytap 10.1.1.1 netmask 255.255.255.0 up
+//    ./waf --run "tap-wifi-dumbbell --mode=UseLocal --tapName=mytap"&
+//    ping 10.1.1.3
+//
+// 5) Try to run this in UseBridge mode.  This allows you to bridge an ns-3
+//    simulation to an existing pre-configured bridge.  This uses tap devices
+//    just for illustration, you can create your own bridge if you want.
+//
+//    sudo tunctl -t mytap1
+//    sudo ifconfig mytap1 0.0.0.0 promisc up
+//    sudo tunctl -t mytap2
+//    sudo ifconfig mytap2 0.0.0.0 promisc up
+//    sudo brctl addbr mybridge
+//    sudo brctl addif mybridge mytap1
+//    sudo brctl addif mybridge mytap2
+//    sudo ifconfig mybridge 10.1.1.5 netmask 255.255.255.0 up
+//    ./waf --run "tap-wifi-dumbbell --mode=UseBridge --tapName=mytap2"&
+//    ping 10.1.1.3
 
 #include <iostream>
 #include <fstream>
@@ -98,7 +123,12 @@ NS_LOG_COMPONENT_DEFINE ("TapDumbbellExample");
 int 
 main (int argc, char *argv[])
 {
+  std::string mode = "ConfigureLocal";
+  std::string tapName = "thetap";
+
   CommandLine cmd;
+  cmd.AddValue("mode", "Mode setting of TapBridge", mode);
+  cmd.AddValue("tapName", "Name of the OS tap device", tapName);
   cmd.Parse (argc, argv);
 
   GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
@@ -145,9 +175,10 @@ main (int argc, char *argv[])
   ipv4Left.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer interfacesLeft = ipv4Left.Assign (devicesLeft);
 
-  TapBridgeHelper bridgeLeft (interfacesLeft.GetAddress (1));
-  bridgeLeft.SetAttribute ("DeviceName", StringValue ("left"));
-  bridgeLeft.Install (nodesLeft.Get (0), devicesLeft.Get (0));
+  TapBridgeHelper tapBridge (interfacesLeft.GetAddress (1));
+  tapBridge.SetAttribute ("Mode", StringValue (mode));
+  tapBridge.SetAttribute ("DeviceName", StringValue (tapName));
+  tapBridge.Install (nodesLeft.Get (0), devicesLeft.Get (0));
 
   //
   // Now, create the right side.
