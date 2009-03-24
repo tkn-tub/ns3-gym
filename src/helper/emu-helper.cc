@@ -41,7 +41,7 @@ EmuHelper::EmuHelper ()
   m_deviceFactory.SetTypeId ("ns3::EmuNetDevice");
 }
 
-  void 
+void 
 EmuHelper::SetQueue (
   std::string type,
   std::string n1, const AttributeValue &v1,
@@ -57,20 +57,17 @@ EmuHelper::SetQueue (
   m_queueFactory.Set (n4, v4);
 }
 
-  void 
+void 
 EmuHelper::SetAttribute (std::string n1, const AttributeValue &v1)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_deviceFactory.Set (n1, v1);
 }
 
-  void 
-EmuHelper::EnablePcap (
-  std::string filename, 
-  uint32_t nodeid, 
-  uint32_t deviceid)
+void 
+EmuHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid, bool promiscuous)
 {
-  NS_LOG_FUNCTION (filename << nodeid << deviceid);
+  NS_LOG_FUNCTION (filename << nodeid << deviceid << promiscuous);
   std::ostringstream oss;
   oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
   Ptr<PcapWriter> pcap = Create<PcapWriter> ();
@@ -78,33 +75,48 @@ EmuHelper::EnablePcap (
   pcap->WriteEthernetHeader ();
 
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmuNetDevice/Rx";
-  Config::ConnectWithoutContext (oss.str (), 
-    MakeBoundCallback (&EmuHelper::RxEvent, pcap));
-
-  oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmuNetDevice/TxQueue/Enqueue";
-  Config::ConnectWithoutContext (oss.str (), 
-    MakeBoundCallback (&EmuHelper::EnqueueEvent, pcap));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid;
+  if (promiscuous)
+    {
+      oss << "/$ns3::EmuNetDevice/PromiscSniffer";
+    }
+  else
+    {
+      oss << "/$ns3::EmuNetDevice/Sniffer";
+    }
+  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&EmuHelper::SniffEvent, pcap));
 }
 
-  void 
-EmuHelper::EnablePcap (std::string filename, NetDeviceContainer d)
+void 
+EmuHelper::EnablePcap (std::string filename, Ptr<NetDevice> nd, bool promiscuous)
 {
-  NS_LOG_FUNCTION (filename << &d);
+  NS_LOG_FUNCTION (filename << &nd << promiscuous);
+  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex (), promiscuous);
+}
+
+void 
+EmuHelper::EnablePcap (std::string filename, std::string ndName, bool promiscuous)
+{
+  NS_LOG_FUNCTION (filename << ndName << promiscuous);
+  Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
+  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex (), promiscuous);
+}
+
+void 
+EmuHelper::EnablePcap (std::string filename, NetDeviceContainer d, bool promiscuous)
+{
+  NS_LOG_FUNCTION (filename << &d << promiscuous);
   for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
     {
       Ptr<NetDevice> dev = *i;
-      EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex ());
+      EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex (), promiscuous);
     }
 }
 
-  void
-EmuHelper::EnablePcap (std::string filename, NodeContainer n)
+void
+EmuHelper::EnablePcap (std::string filename, NodeContainer n, bool promiscuous)
 {
-  NS_LOG_FUNCTION (filename << &n);
+  NS_LOG_FUNCTION (filename << &n << promiscuous);
   NetDeviceContainer devs;
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
     {
@@ -114,48 +126,40 @@ EmuHelper::EnablePcap (std::string filename, NodeContainer n)
 	  devs.Add (node->GetDevice (j));
 	}
     }
-  EnablePcap (filename, devs);
+  EnablePcap (filename, devs, promiscuous);
 }
 
-  void
-EmuHelper::EnablePcapAll (std::string filename)
+void
+EmuHelper::EnablePcapAll (std::string filename, bool promiscuous)
 {
-  NS_LOG_FUNCTION (filename);
-  EnablePcap (filename, NodeContainer::GetGlobal ());
+  NS_LOG_FUNCTION (filename << promiscuous);
+  EnablePcap (filename, NodeContainer::GetGlobal (), promiscuous);
 }
 
-  void 
+void 
 EmuHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
 {
   NS_LOG_FUNCTION (&os << nodeid << deviceid);
   Packet::EnablePrinting ();
   std::ostringstream oss;
 
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmuNetDevice/Rx";
-  Config::Connect (oss.str (), 
-    MakeBoundCallback (&EmuHelper::AsciiRxEvent, &os));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/MacRx";
+  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiRxEvent, &os));
 
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmuNetDevice/TxQueue/Enqueue";
-  Config::Connect (oss.str (), 
-    MakeBoundCallback (&EmuHelper::AsciiEnqueueEvent, &os));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/TxQueue/Enqueue";
+  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiEnqueueEvent, &os));
 
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmuNetDevice/TxQueue/Dequeue";
-  Config::Connect (oss.str (), 
-    MakeBoundCallback (&EmuHelper::AsciiDequeueEvent, &os));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/TxQueue/Dequeue";
+  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiDequeueEvent, &os));
 
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << 
-    "/$ns3::EmuNetDevice/TxQueue/Drop";
-  Config::Connect (oss.str (), 
-    MakeBoundCallback (&EmuHelper::AsciiDropEvent, &os));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/TxQueue/Drop";
+  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiDropEvent, &os));
 }
 
-  void 
+void 
 EmuHelper::EnableAscii (std::ostream &os, NetDeviceContainer d)
 {
   NS_LOG_FUNCTION (&os << &d);
@@ -182,7 +186,7 @@ EmuHelper::EnableAscii (std::ostream &os, NodeContainer n)
   EnableAscii (os, devs);
 }
 
-  void
+void
 EmuHelper::EnableAsciiAll (std::ostream &os)
 {
   NS_LOG_FUNCTION (&os);
@@ -215,7 +219,7 @@ EmuHelper::Install (const NodeContainer &c) const
   return devs;
 }
 
-  Ptr<NetDevice>
+Ptr<NetDevice>
 EmuHelper::InstallPriv (Ptr<Node> node) const
 {
   Ptr<EmuNetDevice> device = m_deviceFactory.Create<EmuNetDevice> ();
@@ -227,21 +231,14 @@ EmuHelper::InstallPriv (Ptr<Node> node) const
   return device;
 }
 
-  void 
-EmuHelper::EnqueueEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
+void 
+EmuHelper::SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
 {
   NS_LOG_FUNCTION (writer << packet);
   writer->WritePacket (packet);
 }
 
-  void 
-EmuHelper::RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
-{
-  NS_LOG_FUNCTION (writer << packet);
-  writer->WritePacket (packet);
-}
-
-  void 
+void 
 EmuHelper::AsciiEnqueueEvent (
   std::ostream *os, 
   std::string path, 
@@ -252,7 +249,7 @@ EmuHelper::AsciiEnqueueEvent (
   *os << path << " " << *packet << std::endl;
 }
 
-  void 
+void 
 EmuHelper::AsciiDequeueEvent (
   std::ostream *os, 
   std::string path, 
@@ -263,7 +260,7 @@ EmuHelper::AsciiDequeueEvent (
   *os << path << " " << *packet << std::endl;
 }
 
-  void 
+void 
 EmuHelper::AsciiDropEvent (
   std::ostream *os, 
   std::string path, 
@@ -274,7 +271,7 @@ EmuHelper::AsciiDropEvent (
   *os << path << " " << *packet << std::endl;
 }
 
-  void 
+void 
 EmuHelper::AsciiRxEvent (
   std::ostream *os, 
   std::string path, 

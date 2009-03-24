@@ -95,6 +95,25 @@ public:
    * been fully constructed.
    */
   static void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
+
+  /**
+   * \param filename filename prefix to use for pcap files.
+   * \param nd Net device on which you want to enable tracing.
+   *
+   * Enable pcap output on each input device which is of the
+   * ns3::PointToPointNetDevice type.
+   */
+  static void EnablePcap (std::string filename, Ptr<NetDevice> nd);
+
+  /**
+   * \param filename filename prefix to use for pcap files.
+   * \param ndName Name of net device on which you want to enable tracing.
+   *
+   * Enable pcap output on each input device which is of the
+   * ns3::PointToPointNetDevice type.
+   */
+  static void EnablePcap (std::string filename, std::string ndName);
+
   /**
    * \param filename filename prefix to use for pcap files.
    * \param d container of devices of type ns3::PointToPointNetDevice
@@ -103,6 +122,8 @@ public:
    * ns3::PointToPointNetDevice type.
    */
   static void EnablePcap (std::string filename, NetDeviceContainer d);
+
+
   /**
    * \param filename filename prefix to use for pcap files.
    * \param n container of nodes.
@@ -112,6 +133,7 @@ public:
    * input nodes.
    */
   static void EnablePcap (std::string filename, NodeContainer n);
+
   /**
    * \param filename filename prefix to use for pcap files.
    *
@@ -130,6 +152,7 @@ public:
    * that to the specified stdc++ output stream.
    */
   static void EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid);
+
   /**
    * \param os output stream
    * \param d device container
@@ -140,6 +163,7 @@ public:
    * stdc++ output stream.
    */
   static void EnableAscii (std::ostream &os, NetDeviceContainer d);
+
   /**
    * \param os output stream
    * \param n node container
@@ -150,6 +174,7 @@ public:
    * stdc++ output stream.
    */
   static void EnableAscii (std::ostream &os, NodeContainer n);
+
   /**
    * \param os output stream
    *
@@ -261,13 +286,14 @@ public:
 
 private:
   void EnablePcap (Ptr<Node> node, Ptr<NetDevice> device, Ptr<Queue> queue);
+  static void SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
+
   void EnableAscii (Ptr<Node> node, Ptr<NetDevice> device);
-  static void RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
-  static void EnqueueEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
+  static void AsciiRxEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
   static void AsciiEnqueueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
   static void AsciiDequeueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
   static void AsciiDropEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
-  static void AsciiRxEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
+
   ObjectFactory m_queueFactory;
   ObjectFactory m_channelFactory;
   ObjectFactory m_deviceFactory;

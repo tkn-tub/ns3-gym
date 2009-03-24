@@ -31,6 +31,7 @@
 #include "ipv4-l4-protocol.h"
 #include "ipv4-interface.h"
 
+#include "tcp-socket-impl.h"
 #include "tcp-header.h"
 #include "tcp-typedefs.h"
 
@@ -120,6 +121,7 @@ private:
 
   bool m_goodChecksum;
   bool m_calcChecksum;
+  std::vector<Ptr<TcpSocketImpl> > m_sockets;
 };
 
 }; // namespace ns3

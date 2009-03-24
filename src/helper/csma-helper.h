@@ -87,6 +87,7 @@ public:
    * \param filename filename prefix to use for pcap files.
    * \param nodeid the id of the node to generate pcap output for.
    * \param deviceid the id of the device to generate pcap output for.
+   * \param promiscuous If true capture all possible packets available at the device.
    *
    * Generate a pcap file which contains the link-level data observed
    * by the specified deviceid within the specified nodeid. The pcap
@@ -95,31 +96,53 @@ public:
    * This method should be invoked after the network topology has 
    * been fully constructed.
    */
-  static void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
+  static void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid, bool promiscuous);
+
+  /**
+   * \param filename filename prefix to use for pcap files.
+   * \param nd Net device in which you want to enable tracing.
+   * \param promiscuous If true capture all possible packets available at the device.
+   *
+   * Enable pcap output the indicated net device.
+   */
+  static void EnablePcap (std::string filename, Ptr<NetDevice> nd, bool promiscuous);
+
+  /**
+   * \param filename filename prefix to use for pcap files.
+   * \param ndName The name of the net device in which you want to enable tracing.
+   * \param promiscuous If true capture all possible packets available at the device.
+   *
+   * Enable pcap output the indicated net device.
+   */
+  static void EnablePcap (std::string filename, std::string ndName, bool promiscuous);
+
   /**
    * \param filename filename prefix to use for pcap files.
    * \param d container of devices of type ns3::CsmaNetDevice
+   * \param promiscuous If true capture all possible packets available at the device.
    *
-   * Enable pcap output on each input device which is of the
-   * ns3::CsmaNetDevice type.
+   * Enable pcap output on each input device which is of the ns3::CsmaNetDevice type.
    */
-  static void EnablePcap (std::string filename, NetDeviceContainer d);
+  static void EnablePcap (std::string filename, NetDeviceContainer d, bool promiscuous);
+
   /**
    * \param filename filename prefix to use for pcap files.
    * \param n container of nodes.
+   * \param promiscuous If true capture all possible packets available at the device.
    *
    * Enable pcap output on each device which is of the
    * ns3::CsmaNetDevice type and which is located in one of the 
    * input nodes.
    */
-  static void EnablePcap (std::string filename, NodeContainer n);
+  static void EnablePcap (std::string filename, NodeContainer n, bool promiscuous);
   /**
    * \param filename filename prefix to use for pcap files.
+   * \param promiscuous If true capture all possible packets available at the device.
    *
    * Enable pcap output on each device which is of the
    * ns3::CsmaNetDevice type
    */
-  static void EnablePcapAll (std::string filename);
+  static void EnablePcapAll (std::string filename, bool promiscuous);
 
   /**
    * \param os output stream
@@ -331,12 +354,13 @@ public:
 private:
   Ptr<NetDevice> InstallPriv (Ptr<Node> node, Ptr<CsmaChannel> channel) const;
 
-  static void RxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
-  static void EnqueueEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
+  static void SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
+
+  static void AsciiRxEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
   static void AsciiEnqueueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
   static void AsciiDequeueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
   static void AsciiDropEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
-  static void AsciiRxEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
+
   ObjectFactory m_queueFactory;
   ObjectFactory m_deviceFactory;
   ObjectFactory m_channelFactory;

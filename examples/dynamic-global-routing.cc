@@ -193,7 +193,7 @@ main (int argc, char *argv[])
   ascii.open ("dynamic-global-routing.tr");
   PointToPointHelper::EnablePcapAll ("dynamic-global-routing");
   PointToPointHelper::EnableAsciiAll (ascii);
-  CsmaHelper::EnablePcapAll ("dynamic-global-routing");
+  CsmaHelper::EnablePcapAll ("dynamic-global-routing", false);
   CsmaHelper::EnableAsciiAll (ascii);
   InternetStackHelper::EnableAsciiAll (ascii);
  

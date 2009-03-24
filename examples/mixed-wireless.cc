@@ -388,7 +388,8 @@ main (int argc, char *argv[])
       InternetStackHelper::EnableAsciiAll (ascii);
 
       // Let's do a pcap trace on the application source and sink, ifIndex 0
-      CsmaHelper::EnablePcap ("mixed-wireless", appSource->GetId (), 0);
+      // Csma captures in non-promiscuous mode
+      CsmaHelper::EnablePcap ("mixed-wireless", appSource->GetId (), 0, false);
       YansWifiPhyHelper::EnablePcap ("mixed-wireless", appSink->GetId (), 0);
       YansWifiPhyHelper::EnablePcap ("mixed-wireless", 9, 2);
       YansWifiPhyHelper::EnablePcap ("mixed-wireless", 9, 0);

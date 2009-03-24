@@ -57,9 +57,14 @@ static uint32_t txBytes = 2000000;
 void StartFlow(Ptr<Socket>, Ipv4Address, uint16_t);
 void WriteUntilBufferFull (Ptr<Socket>, uint32_t);
 
+static void 
+CwndTracer (uint32_t oldval, uint32_t newval)
+{
+  NS_LOG_INFO ("Moving cwnd from " << oldval << " to " << newval);
+}
+
 int main (int argc, char *argv[])
 {
-
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
   //  LogComponentEnable("TcpL4Protocol", LOG_LEVEL_ALL);
@@ -67,9 +72,6 @@ int main (int argc, char *argv[])
   //  LogComponentEnable("PacketSink", LOG_LEVEL_ALL);
   //  LogComponentEnable("TcpLargeTransfer", LOG_LEVEL_ALL);
 
-
-  // Allow the user to override any of the defaults and the above
-  // Bind()s at run-time, via command-line arguments
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
@@ -140,6 +142,9 @@ int main (int argc, char *argv[])
       Socket::CreateSocket (n0n1.Get (0), TcpSocketFactory::GetTypeId ());
   localSocket->Bind ();
 
+  // Trace changes to the congestion window
+  Config::ConnectWithoutContext ("/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow", MakeCallback (&CwndTracer));
+
   // ...and schedule the sending "Application"; This is similar to what an 
   // ns3::Application subclass would do internally.
   Simulator::ScheduleNow (&StartFlow, localSocket,
@@ -155,7 +160,6 @@ int main (int argc, char *argv[])
   std::ofstream ascii;
   ascii.open ("tcp-large-transfer.tr");
   PointToPointHelper::EnableAsciiAll (ascii);
-
   PointToPointHelper::EnablePcapAll ("tcp-large-transfer");
 
   // Finally, set up the simulator to run.  The 1000 second hard limit is a

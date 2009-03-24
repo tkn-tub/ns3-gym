@@ -134,7 +134,7 @@ def main(argv):
     # and can be read by the "tcpdump -r" command(use "-tt" option to
     # display timestamps correctly)
     #
-    ns3.CsmaHelper.EnablePcapAll("csma-bridge")
+    ns3.CsmaHelper.EnablePcapAll("csma-bridge", False)
 
     #
     # Now, do the actual simulation.

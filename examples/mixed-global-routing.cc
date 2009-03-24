@@ -125,7 +125,7 @@ main (int argc, char *argv[])
   ascii.open ("mixed-global-routing.tr");
   PointToPointHelper::EnablePcapAll ("mixed-global-routing");
   PointToPointHelper::EnableAsciiAll (ascii);
-  CsmaHelper::EnablePcapAll ("mixed-global-routing");
+  CsmaHelper::EnablePcapAll ("mixed-global-routing", false);
   CsmaHelper::EnableAsciiAll (ascii);
 
 

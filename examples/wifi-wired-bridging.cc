@@ -183,8 +183,9 @@ int main (int argc, char *argv[])
   apps.Start (Seconds (0.5));
   apps.Stop (Seconds (3.0));
   
-  YansWifiPhyHelper::EnablePcap ("wifi-wired-bridging", staNodes[1].Get (1));
-  YansWifiPhyHelper::EnablePcap ("wifi-wired-bridging", staNodes[0].Get (0));
+  YansWifiPhyHelper::EnablePcap ("wifi-wired-bridging", apDevices[0]);
+  YansWifiPhyHelper::EnablePcap ("wifi-wired-bridging", apDevices[1]);
+
   std::ofstream os;
   os.open ("wifi-wired-bridging.mob");
   MobilityHelper::EnableAsciiAll (os);

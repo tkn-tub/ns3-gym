@@ -7,6 +7,8 @@ def register_types(module):
     module.add_class('DelayJitterEstimation')
     ## event-garbage-collector.h: ns3::EventGarbageCollector [class]
     module.add_class('EventGarbageCollector')
+    ## file-config.h: ns3::FileConfig [class]
+    module.add_class('FileConfig', allow_subclassing=True)
     ## gnuplot.h: ns3::Gnuplot [class]
     module.add_class('Gnuplot')
     ## gnuplot.h: ns3::GnuplotCollection [class]
@@ -15,8 +17,14 @@ def register_types(module):
     module.add_class('GnuplotDataset')
     ## gtk-config-store.h: ns3::GtkConfigStore [class]
     module.add_class('GtkConfigStore')
+    ## file-config.h: ns3::NoneFileConfig [class]
+    module.add_class('NoneFileConfig', parent=root_module['ns3::FileConfig'])
     ## config-store.h: ns3::ConfigStore [class]
     module.add_class('ConfigStore', parent=root_module['ns3::ObjectBase'])
+    ## config-store.h: ns3::ConfigStore::Mode [enumeration]
+    module.add_enum('Mode', ['LOAD', 'SAVE', 'NONE'], outer_class=root_module['ns3::ConfigStore'])
+    ## config-store.h: ns3::ConfigStore::FileFormat [enumeration]
+    module.add_enum('FileFormat', ['XML', 'RAW_TEXT'], outer_class=root_module['ns3::ConfigStore'])
     ## flow-id-tag.h: ns3::FlowIdTag [class]
     module.add_class('FlowIdTag', parent=root_module['ns3::Tag'])
     ## gnuplot.h: ns3::Gnuplot2dDataset [class]
@@ -75,10 +83,12 @@ def register_types_ns3_olsr(module):
 def register_methods(root_module):
     register_Ns3DelayJitterEstimation_methods(root_module, root_module['ns3::DelayJitterEstimation'])
     register_Ns3EventGarbageCollector_methods(root_module, root_module['ns3::EventGarbageCollector'])
+    register_Ns3FileConfig_methods(root_module, root_module['ns3::FileConfig'])
     register_Ns3Gnuplot_methods(root_module, root_module['ns3::Gnuplot'])
     register_Ns3GnuplotCollection_methods(root_module, root_module['ns3::GnuplotCollection'])
     register_Ns3GnuplotDataset_methods(root_module, root_module['ns3::GnuplotDataset'])
     register_Ns3GtkConfigStore_methods(root_module, root_module['ns3::GtkConfigStore'])
+    register_Ns3NoneFileConfig_methods(root_module, root_module['ns3::NoneFileConfig'])
     register_Ns3ConfigStore_methods(root_module, root_module['ns3::ConfigStore'])
     register_Ns3FlowIdTag_methods(root_module, root_module['ns3::FlowIdTag'])
     register_Ns3Gnuplot2dDataset_methods(root_module, root_module['ns3::Gnuplot2dDataset'])
@@ -122,6 +132,33 @@ def register_Ns3EventGarbageCollector_methods(root_module, cls):
     cls.add_method('Track', 
                    'void', 
                    [param('ns3::EventId', 'event')])
+    return
+
+def register_Ns3FileConfig_methods(root_module, cls):
+    ## file-config.h: ns3::FileConfig::FileConfig(ns3::FileConfig const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::FileConfig const &', 'arg0')])
+    ## file-config.h: ns3::FileConfig::FileConfig() [constructor]
+    cls.add_constructor([])
+    ## file-config.h: void ns3::FileConfig::SetFilename(std::string filename) [member function]
+    cls.add_method('SetFilename', 
+                   'void', 
+                   [param('std::string', 'filename')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## file-config.h: void ns3::FileConfig::Default() [member function]
+    cls.add_method('Default', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## file-config.h: void ns3::FileConfig::Global() [member function]
+    cls.add_method('Global', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## file-config.h: void ns3::FileConfig::Attributes() [member function]
+    cls.add_method('Attributes', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3Gnuplot_methods(root_module, cls):
@@ -215,10 +252,41 @@ def register_Ns3GtkConfigStore_methods(root_module, cls):
     cls.add_constructor([param('ns3::GtkConfigStore const &', 'arg0')])
     ## gtk-config-store.h: ns3::GtkConfigStore::GtkConfigStore() [constructor]
     cls.add_constructor([])
-    ## gtk-config-store.h: void ns3::GtkConfigStore::Configure() [member function]
-    cls.add_method('Configure', 
+    ## gtk-config-store.h: void ns3::GtkConfigStore::ConfigureDefaults() [member function]
+    cls.add_method('ConfigureDefaults', 
                    'void', 
                    [])
+    ## gtk-config-store.h: void ns3::GtkConfigStore::ConfigureAttributes() [member function]
+    cls.add_method('ConfigureAttributes', 
+                   'void', 
+                   [])
+    return
+
+def register_Ns3NoneFileConfig_methods(root_module, cls):
+    ## file-config.h: ns3::NoneFileConfig::NoneFileConfig(ns3::NoneFileConfig const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::NoneFileConfig const &', 'arg0')])
+    ## file-config.h: ns3::NoneFileConfig::NoneFileConfig() [constructor]
+    cls.add_constructor([])
+    ## file-config.h: void ns3::NoneFileConfig::SetFilename(std::string filename) [member function]
+    cls.add_method('SetFilename', 
+                   'void', 
+                   [param('std::string', 'filename')], 
+                   is_virtual=True)
+    ## file-config.h: void ns3::NoneFileConfig::Default() [member function]
+    cls.add_method('Default', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## file-config.h: void ns3::NoneFileConfig::Global() [member function]
+    cls.add_method('Global', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## file-config.h: void ns3::NoneFileConfig::Attributes() [member function]
+    cls.add_method('Attributes', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     return
 
 def register_Ns3ConfigStore_methods(root_module, cls):
@@ -236,8 +304,24 @@ def register_Ns3ConfigStore_methods(root_module, cls):
                    is_const=True, is_virtual=True)
     ## config-store.h: ns3::ConfigStore::ConfigStore() [constructor]
     cls.add_constructor([])
-    ## config-store.h: void ns3::ConfigStore::Configure() [member function]
-    cls.add_method('Configure', 
+    ## config-store.h: void ns3::ConfigStore::SetMode(ns3::ConfigStore::Mode mode) [member function]
+    cls.add_method('SetMode', 
+                   'void', 
+                   [param('ns3::ConfigStore::Mode', 'mode')])
+    ## config-store.h: void ns3::ConfigStore::SetFileFormat(ns3::ConfigStore::FileFormat format) [member function]
+    cls.add_method('SetFileFormat', 
+                   'void', 
+                   [param('ns3::ConfigStore::FileFormat', 'format')])
+    ## config-store.h: void ns3::ConfigStore::SetFilename(std::string filename) [member function]
+    cls.add_method('SetFilename', 
+                   'void', 
+                   [param('std::string', 'filename')])
+    ## config-store.h: void ns3::ConfigStore::ConfigureDefaults() [member function]
+    cls.add_method('ConfigureDefaults', 
+                   'void', 
+                   [])
+    ## config-store.h: void ns3::ConfigStore::ConfigureAttributes() [member function]
+    cls.add_method('ConfigureAttributes', 
                    'void', 
                    [])
     return

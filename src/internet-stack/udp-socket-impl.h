@@ -105,8 +105,6 @@ private:
   Ptr<UdpL4Protocol> m_udp;
   Ipv4Address m_defaultAddress;
   uint16_t m_defaultPort;
-  Callback<void,Ptr<Socket>,uint32_t,const Address &> m_dummyRxCallback;
-  Callback<void,Ptr<Socket>,uint8_t const*,uint32_t,const Address &> m_rxCallback;
   TracedCallback<Ptr<const Packet> > m_dropTrace;
 
   enum SocketErrno m_errno;

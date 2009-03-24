@@ -176,10 +176,38 @@ public:
    * \param linkDown the callback to invoke when the link becomes down.
    */
   virtual void SetLinkDownCallback (Callback<void> linkDown) = 0;
+
+  /**
+   * Public method used to fire a MacTx trace.  Implemented for encapsulation 
+   * purposes.
+   */
+  void NotifyTx (Ptr<const Packet> packet);
+
+  /**
+   * Public method used to fire a MacTxDrop trace.  Implemented for encapsulation 
+   * purposes.
+   */
+  void NotifyTxDrop (Ptr<const Packet> packet);
+
+  /**
+   * Public method used to fire a MacRx trace.  Implemented for encapsulation 
+   * purposes.
+   */
+  void NotifyRx (Ptr<const Packet> packet);
+
+  /**
+   * Public method used to fire a MacPromiscRx trace.  Implemented for encapsulation 
+   * purposes.
+   */
+  void NotifyPromiscRx (Ptr<const Packet> packet);
+
+  /**
+   * Public method used to fire a MacRxDrop trace.  Implemented for encapsulation 
+   * purposes.
+   */
+  void NotifyRxDrop (Ptr<const Packet> packet);
+
 private:
-
-
-
   static Time GetDefaultMaxPropagationDelay (void);
   static Time GetDefaultSlot (void);
   static Time GetDefaultSifs (void);
@@ -189,6 +217,49 @@ private:
 
   Time m_maxPropagationDelay;
   uint32_t m_maxMsduSize;
+
+  /**
+   * The trace source fired when packets come into the "top" of the device
+   * at the L3/L2 transition, before being queued for transmission.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_macTxTrace;
+
+  /**
+   * The trace source fired when packets coming into the "top" of the device
+   * are dropped at the MAC layer during transmission.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_macTxDropTrace;
+
+  /**
+   * The trace source fired for packets successfully received by the device
+   * immediately before being forwarded up to higher layers (at the L2/L3 
+   * transition).  This is a promiscuous trace.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_macPromiscRxTrace;
+
+  /**
+   * The trace source fired for packets successfully received by the device
+   * immediately before being forwarded up to higher layers (at the L2/L3 
+   * transition).  This is a non- promiscuous trace.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_macRxTrace;
+
+  /**
+   * The trace source fired when packets coming into the "top" of the device
+   * are dropped at the MAC layer during reception.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_macRxDropTrace;
+
 };
 
 } // namespace ns3

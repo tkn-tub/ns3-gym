@@ -24,6 +24,7 @@
 #include "mac-rx-middle.h"
 #include "wifi-phy.h"
 #include "dcf-manager.h"
+#include "wifi-mac-trailer.h"
 #include "ns3/pointer.h"
 #include "ns3/packet.h"
 #include "ns3/log.h"

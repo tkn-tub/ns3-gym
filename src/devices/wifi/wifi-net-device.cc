@@ -57,10 +57,6 @@ WifiNetDevice::GetTypeId (void)
                    MakePointerAccessor (&WifiNetDevice::SetRemoteStationManager,
                                         &WifiNetDevice::GetRemoteStationManager),
                    MakePointerChecker<WifiRemoteStationManager> ())
-    .AddTraceSource ("Rx", "Received payload from the MAC layer.",
-                     MakeTraceSourceAccessor (&WifiNetDevice::m_rxLogger))
-    .AddTraceSource ("Tx", "Send payload to the MAC layer.",
-                     MakeTraceSourceAccessor (&WifiNetDevice::m_txLogger))
     ;
   return tid;
 }
@@ -243,18 +239,18 @@ WifiNetDevice::IsBridge (void) const
   return false;
 }
 bool 
-WifiNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
+WifiNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
   NS_ASSERT (Mac48Address::IsMatchingType (dest));
 
   Mac48Address realTo = Mac48Address::ConvertFrom (dest);
+  Mac48Address realFrom = Mac48Address::ConvertFrom (GetAddress ());
 
   LlcSnapHeader llc;
   llc.SetType (protocolNumber);
   packet->AddHeader (llc);
 
-  m_txLogger (packet, realTo);
-
+  m_mac->NotifyTx (packet);
   m_mac->Enqueue (packet, realTo);
   return true;
 }
@@ -283,7 +279,6 @@ WifiNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 void
 WifiNetDevice::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to)
 {
-  m_rxLogger (packet, from);
   LlcSnapHeader llc;
   packet->RemoveHeader (llc);
   enum NetDevice::PacketType type;
@@ -303,12 +298,16 @@ WifiNetDevice::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to
     {
       type = NetDevice::PACKET_OTHERHOST;
     }
+
   if (type != NetDevice::PACKET_OTHERHOST)
     {
+      m_mac->NotifyRx (packet);
       m_forwardUp (this, packet, llc.GetType (), from);
     }
+
   if (!m_promiscRx.IsNull ())
     {
+      m_mac->NotifyPromiscRx (packet);
       m_promiscRx (this, packet, llc.GetType (), from, to, type);
     }
 }
@@ -345,8 +344,7 @@ WifiNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Addres
   llc.SetType (protocolNumber);
   packet->AddHeader (llc);
 
-  m_txLogger (packet, realTo);
-
+  m_mac->NotifyTx (packet);
   m_mac->Enqueue (packet, realTo, realFrom);
 
   return true;

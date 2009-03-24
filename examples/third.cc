@@ -162,10 +162,9 @@ main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (10.0));
 
-  YansWifiPhyHelper::EnablePcap ("third", 
-    wifiStaNodes.Get (nWifi - 1)->GetId (), 0);
-  CsmaHelper::EnablePcap ("third", 
-    csmaNodes.Get (nCsma)->GetId (), 0);
+  PointToPointHelper::EnablePcap ("third", p2pDevices.Get (0));
+  YansWifiPhyHelper::EnablePcap ("third", apDevices.Get (0));
+  CsmaHelper::EnablePcap ("third", csmaDevices.Get (0), true);
 
   Simulator::Run ();
   Simulator::Destroy ();

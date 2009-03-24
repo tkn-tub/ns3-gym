@@ -940,7 +940,6 @@ TapBridge::ReceiveFromBridgedDevice (
     }
 
   Ptr<Packet> p = packet->Copy ();
-
   EthernetHeader header = EthernetHeader (false);
   header.SetSource (from);
   header.SetDestination (to);

@@ -1336,6 +1336,26 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'linkDown')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## wifi-mac.h: void ns3::WifiMac::NotifyTx(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyTx', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-mac.h: void ns3::WifiMac::NotifyTxDrop(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyTxDrop', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-mac.h: void ns3::WifiMac::NotifyRx(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyRx', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-mac.h: void ns3::WifiMac::NotifyPromiscRx(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyPromiscRx', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-mac.h: void ns3::WifiMac::NotifyRxDrop(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyRxDrop', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
     return
 
 def register_Ns3WifiModeChecker_methods(root_module, cls):
@@ -1528,6 +1548,34 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [], 
                    is_static=True)
+    ## wifi-phy.h: void ns3::WifiPhy::NotifyTxBegin(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyTxBegin', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-phy.h: void ns3::WifiPhy::NotifyTxEnd(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyTxEnd', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-phy.h: void ns3::WifiPhy::NotifyTxDrop(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyTxDrop', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-phy.h: void ns3::WifiPhy::NotifyRxBegin(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyRxBegin', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-phy.h: void ns3::WifiPhy::NotifyRxEnd(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyRxEnd', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-phy.h: void ns3::WifiPhy::NotifyRxDrop(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyRxDrop', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-phy.h: void ns3::WifiPhy::NotifyPromiscSniff(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyPromiscSniff', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
     return
 
 def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
