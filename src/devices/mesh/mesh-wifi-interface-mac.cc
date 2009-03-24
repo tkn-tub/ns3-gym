@@ -53,11 +53,6 @@ MeshWifiInterfaceMac::GetTypeId ()
                                      MakeTimeAccessor (&MeshWifiInterfaceMac::m_randomStart),
                                      MakeTimeChecker ()
                                     )
-                      .AddAttribute ("SoftwareDelay", "Window of uniformely distributed random software handling delay",
-                                     TimeValue (MicroSeconds (500)),
-                                     MakeTimeAccessor (&MeshWifiInterfaceMac::m_softwareDelay),
-                                     MakeTimeChecker ()
-                                    )
                       .AddAttribute ("BeaconGeneration", "Enable/Disable Beaconing.",
                                      BooleanValue (true),
                                      MakeBooleanAccessor (
@@ -408,43 +403,10 @@ MeshWifiInterfaceMac::CheckSupportedRates(SupportedRates rates) const
 // Beacons
 //-----------------------------------------------------------------------------
 void
-MeshWifiInterfaceMac::SetSoftwareDelay (Time delay)
-{
-  NS_ASSERT (delay < m_beaconInterval);
-  m_softwareDelay = delay;
-}
-
-Time
-MeshWifiInterfaceMac::GetSoftwareDelay ()
-{
-  return m_softwareDelay;
-}
-
-Time
-MeshWifiInterfaceMac::CalcSwDelay ()
-{
-#if 0
-  UniformVariable coefficient (0.0, m_softwareDelay.GetSeconds());
-  
-  // Be sure that frames don't change order due to different software delays
-  Time delay = Seconds (coefficient.GetValue());
-  if (delay.GetSeconds () + Simulator::Now().GetSeconds() < m_lastMgtFrame.GetSeconds())
-    delay = Seconds (m_lastMgtFrame.GetSeconds() - Simulator::Now().GetSeconds());
-  m_lastMgtFrame = Seconds (Simulator::Now().GetSeconds() + delay.GetSeconds());
-
-  NS_ASSERT (delay.GetSeconds() >= 0);
-  return delay;
-#endif
-  return MicroSeconds(0);
-}
-
-void
 MeshWifiInterfaceMac::SetBeaconInterval (Time interval)
 {
   NS_LOG_FUNCTION (this << interval);
   m_beaconInterval = interval;
-  
-  NS_ASSERT (m_beaconInterval > m_softwareDelay);
 }
 
 Time 

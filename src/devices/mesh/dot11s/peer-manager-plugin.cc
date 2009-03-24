@@ -59,7 +59,7 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     MgtBeaconHeader beacon_hdr;
     myBeacon->RemoveHeader(beacon_hdr);
     bool meshBeacon = false;
-    if(beaconTiming.FindMyInformationElement(myBeacon))
+    if(beaconTiming.FindFirst(myBeacon))
     {
       NS_LOG_DEBUG("Beacon timing:"<<beaconTiming);
       meshBeacon = true;

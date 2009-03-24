@@ -155,8 +155,6 @@ private:
   virtual void ForwardUp (Ptr<Packet> packet, Mac48Address src, Mac48Address dst);
   /// Send frame. Frame is supposed to be tagged by routing information. TODO: clarify this point 
   void  ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
-  /// Calc software delay value uniformely distributed between 0 and m_softwareDealy, see SetSoftwareDelay ().
-  Time CalcSwDelay ();
   /// Send beacon
   void SendBeacon ();
   /// Schedule next beacon
@@ -197,10 +195,6 @@ private:
   Time m_beaconInterval;
   /// Maximum delay before first beacon
   Time m_randomStart;
-  /// Maximum software delay
-  Time m_softwareDelay;
-  /// Send time of the last management frame, used to ensure correct frame order 
-  Time m_lastMgtFrame;
   /// Time for the next frame
   Time m_tbtt;
   //\}

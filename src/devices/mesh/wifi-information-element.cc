@@ -65,7 +65,7 @@ void WifiInformationElement::Print (std::ostream &os) const
   os << "</information_element>\n";
 }
 
-bool WifiInformationElement::FindMyInformationElement(Ptr<Packet> packet)
+bool WifiInformationElement::FindFirst(Ptr<Packet> packet)
 {
   const uint8_t * data = packet->PeekData();
   uint32_t position = 0;

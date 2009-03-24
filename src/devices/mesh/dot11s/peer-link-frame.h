@@ -41,7 +41,7 @@ public:
   void SetPlinkFrameStart(PlinkFrameStartFields);
   PlinkFrameStartFields GetFields ();
   bool CheckPlinkFrameStart(Ptr<MeshWifiInterfaceMac> mac);
-  /** Inherited from header:
+  /** \name Inherited from header:
    * \{
    */
   static  TypeId   GetTypeId ();

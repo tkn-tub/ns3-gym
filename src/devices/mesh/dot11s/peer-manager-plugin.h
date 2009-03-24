@@ -44,17 +44,13 @@ class PeerManagerMacPlugin : public MeshWifiInterfaceMacPlugin
 public:
   PeerManagerMacPlugin (uint32_t interface, Ptr<PeerManagerProtocol> protocol);
   ~PeerManagerMacPlugin ();
-  /**
-   * \brief Inherited from plugin abstract class
-   * \{
-   */
+  ///\name Inherited from plugin abstract class
+  ///\{
   void SetParent (Ptr<MeshWifiInterfaceMac> parent);
   bool Receive (Ptr<Packet> packet, const WifiMacHeader & header);
   bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const;
   void UpdateBeacon (MeshWifiBeacon & beacon) const;
-  /**
-   * \}
-   */
+  ///\}
   void SetPeerManagerProtcol(Ptr<PeerManagerProtocol> protocol);
   void SendPeerLinkManagementFrame(
       Mac48Address peerAddress,
@@ -62,47 +58,32 @@ public:
       IeDot11sPeerManagement peerElement,
       IeDot11sConfiguration meshConfig
       );
-  //IeDot11sConfiguration AskPeerLinkManagementElement();
-  /**
-   * \brief DUBUG only
-   */
+  ///\brief DUBUG only - to print established links
   Mac48Address GetAddress () const;
 private:
-  /**
-   * Information about MAC and protocol:
-   * \{
-   */
+  ///\name Information about MAC and protocol:
+  ///\{
   Ptr<MeshWifiInterfaceMac> m_parent;
   uint32_t m_ifIndex;
   Ptr<PeerManagerProtocol> m_protocol;
-  /**
-   * \}
-   */
-  /**
-   * Create peer link management frames:
-   * \{
-   */
+   ///\}
+   ///\name Create peer link management frames:
+   ///\{
   Ptr<Packet> CreatePeerLinkOpenFrame();
   Ptr<Packet> CreatePeerLinkConfirmFrame();
   Ptr<Packet> CreatePeerLinkCloseFrame();
-  /**
-   * This structure keeps all fields in peer link management frame,
-   * which are not subclasses of WifiInformationElement
-   */
+  ///This structure keeps all fields in peer link management frame,
+  ///which are not subclasses of WifiInformationElement
   struct PlinkFrameStart {
     uint8_t subtype;
     uint16_t aid;
     SupportedRates rates;
     uint16_t qos;
   };
-  /**
-   * \brief Parses the start of the frame, where there are no
-   * WifiInformationElements exist
-   */
+  /// \name Parses the start of the frame, where there are no
+  /// WifiInformationElements exist
   PlinkFrameStart ParsePlinkFrame(Ptr<const Packet> packet);
-  /**
-   * \}
-   */
+  ///\}
 };
   
 } // namespace dot11s

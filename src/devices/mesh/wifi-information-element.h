@@ -132,7 +132,7 @@ public:
    * This method takes a packet which must be a list of information
    * elements and looks for an information element of MINE Element ID
    */
-  bool FindMyInformationElement(Ptr<Packet> packet);
+  bool FindFirst(Ptr<Packet> packet);
   //\}
     
 protected:

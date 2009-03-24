@@ -135,6 +135,7 @@ private:
   typedef std::map<Mac48Address, BeaconInfo>  BeaconsOnInterface;
   typedef std::map<uint32_t, BeaconsOnInterface> BeaconInfoMap;
   typedef std::map<uint32_t, Ptr<PeerManagerMacPlugin> > PeerManagerPluginMap;
+  ///\}
 private:
   /**
    * Return a position in beacon-storage for a given remote station
@@ -142,7 +143,7 @@ private:
   void FillBeaconInfo(uint32_t interface, Mac48Address peerAddress, Time receivingTime, Time beaconInterval);
   Ptr<PeerLink> InitiateLink (uint32_t interface, Mac48Address peerAddress, Time lastBeacon, Time beaconInterval);
   /**
-   * External peer-chooser
+   * \name External peer-chooser
    * \{
    */
   bool ShouldSendOpen (uint32_t interface, Mac48Address peerAddress);
@@ -159,15 +160,12 @@ private:
 private:
   PeerManagerPluginMap m_plugins;
   /**
-   * Information related to beacons:
+   * \name Information related to beacons:
    * \{
    */
   BeaconInfoMap m_neighbourBeacons;
   static const uint8_t m_maxBeaconLoss = 3;
-  /**
-   * \}
-   * \}
-   */
+  ///\}
   uint16_t m_lastAssocId;
   uint16_t m_lastLocalLinkId;
   uint8_t m_numberOfActivePeers; //number of established peer links
