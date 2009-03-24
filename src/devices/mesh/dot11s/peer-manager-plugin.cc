@@ -32,24 +32,24 @@
 NS_LOG_COMPONENT_DEFINE("PeerManager");
 namespace ns3 {
 namespace dot11s {
-Dot11sPeerManagerMacPlugin::Dot11sPeerManagerMacPlugin (uint32_t interface, Ptr<Dot11sPeerManagerProtocol> protocol)
+PeerManagerMacPlugin::PeerManagerMacPlugin (uint32_t interface, Ptr<PeerManagerProtocol> protocol)
 {
   m_ifIndex = interface;
   m_protocol = protocol;
 }
 
-Dot11sPeerManagerMacPlugin::~Dot11sPeerManagerMacPlugin ()
+PeerManagerMacPlugin::~PeerManagerMacPlugin ()
 {
 }
 
 void
-Dot11sPeerManagerMacPlugin::SetParent (Ptr<MeshWifiInterfaceMac> parent)
+PeerManagerMacPlugin::SetParent (Ptr<MeshWifiInterfaceMac> parent)
 {
   m_parent = parent;
 }
 
 bool
-Dot11sPeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & header)
+PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & header)
 {
   Ptr<Packet> packet = const_packet->Copy();
   if(header.IsBeacon())
@@ -134,13 +134,13 @@ Dot11sPeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHead
 }
 
 bool
-Dot11sPeerManagerMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const
+PeerManagerMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const
 {
   return false;
 }
 
 void
-Dot11sPeerManagerMacPlugin::UpdateBeacon (MeshWifiBeacon & beacon) const
+PeerManagerMacPlugin::UpdateBeacon (MeshWifiBeacon & beacon) const
 {
   Ptr<IeDot11sBeaconTiming>  beaconTiming = 
     m_protocol->SendBeacon(
@@ -150,7 +150,7 @@ Dot11sPeerManagerMacPlugin::UpdateBeacon (MeshWifiBeacon & beacon) const
   beacon.AddInformationElement(beaconTiming);
 }
 void
-Dot11sPeerManagerMacPlugin::SendPeerLinkManagementFrame(
+PeerManagerMacPlugin::SendPeerLinkManagementFrame(
       Mac48Address peerAddress,
       uint16_t aid,
       IeDot11sPeerManagement peerElement,
@@ -208,7 +208,7 @@ Dot11sPeerManagerMacPlugin::SendPeerLinkManagementFrame(
   m_parent->SendManagementFrame(packet, hdr);
 }
 Mac48Address
-Dot11sPeerManagerMacPlugin::GetAddress () const
+PeerManagerMacPlugin::GetAddress () const
 {
   if(m_parent !=  0)
     return m_parent->GetAddress ();

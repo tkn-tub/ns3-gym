@@ -34,16 +34,16 @@
 #include <map>
 namespace ns3 {
 namespace dot11s {
-class Dot11sPeerManagerMacPlugin;
+class PeerManagerMacPlugin;
 class PeerLink;
 /**
  * \ingroup dot11s
  */
-class Dot11sPeerManagerProtocol : public Object
+class PeerManagerProtocol : public Object
 {
 public:
-  Dot11sPeerManagerProtocol ();
-  ~Dot11sPeerManagerProtocol ();
+  PeerManagerProtocol ();
+  ~PeerManagerProtocol ();
   static TypeId GetTypeId ();
   bool AttachPorts(std::vector<Ptr<WifiNetDevice> >);
   /** \brief Methods that handle beacon sending/receiving procedure.
@@ -134,7 +134,7 @@ private:
   typedef std::map<uint32_t, PeerLinksOnInterface>  PeerLinksMap;
   typedef std::map<Mac48Address, BeaconInfo>  BeaconsOnInterface;
   typedef std::map<uint32_t, BeaconsOnInterface> BeaconInfoMap;
-  typedef std::map<uint32_t, Ptr<Dot11sPeerManagerMacPlugin> > PeerManagerPluginMap;
+  typedef std::map<uint32_t, Ptr<PeerManagerMacPlugin> > PeerManagerPluginMap;
 private:
   /**
    * Return a position in beacon-storage for a given remote station

@@ -153,7 +153,7 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
     mac->SetAddress (Mac48Address::Allocate ());
     device->SetMac (mac);
     device->SetPhy (phy);
-    Ptr<Dot11sPeerManagerProtocol> peerMan = m_peerMan.Create<Dot11sPeerManagerProtocol> ();    
+    Ptr<PeerManagerProtocol> peerMan = m_peerMan.Create<PeerManagerProtocol> ();    
     NS_ASSERT(peerMan->AttachPorts(ports));
     device->SetRemoteStationManager (manager);
     node->AddDevice (device);

@@ -29,7 +29,7 @@ class MeshWifiInterfaceMac;
 namespace dot11s {
 class IeDot11sConfiguration;
 class IeDot11sPeerManagement;
-class Dot11sPeerManagerProtocol;
+class PeerManagerProtocol;
 /**
  * \ingroup dot11s
  * 
@@ -39,11 +39,11 @@ class Dot11sPeerManagerProtocol;
  * element and mesh configuration element and passes it to main part
  * of protocol
  */
-class Dot11sPeerManagerMacPlugin : public MeshWifiInterfaceMacPlugin
+class PeerManagerMacPlugin : public MeshWifiInterfaceMacPlugin
 {
 public:
-  Dot11sPeerManagerMacPlugin (uint32_t interface, Ptr<Dot11sPeerManagerProtocol> protocol);
-  ~Dot11sPeerManagerMacPlugin ();
+  PeerManagerMacPlugin (uint32_t interface, Ptr<PeerManagerProtocol> protocol);
+  ~PeerManagerMacPlugin ();
   /**
    * \brief Inherited from plugin abstract class
    * \{
@@ -55,7 +55,7 @@ public:
   /**
    * \}
    */
-  void SetPeerManagerProtcol(Ptr<Dot11sPeerManagerProtocol> protocol);
+  void SetPeerManagerProtcol(Ptr<PeerManagerProtocol> protocol);
   void SendPeerLinkManagementFrame(
       Mac48Address peerAddress,
       uint16_t aid,
@@ -74,7 +74,7 @@ private:
    */
   Ptr<MeshWifiInterfaceMac> m_parent;
   uint32_t m_ifIndex;
-  Ptr<Dot11sPeerManagerProtocol> m_protocol;
+  Ptr<PeerManagerProtocol> m_protocol;
   /**
    * \}
    */

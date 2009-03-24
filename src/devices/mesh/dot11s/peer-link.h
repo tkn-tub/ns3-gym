@@ -131,7 +131,7 @@ public:
    * Set pointer to MAC-plugin, which is responsible for sending peer
    * link management frames
    */
-  void SetMacPlugin(Ptr<Dot11sPeerManagerMacPlugin> plugin);
+  void SetMacPlugin(Ptr<PeerManagerMacPlugin> plugin);
 private:
   /// Peer link states, see 802.11s draft 11B.3.3.1
   enum  PeerState {
@@ -199,7 +199,7 @@ private:
   ///The number of interface I am associated with
   uint32_t m_interface;
   /// pointer to mac plugin, which is responsible for peer management
-  Ptr<Dot11sPeerManagerMacPlugin> m_macPlugin;
+  Ptr<PeerManagerMacPlugin> m_macPlugin;
   /// Peer address
   Mac48Address m_peerAddress;
   /// My ID of this link
