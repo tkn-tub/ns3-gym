@@ -38,6 +38,8 @@ class PeerManagerMacPlugin;
 class PeerLink;
 /**
  * \ingroup dot11s
+ * 
+ * \brief 802.11s Peer Management Protocol model 
  */
 class PeerManagerProtocol : public Object
 {

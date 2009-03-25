@@ -47,18 +47,18 @@ PeerManagerProtocol::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::PeerManagerProtocol")
     .SetParent<Object> ()
     .AddConstructor<PeerManagerProtocol> ()
-    /// peerLinkCleanupTimeout. We go through the map of peer links and 
-    /// remove all links which state is IDLE.
+    // peerLinkCleanupTimeout. We go through the map of peer links and 
+    // remove all links which state is IDLE.
     .AddAttribute ("PeerLinkCleanupPeriod",
-        "PeerLinkCleanupPeriod",
+        "Idle peer link collection interval",
         TimeValue (MilliSeconds (80)),
         MakeTimeAccessor (&PeerManagerProtocol::m_peerLinkCleanupPeriod),
         MakeTimeChecker ()
         )
-    /// maximum number of peer links. Now we calculate the total
-    /// number of peer links on all interfaces
+    // maximum number of peer links. Now we calculate the total
+    // number of peer links on all interfaces
     .AddAttribute ("MaxNumberOfPeerLinks",
-        "Maximum number of peer links ",
+        "Maximum number of peer links",
         UintegerValue (32),
         MakeUintegerAccessor (&PeerManagerProtocol::m_maxNumberOfPeerLinks),
         MakeUintegerChecker<uint8_t> ()
@@ -144,6 +144,7 @@ PeerManagerProtocol::GetBeaconTimingElement(uint32_t interface)
     retval->AddNeighboursTimingElementUnit(j->second.aid, j->second.referenceTbtt, j->second.beaconInterval);
   return retval;
 }
+
 void
 PeerManagerProtocol::FillBeaconInfo(uint32_t interface, Mac48Address peerAddress, Time receivingTime, Time beaconInterval)
 {
@@ -267,7 +268,7 @@ PeerManagerProtocol::InitiateLink (
     FillBeaconInfo(interface, peerAddress, lastBeacon, beaconInterval);
   //find a peer link  - it must not exist
   NS_ASSERT(FindPeerLink(interface, peerAddress) == 0);
-  /// Plugin must exust
+  // Plugin must exist
   PeerManagerPluginMap::iterator plugin = m_plugins.find (interface);
   NS_ASSERT(plugin != m_plugins.end ());
   PeerLinksMap::iterator iface = m_peerLinks.find (interface);
@@ -316,7 +317,6 @@ PeerManagerProtocol::PeerCleanup ()
       to_erase.clear ();
     }
   // cleanup neighbour beacons:
-  //NS_ASSERT(false);
   m_cleanupEvent = Simulator::Schedule (m_peerLinkCleanupPeriod, &PeerManagerProtocol::PeerCleanup, this);
 }
 bool

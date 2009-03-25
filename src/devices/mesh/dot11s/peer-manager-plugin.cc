@@ -51,7 +51,7 @@ PeerManagerMacPlugin::SetParent (Ptr<MeshWifiInterfaceMac> parent)
 bool
 PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & header)
 {
-  /// First of all we copy a packet, because we need to remove some
+  // First of all we copy a packet, because we need to remove some
   //headers
   Ptr<Packet> packet = const_packet->Copy();
   if(header.IsBeacon())
@@ -71,7 +71,7 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
         Simulator::Now(),
         MicroSeconds(beacon_hdr.GetBeaconIntervalUs())
         );
-    /// Beacon shall not be dropeed. May be needed to another plugins
+    // Beacon shall not be dropeed. May be needed to another plugins
     return true;
   }
   if(header.IsMultihopAction())
@@ -82,7 +82,7 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     //parse multihop action header:
     packet->RemoveHeader (multihopHdr);
     WifiMeshMultihopActionHeader::ACTION_VALUE actionValue = multihopHdr.GetAction ();
-    /// If can not handle - just return;
+    // If can not handle - just return;
     if(multihopHdr.GetCategory () != WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT)
       return true;
     Mac48Address peerAddress = header.GetAddr2 ();
@@ -97,25 +97,25 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
       if(!(m_parent->CheckSupportedRates(fields.rates)))
       {
         m_protocol->ConfigurationMismatch (m_ifIndex, peerAddress);
-        /// Broken peer link frame - drop it
+        // Broken peer link frame - drop it
         return false;
       }
       if (!fields.meshId.IsEqual(m_parent->GetSsid()))
       {
         m_protocol->ConfigurationMismatch (m_ifIndex, peerAddress);
-        /// Broken peer link frame - drop it
+        // Broken peer link frame - drop it
         return true;
       }
     }
-    /// MeshConfiguration Element - exists in all peer link management
-    /// frames except CLOSE
+    // MeshConfiguration Element - exists in all peer link management
+    // frames except CLOSE
     IeConfiguration meshConfig;
     if(fields.subtype != IePeerManagement::PEER_CLOSE)
     packet->RemoveHeader(meshConfig);
     IePeerManagement peerElement;
     packet->RemoveHeader(peerElement);
-    /// Check the correspondance betwee action valuse and peer link
-    /// management element subtypes:
+    // Check the correspondance betwee action valuse and peer link
+    // management element subtypes:
     switch (actionValue.peerLink)
     {
       case WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM:
@@ -128,12 +128,12 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
         NS_ASSERT(fields.subtype == IePeerManagement::PEER_CLOSE);
         break;
       default:
-        /// Protocol can not define which frame is it - pass further
+        // Protocol can not define which frame is it - pass further
         return true;
     }
     //Deliver Peer link management frame to protocol:
     m_protocol->ReceivePeerLinkFrame(m_ifIndex, peerAddress, fields.aid, peerElement, meshConfig);
-    /// if we can handle a frame - drop it
+    // if we can handle a frame - drop it
     return false;
   } 
   return true;
@@ -151,6 +151,7 @@ PeerManagerMacPlugin::UpdateBeacon (MeshWifiBeacon & beacon) const
   Ptr<IeBeaconTiming>  beaconTiming = m_protocol->GetBeaconTimingElement(m_ifIndex);
   beacon.AddInformationElement(beaconTiming);
 }
+
 void
 PeerManagerMacPlugin::SendPeerLinkManagementFrame(
       Mac48Address peerAddress,
@@ -209,6 +210,7 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
   hdr.SetDsNotTo ();
   m_parent->SendManagementFrame(packet, hdr);
 }
+
 Mac48Address
 PeerManagerMacPlugin::GetAddress () const
 {
