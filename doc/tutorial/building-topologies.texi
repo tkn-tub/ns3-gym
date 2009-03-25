@@ -158,9 +158,9 @@ point-to-point and CSMA net device, the number of ``extra'' nodes means the
 number nodes you desire in the CSMA section minus one.
 
 The next bit of code should be quite familiar by now.  We instantiate a
-@code{PointToPointHelper} and set the associated default attributes so that
-we create a five megabit per second transmitter on devices created using the
-helper and a two millisecond delay on channels created by the helper.
+@code{PointToPointHelper} and set the associated default @code{Attributes} so
+that we create a five megabit per second transmitter on devices created using
+the helper and a two millisecond delay on channels created by the helper.
 
 @verbatim
   PointToPointHelper pointToPoint;
@@ -179,13 +179,13 @@ We mentioned above that you were going to see a helper for CSMA devices and
 channels, and the next lines introduce them.  The @code{CsmaHelper} works just
 like a @code{PointToPointHelper}, but it creates and connects CSMA devices and
 channels.  In the case of a CSMA device and channel pair, notice that the data
-rate is specified by a @emph{channel} attribute instead of a device attribute.
-This is because a real CSMA network does not allow one to mix, for example, 
-10Base-T and 100Base-T devices on a given channel.  We first set the data rate
-to 100 megabits per second, and then set the speed-of-light delay of the channel
-to 6560 nano-seconds (arbitrarily chosen as 1 nanosecond per foot over a 100
-meter segment).  Notice that you can set an attribute using its native data 
-type.
+rate is specified by a @emph{channel} @code{Attribute} instead of a device 
+@code{Attribute}.  This is because a real CSMA network does not allow one to mix,
+for example, 10Base-T and 100Base-T devices on a given channel.  We first set 
+the data rate to 100 megabits per second, and then set the speed-of-light delay
+of the channel to 6560 nano-seconds (arbitrarily chosen as 1 nanosecond per foot
+over a 100 meter segment).  Notice that you can set an @code{Attribute} using 
+its native data type.
 
 @verbatim
   CsmaHelper csma;
@@ -252,8 +252,8 @@ nodes that has a CSMA node and the client on the node having only a
 point-to-point device.
 
 First, we set up the echo server.  We create a @code{UdpEchoServerHelper} and
-provide a required attribute value to the constructor which is the server port
-number.  Recall that this port can be changed later using the 
+provide a required @code{Attribute} value to the constructor which is the server
+port number.  Recall that this port can be changed later using the 
 @code{SetAttribute} method if desired, but we require it to be provided to
 the constructor.
 
@@ -276,7 +276,7 @@ if we create @code{nCsma} ``extra'' nodes the last one will be at index
 code.
 
 The client application is set up exactly as we did in the @code{first.cc}
-example script.  Again, we provide required attributes to the 
+example script.  Again, we provide required @code{Attributes} to the 
 @code{UdpEchoClientHelper} in the constructor (in this case the remote address
 and port).  We tell the client to send packets to the server we just installed
 on the last of the ``extra'' CSMA nodes.  We install the client on the 
@@ -780,8 +780,8 @@ that we will connect via the point-to-point link.
 @end verbatim
 
 Next, we see an old friend.  We instantiate a @code{PointToPointHelper} and 
-set the associated default attributes so that we create a five megabit per 
-second transmitter on devices created using the helper and a two millisecond 
+set the associated default @code{Attributes} so that we create a five megabit 
+per second transmitter on devices created using the helper and a two millisecond 
 delay on channels created by the helper.  We then @code{Intall} the devices
 on the nodes and the channel between them.
 
@@ -809,8 +809,8 @@ that will get CSMA devices.  The node in question is going to end up with a
 point-to-point device and a CSMA device.  We then create a number of ``extra''
 nodes that compose the remainder of the CSMA network.
 
-We then instantiate a @code{CsmaHelper} and set its attributes as we did in
-the previous example.  We create a @code{NetDeviceContainer} to keep track of
+We then instantiate a @code{CsmaHelper} and set its @code{Attributes} as we did
+in the previous example.  We create a @code{NetDeviceContainer} to keep track of
 the created CSMA net devices and then we @code{Install} CSMA devices on the 
 selected nodes.
 
@@ -882,8 +882,8 @@ will be used to set the value of the ``Ssid'' @code{Attribute} of the MAC
 layer implementation.  The particular kind of MAC layer is specified by
 @code{Attribute} as being of the "ns3::NqstaWifiMac" type.  This means that 
 the MAC will use a ``non-QoS station'' (nqsta) state machine.  Finally, the 
-``ActiveProbing'' attribute is set to false.  This means that probe requests
-will not be sent by MACs created by this helper.
+``ActiveProbing'' @code{Attribute} is set to false.  This means that probe
+requests will not be sent by MACs created by this helper.
 
 Once all the station-specific parameters are fully configured, both at the
 MAC and PHY layers, we can invoke our now-familiar @code{Install} method to 
@@ -908,11 +908,11 @@ requirements of the AP.
 
 In this case, the @code{WifiHelper} is going to create MAC layers of the 
 ``ns3::NqapWifiMac'' (Non-Qos Access Point) type.  We set the 
-``BeaconGeneration'' attribute to true and also set an interval between 
+``BeaconGeneration'' @code{Attribute} to true and also set an interval between 
 beacons of 2.5 seconds.
 
 The next lines create the single AP which shares the same set of PHY-level
-attributes (and channel) as the stations:
+@code{Attributes} (and channel) as the stations:
 
 @verbatim
   NetDeviceContainer apDevices;
@@ -922,8 +922,8 @@ attributes (and channel) as the stations:
 Now, we are going to add mobility models.  We want the STA nodes to be mobile,
 wandering around inside a bounding box, and we want to make the AP node 
 stationary.  We use the @code{MobilityHelper} to make this easy for us.
-First, we instantiate a @code{MobilityHelper} object and set some attributes
-controlling the ``position allocator'' functionality.
+First, we instantiate a @code{MobilityHelper} object and set some 
+@code{Attributes} controlling the ``position allocator'' functionality.
 
 @verbatim
   MobilityHelper mobility;
@@ -1329,7 +1329,8 @@ Under the ``core'' section, you will find a link to ``The list of all trace
 sources.''  You may find it interesting to try and hook some of these 
 traces yourself.  Additionally in the ``Modules'' documentation, there is
 a link to ``The list of all attributes.''  You can set the default value of 
-any of these attributes via the command line as we have previously discussed.
+any of these @code{Attributes} via the command line as we have previously 
+discussed.
 
 We have just scratched the surface of @command{ns-3} in this tutorial, but we 
 hope we have covered enough to get you started doing useful work.

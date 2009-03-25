@@ -411,7 +411,7 @@ system.  in the example above, this library was not found and the corresponding
 feature was not enabled.  There is a feature to use sudo to set the suid bit of
 certain programs.  This was not enabled by default.
 
-Now go ahead and switch back to the debug build:
+Now go ahead and switch back to the debug build.
 
 @verbatim
   ./waf -d debug configure
@@ -423,6 +423,26 @@ the @command{ns-3} programs by simply typing,
 @verbatim
   ./waf
 @end verbatim
+
+Some waf commands are meaningful during the build phase and some commands are valid
+in the configuration phase.  For example, if you wanted to use the emulation 
+features of @command{ns-3} you might want to enable setting the suid bit using
+sudo.  This is a configuration command, and so you could have run the following
+command
+
+@verbatim
+  ./waf -d debug --enable-sudo configure
+@end verbatim
+
+If you had done this, waf would have run sudo to change the socket creator 
+programs to run as root.  There are many other configure- and build-time options
+available in waf.  To explore these options, type:
+
+@verbatim
+  ./waf -- help
+@end verbatim
+
+We'll use some of the testing-related commands in the next section.
 
 Okay, sorry, I made you build the @command{ns-3} part of the system twice,
 but now you know how to change the configuration and build optimized code.
@@ -518,7 +538,7 @@ a regression test, you can do the following:
 
 @verbatim
   cd build/debug/regression/traces/second.ref
-  tcpdump -nn -tt -r second-1-1.pcap
+  tcpdump -nn -tt -r second-2-0.pcap
 @end verbatim
 
 The output should be clear to anyone who is familiar with tcpdump or net

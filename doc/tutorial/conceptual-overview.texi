@@ -446,12 +446,12 @@ to what we call an @code{Attribute} of the @code{PointToPointNetDevice}.
 If you look at the Doxygen for class @code{ns3::PointToPointNetDevice} and 
 find the documentation for the @code{GetTypeId} method, you will find a list
 of  @code{Attributes} defined for the device.  Among these is the ``DataRate''
-attribute.  Most user-visible @command{ns-3} objects have similar lists of 
-attributes.  We use this mechanism to easily configure simulations without
+@code{Attribute}.  Most user-visible @command{ns-3} objects have similar lists of 
+@code{Attributes}.  We use this mechanism to easily configure simulations without
 recompiling as you will see in a following section.
 
 Similar to the ``DataRate'' on the @code{PointToPointNetDevice} you will find a
-``Delay'' attribute associated with the @code{PointToPointChannel}.  The 
+``Delay'' @code{Attribute} associated with the @code{PointToPointChannel}.  The 
 final line,
 
 @verbatim
@@ -487,8 +487,9 @@ is created.  For each node in the @code{NodeContainer} (there must be exactly
 two for a point-to-point link) a @code{PointToPointNetDevice} is created and 
 saved in the device container.  A @code{PointToPointChannel} is created and 
 the two @code{PointToPointNetDevices} are attached.  When objects are created
-by the @code{PointToPointHelper}, the attributes previously set in the helper
-are used to initialize the corresponding attributes in the created objects.
+by the @code{PointToPointHelper}, the @code{Attributes} previously set in the 
+helper are used to initialize the corresponding @code{Attributes} in the 
+created objects.
 
 After executing the @code{pointToPoint.Install (nodes)} call we will have
 two nodes, each with an installed point-to-point net device and a 
@@ -575,13 +576,13 @@ created.
 The first line of code in the above snippet declares the 
 @code{UdpEchoServerHelper}.  As usual, this isn't the application itself, it
 is an object used to help us create the actual applications.  One of our 
-conventions is to place required attributes in the helper constructor.  In this
-case, the helper can't do anything useful unless it is provided with a port
-number that the client also knows about.  Rather than just picking one and
-hoping it all works out, we require the port number as a parameter to the 
+conventions is to place required @code{Attributes} in the helper constructor.
+In this case, the helper can't do anything useful unless it is provided with
+a port number that the client also knows about.  Rather than just picking one 
+and hoping it all works out, we require the port number as a parameter to the 
 constructor.  The constructor, in turn, simply does a @code{SetAttribute}
-with the passed value.  You can, if desired, set the ``Port'' attribute to
-another value later.
+with the passed value.  You can, if desired, set the ``Port'' @code{Attribute}
+to another value later.
 
 Similar to many other helper objects, the @code{UdpEchoServerHelper} object 
 has an @code{Install} method.  It is the execution of this method that actually
@@ -634,12 +635,12 @@ that is managed by an @code{UdpEchoClientHelper}.
     clientApps.Stop (Seconds (10.0));
 @end verbatim
 
-For the echo client, however, we need to set five different attributes.  The 
-first two attributes are set during construction of the 
+For the echo client, however, we need to set five different @code{Attributes}.
+The first two @code{Attributes} are set during construction of the 
 @code{UdpEchoClientHelper}.  We pass parameters that are used (internally to
-the helper) to set the ``RemoteAddress'' and ``RemotePort'' attributes in
-accordance with our convention to make required attributes parameters in the 
-helper constructors.  
+the helper) to set the ``RemoteAddress'' and ``RemotePort'' @code{Attributes}
+in accordance with our convention to make required @code{Attributes} parameters
+in the helper constructors.  
 
 Recall that we used an @code{Ipv4InterfaceContainer} to keep track of the IP 
 addresses we assigned to our devices.  The zeroth interface in the 
@@ -651,12 +652,12 @@ are creating the helper and telling it so set the remote address of the client
 to be  the IP address assigned to the node on which the server resides.  We 
 also tell it to arrange to send packets to port nine.
 
-The ``MaxPackets'' attribute tells the client the maximum number of packets 
-we allow it to send during the simulation.  The ``Interval'' attribute tells
-the client how long to wait between packets, and the ``PacketSize'' attribute
-tells the client how large its packet payloads should be.  With this 
-particular combination of attributes, we are telling the client to send one 
-1024-byte packet.
+The ``MaxPackets'' @code{Attribute} tells the client the maximum number of 
+packets we allow it to send during the simulation.  The ``Interval'' 
+@code{Attribute} tells the client how long to wait between packets, and the
+``PacketSize'' @code{Attribute} tells the client how large its packet payloads
+should be.  With this particular combination of @code{Attributes}, we are 
+telling the client to send one 1024-byte packet.
 
 Just as in the case of the echo server, we tell the echo client to @code{Start}
 and @code{Stop}, but here we start the client one second after the server is

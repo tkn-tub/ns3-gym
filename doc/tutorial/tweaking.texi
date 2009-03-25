@@ -93,7 +93,7 @@ to get our bearings, go ahead and run the script just as you did previously,
 
 @verbatim
   ./waf --run scratch/myfirst
-@end verbtim
+@end verbatim
 
 You should see the now familiar output of the first @command{ns-3} example
 program
@@ -438,10 +438,10 @@ in the following code,
 @end verbatim
 
 This simple two line snippet is actually very useful by itself.  It opens the
-door to the @command{ns-3} global variable and attribute systems.  Go ahead 
-and add that two lines of code to the @code{scratch/first.cc} script at the 
-start of @code{main}.  Go ahead and build the script and run it, but ask the script 
-for help in the following way,
+door to the @command{ns-3} global variable and @code{Attribute} systems.  Go 
+ahead and add that two lines of code to the @code{scratch/first.cc} script at
+the start of @code{main}.  Go ahead and build the script and run it, but ask 
+the script for help in the following way,
 
 @verbatim
   ./waf --run "scratch/myfirst --PrintHelp"
@@ -464,7 +464,7 @@ now see the @code{--PrintHelp} argument and respond with,
 @end verbatim
 
 Let's focus on the @code{--PrintAttributes} option.  We have already hinted
-at the @command{ns-3} attribute system while walking through the 
+at the @command{ns-3} @code{Attribute} system while walking through the 
 @code{first.cc} script.  We looked at the following lines of code,
 
 @verbatim
@@ -475,17 +475,17 @@ at the @command{ns-3} attribute system while walking through the
 
 and mentioned that @code{DataRate} was actually an @code{Attribute} of the 
 @code{PointToPointNetDevice}.  Let's use the command line argument parser
-to take a look at the attributes of the PointToPointNetDevice.  The help
+to take a look at the @code{Attributes} of the PointToPointNetDevice.  The help
 listing says that we should provide a @code{TypeId}.  This corresponds to the
-class name of the class to which the attributes belong.  In this case it will
-be @code{ns3::PointToPointNetDevice}.  Let's go ahead and type in,
+class name of the class to which the @code{Attributes} belong.  In this case it
+will be @code{ns3::PointToPointNetDevice}.  Let's go ahead and type in,
 
 @verbatim
   ./waf --run "scratch/myfirst --PrintAttributes=ns3::PointToPointNetDevice"
 @end verbatim
 
-The system will print out all of the attributes of this kind of net device.
-Among the attributes you will see listed is,
+The system will print out all of the @code{Attributes} of this kind of net device.
+Among the @code{Attributes} you will see listed is,
 
 @verbatim
   --ns3::PointToPointNetDevice::DataRate=[32768bps]:
@@ -493,7 +493,7 @@ Among the attributes you will see listed is,
 @end verbatim
 
 This is the default value that will be used when a @code{PointToPointNetDevice}
-is created in the system.  We overrode this default with the attribute
+is created in the system.  We overrode this default with the @code{Attribute}
 setting in the @code{PointToPointHelper} above.  Let's use the default values 
 for the point-to-point devices and channels by deleting the 
 @code{SetDeviceAttribute} call and the @code{SetChannelAttribute} call from 
@@ -558,7 +558,7 @@ the formula implied by the help item:
   ./waf --run "scratch/myfirst --ns3::PointToPointNetDevice::DataRate=5Mbps"
 @end verbatim
 
-This will set the default value of the @code{DataRate} attribute back to 
+This will set the default value of the @code{DataRate} @code{Attribute} back to 
 five megabits per second.  Are you surprised by the result?  It turns out that
 in order to get the original behavior of the script back, we will have to set 
 the speed-of-light delay of the channel as well.  We can ask the command line 
@@ -569,7 +569,7 @@ the net device:
   ./waf --run "scratch/myfirst --PrintAttributes=ns3::PointToPointChannel"
 @end verbatim
 
-We discover the @code{Delay} attribute of the channel is set in the following
+We discover the @code{Delay} @code{Attribute} of the channel is set in the following
 way:
 
 @verbatim
@@ -603,12 +603,12 @@ in which case we recover the timing we had when we explicitly set the
 @end verbatim
 
 Note that the packet is again received by the server at 2.00369 seconds.  We 
-could actually set any of the attributes used in the script in this way.  In
-particular we could set the @code{UdpEchoClient} attribute @code{MaxPackets} 
+could actually set any of the @code{Attributes} used in the script in this way.
+In particular we could set the @code{UdpEchoClient Attribute MaxPackets} 
 to some other value than one.
 
 How would you go about that?  Give it a try.  Remember you have to comment 
-out the place we override the default attribute in the script.  Then you 
+out the place we override the default @code{Attribute} in the script.  Then you 
 have to rebuild the script using the default.  You will also have to find the
 syntax for actually setting the new default atribute value using the command
 line help facility.  Once you have this figured out you should be able to
@@ -649,11 +649,11 @@ start with the following code,
 @end verbatim
 
 Scroll down to the point in the script where we set the @code{MaxPackets}
-attribute and change it so that it is set to the variable @code{nPackets}
+@code{Attribute} and change it so that it is set to the variable @code{nPackets}
 instead of the constant @code{1} as is shown below.
 
 @verbatim
-  echoClient.SetAppAttribute ("MaxPackets", UintegerValue (nPackets));
+  echoClient.SetAttribute ("MaxPackets", UintegerValue (nPackets));
 @end verbatim
 
 Now if you run the script and provide the @code{--PrintHelp} argument, you 
@@ -708,11 +708,11 @@ You should now see
 You have now echoed two packets.
 
 You can see that if you are an @command{ns-3} user, you can use the command 
-line argument system to control global values and attributes.  If you are a 
-model author, you can add new attributes to your Objects and they will 
-automatically be available for setting by your users through the command line
-system.  If you are a script author, you can add new variables to your scripts
-and hook them into the command line system quite painlessly.
+line argument system to control global values and @code{Attributes}.  If you are
+a model author, you can add new @code{Attributes} to your @code{Objects} and 
+they will automatically be available for setting by your users through the
+command line system.  If you are a script author, you can add new variables to 
+your scripts and hook them into the command line system quite painlessly.
 
 @c ========================================================================
 @c Using the Tracing System
@@ -927,7 +927,7 @@ device on the node with the echo server. I have reproduced that event below.
 @verbatim
   00 r 
   01 2.25732 
-  02 /NodeList/1/DeviceList/0/$ns3::PointToPointNetDevice/Rx 
+  02 /NodeList/1/DeviceList/0/$ns3::PointToPointNetDevice/MacRx 
   03 ns3::PppHeader (
   04   Point-to-Point Protocol: IP (0x0021)) 
   05   ns3::Ipv4Header (
