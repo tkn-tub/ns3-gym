@@ -726,13 +726,7 @@ the @code{scratch} directory.
   ~/repos/ns-3-dev > cp examples/first.cc scratch/myfirst.cc
 @end verbatim
 
-Warning:  We use the file @code{first.cc} as one of our regression tests to
-verify that it works exactly as we expect.  This means that an executable
-named @code{first} already exists in the project.  If you want to execute
-what you compile, and not a previously compiled program, please do the 
-renaming suggested below.)
-
-Now build your example using Waf:
+Now build your first example script using waf:
 
 @verbatim
   ./waf
@@ -742,7 +736,7 @@ You should see messages reporting that your @code{myfirst} example was built
 successfully.
 
 @verbatim
-  Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
+  Entering directory `repos/ns-3-allinone-dev/ns-3-dev/build'
   [563/648] cxx: scratch/myfirst.cc -> build/debug/scratch/myfirst_3.o
   [646/648] cxx_link: build/debug/scratch/myfirst_3.o -> build/debug/scratch/myfirst
   Build finished successfully (00:00:02)
@@ -758,7 +752,7 @@ directory you must run it out of the scratch directory):
 You should see some output:
 
 @verbatim
-  Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
+  Entering directory `repos/ns-3-allinone-dev/ns-3-dev/build'
   Build finished successfully (00:00:00)
   Sent 1024 bytes to 10.1.1.2
   Received 1024 bytes from 10.1.1.1

@@ -99,7 +99,7 @@ You should see the now familiar output of the first @command{ns-3} example
 program
 
 @verbatim
-  Entering directory `/home/craigdo/repos/ns-3-dev/build'
+  Entering directory `repos/ns-3-dev/build'
   Compilation finished successfully
   Sent 1024 bytes to 10.1.1.2
   Received 1024 bytes from 10.1.1.1
@@ -148,7 +148,7 @@ you run the script with NS_LOG set this way, the @command{ns-3} logging
 system will pick up the change and you should see the following output:
 
 @verbatim
-  Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
+  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
   Build finished successfully (00:00:00)
   UdpEchoClientApplication:UdpEchoClient()
   UdpEchoClientApplication:StartApplication()
@@ -201,7 +201,7 @@ that every message from the given log component is prefixed with the component
 name.
 
 @verbatim
-  Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
+  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
   Build finished successfully (00:00:00)
   UdpEchoClientApplication:UdpEchoClient()
   UdpEchoClientApplication:StartApplication()
@@ -236,7 +236,7 @@ echo client and server applications.  You may see that this can be very useful
 in debugging problems.
 
 @verbatim
-  Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
+  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
   Build finished successfully (00:00:00)
   UdpEchoServerApplication:UdpEchoServer()
   UdpEchoClientApplication:UdpEchoClient()
@@ -269,7 +269,7 @@ Again, you will have to remove the newline above.  If you run the script now,
 you should see the following output:
 
 @verbatim
-  Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
+  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
   Build finished successfully (00:00:00)
   0s UdpEchoServerApplication:UdpEchoServer()
   0s UdpEchoClientApplication:UdpEchoClient()
@@ -399,7 +399,7 @@ If you now run the script you will see your new ``Creating Topology'' log
 message,
 
 @verbatim
-  Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
+  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
   Build finished successfully (00:00:00)
   Creating Topology
   Sent 1024 bytes to 10.1.1.2
@@ -453,7 +453,7 @@ sort out which program gets which argument.  The command line parser will
 now see the @code{--PrintHelp} argument and respond with,
 
 @verbatim
-  Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
+  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
   Build finished successfully (00:00:00)
   --PrintHelp: Print this help message.
   --PrintGroups: Print the list of groups.
@@ -589,7 +589,7 @@ in which case we recover the timing we had when we explicitly set the
 @code{DataRate} and @code{Delay} in the script:
 
 @verbatim
-  Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
+  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
   Build finished successfully (00:00:00)
   0s UdpEchoServerApplication:UdpEchoServer()
   1s UdpEchoServerApplication:StartApplication()
@@ -666,7 +666,7 @@ Try,
 @end verbatim
 
 @verbatim
-  Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
+  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
   Build finished successfully (00:00:00)
   --PrintHelp: Print this help message.
   --PrintGroups: Print the list of groups.
@@ -688,7 +688,7 @@ setting the @code{--nPackets} argument in the command line,
 You should now see
 
 @verbatim
-  Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
+  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
   Build finished successfully (00:00:00)
   0s UdpEchoServerApplication:UdpEchoServer()
   1s UdpEchoServerApplication:StartApplication()

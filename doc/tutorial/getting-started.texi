@@ -446,7 +446,7 @@ You should see a report from each unit test that executes indicating that the
 test has passed.
 
 @verbatim
-  Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
   Build finished successfully (00:00:00)
   -- Running NS-3 C++ core unit tests...
   PASS AddressHelper
@@ -499,7 +499,7 @@ You should see messages indicating that many tests are being run and are
 passing.
 
 @verbatim
-  Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
   [647/669] regression-test (test-csma-bridge)
   [648/669] regression-test (test-csma-broadcast)
   [649/669] regression-test (test-csma-multicast)
