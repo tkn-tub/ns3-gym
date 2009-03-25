@@ -16,162 +16,44 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Authors: Kirill Andreev <andreev@iitp.ru>
- *          Aleksey Kovalenko <kovalenko@iitp.ru>
- *          Pavel Boyko <boyko@iitp.ru>
  */
 
 
-#include "ns3/hwmp.h"
+#include "hwmp-protocol.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/mesh-point-device.h"
 
-NS_LOG_COMPONENT_DEFINE ("Hwmp");
+NS_LOG_COMPONENT_DEFINE ("HwmpProtocol");
 
 namespace ns3 {
+namespace dot11s {
 
-NS_OBJECT_ENSURE_REGISTERED (Hwmp);
-NS_OBJECT_ENSURE_REGISTERED (HwmpTag);
-//Class HwmpTag:
-HwmpTag::HwmpTag ()
-{
-}
-
-HwmpTag::~HwmpTag ()
-{
-}
-
-void
-HwmpTag::SetAddress (Mac48Address retransmitter)
-{
-  m_address = retransmitter;
-}
-
-Mac48Address
-HwmpTag::GetAddress ()
-{
-  return m_address;
-}
-
-void
-HwmpTag::SetTtl (uint8_t ttl)
-{
-  m_ttl = ttl;
-}
-
-uint8_t
-HwmpTag::GetTtl ()
-{
-  return m_ttl;
-}
-
-void
-HwmpTag::SetMetric (uint32_t metric)
-{
-  m_metric = metric;
-}
-
-uint32_t
-HwmpTag::GetMetric ()
-{
-  return m_metric;
-}
-
-void
-HwmpTag::SetSeqno (uint32_t seqno)
-{
-  m_seqno = seqno;
-}
-
-uint32_t
-HwmpTag::GetSeqno ()
-{
-  return m_seqno;
-}
-
-TypeId
-HwmpTag::GetTypeId ()
-{
-  static TypeId tid = TypeId ("ns3::HwmpTag")
-                      .SetParent<Tag> ()
-                      .AddConstructor<HwmpTag> ()
-                      ;
-  return tid;
-}
-
-TypeId
-HwmpTag::GetInstanceTypeId () const
-{
-  return GetTypeId ();
-}
-
-uint32_t
-HwmpTag::GetSerializedSize () const
-{
-  return  6 //address
-         +1 //ttl
-         +4; //metric
-}
-
-void
-HwmpTag::Serialize (TagBuffer i) const
-{
-  uint8_t address[6];
-  int j;
-  m_address.CopyTo (address);
-  i.WriteU8 (m_ttl);
-  i.WriteU32 (m_metric);
-  for (j = 0; j < 6; j ++)
-    i.WriteU8 (address[j]);
-}
-
-void
-HwmpTag::Deserialize (TagBuffer i)
-{
-  uint8_t address[6];
-  int j;
-  m_ttl = i.ReadU8 ();
-  m_metric = i.ReadU32 ();
-  for (j = 0; j < 6; j ++)
-    address[j] = i.ReadU8 ();
-  m_address.CopyFrom (address);
-}
-
-void
-HwmpTag::Print (std::ostream &os) const
-{
-  os << "address=" << m_address;
-  os << "ttl="  <<  m_ttl;
-  os << "metrc=" << m_metric;
-}
-void
-HwmpTag::DecrementTtl ()
-{
-  m_ttl --;
-}
+NS_OBJECT_ENSURE_REGISTERED (HwmpProtocol);
 //Class HWMP:
 TypeId
-Hwmp::GetTypeId ()
+HwmpProtocol::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::Hwmp")
+  static TypeId tid = TypeId ("ns3::HwmpProtocol")
                       .SetParent<MeshL2RoutingProtocol> ()
-                      .AddConstructor<Hwmp> ();
+                      .AddConstructor<HwmpProtocol> ();
   return tid;
 }
-Hwmp::Hwmp ():
-    m_rtable (CreateObject<HwmpRtable> ()),
-    m_maxTtl (32),
-    m_broadcastPerr (false)
+HwmpProtocol::HwmpProtocol ()//:
+//    m_rtable (CreateObject<HwmpRtable> ()),
+//    m_maxTtl (32),
+//    m_broadcastPerr (false)
 {
 }
 
-Hwmp::~Hwmp ()
+HwmpProtocol::~HwmpProtocol ()
 {
 }
 
 void
-Hwmp::DoDispose ()
+HwmpProtocol::DoDispose ()
 {
+#if 0
   for (std::map<Mac48Address, EventId>::iterator i = m_timeoutDatabase.begin (); i != m_timeoutDatabase.end(); i ++)
     i->second.Cancel ();
   m_timeoutDatabase.clear ();
@@ -201,10 +83,11 @@ Hwmp::DoDispose ()
   for (unsigned int i = 0; i < m_hwmpStates.size (); i ++)
     m_hwmpStates[i] = 0;
   m_hwmpStates.clear ();
+#endif
 }
 
 bool
-Hwmp::RequestRoute (
+HwmpProtocol::RequestRoute (
   uint32_t sourceIface,
   const Mac48Address source,
   const Mac48Address destination,
@@ -213,8 +96,9 @@ Hwmp::RequestRoute (
   MeshL2RoutingProtocol::RouteReplyCallback routeReply
 )
 {
+#if 0
   HwmpRtable::LookupResult result;
-  HwmpTag tag;
+  HwmpProtocolTag tag;
   if (sourceIface == GetMeshPoint ()->GetIfIndex())
     // packet from level 3
     {
@@ -343,11 +227,13 @@ Hwmp::RequestRoute (
         result.ifIndex
       );
     }
+#endif
   return true;
 }
 bool
-Hwmp::AttachPorts (std::vector<Ptr<NetDevice> > ports)
+HwmpProtocol::AttachPorts (std::vector<Ptr<NetDevice> > ports)
 {
+#if 0
   for (std::vector<Ptr<NetDevice> >::iterator i = ports.begin (); i != ports.end(); i++)
     {
       //Checking netdevice:
@@ -358,30 +244,31 @@ Hwmp::AttachPorts (std::vector<Ptr<NetDevice> > ports)
       if (meshWifiMac == NULL)
         return false;
       //Adding HWMP-state
-      Ptr<HwmpState> hwmpState = CreateObject<HwmpState> ();
-      hwmpState->SetRoutingInfoCallback (MakeCallback(&Hwmp::ObtainRoutingInformation, this));
+      Ptr<HwmpProtocolState> hwmpState = CreateObject<HwmpProtocolState> ();
+      hwmpState->SetRoutingInfoCallback (MakeCallback(&HwmpProtocol::ObtainRoutingInformation, this));
       hwmpState->SetMac (meshWifiMac);
-      hwmpState->SetRequestRouteCallback (MakeCallback(&Hwmp::RequestRouteForAddress, this));
-      hwmpState->SetRequestRootPathCallback (MakeCallback(&Hwmp::RequestRootPathForPort, this));
+      hwmpState->SetRequestRouteCallback (MakeCallback(&HwmpProtocol::RequestRouteForAddress, this));
+      hwmpState->SetRequestRootPathCallback (MakeCallback(&HwmpProtocol::RequestRootPathForPort, this));
       hwmpState->SetAssociatedIfaceId (wifiNetDev->GetIfIndex());
-      hwmpState->SetRetransmittersOfPerrCallback (MakeCallback(&Hwmp::GetRetransmittersForFailedDestinations,this));
+      hwmpState->SetRetransmittersOfPerrCallback (MakeCallback(&HwmpProtocol::GetRetransmittersForFailedDestinations,this));
       m_hwmpStates.push_back (hwmpState);
-      m_requestCallback.push_back (MakeCallback(&HwmpState::RequestDestination, hwmpState));
-      m_pathErrorCallback.push_back (MakeCallback(&HwmpState::SendPathError, hwmpState));
+      m_requestCallback.push_back (MakeCallback(&HwmpProtocolState::RequestDestination, hwmpState));
+      m_pathErrorCallback.push_back (MakeCallback(&HwmpProtocolState::SendPathError, hwmpState));
       //Default mode is reactive, default state is enabled
       enum DeviceState state = ENABLED;
       enum DeviceMode  mode  = REACTIVE;
       m_states.push_back (state);
       m_modes.push_back (mode);
     }
+#endif
   return true;
 }
-
+#if 0
 void
-Hwmp::DisablePort (uint32_t port)
+HwmpProtocol::DisablePort (uint32_t port)
 {
   int position = 0;
-  for (std::vector<Ptr<HwmpState> >::iterator i = m_hwmpStates.begin (); i != m_hwmpStates.end(); i++)
+  for (std::vector<Ptr<HwmpProtocolState> >::iterator i = m_hwmpStates.begin (); i != m_hwmpStates.end(); i++)
     {
       if ((*i)->GetAssociatedIfaceId () == port)
         {
@@ -394,10 +281,10 @@ Hwmp::DisablePort (uint32_t port)
 }
 
 void
-Hwmp::EnablePort (uint32_t port)
+HwmpProtocol::EnablePort (uint32_t port)
 {
   int position = 0;
-  for (std::vector<Ptr<HwmpState> >::iterator i = m_hwmpStates.begin (); i != m_hwmpStates.end(); i++)
+  for (std::vector<Ptr<HwmpProtocolState> >::iterator i = m_hwmpStates.begin (); i != m_hwmpStates.end(); i++)
     {
       if ((*i)->GetAssociatedIfaceId () == port)
         {
@@ -410,10 +297,10 @@ Hwmp::EnablePort (uint32_t port)
 }
 
 void
-Hwmp::SetRoot (uint32_t port)
+HwmpProtocol::SetRoot (uint32_t port)
 {
   int position = 0;
-  for (std::vector<Ptr<HwmpState> >::iterator i = m_hwmpStates.begin (); i != m_hwmpStates.end(); i++)
+  for (std::vector<Ptr<HwmpProtocolState> >::iterator i = m_hwmpStates.begin (); i != m_hwmpStates.end(); i++)
     {
       if (((*i)->GetAssociatedIfaceId () == port)||(port == HwmpRtable::PORT_ANY))
         {
@@ -427,10 +314,10 @@ Hwmp::SetRoot (uint32_t port)
     }
 }
 void
-Hwmp::SetProactive (uint32_t port)
+HwmpProtocol::SetProactive (uint32_t port)
 {
   int position = 0;
-  for (std::vector<Ptr<HwmpState> >::iterator i = m_hwmpStates.begin (); i != m_hwmpStates.end(); i++)
+  for (std::vector<Ptr<HwmpProtocolState> >::iterator i = m_hwmpStates.begin (); i != m_hwmpStates.end(); i++)
     {
       if ((*i)->GetAssociatedIfaceId () == port)
         {
@@ -441,10 +328,10 @@ Hwmp::SetProactive (uint32_t port)
     }
 }
 bool
-Hwmp::IsRoot (uint32_t port)
+HwmpProtocol::IsRoot (uint32_t port)
 {
   int position = 0;
-  for (std::vector<Ptr<HwmpState> >::iterator i = m_hwmpStates.begin (); i != m_hwmpStates.end(); i++)
+  for (std::vector<Ptr<HwmpProtocolState> >::iterator i = m_hwmpStates.begin (); i != m_hwmpStates.end(); i++)
     {
       if ((*i)->GetAssociatedIfaceId () == port)
         if (m_modes[position] == ROOT)
@@ -454,10 +341,10 @@ Hwmp::IsRoot (uint32_t port)
   return false;
 }
 void
-Hwmp::UnSetRoot (uint32_t port)
+HwmpProtocol::UnSetRoot (uint32_t port)
 {
   int position = 0;
-  for (std::vector<Ptr<HwmpState> >::iterator i = m_hwmpStates.begin (); i != m_hwmpStates.end(); i++)
+  for (std::vector<Ptr<HwmpProtocolState> >::iterator i = m_hwmpStates.begin (); i != m_hwmpStates.end(); i++)
     {
       if (((*i)->GetAssociatedIfaceId () == port)||(port == HwmpRtable::PORT_ANY))
         {
@@ -469,13 +356,13 @@ Hwmp::UnSetRoot (uint32_t port)
 }
 
 void
-Hwmp::ObtainRoutingInformation (
-  HwmpState::INFO info
+HwmpProtocol::ObtainRoutingInformation (
+  HwmpProtocolState::INFO info
 )
 {
   switch (info.type)
     {
-    case HwmpState::INFO_PREP:
+    case HwmpProtocolState::INFO_PREP:
       if (info.me != info.source)
         {
           m_rtable->AddPrecursor (info.source, info.outPort, info.nextHop);
@@ -483,7 +370,7 @@ Hwmp::ObtainRoutingInformation (
           NS_LOG_DEBUG ("path to "<<info.source<<" precursor is "<<info.nextHop);
           NS_LOG_DEBUG ("path to "<<info.destination<<" precursor is "<<info.prevHop);
         }
-    case HwmpState::INFO_PREQ:
+    case HwmpProtocolState::INFO_PREQ:
       m_rtable->AddReactivePath (
         info.destination,
         info.nextHop,
@@ -493,9 +380,9 @@ Hwmp::ObtainRoutingInformation (
         info.dsn);
       SendAllPossiblePackets (info.destination);
       break;
-    case HwmpState::INFO_PERR:
+    case HwmpProtocolState::INFO_PERR:
       //delete first subentry
-    case HwmpState::INFO_PROACTIVE:
+    case HwmpProtocolState::INFO_PROACTIVE:
       //add information to the root MP.
       m_rtable->AddProactivePath (
         info.metric,
@@ -507,7 +394,7 @@ Hwmp::ObtainRoutingInformation (
       //Set mode as PROACTIVE:
       SetProactive (info.outPort);
       break;
-    case HwmpState::INFO_NEW_PEER:
+    case HwmpProtocolState::INFO_NEW_PEER:
 #if 0
       m_rtable->AddReactivePath (
         info.destination,
@@ -518,7 +405,7 @@ Hwmp::ObtainRoutingInformation (
         0);
 #endif
       break;
-    case HwmpState::INFO_FAILED_PEER:
+    case HwmpProtocolState::INFO_FAILED_PEER:
       /**
        * Conditions for generating PERR
        */
@@ -542,19 +429,19 @@ Hwmp::ObtainRoutingInformation (
 }
 
 HwmpRtable::LookupResult
-Hwmp::RequestRouteForAddress (const Mac48Address& dst)
+HwmpProtocol::RequestRouteForAddress (const Mac48Address& dst)
 {
   return m_rtable->LookupReactive (dst);
 }
 
 HwmpRtable::LookupResult
-Hwmp::RequestRootPathForPort (uint32_t port)
+HwmpProtocol::RequestRootPathForPort (uint32_t port)
 {
   return m_rtable->LookupProactive (port);
 }
 
 void
-Hwmp::StartPathErrorProcedure (std::vector<HwmpRtable::FailedDestination> destinations, uint32_t port)
+HwmpProtocol::StartPathErrorProcedure (std::vector<HwmpRtable::FailedDestination> destinations, uint32_t port)
 {
   NS_LOG_DEBUG ("START PERR");
   for (unsigned int i  = 0; i < m_hwmpStates.size (); i++)
@@ -562,7 +449,7 @@ Hwmp::StartPathErrorProcedure (std::vector<HwmpRtable::FailedDestination> destin
       m_pathErrorCallback[i] (destinations);
 }
 std::vector<Mac48Address>
-Hwmp::GetRetransmittersForFailedDestinations (std::vector<HwmpRtable::FailedDestination> failedDest, uint32_t port)
+HwmpProtocol::GetRetransmittersForFailedDestinations (std::vector<HwmpRtable::FailedDestination> failedDest, uint32_t port)
 {
   std::vector<Mac48Address> retransmitters;
   if (m_broadcastPerr)
@@ -587,25 +474,27 @@ Hwmp::GetRetransmittersForFailedDestinations (std::vector<HwmpRtable::FailedDest
     }
   return retransmitters;
 }
+#endif
 void
-Hwmp::SetMaxQueueSize (int maxPacketsPerDestination)
+HwmpProtocol::SetMaxQueueSize (int maxPacketsPerDestination)
 {
-  m_maxQueueSize = maxPacketsPerDestination;
 }
-
 bool
-Hwmp::QueuePacket (MeshL2RoutingProtocol::QueuedPacket packet)
+HwmpProtocol::QueuePacket (MeshL2RoutingProtocol::QueuedPacket packet)
 {
+#if 0
   if ((int)m_rqueue[packet.dst].size () > m_maxQueueSize)
     return false;
   m_rqueue[packet.dst].push (packet);
+#endif
   return true;
 }
 
 MeshL2RoutingProtocol::QueuedPacket
-Hwmp::DequeuePacket (Mac48Address dst)
+HwmpProtocol::DequeuePacket (Mac48Address dst)
 {
   MeshL2RoutingProtocol::QueuedPacket retval;
+#if 0
   retval.pkt = NULL;
   //Ptr<Packet> in this structure is NULL when queue is empty
   std::map<Mac48Address, std::queue<QueuedPacket> >:: iterator i = m_rqueue.find (dst);
@@ -620,12 +509,13 @@ Hwmp::DequeuePacket (Mac48Address dst)
     }
   retval = m_rqueue[dst].front ();
   m_rqueue[dst].pop ();
+#endif
   return retval;
 }
-
 void
-Hwmp::SendAllPossiblePackets (Mac48Address dst)
+HwmpProtocol::SendAllPossiblePackets (Mac48Address dst)
 {
+#if 0
   HwmpRtable::LookupResult result = m_rtable->LookupReactive (dst);
   MeshL2RoutingProtocol::QueuedPacket packet;
   while (1)
@@ -635,7 +525,7 @@ Hwmp::SendAllPossiblePackets (Mac48Address dst)
       if (packet.pkt == NULL)
         return;
       //set RA tag for retransmitter:
-      HwmpTag tag;
+      HwmpProtocolTag tag;
       NS_ASSERT (packet.pkt->FindFirstMatchingTag(tag));
       tag.SetAddress (result.retransmitter);
       NS_ASSERT (result.retransmitter != Mac48Address::GetBroadcast());
@@ -643,23 +533,24 @@ Hwmp::SendAllPossiblePackets (Mac48Address dst)
       packet.pkt->AddTag (tag);
       packet.reply (true, packet.pkt, packet.src, packet.dst, packet.protocol, result.ifIndex);
     }
+#endif
 }
-
+#if 0
 bool
-Hwmp::ShouldSendPreq (Mac48Address dst)
+HwmpProtocol::ShouldSendPreq (Mac48Address dst)
 {
   std::map<Mac48Address, EventId>::iterator i = m_timeoutDatabase.find (dst);
   if (i == m_timeoutDatabase.end ())
     {
       m_timeoutDatabase[dst] = Simulator::Schedule (
                                  MilliSeconds (2*(dot11sParameters::dot11MeshHWMPnetDiameterTraversalTime.GetMilliSeconds())),
-                                 &Hwmp::RetryPathDiscovery, this, dst, 0);
+                                 &HwmpProtocol::RetryPathDiscovery, this, dst, 0);
       return true;
     }
   return false;
 }
 void
-Hwmp::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
+HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
 {
   HwmpRtable::LookupResult result = m_rtable->LookupReactive (dst);
   if (result.retransmitter != Mac48Address::GetBroadcast ())
@@ -691,6 +582,8 @@ Hwmp::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
       m_requestCallback[i] (dst);
   m_timeoutDatabase[dst] = Simulator::Schedule (
                              MilliSeconds (2*(dot11sParameters::dot11MeshHWMPnetDiameterTraversalTime.GetMilliSeconds())),
-                             &Hwmp::RetryPathDiscovery, this, dst, numOfRetry);
+                             &HwmpProtocol::RetryPathDiscovery, this, dst, numOfRetry);
 }
+#endif
+} //namespace dot11s
 } //namespace ns3

@@ -16,8 +16,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Authors: Kirill Andreev <andreev@iitp.ru>
- *          Aleksey Kovalenko <kovalenko@iitp.ru>
- *          Pavel Boyko <boyko@iitp.ru>
  */
 
 
@@ -27,66 +25,21 @@
 #include <map>
 #include <queue>
 #include "ns3/tag.h"
-#include "ns3/object.h"
 #include "ns3/mac48-address.h"
 #include "ns3/mesh-l2-routing-protocol.h"
 #include "ns3/packet.h"
-#include "ns3/hwmp-state.h"
 namespace ns3 {
-class HwmpState;
-/**
- * \ingroup mesh
- *
- * \brief Hwmp tag implements interaction between HWMP
- * protocol and MeshWifiMac
- *
- * \details Hwmp tag keeps the following:
- * 1. When packet is passed from Hwmp to 11sMAC:
- *  - retransmitter address,
- *  - TTL value,
- * 2. When packet is passed to Hwmp from 11sMAC:
- *  - lasthop address,
- *  - TTL value,
- *  - metric value (metric of link is recalculated
- *  at each packet, but routing table stores metric
- *  obtained during path discovery procedure)
- */
-class HwmpTag : public Tag
-{
-public:
-  HwmpTag ();
-  ~HwmpTag ();
-  void  SetAddress (Mac48Address retransmitter);
-  Mac48Address GetAddress ();
-  void  SetTtl (uint8_t ttl);
-  uint8_t GetTtl ();
-  void  SetMetric (uint32_t metric);
-  uint32_t GetMetric ();
-  void  SetSeqno (uint32_t seqno);
-  uint32_t GetSeqno ();
-  void  DecrementTtl ();
-
-  static  TypeId  GetTypeId ();
-  virtual TypeId  GetInstanceTypeId () const;
-  virtual uint32_t GetSerializedSize () const;
-  virtual void  Serialize (TagBuffer i) const;
-  virtual void  Deserialize (TagBuffer i);
-  virtual void  Print (std::ostream &os) const;
-private:
-  Mac48Address m_address;
-  uint8_t  m_ttl;
-  uint32_t m_metric;
-  uint32_t m_seqno;
-};
+class NetDevice;
+namespace dot11s {
 /**
  * \ingroup mesh
  */
-class Hwmp : public MeshL2RoutingProtocol
+class HwmpProtocol : public MeshL2RoutingProtocol
 {
 public:
   static TypeId GetTypeId ();
-  Hwmp ();
-  ~Hwmp ();
+  HwmpProtocol ();
+  ~HwmpProtocol ();
   void DoDispose ();
   //intheritedfrom L2RoutingProtocol
   /**
@@ -115,6 +68,7 @@ public:
     MeshL2RoutingProtocol::RouteReplyCallback  routeReply
   );
   bool AttachPorts (std::vector<Ptr<NetDevice> >);
+#if 0
   /**
    * \brief Disables port by index.
    * \details Needed for external modules like
@@ -150,30 +104,32 @@ public:
    */
   void UnSetRoot (uint32_t port);
   /**
-   * \brief HwmpState retrns to Hwmp class all
+   * \brief HwmpProtocolState retrns to HwmpProtocol class all
    * routing information obtained from all HWMP
    * action frames
    */
   void ObtainRoutingInformation (
-    HwmpState::INFO info
+    HwmpProtocolState::INFO info
   );
   /**
-   * \brief Hwmp state noyifyes that neighbour
-   * is dissapeared. Hwmp state knows about peer
+   * \brief HwmpProtocol state noyifyes that neighbour
+   * is dissapeared. HwmpProtocol state knows about peer
    * failure from MAC
    */
   void PeerFailure (Mac48Address peerAddress);
   void SetMaxTtl (uint8_t ttl);
   uint8_t  GetMaxTtl ();
-private:
   static const uint32_t MAX_SEQNO = 0xffffffff;
+#endif
   //candidate queue is implemented inside the
   //protocol:
+private:
   void  SetMaxQueueSize (int maxPacketsPerDestination);
   int  m_maxQueueSize;
   bool  QueuePacket (MeshL2RoutingProtocol::QueuedPacket packet);
   MeshL2RoutingProtocol::QueuedPacket  DequeuePacket (Mac48Address dst);
   void  SendAllPossiblePackets (Mac48Address dst);
+#if 0
   std::map<Mac48Address, std::queue<QueuedPacket> >  m_rqueue;
   //devices and HWMP states:
   enum DeviceState {
@@ -187,7 +143,7 @@ private:
   };
   std::vector<enum DeviceState>  m_states;
   std::vector<enum DeviceMode>   m_modes;
-  std::vector<Ptr<HwmpState> >   m_hwmpStates;
+  std::vector<Ptr<HwmpProtocolState> >   m_hwmpStates;
   //Routing table:
   Ptr<HwmpRtable>  m_rtable;
   //Proactive routines:
@@ -205,7 +161,7 @@ private:
    */
   bool  IsRoot (uint32_t port);
   /**
-   * \brief Interaction with HwmpState class -
+   * \brief Interaction with HwmpProtocolState class -
    * request for starting routing discover
    * procedure (reactive route discovery!)
    * \param Mac48Address is destination to be
@@ -225,7 +181,7 @@ private:
     std::vector<HwmpRtable::FailedDestination> destinations,
     uint32_t port);
   /**
-   * \brief HwmpState need to know where to
+   * \brief HwmpProtocolState need to know where to
    * retransmit PERR, only HWMP knows how to
    * retransmit it (broadcast/unicast) and only
    * HWMP has accessto routing table
@@ -234,7 +190,7 @@ private:
     std::vector<HwmpRtable::FailedDestination> failedDest,
     uint32_t port);
   /**
-   * \brief Needed by HwmpState to find routes in case
+   * \brief Needed by HwmpProtocolState to find routes in case
    * of intermediate reply and choosing the
    * better route
    *
@@ -271,6 +227,8 @@ private:
    */
   uint8_t  m_maxTtl;
   bool     m_broadcastPerr;
+#endif
 };
+} //namespace dot11s
 } //namespace ns3
 #endif

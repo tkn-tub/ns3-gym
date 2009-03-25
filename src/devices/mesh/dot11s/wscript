@@ -16,7 +16,8 @@ def build(bld):
         'peer-management-protocol.cc',
         'hwmp-tag.cc',
         'hwmp-rtable.cc',
-        #'hwmp-protocol.cc',
+        #'hwmp-mac-plugin.cc',
+        'hwmp-protocol.cc',
         'dot11s-helper.cc',
         ]
     headers = bld.new_task_gen('ns3header')

@@ -22,15 +22,18 @@
 #ifndef HWMP_STATE_H
 #define HWMP_STATE_H
 #include <map>
-#include "ns3/hwmp-rtable.h"
+
+#include "ns3/mesh-wifi-interface-mac-plugin.h"
+
+#include "hwmp-rtable.h"
 #include "ns3/packet.h"
-#include "ns3/mesh-wifi-mac.h"
-#include "ns3/ie-dot11s-preq.h"
-#include "ns3/ie-dot11s-prep.h"
-#include "ns3/ie-dot11s-perr.h"
+#include "ie-dot11s-preq.h"
+#include "ie-dot11s-prep.h"
+#include "ie-dot11s-perr.h"
 #include "ns3/dot11s-parameters.h"
 #include "ns3/wifi-net-device.h"
 namespace ns3 {
+namespace dot11s {
 /**
  * \ingroup mesh
  *
@@ -43,11 +46,11 @@ namespace ns3 {
  *  3. Deliver routing information to Hwmp main class
  *  4. Notify about broken peers
  */
-class HwmpState : public Object {
+class HwmpMacPlugin : public MeshWifiInterfaceMacPlugin {
 public:
   static TypeId GetTypeId ();
-  HwmpState ();
-  ~HwmpState ();
+  HwmpMacPlugin ();
+  ~HwmpMacPlugin ();
 
   /**
    * \brief Interface with HWMP - Hwmp can only
@@ -175,5 +178,6 @@ private:
   //Configurable parameters:
   uint8_t  m_maxTtl;
 };
+} //namespace dot11s
 } //namespace ns3
 #endif
