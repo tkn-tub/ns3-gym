@@ -352,7 +352,7 @@ PeerManagerProtocol::GetNextBeaconShift (uint32_t interface)
   //                              3) hereafter TU = 1024 microseconds
   //Im my MAC everything is stored in MicroSeconds
 
-  uint32_t myNextTbttInTimeUnits = 0;
+  uint32_t myNextTbttInTimeUnits = Simulator::Now().GetMicroSeconds();
   uint32_t futureBeaconInTimeUnits = 0;
   //Going through all my timing elements and detecting future beacon collisions
   PeerLinksMap::iterator iface = m_peerLinks.find (interface);
@@ -410,7 +410,11 @@ PeerManagerProtocol::GetNextBeaconShift (uint32_t interface)
       int beaconShift = randomShift.GetInteger (1,15) * coefficientSign;
       NS_LOG_DEBUG ("Shift value = " << beaconShift << " beacon TUs");
       //We need the result not in Time Units, but in microseconds
-      return MicroSeconds (beaconShift * 1024);
+      //Do not shift to the past
+      if(MicroSeconds(beaconShift * 1024) + Simulator::Now() < myBeacon.first)
+        return MicroSeconds (beaconShift * 1024);
+      else
+        return MicroSeconds (0);
     }
   //No collision detected, hence no shift is needed
   else
