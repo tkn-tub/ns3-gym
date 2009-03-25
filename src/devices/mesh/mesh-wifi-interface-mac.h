@@ -94,7 +94,6 @@ public:
   
   ///\name Beacons
   //\{
-
   /// Set interval between two successive beacons
   void SetBeaconInterval (Time interval);
   /// \return interval between two beacons
@@ -113,24 +112,6 @@ public:
    * \attention User of ShiftTbtt () must take care to not shift it to the past. 
    */
   void ShiftTbtt (Time shift);
-  /**
-   * \brief Set maximum software delay. Maximum software delay must be smaller than beacon interval.
-   *
-   * Software delay models random small internal delay to avoid simultaneous operation of 
-   * different mesh points (e.g. on power on). 
-   * 
-   * Software delay is calculated as uniformely distributed random value between zero and
-   * given parameter. All management frames are sent after software delay is passed,
-   * for example, beacon is formed at software delay before putting it to the queue.
-   *
-   * \attention The software delay is supposed to be independent from traffic intensity.
-   * 
-   * \param delay is the maximum software delay.
-   */
-  void SetSoftwareDelay (Time delay);
-  /// \return Maximum software delay
-  Time GetSoftwareDelay ();
-
   //\}
   
   ///\name Plugins
