@@ -157,8 +157,6 @@ int main (int argc, char *argv[])
       wifiX += 20.0;
     }
 
-  GlobalRouteManager::PopulateRoutingTables ();
-
   Address dest;
   std::string protocol;
   if (sendIp)
