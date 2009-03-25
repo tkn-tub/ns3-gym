@@ -84,6 +84,7 @@ main (int argc, char *argv[])
                                  "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (nodes);
+  NS_LOG_UNCOND("start");
 #if 0
   // Setting Internet Stack:
   InternetStackHelper stack;

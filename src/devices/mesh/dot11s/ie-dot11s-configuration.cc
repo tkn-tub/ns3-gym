@@ -20,7 +20,7 @@
  */
 
 
-#include "ns3/ie-dot11s-configuration.h"
+#include "ie-dot11s-configuration.h"
 
 namespace ns3 {
 namespace dot11s {

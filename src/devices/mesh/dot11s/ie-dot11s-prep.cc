@@ -19,7 +19,7 @@
  */
 
 
-#include "ns3/ie-dot11s-prep.h"
+#include "ie-dot11s-prep.h"
 #include "ns3/address-utils.h"
 #include "ns3/node.h"
 #include "ns3/assert.h"

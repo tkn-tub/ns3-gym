@@ -26,13 +26,10 @@
 #include <map>
 #include "ns3/mac48-address.h"
 #include "ns3/mgt-headers.h"
-//#include "ns3/mesh-mgt-headers.h"
 #include "ns3/callback.h"
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
-#include "ns3/ie-dot11s-beacon-timing.h"
 #include "ns3/wifi-remote-station-manager.h"
-//#include "ns3/mesh-wifi-peer-manager.h"
 #include "ns3/wifi-mac.h"
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 #include "ns3/event-id.h"

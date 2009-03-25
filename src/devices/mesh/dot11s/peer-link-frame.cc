@@ -18,7 +18,7 @@
  * Authors: Kirill Andreev <andreev@iitp.ru>
  */
 
-#include "ns3/peer-link-frame.h"
+#include "peer-link-frame.h"
 #include "ns3/mesh-wifi-interface-mac.h"
 namespace ns3 {
 namespace dot11s {

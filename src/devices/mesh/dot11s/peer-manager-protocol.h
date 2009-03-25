@@ -111,9 +111,9 @@ public:
    * Checks if there is established link
    */
   bool IsActiveLink (uint32_t interface, Mac48Address peerAddress);
-  /**
-   * \}
-   */
+  ///\}
+  ///\brief Needed by external module to do MLME
+  Ptr<PeerLink> FindPeerLink(uint32_t interface, Mac48Address peerAddress);
 private:
   ///\name Private structures
   ///\{

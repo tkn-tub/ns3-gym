@@ -20,7 +20,7 @@
  */
 
 
-#include "ns3/ie-dot11s-peer-management.h"
+#include "ie-dot11s-peer-management.h"
 #include "ns3/assert.h"
 
 

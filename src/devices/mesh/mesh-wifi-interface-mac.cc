@@ -488,6 +488,8 @@ void
 MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
   // Process beacon
+  if((hdr->GetAddr1() != GetAddress()) && (hdr->GetAddr1() != Mac48Address::GetBroadcast()))
+    return;
   if (hdr->IsBeacon ())
     {
       MgtBeaconHeader beacon_hdr;
