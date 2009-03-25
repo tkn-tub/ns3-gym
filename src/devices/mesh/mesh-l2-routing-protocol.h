@@ -69,48 +69,39 @@ public:
    * 
    * \param uint32_t    outcoming interface to use or 0xffffffff if packet should be sent by ALL interfaces
    */
-  typedef Callback<void,                /* return type */
-                   bool,                /* flag */
-                   Ptr<Packet>,         /* packet */
-                   Mac48Address,        /* src */
-                   Mac48Address,        /* dst */
-                   uint16_t,            /* protocol */
-                   uint32_t             /* out interface ID */ 
+  typedef Callback<void,/* return type */
+          bool,        /* flag */
+          Ptr<Packet>, /* packet */
+          Mac48Address,/* src */
+          Mac48Address,/* dst */
+          uint16_t,    /* protocol */
+          uint32_t     /* out interface ID */ 
           > RouteReplyCallback;
   /**
    * Request routing information, all packets must go through this request.
    * 
    * Note that route discobery works async. -- RequestRoute returns immediately, while
    * reply callback will be called when routing information will be avaliable.
-   *  
    * \return true if valid route is already known
-   * 
-   * \param sourceIface         the incoming interface of the packet
-   * 
-   * \param source              source address
-   * 
-   * \param destination         destination address
-   * 
-   * \param packet              the packet to be resolved (needed the whole packet, because routing information 
-   *                            is added as tags or headers). The packet will be retutned to reply callback. 
-   *                            
-   * \param protocolType        protocol ID, needed to form a proper MAC-layer header
-   * 
-   * \param routeReply          callback to be invoked after route discovery procedure, supposed to really send packet using routing information.
+   * \param sourceIface the incoming interface of the packet
+   * \param source        source address
+   * \param destination   destination address
+   * \param packet        the packet to be resolved (needed the whole packet, because
+   *                      routing information is added as tags or headers). The packet
+   *                      will be retutned to reply callback. 
+   * \param protocolType  protocol ID, needed to form a proper MAC-layer header
+   * \param routeReply    callback to be invoked after route discovery procedure, supposed 
+   *                      to really send packetusing routing information.
    */
   virtual bool RequestRoute (uint32_t sourceIface, const Mac48Address source, const Mac48Address destination, 
-                            Ptr<Packet> packet, uint16_t  protocolType, RouteReplyCallback routeReply ) = 0;
-  
+      Ptr<Packet> packet, uint16_t  protocolType, RouteReplyCallback routeReply ) = 0;
   /// Set host mesh point, analog of SetNode (...) methods for upper layer protocols.
   void SetMeshPoint (Ptr<MeshPointDevice> mp);
   /// Each mesh protocol must be installed on the mesh point to work.
   Ptr<MeshPointDevice> GetMeshPoint () const; 
-  
 protected:
-  
   ///\name Route request queue API, supposed to be implemented in subclasses
   //\{
-  
   /// Packet waiting its routing inforamation, supposed to be used by all implementations to correctly implement timeouts.
   struct QueuedPacket {
     Ptr<Packet> pkt;            ///< the packet

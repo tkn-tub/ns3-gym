@@ -22,14 +22,10 @@
 #include "ns3/object.h"
 #include "ns3/assert.h"
 #include "ns3/simulator.h"
-#include "ns3/ptr.h"
-#include "ns3/log.h"
-#include "ns3/node.h"
-#include "ns3/hwmp-rtable.h"
-
-NS_LOG_COMPONENT_DEFINE ("HwmpRtable");
+#include "hwmp-rtable.h"
 
 namespace ns3 {
+namespace dot11s {
 
 NS_OBJECT_ENSURE_REGISTERED (HwmpRtable);
 
@@ -37,29 +33,23 @@ TypeId
 HwmpRtable::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::HwmpRtable")
-                      .SetParent<Object> ()
-                      .AddConstructor<HwmpRtable> ();
+    .SetParent<Object> ()
+    .AddConstructor<HwmpRtable> ();
   return tid;
-
 }
-
 HwmpRtable::HwmpRtable ()
 {
 }
-
 HwmpRtable::~HwmpRtable ()
 {
   DoDispose ();
 }
-
 void
 HwmpRtable::DoDispose ()
 {
-  NS_LOG_UNCOND ("RTABLE DISPOSE STARTED");
   m_routes.clear ();
   m_roots.clear ();
 }
-
 void
 HwmpRtable::AddReactivePath (
   Mac48Address destination,
@@ -108,7 +98,6 @@ HwmpRtable::AddReactivePath (
     i->second.whenExpire = Seconds (0);
   i->second.seqnum = seqnum;
 }
-
 void
 HwmpRtable::AddProactivePath (
   uint32_t metric,
@@ -128,9 +117,7 @@ HwmpRtable::AddProactivePath (
   i->second.metric = metric;
   i->second.whenExpire = MilliSeconds (Simulator::Now().GetMilliSeconds() + lifetime.GetMilliSeconds());
   i->second.seqnum = seqnum;
-
 }
-
 void
 HwmpRtable::AddPrecursor (Mac48Address destination, uint32_t port, Mac48Address precursor)
 {
@@ -157,14 +144,12 @@ HwmpRtable::AddPrecursor (Mac48Address destination, uint32_t port, Mac48Address 
       return;
     }
 }
-
 void
 HwmpRtable::DeleteProactivePath (uint32_t port)
 {
   std::map<uint32_t,ProactiveRoute>::iterator j = m_roots.find (port);
   if (j != m_roots.end ())
     m_roots.erase (j);
-
 }
 void
 HwmpRtable::DeleteProactivePath (Mac48Address root, uint32_t port)
@@ -172,9 +157,7 @@ HwmpRtable::DeleteProactivePath (Mac48Address root, uint32_t port)
   std::map<uint32_t,ProactiveRoute>::iterator j = m_roots.find (port);
   if ((j != m_roots.end ())&&(j->second.root == root))
     m_roots.erase (j);
-
 }
-
 void
 HwmpRtable::DeleteReactivePath (Mac48Address destination, uint32_t port)
 {
@@ -183,7 +166,6 @@ HwmpRtable::DeleteReactivePath (Mac48Address destination, uint32_t port)
     if (i->second.port ==  port)
       m_routes.erase (i);
 }
-
 HwmpRtable::LookupResult
 HwmpRtable::LookupReactive (Mac48Address destination)
 {
@@ -205,7 +187,6 @@ HwmpRtable::LookupReactive (Mac48Address destination)
   result.seqnum = i->second.seqnum;
   return result;
 }
-
 HwmpRtable::LookupResult
 HwmpRtable::LookupProactive (uint32_t port)
 {
@@ -224,15 +205,14 @@ HwmpRtable::LookupProactive (uint32_t port)
   result.seqnum = i->second.seqnum;
   return result;
 }
-
-std::vector<HwmpRtable::FailedDestination>
+std::vector<IePerr::FailedDestination>
 HwmpRtable::GetUnreachableDestinations (Mac48Address peerAddress, uint32_t port)
 {
-  std::vector<FailedDestination> retval;
+  std::vector<IePerr::FailedDestination> retval;
   for (std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.begin (); i != m_routes.end(); i++)
     if ((i->second.retransmitter == peerAddress)&& (i->second.port == port))
       {
-        FailedDestination dst;
+        IePerr::FailedDestination dst;
         dst.destination = i->first;
         i->second.seqnum ++;
         dst.seqnum = i->second.seqnum;
@@ -244,7 +224,7 @@ HwmpRtable::GetUnreachableDestinations (Mac48Address peerAddress, uint32_t port)
   std::map<uint32_t, ProactiveRoute>::iterator i = m_roots.find (port);
   if ((i != m_roots.end ())&&(i->second.retransmitter == peerAddress))
     {
-      FailedDestination dst;
+      IePerr::FailedDestination dst;
       dst.destination = i->second.root;
       dst.seqnum = i->second.seqnum;
       retval.push_back (dst);
@@ -259,7 +239,6 @@ HwmpRtable::RequestSeqnum (Mac48Address destination)
     return 0;
   return i->second.seqnum;
 }
-
 std::vector<Mac48Address>
 HwmpRtable::GetPrecursors (Mac48Address destination, uint32_t port)
 {
@@ -278,5 +257,5 @@ HwmpRtable::GetPrecursors (Mac48Address destination, uint32_t port)
     }
   return retval;
 }
-
-}//namespace ns3
+} //namespace dot11s
+} //namespace ns3

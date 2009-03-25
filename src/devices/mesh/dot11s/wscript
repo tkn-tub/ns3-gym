@@ -11,10 +11,13 @@ def build(bld):
         'ie-dot11s-perr.cc',
         'ie-dot11s-rann.cc',
         'peer-link-frame.cc',
+        'peer-link.cc',
         'peer-management-plugin.cc',
         'peer-management-protocol.cc',
+        'hwmp-tag.cc',
+        'hwmp-rtable.cc',
+        #'hwmp-protocol.cc',
         'dot11s-helper.cc',
-        'peer-link.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'dot11s'
@@ -27,10 +30,10 @@ def build(bld):
         #'ie-dot11s-perr.h',
         #'ie-dot11s-rann.h',
         #'peer-link-frame.h',
-        'peer-management-protocol.h',
-        #'peer-management-plugin.h',
-        'dot11s-helper.h',
         #'peer-link.h',
+        #'peer-management-plugin.h',
+        'peer-management-protocol.h',
+        'dot11s-helper.h',
         ]
 
 #    obj = bld.create_ns3_program('wifi-phy-test',

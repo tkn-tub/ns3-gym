@@ -22,15 +22,12 @@
 #ifndef HWMP_RTABLE_H
 #define HWMP_RTABLE_H
 
-#include <list>
 #include <map>
 #include "ns3/nstime.h"
 #include "ns3/mac48-address.h"
-#include "ns3/net-device.h"
-#include "ns3/event-id.h"
-#include "ns3/packet.h"
+#include "ie-dot11s-perr.h"
 namespace ns3 {
-
+namespace dot11s {
 /**
  * \ingroup mesh
  */
@@ -71,12 +68,7 @@ public:
   LookupResult  LookupReactive (Mac48Address destination);
   LookupResult  LookupProactive (uint32_t port);
   //path error routines:
-  struct FailedDestination
-  {
-    Mac48Address destination;
-    uint32_t seqnum;
-  };
-  std::vector<FailedDestination>  GetUnreachableDestinations (Mac48Address peerAddress, uint32_t port);
+  std::vector<IePerr::FailedDestination>  GetUnreachableDestinations (Mac48Address peerAddress, uint32_t port);
   uint32_t  RequestSeqnum (Mac48Address dst);
   std::vector<Mac48Address>  GetPrecursors (Mac48Address destination, uint32_t port);
   const static uint32_t PORT_ANY = 0xffffffff;
@@ -103,5 +95,6 @@ private:
   std::map<Mac48Address, ReactiveRoute>  m_routes;
   std::map<uint32_t, ProactiveRoute>  m_roots;
 };
+} //namespace dot11s
 } //namespace ns3
 #endif
