@@ -39,6 +39,7 @@ namespace dot11s {
 class PeerLink : public Object
 {
 public:
+  friend class PeerManagerProtocol;
   /// Support object system
   static TypeId GetTypeId();
   /// C-tor create empty link
@@ -62,14 +63,14 @@ public:
   void  SetPeerLinkId (uint16_t id);
   void  SetLocalAid (uint16_t aid);
   void  SetPeerAid (uint16_t aid);
-  void  SetBeaconTimingElement (IeDot11sBeaconTiming beaconTiming);
-  void  SetPeerLinkDescriptorElement (IeDot11sPeerManagement peerLinkElement);
+  void  SetBeaconTimingElement (IeBeaconTiming beaconTiming);
+  void  SetPeerLinkDescriptorElement (IePeerManagement peerLinkElement);
   Mac48Address GetPeerAddress () const;
   uint16_t GetLocalAid () const;
   Time  GetLastBeacon () const;
   Time  GetBeaconInterval () const;
-  IeDot11sBeaconTiming GetBeaconTimingElement ()const;
-  IeDot11sPeerManagement GetPeerLinkDescriptorElement ()const;
+  IeBeaconTiming GetBeaconTimingElement ()const;
+  IePeerManagement GetPeerLinkDescriptorElement ()const;
   void  ClearTimingElement ();
   //\}
   
@@ -90,7 +91,7 @@ public:
   /// Set callback
   void MLMESetSignalStatusCallback (SignalStatusCallback);
   //\}
-
+private:
   /**
    * \name Link response to received management frames
    * 
@@ -104,21 +105,21 @@ public:
   /// Close link
   void Close (uint16_t localLinkID, uint16_t peerLinkID, dot11sReasonCode reason);
   /// Accept open link
-  void OpenAccept (uint16_t localLinkId, IeDot11sConfiguration conf);
+  void OpenAccept (uint16_t localLinkId, IeConfiguration conf);
   /// Reject open link 
-  void OpenReject (uint16_t localLinkId, IeDot11sConfiguration conf, dot11sReasonCode reason);
+  void OpenReject (uint16_t localLinkId, IeConfiguration conf, dot11sReasonCode reason);
   /// Confirm accept
   void ConfirmAccept (
     uint16_t localLinkId,
     uint16_t peerLinkId,
     uint16_t peerAid,
-    IeDot11sConfiguration conf
+    IeConfiguration conf
   );
   /// Confirm reject
   void  ConfirmReject (
     uint16_t localLinkId,
     uint16_t peerLinkId,
-    IeDot11sConfiguration  conf,
+    IeConfiguration  conf,
     dot11sReasonCode reason
   );
   //\}
@@ -219,11 +220,11 @@ private:
   /// Current state
   PeerState m_state;
   /// Mesh interface configuration
-  IeDot11sConfiguration m_configuration;
+  IeConfiguration m_configuration;
   
   // State is a bitfield as defined as follows:
   // This are states for a given
-  IeDot11sBeaconTiming m_beaconTiming;
+  IeBeaconTiming m_beaconTiming;
 
   /**
    * \name Timers & counters used for internal state transitions

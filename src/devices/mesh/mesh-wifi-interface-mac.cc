@@ -533,5 +533,3 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 
 } // namespace ns3
 
-
-

@@ -81,32 +81,32 @@ DestinationAddressUnit::GetDestinationAddress () const
   return m_destinationAddress;
 }
 /********************************
- * IeDot11sPreq
+ * IePreq
  *******************************/
-IeDot11sPreq::~IeDot11sPreq ()
+IePreq::~IePreq ()
 {
 }
 
 TypeId
-IeDot11sPreq::GetTypeId ()
+IePreq::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::IeDot11sPreq")
+  static TypeId tid = TypeId ("ns3::IePreq")
                       .SetParent<Object> ();
   return tid;
 }
 void
-IeDot11sPreq::Print (std::ostream &os) const
+IePreq::Print (std::ostream &os) const
 {
   //TODO:fill this method
 }
 
 TypeId
-IeDot11sPreq::GetInstanceTypeId () const
+IePreq::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
-IeDot11sPreq::IeDot11sPreq ():
+IePreq::IePreq ():
     m_maxSize (32),
     m_flags (0),
     m_hopCount (0),
@@ -120,136 +120,136 @@ IeDot11sPreq::IeDot11sPreq ():
 {
 }
 void
-IeDot11sPreq::SetUnicastPreq ()
+IePreq::SetUnicastPreq ()
 {
   m_flags |= 1<<1;
 }
 
 void
-IeDot11sPreq::SetNeedNotPrep ()
+IePreq::SetNeedNotPrep ()
 {
   m_flags |= 1<<2;
 }
 //void
-//IeDot11sPreq::SetFlags (uint8_t flags)
+//IePreq::SetFlags (uint8_t flags)
 //{
 // m_flags = flags;
 //}
 void
-IeDot11sPreq::SetHopcount (uint8_t hopcount)
+IePreq::SetHopcount (uint8_t hopcount)
 {
   m_hopCount = hopcount;
 }
 void
-IeDot11sPreq::SetTTL (uint8_t ttl)
+IePreq::SetTTL (uint8_t ttl)
 {
   m_ttl = ttl;
 }
 void
-IeDot11sPreq::SetPreqID (uint32_t preq_id)
+IePreq::SetPreqID (uint32_t preq_id)
 {
   m_preqId = preq_id;
 }
 void
-IeDot11sPreq::SetMetric (uint32_t metric)
+IePreq::SetMetric (uint32_t metric)
 {
   m_metric = metric;
 }
 void
-IeDot11sPreq::SetOriginatorAddress (Mac48Address originator_address)
+IePreq::SetOriginatorAddress (Mac48Address originator_address)
 {
   m_originatorAddress = originator_address;
 }
 void
-IeDot11sPreq::SetOriginatorSeqNumber (uint32_t originator_seq_number)
+IePreq::SetOriginatorSeqNumber (uint32_t originator_seq_number)
 {
   m_originatorSeqNumber = originator_seq_number;
 }
 void
-IeDot11sPreq::SetLifetime (uint32_t lifetime)
+IePreq::SetLifetime (uint32_t lifetime)
 {
   m_lifetime = lifetime;
 }
 void
-IeDot11sPreq::SetDestCount (uint8_t dest_count)
+IePreq::SetDestCount (uint8_t dest_count)
 {
   m_destCount = dest_count;
 }
 
 //uint8_t
-//IeDot11sPreq::GetFlags () const
+//IePreq::GetFlags () const
 //{
 // return m_flags;
 //}
 bool
-IeDot11sPreq::IsUnicastPreq () const
+IePreq::IsUnicastPreq () const
 {
   return (m_flags & (1<<1));
 }
 
 bool
-IeDot11sPreq::IsNeedNotPrep () const
+IePreq::IsNeedNotPrep () const
 {
   return (m_flags & (1<<2));
 }
 
 uint8_t
-IeDot11sPreq::GetHopCount () const
+IePreq::GetHopCount () const
 {
   return m_hopCount;
 }
 uint8_t
-IeDot11sPreq::GetTtl () const
+IePreq::GetTtl () const
 {
   return m_ttl;
 }
 uint32_t
-IeDot11sPreq::GetPreqID () const
+IePreq::GetPreqID () const
 {
   return m_preqId;
 }
 uint32_t
-IeDot11sPreq::GetMetric () const
+IePreq::GetMetric () const
 {
   return m_metric;
 }
 Mac48Address
-IeDot11sPreq::GetOriginatorAddress () const
+IePreq::GetOriginatorAddress () const
 {
   return m_originatorAddress;
 }
 uint32_t
-IeDot11sPreq::GetOriginatorSeqNumber () const
+IePreq::GetOriginatorSeqNumber () const
 {
   return m_originatorSeqNumber;
 }
 uint32_t
-IeDot11sPreq::GetLifetime () const
+IePreq::GetLifetime () const
 {
   return m_lifetime;
 }
 
 uint8_t
-IeDot11sPreq::GetDestCount () const
+IePreq::GetDestCount () const
 {
   return m_destCount;
 }
 
 void
-IeDot11sPreq::DecrementTtl ()
+IePreq::DecrementTtl ()
 {
   m_ttl --;
   m_hopCount ++;
 }
 
 void
-IeDot11sPreq::IncrementMetric (uint32_t metric)
+IePreq::IncrementMetric (uint32_t metric)
 {
   m_metric +=metric;
 }
 
 void
-IeDot11sPreq::SerializeInformation (Buffer::Iterator i) const
+IePreq::SerializeInformation (Buffer::Iterator i) const
 {
   i.WriteU8 (m_flags);
   i.WriteU8 (m_hopCount);
@@ -278,7 +278,7 @@ IeDot11sPreq::SerializeInformation (Buffer::Iterator i) const
 }
 
 uint8_t
-IeDot11sPreq::DeserializeInformation (Buffer::Iterator start, uint8_t length)
+IePreq::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   m_flags = i.ReadU8 ();
@@ -314,7 +314,7 @@ IeDot11sPreq::DeserializeInformation (Buffer::Iterator start, uint8_t length)
   return i.GetDistanceFrom (start);
 }
 uint8_t
-IeDot11sPreq::GetInformationSize () const
+IePreq::GetInformationSize () const
 {
   uint8_t retval =
      1 //Flags
@@ -334,17 +334,17 @@ IeDot11sPreq::GetInformationSize () const
 }
 
 void
-IeDot11sPreq::PrintInformation (std::ostream& os) const
+IePreq::PrintInformation (std::ostream& os) const
 {
   //TODO
 }
 std::vector<Ptr<DestinationAddressUnit> >
-IeDot11sPreq::GetDestinationList ()
+IePreq::GetDestinationList ()
 {
   return m_destinations;
 }
 void
-IeDot11sPreq::AddDestinationAddressElement (
+IePreq::AddDestinationAddressElement (
   bool doFlag, bool rfFlag,
   Mac48Address dest_address,
   uint32_t dest_seq_number
@@ -362,7 +362,7 @@ IeDot11sPreq::AddDestinationAddressElement (
 }
 
 void
-IeDot11sPreq::DelDestinationAddressElement (Mac48Address dest_address)
+IePreq::DelDestinationAddressElement (Mac48Address dest_address)
 {
   for (std::vector<Ptr<DestinationAddressUnit> >::iterator i = m_destinations.begin (); i != m_destinations.end(); i++)
     if ((*i)->GetDestinationAddress () == dest_address)
@@ -374,7 +374,7 @@ IeDot11sPreq::DelDestinationAddressElement (Mac48Address dest_address)
 }
 
 void
-IeDot11sPreq::ClearDestinationAddressElement ()
+IePreq::ClearDestinationAddressElement ()
 {
   int i;
   for (std::vector<Ptr<DestinationAddressUnit> >::iterator j = m_destinations.begin (); j != m_destinations.end(); j++)

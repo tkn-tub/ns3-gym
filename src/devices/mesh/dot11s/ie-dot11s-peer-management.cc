@@ -29,7 +29,7 @@
 namespace ns3 {
 namespace dot11s {
 
-IeDot11sPeerManagement::IeDot11sPeerManagement ():
+IePeerManagement::IePeerManagement ():
     m_length (0),
     m_subtype (PEER_OPEN),
     m_localLinkId (0),
@@ -39,14 +39,14 @@ IeDot11sPeerManagement::IeDot11sPeerManagement ():
 
 
 void
-IeDot11sPeerManagement::SetPeerOpen (uint16_t localLinkId)
+IePeerManagement::SetPeerOpen (uint16_t localLinkId)
 {
   m_length = 3;
   m_subtype = PEER_OPEN;
   m_localLinkId = localLinkId;
 }
 void
-IeDot11sPeerManagement::SetPeerClose (uint16_t localLinkId, uint16_t peerLinkId, dot11sReasonCode reasonCode)
+IePeerManagement::SetPeerClose (uint16_t localLinkId, uint16_t peerLinkId, dot11sReasonCode reasonCode)
 {
   m_length = 7;
   m_subtype = PEER_CLOSE;
@@ -56,7 +56,7 @@ IeDot11sPeerManagement::SetPeerClose (uint16_t localLinkId, uint16_t peerLinkId,
 }
 
 void
-IeDot11sPeerManagement::SetPeerConfirm (uint16_t localLinkId, uint16_t peerLinkId)
+IePeerManagement::SetPeerConfirm (uint16_t localLinkId, uint16_t peerLinkId)
 {
   m_length = 5;
   m_subtype = PEER_CONFIRM;
@@ -65,47 +65,47 @@ IeDot11sPeerManagement::SetPeerConfirm (uint16_t localLinkId, uint16_t peerLinkI
 }
 
 dot11sReasonCode
-IeDot11sPeerManagement::GetReasonCode () const
+IePeerManagement::GetReasonCode () const
 {
   return m_reasonCode;
 }
 
 uint16_t
-IeDot11sPeerManagement::GetLocalLinkId () const
+IePeerManagement::GetLocalLinkId () const
 {
   return m_localLinkId;
 }
 
 uint16_t
-IeDot11sPeerManagement::GetPeerLinkId () const
+IePeerManagement::GetPeerLinkId () const
 {
   return m_peerLinkId;
 }
 
 uint8_t
-IeDot11sPeerManagement::GetInformationSize (void) const
+IePeerManagement::GetInformationSize (void) const
 {
   return m_length;
 }
 
 bool
-IeDot11sPeerManagement::SubtypeIsOpen () const
+IePeerManagement::SubtypeIsOpen () const
 {
   return (m_subtype == PEER_OPEN);
 }
 bool
-IeDot11sPeerManagement::SubtypeIsClose () const
+IePeerManagement::SubtypeIsClose () const
 {
   return (m_subtype == PEER_CLOSE);
 }
 bool
-IeDot11sPeerManagement::SubtypeIsConfirm () const
+IePeerManagement::SubtypeIsConfirm () const
 {
   return (m_subtype == PEER_CONFIRM);
 }
 
 void
-IeDot11sPeerManagement::SerializeInformation (Buffer::Iterator i) const
+IePeerManagement::SerializeInformation (Buffer::Iterator i) const
 {
   i.WriteU8 (m_subtype);
   i.WriteHtonU16 (m_localLinkId);
@@ -115,7 +115,7 @@ IeDot11sPeerManagement::SerializeInformation (Buffer::Iterator i) const
     i.WriteHtonU16 (m_reasonCode);
 }
 uint8_t
-IeDot11sPeerManagement::DeserializeInformation (Buffer::Iterator start, uint8_t length)
+IePeerManagement::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   m_subtype  = i.ReadU8 ();
@@ -134,7 +134,7 @@ IeDot11sPeerManagement::DeserializeInformation (Buffer::Iterator start, uint8_t 
   return i.GetDistanceFrom (start);
 }
 void
-IeDot11sPeerManagement::PrintInformation (std::ostream& os) const
+IePeerManagement::PrintInformation (std::ostream& os) const
 {
   //TODO
 }

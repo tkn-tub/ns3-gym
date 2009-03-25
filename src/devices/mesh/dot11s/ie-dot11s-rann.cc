@@ -27,26 +27,26 @@
 namespace ns3 {
 namespace dot11s {
 
-IeDot11sRann::~IeDot11sRann ()
+IeRann::~IeRann ()
 {
 }
 TypeId
-IeDot11sRann::GetTypeId ()
+IeRann::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::IeDot11sRann").SetParent<Object> ();
+  static TypeId tid = TypeId ("ns3::IeRann").SetParent<Object> ();
   return tid;
 }
 TypeId
-IeDot11sRann::GetInstanceTypeId () const
+IeRann::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 void
-IeDot11sRann::Print (std::ostream &os)const
+IeRann::Print (std::ostream &os)const
 {
   // FILL
 }
-IeDot11sRann::IeDot11sRann ():
+IeRann::IeRann ():
     m_flags (0),
     m_hopcount (0),
     m_ttl (0),
@@ -56,68 +56,68 @@ IeDot11sRann::IeDot11sRann ():
 {
 }
 void
-IeDot11sRann::SetFlags (uint8_t flags)
+IeRann::SetFlags (uint8_t flags)
 {
   m_flags = flags;
 }
 void
-IeDot11sRann::SetHopcount (uint8_t hopcount)
+IeRann::SetHopcount (uint8_t hopcount)
 {
   m_hopcount = hopcount;
 }
 void
-IeDot11sRann::SetTTL (uint8_t ttl)
+IeRann::SetTTL (uint8_t ttl)
 {
   m_ttl = ttl;
 }
 void
-IeDot11sRann::SetDestSeqNumber (uint32_t dest_seq_number)
+IeRann::SetDestSeqNumber (uint32_t dest_seq_number)
 {
   m_destSeqNumber = dest_seq_number;
 }
 void
-IeDot11sRann::SetMetric (uint32_t metric)
+IeRann::SetMetric (uint32_t metric)
 {
   m_metric = metric;
 }
 void
-IeDot11sRann::SetOriginatorAddress (Mac48Address originator_address)
+IeRann::SetOriginatorAddress (Mac48Address originator_address)
 {
   m_originatorAddress = originator_address;
 }
 
 uint8_t
-IeDot11sRann::GetFlags ()
+IeRann::GetFlags ()
 {
   return m_flags;
 }
 uint8_t
-IeDot11sRann::GetHopcount ()
+IeRann::GetHopcount ()
 {
   return m_hopcount;
 }
 uint8_t
-IeDot11sRann::GetTTL ()
+IeRann::GetTTL ()
 {
   return m_ttl;
 }
 uint32_t
-IeDot11sRann::GetDestSeqNumber ()
+IeRann::GetDestSeqNumber ()
 {
   return m_destSeqNumber;
 }
 uint32_t
-IeDot11sRann::GetMetric ()
+IeRann::GetMetric ()
 {
   return m_metric;
 }
 Mac48Address
-IeDot11sRann::GetOriginatorAddress ()
+IeRann::GetOriginatorAddress ()
 {
   return m_originatorAddress;
 }
 void
-IeDot11sRann::SerializeInformation (Buffer::Iterator i) const
+IeRann::SerializeInformation (Buffer::Iterator i) const
 {
   i.WriteU8 (m_flags);
   i.WriteU8 (m_hopcount);
@@ -127,7 +127,7 @@ IeDot11sRann::SerializeInformation (Buffer::Iterator i) const
   i.WriteHtonU32 (m_metric);
 }
 uint8_t
-IeDot11sRann::DeserializeInformation (Buffer::Iterator start, uint8_t length)
+IeRann::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   m_flags = i.ReadU8 ();
@@ -139,7 +139,7 @@ IeDot11sRann::DeserializeInformation (Buffer::Iterator start, uint8_t length)
   return i.GetDistanceFrom (start);
 }
 uint8_t
-IeDot11sRann::GetInformationSize () const
+IeRann::GetInformationSize () const
 {
   uint8_t retval =
      1 //Flags

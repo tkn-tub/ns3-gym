@@ -25,38 +25,38 @@
 
 namespace ns3 {
 namespace dot11s {
-IeDot11sPerr::~IeDot11sPerr ()
+IePerr::~IePerr ()
 {
 }
 
 TypeId
-IeDot11sPerr::GetTypeId ()
+IePerr::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::IeDot11sPerr")
+  static TypeId tid = TypeId ("ns3::IePerr")
                       .SetParent<Object> ();
   return tid;
 }
 void
-IeDot11sPerr::PrintInformation (std::ostream &os) const
+IePerr::PrintInformation (std::ostream &os) const
 {
     // FILL
 }
 TypeId
-IeDot11sPerr::GetInstanceTypeId () const
+IePerr::GetInstanceTypeId () const
 {
     return GetTypeId ();
 }
-IeDot11sPerr::IeDot11sPerr ():
+IePerr::IePerr ():
     m_numOfDest (0)
 {
 }
 uint8_t
-IeDot11sPerr::GetNumOfDest ()
+IePerr::GetNumOfDest ()
 {
   return m_numOfDest;
 }
 void
-IeDot11sPerr::SerializeInformation (Buffer::Iterator i) const
+IePerr::SerializeInformation (Buffer::Iterator i) const
 {
   i.WriteU8 (0);
   i.WriteU8 (m_numOfDest);
@@ -68,7 +68,7 @@ IeDot11sPerr::SerializeInformation (Buffer::Iterator i) const
     }
 }
 uint8_t
-IeDot11sPerr::DeserializeInformation (Buffer::Iterator start, uint8_t length)
+IePerr::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   i.Next (1); //Mode flags is not used now
@@ -86,7 +86,7 @@ IeDot11sPerr::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 }
 
 uint8_t
-IeDot11sPerr::GetInformationSize () const
+IePerr::GetInformationSize () const
 {
   uint8_t retval =
      1 //ModeFlags
@@ -97,7 +97,7 @@ IeDot11sPerr::GetInformationSize () const
 }
 
 void
-IeDot11sPerr::AddAddressUnit (FailedDestination unit)
+IePerr::AddAddressUnit (FailedDestination unit)
 {
   for (unsigned int i = 0; i < m_addressUnits.size (); i ++)
     if (m_addressUnits[i].destination == unit.destination)
@@ -106,13 +106,13 @@ IeDot11sPerr::AddAddressUnit (FailedDestination unit)
   m_numOfDest++;
 }
 
-std::vector<IeDot11sPerr::FailedDestination>
-IeDot11sPerr::GetAddressUnitVector ()
+std::vector<IePerr::FailedDestination>
+IePerr::GetAddressUnitVector ()
 {
   return m_addressUnits;
 }
 void
-IeDot11sPerr::DeleteAddressUnit (Mac48Address address)
+IePerr::DeleteAddressUnit (Mac48Address address)
 {
   for (std::vector<FailedDestination>::iterator i = m_addressUnits.begin (); i != m_addressUnits.end(); i ++)
     if ((*i).destination == address)
@@ -124,7 +124,7 @@ IeDot11sPerr::DeleteAddressUnit (Mac48Address address)
 }
 
 void
-IeDot11sPerr::ResetPerr ()
+IePerr::ResetPerr ()
 {
   m_numOfDest = 0;
   m_addressUnits.clear ();

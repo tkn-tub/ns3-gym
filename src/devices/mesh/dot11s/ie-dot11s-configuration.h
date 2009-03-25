@@ -89,13 +89,13 @@ public:
  * \brief Describes Mesh Configuration Element 
  * see 7.3.2.81 of 802.11s draft 2.07
  */
-class IeDot11sConfiguration : public WifiInformationElement
+class IeConfiguration : public WifiInformationElement
 {
 public:
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
 
-  IeDot11sConfiguration ();
+  IeConfiguration ();
   void   SetRouting (dot11sPathSelectionProtocol routingId);
   void   SetMetric (dot11sPathSelectionMetric metricId);
   bool   IsHWMP ();

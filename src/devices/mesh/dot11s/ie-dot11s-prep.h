@@ -33,11 +33,11 @@ namespace dot11s {
  * \ingroup dot11s
  * \brief See 7.3.2.97 of 802.11s draft 2.07
  */
-class IeDot11sPrep : public WifiInformationElement
+class IePrep : public WifiInformationElement
 {
 public:
-  IeDot11sPrep ();
-  ~IeDot11sPrep ();
+  IePrep ();
+  ~IePrep ();
   static TypeId GetTypeId ();
   virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;

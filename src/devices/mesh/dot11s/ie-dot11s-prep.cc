@@ -26,30 +26,30 @@
 namespace ns3 {
 namespace dot11s {
 /********************************
- * IeDot11sPrep
+ * IePrep
  *******************************/
-IeDot11sPrep::~IeDot11sPrep ()
+IePrep::~IePrep ()
 {
 }
 
 TypeId
-IeDot11sPrep::GetTypeId ()
+IePrep::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::IeDot11sPrep")
+  static TypeId tid = TypeId ("ns3::IePrep")
                       .SetParent<Object> ();
   return tid;
 }
 void
-IeDot11sPrep::Print (std::ostream &os) const
+IePrep::Print (std::ostream &os) const
 {
   //TODO:fill this method
 }
 TypeId
-IeDot11sPrep::GetInstanceTypeId () const
+IePrep::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
-IeDot11sPrep::IeDot11sPrep ():
+IePrep::IePrep ():
     m_flags (0),
     m_hopcount (0),
     m_ttl (0),
@@ -62,110 +62,110 @@ IeDot11sPrep::IeDot11sPrep ():
 {
 }
 void
-IeDot11sPrep::SetFlags (uint8_t flags)
+IePrep::SetFlags (uint8_t flags)
 {
   m_flags = flags;
 }
 void
-IeDot11sPrep::SetHopcount (uint8_t hopcount)
+IePrep::SetHopcount (uint8_t hopcount)
 {
   m_hopcount = hopcount;
 }
 void
-IeDot11sPrep::SetTTL (uint8_t ttl)
+IePrep::SetTTL (uint8_t ttl)
 {
   m_ttl = ttl;
 }
 void
-IeDot11sPrep::SetDestinationSeqNumber (uint32_t dest_seq_number)
+IePrep::SetDestinationSeqNumber (uint32_t dest_seq_number)
 {
   m_destSeqNumber = dest_seq_number;
 }
 void
-IeDot11sPrep::SetDestinationAddress (Mac48Address dest_address)
+IePrep::SetDestinationAddress (Mac48Address dest_address)
 {
   m_destinationAddress = dest_address;
 }
 void
-IeDot11sPrep::SetMetric (uint32_t metric)
+IePrep::SetMetric (uint32_t metric)
 {
   m_metric = metric;
 }
 void
-IeDot11sPrep::SetOriginatorAddress (Mac48Address originator_address)
+IePrep::SetOriginatorAddress (Mac48Address originator_address)
 {
   m_originatorAddress = originator_address;
 }
 void
-IeDot11sPrep::SetOriginatorSeqNumber (uint32_t originator_seq_number)
+IePrep::SetOriginatorSeqNumber (uint32_t originator_seq_number)
 {
   m_originatorSeqNumber = originator_seq_number;
 }
 void
-IeDot11sPrep::SetLifetime (uint32_t lifetime)
+IePrep::SetLifetime (uint32_t lifetime)
 {
   m_lifetime = lifetime;
 }
 uint8_t
-IeDot11sPrep::GetFlags () const
+IePrep::GetFlags () const
 {
   return m_flags;
 }
 uint8_t
-IeDot11sPrep::GetHopcount () const
+IePrep::GetHopcount () const
 {
   return m_hopcount;
 }
 uint32_t
-IeDot11sPrep::GetTTL () const
+IePrep::GetTTL () const
 {
   return m_ttl;
 }
 uint32_t
-IeDot11sPrep::GetDestinationSeqNumber () const
+IePrep::GetDestinationSeqNumber () const
 {
   return m_destSeqNumber;
 }
 Mac48Address
-IeDot11sPrep::GetDestinationAddress () const
+IePrep::GetDestinationAddress () const
 {
   return m_destinationAddress;
 }
 uint32_t
-IeDot11sPrep::GetMetric () const
+IePrep::GetMetric () const
 {
   return m_metric;
 }
 Mac48Address
-IeDot11sPrep::GetOriginatorAddress () const
+IePrep::GetOriginatorAddress () const
 {
   return m_originatorAddress;
 }
 uint32_t
-IeDot11sPrep::GetOriginatorSeqNumber () const
+IePrep::GetOriginatorSeqNumber () const
 {
   return m_originatorSeqNumber;
 }
 uint32_t
-IeDot11sPrep::GetLifetime () const
+IePrep::GetLifetime () const
 {
   return m_lifetime;
 }
 void
-IeDot11sPrep::DecrementTtl ()
+IePrep::DecrementTtl ()
 {
   m_ttl --;
 }
 
 void
-IeDot11sPrep::IncrementMetric (uint32_t metric)
+IePrep::IncrementMetric (uint32_t metric)
 {
   m_metric +=metric;
 }
 
 
 void
-IeDot11sPrep::SerializeInformation (Buffer::Iterator i) const
+IePrep::SerializeInformation (Buffer::Iterator i) const
 {
   i.WriteU8 (m_flags);
   i.WriteU8 (m_hopcount);
@@ -178,7 +178,7 @@ IeDot11sPrep::SerializeInformation (Buffer::Iterator i) const
   i.WriteHtonU32 (m_originatorSeqNumber);
 }
 uint8_t
-IeDot11sPrep::DeserializeInformation (Buffer::Iterator start, uint8_t length)
+IePrep::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   m_flags = i.ReadU8 ();
@@ -193,7 +193,7 @@ IeDot11sPrep::DeserializeInformation (Buffer::Iterator start, uint8_t length)
   return i.GetDistanceFrom (start);
 }
 uint8_t
-IeDot11sPrep::GetInformationSize () const
+IePrep::GetInformationSize () const
 {
   uint32_t retval =
      1 //Flags
@@ -210,7 +210,7 @@ IeDot11sPrep::GetInformationSize () const
 };
 
 void
-IeDot11sPrep::PrintInformation (std::ostream& os) const
+IePrep::PrintInformation (std::ostream& os) const
 {
   //TODO
 }

@@ -57,11 +57,11 @@ private:
  * \ingroup dot11s
  * \brief See 7.3.2.96 of 802.11s draft 2.07
  */
-class IeDot11sPreq : public WifiInformationElement
+class IePreq : public WifiInformationElement
 {
 public:
-  IeDot11sPreq ();
-  ~IeDot11sPreq ();
+  IePreq ();
+  ~IePreq ();
   static TypeId GetTypeId ();
   virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;

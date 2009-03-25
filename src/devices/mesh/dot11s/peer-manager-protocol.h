@@ -45,21 +45,19 @@ public:
   PeerManagerProtocol ();
   ~PeerManagerProtocol ();
   static TypeId GetTypeId ();
-  bool AttachPorts(std::vector<Ptr<WifiNetDevice> >);
+  bool AttachInterfaces(std::vector<Ptr<WifiNetDevice> >);
   /** \brief Methods that handle beacon sending/receiving procedure.
    * This methods interact with MAC_layer plug-in
    * \{
    */
   /**
-   * \brief When we are sending a beacon - we add a timing element to 
-   * it and remember the time, when we sent a beacon (for BCA)
-   * \param IeDot11sBeaconTiming is a beacon timing element that
+   * \brief When we are sending a beacon - we fill beacon timing
+   * element
+   * \param IeBeaconTiming is a beacon timing element that
    * should be present in beacon
    * \param interface is a interface sending a beacon
-   * \param currentTbtt is a time of beacon sending
-   * \param beaconInterval is a beacon interval on this interface
    */
-  Ptr<IeDot11sBeaconTiming> SendBeacon(uint32_t interface, Time currentTbtt, Time beaconInterval);
+  Ptr<IeBeaconTiming> GetBeaconTimingElement(uint32_t interface);
   /**
    * \brief When we receive a beacon from peer-station, we remember
    * its beacon timing element (needed for peer choosing mechanism),
@@ -68,10 +66,10 @@ public:
    * \param interface is a interface on which beacon was received
    * \param timingElement is a timing element of remote beacon
    */
-  void ReceiveBeacon(
+  void UpdatePeerBeaconTiming(
       uint32_t interface,
       bool meshBeacon,
-      IeDot11sBeaconTiming timingElement,
+      IeBeaconTiming timingElement,
       Mac48Address peerAddress,
       Time receivingTime,
       Time beaconInterval
@@ -93,16 +91,16 @@ public:
    * \param Mac48Address is address of peer
    * \param uint16_t is association ID, which peer has assigned to
    * us
-   * \param IeDot11sConfiguration is mesh configuration element
+   * \param IeConfiguration is mesh configuration element
    * taken from the peer management frame
-   * \param IeDot11sPeerManagement is peer link management element
+   * \param IePeerManagement is peer link management element
    */
   void ReceivePeerLinkFrame(
       uint32_t interface,
       Mac48Address peerAddress,
       uint16_t aid,
-      IeDot11sPeerManagement peerManagementElement,
-      IeDot11sConfiguration meshConfig
+      IePeerManagement peerManagementElement,
+      IeConfiguration meshConfig
       );
   /**
    * Cancell peer link due to broken configuration (SSID or Supported
@@ -117,23 +115,29 @@ public:
    * \}
    */
 private:
-  /**
-   * All private structures:
-   * * peer link descriptors;
-   * * information about received beacons
-   * * pointers to proper plugins
-   * \{
-   */
+  ///\name Private structures
+  ///\{
+  ///\brief keeps information about beacon of peer station:
+  /// beacon interval, association ID, last time we have received a
+  /// beacon
   struct BeaconInfo
   {
     uint16_t aid; //Assoc ID
     Time referenceTbtt; //When one of my station's beacons was put into a beacon queue;
     Time beaconInterval; //Beacon interval of my station;
   };
+  /// We keep a vector of pointers to PeerLink class. This vector
+  /// keeps all peer links at a given interface.
   typedef std::vector<Ptr<PeerLink> > PeerLinksOnInterface;
+  /// This map keeps all peer links.
+  ///\param uint32_t is interface ID
   typedef std::map<uint32_t, PeerLinksOnInterface>  PeerLinksMap;
+  ///\brief This map keeps relationship between peer address and its
+  /// beacon information
   typedef std::map<Mac48Address, BeaconInfo>  BeaconsOnInterface;
+  ///\brief This map keeps beacon information on all intefaces
   typedef std::map<uint32_t, BeaconsOnInterface> BeaconInfoMap;
+  ///\brief this vector keeps pointers to MAC-plugins
   typedef std::map<uint32_t, Ptr<PeerManagerMacPlugin> > PeerManagerPluginMap;
   ///\}
 private:

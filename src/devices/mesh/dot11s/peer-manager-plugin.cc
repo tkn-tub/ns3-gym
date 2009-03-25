@@ -54,7 +54,7 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
   Ptr<Packet> packet = const_packet->Copy();
   if(header.IsBeacon())
   {
-    IeDot11sBeaconTiming beaconTiming;
+    IeBeaconTiming beaconTiming;
     Ptr<Packet> myBeacon = packet->Copy();
     MgtBeaconHeader beacon_hdr;
     myBeacon->RemoveHeader(beacon_hdr);
@@ -64,7 +64,7 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
       NS_LOG_DEBUG("Beacon timing:"<<beaconTiming);
       meshBeacon = true;
     }
-    m_protocol->ReceiveBeacon(
+    m_protocol->UpdatePeerBeaconTiming(
         m_ifIndex,
         meshBeacon,
         beaconTiming,
@@ -107,22 +107,22 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
       }
     }
     //link management element:
-    IeDot11sConfiguration meshConfig;
-    if(fields.subtype != IeDot11sPeerManagement::PEER_CLOSE)
+    IeConfiguration meshConfig;
+    if(fields.subtype != IePeerManagement::PEER_CLOSE)
     packet->RemoveHeader(meshConfig);
-    IeDot11sPeerManagement peerElement;
+    IePeerManagement peerElement;
     packet->RemoveHeader(peerElement);
 
     switch (actionValue.peerLink)
     {
       case WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM:
-        NS_ASSERT(fields.subtype == IeDot11sPeerManagement::PEER_CONFIRM);
+        NS_ASSERT(fields.subtype == IePeerManagement::PEER_CONFIRM);
         break;
       case WifiMeshMultihopActionHeader::PEER_LINK_OPEN:
-        NS_ASSERT(fields.subtype == IeDot11sPeerManagement::PEER_OPEN);
+        NS_ASSERT(fields.subtype == IePeerManagement::PEER_OPEN);
         break;
       case WifiMeshMultihopActionHeader::PEER_LINK_CLOSE:
-        NS_ASSERT(fields.subtype == IeDot11sPeerManagement::PEER_CLOSE);
+        NS_ASSERT(fields.subtype == IePeerManagement::PEER_CLOSE);
         break;
       default:
         return false;
@@ -142,19 +142,15 @@ PeerManagerMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & 
 void
 PeerManagerMacPlugin::UpdateBeacon (MeshWifiBeacon & beacon) const
 {
-  Ptr<IeDot11sBeaconTiming>  beaconTiming = 
-    m_protocol->SendBeacon(
-        m_ifIndex,
-        Simulator::Now(),
-        MicroSeconds(beacon.BeaconHeader().GetBeaconIntervalUs()));
+  Ptr<IeBeaconTiming>  beaconTiming = m_protocol->GetBeaconTimingElement(m_ifIndex);
   beacon.AddInformationElement(beaconTiming);
 }
 void
 PeerManagerMacPlugin::SendPeerLinkManagementFrame(
       Mac48Address peerAddress,
       uint16_t aid,
-      IeDot11sPeerManagement peerElement,
-      IeDot11sConfiguration meshConfig
+      IePeerManagement peerElement,
+      IeConfiguration meshConfig
       )
 {
   //Create a packet:

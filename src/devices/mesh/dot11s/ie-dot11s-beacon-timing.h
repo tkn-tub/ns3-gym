@@ -33,10 +33,10 @@ namespace dot11s {
  * \ingroup dot11s
  * \brief Describes one unit of beacon timing element
  */
-class IeDot11sBeaconTimingUnit : public RefCountBase
+class IeBeaconTimingUnit : public RefCountBase
 {
 public:
-  IeDot11sBeaconTimingUnit ();
+  IeBeaconTimingUnit ();
   void SetAid (uint8_t aid);
   void SetLastBeacon (uint16_t last_beacon);
   void SetBeaconInterval (uint16_t beacon_interval);
@@ -63,16 +63,16 @@ public:
  * \ingroup dot11s
  * \brief See 7.3.2.89 of 802.11s draft 2.07
  */
-class IeDot11sBeaconTiming : public WifiInformationElement
+class IeBeaconTiming : public WifiInformationElement
 {
 public:
   /**
    * \ingroup dot11s
    * This type is a list of timing elements obtained from neigbours with their beacons:
    */
-  typedef std::list< Ptr<IeDot11sBeaconTimingUnit> > NeighboursTimingUnitsList;
+  typedef std::list< Ptr<IeBeaconTimingUnit> > NeighboursTimingUnitsList;
 
-  IeDot11sBeaconTiming ();
+  IeBeaconTiming ();
   /**
    * This methods are needed for beacon collision
    * avoidance module:

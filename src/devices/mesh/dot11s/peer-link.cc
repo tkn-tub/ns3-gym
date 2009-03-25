@@ -123,7 +123,7 @@ PeerLink::BeaconLoss ()
 }
 
 void
-PeerLink::SetBeaconTimingElement (IeDot11sBeaconTiming beaconTiming)
+PeerLink::SetBeaconTimingElement (IeBeaconTiming beaconTiming)
 {
   m_beaconTiming = beaconTiming;
 }
@@ -152,7 +152,7 @@ PeerLink::GetBeaconInterval () const
   return m_beaconInterval;
 }
 
-IeDot11sBeaconTiming
+IeBeaconTiming
 PeerLink::GetBeaconTimingElement () const
 {
   return m_beaconTiming;
@@ -195,7 +195,7 @@ void PeerLink::Close (uint16_t localLinkId, uint16_t peerLinkId, dot11sReasonCod
   StateMachine (CLS_ACPT, reason);
 }
 
-void PeerLink::OpenAccept (uint16_t localLinkId, IeDot11sConfiguration  conf)
+void PeerLink::OpenAccept (uint16_t localLinkId, IeConfiguration  conf)
 {
   if (m_peerLinkId == 0)
     m_peerLinkId = localLinkId;
@@ -203,7 +203,7 @@ void PeerLink::OpenAccept (uint16_t localLinkId, IeDot11sConfiguration  conf)
   StateMachine (OPN_ACPT);
 }
 
-void PeerLink::OpenReject (uint16_t localLinkId, IeDot11sConfiguration  conf,dot11sReasonCode reason)
+void PeerLink::OpenReject (uint16_t localLinkId, IeConfiguration  conf,dot11sReasonCode reason)
 {
   if ( m_peerLinkId == 0)
     m_peerLinkId = localLinkId;
@@ -212,7 +212,7 @@ void PeerLink::OpenReject (uint16_t localLinkId, IeDot11sConfiguration  conf,dot
 }
 
 void
-PeerLink::ConfirmAccept (uint16_t localLinkId, uint16_t peerLinkId, uint16_t peerAid, IeDot11sConfiguration conf)
+PeerLink::ConfirmAccept (uint16_t localLinkId, uint16_t peerLinkId, uint16_t peerAid, IeConfiguration conf)
 {
   if ( m_localLinkId != peerLinkId)
     return;
@@ -227,7 +227,7 @@ PeerLink::ConfirmAccept (uint16_t localLinkId, uint16_t peerLinkId, uint16_t pee
 
 void
 PeerLink::ConfirmReject (uint16_t localLinkId, uint16_t peerLinkId,
-    IeDot11sConfiguration  conf,dot11sReasonCode reason)
+    IeConfiguration  conf,dot11sReasonCode reason)
 {
   if (m_localLinkId != peerLinkId)
     return;
@@ -507,14 +507,14 @@ void PeerLink::ClearHoldingTimer ()
 
 void PeerLink::SendPeerLinkClose (dot11sReasonCode reasoncode)
 {
-  IeDot11sPeerManagement peerElement;
+  IePeerManagement peerElement;
   peerElement.SetPeerClose (m_localLinkId, m_peerLinkId, reasoncode);
   m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_assocId, peerElement, m_configuration);
 }
 
 void PeerLink::SendPeerLinkOpen ()
 {
-  IeDot11sPeerManagement peerElement;
+  IePeerManagement peerElement;
   peerElement.SetPeerOpen (m_localLinkId);
   NS_ASSERT (m_macPlugin != NULL);
   m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_assocId, peerElement, m_configuration);
@@ -522,7 +522,7 @@ void PeerLink::SendPeerLinkOpen ()
 
 void PeerLink::SendPeerLinkConfirm ()
 {
-  IeDot11sPeerManagement peerElement;
+  IePeerManagement peerElement;
   peerElement.SetPeerConfirm (m_localLinkId, m_peerLinkId);
   m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_assocId, peerElement, m_configuration);
 }

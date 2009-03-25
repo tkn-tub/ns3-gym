@@ -71,7 +71,7 @@ main (int argc, char *argv[])
                "RandomStart", TimeValue (Seconds (randomStart))
               );
   //wifi.SetPeerManager("ns3::WifiPeerManager");
-  wifi.SetPeerManager("ns3::Dot11sPeerManagerProtocol");
+  wifi.SetPeerManager("ns3::PeerManagerProtocol");
   wifi.SetL2RoutingNetDevice ("ns3::MeshPointDevice");
   meshDevices = wifi.Install (wifiPhy,nodes);
   // Installing Mobility.

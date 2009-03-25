@@ -32,11 +32,11 @@ namespace dot11s {
  * \ingroup dot11s
  * \brief See 7.3.2.98 of 802.11s draft 2.07
  */
-class IeDot11sPerr : public WifiInformationElement
+class IePerr : public WifiInformationElement
 {
 public:
-  IeDot11sPerr ();
-  ~IeDot11sPerr ();
+  IePerr ();
+  ~IePerr ();
   static  TypeId   GetTypeId ();
   virtual TypeId   GetInstanceTypeId () const;
   struct FailedDestination

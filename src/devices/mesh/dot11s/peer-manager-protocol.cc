@@ -45,32 +45,25 @@ TypeId
 PeerManagerProtocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PeerManagerProtocol")
-                      .SetParent<Object> ()
-                      .AddConstructor<PeerManagerProtocol> ()
-                      //peerLinkCleanupTimeout. This constant is not specified in Draft 2.0
-                      .AddAttribute ("PeerLinkCleanupPeriod",
-                                     "PeerLinkCleanupPeriod",
-                                     TimeValue (MilliSeconds (80)),
-                                     MakeTimeAccessor (&PeerManagerProtocol::m_peerLinkCleanupPeriod),
-                                     MakeTimeChecker ()
-                                    )
-                      //MaxBeaconLost. This constant is not specified in Draft 2.0
-#if 0
-                      .AddAttribute ("MaxBeaconLost", "Max Beacon Lost",
-                                     UintegerValue (3),
-                                     MakeUintegerAccessor (&PeerManagerProtocol::m_maxBeaconLoss),
-                                     MakeUintegerChecker<uint8_t> ()
-                                    )
-#endif
-                      //maximum number of peer links.
-                      .AddAttribute ("MaxNumberOfPeerLinks",
-                                     "Maximum number of peer links ",
-                                     UintegerValue (32),
-                                     MakeUintegerAccessor (&PeerManagerProtocol::m_maxNumberOfPeerLinks),
-                                     MakeUintegerChecker<uint8_t> ()
-                                    );
+    .SetParent<Object> ()
+    .AddConstructor<PeerManagerProtocol> ()
+    /// peerLinkCleanupTimeout. We go through the map of peer links and 
+    /// remove all links which state is IDLE.
+    .AddAttribute ("PeerLinkCleanupPeriod",
+        "PeerLinkCleanupPeriod",
+        TimeValue (MilliSeconds (80)),
+        MakeTimeAccessor (&PeerManagerProtocol::m_peerLinkCleanupPeriod),
+        MakeTimeChecker ()
+        )
+    /// maximum number of peer links. Now we calculate the total
+    /// number of peer links on all interfaces
+    .AddAttribute ("MaxNumberOfPeerLinks",
+        "Maximum number of peer links ",
+        UintegerValue (32),
+        MakeUintegerAccessor (&PeerManagerProtocol::m_maxNumberOfPeerLinks),
+        MakeUintegerChecker<uint8_t> ()
+        );
   return tid;
-
 }
 PeerManagerProtocol::PeerManagerProtocol ():
   m_lastAssocId (0),
@@ -103,7 +96,7 @@ PeerManagerProtocol::~PeerManagerProtocol ()
 }
 
 bool
-PeerManagerProtocol::AttachPorts(std::vector<Ptr<WifiNetDevice> > interfaces)
+PeerManagerProtocol::AttachInterfaces(std::vector<Ptr<WifiNetDevice> > interfaces)
 {
   for(std::vector<Ptr<WifiNetDevice> >::iterator i = interfaces.begin(); i != interfaces.end(); i ++)
   {
@@ -119,10 +112,10 @@ PeerManagerProtocol::AttachPorts(std::vector<Ptr<WifiNetDevice> > interfaces)
   return true;
 }
 
-Ptr<IeDot11sBeaconTiming>
-PeerManagerProtocol::SendBeacon(uint32_t interface, Time currentTbtt, Time beaconInterval)
+Ptr<IeBeaconTiming>
+PeerManagerProtocol::GetBeaconTimingElement(uint32_t interface)
 {
-  Ptr<IeDot11sBeaconTiming> retval = Create<IeDot11sBeaconTiming> ();
+  Ptr<IeBeaconTiming> retval = Create<IeBeaconTiming> ();
   BeaconInfoMap::iterator i = m_neighbourBeacons.find(interface);
   if(i == m_neighbourBeacons.end())
     return retval;
@@ -169,10 +162,10 @@ PeerManagerProtocol::FillBeaconInfo(uint32_t interface, Mac48Address peerAddress
 }
 
 void
-PeerManagerProtocol::ReceiveBeacon(
+PeerManagerProtocol::UpdatePeerBeaconTiming(
     uint32_t interface,
     bool meshBeacon,
-    IeDot11sBeaconTiming timingElement,
+    IeBeaconTiming timingElement,
     Mac48Address peerAddress,
     Time receivingTime,
     Time beaconInterval)
@@ -206,8 +199,8 @@ PeerManagerProtocol::ReceivePeerLinkFrame (
     uint32_t interface,
     Mac48Address peerAddress,
     uint16_t aid,
-    IeDot11sPeerManagement peerManagementElement,
-    IeDot11sConfiguration meshConfig
+    IePeerManagement peerManagementElement,
+    IeConfiguration meshConfig
       )
 {
   if (peerManagementElement.SubtypeIsOpen ())
@@ -400,10 +393,10 @@ PeerManagerProtocol::GetNextBeaconShift (
   NS_ASSERT (myBeacon != m_myBeaconInfo.end());
   for (PeerLinksOnInterface::iterator i = interface->second.begin (); i != interface->second.end(); i++)
     {
-      IeDot11sBeaconTiming::NeighboursTimingUnitsList neighbours;
+      IeBeaconTiming::NeighboursTimingUnitsList neighbours;
       neighbours = (*i)->GetBeaconTimingElement ().GetNeighboursTimingElementsList();
       //first let's form the list of all kown TBTTs
-      for (IeDot11sBeaconTiming::NeighboursTimingUnitsList::const_iterator j = neighbours.begin (); j != neighbours.end(); j++)
+      for (IeBeaconTiming::NeighboursTimingUnitsList::const_iterator j = neighbours.begin (); j != neighbours.end(); j++)
         {
           uint16_t beaconIntervalTimeUnits;
           beaconIntervalTimeUnits = (*j)->GetBeaconInterval ();
@@ -471,9 +464,15 @@ PeerManagerProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAddres
    NS_ASSERT(plugin != m_plugins.end());
    NS_LOG_UNCOND("LINK between me:"<<plugin->second->GetAddress() <<" and peer:"<<peerAddress<<", at interface "<<interface);
    if(status)
+   {
      NS_LOG_UNCOND("Established");
+     m_numberOfActivePeers ++;
+   }
    else
+   {
      NS_LOG_UNCOND("Closed");
+     m_numberOfActivePeers --;
+   }
 }
   
 } // namespace dot11s

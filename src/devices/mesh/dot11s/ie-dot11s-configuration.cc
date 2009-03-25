@@ -76,7 +76,7 @@ bool dot11sMeshCapability::Is (uint16_t cap, uint8_t n) const
   return (cap & mask) == mask;
 }
 
-IeDot11sConfiguration::IeDot11sConfiguration ():
+IeConfiguration::IeConfiguration ():
     m_APSId (PROTOCOL_HWMP),
     m_APSMId (METRIC_AIRTIME),
     m_CCMId (CONGESTION_DEFAULT),
@@ -84,20 +84,20 @@ IeDot11sConfiguration::IeDot11sConfiguration ():
 {}
 
 TypeId
-IeDot11sConfiguration::GetTypeId ()
+IeConfiguration::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::IeDot11sConfiguration")
+  static TypeId tid = TypeId ("ns3::IeConfiguration")
     .SetParent<WifiInformationElement> ();
   return tid;
 }
 
 TypeId
-IeDot11sConfiguration::GetInstanceTypeId () const
+IeConfiguration::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 uint8_t
-IeDot11sConfiguration::GetInformationSize () const
+IeConfiguration::GetInformationSize () const
 {
   return 1 // Version
     + 4 // APSPId
@@ -108,7 +108,7 @@ IeDot11sConfiguration::GetInformationSize () const
 }
 
 void
-IeDot11sConfiguration::SerializeInformation (Buffer::Iterator i) const
+IeConfiguration::SerializeInformation (Buffer::Iterator i) const
 {
   i.WriteU8 (1); //Version
   // Active Path Selection Protocol ID:
@@ -123,7 +123,7 @@ IeDot11sConfiguration::SerializeInformation (Buffer::Iterator i) const
 }
 
 uint8_t
-IeDot11sConfiguration::DeserializeInformation (Buffer::Iterator i, uint8_t length)
+IeConfiguration::DeserializeInformation (Buffer::Iterator i, uint8_t length)
 {
   Buffer::Iterator start = i;
   uint8_t version;
@@ -140,35 +140,35 @@ IeDot11sConfiguration::DeserializeInformation (Buffer::Iterator i, uint8_t lengt
   return i.GetDistanceFrom (start);
 }
 void
-IeDot11sConfiguration::PrintInformation (std::ostream& os) const
+IeConfiguration::PrintInformation (std::ostream& os) const
 {
   //TODO: print
 }
 void
-IeDot11sConfiguration::SetRouting (dot11sPathSelectionProtocol routingId)
+IeConfiguration::SetRouting (dot11sPathSelectionProtocol routingId)
 {
   m_APSId  =  routingId;
 }
 
 void
-IeDot11sConfiguration::SetMetric (dot11sPathSelectionMetric metricId)
+IeConfiguration::SetMetric (dot11sPathSelectionMetric metricId)
 {
   m_APSMId =  metricId;
 }
 
 bool
-IeDot11sConfiguration::IsHWMP ()
+IeConfiguration::IsHWMP ()
 {
   return (m_APSId == PROTOCOL_HWMP);
 }
 
 bool
-IeDot11sConfiguration::IsAirtime ()
+IeConfiguration::IsAirtime ()
 {
   return (m_APSMId  == METRIC_AIRTIME);
 }
 
-dot11sMeshCapability const& IeDot11sConfiguration::MeshCapability ()
+dot11sMeshCapability const& IeConfiguration::MeshCapability ()
 {
   return m_meshCap;
 }

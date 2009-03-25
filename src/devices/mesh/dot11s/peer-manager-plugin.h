@@ -27,8 +27,8 @@
 namespace ns3 {
 class MeshWifiInterfaceMac;
 namespace dot11s {
-class IeDot11sConfiguration;
-class IeDot11sPeerManagement;
+class IeConfiguration;
+class IePeerManagement;
 class PeerManagerProtocol;
 /**
  * \ingroup dot11s
@@ -51,12 +51,15 @@ public:
   bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const;
   void UpdateBeacon (MeshWifiBeacon & beacon) const;
   ///\}
+private:
+  friend class PeerManagerProtocol;
+  friend class PeerLink;
   void SetPeerManagerProtcol(Ptr<PeerManagerProtocol> protocol);
   void SendPeerLinkManagementFrame(
       Mac48Address peerAddress,
       uint16_t aid,
-      IeDot11sPeerManagement peerElement,
-      IeDot11sConfiguration meshConfig
+      IePeerManagement peerElement,
+      IeConfiguration meshConfig
       );
   ///\brief DUBUG only - to print established links
   Mac48Address GetAddress () const;

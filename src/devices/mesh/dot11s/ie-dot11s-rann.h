@@ -32,11 +32,11 @@ namespace dot11s {
  * \ingroup dot11s
  * \brief See 7.3.2.95 of 802.11s draft 2.07
  */
-class IeDot11sRann
+class IeRann
 {
 public:
-  IeDot11sRann ();
-  virtual ~IeDot11sRann ();
+  IeRann ();
+  virtual ~IeRann ();
   static TypeId GetTypeId ();
   virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;

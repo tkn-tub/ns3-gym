@@ -32,10 +32,10 @@ namespace dot11s {
  * \ingroup dot11s
  * \brief See 7.3.2.85 of draft 2.07
  */
-class IeDot11sPeerManagement : public WifiInformationElement
+class IePeerManagement : public WifiInformationElement
 {
 public:
-    IeDot11sPeerManagement ();
+    IePeerManagement ();
     enum Subtype {
       PEER_OPEN    = 0,
       PEER_CLOSE   = 1,

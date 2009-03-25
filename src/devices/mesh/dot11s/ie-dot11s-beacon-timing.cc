@@ -24,9 +24,9 @@
 namespace ns3 {
 namespace dot11s {
 /*******************************************
- * IeDot11sBeaconTimingUnit
+ * IeBeaconTimingUnit
  *******************************************/
-IeDot11sBeaconTimingUnit::IeDot11sBeaconTimingUnit ():
+IeBeaconTimingUnit::IeBeaconTimingUnit ():
   m_aid (0),
   m_lastBeacon (0),
   m_beaconInterval (0)
@@ -34,57 +34,57 @@ IeDot11sBeaconTimingUnit::IeDot11sBeaconTimingUnit ():
 }
 
 void
-IeDot11sBeaconTimingUnit::SetAid (uint8_t aid)
+IeBeaconTimingUnit::SetAid (uint8_t aid)
 {
   m_aid = aid;
 }
 
 void
-IeDot11sBeaconTimingUnit::SetLastBeacon (uint16_t lastBeacon)
+IeBeaconTimingUnit::SetLastBeacon (uint16_t lastBeacon)
 {
   m_lastBeacon = lastBeacon;
 }
 
 void
-IeDot11sBeaconTimingUnit::SetBeaconInterval (uint16_t beaconInterval)
+IeBeaconTimingUnit::SetBeaconInterval (uint16_t beaconInterval)
 {
   m_beaconInterval = beaconInterval;
 }
 
 uint8_t
-IeDot11sBeaconTimingUnit::GetAid ()
+IeBeaconTimingUnit::GetAid ()
 {
   return m_aid;
 }
 
 uint16_t
-IeDot11sBeaconTimingUnit::GetLastBeacon ()
+IeBeaconTimingUnit::GetLastBeacon ()
 {
   return m_lastBeacon;
 }
 
 uint16_t
-IeDot11sBeaconTimingUnit::GetBeaconInterval ()
+IeBeaconTimingUnit::GetBeaconInterval ()
 {
   return m_beaconInterval;
 }
 
 /*******************************************
- * IeDot11sBeaconTiming
+ * IeBeaconTiming
  *******************************************/
-IeDot11sBeaconTiming::IeDot11sBeaconTiming ():
+IeBeaconTiming::IeBeaconTiming ():
   m_numOfUnits (0)
 {
 }
 
-IeDot11sBeaconTiming::NeighboursTimingUnitsList
-IeDot11sBeaconTiming::GetNeighboursTimingElementsList ()
+IeBeaconTiming::NeighboursTimingUnitsList
+IeBeaconTiming::GetNeighboursTimingElementsList ()
 {
   return m_neighbours;
 }
 
 void
-IeDot11sBeaconTiming::AddNeighboursTimingElementUnit (
+IeBeaconTiming::AddNeighboursTimingElementUnit (
   uint16_t aid,
   Time  last_beacon, //MicroSeconds!
   Time  beacon_interval //MicroSeconds!
@@ -100,7 +100,7 @@ IeDot11sBeaconTiming::AddNeighboursTimingElementUnit (
       && ((*i)->GetBeaconInterval () == BeaconIntervalToU16(beacon_interval))
     )
       return;
-  Ptr<IeDot11sBeaconTimingUnit>new_element = Create<IeDot11sBeaconTimingUnit> ();
+  Ptr<IeBeaconTimingUnit>new_element = Create<IeBeaconTimingUnit> ();
   new_element->SetAid (AidToU8(aid));
   new_element->SetLastBeacon (TimestampToU16(last_beacon));
   new_element->SetBeaconInterval (BeaconIntervalToU16(beacon_interval));
@@ -109,7 +109,7 @@ IeDot11sBeaconTiming::AddNeighboursTimingElementUnit (
 }
 
 void
-IeDot11sBeaconTiming::DelNeighboursTimingElementUnit (
+IeBeaconTiming::DelNeighboursTimingElementUnit (
   uint16_t aid,
   Time  last_beacon, //MicroSeconds!
   Time  beacon_interval //MicroSeconds!
@@ -129,7 +129,7 @@ IeDot11sBeaconTiming::DelNeighboursTimingElementUnit (
 }
 
 void
-IeDot11sBeaconTiming::ClearTimingElement ()
+IeBeaconTiming::ClearTimingElement ()
 {
   uint16_t to_delete = 0;
   uint16_t i;
@@ -145,13 +145,13 @@ IeDot11sBeaconTiming::ClearTimingElement ()
 }
 
 uint8_t
-IeDot11sBeaconTiming::GetInformationSize () const
+IeBeaconTiming::GetInformationSize () const
 {
   return (5*m_numOfUnits);
 }
 
 void
-IeDot11sBeaconTiming::PrintInformation (std::ostream& os) const
+IeBeaconTiming::PrintInformation (std::ostream& os) const
 {
   for (NeighboursTimingUnitsList::const_iterator j = m_neighbours.begin (); j != m_neighbours.end(); j++)
     os << "AID=" << (*j)->GetAid () << ", Last beacon was at "
@@ -159,7 +159,7 @@ IeDot11sBeaconTiming::PrintInformation (std::ostream& os) const
 }
 
 void
-IeDot11sBeaconTiming::SerializeInformation (Buffer::Iterator i) const
+IeBeaconTiming::SerializeInformation (Buffer::Iterator i) const
 {
   for (NeighboursTimingUnitsList::const_iterator j = m_neighbours.begin (); j != m_neighbours.end(); j++)
   {
@@ -169,13 +169,13 @@ IeDot11sBeaconTiming::SerializeInformation (Buffer::Iterator i) const
   }
 }
 uint8_t 
-IeDot11sBeaconTiming::DeserializeInformation (Buffer::Iterator start, uint8_t length)
+IeBeaconTiming::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   m_numOfUnits = length/5;
   for (int j = 0; j < m_numOfUnits; j ++)
     {
-      Ptr<IeDot11sBeaconTimingUnit> new_element = Create<IeDot11sBeaconTimingUnit> ();
+      Ptr<IeBeaconTimingUnit> new_element = Create<IeBeaconTimingUnit> ();
       new_element->SetAid (i.ReadU8());
       new_element->SetLastBeacon (i.ReadNtohU16());
       new_element->SetBeaconInterval (i.ReadNtohU16());
@@ -185,19 +185,19 @@ IeDot11sBeaconTiming::DeserializeInformation (Buffer::Iterator start, uint8_t le
 };
 
 uint16_t
-IeDot11sBeaconTiming::TimestampToU16 (Time x)
+IeBeaconTiming::TimestampToU16 (Time x)
 {
   return ((uint16_t) ((x.GetMicroSeconds() >> 8)&0xffff));
 };
 
 uint16_t 
-IeDot11sBeaconTiming::BeaconIntervalToU16 (Time x)
+IeBeaconTiming::BeaconIntervalToU16 (Time x)
 {
   return ((uint16_t) (x.GetMicroSeconds() >>10)&0xffff);
 };
 
 uint8_t
-IeDot11sBeaconTiming::AidToU8 (uint16_t x)
+IeBeaconTiming::AidToU8 (uint16_t x)
 {
   return (uint8_t) (x&0xff);
 };
