@@ -142,7 +142,7 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
 bool
 PeerManagerMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const
 {
-  return false;
+  return true;
 }
 
 void
@@ -216,7 +216,20 @@ PeerManagerMacPlugin::GetAddress () const
     return m_parent->GetAddress ();
   else return Mac48Address::Mac48Address();
 }
-  
+std::pair<Time, Time> 
+PeerManagerMacPlugin::GetBeaconInfo() const
+{
+  std::pair<Time,Time> retval;
+  retval.first = m_parent->GetTbtt ();
+  retval.second = m_parent->GetBeaconInterval ();
+  return retval;
+}
+void
+PeerManagerMacPlugin::SetBeaconShift(Time shift)
+{
+  m_parent->ShiftTbtt (shift);
+}
+
 } // namespace dot11s
 } //namespace ns3
 

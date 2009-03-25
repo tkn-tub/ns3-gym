@@ -161,6 +161,8 @@ private:
    * Removes all links which are idle
    */
   void  PeerCleanup ();
+  ///\brief BCA
+  Time GetNextBeaconShift (uint32_t interface);
 private:
   PeerManagerPluginMap m_plugins;
   /**
@@ -168,7 +170,6 @@ private:
    * \{
    */
   BeaconInfoMap m_neighbourBeacons;
-  static const uint8_t m_maxBeaconLoss = 3;
   ///\}
   uint16_t m_lastAssocId;
   uint16_t m_lastLocalLinkId;

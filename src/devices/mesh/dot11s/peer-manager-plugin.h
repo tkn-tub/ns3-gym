@@ -53,7 +53,16 @@ public:
   ///\}
 private:
   friend class PeerManagerProtocol;
-  friend class PeerLink;
+  friend class PeerLink; 
+  ///\name BCA functionallity:
+  ///\{
+  ///\brief Fills TBTT and beacon interval. Needed by BCA
+  ///functionallity
+  ///\param first in retval is TBTT
+  ///\param second in retval is beacon interval
+  std::pair<Time, Time> GetBeaconInfo() const;
+  void SetBeaconShift(Time shift);
+  ///\}
   void SetPeerManagerProtcol(Ptr<PeerManagerProtocol> protocol);
   void SendPeerLinkManagementFrame(
       Mac48Address peerAddress,
