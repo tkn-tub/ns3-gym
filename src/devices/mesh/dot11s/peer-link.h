@@ -28,7 +28,7 @@
 #include "ie-dot11s-beacon-timing.h"
 #include "ie-dot11s-peer-management.h"
 #include "ie-dot11s-configuration.h"
-#include "peer-manager-plugin.h"
+#include "peer-management-plugin.h"
 namespace ns3 {
 namespace dot11s {
 /**

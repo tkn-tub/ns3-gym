@@ -28,7 +28,6 @@
 #include "ns3/wifi-channel.h"
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/mesh-wifi-interface-mac.h"
-//#include "ns3/peer-manager-plugin.h"
 
 namespace ns3 {
 namespace dot11s {

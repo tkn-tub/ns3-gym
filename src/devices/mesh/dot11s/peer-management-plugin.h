@@ -22,7 +22,7 @@
 #define PEER_MANAGER_MAC_PLUGIN_H_
 
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
-#include "peer-manager-protocol.h"
+#include "peer-management-protocol.h"
 
 namespace ns3 {
 class MeshWifiInterfaceMac;

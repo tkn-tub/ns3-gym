@@ -22,7 +22,7 @@
 #ifndef _MESHWIFIHELPER_H
 #define _MESHWIFIHELPER_H
 #include "ns3/wifi-helper.h"
-#include "ns3/peer-manager-protocol.h"
+#include "ns3/peer-management-protocol.h"
 
 namespace ns3 {
 namespace dot11s {

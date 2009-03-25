@@ -21,7 +21,7 @@
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ie-dot11s-configuration.h"
 #include "ie-dot11s-peer-management.h"
-#include "peer-manager-plugin.h"
+#include "peer-management-plugin.h"
 #include "peer-link-frame.h"
 #include "ns3/mesh-wifi-mac-header.h"
 #include "ns3/simulator.h"

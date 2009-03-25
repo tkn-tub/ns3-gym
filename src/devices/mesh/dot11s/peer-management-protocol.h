@@ -25,10 +25,10 @@
 
 #include "ns3/mac48-address.h"
 #include "ns3/wifi-net-device.h"
-#include "ns3/ie-dot11s-peer-management.h"
-#include "ns3/ie-dot11s-beacon-timing.h"
-#include "ns3/ie-dot11s-configuration.h"
 #include "ns3/event-id.h"
+#include "ie-dot11s-peer-management.h"
+#include "ie-dot11s-beacon-timing.h"
+#include "ie-dot11s-configuration.h"
 
 #include <list>
 #include <map>

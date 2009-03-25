@@ -20,7 +20,7 @@
  */
 
 
-#include "peer-manager-protocol.h"
+#include "peer-management-protocol.h"
 
 #include "ns3/dot11s-parameters.h"
 #include "ns3/simulator.h"
@@ -30,7 +30,7 @@
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 #include "peer-link.h"
-#include "peer-manager-plugin.h"
+#include "peer-management-plugin.h"
 
 
 NS_LOG_COMPONENT_DEFINE ("PeerManagerProtocol");

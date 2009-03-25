@@ -23,7 +23,7 @@
 #include "ns3/header.h"
 #include "ns3/supported-rates.h"
 #include "ns3/ssid.h"
-#include "ns3/ie-dot11s-peer-management.h"
+#include "ie-dot11s-peer-management.h"
 namespace ns3 {
 class MeshWifiInterfaceMac;
 namespace dot11s {
