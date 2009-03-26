@@ -161,34 +161,31 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
     Ptr<Node> node = *i;
     // Create a mesh point device:
     Ptr<MeshPointDevice> mp = m_deviceFactory.Create<MeshPointDevice> ();
-    std::vector<Ptr<NetDevice> >interfaces;
-    devices.Add (mp);
+    std::vector<Ptr<NetDevice> > mpInterfacess;
     // Creating interface:
-    std::vector<Ptr<WifiNetDevice> > nodeDevices;
-    Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
-    interfaces.push_back(device);
-    //Creating MAC for this interface
-    Ptr<MeshWifiInterfaceMac> mac = m_meshMac.Create<MeshWifiInterfaceMac> ();
-    Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
-    Ptr<WifiPhy> phy = phyHelper.Create (node, device);
-    mac->SetAddress (Mac48Address::Allocate ());
-    device->SetMac (mac);
-    device->SetPhy (phy);
-    device->SetRemoteStationManager (manager);
-    //Attaching peer manager:
-    Ptr<PeerManagerProtocol> peerMan = m_peerMan.Create<PeerManagerProtocol> ();    
-    NS_ASSERT(peerMan->AttachInterfaces(interfaces));
-    //Creating Hwmp:
-    ////TODO: make it using object factory
-    Ptr<HwmpProtocol> hwmp = m_routing.Create<HwmpProtocol> ();
-    NS_ASSERT(hwmp->AttachInterfaces(interfaces));
-    //Attaching interfaces to node:
-    node->AddDevice (device);
-    nodeDevices.push_back (device);
+    {
+      Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
+      //Creating MAC for this interface
+      Ptr<MeshWifiInterfaceMac> mac = m_meshMac.Create<MeshWifiInterfaceMac> ();
+      Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
+      Ptr<WifiPhy> phy = phyHelper.Create (node, device);
+      mac->SetAddress (Mac48Address::Allocate ());
+      device->SetMac (mac);
+      device->SetPhy (phy);
+      device->SetRemoteStationManager (manager);
+      node->AddDevice (device);
+      mpInterfacess.push_back (device);
+    }
     node -> AddDevice (mp);
-    for (std::vector<Ptr<WifiNetDevice> > ::iterator iter=nodeDevices.begin ();iter != nodeDevices.end(); ++iter)
+    for (std::vector<Ptr<NetDevice> > ::iterator iter=mpInterfacess.begin ();iter != mpInterfacess.end(); ++iter)
       mp->AddInterface (*iter);
-    nodeDevices.clear ();
+    mpInterfacess.clear ();
+    //Install protocols:
+    Ptr<PeerManagerProtocol> peer = m_peerMan.Create<PeerManagerProtocol> ();
+    NS_ASSERT(peer->Install(mp));
+    Ptr<HwmpProtocol> hwmp = m_routing.Create<HwmpProtocol> ();
+    NS_ASSERT(hwmp->Install(mp));
+    devices.Add (mp);
   }
   return devices;
 }

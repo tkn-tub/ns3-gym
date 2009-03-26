@@ -25,6 +25,7 @@
 #include "ie-dot11s-peer-management.h"
 #include "ie-dot11s-configuration.h"
 
+#include "ns3/mesh-point-device.h"
 #include "ns3/dot11s-parameters.h"
 #include "ns3/simulator.h"
 #include "ns3/assert.h"
@@ -100,8 +101,9 @@ PeerManagerProtocol::~PeerManagerProtocol ()
 }
 
 bool
-PeerManagerProtocol::AttachInterfaces(std::vector<Ptr<NetDevice> > interfaces)
+PeerManagerProtocol::Install(Ptr<MeshPointDevice> mp)
 {
+  std::vector<Ptr<NetDevice> > interfaces = mp->GetInterfaces ();
   for(std::vector<Ptr<NetDevice> >::iterator i = interfaces.begin(); i != interfaces.end(); i ++)
   {
     const WifiNetDevice * wifiNetDev = dynamic_cast<const WifiNetDevice *> (PeekPointer (*i));

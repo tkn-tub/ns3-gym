@@ -32,6 +32,7 @@
 
 #include <map>
 namespace ns3 {
+class MeshPointDevice;
 namespace dot11s {
 class PeerManagerMacPlugin;
 class PeerLink;
@@ -48,7 +49,7 @@ public:
   PeerManagerProtocol ();
   ~PeerManagerProtocol ();
   static TypeId GetTypeId ();
-  bool AttachInterfaces(std::vector<Ptr<NetDevice> >);
+  bool Install(Ptr<MeshPointDevice>);
   /** \brief Methods that handle beacon sending/receiving procedure.
    * This methods interact with MAC_layer plug-in
    * \{

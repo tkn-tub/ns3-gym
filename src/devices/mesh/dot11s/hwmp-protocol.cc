@@ -26,6 +26,7 @@
 #include "ns3/packet.h"
 #include "ns3/mesh-point-device.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/mesh-point-device.h"
 #include "ns3/mesh-wifi-interface-mac.h"
 
 NS_LOG_COMPONENT_DEFINE ("HwmpProtocol");
@@ -100,6 +101,7 @@ HwmpProtocol::RequestRoute (
   MeshL2RoutingProtocol::RouteReplyCallback routeReply
 )
 {
+  NS_LOG_UNCOND("Packet has come!");
 #if 0
   HwmpRtable::LookupResult result;
   HwmpProtocolTag tag;
@@ -235,8 +237,10 @@ HwmpProtocol::RequestRoute (
   return true;
 }
 bool
-HwmpProtocol::AttachInterfaces (std::vector<Ptr<NetDevice> > interfaces)
+HwmpProtocol::Install (Ptr<MeshPointDevice> mp)
 {
+  m_mp = mp;
+  std::vector<Ptr<NetDevice> > interfaces = mp->GetInterfaces ();
   for (std::vector<Ptr<NetDevice> >::iterator i = interfaces.begin (); i != interfaces.end(); i++)
     {
       //Checking netdevice:
@@ -251,6 +255,7 @@ HwmpProtocol::AttachInterfaces (std::vector<Ptr<NetDevice> > interfaces)
       m_interfaces[wifiNetDev->GetIfIndex ()] = hwmpMac;
       mac->InstallPlugin (hwmpMac);
     }
+  mp->SetRoutingProtocol(this);
   return true;
 }
 #if 0

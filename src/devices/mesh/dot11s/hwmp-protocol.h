@@ -26,7 +26,7 @@
 #include <map>
 
 namespace ns3 {
-class NetDevice;
+class MeshPointDevice;
 class Packet;
 class Mac48Address;
 namespace dot11s {
@@ -52,7 +52,7 @@ public:
     uint16_t  protocolType,
     MeshL2RoutingProtocol::RouteReplyCallback  routeReply
   );
-  bool AttachInterfaces (std::vector<Ptr<NetDevice> >);
+  bool Install (Ptr<MeshPointDevice>);
 #if 0
   /**
    * \brief Disables port by index.

@@ -296,7 +296,11 @@ MeshPointDevice::GetInterface (uint32_t n) const
   NS_ASSERT (m_ifaces.size () > n);
   return m_ifaces[n];
 }
-
+std::vector<Ptr<NetDevice> >
+MeshPointDevice::GetInterfaces () const
+{
+  return m_ifaces;
+}
 void
 MeshPointDevice::AddInterface (Ptr<NetDevice> iface)
 {

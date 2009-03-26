@@ -74,6 +74,10 @@ public:
    * \param id is interface id, 0 <= id < GetNInterfaces
    */
   Ptr<NetDevice> GetInterface (uint32_t id) const;
+  /**
+   * \return vector of interfaces
+   */
+  std::vector<Ptr<NetDevice> > GetInterfaces () const;
   //\}
   
   ///\name Protocols

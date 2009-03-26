@@ -85,7 +85,6 @@ main (int argc, char *argv[])
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (nodes);
   NS_LOG_UNCOND("start");
-#if 0
   // Setting Internet Stack:
   InternetStackHelper stack;
   stack.Install (nodes);
@@ -104,7 +103,6 @@ main (int argc, char *argv[])
   clientApps.Start (Seconds (2.0));
   clientApps.Stop (Seconds (10.0));
   //end
-#endif
   Simulator::Stop (Seconds (10.0));
   Simulator::Run ();
   Simulator::Destroy ();
