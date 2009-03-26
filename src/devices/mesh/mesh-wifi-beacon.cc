@@ -70,7 +70,7 @@ WifiMacHeader MeshWifiBeacon::CreateHeader (Mac48Address address)
   hdr.SetBeacon ();
   hdr.SetAddr1 (Mac48Address::GetBroadcast ());
   hdr.SetAddr2 (address);
-  hdr.SetAddr3 (address);
+  hdr.SetAddr3 (Mac48Address ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   

@@ -32,9 +32,9 @@ TypeId
 WifiMeshHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiMeshHeader")
-                      .SetParent<Header> ()
-                      .AddConstructor<WifiMeshHeader> ()
-                      ;
+    .SetParent<Header> ()
+    .AddConstructor<WifiMeshHeader> ()
+    ;
   return tid;
 }
 
