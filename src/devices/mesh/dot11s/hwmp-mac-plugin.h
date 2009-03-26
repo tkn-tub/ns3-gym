@@ -51,9 +51,9 @@ class HwmpMacPlugin : public MeshWifiInterfaceMacPlugin
   private:
     friend class HwmpProtocol;
     ///\brief Interaction with protocol:
-    void SendPreq(Ptr<IePreq> preq);
-    void SendPrep(Ptr<IePreq> prep);
-    void SendPerr(Ptr<IePreq> perr);
+    void SendPreq(Ptr<IePreq> preq, std::vector<Mac48Address> receivers);
+    void SendPrep(Ptr<IePreq> prep, std::vector<Mac48Address> receivers);
+    void SendPerr(Ptr<IePreq> perr, std::vector<Mac48Address> receivers);
   private:
     Ptr<MeshWifiInterfaceMac> m_parent;
     uint32_t m_ifIndex;

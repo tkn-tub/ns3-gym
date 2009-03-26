@@ -40,22 +40,22 @@ PeerLink::GetTypeId()
     .AddConstructor<PeerLink> ()
     .AddAttribute ("RetryTimeout", "Retry timeout",
         TimeValue (TimeValue (MicroSeconds (40 * 1024))),
-        MakeTimeAccessor (&PeerLink::m_retryTimeout),
+        MakeTimeAccessor (&PeerLink::m_dot11MeshRetryTimeout),
         MakeTimeChecker ()
         )
     .AddAttribute ("HoldingTimeout", "Holding timeout",
         TimeValue (TimeValue (MicroSeconds (40 * 1024))),
-        MakeTimeAccessor (&PeerLink::m_holdingTimeout),
+        MakeTimeAccessor (&PeerLink::m_dot11MeshHoldingTimeout),
         MakeTimeChecker ()
         )
     .AddAttribute ("ConfirmTimeout", "Confirm timeout",
         TimeValue (TimeValue (MicroSeconds (40 * 1024))),
-        MakeTimeAccessor (&PeerLink::m_confirmTimeout),
+        MakeTimeAccessor (&PeerLink::m_dot11MeshConfirmTimeout),
         MakeTimeChecker ()
         )
     .AddAttribute ("MaxRetries", "Maximum number of retries",
         UintegerValue (4),
-        MakeUintegerAccessor (&PeerLink::m_maxRetries),
+        MakeUintegerAccessor (&PeerLink::m_dot11MeshMaxRetries),
         MakeUintegerChecker<uint16_t> ()
         )
     .AddAttribute ("MaxBeaconLoss", "Maximum number of lost beacons before link will be closed",
@@ -530,8 +530,8 @@ void PeerLink::SendPeerLinkConfirm ()
 
 void PeerLink::SetHoldingTimer ()
 {
-  NS_ASSERT(m_holdingTimeout.GetMicroSeconds() !=0);
-  m_holdingTimer = Simulator::Schedule (m_holdingTimeout, &PeerLink::HoldingTimeout, this);
+  NS_ASSERT(m_dot11MeshHoldingTimeout.GetMicroSeconds() !=0);
+  m_holdingTimer = Simulator::Schedule (m_dot11MeshHoldingTimeout, &PeerLink::HoldingTimeout, this);
 }
 
 void PeerLink::HoldingTimeout ()
@@ -541,13 +541,13 @@ void PeerLink::HoldingTimeout ()
 
 void PeerLink::SetRetryTimer ()
 {
-  NS_ASSERT(m_retryTimeout.GetMicroSeconds() !=0);
-  m_retryTimer = Simulator::Schedule (m_retryTimeout, &PeerLink::RetryTimeout, this);
+  NS_ASSERT(m_dot11MeshRetryTimeout.GetMicroSeconds() !=0);
+  m_retryTimer = Simulator::Schedule (m_dot11MeshRetryTimeout, &PeerLink::RetryTimeout, this);
 }
 
 void PeerLink::RetryTimeout ()
 {
-  if ( m_retryCounter < m_maxRetries)
+  if ( m_retryCounter < m_dot11MeshMaxRetries)
     StateMachine (TOR1);
   else
     StateMachine (TOR2);
@@ -555,8 +555,8 @@ void PeerLink::RetryTimeout ()
 
 void PeerLink::SetConfirmTimer ()
 {
-  NS_ASSERT(m_confirmTimeout.GetMicroSeconds() !=0);
-  m_confirmTimer = Simulator::Schedule (m_confirmTimeout, &PeerLink::ConfirmTimeout, this);
+  NS_ASSERT(m_dot11MeshConfirmTimeout.GetMicroSeconds() !=0);
+  m_confirmTimer = Simulator::Schedule (m_dot11MeshConfirmTimeout, &PeerLink::ConfirmTimeout, this);
 }
 
 void PeerLink::ConfirmTimeout ()

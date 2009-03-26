@@ -231,13 +231,14 @@ private:
    * \name Timers & counters used for internal state transitions
    * \{
    */
-  Time     m_retryTimeout;
+  uint16_t m_dot11MeshMaxRetries;
+  Time     m_dot11MeshRetryTimeout;
+  Time     m_dot11MeshHoldingTimeout;
+  Time     m_dot11MeshConfirmTimeout;
+
   EventId  m_retryTimer;
-  Time     m_holdingTimeout;
   EventId  m_holdingTimer;
-  Time     m_confirmTimeout;
   EventId  m_confirmTimer;
-  uint16_t m_maxRetries;
   uint16_t m_retryCounter;
   EventId  m_beaconLossTimer;
   uint16_t  m_maxBeaconLoss;

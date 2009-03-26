@@ -87,7 +87,6 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     if(multihopHdr.GetCategory () != WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT)
       return true;
     NS_ASSERT(meshHdr.GetMeshTtl () == 1);
-    NS_LOG_UNCOND("ext = "<<(uint32_t)meshHdr.GetAddressExt());
     NS_ASSERT(meshHdr.GetAddressExt () == 1);
     NS_ASSERT(meshHdr.GetAddr4 () == header.GetAddr2 ());
 
@@ -210,7 +209,6 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
   meshHdr.SetMeshTtl (1);
   meshHdr.SetMeshSeqno (0);
   meshHdr.SetAddressExt(1);
-  NS_LOG_UNCOND("Address ext = "<<(uint32_t)meshHdr.GetAddressExt ());
   meshHdr.SetAddr4(m_parent->GetAddress ());
   packet->AddHeader (meshHdr);
   //Wifi Mac header:

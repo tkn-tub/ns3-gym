@@ -41,8 +41,62 @@ TypeId
 HwmpProtocol::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::HwmpProtocol")
-                      .SetParent<MeshL2RoutingProtocol> ()
-                      .AddConstructor<HwmpProtocol> ();
+    .SetParent<MeshL2RoutingProtocol> ()
+    .AddConstructor<HwmpProtocol> ()
+    .AddAttribute ("dot11MeshHWMPmaxPREQretries",
+        "Maximum number of retries before we suppose the destination to be unreachable",
+        UintegerValue (3),
+        MakeUintegerAccessor (&HwmpProtocol::m_dot11MeshHWMPmaxPREQretries),
+        MakeUintegerChecker<uint8_t> (1)
+        )
+    .AddAttribute ("dot11MeshHWMPnetDiameterTraversalTime",
+        "Time we suppose the packet to go from one edge of the network to another",
+        TimeValue (MicroSeconds (1024*10)),
+        MakeTimeAccessor (&HwmpProtocol::m_dot11MeshHWMPnetDiameterTraversalTime),
+        MakeTimeChecker ()
+        )
+    .AddAttribute ("dot11MeshHWMPpreqMinInterva",
+        "Minimal interval between to successive PREQs",
+        TimeValue (MicroSeconds (1024*100)),
+        MakeTimeAccessor (&HwmpProtocol::m_dot11MeshHWMPpreqMinInterval),
+        MakeTimeChecker ()
+        )
+    .AddAttribute ("dot11MeshHWMPperrMinInterval",
+        "Minimal interval between to successive PREQs",
+        TimeValue (MicroSeconds (1024*100)),
+        MakeTimeAccessor (&HwmpProtocol::m_dot11MeshHWMPperrMinInterval),
+        MakeTimeChecker ()
+        )
+    .AddAttribute ("dot11MeshHWMPactiveRootTimeout",
+        "Lifetime of poractive routing information",
+        TimeValue (MicroSeconds (1024*5000)),
+        MakeTimeAccessor (&HwmpProtocol::m_dot11MeshHWMPactiveRootTimeout),
+        MakeTimeChecker ()
+        )
+    .AddAttribute ("dot11MeshHWMPactiveRootTimeout",
+        "Lifetime of poractive routing information",
+        TimeValue (MicroSeconds (1024*5000)),
+        MakeTimeAccessor (&HwmpProtocol::m_dot11MeshHWMPactiveRootTimeout),
+        MakeTimeChecker ()
+        )
+    .AddAttribute ("dot11MeshHWMPactivePathTimeout",
+        "Lifetime of reactive routing information",
+        TimeValue (MicroSeconds (1024*5000)),
+        MakeTimeAccessor (&HwmpProtocol::m_dot11MeshHWMPactivePathTimeout),
+        MakeTimeChecker ()
+        )
+    .AddAttribute ("dot11MeshHWMPpathToRootInterval",
+        "Interval between two successive proactive PREQs",
+        TimeValue (MicroSeconds (1024*5000)),
+        MakeTimeAccessor (&HwmpProtocol::m_dot11MeshHWMPpathToRootInterval),
+        MakeTimeChecker ()
+        )
+    .AddAttribute ("dot11MeshHWMPrannInterval",
+        "Lifetime of poractive routing information",
+        TimeValue (MicroSeconds (1024*5000)),
+        MakeTimeAccessor (&HwmpProtocol::m_dot11MeshHWMPrannInterval),
+        MakeTimeChecker ()
+        );
   return tid;
 }
 HwmpProtocol::HwmpProtocol ():
@@ -61,9 +115,9 @@ void
 HwmpProtocol::DoDispose ()
 {
 #if 0
-  for (std::map<Mac48Address, EventId>::iterator i = m_timeoutDatabase.begin (); i != m_timeoutDatabase.end(); i ++)
+  for (std::map<Mac48Address, EventId>::iterator i = m_preqTimeouts.begin (); i != m_preqTimeouts.end(); i ++)
     i->second.Cancel ();
-  m_timeoutDatabase.clear ();
+  m_preqTimeouts.clear ();
   m_seqnoDatabase.clear ();
   m_rtable = 0;
 
@@ -531,16 +585,15 @@ HwmpProtocol::SendAllPossiblePackets (Mac48Address dst)
     }
 #endif
 }
-#if 0
 bool
 HwmpProtocol::ShouldSendPreq (Mac48Address dst)
 {
-  std::map<Mac48Address, EventId>::iterator i = m_timeoutDatabase.find (dst);
-  if (i == m_timeoutDatabase.end ())
+  std::map<Mac48Address, EventId>::iterator i = m_preqTimeouts.find (dst);
+  if (i == m_preqTimeouts.end ())
     {
-      m_timeoutDatabase[dst] = Simulator::Schedule (
-                                 MilliSeconds (2*(dot11sParameters::dot11MeshHWMPnetDiameterTraversalTime.GetMilliSeconds())),
-                                 &HwmpProtocol::RetryPathDiscovery, this, dst, 0);
+      m_preqTimeouts[dst] = Simulator::Schedule (
+          MilliSeconds (2*(m_dot11MeshHWMPnetDiameterTraversalTime.GetMilliSeconds())),
+          &HwmpProtocol::RetryPathDiscovery, this, dst, 0);
       return true;
     }
   return false;
@@ -548,12 +601,13 @@ HwmpProtocol::ShouldSendPreq (Mac48Address dst)
 void
 HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
 {
+#if 0
   HwmpRtable::LookupResult result = m_rtable->LookupReactive (dst);
   if (result.retransmitter != Mac48Address::GetBroadcast ())
     {
-      std::map<Mac48Address, EventId>::iterator i = m_timeoutDatabase.find (dst);
-      NS_ASSERT (i !=  m_timeoutDatabase.end());
-      m_timeoutDatabase.erase (i);
+      std::map<Mac48Address, EventId>::iterator i = m_preqTimeouts.find (dst);
+      NS_ASSERT (i !=  m_preqTimeouts.end());
+      m_preqTimeouts.erase (i);
       return;
     }
   numOfRetry++;
@@ -568,18 +622,20 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
             break;
           packet.reply (false, packet.pkt, packet.src, packet.dst, packet.protocol, HwmpRtable::MAX_METRIC);
         }
-      std::map<Mac48Address, EventId>::iterator i = m_timeoutDatabase.find (dst);
-      NS_ASSERT (i !=  m_timeoutDatabase.end());
-      m_timeoutDatabase.erase (i);
+      std::map<Mac48Address, EventId>::iterator i = m_preqTimeouts.find (dst);
+      NS_ASSERT (i !=  m_preqTimeouts.end());
+      m_preqTimeouts.erase (i);
       return;
     }
+#if 0
   for (unsigned int i = 0; i < m_requestCallback.size (); i++)
     if ((m_modes[i] == REACTIVE) || (m_modes[i] == ROOT))
       m_requestCallback[i] (dst);
-  m_timeoutDatabase[dst] = Simulator::Schedule (
+#endif
+  m_preqTimeouts[dst] = Simulator::Schedule (
                              MilliSeconds (2*(dot11sParameters::dot11MeshHWMPnetDiameterTraversalTime.GetMilliSeconds())),
                              &HwmpProtocol::RetryPathDiscovery, this, dst, numOfRetry);
-}
 #endif
+}
 } //namespace dot11s
 } //namespace ns3

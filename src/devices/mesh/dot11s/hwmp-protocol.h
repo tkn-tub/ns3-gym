@@ -23,12 +23,14 @@
 #define HWMP_PROTOCOL_H
 
 #include "ns3/mesh-l2-routing-protocol.h"
+#include "ns3/nstime.h"
 #include <map>
 
 namespace ns3 {
 class MeshPointDevice;
 class Packet;
 class Mac48Address;
+class EventId;
 namespace dot11s {
 class HwmpMacPlugin;
 class HwmpRtable;
@@ -112,9 +114,9 @@ public:
 private:
   friend class HwmpMacPlugin;
   ///\brief interaction with HWMP MAC plugin
-  void ReceivePreq(Ptr<IePreq> preq);
-  void ReceivePrep(Ptr<IePreq> prep);
-  void ReceivePerr(Ptr<IePreq> perr);
+  void ReceivePreq(Ptr<IePreq> preq, Mac48Address from);
+  void ReceivePrep(Ptr<IePreq> prep, Mac48Address from);
+  void ReceivePerr(Ptr<IePreq> perr, Mac48Address from);
   ///\brief MAC-plugin asks wether the frame can be dropeed. Protocol
   //automatically updates seqno.
   //\returns true if frame can be dropped
@@ -127,6 +129,17 @@ private:
   bool  QueuePacket (MeshL2RoutingProtocol::QueuedPacket packet);
   MeshL2RoutingProtocol::QueuedPacket  DequeuePacket (Mac48Address dst);
   void  SendAllPossiblePackets (Mac48Address dst);
+  ///\name Methods responsible for Path discovery retry procedure:
+  //\{
+  //\brief checks when the last path discovery procedure was started
+  //for a given destination. If the retry counter has not achieved the
+  //maximum level - preq should not be sent
+  bool  ShouldSendPreq (Mac48Address dst);
+  //\brief Generates PREQ retry when retry timeout has expired and
+  //route is still unresolved. When PREQ retry has achieved the
+  //maximum level - retry mechanish should be cancelled
+  void  RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry);
+  ///\}
 private:
   //fields:
   std::map<uint32_t, Ptr<HwmpMacPlugin> > m_interfaces;
@@ -138,24 +151,31 @@ private:
   std::map<Mac48Address, uint32_t,std::less<Mac48Address> >  m_lastHwmpSeqno;
   ///\brief Routing table
   Ptr<HwmpRtable> m_rtable;
-
+  ///\name Timers:
+  //\{
+  std::map<Mac48Address, EventId>  m_preqTimeouts;
+  //\}
+private:
+  ///\name HWMP-protocol parameters
+  ///\{
+  uint8_t m_dot11MeshHWMPmaxPREQretries;
+  Time m_dot11MeshHWMPnetDiameterTraversalTime;
+  Time m_dot11MeshHWMPpreqMinInterval;
+  Time m_dot11MeshHWMPperrMinInterval;
+  Time m_dot11MeshHWMPactiveRootTimeout;
+  Time m_dot11MeshHWMPactivePathTimeout;
+  Time m_dot11MeshHWMPpathToRootInterval;
+  Time m_dot11MeshHWMPrannInterval;
+  ///\}
 #if 0
   std::map<Mac48Address, std::queue<QueuedPacket> >  m_rqueue;
   //devices and HWMP states:
-  enum DeviceState {
-    ENABLED,
-    DISABLED
-  };
   enum DeviceMode {
     REACTIVE,
     PROACTIVE,
     ROOT
   };
-  std::vector<enum DeviceState>  m_states;
   std::vector<enum DeviceMode>   m_modes;
-  std::vector<Ptr<HwmpProtocolState> >   m_hwmpStates;
-  //Routing table:
-  Ptr<HwmpRtable>  m_rtable;
   //Proactive routines:
   /**
    * \brief Set port state as proactive.
@@ -170,27 +190,7 @@ private:
    * port
    */
   bool  IsRoot (uint32_t port);
-  /**
-   * \brief Interaction with HwmpProtocolState class -
-   * request for starting routing discover
-   * procedure (reactive route discovery!)
-   * \param Mac48Address is destination to be
-   * resolved
-   */
-  std::vector< Callback<void, Mac48Address> >  m_requestCallback;
-  /**
-   * \brief Callback that shall be executed when
-   * need to send Path error
-   * \param std::vector<Mac48Address> is the
-   * list of unreachable destinations
-   * \param std::vector<Mac48Address> is
-   * receivers of PERR
-   */
-  std::vector<Callback<void,std::vector<HwmpRtable::FailedDestination> > >  m_pathErrorCallback;
-  void StartPathErrorProcedure (
-    std::vector<HwmpRtable::FailedDestination> destinations,
-    uint32_t port);
-  /**
+    /**
    * \brief HwmpProtocolState need to know where to
    * retransmit PERR, only HWMP knows how to
    * retransmit it (broadcast/unicast) and only
@@ -231,11 +231,10 @@ private:
    * Keeps PREQ retry timers for every
    * destination
    */
-  std::map<Mac48Address, EventId>  m_timeoutDatabase;
+  std::map<Mac48Address, EventId>  m_preqTimeouts;
   /**
    * Configurable parameters:
    */
-  uint8_t  m_maxTtl;
   bool     m_broadcastPerr;
 #endif
 };

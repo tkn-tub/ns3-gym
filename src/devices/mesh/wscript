@@ -13,7 +13,7 @@ def build(bld):
         'mesh-wifi-mac-header.cc',
         'tx-statistics.cc',
         #'hwmp-rtable.cc',
-        'dot11s-parameters.cc',
+        #'dot11s-parameters.cc',
         #'hwmp.cc',
         #'mesh-wifi-mac.cc',
         #'hwmp-state.cc',
@@ -33,7 +33,7 @@ def build(bld):
         # Dirty
         'dot11s-codes.h',
         #'hwmp-state.h',
-        'dot11s-parameters.h',
+        #'dot11s-parameters.h',
         #'mesh-mgt-headers.h',
         #'hwmp.h',
         'tx-statistics.h',
