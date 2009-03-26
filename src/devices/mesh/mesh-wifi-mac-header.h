@@ -38,21 +38,21 @@ public:
   virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
 
+  void   SetAddr4 (Mac48Address address);
   void   SetAddr5 (Mac48Address address);
   void   SetAddr6 (Mac48Address address);
-  void   SetAddr7 (Mac48Address address);
-  Mac48Address  GetAddr5 ();
-  Mac48Address  GetAddr6 ();
-  Mac48Address  GetAddr7 ();
+  Mac48Address  GetAddr4 () const;
+  Mac48Address  GetAddr5 () const;
+  Mac48Address  GetAddr6 () const;
 
   void   SetMeshSeqno (uint32_t seqno);
-  uint32_t  GetMeshSeqno ();
+  uint32_t  GetMeshSeqno () const;
 
   void   SetMeshTtl (uint8_t TTL);
-  uint8_t  GetMeshTtl ();
+  uint8_t  GetMeshTtl () const;
 
   void   SetAddressExt (uint8_t num_of_addresses);
-  uint8_t  GetAddressExt ();
+  uint8_t  GetAddressExt () const;
 
   virtual uint32_t GetSerializedSize () const;
   virtual void  Serialize (Buffer::Iterator start) const;
@@ -61,9 +61,9 @@ private:
   uint8_t  m_meshFlags;
   uint8_t  m_meshTtl;
   uint32_t m_meshSeqno;
+  Mac48Address m_addr4;
   Mac48Address m_addr5;
   Mac48Address m_addr6;
-  Mac48Address m_addr7;
 };
 
 /**

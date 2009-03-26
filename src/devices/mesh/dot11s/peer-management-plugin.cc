@@ -86,6 +86,11 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     // If can not handle - just return;
     if(multihopHdr.GetCategory () != WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT)
       return true;
+    NS_ASSERT(meshHdr.GetMeshTtl () == 1);
+    NS_LOG_UNCOND("ext = "<<(uint32_t)meshHdr.GetAddressExt());
+    NS_ASSERT(meshHdr.GetAddressExt () == 1);
+    NS_ASSERT(meshHdr.GetAddr4 () == header.GetAddr2 ());
+
     Mac48Address peerAddress = header.GetAddr2 ();
     PeerLinkFrameStart::PlinkFrameStartFields fields;
     {
@@ -136,7 +141,11 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     m_protocol->ReceivePeerLinkFrame(m_ifIndex, peerAddress, fields.aid, peerElement, meshConfig);
     // if we can handle a frame - drop it
     return false;
-  } 
+  }
+  if(header.IsData())
+  {
+    return m_protocol->IsActiveLink(m_ifIndex,header.GetAddr2());
+  }
   return true;
 }
 
@@ -200,13 +209,16 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
   WifiMeshHeader meshHdr;
   meshHdr.SetMeshTtl (1);
   meshHdr.SetMeshSeqno (0);
+  meshHdr.SetAddressExt(1);
+  NS_LOG_UNCOND("Address ext = "<<(uint32_t)meshHdr.GetAddressExt ());
+  meshHdr.SetAddr4(m_parent->GetAddress ());
   packet->AddHeader (meshHdr);
   //Wifi Mac header:
   WifiMacHeader hdr;
   hdr.SetMultihopAction ();
   hdr.SetAddr1 (peerAddress);
   hdr.SetAddr2 (m_parent->GetAddress ());
-  hdr.SetAddr3 (m_parent->GetAddress ());
+  hdr.SetAddr3 (peerAddress);
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   m_parent->SendManagementFrame(packet, hdr);

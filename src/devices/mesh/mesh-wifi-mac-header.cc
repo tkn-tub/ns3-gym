@@ -38,8 +38,13 @@ WifiMeshHeader::GetTypeId ()
   return tid;
 }
 
-WifiMeshHeader::WifiMeshHeader ()
-    :m_meshFlags (0)
+WifiMeshHeader::WifiMeshHeader ():
+  m_meshFlags (0),
+  m_meshTtl (0),
+  m_meshSeqno (0),
+  m_addr4 (Mac48Address ()),
+  m_addr5 (Mac48Address ()),
+  m_addr6 (Mac48Address ())
 {
 }
 
@@ -54,6 +59,12 @@ WifiMeshHeader::GetInstanceTypeId () const
 }
 
 void
+WifiMeshHeader::SetAddr4 (Mac48Address address)
+{
+  m_addr4 = address;
+}
+
+void
 WifiMeshHeader::SetAddr5 (Mac48Address address)
 {
   m_addr5 = address;
@@ -65,28 +76,22 @@ WifiMeshHeader::SetAddr6 (Mac48Address address)
   m_addr6 = address;
 }
 
-void
-WifiMeshHeader::SetAddr7 (Mac48Address address)
+Mac48Address
+WifiMeshHeader::GetAddr4 () const
 {
-  m_addr7 = address;
+  return m_addr4;
 }
 
 Mac48Address
-WifiMeshHeader::GetAddr5 ()
+WifiMeshHeader::GetAddr5 () const
 {
   return m_addr5;
 }
 
 Mac48Address
-WifiMeshHeader::GetAddr6 ()
+WifiMeshHeader::GetAddr6 () const
 {
   return m_addr6;
-}
-
-Mac48Address
-WifiMeshHeader::GetAddr7 ()
-{
-  return m_addr7;
 }
 
 void
@@ -96,7 +101,7 @@ WifiMeshHeader::SetMeshSeqno (uint32_t seqno)
 }
 
 uint32_t
-WifiMeshHeader::GetMeshSeqno ()
+WifiMeshHeader::GetMeshSeqno () const
 {
   return m_meshSeqno;
 }
@@ -108,7 +113,7 @@ WifiMeshHeader::SetMeshTtl (uint8_t TTL)
 }
 
 uint8_t
-WifiMeshHeader::GetMeshTtl ()
+WifiMeshHeader::GetMeshTtl () const
 {
   return m_meshTtl;
 }
@@ -118,11 +123,11 @@ WifiMeshHeader::SetAddressExt (uint8_t num_of_addresses)
 {
   if (num_of_addresses > 3)
     return;
-  m_meshFlags = 0xc0 | (num_of_addresses << 6);
+  m_meshFlags |= 0xc0 & (num_of_addresses << 6);
 }
 
 uint8_t
-WifiMeshHeader::GetAddressExt ()
+WifiMeshHeader::GetAddressExt () const
 {
   return ((0xc0 & m_meshFlags) >> 6);
 }
@@ -131,7 +136,7 @@ WifiMeshHeader::GetAddressExt ()
 uint32_t
 WifiMeshHeader::GetSerializedSize () const
 {
-  return 6 + ((0xc0 & m_meshFlags) >> 6)*6;
+  return 6 + GetAddressExt () * 6;
 }
 
 void
@@ -141,14 +146,14 @@ WifiMeshHeader::Serialize (Buffer::Iterator start) const
   i.WriteU8 (m_meshFlags);
   i.WriteU8 (m_meshTtl);
   i.WriteU32 (m_meshSeqno);
-  uint8_t addresses_to_add = (m_meshFlags & 0xc0) >> 6;
+  uint8_t addresses_to_add = GetAddressExt ();
   //Writing Address extensions:
   if (addresses_to_add > 0)
-    WriteTo (i, m_addr5);
+    WriteTo (i, m_addr4);
   if (addresses_to_add > 1)
-    WriteTo (i, m_addr6);
+    WriteTo (i, m_addr5);
   if (addresses_to_add > 2)
-    WriteTo (i, m_addr7);
+    WriteTo (i, m_addr6);
 }
 
 uint32_t
@@ -161,11 +166,11 @@ WifiMeshHeader::Deserialize (Buffer::Iterator start)
   m_meshSeqno = i.ReadU32 ();
   addresses_to_read = (m_meshFlags & 0xc0) >> 6;
   if (addresses_to_read > 0)
-    ReadFrom (i, m_addr5);
+    ReadFrom (i, m_addr4);
   if (addresses_to_read > 1)
-    ReadFrom (i, m_addr6);
+    ReadFrom (i, m_addr5);
   if (addresses_to_read > 2)
-    ReadFrom (i, m_addr7);
+    ReadFrom (i, m_addr6);
   return i.GetDistanceFrom (start);
 }
 void

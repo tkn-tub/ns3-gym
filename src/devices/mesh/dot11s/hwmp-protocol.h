@@ -19,8 +19,8 @@
  */
 
 
-#ifndef HWMP_H
-#define HWMP_H
+#ifndef HWMP_PROTOCOL_H
+#define HWMP_PROTOCOL_H
 
 #include "ns3/mesh-l2-routing-protocol.h"
 #include <map>
@@ -109,10 +109,17 @@ public:
   //candidate queue is implemented inside the
   //protocol:
 private:
+  friend class HwmpMacPlugin;
   ///\brief interaction with HWMP MAC plugin
   void ReceivePreq(Ptr<IePreq> preq);
   void ReceivePrep(Ptr<IePreq> prep);
   void ReceivePerr(Ptr<IePreq> perr);
+  ///\brief MAC-plugin asks wether the frame can be dropeed. Protocol
+  //automatically updates seqno.
+  //\returns true if frame can be dropped
+  //\param uint32_t is the seqno
+  //\param Mac48Address is the mesh source addrress of the frame
+  bool DropDataFrame(uint32_t, Mac48Address);
 private:
   void  SetMaxQueueSize (int maxPacketsPerDestination);
   int  m_maxQueueSize;
@@ -122,6 +129,13 @@ private:
 private:
   //fields:
   std::map<uint32_t, Ptr<HwmpMacPlugin> > m_interfaces;
+  uint32_t m_dataSeqno;
+  uint32_t m_hwmpSeqno;
+  uint32_t m_maxTtl;
+  ///\brief Sequence number filters:
+  std::map<Mac48Address, uint32_t,std::less<Mac48Address> >  m_lastDataSeqno;
+  std::map<Mac48Address, uint32_t,std::less<Mac48Address> >  m_lastHwmpSeqno;
+
 #if 0
   std::map<Mac48Address, std::queue<QueuedPacket> >  m_rqueue;
   //devices and HWMP states:

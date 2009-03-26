@@ -21,6 +21,7 @@
 
 #include "hwmp-protocol.h"
 #include "hwmp-mac-plugin.h"
+#include "hwmp-tag.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
@@ -35,7 +36,6 @@ namespace ns3 {
 namespace dot11s {
 
 NS_OBJECT_ENSURE_REGISTERED (HwmpProtocol);
-//Class HWMP:
 TypeId
 HwmpProtocol::GetTypeId ()
 {
@@ -44,9 +44,11 @@ HwmpProtocol::GetTypeId ()
                       .AddConstructor<HwmpProtocol> ();
   return tid;
 }
-HwmpProtocol::HwmpProtocol ()//:
+HwmpProtocol::HwmpProtocol ():
 //    m_rtable (CreateObject<HwmpRtable> ()),
-//    m_maxTtl (32),
+    m_dataSeqno(0),
+    m_hwmpSeqno(0),
+    m_maxTtl (32)
 //    m_broadcastPerr (false)
 {
 }
@@ -102,26 +104,43 @@ HwmpProtocol::RequestRoute (
 )
 {
   NS_LOG_UNCOND("Packet has come!");
-#if 0
-  HwmpRtable::LookupResult result;
-  HwmpProtocolTag tag;
+  //HwmpRtable::LookupResult result;
+  HwmpTag tag;
   if (sourceIface == GetMeshPoint ()->GetIfIndex())
     // packet from level 3
+  {
+    NS_LOG_UNCOND("Packet from upper layer. Broadcast frame");
+    NS_ASSERT (!packet->FindFirstMatchingTag(tag));
+    //Filling TAG:
+    tag.SetSeqno (m_dataSeqno++);
+    tag.SetAddress (Mac48Address::GetBroadcast());
+    tag.SetTtl (m_maxTtl);
+    if (m_dataSeqno == 0xffffffff)
+      m_dataSeqno = 0;
+    packet->AddTag(tag);
+    if (destination == Mac48Address::GetBroadcast ())
     {
-      if (destination == Mac48Address::GetBroadcast ())
-        {
-          //set seqno!
-          tag.SetSeqno (m_seqno++);
-          if (m_seqno == MAX_SEQNO)
-            m_seqno = 0;
-        }
-      tag.SetTtl (m_maxTtl);
+      //Reply immediately
+      routeReply (true, packet, source, destination, protocolType, 0xffffffff);
     }
+    else
+    {
+      //NS_ASSERT(false);
+    }
+  }
   else
     // packet from own interface
+  {
+    NS_ASSERT (packet->FindFirstMatchingTag(tag));
+    if (destination == Mac48Address::GetBroadcast ())
+      //reply immediately
+      routeReply (true, packet, source, destination, protocolType, 0xffffffff);
+    else
     {
-      NS_ASSERT (packet->FindFirstMatchingTag(tag));
-      //check seqno!
+      //NS_ASSERT(false);
+    }
+  }
+#if 0
       if (destination == Mac48Address::GetBroadcast ())
         {
           std::map<Mac48Address, uint32_t>::iterator i = m_seqnoDatabase.find (source);
@@ -135,7 +154,6 @@ HwmpProtocol::RequestRoute (
             }
         }
     }
-  tag.SetAddress (Mac48Address::GetBroadcast());
   if (tag.GetTtl () == 0)
     return false;
   tag.DecrementTtl ();
@@ -258,6 +276,21 @@ HwmpProtocol::Install (Ptr<MeshPointDevice> mp)
   mp->SetRoutingProtocol(this);
   return true;
 }
+bool
+HwmpProtocol::DropDataFrame(uint32_t seqno, Mac48Address source)
+{
+  std::map<Mac48Address, uint32_t,std::less<Mac48Address> >::iterator i = m_lastDataSeqno.find (source);
+  if (i == m_lastDataSeqno.end ())
+    m_lastDataSeqno[source] = seqno;
+  else
+  {
+    if (i->second >= seqno)
+      return true;
+    m_lastDataSeqno[source] = seqno;
+  }
+  return false;
+}
+
 #if 0
 void
 HwmpProtocol::DisablePort (uint32_t port)

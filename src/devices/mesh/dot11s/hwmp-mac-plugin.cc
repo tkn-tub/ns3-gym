@@ -24,9 +24,11 @@
 #include "ns3/nstime.h"
 #include "ns3/log.h"
 #include "ns3/dot11s-parameters.h"
+#include "ns3/mesh-wifi-mac-header.h"
 
 #include "hwmp-mac-plugin.h"
 #include "hwmp-protocol.h"
+#include "hwmp-tag.h"
 #include "ie-dot11s-preq.h"
 #include "ie-dot11s-prep.h"
 #include "ie-dot11s-perr.h"
@@ -52,12 +54,46 @@ bool
 HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
 {
   //TODO: here we fix only mesh header
+  if(header.IsData())
+  {
+    WifiMeshHeader meshHdr;
+    HwmpTag tag;
+    packet->RemoveHeader(meshHdr);
+    //TODO: address extension
+    NS_LOG_UNCOND("Received Data frame");
+    Mac48Address destination;
+    switch (meshHdr.GetAddressExt ())
+    {
+      case 0:
+        destination = header.GetAddr3 ();
+        break;
+      default:
+        NS_ASSERT(false);
+    };
+    tag.SetSeqno (2);//meshHdr.GetMeshSeqno ());
+    tag.SetTtl (meshHdr.GetMeshTtl () - 1);
+    tag.SetAddress (header.GetAddr2 ());
+    packet->AddTag(tag);
+    if (destination == Mac48Address::GetBroadcast ())
+      if(m_protocol->DropDataFrame (meshHdr.GetMeshSeqno (), header.GetAddr4 ()) )
+        return false;
+    if(tag.GetTtl () == 0)
+      return false;
+  }
   return true;
 }
 bool
 HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const
 {
   //TODO: add a mesh header and remove a TAG
+  HwmpTag tag;
+  NS_ASSERT(packet->FindFirstMatchingTag(tag));
+  WifiMeshHeader meshHdr;
+  meshHdr.SetMeshSeqno(tag.GetSeqno());
+  meshHdr.SetMeshTtl(tag.GetTtl());
+  packet->AddHeader(meshHdr);
+  header.SetAddr1(tag.GetAddress());
+  packet->RemoveAllTags ();
   return true;
 }
 #if 0
