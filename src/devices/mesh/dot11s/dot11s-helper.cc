@@ -107,8 +107,29 @@ MeshWifiHelper::SetPeerManager (std::string type,
   m_peerMan.Set (n6, v6);
   m_peerMan.Set (n7, v7);
 }
-
-  void
+void
+MeshWifiHelper::SetRouting (std::string type,
+    std::string n0, const AttributeValue &v0,
+    std::string n1, const AttributeValue &v1,
+    std::string n2, const AttributeValue &v2,
+    std::string n3, const AttributeValue &v3,
+    std::string n4, const AttributeValue &v4,
+    std::string n5, const AttributeValue &v5,
+    std::string n6, const AttributeValue &v6,
+    std::string n7, const AttributeValue &v7)
+{
+  m_routing = ObjectFactory ();
+  m_routing.SetTypeId (type);
+  m_routing.Set (n0, v0);
+  m_routing.Set (n1, v1);
+  m_routing.Set (n2, v2);
+  m_routing.Set (n3, v3);
+  m_routing.Set (n4, v4);
+  m_routing.Set (n5, v5);
+  m_routing.Set (n6, v6);
+  m_routing.Set (n7, v7);
+}
+void
 MeshWifiHelper::SetL2RoutingNetDevice (std::string type,
     std::string n0, const AttributeValue &v0,
     std::string n1, const AttributeValue &v1,
@@ -138,23 +159,30 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
   {
     Ptr<Node> node = *i;
+    // Create a mesh point device:
     Ptr<MeshPointDevice> mp = m_deviceFactory.Create<MeshPointDevice> ();
-    std::vector<Ptr<WifiNetDevice> >ports;
+    std::vector<Ptr<NetDevice> >interfaces;
     devices.Add (mp);
+    // Creating interface:
     std::vector<Ptr<WifiNetDevice> > nodeDevices;
     Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
-    ports.push_back(device);
+    interfaces.push_back(device);
+    //Creating MAC for this interface
     Ptr<MeshWifiInterfaceMac> mac = m_meshMac.Create<MeshWifiInterfaceMac> ();
-   // Ptr<Dot11sPeerManagerMacPlugin> peer_plugin = Create<Dot11sPeerManagerMacPlugin>();
-   // mac->InstallPlugin(peer_plugin);
     Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
     Ptr<WifiPhy> phy = phyHelper.Create (node, device);
     mac->SetAddress (Mac48Address::Allocate ());
     device->SetMac (mac);
     device->SetPhy (phy);
-    Ptr<PeerManagerProtocol> peerMan = m_peerMan.Create<PeerManagerProtocol> ();    
-    NS_ASSERT(peerMan->AttachInterfaces(ports));
     device->SetRemoteStationManager (manager);
+    //Attaching peer manager:
+    Ptr<PeerManagerProtocol> peerMan = m_peerMan.Create<PeerManagerProtocol> ();    
+    NS_ASSERT(peerMan->AttachInterfaces(interfaces));
+    //Creating Hwmp:
+    ////TODO: make it using object factory
+    Ptr<HwmpProtocol> hwmp = m_routing.Create<HwmpProtocol> ();
+    NS_ASSERT(hwmp->AttachInterfaces(interfaces));
+    //Attaching interfaces to node:
     node->AddDevice (device);
     nodeDevices.push_back (device);
     node -> AddDevice (mp);

@@ -22,6 +22,9 @@
 
 #include "peer-management-protocol.h"
 
+#include "ie-dot11s-peer-management.h"
+#include "ie-dot11s-configuration.h"
+
 #include "ns3/dot11s-parameters.h"
 #include "ns3/simulator.h"
 #include "ns3/assert.h"
@@ -29,6 +32,7 @@
 #include "ns3/random-variable.h"
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
+#include "ns3/wifi-net-device.h"
 #include "peer-link.h"
 #include "peer-management-plugin.h"
 
@@ -96,11 +100,14 @@ PeerManagerProtocol::~PeerManagerProtocol ()
 }
 
 bool
-PeerManagerProtocol::AttachInterfaces(std::vector<Ptr<WifiNetDevice> > interfaces)
+PeerManagerProtocol::AttachInterfaces(std::vector<Ptr<NetDevice> > interfaces)
 {
-  for(std::vector<Ptr<WifiNetDevice> >::iterator i = interfaces.begin(); i != interfaces.end(); i ++)
+  for(std::vector<Ptr<NetDevice> >::iterator i = interfaces.begin(); i != interfaces.end(); i ++)
   {
-    MeshWifiInterfaceMac * mac = dynamic_cast<MeshWifiInterfaceMac *> (PeekPointer ((*i)->GetMac ()));
+    const WifiNetDevice * wifiNetDev = dynamic_cast<const WifiNetDevice *> (PeekPointer (*i));
+      if (wifiNetDev == NULL)
+        return false;
+    MeshWifiInterfaceMac * mac = dynamic_cast<MeshWifiInterfaceMac *> (PeekPointer (wifiNetDev->GetMac ()));
     if (mac == NULL)
       return false;
     Ptr<PeerManagerMacPlugin> peerPlugin = Create<PeerManagerMacPlugin> ((*i)->GetIfIndex(), this);

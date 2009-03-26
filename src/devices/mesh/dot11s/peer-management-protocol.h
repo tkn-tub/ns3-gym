@@ -24,18 +24,19 @@
 #define DOT11S_PEER_MAN_H
 
 #include "ns3/mac48-address.h"
-#include "ns3/wifi-net-device.h"
+#include "ns3/net-device.h"
 #include "ns3/event-id.h"
-#include "ie-dot11s-peer-management.h"
+#include "ns3/nstime.h"
+#include "ns3/dot11s-codes.h"
 #include "ie-dot11s-beacon-timing.h"
-#include "ie-dot11s-configuration.h"
 
-#include <list>
 #include <map>
 namespace ns3 {
 namespace dot11s {
 class PeerManagerMacPlugin;
 class PeerLink;
+class IePeerManagement;
+class IeConfiguration;
 /**
  * \ingroup dot11s
  * 
@@ -47,7 +48,7 @@ public:
   PeerManagerProtocol ();
   ~PeerManagerProtocol ();
   static TypeId GetTypeId ();
-  bool AttachInterfaces(std::vector<Ptr<WifiNetDevice> >);
+  bool AttachInterfaces(std::vector<Ptr<NetDevice> >);
   /** \brief Methods that handle beacon sending/receiving procedure.
    * This methods interact with MAC_layer plug-in
    * \{

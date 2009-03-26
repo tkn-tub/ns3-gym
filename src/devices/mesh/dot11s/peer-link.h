@@ -25,6 +25,7 @@
 #include "ns3/nstime.h"
 #include "ns3/callback.h"
 #include "ns3/mac48-address.h"
+#include "ns3/event-id.h"
 #include "ie-dot11s-beacon-timing.h"
 #include "ie-dot11s-peer-management.h"
 #include "ie-dot11s-configuration.h"

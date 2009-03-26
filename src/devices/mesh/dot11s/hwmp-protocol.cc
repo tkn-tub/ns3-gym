@@ -20,9 +20,13 @@
 
 
 #include "hwmp-protocol.h"
+#include "hwmp-mac-plugin.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
+#include "ns3/packet.h"
 #include "ns3/mesh-point-device.h"
+#include "ns3/wifi-net-device.h"
+#include "ns3/mesh-wifi-interface-mac.h"
 
 NS_LOG_COMPONENT_DEFINE ("HwmpProtocol");
 
@@ -231,36 +235,22 @@ HwmpProtocol::RequestRoute (
   return true;
 }
 bool
-HwmpProtocol::AttachPorts (std::vector<Ptr<NetDevice> > ports)
+HwmpProtocol::AttachInterfaces (std::vector<Ptr<NetDevice> > interfaces)
 {
-#if 0
-  for (std::vector<Ptr<NetDevice> >::iterator i = ports.begin (); i != ports.end(); i++)
+  for (std::vector<Ptr<NetDevice> >::iterator i = interfaces.begin (); i != interfaces.end(); i++)
     {
       //Checking netdevice:
       const WifiNetDevice * wifiNetDev = dynamic_cast<const WifiNetDevice *> (PeekPointer (*i));
       if (wifiNetDev == NULL)
         return false;
-      MeshWifiMac * meshWifiMac = dynamic_cast<MeshWifiMac *> (PeekPointer (wifiNetDev->GetMac ()));
-      if (meshWifiMac == NULL)
+      MeshWifiInterfaceMac * mac = dynamic_cast<MeshWifiInterfaceMac *> (PeekPointer (wifiNetDev->GetMac ()));
+      if (mac == NULL)
         return false;
-      //Adding HWMP-state
-      Ptr<HwmpProtocolState> hwmpState = CreateObject<HwmpProtocolState> ();
-      hwmpState->SetRoutingInfoCallback (MakeCallback(&HwmpProtocol::ObtainRoutingInformation, this));
-      hwmpState->SetMac (meshWifiMac);
-      hwmpState->SetRequestRouteCallback (MakeCallback(&HwmpProtocol::RequestRouteForAddress, this));
-      hwmpState->SetRequestRootPathCallback (MakeCallback(&HwmpProtocol::RequestRootPathForPort, this));
-      hwmpState->SetAssociatedIfaceId (wifiNetDev->GetIfIndex());
-      hwmpState->SetRetransmittersOfPerrCallback (MakeCallback(&HwmpProtocol::GetRetransmittersForFailedDestinations,this));
-      m_hwmpStates.push_back (hwmpState);
-      m_requestCallback.push_back (MakeCallback(&HwmpProtocolState::RequestDestination, hwmpState));
-      m_pathErrorCallback.push_back (MakeCallback(&HwmpProtocolState::SendPathError, hwmpState));
-      //Default mode is reactive, default state is enabled
-      enum DeviceState state = ENABLED;
-      enum DeviceMode  mode  = REACTIVE;
-      m_states.push_back (state);
-      m_modes.push_back (mode);
+      //Installing plugins:
+      Ptr<HwmpMacPlugin> hwmpMac = Create<HwmpMacPlugin> (wifiNetDev->GetIfIndex (), this);
+      m_interfaces[wifiNetDev->GetIfIndex ()] = hwmpMac;
+      mac->InstallPlugin (hwmpMac);
     }
-#endif
   return true;
 }
 #if 0

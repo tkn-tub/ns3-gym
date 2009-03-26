@@ -21,31 +21,45 @@
 
 #ifndef HWMP_STATE_H
 #define HWMP_STATE_H
-#include <map>
 
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 
-#include "hwmp-rtable.h"
-#include "ns3/packet.h"
-#include "ie-dot11s-preq.h"
-#include "ie-dot11s-prep.h"
-#include "ie-dot11s-perr.h"
-#include "ns3/dot11s-parameters.h"
-#include "ns3/wifi-net-device.h"
 namespace ns3 {
+class MeshWifiInterfaceMac;
 namespace dot11s {
+class HwmpProtocol;
+class IePreq;
+class IePrep;
+class IePerr;
 /**
  * \ingroup mesh
- *
- * \brief Handles HWMP state machine at each real interface
- *
- * \details Implements the following:
- *  1. Keep it's own DSN,
- *  2. Keep PREQ and PREP timers adn send this frames in
- *  accordance with HWMP-limitations
- *  3. Deliver routing information to Hwmp main class
- *  4. Notify about broken peers
  */
+class HwmpMacPlugin : public MeshWifiInterfaceMacPlugin
+{
+  public:
+    HwmpMacPlugin (uint32_t, Ptr<HwmpProtocol>);
+    ~HwmpMacPlugin ();
+    ///\name Inherited from MAC plugin
+    //\{
+    void SetParent (Ptr<MeshWifiInterfaceMac> parent);
+    bool Receive (Ptr<Packet> packet, const WifiMacHeader & header);
+    bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const;
+    ///\brief Update beacon is empty, because HWMP does not know
+    //anything about beacons
+    void UpdateBeacon (MeshWifiBeacon & beacon) const {};
+    //\}
+  private:
+    friend class HwmpProtocol;
+    ///\brief Interaction with protocol:
+    void SendPreq(Ptr<IePreq> preq);
+    void SendPrep(Ptr<IePreq> prep);
+    void SendPerr(Ptr<IePreq> perr);
+  private:
+    Ptr<MeshWifiInterfaceMac> m_parent;
+    uint32_t m_ifIndex;
+    Ptr<HwmpProtocol> m_protocol;
+};
+#if 0
 class HwmpMacPlugin : public MeshWifiInterfaceMacPlugin {
 public:
   static TypeId GetTypeId ();
@@ -178,6 +192,7 @@ private:
   //Configurable parameters:
   uint8_t  m_maxTtl;
 };
+#endif
 } //namespace dot11s
 } //namespace ns3
 #endif

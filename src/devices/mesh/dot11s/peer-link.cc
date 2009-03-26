@@ -23,6 +23,7 @@
 #include "peer-link.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
+#include "ns3/traced-value.h"
 
 NS_LOG_COMPONENT_DEFINE ("Dot11sPeerManagementProtocol");
 
@@ -35,33 +36,33 @@ TypeId
 PeerLink::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::PeerLink")
-                      .SetParent<Object> ()
-                      .AddConstructor<PeerLink> ()
-                      .AddAttribute ("RetryTimeout", "Retry timeout",
-                                     TimeValue (TimeValue (MicroSeconds (40 * 1024))),
-                                     MakeTimeAccessor (&PeerLink::m_retryTimeout),
-                                     MakeTimeChecker ()
-                                    )
-                      .AddAttribute ("HoldingTimeout", "Holding timeout",
-                                     TimeValue (TimeValue (MicroSeconds (40 * 1024))),
-                                     MakeTimeAccessor (&PeerLink::m_holdingTimeout),
-                                     MakeTimeChecker ()
-                                    )
-                      .AddAttribute ("ConfirmTimeout", "Confirm timeout",
-                                     TimeValue (TimeValue (MicroSeconds (40 * 1024))),
-                                     MakeTimeAccessor (&PeerLink::m_confirmTimeout),
-                                     MakeTimeChecker ()
-                                    )
-                      .AddAttribute ("MaxRetries", "Maximum number of retries",
-                                     UintegerValue (4),
-                                     MakeUintegerAccessor (&PeerLink::m_maxRetries),
-                                     MakeUintegerChecker<uint16_t> ()
-                                    )
-                      .AddAttribute ("MaxBeaconLoss", "Maximum number of lost beacons before link will be closed",
-                                     UintegerValue (3),
-                                     MakeUintegerAccessor (&PeerLink::m_maxBeaconLoss),
-                                     MakeUintegerChecker<uint16_t> (1)
-                                    );
+    .SetParent<Object> ()
+    .AddConstructor<PeerLink> ()
+    .AddAttribute ("RetryTimeout", "Retry timeout",
+        TimeValue (TimeValue (MicroSeconds (40 * 1024))),
+        MakeTimeAccessor (&PeerLink::m_retryTimeout),
+        MakeTimeChecker ()
+        )
+    .AddAttribute ("HoldingTimeout", "Holding timeout",
+        TimeValue (TimeValue (MicroSeconds (40 * 1024))),
+        MakeTimeAccessor (&PeerLink::m_holdingTimeout),
+        MakeTimeChecker ()
+        )
+    .AddAttribute ("ConfirmTimeout", "Confirm timeout",
+        TimeValue (TimeValue (MicroSeconds (40 * 1024))),
+        MakeTimeAccessor (&PeerLink::m_confirmTimeout),
+        MakeTimeChecker ()
+        )
+    .AddAttribute ("MaxRetries", "Maximum number of retries",
+        UintegerValue (4),
+        MakeUintegerAccessor (&PeerLink::m_maxRetries),
+        MakeUintegerChecker<uint16_t> ()
+        )
+    .AddAttribute ("MaxBeaconLoss", "Maximum number of lost beacons before link will be closed",
+        UintegerValue (3),
+        MakeUintegerAccessor (&PeerLink::m_maxBeaconLoss),
+        MakeUintegerChecker<uint16_t> (1)
+        );
   return tid;
 }
   

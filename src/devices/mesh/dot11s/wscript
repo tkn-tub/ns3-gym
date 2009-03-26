@@ -16,7 +16,7 @@ def build(bld):
         'peer-management-protocol.cc',
         'hwmp-tag.cc',
         'hwmp-rtable.cc',
-        #'hwmp-mac-plugin.cc',
+        'hwmp-mac-plugin.cc',
         'hwmp-protocol.cc',
         'dot11s-helper.cc',
         ]
@@ -24,7 +24,7 @@ def build(bld):
     headers.module = 'dot11s'
     headers.source = [
         'ie-dot11s-beacon-timing.h',
-        'ie-dot11s-configuration.h',
+        #'ie-dot11s-configuration.h',
         'ie-dot11s-peer-management.h',
         #'ie-dot11s-preq.h',
         #'ie-dot11s-prep.h',
@@ -34,6 +34,8 @@ def build(bld):
         #'peer-link.h',
         #'peer-management-plugin.h',
         'peer-management-protocol.h',
+        #'hwmp-mac-plugin.h',
+        'hwmp-protocol.h',
         'dot11s-helper.h',
         ]
 

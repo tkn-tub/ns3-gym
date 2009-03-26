@@ -70,7 +70,7 @@ main (int argc, char *argv[])
                "Ssid", SsidValue (ssid),
                "RandomStart", TimeValue (Seconds (randomStart))
               );
-  //wifi.SetPeerManager("ns3::WifiPeerManager");
+  wifi.SetRouting("ns3::HwmpProtocol");
   wifi.SetPeerManager("ns3::PeerManagerProtocol");
   wifi.SetL2RoutingNetDevice ("ns3::MeshPointDevice");
   meshDevices = wifi.Install (wifiPhy,nodes);

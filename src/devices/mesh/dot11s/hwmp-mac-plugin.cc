@@ -18,16 +18,49 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  */
 
-
-#include "hwmp-mac-plugin.h"
+#include "ns3/mesh-wifi-interface-mac.h"
+#include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
 #include "ns3/log.h"
+#include "ns3/dot11s-parameters.h"
+
+#include "hwmp-mac-plugin.h"
+#include "hwmp-protocol.h"
+#include "ie-dot11s-preq.h"
+#include "ie-dot11s-prep.h"
+#include "ie-dot11s-perr.h"
 
 namespace ns3 {
 namespace dot11s {
 
 NS_LOG_COMPONENT_DEFINE ("HwmpMacPlugin");
+HwmpMacPlugin::HwmpMacPlugin (uint32_t ifIndex, Ptr<HwmpProtocol> protocol)
+{
+  m_ifIndex = ifIndex;
+  m_protocol = protocol;
+}
+HwmpMacPlugin::~HwmpMacPlugin ()
+{
+}
+void
+HwmpMacPlugin::SetParent (Ptr<MeshWifiInterfaceMac> parent)
+{
+  m_parent = parent;
+}
+bool
+HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
+{
+  //TODO: here we fix only mesh header
+  return true;
+}
+bool
+HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const
+{
+  //TODO: add a mesh header and remove a TAG
+  return true;
+}
+#if 0
 TypeId
 HwmpMacPlugin::GetTypeId ()
 {
@@ -537,5 +570,6 @@ HwmpMacPlugin::SendOnePerr ()
   m_perrCallback (m_myPerr, m_myPerrReceivers);
   m_myPerr.ResetPerr ();
 }
+#endif
 } //namespace dot11s
 }//namespace ns3

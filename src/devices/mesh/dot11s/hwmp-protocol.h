@@ -22,15 +22,18 @@
 #ifndef HWMP_H
 #define HWMP_H
 
-#include <map>
-#include <queue>
-#include "ns3/tag.h"
-#include "ns3/mac48-address.h"
 #include "ns3/mesh-l2-routing-protocol.h"
-#include "ns3/packet.h"
+#include <map>
+
 namespace ns3 {
 class NetDevice;
+class Packet;
+class Mac48Address;
 namespace dot11s {
+class HwmpMacPlugin;
+class IePreq;
+class IePrep;
+class IePerr;
 /**
  * \ingroup mesh
  */
@@ -41,24 +44,6 @@ public:
   HwmpProtocol ();
   ~HwmpProtocol ();
   void DoDispose ();
-  //intheritedfrom L2RoutingProtocol
-  /**
-   * \brief L2Routing protocol base class metod
-   *
-   * \details Route resolving procedure consits
-   * of the following steps:
-   * 1. Find reactive route and send a packet.
-   * 2. Find all ports which are operate in
-   * 'Proactive' mode and find a proper default
-   * routes. and send packet to all proactive
-   * 'ports'.
-   * 3. If there are ports which are operate in
-   * reactive mode - queue packet and start
-   * route reactive path discovery
-   *
-   * \bug Now packet is sent to the 'best root'
-   * rather than to the best root at each port
-   */
   bool RequestRoute (
     uint32_t  sourceIface,
     const Mac48Address source,
@@ -67,7 +52,7 @@ public:
     uint16_t  protocolType,
     MeshL2RoutingProtocol::RouteReplyCallback  routeReply
   );
-  bool AttachPorts (std::vector<Ptr<NetDevice> >);
+  bool AttachInterfaces (std::vector<Ptr<NetDevice> >);
 #if 0
   /**
    * \brief Disables port by index.
@@ -124,11 +109,19 @@ public:
   //candidate queue is implemented inside the
   //protocol:
 private:
+  ///\brief interaction with HWMP MAC plugin
+  void ReceivePreq(Ptr<IePreq> preq);
+  void ReceivePrep(Ptr<IePreq> prep);
+  void ReceivePerr(Ptr<IePreq> perr);
+private:
   void  SetMaxQueueSize (int maxPacketsPerDestination);
   int  m_maxQueueSize;
   bool  QueuePacket (MeshL2RoutingProtocol::QueuedPacket packet);
   MeshL2RoutingProtocol::QueuedPacket  DequeuePacket (Mac48Address dst);
   void  SendAllPossiblePackets (Mac48Address dst);
+private:
+  //fields:
+  std::map<uint32_t, Ptr<HwmpMacPlugin> > m_interfaces;
 #if 0
   std::map<Mac48Address, std::queue<QueuedPacket> >  m_rqueue;
   //devices and HWMP states:
