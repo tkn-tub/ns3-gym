@@ -22,6 +22,7 @@
 #include "hwmp-protocol.h"
 #include "hwmp-mac-plugin.h"
 #include "hwmp-tag.h"
+#include "hwmp-rtable.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
@@ -45,11 +46,10 @@ HwmpProtocol::GetTypeId ()
   return tid;
 }
 HwmpProtocol::HwmpProtocol ():
-//    m_rtable (CreateObject<HwmpRtable> ()),
     m_dataSeqno(0),
     m_hwmpSeqno(0),
-    m_maxTtl (32)
-//    m_broadcastPerr (false)
+    m_maxTtl (32),
+    m_rtable (CreateObject<HwmpRtable> ())
 {
 }
 
@@ -125,7 +125,7 @@ HwmpProtocol::RequestRoute (
     }
     else
     {
-      //NS_ASSERT(false);
+      
     }
   }
   else
@@ -137,7 +137,7 @@ HwmpProtocol::RequestRoute (
       routeReply (true, packet, source, destination, protocolType, 0xffffffff);
     else
     {
-      //NS_ASSERT(false);
+      NS_ASSERT(false);
     }
   }
 #if 0
@@ -292,38 +292,6 @@ HwmpProtocol::DropDataFrame(uint32_t seqno, Mac48Address source)
 }
 
 #if 0
-void
-HwmpProtocol::DisablePort (uint32_t port)
-{
-  int position = 0;
-  for (std::vector<Ptr<HwmpProtocolState> >::iterator i = m_hwmpStates.begin (); i != m_hwmpStates.end(); i++)
-    {
-      if ((*i)->GetAssociatedIfaceId () == port)
-        {
-          m_states[position] = DISABLED;
-          m_hwmpStates[position]->Disable ();
-          return;
-        }
-      position ++;
-    }
-}
-
-void
-HwmpProtocol::EnablePort (uint32_t port)
-{
-  int position = 0;
-  for (std::vector<Ptr<HwmpProtocolState> >::iterator i = m_hwmpStates.begin (); i != m_hwmpStates.end(); i++)
-    {
-      if ((*i)->GetAssociatedIfaceId () == port)
-        {
-          m_states[position] = ENABLED;
-          m_hwmpStates[position]->Enable ();
-          return;
-        }
-      position ++;
-    }
-}
-
 void
 HwmpProtocol::SetRoot (uint32_t port)
 {

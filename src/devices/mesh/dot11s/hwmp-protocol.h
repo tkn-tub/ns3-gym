@@ -31,6 +31,7 @@ class Packet;
 class Mac48Address;
 namespace dot11s {
 class HwmpMacPlugin;
+class HwmpRtable;
 class IePreq;
 class IePrep;
 class IePerr;
@@ -135,6 +136,8 @@ private:
   ///\brief Sequence number filters:
   std::map<Mac48Address, uint32_t,std::less<Mac48Address> >  m_lastDataSeqno;
   std::map<Mac48Address, uint32_t,std::less<Mac48Address> >  m_lastHwmpSeqno;
+  ///\brief Routing table
+  Ptr<HwmpRtable> m_rtable;
 
 #if 0
   std::map<Mac48Address, std::queue<QueuedPacket> >  m_rqueue;
