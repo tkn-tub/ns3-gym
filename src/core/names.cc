@@ -623,40 +623,47 @@ Names::Delete (void)
   NamesPriv::Delete ();
 }
 
-bool
+void
 Names::Add (std::string name, Ptr<Object> object)
 {
-  return NamesPriv::Get ()->Add (name, object);
+  bool result = NamesPriv::Get ()->Add (name, object);
+  NS_ABORT_MSG_UNLESS (result, "Names::Add(): Error adding name " << name);
 }
 
-bool
+void
 Names::Rename (std::string oldpath, std::string newname)
 {
-  return NamesPriv::Get ()->Rename (oldpath, newname);
+  bool result = NamesPriv::Get ()->Rename (oldpath, newname);
+  NS_ABORT_MSG_UNLESS (result, "Names::Rename(): Error renaming " << oldpath << " to " << newname);
 }
 
-bool
+void
 Names::Add (std::string path, std::string name, Ptr<Object> object)
 {
-  return NamesPriv::Get ()->Add (path, name, object);
+  bool result = NamesPriv::Get ()->Add (path, name, object);
+  NS_ABORT_MSG_UNLESS (result, "Names::Add(): Error adding " << path << " " << name);
 }
 
-bool
+void
 Names::Rename (std::string path, std::string oldname, std::string newname)
 {
-  return NamesPriv::Get ()->Rename (path, oldname, newname);
+  bool result = NamesPriv::Get ()->Rename (path, oldname, newname);
+  NS_ABORT_MSG_UNLESS (result, "Names::Rename (): Error renaming " << path << " " << oldname << " to " << newname);
 }
 
-bool
+void
 Names::Add (Ptr<Object> context, std::string name, Ptr<Object> object)
 {
-  return NamesPriv::Get ()->Add (context, name, object);
+  bool result = NamesPriv::Get ()->Add (context, name, object);
+  NS_ABORT_MSG_UNLESS (result, "Names::Add(): Error adding name " << name << " under context " << &context);
 }
 
-bool
+void
 Names::Rename (Ptr<Object> context, std::string oldname, std::string newname)
 {
-  return NamesPriv::Get ()->Rename (context, oldname, newname);
+  bool result = NamesPriv::Get ()->Rename (context, oldname, newname);
+  NS_ABORT_MSG_UNLESS (result, "Names::Rename (): Error renaming " << oldname << " to " << newname << " under context " <<
+                       &context);
 }
 
 std::string
@@ -730,50 +737,53 @@ NamesTest::RunTests (void)
 {
   bool result = true;
 
+  //
+  // Names::Add and Names::Rename return void to align with the Config API.
+  // The private versions of these functions do return error codes so we
+  // can test to make sure errors are detected.  Names::Add and 
+  // Names::Rename check for these error codes and abort if an error was
+  // detected.  So when we expect that an error should be detected, we 
+  // have to call the private routine to avoid a fatal error popping.
   // 
   // Name a couple of objects at the root level
   //
   Ptr<TestObject> client = CreateObject<TestObject> ();
-  result = Names::Add ("Client", client);
-  NS_TEST_ASSERT_EQUAL (result, true);
+  Names::Add ("Client", client);
 
   Ptr<TestObject> server = CreateObject<TestObject> ();
-  result = Names::Add ("Server", server);
-  NS_TEST_ASSERT_EQUAL (result, true);
+  Names::Add ("Server", server);
 
   //
   // We shouldn't be able to add another name to a previously named object
   //
-  result = Names::Add ("Not Client", client);
+  result = NamesPriv::Get ()->Add ("Not Client", client);
   NS_TEST_ASSERT_EQUAL (result, false);
 
   //
   // We shouldn't be able to duplicate a name at the root level.
   //
   Ptr<TestObject> secondClient = CreateObject<TestObject> ();
-  result = Names::Add ("Client", secondClient);
+  result = NamesPriv::Get ()->Add ("Client", secondClient);
   NS_TEST_ASSERT_EQUAL (result, false);
 
   //
   // We should be able to add a new name in the first object's context
   //
   Ptr<TestObject> clientEth0 = CreateObject<TestObject> ();
-  result = Names::Add (client, "eth0", clientEth0);
-  NS_TEST_ASSERT_EQUAL (result, true);
+  Names::Add (client, "eth0", clientEth0);
 
   //
   // We shouldn't be able to duplicate a name in that context.
   //
   Ptr<TestObject> secondClientEth0 = CreateObject<TestObject> ();
-  result = Names::Add (client, "eth0", secondClientEth0);
+  result = NamesPriv::Get ()->Add (client, "eth0", secondClientEth0);
   NS_TEST_ASSERT_EQUAL (result, false);
 
   //
   // We should be able to add the same name in the second object's context
   //
   Ptr<TestObject> serverEth0 = CreateObject<TestObject> ();
-  result = Names::Add (server, "eth0", serverEth0);
-  NS_TEST_ASSERT_EQUAL (result, true);
+  Names::Add (server, "eth0", serverEth0);
 
   //
   // We should be able to find the short names for the objects we created
@@ -879,32 +889,28 @@ NamesTest::RunTests (void)
   // in the name.
   //
   Ptr<TestObject> router1 = CreateObject<TestObject> ();
-  result = Names::Add ("/Names/Router1", router1);
-  NS_TEST_ASSERT_EQUAL (result, true);
+  Names::Add ("/Names/Router1", router1);
 
   //
   // We should be able to add objects while not including the root of the namespace
   // in the name.
   //
   Ptr<TestObject> router2 = CreateObject<TestObject> ();
-  result = Names::Add ("Router2", router2);
-  NS_TEST_ASSERT_EQUAL (result, true);
+  Names::Add ("Router2", router2);
 
   //
   // We should be able to add sub-objects while including the root of the namespace
   // in the name.
   //
   Ptr<TestObject> router1Eth0 = CreateObject<TestObject> ();
-  result = Names::Add ("/Names/Router1/eth0", router1Eth0);
-  NS_TEST_ASSERT_EQUAL (result, true);
+  Names::Add ("/Names/Router1/eth0", router1Eth0);
 
   //
   // We should be able to add sub-objects while not including the root of the namespace
   // in the name.
   //
   Ptr<TestObject> router2Eth0 = CreateObject<TestObject> ();
-  result = Names::Add ("Router2/eth0", router2Eth0);
-  NS_TEST_ASSERT_EQUAL (result, true);
+  Names::Add ("Router2/eth0", router2Eth0);
 
   //
   // We should be able to find these objects in the same two ways
@@ -937,20 +943,17 @@ NamesTest::RunTests (void)
   // We have a pile of names defined.  We should be able to rename them in the
   // usual ways.
   //
-  result = Names::Rename ("/Names/Router1", "RouterX");
-  NS_TEST_ASSERT_EQUAL (result, true);
+  Names::Rename ("/Names/Router1", "RouterX");
 
   foundObject = Names::Find<TestObject> ("/Names/RouterX");
   NS_TEST_ASSERT_EQUAL (foundObject, router1);
 
-  result = Names::Rename ("Router2", "RouterY");
-  NS_TEST_ASSERT_EQUAL (result, true);
+  Names::Rename ("Router2", "RouterY");
 
   foundObject = Names::Find<TestObject> ("RouterY");
   NS_TEST_ASSERT_EQUAL (foundObject, router2);
 
-  result = Names::Rename ("/Names/RouterX/eth0", "ath0");
-  NS_TEST_ASSERT_EQUAL (result, true);
+  Names::Rename ("/Names/RouterX/eth0", "ath0");
 
   foundObject = Names::Find<TestObject> ("/Names/RouterX/ath0");
   NS_TEST_ASSERT_EQUAL (foundObject, router1Eth0);
@@ -963,7 +966,7 @@ NamesTest::RunTests (void)
   // object.
   //
 
-  result = Names::Rename ("/Names/RouterX", "RouterY");
+  result = NamesPriv::Get ()->Rename ("/Names/RouterX", "RouterY");
   NS_TEST_ASSERT_EQUAL (result, false);
 
   Names::Delete ();

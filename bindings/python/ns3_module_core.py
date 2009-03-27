@@ -479,34 +479,34 @@ def register_Ns3Names_methods(root_module, cls):
     cls.add_constructor([param('ns3::Names const &', 'arg0')])
     ## names.h: ns3::Names::Names() [constructor]
     cls.add_constructor([])
-    ## names.h: static bool ns3::Names::Add(std::string name, ns3::Ptr<ns3::Object> obj) [member function]
+    ## names.h: static void ns3::Names::Add(std::string name, ns3::Ptr<ns3::Object> obj) [member function]
     cls.add_method('Add', 
-                   'bool', 
+                   'void', 
                    [param('std::string', 'name'), param('ns3::Ptr< ns3::Object >', 'obj')], 
                    is_static=True)
-    ## names.h: static bool ns3::Names::Add(std::string path, std::string name, ns3::Ptr<ns3::Object> object) [member function]
+    ## names.h: static void ns3::Names::Add(std::string path, std::string name, ns3::Ptr<ns3::Object> object) [member function]
     cls.add_method('Add', 
-                   'bool', 
+                   'void', 
                    [param('std::string', 'path'), param('std::string', 'name'), param('ns3::Ptr< ns3::Object >', 'object')], 
                    is_static=True)
-    ## names.h: static bool ns3::Names::Add(ns3::Ptr<ns3::Object> context, std::string name, ns3::Ptr<ns3::Object> object) [member function]
+    ## names.h: static void ns3::Names::Add(ns3::Ptr<ns3::Object> context, std::string name, ns3::Ptr<ns3::Object> object) [member function]
     cls.add_method('Add', 
-                   'bool', 
+                   'void', 
                    [param('ns3::Ptr< ns3::Object >', 'context'), param('std::string', 'name'), param('ns3::Ptr< ns3::Object >', 'object')], 
                    is_static=True)
-    ## names.h: static bool ns3::Names::Rename(std::string oldpath, std::string newname) [member function]
+    ## names.h: static void ns3::Names::Rename(std::string oldpath, std::string newname) [member function]
     cls.add_method('Rename', 
-                   'bool', 
+                   'void', 
                    [param('std::string', 'oldpath'), param('std::string', 'newname')], 
                    is_static=True)
-    ## names.h: static bool ns3::Names::Rename(std::string path, std::string oldname, std::string newname) [member function]
+    ## names.h: static void ns3::Names::Rename(std::string path, std::string oldname, std::string newname) [member function]
     cls.add_method('Rename', 
-                   'bool', 
+                   'void', 
                    [param('std::string', 'path'), param('std::string', 'oldname'), param('std::string', 'newname')], 
                    is_static=True)
-    ## names.h: static bool ns3::Names::Rename(ns3::Ptr<ns3::Object> context, std::string oldname, std::string newname) [member function]
+    ## names.h: static void ns3::Names::Rename(ns3::Ptr<ns3::Object> context, std::string oldname, std::string newname) [member function]
     cls.add_method('Rename', 
-                   'bool', 
+                   'void', 
                    [param('ns3::Ptr< ns3::Object >', 'context'), param('std::string', 'oldname'), param('std::string', 'newname')], 
                    is_static=True)
     ## names.h: static std::string ns3::Names::FindName(ns3::Ptr<ns3::Object> object) [member function]

@@ -65,7 +65,7 @@ public:
    *             prepended with a path to that object.
    * \param obj A smart pointer to the object itself.
    */
-  static bool Add (std::string name, Ptr<Object> obj);
+  static void Add (std::string name, Ptr<Object> obj);
 
   /**
    * \brief An intermediate form of Names::Add allowing you to provide a path to
@@ -96,11 +96,9 @@ public:
    * \param name The name of the object you want to associate.
    * \param obj A smart pointer to the object itself.
    *
-   * \returns true if the association was successfully completed, false otherwise
-   *
    * \see Names::Add (Ptr<Object> context, std::string name, Ptr<Object> object);
    */
-  static bool Add (std::string path, std::string name, Ptr<Object> object);
+  static void Add (std::string path, std::string name, Ptr<Object> object);
 
   /**
    * \brief A low-level form of Names::Add allowing you to specify the path to
@@ -148,10 +146,8 @@ public:
    *                under which you want this new name to be defined.
    * \param name The name of the object you want to associate.
    * \param obj A smart pointer to the object itself.
-   *
-   * \returns true if the association was successfully completed, false otherwise
    */
-  static bool Add (Ptr<Object> context, std::string name, Ptr<Object> object);
+  static void Add (Ptr<Object> context, std::string name, Ptr<Object> object);
 
   /**
    * \brief Rename a previously associated name.
@@ -178,11 +174,9 @@ public:
    * \param oldpath The current path name to the object you want to change.
    * \param newname The new name of the object you want to change.
    *
-   * \returns true if the name change was successfully completed, false otherwise
-   *
    * \see Names::Add (std::string name, Ptr<Object> obj)
    */
-  static bool Rename (std::string oldpath, std::string newname);
+  static void Rename (std::string oldpath, std::string newname);
 
   /**
    * \brief An intermediate form of Names::Rename allowing you to provide a path to
@@ -203,10 +197,8 @@ public:
    *             you want this name change to occur (cf. directory).
    * \param oldname The currently defined name of the object.
    * \param newname The new name you want the object to have.
-   *
-   * \returns true if the name change was successfully completed, false otherwise
    */
-  static bool Rename (std::string path, std::string oldname, std::string newname);
+  static void Rename (std::string path, std::string oldname, std::string newname);
 
   /**
    * \brief A low-level form of Names::Rename allowing you to specify the path to
@@ -244,10 +236,8 @@ public:
    *                under which you want this new name to be defined.
    * \param oldname The current shortname of the object you want to change.
    * \param newname The new shortname of the object you want to change.
-   *
-   * \returns true if the name change was successfully completed, false otherwise
    */
-  static bool Rename (Ptr<Object> context, std::string oldname, std::string newname);
+  static void Rename (Ptr<Object> context, std::string oldname, std::string newname);
 
   /**
    * Given a pointer to an object, look to see if that object has a name

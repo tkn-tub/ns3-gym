@@ -946,6 +946,8 @@ def register_Ns3StaticMulticastRouteHelper_methods(root_module, cls):
 def register_Ns3TapBridgeHelper_methods(root_module, cls):
     ## tap-bridge-helper.h: ns3::TapBridgeHelper::TapBridgeHelper(ns3::TapBridgeHelper const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::TapBridgeHelper const &', 'arg0')])
+    ## tap-bridge-helper.h: ns3::TapBridgeHelper::TapBridgeHelper() [constructor]
+    cls.add_constructor([])
     ## tap-bridge-helper.h: ns3::TapBridgeHelper::TapBridgeHelper(ns3::Ipv4Address gateway) [constructor]
     cls.add_constructor([param('ns3::Ipv4Address', 'gateway')])
     ## tap-bridge-helper.h: void ns3::TapBridgeHelper::SetAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
@@ -968,6 +970,10 @@ def register_Ns3TapBridgeHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('std::string', 'nodeName'), param('std::string', 'ndName')])
+    ## tap-bridge-helper.h: ns3::Ptr<ns3::NetDevice> ns3::TapBridgeHelper::Install(ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::NetDevice> nd, ns3::AttributeValue const & v1) [member function]
+    cls.add_method('Install', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('ns3::AttributeValue const &', 'v1')])
     return
 
 def register_Ns3UdpEchoClientHelper_methods(root_module, cls):
