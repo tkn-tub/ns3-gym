@@ -24,6 +24,7 @@
 
 #include "ns3/mesh-l2-routing-protocol.h"
 #include "ns3/nstime.h"
+#include <vector>
 #include <map>
 
 namespace ns3 {
@@ -124,11 +125,15 @@ private:
   //\param Mac48Address is the mesh source addrress of the frame
   bool DropDataFrame(uint32_t, Mac48Address);
 private:
-  void  SetMaxQueueSize (int maxPacketsPerDestination);
-  int  m_maxQueueSize;
-  bool  QueuePacket (MeshL2RoutingProtocol::QueuedPacket packet);
-  MeshL2RoutingProtocol::QueuedPacket  DequeuePacket (Mac48Address dst);
-  void  SendAllPossiblePackets (Mac48Address dst);
+  ///\name Methods related to Queue/Dequeue procedures
+  ///\{
+  uint16_t m_maxQueueSize;
+  bool QueuePacket (MeshL2RoutingProtocol::QueuedPacket packet);
+  QueuedPacket  DequeueFirstPacketByDst (Mac48Address dst);
+  QueuedPacket  DequeueFirstPacket ();
+  void ReactivePathResolved (Mac48Address dst);
+  void ProactivePathResolved ();
+  ///\}
   ///\name Methods responsible for Path discovery retry procedure:
   //\{
   //\brief checks when the last path discovery procedure was started
@@ -155,6 +160,8 @@ private:
   //\{
   std::map<Mac48Address, EventId>  m_preqTimeouts;
   //\}
+  ///\Packet Queue
+  std::vector<QueuedPacket>  m_rqueue;
 private:
   ///\name HWMP-protocol parameters
   ///\{
@@ -168,7 +175,6 @@ private:
   Time m_dot11MeshHWMPrannInterval;
   ///\}
 #if 0
-  std::map<Mac48Address, std::queue<QueuedPacket> >  m_rqueue;
   //devices and HWMP states:
   enum DeviceMode {
     REACTIVE,
@@ -207,35 +213,6 @@ private:
    */
   HwmpRtable::LookupResult  RequestRouteForAddress (const Mac48Address& destination);
   HwmpRtable::LookupResult  RequestRootPathForPort (uint32_t port);
-
-  /**
-   * \attention mesh seqno is processed at HWMP
-   */
-  uint32_t m_seqno;
-  std::map<Mac48Address, uint32_t/**/>  m_seqnoDatabase;
-  //Timers:
-  /**
-   * /brief checks when last preq was initiated, returns
-   * false when retry has not expired
-   */
-  bool  ShouldSendPreq (Mac48Address dst);
-  /**
-   * \brief Generates PREQ retry when route is
-   * still unresolved after first PREQ
-   * If number of retries greater than
-   * dot11sParameters::dot11MeshHWMPmaxPREQretries,
-   * we return all packets to upper layers
-   */
-  void  RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry);
-  /**
-   * Keeps PREQ retry timers for every
-   * destination
-   */
-  std::map<Mac48Address, EventId>  m_preqTimeouts;
-  /**
-   * Configurable parameters:
-   */
-  bool     m_broadcastPerr;
 #endif
 };
 } //namespace dot11s

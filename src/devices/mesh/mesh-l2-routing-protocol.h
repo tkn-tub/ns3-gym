@@ -104,37 +104,26 @@ protected:
   //\{
   /// Packet waiting its routing inforamation, supposed to be used by all implementations to correctly implement timeouts.
   struct QueuedPacket {
-    Ptr<Packet> pkt;            ///< the packet
-    Mac48Address src;           ///< src address
-    Mac48Address dst;           ///< dst address
-    uint16_t protocol;          ///< protocol number
-    uint32_t inPort;            ///< incoming device interface ID (= mesh point IfID for packets from level 3 and mesh interface ID for packets to forward) 
-    RouteReplyCallback reply;   ///< how to reply
+    Ptr<Packet> pkt; ///< the packet
+    Mac48Address src; ///< src address
+    Mac48Address dst; ///< dst address
+    uint16_t protocol; ///< protocol number
+    uint32_t inInterface; ///< incoming device interface ID. (if packet has come from upper layers, this is Mesh point ID)
+    RouteReplyCallback reply; ///< how to reply
   };
   /**
-   * \brief Set maximum route request queue size per destination
-   * 
-   * Routing Queue is implemented inside the routing protocol and keeps one queue per
-   * destination (to make it easier to find resolved and timed out packets).
-   * 
-   * \param maxPacketsPerDestination    Packets per destination that can be stored inside protocol.
-   */
-  virtual void SetMaxQueueSize (int maxPacketsPerDestination) = 0;
-  /**
-   * \brief Queue route request packet with 'Ethernet header' \return false if the queue is full.
+   * \brief Queue route request packet with 'Ethernet header'
+   * \return false if the queue is full.
    */
   virtual bool QueuePacket (struct QueuedPacket packet) = 0;
   /**
    * \brief Deque packet with 'Ethernet header'
-   * 
    * \param destination The destination address, which identifyes queue.
-   * 
    * \return Ptr<packet> (0 if queue is empty), src, dst, protocol ID, incoming port ID, and reply callback
    */
-  virtual struct QueuedPacket DequeuePacket (Mac48Address destination) = 0;
-  
+  virtual QueuedPacket DequeueFirstPacketByDst (Mac48Address destination) = 0;
+  virtual QueuedPacket DequeueFirstPacket () = 0;
   //\}
-  
 protected:
   /// Host mesh point
   Ptr<MeshPointDevice> m_mp;

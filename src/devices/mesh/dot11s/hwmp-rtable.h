@@ -41,7 +41,7 @@ public:
   void AddReactivePath (
     Mac48Address destination,
     Mac48Address retransmitter,
-    uint32_t port,
+    uint32_t interface,
     uint32_t metric,
     Time  lifetime,
     uint32_t seqnum
@@ -50,14 +50,13 @@ public:
     uint32_t metric,
     Mac48Address root,
     Mac48Address retransmitter,
-    uint32_t port,
+    uint32_t interface,
     Time  lifetime,
     uint32_t seqnum
   );
-  void AddPrecursor (Mac48Address destination, uint32_t port, Mac48Address precursor);
-  void DeleteProactivePath (uint32_t port);
-  void DeleteProactivePath (Mac48Address root, uint32_t port);
-  void DeleteReactivePath (Mac48Address destination, uint32_t port);
+  void AddPrecursor (Mac48Address destination, uint32_t interface, Mac48Address precursor);
+  void DeleteProactivePath ();
+  void DeleteReactivePath (Mac48Address destination, uint32_t interface);
   struct LookupResult
   {
     Mac48Address retransmitter;
@@ -66,18 +65,18 @@ public:
     uint32_t seqnum;
   };
   LookupResult  LookupReactive (Mac48Address destination);
-  LookupResult  LookupProactive (uint32_t port);
+  LookupResult  LookupProactive ();
   //path error routines:
-  std::vector<IePerr::FailedDestination>  GetUnreachableDestinations (Mac48Address peerAddress, uint32_t port);
+  std::vector<IePerr::FailedDestination>  GetUnreachableDestinations (Mac48Address peerAddress, uint32_t interface);
   uint32_t  RequestSeqnum (Mac48Address dst);
-  std::vector<Mac48Address>  GetPrecursors (Mac48Address destination, uint32_t port);
-  const static uint32_t PORT_ANY = 0xffffffff;
+  std::vector<Mac48Address>  GetPrecursors (Mac48Address destination, uint32_t interface);
+  const static uint32_t INTERFACE_ANY = 0xffffffff;
   const static uint32_t MAX_METRIC = 0xffffffff;
 private:
   struct ReactiveRoute
   {
     Mac48Address retransmitter;
-    uint32_t port;
+    uint32_t interface;
     uint32_t metric;
     Time whenExpire;
     uint32_t seqnum;
@@ -87,13 +86,14 @@ private:
   {
     Mac48Address root;
     Mac48Address retransmitter;
+    uint32_t interface;
     uint32_t metric;
     Time whenExpire;
     uint32_t seqnum;
     std::vector<Mac48Address> precursors;
   };
   std::map<Mac48Address, ReactiveRoute>  m_routes;
-  std::map<uint32_t, ProactiveRoute>  m_roots;
+  ProactiveRoute  m_root;
 };
 } //namespace dot11s
 } //namespace ns3
