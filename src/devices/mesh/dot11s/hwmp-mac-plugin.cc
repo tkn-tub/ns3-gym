@@ -71,14 +71,14 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
         NS_ASSERT(false);
     };
     tag.SetSeqno (2);//meshHdr.GetMeshSeqno ());
+    if(meshHdr.GetMeshTtl () == 0)
+      return false;
     tag.SetTtl (meshHdr.GetMeshTtl () - 1);
     tag.SetAddress (header.GetAddr2 ());
     packet->AddTag(tag);
     if (destination == Mac48Address::GetBroadcast ())
       if(m_protocol->DropDataFrame (meshHdr.GetMeshSeqno (), header.GetAddr4 ()) )
         return false;
-    if(tag.GetTtl () == 0)
-      return false;
   }
   return true;
 }

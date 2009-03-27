@@ -28,7 +28,7 @@ def build(bld):
         'ie-dot11s-peer-management.h',
         #'ie-dot11s-preq.h',
         #'ie-dot11s-prep.h',
-        #'ie-dot11s-perr.h',
+        'ie-dot11s-perr.h',
         #'ie-dot11s-rann.h',
         #'peer-link-frame.h',
         #'peer-link.h',

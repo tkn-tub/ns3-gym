@@ -56,6 +56,7 @@ public:
   );
   void AddPrecursor (Mac48Address destination, uint32_t interface, Mac48Address precursor);
   void DeleteProactivePath ();
+  void DeleteProactivePath (Mac48Address root);
   void DeleteReactivePath (Mac48Address destination, uint32_t interface);
   struct LookupResult
   {
@@ -64,11 +65,12 @@ public:
     uint32_t metric;
     uint32_t seqnum;
   };
-  LookupResult  LookupReactive (Mac48Address destination);
-  LookupResult  LookupProactive ();
+  LookupResult LookupReactive (Mac48Address destination);
+  LookupResult LookupReactiveExpired (Mac48Address destination);
+  LookupResult LookupProactive ();
+  LookupResult LookupProactiveExpired ();
   //path error routines:
   std::vector<IePerr::FailedDestination>  GetUnreachableDestinations (Mac48Address peerAddress, uint32_t interface);
-  uint32_t  RequestSeqnum (Mac48Address dst);
   std::vector<Mac48Address>  GetPrecursors (Mac48Address destination, uint32_t interface);
   const static uint32_t INTERFACE_ANY = 0xffffffff;
   const static uint32_t MAX_METRIC = 0xffffffff;
