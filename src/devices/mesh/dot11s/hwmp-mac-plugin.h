@@ -36,29 +36,43 @@ class IePerr;
  */
 class HwmpMacPlugin : public MeshWifiInterfaceMacPlugin
 {
-  public:
-    HwmpMacPlugin (uint32_t, Ptr<HwmpProtocol>);
-    ~HwmpMacPlugin ();
-    ///\name Inherited from MAC plugin
-    //\{
-    void SetParent (Ptr<MeshWifiInterfaceMac> parent);
-    bool Receive (Ptr<Packet> packet, const WifiMacHeader & header);
-    bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const;
-    ///\brief Update beacon is empty, because HWMP does not know
-    //anything about beacons
-    void UpdateBeacon (MeshWifiBeacon & beacon) const {};
-    //\}
-  private:
-    friend class HwmpProtocol;
-    ///\brief Interaction with protocol:
-    void SendPreq(Ptr<IePreq> preq, std::vector<Mac48Address> receivers);
-    void SendPrep(Ptr<IePreq> prep, std::vector<Mac48Address> receivers);
-    void SendPerr(Ptr<IePreq> perr, std::vector<Mac48Address> receivers);
-  private:
-    Ptr<MeshWifiInterfaceMac> m_parent;
-    uint32_t m_ifIndex;
-    Ptr<HwmpProtocol> m_protocol;
+public:
+  HwmpMacPlugin (uint32_t, Ptr<HwmpProtocol>);
+  ~HwmpMacPlugin ();
+  ///\name Inherited from MAC plugin
+  //\{
+  void SetParent (Ptr<MeshWifiInterfaceMac> parent);
+  bool Receive (Ptr<Packet> packet, const WifiMacHeader & header);
+  bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const;
+  ///\brief Update beacon is empty, because HWMP does not know
+  //anything about beacons
+  void UpdateBeacon (MeshWifiBeacon & beacon) const {};
+  //\}
+private:
+  friend class HwmpProtocol;
+  ///\brief Interaction with protocol:
+  ///\name Intercation with HWMP:
+  ///\{
+  void SendPreq(IePreq preq, std::vector<Mac48Address> receivers);
+  void SendPrep(IePreq prep, Mac48Address receiver);
+  void SendPerr(IePreq perr, std::vector<Mac48Address> receivers);
+  void RequestDestination (Mac48Address dest);
+  ///\}
+  ///\brief Sends one PREQ when PreqMinInterval after last PREQ
+  //expires (if any PREQ exists in rhe queue)
+  void  SendOnePreq ();
+private:
+  Ptr<MeshWifiInterfaceMac> m_parent;
+  uint32_t m_ifIndex;
+  Ptr<HwmpProtocol> m_protocol;
+  ///\name PREQ queue and PREQ timer:
+  ///\{
+  EventId  m_preqTimer;
+  std::vector<IePreq>  m_preqQueue;
+  std::vector<IePreq>::iterator  m_myPreq;
+  ///\}
 };
+
 #if 0
 class HwmpMacPlugin : public MeshWifiInterfaceMacPlugin {
 public:
@@ -102,7 +116,6 @@ public:
   );
   void SetRetransmittersOfPerrCallback (
     Callback<std::vector<Mac48Address>, std::vector<HwmpRtable::FailedDestination>, uint32_t> cb);
-  void RequestDestination (Mac48Address dest);
   void SendPathError (std::vector<HwmpRtable::FailedDestination> destinations);
   void SetAssociatedIfaceId (uint32_t interface);
   uint32_t  GetAssociatedIfaceId ();
@@ -117,34 +130,10 @@ public:
   void ReceivePreq (IeDot11sPreq&, const Mac48Address& from, const uint32_t& metric);
   void ReceivePrep (IeDot11sPrep&, const Mac48Address& from, const uint32_t& metric);
   void ReceivePerr (IeDot11sPerr&, const Mac48Address& from);
-  void PeerStatus (
-    const Mac48Address peerAddress,
-    const bool status,
-    const uint32_t metric
-  );
-  //Proactive mode routines:
-  bool SetRoot ();
-  void UnSetRoot ();
-  //external handling:
-  void Disable ();
-  void Enable ();
-  //DEBUG purpose:
-  Mac48Address GetAddress ();
 private:
-  static const uint32_t MAX_PREQ_ID = 0xffffffff;
-  static const uint32_t MAX_DSN = 0xffffffff;
-  //information about associated port:
-  Mac48Address m_address;
-  //index when HWMP state is attached
-  uint32_t m_ifIndex;
-  //timers for PREQ and PREP:
-  EventId  m_preqTimer;
-  void  SendOnePreq ();
-  std::vector<IeDot11sPreq>  m_preqQueue;
   //true means that we can add a destination to
   //existing PREQ element
   //False means that we must send
-  EventId  m_prepTimer;
   void  SendPrep (
     Mac48Address dst, //dst is PREQ's originator address
     Mac48Address src, //src is PREQ's destination address
@@ -154,7 +143,6 @@ private:
     uint32_t originatorDsn, //taken from rtable or as m_myDsn ++;
     uint32_t lifetime //taken from PREQ
   );
-  std::vector<IeDot11sPreq>::iterator  m_myPreq;
   //HWMP interaction callbacks:
   Callback<void, INFO>  m_routingInfoCallback;
   Callback<std::vector<Mac48Address>, std::vector<HwmpRtable::FailedDestination>, uint32_t>  m_retransmittersOfPerrCallback;

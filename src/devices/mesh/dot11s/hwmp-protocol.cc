@@ -30,6 +30,9 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/mesh-point-device.h"
 #include "ns3/mesh-wifi-interface-mac.h"
+#include "ie-dot11s-preq.h"
+#include "ie-dot11s-prep.h"
+#include "ie-dot11s-perr.h"
 
 NS_LOG_COMPONENT_DEFINE ("HwmpProtocol");
 
@@ -55,7 +58,7 @@ HwmpProtocol::GetTypeId ()
         MakeTimeAccessor (&HwmpProtocol::m_dot11MeshHWMPnetDiameterTraversalTime),
         MakeTimeChecker ()
         )
-    .AddAttribute ("dot11MeshHWMPpreqMinInterva",
+    .AddAttribute ("dot11MeshHWMPpreqMinInterval",
         "Minimal interval between to successive PREQs",
         TimeValue (MicroSeconds (1024*100)),
         MakeTimeAccessor (&HwmpProtocol::m_dot11MeshHWMPpreqMinInterval),
@@ -118,10 +121,13 @@ HwmpProtocol::GetTypeId ()
   return tid;
 }
 HwmpProtocol::HwmpProtocol ():
-    m_dataSeqno(1),
-    m_hwmpSeqno(1),
+    m_dataSeqno (1),
+    m_hwmpSeqno (1),
+    m_preqId (0),
     m_rtable (CreateObject<HwmpRtable> ()),
-    m_isRoot (false)
+    m_isRoot (false),
+    m_doFlag (false),
+    m_rfFlag (false)
 {
 }
 
@@ -139,6 +145,7 @@ HwmpProtocol::DoDispose ()
   m_lastHwmpSeqno.clear ();
   m_rqueue.clear ();
   m_rtable = 0;
+
   //TODO: clear plugins
 }
 
@@ -157,7 +164,6 @@ HwmpProtocol::RequestRoute (
   if (sourceIface == GetMeshPoint ()->GetIfIndex())
     // packet from level 3
   {
-    NS_LOG_UNCOND("Packet from upper layer. Broadcast frame");
     NS_ASSERT (!packet->FindFirstMatchingTag(tag));
     //Filling TAG:
     tag.SetSeqno (m_dataSeqno++);
@@ -208,7 +214,9 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
       return false;
   }
   //Request a destination:
-  NS_ASSERT(false);
+  if(ShouldSendPreq(destination))
+    for(PLUGINS::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
+      i->second->RequestDestination(destination);
   QueuedPacket pkt;
   HwmpTag tag;
   tag.SetAddress(Mac48Address::GetBroadcast ());
@@ -369,6 +377,13 @@ HwmpProtocol::GetPerrReceivers (std::vector<IePerr::FailedDestination> failedDes
   }
   return retransmitters;
 }
+std::vector<Mac48Address>
+HwmpProtocol::GetPreqReceivers ()
+{
+  std::vector<Mac48Address> retval;
+  retval.push_back (Mac48Address::GetBroadcast ());
+  return retval;
+}
 bool
 HwmpProtocol::QueuePacket (QueuedPacket packet)
 {
@@ -452,6 +467,7 @@ HwmpProtocol::ShouldSendPreq (Mac48Address dst)
   std::map<Mac48Address, EventId>::iterator i = m_preqTimeouts.find (dst);
   if (i == m_preqTimeouts.end ())
     {
+      NS_LOG_UNCOND("Timeout is:" <<2*(m_dot11MeshHWMPnetDiameterTraversalTime.GetMilliSeconds()));
       m_preqTimeouts[dst] = Simulator::Schedule (
           MilliSeconds (2*(m_dot11MeshHWMPnetDiameterTraversalTime.GetMilliSeconds())),
           &HwmpProtocol::RetryPathDiscovery, this, dst, 0);
@@ -489,11 +505,82 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
       m_preqTimeouts.erase (i);
       return;
     }
-  //TODO: Request a destination again
-  NS_ASSERT(false);
+  for(PLUGINS::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
+    i->second->RequestDestination(dst);
   m_preqTimeouts[dst] = Simulator::Schedule (
       MilliSeconds (2*(m_dot11MeshHWMPnetDiameterTraversalTime.GetMilliSeconds())),
       &HwmpProtocol::RetryPathDiscovery, this, dst, numOfRetry);
+}
+//Proactive PREQ routines:
+void
+HwmpProtocol::SetRoot ()
+{
+  SendProactivePreq ();
+  m_isRoot = true;
+}
+void
+HwmpProtocol::UnsetRoot ()
+{
+  m_proactivePreqTimer.Cancel ();
+}
+void
+HwmpProtocol::SendProactivePreq ()
+{
+  NS_LOG_DEBUG ("Sending proactive PREQ");
+  IePreq preq;
+  //By default: must answer
+  preq.SetHopcount (0);
+  preq.SetTTL (m_maxTtl);
+  if (m_preqId == 0xffffffff)
+    m_preqId = 0;
+  preq.SetLifetime (m_dot11MeshHWMPpathToRootInterval.GetMicroSeconds () /1024);
+  //\attention: do not forget to set originator address, sequence
+  //number and preq ID in HWMP-MAC plugin
+  preq.AddDestinationAddressElement (true, true, Mac48Address::GetBroadcast (), 0);
+  for(PLUGINS::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
+    i->second->SendPreq(preq, GetPreqReceivers ());
+  m_proactivePreqTimer = Simulator::Schedule (m_dot11MeshHWMPactiveRootTimeout, &HwmpProtocol::SendProactivePreq, this);
+}
+bool
+HwmpProtocol::GetDoFlag ()
+{
+  return m_doFlag;
+}
+bool
+HwmpProtocol::GetRfFlag ()
+{
+  return m_rfFlag;
+}
+Time
+HwmpProtocol::GetPreqMinInterval ()
+{
+  return m_dot11MeshHWMPpreqMinInterval;
+}
+Time
+HwmpProtocol::GetPerrMinInterval ()
+{
+  return m_dot11MeshHWMPperrMinInterval;
+}
+uint8_t
+HwmpProtocol::GetMaxTtl ()
+{
+  return m_maxTtl;
+}
+uint32_t
+HwmpProtocol::GetNextPreqId ()
+{
+  m_preqId ++;
+  if(m_preqId == 0xffffffff)
+    m_preqId = 0;
+  return m_preqId;
+}
+uint32_t
+HwmpProtocol::GetNextHwmpSeqno ()
+{
+  m_hwmpSeqno ++;
+  if(m_hwmpSeqno == 0xffffffff)
+    m_hwmpSeqno = 0;
+  return m_hwmpSeqno;
 }
 } //namespace dot11s
 } //namespace ns3

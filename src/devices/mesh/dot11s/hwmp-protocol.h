@@ -25,6 +25,7 @@
 #include "ns3/mesh-l2-routing-protocol.h"
 #include "ns3/nstime.h"
 #include "ns3/ie-dot11s-perr.h"
+#include "ns3/event-id.h"
 #include <vector>
 #include <map>
 
@@ -32,7 +33,6 @@ namespace ns3 {
 class MeshPointDevice;
 class Packet;
 class Mac48Address;
-class EventId;
 namespace dot11s {
 class HwmpMacPlugin;
 class HwmpRtable;
@@ -65,9 +65,9 @@ private:
   //destination fails on a given interface
   //\param uint32_t is an interface ID, where route has failed
   void MakePathError (Mac48Address, uint32_t);
-  ///\return list of addresses where a perr should be sent to
+  ///\return list of addresses where a PERR/PREQ should be sent to
   std::vector<Mac48Address> GetPerrReceivers (std::vector<IePerr::FailedDestination> failedDest, uint32_t port);
-
+  std::vector<Mac48Address> GetPreqReceivers ();
   ///\brief MAC-plugin asks wether the frame can be dropeed. Protocol
   //automatically updates seqno.
   //\returns true if frame can be dropped
@@ -96,24 +96,33 @@ private:
   //maximum level - retry mechanish should be cancelled
   void  RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry);
   ///\}
+  ///\name Proactive Preq routines:
+  ///\{
+  void SetRoot ();
+  void UnsetRoot ();
+  void SendProactivePreq ();
+  ///\}
 private:
   //fields:
-  std::map<uint32_t, Ptr<HwmpMacPlugin> > m_interfaces;
+  typedef std::map<uint32_t, Ptr<HwmpMacPlugin> > PLUGINS;
+  PLUGINS m_interfaces;
   uint32_t m_dataSeqno;
   uint32_t m_hwmpSeqno;
+  uint32_t m_preqId;
   ///\brief Sequence number filters:
-  std::map<Mac48Address, uint32_t,std::less<Mac48Address> >  m_lastDataSeqno;
-  std::map<Mac48Address, uint32_t,std::less<Mac48Address> >  m_lastHwmpSeqno;
+  std::map<Mac48Address, uint32_t,std::less<Mac48Address> > m_lastDataSeqno;
+  std::map<Mac48Address, uint32_t,std::less<Mac48Address> > m_lastHwmpSeqno;
   ///\brief Routing table
   Ptr<HwmpRtable> m_rtable;
   ///\name Timers:
   //\{
-  std::map<Mac48Address, EventId>  m_preqTimeouts;
+  std::map<Mac48Address, EventId> m_preqTimeouts;
+  EventId m_proactivePreqTimer;
   //\}
   ///\Packet Queue
-  std::vector<QueuedPacket>  m_rqueue;
+  std::vector<QueuedPacket> m_rqueue;
 private:
-  ///\name HWMP-protocol parameters
+  ///\name HWMP-protocol parameters (attributes of GetTypeId)
   ///\{
   uint8_t m_dot11MeshHWMPmaxPREQretries;
   Time m_dot11MeshHWMPnetDiameterTraversalTime;
@@ -127,6 +136,19 @@ private:
   uint8_t m_maxTtl;
   uint8_t m_unicastPerrThreshold;
   uint8_t m_unicastPreqThreshold;
+  bool m_doFlag;
+  bool m_rfFlag;
+  ///\}
+  ///\name Methods needed by HwmpMacLugin to access protocol
+  //parameters:
+  ///\{
+  bool GetDoFlag ();
+  bool GetRfFlag ();
+  Time GetPreqMinInterval ();
+  Time GetPerrMinInterval ();
+  uint8_t GetMaxTtl ();
+  uint32_t GetNextPreqId ();
+  uint32_t GetNextHwmpSeqno ();
   ///\}
 };
 } //namespace dot11s

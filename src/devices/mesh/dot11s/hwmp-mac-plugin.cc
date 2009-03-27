@@ -23,7 +23,6 @@
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
 #include "ns3/log.h"
-#include "ns3/dot11s-parameters.h"
 #include "ns3/mesh-wifi-mac-header.h"
 
 #include "hwmp-mac-plugin.h"
@@ -80,12 +79,55 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
       if(m_protocol->DropDataFrame (meshHdr.GetMeshSeqno (), header.GetAddr4 ()) )
         return false;
   }
+  if(header.IsMultihopAction())
+  {
+    WifiMeshHeader meshHdr;
+    packet->RemoveHeader (meshHdr);
+    //parse multihop action header:
+    WifiMeshMultihopActionHeader multihopHdr;
+    packet->RemoveHeader (multihopHdr);
+    WifiMeshMultihopActionHeader::ACTION_VALUE actionValue = multihopHdr.GetAction ();
+    if(multihopHdr.GetCategory () != WifiMeshMultihopActionHeader::MESH_PATH_SELECTION)
+      return true;
+    if(meshHdr.GetMeshTtl () == 0)
+        return false;
+    switch (actionValue.pathSelection)
+    {
+      case WifiMeshMultihopActionHeader::PATH_REQUEST:
+        {
+          IePreq preq;
+          NS_ASSERT(false);
+          packet->RemoveHeader (preq);
+          //TODO:recalculate
+          //metric
+          //m_preqReceived (preq, hdr->GetAddr2(), CalculateMetric(hdr->GetAddr2()));
+          return false;
+        }
+      case WifiMeshMultihopActionHeader::PATH_REPLY:
+        {
+          IePrep prep;
+          packet->RemoveHeader (prep);
+          //m_prepReceived (prep, hdr->GetAddr2(), CalculateMetric(hdr->GetAddr2()));
+          return false;
+        }
+      case WifiMeshMultihopActionHeader::PATH_ERROR:
+        {
+          IePerr perr;
+          packet->RemoveHeader (perr);
+          //m_perrReceived (perr, hdr->GetAddr2());
+          return false;
+        }
+      case WifiMeshMultihopActionHeader::ROOT_ANNOUNCEMENT:
+        return false;
+    }
+  }
   return true;
 }
 bool
 HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const
 {
   //TODO: add a mesh header and remove a TAG
+  NS_ASSERT(header.IsData ());
   HwmpTag tag;
   NS_ASSERT(packet->FindFirstMatchingTag(tag));
   WifiMeshHeader meshHdr;
@@ -97,111 +139,49 @@ HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header,
   return true;
 }
 #if 0
-TypeId
-HwmpMacPlugin::GetTypeId ()
-{
-  static TypeId tid = TypeId ("ns3::HwmpMacPlugin")
-                      .SetParent<Object> ()
-                      .AddConstructor<HwmpMacPlugin> ()
-                      ;
-  return tid;
-}
-
 HwmpMacPlugin::HwmpMacPlugin ():
     m_myPreq (m_preqQueue.end()),
-    m_preqId (1),
-    m_myDsn (1),
-    m_disabled (false),
-    m_maxTtl (10)
 {
-}
-void
-HwmpMacPlugin::SetRequestRouteCallback (
-  Callback<HwmpRtable::LookupResult, const Mac48Address&> cb)
-{
-  m_requestRouteCallback = cb;
 }
 
-void
-HwmpMacPlugin::SetRequestRootPathCallback (
-  Callback<HwmpRtable::LookupResult, uint32_t> cb)
-{
-  m_requestRootPathCallback = cb;
-}
-
-//Setting MAC
-void
-HwmpMacPlugin::SetMac (Ptr<MeshWifiMac> mac)
-{
-  mac->SetPeerStatusCallback (MakeCallback(&HwmpMacPlugin::PeerStatus, this));
-  mac->SetPreqReceivedCallback (MakeCallback(&HwmpMacPlugin::ReceivePreq, this));
-  mac->SetPrepReceivedCallback (MakeCallback(&HwmpMacPlugin::ReceivePrep, this));
-  mac->SetPerrReceivedCallback (MakeCallback(&HwmpMacPlugin::ReceivePerr, this));
-  m_address = mac->GetAddress ();
-  m_preqCallback = MakeCallback (&MeshWifiMac::SendPreq, mac);
-  m_prepCallback = MakeCallback (&MeshWifiMac::SendPrep, mac);
-  m_perrCallback = MakeCallback (&MeshWifiMac::SendPerr, mac);
-}
 HwmpMacPlugin::~HwmpMacPlugin ()
 {
   m_preqQueue.clear ();
 }
 //Interaction with HWMP:
+#endif
 void
-HwmpMacPlugin::SetRoutingInfoCallback (
-  Callback<void, INFO> cb
-)
+HwmpMacPlugin::SendPreq(IePreq, std::vector<Mac48Address> receivers)
 {
-  m_routingInfoCallback = cb;
+  NS_ASSERT(false);
 }
-
-void
-HwmpMacPlugin::SetRetransmittersOfPerrCallback (
-  Callback<std::vector<Mac48Address>, std::vector<HwmpRtable::FailedDestination>, uint32_t> cb)
-{
-  m_retransmittersOfPerrCallback = cb;
-}
-
 void
 HwmpMacPlugin::RequestDestination (Mac48Address dst)
 {
   if (m_preqQueue.end () == m_myPreq)
-    {
-      IeDot11sPreq preq;
-      //fill PREQ:
-      preq.SetHopcount (0);
-      preq.SetTTL (m_maxTtl);
-      preq.SetPreqID (m_preqId++);
-      if (m_preqId == MAX_PREQ_ID)
-        m_preqId = 0;
-      preq.SetLifetime (TIME_TO_TU(dot11sParameters::dot11MeshHWMPactivePathTimeout));
-      preq.SetOriginatorSeqNumber (m_myDsn++);
-      if (m_myDsn == MAX_DSN)
-        m_myDsn = 0;
-      preq.SetOriginatorAddress (m_address);
-      preq.AddDestinationAddressElement (false, false, dst, 0); //DO = 0, RF = 0
-      if (m_preqTimer.IsRunning ())
-        {
-          NS_LOG_DEBUG ("No my preq");
-          m_preqQueue.push_back (preq);
-          //set iterator position to my preq:
-          m_myPreq = m_preqQueue.end () -1;
-        }
-      else
-        {
-          NS_LOG_DEBUG ("Send PREQ now, "<<preq.GetPreqID()<<" destinations, now is "<<Simulator::Now());
-          m_preqCallback (preq);
-          NS_ASSERT (!m_preqTimer.IsRunning());
-          m_preqTimer = Simulator::Schedule (dot11sParameters::dot11MeshHWMPpreqMinInterval, &HwmpMacPlugin::SendOnePreq, this);
-        }
-    }
+  {
+    IePreq preq;
+    //fill PREQ:
+    preq.SetHopcount (0);
+    preq.SetTTL (m_protocol->GetMaxTtl ());
+    preq.SetPreqID (m_protocol->GetNextPreqId ());
+    preq.SetOriginatorAddress (m_parent->GetAddress ());
+    preq.SetOriginatorSeqNumber (m_protocol->GetNextHwmpSeqno());
+    preq.AddDestinationAddressElement (false, false, dst, 0); //DO = 0, RF = 0
+    m_preqQueue.push_back (preq);
+    //set iterator position to my preq:
+    m_myPreq = m_preqQueue.end () -1;
+    NS_LOG_UNCOND("no preq");
+    SendOnePreq ();
+  }
   else
-    {
-      NS_ASSERT (m_myPreq->GetOriginatorAddress() == m_address);
-      NS_LOG_DEBUG ("add a destination "<<dst);
-      m_myPreq->AddDestinationAddressElement (false, false, dst, 0); //DO = 0, RF = 0
-    }
+  {
+    NS_ASSERT (m_myPreq->GetOriginatorAddress() == m_parent->GetAddress());
+    NS_LOG_UNCOND ("add a destination "<<dst);
+    m_myPreq->AddDestinationAddressElement (false, false, dst, 0); //DO = 0, RF = 0
+  }
 }
+#if 0
 void
 HwmpMacPlugin::SendPathError (std::vector<HwmpRtable::FailedDestination> destinations)
 {
@@ -229,17 +209,6 @@ HwmpMacPlugin::SendPathError (std::vector<HwmpRtable::FailedDestination> destina
     }
 }
 //needed to fill routing information structure
-void
-HwmpMacPlugin::SetAssociatedIfaceId (uint32_t interface)
-{
-  m_ifIndex = interface;
-}
-
-uint32_t
-HwmpMacPlugin::GetAssociatedIfaceId ()
-{
-  return m_ifIndex;
-}
 
 //Interaction with MAC:
 void
@@ -472,53 +441,6 @@ HwmpMacPlugin::PeerStatus (const Mac48Address peerAddress, const bool status, co
     newInfo.type = INFO_FAILED_PEER;
   m_routingInfoCallback (newInfo);
 }
-
-bool
-HwmpMacPlugin::SetRoot ()
-{
-#if 0
-  //TODO:: delete this lines!!!!!!!
-  if (m_address != Mac48Address ("00:00:00:00:00:10"))
-    return false;
-  //TODO
-#endif
-  Simulator::Schedule (dot11sParameters::dot11MeshHWMPactiveRootTimeout, &HwmpMacPlugin::SendProactivePreq, this);
-  return true;
-}
-
-void
-HwmpMacPlugin::SendProactivePreq ()
-{
-  NS_LOG_DEBUG ("Sending proactive PREQ");
-  IeDot11sPreq preq;
-  //By default: must answer
-  preq.SetHopcount (0);
-  preq.SetTTL (m_maxTtl);
-  preq.SetPreqID (m_preqId++);
-  if (m_preqId == MAX_PREQ_ID)
-    m_preqId = 0;
-  preq.SetLifetime (TIME_TO_TU(dot11sParameters::dot11MeshHWMPpathToRootInterval));
-  preq.SetOriginatorSeqNumber (m_myDsn++);
-  if (m_myDsn == MAX_DSN)
-    m_myDsn = 0;
-  preq.SetOriginatorAddress (m_address);
-  preq.AddDestinationAddressElement (
-    true,
-    true,
-    Mac48Address::GetBroadcast ()
-    ,0);
-  if (m_preqTimer.IsRunning ())
-    m_preqQueue.push_back (preq);
-  else
-    {
-      NS_LOG_DEBUG ("Send now "<<preq.GetPreqID());
-      m_preqCallback (preq);
-      NS_ASSERT (!m_preqTimer.IsRunning());
-      m_preqTimer = Simulator::Schedule (dot11sParameters::dot11MeshHWMPpreqMinInterval, &HwmpMacPlugin::SendOnePreq, this);
-    }
-  Simulator::Schedule (dot11sParameters::dot11MeshHWMPactiveRootTimeout, &HwmpMacPlugin::SendProactivePreq, this);
-}
-
 void
 HwmpMacPlugin::AddPerrReceiver (Mac48Address receiver)
 {
@@ -531,52 +453,57 @@ HwmpMacPlugin::AddPerrReceiver (Mac48Address receiver)
       return;
   m_myPerrReceivers.push_back (receiver);
 }
-
-void
-HwmpMacPlugin::UnSetRoot ()
-{
-}
-
-void
-HwmpMacPlugin::Disable ()
-{
-  m_disabled = true;
-}
-
-void
-HwmpMacPlugin::Enable ()
-{
-  m_disabled = false;
-}
-
-Mac48Address
-HwmpMacPlugin::GetAddress ()
-{
-  return m_address;
-}
-
+#endif
 void
 HwmpMacPlugin::SendOnePreq ()
 {
+  if(m_preqTimer.IsRunning ())
+    return;
   if (m_preqQueue.size () == 0)
     return;
   if (m_myPreq == m_preqQueue.begin ())
     m_myPreq == m_preqQueue.end ();
-  IeDot11sPreq preq = m_preqQueue[0];
-  NS_LOG_DEBUG (
+  IePreq preq = m_preqQueue[0];
+  NS_LOG_UNCOND (
     "Sending PREQ from "<<preq.GetOriginatorAddress () <<
     " destinations are  "<< (int)preq.GetDestCount()<<
     ", at "<<Simulator::Now ()<<
     ", store in queue "<<m_preqQueue.size ()<<
-    " preqs"<<", I am "<<m_address);
-  m_preqCallback (preq);
+    " preqs"<<", I am "<<m_parent->GetAddress ());
+  //Create packet
+  Ptr<Packet> packet  = Create<Packet> ();
+  packet->AddHeader(preq);
+  //Multihop action header:
+  WifiMeshMultihopActionHeader multihopHdr;
+  WifiMeshMultihopActionHeader::ACTION_VALUE action;
+  action.pathSelection = WifiMeshMultihopActionHeader::PATH_REQUEST;
+  multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
+  packet->AddHeader (multihopHdr);
+  //Mesh header
+  WifiMeshHeader meshHdr;
+  meshHdr.SetMeshTtl (m_protocol->GetMaxTtl ());
+  //TODO: should seqno be here?
+  meshHdr.SetMeshSeqno (0);
+  meshHdr.SetAddressExt(1);
+  meshHdr.SetAddr4(preq.GetOriginatorAddress ());
+  packet->AddHeader (meshHdr);
+  //create 802.11 header:
+  WifiMacHeader hdr;
+  hdr.SetMultihopAction ();
+  hdr.SetDsNotFrom ();
+  hdr.SetDsNotTo ();
+  hdr.SetAddr1 (Mac48Address::GetBroadcast ());
+  hdr.SetAddr2 (m_parent->GetAddress ());
+  hdr.SetAddr3 (Mac48Address::GetBroadcast ());
+  //Send Management frame
+  m_parent->SendManagementFrame(packet, hdr);
   //erase first!
   m_preqQueue.erase (m_preqQueue.begin());
   //reschedule sending PREQ
   NS_ASSERT (!m_preqTimer.IsRunning());
-  m_preqTimer = Simulator::Schedule (dot11sParameters::dot11MeshHWMPpreqMinInterval, &HwmpMacPlugin::SendOnePreq, this);
+  m_preqTimer = Simulator::Schedule (m_protocol->GetPreqMinInterval (), &HwmpMacPlugin::SendOnePreq, this);
 }
-
+#if 0
 void
 HwmpMacPlugin::SendPrep (Mac48Address dst,
                     Mac48Address src,

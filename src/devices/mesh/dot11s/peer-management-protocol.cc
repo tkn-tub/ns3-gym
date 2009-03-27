@@ -26,7 +26,6 @@
 #include "ie-dot11s-configuration.h"
 
 #include "ns3/mesh-point-device.h"
-#include "ns3/dot11s-parameters.h"
 #include "ns3/simulator.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
@@ -272,9 +271,11 @@ PeerManagerProtocol::InitiateLink (
   BeaconInfoMap::iterator beaconsOnInterface = m_neighbourBeacons.find (interface);
   if(beaconsOnInterface == m_neighbourBeacons.end())
     FillBeaconInfo(interface, peerAddress, lastBeacon, beaconInterval);
+  beaconsOnInterface = m_neighbourBeacons.find (interface);
   BeaconsOnInterface::iterator beacon = beaconsOnInterface->second.find (peerAddress);
   if(beacon == beaconsOnInterface->second.end ())
     FillBeaconInfo(interface, peerAddress, lastBeacon, beaconInterval);
+  beacon = beaconsOnInterface->second.find (peerAddress);
   //find a peer link  - it must not exist
   NS_ASSERT(FindPeerLink(interface, peerAddress) == 0);
   // Plugin must exist

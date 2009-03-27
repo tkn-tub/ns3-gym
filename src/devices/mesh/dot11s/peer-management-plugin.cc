@@ -89,7 +89,6 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     NS_ASSERT(meshHdr.GetMeshTtl () == 1);
     NS_ASSERT(meshHdr.GetAddressExt () == 1);
     NS_ASSERT(meshHdr.GetAddr4 () == header.GetAddr2 ());
-
     Mac48Address peerAddress = header.GetAddr2 ();
     PeerLinkFrameStart::PlinkFrameStartFields fields;
     {
@@ -116,7 +115,7 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     // frames except CLOSE
     IeConfiguration meshConfig;
     if(fields.subtype != IePeerManagement::PEER_CLOSE)
-    packet->RemoveHeader(meshConfig);
+      packet->RemoveHeader(meshConfig);
     IePeerManagement peerElement;
     packet->RemoveHeader(peerElement);
     // Check the correspondance betwee action valuse and peer link
@@ -141,11 +140,7 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     // if we can handle a frame - drop it
     return false;
   }
-  if(header.IsData())
-  {
-    return m_protocol->IsActiveLink(m_ifIndex,header.GetAddr2());
-  }
-  return true;
+  return m_protocol->IsActiveLink(m_ifIndex,header.GetAddr2());
 }
 
 bool
