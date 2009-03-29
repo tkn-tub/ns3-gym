@@ -58,9 +58,18 @@ private:
       Ptr<Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply);
   ///\name interaction with HWMP MAC plugin
   //\{
-  void ReceivePreq(Ptr<IePreq> preq, Mac48Address from);
-  void ReceivePrep(Ptr<IePreq> prep, Mac48Address from);
-  void ReceivePerr(Ptr<IePreq> perr, Mac48Address from);
+  void ReceivePreq(IePreq preq, Mac48Address from, uint32_t interface, Mac48Address interfaceAddress);
+  void ReceivePrep(IePrep prep, Mac48Address from, uint32_t interface);
+  void ReceivePerr(IePerr perr, Mac48Address from, uint32_t interface);
+  void SendPrep (
+      Mac48Address src,
+      Mac48Address dst,
+      Mac48Address retransmitter,
+      uint32_t initMetric,
+      uint32_t originatorDsn,
+      uint32_t destinationSN,
+      uint32_t lifetime,
+      uint32_t interface);
   ///\brief forms a path error information element when list of
   //destination fails on a given interface
   //\param uint32_t is an interface ID, where route has failed
@@ -109,9 +118,15 @@ private:
   uint32_t m_dataSeqno;
   uint32_t m_hwmpSeqno;
   uint32_t m_preqId;
-  ///\brief Sequence number filters:
+  ///\name Sequence number filters:
+  ///\{
+  ///\brief Data sequence number database:
   std::map<Mac48Address, uint32_t,std::less<Mac48Address> > m_lastDataSeqno;
+  ///\brief DSN databse:
   std::map<Mac48Address, uint32_t,std::less<Mac48Address> > m_lastHwmpSeqno;
+  ///\brief Metric database:
+  std::map<Mac48Address, uint32_t,std::less<Mac48Address> > m_lastHwmpMetric;
+  ///\}
   ///\brief Routing table
   Ptr<HwmpRtable> m_rtable;
   ///\name Timers:
@@ -149,6 +164,7 @@ private:
   uint8_t GetMaxTtl ();
   uint32_t GetNextPreqId ();
   uint32_t GetNextHwmpSeqno ();
+  uint32_t GetActivePathLifetime ();
   ///\}
 };
 } //namespace dot11s

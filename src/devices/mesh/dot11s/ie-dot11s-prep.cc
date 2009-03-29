@@ -39,11 +39,6 @@ IePrep::GetTypeId ()
                       .SetParent<Object> ();
   return tid;
 }
-void
-IePrep::Print (std::ostream &os) const
-{
-  //TODO:fill this method
-}
 TypeId
 IePrep::GetInstanceTypeId () const
 {

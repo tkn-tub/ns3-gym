@@ -40,7 +40,6 @@ public:
   ~IePrep ();
   static TypeId GetTypeId ();
   virtual TypeId GetInstanceTypeId () const;
-  virtual void Print (std::ostream &os) const;
   void SetFlags (uint8_t flags);
   void SetHopcount (uint8_t hopcount);
   void SetTTL (uint8_t ttl);

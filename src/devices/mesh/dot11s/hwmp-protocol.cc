@@ -104,7 +104,7 @@ HwmpProtocol::GetTypeId ()
         "Initial value of Time To Live field",
         UintegerValue (32),
         MakeUintegerAccessor (&HwmpProtocol::m_maxTtl),
-        MakeUintegerChecker<uint8_t> (1)
+        MakeUintegerChecker<uint8_t> (2)
         )
   .AddAttribute ("unicastPerrThreshold",
         "Maximum number of PERR receivers, when we send a PERR as a chain of unicasts",
@@ -230,6 +230,157 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
   pkt.inInterface = sourceIface;
   QueuePacket (pkt);
   return true;
+}
+void
+HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, Mac48Address interfaceAddress)
+{
+  preq.IncrementMetric (1);
+  //acceptance cretirea:
+  std::map<Mac48Address, uint32_t>::iterator i = m_lastHwmpSeqno.find (preq.GetOriginatorAddress());
+  if (i == m_lastHwmpSeqno.end ())
+    {
+      m_lastHwmpSeqno[preq.GetOriginatorAddress ()] = preq.GetOriginatorSeqNumber();
+      m_lastHwmpMetric[preq.GetOriginatorAddress ()] = preq.GetMetric();
+    }
+  else
+    {
+      if (i->second > preq.GetOriginatorSeqNumber ())
+        return;
+      if (i->second == preq.GetOriginatorSeqNumber ())
+        {
+          //find metric
+          std::map<Mac48Address, uint32_t>::iterator j =
+            m_lastHwmpMetric.find (preq.GetOriginatorAddress());
+          NS_ASSERT (j != m_lastHwmpSeqno.end());
+          if (j->second <= preq.GetMetric ())
+            return;
+        }
+      m_lastHwmpSeqno[preq.GetOriginatorAddress ()] = preq.GetOriginatorSeqNumber();
+      m_lastHwmpMetric[preq.GetOriginatorAddress ()] = preq.GetMetric();
+    }
+  //check if can answer:
+  std::vector<Ptr<DestinationAddressUnit> > destinations = preq.GetDestinationList ();
+  for (std::vector<Ptr<DestinationAddressUnit> >::iterator i = destinations.begin (); i != destinations.end(); i++)
+    {
+      if ((*i)->GetDestinationAddress () == Mac48Address::GetBroadcast())
+        {
+          //only proactive PREQ contains destination
+          //address as broadcast! Proactive preq MUST
+          //have destination count equal to 1 and
+          //per destination flags DO and RF
+          NS_ASSERT (preq.GetDestCount() == 1);
+          NS_ASSERT (((*i)->IsDo()) && ((*i)->IsRf()));
+          m_rtable->AddProactivePath (
+              preq.GetMetric (),
+              preq.GetOriginatorAddress (),
+              from,
+              interface,
+              MicroSeconds (preq.GetLifetime () * 1024),
+              preq.GetOriginatorSeqNumber ()
+              );
+          ProactivePathResolved ();
+          if (!preq.IsNeedNotPrep ())
+              SendPrep (
+                  interfaceAddress,
+                  preq.GetOriginatorAddress (),
+                  from,
+                  preq.GetMetric (),
+                  preq.GetOriginatorSeqNumber (),
+                  GetNextHwmpSeqno (),
+                  preq.GetLifetime (),
+                  interface
+              );
+          break;
+        }
+      if ((*i)->GetDestinationAddress () == interfaceAddress)
+        {
+          preq.DelDestinationAddressElement ((*i)->GetDestinationAddress());
+          SendPrep (
+              interfaceAddress,
+              preq.GetOriginatorAddress (),
+              from,
+              (uint32_t)0,
+              preq.GetOriginatorSeqNumber (),
+              GetNextHwmpSeqno (),
+              preq.GetLifetime (),
+              interface
+          );
+          continue;
+        }
+      //check if can answer:
+      HwmpRtable::LookupResult result = m_rtable->LookupReactive ((*i)->GetDestinationAddress());
+      if ((! ((*i)->IsDo())) && (result.retransmitter != Mac48Address::GetBroadcast()))
+        {
+          //have a valid information and acn answer
+          if ((*i)->IsRf ())
+            (*i)->SetFlags (true, false); //DO = 1, RF = 0 (as it was)
+          else
+            {
+              //send a PREP and delete destination
+              preq.DelDestinationAddressElement ((*i)->GetDestinationAddress());
+              SendPrep (
+                  interfaceAddress,
+                  preq.GetOriginatorAddress (),
+                  from,
+                  result.metric,
+                  preq.GetOriginatorSeqNumber (),
+                  result.seqnum,
+                  preq.GetLifetime (),
+                  interface
+              );
+              continue;
+            }
+        }
+    }
+  m_rtable->AddReactivePath (
+      preq.GetOriginatorAddress (),
+      from,
+      interface,
+      preq.GetMetric (),
+      MicroSeconds (preq.GetLifetime () *1024),
+      preq.GetOriginatorSeqNumber ()
+      );
+  ReactivePathResolved (preq.GetOriginatorAddress ());
+  //m_routingInfoCallback (newInfo);
+  //chack if must retransmit:
+  if (preq.GetDestCount () == 0)
+    return;
+  //Forward PREQ to all interfaces:
+  NS_LOG_UNCOND("I am "<<interfaceAddress<<"retransmitting PREQ:"<<preq);
+  for(PLUGINS::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
+    i->second->SendPreq (preq, GetPreqReceivers ());
+}
+void
+HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface)
+{
+}
+void
+HwmpProtocol::ReceivePerr (IePerr perr, Mac48Address from, uint32_t interface)
+{
+}
+void
+HwmpProtocol::SendPrep (
+    Mac48Address src,
+    Mac48Address dst,
+    Mac48Address retransmitter,
+    uint32_t initMetric,
+    uint32_t originatorDsn,
+    uint32_t destinationSN,
+    uint32_t lifetime,
+    uint32_t interface)
+{
+  NS_ASSERT(false);
+  IePrep prep;
+  prep.SetHopcount (0);
+  prep.SetTTL (m_maxTtl);
+  prep.SetDestinationAddress (dst);
+  prep.SetDestinationSeqNumber (destinationSN);
+  prep.SetLifetime (lifetime);
+  prep.SetMetric (0);
+  prep.SetOriginatorAddress (src);
+  prep.SetOriginatorSeqNumber (originatorDsn);
+  //m_prepCallback (prep, retransmitter);
+
 }
 bool
 HwmpProtocol::Install (Ptr<MeshPointDevice> mp)
@@ -581,6 +732,11 @@ HwmpProtocol::GetNextHwmpSeqno ()
   if(m_hwmpSeqno == 0xffffffff)
     m_hwmpSeqno = 0;
   return m_hwmpSeqno;
+}
+uint32_t
+HwmpProtocol::GetActivePathLifetime ()
+{
+  return m_dot11MeshHWMPactivePathTimeout.GetMicroSeconds () / 1024;
 }
 } //namespace dot11s
 } //namespace ns3

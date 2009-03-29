@@ -94,12 +94,6 @@ IePreq::GetTypeId ()
                       .SetParent<Object> ();
   return tid;
 }
-void
-IePreq::Print (std::ostream &os) const
-{
-  //TODO:fill this method
-}
-
 TypeId
 IePreq::GetInstanceTypeId () const
 {
@@ -332,11 +326,18 @@ IePreq::GetInformationSize () const
      retval += (m_destCount*11);
   return retval;
 }
-
 void
-IePreq::PrintInformation (std::ostream& os) const
+IePreq::PrintInformation (std::ostream &os) const
 {
-  //TODO
+  os << "Originator address =" << m_originatorAddress;
+  os << " TTL="  <<  (uint16_t)m_ttl;
+  os << " Hopcount="  <<  (uint16_t)m_hopCount;
+  os << " metric=" << m_metric;
+  os << " Seqno=" << m_originatorSeqNumber;
+  os << " Lifetime=" << m_lifetime;
+  os << "\nDestinations are:\n";
+  for (int j = 0; j < m_destCount; j++ )
+    os << m_destinations[j]->GetDestinationAddress () << "\n";
 }
 std::vector<Ptr<DestinationAddressUnit> >
 IePreq::GetDestinationList ()

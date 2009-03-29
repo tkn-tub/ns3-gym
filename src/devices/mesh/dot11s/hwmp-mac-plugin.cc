@@ -96,25 +96,27 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
       case WifiMeshMultihopActionHeader::PATH_REQUEST:
         {
           IePreq preq;
-          NS_ASSERT(false);
           packet->RemoveHeader (preq);
-          //TODO:recalculate
-          //metric
-          //m_preqReceived (preq, hdr->GetAddr2(), CalculateMetric(hdr->GetAddr2()));
+          if (preq.GetOriginatorAddress () == m_parent->GetAddress ())
+            return false;
+          if (preq.GetTtl () == 0)
+            return false;
+          preq.DecrementTtl ();
+          m_protocol->ReceivePreq (preq, header.GetAddr2 (), m_ifIndex, m_parent->GetAddress ());
           return false;
         }
       case WifiMeshMultihopActionHeader::PATH_REPLY:
         {
           IePrep prep;
           packet->RemoveHeader (prep);
-          //m_prepReceived (prep, hdr->GetAddr2(), CalculateMetric(hdr->GetAddr2()));
+          m_protocol->ReceivePrep (prep, header.GetAddr2 (), m_ifIndex);
           return false;
         }
       case WifiMeshMultihopActionHeader::PATH_ERROR:
         {
           IePerr perr;
           packet->RemoveHeader (perr);
-          //m_perrReceived (perr, hdr->GetAddr2());
+          m_protocol->ReceivePerr (perr, header.GetAddr2 (), m_ifIndex);
           return false;
         }
       case WifiMeshMultihopActionHeader::ROOT_ANNOUNCEMENT:
@@ -151,9 +153,38 @@ HwmpMacPlugin::~HwmpMacPlugin ()
 //Interaction with HWMP:
 #endif
 void
-HwmpMacPlugin::SendPreq(IePreq, std::vector<Mac48Address> receivers)
+HwmpMacPlugin::SendPreq(IePreq preq, std::vector<Mac48Address> receivers)
 {
-  NS_ASSERT(false);
+  //Create packet
+  Ptr<Packet> packet  = Create<Packet> ();
+  packet->AddHeader(preq);
+  //Multihop action header:
+  WifiMeshMultihopActionHeader multihopHdr;
+  WifiMeshMultihopActionHeader::ACTION_VALUE action;
+  action.pathSelection = WifiMeshMultihopActionHeader::PATH_REQUEST;
+  multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
+  packet->AddHeader (multihopHdr);
+  //Mesh header
+  WifiMeshHeader meshHdr;
+  meshHdr.SetMeshTtl (m_protocol->GetMaxTtl ());
+  //TODO: should seqno be here?
+  meshHdr.SetMeshSeqno (0);
+  meshHdr.SetAddressExt(1);
+  meshHdr.SetAddr4(preq.GetOriginatorAddress ());
+  packet->AddHeader (meshHdr);
+  //create 802.11 header:
+  WifiMacHeader hdr;
+  hdr.SetMultihopAction ();
+  hdr.SetDsNotFrom ();
+  hdr.SetDsNotTo ();
+  hdr.SetAddr2 (m_parent->GetAddress ());
+  hdr.SetAddr3 (Mac48Address::GetBroadcast ());
+  //Send Management frame
+  for(std::vector<Mac48Address>::iterator i = receivers.begin (); i != receivers.end (); i ++)
+  {
+    hdr.SetAddr1 (*i);
+    m_parent->SendManagementFrame(packet, hdr);
+  }
 }
 void
 HwmpMacPlugin::RequestDestination (Mac48Address dst)
@@ -167,6 +198,7 @@ HwmpMacPlugin::RequestDestination (Mac48Address dst)
     preq.SetPreqID (m_protocol->GetNextPreqId ());
     preq.SetOriginatorAddress (m_parent->GetAddress ());
     preq.SetOriginatorSeqNumber (m_protocol->GetNextHwmpSeqno());
+    preq.SetLifetime (m_protocol->GetActivePathLifetime ());
     preq.AddDestinationAddressElement (false, false, dst, 0); //DO = 0, RF = 0
     m_preqQueue.push_back (preq);
     //set iterator position to my preq:
@@ -209,146 +241,6 @@ HwmpMacPlugin::SendPathError (std::vector<HwmpRtable::FailedDestination> destina
     }
 }
 //needed to fill routing information structure
-
-//Interaction with MAC:
-void
-HwmpMacPlugin::ReceivePreq (IeDot11sPreq& preq,  const Mac48Address& from, const uint32_t& metric)
-{
-  if (m_disabled)
-    return;
-  if (preq.GetOriginatorAddress () == m_address)
-    return;
-  preq.DecrementTtl ();
-  preq.IncrementMetric (metric);
-  if (preq.GetTtl () == 0)
-    return;
-  //acceptance cretirea:
-  std::map<Mac48Address, uint32_t>::iterator i = m_dsnDatabase.find (preq.GetOriginatorAddress());
-  if (i == m_dsnDatabase.end ())
-    {
-      m_dsnDatabase[preq.GetOriginatorAddress ()] = preq.GetOriginatorSeqNumber();
-      m_preqMetricDatabase[preq.GetOriginatorAddress ()] = preq.GetMetric();
-    }
-  else
-    {
-      if (i->second > preq.GetOriginatorSeqNumber ())
-        return;
-      if (i->second == preq.GetOriginatorSeqNumber ())
-        {
-          //find metric
-          std::map<Mac48Address, uint32_t>::iterator j =
-            m_preqMetricDatabase.find (preq.GetOriginatorAddress());
-          NS_ASSERT (j != m_dsnDatabase.end());
-          if (j->second <= preq.GetMetric ())
-            return;
-        }
-      m_dsnDatabase[preq.GetOriginatorAddress ()] = preq.GetOriginatorSeqNumber();
-      m_preqMetricDatabase[preq.GetOriginatorAddress ()] = preq.GetMetric();
-    }
-  NS_LOG_DEBUG (
-    "PREQ from "<< preq.GetOriginatorAddress ()
-    <<", at "<< m_address
-    <<", TTL ="<< (int)preq.GetTtl ()
-    <<", metric = "<< preq.GetMetric ()
-    <<", hopcount = "<< (int)preq.GetHopCount ()
-    <<", preqId = "<< preq.GetPreqID ()
-    <<", transmitter is "<<from);
-  //fill routingTable
-  INFO newInfo;
-  newInfo.me = m_address;
-  newInfo.destination = preq.GetOriginatorAddress ();
-  newInfo.nextHop = from;
-  newInfo.metric = preq.GetMetric ();
-  newInfo.lifetime = TU_TO_TIME (preq.GetLifetime());
-  newInfo.outPort = m_ifIndex;
-  newInfo.dsn = preq.GetOriginatorSeqNumber ();
-  newInfo.type = INFO_PREQ;
-  //check if can answer:
-  std::vector<Ptr<DestinationAddressUnit> > destinations = preq.GetDestinationList ();
-  for (std::vector<Ptr<DestinationAddressUnit> >::iterator i = destinations.begin (); i != destinations.end(); i++)
-    {
-      if ((*i)->GetDestinationAddress () == Mac48Address::GetBroadcast())
-        {
-          //only proactive PREQ contains destination
-          //address as broadcast! Proactive preq MUST
-          //have destination count equal to 1 and
-          //per destination flags DO and RF
-          NS_ASSERT (preq.GetDestCount() == 1);
-          NS_ASSERT (((*i)->IsDo()) && ((*i)->IsRf()));
-          NS_LOG_DEBUG ("PROACTIVE PREQ RECEIVED");
-          newInfo.type = INFO_PROACTIVE;
-          m_routingInfoCallback (newInfo);
-          if (!preq.IsNeedNotPrep ())
-            {
-              SendPrep (
-                preq.GetOriginatorAddress (),
-                m_address,
-                from,
-                preq.GetMetric (),
-                preq.GetOriginatorSeqNumber (),
-                m_myDsn ++,
-                preq.GetLifetime ()
-              );
-              if (m_myDsn == MAX_DSN)
-                m_myDsn = 0;
-            }
-          break;
-        }
-      if ((*i)->GetDestinationAddress () == m_address)
-        {
-          preq.DelDestinationAddressElement ((*i)->GetDestinationAddress());
-          SendPrep (
-            preq.GetOriginatorAddress (),
-            m_address,
-            from,
-            0,
-            preq.GetOriginatorSeqNumber (),
-            m_myDsn++,
-            preq.GetLifetime ()
-          );
-          if (m_myDsn == MAX_DSN)
-            m_myDsn = 0;
-          continue;
-        }
-      //check if can answer:
-      HwmpRtable::LookupResult result = m_requestRouteCallback ((*i)->GetDestinationAddress());
-      if ((! ((*i)->IsDo())) && (result.retransmitter != Mac48Address::GetBroadcast()))
-        {
-          //have a valid information and acn answer
-          if ((*i)->IsRf ())
-            (*i)->SetFlags (true, false); //DO = 1, RF = 0 (as it was)
-          else
-            {
-              //send a PREP and delete destination
-              preq.DelDestinationAddressElement ((*i)->GetDestinationAddress());
-              SendPrep (
-                preq.GetOriginatorAddress (),
-                (*i)->GetDestinationAddress (),
-                result.retransmitter,
-                result.metric,
-                preq.GetOriginatorSeqNumber (),
-                result.seqnum,
-                preq.GetLifetime ()
-              );
-              continue;
-            }
-        }
-    }
-  m_routingInfoCallback (newInfo);
-  //chack if must retransmit:
-  if (preq.GetDestCount () == 0)
-    return;
-  if (m_preqTimer.IsRunning ())
-    {
-      m_preqQueue.push_back (preq);
-    }
-  else
-    {
-      m_preqCallback (preq);
-      NS_ASSERT (!m_preqTimer.IsRunning());
-      m_preqTimer = Simulator::Schedule (dot11sParameters::dot11MeshHWMPpreqMinInterval, &HwmpMacPlugin::SendOnePreq, this);
-    }
-}
 
 void
 HwmpMacPlugin::ReceivePrep (IeDot11sPrep& prep, const Mac48Address& from, const uint32_t& metric)
@@ -463,13 +355,9 @@ HwmpMacPlugin::SendOnePreq ()
     return;
   if (m_myPreq == m_preqQueue.begin ())
     m_myPreq == m_preqQueue.end ();
-  IePreq preq = m_preqQueue[0];
-  NS_LOG_UNCOND (
-    "Sending PREQ from "<<preq.GetOriginatorAddress () <<
-    " destinations are  "<< (int)preq.GetDestCount()<<
-    ", at "<<Simulator::Now ()<<
-    ", store in queue "<<m_preqQueue.size ()<<
-    " preqs"<<", I am "<<m_parent->GetAddress ());
+  NS_LOG_UNCOND ("I am "<<m_parent->GetAddress ()<<"sending PREQ:"<<m_preqQueue[0]);
+  SendPreq(m_preqQueue[0], m_protocol->GetPreqReceivers ());
+#if 0
   //Create packet
   Ptr<Packet> packet  = Create<Packet> ();
   packet->AddHeader(preq);
@@ -497,6 +385,7 @@ HwmpMacPlugin::SendOnePreq ()
   hdr.SetAddr3 (Mac48Address::GetBroadcast ());
   //Send Management frame
   m_parent->SendManagementFrame(packet, hdr);
+#endif
   //erase first!
   m_preqQueue.erase (m_preqQueue.begin());
   //reschedule sending PREQ
@@ -522,7 +411,7 @@ HwmpMacPlugin::SendPrep (Mac48Address dst,
   prep.SetMetric (0);
   prep.SetOriginatorAddress (src);
   prep.SetOriginatorSeqNumber (originatorDsn);
-  m_prepCallback (prep, retransmitter);
+  //m_prepCallback (prep, retransmitter);
 }
 
 void

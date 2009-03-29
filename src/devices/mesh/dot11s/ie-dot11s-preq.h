@@ -64,7 +64,6 @@ public:
   ~IePreq ();
   static TypeId GetTypeId ();
   virtual TypeId GetInstanceTypeId () const;
-  virtual void Print (std::ostream &os) const;
   void AddDestinationAddressElement (
     bool doFlag,
     bool rfFlag,

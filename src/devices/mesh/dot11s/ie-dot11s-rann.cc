@@ -41,11 +41,6 @@ IeRann::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
-void
-IeRann::Print (std::ostream &os)const
-{
-  // FILL
-}
 IeRann::IeRann ():
     m_flags (0),
     m_hopcount (0),
