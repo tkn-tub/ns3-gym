@@ -46,7 +46,33 @@ us a note on ns-developers mailing list.  </p>
 <hr>
 <h1>changes from ns-3.3 to ns-3.4</h1>
 
+<h2>changes to build system</h2>
+<ul>
+<li>A major option regarding the downloading and building of ns-3 has been</li>
+<li>added for ns-3.4 -- the ns-3-allinone feature.  This allows a user to</li>
+<li>get the most common options for ns-3 downloaded and built with a minimum</li>
+<li>amount of trouble.  See the ns-3 tutorial for a detailed explanation of<li>
+<li>how to use this new feature.</li>
+</ul>
+
+<ul>
+<li>The build system now runs build items in parallel by default.  This</li>
+<li>includes the regression tests.<li>
+</ul>
+
 <h2>new API:</h2>
+<ul>
+<li>XML support has been added to the ConfigStore in /src/contrib/config-store.cc</li>
+</ul>
+
+<ul>
+<li>The ns-2 calendar queue scheduler option has been ported to src/simulator</li>
+</ul>
+
+<ul>
+<li>A ThreeLogDistancePropagationLossModel has been added to src/devices/wifi</li>
+</ul>
+
 <ul>
 <li>ConstantAccelerationMobilityModel in src/mobility/constant-acceleration-mobility-model.h</li>
 </ul>
@@ -61,7 +87,17 @@ us a note on ns-developers mailing list.  </p>
 <li>src/core/names.{cc,h})</li>
 </ul>
 
+<ul>
+<li>Wifi multicast support has been added in src/devices/wifi</li>
+</ul>
+
 <h2>changes to existing API:</h2>
+
+<ul>
+<li>Some fairly significant changes have been made to the API of the</li>
+<li>random variable code.  Please see the ns-3 manual and src/core/random-variable.cc</li>
+<li>for details.</li>
+</ul>
 
 <ul>
 <li>The trace sources in the various NetDevice classes has been completely</li>
@@ -79,6 +115,30 @@ us a note on ns-developers mailing list.  </p>
 <ul>
 <li>StaticMobilityModel has been renamed ConstantPositionMobilityModel</li>
 <li>StaticSpeedMobilityModel has been renamed ConstantVelocityMobilityModel</li>
+</ul>
+
+<ul>
+<li>The Callback templates have been extended to support more parameters.</li>
+<li>See src/core/callback.h</li>
+</ul>
+
+<ul>
+<li>Many helper API have been changed to allow passing Object-based parameters</li>
+<li>as string names to ease working with the object name service.</li>
+</ul>
+
+<ul>
+<li>The Config APIs now accept path segments that are names defined by the </li>
+<li>object name service.</li>
+</ul>
+
+<ul>
+<li>Minor changes were made to make the system build under the Intel C++ compiler.</li>
+</ul>
+
+<ul>
+<li>Trace hooks for association and deassociation to/from an access point were</li>
+<li>added to src/devices/wifi/nqsta-wifi-mac.cc</li>
 </ul>
 
 <hr>
