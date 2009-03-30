@@ -27,8 +27,8 @@
 #include "ns3/net-device.h"
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
-#include "ns3/dot11s-codes.h"
 #include "ie-dot11s-beacon-timing.h"
+#include "ie-dot11s-peer-management.h"
 
 #include <map>
 namespace ns3 {
@@ -162,7 +162,7 @@ private:
    * \{
    */
   bool ShouldSendOpen (uint32_t interface, Mac48Address peerAddress);
-  bool ShouldAcceptOpen (uint32_t interface, Mac48Address peerAddress, dot11sReasonCode & reasonCode);
+  bool ShouldAcceptOpen (uint32_t interface, Mac48Address peerAddress, PmpReasonCode & reasonCode);
   /**
    * \}
    * \brief Indicates changes in peer links

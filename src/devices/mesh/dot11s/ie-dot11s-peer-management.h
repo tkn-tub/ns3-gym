@@ -23,11 +23,32 @@
 #ifndef MESH_PEER_MAN_ELEMENT
 #define MESH_PEER_MAN_ELEMENT
 
-#include "ns3/dot11s-codes.h"
 #include "ns3/wifi-information-element.h"
 
 namespace ns3 {
 namespace dot11s {
+
+/**
+ * \ingroup dot11s
+ * \brief Codes used by 802.11s Peer Management Protocol 
+ */
+enum PmpReasonCode {
+  REASON11S_PEER_LINK_CANCELLED,
+  REASON11S_MESH_MAX_PEERS,
+  REASON11S_MESH_CAPABILITY_POLICY_VIOLATION,
+  REASON11S_MESH_CLOSE_RCVD,
+  REASON11S_MESH_MAX_RETRIES,
+  REASON11S_MESH_CONFIRM_TIMEOUT,
+  REASON11S_MESH_SECURITY_ROLE_NEGOTIATION_DIFFERS,
+  REASON11S_MESH_SECURITY_AUTHENTICATION_IMPOSSIBLE,
+  REASON11S_MESH_SECURITY_FAILED_VERIFICATION,
+  REASON11S_MESH_INVALID_GTK,
+  REASON11S_MESH_MISMATCH_GTK,
+  REASON11S_MESH_INCONSISTENT_PARAMETERS,
+  REASON11S_MESH_CONFIGURATION_POLICY_VIOLATION,
+  REASON11S_RESERVED,
+};
+  
 /**
  * \ingroup dot11s
  * \brief See 7.3.2.85 of draft 2.07
@@ -42,10 +63,10 @@ public:
       PEER_CONFIRM = 2,
     };
   void   SetPeerOpen (uint16_t localLinkId);
-  void   SetPeerClose (uint16_t localLinkID, uint16_t peerLinkId, dot11sReasonCode reasonCode);
+  void   SetPeerClose (uint16_t localLinkID, uint16_t peerLinkId, PmpReasonCode reasonCode);
   void   SetPeerConfirm (uint16_t localLinkID, uint16_t peerLinkId);
 
-  dot11sReasonCode GetReasonCode () const;
+  PmpReasonCode GetReasonCode () const;
   uint16_t  GetLocalLinkId () const;
   uint16_t  GetPeerLinkId () const;
   bool   SubtypeIsOpen () const;
@@ -71,7 +92,7 @@ private:
   /**
    * Present only within close frame
    */
-  dot11sReasonCode m_reasonCode;
+  PmpReasonCode m_reasonCode;
 };
 
 } // namespace dot11s

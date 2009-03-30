@@ -227,7 +227,7 @@ PeerManagerProtocol::ReceivePeerLinkFrame (
   Ptr<PeerLink> peerLink = FindPeerLink(interface, peerAddress);
   if (peerManagementElement.SubtypeIsOpen ())
   {
-    dot11sReasonCode reasonCode;
+    PmpReasonCode reasonCode;
     bool reject = ! (ShouldAcceptOpen (interface, peerAddress,reasonCode));
     if (peerLink == 0)
       peerLink = InitiateLink (interface, peerAddress, Simulator::Now (), Seconds(1.0));
@@ -347,7 +347,7 @@ PeerManagerProtocol::ShouldSendOpen (uint32_t interface, Mac48Address peerAddres
   return true;
 }
 bool
-PeerManagerProtocol::ShouldAcceptOpen (uint32_t interface, Mac48Address peerAddress, dot11sReasonCode & reasonCode)
+PeerManagerProtocol::ShouldAcceptOpen (uint32_t interface, Mac48Address peerAddress, PmpReasonCode & reasonCode)
 {
   if (m_numberOfActivePeers > m_maxNumberOfPeerLinks)
     {

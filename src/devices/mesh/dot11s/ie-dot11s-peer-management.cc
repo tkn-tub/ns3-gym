@@ -46,7 +46,7 @@ IePeerManagement::SetPeerOpen (uint16_t localLinkId)
   m_localLinkId = localLinkId;
 }
 void
-IePeerManagement::SetPeerClose (uint16_t localLinkId, uint16_t peerLinkId, dot11sReasonCode reasonCode)
+IePeerManagement::SetPeerClose (uint16_t localLinkId, uint16_t peerLinkId, PmpReasonCode reasonCode)
 {
   m_length = 7;
   m_subtype = PEER_CLOSE;
@@ -64,7 +64,7 @@ IePeerManagement::SetPeerConfirm (uint16_t localLinkId, uint16_t peerLinkId)
   m_peerLinkId = peerLinkId;
 }
 
-dot11sReasonCode
+PmpReasonCode
 IePeerManagement::GetReasonCode () const
 {
   return m_reasonCode;
@@ -130,7 +130,7 @@ IePeerManagement::DeserializeInformation (Buffer::Iterator start, uint8_t length
   if (m_length > 3)
     m_peerLinkId = i.ReadNtohU16 ();
   if (m_length > 5)
-    m_reasonCode = (dot11sReasonCode)i.ReadNtohU16 ();
+    m_reasonCode = (PmpReasonCode)i.ReadNtohU16 ();
   return i.GetDistanceFrom (start);
 }
 void

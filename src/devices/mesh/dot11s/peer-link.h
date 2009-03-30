@@ -80,7 +80,7 @@ public:
    * \{
    */
   /// MLME-CancelPeerLink.request
-  void MLMECancelPeerLink (dot11sReasonCode reason);
+  void MLMECancelPeerLink (PmpReasonCode reason);
   /// MLME-PassivePeerLinkOpen.request
   void MLMEPassivePeerLinkOpen ();
   /// MLME-ActivePeerLinkOpen.request
@@ -104,11 +104,11 @@ private:
    * \{
    */
   /// Close link
-  void Close (uint16_t localLinkID, uint16_t peerLinkID, dot11sReasonCode reason);
+  void Close (uint16_t localLinkID, uint16_t peerLinkID, PmpReasonCode reason);
   /// Accept open link
   void OpenAccept (uint16_t localLinkId, IeConfiguration conf);
   /// Reject open link 
-  void OpenReject (uint16_t localLinkId, IeConfiguration conf, dot11sReasonCode reason);
+  void OpenReject (uint16_t localLinkId, IeConfiguration conf, PmpReasonCode reason);
   /// Confirm accept
   void ConfirmAccept (
     uint16_t localLinkId,
@@ -121,7 +121,7 @@ private:
     uint16_t localLinkId,
     uint16_t peerLinkId,
     IeConfiguration  conf,
-    dot11sReasonCode reason
+    PmpReasonCode reason
   );
   //\}
   
@@ -165,7 +165,7 @@ private:
   
 private:
   /// State transition
-  void StateMachine (PeerEvent event, dot11sReasonCode = REASON11S_RESERVED);
+  void StateMachine (PeerEvent event, PmpReasonCode = REASON11S_RESERVED);
   
   /** 
    * \name Event handlers
@@ -183,7 +183,7 @@ private:
    * \name Work with management frames
    * \{
    */
-  void SendPeerLinkClose (dot11sReasonCode reasoncode);
+  void SendPeerLinkClose (PmpReasonCode reasoncode);
   void SendPeerLinkOpen ();
   void SendPeerLinkConfirm ();
   //\}

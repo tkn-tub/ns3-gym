@@ -165,7 +165,7 @@ PeerLink::ClearTimingElement ()
   m_beaconTiming.ClearTimingElement ();
 }
 
-void PeerLink::MLMECancelPeerLink (dot11sReasonCode reason)
+void PeerLink::MLMECancelPeerLink (PmpReasonCode reason)
 {
   StateMachine (CNCL,reason);
 }
@@ -185,7 +185,7 @@ void PeerLink::MLMEPeeringRequestReject ()
   StateMachine (REQ_RJCT, REASON11S_PEER_LINK_CANCELLED);
 }
 
-void PeerLink::Close (uint16_t localLinkId, uint16_t peerLinkId, dot11sReasonCode reason)
+void PeerLink::Close (uint16_t localLinkId, uint16_t peerLinkId, PmpReasonCode reason)
 {
   if (peerLinkId != 0 && m_localLinkId != peerLinkId)
     return;
@@ -204,7 +204,7 @@ void PeerLink::OpenAccept (uint16_t localLinkId, IeConfiguration  conf)
   StateMachine (OPN_ACPT);
 }
 
-void PeerLink::OpenReject (uint16_t localLinkId, IeConfiguration  conf,dot11sReasonCode reason)
+void PeerLink::OpenReject (uint16_t localLinkId, IeConfiguration  conf,PmpReasonCode reason)
 {
   if ( m_peerLinkId == 0)
     m_peerLinkId = localLinkId;
@@ -228,7 +228,7 @@ PeerLink::ConfirmAccept (uint16_t localLinkId, uint16_t peerLinkId, uint16_t pee
 
 void
 PeerLink::ConfirmReject (uint16_t localLinkId, uint16_t peerLinkId,
-    IeConfiguration  conf,dot11sReasonCode reason)
+    IeConfiguration  conf,PmpReasonCode reason)
 {
   if (m_localLinkId != peerLinkId)
     return;
@@ -260,7 +260,7 @@ PeerLink::SetMacPlugin(Ptr<PeerManagerMacPlugin> plugin)
 // Private
 //-----------------------------------------------------------------------------
 void
-PeerLink::StateMachine (PeerEvent event,dot11sReasonCode reasoncode)
+PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
 {
   switch (m_state)
     {
@@ -506,7 +506,7 @@ void PeerLink::ClearHoldingTimer ()
   m_holdingTimer.Cancel ();
 }
 
-void PeerLink::SendPeerLinkClose (dot11sReasonCode reasoncode)
+void PeerLink::SendPeerLinkClose (PmpReasonCode reasoncode)
 {
   IePeerManagement peerElement;
   peerElement.SetPeerClose (m_localLinkId, m_peerLinkId, reasoncode);

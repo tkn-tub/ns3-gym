@@ -24,7 +24,6 @@
 
 
 #include "ns3/mac48-address.h"
-#include "ns3/dot11s-codes.h"
 #include "ns3/wifi-information-element.h"
 
 namespace ns3 {
