@@ -70,8 +70,8 @@ main (int argc, char *argv[])
                "Ssid", SsidValue (ssid),
                "RandomStart", TimeValue (Seconds (randomStart))
               );
-  wifi.SetRouting("ns3::HwmpProtocol");
-  wifi.SetPeerManager("ns3::PeerManagerProtocol");
+  wifi.SetRouting("ns3::dot11s::HwmpProtocol");
+  wifi.SetPeerManager("ns3::dot11s::PeerManagerProtocol");
   wifi.SetL2RoutingNetDevice ("ns3::MeshPointDevice");
   meshDevices = wifi.Install (wifiPhy,nodes);
   // Installing Mobility.

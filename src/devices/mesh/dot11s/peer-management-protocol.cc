@@ -48,7 +48,7 @@ NS_OBJECT_ENSURE_REGISTERED (PeerManagerProtocol);
 TypeId
 PeerManagerProtocol::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::PeerManagerProtocol")
+  static TypeId tid = TypeId ("ns3::dot11s::PeerManagerProtocol")
     .SetParent<Object> ()
     .AddConstructor<PeerManagerProtocol> ()
     // peerLinkCleanupTimeout. We go through the map of peer links and 
@@ -117,6 +117,8 @@ PeerManagerProtocol::Install(Ptr<MeshPointDevice> mp)
     PeerLinksOnInterface newmap;
     m_peerLinks[(*i)->GetIfIndex()] = newmap;
   }
+  // Mesh point aggregates all installed protocols
+  mp->AggregateObject(this);
   return true;
 }
 

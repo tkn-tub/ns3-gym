@@ -49,8 +49,18 @@ public:
   PeerManagerProtocol ();
   ~PeerManagerProtocol ();
   static TypeId GetTypeId ();
+  /** 
+   * \brief Install PMP on given mesh point. 
+   * 
+   * Installing protocol cause installing its interface MAC plugins.
+   *  
+   * Also MP aggregates all installed protocols, PMP protocol can be accessed 
+   * via MeshPointDevice::GetObject<PeerManagerProtocol>();
+   */
   bool Install(Ptr<MeshPointDevice>);
-  /** \brief Methods that handle beacon sending/receiving procedure.
+  /** 
+   * \brief Methods that handle beacon sending/receiving procedure.
+   * 
    * This methods interact with MAC_layer plug-in
    * \{
    */
@@ -78,9 +88,7 @@ public:
       Time receivingTime,
       Time beaconInterval
       );
-  /**
-   * \}
-   */
+  //\}
   /**
    * \brief Methods that handle Peer link management frames
    * interaction:
@@ -115,15 +123,14 @@ public:
    * Checks if there is established link
    */
   bool IsActiveLink (uint32_t interface, Mac48Address peerAddress);
-  ///\}
+  //\}
   ///\brief Needed by external module to do MLME
   Ptr<PeerLink> FindPeerLink(uint32_t interface, Mac48Address peerAddress);
 private:
-  ///\name Private structures
-  ///\{
-  ///\brief keeps information about beacon of peer station:
-  /// beacon interval, association ID, last time we have received a
-  /// beacon
+  /** \name Private structures
+   * \{
+   */
+  /// Keeps information about beacon of peer station: beacon interval, association ID, last time we have received a beacon
   struct BeaconInfo
   {
     uint16_t aid; //Assoc ID

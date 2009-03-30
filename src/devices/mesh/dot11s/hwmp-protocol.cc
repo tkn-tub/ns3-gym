@@ -43,7 +43,7 @@ NS_OBJECT_ENSURE_REGISTERED (HwmpProtocol);
 TypeId
 HwmpProtocol::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::HwmpProtocol")
+  static TypeId tid = TypeId ("ns3::dot11s::HwmpProtocol")
     .SetParent<MeshL2RoutingProtocol> ()
     .AddConstructor<HwmpProtocol> ()
     .AddAttribute ("dot11MeshHWMPmaxPREQretries",
@@ -389,19 +389,21 @@ HwmpProtocol::Install (Ptr<MeshPointDevice> mp)
   std::vector<Ptr<NetDevice> > interfaces = mp->GetInterfaces ();
   for (std::vector<Ptr<NetDevice> >::iterator i = interfaces.begin (); i != interfaces.end(); i++)
     {
-      //Checking netdevice:
+      // Checking for compatible net device
       const WifiNetDevice * wifiNetDev = dynamic_cast<const WifiNetDevice *> (PeekPointer (*i));
       if (wifiNetDev == NULL)
         return false;
       MeshWifiInterfaceMac * mac = dynamic_cast<MeshWifiInterfaceMac *> (PeekPointer (wifiNetDev->GetMac ()));
       if (mac == NULL)
         return false;
-      //Installing plugins:
+      // Installing plugins:
       Ptr<HwmpMacPlugin> hwmpMac = Create<HwmpMacPlugin> (wifiNetDev->GetIfIndex (), this);
       m_interfaces[wifiNetDev->GetIfIndex ()] = hwmpMac;
       mac->InstallPlugin (hwmpMac);
     }
   mp->SetRoutingProtocol(this);
+  // Mesh point aggregates all installed protocols
+  mp->AggregateObject(this);
   return true;
 }
 bool

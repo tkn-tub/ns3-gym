@@ -50,7 +50,16 @@ public:
   void DoDispose ();
   bool RequestRoute (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
       Ptr<Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply);
+  /** 
+   * \brief Install HWMP on given mesh point. 
+   * 
+   * Installing protocol cause installing its interface MAC plugins.
+   *  
+   * Also MP aggregates all installed protocols, HWMP protocol can be accessed 
+   * via MeshPointDevice::GetObject<dot11s::HwmpProtocol>();
+   */
   bool Install (Ptr<MeshPointDevice>);
+  
 private:
   friend class HwmpMacPlugin;
   ///\brief Like RequestRoute, but for unicast packets
