@@ -18,7 +18,7 @@ http://www.nsnam.org/releases/ns-3.4.tar.bz2
 
 Supported platforms
 -------------------
-ns-3.2 has been tested on the following platforms:
+ns-3.4 has been tested on the following platforms:
   - linux x86 gcc 4.2, 4.1, and, 3.4.6.
   - linux x86_64 gcc 4.3.2, 4.2.3, 4.2.1, 4.1.3, 3.4.6
   - MacOS X ppc and x86
@@ -34,6 +34,19 @@ New user-visible features
      propagation loss model based on the ns-2 models. Fabian Mauchle contributed
      multicast support.
 
+  b) Object Name Service:  A facility allowing ns-3 Objects to be assigned
+     names has been added.
+
+  c) Tap Bridge:  A second option for integrating ns-3 with real-world hosts
+     has been added.  This allows for real hosts to talk over ns-3 net devices
+     and simulated networks.
+
+  d) A new build option (ns-3-allinone) has been provided to make it easier for
+     users to download and bulid commonly used ns-3 configurations.
+
+  e) The ns-3 calendar queue scheduler has been ported to ns-3.
+
+  f) XML support has been added to the ConfigStore.
 
 API changes from ns-3.3
 -----------------------
