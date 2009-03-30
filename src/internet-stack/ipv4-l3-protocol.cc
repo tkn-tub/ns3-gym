@@ -152,17 +152,16 @@ Ipv4L3Protocol::DoDispose (void)
   NS_LOG_FUNCTION (this);
   for (L4List_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
-      (*i)->Dispose ();
       *i = 0;
     }
   m_protocols.clear ();
 
-  for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); ++i)
+  for (Ipv4InterfaceList::iterator i = m_interfaces.begin (); i != m_interfaces.end (); ++i)
     {
-      Ptr<Ipv4Interface> interface = *i;
-      interface->Dispose ();
+      *i = 0;
     }
   m_interfaces.clear ();
+  m_routingProtocols.clear ();
   m_node = 0;
   m_staticRouting->Dispose ();
   m_staticRouting = 0;

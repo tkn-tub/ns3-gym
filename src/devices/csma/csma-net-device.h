@@ -61,7 +61,6 @@ public:
 
   /**
    * Enumeration of the types of packets supported in the class.
-   *
    */
   enum EncapsulationMode {
     ILLEGAL,     /**< Encapsulation mode not set */

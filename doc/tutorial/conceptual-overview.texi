@@ -362,21 +362,6 @@ enable on each component.  These two lines of code enable debug logging at the
 INFO level for echo clients and servers.  This will result in the application
 printing out messages as packets are sent and received during the simulation.
 
-The next line of code is used to give a fixed seed to the random number 
-generators so that they will generate repeatable results.  In the example
-programs, it allows us to thouroughly document the output of the trace files
-in a consistent way.  Having a fixed seed also allows us to use the examples 
-in our regression testing framework.
-
-@verbatim
-  RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
-@end verbatim
-
-Random variables are very important in understanding how to get repeatable
-results, so you are encouraged to read the Doxygen and manual sections to
-understand what is going on there.  For us, the main concern is in making 
-random backoff algorithms consistent across runs.
-
 Now we will get directly to the business of creating a topology and running 
 a simulation.  We use the topology helper objects to make this job as
 easy as possible.
@@ -439,7 +424,7 @@ The next three lines in the script are,
     pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
 @end verbatim
 
-The first line 
+The first line,
 
 @verbatim
     PointToPointHelper pointToPoint;
@@ -461,12 +446,12 @@ to what we call an @code{Attribute} of the @code{PointToPointNetDevice}.
 If you look at the Doxygen for class @code{ns3::PointToPointNetDevice} and 
 find the documentation for the @code{GetTypeId} method, you will find a list
 of  @code{Attributes} defined for the device.  Among these is the ``DataRate''
-attribute.  Most user-visible @command{ns-3} objects have similar lists of 
-attributes.  We use this mechanism to easily configure simulations without
+@code{Attribute}.  Most user-visible @command{ns-3} objects have similar lists of 
+@code{Attributes}.  We use this mechanism to easily configure simulations without
 recompiling as you will see in a following section.
 
 Similar to the ``DataRate'' on the @code{PointToPointNetDevice} you will find a
-``Delay'' attribute associated with the @code{PointToPointChannel}.  The 
+``Delay'' @code{Attribute} associated with the @code{PointToPointChannel}.  The 
 final line,
 
 @verbatim
@@ -502,8 +487,9 @@ is created.  For each node in the @code{NodeContainer} (there must be exactly
 two for a point-to-point link) a @code{PointToPointNetDevice} is created and 
 saved in the device container.  A @code{PointToPointChannel} is created and 
 the two @code{PointToPointNetDevices} are attached.  When objects are created
-by the @code{PointToPointHelper}, the attributes previously set in the helper
-are used to initialize the corresponding attributes in the created objects.
+by the @code{PointToPointHelper}, the @code{Attributes} previously set in the 
+helper are used to initialize the corresponding @code{Attributes} in the 
+created objects.
 
 After executing the @code{pointToPoint.Install (nodes)} call we will have
 two nodes, each with an installed point-to-point net device and a 
@@ -590,13 +576,13 @@ created.
 The first line of code in the above snippet declares the 
 @code{UdpEchoServerHelper}.  As usual, this isn't the application itself, it
 is an object used to help us create the actual applications.  One of our 
-conventions is to place required attributes in the helper constructor.  In this
-case, the helper can't do anything useful unless it is provided with a port
-number that the client also knows about.  Rather than just picking one and
-hoping it all works out, we require the port number as a parameter to the 
+conventions is to place required @code{Attributes} in the helper constructor.
+In this case, the helper can't do anything useful unless it is provided with
+a port number that the client also knows about.  Rather than just picking one 
+and hoping it all works out, we require the port number as a parameter to the 
 constructor.  The constructor, in turn, simply does a @code{SetAttribute}
-with the passed value.  You can, if desired, set the ``Port'' attribute to
-another value later.
+with the passed value.  You can, if desired, set the ``Port'' @code{Attribute}
+to another value later.
 
 Similar to many other helper objects, the @code{UdpEchoServerHelper} object 
 has an @code{Install} method.  It is the execution of this method that actually
@@ -649,12 +635,12 @@ that is managed by an @code{UdpEchoClientHelper}.
     clientApps.Stop (Seconds (10.0));
 @end verbatim
 
-For the echo client, however, we need to set five different attributes.  The 
-first two attributes are set during construction of the 
+For the echo client, however, we need to set five different @code{Attributes}.
+The first two @code{Attributes} are set during construction of the 
 @code{UdpEchoClientHelper}.  We pass parameters that are used (internally to
-the helper) to set the ``RemoteAddress'' and ``RemotePort'' attributes in
-accordance with our convention to make required attributes parameters in the 
-helper constructors.  
+the helper) to set the ``RemoteAddress'' and ``RemotePort'' @code{Attributes}
+in accordance with our convention to make required @code{Attributes} parameters
+in the helper constructors.  
 
 Recall that we used an @code{Ipv4InterfaceContainer} to keep track of the IP 
 addresses we assigned to our devices.  The zeroth interface in the 
@@ -666,12 +652,12 @@ are creating the helper and telling it so set the remote address of the client
 to be  the IP address assigned to the node on which the server resides.  We 
 also tell it to arrange to send packets to port nine.
 
-The ``MaxPackets'' attribute tells the client the maximum number of packets 
-we allow it to send during the simulation.  The ``Interval'' attribute tells
-the client how long to wait between packets, and the ``PacketSize'' attribute
-tells the client how large its packet payloads should be.  With this 
-particular combination of attributes, we are telling the client to send one 
-1024-byte packet.
+The ``MaxPackets'' @code{Attribute} tells the client the maximum number of 
+packets we allow it to send during the simulation.  The ``Interval'' 
+@code{Attribute} tells the client how long to wait between packets, and the
+``PacketSize'' @code{Attribute} tells the client how large its packet payloads
+should be.  With this particular combination of @code{Attributes}, we are 
+telling the client to send one 1024-byte packet.
 
 Just as in the case of the echo server, we tell the echo client to @code{Start}
 and @code{Stop}, but here we start the client one second after the server is
@@ -738,34 +724,40 @@ built if you run Waf.  Let's try it.  Copy @code{examples/first.cc} into
 the @code{scratch} directory.
 
 @verbatim
-  ~/repos/ns-3-dev > cp examples/first.cc scratch/
+  ~/repos/ns-3-dev > cp examples/first.cc scratch/myfirst.cc
 @end verbatim
 
-and then build it using waf,
+Now build your first example script using waf:
 
 @verbatim
-  ~/repos/ns-3-dev > ./waf
-  Entering directory `/home/craigdo/repos/ns-3-dev/build'
-  [467/511] cxx: scratch/first.cc -> build/debug/scratch/first_1.o
-  [468/511] cxx: scratch/multiple-sources/simple-main.cc -> build/debug/scratch/multiple-sources/simple-main_2.o
-  [469/511] cxx: scratch/multiple-sources/simple-simulation.cc -> build/debug/scratch/multiple-sources/simple-simulation_2.o
-  [470/511] cxx: scratch/simple.cc -> build/debug/scratch/simple_3.o
-  [508/511] cxx_link: build/debug/scratch/first_1.o -> build/debug/scratch/first
-  Compilation finished successfully 
-  ~/repos/ns-3-dev >
+  ./waf
+@end verbatim
+
+You should see messages reporting that your @code{myfirst} example was built
+successfully.
+
+@verbatim
+  Entering directory `repos/ns-3-allinone-dev/ns-3-dev/build'
+  [563/648] cxx: scratch/myfirst.cc -> build/debug/scratch/myfirst_3.o
+  [646/648] cxx_link: build/debug/scratch/myfirst_3.o -> build/debug/scratch/myfirst
+  Build finished successfully (00:00:02)
 @end verbatim
 
 You can now run the example (note that if you build your program in the scratch
 directory you must run it out of the scratch directory):
 
 @verbatim
-  ~/repos/ns-3-dev > ./waf --run scratch/first
-  Entering directory `/home/craigdo/repos/ns-3-dev/build'
-  Compilation finished successfully
+  ./waf --run scratch/myfirst
+@end verbatim
+
+You should see some output:
+
+@verbatim
+  Entering directory `repos/ns-3-allinone-dev/ns-3-dev/build'
+  Build finished successfully (00:00:00)
   Sent 1024 bytes to 10.1.1.2
   Received 1024 bytes from 10.1.1.1
   Received 1024 bytes from 10.1.1.2
-  ~/repos/ns-3-dev >
 @end verbatim
 
 Here you see that the build system checks to make sure that the file has been
@@ -793,38 +785,42 @@ links, one can browse the source tree.
 
 The top-level directory for one of our @emph{repositories} will look 
 something like:
+
 @verbatim
-drwxr-xr-x  [up]   
-drwxr-xr-x         doc             manifest 
-drwxr-xr-x         examples        manifest 
-drwxr-xr-x         ns3             manifest 
-drwxr-xr-x         regression      manifest 
-drwxr-xr-x         samples         manifest 
-drwxr-xr-x         scratch         manifest 
-drwxr-xr-x         src             manifest 
-drwxr-xr-x         tutorial        manifest 
-drwxr-xr-x         utils           manifest 
--rw-r--r-- 135     .hgignore       file | revisions | annotate 
--rw-r--r-- 891     .hgtags         file | revisions | annotate 
--rw-r--r-- 441     AUTHORS         file | revisions | annotate 
--rw-r--r-- 17987   LICENSE         file | revisions | annotate 
--rw-r--r-- 4948    README          file | revisions | annotate 
--rw-r--r-- 4917    RELEASE_NOTES   file | revisions | annotate 
--rw-r--r-- 7       VERSION         file | revisions | annotate 
--rwxr-xr-x 99143   waf             file | revisions | annotate 
--rwxr-xr-x 28      waf.bat         file | revisions | annotate 
--rw-r--r-- 30584   wscript         file | revisions | annotate 
+drwxr-xr-x   [up]   
+drwxr-xr-x   bindings python                          files 
+drwxr-xr-x   doc                                      files 
+drwxr-xr-x   examples                                 files 
+drwxr-xr-x   ns3                                      files 
+drwxr-xr-x   regression                               files 
+drwxr-xr-x   samples                                  files 
+drwxr-xr-x   scratch                                  files 
+drwxr-xr-x   src                                      files 
+drwxr-xr-x   utils                                    files 
+-rw-r--r-- 2009-03-24 00:51 -0700 505   .hgignore     file | revisions | annotate 
+-rw-r--r-- 2009-03-24 00:51 -0700 1682  .hgtags       file | revisions | annotate 
+-rw-r--r-- 2009-03-24 00:51 -0700 686   AUTHORS       file | revisions | annotate 
+-rw-r--r-- 2009-03-24 00:51 -0700 14893 CHANGES.html  file | revisions | annotate 
+-rw-r--r-- 2009-03-24 00:51 -0700 17987 LICENSE       file | revisions | annotate 
+-rw-r--r-- 2009-03-24 00:51 -0700 3742  README        file | revisions | annotate 
+-rw-r--r-- 2009-03-24 00:51 -0700 13505 RELEASE_NOTES file | revisions | annotate 
+-rw-r--r-- 2009-03-24 00:51 -0700 6     VERSION       file | revisions | annotate 
+-rw-r--r-- 2009-03-24 00:51 -0700 9257  regression.py file | revisions | annotate 
+-rwxr-xr-x 2009-03-24 00:51 -0700 81285 waf           file | revisions | annotate 
+-rwxr-xr-x 2009-03-24 00:51 -0700 28    waf.bat       file | revisions | annotate 
+-rw-r--r-- 2009-03-24 00:51 -0700 26270 wscript       file | revisions | annotate 
+-rw-r--r-- 2009-03-24 00:51 -0700 6636  wutils.py     file | revisions | annotate 
 @end verbatim
 
 The source code is mainly in the @code{src} directory.  You can view source
-code by clicking on the @code{manifest} link to the right of the directory 
-name.  If you click on the @code{manifest} link to the right of the src
-directory you will find a subdirectory.  If you click on the @code{manifest}
-link next to the @code{core} subdirectory in under @code{src}, you will find
-a list of files.  The first file you will find is @code{assert.h}.  If you 
-click on the @code{file} link, you will be sent to the source file for
-@code{assert.h}.
+code either by clicking on the directory name or by clicking on the @code{files}
+link to the right of the directory name.  If you click on the @code{src}
+directory you be taken to the lising of the @code{src} subdirectories.  If you 
+click on @code{core} subdirectory, you will find a list of files.  The first file
+you will find (as of this writing) is @code{abort.h}.  If you 
+click on @code{abort.h} link, you will be sent to the source file for @code{abort.h}.
 
 Our example scripts are in the @code{examples} directory.  The source code for
 the helpers we have used in this chapter can be found in the 
-@code{src/helpers} directory.
+@code{src/helpers} directory.  Feel free to poke around in the directory tree to
+get a feel for what is there and the style of @command{ns-3} programs.

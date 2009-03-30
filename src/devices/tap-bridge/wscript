@@ -27,6 +27,7 @@ def build(bld):
         module.source.extend([
                 'tap-bridge.cc',
                 'tap-encode-decode.cc',
+                'tap-creator.cc',
                 ])
         headers.source.extend([
                 'tap-bridge.h',

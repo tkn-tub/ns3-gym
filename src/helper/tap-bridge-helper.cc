@@ -18,6 +18,7 @@
 
 #include "ns3/log.h"
 #include "ns3/node.h"
+#include "ns3/enum.h"
 #include "ns3/tap-bridge.h"
 #include "ns3/names.h"
 #include "tap-bridge-helper.h"
@@ -26,11 +27,18 @@ NS_LOG_COMPONENT_DEFINE ("TapBridgeHelper");
 
 namespace ns3 {
 
+TapBridgeHelper::TapBridgeHelper ()
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_deviceFactory.SetTypeId ("ns3::TapBridge");
+}
+
 TapBridgeHelper::TapBridgeHelper (Ipv4Address gateway)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_deviceFactory.SetTypeId ("ns3::TapBridge");
   SetAttribute ("Gateway", Ipv4AddressValue (gateway));
+  SetAttribute ("Mode", EnumValue(TapBridge::CONFIGURE_LOCAL));
 }
 
 void 
@@ -40,6 +48,14 @@ TapBridgeHelper::SetAttribute (std::string n1, const AttributeValue &v1)
   m_deviceFactory.Set (n1, v1);
 }
 
+
+Ptr<NetDevice>
+TapBridgeHelper::Install (Ptr<Node> node, Ptr<NetDevice> nd, const AttributeValue &v1)
+{
+  NS_LOG_FUNCTION (node << nd << &v1);
+  m_deviceFactory.Set ("DeviceName", v1);
+  return Install (node, nd);
+}
 
   Ptr<NetDevice>
 TapBridgeHelper::Install (Ptr<Node> node, Ptr<NetDevice> nd)
