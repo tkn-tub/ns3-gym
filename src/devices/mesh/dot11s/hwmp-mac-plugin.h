@@ -53,9 +53,9 @@ private:
   ///\brief Interaction with protocol:
   ///\name Intercation with HWMP:
   ///\{
-  void SendPreq(IePreq preq, std::vector<Mac48Address> receivers);
-  void SendPrep(IePreq prep, Mac48Address receiver);
-  void SendPerr(IePreq perr, std::vector<Mac48Address> receivers);
+  void SendPreq(IePreq preq);
+  void SendPrep(IePrep prep, Mac48Address receiver);
+  void SendPerr(IePerr perr, std::vector<Mac48Address> receivers);
   void RequestDestination (Mac48Address dest);
   ///\}
   ///\brief Sends one PREQ when PreqMinInterval after last PREQ

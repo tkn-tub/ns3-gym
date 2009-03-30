@@ -54,10 +54,10 @@ public:
     Time  lifetime,
     uint32_t seqnum
   );
-  void AddPrecursor (Mac48Address destination, uint32_t interface, Mac48Address precursor);
+  void AddPrecursor (Mac48Address destination, uint32_t precursorInterface, Mac48Address precursorAddress);
   void DeleteProactivePath ();
   void DeleteProactivePath (Mac48Address root);
-  void DeleteReactivePath (Mac48Address destination, uint32_t interface);
+  void DeleteReactivePath (Mac48Address destination);
   struct LookupResult
   {
     Mac48Address retransmitter;
@@ -70,8 +70,15 @@ public:
   LookupResult LookupProactive ();
   LookupResult LookupProactiveExpired ();
   //path error routines:
-  std::vector<IePerr::FailedDestination>  GetUnreachableDestinations (Mac48Address peerAddress, uint32_t interface);
-  std::vector<Mac48Address>  GetPrecursors (Mac48Address destination, uint32_t interface);
+  ///\brief When peer link with a given MAC-address fails - it returns list of unreachable
+  //destination addresses
+  std::vector<IePerr::FailedDestination>  GetUnreachableDestinations (Mac48Address peerAddress);
+  ///\brief When we talk about multi-interface HWMP, 'precursor' means
+  //not only address but also an interface ID
+  //So, when we request "precursor list", we mean that this list will
+  //consist of interface ID and addresses
+  typedef std::vector<std::pair<uint32_t, Mac48Address> > PRECURSOR_LIST;
+  PRECURSOR_LIST GetPrecursors (Mac48Address destination);
   const static uint32_t INTERFACE_ANY = 0xffffffff;
   const static uint32_t MAX_METRIC = 0xffffffff;
 private:
@@ -82,7 +89,7 @@ private:
     uint32_t metric;
     Time whenExpire;
     uint32_t seqnum;
-    std::vector<Mac48Address> precursors;
+    std::vector<std::pair<uint32_t, Mac48Address> > precursors;
   };
   struct ProactiveRoute
   {
@@ -92,7 +99,7 @@ private:
     uint32_t metric;
     Time whenExpire;
     uint32_t seqnum;
-    std::vector<Mac48Address> precursors;
+    std::vector<std::pair<uint32_t, Mac48Address> > precursors;
   };
   std::map<Mac48Address, ReactiveRoute>  m_routes;
   ProactiveRoute  m_root;

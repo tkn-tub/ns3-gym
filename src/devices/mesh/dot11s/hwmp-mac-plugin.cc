@@ -153,7 +153,7 @@ HwmpMacPlugin::~HwmpMacPlugin ()
 //Interaction with HWMP:
 #endif
 void
-HwmpMacPlugin::SendPreq(IePreq preq, std::vector<Mac48Address> receivers)
+HwmpMacPlugin::SendPreq(IePreq preq)
 {
   //Create packet
   Ptr<Packet> packet  = Create<Packet> ();
@@ -180,6 +180,7 @@ HwmpMacPlugin::SendPreq(IePreq preq, std::vector<Mac48Address> receivers)
   hdr.SetAddr2 (m_parent->GetAddress ());
   hdr.SetAddr3 (Mac48Address::GetBroadcast ());
   //Send Management frame
+  std::vector <Mac48Address> receivers = m_protocol->GetPreqReceivers (m_ifIndex);
   for(std::vector<Mac48Address>::iterator i = receivers.begin (); i != receivers.end (); i ++)
   {
     hdr.SetAddr1 (*i);
@@ -356,15 +357,23 @@ HwmpMacPlugin::SendOnePreq ()
   if (m_myPreq == m_preqQueue.begin ())
     m_myPreq == m_preqQueue.end ();
   NS_LOG_UNCOND ("I am "<<m_parent->GetAddress ()<<"sending PREQ:"<<m_preqQueue[0]);
-  SendPreq(m_preqQueue[0], m_protocol->GetPreqReceivers ());
-#if 0
+  SendPreq(m_preqQueue[0]);
+  //erase first!
+  m_preqQueue.erase (m_preqQueue.begin());
+  //reschedule sending PREQ
+  NS_ASSERT (!m_preqTimer.IsRunning());
+  m_preqTimer = Simulator::Schedule (m_protocol->GetPreqMinInterval (), &HwmpMacPlugin::SendOnePreq, this);
+}
+void
+HwmpMacPlugin::SendPrep (IePrep prep, Mac48Address receiver)
+{
   //Create packet
   Ptr<Packet> packet  = Create<Packet> ();
-  packet->AddHeader(preq);
+  packet->AddHeader(prep);
   //Multihop action header:
   WifiMeshMultihopActionHeader multihopHdr;
   WifiMeshMultihopActionHeader::ACTION_VALUE action;
-  action.pathSelection = WifiMeshMultihopActionHeader::PATH_REQUEST;
+  action.pathSelection = WifiMeshMultihopActionHeader::PATH_REPLY;
   multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
   packet->AddHeader (multihopHdr);
   //Mesh header
@@ -373,24 +382,18 @@ HwmpMacPlugin::SendOnePreq ()
   //TODO: should seqno be here?
   meshHdr.SetMeshSeqno (0);
   meshHdr.SetAddressExt(1);
-  meshHdr.SetAddr4(preq.GetOriginatorAddress ());
+  meshHdr.SetAddr4(prep.GetOriginatorAddress ());
   packet->AddHeader (meshHdr);
   //create 802.11 header:
   WifiMacHeader hdr;
   hdr.SetMultihopAction ();
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
-  hdr.SetAddr1 (Mac48Address::GetBroadcast ());
+  hdr.SetAddr1 (receiver);
   hdr.SetAddr2 (m_parent->GetAddress ());
   hdr.SetAddr3 (Mac48Address::GetBroadcast ());
   //Send Management frame
   m_parent->SendManagementFrame(packet, hdr);
-#endif
-  //erase first!
-  m_preqQueue.erase (m_preqQueue.begin());
-  //reschedule sending PREQ
-  NS_ASSERT (!m_preqTimer.IsRunning());
-  m_preqTimer = Simulator::Schedule (m_protocol->GetPreqMinInterval (), &HwmpMacPlugin::SendOnePreq, this);
 }
 #if 0
 void

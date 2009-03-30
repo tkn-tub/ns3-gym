@@ -84,8 +84,8 @@ private:
   //\param uint32_t is an interface ID, where route has failed
   void MakePathError (Mac48Address, uint32_t);
   ///\return list of addresses where a PERR/PREQ should be sent to
-  std::vector<Mac48Address> GetPerrReceivers (std::vector<IePerr::FailedDestination> failedDest, uint32_t port);
-  std::vector<Mac48Address> GetPreqReceivers ();
+  std::vector<std::pair<uint32_t, Mac48Address> > GetPerrReceivers (std::vector<IePerr::FailedDestination> failedDest);
+  std::vector<Mac48Address> GetPreqReceivers (uint32_t interface);
   ///\brief MAC-plugin asks wether the frame can be dropeed. Protocol
   //automatically updates seqno.
   //\returns true if frame can be dropped

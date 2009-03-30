@@ -116,14 +116,19 @@ HwmpRtable::AddProactivePath (
   m_root.interface = interface;
 }
 void
-HwmpRtable::AddPrecursor (Mac48Address destination, uint32_t interface, Mac48Address precursor)
+HwmpRtable::AddPrecursor (Mac48Address destination, uint32_t precursorInterface, Mac48Address precursorAddress)
 {
+  std::pair<uint32_t, Mac48Address> precursor;
+  precursor.first = precursorInterface;
+  precursor.second = precursorAddress;
   std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find (destination);
-  if ((i != m_routes.end ()) && (i->second.interface == interface))
+  if (i != m_routes.end ())
     {
       bool should_add = true;
       for (unsigned int j = 0 ; j < i->second.precursors.size (); j ++)
-        if (i->second.precursors[j] == precursor)
+        //NB: nly one active route may exist, so even d not check
+        //interface ID, just address
+        if (i->second.precursors[j].second == precursorAddress)
           {
             should_add = false;
             break;
@@ -131,9 +136,9 @@ HwmpRtable::AddPrecursor (Mac48Address destination, uint32_t interface, Mac48Add
       if (should_add)
         i->second.precursors.push_back (precursor);
     }
-  if((m_root.root == destination) && (m_root.interface == interface))
+  if(m_root.root == destination)
     for (unsigned int j = 0 ; j < m_root.precursors.size (); j ++)
-      if (m_root.precursors[j] == precursor)
+      if (m_root.precursors[j].second == precursorAddress)
         return;
   m_root.precursors.push_back(precursor);
 }
@@ -154,12 +159,11 @@ HwmpRtable::DeleteProactivePath (Mac48Address root)
     DeleteProactivePath ();
 }
 void
-HwmpRtable::DeleteReactivePath (Mac48Address destination, uint32_t interface)
+HwmpRtable::DeleteReactivePath (Mac48Address destination)
 {
   std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find (destination);
   if (i != m_routes.end ())
-    if (i->second.interface ==  interface)
-      m_routes.erase (i);
+    m_routes.erase (i);
 }
 HwmpRtable::LookupResult
 HwmpRtable::LookupReactive (Mac48Address destination)
@@ -223,41 +227,49 @@ HwmpRtable::LookupProactiveExpired ()
   return retval;
 }
 std::vector<IePerr::FailedDestination>
-HwmpRtable::GetUnreachableDestinations (Mac48Address peerAddress, uint32_t interface)
+HwmpRtable::GetUnreachableDestinations (Mac48Address peerAddress)
 {
+  IePerr::FailedDestination dst;
   std::vector<IePerr::FailedDestination> retval;
   for (std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.begin (); i != m_routes.end(); i++)
-    if ((i->second.retransmitter == peerAddress)&& (i->second.interface == interface))
+    if (i->second.retransmitter == peerAddress)
       {
-        IePerr::FailedDestination dst;
         dst.destination = i->first;
         i->second.seqnum ++;
         dst.seqnum = i->second.seqnum;
         retval.push_back (dst);
       }
-  /**
-   * Lookup a path to root
-   */
-  if ((m_root.retransmitter == peerAddress) &&(m_root.interface == interface))
+  //Lookup a path to root
+  if (m_root.retransmitter == peerAddress)
     {
-      IePerr::FailedDestination dst;
       dst.destination = m_root.root;
       dst.seqnum = m_root.seqnum;
       retval.push_back (dst);
     }
   return retval;
 }
-std::vector<Mac48Address>
-HwmpRtable::GetPrecursors (Mac48Address destination, uint32_t interface)
+HwmpRtable::PRECURSOR_LIST
+HwmpRtable::GetPrecursors (Mac48Address destination)
 {
-  std::vector<Mac48Address> retval;
-  if (m_root.root == destination)
-      for (unsigned int i = 0; i < m_root.precursors.size (); i ++)
-        retval.push_back (m_root.precursors[i]);
+  //We suppose that no dublicates here can be
+  PRECURSOR_LIST retval;
   std::map<Mac48Address, ReactiveRoute>::iterator route = m_routes.find (destination);
-  if ( (route != m_routes.end ()) && (route->second.interface == interface) )
-      for (unsigned int i = 0; i < route->second.precursors.size (); i ++)
-        retval.push_back (route->second.precursors[i]);
+  if (route != m_routes.end ())
+    for (unsigned int i = 0; i < route->second.precursors.size (); i ++)
+      retval.push_back(route->second.precursors[i]);
+  if (m_root.root == destination)
+    for (unsigned int i = 0; i < m_root.precursors.size (); i ++)
+    {
+      bool should_add = true;
+      for(unsigned int j = 0; j < retval.size(); j ++)
+        if(retval[j].second == m_root.precursors[i].second)
+         {
+            should_add = false;
+            break;
+         }
+      if(should_add)
+        retval.push_back(m_root.precursors[i]);
+    }
   return retval;
 }
 } //namespace dot11s
