@@ -163,7 +163,12 @@ IeRann::GetInformationSize () const
 void 
 IeRann::PrintInformation (std::ostream &os) const
 {
-  // TODO
+  os << "  flags              = " << (int)m_flags       << "\n";
+  os << "  hop count          = " << (int)m_hopcount    << "\n";
+  os << "  TTL                = " << (int)m_ttl         << "\n";
+  os << "  originator address = " << m_originatorAddress<< "\n";
+  os << "  dst seq. number    = " << m_destSeqNumber    << "\n";
+  os << "  metric             = " << m_metric           << "\n";
 }
 
 bool
@@ -183,7 +188,7 @@ operator== (const IeRann & a, const IeRann & b)
 /// Built-in self test for IeRann
 struct IeRannBist : public Test 
 {
-  IeRannBist () : Test ("Mesh/802.11s/IeRann") {}
+  IeRannBist () : Test ("Mesh/802.11s/IE/RANN") {}
   virtual bool RunTests(); 
 };
 

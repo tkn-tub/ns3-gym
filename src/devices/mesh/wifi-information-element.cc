@@ -60,7 +60,7 @@ uint32_t WifiInformationElement::Deserialize (Buffer::Iterator i)
 
 void WifiInformationElement::Print (std::ostream &os) const
 {
-  os << "<information_element id=" << ElementId () << ">\n";
+  os << "\n<information_element id=" << ElementId () << ">\n";
   PrintInformation (os);
   os << "</information_element>\n";
 }
