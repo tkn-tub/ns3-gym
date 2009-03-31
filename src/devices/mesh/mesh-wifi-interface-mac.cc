@@ -327,7 +327,6 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
   hdr.SetAddr4 (from);
   hdr.SetDsFrom ();
   hdr.SetDsTo ();
-  
   // Address 1 is unknwon here. Routing plugin is responsible to correctly set it.
   hdr.SetAddr1 (Mac48Address ());
   

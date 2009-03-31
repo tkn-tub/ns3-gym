@@ -159,7 +159,6 @@ HwmpProtocol::RequestRoute (
   MeshL2RoutingProtocol::RouteReplyCallback routeReply
 )
 {
-  NS_LOG_UNCOND("Packet has come!");
   HwmpTag tag;
   if (sourceIface == GetMeshPoint ()->GetIfIndex())
     // packet from level 3
@@ -186,11 +185,19 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
 {
   NS_ASSERT(destination != Mac48Address::GetBroadcast ());
   HwmpRtable::LookupResult result = m_rtable->LookupReactive(destination);
+  NS_LOG_UNCOND("FORWARD UNICAST");
   if(result.retransmitter == Mac48Address::GetBroadcast ())
     result = m_rtable->LookupProactive ();
   if(result.retransmitter != Mac48Address::GetBroadcast ())
   {
+    NS_LOG_UNCOND("Reply now:");
     //reply immediately:
+    packet->RemoveAllTags ();
+    //Add a proper HWMP-tag:
+    HwmpTag tag;
+    tag.SetAddress (result.retransmitter);
+    //seqno and metric is not used;
+    packet->AddTag(tag);
     routeReply (true, packet, source, destination, protocolType, result.ifIndex);
     return true;
   }

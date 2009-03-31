@@ -77,6 +77,7 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
   NS_LOG_DEBUG ("UID is " << packet->GetUid ());
   const Mac48Address src48 = Mac48Address::ConvertFrom (src);
   const Mac48Address dst48 = Mac48Address::ConvertFrom (dst);
+  NS_LOG_UNCOND("SRC="<<src48<<", DST = "<<dst48<<", I am: "<<m_address);
   if (!m_promiscRxCallback.IsNull ())
     m_promiscRxCallback (this, packet, protocol, src, dst, packetType);
   switch (packetType)
