@@ -110,7 +110,7 @@ private:
 
 #define NS_TEST_ASSERT_EQUAL_FILELINE(got, expected, file, line)    \
   do {                                                              \
-    if ((got) != (expected))                                        \
+    if (! ((got) == (expected)))                                    \
       {                                                             \
         Failure () << file << ":" <<line                            \
                    << ": expected " << (expected)                   \

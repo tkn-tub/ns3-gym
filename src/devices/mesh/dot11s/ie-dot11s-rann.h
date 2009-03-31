@@ -31,7 +31,7 @@ namespace dot11s {
  * \ingroup dot11s
  * \brief See 7.3.2.95 of 802.11s draft 2.07
  */
-class IeRann
+class IeRann : public WifiInformationElement
 {
 public:
   IeRann ();
@@ -46,12 +46,13 @@ public:
   void SetMetric (uint32_t metric);
   uint8_t GetFlags ();
   uint8_t GetHopcount ();
-  uint8_t GetTTL ();
+  uint8_t GetTtl ();
   Mac48Address GetOriginatorAddress ();
   uint32_t GetDestSeqNumber ();
   uint32_t GetMetric ();
   void DecrementTtl ();
   void IncrementMetric (uint32_t metric);
+    
 private:
   WifiElementId ElementId () const{
     return IE11S_RANN;
@@ -59,14 +60,21 @@ private:
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
   uint8_t GetInformationSize () const;
+  void PrintInformation (std::ostream &os) const;
+  
   uint8_t m_flags;
   uint8_t m_hopcount;
   uint8_t m_ttl;
   Mac48Address m_originatorAddress;
   uint32_t m_destSeqNumber;
   uint32_t m_metric;
-};
   
+  friend bool operator== (const IeRann & a, const IeRann & b);
+};
+
+bool operator== (const IeRann & a, const IeRann & b);
+
 } // namespace dot11s
 } //namespace ns3
+
 #endif

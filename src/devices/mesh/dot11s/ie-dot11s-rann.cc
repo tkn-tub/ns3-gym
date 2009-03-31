@@ -23,6 +23,8 @@
 #include "ns3/assert.h"
 #include "ns3/address-utils.h"
 #include "ns3/node.h"
+#include "ns3/packet.h"
+#include "ns3/test.h"
 
 namespace ns3 {
 namespace dot11s {
@@ -92,7 +94,7 @@ IeRann::GetHopcount ()
   return m_hopcount;
 }
 uint8_t
-IeRann::GetTTL ()
+IeRann::GetTtl ()
 {
   return m_ttl;
 }
@@ -106,6 +108,18 @@ IeRann::GetMetric ()
 {
   return m_metric;
 }
+void
+IeRann::DecrementTtl ()
+{
+  m_ttl--;
+}
+
+void 
+IeRann::IncrementMetric (uint32_t m)
+{
+  m_metric += m;
+}
+
 Mac48Address
 IeRann::GetOriginatorAddress ()
 {
@@ -145,8 +159,73 @@ IeRann::GetInformationSize () const
     +4;//Metric
   return retval;
 }
+
+void 
+IeRann::PrintInformation (std::ostream &os) const
+{
+  // TODO
+}
+
+bool
+operator== (const IeRann & a, const IeRann & b)
+{
+  return (a.m_flags == b.m_flags 
+      &&  a.m_hopcount == b.m_hopcount 
+      &&  a.m_ttl == b.m_ttl
+      &&  a.m_originatorAddress == b.m_originatorAddress
+      &&  a.m_destSeqNumber == b.m_destSeqNumber
+      &&  a.m_metric == b.m_metric 
+      );
+}
   
-} // namespace dot11s
-} //namespace ns3
+#ifdef RUN_SELF_TESTS
+
+/// Built-in self test for IeRann
+struct IeRannBist : public Test 
+{
+  IeRannBist () : Test ("Mesh/802.11s/IeRann") {}
+  virtual bool RunTests(); 
+};
+
+/// Test instance
+static IeRannBist g_IeRannBist;
+
+bool IeRannBist::RunTests ()
+{
+  bool result(true);
+  
+  // create test information element
+  IeRann a;
+  
+  a.SetFlags (1);
+  a.SetHopcount (2);
+  a.SetTTL (4);
+  a.DecrementTtl ();
+  NS_TEST_ASSERT_EQUAL (a.GetTtl(), 3);
+  a.SetOriginatorAddress (Mac48Address());
+  a.SetDestSeqNumber (5);
+  a.SetMetric (6);
+  a.IncrementMetric (2);
+  NS_TEST_ASSERT_EQUAL (a.GetMetric(), 8);
+  
+  // test roundtrip serialization
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (a);
+  IeRann b;
+  packet->RemoveHeader (b);
+  NS_TEST_ASSERT_EQUAL (a, b);  // using default operator==
+  
+  // test FindFirst()
+  packet->AddHeader (a);
+  IeRann c;
+  bool ok = c.FindFirst(packet);
+  NS_TEST_ASSERT (ok);
+  NS_TEST_ASSERT_EQUAL (a, c);
+  
+  return result;
+}
+#endif // RUN_SELF_TESTS
+
+}} // namespace ns3::dot11s
 
 

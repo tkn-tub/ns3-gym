@@ -30,7 +30,7 @@
 namespace ns3 {
 namespace dot11s {
 /**
- * \ingroup mesh
+ * \ingroup dot11s
  *
  * \brief Hwmp tag implements interaction between HWMP
  * protocol and MeshWifiMac
