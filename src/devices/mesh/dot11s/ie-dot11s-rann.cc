@@ -35,7 +35,7 @@ IeRann::~IeRann ()
 TypeId
 IeRann::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::IeRann").SetParent<Object> ();
+  static TypeId tid = TypeId ("ns3::dot11s::IeRann").SetParent<Object> ();
   return tid;
 }
 TypeId
@@ -111,7 +111,8 @@ IeRann::GetMetric ()
 void
 IeRann::DecrementTtl ()
 {
-  m_ttl--;
+  m_ttl --;
+  m_hopcount ++;
 }
 
 void 
@@ -207,7 +208,7 @@ bool IeRannBist::RunTests ()
   a.SetTTL (4);
   a.DecrementTtl ();
   NS_TEST_ASSERT_EQUAL (a.GetTtl(), 3);
-  a.SetOriginatorAddress (Mac48Address());
+  a.SetOriginatorAddress (Mac48Address ("11:22:33:44:55:66"));
   a.SetDestSeqNumber (5);
   a.SetMetric (6);
   a.IncrementMetric (2);
@@ -218,7 +219,7 @@ bool IeRannBist::RunTests ()
   packet->AddHeader (a);
   IeRann b;
   packet->RemoveHeader (b);
-  NS_TEST_ASSERT_EQUAL (a, b);  // using default operator==
+  NS_TEST_ASSERT_EQUAL (a, b);
   
   // test FindFirst()
   packet->AddHeader (a);

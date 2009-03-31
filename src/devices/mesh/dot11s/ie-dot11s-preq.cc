@@ -23,6 +23,8 @@
 #include "ns3/address-utils.h"
 #include "ns3/node.h"
 #include "ns3/assert.h"
+#include "ns3/test.h"
+#include "ns3/packet.h"
 
 namespace ns3 {
 namespace dot11s {
@@ -90,7 +92,7 @@ IePreq::~IePreq ()
 TypeId
 IePreq::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::IePreq")
+  static TypeId tid = TypeId ("ns3::dot11s::IePreq")
                       .SetParent<Object> ();
   return tid;
 }
@@ -329,15 +331,15 @@ IePreq::GetInformationSize () const
 void
 IePreq::PrintInformation (std::ostream &os) const
 {
-  os << "Originator address =" << m_originatorAddress;
-  os << " TTL="  <<  (uint16_t)m_ttl;
-  os << " Hopcount="  <<  (uint16_t)m_hopCount;
-  os << " metric=" << m_metric;
-  os << " Seqno=" << m_originatorSeqNumber;
-  os << " Lifetime=" << m_lifetime;
-  os << "\nDestinations are:\n";
+  os << " originator address  = " << m_originatorAddress << "\n";
+  os << " TTL                 = "  <<  (uint16_t)m_ttl << "\n";
+  os << " hop count           = "  <<  (uint16_t)m_hopCount << "\n";
+  os << " metric              = " << m_metric << "\n";
+  os << " seqno               = " << m_originatorSeqNumber << "\n";
+  os << " lifetime            = " << m_lifetime << "\n";
+  os << " Destinations are:\n";
   for (int j = 0; j < m_destCount; j++ )
-    os << m_destinations[j]->GetDestinationAddress () << "\n";
+    os << "    " << m_destinations[j]->GetDestinationAddress () << "\n";
 }
 std::vector<Ptr<DestinationAddressUnit> >
 IePreq::GetDestinationList ()
@@ -384,6 +386,90 @@ IePreq::ClearDestinationAddressElement ()
     m_destinations.pop_back ();
   m_destinations.clear ();
 };
+
+bool operator== (const DestinationAddressUnit & a, const DestinationAddressUnit & b)
+{
+  return (a.m_do == b.m_do 
+      &&  a.m_rf == b.m_rf
+      &&  a.m_destinationAddress == b.m_destinationAddress
+      &&  a.m_destSeqNumber == b.m_destSeqNumber
+    );
+}
+
+bool operator== (const IePreq & a, const IePreq & b)
+{
+  bool ok = ( a.m_flags == b.m_flags 
+    && a.m_hopCount == b.m_hopCount
+    && a.m_ttl == b.m_ttl
+    && a.m_preqId == b.m_preqId 
+    && a.m_originatorAddress == b.m_originatorAddress
+    && a.m_originatorSeqNumber == b.m_originatorSeqNumber
+    && a.m_lifetime == b.m_lifetime
+    && a.m_metric == b.m_metric
+    && a.m_destCount == b.m_destCount
+  );
+  
+  if (! ok) 
+    return false;
+  
+  if (a.m_destinations.size() != b.m_destinations.size())
+    return false;
+  
+  for (size_t i = 0; i < a.m_destinations.size(); ++i)
+    if (!( *(PeekPointer (a.m_destinations[i])) == 
+           *(PeekPointer (b.m_destinations[i]))
+         )
+       )
+      return false;
+  
+  return true;
+}
+
+#ifdef RUN_SELF_TESTS
+
+/// Built-in self test for IePreq
+struct IePreqBist : public Test 
+{
+  IePreqBist () : Test ("Mesh/802.11s/IE/PREQ") {}
+  virtual bool RunTests(); 
+};
+
+/// Test instance
+static IePreqBist g_IePreqBist;
+
+bool IePreqBist::RunTests ()
+{
+  bool result(true);
+  
+  // create test information element
+  IePreq a;
+  a.SetHopcount (0);
+  a.SetTTL (1);
+  a.SetPreqID (2);
+  a.SetOriginatorAddress ( Mac48Address("11:22:33:44:55:66") );
+  a.SetOriginatorSeqNumber (3);
+  a.SetLifetime (4);
+  a.AddDestinationAddressElement (false, false, Mac48Address("11:11:11:11:11:11"), 5);
+  a.AddDestinationAddressElement (false, false, Mac48Address("22:22:22:22:22:22"), 6);
+ 
+  // test roundtrip serialization
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (a);
+  IePreq b;
+  packet->RemoveHeader (b);
+  NS_TEST_ASSERT_EQUAL (a, b);
+  
+  // test FindFirst()
+  packet->AddHeader (a);
+  IePreq c;
+  bool ok = c.FindFirst(packet);
+  NS_TEST_ASSERT (ok);
+  NS_TEST_ASSERT_EQUAL (a, c);
+  
+  return result;
+}
+
+#endif // RUN_SELF_TESTS
   
 } // namespace dot11s
 } //namespace ns3

@@ -51,6 +51,8 @@ private:
   bool m_rf;
   Mac48Address m_destinationAddress;
   uint32_t m_destSeqNumber;
+  
+  friend bool operator== (const DestinationAddressUnit & a, const DestinationAddressUnit & b);
 };
 /**
  * \ingroup dot11s
@@ -123,8 +125,13 @@ private:
   uint32_t m_metric;
   uint8_t  m_destCount;
   std::vector<Ptr<DestinationAddressUnit> >  m_destinations;
-};
   
+  friend bool operator== (const IePreq & a, const IePreq & b);
+};
+
+bool operator== (const DestinationAddressUnit & a, const DestinationAddressUnit & b);
+bool operator== (const IePreq & a, const IePreq & b);
+
 } // namespace dot11s
 } //namespace ns3
 #endif
