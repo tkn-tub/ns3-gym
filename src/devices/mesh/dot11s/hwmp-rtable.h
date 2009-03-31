@@ -29,7 +29,11 @@
 namespace ns3 {
 namespace dot11s {
 /**
- * \ingroup mesh
+ * \ingroup dot11s
+ * 
+ * \brief Routing table for HWMP -- 802.11s routing protocol
+ * 
+ * TODO: comment all methods
  */
 class HwmpRtable : public Object
 {
@@ -58,6 +62,7 @@ public:
   void DeleteProactivePath ();
   void DeleteProactivePath (Mac48Address root);
   void DeleteReactivePath (Mac48Address destination);
+  
   struct LookupResult
   {
     Mac48Address retransmitter;
@@ -65,6 +70,7 @@ public:
     uint32_t metric;
     uint32_t seqnum;
   };
+  
   LookupResult LookupReactive (Mac48Address destination);
   LookupResult LookupReactiveExpired (Mac48Address destination);
   LookupResult LookupProactive ();

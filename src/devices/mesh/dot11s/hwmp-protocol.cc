@@ -215,7 +215,7 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
   }
   //Request a destination:
   if(ShouldSendPreq(destination))
-    for(PLUGINS::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
+    for(HwmpPluginMap::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
       i->second->RequestDestination(destination);
   QueuedPacket pkt;
   HwmpTag tag;
@@ -347,7 +347,7 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
     return;
   //Forward PREQ to all interfaces:
   NS_LOG_UNCOND("I am "<<interfaceAddress<<"retransmitting PREQ:"<<preq);
-  for(PLUGINS::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
+  for(HwmpPluginMap::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
     i->second->SendPreq (preq);
 }
 void
@@ -420,7 +420,7 @@ HwmpProtocol::SendPrep (
   prep.SetMetric (0);
   prep.SetOriginatorAddress (src);
   prep.SetOriginatorSeqNumber (originatorDsn);
-  PLUGINS::iterator prep_sender = m_interfaces.find (interface);
+  HwmpPluginMap::iterator prep_sender = m_interfaces.find (interface);
   NS_ASSERT(prep_sender != m_interfaces.end ());
   prep_sender->second->SendPrep(prep, retransmitter);
   //m_prepCallback (prep, retransmitter);
@@ -703,7 +703,7 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
       m_preqTimeouts.erase (i);
       return;
     }
-  for(PLUGINS::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
+  for(HwmpPluginMap::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
     i->second->RequestDestination(dst);
   m_preqTimeouts[dst] = Simulator::Schedule (
       MilliSeconds (2*(m_dot11MeshHWMPnetDiameterTraversalTime.GetMilliSeconds())),
@@ -735,7 +735,7 @@ HwmpProtocol::SendProactivePreq ()
   //\attention: do not forget to set originator address, sequence
   //number and preq ID in HWMP-MAC plugin
   preq.AddDestinationAddressElement (true, true, Mac48Address::GetBroadcast (), 0);
-  for(PLUGINS::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
+  for(HwmpPluginMap::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
     i->second->SendPreq(preq);
   m_proactivePreqTimer = Simulator::Schedule (m_dot11MeshHWMPactiveRootTimeout, &HwmpProtocol::SendProactivePreq, this);
 }

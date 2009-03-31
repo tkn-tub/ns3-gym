@@ -25,14 +25,20 @@
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 
 namespace ns3 {
+
 class MeshWifiInterfaceMac;
+
 namespace dot11s {
+
 class HwmpProtocol;
 class IePreq;
 class IePrep;
 class IePerr;
+
 /**
- * \ingroup mesh
+ * \ingroup dot11s
+ * 
+ * \brief Interface MAC plugin for HWMP -- 802.11s routing protocol
  */
 class HwmpMacPlugin : public MeshWifiInterfaceMacPlugin
 {
@@ -44,33 +50,35 @@ public:
   void SetParent (Ptr<MeshWifiInterfaceMac> parent);
   bool Receive (Ptr<Packet> packet, const WifiMacHeader & header);
   bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const;
-  ///\brief Update beacon is empty, because HWMP does not know
-  //anything about beacons
+  /// Update beacon is empty, because HWMP does not know anything about beacons
   void UpdateBeacon (MeshWifiBeacon & beacon) const {};
   //\}
+  
 private:
   friend class HwmpProtocol;
-  ///\brief Interaction with protocol:
+  
   ///\name Intercation with HWMP:
-  ///\{
+  //\{
   void SendPreq(IePreq preq);
   void SendPrep(IePrep prep, Mac48Address receiver);
   void SendPerr(IePerr perr, std::vector<Mac48Address> receivers);
   void RequestDestination (Mac48Address dest);
-  ///\}
-  ///\brief Sends one PREQ when PreqMinInterval after last PREQ
-  //expires (if any PREQ exists in rhe queue)
-  void  SendOnePreq ();
+  //\}
+  
+  /// Sends one PREQ when PreqMinInterval after last PREQ expires (if any PREQ exists in rhe queue)
+  void SendOnePreq ();
+  
 private:
   Ptr<MeshWifiInterfaceMac> m_parent;
   uint32_t m_ifIndex;
   Ptr<HwmpProtocol> m_protocol;
+  
   ///\name PREQ queue and PREQ timer:
-  ///\{
+  //\{
   EventId  m_preqTimer;
   std::vector<IePreq>  m_preqQueue;
   std::vector<IePreq>::iterator  m_myPreq;
-  ///\}
+  //\}
 };
 
 #if 0
