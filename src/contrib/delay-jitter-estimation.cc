@@ -83,14 +83,14 @@ void
 DelayJitterEstimation::PrepareTx (Ptr<const Packet> packet)
 {
   DelayJitterEstimationTimestampTag tag;
-  packet->AddTag (tag);
+  packet->AddByteTag (tag);
 }
 void 
 DelayJitterEstimation::RecordRx (Ptr<const Packet> packet)
 {
   DelayJitterEstimationTimestampTag tag;
   bool found;
-  found = packet->FindFirstMatchingTag (tag);
+  found = packet->FindFirstMatchingByteTag (tag);
   if (!found)
     {
       return;

@@ -57,6 +57,7 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
   {
     WifiMeshHeader meshHdr;
     HwmpTag tag;
+    NS_ASSERT(!packet->RemovePacketTag (tag));
     packet->RemoveHeader(meshHdr);
     //TODO: address extension
     Mac48Address destination;
@@ -68,13 +69,13 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
       default:
         NS_ASSERT(false);
     };
-    NS_LOG_UNCOND("Received Data frame to "<<destination);
+    NS_LOG_UNCOND("Received Data frame to "<<destination<<" uid = "<<packet->GetUid ());
     tag.SetSeqno (meshHdr.GetMeshSeqno ());
     if(meshHdr.GetMeshTtl () == 0)
       return false;
     tag.SetTtl (meshHdr.GetMeshTtl () - 1);
     tag.SetAddress (header.GetAddr2 ());
-    packet->AddTag(tag);
+    packet->AddPacketTag(tag);
     if (destination == Mac48Address::GetBroadcast ())
       if(m_protocol->DropDataFrame (meshHdr.GetMeshSeqno (), header.GetAddr4 ()) )
         return false;
@@ -134,14 +135,12 @@ HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header,
   //TODO: add a mesh header and remove a TAG
   NS_ASSERT(header.IsData ());
   HwmpTag tag;
-  NS_LOG_UNCOND("sending packet to "<<to);
-  NS_ASSERT(packet->FindFirstMatchingTag(tag));
+  NS_ASSERT(packet->RemovePacketTag(tag));
   WifiMeshHeader meshHdr;
   meshHdr.SetMeshSeqno(tag.GetSeqno());
   meshHdr.SetMeshTtl(tag.GetTtl());
   packet->AddHeader(meshHdr);
   header.SetAddr1(tag.GetAddress());
-  packet->RemoveAllTags ();
   return true;
 }
 #if 0

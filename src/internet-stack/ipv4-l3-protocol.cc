@@ -606,7 +606,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   m_identification ++;
 
   SocketSetDontFragmentTag dfTag;
-  bool found = packet->FindFirstMatchingTag (dfTag);
+  bool found = packet->RemovePacketTag (dfTag);
   if (found)
     {
       if (dfTag.IsEnabled ())
@@ -623,7 +623,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   // Set TTL to 1 if it is a broadcast packet of any type.  Otherwise,
   // possibly override the default TTL if the packet is tagged
   SocketIpTtlTag tag;
-  found = packet->FindFirstMatchingTag (tag);
+  found = packet->RemovePacketTag (tag);
 
   if (destination.IsBroadcast ()) 
     {
@@ -632,7 +632,6 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   else if (found)
     {
       ipHeader.SetTtl (tag.GetTtl ());
-      // XXX remove tag here?  
     }
   else
     {

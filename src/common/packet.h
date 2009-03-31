@@ -26,7 +26,8 @@
 #include "trailer.h"
 #include "packet-metadata.h"
 #include "tag.h"
-#include "tag-list.h"
+#include "byte-tag-list.h"
+#include "packet-tag-list.h"
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 #include "ns3/ptr.h"
@@ -45,7 +46,7 @@ namespace ns3 {
  *
  * This is a java-style iterator.
  */
-class TagIterator
+class ByteTagIterator
 {
 public:
   /**
@@ -81,7 +82,7 @@ public:
      */
     void GetTag (Tag &tag) const;
   private:
-    friend class TagIterator;
+    friend class ByteTagIterator;
     Item (TypeId tid, uint32_t start, uint32_t end, TagBuffer buffer);
     TypeId m_tid;
     uint32_t m_start;
@@ -98,16 +99,63 @@ public:
   Item Next (void);
 private:
   friend class Packet;
-  TagIterator (TagList::Iterator i);
-  TagList::Iterator m_current;
+  ByteTagIterator (ByteTagList::Iterator i);
+  ByteTagList::Iterator m_current;
+};
+
+/**
+ * \ingroup packet
+ * \brief Iterator over the set of 'packet' tags in a packet
+ *
+ * This is a java-style iterator.
+ */
+class PacketTagIterator
+{
+public:
+  /**
+   * Identifies a tag within a packet.
+   */
+  class Item 
+  {
+  public:
+    /**
+     * \returns the ns3::TypeId associated to this tag.
+     */
+    TypeId GetTypeId (void) const;
+    /**
+     * \param tag the user tag to which the data should be copied.
+     *
+     * Read the requested tag and store it in the user-provided
+     * tag instance. This method will crash if the type of the
+     * tag provided by the user does not match the type of
+     * the underlying tag.
+     */
+    void GetTag (Tag &tag) const;
+  private:
+    friend class PacketTagIterator;
+    Item (const struct PacketTagList::TagData *data);
+    const struct PacketTagList::TagData *m_data;
+  };
+  /**
+   * \returns true if calling Next is safe, false otherwise.
+   */
+  bool HasNext (void) const;
+  /**
+   * \returns the next item found and prepare for the next one.
+   */
+  Item Next (void);
+private:
+  friend class Packet;
+  PacketTagIterator (const struct PacketTagList::TagData *head);
+  const struct PacketTagList::TagData *m_current;
 };
 
 /**
  * \ingroup packet
  * \brief network packets
  *
- * Each network packet contains a byte buffer, a set of tags, and
- * metadata.
+ * Each network packet contains a byte buffer, a set of byte tags, a set of
+ * packet tags, and metadata.
  *
  * - The byte buffer stores the serialized content of the headers and trailers 
  * added to a packet. The serialized representation of these headers is expected
@@ -115,16 +163,22 @@ private:
  * forces you to do this) which means that the content of a packet buffer
  * is expected to be that of a real packet.
  *
- * - Each tag tags a subset of the bytes in the packet byte buffer with the 
- * information stored in the tag. A classic example of a tag is a FlowIdTag 
- * which contains a flow id: the set of bytes tagged by this tag implicitely 
- * belong to the attached flow id.
- *
  * - The metadata describes the type of the headers and trailers which
  * were serialized in the byte buffer. The maintenance of metadata is
  * optional and disabled by default. To enable it, you must call
  * Packet::EnableMetadata and this will allow you to get non-empty
  * output from Packet::Print and Packet::Print.
+ *
+ * - The set of tags contain simulation-specific information which cannot
+ * be stored in the packet byte buffer because the protocol headers or trailers
+ * have no standard-conformant field for this information. So-called
+ * 'byte' tags are used to tag a subset of the bytes in the packet byte buffer
+ * while 'packet' tags are used to tag the packet itself. The main difference
+ * between these two kinds of tags is what happens when packets are copied,
+ * fragmented, and reassembled: 'byte' tags follow bytes while 'packet' tags
+ * follow packets. A classic example of a 'byte' tag is a FlowIdTag 
+ * which contains a flow id: the set of bytes tagged by this tag implicitely 
+ * belong to the attached flow id.
  *
  * Implementing a new type of Header or Trailer for a new protocol is 
  * pretty easy and is a matter of creating a subclass of the ns3::Header 
@@ -236,13 +290,6 @@ public:
    * \returns the number of bytes read from the end of the packet.
    */
   uint32_t PeekTrailer (Trailer &trailer);
-  /**
-   * \param os output stream in which the data should be printed.
-   *
-   * Iterate over the tags present in this packet, and
-   * invoke the Print method of each tag stored in the packet.
-   */
-  void PrintTags (std::ostream &os) const;
 
   /**
    * Concatenate the input packet at the end of the current
@@ -390,11 +437,11 @@ public:
    * totally evil to allow a trace sink to modify the content of a
    * packet).
    */
-  void AddTag (const Tag &tag) const;
+  void AddByteTag (const Tag &tag) const;
   /**
-   * \returns an iterator over the set of tags included in this packet.
+   * \returns an iterator over the set of byte tags included in this packet.
    */
-  TagIterator GetTagIterator (void) const;
+  ByteTagIterator GetByteTagIterator (void) const;
   /**
    * \param tag the tag to search in this packet
    * \returns true if the requested tag type was found, false otherwise.
@@ -402,17 +449,78 @@ public:
    * If the requested tag type is found, it is copied in the user's 
    * provided tag instance.
    */
-  bool FindFirstMatchingTag (Tag &tag) const;
+  bool FindFirstMatchingByteTag (Tag &tag) const;
 
   /**
    * Remove all the tags stored in this packet.
    */
-  void RemoveAllTags (void);
+  void RemoveAllByteTags (void);
+
+  /**
+   * \param os output stream in which the data should be printed.
+   *
+   * Iterate over the tags present in this packet, and
+   * invoke the Print method of each tag stored in the packet.
+   */
+  void PrintByteTags (std::ostream &os) const;
+
+  /**
+   * \param tag the tag to store in this packet
+   *
+   * Add a tag to this packet. This method calls the
+   * Tag::GetSerializedSize and, then, Tag::Serialize.
+   *
+   * Note that this method is const, that is, it does not
+   * modify the state of this packet, which is fairly
+   * un-intuitive.
+   *
+   * \sa AddTag
+   */
+  void AddPacketTag (const Tag &tag) const;
+  /**
+   * \param tag the tag to remove from this packet
+   * \returns true if the requested tag is found, false
+   *          otherwise.
+   *
+   * Remove a tag from this packet. This method calls
+   * Tag::Deserialize if the tag is found.
+   */
+  bool RemovePacketTag (Tag &tag);
+  /**
+   * \param tag the tag to search in this packet
+   * \returns true if the requested tag is found, false
+   *          otherwise.
+   *
+   * Search a matching tag and call Tag::Deserialize if it is found.
+   */
+  bool PeekPacketTag (Tag &tag) const;
+  /**
+   * Remove all packet tags.
+   */
+  void RemoveAllPacketTags (void);
+
+  /**
+   * \param os the stream in which we want to print data.
+   *
+   * Print the list of 'packet' tags.
+   *
+   * \sa Packet::AddPacketTag, Packet::RemovePacketTag, Packet::PeekPacketTag,
+   *  Packet::RemoveAllPacketTags
+   */
+  void PrintPacketTags (std::ostream &os) const;
+
+  /**
+   * \returns an object which can be used to iterate over the list of
+   *  packet tags.
+   */
+  PacketTagIterator GetPacketTagIterator (void) const;
 
 private:
-  Packet (const Buffer &buffer, const TagList &tagList, const PacketMetadata &metadata);
+  Packet (const Buffer &buffer, const ByteTagList &byteTagList, 
+          const PacketTagList &packetTagList, const PacketMetadata &metadata);
   Buffer m_buffer;
-  TagList m_tagList;
+  ByteTagList m_byteTagList;
+  PacketTagList m_packetTagList;
   PacketMetadata m_metadata;
   mutable uint32_t m_refCount;
   static uint32_t m_globalUid;
@@ -437,11 +545,14 @@ std::ostream& operator<< (std::ostream& os, const Packet &packet);
  *   - ns3::Packet::AddHeader
  *   - ns3::Packet::AddTrailer
  *   - both versions of ns3::Packet::AddAtEnd
+ *   - ns3::Packet::RemovePacketTag
  *
  * Non-dirty operations:
  *   - ns3::Packet::AddTag
  *   - ns3::Packet::RemoveAllTags
  *   - ns3::Packet::PeekTag
+ *   - ns3::Packet::RemoveAllPacketTags
+ *   - ns3::Packet::PeekPacketTag
  *   - ns3::Packet::RemoveHeader
  *   - ns3::Packet::RemoveTrailer
  *   - ns3::Packet::CreateFragment
