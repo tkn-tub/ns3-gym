@@ -67,7 +67,7 @@ IePrep::SetHopcount (uint8_t hopcount)
   m_hopcount = hopcount;
 }
 void
-IePrep::SetTTL (uint8_t ttl)
+IePrep::SetTtl (uint8_t ttl)
 {
   m_ttl = ttl;
 }
@@ -112,7 +112,7 @@ IePrep::GetHopcount () const
   return m_hopcount;
 }
 uint32_t
-IePrep::GetTTL () const
+IePrep::GetTtl () const
 {
   return m_ttl;
 }
@@ -193,7 +193,7 @@ IePrep::GetInformationSize () const
   uint32_t retval =
      1 //Flags
     +1 //Hopcount
-    +1 //TTL
+    +1 //Ttl
     +6 //Dest address
     +4 //Dest seqno
     +4 //Lifetime

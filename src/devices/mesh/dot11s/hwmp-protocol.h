@@ -74,7 +74,7 @@ private:
   
   ///\name Interaction with HWMP MAC plugin
   //\{
-  void ReceivePreq(IePreq preq, Mac48Address from, uint32_t interface, Mac48Address interfaceAddress);
+  void ReceivePreq(IePreq preq, Mac48Address from, uint32_t interface);
   void ReceivePrep(IePrep prep, Mac48Address from, uint32_t interface);
   void ReceivePerr(IePerr perr, Mac48Address from, uint32_t interface);
   void SendPrep (
@@ -113,7 +113,6 @@ private:
 private:
   ///\name Methods related to Queue/Dequeue procedures
   //\{
-  uint16_t m_maxQueueSize;
   bool QueuePacket (MeshL2RoutingProtocol::QueuedPacket packet);
   QueuedPacket  DequeueFirstPacketByDst (Mac48Address dst);
   QueuedPacket  DequeueFirstPacket ();
@@ -145,10 +144,12 @@ private:
   void UnsetRoot ();
   void SendProactivePreq ();
   //\}
-  
+  ///\return address of MeshPointDevice
+  Mac48Address GetAddress (); 
 private:
   typedef std::map<uint32_t, Ptr<HwmpMacPlugin> > HwmpPluginMap;
   HwmpPluginMap m_interfaces;
+  Mac48Address m_address;
   uint32_t m_dataSeqno;
   uint32_t m_hwmpSeqno;
   uint32_t m_preqId;
@@ -177,6 +178,7 @@ private:
 private:
   ///\name HWMP-protocol parameters (attributes of GetTypeId)
   //\{
+  uint16_t m_maxQueueSize;
   uint8_t m_dot11MeshHWMPmaxPREQretries;
   Time m_dot11MeshHWMPnetDiameterTraversalTime;
   Time m_dot11MeshHWMPpreqMinInterval;

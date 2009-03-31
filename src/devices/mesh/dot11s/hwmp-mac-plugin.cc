@@ -102,13 +102,16 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
           if (preq.GetTtl () == 0)
             return false;
           preq.DecrementTtl ();
-          m_protocol->ReceivePreq (preq, header.GetAddr2 (), m_ifIndex, m_parent->GetAddress ());
+          m_protocol->ReceivePreq (preq, header.GetAddr2 (), m_ifIndex);
           return false;
         }
       case WifiMeshMultihopActionHeader::PATH_REPLY:
         {
           IePrep prep;
           packet->RemoveHeader (prep);
+          if(prep.GetTtl () == 0)
+            return false;
+          prep.DecrementTtl ();
           m_protocol->ReceivePrep (prep, header.GetAddr2 (), m_ifIndex);
           return false;
         }
@@ -197,7 +200,7 @@ HwmpMacPlugin::RequestDestination (Mac48Address dst)
     preq.SetHopcount (0);
     preq.SetTTL (m_protocol->GetMaxTtl ());
     preq.SetPreqID (m_protocol->GetNextPreqId ());
-    preq.SetOriginatorAddress (m_parent->GetAddress ());
+    preq.SetOriginatorAddress (m_protocol->GetAddress ());
     preq.SetOriginatorSeqNumber (m_protocol->GetNextHwmpSeqno());
     preq.SetLifetime (m_protocol->GetActivePathLifetime ());
     preq.AddDestinationAddressElement (false, false, dst, 0); //DO = 0, RF = 0
@@ -393,6 +396,7 @@ HwmpMacPlugin::SendPrep (IePrep prep, Mac48Address receiver)
   hdr.SetAddr2 (m_parent->GetAddress ());
   hdr.SetAddr3 (Mac48Address::GetBroadcast ());
   //Send Management frame
+  NS_LOG_UNCOND("Sending PREP");
   m_parent->SendManagementFrame(packet, hdr);
 }
 #if 0

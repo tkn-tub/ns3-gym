@@ -41,7 +41,7 @@ public:
   virtual TypeId GetInstanceTypeId () const;
   void SetFlags (uint8_t flags);
   void SetHopcount (uint8_t hopcount);
-  void SetTTL (uint8_t ttl);
+  void SetTtl (uint8_t ttl);
   void SetDestinationAddress (Mac48Address dest_address);
   void SetDestinationSeqNumber (uint32_t dest_seq_number);
   void SetLifetime (uint32_t lifetime);
@@ -51,7 +51,7 @@ public:
  
   uint8_t GetFlags () const;
   uint8_t GetHopcount () const;
-  uint32_t GetTTL () const;
+  uint32_t GetTtl () const;
   Mac48Address GetDestinationAddress () const;
   uint32_t GetDestinationSeqNumber () const;
   uint32_t GetLifetime () const;
