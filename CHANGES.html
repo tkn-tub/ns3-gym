@@ -44,113 +44,100 @@ to this file based on your experience, please contribute a patch or drop
 us a note on ns-developers mailing list.  </p>
 
 <hr>
-<h1>changes from ns-3.3 to ns-3.4</h1>
+<h1>Changes from ns-3.3 to ns-3.4</h1>
 
-<h2>changes to build system</h2>
+<h2>Changes to build system</h2>
 <ul>
-<li>A major option regarding the downloading and building of ns-3 has been</li>
-<li>added for ns-3.4 -- the ns-3-allinone feature.  This allows a user to</li>
-<li>get the most common options for ns-3 downloaded and built with a minimum</li>
-<li>amount of trouble.  See the ns-3 tutorial for a detailed explanation of<li>
-<li>how to use this new feature.</li>
+<li>A major option regarding the downloading and building of ns-3 has been
+added for ns-3.4 -- the ns-3-allinone feature.  This allows a user to
+get the most common options for ns-3 downloaded and built with a minimum
+amount of trouble.  See the ns-3 tutorial for a detailed explanation of
+how to use this new feature.</li>
+
+<li>The build system now runs build items in parallel by default.  This includes
+the regression tests.</li>
 </ul>
 
-<ul>
-<li>The build system now runs build items in parallel by default.  This</li>
-<li>includes the regression tests.<li>
-</ul>
-
-<h2>new API:</h2>
+<h2>New API:</h2>
 <ul>
 <li>XML support has been added to the ConfigStore in /src/contrib/config-store.cc</li>
-</ul>
 
-<ul>
 <li>The ns-2 calendar queue scheduler option has been ported to src/simulator</li>
-</ul>
 
-<ul>
 <li>A ThreeLogDistancePropagationLossModel has been added to src/devices/wifi</li>
-</ul>
 
-<ul>
 <li>ConstantAccelerationMobilityModel in src/mobility/constant-acceleration-mobility-model.h</li>
-</ul>
 
-<ul>
-<li>A new emulation mode is supported with the TapBridge net device (see</li>
-<li>src/devices/tap-bridge)</li>
-</ul>
+<li>A new emulation mode is supported with the TapBridge net device (see
+src/devices/tap-bridge)</li>
 
-<ul>
-<li>A new facility for naming ns-3 Objects is included (see</li>
-<li>src/core/names.{cc,h})</li>
-</ul>
+<li>A new facility for naming ns-3 Objects is included (see
+src/core/names.{cc,h})</li>
 
-<ul>
 <li>Wifi multicast support has been added in src/devices/wifi</li>
 </ul>
 
-<h2>changes to existing API:</h2>
+<h2>Changes to existing API:</h2>
 
 <ul>
-<li>Some fairly significant changes have been made to the API of the</li>
-<li>random variable code.  Please see the ns-3 manual and src/core/random-variable.cc</li>
-<li>for details.</li>
-</ul>
+<li>Some fairly significant changes have been made to the API of the
+random variable code.  Please see the ns-3 manual and src/core/random-variable.cc
+for details.</li>
 
-<ul>
-<li>The trace sources in the various NetDevice classes has been completely</li>
-<li>reworked to allow for a consistent set of trace sources across the</li>
-<li>devices.  The names of the trace sources have been changed to provide</li>
-<li>some context with respect to the level at which the trace occurred.</li>
-<li>A new set of trace sources has been added which emulates the behavior</li>
-<li>of packet sniffers.  These sources have been used to implement tcpdump-</li>
-<li>like functionality and are plumbed up into the helper classes.  The </li>
-<li>user-visible changes are the trace source name changes and the ability </li>
-<li>to do promiscuous-mode pcap tracing via helpers.  For further information</li>
-<li>regarding these changes, please see the ns-3 manual</li>
-</ul>
+<li>The trace sources in the various NetDevice classes has been completely
+reworked to allow for a consistent set of trace sources across the
+devices.  The names of the trace sources have been changed to provide
+some context with respect to the level at which the trace occurred.
+A new set of trace sources has been added which emulates the behavior
+of packet sniffers.  These sources have been used to implement tcpdump-
+like functionality and are plumbed up into the helper classes.  The 
+user-visible changes are the trace source name changes and the ability
+to do promiscuous-mode pcap tracing via helpers.  For further information
+regarding these changes, please see the ns-3 manual</li>
 
-<ul>
-<li>StaticMobilityModel has been renamed ConstantPositionMobilityModel</li>
-<li>StaticSpeedMobilityModel has been renamed ConstantVelocityMobilityModel</li>
-</ul>
+<li>StaticMobilityModel has been renamed ConstantPositionMobilityModel
+StaticSpeedMobilityModel has been renamed ConstantVelocityMobilityModel</li>
 
-<ul>
-<li>The Callback templates have been extended to support more parameters.</li>
-<li>See src/core/callback.h</li>
-</ul>
+<li>The Callback templates have been extended to support more parameters.
+See src/core/callback.h</li>
 
-<ul>
-<li>Many helper API have been changed to allow passing Object-based parameters</li>
-<li>as string names to ease working with the object name service.</li>
-</ul>
+<li>Many helper API have been changed to allow passing Object-based parameters
+as string names to ease working with the object name service.</li>
 
-<ul>
-<li>The Config APIs now accept path segments that are names defined by the </li>
-<li>object name service.</li>
-</ul>
+<li>The Config APIs now accept path segments that are names defined by the
+object name service.</li>
 
-<ul>
 <li>Minor changes were made to make the system build under the Intel C++ compiler.</li>
+
+<li>Trace hooks for association and deassociation to/from an access point were
+added to src/devices/wifi/nqsta-wifi-mac.cc</li>
 </ul>
 
+<h2>Changed behavior:</h2>
+
 <ul>
-<li>Trace hooks for association and deassociation to/from an access point were</li>
-<li>added to src/devices/wifi/nqsta-wifi-mac.cc</li>
+<li>The tracing system rework has introduced some significant changes in the
+behavior of some trace sources, specifically in the positioning of trace sources
+in the device code.  For example, there were cases where the packet transmit 
+trace source was hit before the packet was enqueued on the device transmit quueue.
+This now happens just before the packet is transmitted over the channel medium.
+The scope of the changes is too large to be included here.  If you have concerns
+regarding trace semantics, please consult the net device documentation for details.
+As is usual, the ultimate source for documentation is the net device source code.</li>
 </ul>
 
 <hr>
-<h1>changes from ns-3.2 to ns-3.3</h1>
+<h1>Changes from ns-3.2 to ns-3.3</h1>
 
-<h2>new API:</h2>
+<h2>New API:</h2>
 <ul>
-<li> ns-3 ABORT macros in src/core/abort.h</li>
-<li> Config::MatchContainer </li>
-<li> ConstCast and DynamicCast helper functions for Ptr casting</li>
-<li> StarTopology added to several topology helpers </li>
-<li> NetDevice::IsBridge () </li>
+<li>
+ns-3 ABORT macros in src/core/abort.h
+Config::MatchContainer
+ConstCast and DynamicCast helper functions for Ptr casting
+StarTopology added to several topology helpers
+NetDevice::IsBridge () 
+</li>
 
 <li>17-11-2008; changeset 
 <a href="http://code.nsnam.org/ns-3-dev/rev/4c1c3f6bcd03">4c1c3f6bcd03</a></li>
@@ -180,7 +167,7 @@ hook ascii trace to the drop trace events in Ipv4L3Protocol and ArpL3Protocol.
 </ul>
 
 </ul>
-<h2>changes to existing API:</h2>
+<h2>Changes to existing API:</h2>
 <ul>
 
 <li> NetDevice::MakeMulticastAddress() was renamed to NetDevice::GetMulticast()
@@ -247,9 +234,9 @@ Global routing supports bridge devices.
 </ul>
 
 <hr>
-<h1>changes from ns-3.1 to ns-3.2</h1>
+<h1>Changes from ns-3.1 to ns-3.2</h1>
 
-<h2>new API:</h2>
+<h2>New API:</h2>
 <ul>
 
 <li>26-08-2008; changeset 
@@ -273,7 +260,7 @@ multithreaded simulator implementation.
 </ul>
 
 </ul>
-<h2>new API in existing classes:</h2>
+<h2>New API in existing classes:</h2>
 <ul>
 
 <li>01-08-2008; changeset 
@@ -286,7 +273,7 @@ mostly for internal use.
 </li>
 
 </ul>
-<h2>changes to existing API:</h2>
+<h2>Changes to existing API:</h2>
 <ul>
 
 <li>05-09-2008; changeset 
@@ -424,7 +411,7 @@ Rename all instances method names using "Set..Parameter" to "Set..Attribute"
 </li>
 
 </ul>
-<h2>changed behavior:</h2>
+<h2>Changed behavior:</h2>
 <ul>
 
 <li>07-09-2008; changeset 
