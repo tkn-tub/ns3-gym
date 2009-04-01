@@ -11,7 +11,7 @@ def build(bld):
         'mesh-wifi-interface-mac.cc',
         # Not refactored
         'mesh-wifi-mac-header.cc',
-        'tx-statistics.cc',
+        #'tx-statistics.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'mesh'
@@ -24,7 +24,7 @@ def build(bld):
         'mesh-wifi-interface-mac.h',
         'mesh-wifi-interface-mac-plugin.h',
         # Dirty
-        'tx-statistics.h',
+        #'tx-statistics.h',
         'mesh-wifi-mac-header.h',
         ]
 

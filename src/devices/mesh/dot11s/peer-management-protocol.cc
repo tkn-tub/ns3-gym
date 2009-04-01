@@ -454,17 +454,15 @@ PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAdd
 {
    PeerManagerPluginMap::iterator plugin = m_plugins.find (interface);
    NS_ASSERT(plugin != m_plugins.end());
-   NS_LOG_UNCOND("LINK between me:"<<plugin->second->GetAddress() <<" and peer:"<<peerAddress<<", at interface "<<interface);
+   NS_LOG_DEBUG(
+       "LINK between me:"<<plugin->second->GetAddress() <<
+       " and peer:"<<peerAddress<<
+       ", at interface "<<interface<<
+       "Status(1 - opened, 0 - closed)"<<status);
    if(status)
-   {
-     NS_LOG_UNCOND("Established");
      m_numberOfActivePeers ++;
-   }
    else
-   {
-     NS_LOG_UNCOND("Closed");
      m_numberOfActivePeers --;
-   }
    if(!m_peerStatusCallback.IsNull ())
      m_peerStatusCallback (peerAddress, interface, status);
 }

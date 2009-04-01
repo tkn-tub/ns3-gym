@@ -422,9 +422,7 @@ WifiRemoteStation::WifiRemoteStation ()
   : m_state (BRAND_NEW),
     m_ssrc (0),
     m_slrc (0)
-{
-	m_txStat = CreateObject<WifiTxStatistics> ();
-}
+{}
 WifiRemoteStation::~WifiRemoteStation ()
 {}
 
@@ -545,7 +543,7 @@ WifiRemoteStation::GetCtsMode (WifiMode rtsMode)
 WifiMode 
 WifiRemoteStation::GetAckMode (WifiMode dataMode)
 {
-  return dataMode;
+  return GetControlAnswerMode (dataMode);
 }
 
 uint32_t 
@@ -574,14 +572,12 @@ WifiRemoteStation::GetDataMode (Ptr<const Packet> packet, uint32_t fullPacketSiz
 {
   if (GetManager ()->IsLowLatency ())
     {
-      m_txStat->NotifyDataSent(fullPacketSize, DoGetDataMode (fullPacketSize).GetDataRate());
       return DoGetDataMode (fullPacketSize);
     }
   TxModeTag tag;
   bool found;
   found = ConstCast<Packet> (packet)->RemovePacketTag (tag);
   NS_ASSERT (found);
-  m_txStat->NotifyDataSent(fullPacketSize, tag.GetDataMode ().GetDataRate());
   return tag.GetDataMode ();
 }
 WifiMode 
@@ -589,14 +585,12 @@ WifiRemoteStation::GetRtsMode (Ptr<const Packet> packet)
 {
   if (GetManager ()->IsLowLatency ())
     {
-      m_txStat->NotifyDataSent(packet->GetSize() +36, DoGetRtsMode().GetDataRate());
       return DoGetRtsMode ();
     }
   TxModeTag tag;
   bool found;
   found = ConstCast<Packet> (packet)->RemovePacketTag (tag);
   NS_ASSERT (found);
-  m_txStat->NotifyDataSent(packet->GetSize() +36, tag.GetRtsMode ().GetDataRate());
   return tag.GetRtsMode ();
 }
 
@@ -699,7 +693,6 @@ WifiRemoteStation::ReportDataFailed (void)
 void 
 WifiRemoteStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
-  m_txStat->NotifyRtsSuccess(m_ssrc);
   m_ssrc = 0;
   DoReportRtsOk (ctsSnr, ctsMode, rtsSnr);
 }
@@ -707,7 +700,6 @@ WifiRemoteStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
 void 
 WifiRemoteStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
 {
-  m_txStat->NotifyGotAck(m_slrc);
   m_slrc = 0;
   DoReportDataOk (ackSnr, ackMode, dataSnr);
 }
@@ -716,7 +708,6 @@ void
 WifiRemoteStation::ReportFinalRtsFailed (void)
 {
   m_ssrc = 0;
-  m_txStat->NotifyRtsFailed();
   DoReportFinalRtsFailed ();
 }
 
@@ -724,7 +715,6 @@ void
 WifiRemoteStation::ReportFinalDataFailed (void)
 {
   m_slrc = 0;
-  m_txStat->NotifyDataFailed();
   DoReportFinalDataFailed ();
 }
 
@@ -733,16 +723,5 @@ WifiRemoteStation::ReportRxOk (double rxSnr, WifiMode txMode)
 {
   DoReportRxOk (rxSnr, txMode);
 }
-WifiTxStatistics::TX_STATISTICS
-WifiRemoteStation::GetTxStat()
-{
-	return m_txStat->GetTxStatRateLength();
-}
-void
-WifiRemoteStation::ResetTxStat()
-{
-	m_txStat->ResetStatistics();
-}
-
 } // namespace ns3
 
