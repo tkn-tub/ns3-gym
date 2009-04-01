@@ -40,7 +40,7 @@ namespace dot11s {
 class PeerLink : public Object
 {
 public:
-  friend class PeerManagerProtocol;
+  friend class PeerManagementProtocol;
   /// Support object system
   static TypeId GetTypeId();
   /// C-tor create empty link

@@ -59,7 +59,7 @@ PeerLink::GetTypeId()
         MakeUintegerChecker<uint16_t> ()
         )
     .AddAttribute ("MaxBeaconLoss", "Maximum number of lost beacons before link will be closed",
-        UintegerValue (3),
+        UintegerValue (2),
         MakeUintegerAccessor (&PeerLink::m_maxBeaconLoss),
         MakeUintegerChecker<uint16_t> (1)
         );

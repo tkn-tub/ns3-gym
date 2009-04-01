@@ -181,9 +181,11 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
       mp->AddInterface (*iter);
     mpInterfacess.clear ();
     //Install protocols:
-    Ptr<PeerManagerProtocol> peer = m_peerMan.Create<PeerManagerProtocol> ();
+    Ptr<PeerManagementProtocol> peer = m_peerMan.Create<PeerManagementProtocol> ();
     NS_ASSERT(peer->Install(mp));
     Ptr<HwmpProtocol> hwmp = m_routing.Create<HwmpProtocol> ();
+    peer->SetPeerLinkStatusCallback(MakeCallback(&HwmpProtocol::PeerLinkStatus, hwmp));
+    hwmp->SetNeighboursCallback(MakeCallback(&PeerManagementProtocol::GetActiveLinks, peer));
     NS_ASSERT(hwmp->Install(mp));
     devices.Add (mp);
   }

@@ -33,7 +33,7 @@
 NS_LOG_COMPONENT_DEFINE("PeerManager");
 namespace ns3 {
 namespace dot11s {
-PeerManagerMacPlugin::PeerManagerMacPlugin (uint32_t interface, Ptr<PeerManagerProtocol> protocol)
+PeerManagerMacPlugin::PeerManagerMacPlugin (uint32_t interface, Ptr<PeerManagementProtocol> protocol)
 {
   m_ifIndex = interface;
   m_protocol = protocol;

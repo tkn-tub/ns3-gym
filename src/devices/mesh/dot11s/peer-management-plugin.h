@@ -29,7 +29,7 @@ namespace dot11s {
 class PeerManagementProtocol;
 class IeConfiguration;
 class IePeerManagement;
-class PeerManagerProtocol;
+class PeerManagementProtocol;
 /**
  * \ingroup dot11s
  * 
@@ -42,7 +42,7 @@ class PeerManagerProtocol;
 class PeerManagerMacPlugin : public MeshWifiInterfaceMacPlugin
 {
 public:
-  PeerManagerMacPlugin (uint32_t interface, Ptr<PeerManagerProtocol> protocol);
+  PeerManagerMacPlugin (uint32_t interface, Ptr<PeerManagementProtocol> protocol);
   ~PeerManagerMacPlugin ();
   ///\name Inherited from plugin abstract class
   ///\{
@@ -52,7 +52,7 @@ public:
   void UpdateBeacon (MeshWifiBeacon & beacon) const;
   ///\}
 private:
-  friend class PeerManagerProtocol;
+  friend class PeerManagementProtocol;
   friend class PeerLink; 
   ///\name BCA functionallity:
   ///\{
@@ -63,7 +63,7 @@ private:
   std::pair<Time, Time> GetBeaconInfo() const;
   void SetBeaconShift(Time shift);
   ///\}
-  void SetPeerManagerProtcol(Ptr<PeerManagerProtocol> protocol);
+  void SetPeerManagerProtcol(Ptr<PeerManagementProtocol> protocol);
   void SendPeerLinkManagementFrame(
       Mac48Address peerAddress,
       uint16_t aid,
@@ -77,7 +77,7 @@ private:
   ///\{
   Ptr<MeshWifiInterfaceMac> m_parent;
   uint32_t m_ifIndex;
-  Ptr<PeerManagerProtocol> m_protocol;
+  Ptr<PeerManagementProtocol> m_protocol;
    ///\}
    ///\name Create peer link management frames:
    ///\{

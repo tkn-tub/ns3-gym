@@ -225,7 +225,7 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
       result = m_rtable->LookupProactiveExpired ();
     if((result.retransmitter == Mac48Address::GetBroadcast ()) && (!m_isRoot))
       return false;
-    MakePathError (result.retransmitter, result.ifIndex);
+    MakePathError (result.retransmitter);
     if(!m_isRoot)
       return false;
   }
@@ -478,6 +478,21 @@ HwmpProtocol::Install (Ptr<MeshPointDevice> mp)
   m_address = Mac48Address::ConvertFrom (mp->GetAddress ());//* address;
   return true;
 }
+void
+HwmpProtocol::PeerLinkStatus(Mac48Address peerAddress, uint32_t interface, bool status)
+{
+  if(status)
+  {
+   // m_rtable->AddReactivePath(peerAddress, peerAddress, interface, 1, Seconds (0), 0);
+  }
+  else
+    MakePathError (peerAddress);
+}
+void
+HwmpProtocol::SetNeighboursCallback(Callback<std::vector<Mac48Address>, uint32_t> cb)
+{
+  m_neighboursCallback = cb;
+}
 bool
 HwmpProtocol::DropDataFrame(uint32_t seqno, Mac48Address source)
 {
@@ -568,14 +583,27 @@ HwmpProtocol::ObtainRoutingInformation (
 }
 #endif
 void
-HwmpProtocol::MakePathError (Mac48Address retransmitter, uint32_t interface)
+HwmpProtocol::MakePathError (Mac48Address retransmitter)
 {
-  NS_LOG_DEBUG ("START PERR");
+  NS_LOG_UNCOND ("START PERR, I am "<<m_address);
   //TODO:
   //make a perr IE and send
   std::vector<IePerr::FailedDestination> destinations = m_rtable->GetUnreachableDestinations (retransmitter);
   //HwmpRtable increments a sequence number as written in 11B.9.7.2
-  //std::vector<Mac48Address> receivers = GetPerrReceivers (destinations, interface);
+  NS_LOG_UNCOND("Number of unreachable destinations:"<<destinations.size ());
+  for(std::vector<IePerr::FailedDestination>::iterator i =  destinations.begin (); i != destinations.end (); i ++)
+  {
+    HwmpRtable::LookupResult result = m_rtable->LookupReactiveExpired (i->destination);
+    NS_LOG_UNCOND("Address::"<<i->destination<<", next hop is "<<result.retransmitter);
+  }
+  std::vector<std::pair<uint32_t, Mac48Address> > receivers = GetPerrReceivers (destinations);
+  NS_LOG_UNCOND("Number of perr receivers:"<<receivers.size ());
+  if(receivers.size () == 0)
+    return;
+  for(std::vector<std::pair<uint32_t, Mac48Address> >::iterator i = receivers.begin (); i != receivers.end (); i ++)
+    NS_LOG_UNCOND("Address:"<<i->second<<", interface:"<<i->first);
+  //form a path error and send it to proper ports
+  IePerr perr;
   NS_ASSERT(false);
 }
 std::vector<std::pair<uint32_t, Mac48Address> >
@@ -607,7 +635,12 @@ std::vector<Mac48Address>
 HwmpProtocol::GetPreqReceivers (uint32_t interface)
 {
   std::vector<Mac48Address> retval;
-  retval.push_back (Mac48Address::GetBroadcast ());
+  if(!m_neighboursCallback.IsNull ()) retval = m_neighboursCallback (interface);
+  if (retval.size() >= m_unicastPreqThreshold)
+  {
+    retval.clear ();
+    retval.push_back (Mac48Address::GetBroadcast ());
+  }
   return retval;
 }
 bool

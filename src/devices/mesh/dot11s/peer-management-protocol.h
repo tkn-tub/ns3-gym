@@ -43,11 +43,11 @@ class IeConfiguration;
  * 
  * \brief 802.11s Peer Management Protocol model 
  */
-class PeerManagerProtocol : public Object
+class PeerManagementProtocol : public Object
 {
 public:
-  PeerManagerProtocol ();
-  ~PeerManagerProtocol ();
+  PeerManagementProtocol ();
+  ~PeerManagementProtocol ();
   static TypeId GetTypeId ();
   /** 
    * \brief Install PMP on given mesh point. 
@@ -55,7 +55,7 @@ public:
    * Installing protocol cause installing its interface MAC plugins.
    *  
    * Also MP aggregates all installed protocols, PMP protocol can be accessed 
-   * via MeshPointDevice::GetObject<PeerManagerProtocol>();
+   * via MeshPointDevice::GetObject<PeerManagementProtocol>();
    */
   bool Install(Ptr<MeshPointDevice>);
   /** 
@@ -126,6 +126,8 @@ public:
   //\}
   ///\brief Needed by external module to do MLME
   Ptr<PeerLink> FindPeerLink(uint32_t interface, Mac48Address peerAddress);
+  void SetPeerLinkStatusCallback (Callback<void, Mac48Address, uint32_t, bool> cb);
+  std::vector<Mac48Address> GetActiveLinks(uint32_t interface);
 private:
   /** \name Private structures
    * \{
@@ -201,9 +203,13 @@ private:
    */
   Time  m_peerLinkCleanupPeriod;
   EventId  m_cleanupEvent;
-  /**
-   * \}
-   */
+  ///\}
+  ///\brief Callback to notify about peer link changes:
+  ///\param Mac48Address is peer address
+  ///\param uint32_t - interface ID
+  ///\param bool is staus - true when new link has appeared, false -
+  //when link was closed
+  Callback <void, Mac48Address, uint32_t, bool> m_peerStatusCallback;
 };
   
 } // namespace dot11s

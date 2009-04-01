@@ -64,7 +64,11 @@ public:
    * via MeshPointDevice::GetObject<dot11s::HwmpProtocol>();
    */
   bool Install (Ptr<MeshPointDevice>);
-  
+  void PeerLinkStatus(Mac48Address peerAddress, uint32_t interface,bool status);
+  ///\brief This callback is used to obtain active neighbours on a
+  //given interface
+  ///\param interface is the interface ID
+  void SetNeighboursCallback(Callback<std::vector<Mac48Address>, uint32_t> cb);
 private:
   friend class HwmpMacPlugin;
   
@@ -87,13 +91,8 @@ private:
       uint32_t lifetime,
       uint32_t interface);
   
-  /** 
-   * \brief forms a path error information element when list of destination fails on a given interface
-   * 
-   * \param uint32_t is an interface ID, where route has failed
-   */
-  void MakePathError (Mac48Address, uint32_t);
-  
+  ///\brief forms a path error information element when list of destination fails on a given interface
+  void MakePathError (Mac48Address peerAddress);
   /// \return list of addresses where a PERR should be sent to
   std::vector<std::pair<uint32_t, Mac48Address> > GetPerrReceivers (std::vector<IePerr::FailedDestination> failedDest);
   
@@ -206,6 +205,7 @@ private:
   uint32_t GetNextHwmpSeqno ();
   uint32_t GetActivePathLifetime ();
   //\}
+  Callback <std::vector<Mac48Address>, uint32_t> m_neighboursCallback;
 };
 } //namespace dot11s
 } //namespace ns3

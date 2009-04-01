@@ -37,26 +37,26 @@
 #include "peer-management-plugin.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("PeerManagerProtocol");
+NS_LOG_COMPONENT_DEFINE ("PeerManagementProtocol");
 namespace ns3 {
 namespace dot11s {
 /***************************************************
  * PeerManager
  ***************************************************/
-NS_OBJECT_ENSURE_REGISTERED (PeerManagerProtocol);
+NS_OBJECT_ENSURE_REGISTERED (PeerManagementProtocol);
 
 TypeId
-PeerManagerProtocol::GetTypeId (void)
+PeerManagementProtocol::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::dot11s::PeerManagerProtocol")
+  static TypeId tid = TypeId ("ns3::dot11s::PeerManagementProtocol")
     .SetParent<Object> ()
-    .AddConstructor<PeerManagerProtocol> ()
+    .AddConstructor<PeerManagementProtocol> ()
     // peerLinkCleanupTimeout. We go through the map of peer links and 
     // remove all links which state is IDLE.
     .AddAttribute ("PeerLinkCleanupPeriod",
         "Idle peer link collection interval",
         TimeValue (MilliSeconds (80)),
-        MakeTimeAccessor (&PeerManagerProtocol::m_peerLinkCleanupPeriod),
+        MakeTimeAccessor (&PeerManagementProtocol::m_peerLinkCleanupPeriod),
         MakeTimeChecker ()
         )
     // maximum number of peer links. Now we calculate the total
@@ -64,19 +64,19 @@ PeerManagerProtocol::GetTypeId (void)
     .AddAttribute ("MaxNumberOfPeerLinks",
         "Maximum number of peer links",
         UintegerValue (32),
-        MakeUintegerAccessor (&PeerManagerProtocol::m_maxNumberOfPeerLinks),
+        MakeUintegerAccessor (&PeerManagementProtocol::m_maxNumberOfPeerLinks),
         MakeUintegerChecker<uint8_t> ()
         );
   return tid;
 }
-PeerManagerProtocol::PeerManagerProtocol ():
+PeerManagementProtocol::PeerManagementProtocol ():
   m_lastAssocId (0),
   m_lastLocalLinkId (1),
   m_numberOfActivePeers (0)
 {
-  m_cleanupEvent = Simulator::Schedule (m_peerLinkCleanupPeriod, &PeerManagerProtocol::PeerCleanup, this);
+  m_cleanupEvent = Simulator::Schedule (m_peerLinkCleanupPeriod, &PeerManagementProtocol::PeerCleanup, this);
 }
-PeerManagerProtocol::~PeerManagerProtocol ()
+PeerManagementProtocol::~PeerManagementProtocol ()
 {
   //cancel cleanup event and go through the map of peer links,
   //deleting each
@@ -100,7 +100,7 @@ PeerManagerProtocol::~PeerManagerProtocol ()
 }
 
 bool
-PeerManagerProtocol::Install(Ptr<MeshPointDevice> mp)
+PeerManagementProtocol::Install(Ptr<MeshPointDevice> mp)
 {
   std::vector<Ptr<NetDevice> > interfaces = mp->GetInterfaces ();
   for(std::vector<Ptr<NetDevice> >::iterator i = interfaces.begin(); i != interfaces.end(); i ++)
@@ -123,7 +123,7 @@ PeerManagerProtocol::Install(Ptr<MeshPointDevice> mp)
 }
 
 Ptr<IeBeaconTiming>
-PeerManagerProtocol::GetBeaconTimingElement(uint32_t interface)
+PeerManagementProtocol::GetBeaconTimingElement(uint32_t interface)
 {
   Ptr<IeBeaconTiming> retval = Create<IeBeaconTiming> ();
   BeaconInfoMap::iterator i = m_neighbourBeacons.find(interface);
@@ -156,7 +156,7 @@ PeerManagerProtocol::GetBeaconTimingElement(uint32_t interface)
 }
 
 void
-PeerManagerProtocol::FillBeaconInfo(uint32_t interface, Mac48Address peerAddress, Time receivingTime, Time beaconInterval)
+PeerManagementProtocol::FillBeaconInfo(uint32_t interface, Mac48Address peerAddress, Time receivingTime, Time beaconInterval)
 {
   BeaconInfoMap::iterator i = m_neighbourBeacons.find(interface);
   if(i == m_neighbourBeacons.end())
@@ -184,7 +184,7 @@ PeerManagerProtocol::FillBeaconInfo(uint32_t interface, Mac48Address peerAddress
 }
 
 void
-PeerManagerProtocol::UpdatePeerBeaconTiming(
+PeerManagementProtocol::UpdatePeerBeaconTiming(
     uint32_t interface,
     bool meshBeacon,
     IeBeaconTiming timingElement,
@@ -216,7 +216,7 @@ PeerManagerProtocol::UpdatePeerBeaconTiming(
 }
 
 void
-PeerManagerProtocol::ReceivePeerLinkFrame (
+PeerManagementProtocol::ReceivePeerLinkFrame (
     uint32_t interface,
     Mac48Address peerAddress,
     uint16_t aid,
@@ -252,7 +252,7 @@ PeerManagerProtocol::ReceivePeerLinkFrame (
 }
 
 void
-PeerManagerProtocol::ConfigurationMismatch (uint32_t interface, Mac48Address peerAddress)
+PeerManagementProtocol::ConfigurationMismatch (uint32_t interface, Mac48Address peerAddress)
 {
   Ptr<PeerLink> peerLink = FindPeerLink(interface, peerAddress);
   if(peerLink != 0)
@@ -260,7 +260,7 @@ PeerManagerProtocol::ConfigurationMismatch (uint32_t interface, Mac48Address pee
 }
 
 Ptr<PeerLink>
-PeerManagerProtocol::InitiateLink (
+PeerManagementProtocol::InitiateLink (
   uint32_t interface,
   Mac48Address peerAddress,
   Time lastBeacon,
@@ -291,22 +291,39 @@ PeerManagerProtocol::InitiateLink (
   new_link->SetPeerAddress (peerAddress);
   new_link->SetBeaconInformation (lastBeacon, beaconInterval);
   new_link->SetMacPlugin (plugin->second);
-  new_link->MLMESetSignalStatusCallback (MakeCallback(&PeerManagerProtocol::PeerLinkStatus, this));
+  new_link->MLMESetSignalStatusCallback (MakeCallback(&PeerManagementProtocol::PeerLinkStatus, this));
   iface->second.push_back (new_link);  
   return new_link;
 }
 Ptr<PeerLink>
-PeerManagerProtocol::FindPeerLink(uint32_t interface, Mac48Address peerAddress)
+PeerManagementProtocol::FindPeerLink(uint32_t interface, Mac48Address peerAddress)
 {
   PeerLinksMap::iterator iface = m_peerLinks.find (interface);
   NS_ASSERT (iface != m_peerLinks.end());
-  for (PeerLinksOnInterface::iterator i = iface->second.begin (); i != iface->second.end(); i++)  
+  for (PeerLinksOnInterface::iterator i = iface->second.begin (); i != iface->second.end(); i++)
     if ((*i)->GetPeerAddress () == peerAddress)
       return (*i);
   return 0;
 }
 void
-PeerManagerProtocol::PeerCleanup ()
+PeerManagementProtocol::SetPeerLinkStatusCallback(Callback <void, Mac48Address, uint32_t, bool> cb)
+{
+  m_peerStatusCallback = cb;
+}
+std::vector<Mac48Address>
+PeerManagementProtocol::GetActiveLinks(uint32_t interface)
+{
+  std::vector<Mac48Address> retval;
+  PeerLinksMap::iterator iface = m_peerLinks.find (interface);
+  NS_ASSERT (iface != m_peerLinks.end());
+  for (PeerLinksOnInterface::iterator i = iface->second.begin (); i != iface->second.end(); i++)
+    if((*i)->LinkIsEstab ())
+      retval.push_back((*i)->GetPeerAddress ());
+  return retval;
+  NS_ASSERT(false);
+}
+void
+PeerManagementProtocol::PeerCleanup ()
 {
   //Cleanup a peer link descriptors:
   for (
@@ -329,10 +346,10 @@ PeerManagerProtocol::PeerCleanup ()
       to_erase.clear ();
     }
   // cleanup neighbour beacons:
-  m_cleanupEvent = Simulator::Schedule (m_peerLinkCleanupPeriod, &PeerManagerProtocol::PeerCleanup, this);
+  m_cleanupEvent = Simulator::Schedule (m_peerLinkCleanupPeriod, &PeerManagementProtocol::PeerCleanup, this);
 }
 bool
-PeerManagerProtocol::IsActiveLink (uint32_t interface, Mac48Address peerAddress)
+PeerManagementProtocol::IsActiveLink (uint32_t interface, Mac48Address peerAddress)
 {
   Ptr<PeerLink> peerLink = FindPeerLink(interface, peerAddress);
     if(peerLink != 0)
@@ -340,14 +357,14 @@ PeerManagerProtocol::IsActiveLink (uint32_t interface, Mac48Address peerAddress)
   return false;
 }
 bool
-PeerManagerProtocol::ShouldSendOpen (uint32_t interface, Mac48Address peerAddress)
+PeerManagementProtocol::ShouldSendOpen (uint32_t interface, Mac48Address peerAddress)
 {
   if (m_numberOfActivePeers > m_maxNumberOfPeerLinks)
     return false;
   return true;
 }
 bool
-PeerManagerProtocol::ShouldAcceptOpen (uint32_t interface, Mac48Address peerAddress, PmpReasonCode & reasonCode)
+PeerManagementProtocol::ShouldAcceptOpen (uint32_t interface, Mac48Address peerAddress, PmpReasonCode & reasonCode)
 {
   if (m_numberOfActivePeers > m_maxNumberOfPeerLinks)
     {
@@ -357,7 +374,7 @@ PeerManagerProtocol::ShouldAcceptOpen (uint32_t interface, Mac48Address peerAddr
   return true;
 }
 Time
-PeerManagerProtocol::GetNextBeaconShift (uint32_t interface)
+PeerManagementProtocol::GetNextBeaconShift (uint32_t interface)
 {
   //REMINDER:: in timing element  1) last beacon reception time is measured in units of 256 microseconds
   //                              2) beacon interval is mesured in units of 1024 microseconds
@@ -433,7 +450,7 @@ PeerManagerProtocol::GetNextBeaconShift (uint32_t interface)
     return MicroSeconds (0);
 }
 void
-PeerManagerProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, bool status)
+PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, bool status)
 {
    PeerManagerPluginMap::iterator plugin = m_plugins.find (interface);
    NS_ASSERT(plugin != m_plugins.end());
@@ -448,6 +465,8 @@ PeerManagerProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAddres
      NS_LOG_UNCOND("Closed");
      m_numberOfActivePeers --;
    }
+   if(!m_peerStatusCallback.IsNull ())
+     m_peerStatusCallback (peerAddress, interface, status);
 }
   
 } // namespace dot11s

@@ -39,8 +39,8 @@ int
 main (int argc, char *argv[])
 {
   // Creating square topology with nNodes x nNodes grid:
-  int      xSize       =5;
-  int      ySize       = 5;
+  int      xSize       =6;
+  int      ySize       = 6;
   double   step        = 100.0; //Grid with one-hop edge
   double   randomStart = 0.1; //One beacon interval
   NodeContainer      nodes;
@@ -71,7 +71,7 @@ main (int argc, char *argv[])
                "RandomStart", TimeValue (Seconds (randomStart))
               );
   wifi.SetRouting("ns3::dot11s::HwmpProtocol");
-  wifi.SetPeerManager("ns3::dot11s::PeerManagerProtocol");
+  wifi.SetPeerManager("ns3::dot11s::PeerManagementProtocol");
   wifi.SetL2RoutingNetDevice ("ns3::MeshPointDevice");
   meshDevices = wifi.Install (wifiPhy,nodes);
   // Installing Mobility.

@@ -69,7 +69,6 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
       default:
         NS_ASSERT(false);
     };
-    NS_LOG_UNCOND("Received Data frame to "<<destination<<" uid = "<<packet->GetUid ());
     tag.SetSeqno (meshHdr.GetMeshSeqno ());
     if(meshHdr.GetMeshTtl () == 0)
       return false;
