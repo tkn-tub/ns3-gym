@@ -541,7 +541,7 @@ HwmpProtocol::MakePathError (std::vector<IePerr::FailedDestination> destinations
     for(unsigned int j = 0; j < receivers.size(); j ++)
       if(i->first == receivers[j].first)
         receivers_for_interface.push_back(receivers[j].second);
-    i->second->SendOnePerr (perr, receivers_for_interface);
+    i->second->SendPerr (perr, receivers_for_interface);
   }
 }
 std::vector<std::pair<uint32_t, Mac48Address> >
@@ -604,8 +604,10 @@ HwmpProtocol::DequeueFirstPacket ()
   QueuedPacket retval;
   retval.pkt = NULL;
   if(m_rqueue.size () != 0)
+  {
     retval = m_rqueue[0];
-  m_rqueue.erase (m_rqueue.begin ());
+    m_rqueue.erase (m_rqueue.begin ());
+  }
   return retval;
 }
 void
@@ -714,7 +716,6 @@ HwmpProtocol::UnsetRoot ()
 void
 HwmpProtocol::SendProactivePreq ()
 {
-  NS_LOG_DEBUG ("Sending proactive PREQ");
   IePreq preq;
   //By default: must answer
   preq.SetHopcount (0);
@@ -725,6 +726,7 @@ HwmpProtocol::SendProactivePreq ()
   //\attention: do not forget to set originator address, sequence
   //number and preq ID in HWMP-MAC plugin
   preq.AddDestinationAddressElement (true, true, Mac48Address::GetBroadcast (), 0);
+  preq.SetOriginatorAddress(m_address);
   for(HwmpPluginMap::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
     i->second->SendPreq(preq);
   m_proactivePreqTimer = Simulator::Schedule (m_dot11MeshHWMPactiveRootTimeout, &HwmpProtocol::SendProactivePreq, this);

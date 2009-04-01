@@ -145,37 +145,8 @@ HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header,
 void
 HwmpMacPlugin::SendPreq(IePreq preq)
 {
-  //Create packet
-  Ptr<Packet> packet  = Create<Packet> ();
-  packet->AddHeader(preq);
-  //Multihop action header:
-  WifiMeshMultihopActionHeader multihopHdr;
-  WifiMeshMultihopActionHeader::ACTION_VALUE action;
-  action.pathSelection = WifiMeshMultihopActionHeader::PATH_REQUEST;
-  multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
-  packet->AddHeader (multihopHdr);
-  //Mesh header
-  WifiMeshHeader meshHdr;
-  meshHdr.SetMeshTtl (m_protocol->GetMaxTtl ());
-  //TODO: should seqno be here?
-  meshHdr.SetMeshSeqno (0);
-  meshHdr.SetAddressExt(1);
-  meshHdr.SetAddr4(preq.GetOriginatorAddress ());
-  packet->AddHeader (meshHdr);
-  //create 802.11 header:
-  WifiMacHeader hdr;
-  hdr.SetMultihopAction ();
-  hdr.SetDsNotFrom ();
-  hdr.SetDsNotTo ();
-  hdr.SetAddr2 (m_parent->GetAddress ());
-  hdr.SetAddr3 (Mac48Address::GetBroadcast ());
-  //Send Management frame
-  std::vector <Mac48Address> receivers = m_protocol->GetPreqReceivers (m_ifIndex);
-  for(std::vector<Mac48Address>::iterator i = receivers.begin (); i != receivers.end (); i ++)
-  {
-    hdr.SetAddr1 (*i);
-    m_parent->SendManagementFrame(packet, hdr);
-  }
+  m_preqQueue.push_back (preq);
+  SendOnePreq ();
 }
 void
 HwmpMacPlugin::RequestDestination (Mac48Address dst)
@@ -211,15 +182,44 @@ HwmpMacPlugin::SendOnePreq ()
     return;
   if (m_myPreq == m_preqQueue.begin ())
     m_myPreq == m_preqQueue.end ();
-  SendPreq(m_preqQueue[0]);
-  //erase first!
-  m_preqQueue.erase (m_preqQueue.begin());
   //reschedule sending PREQ
   NS_ASSERT (!m_preqTimer.IsRunning());
   m_preqTimer = Simulator::Schedule (m_protocol->GetPreqMinInterval (), &HwmpMacPlugin::SendOnePreq, this);
+  Ptr<Packet> packet  = Create<Packet> ();
+  packet->AddHeader(m_preqQueue[0]);
+  //Multihop action header:
+  WifiMeshMultihopActionHeader multihopHdr;
+  WifiMeshMultihopActionHeader::ACTION_VALUE action;
+  action.pathSelection = WifiMeshMultihopActionHeader::PATH_REQUEST;
+  multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
+  packet->AddHeader (multihopHdr);
+  //Mesh header
+  WifiMeshHeader meshHdr;
+  meshHdr.SetMeshTtl (m_protocol->GetMaxTtl ());
+  //TODO: should seqno be here?
+  meshHdr.SetMeshSeqno (0);
+  meshHdr.SetAddressExt(1);
+  meshHdr.SetAddr4(m_preqQueue[0].GetOriginatorAddress ());
+  packet->AddHeader (meshHdr);
+  //create 802.11 header:
+  WifiMacHeader hdr;
+  hdr.SetMultihopAction ();
+  hdr.SetDsNotFrom ();
+  hdr.SetDsNotTo ();
+  hdr.SetAddr2 (m_parent->GetAddress ());
+  hdr.SetAddr3 (Mac48Address::GetBroadcast ());
+  //Send Management frame
+  std::vector <Mac48Address> receivers = m_protocol->GetPreqReceivers (m_ifIndex);
+  for(std::vector<Mac48Address>::iterator i = receivers.begin (); i != receivers.end (); i ++)
+  {
+    hdr.SetAddr1 (*i);
+    m_parent->SendManagementFrame(packet, hdr);
+  }
+  //erase queue
+  m_preqQueue.erase (m_preqQueue.begin());
 }
 void
-HwmpMacPlugin::SendPerr()
+HwmpMacPlugin::SendOnePerr()
 {
   if(m_perrTimer.IsRunning ())
     return;
@@ -228,7 +228,7 @@ HwmpMacPlugin::SendPerr()
     m_myPerr.receivers.clear ();
     m_myPerr.receivers.push_back (Mac48Address::GetBroadcast ());
   }
-  m_perrTimer = Simulator::Schedule (m_protocol->GetPerrMinInterval (), &HwmpMacPlugin::SendPerr, this);
+  m_perrTimer = Simulator::Schedule (m_protocol->GetPerrMinInterval (), &HwmpMacPlugin::SendOnePerr, this);
 //Create packet
   Ptr<Packet> packet  = Create<Packet> ();
   packet->AddHeader(m_myPerr.perr);
@@ -294,7 +294,7 @@ HwmpMacPlugin::SendPrep (IePrep prep, Mac48Address receiver)
   m_parent->SendManagementFrame(packet, hdr);
 }
 void
-HwmpMacPlugin::SendOnePerr(IePerr perr, std::vector<Mac48Address> receivers)
+HwmpMacPlugin::SendPerr(IePerr perr, std::vector<Mac48Address> receivers)
 {
   m_myPerr.perr.Merge(perr);
   for(unsigned int i = 0; i < receivers.size (); i ++)
@@ -306,7 +306,7 @@ HwmpMacPlugin::SendOnePerr(IePerr perr, std::vector<Mac48Address> receivers)
     if(should_add)
       m_myPerr.receivers.push_back(receivers[i]);
   }
-  SendPerr ();
+  SendOnePerr ();
 }
 } //namespace dot11s
 }//namespace ns3

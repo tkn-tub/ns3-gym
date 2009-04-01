@@ -62,13 +62,13 @@ private:
   //\{
   void SendPreq(IePreq preq);
   void SendPrep(IePrep prep, Mac48Address receiver);
-  void SendOnePerr(IePerr perr, std::vector<Mac48Address> receivers);
+  void SendPerr(IePerr perr, std::vector<Mac48Address> receivers);
   void RequestDestination (Mac48Address dest);
   //\}
   
   /// Sends one PREQ when PreqMinInterval after last PREQ expires (if any PREQ exists in rhe queue)
   void SendOnePreq ();
-  void SendPerr ();
+  void SendOnePerr ();
 private:
   Ptr<MeshWifiInterfaceMac> m_parent;
   uint32_t m_ifIndex;
