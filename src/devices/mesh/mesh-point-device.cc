@@ -299,8 +299,11 @@ MeshPointDevice::GetNInterfaces () const
 Ptr<NetDevice>
 MeshPointDevice::GetInterface (uint32_t n) const
 {
-  NS_ASSERT (m_ifaces.size () > n);
-  return m_ifaces[n];
+  for(std::vector< Ptr<NetDevice> >::const_iterator i = m_ifaces.begin (); i != m_ifaces.end (); i ++)
+    if((*i)->GetIfIndex() == n)
+      return (*i);
+  NS_ASSERT(false);
+  return 0;
 }
 std::vector<Ptr<NetDevice> >
 MeshPointDevice::GetInterfaces () const

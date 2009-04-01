@@ -108,8 +108,6 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c, uint32
     pmp->SetPeerLinkStatusCallback(MakeCallback(&HwmpProtocol::PeerLinkStatus, hwmp));
     hwmp->SetNeighboursCallback(MakeCallback(&PeerManagementProtocol::GetActiveLinks, pmp));
     
-    mp->SetRoutingProtocol (hwmp);
-    
     devices.Add (mp);
   }
   return devices;
@@ -118,7 +116,7 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c, uint32
 NetDeviceContainer
 MeshWifiHelper::Install (const WifiPhyHelper &phy, Ptr<Node> node, uint32_t nInterfaces) const
 {
-  return Install (phy, NodeContainer (node));
+  return Install (phy, NodeContainer (node), nInterfaces);
 }
   
 } // namespace dot11s
