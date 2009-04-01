@@ -22,34 +22,43 @@
 #include "ns3/object.h"
 #include "ns3/assert.h"
 #include "ns3/simulator.h"
+#include "ns3/test.h"
+#include "ns3/log.h"
+
 #include "hwmp-rtable.h"
 
 namespace ns3 {
 namespace dot11s {
 
+NS_LOG_COMPONENT_DEFINE ("HwmpRtable");
+  
 NS_OBJECT_ENSURE_REGISTERED (HwmpRtable);
 
 TypeId
 HwmpRtable::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::HwmpRtable")
+  static TypeId tid = TypeId ("ns3::dot11s::HwmpRtable")
     .SetParent<Object> ()
     .AddConstructor<HwmpRtable> ();
   return tid;
 }
+
 HwmpRtable::HwmpRtable ()
 {
   DeleteProactivePath ();
 }
+
 HwmpRtable::~HwmpRtable ()
 {
   DoDispose ();
 }
+
 void
 HwmpRtable::DoDispose ()
 {
   m_routes.clear ();
 }
+
 void
 HwmpRtable::AddReactivePath (
   Mac48Address destination,
@@ -68,7 +77,7 @@ HwmpRtable::AddReactivePath (
     }
   else
     {
-      /**
+      /*
        * if outinterface differs from stored, routing info is
        * actual and metric is worse - we ignore this
        * information
@@ -76,7 +85,7 @@ HwmpRtable::AddReactivePath (
       if (
         (i->second.interface != interface) &&
         (i->second.metric < metric) &&
-        /**
+        /*
          * The routing info is actual or it
          * was received from peer
          */
@@ -92,12 +101,13 @@ HwmpRtable::AddReactivePath (
   if (lifetime != Seconds (0))
     i->second.whenExpire = MilliSeconds (Simulator::Now().GetMilliSeconds() + lifetime.GetMilliSeconds());
   else
-    /**
+    /*
      * Information about peer does not have lifetime
      */
     i->second.whenExpire = Seconds (0);
   i->second.seqnum = seqnum;
 }
+
 void
 HwmpRtable::AddProactivePath (
   uint32_t metric,
@@ -115,6 +125,7 @@ HwmpRtable::AddProactivePath (
   m_root.seqnum = seqnum;
   m_root.interface = interface;
 }
+
 void
 HwmpRtable::AddPrecursor (Mac48Address destination, uint32_t precursorInterface, Mac48Address precursorAddress)
 {
@@ -126,7 +137,7 @@ HwmpRtable::AddPrecursor (Mac48Address destination, uint32_t precursorInterface,
     {
       bool should_add = true;
       for (unsigned int j = 0 ; j < i->second.precursors.size (); j ++)
-        //NB: nly one active route may exist, so even d not check
+        //NB: Only one active route may exist, so do not check
         //interface ID, just address
         if (i->second.precursors[j].second == precursorAddress)
           {
@@ -142,6 +153,7 @@ HwmpRtable::AddPrecursor (Mac48Address destination, uint32_t precursorInterface,
         return;
   m_root.precursors.push_back(precursor);
 }
+
 void
 HwmpRtable::DeleteProactivePath ()
 {
@@ -152,12 +164,14 @@ HwmpRtable::DeleteProactivePath ()
   m_root.seqnum = 0;
   m_root.whenExpire = Simulator::Now ();
 }
+
 void
 HwmpRtable::DeleteProactivePath (Mac48Address root)
 {
   if(m_root.root == root)
     DeleteProactivePath ();
 }
+
 void
 HwmpRtable::DeleteReactivePath (Mac48Address destination)
 {
@@ -165,34 +179,34 @@ HwmpRtable::DeleteReactivePath (Mac48Address destination)
   if (i != m_routes.end ())
     m_routes.erase (i);
 }
+
 HwmpRtable::LookupResult
 HwmpRtable::LookupReactive (Mac48Address destination)
 {
   LookupResult result;
-  result.retransmitter = Mac48Address::GetBroadcast ();
-  result.metric = MAX_METRIC;
-  result.ifIndex = INTERFACE_ANY;
 
   std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find (destination);
   if (i == m_routes.end ())
     return result;
+  
   result.ifIndex = i->second.interface;
   //Seconds (0) means that this is routing
-  if (i->second.whenExpire < Simulator::Now ())
-    if (i->second.retransmitter != destination)
-      return result;
+  if (i->second.whenExpire < Simulator::Now () && i->second.retransmitter != destination)
+    {
+      NS_LOG_DEBUG ("Reactive route has expired, sorry.");
+      return LookupResult();
+    }
+  
   result.retransmitter = i->second.retransmitter;
   result.metric = i->second.metric;
   result.seqnum = i->second.seqnum;
   return result;
 }
+
 HwmpRtable::LookupResult
 HwmpRtable::LookupReactiveExpired (Mac48Address destination)
 {
   LookupResult result;
-  result.retransmitter = Mac48Address::GetBroadcast ();
-  result.metric = MAX_METRIC;
-  result.ifIndex = INTERFACE_ANY;
 
   std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find (destination);
   if (i == m_routes.end ())
@@ -208,24 +222,21 @@ HwmpRtable::LookupResult
 HwmpRtable::LookupProactive ()
 {
   if (m_root.whenExpire < Simulator::Now ())
-    DeleteProactivePath ();
-  LookupResult retval;
-  retval.retransmitter = m_root.retransmitter;
-  retval.ifIndex = m_root.interface;
-  retval.metric = m_root.metric;
-  retval.seqnum = m_root.seqnum;
-  return retval;
+    {
+      NS_LOG_DEBUG ("Proactive route has expired and will be deleted, sorry.");
+      DeleteProactivePath ();
+    }
+  
+  return LookupProactiveExpired ();
 }
+
 HwmpRtable::LookupResult
 HwmpRtable::LookupProactiveExpired ()
 {
-  LookupResult retval;
-  retval.retransmitter = m_root.retransmitter;
-  retval.ifIndex = m_root.interface;
-  retval.metric = m_root.metric;
-  retval.seqnum = m_root.seqnum;
+  LookupResult retval (m_root.retransmitter, m_root.interface, m_root.metric, m_root.seqnum);
   return retval;
 }
+
 std::vector<IePerr::FailedDestination>
 HwmpRtable::GetUnreachableDestinations (Mac48Address peerAddress)
 {
@@ -248,11 +259,12 @@ HwmpRtable::GetUnreachableDestinations (Mac48Address peerAddress)
     }
   return retval;
 }
-HwmpRtable::PRECURSOR_LIST
+
+HwmpRtable::PrecursorList
 HwmpRtable::GetPrecursors (Mac48Address destination)
 {
   //We suppose that no dublicates here can be
-  PRECURSOR_LIST retval;
+  PrecursorList retval;
   std::map<Mac48Address, ReactiveRoute>::iterator route = m_routes.find (destination);
   if (route != m_routes.end ())
     for (unsigned int i = 0; i < route->second.precursors.size (); i ++)
@@ -272,5 +284,121 @@ HwmpRtable::GetPrecursors (Mac48Address destination)
     }
   return retval;
 }
+
+bool HwmpRtable::LookupResult::operator==(const HwmpRtable::LookupResult & o) const
+{
+  return (retransmitter == o.retransmitter
+      && ifIndex == o.ifIndex 
+      && metric  == o.metric
+      && seqnum  == o.seqnum
+    );
+}
+
+bool HwmpRtable::LookupResult::IsValid() const
+{
+  return !( retransmitter == Mac48Address::GetBroadcast ()
+        &&  ifIndex == INTERFACE_ANY
+        &&  metric == MAX_METRIC
+        &&  seqnum == 0
+      );
+}
+
+#ifdef RUN_SELF_TESTS
+
+/// Unit test for HwmpRtable
+class HwmpRtableTest : public Test 
+{
+public:
+  HwmpRtableTest ();
+  virtual bool RunTests(); 
+  
+private:
+  void Test1 ();
+  void Test2 ();
+  void Test3 ();
+  void Test4 ();
+
+private:
+  bool result;
+  
+  Mac48Address dst;
+  Mac48Address hop;
+  uint32_t iface;
+  uint32_t metric;
+  uint32_t seqnum;
+  Time expire;
+  Ptr<HwmpRtable> table;
+};
+
+/// Test instance
+static HwmpRtableTest g_HwmpRtableTest;
+
+HwmpRtableTest::HwmpRtableTest ()  : Test ("Mesh/802.11s/HwmpRtable"), 
+  result(true),
+  dst ("01:00:00:01:00:01"),
+  hop ("01:00:00:01:00:03"),
+  iface (8010),
+  metric (10),
+  seqnum (1),
+  expire (Seconds (10)) 
+{
+}
+
+void HwmpRtableTest::Test1 ()
+{
+  HwmpRtable::LookupResult correct (hop, iface, metric, seqnum);
+  
+  // Reactive path
+  table->AddReactivePath (dst, hop, iface, metric, expire, seqnum);
+  NS_TEST_ASSERT (table->LookupReactive (dst) == correct);
+  table->DeleteReactivePath (dst);
+  NS_TEST_ASSERT (! table->LookupReactive (dst).IsValid ());
+  
+  // Proactive
+  table->AddProactivePath (metric, dst, hop, iface, expire, seqnum);
+  NS_TEST_ASSERT (table->LookupProactive () == correct);
+  table->DeleteProactivePath (dst);
+  NS_TEST_ASSERT (! table->LookupProactive ().IsValid ());
+}
+
+void HwmpRtableTest::Test2 ()
+{
+  table->AddReactivePath (dst, hop, iface, metric, expire, seqnum);
+  table->AddProactivePath (metric, dst, hop, iface, expire, seqnum);
+}
+
+void HwmpRtableTest::Test3 ()
+{
+  // this is assumed to be called when path records are already expired
+  HwmpRtable::LookupResult correct (hop, iface, metric, seqnum);
+  NS_TEST_ASSERT (table->LookupReactiveExpired (dst) == correct);
+  NS_TEST_ASSERT (table->LookupProactiveExpired () == correct);
+  
+  NS_TEST_ASSERT (! table->LookupReactive (dst).IsValid ());
+  NS_TEST_ASSERT (! table->LookupProactive ().IsValid ());
+}
+
+void HwmpRtableTest::Test4 ()
+{
+  // TODO: test AddPrecursor and GetPrecursors
+}
+
+bool HwmpRtableTest::RunTests ()
+{
+  table = CreateObject<HwmpRtable> ();
+  
+  Simulator::Schedule (Seconds (0), & HwmpRtableTest::Test1, this);
+  Simulator::Schedule (Seconds (1), & HwmpRtableTest::Test2, this);
+  Simulator::Schedule (expire + Seconds (2), & HwmpRtableTest::Test3, this);
+  Simulator::Schedule (expire + Seconds (3), & HwmpRtableTest::Test4, this);
+  
+  Simulator::Run ();
+  Simulator::Destroy ();
+  
+  return result;
+}
+
+#endif // RUN_SELF_TESTS
+
 } //namespace dot11s
 } //namespace ns3

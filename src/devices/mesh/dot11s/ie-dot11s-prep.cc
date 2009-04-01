@@ -35,7 +35,7 @@ IePrep::~IePrep ()
 TypeId
 IePrep::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::IePrep")
+  static TypeId tid = TypeId ("ns3::dot11s::IePrep")
                       .SetParent<Object> ();
   return tid;
 }
