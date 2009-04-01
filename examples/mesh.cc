@@ -38,43 +38,36 @@ NS_LOG_COMPONENT_DEFINE ("TestMeshScript");
 int
 main (int argc, char *argv[])
 {
-  // Creating square topology with nNodes x nNodes grid:
-  int      xSize       =6;
+  // Creating square topology with nNodes x nNodes grid
+  int      xSize       = 6;
   int      ySize       = 6;
   double   step        = 100.0; //Grid with one-hop edge
-  double   randomStart = 0.1; //One beacon interval
-  NodeContainer      nodes;
-  CommandLine        cmd;
-  MobilityHelper     mobility;
-  MeshWifiHelper     wifi;
-  NetDeviceContainer meshDevices;
-  // Defining a size of our network:
+  double   randomStart = 0.1;   //One beacon interval
+  
+  // Defining a size of our network
+  CommandLine cmd;
   cmd.AddValue ("x-size", "Number of nodes in a row grid", xSize);
   cmd.AddValue ("y-size", "Number of rows in a grid", ySize);
   cmd.AddValue ("step", "Size of edge in our grid", step);
   cmd.AddValue ("start", "Random start parameter", randomStart);
   cmd.Parse (argc, argv);
-  NS_LOG_DEBUG ("Grid:"<<xSize<<"*"<<ySize);
-  // Creating nodes:
+  NS_LOG_DEBUG ("Grid:" << xSize << "*" << ySize);
+  
+  // Creating nodes
+  NodeContainer nodes;
   nodes.Create (ySize*xSize);
 
-  // Setting channel:
+  // Setting channel
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
-  // Setting Wifi:
-  //wifi.SetPhy ("ns3::WifiPhy");
-  wifi.SetRemoteStationManager ("ns3::AarfWifiManager");
-  Ssid ssid = Ssid ("MyMeSH");
-  wifi.SetMac ("ns3::MeshWifiInterfaceMac",
-               "Ssid", SsidValue (ssid),
-               "RandomStart", TimeValue (Seconds (randomStart))
-              );
-  wifi.SetRouting("ns3::dot11s::HwmpProtocol");
-  wifi.SetPeerManager("ns3::dot11s::PeerManagementProtocol");
-  wifi.SetL2RoutingNetDevice ("ns3::MeshPointDevice");
-  meshDevices = wifi.Install (wifiPhy,nodes);
-  // Installing Mobility.
+  
+  // Install mesh point devices & protocols
+  MeshWifiHelper mesh;
+  NetDeviceContainer meshDevices = mesh.Install (wifiPhy, nodes);
+  
+  // Setup mobility
+  MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
                                  "MinX", DoubleValue (0.0),
                                  "MinY", DoubleValue (0.0),
@@ -84,13 +77,17 @@ main (int argc, char *argv[])
                                  "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (nodes);
+  
   NS_LOG_UNCOND("start");
-  // Setting Internet Stack:
+  
+  // Install internet stack
   InternetStackHelper stack;
   stack.Install (nodes);
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer interfaces = address.Assign (meshDevices);
+  
+  // Install applications
   UdpEchoServerHelper echoServer (9);
   ApplicationContainer serverApps = echoServer.Install (nodes.Get (0));
   serverApps.Start (Seconds (1.0));
@@ -102,7 +99,8 @@ main (int argc, char *argv[])
   ApplicationContainer clientApps = echoClient.Install (nodes.Get (1));
   clientApps.Start (Seconds (2.0));
   clientApps.Stop (Seconds (10.0));
-  //end
+  
+  // Happy end
   Simulator::Stop (Seconds (10.0));
   Simulator::Run ();
   Simulator::Destroy ();

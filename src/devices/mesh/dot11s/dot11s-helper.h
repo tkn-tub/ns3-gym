@@ -16,12 +16,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Kirill Andreev <andreev@iitp.ru>
+ *         Pavel Boyko <boyko@iitp.ru>
  */
 
 
 #ifndef _MESHWIFIHELPER_H
 #define _MESHWIFIHELPER_H
+
 #include "ns3/wifi-helper.h"
+#include "ns3/ssid.h"
+#include "ns3/nstime.h"
 #include "ns3/peer-management-protocol.h"
 #include "ns3/hwmp-protocol.h"
 
@@ -33,89 +37,44 @@ class WifiChannel;
 /** 
  * \ingroup dot11s
  * 
+ * \brief Helper to create IEEE 802.11s mesh networks
  */
 class MeshWifiHelper
 {
-  public:
-    MeshWifiHelper ();
-    virtual ~MeshWifiHelper ();
-
-    /**
-     * \param type the type of peer manager to use.
-     * \param n0 the name of the attribute to set in the peer manager.
-     * \param v0 the value of the attribute to set in the peer manager.
-     * etc.
-     *
-     */
-    void SetRemoteStationManager (std::string type,
-        std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-        std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-        std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-        std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-        std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-        std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-        std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-        std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ()
-        );
-
-    /**
-     * \param type the type of ns3::WifiMac to create.
-     * \param n0 the name of the attribute to set
-     * \param v0 the value of the attribute to set
-     *
-     * All the attributes specified in this method should exist
-     * in the requested mac.
-     */
-    void SetMac (std::string type,
-        std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-        std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-        std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-        std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-        std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-        std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-        std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-        std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ()
-        );
-    void SetPeerManager (std::string type,
-        std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-        std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-        std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-        std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-        std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-        std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-        std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-        std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ()
-        );
-    void SetRouting (std::string type,
-        std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-        std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-        std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-        std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-        std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-        std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-        std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-        std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ()
-        );
-
-
-    void SetL2RoutingNetDevice (std::string type,
-        std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-        std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-        std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-        std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-        std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-        std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-        std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-        std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ()
-        );
-    NetDeviceContainer Install (const WifiPhyHelper &phyHelper, NodeContainer c) const;
-    NetDeviceContainer Install (const WifiPhyHelper &phy, Ptr<Node> node) const;
-  private:
-    ObjectFactory m_stationManager;
-    ObjectFactory m_meshMac;
-    ObjectFactory m_peerMan;
-    ObjectFactory m_routing;
-    ObjectFactory m_deviceFactory;
+public:
+  MeshWifiHelper (); 
+  /// Set mesh SSID
+  void SetSsid (const Ssid  &);
+  /// Set maximum random start delay
+  void SetRandomStartDelay (Time delay);
+  /** 
+   * \brief Install 802.11s mesh device & protocols on given node
+   * 
+   * \param phy                 Wifi PHY helper
+   * \param nodes               List of nodes to install
+   * \param nInterfaces         Number of mesh point radio interfaces (= WiFi NICs)
+   * 
+   * \return list of created mesh point devices, see MeshPointDevice
+   */
+  NetDeviceContainer Install (const WifiPhyHelper &phyHelper, NodeContainer c, uint32_t nInterfaces = 1) const;
+  /** 
+   * \brief Install 802.11s mesh device & protocols on given node
+   * 
+   * \param phy                 Wifi PHY helper
+   * \param node                Node to install
+   * \param nInterfaces         Number of mesh point radio interfaces (= WiFi NICs)
+   * 
+   * \return list of created mesh point devices, see MeshPointDevice
+   */ 
+  NetDeviceContainer Install (const WifiPhyHelper &phy, Ptr<Node> node, uint32_t nInterfaces = 1) const;
+  
+private:
+  Ssid m_ssid;
+  Time m_randomStartDelay;
+  
+  /// Create single mesh interface NIC
+  Ptr<WifiNetDevice> CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node) const;
+  
 };
 } // namespace dot11s
 } //namespace ns3

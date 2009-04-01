@@ -401,6 +401,13 @@ MeshWifiInterfaceMac::CheckSupportedRates(SupportedRates rates) const
 //-----------------------------------------------------------------------------
 // Beacons
 //-----------------------------------------------------------------------------
+void 
+MeshWifiInterfaceMac::SetRandomStartDelay (Time interval)
+{
+  NS_LOG_FUNCTION (this << interval);
+  m_randomStart = interval;
+}
+
 void
 MeshWifiInterfaceMac::SetBeaconInterval (Time interval)
 {

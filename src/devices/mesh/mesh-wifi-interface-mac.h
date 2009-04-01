@@ -94,6 +94,8 @@ public:
   
   ///\name Beacons
   //\{
+  /// Set maximum initial random delay before first beacon
+  void SetRandomStartDelay (Time interval);
   /// Set interval between two successive beacons
   void SetBeaconInterval (Time interval);
   /// \return interval between two beacons
