@@ -85,7 +85,7 @@ HwmpTag::GetSeqno ()
 TypeId
 HwmpTag::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::HwmpTag")
+  static TypeId tid = TypeId ("ns3::dot11s::HwmpTag")
     .SetParent<Tag> ()
     .AddConstructor<HwmpTag> ();
   return tid;

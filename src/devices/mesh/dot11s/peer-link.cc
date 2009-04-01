@@ -35,7 +35,7 @@ NS_OBJECT_ENSURE_REGISTERED(PeerLink);
 TypeId 
 PeerLink::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::PeerLink")
+  static TypeId tid = TypeId ("ns3::dot11s::PeerLink")
     .SetParent<Object> ()
     .AddConstructor<PeerLink> ()
     .AddAttribute ("RetryTimeout", "Retry timeout",

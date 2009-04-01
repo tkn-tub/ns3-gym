@@ -32,16 +32,50 @@ namespace dot11s {
  * \ingroup dot11s
  * 
  * \brief Routing table for HWMP -- 802.11s routing protocol
- * 
- * TODO: comment all methods
  */
 class HwmpRtable : public Object
 {
+public:
+  /// Means all interfaces
+  const static uint32_t INTERFACE_ANY = 0xffffffff;
+  /// Maximum (the best?) path metric
+  const static uint32_t MAX_METRIC = 0xffffffff;
+  
+  /// Route lookup result, return type of LookupXXX methods
+  struct LookupResult
+  {
+    Mac48Address retransmitter;
+    uint32_t ifIndex;
+    uint32_t metric;
+    uint32_t seqnum;
+    
+    LookupResult(Mac48Address r = Mac48Address::GetBroadcast (), 
+                 uint32_t i = INTERFACE_ANY, 
+                 uint32_t m = MAX_METRIC, 
+                 uint32_t s = 0) 
+      : retransmitter (r),
+        ifIndex (i),
+        metric (m),
+        seqnum (s)
+    {
+    }
+    
+    /// True for valid route 
+    bool IsValid() const;
+    /// Compare route lookup results, used by tests
+    bool operator==(const LookupResult & o) const;
+  };
+  /// Path precursor = {MAC, interface ID}
+  typedef std::vector<std::pair<uint32_t, Mac48Address> > PrecursorList;
+    
 public:
   static TypeId GetTypeId ();
   HwmpRtable ();
   ~HwmpRtable ();
   void DoDispose ();
+  
+  ///\name Add/delete paths
+  //\{ 
   void AddReactivePath (
     Mac48Address destination,
     Mac48Address retransmitter,
@@ -59,35 +93,29 @@ public:
     uint32_t seqnum
   );
   void AddPrecursor (Mac48Address destination, uint32_t precursorInterface, Mac48Address precursorAddress);
+  PrecursorList GetPrecursors (Mac48Address destination);
   void DeleteProactivePath ();
   void DeleteProactivePath (Mac48Address root);
   void DeleteReactivePath (Mac48Address destination);
+  //\}
   
-  struct LookupResult
-  {
-    Mac48Address retransmitter;
-    uint32_t ifIndex;
-    uint32_t metric;
-    uint32_t seqnum;
-  };
-  
+  ///\name Lookup
+  //\{
+  /// Lookup path to destination
   LookupResult LookupReactive (Mac48Address destination);
+  /// Return all reactive paths, including expired
   LookupResult LookupReactiveExpired (Mac48Address destination);
+  /// Find proactive path to tree root. Note that calling this method has side effect of deleting expired proactive path
   LookupResult LookupProactive ();
+  /// Return all proactive paths, including expired
   LookupResult LookupProactiveExpired ();
-  //path error routines:
-  ///\brief When peer link with a given MAC-address fails - it returns list of unreachable
-  //destination addresses
-  std::vector<IePerr::FailedDestination>  GetUnreachableDestinations (Mac48Address peerAddress);
-  ///\brief When we talk about multi-interface HWMP, 'precursor' means
-  //not only address but also an interface ID
-  //So, when we request "precursor list", we mean that this list will
-  //consist of interface ID and addresses
-  typedef std::vector<std::pair<uint32_t, Mac48Address> > PRECURSOR_LIST;
-  PRECURSOR_LIST GetPrecursors (Mac48Address destination);
-  const static uint32_t INTERFACE_ANY = 0xffffffff;
-  const static uint32_t MAX_METRIC = 0xffffffff;
+  //\}
+  
+  /// When peer link with a given MAC-address fails - it returns list of unreachable destination addresses
+  std::vector<IePerr::FailedDestination> GetUnreachableDestinations (Mac48Address peerAddress);
+  
 private:
+  /// Route found in reactive mode
   struct ReactiveRoute
   {
     Mac48Address retransmitter;
@@ -97,6 +125,7 @@ private:
     uint32_t seqnum;
     std::vector<std::pair<uint32_t, Mac48Address> > precursors;
   };
+  /// Route fond in proactive mode
   struct ProactiveRoute
   {
     Mac48Address root;
@@ -107,7 +136,10 @@ private:
     uint32_t seqnum;
     std::vector<std::pair<uint32_t, Mac48Address> > precursors;
   };
+  
+  /// List of routes
   std::map<Mac48Address, ReactiveRoute>  m_routes;
+  /// Path to proactive tree root MP
   ProactiveRoute  m_root;
 };
 } //namespace dot11s

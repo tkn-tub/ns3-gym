@@ -609,10 +609,10 @@ HwmpProtocol::MakePathError (Mac48Address retransmitter)
 std::vector<std::pair<uint32_t, Mac48Address> >
 HwmpProtocol::GetPerrReceivers (std::vector<IePerr::FailedDestination> failedDest)
 {
-  HwmpRtable::PRECURSOR_LIST retval;
+  HwmpRtable::PrecursorList retval;
   for (unsigned int i = 0; i < failedDest.size (); i ++)
   {
-    HwmpRtable::PRECURSOR_LIST precursors = m_rtable->GetPrecursors(failedDest[i].destination);
+    HwmpRtable::PrecursorList precursors = m_rtable->GetPrecursors(failedDest[i].destination);
     m_rtable->DeleteReactivePath (failedDest[i].destination);
     m_rtable->DeleteProactivePath(failedDest[i].destination);
     for (unsigned int j = 0; j < precursors.size (); j ++)

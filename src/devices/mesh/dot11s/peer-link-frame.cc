@@ -58,7 +58,7 @@ TypeId
 PeerLinkFrameStart::GetTypeId ()
 {
   static TypeId tid =
-    TypeId ("ns3::PeerLinkFrameStart")
+    TypeId ("ns3::dot11s::PeerLinkFrameStart")
     .SetParent<Header> ()
     .AddConstructor<PeerLinkFrameStart> ()
     ;

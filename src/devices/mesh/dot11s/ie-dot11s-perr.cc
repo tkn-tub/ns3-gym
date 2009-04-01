@@ -32,7 +32,7 @@ IePerr::~IePerr ()
 TypeId
 IePerr::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::IePerr")
+  static TypeId tid = TypeId ("ns3::dot11s::IePerr")
                       .SetParent<Object> ();
   return tid;
 }

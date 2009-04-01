@@ -86,7 +86,7 @@ IeConfiguration::IeConfiguration ():
 TypeId
 IeConfiguration::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::IeConfiguration")
+  static TypeId tid = TypeId ("ns3::dot11s::IeConfiguration")
     .SetParent<WifiInformationElement> ();
   return tid;
 }

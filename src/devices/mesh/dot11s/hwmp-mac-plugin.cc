@@ -57,7 +57,7 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
   {
     WifiMeshHeader meshHdr;
     HwmpTag tag;
-    NS_ASSERT(!packet->RemovePacketTag (tag));
+    NS_ASSERT(! packet->PeekPacketTag (tag));
     packet->RemoveHeader(meshHdr);
     //TODO: address extension
     Mac48Address destination;
