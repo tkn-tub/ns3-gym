@@ -194,7 +194,7 @@ HwmpRtable::LookupReactive (Mac48Address destination)
   if (i->second.whenExpire < Simulator::Now () && i->second.retransmitter != destination)
     {
       NS_LOG_DEBUG ("Reactive route has expired, sorry.");
-      return LookupResult();+
+      return LookupResult();
     }
   
   result.retransmitter = i->second.retransmitter;
