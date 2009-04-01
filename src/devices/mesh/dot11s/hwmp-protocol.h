@@ -92,7 +92,7 @@ private:
       uint32_t interface);
   
   ///\brief forms a path error information element when list of destination fails on a given interface
-  void MakePathError (Mac48Address peerAddress);
+  void MakePathError (std::vector<IePerr::FailedDestination> destinations);
   /// \return list of addresses where a PERR should be sent to
   std::vector<std::pair<uint32_t, Mac48Address> > GetPerrReceivers (std::vector<IePerr::FailedDestination> failedDest);
   
@@ -204,6 +204,7 @@ private:
   uint32_t GetNextPreqId ();
   uint32_t GetNextHwmpSeqno ();
   uint32_t GetActivePathLifetime ();
+  uint8_t GetUnicastPerrThreshold ();
   //\}
   Callback <std::vector<Mac48Address>, uint32_t> m_neighboursCallback;
 };

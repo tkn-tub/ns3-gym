@@ -45,10 +45,11 @@ public:
   };
   uint8_t   GetNumOfDest ();
 
-  void   AddAddressUnit (struct FailedDestination unit);
-  std::vector<FailedDestination>  GetAddressUnitVector ();
-  void   DeleteAddressUnit (Mac48Address address);
-  void   ResetPerr ();
+  void AddAddressUnit (struct FailedDestination unit);
+  std::vector<FailedDestination> GetAddressUnitVector () const;
+  void DeleteAddressUnit (Mac48Address address);
+  void Merge(const IePerr perr);
+  void ResetPerr ();
 private:
   WifiElementId ElementId () const{
     return IE11S_PERR;

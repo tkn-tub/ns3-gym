@@ -107,7 +107,7 @@ IePerr::AddAddressUnit (FailedDestination unit)
 }
 
 std::vector<IePerr::FailedDestination>
-IePerr::GetAddressUnitVector ()
+IePerr::GetAddressUnitVector () const
 {
   return m_addressUnits;
 }
@@ -115,14 +115,27 @@ void
 IePerr::DeleteAddressUnit (Mac48Address address)
 {
   for (std::vector<FailedDestination>::iterator i = m_addressUnits.begin (); i != m_addressUnits.end(); i ++)
-    if ((*i).destination == address)
+    if (i->destination == address)
       {
         m_numOfDest --;
         m_addressUnits.erase (i);
         break;
       }
 }
-
+void
+IePerr::Merge(const IePerr perr)
+{
+  std::vector<FailedDestination> to_merge = perr.GetAddressUnitVector ();
+  for (std::vector<FailedDestination>::iterator i = to_merge.begin (); i != to_merge.end(); i ++)
+  {
+    bool should_add = true;
+    for (std::vector<FailedDestination>::iterator j = m_addressUnits.begin (); j != m_addressUnits.end(); j ++)
+      if ((i->destination == j->destination) && (i->seqnum <= j->seqnum))
+        should_add = false;
+    if(should_add)
+      AddAddressUnit (*i);
+  }
+}
 void
 IePerr::ResetPerr ()
 {

@@ -225,7 +225,8 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
       result = m_rtable->LookupProactiveExpired ();
     if((result.retransmitter == Mac48Address::GetBroadcast ()) && (!m_isRoot))
       return false;
-    MakePathError (result.retransmitter);
+    std::vector<IePerr::FailedDestination> destinations = m_rtable->GetUnreachableDestinations (result.retransmitter);
+    MakePathError (destinations);
     if(!m_isRoot)
       return false;
   }
@@ -421,6 +422,28 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface)
 void
 HwmpProtocol::ReceivePerr (IePerr perr, Mac48Address from, uint32_t interface)
 {
+  //Acceptance cretirea:
+  NS_LOG_UNCOND("I am "<<m_address<<", received PERR from "<<from);
+  std::vector<IePerr::FailedDestination> destinations = perr.GetAddressUnitVector ();
+  HwmpRtable::LookupResult result;
+  for(unsigned int i = 0; i < destinations.size (); i ++)
+  {
+    result = m_rtable->LookupReactive (destinations[i].destination);
+    NS_LOG_UNCOND("Destination = "<<destinations[i].destination<<", RA = "<<result.retransmitter);
+    if (
+        (result.retransmitter != from) ||
+        (result.ifIndex != interface) ||
+        (result.seqnum > destinations[i].seqnum)
+        )
+    {
+      perr.DeleteAddressUnit(destinations[i].destination);
+      continue;
+    }
+    m_rtable->DeleteReactivePath(destinations[i].destination);
+  }
+  if(perr.GetNumOfDest () == 0)
+    return;
+  MakePathError (destinations);
 }
 void
 HwmpProtocol::SendPrep (
@@ -486,7 +509,10 @@ HwmpProtocol::PeerLinkStatus(Mac48Address peerAddress, uint32_t interface, bool 
    // m_rtable->AddReactivePath(peerAddress, peerAddress, interface, 1, Seconds (0), 0);
   }
   else
-    MakePathError (peerAddress);
+  {
+    std::vector<IePerr::FailedDestination> destinations = m_rtable->GetUnreachableDestinations (peerAddress);
+    MakePathError (destinations);
+  }
 }
 void
 HwmpProtocol::SetNeighboursCallback(Callback<std::vector<Mac48Address>, uint32_t> cb)
@@ -583,12 +609,11 @@ HwmpProtocol::ObtainRoutingInformation (
 }
 #endif
 void
-HwmpProtocol::MakePathError (Mac48Address retransmitter)
+HwmpProtocol::MakePathError (std::vector<IePerr::FailedDestination> destinations)
 {
   NS_LOG_UNCOND ("START PERR, I am "<<m_address);
   //TODO:
   //make a perr IE and send
-  std::vector<IePerr::FailedDestination> destinations = m_rtable->GetUnreachableDestinations (retransmitter);
   //HwmpRtable increments a sequence number as written in 11B.9.7.2
   NS_LOG_UNCOND("Number of unreachable destinations:"<<destinations.size ());
   for(std::vector<IePerr::FailedDestination>::iterator i =  destinations.begin (); i != destinations.end (); i ++)
@@ -604,7 +629,20 @@ HwmpProtocol::MakePathError (Mac48Address retransmitter)
     NS_LOG_UNCOND("Address:"<<i->second<<", interface:"<<i->first);
   //form a path error and send it to proper ports
   IePerr perr;
-  NS_ASSERT(false);
+  for(unsigned int i = 0; i < destinations.size (); i ++)
+  {
+    perr.AddAddressUnit(destinations[i]);
+    m_rtable->DeleteReactivePath(destinations[i].destination);
+  }
+  for(HwmpPluginMap::iterator i =  m_interfaces.begin (); i != m_interfaces.end (); i ++)
+  {
+    std::vector<Mac48Address> receivers_for_interface;
+    for(unsigned int j = 0; j < receivers.size(); j ++)
+      if(i->first == receivers[j].first)
+        receivers_for_interface.push_back(receivers[j].second);
+    i->second->SendOnePerr (perr, receivers_for_interface);
+  }
+
 }
 std::vector<std::pair<uint32_t, Mac48Address> >
 HwmpProtocol::GetPerrReceivers (std::vector<IePerr::FailedDestination> failedDest)
@@ -766,6 +804,7 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
   {
     i->second->RequestDestination(dst);
     i->second->RequestDestination(Mac48Address("00:00:00:00:00:10"));
+    i->second->RequestDestination(Mac48Address("00:00:00:00:00:24"));
   }
   m_preqTimeouts[dst] = Simulator::Schedule (
       MilliSeconds (2*(m_dot11MeshHWMPnetDiameterTraversalTime.GetMilliSeconds())),
@@ -846,6 +885,11 @@ uint32_t
 HwmpProtocol::GetActivePathLifetime ()
 {
   return m_dot11MeshHWMPactivePathTimeout.GetMicroSeconds () / 1024;
+}
+uint8_t
+HwmpProtocol::GetUnicastPerrThreshold()
+{
+  return m_unicastPerrThreshold;
 }
 Mac48Address
 HwmpProtocol::GetAddress ()

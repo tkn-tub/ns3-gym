@@ -23,6 +23,7 @@
 #define HWMP_STATE_H
 
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
+#include "ie-dot11s-perr.h"
 
 namespace ns3 {
 
@@ -61,13 +62,13 @@ private:
   //\{
   void SendPreq(IePreq preq);
   void SendPrep(IePrep prep, Mac48Address receiver);
-  void SendPerr(IePerr perr, std::vector<Mac48Address> receivers);
+  void SendOnePerr(IePerr perr, std::vector<Mac48Address> receivers);
   void RequestDestination (Mac48Address dest);
   //\}
   
   /// Sends one PREQ when PreqMinInterval after last PREQ expires (if any PREQ exists in rhe queue)
   void SendOnePreq ();
-  
+  void SendPerr ();
 private:
   Ptr<MeshWifiInterfaceMac> m_parent;
   uint32_t m_ifIndex;
@@ -79,66 +80,20 @@ private:
   std::vector<IePreq>  m_preqQueue;
   std::vector<IePreq>::iterator  m_myPreq;
   //\}
+  ///\name PERR timer and stored path error
+  //{
+  EventId m_perrTimer;
+  struct MyPerr {
+    IePerr perr;
+    std::vector<Mac48Address> receivers;
+  };
+  MyPerr m_myPerr;
 };
 
 #if 0
 class HwmpMacPlugin : public MeshWifiInterfaceMacPlugin {
 public:
-  static TypeId GetTypeId ();
-  HwmpMacPlugin ();
-  ~HwmpMacPlugin ();
-
-  /**
-   * \brief Interface with HWMP - Hwmp can only
-   * request address and collect routing
-   * information
-   */
-  void SetRequestRouteCallback (
-    Callback<HwmpRtable::LookupResult, const Mac48Address&> cb);
-  void SetRequestRootPathCallback (
-    Callback<HwmpRtable::LookupResult, uint32_t> cb);
-
-  enum InfoType {
-    INFO_PREQ,
-    INFO_PREP,
-    INFO_PERR,
-    INFO_PROACTIVE,
-    INFO_NEW_PEER,
-    INFO_FAILED_PEER
-  };
-  typedef struct RoutingInfo {
-    Mac48Address me;
-    Mac48Address destination;
-    Mac48Address source;
-    Mac48Address nextHop;
-    Mac48Address prevHop;
-    uint32_t outPort;
-    uint32_t metric;
-    std::vector<Mac48Address>  failedDestinations;
-    uint32_t dsn;
-    Time  lifetime;
-    enum InfoType type;
-  } INFO;
-  void SetRoutingInfoCallback (
-    Callback<void, INFO> cb
-  );
-  void SetRetransmittersOfPerrCallback (
-    Callback<std::vector<Mac48Address>, std::vector<HwmpRtable::FailedDestination>, uint32_t> cb);
-  void SendPathError (std::vector<HwmpRtable::FailedDestination> destinations);
-  void SetAssociatedIfaceId (uint32_t interface);
-  uint32_t  GetAssociatedIfaceId ();
-  //Mac interaction:
-  void SetMac (Ptr<MeshWifiMac> mac);
-  void SetSendPreqCallback (
-    Callback<void, const IeDot11sPreq&> cb);
-  void SetSendPrepCallback (
-    Callback<void, const IeDot11sPrep&> cb);
-  void SetSendPerrCallback (
-    Callback<void, const IeDot11sPerr&, std::vector<Mac48Address> > cb);
-  void ReceivePreq (IeDot11sPreq&, const Mac48Address& from, const uint32_t& metric);
-  void ReceivePrep (IeDot11sPrep&, const Mac48Address& from, const uint32_t& metric);
-  void ReceivePerr (IeDot11sPerr&, const Mac48Address& from);
-private:
+  private:
   //true means that we can add a destination to
   //existing PREQ element
   //False means that we must send
@@ -171,22 +126,9 @@ private:
   //Proactive PREQ mechanism:
   EventId  m_proactivePreqTimer;
   void  SendProactivePreq ();
-  /**
-   * \brief Two PERRs may not be sent closer to
-   * each other than
-   * dot11MeshHWMPperrMinInterval, so, each HWMP
-   * state collects all unreachable destinations
-   * and once in dot11MeshHWMPperrMinInterval
-   * should send PERR, and PERR element should
-   * be cleared
-   */
-  IeDot11sPerr  m_myPerr;
-  std::vector<Mac48Address>   m_myPerrReceivers;
-  void  AddPerrReceiver (Mac48Address receiver);
+   IeDot11sPerr  m_myPerr;
   EventId  m_perrTimer;
   void  SendOnePerr ();
-  //Configurable parameters:
-  uint8_t  m_maxTtl;
 };
 #endif
 } //namespace dot11s
