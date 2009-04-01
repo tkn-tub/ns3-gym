@@ -82,10 +82,10 @@ public:
   
   ///\name Protocols
   //\{
-  /**
-   * \brief Register routing protocol to be used. Protocol must be alredy installed on this mesh point.
-   */
+  /// Register routing protocol to be used. Protocol must be alredy installed on this mesh point.
   void SetRoutingProtocol (Ptr<MeshL2RoutingProtocol> protocol);
+  /// Access current routing protocol
+  Ptr<MeshL2RoutingProtocol> GetRoutingProtocol() const;
   //\}
   
   ///\name NetDevice interface for upper layers
@@ -168,6 +168,8 @@ private:
   
   /// Routing response callback, this is supplied to mesh routing protocol
   MeshL2RoutingProtocol::RouteReplyCallback  m_myResponse;
+  /// Current routing protocol, used mainly by GetRoutingProtocol
+  Ptr<MeshL2RoutingProtocol> m_routingProtocol;
 };
 } //namespace ns3
 #endif

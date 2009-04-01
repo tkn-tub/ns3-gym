@@ -23,6 +23,7 @@
 #include "ns3/node.h"
 #include "ns3/packet.h"
 #include "ns3/log.h"
+#include "ns3/pointer.h"                                                                        
 #include "ns3/mesh-point-device.h"
 
 NS_LOG_COMPONENT_DEFINE ("MeshPointDevice");
@@ -37,8 +38,12 @@ MeshPointDevice::GetTypeId ()
   static TypeId tid = TypeId ("ns3::MeshPointDevice")
                       .SetParent<NetDevice> ()
                       .AddConstructor<MeshPointDevice> ()
+                      .AddAttribute ("RoutingProtocol", "The mesh routing protocol used by this mesh point.",
+                          PointerValue (),
+                          MakePointerAccessor (&MeshPointDevice::GetRoutingProtocol,
+                                               &MeshPointDevice::SetRoutingProtocol),
+                          MakePointerChecker<MeshL2RoutingProtocol> ())
                       ;
-  // TODO Add station-level attributes here
   return tid;
 }
 
@@ -333,10 +338,17 @@ MeshPointDevice::SetRoutingProtocol (Ptr<MeshL2RoutingProtocol> protocol)
   
   NS_ASSERT_MSG (PeekPointer(protocol->GetMeshPoint()) == this, "Routing protocol must be installed on mesh point to be usefull.");
   
+  m_routingProtocol = protocol;
   m_requestRoute = MakeCallback (&MeshL2RoutingProtocol::RequestRoute, protocol);
   m_myResponse = MakeCallback (&MeshPointDevice::DoSend, this);
   
   return;
+}
+
+Ptr<MeshL2RoutingProtocol>
+MeshPointDevice::GetRoutingProtocol () const
+{
+  return m_routingProtocol;
 }
 
 void
