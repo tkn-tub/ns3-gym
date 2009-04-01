@@ -33,21 +33,29 @@
 namespace ns3 {
 namespace dot11s {
 
-MeshWifiHelper::MeshWifiHelper () : m_ssid("Mesh"), m_randomStartDelay (Seconds (0))
+MeshWifiHelper::MeshWifiHelper () : m_ssid("mesh"), m_randomStartDelay (Seconds (0))
 {
 }
   
-void MeshWifiHelper::SetSsid (Ssid const & s)
+void
+MeshWifiHelper::SetSsid (Ssid const & s)
 {
   m_ssid = s;
 }
 
-void MeshWifiHelper::SetRandomStartDelay (Time t)
+Ssid MeshWifiHelper::GetSsid () const
+{
+  return m_ssid;
+}
+
+void 
+MeshWifiHelper::SetRandomStartDelay (Time t)
 {
   m_randomStartDelay = t;
 }
 
-Ptr<WifiNetDevice> MeshWifiHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node) const
+Ptr<WifiNetDevice> 
+MeshWifiHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node) const
 {
   Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
   

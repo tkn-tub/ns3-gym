@@ -45,6 +45,8 @@ public:
   MeshWifiHelper (); 
   /// Set mesh SSID
   void SetSsid (const Ssid  &);
+  /// Get mesh SSID
+  Ssid GetSsid () const;
   /// Set maximum random start delay
   void SetRandomStartDelay (Time delay);
   /** 

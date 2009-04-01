@@ -41,15 +41,20 @@ main (int argc, char *argv[])
   // Creating square topology with nNodes x nNodes grid
   int      xSize       = 6;
   int      ySize       = 6;
-  double   step        = 100.0; //Grid with one-hop edge
-  double   randomStart = 0.1;   //One beacon interval
+  double   step        = 100.0; // Grid with one-hop edge
+  double   randomStart = 0.1;   // One beacon interval
+  uint32_t nIfaces     = 1;
+  bool     pcap        = false;
   
-  // Defining a size of our network
+  // Command line arguments
   CommandLine cmd;
-  cmd.AddValue ("x-size", "Number of nodes in a row grid", xSize);
-  cmd.AddValue ("y-size", "Number of rows in a grid", ySize);
-  cmd.AddValue ("step", "Size of edge in our grid", step);
-  cmd.AddValue ("start", "Random start parameter", randomStart);
+  cmd.AddValue ("x-size", "Number of nodes in a row grid. [6]", xSize);
+  cmd.AddValue ("y-size", "Number of rows in a grid. [6]", ySize);
+  cmd.AddValue ("step",   "Size of edge in our grid, meters. [100 m]", step);
+  cmd.AddValue ("start",  "Maximum random start delay, seconds. [0.1 s]", randomStart);
+  cmd.AddValue ("interfaces", "Number of radio interfaces used by each mesh point. [1]", nIfaces);
+  cmd.AddValue ("pcap",   "Enable PCAP traces on interfaces. [0]", pcap);
+  
   cmd.Parse (argc, argv);
   NS_LOG_DEBUG ("Grid:" << xSize << "*" << ySize);
   
@@ -64,7 +69,7 @@ main (int argc, char *argv[])
   
   // Install mesh point devices & protocols
   MeshWifiHelper mesh;
-  NetDeviceContainer meshDevices = mesh.Install (wifiPhy, nodes);
+  NetDeviceContainer meshDevices = mesh.Install (wifiPhy, nodes, nIfaces);
   
   // Setup mobility
   MobilityHelper mobility;
@@ -99,6 +104,10 @@ main (int argc, char *argv[])
   ApplicationContainer clientApps = echoClient.Install (nodes.Get (1));
   clientApps.Start (Seconds (2.0));
   clientApps.Stop (Seconds (10.0));
+  
+  // Enable PCAP trace
+  if (pcap)
+      wifiPhy.EnablePcapAll (std::string ("mp-") + mesh.GetSsid ().PeekString ());
   
   // Happy end
   Simulator::Stop (Seconds (10.0));
