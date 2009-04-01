@@ -89,48 +89,6 @@ private:
   };
   MyPerr m_myPerr;
 };
-
-#if 0
-class HwmpMacPlugin : public MeshWifiInterfaceMacPlugin {
-public:
-  private:
-  //true means that we can add a destination to
-  //existing PREQ element
-  //False means that we must send
-  void  SendPrep (
-    Mac48Address dst, //dst is PREQ's originator address
-    Mac48Address src, //src is PREQ's destination address
-    Mac48Address retransmitter,
-    uint32_t initMetric,
-    uint32_t dsn,/* taken form PREQ*/
-    uint32_t originatorDsn, //taken from rtable or as m_myDsn ++;
-    uint32_t lifetime //taken from PREQ
-  );
-  //HWMP interaction callbacks:
-  Callback<void, INFO>  m_routingInfoCallback;
-  Callback<std::vector<Mac48Address>, std::vector<HwmpRtable::FailedDestination>, uint32_t>  m_retransmittersOfPerrCallback;
-  Callback<HwmpRtable::LookupResult, const Mac48Address&>          m_requestRouteCallback;
-  Callback<HwmpRtable::LookupResult, uint32_t>                     m_requestRootPathCallback;
-  //Mac interaction callbacks:
-  Callback<void, const IeDot11sPreq&>                              m_preqCallback;
-  Callback<void, const IeDot11sPrep&, const Mac48Address&>         m_prepCallback;
-  Callback<void, const IeDot11sPerr&, std::vector<Mac48Address> >  m_perrCallback;
-  //HwmpCounters:
-  uint32_t m_preqId;
-  uint32_t m_myDsn;
-  //Seqno and metric database
-  std::map<Mac48Address, uint32_t>  m_dsnDatabase;
-  std::map<Mac48Address, uint32_t>  m_preqMetricDatabase;
-  //Disable/enable functionality
-  bool  m_disabled;
-  //Proactive PREQ mechanism:
-  EventId  m_proactivePreqTimer;
-  void  SendProactivePreq ();
-   IeDot11sPerr  m_myPerr;
-  EventId  m_perrTimer;
-  void  SendOnePerr ();
-};
-#endif
 } //namespace dot11s
 } //namespace ns3
 #endif
