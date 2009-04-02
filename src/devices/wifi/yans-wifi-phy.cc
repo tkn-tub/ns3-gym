@@ -109,13 +109,21 @@ YansWifiPhy::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&YansWifiPhy::m_state),
                    MakePointerChecker<WifiPhyStateHelper> ())
+    .AddAttribute ("ChannelSwitchDelay",
+                   "Delay between two short frames transmitted on different frequencies",
+                   TimeValue (MicroSeconds (250)),
+                   MakeTimeAccessor (&YansWifiPhy::m_channelSwitchDelay), 
+                   MakeTimeChecker ())
+    
     ;
   return tid;
 }
 
 YansWifiPhy::YansWifiPhy ()
- : m_endSyncEvent (),
-   m_random (0.0, 1.0)
+ : m_channelId(0),
+   m_endSyncEvent (),
+   m_random (0.0, 1.0),
+   m_channelStartingFrequency(0.0)
 {
   NS_LOG_FUNCTION (this);
   m_state = CreateObject<WifiPhyStateHelper> ();
@@ -288,6 +296,32 @@ YansWifiPhy::SetChannel (Ptr<YansWifiChannel> channel)
 {
   m_channel = channel;
   m_channel->Add (this);
+  m_channelId = 0;      // always start on channel starting frequency
+}
+
+void 
+YansWifiPhy::SetFrequencyChannel (uint16_t nch)
+{
+  Simulator::Schedule (m_channelSwitchDelay, &YansWifiPhy::DoSetChannelId, this, nch);
+}
+
+void
+YansWifiPhy::DoSetChannelId (uint16_t nch)
+{
+  NS_LOG_DEBUG("switching channel " << m_channelId << " -> " << nch);
+  m_channelId = nch;
+}
+
+uint16_t 
+YansWifiPhy::GetFrequencyChannel() const
+{
+  return m_channelId;
+}
+
+double
+YansWifiPhy::GetChannelCenterFrequency() const
+{
+  return m_channelStartingFrequency + 5e6 * GetFrequencyChannel();
 }
 
 void 
@@ -424,6 +458,7 @@ YansWifiPhy::Configure80211a (void)
 {
   NS_LOG_FUNCTION (this);
   m_interference.Configure80211aParameters ();
+  m_channelStartingFrequency = 5e9; // 5 GHz 
   m_modes.push_back (WifiPhy::Get6mba ());
   m_modes.push_back (WifiPhy::Get9mba ());
   m_modes.push_back (WifiPhy::Get12mba ());

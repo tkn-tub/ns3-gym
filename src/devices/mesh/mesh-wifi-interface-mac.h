@@ -121,13 +121,32 @@ public:
   /// Install plugin. TODO return unique ID to allow unregister plugins
   void InstallPlugin (Ptr<MeshWifiInterfaceMacPlugin> plugin);
   //\}
-  ///\name Management frame sender:
+  
+  /** \name Channel switching
+   * 
+   * Channel center frequency = Channel starting frequency + 5 × nch (MHz), 
+   * where Starting channel frequency is standard-dependent as defined in IEEE 802.11-2007 17.3.8.3.2.
+   * 
+   * Number of channels to use must be limited elsewhere. 
+   */
   //\{
-  void SendManagementFrame(Ptr<Packet> frame, const WifiMacHeader& hdr);
+  /// Return true if PHY layer can switch channels
+  bool CanSwitchChannel () const;
+  /// Current channel Id
+  uint16_t GetFrequencyChannel () const;
+  /// Switch channel
+  void SwitchFrequencyChannel (uint16_t new_id);
   //\}
+  
+  /// To be used by plugins sending management frames.
+  void SendManagementFrame(Ptr<Packet> frame, const WifiMacHeader& hdr);
+  /// \return true if meshId is correct Ssid
   bool CheckMeshId(Ssid meshId) const;
+  /// \return true if rates are supported
   bool CheckSupportedRates(SupportedRates rates) const;
+  /// \return list of supported bitrates
   SupportedRates GetSupportedRates () const;
+  
 private:
   /// Frame receive handler
   void  Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);

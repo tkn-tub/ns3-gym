@@ -81,6 +81,10 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
     {
       if (sender != (*i))
         {
+          // For now don't account for interchannel interference
+          if ((*i)->GetFrequencyChannel() != sender->GetFrequencyChannel())
+            continue;
+          
           Ptr<MobilityModel> receiverMobility = (*i)->GetMobility ()->GetObject<MobilityModel> ();
           Time delay = m_delay->GetDelay (senderMobility, receiverMobility);
           double rxPowerDbm = m_loss->CalcRxPower (txPowerDbm, senderMobility, receiverMobility);

@@ -69,6 +69,21 @@ public:
   virtual ~YansWifiPhy ();
 
   void SetChannel (Ptr<YansWifiChannel> channel);
+  
+  /** 
+   * \brief Set channel number. 
+   * 
+   * Channel center frequency = Channel starting frequency + 5 × nch (MHz)
+   *
+   * where Starting channel frequency is standard-dependent, see SetStandard()
+   * as defined in IEEE 802.11-2007 17.3.8.3.2.
+   */ 
+  void SetFrequencyChannel (uint16_t id);
+  /// Return current channel ID, see SetChannelId()
+  uint16_t GetFrequencyChannel () const;
+  /// Return current center channel frequency in Hz, see SetChannelId()
+  double GetChannelCenterFrequency() const;
+  
   void StartReceivePacket (Ptr<Packet> packet,
                            double rxPowerDbm,
                            WifiMode mode,
@@ -94,6 +109,8 @@ public:
   Ptr<ErrorRateModel> GetErrorRateModel (void) const;
   Ptr<Object> GetDevice (void) const;
   Ptr<Object> GetMobility (void);
+  
+  
 
 
   virtual double GetTxPowerStart (void) const;
@@ -132,6 +149,7 @@ private:
   double RatioToDb (double ratio) const;
   double GetPowerDbm (uint8_t power) const;
   void EndSync (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event);
+  void DoSetChannelId(uint16_t id);
 
 private:
   double   m_edThresholdW;
@@ -143,14 +161,18 @@ private:
   uint32_t m_nTxPower;
 
   Ptr<YansWifiChannel> m_channel;
+  uint16_t m_channelId;
   Ptr<Object> m_device;
   Ptr<Object> m_mobility;
   Modes m_modes;
   EventId m_endSyncEvent;
   UniformVariable m_random;
   WifiPhyStandard m_standard;
+  /// Standard-dependent center frequency of 0-th channel 
+  double m_channelStartingFrequency;
   Ptr<WifiPhyStateHelper> m_state;
   InterferenceHelper m_interference;
+  Time m_channelSwitchDelay;
 
 };
 

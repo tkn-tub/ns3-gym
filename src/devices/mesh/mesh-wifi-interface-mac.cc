@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-/* 
+/*
  * Copyright (c) 2009 IITP RAS
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Authors: Kirill Andreev <andreev@iitp.ru>
  *          Pavel Boyko <boyko@iitp.ru>
  */
@@ -30,6 +30,7 @@
 #include "ns3/mesh-wifi-mac-header.h"
 #include "ns3/random-variable.h"
 #include "ns3/simulator.h"
+#include "ns3/yans-wifi-phy.h"
 
 NS_LOG_COMPONENT_DEFINE ("MeshWifiInterfaceMac");
 
@@ -67,7 +68,7 @@ MeshWifiInterfaceMac::GetTypeId ()
 MeshWifiInterfaceMac::MeshWifiInterfaceMac ()
 {
   NS_LOG_FUNCTION (this);
-  
+
   m_rxMiddle = new MacRxMiddle ();
   m_rxMiddle->SetForwardCallback (MakeCallback (&MeshWifiInterfaceMac::Receive, this));
 
@@ -187,6 +188,8 @@ MeshWifiInterfaceMac::SetWifiPhy (Ptr<WifiPhy> phy)
   m_phy = phy;
   m_dcfManager->SetupPhyListener (phy);
   m_low->SetPhy (phy);
+
+  NS_LOG_DEBUG("SetWifiPhy: Can switch channel now: " << CanSwitchChannel() ); // TMP
 }
 
 void
@@ -290,18 +293,72 @@ MeshWifiInterfaceMac::DoDispose ()
   m_VO = 0;
   m_beaconSendEvent.Cancel ();
   m_beaconDca = 0;
-  
+
   WifiMac::DoDispose ();
 }
 
 //-----------------------------------------------------------------------------
 // Plugins
 //-----------------------------------------------------------------------------
-void 
+void
 MeshWifiInterfaceMac::InstallPlugin ( Ptr<MeshWifiInterfaceMacPlugin> plugin)
 {
+  NS_LOG_FUNCTION (this);
+
   plugin->SetParent (this);
   m_plugins.push_back (plugin);
+}
+
+//-----------------------------------------------------------------------------
+// Switch channels
+//-----------------------------------------------------------------------------
+bool MeshWifiInterfaceMac::CanSwitchChannel () const
+{
+  NS_LOG_FUNCTION (this);
+
+  // now only YansWifiPhy can switch channels runtime
+  if (m_phy != 0)
+    {
+      Ptr<YansWifiPhy> phy = m_phy->GetObject<YansWifiPhy> ();
+      return (phy != 0);
+    }
+  else
+    return false;
+}
+
+uint16_t MeshWifiInterfaceMac::GetFrequencyChannel () const
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (m_phy != 0); // need PHY to set/get channel
+
+  Ptr<YansWifiPhy> phy = m_phy->GetObject<YansWifiPhy> ();
+  if (phy != 0)
+    return phy->GetFrequencyChannel ();
+  else
+    return 0;
+}
+
+void MeshWifiInterfaceMac::SwitchFrequencyChannel (uint16_t new_id)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (m_phy != 0); // need PHY to set/get channel
+  /* TODO
+   *
+   * Correct channel switching is:
+   *
+   * 1. Interface down, e.g. to stop packets from layer 3
+   * 2. Wait before all output queues will be empty
+   * 3. Switch PHY channel
+   * 4. Interface up
+   *
+   * Now we use dirty channel switch -- just change frequency
+   */
+  NS_ASSERT(CanSwitchChannel());
+
+  Ptr<YansWifiPhy> phy = m_phy->GetObject<YansWifiPhy> ();
+  phy->SetFrequencyChannel (new_id);
+  // Don't know NAV on new channel
+  m_dcfManager->NotifyNavResetNow (Seconds (0));
 }
 
 //-----------------------------------------------------------------------------
@@ -319,7 +376,7 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
 {
   // copy packet to allow modifications
   Ptr<Packet> packet = const_packet->Copy ();
-  
+
   WifiMacHeader hdr;
   hdr.SetTypeData ();
   hdr.SetAddr2 (GetAddress ());
@@ -327,19 +384,20 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
   hdr.SetAddr4 (from);
   hdr.SetDsFrom ();
   hdr.SetDsTo ();
+
   // Address 1 is unknwon here. Routing plugin is responsible to correctly set it.
   hdr.SetAddr1 (Mac48Address ());
-  
+
   // Filter packet through all installed plugins
   for (PluginList::const_iterator i = m_plugins.begin(); i != m_plugins.end(); ++i)
     {
       bool drop = ! ((*i)->UpdateOutcomingFrame(packet, hdr, from, to));
       if (drop) return; // plugin drops frame
     }
-  
+
   // Assert that address1 is set. Assert will fail e.g. if there is no installed routing plugin.
   NS_ASSERT (hdr.GetAddr1() != Mac48Address() );
-  
+
   // Queue frame
   WifiRemoteStation *destination = m_stationManager->Lookup (to);
 
@@ -415,7 +473,7 @@ MeshWifiInterfaceMac::SetBeaconInterval (Time interval)
   m_beaconInterval = interval;
 }
 
-Time 
+Time
 MeshWifiInterfaceMac::GetBeaconInterval () const
 {
   return m_beaconInterval;
@@ -430,7 +488,7 @@ MeshWifiInterfaceMac::SetBeaconGeneration (bool enable)
       // Now start sending beacons after some random delay (to avoid collisions)
       UniformVariable coefficient (0.0, m_randomStart.GetSeconds());
       Time randomStart = Seconds (coefficient.GetValue());
-      
+
       m_beaconSendEvent = Simulator::Schedule (randomStart, &MeshWifiInterfaceMac::SendBeacon, this);
       m_tbtt = Simulator::Now() + randomStart;
     }
@@ -455,14 +513,14 @@ void MeshWifiInterfaceMac::ShiftTbtt (Time shift)
 {
   // User of ShiftTbtt () must take care don't shift it to the past
   NS_ASSERT (GetTbtt() + shift > Simulator::Now());
-  
+
   m_tbtt += shift;
   // Shift scheduled event
   Simulator::Cancel (m_beaconSendEvent);
   m_beaconSendEvent = Simulator::Schedule (GetTbtt () - Simulator::Now(), &MeshWifiInterfaceMac::SendBeacon, this);
 }
 
-void 
+void
 MeshWifiInterfaceMac::ScheduleNextBeacon ()
 {
   m_tbtt += GetBeaconInterval ();
@@ -474,19 +532,19 @@ MeshWifiInterfaceMac::SendBeacon ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG (GetAddress() <<" is sending beacon");
-  
+
   NS_ASSERT (! m_beaconSendEvent.IsRunning());
   NS_ASSERT (Simulator::Now().GetMicroSeconds() == GetTbtt().GetMicroSeconds());     // assert that beacon is just on time
-   
+
   // Form & send beacon
   MeshWifiBeacon beacon (GetSsid (), GetSupportedRates (), m_beaconInterval.GetMicroSeconds ());
-  
+
   // Ask all plugins to add their specific information elements to beacon
   for (PluginList::const_iterator i = m_plugins.begin(); i != m_plugins.end(); ++i)
     (*i)->UpdateBeacon (beacon);
-  
+
   m_beaconDca->Queue (beacon.CreatePacket(), beacon.CreateHeader(GetAddress()));
-  
+
   ScheduleNextBeacon ();
 }
 
@@ -500,20 +558,20 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
     {
       MgtBeaconHeader beacon_hdr;
       Mac48Address from = hdr->GetAddr2 ();
-      
+
       packet->PeekHeader (beacon_hdr);
-      
+
       NS_LOG_DEBUG ("Beacon received from "<<hdr->GetAddr2()<<
                    " I am "<<GetAddress ()<<
                    " at "<<Simulator::Now ().GetMicroSeconds ()<<
                    " microseconds");
-      
+
       // update supported rates
       if (beacon_hdr.GetSsid ().IsEqual(GetSsid()))
         {
           SupportedRates rates = beacon_hdr.GetSupportedRates ();
           WifiRemoteStation * peerSta = m_stationManager->Lookup (hdr->GetAddr2 ());
-      
+
           for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
           {
             WifiMode mode = m_phy->GetMode (i);
@@ -526,14 +584,14 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
           }
         }
     }
-  
+
   // Filter frame through all installed plugins
   for (PluginList::iterator i = m_plugins.begin (); i != m_plugins.end(); ++i)
     {
       bool drop = ! ((*i)->Receive(packet, *hdr));
       if (drop) return; // plugin drops frame
     }
-    
+
   // Forward data up
   if (hdr->IsData ())
       ForwardUp (packet, hdr->GetAddr4(), hdr->GetAddr3());
