@@ -257,8 +257,7 @@ get a copy of a release by typing the following into your Linux shell
   mkdir tarballs
   cd tarballs
   wget http://www.nsnam.org/releases/ns-allinone-3.4.tar.bz2
-  bunzip2 ns-allinone-3.4.tar.bz2
-  tar xf ns-3.4.tar
+  tar xjf ns-3.4.tar.bz2
 @end verbatim 
 
 If you change into the directory @code{ns-allinone-3.4} you should see a
