@@ -97,7 +97,7 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
         {
           IePreq preq;
           packet->RemoveHeader (preq);
-          if (preq.GetOriginatorAddress () == m_parent->GetAddress ())
+          if(preq.GetOriginatorAddress () == m_protocol->GetAddress ())
             return false;
           if (preq.GetTtl () == 0)
             return false;
@@ -171,7 +171,7 @@ HwmpMacPlugin::RequestDestination (Mac48Address dst)
   else
   {
     NS_ASSERT (m_myPreq->GetOriginatorAddress() == m_parent->GetAddress());
-    m_myPreq->AddDestinationAddressElement (false, false, dst, 0); //DO = 0, RF = 0
+    m_myPreq->AddDestinationAddressElement (m_protocol->GetDoFlag(), m_protocol->GetRfFlag(), dst, 0); //DO = 0, RF = 0
   }
 }
 void

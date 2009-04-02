@@ -39,12 +39,12 @@ int
 main (int argc, char *argv[])
 {
   // Creating square topology with nNodes x nNodes grid
-  int      xSize       = 4;
-  int      ySize       = 4;
+  int      xSize       = 3;
+  int      ySize       = 3;
   double   step        = 100.0; // Grid with one-hop edge
   double   randomStart = 0.1;   // One beacon interval
   uint32_t nIfaces     = 2;
-  bool     chan        = false;
+  bool     chan        = true;
   bool     pcap        = false;
   
   // Command line arguments
