@@ -80,10 +80,8 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
   Ptr<MobilityModel> senderMobility = sender->GetMobility ()->GetObject<MobilityModel> ();
   NS_ASSERT (senderMobility != 0);
   uint32_t j = 0;
-  for (PhyList::const_iterator i = m_phyList.begin (); i != m_phyList.end (); i++)
-    {
-      j++;
-      
+  for (PhyList::const_iterator i = m_phyList.begin (); i != m_phyList.end (); i++, j++)
+    { 
       if (sender != (*i))
         {
           // For now don't account for interchannel interference
@@ -102,7 +100,7 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
                         "distance="<<senderMobility->GetDistanceFrom (receiverMobility)<<"m, delay="<<delay);
           Ptr<Packet> copy = packet->Copy ();
           Simulator::Schedule (delay, &YansWifiChannel::Receive, this, 
-                               j-1, copy, rxPowerDbm, wifiMode, preamble);
+                               j, copy, rxPowerDbm, wifiMode, preamble);
         }
     }
 }
