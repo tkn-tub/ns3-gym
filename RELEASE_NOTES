@@ -8,8 +8,8 @@ http://www.nsnam.org
 including tutorials:
 http://www.nsnam.org/tutorials.html
 
-Release 3.4 (pending)
-=====================
+Release 3.4
+===========
 
 Availability
 ------------
@@ -18,7 +18,7 @@ http://www.nsnam.org/releases/ns-3.4.tar.bz2
 
 Supported platforms
 -------------------
-ns-3.2 has been tested on the following platforms:
+ns-3.4 has been tested on the following platforms:
   - linux x86 gcc 4.2, 4.1, and, 3.4.6.
   - linux x86_64 gcc 4.3.2, 4.2.3, 4.2.1, 4.1.3, 3.4.6
   - MacOS X ppc and x86
@@ -34,6 +34,19 @@ New user-visible features
      propagation loss model based on the ns-2 models. Fabian Mauchle contributed
      multicast support.
 
+  b) Object Name Service:  A facility allowing ns-3 Objects to be assigned
+     names has been added.
+
+  c) Tap Bridge:  A second option for integrating ns-3 with real-world hosts
+     has been added.  This allows for real hosts to talk over ns-3 net devices
+     and simulated networks.
+
+  d) A new build option (ns-3-allinone) has been provided to make it easier for
+     users to download and bulid commonly used ns-3 configurations.
+
+  e) The ns-3 calendar queue scheduler has been ported to ns-3.
+
+  f) XML support has been added to the ConfigStore.
 
 API changes from ns-3.3
 -----------------------
@@ -56,7 +69,8 @@ Future releases
 Our next release, which is expected to happen in 2 to 4 months from now, will
 feature the merging of some of our projects currently in development including
 fuller IPv6 support, and IPv4 and routing protocol refactoring, and some smaller
-features such as an object naming facility and a new Global ARP package.
+features such as a new Global ARP package and possibly a new Testing and Validation
+suite,
 
 Release 3.3
 ===========
@@ -68,7 +82,7 @@ http://www.nsnam.org/releases/ns-3.3.tar.bz2
 
 Supported platforms
 -------------------
-ns-3.2 has been tested on the following platforms:
+ns-3.3 has been tested on the following platforms:
   - linux x86 gcc 4.2, 4.1, and, 3.4.6.
   - linux x86_64 gcc 4.3.2, 4.2.3, 4.2.1, 4.1.3, 3.4.6
   - MacOS X ppc and x86
