@@ -54,7 +54,6 @@ public:
   /// Route request, inherited from MeshL2RoutingProtocol
   bool RequestRoute (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
       Ptr<Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply);
-  bool HandleIncomingFrame (Ptr<Packet> packet, Mac48Address src, Mac48Address dst, uint16_t protocol);
   /** 
    * \brief Install HWMP on given mesh point. 
    * 
@@ -64,7 +63,7 @@ public:
    * via MeshPointDevice::GetObject<dot11s::HwmpProtocol>();
    */
   bool Install (Ptr<MeshPointDevice>);
-  void PeerLinkStatus(Mac48Address peerAddress, uint32_t interface,bool status);
+  void PeerLinkStatus(Mac48Address meshPontAddress, Mac48Address peerAddress, uint32_t interface,bool status);
   ///\brief This callback is used to obtain active neighbours on a
   //given interface
   ///\param interface is the interface ID
@@ -108,7 +107,8 @@ private:
    */
   bool DropDataFrame(uint32_t, Mac48Address);
   //\}
-  
+  ///\brief if the packet is ours - plugins should remove tag
+  bool RemoveTags (Mac48Address dst);
 private:
   ///\name Methods related to Queue/Dequeue procedures
   //\{

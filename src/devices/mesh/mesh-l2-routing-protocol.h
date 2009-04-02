@@ -95,11 +95,6 @@ public:
    */
   virtual bool RequestRoute (uint32_t sourceIface, const Mac48Address source, const Mac48Address destination, 
       Ptr<Packet> packet, uint16_t  protocolType, RouteReplyCallback routeReply ) = 0;
-  ///\return false if packet should be dropeed
-  ///\details If incoming frame is our frame - we pass a packet
-  //through protocol, because protocol needs to remove all tags and
-  //check TTL
-  virtual bool HandleIncomingFrame (Ptr<Packet> packet, Mac48Address src, Mac48Address dst, uint16_t protocol) = 0;
   /// Set host mesh point, analog of SetNode (...) methods for upper layer protocols.
   void SetMeshPoint (Ptr<MeshPointDevice> mp);
   /// Each mesh protocol must be installed on the mesh point to work.

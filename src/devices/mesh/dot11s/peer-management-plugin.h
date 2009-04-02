@@ -66,6 +66,7 @@ private:
   void SetPeerManagerProtcol(Ptr<PeerManagementProtocol> protocol);
   void SendPeerLinkManagementFrame(
       Mac48Address peerAddress,
+      Mac48Address peerMpAddress,
       uint16_t aid,
       IePeerManagement peerElement,
       IeConfiguration meshConfig

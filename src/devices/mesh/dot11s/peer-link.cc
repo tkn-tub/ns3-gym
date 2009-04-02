@@ -70,19 +70,24 @@ PeerLink::GetTypeId()
 // PeerLink public interface
 //-----------------------------------------------------------------------------
 PeerLink::PeerLink ():
-    m_localLinkId (0),
-    m_peerLinkId (0),
-    m_state (IDLE),
-    m_retryCounter (0)
+  m_peerAddress (Mac48Address::GetBroadcast ()),
+  m_peerMeshPointAddress (Mac48Address::GetBroadcast ()),
+  m_localLinkId (0),
+  m_peerLinkId (0),
+  m_state (IDLE),
+  m_retryCounter (0)
 {
 }
-
 void
 PeerLink::SetPeerAddress (Mac48Address macaddr)
 {
   m_peerAddress = macaddr;
 }
-
+void
+PeerLink::SetPeerMeshPointAddress(Mac48Address macaddr)
+{
+  m_peerMeshPointAddress = macaddr;
+}
 void
 PeerLink::SetInterface (uint32_t interface)
 {
@@ -93,13 +98,11 @@ PeerLink::SetLocalLinkId (uint16_t id)
 {
   m_localLinkId = id;
 }
-
 void
 PeerLink::SetLocalAid (uint16_t aid)
 {
   m_assocId = aid;
 }
-
 void
 PeerLink::SetBeaconInformation (Time lastBeacon, Time beaconInterval)
 {
@@ -110,82 +113,73 @@ PeerLink::SetBeaconInformation (Time lastBeacon, Time beaconInterval)
   NS_ASSERT (delay.GetMicroSeconds() != 0);
   m_beaconLossTimer = Simulator::Schedule (delay, &PeerLink::BeaconLoss, this);
 }
-
 void
 PeerLink::MLMESetSignalStatusCallback (PeerLink::SignalStatusCallback cb)
 {
   m_linkStatusCallback = cb;
 }
-
 void
 PeerLink::BeaconLoss ()
 {
   StateMachine (CNCL);
 }
-
 void
 PeerLink::SetBeaconTimingElement (IeBeaconTiming beaconTiming)
 {
   m_beaconTiming = beaconTiming;
 }
-
 Mac48Address
 PeerLink::GetPeerAddress () const
 {
   return m_peerAddress;
 }
-
 uint16_t
 PeerLink::GetLocalAid () const
 {
   return m_assocId;
 }
-
 Time
 PeerLink::GetLastBeacon () const
 {
   return m_lastBeacon;
 }
-
 Time
 PeerLink::GetBeaconInterval () const
 {
   return m_beaconInterval;
 }
-
 IeBeaconTiming
 PeerLink::GetBeaconTimingElement () const
 {
   return m_beaconTiming;
 }
-
 void
 PeerLink::ClearTimingElement ()
 {
   m_beaconTiming.ClearTimingElement ();
 }
-
-void PeerLink::MLMECancelPeerLink (PmpReasonCode reason)
+void
+PeerLink::MLMECancelPeerLink (PmpReasonCode reason)
 {
   StateMachine (CNCL,reason);
 }
-
-void PeerLink::MLMEPassivePeerLinkOpen ()
+void
+PeerLink::MLMEPassivePeerLinkOpen ()
 {
   StateMachine (PASOPN);
 }
-
-void PeerLink::MLMEActivePeerLinkOpen ()
+void
+PeerLink::MLMEActivePeerLinkOpen ()
 {
   StateMachine (ACTOPN);
 }
-
-void PeerLink::MLMEPeeringRequestReject ()
+void
+PeerLink::MLMEPeeringRequestReject ()
 {
   StateMachine (REQ_RJCT, REASON11S_PEER_LINK_CANCELLED);
 }
-
-void PeerLink::Close (uint16_t localLinkId, uint16_t peerLinkId, PmpReasonCode reason)
+void
+PeerLink::Close (uint16_t localLinkId, uint16_t peerLinkId, PmpReasonCode reason)
 {
   if (peerLinkId != 0 && m_localLinkId != peerLinkId)
     return;
@@ -195,25 +189,32 @@ void PeerLink::Close (uint16_t localLinkId, uint16_t peerLinkId, PmpReasonCode r
     return;
   StateMachine (CLS_ACPT, reason);
 }
-
-void PeerLink::OpenAccept (uint16_t localLinkId, IeConfiguration  conf)
+void
+PeerLink::OpenAccept (uint16_t localLinkId, IeConfiguration  conf, Mac48Address peerMp)
 {
   if (m_peerLinkId == 0)
     m_peerLinkId = localLinkId;
   m_configuration = conf;
+  if(m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
+    NS_ASSERT(m_peerMeshPointAddress == peerMp);
+  else
+    m_peerMeshPointAddress = peerMp;
   StateMachine (OPN_ACPT);
 }
-
-void PeerLink::OpenReject (uint16_t localLinkId, IeConfiguration  conf,PmpReasonCode reason)
+void
+PeerLink::OpenReject (uint16_t localLinkId, IeConfiguration  conf, Mac48Address peerMp, PmpReasonCode reason)
 {
   if ( m_peerLinkId == 0)
     m_peerLinkId = localLinkId;
   m_configuration = conf;
+  if(m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
+    NS_ASSERT(m_peerMeshPointAddress == peerMp);
+  else
+    m_peerMeshPointAddress = peerMp;
   StateMachine (OPN_RJCT, reason);
 }
-
 void
-PeerLink::ConfirmAccept (uint16_t localLinkId, uint16_t peerLinkId, uint16_t peerAid, IeConfiguration conf)
+PeerLink::ConfirmAccept (uint16_t localLinkId, uint16_t peerLinkId, uint16_t peerAid, IeConfiguration conf, Mac48Address peerMp)
 {
   if ( m_localLinkId != peerLinkId)
     return;
@@ -223,12 +224,15 @@ PeerLink::ConfirmAccept (uint16_t localLinkId, uint16_t peerLinkId, uint16_t pee
     return;
   m_configuration = conf;
   m_peerAssocId = peerAid;
+  if(m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
+    NS_ASSERT(m_peerMeshPointAddress == peerMp);
+  else
+    m_peerMeshPointAddress = peerMp;
   StateMachine (CNF_ACPT);
 }
-
 void
 PeerLink::ConfirmReject (uint16_t localLinkId, uint16_t peerLinkId,
-    IeConfiguration  conf,PmpReasonCode reason)
+    IeConfiguration  conf, Mac48Address peerMp, PmpReasonCode reason)
 {
   if (m_localLinkId != peerLinkId)
     return;
@@ -237,15 +241,16 @@ PeerLink::ConfirmReject (uint16_t localLinkId, uint16_t peerLinkId,
   else if (m_peerLinkId != localLinkId)
     return;
   m_configuration = conf;
+  if(m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
+    NS_ASSERT(m_peerMeshPointAddress == peerMp);
+  m_peerMeshPointAddress = peerMp;
   StateMachine (CNF_RJCT, reason);
 }
-
 bool
 PeerLink::LinkIsEstab () const
 {
   return (m_state == ESTAB);
 }
-
 bool
 PeerLink::LinkIsIdle () const
 {
@@ -360,7 +365,8 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           m_state = ESTAB;
           ClearConfirmTimer ();
           SendPeerLinkConfirm ();
-          m_linkStatusCallback (m_interface, m_peerAddress, true);
+          NS_ASSERT(m_peerMeshPointAddress != Mac48Address::GetBroadcast ());
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, true);
           // TODO Callback MLME-SignalPeerLinkStatus
           break;
         case CLS_ACPT:
@@ -402,7 +408,8 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
         case CNF_ACPT:
           m_state = ESTAB;
           ClearRetryTimer ();
-          m_linkStatusCallback (m_interface, m_peerAddress, true);
+          NS_ASSERT(m_peerMeshPointAddress != Mac48Address::GetBroadcast ());
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, true);
           // TODO Callback MLME-SignalPeerLinkStatus
           break;
         case CLS_ACPT:
@@ -444,7 +451,7 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           m_state = HOLDING;
           SendPeerLinkClose (REASON11S_MESH_CLOSE_RCVD);
           SetHoldingTimer ();
-          m_linkStatusCallback (m_interface, m_peerAddress, false);
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, false);
           break;
         case OPN_RJCT:
         case CNF_RJCT:
@@ -452,13 +459,13 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           ClearRetryTimer ();
           SendPeerLinkClose (reasoncode);
           SetHoldingTimer ();
-          m_linkStatusCallback (m_interface, m_peerAddress, false);
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, false);
           break;
         case CNCL:
           m_state = HOLDING;
           SendPeerLinkClose (REASON11S_PEER_LINK_CANCELLED);
           SetHoldingTimer ();
-          m_linkStatusCallback (m_interface, m_peerAddress, false);
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, false);
           break;
         default:
         {}
@@ -490,80 +497,79 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
       break;
     }
 }
-
-void PeerLink::ClearRetryTimer ()
+void
+PeerLink::ClearRetryTimer ()
 {
   m_retryTimer.Cancel ();
 }
-
-void PeerLink::ClearConfirmTimer ()
+void
+PeerLink::ClearConfirmTimer ()
 {
   m_confirmTimer.Cancel ();
 }
-
-void PeerLink::ClearHoldingTimer ()
+void
+PeerLink::ClearHoldingTimer ()
 {
   m_holdingTimer.Cancel ();
 }
-
-void PeerLink::SendPeerLinkClose (PmpReasonCode reasoncode)
+void
+PeerLink::SendPeerLinkClose (PmpReasonCode reasoncode)
 {
   IePeerManagement peerElement;
   peerElement.SetPeerClose (m_localLinkId, m_peerLinkId, reasoncode);
-  m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_assocId, peerElement, m_configuration);
+  m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_peerMeshPointAddress, m_assocId, peerElement, m_configuration);
 }
-
-void PeerLink::SendPeerLinkOpen ()
+void
+PeerLink::SendPeerLinkOpen ()
 {
   IePeerManagement peerElement;
   peerElement.SetPeerOpen (m_localLinkId);
   NS_ASSERT (m_macPlugin != NULL);
-  m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_assocId, peerElement, m_configuration);
+  m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_peerMeshPointAddress, m_assocId, peerElement, m_configuration);
 }
-
-void PeerLink::SendPeerLinkConfirm ()
+void
+PeerLink::SendPeerLinkConfirm ()
 {
   IePeerManagement peerElement;
   peerElement.SetPeerConfirm (m_localLinkId, m_peerLinkId);
-  m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_assocId, peerElement, m_configuration);
+  m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_peerMeshPointAddress, m_assocId, peerElement, m_configuration);
 }
-
-void PeerLink::SetHoldingTimer ()
+void
+PeerLink::SetHoldingTimer ()
 {
   NS_ASSERT(m_dot11MeshHoldingTimeout.GetMicroSeconds() !=0);
   m_holdingTimer = Simulator::Schedule (m_dot11MeshHoldingTimeout, &PeerLink::HoldingTimeout, this);
 }
-
-void PeerLink::HoldingTimeout ()
+void
+PeerLink::HoldingTimeout ()
 {
   StateMachine (TOH);
 }
-
-void PeerLink::SetRetryTimer ()
+void
+PeerLink::SetRetryTimer ()
 {
   NS_ASSERT(m_dot11MeshRetryTimeout.GetMicroSeconds() !=0);
   m_retryTimer = Simulator::Schedule (m_dot11MeshRetryTimeout, &PeerLink::RetryTimeout, this);
 }
-
-void PeerLink::RetryTimeout ()
+void
+PeerLink::RetryTimeout ()
 {
   if ( m_retryCounter < m_dot11MeshMaxRetries)
     StateMachine (TOR1);
   else
     StateMachine (TOR2);
 }
-
-void PeerLink::SetConfirmTimer ()
+void
+PeerLink::SetConfirmTimer ()
 {
   NS_ASSERT(m_dot11MeshConfirmTimeout.GetMicroSeconds() !=0);
   m_confirmTimer = Simulator::Schedule (m_dot11MeshConfirmTimeout, &PeerLink::ConfirmTimeout, this);
 }
-
-void PeerLink::ConfirmTimeout ()
+void
+PeerLink::ConfirmTimeout ()
 {
   StateMachine (TOC);
-}
-  
+}  
 } // namespace dot11s
 } //namespace ns3
 

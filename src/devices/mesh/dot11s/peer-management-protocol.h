@@ -101,6 +101,8 @@ public:
    * \param uint32_t - is a interface ID of a given MAC (interfaceID rather
    * than MAC address, beacause many interfaces may have the same MAC)
    * \param Mac48Address is address of peer
+   * \param Mac48Address is address of peer mesh point device (equal
+   * to peer address when only one interface)
    * \param uint16_t is association ID, which peer has assigned to
    * us
    * \param IeConfiguration is mesh configuration element
@@ -110,6 +112,7 @@ public:
   void ReceivePeerLinkFrame(
       uint32_t interface,
       Mac48Address peerAddress,
+      Mac48Address peerMeshPointAddress,
       uint16_t aid,
       IePeerManagement peerManagementElement,
       IeConfiguration meshConfig
@@ -126,8 +129,10 @@ public:
   //\}
   ///\brief Needed by external module to do MLME
   Ptr<PeerLink> FindPeerLink(uint32_t interface, Mac48Address peerAddress);
-  void SetPeerLinkStatusCallback (Callback<void, Mac48Address, uint32_t, bool> cb);
+  void SetPeerLinkStatusCallback (Callback<void, Mac48Address, Mac48Address, uint32_t, bool> cb);
   std::vector<Mac48Address> GetActiveLinks(uint32_t interface);
+  ///\brief needed by plugins to set global source address
+  Mac48Address GetAddress ();
 private:
   /** \name Private structures
    * \{
@@ -158,7 +163,13 @@ private:
    * Return a position in beacon-storage for a given remote station
    */
   void FillBeaconInfo(uint32_t interface, Mac48Address peerAddress, Time receivingTime, Time beaconInterval);
-  Ptr<PeerLink> InitiateLink (uint32_t interface, Mac48Address peerAddress, Time lastBeacon, Time beaconInterval);
+  Ptr<PeerLink> InitiateLink (
+      uint32_t interface,
+      Mac48Address peerAddress,
+      Mac48Address peerMeshPointAddress,
+      Time lastBeacon,
+      Time beaconInterval
+      );
   /**
    * \name External peer-chooser
    * \{
@@ -169,7 +180,7 @@ private:
    * \}
    * \brief Indicates changes in peer links
    */
-  void PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, bool status);
+  void PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, Mac48Address peerMeshPointAddres, bool status);
   /**
    * Removes all links which are idle
    */
@@ -178,6 +189,7 @@ private:
   Time GetNextBeaconShift (uint32_t interface);
 private:
   PeerManagerPluginMap m_plugins;
+  Mac48Address m_address;
   /**
    * \name Information related to beacons:
    * \{
@@ -205,11 +217,12 @@ private:
   EventId  m_cleanupEvent;
   ///\}
   ///\brief Callback to notify about peer link changes:
-  ///\param Mac48Address is peer address
+  ///\param Mac48Address is peer address of mesh point
+  ///\param Mac48Address is peer address of interface
   ///\param uint32_t - interface ID
   ///\param bool is staus - true when new link has appeared, false -
   //when link was closed
-  Callback <void, Mac48Address, uint32_t, bool> m_peerStatusCallback;
+  Callback <void, Mac48Address, Mac48Address, uint32_t, bool> m_peerStatusCallback;
 };
   
 } // namespace dot11s

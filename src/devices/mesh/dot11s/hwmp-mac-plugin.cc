@@ -74,7 +74,8 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
       return false;
     tag.SetTtl (meshHdr.GetMeshTtl () - 1);
     tag.SetAddress (header.GetAddr2 ());
-    packet->AddPacketTag(tag);
+    if(!m_protocol->RemoveTags(destination))
+      packet->AddPacketTag(tag);
     if (destination == Mac48Address::GetBroadcast ())
       if(m_protocol->DropDataFrame (meshHdr.GetMeshSeqno (), header.GetAddr4 ()) )
         return false;
@@ -140,6 +141,7 @@ HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header,
   meshHdr.SetMeshTtl(tag.GetTtl());
   packet->AddHeader(meshHdr);
   header.SetAddr1(tag.GetAddress());
+  NS_LOG_UNCOND("Broadcast sent");
   return true;
 }
 void

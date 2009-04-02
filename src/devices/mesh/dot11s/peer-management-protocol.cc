@@ -118,6 +118,8 @@ PeerManagementProtocol::Install(Ptr<MeshPointDevice> mp)
     m_peerLinks[(*i)->GetIfIndex()] = newmap;
   }
   // Mesh point aggregates all installed protocols
+  m_address = Mac48Address::ConvertFrom(mp->GetAddress ());
+  NS_LOG_UNCOND("MP address:"<<m_address);
   mp->AggregateObject(this);
   return true;
 }
@@ -200,6 +202,10 @@ PeerManagementProtocol::UpdatePeerBeaconTiming(
    NS_ASSERT(plugin != m_plugins.end ());
    plugin->second->SetBeaconShift(GetNextBeaconShift(interface));
    //PM STATE Machine
+   //Check that a given beacon is not from our interface
+   for(PeerManagerPluginMap::const_iterator i = m_plugins.begin (); i != m_plugins.end (); i ++)
+     if(i->second->GetAddress () == peerAddress)
+       return;
    Ptr<PeerLink> peerLink = FindPeerLink(interface, peerAddress);
    if(peerLink !=0)  
    {
@@ -208,7 +214,7 @@ PeerManagementProtocol::UpdatePeerBeaconTiming(
    }
    else
    {
-     peerLink = InitiateLink (interface, peerAddress, receivingTime, beaconInterval);
+     peerLink = InitiateLink (interface, peerAddress, Mac48Address::GetBroadcast (), receivingTime, beaconInterval);
      peerLink->SetBeaconTimingElement (timingElement);
      if (ShouldSendOpen (interface, peerAddress))
        peerLink->MLMEActivePeerLinkOpen ();
@@ -219,6 +225,7 @@ void
 PeerManagementProtocol::ReceivePeerLinkFrame (
     uint32_t interface,
     Mac48Address peerAddress,
+    Mac48Address peerMeshPointAddress,
     uint16_t aid,
     IePeerManagement peerManagementElement,
     IeConfiguration meshConfig
@@ -230,19 +237,24 @@ PeerManagementProtocol::ReceivePeerLinkFrame (
     PmpReasonCode reasonCode;
     bool reject = ! (ShouldAcceptOpen (interface, peerAddress,reasonCode));
     if (peerLink == 0)
-      peerLink = InitiateLink (interface, peerAddress, Simulator::Now (), Seconds(1.0));
+      peerLink = InitiateLink (interface, peerAddress, peerMeshPointAddress, Simulator::Now (), Seconds(1.0));
     if(!reject)
     {
       peerLink->MLMEPassivePeerLinkOpen ();
-      peerLink->OpenAccept (peerManagementElement.GetLocalLinkId(), meshConfig);
+      peerLink->OpenAccept (peerManagementElement.GetLocalLinkId(), meshConfig, peerMeshPointAddress);
     }
     else
-      peerLink->OpenReject (peerManagementElement.GetLocalLinkId(), meshConfig, reasonCode);
+      peerLink->OpenReject (peerManagementElement.GetLocalLinkId(), meshConfig, peerMeshPointAddress, reasonCode);
   }
   if (peerLink == 0)
     return;
   if (peerManagementElement.SubtypeIsConfirm ())
-    peerLink->ConfirmAccept (peerManagementElement.GetLocalLinkId(), peerManagementElement.GetPeerLinkId(), aid, meshConfig);
+    peerLink->ConfirmAccept (
+        peerManagementElement.GetLocalLinkId(),
+        peerManagementElement.GetPeerLinkId(),
+        aid,
+        meshConfig,
+        peerMeshPointAddress);
   if (peerManagementElement.SubtypeIsClose ())
     peerLink->Close (
         peerManagementElement.GetLocalLinkId(),
@@ -263,6 +275,7 @@ Ptr<PeerLink>
 PeerManagementProtocol::InitiateLink (
   uint32_t interface,
   Mac48Address peerAddress,
+  Mac48Address peerMeshPointAddress,
   Time lastBeacon,
   Time beaconInterval)
 {
@@ -289,6 +302,7 @@ PeerManagementProtocol::InitiateLink (
   new_link->SetInterface (interface);
   new_link->SetLocalLinkId (m_lastLocalLinkId++);
   new_link->SetPeerAddress (peerAddress);
+  new_link->SetPeerMeshPointAddress (peerMeshPointAddress);
   new_link->SetBeaconInformation (lastBeacon, beaconInterval);
   new_link->SetMacPlugin (plugin->second);
   new_link->MLMESetSignalStatusCallback (MakeCallback(&PeerManagementProtocol::PeerLinkStatus, this));
@@ -306,7 +320,7 @@ PeerManagementProtocol::FindPeerLink(uint32_t interface, Mac48Address peerAddres
   return 0;
 }
 void
-PeerManagementProtocol::SetPeerLinkStatusCallback(Callback <void, Mac48Address, uint32_t, bool> cb)
+PeerManagementProtocol::SetPeerLinkStatusCallback(Callback <void, Mac48Address, Mac48Address, uint32_t, bool> cb)
 {
   m_peerStatusCallback = cb;
 }
@@ -364,7 +378,10 @@ PeerManagementProtocol::ShouldSendOpen (uint32_t interface, Mac48Address peerAdd
   return true;
 }
 bool
-PeerManagementProtocol::ShouldAcceptOpen (uint32_t interface, Mac48Address peerAddress, PmpReasonCode & reasonCode)
+PeerManagementProtocol::ShouldAcceptOpen (
+    uint32_t interface,
+    Mac48Address peerAddress,
+    PmpReasonCode & reasonCode)
 {
   if (m_numberOfActivePeers > m_maxNumberOfPeerLinks)
     {
@@ -450,23 +467,29 @@ PeerManagementProtocol::GetNextBeaconShift (uint32_t interface)
     return MicroSeconds (0);
 }
 void
-PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, bool status)
+PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, Mac48Address peerMeshPointAddress, bool status)
 {
    PeerManagerPluginMap::iterator plugin = m_plugins.find (interface);
    NS_ASSERT(plugin != m_plugins.end());
    NS_LOG_DEBUG(
-       "LINK between me:"<<plugin->second->GetAddress() <<
-       " and peer:"<<peerAddress<<
-       ", at interface "<<interface<<
-       "Status(1 - opened, 0 - closed)"<<status);
+       "Link between me:" << m_address <<
+       " my interface:" << plugin->second->GetAddress() <<
+       " and peer mesh point:" << peerMeshPointAddress <<
+       " and its interface:" << peerAddress <<
+       ", at my interface ID:" << interface <<
+       ". Status:" << status);
    if(status)
      m_numberOfActivePeers ++;
    else
      m_numberOfActivePeers --;
    if(!m_peerStatusCallback.IsNull ())
-     m_peerStatusCallback (peerAddress, interface, status);
+     m_peerStatusCallback (peerMeshPointAddress, peerAddress, interface, status);
 }
-  
+Mac48Address
+PeerManagementProtocol::GetAddress ()
+{
+  return m_address;
+}
 } // namespace dot11s
 } //namespace ns3
 

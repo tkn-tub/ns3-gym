@@ -183,7 +183,10 @@ HwmpProtocol::RequestRoute (
     tag.DecrementTtl ();
   }
   if (destination == Mac48Address::GetBroadcast ())
+  {
+    NS_LOG_UNCOND("BROADCAS");
     routeReply (true, packet, source, destination, protocolType, HwmpRtable::INTERFACE_ANY);
+  }
   else
     return ForwardUnicast(sourceIface, source, destination, packet, protocolType, routeReply);
   return true;
@@ -248,13 +251,12 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
   return true;
 }
 bool
-HwmpProtocol::HandleIncomingFrame (Ptr<Packet> packet, Mac48Address src, Mac48Address dst, uint16_t protocol)
+HwmpProtocol::RemoveTags (Mac48Address dst)
 {
-  //Handle only incoming frames:
-  NS_ASSERT(dst == m_address);
-  HwmpTag tag;
-  NS_ASSERT(packet->RemovePacketTag(tag));
-  return true;
+  //Check that dst is my address
+  if(dst == m_address)
+    return true;
+  return false;
 }
 void
 HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface)
@@ -493,10 +495,17 @@ HwmpProtocol::Install (Ptr<MeshPointDevice> mp)
   return true;
 }
 void
-HwmpProtocol::PeerLinkStatus(Mac48Address peerAddress, uint32_t interface, bool status)
+HwmpProtocol::PeerLinkStatus(Mac48Address meshPointAddress, Mac48Address peerAddress, uint32_t interface, bool status)
 {
   if(status)
-    m_rtable->AddReactivePath(peerAddress, peerAddress, interface, 1, Seconds (0), 0);
+  {
+    HwmpRtable::LookupResult result = m_rtable->LookupReactive(meshPointAddress);
+    if(result.retransmitter == Mac48Address::GetBroadcast ())
+    {
+      NS_LOG_UNCOND("I am"<<m_address<<" MP:"<<meshPointAddress<<"accessible through interface"<<interface<<", ra = "<<peerAddress);
+      m_rtable->AddReactivePath(meshPointAddress, peerAddress, interface, 1, Seconds (0), 0);
+    }
+  }
   else
   {
     std::vector<IePerr::FailedDestination> destinations = m_rtable->GetUnreachableDestinations (peerAddress);
@@ -696,7 +705,10 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
       return;
     }
   for(HwmpPluginMap::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
+  {
+    //i->second->RequestDestination(Mac48Address("00:00:00:00:00:04"));
     i->second->RequestDestination(dst);
+  }
   m_preqTimeouts[dst] = Simulator::Schedule (
       MilliSeconds (2*(m_dot11MeshHWMPnetDiameterTraversalTime.GetMilliSeconds())),
       &HwmpProtocol::RetryPathDiscovery, this, dst, numOfRetry);

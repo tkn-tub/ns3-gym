@@ -58,21 +58,22 @@ public:
    * \name Peer link geeters/setters
    * \{
    */
-  void  SetPeerAddress (Mac48Address macaddr);
-  void  SetInterface (uint32_t interface);
-  void  SetLocalLinkId (uint16_t id);
-  void  SetPeerLinkId (uint16_t id);
-  void  SetLocalAid (uint16_t aid);
-  void  SetPeerAid (uint16_t aid);
-  void  SetBeaconTimingElement (IeBeaconTiming beaconTiming);
-  void  SetPeerLinkDescriptorElement (IePeerManagement peerLinkElement);
+  void SetPeerAddress (Mac48Address macaddr);
+  void SetPeerMeshPointAddress (Mac48Address macaddr);
+  void SetInterface (uint32_t interface);
+  void SetLocalLinkId (uint16_t id);
+  void SetPeerLinkId (uint16_t id);
+  void SetLocalAid (uint16_t aid);
+  void SetPeerAid (uint16_t aid);
+  void SetBeaconTimingElement (IeBeaconTiming beaconTiming);
+  void SetPeerLinkDescriptorElement (IePeerManagement peerLinkElement);
   Mac48Address GetPeerAddress () const;
   uint16_t GetLocalAid () const;
-  Time  GetLastBeacon () const;
-  Time  GetBeaconInterval () const;
+  Time GetLastBeacon () const;
+  Time GetBeaconInterval () const;
   IeBeaconTiming GetBeaconTimingElement ()const;
   IePeerManagement GetPeerLinkDescriptorElement ()const;
-  void  ClearTimingElement ();
+  void ClearTimingElement ();
   //\}
   
   /**
@@ -88,7 +89,7 @@ public:
   /// MLME-PeeringRequestReject
   void MLMEPeeringRequestReject ();
   /// Callback type for MLME-SignalPeerLinkStatus event
-  typedef Callback<void, uint32_t, Mac48Address, bool> SignalStatusCallback; 
+  typedef Callback<void, uint32_t, Mac48Address, Mac48Address, bool> SignalStatusCallback; 
   /// Set callback
   void MLMESetSignalStatusCallback (SignalStatusCallback);
   //\}
@@ -106,21 +107,23 @@ private:
   /// Close link
   void Close (uint16_t localLinkID, uint16_t peerLinkID, PmpReasonCode reason);
   /// Accept open link
-  void OpenAccept (uint16_t localLinkId, IeConfiguration conf);
+  void OpenAccept (uint16_t localLinkId, IeConfiguration conf, Mac48Address peerMp);
   /// Reject open link 
-  void OpenReject (uint16_t localLinkId, IeConfiguration conf, PmpReasonCode reason);
+  void OpenReject (uint16_t localLinkId, IeConfiguration conf, Mac48Address peerMp, PmpReasonCode reason);
   /// Confirm accept
   void ConfirmAccept (
     uint16_t localLinkId,
     uint16_t peerLinkId,
     uint16_t peerAid,
-    IeConfiguration conf
+    IeConfiguration conf,
+    Mac48Address peerMp
   );
   /// Confirm reject
   void  ConfirmReject (
     uint16_t localLinkId,
     uint16_t peerLinkId,
     IeConfiguration  conf,
+    Mac48Address peerMp,
     PmpReasonCode reason
   );
   //\}
@@ -204,6 +207,9 @@ private:
   Ptr<PeerManagerMacPlugin> m_macPlugin;
   /// Peer address
   Mac48Address m_peerAddress;
+  /// Mesh point address, equal to peer address in case of single
+  //interface mesh point
+  Mac48Address m_peerMeshPointAddress;
   /// My ID of this link
   uint16_t m_localLinkId;
   /// Peer ID of this link

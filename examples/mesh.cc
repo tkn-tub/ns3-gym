@@ -39,8 +39,8 @@ int
 main (int argc, char *argv[])
 {
   // Creating square topology with nNodes x nNodes grid
-  int      xSize       = 6;
-  int      ySize       = 6;
+  int      xSize       = 2;
+  int      ySize       = 2;
   double   step        = 100.0; // Grid with one-hop edge
   double   randomStart = 0.1;   // One beacon interval
   uint32_t nIfaces     = 1;
