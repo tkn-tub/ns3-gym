@@ -44,6 +44,7 @@ main (int argc, char *argv[])
   double   step        = 100.0; // Grid with one-hop edge
   double   randomStart = 0.1;   // One beacon interval
   uint32_t nIfaces     = 1;
+  bool     chan        = false;
   bool     pcap        = false;
   
   // Command line arguments
@@ -53,6 +54,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("step",   "Size of edge in our grid, meters. [100 m]", step);
   cmd.AddValue ("start",  "Maximum random start delay, seconds. [0.1 s]", randomStart);
   cmd.AddValue ("interfaces", "Number of radio interfaces used by each mesh point. [1]", nIfaces);
+  cmd.AddValue ("channels",   "Use different frequency channels for different interfaces. [0]", chan);
   cmd.AddValue ("pcap",   "Enable PCAP traces on interfaces. [0]", pcap);
   
   cmd.Parse (argc, argv);
@@ -69,6 +71,7 @@ main (int argc, char *argv[])
   
   // Install mesh point devices & protocols
   MeshWifiHelper mesh;
+  mesh.SetSpreadInterfaceChannels (chan);
   NetDeviceContainer meshDevices = mesh.Install (wifiPhy, nodes, nIfaces);
   
   // Setup mobility

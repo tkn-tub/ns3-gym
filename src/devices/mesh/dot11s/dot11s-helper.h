@@ -50,6 +50,14 @@ public:
   /// Set maximum random start delay
   void SetRandomStartDelay (Time delay);
   /** 
+   *  \brief Spread/not spread frequency channels of MP interfaces. 
+   * 
+   *  If set to true different non-overlaping 20MHz frequency 
+   *  channels will be assigned to different mesh point interfaces.
+   */ 
+  void SetSpreadInterfaceChannels (bool); 
+  
+  /** 
    * \brief Install 802.11s mesh device & protocols on given node
    * 
    * \param phy                 Wifi PHY helper
@@ -73,6 +81,7 @@ public:
 private:
   Ssid m_ssid;
   Time m_randomStartDelay;
+  bool m_spreadInterfaceChannels;
   
   /// Create single mesh interface NIC
   Ptr<WifiNetDevice> CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node) const;

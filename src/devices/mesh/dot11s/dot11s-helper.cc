@@ -33,7 +33,10 @@
 namespace ns3 {
 namespace dot11s {
 
-MeshWifiHelper::MeshWifiHelper () : m_ssid("mesh"), m_randomStartDelay (Seconds (0))
+MeshWifiHelper::MeshWifiHelper () : 
+    m_ssid("mesh"), 
+    m_randomStartDelay (Seconds (0)),
+    m_spreadInterfaceChannels (false)
 {
 }
   
@@ -54,6 +57,13 @@ MeshWifiHelper::SetRandomStartDelay (Time t)
   m_randomStartDelay = t;
 }
 
+void 
+MeshWifiHelper::SetSpreadInterfaceChannels (bool s)
+{
+  m_spreadInterfaceChannels = s;
+}
+
+
 Ptr<WifiNetDevice> 
 MeshWifiHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node) const
 {
@@ -70,7 +80,10 @@ MeshWifiHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node)
   device->SetMac (mac);
   device->SetPhy (phy);
   device->SetRemoteStationManager (manager);
-  
+  /*
+  if (channel > 0)
+    mac->SwitchFrequencyChannel (channel);
+  */
   return device;
 }
   
@@ -94,6 +107,23 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c, uint32
         
         node->AddDevice (iface);
         mp->AddInterface (iface);
+      }
+    
+    // Set different channels on different ifaces
+    if (m_spreadInterfaceChannels)
+      {
+        std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
+        for (size_t i = 0; i < ifaces.size(); ++i)
+          {
+            uint32_t channel = i * 5;
+            
+            Ptr<WifiNetDevice> iface = ifaces[i]->GetObject<WifiNetDevice> ();
+            NS_ASSERT (iface);
+            Ptr<MeshWifiInterfaceMac> mac = iface->GetMac ()->GetObject<MeshWifiInterfaceMac> ();
+            NS_ASSERT (mac);
+            
+            mac->SwitchFrequencyChannel (channel);
+          }
       }
     
     // Install 802.11s protocols
