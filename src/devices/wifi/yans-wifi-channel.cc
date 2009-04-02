@@ -74,16 +74,26 @@ void
 YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double txPowerDbm,
                        WifiMode wifiMode, WifiPreamble preamble) const
 {
+  NS_LOG_DEBUG ("I am on channel "  << sender->GetFrequencyChannel()
+                << " : sending " << packet->GetUid ());
+  
   Ptr<MobilityModel> senderMobility = sender->GetMobility ()->GetObject<MobilityModel> ();
   NS_ASSERT (senderMobility != 0);
   uint32_t j = 0;
   for (PhyList::const_iterator i = m_phyList.begin (); i != m_phyList.end (); i++)
     {
+      j++;
+      
       if (sender != (*i))
         {
           // For now don't account for interchannel interference
           if ((*i)->GetFrequencyChannel() != sender->GetFrequencyChannel())
-            continue;
+            {
+              NS_LOG_DEBUG ("Dropped: " << (*i)->GetFrequencyChannel() 
+                            << " != " << sender->GetFrequencyChannel() );
+              continue;
+            }
+          NS_LOG_DEBUG ("Passed to receiver");
           
           Ptr<MobilityModel> receiverMobility = (*i)->GetMobility ()->GetObject<MobilityModel> ();
           Time delay = m_delay->GetDelay (senderMobility, receiverMobility);
@@ -92,9 +102,8 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
                         "distance="<<senderMobility->GetDistanceFrom (receiverMobility)<<"m, delay="<<delay);
           Ptr<Packet> copy = packet->Copy ();
           Simulator::Schedule (delay, &YansWifiChannel::Receive, this, 
-                               j, copy, rxPowerDbm, wifiMode, preamble);
+                               j-1, copy, rxPowerDbm, wifiMode, preamble);
         }
-      j++;
     }
 }
 
