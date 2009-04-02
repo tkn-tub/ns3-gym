@@ -3,7 +3,7 @@ import os
 import sys
 import shutil
 import pproc as subprocess
-import urllib
+import errno
 
 # WAF modules
 import Build
@@ -118,7 +118,11 @@ class regression_test_task(Task.TaskBase):
 
         if Options.options.regression_generate:
             # clean the target dir
-            shutil.rmtree(reference_traces_path, ignore_errors=True)
+            try:
+                shutil.rmtree(trace_output_path)
+            except OSError, ex:
+                if ex.errno not in [errno.ENOENT]:
+                    raise
             os.makedirs(reference_traces_path)
             result = self.run_reference_generate(reference_traces_path, program, arguments, is_pyscript)
             if result == 0:
@@ -127,7 +131,11 @@ class regression_test_task(Task.TaskBase):
                 print "GENERATE FAIL " + self.test_name
         else:
             # clean the target dir
-            shutil.rmtree(trace_output_path, ignore_errors=True)
+            try:
+                shutil.rmtree(trace_output_path)
+            except OSError, ex:
+                if ex.errno not in [errno.ENOENT]:
+                    raise
             os.makedirs(trace_output_path)
             # run it
             result = self.run_reference_test(reference_traces_path, trace_output_path, program, arguments, is_pyscript)
