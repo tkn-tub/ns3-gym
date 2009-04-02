@@ -107,8 +107,6 @@ private:
    */
   bool DropDataFrame(uint32_t, Mac48Address);
   //\}
-  ///\brief if the packet is ours - plugins should remove tag
-  bool RemoveTags (Mac48Address dst);
 private:
   ///\name Methods related to Queue/Dequeue procedures
   //\{

@@ -160,6 +160,7 @@ HwmpProtocol::RequestRoute (
 )
 {
   HwmpTag tag;
+  tag.SetAddress(Mac48Address::GetBroadcast());
   if (sourceIface == GetMeshPoint ()->GetIfIndex())
     // packet from level 3
   {
@@ -168,7 +169,6 @@ HwmpProtocol::RequestRoute (
     if(destination == Mac48Address::GetBroadcast ())
     {
       tag.SetSeqno (m_dataSeqno++);
-      tag.SetAddress (Mac48Address::GetBroadcast());
       tag.SetTtl (m_maxTtl+1);
       if (m_dataSeqno == 0xffffffff)
         m_dataSeqno = 0;
@@ -184,7 +184,9 @@ HwmpProtocol::RequestRoute (
   }
   if (destination == Mac48Address::GetBroadcast ())
   {
-    NS_LOG_UNCOND("BROADCAS");
+    packet->RemovePacketTag (tag);
+    tag.SetAddress (Mac48Address::GetBroadcast ());
+    packet->AddPacketTag(tag);
     routeReply (true, packet, source, destination, protocolType, HwmpRtable::INTERFACE_ANY);
   }
   else
@@ -249,14 +251,6 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
   pkt.inInterface = sourceIface;
   QueuePacket (pkt);
   return true;
-}
-bool
-HwmpProtocol::RemoveTags (Mac48Address dst)
-{
-  //Check that dst is my address
-  if(dst == m_address)
-    return true;
-  return false;
 }
 void
 HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface)
@@ -503,7 +497,7 @@ HwmpProtocol::PeerLinkStatus(Mac48Address meshPointAddress, Mac48Address peerAdd
     if(result.retransmitter == Mac48Address::GetBroadcast ())
     {
       NS_LOG_UNCOND("I am"<<m_address<<" MP:"<<meshPointAddress<<"accessible through interface"<<interface<<", ra = "<<peerAddress);
-      m_rtable->AddReactivePath(meshPointAddress, peerAddress, interface, 1, Seconds (0), 0);
+      //m_rtable->AddReactivePath(meshPointAddress, peerAddress, interface, 1, Seconds (0), 0);
     }
   }
   else
@@ -706,7 +700,7 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
     }
   for(HwmpPluginMap::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
   {
-    //i->second->RequestDestination(Mac48Address("00:00:00:00:00:04"));
+    i->second->RequestDestination(Mac48Address("00:00:00:00:00:20"));
     i->second->RequestDestination(dst);
   }
   m_preqTimeouts[dst] = Simulator::Schedule (
