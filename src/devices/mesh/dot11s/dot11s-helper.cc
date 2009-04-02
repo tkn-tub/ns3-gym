@@ -98,12 +98,12 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c, uint32
     
     // Install 802.11s protocols
     Ptr<PeerManagementProtocol> pmp = CreateObject<PeerManagementProtocol> ();
-    bool pmp_ok = pmp->Install (mp);
-    NS_ASSERT (pmp_ok);
+    bool install_ok = pmp->Install (mp);
+    NS_ASSERT (install_ok);
     
     Ptr<HwmpProtocol> hwmp = CreateObject<HwmpProtocol> ();
-    bool hwmp_ok = hwmp->Install (mp);
-    NS_ASSERT (hwmp_ok);
+    install_ok = hwmp->Install (mp);
+    NS_ASSERT (install_ok);
     
     pmp->SetPeerLinkStatusCallback(MakeCallback(&HwmpProtocol::PeerLinkStatus, hwmp));
     hwmp->SetNeighboursCallback(MakeCallback(&PeerManagementProtocol::GetActiveLinks, pmp));
