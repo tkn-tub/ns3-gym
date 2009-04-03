@@ -36,6 +36,7 @@
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
+#include "ns3/contrib-module.h"
 
 using namespace ns3;
 
@@ -55,6 +56,9 @@ main (int argc, char *argv[])
   // Bind()s at run-time, via command-line arguments
   CommandLine cmd;
   cmd.Parse (argc, argv);
+
+  GtkConfigStore config;
+  config.ConfigureDefaults ();
 
   NS_LOG_INFO ("Create nodes.");
   NodeContainer c;
@@ -113,6 +117,8 @@ main (int argc, char *argv[])
   std::ofstream ascii;
   ascii.open ("csma-broadcast.tr");
   CsmaHelper::EnableAsciiAll (ascii);
+
+  config.ConfigureAttributes ();
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();    
