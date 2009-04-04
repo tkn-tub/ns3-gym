@@ -52,13 +52,20 @@ main (int argc, char *argv[])
 #endif
   LogComponentEnable ("CsmaBroadcastExample", LOG_PREFIX_TIME);
 
+  // By default, this example will launch the GtkConfigStore
+  bool suppressGtkConfigStore = false;
+
   // Allow the user to override any of the defaults and the above
   // Bind()s at run-time, via command-line arguments
   CommandLine cmd;
+  cmd.AddValue ("suppressGtkConfigStore", "suppress GtkConfigStore if true", suppressGtkConfigStore);
   cmd.Parse (argc, argv);
 
   GtkConfigStore config;
-  config.ConfigureDefaults ();
+  if (suppressGtkConfigStore == false)
+    {
+      config.ConfigureDefaults ();
+    }
 
   NS_LOG_INFO ("Create nodes.");
   NodeContainer c;
@@ -118,7 +125,10 @@ main (int argc, char *argv[])
   ascii.open ("csma-broadcast.tr");
   CsmaHelper::EnableAsciiAll (ascii);
 
-  config.ConfigureAttributes ();
+  if (suppressGtkConfigStore == false)
+    {
+      config.ConfigureAttributes ();
+    }
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();    
