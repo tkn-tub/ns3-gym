@@ -429,8 +429,9 @@ def build(bld):
             if was_enabled:
                 features.append(name)
 
-        bindgen = bld.new_task_gen('command', source=source, target=target,
-                                   command=argv, variables=dict(FEATURES=(','.join(features))))
+        bindgen = bld.new_task_gen('command', source=source, target=target, command=argv)
+        bindgen.env['FEATURES'] = ','.join(features)
+        bindgen.dep_vars = ['FEATURES']
         bindgen.before = 'cxx'
         bindgen.after = 'gen_everything_h_task'
 
