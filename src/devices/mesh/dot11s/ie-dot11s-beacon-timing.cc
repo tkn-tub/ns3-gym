@@ -93,7 +93,7 @@ IeBeaconTiming::AddNeighboursTimingElementUnit (
   if (m_numOfUnits == 50)
     return;
   //Firs we lookup if this element already exists
-  for (NeighboursTimingUnitsList::iterator i = m_neighbours.begin (); i != m_neighbours.end(); i++)
+  for (NeighboursTimingUnitsList::const_iterator i = m_neighbours.begin (); i != m_neighbours.end(); i++)
     if (
       ((*i)->GetAid () == AidToU8(aid))
       && ((*i)->GetLastBeacon () == TimestampToU16(last_beacon))

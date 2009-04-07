@@ -211,7 +211,7 @@ HwmpMacPlugin::SendOnePreq ()
   hdr.SetAddr3 (Mac48Address::GetBroadcast ());
   //Send Management frame
   std::vector <Mac48Address> receivers = m_protocol->GetPreqReceivers (m_ifIndex);
-  for(std::vector<Mac48Address>::iterator i = receivers.begin (); i != receivers.end (); i ++)
+  for(std::vector<Mac48Address>::const_iterator i = receivers.begin (); i != receivers.end (); i ++)
   {
     hdr.SetAddr1 (*i);
     m_parent->SendManagementFrame(packet, hdr);
@@ -255,7 +255,7 @@ HwmpMacPlugin::SendOnePerr()
   hdr.SetAddr2 (m_parent->GetAddress ());
   hdr.SetAddr3 (Mac48Address::GetBroadcast ());
   //Send Management frame
-  for(std::vector<Mac48Address>::iterator i = m_myPerr.receivers.begin (); i != m_myPerr.receivers.end (); i ++)
+  for(std::vector<Mac48Address>::const_iterator i = m_myPerr.receivers.begin (); i != m_myPerr.receivers.end (); i ++)
   {
     hdr.SetAddr1 (*i);
     m_parent->SendManagementFrame(packet, hdr);

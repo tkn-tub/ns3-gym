@@ -102,7 +102,7 @@ main (int argc, char *argv[])
   serverApps.Stop (Seconds (10.0));
   UdpEchoClientHelper echoClient (interfaces.GetAddress (0), 9);
   echoClient.SetAttribute ("MaxPackets", UintegerValue (10000));
-  echoClient.SetAttribute ("Interval", TimeValue (Seconds (0.01)));
+  echoClient.SetAttribute ("Interval", TimeValue (Seconds (0.005)));
   echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
   ApplicationContainer clientApps = echoClient.Install (nodes.Get (1));
   clientApps.Start (Seconds (2.0));

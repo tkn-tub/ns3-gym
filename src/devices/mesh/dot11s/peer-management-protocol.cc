@@ -152,7 +152,7 @@ PeerManagementProtocol::GetBeaconTimingElement(uint32_t interface)
     }
     cleaned = true;
   }
-  for(BeaconsOnInterface::iterator j = i->second.begin(); j != i->second.end(); j++)
+  for(BeaconsOnInterface::const_iterator j = i->second.begin(); j != i->second.end(); j++)
     retval->AddNeighboursTimingElementUnit(j->second.aid, j->second.referenceTbtt, j->second.beaconInterval);
   return retval;
 }

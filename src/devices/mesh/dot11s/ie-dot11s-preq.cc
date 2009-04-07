@@ -354,7 +354,7 @@ IePreq::AddDestinationAddressElement (
   uint32_t dest_seq_number
 )
 {
-  for (std::vector<Ptr<DestinationAddressUnit> >::iterator i = m_destinations.begin (); i != m_destinations.end(); i++ )
+  for (std::vector<Ptr<DestinationAddressUnit> >::const_iterator i = m_destinations.begin (); i != m_destinations.end(); i++ )
     if ((*i)->GetDestinationAddress () == dest_address)
       return;
   Ptr<DestinationAddressUnit>new_element = Create<DestinationAddressUnit> ();
