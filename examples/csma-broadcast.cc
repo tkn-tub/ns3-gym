@@ -36,7 +36,6 @@
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/contrib-module.h"
 
 using namespace ns3;
 
@@ -52,20 +51,10 @@ main (int argc, char *argv[])
 #endif
   LogComponentEnable ("CsmaBroadcastExample", LOG_PREFIX_TIME);
 
-  // By default, this example will launch the GtkConfigStore
-  bool suppressGtkConfigStore = false;
-
   // Allow the user to override any of the defaults and the above
   // Bind()s at run-time, via command-line arguments
   CommandLine cmd;
-  cmd.AddValue ("suppressGtkConfigStore", "suppress GtkConfigStore if true", suppressGtkConfigStore);
   cmd.Parse (argc, argv);
-
-  GtkConfigStore config;
-  if (suppressGtkConfigStore == false)
-    {
-      config.ConfigureDefaults ();
-    }
 
   NS_LOG_INFO ("Create nodes.");
   NodeContainer c;
@@ -124,11 +113,6 @@ main (int argc, char *argv[])
   std::ofstream ascii;
   ascii.open ("csma-broadcast.tr");
   CsmaHelper::EnableAsciiAll (ascii);
-
-  if (suppressGtkConfigStore == false)
-    {
-      config.ConfigureAttributes ();
-    }
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();    
