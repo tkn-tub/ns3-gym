@@ -59,7 +59,7 @@ main (int argc, char *argv[])
   
   cmd.Parse (argc, argv);
   NS_LOG_DEBUG ("Grid:" << xSize << "*" << ySize);
-  
+  SeedManager::SetSeed(1);
   // Creating nodes
   NodeContainer nodes;
   nodes.Create (ySize*xSize);
@@ -101,8 +101,8 @@ main (int argc, char *argv[])
   serverApps.Start (Seconds (1.0));
   serverApps.Stop (Seconds (10.0));
   UdpEchoClientHelper echoClient (interfaces.GetAddress (0), 9);
-  echoClient.SetAttribute ("MaxPackets", UintegerValue (1000));
-  echoClient.SetAttribute ("Interval", TimeValue (Seconds (0.001)));
+  echoClient.SetAttribute ("MaxPackets", UintegerValue (10000));
+  echoClient.SetAttribute ("Interval", TimeValue (Seconds (0.01)));
   echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
   ApplicationContainer clientApps = echoClient.Install (nodes.Get (1));
   clientApps.Start (Seconds (2.0));

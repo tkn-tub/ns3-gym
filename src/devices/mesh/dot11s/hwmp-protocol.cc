@@ -114,9 +114,15 @@ HwmpProtocol::GetTypeId ()
         )
   .AddAttribute ("unicastPreqThreshold",
         "Maximum number of PREQ receivers, when we send a PREQ as a chain of unicasts",
-        UintegerValue (0),
+        UintegerValue (1),
         MakeUintegerAccessor (&HwmpProtocol::m_unicastPreqThreshold),
-        MakeUintegerChecker<uint8_t> (0)
+        MakeUintegerChecker<uint8_t> (1)
+        )
+  .AddAttribute ("unicastDataThreshold",
+        "Maximum number ofbroadcast receivers, when we send a broadcast as a chain of unicasts",
+        UintegerValue (32),
+        MakeUintegerAccessor (&HwmpProtocol::m_unicastDataThreshold),
+        MakeUintegerChecker<uint8_t> (1)
         )
   .AddAttribute ("isRoot",
         "Root mesh point",
@@ -200,10 +206,23 @@ HwmpProtocol::RequestRoute (
   }
   if (destination == Mac48Address::GetBroadcast ())
   {
-    packet->RemovePacketTag (tag);
+    NS_ASSERT(packet->RemovePacketTag (tag));
+    for(HwmpPluginMap::const_iterator plugin = m_interfaces.begin (); plugin != m_interfaces.end (); plugin ++)
+    {
+      std::vector<Mac48Address> receivers = GetBroadcastReceivers (plugin->first);
+      for (std::vector<Mac48Address>::const_iterator i = receivers.begin (); i != receivers.end(); i ++)
+      {
+        Ptr<Packet> packet_copy = packet->Copy();
+        tag.SetAddress (*i);
+        packet_copy->AddPacketTag (tag);
+        routeReply (true, packet_copy, source, destination, protocolType, plugin->first);
+      }
+    }
+#if 0
     tag.SetAddress (Mac48Address::GetBroadcast ());
     packet->AddPacketTag(tag);
     routeReply (true, packet, source, destination, protocolType, HwmpRtable::INTERFACE_ANY);
+#endif
   }
   else
     return ForwardUnicast(sourceIface, source, destination, packet, protocolType, routeReply);
@@ -269,7 +288,7 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
   return true;
 }
 void
-HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface)
+HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, uint32_t metric)
 {
   preq.IncrementMetric (1);
   //acceptance cretirea:
@@ -284,14 +303,13 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface)
       if (i->second > preq.GetOriginatorSeqNumber ())
         return;
       if (i->second == preq.GetOriginatorSeqNumber ())
-        {
-          //find metric
-          std::map<Mac48Address, uint32_t>::iterator j =
-            m_lastHwmpMetric.find (preq.GetOriginatorAddress());
-          NS_ASSERT (j != m_lastHwmpSeqno.end());
-          if (j->second <= preq.GetMetric ())
-            return;
-        }
+      {
+        //find metric
+        std::map<Mac48Address, uint32_t>::iterator j = m_lastHwmpMetric.find (preq.GetOriginatorAddress());
+        NS_ASSERT (j != m_lastHwmpSeqno.end());
+        if (j->second <= preq.GetMetric ())
+          return;
+      }
       m_lastHwmpSeqno[preq.GetOriginatorAddress ()] = preq.GetOriginatorSeqNumber();
       m_lastHwmpMetric[preq.GetOriginatorAddress ()] = preq.GetMetric();
     }
@@ -389,9 +407,9 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface)
     i->second->SendPreq (preq);
 }
 void
-HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface)
+HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, uint32_t metric)
 {
-  prep.IncrementMetric (1);
+  prep.IncrementMetric (metric);
   //acceptance cretirea:
   std::map<Mac48Address, uint32_t>::iterator i = m_lastHwmpSeqno.find (prep.GetOriginatorAddress());
   if (i == m_lastHwmpSeqno.end ())
@@ -507,8 +525,10 @@ HwmpProtocol::PeerLinkStatus(Mac48Address meshPointAddress, Mac48Address peerAdd
   if(status)
   {
     HwmpRtable::LookupResult result = m_rtable->LookupReactive(meshPointAddress);
+    HwmpPluginMap::iterator i = m_interfaces.find(interface);
+    NS_ASSERT(i != m_interfaces.end ());
     if(result.retransmitter == Mac48Address::GetBroadcast ())
-      m_rtable->AddReactivePath(meshPointAddress, peerAddress, interface, 1, Seconds (0), 0);
+      m_rtable->AddReactivePath(meshPointAddress, peerAddress, interface, 1, Seconds (0), i->second->GetLinkMetric(peerAddress));
   }
   else
   {
@@ -588,6 +608,19 @@ HwmpProtocol::GetPreqReceivers (uint32_t interface)
   }
   return retval;
 }
+std::vector<Mac48Address>
+HwmpProtocol::GetBroadcastReceivers (uint32_t interface)
+{
+  std::vector<Mac48Address> retval;
+  if(!m_neighboursCallback.IsNull ()) retval = m_neighboursCallback (interface);
+  if (retval.size() >= m_unicastDataThreshold)
+  {
+    retval.clear ();
+    retval.push_back (Mac48Address::GetBroadcast ());
+  }
+  return retval;
+}
+
 bool
 HwmpProtocol::QueuePacket (QueuedPacket packet)
 {

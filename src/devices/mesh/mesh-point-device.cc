@@ -82,14 +82,13 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
   NS_LOG_DEBUG ("UID is " << packet->GetUid ());
   const Mac48Address src48 = Mac48Address::ConvertFrom (src);
   const Mac48Address dst48 = Mac48Address::ConvertFrom (dst);
-  NS_LOG_UNCOND("SRC="<<src48<<", DST = "<<dst48<<", I am: "<<m_address);
+  NS_LOG_DEBUG("SRC="<<src48<<", DST = "<<dst48<<", I am: "<<m_address);
   if (!m_promiscRxCallback.IsNull ())
     m_promiscRxCallback (this, packet, protocol, src, dst, packetType);
   switch (packetType)
     {
     case PACKET_HOST:
-      if (dst48 == m_address)
-        m_rxCallback (this, packet, protocol, src);
+      m_rxCallback (this, packet, protocol, src);
       break;
     case PACKET_BROADCAST:
     case PACKET_MULTICAST:
@@ -226,6 +225,7 @@ bool
 MeshPointDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
   const Mac48Address dst48 = Mac48Address::ConvertFrom (dest);
+  NS_LOG_DEBUG("SEND:, DST = "<<dst48<<", I am: "<<m_address);
   return m_requestRoute (m_ifIndex, m_address, dst48, packet, protocolNumber, m_myResponse);
 }
 

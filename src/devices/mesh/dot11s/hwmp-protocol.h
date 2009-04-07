@@ -77,8 +77,8 @@ private:
   
   ///\name Interaction with HWMP MAC plugin
   //\{
-  void ReceivePreq(IePreq preq, Mac48Address from, uint32_t interface);
-  void ReceivePrep(IePrep prep, Mac48Address from, uint32_t interface);
+  void ReceivePreq(IePreq preq, Mac48Address from, uint32_t interface, uint32_t metric);
+  void ReceivePrep(IePrep prep, Mac48Address from, uint32_t interface, uint32_t metric);
   void ReceivePerr(IePerr perr, Mac48Address from, uint32_t interface);
   void SendPrep (
       Mac48Address src,
@@ -97,7 +97,9 @@ private:
   
   /// \return list of addresses where a PERR should be sent to
   std::vector<Mac48Address> GetPreqReceivers (uint32_t interface);
-  
+  /// \return list of addresses where a broadcast should be
+  //retransmitted
+  std::vector<Mac48Address> GetBroadcastReceivers (uint32_t interface); 
   /**
    * \brief MAC-plugin asks wether the frame can be dropeed. Protocol automatically updates seqno.
    * 
@@ -188,6 +190,7 @@ private:
   uint8_t m_maxTtl;
   uint8_t m_unicastPerrThreshold;
   uint8_t m_unicastPreqThreshold;
+  uint8_t m_unicastDataThreshold;
   bool m_doFlag;
   bool m_rfFlag;
   //\}

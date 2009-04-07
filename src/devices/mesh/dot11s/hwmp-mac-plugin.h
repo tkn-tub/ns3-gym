@@ -69,6 +69,9 @@ private:
   /// Sends one PREQ when PreqMinInterval after last PREQ expires (if any PREQ exists in rhe queue)
   void SendOnePreq ();
   void SendOnePerr ();
+  /// Returns metric to HWMP protocol, needed only by metrics to add
+  //peer as routing entry
+  uint32_t GetLinkMetric (Mac48Address peerAddress);
 private:
   Ptr<MeshWifiInterfaceMac> m_parent;
   uint32_t m_ifIndex;

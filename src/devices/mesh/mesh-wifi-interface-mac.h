@@ -146,7 +146,7 @@ public:
   bool CheckSupportedRates(SupportedRates rates) const;
   /// \return list of supported bitrates
   SupportedRates GetSupportedRates () const;
-  
+  uint32_t GetLinkMetric(Mac48Address peerAddress);
 private:
   /// Frame receive handler
   void  Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);

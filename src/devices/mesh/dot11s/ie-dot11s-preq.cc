@@ -337,6 +337,7 @@ IePreq::PrintInformation (std::ostream &os) const
   os << " metric              = " << m_metric << "\n";
   os << " seqno               = " << m_originatorSeqNumber << "\n";
   os << " lifetime            = " << m_lifetime << "\n";
+  os << " preq ID             = " <<m_preqId << "\n";
   os << " Destinations are:\n";
   for (int j = 0; j < m_destCount; j++ )
     os << "    " << m_destinations[j]->GetDestinationAddress () << "\n";

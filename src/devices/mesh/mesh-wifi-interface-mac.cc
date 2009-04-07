@@ -584,7 +584,6 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
           }
         }
     }
-
   // Filter frame through all installed plugins
   for (PluginList::iterator i = m_plugins.begin (); i != m_plugins.end(); ++i)
     {
@@ -596,6 +595,10 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
   if (hdr->IsData ())
       ForwardUp (packet, hdr->GetAddr4(), hdr->GetAddr3());
 }
-
+uint32_t
+MeshWifiInterfaceMac::GetLinkMetric (Mac48Address peerAddress)
+{
+  return 1;
+}
 } // namespace ns3
 

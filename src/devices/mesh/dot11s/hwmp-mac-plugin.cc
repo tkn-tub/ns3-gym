@@ -102,7 +102,7 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
           if (preq.GetTtl () == 0)
             return false;
           preq.DecrementTtl ();
-          m_protocol->ReceivePreq (preq, header.GetAddr2 (), m_ifIndex);
+          m_protocol->ReceivePreq (preq, header.GetAddr2 (), m_ifIndex, m_parent->GetLinkMetric(header.GetAddr2 ()));
           return false;
         }
       case WifiMeshMultihopActionHeader::PATH_REPLY:
@@ -112,7 +112,7 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
           if(prep.GetTtl () == 0)
             return false;
           prep.DecrementTtl ();
-          m_protocol->ReceivePrep (prep, header.GetAddr2 (), m_ifIndex);
+          m_protocol->ReceivePrep (prep, header.GetAddr2 (), m_ifIndex, m_parent->GetLinkMetric(header.GetAddr2 ()));
           return false;
         }
       case WifiMeshMultihopActionHeader::PATH_ERROR:
@@ -308,6 +308,11 @@ HwmpMacPlugin::SendPerr(IePerr perr, std::vector<Mac48Address> receivers)
       m_myPerr.receivers.push_back(receivers[i]);
   }
   SendOnePerr ();
+}
+uint32_t
+HwmpMacPlugin::GetLinkMetric(Mac48Address peerAddress)
+{
+  return m_parent->GetLinkMetric(peerAddress);
 }
 } //namespace dot11s
 }//namespace ns3
