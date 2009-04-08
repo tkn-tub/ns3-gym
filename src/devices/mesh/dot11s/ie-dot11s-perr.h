@@ -58,10 +58,12 @@ private:
   uint8_t  DeserializeInformation (Buffer::Iterator start, uint8_t length);
   void PrintInformation (std::ostream& os) const;
   uint8_t  GetInformationSize () const;
+private:
   uint8_t   m_numOfDest;
   std::vector<FailedDestination> m_addressUnits;
+  friend bool operator== (const IePerr & a, const IePerr & b);
 };
-  
+  bool operator== (const IePerr & a, const IePerr & b);
 } // namespace dot11s
 } //namespace ns3
 #endif

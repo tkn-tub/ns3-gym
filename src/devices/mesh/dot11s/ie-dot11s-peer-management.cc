@@ -22,8 +22,8 @@
 
 #include "ie-dot11s-peer-management.h"
 #include "ns3/assert.h"
-
-
+#include "ns3/test.h"
+#include "ns3/packet.h"
 //NS_LOG_COMPONENT_DEFINE ("MeshPeerLinkManagementelement");
 
 namespace ns3 {
@@ -138,7 +138,74 @@ IePeerManagement::PrintInformation (std::ostream& os) const
 {
   //TODO
 }
-  
+bool operator== (const IePeerManagement & a, const IePeerManagement & b)
+{
+  return (
+      (a.m_length == b.m_length) &&
+      (a.m_subtype == b.m_subtype) &&
+      (a.m_localLinkId == b.m_localLinkId) &&
+      (a.m_peerLinkId == b.m_peerLinkId) &&
+      (a.m_reasonCode == b.m_reasonCode)
+      );
+}
+#ifdef RUN_SELF_TESTS  
+struct IePeerManagementBist : public Test 
+{
+  IePeerManagementBist () : Test ("Mesh/802.11s/IE/PeerManagement") {}
+  virtual bool RunTests(); 
+};
+
+/// Test instance
+static IePeerManagementBist g_IePerrBist;
+
+bool IePeerManagementBist::RunTests ()
+{
+  bool result(true);
+  {
+    IePeerManagement a;
+    a.SetPeerOpen (1);
+    Ptr<Packet> packet = Create<Packet> ();
+    packet->AddHeader(a);
+    IePeerManagement b;
+    packet->RemoveHeader(b);
+    NS_TEST_ASSERT_EQUAL (a, b);
+    packet->AddHeader (a);
+    IePeerManagement c;
+    bool ok = c.FindFirst(packet);
+    NS_TEST_ASSERT (ok);
+    NS_TEST_ASSERT_EQUAL (a, c);
+  }
+  {
+    IePeerManagement a;
+    a.SetPeerConfirm (1,2);
+    Ptr<Packet> packet = Create<Packet> ();
+    packet->AddHeader(a);
+    IePeerManagement b;
+    packet->RemoveHeader(b);
+    NS_TEST_ASSERT_EQUAL (a, b);
+    packet->AddHeader (a);
+    IePeerManagement c;
+    bool ok = c.FindFirst(packet);
+    NS_TEST_ASSERT (ok);
+    NS_TEST_ASSERT_EQUAL (a, c);
+  }
+  {
+    IePeerManagement a;
+    a.SetPeerClose (1, 2, REASON11S_MESH_CONFIGURATION_POLICY_VIOLATION);
+    Ptr<Packet> packet = Create<Packet> ();
+    packet->AddHeader(a);
+    IePeerManagement b;
+    packet->RemoveHeader(b);
+    NS_TEST_ASSERT_EQUAL (a, b);
+    packet->AddHeader (a);
+    IePeerManagement c;
+    bool ok = c.FindFirst(packet);
+    NS_TEST_ASSERT (ok);
+    NS_TEST_ASSERT_EQUAL (a, c);
+  }
+  return result;
+}
+#endif
 } // namespace dot11s
 } //namespace ns3
 

@@ -23,6 +23,8 @@
 #include "ns3/address-utils.h"
 #include "ns3/node.h"
 #include "ns3/assert.h"
+#include "ns3/test.h"
+#include "ns3/packet.h"
 namespace ns3 {
 namespace dot11s {
 /********************************
@@ -203,13 +205,70 @@ IePrep::GetInformationSize () const
     +1; //destination count
   return retval;
 };
-
 void
 IePrep::PrintInformation (std::ostream& os) const
 {
   //TODO
 }
+bool operator== (const IePrep & a, const IePrep & b)
+{
+  return (
+      (a.m_flags == b.m_flags) &&
+      (a.m_hopcount == b.m_hopcount) &&
+      (a.m_ttl == b.m_ttl) &&
+      (a.m_destinationAddress == b.m_destinationAddress) &&
+      (a.m_destSeqNumber == b.m_destSeqNumber) && 
+      (a.m_lifetime == b.m_lifetime) &&
+      (a.m_metric == b.m_metric) &&
+      (a.m_originatorAddress == b.m_originatorAddress) &&
+      (a.m_originatorSeqNumber == b.m_originatorSeqNumber)
+      );
+}
+
+#ifdef RUN_SELF_TESTS
+
+/// Built-in self test for IePrep
+struct IePrepBist : public Test 
+{
+  IePrepBist () : Test ("Mesh/802.11s/IE/PREP") {};
+  virtual bool RunTests(); 
+};
+
+/// Test instance
+static IePrepBist g_IePrepBist;
+
+bool IePrepBist::RunTests ()
+{
+  bool result(true);
   
+  // create test information element
+  IePrep a;
+  a.SetFlags (12);
+  a.SetHopcount (11);
+  a.SetTtl (10);
+  a.SetDestinationAddress (Mac48Address("11:22:33:44:55:66"));
+  a.SetDestinationSeqNumber (123);
+  a.SetLifetime (5000);
+  a.SetMetric (4321);
+  a.SetOriginatorAddress (Mac48Address("33:00:22:00:11:00"));
+  a.SetOriginatorSeqNumber (666);
+  // test roundtrip serialization
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (a);
+  IePrep b;
+  packet->RemoveHeader (b);
+  NS_TEST_ASSERT_EQUAL (a, b);
+  // test FindFirst()
+  packet->AddHeader (a);
+  IePrep c;
+  bool ok = c.FindFirst(packet);
+  NS_TEST_ASSERT (ok);
+  NS_TEST_ASSERT_EQUAL (a, c);
+  return result;
+}
+
+#endif // RUN_SELF_TESTS
+ 
 } // namespace dot11s
 } //namespace ns3
 

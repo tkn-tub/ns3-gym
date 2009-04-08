@@ -22,7 +22,8 @@
 #include "ie-dot11s-perr.h"
 #include "ns3/address-utils.h"
 #include "ns3/node.h"
-
+#include "ns3/packet.h"
+#include "ns3/test.h"
 namespace ns3 {
 namespace dot11s {
 IePerr::~IePerr ()
@@ -142,6 +143,63 @@ IePerr::ResetPerr ()
   m_numOfDest = 0;
   m_addressUnits.clear ();
 }
+bool operator== (const IePerr & a, const IePerr & b)
+{
+  if(a.m_numOfDest != b.m_numOfDest)
+    return false;
+  for(unsigned int i = 0; i < a.m_addressUnits.size(); i ++)
+  {
+    if(a.m_addressUnits[i].destination != b.m_addressUnits[i].destination)
+      return false;
+    if(a.m_addressUnits[i].seqnum != b.m_addressUnits[i].seqnum)
+      return false;
+  }
+  return true;
+}
+#ifdef RUN_SELF_TESTS
+
+/// Built-in self test for IePreq
+struct IePerrBist : public Test 
+{
+  IePerrBist () : Test ("Mesh/802.11s/IE/PERR") {}
+  virtual bool RunTests(); 
+};
+
+/// Test instance
+static IePerrBist g_IePerrBist;
+
+bool IePerrBist::RunTests ()
+{
+  bool result(true);
+  // create test information element
+  IePerr a;
+  IePerr::FailedDestination dest;
+  dest.destination = Mac48Address("11:22:33:44:55:66");
+  dest.seqnum = 1;
+  a.AddAddressUnit(dest);
+  dest.destination = Mac48Address("10:20:30:40:50:60");
+  dest.seqnum = 2;
+  a.AddAddressUnit(dest);
+  dest.destination = Mac48Address("01:02:03:04:05:06");
+  dest.seqnum = 3;
+  a.AddAddressUnit(dest);
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (a);
+  IePerr b;
+  packet->RemoveHeader (b);
+  NS_TEST_ASSERT_EQUAL (a, b);
+  b.Merge(a);
+  NS_TEST_ASSERT_EQUAL (a, b);
+  // test FindFirst()
+  packet->AddHeader (a);
+  IePerr c;
+  bool ok = c.FindFirst(packet);
+  NS_TEST_ASSERT (ok);
+  NS_TEST_ASSERT_EQUAL (a, c);
+  return result;
+}
+
+#endif // RUN_SELF_TESTS
 
 } // namespace dot11s
 } //namespace ns3

@@ -22,7 +22,7 @@
 #ifndef WIFI_TIMING_ELEMENT_H
 #define WIFI_TIMING_ELEMENT_H
 
-#include <list>
+#include <vector>
 #include "ns3/nstime.h"
 #include "ns3/wifi-information-element.h"
 
@@ -40,9 +40,9 @@ public:
   void SetLastBeacon (uint16_t last_beacon);
   void SetBeaconInterval (uint16_t beacon_interval);
 
-  uint8_t GetAid ();
-  uint16_t GetLastBeacon ();
-  uint16_t GetBeaconInterval ();
+  uint8_t GetAid () const;
+  uint16_t GetLastBeacon () const;
+  uint16_t GetBeaconInterval () const;
   /**
    * \brief Least significant octet of AID:
    */
@@ -56,6 +56,7 @@ public:
    * \brief Beacon interval of remote mesh point:
    */
   uint16_t m_beaconInterval;
+  friend bool operator== (const IeBeaconTimingUnit & a, const IeBeaconTimingUnit & b);
 };
 
 /**
@@ -69,7 +70,7 @@ public:
    * \ingroup dot11s
    * This type is a list of timing elements obtained from neigbours with their beacons:
    */
-  typedef std::list< Ptr<IeBeaconTimingUnit> > NeighboursTimingUnitsList;
+  typedef std::vector< Ptr<IeBeaconTimingUnit> > NeighboursTimingUnitsList;
 
   IeBeaconTiming ();
   /**
@@ -108,8 +109,10 @@ private:
    * Timing element parameters:
    */
   uint16_t  m_numOfUnits;
+  friend bool operator== (const IeBeaconTiming & a, const IeBeaconTiming & b);
 };
-  
+bool operator== (const IeBeaconTiming & a, const IeBeaconTiming & b);
+bool operator== (const IeBeaconTimingUnit & a, const IeBeaconTimingUnit & b);
 } // namespace dot11s
 } //namespace ns3
 #endif

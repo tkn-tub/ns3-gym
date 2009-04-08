@@ -47,7 +47,7 @@ public:
   void SetLifetime (uint32_t lifetime);
   void SetMetric (uint32_t metric);
   void SetOriginatorAddress (Mac48Address originator_address);
-  void SetOriginatorSeqNumber (uint32_t originator_seg_number);
+  void SetOriginatorSeqNumber (uint32_t originator_seq_number);
  
   uint8_t GetFlags () const;
   uint8_t GetHopcount () const;
@@ -69,6 +69,7 @@ private:
   uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
   uint8_t GetInformationSize () const;
   void PrintInformation (std::ostream& os) const;
+private:
   uint8_t  m_flags;
   uint8_t  m_hopcount;
   uint8_t  m_ttl;
@@ -78,8 +79,9 @@ private:
   uint32_t m_metric;
   Mac48Address m_originatorAddress;
   uint32_t m_originatorSeqNumber;
+  friend bool operator== (const IePrep & a, const IePrep & b);
 };
-  
+bool operator== (const IePrep & a, const IePrep & b); 
 } // namespace dot11s
 } //namespace ns3
 #endif

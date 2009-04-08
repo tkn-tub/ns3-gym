@@ -21,7 +21,8 @@
 
 
 #include "ie-dot11s-configuration.h"
-
+#include "ns3/test.h"
+#include "ns3/packet.h"
 namespace ns3 {
 namespace dot11s {
 
@@ -29,8 +30,8 @@ dot11sMeshCapability::dot11sMeshCapability ():
     acceptPeerLinks (true),
     MDAEnabled (false),
     forwarding (true),
-    beaconTimingReport (false),
-    TBTTAdjustment (false),
+    beaconTimingReport (true),
+    TBTTAdjustment (true),
     powerSaveLevel (false)
 {}
 
@@ -172,7 +173,58 @@ dot11sMeshCapability const& IeConfiguration::MeshCapability ()
 {
   return m_meshCap;
 }
-  
+bool operator== (const dot11sMeshCapability & a, const dot11sMeshCapability & b)
+{
+  return (
+      (a.acceptPeerLinks == b.acceptPeerLinks) &&
+      (a.MDAEnabled == b.MDAEnabled) &&
+      (a.forwarding == b.forwarding) &&
+      (a.beaconTimingReport == b.beaconTimingReport) &&
+      (a.TBTTAdjustment == b.TBTTAdjustment) &&
+      (a.powerSaveLevel == b.powerSaveLevel)
+      );
+}
+bool operator== (const IeConfiguration & a, const IeConfiguration & b)
+{
+  return (
+      (a.m_APSId == b.m_APSId) &&
+      (a.m_APSMId == b.m_APSMId) &&
+      (a.m_CCMId == b.m_CCMId) &&
+      (a.m_CP == b.m_CP) &&
+      (a.m_meshCap == b.m_meshCap)
+      );
+}
+#ifdef RUN_SELF_TESTS
+
+/// Built-in self test for IePreq
+struct IeConfigurationBist : public Test 
+{
+  IeConfigurationBist () : Test ("Mesh/802.11s/IE/Configuration") {}
+  virtual bool RunTests(); 
+};
+
+/// Test instance
+static IeConfigurationBist g_IeConfigurationBist;
+
+bool IeConfigurationBist::RunTests ()
+{
+  bool result(true);
+  IeConfiguration a;
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (a);
+  IeConfiguration b;
+  packet->RemoveHeader (b);
+  NS_TEST_ASSERT_EQUAL (a, b);
+  // test FindFirst()
+  packet->AddHeader (a);
+  IeConfiguration c;
+  bool ok = c.FindFirst(packet);
+  NS_TEST_ASSERT (ok);
+  NS_TEST_ASSERT_EQUAL (a, c);
+
+  return result;
+}
+#endif
 } // namespace dot11s
 } //namespace ns3
 

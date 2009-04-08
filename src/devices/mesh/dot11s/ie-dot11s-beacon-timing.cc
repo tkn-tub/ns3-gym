@@ -21,6 +21,8 @@
 
 #include "ie-dot11s-beacon-timing.h"
 #include "ns3/log.h"
+#include "ns3/test.h"
+#include "ns3/packet.h"
 namespace ns3 {
 namespace dot11s {
 /*******************************************
@@ -52,23 +54,22 @@ IeBeaconTimingUnit::SetBeaconInterval (uint16_t beaconInterval)
 }
 
 uint8_t
-IeBeaconTimingUnit::GetAid ()
+IeBeaconTimingUnit::GetAid () const
 {
   return m_aid;
 }
 
 uint16_t
-IeBeaconTimingUnit::GetLastBeacon ()
+IeBeaconTimingUnit::GetLastBeacon () const
 {
   return m_lastBeacon;
 }
 
 uint16_t
-IeBeaconTimingUnit::GetBeaconInterval ()
+IeBeaconTimingUnit::GetBeaconInterval () const
 {
   return m_beaconInterval;
 }
-
 /*******************************************
  * IeBeaconTiming
  *******************************************/
@@ -153,8 +154,9 @@ IeBeaconTiming::GetInformationSize () const
 void
 IeBeaconTiming::PrintInformation (std::ostream& os) const
 {
+  os <<"Number of units: " << (uint16_t)m_numOfUnits << "\n";
   for (NeighboursTimingUnitsList::const_iterator j = m_neighbours.begin (); j != m_neighbours.end(); j++)
-    os << "AID=" << (*j)->GetAid () << ", Last beacon was at "
+    os<< "AID=" << (uint16_t)(*j)->GetAid () << ", Last beacon was at "
       << (*j)->GetLastBeacon ()<<", with beacon interval " << (*j)->GetBeaconInterval () << "\n";
 }
 
@@ -201,7 +203,58 @@ IeBeaconTiming::AidToU8 (uint16_t x)
 {
   return (uint8_t) (x&0xff);
 };
-  
+
+bool operator== (const IeBeaconTimingUnit & a, const IeBeaconTimingUnit & b)
+{
+  return (
+      (a.GetAid () == b.GetAid ()) &&
+      (a.GetLastBeacon () == b.GetLastBeacon()) &&
+      (a.GetBeaconInterval () == b.GetBeaconInterval ())
+      );
+}
+bool operator== (const IeBeaconTiming & a, const IeBeaconTiming& b)
+{
+  if(a.m_numOfUnits != b.m_numOfUnits)
+    return false;
+  for(unsigned int i = 0; i < a.m_neighbours.size (); i ++)
+    if(!(*PeekPointer(a.m_neighbours[i]) == *PeekPointer(b.m_neighbours[i])))
+      return false;
+  return true;
+}
+
+#ifdef RUN_SELF_TESTS  
+struct IeBeaconTimingBist : public Test 
+{
+  IeBeaconTimingBist () : Test ("Mesh/802.11s/IE/BeaconTiming") {}
+  virtual bool RunTests(); 
+};
+
+/// Test instance
+static IeBeaconTimingBist g_IePerrBist;
+
+bool IeBeaconTimingBist::RunTests ()
+{
+  bool result(true);
+  // create test information element
+  IeBeaconTiming a;
+  a.IeBeaconTiming::AddNeighboursTimingElementUnit (1,Seconds(1.0), Seconds(4.0));
+  a.IeBeaconTiming::AddNeighboursTimingElementUnit (2,Seconds(2.0), Seconds(3.0));
+  a.IeBeaconTiming::AddNeighboursTimingElementUnit (3,Seconds(3.0), Seconds(2.0));
+  a.IeBeaconTiming::AddNeighboursTimingElementUnit (4,Seconds(4.0), Seconds(1.0));
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader(a);
+  IeBeaconTiming b;
+  packet->RemoveHeader(b);
+  NS_TEST_ASSERT_EQUAL (a, b);
+  //Test Find First
+  packet->AddHeader (a);
+  IeBeaconTiming c;
+  bool ok = c.FindFirst(packet);
+  NS_TEST_ASSERT (ok);
+  NS_TEST_ASSERT_EQUAL (a, c);
+  return result;
+}
+#endif
 } // namespace dot11s
 } //namespace ns3
 

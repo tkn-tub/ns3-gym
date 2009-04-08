@@ -80,8 +80,8 @@ public:
   bool beaconTimingReport;
   bool TBTTAdjustment;
   bool powerSaveLevel;
-
   bool Is (uint16_t cap,uint8_t n) const;
+  friend bool operator== (const dot11sMeshCapability & a, const dot11sMeshCapability & b);
 };
 
 /**
@@ -111,6 +111,7 @@ private:
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
   void PrintInformation (std::ostream& os) const;
+private:
   /** Active Path Selection Protocol ID */
   dot11sPathSelectionProtocol m_APSId;
   /** Active Path Metric ID */
@@ -120,8 +121,10 @@ private:
   /* Channel Precedence */
   dot11sChannelPrecedence m_CP;
   dot11sMeshCapability m_meshCap;
+  friend bool operator== (const IeConfiguration & a, const IeConfiguration & b);
 };
-  
+bool operator== (const IeConfiguration & a, const IeConfiguration & b);
+bool operator== (const dot11sMeshCapability & a, const dot11sMeshCapability & b);
 } // namespace dot11s
 } //namespace ns3
 #endif

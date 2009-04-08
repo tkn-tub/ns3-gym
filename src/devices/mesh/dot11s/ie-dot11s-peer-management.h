@@ -93,8 +93,9 @@ private:
    * Present only within close frame
    */
   PmpReasonCode m_reasonCode;
+  friend bool operator== (const IePeerManagement & a, const IePeerManagement & b);
 };
-
+bool operator== (const IePeerManagement & a, const IePeerManagement & b);
 } // namespace dot11s
 } //namespace ns3
 #endif
