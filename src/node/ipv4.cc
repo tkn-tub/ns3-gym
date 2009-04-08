@@ -41,7 +41,7 @@ Ipv4::~Ipv4 ()
 {}
 
 uint32_t 
-Ipv4::GetIfIndexByAddress (Ipv4Address addr, Ipv4Mask mask)
+Ipv4::GetInterfaceByAddress (Ipv4Address addr, Ipv4Mask mask)
 {
   for (uint32_t i = 0; i < GetNInterfaces (); i++)
     {
@@ -51,7 +51,7 @@ Ipv4::GetIfIndexByAddress (Ipv4Address addr, Ipv4Mask mask)
         }
     }
   // Mapping not found
-  NS_ASSERT_MSG (false, "Ipv4::GetIfIndexByAddress failed");
+  NS_ASSERT_MSG (false, "Ipv4::GetInterfaceByAddress failed");
   return 0;
 }
 

@@ -193,8 +193,8 @@ public:
   Ipv4Address GetAddress (uint32_t i) const;
   void SetMetric (uint32_t i, uint16_t metric);
   uint16_t GetMetric (uint32_t i) const;
-  bool GetIfIndexForDestination (Ipv4Address destination, 
-                                 uint32_t& ifIndex) const;
+  bool GetInterfaceForDestination (Ipv4Address destination, 
+                                 uint32_t& interface) const;
   uint16_t GetMtu (uint32_t i) const;
   bool IsUp (uint32_t i) const;
   void SetUp (uint32_t i);
@@ -210,7 +210,7 @@ protected:
 private:
   Ipv4L3Protocol(const Ipv4L3Protocol &);
   Ipv4L3Protocol &operator = (const Ipv4L3Protocol &);
-  void Lookup (uint32_t ifIndex,
+  void Lookup (uint32_t interface,
                Ipv4Header const &ipHeader,
                Ptr<Packet> packet,
                Ipv4RoutingProtocol::RouteReplyCallback routeReply);
@@ -219,7 +219,7 @@ private:
                     Ipv4Route const &route,
                     Ptr<Packet> packet,
                     Ipv4Header const &ipHeader);
-  bool Forwarding (uint32_t ifIndex, 
+  bool Forwarding (uint32_t interface, 
                    Ptr<Packet> packet, 
                    Ipv4Header &ipHeader, 
                    Ptr<NetDevice> device);
@@ -228,7 +228,7 @@ private:
   void SetupLoopback (void);
   Ptr<Icmpv4L4Protocol> GetIcmp (void) const;
   bool IsUnicast (Ipv4Address ad, Ipv4Mask interfaceMask) const;
-  void DoForward (uint32_t ifIndex, 
+  void DoForward (uint32_t interface, 
                   Ptr<Packet> packet, 
                   Ipv4Header ipHeader);
 

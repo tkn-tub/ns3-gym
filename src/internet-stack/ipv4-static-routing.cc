@@ -111,7 +111,7 @@ Ipv4StaticRouting::SetDefaultMulticastRoute(uint32_t outputInterface)
   NS_LOG_FUNCTION_NOARGS ();
   Ipv4Address origin = Ipv4Address::GetAny ();
   Ipv4Address group = Ipv4Address::GetAny ();
-  uint32_t inputInterface = Ipv4RoutingProtocol::IF_INDEX_ANY;
+  uint32_t inputInterface = Ipv4RoutingProtocol::INTERFACE_ANY;
 
   std::vector<uint32_t> outputInterfaces (1);
   outputInterfaces[0] = outputInterface;
@@ -296,7 +296,7 @@ Ipv4MulticastRoute *
 Ipv4StaticRouting::LookupStatic (
   Ipv4Address origin, 
   Ipv4Address group,
-  uint32_t    ifIndex)
+  uint32_t    interface)
 {
   NS_LOG_FUNCTION_NOARGS ();
 //
@@ -317,12 +317,12 @@ Ipv4StaticRouting::LookupStatic (
 //
 // The first case is the restrictive case where the origin, group and index
 // matches.  This picks up exact routes during forwarded and exact routes from
-// the local node (in which case the ifIndex is a wildcard).
+// the local node (in which case the interface is a wildcard).
 //
       if (origin == route->GetOrigin () && group == route->GetGroup ())
         {
-          if (ifIndex == Ipv4RoutingProtocol::IF_INDEX_ANY || 
-              ifIndex == route->GetInputInterface ())
+          if (interface == Ipv4RoutingProtocol::INTERFACE_ANY || 
+              interface == route->GetInputInterface ())
             {
               return *i;
             }
@@ -334,7 +334,7 @@ Ipv4StaticRouting::LookupStatic (
 // just happily forward packets we don't really know what to do with.  
 // Multicast storms are not generally considered a good thing.
 //
-  if (ifIndex != Ipv4RoutingProtocol::IF_INDEX_ANY)
+  if (interface != Ipv4RoutingProtocol::INTERFACE_ANY)
     {
       return 0;
     }
@@ -515,12 +515,12 @@ Ipv4StaticRouting::RemoveRoute (uint32_t index)
 
 bool
 Ipv4StaticRouting::RequestRoute (
-  uint32_t ifIndex,
+  uint32_t interface,
   Ipv4Header const &ipHeader,
   Ptr<Packet> packet,
   RouteReplyCallback routeReply)
 {
-  NS_LOG_FUNCTION (this << ifIndex << &ipHeader << packet << &routeReply);
+  NS_LOG_FUNCTION (this << interface << &ipHeader << packet << &routeReply);
 
   NS_LOG_LOGIC ("source = " << ipHeader.GetSource ());
 
@@ -531,7 +531,7 @@ Ipv4StaticRouting::RequestRoute (
       NS_LOG_LOGIC ("Multicast destination");
 
       Ipv4MulticastRoute *mRoute = LookupStatic(ipHeader.GetSource (),
-        ipHeader.GetDestination (), ifIndex);
+        ipHeader.GetDestination (), interface);
 
       if (mRoute)
         {
@@ -570,9 +570,9 @@ Ipv4StaticRouting::RequestRoute (
 }
 
 bool
-Ipv4StaticRouting::RequestIfIndex (Ipv4Address destination, uint32_t& ifIndex)
+Ipv4StaticRouting::RequestInterface (Ipv4Address destination, uint32_t& interface)
 {
-  NS_LOG_FUNCTION (this << destination << &ifIndex);
+  NS_LOG_FUNCTION (this << destination << &interface);
 //
 // First, see if this is a multicast packet we have a route for.  If we
 // have a route, then send the packet down each of the specified interfaces.
@@ -582,7 +582,7 @@ Ipv4StaticRouting::RequestIfIndex (Ipv4Address destination, uint32_t& ifIndex)
       NS_LOG_LOGIC ("Multicast destination");
 
       Ipv4MulticastRoute *mRoute = LookupStatic(Ipv4Address::GetAny (),
-        destination, Ipv4RoutingProtocol::IF_INDEX_ANY);
+        destination, Ipv4RoutingProtocol::INTERFACE_ANY);
 
       if (mRoute)
         {
@@ -594,8 +594,8 @@ Ipv4StaticRouting::RequestIfIndex (Ipv4Address destination, uint32_t& ifIndex)
               return false;
             }
 
-          ifIndex = mRoute->GetOutputInterface(0);
-          NS_LOG_LOGIC ("Found ifIndex " << ifIndex);
+          interface = mRoute->GetOutputInterface(0);
+          NS_LOG_LOGIC ("Found interface " << interface);
           return true;
         }
       return false; // Let other routing protocols try to handle this
@@ -607,7 +607,7 @@ Ipv4StaticRouting::RequestIfIndex (Ipv4Address destination, uint32_t& ifIndex)
   Ipv4Route *route = LookupStatic (destination);
   if (route)
     {
-      ifIndex = route->GetInterface ();
+      interface = route->GetInterface ();
       return true;
     }
   else

@@ -1352,7 +1352,7 @@ GlobalRouteManagerImpl::SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* 
 
 //
 // Return the interface index corresponding to a given IP address
-// This is a wrapper around GetIfIndexByIpv4Address(), but we first
+// This is a wrapper around GetInterfaceByIpv4Address(), but we first
 // have to find the right node pointer to pass to that function.
 //
   uint32_t
@@ -1406,7 +1406,7 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
 // we're looking for.  If we find one, return the corresponding interface
 // index.
 //
-          return (ipv4->GetIfIndexByAddress (a, amask) );
+          return (ipv4->GetInterfaceByAddress (a, amask) );
         }
     }
 //

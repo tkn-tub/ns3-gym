@@ -242,17 +242,17 @@ Ipv4L3Protocol::Lookup (
 {
   NS_LOG_FUNCTION (this << &ipHeader << packet << &routeReply);
 
-  Lookup (Ipv4RoutingProtocol::IF_INDEX_ANY, ipHeader, packet, routeReply);
+  Lookup (Ipv4RoutingProtocol::INTERFACE_ANY, ipHeader, packet, routeReply);
 }
 
 void
 Ipv4L3Protocol::Lookup (
-  uint32_t ifIndex,
+  uint32_t interface,
   Ipv4Header const &ipHeader,
   Ptr<Packet> packet,
   Ipv4RoutingProtocol::RouteReplyCallback routeReply)
 {
-  NS_LOG_FUNCTION (this << ifIndex << &ipHeader << packet << &routeReply);
+  NS_LOG_FUNCTION (this << interface << &ipHeader << packet << &routeReply);
 
   for (Ipv4RoutingProtocolList::const_iterator rprotoIter = 
          m_routingProtocols.begin ();
@@ -260,13 +260,13 @@ Ipv4L3Protocol::Lookup (
        rprotoIter++)
     {
       NS_LOG_LOGIC ("Requesting route");
-      if ((*rprotoIter).second->RequestRoute (ifIndex, ipHeader, packet, 
+      if ((*rprotoIter).second->RequestRoute (interface, ipHeader, packet, 
                                               routeReply))
         return;
     }
 
   if (ipHeader.GetDestination ().IsMulticast () && 
-      ifIndex == Ipv4RoutingProtocol::IF_INDEX_ANY)
+      interface == Ipv4RoutingProtocol::INTERFACE_ANY)
     {
       NS_LOG_LOGIC ("Multicast destination with local source");
 //
@@ -432,14 +432,14 @@ Ipv4L3Protocol::FindInterfaceForAddr (Ipv4Address addr) const
 {
   NS_LOG_FUNCTION (this << addr);
 
-  uint32_t ifIndex = 0;
+  uint32_t interface = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); 
        i != m_interfaces.end (); 
-       i++, ifIndex++)
+       i++, interface++)
     {
       if ((*i)->GetAddress () == addr)
         {
-          return ifIndex;
+          return interface;
         }
     }
 
@@ -453,14 +453,14 @@ Ipv4L3Protocol::FindInterfaceForAddr (Ipv4Address addr, Ipv4Mask mask) const
 {
   NS_LOG_FUNCTION (this << addr << mask);
 
-  uint32_t ifIndex = 0;
+  uint32_t interface = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); 
        i != m_interfaces.end (); 
-       i++, ifIndex++)
+       i++, interface++)
     {
       if ((*i)->GetAddress ().CombineMask (mask) == addr.CombineMask (mask))
         {
-          return ifIndex;
+          return interface;
         }
     }
 
@@ -474,14 +474,14 @@ Ipv4L3Protocol::FindInterfaceIndexForDevice (Ptr<NetDevice> device) const
 {
   NS_LOG_FUNCTION (this << device);
 
-  uint32_t ifIndex = 0;
+  uint32_t interface = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); 
        i != m_interfaces.end (); 
-       i++, ifIndex++)
+       i++, interface++)
     {
       if ((*i)->GetDevice () == device)
         {
-          return ifIndex;
+          return interface;
         }
     }
 
@@ -777,12 +777,12 @@ Ipv4L3Protocol::SendRealOut (bool found,
 
 bool
 Ipv4L3Protocol::Forwarding (
-  uint32_t ifIndex, 
+  uint32_t interface, 
   Ptr<Packet> packet, 
   Ipv4Header &ipHeader, 
   Ptr<NetDevice> device)
 {
-  NS_LOG_FUNCTION (ifIndex << packet << &ipHeader<< device);
+  NS_LOG_FUNCTION (interface << packet << &ipHeader<< device);
   NS_LOG_LOGIC ("Forwarding logic for node: " << m_node->GetId ());
 
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin ();
@@ -835,26 +835,26 @@ Ipv4L3Protocol::Forwarding (
           // We forward with a packet copy, since forwarding may change
           // the packet, affecting our local delivery
           NS_LOG_LOGIC ("Forwarding (multicast).");
-          DoForward (ifIndex, packet->Copy (), ipHeader);
+          DoForward (interface, packet->Copy (), ipHeader);
           return false;
         }   
     }
 
-  DoForward (ifIndex, packet, ipHeader);
+  DoForward (interface, packet, ipHeader);
   return true;
 }
 
 void
-Ipv4L3Protocol::DoForward (uint32_t ifIndex, 
+Ipv4L3Protocol::DoForward (uint32_t interface, 
                            Ptr<Packet> packet, 
                            Ipv4Header ipHeader)
 {
-  NS_LOG_FUNCTION (this << ifIndex << packet << ipHeader);
+  NS_LOG_FUNCTION (this << interface << packet << ipHeader);
 
   ipHeader.SetTtl (ipHeader.GetTtl () - 1);
   if (ipHeader.GetTtl () == 0)
     {
-      if (IsUnicast (ipHeader.GetDestination (), GetInterface (ifIndex)->GetNetworkMask ()))
+      if (IsUnicast (ipHeader.GetDestination (), GetInterface (interface)->GetNetworkMask ()))
         {
           Ptr<Icmpv4L4Protocol> icmp = GetIcmp ();
           icmp->SendTimeExceededTtl (ipHeader, packet);
@@ -864,7 +864,7 @@ Ipv4L3Protocol::DoForward (uint32_t ifIndex,
       return;
     }  
   NS_LOG_LOGIC ("Not for me, forwarding.");
-  Lookup (ifIndex, ipHeader, packet,
+  Lookup (interface, ipHeader, packet,
           MakeCallback (&Ipv4L3Protocol::SendRealOut, this));
 }
 
@@ -972,10 +972,10 @@ Ipv4L3Protocol::GetMetric (uint32_t i) const
 }
 
 bool
-Ipv4L3Protocol::GetIfIndexForDestination (
-  Ipv4Address destination, uint32_t& ifIndex) const
+Ipv4L3Protocol::GetInterfaceForDestination (
+  Ipv4Address destination, uint32_t& interface) const
 {
-  NS_LOG_FUNCTION (this << destination << &ifIndex);
+  NS_LOG_FUNCTION (this << destination << &interface);
 //
 // The first thing we do in trying to determine a source address is to 
 // consult the routing protocols.  These will also check for a default route
@@ -986,12 +986,12 @@ Ipv4L3Protocol::GetIfIndexForDestination (
        i++)
     {
       NS_LOG_LOGIC ("Requesting Source Address");
-      uint32_t ifIndexTmp;
+      uint32_t interfaceTmp;
 
-      if ((*i).second->RequestIfIndex (destination, ifIndexTmp))
+      if ((*i).second->RequestInterface (destination, interfaceTmp))
         {
-          NS_LOG_LOGIC ("Found ifIndex " << ifIndexTmp);
-          ifIndex = ifIndexTmp;
+          NS_LOG_LOGIC ("Found interface " << interfaceTmp);
+          interface = interfaceTmp;
           return true;
         }
     }
@@ -1007,7 +1007,7 @@ Ipv4L3Protocol::GetIfIndexForDestination (
   if (GetNInterfaces () == 2)
     {
       NS_LOG_LOGIC ("One Interface.  Using interface 1.");
-      ifIndex = 1;
+      interface = 1;
       return true;
     }
 //
@@ -1030,14 +1030,14 @@ Ipv4L3Protocol::GetIfIndexForDestination (
 
   if (route == NULL)
     {
-      NS_LOG_LOGIC ("Ipv4L3Protocol::GetIfIndexForDestination (): "
+      NS_LOG_LOGIC ("Ipv4L3Protocol::GetInterfaceForDestination (): "
                     "Unable to determine outbound interface.  No default route set");
       return false;
     }
 
-  ifIndex = route->GetInterface ();
+  interface = route->GetInterface ();
 
-  NS_LOG_LOGIC ("Default route specifies interface " << ifIndex);
+  NS_LOG_LOGIC ("Default route specifies interface " << interface);
   return true;
 }
 

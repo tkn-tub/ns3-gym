@@ -63,7 +63,7 @@ Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address dest, uint8_t typ
 {
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
   uint32_t i;
-  if (!ipv4->GetIfIndexForDestination (dest, i))
+  if (!ipv4->GetInterfaceForDestination (dest, i))
     {
       NS_LOG_WARN ("drop icmp message");
       return;

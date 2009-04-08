@@ -102,10 +102,10 @@ public:
  * 
  * If the destination address is a multicast, then the exact processing steps
  * depend on whether or not the packet has been sourced locally.  This is 
- * determined by the parameter ifIndex.  This is the interface index over which
+ * determined by the parameter interface.  This is the interface index over which
  * this packet was received.  If the packet has not been received over a
  * network interface, this index will be set to 
- * Ipv4RoutingProtocol::IF_INDEX_ANY (a very large number).  In that case, 
+ * Ipv4RoutingProtocol::INTERFACE_INDEX_ANY (a very large number).  In that case, 
  * we want to avoid the requirement that an explicit route out of each node 
  * must be set, so we don't do anything here.
  * 
@@ -118,9 +118,9 @@ public:
  * packet out of as many interfaces as required using the provided callback
  * (think of it as a pre-packaged send call).
  *
- * @param ifIndex The network interface index over which the packed was 
- * received.  If the packet is from a local source, ifIndex will be set to
- * Ipv4RoutingProtocol::IF_INDEX_ANY.
+ * @param interface The network interface index over which the packed was 
+ * received.  If the packet is from a local source, interface will be set to
+ * Ipv4RoutingProtocol::INTERFACE_ANY.
  * @param ipHeader the Ipv4Header containing the source and destination IP
  * addresses for the packet.
  * @param packet The packet to be sent if a route is found.
@@ -134,7 +134,7 @@ public:
  * @see Ipv4StaticRouting
  * @see Ipv4RoutingProtocol
  */
-  virtual bool RequestRoute (uint32_t ifIndex,
+  virtual bool RequestRoute (uint32_t interface,
                              Ipv4Header const &ipHeader,
                              Ptr<Packet> packet,
                              RouteReplyCallback routeReply);
@@ -157,12 +157,12 @@ public:
  * that includeds multiple output interfaces, that route cannot be used.
  * 
  * If there are multiple paths out of the node, the resolution is performed
- * by Ipv4L3Protocol::GetIfIndexforDestination which has access to more 
+ * by Ipv4L3Protocol::GetInterfaceforDestination which has access to more 
  * contextual information that is useful for making a determination.
  *
  * @param destination The Ipv4Address if the destination of a hypothetical 
  * packet.  This may be a multicast group address.
- * @param ifIndex A reference to the interface index over which a packet
+ * @param interface A reference to the interface index over which a packet
  * sent to this destination would be sent.
  * @return Returns true if a route is found to the destination that involves
  * a single output interface index, otherwise returns false indicating that
@@ -173,7 +173,7 @@ public:
  * @see Ipv4RoutingProtocol
  * @see Ipv4L3Protocol
  */
-  virtual bool RequestIfIndex (Ipv4Address destination, uint32_t& ifIndex);
+  virtual bool RequestInterface (Ipv4Address destination, uint32_t& interface);
 
 /**
  * @brief Add a host route to the static routing table.
@@ -323,7 +323,7 @@ public:
  * of a local node.  The difference is in the input interface.  Routes for
  * forwarding will always have an explicit input interface specified.  Routes
  * off of a node will always set the input interface to a wildcard specified
- * by the index Ipv4RoutingProtocol::IF_INDEX_ANY.
+ * by the index Ipv4RoutingProtocol::INTERFACE_ANY.
  *
  * For routes off of a local node wildcards may be used in the origin and
  * multicast group addresses.  The wildcard used for Ipv4Adresses is that 
@@ -346,7 +346,7 @@ public:
  * @param group The Ipv4Address of the multicast group or this route.
  * @param inputInterface The input network interface index over which to 
  * expect packets destined for this route.  May be
- * Ipv4RoutingProtocol::IF_INDEX_ANY for packets of local origin.
+ * Ipv4RoutingProtocol::INTERFACE_ANY for packets of local origin.
  * @param outputInterfaces A vector of network interface indices used to specify
  * how to send packets to the destination(s).
  *
@@ -492,7 +492,7 @@ private:
 
   Ipv4Route *LookupStatic (Ipv4Address dest);
   Ipv4MulticastRoute *LookupStatic (Ipv4Address origin, Ipv4Address group,
-                                    uint32_t ifIndex);
+                                    uint32_t interface);
 
   HostRoutes m_hostRoutes;
   NetworkRoutes m_networkRoutes;

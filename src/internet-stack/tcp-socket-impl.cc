@@ -340,12 +340,12 @@ TcpSocketImpl::Connect (const Address & address)
   m_remoteAddress = transport.GetIpv4 ();
   m_remotePort = transport.GetPort ();
   
-  uint32_t localIfIndex;
+  uint32_t localInterface;
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
 
-  if (ipv4->GetIfIndexForDestination (m_remoteAddress, localIfIndex))
+  if (ipv4->GetInterfaceForDestination (m_remoteAddress, localInterface))
     {
-      m_endPoint->SetLocalAddress (ipv4->GetAddress (localIfIndex));
+      m_endPoint->SetLocalAddress (ipv4->GetAddress (localInterface));
     }
   else
     {
@@ -794,7 +794,7 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
                                      const Address& fromAddress)
 {
   NS_LOG_FUNCTION (this << a << p  << fromAddress);
-  uint32_t localIfIndex;
+  uint32_t localInterface;
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
   switch (a)
   {
@@ -809,9 +809,9 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       NS_LOG_LOGIC ("TcpSocketImpl " << this <<" Action SYN_ACK_TX");
 //      m_remotePort = InetSocketAddress::ConvertFrom (fromAddress).GetPort ();
 //      m_remoteAddress = InetSocketAddress::ConvertFrom (fromAddress).GetIpv4 ();
-//       if (ipv4->GetIfIndexForDestination (m_remoteAddress, localIfIndex))
+//       if (ipv4->GetInterfaceForDestination (m_remoteAddress, localInterface))
 //         {
-//           m_localAddress = ipv4->GetAddress (localIfIndex);
+//           m_localAddress = ipv4->GetAddress (localInterface);
 //         }
       if (m_state == LISTEN) //this means we should fork a new TcpSocketImpl
         {
@@ -830,9 +830,9 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       // This is the cloned endpoint
       NS_ASSERT (m_state == SYN_RCVD);
       m_endPoint->SetPeer (m_remoteAddress, m_remotePort);
-      if (ipv4->GetIfIndexForDestination (m_remoteAddress, localIfIndex))
+      if (ipv4->GetInterfaceForDestination (m_remoteAddress, localInterface))
         {
-          m_localAddress = ipv4->GetAddress (localIfIndex);
+          m_localAddress = ipv4->GetAddress (localInterface);
           m_endPoint->SetLocalAddress (m_localAddress);
           // Leave local addr in the portmap to any, as the path from
           // remote can change and packets can arrive on different interfaces

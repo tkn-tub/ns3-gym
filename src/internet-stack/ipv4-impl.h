@@ -94,8 +94,8 @@ public:
   virtual void SetMetric (uint32_t i, uint16_t metric);
   virtual uint16_t GetMetric (uint32_t i) const;
   virtual Ipv4Address GetSourceAddress (Ipv4Address destination) const;
-  virtual bool GetIfIndexForDestination (Ipv4Address dest, 
-    uint32_t &ifIndex) const;
+  virtual bool GetInterfaceForDestination (Ipv4Address dest, 
+    uint32_t &interface) const;
 
   virtual uint16_t GetMtu (uint32_t i) const;
   virtual bool IsUp (uint32_t i) const;

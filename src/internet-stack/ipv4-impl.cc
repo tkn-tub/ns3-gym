@@ -224,21 +224,21 @@ Ipv4Impl::GetMetric (uint32_t i) const
 }
 
 bool
-Ipv4Impl::GetIfIndexForDestination (Ipv4Address dest, uint32_t &ifIndex) const
+Ipv4Impl::GetInterfaceForDestination (Ipv4Address dest, uint32_t &interface) const
 {
-  return m_ipv4->GetIfIndexForDestination (dest, ifIndex);
+  return m_ipv4->GetInterfaceForDestination (dest, interface);
 }
 
 Ipv4Address 
 Ipv4Impl::GetSourceAddress (Ipv4Address destination) const
 {
-  uint32_t ifIndex = 0xffffffff;
+  uint32_t interface = 0xffffffff;
 
-  bool result = m_ipv4->GetIfIndexForDestination (destination, ifIndex);
+  bool result = m_ipv4->GetInterfaceForDestination (destination, interface);
 
   if (result)
     {
-      return m_ipv4->GetAddress (ifIndex);
+      return m_ipv4->GetAddress (interface);
     }
   else
     {

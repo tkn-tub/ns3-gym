@@ -98,12 +98,12 @@ public:
                       RoutingTableEntry &outEntry) const;
 
   // From Ipv4RoutingProtocol
-  virtual bool RequestRoute (uint32_t ifIndex,
+  virtual bool RequestRoute (uint32_t interface,
                              const Ipv4Header &ipHeader,
                              Ptr<Packet> packet,
                              RouteReplyCallback routeReply);
-  virtual bool RequestIfIndex (Ipv4Address destination, 
-                               uint32_t& ifIndex);
+  virtual bool RequestInterface (Ipv4Address destination, 
+                               uint32_t& interface);
 
 };
 

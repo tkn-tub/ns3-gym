@@ -308,7 +308,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
       return -1;
     }
 
-  uint32_t localIfIndex;
+  uint32_t localInterface;
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
 
   // Locally override the IP TTL for this socket
@@ -389,10 +389,10 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
       NS_LOG_LOGIC ("Limited broadcast end.");
       return p->GetSize();
     }
-  else if (ipv4->GetIfIndexForDestination(dest, localIfIndex))
+  else if (ipv4->GetInterfaceForDestination(dest, localInterface))
     {
       NS_LOG_LOGIC ("Route exists");
-      m_udp->Send (p->Copy (), ipv4->GetAddress (localIfIndex), dest,
+      m_udp->Send (p->Copy (), ipv4->GetAddress (localInterface), dest,
 		   m_endPoint->GetLocalPort (), port);
       NotifyDataSent (p->GetSize ());
       NotifySend (GetTxAvailable ());

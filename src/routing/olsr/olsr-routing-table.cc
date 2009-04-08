@@ -105,7 +105,7 @@ RoutingTable::FindSendEntry (RoutingTableEntry const &entry,
 
 
 bool
-RoutingTable::RequestRoute (uint32_t ifIndex,
+RoutingTable::RequestRoute (uint32_t interface,
                             const Ipv4Header &ipHeader,
                             Ptr<Packet> packet,
                             RouteReplyCallback routeReply)
@@ -148,8 +148,8 @@ RoutingTable::RequestRoute (uint32_t ifIndex,
 }
 
 bool
-RoutingTable::RequestIfIndex (Ipv4Address destination,
-                              uint32_t& ifIndex)
+RoutingTable::RequestInterface (Ipv4Address destination,
+                              uint32_t& interface)
 {
   RoutingTableEntry entry1, entry2;
   if (Lookup (destination, entry1))
@@ -157,7 +157,7 @@ RoutingTable::RequestIfIndex (Ipv4Address destination,
       bool foundSendEntry = FindSendEntry (entry1, entry2);
       if (!foundSendEntry)
         NS_FATAL_ERROR ("FindSendEntry failure");
-      ifIndex = entry2.interface;
+      interface = entry2.interface;
       return true;
     }
   else
