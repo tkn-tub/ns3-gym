@@ -1,0 +1,43 @@
+1. Changeset:
+
+Synopsis:
+--------
+- deconflict NetDevice::ifIndex and Ipv4::ifIndex (bug 85)
+
+Changed public API (src/node)
+--------
+
+All function parameters named "ifIndex" that refer to an Ipv4 interface
+are instead named "interface". 
+
+- static const uint32_t Ipv4RoutingProtocol::IF_INDEX_ANY = 0xffffffff;
++ static const uint32_t Ipv4RoutingProtocol::INTERFACE_ANY = 0xffffffff;
+
+- bool Ipv4RoutingProtocol::RequestIfIndex (Ipv4Address destination, uint32_t& ifIndex);
++ bool Ipv4RoutingProtocol::RequestInterface (Ipv4Address destination, uint32_t& interface);
+(N.B. this particular function will be later renamed to RouteOutput() in the 
+proposed IPv4 routing refactoring)
+
+- uint32_t Ipv4::GetIfIndexByAddress (Ipv4Address addr, Ipv4Mask mask);
++ int_32t Ipv4::GetInterfaceForAddress (Ipv4Address address, Ipv4Mask mask) const;
+
+- bool Ipv4::GetIfIndexForDestination (Ipv4Address dest, uint32_t &ifIndex) const;
++ bool Ipv4::GetInterfaceForDestination (Ipv4Address dest, uint32_t &interface) const;
+(N.B. this function is not needed in the proposed Ipv4 routing refactoring)
+
+
+New public API or classes (src/node)
+--------
+
+None.
+
+Changed private API (src/internet-node)
+--------
+
+New private API or classes (src/internet-node)
+--------
+
+None.
+
+Changeset:
+- allow multiple IPv4 addresses to be assigned to an interface (bug 188)
