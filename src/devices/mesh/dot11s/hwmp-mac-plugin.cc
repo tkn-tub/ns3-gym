@@ -309,9 +309,14 @@ HwmpMacPlugin::SendPerr(IePerr perr, std::vector<Mac48Address> receivers)
   SendOnePerr ();
 }
 uint32_t
-HwmpMacPlugin::GetLinkMetric(Mac48Address peerAddress)
+HwmpMacPlugin::GetLinkMetric(Mac48Address peerAddress) const
 {
   return m_parent->GetLinkMetric(peerAddress);
+}
+uint16_t
+HwmpMacPlugin::GetChannelId () const
+{
+  return m_parent->GetFrequencyChannel ();
 }
 } //namespace dot11s
 }//namespace ns3

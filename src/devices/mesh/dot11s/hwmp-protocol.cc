@@ -209,8 +209,17 @@ HwmpProtocol::RequestRoute (
   }
   if (destination == Mac48Address::GetBroadcast ())
   {
+    //channel IDs where we have already sent broadcast:
+    std::vector<uint16_t> channels;
     for(HwmpPluginMap::const_iterator plugin = m_interfaces.begin (); plugin != m_interfaces.end (); plugin ++)
     {
+      bool should_send = true;
+      for(std::vector<uint16_t>::const_iterator chan = channels.begin(); chan != channels.end(); chan ++)
+        if(*chan == plugin->second->GetChannelId ())
+          should_send = false;
+      if(!should_send)
+        continue;
+      channels.push_back(plugin->second->GetChannelId ());
       std::vector<Mac48Address> receivers = GetBroadcastReceivers (plugin->first);
       for (std::vector<Mac48Address>::const_iterator i = receivers.begin (); i != receivers.end(); i ++)
       {
