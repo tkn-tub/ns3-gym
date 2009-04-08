@@ -20,6 +20,7 @@ def build(bld):
         'hwmp-protocol.cc',
         'airtime-metric.cc',
         'dot11s-helper.cc',
+        'mesh-wifi-mac-header.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'dot11s'

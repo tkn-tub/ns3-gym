@@ -21,10 +21,10 @@
 
 #include "ns3/assert.h"
 #include "ns3/address-utils.h"
-#include "ns3/mesh-wifi-mac-header.h"
+#include "mesh-wifi-mac-header.h"
 
 namespace ns3 {
-
+namespace dot11s {
 /***********************************************************
  *  Here Mesh Mac Header functionality is defined.
  ***********************************************************/
@@ -37,7 +37,6 @@ WifiMeshHeader::GetTypeId ()
     ;
   return tid;
 }
-
 WifiMeshHeader::WifiMeshHeader ():
   m_meshFlags (0),
   m_meshTtl (0),
@@ -47,77 +46,64 @@ WifiMeshHeader::WifiMeshHeader ():
   m_addr6 (Mac48Address ())
 {
 }
-
 WifiMeshHeader::~WifiMeshHeader ()
 {
 }
-
 TypeId
 WifiMeshHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
-
 void
 WifiMeshHeader::SetAddr4 (Mac48Address address)
 {
   m_addr4 = address;
 }
-
 void
 WifiMeshHeader::SetAddr5 (Mac48Address address)
 {
   m_addr5 = address;
 }
-
 void
 WifiMeshHeader::SetAddr6 (Mac48Address address)
 {
   m_addr6 = address;
 }
-
 Mac48Address
 WifiMeshHeader::GetAddr4 () const
 {
   return m_addr4;
 }
-
 Mac48Address
 WifiMeshHeader::GetAddr5 () const
 {
   return m_addr5;
 }
-
 Mac48Address
 WifiMeshHeader::GetAddr6 () const
 {
   return m_addr6;
 }
-
 void
 WifiMeshHeader::SetMeshSeqno (uint32_t seqno)
 {
   m_meshSeqno = seqno;
 }
-
 uint32_t
 WifiMeshHeader::GetMeshSeqno () const
 {
   return m_meshSeqno;
 }
-
 void
 WifiMeshHeader::SetMeshTtl (uint8_t TTL)
 {
   m_meshTtl = TTL;
 }
-
 uint8_t
 WifiMeshHeader::GetMeshTtl () const
 {
   return m_meshTtl;
 }
-
 void
 WifiMeshHeader::SetAddressExt (uint8_t num_of_addresses)
 {
@@ -125,20 +111,16 @@ WifiMeshHeader::SetAddressExt (uint8_t num_of_addresses)
     return;
   m_meshFlags |= 0xc0 & (num_of_addresses << 6);
 }
-
 uint8_t
 WifiMeshHeader::GetAddressExt () const
 {
   return ((0xc0 & m_meshFlags) >> 6);
 }
-
-
 uint32_t
 WifiMeshHeader::GetSerializedSize () const
 {
   return 6 + GetAddressExt () * 6;
 }
-
 void
 WifiMeshHeader::Serialize (Buffer::Iterator start) const
 {
@@ -155,7 +137,6 @@ WifiMeshHeader::Serialize (Buffer::Iterator start) const
   if (addresses_to_add > 2)
     WriteTo (i, m_addr6);
 }
-
 uint32_t
 WifiMeshHeader::Deserialize (Buffer::Iterator start)
 {
@@ -186,14 +167,12 @@ WifiMeshHeader::Print (std::ostream &os) const
 WifiMeshMultihopActionHeader::WifiMeshMultihopActionHeader ()
 {
 }
-
 WifiMeshMultihopActionHeader::~WifiMeshMultihopActionHeader ()
 {
 }
-
 void
 WifiMeshMultihopActionHeader::SetAction (
-  enum WifiMeshMultihopActionHeader::CategoryValue type,
+  WifiMeshMultihopActionHeader::CategoryValue type,
   WifiMeshMultihopActionHeader::ACTION_VALUE action)
 {
   switch (type)
@@ -242,8 +221,7 @@ WifiMeshMultihopActionHeader::SetAction (
       break;
     };
 }
-
-enum WifiMeshMultihopActionHeader::CategoryValue
+WifiMeshMultihopActionHeader::CategoryValue
 WifiMeshMultihopActionHeader::GetCategory ()
 {
   switch (m_category)
@@ -263,7 +241,6 @@ WifiMeshMultihopActionHeader::GetCategory ()
       return MESH_PEER_LINK_MGT;
     }
 }
-
 WifiMeshMultihopActionHeader::ACTION_VALUE
 WifiMeshMultihopActionHeader::GetAction ()
 {
@@ -320,7 +297,6 @@ WifiMeshMultihopActionHeader::GetAction ()
       return retval;
     }
 }
-
 TypeId
 WifiMeshMultihopActionHeader::GetTypeId ()
 {
@@ -330,31 +306,26 @@ WifiMeshMultihopActionHeader::GetTypeId ()
                       ;
   return tid;
 }
-
 TypeId
 WifiMeshMultihopActionHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
-
 void
 WifiMeshMultihopActionHeader::Print (std::ostream &os) const
 {
 }
-
 uint32_t
 WifiMeshMultihopActionHeader::GetSerializedSize () const
 {
   return 2;
 }
-
 void
 WifiMeshMultihopActionHeader::Serialize (Buffer::Iterator start) const
 {
   start.WriteU8 (m_category);
   start.WriteU8 (m_actionValue);
 }
-
 uint32_t
 WifiMeshMultihopActionHeader::Deserialize (Buffer::Iterator start)
 {
@@ -363,5 +334,5 @@ WifiMeshMultihopActionHeader::Deserialize (Buffer::Iterator start)
   m_actionValue = i.ReadU8 ();
   return i.GetDistanceFrom (start);
 }
-
+} //namespace dot11s
 } // namespace ns3

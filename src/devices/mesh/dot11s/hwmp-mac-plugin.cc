@@ -23,9 +23,8 @@
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
 #include "ns3/log.h"
-#include "ns3/mesh-wifi-mac-header.h"
-
 #include "hwmp-mac-plugin.h"
+#include "mesh-wifi-mac-header.h"
 #include "hwmp-protocol.h"
 #include "hwmp-tag.h"
 #include "ie-dot11s-preq.h"

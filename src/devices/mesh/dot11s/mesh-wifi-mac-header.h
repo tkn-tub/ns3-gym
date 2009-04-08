@@ -26,8 +26,9 @@
 #include "ns3/mac48-address.h"
 
 namespace ns3 {
+namespace dot11s {
 /**
- * \ingroup mesh
+ * \ingroup dot11s
  */
 class WifiMeshHeader : public Header //7.1.3.5b
 {
@@ -145,5 +146,6 @@ private:
   uint8_t m_category;
   uint8_t m_actionValue;
 };
+} //namespace dot11s
 } // namespace ns3
 #endif /* MESH_WIFI_MAC_HEADER_H */

@@ -23,11 +23,10 @@
 #include "peer-management-plugin.h"
 #include "peer-management-protocol.h"
 #include "peer-link-frame.h"
+#include "mesh-wifi-mac-header.h"
 #include "ns3/mesh-wifi-interface-mac.h"
-#include "ns3/mesh-wifi-mac-header.h"
 #include "ns3/simulator.h"
 #include "ns3/wifi-mac-header.h"
-#include "ns3/mesh-wifi-mac-header.h"
 #include "ns3/log.h"
 
 NS_LOG_COMPONENT_DEFINE("PeerManager");
