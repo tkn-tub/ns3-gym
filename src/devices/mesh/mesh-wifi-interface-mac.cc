@@ -598,7 +598,20 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 uint32_t
 MeshWifiInterfaceMac::GetLinkMetric (Mac48Address peerAddress)
 {
-  return 1;
+  uint32_t metric = 1;
+  if(!m_linkMetricCallback.IsNull ())
+    metric = m_linkMetricCallback(peerAddress, this);
+  return metric;
+}
+void
+MeshWifiInterfaceMac::SetLinkMetricCallback (Callback<uint32_t, Mac48Address, Ptr<MeshWifiInterfaceMac> > cb)
+{
+  m_linkMetricCallback = cb;
+}
+Ptr<WifiRemoteStationManager>
+MeshWifiInterfaceMac::GetStationManager()
+{
+  return m_stationManager;
 }
 } // namespace ns3
 

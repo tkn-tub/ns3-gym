@@ -29,6 +29,7 @@
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/aarf-wifi-manager.h"
+#include "airtime-metric.h"
 
 namespace ns3 {
 namespace dot11s {
@@ -80,6 +81,8 @@ MeshWifiHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node)
   device->SetMac (mac);
   device->SetPhy (phy);
   device->SetRemoteStationManager (manager);
+  Ptr<AirtimeLinkMetricCalculator> metric = Create <AirtimeLinkMetricCalculator> ();
+  mac->SetLinkMetricCallback (MakeCallback(&AirtimeLinkMetricCalculator::CalculateMetric, metric));
   /*
   if (channel > 0)
     mac->SwitchFrequencyChannel (channel);

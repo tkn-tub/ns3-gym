@@ -146,7 +146,12 @@ public:
   bool CheckSupportedRates(SupportedRates rates) const;
   /// \return list of supported bitrates
   SupportedRates GetSupportedRates () const;
+  ///\ name Metric Calculation routines:
+  ///\{
+  void SetLinkMetricCallback(Callback<uint32_t, Mac48Address, Ptr<MeshWifiInterfaceMac> > cb);
   uint32_t GetLinkMetric(Mac48Address peerAddress);
+  Ptr<WifiRemoteStationManager> GetStationManager ();
+  ///\}
 private:
   /// Frame receive handler
   void  Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
@@ -215,6 +220,7 @@ private:
   typedef std::vector< Ptr<MeshWifiInterfaceMacPlugin> > PluginList; 
   /// List of all installed plugins
   PluginList m_plugins;
+  Callback<uint32_t, Mac48Address, Ptr<MeshWifiInterfaceMac> > m_linkMetricCallback;
 };
 
 } // namespace ns3

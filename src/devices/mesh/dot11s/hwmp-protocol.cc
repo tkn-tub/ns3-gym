@@ -291,7 +291,7 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
 void
 HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, uint32_t metric)
 {
-  preq.IncrementMetric (1);
+  preq.IncrementMetric (metric);
   //acceptance cretirea:
   std::map<Mac48Address, uint32_t>::const_iterator i = m_lastHwmpSeqno.find (preq.GetOriginatorAddress());
   if (i == m_lastHwmpSeqno.end ())
@@ -314,7 +314,7 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, u
       m_lastHwmpSeqno[preq.GetOriginatorAddress ()] = preq.GetOriginatorSeqNumber();
       m_lastHwmpMetric[preq.GetOriginatorAddress ()] = preq.GetMetric();
     }
-  NS_LOG_DEBUG("I am "<<m_address<<"Accepted preq from address"<<from<<", preq:"<<preq);
+  NS_LOG_UNCOND("I am "<<m_address<<"Accepted preq from address"<<from<<", preq:"<<preq);
   //check if can answer:
   std::vector<Ptr<DestinationAddressUnit> > destinations = preq.GetDestinationList ();
   for (std::vector<Ptr<DestinationAddressUnit> >::const_iterator i = destinations.begin (); i != destinations.end(); i++)
@@ -528,8 +528,8 @@ HwmpProtocol::PeerLinkStatus(Mac48Address meshPointAddress, Mac48Address peerAdd
     HwmpRtable::LookupResult result = m_rtable->LookupReactive(meshPointAddress);
     HwmpPluginMap::const_iterator i = m_interfaces.find(interface);
     NS_ASSERT(i != m_interfaces.end ());
-    if(result.retransmitter == Mac48Address::GetBroadcast ())
-      m_rtable->AddReactivePath(meshPointAddress, peerAddress, interface, 1, Seconds (0), i->second->GetLinkMetric(peerAddress));
+    //if(result.retransmitter == Mac48Address::GetBroadcast ())
+    //  m_rtable->AddReactivePath(meshPointAddress, peerAddress, interface, 1, Seconds (0), i->second->GetLinkMetric(peerAddress));
   }
   else
   {

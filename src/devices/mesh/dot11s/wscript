@@ -18,6 +18,7 @@ def build(bld):
         'hwmp-rtable.cc',
         'hwmp-mac-plugin.cc',
         'hwmp-protocol.cc',
+        'airtime-metric.cc',
         'dot11s-helper.cc',
         ]
     headers = bld.new_task_gen('ns3header')
