@@ -73,7 +73,7 @@ private:
   
   /// Like RequestRoute, but for unicast packets
   bool ForwardUnicast (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
-      Ptr<Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply);
+      Ptr<Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply, uint32_t ttl);
   
   ///\name Interaction with HWMP MAC plugin
   //\{

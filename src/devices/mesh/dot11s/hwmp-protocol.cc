@@ -182,32 +182,33 @@ HwmpProtocol::RequestRoute (
 )
 {
   HwmpTag tag;
-  tag.SetAddress(Mac48Address::GetBroadcast());
   if (sourceIface == GetMeshPoint ()->GetIfIndex())
     // packet from level 3
   {
-    NS_ASSERT (!packet->PeekPacketTag(tag));
+    if(packet->PeekPacketTag(tag))
+      NS_ASSERT (false);
     //Filling TAG:
     if(destination == Mac48Address::GetBroadcast ())
     {
       tag.SetSeqno (m_dataSeqno++);
-      tag.SetTtl (m_maxTtl+1);
       if (m_dataSeqno == 0xffffffff)
         m_dataSeqno = 0;
-      packet->AddPacketTag(tag);
     }
+    tag.SetTtl (m_maxTtl+1);
   }
   else
   {
-    NS_ASSERT (packet->PeekPacketTag(tag));
+    if(!packet->RemovePacketTag(tag))
+    {
+      NS_ASSERT(false);
+      return false;
+    }
     if (tag.GetTtl () == 0)
       return false;
     tag.DecrementTtl ();
   }
   if (destination == Mac48Address::GetBroadcast ())
   {
-    bool tagExists = packet->RemovePacketTag (tag);
-    NS_ASSERT(tagExists);
     for(HwmpPluginMap::const_iterator plugin = m_interfaces.begin (); plugin != m_interfaces.end (); plugin ++)
     {
       std::vector<Mac48Address> receivers = GetBroadcastReceivers (plugin->first);
@@ -221,12 +222,12 @@ HwmpProtocol::RequestRoute (
     }
   }
   else
-    return ForwardUnicast(sourceIface, source, destination, packet, protocolType, routeReply);
+    return ForwardUnicast(sourceIface, source, destination, packet, protocolType, routeReply, tag.GetTtl ());
   return true;
 }
 bool
 HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
-    Ptr<Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply)
+    Ptr<Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply, uint32_t ttl)
 {
   NS_ASSERT(destination != Mac48Address::GetBroadcast ());
   HwmpRtable::LookupResult result = m_rtable->LookupReactive(destination);
@@ -235,11 +236,9 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
   if(result.retransmitter != Mac48Address::GetBroadcast ())
   {
     //reply immediately:
-    //packet->RemoveAllTags ();
-    //Add a proper HWMP-tag:
     HwmpTag tag;
-    NS_ASSERT(!packet->RemovePacketTag(tag));
     tag.SetAddress (result.retransmitter);
+    tag.SetTtl (ttl);
     //seqno and metric is not used;
     packet->AddPacketTag(tag);
     routeReply (true, packet, source, destination, protocolType, result.ifIndex);
@@ -275,7 +274,6 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
   QueuedPacket pkt;
   HwmpTag tag;
   packet->RemovePacketTag (tag);
-  tag.SetAddress(Mac48Address::GetBroadcast ());
   packet->AddPacketTag (tag);
   pkt.pkt = packet;
   pkt.dst = destination;
