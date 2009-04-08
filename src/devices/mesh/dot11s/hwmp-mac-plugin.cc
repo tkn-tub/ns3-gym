@@ -150,7 +150,7 @@ HwmpMacPlugin::SendPreq(IePreq preq)
   SendOnePreq ();
 }
 void
-HwmpMacPlugin::RequestDestination (Mac48Address dst)
+HwmpMacPlugin::RequestDestination (Mac48Address dst, uint32_t seqno)
 {
   if (m_preqQueue.end () == m_myPreq)
   {
@@ -160,17 +160,17 @@ HwmpMacPlugin::RequestDestination (Mac48Address dst)
     preq.SetTTL (m_protocol->GetMaxTtl ());
     preq.SetPreqID (m_protocol->GetNextPreqId ());
     preq.SetOriginatorAddress (m_protocol->GetAddress ());
-    preq.SetOriginatorSeqNumber (m_protocol->GetNextHwmpSeqno());
+    preq.SetOriginatorSeqNumber (seqno);
     preq.SetLifetime (m_protocol->GetActivePathLifetime ());
     preq.AddDestinationAddressElement (false, false, dst, 0); //DO = 0, RF = 0
     m_preqQueue.push_back (preq);
     //set iterator position to my preq:
-    m_myPreq = m_preqQueue.end () -1;
+    m_myPreq = m_preqQueue.end () - 1;
     SendOnePreq ();
   }
   else
   {
-    NS_ASSERT (m_myPreq->GetOriginatorAddress() == m_parent->GetAddress());
+    NS_ASSERT (m_myPreq->GetOriginatorAddress() == m_protocol->GetAddress());
     m_myPreq->AddDestinationAddressElement (m_protocol->GetDoFlag(), m_protocol->GetRfFlag(), dst, 0); //DO = 0, RF = 0
   }
 }

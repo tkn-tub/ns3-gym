@@ -99,21 +99,21 @@ main (int argc, char *argv[])
   UdpEchoServerHelper echoServer (9);
   ApplicationContainer serverApps = echoServer.Install (nodes.Get (0));
   serverApps.Start (Seconds (1.0));
-  serverApps.Stop (Seconds (10.0));
+  serverApps.Stop (Seconds (100.0));
   UdpEchoClientHelper echoClient (interfaces.GetAddress (0), 9);
-  echoClient.SetAttribute ("MaxPackets", UintegerValue (10000));
+  echoClient.SetAttribute ("MaxPackets", UintegerValue (100000));
   echoClient.SetAttribute ("Interval", TimeValue (Seconds (0.005)));
   echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
   ApplicationContainer clientApps = echoClient.Install (nodes.Get (1));
   clientApps.Start (Seconds (2.0));
-  clientApps.Stop (Seconds (10.0));
+  clientApps.Stop (Seconds (100.0));
   
   // Enable PCAP trace
   if (pcap)
       wifiPhy.EnablePcapAll (std::string ("mp-") + mesh.GetSsid ().PeekString ());
   
   // Happy end
-  Simulator::Stop (Seconds (10.0));
+  Simulator::Stop (Seconds (100.0));
   Simulator::Run ();
   Simulator::Destroy ();
   return 0;

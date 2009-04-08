@@ -63,7 +63,7 @@ private:
   void SendPreq(IePreq preq);
   void SendPrep(IePrep prep, Mac48Address receiver);
   void SendPerr(IePerr perr, std::vector<Mac48Address> receivers);
-  void RequestDestination (Mac48Address dest);
+  void RequestDestination (Mac48Address dest, uint32_t seqno);
   //\}
   
   /// Sends one PREQ when PreqMinInterval after last PREQ expires (if any PREQ exists in rhe queue)

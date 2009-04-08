@@ -85,18 +85,16 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
   NS_LOG_DEBUG("SRC="<<src48<<", DST = "<<dst48<<", I am: "<<m_address);
   if (!m_promiscRxCallback.IsNull ())
     m_promiscRxCallback (this, packet, protocol, src, dst, packetType);
-  switch (packetType)
-    {
-    case PACKET_HOST:
-      m_rxCallback (this, packet, protocol, src);
-      break;
-    case PACKET_BROADCAST:
-    case PACKET_MULTICAST:
-      m_rxCallback (this, packet, protocol, src);
-    case PACKET_OTHERHOST:
-      Forward (incomingPort, packet->Copy (), protocol, src48, dst48);
-      break;
-    }
+  if(dst48.IsBroadcast () || dst48.IsMulticast ())
+  {
+    m_rxCallback (this, packet, protocol, src);
+    Forward (incomingPort, packet->Copy (), protocol, src48, dst48);
+    return;
+  }
+  if(dst48 == m_address)
+    m_rxCallback (this, packet, protocol, src);
+  else
+    Forward (incomingPort, packet->Copy (), protocol, src48, dst48);
 }
 
 void

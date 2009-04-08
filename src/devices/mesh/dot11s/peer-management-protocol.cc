@@ -334,7 +334,6 @@ PeerManagementProtocol::GetActiveLinks(uint32_t interface)
     if((*i)->LinkIsEstab ())
       retval.push_back((*i)->GetPeerAddress ());
   return retval;
-  NS_ASSERT(false);
 }
 void
 PeerManagementProtocol::PeerCleanup ()

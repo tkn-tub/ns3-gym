@@ -120,7 +120,7 @@ HwmpProtocol::GetTypeId ()
         )
   .AddAttribute ("unicastDataThreshold",
         "Maximum number ofbroadcast receivers, when we send a broadcast as a chain of unicasts",
-        UintegerValue (32),
+        UintegerValue (1),
         MakeUintegerAccessor (&HwmpProtocol::m_unicastDataThreshold),
         MakeUintegerChecker<uint8_t> (1)
         )
@@ -219,11 +219,6 @@ HwmpProtocol::RequestRoute (
         routeReply (true, packet_copy, source, destination, protocolType, plugin->first);
       }
     }
-#if 0
-    tag.SetAddress (Mac48Address::GetBroadcast ());
-    packet->AddPacketTag(tag);
-    routeReply (true, packet, source, destination, protocolType, HwmpRtable::INTERFACE_ANY);
-#endif
   }
   else
     return ForwardUnicast(sourceIface, source, destination, packet, protocolType, routeReply);
@@ -272,8 +267,11 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
   }
   //Request a destination:
   if(ShouldSendPreq(destination))
+  {
+    uint32_t seqno = GetNextHwmpSeqno ();
     for(HwmpPluginMap::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
-      i->second->RequestDestination(destination);
+      i->second->RequestDestination(destination, seqno);
+  }
   QueuedPacket pkt;
   HwmpTag tag;
   packet->RemovePacketTag (tag);
@@ -314,8 +312,7 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, u
       m_lastHwmpSeqno[preq.GetOriginatorAddress ()] = preq.GetOriginatorSeqNumber();
       m_lastHwmpMetric[preq.GetOriginatorAddress ()] = preq.GetMetric();
     }
-  NS_LOG_UNCOND("I am "<<m_address<<"Accepted preq from address"<<from<<", preq:"<<preq);
-  //check if can answer:
+  NS_LOG_DEBUG("I am "<<m_address<<"Accepted preq from address"<<from<<", preq:"<<preq);
   std::vector<Ptr<DestinationAddressUnit> > destinations = preq.GetDestinationList ();
   for (std::vector<Ptr<DestinationAddressUnit> >::const_iterator i = destinations.begin (); i != destinations.end(); i++)
     {
@@ -398,7 +395,6 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, u
       preq.GetOriginatorSeqNumber ()
       );
   ReactivePathResolved (preq.GetOriginatorAddress ());
-  //m_routingInfoCallback (newInfo);
   //chack if must retransmit:
   if (preq.GetDestCount () == 0)
     return;
@@ -418,8 +414,12 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, u
       m_lastHwmpSeqno[prep.GetOriginatorAddress ()] = prep.GetOriginatorSeqNumber();
     }
   else
-    if (i->second > prep.GetOriginatorSeqNumber ())
+  {
+    if (i->second >= prep.GetOriginatorSeqNumber ())
       return;
+    else
+      m_lastHwmpSeqno[prep.GetOriginatorAddress ()] = prep.GetOriginatorSeqNumber();
+  }
   NS_LOG_DEBUG("I am "<<m_address<<", received prep from "<<prep.GetOriginatorAddress ()<<", receiver was:"<<from);
   //update routing info
   //Now add a path to destination and add precursor to source
@@ -528,8 +528,11 @@ HwmpProtocol::PeerLinkStatus(Mac48Address meshPointAddress, Mac48Address peerAdd
     HwmpRtable::LookupResult result = m_rtable->LookupReactive(meshPointAddress);
     HwmpPluginMap::const_iterator i = m_interfaces.find(interface);
     NS_ASSERT(i != m_interfaces.end ());
-    //if(result.retransmitter == Mac48Address::GetBroadcast ())
-    //  m_rtable->AddReactivePath(meshPointAddress, peerAddress, interface, 1, Seconds (0), i->second->GetLinkMetric(peerAddress));
+    if(result.metric < i->second->GetLinkMetric(peerAddress))
+    {
+      m_rtable->AddReactivePath(meshPointAddress, peerAddress, interface, 1, Seconds (0), i->second->GetLinkMetric(peerAddress));
+      ReactivePathResolved (meshPointAddress);
+    }
   }
   else
   {
@@ -673,7 +676,7 @@ HwmpProtocol::ReactivePathResolved (Mac48Address dst)
       return;
     //set RA tag for retransmitter:
     HwmpTag tag;
-    NS_ASSERT (packet.pkt->PeekPacketTag(tag));
+    packet.pkt->RemovePacketTag(tag);
     tag.SetAddress (result.retransmitter);
     packet.pkt->AddPacketTag (tag);
     packet.reply (true, packet.pkt, packet.src, packet.dst, packet.protocol, result.ifIndex);
@@ -744,8 +747,9 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
       m_preqTimeouts.erase (i);
       return;
     }
+  uint32_t seqno = GetNextHwmpSeqno ();
   for(HwmpPluginMap::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
-    i->second->RequestDestination(dst);
+    i->second->RequestDestination(dst, seqno);
   m_preqTimeouts[dst] = Simulator::Schedule (
       MilliSeconds (2*(m_dot11MeshHWMPnetDiameterTraversalTime.GetMilliSeconds())),
       &HwmpProtocol::RetryPathDiscovery, this, dst, numOfRetry);

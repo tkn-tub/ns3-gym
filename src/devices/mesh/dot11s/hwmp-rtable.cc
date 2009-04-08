@@ -101,9 +101,7 @@ HwmpRtable::AddReactivePath (
   if (lifetime != Seconds (0))
     i->second.whenExpire = MilliSeconds (Simulator::Now().GetMilliSeconds() + lifetime.GetMilliSeconds());
   else
-    /*
-     * Information about peer does not have lifetime
-     */
+    // Information about peer does not have lifetime
     i->second.whenExpire = Seconds (0);
   i->second.seqnum = seqnum;
 }
@@ -191,7 +189,7 @@ HwmpRtable::LookupReactive (Mac48Address destination)
   
   result.ifIndex = i->second.interface;
   //Seconds (0) means that this is routing
-  if (i->second.whenExpire < Simulator::Now () && i->second.retransmitter != destination)
+  if (i->second.whenExpire < Simulator::Now ())
     {
       NS_LOG_DEBUG ("Reactive route has expired, sorry.");
       return LookupResult();
