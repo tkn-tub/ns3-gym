@@ -24,6 +24,7 @@
 
 #include <list>
 #include "ns3/ipv4-address.h"
+#include "ns3/ipv4-interface-address.h"
 #include "ns3/ptr.h"
 #include "ns3/object.h"
 
@@ -142,6 +143,28 @@ public:
    */ 
   void Send(Ptr<Packet> p, Ipv4Address dest);
 
+  /**
+   * \param address The Ipv4InterfaceAddress to add to the interface
+   * \returns The index of the newly-added Ipv4InterfaceAddress
+   */
+  uint32_t AddAddress (Ipv4InterfaceAddress address);
+
+  /**
+   * \param i Index of Ipv4InterfaceAddress to return
+   * \returns The Ipv4InterfaceAddress address whose index is i
+   */
+  Ipv4InterfaceAddress GetAddress (uint32_t index) const;
+
+  /**
+   * \returns the number of Ipv4InterfaceAddresss stored on this interface
+   */
+  uint32_t GetNAddresses (void) const;
+
+  /**
+   * \param i index of Ipv4InterfaceAddress to remove from address list.
+   */
+  void RemoveAddress (uint32_t index);
+
 protected:
   virtual void DoDispose (void);
 private:
@@ -150,6 +173,11 @@ private:
   Ipv4Address m_address;
   Ipv4Mask m_netmask;
   uint16_t m_metric;
+
+  typedef std::list<Ipv4InterfaceAddress> Ipv4InterfaceAddressList;
+  typedef std::list<Ipv4InterfaceAddress>::const_iterator Ipv4InterfaceAddressListCI;
+  typedef std::list<Ipv4InterfaceAddress>::iterator Ipv4InterfaceAddressListI;
+  Ipv4InterfaceAddressList m_ifaddrs;
 };
 
 }; // namespace ns3

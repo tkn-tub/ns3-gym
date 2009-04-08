@@ -187,6 +187,10 @@ public:
   void JoinMulticastGroup (Ipv4Address origin, Ipv4Address group);
   void LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group);
 
+  uint32_t AddAddress (uint32_t i, Ipv4InterfaceAddress address);
+  Ipv4InterfaceAddress GetAddress (uint32_t interfaceIndex, uint32_t addressIndex) const;
+  uint32_t GetNAddresses (uint32_t interface) const;
+
   void SetAddress (uint32_t i, Ipv4Address address);
   void SetNetworkMask (uint32_t i, Ipv4Mask mask);
   Ipv4Mask GetNetworkMask (uint32_t t) const;

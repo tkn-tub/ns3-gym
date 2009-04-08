@@ -923,6 +923,30 @@ Ipv4L3Protocol::LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group)
     }
 }
 
+uint32_t
+Ipv4L3Protocol::AddAddress (uint32_t i, Ipv4InterfaceAddress address)
+{
+  NS_LOG_FUNCTION (this << i << address);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
+  return interface->AddAddress (address);
+}
+
+Ipv4InterfaceAddress
+Ipv4L3Protocol::GetAddress (uint32_t interfaceIndex, uint32_t addressIndex) const
+{
+  NS_LOG_FUNCTION (this << interfaceIndex << addressIndex);
+  Ptr<Ipv4Interface> interface = GetInterface (interfaceIndex);
+  return interface->GetAddress (addressIndex);
+}
+
+uint32_t
+Ipv4L3Protocol::GetNAddresses (uint32_t interface) const
+{
+  NS_LOG_FUNCTION (this << interface);
+  Ptr<Ipv4Interface> iface = GetInterface (interface);
+  return iface->GetNAddresses ();
+}
+
 void 
 Ipv4L3Protocol::SetAddress (uint32_t i, Ipv4Address address)
 {

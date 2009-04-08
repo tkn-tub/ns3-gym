@@ -87,6 +87,10 @@ public:
   virtual void JoinMulticastGroup (Ipv4Address origin, Ipv4Address group);
   virtual void LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group);
 
+  uint32_t AddAddress (uint32_t i, Ipv4InterfaceAddress address);
+  Ipv4InterfaceAddress GetAddress (uint32_t interfaceIndex, uint32_t addressIndex) const;
+  uint32_t GetNAddresses (uint32_t interface) const;
+
   virtual void SetAddress (uint32_t i, Ipv4Address address);
   virtual void SetNetworkMask (uint32_t i, Ipv4Mask mask);
   virtual Ipv4Mask GetNetworkMask (uint32_t t) const;

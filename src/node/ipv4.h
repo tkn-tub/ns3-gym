@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 #include "ns3/ipv4-address.h"
+#include "ns3/ipv4-interface-address.h"
 #include "ns3/object.h"
 #include "ns3/callback.h"
 #include "ipv4-route.h"
@@ -389,6 +390,26 @@ public:
    * \param group The multicast group address.
    */
   virtual void LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group) = 0;
+
+  /**
+   * \param interface Interface number of an Ipv4 interface
+   * \param address Ipv4InterfaceAddress address to associate with the underlying Ipv4 interface
+   * \returns The address index of the newly-added address
+   */
+  virtual uint32_t AddAddress (uint32_t interface, Ipv4InterfaceAddress address) = 0;
+
+  /**
+   * \param interface Interface number of an Ipv4 interface
+   * \returns the number of Ipv4InterfaceAddress entries for the interface.
+   */
+  virtual uint32_t GetNAddresses (uint32_t interface) const = 0;
+
+  /**
+   * \param interface Interface number of an Ipv4 interface
+   * \param addressIndex index of Ipv4InterfaceAddress
+   * \returns the Ipv4InterfaceAddress associated to the interface and addresIndex
+   */
+  virtual Ipv4InterfaceAddress GetAddress (uint32_t interface, uint32_t addressIndex) const = 0;
 
   /**
    * \param i index of ipv4 interface

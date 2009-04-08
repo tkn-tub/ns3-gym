@@ -189,6 +189,24 @@ Ipv4Impl::LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group)
   m_ipv4->LeaveMulticastGroup(origin, group);
 }
 
+uint32_t 
+Ipv4Impl::AddAddress (uint32_t i, Ipv4InterfaceAddress address)
+{
+  return m_ipv4->AddAddress (i, address);
+}
+
+Ipv4InterfaceAddress 
+Ipv4Impl::GetAddress (uint32_t interfaceIndex, uint32_t addressIndex) const
+{
+  return m_ipv4->GetAddress (interfaceIndex, addressIndex);
+}
+
+uint32_t 
+Ipv4Impl::GetNAddresses (uint32_t interface) const
+{
+  return m_ipv4->GetNAddresses (interface);
+}
+
 void 
 Ipv4Impl::SetAddress (uint32_t i, Ipv4Address address)
 {
