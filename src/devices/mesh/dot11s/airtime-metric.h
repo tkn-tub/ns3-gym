@@ -35,7 +35,7 @@ class AirtimeLinkMetricCalculator : public RefCountBase
       +9*2  //SIFS
       +16*2 //Preamble
       +24)  //Ack
-      *1000;
+      *1000; //nanoseconds
     static const uint32_t test_length = 1024;
     static const uint32_t header_length = 36;
 };

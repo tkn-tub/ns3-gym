@@ -56,7 +56,8 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
   {
     WifiMeshHeader meshHdr;
     HwmpTag tag;
-    NS_ASSERT(! packet->PeekPacketTag (tag));
+    if(packet->PeekPacketTag (tag))
+      NS_ASSERT (false);
     packet->RemoveHeader(meshHdr);
     //TODO: address extension
     Mac48Address destination;
@@ -134,7 +135,8 @@ HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header,
   NS_ASSERT(header.IsData ());
   HwmpTag tag;
   bool tagExists = packet->RemovePacketTag(tag);
-  NS_ASSERT(tagExists);
+  if (!tagExists)
+    NS_ASSERT (false);
   WifiMeshHeader meshHdr;
   meshHdr.SetMeshSeqno(tag.GetSeqno());
   meshHdr.SetMeshTtl(tag.GetTtl());
