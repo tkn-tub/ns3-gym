@@ -24,7 +24,6 @@
 #include "ns3/assert.h"
 #include "ns3/test.h"
 #include "ns3/packet.h"
-//NS_LOG_COMPONENT_DEFINE ("MeshPeerLinkManagementelement");
 
 namespace ns3 {
 namespace dot11s {
@@ -121,11 +120,17 @@ IePeerManagement::DeserializeInformation (Buffer::Iterator start, uint8_t length
   m_subtype  = i.ReadU8 ();
   m_length = length;
   if (m_subtype == PEER_OPEN)
+  {
     NS_ASSERT (length == 3);
+  }
   if (m_subtype == PEER_CONFIRM)
+  {
     NS_ASSERT (length == 5);
+  }
   if (m_subtype == PEER_CLOSE)
+  {
     NS_ASSERT (length == 7);
+  }
   m_localLinkId  = i.ReadNtohU16 ();
   if (m_length > 3)
     m_peerLinkId = i.ReadNtohU16 ();

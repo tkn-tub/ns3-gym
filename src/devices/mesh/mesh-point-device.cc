@@ -82,7 +82,7 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
   NS_LOG_DEBUG ("UID is " << packet->GetUid ());
   const Mac48Address src48 = Mac48Address::ConvertFrom (src);
   const Mac48Address dst48 = Mac48Address::ConvertFrom (dst);
-  NS_LOG_DEBUG("SRC="<<src48<<", DST = "<<dst48<<", I am: "<<m_address);
+  NS_LOG_DEBUG ("SRC="<<src48<<", DST = "<<dst48<<", I am: "<<m_address);
   if (!m_promiscRxCallback.IsNull ())
     m_promiscRxCallback (this, packet, protocol, src, dst, packetType);
   if(dst48.IsBroadcast () || dst48.IsMulticast ())
@@ -315,9 +315,13 @@ MeshPointDevice::AddInterface (Ptr<NetDevice> iface)
   
   NS_ASSERT (iface != this);
   if (!Mac48Address::IsMatchingType (iface->GetAddress ()))
+  {
     NS_FATAL_ERROR ("Device does not support eui 48 addresses: cannot be added to bridge.");
+  }
   if (!iface->SupportsSendFrom ())
+  {
     NS_FATAL_ERROR ("Device does not support SendFrom: cannot be added to bridge.");
+  }
   m_address = Mac48Address::ConvertFrom (iface->GetAddress ());
   
   NS_LOG_DEBUG ("RegisterProtocolHandler for " << iface->GetName ());
@@ -358,12 +362,9 @@ MeshPointDevice::DoSend (bool success, Ptr<Packet> packet, Mac48Address src, Mac
   if (!success)
     {
       NS_LOG_UNCOND ("Resolve failed");
-      //TODO: SendError callback
       return;
     }
-  
   // Ok, now I know the route, just SendFrom
-  
   if (outIface != 0xffffffff)
     GetInterface (outIface)->SendFrom(packet, src, dst, protocol);
   else

@@ -196,7 +196,9 @@ PeerLink::OpenAccept (uint16_t localLinkId, IeConfiguration  conf, Mac48Address 
     m_peerLinkId = localLinkId;
   m_configuration = conf;
   if(m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
+  {
     NS_ASSERT(m_peerMeshPointAddress == peerMp);
+  }
   else
     m_peerMeshPointAddress = peerMp;
   StateMachine (OPN_ACPT);
@@ -208,7 +210,9 @@ PeerLink::OpenReject (uint16_t localLinkId, IeConfiguration  conf, Mac48Address 
     m_peerLinkId = localLinkId;
   m_configuration = conf;
   if(m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
+  {
     NS_ASSERT(m_peerMeshPointAddress == peerMp);
+  }
   else
     m_peerMeshPointAddress = peerMp;
   StateMachine (OPN_RJCT, reason);
@@ -225,7 +229,9 @@ PeerLink::ConfirmAccept (uint16_t localLinkId, uint16_t peerLinkId, uint16_t pee
   m_configuration = conf;
   m_peerAssocId = peerAid;
   if(m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
+  {
     NS_ASSERT(m_peerMeshPointAddress == peerMp);
+  }
   else
     m_peerMeshPointAddress = peerMp;
   StateMachine (CNF_ACPT);
@@ -242,7 +248,9 @@ PeerLink::ConfirmReject (uint16_t localLinkId, uint16_t peerLinkId,
     return;
   m_configuration = conf;
   if(m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
+  {
     NS_ASSERT(m_peerMeshPointAddress == peerMp);
+  }
   m_peerMeshPointAddress = peerMp;
   StateMachine (CNF_RJCT, reason);
 }

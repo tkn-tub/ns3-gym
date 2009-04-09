@@ -186,7 +186,9 @@ HwmpProtocol::RequestRoute (
     // packet from level 3
   {
     if(packet->PeekPacketTag(tag))
+    {
       NS_ASSERT (false);
+    }
     //Filling TAG:
     if(destination == Mac48Address::GetBroadcast ())
     {

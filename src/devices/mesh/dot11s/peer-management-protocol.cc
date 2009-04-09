@@ -293,7 +293,9 @@ PeerManagementProtocol::InitiateLink (
   beacon = beaconsOnInterface->second.find (peerAddress);
   //find a peer link  - it must not exist
   if(FindPeerLink(interface, peerAddress) != 0)
+  {
     NS_ASSERT (false);
+  }
   // Plugin must exist
   PeerManagerPluginMap::iterator plugin = m_plugins.find (interface);
   NS_ASSERT(plugin != m_plugins.end ());
