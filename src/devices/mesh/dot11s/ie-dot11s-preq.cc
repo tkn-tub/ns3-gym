@@ -31,29 +31,28 @@ namespace dot11s {
 /*************************
  * DestinationAddressUnit
  ************************/
-DestinationAddressUnit::DestinationAddressUnit ()
+DestinationAddressUnit::DestinationAddressUnit ():
+  m_do (false),
+  m_rf (false),
+  m_usn (false),
+  m_destinationAddress (Mac48Address ()),
+  m_destSeqNumber (0)
 {
-  m_do = false;
-  m_rf = false;
-  m_destSeqNumber = 0;
-  uint8_t mac_buffer[6];
-  for (int j = 0; j < 6; j++)
-    {
-      mac_buffer[j] = 0;
-    }
-  m_destinationAddress.CopyFrom (mac_buffer);
 }
 void
-DestinationAddressUnit::SetFlags (bool doFlag, bool rfFlag)
+DestinationAddressUnit::SetFlags (bool doFlag, bool rfFlag, bool usnFlag)
 {
   m_do = doFlag;
   m_rf = rfFlag;
+  m_usn = usnFlag;
 }
 
 void
 DestinationAddressUnit::SetDestSeqNumber (uint32_t dest_seq_number)
 {
   m_destSeqNumber = dest_seq_number;
+  if(m_destSeqNumber != 0)
+    m_usn = true;
 }
 void
 DestinationAddressUnit::SetDestinationAddress (Mac48Address dest_address)
@@ -71,7 +70,11 @@ DestinationAddressUnit::IsRf ()
 {
   return m_rf;
 }
-
+bool
+DestinationAddressUnit::IsUsn ()
+{
+  return m_usn;
+}
 uint32_t
 DestinationAddressUnit::GetDestSeqNumber () const
 {
@@ -261,9 +264,11 @@ IePreq::SerializeInformation (Buffer::Iterator i) const
     {
       uint8_t flags = 0;
       if ((*j)->IsDo ())
-        flags +=128;
+        flags += 128;
       if ((*j)->IsRf ())
-        flags +=64;
+        flags += 64;
+      if((*j)->IsUsn ())
+        flags += 32;
       i.WriteU8 (flags);
       WriteTo (i, (*j)->GetDestinationAddress());
       i.WriteHtonU32 ((*j)->GetDestSeqNumber ());
@@ -291,6 +296,7 @@ IePreq::DeserializeInformation (Buffer::Iterator start, uint8_t length)
       Ptr<DestinationAddressUnit> new_element = Create<DestinationAddressUnit> ();
       bool doFlag = false;
       bool rfFlag = false;
+      bool usnFlag = false;
       uint8_t flags = i.ReadU8 ();
       if (flags >= 128)
         {
@@ -298,8 +304,13 @@ IePreq::DeserializeInformation (Buffer::Iterator start, uint8_t length)
           flags -=128;
         }
       if (flags >=64)
+      {
         rfFlag = true;
-      new_element->SetFlags (doFlag, rfFlag);
+        flags -= 64;
+      }
+      if (flags >= 32)
+        usnFlag = true;
+      new_element->SetFlags (doFlag, rfFlag, usnFlag);
       Mac48Address addr;
       ReadFrom (i,addr);
       new_element->SetDestinationAddress (addr);
@@ -358,7 +369,7 @@ IePreq::AddDestinationAddressElement (
     if ((*i)->GetDestinationAddress () == dest_address)
       return;
   Ptr<DestinationAddressUnit>new_element = Create<DestinationAddressUnit> ();
-  new_element->SetFlags (doFlag, rfFlag);
+  new_element->SetFlags (doFlag, rfFlag, false);
   new_element->SetDestinationAddress (dest_address);
   new_element->SetDestSeqNumber (dest_seq_number);
   m_destinations.push_back (new_element);
@@ -392,6 +403,7 @@ bool operator== (const DestinationAddressUnit & a, const DestinationAddressUnit 
 {
   return (a.m_do == b.m_do 
       &&  a.m_rf == b.m_rf
+      &&  a.m_usn == b.m_usn
       &&  a.m_destinationAddress == b.m_destinationAddress
       &&  a.m_destSeqNumber == b.m_destSeqNumber
     );

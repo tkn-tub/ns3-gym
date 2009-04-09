@@ -38,17 +38,19 @@ class DestinationAddressUnit : public RefCountBase
 {
 public:
   DestinationAddressUnit ();
-  void SetFlags (bool doFlag, bool rfflag);
+  void SetFlags (bool doFlag, bool rfFlag, bool usnFlag);
   void SetDestinationAddress (Mac48Address dest_address);
   void SetDestSeqNumber (uint32_t dest_seq_number);
   bool IsDo ();
   bool IsRf ();
+  bool IsUsn ();
   Mac48Address GetDestinationAddress () const;
   uint32_t GetDestSeqNumber () const;
 
 private:
   bool m_do;
   bool m_rf;
+  bool m_usn;
   Mac48Address m_destinationAddress;
   uint32_t m_destSeqNumber;
   
