@@ -111,7 +111,14 @@ BridgeNetDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
       break;
 
     case PACKET_OTHERHOST:
-      ForwardUnicast (incomingPort, packet, protocol, src48, dst48);
+      if (dst48 == m_address)
+        {
+          m_rxCallback (this, packet, protocol, src);
+        }
+      else
+        {
+          ForwardUnicast (incomingPort, packet, protocol, src48, dst48);
+        }
       break;
     }
 }
