@@ -24,7 +24,7 @@
 #include "ns3/nstime.h"
 #include "ns3/log.h"
 #include "hwmp-mac-plugin.h"
-#include "mesh-wifi-mac-header.h"
+#include "dot11s-mac-header.h"
 #include "hwmp-protocol.h"
 #include "hwmp-tag.h"
 #include "ie-dot11s-preq.h"
@@ -54,7 +54,7 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
   //TODO: here we fix only mesh header
   if(header.IsData())
   {
-    WifiMeshHeader meshHdr;
+    Dot11sMacHeader meshHdr;
     HwmpTag tag;
     if(packet->PeekPacketTag (tag))
     {
@@ -83,7 +83,7 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
   }
   if(header.IsMultihopAction())
   {
-    WifiMeshHeader meshHdr;
+    Dot11sMacHeader meshHdr;
     packet->RemoveHeader (meshHdr);
     //parse multihop action header:
     WifiMeshMultihopActionHeader multihopHdr;
@@ -141,7 +141,7 @@ HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header,
   {
     NS_ASSERT (false);
   }
-  WifiMeshHeader meshHdr;
+  Dot11sMacHeader meshHdr;
   meshHdr.SetMeshSeqno(tag.GetSeqno());
   meshHdr.SetMeshTtl(tag.GetTtl());
   packet->AddHeader(meshHdr);
@@ -200,7 +200,7 @@ HwmpMacPlugin::SendOnePreq ()
   multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
   packet->AddHeader (multihopHdr);
   //Mesh header
-  WifiMeshHeader meshHdr;
+  Dot11sMacHeader meshHdr;
   meshHdr.SetMeshTtl (m_protocol->GetMaxTtl ());
   //TODO: should seqno be here?
   meshHdr.SetMeshSeqno (0);
@@ -245,7 +245,7 @@ HwmpMacPlugin::SendOnePerr()
   multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
   packet->AddHeader (multihopHdr);
   //Mesh header
-  WifiMeshHeader meshHdr;
+  Dot11sMacHeader meshHdr;
   meshHdr.SetMeshTtl (m_protocol->GetMaxTtl ());
   //TODO: should seqno be here?
   meshHdr.SetMeshSeqno (0);
@@ -281,7 +281,7 @@ HwmpMacPlugin::SendPrep (IePrep prep, Mac48Address receiver)
   multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
   packet->AddHeader (multihopHdr);
   //Mesh header
-  WifiMeshHeader meshHdr;
+  Dot11sMacHeader meshHdr;
   meshHdr.SetMeshTtl (m_protocol->GetMaxTtl ());
   //TODO: should seqno be here?
   meshHdr.SetMeshSeqno (0);

@@ -21,7 +21,9 @@
 
 #include "ns3/assert.h"
 #include "ns3/address-utils.h"
-#include "mesh-wifi-mac-header.h"
+#include "dot11s-mac-header.h"
+#include "ns3/packet.h"
+#include "ns3/test.h"
 
 namespace ns3 {
 namespace dot11s {
@@ -29,15 +31,15 @@ namespace dot11s {
  *  Here Mesh Mac Header functionality is defined.
  ***********************************************************/
 TypeId
-WifiMeshHeader::GetTypeId ()
+Dot11sMacHeader::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::WifiMeshHeader")
+  static TypeId tid = TypeId ("ns3::Dot11sMacHeader")
     .SetParent<Header> ()
-    .AddConstructor<WifiMeshHeader> ()
+    .AddConstructor<Dot11sMacHeader> ()
     ;
   return tid;
 }
-WifiMeshHeader::WifiMeshHeader ():
+Dot11sMacHeader::Dot11sMacHeader ():
   m_meshFlags (0),
   m_meshTtl (0),
   m_meshSeqno (0),
@@ -46,83 +48,83 @@ WifiMeshHeader::WifiMeshHeader ():
   m_addr6 (Mac48Address ())
 {
 }
-WifiMeshHeader::~WifiMeshHeader ()
+Dot11sMacHeader::~Dot11sMacHeader ()
 {
 }
 TypeId
-WifiMeshHeader::GetInstanceTypeId () const
+Dot11sMacHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 void
-WifiMeshHeader::SetAddr4 (Mac48Address address)
+Dot11sMacHeader::SetAddr4 (Mac48Address address)
 {
   m_addr4 = address;
 }
 void
-WifiMeshHeader::SetAddr5 (Mac48Address address)
+Dot11sMacHeader::SetAddr5 (Mac48Address address)
 {
   m_addr5 = address;
 }
 void
-WifiMeshHeader::SetAddr6 (Mac48Address address)
+Dot11sMacHeader::SetAddr6 (Mac48Address address)
 {
   m_addr6 = address;
 }
 Mac48Address
-WifiMeshHeader::GetAddr4 () const
+Dot11sMacHeader::GetAddr4 () const
 {
   return m_addr4;
 }
 Mac48Address
-WifiMeshHeader::GetAddr5 () const
+Dot11sMacHeader::GetAddr5 () const
 {
   return m_addr5;
 }
 Mac48Address
-WifiMeshHeader::GetAddr6 () const
+Dot11sMacHeader::GetAddr6 () const
 {
   return m_addr6;
 }
 void
-WifiMeshHeader::SetMeshSeqno (uint32_t seqno)
+Dot11sMacHeader::SetMeshSeqno (uint32_t seqno)
 {
   m_meshSeqno = seqno;
 }
 uint32_t
-WifiMeshHeader::GetMeshSeqno () const
+Dot11sMacHeader::GetMeshSeqno () const
 {
   return m_meshSeqno;
 }
 void
-WifiMeshHeader::SetMeshTtl (uint8_t TTL)
+Dot11sMacHeader::SetMeshTtl (uint8_t TTL)
 {
   m_meshTtl = TTL;
 }
 uint8_t
-WifiMeshHeader::GetMeshTtl () const
+Dot11sMacHeader::GetMeshTtl () const
 {
   return m_meshTtl;
 }
 void
-WifiMeshHeader::SetAddressExt (uint8_t num_of_addresses)
+Dot11sMacHeader::SetAddressExt (uint8_t num_of_addresses)
 {
   if (num_of_addresses > 3)
     return;
   m_meshFlags |= 0xc0 & (num_of_addresses << 6);
 }
 uint8_t
-WifiMeshHeader::GetAddressExt () const
+Dot11sMacHeader::GetAddressExt () const
 {
   return ((0xc0 & m_meshFlags) >> 6);
 }
 uint32_t
-WifiMeshHeader::GetSerializedSize () const
+Dot11sMacHeader::GetSerializedSize () const
 {
   return 6 + GetAddressExt () * 6;
 }
 void
-WifiMeshHeader::Serialize (Buffer::Iterator start) const
+Dot11sMacHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   i.WriteU8 (m_meshFlags);
@@ -130,15 +132,15 @@ WifiMeshHeader::Serialize (Buffer::Iterator start) const
   i.WriteU32 (m_meshSeqno);
   uint8_t addresses_to_add = GetAddressExt ();
   //Writing Address extensions:
-  if (addresses_to_add > 0)
+  if ((addresses_to_add == 1) || (addresses_to_add == 3))
     WriteTo (i, m_addr4);
   if (addresses_to_add > 1)
     WriteTo (i, m_addr5);
-  if (addresses_to_add > 2)
+  if (addresses_to_add > 1)
     WriteTo (i, m_addr6);
 }
 uint32_t
-WifiMeshHeader::Deserialize (Buffer::Iterator start)
+Dot11sMacHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   uint8_t addresses_to_read = 0;
@@ -146,20 +148,34 @@ WifiMeshHeader::Deserialize (Buffer::Iterator start)
   m_meshTtl = i.ReadU8 ();
   m_meshSeqno = i.ReadU32 ();
   addresses_to_read = (m_meshFlags & 0xc0) >> 6;
-  if (addresses_to_read > 0)
+  if ((addresses_to_read == 1) || (addresses_to_read == 3))
     ReadFrom (i, m_addr4);
   if (addresses_to_read > 1)
     ReadFrom (i, m_addr5);
-  if (addresses_to_read > 2)
+  if (addresses_to_read > 1)
     ReadFrom (i, m_addr6);
   return i.GetDistanceFrom (start);
 }
 void
-WifiMeshHeader::Print (std::ostream &os) const
+Dot11sMacHeader::Print (std::ostream &os) const
 {
-  os << "flags" << m_meshFlags
-  << "ttl" << m_meshTtl
-  << "seqno" << m_meshSeqno;
+  os << "flags = " << (uint16_t)m_meshFlags
+  << "\nttl = " << (uint16_t)m_meshTtl
+  << "\nseqno = " << m_meshSeqno
+  << "\naddr4 = " << m_addr4
+  << "\naddr5 = " << m_addr5
+  << "\naddr6 = " << m_addr6;
+}
+bool operator== (const Dot11sMacHeader & a, const Dot11sMacHeader & b)
+{
+  return (
+      (a.m_meshFlags == b.m_meshFlags) &&
+      (a.m_meshTtl == b.m_meshTtl) &&
+      (a.m_meshSeqno == b.m_meshSeqno) &&
+      (a.m_addr4 == b.m_addr4) &&
+      (a.m_addr5 == b.m_addr5) &&
+      (a.m_addr6 == b.m_addr6)
+      );
 }
 /**********************************************************
  *   MultihopActionFrame
@@ -334,5 +350,62 @@ WifiMeshMultihopActionHeader::Deserialize (Buffer::Iterator start)
   m_actionValue = i.ReadU8 ();
   return i.GetDistanceFrom (start);
 }
+#ifdef RUN_SELF_TESTS
+
+/// Built-in self test for Dot11sMacHeader
+struct Dot11sMacHeaderBist : public Test 
+{
+  Dot11sMacHeaderBist () : Test ("Mesh/802.11s/IE/Dot11sMacHeader") {}
+  virtual bool RunTests(); 
+};
+
+/// Test instance
+static Dot11sMacHeaderBist g_Dot11sMacHeaderBist;
+
+bool Dot11sMacHeaderBist::RunTests ()
+{
+  bool result (true);
+  {
+    Dot11sMacHeader a;
+    a.SetAddressExt(3);
+    a.SetAddr4(Mac48Address ("11:22:33:44:55:66"));
+    a.SetAddr5(Mac48Address ("11:00:33:00:55:00"));
+    a.SetAddr6(Mac48Address ("00:22:00:44:00:66"));
+    a.SetMeshTtl (122);
+    a.SetMeshSeqno (321);
+    Ptr<Packet> packet = Create<Packet> ();
+    packet->AddHeader (a);
+    Dot11sMacHeader b;
+    packet->RemoveHeader (b);
+    NS_TEST_ASSERT_EQUAL (a, b);
+  } 
+  {
+    Dot11sMacHeader a;
+    a.SetAddressExt(2);
+    a.SetAddr5(Mac48Address ("11:00:33:00:55:00"));
+    a.SetAddr6(Mac48Address ("00:22:00:44:00:66"));
+    a.SetMeshTtl (122);
+    a.SetMeshSeqno (321);
+    Ptr<Packet> packet = Create<Packet> ();
+    packet->AddHeader (a);
+    Dot11sMacHeader b;
+    packet->RemoveHeader (b);
+    NS_TEST_ASSERT_EQUAL (a, b);
+  }
+  {
+    Dot11sMacHeader a;
+    a.SetAddressExt(1);
+    a.SetAddr4(Mac48Address ("11:22:33:44:55:66"));
+    a.SetMeshTtl (122);
+    a.SetMeshSeqno (321);
+    Ptr<Packet> packet = Create<Packet> ();
+    packet->AddHeader (a);
+    Dot11sMacHeader b;
+    packet->RemoveHeader (b);
+    NS_TEST_ASSERT_EQUAL (a, b);
+  }
+  return result;
+}
+#endif
 } //namespace dot11s
 } // namespace ns3

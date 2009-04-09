@@ -10,6 +10,7 @@ def build(bld):
         'ie-dot11s-prep.cc',
         'ie-dot11s-perr.cc',
         'ie-dot11s-rann.cc',
+        'dot11s-mac-header.cc',
         'peer-link-frame.cc',
         'peer-link.cc',
         'peer-management-plugin.cc',
@@ -20,7 +21,6 @@ def build(bld):
         'hwmp-protocol.cc',
         'airtime-metric.cc',
         'dot11s-helper.cc',
-        'mesh-wifi-mac-header.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'dot11s'

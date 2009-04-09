@@ -20,10 +20,10 @@
 
 #include "ie-dot11s-configuration.h"
 #include "ie-dot11s-peer-management.h"
+#include "dot11s-mac-header.h"
 #include "peer-management-plugin.h"
 #include "peer-management-protocol.h"
 #include "peer-link-frame.h"
-#include "mesh-wifi-mac-header.h"
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/simulator.h"
 #include "ns3/wifi-mac-header.h"
@@ -74,7 +74,7 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
   }
   if(header.IsMultihopAction())
   {
-    WifiMeshHeader meshHdr;
+    Dot11sMacHeader meshHdr;
     packet->RemoveHeader (meshHdr);
     WifiMeshMultihopActionHeader multihopHdr;
     //parse multihop action header:
@@ -198,7 +198,7 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
     }
   packet->AddHeader (multihopHdr);
   //mesh header:
-  WifiMeshHeader meshHdr;
+  Dot11sMacHeader meshHdr;
   meshHdr.SetMeshTtl (1);
   meshHdr.SetMeshSeqno (0);
   meshHdr.SetAddressExt(1);

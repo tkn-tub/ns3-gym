@@ -30,11 +30,11 @@ namespace dot11s {
 /**
  * \ingroup dot11s
  */
-class WifiMeshHeader : public Header //7.1.3.5b
+class Dot11sMacHeader : public Header //7.1.3.5b
 {
 public:
-  WifiMeshHeader ();
-  ~WifiMeshHeader ();
+  Dot11sMacHeader ();
+  ~Dot11sMacHeader ();
   static TypeId GetTypeId ();
   virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
@@ -65,8 +65,9 @@ private:
   Mac48Address m_addr4;
   Mac48Address m_addr5;
   Mac48Address m_addr6;
+  friend bool operator== (const Dot11sMacHeader & a, const Dot11sMacHeader & b);
 };
-
+bool operator== (const Dot11sMacHeader & a, const Dot11sMacHeader & b);
 /**
  * \ingroup mesh
  */
