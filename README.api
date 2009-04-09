@@ -1,4 +1,4 @@
-1. Changeset:
+1. Changeset: d99061f1167c
 
 Synopsis:
 --------
@@ -34,10 +34,69 @@ None.
 Changed private API (src/internet-node)
 --------
 
+(similar API changes to the IPv4 implementation classes instantiating
+the above public API) 
+
 New private API or classes (src/internet-node)
 --------
 
 None.
 
-Changeset:
+
+========================================================================
+
+2.  Changeset: e493e80274bd (implementation added in parallel)
+    Changeset: TBD          (cut over of client code, remove old code)
+
+Synopsis:
+--------
 - allow multiple IPv4 addresses to be assigned to an interface (bug 188)
+
+Changed public API:
+--------
+
+We now have a new class and methods to account for the possibility of having
+multiple IP addresses on an interface:
+
++  virtual uint32_t AddAddress (uint32_t interface, Ipv4InterfaceAddress address) = 0;
++  virtual Ipv4InterfaceAddress GetAddress (uint32_t interface, uint32_t addressIndex) const = 0;
++  virtual uint32_t GetNAddresses (uint32_t interface) const = 0;
+
+This convenience function was removed:
+-  virtual uint32_t GetIfIndexByAddress (Ipv4Address addr,
+-    Ipv4Mask mask = Ipv4Mask("255.255.255.255"));
+
+A few public methods were renamed because they were poorly named:
+-  virtual uint32_t FindInterfaceForAddr (Ipv4Address addr,
++  virtual int32_t GetInterfaceForAddress (Ipv4Address address,
+     Ipv4Mask mask) const = 0;
+-  virtual int32_t FindInterfaceForDevice(Ptr<NetDevice> nd) const = 0;
++  virtual int32_t GetInterfaceForDevice (Ptr<const NetDevice> device) const = 0;
+
+
+New public API or classes (src/node)
+--------
+
+class Ipv4InterfaceAddress:  This is a new class to parallel Linux 
+struct in_ifaddr.  It holds IP addressing information, including mask, 
+broadcast address, scope, whether primary or secondary, etc.
+
+
+========================================================================
+
+3.  Changeset: TBD
+
+Synopsis:
+--------
+- Remove class Ipv4Impl from src/internet-stack
+
+Changed public API:
+--------
+
+None
+
+Changed private API
+---------
+
+Remove class Ipv4Impl; class Ipv4L3Protocol now inherits from class Ipv4
+allow multiple IPv4 addresses to be assigned to an interface (bug 188)
