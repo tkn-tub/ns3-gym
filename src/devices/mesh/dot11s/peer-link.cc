@@ -280,21 +280,6 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
     case IDLE:
       switch (event)
         {
-        case PASOPN:
-          m_state = LISTEN;
-          break;
-        case ACTOPN:
-          m_state = OPN_SNT;
-          SendPeerLinkOpen ();
-          SetRetryTimer ();
-          break;
-        default:
-        {}
-        }
-      break;
-    case LISTEN:
-      switch (event)
-        {
         case CNCL:
         case CLS_ACPT:
           m_state = IDLE;

@@ -141,7 +141,6 @@ private:
   /// Peer link states, see 802.11s draft 11B.3.3.1
   enum  PeerState {
     IDLE,       
-    LISTEN,
     OPN_SNT,
     CNF_RCVD,
     OPN_RCVD,
