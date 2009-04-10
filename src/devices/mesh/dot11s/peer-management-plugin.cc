@@ -90,8 +90,10 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     PeerLinkFrameStart::PlinkFrameStartFields fields;
     {
       PeerLinkFrameStart peerFrame;
+      peerFrame.SetPlinkFrameSubtype((uint8_t)actionValue.peerLink);
       packet->RemoveHeader (peerFrame);
       fields = peerFrame.GetFields();
+      NS_ASSERT(fields.subtype == actionValue.peerLink);
     }
     if (actionValue.peerLink != WifiMeshMultihopActionHeader::PEER_LINK_CLOSE)
     {
@@ -105,32 +107,30 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
       {
         m_protocol->ConfigurationMismatch (m_ifIndex, peerAddress);
         // Broken peer link frame - drop it
-        return true;
+        return false;
       }
     }
     // MeshConfiguration Element - exists in all peer link management
     // frames except CLOSE
     IeConfiguration meshConfig;
-    if(fields.subtype != IePeerManagement::PEER_CLOSE)
+    if(fields.subtype != (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE))
+    {
       packet->RemoveHeader(meshConfig);
+    }
     IePeerManagement peerElement;
     packet->RemoveHeader(peerElement);
-    // Check the correspondance betwee action valuse and peer link
-    // management element subtypes:
-    switch (actionValue.peerLink)
+    //Check taht frame subtype corresponds peer link subtype
+    if(peerElement.SubtypeIsOpen ())
     {
-      case WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM:
-        NS_ASSERT(fields.subtype == IePeerManagement::PEER_CONFIRM);
-        break;
-      case WifiMeshMultihopActionHeader::PEER_LINK_OPEN:
-        NS_ASSERT(fields.subtype == IePeerManagement::PEER_OPEN);
-        break;
-      case WifiMeshMultihopActionHeader::PEER_LINK_CLOSE:
-        NS_ASSERT(fields.subtype == IePeerManagement::PEER_CLOSE);
-        break;
-      default:
-        // Protocol can not define which frame is it - pass further
-        return true;
+      NS_ASSERT(actionValue.peerLink == WifiMeshMultihopActionHeader::PEER_LINK_OPEN);
+    }
+    if(peerElement.SubtypeIsConfirm ())
+    {
+      NS_ASSERT(actionValue.peerLink == WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM);
+    }
+    if(peerElement.SubtypeIsClose ())
+    {
+      NS_ASSERT(actionValue.peerLink == WifiMeshMultihopActionHeader::PEER_LINK_CLOSE);
     }
     //Deliver Peer link management frame to protocol:
     m_protocol->ReceivePeerLinkFrame(m_ifIndex, peerAddress, peerMpAddress, fields.aid, peerElement, meshConfig);
@@ -168,13 +168,9 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
   if(!peerElement.SubtypeIsClose())
     packet->AddHeader (meshConfig);
   PeerLinkFrameStart::PlinkFrameStartFields fields;
-  fields.subtype = peerElement.GetSubtype();
-  fields.aid = aid;
   fields.rates = m_parent->GetSupportedRates ();
   fields.meshId = m_parent->GetSsid ();
   PeerLinkFrameStart plinkFrame;
-  plinkFrame.SetPlinkFrameStart(fields);
-  packet->AddHeader (plinkFrame);
   //Create an 802.11 frame header:
   //Send management frame to MAC:
   WifiMeshMultihopActionHeader multihopHdr;
@@ -182,20 +178,27 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
     {
       WifiMeshMultihopActionHeader::ACTION_VALUE action;
       action.peerLink = WifiMeshMultihopActionHeader::PEER_LINK_OPEN;
+      fields.subtype = WifiMeshMultihopActionHeader::PEER_LINK_OPEN;
       multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT, action);
     }
   if (peerElement.SubtypeIsConfirm ())
     {
       WifiMeshMultihopActionHeader::ACTION_VALUE action;
       action.peerLink = WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM;
+      fields.aid = aid;
+      fields.subtype = WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM;
       multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT, action);
     }
   if (peerElement.SubtypeIsClose ())
     {
       WifiMeshMultihopActionHeader::ACTION_VALUE action;
       action.peerLink = WifiMeshMultihopActionHeader::PEER_LINK_CLOSE;
+      fields.subtype = WifiMeshMultihopActionHeader::PEER_LINK_CLOSE;
+      fields.reasonCode = peerElement.GetReasonCode ();
       multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT, action);
     }
+  plinkFrame.SetPlinkFrameStart(fields);
+  packet->AddHeader (plinkFrame);
   packet->AddHeader (multihopHdr);
   //mesh header:
   Dot11sMacHeader meshHdr;

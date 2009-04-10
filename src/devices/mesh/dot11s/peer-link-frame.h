@@ -23,7 +23,7 @@
 #include "ns3/header.h"
 #include "ns3/supported-rates.h"
 #include "ns3/ssid.h"
-#include "ie-dot11s-peer-management.h"
+#include "dot11s-mac-header.h"
 namespace ns3 {
 class MeshWifiInterfaceMac;
 namespace dot11s {
@@ -46,10 +46,14 @@ public:
   struct PlinkFrameStartFields
   {
     uint8_t subtype;
-    uint16_t aid;
-    SupportedRates rates;
-    Ssid meshId;
+    uint16_t reasonCode;  //close only
+    uint16_t aid;         //confirm only
+    SupportedRates rates; //open and confirm
+    Ssid meshId;          //open and confirm
   };
+  ///\attention: must be set before deserialize, before only multihop
+  //action header knows about subtype
+  void SetPlinkFrameSubtype(uint8_t subtype);
   void SetPlinkFrameStart(PlinkFrameStartFields);
   PlinkFrameStartFields GetFields ();
   bool CheckPlinkFrameStart(Ptr<MeshWifiInterfaceMac> mac);
@@ -66,9 +70,15 @@ public:
    * \}
    */
 private:
-  PlinkFrameStartFields m_fields;
-};
+  uint8_t m_subtype;
+  uint16_t m_reasonCode;
+  uint16_t m_aid;
+  SupportedRates m_rates;
+  Ssid m_meshId;
 
+  friend bool operator== (const PeerLinkFrameStart & a, const PeerLinkFrameStart & b);
+};
+bool operator== (const PeerLinkFrameStart & a, const PeerLinkFrameStart & b);
 } //namespace dot11s
 } //namespace ns3
 #endif

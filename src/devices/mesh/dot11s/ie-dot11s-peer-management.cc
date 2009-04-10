@@ -141,7 +141,12 @@ IePeerManagement::DeserializeInformation (Buffer::Iterator start, uint8_t length
 void
 IePeerManagement::PrintInformation (std::ostream& os) const
 {
-  //TODO
+
+  os << " Subtype:      = " << (uint16_t)m_subtype << "\n";
+  os << " Length:       = " << (uint16_t)m_length << "\n";
+  os << " LocalLinkId:  = " << m_localLinkId << "\n";
+  os << " PeerLinkId:   = " << m_peerLinkId << "\n";
+  os << " ReasonCode:   = " << m_reasonCode << "\n";
 }
 bool operator== (const IePeerManagement & a, const IePeerManagement & b)
 {
