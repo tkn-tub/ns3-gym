@@ -237,7 +237,8 @@ void AgentImpl::Start ()
       Ipv4Address loopback ("127.0.0.1");
       for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
         {
-          Ipv4Address addr = m_ipv4->GetAddress (i);
+          // Use primary address, if multiple
+          Ipv4Address addr = m_ipv4->GetAddress (i, 0).GetLocal ();
           if (addr != loopback)
             {
               m_mainAddress = addr;
@@ -260,7 +261,7 @@ void AgentImpl::Start ()
   Ipv4Address loopback ("127.0.0.1");
   for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
     {
-      Ipv4Address addr = m_ipv4->GetAddress (i);
+      Ipv4Address addr = m_ipv4->GetAddress (i, 0).GetLocal ();
       if (addr == loopback)
         continue;
 
@@ -297,7 +298,7 @@ void AgentImpl::Start ()
 
 void AgentImpl::SetMainInterface (uint32_t interface)
 {
-  m_mainAddress = m_ipv4->GetAddress (interface);
+  m_mainAddress = m_ipv4->GetAddress (interface, 0).GetLocal ();
 }
 
 
@@ -1556,7 +1557,7 @@ AgentImpl::SendMid ()
   Ipv4Address loopback ("127.0.0.1");
   for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
     {
-      Ipv4Address addr = m_ipv4->GetAddress (i);
+      Ipv4Address addr = m_ipv4->GetAddress (i, 0).GetLocal ();
       if (addr != m_mainAddress && addr != loopback)
         mid.interfaceAddresses.push_back (addr);
     }

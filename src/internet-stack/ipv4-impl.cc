@@ -207,28 +207,6 @@ Ipv4Impl::GetNAddresses (uint32_t interface) const
   return m_ipv4->GetNAddresses (interface);
 }
 
-void 
-Ipv4Impl::SetAddress (uint32_t i, Ipv4Address address)
-{
-  m_ipv4->SetAddress (i, address);
-}
-void 
-Ipv4Impl::SetNetworkMask (uint32_t i, Ipv4Mask mask)
-{
-  m_ipv4->SetNetworkMask (i, mask);
-}
-Ipv4Mask 
-Ipv4Impl::GetNetworkMask (uint32_t i) const
-{
-  return m_ipv4->GetNetworkMask (i);
-}
-
-Ipv4Address 
-Ipv4Impl::GetAddress (uint32_t i) const
-{
-  return m_ipv4->GetAddress (i);
-}
-
 void
 Ipv4Impl::SetMetric (uint32_t i, uint16_t metric) 
 {
@@ -250,21 +228,7 @@ Ipv4Impl::GetInterfaceForDestination (Ipv4Address dest, uint32_t &interface) con
 Ipv4Address 
 Ipv4Impl::GetSourceAddress (Ipv4Address destination) const
 {
-  uint32_t interface = 0xffffffff;
-
-  bool result = m_ipv4->GetInterfaceForDestination (destination, interface);
-
-  if (result)
-    {
-      return m_ipv4->GetAddress (interface);
-    }
-  else
-    {
-//
-// If we can't find any address, just leave it 0.0.0.0
-//
-      return Ipv4Address::GetAny ();
-    }
+  return m_ipv4->GetSourceAddress (destination);
 }
 
 uint16_t 

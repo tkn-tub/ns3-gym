@@ -139,8 +139,8 @@ Ipv4AddressHelper::Assign (const NetDeviceContainer &c)
     NS_ASSERT_MSG (interface >= 0, "Ipv4AddressHelper::Allocate(): "
       "Interface index not found");
 
-    ipv4->SetAddress (interface, NewAddress ());
-    ipv4->SetNetworkMask (interface, m_mask);
+    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (NewAddress (), m_mask);
+    ipv4->AddAddress (interface, ipv4Addr);
     ipv4->SetMetric (interface, 1);
     ipv4->SetUp (interface);
     retval.Add (ipv4, interface);

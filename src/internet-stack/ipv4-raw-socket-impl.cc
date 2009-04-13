@@ -173,7 +173,7 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
   uint32_t localInterface;
   if (ipv4->GetInterfaceForDestination(dst, localInterface))
     {
-      ipv4->Send (p, ipv4->GetAddress (localInterface), dst, m_protocol);
+      ipv4->Send (p, ipv4->GetSourceAddress (dst), dst, m_protocol);
     }
   else
     {

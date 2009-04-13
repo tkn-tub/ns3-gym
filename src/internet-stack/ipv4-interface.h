@@ -76,23 +76,6 @@ public:
   virtual Ptr<NetDevice> GetDevice (void) const = 0;
 
   /**
-   * \param a set the ipv4 address of this interface.
-   */
-  void SetAddress (Ipv4Address a);
-  /**
-   * \param mask set the ipv4 netmask of this interface.
-   */
-  void SetNetworkMask (Ipv4Mask mask);
-
-  /**
-   * \returns the broadcast ipv4 address associated to this interface
-   */
-  Ipv4Address GetBroadcast (void) const;
-  /**
-   * \returns the ipv4 netmask of this interface
-   */
-  Ipv4Mask GetNetworkMask (void) const;
-  /**
    * \param metric configured routing metric (cost) of this interface
    */
   void SetMetric (uint16_t metric);
@@ -100,10 +83,6 @@ public:
    * \returns configured routing metric (cost) of this interface
    */
   uint16_t GetMetric (void) const;
-  /**
-   * \returns the ipv4 address of this interface
-   */
-  Ipv4Address GetAddress (void) const;
 
   /**
    * This function a pass-through to NetDevice GetMtu, modulo
@@ -170,8 +149,6 @@ protected:
 private:
   virtual void SendTo (Ptr<Packet> p, Ipv4Address dest) = 0;
   bool m_ifup;
-  Ipv4Address m_address;
-  Ipv4Mask m_netmask;
   uint16_t m_metric;
 
   typedef std::list<Ipv4InterfaceAddress> Ipv4InterfaceAddressList;

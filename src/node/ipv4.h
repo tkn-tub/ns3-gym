@@ -413,24 +413,6 @@ public:
 
   /**
    * \param i index of ipv4 interface
-   * \param address address to associate to the underlying ipv4 interface
-   */
-  virtual void SetAddress (uint32_t i, Ipv4Address address) = 0;
-
-  /**
-   * \param i index of ipv4 interface
-   * \param mask mask to associate to the underlying ipv4 interface
-   */
-  virtual void SetNetworkMask (uint32_t i, Ipv4Mask mask) = 0;
-
-  /**
-   * \param i index of ipv4 interface
-   * \returns the mask associated to the underlying ipv4 interface
-   */
-  virtual Ipv4Mask GetNetworkMask (uint32_t i) const = 0;
-
-  /**
-   * \param i index of ipv4 interface
    * \param metric routing metric (cost) associated to the underlying 
    *          ipv4 interface
    */
@@ -442,17 +424,6 @@ public:
    *          ipv4 interface
    */
   virtual uint16_t GetMetric (uint32_t i) const = 0;
-
-  /**
-   * \param i index of ipv4 interface
-   * \returns the address associated to the underlying ipv4 interface
-   *
-   * Note that the broadcast address for this interface may be fetched
-   * from the Ipv4Address object returned here using
-   * Ipv4Address::GetSubnetDirectedBroadcast(mask), where the mask for
-   * the interface may be retrived using Ipv4::GetNetworkMask(i).
-   */
-  virtual Ipv4Address GetAddress (uint32_t i) const = 0;
 
   /**
    * \param destination The IP address of a hypothetical destination.

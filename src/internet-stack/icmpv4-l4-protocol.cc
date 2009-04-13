@@ -68,7 +68,8 @@ Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address dest, uint8_t typ
       NS_LOG_WARN ("drop icmp message");
       return;
     }
-  Ipv4Address source = ipv4->GetAddress (i);
+  // XXX handle multi-address case
+  Ipv4Address source = ipv4->GetAddress (i, 0).GetLocal ();
   SendMessage (packet, source, dest, type, code);
 }
 

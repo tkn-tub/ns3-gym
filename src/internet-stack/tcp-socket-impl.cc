@@ -345,7 +345,7 @@ TcpSocketImpl::Connect (const Address & address)
 
   if (ipv4->GetInterfaceForDestination (m_remoteAddress, localInterface))
     {
-      m_endPoint->SetLocalAddress (ipv4->GetAddress (localInterface));
+      m_endPoint->SetLocalAddress (ipv4->GetSourceAddress (m_remoteAddress));
     }
   else
     {
@@ -832,7 +832,7 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       m_endPoint->SetPeer (m_remoteAddress, m_remotePort);
       if (ipv4->GetInterfaceForDestination (m_remoteAddress, localInterface))
         {
-          m_localAddress = ipv4->GetAddress (localInterface);
+          m_localAddress = ipv4->GetSourceAddress (m_remoteAddress);
           m_endPoint->SetLocalAddress (m_localAddress);
           // Leave local addr in the portmap to any, as the path from
           // remote can change and packets can arrive on different interfaces
@@ -1930,8 +1930,8 @@ TcpSocketImplTest::AddSimpleNetDevice (Ptr<Node> node, const char* ipaddr, const
   node->AddDevice (dev);
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   uint32_t ndid = ipv4->AddInterface (dev);
-  ipv4->SetAddress (ndid, Ipv4Address (ipaddr));
-  ipv4->SetNetworkMask (ndid, Ipv4Mask (netmask));
+  Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (Ipv4Address (ipaddr), Ipv4Mask (netmask));
+  ipv4->AddAddress (ndid, ipv4Addr);
   ipv4->SetUp (ndid);
   return dev;
 }

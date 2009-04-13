@@ -106,7 +106,8 @@ ArpIpv4Interface::SendTo (Ptr<Packet> p, Ipv4Address dest)
   NS_LOG_FUNCTION (this << p << dest);
 
   NS_ASSERT (GetDevice () != 0);
-  if (dest == GetAddress ())
+  // XXX multi-address case
+  if (dest == GetAddress (0).GetLocal ())
     {
       Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
         
@@ -124,9 +125,9 @@ ArpIpv4Interface::SendTo (Ptr<Packet> p, Ipv4Address dest)
         m_node->GetObject<ArpL3Protocol> ();
       Address hardwareDestination;
       bool found;
-      
+      // XXX multi-address case
       if (dest.IsBroadcast () || 
-          dest.IsSubnetDirectedBroadcast (GetNetworkMask ()) )
+          dest.IsSubnetDirectedBroadcast (GetAddress (0).GetMask ()) )
         {
           NS_LOG_LOGIC ("IsBroadcast");
           hardwareDestination = GetDevice ()->GetBroadcast ();

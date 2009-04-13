@@ -23,12 +23,13 @@ Ipv4InterfaceContainer::GetN (void) const
 }
 
 Ipv4Address 
-Ipv4InterfaceContainer::GetAddress (uint32_t i) const
+Ipv4InterfaceContainer::GetAddress (uint32_t i, uint32_t j) const
 {
   Ptr<Ipv4> ipv4 = m_interfaces[i].first;
   uint32_t interface = m_interfaces[i].second;
-  return ipv4->GetAddress (interface);
+  return ipv4->GetAddress (interface, j).GetLocal ();
 }
+
 void 
 Ipv4InterfaceContainer::SetMetric (uint32_t i, uint16_t metric)
 {

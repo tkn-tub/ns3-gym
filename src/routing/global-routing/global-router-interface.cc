@@ -704,8 +704,12 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
   Ptr<Ipv4> ipv4Local = node->GetObject<Ipv4> ();
   NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessSingleBroadcastLink (): GetObject for <Ipv4> interface failed");
 
-  Ipv4Address addrLocal = ipv4Local->GetAddress(interfaceLocal);
-  Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(interfaceLocal);
+  if (ipv4Local->GetNAddresses (interfaceLocal) > 1)
+    {
+      NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
+    }
+  Ipv4Address addrLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetLocal ();
+  Ipv4Mask maskLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetMask ();
   NS_LOG_LOGIC ("Working with local address " << addrLocal);
   uint16_t metricLocal = ipv4Local->GetMetric (interfaceLocal);
 
@@ -820,8 +824,12 @@ GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *
   Ptr<Ipv4> ipv4Local = node->GetObject<Ipv4> ();
   NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessBridgedBroadcastLink (): GetObject for <Ipv4> interface failed");
 
-  Ipv4Address addrLocal = ipv4Local->GetAddress(interfaceLocal);
-  Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(interfaceLocal);
+  if (ipv4Local->GetNAddresses (interfaceLocal) > 1)
+    {
+      NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
+    }
+  Ipv4Address addrLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetLocal ();
+  Ipv4Mask maskLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetMask ();;
   NS_LOG_LOGIC ("Working with local address " << addrLocal);
   uint16_t metricLocal = ipv4Local->GetMetric (interfaceLocal);
 
@@ -962,8 +970,12 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   Ptr<Ipv4> ipv4Local = nodeLocal->GetObject<Ipv4> ();
   NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessPointToPointLink (): GetObject for <Ipv4> interface failed");
 
-  Ipv4Address addrLocal = ipv4Local->GetAddress(interfaceLocal);
-  Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(interfaceLocal);
+  if (ipv4Local->GetNAddresses (interfaceLocal) > 1)
+    {
+      NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
+    }
+  Ipv4Address addrLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetLocal ();
+  Ipv4Mask maskLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetMask ();
   NS_LOG_LOGIC ("Working with local address " << addrLocal);
   uint16_t metricLocal = ipv4Local->GetMetric (interfaceLocal);
 
@@ -1018,8 +1030,12 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   // Now that we have the Ipv4 interface, we can get the (remote) address and
   // mask we need.
   //
-  Ipv4Address addrRemote = ipv4Remote->GetAddress(interfaceRemote);
-  Ipv4Mask maskRemote = ipv4Remote->GetNetworkMask(interfaceRemote);
+  if (ipv4Remote->GetNAddresses (interfaceRemote) > 1)
+    {
+      NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
+    }
+  Ipv4Address addrRemote = ipv4Remote->GetAddress (interfaceRemote, 0).GetLocal ();
+  Ipv4Mask maskRemote = ipv4Remote->GetAddress (interfaceRemote, 0).GetMask ();
   NS_LOG_LOGIC ("Working with remote address " << addrRemote);
 
   //
@@ -1076,8 +1092,12 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
       Ptr<Ipv4> ipv4Local = node->GetObject<Ipv4> ();
       NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessPointToPointLink (): GetObject for <Ipv4> interface failed");
 
-      Ipv4Address addrLocal = ipv4Local->GetAddress(interfaceLocal);
-      Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(interfaceLocal);
+      if (ipv4Local->GetNAddresses (interfaceLocal) > 1)
+        {
+          NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
+        }
+      Ipv4Address addrLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetLocal ();
+      Ipv4Mask maskLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetMask ();
 
       GlobalRoutingLSA *pLSA = new GlobalRoutingLSA;
       NS_ABORT_MSG_IF (pLSA == 0, "GlobalRouter::BuildNetworkLSAs(): Can't alloc link record");
@@ -1128,7 +1148,11 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
                 }
               else 
                 {
-                  Ipv4Address tempAddr = tempIpv4->GetAddress(tempInterface);
+                  if (tempIpv4->GetNAddresses (tempInterface) > 1)
+                    {
+                      NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
+                    }
+                  Ipv4Address tempAddr = tempIpv4->GetAddress(tempInterface, 0).GetLocal ();
                   pLSA->AddAttachedRouter (tempAddr);
                 }
             }
@@ -1206,7 +1230,11 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRec
                       NS_LOG_LOGIC ("Remote side interface " << interfaceOther << " not up");
                       continue;
                     }
-                  Ipv4Address addrOther = ipv4->GetAddress (interfaceOther);
+                  if (ipv4->GetNAddresses (interfaceOther) > 1)
+                    {
+                      NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
+                    }
+                  Ipv4Address addrOther = ipv4->GetAddress (interfaceOther, 0).GetLocal ();
                   desigRtr = addrOther < desigRtr ? addrOther : desigRtr;
                   NS_LOG_LOGIC ("designated router now " << desigRtr);
                 }
@@ -1255,7 +1283,11 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRec
                       continue;
                     }
                   NS_LOG_LOGIC ("Found router on net device " << ndOther);
-                  Ipv4Address addrOther = ipv4->GetAddress (interfaceOther);
+                  if (ipv4->GetNAddresses (interfaceOther) > 1)
+                    {
+                      NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
+                    }
+                  Ipv4Address addrOther = ipv4->GetAddress (interfaceOther, 0).GetLocal ();
                   desigRtr = addrOther < desigRtr ? addrOther : desigRtr;
                   NS_LOG_LOGIC ("designated router now " << desigRtr);
                 }

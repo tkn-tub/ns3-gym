@@ -142,28 +142,29 @@ ArpL3Protocol::Receive(Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
       NS_LOG_LOGIC ("ARP: Cannot remove ARP header");
       return;
     }
-  
+  // XXX multi-address case  
   NS_LOG_LOGIC ("ARP: received "<< (arp.IsRequest ()? "request" : "reply") <<
             " node="<<m_node->GetId ()<<", got request from " <<
             arp.GetSourceIpv4Address () << " for address " <<
             arp.GetDestinationIpv4Address () << "; we have address " <<
-            cache->GetInterface ()->GetAddress ());
+            cache->GetInterface ()->GetAddress (0).GetLocal ());
 
   /**
    * Note: we do not update the ARP cache when we receive an ARP request
    * from an unknown node. See bug #107
    */
-
+  // XXX multi-address case
   if (arp.IsRequest () && 
-      arp.GetDestinationIpv4Address () == cache->GetInterface ()->GetAddress ()) 
+      arp.GetDestinationIpv4Address () == cache->GetInterface ()->GetAddress (0).GetLocal ()) 
     {
       NS_LOG_LOGIC ("node="<<m_node->GetId () <<", got request from " << 
                 arp.GetSourceIpv4Address () << " -- send reply");
       SendArpReply (cache, arp.GetSourceIpv4Address (),
                     arp.GetSourceHardwareAddress ());
     } 
+  // XXX multi-address case
   else if (arp.IsReply () &&
-           arp.GetDestinationIpv4Address ().IsEqual (cache->GetInterface ()->GetAddress ()) &&
+           arp.GetDestinationIpv4Address ().IsEqual (cache->GetInterface ()->GetAddress (0).GetLocal ()) &&
            arp.GetDestinationHardwareAddress () == device->GetAddress ()) 
     {
       Ipv4Address from = arp.GetSourceIpv4Address ();
@@ -284,11 +285,12 @@ ArpL3Protocol::SendArpRequest (Ptr<const ArpCache> cache, Ipv4Address to)
   ArpHeader arp;
   NS_LOG_LOGIC ("ARP: sending request from node "<<m_node->GetId ()<<
             " || src: " << cache->GetDevice ()->GetAddress () <<
-            " / " << cache->GetInterface ()->GetAddress () <<
+            " / " << cache->GetInterface ()->GetAddress (0).GetLocal () <<
             " || dst: " << cache->GetDevice ()->GetBroadcast () <<
             " / " << to);
+  // XXX multi-address case
   arp.SetRequest (cache->GetDevice ()->GetAddress (),
-		  cache->GetInterface ()->GetAddress (), 
+		  cache->GetInterface ()->GetAddress (0).GetLocal (), 
                   cache->GetDevice ()->GetBroadcast (),
                   to);
   Ptr<Packet> packet = Create<Packet> ();
@@ -303,10 +305,11 @@ ArpL3Protocol::SendArpReply (Ptr<const ArpCache> cache, Ipv4Address toIp, Addres
   ArpHeader arp;
   NS_LOG_LOGIC ("ARP: sending reply from node "<<m_node->GetId ()<<
             "|| src: " << cache->GetDevice ()->GetAddress () << 
-            " / " << cache->GetInterface ()->GetAddress () <<
+            " / " << cache->GetInterface ()->GetAddress (0).GetLocal () <<
             " || dst: " << toMac << " / " << toIp);
+  // XXX multi-address case
   arp.SetReply (cache->GetDevice ()->GetAddress (),
-                cache->GetInterface ()->GetAddress (),
+                cache->GetInterface ()->GetAddress (0).GetLocal (),
                 toMac, toIp);
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (arp);

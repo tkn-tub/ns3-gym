@@ -62,37 +62,6 @@ Ipv4Interface::DoDispose (void)
   Object::DoDispose ();
 }
 
-void 
-Ipv4Interface::SetAddress (Ipv4Address a)
-{
-  NS_LOG_FUNCTION (this << a);
-  m_address = a;
-}
-
-void 
-Ipv4Interface::SetNetworkMask (Ipv4Mask mask)
-{
-  NS_LOG_FUNCTION (this << mask);
-  m_netmask = mask;
-}
-
-Ipv4Address
-Ipv4Interface::GetBroadcast (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  uint32_t mask = m_netmask.Get ();
-  uint32_t address = m_address.Get ();
-  Ipv4Address broadcast = Ipv4Address (address | (~mask));
-  return broadcast;
-}
-
-Ipv4Mask 
-Ipv4Interface::GetNetworkMask (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_netmask;
-}
-
 void
 Ipv4Interface::SetMetric (uint16_t metric)
 {
@@ -105,13 +74,6 @@ Ipv4Interface::GetMetric (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_metric;
-}
-
-Ipv4Address 
-Ipv4Interface::GetAddress (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_address;
 }
 
 uint16_t 

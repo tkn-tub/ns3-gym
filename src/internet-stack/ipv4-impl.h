@@ -91,10 +91,6 @@ public:
   Ipv4InterfaceAddress GetAddress (uint32_t interfaceIndex, uint32_t addressIndex) const;
   uint32_t GetNAddresses (uint32_t interface) const;
 
-  virtual void SetAddress (uint32_t i, Ipv4Address address);
-  virtual void SetNetworkMask (uint32_t i, Ipv4Mask mask);
-  virtual Ipv4Mask GetNetworkMask (uint32_t t) const;
-  virtual Ipv4Address GetAddress (uint32_t i) const;
   virtual void SetMetric (uint32_t i, uint16_t metric);
   virtual uint16_t GetMetric (uint32_t i) const;
   virtual Ipv4Address GetSourceAddress (Ipv4Address destination) const;

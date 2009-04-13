@@ -362,8 +362,10 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
       NS_LOG_LOGIC ("Limited broadcast start.");
       for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++ )
         {
-          Ipv4Address addri = ipv4->GetAddress (i);
-          Ipv4Mask maski = ipv4->GetNetworkMask (i);
+          // Get the primary address
+          Ipv4InterfaceAddress iaddr = ipv4->GetAddress (i, 0);
+          Ipv4Address addri = iaddr.GetLocal ();
+          Ipv4Mask maski = iaddr.GetMask ();
           if (maski == Ipv4Mask::GetOnes ())
             {
               // if the network mask is 255.255.255.255, do not convert dest
@@ -392,7 +394,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
   else if (ipv4->GetInterfaceForDestination(dest, localInterface))
     {
       NS_LOG_LOGIC ("Route exists");
-      m_udp->Send (p->Copy (), ipv4->GetAddress (localInterface), dest,
+      m_udp->Send (p->Copy (), ipv4->GetSourceAddress (dest), dest,
 		   m_endPoint->GetLocalPort (), port);
       NotifyDataSent (p->GetSize ());
       NotifySend (GetTxAvailable ());
@@ -666,8 +668,8 @@ UdpSocketImplTest::RunTests (void)
     rxNode->AddDevice (rxDev1);
     Ptr<Ipv4> ipv4 = rxNode->GetObject<Ipv4> ();
     uint32_t netdev_idx = ipv4->AddInterface (rxDev1);
-    ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.0.1"));
-    ipv4->SetNetworkMask (netdev_idx, Ipv4Mask (0xffff0000U));
+    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.0.1"), Ipv4Mask (0xffff0000U));
+    ipv4->AddAddress (netdev_idx, ipv4Addr);
     ipv4->SetUp (netdev_idx);
   }
 
@@ -677,8 +679,8 @@ UdpSocketImplTest::RunTests (void)
     rxNode->AddDevice (rxDev2);
     Ptr<Ipv4> ipv4 = rxNode->GetObject<Ipv4> ();
     uint32_t netdev_idx = ipv4->AddInterface (rxDev2);
-    ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.1.1"));
-    ipv4->SetNetworkMask (netdev_idx, Ipv4Mask (0xffff0000U));
+    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.1.1"), Ipv4Mask (0xffff0000U));
+    ipv4->AddAddress (netdev_idx, ipv4Addr);
     ipv4->SetUp (netdev_idx);
   }
   
@@ -692,8 +694,8 @@ UdpSocketImplTest::RunTests (void)
     txNode->AddDevice (txDev1);
     Ptr<Ipv4> ipv4 = txNode->GetObject<Ipv4> ();
     uint32_t netdev_idx = ipv4->AddInterface (txDev1);
-    ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.0.2"));
-    ipv4->SetNetworkMask (netdev_idx, Ipv4Mask (0xffff0000U));
+    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.0.2"), Ipv4Mask (0xffff0000U));
+    ipv4->AddAddress (netdev_idx, ipv4Addr);
     ipv4->SetUp (netdev_idx);
   }
   Ptr<SimpleNetDevice> txDev2;
@@ -703,8 +705,8 @@ UdpSocketImplTest::RunTests (void)
     txNode->AddDevice (txDev2);
     Ptr<Ipv4> ipv4 = txNode->GetObject<Ipv4> ();
     uint32_t netdev_idx = ipv4->AddInterface (txDev2);
-    ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.1.2"));
-    ipv4->SetNetworkMask (netdev_idx, Ipv4Mask (0xffff0000U));
+    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.1.2"), Ipv4Mask (0xffff0000U));
+    ipv4->AddAddress (netdev_idx, ipv4Addr);
     ipv4->SetUp (netdev_idx);
   }
 

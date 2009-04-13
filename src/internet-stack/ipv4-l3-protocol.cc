@@ -175,8 +175,8 @@ Ipv4L3Protocol::SetupLoopback (void)
 
   Ptr<Ipv4LoopbackInterface> interface = CreateObject<Ipv4LoopbackInterface> ();
   interface->SetNode (m_node);
-  interface->SetAddress (Ipv4Address::GetLoopback ());
-  interface->SetNetworkMask (Ipv4Mask::GetLoopback ());
+  Ipv4InterfaceAddress ifaceAddr = Ipv4InterfaceAddress (Ipv4Address::GetLoopback (), Ipv4Mask::GetLoopback ());
+  interface->AddAddress (ifaceAddr);
   uint32_t index = AddIpv4Interface (interface);
   AddHostRouteTo (Ipv4Address::GetLoopback (), index);
   interface->SetUp ();
@@ -437,9 +437,12 @@ Ipv4L3Protocol::FindInterfaceForAddr (Ipv4Address addr) const
        i != m_interfaces.end (); 
        i++, interface++)
     {
-      if ((*i)->GetAddress () == addr)
+      for (uint32_t j = 0; j < (*i)->GetNAddresses (); j++) 
         {
-          return interface;
+          if ((*i)->GetAddress (j).GetLocal () == addr)
+            {
+              return interface;
+            }
         }
     }
 
@@ -458,9 +461,12 @@ Ipv4L3Protocol::FindInterfaceForAddr (Ipv4Address addr, Ipv4Mask mask) const
        i != m_interfaces.end (); 
        i++, interface++)
     {
-      if ((*i)->GetAddress ().CombineMask (mask) == addr.CombineMask (mask))
+      for (uint32_t j = 0; j < (*i)->GetNAddresses (); j++)
         {
-          return interface;
+          if ((*i)->GetAddress (j).GetLocal ().CombineMask (mask) == addr.CombineMask (mask))
+            {
+              return interface;
+            }
         }
     }
 
@@ -642,11 +648,15 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
            ifaceIter != m_interfaces.end (); ifaceIter++, ifaceIndex++)
         {
           Ptr<Ipv4Interface> outInterface = *ifaceIter;
-          if (destination.IsSubnetDirectedBroadcast (
-                outInterface->GetNetworkMask ()))
-          {
-            ipHeader.SetTtl (1);
-          }
+          // XXX this logic might not be completely correct for multi-addressed interface
+          for (uint32_t j = 0; j < outInterface->GetNAddresses(); j++)
+            {
+              if (destination.IsSubnetDirectedBroadcast (
+                outInterface->GetAddress (j).GetMask ()))
+                {
+                  ipHeader.SetTtl (1);
+                }
+            }
         }
     }
   if (destination.IsBroadcast ())
@@ -659,9 +669,10 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
           Ptr<Packet> packetCopy = packet->Copy ();
 
           packetCopy->AddHeader (ipHeader);
+          // XXX Handle multiple address on interface
           if (packetCopy->GetSize () > outInterface->GetMtu () &&
               ipHeader.IsDontFragment () &&
-              IsUnicast (ipHeader.GetDestination (), outInterface->GetNetworkMask ()))
+              IsUnicast (ipHeader.GetDestination (), outInterface->GetAddress (0).GetMask ()))
             {
               Ptr<Icmpv4L4Protocol> icmp = GetIcmp ();
               NS_ASSERT (icmp != 0);
@@ -723,9 +734,10 @@ Ipv4L3Protocol::SendRealOut (bool found,
   NS_LOG_LOGIC ("Send via interface " << route.GetInterface ());
 
   Ptr<Ipv4Interface> outInterface = GetInterface (route.GetInterface ());
+  // XXX handle multiple address on interface
   if (packet->GetSize () > outInterface->GetMtu () &&
       ipHeader.IsDontFragment () &&
-      IsUnicast (ipHeader.GetDestination (), outInterface->GetNetworkMask ()))
+      IsUnicast (ipHeader.GetDestination (), outInterface->GetAddress (0).GetMask ()))
     {
       NS_LOG_LOGIC ("Too big: need fragmentation but not allowed");
       Ptr<Icmpv4L4Protocol> icmp = GetIcmp ();
@@ -788,10 +800,13 @@ Ipv4L3Protocol::Forwarding (
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin ();
        i != m_interfaces.end (); i++) 
     {
-      if ((*i)->GetAddress ().IsEqual (ipHeader.GetDestination ())) 
+      for (uint32_t j = 0; j < (*i)->GetNAddresses (); j++)
         {
-          NS_LOG_LOGIC ("For me (destination match)");
-          return false;
+          if ((*i)->GetAddress (j).GetLocal ().IsEqual (ipHeader.GetDestination ())) 
+            {
+              NS_LOG_LOGIC ("For me (destination match)");
+              return false;
+            }
         }
     }
   
@@ -801,7 +816,8 @@ Ipv4L3Protocol::Forwarding (
       Ptr<Ipv4Interface> interface = *i;
       if (interface->GetDevice () == device)
 	{
-	  if (ipHeader.GetDestination ().IsEqual (interface->GetBroadcast ())) 
+          // XXX multi-address case
+	  if (ipHeader.GetDestination ().IsEqual (interface->GetAddress (0).GetBroadcast ())) 
 	    {
               NS_LOG_LOGIC ("For me (interface broadcast address)");
 	      return false;
@@ -852,9 +868,10 @@ Ipv4L3Protocol::DoForward (uint32_t interface,
   NS_LOG_FUNCTION (this << interface << packet << ipHeader);
 
   ipHeader.SetTtl (ipHeader.GetTtl () - 1);
+  // XXX handle multi-interfaces
   if (ipHeader.GetTtl () == 0)
     {
-      if (IsUnicast (ipHeader.GetDestination (), GetInterface (interface)->GetNetworkMask ()))
+      if (IsUnicast (ipHeader.GetDestination (), GetInterface (interface)->GetAddress (0).GetMask ()))
         {
           Ptr<Icmpv4L4Protocol> icmp = GetIcmp ();
           icmp->SendTimeExceededTtl (ipHeader, packet);
@@ -889,7 +906,8 @@ Ipv4L3Protocol::ForwardUp (Ptr<Packet> p, Ipv4Header const&ip,
       case Ipv4L4Protocol::RX_CSUM_FAILED:
         break;
       case Ipv4L4Protocol::RX_ENDPOINT_UNREACH:
-        if (IsUnicast (ip.GetDestination (), incomingInterface->GetNetworkMask ()))
+        // XXX handle multi-interface case
+        if (IsUnicast (ip.GetDestination (), incomingInterface->GetAddress (0).GetMask ()))
           {
             GetIcmp ()->SendDestUnreachPort (ip, copy);
           }
@@ -945,38 +963,6 @@ Ipv4L3Protocol::GetNAddresses (uint32_t interface) const
   NS_LOG_FUNCTION (this << interface);
   Ptr<Ipv4Interface> iface = GetInterface (interface);
   return iface->GetNAddresses ();
-}
-
-void 
-Ipv4L3Protocol::SetAddress (uint32_t i, Ipv4Address address)
-{
-  NS_LOG_FUNCTION (this << i << address);
-  Ptr<Ipv4Interface> interface = GetInterface (i);
-  interface->SetAddress (address);
-}
-
-void 
-Ipv4L3Protocol::SetNetworkMask (uint32_t i, Ipv4Mask mask)
-{
-  NS_LOG_FUNCTION (this << i << mask);
-  Ptr<Ipv4Interface> interface = GetInterface (i);
-  interface->SetNetworkMask (mask);
-}
-
-Ipv4Mask 
-Ipv4L3Protocol::GetNetworkMask (uint32_t i) const
-{
-  NS_LOG_FUNCTION (this << i);
-  Ptr<Ipv4Interface> interface = GetInterface (i);
-  return interface->GetNetworkMask ();
-}
-
-Ipv4Address 
-Ipv4L3Protocol::GetAddress (uint32_t i) const
-{
-  NS_LOG_FUNCTION (this << i);
-  Ptr<Ipv4Interface> interface = GetInterface (i);
-  return interface->GetAddress ();
 }
 
 void 
@@ -1091,11 +1077,13 @@ Ipv4L3Protocol::SetUp (uint32_t i)
   // If interface address and network mask have been set, add a route
   // to the network of the interface (like e.g. ifconfig does on a
   // Linux box)
-  if (((interface->GetAddress ()) != (Ipv4Address ()))
-      && (interface->GetNetworkMask ()) != (Ipv4Mask ()))
+  for (uint32_t j = 0; j < interface->GetNAddresses (); j++)
     {
-      AddNetworkRouteTo (interface->GetAddress ().CombineMask (interface->GetNetworkMask ()),
-                         interface->GetNetworkMask (), i);
+      if (((interface->GetAddress (j).GetLocal ()) != (Ipv4Address ()))
+          && (interface->GetAddress (j).GetMask ()) != (Ipv4Mask ()))
+        {
+          AddNetworkRouteTo (interface->GetAddress (j).GetLocal ().CombineMask (interface->GetAddress (j).GetMask ()), interface->GetAddress (j).GetMask (), i);
+        }
     }
 }
 
@@ -1123,5 +1111,37 @@ Ipv4L3Protocol::SetDown (uint32_t ifaceIndex)
         }
     }
 }
+
+// Note:  This method will be removed in Ipv4 routing work
+Ipv4Address
+Ipv4L3Protocol::GetSourceAddress (Ipv4Address destination) const
+{
+  uint32_t interface = 0xffffffff;
+
+  bool result = GetInterfaceForDestination (destination, interface);
+
+  if (result)
+    {
+      // if multiple addresses exist, search for the first one on the same subnet
+      for (uint32_t i = 0; i < GetNAddresses (interface); i++)
+        {
+          Ipv4InterfaceAddress ipv4InAddr = GetAddress (interface, i);
+          if (ipv4InAddr.GetLocal().CombineMask(ipv4InAddr.GetMask ()) == destination.CombineMask (ipv4InAddr.GetMask ()))
+            {
+              return ipv4InAddr.GetLocal ();
+            }
+        }
+      // Destination is off-link, so return first address.
+      return GetAddress (interface, 0).GetLocal ();
+    }
+  else
+    {
+//
+// If we can't find any address, just leave it 0.0.0.0
+//
+      return Ipv4Address::GetAny ();
+    }
+}
+
 
 }//namespace ns3
