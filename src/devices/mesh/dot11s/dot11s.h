@@ -25,5 +25,10 @@
  * 
  * \brief IEEE 802.11s (mesh) draft standard implementation
  * 
- * TODO: add documentation on 802.11s implementation here
+ * Current model conforms IEEE 802.11s D3.0 draft version and includes
+ * Peer Management Protocol and HWMP (routing) Protocol implementations.
+ * 
+ * The multi-interface (aka multi radio) mesh points are supported as an 
+ * extensions of ieee draft version 3.0. Note that corresponding helper
+ * creates single interface station by default.  
  */

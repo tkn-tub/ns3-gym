@@ -24,7 +24,7 @@
  * \ingroup devices
  * \defgroup mesh Mesh
  *
- * \brief Level 2 mobile ad hoc wireless networking
+ * \brief Layer 2 mobile ad hoc wireless (aka mesh) networking
  *
- * TODO module documentation here
+ * see http://www.nsnam.org/wiki/index.php/Mesh for module architectural description.
  */

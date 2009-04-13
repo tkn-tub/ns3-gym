@@ -29,8 +29,10 @@ namespace ns3 {
 namespace dot11s {
 /**
  * \ingroup dot11s
+ * 
+ * \brief See IEEE 802.11s draft 3.0 section 7.1.3.5b
  */
-class Dot11sMacHeader : public Header //7.1.3.5b
+class Dot11sMacHeader : public Header
 {
 public:
   Dot11sMacHeader ();
@@ -68,18 +70,22 @@ private:
   friend bool operator== (const Dot11sMacHeader & a, const Dot11sMacHeader & b);
 };
 bool operator== (const Dot11sMacHeader & a, const Dot11sMacHeader & b);
+
 /**
- * \ingroup mesh
+ * \ingroup dot11s
+ * 
+ * \brief See IEEE 802.11s draft 3.0 section 7.2.3.14
+ * 
+ * Multichop action frame consists of Mesh header, Action, and
+ * the last information. Mesh header is present within all data
+ * frames and multihop action frames, so Mesh header is a
+ * separate structure. Each MultihopAction frames (frames like
+ * PREQ, PREP and other) start form Category field and Action
+ * value field, so the Multihop Action Frame should containt
+ * three fields: Category, Action Value.
  */
-class WifiMeshMultihopActionHeader : public Header //7.2.3.14
+class WifiMeshMultihopActionHeader : public Header 
 {
-  //Multichop action frame consists of Mesh header, Action, and
-  //the last information. Mesh header is present within all data
-  //frames and multihop action frames, so Mesh header is a
-  //separate structure. Each MultihopAction frames (frames like
-  //PREQ, PREP and other) start form Category field and Action
-  //value field, so the Multihop Action Frame should containt
-  //three fields: Category, Action Value;
 public:
   WifiMeshMultihopActionHeader ();
   ~WifiMeshMultihopActionHeader ();
