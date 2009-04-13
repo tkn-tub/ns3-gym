@@ -440,7 +440,7 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, u
   //Add a reactive path only if it is better than existing:
   if (
       (result.retransmitter == Mac48Address::GetBroadcast ()) ||
-      (result.retransmitter != Mac48Address::GetBroadcast ()) && (result.metric > prep.GetMetric ())
+      (result.metric > prep.GetMetric ())
       )
   {
     m_rtable->AddPrecursor (prep.GetDestinationAddress (), interface, from);
