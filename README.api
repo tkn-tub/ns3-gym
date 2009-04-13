@@ -1,3 +1,6 @@
+This repository handles changes to the Ipv4 interface class and Ipv4Impl
+class.
+
 1. Changeset: d99061f1167c
 
 Synopsis:
@@ -46,7 +49,7 @@ None.
 ========================================================================
 
 2.  Changeset: e493e80274bd (implementation added in parallel)
-    Changeset: TBD          (cut over of client code, remove old code)
+    Changeset: db81fdcb06e7 (cut over of client code, remove old code)
 
 Synopsis:
 --------
@@ -62,16 +65,26 @@ multiple IP addresses on an interface:
 +  virtual Ipv4InterfaceAddress GetAddress (uint32_t interface, uint32_t addressIndex) const = 0;
 +  virtual uint32_t GetNAddresses (uint32_t interface) const = 0;
 
-This convenience function was removed:
--  virtual uint32_t GetIfIndexByAddress (Ipv4Address addr,
--    Ipv4Mask mask = Ipv4Mask("255.255.255.255"));
+Regarding legacy API usage, typically where you once did the following,
+using the public Ipv4 class interface (e.g.):
 
-A few public methods were renamed because they were poorly named:
--  virtual uint32_t FindInterfaceForAddr (Ipv4Address addr,
-+  virtual int32_t GetInterfaceForAddress (Ipv4Address address,
-     Ipv4Mask mask) const = 0;
--  virtual int32_t FindInterfaceForDevice(Ptr<NetDevice> nd) const = 0;
-+  virtual int32_t GetInterfaceForDevice (Ptr<const NetDevice> device) const = 0;
+  ipv4A->SetAddress (ifIndexA, Ipv4Address ("172.16.1.1"));
+  ipv4A->SetNetworkMask (ifIndexA, Ipv4Mask ("255.255.255.255"));
+
+you now do:
+
+  Ipv4InterfaceAddress ipv4IfAddrA = Ipv4InterfaceAddress (Ipv4Address ("172.16.1.1"), Ipv4Mask ("255.255.255.255"));
+  ipv4A->AddAddress (ifIndexA, ipv4IfAddrA);
+
+
+At the helper API level, one often gets an address from an interface
+container.  We preserve the legacy GetAddress (uint32_t i) but it
+is documented that this will return only the first (address index 0)
+address on the interface, if there are multiple such addresses. 
+We provide also an overloaded variant for the multi-address case: 
+
+Ipv4Address Ipv4InterfaceContainer::GetAddress (uint32_t i)
++ Ipv4Address Ipv4InterfaceContainer::GetAddress (uint32_t i, uint32_t j)
 
 
 New public API or classes (src/node)
@@ -81,6 +94,7 @@ class Ipv4InterfaceAddress:  This is a new class to parallel Linux
 struct in_ifaddr.  It holds IP addressing information, including mask, 
 broadcast address, scope, whether primary or secondary, etc.
 
+Location:  src/node/ipv4-interface-address.h
 
 ========================================================================
 
