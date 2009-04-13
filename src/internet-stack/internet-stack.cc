@@ -29,7 +29,6 @@
 #include "arp-l3-protocol.h"
 #include "udp-socket-factory-impl.h"
 #include "tcp-socket-factory-impl.h"
-#include "ipv4-impl.h"
 #include "ipv4-raw-socket-factory-impl.h"
 #include "icmpv4-l4-protocol.h"
 #ifdef NETWORK_SIMULATION_CRADLE
@@ -94,9 +93,6 @@ AddIpv4Stack(Ptr<Node> node)
   Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
   ipv4->SetNode (node);
   node->AggregateObject (ipv4);
-  Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> ();
-  ipv4Impl->SetIpv4 (ipv4);
-  node->AggregateObject (ipv4Impl);
 }
 
 void

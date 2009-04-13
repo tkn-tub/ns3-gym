@@ -53,7 +53,7 @@ class Icmpv4L4Protocol;
  * This is the actual implementation of IP.  It contains APIs to send and
  * receive packets at the IP layer, as well as APIs for IP routing.
  */
-class Ipv4L3Protocol : public Object
+class Ipv4L3Protocol : public Ipv4
 {
 public:
   static TypeId GetTypeId (void);
@@ -158,7 +158,7 @@ public:
                Ipv4RoutingProtocol::RouteReplyCallback routeReply);
 
   uint32_t GetNRoutes (void);
-  Ipv4Route *GetRoute (uint32_t i);
+  Ipv4Route GetRoute (uint32_t i);
   void RemoveRoute (uint32_t i);
 
   void AddMulticastRoute (Ipv4Address origin,
@@ -169,7 +169,7 @@ public:
   void SetDefaultMulticastRoute (uint32_t onputInterface);
 
   uint32_t GetNMulticastRoutes (void) const;
-  Ipv4MulticastRoute *GetMulticastRoute (uint32_t i) const;
+  Ipv4MulticastRoute GetMulticastRoute (uint32_t i) const;
 
   void RemoveMulticastRoute (Ipv4Address origin,
                              Ipv4Address group,
@@ -182,7 +182,7 @@ public:
 
   uint32_t FindInterfaceForAddr (Ipv4Address addr) const;
   uint32_t FindInterfaceForAddr (Ipv4Address addr, Ipv4Mask mask) const;
-  int32_t FindInterfaceIndexForDevice (Ptr<NetDevice> device) const;
+  int32_t FindInterfaceForDevice (Ptr<NetDevice> device) const;
   
   void JoinMulticastGroup (Ipv4Address origin, Ipv4Address group);
   void LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group);
@@ -201,8 +201,10 @@ public:
   void SetUp (uint32_t i);
   void SetDown (uint32_t i);
 
+  Ptr<NetDevice> GetNetDevice (uint32_t i);
+
   void AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
-                           int priority);
+                           int16_t priority);
 
 protected:
 

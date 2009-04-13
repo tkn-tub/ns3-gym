@@ -53,7 +53,7 @@ TypeId
 Ipv4L3Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4L3Protocol")
-    .SetParent<Object> ()
+    .SetParent<Ipv4> ()
     .AddConstructor<Ipv4L3Protocol> ()
     .AddAttribute ("DefaultTtl", "The TTL value set by default on all outgoing packets generated on this node.",
                    UintegerValue (64),
@@ -298,7 +298,7 @@ Ipv4L3Protocol::Lookup (
 
 void
 Ipv4L3Protocol::AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
-                                    int priority)
+                                    int16_t priority)
 {
   NS_LOG_FUNCTION (this << &routingProtocol << priority);
   m_routingProtocols.push_back
@@ -313,11 +313,11 @@ Ipv4L3Protocol::GetNRoutes (void)
   return m_staticRouting->GetNRoutes ();
 }
 
-Ipv4Route *
+Ipv4Route 
 Ipv4L3Protocol::GetRoute (uint32_t index)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  return m_staticRouting->GetRoute (index);
+  return *m_staticRouting->GetRoute (index);
 }
 
 void 
@@ -354,11 +354,11 @@ Ipv4L3Protocol::GetNMulticastRoutes (void) const
   return m_staticRouting->GetNMulticastRoutes ();
 }
 
-Ipv4MulticastRoute *
+Ipv4MulticastRoute 
 Ipv4L3Protocol::GetMulticastRoute (uint32_t index) const
 {
   NS_LOG_FUNCTION (this << index);
-  return m_staticRouting->GetMulticastRoute (index);
+  return *m_staticRouting->GetMulticastRoute (index);
 }
 
 void 
@@ -476,7 +476,7 @@ Ipv4L3Protocol::FindInterfaceForAddr (Ipv4Address addr, Ipv4Mask mask) const
 }
 
 int32_t 
-Ipv4L3Protocol::FindInterfaceIndexForDevice (Ptr<NetDevice> device) const
+Ipv4L3Protocol::FindInterfaceForDevice (Ptr<NetDevice> device) const
 {
   NS_LOG_FUNCTION (this << device);
 
@@ -1101,8 +1101,8 @@ Ipv4L3Protocol::SetDown (uint32_t ifaceIndex)
       modified = false;
       for (uint32_t i = 0; i < GetNRoutes (); i++)
         {
-          Ipv4Route *route = GetRoute (i);
-          if (route->GetInterface () == ifaceIndex)
+          Ipv4Route route = GetRoute (i);
+          if (route.GetInterface () == ifaceIndex)
             {
               RemoveRoute (i);
               modified = true;
@@ -1142,6 +1142,13 @@ Ipv4L3Protocol::GetSourceAddress (Ipv4Address destination) const
       return Ipv4Address::GetAny ();
     }
 }
+
+Ptr<NetDevice>
+Ipv4L3Protocol::GetNetDevice (uint32_t i)
+{
+  return GetInterface (i)-> GetDevice ();
+}
+
 
 
 }//namespace ns3

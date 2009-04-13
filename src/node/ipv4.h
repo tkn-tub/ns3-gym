@@ -320,7 +320,7 @@ public:
   /**
    * \returns the number of interfaces added by the user.
    */
-  virtual uint32_t GetNInterfaces (void) = 0;  
+  virtual uint32_t GetNInterfaces (void) const = 0;  
 
   /**
    * \brief Find and return the interface ID of the interface that has been
