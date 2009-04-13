@@ -16,6 +16,7 @@ import Build
 # these are set from the main wscript file
 APPNAME=None
 VERSION=None
+bld=None
 
 #
 # The last part of the path name to use to find the regression traces tarball.
@@ -65,7 +66,7 @@ def find_program(program_name, env):
     launch_dir = os.path.abspath(Options.cwd_launch)
     top_dir = os.path.abspath(Options.launch_dir)
     found_programs = []
-    for obj in Build.bld.all_task_gen:
+    for obj in bld.all_task_gen:
         if not getattr(obj, 'is_ns3_program', False):
             continue
 
@@ -84,7 +85,7 @@ def find_program(program_name, env):
                      % (program_name, found_programs))
 
 def get_proc_env(os_env=None):
-    env = Build.bld.env
+    env = bld.env
     if sys.platform == 'linux2':
         pathvar = 'LD_LIBRARY_PATH'
     elif sys.platform == 'darwin':
@@ -111,7 +112,7 @@ def get_proc_env(os_env=None):
         else:
             proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']))
 
-    pymoddir = Build.bld.path.find_dir('bindings/python').abspath(env)
+    pymoddir = bld.path.find_dir('bindings/python').abspath(env)
     if 'PYTHONPATH' in proc_env:
         proc_env['PYTHONPATH'] = os.pathsep.join([pymoddir] + [proc_env['PYTHONPATH']])
     else:
@@ -121,7 +122,6 @@ def get_proc_env(os_env=None):
 
 def run_argv(argv, os_env=None, cwd=None):
     proc_env = get_proc_env(os_env)
-    #env = Build.bld.env
     retval = subprocess.Popen(argv, env=proc_env, cwd=cwd).wait()
     if retval:
         raise Utils.WafError("Command %s exited with code %i" % (argv, retval))
@@ -133,7 +133,7 @@ def get_run_program(program_string, command_template=None):
     run_program(program_string, command_template).
     """
     #print "get_run_program_argv(program_string=%r, command_template=%r)" % (program_string, command_template)
-    env = Build.bld.env
+    env = bld.env
 
     if command_template in (None, '%s'):
         argv = shlex.split(program_string)
@@ -187,7 +187,7 @@ def run_program(program_string, command_template=None, cwd=None):
 
 
 def run_python_program(program_string):
-    env = Build.bld.env
+    env = bld.env
     execvec = shlex.split(program_string)
     if (Options.options.cwd_launch):
         cwd = Options.options.cwd_launch

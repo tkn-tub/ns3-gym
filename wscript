@@ -10,6 +10,7 @@ import os.path
 # WAF modules
 import pproc as subprocess
 import Options
+
 import Logs
 import TaskGen
 import Constants
@@ -23,6 +24,7 @@ Task.algotype = Constants.JOBCONTROL # so that Task.maxjobs=1 takes effect
 import Utils
 import Build
 import Configure
+import Scripting
 
 import cflags # override the build profiles from waf
 cflags.profiles = {
@@ -133,7 +135,7 @@ def set_options(opt):
                    action="store_true", default=False,
                    dest='valgrind')
     opt.add_option('--shell',
-                   help=('Run a shell with an environment suitably modified to run locally built programs'),
+                   help=('DEPRECATED (run ./waf shell)'),
                    action="store_true", default=False,
                    dest='shell')
     opt.add_option('--enable-sudo',
@@ -161,7 +163,7 @@ def set_options(opt):
     opt.sub_options('src/internet-stack')
 
 
-def check_compilation_flag(conf, flag):
+def _check_compilation_flag(conf, flag):
     """
     Checks if the C++ compiler accepts a certain compilation flag or flags
     flag: can be a string or a list of strings
@@ -186,7 +188,7 @@ def report_optional_feature(conf, name, caption, was_enabled, reason_not_enabled
 
 def configure(conf):
     # attach some extra methods
-    conf.check_compilation_flag = types.MethodType(check_compilation_flag, conf)
+    conf.check_compilation_flag = types.MethodType(_check_compilation_flag, conf)
     conf.report_optional_feature = types.MethodType(report_optional_feature, conf)
     conf.env['NS3_OPTIONAL_FEATURES'] = []
 
@@ -235,7 +237,7 @@ def configure(conf):
     env.append_value('CXXDEFINES', 'RUN_SELF_TESTS')
     
     if env['COMPILER_CXX'] == 'g++' and 'CXXFLAGS' not in os.environ:
-        if check_compilation_flag(conf, '-Wno-error=deprecated-declarations'):
+        if conf.check_compilation_flag('-Wno-error=deprecated-declarations'):
             env.append_value('CXXFLAGS', '-Wno-error=deprecated-declarations')
         
     if Options.options.build_profile == 'debug':
@@ -363,6 +365,7 @@ def add_scratch_programs(bld):
 
 
 def build(bld):
+    wutils.bld = bld
     if Options.options.no_task_lines:
         import Runner
         def null_printout(s):
@@ -378,21 +381,6 @@ def build(bld):
     variant_env = bld.env_of_name(variant_name)
     bld.all_envs['default'] = variant_env
 
-    if Options.options.shell:
-        run_shell()
-        raise SystemExit(0)
-
-    if Options.options.doxygen:
-        doxygen()
-        raise SystemExit(0)
-
-    check_shell()
-
-    if Options.options.doxygen:
-        doxygen()
-        raise SystemExit(0)
-
-    print "Entering directory `%s'" % os.path.join(bld.path.abspath(), 'build')
     # process subfolders from here
     bld.add_subdirs('src')
     bld.add_subdirs('samples utils examples')
@@ -427,14 +415,14 @@ def build(bld):
                         changed = True
 
         ## remove objects that depend on modules not listed
-        for obj in list(Build.bld.all_task_gen):
+        for obj in list(bld.all_task_gen):
             if hasattr(obj, 'ns3_module_dependencies'):
                 for dep in obj.ns3_module_dependencies:
                     if dep not in modules:
-                        Build.bld.all_task_gen.remove(obj)
+                        bld.all_task_gen.remove(obj)
                         break
             if obj.name in env['NS3_MODULES'] and obj.name not in modules:
-                Build.bld.all_task_gen.remove(obj)
+                bld.all_task_gen.remove(obj)
 
     ## Create a single ns3 library containing all enabled modules
     lib = bld.new_task_gen('cxx', 'shlib')
@@ -468,11 +456,13 @@ def build(bld):
         regression.run_regression(bld, regression_traces)
 
 
-def shutdown():
-    env = Build.bld.env
 
-    if Options.commands['check']:
-        _run_waf_check()
+def shutdown(ctx):
+    bld = wutils.bld
+    env = bld.env
+
+    #if Options.commands['check']:
+    #    _run_waf_check()
 
     if Options.options.lcov_report:
         lcov_report()
@@ -485,9 +475,26 @@ def shutdown():
         wutils.run_python_program(Options.options.pyrun)
         raise SystemExit(0)
 
-def _run_waf_check():
+    if Options.options.shell:
+        raise Utils.WafError("Run `./waf shell' now, instead of `./waf shell'")
+
+    if Options.options.doxygen:
+        doxygen()
+        raise SystemExit(0)
+
+    check_shell(bld)
+
+    if Options.options.doxygen:
+        doxygen()
+        raise SystemExit(0)
+
+
+check_context = Build.BuildContext
+def check(bld):
+    "run the NS-3 unit tests"
+    Scripting.build(bld)
     ## generate the trace sources list docs
-    env = Build.bld.env
+    env = bld.env
     proc_env = wutils.get_proc_env()
     try:
         program_obj = wutils.find_program('print-introspected-doxygen', env)
@@ -514,14 +521,14 @@ def _run_waf_check():
 
 
 
-def check_shell():
+def check_shell(bld):
     if 'NS3_MODULE_PATH' not in os.environ:
         return
-    env = Build.bld.env
+    env = bld.env
     correct_modpath = os.pathsep.join(env['NS3_MODULE_PATH'])
     found_modpath = os.environ['NS3_MODULE_PATH']
     if found_modpath != correct_modpath:
-        msg = ("Detected shell (waf --shell) with incorrect configuration\n"
+        msg = ("Detected shell (./waf shell) with incorrect configuration\n"
                "=========================================================\n"
                "Possible reasons for this problem:\n"
                "  1. You switched to another ns-3 tree from inside this shell\n"
@@ -533,13 +540,19 @@ def check_shell():
         raise Utils.WafError(msg)
 
 
-def run_shell():
+shell_context = Build.BuildContext
+def shell(ctx):
+    """run a shell with an environment suitably modified to run locally built programs"""
+
+    #make sure we build first"
+    Scripting.build(ctx)
+
     if sys.platform == 'win32':
         shell = os.environ.get("COMSPEC", "cmd.exe")
     else:
         shell = os.environ.get("SHELL", "/bin/sh")
 
-    env = Build.bld.env
+    env = wutils.bld.env
     wutils.run_argv([shell], {'NS3_MODULE_PATH': os.pathsep.join(env['NS3_MODULE_PATH'])})
 
 def doxygen():
@@ -598,7 +611,7 @@ from Scripting import dist_exts, excludes, BLDDIR
 import Utils
 import os
 
-def copytree(src, dst, symlinks=False, excludes=(), build_dir=None):
+def _copytree(src, dst, symlinks=False, excludes=(), build_dir=None):
     """Recursively copy a directory tree using copy2().
 
     The destination directory must not already exist.
@@ -668,7 +681,7 @@ def copytree(src, dst, symlinks=False, excludes=(), build_dir=None):
 
 
 def DistDir(appname, version):
-    "make a distribution directory with all the sources in it"
+    #"make a distribution directory with all the sources in it"
     import shutil
 
     # Our temporary folder where to put our files
@@ -683,7 +696,7 @@ def DistDir(appname, version):
     build_dir = getattr(Utils.g_module, BLDDIR, None)
 
     # Copy everything into the new folder
-    copytree('.', TMPFOLDER, excludes=excludes, build_dir=build_dir)
+    _copytree('.', TMPFOLDER, excludes=excludes, build_dir=build_dir)
 
     # TODO undocumented hook
     dist_hook = getattr(Utils.g_module, 'dist_hook', None)
