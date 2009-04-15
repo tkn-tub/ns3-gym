@@ -137,15 +137,15 @@ InterferenceHelper::GetMaxPacketDuration (void) const
 }
 
 void 
-InterferenceHelper::SetNoiseFloorW (double noiseFloor)
+InterferenceHelper::SetNoiseFigure (double value)
 {
-  m_noiseFloorW = noiseFloor;
+  m_noiseFigure = value;
 }
 
 double 
-InterferenceHelper::GetNoiseFloorW (void) const
+InterferenceHelper::GetNoiseFigure (void) const
 {
-  return m_noiseFloorW;
+  return m_noiseFigure;
 }
 
 void 
@@ -260,9 +260,10 @@ InterferenceHelper::CalculateSnr (double signal, double noiseInterference, WifiM
 {
   // thermal noise at 290K in J/s = W
   static const double BOLTZMANN = 1.3803e-23;
+  // Nt is the power of thermal noise in W
   double Nt = BOLTZMANN * 290.0 * mode.GetBandwidth ();
-  // receiver noise Floor (W)
-  double noiseFloor = m_noiseFloorW * Nt;
+  // receiver noise Floor (W) which accounts for thermal noise and non-idealities of the receiver
+  double noiseFloor = m_noiseFigure * Nt;
   double noise = noiseFloor + noiseInterference;
   double snr = signal / noise;
   return snr;

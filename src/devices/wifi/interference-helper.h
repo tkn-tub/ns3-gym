@@ -50,10 +50,10 @@ public:
   ~InterferenceHelper ();
 
   void Configure80211aParameters (void);
-  void SetNoiseFloorW (double noiseFloor);
+  void SetNoiseFigure (double value);
   void SetErrorRateModel (Ptr<ErrorRateModel> rate);
 
-  double GetNoiseFloorW (void) const;
+  double GetNoiseFigure (void) const;
   Ptr<ErrorRateModel> GetErrorRateModel (void) const;
 
 
@@ -99,7 +99,7 @@ private:
   WifiMode m_shortPlcpHeaderMode;
   uint32_t m_plcpHeaderLength;
   Time m_maxPacketDuration;
-  double m_noiseFloorW;
+  double m_noiseFigure; /**< noise figure (linear) */
   Events m_events;
   bool m_80211a;
   Ptr<ErrorRateModel> m_errorRateModel;
