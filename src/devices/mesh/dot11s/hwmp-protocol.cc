@@ -296,8 +296,7 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
   pkt.protocol = protocolType;
   pkt.reply = routeReply;
   pkt.inInterface = sourceIface;
-  QueuePacket (pkt);
-  return true;
+  return QueuePacket (pkt);
 }
 void
 HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, uint32_t metric)
@@ -433,17 +432,17 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, u
     else
       m_lastHwmpSeqno[prep.GetOriginatorAddress ()] = prep.GetOriginatorSeqNumber();
   }
-  NS_LOG_DEBUG("I am "<<m_address<<", received prep from "<<prep.GetOriginatorAddress ()<<", receiver was:"<<from);
   //update routing info
   //Now add a path to destination and add precursor to source
-  HwmpRtable::LookupResult result = m_rtable->LookupReactive(prep.GetDestinationAddress());
+  NS_LOG_DEBUG("I am "<<m_address<<", received prep from "<<prep.GetOriginatorAddress ()<<", receiver was:"<<from);
+  HwmpRtable::LookupResult result = m_rtable->LookupReactive(prep.GetOriginatorAddress());
   //Add a reactive path only if it is better than existing:
+  m_rtable->AddPrecursor (prep.GetDestinationAddress (), interface, from);
   if (
       (result.retransmitter == Mac48Address::GetBroadcast ()) ||
       (result.metric > prep.GetMetric ())
       )
   {
-    m_rtable->AddPrecursor (prep.GetDestinationAddress (), interface, from);
     m_rtable->AddReactivePath (
         prep.GetOriginatorAddress (),
         from,
@@ -452,6 +451,7 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, u
         MicroSeconds(prep.GetLifetime () * 1024),
         prep.GetOriginatorSeqNumber ());
     m_rtable->AddPrecursor (prep.GetOriginatorAddress (), interface, result.retransmitter);
+    ReactivePathResolved (prep.GetOriginatorAddress ());
   }
   if (result.retransmitter == Mac48Address::GetBroadcast ())
     //try to look for default route
@@ -698,6 +698,7 @@ HwmpProtocol::ReactivePathResolved (Mac48Address dst)
     HwmpTag tag;
     packet.pkt->RemovePacketTag(tag);
     tag.SetAddress (result.retransmitter);
+    tag.SetTtl(m_maxTtl);
     packet.pkt->AddPacketTag (tag);
     packet.reply (true, packet.pkt, packet.src, packet.dst, packet.protocol, result.ifIndex);
   }

@@ -75,24 +75,6 @@ HwmpRtable::AddReactivePath (
       ReactiveRoute newroute;
       m_routes[destination] = newroute;
     }
-  else
-    {
-      /*
-       * if outinterface differs from stored, routing info is
-       * actual and metric is worse - we ignore this
-       * information
-       */
-      if (
-        (i->second.interface != interface) &&
-        (i->second.metric < metric) &&
-        /*
-         * The routing info is actual or it
-         * was received from peer
-         */
-        ((i->second.whenExpire > Simulator::Now ())||(i->second.whenExpire == Seconds(0)))
-      )
-        return;
-    }
   i = m_routes.find (destination);
   NS_ASSERT (i != m_routes.end());
   i->second.retransmitter = retransmitter;
@@ -116,6 +98,7 @@ HwmpRtable::AddProactivePath (
   uint32_t seqnum
 )
 {
+  NS_ASSERT(false);
   m_root.root = root;
   m_root.retransmitter = retransmitter;
   m_root.metric = metric;
@@ -181,39 +164,24 @@ HwmpRtable::DeleteReactivePath (Mac48Address destination)
 HwmpRtable::LookupResult
 HwmpRtable::LookupReactive (Mac48Address destination)
 {
-  LookupResult result;
-
   std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find (destination);
   if (i == m_routes.end ())
-    return result;
-  
-  result.ifIndex = i->second.interface;
-  //Seconds (0) means that this is routing
+    return LookupResult ();
   if (i->second.whenExpire < Simulator::Now ())
     {
       NS_LOG_DEBUG ("Reactive route has expired, sorry.");
       return LookupResult();
     }
-  
-  result.retransmitter = i->second.retransmitter;
-  result.metric = i->second.metric;
-  result.seqnum = i->second.seqnum;
-  return result;
+  return LookupResult (i->second.retransmitter, i->second.interface, i->second.metric, i->second.seqnum);
 }
 
 HwmpRtable::LookupResult
 HwmpRtable::LookupReactiveExpired (Mac48Address destination)
 {
-  LookupResult result;
-
   std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find (destination);
   if (i == m_routes.end ())
-    return result;
-  result.ifIndex = i->second.interface;
-  result.retransmitter = i->second.retransmitter;
-  result.metric = i->second.metric;
-  result.seqnum = i->second.seqnum;
-  return result;
+    return LookupResult ();
+  return LookupResult (i->second.retransmitter, i->second.interface, i->second.metric, i->second.seqnum);
 }
 
 HwmpRtable::LookupResult
@@ -224,15 +192,13 @@ HwmpRtable::LookupProactive ()
       NS_LOG_DEBUG ("Proactive route has expired and will be deleted, sorry.");
       DeleteProactivePath ();
     }
-  
   return LookupProactiveExpired ();
 }
 
 HwmpRtable::LookupResult
 HwmpRtable::LookupProactiveExpired ()
 {
-  LookupResult retval (m_root.retransmitter, m_root.interface, m_root.metric, m_root.seqnum);
-  return retval;
+  return LookupResult(m_root.retransmitter, m_root.interface, m_root.metric, m_root.seqnum);
 }
 
 std::vector<IePerr::FailedDestination>

@@ -104,7 +104,7 @@ main (int argc, char *argv[])
   echoClient.SetAttribute ("MaxPackets", UintegerValue (100000));
   echoClient.SetAttribute ("Interval", TimeValue (Seconds (0.005)));
   echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
-  ApplicationContainer clientApps = echoClient.Install (nodes.Get (1));
+  ApplicationContainer clientApps = echoClient.Install (nodes.Get (xSize*ySize-1));
   clientApps.Start (Seconds (2.0));
   clientApps.Stop (Seconds (100.0));
   
