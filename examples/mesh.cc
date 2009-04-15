@@ -39,13 +39,16 @@ int
 main (int argc, char *argv[])
 {
   // Creating square topology with nNodes x nNodes grid
-  int      xSize       = 3;
-  int      ySize       = 3;
-  double   step        = 100.0; // Grid with one-hop edge
-  double   randomStart = 0.1;   // One beacon interval
-  uint32_t nIfaces     = 2;
-  bool     chan        = true;
-  bool     pcap        = false;
+  int       xSize           = 3;
+  int       ySize           = 3;
+  double    step            = 100.0;
+  double    randomStart     = 0.1;
+  double    totalTime       = 100.0;
+  double    packetInterval  = 0.001;
+  uint16_t  packetSize      = 1024;
+  uint32_t  nIfaces         = 2;
+  bool      chan            = true;
+  bool      pcap            = false;
   
   // Command line arguments
   CommandLine cmd;
@@ -53,6 +56,9 @@ main (int argc, char *argv[])
   cmd.AddValue ("y-size", "Number of rows in a grid. [6]", ySize);
   cmd.AddValue ("step",   "Size of edge in our grid, meters. [100 m]", step);
   cmd.AddValue ("start",  "Maximum random start delay, seconds. [0.1 s]", randomStart);
+  cmd.AddValue ("time",  "Simulation time", totalTime);
+  cmd.AddValue ("packetInterval",  "Interval between packets", packetInterval);
+  cmd.AddValue ("packetSize",  "Size of packets", packetSize);
   cmd.AddValue ("interfaces", "Number of radio interfaces used by each mesh point. [1]", nIfaces);
   cmd.AddValue ("channels",   "Use different frequency channels for different interfaces. [0]", chan);
   cmd.AddValue ("pcap",   "Enable PCAP traces on interfaces. [0]", pcap);
@@ -98,22 +104,22 @@ main (int argc, char *argv[])
   // Install applications
   UdpEchoServerHelper echoServer (9);
   ApplicationContainer serverApps = echoServer.Install (nodes.Get (0));
-  serverApps.Start (Seconds (1.0));
-  serverApps.Stop (Seconds (100.0));
+  serverApps.Start (Seconds (0.0));
+  serverApps.Stop (Seconds (totalTime));
   UdpEchoClientHelper echoClient (interfaces.GetAddress (0), 9);
-  echoClient.SetAttribute ("MaxPackets", UintegerValue (100000));
-  echoClient.SetAttribute ("Interval", TimeValue (Seconds (0.005)));
-  echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
+  echoClient.SetAttribute ("MaxPackets", UintegerValue ((uint32_t)(totalTime*(1/packetInterval))));
+  echoClient.SetAttribute ("Interval", TimeValue (Seconds (packetInterval)));
+  echoClient.SetAttribute ("PacketSize", UintegerValue (packetSize));
   ApplicationContainer clientApps = echoClient.Install (nodes.Get (xSize*ySize-1));
-  clientApps.Start (Seconds (2.0));
-  clientApps.Stop (Seconds (100.0));
+  clientApps.Start (Seconds (0.0));
+  clientApps.Stop (Seconds (totalTime));
   
   // Enable PCAP trace
   if (pcap)
       wifiPhy.EnablePcapAll (std::string ("mp-") + mesh.GetSsid ().PeekString ());
   
   // Happy end
-  Simulator::Stop (Seconds (100.0));
+  Simulator::Stop (Seconds (totalTime));
   Simulator::Run ();
   Simulator::Destroy ();
   return 0;

@@ -167,7 +167,7 @@ HwmpRtable::LookupReactive (Mac48Address destination)
   std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find (destination);
   if (i == m_routes.end ())
     return LookupResult ();
-  if (i->second.whenExpire < Simulator::Now ())
+  if ((i->second.whenExpire < Simulator::Now ()) && (i->second.whenExpire != Seconds (0)))
     {
       NS_LOG_DEBUG ("Reactive route has expired, sorry.");
       return LookupResult();
