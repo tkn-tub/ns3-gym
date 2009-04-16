@@ -228,8 +228,8 @@ def register_Ns3InterferenceHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::ErrorRateModel >', 
                    [], 
                    is_const=True)
-    ## interference-helper.h: double ns3::InterferenceHelper::GetNoiseFloorW() const [member function]
-    cls.add_method('GetNoiseFloorW', 
+    ## interference-helper.h: double ns3::InterferenceHelper::GetNoiseFigure() const [member function]
+    cls.add_method('GetNoiseFigure', 
                    'double', 
                    [], 
                    is_const=True)
@@ -237,10 +237,10 @@ def register_Ns3InterferenceHelper_methods(root_module, cls):
     cls.add_method('SetErrorRateModel', 
                    'void', 
                    [param('ns3::Ptr< ns3::ErrorRateModel >', 'rate')])
-    ## interference-helper.h: void ns3::InterferenceHelper::SetNoiseFloorW(double noiseFloor) [member function]
-    cls.add_method('SetNoiseFloorW', 
+    ## interference-helper.h: void ns3::InterferenceHelper::SetNoiseFigure(double value) [member function]
+    cls.add_method('SetNoiseFigure', 
                    'void', 
-                   [param('double', 'noiseFloor')])
+                   [param('double', 'value')])
     return
 
 def register_Ns3InterferenceHelperSnrPer_methods(root_module, cls):
@@ -1707,10 +1707,10 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
     cls.add_method('SetStandard', 
                    'void', 
                    [param('ns3::WifiPhyStandard', 'standard')])
-    ## yans-wifi-phy.h: void ns3::YansWifiPhy::SetRxNoise(double ratio) [member function]
-    cls.add_method('SetRxNoise', 
+    ## yans-wifi-phy.h: void ns3::YansWifiPhy::SetRxNoiseFigure(double noiseFigureDb) [member function]
+    cls.add_method('SetRxNoiseFigure', 
                    'void', 
-                   [param('double', 'ratio')])
+                   [param('double', 'noiseFigureDb')])
     ## yans-wifi-phy.h: void ns3::YansWifiPhy::SetTxPowerStart(double start) [member function]
     cls.add_method('SetTxPowerStart', 
                    'void', 
@@ -1751,8 +1751,8 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
     cls.add_method('SetMobility', 
                    'void', 
                    [param('ns3::Ptr< ns3::Object >', 'mobility')])
-    ## yans-wifi-phy.h: double ns3::YansWifiPhy::GetRxNoise() const [member function]
-    cls.add_method('GetRxNoise', 
+    ## yans-wifi-phy.h: double ns3::YansWifiPhy::GetRxNoiseFigure() const [member function]
+    cls.add_method('GetRxNoiseFigure', 
                    'double', 
                    [], 
                    is_const=True)
