@@ -82,6 +82,7 @@ main (int argc, char *argv[])
   mesh.SetSpreadInterfaceChannels (chan);
   std::vector<uint32_t> roots;
   //roots.push_back(xSize-1);
+  //roots.push_back(xSize*ySize-xSize);
   NetDeviceContainer meshDevices = mesh.Install (wifiPhy, nodes, roots, nIfaces);
   
   // Setup mobility
@@ -108,14 +109,14 @@ main (int argc, char *argv[])
   // Install applications
   UdpEchoServerHelper echoServer (9);
   ApplicationContainer serverApps = echoServer.Install (nodes.Get (0));
-  serverApps.Start (Seconds (7.0));
+  serverApps.Start (Seconds (0.0));
   serverApps.Stop (Seconds (totalTime));
   UdpEchoClientHelper echoClient (interfaces.GetAddress (0), 9);
   echoClient.SetAttribute ("MaxPackets", UintegerValue ((uint32_t)(totalTime*(1/packetInterval))));
   echoClient.SetAttribute ("Interval", TimeValue (Seconds (packetInterval)));
   echoClient.SetAttribute ("PacketSize", UintegerValue (packetSize));
   ApplicationContainer clientApps = echoClient.Install (nodes.Get (xSize*ySize-1));
-  clientApps.Start (Seconds (7.0));
+  clientApps.Start (Seconds (0.0));
   clientApps.Stop (Seconds (totalTime));
   
   // Enable PCAP trace

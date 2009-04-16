@@ -172,11 +172,12 @@ private:
   //\{
   std::map<Mac48Address, EventId> m_preqTimeouts;
   EventId m_proactivePreqTimer;
+  //Random start in Proactive PREQ propagation
+  Time m_randomStart;
   //\}
   
   /// Packet Queue
-  std::vector<QueuedPacket> m_rqueue;
-  
+  std::vector<QueuedPacket> m_rqueue; 
 private:
   ///\name HWMP-protocol parameters (attributes of GetTypeId)
   //\{

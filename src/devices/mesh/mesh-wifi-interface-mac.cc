@@ -41,26 +41,26 @@ TypeId
 MeshWifiInterfaceMac::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MeshWifiInterfaceMac")
-                      .SetParent<WifiMac> ()
-                      .AddConstructor<MeshWifiInterfaceMac> ()
-                      .AddAttribute ("BeaconInterval", "Beacon Interval",
-                                     TimeValue (Seconds (1.0)),
-                                     MakeTimeAccessor (&MeshWifiInterfaceMac::m_beaconInterval),
-                                     MakeTimeChecker ()
-                                    )
-                      .AddAttribute ("RandomStart", "Window when beacon generating starts (uniform random) in seconds",
-                                     TimeValue (Seconds (0.1)),
-                                     MakeTimeAccessor (&MeshWifiInterfaceMac::m_randomStart),
-                                     MakeTimeChecker ()
-                                    )
-                      .AddAttribute ("BeaconGeneration", "Enable/Disable Beaconing.",
-                                     BooleanValue (true),
-                                     MakeBooleanAccessor (
-                                       &MeshWifiInterfaceMac::SetBeaconGeneration,
-                                       &MeshWifiInterfaceMac::GetBeaconGeneration
-                                     ),
-                                     MakeBooleanChecker ()
-                                    );
+    .SetParent<WifiMac> ()
+    .AddConstructor<MeshWifiInterfaceMac> ()
+    .AddAttribute ("BeaconInterval", "Beacon Interval",
+        TimeValue (Seconds (1.0)),
+        MakeTimeAccessor (&MeshWifiInterfaceMac::m_beaconInterval),
+        MakeTimeChecker ()
+        )
+    .AddAttribute ("RandomStart", "Window when beacon generating starts (uniform random) in seconds",
+        TimeValue (Seconds (0.1)),
+        MakeTimeAccessor (&MeshWifiInterfaceMac::m_randomStart),
+        MakeTimeChecker ()
+        )
+    .AddAttribute ("BeaconGeneration", "Enable/Disable Beaconing.",
+        BooleanValue (true),
+        MakeBooleanAccessor (
+          &MeshWifiInterfaceMac::SetBeaconGeneration,
+          &MeshWifiInterfaceMac::GetBeaconGeneration
+          ),
+        MakeBooleanChecker ()
+        );
   return tid;
 }
 

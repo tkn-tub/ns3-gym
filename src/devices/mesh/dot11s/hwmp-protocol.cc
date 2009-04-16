@@ -30,6 +30,7 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/mesh-point-device.h"
 #include "ns3/mesh-wifi-interface-mac.h"
+#include "ns3/random-variable.h"
 #include "ie-dot11s-preq.h"
 #include "ie-dot11s-prep.h"
 #include "ie-dot11s-perr.h"
@@ -135,8 +136,12 @@ HwmpProtocol::GetTypeId ()
         BooleanValue (false),
         MakeUintegerAccessor (&HwmpProtocol::m_rfFlag),
         MakeUintegerChecker<bool> ()
+        )
+  .AddAttribute ("RandomStart", "Random delay at first proactive PREQ",
+        TimeValue (Seconds (0.1)),
+        MakeTimeAccessor (&HwmpProtocol::m_randomStart),
+        MakeTimeChecker ()
         );
-
   return tid;
 }
 HwmpProtocol::HwmpProtocol ():
@@ -326,14 +331,20 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, u
           //per destination flags DO and RF
           NS_ASSERT (preq.GetDestCount() == 1);
           NS_ASSERT (((*i)->IsDo()) && ((*i)->IsRf()));
-          m_rtable->AddProactivePath (
-              preq.GetMetric (),
-              preq.GetOriginatorAddress (),
-              from,
-              interface,
-              MicroSeconds (preq.GetLifetime () * 1024),
-              preq.GetOriginatorSeqNumber ()
-              );
+          //Add proactive path only if it is the better then existed
+          //before
+          if(
+              ((m_rtable->LookupProactive ()).retransmitter == Mac48Address::GetBroadcast ()) ||
+              ((m_rtable->LookupProactive ()).metric > preq.GetMetric ())
+            )
+            m_rtable->AddProactivePath (
+                preq.GetMetric (),
+                preq.GetOriginatorAddress (),
+                from,
+                interface,
+                MicroSeconds (preq.GetLifetime () * 1024),
+                preq.GetOriginatorSeqNumber ()
+                );
           ProactivePathResolved ();
           if (!preq.IsNeedNotPrep ())
               SendPrep (
@@ -781,7 +792,10 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
 void
 HwmpProtocol::SetRoot ()
 {
-  NS_LOG_UNCOND("ROOT IS"<<m_address);
+  UniformVariable coefficient (0.0, m_randomStart.GetSeconds());
+  Time randomStart = Seconds (coefficient.GetValue());
+  m_proactivePreqTimer = Simulator::Schedule (randomStart, &HwmpProtocol::SendProactivePreq, this);
+  NS_LOG_UNCOND("ROOT IS: "<<m_address);
   SendProactivePreq ();
   m_isRoot = true;
 }

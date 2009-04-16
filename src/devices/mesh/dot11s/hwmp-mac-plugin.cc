@@ -73,7 +73,10 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
     };
     tag.SetSeqno (meshHdr.GetMeshSeqno ());
     if(meshHdr.GetMeshTtl () == 0)
+    {
+      NS_ASSERT(false);
       return false;
+    }
     tag.SetTtl (meshHdr.GetMeshTtl () - 1);
     if(m_protocol->GetAddress() != destination)
       packet->AddPacketTag(tag);
