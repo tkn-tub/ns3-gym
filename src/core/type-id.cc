@@ -71,6 +71,8 @@ public:
   bool MustHideFromDocumentation (uint16_t uid) const;
 
 private:
+  bool HasTraceSource (uint16_t uid, std::string name);
+
   struct AttributeInformation {
     std::string name;
     std::string help;
@@ -310,6 +312,33 @@ IidManager::GetAttributeChecker (uint16_t uid, uint32_t i) const
   return information->attributes[i].checker;
 }
 
+bool
+IidManager::HasTraceSource (uint16_t uid,
+                            std::string name)
+{
+  struct IidInformation *information  = LookupInformation (uid);
+  while (true)
+    {
+      for (std::vector<struct TraceSourceInformation>::const_iterator i = information->traceSources.begin ();
+           i != information->traceSources.end (); ++i)
+        {
+          if (i->name == name)
+            {
+              return true;
+            }
+        }
+      struct IidInformation *parent = LookupInformation (information->parent);
+      if (parent == information)
+        {
+          // top of inheritance tree
+          return false;
+        }
+      // check parent
+      information = parent;
+    }
+  return false;
+}
+
 void 
 IidManager::AddTraceSource (uint16_t uid,
                             std::string name, 
@@ -317,6 +346,11 @@ IidManager::AddTraceSource (uint16_t uid,
                             ns3::Ptr<const ns3::TraceSourceAccessor> accessor)
 {
   struct IidInformation *information  = LookupInformation (uid);
+  if (HasTraceSource (uid, name))
+    {
+      NS_FATAL_ERROR ("Trace source \"" << name << "\" already registered on tid=\"" << 
+                      information->name << "\"");
+    }
   struct TraceSourceInformation source;
   source.name = name;
   source.help = help;
