@@ -459,6 +459,8 @@ def build(bld):
 
 def shutdown(ctx):
     bld = wutils.bld
+    if wutils.bld is None:
+        return
     env = bld.env
 
     #if Options.commands['check']:
