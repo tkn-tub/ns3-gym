@@ -80,6 +80,8 @@ public:
 
   bool IsLowLatency (void) const;
 
+  WifiMode GetNonUnicastMode (void) const;
+
   WifiRemoteStation *Lookup (Mac48Address address);
   WifiRemoteStation *LookupNonUnicast (void);
 protected:
@@ -97,6 +99,7 @@ private:
   uint32_t m_maxSlrc;
   uint32_t m_rtsCtsThreshold;
   uint32_t m_fragmentationThreshold;
+  WifiMode m_nonUnicastMode;
 };
 
 } // namespace ns3
