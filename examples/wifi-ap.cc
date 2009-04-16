@@ -32,14 +32,14 @@
 using namespace ns3;
 
 void
-DevTxTrace (std::string context, Ptr<const Packet> p, Mac48Address address)
+DevTxTrace (std::string context, Ptr<const Packet> p)
 {
-  std::cout << " TX to=" << address << " p: " << *p << std::endl;
+  std::cout << " TX p: " << *p << std::endl;
 }
 void
-DevRxTrace (std::string context, Ptr<const Packet> p, Mac48Address address)
+DevRxTrace (std::string context, Ptr<const Packet> p)
 {
-  std::cout << " RX from=" << address << " p: " << *p << std::endl;
+  std::cout << " RX p: " << *p << std::endl;
 }
 void
 PhyRxOkTrace (std::string context, Ptr<const Packet> packet, double snr, WifiMode mode, enum WifiPreamble preamble)
@@ -168,8 +168,8 @@ int main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (44.0));
 
-  Config::Connect ("/NodeList/*/DeviceList/*/Tx", MakeCallback (&DevTxTrace));
-  Config::Connect ("/NodeList/*/DeviceList/*/Rx", MakeCallback (&DevRxTrace));
+  Config::Connect ("/NodeList/*/DeviceList/*/Mac/MacTx", MakeCallback (&DevTxTrace));
+  Config::Connect ("/NodeList/*/DeviceList/*/Mac/MacRx", MakeCallback (&DevRxTrace));
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/RxOk", MakeCallback (&PhyRxOkTrace));
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/RxError", MakeCallback (&PhyRxErrorTrace));
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/Tx", MakeCallback (&PhyTxTrace));
