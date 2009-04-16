@@ -1220,6 +1220,230 @@ LogNormalVariable::LogNormalVariable (double mu, double sigma)
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
+// GammaVariableImpl
+class GammaVariableImpl : public RandomVariableBase
+{
+public:
+  /**
+   * \param alpha alpha parameter of the gamma distribution
+   * \param beta beta parameter of the gamma distribution
+   */
+  GammaVariableImpl (double alpha, double beta);
+
+  /**
+   * \return A random value from this distribution
+   */
+  virtual double GetValue ();
+
+  /**
+   * \return A random value from the gamma distribution with parameters alpha
+   * and beta
+   */
+  double GetValue(double alpha, double beta);
+
+  virtual RandomVariableBase* Copy(void) const;
+
+private:
+  double m_alpha;
+  double m_beta;
+  NormalVariable m_normal;
+};
+
+
+RandomVariableBase* GammaVariableImpl::Copy () const
+{
+  return new GammaVariableImpl (m_alpha, m_beta);
+}
+
+GammaVariableImpl::GammaVariableImpl (double alpha, double beta)
+  : m_alpha(alpha), m_beta(beta) 
+{
+}
+
+double
+GammaVariableImpl::GetValue ()
+{
+  return GetValue(m_alpha, m_beta);
+}
+
+/*
+  The code for the following generator functions was adapted from ns-2
+  tools/ranvar.cc
+
+  Originally the algorithm was devised by Marsaglia in 2000:
+  G. Marsaglia, W. W. Tsang: A simple method for gereating Gamma variables
+  ACM Transactions on mathematical software, Vol. 26, No. 3, Sept. 2000
+
+  The Gamma distribution density function has the form 
+
+	                     x^(alpha-1) * exp(-x/beta)
+	p(x; alpha, beta) = ----------------------------
+                             beta^alpha * Gamma(alpha)
+
+  for x > 0.
+*/
+double
+GammaVariableImpl::GetValue (double alpha, double beta)
+{
+  if(!m_generator)
+    {
+      m_generator = new RngStream();
+    }
+
+  if (alpha < 1)
+    {
+      double u = m_generator->RandU01 ();
+      return GetValue(1.0 + alpha, beta) * pow (u, 1.0 / alpha);
+    }
+	
+  double x, v, u;
+  double d = alpha - 1.0 / 3.0;
+  double c = (1.0 / 3.0) / sqrt (d);
+
+  while (1)
+    {
+      do
+        {
+          x = m_normal.GetValue ();
+          v = 1.0 + c * x;
+        } while (v <= 0);
+
+      v = v * v * v;
+      u = m_generator->RandU01 ();
+      if (u < 1 - 0.0331 * x * x * x * x)
+        {
+          break;
+        }
+      if (log (u) < 0.5 * x * x + d * (1 - v + log (v)))
+        {
+          break;
+        }
+    }
+
+  return beta * d * v;
+}
+
+GammaVariable::GammaVariable ()
+  : RandomVariable (GammaVariableImpl (1.0, 1.0))
+{
+}
+
+GammaVariable::GammaVariable (double alpha, double beta)
+  : RandomVariable (GammaVariableImpl (alpha, beta))
+{
+}
+
+double GammaVariable::GetValue(void) const
+{
+  return this->RandomVariable::GetValue ();
+}
+
+double GammaVariable::GetValue(double alpha, double beta) const
+{
+  return ((GammaVariableImpl*)Peek())->GetValue(alpha, beta);
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// ErlangVariableImpl
+
+class ErlangVariableImpl : public RandomVariableBase
+{
+public:
+  /**
+   * \param k k parameter of the Erlang distribution
+   * \param lambda lambda parameter of the Erlang distribution
+   */
+  ErlangVariableImpl (unsigned int k, double lambda);
+
+  /**
+   * \return A random value from this distribution
+   */
+  virtual double GetValue ();
+
+  /**
+   * \return A random value from the Erlang distribution with parameters k and
+   * lambda.
+   */
+  double GetValue(unsigned int k, double lambda);
+
+  virtual RandomVariableBase* Copy(void) const;
+
+private:
+  unsigned int m_k;
+  double m_lambda;
+};
+
+
+RandomVariableBase* ErlangVariableImpl::Copy () const
+{
+  return new ErlangVariableImpl (m_k, m_lambda);
+}
+
+ErlangVariableImpl::ErlangVariableImpl (unsigned int k, double lambda)
+  : m_k(k), m_lambda(lambda)
+{
+}
+
+double
+ErlangVariableImpl::GetValue ()
+{
+  return GetValue(m_k, m_lambda);
+}
+
+/*
+  The code for the following generator functions was adapted from ns-2
+  tools/ranvar.cc
+
+  The Erlang distribution density function has the form 
+
+	                   x^(k-1) * exp(-x/lambda)
+	p(x; k, lambda) = ---------------------------
+                             lambda^k * (k-1)!
+
+  for x > 0.
+*/
+double
+ErlangVariableImpl::GetValue (unsigned int k, double lambda)
+{
+  if(!m_generator)
+    {
+      m_generator = new RngStream();
+    }
+
+  ExponentialVariable exponential(lambda);
+
+  double result = 0;
+  for (unsigned int i = 0; i < k; ++i)
+    {
+      result += exponential.GetValue();
+    }
+
+  return result;
+}
+
+ErlangVariable::ErlangVariable ()
+  : RandomVariable (ErlangVariableImpl (1, 1.0))
+{
+}
+
+ErlangVariable::ErlangVariable (unsigned int k, double lambda)
+  : RandomVariable (ErlangVariableImpl (k, lambda))
+{
+}
+
+double ErlangVariable::GetValue(void) const
+{
+  return this->RandomVariable::GetValue ();
+}
+
+double ErlangVariable::GetValue(unsigned int k, double lambda) const
+{
+  return ((ErlangVariableImpl*)Peek())->GetValue(k, lambda);
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // TriangularVariableImpl methods
 class TriangularVariableImpl : public RandomVariableBase {
 public:
