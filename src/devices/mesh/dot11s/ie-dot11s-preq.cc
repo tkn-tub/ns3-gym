@@ -174,24 +174,16 @@ IePreq::SetDestCount (uint8_t dest_count)
 {
   m_destCount = dest_count;
 }
-
-//uint8_t
-//IePreq::GetFlags () const
-//{
-// return m_flags;
-//}
 bool
 IePreq::IsUnicastPreq () const
 {
   return (m_flags & (1<<1));
 }
-
 bool
 IePreq::IsNeedNotPrep () const
 {
   return (m_flags & (1<<2));
 }
-
 uint8_t
 IePreq::GetHopCount () const
 {
@@ -233,20 +225,17 @@ IePreq::GetDestCount () const
 {
   return m_destCount;
 }
-
 void
 IePreq::DecrementTtl ()
 {
   m_ttl --;
   m_hopCount ++;
 }
-
 void
 IePreq::IncrementMetric (uint32_t metric)
 {
   m_metric +=metric;
 }
-
 void
 IePreq::SerializeInformation (Buffer::Iterator i) const
 {
@@ -277,7 +266,6 @@ IePreq::SerializeInformation (Buffer::Iterator i) const
         break;
     }
 }
-
 uint8_t
 IePreq::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 {
@@ -375,7 +363,6 @@ IePreq::AddDestinationAddressElement (
   m_destinations.push_back (new_element);
   m_destCount++;
 }
-
 void
 IePreq::DelDestinationAddressElement (Mac48Address dest_address)
 {
@@ -387,7 +374,6 @@ IePreq::DelDestinationAddressElement (Mac48Address dest_address)
         break;
       }
 }
-
 void
 IePreq::ClearDestinationAddressElement ()
 {
@@ -397,8 +383,7 @@ IePreq::ClearDestinationAddressElement ()
   for (i = 0; i < m_destCount; i ++)
     m_destinations.pop_back ();
   m_destinations.clear ();
-};
-
+}
 bool operator== (const DestinationAddressUnit & a, const DestinationAddressUnit & b)
 {
   return (a.m_do == b.m_do 
@@ -408,7 +393,6 @@ bool operator== (const DestinationAddressUnit & a, const DestinationAddressUnit 
       &&  a.m_destSeqNumber == b.m_destSeqNumber
     );
 }
-
 bool operator== (const IePreq & a, const IePreq & b)
 {
   bool ok = ( a.m_flags == b.m_flags 
@@ -437,7 +421,15 @@ bool operator== (const IePreq & a, const IePreq & b)
   
   return true;
 }
-
+bool
+IePreq::MayAddAddress (Mac48Address originator)
+{
+  if (m_originatorAddress != originator)
+    return false;
+  if(m_destinations[0]->GetDestinationAddress () == Mac48Address::GetBroadcast ())
+    return false;
+  return true;
+}
 #ifdef RUN_SELF_TESTS
 
 /// Built-in self test for IePreq

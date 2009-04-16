@@ -46,7 +46,6 @@ public:
   bool IsUsn ();
   Mac48Address GetDestinationAddress () const;
   uint32_t GetDestSeqNumber () const;
-
 private:
   bool m_do;
   bool m_rf;
@@ -102,6 +101,12 @@ public:
   uint8_t  GetDestCount () const;
   void  DecrementTtl ();
   void  IncrementMetric (uint32_t metric);
+  /*
+   * \brief Checks that preq's originator address equals to originator, and
+   * this preq is not proactive
+   */
+  bool MayAddAddress(Mac48Address originator);
+
 private:
   WifiElementId ElementId () const{
     return IE11S_PREQ;

@@ -88,7 +88,6 @@ private:
   //\{
   EventId  m_preqTimer;
   std::vector<IePreq>  m_preqQueue;
-  std::vector<IePreq>::iterator  m_myPreq;
   //\}
   ///\name PERR timer and stored path error
   //{
