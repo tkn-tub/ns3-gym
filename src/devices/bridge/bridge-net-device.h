@@ -88,8 +88,6 @@ public:
   Ptr<NetDevice> GetBridgePort (uint32_t n) const;
 
   // inherited from NetDevice base class.
-  virtual void SetName(const std::string name);
-  virtual std::string GetName(void) const;
   virtual void SetIfIndex(const uint32_t index);
   virtual uint32_t GetIfIndex(void) const;
   virtual Ptr<Channel> GetChannel (void) const;
@@ -140,7 +138,6 @@ private:
   std::map<Mac48Address, LearnedState> m_learnState;
   Ptr<Node> m_node;
   Ptr<BridgeChannel> m_channel;
-  std::string m_name;
   std::vector< Ptr<NetDevice> > m_ports;
   uint32_t m_ifIndex;
   uint16_t m_mtu;

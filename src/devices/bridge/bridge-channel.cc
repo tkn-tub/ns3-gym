@@ -34,7 +34,7 @@ BridgeChannel::GetTypeId (void)
 }
 
 BridgeChannel::BridgeChannel ()
-  : Channel ("BridgeChannel")
+  : Channel ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 }

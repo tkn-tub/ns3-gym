@@ -68,11 +68,6 @@ EmuNetDevice::GetTypeId (void)
                    Mac48AddressValue (Mac48Address ("ff:ff:ff:ff:ff:ff")),
                    MakeMac48AddressAccessor (&EmuNetDevice::m_address),
                    MakeMac48AddressChecker ())
-    .AddAttribute ("DeviceName", 
-                   "The name of the underlying real device (e.g. eth1).",
-                   StringValue ("eth1"),
-                   MakeStringAccessor (&EmuNetDevice::m_deviceName),
-                   MakeStringChecker ())
     .AddAttribute ("Start", 
                    "The simulation time at which to spin up the device thread.",
                    TimeValue (Seconds (0.)),
@@ -173,8 +168,7 @@ EmuNetDevice::EmuNetDevice ()
   m_sock (-1),
   m_readThread (0),
   m_ifIndex (std::numeric_limits<uint32_t>::max ()),  // absurdly large value
-  m_sll_ifindex (-1),
-  m_name ("Emu NetDevice")
+  m_sll_ifindex (-1)
 {
   NS_LOG_FUNCTION (this);
   Start (m_tStart);
@@ -841,18 +835,6 @@ EmuNetDevice::NotifyLinkUp (void)
     {
       m_linkChangeCallback ();
     }
-}
-
-void 
-EmuNetDevice::SetName(const std::string name)
-{
-  m_name = name;
-}
-
-std::string 
-EmuNetDevice::GetName(void) const
-{
-  return m_name;
 }
 
 void 

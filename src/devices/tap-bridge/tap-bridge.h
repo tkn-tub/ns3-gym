@@ -173,8 +173,6 @@ public:
   // The following methods are inherited from NetDevice base class and are
   // documented there.
   //
-  virtual void SetName(const std::string name);
-  virtual std::string GetName(void) const;
   virtual void SetIfIndex(const uint32_t index);
   virtual uint32_t GetIfIndex(void) const;
   virtual Ptr<Channel> GetChannel (void) const;
@@ -318,12 +316,6 @@ private:
    */
   Ptr<Node> m_node;
 
-  /**
-   * \internal
-   *
-   * A possible name for the (ghost) Node to which we are connected.
-   */
-  std::string m_name;
 
   /**
    * \internal

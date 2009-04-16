@@ -43,11 +43,11 @@ PointToPointChannel::GetTypeId (void)
 }
 
 //
-// By default, you get a channel with the name "PointToPoint Channel" that 
+// By default, you get a channel that 
 // has an "infitely" fast transmission speed and zero delay.
 PointToPointChannel::PointToPointChannel()
 : 
-  Channel ("PointToPoint Channel"), 
+  Channel (), 
   m_delay (Seconds (0.)),
   m_nDevices (0)
 {
