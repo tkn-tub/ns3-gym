@@ -72,6 +72,7 @@ public:
 
 private:
   bool HasTraceSource (uint16_t uid, std::string name);
+  bool HasAttribute (uint16_t uid, std::string name);
 
   struct AttributeInformation {
     std::string name;
@@ -233,6 +234,33 @@ IidManager::GetRegistered (uint32_t i) const
   return i + 1;
 }
 
+bool
+IidManager::HasAttribute (uint16_t uid,
+                          std::string name)
+{
+  struct IidInformation *information  = LookupInformation (uid);
+  while (true)
+    {
+      for (std::vector<struct AttributeInformation>::const_iterator i = information->attributes.begin ();
+           i != information->attributes.end (); ++i)
+        {
+          if (i->name == name)
+            {
+              return true;
+            }
+        }
+      struct IidInformation *parent = LookupInformation (information->parent);
+      if (parent == information)
+        {
+          // top of inheritance tree
+          return false;
+        }
+      // check parent
+      information = parent;
+    }
+  return false;
+}
+
 void 
 IidManager::AddAttribute (uint16_t uid, 
                           std::string name,
@@ -243,14 +271,10 @@ IidManager::AddAttribute (uint16_t uid,
                           ns3::Ptr<const ns3::AttributeChecker> checker)
 {
   struct IidInformation *information = LookupInformation (uid);
-  for (std::vector<struct AttributeInformation>::const_iterator j = information->attributes.begin ();
-       j != information->attributes.end (); j++)
+  if (HasAttribute (uid, name))
     {
-      if (j->name == name)
-        {
-          NS_FATAL_ERROR ("Registered the same attribute twice name=\""<<name<<"\" in TypeId=\""<<information->name<<"\"");
-          return;
-        }
+      NS_FATAL_ERROR ("Attribute \"" << name << "\" already registered on tid=\"" << 
+                      information->name << "\"");
     }
   struct AttributeInformation param;
   param.name = name;
