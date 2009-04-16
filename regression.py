@@ -159,13 +159,13 @@ class regression_test_task(Task.TaskBase):
             script = os.path.abspath(os.path.join('..', *os.path.split(program)))
             argv = [self.env['PYTHON'], script] + arguments
             try:
-                wutils.run_argv(argv, cwd=trace_output_path)
+                wutils.run_argv(argv, self.env, cwd=trace_output_path)
             except Utils.WafError, ex:
                 print >> sys.stderr, ex
                 return 1
         else:
             try:
-                wutils.run_program(program,
+                wutils.run_program(program, self.env,
                                    command_template=wutils.get_command_template(self.env, arguments),
                                    cwd=trace_output_path)
             except Utils.WafError, ex:
@@ -191,13 +191,13 @@ class regression_test_task(Task.TaskBase):
             script = os.path.abspath(os.path.join('..', *os.path.split(program)))
             argv = [self.env['PYTHON'], script] + arguments
             try:
-                retval = wutils.run_argv(argv, cwd=trace_output_path)
+                retval = wutils.run_argv(argv, self.env, cwd=trace_output_path)
             except Utils.WafError, ex:
                 print >> sys.stderr, ex
                 return 1
         else:
             try:
-                retval = wutils.run_program(program,
+                retval = wutils.run_program(program, self.env,
                                             command_template=wutils.get_command_template(self.env, arguments),
                                             cwd=trace_output_path)
             except Utils.WafError, ex:

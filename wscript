@@ -470,11 +470,11 @@ def shutdown(ctx):
         lcov_report()
 
     if Options.options.run:
-        wutils.run_program(Options.options.run, wutils.get_command_template(env))
+        wutils.run_program(Options.options.run, env, wutils.get_command_template(env))
         raise SystemExit(0)
 
     if Options.options.pyrun:
-        wutils.run_python_program(Options.options.pyrun)
+        wutils.run_python_program(Options.options.pyrun, env)
         raise SystemExit(0)
 
     if Options.options.shell:
@@ -516,7 +516,7 @@ def check(bld):
 
     if env['ENABLE_PYTHON_BINDINGS']:
         print "-- Running NS-3 Python bindings unit tests..."
-        wutils.run_argv([env['PYTHON'], os.path.join("utils", "python-unit-tests.py")], proc_env)
+        wutils.run_argv([env['PYTHON'], self.env, os.path.join("utils", "python-unit-tests.py")], proc_env)
     else:
         print "-- Skipping NS-3 Python bindings unit tests: Python bindings not enabled."
 
@@ -555,7 +555,7 @@ def shell(ctx):
         shell = os.environ.get("SHELL", "/bin/sh")
 
     env = wutils.bld.env
-    wutils.run_argv([shell], {'NS3_MODULE_PATH': os.pathsep.join(env['NS3_MODULE_PATH'])})
+    wutils.run_argv([shell], env, {'NS3_MODULE_PATH': os.pathsep.join(env['NS3_MODULE_PATH'])})
 
 def doxygen():
     if not os.path.exists('doc/introspected-doxygen.h'):
