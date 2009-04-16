@@ -151,6 +151,12 @@ HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header,
 void
 HwmpMacPlugin::SendPreq(IePreq preq)
 {
+  if(m_myPreq == m_preqQueue.end ())
+  {
+    m_preqQueue.push_back (preq);
+    m_myPreq = m_preqQueue.end ();
+  }
+  else
   m_preqQueue.push_back (preq);
   SendOnePreq ();
 }
@@ -223,6 +229,8 @@ HwmpMacPlugin::SendOnePreq ()
   }
   //erase queue
   m_preqQueue.erase (m_preqQueue.begin());
+  if(m_preqQueue.size () == 0)
+    m_myPreq = m_preqQueue.end ();
 }
 void
 HwmpMacPlugin::SendOnePerr()

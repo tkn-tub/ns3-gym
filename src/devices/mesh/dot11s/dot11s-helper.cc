@@ -91,10 +91,10 @@ MeshWifiHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node)
 }
   
 NetDeviceContainer
-MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c, uint32_t nInterfaces) const
+MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c,  std::vector<uint32_t> roots, uint32_t nInterfaces) const
 {
   NetDeviceContainer devices;
-  
+  uint32_t node_index = 0;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
   {
     Ptr<Node> node = *i;
@@ -140,16 +140,21 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c, uint32
     
     pmp->SetPeerLinkStatusCallback(MakeCallback(&HwmpProtocol::PeerLinkStatus, hwmp));
     hwmp->SetNeighboursCallback(MakeCallback(&PeerManagementProtocol::GetActiveLinks, pmp));
-    
+    // Setting root mesh point
+    for(std::vector<uint32_t>::const_iterator root_iterator = roots.begin (); root_iterator != roots.end (); root_iterator ++)
+      //if(*root_iterator == i.GetDistanceFrom(c.Begin ()))
+      if(*root_iterator == node_index)
+        hwmp->SetRoot ();
     devices.Add (mp);
+    node_index ++;
   }
   return devices;
 }
 
 NetDeviceContainer
-MeshWifiHelper::Install (const WifiPhyHelper &phy, Ptr<Node> node, uint32_t nInterfaces) const
+MeshWifiHelper::Install (const WifiPhyHelper &phy, Ptr<Node> node,  std::vector<uint32_t> roots, uint32_t nInterfaces) const
 {
-  return Install (phy, NodeContainer (node), nInterfaces);
+  return Install (phy, NodeContainer (node), roots, nInterfaces);
 }
   
 } // namespace dot11s

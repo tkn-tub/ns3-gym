@@ -62,21 +62,23 @@ public:
    * 
    * \param phy                 Wifi PHY helper
    * \param nodes               List of nodes to install
+   * \param roots               List of root mesh points
    * \param nInterfaces         Number of mesh point radio interfaces (= WiFi NICs)
    * 
    * \return list of created mesh point devices, see MeshPointDevice
    */
-  NetDeviceContainer Install (const WifiPhyHelper &phyHelper, NodeContainer c, uint32_t nInterfaces = 1) const;
+  NetDeviceContainer Install (const WifiPhyHelper &phyHelper, NodeContainer c, std::vector<uint32_t> roots = std::vector<uint32_t> (), uint32_t nInterfaces = 1) const;
   /** 
    * \brief Install 802.11s mesh device & protocols on given node
    * 
    * \param phy                 Wifi PHY helper
    * \param node                Node to install
+   * \param roots               List of root mesh points
    * \param nInterfaces         Number of mesh point radio interfaces (= WiFi NICs)
    * 
    * \return list of created mesh point devices, see MeshPointDevice
    */ 
-  NetDeviceContainer Install (const WifiPhyHelper &phy, Ptr<Node> node, uint32_t nInterfaces = 1) const;
+  NetDeviceContainer Install (const WifiPhyHelper &phy, Ptr<Node> node,  std::vector<uint32_t> roots = std::vector<uint32_t> (), uint32_t nInterfaces = 1) const;
   
 private:
   Ssid m_ssid;

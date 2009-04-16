@@ -68,6 +68,11 @@ public:
   //given interface
   ///\param interface is the interface ID
   void SetNeighboursCallback(Callback<std::vector<Mac48Address>, uint32_t> cb);
+  ///\name Proactive PREQ mechanism:
+  ///\{
+  void SetRoot ();
+  void UnsetRoot ();
+  ///\}
 private:
   friend class HwmpMacPlugin;
   
@@ -139,8 +144,6 @@ private:
   
   ///\name Proactive Preq routines:
   //\{
-  void SetRoot ();
-  void UnsetRoot ();
   void SendProactivePreq ();
   //\}
   ///\return address of MeshPointDevice

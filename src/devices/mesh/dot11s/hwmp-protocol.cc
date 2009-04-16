@@ -84,7 +84,7 @@ HwmpProtocol::GetTypeId ()
         )
     .AddAttribute ("dot11MeshHWMPpathToRootInterval",
         "Interval between two successive proactive PREQs",
-        TimeValue (MicroSeconds (1024*5000)),
+        TimeValue (MicroSeconds (1024*2000)),
         MakeTimeAccessor (&HwmpProtocol::m_dot11MeshHWMPpathToRootInterval),
         MakeTimeChecker ()
         )
@@ -124,12 +124,6 @@ HwmpProtocol::GetTypeId ()
         MakeUintegerAccessor (&HwmpProtocol::m_unicastDataThreshold),
         MakeUintegerChecker<uint8_t> (1)
         )
-  .AddAttribute ("isRoot",
-        "Root mesh point",
-        BooleanValue (false),
-        MakeUintegerAccessor (&HwmpProtocol::m_isRoot),
-        MakeUintegerChecker<bool> ()
-        )
   .AddAttribute ("doFlag",
         "Destination only HWMP flag",
         BooleanValue (true),
@@ -149,7 +143,8 @@ HwmpProtocol::HwmpProtocol ():
     m_dataSeqno (1),
     m_hwmpSeqno (1),
     m_preqId (0),
-    m_rtable (CreateObject<HwmpRtable> ())
+    m_rtable (CreateObject<HwmpRtable> ()),
+    m_isRoot(false)
 {
 }
 
@@ -266,15 +261,12 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
     //2.  If there was no reactive path, we lookup expired proactive
     //    path. If exist - start path error procedure towards path to
     //    root
-    //3.  If and only if we are a root station - we queue packet
-    if((result.retransmitter == Mac48Address::GetBroadcast ()) && (!m_isRoot))
+    if(result.retransmitter == Mac48Address::GetBroadcast ())
       result = m_rtable->LookupProactiveExpired ();
-    if((result.retransmitter == Mac48Address::GetBroadcast ()) && (!m_isRoot))
+    if(result.retransmitter == Mac48Address::GetBroadcast ())
       return false;
     std::vector<IePerr::FailedDestination> destinations = m_rtable->GetUnreachableDestinations (result.retransmitter);
     MakePathError (destinations);
-    if(!m_isRoot)
-      return false;
   }
   //Request a destination:
   result = m_rtable->LookupReactiveExpired (destination);
@@ -452,8 +444,14 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, u
         prep.GetMetric (),
         MicroSeconds(prep.GetLifetime () * 1024),
         prep.GetOriginatorSeqNumber ());
-    m_rtable->AddPrecursor (prep.GetOriginatorAddress (), interface, result.retransmitter);
+    if(result.retransmitter != Mac48Address::GetBroadcast ())
+      m_rtable->AddPrecursor (prep.GetOriginatorAddress (), interface, result.retransmitter);
     ReactivePathResolved (prep.GetOriginatorAddress ());
+  }
+  if(prep.GetDestinationAddress () == GetAddress ())
+  {
+    NS_LOG_DEBUG("I am "<<GetAddress ()<<", resolved "<<prep.GetOriginatorAddress ());
+    return;
   }
   if (result.retransmitter == Mac48Address::GetBroadcast ())
     //try to look for default route
@@ -783,6 +781,7 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
 void
 HwmpProtocol::SetRoot ()
 {
+  NS_LOG_UNCOND("ROOT IS"<<m_address);
   SendProactivePreq ();
   m_isRoot = true;
 }
@@ -800,14 +799,16 @@ HwmpProtocol::SendProactivePreq ()
   preq.SetTTL (m_maxTtl);
   if (m_preqId == 0xffffffff)
     m_preqId = 0;
-  preq.SetLifetime (m_dot11MeshHWMPpathToRootInterval.GetMicroSeconds () /1024);
+  preq.SetLifetime (m_dot11MeshHWMPactiveRootTimeout.GetMicroSeconds () /1024);
   //\attention: do not forget to set originator address, sequence
   //number and preq ID in HWMP-MAC plugin
   preq.AddDestinationAddressElement (true, true, Mac48Address::GetBroadcast (), 0);
   preq.SetOriginatorAddress(GetAddress ());
+  preq.SetPreqID (GetNextPreqId ());
+  preq.SetOriginatorSeqNumber (GetNextHwmpSeqno ());
   for(HwmpPluginMap::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
     i->second->SendPreq(preq);
-  m_proactivePreqTimer = Simulator::Schedule (m_dot11MeshHWMPactiveRootTimeout, &HwmpProtocol::SendProactivePreq, this);
+  m_proactivePreqTimer = Simulator::Schedule (m_dot11MeshHWMPpathToRootInterval, &HwmpProtocol::SendProactivePreq, this);
 }
 bool
 HwmpProtocol::GetDoFlag ()

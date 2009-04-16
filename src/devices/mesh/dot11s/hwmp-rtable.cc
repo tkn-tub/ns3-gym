@@ -98,7 +98,6 @@ HwmpRtable::AddProactivePath (
   uint32_t seqnum
 )
 {
-  NS_ASSERT(false);
   m_root.root = root;
   m_root.retransmitter = retransmitter;
   m_root.metric = metric;

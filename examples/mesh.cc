@@ -49,6 +49,7 @@ main (int argc, char *argv[])
   uint32_t  nIfaces         = 2;
   bool      chan            = true;
   bool      pcap            = false;
+  uint64_t  seed            =1;
   
   // Command line arguments
   CommandLine cmd;
@@ -62,10 +63,11 @@ main (int argc, char *argv[])
   cmd.AddValue ("interfaces", "Number of radio interfaces used by each mesh point. [1]", nIfaces);
   cmd.AddValue ("channels",   "Use different frequency channels for different interfaces. [0]", chan);
   cmd.AddValue ("pcap",   "Enable PCAP traces on interfaces. [0]", pcap);
+  cmd.AddValue ("seed",   "Seed value", seed);
   
   cmd.Parse (argc, argv);
   NS_LOG_DEBUG ("Grid:" << xSize << "*" << ySize);
-  SeedManager::SetSeed(1);
+  SeedManager::SetSeed(seed);
   // Creating nodes
   NodeContainer nodes;
   nodes.Create (ySize*xSize);
@@ -78,7 +80,9 @@ main (int argc, char *argv[])
   // Install mesh point devices & protocols
   MeshWifiHelper mesh;
   mesh.SetSpreadInterfaceChannels (chan);
-  NetDeviceContainer meshDevices = mesh.Install (wifiPhy, nodes, nIfaces);
+  std::vector<uint32_t> roots;
+  //roots.push_back(xSize-1);
+  NetDeviceContainer meshDevices = mesh.Install (wifiPhy, nodes, roots, nIfaces);
   
   // Setup mobility
   MobilityHelper mobility;
@@ -104,14 +108,14 @@ main (int argc, char *argv[])
   // Install applications
   UdpEchoServerHelper echoServer (9);
   ApplicationContainer serverApps = echoServer.Install (nodes.Get (0));
-  serverApps.Start (Seconds (0.0));
+  serverApps.Start (Seconds (7.0));
   serverApps.Stop (Seconds (totalTime));
   UdpEchoClientHelper echoClient (interfaces.GetAddress (0), 9);
   echoClient.SetAttribute ("MaxPackets", UintegerValue ((uint32_t)(totalTime*(1/packetInterval))));
   echoClient.SetAttribute ("Interval", TimeValue (Seconds (packetInterval)));
   echoClient.SetAttribute ("PacketSize", UintegerValue (packetSize));
   ApplicationContainer clientApps = echoClient.Install (nodes.Get (xSize*ySize-1));
-  clientApps.Start (Seconds (0.0));
+  clientApps.Start (Seconds (7.0));
   clientApps.Stop (Seconds (totalTime));
   
   // Enable PCAP trace
