@@ -86,16 +86,6 @@ def register_Ns3TapBridge_methods(root_module, cls):
     cls.add_method('GetMode', 
                    'ns3::TapBridge::Mode', 
                    [])
-    ## tap-bridge.h: void ns3::TapBridge::SetName(std::string const name) [member function]
-    cls.add_method('SetName', 
-                   'void', 
-                   [param('std::string const', 'name')], 
-                   is_virtual=True)
-    ## tap-bridge.h: std::string ns3::TapBridge::GetName() const [member function]
-    cls.add_method('GetName', 
-                   'std::string', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## tap-bridge.h: void ns3::TapBridge::SetIfIndex(uint32_t const index) [member function]
     cls.add_method('SetIfIndex', 
                    'void', 

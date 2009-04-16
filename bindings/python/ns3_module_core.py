@@ -115,8 +115,12 @@ def register_types(module):
     module.add_class('EnumChecker', parent=root_module['ns3::AttributeChecker'])
     ## enum.h: ns3::EnumValue [class]
     module.add_class('EnumValue', parent=root_module['ns3::AttributeValue'])
+    ## random-variable.h: ns3::ErlangVariable [class]
+    module.add_class('ErlangVariable', parent=root_module['ns3::RandomVariable'])
     ## random-variable.h: ns3::ExponentialVariable [class]
     module.add_class('ExponentialVariable', parent=root_module['ns3::RandomVariable'])
+    ## random-variable.h: ns3::GammaVariable [class]
+    module.add_class('GammaVariable', parent=root_module['ns3::RandomVariable'])
     ## random-variable.h: ns3::IntEmpiricalVariable [class]
     module.add_class('IntEmpiricalVariable', parent=root_module['ns3::EmpiricalVariable'])
     ## integer.h: ns3::IntegerValue [class]
@@ -261,7 +265,9 @@ def register_methods(root_module):
     register_Ns3EmptyAttributeValue_methods(root_module, root_module['ns3::EmptyAttributeValue'])
     register_Ns3EnumChecker_methods(root_module, root_module['ns3::EnumChecker'])
     register_Ns3EnumValue_methods(root_module, root_module['ns3::EnumValue'])
+    register_Ns3ErlangVariable_methods(root_module, root_module['ns3::ErlangVariable'])
     register_Ns3ExponentialVariable_methods(root_module, root_module['ns3::ExponentialVariable'])
+    register_Ns3GammaVariable_methods(root_module, root_module['ns3::GammaVariable'])
     register_Ns3IntEmpiricalVariable_methods(root_module, root_module['ns3::IntEmpiricalVariable'])
     register_Ns3IntegerValue_methods(root_module, root_module['ns3::IntegerValue'])
     register_Ns3LogNormalVariable_methods(root_module, root_module['ns3::LogNormalVariable'])
@@ -1497,6 +1503,25 @@ def register_Ns3EnumValue_methods(root_module, cls):
                    is_virtual=True)
     return
 
+def register_Ns3ErlangVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::ErlangVariable::ErlangVariable(ns3::ErlangVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ErlangVariable const &', 'arg0')])
+    ## random-variable.h: ns3::ErlangVariable::ErlangVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable.h: ns3::ErlangVariable::ErlangVariable(unsigned int k, double lambda) [constructor]
+    cls.add_constructor([param('unsigned int', 'k'), param('double', 'lambda')])
+    ## random-variable.h: double ns3::ErlangVariable::GetValue() const [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable.h: double ns3::ErlangVariable::GetValue(unsigned int k, double lambda) const [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [param('unsigned int', 'k'), param('double', 'lambda')], 
+                   is_const=True)
+    return
+
 def register_Ns3ExponentialVariable_methods(root_module, cls):
     ## random-variable.h: ns3::ExponentialVariable::ExponentialVariable(ns3::ExponentialVariable const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::ExponentialVariable const &', 'arg0')])
@@ -1506,6 +1531,25 @@ def register_Ns3ExponentialVariable_methods(root_module, cls):
     cls.add_constructor([param('double', 'm')])
     ## random-variable.h: ns3::ExponentialVariable::ExponentialVariable(double m, double b) [constructor]
     cls.add_constructor([param('double', 'm'), param('double', 'b')])
+    return
+
+def register_Ns3GammaVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::GammaVariable::GammaVariable(ns3::GammaVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::GammaVariable const &', 'arg0')])
+    ## random-variable.h: ns3::GammaVariable::GammaVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable.h: ns3::GammaVariable::GammaVariable(double alpha, double beta) [constructor]
+    cls.add_constructor([param('double', 'alpha'), param('double', 'beta')])
+    ## random-variable.h: double ns3::GammaVariable::GetValue() const [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable.h: double ns3::GammaVariable::GetValue(double alpha, double beta) const [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [param('double', 'alpha'), param('double', 'beta')], 
+                   is_const=True)
     return
 
 def register_Ns3IntEmpiricalVariable_methods(root_module, cls):
