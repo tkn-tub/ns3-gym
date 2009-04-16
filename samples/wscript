@@ -10,6 +10,9 @@ def build(bld):
     obj = bld.create_ns3_program('main-simulator')
     obj.source = 'main-simulator.cc'
 
+    obj = bld.create_ns3_program('main-random-variable')
+    obj.source = 'main-random-variable.cc'
+
     obj = bld.create_ns3_program('main-packet-header', ['common', 'simulator'])
     obj.source = 'main-packet-header.cc'
 

@@ -225,7 +225,7 @@ bool
 Node::PromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                                 const Address &from, const Address &to, NetDevice::PacketType packetType)
 {
-  NS_LOG_FUNCTION(device->GetName ());
+  NS_LOG_FUNCTION(this);
   return ReceiveFromDevice (device, packet, protocol, from, to, packetType, true);
 }
 
@@ -233,7 +233,7 @@ bool
 Node::NonPromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                                    const Address &from)
 {
-  NS_LOG_FUNCTION(device->GetName ());
+  NS_LOG_FUNCTION(this);
   return ReceiveFromDevice (device, packet, protocol, from, from, NetDevice::PacketType (0), false);
 }
 
@@ -242,8 +242,7 @@ Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16
                          const Address &from, const Address &to, NetDevice::PacketType packetType, bool promiscuous)
 {
   NS_LOG_DEBUG("Node " << GetId () << " ReceiveFromDevice:  dev "
-               << device->GetIfIndex () << " ("
-               << device->GetName () << " type " << device->GetInstanceTypeId ().GetName ()
+               << device->GetIfIndex () << " (type=" << device->GetInstanceTypeId ().GetName ()
                << ") Packet UID " << packet->GetUid ());
   bool found = false;
 

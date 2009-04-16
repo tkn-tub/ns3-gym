@@ -137,16 +137,6 @@ WifiNetDevice::GetRemoteStationManager (void) const
 }
 
 void 
-WifiNetDevice::SetName(const std::string name)
-{
-  m_name = name;
-}
-std::string 
-WifiNetDevice::GetName(void) const
-{
-  return m_name;
-}
-void 
 WifiNetDevice::SetIfIndex(const uint32_t index)
 {
   m_ifIndex = index;
