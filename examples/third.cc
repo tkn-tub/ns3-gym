@@ -40,11 +40,10 @@ NS_LOG_COMPONENT_DEFINE ("ThirdScriptExample");
 int 
 main (int argc, char *argv[])
 {
-
   bool verbose = true;
-
   uint32_t nCsma = 3;
   uint32_t nWifi = 3;
+
   CommandLine cmd;
   cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
   cmd.AddValue ("nWifi", "Number of wifi STA devices", nWifi);
@@ -162,7 +161,7 @@ main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (10.0));
 
-  PointToPointHelper::EnablePcap ("third", p2pDevices.Get (0));
+  PointToPointHelper::EnablePcapAll ("third");
   YansWifiPhyHelper::EnablePcap ("third", apDevices.Get (0));
   CsmaHelper::EnablePcap ("third", csmaDevices.Get (0), true);
 

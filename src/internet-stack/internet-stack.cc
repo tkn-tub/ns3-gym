@@ -54,6 +54,8 @@ AddUdpStack(Ptr<Node> node)
   Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
   udp->SetNode (node);
   ipv4->Insert (udp);
+  node->AggregateObject (udp);
+
   Ptr<UdpSocketFactoryImpl> udpFactory = CreateObject<UdpSocketFactoryImpl> ();
   udpFactory->SetUdp (udp);
   node->AggregateObject (udpFactory);
@@ -66,6 +68,8 @@ AddIcmpStack (Ptr<Node> node)
   Ptr<Icmpv4L4Protocol> icmp = CreateObject<Icmpv4L4Protocol> ();
   icmp->SetNode (node);
   ipv4->Insert (icmp);
+  node->AggregateObject (icmp);
+
   Ptr<Ipv4RawSocketFactoryImpl> rawFactory = CreateObject<Ipv4RawSocketFactoryImpl> ();
   node->AggregateObject (rawFactory);
 }
@@ -76,8 +80,8 @@ AddTcpStack(Ptr<Node> node)
   Ptr<Ipv4L3Protocol> ipv4 = node->GetObject<Ipv4L3Protocol> ();
   Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> ();
   tcp->SetNode (node);
-
   ipv4->Insert (tcp);
+  node->AggregateObject (tcp);
 
   Ptr<TcpSocketFactoryImpl> tcpFactory = CreateObject<TcpSocketFactoryImpl> ();
   tcpFactory->SetTcp (tcp);
@@ -114,6 +118,8 @@ AddNscStack(Ptr<Node> node, const std::string &soname)
   tcp->SetNscLibrary(soname);
   tcp->SetNode (node);
   ipv4->Insert (tcp);
+  node->AggregateObject (tcp);
+
   Ptr<NscTcpSocketFactoryImpl> tcpFactory = CreateObject<NscTcpSocketFactoryImpl> ();
   tcpFactory->SetTcp (tcp);
   node->AggregateObject (tcpFactory);

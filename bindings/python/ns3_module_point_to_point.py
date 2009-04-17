@@ -175,16 +175,6 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'uint16_t', 
                    [], 
                    is_const=True)
-    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetName(std::string const name) [member function]
-    cls.add_method('SetName', 
-                   'void', 
-                   [param('std::string const', 'name')], 
-                   is_virtual=True)
-    ## point-to-point-net-device.h: std::string ns3::PointToPointNetDevice::GetName() const [member function]
-    cls.add_method('GetName', 
-                   'std::string', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetIfIndex(uint32_t const index) [member function]
     cls.add_method('SetIfIndex', 
                    'void', 

@@ -75,8 +75,6 @@ public:
 
 
   // inherited from NetDevice base class.
-  virtual void SetName(const std::string name);
-  virtual std::string GetName(void) const;
   virtual void SetIfIndex(const uint32_t index);
   virtual uint32_t GetIfIndex(void) const;
   virtual Ptr<Channel> GetChannel (void) const;
@@ -123,7 +121,6 @@ private:
   TracedCallback<Ptr<const Packet>, Mac48Address> m_txLogger;
 
   uint32_t m_ifIndex;
-  std::string m_name;
   bool m_linkUp;
   Callback<void> m_linkChange;
   mutable uint16_t m_mtu;

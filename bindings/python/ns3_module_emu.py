@@ -80,16 +80,6 @@ def register_Ns3EmuNetDevice_methods(root_module, cls):
     cls.add_method('SetAddress', 
                    'void', 
                    [param('ns3::Mac48Address', 'addr')])
-    ## emu-net-device.h: void ns3::EmuNetDevice::SetName(std::string const name) [member function]
-    cls.add_method('SetName', 
-                   'void', 
-                   [param('std::string const', 'name')], 
-                   is_virtual=True)
-    ## emu-net-device.h: std::string ns3::EmuNetDevice::GetName() const [member function]
-    cls.add_method('GetName', 
-                   'std::string', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## emu-net-device.h: void ns3::EmuNetDevice::SetIfIndex(uint32_t const index) [member function]
     cls.add_method('SetIfIndex', 
                    'void', 

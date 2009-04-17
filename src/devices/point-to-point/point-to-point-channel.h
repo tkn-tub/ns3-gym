@@ -50,7 +50,7 @@ public:
   /**
    * \brief Create a PointToPointChannel
    *
-   * By default, you get a channel with the name "PointToPoint Channel" that
+   * By default, you get a channel that
    * has zero transmission delay.
    */
   PointToPointChannel ();

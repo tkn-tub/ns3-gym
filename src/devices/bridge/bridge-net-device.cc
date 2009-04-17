@@ -53,7 +53,6 @@ BridgeNetDevice::GetTypeId (void)
 
 BridgeNetDevice::BridgeNetDevice ()
   : m_node (0),
-    m_name (""),
     m_ifIndex (0),
     m_mtu (0xffff)
 {
@@ -111,7 +110,14 @@ BridgeNetDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
       break;
 
     case PACKET_OTHERHOST:
-      ForwardUnicast (incomingPort, packet, protocol, src48, dst48);
+      if (dst48 == m_address)
+        {
+          m_rxCallback (this, packet, protocol, src);
+        }
+      else
+        {
+          ForwardUnicast (incomingPort, packet, protocol, src48, dst48);
+        }
       break;
     }
 }
@@ -121,7 +127,7 @@ BridgeNetDevice::ForwardUnicast (Ptr<NetDevice> incomingPort, Ptr<const Packet> 
                                  uint16_t protocol, Mac48Address src, Mac48Address dst)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_LOG_DEBUG ("LearningBridgeForward (incomingPort=" << incomingPort->GetName ()
+  NS_LOG_DEBUG ("LearningBridgeForward (incomingPort=" << incomingPort->GetInstanceTypeId ().GetName ()
                 << ", packet=" << packet << ", protocol="<<protocol
                 << ", src=" << src << ", dst=" << dst << ")");
 
@@ -129,7 +135,7 @@ BridgeNetDevice::ForwardUnicast (Ptr<NetDevice> incomingPort, Ptr<const Packet> 
   Ptr<NetDevice> outPort = GetLearnedState (dst);
   if (outPort != NULL && outPort != incomingPort)
     {
-      NS_LOG_LOGIC ("Learning bridge state says to use port `" << outPort->GetName () << "'");
+      NS_LOG_LOGIC ("Learning bridge state says to use port `" << outPort->GetInstanceTypeId ().GetName () << "'");
       outPort->SendFrom (packet->Copy (), src, dst, protocol);
     }
   else
@@ -141,8 +147,9 @@ BridgeNetDevice::ForwardUnicast (Ptr<NetDevice> incomingPort, Ptr<const Packet> 
           Ptr<NetDevice> port = *iter;
           if (port != incomingPort)
             {
-              NS_LOG_LOGIC ("LearningBridgeForward (" << src << " => " << dst << "): " << incomingPort->GetName ()
-                            << " --> " << port->GetName ()
+              NS_LOG_LOGIC ("LearningBridgeForward (" << src << " => " << dst << "): " 
+                            << incomingPort->GetInstanceTypeId ().GetName ()
+                            << " --> " << port->GetInstanceTypeId ().GetName ()
                             << " (UID " << packet->GetUid () << ").");
               port->SendFrom (packet->Copy (), src, dst, protocol);
             }
@@ -155,7 +162,7 @@ BridgeNetDevice::ForwardBroadcast (Ptr<NetDevice> incomingPort, Ptr<const Packet
                                         uint16_t protocol, Mac48Address src, Mac48Address dst)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_LOG_DEBUG ("LearningBridgeForward (incomingPort=" << incomingPort->GetName ()
+  NS_LOG_DEBUG ("LearningBridgeForward (incomingPort=" << incomingPort->GetInstanceTypeId ().GetName ()
                 << ", packet=" << packet << ", protocol="<<protocol
                 << ", src=" << src << ", dst=" << dst << ")");
   Learn (src, incomingPort);
@@ -166,8 +173,9 @@ BridgeNetDevice::ForwardBroadcast (Ptr<NetDevice> incomingPort, Ptr<const Packet
       Ptr<NetDevice> port = *iter;
       if (port != incomingPort)
         {
-          NS_LOG_LOGIC ("LearningBridgeForward (" << src << " => " << dst << "): " << incomingPort->GetName ()
-                        << " --> " << port->GetName ()
+          NS_LOG_LOGIC ("LearningBridgeForward (" << src << " => " << dst << "): " 
+                        << incomingPort->GetInstanceTypeId ().GetName ()
+                        << " --> " << port->GetInstanceTypeId ().GetName ()
                         << " (UID " << packet->GetUid () << ").");
           port->SendFrom (packet->Copy (), src, dst, protocol);
         }
@@ -242,25 +250,11 @@ BridgeNetDevice::AddBridgePort (Ptr<NetDevice> bridgePort)
       m_address = Mac48Address::ConvertFrom (bridgePort->GetAddress ());
     }
 
-  NS_LOG_DEBUG ("RegisterProtocolHandler for " << bridgePort->GetName ());
+  NS_LOG_DEBUG ("RegisterProtocolHandler for " << bridgePort->GetInstanceTypeId ().GetName ());
   m_node->RegisterProtocolHandler (MakeCallback (&BridgeNetDevice::ReceiveFromDevice, this),
                                    0, bridgePort, true);
   m_ports.push_back (bridgePort);
   m_channel->AddChannel (bridgePort->GetChannel ());
-}
-
-void 
-BridgeNetDevice::SetName(const std::string name)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_name = name;
-}
-
-std::string 
-BridgeNetDevice::GetName(void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_name;
 }
 
 void 

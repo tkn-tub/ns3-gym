@@ -103,16 +103,6 @@ def register_Ns3BridgeNetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('uint32_t', 'n')], 
                    is_const=True)
-    ## bridge-net-device.h: void ns3::BridgeNetDevice::SetName(std::string const name) [member function]
-    cls.add_method('SetName', 
-                   'void', 
-                   [param('std::string const', 'name')], 
-                   is_virtual=True)
-    ## bridge-net-device.h: std::string ns3::BridgeNetDevice::GetName() const [member function]
-    cls.add_method('GetName', 
-                   'std::string', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## bridge-net-device.h: void ns3::BridgeNetDevice::SetIfIndex(uint32_t const index) [member function]
     cls.add_method('SetIfIndex', 
                    'void', 

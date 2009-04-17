@@ -45,7 +45,7 @@ RandomWaypointMobilityModel::GetTypeId (void)
                    RandomVariableValue (ConstantVariable (2.0)),
                    MakeRandomVariableAccessor (&RandomWaypointMobilityModel::m_pause),
                    MakeRandomVariableChecker ())
-    .AddAttribute ("Position",
+    .AddAttribute ("PositionAllocator",
                    "The position model used to pick a destination point.",
                    PointerValue (),
                    MakePointerAccessor (&RandomWaypointMobilityModel::m_position),

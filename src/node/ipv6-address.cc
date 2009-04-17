@@ -338,7 +338,8 @@ void Ipv6Address::Print (std::ostream& os) const
     << std::hex << std::setw(2) << std::setfill('0') << (unsigned int) m_address[12]
     << std::hex << std::setw(2) << std::setfill('0') << (unsigned int) m_address[13] << ":"
     << std::hex << std::setw(2) << std::setfill('0') << (unsigned int) m_address[14]
-    << std::hex << std::setw(2) << std::setfill('0') << (unsigned int) m_address[15];
+    << std::hex << std::setw(2) << std::setfill('0') << (unsigned int) m_address[15] 
+    << std::dec << std::setfill(' ');
 }
 
 bool Ipv6Address::IsLocalhost () const

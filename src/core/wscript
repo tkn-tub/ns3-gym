@@ -11,7 +11,7 @@ def configure(conf):
 
     # Check for POSIX threads
     test_env = conf.env.copy()
-    if Options.platform != 'darwin':
+    if Options.platform != 'darwin' and Options.platform != 'cygwin':
         test_env.append_value('LINKFLAGS', '-pthread')
         test_env.append_value('CXXFLAGS', '-pthread')
         test_env.append_value('CCFLAGS', '-pthread')
@@ -30,7 +30,7 @@ int main ()
                               mandatory=False)
     if have_pthread:
         # darwin accepts -pthread but prints a warning saying it is ignored
-        if Options.platform != 'darwin':
+        if Options.platform != 'darwin' and Options.platform != 'cygwin':
             conf.env['CXXFLAGS_PTHREAD'] = '-pthread'
             conf.env['CCFLAGS_PTHREAD'] = '-pthread'
             conf.env['LINKFLAGS_PTHREAD'] = '-pthread'

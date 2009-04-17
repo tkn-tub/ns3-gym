@@ -37,8 +37,8 @@ int
 main (int argc, char *argv[])
 {
   bool verbose = true;
-
   uint32_t nCsma = 3;
+
   CommandLine cmd;
   cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
   cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
@@ -50,6 +50,8 @@ main (int argc, char *argv[])
       LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
       LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
     }
+
+  nCsma = nCsma == 0 ? 1 : nCsma;
 
   NodeContainer p2pNodes;
   p2pNodes.Create (2);
@@ -102,8 +104,8 @@ main (int argc, char *argv[])
 
   GlobalRouteManager::PopulateRoutingTables ();
 
-  PointToPointHelper::EnablePcap ("second", p2pDevices.Get (1));
-  CsmaHelper::EnablePcap ("second", csmaDevices.Get (0), true);
+  PointToPointHelper::EnablePcapAll ("second");
+  CsmaHelper::EnablePcap ("second", csmaDevices.Get (1), true);
 
   Simulator::Run ();
   Simulator::Destroy ();

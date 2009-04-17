@@ -106,7 +106,7 @@ public:
   T *operator -> () const;
   T *operator -> ();
   const T &operator * () const;
-  const T &operator * ();
+  T &operator * ();
   // allow if (!sp)
   bool operator! ();
   // allow if (sp)
@@ -472,7 +472,7 @@ Ptr<T>::operator * () const
 }
 
 template <typename T>
-const T &
+T &
 Ptr<T>::operator * ()
 {
   return *m_ptr;

@@ -5,6 +5,8 @@ def register_types(module):
     
     ## tap-bridge.h: ns3::TapBridge [class]
     module.add_class('TapBridge', parent=root_module['ns3::NetDevice'])
+    ## tap-bridge.h: ns3::TapBridge::Mode [enumeration]
+    module.add_enum('Mode', ['ILLEGAL', 'CONFIGURE_LOCAL', 'USE_LOCAL', 'USE_BRIDGE'], outer_class=root_module['ns3::TapBridge'])
     
     ## Register a nested module for the namespace Config
     
@@ -76,16 +78,14 @@ def register_Ns3TapBridge_methods(root_module, cls):
     cls.add_method('Stop', 
                    'void', 
                    [param('ns3::Time', 'tStop')])
-    ## tap-bridge.h: void ns3::TapBridge::SetName(std::string const name) [member function]
-    cls.add_method('SetName', 
+    ## tap-bridge.h: void ns3::TapBridge::SetMode(ns3::TapBridge::Mode mode) [member function]
+    cls.add_method('SetMode', 
                    'void', 
-                   [param('std::string const', 'name')], 
-                   is_virtual=True)
-    ## tap-bridge.h: std::string ns3::TapBridge::GetName() const [member function]
-    cls.add_method('GetName', 
-                   'std::string', 
-                   [], 
-                   is_const=True, is_virtual=True)
+                   [param('ns3::TapBridge::Mode', 'mode')])
+    ## tap-bridge.h: ns3::TapBridge::Mode ns3::TapBridge::GetMode() [member function]
+    cls.add_method('GetMode', 
+                   'ns3::TapBridge::Mode', 
+                   [])
     ## tap-bridge.h: void ns3::TapBridge::SetIfIndex(uint32_t const index) [member function]
     cls.add_method('SetIfIndex', 
                    'void', 

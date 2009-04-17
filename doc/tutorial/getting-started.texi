@@ -44,78 +44,228 @@ the Getting Started section of the  @command{ns-3} web site:
 
 @cindex tarball
 The @command{ns-3} code is available in Mercurial repositories on the server
-code.nsnam.org.  You can download a tarball release at
+code.nsnam.org.  You can also download a tarball release at
 @uref{http://www.nsnam.org/releases/}, or you can work with repositories
-using Mercurial.
+using Mercurial.  We recommend using Mercurial unless there's a good reason
+not to.  See the end of this section for instructions on how to get a tarball
+release.
 
 @cindex repository
-If you go to the following link: @uref{http://code.nsnam.org/},
-you will see a number of repositories.  Many are the private repositories of
-the @command{ns-3} development team.  The repositories of interest to you will
-be prefixed with ``ns-3''.  The current development snapshot (unreleased)
-of @command{ns-3} may be found at: @uref{http://code.nsnam.org/ns-3-dev/}.
-Official releases of @command{ns-3} will be numbered as @code{ns-3.<release>}
-with any required  hotfixes added as minor release numbers.  For example, a 
-second hotfix to a hypothetical release nine of @command{ns-3} would be
-numbered @code{ns-3.9.2}.
+The simplest way to get started using Mercurial repositories is to use the
+@code{ns-3-allinone} environment.  This is a set of scripts that manages the 
+downloading and building of various subystems of @command{ns-3} for you.  We 
+recommend that you begin your @command{ns-3} adventures in this environment
+as it can really simplify your life at this point.
 
-The current development snapshot (unreleased) of @command{ns-3} may be found 
-at:  @uref{http://code.nsnam.org/ns-3-dev/}.  The developers attempt to keep
-this repository in a consistent, working state but it is a development area 
-with unreleased code present, so you may want to consider staying with an 
-official release if you do not need newly-introduced features.
-
-Since the release numbers are going to be changing, I will stick with 
-the more constant ns-3-dev here in the tutorial, but you can replace the 
-string ``ns-3-dev'' with your choice of release (e.g., ns-3.2) in the text 
-below.  You can find the latest version  of the code either by inspection of 
-the repository list or by going to the ``Getting Started'' web page and 
-looking for the latest release identifier.
-
+@subsection Downloading ns-3 Using Mercurial
 One practice is to create a directory called @code{repos} in one's home 
 directory under which one can keep local Mercurial repositories.  
 @emph{Hint:  we will assume you do this later in the tutorial.}  If you adopt
-that approach, you can get a copy of the development version of 
-@command{ns-3} by typing the following into your Linux shell (assuming you 
-have installed Mercurial):
+that approach, you can get a copy of @code{ns-3-allinone} by typing the 
+following into your Linux shell (assuming you have installed Mercurial):
 
 @verbatim
   cd
   mkdir repos
   cd repos
-  hg clone http://code.nanam.org/ns-3-dev
+  hg clone http://code.nsnam.org/ns-3-allinone
+@end verbatim
+
+As the hg (Mercurial) command executes, you should see something like the 
+following displayed,
+
+@verbatim
+  destination directory: ns-3-allinone
+  requesting all changes
+  adding changesets
+  adding manifests
+  adding file changes
+  added 26 changesets with 40 changes to 7 files
+  7 files updated, 0 files merged, 0 files removed, 0 files unresolved
+@end verbatim
+
+After the clone command completes, you should have a directory called 
+@code{ns-3-allinone} under your @code{~/repos} directory, the contents of which should 
+look something like the following:
+
+@verbatim
+  build.py*  constants.py  dist.py*  download.py*  README  util.py
+@end verbatim
+
+Notice that you really just downloaded some Python scripts.  The next step
+will be to use those scripts to download and build the @command{ns-3}
+distribution of your choice.
+
+@cindex repository
+If you go to the following link: @uref{http://code.nsnam.org/},
+you will see a number of repositories.  Many are the private repositories of
+the @command{ns-3} development team.  The repositories of interest to you will
+be prefixed with ``ns-3''.  Official releases of @command{ns-3} will be 
+numbered as @code{ns-3.<release>.<hotfix>}.  For example, a second hotfix to a
+still hypothetical release nine of @command{ns-3} would be numbered as
+@code{ns-3.9.2}.
+
+We have had a regression testing framework in place since the first release.
+For each release, a set of output files that define ``good behavior'' are saved.
+These known good output files are called reference traces and are associated 
+with a given release by name.  For example, in @uref{http://code.nsnam.org/}
+you will find a repository named @code{ns-3.1} which is the first stable release
+of @command{ns-3}.  You will also find a separate repository named 
+@code{ns-3.1-ref-traces} that holds the reference traces for the @code{ns-3.1}
+release.  It is crucial to keep these files consistent if you want to do any
+regression testing of your repository.  This is a good idea to do at least once
+to verify everything has built correctly.
+
+The current development snapshot (unreleased) of @command{ns-3} may be found 
+at @uref{http://code.nsnam.org/ns-3-dev/} and the associated reference traces
+may be found at @uref{http://code.nsnam.org/ns-3-dev-ref-traces/}.  The 
+developers attempt to keep these repository in consistent, working states but
+they are in a development area with unreleased code present, so you may want 
+to consider staying with an official release if you do not need newly-
+introduced features.
+
+Since the release numbers are going to be changing, I will stick with 
+the more constant ns-3-dev here in the tutorial, but you can replace the 
+string ``ns-3-dev'' with your choice of release (e.g., ns-3.4 and 
+ns-3.4-ref-traces) in the text below.  You can find the latest version  of the
+code either by inspection of the repository list or by going to the ``Getting 
+Started'' web page and looking for the latest release identifier.
+
+Go ahead and change into the @code{ns-3-allinone} directory you created when
+you cloned that repository.  We are now going to use the @code{download.py} 
+script to pull down the various pieces of @command{ns-3} you will be using/
+
+Go ahead and type the following into your shell (remember you can substitute
+the name of your chosen release number instead of @code{ns-3-dev} -- like
+@code{"ns-3.4"} and @code{"ns-3.4-ref-traces"} if you want to work with a 
+stable release).
+
+@verbatim
+  ./download.py -n ns-3-dev -r ns-3-dev-ref-traces
 @end verbatim
 
 As the hg (Mercurial) command executes, you should see something like the 
 following,
 
 @verbatim
-  destination directory: ns-3-dev
+      #
+      # Get NS-3
+      #
+
+  Cloning ns-3 branch
+   =>  hg clone http://code.nsnam.org/ns-3-dev ns-3-dev
   requesting all changes
   adding changesets
   adding manifests
   adding file changes
-  added 3276 changesets with 12301 changes to 1353 files
-  594 files updated, 0 files merged, 0 files removed, 0 files unresolved
+  added 4292 changesets with 15368 changes to 1671 files
+  823 files updated, 0 files merged, 0 files removed, 0 files unresolved
 @end verbatim
 
-After the clone command completes, you should have a directory called 
-ns-3-dev under your @code{~/repos} directory, the contents of which should 
-look something like the following:
+This is output by the download script as it fetches the actual @code{ns-3}
+code from the repository.  Next, you should see something like,
 
 @verbatim
-  AUTHORS  examples/  README         samples/  utils/   waf.bat*
-  build/   LICENSE    regression/    scratch/  VERSION  wscript
-  doc/     ns3/       RELEASE_NOTES  src/      waf*
+      #
+      # Get the regression traces
+      #
+  
+  Synchronizing reference traces using Mercurial.
+   =>  hg clone http://code.nsnam.org/ns-3-dev-ref-traces ns-3-dev-ref-traces
+  requesting all changes
+  adding changesets
+  adding manifests
+  adding file changes
+  added 79 changesets with 1102 changes to 222 files
+  206 files updated, 0 files merged, 0 files removed, 0 files unresolved
 @end verbatim
 
-Similarly, if working from a released version instead, you can simply
+This is the download script fetching the reference trace files for you.
+The download script is smart enough to know that on some platforms various
+pieces of ns-3 are not supported.  On your platform you may not see some
+of these pieces come down.  However, on most platforms, the process should
+continue with something like,
+
+@verbatim
+      #
+      # Get PyBindGen
+      #
+  
+  Required pybindgen version:  0.10.0.630
+  Trying to fetch pybindgen; this will fail if no network connection is available.  Hit Ctrl-C to skip.
+   =>  bzr checkout -rrevno:630 https://launchpad.net/pybindgen pybindgen
+  Fetch was successful.
+@end verbatim
+
+This was the download script getting the Python bindings generator for you.
+Next you should see (modulo platform variations) something along the lines of,
+
+@verbatim
+      #
+      # Get NSC
+      #
+  
+  Required NSC version:  nsc-0.5.0
+  Retrieving nsc from https://secure.wand.net.nz/mercurial/nsc
+   =>  hg clone https://secure.wand.net.nz/mercurial/nsc nsc
+  requesting all changes
+  adding changesets
+  adding manifests
+  adding file changes
+  added 270 changesets with 17375 changes to 14991 files
+  10614 files updated, 0 files merged, 0 files removed, 0 files unresolved 
+@end verbatim
+
+This part of the process is the script downloading the Network Simulation
+Cradle for you.
+
+After the clone command completes, you should have several new directories
+under @code{~/repos/ns-3-allinone}:
+
+@verbatim
+  build.py*     constants.pyc  download.py*  ns-3-dev-ref-traces/  pybindgen/  util.py
+  constants.py  dist.py*       ns-3-dev/     nsc/                  README      util.pyc
+@end verbatim
+
+Go ahead and change into @code{ns-3-dev} under your @code{~/repos/ns-3-allinone} 
+directory.  You should see something like the following there:
+
+@verbatim
+  AUTHORS       examples/  regression/    scratch/  waf*
+  bindings/     LICENSE    regression.py  src/      waf.bat*
+  CHANGES.html  ns3/       RELEASE_NOTES  utils/    wscript
+  doc/          README     samples/       VERSION   wutils.py
+@end verbatim
+
+You are now ready to build the @command{ns-3} distribution.
+
+@subsection Downloading ns-3 Using a Tarball
+The process for downloading @command{ns-3} via tarball is simpler than the
+Mercurial process since all of the pieces are pre-packaged for you.  You just
+have to pick a release, download it and decompress it.
+
+As mentioned above, one practice is to create a directory called @code{repos}
+in one's home directory under which one can keep local Mercurial repositories.
+One could also keep a @code{tarballs} directory.  @emph{Hint:  the tutorial
+will assume you downloaded into a @code{repos} directory, so remember the
+placekeeper.}  If you adopt the @code{tarballs} directory approach, you can 
+get a copy of a release by typing the following into your Linux shell 
+(substitute the appropriate version numbers, of course):
+
 @verbatim
   cd
-  mkdir repos
-  wget http://www.nsnam.org/releases/ns-3.2.tar.bz2
-  bunzip2 ns-3.2.tar.bz2
-  tar xvf ns-3.2.tar
+  mkdir tarballs
+  cd tarballs
+  wget http://www.nsnam.org/releases/ns-allinone-3.4.tar.bz2
+  tar xjf ns-3.4.tar.bz2
+@end verbatim 
+
+If you change into the directory @code{ns-allinone-3.4} you should see a
+number of files:
+
+@verbatim
+build.py*     ns-3.4-RC2/             nsc-0.5.0/             util.py
+constants.py  ns-3.4-RC2-ref-traces/  pybindgen-0.10.0.630/
 @end verbatim 
 
 You are now ready to build the @command{ns-3} distribution.
@@ -127,19 +277,61 @@ You are now ready to build the @command{ns-3} distribution.
 @node Building ns-3
 @section Building ns-3
 
+@subsection Building with build.py
+@cindex building with build.py
+The first time you build the @command{ns-3} project you should build using the
+@command{allinone} environment.  This will get the project configured for you
+in the most commonly useful way.
+
+Change into the directory you created in the download section above.  If you
+downloaded using Mercurial you should have a directory called 
+@code{ns-3-allinone} under your @code{~/repos} directory.  If you downloaded
+using a tarball you should have a directory called something like 
+@code{ns-3-allinone-3.4} under your @code{~/tarballs} directory.  Take a deep
+breath and type the following:
+
+@verbatim
+  ./build.py
+@end verbatim
+
+You will see lots of typical compiler output messages displayed as the build
+script builds the various pieces you downloaded.  Eventually you should see the
+following magic words:
+
+@verbatim
+  Build finished successfully (00:02:37)
+  Leaving directory `./ns-3-dev'
+@end verbatim
+
+Once the project has built you can say goodbye to your old friends, the 
+@code{ns-3-allinone} scripts.  You got what you needed from them and will now 
+interact directly with Waf and we do it in the @code{ns-3-dev} directory and
+not in the @code{ns-3-allinone} directory.  Go ahead and change into the 
+@code{ns-3-dev} directory (or the directory for the appropriate release you
+downloaded.
+
+@verbatim
+  cd ns-3-dev
+@end verbatim
+
+@subsection Building with Waf
 @cindex building with Waf
 @cindex configuring Waf
 @cindex building debug version with Waf
 @cindex compiling with Waf
 @cindex unit tests with Waf
 @cindex regression tests with Waf
-We use Waf to build the @command{ns-3} project.  The first thing you will need
-to do is to configure the build.  For reasons that will become clear later, 
-we are going to work with debug builds in the tutorial.  To explain to Waf 
-that it should do debug builds you will need to execute the following command,
+We use Waf to configure and build the @command{ns-3} project.  It's not 
+strictly required at this point, but it will be valuable to take a slight
+detour and look at how to make changes to the configuration of the project.
+Probably the most useful configuration change you can make will be to 
+build the optimized version of the code.  By default you have configured
+your project to build the debug version.  Let's tell the project to do
+make an optimized build.  To explain to Waf that it should do optimized
+builds you will need to execute the following command,
 
 @verbatim
-  ./waf -d debug configure
+  ./waf -d optimized configure
 @end verbatim
 
 This runs Waf out of the local directory (which is provided as a convenience
@@ -147,57 +339,82 @@ for you).  As the build system checks for various dependencies you should see
 output that looks similar to the following,
 
 @verbatim
-Checking for program g++                 : ok /usr/bin/g++ 
-Checking for compiler version            : ok Version 4.0.1 
-Checking for program cpp                 : ok /usr/bin/cpp 
-Checking for program ar                  : ok /usr/bin/ar 
-Checking for program ranlib              : ok /usr/bin/ranlib 
-Checking for compiler could create programs : ok  
-Checking for compiler could create shared libs : ok  
-Checking for compiler could create static libs : ok  
-Checking for flags -O2 -DNDEBUG                : ok  
-Checking for flags -g -DDEBUG                  : ok  
-Checking for flags -g3 -O0 -DDEBUG             : ok  
-Checking for flags -Wall                       : ok  
-Checking for g++                               : ok  
-Checking for -Wno-error=deprecated-declarations compilation flag support : no 
-Checking for header stdlib.h                   : ok  
-Checking for header stdlib.h                   : ok  
-Checking for header signal.h                   : ok  
-Checking for library rt                        : not found 
-Checking for header pthread.h                  : ok  
-Checking for high precision time implementation: 128-bit integer 
-Checking for header stdint.h                   : ok  
-Checking for header inttypes.h                 : ok  
-Checking for header sys/inttypes.h             : not found 
-Checking for package gtk+-2.0 >= 2.12          : not found 
-Checking for library sqlite3                   : ok  
-Checking for package goocanvas gthread-2.0     : not found 
-Checking for program python                    : ok /usr/local/bin/python 
-Checking for Python version >= 2.3             : ok 2.4.3 
-Checking for library python2.4                 : not found 
-Checking for library python2.4                 : not found 
-Checking for library python24                  : not found 
-Checking for program python2.4-config          : not found 
-Checking for header Python.h                   : not found 
-Checking for program diff                      : ok /usr/bin/diff 
-Checking for program hg                        : ok /opt/local/bin/hg 
+Checking for program g++                 : ok /usr/bin/g++
+Checking for program cpp                 : ok /usr/bin/cpp
+Checking for program ar                  : ok /usr/bin/ar
+Checking for program ranlib              : ok /usr/bin/ranlib
+Checking for g++                         : ok
+Checking for program pkg-config          : ok /usr/bin/pkg-config
+Checking for regression reference traces  : ok ../ns-3-dev-ref-traces (guessed)
+Checking for -Wno-error=deprecated-declarations support : yes
+Checking for header stdlib.h                            : ok
+Checking for header signal.h                            : ok
+Checking for header pthread.h                           : ok
+Checking for high precision time implementation         : 128-bit integer
+Checking for header stdint.h                            : ok
+Checking for header inttypes.h                          : ok
+Checking for header sys/inttypes.h                      : not found
+Checking for library rt                                 : ok
+Checking for header netpacket/packet.h                  : ok
+Checking for header linux/if_tun.h                      : ok
+Checking for pkg-config flags for GTK_CONFIG_STORE      : ok
+Package libxml-2.0 was not found in the pkg-config search path.
+Perhaps you should add the directory containing `libxml-2.0.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'libxml-2.0' found
+Checking for pkg-config flags for LIBXML2               : not found
+Checking for library sqlite3                            : ok
+Checking for NSC location                               : ok ../nsc (guessed)
+Checking for library dl                                 : ok
+Checking for NSC supported architecture x86_64          : ok
+Package goocanvas was not found in the pkg-config search path.
+Perhaps you should add the directory containing `goocanvas.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'goocanvas' found
+Checking for pkg-config flags for MOBILITY_VISUALIZER   : not found
+Checking for program python                             : ok /usr/bin/python
+Checking for Python version >= 2.3                      : ok 2.5.2
+Checking for library python2.5                          : ok
+Checking for program python2.5-config                   : ok /usr/bin/python2.5-config
+Checking for header Python.h                            : ok
+Checking for -fvisibility=hidden support                : yes
+Checking for pybindgen location                         : ok ../pybindgen (guessed)
+Checking for Python module pybindgen                    : ok
+Checking for pybindgen version                          : ok 0.10.0.630
+Checking for Python module pygccxml                     : ok
+Checking for pygccxml version                           : ok 0.9.5
+Checking for program gccxml                             : ok /usr/local/bin/gccxml
+Checking for gccxml version                             : ok 0.9.0
+Checking for program sudo                               : ok /usr/bin/sudo
+Checking for program hg                                 : ok /usr/bin/hg
+Checking for program valgrind                           : ok /usr/bin/valgrind
 ---- Summary of optional NS-3 features:
-Threading Primitives        : enabled
-Real Time Simulator         : enabled
-GtkConfigStore              : not enabled (library 'gtk+-2.0 >= 2.12' not found)
-SQlite stats data output    : enabled
-Network Simulation Cradle   : not enabled (--enable-nsc configure option not given)
-Python Bindings             : not enabled (Python development headers not found.)
-Configuration finished successfully; project is now ready to build. 
+Threading Primitives          : enabled
+Real Time Simulator           : enabled
+Emulated Net Device           : enabled
+Tap Bridge                    : enabled
+GtkConfigStore                : enabled
+XmlIo                         : not enabled (library 'libxml-2.0 >= 2.7' not found)
+SQlite stats data output      : enabled
+Network Simulation Cradle     : enabled
+Python Bindings               : enabled
+Python API Scanning Support   : enabled
+Use sudo to set suid bit      : not enabled (option --enable-sudo not selected)
+Configuration finished successfully (00:00:02); project is now ready to build.
 @end verbatim
 
-Note the trailing portion of the above output.  Some ns-3 options are
-not enabled by default or require support from the underlying system.
-For instance, to enable Python bindings, Python development headers must
-be installed on the host machine, and they were not found in the above
-example, so Python scripting will not be supported in the resulting build.
-For this tutorial, we will focus on the non-optional pieces of ns-3.
+Note the last part of the above output.  Some ns-3 options are not enabled by
+default or require support from the underlying system to work properly
+For instance, to enable XmlTo, the library libxml-2.0 must be found on the
+system.  in the example above, this library was not found and the corresponding
+feature was not enabled.  There is a feature to use sudo to set the suid bit of
+certain programs.  This was not enabled by default.
+
+Now go ahead and switch back to the debug build.
+
+@verbatim
+  ./waf -d debug configure
+@end verbatim
 
 The build system is now configured and you can build the debug versions of 
 the @command{ns-3} programs by simply typing,
@@ -206,14 +423,28 @@ the @command{ns-3} programs by simply typing,
   ./waf
 @end verbatim
 
-(Hint:  if you have a multicore machine, use the "-j JOBS" option to speed
-up your build, where JOBS is the number of cores)
-You will see many Waf status messages displayed as the system compiles.  The
-most important is the last one:
+Some waf commands are meaningful during the build phase and some commands are valid
+in the configuration phase.  For example, if you wanted to use the emulation 
+features of @command{ns-3} you might want to enable setting the suid bit using
+sudo.  This is a configuration command, and so you could have run the following
+command
 
 @verbatim
-  Compilation finished successfully
+  ./waf -d debug --enable-sudo configure
 @end verbatim
+
+If you had done this, waf would have run sudo to change the socket creator 
+programs to run as root.  There are many other configure- and build-time options
+available in waf.  To explore these options, type:
+
+@verbatim
+  ./waf -- help
+@end verbatim
+
+We'll use some of the testing-related commands in the next section.
+
+Okay, sorry, I made you build the @command{ns-3} part of the system twice,
+but now you know how to change the configuration and build optimized code.
 
 @c ========================================================================
 @c Testing ns-3
@@ -234,19 +465,22 @@ You should see a report from each unit test that executes indicating that the
 test has passed.
 
 @verbatim
-  ~/repos/ns-3-dev > ./waf check
-  Entering directory `/home/craigdo/repos/ns-3-dev/build'
-  Compilation finished successfully
+  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
+  Build finished successfully (00:00:00)
+  -- Running NS-3 C++ core unit tests...
   PASS AddressHelper
   PASS Wifi
   PASS DcfManager
-  
   ...
-
   PASS Object
   PASS Ptr
   PASS Callback
-  ~/repos/ns-3-dev >
+  -- Running NS-3 Python bindings unit tests...
+  ...........
+  ----------------------------------------------------------------------
+  Ran 11 tests in 0.003s
+
+  OK
 @end verbatim
 
 This command is typically run by @code{users} to quickly verify that an 
@@ -255,60 +489,66 @@ This command is typically run by @code{users} to quickly verify that an
 @cindex regression tests
 You can also run our regression test suite to ensure that your distribution and
 tool chain have produced binaries that generate output that is identical to
-reference output files stored in a central location.  To run the regression 
-tests, you provide Waf with the regression flag.
+known-good reference output files.  You downloaded these reference traces to 
+your machine during the download process above.  (Warning:  The @code{ns-3.2} 
+and @code{ns-3.3} releases do not use the @code{ns-3-allinone} environment
+and require you to be online when you run regression tests because they
+dynamically synchronize the reference traces directory with an online
+repository immediately prior to the run).
+
+During regression testing Waf will run a number of tests that generate what we
+call trace files.  The content of these trace files are compared with the 
+reference traces.  If they are identical, the regression tests report a PASS 
+status.  If a regression test fails you will see a FAIL indication along with a
+pointer to the offending trace file and its associated reference trace file
+along with a suggestion on diff parameters and options in order to see what 
+has gone awry.  If the error was discovered in a pcap file, it will be useful
+to convert the pcap files to text using tcpdump prior to comparison.
+
+Some regression tests wmay be SKIPped if the required support
+is not present.
+
+To run the regression tests, you provide Waf with the regression flag.
 
 @verbatim
   ./waf --regression
 @end verbatim
 
-Waf will verify that the current files in the @command{ns-3} distribution are
-built and will then look for trace files in the aforementioned centralized 
-location.  If your tool chain includes Mercurial, the regression tests will 
-be downloaded from a repository at @code{code.nsnam.org}.  If you do not have 
-Mercurial installed, the reference traces will be downloaded from a tarball 
-located in the releases section of @code{www.nsnam.org}.  The particular name 
-of the reference trace location is built from the @command{ns-3} version 
-located in the VERSION file, so don't change that string yourself unless you 
-know what you are doing.  (Warning:  The ns-3.2 release requires you
-to be online when you run regression tests because it synchronizes the
-trace directory with an online repository).
-
-Once the reference traces are downloaded to your local machine, Waf will run
-a number of tests that generate what we call trace files.  The content of 
-these trace files are compared with the reference traces just downloaded.  If 
-they are identical, the regression tests report a PASS status.  If the 
-regression tests pass, you should see something like,
+You should see messages indicating that many tests are being run and are
+passing.
 
 @verbatim
-  ~/repos/ns-3-dev > ./waf --regression
-  Entering directory `/home/craigdo/repos/ns-3-dev/build'
-  Compilation finished successfully 
-  ========== Running Regression Tests ==========
-  Synchronizing reference traces using Mercurial.
-  Pulling http://code.nsnam.org/ns-3-dev-ref-traces from repo.
-  Skipping csma-bridge: Python bindings not available.
-  SKIP test-csma-bridge
-  PASS test-csma-broadcast
+  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
+  [647/669] regression-test (test-csma-bridge)
+  [648/669] regression-test (test-csma-broadcast)
+  [649/669] regression-test (test-csma-multicast)
+  [650/669] regression-test (test-csma-one-subnet)
   PASS test-csma-multicast
-  PASS test-csma-one-subnet
-  PASS test-csma-packet-socket
-  PASS test-realtime-udp-echo
-  PASS test-simple-error-model
-  PASS test-simple-global-routing
-  PASS test-simple-point-to-point-olsr
-  PASS test-tcp-large-transfer
-  PASS test-udp-echo
-  PASS test-wifi-wired-bridging
-
-  ~/repos/ns-3-dev >
+  [651/669] regression-test (test-csma-packet-socket)
+  PASS test-csma-bridge
+  ...
+  Regression testing summary:
+  PASS: 22 of 22 tests passed
+  Build finished successfully (00:00:23)
 @end verbatim
 
-If a regression tests fails you will see a FAIL indication along with a
-pointer to the offending trace file and its associated reference trace file
-along with a suggestion on diff parameters and options in order to see what 
-has gone awry.  Python regression tests will be SKIPped if Python bindings
-are not built.
+If you want to take a look at an example of what might be checked during
+a regression test, you can do the following:
+
+@verbatim
+  cd build/debug/regression/traces/second.ref
+  tcpdump -nn -tt -r second-2-0.pcap
+@end verbatim
+
+The output should be clear to anyone who is familiar with tcpdump or net
+sniffers.  We'll have much more to say on pcap files later in this tutorial.
+
+Remember to cd back into the top-level @command{ns-3} directory
+after you are done:
+
+@verbatim
+  cd ../../../../..
+@end verbatim
 
 @c ========================================================================
 @c Running a Script

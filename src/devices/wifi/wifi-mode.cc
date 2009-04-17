@@ -87,6 +87,12 @@ WifiMode::GetConstellationSize (void) const
 std::string 
 WifiMode::GetUniqueName (void) const
 {
+  // needed for ostream printing of the invalid mode
+  if (m_uid == 0)
+    {
+      return "Invalid-WifiMode";
+    }
+
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->uniqueUid;
 }

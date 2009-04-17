@@ -68,14 +68,6 @@ public:
   virtual ~NetDevice();
 
   /**
-   * \param name name of the device (e.g. "eth0")
-   */
-  virtual void SetName(const std::string name) = 0;
-  /**
-   * \return name name of the device (e.g. "eth0")
-   */
-  virtual std::string GetName(void) const = 0;
-  /**
    * \param index ifIndex of the device 
    */
   virtual void SetIfIndex(const uint32_t index) = 0;

@@ -97,14 +97,14 @@ class TestSimulator(unittest.TestCase):
         ## -- object pointer values
         mobility = ns3.RandomWaypointMobilityModel()
         ptr = ns3.PointerValue()
-        mobility.GetAttribute("Position", ptr)
+        mobility.GetAttribute("PositionAllocator", ptr)
         self.assertEqual(ptr.GetObject(), None)
         
         pos = ns3.ListPositionAllocator()
-        mobility.SetAttribute("Position", ns3.PointerValue(pos))
+        mobility.SetAttribute("PositionAllocator", ns3.PointerValue(pos))
 
         ptr = ns3.PointerValue()
-        mobility.GetAttribute("Position", ptr)
+        mobility.GetAttribute("PositionAllocator", ptr)
         self.assert_(ptr.GetObject() is not None)
 
     def testIdentity(self):

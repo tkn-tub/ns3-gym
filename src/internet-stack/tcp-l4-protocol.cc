@@ -22,6 +22,7 @@
 #include "ns3/log.h"
 #include "ns3/nstime.h"
 #include "ns3/boolean.h"
+#include "ns3/object-vector.h"
 
 #include "ns3/packet.h"
 #include "ns3/node.h"
@@ -31,7 +32,6 @@
 #include "ipv4-end-point-demux.h"
 #include "ipv4-end-point.h"
 #include "ipv4-l3-protocol.h"
-#include "tcp-socket-impl.h"
 
 #include "tcp-typedefs.h"
 
@@ -334,6 +334,10 @@ TcpL4Protocol::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&TcpL4Protocol::m_calcChecksum),
                    MakeBooleanChecker ())
+    .AddAttribute ("SocketList", "The list of sockets associated to this protocol.",
+                   ObjectVectorValue (),
+                   MakeObjectVectorAccessor (&TcpL4Protocol::m_sockets),
+                   MakeObjectVectorChecker<TcpSocketImpl> ())
     ;
   return tid;
 }
@@ -366,11 +370,18 @@ void
 TcpL4Protocol::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  for (std::vector<Ptr<TcpSocketImpl> >::iterator i = m_sockets.begin (); i != m_sockets.end (); i++)
+    {
+      *i = 0;
+    }
+  m_sockets.clear ();
+
   if (m_endPoints != 0)
     {
       delete m_endPoints;
       m_endPoints = 0;
     }
+
   m_node = 0;
   Ipv4L4Protocol::DoDispose ();
 }
@@ -384,6 +395,7 @@ TcpL4Protocol::CreateSocket (void)
   socket->SetNode (m_node);
   socket->SetTcp (this);
   socket->SetRtt (rtt);
+  m_sockets.push_back (socket);
   return socket;
 }
 

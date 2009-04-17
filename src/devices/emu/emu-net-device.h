@@ -105,9 +105,6 @@ public:
 //
 // Pure virtual methods inherited from NetDevice we must implement.
 //
-  virtual void SetName(const std::string name);
-  virtual std::string GetName(void) const;
-
   virtual void SetIfIndex(const uint32_t index);
   virtual uint32_t GetIfIndex(void) const;
 
@@ -448,11 +445,6 @@ private:
    * we are using to talk to the network.  Valid when m_sock is valid.
    */
   int32_t m_sll_ifindex;
-
-  /**
-   * The human readable name of this device.
-   */
-  std::string m_name;
 
   /**
    * Flag indicating whether or not the link is up.  In this case,

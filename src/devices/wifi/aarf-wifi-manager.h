@@ -17,8 +17,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef AARF_MAC_STATIONS_H
-#define AARF_MAC_STATIONS_H
+#ifndef AARF_WIFI_MANAGER_H
+#define AARF_WIFI_MANAGER_H
 
 #include "arf-wifi-manager.h"
 
@@ -39,6 +39,7 @@ public:
   AarfWifiManager ();
   virtual ~AarfWifiManager ();
 private:
+  friend class AarfWifiRemoteStation;
   virtual class WifiRemoteStation *CreateStation (void);
   uint32_t m_minTimerThreshold;
   uint32_t m_minSuccessThreshold;
@@ -50,24 +51,18 @@ private:
 class AarfWifiRemoteStation : public ArfWifiRemoteStation
 {
 public:
-  AarfWifiRemoteStation (Ptr<AarfWifiManager> stations,
-                         uint32_t minTimerThreshold,
-                         uint32_t minSuccessThreshold,
-                         double successK,
-                         uint32_t maxSuccessThreshold,
-                         double timerK);
+  AarfWifiRemoteStation (Ptr<AarfWifiManager> stations);
   virtual ~AarfWifiRemoteStation ();
 
 private:
   virtual void ReportRecoveryFailure (void);
   virtual void ReportFailure (void);
+  virtual Ptr<WifiRemoteStationManager> GetManager (void) const;
 
-  double m_successK;
-  uint32_t m_maxSuccessThreshold;
-  double m_timerK;
+  Ptr<AarfWifiManager> m_manager;
 };
 
 } // namespace ns3
 
 
-#endif /* AARF_MAC_STATIONS_H */
+#endif /* AARF_WIFI_MANAGER_H */

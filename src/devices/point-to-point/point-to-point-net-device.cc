@@ -148,7 +148,6 @@ PointToPointNetDevice::PointToPointNetDevice ()
 : 
   m_txMachineState (READY),
   m_channel (0), 
-  m_name (""),
   m_linkUp (false),
   m_currentPkt (0)
 {
@@ -167,6 +166,7 @@ PointToPointNetDevice::PointToPointNetDevice ()
 
 PointToPointNetDevice::~PointToPointNetDevice ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
   void 
@@ -226,8 +226,8 @@ PointToPointNetDevice::TransmitStart (Ptr<Packet> p)
   //
   NS_ASSERT_MSG(m_txMachineState == READY, "Must be READY to transmit");
   m_txMachineState = BUSY;
-  m_phyTxBeginTrace (m_currentPkt);
   m_currentPkt = p;
+  m_phyTxBeginTrace (m_currentPkt);
 
   Time txTime = Seconds (m_bps.CalculateTxTime(p->GetSize()));
   Time txCompleteTime = txTime + m_tInterframeGap;
@@ -370,18 +370,6 @@ PointToPointNetDevice::NotifyLinkUp (void)
     {
       m_linkChangeCallback ();
     }
-}
-
-  void 
-PointToPointNetDevice::SetName(const std::string name)
-{
-  m_name = name;
-}
-
-  std::string 
-PointToPointNetDevice::GetName(void) const
-{
-  return m_name;
 }
 
   void 
