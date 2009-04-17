@@ -60,12 +60,12 @@ public:
 private:
   virtual Ptr<WifiRemoteStationManager> GetManager (void) const;
   virtual void DoReportRtsFailed (void);
-  virtual void DoReportRxOk (double rxSnr, WifiMode txMode);
   virtual void DoReportDataFailed (void);
   virtual void DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
   virtual void DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
   virtual void DoReportFinalRtsFailed (void);
   virtual void DoReportFinalDataFailed (void);
+  virtual void DoReportRxOk (double rxSnr, WifiMode txMode);
   virtual bool DoNeedRts (Ptr<const Packet> packet);
   virtual WifiMode DoGetDataMode (uint32_t size);
   virtual WifiMode DoGetRtsMode (void);
