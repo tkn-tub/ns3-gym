@@ -516,7 +516,7 @@ def check(bld):
 
     if env['ENABLE_PYTHON_BINDINGS']:
         print "-- Running NS-3 Python bindings unit tests..."
-        wutils.run_argv([env['PYTHON'], self.env, os.path.join("utils", "python-unit-tests.py")], proc_env)
+        wutils.run_argv([env['PYTHON'], env, os.path.join("utils", "python-unit-tests.py")], proc_env)
     else:
         print "-- Skipping NS-3 Python bindings unit tests: Python bindings not enabled."
 
