@@ -50,12 +50,7 @@ private:
 class AarfcdWifiRemoteStation : public WifiRemoteStation
 {
 public:
-  AarfcdWifiRemoteStation (Ptr<AarfcdWifiManager> manager,
-                           int minTimerThreshold, 
-                           int minSuccessThreshold, 
-                           double successK,
-                           int maxSuccessThreshold,
-                           double timerK);
+  AarfcdWifiRemoteStation (Ptr<AarfcdWifiManager> manager);
   virtual ~AarfcdWifiRemoteStation ();
 
 
@@ -84,15 +79,6 @@ private:
 
   bool NeedRecoveryFallback (void);
   bool NeedNormalFallback (void);
-  
-  uint32_t GetTimerTimeout (void);
-  uint32_t GetSuccessThreshold (void);
-  uint32_t GetMinSuccessThreshold (void);
-  uint32_t GetMinTimerTimeout (void);
-  
-  void SetTimerTimeout (uint32_t timerTimeout);
-  void SetSuccessThreshold (uint32_t successThreshold);
-
 
   uint32_t m_timer;
   uint32_t m_success;
@@ -101,11 +87,6 @@ private:
   bool m_justModifyRate;
   uint32_t m_retry;
   
-  uint32_t m_minTimerThreshold;
-  uint32_t m_minSuccessThreshold;
-  double m_successK;
-  uint32_t m_maxSuccessThreshold;
-  double m_timerK;
   uint32_t m_successThreshold;
   uint32_t m_timerTimeout;
 

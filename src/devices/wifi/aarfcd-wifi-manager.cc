@@ -31,21 +31,11 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED(AarfcdWifiManager);
 
-AarfcdWifiRemoteStation::AarfcdWifiRemoteStation (Ptr<AarfcdWifiManager> manager,
-                                                  int minTimerThreshold,
-                                                  int minSuccessThreshold,
-                                                  double successK,
-                                                  int maxSuccessThreshold,
-                                                  double timerK)
+AarfcdWifiRemoteStation::AarfcdWifiRemoteStation (Ptr<AarfcdWifiManager> manager)
   : m_manager (manager)
 {
-  m_minTimerThreshold = minTimerThreshold;
-  m_timerTimeout = m_minTimerThreshold;
-  m_minSuccessThreshold = minSuccessThreshold;
-  m_successThreshold = m_minSuccessThreshold;
-  m_successK = successK;
-  m_maxSuccessThreshold = maxSuccessThreshold;
-  m_timerK = timerK;
+  m_timerTimeout = m_manager->m_minTimerThreshold;
+  m_successThreshold = m_manager->m_minSuccessThreshold;
   m_rate = GetMinRate ();
 
   m_success = 0;
@@ -73,32 +63,20 @@ AarfcdWifiRemoteStation::GetMinRate (void)
   return 0;
 }
 
-uint32_t
-AarfcdWifiRemoteStation::GetMinTimerTimeout (void)
-{
-  return m_minTimerThreshold;
-}
-
-uint32_t
-AarfcdWifiRemoteStation::GetMinSuccessThreshold (void)
-{
-  return m_minSuccessThreshold;
-}
-
 void
 AarfcdWifiRemoteStation::ReportRecoveryFailure (void)
 {
-  SetSuccessThreshold ((int)(std::min ((uint32_t)(GetSuccessThreshold () * m_successK),
-                                       m_maxSuccessThreshold)));
-  SetTimerTimeout ((int)(std::max (GetMinTimerTimeout (),
-                                   (uint32_t)(GetSuccessThreshold () * m_timerK))));
+  m_successThreshold = (int)(std::min ((uint32_t)(m_successThreshold * m_manager->m_successK),
+                                       m_manager->m_maxSuccessThreshold));
+  m_timerTimeout = (int)(std::max (m_manager->m_minTimerThreshold,
+                                   (uint32_t)(m_successThreshold * m_manager->m_timerK)));
 }
 
 void
 AarfcdWifiRemoteStation::ReportFailure (void)
 {
-  SetTimerTimeout (GetMinTimerTimeout ());
-  SetSuccessThreshold (GetMinSuccessThreshold ());
+  m_timerTimeout = m_manager->m_minTimerThreshold;
+  m_successThreshold = m_manager->m_minSuccessThreshold;
 }
 
 bool 
@@ -195,7 +173,7 @@ AarfcdWifiRemoteStation::DoReportDataFailed (void)
             {
               m_rate--;
             }
-          NS_LOG_INFO ("" << this << " JD rate=" << m_rate << " Sthr=" << GetSuccessThreshold ());
+          NS_LOG_INFO ("" << this << " JD rate=" << m_rate << " Sthr=" << m_successTreshold);
           //printf ("%.9f %p DecreaseRateRecovery %d\n", Simulator::Now ().GetSeconds (),this, m_rate);
         }
       m_timer = 0;
@@ -217,7 +195,7 @@ AarfcdWifiRemoteStation::DoReportDataFailed (void)
             {
               m_rate--;
             }
-          NS_LOG_INFO ("" << this << " JD rate=" << m_rate << " Sthr=" << GetSuccessThreshold ());
+          NS_LOG_INFO ("" << this << " JD rate=" << m_rate << " Sthr=" << m_successThreshold);
           //printf ("%.9f %p DecreaseRate %d\n", Simulator::Now ().GetSeconds (),this,m_rate);
         }
       if (m_retry >= 2) 
@@ -251,13 +229,13 @@ AarfcdWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double
   //printf ("%.9f %p Ok %d %d %d\n",Simulator::Now ().GetSeconds (),this,m_rate,m_timer,m_retry);
   //printf ("%p OK (m_success=%d, th=%d, m_rate=%d, maxRate=%d)\n",this,m_success,GetSuccessThreshold (), m_rate, GetMaxRate ());
   NS_LOG_DEBUG ("self="<<this<<" data ok success="<<m_success<<", timer="<<m_timer);
-  if ((m_success == GetSuccessThreshold () ||
-       m_timer >= GetTimerTimeout ()) &&
+  if ((m_success == m_successThreshold ||
+       m_timer >= m_timerTimeout) &&
       (m_rate < GetMaxRate ())) 
     {
       NS_LOG_DEBUG ("self="<<this<<" inc rate");
       m_rate++;
-      NS_LOG_INFO ("" << this << " JI rate=" << m_rate << " Sthr=" << GetSuccessThreshold ());
+      NS_LOG_INFO ("" << this << " JI rate=" << m_rate << " Sthr=" << m_successTreshold);
       m_timer = 0;
       m_success = 0;
       m_recovery = true;
@@ -270,10 +248,10 @@ AarfcdWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double
         }
       //printf ("%.9f %p IncreaseRate %d %d\n", Simulator::Now ().GetSeconds (),this,m_rate,(m_rtsOn?1:0));
     }
-  else if (m_success == GetSuccessThreshold () ||
-           m_timer >= GetTimerTimeout ()) 
+  else if (m_success == m_successThreshold ||
+           m_timer >= m_timerTimeout) 
     {
-      NS_LOG_INFO ("" << this << " JI rate=" << m_rate << " Sthr=" << GetSuccessThreshold ());
+      NS_LOG_INFO ("" << this << " JI rate=" << m_rate << " Sthr=" << m_successThreshold);
     }
   CheckRts ();
 }
@@ -297,26 +275,6 @@ AarfcdWifiRemoteStation::DoGetRtsMode (void)
   return GetSupportedMode (0);
 }
 
-uint32_t 
-AarfcdWifiRemoteStation::GetTimerTimeout (void)
-{
-  return m_timerTimeout;
-}
-uint32_t 
-AarfcdWifiRemoteStation::GetSuccessThreshold (void)
-{
-  return m_successThreshold;
-}
-void 
-AarfcdWifiRemoteStation::SetTimerTimeout (uint32_t timerTimeout)
-{
-  m_timerTimeout = timerTimeout;
-}
-void 
-AarfcdWifiRemoteStation::SetSuccessThreshold (uint32_t successThreshold)
-{
-  m_successThreshold = successThreshold;
-}
 Ptr<WifiRemoteStationManager>
 AarfcdWifiRemoteStation::GetManager (void) const
 {
@@ -446,12 +404,7 @@ AarfcdWifiManager::~AarfcdWifiManager ()
 WifiRemoteStation *
 AarfcdWifiManager::CreateStation (void)
 {
-  return new AarfcdWifiRemoteStation (this, 
-                                      m_minTimerThreshold, 
-                                      m_minSuccessThreshold,
-                                      m_successK,
-                                      m_maxSuccessThreshold,
-                                      m_timerK);
+  return new AarfcdWifiRemoteStation (this);
 }
 
 } // namespace ns3
