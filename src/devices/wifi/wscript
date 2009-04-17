@@ -43,6 +43,7 @@ def build(bld):
         'onoe-wifi-manager.cc',
         'rraa-wifi-manager.cc',
         'aarfcd-wifi-manager.cc',
+        'cara-wifi-manager.cc',
         'constant-rate-wifi-manager.cc',
         'wifi-test.cc',
         ]
