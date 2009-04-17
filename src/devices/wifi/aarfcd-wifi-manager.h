@@ -32,6 +32,7 @@ public:
   virtual ~AarfcdWifiManager ();
 
 private:
+  friend class AarfcdWifiRemoteStation;
   virtual WifiRemoteStation *CreateStation (void);
   uint32_t m_minTimerThreshold;
   uint32_t m_minSuccessThreshold;
@@ -54,12 +55,7 @@ public:
                            int minSuccessThreshold, 
                            double successK,
                            int maxSuccessThreshold,
-                           double timerK,
-                           int minRtsWnd,
-                           int maxRtsWnd,
-                           bool rtsFailsAsDataFails,
-                           bool turnOffRtsAfterRateDecrease,
-                           bool turnOnRtsAfterRateIncrese);
+                           double timerK);
   virtual ~AarfcdWifiRemoteStation ();
 
 
@@ -116,16 +112,10 @@ private:
   uint32_t m_rate;
   bool m_rtsOn;
   uint32_t m_rtsWnd;
-  uint32_t m_minRtsWnd;
-  uint32_t m_maxRtsWnd;
   uint32_t m_rtsCounter;
   bool m_haveASuccess;
   
   Ptr<AarfcdWifiManager> m_manager;
-  bool m_rtsFailsAsDataFails;
-  bool m_turnOffRtsAfterRateDecrease;
-  bool m_turnOnRtsAfterRateIncrease;
-  
 };
 
 } // namespace ns3

@@ -36,12 +36,7 @@ AarfcdWifiRemoteStation::AarfcdWifiRemoteStation (Ptr<AarfcdWifiManager> manager
                                                   int minSuccessThreshold,
                                                   double successK,
                                                   int maxSuccessThreshold,
-                                                  double timerK,
-                                                  int minRtsWnd,
-                                                  int maxRtsWnd,
-                                                  bool rtsFailsAsDataFails,
-                                                  bool turnOffRtsAfterRateDecrease,
-                                                  bool turnOnRtsAfterRateIncrease)
+                                                  double timerK)
   : m_manager (manager)
 {
   m_minTimerThreshold = minTimerThreshold;
@@ -59,13 +54,8 @@ AarfcdWifiRemoteStation::AarfcdWifiRemoteStation (Ptr<AarfcdWifiManager> manager
   m_retry = 0;
   m_timer = 0;
   m_rtsOn = false;
-  m_minRtsWnd = minRtsWnd;
-  m_maxRtsWnd = maxRtsWnd;
-  m_rtsWnd = m_minRtsWnd;
+  m_rtsWnd = m_manager->m_minRtsWnd;
   m_rtsCounter = 0;
-  m_rtsFailsAsDataFails = rtsFailsAsDataFails;
-  m_turnOffRtsAfterRateDecrease = turnOffRtsAfterRateDecrease;
-  m_turnOnRtsAfterRateIncrease = turnOnRtsAfterRateIncrease;
   m_justModifyRate = true;
   m_haveASuccess = false;
 }
@@ -144,10 +134,11 @@ AarfcdWifiRemoteStation::DoReportRtsFailed (void)
 {
   //printf ("%.9f %p RtsFail %d %d %d\n",Simulator::Now ().GetSeconds (),this,m_rate,m_timer,m_retry);
   NS_LOG_INFO ("" << this << " RtsFail rate=" << m_rate);
-  if (m_rtsFailsAsDataFails) {
-    m_rtsCounter--;
-    ReportDataFailed ();
-  }
+  if (m_manager->m_rtsFailsAsDataFails)
+    {
+      m_rtsCounter--;
+      ReportDataFailed ();
+    }
 }
 /**
  * It is important to realize that "recovery" mode starts after failure of
@@ -194,7 +185,7 @@ AarfcdWifiRemoteStation::DoReportDataFailed (void)
       m_rtsCounter = m_rtsWnd;
       if (NeedRecoveryFallback ()) 
         {
-          if (m_turnOffRtsAfterRateDecrease) 
+          if (m_manager->m_turnOffRtsAfterRateDecrease) 
             {
               TurnOffRts ();
             }
@@ -216,7 +207,7 @@ AarfcdWifiRemoteStation::DoReportDataFailed (void)
       m_rtsCounter = m_rtsWnd;
       if (NeedNormalFallback ()) 
         {
-          if (m_turnOffRtsAfterRateDecrease) 
+          if (m_manager->m_turnOffRtsAfterRateDecrease) 
             {
               TurnOffRts ();
             }
@@ -271,7 +262,7 @@ AarfcdWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double
       m_success = 0;
       m_recovery = true;
       m_justModifyRate = true;
-      if (m_turnOnRtsAfterRateIncrease) 
+      if (m_manager->m_turnOnRtsAfterRateIncrease) 
         {
           TurnOnRts ();
           ResetRtsWnd ();
@@ -359,22 +350,22 @@ AarfcdWifiRemoteStation::TurnOnRts (void)
 void
 AarfcdWifiRemoteStation::IncreaseRtsWnd (void)
 {
-  if (m_rtsWnd == m_maxRtsWnd)
+  if (m_rtsWnd == m_manager->m_maxRtsWnd)
     {
       return;
     }
 
   m_rtsWnd *= 2;
-  if (m_rtsWnd > m_maxRtsWnd)
+  if (m_rtsWnd > m_manager->m_maxRtsWnd)
     {
-      m_rtsWnd = m_maxRtsWnd;
+      m_rtsWnd = m_manager->m_maxRtsWnd;
     }
 }
 
 void
 AarfcdWifiRemoteStation::ResetRtsWnd (void)
 {
-  m_rtsWnd = m_minRtsWnd;
+  m_rtsWnd = m_manager->m_minRtsWnd;
 }
 
 bool
@@ -460,12 +451,7 @@ AarfcdWifiManager::CreateStation (void)
                                       m_minSuccessThreshold,
                                       m_successK,
                                       m_maxSuccessThreshold,
-                                      m_timerK, 
-                                      m_minRtsWnd, 
-                                      m_maxRtsWnd, 
-                                      m_rtsFailsAsDataFails, 
-                                      m_turnOffRtsAfterRateDecrease,
-                                      m_turnOnRtsAfterRateIncrease);
+                                      m_timerK);
 }
 
 } // namespace ns3
