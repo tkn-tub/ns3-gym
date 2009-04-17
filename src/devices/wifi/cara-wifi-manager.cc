@@ -66,11 +66,13 @@ CaraWifiRemoteStation::DoReportRtsFailed (void)
 void 
 CaraWifiRemoteStation::DoReportDataFailed (void)
 {
+  NS_LOG_FUNCTION (this);
   m_timer++;
   m_failed++;
   m_success = 0;
   if (NeedNormalFallback ()) 
     {
+      NS_LOG_DEBUG ("self="<<this<<" dec rate");
       if (m_rate != GetMinRate ())
         {
           m_rate--;
@@ -97,11 +99,11 @@ CaraWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double d
   if ((m_success == m_manager->m_successThreshold ||
        m_timer >= m_manager->m_timerTimeout))
     {
-      NS_LOG_DEBUG ("self="<<this<<" inc rate");
       if (m_rate < GetMaxRate ())
         {
           m_rate++;
         }
+      NS_LOG_DEBUG ("self="<<this<<" inc rate=" << m_rate);
       m_timer = 0;
       m_success = 0;
     }
@@ -165,7 +167,7 @@ CaraWifiManager::GetTypeId (void)
    .AddAttribute ("SuccessThreshold",
                   "The minimum number of sucessfull transmissions to try a new rate.",
                   UintegerValue (10),
-                  MakeUintegerAccessor (&CaraWifiManager::m_failureThreshold),
+                  MakeUintegerAccessor (&CaraWifiManager::m_successThreshold),
                   MakeUintegerChecker<uint32_t> ())
    .AddAttribute ("Timeout",
                   "The 'timer' in the CARA algorithm",
