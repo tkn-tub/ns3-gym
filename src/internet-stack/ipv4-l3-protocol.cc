@@ -150,7 +150,13 @@ void
 Ipv4L3Protocol::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  for (L4List_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
+ 
+  for (SocketList::iterator i = m_sockets.begin (); i != m_sockets.end (); ++i)
+    {
+      *i = 0;
+    }
+
+ for (L4List_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
       *i = 0;
     }
