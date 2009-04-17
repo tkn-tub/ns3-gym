@@ -25,7 +25,7 @@
 #include "ns3/boolean.h"
 #include <algorithm>
 
-NS_LOG_COMPONENT_DEFINE ("Maarf");
+NS_LOG_COMPONENT_DEFINE ("Aarfcd");
 
 namespace ns3 {
 
@@ -167,60 +167,73 @@ AarfcdWifiRemoteStation::DoReportDataFailed (void)
   m_retry++;
   m_success = 0;
   //printf ("%.9f %p Fail %d %d %d\n",Simulator::Now ().GetSeconds (),this,m_rate,m_timer,m_retry);
-  if (!m_rtsOn) {
-    TurnOnRts ();
-    if (!m_justModifyRate && !m_haveASuccess) {
-      //printf ("%p Increase RTS Windows\n",this);
-      IncreaseRtsWnd ();
+  if (!m_rtsOn) 
+    {
+      TurnOnRts ();
+      if (!m_justModifyRate && !m_haveASuccess) 
+        {
+          //printf ("%p Increase RTS Windows\n",this);
+          IncreaseRtsWnd ();
+        }
+      else 
+        {
+          //printf ("%p Reset RTS Window\n",this);
+          ResetRtsWnd ();
+        }
+      m_rtsCounter = m_rtsWnd;
+      if (m_retry >= 2) 
+        {
+          m_timer = 0;
+        }
+      //printf ("%.9f %p AtcivateRTS %d %d\n",Simulator::Now ().GetSeconds (),this, m_rate, m_rtsCounter);
     }
-    else {
-      //printf ("%p Reset RTS Window\n",this);
-      ResetRtsWnd ();
-    }
-    m_rtsCounter = m_rtsWnd;
-    if (m_retry >= 2) {
+  else if (m_recovery) 
+    {
+      NS_ASSERT (m_retry >= 1);
+      m_justModifyRate = false;
+      m_rtsCounter = m_rtsWnd;
+      if (NeedRecoveryFallback ()) 
+        {
+          if (m_turnOffRtsAfterRateDecrease) 
+            {
+              TurnOffRts ();
+            }
+          m_justModifyRate = true;
+          ReportRecoveryFailure ();
+          if (m_rate != GetMinRate ()) 
+            {
+              m_rate--;
+            }
+          NS_LOG_INFO ("" << this << " JD rate=" << m_rate << " Sthr=" << GetSuccessThreshold ());
+          //printf ("%.9f %p DecreaseRateRecovery %d\n", Simulator::Now ().GetSeconds (),this, m_rate);
+        }
       m_timer = 0;
+    } 
+  else 
+    {
+      NS_ASSERT (m_retry >= 1);
+      m_justModifyRate = false;
+      m_rtsCounter = m_rtsWnd;
+      if (NeedNormalFallback ()) 
+        {
+          if (m_turnOffRtsAfterRateDecrease) 
+            {
+              TurnOffRts ();
+            }
+          m_justModifyRate = true;
+          ReportFailure ();
+          if (m_rate != GetMinRate ()) 
+            {
+              m_rate--;
+            }
+          NS_LOG_INFO ("" << this << " JD rate=" << m_rate << " Sthr=" << GetSuccessThreshold ());
+          //printf ("%.9f %p DecreaseRate %d\n", Simulator::Now ().GetSeconds (),this,m_rate);
+        }
+      if (m_retry >= 2) 
+        {
+          m_timer = 0;
+        }
     }
-    //printf ("%.9f %p AtcivateRTS %d %d\n",Simulator::Now ().GetSeconds (),this, m_rate, m_rtsCounter);
-  }
-  else if (m_recovery) {
-    NS_ASSERT (m_retry >= 1);
-    m_justModifyRate = false;
-    m_rtsCounter = m_rtsWnd;
-    if (NeedRecoveryFallback ()) {
-      if (m_turnOffRtsAfterRateDecrease) {
-        TurnOffRts ();
-      }
-      m_justModifyRate = true;
-      ReportRecoveryFailure ();
-      if (m_rate != GetMinRate ()) {
-        m_rate--;
-      }
-      NS_LOG_INFO ("" << this << " JD rate=" << m_rate << " Sthr=" << GetSuccessThreshold ());
-      //printf ("%.9f %p DecreaseRateRecovery %d\n", Simulator::Now ().GetSeconds (),this, m_rate);
-    }
-    m_timer = 0;
-  } 
-  else {
-    NS_ASSERT (m_retry >= 1);
-    m_justModifyRate = false;
-    m_rtsCounter = m_rtsWnd;
-    if (NeedNormalFallback ()) {
-      if (m_turnOffRtsAfterRateDecrease) {
-        TurnOffRts ();
-      }
-      m_justModifyRate = true;
-      ReportFailure ();
-      if (m_rate != GetMinRate ()) {
-        m_rate--;
-      }
-      NS_LOG_INFO ("" << this << " JD rate=" << m_rate << " Sthr=" << GetSuccessThreshold ());
-      //printf ("%.9f %p DecreaseRate %d\n", Simulator::Now ().GetSeconds (),this,m_rate);
-    }
-    if (m_retry >= 2) {
-      m_timer = 0;
-    }
-  }
   CheckRts ();
 }
 void 
@@ -250,25 +263,27 @@ AarfcdWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double
   if ((m_success == GetSuccessThreshold () ||
        m_timer >= GetTimerTimeout ()) &&
       (m_rate < GetMaxRate ())) 
-  {
-    NS_LOG_DEBUG ("self="<<this<<" inc rate");
-    m_rate++;
-    NS_LOG_INFO ("" << this << " JI rate=" << m_rate << " Sthr=" << GetSuccessThreshold ());
-    m_timer = 0;
-    m_success = 0;
-    m_recovery = true;
-    m_justModifyRate = true;
-    if (m_turnOnRtsAfterRateIncrease) {
-      TurnOnRts ();
-      ResetRtsWnd ();
-      m_rtsCounter = m_rtsWnd;
+    {
+      NS_LOG_DEBUG ("self="<<this<<" inc rate");
+      m_rate++;
+      NS_LOG_INFO ("" << this << " JI rate=" << m_rate << " Sthr=" << GetSuccessThreshold ());
+      m_timer = 0;
+      m_success = 0;
+      m_recovery = true;
+      m_justModifyRate = true;
+      if (m_turnOnRtsAfterRateIncrease) 
+        {
+          TurnOnRts ();
+          ResetRtsWnd ();
+          m_rtsCounter = m_rtsWnd;
+        }
+      //printf ("%.9f %p IncreaseRate %d %d\n", Simulator::Now ().GetSeconds (),this,m_rate,(m_rtsOn?1:0));
     }
-    //printf ("%.9f %p IncreaseRate %d %d\n", Simulator::Now ().GetSeconds (),this,m_rate,(m_rtsOn?1:0));
-  }
   else if (m_success == GetSuccessThreshold () ||
-           m_timer >= GetTimerTimeout ()) {
-    NS_LOG_INFO ("" << this << " JI rate=" << m_rate << " Sthr=" << GetSuccessThreshold ());
-  }
+           m_timer >= GetTimerTimeout ()) 
+    {
+      NS_LOG_INFO ("" << this << " JI rate=" << m_rate << " Sthr=" << GetSuccessThreshold ());
+    }
   CheckRts ();
 }
 void 
@@ -320,10 +335,11 @@ AarfcdWifiRemoteStation::GetManager (void) const
 void
 AarfcdWifiRemoteStation::CheckRts (void)
 {
-  if (m_rtsCounter == 0 && m_rtsOn) {
-    //printf ("%p Turn off RTS\n",this);
-    TurnOffRts ();
-  }
+  if (m_rtsCounter == 0 && m_rtsOn) 
+    {
+      //printf ("%p Turn off RTS\n",this);
+      TurnOffRts ();
+    }
 }
 
 void
@@ -344,11 +360,15 @@ void
 AarfcdWifiRemoteStation::IncreaseRtsWnd (void)
 {
   if (m_rtsWnd == m_maxRtsWnd)
-    return;
+    {
+      return;
+    }
 
   m_rtsWnd *= 2;
   if (m_rtsWnd > m_maxRtsWnd)
-    m_rtsWnd = m_maxRtsWnd;
+    {
+      m_rtsWnd = m_maxRtsWnd;
+    }
 }
 
 void
