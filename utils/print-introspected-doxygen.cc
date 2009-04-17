@@ -239,7 +239,7 @@ int main (int argc, char *argv[])
   info.RecordAggregationInfo ("ns3::Node", "ns3::TcpSocketFactory");
   info.RecordAggregationInfo ("ns3::Node", "ns3::UdpSocketFactory");
   info.RecordAggregationInfo ("ns3::Node", "ns3::PacketSocketFactory");
-  info.RecordAggregationInfo ("ns3::Node", "ns3::olsr::Agent");
+  info.RecordAggregationInfo ("ns3::Node", "ns3::olsr::RoutingProtocol");
   info.RecordAggregationInfo ("ns3::Node", "ns3::MobilityModel");
   info.RecordAggregationInfo ("ns3::Node", "ns3::Ipv4L3Protocol");
   info.RecordAggregationInfo ("ns3::Node", "ns3::ArpL3Protocol");
