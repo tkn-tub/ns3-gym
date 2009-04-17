@@ -2591,7 +2591,7 @@ RoutingProtocol::RequestRoute (uint32_t ifIndex,
 }
 
 bool
-RoutingProtocol::RequestIfIndex (Ipv4Address destination,
+RoutingProtocol::RequestInterface (Ipv4Address destination,
                               uint32_t& ifIndex)
 {
   RoutingTableEntry entry1, entry2;
@@ -2653,10 +2653,13 @@ RoutingProtocol::AddEntry (Ipv4Address const &dest,
   RoutingTableEntry entry;
   for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
     {
-      if (m_ipv4->GetAddress (i) == interfaceAddress)
+      for (uint32_t j = 0; j < m_ipv4->GetNAddresses (i); j++)
         {
-          AddEntry (dest, next, i, distance);
-          return;
+          if (m_ipv4->GetAddress (i,j).GetLocal () == interfaceAddress)
+            {
+              AddEntry (dest, next, i, distance);
+              return;
+            }
         }
     }
   NS_ASSERT (false); // should not be reached
