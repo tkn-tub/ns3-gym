@@ -28,15 +28,11 @@ NS_LOG_COMPONENT_DEFINE ("ns3::ArfWifiManager");
 
 namespace ns3 {
   
-ArfWifiRemoteStation::ArfWifiRemoteStation (Ptr<ArfWifiManager> stations,
-                                            int minTimerTimeout,
-                                            int minSuccessThreshold)
-  : m_stations (stations)
+ArfWifiRemoteStation::ArfWifiRemoteStation (Ptr<ArfWifiManager> manager)
+  : m_manager (manager)
 {
-  m_minTimerTimeout = minTimerTimeout;
-  m_minSuccessThreshold = minSuccessThreshold;
-  m_successThreshold = m_minSuccessThreshold;
-  m_timerTimeout = m_minTimerTimeout;
+  m_successThreshold = m_manager->m_successThreshold;
+  m_timerTimeout = m_manager->m_timerThreshold;
   m_rate = GetMinRate ();
 
   m_success = 0;
@@ -189,11 +185,11 @@ void ArfWifiRemoteStation::ReportFailure (void)
 {}
 uint32_t ArfWifiRemoteStation::GetMinTimerTimeout (void)
 {
-  return m_minTimerTimeout;
+  return m_manager->m_timerThreshold;
 }
 uint32_t ArfWifiRemoteStation::GetMinSuccessThreshold (void)
 {
-  return m_minSuccessThreshold;
+  return m_manager->m_successThreshold;
 }
 uint32_t ArfWifiRemoteStation::GetTimerTimeout (void)
 {
@@ -205,18 +201,18 @@ uint32_t ArfWifiRemoteStation::GetSuccessThreshold (void)
 }
 void ArfWifiRemoteStation::SetTimerTimeout (uint32_t timerTimeout)
 {
-  NS_ASSERT (timerTimeout >= m_minTimerTimeout);
+  NS_ASSERT (timerTimeout >= m_manager->m_timerThreshold);
   m_timerTimeout = timerTimeout;
 }
 void ArfWifiRemoteStation::SetSuccessThreshold (uint32_t successThreshold)
 {
-  NS_ASSERT (successThreshold >= m_minSuccessThreshold);
+  NS_ASSERT (successThreshold >= m_manager->m_successThreshold);
   m_successThreshold = successThreshold;
 }
 Ptr<WifiRemoteStationManager>
 ArfWifiRemoteStation::GetManager (void) const
 {
-  return m_stations;
+  return m_manager;
 }
 
 NS_OBJECT_ENSURE_REGISTERED (ArfWifiManager);
@@ -247,7 +243,7 @@ ArfWifiManager::~ArfWifiManager ()
 WifiRemoteStation *
 ArfWifiManager::CreateStation (void)
 {
-  return new ArfWifiRemoteStation (this, m_timerThreshold, m_successThreshold);
+  return new ArfWifiRemoteStation (this);
 }
 
 } // namespace ns3

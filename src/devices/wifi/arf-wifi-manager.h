@@ -46,6 +46,7 @@ public:
   virtual ~ArfWifiManager ();
 
 private:
+  friend class ArfWifiRemoteStation;
   virtual class WifiRemoteStation *CreateStation (void);
   uint32_t m_timerThreshold;
   uint32_t m_successThreshold;
@@ -55,9 +56,7 @@ private:
 class ArfWifiRemoteStation : public WifiRemoteStation
 {
 public:
-  ArfWifiRemoteStation (Ptr<ArfWifiManager> stations,
-                        int minTimerTimeout,
-                        int minSuccessThreshold);
+  ArfWifiRemoteStation (Ptr<ArfWifiManager> manager);
   virtual ~ArfWifiRemoteStation ();
 
 protected:
@@ -85,10 +84,7 @@ private:
 
   uint32_t m_rate;
   
-  uint32_t m_minTimerTimeout;
-  uint32_t m_minSuccessThreshold;
-
-  Ptr<ArfWifiManager> m_stations;
+  Ptr<ArfWifiManager> m_manager;
   
 private:
   // overriden by AarfMacStation.
