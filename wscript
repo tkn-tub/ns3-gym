@@ -246,9 +246,11 @@ def configure(conf):
 
     env['PLATFORM'] = sys.platform
 
-    if sys.platform == 'win32':
-        if env['COMPILER_CXX'] == 'g++':
+    if conf.env['CXX_NAME'] == 'gcc':
+        if sys.platform == 'win32':
             env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
+        elif sys.platform == 'cygwin':
+            env.append_value("LINKFLAGS", "-Wl,--enable-auto-import")
 
     conf.sub_config('src')
     conf.sub_config('utils')
