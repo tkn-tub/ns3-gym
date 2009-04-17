@@ -24,6 +24,14 @@
 
 namespace ns3 {
 
+/**
+ * \brief an implementation of the AARF-CD algorithm
+ *
+ * This algorithm was first described in "Efficient Collision Detection for Auto Rate Fallback Algorithm".
+ * The implementation available here was done by Federico Maguolo for a very early development
+ * version of ns-3. Federico died before merging this work in ns-3 itself so his code was ported
+ * to ns-3 later without his supervision.
+ */
 class AarfcdWifiManager : public WifiRemoteStationManager 
 {
 public:
