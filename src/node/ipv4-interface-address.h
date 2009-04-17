@@ -27,6 +27,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup address
+ *
  * \brief a class to store IPv4 address information on an interface
  *
  * Corresponds to Linux struct in_ifaddr.  A list of these addresses
@@ -53,8 +55,6 @@ public:
 
   void SetLocal (Ipv4Address local);
   Ipv4Address GetLocal (void) const;
-  void SetPeer (Ipv4Address peer);
-  Ipv4Address GetPeer (void) const;
   void SetMask (Ipv4Mask mask);
   Ipv4Mask GetMask (void) const;
   void SetBroadcast (Ipv4Address broadcast);
@@ -68,8 +68,10 @@ public:
   void SetPrimary (void);
   
 private:
+
   Ipv4Address m_local;     // Interface address
-  Ipv4Address m_peer;      // Peer destination address (in Linux:  m_address)
+  // Note:  m_peer may be added in future when necessary
+  // Ipv4Address m_peer;      // Peer destination address (in Linux:  m_address)
   Ipv4Mask m_mask;         // Network mask
   Ipv4Address m_broadcast; // Broadcast address
 

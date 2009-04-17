@@ -45,7 +45,6 @@ Ipv4InterfaceAddress::Ipv4InterfaceAddress (Ipv4Address local, Ipv4Mask mask)
 
 Ipv4InterfaceAddress::Ipv4InterfaceAddress (const Ipv4InterfaceAddress &o)
   : m_local (o.m_local),
-    m_peer (o.m_peer),
     m_mask (o.m_mask),
     m_broadcast (o.m_broadcast),
     m_scope (o.m_scope),
@@ -66,20 +65,6 @@ Ipv4InterfaceAddress::GetLocal (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_local; 
-}
-
-void 
-Ipv4InterfaceAddress::SetPeer (Ipv4Address peer)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_peer = peer;
-}
-
-Ipv4Address 
-Ipv4InterfaceAddress::GetPeer (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_peer;
 }
 
 void 
@@ -147,7 +132,7 @@ Ipv4InterfaceAddress::SetPrimary (void)
 
 std::ostream& operator<< (std::ostream& os, const Ipv4InterfaceAddress &addr)
 { 
-  os << "m_local=" << addr.GetLocal () << "; m_peer=" << addr.GetPeer () << "; m_mask=" <<
+  os << "m_local=" << addr.GetLocal () << "; m_mask=" <<
     addr.GetMask () << "; m_broadcast=" << addr.GetBroadcast () << "; m_scope=" << addr.GetScope() <<
     "; m_secondary=" << addr.IsSecondary ();
   return os;
