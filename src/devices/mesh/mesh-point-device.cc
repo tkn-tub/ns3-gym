@@ -23,7 +23,7 @@
 #include "ns3/node.h"
 #include "ns3/packet.h"
 #include "ns3/log.h"
-#include "ns3/pointer.h"                                                                        
+#include "ns3/pointer.h"
 #include "ns3/mesh-point-device.h"
 
 NS_LOG_COMPONENT_DEFINE ("MeshPointDevice");
@@ -324,7 +324,7 @@ MeshPointDevice::AddInterface (Ptr<NetDevice> iface)
   }
   m_address = Mac48Address::ConvertFrom (iface->GetAddress ());
   
-  NS_LOG_DEBUG ("RegisterProtocolHandler for " << iface->GetName ());
+  NS_LOG_DEBUG ("RegisterProtocolHandler for " << iface->GetInstanceTypeId ().GetName ());
   m_node->RegisterProtocolHandler (MakeCallback (&MeshPointDevice::ReceiveFromDevice, this),
                                    0, iface, /*promiscuous = */true);
   
