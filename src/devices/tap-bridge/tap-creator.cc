@@ -138,13 +138,17 @@ AsciiToMac48 (const char *str, uint8_t addr[6])
     }
 }
 
-static void
-SetInetAddress (sockaddr *ad, uint32_t networkOrder)
+static sockaddr
+CreateInetAddress (uint32_t networkOrder)
 {
-  struct sockaddr_in *sin = (struct sockaddr_in*)ad;
-  sin->sin_family = AF_INET;
-  sin->sin_port = 0; // unused
-  sin->sin_addr.s_addr = htonl (networkOrder);
+  union {
+    struct sockaddr any_socket;
+    struct sockaddr_in si;
+  } s;
+  s.si.sin_family = AF_INET;
+  s.si.sin_port = 0; // unused
+  s.si.sin_addr.s_addr = htonl (networkOrder);
+  return s.any_socket;
 }
 
   static void
@@ -330,7 +334,7 @@ CreateTap (const char *dev, const char *gw, const char *ip, const char *mac, con
   //
   // Set the IP address of the new interface/device.
   //
-  SetInetAddress (&ifr.ifr_addr, AsciiToIpv4 (ip));
+  ifr.ifr_addr = CreateInetAddress (AsciiToIpv4 (ip));
   status = ioctl (fd, SIOCSIFADDR, &ifr);
   ABORT_IF (status == -1, "Could not set IP address", true);
   LOG ("Set device IP address to " << ip);
@@ -338,7 +342,7 @@ CreateTap (const char *dev, const char *gw, const char *ip, const char *mac, con
   //
   // Set the net mask of the new interface/device
   //
-  SetInetAddress (&ifr.ifr_netmask, AsciiToIpv4 (netmask));
+  ifr.ifr_netmask = CreateInetAddress (AsciiToIpv4 (netmask));
   status = ioctl (fd, SIOCSIFNETMASK, &ifr);
   ABORT_IF (status == -1, "Could not set net mask", true);
   LOG ("Set device Net Mask to " << netmask);

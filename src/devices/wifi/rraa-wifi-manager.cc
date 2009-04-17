@@ -29,6 +29,8 @@
 NS_LOG_COMPONENT_DEFINE ("RraaWifiManager");
 
 namespace ns3 {
+
+NS_OBJECT_ENSURE_REGISTERED(RraaWifiManager);
   
 RraaWifiRemoteStation::RraaWifiRemoteStation (Ptr<RraaWifiManager> stations)
   : m_stations (stations)
@@ -188,7 +190,7 @@ RraaWifiRemoteStation::ARts (void)
 TypeId 
 RraaWifiManager::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("RraaWifiManager")
+  static TypeId tid = TypeId ("ns3::RraaWifiManager")
     .SetParent<WifiRemoteStationManager> ()
     .AddConstructor<RraaWifiManager> ()
     .AddAttribute ("Basic",
