@@ -745,8 +745,8 @@ def register_Ns3OlsrRoutingProtocol_methods(root_module, cls):
                    'bool', 
                    [param('uint32_t', 'ifIndex'), param('ns3::Ipv4Header const &', 'ipHeader'), param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Callback< void, bool, ns3::Ipv4Route const &, ns3::Ptr< ns3::Packet >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'routeReply')], 
                    visibility='private', is_virtual=True)
-    ## olsr-routing-protocol.h: bool ns3::olsr::RoutingProtocol::RequestIfIndex(ns3::Ipv4Address destination, uint32_t & ifIndex) [member function]
-    cls.add_method('RequestIfIndex', 
+    ## olsr-routing-protocol.h: bool ns3::olsr::RoutingProtocol::RequestInterface(ns3::Ipv4Address destination, uint32_t & ifIndex) [member function]
+    cls.add_method('RequestInterface', 
                    'bool', 
                    [param('ns3::Ipv4Address', 'destination'), param('uint32_t &', 'ifIndex')], 
                    visibility='private', is_virtual=True)
