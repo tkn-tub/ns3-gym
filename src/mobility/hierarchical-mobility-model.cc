@@ -52,15 +52,46 @@ HierarchicalMobilityModel::HierarchicalMobilityModel ()
 void 
 HierarchicalMobilityModel::SetChild (Ptr<MobilityModel> model)
 {
+  Ptr<MobilityModel> oldChild = m_child;
+  Vector pos;
+  if (m_child)
+    {
+      pos = GetPosition ();
+      m_child->TraceDisconnectWithoutContext ("CourseChange", MakeCallback (&HierarchicalMobilityModel::ChildChanged, this));
+    }
   m_child = model;
   m_child->TraceConnectWithoutContext ("CourseChange", MakeCallback (&HierarchicalMobilityModel::ChildChanged, this));
+
+  // if we had a child before, then we had a valid position before;
+  // try to preserve the old absolute position.
+  if (oldChild)
+    {
+      SetPosition (pos);
+    }
 }
 
 void 
 HierarchicalMobilityModel::SetParent (Ptr<MobilityModel> model)
 {
+  Vector pos;
+  if (m_child)
+    {
+      pos = GetPosition ();
+    }
+  if (m_parent)
+    {
+      m_parent->TraceDisconnectWithoutContext ("CourseChange", MakeCallback (&HierarchicalMobilityModel::ParentChanged, this));
+    }
   m_parent = model;
-  m_parent->TraceConnectWithoutContext ("CourseChange", MakeCallback (&HierarchicalMobilityModel::ParentChanged, this));
+  if (m_parent)
+    {
+      m_parent->TraceConnectWithoutContext ("CourseChange", MakeCallback (&HierarchicalMobilityModel::ParentChanged, this));
+    }
+  // try to preserve the old position across parent changes
+  if (m_child)
+    {
+      SetPosition (pos);
+    }
 }
 
 
@@ -79,6 +110,10 @@ HierarchicalMobilityModel::GetParent (void) const
 Vector
 HierarchicalMobilityModel::DoGetPosition (void) const
 {
+  if (!m_parent)
+    {
+      return m_child->GetPosition ();
+    }
   Vector parentPosition = m_parent->GetPosition ();
   Vector childPosition = m_child->GetPosition ();
   return Vector (parentPosition.x + childPosition.x,
@@ -88,27 +123,41 @@ HierarchicalMobilityModel::DoGetPosition (void) const
 void 
 HierarchicalMobilityModel::DoSetPosition (const Vector &position)
 {
-  if (m_parent == 0 || m_child == 0)
+  if (m_child == 0)
     {
       return;
     }
   // This implementation of DoSetPosition is really an arbitraty choice.
   // anything else would have been ok.
-  Vector parentPosition = m_parent->GetPosition ();
-  Vector childPosition (position.x - parentPosition.x,
-			  position.y - parentPosition.y,
-			  position.z - parentPosition.z);
-  m_child->SetPosition (childPosition);
+  if (m_parent)
+    {
+      Vector parentPosition = m_parent->GetPosition ();
+      Vector childPosition (position.x - parentPosition.x,
+                            position.y - parentPosition.y,
+                            position.z - parentPosition.z);
+      m_child->SetPosition (childPosition);
+    }
+  else
+    {
+      m_child->SetPosition (position);
+    }
 }
 Vector
 HierarchicalMobilityModel::DoGetVelocity (void) const
 {
-  Vector parentSpeed = m_parent->GetVelocity ();
-  Vector childSpeed = m_child->GetVelocity ();
-  Vector speed (parentSpeed.x + childSpeed.x,
-               parentSpeed.y + childSpeed.y,
-               parentSpeed.z + childSpeed.z);
-  return speed;
+  if (m_parent)
+    {
+      Vector parentSpeed = m_parent->GetVelocity ();
+      Vector childSpeed = m_child->GetVelocity ();
+      Vector speed (parentSpeed.x + childSpeed.x,
+                    parentSpeed.y + childSpeed.y,
+                    parentSpeed.z + childSpeed.z);
+      return speed;
+    }
+  else
+    {
+      return m_child->GetVelocity ();
+    }
 }
 
 void 
