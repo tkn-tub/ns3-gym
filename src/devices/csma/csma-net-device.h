@@ -305,8 +305,6 @@ public:
   //
   // The following methods are inherited from NetDevice base class.
   //
-  virtual void SetName (const std::string name);
-  virtual std::string GetName (void) const;
   virtual void SetIfIndex (const uint32_t index);
   virtual uint32_t GetIfIndex (void) const;
   virtual Ptr<Channel> GetChannel (void) const;
@@ -806,11 +804,6 @@ private:
    * this network device.
    */
   uint32_t m_ifIndex;
-
-  /**
-   * The human readable name of this device.
-   */
-  std::string m_name;
 
   /**
    * Flag indicating whether or not the link is up.  In this case,

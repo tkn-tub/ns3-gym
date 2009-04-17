@@ -43,11 +43,7 @@ public:
   static TypeId GetTypeId (void);
 
   Channel ();
-  Channel (std::string name);
   virtual ~Channel ();
-
-  void SetName(std::string);
-  std::string GetName(void);
 
   /**
    * \returns the number of NetDevices connected to this Channel.
@@ -63,10 +59,8 @@ public:
    */
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const = 0;
 
-private:
-  std::string   m_name;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* NS3_CHANNEL_H */

@@ -97,7 +97,7 @@ NonUnicastWifiRemoteStation::DoReportFinalDataFailed (void)
 WifiMode 
 NonUnicastWifiRemoteStation::DoGetDataMode (uint32_t size)
 {
-  WifiMode mode = m_stations->GetBasicMode (0);
+  WifiMode mode = m_stations->GetNonUnicastMode ();
   NS_LOG_DEBUG ("non-unicast size="<<size<<", mode="<<mode);
   return mode;
 }
@@ -155,6 +155,10 @@ WifiRemoteStationManager::GetTypeId (void)
                    UintegerValue (1500),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_fragmentationThreshold),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("NonUnicastMode", "Wifi mode used for non-unicast transmissions.",
+                   WifiModeValue (),
+                   MakeWifiModeAccessor (&WifiRemoteStationManager::m_nonUnicastMode),
+                   MakeWifiModeChecker ())
     ;
   return tid;
 }
@@ -304,6 +308,14 @@ bool
 WifiRemoteStationManager::IsLowLatency (void) const
 {
   return m_isLowLatency;
+}
+WifiMode
+WifiRemoteStationManager::GetNonUnicastMode (void) const
+{
+  if (m_nonUnicastMode == WifiMode ())
+    return GetBasicMode(0);
+  else
+    return m_nonUnicastMode;
 }
 
 } // namespace ns3

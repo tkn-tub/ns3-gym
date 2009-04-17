@@ -1,3 +1,22 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2005,2006 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as 
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
 #include "interference-helper.h"
 #include "wifi-phy.h"
 #include "error-rate-model.h"
@@ -137,15 +156,15 @@ InterferenceHelper::GetMaxPacketDuration (void) const
 }
 
 void 
-InterferenceHelper::SetNoiseFloorW (double noiseFloor)
+InterferenceHelper::SetNoiseFigure (double value)
 {
-  m_noiseFloorW = noiseFloor;
+  m_noiseFigure = value;
 }
 
 double 
-InterferenceHelper::GetNoiseFloorW (void) const
+InterferenceHelper::GetNoiseFigure (void) const
 {
-  return m_noiseFloorW;
+  return m_noiseFigure;
 }
 
 void 
@@ -260,9 +279,10 @@ InterferenceHelper::CalculateSnr (double signal, double noiseInterference, WifiM
 {
   // thermal noise at 290K in J/s = W
   static const double BOLTZMANN = 1.3803e-23;
+  // Nt is the power of thermal noise in W
   double Nt = BOLTZMANN * 290.0 * mode.GetBandwidth ();
-  // receiver noise Floor (W)
-  double noiseFloor = m_noiseFloorW * Nt;
+  // receiver noise Floor (W) which accounts for thermal noise and non-idealities of the receiver
+  double noiseFloor = m_noiseFigure * Nt;
   double noise = noiseFloor + noiseInterference;
   double snr = signal / noise;
   return snr;

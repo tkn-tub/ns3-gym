@@ -962,20 +962,6 @@ TapBridge::ReceiveFromBridgedDevice (
 }
 
 void 
-TapBridge::SetName(const std::string name)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_name = name;
-}
-
-std::string 
-TapBridge::GetName(void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_name;
-}
-
-void 
 TapBridge::SetIfIndex(const uint32_t index)
 {
   NS_LOG_FUNCTION_NOARGS ();

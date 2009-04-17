@@ -226,12 +226,6 @@ public:
    */
   uint16_t GetFrameSize (void) const;
 
-//
-// Pure virtual methods inherited from NetDevice we must implement.
-//
-  virtual void SetName(const std::string name);
-  virtual std::string GetName(void) const;
-
   virtual void SetIfIndex(const uint32_t index);
   virtual uint32_t GetIfIndex(void) const;
 
@@ -531,7 +525,6 @@ private:
   NetDevice::ReceiveCallback m_rxCallback;
   NetDevice::PromiscReceiveCallback m_promiscCallback;
   uint32_t m_ifIndex;
-  std::string m_name;
   bool m_linkUp;
   Callback<void> m_linkChangeCallback;
 

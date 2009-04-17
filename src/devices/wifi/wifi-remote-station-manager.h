@@ -80,6 +80,8 @@ public:
 
   bool IsLowLatency (void) const;
 
+  WifiMode GetNonUnicastMode (void) const;
+
   WifiRemoteStation *Lookup (Mac48Address address);
   WifiRemoteStation *LookupNonUnicast (void);
 protected:
@@ -97,6 +99,7 @@ private:
   uint32_t m_maxSlrc;
   uint32_t m_rtsCtsThreshold;
   uint32_t m_fragmentationThreshold;
+  WifiMode m_nonUnicastMode;
 };
 
 } // namespace ns3
@@ -259,12 +262,9 @@ public:
   WifiMode GetAckMode (WifiMode dataMode);
 
 private:
-  typedef std::vector<WifiMode> SupportedModes;
   virtual Ptr<WifiRemoteStationManager> GetManager (void) const = 0;
   virtual WifiMode DoGetDataMode (uint32_t size) = 0;
   virtual WifiMode DoGetRtsMode (void) = 0;
-  uint32_t GetNFragments (Ptr<const Packet> packet);
-protected:
   virtual void DoReportRtsFailed (void) = 0;
   virtual void DoReportDataFailed (void) = 0;
   virtual void DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr) = 0;
@@ -272,9 +272,12 @@ protected:
   virtual void DoReportFinalRtsFailed (void) = 0;
   virtual void DoReportFinalDataFailed (void) = 0;
   virtual void DoReportRxOk (double rxSnr, WifiMode txMode) = 0;
+protected:
   uint32_t GetNSupportedModes (void) const;
   WifiMode GetSupportedMode (uint32_t i) const;
 private:
+  typedef std::vector<WifiMode> SupportedModes;
+  uint32_t GetNFragments (Ptr<const Packet> packet);
   bool IsIn (WifiMode mode) const;
   WifiMode GetControlAnswerMode (WifiMode reqMode);
   enum {

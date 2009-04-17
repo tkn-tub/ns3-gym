@@ -36,7 +36,7 @@
  *
  */
 
-namespace ns3{
+namespace ns3 {
 
 class RandomVariableBase;
 
@@ -422,7 +422,7 @@ public:
    * value and a shape (alpha) parameter of 1.5.
    * \param m mean value of the distribution
    */
-   WeibullVariable(double m) ;
+  WeibullVariable(double m) ;
 
   /**
    * Constructs a weibull random variable with the specified mean
@@ -560,7 +560,6 @@ public:
   explicit DeterministicVariable(double* d, uint32_t c);
 };
 
-
 /**
  * \brief Log-normal Distributed random var
  * \ingroup randomvariable
@@ -591,6 +590,108 @@ public:
    * \param sigma sigma parameter of the lognormal distribution
    */
   LogNormalVariable (double mu, double sigma);
+};
+
+/**
+ * \brief Gamma Distributed Random Variable
+ * \ingroup randomvariable
+ *
+ * GammaVariable defines a random variable with gamma distribution. 
+ *
+ * This class supports the creation of objects that return random numbers
+ * from a fixed gamma distribution. It also supports the generation of 
+ * single random numbers from various gamma distributions.
+ *
+ * The probability density function is defined over the interval [0,+inf) as:
+ * \f$ x^{\alpha-1} \frac{e^{-\frac{x}{\beta}}}{\beta^\alpha \Gamma(\alpha)}\f$
+ * where \f$ mean = \alpha\beta \f$ and 
+ * \f$ variance = \alpha \beta^2\f$
+ */
+class GammaVariable : public RandomVariable 
+{
+public:
+  /**
+   * Constructs a gamma random variable with alpha = 1.0 and beta = 1.0
+   */
+  GammaVariable ();
+
+  /**
+   * \param alpha alpha parameter of the gamma distribution
+   * \param beta beta parameter of the gamma distribution
+   */
+  GammaVariable (double alpha, double beta);
+
+  /**
+   * \brief call RandomVariable::GetValue
+   * \return A floating point random value 
+   *
+   * Note: we have to re-implement this method here because the method is
+   * overloaded below for the two-argument variant and the c++ name resolution
+   * rules don't work well with overloads split between parent and child
+   * classes.
+   */
+  double GetValue (void) const;
+  
+  /**
+   * \brief Returns a gamma random distributed double with parameters alpha and beta.
+   * \param alpha alpha parameter of the gamma distribution
+   * \param beta beta parameter of the gamma distribution
+   * \return A floating point random value
+   */
+  double GetValue(double alpha, double beta) const;
+};
+
+/**
+ * \brief Erlang Distributed Random Variable
+ * \ingroup randomvariable
+ *
+ * ErlangVariable defines a random variable with Erlang distribution.
+ *
+ * The Erlang distribution is a special case of the Gamma distribution where k
+ * (= alpha) is a non-negative integer. Erlang distributed variables can be
+ * generated using a much faster algorithm than gamma variables.
+ *
+ * This class supports the creation of objects that return random numbers from
+ * a fixed Erlang distribution. It also supports the generation of single
+ * random numbers from various Erlang distributions.
+ *
+ * The probability density function is defined over the interval [0,+inf) as:
+ * \f$ \frac{x^{k-1} e^{-\frac{x}{\lambda}}}{\lambda^k (k-1)!}\f$
+ * where \f$ mean = k \lambda \f$ and 
+ * \f$ variance = k \lambda^2\f$
+ */
+class ErlangVariable : public RandomVariable 
+{
+public:
+  /**
+   * Constructs an Erlang random variable with k = 1 and lambda = 1.0
+   */
+  ErlangVariable ();
+
+  /**
+   * \param k k parameter of the Erlang distribution. Must be a non-negative integer.
+   * \param lambda lambda parameter of the Erlang distribution
+   */
+  ErlangVariable (unsigned int k, double lambda);
+
+  /**
+   * \brief call RandomVariable::GetValue
+   * \return A floating point random value 
+   *
+   * Note: we have to re-implement this method here because the method is
+   * overloaded below for the two-argument variant and the c++ name resolution
+   * rules don't work well with overloads split between parent and child
+   * classes.
+   */
+  double GetValue (void) const;
+  
+  /**
+   * \brief Returns an Erlang random distributed double with parameters k and lambda.
+   * \param k k parameter of the Erlang distribution. Must be a non-negative integer.
+   * \param lambda lambda parameter of the Erlang distribution
+   * \return A floating point random value
+   */
+  double GetValue(unsigned int k, double lambda) const;
 };
 
 /**

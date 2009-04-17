@@ -71,39 +71,34 @@ AarfWifiManager::~AarfWifiManager ()
 WifiRemoteStation *
 AarfWifiManager::CreateStation (void)
 {
-  return new AarfWifiRemoteStation (this, m_minTimerThreshold,
-                                    m_minSuccessThreshold,
-                                    m_successK,
-                                    m_maxSuccessThreshold,
-                                    m_timerK);
+  return new AarfWifiRemoteStation (this);
 }
 
 
 
 
-AarfWifiRemoteStation::AarfWifiRemoteStation (Ptr<AarfWifiManager> stations,
-                                              uint32_t minTimerThreshold,
-                                              uint32_t minSuccessThreshold,
-                                              double successK,
-                                              uint32_t maxSuccessThreshold,
-                                              double timerK)
-  : ArfWifiRemoteStation (stations, minTimerThreshold, minSuccessThreshold),
-    m_successK (successK),
-    m_maxSuccessThreshold (maxSuccessThreshold),
-    m_timerK (timerK)
+AarfWifiRemoteStation::AarfWifiRemoteStation (Ptr<AarfWifiManager> manager)
+  : ArfWifiRemoteStation (manager),
+    m_manager (manager)
 {}
 
 
 AarfWifiRemoteStation::~AarfWifiRemoteStation ()
 {}
 
+Ptr<WifiRemoteStationManager> 
+AarfWifiRemoteStation::GetManager (void) const
+{
+  return m_manager;
+}
+
 void 
 AarfWifiRemoteStation::ReportRecoveryFailure (void)
 {
-  SetSuccessThreshold ((int)(Min (GetSuccessThreshold () * m_successK,
-                                  m_maxSuccessThreshold)));
+  SetSuccessThreshold ((int)(Min (GetSuccessThreshold () * m_manager->m_successK,
+                                  m_manager->m_maxSuccessThreshold)));
   SetTimerTimeout ((int)(Max (GetMinTimerTimeout (),
-                              GetSuccessThreshold () * m_timerK)));
+                              GetSuccessThreshold () * m_manager->m_timerK)));
 }
 
 void 

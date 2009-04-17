@@ -6,7 +6,6 @@ import pproc as subprocess
 import errno
 
 # WAF modules
-import Build
 import Options
 import Utils
 import Task
@@ -66,9 +65,11 @@ class regression_test_task(Task.TaskBase):
     after = 'cc cxx cc_link cxx_link'
     color = 'BLUE'
 
-    def __init__(self, env, test_name, test_scripts_dir, build_traces_dir, reference_traces):
-        super(regression_test_task, self).__init__()
+    def __init__(self, bld, env, test_name, test_scripts_dir, build_traces_dir, reference_traces):
+        self.bld = bld
+        self.generator = self
         self.env = env
+        super(regression_test_task, self).__init__(generator=self, env=env)
         self.test_name = test_name
         self.test_scripts_dir = test_scripts_dir
         self.build_traces_dir = build_traces_dir
@@ -76,6 +77,9 @@ class regression_test_task(Task.TaskBase):
 
     def __str__(self):
         return 'regression-test (%s)\n' % self.test_name
+
+    def runnable_status(self):
+        return Task.RUN_ME
 
     def run(self):
         """Run a single test"""
@@ -119,7 +123,7 @@ class regression_test_task(Task.TaskBase):
         if Options.options.regression_generate:
             # clean the target dir
             try:
-                shutil.rmtree(trace_output_path)
+                shutil.rmtree(reference_traces_path)
             except OSError, ex:
                 if ex.errno not in [errno.ENOENT]:
                     raise
@@ -155,13 +159,13 @@ class regression_test_task(Task.TaskBase):
             script = os.path.abspath(os.path.join('..', *os.path.split(program)))
             argv = [self.env['PYTHON'], script] + arguments
             try:
-                wutils.run_argv(argv, cwd=trace_output_path)
+                wutils.run_argv(argv, self.env, cwd=trace_output_path)
             except Utils.WafError, ex:
                 print >> sys.stderr, ex
                 return 1
         else:
             try:
-                wutils.run_program(program,
+                wutils.run_program(program, self.env,
                                    command_template=wutils.get_command_template(self.env, arguments),
                                    cwd=trace_output_path)
             except Utils.WafError, ex:
@@ -187,13 +191,13 @@ class regression_test_task(Task.TaskBase):
             script = os.path.abspath(os.path.join('..', *os.path.split(program)))
             argv = [self.env['PYTHON'], script] + arguments
             try:
-                retval = wutils.run_argv(argv, cwd=trace_output_path)
+                retval = wutils.run_argv(argv, self.env, cwd=trace_output_path)
             except Utils.WafError, ex:
                 print >> sys.stderr, ex
                 return 1
         else:
             try:
-                retval = wutils.run_program(program,
+                retval = wutils.run_program(program, self.env,
                                             command_template=wutils.get_command_template(self.env, arguments),
                                             cwd=trace_output_path)
             except Utils.WafError, ex:
@@ -206,12 +210,16 @@ class regression_test_collector_task(Task.TaskBase):
     after = 'regression_test_task'
     color = 'BLUE'
 
-    def __init__(self, test_tasks):
-        super(regression_test_collector_task, self).__init__()
+    def __init__(self, bld, test_tasks):
+        self.bld = bld
+        super(regression_test_collector_task, self).__init__(generator=self)
         self.test_tasks = test_tasks
 
     def __str__(self):
         return 'regression-test-collector\n'
+
+    def runnable_status(self):
+        return Task.RUN_ME
 
     def run(self):
         failed_tests = [test for test in self.test_tasks if test.result is not None and test.result != 0]
@@ -256,5 +264,7 @@ def run_regression(bld, reference_traces):
     build_traces_dir = bld.path.find_or_declare('regression/traces').abspath(bld.env)
     tasks = []
     for test in tests:
-        tasks.append(regression_test_task(bld.env, test, test_scripts_dir, build_traces_dir, reference_traces))
-    regression_test_collector_task(tasks)
+        task = regression_test_task(bld, bld.env, test, test_scripts_dir, build_traces_dir, reference_traces)
+        #bld.task_manager.add_task(task)
+        tasks.append(task)
+    regression_test_collector_task(bld, tasks)

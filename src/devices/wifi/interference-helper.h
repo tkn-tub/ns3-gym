@@ -1,3 +1,22 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2005,2006 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as 
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
 #ifndef INTERFERENCE_HELPER_H
 #define INTERFERENCE_HELPER_H
 
@@ -50,10 +69,10 @@ public:
   ~InterferenceHelper ();
 
   void Configure80211aParameters (void);
-  void SetNoiseFloorW (double noiseFloor);
+  void SetNoiseFigure (double value);
   void SetErrorRateModel (Ptr<ErrorRateModel> rate);
 
-  double GetNoiseFloorW (void) const;
+  double GetNoiseFigure (void) const;
   Ptr<ErrorRateModel> GetErrorRateModel (void) const;
 
 
@@ -99,7 +118,7 @@ private:
   WifiMode m_shortPlcpHeaderMode;
   uint32_t m_plcpHeaderLength;
   Time m_maxPacketDuration;
-  double m_noiseFloorW;
+  double m_noiseFigure; /**< noise figure (linear) */
   Events m_events;
   bool m_80211a;
   Ptr<ErrorRateModel> m_errorRateModel;

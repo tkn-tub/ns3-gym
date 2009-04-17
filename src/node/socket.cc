@@ -252,6 +252,19 @@ Socket::NotifyDataRecv (void)
     }
 }
 
+void 
+Socket::DoDispose (void)
+{
+  
+  m_connectionSucceeded = MakeNullCallback<void,Ptr<Socket> > ();
+  m_connectionFailed = MakeNullCallback<void,Ptr<Socket> > ();
+  m_connectionRequest = MakeNullCallback<bool,Ptr<Socket>, const Address &> ();
+  m_newConnectionCreated = MakeNullCallback<void,Ptr<Socket>, const Address &> ();
+  m_dataSent = MakeNullCallback<void,Ptr<Socket>, uint32_t> ();
+  m_sendCb = MakeNullCallback<void,Ptr<Socket>, uint32_t> ();
+  m_receivedData = MakeNullCallback<void,Ptr<Socket> > ();
+}
+
 /***************************************************************
  *           Socket Tags
  ***************************************************************/

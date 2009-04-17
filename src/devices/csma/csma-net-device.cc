@@ -154,8 +154,7 @@ CsmaNetDevice::GetTypeId (void)
 }
 
 CsmaNetDevice::CsmaNetDevice ()
-  : m_name (""),
-    m_linkUp (false)
+ : m_linkUp (false)
 {
   NS_LOG_FUNCTION (this);
   m_txMachineState = READY;
@@ -874,20 +873,6 @@ CsmaNetDevice::NotifyLinkUp (void)
 }
 
   void 
-CsmaNetDevice::SetName (const std::string name)
-{
-  NS_LOG_FUNCTION (name);
-  m_name = name;
-}
-
-  std::string 
-CsmaNetDevice::GetName (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_name;
-}
-
-  void 
 CsmaNetDevice::SetIfIndex (const uint32_t index)
 {
   NS_LOG_FUNCTION (index);
@@ -1054,25 +1039,6 @@ CsmaNetDevice::SetNode (Ptr<Node> node)
   NS_LOG_FUNCTION (node);
 
   m_node = node;
-  int count = -1;
-  if (m_name.size () == 0)
-    {
-      for (uint32_t i = 0; i < node->GetNDevices (); i++)
-        {
-          Ptr<NetDevice> dev = node->GetDevice (i);
-          if (dynamic_cast<CsmaNetDevice*> (PeekPointer (dev)))
-            {
-              count++;
-              if (dev == this)
-                {
-                  break;
-                }
-            }
-        }
-      std::ostringstream s;
-      s << "eth" << count;
-      m_name = s.str ();
-    }
 }
 
   bool 

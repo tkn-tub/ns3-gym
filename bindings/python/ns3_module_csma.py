@@ -273,16 +273,6 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
     cls.add_method('GetEncapsulationMode', 
                    'ns3::CsmaNetDevice::EncapsulationMode', 
                    [])
-    ## csma-net-device.h: void ns3::CsmaNetDevice::SetName(std::string const name) [member function]
-    cls.add_method('SetName', 
-                   'void', 
-                   [param('std::string const', 'name')], 
-                   is_virtual=True)
-    ## csma-net-device.h: std::string ns3::CsmaNetDevice::GetName() const [member function]
-    cls.add_method('GetName', 
-                   'std::string', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## csma-net-device.h: void ns3::CsmaNetDevice::SetIfIndex(uint32_t const index) [member function]
     cls.add_method('SetIfIndex', 
                    'void', 

@@ -133,6 +133,8 @@ def register_types(module):
     module.add_class('SimpleChannel', parent=root_module['ns3::Channel'])
     ## simple-net-device.h: ns3::SimpleNetDevice [class]
     module.add_class('SimpleNetDevice', parent=root_module['ns3::NetDevice'])
+    module.add_container('ns3::olsr::MprSet', 'ns3::Ipv4Address', container_type='set')
+    module.add_container('std::vector< ns3::Ipv4Address >', 'ns3::Ipv4Address', container_type='vector')
     
     ## Register a nested module for the namespace Config
     
@@ -173,7 +175,6 @@ def register_types_ns3_internal(module):
 def register_types_ns3_olsr(module):
     root_module = module.get_root()
     
-    module.add_container('std::vector< ns3::Ipv4Address >', 'ns3::Ipv4Address', container_type='vector')
 
 def register_methods(root_module):
     register_Ns3Address_methods(root_module, root_module['ns3::Address'])
@@ -2310,16 +2311,6 @@ def register_Ns3Channel_methods(root_module, cls):
                    is_static=True)
     ## channel.h: ns3::Channel::Channel() [constructor]
     cls.add_constructor([])
-    ## channel.h: ns3::Channel::Channel(std::string name) [constructor]
-    cls.add_constructor([param('std::string', 'name')])
-    ## channel.h: void ns3::Channel::SetName(std::string arg0) [member function]
-    cls.add_method('SetName', 
-                   'void', 
-                   [param('std::string', 'arg0')])
-    ## channel.h: std::string ns3::Channel::GetName() [member function]
-    cls.add_method('GetName', 
-                   'std::string', 
-                   [])
     ## channel.h: uint32_t ns3::Channel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
                    'uint32_t', 
@@ -2749,16 +2740,6 @@ def register_Ns3NetDevice_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## net-device.h: void ns3::NetDevice::SetName(std::string const name) [member function]
-    cls.add_method('SetName', 
-                   'void', 
-                   [param('std::string const', 'name')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## net-device.h: std::string ns3::NetDevice::GetName() const [member function]
-    cls.add_method('GetName', 
-                   'std::string', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## net-device.h: void ns3::NetDevice::SetIfIndex(uint32_t const index) [member function]
     cls.add_method('SetIfIndex', 
                    'void', 
@@ -3015,16 +2996,6 @@ def register_Ns3SimpleNetDevice_methods(root_module, cls):
     cls.add_method('SetAddress', 
                    'void', 
                    [param('ns3::Mac48Address', 'address')])
-    ## simple-net-device.h: void ns3::SimpleNetDevice::SetName(std::string const name) [member function]
-    cls.add_method('SetName', 
-                   'void', 
-                   [param('std::string const', 'name')], 
-                   is_virtual=True)
-    ## simple-net-device.h: std::string ns3::SimpleNetDevice::GetName() const [member function]
-    cls.add_method('GetName', 
-                   'std::string', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## simple-net-device.h: void ns3::SimpleNetDevice::SetIfIndex(uint32_t const index) [member function]
     cls.add_method('SetIfIndex', 
                    'void', 

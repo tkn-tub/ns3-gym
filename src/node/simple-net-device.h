@@ -46,8 +46,6 @@ public:
   void SetAddress (Mac48Address address);
 
   // inherited from NetDevice base class.
-  virtual void SetName(const std::string name);
-  virtual std::string GetName(void) const;
   virtual void SetIfIndex(const uint32_t index);
   virtual uint32_t GetIfIndex(void) const;
   virtual Ptr<Channel> GetChannel (void) const;
@@ -82,7 +80,6 @@ private:
   NetDevice::PromiscReceiveCallback m_promiscCallback;
   Ptr<Node> m_node;
   uint16_t m_mtu;
-  std::string m_name;
   uint32_t m_ifIndex;
   Mac48Address m_address;
 };
