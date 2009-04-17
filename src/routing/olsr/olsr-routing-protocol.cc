@@ -33,7 +33,7 @@
   if (GetObject<Node> ()) { std::clog << "[node " << GetObject<Node> ()->GetId () << "] "; }
 
 
-#include "olsr-agent-impl.h"
+#include "olsr-routing-protocol.h"
 #include "ns3/socket-factory.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/simulator.h"
@@ -44,6 +44,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/enum.h"
 #include "ns3/trace-source-accessor.h"
+#include "ns3/ipv4-header.h"
 
 /********** Useful macros **********/
 
@@ -142,63 +143,63 @@ NS_LOG_COMPONENT_DEFINE ("OlsrAgent");
 
 /********** OLSR class **********/
 
-NS_OBJECT_ENSURE_REGISTERED (AgentImpl);
+NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 
 TypeId 
-AgentImpl::GetTypeId (void)
+RoutingProtocol::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::olsr::AgentImpl")
-    .SetParent<Agent> ()
-    .AddConstructor<AgentImpl> ()
+  static TypeId tid = TypeId ("ns3::olsr::RoutingProtocol")
+    .SetParent<Ipv4RoutingProtocol> ()
+    .AddConstructor<RoutingProtocol> ()
     .AddAttribute ("HelloInterval", "HELLO messages emission interval.",
                    TimeValue (Seconds (2)),
-                   MakeTimeAccessor (&AgentImpl::m_helloInterval),
+                   MakeTimeAccessor (&RoutingProtocol::m_helloInterval),
                    MakeTimeChecker ())
     .AddAttribute ("TcInterval", "TC messages emission interval.",
                    TimeValue (Seconds (5)),
-                   MakeTimeAccessor (&AgentImpl::m_tcInterval),
+                   MakeTimeAccessor (&RoutingProtocol::m_tcInterval),
                    MakeTimeChecker ())
     .AddAttribute ("MidInterval", "MID messages emission interval.  Normally it is equal to TcInterval.",
                    TimeValue (Seconds (5)),
-                   MakeTimeAccessor (&AgentImpl::m_midInterval),
+                   MakeTimeAccessor (&RoutingProtocol::m_midInterval),
                    MakeTimeChecker ())
     .AddAttribute ("Willingness", "Willingness of a node to carry and forward traffic for other nodes.",
                    EnumValue (OLSR_WILL_DEFAULT),
-                   MakeEnumAccessor (&AgentImpl::m_willingness),
+                   MakeEnumAccessor (&RoutingProtocol::m_willingness),
                    MakeEnumChecker (OLSR_WILL_NEVER, "never",
                                     OLSR_WILL_LOW, "low",
                                     OLSR_WILL_DEFAULT, "default",
                                     OLSR_WILL_HIGH, "high",
                                     OLSR_WILL_ALWAYS, "always"))
     .AddTraceSource ("Rx", "Receive OLSR packet.",
-                     MakeTraceSourceAccessor (&AgentImpl::m_rxPacketTrace))
+                     MakeTraceSourceAccessor (&RoutingProtocol::m_rxPacketTrace))
     .AddTraceSource ("Tx", "Send OLSR packet.",
-                     MakeTraceSourceAccessor (&AgentImpl::m_txPacketTrace))
+                     MakeTraceSourceAccessor (&RoutingProtocol::m_txPacketTrace))
     .AddTraceSource ("RoutingTableChanged", "The OLSR routing table has changed.",
-		     MakeTraceSourceAccessor (&AgentImpl::m_routingTableChanged))
+		     MakeTraceSourceAccessor (&RoutingProtocol::m_routingTableChanged))
     ;
   return tid;
 }
 
 
-AgentImpl::AgentImpl ()
+RoutingProtocol::RoutingProtocol ()
   :
   m_helloTimer (Timer::CANCEL_ON_DESTROY),
   m_tcTimer (Timer::CANCEL_ON_DESTROY),
   m_midTimer (Timer::CANCEL_ON_DESTROY)
 {}
 
-AgentImpl::~AgentImpl ()
+RoutingProtocol::~RoutingProtocol ()
 {}
 
 void
-AgentImpl::SetNode (Ptr<Node> node)
+RoutingProtocol::SetNode (Ptr<Node> node)
 {
-  NS_LOG_DEBUG ("Created olsr::AgentImpl");
-  m_helloTimer.SetFunction (&AgentImpl::HelloTimerExpire, this);
-  m_tcTimer.SetFunction (&AgentImpl::TcTimerExpire, this);
-  m_midTimer.SetFunction (&AgentImpl::MidTimerExpire, this);
-  m_queuedMessagesTimer.SetFunction (&AgentImpl::SendQueuedMessages, this);
+  NS_LOG_DEBUG ("Created olsr::RoutingProtocol");
+  m_helloTimer.SetFunction (&RoutingProtocol::HelloTimerExpire, this);
+  m_tcTimer.SetFunction (&RoutingProtocol::TcTimerExpire, this);
+  m_midTimer.SetFunction (&RoutingProtocol::MidTimerExpire, this);
+  m_queuedMessagesTimer.SetFunction (&RoutingProtocol::SendQueuedMessages, this);
 
   m_packetSequenceNumber = OLSR_MAX_SEQ_NUM;
   m_messageSequenceNumber = OLSR_MAX_SEQ_NUM;
@@ -210,27 +211,21 @@ AgentImpl::SetNode (Ptr<Node> node)
   NS_ASSERT (m_ipv4);
 }
 
-void AgentImpl::DoDispose ()
+void RoutingProtocol::DoDispose ()
 {
   m_ipv4 = 0;
 
   for (std::map< Ptr<Socket>, Ipv4Address >::iterator iter = m_socketAddresses.begin ();
        iter != m_socketAddresses.end (); iter++)
     {
-      iter->first->Dispose ();
+      iter->first->Close ();
     }
   m_socketAddresses.clear ();
 
-  if (m_routingTable)
-    {
-      m_routingTable->Dispose ();
-      m_routingTable = 0;
-    }
-
-  Object::DoDispose ();
+  Ipv4RoutingProtocol::DoDispose ();
 }
 
-void AgentImpl::Start ()
+void RoutingProtocol::Start ()
 {
   if (m_mainAddress == Ipv4Address ())
     {
@@ -250,13 +245,6 @@ void AgentImpl::Start ()
 
   NS_LOG_DEBUG ("Starting OLSR on node " << m_mainAddress);
 
-  m_routingTable = CreateObject<RoutingTable> ();
-  m_routingTable->SetIpv4 (m_ipv4);
-  m_routingTable->SetMainAddress (m_mainAddress);
-  // Add OLSR as routing protocol, with slightly higher priority than
-  // static routing.
-  m_ipv4->AddRoutingProtocol (m_routingTable, 10);
-  
   Ipv4Address loopback ("127.0.0.1");
   for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
     {
@@ -279,7 +267,7 @@ void AgentImpl::Start ()
       // Create a socket to listen only on this interface
       Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (), 
         UdpSocketFactory::GetTypeId()); 
-      socket->SetRecvCallback (MakeCallback (&AgentImpl::RecvOlsr,  this));
+      socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvOlsr,  this));
       if (socket->Bind (InetSocketAddress (addr, OLSR_PORT_NUMBER)))
         {
           NS_FATAL_ERROR ("Failed to bind() OLSR receive socket");
@@ -295,7 +283,7 @@ void AgentImpl::Start ()
   NS_LOG_DEBUG ("OLSR on node " << m_mainAddress << " started");
 }
 
-void AgentImpl::SetMainInterface (uint32_t interface)
+void RoutingProtocol::SetMainInterface (uint32_t interface)
 {
   m_mainAddress = m_ipv4->GetAddress (interface);
 }
@@ -304,7 +292,7 @@ void AgentImpl::SetMainInterface (uint32_t interface)
 //
 // \brief Processes an incoming %OLSR packet following RFC 3626 specification.
 void
-AgentImpl::RecvOlsr (Ptr<Socket> socket)
+RoutingProtocol::RecvOlsr (Ptr<Socket> socket)
 {
   Ptr<Packet> receivedPacket;
   Address sourceAddress;
@@ -453,7 +441,7 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket)
 /// \return the degree of the node.
 ///
 int
-AgentImpl::Degree (NeighborTuple const &tuple)
+RoutingProtocol::Degree (NeighborTuple const &tuple)
 {
   int degree = 0;
   for (TwoHopNeighborSet::const_iterator it = m_state.GetTwoHopNeighbors ().begin ();
@@ -475,7 +463,7 @@ AgentImpl::Degree (NeighborTuple const &tuple)
 /// \brief Computates MPR set of a node following RFC 3626 hints.
 ///
 void
-AgentImpl::MprComputation()
+RoutingProtocol::MprComputation()
 {
   NS_LOG_FUNCTION (this);
   
@@ -744,7 +732,7 @@ AgentImpl::MprComputation()
 /// \return the corresponding main address.
 ///
 Ipv4Address
-AgentImpl::GetMainAddress (Ipv4Address iface_addr) const
+RoutingProtocol::GetMainAddress (Ipv4Address iface_addr) const
 {
   const IfaceAssocTuple *tuple =
     m_state.FindIfaceAssocTuple (iface_addr);
@@ -759,13 +747,13 @@ AgentImpl::GetMainAddress (Ipv4Address iface_addr) const
 /// \brief Creates the routing table of the node following RFC 3626 hints.
 ///
 void
-AgentImpl::RoutingTableComputation ()
+RoutingProtocol::RoutingTableComputation ()
 {
   NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " s: Node " << m_mainAddress
                 << ": RoutingTableComputation begin...");
 
   // 1. All the entries from the routing table are removed.
-  m_routingTable->Clear ();
+  Clear ();
 	
   // 2. The new routing entries are added starting with the
   // symmetric neighbors (h=1) as the destination nodes.
@@ -792,10 +780,10 @@ AgentImpl::RoutingTableComputation ()
                   NS_LOG_LOGIC ("Link tuple matches neighbor " << nb_tuple.neighborMainAddr
                                 << " => adding routing table entry to neighbor");
                   lt = &link_tuple;
-                  m_routingTable->AddEntry (link_tuple.neighborIfaceAddr,
-                                            link_tuple.neighborIfaceAddr,
-                                            link_tuple.localIfaceAddr,
-                                            1);
+                  AddEntry (link_tuple.neighborIfaceAddr,
+                            link_tuple.neighborIfaceAddr,
+                            link_tuple.localIfaceAddr,
+                            1);
                   if (link_tuple.neighborIfaceAddr == nb_tuple.neighborMainAddr)
                     {
                       nb_main_addr = true;
@@ -823,10 +811,10 @@ AgentImpl::RoutingTableComputation ()
             {
               NS_LOG_LOGIC ("no R_dest_addr is equal to the main address of the neighbor "
                             "=> adding additional routing entry");
-              m_routingTable->AddEntry(nb_tuple.neighborMainAddr,
-                                       lt->neighborIfaceAddr,
-                                       lt->localIfaceAddr,
-                                       1);
+              AddEntry(nb_tuple.neighborMainAddr,
+                       lt->neighborIfaceAddr,
+                       lt->localIfaceAddr,
+                       1);
             }
         }
     }
@@ -892,11 +880,11 @@ AgentImpl::RoutingTableComputation ()
       //                                   R_dest_addr == N_neighbor_main_addr
       //                                                  of the 2-hop tuple;
       RoutingTableEntry entry;
-      bool foundEntry = m_routingTable->Lookup (nb2hop_tuple.neighborMainAddr, entry);
+      bool foundEntry = Lookup (nb2hop_tuple.neighborMainAddr, entry);
       if (foundEntry)
         {
           NS_LOG_LOGIC ("Adding routing entry for two-hop neighbor.");
-          m_routingTable->AddEntry (nb2hop_tuple.twoHopNeighborAddr,
+          AddEntry (nb2hop_tuple.twoHopNeighborAddr,
                                     entry.nextAddr,
                                     entry.interface,
                                     2);
@@ -927,8 +915,8 @@ AgentImpl::RoutingTableComputation ()
           NS_LOG_LOGIC ("Looking at topology tuple: " << topology_tuple);
 
           RoutingTableEntry destAddrEntry, lastAddrEntry;
-          bool have_destAddrEntry = m_routingTable->Lookup (topology_tuple.destAddr, destAddrEntry);
-          bool have_lastAddrEntry = m_routingTable->Lookup (topology_tuple.lastAddr, lastAddrEntry);
+          bool have_destAddrEntry = Lookup (topology_tuple.destAddr, destAddrEntry);
+          bool have_lastAddrEntry = Lookup (topology_tuple.lastAddr, lastAddrEntry);
           if (!have_destAddrEntry && have_lastAddrEntry && lastAddrEntry.distance == h)
             {
               NS_LOG_LOGIC ("Adding routing table entry based on the topology tuple.");
@@ -942,10 +930,10 @@ AgentImpl::RoutingTableComputation ()
               //                     R_iface_addr = R_iface_addr of the recorded
               //                                    route entry where:
               //                                       R_dest_addr == T_last_addr.
-              m_routingTable->AddEntry (topology_tuple.destAddr,
-                                        lastAddrEntry.nextAddr,
-                                        lastAddrEntry.interface,
-                                        h + 1);
+              AddEntry (topology_tuple.destAddr,
+                        lastAddrEntry.nextAddr,
+                        lastAddrEntry.interface,
+                        h + 1);
               added = true;
             }
           else
@@ -973,8 +961,8 @@ AgentImpl::RoutingTableComputation ()
     {
       IfaceAssocTuple const &tuple = *it;
       RoutingTableEntry entry1, entry2;
-      bool have_entry1 = m_routingTable->Lookup (tuple.mainAddr, entry1);
-      bool have_entry2 = m_routingTable->Lookup (tuple.ifaceAddr, entry2);
+      bool have_entry1 = Lookup (tuple.mainAddr, entry1);
+      bool have_entry2 = Lookup (tuple.ifaceAddr, entry2);
       if (have_entry1 && !have_entry2)
         {
           // then a route entry is created in the routing table with:
@@ -983,15 +971,15 @@ AgentImpl::RoutingTableComputation ()
           //       R_next_addr  =  R_next_addr  (of the recorded route entry)
           //       R_dist       =  R_dist       (of the recorded route entry)
           //       R_iface_addr =  R_iface_addr (of the recorded route entry).
-          m_routingTable->AddEntry (tuple.ifaceAddr,
-                                    entry1.nextAddr,
-                                    entry1.interface,
-                                    entry1.distance);
+          AddEntry (tuple.ifaceAddr,
+                    entry1.nextAddr,
+                    entry1.interface,
+                    entry1.distance);
         }
     }
 
   NS_LOG_DEBUG ("Node " << m_mainAddress << ": RoutingTableComputation end.");
-  m_routingTableChanged (m_routingTable->GetSize ());
+  m_routingTableChanged (GetSize ());
 }
 
 
@@ -1006,7 +994,7 @@ AgentImpl::RoutingTableComputation ()
 /// \param sender_iface the address of the interface where the message was sent from.
 ///
 void
-AgentImpl::ProcessHello (const olsr::MessageHeader &msg,
+RoutingProtocol::ProcessHello (const olsr::MessageHeader &msg,
                          const Ipv4Address &receiverIface,
                          const Ipv4Address &senderIface)
 {
@@ -1067,7 +1055,7 @@ AgentImpl::ProcessHello (const olsr::MessageHeader &msg,
 /// \param sender_iface the address of the interface where the message was sent from.
 ///
 void
-AgentImpl::ProcessTc (const olsr::MessageHeader &msg,
+RoutingProtocol::ProcessTc (const olsr::MessageHeader &msg,
                       const Ipv4Address &senderIface)
 {
   const olsr::MessageHeader::Tc &tc = msg.GetTc ();
@@ -1130,7 +1118,7 @@ AgentImpl::ProcessTc (const olsr::MessageHeader &msg,
 
           // Schedules topology tuple deletion
           m_events.Track (Simulator::Schedule (DELAY (topologyTuple.expirationTime),
-                                               &AgentImpl::TopologyTupleTimerExpire,
+                                               &RoutingProtocol::TopologyTupleTimerExpire,
                                                this,
                                                topologyTuple.destAddr,
                                                topologyTuple.lastAddr));
@@ -1162,7 +1150,7 @@ AgentImpl::ProcessTc (const olsr::MessageHeader &msg,
 /// \param sender_iface the address of the interface where the message was sent from.
 ///
 void
-AgentImpl::ProcessMid (const olsr::MessageHeader &msg,
+RoutingProtocol::ProcessMid (const olsr::MessageHeader &msg,
                        const Ipv4Address &senderIface)
 {
   const olsr::MessageHeader::Mid &mid = msg.GetMid ();
@@ -1208,7 +1196,7 @@ AgentImpl::ProcessMid (const olsr::MessageHeader &msg,
           NS_LOG_LOGIC ("New IfaceAssoc added: " << tuple);
           // Schedules iface association tuple deletion
           Simulator::Schedule (DELAY (tuple.time),
-                               &AgentImpl::IfaceAssocTupleTimerExpire, this, tuple.ifaceAddr);
+                               &RoutingProtocol::IfaceAssocTupleTimerExpire, this, tuple.ifaceAddr);
         }
     }
 
@@ -1244,7 +1232,7 @@ AgentImpl::ProcessMid (const olsr::MessageHeader &msg,
 /// \param local_iface the address of the interface where the message was received from.
 ///
 void
-AgentImpl::ForwardDefault (olsr::MessageHeader olsrMessage,
+RoutingProtocol::ForwardDefault (olsr::MessageHeader olsrMessage,
                                DuplicateTuple *duplicated,
                                const Ipv4Address &localIface,
                                const Ipv4Address &senderAddress)
@@ -1304,7 +1292,7 @@ AgentImpl::ForwardDefault (olsr::MessageHeader olsrMessage,
       AddDuplicateTuple (newDup);
       // Schedule dup tuple deletion
       Simulator::Schedule (OLSR_DUP_HOLD_TIME,
-                           &AgentImpl::DupTupleTimerExpire, this,
+                           &RoutingProtocol::DupTupleTimerExpire, this,
                            newDup.address, newDup.sequenceNumber);
     }
 }
@@ -1319,7 +1307,7 @@ AgentImpl::ForwardDefault (olsr::MessageHeader olsrMessage,
 /// \param delay maximum delay the %OLSR message is going to be buffered.
 ///
 void
-AgentImpl::QueueMessage (const olsr::MessageHeader &message, Time delay)
+RoutingProtocol::QueueMessage (const olsr::MessageHeader &message, Time delay)
 {
   m_queuedMessages.push_back (message);
   if (not m_queuedMessagesTimer.IsRunning ())
@@ -1330,7 +1318,7 @@ AgentImpl::QueueMessage (const olsr::MessageHeader &message, Time delay)
 }
 
 void
-AgentImpl::SendPacket (Ptr<Packet> packet, 
+RoutingProtocol::SendPacket (Ptr<Packet> packet, 
                        const MessageList &containedMessages)
 {
   NS_LOG_DEBUG ("OLSR node " << m_mainAddress << " sending a OLSR packet");
@@ -1356,7 +1344,7 @@ AgentImpl::SendPacket (Ptr<Packet> packet,
 /// dictated by OLSR_MAX_MSGS constant.
 ///
 void
-AgentImpl::SendQueuedMessages ()
+RoutingProtocol::SendQueuedMessages ()
 {
   Ptr<Packet> packet = Create<Packet> ();
   int numMessages = 0;
@@ -1395,7 +1383,7 @@ AgentImpl::SendQueuedMessages ()
 /// \brief Creates a new %OLSR HELLO message which is buffered for being sent later on.
 ///
 void
-AgentImpl::SendHello ()
+RoutingProtocol::SendHello ()
 {
   NS_LOG_FUNCTION (this);
   
@@ -1506,7 +1494,7 @@ AgentImpl::SendHello ()
 /// \brief Creates a new %OLSR TC message which is buffered for being sent later on.
 ///
 void
-AgentImpl::SendTc ()
+RoutingProtocol::SendTc ()
 {
   NS_LOG_FUNCTION (this);
   
@@ -1532,7 +1520,7 @@ AgentImpl::SendTc ()
 /// \brief Creates a new %OLSR MID message which is buffered for being sent later on.
 ///
 void
-AgentImpl::SendMid ()
+RoutingProtocol::SendMid ()
 {
   olsr::MessageHeader msg;
   olsr::MessageHeader::Mid &mid = msg.GetMid ();
@@ -1576,7 +1564,7 @@ AgentImpl::SendMid ()
 /// \brief	Updates Link Set according to a new received HELLO message (following RFC 3626
 ///		specification). Neighbor Set is also updated if needed.
 void
-AgentImpl::LinkSensing (const olsr::MessageHeader &msg,
+RoutingProtocol::LinkSensing (const olsr::MessageHeader &msg,
                         const olsr::MessageHeader::Hello &hello,
                         const Ipv4Address &receiverIface,
                         const Ipv4Address &senderIface)
@@ -1700,7 +1688,7 @@ AgentImpl::LinkSensing (const olsr::MessageHeader &msg,
     {
       LinkTupleAdded (*link_tuple, hello.willingness);
       m_events.Track (Simulator::Schedule (DELAY (std::min (link_tuple->time, link_tuple->symTime)),
-                                           &AgentImpl::LinkTupleTimerExpire, this,
+                                           &RoutingProtocol::LinkTupleTimerExpire, this,
                                            link_tuple->neighborIfaceAddr));
     }
   NS_LOG_DEBUG ("@" << now.GetSeconds () << ": Olsr node " << m_mainAddress
@@ -1711,7 +1699,7 @@ AgentImpl::LinkSensing (const olsr::MessageHeader &msg,
 /// \brief	Updates the Neighbor Set according to the information contained in a new received
 ///		HELLO message (following RFC 3626).
 void
-AgentImpl::PopulateNeighborSet (const olsr::MessageHeader &msg,
+RoutingProtocol::PopulateNeighborSet (const olsr::MessageHeader &msg,
                                 const olsr::MessageHeader::Hello &hello)
 {
   NeighborTuple *nb_tuple = m_state.FindNeighborTuple (msg.GetOriginatorAddress ());
@@ -1726,7 +1714,7 @@ AgentImpl::PopulateNeighborSet (const olsr::MessageHeader &msg,
 /// \brief	Updates the 2-hop Neighbor Set according to the information contained in a new
 ///		received HELLO message (following RFC 3626).
 void
-AgentImpl::PopulateTwoHopNeighborSet (const olsr::MessageHeader &msg,
+RoutingProtocol::PopulateTwoHopNeighborSet (const olsr::MessageHeader &msg,
                                       const olsr::MessageHeader::Hello &hello)
 {
   Time now = Simulator::Now ();
@@ -1801,7 +1789,7 @@ AgentImpl::PopulateTwoHopNeighborSet (const olsr::MessageHeader &msg,
                       AddTwoHopNeighborTuple (new_nb2hop_tuple);
                       // Schedules nb2hop tuple deletion
                       m_events.Track (Simulator::Schedule (DELAY (new_nb2hop_tuple.expirationTime),
-                                                           &AgentImpl::Nb2hopTupleTimerExpire, this,
+                                                           &RoutingProtocol::Nb2hopTupleTimerExpire, this,
                                                            new_nb2hop_tuple.neighborMainAddr,
                                                            new_nb2hop_tuple.twoHopNeighborAddr));
                     }
@@ -1838,7 +1826,7 @@ AgentImpl::PopulateTwoHopNeighborSet (const olsr::MessageHeader &msg,
 /// \brief	Updates the MPR Selector Set according to the information contained in a new
 ///		received HELLO message (following RFC 3626).
 void
-AgentImpl::PopulateMprSelectorSet (const olsr::MessageHeader &msg,
+RoutingProtocol::PopulateMprSelectorSet (const olsr::MessageHeader &msg,
                                        const olsr::MessageHeader::Hello &hello)
 {
   NS_LOG_FUNCTION (this);
@@ -1878,7 +1866,7 @@ AgentImpl::PopulateMprSelectorSet (const olsr::MessageHeader &msg,
                       // Schedules mpr selector tuple deletion
                       m_events.Track (Simulator::Schedule
                                       (DELAY (mprsel_tuple.expirationTime),
-                                       &AgentImpl::MprSelTupleTimerExpire, this,
+                                       &RoutingProtocol::MprSelTupleTimerExpire, this,
                                        mprsel_tuple.mainAddr));
                     }
                   else
@@ -1938,7 +1926,7 @@ OLSR::mac_failed(Ptr<Packet> p) {
 /// \param tuple link tuple with the information of the link to the neighbor which has been lost.
 ///
 void
-AgentImpl::NeighborLoss (const LinkTuple &tuple)
+RoutingProtocol::NeighborLoss (const LinkTuple &tuple)
 {
   NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
                 << "s: OLSR Node " << m_mainAddress
@@ -1957,7 +1945,7 @@ AgentImpl::NeighborLoss (const LinkTuple &tuple)
 /// \param tuple the duplicate tuple to be added.
 ///
 void
-AgentImpl::AddDuplicateTuple (const DuplicateTuple &tuple)
+RoutingProtocol::AddDuplicateTuple (const DuplicateTuple &tuple)
 {
 	/*debug("%f: Node %d adds dup tuple: addr = %d seq_num = %d\n",
 		Simulator::Now (),
@@ -1973,7 +1961,7 @@ AgentImpl::AddDuplicateTuple (const DuplicateTuple &tuple)
 /// \param tuple the duplicate tuple to be removed.
 ///
 void
-AgentImpl::RemoveDuplicateTuple (const DuplicateTuple &tuple)
+RoutingProtocol::RemoveDuplicateTuple (const DuplicateTuple &tuple)
 {
   /*debug("%f: Node %d removes dup tuple: addr = %d seq_num = %d\n",
     Simulator::Now (),
@@ -1984,7 +1972,7 @@ AgentImpl::RemoveDuplicateTuple (const DuplicateTuple &tuple)
 }
 
 void
-AgentImpl::LinkTupleAdded (const LinkTuple &tuple, uint8_t willingness)
+RoutingProtocol::LinkTupleAdded (const LinkTuple &tuple, uint8_t willingness)
 {
   // Creates associated neighbor tuple
   NeighborTuple nb_tuple;
@@ -2009,7 +1997,7 @@ AgentImpl::LinkTupleAdded (const LinkTuple &tuple, uint8_t willingness)
 /// \param tuple the link tuple to be removed.
 ///
 void
-AgentImpl::RemoveLinkTuple (const LinkTuple &tuple)
+RoutingProtocol::RemoveLinkTuple (const LinkTuple &tuple)
 {
   NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
                 << "s: OLSR Node " << m_mainAddress
@@ -2027,7 +2015,7 @@ AgentImpl::RemoveLinkTuple (const LinkTuple &tuple)
 /// \param tuple the link tuple which has been updated.
 ///
 void
-AgentImpl::LinkTupleUpdated (const LinkTuple &tuple, uint8_t willingness)
+RoutingProtocol::LinkTupleUpdated (const LinkTuple &tuple, uint8_t willingness)
 {
   // Each time a link tuple changes, the associated neighbor tuple must be recomputed
 
@@ -2074,7 +2062,7 @@ AgentImpl::LinkTupleUpdated (const LinkTuple &tuple, uint8_t willingness)
 /// \param tuple the neighbor tuple to be added.
 ///
 void
-AgentImpl::AddNeighborTuple (const NeighborTuple &tuple)
+RoutingProtocol::AddNeighborTuple (const NeighborTuple &tuple)
 {
 //   debug("%f: Node %d adds neighbor tuple: nb_addr = %d status = %s\n",
 //         Simulator::Now (),
@@ -2092,7 +2080,7 @@ AgentImpl::AddNeighborTuple (const NeighborTuple &tuple)
 /// \param tuple the neighbor tuple to be removed.
 ///
 void
-AgentImpl::RemoveNeighborTuple (const NeighborTuple &tuple)
+RoutingProtocol::RemoveNeighborTuple (const NeighborTuple &tuple)
 {
 //   debug("%f: Node %d removes neighbor tuple: nb_addr = %d status = %s\n",
 //         Simulator::Now (),
@@ -2110,7 +2098,7 @@ AgentImpl::RemoveNeighborTuple (const NeighborTuple &tuple)
 /// \param tuple the 2-hop neighbor tuple to be added.
 ///
 void
-AgentImpl::AddTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
+RoutingProtocol::AddTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
 {
 //   debug("%f: Node %d adds 2-hop neighbor tuple: nb_addr = %d nb2hop_addr = %d\n",
 //         Simulator::Now (),
@@ -2127,7 +2115,7 @@ AgentImpl::AddTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
 /// \param tuple the 2-hop neighbor tuple to be removed.
 ///
 void
-AgentImpl::RemoveTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
+RoutingProtocol::RemoveTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
 {
 //   debug("%f: Node %d removes 2-hop neighbor tuple: nb_addr = %d nb2hop_addr = %d\n",
 //         Simulator::Now (),
@@ -2139,7 +2127,7 @@ AgentImpl::RemoveTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
 }
 
 void
-AgentImpl::IncrementAnsn ()
+RoutingProtocol::IncrementAnsn ()
 {
   m_ansn = (m_ansn + 1) % (OLSR_MAX_SEQ_NUM + 1);
 }
@@ -2152,7 +2140,7 @@ AgentImpl::IncrementAnsn ()
 /// \param tuple the MPR selector tuple to be added.
 ///
 void
-AgentImpl::AddMprSelectorTuple (const MprSelectorTuple  &tuple)
+RoutingProtocol::AddMprSelectorTuple (const MprSelectorTuple  &tuple)
 {
 //   debug("%f: Node %d adds MPR selector tuple: nb_addr = %d\n",
 //         Simulator::Now (),
@@ -2171,7 +2159,7 @@ AgentImpl::AddMprSelectorTuple (const MprSelectorTuple  &tuple)
 /// \param tuple the MPR selector tuple to be removed.
 ///
 void
-AgentImpl::RemoveMprSelectorTuple (const MprSelectorTuple &tuple)
+RoutingProtocol::RemoveMprSelectorTuple (const MprSelectorTuple &tuple)
 {
 //   debug("%f: Node %d removes MPR selector tuple: nb_addr = %d\n",
 //         Simulator::Now (),
@@ -2188,7 +2176,7 @@ AgentImpl::RemoveMprSelectorTuple (const MprSelectorTuple &tuple)
 /// \param tuple the topology tuple to be added.
 ///
 void
-AgentImpl::AddTopologyTuple (const TopologyTuple &tuple)
+RoutingProtocol::AddTopologyTuple (const TopologyTuple &tuple)
 {
 //   debug("%f: Node %d adds topology tuple: dest_addr = %d last_addr = %d seq = %d\n",
 //         Simulator::Now (),
@@ -2206,7 +2194,7 @@ AgentImpl::AddTopologyTuple (const TopologyTuple &tuple)
 /// \param tuple the topology tuple to be removed.
 ///
 void
-AgentImpl::RemoveTopologyTuple (const TopologyTuple &tuple)
+RoutingProtocol::RemoveTopologyTuple (const TopologyTuple &tuple)
 {
 //   debug("%f: Node %d removes topology tuple: dest_addr = %d last_addr = %d seq = %d\n",
 //         Simulator::Now (),
@@ -2224,7 +2212,7 @@ AgentImpl::RemoveTopologyTuple (const TopologyTuple &tuple)
 /// \param tuple the interface association tuple to be added.
 ///
 void
-AgentImpl::AddIfaceAssocTuple (const IfaceAssocTuple &tuple)
+RoutingProtocol::AddIfaceAssocTuple (const IfaceAssocTuple &tuple)
 {
 //   debug("%f: Node %d adds iface association tuple: main_addr = %d iface_addr = %d\n",
 //         Simulator::Now (),
@@ -2241,7 +2229,7 @@ AgentImpl::AddIfaceAssocTuple (const IfaceAssocTuple &tuple)
 /// \param tuple the interface association tuple to be removed.
 ///
 void
-AgentImpl::RemoveIfaceAssocTuple (const IfaceAssocTuple &tuple)
+RoutingProtocol::RemoveIfaceAssocTuple (const IfaceAssocTuple &tuple)
 {
 //   debug("%f: Node %d removes iface association tuple: main_addr = %d iface_addr = %d\n",
 //         Simulator::Now (),
@@ -2253,14 +2241,14 @@ AgentImpl::RemoveIfaceAssocTuple (const IfaceAssocTuple &tuple)
 }
 
 
-uint16_t AgentImpl::GetPacketSequenceNumber ()
+uint16_t RoutingProtocol::GetPacketSequenceNumber ()
 {
   m_packetSequenceNumber = (m_packetSequenceNumber + 1) % (OLSR_MAX_SEQ_NUM + 1);
   return m_packetSequenceNumber;
 }
 
 /// Increments message sequence number and returns the new value.
-uint16_t AgentImpl::GetMessageSequenceNumber ()
+uint16_t RoutingProtocol::GetMessageSequenceNumber ()
 {
   m_messageSequenceNumber = (m_messageSequenceNumber + 1) % (OLSR_MAX_SEQ_NUM + 1);
   return m_messageSequenceNumber;
@@ -2272,7 +2260,7 @@ uint16_t AgentImpl::GetMessageSequenceNumber ()
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::HelloTimerExpire ()
+RoutingProtocol::HelloTimerExpire ()
 {
   SendHello ();
   m_helloTimer.Schedule (m_helloInterval);
@@ -2283,7 +2271,7 @@ AgentImpl::HelloTimerExpire ()
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::TcTimerExpire ()
+RoutingProtocol::TcTimerExpire ()
 {
   if (m_state.GetMprSelectors ().size () > 0)
     {
@@ -2302,7 +2290,7 @@ AgentImpl::TcTimerExpire ()
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::MidTimerExpire ()
+RoutingProtocol::MidTimerExpire ()
 {
   SendMid ();
   m_midTimer.Schedule (m_midInterval);
@@ -2316,7 +2304,7 @@ AgentImpl::MidTimerExpire ()
 /// \param tuple The tuple which has expired.
 ///
 void
-AgentImpl::DupTupleTimerExpire (Ipv4Address address, uint16_t sequenceNumber)
+RoutingProtocol::DupTupleTimerExpire (Ipv4Address address, uint16_t sequenceNumber)
 {
   DuplicateTuple *tuple =
     m_state.FindDuplicateTuple (address, sequenceNumber);
@@ -2331,7 +2319,7 @@ AgentImpl::DupTupleTimerExpire (Ipv4Address address, uint16_t sequenceNumber)
   else
     {
       m_events.Track (Simulator::Schedule (DELAY (tuple->expirationTime),
-                                           &AgentImpl::DupTupleTimerExpire, this,
+                                           &RoutingProtocol::DupTupleTimerExpire, this,
                                            address, sequenceNumber));
     }
 }
@@ -2348,7 +2336,7 @@ AgentImpl::DupTupleTimerExpire (Ipv4Address address, uint16_t sequenceNumber)
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::LinkTupleTimerExpire (Ipv4Address neighborIfaceAddr)
+RoutingProtocol::LinkTupleTimerExpire (Ipv4Address neighborIfaceAddr)
 {
   Time now = Simulator::Now ();
 
@@ -2370,13 +2358,13 @@ AgentImpl::LinkTupleTimerExpire (Ipv4Address neighborIfaceAddr)
         NeighborLoss (*tuple);
 
       m_events.Track (Simulator::Schedule (DELAY (tuple->time),
-                                           &AgentImpl::LinkTupleTimerExpire, this,
+                                           &RoutingProtocol::LinkTupleTimerExpire, this,
                                            neighborIfaceAddr));
     }
   else
     {
       m_events.Track (Simulator::Schedule (DELAY (std::min (tuple->time, tuple->symTime)),
-                                           &AgentImpl::LinkTupleTimerExpire, this,
+                                           &RoutingProtocol::LinkTupleTimerExpire, this,
                                            neighborIfaceAddr));
     }
 }
@@ -2389,7 +2377,7 @@ AgentImpl::LinkTupleTimerExpire (Ipv4Address neighborIfaceAddr)
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::Nb2hopTupleTimerExpire (Ipv4Address neighborMainAddr, Ipv4Address twoHopNeighborAddr)
+RoutingProtocol::Nb2hopTupleTimerExpire (Ipv4Address neighborMainAddr, Ipv4Address twoHopNeighborAddr)
 {
   TwoHopNeighborTuple *tuple;
   tuple = m_state.FindTwoHopNeighborTuple (neighborMainAddr, twoHopNeighborAddr);
@@ -2404,7 +2392,7 @@ AgentImpl::Nb2hopTupleTimerExpire (Ipv4Address neighborMainAddr, Ipv4Address two
   else
     {
       m_events.Track (Simulator::Schedule (DELAY (tuple->expirationTime),
-                                           &AgentImpl::Nb2hopTupleTimerExpire,
+                                           &RoutingProtocol::Nb2hopTupleTimerExpire,
                                            this, neighborMainAddr, twoHopNeighborAddr));
     }
 }
@@ -2417,7 +2405,7 @@ AgentImpl::Nb2hopTupleTimerExpire (Ipv4Address neighborMainAddr, Ipv4Address two
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::MprSelTupleTimerExpire (Ipv4Address mainAddr)
+RoutingProtocol::MprSelTupleTimerExpire (Ipv4Address mainAddr)
 {
   MprSelectorTuple *tuple = m_state.FindMprSelectorTuple (mainAddr);
   if (tuple == NULL)
@@ -2431,7 +2419,7 @@ AgentImpl::MprSelTupleTimerExpire (Ipv4Address mainAddr)
   else
     {
       m_events.Track (Simulator::Schedule (DELAY (tuple->expirationTime),
-                                           &AgentImpl::MprSelTupleTimerExpire,
+                                           &RoutingProtocol::MprSelTupleTimerExpire,
                                            this, mainAddr));
     }
 }
@@ -2444,7 +2432,7 @@ AgentImpl::MprSelTupleTimerExpire (Ipv4Address mainAddr)
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::TopologyTupleTimerExpire (Ipv4Address destAddr, Ipv4Address lastAddr)
+RoutingProtocol::TopologyTupleTimerExpire (Ipv4Address destAddr, Ipv4Address lastAddr)
 {
   TopologyTuple *tuple = m_state.FindTopologyTuple (destAddr, lastAddr);
   if (tuple == NULL)
@@ -2458,7 +2446,7 @@ AgentImpl::TopologyTupleTimerExpire (Ipv4Address destAddr, Ipv4Address lastAddr)
   else
     {
       m_events.Track (Simulator::Schedule (DELAY (tuple->expirationTime),
-                                           &AgentImpl::TopologyTupleTimerExpire,
+                                           &RoutingProtocol::TopologyTupleTimerExpire,
                                            this, tuple->destAddr, tuple->lastAddr));
     }
 }
@@ -2469,7 +2457,7 @@ AgentImpl::TopologyTupleTimerExpire (Ipv4Address destAddr, Ipv4Address lastAddr)
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::IfaceAssocTupleTimerExpire (Ipv4Address ifaceAddr)
+RoutingProtocol::IfaceAssocTupleTimerExpire (Ipv4Address ifaceAddr)
 {
   IfaceAssocTuple *tuple = m_state.FindIfaceAssocTuple (ifaceAddr);
   if (tuple == NULL)
@@ -2483,16 +2471,210 @@ AgentImpl::IfaceAssocTupleTimerExpire (Ipv4Address ifaceAddr)
   else
     {
       m_events.Track (Simulator::Schedule (DELAY (tuple->time),
-                                           &AgentImpl::IfaceAssocTupleTimerExpire,
+                                           &RoutingProtocol::IfaceAssocTupleTimerExpire,
                                            this, ifaceAddr));
     }
 }
 
-Ptr<const olsr::RoutingTable>
-AgentImpl::GetRoutingTable () const
+///
+/// \brief Clears the routing table and frees the memory assigned to each one of its entries.
+///
+void
+RoutingProtocol::Clear ()
 {
-  return m_routingTable;
+  NS_LOG_FUNCTION_NOARGS ();
+  m_table.clear ();
 }
+
+///
+/// \brief Deletes the entry whose destination address is given.
+/// \param dest	address of the destination node.
+///
+void
+RoutingProtocol::RemoveEntry (Ipv4Address const &dest)
+{
+  m_table.erase (dest);
+}
+
+///
+/// \brief Looks up an entry for the specified destination address.
+/// \param dest	destination address.
+/// \param outEntry output parameter to hold the routing entry result, if fuond
+/// \return	true if found, false if not found
+///
+bool
+RoutingProtocol::Lookup (Ipv4Address const &dest,
+                      RoutingTableEntry &outEntry) const
+{
+  // Get the iterator at "dest" position
+  std::map<Ipv4Address, RoutingTableEntry>::const_iterator it =
+    m_table.find (dest);
+  // If there is no route to "dest", return NULL
+  if (it == m_table.end ())
+    return false;
+  outEntry = it->second;
+  return true;
+}
+
+///
+/// \brief	Finds the appropiate entry which must be used in order to forward
+///		a data packet to a next hop (given a destination).
+///
+/// Imagine a routing table like this: [A,B] [B,C] [C,C]; being each pair of the
+/// form [dest addr,next-hop addr]. In this case, if this function is invoked with
+/// [A,B] then pair [C,C] is returned because C is the next hop that must be used
+/// to forward a data packet destined to A. That is, C is a neighbor of this node,
+/// but B isn't. This function finds the appropiate neighbor for forwarding a packet.
+///
+/// \param entry	the routing table entry which indicates the destination node
+///			we are interested in.
+/// \return		the appropiate routing table entry which indicates the next
+///			hop which must be used for forwarding a data packet, or NULL
+///			if there is no such entry.
+///
+bool
+RoutingProtocol::FindSendEntry (RoutingTableEntry const &entry,
+                             RoutingTableEntry &outEntry) const
+{
+  outEntry = entry;
+  while (outEntry.destAddr != outEntry.nextAddr)
+    {
+      if (not Lookup(outEntry.nextAddr, outEntry))
+        return false;
+    }
+  return true;
+}
+
+
+bool
+RoutingProtocol::RequestRoute (uint32_t ifIndex,
+                            const Ipv4Header &ipHeader,
+                            Ptr<Packet> packet,
+                            RouteReplyCallback routeReply)
+{
+  RoutingTableEntry entry1, entry2;
+  if (Lookup (ipHeader.GetDestination (), entry1))
+    {
+      bool foundSendEntry = FindSendEntry (entry1, entry2);
+      if (!foundSendEntry)
+        NS_FATAL_ERROR ("FindSendEntry failure");
+
+      Ipv4Route route = Ipv4Route::CreateHostRouteTo
+        (ipHeader.GetDestination (), entry2.nextAddr, entry2.interface);
+
+      NS_LOG_DEBUG ("Olsr node " << m_mainAddress
+                    << ": RouteRequest for dest=" << ipHeader.GetDestination ()
+                    << " --> nestHop=" << entry2.nextAddr
+                    << " interface=" << entry2.interface);
+      
+      routeReply (true, route, packet, ipHeader);
+      return true;
+    }
+  else
+    {
+#ifdef NS3_LOG_ENABLE
+      NS_LOG_DEBUG ("Olsr node " << m_mainAddress
+                    << ": RouteRequest for dest=" << ipHeader.GetDestination ()
+                    << " --> NOT FOUND; ** Dumping routing table...");
+      for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();
+           iter != m_table.end (); iter++)
+        {
+          NS_LOG_DEBUG ("dest=" << iter->first << " --> next=" << iter->second.nextAddr
+                        << " via interface " << iter->second.interface);
+        }
+
+      NS_LOG_DEBUG ("** Routing table dump end.");
+#endif
+      return false;
+    }
+}
+
+bool
+RoutingProtocol::RequestIfIndex (Ipv4Address destination,
+                              uint32_t& ifIndex)
+{
+  RoutingTableEntry entry1, entry2;
+  if (Lookup (destination, entry1))
+    {
+      bool foundSendEntry = FindSendEntry (entry1, entry2);
+      if (!foundSendEntry)
+        NS_FATAL_ERROR ("FindSendEntry failure");
+      ifIndex = entry2.interface;
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+
+///
+/// \brief Adds a new entry into the routing table.
+///
+/// If an entry for the given destination existed, it is deleted and freed.
+///
+/// \param dest		address of the destination node.
+/// \param next		address of the next hop node.
+/// \param iface	address of the local interface.
+/// \param dist		distance to the destination node.
+///
+void
+RoutingProtocol::AddEntry (Ipv4Address const &dest,
+                        Ipv4Address const &next,
+                        uint32_t interface,
+                        uint32_t distance)
+{
+  NS_LOG_FUNCTION (this << dest << next << interface << distance << m_mainAddress);
+
+  NS_ASSERT (distance > 0);
+
+  // Creates a new rt entry with specified values
+  RoutingTableEntry &entry = m_table[dest];
+
+  entry.destAddr = dest;
+  entry.nextAddr = next;
+  entry.interface = interface;
+  entry.distance = distance;
+}
+
+void
+RoutingProtocol::AddEntry (Ipv4Address const &dest,
+                        Ipv4Address const &next,
+                        Ipv4Address const &interfaceAddress,
+                        uint32_t distance)
+{
+  NS_LOG_FUNCTION (this << dest << next << interfaceAddress << distance << m_mainAddress);
+
+  NS_ASSERT (distance > 0);
+  NS_ASSERT (m_ipv4);
+
+  RoutingTableEntry entry;
+  for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
+    {
+      if (m_ipv4->GetAddress (i) == interfaceAddress)
+        {
+          AddEntry (dest, next, i, distance);
+          return;
+        }
+    }
+  NS_ASSERT (false); // should not be reached
+  AddEntry (dest, next, 0, distance);
+}
+
+
+std::vector<RoutingTableEntry>
+RoutingProtocol::GetEntries () const
+{
+  std::vector<RoutingTableEntry> retval;
+  for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();
+       iter != m_table.end (); iter++)
+    {
+      retval.push_back (iter->second);
+    }
+  return retval;
+}
+
 
 }} // namespace olsr, ns3
 

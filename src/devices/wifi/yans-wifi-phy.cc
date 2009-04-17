@@ -93,11 +93,17 @@ YansWifiPhy::GetTypeId (void)
                    MakeDoubleAccessor (&YansWifiPhy::SetTxPowerStart, 
                                        &YansWifiPhy::GetTxPowerStart),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("RxNoise",
-                   "Ratio of energy lost by receiver (dB).",
+    .AddAttribute ("RxNoiseFigure",
+                   "Loss (dB) in the Signal-to-Noise-Ratio due to non-idealities in the receiver."
+                   " According to Wikipedia (http://en.wikipedia.org/wiki/Noise_figure), this is "
+                   "\"the difference in decibels (dB) between"
+                   " the noise output of the actual receiver to the noise output of an "
+                   " ideal receiver with the same overall gain and bandwidth when the receivers "
+                   " are connected to sources at the standard noise temperature T0 (usually 290 K)\"."
+                   " For",
                    DoubleValue (7),
-                   MakeDoubleAccessor (&YansWifiPhy::SetRxNoise,
-                                       &YansWifiPhy::GetRxNoise),
+                   MakeDoubleAccessor (&YansWifiPhy::SetRxNoiseFigure,
+                                       &YansWifiPhy::GetRxNoiseFigure),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("Standard", "The standard chosen configures a set of transmission modes"
                    " and some PHY-specific constants.",
@@ -163,10 +169,10 @@ YansWifiPhy::SetStandard (enum WifiPhyStandard standard)
 
 
 void 
-YansWifiPhy::SetRxNoise (double db)
+YansWifiPhy::SetRxNoiseFigure (double noiseFigureDb)
 {
-  NS_LOG_FUNCTION (this << db);
-  m_interference.SetNoiseFloorW (DbToRatio (db));
+  NS_LOG_FUNCTION (this << noiseFigureDb);
+  m_interference.SetNoiseFigure (DbToRatio (noiseFigureDb));
 }
 void 
 YansWifiPhy::SetTxPowerStart (double start)
@@ -227,9 +233,9 @@ YansWifiPhy::SetMobility (Ptr<Object> mobility)
 }
 
 double 
-YansWifiPhy::GetRxNoise (void) const
+YansWifiPhy::GetRxNoiseFigure (void) const
 {
-  return RatioToDb (m_interference.GetNoiseFloorW ());
+  return RatioToDb (m_interference.GetNoiseFigure ());
 }
 double 
 YansWifiPhy::GetTxPowerStart (void) const

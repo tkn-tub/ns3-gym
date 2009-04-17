@@ -11,11 +11,13 @@ import Utils
 import Logs
 import TaskGen
 import Build
+import re
 
 
 # these are set from the main wscript file
 APPNAME=None
 VERSION=None
+bld=None
 
 #
 # The last part of the path name to use to find the regression traces tarball.
@@ -27,14 +29,7 @@ TRACEBALL_SUFFIX = ".tar.bz2"
 
 
 def get_command_template(env, arguments=()):
-    if Options.options.valgrind:
-        if Options.options.command_template:
-            raise Utils.WafError("Options --command-template and --valgrind are conflicting")
-        if not env['VALGRIND']:
-            raise Utils.WafError("valgrind is not installed")
-        cmd = env['VALGRIND'] + " --leak-check=full --error-exitcode=1 %s"
-    else:
-        cmd = Options.options.command_template or '%s'
+    cmd = Options.options.command_template or '%s'
     for arg in arguments:
         cmd = cmd + " " + arg
     return cmd
@@ -65,7 +60,7 @@ def find_program(program_name, env):
     launch_dir = os.path.abspath(Options.cwd_launch)
     top_dir = os.path.abspath(Options.launch_dir)
     found_programs = []
-    for obj in Build.bld.all_task_gen:
+    for obj in bld.all_task_gen:
         if not getattr(obj, 'is_ns3_program', False):
             continue
 
@@ -84,7 +79,7 @@ def find_program(program_name, env):
                      % (program_name, found_programs))
 
 def get_proc_env(os_env=None):
-    env = Build.bld.env
+    env = bld.env
     if sys.platform == 'linux2':
         pathvar = 'LD_LIBRARY_PATH'
     elif sys.platform == 'darwin':
@@ -111,7 +106,7 @@ def get_proc_env(os_env=None):
         else:
             proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']))
 
-    pymoddir = Build.bld.path.find_dir('bindings/python').abspath(env)
+    pymoddir = bld.path.find_dir('bindings/python').abspath(env)
     if 'PYTHONPATH' in proc_env:
         proc_env['PYTHONPATH'] = os.pathsep.join([pymoddir] + [proc_env['PYTHONPATH']])
     else:
@@ -119,10 +114,29 @@ def get_proc_env(os_env=None):
 
     return proc_env
 
-def run_argv(argv, os_env=None, cwd=None):
+def run_argv(argv, env, os_env=None, cwd=None):
     proc_env = get_proc_env(os_env)
-    #env = Build.bld.env
-    retval = subprocess.Popen(argv, env=proc_env, cwd=cwd).wait()
+    if Options.options.valgrind:
+        if Options.options.command_template:
+            raise Utils.WafError("Options --command-template and --valgrind are conflicting")
+        if not env['VALGRIND']:
+            raise Utils.WafError("valgrind is not installed")
+        argv = [env['VALGRIND'], "--leak-check=full", "--error-exitcode=1"] + argv
+        proc = subprocess.Popen(argv, env=proc_env, cwd=cwd, stderr=subprocess.PIPE)
+        reg = re.compile ('definitely lost: ([^ ]+) bytes')
+        error = False
+        for line in proc.stderr:
+            sys.stderr.write(line)
+            result = reg.search(line)
+            if result is None:
+                continue
+            if result.group(1) != "0":
+                error = True
+        retval = proc.wait()
+        if retval == 0 and error:
+            retval = 1
+    else:
+        retval = subprocess.Popen(argv, env=proc_env, cwd=cwd).wait()
     if retval:
         raise Utils.WafError("Command %s exited with code %i" % (argv, retval))
     return retval
@@ -133,7 +147,7 @@ def get_run_program(program_string, command_template=None):
     run_program(program_string, command_template).
     """
     #print "get_run_program_argv(program_string=%r, command_template=%r)" % (program_string, command_template)
-    env = Build.bld.env
+    env = bld.env
 
     if command_template in (None, '%s'):
         argv = shlex.split(program_string)
@@ -169,7 +183,7 @@ def get_run_program(program_string, command_template=None):
         execvec = shlex.split(command_template % (program_node.abspath(env),))
     return program_name, execvec
 
-def run_program(program_string, command_template=None, cwd=None):
+def run_program(program_string, env, command_template=None, cwd=None):
     """
     if command_template is not None, then program_string == program
     name and argv is given by command_template with %s replaced by the
@@ -182,17 +196,17 @@ def run_program(program_string, command_template=None, cwd=None):
             cwd = Options.options.cwd_launch
         else:
             cwd = Options.cwd_launch
-    return run_argv(execvec, cwd=cwd)
+    return run_argv(execvec, env, cwd=cwd)
 
 
 
-def run_python_program(program_string):
-    env = Build.bld.env
+def run_python_program(program_string, env):
+    env = bld.env
     execvec = shlex.split(program_string)
     if (Options.options.cwd_launch):
         cwd = Options.options.cwd_launch
     else:
         cwd = Options.cwd_launch
-    return run_argv([env['PYTHON']] + execvec, cwd=cwd)
+    return run_argv([env['PYTHON']] + execvec, env, cwd=cwd)
 
 

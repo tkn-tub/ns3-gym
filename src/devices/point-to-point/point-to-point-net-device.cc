@@ -148,7 +148,6 @@ PointToPointNetDevice::PointToPointNetDevice ()
 : 
   m_txMachineState (READY),
   m_channel (0), 
-  m_name (""),
   m_linkUp (false),
   m_currentPkt (0)
 {
@@ -371,18 +370,6 @@ PointToPointNetDevice::NotifyLinkUp (void)
     {
       m_linkChangeCallback ();
     }
-}
-
-  void 
-PointToPointNetDevice::SetName(const std::string name)
-{
-  m_name = name;
-}
-
-  std::string 
-PointToPointNetDevice::GetName(void) const
-{
-  return m_name;
 }
 
   void 

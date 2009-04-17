@@ -251,6 +251,24 @@ int main (int argc, char *argv[])
   dataset = experiment.Run (wifi, wifiPhy, wifiChannel);
   gnuplot.AddDataset (dataset);
 
+  NS_LOG_DEBUG ("aarf-cd");
+  experiment = Experiment ("aarf-cd");
+  wifi.SetRemoteStationManager ("ns3::AarfcdWifiManager");
+  dataset = experiment.Run (wifi, wifiPhy, wifiChannel);
+  gnuplot.AddDataset (dataset);
+
+  NS_LOG_DEBUG ("cara");
+  experiment = Experiment ("cara");
+  wifi.SetRemoteStationManager ("ns3::CaraWifiManager");
+  dataset = experiment.Run (wifi, wifiPhy, wifiChannel);
+  gnuplot.AddDataset (dataset);
+
+  NS_LOG_DEBUG ("rraa");
+  experiment = Experiment ("rraa");
+  wifi.SetRemoteStationManager ("ns3::RraaWifiManager");
+  dataset = experiment.Run (wifi, wifiPhy, wifiChannel);
+  gnuplot.AddDataset (dataset);
+
   NS_LOG_DEBUG ("ideal");
   experiment = Experiment ("ideal");
   wifi.SetRemoteStationManager ("ns3::IdealWifiManager");

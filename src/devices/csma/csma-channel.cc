@@ -51,7 +51,7 @@ CsmaChannel::GetTypeId (void)
 
 CsmaChannel::CsmaChannel ()
 : 
-  Channel ("Csma Channel")
+  Channel ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_state = IDLE;

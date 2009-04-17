@@ -90,7 +90,7 @@ public:
                            WifiPreamble preamble);
 
   void SetStandard (enum WifiPhyStandard standard);
-  void SetRxNoise (double ratio);
+  void SetRxNoiseFigure (double noiseFigureDb);
   void SetTxPowerStart (double start);
   void SetTxPowerEnd (double end);
   void SetNTxPower (uint32_t n);
@@ -101,7 +101,7 @@ public:
   void SetErrorRateModel (Ptr<ErrorRateModel> rate);
   void SetDevice (Ptr<Object> device);
   void SetMobility (Ptr<Object> mobility);
-  double GetRxNoise (void) const;
+  double GetRxNoiseFigure (void) const;
   double GetTxGain (void) const;
   double GetRxGain (void) const;
   double GetEdThreshold (void) const;

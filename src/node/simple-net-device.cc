@@ -38,7 +38,6 @@ SimpleNetDevice::SimpleNetDevice ()
   : m_channel (0),
     m_node (0),
     m_mtu (0xffff),
-    m_name (""),
     m_ifIndex (0)
 {}
 
@@ -83,16 +82,6 @@ SimpleNetDevice::SetAddress (Mac48Address address)
   m_address = address;
 }
 
-void 
-SimpleNetDevice::SetName(const std::string name)
-{
-  m_name = name;
-}
-std::string 
-SimpleNetDevice::GetName(void) const
-{
-  return m_name;
-}
 void 
 SimpleNetDevice::SetIfIndex(const uint32_t index)
 {

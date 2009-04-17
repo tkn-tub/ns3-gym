@@ -35,34 +35,14 @@ Channel::GetTypeId (void)
 }
 
 Channel::Channel ()
-  : m_name("Channel")
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-Channel::Channel (std::string name)
-  : m_name(name)
-{
-  NS_LOG_FUNCTION (this << name);
-}
 
 Channel::~Channel ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-}
-
-  void
-Channel::SetName(std::string name)
-{
-  NS_LOG_FUNCTION (this << name);
-  m_name = name;
-}
-
-  std::string
-Channel::GetName(void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_name;
 }
 
 } // namespace ns3

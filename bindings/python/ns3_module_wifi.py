@@ -228,8 +228,8 @@ def register_Ns3InterferenceHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::ErrorRateModel >', 
                    [], 
                    is_const=True)
-    ## interference-helper.h: double ns3::InterferenceHelper::GetNoiseFloorW() const [member function]
-    cls.add_method('GetNoiseFloorW', 
+    ## interference-helper.h: double ns3::InterferenceHelper::GetNoiseFigure() const [member function]
+    cls.add_method('GetNoiseFigure', 
                    'double', 
                    [], 
                    is_const=True)
@@ -237,10 +237,10 @@ def register_Ns3InterferenceHelper_methods(root_module, cls):
     cls.add_method('SetErrorRateModel', 
                    'void', 
                    [param('ns3::Ptr< ns3::ErrorRateModel >', 'rate')])
-    ## interference-helper.h: void ns3::InterferenceHelper::SetNoiseFloorW(double noiseFloor) [member function]
-    cls.add_method('SetNoiseFloorW', 
+    ## interference-helper.h: void ns3::InterferenceHelper::SetNoiseFigure(double value) [member function]
+    cls.add_method('SetNoiseFigure', 
                    'void', 
-                   [param('double', 'noiseFloor')])
+                   [param('double', 'value')])
     return
 
 def register_Ns3InterferenceHelperSnrPer_methods(root_module, cls):
@@ -727,8 +727,8 @@ def register_Ns3AmrrWifiRemoteStation_methods(root_module, cls):
 def register_Ns3ArfWifiRemoteStation_methods(root_module, cls):
     ## arf-wifi-manager.h: ns3::ArfWifiRemoteStation::ArfWifiRemoteStation(ns3::ArfWifiRemoteStation const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::ArfWifiRemoteStation const &', 'arg0')])
-    ## arf-wifi-manager.h: ns3::ArfWifiRemoteStation::ArfWifiRemoteStation(ns3::Ptr<ns3::ArfWifiManager> stations, int minTimerTimeout, int minSuccessThreshold) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::ArfWifiManager >', 'stations'), param('int', 'minTimerTimeout'), param('int', 'minSuccessThreshold')])
+    ## arf-wifi-manager.h: ns3::ArfWifiRemoteStation::ArfWifiRemoteStation(ns3::Ptr<ns3::ArfWifiManager> manager) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::ArfWifiManager >', 'manager')])
     ## arf-wifi-manager.h: void ns3::ArfWifiRemoteStation::DoReportRxOk(double rxSnr, ns3::WifiMode txMode) [member function]
     cls.add_method('DoReportRxOk', 
                    'void', 
@@ -1667,6 +1667,11 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStationManager::GetNonUnicastMode() const [member function]
+    cls.add_method('GetNonUnicastMode', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_const=True)
     ## wifi-remote-station-manager.h: ns3::WifiRemoteStation * ns3::WifiRemoteStationManager::Lookup(ns3::Mac48Address address) [member function]
     cls.add_method('Lookup', 
                    'ns3::WifiRemoteStation *', 
@@ -1707,10 +1712,10 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
     cls.add_method('SetStandard', 
                    'void', 
                    [param('ns3::WifiPhyStandard', 'standard')])
-    ## yans-wifi-phy.h: void ns3::YansWifiPhy::SetRxNoise(double ratio) [member function]
-    cls.add_method('SetRxNoise', 
+    ## yans-wifi-phy.h: void ns3::YansWifiPhy::SetRxNoiseFigure(double noiseFigureDb) [member function]
+    cls.add_method('SetRxNoiseFigure', 
                    'void', 
-                   [param('double', 'ratio')])
+                   [param('double', 'noiseFigureDb')])
     ## yans-wifi-phy.h: void ns3::YansWifiPhy::SetTxPowerStart(double start) [member function]
     cls.add_method('SetTxPowerStart', 
                    'void', 
@@ -1751,8 +1756,8 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
     cls.add_method('SetMobility', 
                    'void', 
                    [param('ns3::Ptr< ns3::Object >', 'mobility')])
-    ## yans-wifi-phy.h: double ns3::YansWifiPhy::GetRxNoise() const [member function]
-    cls.add_method('GetRxNoise', 
+    ## yans-wifi-phy.h: double ns3::YansWifiPhy::GetRxNoiseFigure() const [member function]
+    cls.add_method('GetRxNoiseFigure', 
                    'double', 
                    [], 
                    is_const=True)
@@ -1900,8 +1905,8 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
 def register_Ns3AarfWifiRemoteStation_methods(root_module, cls):
     ## aarf-wifi-manager.h: ns3::AarfWifiRemoteStation::AarfWifiRemoteStation(ns3::AarfWifiRemoteStation const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::AarfWifiRemoteStation const &', 'arg0')])
-    ## aarf-wifi-manager.h: ns3::AarfWifiRemoteStation::AarfWifiRemoteStation(ns3::Ptr<ns3::AarfWifiManager> stations, uint32_t minTimerThreshold, uint32_t minSuccessThreshold, double successK, uint32_t maxSuccessThreshold, double timerK) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::AarfWifiManager >', 'stations'), param('uint32_t', 'minTimerThreshold'), param('uint32_t', 'minSuccessThreshold'), param('double', 'successK'), param('uint32_t', 'maxSuccessThreshold'), param('double', 'timerK')])
+    ## aarf-wifi-manager.h: ns3::AarfWifiRemoteStation::AarfWifiRemoteStation(ns3::Ptr<ns3::AarfWifiManager> stations) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::AarfWifiManager >', 'stations')])
     ## aarf-wifi-manager.h: void ns3::AarfWifiRemoteStation::ReportRecoveryFailure() [member function]
     cls.add_method('ReportRecoveryFailure', 
                    'void', 
@@ -1912,6 +1917,11 @@ def register_Ns3AarfWifiRemoteStation_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    ## aarf-wifi-manager.h: ns3::Ptr<ns3::WifiRemoteStationManager> ns3::AarfWifiRemoteStation::GetManager() const [member function]
+    cls.add_method('GetManager', 
+                   'ns3::Ptr< ns3::WifiRemoteStationManager >', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3AdhocWifiMac_methods(root_module, cls):
@@ -2697,16 +2707,6 @@ def register_Ns3WifiNetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::WifiRemoteStationManager >', 
                    [], 
                    is_const=True)
-    ## wifi-net-device.h: void ns3::WifiNetDevice::SetName(std::string const name) [member function]
-    cls.add_method('SetName', 
-                   'void', 
-                   [param('std::string const', 'name')], 
-                   is_virtual=True)
-    ## wifi-net-device.h: std::string ns3::WifiNetDevice::GetName() const [member function]
-    cls.add_method('GetName', 
-                   'std::string', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## wifi-net-device.h: void ns3::WifiNetDevice::SetIfIndex(uint32_t const index) [member function]
     cls.add_method('SetIfIndex', 
                    'void', 

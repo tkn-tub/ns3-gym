@@ -25,7 +25,7 @@
 #ifndef __OLSR_STATE_H__
 #define __OLSR_STATE_H__
 
-#include "repositories.h"
+#include "olsr-repositories.h"
 
 namespace ns3 {
 

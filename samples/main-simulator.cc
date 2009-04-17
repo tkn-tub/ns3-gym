@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
+#include "ns3/command-line.h"
 #include <iostream>
 
 using namespace ns3;
@@ -37,6 +38,9 @@ random_function (MyModel *model)
 
 int main (int argc, char *argv[])
 {
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
+
   MyModel model;
 
   Simulator::Schedule (Seconds (10.0), &random_function, &model);

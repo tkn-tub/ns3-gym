@@ -21,7 +21,7 @@
  */
 
 ///
-/// \file	OLSR_repositories.h
+/// \file	OLSR_olsr-repositories.h
 /// \brief	Here are defined all data structures needed by an OLSR node.
 ///
 

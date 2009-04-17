@@ -9,8 +9,7 @@ import TaskGen
 import Task
 import Options
 import Build
-from Utils import md5
-
+import Utils
 
 all_modules = (
     'core',
@@ -111,7 +110,7 @@ class ns3header_taskgen(TaskGen.task_gen):
     def apply(self):
         if self.module is None:
             raise Utils.WafError("'module' missing on ns3headers object %s" % self)
-        ns3_dir_node = Build.bld.path.find_dir("ns3")
+        ns3_dir_node = self.bld.path.find_dir("ns3")
         if self.sub_dir is not None:
             ns3_dir_node = ns3_dir_node.find_dir(self.sub_dir)
         for filename in self.to_list(self.source):
@@ -178,7 +177,7 @@ class gen_ns3_module_header_task(Task.Task):
         return 0
 
     def sig_explicit_deps(self):
-        m = md5()
+        m = Utils.md5()
         m.update('\n'.join([node.abspath(self.env) for node in self.inputs]))
         return m.digest()
 
@@ -187,7 +186,7 @@ class gen_ns3_module_header_task(Task.Task):
             return self.uid
         except AttributeError:
             "this is not a real hot zone, but we want to avoid surprizes here"
-            m = md5()
+            m = Utils.md5()
             m.update("ns-3-module-header-%s" % self.module)
             self.uid = m.digest()
             return self.uid
@@ -201,13 +200,12 @@ class ns3moduleheader_taskgen(TaskGen.task_gen):
     COLOR = 'BLUE'
     def __init__(self, *args, **kwargs):
         super(ns3moduleheader_taskgen, self).__init__(*args, **kwargs)
-        self.module_name = None
 
     def apply(self):
         ## get all of the ns3 headers
-        ns3_dir_node = Build.bld.path.find_dir("ns3")
+        ns3_dir_node = self.bld.path.find_dir("ns3")
         all_headers_inputs = []
-        for ns3headers in Build.bld.all_task_gen:
+        for ns3headers in self.bld.all_task_gen:
             if isinstance(ns3headers, ns3header_taskgen):
                 if ns3headers.module != self.module:
                     continue
@@ -217,8 +215,10 @@ class ns3moduleheader_taskgen(TaskGen.task_gen):
                     if node is None:
                         fatal("missing header file %s" % (source,))
                     all_headers_inputs.append(node)
+        if not all_headers_inputs:
+            raise Utils.WscriptError("error finding headers for module %s" % self.module)
         assert all_headers_inputs
-        module_obj = Build.bld.name_to_obj("ns3-" + self.module, self.env)
+        module_obj = self.bld.name_to_obj("ns3-" + self.module, self.env)
         assert module_obj is not None
         all_headers_outputs = [ns3_dir_node.find_or_declare("%s-module.h" % self.module)]
         task = self.create_task('gen_ns3_module_header', self.env)

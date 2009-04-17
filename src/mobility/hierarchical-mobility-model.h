@@ -27,8 +27,31 @@ namespace ns3 {
 /**
  * \brief a hierachical mobility model.
  * 
- * This model allows you to specify the position of a
- * child object relative to a parent object.
+ * This model allows you to specify the position of a child object
+ * relative to a parent object.
+ * 
+ * Basically this is a mobility model that combines two other mobility
+ * models: a "parent" model and a "child" model.  The position of the
+ * hierarchical model is always the vector sum of the parent + child
+ * positions, so that if the parent model "moves", then this model
+ * will report an equal relative movement.  Useful, for instance, if
+ * you want to simulate a node inside another node that moves, such as
+ * a vehicle.
+ *
+ * Setting the position on this model is always done using world
+ * absolute coordinates, and it changes only the child mobility model
+ * position, never the parent.  The child mobility model always uses a
+ * coordinate sytem relative to the parent model position.
+ *
+ * @note: as a special case, the parent model may be NULL, which is
+ * semantically equivalent to having a ConstantPositionMobilityModel
+ * as parent positioned at origin (0,0,0).  In other words, setting
+ * the parent model to NULL makes the child model and the hierarchical
+ * model start using world absolute coordinates.
+ *
+ * @warning: changing the parent/child mobility models in the middle
+ * of a simulation will probably not play very well with the
+ * ConfigStore APIs, so do this only if you know what you are doing.
  */
 class HierarchicalMobilityModel : public MobilityModel
 {
@@ -52,14 +75,26 @@ public:
    * position by the child mobility model.
    */
   Ptr<MobilityModel> GetParent (void) const;
+  /**
+   * Sets the child mobility model to a new one.  If before there
+   * already existed a child model, then the child mobility model
+   * current position is also modified to ensure that the composite
+   * position is preserved.
+   */
+  void SetChild (Ptr<MobilityModel> model);
+  /**
+   * Sets the parent mobility model to a new one.  If before there
+   * already existed a child model, then the child mobility model
+   * current position is also modified to ensure that the composite
+   * position is preserved.
+   */
+  void SetParent (Ptr<MobilityModel> model);
   
 private:
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
 
-  void SetChild (Ptr<MobilityModel> model);
-  void SetParent (Ptr<MobilityModel> model);
   void ParentChanged (Ptr<const MobilityModel> model);
   void ChildChanged (Ptr<const MobilityModel> model);
 
