@@ -173,7 +173,7 @@ AarfcdWifiRemoteStation::DoReportDataFailed (void)
             {
               m_rate--;
             }
-          NS_LOG_INFO ("" << this << " JD rate=" << m_rate << " Sthr=" << m_successTreshold);
+          NS_LOG_INFO ("" << this << " JD rate=" << m_rate << " Sthr=" << m_successThreshold);
           //printf ("%.9f %p DecreaseRateRecovery %d\n", Simulator::Now ().GetSeconds (),this, m_rate);
         }
       m_timer = 0;
@@ -235,7 +235,7 @@ AarfcdWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double
     {
       NS_LOG_DEBUG ("self="<<this<<" inc rate");
       m_rate++;
-      NS_LOG_INFO ("" << this << " JI rate=" << m_rate << " Sthr=" << m_successTreshold);
+      NS_LOG_INFO ("" << this << " JI rate=" << m_rate << " Sthr=" << m_successThreshold);
       m_timer = 0;
       m_success = 0;
       m_recovery = true;
