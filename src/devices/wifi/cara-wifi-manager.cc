@@ -133,7 +133,7 @@ CaraWifiRemoteStation::GetManager (void) const
 }
 
 bool
-CaraWifiRemoteStation::DoNeedRts (Ptr<const Packet> packet)
+CaraWifiRemoteStation::NeedRts (Ptr<const Packet> packet)
 {
   bool rts = WifiRemoteStation::NeedRts (packet);
   if (rts || m_failed >= m_manager->m_probeThreshold)

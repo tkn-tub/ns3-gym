@@ -327,7 +327,7 @@ AarfcdWifiRemoteStation::ResetRtsWnd (void)
 }
 
 bool
-AarfcdWifiRemoteStation::DoNeedRts (Ptr<const Packet> packet)
+AarfcdWifiRemoteStation::NeedRts (Ptr<const Packet> packet)
 {
   //printf ("%.9f %p NeedRts %d %d\n",Simulator::Now ().GetSeconds (),this,m_rate,(m_rtsOn?1:0));
   NS_LOG_INFO ("" << this << " rate=" << m_rate << " rts=" << (m_rtsOn?"RTS":"BASIC") << " rtsCounter=" << m_rtsCounter);

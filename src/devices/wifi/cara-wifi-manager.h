@@ -66,9 +66,10 @@ private:
   virtual void DoReportFinalRtsFailed (void);
   virtual void DoReportFinalDataFailed (void);
   virtual void DoReportRxOk (double rxSnr, WifiMode txMode);
-  virtual bool DoNeedRts (Ptr<const Packet> packet);
   virtual WifiMode DoGetDataMode (uint32_t size);
   virtual WifiMode DoGetRtsMode (void);
+
+  virtual bool NeedRts (Ptr<const Packet> packet);
 
   uint32_t m_timer;
   uint32_t m_success;

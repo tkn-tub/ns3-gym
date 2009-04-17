@@ -70,10 +70,10 @@ private:
   virtual void DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
   virtual void DoReportFinalRtsFailed (void);
   virtual void DoReportFinalDataFailed (void);
-  virtual bool DoNeedRts (Ptr<const Packet> packet);
   virtual Ptr<WifiRemoteStationManager> GetManager (void) const;
   virtual WifiMode DoGetDataMode (uint32_t size);
   virtual WifiMode DoGetRtsMode (void);
+  virtual bool NeedRts (Ptr<const Packet> packet);
 
   void ReportRecoveryFailure (void);
   void ReportFailure (void);
