@@ -174,7 +174,7 @@ def _check_compilation_flag(conf, flag):
     try:
         retval = conf.run_c_code(code='#include <stdio.h>\nint main() { return 0; }\n',
                                  env=env, compile_filename='test.cc',
-                                 compile_mode='cxx',type='program', execute=False)
+                                 compile_mode='cxx',type='cprogram', execute=False)
     except Configure.ConfigurationError:
         ok = False
     else:
@@ -296,10 +296,11 @@ class SuidBuildTask(Task.TaskBase):
     after = 'cxx_link cc_link'
     maxjobs = 1
     def __init__(self, bld, program):
+        self.bld = bld
         self.m_display = 'build-suid'
         self.__program = program
         self.__env = bld.env.copy ()
-        super(SuidBuildTask, self).__init__()
+        super(SuidBuildTask, self).__init__(generator=self)
         try:
             program_obj = wutils.find_program(self.__program.target, self.__env)
         except ValueError, ex:
