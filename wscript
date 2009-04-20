@@ -515,7 +515,7 @@ def check(bld):
         out.close()
 
     print "-- Running NS-3 C++ core unit tests..."
-    wutils.run_program('run-tests', wutils.get_command_template(env))
+    wutils.run_program('run-tests', env, wutils.get_command_template(env))
 
     if env['ENABLE_PYTHON_BINDINGS']:
         print "-- Running NS-3 Python bindings unit tests..."
