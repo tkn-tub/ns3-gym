@@ -67,7 +67,7 @@ def configure(conf):
 
 
 def create_ns3_module(bld, name, dependencies=()):
-    module = bld.new_task_gen('cxx', 'objects')
+    module = bld.new_task_gen('cxx')
     module.name = 'ns3-' + name
     module.target = module.name
     module.add_objects = ['ns3-' + dep for dep in dependencies]

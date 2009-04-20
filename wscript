@@ -499,7 +499,7 @@ def check(bld):
     "run the NS-3 unit tests"
     Scripting.build(bld)
     ## generate the trace sources list docs
-    env = bld.env
+    env = wutils.bld.env
     proc_env = wutils.get_proc_env()
     try:
         program_obj = wutils.find_program('print-introspected-doxygen', env)
