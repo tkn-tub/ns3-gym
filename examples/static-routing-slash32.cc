@@ -87,13 +87,13 @@ main (int argc, char *argv[])
   int32_t ifIndexA = ipv4A->AddInterface (deviceA);
   int32_t ifIndexC = ipv4C->AddInterface (deviceC);
     
-  ipv4A->SetAddress (ifIndexA, Ipv4Address ("172.16.1.1"));
-  ipv4A->SetNetworkMask (ifIndexA, Ipv4Mask ("255.255.255.255"));
+  Ipv4InterfaceAddress ifInAddrA = Ipv4InterfaceAddress (Ipv4Address ("172.16.1.1"), Ipv4Mask ("255.255.255.255"));
+  ipv4A->AddAddress (ifIndexA, ifInAddrA);
   ipv4A->SetMetric (ifIndexA, 1);
   ipv4A->SetUp (ifIndexA);
 
-  ipv4C->SetAddress (ifIndexC, Ipv4Address ("192.168.1.1"));
-  ipv4C->SetNetworkMask (ifIndexC, Ipv4Mask ("255.255.255.255"));
+  Ipv4InterfaceAddress ifInAddrC = Ipv4InterfaceAddress (Ipv4Address ("192.168.1.1"), Ipv4Mask ("255.255.255.255"));
+  ipv4C->AddAddress (ifIndexC, ifInAddrC);
   ipv4C->SetMetric (ifIndexC, 1);
   ipv4C->SetUp (ifIndexC);
  
@@ -107,7 +107,7 @@ main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   uint16_t port = 9;   // Discard port (RFC 863)
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
-    Address (InetSocketAddress (Ipv4Address("192.168.1.1"), port)));
+    Address (InetSocketAddress (ifInAddrC.GetLocal (), port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (6000)));

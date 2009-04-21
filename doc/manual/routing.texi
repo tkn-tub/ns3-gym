@@ -76,7 +76,7 @@ The main function that must be supported by these protocols is called
    * immediately after the IP header, although most routing do not
    * insert any extra header.
    */
-  virtual bool RequestRoute (uint32_t ifIndex,
+  virtual bool RequestRoute (uint32_t interface,
                              const Ipv4Header &ipHeader,
                              Ptr<Packet> packet,
                              RouteReplyCallback routeReply) = 0;
@@ -118,7 +118,7 @@ routing, insert it with priority less than 0; e.g.:
 The main function for obtaining a route is shown below:  
 @verbatim
 Ipv4L3Protocol::Lookup (
-  uint32_t ifIndex,
+  uint32_t interface,
   Ipv4Header const &ipHeader,
   Ptr<Packet> packet,
   Ipv4RoutingProtocol::RouteReplyCallback routeReply)

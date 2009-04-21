@@ -24,6 +24,7 @@
 
 #include <list>
 #include "ns3/ipv4-address.h"
+#include "ns3/ipv4-interface-address.h"
 #include "ns3/ptr.h"
 #include "ns3/object.h"
 
@@ -75,23 +76,6 @@ public:
   virtual Ptr<NetDevice> GetDevice (void) const = 0;
 
   /**
-   * \param a set the ipv4 address of this interface.
-   */
-  void SetAddress (Ipv4Address a);
-  /**
-   * \param mask set the ipv4 netmask of this interface.
-   */
-  void SetNetworkMask (Ipv4Mask mask);
-
-  /**
-   * \returns the broadcast ipv4 address associated to this interface
-   */
-  Ipv4Address GetBroadcast (void) const;
-  /**
-   * \returns the ipv4 netmask of this interface
-   */
-  Ipv4Mask GetNetworkMask (void) const;
-  /**
    * \param metric configured routing metric (cost) of this interface
    */
   void SetMetric (uint16_t metric);
@@ -99,10 +83,6 @@ public:
    * \returns configured routing metric (cost) of this interface
    */
   uint16_t GetMetric (void) const;
-  /**
-   * \returns the ipv4 address of this interface
-   */
-  Ipv4Address GetAddress (void) const;
 
   /**
    * This function a pass-through to NetDevice GetMtu, modulo
@@ -142,14 +122,39 @@ public:
    */ 
   void Send(Ptr<Packet> p, Ipv4Address dest);
 
+  /**
+   * \param address The Ipv4InterfaceAddress to add to the interface
+   * \returns The index of the newly-added Ipv4InterfaceAddress
+   */
+  uint32_t AddAddress (Ipv4InterfaceAddress address);
+
+  /**
+   * \param i Index of Ipv4InterfaceAddress to return
+   * \returns The Ipv4InterfaceAddress address whose index is i
+   */
+  Ipv4InterfaceAddress GetAddress (uint32_t index) const;
+
+  /**
+   * \returns the number of Ipv4InterfaceAddresss stored on this interface
+   */
+  uint32_t GetNAddresses (void) const;
+
+  /**
+   * \param i index of Ipv4InterfaceAddress to remove from address list.
+   */
+  void RemoveAddress (uint32_t index);
+
 protected:
   virtual void DoDispose (void);
 private:
   virtual void SendTo (Ptr<Packet> p, Ipv4Address dest) = 0;
   bool m_ifup;
-  Ipv4Address m_address;
-  Ipv4Mask m_netmask;
   uint16_t m_metric;
+
+  typedef std::list<Ipv4InterfaceAddress> Ipv4InterfaceAddressList;
+  typedef std::list<Ipv4InterfaceAddress>::const_iterator Ipv4InterfaceAddressListCI;
+  typedef std::list<Ipv4InterfaceAddress>::iterator Ipv4InterfaceAddressListI;
+  Ipv4InterfaceAddressList m_ifaddrs;
 };
 
 }; // namespace ns3

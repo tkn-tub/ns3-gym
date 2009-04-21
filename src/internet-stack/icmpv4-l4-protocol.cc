@@ -63,12 +63,13 @@ Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address dest, uint8_t typ
 {
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
   uint32_t i;
-  if (!ipv4->GetIfIndexForDestination (dest, i))
+  if (!ipv4->GetInterfaceForDestination (dest, i))
     {
       NS_LOG_WARN ("drop icmp message");
       return;
     }
-  Ipv4Address source = ipv4->GetAddress (i);
+  // XXX handle multi-address case
+  Ipv4Address source = ipv4->GetAddress (i, 0).GetLocal ();
   SendMessage (packet, source, dest, type, code);
 }
 

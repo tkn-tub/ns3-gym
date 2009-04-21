@@ -62,37 +62,6 @@ Ipv4Interface::DoDispose (void)
   Object::DoDispose ();
 }
 
-void 
-Ipv4Interface::SetAddress (Ipv4Address a)
-{
-  NS_LOG_FUNCTION (this << a);
-  m_address = a;
-}
-
-void 
-Ipv4Interface::SetNetworkMask (Ipv4Mask mask)
-{
-  NS_LOG_FUNCTION (this << mask);
-  m_netmask = mask;
-}
-
-Ipv4Address
-Ipv4Interface::GetBroadcast (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  uint32_t mask = m_netmask.Get ();
-  uint32_t address = m_address.Get ();
-  Ipv4Address broadcast = Ipv4Address (address | (~mask));
-  return broadcast;
-}
-
-Ipv4Mask 
-Ipv4Interface::GetNetworkMask (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_netmask;
-}
-
 void
 Ipv4Interface::SetMetric (uint16_t metric)
 {
@@ -105,13 +74,6 @@ Ipv4Interface::GetMetric (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_metric;
-}
-
-Ipv4Address 
-Ipv4Interface::GetAddress (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_address;
 }
 
 uint16_t 
@@ -168,6 +130,65 @@ Ipv4Interface::Send(Ptr<Packet> p, Ipv4Address dest)
     NS_LOG_LOGIC ("SendTo");
     SendTo(p, dest);
   }
+}
+
+uint32_t
+Ipv4Interface::GetNAddresses (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_ifaddrs.size();
+}
+
+uint32_t
+Ipv4Interface::AddAddress (Ipv4InterfaceAddress addr)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  uint32_t index = m_ifaddrs.size ();
+  m_ifaddrs.push_back (addr);
+  return index;
+}
+
+Ipv4InterfaceAddress
+Ipv4Interface::GetAddress (uint32_t index) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  if (index < m_ifaddrs.size ())
+    {
+      uint32_t tmp = 0;
+      for (Ipv4InterfaceAddressListCI i = m_ifaddrs.begin (); i!= m_ifaddrs.end (); i++)
+        {
+          if (tmp  == index)
+            {
+              return *i;
+            }
+          ++tmp;
+        }
+    }
+  NS_ASSERT (false);  // Assert if not found
+  Ipv4InterfaceAddress addr;
+  return (addr);  // quiet compiler
+}
+
+void
+Ipv4Interface::RemoveAddress (uint32_t index)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  if (index >= m_ifaddrs.size ())
+    {
+      NS_ASSERT_MSG (false, "Bug in Ipv4Interface::RemoveAddress");
+    }
+  Ipv4InterfaceAddressListI i = m_ifaddrs.begin ();
+  uint32_t tmp = 0;
+  while (i != m_ifaddrs.end ())
+    {
+      if (tmp  == index)
+        {
+          m_ifaddrs.erase (i);
+          return;
+        }
+       ++tmp;
+    }
+  NS_ASSERT_MSG (false, "Address " << index << " not found");
 }
 
 }; // namespace ns3

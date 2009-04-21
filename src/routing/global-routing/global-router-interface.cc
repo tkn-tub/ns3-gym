@@ -594,8 +594,8 @@ GlobalRouter::DiscoverLSAs (void)
       //
       if (NetDeviceIsBridged (ndLocal))
         {
-          uint32_t ifIndexBridge;
-          bool rc = FindIfIndexForDevice(node, ndLocal, ifIndexBridge);
+          uint32_t interfaceBridge;
+          bool rc = FindInterfaceForDevice(node, ndLocal, interfaceBridge);
           NS_ABORT_MSG_IF (rc, "GlobalRouter::DiscoverLSAs(): Bridge ports must not have an IPv4 interface index");
         }
 
@@ -697,17 +697,21 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
   //
   Ptr<Node> node = nd->GetNode ();
 
-  uint32_t ifIndexLocal;
-  bool rc = FindIfIndexForDevice(node, nd, ifIndexLocal);
+  uint32_t interfaceLocal;
+  bool rc = FindInterfaceForDevice(node, nd, interfaceLocal);
   NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessSingleBroadcastLink(): No interface index associated with device");
 
   Ptr<Ipv4> ipv4Local = node->GetObject<Ipv4> ();
   NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessSingleBroadcastLink (): GetObject for <Ipv4> interface failed");
 
-  Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
-  Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
+  if (ipv4Local->GetNAddresses (interfaceLocal) > 1)
+    {
+      NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
+    }
+  Ipv4Address addrLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetLocal ();
+  Ipv4Mask maskLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetMask ();
   NS_LOG_LOGIC ("Working with local address " << addrLocal);
-  uint16_t metricLocal = ipv4Local->GetMetric (ifIndexLocal);
+  uint16_t metricLocal = ipv4Local->GetMetric (interfaceLocal);
 
   //
   // Check to see if the net device is connected to a channel/network that has
@@ -813,17 +817,21 @@ GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *
   //
   Ptr<Node> node = nd->GetNode ();
 
-  uint32_t ifIndexLocal;
-  bool rc = FindIfIndexForDevice(node, nd, ifIndexLocal);
+  uint32_t interfaceLocal;
+  bool rc = FindInterfaceForDevice(node, nd, interfaceLocal);
   NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessBridgedBroadcastLink(): No interface index associated with device");
 
   Ptr<Ipv4> ipv4Local = node->GetObject<Ipv4> ();
   NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessBridgedBroadcastLink (): GetObject for <Ipv4> interface failed");
 
-  Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
-  Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
+  if (ipv4Local->GetNAddresses (interfaceLocal) > 1)
+    {
+      NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
+    }
+  Ipv4Address addrLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetLocal ();
+  Ipv4Mask maskLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetMask ();;
   NS_LOG_LOGIC ("Working with local address " << addrLocal);
-  uint16_t metricLocal = ipv4Local->GetMetric (ifIndexLocal);
+  uint16_t metricLocal = ipv4Local->GetMetric (interfaceLocal);
 
   //
   // We need to handle a bridge on the router.  This means that we have been 
@@ -955,17 +963,21 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   //
   Ptr<Node> nodeLocal = ndLocal->GetNode ();
 
-  uint32_t ifIndexLocal;
-  bool rc = FindIfIndexForDevice(nodeLocal, ndLocal, ifIndexLocal);
+  uint32_t interfaceLocal;
+  bool rc = FindInterfaceForDevice(nodeLocal, ndLocal, interfaceLocal);
   NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessPointToPointLink (): No interface index associated with device");
 
   Ptr<Ipv4> ipv4Local = nodeLocal->GetObject<Ipv4> ();
   NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessPointToPointLink (): GetObject for <Ipv4> interface failed");
 
-  Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
-  Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
+  if (ipv4Local->GetNAddresses (interfaceLocal) > 1)
+    {
+      NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
+    }
+  Ipv4Address addrLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetLocal ();
+  Ipv4Mask maskLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetMask ();
   NS_LOG_LOGIC ("Working with local address " << addrLocal);
-  uint16_t metricLocal = ipv4Local->GetMetric (ifIndexLocal);
+  uint16_t metricLocal = ipv4Local->GetMetric (interfaceLocal);
 
   //
   // Now, we're going to walk over to the remote net device on the other end of 
@@ -1010,16 +1022,20 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   // Now, just like we did above, we need to get the IP interface index for the 
   // net device on the other end of the point-to-point channel.
   //
-  uint32_t ifIndexRemote;
-  rc = FindIfIndexForDevice(nodeRemote, ndRemote, ifIndexRemote);
+  uint32_t interfaceRemote;
+  rc = FindInterfaceForDevice(nodeRemote, ndRemote, interfaceRemote);
   NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessPointToPointLinks(): No interface index associated with remote device");
 
   //
   // Now that we have the Ipv4 interface, we can get the (remote) address and
   // mask we need.
   //
-  Ipv4Address addrRemote = ipv4Remote->GetAddress(ifIndexRemote);
-  Ipv4Mask maskRemote = ipv4Remote->GetNetworkMask(ifIndexRemote);
+  if (ipv4Remote->GetNAddresses (interfaceRemote) > 1)
+    {
+      NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
+    }
+  Ipv4Address addrRemote = ipv4Remote->GetAddress (interfaceRemote, 0).GetLocal ();
+  Ipv4Mask maskRemote = ipv4Remote->GetAddress (interfaceRemote, 0).GetMask ();
   NS_LOG_LOGIC ("Working with remote address " << addrRemote);
 
   //
@@ -1028,9 +1044,9 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   // the second is a stub network record with the network number.
   //
   GlobalRoutingLinkRecord *plr;
-  if (ipv4Remote->IsUp (ifIndexRemote))
+  if (ipv4Remote->IsUp (interfaceRemote))
     {
-      NS_LOG_LOGIC ("Remote side interface " << ifIndexRemote << " is up-- add a type 1 link");
+      NS_LOG_LOGIC ("Remote side interface " << interfaceRemote << " is up-- add a type 1 link");
  
       plr  = new GlobalRoutingLinkRecord;
       NS_ABORT_MSG_IF (plr == 0, "GlobalRouter::ProcessPointToPointLink(): Can't alloc link record");
@@ -1069,15 +1085,19 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
       Ptr<NetDevice> ndLocal = c.Get (i);
       Ptr<Node> node = ndLocal->GetNode ();
 
-      uint32_t ifIndexLocal;
-      bool rc = FindIfIndexForDevice(node, ndLocal, ifIndexLocal);
+      uint32_t interfaceLocal;
+      bool rc = FindInterfaceForDevice(node, ndLocal, interfaceLocal);
       NS_ABORT_MSG_IF (rc == false, "GlobalRouter::BuildNetworkLSAs (): No interface index associated with device");
 
       Ptr<Ipv4> ipv4Local = node->GetObject<Ipv4> ();
       NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessPointToPointLink (): GetObject for <Ipv4> interface failed");
 
-      Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
-      Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
+      if (ipv4Local->GetNAddresses (interfaceLocal) > 1)
+        {
+          NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
+        }
+      Ipv4Address addrLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetLocal ();
+      Ipv4Mask maskLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetMask ();
 
       GlobalRoutingLSA *pLSA = new GlobalRoutingLSA;
       NS_ABORT_MSG_IF (pLSA == 0, "GlobalRouter::BuildNetworkLSAs(): Can't alloc link record");
@@ -1117,18 +1137,22 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
           // Does the attached node have an ipv4 interface for the device we're probing?
           // If not, it can't play router.
           //
-          uint32_t tempIfIndex;
-          if (FindIfIndexForDevice (tempNode, tempNd, tempIfIndex))
+          uint32_t tempInterface;
+          if (FindInterfaceForDevice (tempNode, tempNd, tempInterface))
             {
               Ptr<Ipv4> tempIpv4 = tempNode->GetObject<Ipv4> ();
               NS_ASSERT (tempIpv4);
-              if (!tempIpv4->IsUp (tempIfIndex))
+              if (!tempIpv4->IsUp (tempInterface))
                 {
-                  NS_LOG_LOGIC ("Remote side interface " << tempIfIndex << " not up");
+                  NS_LOG_LOGIC ("Remote side interface " << tempInterface << " not up");
                 }
               else 
                 {
-                  Ipv4Address tempAddr = tempIpv4->GetAddress(tempIfIndex);
+                  if (tempIpv4->GetNAddresses (tempInterface) > 1)
+                    {
+                      NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
+                    }
+                  Ipv4Address tempAddr = tempIpv4->GetAddress(tempInterface, 0).GetLocal ();
                   pLSA->AddAttachedRouter (tempAddr);
                 }
             }
@@ -1197,16 +1221,20 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRec
           Ptr<Ipv4> ipv4 = nodeOther->GetObject<Ipv4> ();
           if (rtr && ipv4)
             {
-              uint32_t ifIndexOther;
-              if (FindIfIndexForDevice(nodeOther, bnd, ifIndexOther))
+              uint32_t interfaceOther;
+              if (FindInterfaceForDevice(nodeOther, bnd, interfaceOther))
                 {
                   NS_LOG_LOGIC ("Found router on bridge net device " << bnd);
-                  if (!ipv4->IsUp (ifIndexOther))
+                  if (!ipv4->IsUp (interfaceOther))
                     {
-                      NS_LOG_LOGIC ("Remote side interface " << ifIndexOther << " not up");
+                      NS_LOG_LOGIC ("Remote side interface " << interfaceOther << " not up");
                       continue;
                     }
-                  Ipv4Address addrOther = ipv4->GetAddress (ifIndexOther);
+                  if (ipv4->GetNAddresses (interfaceOther) > 1)
+                    {
+                      NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
+                    }
+                  Ipv4Address addrOther = ipv4->GetAddress (interfaceOther, 0).GetLocal ();
                   desigRtr = addrOther < desigRtr ? addrOther : desigRtr;
                   NS_LOG_LOGIC ("designated router now " << desigRtr);
                 }
@@ -1246,16 +1274,20 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRec
           Ptr<Ipv4> ipv4 = nodeOther->GetObject<Ipv4> ();
           if (rtr && ipv4)
             {
-              uint32_t ifIndexOther;
-              if (FindIfIndexForDevice(nodeOther, ndOther, ifIndexOther))
+              uint32_t interfaceOther;
+              if (FindInterfaceForDevice(nodeOther, ndOther, interfaceOther))
                 {
-                  if (!ipv4->IsUp (ifIndexOther))
+                  if (!ipv4->IsUp (interfaceOther))
                     {
-                      NS_LOG_LOGIC ("Remote side interface " << ifIndexOther << " not up");
+                      NS_LOG_LOGIC ("Remote side interface " << interfaceOther << " not up");
                       continue;
                     }
                   NS_LOG_LOGIC ("Found router on net device " << ndOther);
-                  Ipv4Address addrOther = ipv4->GetAddress (ifIndexOther);
+                  if (ipv4->GetNAddresses (interfaceOther) > 1)
+                    {
+                      NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
+                    }
+                  Ipv4Address addrOther = ipv4->GetAddress (interfaceOther, 0).GetLocal ();
                   desigRtr = addrOther < desigRtr ? addrOther : desigRtr;
                   NS_LOG_LOGIC ("designated router now " << desigRtr);
                 }
@@ -1441,7 +1473,7 @@ GlobalRouter::GetAdjacent (Ptr<NetDevice> nd, Ptr<Channel> ch) const
 // is bridged, there will not be an interface associated directly with the device.
 //
   bool
-GlobalRouter::FindIfIndexForDevice (Ptr<Node> node, Ptr<NetDevice> nd, uint32_t &index) const
+GlobalRouter::FindInterfaceForDevice (Ptr<Node> node, Ptr<NetDevice> nd, uint32_t &index) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC("For node " << node->GetId () << " for net device " << nd );

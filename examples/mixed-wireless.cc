@@ -353,7 +353,7 @@ main (int argc, char *argv[])
   uint32_t lastNodeIndex = backboneNodes + backboneNodes*(lanNodes - 1) + backboneNodes*(infraNodes - 1) - 1;
   Ptr<Node> appSink = NodeList::GetNode (lastNodeIndex);  
   // Let's fetch the IP address of the last node, which is on Ipv4Interface 1
-  Ipv4Address remoteAddr = appSink->GetObject<Ipv4> ()->GetAddress(1);
+  Ipv4Address remoteAddr = appSink->GetObject<Ipv4> ()->GetAddress(1, 0).GetLocal ();
 
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
                      Address (InetSocketAddress (remoteAddr, port)));

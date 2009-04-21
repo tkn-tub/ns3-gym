@@ -644,7 +644,7 @@ private:
   void ClearLSAs (void);
 
   Ptr<NetDevice> GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const;
-  bool FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd, uint32_t &index) const;
+  bool FindInterfaceForDevice(Ptr<Node> node, Ptr<NetDevice> nd, uint32_t &index) const;
   Ipv4Address FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRecursion) const;
   bool AnotherRouterOnLink (Ptr<NetDevice> nd, bool allowRecursion) const;
   void ProcessBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c);

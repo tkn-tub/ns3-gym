@@ -518,15 +518,15 @@ def register_Ns3Ipv4GlobalRouting_methods(root_module, cls):
                    is_static=True)
     ## ipv4-global-routing.h: ns3::Ipv4GlobalRouting::Ipv4GlobalRouting() [constructor]
     cls.add_constructor([])
-    ## ipv4-global-routing.h: bool ns3::Ipv4GlobalRouting::RequestRoute(uint32_t ifIndex, ns3::Ipv4Header const & ipHeader, ns3::Ptr<ns3::Packet> packet, ns3::Callback<void,bool,const ns3::Ipv4Route&,ns3::Ptr<ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> routeReply) [member function]
+    ## ipv4-global-routing.h: bool ns3::Ipv4GlobalRouting::RequestRoute(uint32_t interface, ns3::Ipv4Header const & ipHeader, ns3::Ptr<ns3::Packet> packet, ns3::Callback<void,bool,const ns3::Ipv4Route&,ns3::Ptr<ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> routeReply) [member function]
     cls.add_method('RequestRoute', 
                    'bool', 
-                   [param('uint32_t', 'ifIndex'), param('ns3::Ipv4Header const &', 'ipHeader'), param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Callback< void, bool, ns3::Ipv4Route const &, ns3::Ptr< ns3::Packet >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'routeReply')], 
+                   [param('uint32_t', 'interface'), param('ns3::Ipv4Header const &', 'ipHeader'), param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Callback< void, bool, ns3::Ipv4Route const &, ns3::Ptr< ns3::Packet >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'routeReply')], 
                    is_virtual=True)
-    ## ipv4-global-routing.h: bool ns3::Ipv4GlobalRouting::RequestIfIndex(ns3::Ipv4Address destination, uint32_t & ifIndex) [member function]
-    cls.add_method('RequestIfIndex', 
+    ## ipv4-global-routing.h: bool ns3::Ipv4GlobalRouting::RequestInterface(ns3::Ipv4Address destination, uint32_t & interface) [member function]
+    cls.add_method('RequestInterface', 
                    'bool', 
-                   [param('ns3::Ipv4Address', 'destination'), param('uint32_t &', 'ifIndex')], 
+                   [param('ns3::Ipv4Address', 'destination'), param('uint32_t &', 'interface')], 
                    is_virtual=True)
     ## ipv4-global-routing.h: void ns3::Ipv4GlobalRouting::AddHostRouteTo(ns3::Ipv4Address dest, ns3::Ipv4Address nextHop, uint32_t interface) [member function]
     cls.add_method('AddHostRouteTo', 

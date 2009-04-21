@@ -209,12 +209,12 @@ Ipv4GlobalRouting::RemoveRoute (uint32_t index)
 
 bool
 Ipv4GlobalRouting::RequestRoute (
-  uint32_t ifIndex,
+  uint32_t interface,
   Ipv4Header const &ipHeader,
   Ptr<Packet> packet,
   RouteReplyCallback routeReply)
 {
-  NS_LOG_FUNCTION (this << ifIndex << &ipHeader << packet << &routeReply);
+  NS_LOG_FUNCTION (this << interface << &ipHeader << packet << &routeReply);
 
   NS_LOG_LOGIC ("source = " << ipHeader.GetSource ());
 
@@ -243,9 +243,9 @@ Ipv4GlobalRouting::RequestRoute (
 }
 
 bool
-Ipv4GlobalRouting::RequestIfIndex (Ipv4Address destination, uint32_t& ifIndex)
+Ipv4GlobalRouting::RequestInterface (Ipv4Address destination, uint32_t& interface)
 {
-  NS_LOG_FUNCTION (this << destination << &ifIndex);
+  NS_LOG_FUNCTION (this << destination << &interface);
 //
 // First, see if this is a multicast packet we have a route for.  If we
 // have a route, then send the packet down each of the specified interfaces.
@@ -262,7 +262,7 @@ Ipv4GlobalRouting::RequestIfIndex (Ipv4Address destination, uint32_t& ifIndex)
   Ipv4Route *route = LookupGlobal (destination);
   if (route)
     {
-      ifIndex = route->GetInterface ();
+      interface = route->GetInterface ();
       return true;
     }
   else

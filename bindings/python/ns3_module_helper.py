@@ -482,10 +482,10 @@ def register_Ns3Ipv4InterfaceContainer_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## ipv4-interface-container.h: ns3::Ipv4Address ns3::Ipv4InterfaceContainer::GetAddress(uint32_t i) const [member function]
+    ## ipv4-interface-container.h: ns3::Ipv4Address ns3::Ipv4InterfaceContainer::GetAddress(uint32_t i, uint32_t j=0) const [member function]
     cls.add_method('GetAddress', 
                    'ns3::Ipv4Address', 
-                   [param('uint32_t', 'i')], 
+                   [param('uint32_t', 'i'), param('uint32_t', 'j', default_value='0')], 
                    is_const=True)
     ## ipv4-interface-container.h: void ns3::Ipv4InterfaceContainer::SetMetric(uint32_t i, uint16_t metric) [member function]
     cls.add_method('SetMetric', 

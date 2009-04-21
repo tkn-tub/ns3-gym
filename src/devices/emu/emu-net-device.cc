@@ -68,6 +68,11 @@ EmuNetDevice::GetTypeId (void)
                    Mac48AddressValue (Mac48Address ("ff:ff:ff:ff:ff:ff")),
                    MakeMac48AddressAccessor (&EmuNetDevice::m_address),
                    MakeMac48AddressChecker ())
+    .AddAttribute ("DeviceName", 
+                   "The name of the underlying real device (e.g. eth1).",
+                   StringValue ("eth1"),
+                   MakeStringAccessor (&EmuNetDevice::m_deviceName),
+                   MakeStringChecker ())
     .AddAttribute ("Start", 
                    "The simulation time at which to spin up the device thread.",
                    TimeValue (Seconds (0.)),

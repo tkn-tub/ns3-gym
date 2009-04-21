@@ -170,10 +170,10 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
   InetSocketAddress ad = InetSocketAddress::ConvertFrom (toAddress);
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
   Ipv4Address dst = ad.GetIpv4 ();
-  uint32_t localIfIndex;
-  if (ipv4->GetIfIndexForDestination(dst, localIfIndex))
+  uint32_t localInterface;
+  if (ipv4->GetInterfaceForDestination(dst, localInterface))
     {
-      ipv4->Send (p, ipv4->GetAddress (localIfIndex), dst, m_protocol);
+      ipv4->Send (p, ipv4->GetSourceAddress (dst), dst, m_protocol);
     }
   else
     {
