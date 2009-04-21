@@ -253,9 +253,10 @@ def configure(conf):
             env.append_value("LINKFLAGS", "-Wl,--enable-auto-import")
         cxx, = env['CXX']
         p = subprocess.Popen([cxx, '-print-file-name=libstdc++.so'], stdout=subprocess.PIPE)
-        libstdcxx = p.stdout.read().strip()
+        libstdcxx_location = os.path.dirname(p.stdout.read().strip())
         p.wait()
-        conf.env.append_value('NS3_MODULE_PATH', os.path.dirname(libstdcxx))
+        if libstdcxx_location:
+            conf.env.append_value('NS3_MODULE_PATH', libstdcxx_location)
 
     conf.sub_config('src')
     conf.sub_config('utils')
@@ -524,7 +525,8 @@ def check(bld):
 
     if env['ENABLE_PYTHON_BINDINGS']:
         print "-- Running NS-3 Python bindings unit tests..."
-        wutils.run_argv([env['PYTHON'], os.path.join("utils", "python-unit-tests.py")], env, proc_env)
+        wutils.run_argv([env['PYTHON'], os.path.join("utils", "python-unit-tests.py")],
+                        env, proc_env, force_no_valgrind=True)
     else:
         print "-- Skipping NS-3 Python bindings unit tests: Python bindings not enabled."
 
