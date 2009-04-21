@@ -174,7 +174,7 @@ def _check_compilation_flag(conf, flag):
     try:
         retval = conf.run_c_code(code='#include <stdio.h>\nint main() { return 0; }\n',
                                  env=env, compile_filename='test.cc',
-                                 compile_mode='cxx',type='program', execute=False)
+                                 compile_mode='cxx',type='cprogram', execute=False)
     except Configure.ConfigurationError:
         ok = False
     else:
@@ -296,10 +296,11 @@ class SuidBuildTask(Task.TaskBase):
     after = 'cxx_link cc_link'
     maxjobs = 1
     def __init__(self, bld, program):
+        self.bld = bld
         self.m_display = 'build-suid'
         self.__program = program
         self.__env = bld.env.copy ()
-        super(SuidBuildTask, self).__init__()
+        super(SuidBuildTask, self).__init__(generator=self)
         try:
             program_obj = wutils.find_program(self.__program.target, self.__env)
         except ValueError, ex:
@@ -498,7 +499,7 @@ def check(bld):
     "run the NS-3 unit tests"
     Scripting.build(bld)
     ## generate the trace sources list docs
-    env = bld.env
+    env = wutils.bld.env
     proc_env = wutils.get_proc_env()
     try:
         program_obj = wutils.find_program('print-introspected-doxygen', env)
@@ -514,7 +515,7 @@ def check(bld):
         out.close()
 
     print "-- Running NS-3 C++ core unit tests..."
-    wutils.run_program('run-tests', wutils.get_command_template(env))
+    wutils.run_program('run-tests', env, wutils.get_command_template(env))
 
     if env['ENABLE_PYTHON_BINDINGS']:
         print "-- Running NS-3 Python bindings unit tests..."
