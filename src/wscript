@@ -72,7 +72,8 @@ def create_ns3_module(bld, name, dependencies=()):
     module.target = module.name
     module.add_objects = ['ns3-' + dep for dep in dependencies]
     module.module_deps = list(dependencies)
-    module.env.append_value('CXXFLAGS', module.env['shlib_CXXFLAGS'])
+    if not module.env['ENABLE_STATIC_NS3']:
+        module.env.append_value('CXXFLAGS', module.env['shlib_CXXFLAGS'])
     module.env.append_value('CXXDEFINES', "NS3_MODULE_COMPILATION")
     return module
 
