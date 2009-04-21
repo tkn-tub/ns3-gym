@@ -253,9 +253,10 @@ def configure(conf):
             env.append_value("LINKFLAGS", "-Wl,--enable-auto-import")
         cxx, = env['CXX']
         p = subprocess.Popen([cxx, '-print-file-name=libstdc++.so'], stdout=subprocess.PIPE)
-        libstdcxx = p.stdout.read().strip()
+        libstdcxx_location = os.path.dirname(p.stdout.read().strip())
         p.wait()
-        conf.env.append_value('NS3_MODULE_PATH', os.path.dirname(libstdcxx))
+        if libstdcxx_location:
+            conf.env.append_value('NS3_MODULE_PATH', libstdcxx_location)
 
     conf.sub_config('src')
     conf.sub_config('utils')
