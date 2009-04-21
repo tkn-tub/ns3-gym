@@ -29,36 +29,42 @@ class Packet;
 /**
  * \ingroup mesh
  * 
- * \brief Enum of all known information element id. 
+ * \brief Enum of all known information element id (aka tags). 
  * 
  * For now only 802.11s (mesh) related elements are supported here (so 11S prefix), 
  * but this can change in future.
+ * 
+ * Note that 802.11s element ids are not yet officially assigned, we use ones 
+ * compatible with open80211s (http://o11s.org/) implementation.   
  */
 enum WifiElementId {
-  IE11S_MESH_CONFIGURATION = 18,
-  IE11S_MESH_ID,
-  IE11S_LINK_METRIC_REPORT,
-  IE11S_CONGESTION_NOTIFICATION,
-  IE11S_PEER_LINK_MANAGEMENT,
-  IE11S_MESH_CHANNEL_SWITCH_ANNOUNCEMENT,
-  IE11S_MESH_TIM,
-  IE11S_AWAKE_WINDOW,
-  IE11S_SYNCHRONIZATION_PROTOCOL,
-  IE11S_BEACON_TIMING,
-  IE11S_MDAOP_SETUP_REQUEST,
-  IE11S_MDAOP_SETUP_REPLY,
-  IE11S_MDAOP_ADVERTISEMENT,
-  IE11S_MDAOP_SET_TEARDOWN,
-  IE11S_CONNECTIVITY_REPORT,
-  IE11S_PORTAL_ANNOUNCEMENT,
-  IE11S_RANN,
-  IE11S_PREQ,
-  IE11S_PREP,
-  IE11S_PERR,
-  IE11S_PROXY_UPDATE,
-  IE11S_PROXY_UPDATE_CONFIRMATION,
-  IE11S_MSCIE,
-  IE11S_MSAIE,
+  IE11S_LINK_METRIC_REPORT              = 20,
+  IE11S_CONGESTION_NOTIFICATION         = 21,
+  IE11S_MESH_CHANNEL_SWITCH_ANNOUNCEMENT= 23,
+  IE11S_MESH_TIM                        = 24,
+  IE11S_AWAKE_WINDOW                    = 25,
+  IE11S_SYNCHRONIZATION_PROTOCOL        = 26,
+  IE11S_BEACON_TIMING                   = 27,
+  IE11S_MDAOP_SETUP_REQUEST             = 28,
+  IE11S_MDAOP_SETUP_REPLY               = 29,
+  IE11S_MDAOP_ADVERTISEMENT             = 30,
+  IE11S_MDAOP_SET_TEARDOWN              = 31,
+  IE11S_CONNECTIVITY_REPORT             = 32,
+  IE11S_PORTAL_ANNOUNCEMENT             = 33,
+  IE11S_RANN                            = 34,
+  IE11S_PROXY_UPDATE                    = 38,
+  IE11S_PROXY_UPDATE_CONFIRMATION       = 39,
+  IE11S_MSCIE                           = 40,
+  IE11S_MSAIE                           = 41,
+  
+  /* this ID are compatible with open80211s implementation */
+  IE11S_MESH_CONFIGURATION              = 51,
+  IE11S_MESH_ID                         = 52,
+  IE11S_PEER_LINK_MANAGEMENT            = 53,
+  /* 54 - 67 */
+  IE11S_PREQ                            = 68,
+  IE11S_PREP                            = 69,
+  IE11S_PERR                            = 70, 
 };  
   
 /**

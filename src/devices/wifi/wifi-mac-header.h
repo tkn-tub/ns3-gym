@@ -44,7 +44,8 @@ enum WifiMacType_e {
   WIFI_MAC_MGT_PROBE_RESPONSE,
   WIFI_MAC_MGT_AUTHENTICATION,
   WIFI_MAC_MGT_DEAUTHENTICATION,
-//Mesh management frames:  
+  WIFI_MAC_MGT_ACTION,
+  WIFI_MAC_MGT_ACTION_NO_ACK,
   WIFI_MAC_MGT_MULTIHOP_ACTION,
 
   WIFI_MAC_DATA,
@@ -85,6 +86,7 @@ public:
   void SetProbeResp (void);
   void SetBeacon (void);
   void SetTypeData (void);
+  void SetAction ();
   void SetMultihopAction();
   void SetDsFrom (void);
   void SetDsNotFrom (void);
@@ -132,7 +134,8 @@ public:
   bool IsDisassociation (void) const;
   bool IsAuthentication (void) const;
   bool IsDeauthentication (void) const;
-  bool IsMultihopAction(void) const;
+  bool IsAction () const;
+  bool IsMultihopAction () const;
   uint16_t GetRawDuration (void) const;
   Time GetDuration (void) const;
   uint16_t GetSequenceControl (void) const;

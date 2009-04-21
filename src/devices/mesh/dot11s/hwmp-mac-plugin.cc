@@ -83,14 +83,15 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
       if(m_protocol->DropDataFrame (meshHdr.GetMeshSeqno (), header.GetAddr4 ()) )
         return false;
   }
-  if(header.IsMultihopAction())
+  if(header.IsAction())
   {
+    // TODO don't use multihop header
     Dot11sMacHeader meshHdr;
     packet->RemoveHeader (meshHdr);
     //parse multihop action header:
     WifiMeshMultihopActionHeader multihopHdr;
     packet->RemoveHeader (multihopHdr);
-    WifiMeshMultihopActionHeader::ACTION_VALUE actionValue = multihopHdr.GetAction ();
+    WifiMeshMultihopActionHeader::ActionValue actionValue = multihopHdr.GetAction ();
     if(multihopHdr.GetCategory () != WifiMeshMultihopActionHeader::MESH_PATH_SELECTION)
       return true;
     if(meshHdr.GetMeshTtl () == 0)
@@ -192,7 +193,7 @@ HwmpMacPlugin::SendOnePreq ()
   packet->AddHeader(m_preqQueue[0]);
   //Multihop action header:
   WifiMeshMultihopActionHeader multihopHdr;
-  WifiMeshMultihopActionHeader::ACTION_VALUE action;
+  WifiMeshMultihopActionHeader::ActionValue action;
   action.pathSelection = WifiMeshMultihopActionHeader::PATH_REQUEST;
   multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
   packet->AddHeader (multihopHdr);
@@ -205,8 +206,9 @@ HwmpMacPlugin::SendOnePreq ()
   meshHdr.SetAddr4(m_preqQueue[0].GetOriginatorAddress ());
   packet->AddHeader (meshHdr);
   //create 802.11 header:
+  // TODO don't use me
   WifiMacHeader hdr;
-  hdr.SetMultihopAction ();
+  hdr.SetAction ();
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   hdr.SetAddr2 (m_parent->GetAddress ());
@@ -237,7 +239,7 @@ HwmpMacPlugin::SendOnePerr()
   packet->AddHeader(m_myPerr.perr);
   //Multihop action header:
   WifiMeshMultihopActionHeader multihopHdr;
-  WifiMeshMultihopActionHeader::ACTION_VALUE action;
+  WifiMeshMultihopActionHeader::ActionValue action;
   action.pathSelection = WifiMeshMultihopActionHeader::PATH_ERROR;
   multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
   packet->AddHeader (multihopHdr);
@@ -250,8 +252,9 @@ HwmpMacPlugin::SendOnePerr()
   meshHdr.SetAddr4(m_protocol->GetAddress ());
   packet->AddHeader (meshHdr);
   //create 802.11 header:
+  // TODO don't use me
   WifiMacHeader hdr;
-  hdr.SetMultihopAction ();
+  hdr.SetAction ();
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   hdr.SetAddr2 (m_parent->GetAddress ());
@@ -273,7 +276,7 @@ HwmpMacPlugin::SendPrep (IePrep prep, Mac48Address receiver)
   packet->AddHeader(prep);
   //Multihop action header:
   WifiMeshMultihopActionHeader multihopHdr;
-  WifiMeshMultihopActionHeader::ACTION_VALUE action;
+  WifiMeshMultihopActionHeader::ActionValue action;
   action.pathSelection = WifiMeshMultihopActionHeader::PATH_REPLY;
   multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
   packet->AddHeader (multihopHdr);
@@ -286,8 +289,9 @@ HwmpMacPlugin::SendPrep (IePrep prep, Mac48Address receiver)
   meshHdr.SetAddr4(prep.GetOriginatorAddress ());
   packet->AddHeader (meshHdr);
   //create 802.11 header:
+  // TODO don't use me
   WifiMacHeader hdr;
-  hdr.SetMultihopAction ();
+  hdr.SetAction ();
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   hdr.SetAddr1 (receiver);

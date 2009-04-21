@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("TestMeshScript");
 int
 main (int argc, char *argv[])
 {
-  // Creating square topology with nNodes x nNodes grid
+  // Creating square topology with xSize x ySize grid
   int       xSize           = 3;
   int       ySize           = 3;
   double    step            = 100.0;
@@ -46,10 +46,10 @@ main (int argc, char *argv[])
   double    totalTime       = 100.0;
   double    packetInterval  = 0.001;
   uint16_t  packetSize      = 1024;
-  uint32_t  nIfaces         = 2;
+  uint32_t  nIfaces         = 1;
   bool      chan            = true;
   bool      pcap            = false;
-  uint64_t  seed            =1;
+  uint64_t  seed            = 1;
   
   // Command line arguments
   CommandLine cmd;
@@ -57,9 +57,9 @@ main (int argc, char *argv[])
   cmd.AddValue ("y-size", "Number of rows in a grid. [6]", ySize);
   cmd.AddValue ("step",   "Size of edge in our grid, meters. [100 m]", step);
   cmd.AddValue ("start",  "Maximum random start delay, seconds. [0.1 s]", randomStart);
-  cmd.AddValue ("time",  "Simulation time", totalTime);
-  cmd.AddValue ("packetInterval",  "Interval between packets", packetInterval);
-  cmd.AddValue ("packetSize",  "Size of packets", packetSize);
+  cmd.AddValue ("time",  "Simulation time, seconds [100 s]", totalTime);
+  cmd.AddValue ("packet-interval",  "Interval between packets, seconds [0.001 s]", packetInterval);
+  cmd.AddValue ("packet-size",  "Size of packets", packetSize);
   cmd.AddValue ("interfaces", "Number of radio interfaces used by each mesh point. [1]", nIfaces);
   cmd.AddValue ("channels",   "Use different frequency channels for different interfaces. [0]", chan);
   cmd.AddValue ("pcap",   "Enable PCAP traces on interfaces. [0]", pcap);
@@ -67,6 +67,7 @@ main (int argc, char *argv[])
   
   cmd.Parse (argc, argv);
   NS_LOG_DEBUG ("Grid:" << xSize << "*" << ySize);
+  NS_LOG_DEBUG ("Simulation time: " << totalTime << " s");
   SeedManager::SetSeed(seed);
   // Creating nodes
   NodeContainer nodes;

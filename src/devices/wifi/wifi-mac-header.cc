@@ -125,11 +125,19 @@ WifiMacHeader::SetTypeData (void)
   m_ctrlType = TYPE_DATA;
   m_ctrlSubtype = 0;
 }
+
+void
+WifiMacHeader::SetAction (void)
+{
+ m_ctrlType = TYPE_MGT;
+ m_ctrlSubtype = 0x0D;
+}
+
 void
 WifiMacHeader::SetMultihopAction (void)
 {
  m_ctrlType = TYPE_MGT;
- m_ctrlSubtype = 15;
+ m_ctrlSubtype = 0x0F;
 }
 
 void 
@@ -195,6 +203,12 @@ WifiMacHeader::SetType (enum WifiMacType_e type)
   case WIFI_MAC_MGT_DEAUTHENTICATION:
     m_ctrlType = TYPE_MGT;
     m_ctrlSubtype = 12;
+  case WIFI_MAC_MGT_ACTION:
+    m_ctrlType = TYPE_MGT;
+    m_ctrlSubtype = 13;
+  case WIFI_MAC_MGT_ACTION_NO_ACK:
+    m_ctrlType = TYPE_MGT;
+    m_ctrlSubtype = 14;
   case WIFI_MAC_MGT_MULTIHOP_ACTION:
     m_ctrlType = TYPE_MGT;
     m_ctrlSubtype = 15;
@@ -370,7 +384,13 @@ WifiMacHeader::GetType (void) const
     case 12:
       return WIFI_MAC_MGT_DEAUTHENTICATION;
       break;
-   case 15:
+    case 13:
+      return WIFI_MAC_MGT_ACTION;
+      break;
+    case 14:
+      return WIFI_MAC_MGT_ACTION_NO_ACK;
+      break;
+    case 15:
       return WIFI_MAC_MGT_MULTIHOP_ACTION;
       break;
 
@@ -567,6 +587,11 @@ WifiMacHeader::IsDeauthentication (void) const
   return (GetType () == WIFI_MAC_MGT_DEAUTHENTICATION)?true:false;
 }
 bool
+WifiMacHeader::IsAction (void) const
+{
+  return (GetType () == WIFI_MAC_MGT_ACTION)?true:false;
+}
+bool
 WifiMacHeader::IsMultihopAction (void) const
 {
   return (GetType () == WIFI_MAC_MGT_MULTIHOP_ACTION)?true:false;
@@ -755,6 +780,9 @@ case WIFI_MAC_ ## x: \
     FOO (MGT_PROBE_RESPONSE);
     FOO (MGT_AUTHENTICATION);
     FOO (MGT_DEAUTHENTICATION);
+    FOO (MGT_ACTION);
+    FOO (MGT_ACTION_NO_ACK);
+    FOO (MGT_MULTIHOP_ACTION);
     
     FOO (DATA);
     FOO (DATA_CFACK);
@@ -839,6 +867,12 @@ WifiMacHeader::Print (std::ostream &os) const
          << ", BSSID=" << m_addr3 << ", FragNumber=" << m_seqFrag
          << ", SeqNumber=" << m_seqSeq;
       break;
+    case WIFI_MAC_MGT_ACTION:
+      // TODO
+    case WIFI_MAC_MGT_ACTION_NO_ACK:
+      // TODO
+    case WIFI_MAC_MGT_MULTIHOP_ACTION:
+      // TODO
     case WIFI_MAC_DATA:
       PrintFrameControl (os);
       os << " Duration/ID=" << m_duration << "us";
@@ -879,7 +913,6 @@ WifiMacHeader::Print (std::ostream &os) const
     case WIFI_MAC_QOSDATA_NULL:
     case WIFI_MAC_QOSDATA_NULL_CFPOLL:
     case WIFI_MAC_QOSDATA_NULL_CFACK_CFPOLL:
-    case WIFI_MAC_MGT_MULTIHOP_ACTION:
       break;
     }
 }

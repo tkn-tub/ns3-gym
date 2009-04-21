@@ -189,51 +189,25 @@ WifiMeshMultihopActionHeader::~WifiMeshMultihopActionHeader ()
 void
 WifiMeshMultihopActionHeader::SetAction (
   WifiMeshMultihopActionHeader::CategoryValue type,
-  WifiMeshMultihopActionHeader::ACTION_VALUE action)
+  WifiMeshMultihopActionHeader::ActionValue action)
 {
+  m_category = type;
+  
   switch (type)
     {
     case MESH_PEER_LINK_MGT:
-      m_category = 4;
-      switch (action.peerLink)
-        {
-        case PEER_LINK_OPEN:
-          m_actionValue = 0;
-          break;
-        case PEER_LINK_CONFIRM:
-          m_actionValue = 1;
-          break;
-        case PEER_LINK_CLOSE:
-          m_actionValue = 2;
-          break;
-        };
-      break;
-    case MESH_LINK_METRIC:
-      m_category = 5;
-      break;
+      {
+        m_actionValue = action.peerLink;
+        break;
+      }
     case MESH_PATH_SELECTION:
-      m_category = 6;
-      switch (action.pathSelection)
-        {
-        case PATH_REQUEST:
-          m_actionValue = 0;
-          break;
-        case PATH_REPLY:
-          m_actionValue = 1;
-          break;
-        case PATH_ERROR:
-          m_actionValue = 2;
-          break;
-        case ROOT_ANNOUNCEMENT:
-          m_actionValue = 3;
-          break;
-        };
-      break;
+      {
+        m_actionValue = action.pathSelection;
+        break;
+      }
+    case MESH_LINK_METRIC:
     case MESH_INTERWORK_ACTION:
-      m_category = 7;
-      break;
     case MESH_RESOURCE_COORDINATION:
-      m_category = 8;
       break;
     };
 }
@@ -242,72 +216,68 @@ WifiMeshMultihopActionHeader::GetCategory ()
 {
   switch (m_category)
     {
-    case 4:
+    case MESH_PEER_LINK_MGT:
       return MESH_PEER_LINK_MGT;
-    case 5:
+    case MESH_LINK_METRIC:
       return MESH_LINK_METRIC;
-    case 6:
+    case MESH_PATH_SELECTION:
       return MESH_PATH_SELECTION;
-    case 7:
+    case MESH_INTERWORK_ACTION:
       return MESH_INTERWORK_ACTION;
-    case 8:
+    case MESH_RESOURCE_COORDINATION:
       return MESH_RESOURCE_COORDINATION;
     default:
       NS_ASSERT (false);
       return MESH_PEER_LINK_MGT;
     }
 }
-WifiMeshMultihopActionHeader::ACTION_VALUE
+WifiMeshMultihopActionHeader::ActionValue
 WifiMeshMultihopActionHeader::GetAction ()
 {
-  ACTION_VALUE retval;
+  ActionValue retval;
   switch (m_category)
     {
-    case 4:
-      //MESH_PEER_LINK_MGT;
+    case MESH_PEER_LINK_MGT:
       switch (m_actionValue)
         {
-        case 0:
+        case PEER_LINK_OPEN:
           retval.peerLink = PEER_LINK_OPEN;
           return retval;
-        case 1:
+        case PEER_LINK_CONFIRM:
           retval.peerLink = PEER_LINK_CONFIRM;
           return retval;
-        case 2:
+        case PEER_LINK_CLOSE:
           retval.peerLink = PEER_LINK_CLOSE;
           return retval;
         default:
           NS_ASSERT (false);
           return retval;
-
         }
-    case 5:
-      //MESH_LINK_METRIC;
-    case 6:
-      //MESH_PATH_SELECTION;
+    case MESH_PATH_SELECTION:
       switch (m_actionValue)
         {
-        case 0:
+        case PATH_REQUEST:
           retval.pathSelection = PATH_REQUEST;
           return retval;
-        case 1:
+        case PATH_REPLY:
           retval.pathSelection = PATH_REPLY;
           return retval;
-        case 2:
+        case PATH_ERROR:
           retval.pathSelection = PATH_ERROR;
           return retval;
-        case 3:
+        case ROOT_ANNOUNCEMENT:
           retval.pathSelection = ROOT_ANNOUNCEMENT;
           return retval;
         default:
           NS_ASSERT (false);
           return retval;
         }
-
-    case 7:
-      //MESH_INTERWORK_ACTION;
-    case 8:
-      //MESH_RESOURCE_COORDINATION;
+    case MESH_LINK_METRIC:
+      // ???
+    case MESH_INTERWORK_ACTION:
+      // ???
+    case MESH_RESOURCE_COORDINATION:
+      // ???
     default:
       NS_ASSERT (false);
       return retval;

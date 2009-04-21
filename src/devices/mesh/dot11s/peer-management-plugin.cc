@@ -72,14 +72,15 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     // Beacon shall not be dropeed. May be needed to another plugins
     return true;
   }
-  if(header.IsMultihopAction())
+  if(header.IsAction())
   {
+    // TODO don't use this
     Dot11sMacHeader meshHdr;
     packet->RemoveHeader (meshHdr);
     WifiMeshMultihopActionHeader multihopHdr;
     //parse multihop action header:
     packet->RemoveHeader (multihopHdr);
-    WifiMeshMultihopActionHeader::ACTION_VALUE actionValue = multihopHdr.GetAction ();
+    WifiMeshMultihopActionHeader::ActionValue actionValue = multihopHdr.GetAction ();
     // If can not handle - just return;
     if(multihopHdr.GetCategory () != WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT)
       return true;
@@ -176,14 +177,14 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
   WifiMeshMultihopActionHeader multihopHdr;
   if (peerElement.SubtypeIsOpen ())
     {
-      WifiMeshMultihopActionHeader::ACTION_VALUE action;
+      WifiMeshMultihopActionHeader::ActionValue action;
       action.peerLink = WifiMeshMultihopActionHeader::PEER_LINK_OPEN;
       fields.subtype = WifiMeshMultihopActionHeader::PEER_LINK_OPEN;
       multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT, action);
     }
   if (peerElement.SubtypeIsConfirm ())
     {
-      WifiMeshMultihopActionHeader::ACTION_VALUE action;
+      WifiMeshMultihopActionHeader::ActionValue action;
       action.peerLink = WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM;
       fields.aid = aid;
       fields.subtype = WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM;
@@ -191,7 +192,7 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
     }
   if (peerElement.SubtypeIsClose ())
     {
-      WifiMeshMultihopActionHeader::ACTION_VALUE action;
+      WifiMeshMultihopActionHeader::ActionValue action;
       action.peerLink = WifiMeshMultihopActionHeader::PEER_LINK_CLOSE;
       fields.subtype = WifiMeshMultihopActionHeader::PEER_LINK_CLOSE;
       fields.reasonCode = peerElement.GetReasonCode ();
@@ -201,15 +202,16 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
   packet->AddHeader (plinkFrame);
   packet->AddHeader (multihopHdr);
   //mesh header:
+  // TODO don't use me
   Dot11sMacHeader meshHdr;
   meshHdr.SetMeshTtl (1);
   meshHdr.SetMeshSeqno (0);
   meshHdr.SetAddressExt(1);
   meshHdr.SetAddr4(m_protocol->GetAddress ());
-  packet->AddHeader (meshHdr);
-  //Wifi Mac header:
+  packet->AddHeader (meshHdr);  
+  // Wifi Mac header:
   WifiMacHeader hdr;
-  hdr.SetMultihopAction ();
+  hdr.SetAction ();
   hdr.SetAddr1 (peerAddress);
   hdr.SetAddr2 (m_parent->GetAddress ());
   hdr.SetAddr3 (peerMpAddress);

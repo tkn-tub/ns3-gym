@@ -89,35 +89,39 @@ class WifiMeshMultihopActionHeader : public Header
 public:
   WifiMeshMultihopActionHeader ();
   ~WifiMeshMultihopActionHeader ();
+      
+  /* Compatible with open80211s implementation */
   enum CategoryValue //table 7-24 staring from 4
   {
-    MESH_PEER_LINK_MGT =4,
-    MESH_LINK_METRIC,
-    MESH_PATH_SELECTION,
-    MESH_INTERWORK_ACTION,
-    MESH_RESOURCE_COORDINATION,
+    MESH_PEER_LINK_MGT          = 30,
+    MESH_LINK_METRIC            = 31,
+    MESH_PATH_SELECTION         = 32,
+    MESH_INTERWORK_ACTION       = 33,
+    MESH_RESOURCE_COORDINATION  = 34,
   };
+  /* Compatible with open80211s implementation */
   enum PeerLinkMgtActionValue
   {
-    PEER_LINK_OPEN = 0,
-    PEER_LINK_CONFIRM,
-    PEER_LINK_CLOSE,
+    PEER_LINK_OPEN              = 0,
+    PEER_LINK_CONFIRM           = 1,
+    PEER_LINK_CLOSE             = 2,
   };
   enum LinkMetricActionValue
   {
-    LINK_METRIC_REQUEST = 0,
+    LINK_METRIC_REQUEST         = 0,
     LINK_METRIC_REPORT,
   };
+  /* Compatible with open80211s implementation */
   enum PathSelectionActionValue
   {
-    PATH_REQUEST = 0,
-    PATH_REPLY,
-    PATH_ERROR,
-    ROOT_ANNOUNCEMENT,
+    PATH_REQUEST                = 0,
+    PATH_REPLY                  = 1,
+    PATH_ERROR                  = 2,
+    ROOT_ANNOUNCEMENT           = 3,
   };
   enum InterworkActionValue
   {
-    PORTAL_ANNOUNCEMENT = 0,
+    PORTAL_ANNOUNCEMENT         = 0,
   };
   enum ResourceCoordinationActionValue
   {
@@ -139,10 +143,11 @@ public:
     enum PathSelectionActionValue  pathSelection;
     enum InterworkActionValue  interwork;
     enum ResourceCoordinationActionValue resourceCoordination;
-  } ACTION_VALUE;
-  void   SetAction (enum CategoryValue type,ACTION_VALUE action);
-  enum CategoryValue GetCategory ();
-  ACTION_VALUE  GetAction ();
+  } ActionValue;
+  void   SetAction (enum CategoryValue type,ActionValue action);
+  
+  CategoryValue GetCategory ();
+  ActionValue  GetAction ();
   static TypeId  GetTypeId ();
   virtual TypeId  GetInstanceTypeId () const;
   virtual void  Print (std::ostream &os) const;
