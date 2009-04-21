@@ -27,7 +27,6 @@
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/simulator.h"
 #include "ns3/wifi-mac-header.h"
-
 namespace ns3 {
 namespace dot11s {
 PeerManagerMacPlugin::PeerManagerMacPlugin (uint32_t interface, Ptr<PeerManagementProtocol> protocol)
@@ -74,9 +73,6 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
   }
   if(header.IsAction())
   {
-    // TODO don't use this
-    Dot11sMacHeader meshHdr;
-    packet->RemoveHeader (meshHdr);
     WifiMeshMultihopActionHeader multihopHdr;
     //parse multihop action header:
     packet->RemoveHeader (multihopHdr);
@@ -84,10 +80,8 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     // If can not handle - just return;
     if(multihopHdr.GetCategory () != WifiMeshMultihopActionHeader::MESH_PEER_LINK_MGT)
       return true;
-    NS_ASSERT(meshHdr.GetMeshTtl () == 1);
-    NS_ASSERT(meshHdr.GetAddressExt () == 1);
     Mac48Address peerAddress = header.GetAddr2 ();
-    Mac48Address peerMpAddress = meshHdr.GetAddr4 ();
+    Mac48Address peerMpAddress = header.GetAddr3 ();
     PeerLinkFrameStart::PlinkFrameStartFields fields;
     {
       PeerLinkFrameStart peerFrame;
@@ -201,20 +195,13 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
   plinkFrame.SetPlinkFrameStart(fields);
   packet->AddHeader (plinkFrame);
   packet->AddHeader (multihopHdr);
-  //mesh header:
-  // TODO don't use me
-  Dot11sMacHeader meshHdr;
-  meshHdr.SetMeshTtl (1);
-  meshHdr.SetMeshSeqno (0);
-  meshHdr.SetAddressExt(1);
-  meshHdr.SetAddr4(m_protocol->GetAddress ());
-  packet->AddHeader (meshHdr);  
   // Wifi Mac header:
   WifiMacHeader hdr;
   hdr.SetAction ();
   hdr.SetAddr1 (peerAddress);
   hdr.SetAddr2 (m_parent->GetAddress ());
-  hdr.SetAddr3 (peerMpAddress);
+  //Addr is not used here, we use it as our MP address
+  hdr.SetAddr3 (m_protocol->GetAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   m_parent->SendManagementFrame(packet, hdr);

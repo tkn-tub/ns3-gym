@@ -86,16 +86,12 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
   if(header.IsAction())
   {
     // TODO don't use multihop header
-    Dot11sMacHeader meshHdr;
-    packet->RemoveHeader (meshHdr);
     //parse multihop action header:
     WifiMeshMultihopActionHeader multihopHdr;
     packet->RemoveHeader (multihopHdr);
     WifiMeshMultihopActionHeader::ActionValue actionValue = multihopHdr.GetAction ();
     if(multihopHdr.GetCategory () != WifiMeshMultihopActionHeader::MESH_PATH_SELECTION)
       return true;
-    if(meshHdr.GetMeshTtl () == 0)
-        return false;
     switch (actionValue.pathSelection)
     {
       case WifiMeshMultihopActionHeader::PATH_REQUEST:
@@ -197,16 +193,7 @@ HwmpMacPlugin::SendOnePreq ()
   action.pathSelection = WifiMeshMultihopActionHeader::PATH_REQUEST;
   multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
   packet->AddHeader (multihopHdr);
-  //Mesh header
-  Dot11sMacHeader meshHdr;
-  meshHdr.SetMeshTtl (m_protocol->GetMaxTtl ());
-  //TODO: should seqno be here?
-  meshHdr.SetMeshSeqno (0);
-  meshHdr.SetAddressExt(1);
-  meshHdr.SetAddr4(m_preqQueue[0].GetOriginatorAddress ());
-  packet->AddHeader (meshHdr);
   //create 802.11 header:
-  // TODO don't use me
   WifiMacHeader hdr;
   hdr.SetAction ();
   hdr.SetDsNotFrom ();
@@ -243,16 +230,7 @@ HwmpMacPlugin::SendOnePerr()
   action.pathSelection = WifiMeshMultihopActionHeader::PATH_ERROR;
   multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
   packet->AddHeader (multihopHdr);
-  //Mesh header
-  Dot11sMacHeader meshHdr;
-  meshHdr.SetMeshTtl (m_protocol->GetMaxTtl ());
-  //TODO: should seqno be here?
-  meshHdr.SetMeshSeqno (0);
-  meshHdr.SetAddressExt(1);
-  meshHdr.SetAddr4(m_protocol->GetAddress ());
-  packet->AddHeader (meshHdr);
   //create 802.11 header:
-  // TODO don't use me
   WifiMacHeader hdr;
   hdr.SetAction ();
   hdr.SetDsNotFrom ();
@@ -280,16 +258,7 @@ HwmpMacPlugin::SendPrep (IePrep prep, Mac48Address receiver)
   action.pathSelection = WifiMeshMultihopActionHeader::PATH_REPLY;
   multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
   packet->AddHeader (multihopHdr);
-  //Mesh header
-  Dot11sMacHeader meshHdr;
-  meshHdr.SetMeshTtl (m_protocol->GetMaxTtl ());
-  //TODO: should seqno be here?
-  meshHdr.SetMeshSeqno (0);
-  meshHdr.SetAddressExt(1);
-  meshHdr.SetAddr4(prep.GetOriginatorAddress ());
-  packet->AddHeader (meshHdr);
   //create 802.11 header:
-  // TODO don't use me
   WifiMacHeader hdr;
   hdr.SetAction ();
   hdr.SetDsNotFrom ();
