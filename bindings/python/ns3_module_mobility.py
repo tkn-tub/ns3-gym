@@ -707,6 +707,14 @@ def register_Ns3HierarchicalMobilityModel_methods(root_module, cls):
                    'ns3::Ptr< ns3::MobilityModel >', 
                    [], 
                    is_const=True)
+    ## hierarchical-mobility-model.h: void ns3::HierarchicalMobilityModel::SetChild(ns3::Ptr<ns3::MobilityModel> model) [member function]
+    cls.add_method('SetChild', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'model')])
+    ## hierarchical-mobility-model.h: void ns3::HierarchicalMobilityModel::SetParent(ns3::Ptr<ns3::MobilityModel> model) [member function]
+    cls.add_method('SetParent', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'model')])
     ## hierarchical-mobility-model.h: ns3::Vector ns3::HierarchicalMobilityModel::DoGetPosition() const [member function]
     cls.add_method('DoGetPosition', 
                    'ns3::Vector', 

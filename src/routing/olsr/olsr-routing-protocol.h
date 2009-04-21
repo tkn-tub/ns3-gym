@@ -125,7 +125,7 @@ private:
                              const Ipv4Header &ipHeader,
                              Ptr<Packet> packet,
                              RouteReplyCallback routeReply);
-  virtual bool RequestIfIndex (Ipv4Address destination, 
+  virtual bool RequestInterface (Ipv4Address destination, 
                                uint32_t& ifIndex);
 
 

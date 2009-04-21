@@ -42,16 +42,16 @@ StaticMulticastRouteHelper::AddMulticastRoute (
 {
   Ptr<Ipv4> ipv4 = n->GetObject<Ipv4> ();
 
-  // We need to convert the NetDeviceContainer to an array of ifIndex
+  // We need to convert the NetDeviceContainer to an array of interface
   std::vector<uint32_t> outputInterfaces;
   for (NetDeviceContainer::Iterator i = output.Begin (); i != output.End (); ++i)
     {
       Ptr<NetDevice> nd = *i;
-      uint32_t oifIndex = ipv4->FindInterfaceForDevice (nd);
-      outputInterfaces.push_back(oifIndex);
+      uint32_t ointerface = ipv4->FindInterfaceForDevice (nd);
+      outputInterfaces.push_back(ointerface);
     }
-  uint32_t iifIndex = ipv4->FindInterfaceForDevice (input);
-  ipv4->AddMulticastRoute (source, group, iifIndex, outputInterfaces);
+  uint32_t iinterface = ipv4->FindInterfaceForDevice (input);
+  ipv4->AddMulticastRoute (source, group, iinterface, outputInterfaces);
 }
 
 void  
@@ -97,8 +97,8 @@ StaticMulticastRouteHelper::SetDefaultMulticastRoute (
   Ptr<NetDevice> nd)
 {
   Ptr<Ipv4> ipv4 = n->GetObject<Ipv4> ();
-  uint32_t ifIndexSrc = ipv4->FindInterfaceForDevice (nd);
-  ipv4->SetDefaultMulticastRoute (ifIndexSrc);
+  uint32_t interfaceSrc = ipv4->FindInterfaceForDevice (nd);
+  ipv4->SetDefaultMulticastRoute (interfaceSrc);
 }
 
 void

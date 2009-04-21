@@ -41,7 +41,7 @@ int main ()
                                  conf.env['ENABLE_THREADING'],
                                  "<pthread.h> include not detected")
 
-    conf.write_config_header('ns3/core-config.h')
+    conf.write_config_header('ns3/core-config.h', project_root_relative=True)
 
 def build(bld):
     core = bld.create_ns3_module('core')

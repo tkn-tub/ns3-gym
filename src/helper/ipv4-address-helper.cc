@@ -131,19 +131,19 @@ Ipv4AddressHelper::Assign (const NetDeviceContainer &c)
     Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
     NS_ASSERT_MSG (ipv4, "Ipv4AddressHelper::Allocate(): Bad ipv4");
 
-    int32_t ifIndex = ipv4->FindInterfaceForDevice (device);
-    if (ifIndex == -1)
+    int32_t interface = ipv4->FindInterfaceForDevice (device);
+    if (interface == -1)
       {
-        ifIndex = ipv4->AddInterface (device);
+        interface = ipv4->AddInterface (device);
       }
-    NS_ASSERT_MSG (ifIndex >= 0, "Ipv4AddressHelper::Allocate(): "
+    NS_ASSERT_MSG (interface >= 0, "Ipv4AddressHelper::Allocate(): "
       "Interface index not found");
 
-    ipv4->SetAddress (ifIndex, NewAddress ());
-    ipv4->SetNetworkMask (ifIndex, m_mask);
-    ipv4->SetMetric (ifIndex, 1);
-    ipv4->SetUp (ifIndex);
-    retval.Add (ipv4, ifIndex);
+    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (NewAddress (), m_mask);
+    ipv4->AddAddress (interface, ipv4Addr);
+    ipv4->SetMetric (interface, 1);
+    ipv4->SetUp (interface);
+    retval.Add (ipv4, interface);
   }
   return retval;
 }

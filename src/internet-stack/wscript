@@ -92,7 +92,6 @@ def build(bld):
         'udp-socket-impl.cc',
         'tcp-socket-impl.cc',
         'ipv4-end-point-demux.cc',
-        'ipv4-impl.cc',
         'udp-socket-factory-impl.cc',
         'tcp-socket-factory-impl.cc',
         'pending-data.cc',

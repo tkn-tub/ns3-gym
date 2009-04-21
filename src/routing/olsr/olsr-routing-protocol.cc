@@ -232,7 +232,8 @@ void RoutingProtocol::Start ()
       Ipv4Address loopback ("127.0.0.1");
       for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
         {
-          Ipv4Address addr = m_ipv4->GetAddress (i);
+          // Use primary address, if multiple
+          Ipv4Address addr = m_ipv4->GetAddress (i, 0).GetLocal ();
           if (addr != loopback)
             {
               m_mainAddress = addr;
@@ -248,7 +249,7 @@ void RoutingProtocol::Start ()
   Ipv4Address loopback ("127.0.0.1");
   for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
     {
-      Ipv4Address addr = m_ipv4->GetAddress (i);
+      Ipv4Address addr = m_ipv4->GetAddress (i, 0).GetLocal ();
       if (addr == loopback)
         continue;
 
@@ -285,7 +286,7 @@ void RoutingProtocol::Start ()
 
 void RoutingProtocol::SetMainInterface (uint32_t interface)
 {
-  m_mainAddress = m_ipv4->GetAddress (interface);
+  m_mainAddress = m_ipv4->GetAddress (interface, 0).GetLocal ();
 }
 
 
@@ -1544,7 +1545,7 @@ RoutingProtocol::SendMid ()
   Ipv4Address loopback ("127.0.0.1");
   for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
     {
-      Ipv4Address addr = m_ipv4->GetAddress (i);
+      Ipv4Address addr = m_ipv4->GetAddress (i, 0).GetLocal ();
       if (addr != m_mainAddress && addr != loopback)
         mid.interfaceAddresses.push_back (addr);
     }
@@ -2590,7 +2591,7 @@ RoutingProtocol::RequestRoute (uint32_t ifIndex,
 }
 
 bool
-RoutingProtocol::RequestIfIndex (Ipv4Address destination,
+RoutingProtocol::RequestInterface (Ipv4Address destination,
                               uint32_t& ifIndex)
 {
   RoutingTableEntry entry1, entry2;
@@ -2652,10 +2653,13 @@ RoutingProtocol::AddEntry (Ipv4Address const &dest,
   RoutingTableEntry entry;
   for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
     {
-      if (m_ipv4->GetAddress (i) == interfaceAddress)
+      for (uint32_t j = 0; j < m_ipv4->GetNAddresses (i); j++)
         {
-          AddEntry (dest, next, i, distance);
-          return;
+          if (m_ipv4->GetAddress (i,j).GetLocal () == interfaceAddress)
+            {
+              AddEntry (dest, next, i, distance);
+              return;
+            }
         }
     }
   NS_ASSERT (false); // should not be reached

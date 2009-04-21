@@ -92,9 +92,9 @@ public:
  * If the destination address is a multicast, then the method will return
  * false.
  *
- * @param ifIndex The network interface index over which the packed was 
- * received.  If the packet is from a local source, ifIndex will be set to
- * Ipv4RoutingProtocol::IF_INDEX_ANY.
+ * @param interface The network interface index over which the packed was 
+ * received.  If the packet is from a local source, interface will be set to
+ * Ipv4RoutingProtocol::INTERFACE_INDEX_ANY.
  * @param ipHeader the Ipv4Header containing the source and destination IP
  * addresses for the packet.
  * @param packet The packet to be sent if a route is found.
@@ -107,7 +107,7 @@ public:
  * @see Ipv4GlobalRouting
  * @see Ipv4RoutingProtocol
  */
-  virtual bool RequestRoute (uint32_t ifIndex,
+  virtual bool RequestRoute (uint32_t interface,
                              Ipv4Header const &ipHeader,
                              Ptr<Packet> packet,
                              RouteReplyCallback routeReply);
@@ -126,14 +126,14 @@ public:
  * given destination.
  *
  * If there are multiple paths out of the node, the resolution is performed
- * by Ipv4L3Protocol::GetIfIndexforDestination which has access to more 
+ * by Ipv4L3Protocol::GetInterfaceforDestination which has access to more 
  * contextual information that is useful for making a determination.
  *
  * This method will return false on a multicast address.
  *
  * @param destination The Ipv4Address if the destination of a hypothetical 
  * packet.  This may be a multicast group address.
- * @param ifIndex A reference to the interface index over which a packet
+ * @param interface A reference to the interface index over which a packet
  * sent to this destination would be sent.
  * @return Returns true if a route is found to the destination that involves
  * a single output interface index, otherwise returns false indicating that
@@ -143,7 +143,7 @@ public:
  * @see Ipv4RoutingProtocol
  * @see Ipv4L3Protocol
  */
-  virtual bool RequestIfIndex (Ipv4Address destination, uint32_t& ifIndex);
+  virtual bool RequestInterface (Ipv4Address destination, uint32_t& interface);
 
 /**
  * @brief Add a host route to the global routing table.

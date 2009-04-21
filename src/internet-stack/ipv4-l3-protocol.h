@@ -53,7 +53,7 @@ class Icmpv4L4Protocol;
  * This is the actual implementation of IP.  It contains APIs to send and
  * receive packets at the IP layer, as well as APIs for IP routing.
  */
-class Ipv4L3Protocol : public Object
+class Ipv4L3Protocol : public Ipv4
 {
 public:
   static TypeId GetTypeId (void);
@@ -158,7 +158,7 @@ public:
                Ipv4RoutingProtocol::RouteReplyCallback routeReply);
 
   uint32_t GetNRoutes (void);
-  Ipv4Route *GetRoute (uint32_t i);
+  Ipv4Route GetRoute (uint32_t i);
   void RemoveRoute (uint32_t i);
 
   void AddMulticastRoute (Ipv4Address origin,
@@ -169,7 +169,7 @@ public:
   void SetDefaultMulticastRoute (uint32_t onputInterface);
 
   uint32_t GetNMulticastRoutes (void) const;
-  Ipv4MulticastRoute *GetMulticastRoute (uint32_t i) const;
+  Ipv4MulticastRoute GetMulticastRoute (uint32_t i) const;
 
   void RemoveMulticastRoute (Ipv4Address origin,
                              Ipv4Address group,
@@ -182,26 +182,29 @@ public:
 
   uint32_t FindInterfaceForAddr (Ipv4Address addr) const;
   uint32_t FindInterfaceForAddr (Ipv4Address addr, Ipv4Mask mask) const;
-  int32_t FindInterfaceIndexForDevice (Ptr<NetDevice> device) const;
+  int32_t FindInterfaceForDevice (Ptr<NetDevice> device) const;
   
   void JoinMulticastGroup (Ipv4Address origin, Ipv4Address group);
   void LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group);
 
-  void SetAddress (uint32_t i, Ipv4Address address);
-  void SetNetworkMask (uint32_t i, Ipv4Mask mask);
-  Ipv4Mask GetNetworkMask (uint32_t t) const;
-  Ipv4Address GetAddress (uint32_t i) const;
+  uint32_t AddAddress (uint32_t i, Ipv4InterfaceAddress address);
+  Ipv4InterfaceAddress GetAddress (uint32_t interfaceIndex, uint32_t addressIndex) const;
+  uint32_t GetNAddresses (uint32_t interface) const;
+
   void SetMetric (uint32_t i, uint16_t metric);
   uint16_t GetMetric (uint32_t i) const;
-  bool GetIfIndexForDestination (Ipv4Address destination, 
-                                 uint32_t& ifIndex) const;
+  Ipv4Address GetSourceAddress (Ipv4Address destination) const;
+  bool GetInterfaceForDestination (Ipv4Address destination, 
+                                 uint32_t& interface) const;
   uint16_t GetMtu (uint32_t i) const;
   bool IsUp (uint32_t i) const;
   void SetUp (uint32_t i);
   void SetDown (uint32_t i);
 
+  Ptr<NetDevice> GetNetDevice (uint32_t i);
+
   void AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
-                           int priority);
+                           int16_t priority);
 
 protected:
 
@@ -210,7 +213,7 @@ protected:
 private:
   Ipv4L3Protocol(const Ipv4L3Protocol &);
   Ipv4L3Protocol &operator = (const Ipv4L3Protocol &);
-  void Lookup (uint32_t ifIndex,
+  void Lookup (uint32_t interface,
                Ipv4Header const &ipHeader,
                Ptr<Packet> packet,
                Ipv4RoutingProtocol::RouteReplyCallback routeReply);
@@ -219,7 +222,7 @@ private:
                     Ipv4Route const &route,
                     Ptr<Packet> packet,
                     Ipv4Header const &ipHeader);
-  bool Forwarding (uint32_t ifIndex, 
+  bool Forwarding (uint32_t interface, 
                    Ptr<Packet> packet, 
                    Ipv4Header &ipHeader, 
                    Ptr<NetDevice> device);
@@ -228,7 +231,7 @@ private:
   void SetupLoopback (void);
   Ptr<Icmpv4L4Protocol> GetIcmp (void) const;
   bool IsUnicast (Ipv4Address ad, Ipv4Mask interfaceMask) const;
-  void DoForward (uint32_t ifIndex, 
+  void DoForward (uint32_t interface, 
                   Ptr<Packet> packet, 
                   Ipv4Header ipHeader);
 

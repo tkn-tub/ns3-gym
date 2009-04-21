@@ -30,7 +30,16 @@ public:
    */
   uint32_t GetN (void) const;
 
-  Ipv4Address GetAddress (uint32_t i) const;
+  /**
+   * \returns the IPv4 address of the j'th address of the interface
+   *  corresponding to index i.
+   * 
+   * If the second parameter is omitted, the zeroth indexed address of 
+   * the interface is returned.  Unless IP aliaising is being used on
+   * the interface, the second parameter may typically be omitted.
+   */
+  Ipv4Address GetAddress (uint32_t i, uint32_t j = 0) const;
+
   void SetMetric (uint32_t i, uint16_t metric);
 
   void Add (Ptr<Ipv4> ipv4, uint32_t interface);

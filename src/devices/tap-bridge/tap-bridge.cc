@@ -343,12 +343,16 @@ TapBridge::CreateTap (void)
       Ptr<Node> n = nd->GetNode ();
       Ptr<Ipv4> ipv4 = n->GetObject<Ipv4> ();
       uint32_t index = ipv4->FindInterfaceForDevice (nd);
-      Ipv4Address ipv4Address = ipv4->GetAddress (index);
+      if (ipv4->GetNAddresses (index) > 1)
+        {
+          NS_LOG_WARN ("Underlying bridged NetDevice has multiple IP addresses; using first one.");
+        }
+      Ipv4Address ipv4Address = ipv4->GetAddress (index, 0).GetLocal ();
 
       //
       // The net mask is sitting right there next to the ipv4 address.
       //
-      Ipv4Mask ipv4Mask = ipv4->GetNetworkMask (index);
+      Ipv4Mask ipv4Mask = ipv4->GetAddress (index, 0).GetMask ();
 
       //
       // The MAC address should also already be assigned and waiting for us in

@@ -344,8 +344,9 @@ void NscTcpL4Protocol::AddInterface(void)
   // how things _should_ be (once nsc can deal with multiple interfaces...)
   for (uint32_t i = 1; i < nInterfaces; i++)
     {
-      Ipv4Address addr = ip->GetAddress(i);
-      Ipv4Mask mask = ip->GetNetworkMask(i);
+      Ipv4InterfaceAddress ifAddr = ip->GetAddress (i, 0);
+      Ipv4Address addr = ifAddr.GetLocal ();
+      Ipv4Mask mask = ifAddr.GetMask ();
       uint16_t mtu = ip->GetMtu (i);
 
       std::ostringstream addrOss, maskOss;

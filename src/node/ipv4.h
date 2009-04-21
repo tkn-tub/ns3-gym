@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 #include "ns3/ipv4-address.h"
+#include "ns3/ipv4-interface-address.h"
 #include "ns3/object.h"
 #include "ns3/callback.h"
 #include "ipv4-route.h"
@@ -76,7 +77,7 @@ public:
   /**
    * \brief Request that a packet be routed.
    *
-   * \param ifIndex The interface index on which the packet was received.
+   * \param interface The interface index on which the packet was received.
    * \param ipHeader IP header of the packet
    * \param packet packet that is being sent or forwarded
    * \param routeReply callback that will receive the route reply
@@ -111,7 +112,7 @@ public:
    * destination will be serviced by cloning the packet and calling the 
    * route reply callback once for each outgoing interface in the route.
    */
-  virtual bool RequestRoute (uint32_t ifIndex,
+  virtual bool RequestRoute (uint32_t interface,
                              const Ipv4Header &ipHeader,
                              Ptr<Packet> packet,
                              RouteReplyCallback routeReply) = 0;
@@ -134,12 +135,12 @@ public:
  * that includeds multiple output interfaces, that route cannot be used.
  * 
  * If there are multiple paths out of the node, the resolution is performed
- * by Ipv4L3Protocol::GetIfIndexforDestination which has access to more 
+ * by Ipv4L3Protocol::GetInterfaceforDestination which has access to more 
  * contextual information that is useful for making a determination.
  *
  * \param destination The Ipv4Address if the destination of a hypothetical 
  * packet.  This may be a multicast group address.
- * \param ifIndex A reference to the interface index over which a packet
+ * \param interface A reference to the interface index over which a packet
  * sent to this destination would be sent.
  * \return Returns true if a route is found to the destination that involves
  * a single output interface index, otherwise false.
@@ -148,10 +149,10 @@ public:
  * \see Ipv4RoutingProtocol
  * \see Ipv4L3Protocol
  */
-  virtual bool RequestIfIndex (Ipv4Address destination, 
-                              uint32_t& ifIndex) = 0;
+  virtual bool RequestInterface (Ipv4Address destination, 
+                              uint32_t& interface) = 0;
 
-  static const uint32_t IF_INDEX_ANY = 0xffffffff;
+  static const uint32_t INTERFACE_ANY = 0xffffffff;
 };
 
 /**
@@ -319,7 +320,7 @@ public:
   /**
    * \returns the number of interfaces added by the user.
    */
-  virtual uint32_t GetNInterfaces (void) = 0;  
+  virtual uint32_t GetNInterfaces (void) const = 0;  
 
   /**
    * \brief Find and return the interface ID of the interface that has been
@@ -391,22 +392,24 @@ public:
   virtual void LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group) = 0;
 
   /**
-   * \param i index of ipv4 interface
-   * \param address address to associate to the underlying ipv4 interface
+   * \param interface Interface number of an Ipv4 interface
+   * \param address Ipv4InterfaceAddress address to associate with the underlying Ipv4 interface
+   * \returns The address index of the newly-added address
    */
-  virtual void SetAddress (uint32_t i, Ipv4Address address) = 0;
+  virtual uint32_t AddAddress (uint32_t interface, Ipv4InterfaceAddress address) = 0;
 
   /**
-   * \param i index of ipv4 interface
-   * \param mask mask to associate to the underlying ipv4 interface
+   * \param interface Interface number of an Ipv4 interface
+   * \returns the number of Ipv4InterfaceAddress entries for the interface.
    */
-  virtual void SetNetworkMask (uint32_t i, Ipv4Mask mask) = 0;
+  virtual uint32_t GetNAddresses (uint32_t interface) const = 0;
 
   /**
-   * \param i index of ipv4 interface
-   * \returns the mask associated to the underlying ipv4 interface
+   * \param interface Interface number of an Ipv4 interface
+   * \param addressIndex index of Ipv4InterfaceAddress
+   * \returns the Ipv4InterfaceAddress associated to the interface and addresIndex
    */
-  virtual Ipv4Mask GetNetworkMask (uint32_t i) const = 0;
+  virtual Ipv4InterfaceAddress GetAddress (uint32_t interface, uint32_t addressIndex) const = 0;
 
   /**
    * \param i index of ipv4 interface
@@ -423,17 +426,6 @@ public:
   virtual uint16_t GetMetric (uint32_t i) const = 0;
 
   /**
-   * \param i index of ipv4 interface
-   * \returns the address associated to the underlying ipv4 interface
-   *
-   * Note that the broadcast address for this interface may be fetched
-   * from the Ipv4Address object returned here using
-   * Ipv4Address::GetSubnetDirectedBroadcast(mask), where the mask for
-   * the interface may be retrived using Ipv4::GetNetworkMask(i).
-   */
-  virtual Ipv4Address GetAddress (uint32_t i) const = 0;
-
-  /**
    * \param destination The IP address of a hypothetical destination.
    * \returns The IP address assigned to the interface that will be used
    * if we were to send a packet to destination.
@@ -447,12 +439,12 @@ public:
 
   /**
    * \param dest The IP address of a hypothetical destination.
-   * \param ifIndex filled in with the interface index that will be used to
+   * \param interface filled in with the interface index that will be used to
    *        send a packet to the hypothetical destination.
    * \returns true if a single interface can be identified, false otherwise.
    */
-  virtual bool GetIfIndexForDestination (Ipv4Address dest,
-                                         uint32_t &ifIndex) const = 0;
+  virtual bool GetInterfaceForDestination (Ipv4Address dest,
+                                         uint32_t &interface) const = 0;
 
   /**
    * \param i index of ipv4 interface
@@ -485,14 +477,14 @@ public:
   virtual void SetDown (uint32_t i) = 0;
 
   /**
-   * \brief Convenience function to return the ifIndex corresponding
+   * \brief Convenience function to return the interface corresponding
    * to the Ipv4Address provided
    *
    * \param addr Ipv4Address
    * \param mask corresponding Ipv4Mask
-   * \returns ifIndex corresponding to a/amask
+   * \returns interface corresponding to a/amask
    */
-  virtual uint32_t GetIfIndexByAddress (Ipv4Address addr, 
+  virtual uint32_t GetInterfaceByAddress (Ipv4Address addr, 
     Ipv4Mask mask = Ipv4Mask("255.255.255.255"));
 };
 
