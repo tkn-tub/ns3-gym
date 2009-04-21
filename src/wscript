@@ -82,10 +82,6 @@ def create_obj(bld, *args):
     return bld.new_task_gen(*args)
 
 def build(bld):
-    #Object.register('ns3header', Ns3Header)
-    #Action.Action('ns3header', func=_ns3_headers_inst, color='BLUE')
-    #Object.register('ns3-module-header', Ns3ModuleHeader)
-    #Action.Action('gen-ns3-module-header', func=gen_ns3_module_header, color='BLUE')
     bld.create_ns3_module = types.MethodType(create_ns3_module, bld)
     bld.create_obj = types.MethodType(create_obj, bld)
     
