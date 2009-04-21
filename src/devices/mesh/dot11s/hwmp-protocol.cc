@@ -559,10 +559,10 @@ HwmpProtocol::PeerLinkStatus(Mac48Address meshPointAddress, Mac48Address peerAdd
     HwmpRtable::LookupResult result = m_rtable->LookupReactive(meshPointAddress);
     HwmpPluginMap::const_iterator i = m_interfaces.find(interface);
     NS_ASSERT(i != m_interfaces.end ());
-    if(result.metric < i->second->GetLinkMetric(peerAddress))
+    if (result.metric > i->second->GetLinkMetric(peerAddress))
     {
-     m_rtable->AddReactivePath(meshPointAddress, peerAddress, interface, 1, Seconds (0), i->second->GetLinkMetric(peerAddress));
-     ReactivePathResolved (meshPointAddress);
+      m_rtable->AddReactivePath(meshPointAddress, peerAddress, interface, 1, Seconds (0), i->second->GetLinkMetric(peerAddress));
+      ReactivePathResolved (meshPointAddress);
     }
   }
   else
