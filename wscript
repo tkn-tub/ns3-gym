@@ -251,6 +251,11 @@ def configure(conf):
             env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
         elif sys.platform == 'cygwin':
             env.append_value("LINKFLAGS", "-Wl,--enable-auto-import")
+        cxx, = env['CXX']
+        p = subprocess.Popen([cxx, '-print-file-name=libstdc++.so'], stdout=subprocess.PIPE)
+        libstdcxx = p.stdout.read().strip()
+        p.wait()
+        conf.env.append_value('NS3_MODULE_PATH', os.path.dirname(libstdcxx))
 
     conf.sub_config('src')
     conf.sub_config('utils')
