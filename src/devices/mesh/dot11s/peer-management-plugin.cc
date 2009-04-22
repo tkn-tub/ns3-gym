@@ -90,21 +90,24 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
       fields = peerFrame.GetFields();
       NS_ASSERT(fields.subtype == actionValue.peerLink);
     }
-    if (actionValue.peerLink != WifiMeshMultihopActionHeader::PEER_LINK_CLOSE)
-    {
-      if(!(m_parent->CheckSupportedRates(fields.rates)))
+    if (
+        (actionValue.peerLink != WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) &&
+        !(m_parent->CheckSupportedRates(fields.rates))
+        )
       {
         m_protocol->ConfigurationMismatch (m_ifIndex, peerAddress);
         // Broken peer link frame - drop it
         return false;
       }
-      if (!fields.meshId.IsEqual(m_parent->GetSsid()))
+    if (
+        (actionValue.peerLink != WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) &&
+        !fields.meshId.IsEqual(m_parent->GetSsid())
+        )
       {
         m_protocol->ConfigurationMismatch (m_ifIndex, peerAddress);
         // Broken peer link frame - drop it
         return false;
       }
-    }
     IePeerManagement peerElement;
     packet->RemoveHeader(peerElement);
     //Check taht frame subtype corresponds peer link subtype
