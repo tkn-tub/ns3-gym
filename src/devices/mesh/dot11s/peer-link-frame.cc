@@ -48,7 +48,7 @@ void
 PeerLinkFrameStart::SetPlinkFrameStart(PeerLinkFrameStart::PlinkFrameStartFields fields)
 {
   m_subtype = fields.subtype;
-  //TODO: protocol version
+  m_protocol = fields.protocol;
   if(m_subtype != (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE))
     m_capability = fields.capability;
   if(m_subtype == (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM))
@@ -142,7 +142,8 @@ PeerLinkFrameStart::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   NS_ASSERT(m_subtype < 3);
-  i.Next(3);
+  m_protocol.Serialize (i);
+  i.Next (m_protocol.GetSerializedSize ());
   if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
     i.WriteHtonU16(m_capability);
   if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) == m_subtype)
@@ -163,7 +164,8 @@ PeerLinkFrameStart::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   NS_ASSERT(m_subtype < 3);
-  i.Next(3); //peering protocol:
+  m_protocol.Deserialize (i);
+  i.Next (m_protocol.GetSerializedSize ());
   if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
     m_capability = i.ReadNtohU16();
   if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) == m_subtype)
