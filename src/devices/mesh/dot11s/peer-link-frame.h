@@ -52,7 +52,7 @@ public:
     uint16_t capability;        //open and confirm
     uint16_t aid;               //confirm only
     SupportedRates rates;       //open and confirm
-    Ssid meshId;                //open and confirm
+    Ssid meshId;                //open and close
     IeConfiguration config;     //open and confirm
     uint16_t reasonCode;        //close only
   };
