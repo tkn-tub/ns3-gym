@@ -24,6 +24,7 @@
 #include "ns3/supported-rates.h"
 #include "ns3/ssid.h"
 #include "dot11s-mac-header.h"
+#include "ie-dot11s-configuration.h"
 namespace ns3 {
 class MeshWifiInterfaceMac;
 namespace dot11s {
@@ -46,10 +47,13 @@ public:
   struct PlinkFrameStartFields
   {
     uint8_t subtype;
-    uint16_t reasonCode;  //close only
-    uint16_t aid;         //confirm only
-    SupportedRates rates; //open and confirm
-    Ssid meshId;          //open and confirm
+    //                      //Peering protocol version - in all subtypes - 3 octets
+    uint16_t capability;    //open and confirm
+    uint16_t aid;           //confirm only
+    SupportedRates rates;   //open and confirm
+    Ssid meshId;            //open and confirm
+    IeConfiguration config; //open and confirm
+    uint16_t reasonCode;    //close only
   };
   ///\attention: must be set before deserialize, before only multihop
   //action header knows about subtype
@@ -71,10 +75,12 @@ public:
    */
 private:
   uint8_t m_subtype;
-  uint16_t m_reasonCode;
+  uint16_t m_capability;
   uint16_t m_aid;
   SupportedRates m_rates;
   Ssid m_meshId;
+  IeConfiguration m_config;
+  uint16_t m_reasonCode;
 
   friend bool operator== (const PeerLinkFrameStart & a, const PeerLinkFrameStart & b);
 };

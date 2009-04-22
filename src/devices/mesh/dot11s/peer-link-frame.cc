@@ -19,18 +19,24 @@
  */
 
 #include "peer-link-frame.h"
+#include "ie-dot11s-peer-management.h"
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/test.h"
 #include "ns3/packet.h"
+
 namespace ns3 {
 namespace dot11s {
 NS_OBJECT_ENSURE_REGISTERED (PeerLinkFrameStart);
 
 PeerLinkFrameStart::PeerLinkFrameStart ():
   m_subtype (255),
+  m_capability (0),
   m_aid (0),
   m_rates (SupportedRates()),
-  m_meshId (Ssid())
+  m_meshId (Ssid()),
+  m_config(IeConfiguration ()),
+  //m_reasonCode (REASON11S_RESERVED),
+  m_reasonCode ((uint16_t)REASON11S_RESERVED)
 {
 }
 void
@@ -42,12 +48,16 @@ void
 PeerLinkFrameStart::SetPlinkFrameStart(PeerLinkFrameStart::PlinkFrameStartFields fields)
 {
   m_subtype = fields.subtype;
+  //TODO: protocol version
+  if(m_subtype != (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE))
+    m_capability = fields.capability;
   if(m_subtype == (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM))
     m_aid = fields.aid;
   if(m_subtype != (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE))
   {
     m_rates = fields.rates;
     m_meshId = fields.meshId;
+    m_config = fields.config;
   }
   else
     m_reasonCode = fields.reasonCode;
@@ -57,10 +67,14 @@ PeerLinkFrameStart::PlinkFrameStartFields
 PeerLinkFrameStart::GetFields ()
 {
   PlinkFrameStartFields retval;
+  //TODO: protocol version:
   retval.subtype = m_subtype;
+  retval.capability = m_capability;
   retval.aid = m_aid;
   retval.rates = m_rates;
   retval.meshId = m_meshId;
+  retval.config = m_config;
+  retval.reasonCode = m_reasonCode;
   return retval;
 }
 
@@ -95,23 +109,28 @@ void
 PeerLinkFrameStart::Print (std::ostream &os) const
 {
   os << "subtype = " << (uint16_t)m_subtype
+  << "\ncapability = " << m_capability
   << "\naid = " << (uint16_t)m_aid
   << "\nrates = " << m_rates
-  << "\nmeshId = " << m_meshId;
+  << "\nmeshId = " << m_meshId
+  << "\nconfiguration = " << m_config
+  << "\nreason code = " << m_reasonCode;
 }
 
 uint32_t
 PeerLinkFrameStart::GetSerializedSize () const
 {
-  uint32_t size = 0;
+  uint32_t size = 3; //Peering protocol
   NS_ASSERT(m_subtype < 3);
+  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
+    size += 2;  //capability
   if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) == m_subtype)
     size += 2; //AID of remote peer
   if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
       size += m_rates.GetSerializedSize ();
-      size += 2;
       size += m_meshId.GetSerializedSize ();
+      size += m_config.GetSerializedSize ();
     }
   else
     size += 2; //reasonCode
@@ -123,14 +142,17 @@ PeerLinkFrameStart::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   NS_ASSERT(m_subtype < 3);
-  //i.WriteU8 (m_subtype);
+  i.Next(3);
+  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
+    i.WriteHtonU16(m_capability);
   if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) == m_subtype)
     i.WriteHtonU16 (m_aid);
   if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
       i = m_rates.Serialize (i);
-      i.Next(2); //QoS
       i = m_meshId.Serialize (i);
+      m_config.Serialize (i);
+      i.Next(m_config.GetSerializedSize ());
     }
   else
     i.WriteHtonU16(m_reasonCode);
@@ -141,14 +163,17 @@ PeerLinkFrameStart::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   NS_ASSERT(m_subtype < 3);
-  //m_subtype = (IePeerManagement::Subtype)i.ReadU8 ();
+  i.Next(3); //peering protocol:
+  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
+    m_capability = i.ReadNtohU16();
   if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) == m_subtype)
     m_aid = i.ReadNtohU16 ();
   if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
       i = m_rates.Deserialize (i);
-      i.Next(2);  //QoS
       i = m_meshId.Deserialize (i);
+      m_config.Deserialize (i);
+      i.Next (m_config.GetSerializedSize ());
     }
   else
     m_reasonCode = i.ReadNtohU16();
@@ -158,8 +183,11 @@ bool operator== (const PeerLinkFrameStart & a, const PeerLinkFrameStart & b)
 {
   return (
       (a.m_subtype == b.m_subtype) &&
+      (a.m_capability == b.m_capability) &&
       (a.m_aid == b.m_aid) &&
-      (a.m_meshId.IsEqual(b.m_meshId))
+      (a.m_meshId.IsEqual(b.m_meshId)) &&
+      (a.m_config == b.m_config) &&
+      (a.m_reasonCode == b.m_reasonCode)
       );
 }
 #ifdef RUN_SELF_TESTS

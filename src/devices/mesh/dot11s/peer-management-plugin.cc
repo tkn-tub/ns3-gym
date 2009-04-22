@@ -105,13 +105,6 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
         return false;
       }
     }
-    // MeshConfiguration Element - exists in all peer link management
-    // frames except CLOSE
-    IeConfiguration meshConfig;
-    if(fields.subtype != (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE))
-    {
-      packet->RemoveHeader(meshConfig);
-    }
     IePeerManagement peerElement;
     packet->RemoveHeader(peerElement);
     //Check taht frame subtype corresponds peer link subtype
@@ -128,7 +121,7 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
       NS_ASSERT(actionValue.peerLink == WifiMeshMultihopActionHeader::PEER_LINK_CLOSE);
     }
     //Deliver Peer link management frame to protocol:
-    m_protocol->ReceivePeerLinkFrame(m_ifIndex, peerAddress, peerMpAddress, fields.aid, peerElement, meshConfig);
+    m_protocol->ReceivePeerLinkFrame(m_ifIndex, peerAddress, peerMpAddress, fields.aid, peerElement, fields.config);
     // if we can handle a frame - drop it
     return false;
   }
@@ -160,11 +153,10 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
   //Create a packet:
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (peerElement);
-  if(!peerElement.SubtypeIsClose())
-    packet->AddHeader (meshConfig);
   PeerLinkFrameStart::PlinkFrameStartFields fields;
   fields.rates = m_parent->GetSupportedRates ();
   fields.meshId = m_parent->GetSsid ();
+  fields.config = meshConfig;
   PeerLinkFrameStart plinkFrame;
   //Create an 802.11 frame header:
   //Send management frame to MAC:

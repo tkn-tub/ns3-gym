@@ -59,8 +59,8 @@ public:
     IePeerManagement ();
     enum Subtype {
       PEER_OPEN    = 0,
-      PEER_CLOSE   = 1,
-      PEER_CONFIRM = 2,
+      PEER_CONFIRM,
+      PEER_CLOSE,
     };
   void   SetPeerOpen (uint16_t localLinkId);
   void   SetPeerClose (uint16_t localLinkID, uint16_t peerLinkId, PmpReasonCode reasonCode);
