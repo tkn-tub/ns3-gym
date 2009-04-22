@@ -74,6 +74,14 @@ def create_ns3_module(bld, name, dependencies=()):
     module.module_deps = list(dependencies)
     if not module.env['ENABLE_STATIC_NS3']:
         module.env.append_value('CXXFLAGS', module.env['shlib_CXXFLAGS'])
+    elif module.env['CXX_NAME'] == 'gcc' and \
+            os.uname()[4] == 'x86_64' and \
+            module.env['ENABLE_PYTHON_BINDINGS']:
+        # enable that flag for static builds only on x86-64 platforms
+        # when gcc is present and only when we want python bindings
+        # (it's more efficient to not use this option if we can avoid it)
+        module.env.append_value('CXXFLAGS', '-mcmodel=large')
+        
     module.env.append_value('CXXDEFINES', "NS3_MODULE_COMPILATION")
     return module
 
