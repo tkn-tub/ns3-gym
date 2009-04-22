@@ -291,6 +291,7 @@ def configure(conf):
     conf.find_program('valgrind', var='VALGRIND')
 
     if Options.options.enable_static and \
+            not conf.env['ENABLE_PYTHON_BINDINGS'] and \
             env['PLATFORM'].startswith('linux'):
         conf.env['ENABLE_STATIC_NS3'] = Options.options.enable_static
 
