@@ -35,7 +35,6 @@ PeerLinkFrameStart::PeerLinkFrameStart ():
   m_rates (SupportedRates()),
   m_meshId (Ssid()),
   m_config(IeConfiguration ()),
-  //m_reasonCode (REASON11S_RESERVED),
   m_reasonCode ((uint16_t)REASON11S_RESERVED)
 {
 }
@@ -54,11 +53,11 @@ PeerLinkFrameStart::SetPlinkFrameStart(PeerLinkFrameStart::PlinkFrameStartFields
   if(m_subtype == (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM))
     m_aid = fields.aid;
   if(m_subtype != (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE))
-  {
     m_rates = fields.rates;
+  if(m_subtype != (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM))
     m_meshId = fields.meshId;
+  if(m_subtype != (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE))
     m_config = fields.config;
-  }
   else
     m_reasonCode = fields.reasonCode;
 }
@@ -127,11 +126,11 @@ PeerLinkFrameStart::GetSerializedSize () const
   if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) == m_subtype)
     size += 2; //AID of remote peer
   if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
-    {
-      size += m_rates.GetSerializedSize ();
-      size += m_meshId.GetSerializedSize ();
-      size += m_config.GetSerializedSize ();
-    }
+    size += m_rates.GetSerializedSize ();
+  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) != m_subtype)
+    size += m_meshId.GetSerializedSize ();
+  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
+    size += m_config.GetSerializedSize ();
   else
     size += 2; //reasonCode
   return size;
@@ -149,12 +148,14 @@ PeerLinkFrameStart::Serialize (Buffer::Iterator start) const
   if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) == m_subtype)
     i.WriteHtonU16 (m_aid);
   if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
-    {
-      i = m_rates.Serialize (i);
-      i = m_meshId.Serialize (i);
-      m_config.Serialize (i);
-      i.Next(m_config.GetSerializedSize ());
-    }
+    i = m_rates.Serialize (i);
+  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) != m_subtype)
+    i = m_meshId.Serialize (i);
+  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
+  {
+    m_config.Serialize (i);
+    i.Next(m_config.GetSerializedSize ());
+  }
   else
     i.WriteHtonU16(m_reasonCode);
 }
@@ -171,12 +172,14 @@ PeerLinkFrameStart::Deserialize (Buffer::Iterator start)
   if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) == m_subtype)
     m_aid = i.ReadNtohU16 ();
   if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
-    {
-      i = m_rates.Deserialize (i);
-      i = m_meshId.Deserialize (i);
-      m_config.Deserialize (i);
-      i.Next (m_config.GetSerializedSize ());
-    }
+    i = m_rates.Deserialize (i);
+  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) != m_subtype)
+    i = m_meshId.Deserialize (i);
+  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
+  {
+    m_config.Deserialize (i);
+    i.Next (m_config.GetSerializedSize ());
+  }
   else
     m_reasonCode = i.ReadNtohU16();
   return i.GetDistanceFrom (start);
