@@ -85,6 +85,7 @@ private:
   bool SlowSub (HighPrecision const &o);
   bool SlowMul (HighPrecision const &o);
   int SlowCompare (HighPrecision const &o) const;
+  cairo_uint128_t  Mul128(cairo_uint128_t , cairo_uint128_t );
   inline void EnsureSlow (void);
 
   static const double MAX_64;
