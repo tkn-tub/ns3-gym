@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2005 INRIA
+ * Copyright (c) 2005, 2009 INRIA
+ * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -16,11 +17,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 #ifndef WIFI_MAC_QUEUE_H
 #define WIFI_MAC_QUEUE_H
 
-#include <deque>
+#include <list>
 #include <utility>
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
@@ -60,25 +62,60 @@ public:
 
   void Enqueue (Ptr<const Packet> packet, WifiMacHeader const &hdr);
   Ptr<const Packet> Dequeue (WifiMacHeader *hdr);
-
+  Ptr<const Packet> Peek (WifiMacHeader *hdr);
+  /**
+   * Searchs and returns, if is present in this queue, first packet having 
+   * address indicated by <i>index</i> equals to <i>addr</i>, and tid 
+   * equals to <i>tid</i>. This method removes the packet from this queue. 
+   * Is typically used by ns3::EdcaTxopN in order to perform correct MSDU 
+   * aggregation (A-MSDU).
+   */
+  Ptr<const Packet> DequeueByTidAndAddress (WifiMacHeader *hdr,
+                                            uint8_t tid, 
+                                            WifiMacHeader::AddressType index,
+                                            Mac48Address addr);
+  /**
+   * Searchs and returns, if is present in this queue, first packet having
+   * address indicated by <i>index</i> equals to <i>addr</i>, and tid 
+   * equals to <i>tid</i>. This method doesn't remove the packet from this queue.
+   * Is typically used by ns3::EdcaTxopN in order to perform correct MSDU
+   * aggregation (A-MSDU).
+   */
+  Ptr<const Packet> PeekByTidAndAddress (WifiMacHeader *hdr,
+                                         uint8_t tid,
+                                         WifiMacHeader::AddressType index,
+                                         Mac48Address addr);
+  /**
+   * If exists, removes <i>packet</i> from queue and returns true. Otherwise it
+   * takes no effects and return false. Deletion of the packet is
+   * performed in linear time (O(n)).  
+   */
+  bool Remove (Ptr<const Packet> packet);
+  
   void Flush (void);
 
   bool IsEmpty (void);
   uint32_t GetSize (void);
 
 private:
+  struct Item;
+  
+  typedef std::list<struct Item> PacketQueue;
+  typedef std::list<struct Item>::reverse_iterator PacketQueueRI;
+  typedef std::list<struct Item>::iterator PacketQueueI;
+  
   void Cleanup (void);
+  Mac48Address GetAddressForPacket (uint8_t index, PacketQueueI);
+  
   struct Item {
     Item (Ptr<const Packet> packet, 
-          WifiMacHeader const&hdr, 
+          WifiMacHeader const &hdr, 
           Time tstamp);
     Ptr<const Packet> packet;
     WifiMacHeader hdr;
     Time tstamp;
   };
-  typedef std::deque<struct Item> PacketQueue;
-  typedef std::deque<struct Item>::reverse_iterator PacketQueueRI;
-  typedef std::deque<struct Item>::iterator PacketQueueI;
+
   PacketQueue m_queue;
   WifiMacParameters *m_parameters;
   uint32_t m_size;
@@ -87,6 +124,5 @@ private:
 };
 
 } // namespace ns3
-
 
 #endif /* WIFI_MAC_QUEUE_H */

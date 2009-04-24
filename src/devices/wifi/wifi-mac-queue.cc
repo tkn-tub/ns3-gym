@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2005 INRIA
+ * Copyright (c) 2005, 2009 INRIA
+ * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -16,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
-
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
@@ -29,7 +30,6 @@ using namespace std;
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (WifiMacQueue);
-
 
 WifiMacQueue::Item::Item (Ptr<const Packet> packet, 
                           WifiMacHeader const &hdr, 
@@ -69,16 +69,19 @@ WifiMacQueue::SetMaxSize (uint32_t maxSize)
 {
   m_maxSize = maxSize;
 }
-void 
+
+void
 WifiMacQueue::SetMaxDelay (Time delay)
 {
   m_maxDelay = delay;
 }
+
 uint32_t 
 WifiMacQueue::GetMaxSize (void) const
 {
   return m_maxSize;
 }
+
 Time 
 WifiMacQueue::GetMaxDelay (void) const
 {
@@ -97,6 +100,7 @@ WifiMacQueue::Enqueue (Ptr<const Packet> packet, WifiMacHeader const &hdr)
   m_queue.push_back (Item (packet, hdr, now));
   m_size++;
 }
+
 void
 WifiMacQueue::Cleanup (void)
 {
@@ -136,6 +140,72 @@ WifiMacQueue::Dequeue (WifiMacHeader *hdr)
   return 0;
 }
 
+Ptr<const Packet>
+WifiMacQueue::Peek (WifiMacHeader *hdr)
+{
+  Cleanup ();
+  if (!m_queue.empty ()) 
+    {
+      Item i = m_queue.front ();
+      *hdr = i.hdr;
+      return i.packet;
+    }
+  return 0;
+}
+
+Ptr<const Packet>
+WifiMacQueue::DequeueByTidAndAddress (WifiMacHeader *hdr, uint8_t tid, 
+                                      WifiMacHeader::AddressType index, Mac48Address dest)
+{
+  Cleanup ();
+  Ptr<const Packet> packet = 0;
+  if (!m_queue.empty ())
+    {
+      PacketQueueI it;
+      NS_ASSERT (index <= 4);
+      for (it = m_queue.begin (); it != m_queue.end (); ++it)
+        {
+          if (it->hdr.IsQosData ())
+            {
+              if (GetAddressForPacket (index, it) == dest &&
+                  it->hdr.GetQosTid () == tid)
+                {
+                  packet = it->packet;
+                  *hdr = it->hdr;
+                  m_queue.erase (it);
+                  m_size--;
+                  break;
+                }
+            }
+        }
+    }
+  return packet;
+}
+
+Ptr<const Packet>
+WifiMacQueue::PeekByTidAndAddress (WifiMacHeader *hdr, uint8_t tid, 
+                                   WifiMacHeader::AddressType index, Mac48Address dest)
+{
+  Cleanup ();
+  if (!m_queue.empty ())
+    {
+      PacketQueueI it;
+      NS_ASSERT (index <= 4);
+      for (it = m_queue.begin (); it != m_queue.end (); ++it)
+        {
+          if (it->hdr.IsQosData ())
+            {
+              if (GetAddressForPacket (index, it) == dest &&
+                  it->hdr.GetQosTid () == tid)
+                {
+                  *hdr = it->hdr;
+                  return it->packet;
+                }
+            }
+        }
+    }
+  return 0;
+}
 
 bool
 WifiMacQueue::IsEmpty (void)
@@ -143,7 +213,6 @@ WifiMacQueue::IsEmpty (void)
   Cleanup ();
   return m_queue.empty ();
 }
-
 
 uint32_t
 WifiMacQueue::GetSize (void)
@@ -156,6 +225,39 @@ WifiMacQueue::Flush (void)
 {
   m_queue.erase (m_queue.begin (), m_queue.end ());
   m_size = 0;
+}
+
+Mac48Address
+WifiMacQueue::GetAddressForPacket (uint8_t index, PacketQueueI it)
+{
+  if (index == WifiMacHeader::ADDR1)
+    {
+      return it->hdr.GetAddr1 ();
+    }
+  if (index == WifiMacHeader::ADDR2)
+    {
+      return it->hdr.GetAddr2 ();
+    }
+  if (index == WifiMacHeader::ADDR3)
+    {
+      return it->hdr.GetAddr3 ();
+    }
+  return 0;
+}
+
+bool
+WifiMacQueue::Remove (Ptr<const Packet> packet)
+{
+  PacketQueueI it = m_queue.begin ();
+  for (; it != m_queue.end (); it++)
+    {
+      if (it->packet == packet)
+        {
+          m_queue.erase (it);
+          return true;
+        }
+    }
+  return false;
 }
 
 } // namespace ns3
