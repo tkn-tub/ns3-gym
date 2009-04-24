@@ -33,8 +33,7 @@ MacTxMiddle::MacTxMiddle ()
 
 MacTxMiddle::~MacTxMiddle ()
 {
-  std::map<Mac48Address,uint16_t*>::iterator i = m_qosSequences.begin();
-  for (; i != m_qosSequences.end (); i++)
+  for (std::map<Mac48Address,uint16_t*>::iterator i = m_qosSequences.begin(); i != m_qosSequences.end (); i++)
     {
       delete [] i->second;
     }
@@ -63,7 +62,9 @@ MacTxMiddle::GetNextSequenceNumberfor (const WifiMacHeader *hdr)
           std::pair <std::map<Mac48Address,uint16_t*>::iterator,bool> newIns = m_qosSequences.insert (newSeq);
           NS_ASSERT(newIns.second == true);
           for (uint8_t i = 0; i < 16; i++)
-            newIns.first->second[i] = 0;
+            {
+              newIns.first->second[i] = 0;
+            }
           newIns.first->second[tid]++;
         }
     } 
