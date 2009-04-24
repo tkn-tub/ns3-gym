@@ -95,7 +95,7 @@ def register_Ns3Icmpv4DestinationUnreachable_methods(root_module, cls):
                    'uint16_t', 
                    [], 
                    is_const=True)
-    ## icmpv4.h: void ns3::Icmpv4DestinationUnreachable::SetData(ns3::Ptr<const ns3::Packet> data) [member function]
+    ## icmpv4.h: void ns3::Icmpv4DestinationUnreachable::SetData(ns3::Ptr<ns3::Packet const> data) [member function]
     cls.add_method('SetData', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'data')])
@@ -151,7 +151,7 @@ def register_Ns3Icmpv4Echo_methods(root_module, cls):
     cls.add_method('SetSequenceNumber', 
                    'void', 
                    [param('uint16_t', 'seq')])
-    ## icmpv4.h: void ns3::Icmpv4Echo::SetData(ns3::Ptr<const ns3::Packet> data) [member function]
+    ## icmpv4.h: void ns3::Icmpv4Echo::SetData(ns3::Ptr<ns3::Packet const> data) [member function]
     cls.add_method('SetData', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'data')])
@@ -165,7 +165,7 @@ def register_Ns3Icmpv4Echo_methods(root_module, cls):
                    'uint16_t', 
                    [], 
                    is_const=True)
-    ## icmpv4.h: ns3::Ptr<const ns3::Packet> ns3::Icmpv4Echo::GetData() const [member function]
+    ## icmpv4.h: ns3::Ptr<ns3::Packet const> ns3::Icmpv4Echo::GetData() const [member function]
     cls.add_method('GetData', 
                    'ns3::Ptr< ns3::Packet const >', 
                    [], 
@@ -266,7 +266,7 @@ def register_Ns3Icmpv4Header_methods(root_module, cls):
 def register_Ns3Icmpv4TimeExceeded_methods(root_module, cls):
     ## icmpv4.h: ns3::Icmpv4TimeExceeded::Icmpv4TimeExceeded(ns3::Icmpv4TimeExceeded const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Icmpv4TimeExceeded const &', 'arg0')])
-    ## icmpv4.h: void ns3::Icmpv4TimeExceeded::SetData(ns3::Ptr<const ns3::Packet> data) [member function]
+    ## icmpv4.h: void ns3::Icmpv4TimeExceeded::SetData(ns3::Ptr<ns3::Packet const> data) [member function]
     cls.add_method('SetData', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'data')])

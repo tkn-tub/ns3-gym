@@ -374,7 +374,7 @@ def register_Ns3Packet_methods(root_module, cls):
     cls.add_constructor([param('uint32_t', 'size')])
     ## packet.h: ns3::Packet::Packet(uint8_t const * buffer, uint32_t size) [constructor]
     cls.add_constructor([param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
-    ## packet.h: void ns3::Packet::AddAtEnd(ns3::Ptr<const ns3::Packet> packet) [member function]
+    ## packet.h: void ns3::Packet::AddAtEnd(ns3::Ptr<ns3::Packet const> packet) [member function]
     cls.add_method('AddAtEnd', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet')])
@@ -940,7 +940,7 @@ def register_Ns3PcapWriter_methods(root_module, cls):
     cls.add_method('WritePppHeader', 
                    'void', 
                    [])
-    ## pcap-writer.h: void ns3::PcapWriter::WritePacket(ns3::Ptr<const ns3::Packet> packet) [member function]
+    ## pcap-writer.h: void ns3::PcapWriter::WritePacket(ns3::Ptr<ns3::Packet const> packet) [member function]
     cls.add_method('WritePacket', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet')])
