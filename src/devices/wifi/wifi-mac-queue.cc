@@ -155,19 +155,19 @@ WifiMacQueue::Peek (WifiMacHeader *hdr)
 
 Ptr<const Packet>
 WifiMacQueue::DequeueByTidAndAddress (WifiMacHeader *hdr, uint8_t tid, 
-                                      WifiMacHeader::AddressType index, Mac48Address dest)
+                                      WifiMacHeader::AddressType type, Mac48Address dest)
 {
   Cleanup ();
   Ptr<const Packet> packet = 0;
   if (!m_queue.empty ())
     {
       PacketQueueI it;
-      NS_ASSERT (index <= 4);
+      NS_ASSERT (type <= 4);
       for (it = m_queue.begin (); it != m_queue.end (); ++it)
         {
           if (it->hdr.IsQosData ())
             {
-              if (GetAddressForPacket (index, it) == dest &&
+              if (GetAddressForPacket (type, it) == dest &&
                   it->hdr.GetQosTid () == tid)
                 {
                   packet = it->packet;
@@ -184,18 +184,18 @@ WifiMacQueue::DequeueByTidAndAddress (WifiMacHeader *hdr, uint8_t tid,
 
 Ptr<const Packet>
 WifiMacQueue::PeekByTidAndAddress (WifiMacHeader *hdr, uint8_t tid, 
-                                   WifiMacHeader::AddressType index, Mac48Address dest)
+                                   WifiMacHeader::AddressType type, Mac48Address dest)
 {
   Cleanup ();
   if (!m_queue.empty ())
     {
       PacketQueueI it;
-      NS_ASSERT (index <= 4);
+      NS_ASSERT (type <= 4);
       for (it = m_queue.begin (); it != m_queue.end (); ++it)
         {
           if (it->hdr.IsQosData ())
             {
-              if (GetAddressForPacket (index, it) == dest &&
+              if (GetAddressForPacket (type, it) == dest &&
                   it->hdr.GetQosTid () == tid)
                 {
                   *hdr = it->hdr;
@@ -228,17 +228,17 @@ WifiMacQueue::Flush (void)
 }
 
 Mac48Address
-WifiMacQueue::GetAddressForPacket (uint8_t index, PacketQueueI it)
+WifiMacQueue::GetAddressForPacket (uint8_t type, PacketQueueI it)
 {
-  if (index == WifiMacHeader::ADDR1)
+  if (type == WifiMacHeader::ADDR1)
     {
       return it->hdr.GetAddr1 ();
     }
-  if (index == WifiMacHeader::ADDR2)
+  if (type == WifiMacHeader::ADDR2)
     {
       return it->hdr.GetAddr2 ();
     }
-  if (index == WifiMacHeader::ADDR3)
+  if (type == WifiMacHeader::ADDR3)
     {
       return it->hdr.GetAddr3 ();
     }

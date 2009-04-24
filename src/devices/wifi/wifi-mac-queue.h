@@ -65,25 +65,25 @@ public:
   Ptr<const Packet> Peek (WifiMacHeader *hdr);
   /**
    * Searchs and returns, if is present in this queue, first packet having 
-   * address indicated by <i>index</i> equals to <i>addr</i>, and tid 
+   * address indicated by <i>type</i> equals to <i>addr</i>, and tid 
    * equals to <i>tid</i>. This method removes the packet from this queue. 
    * Is typically used by ns3::EdcaTxopN in order to perform correct MSDU 
    * aggregation (A-MSDU).
    */
   Ptr<const Packet> DequeueByTidAndAddress (WifiMacHeader *hdr,
                                             uint8_t tid, 
-                                            WifiMacHeader::AddressType index,
+                                            WifiMacHeader::AddressType type,
                                             Mac48Address addr);
   /**
    * Searchs and returns, if is present in this queue, first packet having
-   * address indicated by <i>index</i> equals to <i>addr</i>, and tid 
+   * address indicated by <i>type</i> equals to <i>addr</i>, and tid 
    * equals to <i>tid</i>. This method doesn't remove the packet from this queue.
    * Is typically used by ns3::EdcaTxopN in order to perform correct MSDU
    * aggregation (A-MSDU).
    */
   Ptr<const Packet> PeekByTidAndAddress (WifiMacHeader *hdr,
                                          uint8_t tid,
-                                         WifiMacHeader::AddressType index,
+                                         WifiMacHeader::AddressType type,
                                          Mac48Address addr);
   /**
    * If exists, removes <i>packet</i> from queue and returns true. Otherwise it
@@ -105,7 +105,7 @@ private:
   typedef std::list<struct Item>::iterator PacketQueueI;
   
   void Cleanup (void);
-  Mac48Address GetAddressForPacket (uint8_t index, PacketQueueI);
+  Mac48Address GetAddressForPacket (uint8_t type, PacketQueueI);
   
   struct Item {
     Item (Ptr<const Packet> packet, 
