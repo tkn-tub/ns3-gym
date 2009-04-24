@@ -55,6 +55,7 @@ UdpEchoServer::UdpEchoServer ()
 UdpEchoServer::~UdpEchoServer()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_socket = 0;
 }
 
 void
@@ -87,6 +88,7 @@ UdpEchoServer::StopApplication ()
 
   if (m_socket != 0) 
     {
+      m_socket->Close ();
       m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket> > ());
     }
 }
