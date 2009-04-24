@@ -89,7 +89,8 @@ NqstaWifiMac::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddAttribute ("DcaTxop", "The DcaTxop object",
                    PointerValue (),
-                   MakePointerAccessor (&NqstaWifiMac::DoGetDcaTxop),
+                   MakePointerAccessor (&NqstaWifiMac::GetDcaTxop,
+                                        &NqstaWifiMac::SetDcaTxop),
                    MakePointerChecker<DcaTxop> ()) 
     .AddTraceSource ("Assoc", "Associated with an access point.",
                      MakeTraceSourceAccessor (&NqstaWifiMac::m_assocLogger))
@@ -98,7 +99,6 @@ NqstaWifiMac::GetTypeId (void)
     ;
   return tid;
 }
-
 
 NqstaWifiMac::NqstaWifiMac ()
   : m_state (BEACON_MISSED),
@@ -115,10 +115,6 @@ NqstaWifiMac::NqstaWifiMac ()
 
   m_dcfManager = new DcfManager ();
   m_dcfManager->SetupLowListener (m_low);
-
-  m_dca = CreateObject<DcaTxop> ();
-  m_dca->SetLow (m_low);
-  m_dca->SetManager (m_dcfManager);
 }
 
 NqstaWifiMac::~NqstaWifiMac ()
@@ -137,6 +133,7 @@ NqstaWifiMac::DoDispose (void)
   m_dcfManager = 0;
   m_phy = 0;
   m_dca = 0;
+  m_stationManager = 0;
   WifiMac::DoDispose ();
 }
 
@@ -207,9 +204,16 @@ NqstaWifiMac::GetPifs (void) const
   return m_low->GetPifs ();
 }
 Ptr<DcaTxop>
-NqstaWifiMac::DoGetDcaTxop(void) const
+NqstaWifiMac::GetDcaTxop(void) const
 {
   return m_dca;
+}
+void
+NqstaWifiMac::SetDcaTxop (Ptr<DcaTxop> dcaTxop)
+{
+  m_dca = dcaTxop;
+  m_dca->SetLow (m_low);
+  m_dca->SetManager (m_dcfManager);
 }
 void 
 NqstaWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
@@ -565,7 +569,7 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
           SetState (WAIT_ASSOC_RESP);
           SendAssociationRequest ();
         }
-  } 
+    } 
   else if (hdr->IsProbeResp ()) 
     {
       if (m_state == WAIT_PROBE_RESP) 

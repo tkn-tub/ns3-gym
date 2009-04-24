@@ -137,7 +137,8 @@ private:
   virtual void DoDispose (void);
   NqstaWifiMac (const NqstaWifiMac & ctor_arg);
   NqstaWifiMac &operator = (const NqstaWifiMac & ctor_arg);
-  Ptr<DcaTxop> DoGetDcaTxop(void) const;
+  Ptr<DcaTxop> GetDcaTxop(void) const;
+  void SetDcaTxop (Ptr<DcaTxop> dcaTxop);
   void SetState (enum MacState value);
 
   enum MacState m_state;

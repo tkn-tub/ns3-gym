@@ -81,6 +81,8 @@ def build(bld):
         'supported-rates.h',
         'error-rate-model.h',
         'yans-error-rate-model.h',
+        'dca-txop.h',
+        'wifi-mac-header.h'
         ]
 
     obj = bld.create_ns3_program('wifi-phy-test',

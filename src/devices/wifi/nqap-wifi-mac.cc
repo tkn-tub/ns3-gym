@@ -60,7 +60,8 @@ NqapWifiMac::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddAttribute ("DcaTxop", "The DcaTxop object",
                    PointerValue (),
-                   MakePointerAccessor (&NqapWifiMac::DoGetDcaTxop),
+                   MakePointerAccessor (&NqapWifiMac::GetDcaTxop,
+                                        &NqapWifiMac::SetDcaTxop),
                    MakePointerChecker<DcaTxop> ()) 
     ;
   return tid;
@@ -77,12 +78,6 @@ NqapWifiMac::NqapWifiMac ()
 
   m_dcfManager = new DcfManager ();
   m_dcfManager->SetupLowListener (m_low);
-
-  m_dca = CreateObject<DcaTxop> ();
-  m_dca->SetLow (m_low);
-  m_dca->SetManager (m_dcfManager);
-  m_dca->SetTxOkCallback (MakeCallback (&NqapWifiMac::TxOk, this));
-  m_dca->SetTxFailedCallback (MakeCallback (&NqapWifiMac::TxFailed, this));
 
   m_beaconDca = CreateObject<DcaTxop> ();
   m_beaconDca->SetAifsn(1);
@@ -108,6 +103,7 @@ NqapWifiMac::DoDispose (void)
   m_phy = 0;
   m_dca = 0;
   m_beaconDca = 0;
+  m_stationManager = 0;
   m_beaconEvent.Cancel ();
   WifiMac::DoDispose ();
 }
@@ -300,8 +296,7 @@ NqapWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Addr
   hdr.SetAddr3 (from);
   hdr.SetDsFrom ();
   hdr.SetDsNotTo ();
-
-  m_dca->Queue (packet, hdr);  
+  m_dca->Queue (packet, hdr);
 }
 void 
 NqapWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from)
@@ -565,9 +560,19 @@ NqapWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
     }  
 }
 Ptr<DcaTxop>
-NqapWifiMac::DoGetDcaTxop(void) const
+NqapWifiMac::GetDcaTxop(void) const
 {
   return m_dca;
+}
+
+void
+NqapWifiMac::SetDcaTxop (Ptr<DcaTxop> dcaTxop)
+{
+  m_dca = dcaTxop;
+  m_dca->SetLow (m_low);
+  m_dca->SetManager (m_dcfManager);
+  m_dca->SetTxOkCallback (MakeCallback (&NqapWifiMac::TxOk, this));
+  m_dca->SetTxFailedCallback (MakeCallback (&NqapWifiMac::TxFailed, this));
 }
 
 } // namespace ns3
