@@ -149,3 +149,7 @@ def build(bld):
         obj = bld.create_ns3_program('tap-wifi-dumbbell',
                                      ['wifi', 'csma', 'point-to-point', 'tap-bridge', 'internet-stack'])
         obj.source = 'tap-wifi-dumbbell.cc'
+
+    obj = bld.create_ns3_program('simple-wifi-frame-aggregation',
+                                 ['core', 'simulator', 'mobility', 'wifi'])
+    obj.source = 'simple-wifi-frame-aggregation.cc'

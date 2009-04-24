@@ -48,6 +48,13 @@ def build(bld):
         'wifi-test.cc',
         'qos-tag.cc',
         'qos-utils.cc',
+        'qadhoc-wifi-mac.cc',
+        'qap-wifi-mac.cc',
+        'qsta-wifi-mac.cc',
+        'edca-txop-n.cc',
+        'msdu-aggregator.cc',
+        'amsdu-subframe-header.cc',
+        'msdu-standard-aggregator.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'wifi'
@@ -82,7 +89,14 @@ def build(bld):
         'error-rate-model.h',
         'yans-error-rate-model.h',
         'dca-txop.h',
-        'wifi-mac-header.h'
+        'wifi-mac-header.h',
+        'qadhoc-wifi-mac.h',
+        'qap-wifi-mac.h',
+        'qsta-wifi-mac.h',
+        'qos-utils.h',
+        'edca-txop-n.h',
+        'msdu-aggregator.h',
+        'amsdu-subframe-header.h',
         ]
 
     obj = bld.create_ns3_program('wifi-phy-test',

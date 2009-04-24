@@ -24,6 +24,7 @@ def build(bld):
         'yans-wifi-helper.cc',
         'v4ping-helper.cc',
         'nqos-wifi-mac-helper.cc',
+        'qos-wifi-mac-helper.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -50,6 +51,7 @@ def build(bld):
         'yans-wifi-helper.h',
         'v4ping-helper.h',
         'nqos-wifi-mac-helper.h',
+        'qos-wifi-mac-helper.h',
         ]
 
     env = bld.env_of_name('default')
