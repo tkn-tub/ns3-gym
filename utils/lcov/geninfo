@@ -1292,6 +1292,12 @@ sub read_gcno_file($)
 				{
 					next;
 				}
+				#added because if length is zero the following
+				#reading process will die, it will read garbage
+				if ($length == 0)
+				{
+					next;
+				}
 				($blocks, $filename) =
 					read_gcno_string(*INPUT, $endianness);
 				if ($blocks > 1)
