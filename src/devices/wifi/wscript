@@ -46,6 +46,8 @@ def build(bld):
         'cara-wifi-manager.cc',
         'constant-rate-wifi-manager.cc',
         'wifi-test.cc',
+        'qos-tag.cc',
+        'qos-utils.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'wifi'
