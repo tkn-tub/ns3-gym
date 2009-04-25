@@ -77,8 +77,8 @@ fashion is governed by the attributes explained in the previous section.
 
 The implementation is contained in the following files:
 @itemize @bullet
-@item @code{src/simulator/realtime-simulator-impl.{cc,h}}
-@item @code{src/simulator/wall-clock-synchronizer.{cc,h}}
+@item @code{src/simulator/realtime-simulator-impl.@{cc,h@}}
+@item @code{src/simulator/wall-clock-synchronizer.@{cc,h@}}
 @end itemize
 
 In order to create a realtime scheduler, to a first approximation you 

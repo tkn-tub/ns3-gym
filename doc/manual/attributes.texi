@@ -72,7 +72,7 @@ For most basic usage (syntax), treat a smart pointer like a regular pointer:
 @node CreateObject
 @subsection CreateObject
 
-As we discussed above in @ref{Object Creation}, 
+As we discussed above in @ref{CreateObject and Create}, 
 at the lowest-level API, objects of type @code{ns3::Object} are 
 not instantiated using @code{operator new} as usual but instead by
 a templated function called @code{CreateObject()}.

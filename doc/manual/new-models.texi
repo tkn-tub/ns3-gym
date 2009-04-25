@@ -399,7 +399,7 @@ LOG_COMPONENT_DEFINE is done outside the namespace ns3
 
 
 @subsection Object Framework
-
+@verbatim
   static const ClassId cid;
 
 

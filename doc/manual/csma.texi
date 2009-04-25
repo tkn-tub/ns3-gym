@@ -5,13 +5,13 @@ This is the introduction to CSMA NetDevice chapter, to complement the
 Csma model doxygen.
 
 @menu
-* Overview of the model::
+* Overview of the CSMA model::
 * Using the CsmaNetDevice::
 * CSMA Tracing::
 @end menu
 
-@node Overview of the model
-@section Overview of the model
+@node Overview of the CSMA model
+@section Overview of the CSMA model
 
 The ns-3 CSMA device models a simple bus network in the spirit of Ethernet.
 Although it does not model any real physical network you could ever build 
@@ -254,7 +254,7 @@ takes just one line of code.
   NetDeviceContainer csmaDevices = csma.Install (csmaNodes);
 @end verbatim
 
-@node Csma Tracing
+@node CSMA Tracing
 @section CSMA Tracing
 
 Like all ns-3 devices, the CSMA Model provides a number of trace sources.

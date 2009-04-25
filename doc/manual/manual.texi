@@ -65,7 +65,9 @@ along with this program.  If not, see @uref{http://www.gnu.org/licenses/}.
 
 @c So the toc is printed at the start.
 @anchor{Full Table of Contents}
+@ifnottex
 @contents
+@end ifnottex
 
 @ifnottex
 @node Top, Overview, Full Table of Contents 
