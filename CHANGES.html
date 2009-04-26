@@ -105,6 +105,32 @@ We provide also an overloaded variant for the multi-address case:
 Ipv4Address Ipv4InterfaceContainer::GetAddress (uint32_t i)
 + Ipv4Address Ipv4InterfaceContainer::GetAddress (uint32_t i, uint32_t j)
 </pre>
+
+</ul>
+</ul>
+
+<ul>
+<li>new WifiMacHelper objects.
+<ul>
+<li>
+Type of wifi MAC is now setted by two new specific helpers, NqosWifiMacHelper for non QoS MACs and QosWifiMacHelper for Qos MACs. They are passed as argument to WifiHelper::Install methods.</li>
+<pre>
+
+- void WifiHelper::SetMac (std::string type, std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),...)
+
+- NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
++ NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &phyHelper, const WifiMacHelper &macHelper, NodeContainer c) const
+
+- NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &phy, Ptr&lt;Node&gt; node) const
++ NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &phy, const WifiMacHelper &mac, Ptr&lt;Node&gt; node) const
+
+- NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &phy, std::string nodeName) const
++ NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &phy, const WifiMacHelper &mac, std::string nodeName) const
+
+  see src/helper/nqos-wifi-mac-helper.h
+      src/helper/qos-wifi-mac-helper.h
+  for more details.
+</pre>
 </ul>
 </ul>
 
