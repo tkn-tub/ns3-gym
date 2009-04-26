@@ -3,7 +3,7 @@
 @anchor{chap:Attributes}
 
 @menu
-* Object Overview::
+* Object Overview::::
 * Attribute Overview::
 * Extending attributes::
 * Adding new class type::
@@ -54,7 +54,6 @@ from @code{ns3::ObjectBase}.
 
 Let's review a couple of properties of these objects.
 
-@node Smart pointers
 @subsection Smart pointers
 
 As introduced in the ns-3 tutorial, ns-3 objects are memory managed by a 
@@ -69,10 +68,9 @@ For most basic usage (syntax), treat a smart pointer like a regular pointer:
   // etc.
 @end verbatim
 
-@node CreateObject
 @subsection CreateObject
 
-As we discussed above in @ref{CreateObject and Create}, 
+As we discussed above in @ref{Memory management and class Ptr},
 at the lowest-level API, objects of type @code{ns3::Object} are 
 not instantiated using @code{operator new} as usual but instead by
 a templated function called @code{CreateObject()}.
@@ -97,7 +95,6 @@ in the code;
 this is because there are some helper objects in effect that 
 are doing the CreateObject()s for you.
 
-@node TypeId
 @subsection TypeId
 
 ns-3 classes that derive from class ns3::Object can include
@@ -110,7 +107,6 @@ manager systems:
  @item the set of accessible constructors in the subclass
 @end itemize
 
-@node Object Summary
 @subsection Object Summary
 
 Putting all of these concepts together, let's look at a specific
@@ -175,7 +171,6 @@ organized list of parameters that are settable on the node and its
 constituent member objects, and help text and default values for
 each parameter.
 
-@node Functional overview
 @subsection Functional overview
 
 We provide a way for users to access values deep in the system, without
@@ -244,7 +239,6 @@ strings such as "MaxPackets" and TypeId strings.  In the next
 section, we will provide an example script that shows how users
 may manipulate these values.
 
-@node Basic usage
 @subsection Basic usage
 
 Let's look at how a user script might access these values.  
@@ -379,7 +373,6 @@ effect as the previous Set())
     limit.Get () << " packets");
 @end verbatim
 
-@node Setting through constructors and helper classes
 @subsection Setting through constructors helper classes
 
 Arbitrary combinations of attributes can be set and fetched from
@@ -398,7 +391,6 @@ or from the higher-level helper APIs, such as:
                                  "LayoutType", StringValue ("RowFirst"));
 @end verbatim
 
-@node Value classes
 @subsection Value classes
 Readers will note the new FooValue classes which are subclasses of the
 AttributeValue base class.  These can be thought of as

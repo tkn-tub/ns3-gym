@@ -4,6 +4,11 @@
 This chapter posts some information about possibly common errors in building
 or running ns-3 programs.
 
+@menu
+* Build errors::
+* Run-time errors::
+@end menu
+
 Please note that the wiki (@uref{http://www.nsnam.org/wiki/index.php/Troubleshooting}) may have contributed items.
 
 @node Build errors
