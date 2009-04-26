@@ -317,10 +317,10 @@ void WifiMacHeader::SetQosAckPolicy (enum QosAckPolicy policy)
     m_qosAckPolicy = 0;
     break;
   case NO_ACK :
-    m_qosAckPolicy = 2;
+    m_qosAckPolicy = 1;
     break;
   case NO_EXPLICIT_ACK :
-    m_qosAckPolicy = 1;
+    m_qosAckPolicy = 2;
     break;
   case BLOCK_ACK :
     m_qosAckPolicy = 3;
