@@ -97,6 +97,7 @@ def build(bld):
         'edca-txop-n.h',
         'msdu-aggregator.h',
         'amsdu-subframe-header.h',
+        'qos-tag.h',
         ]
 
     obj = bld.create_ns3_program('wifi-phy-test',
