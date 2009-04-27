@@ -196,7 +196,7 @@ private:
   /**
    * Figure out where the raw socket creation process lives on the system.
    */
-  std::string FindCreator (void);
+  std::string FindCreator (std::string creatorName);
 
   /**
    * Get a copy of the attached Queue.
