@@ -361,7 +361,6 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, u
         }
       if ((*i)->GetDestinationAddress () == GetAddress ())
         {
-          preq.DelDestinationAddressElement ((*i)->GetDestinationAddress());
           SendPrep (
               GetAddress (),
               preq.GetOriginatorAddress (),
@@ -372,29 +371,31 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, u
               preq.GetLifetime (),
               interface
           );
+          preq.DelDestinationAddressElement ((*i)->GetDestinationAddress());
           continue;
         }
       //check if can answer:
       HwmpRtable::LookupResult result = m_rtable->LookupReactive ((*i)->GetDestinationAddress());
+      NS_LOG_UNCOND("Lookup:"<<(*i)->GetDestinationAddress()<<"I am "<<GetAddress ()<<", RA = "<<result.retransmitter);
       if ((! ((*i)->IsDo())) && (result.retransmitter != Mac48Address::GetBroadcast()))
         {
-          //have a valid information and acn answer
+          //have a valid information and can answer
+          SendPrep (
+              (*i)->GetDestinationAddress (),
+              preq.GetOriginatorAddress (),
+              from,
+              result.metric,
+              preq.GetOriginatorSeqNumber (),
+              result.seqnum +1,
+              preq.GetLifetime (),
+              interface
+              );
+
           if ((*i)->IsRf ())
-            (*i)->SetFlags (true, false, (*i)->IsUsn ()); //DO = 1, RF = 0 (as it was)
+            (*i)->SetFlags (true, false, (*i)->IsUsn ()); //DO = 1, RF = 0
           else
             {
-              //send a PREP and delete destination
               preq.DelDestinationAddressElement ((*i)->GetDestinationAddress());
-              SendPrep (
-                  (*i)->GetDestinationAddress (),
-                  preq.GetOriginatorAddress (),
-                  from,
-                  result.metric,
-                  preq.GetOriginatorSeqNumber (),
-                  result.seqnum +1,
-                  preq.GetLifetime (),
-                  interface
-              );
               continue;
             }
         }
