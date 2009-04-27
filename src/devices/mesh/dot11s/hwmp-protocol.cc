@@ -376,7 +376,6 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, u
         }
       //check if can answer:
       HwmpRtable::LookupResult result = m_rtable->LookupReactive ((*i)->GetDestinationAddress());
-      NS_LOG_UNCOND("Lookup:"<<(*i)->GetDestinationAddress()<<"I am "<<GetAddress ()<<", RA = "<<result.retransmitter);
       if ((! ((*i)->IsDo())) && (result.retransmitter != Mac48Address::GetBroadcast()))
         {
           //have a valid information and can answer
