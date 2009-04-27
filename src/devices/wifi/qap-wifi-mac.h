@@ -104,6 +104,8 @@ private:
   bool GetBeaconGeneration (void) const;
   
   void DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket, WifiMacHeader const *hdr);
+  QapWifiMac &operator = (const QapWifiMac &);
+  QapWifiMac (const QapWifiMac &);
 
   typedef std::map<AccessClass, Ptr<EdcaTxopN> > Queues;
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> > DeaggregatedMsdus;

@@ -138,6 +138,8 @@ private:
    */
   Mac48Address MapSrcAddressForAggregation (WifiMacHeader const &hdr);
   Mac48Address MapDestAddressForAggregation (WifiMacHeader const &hdr);
+  EdcaTxopN &operator = (const EdcaTxopN &);
+  EdcaTxopN (const EdcaTxopN &);
   
   class Dcf;
   class TransmissionListener;

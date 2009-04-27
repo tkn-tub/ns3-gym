@@ -120,6 +120,9 @@ private:
   void SetBEQueue (Ptr<EdcaTxopN> beQueue);
   void SetBKQueue (Ptr<EdcaTxopN> bkQueue);
 
+  QstaWifiMac &operator = (const QstaWifiMac &);
+  QstaWifiMac (const QstaWifiMac &);
+
   typedef std::map<AccessClass, Ptr<EdcaTxopN> > Queues;
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> > DeaggregatedMsdus;
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> >::const_iterator DeaggregatedMsdusCI;
