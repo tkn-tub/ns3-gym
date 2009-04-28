@@ -56,7 +56,9 @@ us a note on ns-developers mailing list.  </p>
 
 <h2>Changes to existing API:</h2>
 <ul>
-<li> deconflict NetDevice::ifIndex and Ipv4::ifIndex (bug 85). All function parameters named "ifIndex" that refer 
+
+<li><b>Deconflict NetDevice::ifIndex and Ipv4::ifIndex (bug 85).</b>
+<p>All function parameters named "ifIndex" that refer 
 to an Ipv4 interface are instead named "interface".
 <pre>
 - static const uint32_t Ipv4RoutingProtocol::IF_INDEX_ANY = 0xffffffff;
@@ -74,48 +76,45 @@ proposed IPv4 routing refactoring)
 + bool Ipv4::GetInterfaceForDestination (Ipv4Address dest, uint32_t &interface) const;
 (N.B. this function is not needed in the proposed Ipv4 routing refactoring)
 </pre>
-<li> allow multiple IPv4 addresses to be assigned to an interface (bug 188).  
-<ul>
-<li> Add class Ipv4InterfaceAddress:  
-This is a new class to resemble Linux's struct in_ifaddr.  It holds IP addressing information, including mask,
-broadcast address, scope, whether primary or secondary, etc.
-<pre>
+
+
+<li><b>Allow multiple IPv4 addresses to be assigned to an interface (bug 188)</b>
+  <ul>
+  <li> Add class Ipv4InterfaceAddress:  
+  This is a new class to resemble Linux's struct in_ifaddr.  It holds IP addressing information, including mask,
+  broadcast address, scope, whether primary or secondary, etc.
+  <pre>
 +  virtual uint32_t AddAddress (uint32_t interface, Ipv4InterfaceAddress address) = 0;
 +  virtual Ipv4InterfaceAddress GetAddress (uint32_t interface, uint32_t addressIndex) const = 0;
 +  virtual uint32_t GetNAddresses (uint32_t interface) const = 0;
-</pre>
-<li>Regarding legacy API usage, typically where you once did the following,
-using the public Ipv4 class interface (e.g.):
-<pre>
+  </pre>
+  <li>Regarding legacy API usage, typically where you once did the following,
+  using the public Ipv4 class interface (e.g.):
+  <pre>
   ipv4A->SetAddress (ifIndexA, Ipv4Address ("172.16.1.1"));
   ipv4A->SetNetworkMask (ifIndexA, Ipv4Mask ("255.255.255.255"));
-</pre>
-you now do:
-<pre>
+  </pre>
+  you now do:
+  <pre>
   Ipv4InterfaceAddress ipv4IfAddrA = Ipv4InterfaceAddress (Ipv4Address ("172.16.1.1"), Ipv4Mask ("255.255.255.255"));
   ipv4A->AddAddress (ifIndexA, ipv4IfAddrA);
-</pre>
-<li> At the helper API level, one often gets an address from an interface
-container.  We preserve the legacy GetAddress (uint32_t i) but it
-is documented that this will return only the first (address index 0)
-address on the interface, if there are multiple such addresses. 
-We provide also an overloaded variant for the multi-address case: 
+  </pre>
+  <li> At the helper API level, one often gets an address from an interface
+  container.  We preserve the legacy GetAddress (uint32_t i) but it
+  is documented that this will return only the first (address index 0)
+  address on the interface, if there are multiple such addresses. 
+  We provide also an overloaded variant for the multi-address case: 
 
-<pre>
+  <pre>
 Ipv4Address Ipv4InterfaceContainer::GetAddress (uint32_t i)
 + Ipv4Address Ipv4InterfaceContainer::GetAddress (uint32_t i, uint32_t j)
-</pre>
+  </pre>
 
-</ul>
-</ul>
+  </ul>
 
-<ul>
-<li>new WifiMacHelper objects.
-<ul>
-<li>
-Type of wifi MAC is now setted by two new specific helpers, NqosWifiMacHelper for non QoS MACs and QosWifiMacHelper for Qos MACs. They are passed as argument to WifiHelper::Install methods.</li>
-<pre>
-
+<li><b>New WifiMacHelper objects</b>
+<p>The type of wifi MAC is now set by two new specific helpers, NqosWifiMacHelper for non QoS MACs and QosWifiMacHelper for Qos MACs. They are passed as argument to WifiHelper::Install methods.</li>
+  <pre>
 - void WifiHelper::SetMac (std::string type, std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),...)
 
 - NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
@@ -126,12 +125,14 @@ Type of wifi MAC is now setted by two new specific helpers, NqosWifiMacHelper fo
 
 - NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &phy, std::string nodeName) const
 + NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &phy, const WifiMacHelper &mac, std::string nodeName) const
+  </pre>
+  See src/helper/nqos-wifi-mac-helper.h and src/helper/qos-wifi-mac-helper.h for more details.
+  </p>
 
-  see src/helper/nqos-wifi-mac-helper.h
-      src/helper/qos-wifi-mac-helper.h
-  for more details.
-</pre>
-</ul>
+<li><b>Remove Mac48Address::IsMulticast</b>
+  <p>This method was considered buggy and unsafe to call. Its replacement is Mac48Address::IsGroup.
+  </li>
+
 </ul>
 
 <h2>Changed behavior:</h2>
