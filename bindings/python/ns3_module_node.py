@@ -1056,11 +1056,6 @@ def register_Ns3Mac48Address_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Address const &', 'address')], 
                    is_static=True)
-    ## mac48-address.h: bool ns3::Mac48Address::IsMulticast() const [member function]
-    cls.add_method('IsMulticast', 
-                   'bool', 
-                   [], 
-                   is_const=True)
     return
 
 def register_Ns3Mac64Address_methods(root_module, cls):
