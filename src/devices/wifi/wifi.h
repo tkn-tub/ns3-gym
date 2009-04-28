@@ -11,30 +11,61 @@
  *
  * The current implementation provides roughly 4 levels of models:
  *   - the PHY layer models
- *   - the so-called MAC low models: they implement DCF
+ *   - the so-called MAC low models: they implement DCF and EDCAF
  *   - the so-called MAC high models: they implement the MAC-level
  *     beacon generation, probing, and association state machines.
  *   - a set of Rate control algorithms used by the MAC low models.
  *
- * We have today 3 MAC high models:
+ * We have today 6 MAC high models, 3 for non QoS MACs and 3 for QoS MACs.
+ *   
+ *  a)non QoS MACs:
+ *
  *   - a simple adhoc state machine which does not perform any
  *     kind of beacon generation, probing, or association. This
- *     state machine is implemented by the ns3::AdhocWifiNetDevice
- *     and ns3::MacHighAdhoc classes.
+ *     state machine is implemented by the ns3::AdhocWifiMac class.
  *   - an active probing and association state machine which handles
  *     automatic re-association whenever too many beacons are missed
- *     is implemented by the ns3::NqstaWifiNetDevice and 
- *     ns3::MacHighNqsta classes.
+ *     is implemented by the ns3::NqstaWifiMac class.
  *   - an access point which generates periodic beacons, and which
  *     accepts every attempt to associate. This AP state machine
- *     is implemented by the ns3::NqapWifiNetDevice and 
- *     ns3::MacHighNqap classes.
+ *     is implemented by the ns3::NqapWifiMac class.
+ *
+ *  b)QoS MACs:
+ *
+ *   - like above but these MAC models are also able to manage QoS traffic.
+ *     These MAC layers are implemented respectively by ns3::QadhocWifiMac,
+ *     ns3::QstaWifiMac and ns3::QapWifiMac classes.
+ *     With these MAC models is possible to work with traffic belonging to 
+ *     four different access classes: AC_VO for voice traffic, AC_VI for video
+ *     traffic, AC_BE for best-effort traffic and AC_BK for background traffic.
+ *     In order to determine MSDU's access class, every packet forwarded down
+ *     to these MAC layers should be marked using ns3::QosTag in order to set
+ *     a TID (traffic id) for that packet otherwise it will be considered
+ *     belonging to AC_BE access class. 
+ *     How TIDs are mapped to access classes are shown in the table below. 
+ *   
+ *     TID-AccessClass mapping:
+ *     
+ *      TID  | Access class
+ *      --------------------
+ *       7   |    AC_VO      ^
+ *       6   |    AC_VO      |
+ *       5   |    AC_VI      |
+ *       4   |    AC_VI      |
+ *       3   |    AC_BE      | priority
+ *       0   |    AC_BE      |  
+ *       2   |    AC_BK      |
+ *       1   |    AC_BK      |
+ *     
  *
  * The MAC low layer is split in 3 components:
  *   - ns3::MacLow which takes care of RTS/CTS/DATA/ACK transactions.
  *   - ns3::DcfManager and ns3::DcfState which implements the DCF function.
- *   - ns3::DcaTxop which handles the packet queue, packet fragmentation,
- *     and packet retransmissions if they are needed.
+ *   - ns3::DcaTxop or ns3::EdcaTxopN which handle the packet queue, packet 
+ *     fragmentation, and packet retransmissions if they are needed.
+ *     ns3::DcaTxop object is used by non QoS high MACs. ns3::EdcaTxopN is
+ *     used by Qos high MACs and performs also QoS operations like 802.11n MSDU
+ *     aggregation.
  *
  * The PHY layer implements a single model in the ns3::WifiPhy class: the
  * physical layer model implemented there is described fully in a paper titled
