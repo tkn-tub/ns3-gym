@@ -584,19 +584,6 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
 {
   NS_LOG_FUNCTION (buf << len);
 
-  /* IPv6 support*/
-  uint8_t mac[6];
-  Mac48Address multicast6AllNodes("33:33:00:00:00:01");
-  Mac48Address multicast6AllRouters("33:33:00:00:00:02");
-  Mac48Address multicast6AllHosts("33:33:00:00:00:03");
-  Mac48Address multicast6Node; /* multicast address addressed to our MAC address */
-
-  /* generate IPv6 multicast ethernet destination that nodes will accept */
-  GetAddress().CopyTo(mac);
-  mac[0]=0x33;
-  mac[1]=0x33;
-  multicast6Node.CopyFrom(mac);
-
   //
   // Create a packet out of the buffer we received and free that buffer.
   //
@@ -636,16 +623,12 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
     }
 
   PacketType packetType;
-      
+
   if (header.GetDestination ().IsBroadcast ())
     {
       packetType = NS3_PACKET_BROADCAST;
     }
-  else if (header.GetDestination ().IsMulticast () ||
-           header.GetDestination() == multicast6Node ||
-           header.GetDestination() == multicast6AllNodes ||
-           header.GetDestination() == multicast6AllRouters ||
-           header.GetDestination() == multicast6AllHosts)
+  else if (header.GetDestination ().IsGroup ())
     {
       packetType = NS3_PACKET_MULTICAST;          
     }
