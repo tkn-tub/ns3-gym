@@ -170,7 +170,7 @@ HwmpMacPlugin::RequestDestination (Mac48Address dst, uint32_t originator_seqno, 
   preq.SetOriginatorAddress (m_protocol->GetAddress ());
   preq.SetOriginatorSeqNumber (originator_seqno);
   preq.SetLifetime (m_protocol->GetActivePathLifetime ());
-  preq.AddDestinationAddressElement (false, false, dst, dst_seqno);
+  preq.AddDestinationAddressElement (m_protocol->GetDoFlag (), m_protocol->GetRfFlag (), dst, dst_seqno);
   m_preqQueue.push_back (preq);
   //set iterator position to my preq:
   SendOnePreq ();
