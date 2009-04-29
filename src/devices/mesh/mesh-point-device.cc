@@ -276,7 +276,7 @@ bool
 MeshPointDevice::SupportsSendFrom () const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  return true;
+  return false; // don't allow to bridge mesh network with something else.
 }
 
 Address
