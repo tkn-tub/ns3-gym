@@ -92,6 +92,11 @@ public:
   virtual void  SetSsid (Ssid ssid);
   //\}
   
+  ///\name Each mesh point interfaces must know the mesh point address
+  //\{
+  void SetMeshPointAddress (Mac48Address);
+  Mac48Address GetMeshPointAddress () const;
+  //\}
   ///\name Beacons
   //\{
   /// Set maximum initial random delay before first beacon
@@ -211,6 +216,8 @@ private:
   Ptr<MacLow> m_low;
   /// My address
   Mac48Address m_address;
+  /// Mesh point address
+  Mac48Address m_mpAddress;
   /// SSID
   Ssid m_meshId;
   

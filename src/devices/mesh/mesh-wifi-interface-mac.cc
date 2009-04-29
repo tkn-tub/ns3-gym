@@ -542,7 +542,7 @@ MeshWifiInterfaceMac::SendBeacon ()
   for (PluginList::const_iterator i = m_plugins.begin(); i != m_plugins.end(); ++i)
     (*i)->UpdateBeacon (beacon);
 
-  m_beaconDca->Queue (beacon.CreatePacket(), beacon.CreateHeader(GetAddress()));
+  m_beaconDca->Queue (beacon.CreatePacket(), beacon.CreateHeader(GetAddress (), GetMeshPointAddress ()));
 
   ScheduleNextBeacon ();
 }
@@ -594,6 +594,7 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
   if (hdr->IsData ())
       ForwardUp (packet, hdr->GetAddr4(), hdr->GetAddr3());
 }
+
 uint32_t
 MeshWifiInterfaceMac::GetLinkMetric (Mac48Address peerAddress)
 {
@@ -602,15 +603,31 @@ MeshWifiInterfaceMac::GetLinkMetric (Mac48Address peerAddress)
     metric = m_linkMetricCallback(peerAddress, this);
   return metric;
 }
+
 void
 MeshWifiInterfaceMac::SetLinkMetricCallback (Callback<uint32_t, Mac48Address, Ptr<MeshWifiInterfaceMac> > cb)
 {
   m_linkMetricCallback = cb;
 }
+
 Ptr<WifiRemoteStationManager>
 MeshWifiInterfaceMac::GetStationManager()
 {
   return m_stationManager;
 }
+
+void
+MeshWifiInterfaceMac::SetMeshPointAddress (Mac48Address a)
+{
+  m_mpAddress = a;
+}
+
+Mac48Address 
+MeshWifiInterfaceMac::GetMeshPointAddress () const
+{
+  return m_mpAddress;
+}
+
+
 } // namespace ns3
 

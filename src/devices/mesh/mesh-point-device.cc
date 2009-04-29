@@ -25,6 +25,8 @@
 #include "ns3/log.h"
 #include "ns3/pointer.h"
 #include "ns3/mesh-point-device.h"
+#include "ns3/wifi-net-device.h"
+#include "ns3/mesh-wifi-interface-mac.h"
 
 NS_LOG_COMPONENT_DEFINE ("MeshPointDevice");
 
@@ -316,15 +318,28 @@ MeshPointDevice::AddInterface (Ptr<NetDevice> iface)
   NS_ASSERT (iface != this);
   if (!Mac48Address::IsMatchingType (iface->GetAddress ()))
   {
-    NS_FATAL_ERROR ("Device does not support eui 48 addresses: cannot be added to bridge.");
+    NS_FATAL_ERROR ("Device does not support eui 48 addresses: cannot be used as a mesh point interface.");
   }
   if (!iface->SupportsSendFrom ())
   {
-    NS_FATAL_ERROR ("Device does not support SendFrom: cannot be added to bridge.");
+    NS_FATAL_ERROR ("Device does not support SendFrom: cannot be used as a mesh point interface.");
   }
-  m_address = Mac48Address::ConvertFrom (iface->GetAddress ());
   
-  NS_LOG_DEBUG ("RegisterProtocolHandler for " << iface->GetInstanceTypeId ().GetName ());
+  // Mesh point has MAC address of it's first interface
+  if (m_ifaces.empty()) 
+    m_address = Mac48Address::ConvertFrom (iface->GetAddress ());
+  
+  const WifiNetDevice * wifiNetDev = dynamic_cast<const WifiNetDevice *> (PeekPointer (iface));
+  if (wifiNetDev == 0)
+    NS_FATAL_ERROR ("Device is not a WiFi NIC: cannot be used as a mesh point interface.");
+      
+  MeshWifiInterfaceMac * ifaceMac = dynamic_cast<MeshWifiInterfaceMac *> (PeekPointer (wifiNetDev->GetMac ()));
+  if (ifaceMac == 0)
+    NS_FATAL_ERROR ("WiFi device doesn't have correct MAC installed: cannot be used as a mesh point interface.");
+
+  ifaceMac->SetMeshPointAddress (m_address);
+  
+  // Receive frames from this interface
   m_node->RegisterProtocolHandler (MakeCallback (&MeshPointDevice::ReceiveFromDevice, this),
                                    0, iface, /*promiscuous = */true);
   
@@ -341,7 +356,7 @@ MeshPointDevice::SetRoutingProtocol (Ptr<MeshL2RoutingProtocol> protocol)
 {
   NS_LOG_FUNCTION_NOARGS ();
   
-  NS_ASSERT_MSG (PeekPointer(protocol->GetMeshPoint()) == this, "Routing protocol must be installed on mesh point to be usefull.");
+  NS_ASSERT_MSG (PeekPointer(protocol->GetMeshPoint()) == this, "Routing protocol must be installed on mesh point to be useful.");
   
   m_routingProtocol = protocol;
   m_requestRoute = MakeCallback (&MeshL2RoutingProtocol::RequestRoute, protocol);

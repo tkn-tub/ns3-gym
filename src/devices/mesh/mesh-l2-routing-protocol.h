@@ -24,6 +24,7 @@
 
 #include "ns3/object.h"
 #include "ns3/mac48-address.h"
+#include "ns3/packet.h"
 
 namespace ns3 {
 
@@ -102,7 +103,7 @@ public:
 protected:
   ///\name Route request queue API, supposed to be implemented in subclasses
   //\{
-  /// Packet waiting its routing inforamation, supposed to be used by all implementations to correctly implement timeouts.
+  /// Packet waiting its routing information, supposed to be used by all implementations to correctly implement timeouts.
   struct QueuedPacket {
     Ptr<Packet> pkt; ///< the packet
     Mac48Address src; ///< src address
@@ -110,12 +111,14 @@ protected:
     uint16_t protocol; ///< protocol number
     uint32_t inInterface; ///< incoming device interface ID. (if packet has come from upper layers, this is Mesh point ID)
     RouteReplyCallback reply; ///< how to reply
+    
+    QueuedPacket () : pkt(0), protocol(0), inInterface(0) {}
   };
   /**
    * \brief Queue route request packet with 'Ethernet header'
    * \return false if the queue is full.
    */
-  virtual bool QueuePacket (struct QueuedPacket packet) = 0;
+  virtual bool QueuePacket (QueuedPacket packet) = 0;
   /**
    * \brief Deque packet with 'Ethernet header'
    * \param destination The destination address, which identifyes queue.
