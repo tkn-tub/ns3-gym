@@ -1,6 +1,7 @@
 /* -*-  Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2006 INRIA
+ * Copyright (c) 2006, 2009 INRIA
+ * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 #include "ns3/assert.h"
 #include "ns3/address-utils.h"
@@ -43,7 +45,8 @@ WifiMacHeader::WifiMacHeader ()
   : m_ctrlPwrMgt (0),
     m_ctrlMoreData (0),
     m_ctrlWep (0),
-    m_ctrlOrder (1)
+    m_ctrlOrder (1),
+    m_amsduPresent (0)
 {}
 WifiMacHeader::~WifiMacHeader ()
 {}
@@ -141,7 +144,7 @@ WifiMacHeader::SetMultihopAction (void)
 }
 
 void 
-WifiMacHeader::SetType (enum WifiMacType_e type)
+WifiMacHeader::SetType (enum WifiMacType type)
 {
   switch (type) {
   case WIFI_MAC_CTL_BACKREQ:
@@ -323,6 +326,39 @@ void WifiMacHeader::SetQosTid (uint8_t tid)
 {
   m_qosTid = tid;
 }
+void WifiMacHeader::SetQosEosp ()
+{
+  m_qosEosp = 1;
+}
+void WifiMacHeader::SetQosNoEosp ()
+{
+  m_qosEosp = 0;
+}
+void WifiMacHeader::SetQosAckPolicy (enum QosAckPolicy policy)
+{
+  switch (policy) {
+  case NORMAL_ACK :
+    m_qosAckPolicy = 0;
+    break;
+  case NO_ACK :
+    m_qosAckPolicy = 1;
+    break;
+  case NO_EXPLICIT_ACK :
+    m_qosAckPolicy = 2;
+    break;
+  case BLOCK_ACK :
+    m_qosAckPolicy = 3;
+    break;
+  }
+}
+void WifiMacHeader::SetQosAmsdu (void)
+{
+  m_amsduPresent = 1;
+}
+void WifiMacHeader::SetQosNoAmsdu (void)
+{
+  m_amsduPresent = 0;
+}
 void WifiMacHeader::SetQosTxopLimit (uint8_t txop)
 {
   m_qosStuff = txop;
@@ -348,7 +384,8 @@ WifiMacHeader::GetAddr4 (void) const
 {
   return m_addr4;
 }
-enum WifiMacType_e 
+
+enum WifiMacType 
 WifiMacHeader::GetType (void) const
 {
   switch (m_ctrlType) {
@@ -468,7 +505,7 @@ WifiMacHeader::GetType (void) const
   }
   // NOTREACHED
   NS_ASSERT (false);
-  return (enum WifiMacType_e)-1;
+  return (enum WifiMacType)-1;
 }
 bool 
 WifiMacHeader::IsFromDs (void) const
@@ -651,12 +688,46 @@ WifiMacHeader::IsQosAck (void) const
   NS_ASSERT (IsQosData ());
   return (m_qosAckPolicy == 0)?true:false;
 }
+bool
+WifiMacHeader::IsQosEosp (void) const
+{
+  NS_ASSERT (IsQosData ());
+  return (m_qosEosp == 1)?true:false;
+}
+bool
+WifiMacHeader::IsQosAmsdu (void) const
+{
+  NS_ASSERT (IsQosData ());
+  return (m_amsduPresent == 1)?true:false;
+}
 uint8_t
 WifiMacHeader::GetQosTid (void) const
 {
   NS_ASSERT (IsQosData ());
   return m_qosTid;
 }
+enum WifiMacHeader::QosAckPolicy
+WifiMacHeader::GetQosAckPolicy (void) const
+{
+  switch (m_qosAckPolicy) {
+  case 0 :
+    return NORMAL_ACK;
+    break;
+  case 1 :
+    return NO_ACK;
+    break;
+  case 2 :
+    return NO_EXPLICIT_ACK;
+    break;
+  case 3 :
+    return BLOCK_ACK;
+    break;
+  }
+  // NOTREACHED
+  NS_ASSERT (false);
+  return (enum QosAckPolicy)-1;
+}
+
 uint8_t 
 WifiMacHeader::GetQosTxopLimit (void) const
 {
@@ -687,6 +758,7 @@ WifiMacHeader::GetQosControl (void) const
   val |= m_qosTid;
   val |= m_qosEosp << 4;
   val |= m_qosAckPolicy << 5;
+  val |= m_amsduPresent << 7;
   val |= m_qosStuff << 8;
   return val;
 }
@@ -716,6 +788,7 @@ WifiMacHeader::SetQosControl (uint16_t qos)
   m_qosTid = qos & 0x000f;
   m_qosEosp = (qos >> 4) & 0x0001;
   m_qosAckPolicy = (qos >> 5) & 0x0003;
+  m_amsduPresent = (qos >> 7) & 0x0001;
   m_qosStuff = (qos >> 8) & 0x00ff;
 }
 
@@ -816,6 +889,7 @@ WifiMacHeader::GetTypeId (void)
     ;
   return tid;
 }
+
 TypeId 
 WifiMacHeader::GetInstanceTypeId (void) const
 {

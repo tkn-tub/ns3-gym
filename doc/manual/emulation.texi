@@ -4,7 +4,7 @@
 
 ns-3 has been designed for integration into testbed and virtual machine
 environments.  We have addressed this need by providing two kinds of 
-net devices.  The first kind, which we call an @code{Emu} @code {NetDevice}
+net devices.  The first kind, which we call an @code{Emu} @code{NetDevice}
 allows ns-3 simulations to send data on a ``real'' network.  The second kind,
 called a @code{Tap} @code{NetDevice} allows a ``real'' host to participate 
 in an ns-3 simulation as if it were one of the simulated nodes.  An ns-3 

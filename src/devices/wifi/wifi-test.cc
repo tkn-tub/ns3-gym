@@ -33,6 +33,8 @@
 #include "ns3/simulator.h"
 #include "ns3/test.h"
 #include "ns3/object-factory.h"
+#include "dca-txop.h"
+#include "ns3/pointer.h"
 
 namespace ns3 {
 
@@ -69,7 +71,9 @@ WifiTest::CreateOne (Vector pos, Ptr<YansWifiChannel> channel)
   Ptr<Node> node = CreateObject<Node> ();
   Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
 
+  Ptr<DcaTxop> queue = CreateObject<DcaTxop> ();
   Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
+  mac->SetAttribute("DcaTxop", PointerValue (queue));
   Ptr<ConstantPositionMobilityModel> mobility = CreateObject<ConstantPositionMobilityModel> ();
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
   Ptr<ErrorRateModel> error = CreateObject<YansErrorRateModel> ();

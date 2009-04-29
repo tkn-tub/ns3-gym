@@ -131,21 +131,22 @@ int main (int argc, char *argv[])
   packetSocket.Install (stas);
   packetSocket.Install (ap);
 
+  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
   Ssid ssid = Ssid ("wifi-default");
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
   // setup stas.
-  wifi.SetMac ("ns3::NqstaWifiMac", 
+  wifiMac.SetType ("ns3::NqstaWifiMac", 
                "Ssid", SsidValue (ssid),
                "ActiveProbing", BooleanValue (false));
-  staDevs = wifi.Install (wifiPhy, stas);
+  staDevs = wifi.Install (wifiPhy, wifiMac, stas);
   // setup ap.
-  wifi.SetMac ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid),
+  wifiMac.SetType ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true),
                "BeaconInterval", TimeValue (Seconds (2.5)));
-  wifi.Install (wifiPhy, ap);
+  wifi.Install (wifiPhy, wifiMac, ap);
 
   // mobility.
   mobility.Install (stas);

@@ -151,19 +151,20 @@ main (int argc, char *argv[])
 
   Ssid ssid = Ssid ("left");
   WifiHelper wifi = WifiHelper::Default ();
+  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
 
-  wifi.SetMac ("ns3::NqapWifiMac", 
-               "Ssid", SsidValue (ssid), 
-               "BeaconGeneration", BooleanValue (true), 
-               "BeaconInterval", TimeValue (Seconds (2.5)));
-  NetDeviceContainer devicesLeft = wifi.Install (wifiPhy, nodesLeft.Get (0));
+  wifiMac.SetType ("ns3::NqapWifiMac", 
+                   "Ssid", SsidValue (ssid), 
+                   "BeaconGeneration", BooleanValue (true), 
+                   "BeaconInterval", TimeValue (Seconds (2.5)));
+  NetDeviceContainer devicesLeft = wifi.Install (wifiPhy, wifiMac, nodesLeft.Get (0));
 
 
-  wifi.SetMac ("ns3::NqstaWifiMac", 
-               "Ssid", SsidValue (ssid), 
-               "ActiveProbing", BooleanValue (false));
-  devicesLeft.Add (wifi.Install (wifiPhy, NodeContainer (nodesLeft.Get (1), nodesLeft.Get (2), nodesLeft.Get (3))));
+  wifiMac.SetType ("ns3::NqstaWifiMac", 
+                   "Ssid", SsidValue (ssid), 
+                   "ActiveProbing", BooleanValue (false));
+  devicesLeft.Add (wifi.Install (wifiPhy, wifiMac, NodeContainer (nodesLeft.Get (1), nodesLeft.Get (2), nodesLeft.Get (3))));
 
   MobilityHelper mobility;
   mobility.Install (nodesLeft);

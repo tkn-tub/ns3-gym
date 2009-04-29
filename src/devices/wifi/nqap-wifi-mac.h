@@ -21,6 +21,7 @@
 #define MAC_HIGH_NQAP_H
 
 #include <stdint.h>
+
 #include "ns3/mac48-address.h"
 #include "ns3/callback.h"
 #include "ns3/packet.h"
@@ -113,7 +114,8 @@ private:
   virtual void DoDispose (void);
   NqapWifiMac (const NqapWifiMac & ctor_arg);
   NqapWifiMac &operator = (const NqapWifiMac &o);
-  Ptr<DcaTxop> DoGetDcaTxop(void) const;
+  Ptr<DcaTxop> GetDcaTxop (void) const;
+  void SetDcaTxop (Ptr<DcaTxop> dcaTxop);
 
   Ptr<DcaTxop> m_dca;
   Ptr<DcaTxop> m_beaconDca;

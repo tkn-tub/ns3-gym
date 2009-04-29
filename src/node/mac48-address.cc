@@ -142,18 +142,6 @@ Mac48Address::IsBroadcast (void) const
   return *this == GetBroadcast ();
 }
 bool 
-Mac48Address::IsMulticast (void) const
-{
-  uint8_t mcBuf[6];
-  CopyTo (mcBuf);
-  mcBuf[3] &= 0x80;
-  mcBuf[4] = 0;
-  mcBuf[5] = 0;
-  Mac48Address prefix;
-  prefix.CopyFrom (mcBuf);
-  return prefix == Mac48Address::GetMulticastPrefix ();
-}
-bool 
 Mac48Address::IsGroup (void) const
 {
   return (m_address[0] & 0x01) == 0x01;

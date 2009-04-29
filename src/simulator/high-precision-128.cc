@@ -19,6 +19,7 @@
  */
 #include "high-precision-128.h"
 #include "ns3/test.h"
+#include "ns3/fatal-error.h"
 #include <math.h>
 #include <iostream>
 
@@ -151,10 +152,69 @@ HighPrecision::SlowMul (HighPrecision const &o)
 {
   EnsureSlow ();
   const_cast<HighPrecision &> (o).EnsureSlow ();
-  cairo_int128_t other = _cairo_int128_rsa (o.m_slowValue, 64);
-  m_slowValue = _cairo_int128_mul (m_slowValue, other);
+  //use the 128 bits multiplication
+  m_slowValue = Mul128(m_slowValue,o.m_slowValue);
   return false;
 }
+/**
+ * this function multiplies two 128 bits fractions considering
+ * the high 64 bits as the integer part and the low 64 bits
+ * as the fractional part. It takes into account the sign
+ * of the operands to produce a signed 128 bits result.
+ */
+cairo_int128_t
+HighPrecision::Mul128(cairo_int128_t a, cairo_int128_t b )
+{
+  //Implement the 128 bits multiplication
+  cairo_int128_t result;
+  cairo_uint128_t hiPart,loPart,midPart;
+  bool resultNegative = false, signA = false,signB = false;
+
+  //take the sign of the operands
+  signA = _cairo_int128_negative (a);
+  signB = _cairo_int128_negative (b);
+  //the result is negative only if one of the operand is negative
+  if ((signA == true && signB == false) ||(signA == false && signB == true))
+    {
+  	 resultNegative = true;
+    }
+  //now take the absolute part to make sure that the resulting operands are positive
+  if (signA == true)
+  {
+	  a = _cairo_int128_negate (a);
+  }
+  if (signB == true)
+  {
+  	  b = _cairo_int128_negate (b);
+  }
+
+  //Multiplying (a.h 2^64 + a.l) x (b.h 2^64 + b.l) =
+  //			2^128 a.h b.h + 2^64*(a.h b.l+b.h a.l) + a.l b.l
+  //get the low part a.l b.l
+  //multiply the fractional part
+  loPart = _cairo_uint64x64_128_mul (a.lo, b.lo);
+  //compute the middle part 2^64*(a.h b.l+b.h a.l)
+  midPart = _cairo_uint128_add(_cairo_uint64x64_128_mul(a.lo, b.hi),
+		  _cairo_uint64x64_128_mul(a.hi, b.lo)) ;
+  //truncate the low part
+  result.lo = _cairo_uint64_add(loPart.hi,midPart.lo);
+  //compute the high part 2^128 a.h b.h
+  hiPart = _cairo_uint64x64_128_mul (a.hi, b.hi);
+  //truncate the high part and only use the low part
+  result.hi = _cairo_uint64_add(hiPart.lo,midPart.hi);
+  //if the high part is not zero, put a warning
+  if (hiPart.hi !=0)
+  {
+	  NS_FATAL_ERROR("High precision 128 bits multiplication error: multiplication overflow.");
+  }
+  //add the sign to the result
+  if (resultNegative)
+  {
+	 result = _cairo_int128_negate (result);
+  }
+  return result;
+}
+
 bool 
 HighPrecision::Div (HighPrecision const &o)
 {
@@ -351,6 +411,22 @@ HighPrecision128Tests::RunTests (void)
   a = HighPrecision (0.1);
   a.Div (HighPrecision (1.25));
   NS_TEST_ASSERT_EQUAL (a.GetDouble (), 0.08);
+  //test the multiplication
+  a = HighPrecision (0.5);
+  a.Mul(HighPrecision (5));
+  NS_TEST_ASSERT_EQUAL (a.GetDouble (), 2.5);
+  //test the sign of multiplication, first operand negative
+  a = HighPrecision (-0.5);
+  a.Mul(HighPrecision (5));
+  NS_TEST_ASSERT_EQUAL (a.GetDouble (), -2.5);
+  //two negative
+  a = HighPrecision (-0.5);
+  a.Mul(HighPrecision (-5));
+  NS_TEST_ASSERT_EQUAL (a.GetDouble (), 2.5);
+  //second operand negative
+  a = HighPrecision (0.5);
+  a.Mul(HighPrecision (-5));
+  NS_TEST_ASSERT_EQUAL (a.GetDouble (), -2.5);
 
 
   return result;

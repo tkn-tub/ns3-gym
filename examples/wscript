@@ -145,11 +145,17 @@ def build(bld):
 
     env = bld.env_of_name('default')
     if env['ENABLE_EMU']:
-        obj = bld.create_ns3_program('emu-udp-echo',
-                                     ['emu', 'internet-stack'])
+        obj = bld.create_ns3_program('emu-udp-echo', ['emu', 'internet-stack'])
         obj.source = 'emu-udp-echo.cc'
+
+        obj = bld.create_ns3_program('emu-ping', ['emu', 'internet-stack'])
+        obj.source = 'emu-ping.cc'
 
     if env['ENABLE_TAP']:
         obj = bld.create_ns3_program('tap-wifi-dumbbell',
                                      ['wifi', 'csma', 'point-to-point', 'tap-bridge', 'internet-stack'])
         obj.source = 'tap-wifi-dumbbell.cc'
+
+    obj = bld.create_ns3_program('simple-wifi-frame-aggregation',
+                                 ['core', 'simulator', 'mobility', 'wifi'])
+    obj.source = 'simple-wifi-frame-aggregation.cc'

@@ -572,11 +572,11 @@ void TimeTests::CheckOld (bool *ok)
 
   Time t4;
   t4 = Seconds (10.0) * Scalar (1.5);
-  CheckTimeSec("old 11", t4.GetSeconds(), 10, ok);
+  CheckTimeSec("old 11", t4.GetSeconds(), 15, ok);
 
   Time t5;
   t5 = NanoSeconds (10) * Scalar (1.5);
-  CheckTime("old 12", t5.GetNanoSeconds(), 10, ok);
+  CheckTime("old 12", t5.GetNanoSeconds(), 15, ok);
 
   t4 = Seconds (10.0) * Scalar (15) / Scalar (10);
   CheckTimeSec("old 13", t4.GetSeconds(), 15, ok);

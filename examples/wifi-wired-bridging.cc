@@ -104,6 +104,7 @@ int main (int argc, char *argv[])
       MobilityHelper mobility;
       BridgeHelper bridge;
       WifiHelper wifi = WifiHelper::Default ();
+      NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
       YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
       YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
       wifiPhy.SetChannel (wifiChannel.Create ());
@@ -121,11 +122,11 @@ int main (int argc, char *argv[])
       // setup the AP.
       mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
       mobility.Install (backboneNodes.Get (i));
-      wifi.SetMac ("ns3::NqapWifiMac",
+      wifiMac.SetType ("ns3::NqapWifiMac",
 		   "Ssid", SsidValue (ssid),
 		   "BeaconGeneration", BooleanValue (true),
 		   "BeaconInterval", TimeValue (Seconds (2.5)));
-      apDev = wifi.Install (wifiPhy, backboneNodes.Get (i));
+      apDev = wifi.Install (wifiPhy, wifiMac, backboneNodes.Get (i));
 
       NetDeviceContainer bridgeDev;
       bridgeDev = bridge.Install (backboneNodes.Get (i), NetDeviceContainer (apDev, backboneDevices.Get (i)));
@@ -141,10 +142,10 @@ int main (int argc, char *argv[])
 				 "Speed", StringValue ("Constant:1.0"),
 				 "Bounds", RectangleValue (Rectangle (wifiX, wifiX+5.0,0.0, (nStas+1)*5.0)));
       mobility.Install (sta);
-      wifi.SetMac ("ns3::NqstaWifiMac",
+      wifiMac.SetType ("ns3::NqstaWifiMac",
 		   "Ssid", SsidValue (ssid),
 		   "ActiveProbing", BooleanValue (false));
-      staDev = wifi.Install (wifiPhy, sta);
+      staDev = wifi.Install (wifiPhy, wifiMac, sta);
       staInterface = ip.Assign (staDev);
 
       // save everything in containers.

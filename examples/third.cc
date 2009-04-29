@@ -89,21 +89,23 @@ main (int argc, char *argv[])
   WifiHelper wifi = WifiHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::AarfWifiManager");
 
+  NqosWifiMacHelper mac = NqosWifiMacHelper::Default ();
+  
   Ssid ssid = Ssid ("ns-3-ssid");
-  wifi.SetMac ("ns3::NqstaWifiMac", 
+  mac.SetType ("ns3::NqstaWifiMac", 
     "Ssid", SsidValue (ssid),
     "ActiveProbing", BooleanValue (false));
 
   NetDeviceContainer staDevices;
-  staDevices = wifi.Install (phy, wifiStaNodes);
+  staDevices = wifi.Install (phy, mac, wifiStaNodes);
 
-  wifi.SetMac ("ns3::NqapWifiMac", 
+  mac.SetType ("ns3::NqapWifiMac", 
     "Ssid", SsidValue (ssid),
     "BeaconGeneration", BooleanValue (true),
     "BeaconInterval", TimeValue (Seconds (2.5)));
 
   NetDeviceContainer apDevices;
-  apDevices = wifi.Install (phy, wifiApNode);
+  apDevices = wifi.Install (phy, mac, wifiApNode);
 
   MobilityHelper mobility;
 

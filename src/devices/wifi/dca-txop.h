@@ -115,6 +115,9 @@ private:
   friend class TransmissionListener;
   friend class WifiRemoteStation;
 
+  DcaTxop &operator = (const DcaTxop &);
+  DcaTxop (const DcaTxop &o);
+
   // Inherited from ns3::Object
   Ptr<MacLow> Low (void);
 

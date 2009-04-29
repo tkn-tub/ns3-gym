@@ -1,6 +1,7 @@
 /* -*-  Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2006 INRIA
+ * Copyright (c) 2006, 2009 INRIA
+ * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 #ifndef WIFI_MAC_HEADER_H
 #define WIFI_MAC_HEADER_H
@@ -27,7 +29,7 @@
 
 namespace ns3 {
 
-enum WifiMacType_e {
+enum WifiMacType {
   WIFI_MAC_CTL_RTS = 0,
   WIFI_MAC_CTL_CTS,
   WIFI_MAC_CTL_ACK,
@@ -68,6 +70,19 @@ enum WifiMacType_e {
 class WifiMacHeader : public Header 
 {
 public:
+  enum QosAckPolicy {
+    NORMAL_ACK = 0,
+    NO_ACK = 1,
+    NO_EXPLICIT_ACK = 2,
+    BLOCK_ACK = 3,
+  };
+  
+  enum AddressType {
+    ADDR1,	
+    ADDR2,
+    ADDR3,
+    ADDR4
+  };
 
   WifiMacHeader ();
   ~WifiMacHeader ();
@@ -96,7 +111,7 @@ public:
   void SetAddr2 (Mac48Address address);
   void SetAddr3 (Mac48Address address);
   void SetAddr4 (Mac48Address address);
-  void SetType (enum WifiMacType_e type);
+  void SetType (enum WifiMacType type);
   void SetRawDuration (uint16_t duration);
   void SetDuration (Time duration);
   void SetId (uint16_t id);
@@ -107,13 +122,19 @@ public:
   void SetRetry (void);
   void SetNoRetry (void);
   void SetQosTid (uint8_t tid);
+  void SetQosEosp ();
+  void SetQosNoEosp ();
+  void SetQosAckPolicy (enum QosAckPolicy);
+  void SetQosAmsdu (void);
+  void SetQosNoAmsdu (void);
   void SetQosTxopLimit (uint8_t txop);
+ 
 
   Mac48Address GetAddr1 (void) const;
   Mac48Address GetAddr2 (void) const;
   Mac48Address GetAddr3 (void) const;
   Mac48Address GetAddr4 (void) const;
-  enum WifiMacType_e GetType (void) const;
+  enum WifiMacType GetType (void) const;
   bool IsFromDs (void) const;
   bool IsToDs (void) const;
   bool IsData (void) const;
@@ -146,7 +167,10 @@ public:
   bool IsQosBlockAck (void) const;
   bool IsQosNoAck (void) const;
   bool IsQosAck (void) const;
+  bool IsQosEosp (void) const;
+  bool IsQosAmsdu (void) const;
   uint8_t GetQosTid (void) const;
+  enum QosAckPolicy GetQosAckPolicy (void) const;
   uint8_t GetQosTxopLimit (void) const;
 
   uint32_t GetSize (void) const;
@@ -181,6 +205,7 @@ private:
   uint8_t m_qosTid;
   uint8_t m_qosEosp;
   uint8_t m_qosAckPolicy;
+  uint8_t m_amsduPresent;
   uint16_t m_qosStuff;
 };
 

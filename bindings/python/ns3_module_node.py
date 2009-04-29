@@ -1056,11 +1056,6 @@ def register_Ns3Mac48Address_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Address const &', 'address')], 
                    is_static=True)
-    ## mac48-address.h: bool ns3::Mac48Address::IsMulticast() const [member function]
-    cls.add_method('IsMulticast', 
-                   'bool', 
-                   [], 
-                   is_const=True)
     return
 
 def register_Ns3Mac64Address_methods(root_module, cls):
@@ -1696,7 +1691,7 @@ def register_Ns3Queue_methods(root_module, cls):
     cls.add_method('Dequeue', 
                    'ns3::Ptr< ns3::Packet >', 
                    [])
-    ## queue.h: ns3::Ptr<const ns3::Packet> ns3::Queue::Peek() const [member function]
+    ## queue.h: ns3::Ptr<ns3::Packet const> ns3::Queue::Peek() const [member function]
     cls.add_method('Peek', 
                    'ns3::Ptr< ns3::Packet const >', 
                    [], 
@@ -1754,7 +1749,7 @@ def register_Ns3Queue_methods(root_module, cls):
                    'ns3::Ptr< ns3::Packet >', 
                    [], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
-    ## queue.h: ns3::Ptr<const ns3::Packet> ns3::Queue::DoPeek() const [member function]
+    ## queue.h: ns3::Ptr<ns3::Packet const> ns3::Queue::DoPeek() const [member function]
     cls.add_method('DoPeek', 
                    'ns3::Ptr< ns3::Packet const >', 
                    [], 
@@ -2420,7 +2415,7 @@ def register_Ns3DropTailQueue_methods(root_module, cls):
                    'ns3::Ptr< ns3::Packet >', 
                    [], 
                    visibility='private', is_virtual=True)
-    ## drop-tail-queue.h: ns3::Ptr<const ns3::Packet> ns3::DropTailQueue::DoPeek() const [member function]
+    ## drop-tail-queue.h: ns3::Ptr<ns3::Packet const> ns3::DropTailQueue::DoPeek() const [member function]
     cls.add_method('DoPeek', 
                    'ns3::Ptr< ns3::Packet const >', 
                    [], 
