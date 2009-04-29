@@ -171,6 +171,9 @@ HwmpRtable::LookupReactive (Mac48Address destination)
       NS_LOG_DEBUG ("Reactive route has expired, sorry.");
       return LookupResult();
     }
+  Time lifetime = Seconds (0.0);
+  if (i->second.whenExpire != Seconds (0))
+    lifetime = i->second.whenExpire - Simulator::Now ();
   return LookupResult (i->second.retransmitter, i->second.interface, i->second.metric, i->second.seqnum);
 }
 

@@ -47,6 +47,17 @@ HwmpProtocol::GetTypeId ()
   static TypeId tid = TypeId ("ns3::dot11s::HwmpProtocol")
     .SetParent<MeshL2RoutingProtocol> ()
     .AddConstructor<HwmpProtocol> ()
+    .AddAttribute ("RandomStart", "Random delay at first proactive PREQ",
+        TimeValue (Seconds (0.1)),
+        MakeTimeAccessor (&HwmpProtocol::m_randomStart),
+        MakeTimeChecker ()
+        )
+    .AddAttribute ("maxQueueSize",
+        "Maximum number of packets we can store when resolving route",
+        UintegerValue (255),
+        MakeUintegerAccessor (&HwmpProtocol::m_maxQueueSize),
+        MakeUintegerChecker<uint16_t> (1)
+        )
     .AddAttribute ("dot11MeshHWMPmaxPREQretries",
         "Maximum number of retries before we suppose the destination to be unreachable",
         UintegerValue (3),
@@ -95,52 +106,41 @@ HwmpProtocol::GetTypeId ()
         MakeTimeAccessor (&HwmpProtocol::m_dot11MeshHWMPrannInterval),
         MakeTimeChecker ()
         )
-  .AddAttribute ("maxQueueSize",
-        "Maximum number of packets we can store when resolving route",
-        UintegerValue (255),
-        MakeUintegerAccessor (&HwmpProtocol::m_maxQueueSize),
-        MakeUintegerChecker<uint16_t> (1)
-        )
-  .AddAttribute ("maxTtl",
+    .AddAttribute ("maxTtl",
         "Initial value of Time To Live field",
         UintegerValue (32),
         MakeUintegerAccessor (&HwmpProtocol::m_maxTtl),
         MakeUintegerChecker<uint8_t> (2)
         )
-  .AddAttribute ("unicastPerrThreshold",
+    .AddAttribute ("unicastPerrThreshold",
         "Maximum number of PERR receivers, when we send a PERR as a chain of unicasts",
         UintegerValue (32),
         MakeUintegerAccessor (&HwmpProtocol::m_unicastPerrThreshold),
         MakeUintegerChecker<uint8_t> (1)
         )
-  .AddAttribute ("unicastPreqThreshold",
+    .AddAttribute ("unicastPreqThreshold",
         "Maximum number of PREQ receivers, when we send a PREQ as a chain of unicasts",
         UintegerValue (1),
         MakeUintegerAccessor (&HwmpProtocol::m_unicastPreqThreshold),
         MakeUintegerChecker<uint8_t> (1)
         )
-  .AddAttribute ("unicastDataThreshold",
+    .AddAttribute ("unicastDataThreshold",
         "Maximum number ofbroadcast receivers, when we send a broadcast as a chain of unicasts",
         UintegerValue (1),
         MakeUintegerAccessor (&HwmpProtocol::m_unicastDataThreshold),
         MakeUintegerChecker<uint8_t> (1)
         )
-  .AddAttribute ("doFlag",
+    .AddAttribute ("doFlag",
         "Destination only HWMP flag",
         BooleanValue (true),
         MakeUintegerAccessor (&HwmpProtocol::m_doFlag),
         MakeUintegerChecker<bool> ()
         )
-  .AddAttribute ("rfFlag",
+    .AddAttribute ("rfFlag",
         "Reply and forward flag",
         BooleanValue (false),
         MakeUintegerAccessor (&HwmpProtocol::m_rfFlag),
         MakeUintegerChecker<bool> ()
-        )
-  .AddAttribute ("RandomStart", "Random delay at first proactive PREQ",
-        TimeValue (Seconds (0.1)),
-        MakeTimeAccessor (&HwmpProtocol::m_randomStart),
-        MakeTimeChecker ()
         );
   return tid;
 }
@@ -149,8 +149,26 @@ HwmpProtocol::HwmpProtocol ():
     m_hwmpSeqno (1),
     m_preqId (0),
     m_rtable (CreateObject<HwmpRtable> ()),
-    m_isRoot(false)
+    m_randomStart(Seconds (0.1)),
+    m_maxQueueSize (255),
+    m_dot11MeshHWMPmaxPREQretries (3),
+    m_dot11MeshHWMPnetDiameterTraversalTime (MicroSeconds (1024*100)),
+    m_dot11MeshHWMPpreqMinInterval (MicroSeconds (1024*100)),
+    m_dot11MeshHWMPperrMinInterval (MicroSeconds (1024*100)),
+    m_dot11MeshHWMPactiveRootTimeout (MicroSeconds (1024*5000)),
+    m_dot11MeshHWMPactivePathTimeout (MicroSeconds (1024*5000)),
+    m_dot11MeshHWMPpathToRootInterval (MicroSeconds (1024*2000)),
+    m_dot11MeshHWMPrannInterval (MicroSeconds (1024*5000)),
+    m_isRoot (false),
+    m_maxTtl (32),
+    m_unicastPerrThreshold (32),
+    m_unicastPreqThreshold (1),
+    m_unicastDataThreshold (1),
+    m_doFlag (false),
+    m_rfFlag (false)
 {
+  if(m_isRoot)
+    SetRoot ();
 }
 
 HwmpProtocol::~HwmpProtocol ()
@@ -379,6 +397,12 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, u
       if ((! ((*i)->IsDo())) && (result.retransmitter != Mac48Address::GetBroadcast()))
         {
           //have a valid information and can answer
+          //!NB: If there is information from peer - set lifetime as
+          //we have got from PREQ, and set the rest lifetime of the
+          //route if the information is correct
+          uint32_t lifetime = preq.GetLifetime ();
+          if(result.lifetime != Seconds (0.0))
+            lifetime = result.lifetime.GetMicroSeconds () / 1024;
           SendPrep (
               (*i)->GetDestinationAddress (),
               preq.GetOriginatorAddress (),
@@ -386,7 +410,7 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, u
               result.metric,
               preq.GetOriginatorSeqNumber (),
               result.seqnum +1,
-              preq.GetLifetime (),
+              lifetime,
               interface
               );
 
