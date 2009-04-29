@@ -856,23 +856,26 @@ wireless medium and can communication and interfere:
   phy.SetChannel (channel.Create ());
 @end verbatim
 
-Once the PHY helper is configured, we can focus on the MAC layer:
+Once the PHY helper is configured, we can focus on the MAC layer. Here we choose to
+work with non-Qos MACs so we use a NqosWifiMacHelper object to set MAC parameters. 
 
 @verbatim
   WifiHelper wifi = WifiHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::AarfWifiManager");
+
+  NqosWifiMacHelper mac = NqosWifiMacHelper::Default ();
 @end verbatim
 
 The @code{SetRemoteStationManager} method tells the helper the type of 
 rate control algorithm to use.  Here, it is asking the helper to use the AARF
 algorithm --- details are, of course, available in Doxygen.
 
-Next, we configure the SSID of the infrastructure network we want to setup
-and make sure that our stations don't perform active probing:
+Next, we configure the type of MAC, the SSID of the infrastructure network we
+want to setup and make sure that our stations don't perform active probing:
 
 @verbatim
   Ssid ssid = Ssid ("ns-3-ssid");
-  wifi.SetMac ("ns3::NqstaWifiMac",
+  mac.SetType ("ns3::NqstaWifiMac",
     "Ssid", SsidValue (ssid),
     "ActiveProbing", BooleanValue (false));
 @end verbatim
@@ -891,22 +894,22 @@ create the wifi devices of these stations:
 
 @verbatim
   NetDeviceContainer staDevices;
-  staDevices = wifi.Install (phy, wifiStaNodes);
+  staDevices = wifi.Install (phy, mac, wifiStaNodes);
 @end verbatim
 
 We have configured Wifi for all of our STA nodes, and now we need to 
 configure the AP (access point) node.  We begin this process by changing
-the default @code{Attributes} of the @code{WifiHelper} to reflect the 
+the default @code{Attributes} of the @code{NqosWifiMacHelper} to reflect the 
 requirements of the AP.
 
 @verbatim
-  wifi.SetMac ("ns3::NqapWifiMac", 
+  mac.SetType ("ns3::NqapWifiMac", 
     "Ssid", SsidValue (ssid),
     "BeaconGeneration", BooleanValue (true),
     "BeaconInterval", TimeValue (Seconds (2.5)));
 @end verbatim
 
-In this case, the @code{WifiHelper} is going to create MAC layers of the 
+In this case, the @code{NqosWifiMacHelper} is going to create MAC layers of the 
 ``ns3::NqapWifiMac'' (Non-Qos Access Point) type.  We set the 
 ``BeaconGeneration'' @code{Attribute} to true and also set an interval between 
 beacons of 2.5 seconds.
@@ -916,7 +919,7 @@ The next lines create the single AP which shares the same set of PHY-level
 
 @verbatim
   NetDeviceContainer apDevices;
-  apDevices = wifi.Install (phy, wifiApNode);
+  apDevices = wifi.Install (phy, mac, wifiApNode);
 @end verbatim
 
 Now, we are going to add mobility models.  We want the STA nodes to be mobile,
