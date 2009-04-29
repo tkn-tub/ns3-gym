@@ -79,16 +79,16 @@ bool operator== (const Dot11sMacHeader & a, const Dot11sMacHeader & b);
  * Multichop action frame consists of Mesh header, Action, and
  * the last information. Mesh header is present within all data
  * frames and multihop action frames, so Mesh header is a
- * separate structure. Each MultihopAction frames (frames like
+ * separate structure. Each Action frames (frames like
  * PREQ, PREP and other) start form Category field and Action
  * value field, so the Multihop Action Frame should containt
  * three fields: Category, Action Value.
  */
-class WifiMeshMultihopActionHeader : public Header 
+class WifiMeshActionHeader : public Header 
 {
 public:
-  WifiMeshMultihopActionHeader ();
-  ~WifiMeshMultihopActionHeader ();
+  WifiMeshActionHeader ();
+  ~WifiMeshActionHeader ();
       
   /* Compatible with open80211s implementation */
   enum CategoryValue //table 7-24 staring from 4

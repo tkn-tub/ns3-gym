@@ -132,7 +132,7 @@ HwmpProtocol::GetTypeId ()
         )
     .AddAttribute ("doFlag",
         "Destination only HWMP flag",
-        BooleanValue (true),
+        BooleanValue (false),
         MakeUintegerAccessor (&HwmpProtocol::m_doFlag),
         MakeUintegerChecker<bool> ()
         )

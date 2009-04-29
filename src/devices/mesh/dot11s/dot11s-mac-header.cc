@@ -178,18 +178,18 @@ bool operator== (const Dot11sMacHeader & a, const Dot11sMacHeader & b)
       );
 }
 /**********************************************************
- *   MultihopActionFrame
+ *   ActionFrame
  **********************************************************/
-WifiMeshMultihopActionHeader::WifiMeshMultihopActionHeader ()
+WifiMeshActionHeader::WifiMeshActionHeader ()
 {
 }
-WifiMeshMultihopActionHeader::~WifiMeshMultihopActionHeader ()
+WifiMeshActionHeader::~WifiMeshActionHeader ()
 {
 }
 void
-WifiMeshMultihopActionHeader::SetAction (
-  WifiMeshMultihopActionHeader::CategoryValue type,
-  WifiMeshMultihopActionHeader::ActionValue action)
+WifiMeshActionHeader::SetAction (
+  WifiMeshActionHeader::CategoryValue type,
+  WifiMeshActionHeader::ActionValue action)
 {
   m_category = type;
   
@@ -211,8 +211,8 @@ WifiMeshMultihopActionHeader::SetAction (
       break;
     };
 }
-WifiMeshMultihopActionHeader::CategoryValue
-WifiMeshMultihopActionHeader::GetCategory ()
+WifiMeshActionHeader::CategoryValue
+WifiMeshActionHeader::GetCategory ()
 {
   switch (m_category)
     {
@@ -231,8 +231,8 @@ WifiMeshMultihopActionHeader::GetCategory ()
       return MESH_PEER_LINK_MGT;
     }
 }
-WifiMeshMultihopActionHeader::ActionValue
-WifiMeshMultihopActionHeader::GetAction ()
+WifiMeshActionHeader::ActionValue
+WifiMeshActionHeader::GetAction ()
 {
   ActionValue retval;
   switch (m_category)
@@ -284,36 +284,36 @@ WifiMeshMultihopActionHeader::GetAction ()
     }
 }
 TypeId
-WifiMeshMultihopActionHeader::GetTypeId ()
+WifiMeshActionHeader::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::WifiMeshMultihopActionHeader")
+  static TypeId tid = TypeId ("ns3::WifiMeshActionHeader")
                       .SetParent<Header> ()
-                      .AddConstructor<WifiMeshMultihopActionHeader> ()
+                      .AddConstructor<WifiMeshActionHeader> ()
                       ;
   return tid;
 }
 TypeId
-WifiMeshMultihopActionHeader::GetInstanceTypeId () const
+WifiMeshActionHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 void
-WifiMeshMultihopActionHeader::Print (std::ostream &os) const
+WifiMeshActionHeader::Print (std::ostream &os) const
 {
 }
 uint32_t
-WifiMeshMultihopActionHeader::GetSerializedSize () const
+WifiMeshActionHeader::GetSerializedSize () const
 {
   return 2;
 }
 void
-WifiMeshMultihopActionHeader::Serialize (Buffer::Iterator start) const
+WifiMeshActionHeader::Serialize (Buffer::Iterator start) const
 {
   start.WriteU8 (m_category);
   start.WriteU8 (m_actionValue);
 }
 uint32_t
-WifiMeshMultihopActionHeader::Deserialize (Buffer::Iterator start)
+WifiMeshActionHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   m_category = i.ReadU8 ();

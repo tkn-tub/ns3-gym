@@ -48,15 +48,15 @@ PeerLinkFrameStart::SetPlinkFrameStart(PeerLinkFrameStart::PlinkFrameStartFields
 {
   m_subtype = fields.subtype;
   m_protocol = fields.protocol;
-  if(m_subtype != (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE))
+  if(m_subtype != (uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE))
     m_capability = fields.capability;
-  if(m_subtype == (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM))
+  if(m_subtype == (uint8_t)(WifiMeshActionHeader::PEER_LINK_CONFIRM))
     m_aid = fields.aid;
-  if(m_subtype != (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE))
+  if(m_subtype != (uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE))
     m_rates = fields.rates;
-  if(m_subtype != (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM))
+  if(m_subtype != (uint8_t)(WifiMeshActionHeader::PEER_LINK_CONFIRM))
     m_meshId = fields.meshId;
-  if(m_subtype != (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE))
+  if(m_subtype != (uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE))
     m_config = fields.config;
   else
     m_reasonCode = fields.reasonCode;
@@ -121,15 +121,15 @@ PeerLinkFrameStart::GetSerializedSize () const
 {
   uint32_t size = 3; //Peering protocol
   NS_ASSERT(m_subtype < 3);
-  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
+  if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
     size += 2;  //capability
-  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) == m_subtype)
+  if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CONFIRM) == m_subtype)
     size += 2; //AID of remote peer
-  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
+  if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
     size += m_rates.GetSerializedSize ();
-  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) != m_subtype)
+  if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CONFIRM) != m_subtype)
     size += m_meshId.GetSerializedSize ();
-  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
+  if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
     size += m_config.GetSerializedSize ();
   else
     size += 2; //reasonCode
@@ -143,15 +143,15 @@ PeerLinkFrameStart::Serialize (Buffer::Iterator start) const
   NS_ASSERT(m_subtype < 3);
   m_protocol.Serialize (i);
   i.Next (m_protocol.GetSerializedSize ());
-  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
+  if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
     i.WriteHtonU16(m_capability);
-  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) == m_subtype)
+  if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CONFIRM) == m_subtype)
     i.WriteHtonU16 (m_aid);
-  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
+  if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
     i = m_rates.Serialize (i);
-  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) != m_subtype)
+  if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CONFIRM) != m_subtype)
     i = m_meshId.Serialize (i);
-  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
+  if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
   {
     m_config.Serialize (i);
     i.Next(m_config.GetSerializedSize ());
@@ -167,15 +167,15 @@ PeerLinkFrameStart::Deserialize (Buffer::Iterator start)
   NS_ASSERT(m_subtype < 3);
   m_protocol.Deserialize (i);
   i.Next (m_protocol.GetSerializedSize ());
-  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
+  if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
     m_capability = i.ReadNtohU16();
-  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) == m_subtype)
+  if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CONFIRM) == m_subtype)
     m_aid = i.ReadNtohU16 ();
-  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
+  if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
     i = m_rates.Deserialize (i);
-  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM) != m_subtype)
+  if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CONFIRM) != m_subtype)
     i = m_meshId.Deserialize (i);
-  if ((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE) != m_subtype)
+  if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
   {
     m_config.Deserialize (i);
     i.Next (m_config.GetSerializedSize ());
@@ -213,7 +213,7 @@ bool PeerLinkFrameStartBist::RunTests ()
   {
     PeerLinkFrameStart a;
     PeerLinkFrameStart::PlinkFrameStartFields fields;
-    fields.subtype = (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_OPEN);
+    fields.subtype = (uint8_t)(WifiMeshActionHeader::PEER_LINK_OPEN);
     fields.aid = 101;
     fields.reasonCode = 12;
     fields.meshId = Ssid("qwertyuiop");
@@ -221,14 +221,14 @@ bool PeerLinkFrameStartBist::RunTests ()
     Ptr<Packet> packet = Create<Packet> ();
     packet->AddHeader (a);
     PeerLinkFrameStart b;
-    b.SetPlinkFrameSubtype((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_OPEN));
+    b.SetPlinkFrameSubtype((uint8_t)(WifiMeshActionHeader::PEER_LINK_OPEN));
     packet->RemoveHeader (b);
     NS_TEST_ASSERT_EQUAL (a, b);
   }
   {
     PeerLinkFrameStart a;
     PeerLinkFrameStart::PlinkFrameStartFields fields;
-    fields.subtype = (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM);
+    fields.subtype = (uint8_t)(WifiMeshActionHeader::PEER_LINK_CONFIRM);
     fields.aid = 1234;
     fields.reasonCode = 12;
     fields.meshId = Ssid("qwerty");
@@ -236,14 +236,14 @@ bool PeerLinkFrameStartBist::RunTests ()
     Ptr<Packet> packet = Create<Packet> ();
     packet->AddHeader (a);
     PeerLinkFrameStart b;
-    b.SetPlinkFrameSubtype((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CONFIRM));
+    b.SetPlinkFrameSubtype((uint8_t)(WifiMeshActionHeader::PEER_LINK_CONFIRM));
     packet->RemoveHeader (b);
     NS_TEST_ASSERT_EQUAL (a, b);
   }
   {
     PeerLinkFrameStart a;
     PeerLinkFrameStart::PlinkFrameStartFields fields;
-    fields.subtype = (uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE);
+    fields.subtype = (uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE);
     fields.aid = 10;
     fields.meshId = Ssid("qqq");
     fields.reasonCode = 12;
@@ -251,7 +251,7 @@ bool PeerLinkFrameStartBist::RunTests ()
     Ptr<Packet> packet = Create<Packet> ();
     packet->AddHeader (a);
     PeerLinkFrameStart b;
-    b.SetPlinkFrameSubtype((uint8_t)(WifiMeshMultihopActionHeader::PEER_LINK_CLOSE));
+    b.SetPlinkFrameSubtype((uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE));
     packet->RemoveHeader (b);
     NS_TEST_ASSERT_EQUAL (a, b);
   }

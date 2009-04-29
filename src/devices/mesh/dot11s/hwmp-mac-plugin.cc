@@ -85,16 +85,14 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
   }
   if(header.IsAction())
   {
-    // TODO don't use multihop header
-    //parse multihop action header:
-    WifiMeshMultihopActionHeader multihopHdr;
-    packet->RemoveHeader (multihopHdr);
-    WifiMeshMultihopActionHeader::ActionValue actionValue = multihopHdr.GetAction ();
-    if(multihopHdr.GetCategory () != WifiMeshMultihopActionHeader::MESH_PATH_SELECTION)
+    WifiMeshActionHeader actionHdr;
+    packet->RemoveHeader (actionHdr);
+    WifiMeshActionHeader::ActionValue actionValue = actionHdr.GetAction ();
+    if(actionHdr.GetCategory () != WifiMeshActionHeader::MESH_PATH_SELECTION)
       return true;
     switch (actionValue.pathSelection)
     {
-      case WifiMeshMultihopActionHeader::PATH_REQUEST:
+      case WifiMeshActionHeader::PATH_REQUEST:
         {
           IePreq preq;
           packet->RemoveHeader (preq);
@@ -106,7 +104,7 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
           m_protocol->ReceivePreq (preq, header.GetAddr2 (), m_ifIndex, m_parent->GetLinkMetric(header.GetAddr2 ()));
           return false;
         }
-      case WifiMeshMultihopActionHeader::PATH_REPLY:
+      case WifiMeshActionHeader::PATH_REPLY:
         {
           IePrep prep;
           packet->RemoveHeader (prep);
@@ -116,14 +114,14 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
           m_protocol->ReceivePrep (prep, header.GetAddr2 (), m_ifIndex, m_parent->GetLinkMetric(header.GetAddr2 ()));
           return false;
         }
-      case WifiMeshMultihopActionHeader::PATH_ERROR:
+      case WifiMeshActionHeader::PATH_ERROR:
         {
           IePerr perr;
           packet->RemoveHeader (perr);
           m_protocol->ReceivePerr (perr, header.GetAddr2 (), m_ifIndex);
           return false;
         }
-      case WifiMeshMultihopActionHeader::ROOT_ANNOUNCEMENT:
+      case WifiMeshActionHeader::ROOT_ANNOUNCEMENT:
         return false;
     }
   }
@@ -187,12 +185,12 @@ HwmpMacPlugin::SendOnePreq ()
   m_preqTimer = Simulator::Schedule (m_protocol->GetPreqMinInterval (), &HwmpMacPlugin::SendOnePreq, this);
   Ptr<Packet> packet  = Create<Packet> ();
   packet->AddHeader(m_preqQueue[0]);
-  //Multihop action header:
-  WifiMeshMultihopActionHeader multihopHdr;
-  WifiMeshMultihopActionHeader::ActionValue action;
-  action.pathSelection = WifiMeshMultihopActionHeader::PATH_REQUEST;
-  multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
-  packet->AddHeader (multihopHdr);
+  //Action header:
+  WifiMeshActionHeader actionHdr;
+  WifiMeshActionHeader::ActionValue action;
+  action.pathSelection = WifiMeshActionHeader::PATH_REQUEST;
+  actionHdr.SetAction (WifiMeshActionHeader::MESH_PATH_SELECTION, action);
+  packet->AddHeader (actionHdr);
   //create 802.11 header:
   WifiMacHeader hdr;
   hdr.SetAction ();
@@ -224,12 +222,12 @@ HwmpMacPlugin::SendOnePerr()
 //Create packet
   Ptr<Packet> packet  = Create<Packet> ();
   packet->AddHeader(m_myPerr.perr);
-  //Multihop action header:
-  WifiMeshMultihopActionHeader multihopHdr;
-  WifiMeshMultihopActionHeader::ActionValue action;
-  action.pathSelection = WifiMeshMultihopActionHeader::PATH_ERROR;
-  multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
-  packet->AddHeader (multihopHdr);
+  //Action header:
+  WifiMeshActionHeader actionHdr;
+  WifiMeshActionHeader::ActionValue action;
+  action.pathSelection = WifiMeshActionHeader::PATH_ERROR;
+  actionHdr.SetAction (WifiMeshActionHeader::MESH_PATH_SELECTION, action);
+  packet->AddHeader (actionHdr);
   //create 802.11 header:
   WifiMacHeader hdr;
   hdr.SetAction ();
@@ -252,12 +250,12 @@ HwmpMacPlugin::SendPrep (IePrep prep, Mac48Address receiver)
   //Create packet
   Ptr<Packet> packet  = Create<Packet> ();
   packet->AddHeader(prep);
-  //Multihop action header:
-  WifiMeshMultihopActionHeader multihopHdr;
-  WifiMeshMultihopActionHeader::ActionValue action;
-  action.pathSelection = WifiMeshMultihopActionHeader::PATH_REPLY;
-  multihopHdr.SetAction (WifiMeshMultihopActionHeader::MESH_PATH_SELECTION, action);
-  packet->AddHeader (multihopHdr);
+  //Action header:
+  WifiMeshActionHeader actionHdr;
+  WifiMeshActionHeader::ActionValue action;
+  action.pathSelection = WifiMeshActionHeader::PATH_REPLY;
+  actionHdr.SetAction (WifiMeshActionHeader::MESH_PATH_SELECTION, action);
+  packet->AddHeader (actionHdr);
   //create 802.11 header:
   WifiMacHeader hdr;
   hdr.SetAction ();
