@@ -286,8 +286,12 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
     //    root
     if(result.retransmitter == Mac48Address::GetBroadcast ())
       result = m_rtable->LookupProactiveExpired ();
-    std::vector<IePerr::FailedDestination> destinations = m_rtable->GetUnreachableDestinations (result.retransmitter);
-    MakePathError (destinations);
+    if(result.retransmitter != Mac48Address::GetBroadcast ())
+    {
+      std::vector<IePerr::FailedDestination> destinations = m_rtable->GetUnreachableDestinations (result.retransmitter);
+      MakePathError (destinations);
+    }
+    return false;
   }
   //Request a destination:
   result = m_rtable->LookupReactiveExpired (destination);
