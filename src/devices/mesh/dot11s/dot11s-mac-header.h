@@ -30,13 +30,15 @@ namespace dot11s {
 /**
  * \ingroup dot11s
  * 
- * \brief See IEEE 802.11s draft 3.0 section 7.1.3.5b
+ * \brief Mesh Control field, see IEEE 802.11s draft 3.0 section 7.1.3.5b
+ * 
+ * Header format: | Mesh flags: 1 | TTL: 1 | Sequence number: 4 | Address ext.: 0, 6, 12 or 18 | 
  */
-class Dot11sMacHeader : public Header
+class MeshHeader : public Header
 {
 public:
-  Dot11sMacHeader ();
-  ~Dot11sMacHeader ();
+  MeshHeader ();
+  ~MeshHeader ();
   static TypeId GetTypeId ();
   virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
@@ -67,22 +69,16 @@ private:
   Mac48Address m_addr4;
   Mac48Address m_addr5;
   Mac48Address m_addr6;
-  friend bool operator== (const Dot11sMacHeader & a, const Dot11sMacHeader & b);
+  friend bool operator== (const MeshHeader & a, const MeshHeader & b);
 };
-bool operator== (const Dot11sMacHeader & a, const Dot11sMacHeader & b);
+bool operator== (const MeshHeader & a, const MeshHeader & b);
 
 /**
  * \ingroup dot11s
  * 
  * \brief See IEEE 802.11s draft 3.0 section 7.2.3.14
  * 
- * Multichop action frame consists of Mesh header, Action, and
- * the last information. Mesh header is present within all data
- * frames and multihop action frames, so Mesh header is a
- * separate structure. Each Action frames (frames like
- * PREQ, PREP and other) start form Category field and Action
- * value field, so the Multihop Action Frame should containt
- * three fields: Category, Action Value.
+ * Header format: | category: 1 | action value: 1 | 
  */
 class WifiMeshActionHeader : public Header 
 {

@@ -26,22 +26,8 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'dot11s'
     headers.source = [
-        'ie-dot11s-beacon-timing.h',
-        #'ie-dot11s-configuration.h',
-        'ie-dot11s-peer-management.h',
-        #'ie-dot11s-preq.h',
-        #'ie-dot11s-prep.h',
-        'ie-dot11s-perr.h',
-        #'ie-dot11s-rann.h',
-        #'peer-link-frame.h',
-        #'peer-link.h',
-        #'peer-management-plugin.h',
         'peer-management-protocol.h',
-        #'hwmp-mac-plugin.h',
         'hwmp-protocol.h',
         'dot11s-helper.h',
+        'dot11s-mac-header.h',
         ]
-
-#    obj = bld.create_ns3_program('wifi-phy-test',
-#        ['core', 'simulator', 'mobility', 'node', 'wifi'])
-#    obj.source = 'wifi-phy-test.cc'
