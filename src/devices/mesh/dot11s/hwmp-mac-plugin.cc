@@ -134,10 +134,8 @@ HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header,
   NS_ASSERT(header.IsData ());
   HwmpTag tag;
   bool tagExists = packet->RemovePacketTag(tag);
-  if (!tagExists)
-  {
-    NS_ASSERT (false);
-  }
+  NS_ASSERT (tagExists);
+  
   Dot11sMacHeader meshHdr;
   meshHdr.SetMeshSeqno(tag.GetSeqno());
   meshHdr.SetMeshTtl(tag.GetTtl());
