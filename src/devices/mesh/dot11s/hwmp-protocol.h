@@ -82,9 +82,9 @@ private:
   
   ///\name Interaction with HWMP MAC plugin
   //\{
-  void ReceivePreq(IePreq preq, Mac48Address from, uint32_t interface, uint32_t metric);
-  void ReceivePrep(IePrep prep, Mac48Address from, uint32_t interface, uint32_t metric);
-  void ReceivePerr(IePerr perr, Mac48Address from, uint32_t interface);
+  void ReceivePreq(IePreq preq, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
+  void ReceivePrep(IePrep prep, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
+  void ReceivePerr(IePerr perr, Mac48Address from, uint32_t interface, Mac48Address fromMp);
   void SendPrep (
       Mac48Address src,
       Mac48Address dst,

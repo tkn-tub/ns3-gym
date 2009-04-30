@@ -376,7 +376,7 @@ MeshPointDevice::DoSend (bool success, Ptr<Packet> packet, Mac48Address src, Mac
 {
   if (!success)
     {
-      NS_LOG_UNCOND ("Resolve failed");
+      NS_LOG_DEBUG ("Resolve failed");
       return;
     }
   // Ok, now I know the route, just SendFrom

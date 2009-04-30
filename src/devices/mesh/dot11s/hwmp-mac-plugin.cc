@@ -101,7 +101,7 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
           if (preq.GetTtl () == 0)
             return false;
           preq.DecrementTtl ();
-          m_protocol->ReceivePreq (preq, header.GetAddr2 (), m_ifIndex, m_parent->GetLinkMetric(header.GetAddr2 ()));
+          m_protocol->ReceivePreq (preq, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (), m_parent->GetLinkMetric(header.GetAddr2 ()));
           return false;
         }
       case WifiMeshActionHeader::PATH_REPLY:
@@ -111,14 +111,14 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
           if(prep.GetTtl () == 0)
             return false;
           prep.DecrementTtl ();
-          m_protocol->ReceivePrep (prep, header.GetAddr2 (), m_ifIndex, m_parent->GetLinkMetric(header.GetAddr2 ()));
+          m_protocol->ReceivePrep (prep, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (), m_parent->GetLinkMetric(header.GetAddr2 ()));
           return false;
         }
       case WifiMeshActionHeader::PATH_ERROR:
         {
           IePerr perr;
           packet->RemoveHeader (perr);
-          m_protocol->ReceivePerr (perr, header.GetAddr2 (), m_ifIndex);
+          m_protocol->ReceivePerr (perr, header.GetAddr2 (), m_ifIndex, header.GetAddr3 ());
           return false;
         }
       case WifiMeshActionHeader::ROOT_ANNOUNCEMENT:
@@ -197,7 +197,7 @@ HwmpMacPlugin::SendOnePreq ()
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   hdr.SetAddr2 (m_parent->GetAddress ());
-  hdr.SetAddr3 (Mac48Address::GetBroadcast ());
+  hdr.SetAddr3 (m_protocol->GetAddress ());
   //Send Management frame
   std::vector <Mac48Address> receivers = m_protocol->GetPreqReceivers (m_ifIndex);
   for(std::vector<Mac48Address>::const_iterator i = receivers.begin (); i != receivers.end (); i ++)
@@ -234,7 +234,7 @@ HwmpMacPlugin::SendOnePerr()
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   hdr.SetAddr2 (m_parent->GetAddress ());
-  hdr.SetAddr3 (Mac48Address::GetBroadcast ());
+  hdr.SetAddr3 (m_protocol->GetAddress ());
   //Send Management frame
   for(std::vector<Mac48Address>::const_iterator i = m_myPerr.receivers.begin (); i != m_myPerr.receivers.end (); i ++)
   {
@@ -263,7 +263,7 @@ HwmpMacPlugin::SendPrep (IePrep prep, Mac48Address receiver)
   hdr.SetDsNotTo ();
   hdr.SetAddr1 (receiver);
   hdr.SetAddr2 (m_parent->GetAddress ());
-  hdr.SetAddr3 (prep.GetDestinationAddress ());
+  hdr.SetAddr3 (m_protocol->GetAddress ());
   //Send Management frame
   m_parent->SendManagementFrame(packet, hdr);
 }
