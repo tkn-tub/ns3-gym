@@ -435,9 +435,8 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
           //!NB: If there is information from peer - set lifetime as
           //we have got from PREQ, and set the rest lifetime of the
           //route if the information is correct
-          uint32_t lifetime = preq.GetLifetime ();
-          if(result.lifetime != Seconds (0.0))
-            lifetime = result.lifetime.GetMicroSeconds () / 1024;
+          uint32_t lifetime = result.lifetime.GetMicroSeconds () / 1024;
+          NS_ASSERT(lifetime > 0);
           SendPrep (
               (*i)->GetDestinationAddress (),
               preq.GetOriginatorAddress (),
@@ -488,7 +487,6 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, M
   NS_LOG_DEBUG("I am "<<GetAddress ()<<", received prep from "<<prep.GetOriginatorAddress ()<<", receiver was:"<<from);
   HwmpRtable::LookupResult result = m_rtable->LookupReactive(prep.GetDestinationAddress());
   //Add a reactive path only if it is better than existing:
-  m_rtable->AddPrecursor (prep.GetDestinationAddress (), interface, from);
   if (
       ((m_rtable->LookupReactive(prep.GetOriginatorAddress ())).retransmitter == Mac48Address::GetBroadcast ()) ||
       ((m_rtable->LookupReactive(prep.GetOriginatorAddress ())).metric > prep.GetMetric ())
@@ -501,6 +499,7 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, M
         prep.GetMetric (),
         MicroSeconds(prep.GetLifetime () * 1024),
         prep.GetOriginatorSeqNumber ());
+    m_rtable->AddPrecursor (prep.GetDestinationAddress (), interface, from);
     if(result.retransmitter != Mac48Address::GetBroadcast ())
       m_rtable->AddPrecursor (prep.GetOriginatorAddress (), interface, result.retransmitter);
     ReactivePathResolved (prep.GetOriginatorAddress ());
@@ -532,7 +531,7 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, M
   //Forward PREP
   HwmpPluginMap::const_iterator prep_sender = m_interfaces.find (result.ifIndex);
   NS_ASSERT(prep_sender != m_interfaces.end ());
-  prep_sender->second->SendPrep(prep, result.retransmitter);
+  prep_sender->second->SendPrep (prep, result.retransmitter);
 }
 void
 HwmpProtocol::ReceivePerr (IePerr perr, Mac48Address from, uint32_t interface, Mac48Address fromMp)
@@ -580,7 +579,7 @@ HwmpProtocol::SendPrep (
   prep.SetOriginatorSeqNumber (originatorDsn);
   HwmpPluginMap::const_iterator prep_sender = m_interfaces.find (interface);
   NS_ASSERT(prep_sender != m_interfaces.end ());
-  prep_sender->second->SendPrep(prep, retransmitter);
+  prep_sender->second->SendPrep (prep, retransmitter);
   //m_prepCallback (prep, retransmitter);
 
 }

@@ -27,6 +27,9 @@ def build(bld):
     headers.module = 'dot11s'
     headers.source = [
         'peer-management-protocol.h',
+        'ie-dot11s-beacon-timing.h', 
+        'ie-dot11s-peer-management.h', 
+        'ie-dot11s-perr.h', 
         'hwmp-protocol.h',
         'dot11s-helper.h',
         'dot11s-mac-header.h',

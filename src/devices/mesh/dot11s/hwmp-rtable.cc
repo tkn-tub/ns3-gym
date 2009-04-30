@@ -80,11 +80,7 @@ HwmpRtable::AddReactivePath (
   i->second.retransmitter = retransmitter;
   i->second.interface = interface;
   i->second.metric = metric;
-  if (lifetime != Seconds (0))
-    i->second.whenExpire = MilliSeconds (Simulator::Now().GetMilliSeconds() + lifetime.GetMilliSeconds());
-  else
-    // Information about peer does not have lifetime
-    i->second.whenExpire = Seconds (0);
+  i->second.whenExpire = Simulator::Now() + lifetime;
   i->second.seqnum = seqnum;
 }
 
@@ -101,7 +97,7 @@ HwmpRtable::AddProactivePath (
   m_root.root = root;
   m_root.retransmitter = retransmitter;
   m_root.metric = metric;
-  m_root.whenExpire = MilliSeconds (Simulator::Now().GetMilliSeconds() + lifetime.GetMilliSeconds());
+  m_root.whenExpire = Simulator::Now() + lifetime;
   m_root.seqnum = seqnum;
   m_root.interface = interface;
 }
@@ -171,10 +167,7 @@ HwmpRtable::LookupReactive (Mac48Address destination)
       NS_LOG_DEBUG ("Reactive route has expired, sorry.");
       return LookupResult();
     }
-  Time lifetime = Seconds (0.0);
-  if (i->second.whenExpire != Seconds (0))
-    lifetime = i->second.whenExpire - Simulator::Now ();
-  return LookupResult (i->second.retransmitter, i->second.interface, i->second.metric, i->second.seqnum);
+  return LookupReactiveExpired (destination);
 }
 
 HwmpRtable::LookupResult
@@ -183,7 +176,12 @@ HwmpRtable::LookupReactiveExpired (Mac48Address destination)
   std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find (destination);
   if (i == m_routes.end ())
     return LookupResult ();
-  return LookupResult (i->second.retransmitter, i->second.interface, i->second.metric, i->second.seqnum);
+  return LookupResult (
+      i->second.retransmitter,
+      i->second.interface,
+      i->second.metric, i->second.seqnum,
+      i->second.whenExpire - Simulator::Now ()
+      );
 }
 
 HwmpRtable::LookupResult
@@ -200,7 +198,7 @@ HwmpRtable::LookupProactive ()
 HwmpRtable::LookupResult
 HwmpRtable::LookupProactiveExpired ()
 {
-  return LookupResult(m_root.retransmitter, m_root.interface, m_root.metric, m_root.seqnum);
+  return LookupResult(m_root.retransmitter, m_root.interface, m_root.metric, m_root.seqnum, m_root.whenExpire - Simulator::Now ());
 }
 
 std::vector<IePerr::FailedDestination>
