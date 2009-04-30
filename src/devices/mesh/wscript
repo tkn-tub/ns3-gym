@@ -12,7 +12,6 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'mesh'
     headers.source = [
-        # Refactored
         'wifi-information-element.h',
         'mesh-point-device.h',
         'mesh-l2-routing-protocol.h',
@@ -20,4 +19,3 @@ def build(bld):
         'mesh-wifi-interface-mac.h',
         'mesh-wifi-interface-mac-plugin.h',
         ]
-

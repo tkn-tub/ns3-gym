@@ -53,7 +53,7 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
   //TODO: here we fix only mesh header
   if(header.IsData())
   {
-    Dot11sMacHeader meshHdr;
+    MeshHeader meshHdr;
     HwmpTag tag;
     if(packet->PeekPacketTag (tag))
     {
@@ -134,11 +134,9 @@ HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header,
   NS_ASSERT(header.IsData ());
   HwmpTag tag;
   bool tagExists = packet->RemovePacketTag(tag);
-  if (!tagExists)
-  {
-    NS_ASSERT (false);
-  }
-  Dot11sMacHeader meshHdr;
+  NS_ASSERT (tagExists);
+  
+  MeshHeader meshHdr;
   meshHdr.SetMeshSeqno(tag.GetSeqno());
   meshHdr.SetMeshTtl(tag.GetTtl());
   packet->AddHeader(meshHdr);
