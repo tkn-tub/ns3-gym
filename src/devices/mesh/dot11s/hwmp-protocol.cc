@@ -689,7 +689,7 @@ HwmpProtocol::QueuePacket (QueuedPacket packet)
   return true;
 }
 
-MeshL2RoutingProtocol::QueuedPacket
+HwmpProtocol::QueuedPacket
 HwmpProtocol::DequeueFirstPacketByDst (Mac48Address dst)
 {
   QueuedPacket retval;
@@ -703,7 +703,8 @@ HwmpProtocol::DequeueFirstPacketByDst (Mac48Address dst)
     }
   return retval;
 }
-MeshL2RoutingProtocol::QueuedPacket
+
+HwmpProtocol::QueuedPacket
 HwmpProtocol::DequeueFirstPacket ()
 {
   QueuedPacket retval;
@@ -715,6 +716,7 @@ HwmpProtocol::DequeueFirstPacket ()
   }
   return retval;
 }
+
 void
 HwmpProtocol::ReactivePathResolved (Mac48Address dst)
 {

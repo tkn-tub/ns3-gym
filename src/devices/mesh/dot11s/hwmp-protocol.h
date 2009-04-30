@@ -115,9 +115,21 @@ private:
   bool DropDataFrame(uint32_t, Mac48Address);
   //\}
 private:
+  /// Packet waiting its routing information
+  struct QueuedPacket {
+    Ptr<Packet> pkt; ///< the packet
+    Mac48Address src; ///< src address
+    Mac48Address dst; ///< dst address
+    uint16_t protocol; ///< protocol number
+    uint32_t inInterface; ///< incoming device interface ID. (if packet has come from upper layers, this is Mesh point ID)
+    RouteReplyCallback reply; ///< how to reply
+    
+    QueuedPacket () : pkt(0), protocol(0), inInterface(0) {}
+  };
+  
   ///\name Methods related to Queue/Dequeue procedures
   //\{
-  bool QueuePacket (MeshL2RoutingProtocol::QueuedPacket packet);
+  bool QueuePacket (QueuedPacket packet);
   QueuedPacket  DequeueFirstPacketByDst (Mac48Address dst);
   QueuedPacket  DequeueFirstPacket ();
   void ReactivePathResolved (Mac48Address dst);
@@ -126,7 +138,6 @@ private:
   
   ///\name Methods responsible for path discovery retry procedure:
   //\{
-  
   /** 
    * \brief checks when the last path discovery procedure was started for a given destination. 
    * 

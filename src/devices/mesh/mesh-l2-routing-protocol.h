@@ -101,33 +101,6 @@ public:
   /// Each mesh protocol must be installed on the mesh point to work.
   Ptr<MeshPointDevice> GetMeshPoint () const; 
 protected:
-  ///\name Route request queue API, supposed to be implemented in subclasses
-  //\{
-  /// Packet waiting its routing information, supposed to be used by all implementations to correctly implement timeouts.
-  struct QueuedPacket {
-    Ptr<Packet> pkt; ///< the packet
-    Mac48Address src; ///< src address
-    Mac48Address dst; ///< dst address
-    uint16_t protocol; ///< protocol number
-    uint32_t inInterface; ///< incoming device interface ID. (if packet has come from upper layers, this is Mesh point ID)
-    RouteReplyCallback reply; ///< how to reply
-    
-    QueuedPacket () : pkt(0), protocol(0), inInterface(0) {}
-  };
-  /**
-   * \brief Queue route request packet with 'Ethernet header'
-   * \return false if the queue is full.
-   */
-  virtual bool QueuePacket (QueuedPacket packet) = 0;
-  /**
-   * \brief Deque packet with 'Ethernet header'
-   * \param destination The destination address, which identifyes queue.
-   * \return Ptr<packet> (0 if queue is empty), src, dst, protocol ID, incoming port ID, and reply callback
-   */
-  virtual QueuedPacket DequeueFirstPacketByDst (Mac48Address destination) = 0;
-  virtual QueuedPacket DequeueFirstPacket () = 0;
-  //\}
-protected:
   /// Host mesh point
   Ptr<MeshPointDevice> m_mp;
 };
