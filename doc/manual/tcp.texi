@@ -13,7 +13,7 @@ with minimal changes to the scripts.
 
 There are two important abstract base classes:
 @itemize @bullet
-@item @code{class TcpSocket}:  This is defined in @code{src/node/tcp-socket.{cc,h}}.  This class exists for hosting TcpSocket attributes that can be
+@item @code{class TcpSocket}:  This is defined in @code{src/node/tcp-socket.@{cc,h@}}.  This class exists for hosting TcpSocket attributes that can be
 reused across different implementations.  For instance, 
 @code{TcpSocket::SetInitialCwnd()} can be used for any of the implementations
 that derive from @code{class TcpSocket}.

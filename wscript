@@ -156,6 +156,10 @@ def set_options(opt):
                    help=('Path to the regression reference traces directory'),
                    default=None,
                    dest='regression_traces', type="string")
+    opt.add_option('--enable-static',
+                   help=('Compile NS-3 statically: works only on linux, without python'),
+                   dest='enable_static', action='store_true',
+                   default=False)
 
     # options provided in a script in a subdirectory named "src"
     opt.sub_options('src')
@@ -286,6 +290,10 @@ def configure(conf):
 
     conf.find_program('valgrind', var='VALGRIND')
 
+    if Options.options.enable_static and \
+            env['PLATFORM'].startswith('linux'):
+        conf.env['ENABLE_STATIC_NS3'] = Options.options.enable_static
+
     # Write a summary of optional features status
     print "---- Summary of optional NS-3 features:"
     for (name, caption, was_enabled, reason_not_enabled) in conf.env['NS3_OPTIONAL_FEATURES']:
@@ -351,6 +359,10 @@ def create_ns3_program(bld, name, dependencies=('simulator',)):
     program.target = program.name
     program.uselib_local = 'ns3'
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
+    if program.env['ENABLE_STATIC_NS3']:
+        program.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
+        program.env.append_value('LINKFLAGS', '-lns3')
+        program.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
     return program
 
 def add_scratch_programs(bld):
@@ -434,7 +446,11 @@ def build(bld):
                 bld.all_task_gen.remove(obj)
 
     ## Create a single ns3 library containing all enabled modules
-    lib = bld.new_task_gen('cxx', 'shlib')
+    if env['ENABLE_STATIC_NS3']:
+        lib = bld.new_task_gen('cxx', 'staticlib')
+    else:
+        lib = bld.new_task_gen('cxx', 'shlib')
+
     lib.name = 'ns3'
     lib.target = 'ns3'
     if env['NS3_ENABLED_MODULES']:

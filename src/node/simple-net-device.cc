@@ -54,7 +54,7 @@ SimpleNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
     {
       packetType = NetDevice::PACKET_HOST;
     }
-  else if (to.IsMulticast ())
+  else if (to.IsGroup ())
     {
       packetType = NetDevice::PACKET_MULTICAST;
     }

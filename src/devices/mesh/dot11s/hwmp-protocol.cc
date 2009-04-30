@@ -132,13 +132,13 @@ HwmpProtocol::GetTypeId ()
         )
     .AddAttribute ("doFlag",
         "Destination only HWMP flag",
-        BooleanValue (false),
+        BooleanValue (true),
         MakeUintegerAccessor (&HwmpProtocol::m_doFlag),
         MakeUintegerChecker<bool> ()
         )
     .AddAttribute ("rfFlag",
         "Reply and forward flag",
-        BooleanValue (false),
+        BooleanValue (true),
         MakeUintegerAccessor (&HwmpProtocol::m_rfFlag),
         MakeUintegerChecker<bool> ()
         );
@@ -286,8 +286,6 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
     //    root
     if(result.retransmitter == Mac48Address::GetBroadcast ())
       result = m_rtable->LookupProactiveExpired ();
-    if(result.retransmitter == Mac48Address::GetBroadcast ())
-      return false;
     std::vector<IePerr::FailedDestination> destinations = m_rtable->GetUnreachableDestinations (result.retransmitter);
     MakePathError (destinations);
   }

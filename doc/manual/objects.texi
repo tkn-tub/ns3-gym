@@ -5,6 +5,14 @@
 @node Object model
 @chapter Object model
 
+@menu
+* Object model::
+* Object-oriented behavior::
+* Object base classes::
+* Memory management and class Ptr::
+* Downcasting::
+@end menu
+
 @command{ns-3} is fundamentally a C++ object system.  Objects can
 be declared and instantiated as usual, per C++ rules.  ns-3 also
 adds some features to traditional C++ objects, as described below,
@@ -129,7 +137,6 @@ memory leaks. These functions are really small convenience
 functions and their goal is just is save you a small
 bit of typing.
 
-@node CreateObject and Create
 @subsection CreateObject and Create
 
 Objects in C++ may be statically, dynamically, or automatically created.
@@ -155,7 +162,6 @@ a templated helper function is available and recommended to be used:
 This is simply a wrapper around operator new that correctly handles
 the reference counting system.
 
-@node Aggregation
 @subsection Aggregation
 
 The ns-3 object aggregation system is motivated in strong part by 

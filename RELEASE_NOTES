@@ -8,6 +8,23 @@ http://www.nsnam.org
 including tutorials:
 http://www.nsnam.org/tutorials.html
 
+Release 3.5
+===========
+
+Availability
+------------
+This release is scheduled for June/July 2009
+
+New user-visible features
+-------------------------
+  a) 802.11e EDCA support: Has been added possibilty to manage QoS traffic on wifi stations.
+
+  b) 802.11n initial support: Has been added support for A-MSDU frame aggregation feature.
+ 
+API changes from ns-3.4
+-----------------------
+API changes for this release are documented in the file CHANGES.html
+
 Release 3.4
 ===========
 

@@ -46,7 +46,8 @@ AdhocWifiMac::GetTypeId (void)
     .AddConstructor<AdhocWifiMac> ()
     .AddAttribute ("DcaTxop", "The DcaTxop object",
                    PointerValue (),
-                   MakePointerAccessor (&AdhocWifiMac::DoGetDcaTxop),
+                   MakePointerAccessor (&AdhocWifiMac::GetDcaTxop,
+                                        &AdhocWifiMac::SetDcaTxop),
                    MakePointerChecker<DcaTxop> ()) 
     ;
   return tid;
@@ -63,10 +64,6 @@ AdhocWifiMac::AdhocWifiMac ()
 
   m_dcfManager = new DcfManager ();
   m_dcfManager->SetupLowListener (m_low);
-
-  m_dca = CreateObject<DcaTxop> ();
-  m_dca->SetLow (m_low);
-  m_dca->SetManager (m_dcfManager);
 }
 AdhocWifiMac::~AdhocWifiMac ()
 {}
@@ -250,9 +247,18 @@ AdhocWifiMac::ForwardUp (Ptr<Packet> packet, WifiMacHeader const *hdr)
   m_upCallback (packet, hdr->GetAddr2 (), hdr->GetAddr1 ());
 }
 Ptr<DcaTxop>
-AdhocWifiMac::DoGetDcaTxop(void) const
+AdhocWifiMac::GetDcaTxop(void) const
 {
   return m_dca;
 }
+
+void
+AdhocWifiMac::SetDcaTxop (Ptr<DcaTxop> dcaTxop)
+{
+  m_dca = dcaTxop;
+  m_dca->SetLow (m_low);
+  m_dca->SetManager (m_dcfManager);
+}
+
 
 } // namespace ns3

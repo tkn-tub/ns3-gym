@@ -5,13 +5,13 @@ This is the introduction to PointToPoint NetDevice chapter, to complement the
 PointToPoint model doxygen.
 
 @menu
-* Overview of the model::
+* Overview of the PointToPoint model::
 * Using the PointToPointNetDevice::
 * PointToPoint Tracing::
 @end menu
 
-@node Overview of the model
-@section Overview of the model
+@node Overview of the PointToPoint model
+@section Overview of the PointToPoint model
 
 The ns-3 point-to-point model is of a very simple point to point data link
 connecting exactly two PointToPointNetDevice devices over an

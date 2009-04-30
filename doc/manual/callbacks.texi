@@ -129,7 +129,6 @@ to another C++ class member method or C++ function.
 This is best observed via walking through an example, based on
 @code{samples/main-callback.cc}.
 
-@node Using the Callback API with static functions
 @subsection Using the Callback API with static functions
 
 Consider a function:
@@ -205,7 +204,6 @@ is a function to call behind this callback.  Then, @code{one()} returns the
 same result as if @code{CbOne()} had been called directly.
 
 
-@node Using the Callback API with member functions
 @subsection Using the Callback API with member functions
 
 Generally, you will not be calling static functions but instead
@@ -267,7 +265,6 @@ int main ()
 }
 @end verbatim
 
-@node Building Null Callbacks
 @subsection Building Null Callbacks
 
 It is possible for callbacks to be null; hence it may be wise to

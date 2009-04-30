@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2005 INRIA
+ * Copyright (c) 2005, 2009 INRIA
+ * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -16,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 
 #include "ns3/assert.h"
@@ -26,11 +28,14 @@
 namespace ns3 {
 
 MacTxMiddle::MacTxMiddle ()
+  : m_sequence (0)
+{}
+
+MacTxMiddle::~MacTxMiddle ()
 {
-  m_sequence = 0;
-  for (uint8_t i = 0; i < 16; i++) 
+  for (std::map<Mac48Address,uint16_t*>::iterator i = m_qosSequences.begin(); i != m_qosSequences.end (); i++)
     {
-      m_qosSequences[i] = 0;
+      delete [] i->second;
     }
 }
 
@@ -43,9 +48,25 @@ MacTxMiddle::GetNextSequenceNumberfor (const WifiMacHeader *hdr)
     {
       uint8_t tid = hdr->GetQosTid ();
       NS_ASSERT (tid < 16);
-      retval = m_qosSequences[tid];
-      m_qosSequences[tid]++;
-      m_qosSequences[tid] %= 4096;
+      std::map<Mac48Address, uint16_t*>::iterator it = m_qosSequences.find (hdr->GetAddr1 ());
+      if (it != m_qosSequences.end ())
+        {
+          retval = it->second[tid];
+          it->second[tid]++;
+          it->second[tid] %= 4096;
+        }
+      else
+        {
+          retval = 0;
+          std::pair <Mac48Address,uint16_t*> newSeq (hdr->GetAddr1 (), new uint16_t[16]);
+          std::pair <std::map<Mac48Address,uint16_t*>::iterator,bool> newIns = m_qosSequences.insert (newSeq);
+          NS_ASSERT(newIns.second == true);
+          for (uint8_t i = 0; i < 16; i++)
+            {
+              newIns.first->second[i] = 0;
+            }
+          newIns.first->second[tid]++;
+        }
     } 
   else 
     {

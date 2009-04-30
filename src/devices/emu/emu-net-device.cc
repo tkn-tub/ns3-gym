@@ -385,7 +385,10 @@ EmuNetDevice::CreateSocket (void)
       //
       // Execute the socket creation process image.
       //
-      status = ::execl (FindCreator ().c_str (), "emu-sock-creator", oss.str ().c_str (), (char *)NULL);
+      status = ::execl (FindCreator ("emu-sock-creator").c_str (), 
+                        "emu-sock-creator",                             // argv[0] (filename)
+                        oss.str ().c_str (),                            // argv[1] (-p<path?
+                        (char *)NULL);
 
       //
       // If the execl successfully completes, it never returns.  If it returns it failed or the OS is
@@ -520,20 +523,41 @@ EmuNetDevice::CreateSocket (void)
 }
 
 std::string
-EmuNetDevice::FindCreator (void)
+EmuNetDevice::FindCreator (std::string creatorName)
 {
-  struct stat st;
-  std::string debug = "./build/debug/src/devices/emu/emu-sock-creator";
-  std::string optimized = "./build/optimized/src/devices/emu/emu-sock-creator";
+  NS_LOG_FUNCTION (creatorName);
 
-  if (::stat (debug.c_str (), &st) == 0)
-    {
-      return debug;
-    }
+  std::list<std::string> locations;
 
-  if (::stat (optimized.c_str (), &st) == 0)
+  // The path to the bits if we're sitting there with them
+  locations.push_back ("./");
+  locations.push_back ("./");
+
+  // The path to the bits if we're sitting in the root of the repo
+  locations.push_back ("./build/optimized/src/devices/emu/");
+  locations.push_back ("./build/debug/src/devices/emu/");
+
+  // if at the level of src (or build)
+  locations.push_back ("../build/optimized/src/devices/emu/");
+  locations.push_back ("../build/debug/src/devices/emu/");
+
+  // src/devices (or build/debug)
+  locations.push_back ("../../build/optimized/src/devices/emu/");
+  locations.push_back ("../../build/debug/src/devices/emu/");
+
+  // src/devices/emu (or build/debug/examples)
+  locations.push_back ("../../../build/optimized/src/devices/emu/");
+  locations.push_back ("../../../build/debug/src/devices/emu/");
+
+  for (std::list<std::string>::const_iterator i = locations.begin (); i != locations.end (); ++i)
     {
-      return optimized;
+      struct stat st;
+
+      if (::stat ((*i + creatorName).c_str (), &st) == 0)
+	{
+          NS_LOG_INFO ("Found Creator " << *i + creatorName);                  
+	  return *i + creatorName;
+	}
     }
 
   NS_FATAL_ERROR ("EmuNetDevice::FindCreator(): Couldn't find creator");
@@ -560,19 +584,6 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
 {
   NS_LOG_FUNCTION (buf << len);
 
-  /* IPv6 support*/
-  uint8_t mac[6];
-  Mac48Address multicast6AllNodes("33:33:00:00:00:01");
-  Mac48Address multicast6AllRouters("33:33:00:00:00:02");
-  Mac48Address multicast6AllHosts("33:33:00:00:00:03");
-  Mac48Address multicast6Node; /* multicast address addressed to our MAC address */
-
-  /* generate IPv6 multicast ethernet destination that nodes will accept */
-  GetAddress().CopyTo(mac);
-  mac[0]=0x33;
-  mac[1]=0x33;
-  multicast6Node.CopyFrom(mac);
-
   //
   // Create a packet out of the buffer we received and free that buffer.
   //
@@ -585,13 +596,6 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
   // headers.
   //
   Ptr<Packet> originalPacket = packet->Copy ();
-
-  //
-  // Checksum the packet
-  //
-  EthernetTrailer trailer;
-  packet->RemoveTrailer (trailer);
-  trailer.CheckFcs (packet);
 
   EthernetHeader header (false);
   packet->RemoveHeader (header);
@@ -619,16 +623,12 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
     }
 
   PacketType packetType;
-      
+
   if (header.GetDestination ().IsBroadcast ())
     {
       packetType = NS3_PACKET_BROADCAST;
     }
-  else if (header.GetDestination ().IsMulticast () ||
-           header.GetDestination() == multicast6Node ||
-           header.GetDestination() == multicast6AllNodes ||
-           header.GetDestination() == multicast6AllRouters ||
-           header.GetDestination() == multicast6AllHosts)
+  else if (header.GetDestination ().IsGroup ())
     {
       packetType = NS3_PACKET_MULTICAST;          
     }

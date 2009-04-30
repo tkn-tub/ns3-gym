@@ -102,12 +102,12 @@ def register_Ns3DelayJitterEstimation_methods(root_module, cls):
     cls.add_constructor([param('ns3::DelayJitterEstimation const &', 'arg0')])
     ## delay-jitter-estimation.h: ns3::DelayJitterEstimation::DelayJitterEstimation() [constructor]
     cls.add_constructor([])
-    ## delay-jitter-estimation.h: static void ns3::DelayJitterEstimation::PrepareTx(ns3::Ptr<const ns3::Packet> packet) [member function]
+    ## delay-jitter-estimation.h: static void ns3::DelayJitterEstimation::PrepareTx(ns3::Ptr<ns3::Packet const> packet) [member function]
     cls.add_method('PrepareTx', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet')], 
                    is_static=True)
-    ## delay-jitter-estimation.h: void ns3::DelayJitterEstimation::RecordRx(ns3::Ptr<const ns3::Packet> packet) [member function]
+    ## delay-jitter-estimation.h: void ns3::DelayJitterEstimation::RecordRx(ns3::Ptr<ns3::Packet const> packet) [member function]
     cls.add_method('RecordRx', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet')])

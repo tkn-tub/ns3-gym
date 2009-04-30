@@ -44,7 +44,7 @@ main (int argc, char *argv[])
   double    step            = 100.0;
   double    randomStart     = 0.1;
   double    totalTime       = 100.0;
-  double    packetInterval  = 0.001;
+  double    packetInterval  = 0.1;
   uint16_t  packetSize      = 1024;
   uint32_t  nIfaces         = 1;
   bool      chan            = true;

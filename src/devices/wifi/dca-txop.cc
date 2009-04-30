@@ -93,10 +93,12 @@ private:
   DcaTxop *m_txop;
 };
 
+NS_OBJECT_ENSURE_REGISTERED (DcaTxop);
+
 TypeId 
 DcaTxop::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("DcaTxop")
+  static TypeId tid = TypeId ("ns3::DcaTxop")
     .SetParent<Object> ()
     .AddConstructor<DcaTxop> ()
     .AddAttribute ("MinCw", "The minimum value of the contention window.",

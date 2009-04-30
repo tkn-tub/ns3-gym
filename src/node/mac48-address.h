@@ -90,10 +90,7 @@ public:
    * \returns true if this is a broadcast address, false otherwise.
    */
   bool IsBroadcast (void) const;
-  /**
-   * \returns true if this is a multicast address, false otherwise.
-   */
-  bool IsMulticast (void) const;
+  
   /**
    * \returns true if the group bit is set, false otherwise.
    */

@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008 INRIA
+ * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 #include "wifi-helper.h"
 #include "ns3/wifi-net-device.h"
@@ -40,6 +42,8 @@ namespace ns3 {
 WifiPhyHelper::~WifiPhyHelper ()
 {}
 
+WifiMacHelper::~WifiMacHelper ()
+{}
 
 WifiHelper::WifiHelper ()
 {}
@@ -49,7 +53,6 @@ WifiHelper::Default (void)
 {
   WifiHelper helper;
   helper.SetRemoteStationManager ("ns3::ArfWifiManager");
-  helper.SetMac ("ns3::AdhocWifiMac");
   return helper;
 }
 
@@ -76,31 +79,9 @@ WifiHelper::SetRemoteStationManager (std::string type,
   m_stationManager.Set (n7, v7);
 }
 
-void 
-WifiHelper::SetMac (std::string type,
-                    std::string n0, const AttributeValue &v0,
-                    std::string n1, const AttributeValue &v1,
-                    std::string n2, const AttributeValue &v2,
-                    std::string n3, const AttributeValue &v3,
-                    std::string n4, const AttributeValue &v4,
-                    std::string n5, const AttributeValue &v5,
-                    std::string n6, const AttributeValue &v6,
-                    std::string n7, const AttributeValue &v7)
-{
-  m_mac = ObjectFactory ();
-  m_mac.SetTypeId (type);
-  m_mac.Set (n0, v0);
-  m_mac.Set (n1, v1);
-  m_mac.Set (n2, v2);
-  m_mac.Set (n3, v3);
-  m_mac.Set (n4, v4);
-  m_mac.Set (n5, v5);
-  m_mac.Set (n6, v6);
-  m_mac.Set (n7, v7);
-}
-
 NetDeviceContainer 
-WifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
+WifiHelper::Install (const WifiPhyHelper &phyHelper,
+                     const WifiMacHelper &macHelper, NodeContainer c) const
 {
   NetDeviceContainer devices;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
@@ -108,7 +89,7 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
       Ptr<Node> node = *i;
       Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
       Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
-      Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
+      Ptr<WifiMac> mac = macHelper.Create ();
       Ptr<WifiPhy> phy = phyHelper.Create (node, device);
       mac->SetAddress (Mac48Address::Allocate ());
       device->SetMac (mac);
@@ -120,16 +101,20 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
     }
   return devices;
 }
+
 NetDeviceContainer 
-WifiHelper::Install (const WifiPhyHelper &phy, Ptr<Node> node) const
+WifiHelper::Install (const WifiPhyHelper &phy,
+                     const WifiMacHelper &mac, Ptr<Node> node) const
 {
-  return Install (phy, NodeContainer (node));
+  return Install (phy, mac, NodeContainer (node));
 }
+
 NetDeviceContainer 
-WifiHelper::Install (const WifiPhyHelper &phy, std::string nodeName) const
+WifiHelper::Install (const WifiPhyHelper &phy,
+                     const WifiMacHelper &mac, std::string nodeName) const
 {
   Ptr<Node> node = Names::Find<Node> (nodeName);
-  return Install (phy, NodeContainer (node));
+  return Install (phy, mac, NodeContainer (node));
 }
 
 } // namespace ns3

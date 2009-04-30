@@ -1,6 +1,14 @@
 @node Creating a new ns-3 model
 @chapter Creating a new ns-3 model 
 
+@menu
+* Design-approach::
+* Scaffolding::
+* Initial Implementation::
+* Adding-a-sample-script::
+* Build-core-functions-and-unit-tests::
+@end menu
+
 This chapter walks through the design process of an @command{ns-3} model.
 In many research cases, users will not be satisfied to merely adapt
 existing models, but may want to extend the core of the simulator in
@@ -399,7 +407,7 @@ LOG_COMPONENT_DEFINE is done outside the namespace ns3
 
 
 @subsection Object Framework
-
+@verbatim
   static const ClassId cid;
 
 

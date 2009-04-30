@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2005 INRIA
+ * Copyright (c) 2005, 2009 INRIA
+ * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -16,12 +17,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 
 #ifndef MAC_TX_MIDDLE_H
 #define MAC_TX_MIDDLE_H
 
 #include <stdint.h>
+#include <map>
+#include "ns3/mac48-address.h"
 
 namespace ns3 {
 
@@ -30,11 +34,12 @@ class WifiMacHeader;
 class MacTxMiddle {
 public:
   MacTxMiddle ();
+  ~MacTxMiddle ();
 
   uint16_t GetNextSequenceNumberfor (const WifiMacHeader *hdr);
 
 private:
-  uint16_t m_qosSequences[16];
+  std::map <Mac48Address,uint16_t*> m_qosSequences;
   uint16_t m_sequence;
 };
 

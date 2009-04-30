@@ -2,6 +2,20 @@
 @node Random variables
 @chapter Random variables
 
+@menu
+* Quick Overview::
+* Background::
+* Seeding and independent replications::
+* class RandomVariable::
+* Base class public API::
+* Types of RandomVariables::
+* Semantics of RandomVariable objects::
+* Using other PRNG::
+* More advanced usage::
+* Publishing your results::
+* Summary::
+@end menu
+
 ns-3 contains a built-in pseudo-random number generator (PRNG).
 It is important for serious users of the simulator to understand
 the functionality, configuration, and usage of this PRNG, and

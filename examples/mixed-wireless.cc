@@ -144,13 +144,14 @@ main (int argc, char *argv[])
   // our container
   //
   WifiHelper wifi;
-  wifi.SetMac ("ns3::AdhocWifiMac");
+  NqosWifiMacHelper mac = NqosWifiMacHelper::Default ();
+  mac.SetType ("ns3::AdhocWifiMac");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue ("wifia-54mbs"));
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
-  NetDeviceContainer backboneDevices = wifi.Install (wifiPhy, backbone);
+  NetDeviceContainer backboneDevices = wifi.Install (wifiPhy, mac, backbone);
   //
   // Add the IPv4 protocol stack to the nodes in our container
   //
@@ -258,6 +259,7 @@ main (int argc, char *argv[])
       // Create an infrastructure network
       //
       WifiHelper wifiInfra = WifiHelper::Default ();
+      NqosWifiMacHelper macInfra = NqosWifiMacHelper::Default ();
       wifiPhy.SetChannel (wifiChannel.Create ());
       // Create unique ssids for these networks
       std::string ssidString("wifi-infra");
@@ -267,15 +269,15 @@ main (int argc, char *argv[])
       Ssid ssid = Ssid (ssidString);
       wifiInfra.SetRemoteStationManager ("ns3::ArfWifiManager");
       // setup stas
-      wifiInfra.SetMac ("ns3::NqstaWifiMac",
+      macInfra.SetType ("ns3::NqstaWifiMac",
                "Ssid", SsidValue (ssid),
                "ActiveProbing", BooleanValue (false));
-      NetDeviceContainer staDevices = wifiInfra.Install (wifiPhy, stas);
+      NetDeviceContainer staDevices = wifiInfra.Install (wifiPhy, macInfra, stas);
       // setup ap.
-      wifiInfra.SetMac ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid),
+      macInfra.SetType ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true),
                "BeaconInterval", TimeValue (Seconds (2.5)));
-      NetDeviceContainer apDevices = wifiInfra.Install (wifiPhy, backbone.Get (i));
+      NetDeviceContainer apDevices = wifiInfra.Install (wifiPhy, macInfra, backbone.Get (i));
       // Collect all of these new devices
       NetDeviceContainer infraDevices (apDevices, staDevices);
 

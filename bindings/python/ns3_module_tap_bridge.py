@@ -206,7 +206,7 @@ def register_Ns3TapBridge_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## tap-bridge.h: void ns3::TapBridge::ReceiveFromBridgedDevice(ns3::Ptr<ns3::NetDevice> device, ns3::Ptr<const ns3::Packet> packet, uint16_t protocol, ns3::Address const & src, ns3::Address const & dst, ns3::NetDevice::PacketType packetType) [member function]
+    ## tap-bridge.h: void ns3::TapBridge::ReceiveFromBridgedDevice(ns3::Ptr<ns3::NetDevice> device, ns3::Ptr<ns3::Packet const> packet, uint16_t protocol, ns3::Address const & src, ns3::Address const & dst, ns3::NetDevice::PacketType packetType) [member function]
     cls.add_method('ReceiveFromBridgedDevice', 
                    'void', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint16_t', 'protocol'), param('ns3::Address const &', 'src'), param('ns3::Address const &', 'dst'), param('ns3::NetDevice::PacketType', 'packetType')], 

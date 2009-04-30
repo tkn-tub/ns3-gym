@@ -303,11 +303,11 @@ def register_Ns3PacketSizeMinMaxAvgTotalCalculator_methods(root_module, cls):
     cls.add_constructor([param('ns3::PacketSizeMinMaxAvgTotalCalculator const &', 'arg0')])
     ## packet-data-calculators.h: ns3::PacketSizeMinMaxAvgTotalCalculator::PacketSizeMinMaxAvgTotalCalculator() [constructor]
     cls.add_constructor([])
-    ## packet-data-calculators.h: void ns3::PacketSizeMinMaxAvgTotalCalculator::PacketUpdate(std::string path, ns3::Ptr<const ns3::Packet> packet) [member function]
+    ## packet-data-calculators.h: void ns3::PacketSizeMinMaxAvgTotalCalculator::PacketUpdate(std::string path, ns3::Ptr<ns3::Packet const> packet) [member function]
     cls.add_method('PacketUpdate', 
                    'void', 
                    [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    ## packet-data-calculators.h: void ns3::PacketSizeMinMaxAvgTotalCalculator::FrameUpdate(std::string path, ns3::Ptr<const ns3::Packet> packet, ns3::Mac48Address realto) [member function]
+    ## packet-data-calculators.h: void ns3::PacketSizeMinMaxAvgTotalCalculator::FrameUpdate(std::string path, ns3::Ptr<ns3::Packet const> packet, ns3::Mac48Address realto) [member function]
     cls.add_method('FrameUpdate', 
                    'void', 
                    [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'realto')])
@@ -400,11 +400,11 @@ def register_Ns3PacketCounterCalculator_methods(root_module, cls):
     cls.add_constructor([param('ns3::PacketCounterCalculator const &', 'arg0')])
     ## packet-data-calculators.h: ns3::PacketCounterCalculator::PacketCounterCalculator() [constructor]
     cls.add_constructor([])
-    ## packet-data-calculators.h: void ns3::PacketCounterCalculator::PacketUpdate(std::string path, ns3::Ptr<const ns3::Packet> packet) [member function]
+    ## packet-data-calculators.h: void ns3::PacketCounterCalculator::PacketUpdate(std::string path, ns3::Ptr<ns3::Packet const> packet) [member function]
     cls.add_method('PacketUpdate', 
                    'void', 
                    [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    ## packet-data-calculators.h: void ns3::PacketCounterCalculator::FrameUpdate(std::string path, ns3::Ptr<const ns3::Packet> packet, ns3::Mac48Address realto) [member function]
+    ## packet-data-calculators.h: void ns3::PacketCounterCalculator::FrameUpdate(std::string path, ns3::Ptr<ns3::Packet const> packet, ns3::Mac48Address realto) [member function]
     cls.add_method('FrameUpdate', 
                    'void', 
                    [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'realto')])

@@ -47,6 +47,26 @@
  * If you want to monitor the efficiency of this strategy, you can 
  * enable the macro HP128INC below and call the HighPrecision::PrintStats
  * method at the end of the simulation.
+ *
+ *  Explanation of Slow and Fast values:
+ *
+ * HighPrecision class create a fastValue and a slowValue depending on the
+ * input number. If the input is an integer with 0 fractional part, it will
+ * use the fastValue which will contain the integer in a 64 bits format. If
+ * it has a fractional part, the slowValue will be used. It is represented
+ * simply as a high part slowValue.hi which will contain the integer part
+ * and the fractional part slowValue.lo which will contain the factional
+ * part as an integer (obtained by multiplying the fractional part by 2^64).
+ *
+ * Explanation of Slow and Fast operations:
+ *
+ * If both operands are fastValues, we will perform fast operations, i-e
+ * simply using integer operations. If we have though one of the value is
+ * slowValue we need to convert the fastValue into a slow one. It is simply
+ * obtained by putting the slowValue.lo = 0 and slowValue.hi = fastValue.
+ * After that we apply the slow operation which will be a 128 bits operation
+ * with two 128 bits operands.
+ *
  */
 
 
@@ -85,6 +105,7 @@ private:
   bool SlowSub (HighPrecision const &o);
   bool SlowMul (HighPrecision const &o);
   int SlowCompare (HighPrecision const &o) const;
+  cairo_uint128_t  Mul128(cairo_uint128_t , cairo_uint128_t );
   inline void EnsureSlow (void);
 
   static const double MAX_64;

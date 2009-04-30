@@ -110,9 +110,9 @@ MacLowTransmissionListener::MacLowTransmissionListener ()
 {}
 MacLowTransmissionListener::~MacLowTransmissionListener ()
 {}
-MacLowNavListener::MacLowNavListener ()
+MacLowDcfListener::MacLowDcfListener ()
 {}
-MacLowNavListener::~MacLowNavListener ()
+MacLowDcfListener::~MacLowDcfListener ()
 {}
 
 MacLowTransmissionParameters::MacLowTransmissionParameters ()
@@ -424,9 +424,9 @@ MacLow::SetRxCallback (Callback<void,Ptr<Packet>,const WifiMacHeader *> callback
   m_rxCallback = callback;
 }
 void 
-MacLow::RegisterNavListener (MacLowNavListener *listener)
+MacLow::RegisterDcfListener (MacLowDcfListener *listener)
 {
-  m_navListeners.push_back (listener);
+  m_dcfListeners.push_back (listener);
 }
 
 
@@ -544,6 +544,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
       station->ReportRtsOk (rxSnr, txMode, tag.Get ());
       
       m_ctsTimeoutEvent.Cancel ();
+      NotifyCtsTimeoutResetNow ();
       m_listener->GotCts (rxSnr, txMode);
       NS_ASSERT (m_sendDataEvent.IsExpired ());
       m_sendDataEvent = Simulator::Schedule (GetSifs (), 
@@ -570,12 +571,14 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
           m_normalAckTimeoutEvent.IsRunning ()) 
         {
           m_normalAckTimeoutEvent.Cancel ();
+          NotifyAckTimeoutResetNow ();
           gotAck = true;
         }
       if (m_txParams.MustWaitFastAck () &&
           m_fastAckTimeoutEvent.IsRunning ()) 
         {
           m_fastAckTimeoutEvent.Cancel ();
+          NotifyAckTimeoutResetNow ();
           gotAck = true;
         }
       if (gotAck) 
@@ -797,7 +800,7 @@ MacLow::NavCounterResetCtsMissed (Time rtsEndRxTime)
 void
 MacLow::DoNavResetNow (Time duration)
 {
-  for (NavListenersCI i = m_navListeners.begin (); i != m_navListeners.end (); i++) 
+  for (DcfListenersCI i = m_dcfListeners.begin (); i != m_dcfListeners.end (); i++) 
     {
       (*i)->NavReset (duration);
     }
@@ -807,7 +810,7 @@ MacLow::DoNavResetNow (Time duration)
 bool
 MacLow::DoNavStartNow (Time duration)
 {
-  for (NavListenersCI i = m_navListeners.begin (); i != m_navListeners.end (); i++) 
+  for (DcfListenersCI i = m_dcfListeners.begin (); i != m_dcfListeners.end (); i++) 
     {
       (*i)->NavStart (duration);
     }
@@ -820,6 +823,38 @@ MacLow::DoNavStartNow (Time duration)
       return true;
     }
   return false;
+}
+void
+MacLow::NotifyAckTimeoutStartNow (Time duration)
+{
+  for (DcfListenersCI i = m_dcfListeners.begin (); i != m_dcfListeners.end (); i++) 
+    {
+      (*i)->AckTimeoutStart (duration);
+    }
+}
+void
+MacLow::NotifyAckTimeoutResetNow ()
+{
+  for (DcfListenersCI i = m_dcfListeners.begin (); i != m_dcfListeners.end (); i++) 
+    {
+      (*i)->AckTimeoutReset ();
+    }
+}
+void
+MacLow::NotifyCtsTimeoutStartNow (Time duration)
+{
+  for (DcfListenersCI i = m_dcfListeners.begin (); i != m_dcfListeners.end (); i++) 
+    {
+      (*i)->CtsTimeoutStart (duration);
+    }
+}
+void
+MacLow::NotifyCtsTimeoutResetNow ()
+{
+  for (DcfListenersCI i = m_dcfListeners.begin (); i != m_dcfListeners.end (); i++) 
+    {
+      (*i)->CtsTimeoutReset ();
+    }
 }
 
 void
@@ -946,6 +981,7 @@ MacLow::SendRtsForPacket (void)
   Time timerDelay = txDuration + GetCtsTimeout ();
 
   NS_ASSERT (m_ctsTimeoutEvent.IsExpired ());
+  NotifyCtsTimeoutStartNow (timerDelay);
   m_ctsTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::CtsTimeout, this);
 
   Ptr<Packet> packet = Create<Packet> ();
@@ -965,18 +1001,21 @@ MacLow::StartDataTxTimers (void)
     {
       Time timerDelay = txDuration + GetAckTimeout ();
       NS_ASSERT (m_normalAckTimeoutEvent.IsExpired ());
+      NotifyAckTimeoutStartNow (timerDelay);
       m_normalAckTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::NormalAckTimeout, this);
     } 
   else if (m_txParams.MustWaitFastAck ()) 
     {
       Time timerDelay = txDuration + GetPifs ();
       NS_ASSERT (m_fastAckTimeoutEvent.IsExpired ());
+      NotifyAckTimeoutStartNow (timerDelay);
       m_fastAckTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::FastAckTimeout, this);
     } 
   else if (m_txParams.MustWaitSuperFastAck ()) 
     {
       Time timerDelay = txDuration + GetPifs ();
       NS_ASSERT (m_superFastAckTimeoutEvent.IsExpired ());
+      NotifyAckTimeoutStartNow (timerDelay);
       m_superFastAckTimeoutEvent = Simulator::Schedule (timerDelay, 
                                                         &MacLow::SuperFastAckTimeout, this);
     } 

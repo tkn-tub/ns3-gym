@@ -60,6 +60,17 @@ class Packet;
  * If you want to write a new MAC layer, you need to subclass
  * this base class and implement your own version of the
  * NetDevice::SendTo method.
+ *
+ * This class was designed to hide as many MAC-level details as 
+ * possible from the perspective of layer 3 to allow a single layer 3
+ * to work with any kind of MAC layer. Specifically, this class 
+ * encapsulates the specific format of MAC addresses used by a
+ * device such that the layer 3 does not need any modification
+ * to handle new address formats. This means obviously that the
+ * NetDevice class must know about the address format of all potential 
+ * layer 3 protocols through its GetMulticast methods: the current
+ * API has been optimized to make it easy to add new MAC protocols,
+ * not to add new layer 3 protocols.
  */
 class NetDevice : public Object
 {

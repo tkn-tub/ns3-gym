@@ -1,6 +1,19 @@
 @node Routing overview
 @chapter Routing overview
 
+@menu
+* Routing-Overview::
+* Support for multiple routing protocols::
+* Roadmap and Future work::
+* Static routing::
+* Unicast routing::
+* Multicast routing::
+* Global centralized routing::
+* Global Unicast Routing API::
+* Global Routing Implementation::
+* Optimized Link State Routing (OLSR)::
+@end menu
+
 This chapter describes the overall design of routing in the 
 @code{src/internet-stack}
 module, and some details about the routing approachs currently
