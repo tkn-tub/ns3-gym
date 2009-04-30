@@ -56,11 +56,11 @@ enum WifiElementId {
   IE11S_PROXY_UPDATE_CONFIRMATION       = 39,
   IE11S_MSCIE                           = 40,
   IE11S_MSAIE                           = 41,
-  IE11S_PEERING_PROTOCOL                = 42,
+  IE11S_PEERING_PROTOCOL                = 74,
   /* this ID are compatible with open80211s implementation */
   IE11S_MESH_CONFIGURATION              = 51,
   IE11S_MESH_ID                         = 52,
-  IE11S_PEER_LINK_MANAGEMENT            = 53,
+  IE11S_PEER_LINK_MANAGEMENT            = 55,
   /* 54 - 67 */
   IE11S_PREQ                            = 68,
   IE11S_PREP                            = 69,
