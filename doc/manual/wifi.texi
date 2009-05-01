@@ -30,34 +30,55 @@ specification.
 The current implementation provides roughly four levels of models:
 @itemize @bullet
 @item the @strong{PHY layer models}
-@item the so-called @strong{MAC low models}: they implement DCF
+@item the so-called @strong{MAC low models}: they implement DCF and EDCAF
 @item the so-called @strong{MAC high models}: they implement the MAC-level
 beacon generation, probing, and association state machines, and
 @item a set of @strong{Rate control algorithms} used by the MAC low models
 @end itemize
 
-There are presently three @strong{MAC high models}:
+There are presently six @strong{MAC high models}, three for non-QoS MACs and three
+for QoS MACs.
+@itemize @bullet
+@item @strong{non-QoS MACs:}
 @enumerate
 @item a simple adhoc state machine that does not perform any
 kind of beacon generation, probing, or association. This
-state machine is implemented by the @code{ns3::AdhocWifiNetDevice}
-and @code{ns3::MacHighAdhoc} classes.
+state machine is implemented by the @code{ns3::AdhocWifiMac} class.
 @item  an active probing and association state machine that handles
 automatic re-association whenever too many beacons are missed
-is implemented by the @code{ns3::NqstaWifiNetDevice} and
-@code{ns3::MacHighNqsta} classes.
+is implemented by the @code{ns3::NqstaWifiMac} class.
 @item an access point that generates periodic beacons, and that
 accepts every attempt to associate. This AP state machine
-is implemented by the @code{ns3::NqapWifiNetDevice} and
-@code{ns3::MacHighNqap} classes.
-@end enumerate 
+is implemented by the @code{ns3::NqapWifiMac} class.
+@end enumerate
+@item @strong{QoS MACs:}
+@enumerate
+@item a simple adhoc state machine like above but also able to manage QoS traffic.
+This state machine is implemented by @code{ns3::QadhocWifiMac} class.
+@item a station state machine like above but also able to manage QoS traffic.
+Implemented by @code{ns3::QstaWifiMac}.
+@item a QoS access point state machine like above implemented by @code{ns3::QapWifiMac}.
+@end enumerate
+@end itemize
+
+With QoS MAC models is possible to work with traffic belonging to 
+four different access classes: @strong{AC_VO} for voice traffic, @strong{AC_VI}
+for video traffic, @strong{AC_BE} for best-effort traffic and @strong{AC_BK} 
+for background traffic.
+In order to determine MSDU's access class, every packet forwarded down
+to these MAC layers should be marked using @code{ns3::QosTag} in order to set
+a TID (traffic id) for that packet otherwise it will be considered
+belonging to @strong{AC_BE} access class.
 
 The @strong{MAC low layer} is split into three components:
 @enumerate
 @item @code{ns3::MacLow} which takes care of RTS/CTS/DATA/ACK transactions.
-@item @code{ns3::DcfManager} and @code{ns3::DcfState} which implements the DCF function.
-@item @code{ns3::DcaTxop} which handles the packet queue, packet fragmentation,
-and packet retransmissions if they are needed.
+@item @code{ns3::DcfManager} and @code{ns3::DcfState} which implements the DCF and EDCAF functions.
+@item @code{ns3::DcaTxop} or @code{ns3::EdcaTxopN} which handle the packet queue,
+packet fragmentation, and packet retransmissions if they are needed.
+@code{ns3::DcaTxop} object is used by non-QoS high MACs. @code{ns3::EdcaTxopN} is
+used by QoS high MACs and performs also QoS operations like 802.11n MSDU
+aggregation.
 @end enumerate
 
 There are also several @strong{rate control algorithms} that can be used by the Mac low layer:
@@ -96,7 +117,7 @@ to their node must create an instance of a WifiNetDevice, plus
 a number of consitutent objects, and bind them together appropriately
 (the WifiNetDevice is very modular in this regard, for future
 extensibility).  At the low-level API, this can be done
-with about 20 lines of code (see @code{ns3::WifiHelper::Install} and
+with about 20 lines of code (see @code{ns3::WifiHelper::Install}, and
 @code{ns3::YansWifiPhyHelper::Create}).  They also must create,
 at some point, a WifiChannel, which also contains a number of
 constituent objects (see @code{ns3::YansWifiChannelHelper::Create}).
@@ -156,6 +177,44 @@ Note that we haven't actually created any WifiPhy objects yet; we've
 just prepared the YansWifiPhyHelper by telling it which channel it is 
 connected to.  The phy objects are created in the next step.
 
+@subsection NqosWifiMacHelper and QosWifiMacHelper
+
+The @code{ns3::NqosWifiMacHelper} and @code{ns3::QosWifiMacHelper} configure an
+object factory to create instances of a @code{ns3::WifiMac}. They are used to
+configure MAC parameters like type of MAC, values of contention windows and so on.
+Setting up a non-QoS MAC layers the object we use is @code{ns3::NqosWifiMacHelper}.
+For example the following user code configures a non-QoS MAC sta and changes its default
+values for contention window and Aifsn:
+@verbatim
+  NqosWifiMacHelper wifiMacHelper = NqosWifiMacHelper::Default ();
+  Ssid ssid = Ssid ("ns-3-ssid");
+  wifiMacHelper.SetType ("ns3::NqstaWifiMac", "Ssid", SsidValue (ssid), "ActiveProbing", BooleanValue (false));
+  wifiMacHelper.SetDcaParameters ("MinCw", UintegerValue (20), "Aifsn", UintegerValue (3));
+@end verbatim
+
+Setting up a QoS MACs we use a @code{ns3::QosWifiMacHelper} instead.
+This object could be also used to change default EDCA parameters, and to set a possible MSDU aggregator
+for a particular access class in order to use 802.11n MSDU aggregation feature.
+A possible user code:
+@verbatim
+  QosWifiMacHelper wifiMacHelper = QosWifiMacHelper::Default ();
+  wifiMacHelper.SetType ("ns3::QapWifiMac", "Ssid", SsidValue (ssid), "BeaconGeneration", BooleanValue (true),
+                         "BeaconInterval", TimeValue (Seconds (2.5)));
+  wifiMacHelper.SetEdcaParametersForAc (AC_VO, "MinCw", UintegerValue (2));
+  wifiMacHelper.SetMsduAggregatorForAc (AC_VO, "ns3::MsduStandardAggregator", "MaxAmsduSize", UintegerValue (3839));
+@end verbatim
+
+Call to QosWifiMacHelper::Default () is needed in order to set default EDCA parameters properly for all
+access classes. Otherwise we should set them one by one:
+@verbatim
+  QosWifiMacHelper wifiMacHelper;
+  wifiMacHelper.SetEdcaParametersForAc (AC_VO, "MinCw", UintegerValue (2), "MaxCw", UintegerValue (7),
+                                               "Aifsn", UintegerValue (2));
+  wifiMacHelper.SetEdcaParametersForAc (AC_VI, "MinCw", UintegerValue (7), "MaxCw", UintegerValue (15),
+                                               "Aifsn", UintegerValue (2));
+  ...
+@end verbatim
+
 @subsection WifiHelper
 
 We're now ready to create WifiNetDevices.  First, let's create
@@ -164,12 +223,11 @@ a WifiHelper with default settings:
   WifiHelper wifiHelper = WifiHelper::Default ();
 @end verbatim
 What does this do?  It sets the RemoteStationManager to
-@code{ns3::ArfWifiManager} and the upper MAC to @code{ns3::AdhocWifiMac}
-by default (which can be overridden by other arguments).
-Now, let's use the wifiPhyHelper created above to install WifiNetDevices
+@code{ns3::ArfWifiManager}.
+Now, let's use the wifiPhyHelper and wifiMacHelper created above to install WifiNetDevices
 on a set of nodes in a NodeContainer "c":
 @verbatim
-  NetDeviceContainer wifiContainer = WifiHelper::Install (wifiPhyHelper, c);
+  NetDeviceContainer wifiContainer = WifiHelper::Install (wifiPhyHelper, wifiMacHelper, c);
 @end verbatim
 This creates the WifiNetDevice which includes also a WifiRemoteStationManager,
 a WifiMac, and a WifiPhy (connected to the matching WifiChannel).
@@ -313,6 +371,7 @@ C++ classes and deal with:
 @item connection and disconnection to and from an Access Point,
 @item the MAC transmission queue,
 @item beacon generation,
+@item msdu aggregation,
 @item etc.
 @end itemize
 
