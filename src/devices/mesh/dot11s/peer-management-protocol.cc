@@ -51,14 +51,6 @@ PeerManagementProtocol::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::dot11s::PeerManagementProtocol")
     .SetParent<Object> ()
     .AddConstructor<PeerManagementProtocol> ()
-    // peerLinkCleanupTimeout. We go through the map of peer links and 
-    // remove all links which state is IDLE.
-    .AddAttribute ("PeerLinkCleanupPeriod",
-        "Idle peer link collection interval",
-        TimeValue (MilliSeconds (80)),
-        MakeTimeAccessor (&PeerManagementProtocol::m_peerLinkCleanupPeriod),
-        MakeTimeChecker ()
-        )
     // maximum number of peer links. Now we calculate the total
     // number of peer links on all interfaces
     .AddAttribute ("MaxNumberOfPeerLinks",
@@ -74,13 +66,11 @@ PeerManagementProtocol::PeerManagementProtocol ():
   m_lastLocalLinkId (1),
   m_numberOfActivePeers (0)
 {
-  m_cleanupEvent = Simulator::Schedule (m_peerLinkCleanupPeriod, &PeerManagementProtocol::PeerCleanup, this);
 }
 PeerManagementProtocol::~PeerManagementProtocol ()
 {
   //cancel cleanup event and go through the map of peer links,
   //deleting each
-  m_cleanupEvent.Cancel ();
   for (PeerLinksMap::iterator j = m_peerLinks.begin (); j != m_peerLinks.end (); j++)
     {
       for (PeerLinksOnInterface::iterator i = j->second.begin (); i != j->second.end(); i++)
@@ -315,6 +305,7 @@ PeerManagementProtocol::InitiateLink (
 Ptr<PeerLink>
 PeerManagementProtocol::FindPeerLink(uint32_t interface, Mac48Address peerAddress)
 {
+  PeerCleanup ();
   PeerLinksMap::iterator iface = m_peerLinks.find (interface);
   NS_ASSERT (iface != m_peerLinks.end());
   for (PeerLinksOnInterface::iterator i = iface->second.begin (); i != iface->second.end(); i++)
@@ -341,28 +332,17 @@ PeerManagementProtocol::GetActiveLinks(uint32_t interface)
 void
 PeerManagementProtocol::PeerCleanup ()
 {
-  //Cleanup a peer link descriptors:
   for (
     PeerLinksMap::iterator j = m_peerLinks.begin ();
     j != m_peerLinks.end ();
     j++)
-    {
-      std::vector<unsigned int> to_erase;
-      for (unsigned int i = 0; i< j->second.size (); i++)
-        if (j->second[i]->LinkIsIdle ())
-          {
-            j->second[i]->ClearTimingElement ();
-            j->second[i] = 0;
-            to_erase.push_back (i);
-          }
-      if (to_erase.size () == 0)
-        return;
-      for (unsigned int i = to_erase.size ()-1 ; i >= 0; i--)
-        j->second.erase (j->second.begin() + to_erase[i]);
-      to_erase.clear ();
-    }
-  // cleanup neighbour beacons:
-  m_cleanupEvent = Simulator::Schedule (m_peerLinkCleanupPeriod, &PeerManagementProtocol::PeerCleanup, this);
+      for (unsigned int i = j->second.size (); i > 0; i--)
+        if(j->second[i-1]->LinkIsIdle ())
+        {
+          j->second[i-1]->ClearTimingElement ();
+          j->second[i-1] = 0;
+          j->second.erase (j->second.begin() + i-1);
+        }
 }
 bool
 PeerManagementProtocol::IsActiveLink (uint32_t interface, Mac48Address peerAddress)

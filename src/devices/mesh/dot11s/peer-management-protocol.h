@@ -208,14 +208,6 @@ private:
   /**
    * \}
    */
-  /**
-   * Periodically we scan the peer manager list of peers
-   * and check if the too many  beacons were lost:
-   * \{
-   */
-  Time  m_peerLinkCleanupPeriod;
-  EventId  m_cleanupEvent;
-  ///\}
   ///\brief Callback to notify about peer link changes:
   ///\param Mac48Address is peer address of mesh point
   ///\param Mac48Address is peer address of interface
