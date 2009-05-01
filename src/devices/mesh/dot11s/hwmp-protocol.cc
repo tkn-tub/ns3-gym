@@ -477,7 +477,7 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, M
     }
   else
   {
-    if (i->second >= prep.GetOriginatorSeqNumber ())
+    if (i->second > prep.GetOriginatorSeqNumber ())
       return;
     else
       m_lastHwmpSeqno[prep.GetOriginatorAddress ()] = prep.GetOriginatorSeqNumber();

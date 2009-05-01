@@ -78,7 +78,7 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     WifiMeshActionHeader::ActionValue actionValue = actionHdr.GetAction ();
     // If can not handle - just return;
     if(actionHdr.GetCategory () != WifiMeshActionHeader::MESH_PEER_LINK_MGT)
-      return true;
+      return m_protocol->IsActiveLink(m_ifIndex,header.GetAddr2());
     Mac48Address peerAddress = header.GetAddr2 ();
     Mac48Address peerMpAddress = header.GetAddr3 ();
     PeerLinkFrameStart::PlinkFrameStartFields fields;
