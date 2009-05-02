@@ -436,18 +436,17 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
           //we have got from PREQ, and set the rest lifetime of the
           //route if the information is correct
           uint32_t lifetime = result.lifetime.GetMicroSeconds () / 1024;
-          NS_ASSERT(lifetime > 0);
-          SendPrep (
-              (*i)->GetDestinationAddress (),
-              preq.GetOriginatorAddress (),
-              from,
-              result.metric,
-              preq.GetOriginatorSeqNumber (),
-              result.seqnum +1,
-              lifetime,
-              interface
-              );
-
+          if(lifetime > 0)
+            SendPrep (
+                (*i)->GetDestinationAddress (),
+                preq.GetOriginatorAddress (),
+                from,
+                result.metric,
+                preq.GetOriginatorSeqNumber (),
+                result.seqnum +1,
+                lifetime,
+                interface
+                );
           if ((*i)->IsRf ())
             (*i)->SetFlags (true, false, (*i)->IsUsn ()); //DO = 1, RF = 0
           else
