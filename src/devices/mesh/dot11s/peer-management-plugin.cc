@@ -133,8 +133,14 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
 bool
 PeerManagerMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const
 {
-  if(header.IsData ())
-    return true;
+  if(header.IsAction ())
+  {
+    WifiMeshActionHeader actionHdr;
+    packet->PeekHeader (actionHdr);
+    WifiMeshActionHeader::ActionValue actionValue = actionHdr.GetAction ();
+    if(actionHdr.GetCategory () == WifiMeshActionHeader::MESH_PEER_LINK_MGT)
+      return true;
+  }
   if(header.GetAddr1 ().IsGroup ())
     return true;
   else

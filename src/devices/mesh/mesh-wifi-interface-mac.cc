@@ -388,7 +388,7 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
   hdr.SetAddr1 (Mac48Address ());
 
   // Filter packet through all installed plugins
-  for (PluginList::const_iterator i = m_plugins.begin(); i != m_plugins.end(); ++i)
+  for (PluginList::const_iterator i = m_plugins.end()-1; i != m_plugins.begin()-1; i--)
     {
       bool drop = ! ((*i)->UpdateOutcomingFrame(packet, hdr, from, to));
       if (drop) return; // plugin drops frame
@@ -416,7 +416,15 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
 void
 MeshWifiInterfaceMac::SendManagementFrame (Ptr<Packet> packet, const WifiMacHeader& hdr)
 {
-  m_VO->Queue (packet, hdr);
+  //Filter management frames:
+  WifiMacHeader header = hdr;
+  for (PluginList::const_iterator i = m_plugins.end()-1; i != m_plugins.begin()-1; i--)
+    {
+      bool drop = ! ((*i)->UpdateOutcomingFrame(packet, header, Mac48Address (), Mac48Address ()));
+      if (drop) return; // plugin drops frame
+    }
+
+  m_VO->Queue (packet, header);
 }
 
 SupportedRates

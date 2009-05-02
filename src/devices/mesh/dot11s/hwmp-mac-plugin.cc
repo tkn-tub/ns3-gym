@@ -131,7 +131,8 @@ bool
 HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const
 {
   //TODO: add a mesh header and remove a TAG
-  NS_ASSERT(header.IsData ());
+  if(!header.IsData ())
+    return true;
   HwmpTag tag;
   bool tagExists = packet->RemovePacketTag(tag);
   NS_ASSERT (tagExists);
