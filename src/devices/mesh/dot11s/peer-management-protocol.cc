@@ -305,12 +305,21 @@ PeerManagementProtocol::InitiateLink (
 Ptr<PeerLink>
 PeerManagementProtocol::FindPeerLink(uint32_t interface, Mac48Address peerAddress)
 {
-  PeerCleanup ();
   PeerLinksMap::iterator iface = m_peerLinks.find (interface);
   NS_ASSERT (iface != m_peerLinks.end());
   for (PeerLinksOnInterface::iterator i = iface->second.begin (); i != iface->second.end(); i++)
     if ((*i)->GetPeerAddress () == peerAddress)
-      return (*i);
+    {
+      if((*i)->LinkIsIdle ())
+      {
+        (*i)->ClearTimingElement ();
+        (*i) = 0;
+        (iface->second).erase(i);
+        return 0;
+      }
+      else
+        return (*i);
+    }
   return 0;
 }
 void
@@ -328,21 +337,6 @@ PeerManagementProtocol::GetActiveLinks(uint32_t interface)
     if((*i)->LinkIsEstab ())
       retval.push_back((*i)->GetPeerAddress ());
   return retval;
-}
-void
-PeerManagementProtocol::PeerCleanup ()
-{
-  for (
-    PeerLinksMap::iterator j = m_peerLinks.begin ();
-    j != m_peerLinks.end ();
-    j++)
-      for (unsigned int i = j->second.size (); i > 0; i--)
-        if(j->second[i-1]->LinkIsIdle ())
-        {
-          j->second[i-1]->ClearTimingElement ();
-          j->second[i-1] = 0;
-          j->second.erase (j->second.begin() + i-1);
-        }
 }
 bool
 PeerManagementProtocol::IsActiveLink (uint32_t interface, Mac48Address peerAddress)

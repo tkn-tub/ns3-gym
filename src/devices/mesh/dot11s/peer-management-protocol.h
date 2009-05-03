@@ -181,10 +181,6 @@ private:
    * \brief Indicates changes in peer links
    */
   void PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, Mac48Address peerMeshPointAddres, bool status);
-  /**
-   * Removes all links which are idle
-   */
-  void  PeerCleanup ();
   ///\brief BCA
   Time GetNextBeaconShift (uint32_t interface);
 private:
