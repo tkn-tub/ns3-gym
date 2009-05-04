@@ -23,6 +23,8 @@
 
 #include "ns3/header.h"
 #include "ns3/ref-count-base.h"
+#include "ns3/test.h"
+#include "ns3/packet.h"
 
 namespace ns3 {
 class Packet;
@@ -162,6 +164,36 @@ protected:
 
 /// Compare information elements using Element ID
 bool operator< (WifiInformationElement const & a, WifiInformationElement const & b);
- 
+
+#ifdef RUN_SELF_TESTS
+/// Generic test of information element
+class IeTest : public Test
+{
+public:
+  IeTest (const char * name) : Test (name) {}
+  /// Test roundtrip serialization
+  template <typename IE> bool TestRoundtripSerialization (IE a);
+};
+
+template <typename IE> bool
+IeTest::TestRoundtripSerialization (IE a)
+{
+  bool result (true);
+  
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (a);
+  IE b;
+  packet->RemoveHeader (b);
+  NS_TEST_ASSERT_EQUAL (a, b);
+  packet->AddHeader (a);
+  IE c;
+  bool ok = c.FindFirst(packet);
+  NS_TEST_ASSERT (ok);
+  NS_TEST_ASSERT_EQUAL (a, c);
+  
+  return result;
+}
+#endif 
+
 }  // namespace ns3
 #endif /* WIFIINFORMATIONELEMENT_H_ */

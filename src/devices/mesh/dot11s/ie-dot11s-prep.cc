@@ -228,9 +228,9 @@ bool operator== (const IePrep & a, const IePrep & b)
 #ifdef RUN_SELF_TESTS
 
 /// Built-in self test for IePrep
-struct IePrepBist : public Test 
+struct IePrepBist : public IeTest 
 {
-  IePrepBist () : Test ("Mesh/802.11s/IE/PREP") {};
+  IePrepBist () : IeTest ("Mesh/802.11s/IE/PREP") {};
   virtual bool RunTests(); 
 };
 
@@ -252,18 +252,8 @@ bool IePrepBist::RunTests ()
   a.SetMetric (4321);
   a.SetOriginatorAddress (Mac48Address("33:00:22:00:11:00"));
   a.SetOriginatorSeqNumber (666);
-  // test roundtrip serialization
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader (a);
-  IePrep b;
-  packet->RemoveHeader (b);
-  NS_TEST_ASSERT_EQUAL (a, b);
-  // test FindFirst()
-  packet->AddHeader (a);
-  IePrep c;
-  bool ok = c.FindFirst(packet);
-  NS_TEST_ASSERT (ok);
-  NS_TEST_ASSERT_EQUAL (a, c);
+  
+  result = result && TestRoundtripSerialization (a);
   return result;
 }
 

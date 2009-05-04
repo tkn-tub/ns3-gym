@@ -223,9 +223,9 @@ bool operator== (const IeBeaconTiming & a, const IeBeaconTiming& b)
 }
 
 #ifdef RUN_SELF_TESTS  
-struct IeBeaconTimingBist : public Test 
+struct IeBeaconTimingBist : public IeTest 
 {
-  IeBeaconTimingBist () : Test ("Mesh/802.11s/IE/BeaconTiming") {}
+  IeBeaconTimingBist () : IeTest ("Mesh/802.11s/IE/BeaconTiming") {}
   virtual bool RunTests(); 
 };
 
@@ -241,17 +241,8 @@ bool IeBeaconTimingBist::RunTests ()
   a.IeBeaconTiming::AddNeighboursTimingElementUnit (2,Seconds(2.0), Seconds(3.0));
   a.IeBeaconTiming::AddNeighboursTimingElementUnit (3,Seconds(3.0), Seconds(2.0));
   a.IeBeaconTiming::AddNeighboursTimingElementUnit (4,Seconds(4.0), Seconds(1.0));
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader(a);
-  IeBeaconTiming b;
-  packet->RemoveHeader(b);
-  NS_TEST_ASSERT_EQUAL (a, b);
-  //Test Find First
-  packet->AddHeader (a);
-  IeBeaconTiming c;
-  bool ok = c.FindFirst(packet);
-  NS_TEST_ASSERT (ok);
-  NS_TEST_ASSERT_EQUAL (a, c);
+  
+  result = TestRoundtripSerialization (a);
   return result;
 }
 #endif

@@ -159,9 +159,9 @@ bool operator== (const IePeerManagement & a, const IePeerManagement & b)
       );
 }
 #ifdef RUN_SELF_TESTS  
-struct IePeerManagementBist : public Test 
+struct IePeerManagementBist : public IeTest 
 {
-  IePeerManagementBist () : Test ("Mesh/802.11s/IE/PeerManagement") {}
+  IePeerManagementBist () : IeTest ("Mesh/802.11s/IE/PeerManagement") {}
   virtual bool RunTests(); 
 };
 
@@ -174,44 +174,17 @@ bool IePeerManagementBist::RunTests ()
   {
     IePeerManagement a;
     a.SetPeerOpen (1);
-    Ptr<Packet> packet = Create<Packet> ();
-    packet->AddHeader(a);
-    IePeerManagement b;
-    packet->RemoveHeader(b);
-    NS_TEST_ASSERT_EQUAL (a, b);
-    packet->AddHeader (a);
-    IePeerManagement c;
-    bool ok = c.FindFirst(packet);
-    NS_TEST_ASSERT (ok);
-    NS_TEST_ASSERT_EQUAL (a, c);
+    result = result && TestRoundtripSerialization (a);
   }
   {
     IePeerManagement a;
     a.SetPeerConfirm (1,2);
-    Ptr<Packet> packet = Create<Packet> ();
-    packet->AddHeader(a);
-    IePeerManagement b;
-    packet->RemoveHeader(b);
-    NS_TEST_ASSERT_EQUAL (a, b);
-    packet->AddHeader (a);
-    IePeerManagement c;
-    bool ok = c.FindFirst(packet);
-    NS_TEST_ASSERT (ok);
-    NS_TEST_ASSERT_EQUAL (a, c);
+    result = result && TestRoundtripSerialization (a);
   }
   {
     IePeerManagement a;
     a.SetPeerClose (1, 2, REASON11S_MESH_CONFIGURATION_POLICY_VIOLATION);
-    Ptr<Packet> packet = Create<Packet> ();
-    packet->AddHeader(a);
-    IePeerManagement b;
-    packet->RemoveHeader(b);
-    NS_TEST_ASSERT_EQUAL (a, b);
-    packet->AddHeader (a);
-    IePeerManagement c;
-    bool ok = c.FindFirst(packet);
-    NS_TEST_ASSERT (ok);
-    NS_TEST_ASSERT_EQUAL (a, c);
+    result = result && TestRoundtripSerialization (a);
   }
   return result;
 }

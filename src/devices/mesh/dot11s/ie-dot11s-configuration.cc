@@ -197,9 +197,9 @@ bool operator== (const IeConfiguration & a, const IeConfiguration & b)
 #ifdef RUN_SELF_TESTS
 
 /// Built-in self test for IePreq
-struct IeConfigurationBist : public Test 
+struct IeConfigurationBist : public IeTest 
 {
-  IeConfigurationBist () : Test ("Mesh/802.11s/IE/Configuration") {}
+  IeConfigurationBist () : IeTest ("Mesh/802.11s/IE/Configuration") {}
   virtual bool RunTests(); 
 };
 
@@ -210,18 +210,8 @@ bool IeConfigurationBist::RunTests ()
 {
   bool result(true);
   IeConfiguration a;
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader (a);
-  IeConfiguration b;
-  packet->RemoveHeader (b);
-  NS_TEST_ASSERT_EQUAL (a, b);
-  // test FindFirst()
-  packet->AddHeader (a);
-  IeConfiguration c;
-  bool ok = c.FindFirst(packet);
-  NS_TEST_ASSERT (ok);
-  NS_TEST_ASSERT_EQUAL (a, c);
-
+  
+  result = TestRoundtripSerialization (a);
   return result;
 }
 #endif

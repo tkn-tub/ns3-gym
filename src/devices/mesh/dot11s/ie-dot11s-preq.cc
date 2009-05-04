@@ -433,9 +433,9 @@ IePreq::MayAddAddress (Mac48Address originator)
 #ifdef RUN_SELF_TESTS
 
 /// Built-in self test for IePreq
-struct IePreqBist : public Test 
+struct IePreqBist : public IeTest 
 {
-  IePreqBist () : Test ("Mesh/802.11s/IE/PREQ") {}
+  IePreqBist () : IeTest ("Mesh/802.11s/IE/PREQ") {}
   virtual bool RunTests(); 
 };
 
@@ -456,21 +456,8 @@ bool IePreqBist::RunTests ()
   a.SetLifetime (4);
   a.AddDestinationAddressElement (false, false, Mac48Address("11:11:11:11:11:11"), 5);
   a.AddDestinationAddressElement (false, false, Mac48Address("22:22:22:22:22:22"), 6);
- 
-  // test roundtrip serialization
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader (a);
-  IePreq b;
-  packet->RemoveHeader (b);
-  NS_TEST_ASSERT_EQUAL (a, b);
-  
-  // test FindFirst()
-  packet->AddHeader (a);
-  IePreq c;
-  bool ok = c.FindFirst(packet);
-  NS_TEST_ASSERT (ok);
-  NS_TEST_ASSERT_EQUAL (a, c);
-  
+
+  result = result && TestRoundtripSerialization (a);
   return result;
 }
 
