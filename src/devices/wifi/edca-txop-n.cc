@@ -659,27 +659,31 @@ EdcaTxopN::GetFragmentPacket (WifiMacHeader *hdr)
 Mac48Address
 EdcaTxopN::MapSrcAddressForAggregation (WifiMacHeader const &hdr)
 {
+  Mac48Address retval;
   if (m_typeOfStation == STA || m_typeOfStation == ADHOC_STA)
     {
-      return hdr.GetAddr2 ();
+      retval = hdr.GetAddr2 ();
     }
   else
     {
-      return hdr.GetAddr3 ();
+      retval = hdr.GetAddr3 ();
     }
+  return retval;
 }
 
 Mac48Address
 EdcaTxopN::MapDestAddressForAggregation (WifiMacHeader const &hdr)
 {
+  Mac48Address retval;
   if (m_typeOfStation == AP || m_typeOfStation == ADHOC_STA)
     {
-      return hdr.GetAddr1 ();
+      retval = hdr.GetAddr1 ();
     }
   else
     {
-      return hdr.GetAddr3 ();
+      retval = hdr.GetAddr3 ();
     }
+  return retval;
 }
 
 void

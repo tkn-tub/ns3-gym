@@ -166,7 +166,7 @@ main (int argc, char *argv[])
   // Ascii trace output will be sent to the file "csma-multicast.tr"
   //
   std::ofstream ascii;
-  ascii.open ("csma-multicast.tr");
+  ascii.open ("csma-multicast.tr",std::ios_base::binary | std::ios_base::out);
   CsmaHelper::EnableAsciiAll (ascii);
 
   // Also configure some tcpdump traces; each interface will be traced.

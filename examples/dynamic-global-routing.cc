@@ -190,7 +190,7 @@ main (int argc, char *argv[])
 
 
   std::ofstream ascii;
-  ascii.open ("dynamic-global-routing.tr");
+  ascii.open ("dynamic-global-routing.tr", std::ios_base::binary | std::ios_base::out);
   PointToPointHelper::EnablePcapAll ("dynamic-global-routing");
   PointToPointHelper::EnableAsciiAll (ascii);
   CsmaHelper::EnablePcapAll ("dynamic-global-routing", false);
