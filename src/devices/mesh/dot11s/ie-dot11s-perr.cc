@@ -159,9 +159,9 @@ bool operator== (const IePerr & a, const IePerr & b)
 #ifdef RUN_SELF_TESTS
 
 /// Built-in self test for IePreq
-struct IePerrBist : public Test 
+struct IePerrBist : public IeTest 
 {
-  IePerrBist () : Test ("Mesh/802.11s/IE/PERR") {}
+  IePerrBist () : IeTest ("Mesh/802.11s/IE/PERR") {}
   virtual bool RunTests(); 
 };
 
@@ -183,19 +183,12 @@ bool IePerrBist::RunTests ()
   dest.destination = Mac48Address("01:02:03:04:05:06");
   dest.seqnum = 3;
   a.AddAddressUnit(dest);
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader (a);
-  IePerr b;
-  packet->RemoveHeader (b);
-  NS_TEST_ASSERT_EQUAL (a, b);
+  
+  IePerr b = a;
   b.Merge(a);
   NS_TEST_ASSERT_EQUAL (a, b);
-  // test FindFirst()
-  packet->AddHeader (a);
-  IePerr c;
-  bool ok = c.FindFirst(packet);
-  NS_TEST_ASSERT (ok);
-  NS_TEST_ASSERT_EQUAL (a, c);
+  
+  result = result && TestRoundtripSerialization (a);
   return result;
 }
 

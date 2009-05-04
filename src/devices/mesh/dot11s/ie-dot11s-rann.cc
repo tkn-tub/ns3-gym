@@ -187,9 +187,9 @@ operator== (const IeRann & a, const IeRann & b)
 #ifdef RUN_SELF_TESTS
 
 /// Built-in self test for IeRann
-struct IeRannBist : public Test 
+struct IeRannBist : public IeTest
 {
-  IeRannBist () : Test ("Mesh/802.11s/IE/RANN") {}
+  IeRannBist () : IeTest ("Mesh/802.11s/IE/RANN") {}
   virtual bool RunTests(); 
 };
 
@@ -214,20 +214,7 @@ bool IeRannBist::RunTests ()
   a.IncrementMetric (2);
   NS_TEST_ASSERT_EQUAL (a.GetMetric(), 8);
   
-  // test roundtrip serialization
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader (a);
-  IeRann b;
-  packet->RemoveHeader (b);
-  NS_TEST_ASSERT_EQUAL (a, b);
-  
-  // test FindFirst()
-  packet->AddHeader (a);
-  IeRann c;
-  bool ok = c.FindFirst(packet);
-  NS_TEST_ASSERT (ok);
-  NS_TEST_ASSERT_EQUAL (a, c);
-  
+  result = result && TestRoundtripSerialization (a);
   return result;
 }
 #endif // RUN_SELF_TESTS
