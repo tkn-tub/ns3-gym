@@ -78,6 +78,18 @@ PeerLink::PeerLink ():
   m_retryCounter (0)
 {
 }
+PeerLink::~PeerLink ()
+{
+}
+void
+PeerLink::DoDispose ()
+{
+  m_retryTimer.Cancel ();
+  m_holdingTimer.Cancel ();
+  m_confirmTimer.Cancel ();
+  m_beaconLossTimer.Cancel ();
+  m_beaconTiming.ClearTimingElement ();
+}
 void
 PeerLink::SetPeerAddress (Mac48Address macaddr)
 {
@@ -152,11 +164,6 @@ IeBeaconTiming
 PeerLink::GetBeaconTimingElement () const
 {
   return m_beaconTiming;
-}
-void
-PeerLink::ClearTimingElement ()
-{
-  m_beaconTiming.ClearTimingElement ();
 }
 void
 PeerLink::MLMECancelPeerLink (PmpReasonCode reason)

@@ -49,6 +49,7 @@ public:
   PeerManagementProtocol ();
   ~PeerManagementProtocol ();
   static TypeId GetTypeId ();
+  void DoDispose ();
   /** 
    * \brief Install PMP on given mesh point. 
    * 

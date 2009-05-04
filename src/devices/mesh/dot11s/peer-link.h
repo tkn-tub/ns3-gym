@@ -45,6 +45,8 @@ public:
   static TypeId GetTypeId();
   /// C-tor create empty link
   PeerLink ();
+  ~PeerLink ();
+  void DoDispose ();
   
   /// Process beacon received from peer
   void SetBeaconInformation (Time lastBeacon, Time BeaconInterval);
@@ -73,7 +75,6 @@ public:
   Time GetBeaconInterval () const;
   IeBeaconTiming GetBeaconTimingElement ()const;
   IePeerManagement GetPeerLinkDescriptorElement ()const;
-  void ClearTimingElement ();
   //\}
   
   /**

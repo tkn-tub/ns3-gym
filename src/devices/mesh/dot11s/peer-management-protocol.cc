@@ -69,15 +69,16 @@ PeerManagementProtocol::PeerManagementProtocol ():
 }
 PeerManagementProtocol::~PeerManagementProtocol ()
 {
+}
+void
+PeerManagementProtocol::DoDispose ()
+{
   //cancel cleanup event and go through the map of peer links,
   //deleting each
   for (PeerLinksMap::iterator j = m_peerLinks.begin (); j != m_peerLinks.end (); j++)
     {
       for (PeerLinksOnInterface::iterator i = j->second.begin (); i != j->second.end(); i++)
-        {
-          (*i)->ClearTimingElement ();
           (*i) = 0;
-        }
       j->second.clear ();
     }
   m_peerLinks.clear ();
@@ -312,7 +313,6 @@ PeerManagementProtocol::FindPeerLink(uint32_t interface, Mac48Address peerAddres
     {
       if((*i)->LinkIsIdle ())
       {
-        (*i)->ClearTimingElement ();
         (*i) = 0;
         (iface->second).erase(i);
         return 0;
