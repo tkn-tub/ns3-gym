@@ -60,7 +60,7 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
-  g_os.open ("csma-packet-socket-sink.tr");
+  g_os.open ("csma-packet-socket-sink.tr",std::ios_base::binary | std::ios_base::out);
 
   // Here, we will explicitly create four nodes.
   NS_LOG_INFO ("Create nodes.");
@@ -117,7 +117,7 @@ main (int argc, char *argv[])
   // Trace output will be sent to the csma-packet-socket.tr file
   NS_LOG_INFO ("Configure Tracing.");
   std::ofstream os;
-  os.open ("csma-packet-socket.tr");
+  os.open ("csma-packet-socket.tr", std::ios_base::binary | std::ios_base::out);
   csma.EnableAsciiAll (os);
 
   NS_LOG_INFO ("Run Simulation.");
