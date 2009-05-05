@@ -295,8 +295,7 @@ def configure(conf):
         if env['PLATFORM'].startswith('linux') and \
                 env['CXX_NAME'] == 'gcc':
             if os.uname()[4] == 'i386':
-                conf.report_optional_feature("static", "Static build", True,
-                                             "Enabled by user request")
+                conf.report_optional_feature("static", "Static build", True, '')
                 env['ENABLE_STATIC_NS3'] = True
             elif os.uname()[4] == 'x86_64':
                 if env['ENABLE_PYTHON_BINDINGS'] and \
@@ -307,11 +306,12 @@ def configure(conf):
                                                      "option. Try --disable-python or upgrade your " \
                                                      "compiler.")
                 else:
-                    conf.report_optional_feature("static", "Static build", True,
-                                                 "Enabled by user request. Try --disable-python " \
-                                                     "to get higher performance.")
-                    env['ENABLE_STATIC_NS3'] = True
-                    
+                    conf.report_optional_feature("static", "Static build", True, '')
+                    env['ENABLE_STATIC_NS3'] = True                    
+        elif env['PLATFORM'].startswith('darwin') and \
+                env['CXX_NAME'] == 'gcc':
+                conf.report_optional_feature("static", "Static build", True, '')
+                env['ENABLE_STATIC_NS3'] = True
         else:
             conf.report_optional_feature("static", "Static build", False,
                                          "Unsupported platform")
@@ -387,9 +387,13 @@ def create_ns3_program(bld, name, dependencies=('simulator',)):
     program.uselib_local = 'ns3'
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
     if program.env['ENABLE_STATIC_NS3']:
-        program.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
-        program.env.append_value('LINKFLAGS', '-lns3')
-        program.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
+        if sys.platform == 'darwin':
+            program.env.append_value('LINKFLAGS', '-Wl,-all_load')
+            program.env.append_value('LINKFLAGS', '-lns3')
+        else:
+            program.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
+            program.env.append_value('LINKFLAGS', '-lns3')
+            program.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
     return program
 
 def add_scratch_programs(bld):
