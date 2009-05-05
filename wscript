@@ -308,8 +308,9 @@ def configure(conf):
                 else:
                     conf.report_optional_feature("static", "Static build", True, '')
                     env['ENABLE_STATIC_NS3'] = True                    
-        elif env['PLATFORM'].startswith('darwin') and \
-                env['CXX_NAME'] == 'gcc':
+        elif env['CXX_NAME'] == 'gcc' and \
+                (env['PLATFORM'].startswith('darwin') or \
+                     env['PLATFORM'].startswith('cygwin')):
                 conf.report_optional_feature("static", "Static build", True, '')
                 env['ENABLE_STATIC_NS3'] = True
         else:
