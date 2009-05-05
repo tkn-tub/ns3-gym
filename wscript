@@ -302,9 +302,9 @@ def configure(conf):
                         not conf.check_compilation_flag('-mcmodel=large'):
                     conf.report_optional_feature("static", "Static build", False,
                                                  "Can't enable static builds because " + \
-                                                     "of python and no -mcmodel=large compiler " \
+                                                     "no -mcmodel=large compiler " \
                                                      "option. Try --disable-python or upgrade your " \
-                                                     "compiler.")
+                                                     "compiler to at least gcc 4.3.x.")
                 else:
                     conf.report_optional_feature("static", "Static build", True, '')
                     env['ENABLE_STATIC_NS3'] = True                    
