@@ -827,7 +827,7 @@ Buffer::Iterator::WriteHtolsbU64 (uint64_t data)
   WriteU8 ((data >> 32) & 0xff);
   WriteU8 ((data >> 40) & 0xff);
   WriteU8 ((data >> 48) & 0xff);
-  WriteU8 ((data >> 54) & 0xff);
+  WriteU8 ((data >> 56) & 0xff);
 }
 
 void 
@@ -903,7 +903,7 @@ Buffer::Iterator::ReadU64 (void)
   uint8_t byte5 = ReadU8 ();
   uint8_t byte6 = ReadU8 ();
   uint8_t byte7 = ReadU8 ();
-  uint32_t data = byte7;
+  uint64_t data = byte7;
   data <<= 8;
   data |= byte6;
   data <<= 8;
@@ -1001,7 +1001,7 @@ Buffer::Iterator::ReadLsbtohU64 (void)
   uint8_t byte5 = ReadU8 ();
   uint8_t byte6 = ReadU8 ();
   uint8_t byte7 = ReadU8 ();
-  uint32_t data = byte7;
+  uint64_t data = byte7;
   data <<= 8;
   data |= byte6;
   data <<= 8;
@@ -1274,6 +1274,34 @@ BufferTest::RunTests (void)
   i.WriteU8 (0xfd);
   ENSURE_WRITTEN_BYTES (o, 6, 0xfe, 0xff, 0x69, 0xde, 0xad, 0xff);
   ENSURE_WRITTEN_BYTES (buffer, 7, 0xfd, 0xfd, 0xff, 0x69, 0xde, 0xad, 0xff);
+
+  // test 64-bit read/write
+  Buffer buff64;
+  buff64.AddAtStart(8);
+  i = buff64.Begin();
+  i.WriteU64 (0x0123456789ABCDEFllu);
+  ENSURE_WRITTEN_BYTES (buff64, 8, 0xef, 0xcd, 0xab, 0x89, 0x67, 0x45, 0x23, 0x01);
+  i = buff64.Begin();
+  if (i.ReadLsbtohU64() != 0x0123456789abcdefllu)
+    {
+       result = false;
+    }
+  i = buff64.Begin();
+  i.WriteHtolsbU64 (0x0123456789ABCDEFllu);
+  ENSURE_WRITTEN_BYTES (buff64, 8, 0xef, 0xcd, 0xab, 0x89, 0x67, 0x45, 0x23, 0x01);
+  i = buff64.Begin();
+  if (i.ReadLsbtohU64() != 0x0123456789abcdefllu)
+    {
+       result = false;
+    }
+  i = buff64.Begin();
+  i.WriteHtonU64 (0x0123456789ABCDEFllu);
+  ENSURE_WRITTEN_BYTES (buff64, 8, 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef);
+  i = buff64.Begin();
+  if (i.ReadNtohU64() != 0x0123456789abcdefllu)
+    {
+       result = false;
+    }
 
   // test self-assignment
   {

@@ -46,18 +46,45 @@
  *   
  *     TID-AccessClass mapping:
  *     
- *      TID  | Access class
- *      --------------------
- *       7   |    AC_VO      ^
- *       6   |    AC_VO      |
- *       5   |    AC_VI      |
- *       4   |    AC_VI      |
- *       3   |    AC_BE      | priority
- *       0   |    AC_BE      |  
- *       2   |    AC_BK      |
- *       1   |    AC_BK      |
- *     
- *
+ *      <table border=1>
+ *      <tr>
+ *        <td><b> TID </b></td>
+ *        <td><b> Access class </b></td>
+ *      </tr>
+ *      <tr>
+ *        <td> 7 </b></td>
+ *        <td> AC_VO </td>
+ *      </tr> 
+ *      <tr>  
+ *        <td> 6 </td>
+ *        <td> AC_VO </td>
+ *      </tr> 
+ *      <tr>  
+ *        <td> 5 </td>
+ *        <td> AC_VI </td>
+ *      </tr> 
+ *      <tr>  
+ *        <td> 4 </td>
+ *        <td> AC_VI </td>
+ *      </tr> 
+ *      <tr>  
+ *        <td> 3 </td>
+ *        <td> AC_BE </td>
+ *      </tr> 
+ *      <tr>  
+ *        <td> 0 </td>
+ *        <td> AC_BE </td>
+ *      </tr> 
+ *      <tr>  
+ *        <td> 2 </td>
+ *        <td> AC_BK </td>
+ *      </tr> 
+ *      <tr>  
+ *        <td> 1 </td>
+ *        <td> AC_BK </td>
+ *      </tr>
+ *      </table>
+ *  
  * The MAC low layer is split in 3 components:
  *   - ns3::MacLow which takes care of RTS/CTS/DATA/ACK transactions.
  *   - ns3::DcfManager and ns3::DcfState which implements the DCF function.

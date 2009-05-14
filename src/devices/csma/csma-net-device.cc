@@ -1000,8 +1000,8 @@ CsmaNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& 
         {
           m_currentPkt = m_queue->Dequeue ();
           NS_ASSERT_MSG (m_currentPkt != 0, "CsmaNetDevice::SendFrom(): IsEmpty false but no Packet on queue?");
-          m_promiscSnifferTrace (packet);
-          m_snifferTrace (packet);
+          m_promiscSnifferTrace (m_currentPkt);
+          m_snifferTrace (m_currentPkt);
           TransmitStart ();
         }
     }

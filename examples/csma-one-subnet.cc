@@ -120,7 +120,7 @@ main (int argc, char *argv[])
 //
   NS_LOG_INFO ("Configure Tracing.");
   std::ofstream ascii;
-  ascii.open ("csma-one-subnet.tr");
+  ascii.open ("csma-one-subnet.tr", std::ios_base::binary | std::ios_base::out);
   CsmaHelper::EnableAsciiAll (ascii);
 //
 // Also configure some tcpdump traces; each interface will be traced.

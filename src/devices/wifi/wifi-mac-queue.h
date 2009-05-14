@@ -105,7 +105,7 @@ private:
   typedef std::list<struct Item>::iterator PacketQueueI;
   
   void Cleanup (void);
-  Mac48Address GetAddressForPacket (uint8_t type, PacketQueueI);
+  Mac48Address GetAddressForPacket (enum WifiMacHeader::AddressType type, PacketQueueI);
   
   struct Item {
     Item (Ptr<const Packet> packet, 

@@ -71,7 +71,8 @@ def configure(conf):
         return
 
     # -fvisibility=hidden optimization
-    if conf.env['CXX_NAME'] == 'gcc' and conf.check_compilation_flag('-fvisibility=hidden'):
+    if (conf.env['CXX_NAME'] == 'gcc' and [int(x) for x in conf.env['CC_VERSION']] >= [4,0,0]
+        and conf.check_compilation_flag('-fvisibility=hidden')):
         conf.env.append_value('CXXFLAGS_PYEXT', '-fvisibility=hidden')
         conf.env.append_value('CCFLAGS_PYEXT', '-fvisibility=hidden')
 
@@ -446,9 +447,13 @@ def build(bld):
         pymod.name = 'ns3module'
         pymod.uselib_local = "ns3"
         if pymod.env['ENABLE_STATIC_NS3']:
-            pymod.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
-            pymod.env.append_value('LINKFLAGS', '-lns3')
-            pymod.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
+            if sys.platform == 'darwin':
+                pymod.env.append_value('LINKFLAGS', '-Wl,-all_load')
+                pymod.env.append_value('LINKFLAGS', '-lns3')
+            else:
+                pymod.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
+                pymod.env.append_value('LINKFLAGS', '-lns3')
+                pymod.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
 
         defines = list(pymod.env['CXXDEFINES'])
         defines.extend(['NS_DEPRECATED=', 'NS3_DEPRECATED_H'])

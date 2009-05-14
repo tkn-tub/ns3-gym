@@ -290,9 +290,37 @@ def configure(conf):
 
     conf.find_program('valgrind', var='VALGRIND')
 
-    if Options.options.enable_static and \
-            env['PLATFORM'].startswith('linux'):
-        conf.env['ENABLE_STATIC_NS3'] = Options.options.enable_static
+    env['ENABLE_STATIC_NS3'] = False
+    if Options.options.enable_static:
+        if env['PLATFORM'].startswith('linux') and \
+                env['CXX_NAME'] == 'gcc':
+            if os.uname()[4] == 'i386':
+                conf.report_optional_feature("static", "Static build", True, '')
+                env['ENABLE_STATIC_NS3'] = True
+            elif os.uname()[4] == 'x86_64':
+                if env['ENABLE_PYTHON_BINDINGS'] and \
+                        not conf.check_compilation_flag('-mcmodel=large'):
+                    conf.report_optional_feature("static", "Static build", False,
+                                                 "Can't enable static builds because " + \
+                                                     "no -mcmodel=large compiler " \
+                                                     "option. Try --disable-python or upgrade your " \
+                                                     "compiler to at least gcc 4.3.x.")
+                else:
+                    conf.report_optional_feature("static", "Static build", True, '')
+                    env['ENABLE_STATIC_NS3'] = True                    
+        elif env['CXX_NAME'] == 'gcc' and \
+                (env['PLATFORM'].startswith('darwin') or \
+                     env['PLATFORM'].startswith('cygwin')):
+                conf.report_optional_feature("static", "Static build", True, '')
+                env['ENABLE_STATIC_NS3'] = True
+        else:
+            conf.report_optional_feature("static", "Static build", False,
+                                         "Unsupported platform")
+    else:
+        conf.report_optional_feature("static", "Static build", False,
+                                     "option --enable-static not selected")
+
+
 
     # Write a summary of optional features status
     print "---- Summary of optional NS-3 features:"
@@ -360,9 +388,13 @@ def create_ns3_program(bld, name, dependencies=('simulator',)):
     program.uselib_local = 'ns3'
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
     if program.env['ENABLE_STATIC_NS3']:
-        program.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
-        program.env.append_value('LINKFLAGS', '-lns3')
-        program.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
+        if sys.platform == 'darwin':
+            program.env.append_value('LINKFLAGS', '-Wl,-all_load')
+            program.env.append_value('LINKFLAGS', '-lns3')
+        else:
+            program.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
+            program.env.append_value('LINKFLAGS', '-lns3')
+            program.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
     return program
 
 def add_scratch_programs(bld):
