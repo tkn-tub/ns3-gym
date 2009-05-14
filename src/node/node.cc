@@ -40,6 +40,7 @@ Node::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Node")
     .SetParent<Object> ()
+    .AddConstructor<Node> ()
     .AddAttribute ("DeviceList", "The list of devices associated to this Node.",
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&Node::m_devices),
