@@ -264,8 +264,9 @@ def configure(conf):
         if libstdcxx_location:
             conf.env.append_value('NS3_MODULE_PATH', libstdcxx_location)
 
-        if conf.check_compilation_flag('-Wl,--soname=foo'):
-            env['WL_SONAME_SUPPORTED'] = True
+        if Options.platform in ['linux']:
+            if conf.check_compilation_flag('-Wl,--soname=foo'):
+                env['WL_SONAME_SUPPORTED'] = True
 
     conf.sub_config('src')
     conf.sub_config('utils')
