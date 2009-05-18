@@ -255,12 +255,17 @@ def configure(conf):
             env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
         elif sys.platform == 'cygwin':
             env.append_value("LINKFLAGS", "-Wl,--enable-auto-import")
+
         cxx, = env['CXX']
+
         p = subprocess.Popen([cxx, '-print-file-name=libstdc++.so'], stdout=subprocess.PIPE)
         libstdcxx_location = os.path.dirname(p.stdout.read().strip())
         p.wait()
         if libstdcxx_location:
             conf.env.append_value('NS3_MODULE_PATH', libstdcxx_location)
+
+        if conf.check_compilation_flag('-Wl,--soname=foo'):
+            env['WL_SONAME_SUPPORTED'] = True
 
     conf.sub_config('src')
     conf.sub_config('utils')
@@ -480,11 +485,15 @@ def build(bld):
     ## Create a single ns3 library containing all enabled modules
     if env['ENABLE_STATIC_NS3']:
         lib = bld.new_task_gen('cxx', 'staticlib')
+        lib.name = 'ns3'
+        lib.target = 'ns3'
     else:
         lib = bld.new_task_gen('cxx', 'shlib')
+        lib.name = 'ns3'
+        lib.target = 'ns3'
+        if lib.env['CXX_NAME'] == 'gcc' and env['WL_SONAME_SUPPORTED']:
+            lib.env.append_value('LINKFLAGS', '-Wl,--soname=%s' % ccroot.get_target_name(lib))
 
-    lib.name = 'ns3'
-    lib.target = 'ns3'
     if env['NS3_ENABLED_MODULES']:
         lib.add_objects = list(modules)
         env['NS3_ENABLED_MODULES'] = list(modules)
