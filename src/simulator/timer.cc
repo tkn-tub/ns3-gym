@@ -24,7 +24,7 @@
 namespace ns3 {
 
 Timer::Timer ()
-  : m_flags (0),
+  : m_flags (CHECK_ON_DESTROY),
     m_delay (FemtoSeconds (0)),
     m_event (),
     m_impl (0)
