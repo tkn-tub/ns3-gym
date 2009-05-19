@@ -6,6 +6,7 @@ import shutil
 import types
 import optparse
 import os.path
+import re
 
 # WAF modules
 import pproc as subprocess
@@ -300,7 +301,7 @@ def configure(conf):
     if Options.options.enable_static:
         if env['PLATFORM'].startswith('linux') and \
                 env['CXX_NAME'] == 'gcc':
-            if os.uname()[4] == 'i386':
+            if re.match('i[3-6]86', os.uname()[4]):
                 conf.report_optional_feature("static", "Static build", True, '')
                 env['ENABLE_STATIC_NS3'] = True
             elif os.uname()[4] == 'x86_64':
