@@ -50,6 +50,7 @@ public:
   bool Receive (Ptr<Packet> packet, const WifiMacHeader & header);
   bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const;
   void UpdateBeacon (MeshWifiBeacon & beacon) const;
+  void Report (std::ostream &) const;
   ///\}
 private:
   friend class PeerManagementProtocol;
@@ -97,6 +98,22 @@ private:
   /// WifiInformationElements exist
   PlinkFrameStart ParsePlinkFrame(Ptr<const Packet> packet);
   ///\}
+  //Keeps statistics
+  struct Statistics {
+    uint16_t sendOpen;
+    uint16_t sendConfirm;
+    uint16_t sendClose;
+    uint16_t recvOpen;
+    uint16_t recvConfirm;
+    uint16_t recvClose;
+    uint16_t received;
+    uint16_t dropped;
+    uint16_t brokenMgt;
+    
+    Statistics ();
+    void Print (std::ostream & os) const;
+  };
+  struct Statistics m_stats;
 };
   
 } // namespace dot11s

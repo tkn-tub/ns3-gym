@@ -134,6 +134,7 @@ public:
   std::vector<Mac48Address> GetActiveLinks(uint32_t interface);
   ///\brief needed by plugins to set global source address
   Mac48Address GetAddress ();
+  ///\brief: Report statistics
 private:
   /** \name Private structures
    * \{

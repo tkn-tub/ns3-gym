@@ -78,7 +78,18 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     WifiMeshActionHeader::ActionValue actionValue = actionHdr.GetAction ();
     // If can not handle - just return;
     if(actionHdr.GetCategory () != WifiMeshActionHeader::MESH_PEER_LINK_MGT)
-      return m_protocol->IsActiveLink(m_ifIndex,header.GetAddr2());
+    {
+      if(m_protocol->IsActiveLink(m_ifIndex,header.GetAddr2()))
+      {
+        m_stats.received ++;
+        return true;
+      }
+      else
+      {
+        m_stats.dropped ++;
+        return false;
+      }
+    }
     Mac48Address peerAddress = header.GetAddr2 ();
     Mac48Address peerMpAddress = header.GetAddr3 ();
     PeerLinkFrameStart::PlinkFrameStartFields fields;
@@ -96,6 +107,7 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
       {
         m_protocol->ConfigurationMismatch (m_ifIndex, peerAddress);
         // Broken peer link frame - drop it
+        m_stats.brokenMgt ++;
         return false;
       }
     if (
@@ -105,6 +117,7 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
       {
         m_protocol->ConfigurationMismatch (m_ifIndex, peerAddress);
         // Broken peer link frame - drop it
+        m_stats.brokenMgt ++;
         return false;
       }
     IePeerManagement peerElement;
@@ -112,14 +125,17 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     //Check taht frame subtype corresponds peer link subtype
     if(peerElement.SubtypeIsOpen ())
     {
+      m_stats.recvOpen ++;
       NS_ASSERT(actionValue.peerLink == WifiMeshActionHeader::PEER_LINK_OPEN);
     }
     if(peerElement.SubtypeIsConfirm ())
     {
+      m_stats.recvConfirm ++;
       NS_ASSERT(actionValue.peerLink == WifiMeshActionHeader::PEER_LINK_CONFIRM);
     }
     if(peerElement.SubtypeIsClose ())
     {
+      m_stats.recvClose ++;
       NS_ASSERT(actionValue.peerLink == WifiMeshActionHeader::PEER_LINK_CLOSE);
     }
     //Deliver Peer link management frame to protocol:
@@ -127,9 +143,17 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     // if we can handle a frame - drop it
     return false;
   }
-  return m_protocol->IsActiveLink(m_ifIndex,header.GetAddr2());
+  if(m_protocol->IsActiveLink(m_ifIndex,header.GetAddr2()))
+  {
+    m_stats.received ++;
+    return true;
+  }
+  else
+  {
+    m_stats.dropped ++;
+    return false;
+  }
 }
-
 bool
 PeerManagerMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const
 {
@@ -146,7 +170,6 @@ PeerManagerMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & 
   else
     return m_protocol->IsActiveLink(m_ifIndex,header.GetAddr1());
 }
-
 void
 PeerManagerMacPlugin::UpdateBeacon (MeshWifiBeacon & beacon) const
 {
@@ -176,6 +199,7 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
   WifiMeshActionHeader actionHdr;
   if (peerElement.SubtypeIsOpen ())
     {
+      m_stats.sendOpen ++;
       WifiMeshActionHeader::ActionValue action;
       action.peerLink = WifiMeshActionHeader::PEER_LINK_OPEN;
       fields.subtype = WifiMeshActionHeader::PEER_LINK_OPEN;
@@ -183,6 +207,7 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
     }
   if (peerElement.SubtypeIsConfirm ())
     {
+      m_stats.sendConfirm ++;
       WifiMeshActionHeader::ActionValue action;
       action.peerLink = WifiMeshActionHeader::PEER_LINK_CONFIRM;
       fields.aid = aid;
@@ -191,6 +216,7 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
     }
   if (peerElement.SubtypeIsClose ())
     {
+      m_stats.sendClose ++;
       WifiMeshActionHeader::ActionValue action;
       action.peerLink = WifiMeshActionHeader::PEER_LINK_CLOSE;
       fields.subtype = WifiMeshActionHeader::PEER_LINK_CLOSE;
@@ -232,7 +258,42 @@ PeerManagerMacPlugin::SetBeaconShift(Time shift)
 {
   m_parent->ShiftTbtt (shift);
 }
-
+PeerManagerMacPlugin::Statistics::Statistics () :
+  sendOpen (0),
+  sendConfirm (0),
+  sendClose (0),
+  recvOpen (0),
+  recvConfirm (0),
+  recvClose (0),
+  received (0),
+  dropped (0),
+  brokenMgt (0)
+{
+}
+void
+PeerManagerMacPlugin::Statistics::Print (std::ostream & os) const
+{
+  os << "<Statistics: "
+    "sendOpen= \"" << sendOpen << "\""
+    "sendConfirm=\"" << sendConfirm << "\" "
+    "sendClose=\"" << sendClose << "\" "
+    "recvOpen=\"" << recvOpen << "\" "
+    "recvConfirm=\"" << recvConfirm << "\" "
+    "recvClose=\"" << recvClose << "\" "
+    "received=\"" << received << "\" "
+    "dropped=\"" << dropped << "\" "
+    "brokenMgt=\"" << brokenMgt << "\" "
+    "/>\n";
+}
+void
+PeerManagerMacPlugin::Report (std::ostream & os) const
+{
+  os << "<Peer Management Protocol Mac "
+    "index=\"" << m_ifIndex << "\" "
+    ">\n";
+  m_stats.Print (os);
+  os << "<PMP MAC>\n";
+}
 } // namespace dot11s
 } //namespace ns3
 
