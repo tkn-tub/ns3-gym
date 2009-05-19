@@ -1,4 +1,4 @@
-from pybindgen import Module, FileCodeSink, param, retval, cppclass
+from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandlers
 
 def register_types(module):
     root_module = module.get_root()
@@ -61,6 +61,10 @@ def register_types(module):
     module.add_class('RealtimeSimulatorImpl', parent=root_module['ns3::SimulatorImpl'])
     ## realtime-simulator-impl.h: ns3::RealtimeSimulatorImpl::SynchronizationMode [enumeration]
     module.add_enum('SynchronizationMode', ['SYNC_BEST_EFFORT', 'SYNC_HARD_LIMIT'], outer_class=root_module['ns3::RealtimeSimulatorImpl'])
+    typehandlers.add_type_alias('ns3::TimeUnit< 2 >', 'ns3::TimeSquare')
+    typehandlers.add_type_alias('ns3::TimeUnit< - 1 >', 'ns3::TimeInvert')
+    typehandlers.add_type_alias('ns3::TimeUnit< 0 >', 'ns3::Scalar')
+    typehandlers.add_type_alias('ns3::TimeUnit< 1 >', 'ns3::Time')
     
     ## Register a nested module for the namespace Config
     
@@ -277,11 +281,6 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Scheduler >', 'scheduler')], 
                    is_static=True)
-    ## simulator.h: static void ns3::Simulator::EnableLogTo(char const * filename) [member function]
-    cls.add_method('EnableLogTo', 
-                   'void', 
-                   [param('char const *', 'filename')], 
-                   is_static=True, deprecated=True)
     ## simulator.h: static void ns3::Simulator::Destroy() [member function]
     cls.add_method('Destroy', 
                    'void', 

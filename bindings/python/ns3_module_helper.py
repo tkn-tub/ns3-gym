@@ -1,4 +1,4 @@
-from pybindgen import Module, FileCodeSink, param, retval, cppclass
+from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandlers
 
 def register_types(module):
     root_module = module.get_root()
@@ -218,16 +218,6 @@ def register_Ns3CsmaHelper_methods(root_module, cls):
     cls.add_method('SetChannelAttribute', 
                    'void', 
                    [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
-    ## csma-helper.h: void ns3::CsmaHelper::SetDeviceParameter(std::string n1, ns3::AttributeValue const & v1) [member function]
-    cls.add_method('SetDeviceParameter', 
-                   'void', 
-                   [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')], 
-                   deprecated=True)
-    ## csma-helper.h: void ns3::CsmaHelper::SetChannelParameter(std::string n1, ns3::AttributeValue const & v1) [member function]
-    cls.add_method('SetChannelParameter', 
-                   'void', 
-                   [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')], 
-                   deprecated=True)
     ## csma-helper.h: static void ns3::CsmaHelper::EnablePcap(std::string filename, uint32_t nodeid, uint32_t deviceid, bool promiscuous) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
@@ -815,16 +805,6 @@ def register_Ns3PointToPointHelper_methods(root_module, cls):
     cls.add_method('SetChannelAttribute', 
                    'void', 
                    [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
-    ## point-to-point-helper.h: void ns3::PointToPointHelper::SetDeviceParameter(std::string name, ns3::AttributeValue const & value) [member function]
-    cls.add_method('SetDeviceParameter', 
-                   'void', 
-                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')], 
-                   deprecated=True)
-    ## point-to-point-helper.h: void ns3::PointToPointHelper::SetChannelParameter(std::string name, ns3::AttributeValue const & value) [member function]
-    cls.add_method('SetChannelParameter', 
-                   'void', 
-                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')], 
-                   deprecated=True)
     ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnablePcap(std::string filename, uint32_t nodeid, uint32_t deviceid) [member function]
     cls.add_method('EnablePcap', 
                    'void', 

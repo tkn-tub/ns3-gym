@@ -1,4 +1,4 @@
-from pybindgen import Module, FileCodeSink, param, retval, cppclass
+from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandlers
 
 def register_types(module):
     root_module = module.get_root()
@@ -135,6 +135,7 @@ def register_types(module):
     module.add_class('YansWifiChannel', parent=root_module['ns3::WifiChannel'])
     ## aarf-wifi-manager.h: ns3::AarfWifiManager [class]
     module.add_class('AarfWifiManager', parent=root_module['ns3::ArfWifiManager'])
+    typehandlers.add_type_alias('std::vector< ns3::ThresholdsItem, std::allocator< ns3::ThresholdsItem > >', 'ns3::Thresholds')
     
     ## Register a nested module for the namespace Config
     

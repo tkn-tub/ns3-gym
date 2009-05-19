@@ -1,4 +1,4 @@
-from pybindgen import Module, FileCodeSink, param, retval, cppclass
+from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandlers
 
 def register_types(module):
     root_module = module.get_root()
@@ -424,11 +424,6 @@ def register_Ns3Packet_methods(root_module, cls):
                    'void', 
                    [], 
                    is_static=True)
-    ## packet.h: static void ns3::Packet::EnableMetadata() [member function]
-    cls.add_method('EnableMetadata', 
-                   'void', 
-                   [], 
-                   is_static=True, deprecated=True)
     ## packet.h: static void ns3::Packet::EnablePrinting() [member function]
     cls.add_method('EnablePrinting', 
                    'void', 
