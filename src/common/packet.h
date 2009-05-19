@@ -321,8 +321,6 @@ public:
 
   PacketMetadata::ItemIterator BeginItem (void) const;
 
-  static void EnableMetadata (void) NS_DEPRECATED;
-
   /**
    * By default, packets do not keep around enough metadata to
    * perform the operations requested by the Print methods. If you

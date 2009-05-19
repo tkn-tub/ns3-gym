@@ -139,10 +139,6 @@ Simulator::SetScheduler (Ptr<Scheduler> scheduler)
   GetImpl ()->SetScheduler (scheduler);
 }
 
-void 
-Simulator::EnableLogTo (char const *filename)
-{}
-
 bool 
 Simulator::IsFinished (void)
 {

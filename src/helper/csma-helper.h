@@ -80,9 +80,6 @@ public:
    */
   void SetChannelAttribute (std::string n1, const AttributeValue &v1);
 
-  void SetDeviceParameter (std::string n1, const AttributeValue &v1) NS_DEPRECATED;
-  void SetChannelParameter (std::string n1, const AttributeValue &v1) NS_DEPRECATED;
-
   /**
    * \param filename filename prefix to use for pcap files.
    * \param nodeid the id of the node to generate pcap output for.

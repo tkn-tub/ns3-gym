@@ -64,17 +64,6 @@ PointToPointHelper::SetChannelAttribute (std::string n1, const AttributeValue &v
 }
 
 void 
-PointToPointHelper::SetDeviceParameter (std::string name, const AttributeValue &value)
-{
-  SetDeviceAttribute (name, value);
-}
-void 
-PointToPointHelper::SetChannelParameter (std::string name, const AttributeValue &value)
-{
-  SetChannelAttribute (name, value);
-}
-
-void 
 PointToPointHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid)
 {
   std::ostringstream oss;

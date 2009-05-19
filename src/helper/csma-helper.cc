@@ -65,18 +65,6 @@ CsmaHelper::SetChannelAttribute (std::string n1, const AttributeValue &v1)
 }
 
 void 
-CsmaHelper::SetDeviceParameter (std::string n1, const AttributeValue &v1)
-{
-  SetDeviceAttribute (n1, v1);
-}
-
-void 
-CsmaHelper::SetChannelParameter (std::string n1, const AttributeValue &v1)
-{
-  SetChannelAttribute (n1, v1);
-}
-
-void 
 CsmaHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid, bool promiscuous)
 {
   std::ostringstream oss;
