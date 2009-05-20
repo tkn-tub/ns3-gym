@@ -135,6 +135,8 @@ public:
   ///\brief needed by plugins to set global source address
   Mac48Address GetAddress ();
   ///\brief: Report statistics
+  void Report (std::ostream &) const;
+
 private:
   /** \name Private structures
    * \{

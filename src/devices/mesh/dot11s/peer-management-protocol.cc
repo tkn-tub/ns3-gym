@@ -96,11 +96,11 @@ PeerManagementProtocol::Install(Ptr<MeshPointDevice> mp)
   std::vector<Ptr<NetDevice> > interfaces = mp->GetInterfaces ();
   for(std::vector<Ptr<NetDevice> >::iterator i = interfaces.begin(); i != interfaces.end(); i ++)
   {
-    const WifiNetDevice * wifiNetDev = dynamic_cast<const WifiNetDevice *> (PeekPointer (*i));
-      if (wifiNetDev == NULL)
-        return false;
-    MeshWifiInterfaceMac * mac = dynamic_cast<MeshWifiInterfaceMac *> (PeekPointer (wifiNetDev->GetMac ()));
-    if (mac == NULL)
+    Ptr<WifiNetDevice> wifiNetDev = (*i)->GetObject<WifiNetDevice> ();
+    if (wifiNetDev == 0)
+      return false;
+    Ptr<MeshWifiInterfaceMac>  mac = wifiNetDev->GetMac ()->GetObject<MeshWifiInterfaceMac> ();
+    if (mac == 0)
       return false;
     Ptr<PeerManagerMacPlugin> peerPlugin = Create<PeerManagerMacPlugin> ((*i)->GetIfIndex(), this);
     mac->InstallPlugin(peerPlugin);
@@ -465,6 +465,12 @@ Mac48Address
 PeerManagementProtocol::GetAddress ()
 {
   return m_address;
+}
+void
+PeerManagementProtocol::Report (std::ostream & os) const
+{
+  for(PeerManagerPluginMap::const_iterator plugins = m_plugins.begin (); plugins != m_plugins.end (); plugins ++)
+    plugins->second->Report (os);
 }
 } // namespace dot11s
 } //namespace ns3

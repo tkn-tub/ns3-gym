@@ -78,18 +78,9 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     WifiMeshActionHeader::ActionValue actionValue = actionHdr.GetAction ();
     // If can not handle - just return;
     if(actionHdr.GetCategory () != WifiMeshActionHeader::MESH_PEER_LINK_MGT)
-    {
-      if(m_protocol->IsActiveLink(m_ifIndex,header.GetAddr2()))
-      {
-        m_stats.received ++;
-        return true;
-      }
-      else
-      {
-        m_stats.dropped ++;
-        return false;
-      }
-    }
+      return m_protocol->IsActiveLink(m_ifIndex,header.GetAddr2());
+    m_stats.recvMgt ++;
+    m_stats.recvMgtBytes += packet->GetSize ();
     Mac48Address peerAddress = header.GetAddr2 ();
     Mac48Address peerMpAddress = header.GetAddr3 ();
     PeerLinkFrameStart::PlinkFrameStartFields fields;
@@ -143,19 +134,10 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     // if we can handle a frame - drop it
     return false;
   }
-  if(m_protocol->IsActiveLink(m_ifIndex,header.GetAddr2()))
-  {
-    m_stats.received ++;
-    return true;
-  }
-  else
-  {
-    m_stats.dropped ++;
-    return false;
-  }
+  return m_protocol->IsActiveLink(m_ifIndex,header.GetAddr2());
 }
 bool
-PeerManagerMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const
+PeerManagerMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to)
 {
   if(header.IsAction ())
   {
@@ -168,7 +150,15 @@ PeerManagerMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & 
   if(header.GetAddr1 ().IsGroup ())
     return true;
   else
-    return m_protocol->IsActiveLink(m_ifIndex,header.GetAddr1());
+  {
+    if(m_protocol->IsActiveLink(m_ifIndex,header.GetAddr1()))
+      return true;
+    else
+    {
+      m_stats.dropped ++;
+      return false;
+    }
+  }
 }
 void
 PeerManagerMacPlugin::UpdateBeacon (MeshWifiBeacon & beacon) const
@@ -226,6 +216,8 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
   plinkFrame.SetPlinkFrameStart(fields);
   packet->AddHeader (plinkFrame);
   packet->AddHeader (actionHdr);
+  m_stats.sentMgt ++;
+  m_stats.sentMgtBytes += packet->GetSize ();
   // Wifi Mac header:
   WifiMacHeader hdr;
   hdr.SetAction ();
@@ -265,34 +257,37 @@ PeerManagerMacPlugin::Statistics::Statistics () :
   recvOpen (0),
   recvConfirm (0),
   recvClose (0),
-  received (0),
   dropped (0),
-  brokenMgt (0)
+  brokenMgt (0),
+  sentMgt (0),
+  sentMgtBytes (0),
+  recvMgt (0),
+  recvMgtBytes (0)
 {
 }
 void
 PeerManagerMacPlugin::Statistics::Print (std::ostream & os) const
 {
-  os << "<Statistics: "
-    "sendOpen= \"" << sendOpen << "\""
-    "sendConfirm=\"" << sendConfirm << "\" "
-    "sendClose=\"" << sendClose << "\" "
-    "recvOpen=\"" << recvOpen << "\" "
-    "recvConfirm=\"" << recvConfirm << "\" "
-    "recvClose=\"" << recvClose << "\" "
-    "received=\"" << received << "\" "
-    "dropped=\"" << dropped << "\" "
-    "brokenMgt=\"" << brokenMgt << "\" "
-    "/>\n";
+  os << "sendOpen=\"" << sendOpen << "\""
+    "sendConfirm=\"" << sendConfirm << "\""
+    "sendClose=\"" << sendClose << "\""
+    "recvOpen=\"" << recvOpen << "\""
+    "recvConfirm=\"" << recvConfirm << "\""
+    "recvClose=\"" << recvClose << "\""
+    "dropped=\"" << dropped << "\""
+    "brokenMgt=\"" << brokenMgt << "\""
+    "sentMgt=\"" << sentMgt << "\""
+    "sentMgtBytes=\"" << sentMgtBytes << "\""
+    "recvMgt=\"" << recvMgt << "\""
+    "recvMgtBytes=\"" << recvMgtBytes << "\"\n";
 }
 void
 PeerManagerMacPlugin::Report (std::ostream & os) const
 {
-  os << "<Peer Management Protocol Mac "
-    "index=\"" << m_ifIndex << "\" "
-    ">\n";
+  os << "<PMP-MAC "
+    "index=\"" << m_ifIndex << "\">\n";
   m_stats.Print (os);
-  os << "<PMP MAC>\n";
+  os << "</PMP MAC>\n";
 }
 } // namespace dot11s
 } //namespace ns3

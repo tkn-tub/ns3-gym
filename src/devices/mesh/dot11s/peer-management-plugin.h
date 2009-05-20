@@ -48,7 +48,7 @@ public:
   ///\{
   void SetParent (Ptr<MeshWifiInterfaceMac> parent);
   bool Receive (Ptr<Packet> packet, const WifiMacHeader & header);
-  bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const;
+  bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to);
   void UpdateBeacon (MeshWifiBeacon & beacon) const;
   void Report (std::ostream &) const;
   ///\}
@@ -106,7 +106,6 @@ private:
     uint16_t recvOpen;
     uint16_t recvConfirm;
     uint16_t recvClose;
-    uint16_t received;
     uint16_t dropped;
     uint16_t brokenMgt;
     uint16_t sentMgt;

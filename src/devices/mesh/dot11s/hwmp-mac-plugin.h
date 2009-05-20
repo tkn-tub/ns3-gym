@@ -50,7 +50,7 @@ public:
   //\{
   void SetParent (Ptr<MeshWifiInterfaceMac> parent);
   bool Receive (Ptr<Packet> packet, const WifiMacHeader & header);
-  bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const;
+  bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to);
   /// Update beacon is empty, because HWMP does not know anything about beacons
   void UpdateBeacon (MeshWifiBeacon & beacon) const {};
   //\}
@@ -79,6 +79,8 @@ private:
   //peer as routing entry
   uint32_t GetLinkMetric (Mac48Address peerAddress) const;
   uint16_t GetChannelId () const;
+  ///\brief Statistics:
+  void Report (std::ostream &) const;
 private:
   Ptr<MeshWifiInterfaceMac> m_parent;
   uint32_t m_ifIndex;
@@ -99,37 +101,41 @@ private:
   MyPerr m_myPerr;
   ///\name Statistics:
   ///\{
-    struct Statistics
-    {
-      uint16_t sentPreq;
-      uint16_t recvPreq;
-      uint16_t sentPrep;
-      uint16_t recvPrep;
-      uint16_t sentPerr;
-      uint16_t recvPerr;
-      uint16_t sentMgt;
-      uint32_t sentMgtBytes;
-      uint16_t recvMgt;
-      uint32_t recvMgtBytes;
-      uint16_t sentData;
-      uint32_t sentDataBytes;
-      
-      void Print (std::ostream & os) const;
-      Statistics () : 
-        sentPreq (0), 
-        recvPreq (0),
-        sentPrep (0),
-        recvPrep (0),
-        sentPerr (0),
-        recvPerr (0),
-        sentMgt (0),
-        sentMgtBytes (0),
-        recvMgt (0),
-        recvMgtBytes (0),
-        sentData (0),
-        sentDataBytes (0)
+  struct Statistics
+  {
+    uint16_t sentPreq;
+    uint16_t recvPreq;
+    uint16_t sentPrep;
+    uint16_t recvPrep;
+    uint16_t sentPerr;
+    uint16_t recvPerr;
+    uint16_t sentMgt;
+    uint32_t sentMgtBytes;
+    uint16_t recvMgt;
+    uint32_t recvMgtBytes;
+    uint16_t sentData;
+    uint32_t sentDataBytes;
+    uint16_t recvData;
+    uint32_t recvDataBytes;
+    void Print (std::ostream & os) const;
+    Statistics () : 
+      sentPreq (0), 
+      recvPreq (0),
+      sentPrep (0),
+      recvPrep (0),
+      sentPerr (0),
+      recvPerr (0),
+      sentMgt (0),
+      sentMgtBytes (0),
+      recvMgt (0),
+      recvMgtBytes (0),
+      sentData (0),
+      sentDataBytes (0),
+      recvData (0),
+      recvDataBytes (0)
       {}
-    };
+  };
+  Statistics m_stats;
   ///\}
 };
 } //namespace dot11s

@@ -60,6 +60,8 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
       NS_ASSERT (false);
     }
     packet->RemoveHeader(meshHdr);
+    m_stats.recvData ++;
+    m_stats.recvDataBytes += packet->GetSize ();
     //TODO: address extension
     Mac48Address destination;
     switch (meshHdr.GetAddressExt ())
@@ -85,6 +87,8 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
   }
   if(header.IsAction())
   {
+    m_stats.recvMgt ++;
+    m_stats.recvMgtBytes += packet->GetSize ();
     WifiMeshActionHeader actionHdr;
     packet->RemoveHeader (actionHdr);
     WifiMeshActionHeader::ActionValue actionValue = actionHdr.GetAction ();
@@ -95,6 +99,7 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
       case WifiMeshActionHeader::PATH_REQUEST:
         {
           IePreq preq;
+          m_stats.recvPreq ++;
           packet->RemoveHeader (preq);
           if(preq.GetOriginatorAddress () == m_protocol->GetAddress ())
             return false;
@@ -107,6 +112,7 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
       case WifiMeshActionHeader::PATH_REPLY:
         {
           IePrep prep;
+          m_stats.recvPrep ++;
           packet->RemoveHeader (prep);
           if(prep.GetTtl () == 0)
             return false;
@@ -117,6 +123,7 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
       case WifiMeshActionHeader::PATH_ERROR:
         {
           IePerr perr;
+          m_stats.recvPerr ++;
           packet->RemoveHeader (perr);
           m_protocol->ReceivePerr (perr, header.GetAddr2 (), m_ifIndex, header.GetAddr3 ());
           return false;
@@ -128,9 +135,8 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
   return true;
 }
 bool
-HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const
+HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to)
 {
-  //TODO: add a mesh header and remove a TAG
   if(!header.IsData ())
     return true;
   HwmpTag tag;
@@ -140,7 +146,8 @@ HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header,
      //do it this way to silence compiler
      NS_ASSERT (false);
   }
-  
+  m_stats.sentData ++;
+  m_stats.sentDataBytes += packet->GetSize ();
   MeshHeader meshHdr;
   meshHdr.SetMeshSeqno(tag.GetSeqno());
   meshHdr.SetMeshTtl(tag.GetTtl());
@@ -206,6 +213,9 @@ HwmpMacPlugin::SendOnePreq ()
   for(std::vector<Mac48Address>::const_iterator i = receivers.begin (); i != receivers.end (); i ++)
   {
     hdr.SetAddr1 (*i);
+    m_stats.sentPreq ++;
+    m_stats.sentMgt ++;
+    m_stats.sentMgtBytes += packet->GetSize ();
     m_parent->SendManagementFrame(packet, hdr);
   }
   //erase queue
@@ -242,6 +252,9 @@ HwmpMacPlugin::SendOnePerr()
   for(std::vector<Mac48Address>::const_iterator i = m_myPerr.receivers.begin (); i != m_myPerr.receivers.end (); i ++)
   {
     hdr.SetAddr1 (*i);
+    m_stats.sentPerr ++;
+    m_stats.sentMgt ++;
+    m_stats.sentMgtBytes += packet->GetSize ();
     m_parent->SendManagementFrame(packet, hdr);
   }
   m_myPerr.perr.ResetPerr ();
@@ -268,6 +281,9 @@ HwmpMacPlugin::SendPrep (IePrep prep, Mac48Address receiver)
   hdr.SetAddr2 (m_parent->GetAddress ());
   hdr.SetAddr3 (m_protocol->GetAddress ());
   //Send Management frame
+  m_stats.sentPrep ++;
+  m_stats.sentMgt ++;
+  m_stats.sentMgtBytes += packet->GetSize ();
   m_parent->SendManagementFrame(packet, hdr);
 }
 void
@@ -294,6 +310,31 @@ uint16_t
 HwmpMacPlugin::GetChannelId () const
 {
   return m_parent->GetFrequencyChannel ();
+}
+void
+HwmpMacPlugin::Statistics::Print (std::ostream & os) const
+{
+  os <<"sentPreq= \"" << sentPreq << "\""
+    "sentPrep=\"" << sentPrep << "\""
+    "sentPerr=\"" << sentPerr << "\""
+    "recvPreq=\"" << recvPreq << "\""
+    "recvPrep=\"" << recvPrep << "\""
+    "recvPerr=\"" << recvPerr << "\""
+    "sentMgt=\"" << sentMgt << "\""
+    "sentMgtBytes=\"" << sentMgtBytes  / 1024 << "K\""
+    "recvMgt=\"" << recvMgt << "\""
+    "recvMgtBytes=\"" << recvMgtBytes / 1204 << "K\""
+    "sentData=\"" << sentData << "\""
+    "sentDataBytes=\"" << sentDataBytes / 1024 << "K\""
+    "recvData=\"" << recvData << "\""
+    "recvDataBytes=\"" << recvDataBytes / 1024 << "K\"\n";
+}
+void
+HwmpMacPlugin::Report (std::ostream & os) const
+{
+  os << "<HwmpMacPlugin index=\""<< m_ifIndex <<"\">\n";
+  m_stats.Print(os);
+  os << "</HwmpMacPlugin>\n";
 }
 } //namespace dot11s
 }//namespace ns3

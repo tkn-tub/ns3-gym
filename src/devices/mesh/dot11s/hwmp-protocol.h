@@ -148,7 +148,7 @@ private:
     uint16_t totalDropped;
 
     void Print (std::ostream & os) const;
-    Statistics () : forwardedUnicast (0), forwardedBroadcast (0), totalQueued (0), totalDropped (0) {}
+    Statistics () : forwardedUnicast (0), forwardedBroadcast (0), forwardedBytes (0), totalQueued (0), totalDropped (0) {}
   };
   Statistics m_stats;
   ///\}

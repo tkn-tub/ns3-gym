@@ -58,7 +58,7 @@ public:
    * \return false if (and only if) frame should be dropped
    * TODO define when MAC call this, preconditions & postconditions
    */
-  virtual bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) const = 0;
+  virtual bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) = 0;
   /**
    * \brief Update beacon before it will be formed and sent
    *  

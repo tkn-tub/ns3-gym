@@ -225,6 +225,8 @@ HwmpProtocol::RequestRoute (
   }
   if (destination == Mac48Address::GetBroadcast ())
   {
+    m_stats.forwardedBroadcast ++;
+    m_stats.forwardedBytes += packet->GetSize ();
     //channel IDs where we have already sent broadcast:
     std::vector<uint16_t> channels;
     for(HwmpPluginMap::const_iterator plugin = m_interfaces.begin (); plugin != m_interfaces.end (); plugin ++)
@@ -595,11 +597,11 @@ HwmpProtocol::Install (Ptr<MeshPointDevice> mp)
   for (std::vector<Ptr<NetDevice> >::const_iterator i = interfaces.begin (); i != interfaces.end(); i++)
     {
       // Checking for compatible net device
-      const WifiNetDevice * wifiNetDev = dynamic_cast<const WifiNetDevice *> (PeekPointer (*i));
-      if (wifiNetDev == NULL)
+      Ptr<WifiNetDevice> wifiNetDev = (*i)->GetObject<WifiNetDevice> ();
+      if (wifiNetDev == 0)
         return false;
-      MeshWifiInterfaceMac * mac = dynamic_cast<MeshWifiInterfaceMac *> (PeekPointer (wifiNetDev->GetMac ()));
-      if (mac == NULL)
+      Ptr<MeshWifiInterfaceMac>  mac = wifiNetDev->GetMac ()->GetObject<MeshWifiInterfaceMac> ();
+      if (mac == 0)
         return false;
       // Installing plugins:
       Ptr<HwmpMacPlugin> hwmpMac = Create<HwmpMacPlugin> (wifiNetDev->GetIfIndex (), this);
@@ -761,6 +763,8 @@ HwmpProtocol::ReactivePathResolved (Mac48Address dst)
     packet.pkt->RemovePacketTag(tag);
     tag.SetAddress (result.retransmitter);
     packet.pkt->AddPacketTag (tag);
+    m_stats.forwardedUnicast ++;
+    m_stats.forwardedBytes += packet.pkt->GetSize ();
     packet.reply (true, packet.pkt, packet.src, packet.dst, packet.protocol, result.ifIndex);
   }
 }
@@ -781,9 +785,10 @@ HwmpProtocol::ProactivePathResolved ()
     NS_ASSERT (packet.pkt->PeekPacketTag(tag));
     tag.SetAddress (result.retransmitter);
     packet.pkt->AddPacketTag (tag);
+    m_stats.forwardedUnicast ++;
+    m_stats.forwardedBytes += packet.pkt->GetSize ();
     packet.reply (true, packet.pkt, packet.src, packet.dst, packet.protocol, result.ifIndex);
   }
-
 }
 
 bool
@@ -931,20 +936,24 @@ HwmpProtocol::GetAddress ()
 //Statistics:
 void HwmpProtocol::Statistics::Print (std::ostream & os) const
 {
-  os << "<Statistics: "
-    "forwardedUnicast= \"" << forwardedUnicast << "\""
-    "forwardedBroadcast= \"" << forwardedBroadcast << "\""
-    "totalQueued= \"" << totalQueued << "\""
-    "totalDropped= \"" << totalDropped << "\"";
+  os << "forwardedUnicast=\"" << forwardedUnicast << "\""
+    "forwardedBroadcast=\"" << forwardedBroadcast << "\""
+    "forwardedBytes=\"" << forwardedBytes / 1024 << "K\""
+    "totalQueued=\"" << totalQueued << "\""
+    "totalDropped=\"" << totalDropped << "\"\n";
 }
 void
 HwmpProtocol::Report (std::ostream & os) const
 {
-  os << "<HWMP Protocol"
+  os << "<Hwmp>\n"
     "address=\"" << m_address << "\" "
-    ">\n";
+    "\n";
   m_stats.Print (os);
-  os << "<HWMP>\n";
+  for(HwmpPluginMap::const_iterator plugin = m_interfaces.begin (); plugin != m_interfaces.end (); plugin ++)
+  {
+    plugin->second->Report(os);
+  }
+  os << "</Hwmp>\n";
 }
 } //namespace dot11s
 } //namespace ns3
