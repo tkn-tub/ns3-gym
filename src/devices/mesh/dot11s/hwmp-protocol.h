@@ -75,6 +75,7 @@ public:
   ///\}
   ///\brief Statistics:
   void Report (std::ostream &) const;
+  void ResetStats ();
 private:
   friend class HwmpMacPlugin;
   

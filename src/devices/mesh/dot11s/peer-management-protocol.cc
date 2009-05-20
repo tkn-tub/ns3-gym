@@ -455,9 +455,15 @@ PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAdd
        ", at my interface ID:" << interface <<
        ". Status:" << status);
    if(status)
+   {
+     m_stats.linksOpened ++;
      m_numberOfActivePeers ++;
+   }
    else
+   {
+     m_stats.linksClosed ++;
      m_numberOfActivePeers --;
+   }
    if(!m_peerStatusCallback.IsNull ())
      m_peerStatusCallback (peerMeshPointAddress, peerAddress, interface, status);
 }
@@ -467,11 +473,26 @@ PeerManagementProtocol::GetAddress ()
   return m_address;
 }
 void
+PeerManagementProtocol::Statistics::Print (std::ostream & os) const
+{
+os << "linksOpened=\"" << linksOpened << "\""
+    "linksClosed=\"" << linksClosed << "\"\n";
+}
+void
 PeerManagementProtocol::Report (std::ostream & os) const
 {
+  os << "<PMP>\n";
+  m_stats.Print (os);
   for(PeerManagerPluginMap::const_iterator plugins = m_plugins.begin (); plugins != m_plugins.end (); plugins ++)
     plugins->second->Report (os);
+  os << "</PMP>\n";
 }
+void
+PeerManagementProtocol::ResetStats ()
+{
+  m_stats = Statistics::Statistics ();
+}
+
 } // namespace dot11s
 } //namespace ns3
 

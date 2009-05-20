@@ -955,5 +955,11 @@ HwmpProtocol::Report (std::ostream & os) const
   }
   os << "</Hwmp>\n";
 }
+void
+HwmpProtocol::ResetStats ()
+{
+  m_stats = Statistics::Statistics ();
+}
+
 } //namespace dot11s
 } //namespace ns3

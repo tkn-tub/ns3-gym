@@ -336,5 +336,11 @@ HwmpMacPlugin::Report (std::ostream & os) const
   m_stats.Print(os);
   os << "</HwmpMacPlugin>\n";
 }
+void
+HwmpMacPlugin::ResetStats ()
+{
+  m_stats = Statistics::Statistics ();
+}
+
 } //namespace dot11s
 }//namespace ns3

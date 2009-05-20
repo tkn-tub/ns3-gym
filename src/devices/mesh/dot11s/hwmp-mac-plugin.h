@@ -81,6 +81,7 @@ private:
   uint16_t GetChannelId () const;
   ///\brief Statistics:
   void Report (std::ostream &) const;
+  void ResetStats ();
 private:
   Ptr<MeshWifiInterfaceMac> m_parent;
   uint32_t m_ifIndex;

@@ -136,7 +136,7 @@ public:
   Mac48Address GetAddress ();
   ///\brief: Report statistics
   void Report (std::ostream &) const;
-
+  void ResetStats ();
 private:
   /** \name Private structures
    * \{
@@ -215,6 +215,17 @@ private:
   ///\param bool is staus - true when new link has appeared, false -
   //when link was closed
   Callback <void, Mac48Address, Mac48Address, uint32_t, bool> m_peerStatusCallback;
+  ///\}
+  //Keeps statistics
+  struct Statistics {
+    uint16_t linksOpened;
+    uint16_t linksClosed;
+
+    Statistics () : linksOpened (0), linksClosed (0) {};
+    void Print (std::ostream & os) const;
+  };
+  struct Statistics m_stats;
+
 };
   
 } // namespace dot11s

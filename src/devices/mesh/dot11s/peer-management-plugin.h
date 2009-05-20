@@ -50,8 +50,10 @@ public:
   bool Receive (Ptr<Packet> packet, const WifiMacHeader & header);
   bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to);
   void UpdateBeacon (MeshWifiBeacon & beacon) const;
-  void Report (std::ostream &) const;
   ///\}
+  ///\brief Statistics:
+  void Report (std::ostream &) const;
+  void ResetStats ();
 private:
   friend class PeerManagementProtocol;
   friend class PeerLink; 
@@ -112,6 +114,7 @@ private:
     uint32_t sentMgtBytes;
     uint16_t recvMgt;
     uint32_t recvMgtBytes;
+    uint16_t beaconShift;
     
     Statistics ();
     void Print (std::ostream & os) const;

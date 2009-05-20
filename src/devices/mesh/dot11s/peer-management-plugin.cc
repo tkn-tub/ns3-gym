@@ -248,6 +248,8 @@ PeerManagerMacPlugin::GetBeaconInfo() const
 void
 PeerManagerMacPlugin::SetBeaconShift(Time shift)
 {
+  if(shift != Seconds (0))
+    m_stats.beaconShift ++;
   m_parent->ShiftTbtt (shift);
 }
 PeerManagerMacPlugin::Statistics::Statistics () :
@@ -262,7 +264,8 @@ PeerManagerMacPlugin::Statistics::Statistics () :
   sentMgt (0),
   sentMgtBytes (0),
   recvMgt (0),
-  recvMgtBytes (0)
+  recvMgtBytes (0),
+  beaconShift (0)
 {
 }
 void
@@ -279,7 +282,8 @@ PeerManagerMacPlugin::Statistics::Print (std::ostream & os) const
     "sentMgt=\"" << sentMgt << "\""
     "sentMgtBytes=\"" << sentMgtBytes << "\""
     "recvMgt=\"" << recvMgt << "\""
-    "recvMgtBytes=\"" << recvMgtBytes << "\"\n";
+    "recvMgtBytes=\"" << recvMgtBytes << "\""
+    "beaconShift=\"" << beaconShift << "\"\n";
 }
 void
 PeerManagerMacPlugin::Report (std::ostream & os) const
@@ -288,6 +292,11 @@ PeerManagerMacPlugin::Report (std::ostream & os) const
     "index=\"" << m_ifIndex << "\">\n";
   m_stats.Print (os);
   os << "</PMP MAC>\n";
+}
+void
+PeerManagerMacPlugin::ResetStats ()
+{
+  m_stats = Statistics::Statistics ();
 }
 } // namespace dot11s
 } //namespace ns3
