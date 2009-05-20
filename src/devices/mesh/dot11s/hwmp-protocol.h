@@ -73,6 +73,8 @@ public:
   void SetRoot ();
   void UnsetRoot ();
   ///\}
+  ///\brief Statistics:
+  void Report (std::ostream &) const;
 private:
   friend class HwmpMacPlugin;
   
@@ -135,7 +137,21 @@ private:
   void ReactivePathResolved (Mac48Address dst);
   void ProactivePathResolved ();
   //\}
-  
+  ///\name Statistics:
+  ///\{
+  struct Statistics
+  {
+    uint16_t forwardedUnicast;
+    uint16_t forwardedBroadcast;
+    uint32_t forwardedBytes;
+    uint16_t totalQueued;
+    uint16_t totalDropped;
+
+    void Print (std::ostream & os) const;
+    Statistics () : forwardedUnicast (0), forwardedBroadcast (0), totalQueued (0), totalDropped (0) {}
+  };
+  Statistics m_stats;
+  ///\}
   ///\name Methods responsible for path discovery retry procedure:
   //\{
   /** 

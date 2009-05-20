@@ -209,11 +209,7 @@ HwmpProtocol::RequestRoute (
     }
     //Filling TAG:
     if(destination == Mac48Address::GetBroadcast ())
-    {
       tag.SetSeqno (m_dataSeqno++);
-      if (m_dataSeqno == 0xffffffff)
-        m_dataSeqno = 0;
-    }
     tag.SetTtl (m_maxTtl+1);
   }
   else
@@ -272,6 +268,8 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
   {
     //reply immediately:
     routeReply (true, packet, source, destination, protocolType, result.ifIndex);
+    m_stats.forwardedUnicast ++;
+    m_stats.forwardedBytes += packet->GetSize ();
     return true;
   }
   if (sourceIface != GetMeshPoint ()->GetIfIndex())
@@ -291,6 +289,7 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
       std::vector<IePerr::FailedDestination> destinations = m_rtable->GetUnreachableDestinations (result.retransmitter);
       MakePathError (destinations);
     }
+    m_stats.totalDropped ++;
     return false;
   }
   //Request a destination:
@@ -311,7 +310,13 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
   pkt.protocol = protocolType;
   pkt.reply = routeReply;
   pkt.inInterface = sourceIface;
-  return QueuePacket (pkt);
+  if(QueuePacket (pkt))
+    return true;
+  else
+  {
+    m_stats.totalDropped ++;
+    return false;
+  }
 }
 void
 HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric)
@@ -817,6 +822,7 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
           packet = DequeueFirstPacketByDst (dst);
           if (packet.pkt == NULL)
             break;
+          m_stats.totalDropped ++;
           packet.reply (false, packet.pkt, packet.src, packet.dst, packet.protocol, HwmpRtable::MAX_METRIC);
         }
       std::map<Mac48Address, EventId>::iterator i = m_preqTimeouts.find (dst);
@@ -857,8 +863,6 @@ HwmpProtocol::SendProactivePreq ()
   //By default: must answer
   preq.SetHopcount (0);
   preq.SetTTL (m_maxTtl);
-  if (m_preqId == 0xffffffff)
-    m_preqId = 0;
   preq.SetLifetime (m_dot11MeshHWMPactiveRootTimeout.GetMicroSeconds () /1024);
   //\attention: do not forget to set originator address, sequence
   //number and preq ID in HWMP-MAC plugin
@@ -899,8 +903,6 @@ uint32_t
 HwmpProtocol::GetNextPreqId ()
 {
   m_preqId ++;
-  if(m_preqId == 0xffffffff)
-    m_preqId = 0;
   return m_preqId;
 }
 uint32_t
@@ -925,6 +927,24 @@ Mac48Address
 HwmpProtocol::GetAddress ()
 {
   return m_address;
+}
+//Statistics:
+void HwmpProtocol::Statistics::Print (std::ostream & os) const
+{
+  os << "<Statistics: "
+    "forwardedUnicast= \"" << forwardedUnicast << "\""
+    "forwardedBroadcast= \"" << forwardedBroadcast << "\""
+    "totalQueued= \"" << totalQueued << "\""
+    "totalDropped= \"" << totalDropped << "\"";
+}
+void
+HwmpProtocol::Report (std::ostream & os) const
+{
+  os << "<HWMP Protocol"
+    "address=\"" << m_address << "\" "
+    ">\n";
+  m_stats.Print (os);
+  os << "<HWMP>\n";
 }
 } //namespace dot11s
 } //namespace ns3

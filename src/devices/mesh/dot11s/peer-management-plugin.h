@@ -109,6 +109,10 @@ private:
     uint16_t received;
     uint16_t dropped;
     uint16_t brokenMgt;
+    uint16_t sentMgt;
+    uint32_t sentMgtBytes;
+    uint16_t recvMgt;
+    uint32_t recvMgtBytes;
     
     Statistics ();
     void Print (std::ostream & os) const;
