@@ -30,7 +30,6 @@
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/aarf-wifi-manager.h"
 #include "airtime-metric.h"
-#include "ns3/log.h"
 namespace ns3 {
 namespace dot11s {
 
@@ -159,7 +158,6 @@ MeshWifiHelper::Install (const WifiPhyHelper &phy, Ptr<Node> node,  std::vector<
 void
 MeshWifiHelper::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os)
 {
-  NS_LOG_UNCOND("Report must be here:");
   Ptr <MeshPointDevice> mp = device->GetObject<MeshPointDevice> ();
   NS_ASSERT (mp != 0);
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
@@ -175,6 +173,7 @@ MeshWifiHelper::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os
       "BeaconInterval=\"" << mac->GetBeaconInterval ().GetSeconds() << "s\" "
       "Channel=\"" << mac->GetFrequencyChannel () << "\" "
       "/>\n";
+    mac->Report(os);
   }
   os << "</MeshPointDevice>\n";
   Ptr <HwmpProtocol> hwmp = mp->GetObject<HwmpProtocol> ();

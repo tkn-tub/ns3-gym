@@ -375,7 +375,8 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
 {
   // copy packet to allow modifications
   Ptr<Packet> packet = const_packet->Copy ();
-
+  m_stats.sentFrames ++;
+  m_stats.sentBytes += packet->GetSize ();
   WifiMacHeader hdr;
   hdr.SetTypeData ();
   hdr.SetAddr2 (GetAddress ());
@@ -563,6 +564,7 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
     return;
   if (hdr->IsBeacon ())
     {
+      m_stats.recvBeacons ++;
       MgtBeaconHeader beacon_hdr;
       Mac48Address from = hdr->GetAddr2 ();
 
@@ -591,6 +593,11 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
           }
         }
     }
+  else
+  {
+    m_stats.recvBytes += packet->GetSize ();
+    m_stats.recvFrames ++;
+  }
   // Filter frame through all installed plugins
   for (PluginList::iterator i = m_plugins.begin (); i != m_plugins.end(); ++i)
     {
@@ -635,7 +642,29 @@ MeshWifiInterfaceMac::GetMeshPointAddress () const
 {
   return m_mpAddress;
 }
-
-
+//Statistics:
+void
+MeshWifiInterfaceMac::Statistics::Print (std::ostream & os) const
+{
+  os << "recvBeacons=\"" << recvBeacons << "\""
+    "sentFrames=\"" << sentFrames << "\""
+    "sentBytes=\"" << sentBytes / 1024 << "K\""
+    "recvFrames=\"" << recvFrames << "\""
+    "recvBytes=\"" << recvBytes / 1024 << "K\"\n";
+}
+void
+MeshWifiInterfaceMac::Report (std::ostream & os) const
+{
+  os << "<Interface>\n"
+    "address=\"" << m_address << "\" "
+    "\n";
+  m_stats.Print (os);
+  os << "</Interface>\n";
+}
+void
+MeshWifiInterfaceMac::ResetStats ()
+{
+  m_stats = Statistics::Statistics ();
+}
 } // namespace ns3
 

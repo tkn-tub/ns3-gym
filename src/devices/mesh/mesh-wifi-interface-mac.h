@@ -157,6 +157,9 @@ public:
   uint32_t GetLinkMetric(Mac48Address peerAddress);
   Ptr<WifiRemoteStationManager> GetStationManager ();
   ///\}
+  ///\brief Statistics:
+  void Report (std::ostream &) const;
+  void ResetStats ();
 private:
   /// Frame receive handler
   void  Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
@@ -228,6 +231,27 @@ private:
   /// List of all installed plugins
   PluginList m_plugins;
   Callback<uint32_t, Mac48Address, Ptr<MeshWifiInterfaceMac> > m_linkMetricCallback;
+  ///\name Statistics:
+  ///\{
+  struct Statistics
+  {
+    uint16_t recvBeacons;
+    uint32_t sentFrames;
+    uint32_t sentBytes;
+    uint32_t recvFrames;
+    uint32_t recvBytes;
+    void Print (std::ostream & os) const;
+    Statistics () :
+      recvBeacons (0),
+      sentFrames (0),
+      sentBytes (0),
+      recvFrames (0),
+      recvBytes (0)
+      {}
+  };
+  Statistics m_stats;
+  ///\}
+
 };
 
 } // namespace ns3

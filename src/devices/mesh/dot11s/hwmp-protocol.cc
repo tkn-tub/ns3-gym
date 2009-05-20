@@ -313,7 +313,10 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
   pkt.reply = routeReply;
   pkt.inInterface = sourceIface;
   if(QueuePacket (pkt))
+  {
+    m_stats.totalQueued ++;
     return true;
+  }
   else
   {
     m_stats.totalDropped ++;
