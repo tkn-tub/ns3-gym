@@ -27,31 +27,72 @@
 #include "ns3/wifi-module.h"
 #include "ns3/mesh-module.h"
 #include "ns3/mobility-module.h"
-
 #include "ns3/dot11s-helper.h"
+
+#include <iostream>
+#include <sstream>
+#include <fstream>
 
 using namespace ns3;
 using namespace dot11s;
 
 NS_LOG_COMPONENT_DEFINE ("TestMeshScript");
-
-int
-main (int argc, char *argv[])
+class MeshTest
 {
-  // Creating square topology with xSize x ySize grid
-  int       xSize           = 3;
-  int       ySize           = 3;
-  double    step            = 100.0;
-  double    randomStart     = 0.1;
-  double    totalTime       = 100.0;
-  double    packetInterval  = 0.1;
-  uint16_t  packetSize      = 1024;
-  uint32_t  nIfaces         = 1;
-  bool      chan            = true;
-  bool      pcap            = false;
-  uint64_t  seed            = 1;
-  
-  // Command line arguments
+  public:
+    /// Init test
+    MeshTest ();
+    /// Configure test from command line arguments
+    void Configure (int argc, char ** argv);
+    /// Run test
+    int Run ();
+  private:
+    int       xSize;
+    int       ySize;
+    double    step;
+    double    randomStart;
+    double    totalTime;
+    double    packetInterval;
+    uint16_t  packetSize;
+    uint32_t  nIfaces;
+    bool      chan;
+    bool      pcap;
+    uint64_t  seed;
+    /// List of network nodes
+    NodeContainer nodes;
+    /// List of all mesh point devices
+    NetDeviceContainer meshDevices;
+    //Addresses of interfaces:
+    Ipv4InterfaceContainer interfaces;
+    //InternetStackHelper stack;
+    //Ipv4AddressHelper address;
+  private:
+    /// Create nodes and setup theis mobility
+    void CreateNodes ();
+    /// Install internet stack on nodes
+    void InstallInternetStack ();
+    /// Install applications
+    void InstallApplication ();
+    /// Print mesh devices diagnostics
+    void Report ();  
+};
+MeshTest::MeshTest () :
+  xSize (3),
+  ySize (3),
+  step (100.0),
+  randomStart (0.1),
+  totalTime (100.0),
+  packetInterval (0.1),
+  packetSize (1024),
+  nIfaces (1),
+  chan (true),
+  pcap (false),
+  seed (1)
+{
+}
+void
+MeshTest::Configure (int argc, char *argv[])
+{
   CommandLine cmd;
   cmd.AddValue ("x-size", "Number of nodes in a row grid. [6]", xSize);
   cmd.AddValue ("y-size", "Number of rows in a grid. [6]", ySize);
@@ -69,23 +110,22 @@ main (int argc, char *argv[])
   NS_LOG_DEBUG ("Grid:" << xSize << "*" << ySize);
   NS_LOG_DEBUG ("Simulation time: " << totalTime << " s");
   SeedManager::SetSeed(seed);
-  // Creating nodes
-  NodeContainer nodes;
+}
+void
+MeshTest::CreateNodes ()
+{ 
   nodes.Create (ySize*xSize);
-
   // Setting channel
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
-  
   // Install mesh point devices & protocols
   MeshWifiHelper mesh;
   mesh.SetSpreadInterfaceChannels (chan);
   std::vector<uint32_t> roots;
   //roots.push_back(xSize-1);
   //roots.push_back(xSize*ySize-xSize);
-  NetDeviceContainer meshDevices = mesh.Install (wifiPhy, nodes, roots, nIfaces);
-  
+  meshDevices = mesh.Install (wifiPhy, nodes, roots, nIfaces);
   // Setup mobility
   MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
@@ -97,17 +137,21 @@ main (int argc, char *argv[])
                                  "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (nodes);
-  
-  NS_LOG_UNCOND("start");
-  
-  // Install internet stack
+  if (pcap)
+    wifiPhy.EnablePcapAll (std::string ("mp-") + mesh.GetSsid ().PeekString ());
+}
+void
+MeshTest::InstallInternetStack ()
+{
   InternetStackHelper stack;
   stack.Install (nodes);
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer interfaces = address.Assign (meshDevices);
-  
-  // Install applications
+  interfaces = address.Assign (meshDevices);
+}
+void
+MeshTest::InstallApplication ()
+{
   UdpEchoServerHelper echoServer (9);
   ApplicationContainer serverApps = echoServer.Install (nodes.Get (0));
   serverApps.Start (Seconds (0.0));
@@ -119,14 +163,44 @@ main (int argc, char *argv[])
   ApplicationContainer clientApps = echoClient.Install (nodes.Get (xSize*ySize-1));
   clientApps.Start (Seconds (0.0));
   clientApps.Stop (Seconds (totalTime));
-  
-  // Enable PCAP trace
-  if (pcap)
-      wifiPhy.EnablePcapAll (std::string ("mp-") + mesh.GetSsid ().PeekString ());
-  
-  // Happy end
+}
+int
+MeshTest::Run ()
+{
+  CreateNodes ();
+  InstallInternetStack ();
+  InstallApplication ();
+  Simulator::Schedule (Seconds(totalTime), & MeshTest::Report, this);
   Simulator::Stop (Seconds (totalTime));
   Simulator::Run ();
   Simulator::Destroy ();
   return 0;
+}
+void
+MeshTest::Report ()
+{
+  NS_LOG_UNCOND("Report is here:");
+  unsigned n (0);
+  for (NetDeviceContainer::Iterator i = meshDevices.Begin (); i != meshDevices.End (); ++i, ++n)
+  {
+    std::ostringstream os;
+    os << "mp-report-" << n << ".xml";
+    std::cerr << "Printing mesh point device #" << n << " diagnostics to " << os.str () << "\n";
+    std::ofstream of;
+    of.open (os.str().c_str());
+    if (! of.is_open ())
+    {
+      std::cerr << "Error: Can't open file " << os.str() << "\n";
+      return;
+    }
+    MeshWifiHelper::Report (*i, of);
+    of.close ();
+  }
+}
+int
+main (int argc, char *argv[])
+{
+  MeshTest t; 
+  t.Configure (argc, argv);
+  return t.Run();
 }

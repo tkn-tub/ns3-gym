@@ -30,7 +30,7 @@
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/aarf-wifi-manager.h"
 #include "airtime-metric.h"
-
+#include "ns3/log.h"
 namespace ns3 {
 namespace dot11s {
 
@@ -156,7 +156,11 @@ MeshWifiHelper::Install (const WifiPhyHelper &phy, Ptr<Node> node,  std::vector<
 {
   return Install (phy, NodeContainer (node), roots, nInterfaces);
 }
-  
+void
+MeshWifiHelper::Report (const ns3::Ptr<ns3::NetDevice>&, std::ofstream&)
+{
+  NS_LOG_UNCOND("Report must be here:");
+}
 } // namespace dot11s
 } //namespace ns3
 
