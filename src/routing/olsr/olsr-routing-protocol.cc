@@ -186,7 +186,8 @@ RoutingProtocol::RoutingProtocol ()
   :
   m_helloTimer (Timer::CANCEL_ON_DESTROY),
   m_tcTimer (Timer::CANCEL_ON_DESTROY),
-  m_midTimer (Timer::CANCEL_ON_DESTROY)
+  m_midTimer (Timer::CANCEL_ON_DESTROY),
+  m_queuedMessagesTimer (Timer::CANCEL_ON_DESTROY)
 {}
 
 RoutingProtocol::~RoutingProtocol ()
