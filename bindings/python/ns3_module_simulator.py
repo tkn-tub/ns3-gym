@@ -1,4 +1,4 @@
-from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandlers
+from pybindgen import Module, FileCodeSink, param, retval, cppclass
 
 def register_types(module):
     root_module = module.get_root()
@@ -61,10 +61,6 @@ def register_types(module):
     module.add_class('RealtimeSimulatorImpl', parent=root_module['ns3::SimulatorImpl'])
     ## realtime-simulator-impl.h: ns3::RealtimeSimulatorImpl::SynchronizationMode [enumeration]
     module.add_enum('SynchronizationMode', ['SYNC_BEST_EFFORT', 'SYNC_HARD_LIMIT'], outer_class=root_module['ns3::RealtimeSimulatorImpl'])
-    typehandlers.add_type_alias('ns3::TimeUnit< 2 >', 'ns3::TimeSquare')
-    typehandlers.add_type_alias('ns3::TimeUnit< - 1 >', 'ns3::TimeInvert')
-    typehandlers.add_type_alias('ns3::TimeUnit< 0 >', 'ns3::Scalar')
-    typehandlers.add_type_alias('ns3::TimeUnit< 1 >', 'ns3::Time')
     
     ## Register a nested module for the namespace Config
     

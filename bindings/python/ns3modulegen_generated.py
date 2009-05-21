@@ -1,4 +1,4 @@
-from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandlers
+from pybindgen import Module, FileCodeSink, param, retval, cppclass
 
 
 import pybindgen.settings
