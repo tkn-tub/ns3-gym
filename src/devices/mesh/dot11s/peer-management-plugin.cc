@@ -271,32 +271,38 @@ PeerManagerMacPlugin::Statistics::Statistics () :
 void
 PeerManagerMacPlugin::Statistics::Print (std::ostream & os) const
 {
-  os << "sendOpen=\"" << sendOpen << "\""
-    "sendConfirm=\"" << sendConfirm << "\""
-    "sendClose=\"" << sendClose << "\""
-    "recvOpen=\"" << recvOpen << "\""
-    "recvConfirm=\"" << recvConfirm << "\""
-    "recvClose=\"" << recvClose << "\""
-    "dropped=\"" << dropped << "\""
-    "brokenMgt=\"" << brokenMgt << "\""
-    "sentMgt=\"" << sentMgt << "\""
-    "sentMgtBytes=\"" << sentMgtBytes << "\""
-    "recvMgt=\"" << recvMgt << "\""
-    "recvMgtBytes=\"" << recvMgtBytes << "\""
-    "beaconShift=\"" << beaconShift << "\"\n";
+  os << "<Statistics "
+    "sendOpen=\"" << sendOpen << "\"\n"
+    "sendConfirm=\"" << sendConfirm << "\"\n"
+    "sendClose=\"" << sendClose << "\"\n"
+    "recvOpen=\"" << recvOpen << "\"\n"
+    "recvConfirm=\"" << recvConfirm << "\"\n"
+    "recvClose=\"" << recvClose << "\"\n"
+    "dropped=\"" << dropped << "\"\n"
+    "brokenMgt=\"" << brokenMgt << "\"\n"
+    "sentMgt=\"" << sentMgt << "\"\n"
+    "sentMgtBytes=\"" << (double)sentMgtBytes /1024.0 << "\"\n"
+    "recvMgt=\"" << recvMgt << "\"\n"
+    "recvMgtBytes=\"" << (double)recvMgtBytes / 1024.0 << "K\"\n"
+    "beaconShift=\"" << beaconShift << "\"/>\n";
 }
 void
 PeerManagerMacPlugin::Report (std::ostream & os) const
 {
-  os << "<PMP-MAC "
-    "index=\"" << m_ifIndex << "\">\n";
+  os << "<PeerManagerPlugin "
+    "address=\"" << m_parent->GetAddress () << "\">\n";
   m_stats.Print (os);
-  os << "</PMP MAC>\n";
+  os << "</PeerManagerPlugin>\n";
 }
 void
 PeerManagerMacPlugin::ResetStats ()
 {
   m_stats = Statistics::Statistics ();
+}
+uint32_t
+PeerManagerMacPlugin::GetLinkMetric (Mac48Address peerAddress)
+{
+  return m_parent->GetLinkMetric (peerAddress);
 }
 } // namespace dot11s
 } //namespace ns3

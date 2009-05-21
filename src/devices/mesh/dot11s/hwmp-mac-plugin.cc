@@ -314,25 +314,27 @@ HwmpMacPlugin::GetChannelId () const
 void
 HwmpMacPlugin::Statistics::Print (std::ostream & os) const
 {
-  os <<"sentPreq= \"" << sentPreq << "\""
-    "sentPrep=\"" << sentPrep << "\""
-    "sentPerr=\"" << sentPerr << "\""
-    "recvPreq=\"" << recvPreq << "\""
-    "recvPrep=\"" << recvPrep << "\""
-    "recvPerr=\"" << recvPerr << "\""
-    "sentMgt=\"" << sentMgt << "\""
-    "sentMgtBytes=\"" << sentMgtBytes  / 1024 << "K\""
-    "recvMgt=\"" << recvMgt << "\""
-    "recvMgtBytes=\"" << recvMgtBytes / 1204 << "K\""
-    "sentData=\"" << sentData << "\""
-    "sentDataBytes=\"" << sentDataBytes / 1024 << "K\""
-    "recvData=\"" << recvData << "\""
-    "recvDataBytes=\"" << recvDataBytes / 1024 << "K\"\n";
+  os << "<Statistics "
+    "sentPreq= \"" << sentPreq << "\"\n"
+    "sentPrep=\"" << sentPrep << "\"\n"
+    "sentPerr=\"" << sentPerr << "\"\n"
+    "recvPreq=\"" << recvPreq << "\"\n"
+    "recvPrep=\"" << recvPrep << "\"\n"
+    "recvPerr=\"" << recvPerr << "\"\n"
+    "sentMgt=\"" << sentMgt << "\"\n"
+    "sentMgtBytes=\"" << (double)sentMgtBytes  / 1024.0 << "K\"\n"
+    "recvMgt=\"" << recvMgt << "\"\n"
+    "recvMgtBytes=\"" << (double)recvMgtBytes / 1204.0 << "K\"\n"
+    "sentData=\"" << sentData << "\"\n"
+    "sentDataBytes=\"" << (double)sentDataBytes / 1024.0 << "K\"\n"
+    "recvData=\"" << recvData << "\"\n"
+    "recvDataBytes=\"" << (double)recvDataBytes / 1024.0 << "K\"/>\n";
 }
 void
 HwmpMacPlugin::Report (std::ostream & os) const
 {
-  os << "<HwmpMacPlugin index=\""<< m_ifIndex <<"\">\n";
+  os << "<HwmpMacPlugin\n"
+    "address =\""<< m_parent->GetAddress () <<"\">\n";
   m_stats.Print(os);
   os << "</HwmpMacPlugin>\n";
 }

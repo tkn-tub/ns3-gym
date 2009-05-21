@@ -51,9 +51,13 @@ public:
   bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to);
   void UpdateBeacon (MeshWifiBeacon & beacon) const;
   ///\}
-  ///\brief Statistics:
+  ///\name Statistics:
+  ///\{
   void Report (std::ostream &) const;
   void ResetStats ();
+  uint32_t GetLinkMetric (Mac48Address peerAddress);
+  uint32_t GetIfIndex () {return m_ifIndex;};
+  ///\}
 private:
   friend class PeerManagementProtocol;
   friend class PeerLink; 

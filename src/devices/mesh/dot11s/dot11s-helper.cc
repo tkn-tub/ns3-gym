@@ -161,21 +161,15 @@ MeshWifiHelper::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os
   Ptr <MeshPointDevice> mp = device->GetObject<MeshPointDevice> ();
   NS_ASSERT (mp != 0);
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
-  os << "<MeshPointDevice ReportTime=\"" << Simulator::Now().GetSeconds() << "s\">\n";
+  os << "<MeshPointDevice ReportTime=\"" << Simulator::Now().GetSeconds() << "s\" MpAddress=\"" << mp->GetAddress () << "\">\n";
   for (std::vector<Ptr<NetDevice> >::const_iterator i = ifaces.begin(); i != ifaces.end(); ++i)
   {
     Ptr<WifiNetDevice> device = (*i)->GetObject<WifiNetDevice> ();
     NS_ASSERT (device != 0);
     Ptr<MeshWifiInterfaceMac> mac = device->GetMac()->GetObject<MeshWifiInterfaceMac> ();
     NS_ASSERT (mac != 0);
-    os << "<Interface "
-      "Index=\"" << device->GetIfIndex () << "\" "
-      "BeaconInterval=\"" << mac->GetBeaconInterval ().GetSeconds() << "s\" "
-      "Channel=\"" << mac->GetFrequencyChannel () << "\" "
-      "/>\n";
     mac->Report(os);
   }
-  os << "</MeshPointDevice>\n";
   Ptr <HwmpProtocol> hwmp = mp->GetObject<HwmpProtocol> ();
   NS_ASSERT(hwmp != 0);
   hwmp->Report (os);
@@ -183,8 +177,30 @@ MeshWifiHelper::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os
   Ptr <PeerManagementProtocol> pmp = mp->GetObject<PeerManagementProtocol> ();
   NS_ASSERT(pmp != 0);
   pmp->Report (os);
+  os << "</MeshPointDevice>\n";
 }
+void
+MeshWifiHelper::ResetStats (const ns3::Ptr<ns3::NetDevice>& device)
+{
+  Ptr <MeshPointDevice> mp = device->GetObject<MeshPointDevice> ();
+  NS_ASSERT (mp != 0);
+  std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
+  for (std::vector<Ptr<NetDevice> >::const_iterator i = ifaces.begin(); i != ifaces.end(); ++i)
+  {
+    Ptr<WifiNetDevice> device = (*i)->GetObject<WifiNetDevice> ();
+    NS_ASSERT (device != 0);
+    Ptr<MeshWifiInterfaceMac> mac = device->GetMac()->GetObject<MeshWifiInterfaceMac> ();
+    NS_ASSERT (mac != 0);
+    mac->ResetStats ();
+  }
+  Ptr <HwmpProtocol> hwmp = mp->GetObject<HwmpProtocol> ();
+  NS_ASSERT(hwmp != 0);
+  hwmp->ResetStats ();
 
+  Ptr <PeerManagementProtocol> pmp = mp->GetObject<PeerManagementProtocol> ();
+  NS_ASSERT(pmp != 0);
+  pmp->ResetStats ();
+}
 } // namespace dot11s
 } //namespace ns3
 

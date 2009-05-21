@@ -80,6 +80,7 @@ public:
    */ 
   NetDeviceContainer Install (const WifiPhyHelper &phy, Ptr<Node> node,  std::vector<uint32_t> roots = std::vector<uint32_t> (), uint32_t nInterfaces = 1) const;
   static void Report (const ns3::Ptr<ns3::NetDevice>&, std::ostream&);
+  static void ResetStats (const ns3::Ptr<ns3::NetDevice>&);
 private:
   Ssid m_ssid;
   Time m_randomStartDelay;

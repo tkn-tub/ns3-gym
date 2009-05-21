@@ -939,18 +939,34 @@ HwmpProtocol::GetAddress ()
 //Statistics:
 void HwmpProtocol::Statistics::Print (std::ostream & os) const
 {
-  os << "forwardedUnicast=\"" << forwardedUnicast << "\""
-    "forwardedBroadcast=\"" << forwardedBroadcast << "\""
-    "forwardedBytes=\"" << forwardedBytes / 1024 << "K\""
-    "totalQueued=\"" << totalQueued << "\""
-    "totalDropped=\"" << totalDropped << "\"\n";
+  os << "<Statistics "
+    "forwardedUnicast=\"" << forwardedUnicast << "\" "
+    "forwardedBroadcast=\"" << forwardedBroadcast << "\" "
+    "forwardedBytes=\"" << forwardedBytes / 1024 << "K\" "
+    "totalQueued=\"" << totalQueued << "\" "
+    "totalDropped=\"" << totalDropped << "\"/>\n";
 }
 void
 HwmpProtocol::Report (std::ostream & os) const
 {
-  os << "<Hwmp>\n"
-    "address=\"" << m_address << "\" "
-    "\n";
+  os << "<Hwmp "
+    "address=\"" << m_address << "\"\n"
+    "maxQueueSize=\"" << m_maxQueueSize << "\"\n"
+    "dot11MeshHWMPmaxPREQretries=\"" << (uint16_t)m_dot11MeshHWMPmaxPREQretries << "\"\n"
+    "dot11MeshHWMPnetDiameterTraversalTime=\"" << m_dot11MeshHWMPnetDiameterTraversalTime.GetMilliSeconds () << "ms\"\n"
+    "dot11MeshHWMPpreqMinInterval=\"" << m_dot11MeshHWMPpreqMinInterval.GetMilliSeconds () << "ms\"\n"
+    "dot11MeshHWMPperrMinInterval=\"" << m_dot11MeshHWMPperrMinInterval.GetMilliSeconds () << "ms\"\n"
+    "dot11MeshHWMPactiveRootTimeout=\"" << m_dot11MeshHWMPactiveRootTimeout.GetMilliSeconds () << "ms\"\n"
+    "dot11MeshHWMPactivePathTimeout=\"" << m_dot11MeshHWMPactivePathTimeout.GetMilliSeconds () << "ms\"\n"
+    "dot11MeshHWMPpathToRootInterval=\"" << m_dot11MeshHWMPpathToRootInterval.GetMilliSeconds () << "ms\"\n"
+    "dot11MeshHWMPrannInterval=\"" << m_dot11MeshHWMPrannInterval.GetMilliSeconds () << "ms\"\n"
+    "isRoot=\"" << m_isRoot << "\"\n"
+    "maxTtl=\"" << (uint16_t)m_maxTtl << "\"\n"
+    "unicastPerrThreshold=\"" << (uint16_t)m_unicastPerrThreshold << "\"\n"
+    "unicastPreqThreshold=\"" << (uint16_t)m_unicastPreqThreshold << "\"\n"
+    "unicastDataThreshold=\"" << (uint16_t)m_unicastDataThreshold << "\"\n"
+    "doFlag=\"" << m_doFlag << "\"\n"
+    "rfFlag=\"" << m_rfFlag << "\">\n";
   m_stats.Print (os);
   for(HwmpPluginMap::const_iterator plugin = m_interfaces.begin (); plugin != m_interfaces.end (); plugin ++)
   {
@@ -962,6 +978,8 @@ void
 HwmpProtocol::ResetStats ()
 {
   m_stats = Statistics::Statistics ();
+  for(HwmpPluginMap::const_iterator plugin = m_interfaces.begin (); plugin != m_interfaces.end (); plugin ++)
+    plugin->second->ResetStats ();
 }
 
 } //namespace dot11s

@@ -475,22 +475,33 @@ PeerManagementProtocol::GetAddress ()
 void
 PeerManagementProtocol::Statistics::Print (std::ostream & os) const
 {
-os << "linksOpened=\"" << linksOpened << "\""
-    "linksClosed=\"" << linksClosed << "\"\n";
+  os << "<Statistics "
+    "linksOpened=\"" << linksOpened << "\" "
+    "linksClosed=\"" << linksClosed << "\"/>\n";
 }
 void
 PeerManagementProtocol::Report (std::ostream & os) const
 {
-  os << "<PMP>\n";
+  os << "<PeerManagementProtocol>\n";
   m_stats.Print (os);
   for(PeerManagerPluginMap::const_iterator plugins = m_plugins.begin (); plugins != m_plugins.end (); plugins ++)
+  {
+    //Take statistics from plugin:
     plugins->second->Report (os);
-  os << "</PMP>\n";
+    //Print all active peer links:
+    PeerLinksMap::const_iterator iface = m_peerLinks.find (plugins->second->m_ifIndex);
+    NS_ASSERT (iface != m_peerLinks.end());
+    for (PeerLinksOnInterface::const_iterator i = iface->second.begin (); i != iface->second.end(); i++)
+      (*i)->Report (os);
+  }
+  os << "</PeerManagementProtocol>\n";
 }
 void
 PeerManagementProtocol::ResetStats ()
 {
   m_stats = Statistics::Statistics ();
+  for(PeerManagerPluginMap::const_iterator plugins = m_plugins.begin (); plugins != m_plugins.end (); plugins ++)
+    plugins->second->ResetStats ();
 }
 
 } // namespace dot11s

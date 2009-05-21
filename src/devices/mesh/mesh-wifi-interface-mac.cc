@@ -375,8 +375,6 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
 {
   // copy packet to allow modifications
   Ptr<Packet> packet = const_packet->Copy ();
-  m_stats.sentFrames ++;
-  m_stats.sentBytes += packet->GetSize ();
   WifiMacHeader hdr;
   hdr.SetTypeData ();
   hdr.SetAddr2 (GetAddress ());
@@ -411,6 +409,8 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
         }
       destination->RecordDisassociated ();
     }
+  m_stats.sentFrames ++;
+  m_stats.sentBytes += packet->GetSize ();
   m_BE->Queue (packet, hdr);
 }
 
@@ -424,7 +424,8 @@ MeshWifiInterfaceMac::SendManagementFrame (Ptr<Packet> packet, const WifiMacHead
       bool drop = ! ((*i)->UpdateOutcomingFrame(packet, header, Mac48Address (), Mac48Address ()));
       if (drop) return; // plugin drops frame
     }
-
+  m_stats.sentFrames ++;
+  m_stats.sentBytes += packet->GetSize ();
   m_VO->Queue (packet, header);
 }
 
@@ -646,18 +647,20 @@ MeshWifiInterfaceMac::GetMeshPointAddress () const
 void
 MeshWifiInterfaceMac::Statistics::Print (std::ostream & os) const
 {
-  os << "recvBeacons=\"" << recvBeacons << "\""
-    "sentFrames=\"" << sentFrames << "\""
-    "sentBytes=\"" << sentBytes / 1024 << "K\""
-    "recvFrames=\"" << recvFrames << "\""
-    "recvBytes=\"" << recvBytes / 1024 << "K\"\n";
+  os << "<Statistics "
+    "recvBeacons=\"" << recvBeacons << "\" "
+    "sentFrames=\"" << sentFrames << "\" "
+    "sentBytes=\"" << (double)sentBytes / 1024.0 << "K\" "
+    "recvFrames=\"" << recvFrames << "\" "
+    "recvBytes=\"" << (double)recvBytes / 1024.0 << "K\"/>\n";
 }
 void
 MeshWifiInterfaceMac::Report (std::ostream & os) const
 {
-  os << "<Interface>\n"
-    "address=\"" << m_address << "\" "
-    "\n";
+  os << "<Interface "
+    "BeaconInterval=\"" << GetBeaconInterval ().GetSeconds() << "s\" "
+    "Channel=\"" << GetFrequencyChannel () << "\" "
+    "Address = \"" << GetAddress () << "\">\n";
   m_stats.Print (os);
   os << "</Interface>\n";
 }

@@ -569,7 +569,27 @@ void
 PeerLink::ConfirmTimeout ()
 {
   StateMachine (TOC);
-}  
+}
+void
+PeerLink::Report (std::ostream & os) const
+{
+  if(m_state != ESTAB)
+    return;
+  os << "<PeerLink\n"
+    "localAddress=\"" << m_macPlugin->GetAddress () << "\"\n"
+    "peerInterfaceAddress=\"" << m_peerAddress << "\"\n"
+    "peerMeshPointAddress=\"" << m_peerMeshPointAddress << "\"\n"
+    "metricOfTheLink=\"" << m_macPlugin->GetLinkMetric(m_peerAddress) << "\"\n"
+    "m_lastBeacon=\"" << m_lastBeacon.GetMilliSeconds () << "ms\"\n"
+    "m_localLinkId=\"" << m_localLinkId << "\"\n"
+    "m_peerLinkId=\"" << m_peerLinkId << "\"\n"
+    "m_assocId=\"" << m_assocId << "\"\n"
+    "dot11MeshMaxRetries=\"" << m_dot11MeshMaxRetries << "\"\n"
+    "dot11MeshRetryTimeout=\"" << m_dot11MeshRetryTimeout.GetMilliSeconds () << "ms\"\n"
+    "dot11MeshHoldingTimeout=\"" << m_dot11MeshHoldingTimeout.GetMilliSeconds () << "ms\"\n"
+    "dot11MeshConfirmTimeout=\"" << m_dot11MeshConfirmTimeout.GetMilliSeconds () << "ms\"\n"
+    "/>\n";
+}
 } // namespace dot11s
 } //namespace ns3
 

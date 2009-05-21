@@ -94,6 +94,8 @@ public:
   /// Set callback
   void MLMESetSignalStatusCallback (SignalStatusCallback);
   //\}
+  ///\brief Statistics
+  void Report (std::ostream & os) const;
 private:
   /**
    * \name Link response to received management frames

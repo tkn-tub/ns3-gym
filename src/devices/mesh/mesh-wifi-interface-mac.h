@@ -129,7 +129,7 @@ public:
   
   /** \name Channel switching
    * 
-   * Channel center frequency = Channel starting frequency + 5 × nch (MHz), 
+   * Channel center frequency = Channel starting frequency + 5 * channel_id (MHz), 
    * where Starting channel frequency is standard-dependent as defined in IEEE 802.11-2007 17.3.8.3.2.
    * 
    * Number of channels to use must be limited elsewhere. 
