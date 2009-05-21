@@ -56,7 +56,6 @@ public:
   void Report (std::ostream &) const;
   void ResetStats ();
   uint32_t GetLinkMetric (Mac48Address peerAddress);
-  uint32_t GetIfIndex () {return m_ifIndex;};
   ///\}
 private:
   friend class PeerManagementProtocol;
