@@ -222,7 +222,7 @@ TimerTests::RunTests (void)
 {
   bool result = true;
 
-  Timer timer;
+  Timer timer = Timer (Timer::CANCEL_ON_DESTROY);
 
   timer.SetFunction (&bari);
   timer.SetArguments (1);
