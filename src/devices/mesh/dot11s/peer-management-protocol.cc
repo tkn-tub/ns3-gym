@@ -467,6 +467,11 @@ PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAdd
    if(!m_peerStatusCallback.IsNull ())
      m_peerStatusCallback (peerMeshPointAddress, peerAddress, interface, status);
 }
+uint8_t
+PeerManagementProtocol::GetNumberOfLinks ()
+{
+  return m_numberOfActivePeers;
+}
 Mac48Address
 PeerManagementProtocol::GetAddress ()
 {

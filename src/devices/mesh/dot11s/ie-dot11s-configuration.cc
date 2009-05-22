@@ -81,7 +81,9 @@ IeConfiguration::IeConfiguration ():
     m_APSId (PROTOCOL_HWMP),
     m_APSMId (METRIC_AIRTIME),
     m_CCMId (CONGESTION_DEFAULT),
-    m_CP (CHANNEL_PRECEDENCE_OFF)
+    m_SPId (SYNC_NEIGHBOUR_OFFSET),
+    m_APId (AUTH_NULL),
+    m_neighbors (0)
 {}
 
 TypeId
@@ -104,7 +106,9 @@ IeConfiguration::GetInformationSize () const
     + 4 // APSPId
     + 4 // APSMId
     + 4 // CCMId
-    + 4 // CP
+    + 4 // SPId
+    + 4 // APId
+    + 1 // Mesh formation info (see 7.3.2.86.6 of 802.11s draft 3.0)
     + m_meshCap.GetSerializedSize ();
 }
 
@@ -117,9 +121,12 @@ IeConfiguration::SerializeInformation (Buffer::Iterator i) const
   // Active Path Metric ID:
   i.WriteHtonU32 (m_APSMId);
   // Congestion Control Mode ID:
-  i.WriteU32 (m_CCMId);
-  // Channel Precedence:
-  i.WriteU32 (m_CP);
+  i.WriteHtonU32 (m_CCMId);
+  // Sync:
+  i.WriteHtonU32 (m_SPId);
+  // Auth:
+  i.WriteHtonU32 (m_APId);
+  i.WriteU8 (m_neighbors * 2);
   m_meshCap.Serialize (i);
 }
 
@@ -134,9 +141,10 @@ IeConfiguration::DeserializeInformation (Buffer::Iterator i, uint8_t length)
   // Active Path Metric ID:
   m_APSMId = (dot11sPathSelectionMetric)i.ReadNtohU32 ();
   // Congestion Control Mode ID:
-  m_CCMId  = (dot11sCongestionControlMode)i.ReadU32 ();
-  // Channel Precedence:
-  m_CP     = (dot11sChannelPrecedence)i.ReadU32 ();
+  m_CCMId  = (dot11sCongestionControlMode)i.ReadNtohU32 ();
+  m_SPId   = (dot11sSynchronizationProtocolIdentifier)i.ReadNtohU32 ();
+  m_APId   = (dot11sAuthenticationProtocol)i.ReadNtohU32 ();
+  m_neighbors = i.ReadU8 () / 2;
   i = m_meshCap.Deserialize (i);
   return i.GetDistanceFrom (start);
 }
@@ -168,7 +176,16 @@ IeConfiguration::IsAirtime ()
 {
   return (m_APSMId  == METRIC_AIRTIME);
 }
-
+void
+IeConfiguration::SetNeighborCount (uint8_t neighbors)
+{
+  m_neighbors = (neighbors > 31) ? 31 : neighbors;
+}
+uint8_t
+IeConfiguration::GetNeighborCount ()
+{
+  return m_neighbors;
+}
 dot11sMeshCapability const& IeConfiguration::MeshCapability ()
 {
   return m_meshCap;
@@ -190,7 +207,9 @@ bool operator== (const IeConfiguration & a, const IeConfiguration & b)
       (a.m_APSId == b.m_APSId) &&
       (a.m_APSMId == b.m_APSMId) &&
       (a.m_CCMId == b.m_CCMId) &&
-      (a.m_CP == b.m_CP) &&
+      (a.m_SPId == b.m_SPId) &&
+      (a.m_APId == b.m_APId) &&
+      (a.m_neighbors == b.m_neighbors) &&
       (a.m_meshCap == b.m_meshCap)
       );
 }

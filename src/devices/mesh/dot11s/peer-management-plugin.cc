@@ -177,6 +177,7 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
       )
 {
   //Create a packet:
+  meshConfig.SetNeighborCount (m_protocol->GetNumberOfLinks ());
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (peerElement);
   PeerLinkFrameStart::PlinkFrameStartFields fields;

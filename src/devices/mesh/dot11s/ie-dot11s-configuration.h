@@ -29,7 +29,7 @@ namespace ns3 {
 namespace dot11s {
 /**
  * \ingroup dot11s
- * \brief See 7.3.2.81.1 in 802.11s draft 2.07
+ * \brief See 7.3.2.84.1 in 802.11s draft 3.0
  */
 enum dot11sPathSelectionProtocol
 {
@@ -38,7 +38,7 @@ enum dot11sPathSelectionProtocol
 };
 /**
  * \ingroup dot11s
- * \brief See 7.3.2.81.2 in 802.11s draft 2.07
+ * \brief See 7.3.2.84.2 in 802.11s draft 3.0
  */
 enum dot11sPathSelectionMetric
 {
@@ -47,7 +47,7 @@ enum dot11sPathSelectionMetric
 };
 /**
  * \ingroup dot11s
- * \brief See 7.3.2.81.3 in 802.11s draft 2.07
+ * \brief See 7.3.2.84.3 in 802.11s draft 3.0
  */
 enum dot11sCongestionControlMode
 {
@@ -56,7 +56,25 @@ enum dot11sCongestionControlMode
 };
 /**
  * \ingroup dot11s
- * \brief See 7.3.2.81.4 in 802.11s draft 2.07
+ * \brief See 7.3.2.86.4 in 802.11s draft 3.0
+ */
+enum dot11sSynchronizationProtocolIdentifier
+{
+  SYNC_NEIGHBOUR_OFFSET = 0x000fac00,
+  SYNC_NULL             = 0x000facff,
+};
+/**
+ * \ingroup dot11s
+ * \brief See 7.3.2.86.5 in 802.11s draft 3.0
+ */
+enum dot11sAuthenticationProtocol
+{
+  AUTH_NULL = 0x000fac00,
+  AUTH_SAE  = 0x000fac01,
+};
+/**
+ * \ingroup dot11s
+ * \brief See 7.3.2.84.4 in 802.11s draft 3.0
  */
 enum dot11sChannelPrecedence
 {
@@ -65,7 +83,7 @@ enum dot11sChannelPrecedence
 
 /**
  * \ingroup dot11s
- * \brief See 7.3.2.81.5 in 802.11s draft 2.07
+ * \brief See 7.3.2.84.5 in 802.11s draft 3.0
  */
 class dot11sMeshCapability
 {
@@ -87,7 +105,7 @@ public:
 /**
  * \ingroup dot11s
  * \brief Describes Mesh Configuration Element 
- * see 7.3.2.81 of 802.11s draft 2.07
+ * see 7.3.2.84 of 802.11s draft 3.0
  */
 class IeConfiguration : public WifiInformationElement
 {
@@ -96,10 +114,12 @@ public:
   TypeId GetInstanceTypeId () const;
 
   IeConfiguration ();
-  void   SetRouting (dot11sPathSelectionProtocol routingId);
-  void   SetMetric (dot11sPathSelectionMetric metricId);
-  bool   IsHWMP ();
-  bool   IsAirtime ();
+  void SetRouting (dot11sPathSelectionProtocol routingId);
+  void SetMetric (dot11sPathSelectionMetric metricId);
+  bool IsHWMP ();
+  bool IsAirtime ();
+  void SetNeighborCount (uint8_t neighbors);
+  uint8_t GetNeighborCount ();
 
   dot11sMeshCapability const& MeshCapability ();
 private:
@@ -118,9 +138,12 @@ private:
   dot11sPathSelectionMetric   m_APSMId;
   /** Congestion Control Mode ID */
   dot11sCongestionControlMode m_CCMId;
-  /* Channel Precedence */
-  dot11sChannelPrecedence m_CP;
+  /** Sync protocol ID */
+  dot11sSynchronizationProtocolIdentifier m_SPId;
+  /** Auth protocol ID */
+  dot11sAuthenticationProtocol m_APId;
   dot11sMeshCapability m_meshCap;
+  uint8_t m_neighbors;
   friend bool operator== (const IeConfiguration & a, const IeConfiguration & b);
 };
 bool operator== (const IeConfiguration & a, const IeConfiguration & b);
