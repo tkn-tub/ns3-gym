@@ -33,6 +33,8 @@ NS_LOG_COMPONENT_DEFINE ("ArpCache");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (ArpCache);
+
 TypeId 
 ArpCache::GetTypeId (void)
 {

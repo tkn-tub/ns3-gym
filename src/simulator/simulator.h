@@ -82,8 +82,6 @@ public:
    */
   static void SetScheduler (Ptr<Scheduler> scheduler);
 
-  static void EnableLogTo (char const *filename) NS_DEPRECATED;
-
   /**
    * Every event scheduled by the Simulator::insertAtDestroy method is
    * invoked. Then, we ensure that any memory allocated by the 

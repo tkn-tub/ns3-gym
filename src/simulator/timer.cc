@@ -24,7 +24,7 @@
 namespace ns3 {
 
 Timer::Timer ()
-  : m_flags (0),
+  : m_flags (CHECK_ON_DESTROY),
     m_delay (FemtoSeconds (0)),
     m_event (),
     m_impl (0)
@@ -222,7 +222,7 @@ TimerTests::RunTests (void)
 {
   bool result = true;
 
-  Timer timer;
+  Timer timer = Timer (Timer::CANCEL_ON_DESTROY);
 
   timer.SetFunction (&bari);
   timer.SetArguments (1);
