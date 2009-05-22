@@ -6,6 +6,7 @@ import shutil
 import types
 import optparse
 import os.path
+import re
 
 # WAF modules
 import pproc as subprocess
@@ -255,12 +256,18 @@ def configure(conf):
             env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
         elif sys.platform == 'cygwin':
             env.append_value("LINKFLAGS", "-Wl,--enable-auto-import")
+
         cxx, = env['CXX']
+
         p = subprocess.Popen([cxx, '-print-file-name=libstdc++.so'], stdout=subprocess.PIPE)
         libstdcxx_location = os.path.dirname(p.stdout.read().strip())
         p.wait()
         if libstdcxx_location:
             conf.env.append_value('NS3_MODULE_PATH', libstdcxx_location)
+
+        if Options.platform in ['linux']:
+            if conf.check_compilation_flag('-Wl,--soname=foo'):
+                env['WL_SONAME_SUPPORTED'] = True
 
     conf.sub_config('src')
     conf.sub_config('utils')
@@ -294,7 +301,7 @@ def configure(conf):
     if Options.options.enable_static:
         if env['PLATFORM'].startswith('linux') and \
                 env['CXX_NAME'] == 'gcc':
-            if os.uname()[4] == 'i386':
+            if re.match('i[3-6]86', os.uname()[4]):
                 conf.report_optional_feature("static", "Static build", True, '')
                 env['ENABLE_STATIC_NS3'] = True
             elif os.uname()[4] == 'x86_64':
@@ -480,11 +487,15 @@ def build(bld):
     ## Create a single ns3 library containing all enabled modules
     if env['ENABLE_STATIC_NS3']:
         lib = bld.new_task_gen('cxx', 'staticlib')
+        lib.name = 'ns3'
+        lib.target = 'ns3'
     else:
         lib = bld.new_task_gen('cxx', 'shlib')
+        lib.name = 'ns3'
+        lib.target = 'ns3'
+        if lib.env['CXX_NAME'] == 'gcc' and env['WL_SONAME_SUPPORTED']:
+            lib.env.append_value('LINKFLAGS', '-Wl,--soname=%s' % ccroot.get_target_name(lib))
 
-    lib.name = 'ns3'
-    lib.target = 'ns3'
     if env['NS3_ENABLED_MODULES']:
         lib.add_objects = list(modules)
         env['NS3_ENABLED_MODULES'] = list(modules)

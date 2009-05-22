@@ -509,13 +509,6 @@ Packet::BeginItem (void) const
 }
 
 void
-Packet::EnableMetadata (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  EnableChecking ();
-}
-
-void
 Packet::EnablePrinting (void)
 {
   NS_LOG_FUNCTION_NOARGS ();

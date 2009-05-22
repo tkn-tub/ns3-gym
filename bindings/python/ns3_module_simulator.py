@@ -277,11 +277,6 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Scheduler >', 'scheduler')], 
                    is_static=True)
-    ## simulator.h: static void ns3::Simulator::EnableLogTo(char const * filename) [member function]
-    cls.add_method('EnableLogTo', 
-                   'void', 
-                   [param('char const *', 'filename')], 
-                   is_static=True, deprecated=True)
     ## simulator.h: static void ns3::Simulator::Destroy() [member function]
     cls.add_method('Destroy', 
                    'void', 

@@ -152,9 +152,7 @@ Unlike Headers, Tags are not serialized into a contiguous buffer
 but are stored in an array.  By default, Tags are limited to 16 bytes in
 size.  Tags can be flexibly defined to be any type, but there
 can only be one instance of any particular object type in
-the Tags buffer at any time.  The implementation makes use
-of templates to generate the proper set of Add(), Remove(),
-and Peek() functions for each Tag type.   
+the Tags buffer at any time.  
 
 @section Packet interface
 
@@ -219,49 +217,46 @@ exist for Trailers.
 @end verbatim
 
 @subsection Adding and removing Tags
+
+@strong{Note:  This part of ns-3 will change for ns-3.5; see this mail message:
+http://mailman.isi.edu/pipermail/ns-developers/2009-March/005557.html}
+
 @verbatim
-    /**
-     * Attach a tag to this packet. The tag is fully copied
-     * in a packet-specific internal buffer. This operation
-     * is expected to be really fast.
-     *
-     * \param tag a pointer to the tag to attach to this packet.
-     */
-    template <typename T>
-    void AddTag (T const &tag);
-    /**
-     * Remove a tag from this packet. The data stored internally
-     * for this tag is copied in the input tag if an instance
-     * of this tag type is present in the internal buffer. If this
-     * tag type is not present, the input tag is not modified.
-     *
-     * This operation can be potentially slow and might trigger
-     * unexpectedly large memory allocations. It is thus
-     * usually a better idea to create a copy of this packet,
-     * and invoke removeAllTags on the copy to remove all
-     * tags rather than remove the tags one by one from a packet.
-     *
-     * \param tag a pointer to the tag to remove from this packet
-     * \returns true if an instance of this tag type is stored
-     *          in this packet, false otherwise.
-     */
-    template <typename T>
-    bool RemoveTag (T &tag);
-    /**
-     * Copy a tag stored internally to the input tag. If no instance
-     * of this tag is present internally, the input tag is not modified.
-     *
-     * \param tag a pointer to the tag to read from this packet
-     * \returns true if an instance of this tag type is stored
-     *          in this packet, false otherwise.
-     */
-    template <typename T>
-    bool PeekTag (T &tag) const;
-    /**
-     * Remove all the tags stored in this packet. This operation is
-     * much much faster than invoking removeTag n times.
-     */
-    void RemoveAllTags (void);
+  /**
+   * \param tag the new tag to add to this packet
+   *
+   * Tag each byte included in this packet with the
+   * new tag.
+   *
+   * Note that adding a tag is a const operation which is pretty
+   * un-intuitive. The rationale is that the content and behavior of
+   * a packet is _not_ changed when a tag is added to a packet: any
+   * code which was not aware of the new tag is going to work just
+   * the same if the new tag is added. The real reason why adding a
+   * tag was made a const operation is to allow a trace sink which gets
+   * a packet to tag the packet, even if the packet is const (and most
+   * trace sources should use const packets because it would be
+   * totally evil to allow a trace sink to modify the content of a
+   * packet).
+   */
+  void AddTag (const Tag &tag) const;
+  /**
+   * \returns an iterator over the set of tags included in this packet.
+   */
+  TagIterator GetTagIterator (void) const;
+  /**
+   * \param tag the tag to search in this packet
+   * \returns true if the requested tag type was found, false otherwise.
+   *
+   * If the requested tag type is found, it is copied in the user's
+   * provided tag instance.
+   */
+  bool FindFirstMatchingTag (Tag &tag) const;
+
+  /**
+   * Remove all the tags stored in this packet.
+   */
+  void RemoveAllTags (void);
 @end verbatim
 
 @subsection Fragmentation
