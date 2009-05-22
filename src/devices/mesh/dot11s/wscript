@@ -5,6 +5,7 @@ def build(bld):
     obj.source = [
         'ie-dot11s-beacon-timing.cc',
         'ie-dot11s-configuration.cc',
+        'ie-dot11s-id.cc',
         'ie-dot11s-peer-management.cc',
         'ie-dot11s-preq.cc',
         'ie-dot11s-prep.cc',

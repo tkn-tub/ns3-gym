@@ -54,11 +54,16 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
   if(header.IsBeacon())
   {
     IeBeaconTiming beaconTiming;
+    IeMeshId meshId;
     Ptr<Packet> myBeacon = packet->Copy();
     MgtBeaconHeader beacon_hdr;
     myBeacon->RemoveHeader(beacon_hdr);
+    meshId.FindFirst(myBeacon);
     bool meshBeacon = false;
-    if(beaconTiming.FindFirst(myBeacon))
+    if (
+        (beaconTiming.FindFirst(myBeacon)) &&
+        (m_protocol->GetMeshId ()->IsEqual(meshId))
+        )
       meshBeacon = true;
     m_protocol->UpdatePeerBeaconTiming(
         m_ifIndex,
@@ -103,7 +108,7 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
       }
     if (
         (actionValue.peerLink != WifiMeshActionHeader::PEER_LINK_CONFIRM) &&
-        !fields.meshId.IsEqual(m_parent->GetSsid())
+        !fields.meshId.IsEqual(*(m_protocol->GetMeshId()))
         )
       {
         m_protocol->ConfigurationMismatch (m_ifIndex, peerAddress);
@@ -165,6 +170,7 @@ PeerManagerMacPlugin::UpdateBeacon (MeshWifiBeacon & beacon) const
 {
   Ptr<IeBeaconTiming>  beaconTiming = m_protocol->GetBeaconTimingElement(m_ifIndex);
   beacon.AddInformationElement(beaconTiming);
+  beacon.AddInformationElement(m_protocol->GetMeshId ());
 }
 
 void
@@ -182,7 +188,7 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
   packet->AddHeader (peerElement);
   PeerLinkFrameStart::PlinkFrameStartFields fields;
   fields.rates = m_parent->GetSupportedRates ();
-  fields.meshId = m_parent->GetSsid ();
+  fields.meshId = *(m_protocol->GetMeshId ());
   fields.config = meshConfig;
   PeerLinkFrameStart plinkFrame;
   //Create an 802.11 frame header:

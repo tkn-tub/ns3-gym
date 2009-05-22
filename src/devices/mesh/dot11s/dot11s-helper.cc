@@ -34,23 +34,10 @@ namespace ns3 {
 namespace dot11s {
 
 MeshWifiHelper::MeshWifiHelper () : 
-    m_ssid("mesh"), 
     m_randomStartDelay (Seconds (0)),
     m_spreadInterfaceChannels (false)
 {
 }
-  
-void
-MeshWifiHelper::SetSsid (Ssid const & s)
-{
-  m_ssid = s;
-}
-
-Ssid MeshWifiHelper::GetSsid () const
-{
-  return m_ssid;
-}
-
 void 
 MeshWifiHelper::SetRandomStartDelay (Time t)
 {
@@ -71,7 +58,7 @@ MeshWifiHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node)
   
   // Creating MAC for this interface
   Ptr<MeshWifiInterfaceMac> mac = CreateObject<MeshWifiInterfaceMac> ();
-  mac->SetSsid (m_ssid);
+  mac->SetSsid (Ssid ());
   if (m_randomStartDelay > Seconds (0))
     mac->SetRandomStartDelay (m_randomStartDelay);
   Ptr<WifiRemoteStationManager> manager = CreateObject<AarfWifiManager> ();
@@ -130,6 +117,7 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c,  std::
     
     // Install 802.11s protocols
     Ptr<PeerManagementProtocol> pmp = CreateObject<PeerManagementProtocol> ();
+    pmp->SetMeshId("mesh",4);
     bool install_ok = pmp->Install (mp);
     NS_ASSERT (install_ok);
     

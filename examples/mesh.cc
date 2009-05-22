@@ -138,7 +138,7 @@ MeshTest::CreateNodes ()
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (nodes);
   if (pcap)
-    wifiPhy.EnablePcapAll (std::string ("mp-") + mesh.GetSsid ().PeekString ());
+    wifiPhy.EnablePcapAll (std::string ("mp-"));
 }
 void
 MeshTest::InstallInternetStack ()

@@ -24,10 +24,10 @@
 #define _MESHWIFIHELPER_H
 
 #include "ns3/wifi-helper.h"
-#include "ns3/ssid.h"
 #include "ns3/nstime.h"
 #include "ns3/peer-management-protocol.h"
 #include "ns3/hwmp-protocol.h"
+#include "ie-dot11s-id.h"
 
 namespace ns3 {
 namespace dot11s {
@@ -43,10 +43,6 @@ class MeshWifiHelper
 {
 public:
   MeshWifiHelper (); 
-  /// Set mesh SSID
-  void SetSsid (const Ssid  &);
-  /// Get mesh SSID
-  Ssid GetSsid () const;
   /// Set maximum random start delay
   void SetRandomStartDelay (Time delay);
   /** 
@@ -82,7 +78,6 @@ public:
   static void Report (const ns3::Ptr<ns3::NetDevice>&, std::ostream&);
   static void ResetStats (const ns3::Ptr<ns3::NetDevice>&);
 private:
-  Ssid m_ssid;
   Time m_randomStartDelay;
   bool m_spreadInterfaceChannels;
   

@@ -22,10 +22,10 @@
 #define PEER_LINK_FRAME_START_H
 #include "ns3/header.h"
 #include "ns3/supported-rates.h"
-#include "ns3/ssid.h"
 #include "dot11s-mac-header.h"
 #include "ie-dot11s-configuration.h"
 #include "ie-dot11s-peering-protocol.h"
+#include "ie-dot11s-id.h"
 namespace ns3 {
 class MeshWifiInterfaceMac;
 namespace dot11s {
@@ -38,7 +38,7 @@ namespace dot11s {
  * - Subtype field
  * - Association ID field
  * - Supported rates
- * - SSID of mesh
+ * - Mesh ID of mesh
  */
 class PeerLinkFrameStart : public Header
 {
@@ -52,7 +52,7 @@ public:
     uint16_t capability;        //open and confirm
     uint16_t aid;               //confirm only
     SupportedRates rates;       //open and confirm
-    Ssid meshId;                //open and close
+    IeMeshId meshId;            //open and close
     IeConfiguration config;     //open and confirm
     uint16_t reasonCode;        //close only
   };
@@ -61,7 +61,6 @@ public:
   void SetPlinkFrameSubtype(uint8_t subtype);
   void SetPlinkFrameStart(PlinkFrameStartFields);
   PlinkFrameStartFields GetFields ();
-  bool CheckPlinkFrameStart(Ptr<MeshWifiInterfaceMac> mac);
   /** \name Inherited from header:
    * \{
    */
@@ -80,7 +79,7 @@ private:
   uint16_t m_capability;
   uint16_t m_aid;
   SupportedRates m_rates;
-  Ssid m_meshId;
+  IeMeshId m_meshId;
   IeConfiguration m_config;
   uint16_t m_reasonCode;
 

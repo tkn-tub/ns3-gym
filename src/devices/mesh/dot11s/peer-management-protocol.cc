@@ -472,6 +472,16 @@ PeerManagementProtocol::GetNumberOfLinks ()
 {
   return m_numberOfActivePeers;
 }
+Ptr<IeMeshId>
+PeerManagementProtocol::GetMeshId () const
+{
+  return m_meshId;
+}
+void
+PeerManagementProtocol::SetMeshId(char const meshId[32], uint8_t length)
+{
+  m_meshId = Create<IeMeshId> (meshId, length);
+}
 Mac48Address
 PeerManagementProtocol::GetAddress ()
 {

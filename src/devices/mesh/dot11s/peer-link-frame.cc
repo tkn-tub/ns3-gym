@@ -33,7 +33,7 @@ PeerLinkFrameStart::PeerLinkFrameStart ():
   m_capability (0),
   m_aid (0),
   m_rates (SupportedRates()),
-  m_meshId (Ssid()),
+  m_meshId (IeMeshId()),
   m_config(IeConfiguration ()),
   m_reasonCode ((uint16_t)REASON11S_RESERVED)
 {
@@ -61,7 +61,6 @@ PeerLinkFrameStart::SetPlinkFrameStart(PeerLinkFrameStart::PlinkFrameStartFields
   else
     m_reasonCode = fields.reasonCode;
 }
-
 PeerLinkFrameStart::PlinkFrameStartFields
 PeerLinkFrameStart::GetFields ()
 {
@@ -76,18 +75,6 @@ PeerLinkFrameStart::GetFields ()
   retval.reasonCode = m_reasonCode;
   return retval;
 }
-
-bool
-PeerLinkFrameStart::CheckPlinkFrameStart(Ptr<MeshWifiInterfaceMac> mac)
-{
-  bool retval;
-  retval = mac->CheckSupportedRates(m_rates);
-  if(! retval)
-    return retval;
-  retval = mac->CheckMeshId(m_meshId);
-  return true;
-}
-
 TypeId
 PeerLinkFrameStart::GetTypeId ()
 {
@@ -98,7 +85,6 @@ PeerLinkFrameStart::GetTypeId ()
     ;
   return tid;
 }
-
 TypeId
 PeerLinkFrameStart::GetInstanceTypeId () const
 {
@@ -115,7 +101,6 @@ PeerLinkFrameStart::Print (std::ostream &os) const
   << "\nconfiguration = " << m_config
   << "\nreason code = " << m_reasonCode;
 }
-
 uint32_t
 PeerLinkFrameStart::GetSerializedSize () const
 {
@@ -135,7 +120,6 @@ PeerLinkFrameStart::GetSerializedSize () const
     size += 2; //reasonCode
   return size;
 }
-
 void
 PeerLinkFrameStart::Serialize (Buffer::Iterator start) const
 {
@@ -150,7 +134,10 @@ PeerLinkFrameStart::Serialize (Buffer::Iterator start) const
   if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
     i = m_rates.Serialize (i);
   if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CONFIRM) != m_subtype)
-    i = m_meshId.Serialize (i);
+  {
+    m_meshId.Serialize (i);
+    i.Next(m_meshId.GetSerializedSize ());
+  }
   if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
   {
     m_config.Serialize (i);
@@ -159,7 +146,6 @@ PeerLinkFrameStart::Serialize (Buffer::Iterator start) const
   else
     i.WriteHtolsbU16(m_reasonCode);
 }
-
 uint32_t
 PeerLinkFrameStart::Deserialize (Buffer::Iterator start)
 {
@@ -174,7 +160,10 @@ PeerLinkFrameStart::Deserialize (Buffer::Iterator start)
   if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
     i = m_rates.Deserialize (i);
   if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CONFIRM) != m_subtype)
-    i = m_meshId.Deserialize (i);
+  {
+    m_meshId.Deserialize (i);
+    i.Next(m_meshId.GetSerializedSize ());
+  }
   if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
   {
     m_config.Deserialize (i);
@@ -196,14 +185,12 @@ bool operator== (const PeerLinkFrameStart & a, const PeerLinkFrameStart & b)
       );
 }
 #ifdef RUN_SELF_TESTS
-
 /// Built-in self test for PeerLinkFrameStart
 struct PeerLinkFrameStartBist : public Test 
 {
   PeerLinkFrameStartBist () : Test ("Mesh/802.11s/IE/PeerLinkFrameStart") {}
   virtual bool RunTests(); 
 };
-
 /// Test instance
 static PeerLinkFrameStartBist g_PeerLinkFrameStartBist;
 
@@ -216,7 +203,7 @@ bool PeerLinkFrameStartBist::RunTests ()
     fields.subtype = (uint8_t)(WifiMeshActionHeader::PEER_LINK_OPEN);
     fields.aid = 101;
     fields.reasonCode = 12;
-    fields.meshId = Ssid("qwertyuiop");
+    fields.meshId = IeMeshId("qwertyuiop", 10);
     a.SetPlinkFrameStart(fields);
     Ptr<Packet> packet = Create<Packet> ();
     packet->AddHeader (a);
@@ -231,7 +218,7 @@ bool PeerLinkFrameStartBist::RunTests ()
     fields.subtype = (uint8_t)(WifiMeshActionHeader::PEER_LINK_CONFIRM);
     fields.aid = 1234;
     fields.reasonCode = 12;
-    fields.meshId = Ssid("qwerty");
+    fields.meshId = IeMeshId("qwerty", 6);
     a.SetPlinkFrameStart(fields);
     Ptr<Packet> packet = Create<Packet> ();
     packet->AddHeader (a);
@@ -245,7 +232,7 @@ bool PeerLinkFrameStartBist::RunTests ()
     PeerLinkFrameStart::PlinkFrameStartFields fields;
     fields.subtype = (uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE);
     fields.aid = 10;
-    fields.meshId = Ssid("qqq");
+    fields.meshId = IeMeshId("qqq", 3);
     fields.reasonCode = 12;
     a.SetPlinkFrameStart(fields);
     Ptr<Packet> packet = Create<Packet> ();

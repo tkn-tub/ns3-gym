@@ -29,6 +29,7 @@
 #include "ns3/nstime.h"
 #include "ie-dot11s-beacon-timing.h"
 #include "ie-dot11s-peer-management.h"
+#include "ie-dot11s-id.h"
 
 #include <map>
 namespace ns3 {
@@ -136,6 +137,8 @@ public:
   Mac48Address GetAddress ();
   ///\Needed to fill mesh configuration
   uint8_t GetNumberOfLinks ();
+  void SetMeshId (char const meshId[32], uint8_t length);
+  Ptr<IeMeshId> GetMeshId() const;
   ///\brief: Report statistics
   void Report (std::ostream &) const;
   void ResetStats ();
@@ -192,6 +195,7 @@ private:
 private:
   PeerManagerPluginMap m_plugins;
   Mac48Address m_address;
+  Ptr<IeMeshId> m_meshId;
   /**
    * \name Information related to beacons:
    * \{

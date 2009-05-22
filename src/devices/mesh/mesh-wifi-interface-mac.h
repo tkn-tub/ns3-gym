@@ -145,8 +145,6 @@ public:
   
   /// To be used by plugins sending management frames.
   void SendManagementFrame(Ptr<Packet> frame, const WifiMacHeader& hdr);
-  /// \return true if meshId is correct Ssid
-  bool CheckMeshId(Ssid meshId) const;
   /// \return true if rates are supported
   bool CheckSupportedRates(SupportedRates rates) const;
   /// \return list of supported bitrates

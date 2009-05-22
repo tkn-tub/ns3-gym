@@ -449,11 +449,6 @@ MeshWifiInterfaceMac::GetSupportedRates () const
   return rates;
 }
 bool
-MeshWifiInterfaceMac::CheckMeshId(Ssid meshId) const
-{
-  return true;
-}
-bool
 MeshWifiInterfaceMac::CheckSupportedRates(SupportedRates rates) const
 {
   for (uint32_t i = 0; i < m_stationManager->GetNBasicModes (); i++)
