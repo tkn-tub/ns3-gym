@@ -188,6 +188,7 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
   packet->AddHeader (peerElement);
   PeerLinkFrameStart::PlinkFrameStartFields fields;
   fields.rates = m_parent->GetSupportedRates ();
+  fields.capability = 0;
   fields.meshId = *(m_protocol->GetMeshId ());
   fields.config = meshConfig;
   PeerLinkFrameStart plinkFrame;

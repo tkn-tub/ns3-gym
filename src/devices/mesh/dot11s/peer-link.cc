@@ -183,7 +183,7 @@ PeerLink::MLMEActivePeerLinkOpen ()
 void
 PeerLink::MLMEPeeringRequestReject ()
 {
-  StateMachine (REQ_RJCT, REASON11S_PEER_LINK_CANCELLED);
+  StateMachine (REQ_RJCT, REASON11S_PEERING_CANCELLED);
 }
 void
 PeerLink::Close (uint16_t localLinkId, uint16_t peerLinkId, PmpReasonCode reason)
@@ -349,7 +349,7 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
         case CNCL:
           m_state = HOLDING;
           ClearRetryTimer ();
-          SendPeerLinkClose (REASON11S_PEER_LINK_CANCELLED);
+          SendPeerLinkClose (REASON11S_PEERING_CANCELLED);
           SetHoldingTimer ();
           break;
         default:
@@ -385,7 +385,7 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
         case CNCL:
           m_state = HOLDING;
           ClearConfirmTimer ();
-          SendPeerLinkClose (REASON11S_PEER_LINK_CANCELLED);
+          SendPeerLinkClose (REASON11S_PEERING_CANCELLED);
           SetHoldingTimer ();
           break;
         case TOC:
@@ -434,7 +434,7 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
         case CNCL:
           m_state = HOLDING;
           ClearRetryTimer ();
-          SendPeerLinkClose (REASON11S_PEER_LINK_CANCELLED);
+          SendPeerLinkClose (REASON11S_PEERING_CANCELLED);
           SetHoldingTimer ();
           break;
         default:
@@ -463,7 +463,7 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           break;
         case CNCL:
           m_state = HOLDING;
-          SendPeerLinkClose (REASON11S_PEER_LINK_CANCELLED);
+          SendPeerLinkClose (REASON11S_PEERING_CANCELLED);
           SetHoldingTimer ();
           m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, false);
           break;
@@ -484,7 +484,7 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
         case CNF_ACPT:
           m_state = HOLDING;
           // reason not spec in D2.0
-          SendPeerLinkClose (REASON11S_PEER_LINK_CANCELLED);
+          SendPeerLinkClose (REASON11S_PEERING_CANCELLED);
           break;
         case OPN_RJCT:
         case CNF_RJCT:

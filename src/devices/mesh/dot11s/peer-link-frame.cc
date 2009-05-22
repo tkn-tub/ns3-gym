@@ -201,6 +201,7 @@ bool PeerLinkFrameStartBist::RunTests ()
     PeerLinkFrameStart a;
     PeerLinkFrameStart::PlinkFrameStartFields fields;
     fields.subtype = (uint8_t)(WifiMeshActionHeader::PEER_LINK_OPEN);
+    fields.capability = 0;
     fields.aid = 101;
     fields.reasonCode = 12;
     fields.meshId = IeMeshId("qwertyuiop", 10);
@@ -216,6 +217,7 @@ bool PeerLinkFrameStartBist::RunTests ()
     PeerLinkFrameStart a;
     PeerLinkFrameStart::PlinkFrameStartFields fields;
     fields.subtype = (uint8_t)(WifiMeshActionHeader::PEER_LINK_CONFIRM);
+    fields.capability = 0;
     fields.aid = 1234;
     fields.reasonCode = 12;
     fields.meshId = IeMeshId("qwerty", 6);
@@ -231,6 +233,7 @@ bool PeerLinkFrameStartBist::RunTests ()
     PeerLinkFrameStart a;
     PeerLinkFrameStart::PlinkFrameStartFields fields;
     fields.subtype = (uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE);
+    fields.capability = 0;
     fields.aid = 10;
     fields.meshId = IeMeshId("qqq", 3);
     fields.reasonCode = 12;

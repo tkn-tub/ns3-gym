@@ -36,7 +36,7 @@ public:
 private:
   WifiElementId ElementId () const
   {
-    return IE11S_PEERING_PROTOCOL;
+    return IE11S_MESH_PEERING_PROTOCOL_VERSION;
   }
   uint8_t  GetInformationSize () const;
   void SerializeInformation (Buffer::Iterator i) const;

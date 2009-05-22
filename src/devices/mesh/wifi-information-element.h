@@ -40,33 +40,35 @@ class Packet;
  * compatible with open80211s (http://o11s.org/) implementation.   
  */
 enum WifiElementId {
-  IE11S_LINK_METRIC_REPORT              = 20,
-  IE11S_CONGESTION_NOTIFICATION         = 21,
-  IE11S_MESH_CHANNEL_SWITCH_ANNOUNCEMENT= 23,
-  IE11S_MESH_TIM                        = 24,
-  IE11S_AWAKE_WINDOW                    = 25,
-  IE11S_SYNCHRONIZATION_PROTOCOL        = 26,
-  IE11S_BEACON_TIMING                   = 27,
-  IE11S_MDAOP_SETUP_REQUEST             = 28,
-  IE11S_MDAOP_SETUP_REPLY               = 29,
-  IE11S_MDAOP_ADVERTISEMENT             = 30,
-  IE11S_MDAOP_SET_TEARDOWN              = 31,
-  IE11S_CONNECTIVITY_REPORT             = 32,
-  IE11S_PORTAL_ANNOUNCEMENT             = 33,
-  IE11S_RANN                            = 34,
-  IE11S_PROXY_UPDATE                    = 38,
-  IE11S_PROXY_UPDATE_CONFIRMATION       = 39,
-  IE11S_MSCIE                           = 40,
-  IE11S_MSAIE                           = 41,
-  IE11S_PEERING_PROTOCOL                = 74,
-  /* this ID are compatible with open80211s implementation */
+  /* begin of open80211s-compatible IDs */
   IE11S_MESH_CONFIGURATION              = 51,
   IE11S_MESH_ID                         = 52,
-  IE11S_PEER_LINK_MANAGEMENT            = 55,
-  /* 54 - 67 */
+  /* end of open80211s-compatible IDs */
+  IE11S_LINK_METRIC_REPORT              = 20,
+  IE11S_CONGESTION_NOTIFICATION,
+  /* begin of open80211s-compatible IDs */
+  IE11S_PEERING_MANAGEMENT              = 55,
+  /* end of open80211s-compatible IDs */
+  IE11S_SUPP_MBSS_REG_CLASSES_CHANNELS  = 23,
+  IE11S_MESH_CHANNEL_SWITCH_ANNOUNCEMENT,
+  IE11S_MESH_TIM,
+  IE11S_AWAKE_WINDOW,
+  IE11S_BEACON_TIMING,
+  IE11S_MCCAOP_SETUP_REQUEST,
+  IE11S_MCCAOP_SETUP_REPLY,
+  IE11S_MCCAOP_ADVERTISEMENT,
+  IE11S_MCCAOP_RESERVATION_TEARDOWN,
+  IE11S_PORTAL_ANNOUNCEMENT,
+  IE11S_RANN                            = 67,
+  /* begin of open80211s-compatible IDs */
   IE11S_PREQ                            = 68,
   IE11S_PREP                            = 69,
   IE11S_PERR                            = 70, 
+  /* end of open80211s-compatible IDs */
+  IE11S_PROXY_UPDATE                    = 37,
+  IE11S_PROXY_UPDATE_CONFIRMATION,
+  IE11S_ABBREVIATED_HANDSHAKE,
+  IE11S_MESH_PEERING_PROTOCOL_VERSION   = 74,
 };  
   
 /**

@@ -183,7 +183,7 @@ bool IePeerManagementBist::RunTests ()
   }
   {
     IePeerManagement a;
-    a.SetPeerClose (1, 2, REASON11S_MESH_CONFIGURATION_POLICY_VIOLATION);
+    a.SetPeerClose (1, 2, REASON11S_MESH_CAPABILITY_POLICY_VIOLATION);
     result = result && TestRoundtripSerialization (a);
   }
   return result;

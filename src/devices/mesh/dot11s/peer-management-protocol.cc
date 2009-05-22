@@ -259,7 +259,7 @@ PeerManagementProtocol::ConfigurationMismatch (uint32_t interface, Mac48Address 
 {
   Ptr<PeerLink> peerLink = FindPeerLink(interface, peerAddress);
   if(peerLink != 0)
-      peerLink->MLMECancelPeerLink (REASON11S_MESH_CONFIGURATION_POLICY_VIOLATION);
+      peerLink->MLMECancelPeerLink (REASON11S_MESH_CAPABILITY_POLICY_VIOLATION);
 }
 
 Ptr<PeerLink>
