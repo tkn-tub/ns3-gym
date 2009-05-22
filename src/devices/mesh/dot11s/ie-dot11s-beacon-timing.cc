@@ -166,8 +166,8 @@ IeBeaconTiming::SerializeInformation (Buffer::Iterator i) const
   for (NeighboursTimingUnitsList::const_iterator j = m_neighbours.begin (); j != m_neighbours.end(); j++)
   {
     i.WriteU8 ((*j)->GetAid ());
-    i.WriteHtonU16 ((*j)->GetLastBeacon ());
-    i.WriteHtonU16 ((*j)->GetBeaconInterval ());
+    i.WriteHtolsbU16 ((*j)->GetLastBeacon ());
+    i.WriteHtolsbU16 ((*j)->GetBeaconInterval ());
   }
 }
 uint8_t 
@@ -179,8 +179,8 @@ IeBeaconTiming::DeserializeInformation (Buffer::Iterator start, uint8_t length)
     {
       Ptr<IeBeaconTimingUnit> new_element = Create<IeBeaconTimingUnit> ();
       new_element->SetAid (i.ReadU8());
-      new_element->SetLastBeacon (i.ReadNtohU16());
-      new_element->SetBeaconInterval (i.ReadNtohU16());
+      new_element->SetLastBeacon (i.ReadLsbtohU16());
+      new_element->SetBeaconInterval (i.ReadLsbtohU16());
       m_neighbours.push_back (new_element);
     }
   return i.GetDistanceFrom (start);

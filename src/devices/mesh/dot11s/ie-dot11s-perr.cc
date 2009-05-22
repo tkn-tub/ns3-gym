@@ -65,7 +65,7 @@ IePerr::SerializeInformation (Buffer::Iterator i) const
   for (unsigned int j = 0; j < m_numOfDest; j++)
     {
       WriteTo (i, m_addressUnits[j].destination);
-      i.WriteHtonU32 (m_addressUnits[j].seqnum);
+      i.WriteHtolsbU32 (m_addressUnits[j].seqnum);
     }
 }
 uint8_t
@@ -80,7 +80,7 @@ IePerr::DeserializeInformation (Buffer::Iterator start, uint8_t length)
     {
       FailedDestination unit;
       ReadFrom (i,unit.destination);
-      unit.seqnum = i.ReadNtohU32 ();
+      unit.seqnum = i.ReadLsbtohU32 ();
       m_addressUnits.push_back (unit);
     }
   return i.GetDistanceFrom (start);

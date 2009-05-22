@@ -55,13 +55,13 @@ Buffer::Iterator dot11sMeshCapability::Serialize (Buffer::Iterator i) const
     result |= 1 << 4;
   if (powerSaveLevel)
     result |= 1 << 5;
-  i.WriteHtonU16 (result);
+  i.WriteHtolsbU16 (result);
   return i;
 }
 
 Buffer::Iterator dot11sMeshCapability::Deserialize (Buffer::Iterator i)
 {
-  uint16_t  cap = i.ReadNtohU16 ();
+  uint16_t  cap = i.ReadLsbtohU16 ();
   acceptPeerLinks = Is (cap, 0);
   MDAEnabled = Is (cap, 1);
   forwarding = Is (cap, 2);
@@ -117,15 +117,15 @@ IeConfiguration::SerializeInformation (Buffer::Iterator i) const
 {
   i.WriteU8 (1); //Version
   // Active Path Selection Protocol ID:
-  i.WriteHtonU32 (m_APSId);
+  i.WriteHtolsbU32 (m_APSId);
   // Active Path Metric ID:
-  i.WriteHtonU32 (m_APSMId);
+  i.WriteHtolsbU32 (m_APSMId);
   // Congestion Control Mode ID:
-  i.WriteHtonU32 (m_CCMId);
+  i.WriteHtolsbU32 (m_CCMId);
   // Sync:
-  i.WriteHtonU32 (m_SPId);
+  i.WriteHtolsbU32 (m_SPId);
   // Auth:
-  i.WriteHtonU32 (m_APId);
+  i.WriteHtolsbU32 (m_APId);
   i.WriteU8 (m_neighbors * 2);
   m_meshCap.Serialize (i);
 }
@@ -137,13 +137,13 @@ IeConfiguration::DeserializeInformation (Buffer::Iterator i, uint8_t length)
   uint8_t version;
   version  = i.ReadU8 ();
   // Active Path Selection Protocol ID:
-  m_APSId  = (dot11sPathSelectionProtocol)i.ReadNtohU32 ();
+  m_APSId  = (dot11sPathSelectionProtocol)i.ReadLsbtohU32 ();
   // Active Path Metric ID:
-  m_APSMId = (dot11sPathSelectionMetric)i.ReadNtohU32 ();
+  m_APSMId = (dot11sPathSelectionMetric)i.ReadLsbtohU32 ();
   // Congestion Control Mode ID:
-  m_CCMId  = (dot11sCongestionControlMode)i.ReadNtohU32 ();
-  m_SPId   = (dot11sSynchronizationProtocolIdentifier)i.ReadNtohU32 ();
-  m_APId   = (dot11sAuthenticationProtocol)i.ReadNtohU32 ();
+  m_CCMId  = (dot11sCongestionControlMode)i.ReadLsbtohU32 ();
+  m_SPId   = (dot11sSynchronizationProtocolIdentifier)i.ReadLsbtohU32 ();
+  m_APId   = (dot11sAuthenticationProtocol)i.ReadLsbtohU32 ();
   m_neighbors = i.ReadU8 () / 2;
   i = m_meshCap.Deserialize (i);
   return i.GetDistanceFrom (start);

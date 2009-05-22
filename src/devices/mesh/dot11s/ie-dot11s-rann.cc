@@ -133,8 +133,8 @@ IeRann::SerializeInformation (Buffer::Iterator i) const
   i.WriteU8 (m_hopcount);
   i.WriteU8 (m_ttl);
   WriteTo (i, m_originatorAddress);
-  i.WriteHtonU32 (m_destSeqNumber);
-  i.WriteHtonU32 (m_metric);
+  i.WriteHtolsbU32 (m_destSeqNumber);
+  i.WriteHtolsbU32 (m_metric);
 }
 uint8_t
 IeRann::DeserializeInformation (Buffer::Iterator start, uint8_t length)
@@ -144,8 +144,8 @@ IeRann::DeserializeInformation (Buffer::Iterator start, uint8_t length)
   m_hopcount = i.ReadU8 ();
   m_ttl = i.ReadU8 ();
   ReadFrom (i, m_originatorAddress);
-  m_destSeqNumber = i.ReadNtohU32 ();
-  m_metric = i.ReadNtohU32 ();
+  m_destSeqNumber = i.ReadLsbtohU32 ();
+  m_metric = i.ReadLsbtohU32 ();
   return i.GetDistanceFrom (start);
 }
 uint8_t

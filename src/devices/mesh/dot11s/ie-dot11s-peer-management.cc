@@ -107,11 +107,11 @@ void
 IePeerManagement::SerializeInformation (Buffer::Iterator i) const
 {
   i.WriteU8 (m_subtype);
-  i.WriteHtonU16 (m_localLinkId);
+  i.WriteHtolsbU16 (m_localLinkId);
   if (m_length > 3)
-    i.WriteHtonU16 (m_peerLinkId);
+    i.WriteHtolsbU16 (m_peerLinkId);
   if (m_length > 5)
-    i.WriteHtonU16 (m_reasonCode);
+    i.WriteHtolsbU16 (m_reasonCode);
 }
 uint8_t
 IePeerManagement::DeserializeInformation (Buffer::Iterator start, uint8_t length)
@@ -131,11 +131,11 @@ IePeerManagement::DeserializeInformation (Buffer::Iterator start, uint8_t length
   {
     NS_ASSERT (length == 7);
   }
-  m_localLinkId  = i.ReadNtohU16 ();
+  m_localLinkId  = i.ReadLsbtohU16 ();
   if (m_length > 3)
-    m_peerLinkId = i.ReadNtohU16 ();
+    m_peerLinkId = i.ReadLsbtohU16 ();
   if (m_length > 5)
-    m_reasonCode = (PmpReasonCode)i.ReadNtohU16 ();
+    m_reasonCode = (PmpReasonCode)i.ReadLsbtohU16 ();
   return i.GetDistanceFrom (start);
 }
 void
