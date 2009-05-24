@@ -1,0 +1,14 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+
+def build(bld):
+    module = bld.create_ns3_module('tap-net-device', ['node'])
+    module.source = [
+        'tap-net-device.cc',
+        ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'tap-net-device'
+    headers.source = [
+        'tap-net-device.h',
+        ]
+

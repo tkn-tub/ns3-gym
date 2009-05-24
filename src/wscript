@@ -23,6 +23,7 @@ all_modules = (
     'devices/emu',
     'devices/bridge',
     'devices/tap-bridge',
+    'devices/tap-net-device',
     'applications/onoff',
     'applications/packet-sink',
     'applications/udp-echo',
