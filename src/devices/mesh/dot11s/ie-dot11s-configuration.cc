@@ -28,7 +28,8 @@ namespace dot11s {
 
 dot11sMeshCapability::dot11sMeshCapability ():
     acceptPeerLinks (true),
-    MDAEnabled (false),
+    MCCASupported (false),
+    MCCAEnabled (false),
     forwarding (true),
     beaconTimingReport (true),
     TBTTAdjustment (true),
@@ -45,16 +46,18 @@ Buffer::Iterator dot11sMeshCapability::Serialize (Buffer::Iterator i) const
   uint16_t result = 0;
   if (acceptPeerLinks)
     result |= 1 << 0;
-  if (MDAEnabled)
+  if (MCCASupported)
     result |= 1 << 1;
-  if (forwarding)
+  if (MCCAEnabled)
     result |= 1 << 2;
-  if (beaconTimingReport)
+  if (forwarding)
     result |= 1 << 3;
-  if (TBTTAdjustment)
+  if (beaconTimingReport)
     result |= 1 << 4;
-  if (powerSaveLevel)
+  if (TBTTAdjustment)
     result |= 1 << 5;
+  if (powerSaveLevel)
+    result |= 1 << 6;
   i.WriteHtolsbU16 (result);
   return i;
 }
@@ -62,12 +65,13 @@ Buffer::Iterator dot11sMeshCapability::Serialize (Buffer::Iterator i) const
 Buffer::Iterator dot11sMeshCapability::Deserialize (Buffer::Iterator i)
 {
   uint16_t  cap = i.ReadLsbtohU16 ();
-  acceptPeerLinks = Is (cap, 0);
-  MDAEnabled = Is (cap, 1);
-  forwarding = Is (cap, 2);
-  beaconTimingReport = Is (cap, 3);
-  TBTTAdjustment = Is (cap, 4);
-  powerSaveLevel = Is (cap, 5);
+  acceptPeerLinks    = Is (cap, 0);
+  MCCASupported      = Is (cap, 1);
+  MCCAEnabled        = Is (cap, 2);
+  forwarding         = Is (cap, 3);
+  beaconTimingReport = Is (cap, 4);
+  TBTTAdjustment     = Is (cap, 5);
+  powerSaveLevel     = Is (cap, 6);
   return i;
 }
 
@@ -80,7 +84,7 @@ bool dot11sMeshCapability::Is (uint16_t cap, uint8_t n) const
 IeConfiguration::IeConfiguration ():
     m_APSId (PROTOCOL_HWMP),
     m_APSMId (METRIC_AIRTIME),
-    m_CCMId (CONGESTION_DEFAULT),
+    m_CCMId (CONGESTION_NULL),
     m_SPId (SYNC_NEIGHBOUR_OFFSET),
     m_APId (AUTH_NULL),
     m_neighbors (0)
@@ -126,7 +130,7 @@ IeConfiguration::SerializeInformation (Buffer::Iterator i) const
   i.WriteHtolsbU32 (m_SPId);
   // Auth:
   i.WriteHtolsbU32 (m_APId);
-  i.WriteU8 (m_neighbors * 2);
+  i.WriteU8 (m_neighbors << 1);
   m_meshCap.Serialize (i);
 }
 
@@ -194,7 +198,8 @@ bool operator== (const dot11sMeshCapability & a, const dot11sMeshCapability & b)
 {
   return (
       (a.acceptPeerLinks == b.acceptPeerLinks) &&
-      (a.MDAEnabled == b.MDAEnabled) &&
+      (a.MCCASupported == b.MCCASupported) &&
+      (a.MCCAEnabled == b.MCCAEnabled) &&
       (a.forwarding == b.forwarding) &&
       (a.beaconTimingReport == b.beaconTimingReport) &&
       (a.TBTTAdjustment == b.TBTTAdjustment) &&

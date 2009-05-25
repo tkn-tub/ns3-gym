@@ -29,30 +29,28 @@ namespace ns3 {
 namespace dot11s {
 /**
  * \ingroup dot11s
- * \brief See 7.3.2.84.1 in 802.11s draft 3.0
+ * \brief See 7.3.2.86.1 in 802.11s draft 3.0
  */
 enum dot11sPathSelectionProtocol
 {
   PROTOCOL_HWMP = 0x000fac00,
-  PROTOCOL_NULL = 0x000facff,
 };
 /**
  * \ingroup dot11s
- * \brief See 7.3.2.84.2 in 802.11s draft 3.0
+ * \brief See 7.3.2.86.2 in 802.11s draft 3.0
  */
 enum dot11sPathSelectionMetric
 {
   METRIC_AIRTIME = 0x000fac00,
-  METRIC_NULL    = 0x000facff,
 };
 /**
  * \ingroup dot11s
- * \brief See 7.3.2.84.3 in 802.11s draft 3.0
+ * \brief See 7.3.2.86.3 in 802.11s draft 3.0
  */
 enum dot11sCongestionControlMode
 {
-  CONGESTION_DEFAULT = 0x000fac00,
-  CONGESTION_NULL    = 0x000facff,
+  CONGESTION_SIGNALING = 0x000fac00,
+  CONGESTION_NULL      = 0x000facff,
 };
 /**
  * \ingroup dot11s
@@ -74,16 +72,7 @@ enum dot11sAuthenticationProtocol
 };
 /**
  * \ingroup dot11s
- * \brief See 7.3.2.84.4 in 802.11s draft 3.0
- */
-enum dot11sChannelPrecedence
-{
-  CHANNEL_PRECEDENCE_OFF = 0x000fac00,
-};
-
-/**
- * \ingroup dot11s
- * \brief See 7.3.2.84.5 in 802.11s draft 3.0
+ * \brief See 7.3.2.86.7 in 802.11s draft 3.0
  */
 class dot11sMeshCapability
 {
@@ -93,7 +82,8 @@ public:
   Buffer::Iterator Serialize (Buffer::Iterator i) const;
   Buffer::Iterator Deserialize (Buffer::Iterator i);
   bool acceptPeerLinks;
-  bool MDAEnabled;
+  bool MCCASupported;
+  bool MCCAEnabled;
   bool forwarding;
   bool beaconTimingReport;
   bool TBTTAdjustment;
@@ -105,7 +95,7 @@ public:
 /**
  * \ingroup dot11s
  * \brief Describes Mesh Configuration Element 
- * see 7.3.2.84 of 802.11s draft 3.0
+ * see 7.3.2.86 of 802.11s draft 3.0
  */
 class IeConfiguration : public WifiInformationElement
 {
