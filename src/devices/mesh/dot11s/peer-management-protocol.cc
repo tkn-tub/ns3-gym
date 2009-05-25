@@ -475,6 +475,7 @@ PeerManagementProtocol::GetNumberOfLinks ()
 Ptr<IeMeshId>
 PeerManagementProtocol::GetMeshId () const
 {
+  NS_ASSERT (m_meshId != 0);
   return m_meshId;
 }
 void
