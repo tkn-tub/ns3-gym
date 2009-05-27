@@ -82,7 +82,7 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     packet->RemoveHeader (actionHdr);
     WifiMeshActionHeader::ActionValue actionValue = actionHdr.GetAction ();
     // If can not handle - just return;
-    if(actionHdr.GetCategory () != WifiMeshActionHeader::MESH_PEER_LINK_MGT)
+    if(actionHdr.GetCategory () != WifiMeshActionHeader::MESH_PEERING_MGT)
       return m_protocol->IsActiveLink(m_ifIndex,header.GetAddr2());
     m_stats.recvMgt ++;
     m_stats.recvMgtBytes += packet->GetSize ();
@@ -149,7 +149,7 @@ PeerManagerMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & 
     WifiMeshActionHeader actionHdr;
     packet->PeekHeader (actionHdr);
     WifiMeshActionHeader::ActionValue actionValue = actionHdr.GetAction ();
-    if(actionHdr.GetCategory () == WifiMeshActionHeader::MESH_PEER_LINK_MGT)
+    if(actionHdr.GetCategory () == WifiMeshActionHeader::MESH_PEERING_MGT)
       return true;
   }
   if(header.GetAddr1 ().IsGroup ())
@@ -201,7 +201,7 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
       WifiMeshActionHeader::ActionValue action;
       action.peerLink = WifiMeshActionHeader::PEER_LINK_OPEN;
       fields.subtype = WifiMeshActionHeader::PEER_LINK_OPEN;
-      actionHdr.SetAction (WifiMeshActionHeader::MESH_PEER_LINK_MGT, action);
+      actionHdr.SetAction (WifiMeshActionHeader::MESH_PEERING_MGT, action);
     }
   if (peerElement.SubtypeIsConfirm ())
     {
@@ -210,7 +210,7 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
       action.peerLink = WifiMeshActionHeader::PEER_LINK_CONFIRM;
       fields.aid = aid;
       fields.subtype = WifiMeshActionHeader::PEER_LINK_CONFIRM;
-      actionHdr.SetAction (WifiMeshActionHeader::MESH_PEER_LINK_MGT, action);
+      actionHdr.SetAction (WifiMeshActionHeader::MESH_PEERING_MGT, action);
     }
   if (peerElement.SubtypeIsClose ())
     {
@@ -219,7 +219,7 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
       action.peerLink = WifiMeshActionHeader::PEER_LINK_CLOSE;
       fields.subtype = WifiMeshActionHeader::PEER_LINK_CLOSE;
       fields.reasonCode = peerElement.GetReasonCode ();
-      actionHdr.SetAction (WifiMeshActionHeader::MESH_PEER_LINK_MGT, action);
+      actionHdr.SetAction (WifiMeshActionHeader::MESH_PEERING_MGT, action);
     }
   plinkFrame.SetPlinkFrameStart(fields);
   packet->AddHeader (plinkFrame);

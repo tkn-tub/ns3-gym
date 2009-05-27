@@ -148,7 +148,7 @@ IeConfiguration::DeserializeInformation (Buffer::Iterator i, uint8_t length)
   m_CCMId  = (dot11sCongestionControlMode)i.ReadLsbtohU32 ();
   m_SPId   = (dot11sSynchronizationProtocolIdentifier)i.ReadLsbtohU32 ();
   m_APId   = (dot11sAuthenticationProtocol)i.ReadLsbtohU32 ();
-  m_neighbors = i.ReadU8 () / 2;
+  m_neighbors = (i.ReadU8 () >> 1) & 0xF;
   i = m_meshCap.Deserialize (i);
   return i.GetDistanceFrom (start);
 }
