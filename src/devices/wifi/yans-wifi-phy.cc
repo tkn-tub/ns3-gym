@@ -110,6 +110,7 @@ YansWifiPhy::GetTypeId (void)
                    EnumValue (WIFI_PHY_STANDARD_80211a),
                    MakeEnumAccessor (&YansWifiPhy::SetStandard),
                    MakeEnumChecker (WIFI_PHY_STANDARD_80211a, "802.11a",
+                                    WIFI_PHY_STANDARD_80211b, "802.11b",
                                     WIFI_PHY_STANDARD_holland, "holland"))
     .AddAttribute ("State", "The state of the PHY layer",
                    PointerValue (),
@@ -149,6 +150,9 @@ YansWifiPhy::SetStandard (enum WifiPhyStandard standard)
   switch (standard) {
   case WIFI_PHY_STANDARD_80211a:
     Configure80211a ();
+    break;
+  case WIFI_PHY_STANDARD_80211b:
+    Configure80211b ();
     break;
   case WIFI_PHY_STANDARD_holland:
     ConfigureHolland ();
@@ -438,6 +442,18 @@ YansWifiPhy::Configure80211a (void)
   m_modes.push_back (WifiPhy::Get36mba ());
   m_modes.push_back (WifiPhy::Get48mba ());
   m_modes.push_back (WifiPhy::Get54mba ());
+}
+
+
+void
+YansWifiPhy::Configure80211b (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_interference.Configure80211bParameters ();
+  m_modes.push_back (WifiPhy::Get1mbb ());
+  m_modes.push_back (WifiPhy::Get2mbb ());
+  m_modes.push_back (WifiPhy::Get5_5mbb ());
+  m_modes.push_back (WifiPhy::Get11mbb ());
 }
 
 void
