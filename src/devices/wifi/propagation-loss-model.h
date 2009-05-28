@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  * Contributions: Timo Bingmann <timo.bingmann@student.kit.edu>
+ * Contributions: Gary Pei <guangyu.pei@boeing.com> for fixed RSS
  */
 
 #ifndef PROPAGATION_LOSS_MODEL_H
@@ -341,6 +342,32 @@ private:
 
   ErlangVariable        m_erlangRandomVariable;
   GammaVariable         m_gammaRandomVariable;
+};
+
+/**
+ * \brief The propagation loss is fixed. The user can set received power level.
+ */ 
+class FixedRssLossModel : public PropagationLossModel
+{
+public:
+  static TypeId GetTypeId (void);
+
+  FixedRssLossModel ();
+  virtual ~FixedRssLossModel ();
+  /**
+   * \param RSS (dBm) the received signal strength
+   *
+   * Set the RSS.
+   */
+  void SetRss (double rss);
+
+private:
+  FixedRssLossModel (const FixedRssLossModel &o);
+  FixedRssLossModel & operator = (const FixedRssLossModel &o);
+  virtual double DoCalcRxPower (double txPowerDbm,
+                                Ptr<MobilityModel> a,
+                                Ptr<MobilityModel> b) const;
+  double m_rss;
 };
 
 } // namespace ns3

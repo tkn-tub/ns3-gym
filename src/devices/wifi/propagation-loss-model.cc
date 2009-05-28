@@ -505,4 +505,42 @@ NakagamiPropagationLossModel::DoCalcRxPower (double txPowerDbm,
 
 // ------------------------------------------------------------------------- //
 
+NS_OBJECT_ENSURE_REGISTERED (FixedRssLossModel);
+
+TypeId 
+FixedRssLossModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::FixedRssLossModel")
+    .SetParent<PropagationLossModel> ()
+    .AddConstructor<FixedRssLossModel> ()
+    .AddAttribute ("Rss", "The fixed receiver Rss.",
+                   DoubleValue (-150.0),
+                   MakeDoubleAccessor (&FixedRssLossModel::m_rss),
+                   MakeDoubleChecker<double> ())
+    ;
+  return tid;
+}
+FixedRssLossModel::FixedRssLossModel ()
+  : PropagationLossModel ()
+{}
+
+FixedRssLossModel::~FixedRssLossModel ()
+{}
+
+void 
+FixedRssLossModel::SetRss (double rss)
+{
+  m_rss = rss;
+}
+
+double 
+FixedRssLossModel::DoCalcRxPower (double txPowerDbm,
+                                           Ptr<MobilityModel> a,
+                                           Ptr<MobilityModel> b) const
+{
+  return m_rss;
+}
+
+// ------------------------------------------------------------------------- //
+
 } // namespace ns3
