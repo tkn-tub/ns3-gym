@@ -125,7 +125,7 @@ private:
 };
 
 /**
- * \brief Make it easy to create and manager PHY objects for the yans model.
+ * \brief Make it easy to create and manage PHY objects for the yans model.
  *
  * The yans PHY model is described in "Yet Another Network Simulator", 
  * http://cutebugs.net/files/wns2-yans.pdf
