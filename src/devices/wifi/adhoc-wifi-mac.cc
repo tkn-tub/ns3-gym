@@ -98,7 +98,6 @@ void
 AdhocWifiMac::SetEifsNoDifs (Time eifsNoDifs)
 {
   m_dcfManager->SetEifsNoDifs (eifsNoDifs);
-  m_eifsNoDifs = eifsNoDifs;
 }
 void 
 AdhocWifiMac::SetAckTimeout (Time ackTimeout)
@@ -128,7 +127,7 @@ AdhocWifiMac::GetSifs (void) const
 Time 
 AdhocWifiMac::GetEifsNoDifs (void) const
 {
-  return m_eifsNoDifs;
+  return m_dcfManager->GetEifsNoDifs ();
 }
 Time 
 AdhocWifiMac::GetAckTimeout (void) const
@@ -241,7 +240,7 @@ AdhocWifiMac::SupportsSendFrom (void) const
 }
 
 void 
-AdhocWifiMac::ForwardUp (Ptr<Packet> packet, WifiMacHeader const *hdr)
+AdhocWifiMac::ForwardUp (Ptr<Packet> packet, const WifiMacHeader *hdr)
 {
   NS_LOG_DEBUG ("received size="<<packet->GetSize ()<<", from="<<hdr->GetAddr2 ());
   m_upCallback (packet, hdr->GetAddr2 (), hdr->GetAddr1 ());
