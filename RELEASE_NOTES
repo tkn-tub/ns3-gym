@@ -17,9 +17,15 @@ This release is scheduled for June/July 2009
 
 New user-visible features
 -------------------------
-  a) 802.11e EDCA support: Has been added possibilty to manage QoS traffic on wifi stations.
 
-  b) 802.11n initial support: Has been added support for A-MSDU frame aggregation feature.
+  a) 802.11 MAC:
+     - EDCA multi-qos-class support (Mirko Banchi)
+     - 802.11n initial support for A-MSDU frame aggregation (Mirko Banchi)
+     - aarf-cd and cara rate control algorithms (Federico Maguolo)
+  b) 802.11 PHY:
+     - 802.11b PHY support (Gary Pei)
+     - Nakagami propagation loss model (Timo Bingmann)
+  c) GammaVariable and ErlangVariable (Timo Bingmann)
  
 API changes from ns-3.4
 -----------------------
