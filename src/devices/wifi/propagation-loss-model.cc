@@ -107,7 +107,7 @@ RandomPropagationLossModel::DoCalcRxPower (double txPowerDbm,
 
 NS_OBJECT_ENSURE_REGISTERED (FriisPropagationLossModel);
 
-const double FriisPropagationLossModel::PI = 3.1415;
+const double FriisPropagationLossModel::PI = 3.14159265358979323846;
 
 TypeId 
 FriisPropagationLossModel::GetTypeId (void)
@@ -408,5 +408,101 @@ ThreeLogDistancePropagationLossModel::DoCalcRxPower (double txPowerDbm,
   return txPowerDbm - pathLossDb;
 }
 
+// ------------------------------------------------------------------------- //
+
+NS_OBJECT_ENSURE_REGISTERED (NakagamiPropagationLossModel);
+
+TypeId
+NakagamiPropagationLossModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::NakagamiPropagationLossModel")
+    .SetParent<PropagationLossModel> ()
+    .AddConstructor<NakagamiPropagationLossModel> ()
+    .AddAttribute ("Distance1",
+                   "Beginning of the second distance field. Default is 80m.",
+                   DoubleValue (80.0),
+                   MakeDoubleAccessor (&NakagamiPropagationLossModel::m_distance1),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("Distance2",
+                   "Beginning of the third distance field. Default is 200m.",
+                   DoubleValue (200.0),
+                   MakeDoubleAccessor (&NakagamiPropagationLossModel::m_distance2),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("m0",
+                   "m0 for distances smaller than Distance1. Default is 1.5.",
+                   DoubleValue (1.5),
+                   MakeDoubleAccessor (&NakagamiPropagationLossModel::m_m0),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("m1",
+                   "m1 for distances smaller than Distance2. Default is 0.75.",
+                   DoubleValue (0.75),
+                   MakeDoubleAccessor (&NakagamiPropagationLossModel::m_m1),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("m2",
+                   "m2 for distances greater than Distance2. Default is 0.75.",
+                   DoubleValue (0.75),
+                   MakeDoubleAccessor (&NakagamiPropagationLossModel::m_m2),
+                   MakeDoubleChecker<double> ())
+    ;
+  return tid;
+                   
+}
+
+NakagamiPropagationLossModel::NakagamiPropagationLossModel ()
+{}
+
+double 
+NakagamiPropagationLossModel::DoCalcRxPower (double txPowerDbm,
+                                             Ptr<MobilityModel> a,
+                                             Ptr<MobilityModel> b) const
+{
+  // select m parameter
+
+  double distance = a->GetDistanceFrom (b);
+  NS_ASSERT(distance >= 0);
+
+  double m;
+  if (distance < m_distance1)
+    {
+      m = m_m0;
+    }
+  else if (distance < m_distance2)
+    {
+      m = m_m1;
+    }
+  else
+    {
+      m = m_m2;
+    }
+  
+  // the current power unit is dBm, but Watt is put into the Nakagami /
+  // Rayleigh distribution.
+  double powerW = pow(10, (txPowerDbm - 30) / 10);
+
+  double resultPowerW;
+
+  // switch between Erlang- and Gamma distributions: this is only for
+  // speed. (Gamma is equal to Erlang for any positive integer m.)
+  unsigned int int_m = static_cast<unsigned int>(floor(m));
+
+  if (int_m == m)
+    {
+      resultPowerW = m_erlangRandomVariable.GetValue(int_m, powerW / m);
+    }
+  else
+    {
+      resultPowerW = m_gammaRandomVariable.GetValue(m, powerW / m);
+    }
+
+  double resultPowerDbm = 10 * log10(resultPowerW) + 30;
+
+  NS_LOG_DEBUG ("Nakagami distance=" << distance << "m, " <<
+                "power=" << powerW <<"W, " <<
+                "resultPower=" << resultPowerW << "W=" << resultPowerDbm << "dBm");
+
+  return resultPowerDbm;
+}
+
+// ------------------------------------------------------------------------- //
 
 } // namespace ns3
