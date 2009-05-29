@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 
   InternetStackHelper internetStack;
 
-  internetStack.SetNscStack ("liblinux2.6.26.so");
+  internetStack.SetTcp ("ns3::NscTcpL4Protocol","Library",StringValue("liblinux2.6.26.so"));
   // this switches nodes 0 and 1 to NSCs Linux 2.6.26 stack.
   internetStack.Install (n.Get(0));
   internetStack.Install (n.Get(1));
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
     {
       // the next statement doesn't change anything for the nodes 0, 1, and 2; since they
       // already have a stack assigned.
-      internetStack.SetNscStack ("liblinux2.6.18.so");
+      internetStack.SetTcp ("ns3::NscTcpL4Protocol","Library",StringValue("liblinux2.6.18.so"));
       // this switches node 3 to NSCs Linux 2.6.18 stack.
       internetStack.Install (n.Get(3));
       // and then agains disables sack/timestamps/wscale on node 3.
