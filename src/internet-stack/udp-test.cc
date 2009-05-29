@@ -216,8 +216,8 @@ UdpSocketImplTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
   NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 0); // second interface should receive it
 
-  m_receivedPacket->RemoveAllTags ();
-  m_receivedPacket2->RemoveAllTags ();
+  //m_receivedPacket->RemoveAllTags ();
+  //m_receivedPacket2->RemoveAllTags ();
 
   // Simple broadcast test
 
@@ -230,8 +230,8 @@ UdpSocketImplTest::RunTests (void)
   // second socket should not receive it (it is bound specifically to the second interface's address
   NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 0);
 
-  m_receivedPacket->RemoveAllTags ();
-  m_receivedPacket2->RemoveAllTags ();
+  //m_receivedPacket->RemoveAllTags ();
+  //m_receivedPacket2->RemoveAllTags ();
 
   // Broadcast test with multiple receiving sockets
 
@@ -251,8 +251,8 @@ InetSocketAddress (Ipv4Address("255.255.255.255"), 1234)), 123);
   NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
   NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 123);
 
-  m_receivedPacket->RemoveAllTags ();
-  m_receivedPacket2->RemoveAllTags ();
+  //m_receivedPacket->RemoveAllTags ();
+  //m_receivedPacket2->RemoveAllTags ();
 
   Simulator::Destroy ();
 

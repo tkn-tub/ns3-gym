@@ -799,7 +799,7 @@ private:
   void SPFIntraAddRouter (SPFVertex* v);
   void SPFIntraAddTransit (SPFVertex* v);
   void SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* v);
-  uint32_t FindOutgoingInterfaceId (Ipv4Address a, 
+  int32_t FindOutgoingInterfaceId (Ipv4Address a, 
     Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
 
   // Local cache of the Ipv4GlobalRouting objects, indexed by nodeId
