@@ -275,6 +275,11 @@ DcfManager::SetEifsNoDifs (Time eifsNoDifs)
 {
   m_eifsNoDifs = eifsNoDifs;
 }
+Time
+DcfManager::GetEifsNoDifs () const
+{
+  return m_eifsNoDifs;
+}
 
 void 
 DcfManager::Add (DcfState *dcf)

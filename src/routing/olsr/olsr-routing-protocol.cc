@@ -40,6 +40,8 @@
 #include "ns3/log.h"
 #include "ns3/random-variable.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/ipv4-routing-protocol.h"
+#include "ns3/ipv4-route.h"
 #include "ns3/boolean.h"
 #include "ns3/uinteger.h"
 #include "ns3/enum.h"
@@ -722,7 +724,7 @@ RoutingProtocol::MprComputation()
     os << "]";
     NS_LOG_DEBUG ("Computed MPR set for node " << m_mainAddress << ": " << os.str ());
   }
-#endif
+#endif  //NS3_LOG_ENABLE
 
   m_state.SetMprSet (mprSet);
 }
@@ -1024,7 +1026,7 @@ RoutingProtocol::ProcessHello (const olsr::MessageHeader &msg,
       }
     NS_LOG_DEBUG ("** END dump Neighbor Set for OLSR Node " << m_mainAddress);
   }
-#endif
+#endif // NS3_LOG_ENABLE
 
   PopulateNeighborSet (msg, hello);
   PopulateTwoHopNeighborSet (msg, hello);
@@ -1041,7 +1043,7 @@ RoutingProtocol::ProcessHello (const olsr::MessageHeader &msg,
       }
     NS_LOG_DEBUG ("** END dump TwoHopNeighbor Set for OLSR Node " << m_mainAddress);
   }
-#endif
+#endif // NS3_LOG_ENABLE
 
   MprComputation ();
   PopulateMprSelectorSet (msg, hello);
@@ -1139,7 +1141,7 @@ RoutingProtocol::ProcessTc (const olsr::MessageHeader &msg,
       }
     NS_LOG_DEBUG ("** END dump TopologySet Set for OLSR Node " << m_mainAddress);
   }
-#endif
+#endif // NS3_LOG_ENABLE
 }
 
 ///
@@ -1631,7 +1633,7 @@ RoutingProtocol::LinkSensing (const olsr::MessageHeader &msg,
                     << lt << " (" << linkTypeName
                     << ") and Neighbor Type " << nt
                     << " (" << neighborTypeName << ")");
-#endif
+#endif // NS3_LOG_ENABLE
 
       // We must not process invalid advertised links
       if ((lt == OLSR_SYM_LINK && nt == OLSR_NOT_NEIGH) ||
@@ -1755,7 +1757,7 @@ RoutingProtocol::PopulateTwoHopNeighborSet (const olsr::MessageHeader &msg,
                                           : "(invalid value)");
           NS_LOG_DEBUG ("Looking at Link Message from HELLO message: neighborType="
                         << neighborType << " (" << neighborTypeName << ")");
-#endif
+#endif // NS3_LOG_ENABLE
 
           for (std::vector<Ipv4Address>::const_iterator nb2hop_addr_iter =
                  linkMessage->neighborInterfaceAddresses.begin ();
@@ -2038,7 +2040,7 @@ RoutingProtocol::LinkTupleUpdated (const LinkTuple &tuple, uint8_t willingness)
     {
 #ifdef NS3_LOG_ENABLE
       int statusBefore = nb_tuple->status;
-#endif
+#endif // NS3_LOG_ENABLE
       if (tuple.symTime >= Simulator::Now ())
         {
           nb_tuple->status = NeighborTuple::STATUS_SYM;
@@ -2547,65 +2549,105 @@ RoutingProtocol::FindSendEntry (RoutingTableEntry const &entry,
   return true;
 }
 
-
-bool
-RoutingProtocol::RequestRoute (uint32_t ifIndex,
-                            const Ipv4Header &ipHeader,
-                            Ptr<Packet> packet,
-                            RouteReplyCallback routeReply)
-{
+Ptr<Ipv4Route>
+RoutingProtocol::RouteOutput (const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr)
+{  
+  NS_LOG_FUNCTION (this << " " << m_ipv4->GetObject<Node> ()->GetId() << " " << header.GetDestination () << " " << oif);
+  // TBD:  oif is unused; can be used to restrict the outgoing interface
+  // of the found route if application bound to a source interface
+  Ptr<Ipv4Route> rtentry;
   RoutingTableEntry entry1, entry2;
-  if (Lookup (ipHeader.GetDestination (), entry1))
+  if (Lookup (header.GetDestination (), entry1) != 0)
     {
       bool foundSendEntry = FindSendEntry (entry1, entry2);
       if (!foundSendEntry)
+        {
+          NS_FATAL_ERROR ("FindSendEntry failure");
+        }
+      rtentry = Create<Ipv4Route> ();
+      rtentry->SetDestination (header.GetDestination ());
+      uint32_t interfaceIdx = entry2.interface;
+      // the source address is the interface address that matches
+      // the destination address (when multiple are present on the 
+      // outgoing interface, one is selected via scoping rules)
+      NS_ASSERT (m_ipv4);  
+      uint32_t numOifAddresses = m_ipv4->GetNAddresses (interfaceIdx);
+      NS_ASSERT (numOifAddresses > 0);
+      Ipv4InterfaceAddress ifAddr;
+      if (numOifAddresses == 1) {
+        ifAddr = m_ipv4->GetAddress (interfaceIdx, 0);
+      } else {
+        NS_FATAL_ERROR ("XXX Not implemented yet:  IP aliasing and OLSR");
+      }
+      rtentry->SetSource (ifAddr.GetLocal ());
+      rtentry->SetGateway (entry2.nextAddr);
+      rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIdx));
+      sockerr = Socket::ERROR_NOTERROR;
+      NS_LOG_DEBUG ("Olsr node " << m_mainAddress 
+                    << ": RouteRequest for dest=" << header.GetDestination ()
+                    << " --> nextHop=" << entry2.nextAddr
+                    << " interface=" << entry2.interface);      NS_LOG_DEBUG ("Found route to " << rtentry->GetDestination () << " via nh " << rtentry->GetGateway () << " with source addr " << rtentry->GetSource () << " and output dev " << rtentry->GetOutputDevice());
+    }
+  else
+    { 
+      sockerr = Socket::ERROR_NOROUTETOHOST;
+    }
+  return rtentry;
+}
+
+bool RoutingProtocol::RouteInput  (Ptr<const Packet> p, 
+  const Ipv4Header &header, Ptr<const NetDevice> idev,                            UnicastForwardCallback ucb, MulticastForwardCallback mcb,             
+  LocalDeliverCallback lcb, ErrorCallback ecb)
+{   
+  NS_LOG_FUNCTION (this << " " << m_ipv4->GetObject<Node> ()->GetId() << " " << header.GetDestination ());
+  
+  Ptr<Ipv4Route> rtentry;
+  RoutingTableEntry entry1, entry2; 
+  if (Lookup (header.GetDestination (), entry1))
+    { 
+      bool foundSendEntry = FindSendEntry (entry1, entry2);
+      if (!foundSendEntry)
         NS_FATAL_ERROR ("FindSendEntry failure");
-
-      Ipv4Route route = Ipv4Route::CreateHostRouteTo
-        (ipHeader.GetDestination (), entry2.nextAddr, entry2.interface);
-
+      rtentry = Create<Ipv4Route> ();
+      rtentry->SetDestination (header.GetDestination ());
+      uint32_t interfaceIdx = entry2.interface;
+      // the source address is the interface address that matches
+      // the destination address (when multiple are present on the
+      // outgoing interface, one is selected via scoping rules)
+      NS_ASSERT (m_ipv4);
+      uint32_t numOifAddresses = m_ipv4->GetNAddresses (interfaceIdx);
+      NS_ASSERT (numOifAddresses > 0);
+      Ipv4InterfaceAddress ifAddr;
+      if (numOifAddresses == 1) {
+        ifAddr = m_ipv4->GetAddress (interfaceIdx, 0);
+      } else {
+        NS_FATAL_ERROR ("XXX Not implemented yet:  IP aliasing and OLSR");
+      }
+      rtentry->SetSource (ifAddr.GetLocal ());
+      rtentry->SetGateway (entry2.nextAddr);
+      rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIdx));
+      
       NS_LOG_DEBUG ("Olsr node " << m_mainAddress
-                    << ": RouteRequest for dest=" << ipHeader.GetDestination ()
-                    << " --> nestHop=" << entry2.nextAddr
+                    << ": RouteRequest for dest=" << header.GetDestination ()
+                    << " --> nextHop=" << entry2.nextAddr
                     << " interface=" << entry2.interface);
       
-      routeReply (true, route, packet, ipHeader);
+      ucb (rtentry, p, header);
       return true;
     }
   else
     {
 #ifdef NS3_LOG_ENABLE
-      NS_LOG_DEBUG ("Olsr node " << m_mainAddress
-                    << ": RouteRequest for dest=" << ipHeader.GetDestination ()
-                    << " --> NOT FOUND; ** Dumping routing table...");
-      for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();
+      NS_LOG_DEBUG ("Olsr node " << m_mainAddress 
+                    << ": RouteRequest for dest=" << header.GetDestination ()
+                    << " --> NOT FOUND; ** Dumping routing table...");      for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();
            iter != m_table.end (); iter++)
-        {
-          NS_LOG_DEBUG ("dest=" << iter->first << " --> next=" << iter->second.nextAddr
+        {           NS_LOG_DEBUG ("dest=" << iter->first << " --> next=" << iter->second.nextAddr                 
                         << " via interface " << iter->second.interface);
         }
-
+      
       NS_LOG_DEBUG ("** Routing table dump end.");
-#endif
-      return false;
-    }
-}
-
-bool
-RoutingProtocol::RequestInterface (Ipv4Address destination,
-                              uint32_t& ifIndex)
-{
-  RoutingTableEntry entry1, entry2;
-  if (Lookup (destination, entry1))
-    {
-      bool foundSendEntry = FindSendEntry (entry1, entry2);
-      if (!foundSendEntry)
-        NS_FATAL_ERROR ("FindSendEntry failure");
-      ifIndex = entry2.interface;
-      return true;
-    }
-  else
-    {
+#endif // NS3_LOG_ENABLE
       return false;
     }
 }

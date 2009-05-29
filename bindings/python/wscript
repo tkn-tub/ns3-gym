@@ -15,7 +15,7 @@ import Build
 import Utils
 
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 10, 0, 630)
+REQUIRED_PYBINDGEN_VERSION = (0, 10, 0, 640)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 
@@ -109,14 +109,14 @@ def configure(conf):
         pybindgen_version_str = out.strip()
         pybindgen_version = tuple([int(x) for x in pybindgen_version_str.split('.')])
         conf.check_message('pybindgen', 'version',
-                           (pybindgen_version >= REQUIRED_PYBINDGEN_VERSION),
+                           (pybindgen_version == REQUIRED_PYBINDGEN_VERSION),
                            pybindgen_version_str)
-        if not (pybindgen_version >= REQUIRED_PYBINDGEN_VERSION):
-            Logs.warn("pybindgen (found %s) is too old (need %s)" %
+        if not (pybindgen_version == REQUIRED_PYBINDGEN_VERSION):
+            Logs.warn("pybindgen (found %s), (need %s)" %
                     (pybindgen_version_str,
                      '.'.join([str(x) for x in REQUIRED_PYBINDGEN_VERSION])))
             conf.report_optional_feature("python", "Python Bindings", False,
-                                         "PyBindGen too old and newer version could not be retrieved")
+                                         "PyBindGen version not correct and newer version could not be retrieved")
             return
 
     ## If all has gone well, we finally enable the Python bindings

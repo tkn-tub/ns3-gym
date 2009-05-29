@@ -1,4 +1,5 @@
 #include "icmpv4-l4-protocol.h"
+#include "ipv4-raw-socket-factory-impl.h"
 #include "ipv4-interface.h"
 #include "ipv4-l3-protocol.h"
 #include "ns3/assert.h"
@@ -6,6 +7,7 @@
 #include "ns3/node.h"
 #include "ns3/packet.h"
 #include "ns3/boolean.h"
+#include "ns3/ipv4-route.h"
 
 namespace ns3 {
 
@@ -47,6 +49,27 @@ Icmpv4L4Protocol::SetNode (Ptr<Node> node)
   m_node = node;
 }
 
+/*
+ * This method is called by AddAgregate and completes the aggregation
+ * by setting the node in the ICMP stack and adding ICMP factory to
+ * IPv4 stack connected to the node
+ */
+void
+Icmpv4L4Protocol::NotifyNewAggregate ()
+{
+  bool is_not_initialized = (m_node == 0);
+  Ptr<Node>node = this->GetObject<Node> ();
+  Ptr<Ipv4L3Protocol> ipv4 = this->GetObject<Ipv4L3Protocol> ();
+  if (is_not_initialized && node!= 0 && ipv4 != 0)
+    {
+      this->SetNode (node);
+      ipv4->Insert (this);
+      Ptr<Ipv4RawSocketFactoryImpl> rawFactory = CreateObject<Ipv4RawSocketFactoryImpl> ();
+      ipv4->AggregateObject (rawFactory);
+    }
+  Object::NotifyNewAggregate ();
+}
+
 uint16_t 
 Icmpv4L4Protocol::GetStaticProtocolNumber (void)
 {
@@ -62,19 +85,27 @@ void
 Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address dest, uint8_t type, uint8_t code)
 {
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
-  uint32_t i;
-  if (!ipv4->GetInterfaceForDestination (dest, i))
+  NS_ASSERT (ipv4 != 0 && ipv4->GetRoutingProtocol () != 0);
+  Ipv4Header header;
+  header.SetDestination (dest);
+  Socket::SocketErrno errno;
+  Ptr<Ipv4Route> route;
+  uint32_t oif = 0; //specify non-zero if bound to a source address
+  route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno);
+  if (route != 0)
+    {
+      NS_LOG_LOGIC ("Route exists");
+     Ipv4Address source = route->GetSource ();
+     SendMessage (packet, source, dest, type, code, route);
+    }
+  else
     {
       NS_LOG_WARN ("drop icmp message");
-      return;
     }
-  // XXX handle multi-address case
-  Ipv4Address source = ipv4->GetAddress (i, 0).GetLocal ();
-  SendMessage (packet, source, dest, type, code);
 }
 
 void
-Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address source, Ipv4Address dest, uint8_t type, uint8_t code)
+Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address source, Ipv4Address dest, uint8_t type, uint8_t code, Ptr<Ipv4Route> route)
 {
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
   Icmpv4Header icmp;
@@ -85,7 +116,7 @@ Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address source, Ipv4Addre
       icmp.EnableChecksum ();
     }
   packet->AddHeader (icmp);
-  ipv4->Send (packet, source, dest, ICMP_PROTOCOL);
+  ipv4->Send (packet, source, dest, ICMP_PROTOCOL, route);
 }
 void 
 Icmpv4L4Protocol::SendDestUnreachFragNeeded (Ipv4Header header, 
@@ -140,7 +171,7 @@ Icmpv4L4Protocol::HandleEcho (Ptr<Packet> p,
   Icmpv4Echo echo;
   p->RemoveHeader (echo);
   reply->AddHeader (echo);
-  SendMessage (reply, destination, source, Icmpv4Header::ECHO_REPLY, 0);
+  SendMessage (reply, destination, source, Icmpv4Header::ECHO_REPLY, 0, 0);
 }
 void
 Icmpv4L4Protocol::Forward (Ipv4Address source, Icmpv4Header icmp,

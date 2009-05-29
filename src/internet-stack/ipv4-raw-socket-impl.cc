@@ -170,14 +170,24 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
   InetSocketAddress ad = InetSocketAddress::ConvertFrom (toAddress);
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
   Ipv4Address dst = ad.GetIpv4 ();
-  uint32_t localInterface;
-  if (ipv4->GetInterfaceForDestination(dst, localInterface))
+  if (ipv4->GetRoutingProtocol ())
     {
-      ipv4->Send (p, ipv4->GetSourceAddress (dst), dst, m_protocol);
-    }
-  else
-    {
-      NS_LOG_DEBUG ("dropped because no outgoing route.");
+      Ipv4Header header;
+      header.SetDestination (dst);
+      SocketErrno errno = ERROR_NOTERROR;;
+      Ptr<Ipv4Route> route;
+      uint32_t oif = 0; //specify non-zero if bound to a source address
+      // TBD-- we could cache the route and just check its validity
+      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno);
+      if (route != 0)
+        {
+          NS_LOG_LOGIC ("Route exists");
+          ipv4->Send (p, route->GetSource (), dst, m_protocol, route);
+        }
+      else
+        {
+          NS_LOG_DEBUG ("dropped because no outgoing route.");
+        }
     }
   return 0;
 }

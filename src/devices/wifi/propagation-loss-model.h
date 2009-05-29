@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  * Contributions: Timo Bingmann <timo.bingmann@student.kit.edu>
+ * Contributions: Gary Pei <guangyu.pei@boeing.com> for fixed RSS
  */
 
 #ifndef PROPAGATION_LOSS_MODEL_H
@@ -294,6 +295,79 @@ private:
   double m_exponent2;
 
   double m_referenceLoss;
+};
+
+/**
+ * \brief Nakagami-m fast fading propagation loss model.
+ *
+ * The Nakagami-m distribution is applied to the power level. The probability
+ * density function is defined as
+ * \f[ p(x; m, \omega) = \frac{2 m^m}{\Gamma(m) \omega^m} x^{2m - 1} e^{-\frac{m}{\omega} x^2} = 2 x \cdot p_{\text{Gamma}}(x^2, m, \frac{m}{\omega}) \f]
+ * with \f$ m \f$ the fading depth parameter and \f$ \omega \f$ the average received power.
+ *
+ * It is implemented by either a ns3::GammaVariable or a ns3::ErlangVariable
+ * random variable.
+ *
+ * Like in ns3::ThreeLogDistancePropagationLossModel, the m parameter is varied
+ * over three distance fields:
+ * \f[ \underbrace{0 \cdots\cdots}_{m_0} \underbrace{d_1 \cdots\cdots}_{m_1} \underbrace{d_2 \cdots\cdots}_{m_2} \infty \f]
+ *
+ * For m = 1 the Nakagami-m distribution equals the Rayleigh distribution. Thus
+ * this model also implements Rayleigh distribution based fast fading.
+ */
+
+class NakagamiPropagationLossModel : public PropagationLossModel
+{
+public:
+  static TypeId GetTypeId (void);
+
+  NakagamiPropagationLossModel ();
+
+  // Parameters are all accessible via attributes.
+
+private:
+  NakagamiPropagationLossModel (const NakagamiPropagationLossModel& o);
+  NakagamiPropagationLossModel& operator= (const NakagamiPropagationLossModel& o);
+
+  virtual double DoCalcRxPower (double txPowerDbm,
+                                Ptr<MobilityModel> a,
+                                Ptr<MobilityModel> b) const;
+
+  double m_distance1;
+  double m_distance2;
+
+  double m_m0;
+  double m_m1;
+  double m_m2;
+
+  ErlangVariable        m_erlangRandomVariable;
+  GammaVariable         m_gammaRandomVariable;
+};
+
+/**
+ * \brief The propagation loss is fixed. The user can set received power level.
+ */ 
+class FixedRssLossModel : public PropagationLossModel
+{
+public:
+  static TypeId GetTypeId (void);
+
+  FixedRssLossModel ();
+  virtual ~FixedRssLossModel ();
+  /**
+   * \param RSS (dBm) the received signal strength
+   *
+   * Set the RSS.
+   */
+  void SetRss (double rss);
+
+private:
+  FixedRssLossModel (const FixedRssLossModel &o);
+  FixedRssLossModel & operator = (const FixedRssLossModel &o);
+  virtual double DoCalcRxPower (double txPowerDbm,
+                                Ptr<MobilityModel> a,
+                                Ptr<MobilityModel> b) const;
+  double m_rss;
 };
 
 } // namespace ns3

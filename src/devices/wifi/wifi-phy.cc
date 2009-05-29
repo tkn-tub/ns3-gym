@@ -199,6 +199,43 @@ WifiPhy::NotifyPromiscSniff (Ptr<const Packet> packet)
   m_phyPromiscSnifferTrace (packet);
 }
 
+WifiMode 
+WifiPhy::Get1mbb (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateDbpsk ("wifib-1mbs",
+                                                      true,
+                                                      22000000, 1000000, 1000000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get2mbb (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateDqpsk ("wifib-2mbs",
+                                                      true,
+                                                      22000000, 2000000, 2000000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get5_5mbb (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateDqpsk ("wifib-5.5mbs",
+                                                      true,
+                                                      22000000, 5500000, 5500000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get11mbb (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateDqpsk ("wifib-11mbs",
+                                                      true,
+                                                      22000000, 11000000, 11000000);
+  return mode;
+}
+
+
 } // namespace ns3
 
 namespace {
@@ -215,6 +252,10 @@ public:
     ns3::WifiPhy::Get36mba ();
     ns3::WifiPhy::Get48mba ();
     ns3::WifiPhy::Get54mba ();
+    ns3::WifiPhy::Get1mbb ();
+    ns3::WifiPhy::Get2mbb ();
+    ns3::WifiPhy::Get5_5mbb ();
+    ns3::WifiPhy::Get11mbb ();
   }
 } g_constructor;
 }

@@ -342,7 +342,7 @@ TapBridge::CreateTap (void)
       Ptr<NetDevice> nd = GetBridgedNetDevice ();
       Ptr<Node> n = nd->GetNode ();
       Ptr<Ipv4> ipv4 = n->GetObject<Ipv4> ();
-      uint32_t index = ipv4->FindInterfaceForDevice (nd);
+      uint32_t index = ipv4->GetInterfaceForDevice (nd);
       if (ipv4->GetNAddresses (index) > 1)
         {
           NS_LOG_WARN ("Underlying bridged NetDevice has multiple IP addresses; using first one.");

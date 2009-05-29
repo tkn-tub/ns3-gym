@@ -1,4 +1,4 @@
-from pybindgen import Module, FileCodeSink, param, retval, cppclass
+from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandlers
 
 def register_types(module):
     root_module = module.get_root()
@@ -17,6 +17,8 @@ def register_types(module):
     module.add_class('Ipv4AddressHelper', allow_subclassing=False)
     ## ipv4-interface-container.h: ns3::Ipv4InterfaceContainer [class]
     module.add_class('Ipv4InterfaceContainer')
+    ## ipv4-static-routing-helper.h: ns3::Ipv4StaticRoutingHelper [class]
+    module.add_class('Ipv4StaticRoutingHelper', allow_subclassing=False)
     ## mobility-helper.h: ns3::MobilityHelper [class]
     module.add_class('MobilityHelper', allow_subclassing=False)
     ## net-device-container.h: ns3::NetDeviceContainer [class]
@@ -35,8 +37,6 @@ def register_types(module):
     module.add_class('PacketSocketHelper', allow_subclassing=False)
     ## point-to-point-helper.h: ns3::PointToPointHelper [class]
     module.add_class('PointToPointHelper', allow_subclassing=False)
-    ## static-multicast-route-helper.h: ns3::StaticMulticastRouteHelper [class]
-    module.add_class('StaticMulticastRouteHelper', allow_subclassing=False)
     ## tap-bridge-helper.h: ns3::TapBridgeHelper [class]
     module.add_class('TapBridgeHelper', allow_subclassing=False)
     ## udp-echo-helper.h: ns3::UdpEchoClientHelper [class]
@@ -72,6 +72,12 @@ def register_types(module):
     register_types_ns3_TimeStepPrecision(nested_module)
     
     
+    ## Register a nested module for the namespace addressUtils
+    
+    nested_module = module.add_cpp_namespace('addressUtils')
+    register_types_ns3_addressUtils(nested_module)
+    
+    
     ## Register a nested module for the namespace internal
     
     nested_module = module.add_cpp_namespace('internal')
@@ -92,6 +98,10 @@ def register_types_ns3_TimeStepPrecision(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_addressUtils(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_internal(module):
     root_module = module.get_root()
     
@@ -108,6 +118,7 @@ def register_methods(root_module):
     register_Ns3InternetStackHelper_methods(root_module, root_module['ns3::InternetStackHelper'])
     register_Ns3Ipv4AddressHelper_methods(root_module, root_module['ns3::Ipv4AddressHelper'])
     register_Ns3Ipv4InterfaceContainer_methods(root_module, root_module['ns3::Ipv4InterfaceContainer'])
+    register_Ns3Ipv4StaticRoutingHelper_methods(root_module, root_module['ns3::Ipv4StaticRoutingHelper'])
     register_Ns3MobilityHelper_methods(root_module, root_module['ns3::MobilityHelper'])
     register_Ns3NetDeviceContainer_methods(root_module, root_module['ns3::NetDeviceContainer'])
     register_Ns3NodeContainer_methods(root_module, root_module['ns3::NodeContainer'])
@@ -117,7 +128,6 @@ def register_methods(root_module):
     register_Ns3PacketSinkHelper_methods(root_module, root_module['ns3::PacketSinkHelper'])
     register_Ns3PacketSocketHelper_methods(root_module, root_module['ns3::PacketSocketHelper'])
     register_Ns3PointToPointHelper_methods(root_module, root_module['ns3::PointToPointHelper'])
-    register_Ns3StaticMulticastRouteHelper_methods(root_module, root_module['ns3::StaticMulticastRouteHelper'])
     register_Ns3TapBridgeHelper_methods(root_module, root_module['ns3::TapBridgeHelper'])
     register_Ns3UdpEchoClientHelper_methods(root_module, root_module['ns3::UdpEchoClientHelper'])
     register_Ns3UdpEchoServerHelper_methods(root_module, root_module['ns3::UdpEchoServerHelper'])
@@ -423,10 +433,14 @@ def register_Ns3InternetStackHelper_methods(root_module, cls):
                    'void', 
                    [param('ns3::NodeContainer', 'c')], 
                    is_const=True)
-    ## internet-stack-helper.h: void ns3::InternetStackHelper::SetNscStack(std::string soname) [member function]
-    cls.add_method('SetNscStack', 
+    ## internet-stack-helper.h: void ns3::InternetStackHelper::SetTcp(std::string tid) [member function]
+    cls.add_method('SetTcp', 
                    'void', 
-                   [param('std::string', 'soname')])
+                   [param('std::string', 'tid')])
+    ## internet-stack-helper.h: void ns3::InternetStackHelper::SetTcp(std::string tid, std::string attr, ns3::AttributeValue const & val) [member function]
+    cls.add_method('SetTcp', 
+                   'void', 
+                   [param('std::string', 'tid'), param('std::string', 'attr'), param('ns3::AttributeValue const &', 'val')])
     ## internet-stack-helper.h: static void ns3::InternetStackHelper::EnableAscii(std::ostream & os, ns3::NodeContainer n) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
@@ -498,6 +512,50 @@ def register_Ns3Ipv4InterfaceContainer_methods(root_module, cls):
     cls.add_method('Add', 
                    'void', 
                    [param('std::string', 'ipv4Name'), param('uint32_t', 'interface')])
+    return
+
+def register_Ns3Ipv4StaticRoutingHelper_methods(root_module, cls):
+    ## ipv4-static-routing-helper.h: ns3::Ipv4StaticRoutingHelper::Ipv4StaticRoutingHelper(ns3::Ipv4StaticRoutingHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv4StaticRoutingHelper const &', 'arg0')])
+    ## ipv4-static-routing-helper.h: ns3::Ipv4StaticRoutingHelper::Ipv4StaticRoutingHelper() [constructor]
+    cls.add_constructor([])
+    ## ipv4-static-routing-helper.h: ns3::Ptr<ns3::Ipv4StaticRouting> ns3::Ipv4StaticRoutingHelper::GetStaticRouting(ns3::Ptr<ns3::Ipv4> ipv4) const [member function]
+    cls.add_method('GetStaticRouting', 
+                   'ns3::Ptr< ns3::Ipv4StaticRouting >', 
+                   [param('ns3::Ptr< ns3::Ipv4 >', 'ipv4')], 
+                   is_const=True)
+    ## ipv4-static-routing-helper.h: void ns3::Ipv4StaticRoutingHelper::AddMulticastRoute(ns3::Ptr<ns3::Node> n, ns3::Ipv4Address source, ns3::Ipv4Address group, ns3::Ptr<ns3::NetDevice> input, ns3::NetDeviceContainer output) [member function]
+    cls.add_method('AddMulticastRoute', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'n'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group'), param('ns3::Ptr< ns3::NetDevice >', 'input'), param('ns3::NetDeviceContainer', 'output')])
+    ## ipv4-static-routing-helper.h: void ns3::Ipv4StaticRoutingHelper::AddMulticastRoute(std::string n, ns3::Ipv4Address source, ns3::Ipv4Address group, ns3::Ptr<ns3::NetDevice> input, ns3::NetDeviceContainer output) [member function]
+    cls.add_method('AddMulticastRoute', 
+                   'void', 
+                   [param('std::string', 'n'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group'), param('ns3::Ptr< ns3::NetDevice >', 'input'), param('ns3::NetDeviceContainer', 'output')])
+    ## ipv4-static-routing-helper.h: void ns3::Ipv4StaticRoutingHelper::AddMulticastRoute(ns3::Ptr<ns3::Node> n, ns3::Ipv4Address source, ns3::Ipv4Address group, std::string inputName, ns3::NetDeviceContainer output) [member function]
+    cls.add_method('AddMulticastRoute', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'n'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group'), param('std::string', 'inputName'), param('ns3::NetDeviceContainer', 'output')])
+    ## ipv4-static-routing-helper.h: void ns3::Ipv4StaticRoutingHelper::AddMulticastRoute(std::string nName, ns3::Ipv4Address source, ns3::Ipv4Address group, std::string inputName, ns3::NetDeviceContainer output) [member function]
+    cls.add_method('AddMulticastRoute', 
+                   'void', 
+                   [param('std::string', 'nName'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group'), param('std::string', 'inputName'), param('ns3::NetDeviceContainer', 'output')])
+    ## ipv4-static-routing-helper.h: void ns3::Ipv4StaticRoutingHelper::SetDefaultMulticastRoute(ns3::Ptr<ns3::Node> n, ns3::Ptr<ns3::NetDevice> nd) [member function]
+    cls.add_method('SetDefaultMulticastRoute', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'n'), param('ns3::Ptr< ns3::NetDevice >', 'nd')])
+    ## ipv4-static-routing-helper.h: void ns3::Ipv4StaticRoutingHelper::SetDefaultMulticastRoute(ns3::Ptr<ns3::Node> n, std::string ndName) [member function]
+    cls.add_method('SetDefaultMulticastRoute', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'n'), param('std::string', 'ndName')])
+    ## ipv4-static-routing-helper.h: void ns3::Ipv4StaticRoutingHelper::SetDefaultMulticastRoute(std::string nName, ns3::Ptr<ns3::NetDevice> nd) [member function]
+    cls.add_method('SetDefaultMulticastRoute', 
+                   'void', 
+                   [param('std::string', 'nName'), param('ns3::Ptr< ns3::NetDevice >', 'nd')])
+    ## ipv4-static-routing-helper.h: void ns3::Ipv4StaticRoutingHelper::SetDefaultMulticastRoute(std::string nName, std::string ndName) [member function]
+    cls.add_method('SetDefaultMulticastRoute', 
+                   'void', 
+                   [param('std::string', 'nName'), param('std::string', 'ndName')])
     return
 
 def register_Ns3MobilityHelper_methods(root_module, cls):
@@ -885,53 +943,6 @@ def register_Ns3PointToPointHelper_methods(root_module, cls):
                    [param('std::string', 'hubName'), param('ns3::NodeContainer', 'spokes'), param('ns3::NetDeviceContainer &', 'hubDevices'), param('ns3::NetDeviceContainer &', 'spokeDevices')])
     return
 
-def register_Ns3StaticMulticastRouteHelper_methods(root_module, cls):
-    ## static-multicast-route-helper.h: ns3::StaticMulticastRouteHelper::StaticMulticastRouteHelper(ns3::StaticMulticastRouteHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::StaticMulticastRouteHelper const &', 'arg0')])
-    ## static-multicast-route-helper.h: ns3::StaticMulticastRouteHelper::StaticMulticastRouteHelper() [constructor]
-    cls.add_constructor([])
-    ## static-multicast-route-helper.h: void ns3::StaticMulticastRouteHelper::AddMulticastRoute(ns3::Ptr<ns3::Node> n, ns3::Ipv4Address source, ns3::Ipv4Address group, ns3::Ptr<ns3::NetDevice> input, ns3::NetDeviceContainer output) [member function]
-    cls.add_method('AddMulticastRoute', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'n'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group'), param('ns3::Ptr< ns3::NetDevice >', 'input'), param('ns3::NetDeviceContainer', 'output')])
-    ## static-multicast-route-helper.h: void ns3::StaticMulticastRouteHelper::AddMulticastRoute(std::string n, ns3::Ipv4Address source, ns3::Ipv4Address group, ns3::Ptr<ns3::NetDevice> input, ns3::NetDeviceContainer output) [member function]
-    cls.add_method('AddMulticastRoute', 
-                   'void', 
-                   [param('std::string', 'n'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group'), param('ns3::Ptr< ns3::NetDevice >', 'input'), param('ns3::NetDeviceContainer', 'output')])
-    ## static-multicast-route-helper.h: void ns3::StaticMulticastRouteHelper::AddMulticastRoute(ns3::Ptr<ns3::Node> n, ns3::Ipv4Address source, ns3::Ipv4Address group, std::string inputName, ns3::NetDeviceContainer output) [member function]
-    cls.add_method('AddMulticastRoute', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'n'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group'), param('std::string', 'inputName'), param('ns3::NetDeviceContainer', 'output')])
-    ## static-multicast-route-helper.h: void ns3::StaticMulticastRouteHelper::AddMulticastRoute(std::string nName, ns3::Ipv4Address source, ns3::Ipv4Address group, std::string inputName, ns3::NetDeviceContainer output) [member function]
-    cls.add_method('AddMulticastRoute', 
-                   'void', 
-                   [param('std::string', 'nName'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group'), param('std::string', 'inputName'), param('ns3::NetDeviceContainer', 'output')])
-    ## static-multicast-route-helper.h: void ns3::StaticMulticastRouteHelper::SetDefaultMulticastRoute(ns3::Ptr<ns3::Node> n, ns3::Ptr<ns3::NetDevice> nd) [member function]
-    cls.add_method('SetDefaultMulticastRoute', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'n'), param('ns3::Ptr< ns3::NetDevice >', 'nd')])
-    ## static-multicast-route-helper.h: void ns3::StaticMulticastRouteHelper::SetDefaultMulticastRoute(ns3::Ptr<ns3::Node> n, std::string ndName) [member function]
-    cls.add_method('SetDefaultMulticastRoute', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'n'), param('std::string', 'ndName')])
-    ## static-multicast-route-helper.h: void ns3::StaticMulticastRouteHelper::SetDefaultMulticastRoute(std::string nName, ns3::Ptr<ns3::NetDevice> nd) [member function]
-    cls.add_method('SetDefaultMulticastRoute', 
-                   'void', 
-                   [param('std::string', 'nName'), param('ns3::Ptr< ns3::NetDevice >', 'nd')])
-    ## static-multicast-route-helper.h: void ns3::StaticMulticastRouteHelper::SetDefaultMulticastRoute(std::string nName, std::string ndName) [member function]
-    cls.add_method('SetDefaultMulticastRoute', 
-                   'void', 
-                   [param('std::string', 'nName'), param('std::string', 'ndName')])
-    ## static-multicast-route-helper.h: void ns3::StaticMulticastRouteHelper::JoinMulticastGroup(ns3::Ptr<ns3::Node> n, ns3::Ipv4Address source, ns3::Ipv4Address group) [member function]
-    cls.add_method('JoinMulticastGroup', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'n'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group')])
-    ## static-multicast-route-helper.h: void ns3::StaticMulticastRouteHelper::JoinMulticastGroup(std::string nName, ns3::Ipv4Address source, ns3::Ipv4Address group) [member function]
-    cls.add_method('JoinMulticastGroup', 
-                   'void', 
-                   [param('std::string', 'nName'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group')])
-    return
-
 def register_Ns3TapBridgeHelper_methods(root_module, cls):
     ## tap-bridge-helper.h: ns3::TapBridgeHelper::TapBridgeHelper(ns3::TapBridgeHelper const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::TapBridgeHelper const &', 'arg0')])
@@ -1264,6 +1275,7 @@ def register_functions(root_module):
     module = root_module
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
+    register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
     return
@@ -1272,6 +1284,9 @@ def register_functions_ns3_Config(module, root_module):
     return
 
 def register_functions_ns3_TimeStepPrecision(module, root_module):
+    return
+
+def register_functions_ns3_addressUtils(module, root_module):
     return
 
 def register_functions_ns3_internal(module, root_module):

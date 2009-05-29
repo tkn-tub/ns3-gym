@@ -62,7 +62,8 @@ class TestSimulator(unittest.TestCase):
 
     def testSocket(self):
         node = ns3.Node()
-        ns3.AddInternetStack(node)
+        internet = ns3.InternetStackHelper()
+        internet.Install(node)
         self._received_packet = None
 
         def rx_callback(socket):

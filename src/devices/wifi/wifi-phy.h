@@ -252,6 +252,11 @@ public:
   static WifiMode Get36mba (void);
   static WifiMode Get48mba (void);
   static WifiMode Get54mba (void);
+  static WifiMode Get1mbb (void);
+  static WifiMode Get2mbb (void);
+  static WifiMode Get5_5mbb (void);
+  static WifiMode Get11mbb (void);
+
 
   /**
    * Public method used to fire a PhyTxBegin trace.  Implemented for encapsulation 

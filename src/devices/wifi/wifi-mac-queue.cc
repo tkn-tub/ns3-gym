@@ -32,7 +32,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (WifiMacQueue);
 
 WifiMacQueue::Item::Item (Ptr<const Packet> packet, 
-                          WifiMacHeader const &hdr, 
+                          const WifiMacHeader &hdr, 
                           Time tstamp)
   : packet (packet), hdr (hdr), tstamp (tstamp)
 {}
@@ -89,7 +89,7 @@ WifiMacQueue::GetMaxDelay (void) const
 }
 
 void 
-WifiMacQueue::Enqueue (Ptr<const Packet> packet, WifiMacHeader const &hdr)
+WifiMacQueue::Enqueue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
   Cleanup ();
   if (m_size == m_maxSize) 

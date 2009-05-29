@@ -23,9 +23,11 @@
 #include "ns3/packet.h"
 #include "ns3/node.h"
 #include "ns3/boolean.h"
+#include "ns3/ipv4-route.h"
 
 #include "udp-l4-protocol.h"
 #include "udp-header.h"
+#include "udp-socket-factory-impl.h"
 #include "ipv4-end-point-demux.h"
 #include "ipv4-end-point.h"
 #include "ipv4-l3-protocol.h"
@@ -70,6 +72,28 @@ void
 UdpL4Protocol::SetNode (Ptr<Node> node)
 {
   m_node = node;
+}
+
+/*
+ * This method is called by AddAgregate and completes the aggregation
+ * by setting the node in the udp stack and link it to the ipv4 object
+ * present in the node along with the socket factory
+ */
+void
+UdpL4Protocol::NotifyNewAggregate ()
+{  
+  bool is_not_initialized = (m_node == 0);
+  Ptr<Node>node = this->GetObject<Node> ();
+  Ptr<Ipv4L3Protocol> ipv4 = this->GetObject<Ipv4L3Protocol> ();
+  if (is_not_initialized && node!= 0 && ipv4 != 0)
+    {
+      this->SetNode (node);
+      ipv4->Insert (this);
+      Ptr<UdpSocketFactoryImpl> udpFactory = CreateObject<UdpSocketFactoryImpl> ();
+      udpFactory->SetUdp (this);
+      node->AggregateObject (udpFactory);
+    }
+  Object::NotifyNewAggregate ();
 }
 
 int 
@@ -200,6 +224,7 @@ UdpL4Protocol::Receive(Ptr<Packet> packet,
                          source, udpHeader.GetSourcePort (), interface);
   if (endPoints.empty ())
     {
+      NS_LOG_LOGIC ("RX_ENDPOINT_UNREACH");
       return Ipv4L4Protocol::RX_ENDPOINT_UNREACH;
     }
   for (Ipv4EndPointDemux::EndPointsI endPoint = endPoints.begin ();
@@ -234,7 +259,36 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
   if (ipv4 != 0)
     {
       NS_LOG_LOGIC ("Sending to IP");
-      ipv4->Send (packet, saddr, daddr, PROT_NUMBER);
+      // Send with null route
+      ipv4->Send (packet, saddr, daddr, PROT_NUMBER, 0);
+    }
+}
+
+void
+UdpL4Protocol::Send (Ptr<Packet> packet, 
+                     Ipv4Address saddr, Ipv4Address daddr, 
+                     uint16_t sport, uint16_t dport, Ptr<Ipv4Route> route)
+{
+  NS_LOG_FUNCTION (this << packet << saddr << daddr << sport << dport);
+
+  UdpHeader udpHeader;
+  if(m_calcChecksum)
+  {
+    udpHeader.EnableChecksums();
+    udpHeader.InitializeChecksum (saddr,
+                                  daddr,
+                                  PROT_NUMBER);
+  }
+  udpHeader.SetDestinationPort (dport);
+  udpHeader.SetSourcePort (sport);
+
+  packet->AddHeader (udpHeader);
+
+  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
+  if (ipv4 != 0)
+    {
+      NS_LOG_LOGIC ("Sending to IP");
+      ipv4->Send (packet, saddr, daddr, PROT_NUMBER, route);
     }
 }
 

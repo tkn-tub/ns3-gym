@@ -131,7 +131,7 @@ Ipv4AddressHelper::Assign (const NetDeviceContainer &c)
     Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
     NS_ASSERT_MSG (ipv4, "Ipv4AddressHelper::Allocate(): Bad ipv4");
 
-    int32_t interface = ipv4->FindInterfaceForDevice (device);
+    int32_t interface = ipv4->GetInterfaceForDevice (device);
     if (interface == -1)
       {
         interface = ipv4->AddInterface (device);

@@ -54,8 +54,8 @@ public:
   virtual ~NscTcpL4Protocol ();
 
   void SetNode (Ptr<Node> node);
-  void SetNscLibrary(const std::string &lib);
-
+  void SetNscLibrary (const std::string &lib);
+  std::string GetNscLibrary (void) const;
   virtual int GetProtocolNumber (void) const;
   virtual int GetVersion (void) const;
 
@@ -105,6 +105,7 @@ public:
 
 protected:
   virtual void DoDispose (void);
+  virtual void NotifyNewAggregate ();
 private:
   Ptr<Node> m_node;
   Ipv4EndPointDemux *m_endPoints;
@@ -116,6 +117,7 @@ private:
   friend class NscTcpSocketImpl;
   INetStack* m_nscStack;
   void *m_dlopenHandle;
+  std::string m_nscLibrary;
   Timer m_softTimer;
   std::vector<Ptr<NscTcpSocketImpl> > m_sockets;
 };

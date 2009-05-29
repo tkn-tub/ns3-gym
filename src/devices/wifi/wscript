@@ -1,5 +1,12 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
+def configure(conf): 
+    have_gsl = conf.pkg_check_modules('GSL', 'gsl', mandatory=False)
+    conf.env['ENABLE_GSL'] = have_gsl
+    conf.report_optional_feature("GSL", "GNU Scientific Library (GSL)",
+                                 conf.env['ENABLE_GSL'],
+                                 "GSL not found")
+
 def build(bld):
     obj = bld.create_ns3_module('wifi', ['node'])
     obj.source = [
@@ -107,6 +114,12 @@ def build(bld):
         'mac-low.h',
         ]
 
+    if bld.env['ENABLE_GSL']:
+        obj.uselib = 'GSL GSLCBLAS M'
+        obj.env.append_value('CXXDEFINES', "ENABLE_GSL")
+
     obj = bld.create_ns3_program('wifi-phy-test',
         ['core', 'simulator', 'mobility', 'node', 'wifi'])
     obj.source = 'wifi-phy-test.cc'
+
+

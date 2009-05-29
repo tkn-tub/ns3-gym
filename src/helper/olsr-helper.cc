@@ -21,6 +21,7 @@
 #include "ns3/olsr-routing-protocol.h"
 #include "ns3/node-list.h"
 #include "ns3/names.h"
+#include "ns3/ipv4-list-routing.h"
 
 namespace ns3 {
 
@@ -72,7 +73,9 @@ OlsrHelper::Install (Ptr<Node> node)
   Ptr<olsr::RoutingProtocol> agent = m_agentFactory.Create<olsr::RoutingProtocol> ();
   node->AggregateObject (agent);
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-  ipv4->AddRoutingProtocol (agent, 10);
+  Ptr<Ipv4ListRouting> ipv4Routing = DynamicCast<Ipv4ListRouting> (ipv4->GetRoutingProtocol ());
+  NS_ASSERT (ipv4Routing);
+  ipv4Routing->AddRoutingProtocol (agent, 10);
   agent->SetNode (node);
   agent->Start ();
 }

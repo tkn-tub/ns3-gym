@@ -38,6 +38,14 @@ void ReadFrom (Buffer::Iterator &i, Ipv6Address &ad);
 void ReadFrom (Buffer::Iterator &i, Address &ad, uint32_t len);
 void ReadFrom (Buffer::Iterator &i, Mac48Address &ad);
 
+namespace addressUtils {
+
+/**
+ * \brief Address family-independent test for a multicast address
+ */
+bool IsMulticast (const Address &ad);
+};  
+
 };
 
 #endif /* ADDRESS_UTILS_H */

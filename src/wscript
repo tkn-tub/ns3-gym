@@ -55,6 +55,7 @@ def configure(conf):
     conf.sub_config('core')
     conf.sub_config('simulator')
     conf.sub_config('devices/emu')
+    conf.sub_config('devices/wifi')
     conf.sub_config('devices/tap-bridge')
     conf.sub_config('contrib')
     conf.sub_config('internet-stack')

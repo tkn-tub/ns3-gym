@@ -169,6 +169,11 @@ public:
   void SetEifsNoDifs (Time eifsNoDifs);
 
   /**
+   * \return value set previously using SetEifsNoDifs.
+   */
+  Time GetEifsNoDifs () const;
+
+  /**
    * \param dcf a new DcfState.
    *
    * The DcfManager does not take ownership of this pointer so, the callee

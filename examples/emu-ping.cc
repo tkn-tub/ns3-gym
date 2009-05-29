@@ -55,7 +55,6 @@
 #include "ns3/core-module.h"
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
-#include "ns3/internet-stack-module.h"
 #include "ns3/emu-module.h"
 #include "ns3/v4ping-module.h"
 #include "ns3/helper-module.h"
@@ -149,7 +148,8 @@ main (int argc, char *argv[])
   // of ARP, IPv4, ICMP, UDP and TCP.
   //
   NS_LOG_INFO ("Add Internet Stack");
-  AddInternetStack (node);
+  InternetStackHelper internetStackHelper;
+  internetStackHelper.Install (node);
 
   NS_LOG_INFO ("Create IPv4 Interface");
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
@@ -175,7 +175,9 @@ main (int argc, char *argv[])
   Ipv4Address gateway ("1.2.3.4");
   NS_ABORT_MSG_IF (gateway == "1.2.3.4", "You must change the gateway IP address before running this example");
 
-  ipv4->SetDefaultRoute (gateway, interface);
+  Ipv4StaticRoutingHelper ipv4RoutingHelper;
+  Ptr<Ipv4StaticRouting> staticRouting = ipv4RoutingHelper.GetStaticRouting (ipv4);
+  staticRouting->SetDefaultRoute (gateway, interface);
 
   //
   // Create the ping application.  This application knows how to send

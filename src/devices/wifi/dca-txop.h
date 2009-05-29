@@ -67,8 +67,8 @@ class DcaTxop : public Object
 public:
   static TypeId GetTypeId (void);
 
-  typedef Callback <void, WifiMacHeader const&> TxOk;
-  typedef Callback <void, WifiMacHeader const&> TxFailed;
+  typedef Callback <void, const WifiMacHeader&> TxOk;
+  typedef Callback <void, const WifiMacHeader&> TxFailed;
 
   DcaTxop ();
   ~DcaTxop ();
@@ -104,7 +104,7 @@ public:
    * Store the packet in the internal queue until it
    * can be sent safely.
    */
-  void Queue (Ptr<const Packet> packet, WifiMacHeader const &hdr);
+  void Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr);
 
 private:
   class TransmissionListener;

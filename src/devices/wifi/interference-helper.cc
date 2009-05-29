@@ -123,7 +123,7 @@ InterferenceHelper::NiChange::operator < (InterferenceHelper::NiChange const &o)
  ****************************************************************/
 
 InterferenceHelper::InterferenceHelper ()
-  : m_80211a (false),
+  : m_80211_standard (WIFI_PHY_STANDARD_80211a),
     m_errorRateModel (0)
 {}
 InterferenceHelper::~InterferenceHelper ()
@@ -227,12 +227,25 @@ InterferenceHelper::GetEnergyDuration (double energyW)
 Time
 InterferenceHelper::CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble) const
 {
-  NS_ASSERT (m_80211a);
   uint64_t delay = 0;
-  delay += m_plcpLongPreambleDelayUs;
-  // symbol duration is 4us
-  delay += 4;
-  delay += lrint (ceil ((size * 8.0 + 16.0 + 6.0) / payloadMode.GetDataRate () / 4e-6) * 4);
+  switch (m_80211_standard) 
+  {
+    case WIFI_PHY_STANDARD_80211a:
+    case WIFI_PHY_STANDARD_holland:
+      delay += m_plcpLongPreambleDelayUs;
+      // symbol duration is 4us
+      delay += 4;
+      delay += lrint (ceil ((size * 8.0 + 16.0 + 6.0) / payloadMode.GetDataRate () / 4e-6) * 4);
+      break;
+    case WIFI_PHY_STANDARD_80211b:
+      delay += m_plcpLongPreambleDelayUs;
+      delay += lrint (ceil ((size * 8.0 + 48.0) / payloadMode.GetDataRate () / 4e-6) * 4);
+      break;
+    default:
+     NS_ASSERT (false);
+     break;
+  }
+
   return MicroSeconds (delay);
 }
 
@@ -240,7 +253,7 @@ void
 InterferenceHelper::Configure80211aParameters (void)
 {
   NS_LOG_FUNCTION (this);
-  m_80211a = true;
+  m_80211_standard = WIFI_PHY_STANDARD_80211a;
   m_plcpLongPreambleDelayUs = 16;
   m_plcpShortPreambleDelayUs = 16;
   m_longPlcpHeaderMode = WifiPhy::Get6mba ();
@@ -248,6 +261,20 @@ InterferenceHelper::Configure80211aParameters (void)
   m_plcpHeaderLength = 4 + 1 + 12 + 1 + 6;
   /* 4095 bytes at a 6Mb/s rate with a 1/2 coding rate. */
   m_maxPacketDuration = CalculateTxDuration (4095, WifiPhy::Get6mba (), WIFI_PREAMBLE_LONG);
+}
+
+void
+InterferenceHelper::Configure80211bParameters (void)
+{ 
+  NS_LOG_FUNCTION (this);
+  m_80211_standard = WIFI_PHY_STANDARD_80211b;
+  m_plcpLongPreambleDelayUs = 144;
+  m_plcpShortPreambleDelayUs = 144; // fixed preamable for 802.11b
+  m_longPlcpHeaderMode = WifiPhy::Get1mbb ();
+  m_shortPlcpHeaderMode = WifiPhy::Get1mbb ();
+  // PLCP Header: signal 8, service 8, length 16, CRC 16 bits
+  m_plcpHeaderLength = 8 + 8 + 16 + 16;
+  m_maxPacketDuration = CalculateTxDuration (4095, WifiPhy::Get1mbb (), WIFI_PREAMBLE_LONG);
 }
 
 void 
