@@ -1,6 +1,6 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2008 University of Washington
+ * Copyright (c) 2009 University of Washington
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -14,12 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * Author: Tom Henderson <tomhend@u.washington.edu>
  */
-#ifndef STATIC_MULTICAST_ROUTE_HELPER_H
-#define STATIC_MULTICAST_ROUTE_HELPER_H
 
+#ifndef IPV4_STATIC_ROUTING_HELPER_H
+#define IPV4_STATIC_ROUTING_HELPER_H
+
+#include "ns3/ipv4.h"
+#include "ns3/ipv4-static-routing.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/node.h"
@@ -29,10 +30,10 @@
 
 namespace ns3 {
 
-class StaticMulticastRouteHelper
+class Ipv4StaticRoutingHelper
 {
 public:
-  StaticMulticastRouteHelper ();
+  Ptr<Ipv4StaticRouting> GetStaticRouting (Ptr<Ipv4> ipv4) const;
 
   void AddMulticastRoute (Ptr<Node> n, Ipv4Address source, Ipv4Address group,  
     Ptr<NetDevice> input, NetDeviceContainer output);
@@ -43,15 +44,20 @@ public:
   void AddMulticastRoute (std::string nName, Ipv4Address source, Ipv4Address group,  
     std::string inputName, NetDeviceContainer output);
 
+  /**
+   * \brief Add a default route to the static routing protocol to forward
+   *        packets out a particular interface
+   *
+   * Functionally equivalent to:
+   * route add 224.0.0.0 netmask 240.0.0.0 dev nd
+   */
   void SetDefaultMulticastRoute (Ptr<Node> n, Ptr<NetDevice> nd);
   void SetDefaultMulticastRoute (Ptr<Node> n, std::string ndName);
   void SetDefaultMulticastRoute (std::string nName, Ptr<NetDevice> nd);
   void SetDefaultMulticastRoute (std::string nName, std::string ndName);
 
-  void JoinMulticastGroup (Ptr<Node> n, Ipv4Address source, Ipv4Address group);
-  void JoinMulticastGroup (std::string nName, Ipv4Address source, Ipv4Address group);
 };
 
 } // namespace ns3
 
-#endif /* STATIC_MULTICAST_ROUTE_HELPER_H */
+#endif /* IPV4_STATIC_ROUTING_HELPER_H */

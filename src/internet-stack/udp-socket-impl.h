@@ -75,15 +75,21 @@ public:
   virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
     Address &fromAddress);
   virtual int GetSockName (Address &address) const; 
+  virtual int MulticastJoinGroup (uint32_t interfaceIndex, const Address &groupAddress);
+  virtual int MulticastLeaveGroup (uint32_t interfaceIndex, const Address &groupAddress);
 
 private:
   // Attributes set through UdpSocket base class 
   virtual void SetRcvBufSize (uint32_t size);
   virtual uint32_t GetRcvBufSize (void) const;
-  virtual void SetIpTtl (uint32_t ipTtl);
-  virtual uint32_t GetIpTtl (void) const;
-  virtual void SetIpMulticastTtl (uint32_t ipTtl);
-  virtual uint32_t GetIpMulticastTtl (void) const;
+  virtual void SetIpTtl (uint8_t ipTtl);
+  virtual uint8_t GetIpTtl (void) const;
+  virtual void SetIpMulticastTtl (uint8_t ipTtl);
+  virtual uint8_t GetIpMulticastTtl (void) const;
+  virtual void SetIpMulticastIf (int32_t ipIf);
+  virtual int32_t GetIpMulticastIf (void) const;
+  virtual void SetIpMulticastLoop (bool loop);
+  virtual bool GetIpMulticastLoop (void) const;
   virtual void SetMtuDiscover (bool discover);
   virtual bool GetMtuDiscover (void) const;
 
@@ -117,8 +123,10 @@ private:
   
   // Socket attributes
   uint32_t m_rcvBufSize;
-  uint32_t m_ipTtl;
-  uint32_t m_ipMulticastTtl;
+  uint8_t m_ipTtl;
+  uint8_t m_ipMulticastTtl;
+  int32_t m_ipMulticastIf;
+  bool m_ipMulticastLoop;
   bool m_mtuDiscover;
   Callback<void, Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback;
 };

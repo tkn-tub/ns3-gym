@@ -160,6 +160,13 @@ public:
   AggregateIterator GetAggregateIterator (void) const;
 
 protected:
+ /**
+  * This function is called by the AggregateObject on all the objects connected in the listed chain.
+  * This way the new object aggregated will be used if needed by the NotifyNewAggregate corresponding
+  * to each object connected in the listed chain. It should be implemented by objects needing an
+  * additional/special behavior when aggregated to another object.
+  */
+  virtual void NotifyNewAggregate ();
   /**
    * This method is called by Object::Dispose or by the object's 
    * destructor, whichever comes first.

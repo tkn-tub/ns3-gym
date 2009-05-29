@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2005 INRIA
+ * Copyright (c) 2009 University of Washington
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,7 +15,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #ifndef IPV4_ROUTE_H
 #define IPV4_ROUTE_H
@@ -24,156 +23,81 @@
 #include <vector>
 #include <ostream>
 
+#include "ns3/ref-count-base.h"
 #include "ipv4-address.h"
 
 namespace ns3 {
+
+class NetDevice;
+
 /**
- * \ingroup ipv4
- * \brief A record of an IPv4 route
+ *\brief Ipv4 route cache entry (similar to Linux struct rtable)
+ *
+ * In the future, we will add other entries from struct dst_entry, struct rtable, and struct dst_ops as needed.
  */
-class Ipv4Route {
+class Ipv4Route : public RefCountBase {
 public:
-  /**
-   * \brief This constructor does nothing
-   */
   Ipv4Route ();
 
-  /**
-   * \brief Copy Constructor
-   * \param route The route to copy
-   */
-  Ipv4Route (Ipv4Route const &route);
+  void SetDestination (Ipv4Address dest);
+  Ipv4Address GetDestination (void) const;
 
-  /**
-   * \brief Copy Constructor
-   * \param route The route to copy
-   */
-  Ipv4Route (Ipv4Route const *route);
+  void SetSource (Ipv4Address src);
+  Ipv4Address GetSource (void) const;
 
-  bool IsHost (void) const;
-  /**
-   * \return The IPv4 address of the destination of this route
-   */
-  Ipv4Address GetDest (void) const;
-
-  bool IsNetwork (void) const;
-  Ipv4Address GetDestNetwork (void) const;
-  Ipv4Mask GetDestNetworkMask (void) const;
-  /**
-   * \return True if this route is a default route; false otherwise
-   */
-  bool IsDefault (void) const;
-
-  bool IsGateway (void) const;
+  void SetGateway (Ipv4Address gw);
   Ipv4Address GetGateway (void) const;
 
-  uint32_t GetInterface (void) const;
+  // dst_entry.dev
+  void SetOutputDevice (Ptr<NetDevice> outputDevice);
+  Ptr<NetDevice> GetOutputDevice (void) const;
 
-  static Ipv4Route CreateHostRouteTo (Ipv4Address dest, 
-				      Ipv4Address nextHop, 
-				      uint32_t interface);
-  static Ipv4Route CreateHostRouteTo (Ipv4Address dest, 
-				      uint32_t interface);
-  static Ipv4Route CreateNetworkRouteTo (Ipv4Address network, 
-					 Ipv4Mask networkMask, 
-					 Ipv4Address nextHop, 
-					 uint32_t interface);
-  static Ipv4Route CreateNetworkRouteTo (Ipv4Address network, 
-					 Ipv4Mask networkMask, 
-					 uint32_t interface);
-  static Ipv4Route CreateDefaultRoute (Ipv4Address nextHop, 
-				       uint32_t interface);
-  
+#ifdef NOTYET
+  // rtable.idev
+  void SetInputIfIndex (uint32_t iif);
+  uint32_t GetInputIfIndex (void) const;
+#endif
+
 private:
-  Ipv4Route (Ipv4Address network,
-	     Ipv4Mask mask,
-	     Ipv4Address gateway,
-	     uint32_t interface);
-  Ipv4Route (Ipv4Address dest,
-	     Ipv4Mask mask,
-	     uint32_t interface);
-  Ipv4Route (Ipv4Address dest,
-	     Ipv4Address gateway,
-	     uint32_t interface);
-  Ipv4Route (Ipv4Address dest,
-	     uint32_t interface);
-
   Ipv4Address m_dest;
-  Ipv4Mask m_destNetworkMask;
+  Ipv4Address m_source;
   Ipv4Address m_gateway;
-  uint32_t m_interface;
+  Ptr<NetDevice> m_outputDevice;
+#ifdef NOTYET
+  uint32_t m_inputIfIndex;
+#endif
 };
 
 std::ostream& operator<< (std::ostream& os, Ipv4Route const& route);
 
 /**
- * \ingroup ipv4 
- * \brief A record of an IPv4 multicast route
+ *\brief Ipv4 multicast route cache entry (similar to Linux struct mfc_cache)
  */
-class Ipv4MulticastRoute {
+class Ipv4MulticastRoute : public RefCountBase {
 public:
-  /**
-   * \brief This constructor does nothing
-   */
   Ipv4MulticastRoute ();
 
-  /**
-   * \brief Copy Constructor
-   * \param route The route to copy
-   */
-  Ipv4MulticastRoute (Ipv4MulticastRoute const &route);
+  void SetGroup (const Ipv4Address group);
+  Ipv4Address GetGroup (void) const; 
 
-  /**
-   * \brief Copy Constructor
-   * \param route The route to copy
-   */
-  Ipv4MulticastRoute (Ipv4MulticastRoute const *route);
+  void SetOrigin (const Ipv4Address group);
+  Ipv4Address GetOrigin (void) const; 
+  
+  void SetParent (uint32_t iif);
+  uint32_t GetParent (void) const;
 
-  /**
-   * \return The IPv4 address of the source of this route
-   */
-  Ipv4Address GetOrigin (void) const;
-
-  /**
-   * \return The IPv4 address of the multicast group of this route
-   */
-  Ipv4Address GetGroup (void) const;
-
-  /**
-   * \return The IPv4 address of the input interface of this route
-   */
-  uint32_t GetInputInterface (void) const;
-
-  /**
-   * \return The number of output interfaces of this route
-   */
-  uint32_t GetNOutputInterfaces (void) const;
-
-  /**
-   * \return A specified output interface.
-   */
-  uint32_t GetOutputInterface (uint32_t n) const;
-
-  /**
-   * \return A vector of all of the output interfaces of this route.
-   */
-  std::vector<uint32_t> GetOutputInterfaces (void) const;
-
-  static Ipv4MulticastRoute CreateMulticastRoute (Ipv4Address origin, 
-    Ipv4Address group, uint32_t inputInterface,
-    std::vector<uint32_t> outputInterfaces);
+  void SetOutputTtl (uint32_t oif, uint32_t ttl);
+  uint32_t GetOutputTtl (uint32_t oif) const;
+  
+  static const uint32_t MAX_INTERFACES = 16;
+  static const uint32_t MAX_TTL = 255;
 
 private:
-  Ipv4MulticastRoute (Ipv4Address origin, Ipv4Address group, 
-    uint32_t inputInterface, std::vector<uint32_t> outputInterfaces);
-
-  Ipv4Address m_origin;
-  Ipv4Address m_group;
-  uint32_t m_inputInterface;
-  std::vector<uint32_t> m_outputInterfaces;
+  Ipv4Address m_group;      // Group 
+  Ipv4Address m_origin;     // Source of packet
+  uint32_t m_parent;        // Source interface
+  std::vector<uint32_t> m_ttls;
 };
-
-std::ostream& operator<< (std::ostream& os, Ipv4MulticastRoute const& route);
 
 }//namespace ns3
 

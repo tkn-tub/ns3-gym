@@ -18,9 +18,11 @@
 
 #include "ns3/log.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/address-utils.h"
 #include "ns3/nstime.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/socket.h"
+#include "ns3/udp-socket.h"
 #include "ns3/simulator.h"
 #include "ns3/socket-factory.h"
 #include "ns3/packet.h"
@@ -76,6 +78,19 @@ UdpEchoServer::StartApplication (void)
       m_socket = Socket::CreateSocket (GetNode(), tid);
       InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), m_port);
       m_socket->Bind (local);
+      if (addressUtils::IsMulticast (m_local))
+        {
+          Ptr<UdpSocket> udpSocket = DynamicCast<UdpSocket> (m_socket);
+          if (udpSocket)
+            {
+              // equivalent to setsockopt (MCAST_JOIN_GROUP)
+              udpSocket->MulticastJoinGroup (0, m_local);
+            }
+          else
+            {
+              NS_FATAL_ERROR ("Error: joining multicast on a non-UDP socket");
+            }
+        }
     }
 
   m_socket->SetRecvCallback(MakeCallback(&UdpEchoServer::HandleRead, this));

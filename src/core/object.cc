@@ -160,6 +160,24 @@ Object::AggregateObject (Ptr<Object> o)
   other->m_next = next;
   NS_ASSERT (CheckLoose ());
   NS_ASSERT (o->CheckLoose ());
+  // call NotifyNewAggregate in the listed chain
+  Object *currentObject = this;
+  do 
+    {
+      // the NotifyNewAggregate of the current object implementation
+      // should be called on the next object in the linked chain
+      currentObject->NotifyNewAggregate ();
+      currentObject = currentObject->m_next;
+    } while (currentObject != this);
+}
+/**
+ * This function must be implemented in the stack that needs to notify
+ * other stacks connected to the node of their presence in the node.
+ */
+void
+Object::NotifyNewAggregate ()
+{
+
 }
 
 Object::AggregateIterator 

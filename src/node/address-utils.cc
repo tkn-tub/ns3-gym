@@ -18,6 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "address-utils.h"
+#include "inet-socket-address.h"
 
 namespace ns3 {
 
@@ -66,5 +67,21 @@ void ReadFrom (Buffer::Iterator &i, Mac48Address &ad)
   i.Read (mac, 6);
   ad.CopyFrom (mac);
 }
+
+namespace addressUtils {
+
+bool IsMulticast (const Address &ad)
+{
+  if (InetSocketAddress::IsMatchingType (ad))
+    {
+      InetSocketAddress inetAddr = InetSocketAddress::ConvertFrom (ad);
+      Ipv4Address ipv4 = inetAddr.GetIpv4 ();
+      return ipv4.IsMulticast ();
+    }
+  // IPv6 case can go here, in future
+  return false;
+}
+
+} // namespace addressUtils
 
 } // namespace ns3
