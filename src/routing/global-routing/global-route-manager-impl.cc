@@ -1382,7 +1382,7 @@ GlobalRouteManagerImpl::SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* 
 // If no such interface is found, return -1 (note:  unit test framework
 // for routing assumes -1 to be a legal return value)
 //
-  uint32_t
+int32_t
 GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
 {
   NS_LOG_FUNCTION (a << amask);
