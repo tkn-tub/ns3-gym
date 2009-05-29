@@ -27,6 +27,11 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (YansErrorRateModel);
 
+#ifndef ENABLE_GSL
+const double YansErrorRateModel::WLAN_SIR_PERFECT = 10.0; 
+const double YansErrorRateModel::WLAN_SIR_IMPOSSIBLE = 0.1; 
+#endif
+
 TypeId 
 YansErrorRateModel::GetTypeId (void)
 {
