@@ -23,6 +23,8 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/ipv4.h"
+#include "ns3/ipv4-header.h"
+#include "ns3/ipv4-routing-protocol.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/trace-source-accessor.h"
 #include "udp-socket-impl.h"
@@ -70,6 +72,7 @@ UdpSocketImpl::~UdpSocketImpl ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
+  // XXX todo:  leave any multicast groups that have been joined
   m_node = 0;
   if (m_endPoint != 0)
     {
@@ -308,7 +311,6 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
       return -1;
     }
 
-  uint32_t localInterface;
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
 
   // Locally override the IP TTL for this socket
@@ -319,22 +321,21 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
   // irrespective of what is set in these socket options.  So, this tagging  
   // may end up setting the TTL of a limited broadcast packet to be
   // the same as a unicast, but it will be fixed further down the stack
-  //NS_LOG_UNCOND ("IPttl: " << m_ipTtl);
   if (m_ipMulticastTtl != 0 && dest.IsMulticast ())
     {
       SocketIpTtlTag tag;
       tag.SetTtl (m_ipMulticastTtl);
-      p->AddPacketTag (tag);
+      p->AddByteTag (tag);
     }
   else if (m_ipTtl != 0 && !dest.IsMulticast () && !dest.IsBroadcast ())
     {
       SocketIpTtlTag tag;
       tag.SetTtl (m_ipTtl);
-      p->AddPacketTag (tag);
+      p->AddByteTag (tag);
     }
   {
     SocketSetDontFragmentTag tag;
-    bool found = p->RemovePacketTag (tag);
+    bool found = p->FindFirstMatchingByteTag (tag);
     if (!found)
       {
         if (m_mtuDiscover)
@@ -345,7 +346,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
           {
             tag.Disable ();
           }
-        p->AddPacketTag (tag);
+        p->AddByteTag (tag);
       }
   }
   //
@@ -391,14 +392,31 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
       NS_LOG_LOGIC ("Limited broadcast end.");
       return p->GetSize();
     }
-  else if (ipv4->GetInterfaceForDestination(dest, localInterface))
+  else if (ipv4->GetRoutingProtocol () != 0)
     {
-      NS_LOG_LOGIC ("Route exists");
-      m_udp->Send (p->Copy (), ipv4->GetSourceAddress (dest), dest,
-		   m_endPoint->GetLocalPort (), port);
-      NotifyDataSent (p->GetSize ());
-      NotifySend (GetTxAvailable ());
-      return p->GetSize();;
+      Ipv4Header header;
+      header.SetDestination (dest);
+      Socket::SocketErrno errno;
+      Ptr<Ipv4Route> route;
+      uint32_t oif = 0; //specify non-zero if bound to a source address
+      // TBD-- we could cache the route and just check its validity
+      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno); 
+      if (route != 0)
+        {
+          NS_LOG_LOGIC ("Route exists");
+          header.SetSource (route->GetSource ());
+          m_udp->Send (p->Copy (), header.GetSource (), header.GetDestination (),
+                       m_endPoint->GetLocalPort (), port, route);
+          NotifyDataSent (p->GetSize ());
+          return p->GetSize();
+        }
+      else 
+        {
+          NS_LOG_LOGIC ("No route to destination");
+          NS_LOG_ERROR (errno);
+          m_errno = errno;
+          return -1;
+        }
     }
   else
    {
@@ -464,7 +482,7 @@ UdpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
 
 Ptr<Packet>
 UdpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags, 
-                         Address &fromAddress)
+  Address &fromAddress)
 {
   NS_LOG_FUNCTION (this << maxSize << flags);
   Ptr<Packet> packet = Recv (maxSize, flags);
@@ -472,7 +490,7 @@ UdpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
     {
       SocketAddressTag tag;
       bool found;
-      found = packet->PeekPacketTag (tag);
+      found = packet->FindFirstMatchingByteTag (tag);
       NS_ASSERT (found);
       fromAddress = tag.GetAddress ();
     }
@@ -494,6 +512,34 @@ UdpSocketImpl::GetSockName (Address &address) const
   return 0;
 }
 
+int 
+UdpSocketImpl::MulticastJoinGroup (uint32_t interface, const Address &groupAddress)
+{
+  NS_LOG_FUNCTION (interface << groupAddress);
+  /*
+   1) sanity check interface
+   2) sanity check that it has not been called yet on this interface/group
+   3) determine address family of groupAddress
+   4) locally store a list of (interface, groupAddress)
+   5) call ipv4->MulticastJoinGroup () or Ipv6->MulticastJoinGroup ()
+  */
+  return 0;
+} 
+
+int 
+UdpSocketImpl::MulticastLeaveGroup (uint32_t interface, const Address &groupAddress) 
+{
+  NS_LOG_FUNCTION (interface << groupAddress);
+  /*
+   1) sanity check interface
+   2) determine address family of groupAddress
+   3) delete from local list of (interface, groupAddress); raise a LOG_WARN
+      if not already present (but return 0) 
+   5) call ipv4->MulticastLeaveGroup () or Ipv6->MulticastLeaveGroup ()
+  */
+  return 0;
+}
+
 void 
 UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
 {
@@ -508,7 +554,7 @@ UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
       Address address = InetSocketAddress (ipv4, port);
       SocketAddressTag tag;
       tag.SetAddress (address);
-      packet->AddPacketTag (tag);
+      packet->AddByteTag (tag);
       m_deliveryQueue.push (packet);
       m_rxAvailable += packet->GetSize ();
       NotifyDataRecv ();
@@ -552,27 +598,51 @@ UdpSocketImpl::GetRcvBufSize (void) const
 }
 
 void 
-UdpSocketImpl::SetIpTtl (uint32_t ipTtl)
+UdpSocketImpl::SetIpTtl (uint8_t ipTtl)
 {
   m_ipTtl = ipTtl;
 }
 
-uint32_t 
+uint8_t 
 UdpSocketImpl::GetIpTtl (void) const
 {
   return m_ipTtl;
 }
 
 void 
-UdpSocketImpl::SetIpMulticastTtl (uint32_t ipTtl)
+UdpSocketImpl::SetIpMulticastTtl (uint8_t ipTtl)
 {
   m_ipMulticastTtl = ipTtl;
 }
 
-uint32_t 
+uint8_t 
 UdpSocketImpl::GetIpMulticastTtl (void) const
 {
   return m_ipMulticastTtl;
+}
+
+void 
+UdpSocketImpl::SetIpMulticastIf (int32_t ipIf)
+{
+  m_ipMulticastIf = ipIf;
+}
+
+int32_t 
+UdpSocketImpl::GetIpMulticastIf (void) const
+{
+  return m_ipMulticastIf;
+}
+
+void 
+UdpSocketImpl::SetIpMulticastLoop (bool loop)
+{
+  m_ipMulticastLoop = loop;
+}
+
+bool 
+UdpSocketImpl::GetIpMulticastLoop (void) const
+{
+  return m_ipMulticastLoop;
 }
 
 void 
@@ -588,207 +658,3 @@ UdpSocketImpl::GetMtuDiscover (void) const
 
 
 } //namespace ns3
-
-
-#ifdef RUN_SELF_TESTS
-
-#include "ns3/test.h"
-#include "ns3/socket-factory.h"
-#include "ns3/udp-socket-factory.h"
-#include "ns3/simulator.h"
-#include "ns3/simple-channel.h"
-#include "ns3/simple-net-device.h"
-#include "ns3/drop-tail-queue.h"
-#include "internet-stack.h"
-#include <string>
-
-namespace ns3 {
-
-class UdpSocketImplTest: public Test
-{
-  Ptr<Packet> m_receivedPacket;
-  Ptr<Packet> m_receivedPacket2;
-
-public:
-  virtual bool RunTests (void);
-  UdpSocketImplTest ();
-
-  void ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
-  void ReceivePacket2 (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
-  void ReceivePkt (Ptr<Socket> socket);
-  void ReceivePkt2 (Ptr<Socket> socket);
-};
-
-
-UdpSocketImplTest::UdpSocketImplTest ()
-  : Test ("UdpSocketImpl") 
-{
-}
-
-void UdpSocketImplTest::ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
-{
-  m_receivedPacket = packet;
-}
-
-void UdpSocketImplTest::ReceivePacket2 (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
-{
-  m_receivedPacket2 = packet;
-}
-
-void UdpSocketImplTest::ReceivePkt (Ptr<Socket> socket)
-{
-  uint32_t availableData;
-  availableData = socket->GetRxAvailable ();
-  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
-  NS_ASSERT (availableData == m_receivedPacket->GetSize ());
-}
-
-void UdpSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
-{
-  uint32_t availableData;
-  availableData = socket->GetRxAvailable ();
-  m_receivedPacket2 = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
-  NS_ASSERT (availableData == m_receivedPacket2->GetSize ());
-}
-
-bool
-UdpSocketImplTest::RunTests (void)
-{
-  bool result = true;
-
-  // Create topology
-  
-  // Receiver Node
-  Ptr<Node> rxNode = CreateObject<Node> ();
-  AddInternetStack (rxNode);
-  Ptr<SimpleNetDevice> rxDev1, rxDev2;
-  { // first interface
-    rxDev1 = CreateObject<SimpleNetDevice> ();
-    rxDev1->SetAddress (Mac48Address::Allocate ());
-    rxNode->AddDevice (rxDev1);
-    Ptr<Ipv4> ipv4 = rxNode->GetObject<Ipv4> ();
-    uint32_t netdev_idx = ipv4->AddInterface (rxDev1);
-    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.0.1"), Ipv4Mask (0xffff0000U));
-    ipv4->AddAddress (netdev_idx, ipv4Addr);
-    ipv4->SetUp (netdev_idx);
-  }
-
-  { // second interface
-    rxDev2 = CreateObject<SimpleNetDevice> ();
-    rxDev2->SetAddress (Mac48Address::Allocate ());
-    rxNode->AddDevice (rxDev2);
-    Ptr<Ipv4> ipv4 = rxNode->GetObject<Ipv4> ();
-    uint32_t netdev_idx = ipv4->AddInterface (rxDev2);
-    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.1.1"), Ipv4Mask (0xffff0000U));
-    ipv4->AddAddress (netdev_idx, ipv4Addr);
-    ipv4->SetUp (netdev_idx);
-  }
-  
-  // Sender Node
-  Ptr<Node> txNode = CreateObject<Node> ();
-  AddInternetStack (txNode);
-  Ptr<SimpleNetDevice> txDev1;
-  {
-    txDev1 = CreateObject<SimpleNetDevice> ();
-    txDev1->SetAddress (Mac48Address::Allocate ());
-    txNode->AddDevice (txDev1);
-    Ptr<Ipv4> ipv4 = txNode->GetObject<Ipv4> ();
-    uint32_t netdev_idx = ipv4->AddInterface (txDev1);
-    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.0.2"), Ipv4Mask (0xffff0000U));
-    ipv4->AddAddress (netdev_idx, ipv4Addr);
-    ipv4->SetUp (netdev_idx);
-  }
-  Ptr<SimpleNetDevice> txDev2;
-  {
-    txDev2 = CreateObject<SimpleNetDevice> ();
-    txDev2->SetAddress (Mac48Address::Allocate ());
-    txNode->AddDevice (txDev2);
-    Ptr<Ipv4> ipv4 = txNode->GetObject<Ipv4> ();
-    uint32_t netdev_idx = ipv4->AddInterface (txDev2);
-    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.1.2"), Ipv4Mask (0xffff0000U));
-    ipv4->AddAddress (netdev_idx, ipv4Addr);
-    ipv4->SetUp (netdev_idx);
-  }
-
-  // link the two nodes
-  Ptr<SimpleChannel> channel1 = CreateObject<SimpleChannel> ();
-  rxDev1->SetChannel (channel1);
-  txDev1->SetChannel (channel1);
-
-  Ptr<SimpleChannel> channel2 = CreateObject<SimpleChannel> ();
-  rxDev2->SetChannel (channel2);
-  txDev2->SetChannel (channel2);
-
-
-  // Create the UDP sockets
-  Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<UdpSocketFactory> ();
-  Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
-  NS_TEST_ASSERT_EQUAL (rxSocket->Bind (InetSocketAddress (Ipv4Address ("10.0.0.1"), 1234)), 0);
-  rxSocket->SetRecvCallback (MakeCallback (&UdpSocketImplTest::ReceivePkt, this));
-
-  Ptr<Socket> rxSocket2 = rxSocketFactory->CreateSocket ();
-  rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketImplTest::ReceivePkt2, this));
-  NS_TEST_ASSERT_EQUAL (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("10.0.1.1"), 1234)), 0);
-
-  Ptr<SocketFactory> txSocketFactory = txNode->GetObject<UdpSocketFactory> ();
-  Ptr<Socket> txSocket = txSocketFactory->CreateSocket ();
-
-  // ------ Now the tests ------------
-
-  // Unicast test
-  m_receivedPacket = Create<Packet> ();
-  m_receivedPacket2 = Create<Packet> ();
-  NS_TEST_ASSERT_EQUAL (txSocket->SendTo ( Create<Packet> (123), 0, 
-    InetSocketAddress (Ipv4Address("10.0.0.1"), 1234)), 123);
-  Simulator::Run ();
-  NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
-  NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 0); // second interface should receive it
-
-  m_receivedPacket->RemoveAllPacketTags ();
-  m_receivedPacket2->RemoveAllPacketTags ();
-
-  // Simple broadcast test
-
-  m_receivedPacket = Create<Packet> ();
-  m_receivedPacket2 = Create<Packet> ();
-  NS_TEST_ASSERT_EQUAL (txSocket->SendTo ( Create<Packet> (123), 0, 
-    InetSocketAddress (Ipv4Address("255.255.255.255"), 1234)), 123);
-  Simulator::Run ();
-  NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
-  // second socket should not receive it (it is bound specifically to the second interface's address
-  NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 0);
-
-  m_receivedPacket->RemoveAllPacketTags ();
-  m_receivedPacket2->RemoveAllPacketTags ();
-
-  // Broadcast test with multiple receiving sockets
-
-  // When receiving broadcast packets, all sockets sockets bound to
-  // the address/port should receive a copy of the same packet -- if
-  // the socket address matches.
-  rxSocket2->Dispose ();
-  rxSocket2 = rxSocketFactory->CreateSocket ();
-  rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketImplTest::ReceivePkt2, this));
-  NS_TEST_ASSERT_EQUAL (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("0.0.0.0"), 1234)), 0);
-
-  m_receivedPacket = Create<Packet> ();
-  m_receivedPacket2 = Create<Packet> ();
-  NS_TEST_ASSERT_EQUAL (txSocket->SendTo (Create<Packet> (123), 0,
-InetSocketAddress (Ipv4Address("255.255.255.255"), 1234)), 123);
-  Simulator::Run ();
-  NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
-  NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 123);
-
-  m_receivedPacket->RemoveAllPacketTags ();
-  m_receivedPacket2->RemoveAllPacketTags ();
-
-  Simulator::Destroy ();
-
-  return result;
-}
-
-static UdpSocketImplTest gUdpSocketImplTest;
-
-}; // namespace ns3
-
-#endif /* RUN_SELF_TESTS */
