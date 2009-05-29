@@ -12,6 +12,7 @@ def build(bld):
         'ie-dot11s-perr.cc',
         'ie-dot11s-rann.cc',
         'ie-dot11s-peering-protocol.cc',
+        'ie-dot11s-metric-report.cc',
         'dot11s-mac-header.cc',
         'peer-link-frame.cc',
         'peer-link.cc',

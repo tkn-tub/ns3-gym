@@ -1,0 +1,58 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2008,2009 IITP RAS
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Kirill Andreev <andreev@iitp.ru>
+ */
+
+#ifndef METRIC_REPORT_H
+#define METRIC_REPORT_H
+
+#include <stdint.h>
+#include "ns3/buffer.h"
+#include "ns3/wifi-information-element.h"
+
+namespace ns3 {
+namespace dot11s {
+/**
+ * \brief a IEEE 802.11s Mesh ID 7.3.2.88 of 802.11s draft 3.0
+ *
+ */
+class IeLinkMetricReport : public WifiInformationElement
+{
+public:
+  IeLinkMetricReport ();
+  IeLinkMetricReport (uint32_t metric);
+  void SetMetric (uint32_t metric);
+  uint32_t GetMetric ();
+private:
+  WifiElementId ElementId () const{
+    return IE11S_LINK_METRIC_REPORT;
+  };
+  void SerializeInformation (Buffer::Iterator i) const;
+  uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
+  void PrintInformation (std::ostream& os) const;
+  uint8_t GetInformationSize () const;
+private:
+  uint32_t m_metric;
+  friend bool operator== (const IeLinkMetricReport & a, const IeLinkMetricReport & b);
+  friend bool operator>  (const IeLinkMetricReport & a, const IeLinkMetricReport & b);
+  friend bool operator<  (const IeLinkMetricReport & a, const IeLinkMetricReport & b);
+};
+
+} //namespace dot11s
+} // namespace ns3
+#endif /* METRIC_REPORT_H */
