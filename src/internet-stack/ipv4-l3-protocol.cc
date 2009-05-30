@@ -164,10 +164,10 @@ Ipv4L3Protocol::NotifyNewAggregate ()
 }
 
 void 
-Ipv4L3Protocol::SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routing)
+Ipv4L3Protocol::SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol)
 {
   NS_LOG_FUNCTION (this);
-  m_routingProtocol = routing;
+  m_routingProtocol = routingProtocol;
   // XXX should check all interfaces to see if any were set to Up state
   // prior to a routing protocol being added
   if (GetStaticRouting () != 0)

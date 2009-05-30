@@ -218,8 +218,8 @@ public:
   NetDeviceContainer Install (std::string aName, Ptr<Node> b);
 
   /**
-   * \param aName Name of first node
-   * \param bName Name of second node
+   * \param aNode Name of first node
+   * \param bNode Name of second node
    *
    * Saves you from having to construct a temporary NodeContainer.
    */

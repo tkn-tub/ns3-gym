@@ -76,7 +76,7 @@ public:
    * Install an ns3::OnOffApplication on the node configured with all the 
    * attributes set with SetAttribute.
    *
-   * \param node The node on which an OnOffApplication will be installed.
+   * \param nodeName The node on which an OnOffApplication will be installed.
    * \returns Container of Ptr to the applications installed.
    */
   ApplicationContainer Install (std::string nodeName) const;
