@@ -121,18 +121,6 @@ TapNetDevice::PromiscReceive (Ptr<Packet> packet, uint16_t protocol,
 
 
 void
-TapNetDevice::SetName (const std::string name)
-{
-  m_name = name;
-}
-
-std::string
-TapNetDevice::GetName (void) const
-{
-  return m_name;
-}
-
-void
 TapNetDevice::SetIfIndex (const uint32_t index)
 {
   m_index = index;
@@ -176,7 +164,7 @@ TapNetDevice::SetLinkChangeCallback (Callback<void> callback)
 bool
 TapNetDevice::IsBroadcast (void) const
 {
-  return m_needsArp;
+  return true;
 }
 
 Address
@@ -217,7 +205,6 @@ TapNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNu
 bool
 TapNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
 {
-  NS_FATAL_ERROR ("not implemented");
   if (m_sendCb (packet, source, dest, protocolNumber))
     {
       m_txTrace (packet);
