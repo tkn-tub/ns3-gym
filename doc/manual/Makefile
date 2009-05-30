@@ -17,6 +17,8 @@ IMAGES_EPS = \
 	$(FIGURES)/node.eps \
 	$(FIGURES)/buffer.eps \
 	$(FIGURES)/sockets-overview.eps \
+	$(FIGURES)/routing.eps \
+	$(FIGURES)/routing-specialization.eps \
 	$(FIGURES)/testbed.eps \
 	$(FIGURES)/emulated-channel.eps \
 	$(FIGURES)/snir.eps \
