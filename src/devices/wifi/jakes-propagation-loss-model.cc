@@ -127,7 +127,7 @@ JakesPropagationLossModel::PathCoefficients::GetLoss (void)
 
 NS_OBJECT_ENSURE_REGISTERED (JakesPropagationLossModel);
 
-const double JakesPropagationLossModel::PI = 3.1415;
+const double JakesPropagationLossModel::PI = 3.14159265358979323846;
 
 TypeId
 JakesPropagationLossModel::GetTypeId (void)

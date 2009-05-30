@@ -43,6 +43,7 @@ ArpL3Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ArpL3Protocol")
     .SetParent<Object> ()
+    .AddConstructor<ArpL3Protocol> ()
     .AddAttribute ("CacheList",
                    "The list of ARP caches",
                    ObjectVectorValue (),
@@ -70,6 +71,23 @@ ArpL3Protocol::SetNode (Ptr<Node> node)
 {
   NS_LOG_FUNCTION (this);
   m_node = node;
+}
+
+/*
+ * This method is called by AddAgregate and completes the aggregation
+ * by setting the node in the ipv4 stack
+ */
+void
+ArpL3Protocol::NotifyNewAggregate ()
+{
+  Ptr<Node>node = this->GetObject<Node> ();
+  //verify that it's a valid node and that
+  //the node was not set before
+  if (node!= 0 && m_node == 0)
+    {
+      this->SetNode (node);
+    }
+  Object::NotifyNewAggregate ();
 }
 
 void 

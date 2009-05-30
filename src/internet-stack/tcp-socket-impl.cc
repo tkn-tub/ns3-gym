@@ -23,6 +23,8 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/log.h"
 #include "ns3/ipv4.h"
+#include "ns3/ipv4-interface-address.h"
+#include "ns3/ipv4-route.h"
 #include "tcp-socket-impl.h"
 #include "tcp-l4-protocol.h"
 #include "ipv4-end-point.h"
@@ -327,6 +329,9 @@ int
 TcpSocketImpl::Connect (const Address & address)
 {
   NS_LOG_FUNCTION (this << address);
+
+  Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
+
   if (m_endPoint == 0)
     {
       if (Bind () == -1)
@@ -340,17 +345,31 @@ TcpSocketImpl::Connect (const Address & address)
   m_remoteAddress = transport.GetIpv4 ();
   m_remotePort = transport.GetPort ();
   
-  uint32_t localInterface;
-  Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
-
-  if (ipv4->GetInterfaceForDestination (m_remoteAddress, localInterface))
+  if (ipv4->GetRoutingProtocol () != 0)
     {
-      m_endPoint->SetLocalAddress (ipv4->GetSourceAddress (m_remoteAddress));
+      Ipv4Header header;
+      header.SetDestination (m_remoteAddress);
+      Socket::SocketErrno errno;
+      Ptr<Ipv4Route> route;
+      uint32_t oif = 0; //specify non-zero if bound to a source address
+      // XXX here, cache the route in the endpoint?
+      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno);
+      if (route != 0)
+        {
+          NS_LOG_LOGIC ("Route exists");
+          m_endPoint->SetLocalAddress (route->GetSource ());
+        }
+      else
+        {
+          NS_LOG_LOGIC ("TcpSocketImpl::Connect():  Route to " << m_remoteAddress << " does not exist");
+          NS_LOG_ERROR (errno);
+          m_errno = errno;
+          return -1;
+        }
     }
   else
     {
-      m_errno = ERROR_NOROUTETOHOST;
-      return -1;
+      NS_FATAL_ERROR ("No Ipv4RoutingProtocol in the node");
     }
 
   Actions_t action = ProcessEvent (APP_CONNECT);
@@ -794,8 +813,8 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
                                      const Address& fromAddress)
 {
   NS_LOG_FUNCTION (this << a << p  << fromAddress);
-  uint32_t localInterface;
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
+
   switch (a)
   {
     case ACK_TX:
@@ -807,12 +826,6 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       break;
     case SYN_ACK_TX:
       NS_LOG_LOGIC ("TcpSocketImpl " << this <<" Action SYN_ACK_TX");
-//      m_remotePort = InetSocketAddress::ConvertFrom (fromAddress).GetPort ();
-//      m_remoteAddress = InetSocketAddress::ConvertFrom (fromAddress).GetIpv4 ();
-//       if (ipv4->GetInterfaceForDestination (m_remoteAddress, localInterface))
-//         {
-//           m_localAddress = ipv4->GetAddress (localInterface);
-//         }
       if (m_state == LISTEN) //this means we should fork a new TcpSocketImpl
         {
           NS_LOG_DEBUG("In SYN_ACK_TX, m_state is LISTEN, this " << this);
@@ -827,20 +840,37 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
                                   p, tcpHeader,fromAddress);
           return true;
         }
-      // This is the cloned endpoint
-      NS_ASSERT (m_state == SYN_RCVD);
-      m_endPoint->SetPeer (m_remoteAddress, m_remotePort);
-      if (ipv4->GetInterfaceForDestination (m_remoteAddress, localInterface))
-        {
-          m_localAddress = ipv4->GetSourceAddress (m_remoteAddress);
-          m_endPoint->SetLocalAddress (m_localAddress);
-          // Leave local addr in the portmap to any, as the path from
-          // remote can change and packets can arrive on different interfaces
-          //m_endPoint->SetLocalAddress (Ipv4Address::GetAny());
-        }
-      // TCP SYN consumes one byte
-      m_nextRxSequence = tcpHeader.GetSequenceNumber() + SequenceNumber(1);
-      SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK);
+        // This is the cloned endpoint
+        m_endPoint->SetPeer (m_remoteAddress, m_remotePort);
+
+        // Look up the source address
+        if (ipv4->GetRoutingProtocol () != 0)
+          {
+            Ipv4Header header;
+            Socket::SocketErrno errno;
+            Ptr<Ipv4Route> route;
+            uint32_t oif = 0; //specify non-zero if bound to a source address
+            header.SetDestination (m_remoteAddress);
+            route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno);
+            if (route != 0)
+              {
+                NS_LOG_LOGIC ("Route exists");
+                m_endPoint->SetLocalAddress (route->GetSource ());
+              }
+            else
+              {
+                NS_LOG_ERROR (errno);
+                m_errno = errno;
+                return -1;
+              }
+          }
+        else
+          {
+            NS_FATAL_ERROR ("No Ipv4RoutingProtocol in the node");
+          }
+        // TCP SYN consumes one byte
+        m_nextRxSequence = tcpHeader.GetSequenceNumber() + SequenceNumber(1);
+        SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK);
       break;
     case ACK_TX_1:
       NS_LOG_LOGIC ("TcpSocketImpl " << this <<" Action ACK_TX_1");
@@ -1683,309 +1713,4 @@ TcpSocketImpl::GetDelAckMaxCount (void) const
 
 }//namespace ns3
 
-#ifdef RUN_SELF_TESTS
 
-#include "ns3/test.h"
-#include "ns3/socket-factory.h"
-#include "ns3/tcp-socket-factory.h"
-#include "ns3/simulator.h"
-#include "ns3/simple-channel.h"
-#include "ns3/simple-net-device.h"
-#include "ns3/drop-tail-queue.h"
-#include "ns3/config.h"
-#include "internet-stack.h"
-#include <string>
-
-namespace ns3 {
-	
-class TcpSocketImplTest: public Test
-{
-  public:
-  TcpSocketImplTest ();
-  virtual bool RunTests (void);
-  private:
-  //test 1, which sends string "Hello world" server->client
-  void Test1 (void);
-  void Test1_HandleConnectionCreated (Ptr<Socket>, const Address &);
-  void Test1_HandleRecv (Ptr<Socket> sock);
-
-  //test 2, which sends a number of bytes server->client
-  void Test2 (uint32_t payloadSize);
-  void Test2_HandleConnectionCreated (Ptr<Socket>, const Address &);
-  void Test2_HandleRecv (Ptr<Socket> sock);
-  uint32_t test2_payloadSize;
-
-  //test 3, which makes sure the rx buffer is finite
-  void Test3 (uint32_t payloadSize);
-  void Test3_HandleConnectionCreated (Ptr<Socket>, const Address &);
-  void Test3_HandleRecv (Ptr<Socket> sock);
-  uint32_t test3_payloadSize;
-
-  //helpers to make topology construction easier
-  Ptr<Node> CreateInternetNode ();
-  Ptr<SimpleNetDevice> AddSimpleNetDevice (Ptr<Node>,const char*,const char*);
-  void SetupDefaultSim ();
-
-  //reset all of the below state for another run
-  void Reset ();
-
-  //all of the state this class needs; basically both ends of the connection,
-  //and this test kind of acts as an single application running on both nodes
-  //simultaneously
-  Ptr<Node> node0;
-  Ptr<Node> node1;
-  Ptr<SimpleNetDevice> dev0;
-  Ptr<SimpleNetDevice> dev1;
-  Ptr<SimpleChannel> channel;
-  Ptr<Socket> listeningSock;
-  Ptr<Socket> sock0;
-  Ptr<Socket> sock1;
-  uint32_t rxBytes0;
-  uint32_t rxBytes1;
-
-  uint8_t* rxPayload;
-
-  bool result;
-};
-
-TcpSocketImplTest::TcpSocketImplTest ()
-  : Test ("TcpSocketImpl"), 
-    rxBytes0 (0),
-    rxBytes1 (0),
-    rxPayload (0),
-    result (true)
-{
-}
-
-bool
-TcpSocketImplTest::RunTests (void)
-{
-  Test1();
-  if (!result) return false;
-  Test2(600);
-  if (!result) return false;
-  Test3(20000);
-  return result;
-}
-
-//-----------------------------------------------------------------------------
-//test 1-----------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void
-TcpSocketImplTest::Test1 ()
-{
-  SetupDefaultSim ();
-  listeningSock->SetAcceptCallback 
-      (MakeNullCallback<bool, Ptr< Socket >, const Address &> (),
-       MakeCallback(&TcpSocketImplTest::Test1_HandleConnectionCreated,this));
-  sock1->SetRecvCallback (MakeCallback(&TcpSocketImplTest::Test1_HandleRecv, this));
-
-  Simulator::Run ();
-  Simulator::Destroy ();
-
-  result = result && (rxBytes1 == 13);
-  result = result && (strcmp((const char*) rxPayload,"Hello World!") == 0);
-
-  Reset ();
-}
-
-void
-TcpSocketImplTest::Test1_HandleConnectionCreated (Ptr<Socket> s, const Address & addr)
-{
-  NS_ASSERT(s != listeningSock);
-  NS_ASSERT(sock0 == 0);
-  sock0 = s;
-  const uint8_t* hello = (uint8_t*)"Hello World!";
-  Ptr<Packet> p = Create<Packet> (hello, 13);
-  sock0->Send(p);
-  
-  sock0->SetRecvCallback (MakeCallback(&TcpSocketImplTest::Test1_HandleRecv, this));
-}
-
-void
-TcpSocketImplTest::Test1_HandleRecv (Ptr<Socket> sock)
-{
-  NS_ASSERT (sock == sock0 || sock == sock1);
-  Ptr<Packet> p = sock->Recv();
-  uint32_t sz = p->GetSize();
-  if (sock == sock1)
-  {
-    rxBytes1 += sz;
-    rxPayload = new uint8_t[sz];
-    memcpy (rxPayload, p->PeekData(), sz);
-  }
-  else
-  {
-    NS_FATAL_ERROR ("Recv from unknown socket "<<sock);
-  }
-}
-
-//-----------------------------------------------------------------------------
-//test 2-----------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void
-TcpSocketImplTest::Test2 (uint32_t payloadSize)
-{
-  test2_payloadSize = payloadSize;
-  SetupDefaultSim ();
-  listeningSock->SetAcceptCallback 
-      (MakeNullCallback<bool, Ptr< Socket >, const Address &> (),
-       MakeCallback(&TcpSocketImplTest::Test2_HandleConnectionCreated,this));
-  sock1->SetRecvCallback (MakeCallback(&TcpSocketImplTest::Test2_HandleRecv, this));
-
-  Simulator::Run ();
-  Simulator::Destroy ();
-
-  result = result && (rxBytes1 == test2_payloadSize);
-
-  Reset ();
-}
-
-void
-TcpSocketImplTest::Test2_HandleConnectionCreated (Ptr<Socket> s, const Address & addr)
-{
-  NS_ASSERT(s != listeningSock);
-  NS_ASSERT(sock0 == 0);
-  sock0 = s;
-  Ptr<Packet> p = Create<Packet> (test2_payloadSize);
-  sock0->Send(p);
-  
-  sock0->SetRecvCallback (MakeCallback(&TcpSocketImplTest::Test2_HandleRecv, this));
-}
-
-void
-TcpSocketImplTest::Test2_HandleRecv (Ptr<Socket> sock)
-{
-  NS_ASSERT (sock == sock0 || sock == sock1);
-  Ptr<Packet> p = sock->Recv();
-  uint32_t sz = p->GetSize();
-  if (sock == sock1)
-  {
-    rxBytes1 += sz;
-  }
-  else
-  {
-    NS_FATAL_ERROR ("Not supposed to be back traffic in test 2..."<<sock);
-  }
-}
-
-//-----------------------------------------------------------------------------
-//test 3-----------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void
-TcpSocketImplTest::Test3 (uint32_t payloadSize)
-{
-  Config::SetDefault ("ns3::TcpSocket::RcvBufSize", UintegerValue (10000));
-  test3_payloadSize = payloadSize;
-  SetupDefaultSim ();
-  listeningSock->SetAcceptCallback 
-      (MakeNullCallback<bool, Ptr< Socket >, const Address &> (),
-       MakeCallback(&TcpSocketImplTest::Test3_HandleConnectionCreated,this));
-  sock1->SetRecvCallback (MakeCallback(&TcpSocketImplTest::Test3_HandleRecv, this));
-
-  Simulator::Run ();
-  Simulator::Destroy ();
-
-  result = result && (rxBytes1 == test3_payloadSize);
-
-  Reset();
-}
-void
-TcpSocketImplTest::Test3_HandleConnectionCreated (Ptr<Socket> s, const Address &)
-{
-  NS_ASSERT(s != listeningSock);
-  NS_ASSERT(sock0 == 0);
-  sock0 = s;
-  Ptr<Packet> p = Create<Packet> (test3_payloadSize);
-  sock0->Send(p);
-}
-void
-TcpSocketImplTest::Test3_HandleRecv (Ptr<Socket> sock)
-{
-  NS_ASSERT_MSG (sock == sock1, "Not supposed to be back traffic in test 3... ");
-  if(sock->GetRxAvailable() >= 10000 ) //perform batch reads every 10000 bytes
-  {
-    Ptr<Packet> p = sock->Recv();
-    uint32_t sz = p->GetSize();
-    rxBytes1 += sz;
-  }
-}
-
-//-----------------------------------------------------------------------------
-//helpers----------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-Ptr<Node>
-TcpSocketImplTest::CreateInternetNode ()
-{
-  Ptr<Node> node = CreateObject<Node> ();
-  AddInternetStack (node);
-  return node;
-}
-
-Ptr<SimpleNetDevice>
-TcpSocketImplTest::AddSimpleNetDevice (Ptr<Node> node, const char* ipaddr, const char* netmask)
-{
-  Ptr<SimpleNetDevice> dev = CreateObject<SimpleNetDevice> ();
-  dev->SetAddress (Mac48Address::Allocate ());
-  node->AddDevice (dev);
-  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-  uint32_t ndid = ipv4->AddInterface (dev);
-  Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (Ipv4Address (ipaddr), Ipv4Mask (netmask));
-  ipv4->AddAddress (ndid, ipv4Addr);
-  ipv4->SetUp (ndid);
-  return dev;
-}
-
-void 
-TcpSocketImplTest::SetupDefaultSim ()
-{
-  const char* netmask = "255.255.255.0";
-  const char* ipaddr0 = "192.168.1.1";
-  const char* ipaddr1 = "192.168.1.2";
-  node0 = CreateInternetNode ();
-  node1 = CreateInternetNode ();
-  dev0 = AddSimpleNetDevice (node0, ipaddr0, netmask);
-  dev1 = AddSimpleNetDevice (node1, ipaddr1, netmask);
-
-  channel = CreateObject<SimpleChannel> ();
-  dev0->SetChannel (channel);
-  dev1->SetChannel (channel);
-
-  Ptr<SocketFactory> sockFactory0 = node0->GetObject<TcpSocketFactory> ();
-  Ptr<SocketFactory> sockFactory1 = node1->GetObject<TcpSocketFactory> ();
-
-  listeningSock = sockFactory0->CreateSocket();
-  sock1 = sockFactory1->CreateSocket();
-
-  uint16_t port = 50000;
-  InetSocketAddress serverlocaladdr (Ipv4Address::GetAny(), port);
-  InetSocketAddress serverremoteaddr (Ipv4Address(ipaddr0), port);
-
-  listeningSock->Bind(serverlocaladdr);
-  listeningSock->Listen ();
-
-  sock1->Connect(serverremoteaddr);
-}
-
-void
-TcpSocketImplTest::Reset ()
-{
-  node0 = 0;
-  node1 = 0;
-  dev0 = 0;
-  dev1 = 0;
-  channel = 0;
-  listeningSock = 0;
-  sock0 = 0;
-  sock1 = 0;
-  rxBytes0 = 0;
-  rxBytes1 = 0;
-  delete[] rxPayload;
-  rxPayload = 0;
-}
-
-static TcpSocketImplTest gTcpSocketImplTest;
-
-}//namespace ns3
-
-#endif /* RUN_SELF_TESTS */

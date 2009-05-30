@@ -25,8 +25,12 @@
 #include "net-device-container.h"
 #include "ns3/pcap-writer.h"
 #include "ns3/packet.h"
+#include "ns3/ptr.h"
+#include "ns3/object-factory.h"
 
 namespace ns3 {
+
+class Node;
 
 /**
  * \brief aggregate IP/TCP/UDP functionality to existing Nodes.
@@ -65,18 +69,32 @@ public:
    */
   void Install (NodeContainer c) const;
 
-  /**
-   * \brief Enable or disable use of the Network Simulation Cradle stack.  
+ /**
+   * \brief set the Tcp stack which will not need any other parameter.  
    *
-   * Give the NSC stack a shared library file name to use when creating the 
-   * statck implementation.  By providing a non-empty string as a parameter, you
-   * select the NSC version of the stack.  By providing an empty string, you 
-   * select the ns-3 default version.
+   * This function sets up the tcp stack to the given TypeId. It should not be 
+   * used for NSC stack setup because the nsc stack needs the Library attribute
+   * to be setup, please use instead the version that requires an attribute
+   * and a value. If you choose to use this function anyways to set nsc stack
+   * the default value for the linux library will be used: "liblinux2.6.26.so".
    *
-   * \param soname name of the shared library with the nsc tcp stack
-   * to use, e.g. 'liblinux2.6.26.so'.
+   * \param tid the type id, typically it is set to  "ns3::TcpL4Protocol"
    */
-  void SetNscStack(std::string soname);
+  void SetTcp(std::string tid);
+   
+  /**
+   * \brief This function is used to setup the Network Simulation Cradle stack with library value.
+   * 
+   * Give the NSC stack a shared library file name to use when creating the 
+   * stack implementation.  The attr string is actually the attribute name to 
+   * be setup and val is its value. The attribute is the stack implementation 
+   * to be used and the value is the shared library name.
+   * 
+   * \param tid The type id, for the case of nsc it would be "ns3::NscTcpL4Protocol" 
+   * \param attr The attribute name that must be setup, for example "Library"
+   * \param val The attribute value, which will be in fact the shared library name (example:"liblinux2.6.26.so")
+   */
+  void SetTcp (std::string tid, std::string attr, const AttributeValue &val); 
 
   /**
    * \param os output stream
@@ -113,7 +131,7 @@ public:
   static void EnablePcapAll (std::string filename);
 
 private:
-  std::string m_nscLibrary;
+  ObjectFactory m_tcpFactory;
   static void Cleanup (void);
   static void LogRxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);
   static void LogTxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);

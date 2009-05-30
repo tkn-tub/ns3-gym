@@ -3,6 +3,7 @@
 
 #include "ns3/socket.h"
 #include "ns3/ipv4-header.h"
+#include "ns3/ipv4-route.h"
 #include <list>
 
 namespace ns3 {

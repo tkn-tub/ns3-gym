@@ -337,7 +337,7 @@ public:
  * @param id The interface index to use when forwarding packets to the host or
  * network represented by "this" SPFVertex.
  */
-  void SetOutgoingInterfaceId (uint32_t id);
+  void SetOutgoingInterfaceId (int32_t id);
 
 /**
  * @brief Get the IP address that should be used to begin forwarding packets 
@@ -569,7 +569,7 @@ private:
   Ipv4Address m_vertexId;
   GlobalRoutingLSA* m_lsa;
   uint32_t m_distanceFromRoot;
-  uint32_t m_rootOif;
+  int32_t m_rootOif;
   Ipv4Address m_nextHop;
   SPFVertex* m_parent;
   typedef std::list<SPFVertex*> ListOfSPFVertex_t;
@@ -799,7 +799,7 @@ private:
   void SPFIntraAddRouter (SPFVertex* v);
   void SPFIntraAddTransit (SPFVertex* v);
   void SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* v);
-  uint32_t FindOutgoingInterfaceId (Ipv4Address a, 
+  int32_t FindOutgoingInterfaceId (Ipv4Address a, 
     Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
 
   // Local cache of the Ipv4GlobalRouting objects, indexed by nodeId

@@ -152,7 +152,6 @@ NqapWifiMac::SetEifsNoDifs (Time eifsNoDifs)
 {
   NS_LOG_FUNCTION (this << eifsNoDifs);
   m_dcfManager->SetEifsNoDifs (eifsNoDifs);
-  m_eifsNoDifs = eifsNoDifs;
 }
 void 
 NqapWifiMac::SetAckTimeout (Time ackTimeout)
@@ -182,7 +181,7 @@ NqapWifiMac::GetSifs (void) const
 Time 
 NqapWifiMac::GetEifsNoDifs (void) const
 {
-  return m_eifsNoDifs;
+  return m_dcfManager->GetEifsNoDifs ();
 }
 Time 
 NqapWifiMac::GetAckTimeout (void) const

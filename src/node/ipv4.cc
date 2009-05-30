@@ -20,6 +20,7 @@
 
 #include "ns3/assert.h" 
 #include "ns3/node.h" 
+#include "ns3/boolean.h"
 #include "ipv4.h"
 
 namespace ns3 {
@@ -30,7 +31,20 @@ TypeId
 Ipv4::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .AddAttribute ("IpForward", "If enabled, node can act as unicast router.",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&Ipv4::SetIpForward,
+                                        &Ipv4::GetIpForward),
+                   MakeBooleanChecker ())
+#if 0
+    .AddAttribute ("MtuDiscover", "If enabled, every outgoing ip packet will have the DF flag set.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&UdpSocket::SetMtuDiscover,
+                                        &UdpSocket::GetMtuDiscover),
+                   MakeBooleanChecker ())
+#endif
+    ;
   return tid;
 }
 
@@ -39,24 +53,5 @@ Ipv4::Ipv4 ()
 
 Ipv4::~Ipv4 ()
 {}
-
-uint32_t 
-Ipv4::GetInterfaceByAddress (Ipv4Address addr, Ipv4Mask mask)
-{
-  for (uint32_t i = 0; i < GetNInterfaces (); i++)
-    {
-      for (uint32_t j = 0; j < GetNAddresses (i); j++)
-        {
-          Ipv4InterfaceAddress ipv4InAddr = GetAddress (i, j);
-          if (ipv4InAddr.GetLocal ().CombineMask(mask) == addr.CombineMask(mask) )
-            {
-              return i;
-            }
-        }
-    }
-  // Mapping not found
-  NS_ASSERT_MSG (false, "Ipv4::GetInterfaceByAddress failed");
-  return 0;
-}
 
 } // namespace ns3

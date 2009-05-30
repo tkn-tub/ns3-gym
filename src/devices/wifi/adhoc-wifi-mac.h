@@ -83,7 +83,7 @@ private:
   // inherited from Object base class.
   virtual void DoDispose (void);
   /* invoked by the MacLows. */
-  void ForwardUp (Ptr<Packet> packet, WifiMacHeader const*hdr);
+  void ForwardUp (Ptr<Packet> packet, const WifiMacHeader *hdr);
   AdhocWifiMac (const AdhocWifiMac & ctor_arg);
   AdhocWifiMac &operator = (const AdhocWifiMac &o);
   Ptr<DcaTxop> GetDcaTxop(void) const;
@@ -97,7 +97,6 @@ private:
   MacRxMiddle *m_rxMiddle;
   Ptr<MacLow> m_low;
   Ssid m_ssid;
-  Time m_eifsNoDifs;
 };
 
 } // namespace ns3

@@ -232,7 +232,7 @@ DcaTxop::GetAifsn (void) const
 }
 
 void 
-DcaTxop::Queue (Ptr<const Packet> packet, WifiMacHeader const &hdr)
+DcaTxop::Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this << packet << &hdr);
   WifiMacTrailer fcs;

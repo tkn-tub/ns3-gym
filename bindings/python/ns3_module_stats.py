@@ -1,4 +1,4 @@
-from pybindgen import Module, FileCodeSink, param, retval, cppclass
+from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandlers
 
 def register_types(module):
     root_module = module.get_root()
@@ -25,6 +25,8 @@ def register_types(module):
     module.add_class('CounterCalculator', template_parameters=['unsigned int'], parent=root_module['ns3::DataCalculator'])
     ## packet-data-calculators.h: ns3::PacketCounterCalculator [class]
     module.add_class('PacketCounterCalculator', parent=root_module['ns3::CounterCalculator< unsigned int >'])
+    typehandlers.add_type_alias('std::list< ns3::Ptr< ns3::DataCalculator >, std::allocator< ns3::Ptr< ns3::DataCalculator > > >', 'ns3::DataCalculatorList')
+    typehandlers.add_type_alias('std::list< std::pair< std::string, std::string >, std::allocator< std::pair< std::string, std::string > > >', 'ns3::MetadataList')
     
     ## Register a nested module for the namespace Config
     
@@ -36,6 +38,12 @@ def register_types(module):
     
     nested_module = module.add_cpp_namespace('TimeStepPrecision')
     register_types_ns3_TimeStepPrecision(nested_module)
+    
+    
+    ## Register a nested module for the namespace addressUtils
+    
+    nested_module = module.add_cpp_namespace('addressUtils')
+    register_types_ns3_addressUtils(nested_module)
     
     
     ## Register a nested module for the namespace internal
@@ -55,6 +63,10 @@ def register_types_ns3_Config(module):
     
 
 def register_types_ns3_TimeStepPrecision(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_addressUtils(module):
     root_module = module.get_root()
     
 
@@ -419,6 +431,7 @@ def register_functions(root_module):
     module = root_module
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
+    register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
     return
@@ -427,6 +440,9 @@ def register_functions_ns3_Config(module, root_module):
     return
 
 def register_functions_ns3_TimeStepPrecision(module, root_module):
+    return
+
+def register_functions_ns3_addressUtils(module, root_module):
     return
 
 def register_functions_ns3_internal(module, root_module):

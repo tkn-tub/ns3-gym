@@ -26,12 +26,14 @@
 
 #include "ns3/packet.h"
 #include "ns3/node.h"
+#include "ns3/ipv4-route.h"
 
 #include "tcp-l4-protocol.h"
 #include "tcp-header.h"
 #include "ipv4-end-point-demux.h"
 #include "ipv4-end-point.h"
 #include "ipv4-l3-protocol.h"
+#include "tcp-socket-factory-impl.h"
 
 #include "tcp-typedefs.h"
 
@@ -324,6 +326,7 @@ TcpL4Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TcpL4Protocol")
     .SetParent<Ipv4L4Protocol> ()
+    .AddConstructor<TcpL4Protocol> ()
     .AddAttribute ("RttEstimatorFactory",
                    "How RttEstimator objects are created.",
                    ObjectFactoryValue (GetDefaultRttEstimatorFactory ()),
@@ -358,6 +361,28 @@ void
 TcpL4Protocol::SetNode (Ptr<Node> node)
 {
   m_node = node;
+}
+
+/* 
+ * This method is called by AddAgregate and completes the aggregation
+ * by setting the node in the TCP stack, link it to the ipv4 stack and 
+ * adding TCP socket factory to the node.
+ */
+void
+TcpL4Protocol::NotifyNewAggregate ()
+{
+  bool is_not_initialized = (m_node == 0);
+  Ptr<Node>node = this->GetObject<Node> ();
+  Ptr<Ipv4L3Protocol> ipv4 = this->GetObject<Ipv4L3Protocol> ();
+  if (is_not_initialized && node!= 0 && ipv4 != 0)
+    {
+      this->SetNode (node);
+      ipv4->Insert (this);
+      Ptr<TcpSocketFactoryImpl> tcpFactory = CreateObject<TcpSocketFactoryImpl> ();
+      tcpFactory->SetTcp (this);
+      node->AggregateObject (tcpFactory);
+    }
+  Object::NotifyNewAggregate ();
 }
 
 int 
@@ -520,7 +545,15 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
     m_node->GetObject<Ipv4L3Protocol> ();
   if (ipv4 != 0)
     {
-      ipv4->Send (packet, saddr, daddr, PROT_NUMBER);
+      // XXX We've already performed the route lookup in TcpSocketImpl
+      // should be cached.
+      Ipv4Header header;
+      header.SetDestination (daddr);
+      Socket::SocketErrno errno;
+      Ptr<Ipv4Route> route;
+      uint32_t oif = 0; //specify non-zero if bound to a source address
+      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno);
+      ipv4->Send (packet, saddr, daddr, PROT_NUMBER, route);
     }
 }
 
@@ -550,7 +583,15 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, TcpHeader outgoingHeader,
     m_node->GetObject<Ipv4L3Protocol> ();
   if (ipv4 != 0)
     {
-      ipv4->Send (packet, saddr, daddr, PROT_NUMBER);
+      // XXX We've already performed the route lookup in TcpSocketImpl
+      // should be cached.
+      Ipv4Header header;
+      header.SetDestination (daddr);
+      Socket::SocketErrno errno;
+      Ptr<Ipv4Route> route;
+      uint32_t oif = 0; //specify non-zero if bound to a source address
+      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno);
+      ipv4->Send (packet, saddr, daddr, PROT_NUMBER, route);
     }
   else
     NS_FATAL_ERROR("Trying to use Tcp on a node without an Ipv4 interface");

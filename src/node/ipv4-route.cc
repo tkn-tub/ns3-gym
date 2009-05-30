@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2005 INRIA
+ * Copyright (c) 2009 University of Washington
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,259 +15,85 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
 #include "ipv4-route.h"
+#include "net-device.h"
 #include "ns3/assert.h"
 
 namespace ns3 {
 
-/*****************************************************
- *     Network Ipv4Route
- *****************************************************/
-
 Ipv4Route::Ipv4Route ()
 {}
 
-Ipv4Route::Ipv4Route (Ipv4Route const &route)
-  : m_dest (route.m_dest),
-    m_destNetworkMask (route.m_destNetworkMask),
-    m_gateway (route.m_gateway),
-    m_interface (route.m_interface)
-{}
-
-Ipv4Route::Ipv4Route (Ipv4Route const *route)
-  : m_dest (route->m_dest),
-    m_destNetworkMask (route->m_destNetworkMask),
-    m_gateway (route->m_gateway),
-    m_interface (route->m_interface)
-{}
-
-Ipv4Route::Ipv4Route (Ipv4Address dest,
-                      Ipv4Address gateway,
-                      uint32_t interface)
-  : m_dest (dest),
-    m_destNetworkMask (Ipv4Mask::GetZero ()),
-    m_gateway (gateway),
-    m_interface (interface)
-{}
-Ipv4Route::Ipv4Route (Ipv4Address dest,
-                      uint32_t interface)
-  : m_dest (dest),
-    m_destNetworkMask (Ipv4Mask::GetZero ()),
-    m_gateway (Ipv4Address::GetZero ()),
-    m_interface (interface)
-{}
-Ipv4Route::Ipv4Route (Ipv4Address network,
-                      Ipv4Mask networkMask,
-                      Ipv4Address gateway,
-                      uint32_t interface)
-  : m_dest (network),
-    m_destNetworkMask (networkMask),
-    m_gateway (gateway),
-    m_interface (interface)
-{}
-Ipv4Route::Ipv4Route (Ipv4Address network,
-                      Ipv4Mask networkMask,
-                      uint32_t interface)
-  : m_dest (network),
-    m_destNetworkMask (networkMask),
-    m_gateway (Ipv4Address::GetZero ()),
-    m_interface (interface)
-{}
-
-bool 
-Ipv4Route::IsHost (void) const
+void 
+Ipv4Route::SetDestination (Ipv4Address dest)
 {
-  if (m_destNetworkMask.IsEqual (Ipv4Mask::GetZero ())) 
-    {
-      return true;
-    } 
-  else 
-    {
-      return false;
-    }
+  m_dest = dest;
 }
+
 Ipv4Address 
-Ipv4Route::GetDest (void) const
+Ipv4Route::GetDestination (void) const
 {
   return m_dest;
 }
-bool 
-Ipv4Route::IsNetwork (void) const
+
+void 
+Ipv4Route::SetSource (Ipv4Address src)
 {
-  return !IsHost ();
+  m_source = src;
 }
-bool 
-Ipv4Route::IsDefault (void) const
-{
-  if (m_dest.IsEqual (Ipv4Address::GetZero ())) 
-    {
-      return true;
-    } 
-  else 
-    {
-      return false;
-    }
-}
+
 Ipv4Address 
-Ipv4Route::GetDestNetwork (void) const
+Ipv4Route::GetSource (void) const
 {
-  return m_dest;
+  return m_source;
 }
-Ipv4Mask 
-Ipv4Route::GetDestNetworkMask (void) const
+
+void 
+Ipv4Route::SetGateway (Ipv4Address gw)
 {
-  return m_destNetworkMask;
+  m_gateway = gw;
 }
-bool 
-Ipv4Route::IsGateway (void) const
-{
-  if (m_gateway.IsEqual (Ipv4Address::GetZero ())) 
-    {
-      return false;
-    } 
-  else 
-    {
-      return true;
-    }
-}
+
 Ipv4Address 
 Ipv4Route::GetGateway (void) const
 {
   return m_gateway;
 }
-uint32_t
-Ipv4Route::GetInterface (void) const
+
+void 
+Ipv4Route::SetOutputDevice (Ptr<NetDevice> outputDevice)
 {
-  return m_interface;
+  m_outputDevice = outputDevice;
 }
 
-Ipv4Route 
-Ipv4Route::CreateHostRouteTo (Ipv4Address dest, 
-			      Ipv4Address nextHop, 
-			      uint32_t interface)
+Ptr<NetDevice> 
+Ipv4Route::GetOutputDevice (void) const
 {
-  return Ipv4Route (dest, nextHop, interface);
+  return m_outputDevice;
 }
-Ipv4Route 
-Ipv4Route::CreateHostRouteTo (Ipv4Address dest,
-			      uint32_t interface)
-{
-  return Ipv4Route (dest, interface);
-}
-Ipv4Route 
-Ipv4Route::CreateNetworkRouteTo (Ipv4Address network, 
-				 Ipv4Mask networkMask, 
-				 Ipv4Address nextHop, 
-				 uint32_t interface)
-{
-  return Ipv4Route (network, networkMask, 
-                    nextHop, interface);
-}
-Ipv4Route 
-Ipv4Route::CreateNetworkRouteTo (Ipv4Address network, 
-				 Ipv4Mask networkMask, 
-				 uint32_t interface)
-{
-  return Ipv4Route (network, networkMask, 
-                    interface);
-}
-Ipv4Route 
-Ipv4Route::CreateDefaultRoute (Ipv4Address nextHop, 
-			       uint32_t interface)
-{
-  return Ipv4Route (Ipv4Address::GetZero (), nextHop, interface);
-}
-
 
 std::ostream& operator<< (std::ostream& os, Ipv4Route const& route)
 {
-  if (route.IsDefault ())
-    {
-      NS_ASSERT (route.IsGateway ());
-      os << "default out=" << route.GetInterface () << ", next hop=" << route.GetGateway ();
-    }
-  else if (route.IsHost ())
-    {
-      if (route.IsGateway ())
-        {
-          os << "host="<< route.GetDest () << 
-            ", out=" << route.GetInterface () << 
-            ", next hop=" << route.GetGateway ();
-        }
-      else
-        {
-          os << "host="<< route.GetDest () << 
-            ", out=" << route.GetInterface ();
-        }
-    }
-  else if (route.IsNetwork ()) 
-    {
-      if (route.IsGateway ())
-        {
-          os << "network=" << route.GetDestNetwork () <<
-            ", mask=" << route.GetDestNetworkMask () <<
-            ",out=" << route.GetInterface () <<
-            ", next hop=" << route.GetGateway ();
-        }
-      else
-        {
-          os << "network=" << route.GetDestNetwork () <<
-            ", mask=" << route.GetDestNetworkMask () <<
-            ",out=" << route.GetInterface ();
-        }
-    }
-  else
-    {
-      NS_ASSERT (false);
-    }
-  return os;
+   os << "source=" << route.GetSource () << " dest="<< route.GetDestination () <<" gw=" << route.GetGateway ();
+   return os;
 }
-
-/*****************************************************
- *     Ipv4MulticastRoute
- *****************************************************/
 
 Ipv4MulticastRoute::Ipv4MulticastRoute ()
 {
+  uint32_t initial_ttl = MAX_TTL;
+  // Initialize array to MAX_TTL, which means that all interfaces are "off"
+  for (uint32_t i = 0; i < MAX_INTERFACES; i++)
+    {
+      m_ttls.push_back(initial_ttl);
+    }
 }
 
-Ipv4MulticastRoute::Ipv4MulticastRoute (Ipv4MulticastRoute const &route)
-: 
-  m_origin (route.m_origin),
-  m_group (route.m_group),
-  m_inputInterface (route.m_inputInterface),
-  m_outputInterfaces (route.m_outputInterfaces)
+void 
+Ipv4MulticastRoute::SetGroup (const Ipv4Address group)
 {
-}
-
-Ipv4MulticastRoute::Ipv4MulticastRoute (Ipv4MulticastRoute const *route)
-: 
-  m_origin (route->m_origin),
-  m_group (route->m_group),
-  m_inputInterface (route->m_inputInterface),
-  m_outputInterfaces (route->m_outputInterfaces)
-{
-}
-
-Ipv4MulticastRoute::Ipv4MulticastRoute (
-  Ipv4Address origin, 
-  Ipv4Address group, 
-  uint32_t inputInterface, 
-  std::vector<uint32_t> outputInterfaces)
-{
-  m_origin = origin;
   m_group = group;
-  m_inputInterface = inputInterface;
-  m_outputInterfaces = outputInterfaces;
-}
-
-Ipv4Address 
-Ipv4MulticastRoute::GetOrigin (void) const
-{
-  return m_origin;
 }
 
 Ipv4Address 
@@ -276,58 +102,40 @@ Ipv4MulticastRoute::GetGroup (void) const
   return m_group;
 }
 
+void 
+Ipv4MulticastRoute::SetOrigin (const Ipv4Address origin)
+{
+  m_origin = origin;
+}
+
+Ipv4Address 
+Ipv4MulticastRoute::GetOrigin (void) const
+{
+  return m_origin;
+}
+
+void 
+Ipv4MulticastRoute::SetParent (uint32_t parent)
+{
+  m_parent = parent;
+}
+
 uint32_t 
-Ipv4MulticastRoute::GetInputInterface (void) const
+Ipv4MulticastRoute::GetParent (void) const
 {
-  return m_inputInterface;
+  return m_parent;
+}
+
+void 
+Ipv4MulticastRoute::SetOutputTtl (uint32_t oif, uint32_t ttl)
+{
+  m_ttls[oif] = ttl;
 }
 
 uint32_t
-Ipv4MulticastRoute::GetNOutputInterfaces (void) const
+Ipv4MulticastRoute::GetOutputTtl (uint32_t oif) const
 {
-  return m_outputInterfaces.size ();
-}
-
-uint32_t
-Ipv4MulticastRoute::GetOutputInterface (uint32_t n) const
-{
-  NS_ASSERT_MSG(n < m_outputInterfaces.size (), 
-    "Ipv4MulticastRoute::GetOutputInterface (): index out of bounds");
-
-  return m_outputInterfaces[n];
-}
-
-std::vector<uint32_t>
-Ipv4MulticastRoute::GetOutputInterfaces (void) const
-{
-  return m_outputInterfaces;
-}
-
-Ipv4MulticastRoute 
-Ipv4MulticastRoute::CreateMulticastRoute (
-  Ipv4Address origin, 
-  Ipv4Address group, 
-  uint32_t inputInterface,
-  std::vector<uint32_t> outputInterfaces)
-{
-  return Ipv4MulticastRoute (origin, group, inputInterface, outputInterfaces);
-}
-
-std::ostream& 
-operator<< (std::ostream& os, Ipv4MulticastRoute const& route)
-{
-  os << "origin=" << route.GetOrigin () << 
-    ", group=" << route.GetGroup () <<
-    ", input interface=" << route.GetInputInterface () <<
-    ", output interfaces=";
-
-  for (uint32_t i = 0; i < route.GetNOutputInterfaces (); ++i)
-    {
-      os << route.GetOutputInterface (i) << " ";
-
-    }
-
-  return os;
+  return m_ttls[oif];
 }
 
 }//namespace ns3

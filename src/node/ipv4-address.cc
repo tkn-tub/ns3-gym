@@ -55,6 +55,7 @@ AsciiToIpv4Host (char const *address)
 
 namespace ns3 {
 
+  
 Ipv4Mask::Ipv4Mask ()
   : m_mask (0x66666666)
 {}

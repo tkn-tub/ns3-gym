@@ -164,7 +164,6 @@ QstaWifiMac::SetEifsNoDifs (Time eifsNoDifs)
 {
   NS_LOG_FUNCTION (this << eifsNoDifs);
   m_dcfManager->SetEifsNoDifs (eifsNoDifs);
-  m_eifsNoDifs = eifsNoDifs;
 }
 
 void
@@ -200,7 +199,7 @@ QstaWifiMac::GetSifs (void) const
 Time 
 QstaWifiMac::GetEifsNoDifs (void) const
 {
-  return m_eifsNoDifs;
+  return m_dcfManager->GetEifsNoDifs ();
 }
 
 Time

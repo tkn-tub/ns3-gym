@@ -109,6 +109,11 @@ public:
 
 protected:
   virtual void DoDispose (void);
+  /* 
+   * This function will notify other components connected to the node that a new stack member is now connected
+   * This will be used to notify Layer 3 protocol of layer 4 protocol stack to connect them together.
+   */
+  virtual void NotifyNewAggregate ();
 private:
   Ptr<Node> m_node;
   Ipv4EndPointDemux *m_endPoints;

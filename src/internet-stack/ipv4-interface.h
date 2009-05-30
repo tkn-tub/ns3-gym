@@ -32,6 +32,8 @@ namespace ns3 {
 
 class NetDevice;
 class Packet;
+class Node;
+class ArpCache;
 
 /**
  * \brief The IPv4 representation of a network interface
@@ -40,26 +42,9 @@ class Packet;
  * of Linux; the main purpose is to provide address-family
  * specific information (addresses) about an interface.
  *
- * This class defines two APIs:
- *  - the public API which is expected to be used by both 
- *    the IPv4 layer and the user during forwarding and 
- *    configuration.
- *  - the private API which is expected to be implemented
- *    by subclasses of this base class. One such subclass 
- *    will be a Loopback interface which loops every
- *    packet sent back to the ipv4 layer. Another such 
- *    subclass typically contains the Ipv4 <-> MAC address
- *    translation logic which will use most of the time the
- *    ARP/RARP protocols.
- *
  * By default, Ipv4 interface are created in the "down" state
- * with ip address 192.168.0.1 and a matching mask. Before
- * becoming useable, the user must invoke SetUp on them
- * once the final Ipv4 address and mask has been set.
- *
- * Subclasses must implement the two methods:
- *   - Ipv4Interface::SendTo
- *   - Ipv4Interface::GetDevice
+ * no IP addresses.  Before becoming useable, the user must 
+ * add an address of some type and invoke Setup on them.
  */
 class Ipv4Interface  : public Object
 {
@@ -69,18 +54,29 @@ public:
   Ipv4Interface ();
   virtual ~Ipv4Interface();
 
+  void SetNode (Ptr<Node> node); 
+  void SetDevice (Ptr<NetDevice> device);
+
   /**
-   * \returns the underlying NetDevice. This method can return
-   *          zero if this interface has no associated NetDevice.
+   * \returns the underlying NetDevice. This method cannot return zero.
    */
-  virtual Ptr<NetDevice> GetDevice (void) const = 0;
+  Ptr<NetDevice> GetDevice (void) const;
 
   /**
    * \param metric configured routing metric (cost) of this interface
+   *
+   * Note:  This is synonymous to the Metric value that ifconfig prints
+   * out.  It is used by ns-3 global routing, but other routing daemons
+   * choose to ignore it. 
    */
   void SetMetric (uint16_t metric);
+
   /**
    * \returns configured routing metric (cost) of this interface
+   *
+   * Note:  This is synonymous to the Metric value that ifconfig prints
+   * out.  It is used by ns-3 global routing, but other routing daemons 
+   * may choose to ignore it. 
    */
   uint16_t GetMetric (void) const;
 
@@ -88,6 +84,8 @@ public:
    * This function a pass-through to NetDevice GetMtu, modulo
    * the  LLC/SNAP header i.e., ipv4MTU = NetDeviceMtu - LLCSNAPSIZE
    * \returns the Maximum Transmission Unit associated to this interface.
+   *
+   * XXX deprecated?  This is duplicate API to GetDevice ()->GetMtu ()
    */
   uint16_t GetMtu (void) const;
 
@@ -100,14 +98,17 @@ public:
    * \returns true if this interface is enabled, false otherwise.
    */
   bool IsUp (void) const;
+
   /**
    * \returns true if this interface is disabled, false otherwise.
    */
   bool IsDown (void) const;
+
   /**
    * Enable this interface
    */
   void SetUp (void);
+
   /**
    * Disable this interface
    */
@@ -147,16 +148,19 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  virtual void SendTo (Ptr<Packet> p, Ipv4Address dest) = 0;
-  bool m_ifup;
-  uint16_t m_metric;
-
+  void DoSetup (void);
   typedef std::list<Ipv4InterfaceAddress> Ipv4InterfaceAddressList;
   typedef std::list<Ipv4InterfaceAddress>::const_iterator Ipv4InterfaceAddressListCI;
   typedef std::list<Ipv4InterfaceAddress>::iterator Ipv4InterfaceAddressListI;
+
+  bool m_ifup;
+  uint16_t m_metric;
   Ipv4InterfaceAddressList m_ifaddrs;
+  Ptr<Node> m_node;
+  Ptr<NetDevice> m_device;
+  Ptr<ArpCache> m_cache; 
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif

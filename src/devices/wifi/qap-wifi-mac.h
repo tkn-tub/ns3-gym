@@ -88,7 +88,7 @@ public:
 
 private:
   virtual void DoDispose (void);
-  void Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
+  void Receive (Ptr<Packet> packet, WifiMacHeader const*hdr);
   void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
   void ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
   /* Next function is invoked only when ap relies a frame. */
@@ -139,7 +139,6 @@ private:
   Ssid m_ssid;
   EventId m_beaconEvent;
   Time m_beaconInterval;
-  Time m_eifsNoDifs;
 };
 
 }  //namespace ns3

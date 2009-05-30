@@ -129,7 +129,6 @@ private:
   Ptr<MacLow> m_low;
   Ssid m_ssid;
   EventId m_beaconEvent;
-  Time m_eifsNoDifs;
 };
 
 } // namespace ns3

@@ -43,7 +43,8 @@ public:
   virtual bool Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket,
                           Mac48Address src, Mac48Address dest);
 private:
-  /*  Calculates how much padding must be added to the end of packet.
+  /*  Calculates how much padding must be added to the end of aggregated packet,
+      after that a new packet is added.
       Each A-MSDU subframe is padded so that its length is multiple of 4 octects.
    */
   uint32_t CalculatePadding (Ptr<const Packet> packet);

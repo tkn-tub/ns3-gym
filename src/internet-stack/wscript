@@ -72,23 +72,23 @@ def configure(conf):
 def build(bld):
     obj = bld.create_ns3_module('internet-stack', ['node'])
     obj.source = [
-        'internet-stack.cc',
+        'tcp-test.cc',
+        'udp-test.cc',
         'ipv4-l4-protocol.cc',
         'udp-header.cc',
         'tcp-header.cc',
         'ipv4-checksum.cc',
         'ipv4-interface.cc',
         'ipv4-l3-protocol.cc',
-        'ipv4-static-routing.cc',
+        'ipv4-static-routing-impl.cc',
+        'ipv4-list-routing-impl.cc',
         'ipv4-global-routing.cc',
         'ipv4-end-point.cc',
         'udp-l4-protocol.cc',
         'tcp-l4-protocol.cc',
         'arp-header.cc',
         'arp-cache.cc',
-        'arp-ipv4-interface.cc',
         'arp-l3-protocol.cc',
-        'ipv4-loopback-interface.cc',
         'udp-socket-impl.cc',
         'tcp-socket-impl.cc',
         'ipv4-end-point-demux.cc',
@@ -101,16 +101,18 @@ def build(bld):
         'ipv4-raw-socket-impl.cc',
         'icmpv4.cc',
         'icmpv4-l4-protocol.cc',
+        'loopback-net-device.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
     headers.module = 'internet-stack'
     headers.source = [
-        'internet-stack.h',
         'udp-header.h',
         'tcp-header.h',
         'sequence-number.h',
         'ipv4-global-routing.h',
+        'ipv4-list-routing-impl.h',
+        'ipv4-static-routing-impl.h',
         'icmpv4.h',
         ]
 

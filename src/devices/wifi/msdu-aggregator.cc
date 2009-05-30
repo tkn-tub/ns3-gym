@@ -59,7 +59,7 @@ MsduAggregator::Deaggregate (Ptr<Packet> aggregatedPacket)
      
      padding = (4 - ((hdr.GetLength () + 14) %4 )) % 4;
   
-     if (padding > 0)
+     if (padding > 0 && deserialized < maxSize)
        {
          aggregatedPacket->RemoveAtStart (padding);
          deserialized += padding;

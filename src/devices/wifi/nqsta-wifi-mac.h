@@ -160,7 +160,6 @@ private:
   MacRxMiddle *m_rxMiddle;
   Ptr<MacLow> m_low;
   Ssid m_ssid;
-  Time m_eifsNoDifs;
 
   TracedCallback<Mac48Address> m_assocLogger;
   TracedCallback<Mac48Address> m_deAssocLogger;
