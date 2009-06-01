@@ -105,7 +105,7 @@ main (int argc, char *argv[])
   // 2) Set up a default multicast route on the sender n0 
   // 3) Have node n4 join the multicast group
   // We have a helper that can help us with static multicast
-  StaticMulticastRouteHelper multicast;
+  Ipv4StaticRoutingHelper multicast;
 
   // 1) Configure a (static) multicast route on node n2 (multicastRouter)
   Ptr<Node> multicastRouter = c.Get (2);  // The node in question
@@ -121,10 +121,6 @@ main (int argc, char *argv[])
   Ptr<NetDevice> senderIf = nd0.Get(0);
   multicast.SetDefaultMulticastRoute (sender, senderIf);
 
-  // 3) Have node n4 join the multicast group
-  Ptr<Node> receiver = c.Get (4);
-  multicast.JoinMulticastGroup (receiver, multicastSource, multicastGroup);
-  
   //
   // Create an OnOff application to send UDP datagrams from node zero to the
   // multicast group (node four will be listening).

@@ -111,12 +111,12 @@ MeshHeader::SetAddressExt (uint8_t num_of_addresses)
 {
   if (num_of_addresses > 3)
     return;
-  m_meshFlags |= 0xc0 & (num_of_addresses << 6);
+  m_meshFlags |= 0x03 & num_of_addresses;
 }
 uint8_t
 MeshHeader::GetAddressExt () const
 {
-  return ((0xc0 & m_meshFlags) >> 6);
+  return (0x03 & m_meshFlags);
 }
 uint32_t
 MeshHeader::GetSerializedSize () const
@@ -129,7 +129,7 @@ MeshHeader::Serialize (Buffer::Iterator start) const
   Buffer::Iterator i = start;
   i.WriteU8 (m_meshFlags);
   i.WriteU8 (m_meshTtl);
-  i.WriteU32 (m_meshSeqno);
+  i.WriteHtolsbU32 (m_meshSeqno);
   uint8_t addresses_to_add = GetAddressExt ();
   //Writing Address extensions:
   if ((addresses_to_add == 1) || (addresses_to_add == 3))
@@ -146,8 +146,8 @@ MeshHeader::Deserialize (Buffer::Iterator start)
   uint8_t addresses_to_read = 0;
   m_meshFlags = i.ReadU8 ();
   m_meshTtl = i.ReadU8 ();
-  m_meshSeqno = i.ReadU32 ();
-  addresses_to_read = (m_meshFlags & 0xc0) >> 6;
+  m_meshSeqno = i.ReadLsbtohU32 ();
+  addresses_to_read = m_meshFlags & 0x03;
   if ((addresses_to_read == 1) || (addresses_to_read == 3))
     ReadFrom (i, m_addr4);
   if (addresses_to_read > 1)
@@ -195,7 +195,7 @@ WifiMeshActionHeader::SetAction (
   
   switch (type)
     {
-    case MESH_PEER_LINK_MGT:
+    case MESH_PEERING_MGT:
       {
         m_actionValue = action.peerLink;
         break;
@@ -206,8 +206,9 @@ WifiMeshActionHeader::SetAction (
         break;
       }
     case MESH_LINK_METRIC:
-    case MESH_INTERWORK_ACTION:
+    case MESH_INTERWORKING:
     case MESH_RESOURCE_COORDINATION:
+    case MESH_PROXY_FORWARDING:
       break;
     };
 }
@@ -216,19 +217,21 @@ WifiMeshActionHeader::GetCategory ()
 {
   switch (m_category)
     {
-    case MESH_PEER_LINK_MGT:
-      return MESH_PEER_LINK_MGT;
+    case MESH_PEERING_MGT:
+      return MESH_PEERING_MGT;
     case MESH_LINK_METRIC:
       return MESH_LINK_METRIC;
     case MESH_PATH_SELECTION:
       return MESH_PATH_SELECTION;
-    case MESH_INTERWORK_ACTION:
-      return MESH_INTERWORK_ACTION;
+    case MESH_INTERWORKING:
+      return MESH_INTERWORKING;
     case MESH_RESOURCE_COORDINATION:
       return MESH_RESOURCE_COORDINATION;
+    case MESH_PROXY_FORWARDING:
+      return MESH_PROXY_FORWARDING;
     default:
       NS_ASSERT (false);
-      return MESH_PEER_LINK_MGT;
+      return MESH_PEERING_MGT;
     }
 }
 WifiMeshActionHeader::ActionValue
@@ -237,7 +240,7 @@ WifiMeshActionHeader::GetAction ()
   ActionValue retval;
   switch (m_category)
     {
-    case MESH_PEER_LINK_MGT:
+    case MESH_PEERING_MGT:
       switch (m_actionValue)
         {
         case PEER_LINK_OPEN:
@@ -274,7 +277,7 @@ WifiMeshActionHeader::GetAction ()
         }
     case MESH_LINK_METRIC:
       // ???
-    case MESH_INTERWORK_ACTION:
+    case MESH_INTERWORKING:
       // ???
     case MESH_RESOURCE_COORDINATION:
       // ???

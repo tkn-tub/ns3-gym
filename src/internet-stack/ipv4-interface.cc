@@ -19,10 +19,16 @@
  */
 
 #include "ipv4-interface.h"
+#include "loopback-net-device.h"
 #include "ns3/ipv4-address.h"
+#include "ipv4-l3-protocol.h"
+#include "arp-l3-protocol.h"
+#include "arp-cache.h"
 #include "ns3/net-device.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
+#include "ns3/node.h"
+#include "ns3/pointer.h"
 
 NS_LOG_COMPONENT_DEFINE ("Ipv4Interface");
 
@@ -33,19 +39,27 @@ Ipv4Interface::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4Interface")
     .SetParent<Object> ()
+    .AddAttribute ("ArpCache",
+                   "The arp cache for this ipv4 interface",
+                   PointerValue (0),
+                   MakePointerAccessor (&Ipv4Interface::m_cache),
+                   MakePointerChecker<Ipv4Interface> ())
+    ;
     ;
   return tid;
 }
 
-  /**
-   * By default, Ipv4 interface are created in the "down" state
-   * with ip address 192.168.0.1 and a matching mask. Before
-   * becoming useable, the user must invoke SetUp on them
-   * once the final Ipv4 address and mask has been set.
-   */
+/** 
+ * By default, Ipv4 interface are created in the "down" state
+ *  with no IP addresses.  Before becoming useable, the user must 
+ * invoke SetUp on them once an Ipv4 address and mask have been set.
+ */
 Ipv4Interface::Ipv4Interface () 
-  : m_ifup(false),
-    m_metric(1)
+  : m_ifup (false),
+    m_metric (1),
+    m_node (0), 
+    m_device (0),
+    m_cache (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -59,7 +73,44 @@ void
 Ipv4Interface::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_node = 0;
+  m_device = 0;
   Object::DoDispose ();
+}
+
+void 
+Ipv4Interface::SetNode (Ptr<Node> node)
+{
+  m_node = node;
+  DoSetup ();
+}
+
+void 
+Ipv4Interface::SetDevice (Ptr<NetDevice> device)
+{
+  m_device = device;
+  DoSetup ();
+}
+
+void
+Ipv4Interface::DoSetup (void)
+{
+  if (m_node == 0 || m_device == 0)
+    {
+      return;
+    }
+  if (!m_device->NeedsArp ())
+    {
+      return;
+    }
+  Ptr<ArpL3Protocol> arp = m_node->GetObject<ArpL3Protocol> ();
+  m_cache = arp->CreateCache (m_device, this);
+}
+
+Ptr<NetDevice>
+Ipv4Interface::GetDevice (void) const
+{
+  return m_device;
 }
 
 void
@@ -80,12 +131,7 @@ uint16_t
 Ipv4Interface::GetMtu (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if (GetDevice () == 0)
-    {
-      uint32_t mtu = (1<<16) - 1;
-      return mtu;
-    }
-  return GetDevice ()->GetMtu ();
+  return m_device->GetMtu ();
 }
 
 /**
@@ -121,15 +167,92 @@ Ipv4Interface::SetDown (void)
   m_ifup = false;
 }
 
-// public wrapper on private virtual function
-void 
-Ipv4Interface::Send(Ptr<Packet> p, Ipv4Address dest)
+void
+Ipv4Interface::Send (Ptr<Packet> p, Ipv4Address dest)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if (IsUp()) {
-    NS_LOG_LOGIC ("SendTo");
-    SendTo(p, dest);
-  }
+  if (!IsUp()) 
+    {
+      return;
+    }
+  // Check for a loopback device
+  if (DynamicCast<LoopbackNetDevice> (m_device))
+    {
+      // XXX additional checks needed here (such as whether multicast
+      // goes to loopback)?
+      m_device->Send (p, m_device->GetBroadcast (), 
+                      Ipv4L3Protocol::PROT_NUMBER);
+      return;
+    } 
+  // is this packet aimed at a local interface ?
+  for (Ipv4InterfaceAddressListCI i = m_ifaddrs.begin (); i != m_ifaddrs.end (); ++i)
+    {
+      if (dest == (*i).GetLocal ())
+        {
+          Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
+        
+          ipv4->Receive (0, p, Ipv4L3Protocol::PROT_NUMBER, 
+                         m_device->GetBroadcast (),
+                         m_device->GetBroadcast (),
+                         NetDevice::PACKET_HOST // note: linux uses PACKET_LOOPBACK here
+                         );
+          return;
+        }
+    }
+  if (m_device->NeedsArp ())
+    {
+      NS_LOG_LOGIC ("Needs ARP" << " " << dest);
+      Ptr<ArpL3Protocol> arp = m_node->GetObject<ArpL3Protocol> ();
+      Address hardwareDestination;
+      bool found = false;
+      if (dest.IsBroadcast ())
+        {
+          NS_LOG_LOGIC ("All-network Broadcast");
+          hardwareDestination = m_device->GetBroadcast ();
+          found = true;
+        }
+      else if (dest.IsMulticast ())
+        {
+          NS_LOG_LOGIC ("IsMulticast");
+          NS_ASSERT_MSG(m_device->IsMulticast (),
+            "ArpIpv4Interface::SendTo (): Sending multicast packet over "
+            "non-multicast device");
+
+          hardwareDestination = m_device->GetMulticast(dest);
+          found = true;
+        }
+      else
+        {
+          for (Ipv4InterfaceAddressListCI i = m_ifaddrs.begin (); i != m_ifaddrs.end (); ++i)
+            {
+              if (dest.IsSubnetDirectedBroadcast ((*i).GetMask ()))
+                {
+                  NS_LOG_LOGIC ("Subnetwork Broadcast");
+                  hardwareDestination = m_device->GetBroadcast ();
+                  found = true;
+                  break;
+                }
+            }
+          if (!found)
+            {
+              NS_LOG_LOGIC ("ARP Lookup");
+              found = arp->Lookup (p, dest, m_device, m_cache, &hardwareDestination);
+            }
+        }
+
+      if (found)
+        {
+          NS_LOG_LOGIC ("Address Resolved.  Send.");
+          m_device ->Send (p, hardwareDestination, 
+                              Ipv4L3Protocol::PROT_NUMBER);
+        }
+    }
+  else
+    {
+      NS_LOG_LOGIC ("Doesn't need ARP");
+      m_device->Send (p, m_device->GetBroadcast (), 
+                      Ipv4L3Protocol::PROT_NUMBER);
+    }
 }
 
 uint32_t

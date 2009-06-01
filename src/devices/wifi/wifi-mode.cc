@@ -165,7 +165,44 @@ WifiModeFactory::CreateQam (std::string uniqueName,
   item->isMandatory = isMandatory;
   return WifiMode (uid);
 }
-
+WifiMode 
+WifiModeFactory::CreateDbpsk (std::string uniqueName,
+			     bool isMandatory,
+			     uint32_t bandwidth,
+			     uint32_t dataRate,
+			     uint32_t phyRate)
+{
+  WifiModeFactory *factory = GetFactory ();
+  uint32_t uid = factory->AllocateUid (uniqueName);
+  WifiModeItem *item = factory->Get (uid);
+  item->uniqueUid = uniqueName;
+  item->bandwidth = bandwidth;
+  item->dataRate = dataRate;
+  item->phyRate = phyRate;
+  item->modulation = WifiMode::DBPSK;
+  item->constellationSize = 2;
+  item->isMandatory = isMandatory;
+  return WifiMode (uid);
+}
+WifiMode 
+WifiModeFactory::CreateDqpsk (std::string uniqueName,
+			     bool isMandatory,
+			     uint32_t bandwidth,
+			     uint32_t dataRate,
+			     uint32_t phyRate)
+{
+  WifiModeFactory *factory = GetFactory ();
+  uint32_t uid = factory->AllocateUid (uniqueName);
+  WifiModeItem *item = factory->Get (uid);
+  item->uniqueUid = uniqueName;
+  item->bandwidth = bandwidth;
+  item->dataRate = dataRate;
+  item->phyRate = phyRate;
+  item->modulation = WifiMode::DQPSK;
+  item->constellationSize = 4;
+  item->isMandatory = isMandatory;
+  return WifiMode (uid);
+}
 bool 
 WifiModeFactory::Search (std::string name, WifiMode *mode)
 {

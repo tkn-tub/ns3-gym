@@ -163,7 +163,6 @@ private:
   EventId m_beaconWatchdog;
   
   uint32_t m_maxMissedBeacons;
-  Time m_eifsNoDifs;
 };
 
 }  //namespace ns3

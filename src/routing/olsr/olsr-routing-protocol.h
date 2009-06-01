@@ -121,13 +121,10 @@ private:
                       RoutingTableEntry &outEntry) const;
 
   // From Ipv4RoutingProtocol
-  virtual bool RequestRoute (uint32_t ifIndex,
-                             const Ipv4Header &ipHeader,
-                             Ptr<Packet> packet,
-                             RouteReplyCallback routeReply);
-  virtual bool RequestInterface (Ipv4Address destination, 
-                               uint32_t& ifIndex);
-
+  virtual Ptr<Ipv4Route> RouteOutput (const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr);
+   virtual bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
+                             UnicastForwardCallback ucb, MulticastForwardCallback mcb,
+                             LocalDeliverCallback lcb, ErrorCallback ecb);  
 
   void DoDispose ();
 

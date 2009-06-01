@@ -52,10 +52,93 @@ us a note on ns-developers mailing list.  </p>
 
 <h2>New API:</h2>
 <ul>
+<li> <b>attributes for class Ipv4</b>
+<p> class Ipv4 now contains attributes in ipv4.cc; the first one
+is called "IpForward" that will enable/disable Ipv4 forwarding.  
+</li>
 </ul>
 
 <h2>Changes to existing API:</h2>
 <ul>
+
+<li><b> Routing decoupled from class Ipv4</b>
+<p> All calls of the form "Ipv4::AddHostRouteTo ()" etc. (i.e. to 
+add static routes, both unicast and multicast) have been moved to a new 
+class Ipv4StaticRouting.  In addition, class Ipv4 now holds only
+one possible routing protocol; the previous way to add routing protocols
+(by ordered list of priority) has been moved to a new class Ipv4ListRouting.
+Class Ipv4 has a new minimal routing API (just to set and get the routing
+protocol):
+<pre>
+-  virtual void AddRoutingProtocol (Ptr&lt;Ipv4RoutingProtocol&gt; routingProtocol, int16_t priority) = 0;
++  virtual void SetRoutingProtocol (Ptr&lt;Ipv4RoutingProtocol&gt; routingProtocol) = 0;
++  virtual Ptr&lt;Ipv4RoutingProtocol&gt; GetRoutingProtocol (void) const = 0;
+</pre>
+</li>
+
+<li><b> class Ipv4RoutingProtocol is refactored</b>
+<p> The abstract base class Ipv4RoutingProtocol has been refactored to
+align with corresponding Linux Ipv4 routing architecture, and has been
+moved from ipv4.h to a new file ipv4-routing-protocol.h.  The new
+methods (RouteOutput () and RouteInput ()) are aligned with Linux 
+ip_route_output() and ip_route_input().  However,
+the general nature of these calls (synchronous routing lookup for
+locally originated packets, and an asynchronous, callback-based lookup
+for forwarded packets) is still the same.
+<pre>
+-  typedef Callback&lt;void, bool, const Ipv4Route&, Ptr&lt;Packet&gt;, const Ipv4Header&&gt; RouteReplyCallback;
++  typedef Callback&lt;void, Ptr&lt;Ipv4Route&gt;, Ptr&lt;const Packet&gt;, const Ipv4Header &&gt; UnicastForwardCallback;
++  typedef Callback&lt;void, Ptr&lt;Ipv4MulticastRoute&gt;, Ptr&lt;const Packet&gt;, const Ipv4Header &&gt; MulticastForwardCallback;
++  typedef Callback&lt;void, Ptr&lt;const Packet&gt;, const Ipv4Header &, uint32_t &gt; LocalDeliverCallback;
++  typedef Callback&lt;void, Ptr&lt;const Packet&gt;, const Ipv4Header &&gt; ErrorCallback;
+-  virtual bool RequestInterface (Ipv4Address destination, uint32_t& interface) = 0;
++  virtual Ptr&lt;Ipv4Route&gt; RouteOutput (const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &errno) = 0;
+-  virtual bool RequestRoute (uint32_t interface,
+-                            const Ipv4Header &ipHeader,
+-                            Ptr&lt;Packet&gt; packet,
+-                            RouteReplyCallback routeReply) = 0;
++  virtual bool RouteInput  (Ptr&lt;const Packet&gt; p, const Ipv4Header &header, Ptr&lt;const NetDevice&gt; idev,
++                             UnicastForwardCallback ucb, MulticastForwardCallback mcb,
++                             LocalDeliverCallback lcb, ErrorCallback ecb) = 0;
+</pre>
+
+</li>
+<li><b> previous class Ipv4Route, Ipv4MulticastRoute renamed; new classes with
+those same names added</b>
+<p> The previous class Ipv4Route and Ipv4MulticastRoute are used by 
+Ipv4StaticRouting and Ipv4GlobalRouting to record internal routing table
+entries, so they were renamed to class Ipv4RoutingTableEntry and
+Ipv4MulticastRoutingTableEntry, respectively.  In their place, new
+class Ipv4Route and class Ipv4MulticastRoute have been added.  These
+are reference-counted objects that are analogous to Linux struct
+rtable and struct mfc_cache, respectively, to achieve better compatibility
+with Linux routing architecture in the future.  
+
+<li><b> class Ipv4 address-to-interface mapping functions changed</b>
+<p>  There was some general cleanup of functions that involve mappings
+from Ipv4Address to either NetDevice or Ipv4 interface index.  
+<pre>
+-  virtual uint32_t FindInterfaceForAddr (Ipv4Address addr) const = 0;
+-  virtual uint32_t FindInterfaceForAddr (Ipv4Address addr, Ipv4Mask mask) const = 0;
++  virtual int32_t GetInterfaceForAddress (Ipv4Address address) const = 0;
++  virtual int32_t GetInterfaceForPrefix (Ipv4Address address, Ipv4Mask mask) const = 0;
+-  virtual int32_t FindInterfaceForDevice(Ptr&lt;NetDevice&gt; nd) const = 0;
++  virtual int32_t GetInterfaceForDevice (Ptr&lt;const NetDevice&gt; device) const = 0;
+-  virtual Ipv4Address GetSourceAddress (Ipv4Address destination) const = 0;
+-  virtual bool GetInterfaceForDestination (Ipv4Address dest,
+-  virtual uint32_t GetInterfaceByAddress (Ipv4Address addr, Ipv4Mask mask = Ipv4Mask("255.255.255.255"));
+</pre>
+
+<li><b> class Ipv4 multicast join API deleted</b>
+<p> The following methods are not really used in present form since IGMP
+is not being generated, so they have been removed (planned to be replaced
+by multicast socket-based calls in the future):
+
+<pre>
+- virtual void JoinMulticastGroup (Ipv4Address origin, Ipv4Address group) = 0;
+- virtual void LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group) = 0;
+</pre>
+
 
 <li><b>Deconflict NetDevice::ifIndex and Ipv4::ifIndex (bug 85).</b>
 <p>All function parameters named "ifIndex" that refer 

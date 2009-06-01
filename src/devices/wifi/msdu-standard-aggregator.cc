@@ -57,19 +57,20 @@ MsduStandardAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggrega
   Ptr<Packet> currentPacket;
   AmsduSubframeHeader currentHdr;
 
-  uint32_t padding = CalculatePadding (packet);
+  uint32_t padding = CalculatePadding (aggregatedPacket);
   uint32_t actualSize = aggregatedPacket->GetSize ();
                           
   if ((14 + packet->GetSize () + actualSize + padding) <= m_maxAmsduLength)
     {
+      if (padding)
+        {
+          aggregatedPacket->AddPaddingAtEnd (padding);
+        }
       currentHdr.SetDestinationAddr (dest);
       currentHdr.SetSourceAddr (src);
       currentHdr.SetLength (packet->GetSize ());
       currentPacket = packet->Copy ();
-      if (padding)
-        {
-          currentPacket->AddPaddingAtEnd (padding);
-        }
+      
       currentPacket->AddHeader (currentHdr);
       aggregatedPacket->AddAtEnd (currentPacket);
       return true;
@@ -80,7 +81,7 @@ MsduStandardAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggrega
 uint32_t
 MsduStandardAggregator::CalculatePadding (Ptr<const Packet> packet)
 {
-  return (4 - ((packet->GetSize() + 14) %4 )) % 4;
+  return (4 - (packet->GetSize() %4 )) % 4;
 }
 
 }  //namespace ns3

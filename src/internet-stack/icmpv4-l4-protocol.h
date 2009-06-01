@@ -9,6 +9,7 @@ namespace ns3 {
 
 class Node;
 class Ipv4Interface;
+class Ipv4Route;
 
 class Icmpv4L4Protocol : public Ipv4L4Protocol
 {
@@ -29,7 +30,12 @@ public:
   void SendDestUnreachFragNeeded (Ipv4Header header, Ptr<const Packet> orgData, uint16_t nextHopMtu);
   void SendTimeExceededTtl (Ipv4Header header, Ptr<const Packet> orgData);
   void SendDestUnreachPort (Ipv4Header header, Ptr<const Packet> orgData);
-
+protected:
+  /*
+   * This function will notify other components connected to the node that a new stack member is now connected
+   * This will be used to notify Layer 3 protocol of layer 4 protocol stack to connect them together.
+   */
+  virtual void NotifyNewAggregate ();
 private:
   void HandleEcho (Ptr<Packet> p,
 		   Icmpv4Header header, 
@@ -46,7 +52,7 @@ private:
   void SendDestUnreach (Ipv4Header header, Ptr<const Packet> orgData, 
 			uint8_t code, uint16_t nextHopMtu);
   void SendMessage (Ptr<Packet> packet, Ipv4Address dest, uint8_t type, uint8_t code);
-  void SendMessage (Ptr<Packet> packet, Ipv4Address source, Ipv4Address dest, uint8_t type, uint8_t code);
+  void SendMessage (Ptr<Packet> packet, Ipv4Address source, Ipv4Address dest, uint8_t type, uint8_t code, Ptr<Ipv4Route> route);
   void Forward (Ipv4Address source, Icmpv4Header icmp,
 		uint32_t info, Ipv4Header ipHeader,
 		const uint8_t payload[8]);

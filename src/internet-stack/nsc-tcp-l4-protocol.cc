@@ -23,15 +23,17 @@
 
 #include "ns3/packet.h"
 #include "ns3/node.h"
+#include "ns3/ipv4-route.h"
 
 #include "ns3/object-vector.h"
-
+#include "ns3/string.h"
 #include "tcp-header.h"
 #include "ipv4-end-point-demux.h"
 #include "ipv4-end-point.h"
 #include "ipv4-l3-protocol.h"
 #include "nsc-tcp-l4-protocol.h"
 #include "nsc-sysctl.h"
+#include "nsc-tcp-socket-factory-impl.h"
 
 #include "tcp-typedefs.h"
 
@@ -65,7 +67,7 @@ NscTcpL4Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::NscTcpL4Protocol")
     .SetParent<Ipv4L4Protocol> ()
-
+    .AddConstructor<NscTcpL4Protocol>()
     .AddAttribute ("RttEstimatorFactory",
                    "How RttEstimator objects are created.",
                    ObjectFactoryValue (GetDefaultRttEstimatorFactory ()),
@@ -75,6 +77,12 @@ NscTcpL4Protocol::GetTypeId (void)
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&NscTcpL4Protocol::m_sockets),
                    MakeObjectVectorChecker<NscTcpSocketImpl> ())
+    .AddAttribute ("Library",
+                   "Set the linux library to be used to create the stack",
+                   TypeId::ATTR_GET|TypeId::ATTR_CONSTRUCT,
+                   StringValue("liblinux2.6.26.so"),
+                   MakeStringAccessor (&NscTcpL4Protocol::GetNscLibrary,&NscTcpL4Protocol::SetNscLibrary),
+                   MakeStringChecker ())
     ;
   return tid;
 }
@@ -101,13 +109,22 @@ NscTcpL4Protocol::~NscTcpL4Protocol ()
 
 void
 NscTcpL4Protocol::SetNscLibrary(const std::string &soname)
-{
-  NS_ASSERT(!m_dlopenHandle);
-  m_dlopenHandle = dlopen(soname.c_str (), RTLD_NOW);
-  if (m_dlopenHandle == NULL)
-    NS_FATAL_ERROR (dlerror());
+{    
+  if (soname!="")
+    {
+      m_nscLibrary = soname;
+      NS_ASSERT(!m_dlopenHandle);
+      m_dlopenHandle = dlopen(soname.c_str (), RTLD_NOW);
+      if (m_dlopenHandle == NULL)
+        NS_FATAL_ERROR (dlerror());
+    }
 }
 
+std::string 
+NscTcpL4Protocol::GetNscLibrary () const
+{
+  return m_nscLibrary;
+}
 void 
 NscTcpL4Protocol::SetNode (Ptr<Node> node)
 {
@@ -142,6 +159,23 @@ NscTcpL4Protocol::SetNode (Ptr<Node> node)
   // its likely no ns-3 interface exits at this point, so
   // we dealy adding the nsc interface until the start of the simulation.
   Simulator::ScheduleNow (&NscTcpL4Protocol::AddInterface, this);
+}
+
+void
+NscTcpL4Protocol::NotifyNewAggregate ()
+{ 
+  bool is_not_initialized = (m_node == 0);
+  Ptr<Node>node = this->GetObject<Node> ();
+  Ptr<Ipv4L3Protocol> ipv4 = this->GetObject<Ipv4L3Protocol> ();
+  if (is_not_initialized && node!= 0 && ipv4 != 0)
+    {
+      this->SetNode (node);
+      ipv4->Insert (this);
+      Ptr<NscTcpSocketFactoryImpl> tcpFactory = CreateObject<NscTcpSocketFactoryImpl> ();
+      tcpFactory->SetTcp (this);
+      node->AggregateObject (tcpFactory);
+    }
+  Object::NotifyNewAggregate ();
 }
 
 int 
@@ -302,7 +336,7 @@ void NscTcpL4Protocol::send_callback(const void* data, int datalen)
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
   NS_ASSERT_MSG (ipv4, "nsc callback invoked, but node has no ipv4 object");
 
-  ipv4->Send (p, saddr, daddr, PROT_NUMBER);
+  ipv4->Send (p, saddr, daddr, PROT_NUMBER, 0);
   m_nscStack->if_send_finish(0);
 }
 

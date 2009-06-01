@@ -41,7 +41,10 @@ public:
   Ipv4Address GetAddress (uint32_t i, uint32_t j = 0) const;
 
   void SetMetric (uint32_t i, uint16_t metric);
-
+  /**
+   * \param ipv4 pointer to Ipv4 object
+   * \param interface interface index of the Ipv4Interface to add to the container
+   */
   void Add (Ptr<Ipv4> ipv4, uint32_t interface);
   void Add (std::string ipv4Name, uint32_t interface);
 

@@ -31,6 +31,8 @@
 #include "ns3/node-list.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv4-global-routing.h"
+#include "ns3/ipv4-routing-protocol.h"
+#include "ns3/ipv4-list-routing.h"
 #include "global-router-interface.h"
 #include "global-route-manager-impl.h"
 #include "candidate-queue.h"
@@ -154,7 +156,7 @@ SPFVertex::GetDistanceFromRoot (void) const
 }
 
   void 
-SPFVertex::SetOutgoingInterfaceId (uint32_t id)
+SPFVertex::SetOutgoingInterfaceId (int32_t id)
 {
   NS_LOG_FUNCTION (id);
   m_rootOif = id;
@@ -414,15 +416,22 @@ GlobalRouteManagerImpl::SelectRouterNodes ()
 
       NS_LOG_LOGIC ("Adding GlobalRouting Protocol to node " << node->GetId ());
       Ptr<Ipv4GlobalRouting> globalRouting = CreateObject<Ipv4GlobalRouting> ();
+      globalRouting->SetNode (node);
+      // Here, we check whether there is an existing Ipv4RoutingProtocol object
+      // to add this protocol to.
+      Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+      NS_ASSERT_MSG (ipv4, "GlobalRouteManagerImpl::SelectRouterNodes (): GetObject for <Ipv4> interface failed");
+      // Now, we add this to an Ipv4ListRouting object.  
+      // XXX in the future, we may want to allow this to be added to Ipv4
+      // directly
+      Ptr<Ipv4ListRouting> ipv4ListRouting = DynamicCast<Ipv4ListRouting> (ipv4->GetRoutingProtocol ());
+      NS_ASSERT_MSG (ipv4ListRouting, "GlobalRouteManagerImpl::SelectRouterNodes (): Ipv4ListRouting not found"); 
       // This is the object that will keep the global routes.  We insert it
       // at slightly higher priority than static routing (which is at zero).
       // This means that global routes (e.g. host routes) will be consulted
       // before static routes
-      Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-      NS_ASSERT_MSG (ipv4, "GlobalRouteManagerImpl::SelectRouterNodes (): "
-        "GetObject for <Ipv4> interface failed");
       // XXX make the below  priority value an attribute
-      ipv4->AddRoutingProtocol (globalRouting, 3);  
+      ipv4ListRouting->AddRoutingProtocol (globalRouting, 3);  
       // Locally cache the globalRouting pointer; we'll need it later
       // when we add routes
       AddGlobalRoutingProtocol (node->GetId (), globalRouting);
@@ -451,8 +460,10 @@ GlobalRouteManagerImpl::SelectRouterNodes (NodeContainer c)
       Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
       NS_ASSERT_MSG (ipv4, "GlobalRouteManagerImpl::SelectRouterNodes (): "
         "GetObject for <Ipv4> interface failed");
+      Ptr<Ipv4ListRouting> ipv4ListRouting = DynamicCast<Ipv4ListRouting> (ipv4->GetRoutingProtocol ());
+      NS_ASSERT_MSG (ipv4ListRouting, "GlobalRouteManagerImpl::SelectRouterNodes (): Ipv4ListRouting not found"); 
       // XXX make the below  priority value an attribute
-      ipv4->AddRoutingProtocol (globalRouting, 3);  
+      ipv4ListRouting->AddRoutingProtocol (globalRouting, 3);  
       // Locally cache the globalRouting pointer; we'll need it later
       // when we add routes
       AddGlobalRoutingProtocol (node->GetId (), globalRouting);
@@ -1344,18 +1355,34 @@ GlobalRouteManagerImpl::SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* 
 //
           Ptr<Ipv4GlobalRouting> gr = GetGlobalRoutingProtocol (node->GetId ());
           NS_ASSERT (gr);
-          gr->AddNetworkRouteTo (tempip, tempmask, v->GetNextHop (), v->GetOutgoingInterfaceId ());
+          if (v->GetOutgoingInterfaceId () >= 0)
+            {
+              gr->AddNetworkRouteTo (tempip, tempmask, v->GetNextHop (), v->GetOutgoingInterfaceId ());
+              NS_LOG_LOGIC ("Node " << node->GetId () <<
+                " add network route to " << tempip <<
+                " using next hop " << v->GetNextHop () <<
+                " via interface " << v->GetOutgoingInterfaceId ());
+            }
+          else
+            {
+              NS_LOG_LOGIC ("Node " << node->GetId () <<
+                " NOT able to add network route to " << tempip <<
+                " using next hop " << v->GetNextHop () <<
+                " since outgoing interface id is negative");
+            }
           return;
         } // if
     } // for
 }
 
 //
-// Return the interface index corresponding to a given IP address
-// This is a wrapper around GetInterfaceByIpv4Address(), but we first
+// Return the interface number corresponding to a given IP address and mask
+// This is a wrapper around GetInterfaceForPrefix(), but we first
 // have to find the right node pointer to pass to that function.
+// If no such interface is found, return -1 (note:  unit test framework
+// for routing assumes -1 to be a legal return value)
 //
-  uint32_t
+int32_t
 GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
 {
   NS_LOG_FUNCTION (a << amask);
@@ -1400,19 +1427,29 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
           Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
           NS_ASSERT_MSG (ipv4, 
             "GlobalRouteManagerImpl::FindOutgoingInterfaceId (): "
-            "QI for <Ipv4> interface failed");
+            "GetObject for <Ipv4> interface failed");
 //
 // Look through the interfaces on this node for one that has the IP address
 // we're looking for.  If we find one, return the corresponding interface
-// index.
+// index, or -1 if not found.
 //
-          return (ipv4->GetInterfaceByAddress (a, amask) );
+          int32_t interface = ipv4->GetInterfaceForPrefix (a, amask);
+
+#if 0
+          if (interface < 0)
+            {
+              NS_FATAL_ERROR ("GlobalRouteManagerImpl::FindOutgoingInterfaceId(): "
+                "Expected an interface associated with address a:" << a);
+            }
+#endif 
+          return interface;
         }
     }
 //
 // Couldn't find it.
 //
-  return 0;
+  NS_LOG_LOGIC ("FindOutgoingInterfaceId():Can't find root node " << routerId);
+  return -1;
 }
 
 //
@@ -1459,8 +1496,8 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
       Ptr<Node> node = *i;
 //
 // The router ID is accessible through the GlobalRouter interface, so we need
-// to QI for that interface.  If there's no GlobalRouter interface, the node
-// in question cannot be the router we want, so we continue.
+// to GetObject for that interface.  If there's no GlobalRouter interface, 
+// the node in question cannot be the router we want, so we continue.
 // 
       Ptr<GlobalRouter> rtr = 
         node->GetObject<GlobalRouter> ();
@@ -1482,14 +1519,14 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
         {
           NS_LOG_LOGIC ("Setting routes for node " << node->GetId ());
 //
-// Routing information is updated using the Ipv4 interface.  We need to QI
-// for that interface.  If the node is acting as an IP version 4 router, it
-// should absolutely have an Ipv4 interface.
+// Routing information is updated using the Ipv4 interface.  We need to 
+// GetObject for that interface.  If the node is acting as an IP version 4 
+// router, it should absolutely have an Ipv4 interface.
 //
           Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
           NS_ASSERT_MSG (ipv4, 
             "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
-            "QI for <Ipv4> interface failed");
+            "GetObject for <Ipv4> interface failed");
 //
 // Get the Global Router Link State Advertisement from the vertex we're
 // adding the routes to.  The LSA will have a number of attached Global Router
@@ -1542,8 +1579,22 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 //
               Ptr<Ipv4GlobalRouting> gr = GetGlobalRoutingProtocol (node->GetId ());
               NS_ASSERT (gr);
-              gr->AddHostRouteTo (lr->GetLinkData (), v->GetNextHop (),
-                v->GetOutgoingInterfaceId ());
+              if (v->GetOutgoingInterfaceId () >= 0)
+                {
+                  gr->AddHostRouteTo (lr->GetLinkData (), v->GetNextHop (),
+                    v->GetOutgoingInterfaceId ());
+                  NS_LOG_LOGIC ("Node " << node->GetId () <<
+                    " adding host route to " << lr->GetLinkData () <<
+                    " using next hop " << v->GetNextHop () <<
+                    " and outgoing interface " << v->GetOutgoingInterfaceId ());
+                }
+              else
+                {
+                  NS_LOG_LOGIC ("Node " << node->GetId () <<
+                    " NOT able to add host route to " << lr->GetLinkData () <<
+                    " using next hop " << v->GetNextHop () <<
+                    " since outgoing interface id is negative");
+                }
             }
 //
 // Done adding the routes for the selected node.
@@ -1580,8 +1631,8 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
       Ptr<Node> node = *i;
 //
 // The router ID is accessible through the GlobalRouter interface, so we need
-// to QI for that interface.  If there's no GlobalRouter interface, the node
-// in question cannot be the router we want, so we continue.
+// to GetObject for that interface.  If there's no GlobalRouter interface, 
+// the node in question cannot be the router we want, so we continue.
 // 
       Ptr<GlobalRouter> rtr = 
         node->GetObject<GlobalRouter> ();
@@ -1603,14 +1654,14 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
         {
           NS_LOG_LOGIC ("setting routes for node " << node->GetId ());
 //
-// Routing information is updated using the Ipv4 interface.  We need to QI
-// for that interface.  If the node is acting as an IP version 4 router, it
-// should absolutely have an Ipv4 interface.
+// Routing information is updated using the Ipv4 interface.  We need to 
+// GetObject for that interface.  If the node is acting as an IP version 4 
+// router, it should absolutely have an Ipv4 interface.
 //
           Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
           NS_ASSERT_MSG (ipv4, 
             "GlobalRouteManagerImpl::SPFIntraAddTransit (): "
-            "QI for <Ipv4> interface failed");
+            "GetObject for <Ipv4> interface failed");
 //
 // Get the Global Router Link State Advertisement from the vertex we're
 // adding the routes to.  The LSA will have a number of attached Global Router
@@ -1626,12 +1677,22 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
           tempip = tempip.CombineMask (tempmask);
           Ptr<Ipv4GlobalRouting> gr = GetGlobalRoutingProtocol (node->GetId ());
           NS_ASSERT (gr);
-          gr->AddNetworkRouteTo (tempip, tempmask, v->GetNextHop (),
-            v->GetOutgoingInterfaceId ());
-          NS_LOG_LOGIC ("Node " << node->GetId () <<
-            " add network route to " << tempip <<
-            " using next hop " << v->GetNextHop () <<
-            " via interface " << v->GetOutgoingInterfaceId ());
+          if (v->GetOutgoingInterfaceId () >= 0)
+            {
+              gr->AddNetworkRouteTo (tempip, tempmask, v->GetNextHop (),
+                v->GetOutgoingInterfaceId ());
+              NS_LOG_LOGIC ("Node " << node->GetId () <<
+                " add network route to " << tempip <<
+                " using next hop " << v->GetNextHop () <<
+                " via interface " << v->GetOutgoingInterfaceId ());
+            }
+          else
+            {
+              NS_LOG_LOGIC ("Node " << node->GetId () <<
+                " NOT able to add network route to " << tempip <<
+                " using next hop " << v->GetNextHop () <<
+                " since outgoing interface id is negative");
+            }
         }
     } 
 }

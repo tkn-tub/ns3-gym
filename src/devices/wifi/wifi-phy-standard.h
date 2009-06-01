@@ -24,6 +24,7 @@ namespace ns3 {
 
 enum WifiPhyStandard {
   WIFI_PHY_STANDARD_80211a,
+  WIFI_PHY_STANDARD_80211b,
   WIFI_PHY_STANDARD_holland
 };
 

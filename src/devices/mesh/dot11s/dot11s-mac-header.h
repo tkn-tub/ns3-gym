@@ -89,11 +89,12 @@ public:
   /* Compatible with open80211s implementation */
   enum CategoryValue //table 7-24 staring from 4
   {
-    MESH_PEER_LINK_MGT          = 30,
+    MESH_PEERING_MGT            = 30,
     MESH_LINK_METRIC            = 31,
     MESH_PATH_SELECTION         = 32,
-    MESH_INTERWORK_ACTION       = 33,
+    MESH_INTERWORKING           = 33,
     MESH_RESOURCE_COORDINATION  = 34,
+    MESH_PROXY_FORWARDING       = 35,
   };
   /* Compatible with open80211s implementation */
   enum PeerLinkMgtActionValue
@@ -129,7 +130,7 @@ public:
     MDAOP_SET_TEARDOWN,
     BEACON_TIMING_REQUEST,
     BEACON_TIMING_RESPONSE,
-    TBTT_ADJASTMENT_REQUEST,
+    TBTT_ADJUSTMENT_REQUEST,
     MESH_CHANNEL_SWITCH_ANNOUNCEMENT,
   };
   typedef union

@@ -1,4 +1,4 @@
-from pybindgen import Module, FileCodeSink, param, retval, cppclass
+from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandlers
 
 def register_types(module):
     root_module = module.get_root()
@@ -61,6 +61,10 @@ def register_types(module):
     module.add_class('RealtimeSimulatorImpl', parent=root_module['ns3::SimulatorImpl'])
     ## realtime-simulator-impl.h: ns3::RealtimeSimulatorImpl::SynchronizationMode [enumeration]
     module.add_enum('SynchronizationMode', ['SYNC_BEST_EFFORT', 'SYNC_HARD_LIMIT'], outer_class=root_module['ns3::RealtimeSimulatorImpl'])
+    typehandlers.add_type_alias('ns3::TimeUnit< 2 >', 'ns3::TimeSquare')
+    typehandlers.add_type_alias('ns3::TimeUnit< - 1 >', 'ns3::TimeInvert')
+    typehandlers.add_type_alias('ns3::TimeUnit< 0 >', 'ns3::Scalar')
+    typehandlers.add_type_alias('ns3::TimeUnit< 1 >', 'ns3::Time')
     
     ## Register a nested module for the namespace Config
     
@@ -72,6 +76,12 @@ def register_types(module):
     
     nested_module = module.add_cpp_namespace('TimeStepPrecision')
     register_types_ns3_TimeStepPrecision(nested_module)
+    
+    
+    ## Register a nested module for the namespace addressUtils
+    
+    nested_module = module.add_cpp_namespace('addressUtils')
+    register_types_ns3_addressUtils(nested_module)
     
     
     ## Register a nested module for the namespace internal
@@ -95,6 +105,10 @@ def register_types_ns3_TimeStepPrecision(module):
     
     ## nstime.h: ns3::TimeStepPrecision::precision_t [enumeration]
     module.add_enum('precision_t', ['S', 'MS', 'US', 'NS', 'PS', 'FS'])
+
+def register_types_ns3_addressUtils(module):
+    root_module = module.get_root()
+    
 
 def register_types_ns3_internal(module):
     root_module = module.get_root()
@@ -1530,6 +1544,7 @@ def register_functions(root_module):
                         [param('uint64_t', 'ts')])
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
+    register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
     return
@@ -1546,6 +1561,9 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
     module.add_function('Set', 
                         'void', 
                         [param('ns3::TimeStepPrecision::precision_t', 'precision')])
+    return
+
+def register_functions_ns3_addressUtils(module, root_module):
     return
 
 def register_functions_ns3_internal(module, root_module):

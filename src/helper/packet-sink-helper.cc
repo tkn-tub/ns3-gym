@@ -38,22 +38,6 @@ PacketSinkHelper::SetAttribute (std::string name, const AttributeValue &value)
   m_factory.Set (name, value);
 }
 
-
-#if 0
-void 
-PacketSinkHelper::SetUdpLocal (Ipv4Address ip, uint16_t port)
-{
-  m_factory.Set ("Protocol", String ("ns3::UdpSocketFactory"));
-  m_factory.Set ("Local", Address (InetSocketAddress (ip, port)));
-}
-void 
-PacketSinkHelper::SetTcpLocal (Ipv4Address ip, uint16_t port)
-{
-  m_factory.Set ("Protocol", String ("ns3::TcpSocketFactory"));
-  m_factory.Set ("Local", Address (InetSocketAddress (ip, port)));
-}
-#endif
-
 ApplicationContainer
 PacketSinkHelper::Install (Ptr<Node> node) const
 {

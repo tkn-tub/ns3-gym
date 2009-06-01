@@ -116,6 +116,10 @@ def build(bld):
                                  ['core', 'simulator', 'mobility', 'wifi'])
     obj.source = 'wifi-adhoc.cc'
 
+    obj = bld.create_ns3_program('wifi-clear-channel-cmu',
+                                 ['core', 'simulator', 'mobility', 'wifi'])
+    obj.source = 'wifi-clear-channel-cmu.cc'
+
     obj = bld.create_ns3_program('wifi-ap',
                                  ['core', 'simulator', 'mobility', 'wifi'])
     obj.source = 'wifi-ap.cc'

@@ -141,6 +141,7 @@ private:
   YansWifiPhy (const YansWifiPhy &o);
   virtual void DoDispose (void);
   void Configure80211a (void);
+  void Configure80211b (void);
   void ConfigureHolland (void);
   double GetEdThresholdW (void) const;
   double DbmToW (double dbm) const;

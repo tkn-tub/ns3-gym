@@ -91,7 +91,7 @@ int main (int argc, char *argv[])
   InternetStackHelper internet;
   // The next statement switches the nodes to 'NSC'-Mode.
   // It disables the native ns-3 TCP model and loads the NSC library.
-  internet.SetNscStack (nscStack);
+  internet.SetTcp ("ns3::NscTcpL4Protocol","Library",StringValue(nscStack));
   internet.Install (n);
 
   if (tcpCong != "cubic") // make sure we only fail if both --nscstack and --TCP_CONGESTION are used

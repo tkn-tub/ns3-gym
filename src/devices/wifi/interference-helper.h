@@ -25,6 +25,7 @@
 #include <list>
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
+#include "wifi-phy-standard.h"
 #include "ns3/nstime.h"
 #include "ns3/ref-count-base.h"
 
@@ -69,6 +70,7 @@ public:
   ~InterferenceHelper ();
 
   void Configure80211aParameters (void);
+  void Configure80211bParameters (void);
   void SetNoiseFigure (double value);
   void SetErrorRateModel (Ptr<ErrorRateModel> rate);
 
@@ -120,7 +122,7 @@ private:
   Time m_maxPacketDuration;
   double m_noiseFigure; /**< noise figure (linear) */
   Events m_events;
-  bool m_80211a;
+  enum WifiPhyStandard m_80211_standard;
   Ptr<ErrorRateModel> m_errorRateModel;
 };
 

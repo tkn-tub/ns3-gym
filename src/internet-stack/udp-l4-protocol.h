@@ -33,6 +33,7 @@ namespace ns3 {
 
 class Node;
 class Socket;
+class Ipv4Route;
 /**
  * \ingroup udp
  * \brief Implementation of the UDP protocol
@@ -76,6 +77,9 @@ public:
   void Send (Ptr<Packet> packet,
              Ipv4Address saddr, Ipv4Address daddr, 
              uint16_t sport, uint16_t dport);
+  void Send (Ptr<Packet> packet,
+             Ipv4Address saddr, Ipv4Address daddr, 
+             uint16_t sport, uint16_t dport, Ptr<Ipv4Route> route);
   /**
    * \brief Receive a packet up the protocol stack
    * \param p The Packet to dump the contents into
@@ -106,6 +110,11 @@ public:
                             const uint8_t payload[8]);
 protected:
   virtual void DoDispose (void);
+  /*
+   * This function will notify other components connected to the node that a new stack member is now connected
+   * This will be used to notify Layer 3 protocol of layer 4 protocol stack to connect them together.
+   */
+  virtual void NotifyNewAggregate ();
 private:
   Ptr<Node> m_node;
   Ipv4EndPointDemux *m_endPoints;

@@ -41,6 +41,8 @@ class WifiMode
  public:
   enum ModulationType {
     BPSK,
+    DBPSK,
+    DQPSK,
     QAM
   };
   
@@ -170,6 +172,40 @@ public:
 			     uint32_t phyRate,
 			     uint8_t constellationSize);
 
+  /**
+   * \param uniqueName the name of the associated WifiMode. This name
+   *        must be unique accross _all_ instances.
+   * \param isMandatory true if this WifiMode is mandatory, false otherwise.
+   * \param bandwidth the bandwidth (Hz) of the signal generated when the
+   *        associated WifiMode is used.
+   * \param dataRate the rate (bits/second) at which the user data is transmitted
+   * \param phyRate the rate (bits/second) at which the encoded user data is transmitted
+   *        The phyRate includes FEC so, is typically higher than the dataRate.
+   *
+   * Create a DBPSK WifiMode.
+   */
+  static WifiMode CreateDbpsk (std::string uniqueName,
+			      bool isMandatory,
+			      uint32_t bandwidth,
+			      uint32_t dataRate,
+			      uint32_t phyRate);
+  /**
+   * \param uniqueName the name of the associated WifiMode. This name
+   *        must be unique accross _all_ instances.
+   * \param isMandatory true if this WifiMode is mandatory, false otherwise.
+   * \param bandwidth the bandwidth (Hz) of the signal generated when the
+   *        associated WifiMode is used.
+   * \param dataRate the rate (bits/second) at which the user data is transmitted
+   * \param phyRate the rate (bits/second) at which the encoded user data is transmitted
+   *        The phyRate includes FEC so, is typically higher than the dataRate.
+   *
+   * Create a DQPSK WifiMode.
+   */
+  static WifiMode CreateDqpsk (std::string uniqueName,
+			      bool isMandatory,
+			      uint32_t bandwidth,
+			      uint32_t dataRate,
+			      uint32_t phyRate);
 private:
   friend class WifiMode;  
   friend std::istream & operator >> (std::istream &is, WifiMode &mode);
