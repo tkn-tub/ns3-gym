@@ -68,7 +68,7 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
     switch (meshHdr.GetAddressExt ())
     {
       case 0:
-        source = header.GetAddr3 ();
+        source = header.GetAddr4 ();
         destination = header.GetAddr3 ();
         break;
       default:
