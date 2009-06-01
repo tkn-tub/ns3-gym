@@ -67,7 +67,7 @@ MeshWifiHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node)
   device->SetMac (mac);
   device->SetPhy (phy);
   device->SetRemoteStationManager (manager);
-  Ptr<AirtimeLinkMetricCalculator> metric = Create <AirtimeLinkMetricCalculator> ();
+  Ptr<AirtimeLinkMetricCalculator> metric = CreateObject <AirtimeLinkMetricCalculator> ();
   mac->SetLinkMetricCallback (MakeCallback(&AirtimeLinkMetricCalculator::CalculateMetric, metric));
   /*
   if (channel > 0)

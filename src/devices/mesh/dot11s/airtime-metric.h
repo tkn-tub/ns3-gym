@@ -23,21 +23,29 @@
 #include "ns3/mesh-wifi-interface-mac.h"
 namespace ns3 {
 namespace dot11s {
-class AirtimeLinkMetricCalculator : public RefCountBase
+class AirtimeLinkMetricCalculator : public Object
 {
   public:
-    friend class MeshWifiInterfaceMac;
+    static TypeId GetTypeId ();
+   // friend class MeshWifiInterfaceMac;
     uint32_t CalculateMetric(Mac48Address peerAddress, Ptr<MeshWifiInterfaceMac> mac);
   private:
-    ///\Microseconds of overhead:
-    static const uint32_t overhead_nanosec = 
+    
+    uint32_t m_overheadNanosec;
+#if 0
       (34   //DIFS
       +9*2  //SIFS
       +16*2 //Preamble
       +24)  //Ack
       *1000; //nanoseconds
+#endif
+    uint32_t m_testLength;
+    uint16_t m_headerLength;
+    uint16_t m_meshHeaderLength;
+#if 0
     static const uint32_t test_length = 1024;
     static const uint32_t header_length = 36;
+#endif
 };
 } //namespace dot11s
 } //namespace ns3
