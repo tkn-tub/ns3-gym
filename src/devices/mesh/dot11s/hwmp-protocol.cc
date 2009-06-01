@@ -225,8 +225,8 @@ HwmpProtocol::RequestRoute (
   }
   if (destination == Mac48Address::GetBroadcast ())
   {
-    m_stats.forwardedBroadcast ++;
-    m_stats.forwardedBytes += packet->GetSize ();
+    m_stats.txBroadcast ++;
+    m_stats.txBytes += packet->GetSize ();
     //channel IDs where we have already sent broadcast:
     std::vector<uint16_t> channels;
     for(HwmpPluginMap::const_iterator plugin = m_interfaces.begin (); plugin != m_interfaces.end (); plugin ++)
@@ -270,8 +270,8 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
   {
     //reply immediately:
     routeReply (true, packet, source, destination, protocolType, result.ifIndex);
-    m_stats.forwardedUnicast ++;
-    m_stats.forwardedBytes += packet->GetSize ();
+    m_stats.txUnicast ++;
+    m_stats.txBytes += packet->GetSize ();
     return true;
   }
   if (sourceIface != GetMeshPoint ()->GetIfIndex())
@@ -768,8 +768,8 @@ HwmpProtocol::ReactivePathResolved (Mac48Address dst)
     packet.pkt->RemovePacketTag(tag);
     tag.SetAddress (result.retransmitter);
     packet.pkt->AddPacketTag (tag);
-    m_stats.forwardedUnicast ++;
-    m_stats.forwardedBytes += packet.pkt->GetSize ();
+    m_stats.txUnicast ++;
+    m_stats.txBytes += packet.pkt->GetSize ();
     packet.reply (true, packet.pkt, packet.src, packet.dst, packet.protocol, result.ifIndex);
   }
 }
@@ -790,8 +790,8 @@ HwmpProtocol::ProactivePathResolved ()
     NS_ASSERT (packet.pkt->PeekPacketTag(tag));
     tag.SetAddress (result.retransmitter);
     packet.pkt->AddPacketTag (tag);
-    m_stats.forwardedUnicast ++;
-    m_stats.forwardedBytes += packet.pkt->GetSize ();
+    m_stats.txUnicast ++;
+    m_stats.txBytes += packet.pkt->GetSize ();
     packet.reply (true, packet.pkt, packet.src, packet.dst, packet.protocol, result.ifIndex);
   }
 }
@@ -942,9 +942,9 @@ HwmpProtocol::GetAddress ()
 void HwmpProtocol::Statistics::Print (std::ostream & os) const
 {
   os << "<Statistics "
-    "forwardedUnicast=\"" << forwardedUnicast << "\" "
-    "forwardedBroadcast=\"" << forwardedBroadcast << "\" "
-    "forwardedBytes=\"" << forwardedBytes / 1024 << "K\" "
+    "txUnicast=\"" << txUnicast << "\" "
+    "txBroadcast=\"" << txBroadcast << "\" "
+    "txBytes=\"" << txBytes / 1024 << "K\" "
     "totalQueued=\"" << totalQueued << "\" "
     "totalDropped=\"" << totalDropped << "\"/>\n";
 }

@@ -142,14 +142,14 @@ private:
   ///\{
   struct Statistics
   {
-    uint16_t forwardedUnicast;
-    uint16_t forwardedBroadcast;
-    uint32_t forwardedBytes;
+    uint16_t txUnicast;
+    uint16_t txBroadcast;
+    uint32_t txBytes;
     uint16_t totalQueued;
     uint16_t totalDropped;
 
     void Print (std::ostream & os) const;
-    Statistics () : forwardedUnicast (0), forwardedBroadcast (0), forwardedBytes (0), totalQueued (0), totalDropped (0) {}
+    Statistics () : txUnicast (0), txBroadcast (0), txBytes (0), totalQueued (0), totalDropped (0) {}
   };
   Statistics m_stats;
   ///\}

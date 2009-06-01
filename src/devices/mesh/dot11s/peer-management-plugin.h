@@ -105,18 +105,18 @@ private:
   ///\}
   //Keeps statistics
   struct Statistics {
-    uint16_t sendOpen;
-    uint16_t sendConfirm;
-    uint16_t sendClose;
-    uint16_t recvOpen;
-    uint16_t recvConfirm;
-    uint16_t recvClose;
+    uint16_t txOpen;
+    uint16_t txConfirm;
+    uint16_t txClose;
+    uint16_t rxOpen;
+    uint16_t rxConfirm;
+    uint16_t rxClose;
     uint16_t dropped;
     uint16_t brokenMgt;
-    uint16_t sentMgt;
-    uint32_t sentMgtBytes;
-    uint16_t recvMgt;
-    uint32_t recvMgtBytes;
+    uint16_t txMgt;
+    uint32_t txMgtBytes;
+    uint16_t rxMgt;
+    uint32_t rxMgtBytes;
     uint16_t beaconShift;
     
     Statistics ();

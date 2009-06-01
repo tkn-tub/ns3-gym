@@ -643,11 +643,11 @@ void
 MeshWifiInterfaceMac::Statistics::Print (std::ostream & os) const
 {
   os << "<Statistics "
-    "recvBeacons=\"" << recvBeacons << "\" "
-    "sentFrames=\"" << sentFrames << "\" "
-    "sentBytes=\"" << (double)sentBytes / 1024.0 << "K\" "
-    "recvFrames=\"" << recvFrames << "\" "
-    "recvBytes=\"" << (double)recvBytes / 1024.0 << "K\"/>\n";
+    "rxBeacons=\"" << recvBeacons << "\" "
+    "txFrames=\"" << sentFrames << "\" "
+    "txBytes=\"" << (double)sentBytes / 1024.0 << "K\" "
+    "rxFrames=\"" << recvFrames << "\" "
+    "rxBytes=\"" << (double)recvBytes / 1024.0 << "K\"/>\n";
 }
 void
 MeshWifiInterfaceMac::Report (std::ostream & os) const
