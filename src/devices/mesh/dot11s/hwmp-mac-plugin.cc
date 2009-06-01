@@ -64,9 +64,11 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
     m_stats.recvDataBytes += packet->GetSize ();
     //TODO: address extension
     Mac48Address destination;
+    Mac48Address source;
     switch (meshHdr.GetAddressExt ())
     {
       case 0:
+        source = header.GetAddr3 ();
         destination = header.GetAddr3 ();
         break;
       default:
@@ -82,7 +84,7 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
     if(m_protocol->GetAddress() != destination)
       packet->AddPacketTag(tag);
     if (destination == Mac48Address::GetBroadcast ())
-      if(m_protocol->DropDataFrame (meshHdr.GetMeshSeqno (), header.GetAddr4 ()) )
+      if(m_protocol->DropDataFrame (meshHdr.GetMeshSeqno (), source))
         return false;
   }
   if(header.IsAction())

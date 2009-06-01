@@ -633,6 +633,8 @@ HwmpProtocol::SetNeighboursCallback(Callback<std::vector<Mac48Address>, uint32_t
 bool
 HwmpProtocol::DropDataFrame(uint32_t seqno, Mac48Address source)
 {
+  if(source == GetAddress ())
+    return true;
   std::map<Mac48Address, uint32_t,std::less<Mac48Address> >::const_iterator i = m_lastDataSeqno.find (source);
   if (i == m_lastDataSeqno.end ())
     m_lastDataSeqno[source] = seqno;

@@ -31,7 +31,7 @@ AirtimeLinkMetricCalculator::CalculateMetric(Mac48Address peerAddress, Ptr<MeshW
   Ptr<Packet> test_frame = Create<Packet> (test_length);
   uint32_t rate = station->GetDataMode(test_frame, test_length+header_length).GetDataRate ();
   uint32_t payload_nanosec = (uint32_t) ((double) (test_length * 8) * 1e9 / ((double)rate));
-  uint32_t metric = (uint32_t) (((double) (payload_nanosec + overhead_nanosec)) / 102.4 * (station->GetAvgSlrc () + 1));
+  uint32_t metric = (uint32_t) (((double) (payload_nanosec + overhead_nanosec)) / 10240 * (station->GetAvgSlrc () + 1));
   return metric;
 }
 } //namespace dot11s
