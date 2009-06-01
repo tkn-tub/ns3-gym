@@ -220,7 +220,10 @@ HwmpProtocol::RequestRoute (
       return false;
     }
     if (tag.GetTtl () == 0)
+    {
+      m_stats.droppedTtl ++;
       return false;
+    }
     tag.DecrementTtl ();
   }
   if (destination == Mac48Address::GetBroadcast ())
@@ -945,6 +948,7 @@ void HwmpProtocol::Statistics::Print (std::ostream & os) const
     "txUnicast=\"" << txUnicast << "\" "
     "txBroadcast=\"" << txBroadcast << "\" "
     "txBytes=\"" << txBytes / 1024 << "K\" "
+    "droppedTtl=\"" << droppedTtl << "\" "
     "totalQueued=\"" << totalQueued << "\" "
     "totalDropped=\"" << totalDropped << "\"/>\n";
 }

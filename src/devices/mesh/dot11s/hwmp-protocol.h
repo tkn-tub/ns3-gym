@@ -145,11 +145,12 @@ private:
     uint16_t txUnicast;
     uint16_t txBroadcast;
     uint32_t txBytes;
+    uint16_t droppedTtl;
     uint16_t totalQueued;
     uint16_t totalDropped;
 
     void Print (std::ostream & os) const;
-    Statistics () : txUnicast (0), txBroadcast (0), txBytes (0), totalQueued (0), totalDropped (0) {}
+    Statistics () : txUnicast (0), txBroadcast (0), txBytes (0), droppedTtl (0), totalQueued (0), totalDropped (0) {}
   };
   Statistics m_stats;
   ///\}
