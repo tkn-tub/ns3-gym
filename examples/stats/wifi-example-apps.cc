@@ -39,7 +39,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("WiFiDistanceApps");
+NS_LOG_COMPONENT_DEFINE ("WiFiThroughputApps");
 
 TypeId
 Sender::GetTypeId(void)
@@ -47,26 +47,26 @@ Sender::GetTypeId(void)
   static TypeId tid = TypeId ("Sender")
     .SetParent<Application> ()
     .AddConstructor<Sender> ()
-    .AddAttribute ("PacketSize", "The size of packets transmitted.",
+    .AddAttribute ("PacketSize", "The size of packets transmitted [Bytes].",
                    UintegerValue(64),
                    MakeUintegerAccessor(&Sender::m_pktSize),
                    MakeUintegerChecker<uint32_t>(1))
-    .AddAttribute("Destination", "Target host address.",
-                  Ipv4AddressValue("255.255.255.255"),
-                  MakeIpv4AddressAccessor(&Sender::m_destAddr),
-                  MakeIpv4AddressChecker())
-    .AddAttribute("Port", "Destination app port.",
-                  UintegerValue(1603),
-                  MakeUintegerAccessor(&Sender::m_destPort),
-                  MakeUintegerChecker<uint32_t>())
-    .AddAttribute("NumPackets", "Total number of packets to send.",
-                  UintegerValue(30),
-                  MakeUintegerAccessor(&Sender::m_numPkts),
-                  MakeUintegerChecker<uint32_t>(1))
-    .AddAttribute ("Interval", "Delay between transmissions.",
-                   RandomVariableValue(ConstantVariable(0.5)),
-                   MakeRandomVariableAccessor(&Sender::m_interval),
-                   MakeRandomVariableChecker())
+    .AddAttribute ("DataRate", "The data rate in on state.",
+                   DataRateValue (DataRate ("500kb/s")),
+                   MakeDataRateAccessor (&Sender::m_cbrRate),
+                   MakeDataRateChecker ())
+    .AddAttribute ("Destination", "Target host address.",
+                   Ipv4AddressValue("255.255.255.255"),
+                   MakeIpv4AddressAccessor(&Sender::m_destAddr),
+                   MakeIpv4AddressChecker())
+    .AddAttribute ("Port", "Destination app port.",
+                   UintegerValue(1603),
+                   MakeUintegerAccessor(&Sender::m_destPort),
+                   MakeUintegerChecker<uint32_t>())
+    .AddAttribute ("NumPackets", "Total number of packets to send.",
+                   UintegerValue(30),
+                   MakeUintegerAccessor(&Sender::m_numPkts),
+                   MakeUintegerChecker<uint32_t>(1))
     .AddTraceSource ("Tx", "A new packet is created and is sent",
                      MakeTraceSourceAccessor (&Sender::m_txTrace))
     ;
@@ -105,7 +105,7 @@ void Sender::StartApplication()
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind ();
   }
-
+  
   m_count = 0;
 
   Simulator::Cancel(m_sendEvent);
@@ -124,8 +124,13 @@ void Sender::StopApplication()
 void Sender::SendPacket()
 {
   // NS_LOG_FUNCTION_NOARGS ();
-  NS_LOG_INFO("Sending packet at " << Simulator::Now() << " to " <<
-              m_destAddr);
+  uint32_t bits = m_pktSize * 8;
+  
+  NS_LOG_LOGIC ("bits = " << bits);
+  nextTime = Time(Seconds (bits / static_cast<double>(m_cbrRate.GetBitRate()))); // Time till next packet
+  
+  NS_LOG_UNCOND("Sending packet at " << Simulator::Now() << " to " <<
+              m_destAddr << " -- Time Interval is: " << nextTime);
 
   Ptr<Packet> packet = Create<Packet>(m_pktSize);
 
@@ -140,11 +145,11 @@ void Sender::SendPacket()
   // Report the event to the trace.
   m_txTrace(packet);
 
-  if (++m_count < m_numPkts) {
-    m_sendEvent = Simulator::Schedule(Seconds(m_interval.GetValue()),
+  if (++m_count < m_numPkts) {    
+    m_sendEvent = Simulator::Schedule(nextTime,
                                       &Sender::SendPacket, this);
   }
-
+  
   // end Sender::SendPacket
 }
 
@@ -250,13 +255,17 @@ Receiver::Receive(Ptr<Socket> socket)
     }
 
     TimestampTag timestamp;
-    packet->FindFirstMatchingTag(timestamp);
-    Time tx = timestamp.GetTimestamp();
-
-    if (m_delay != 0) {
-      m_delay->Update(Simulator::Now() - tx);
+    if( packet->FindFirstMatchingTag(timestamp) ) {
+      Time tx = timestamp.GetTimestamp();
+      
+      if (m_delay != 0) {
+        m_delay->Update(Simulator::Now() - tx);
+      }
     }
-
+    else {
+      NS_LOG_UNCOND ("** missing time tag **");
+    }
+    
     if (m_calc != 0) {
       m_calc->Update();
     }

@@ -55,9 +55,10 @@ private:
   uint32_t        m_pktSize;
   Ipv4Address     m_destAddr;
   uint32_t        m_destPort;
-  RandomVariable  m_interval;
   uint32_t        m_numPkts;
-
+  DataRate        m_cbrRate;      // Rate that data is generated
+  Time            nextTime;       // Time till next packet
+  
   Ptr<Socket>     m_socket;
   EventId         m_sendEvent;
 
