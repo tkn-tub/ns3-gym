@@ -51,6 +51,10 @@ namespace ns3 {
 class TapNetDevice : public NetDevice
 {
 public:
+  /**
+   * Callback the be invoked when the TapNetDevice is asked to queue/transmit a packet.
+   * For more information, consult the documentation of NetDevice::SendFrom().
+   */
   typedef Callback<bool, Ptr<Packet>, const Address&, const Address&, uint16_t> SendFromCallback;
 
   static TypeId GetTypeId (void);
@@ -87,7 +91,7 @@ public:
 
 
   /**
-   * \param p packet sent from below up to Network Device
+   * \param packet packet sent from below up to Network Device
    * \param protocol Protocol type
    * \param source the address of the sender of this packet.
    * \returns true if the packet was forwarded successfully,
@@ -100,7 +104,7 @@ public:
 
 
   /**
-   * \param p packet sent from below up to Network Device
+   * \param packet packet sent from below up to Network Device
    * \param protocol Protocol type
    * \param source the address of the sender of this packet.
    * \param destination the address of the receiver of this packet.
