@@ -293,7 +293,6 @@ Packet::RemoveAllTags (void)
 uint8_t const *
 Packet::PeekData (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_buffer.PeekData ();
 }
 
