@@ -178,8 +178,8 @@ Packet::GetSize (void) const
 void
 Packet::AddHeader (const Header &header)
 {
-  NS_LOG_FUNCTION (this << &header);
   uint32_t size = header.GetSerializedSize ();
+  NS_LOG_FUNCTION (this << header.GetInstanceTypeId ().GetName () << size);
   uint32_t orgStart = m_buffer.GetCurrentStartOffset ();
   bool resized = m_buffer.AddAtStart (size);
   if (resized)
@@ -193,8 +193,8 @@ Packet::AddHeader (const Header &header)
 uint32_t
 Packet::RemoveHeader (Header &header)
 {
-  NS_LOG_FUNCTION (this << &header);
   uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
+  NS_LOG_FUNCTION (this << header.GetInstanceTypeId ().GetName () << deserialized);
   m_buffer.RemoveAtStart (deserialized);
   m_metadata.RemoveHeader (header, deserialized);
   return deserialized;
@@ -202,15 +202,15 @@ Packet::RemoveHeader (Header &header)
 uint32_t
 Packet::PeekHeader (Header &header) const
 {
-  NS_LOG_FUNCTION (this << &header);
   uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
+  NS_LOG_FUNCTION (this << header.GetInstanceTypeId ().GetName () << deserialized);
   return deserialized;
 }
 void
 Packet::AddTrailer (const Trailer &trailer)
 {
-  NS_LOG_FUNCTION (this << &trailer);
   uint32_t size = trailer.GetSerializedSize ();
+  NS_LOG_FUNCTION (this << trailer.GetInstanceTypeId ().GetName () << size);
   uint32_t orgStart = m_buffer.GetCurrentStartOffset ();
   bool resized = m_buffer.AddAtEnd (size);
   if (resized)
@@ -225,8 +225,8 @@ Packet::AddTrailer (const Trailer &trailer)
 uint32_t
 Packet::RemoveTrailer (Trailer &trailer)
 {
-  NS_LOG_FUNCTION (this << &trailer);
   uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
+  NS_LOG_FUNCTION (this << trailer.GetInstanceTypeId ().GetName () << deserialized);
   m_buffer.RemoveAtEnd (deserialized);
   m_metadata.RemoveTrailer (trailer, deserialized);
   return deserialized;
@@ -234,15 +234,15 @@ Packet::RemoveTrailer (Trailer &trailer)
 uint32_t
 Packet::PeekTrailer (Trailer &trailer)
 {
-  NS_LOG_FUNCTION (this << &trailer);
   uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
+  NS_LOG_FUNCTION (this << trailer.GetInstanceTypeId ().GetName () << deserialized);
   return deserialized;
 }
 
 void 
 Packet::AddAtEnd (Ptr<const Packet> packet)
 {
-  NS_LOG_FUNCTION (this << packet);
+  NS_LOG_FUNCTION (this << packet << packet->GetSize ());
   uint32_t aStart = m_buffer.GetCurrentStartOffset ();
   uint32_t bEnd = packet->m_buffer.GetCurrentEndOffset ();
   m_buffer.AddAtEnd (packet->m_buffer);
@@ -540,7 +540,7 @@ Packet::Deserialize (Buffer buffer)
 void 
 Packet::AddTag (const Tag &tag) const
 {
-  NS_LOG_FUNCTION (this << &tag);
+  NS_LOG_FUNCTION (this << tag.GetInstanceTypeId ().GetName () << tag.GetSerializedSize ());
   TagList *list = const_cast<TagList *> (&m_tagList);
   TagBuffer buffer = list->Add (tag.GetInstanceTypeId (), tag.GetSerializedSize (), 
                                  m_buffer.GetCurrentStartOffset (),
