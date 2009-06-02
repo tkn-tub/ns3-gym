@@ -210,7 +210,7 @@ HwmpProtocol::RequestRoute (
     //Filling TAG:
     if(destination == Mac48Address::GetBroadcast ())
       tag.SetSeqno (m_dataSeqno++);
-    tag.SetTtl (m_maxTtl+1);
+    tag.SetTtl (m_maxTtl);
   }
   else
   {
@@ -219,12 +219,12 @@ HwmpProtocol::RequestRoute (
       NS_ASSERT(false);
       return false;
     }
+    tag.DecrementTtl ();
     if (tag.GetTtl () == 0)
     {
       m_stats.droppedTtl ++;
       return false;
     }
-    tag.DecrementTtl ();
   }
   if (destination == Mac48Address::GetBroadcast ())
   {

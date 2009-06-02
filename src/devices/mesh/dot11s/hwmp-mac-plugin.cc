@@ -80,7 +80,7 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
       NS_ASSERT(false);
       return false;
     }
-    tag.SetTtl (meshHdr.GetMeshTtl () - 1);
+    tag.SetTtl (meshHdr.GetMeshTtl ());
     if(m_protocol->GetAddress() != destination)
       packet->AddPacketTag(tag);
     if (destination == Mac48Address::GetBroadcast ())
