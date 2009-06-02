@@ -294,7 +294,13 @@ uint8_t const *
 Packet::PeekData (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_buffer.PeekData ();
+  uint32_t oldStart = m_buffer.GetCurrentStartOffset ();
+  uint8_t const * data = m_buffer.PeekData ();
+  uint32_t newStart = m_buffer.GetCurrentStartOffset ();
+
+  // Update tag offsets if buffer offsets were changed
+  const_cast<TagList &>(m_tagList).AddAtStart (newStart - oldStart, newStart);
+  return data;
 }
 
 uint32_t 
@@ -952,6 +958,18 @@ PacketTest::RunTests (void)
     CHECK (tmp, 1, E (10, 0, 10));
   }
   
+  {
+    // bug 572                                                                  
+    Ptr<Packet> tmp = Create<Packet> (1000);
+    tmp->AddTag (ATestTag<20> ());
+    CHECK (tmp, 1, E (20, 0, 1000));
+    tmp->AddHeader (ATestHeader<2> ());
+    CHECK (tmp, 1, E (20, 2, 1002));
+    tmp->RemoveAtStart (1);
+    CHECK (tmp, 1, E (20, 1, 1001));
+    tmp->PeekData ();
+    CHECK (tmp, 1, E (20, 1, 1001));
+  }
 
   return result;
 }
