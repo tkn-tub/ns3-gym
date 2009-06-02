@@ -7,7 +7,7 @@
  * The set of 802.11 models provided in ns-3 attempts to provide
  * an accurate MAC-level implementation of the 802.11 specification
  * and to provide a not-so-slow PHY-level model of the 802.11a
- * specification.
+ * and 802.11b specifications.
  *
  * The current implementation provides roughly 4 levels of models:
  *   - the PHY layer models
@@ -52,7 +52,7 @@
  *        <td><b> Access class </b></td>
  *      </tr>
  *      <tr>
- *        <td> 7 </b></td>
+ *        <td> 7 </td>
  *        <td> AC_VO </td>
  *      </tr> 
  *      <tr>  
@@ -96,9 +96,9 @@
  *
  * The PHY layer implements a single model in the ns3::WifiPhy class: the
  * physical layer model implemented there is described fully in a paper titled
- * "Yet Another Network Simulator", available there: http://cutebugs.net/files/wns2-yans.pdf
- *
- * It also provides a set of Rate control algorithms:
+ * "Yet Another Network Simulator", available at: http://cutebugs.net/files/wns2-yans.pdf and recently extended to cover 802.11b physical layer.
+ * 
+ * The Wifi Model also provides a set of Rate control algorithms:
  *   - ns3::ArfMacStations 
  *   - ns3::AArfMacStations
  *   - ns3::IdealMacStations

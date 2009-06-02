@@ -29,8 +29,10 @@
 namespace ns3 {
 
 /**
- * \ingroup internetStack
- * \brief A record of an IPv4 routing table entry for Ipv4GlobalRouting and Ipv4StaticRouting
+ * \ingroup ipv4-routing
+ *
+ * A record of an IPv4 routing table entry for Ipv4GlobalRouting and 
+ * Ipv4StaticRouting.  This is not a reference counted object.
  */
 class Ipv4RoutingTableEntry {
 public:
@@ -38,50 +40,95 @@ public:
    * \brief This constructor does nothing
    */
   Ipv4RoutingTableEntry ();
-
   /**
    * \brief Copy Constructor
    * \param route The route to copy
    */
   Ipv4RoutingTableEntry (Ipv4RoutingTableEntry const &route);
-
   /**
    * \brief Copy Constructor
    * \param route The route to copy
    */
   Ipv4RoutingTableEntry (Ipv4RoutingTableEntry const *route);
-
+  /**
+   * \return True if this route is a host route; false otherwise
+   */
   bool IsHost (void) const;
   /**
    * \return The IPv4 address of the destination of this route
    */
-  Ipv4Address GetDest (void) const;
-
   bool IsNetwork (void) const;
-  Ipv4Address GetDestNetwork (void) const;
-  Ipv4Mask GetDestNetworkMask (void) const;
   /**
    * \return True if this route is a default route; false otherwise
    */
   bool IsDefault (void) const;
-
+  /**
+   * \return True if this route is a gateway route; false otherwise
+   */
   bool IsGateway (void) const;
+  /**
+   * \return address of the gateway stored in this entry
+   */
   Ipv4Address GetGateway (void) const;
-
+  /**
+   * \return The IPv4 address of the destination of this route
+   */
+  Ipv4Address GetDest (void) const;
+  /**
+   * \return The IPv4 network number of the destination of this route
+   */
+  Ipv4Address GetDestNetwork (void) const;
+  /**
+   * \return The IPv4 network mask of the destination of this route
+   */
+  Ipv4Mask GetDestNetworkMask (void) const;
+  /**
+   * \return The Ipv4 interface number used for sending outgoing packets
+   */
   uint32_t GetInterface (void) const;
-
+  /**
+   * \return An Ipv4RoutingTableEntry object corresponding to the input parameters.
+   * \param dest Ipv4Address of the destination
+   * \param nextHop Ipv4Address of the next hop
+   * \param interface Outgoing interface 
+   */
   static Ipv4RoutingTableEntry CreateHostRouteTo (Ipv4Address dest, 
 				      Ipv4Address nextHop, 
 				      uint32_t interface);
+  /**
+   * \return An Ipv4RoutingTableEntry object corresponding to the input parameters.
+   * \param dest Ipv4Address of the destination
+   * \param interface Outgoing interface 
+   */
   static Ipv4RoutingTableEntry CreateHostRouteTo (Ipv4Address dest, 
 				      uint32_t interface);
+  /**
+   * \return An Ipv4RoutingTableEntry object corresponding to the input parameters.
+   * \param network Ipv4Address of the destination network
+   * \param networkMask Ipv4Mask of the destination network mask
+   * \param nextHop Ipv4Address of the next hop
+   * \param interface Outgoing interface 
+   */
   static Ipv4RoutingTableEntry CreateNetworkRouteTo (Ipv4Address network, 
 					 Ipv4Mask networkMask, 
 					 Ipv4Address nextHop, 
 					 uint32_t interface);
+  /**
+   * \return An Ipv4RoutingTableEntry object corresponding to the input parameters.
+   * \param network Ipv4Address of the destination network
+   * \param networkMask Ipv4Mask of the destination network mask
+   * \param interface Outgoing interface 
+   */
   static Ipv4RoutingTableEntry CreateNetworkRouteTo (Ipv4Address network, 
 					 Ipv4Mask networkMask, 
 					 uint32_t interface);
+  /**
+   * \return An Ipv4RoutingTableEntry object corresponding to the input 
+   * parameters.  This route is distinguished; it will match any 
+   * destination for which a more specific route does not exist.
+   * \param nextHop Ipv4Address of the next hop
+   * \param interface Outgoing interface 
+   */
   static Ipv4RoutingTableEntry CreateDefaultRoute (Ipv4Address nextHop, 
 				       uint32_t interface);
   
@@ -108,7 +155,8 @@ private:
 std::ostream& operator<< (std::ostream& os, Ipv4RoutingTableEntry const& route);
 
 /**
- * \ingroup internetStack
+ * \ingroup ipv4-routing
+ *
  * \brief A record of an IPv4 multicast route for Ipv4GlobalRouting and Ipv4StaticRouting
  */
 class Ipv4MulticastRoutingTableEntry {
@@ -123,43 +171,42 @@ public:
    * \param route The route to copy
    */
   Ipv4MulticastRoutingTableEntry (Ipv4MulticastRoutingTableEntry const &route);
-
   /**
    * \brief Copy Constructor
    * \param route The route to copy
    */
   Ipv4MulticastRoutingTableEntry (Ipv4MulticastRoutingTableEntry const *route);
-
   /**
    * \return The IPv4 address of the source of this route
    */
   Ipv4Address GetOrigin (void) const;
-
   /**
    * \return The IPv4 address of the multicast group of this route
    */
   Ipv4Address GetGroup (void) const;
-
   /**
    * \return The IPv4 address of the input interface of this route
    */
   uint32_t GetInputInterface (void) const;
-
   /**
    * \return The number of output interfaces of this route
    */
   uint32_t GetNOutputInterfaces (void) const;
-
   /**
    * \return A specified output interface.
    */
   uint32_t GetOutputInterface (uint32_t n) const;
-
   /**
    * \return A vector of all of the output interfaces of this route.
    */
   std::vector<uint32_t> GetOutputInterfaces (void) const;
-
+  /**
+   * \return Ipv4MulticastRoutingTableEntry corresponding to the input parameters.
+   * \param origin Source address for the multicast route 
+   * \param group Group destination address for the multicast route
+   * \param inputInterface Input interface that multicast datagram must be received on
+   * \param outputInterfaces vector of output interfaces to copy and forward the datagram to
+   */
   static Ipv4MulticastRoutingTableEntry CreateMulticastRoute (Ipv4Address origin, 
     Ipv4Address group, uint32_t inputInterface,
     std::vector<uint32_t> outputInterfaces);

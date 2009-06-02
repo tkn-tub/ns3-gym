@@ -130,7 +130,7 @@ public:
   uint32_t AddAddress (Ipv4InterfaceAddress address);
 
   /**
-   * \param i Index of Ipv4InterfaceAddress to return
+   * \param index Index of Ipv4InterfaceAddress to return
    * \returns The Ipv4InterfaceAddress address whose index is i
    */
   Ipv4InterfaceAddress GetAddress (uint32_t index) const;
@@ -141,7 +141,7 @@ public:
   uint32_t GetNAddresses (void) const;
 
   /**
-   * \param i index of Ipv4InterfaceAddress to remove from address list.
+   * \param index index of Ipv4InterfaceAddress to remove from address list.
    */
   void RemoveAddress (uint32_t index);
 

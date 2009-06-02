@@ -355,7 +355,7 @@ public:
   FixedRssLossModel ();
   virtual ~FixedRssLossModel ();
   /**
-   * \param RSS (dBm) the received signal strength
+   * \param rss (dBm) the received signal strength
    *
    * Set the RSS.
    */

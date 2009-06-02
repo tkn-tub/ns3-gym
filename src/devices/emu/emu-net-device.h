@@ -453,6 +453,18 @@ private:
   bool m_linkUp;
 
   /**
+   * Flag indicating whether or not the underlying net device supports 
+   * broadcast.
+   */
+  bool m_isBroadcast;
+
+  /**
+   * Flag indicating whether or not the underlying net device supports
+   * multicast.
+   */
+  bool m_isMulticast;
+
+  /**
    * Callback to fire if the link changes state (up or down).
    */
   Callback<void> m_linkChangeCallback;
