@@ -263,7 +263,7 @@ int
 NscTcpSocketImpl::ShutdownRecv (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_shutdownRecv = false;
+  m_shutdownRecv = true;
   return 0;
 }
 
