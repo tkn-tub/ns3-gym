@@ -91,7 +91,9 @@ public:
   /**
    * \return the channel this NetDevice is connected to. The value
    *         returned can be zero if the NetDevice is not yet connected
-   *         to any channel.
+   *         to any channel or if the underlying NetDevice has no
+   *         concept of a channel. i.e., callers _must_ check for zero
+   *         and be ready to handle it.
    */
   virtual Ptr<Channel> GetChannel (void) const = 0;
 
