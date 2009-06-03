@@ -9,6 +9,16 @@ def register_types(module):
     module.add_class('Buffer')
     ## buffer.h: ns3::Buffer::Iterator [class]
     module.add_class('Iterator', outer_class=root_module['ns3::Buffer'])
+    ## packet.h: ns3::ByteTagIterator [class]
+    module.add_class('ByteTagIterator')
+    ## packet.h: ns3::ByteTagIterator::Item [class]
+    module.add_class('Item', outer_class=root_module['ns3::ByteTagIterator'])
+    ## byte-tag-list.h: ns3::ByteTagList [class]
+    module.add_class('ByteTagList')
+    ## byte-tag-list.h: ns3::ByteTagList::Iterator [class]
+    module.add_class('Iterator', outer_class=root_module['ns3::ByteTagList'])
+    ## byte-tag-list.h: ns3::ByteTagList::Iterator::Item [struct]
+    module.add_class('Item', outer_class=root_module['ns3::ByteTagList::Iterator'])
     ## data-rate.h: ns3::DataRate [class]
     module.add_class('DataRate')
     ## packet.h: ns3::Packet [class]
@@ -21,20 +31,18 @@ def register_types(module):
     module.add_enum('', ['PAYLOAD', 'HEADER', 'TRAILER'], outer_class=root_module['ns3::PacketMetadata::Item'])
     ## packet-metadata.h: ns3::PacketMetadata::ItemIterator [class]
     module.add_class('ItemIterator', outer_class=root_module['ns3::PacketMetadata'])
+    ## packet.h: ns3::PacketTagIterator [class]
+    module.add_class('PacketTagIterator')
+    ## packet.h: ns3::PacketTagIterator::Item [class]
+    module.add_class('Item', outer_class=root_module['ns3::PacketTagIterator'])
+    ## packet-tag-list.h: ns3::PacketTagList [class]
+    module.add_class('PacketTagList')
+    ## packet-tag-list.h: ns3::PacketTagList::TagData [struct]
+    module.add_class('TagData', outer_class=root_module['ns3::PacketTagList'])
     ## tag.h: ns3::Tag [class]
     module.add_class('Tag', parent=root_module['ns3::ObjectBase'])
     ## tag-buffer.h: ns3::TagBuffer [class]
     module.add_class('TagBuffer')
-    ## packet.h: ns3::TagIterator [class]
-    module.add_class('TagIterator')
-    ## packet.h: ns3::TagIterator::Item [class]
-    module.add_class('Item', outer_class=root_module['ns3::TagIterator'])
-    ## tag-list.h: ns3::TagList [class]
-    module.add_class('TagList')
-    ## tag-list.h: ns3::TagList::Iterator [class]
-    module.add_class('Iterator', outer_class=root_module['ns3::TagList'])
-    ## tag-list.h: ns3::TagList::Iterator::Item [struct]
-    module.add_class('Item', outer_class=root_module['ns3::TagList::Iterator'])
     ## chunk.h: ns3::Chunk [class]
     module.add_class('Chunk', parent=root_module['ns3::ObjectBase'])
     ## data-rate.h: ns3::DataRateChecker [class]
@@ -107,18 +115,22 @@ def register_types_ns3_olsr(module):
 def register_methods(root_module):
     register_Ns3Buffer_methods(root_module, root_module['ns3::Buffer'])
     register_Ns3BufferIterator_methods(root_module, root_module['ns3::Buffer::Iterator'])
+    register_Ns3ByteTagIterator_methods(root_module, root_module['ns3::ByteTagIterator'])
+    register_Ns3ByteTagIteratorItem_methods(root_module, root_module['ns3::ByteTagIterator::Item'])
+    register_Ns3ByteTagList_methods(root_module, root_module['ns3::ByteTagList'])
+    register_Ns3ByteTagListIterator_methods(root_module, root_module['ns3::ByteTagList::Iterator'])
+    register_Ns3ByteTagListIteratorItem_methods(root_module, root_module['ns3::ByteTagList::Iterator::Item'])
     register_Ns3DataRate_methods(root_module, root_module['ns3::DataRate'])
     register_Ns3Packet_methods(root_module, root_module['ns3::Packet'])
     register_Ns3PacketMetadata_methods(root_module, root_module['ns3::PacketMetadata'])
     register_Ns3PacketMetadataItem_methods(root_module, root_module['ns3::PacketMetadata::Item'])
     register_Ns3PacketMetadataItemIterator_methods(root_module, root_module['ns3::PacketMetadata::ItemIterator'])
+    register_Ns3PacketTagIterator_methods(root_module, root_module['ns3::PacketTagIterator'])
+    register_Ns3PacketTagIteratorItem_methods(root_module, root_module['ns3::PacketTagIterator::Item'])
+    register_Ns3PacketTagList_methods(root_module, root_module['ns3::PacketTagList'])
+    register_Ns3PacketTagListTagData_methods(root_module, root_module['ns3::PacketTagList::TagData'])
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
-    register_Ns3TagIterator_methods(root_module, root_module['ns3::TagIterator'])
-    register_Ns3TagIteratorItem_methods(root_module, root_module['ns3::TagIterator::Item'])
-    register_Ns3TagList_methods(root_module, root_module['ns3::TagList'])
-    register_Ns3TagListIterator_methods(root_module, root_module['ns3::TagList::Iterator'])
-    register_Ns3TagListIteratorItem_methods(root_module, root_module['ns3::TagList::Iterator::Item'])
     register_Ns3Chunk_methods(root_module, root_module['ns3::Chunk'])
     register_Ns3DataRateChecker_methods(root_module, root_module['ns3::DataRateChecker'])
     register_Ns3DataRateValue_methods(root_module, root_module['ns3::DataRateValue'])
@@ -346,6 +358,113 @@ def register_Ns3BufferIterator_methods(root_module, cls):
                    is_const=True)
     return
 
+def register_Ns3ByteTagIterator_methods(root_module, cls):
+    ## packet.h: ns3::ByteTagIterator::ByteTagIterator(ns3::ByteTagIterator const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ByteTagIterator const &', 'arg0')])
+    ## packet.h: bool ns3::ByteTagIterator::HasNext() const [member function]
+    cls.add_method('HasNext', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packet.h: ns3::ByteTagIterator::Item ns3::ByteTagIterator::Next() [member function]
+    cls.add_method('Next', 
+                   'ns3::ByteTagIterator::Item', 
+                   [])
+    return
+
+def register_Ns3ByteTagIteratorItem_methods(root_module, cls):
+    ## packet.h: ns3::ByteTagIterator::Item::Item(ns3::ByteTagIterator::Item const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ByteTagIterator::Item const &', 'arg0')])
+    ## packet.h: ns3::TypeId ns3::ByteTagIterator::Item::GetTypeId() const [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True)
+    ## packet.h: uint32_t ns3::ByteTagIterator::Item::GetStart() const [member function]
+    cls.add_method('GetStart', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## packet.h: uint32_t ns3::ByteTagIterator::Item::GetEnd() const [member function]
+    cls.add_method('GetEnd', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## packet.h: void ns3::ByteTagIterator::Item::GetTag(ns3::Tag & tag) const [member function]
+    cls.add_method('GetTag', 
+                   'void', 
+                   [param('ns3::Tag &', 'tag')], 
+                   is_const=True)
+    return
+
+def register_Ns3ByteTagList_methods(root_module, cls):
+    ## byte-tag-list.h: ns3::ByteTagList::ByteTagList() [constructor]
+    cls.add_constructor([])
+    ## byte-tag-list.h: ns3::ByteTagList::ByteTagList(ns3::ByteTagList const & o) [copy constructor]
+    cls.add_constructor([param('ns3::ByteTagList const &', 'o')])
+    ## byte-tag-list.h: ns3::TagBuffer ns3::ByteTagList::Add(ns3::TypeId tid, uint32_t bufferSize, int32_t start, int32_t end) [member function]
+    cls.add_method('Add', 
+                   'ns3::TagBuffer', 
+                   [param('ns3::TypeId', 'tid'), param('uint32_t', 'bufferSize'), param('int32_t', 'start'), param('int32_t', 'end')])
+    ## byte-tag-list.h: void ns3::ByteTagList::Add(ns3::ByteTagList const & o) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('ns3::ByteTagList const &', 'o')])
+    ## byte-tag-list.h: void ns3::ByteTagList::RemoveAll() [member function]
+    cls.add_method('RemoveAll', 
+                   'void', 
+                   [])
+    ## byte-tag-list.h: ns3::ByteTagList::Iterator ns3::ByteTagList::Begin(int32_t offsetStart, int32_t offsetEnd) const [member function]
+    cls.add_method('Begin', 
+                   'ns3::ByteTagList::Iterator', 
+                   [param('int32_t', 'offsetStart'), param('int32_t', 'offsetEnd')], 
+                   is_const=True)
+    ## byte-tag-list.h: void ns3::ByteTagList::AddAtEnd(int32_t adjustment, int32_t appendOffset) [member function]
+    cls.add_method('AddAtEnd', 
+                   'void', 
+                   [param('int32_t', 'adjustment'), param('int32_t', 'appendOffset')])
+    ## byte-tag-list.h: void ns3::ByteTagList::AddAtStart(int32_t adjustment, int32_t prependOffset) [member function]
+    cls.add_method('AddAtStart', 
+                   'void', 
+                   [param('int32_t', 'adjustment'), param('int32_t', 'prependOffset')])
+    return
+
+def register_Ns3ByteTagListIterator_methods(root_module, cls):
+    ## byte-tag-list.h: ns3::ByteTagList::Iterator::Iterator(ns3::ByteTagList::Iterator const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ByteTagList::Iterator const &', 'arg0')])
+    ## byte-tag-list.h: bool ns3::ByteTagList::Iterator::HasNext() const [member function]
+    cls.add_method('HasNext', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## byte-tag-list.h: ns3::ByteTagList::Iterator::Item ns3::ByteTagList::Iterator::Next() [member function]
+    cls.add_method('Next', 
+                   'ns3::ByteTagList::Iterator::Item', 
+                   [])
+    ## byte-tag-list.h: uint32_t ns3::ByteTagList::Iterator::GetOffsetStart() const [member function]
+    cls.add_method('GetOffsetStart', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3ByteTagListIteratorItem_methods(root_module, cls):
+    ## byte-tag-list.h: ns3::ByteTagList::Iterator::Item::tid [variable]
+    cls.add_instance_attribute('tid', 'ns3::TypeId', is_const=False)
+    ## byte-tag-list.h: ns3::ByteTagList::Iterator::Item::size [variable]
+    cls.add_instance_attribute('size', 'uint32_t', is_const=False)
+    ## byte-tag-list.h: ns3::ByteTagList::Iterator::Item::start [variable]
+    cls.add_instance_attribute('start', 'int32_t', is_const=False)
+    ## byte-tag-list.h: ns3::ByteTagList::Iterator::Item::end [variable]
+    cls.add_instance_attribute('end', 'int32_t', is_const=False)
+    ## byte-tag-list.h: ns3::ByteTagList::Iterator::Item::buf [variable]
+    cls.add_instance_attribute('buf', 'ns3::TagBuffer', is_const=False)
+    ## byte-tag-list.h: ns3::ByteTagList::Iterator::Item::Item(ns3::ByteTagList::Iterator::Item const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ByteTagList::Iterator::Item const &', 'arg0')])
+    ## byte-tag-list.h: ns3::ByteTagList::Iterator::Item::Item(ns3::TagBuffer buf) [constructor]
+    cls.add_constructor([param('ns3::TagBuffer', 'buf')])
+    return
+
 def register_Ns3DataRate_methods(root_module, cls):
     cls.add_output_stream_operator()
     cls.add_binary_comparison_operator('!=')
@@ -388,19 +507,24 @@ def register_Ns3Packet_methods(root_module, cls):
     cls.add_method('AddAtEnd', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## packet.h: void ns3::Packet::AddByteTag(ns3::Tag const & tag) const [member function]
+    cls.add_method('AddByteTag', 
+                   'void', 
+                   [param('ns3::Tag const &', 'tag')], 
+                   is_const=True)
     ## packet.h: void ns3::Packet::AddHeader(ns3::Header const & header) [member function]
     cls.add_method('AddHeader', 
                    'void', 
                    [param('ns3::Header const &', 'header')])
+    ## packet.h: void ns3::Packet::AddPacketTag(ns3::Tag const & tag) const [member function]
+    cls.add_method('AddPacketTag', 
+                   'void', 
+                   [param('ns3::Tag const &', 'tag')], 
+                   is_const=True)
     ## packet.h: void ns3::Packet::AddPaddingAtEnd(uint32_t size) [member function]
     cls.add_method('AddPaddingAtEnd', 
                    'void', 
                    [param('uint32_t', 'size')])
-    ## packet.h: void ns3::Packet::AddTag(ns3::Tag const & tag) const [member function]
-    cls.add_method('AddTag', 
-                   'void', 
-                   [param('ns3::Tag const &', 'tag')], 
-                   is_const=True)
     ## packet.h: void ns3::Packet::AddTrailer(ns3::Trailer const & trailer) [member function]
     cls.add_method('AddTrailer', 
                    'void', 
@@ -439,19 +563,24 @@ def register_Ns3Packet_methods(root_module, cls):
                    'void', 
                    [], 
                    is_static=True)
-    ## packet.h: bool ns3::Packet::FindFirstMatchingTag(ns3::Tag & tag) const [member function]
-    cls.add_method('FindFirstMatchingTag', 
+    ## packet.h: bool ns3::Packet::FindFirstMatchingByteTag(ns3::Tag & tag) const [member function]
+    cls.add_method('FindFirstMatchingByteTag', 
                    'bool', 
                    [param('ns3::Tag &', 'tag')], 
+                   is_const=True)
+    ## packet.h: ns3::ByteTagIterator ns3::Packet::GetByteTagIterator() const [member function]
+    cls.add_method('GetByteTagIterator', 
+                   'ns3::ByteTagIterator', 
+                   [], 
+                   is_const=True)
+    ## packet.h: ns3::PacketTagIterator ns3::Packet::GetPacketTagIterator() const [member function]
+    cls.add_method('GetPacketTagIterator', 
+                   'ns3::PacketTagIterator', 
+                   [], 
                    is_const=True)
     ## packet.h: uint32_t ns3::Packet::GetSize() const [member function]
     cls.add_method('GetSize', 
                    'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## packet.h: ns3::TagIterator ns3::Packet::GetTagIterator() const [member function]
-    cls.add_method('GetTagIterator', 
-                   'ns3::TagIterator', 
                    [], 
                    is_const=True)
     ## packet.h: uint32_t ns3::Packet::GetUid() const [member function]
@@ -469,6 +598,11 @@ def register_Ns3Packet_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Header &', 'header')], 
                    is_const=True)
+    ## packet.h: bool ns3::Packet::PeekPacketTag(ns3::Tag & tag) const [member function]
+    cls.add_method('PeekPacketTag', 
+                   'bool', 
+                   [param('ns3::Tag &', 'tag')], 
+                   is_const=True)
     ## packet.h: uint32_t ns3::Packet::PeekTrailer(ns3::Trailer & trailer) [member function]
     cls.add_method('PeekTrailer', 
                    'uint32_t', 
@@ -478,13 +612,22 @@ def register_Ns3Packet_methods(root_module, cls):
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_const=True)
-    ## packet.h: void ns3::Packet::PrintTags(std::ostream & os) const [member function]
-    cls.add_method('PrintTags', 
+    ## packet.h: void ns3::Packet::PrintByteTags(std::ostream & os) const [member function]
+    cls.add_method('PrintByteTags', 
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_const=True)
-    ## packet.h: void ns3::Packet::RemoveAllTags() [member function]
-    cls.add_method('RemoveAllTags', 
+    ## packet.h: void ns3::Packet::PrintPacketTags(std::ostream & os) const [member function]
+    cls.add_method('PrintPacketTags', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True)
+    ## packet.h: void ns3::Packet::RemoveAllByteTags() [member function]
+    cls.add_method('RemoveAllByteTags', 
+                   'void', 
+                   [])
+    ## packet.h: void ns3::Packet::RemoveAllPacketTags() [member function]
+    cls.add_method('RemoveAllPacketTags', 
                    'void', 
                    [])
     ## packet.h: void ns3::Packet::RemoveAtEnd(uint32_t size) [member function]
@@ -499,6 +642,10 @@ def register_Ns3Packet_methods(root_module, cls):
     cls.add_method('RemoveHeader', 
                    'uint32_t', 
                    [param('ns3::Header &', 'header')])
+    ## packet.h: bool ns3::Packet::RemovePacketTag(ns3::Tag & tag) [member function]
+    cls.add_method('RemovePacketTag', 
+                   'bool', 
+                   [param('ns3::Tag &', 'tag')])
     ## packet.h: uint32_t ns3::Packet::RemoveTrailer(ns3::Trailer & trailer) [member function]
     cls.add_method('RemoveTrailer', 
                    'uint32_t', 
@@ -623,6 +770,80 @@ def register_Ns3PacketMetadataItemIterator_methods(root_module, cls):
                    [])
     return
 
+def register_Ns3PacketTagIterator_methods(root_module, cls):
+    ## packet.h: ns3::PacketTagIterator::PacketTagIterator(ns3::PacketTagIterator const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PacketTagIterator const &', 'arg0')])
+    ## packet.h: bool ns3::PacketTagIterator::HasNext() const [member function]
+    cls.add_method('HasNext', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packet.h: ns3::PacketTagIterator::Item ns3::PacketTagIterator::Next() [member function]
+    cls.add_method('Next', 
+                   'ns3::PacketTagIterator::Item', 
+                   [])
+    return
+
+def register_Ns3PacketTagIteratorItem_methods(root_module, cls):
+    ## packet.h: ns3::PacketTagIterator::Item::Item(ns3::PacketTagIterator::Item const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PacketTagIterator::Item const &', 'arg0')])
+    ## packet.h: ns3::TypeId ns3::PacketTagIterator::Item::GetTypeId() const [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True)
+    ## packet.h: void ns3::PacketTagIterator::Item::GetTag(ns3::Tag & tag) const [member function]
+    cls.add_method('GetTag', 
+                   'void', 
+                   [param('ns3::Tag &', 'tag')], 
+                   is_const=True)
+    return
+
+def register_Ns3PacketTagList_methods(root_module, cls):
+    ## packet-tag-list.h: ns3::PacketTagList::PacketTagList() [constructor]
+    cls.add_constructor([])
+    ## packet-tag-list.h: ns3::PacketTagList::PacketTagList(ns3::PacketTagList const & o) [copy constructor]
+    cls.add_constructor([param('ns3::PacketTagList const &', 'o')])
+    ## packet-tag-list.h: void ns3::PacketTagList::Add(ns3::Tag const & tag) const [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('ns3::Tag const &', 'tag')], 
+                   is_const=True)
+    ## packet-tag-list.h: bool ns3::PacketTagList::Remove(ns3::Tag & tag) [member function]
+    cls.add_method('Remove', 
+                   'bool', 
+                   [param('ns3::Tag &', 'tag')])
+    ## packet-tag-list.h: bool ns3::PacketTagList::Peek(ns3::Tag & tag) const [member function]
+    cls.add_method('Peek', 
+                   'bool', 
+                   [param('ns3::Tag &', 'tag')], 
+                   is_const=True)
+    ## packet-tag-list.h: void ns3::PacketTagList::RemoveAll() [member function]
+    cls.add_method('RemoveAll', 
+                   'void', 
+                   [])
+    ## packet-tag-list.h: ns3::PacketTagList::TagData const * ns3::PacketTagList::Head() const [member function]
+    cls.add_method('Head', 
+                   'ns3::PacketTagList::TagData const *', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3PacketTagListTagData_methods(root_module, cls):
+    ## packet-tag-list.h: ns3::PacketTagList::TagData::data [variable]
+    cls.add_instance_attribute('data', 'uint8_t [ 20 ]', is_const=False)
+    ## packet-tag-list.h: ns3::PacketTagList::TagData::next [variable]
+    cls.add_instance_attribute('next', 'ns3::PacketTagList::TagData *', is_const=False)
+    ## packet-tag-list.h: ns3::PacketTagList::TagData::tid [variable]
+    cls.add_instance_attribute('tid', 'ns3::TypeId', is_const=False)
+    ## packet-tag-list.h: ns3::PacketTagList::TagData::count [variable]
+    cls.add_instance_attribute('count', 'uint32_t', is_const=False)
+    ## packet-tag-list.h: ns3::PacketTagList::TagData::TagData(ns3::PacketTagList::TagData const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PacketTagList::TagData const &', 'arg0')])
+    ## packet-tag-list.h: ns3::PacketTagList::TagData::TagData() [constructor]
+    cls.add_constructor([])
+    return
+
 def register_Ns3Tag_methods(root_module, cls):
     ## tag.h: ns3::Tag::Tag(ns3::Tag const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Tag const &', 'arg0')])
@@ -716,113 +937,6 @@ def register_Ns3TagBuffer_methods(root_module, cls):
     cls.add_method('Read', 
                    'void', 
                    [param('uint8_t *', 'buffer'), param('uint32_t', 'size')])
-    return
-
-def register_Ns3TagIterator_methods(root_module, cls):
-    ## packet.h: ns3::TagIterator::TagIterator(ns3::TagIterator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::TagIterator const &', 'arg0')])
-    ## packet.h: bool ns3::TagIterator::HasNext() const [member function]
-    cls.add_method('HasNext', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## packet.h: ns3::TagIterator::Item ns3::TagIterator::Next() [member function]
-    cls.add_method('Next', 
-                   'ns3::TagIterator::Item', 
-                   [])
-    return
-
-def register_Ns3TagIteratorItem_methods(root_module, cls):
-    ## packet.h: ns3::TagIterator::Item::Item(ns3::TagIterator::Item const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::TagIterator::Item const &', 'arg0')])
-    ## packet.h: ns3::TypeId ns3::TagIterator::Item::GetTypeId() const [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_const=True)
-    ## packet.h: uint32_t ns3::TagIterator::Item::GetStart() const [member function]
-    cls.add_method('GetStart', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## packet.h: uint32_t ns3::TagIterator::Item::GetEnd() const [member function]
-    cls.add_method('GetEnd', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## packet.h: void ns3::TagIterator::Item::GetTag(ns3::Tag & tag) const [member function]
-    cls.add_method('GetTag', 
-                   'void', 
-                   [param('ns3::Tag &', 'tag')], 
-                   is_const=True)
-    return
-
-def register_Ns3TagList_methods(root_module, cls):
-    ## tag-list.h: ns3::TagList::TagList() [constructor]
-    cls.add_constructor([])
-    ## tag-list.h: ns3::TagList::TagList(ns3::TagList const & o) [copy constructor]
-    cls.add_constructor([param('ns3::TagList const &', 'o')])
-    ## tag-list.h: ns3::TagBuffer ns3::TagList::Add(ns3::TypeId tid, uint32_t bufferSize, int32_t start, int32_t end) [member function]
-    cls.add_method('Add', 
-                   'ns3::TagBuffer', 
-                   [param('ns3::TypeId', 'tid'), param('uint32_t', 'bufferSize'), param('int32_t', 'start'), param('int32_t', 'end')])
-    ## tag-list.h: void ns3::TagList::Add(ns3::TagList const & o) [member function]
-    cls.add_method('Add', 
-                   'void', 
-                   [param('ns3::TagList const &', 'o')])
-    ## tag-list.h: void ns3::TagList::RemoveAll() [member function]
-    cls.add_method('RemoveAll', 
-                   'void', 
-                   [])
-    ## tag-list.h: ns3::TagList::Iterator ns3::TagList::Begin(int32_t offsetStart, int32_t offsetEnd) const [member function]
-    cls.add_method('Begin', 
-                   'ns3::TagList::Iterator', 
-                   [param('int32_t', 'offsetStart'), param('int32_t', 'offsetEnd')], 
-                   is_const=True)
-    ## tag-list.h: void ns3::TagList::AddAtEnd(int32_t adjustment, int32_t appendOffset) [member function]
-    cls.add_method('AddAtEnd', 
-                   'void', 
-                   [param('int32_t', 'adjustment'), param('int32_t', 'appendOffset')])
-    ## tag-list.h: void ns3::TagList::AddAtStart(int32_t adjustment, int32_t prependOffset) [member function]
-    cls.add_method('AddAtStart', 
-                   'void', 
-                   [param('int32_t', 'adjustment'), param('int32_t', 'prependOffset')])
-    return
-
-def register_Ns3TagListIterator_methods(root_module, cls):
-    ## tag-list.h: ns3::TagList::Iterator::Iterator(ns3::TagList::Iterator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::TagList::Iterator const &', 'arg0')])
-    ## tag-list.h: bool ns3::TagList::Iterator::HasNext() const [member function]
-    cls.add_method('HasNext', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## tag-list.h: ns3::TagList::Iterator::Item ns3::TagList::Iterator::Next() [member function]
-    cls.add_method('Next', 
-                   'ns3::TagList::Iterator::Item', 
-                   [])
-    ## tag-list.h: uint32_t ns3::TagList::Iterator::GetOffsetStart() const [member function]
-    cls.add_method('GetOffsetStart', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    return
-
-def register_Ns3TagListIteratorItem_methods(root_module, cls):
-    ## tag-list.h: ns3::TagList::Iterator::Item::tid [variable]
-    cls.add_instance_attribute('tid', 'ns3::TypeId', is_const=False)
-    ## tag-list.h: ns3::TagList::Iterator::Item::size [variable]
-    cls.add_instance_attribute('size', 'uint32_t', is_const=False)
-    ## tag-list.h: ns3::TagList::Iterator::Item::start [variable]
-    cls.add_instance_attribute('start', 'int32_t', is_const=False)
-    ## tag-list.h: ns3::TagList::Iterator::Item::end [variable]
-    cls.add_instance_attribute('end', 'int32_t', is_const=False)
-    ## tag-list.h: ns3::TagList::Iterator::Item::buf [variable]
-    cls.add_instance_attribute('buf', 'ns3::TagBuffer', is_const=False)
-    ## tag-list.h: ns3::TagList::Iterator::Item::Item(ns3::TagList::Iterator::Item const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::TagList::Iterator::Item const &', 'arg0')])
-    ## tag-list.h: ns3::TagList::Iterator::Item::Item(ns3::TagBuffer buf) [constructor]
-    cls.add_constructor([param('ns3::TagBuffer', 'buf')])
     return
 
 def register_Ns3Chunk_methods(root_module, cls):

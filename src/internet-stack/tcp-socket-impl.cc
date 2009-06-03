@@ -563,6 +563,9 @@ TcpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
       m_rxBufSize += i->second->GetSize()-avail;
     }
   }
+  SocketAddressTag tag;
+  tag.SetAddress (InetSocketAddress (m_remoteAddress, m_remotePort));
+  outPacket->AddPacketTag (tag);
   return outPacket;
 }
 
@@ -577,7 +580,7 @@ TcpSocketImpl::GetRxAvailable (void) const
 
 Ptr<Packet>
 TcpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
-  Address &fromAddress)
+                         Address &fromAddress)
 {
   NS_LOG_FUNCTION (this << maxSize << flags);
   Ptr<Packet> packet = Recv (maxSize, flags);
@@ -586,7 +589,7 @@ TcpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
     {
       SocketAddressTag tag;
       bool found;
-      found = packet->FindFirstMatchingTag (tag);
+      found = packet->PeekPacketTag (tag);
       NS_ASSERT (found);
       fromAddress = tag.GetAddress ();
     }
@@ -1196,9 +1199,6 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
       p = p->CreateFragment (0,s);
       m_nextRxSequence += s;           // Advance next expected sequence
       NS_LOG_LOGIC("Case 1, advanced nrxs to " << m_nextRxSequence );
-      SocketAddressTag tag;
-      tag.SetAddress (fromAddress);
-      p->AddTag (tag);
       //buffer this, it'll be read by call to Recv
       UnAckData_t::iterator i = 
           m_bufferedData.find (tcpHeader.GetSequenceNumber () );
@@ -1266,9 +1266,6 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
           }
         }
       // Save for later delivery
-      SocketAddressTag tag;
-      tag.SetAddress (fromAddress);
-      p->AddTag (tag);
       m_bufferedData[startSeq] = p;  
       i = m_bufferedData.find (startSeq);
       next = i;
@@ -1295,9 +1292,6 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
       p = p->CreateFragment (m_nextRxSequence - tcpHeader.GetSequenceNumber (),s);
       SequenceNumber start = m_nextRxSequence;
       m_nextRxSequence += s;           // Advance next expected sequence
-      SocketAddressTag tag;
-      tag.SetAddress (fromAddress);
-      p->AddTag (tag);
       //buffer the new fragment, it'll be read by call to Recv
       UnAckData_t::iterator i = m_bufferedData.find (start);
       if (i != m_bufferedData.end () ) //we found it already in the buffer

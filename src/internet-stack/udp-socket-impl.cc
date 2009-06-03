@@ -325,17 +325,17 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
     {
       SocketIpTtlTag tag;
       tag.SetTtl (m_ipMulticastTtl);
-      p->AddTag (tag);
+      p->AddPacketTag (tag);
     }
   else if (m_ipTtl != 0 && !dest.IsMulticast () && !dest.IsBroadcast ())
     {
       SocketIpTtlTag tag;
       tag.SetTtl (m_ipTtl);
-      p->AddTag (tag);
+      p->AddPacketTag (tag);
     }
   {
     SocketSetDontFragmentTag tag;
-    bool found = p->FindFirstMatchingTag (tag);
+    bool found = p->RemovePacketTag (tag);
     if (!found)
       {
         if (m_mtuDiscover)
@@ -346,7 +346,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
           {
             tag.Disable ();
           }
-        p->AddTag (tag);
+        p->AddPacketTag (tag);
       }
   }
   //
@@ -490,7 +490,7 @@ UdpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
     {
       SocketAddressTag tag;
       bool found;
-      found = packet->FindFirstMatchingTag (tag);
+      found = packet->PeekPacketTag (tag);
       NS_ASSERT (found);
       fromAddress = tag.GetAddress ();
     }
@@ -554,7 +554,7 @@ UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
       Address address = InetSocketAddress (ipv4, port);
       SocketAddressTag tag;
       tag.SetAddress (address);
-      packet->AddTag (tag);
+      packet->AddPacketTag (tag);
       m_deliveryQueue.push (packet);
       m_rxAvailable += packet->GetSize ();
       NotifyDataRecv ();

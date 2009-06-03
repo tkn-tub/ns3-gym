@@ -577,7 +577,7 @@ WifiRemoteStation::PrepareForQueue (Ptr<const Packet> packet, uint32_t fullPacke
       return;
     }
   TxModeTag tag = TxModeTag (DoGetRtsMode (), DoGetDataMode (fullPacketSize));
-  packet->AddTag (tag);
+  packet->AddPacketTag (tag);
 }
 WifiMode 
 WifiRemoteStation::GetDataMode (Ptr<const Packet> packet, uint32_t fullPacketSize)
@@ -588,7 +588,7 @@ WifiRemoteStation::GetDataMode (Ptr<const Packet> packet, uint32_t fullPacketSiz
     }
   TxModeTag tag;
   bool found;
-  found = packet->FindFirstMatchingTag (tag);
+  found = ConstCast<Packet> (packet)->RemovePacketTag (tag);
   NS_ASSERT (found);
   return tag.GetDataMode ();
 }
@@ -601,7 +601,7 @@ WifiRemoteStation::GetRtsMode (Ptr<const Packet> packet)
     }
   TxModeTag tag;
   bool found;
-  found = packet->FindFirstMatchingTag (tag);
+  found = ConstCast<Packet> (packet)->RemovePacketTag (tag);
   NS_ASSERT (found);
   return tag.GetRtsMode ();
 }

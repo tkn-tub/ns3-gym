@@ -59,7 +59,7 @@ QosUtilsGetTidForPacket (Ptr<const Packet> packet)
 {
   QosTag qos;
   uint8_t tid = 8;
-  if (packet->FindFirstMatchingTag (qos))
+  if (packet->PeekPacketTag (qos))
     {
       if (qos.Get () < 8)
         {
