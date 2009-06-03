@@ -31,14 +31,16 @@
 
 namespace ns3 {
 
-static void PcapSniffTxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet, uint16_t channelFreqMhz,  uint32_t rate, bool isShortPreamble)
+static void PcapSniffTxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet, uint16_t channelFreqMhz,  
+                              uint32_t rate, bool isShortPreamble)
 {
   const double unusedValue = 0;
   writer->WriteWifiMonitorPacket(packet, channelFreqMhz, rate, isShortPreamble, true, unusedValue, unusedValue); 
 }
 
 
-static void PcapSniffRxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet, uint16_t channelFreqMhz,  uint32_t rate, bool isShortPreamble, double signalDbm, double noiseDbm)
+static void PcapSniffRxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet, uint16_t channelFreqMhz,  
+                              uint32_t rate, bool isShortPreamble, double signalDbm, double noiseDbm)
 {
   writer->WriteWifiMonitorPacket(packet, channelFreqMhz, rate, isShortPreamble, false, signalDbm, noiseDbm); 
 }

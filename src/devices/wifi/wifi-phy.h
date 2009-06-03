@@ -313,7 +313,8 @@ public:
    * @param signalDbm signal power in dBm
    * @param noiseDbm  noise power in dBm
    */
-  void NotifyPromiscSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble, double signalDbm, double noiseDbm);
+  void NotifyPromiscSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble, 
+                             double signalDbm, double noiseDbm);
 
   /** 
    * 

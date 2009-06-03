@@ -124,7 +124,9 @@ public:
    * @param signalDbm signal power in dBm
    * @param noiseDbm  noise power in dBm
    */
-  void WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble, bool isTx, double signalDbm, double noiseDbm);
+  void WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t channelFreqMhz, 
+                              uint32_t rate, bool isShortPreamble, bool isTx, 
+                              double signalDbm, double noiseDbm);
 
 
 
