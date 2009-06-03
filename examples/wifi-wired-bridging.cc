@@ -89,6 +89,10 @@ int main (int argc, char *argv[])
   backboneDevices = csma.Install (backboneNodes);
 
   double wifiX = 0.0;
+
+  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+  wifiPhy.SetPcapFormat(YansWifiPhyHelper::PCAP_FORMAT_80211_RADIOTAP);
+
   for (uint32_t i = 0; i < nWifis; ++i)
     {
       // calculate ssid for wifi subnetwork
@@ -105,7 +109,6 @@ int main (int argc, char *argv[])
       BridgeHelper bridge;
       WifiHelper wifi = WifiHelper::Default ();
       NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
-      YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
       YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
       wifiPhy.SetChannel (wifiChannel.Create ());
 
@@ -182,8 +185,8 @@ int main (int argc, char *argv[])
   apps.Start (Seconds (0.5));
   apps.Stop (Seconds (3.0));
   
-  YansWifiPhyHelper::EnablePcap ("wifi-wired-bridging", apDevices[0]);
-  YansWifiPhyHelper::EnablePcap ("wifi-wired-bridging", apDevices[1]);
+  wifiPhy.EnablePcap ("wifi-wired-bridging", apDevices[0]);
+  wifiPhy.EnablePcap ("wifi-wired-bridging", apDevices[1]);
 
   std::ofstream os;
   os.open ("wifi-wired-bridging.mob");

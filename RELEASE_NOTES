@@ -25,6 +25,7 @@ New user-visible features
   b) 802.11 PHY:
      - 802.11b PHY support (Gary Pei)
      - Nakagami propagation loss model (Timo Bingmann)
+     - radiotap and prism headers for PCAP output (Nicola Baldo)
   c) GammaVariable and ErlangVariable (Timo Bingmann)
  
 API changes from ns-3.4

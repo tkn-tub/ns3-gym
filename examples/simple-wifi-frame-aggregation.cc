@@ -141,7 +141,7 @@ int main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (10.0));
   
-  YansWifiPhyHelper::EnablePcap ("test-802.11n", 
+  phy.EnablePcap ("test-802.11n", 
     wifiNodes.Get (nWifi - 1)->GetId (), 0);
 
   Simulator::Run ();
