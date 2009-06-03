@@ -23,16 +23,27 @@
 #include "ns3/mesh-wifi-interface-mac.h"
 namespace ns3 {
 namespace dot11s {
+/**
+ * \ingroup dot11s
+ * 
+ * \brief airtime link metric calculator
+ * \details airtime = (o + bt/r)* (1+avgrerycounter), where o is
+ * overhead, bt - is the tess length, r - the current rate of the
+ * packet, expressed in units of 10.24 us
+ */
 class AirtimeLinkMetricCalculator : public Object
 {
   public:
     static TypeId GetTypeId ();
     uint32_t CalculateMetric(Mac48Address peerAddress, Ptr<MeshWifiInterfaceMac> mac);
   private:
-    
+    //\brief Overhead expressed in nanoseconds:DIFS+ 2* SIFS + 2*PREAMBLE + 2* ACK
     uint32_t m_overheadNanosec;
+    ///\brief Bt value
     uint32_t m_testLength;
+    ///\brief header length (used in overhead)
     uint16_t m_headerLength;
+    ///\brief meshHeader length (6 octets ussialy)
     uint16_t m_meshHeaderLength;
 };
 } //namespace dot11s
