@@ -55,6 +55,8 @@ def register_types(module):
     module.add_class('YansWifiChannelHelper', allow_subclassing=False)
     ## yans-wifi-helper.h: ns3::YansWifiPhyHelper [class]
     module.add_class('YansWifiPhyHelper', allow_subclassing=False, parent=root_module['ns3::WifiPhyHelper'])
+    ## yans-wifi-helper.h: ns3::YansWifiPhyHelper::PcapFormat [enumeration]
+    module.add_enum('PcapFormat', ['PCAP_FORMAT_80211', 'PCAP_FORMAT_80211_PRISM', 'PCAP_FORMAT_80211_RADIOTAP'], outer_class=root_module['ns3::YansWifiPhyHelper'])
     ## nqos-wifi-mac-helper.h: ns3::NqosWifiMacHelper [class]
     module.add_class('NqosWifiMacHelper', allow_subclassing=False, parent=root_module['ns3::WifiMacHelper'])
     ## qos-wifi-mac-helper.h: ns3::QosWifiMacHelper [class]
@@ -1160,36 +1162,34 @@ def register_Ns3YansWifiPhyHelper_methods(root_module, cls):
     cls.add_method('SetErrorRateModel', 
                    'void', 
                    [param('std::string', 'name'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue const &', 'v0', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()')])
-    ## yans-wifi-helper.h: static void ns3::YansWifiPhyHelper::EnablePcap(std::string filename, uint32_t nodeid, uint32_t deviceid) [member function]
+    ## yans-wifi-helper.h: void ns3::YansWifiPhyHelper::SetPcapFormat(ns3::YansWifiPhyHelper::PcapFormat format) [member function]
+    cls.add_method('SetPcapFormat', 
+                   'void', 
+                   [param('ns3::YansWifiPhyHelper::PcapFormat', 'format')])
+    ## yans-wifi-helper.h: void ns3::YansWifiPhyHelper::EnablePcap(std::string filename, uint32_t nodeid, uint32_t deviceid) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
-                   [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
-                   is_static=True)
-    ## yans-wifi-helper.h: static void ns3::YansWifiPhyHelper::EnablePcap(std::string filename, ns3::Ptr<ns3::NetDevice> nd) [member function]
+                   [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')])
+    ## yans-wifi-helper.h: void ns3::YansWifiPhyHelper::EnablePcap(std::string filename, ns3::Ptr<ns3::NetDevice> nd) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
-                   [param('std::string', 'filename'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
-                   is_static=True)
-    ## yans-wifi-helper.h: static void ns3::YansWifiPhyHelper::EnablePcap(std::string filename, std::string ndName) [member function]
+                   [param('std::string', 'filename'), param('ns3::Ptr< ns3::NetDevice >', 'nd')])
+    ## yans-wifi-helper.h: void ns3::YansWifiPhyHelper::EnablePcap(std::string filename, std::string ndName) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
-                   [param('std::string', 'filename'), param('std::string', 'ndName')], 
-                   is_static=True)
-    ## yans-wifi-helper.h: static void ns3::YansWifiPhyHelper::EnablePcap(std::string filename, ns3::NetDeviceContainer d) [member function]
+                   [param('std::string', 'filename'), param('std::string', 'ndName')])
+    ## yans-wifi-helper.h: void ns3::YansWifiPhyHelper::EnablePcap(std::string filename, ns3::NetDeviceContainer d) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
-                   [param('std::string', 'filename'), param('ns3::NetDeviceContainer', 'd')], 
-                   is_static=True)
-    ## yans-wifi-helper.h: static void ns3::YansWifiPhyHelper::EnablePcap(std::string filename, ns3::NodeContainer n) [member function]
+                   [param('std::string', 'filename'), param('ns3::NetDeviceContainer', 'd')])
+    ## yans-wifi-helper.h: void ns3::YansWifiPhyHelper::EnablePcap(std::string filename, ns3::NodeContainer n) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
-                   [param('std::string', 'filename'), param('ns3::NodeContainer', 'n')], 
-                   is_static=True)
-    ## yans-wifi-helper.h: static void ns3::YansWifiPhyHelper::EnablePcapAll(std::string filename) [member function]
+                   [param('std::string', 'filename'), param('ns3::NodeContainer', 'n')])
+    ## yans-wifi-helper.h: void ns3::YansWifiPhyHelper::EnablePcapAll(std::string filename) [member function]
     cls.add_method('EnablePcapAll', 
                    'void', 
-                   [param('std::string', 'filename')], 
-                   is_static=True)
+                   [param('std::string', 'filename')])
     ## yans-wifi-helper.h: static void ns3::YansWifiPhyHelper::EnableAscii(std::ostream & os, uint32_t nodeid, uint32_t deviceid) [member function]
     cls.add_method('EnableAscii', 
                    'void', 

@@ -941,6 +941,14 @@ def register_Ns3PcapWriter_methods(root_module, cls):
     cls.add_method('WriteWifiHeader', 
                    'void', 
                    [])
+    ## pcap-writer.h: void ns3::PcapWriter::WriteWifiRadiotapHeader() [member function]
+    cls.add_method('WriteWifiRadiotapHeader', 
+                   'void', 
+                   [])
+    ## pcap-writer.h: void ns3::PcapWriter::WriteWifiPrismHeader() [member function]
+    cls.add_method('WriteWifiPrismHeader', 
+                   'void', 
+                   [])
     ## pcap-writer.h: void ns3::PcapWriter::WritePppHeader() [member function]
     cls.add_method('WritePppHeader', 
                    'void', 
@@ -949,6 +957,10 @@ def register_Ns3PcapWriter_methods(root_module, cls):
     cls.add_method('WritePacket', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## pcap-writer.h: void ns3::PcapWriter::WriteWifiMonitorPacket(ns3::Ptr<ns3::Packet const> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble, bool isTx, double signalDbm, double noiseDbm) [member function]
+    cls.add_method('WriteWifiMonitorPacket', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint16_t', 'channelFreqMhz'), param('uint32_t', 'rate'), param('bool', 'isShortPreamble'), param('bool', 'isTx'), param('double', 'signalDbm'), param('double', 'noiseDbm')])
     return
 
 def register_Ns3Trailer_methods(root_module, cls):
