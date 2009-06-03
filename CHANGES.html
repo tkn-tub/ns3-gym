@@ -51,7 +51,16 @@ us a note on ns-developers mailing list.  </p>
 </ul>
 
 <h2>New API:</h2>
+
 <ul>
+<li><b>YansWifiPhyHelper supporting radiotap and prism PCAP output</b>
+<p>The newly supported pcap formats can be adopted by calling the following new method of YansWifiPhyHelper:</p>
+<pre>
+ +  void SetPcapFormat (enum PcapFormat format);
+</pre>
+where format is one of PCAP_FORMAT_80211_RADIOTAP, PCAP_FORMAT_80211_PRISM or  PCAP_FORMAT_80211. By default, PCAP_FORMAT_80211 is used, so the default PCAP format is the same as before.</p>
+</li>
+
 <li> <b>attributes for class Ipv4</b>
 <p> class Ipv4 now contains attributes in ipv4.cc; the first one
 is called "IpForward" that will enable/disable Ipv4 forwarding.  
@@ -60,6 +69,44 @@ is called "IpForward" that will enable/disable Ipv4 forwarding.
 
 <h2>Changes to existing API:</h2>
 <ul>
+
+<p><b>YansWifiPhyHelper::EnablePcap* methods not static any more</b>
+<p>To accommodate the possibility of configuring the PCAP format used for wifi promiscuous mode traces, several methods of YansWifiPhyHelper had to be made non-static:
+<pre>
+-  static void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
++         void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
+-  static void EnablePcap (std::string filename, Ptr<NetDevice> nd);
++         void EnablePcap (std::string filename, Ptr<NetDevice> nd);
+-  static void EnablePcap (std::string filename, std::string ndName);
++         void EnablePcap (std::string filename, std::string ndName);
+-  static void EnablePcap (std::string filename, NetDeviceContainer d);
++         void EnablePcap (std::string filename, NetDeviceContainer d);
+-  static void EnablePcap (std::string filename, NodeContainer n);
++         void EnablePcap (std::string filename, NodeContainer n);
+-  static void EnablePcapAll (std::string filename);
++         void EnablePcapAll (std::string filename);
+</pre>
+</p>
+</li>
+
+<li><b>Wifi Promisc Sniff interface modified </b>
+<p> 
+To accommodate support for the radiotap and prism headers in PCAP traces, the interface for promiscuos mode sniff in the wifi device was changed. The new implementation was heavily inspired by the way the madwifi driver handles monitor mode. A distinction between TX and RX events is introduced, to account for the fact that different information is to be put in the radiotap/prism header (e.g., RSSI and noise make sense only for RX packets). The following are the relevant modifications to the WifiPhy class:
+<pre>
+-  void NotifyPromiscSniff (Ptr<const Packet> packet);
++  void NotifyPromiscSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble, double signalDbm, double noiseDbm);
++  void NotifyPromiscSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble);
+-  TracedCallback<Ptr<const Packet> > m_phyPromiscSnifferTrace;
++  TracedCallback<Ptr<const Packet>, uint16_t, uint32_t, bool, double, double> m_phyPromiscSniffRxTrace;
++  TracedCallback<Ptr<const Packet>, uint16_t, uint32_t, bool> m_phyPromiscSniffTxTrace;
+</pre>
+The above mentioned callbacks are expected to be used to call the following method to write Wifi PCAP traces in promiscuous mode:
+<pre>
++  void WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble, bool isTx, double signalDbm, double noiseDbm);
+</pre>
+In the above method, the isTx parameter is to be used to differentiate between TX and RX packets. For an example of how to implement these callbacks, see the implementation of PcapSniffTxEvent and PcapSniffRxEvent in src/helper/yans-wifi-helper.cc
+</p>
+</li>
 
 <li><b> Routing decoupled from class Ipv4</b>
 <p> All calls of the form "Ipv4::AddHostRouteTo ()" etc. (i.e. to 

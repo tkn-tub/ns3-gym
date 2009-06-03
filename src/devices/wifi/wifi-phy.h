@@ -294,11 +294,46 @@ public:
    */
   void NotifyRxDrop (Ptr<const Packet> packet);
 
-  /**
-   * Public method used to fire a PromiscSniffer trace.  Implemented for encapsulation 
+  /** 
+   * 
+   * Public method used to fire a PromiscSniffer trace for a wifi packet being received.  Implemented for encapsulation 
    * purposes.
+   * 
+   * @param packet the packet being received
+   * @param channelFreqMhz the frequency in MHz at which the packet is
+   * received. Note that in real devices this is normally the
+   * frequency to which  the receiver is tuned, and this can be
+   * different than the frequency at which the packet was originally
+   * transmitted. This is because it is possible to have the receiver
+   * tuned on a given channel and still to be able to receive packets
+   * on a nearby channel.
+   * @param rate the PHY data rate in units of 500kbps (i.e., the same
+   * units used both for the radiotap and for the prism header) 
+   * @param isPreambleShort true if short preamble is used, false otherwise
+   * @param signalDbm signal power in dBm
+   * @param noiseDbm  noise power in dBm
    */
-  void NotifyPromiscSniff (Ptr<const Packet> packet);
+  void NotifyPromiscSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble, double signalDbm, double noiseDbm);
+
+  /** 
+   * 
+   * Public method used to fire a PromiscSniffer trace for a wifi packet being transmitted.  Implemented for encapsulation 
+   * purposes.
+   * 
+   * @param packet the packet being received
+   * @param channelFreqMhz the frequency in MHz at which the packet is
+   * received. Note that in real devices this is normally the
+   * frequency to which  the receiver is tuned, and this can be
+   * different than the frequency at which the packet was originally
+   * transmitted. This is because it is possible to have the receiver
+   * tuned on a given channel and still to be able to receive packets
+   * on a nearby channel.
+   * @param rate the PHY data rate in units of 500kbps (i.e., the same
+   * units used both for the radiotap and for the prism header) 
+   * @param isPreambleShort true if short preamble is used, false otherwise
+   */
+  void NotifyPromiscSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble);
+  
 
 private:
   /**
@@ -349,24 +384,29 @@ private:
   TracedCallback<Ptr<const Packet> > m_phyRxDropTrace;
 
   /**
-   * A trace source that emulates a promiscuous mode protocol sniffer connected
-   * to the device.  This trace source fire on packets destined for any host
-   * just like your average everyday packet sniffer.
-   *
-   * On the transmit size, this trace hook will fire after a packet is dequeued
-   * from the device queue for transmission.  In Linux, for example, this would
-   * correspond to the point just before a device hard_start_xmit where 
-   * dev_queue_xmit_nit is called to dispatch the packet to the PF_PACKET 
-   * ETH_P_ALL handlers.
-   *
-   * On the receive side, this trace hook will fire when a packet is received,
-   * just before the receive callback is executed.  In Linux, for example, 
-   * this would correspond to the point at which the packet is dispatched to 
-   * packet sniffers in netif_receive_skb.
+   * A trace source that emulates a wifi device in monitor mode
+   * sniffing a packet being received. 
+   * 
+   * As a reference with the real world, firing this trace
+   * corresponds in the madwifi driver to calling the function
+   * ieee80211_input_monitor()
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_phyPromiscSnifferTrace;
+  TracedCallback<Ptr<const Packet>, uint16_t, uint32_t, bool, double, double> m_phyPromiscSniffRxTrace;
+
+  /**
+   * A trace source that emulates a wifi device in monitor mode
+   * sniffing a packet being transmitted. 
+   * 
+   * As a reference with the real world, firing this trace
+   * corresponds in the madwifi driver to calling the function
+   * ieee80211_input_monitor()
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet>, uint16_t, uint32_t, bool> m_phyPromiscSniffTxTrace;
+
 };
 
 } // namespace ns3

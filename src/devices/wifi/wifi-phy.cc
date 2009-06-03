@@ -73,9 +73,12 @@ WifiPhy::GetTypeId (void)
     .AddTraceSource ("PhyRxDrop", 
                      "Trace source indicating a packet has been dropped by the device during reception",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyRxDropTrace))
-    .AddTraceSource ("PromiscSniffer", 
-                     "Trace source simulating a promiscuous packet sniffer attached to the device",
-                     MakeTraceSourceAccessor (&WifiPhy::m_phyPromiscSnifferTrace))
+    .AddTraceSource ("PromiscSnifferRx", 
+                     "Trace source simulating a wifi device in monitor mode sniffing all received frames",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyPromiscSniffRxTrace))
+    .AddTraceSource ("PromiscSnifferTx", 
+                     "Trace source simulating the capability of a wifi device in monitor mode to sniff all frames being transmitted",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyPromiscSniffTxTrace))
     ;
   return tid;
 }
@@ -194,9 +197,15 @@ WifiPhy::NotifyRxDrop (Ptr<const Packet> packet)
 }
 
 void 
-WifiPhy::NotifyPromiscSniff (Ptr<const Packet> packet) 
+WifiPhy::NotifyPromiscSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble, double signalDbm, double noiseDbm)
 {
-  m_phyPromiscSnifferTrace (packet);
+  m_phyPromiscSniffRxTrace (packet, channelFreqMhz, rate, isShortPreamble, signalDbm, noiseDbm);
+}
+
+void 
+WifiPhy::NotifyPromiscSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble)
+{
+  m_phyPromiscSniffTxTrace (packet, channelFreqMhz, rate, isShortPreamble);
 }
 
 WifiMode 
