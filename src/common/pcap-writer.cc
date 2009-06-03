@@ -169,7 +169,9 @@ PcapWriter::WritePacket (Ptr<const Packet> packet)
 }
 
 
-void PcapWriter::WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble, bool isTx, double signalDbm, double noiseDbm)
+void PcapWriter::WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t channelFreqMhz, 
+                                        uint32_t rate, bool isShortPreamble, bool isTx, 
+                                        double signalDbm, double noiseDbm)
 {  
   NS_LOG_FUNCTION (this << packet->GetSize() << channelFreqMhz << rate << isShortPreamble << isTx << signalDbm << noiseDbm);
 
@@ -264,7 +266,7 @@ void PcapWriter::WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t chann
       // (which stands for Received Signal Strength Indicator) but it is
       // rather a Signal to Noise Ratio (SNR), of course in dB.
       // Anyway, in the end we calculate the value exactly as madwifi does.
-      Write32(round(signalDbm - noiseDbm));
+      Write32((uint32_t)round(signalDbm - noiseDbm));
 
       // SQ field not used. I would expect a PRISM_STATUS_ABSENT to be
       // needed here, but if you look at the prism header that madwifi
@@ -278,12 +280,12 @@ void PcapWriter::WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t chann
       Write32(PRISM_DID_SIGNAL);
       Write16(PRISM_STATUS_PRESENT);
       Write16(PRISM_ITEM_LENGTH); 
-      Write32(round(signalDbm));
+      Write32((uint32_t)round(signalDbm));
 
       Write32(PRISM_DID_NOISE);
       Write16(PRISM_STATUS_PRESENT);
       Write16(PRISM_ITEM_LENGTH); 
-      Write32(round(noiseDbm));
+      Write32((uint32_t)round(noiseDbm));
             
       Write32(PRISM_DID_RATE);    
       Write16(PRISM_STATUS_PRESENT);
