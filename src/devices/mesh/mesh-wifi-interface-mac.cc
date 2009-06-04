@@ -108,6 +108,7 @@ MeshWifiInterfaceMac::SetSlot (Time slotTime)
 {
   NS_LOG_FUNCTION (this << slotTime);
   m_dcfManager->SetSlot (slotTime);
+  m_low->SetSlotTime (slotTime);
   m_slot = slotTime;
 }
 
@@ -116,6 +117,7 @@ MeshWifiInterfaceMac::SetSifs (Time sifs)
 {
   NS_LOG_FUNCTION (this << sifs);
   m_dcfManager->SetSifs (sifs);
+  m_low->SetSifs (sifs);
   m_sifs = sifs;
 }
 void
