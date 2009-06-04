@@ -133,14 +133,14 @@ HwmpProtocol::GetTypeId ()
     .AddAttribute ("doFlag",
         "Destination only HWMP flag",
         BooleanValue (false),
-        MakeUintegerAccessor (&HwmpProtocol::m_doFlag),
-        MakeUintegerChecker<bool> ()
+        MakeBooleanAccessor (&HwmpProtocol::m_doFlag),
+        MakeBooleanChecker ()
         )
     .AddAttribute ("rfFlag",
         "Reply and forward flag",
         BooleanValue (true),
-        MakeUintegerAccessor (&HwmpProtocol::m_rfFlag),
-        MakeUintegerChecker<bool> ()
+        MakeBooleanAccessor (&HwmpProtocol::m_rfFlag),
+        MakeBooleanChecker ()
         );
   return tid;
 }
