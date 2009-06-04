@@ -122,6 +122,7 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
             address.GetIpv4());
 
           packet->RemoveAllPacketTags ();
+          packet->RemoteAllByteTags ();
 
           NS_LOG_LOGIC ("Echoing packet");
           socket->SendTo (packet, 0, from);
