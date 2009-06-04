@@ -84,8 +84,8 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     // If can not handle - just return;
     if(actionHdr.GetCategory () != WifiMeshActionHeader::MESH_PEERING_MGT)
       return m_protocol->IsActiveLink(m_ifIndex,header.GetAddr2());
-    m_stats.recvMgt ++;
-    m_stats.recvMgtBytes += packet->GetSize ();
+    m_stats.rxMgt ++;
+    m_stats.rxMgtBytes += packet->GetSize ();
     Mac48Address peerAddress = header.GetAddr2 ();
     Mac48Address peerMpAddress = header.GetAddr3 ();
     PeerLinkFrameStart::PlinkFrameStartFields fields;
@@ -121,17 +121,17 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
     //Check taht frame subtype corresponds peer link subtype
     if(peerElement.SubtypeIsOpen ())
     {
-      m_stats.recvOpen ++;
+      m_stats.rxOpen ++;
       NS_ASSERT(actionValue.peerLink == WifiMeshActionHeader::PEER_LINK_OPEN);
     }
     if(peerElement.SubtypeIsConfirm ())
     {
-      m_stats.recvConfirm ++;
+      m_stats.rxConfirm ++;
       NS_ASSERT(actionValue.peerLink == WifiMeshActionHeader::PEER_LINK_CONFIRM);
     }
     if(peerElement.SubtypeIsClose ())
     {
-      m_stats.recvClose ++;
+      m_stats.rxClose ++;
       NS_ASSERT(actionValue.peerLink == WifiMeshActionHeader::PEER_LINK_CLOSE);
     }
     //Deliver Peer link management frame to protocol:
@@ -197,7 +197,7 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
   WifiMeshActionHeader actionHdr;
   if (peerElement.SubtypeIsOpen ())
     {
-      m_stats.sendOpen ++;
+      m_stats.txOpen ++;
       WifiMeshActionHeader::ActionValue action;
       action.peerLink = WifiMeshActionHeader::PEER_LINK_OPEN;
       fields.subtype = WifiMeshActionHeader::PEER_LINK_OPEN;
@@ -205,7 +205,7 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
     }
   if (peerElement.SubtypeIsConfirm ())
     {
-      m_stats.sendConfirm ++;
+      m_stats.txConfirm ++;
       WifiMeshActionHeader::ActionValue action;
       action.peerLink = WifiMeshActionHeader::PEER_LINK_CONFIRM;
       fields.aid = aid;
@@ -214,7 +214,7 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
     }
   if (peerElement.SubtypeIsClose ())
     {
-      m_stats.sendClose ++;
+      m_stats.txClose ++;
       WifiMeshActionHeader::ActionValue action;
       action.peerLink = WifiMeshActionHeader::PEER_LINK_CLOSE;
       fields.subtype = WifiMeshActionHeader::PEER_LINK_CLOSE;
@@ -224,8 +224,8 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
   plinkFrame.SetPlinkFrameStart(fields);
   packet->AddHeader (plinkFrame);
   packet->AddHeader (actionHdr);
-  m_stats.sentMgt ++;
-  m_stats.sentMgtBytes += packet->GetSize ();
+  m_stats.txMgt ++;
+  m_stats.txMgtBytes += packet->GetSize ();
   // Wifi Mac header:
   WifiMacHeader hdr;
   hdr.SetAction ();
@@ -261,18 +261,18 @@ PeerManagerMacPlugin::SetBeaconShift(Time shift)
   m_parent->ShiftTbtt (shift);
 }
 PeerManagerMacPlugin::Statistics::Statistics () :
-  sendOpen (0),
-  sendConfirm (0),
-  sendClose (0),
-  recvOpen (0),
-  recvConfirm (0),
-  recvClose (0),
+  txOpen (0),
+  txConfirm (0),
+  txClose (0),
+  rxOpen (0),
+  rxConfirm (0),
+  rxClose (0),
   dropped (0),
   brokenMgt (0),
-  sentMgt (0),
-  sentMgtBytes (0),
-  recvMgt (0),
-  recvMgtBytes (0),
+  txMgt (0),
+  txMgtBytes (0),
+  rxMgt (0),
+  rxMgtBytes (0),
   beaconShift (0)
 {
 }
@@ -280,18 +280,18 @@ void
 PeerManagerMacPlugin::Statistics::Print (std::ostream & os) const
 {
   os << "<Statistics "
-    "sendOpen=\"" << sendOpen << "\"\n"
-    "sendConfirm=\"" << sendConfirm << "\"\n"
-    "sendClose=\"" << sendClose << "\"\n"
-    "recvOpen=\"" << recvOpen << "\"\n"
-    "recvConfirm=\"" << recvConfirm << "\"\n"
-    "recvClose=\"" << recvClose << "\"\n"
+    "txOpen=\"" << txOpen << "\"\n"
+    "txConfirm=\"" << txConfirm << "\"\n"
+    "txClose=\"" << txClose << "\"\n"
+    "rxOpen=\"" << rxOpen << "\"\n"
+    "rxConfirm=\"" << rxConfirm << "\"\n"
+    "rxClose=\"" << rxClose << "\"\n"
     "dropped=\"" << dropped << "\"\n"
     "brokenMgt=\"" << brokenMgt << "\"\n"
-    "sentMgt=\"" << sentMgt << "\"\n"
-    "sentMgtBytes=\"" << (double)sentMgtBytes /1024.0 << "\"\n"
-    "recvMgt=\"" << recvMgt << "\"\n"
-    "recvMgtBytes=\"" << (double)recvMgtBytes / 1024.0 << "K\"\n"
+    "txMgt=\"" << txMgt << "\"\n"
+    "txMgtBytes=\"" << (double)txMgtBytes /1024.0 << "\"\n"
+    "rxMgt=\"" << rxMgt << "\"\n"
+    "rxMgtBytes=\"" << (double)rxMgtBytes / 1024.0 << "K\"\n"
     "beaconShift=\"" << beaconShift << "\"/>\n";
 }
 void

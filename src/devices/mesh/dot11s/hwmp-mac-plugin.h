@@ -104,36 +104,36 @@ private:
   ///\{
   struct Statistics
   {
-    uint16_t sentPreq;
-    uint16_t recvPreq;
-    uint16_t sentPrep;
-    uint16_t recvPrep;
-    uint16_t sentPerr;
-    uint16_t recvPerr;
-    uint16_t sentMgt;
-    uint32_t sentMgtBytes;
-    uint16_t recvMgt;
-    uint32_t recvMgtBytes;
-    uint16_t sentData;
-    uint32_t sentDataBytes;
-    uint16_t recvData;
-    uint32_t recvDataBytes;
+    uint16_t txPreq;
+    uint16_t rxPreq;
+    uint16_t txPrep;
+    uint16_t rxPrep;
+    uint16_t txPerr;
+    uint16_t rxPerr;
+    uint16_t txMgt;
+    uint32_t txMgtBytes;
+    uint16_t rxMgt;
+    uint32_t rxMgtBytes;
+    uint16_t txData;
+    uint32_t txDataBytes;
+    uint16_t rxData;
+    uint32_t rxDataBytes;
     void Print (std::ostream & os) const;
     Statistics () : 
-      sentPreq (0), 
-      recvPreq (0),
-      sentPrep (0),
-      recvPrep (0),
-      sentPerr (0),
-      recvPerr (0),
-      sentMgt (0),
-      sentMgtBytes (0),
-      recvMgt (0),
-      recvMgtBytes (0),
-      sentData (0),
-      sentDataBytes (0),
-      recvData (0),
-      recvDataBytes (0)
+      txPreq (0), 
+      rxPreq (0),
+      txPrep (0),
+      rxPrep (0),
+      txPerr (0),
+      rxPerr (0),
+      txMgt (0),
+      txMgtBytes (0),
+      rxMgt (0),
+      rxMgtBytes (0),
+      txData (0),
+      txDataBytes (0),
+      rxData (0),
+      rxDataBytes (0)
       {}
   };
   Statistics m_stats;
