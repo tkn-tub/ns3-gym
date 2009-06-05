@@ -30,16 +30,19 @@ IeMeshId::IeMeshId ()
       m_meshId[i] = 0;
     }
 }
-IeMeshId::IeMeshId (char const meshId[32], uint8_t length)
+IeMeshId::IeMeshId (std::string s)
 {
-  NS_ASSERT (length <= 32);
+  NS_ASSERT (s.size () < 32);
+  const char *meshid = s.c_str ();
   uint8_t len = 0;
-  while (len < length) 
+  while (*meshid != 0 && len < 32) 
     {
-      m_meshId[len] = meshId[len];
+      m_meshId[len] = *meshid;
+      meshid++;
       len++;
     }
-  while (len < 32) 
+  NS_ASSERT (len <= 32);
+  while (len < 33) 
     {
       m_meshId[len] = 0;
       len++;
@@ -148,7 +151,7 @@ bool IeMeshIdBist::RunTests ()
   bool result(true);
   
   // create test information element
-  IeMeshId a("qwerty",6);
+  IeMeshId a("qwerty");
   result = result && TestRoundtripSerialization (a);
   return result;
 }

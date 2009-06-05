@@ -479,9 +479,9 @@ PeerManagementProtocol::GetMeshId () const
   return m_meshId;
 }
 void
-PeerManagementProtocol::SetMeshId(char const meshId[32], uint8_t length)
+PeerManagementProtocol::SetMeshId(std::string s)
 {
-  m_meshId = Create<IeMeshId> (meshId, length);
+  m_meshId = Create<IeMeshId> (s);
 }
 Mac48Address
 PeerManagementProtocol::GetAddress ()

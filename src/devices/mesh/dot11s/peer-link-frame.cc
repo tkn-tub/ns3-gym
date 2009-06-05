@@ -204,7 +204,7 @@ bool PeerLinkFrameStartBist::RunTests ()
     fields.capability = 0;
     fields.aid = 101;
     fields.reasonCode = 12;
-    fields.meshId = IeMeshId("qwertyuiop", 10);
+    fields.meshId = IeMeshId("qwertyuiop");
     a.SetPlinkFrameStart(fields);
     Ptr<Packet> packet = Create<Packet> ();
     packet->AddHeader (a);
@@ -220,7 +220,7 @@ bool PeerLinkFrameStartBist::RunTests ()
     fields.capability = 0;
     fields.aid = 1234;
     fields.reasonCode = 12;
-    fields.meshId = IeMeshId("qwerty", 6);
+    fields.meshId = IeMeshId("qwerty");
     a.SetPlinkFrameStart(fields);
     Ptr<Packet> packet = Create<Packet> ();
     packet->AddHeader (a);
@@ -235,7 +235,7 @@ bool PeerLinkFrameStartBist::RunTests ()
     fields.subtype = (uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE);
     fields.capability = 0;
     fields.aid = 10;
-    fields.meshId = IeMeshId("qqq", 3);
+    fields.meshId = IeMeshId("qqq");
     fields.reasonCode = 12;
     a.SetPlinkFrameStart(fields);
     Ptr<Packet> packet = Create<Packet> ();

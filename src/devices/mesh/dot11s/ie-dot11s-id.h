@@ -36,8 +36,7 @@ class IeMeshId : public WifiInformationElement
 public:
   // broadcast meshId
   IeMeshId ();
-  //IeMeshId (char const meshId[32]);
-  IeMeshId (char const meshId[32], uint8_t length);
+  IeMeshId (std::string s);
 
   bool IsEqual (IeMeshId const &o) const;
   bool IsBroadcast (void) const;

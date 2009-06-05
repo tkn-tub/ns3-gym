@@ -137,7 +137,7 @@ public:
   Mac48Address GetAddress ();
   ///\Needed to fill mesh configuration
   uint8_t GetNumberOfLinks ();
-  void SetMeshId (char const meshId[32], uint8_t length);
+  void SetMeshId (std::string s);
   Ptr<IeMeshId> GetMeshId() const;
   ///\brief: Report statistics
   void Report (std::ostream &) const;

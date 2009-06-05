@@ -117,7 +117,7 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c,  std::
     
     // Install 802.11s protocols
     Ptr<PeerManagementProtocol> pmp = CreateObject<PeerManagementProtocol> ();
-    pmp->SetMeshId("mesh",4);
+    pmp->SetMeshId("mesh");
     bool install_ok = pmp->Install (mp);
     NS_ASSERT (install_ok);
     
