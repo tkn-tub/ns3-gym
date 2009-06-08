@@ -116,21 +116,15 @@ YansWifiPhy::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&YansWifiPhy::m_state),
                    MakePointerChecker<WifiPhyStateHelper> ())
-    .AddAttribute ("ChannelSwitchDelay",
-                   "Delay between two short frames transmitted on different frequencies",
-                   TimeValue (MicroSeconds (250)),
-                   MakeTimeAccessor (&YansWifiPhy::m_channelSwitchDelay), 
-                   MakeTimeChecker ())
-    
     ;
   return tid;
 }
 
 YansWifiPhy::YansWifiPhy ()
- : m_channelId(0),
-   m_endSyncEvent (),
-   m_random (0.0, 1.0),
-   m_channelStartingFrequency(0.0)
+  :  m_channelFreqMhz(2437),
+     m_endSyncEvent (),
+     m_random (0.0, 1.0),
+     m_channelStartingFrequency(0.0)
 {
   NS_LOG_FUNCTION (this);
   m_state = CreateObject<WifiPhyStateHelper> ();
@@ -339,6 +333,7 @@ YansWifiPhy::SetReceiveOkCallback (SyncOkCallback callback)
 {
   m_state->SetReceiveOkCallback (callback);
 }
+
 void 
 YansWifiPhy::SetReceiveErrorCallback (SyncErrorCallback callback)
 {
@@ -442,7 +437,9 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble
       m_endSyncEvent.Cancel ();
     }
   NotifyTxBegin (packet);
-  NotifyPromiscSniff (packet);
+  uint32_t dataRate500KbpsUnits = txMode.GetDataRate () / 500000;   
+  bool isShortPreamble = (WIFI_PREAMBLE_SHORT == preamble);
+  NotifyPromiscSniffTx (packet, m_channelFreqMhz, dataRate500KbpsUnits, isShortPreamble);
   m_state->SwitchToTx (txDuration, packet, txMode, preamble, txPower);
   m_channel->Send (this, packet, GetPowerDbm (txPower) + m_txGainDb, txMode, preamble);
 }
@@ -612,11 +609,14 @@ YansWifiPhy::EndSync (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event)
 
   NS_LOG_DEBUG ("mode="<<(event->GetPayloadMode ().GetDataRate ())<<
                 ", snr="<<snrPer.snr<<", per="<<snrPer.per<<", size="<<packet->GetSize ());
-  
   if (m_random.GetValue () > snrPer.per) 
     {
-      NotifyRxEnd (packet);
-      NotifyPromiscSniff (packet);
+      NotifyRxEnd (packet); 
+      uint32_t dataRate500KbpsUnits = event->GetPayloadMode ().GetDataRate () / 500000;   
+      bool isShortPreamble = (WIFI_PREAMBLE_SHORT == event->GetPreambleType ());  
+      double signalDbm = RatioToDb (event->GetRxPowerW ()) + 30;
+      double noiseDbm = RatioToDb(event->GetRxPowerW() / snrPer.snr) - GetRxNoiseFigure() + 30 ;
+      NotifyPromiscSniffRx (packet, m_channelFreqMhz, dataRate500KbpsUnits, isShortPreamble, signalDbm, noiseDbm);
       m_state->SwitchFromSyncEndOk (packet, snrPer.snr, event->GetPayloadMode (), event->GetPreambleType ());
     } 
   else 
@@ -626,5 +626,4 @@ YansWifiPhy::EndSync (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event)
       m_state->SwitchFromSyncEndError (packet, snrPer.snr);
     }
 }
-
 } // namespace ns3
