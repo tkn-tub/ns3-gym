@@ -121,7 +121,8 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
           NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
             address.GetIpv4());
 
-          packet->RemoveAllTags ();
+          packet->RemoveAllPacketTags ();
+          packet->RemoteAllByteTags ();
 
           NS_LOG_LOGIC ("Echoing packet");
           socket->SendTo (packet, 0, from);

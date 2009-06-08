@@ -91,7 +91,7 @@ public:
    * can be stored in an Address instance.
    */
   enum MaxSize_e {
-    MAX_SIZE = 30
+    MAX_SIZE = 20
   };
 
   /**

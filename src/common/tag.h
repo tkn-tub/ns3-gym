@@ -41,8 +41,8 @@ public:
   /**
    * \returns the number of bytes required to serialize the data of the tag.
    *
-   * This method is typically invoked by Packet::AddTag just prior to calling
-   * Tag::Serialize.
+   * This method is typically invoked by Packet::AddPacketTag or Packet::AddByteTag
+   * just prior to calling Tag::Serialize.
    */
   virtual uint32_t GetSerializedSize (void) const = 0;
   /**
@@ -65,7 +65,8 @@ public:
   /**
    * \param os the stream to print to
    *
-   * This method is typically invoked from the Packet::PrintTags method
+   * This method is typically invoked from the Packet::PrintByteTags
+   * or Packet::PrintPacketTags methods.
    */
   virtual void Print (std::ostream &os) const = 0;
 };

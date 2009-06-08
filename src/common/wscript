@@ -14,8 +14,9 @@ def build(bld):
         'data-rate.cc',
         'error-model.cc',
         'tag.cc',
-        'tag-list.cc',
+        'byte-tag-list.cc',
         'tag-buffer.cc',
+        'packet-tag-list.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -31,6 +32,7 @@ def build(bld):
         'data-rate.h',
         'error-model.h',
         'tag.h',
-        'tag-list.h',
+        'byte-tag-list.h',
         'tag-buffer.h',
+        'packet-tag-list.h',
         ]

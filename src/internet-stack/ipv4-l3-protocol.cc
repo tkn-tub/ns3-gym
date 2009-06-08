@@ -482,7 +482,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   bool mayFragment = true;
   uint8_t ttl = m_defaultTtl;
   SocketIpTtlTag tag;
-  bool found = packet->FindFirstMatchingTag (tag);
+  bool found = packet->RemovePacketTag (tag);
   if (found)
     {
       ttl = tag.GetTtl ();

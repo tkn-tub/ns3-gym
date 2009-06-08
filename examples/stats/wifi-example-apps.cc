@@ -131,7 +131,7 @@ void Sender::SendPacket()
 
   TimestampTag timestamp;
   timestamp.SetTimestamp(Simulator::Now());
-  packet->AddTag(timestamp);
+  packet->AddByteTag (timestamp);
 
   // Could connect the socket since the address never changes; using SendTo
   // here simply because all of the standard apps do not.
@@ -250,7 +250,7 @@ Receiver::Receive(Ptr<Socket> socket)
     }
 
     TimestampTag timestamp;
-    packet->FindFirstMatchingTag(timestamp);
+    packet->FindFirstMatchingByteTag(timestamp);
     Time tx = timestamp.GetTimestamp();
 
     if (m_delay != 0) {

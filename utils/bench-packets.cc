@@ -168,14 +168,14 @@ benchD (uint32_t n)
 
   for (uint32_t i = 0; i < n; i++) {
     Ptr<Packet> p = Create<Packet> (2000);
-    p->AddTag (tag1);
+    p->AddPacketTag (tag1);
     p->AddHeader (udp);
-    p->FindFirstMatchingTag (tag1);
-    p->AddTag (tag2);
+    p->RemovePacketTag (tag1);
+    p->AddPacketTag (tag2);
     p->AddHeader (ipv4);
     Ptr<Packet> o = p->Copy ();
     o->RemoveHeader (ipv4);
-    p->FindFirstMatchingTag (tag2);
+    p->RemovePacketTag (tag2);
     o->RemoveHeader (udp);
   }
 }

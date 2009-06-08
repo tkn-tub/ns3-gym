@@ -65,12 +65,31 @@ where format is one of PCAP_FORMAT_80211_RADIOTAP, PCAP_FORMAT_80211_PRISM or  P
 <p> class Ipv4 now contains attributes in ipv4.cc; the first one
 is called "IpForward" that will enable/disable Ipv4 forwarding.  
 </li>
+
+<li> <b>packet tags</b>
+<p>class Packet now contains AddPacketTag, RemovePacketTag and PeekPacketTag 
+which can be used to attach a tag to a packet, as opposed to the old 
+AddTag method which attached a tag to a set of bytes. The main 
+semantic difference is in how these tags behave in the presence of 
+fragmentation and reassembly.
+</li>
+
 </ul>
 
 <h2>Changes to existing API:</h2>
 <ul>
 
-<p><b>YansWifiPhyHelper::EnablePcap* methods not static any more</b>
+<li> <b>packet byte tags renaming</b>
+  <ul>
+  <li>Packet::AddTag to Packet::AddByteTag</li>
+  <li>Packet::FindFirstMatchingTag to Packet::FindFirstMatchingByteTag</li>
+  <li>Packet::RemoveAllTags to Packet::RemoveAllByteTags</li>
+  <li>Packet::PrintTags to Packet::PrintByteTags</li>
+  <li>Packet::GetTagIterator to Packet::GetByteTagIterator</li>
+  </ul>
+</li>
+
+<li><b>YansWifiPhyHelper::EnablePcap* methods not static any more</b>
 <p>To accommodate the possibility of configuring the PCAP format used for wifi promiscuous mode traces, several methods of YansWifiPhyHelper had to be made non-static:
 <pre>
 -  static void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
