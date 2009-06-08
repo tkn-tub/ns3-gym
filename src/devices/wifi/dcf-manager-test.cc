@@ -68,7 +68,7 @@ public:
 
 
 private:
-  void StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifsNoSifs);
+  void StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifsNoSifs, uint32_t ackTimeoutValue = 20);
   void AddDcfState (uint32_t aifsn);
   void EndTest (void);
   void ExpectInternalCollision (uint64_t time, uint32_t from, uint32_t nSlots);
@@ -77,14 +77,21 @@ private:
   void AddRxErrorEvt (uint64_t at, uint64_t duration);
   void AddNavReset (uint64_t at, uint64_t duration);
   void AddNavStart (uint64_t at, uint64_t duration);
+  void AddAckTimeoutReset (uint64_t at);
   void AddAccessRequest (uint64_t at, uint64_t txTime, 
                          uint64_t expectedGrantTime, uint32_t from);
+  void AddAccessRequestWithAckTimeout (uint64_t at, uint64_t txTime, 
+                                  uint64_t expectedGrantTime, uint32_t from);
+  ///\param ackDelay is delay of the ack after txEnd
+  void AddAccessRequestWithSuccessfullAck (uint64_t at, uint64_t txTime, 
+                                  uint64_t expectedGrantTime, uint32_t ackDelay, uint32_t from);
   void DoAccessRequest (uint64_t txTime, uint64_t expectedGrantTime, DcfStateTest *state);
   
   typedef std::vector<DcfStateTest *> DcfStates;
 
   DcfManager *m_dcfManager;
   DcfStates m_dcfStates;
+  uint32_t m_ackTimeoutValue;
   bool m_result;
 };
 
@@ -130,6 +137,7 @@ DcfManagerTest::NotifyAccessGranted (uint32_t i)
   state->m_expectedGrants.pop_front ();
   NS_TEST_ASSERT_EQUAL (Simulator::Now (), MicroSeconds (expected.second));
   m_dcfManager->NotifyTxStartNow (MicroSeconds (expected.first));
+  m_dcfManager->NotifyAckTimeoutStartNow (MicroSeconds (m_ackTimeoutValue + expected.first));
   if (!result)
     {
       m_result = result;
@@ -187,12 +195,13 @@ DcfManagerTest::ExpectCollision (uint64_t time, uint32_t nSlots, uint32_t from)
 }
 
 void
-DcfManagerTest::StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifsNoSifs)
+DcfManagerTest::StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifsNoSifs, uint32_t ackTimeoutValue)
 {
   m_dcfManager = new DcfManager ();
   m_dcfManager->SetSlot (MicroSeconds (slotTime));
   m_dcfManager->SetSifs (MicroSeconds (sifs));
   m_dcfManager->SetEifsNoDifs (MicroSeconds (eifsNoDifsNoSifs+sifs));
+  m_ackTimeoutValue = ackTimeoutValue;
 }
 
 void
@@ -260,14 +269,35 @@ DcfManagerTest::AddNavStart (uint64_t at, uint64_t duration)
                        MicroSeconds (duration));
 }
 void 
+DcfManagerTest::AddAckTimeoutReset (uint64_t at)
+{
+  Simulator::Schedule (MicroSeconds (at) - Now (), 
+                       &DcfManager::NotifyAckTimeoutResetNow, m_dcfManager);
+}
+void 
 DcfManagerTest::AddAccessRequest (uint64_t at, uint64_t txTime, 
+                                  uint64_t expectedGrantTime, uint32_t from)
+{
+  AddAccessRequestWithSuccessfullAck (at, txTime, expectedGrantTime, 0, from);
+}
+void 
+DcfManagerTest::AddAccessRequestWithAckTimeout (uint64_t at, uint64_t txTime, 
                                   uint64_t expectedGrantTime, uint32_t from)
 {
   Simulator::Schedule (MicroSeconds (at) - Now (), 
                        &DcfManagerTest::DoAccessRequest, this,
                        txTime, expectedGrantTime, m_dcfStates[from]);
 }
-
+void 
+DcfManagerTest::AddAccessRequestWithSuccessfullAck (uint64_t at, uint64_t txTime, 
+                                  uint64_t expectedGrantTime, uint32_t ackDelay, uint32_t from)
+{
+  NS_ASSERT(ackDelay < m_ackTimeoutValue);
+  Simulator::Schedule (MicroSeconds (at) - Now (), 
+                       &DcfManagerTest::DoAccessRequest, this,
+                       txTime, expectedGrantTime, m_dcfStates[from]);
+  AddAckTimeoutReset (expectedGrantTime + txTime + ackDelay);
+}
 void
 DcfManagerTest::DoAccessRequest (uint64_t txTime, uint64_t expectedGrantTime, DcfStateTest *state)
 {
@@ -301,7 +331,7 @@ DcfManagerTest::RunTests (void)
   //   |    rx     | sifs | aifsn | bslot0  | bslot1  |   | rx   | sifs  |  aifsn | bslot2 | bslot3 | tx  |
   //        |
   //       30 request access. backoff slots: 4
-  StartTest (4, 6 , 10);
+  StartTest (4, 6, 10);
   AddDcfState (1);
   AddRxOkEvt (20, 40);
   AddRxOkEvt (80, 20);
@@ -388,7 +418,58 @@ DcfManagerTest::RunTests (void)
   ExpectCollision (40, 0, 1); // backoff: 0 slot
   ExpectInternalCollision (78, 1, 1); // backoff: 1 slot
   EndTest ();
+  
+  // Test of AckTimeout handling: First queue requests access and ack procedure fails,
+  // inside the ack timeout second queue with higher priority requests access.
+  //
+  //            20           40      50     60  66      76
+  // DCF0 - low  |     tx     | ack timeout |sifs|       |
+  // DCF1 - high |                    |     |sifs|  tx   |
+  //                                  ^ request access
+  StartTest (4, 6, 10);
+  AddDcfState (2); // high priority DCF
+  AddDcfState (0); // low priority DCF
+  AddAccessRequestWithAckTimeout (20, 20, 20, 0);
+  AddAccessRequest (50, 10, 66, 1);
+  EndTest ();
 
+  // Test of AckTimeout handling: 
+  //
+  // First queue requests access and ack is 2 us delayed (got ack interval at the picture),
+  // inside this interval second queue with higher priority requests access.
+  //
+  //            20           40  41   42    48      58
+  // DCF0 - low  |     tx     |got ack |sifs|       |
+  // DCF1 - high |                |    |sifs|  tx   |
+  //                              ^ request access
+  StartTest (4, 6, 10);
+  AddDcfState (2); // high priority DCF
+  AddDcfState (0); // low priority DCF
+  AddAccessRequestWithSuccessfullAck (20, 20, 20, 2, 0);
+  AddAccessRequest (41, 10, 48, 1);
+  EndTest ();
+
+  //Repeat the same but with one queue:
+  //            20           40  41   42    48      58
+  // DCF0 - low  |     tx     |got ack |sifs|       |
+  //                              ^ request access
+  StartTest (4, 6, 10);
+  AddDcfState (2);
+  AddAccessRequestWithSuccessfullAck (20, 20, 20, 2, 0);
+  AddAccessRequest (41, 10, 56, 0);
+  EndTest ();
+
+  //Repeat the same when ack was delayed:
+  //and request the next access before previous tx end:
+  //            20       39  40       42              64      74
+  // DCF0 - low  |     tx     |got ack |sifs + 4 * slot|       |
+  //                      ^ request access
+  StartTest (4, 6, 10);
+  AddDcfState (2);
+  AddAccessRequestWithSuccessfullAck (20, 20, 20, 2, 0);
+  AddAccessRequest (39, 10, 64, 0);
+  ExpectCollision (39, 2, 0); // backoff: 2 slot
+  EndTest ();
 
   //
   // test simple NAV count. This scenario modelizes a simple DATA+ACK handshake
@@ -404,7 +485,6 @@ DcfManagerTest::RunTests (void)
   AddAccessRequest (30, 10, 93, 0);
   ExpectCollision (30, 2, 0); // backoff: 2 slot
   EndTest ();
-
 
   //
   // test more complex NAV handling by a CF-poll. This scenario modelizes a 

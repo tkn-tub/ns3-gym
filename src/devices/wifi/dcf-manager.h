@@ -238,12 +238,16 @@ public:
    * Called at end of rx
    */
   void NotifyNavStartNow (Time duration);
-
+  void NotifyAckTimeoutStartNow (Time duration);
+  void NotifyAckTimeoutResetNow ();
+  void NotifyCtsTimeoutStartNow (Time duration);
+  void NotifyCtsTimeoutResetNow ();
 private:
   void UpdateBackoff (void);
   Time MostRecent (Time a, Time b) const;
   Time MostRecent (Time a, Time b, Time c) const;
   Time MostRecent (Time a, Time b, Time c, Time d) const;
+  Time MostRecent (Time a, Time b, Time c, Time d, Time e, Time f) const;
   /**
    * Access will never be granted to the medium _before_
    * the time returned by this method.
@@ -262,6 +266,8 @@ private:
   typedef std::vector<DcfState *> States;
 
   States m_states;
+  Time m_lastAckTimeoutEnd;
+  Time m_lastCtsTimeoutEnd;
   Time m_lastNavStart;
   Time m_lastNavDuration;
   Time m_lastRxStart;
@@ -279,7 +285,7 @@ private:
   Time m_slotTime;
   Time m_sifs;
   class PhyListener *m_phyListener;
-  class LowNavListener *m_lowListener;
+  class LowDcfListener *m_lowListener;
 };
 
 } // namespace ns3

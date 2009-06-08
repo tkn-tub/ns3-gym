@@ -100,10 +100,10 @@ public:
  * and calls to its methods are forwards to the corresponding
  * ns3::Dcf methods.
  */
-class MacLowNavListener {
+class MacLowDcfListener {
 public:
-  MacLowNavListener ();
-  virtual ~MacLowNavListener ();
+  MacLowDcfListener ();
+  virtual ~MacLowDcfListener ();
   /**
    * \param duration duration of NAV timer
    */
@@ -112,6 +112,10 @@ public:
    * \param duration duration of NAV timer
    */
   virtual void NavReset (Time duration) = 0;
+  virtual void AckTimeoutStart (Time duration) = 0;
+  virtual void AckTimeoutReset () = 0;
+  virtual void CtsTimeoutStart (Time duration) = 0;
+  virtual void CtsTimeoutReset () = 0;
 };
 
 /**
@@ -306,7 +310,7 @@ public:
    * \param listener listen to NAV events for every incoming
    *        and outgoing packet.
    */
-  void RegisterNavListener (MacLowNavListener *listener);
+  void RegisterDcfListener (MacLowDcfListener *listener);
 
   /**
    * \param packet to send (does not include the 802.11 MAC header and checksum)
@@ -375,6 +379,10 @@ private:
   void DoNavResetNow (Time duration);
   bool DoNavStartNow (Time duration);
   bool IsNavZero (void) const;
+  void NotifyAckTimeoutStartNow (Time duration);
+  void NotifyAckTimeoutResetNow ();
+  void NotifyCtsTimeoutStartNow (Time duration);
+  void NotifyCtsTimeoutResetNow ();
   void MaybeCancelPrevious (void);
   
   void NavCounterResetCtsMissed (Time rtsEndRxTime);
@@ -397,9 +405,9 @@ private:
   Ptr<WifiPhy> m_phy;
   Ptr<WifiRemoteStationManager> m_stationManager;
   MacLowRxCallback m_rxCallback;
-  typedef std::vector<MacLowNavListener *>::const_iterator NavListenersCI;
-  typedef std::vector<MacLowNavListener *> NavListeners;
-  NavListeners m_navListeners;
+  typedef std::vector<MacLowDcfListener *>::const_iterator DcfListenersCI;
+  typedef std::vector<MacLowDcfListener *> DcfListeners;
+  DcfListeners m_dcfListeners;
 
   EventId m_normalAckTimeoutEvent;
   EventId m_fastAckTimeoutEvent;
