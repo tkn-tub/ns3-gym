@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 #include <vector>
+#include <ostream>
 
 #define BUFFER_HEURISTICS 1
 #define BUFFER_USE_INLINE 1
@@ -485,6 +486,8 @@ public:
 
   int32_t GetCurrentStartOffset (void) const;
   int32_t GetCurrentEndOffset (void) const;
+
+  void CopyData (std::ostream *os, uint32_t size) const;
 
   Buffer (Buffer const &o);
   Buffer &operator = (Buffer const &o);

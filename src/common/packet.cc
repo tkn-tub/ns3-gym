@@ -356,6 +356,12 @@ Packet::CopyData (uint8_t *buffer, uint32_t size) const
   return cur;
 }
 
+void
+Packet::CopyData(std::ostream *os, uint32_t size) const
+{
+  return m_buffer.CopyData (os, size);
+}
+
 uint32_t 
 Packet::GetUid (void) const
 {
