@@ -8,7 +8,7 @@ def register_types(module):
     ## wifi-preamble.h: ns3::WifiPreamble [enumeration]
     module.add_enum('WifiPreamble', ['WIFI_PREAMBLE_LONG', 'WIFI_PREAMBLE_SHORT'])
     ## wifi-phy-standard.h: ns3::WifiPhyStandard [enumeration]
-    module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_holland'])
+    module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_holland'])
     ## qos-utils.h: ns3::AccessClass [enumeration]
     module.add_enum('AccessClass', ['AC_VO', 'AC_VI', 'AC_BE', 'AC_BK', 'AC_UNDEF'])
     ## edca-txop-n.h: ns3::TypeOfStation [enumeration]
@@ -26,7 +26,7 @@ def register_types(module):
     ## wifi-mode.h: ns3::WifiMode [class]
     module.add_class('WifiMode')
     ## wifi-mode.h: ns3::WifiMode::ModulationType [enumeration]
-    module.add_enum('ModulationType', ['BPSK', 'QAM'], outer_class=root_module['ns3::WifiMode'])
+    module.add_enum('ModulationType', ['BPSK', 'DBPSK', 'DQPSK', 'QAM'], outer_class=root_module['ns3::WifiMode'])
     ## wifi-mode.h: ns3::WifiModeFactory [class]
     module.add_class('WifiModeFactory')
     ## wifi-phy.h: ns3::WifiPhyListener [class]
@@ -101,6 +101,8 @@ def register_types(module):
     module.add_class('EdcaTxopN', parent=root_module['ns3::Object'])
     ## error-rate-model.h: ns3::ErrorRateModel [class]
     module.add_class('ErrorRateModel', parent=root_module['ns3::Object'])
+    ## propagation-loss-model.h: ns3::FixedRssLossModel [class]
+    module.add_class('FixedRssLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## propagation-loss-model.h: ns3::FriisPropagationLossModel [class]
     module.add_class('FriisPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## ideal-wifi-manager.h: ns3::IdealWifiManager [class]
@@ -111,6 +113,8 @@ def register_types(module):
     module.add_class('LogDistancePropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## msdu-aggregator.h: ns3::MsduAggregator [class]
     module.add_class('MsduAggregator', parent=root_module['ns3::Object'])
+    ## propagation-loss-model.h: ns3::NakagamiPropagationLossModel [class]
+    module.add_class('NakagamiPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## nqap-wifi-mac.h: ns3::NqapWifiMac [class]
     module.add_class('NqapWifiMac', parent=root_module['ns3::WifiMac'])
     ## nqsta-wifi-mac.h: ns3::NqstaWifiMac [class]
@@ -228,11 +232,13 @@ def register_methods(root_module):
     register_Ns3DcaTxop_methods(root_module, root_module['ns3::DcaTxop'])
     register_Ns3EdcaTxopN_methods(root_module, root_module['ns3::EdcaTxopN'])
     register_Ns3ErrorRateModel_methods(root_module, root_module['ns3::ErrorRateModel'])
+    register_Ns3FixedRssLossModel_methods(root_module, root_module['ns3::FixedRssLossModel'])
     register_Ns3FriisPropagationLossModel_methods(root_module, root_module['ns3::FriisPropagationLossModel'])
     register_Ns3IdealWifiManager_methods(root_module, root_module['ns3::IdealWifiManager'])
     register_Ns3JakesPropagationLossModel_methods(root_module, root_module['ns3::JakesPropagationLossModel'])
     register_Ns3LogDistancePropagationLossModel_methods(root_module, root_module['ns3::LogDistancePropagationLossModel'])
     register_Ns3MsduAggregator_methods(root_module, root_module['ns3::MsduAggregator'])
+    register_Ns3NakagamiPropagationLossModel_methods(root_module, root_module['ns3::NakagamiPropagationLossModel'])
     register_Ns3NqapWifiMac_methods(root_module, root_module['ns3::NqapWifiMac'])
     register_Ns3NqstaWifiMac_methods(root_module, root_module['ns3::NqstaWifiMac'])
     register_Ns3OnoeWifiManager_methods(root_module, root_module['ns3::OnoeWifiManager'])
@@ -265,6 +271,10 @@ def register_Ns3InterferenceHelper_methods(root_module, cls):
                    is_const=True)
     ## interference-helper.h: void ns3::InterferenceHelper::Configure80211aParameters() [member function]
     cls.add_method('Configure80211aParameters', 
+                   'void', 
+                   [])
+    ## interference-helper.h: void ns3::InterferenceHelper::Configure80211bParameters() [member function]
+    cls.add_method('Configure80211bParameters', 
                    'void', 
                    [])
     ## interference-helper.h: ns3::Time ns3::InterferenceHelper::GetEnergyDuration(double energyW) [member function]
@@ -486,6 +496,16 @@ def register_Ns3WifiModeFactory_methods(root_module, cls):
     cls.add_method('CreateQam', 
                    'ns3::WifiMode', 
                    [param('std::string', 'uniqueName'), param('bool', 'isMandatory'), param('uint32_t', 'bandwidth'), param('uint32_t', 'dataRate'), param('uint32_t', 'phyRate'), param('uint8_t', 'constellationSize')], 
+                   is_static=True)
+    ## wifi-mode.h: static ns3::WifiMode ns3::WifiModeFactory::CreateDbpsk(std::string uniqueName, bool isMandatory, uint32_t bandwidth, uint32_t dataRate, uint32_t phyRate) [member function]
+    cls.add_method('CreateDbpsk', 
+                   'ns3::WifiMode', 
+                   [param('std::string', 'uniqueName'), param('bool', 'isMandatory'), param('uint32_t', 'bandwidth'), param('uint32_t', 'dataRate'), param('uint32_t', 'phyRate')], 
+                   is_static=True)
+    ## wifi-mode.h: static ns3::WifiMode ns3::WifiModeFactory::CreateDqpsk(std::string uniqueName, bool isMandatory, uint32_t bandwidth, uint32_t dataRate, uint32_t phyRate) [member function]
+    cls.add_method('CreateDqpsk', 
+                   'ns3::WifiMode', 
+                   [param('std::string', 'uniqueName'), param('bool', 'isMandatory'), param('uint32_t', 'bandwidth'), param('uint32_t', 'dataRate'), param('uint32_t', 'phyRate')], 
                    is_static=True)
     return
 
@@ -2013,6 +2033,26 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [], 
                    is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get1mbb() [member function]
+    cls.add_method('Get1mbb', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get2mbb() [member function]
+    cls.add_method('Get2mbb', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get5_5mbb() [member function]
+    cls.add_method('Get5_5mbb', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get11mbb() [member function]
+    cls.add_method('Get11mbb', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
     ## wifi-phy.h: void ns3::WifiPhy::NotifyTxBegin(ns3::Ptr<ns3::Packet const> packet) [member function]
     cls.add_method('NotifyTxBegin', 
                    'void', 
@@ -2037,10 +2077,14 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('NotifyRxDrop', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    ## wifi-phy.h: void ns3::WifiPhy::NotifyPromiscSniff(ns3::Ptr<ns3::Packet const> packet) [member function]
-    cls.add_method('NotifyPromiscSniff', 
+    ## wifi-phy.h: void ns3::WifiPhy::NotifyPromiscSniffRx(ns3::Ptr<ns3::Packet const> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble, double signalDbm, double noiseDbm) [member function]
+    cls.add_method('NotifyPromiscSniffRx', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint16_t', 'channelFreqMhz'), param('uint32_t', 'rate'), param('bool', 'isShortPreamble'), param('double', 'signalDbm'), param('double', 'noiseDbm')])
+    ## wifi-phy.h: void ns3::WifiPhy::NotifyPromiscSniffTx(ns3::Ptr<ns3::Packet const> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble) [member function]
+    cls.add_method('NotifyPromiscSniffTx', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint16_t', 'channelFreqMhz'), param('uint32_t', 'rate'), param('bool', 'isShortPreamble')])
     return
 
 def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
@@ -2972,6 +3016,25 @@ def register_Ns3ErrorRateModel_methods(root_module, cls):
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
+def register_Ns3FixedRssLossModel_methods(root_module, cls):
+    ## propagation-loss-model.h: static ns3::TypeId ns3::FixedRssLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## propagation-loss-model.h: ns3::FixedRssLossModel::FixedRssLossModel() [constructor]
+    cls.add_constructor([])
+    ## propagation-loss-model.h: void ns3::FixedRssLossModel::SetRss(double rss) [member function]
+    cls.add_method('SetRss', 
+                   'void', 
+                   [param('double', 'rss')])
+    ## propagation-loss-model.h: double ns3::FixedRssLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
 def register_Ns3FriisPropagationLossModel_methods(root_module, cls):
     ## propagation-loss-model.h: static ns3::TypeId ns3::FriisPropagationLossModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
@@ -3120,6 +3183,21 @@ def register_Ns3MsduAggregator_methods(root_module, cls):
                    'std::list< std::pair< ns3::Ptr< ns3::Packet >, ns3::AmsduSubframeHeader > >', 
                    [param('ns3::Ptr< ns3::Packet >', 'aggregatedPacket')], 
                    is_static=True)
+    return
+
+def register_Ns3NakagamiPropagationLossModel_methods(root_module, cls):
+    ## propagation-loss-model.h: static ns3::TypeId ns3::NakagamiPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## propagation-loss-model.h: ns3::NakagamiPropagationLossModel::NakagamiPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## propagation-loss-model.h: double ns3::NakagamiPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3NqapWifiMac_methods(root_module, cls):

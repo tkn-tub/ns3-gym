@@ -44,33 +44,31 @@ MsduAggregator::Deaggregate (Ptr<Packet> aggregatedPacket)
   DeaggregatedMsdus set;
   
   AmsduSubframeHeader hdr;
+  Ptr<Packet> extractedMsdu = Create<Packet> ();
   uint32_t maxSize = aggregatedPacket->GetSize ();
-  // The worst condition is: two aggregated packets with no padding.
-  // 28 bytes is the size of two Amsdu subframe headers.
-  uint8_t *buffer = new uint8_t[maxSize-28];
+  uint16_t extractedLength;
   uint32_t padding;
   uint32_t deserialized = 0;
 
   while (deserialized < maxSize)
    {
      deserialized += aggregatedPacket->RemoveHeader (hdr);
-     deserialized += aggregatedPacket->CopyData (buffer, hdr.GetLength ());
-     aggregatedPacket->RemoveAtStart (hdr.GetLength ());
+     extractedLength = hdr.GetLength ();
+     extractedMsdu = aggregatedPacket->CreateFragment (0, static_cast<uint32_t>(extractedLength));
+     aggregatedPacket->RemoveAtStart (extractedLength);
+     deserialized += extractedLength;
      
-     padding = (4 - ((hdr.GetLength () + 14) %4 )) % 4;
+     padding = (4 - ((extractedLength + 14) %4 )) % 4;
   
      if (padding > 0 && deserialized < maxSize)
        {
          aggregatedPacket->RemoveAtStart (padding);
          deserialized += padding;
        }
-     //a new packet is created with the content of extracted msdu
-     Ptr<Packet> p = Create<Packet> (buffer, hdr.GetLength ());
      
-     std::pair<Ptr<Packet>, AmsduSubframeHeader> packetHdr (p,hdr);
+     std::pair<Ptr<Packet>, AmsduSubframeHeader> packetHdr (extractedMsdu, hdr);
      set.push_back (packetHdr);
    }
-  delete [] buffer;
   NS_LOG_INFO ("Deaggreated A-MSDU: extracted "<< set.size () << " MSDUs");
   return set;
 }

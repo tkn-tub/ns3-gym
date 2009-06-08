@@ -218,8 +218,8 @@ Packet::GetSize (void) const
 void
 Packet::AddHeader (const Header &header)
 {
-  NS_LOG_FUNCTION (this << &header);
   uint32_t size = header.GetSerializedSize ();
+  NS_LOG_FUNCTION (this << header.GetInstanceTypeId ().GetName () << size);
   uint32_t orgStart = m_buffer.GetCurrentStartOffset ();
   bool resized = m_buffer.AddAtStart (size);
   if (resized)
@@ -233,8 +233,8 @@ Packet::AddHeader (const Header &header)
 uint32_t
 Packet::RemoveHeader (Header &header)
 {
-  NS_LOG_FUNCTION (this << &header);
   uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
+  NS_LOG_FUNCTION (this << header.GetInstanceTypeId ().GetName () << deserialized);
   m_buffer.RemoveAtStart (deserialized);
   m_metadata.RemoveHeader (header, deserialized);
   return deserialized;
@@ -242,15 +242,15 @@ Packet::RemoveHeader (Header &header)
 uint32_t
 Packet::PeekHeader (Header &header) const
 {
-  NS_LOG_FUNCTION (this << &header);
   uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
+  NS_LOG_FUNCTION (this << header.GetInstanceTypeId ().GetName () << deserialized);
   return deserialized;
 }
 void
 Packet::AddTrailer (const Trailer &trailer)
 {
-  NS_LOG_FUNCTION (this << &trailer);
   uint32_t size = trailer.GetSerializedSize ();
+  NS_LOG_FUNCTION (this << trailer.GetInstanceTypeId ().GetName () << size);
   uint32_t orgStart = m_buffer.GetCurrentStartOffset ();
   bool resized = m_buffer.AddAtEnd (size);
   if (resized)
@@ -265,8 +265,8 @@ Packet::AddTrailer (const Trailer &trailer)
 uint32_t
 Packet::RemoveTrailer (Trailer &trailer)
 {
-  NS_LOG_FUNCTION (this << &trailer);
   uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
+  NS_LOG_FUNCTION (this << trailer.GetInstanceTypeId ().GetName () << deserialized);
   m_buffer.RemoveAtEnd (deserialized);
   m_metadata.RemoveTrailer (trailer, deserialized);
   return deserialized;
@@ -274,15 +274,15 @@ Packet::RemoveTrailer (Trailer &trailer)
 uint32_t
 Packet::PeekTrailer (Trailer &trailer)
 {
-  NS_LOG_FUNCTION (this << &trailer);
   uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
+  NS_LOG_FUNCTION (this << trailer.GetInstanceTypeId ().GetName () << deserialized);
   return deserialized;
 }
 
 void 
 Packet::AddAtEnd (Ptr<const Packet> packet)
 {
-  NS_LOG_FUNCTION (this << packet);
+  NS_LOG_FUNCTION (this << packet << packet->GetSize ());
   uint32_t aStart = m_buffer.GetCurrentStartOffset ();
   uint32_t bEnd = packet->m_buffer.GetCurrentEndOffset ();
   m_buffer.AddAtEnd (packet->m_buffer);
@@ -333,7 +333,14 @@ Packet::RemoveAllByteTags (void)
 uint8_t const *
 Packet::PeekData (void) const
 {
-  return m_buffer.PeekData ();
+  NS_LOG_FUNCTION (this);
+  uint32_t oldStart = m_buffer.GetCurrentStartOffset ();
+  uint8_t const * data = m_buffer.PeekData ();
+  uint32_t newStart = m_buffer.GetCurrentStartOffset ();
+ 
+  // Update tag offsets if buffer offsets were changed
+  const_cast<ByteTagList &>(m_byteTagList).AddAtStart (newStart - oldStart, newStart);
+  return data;
 }
 
 uint32_t 
@@ -579,7 +586,7 @@ Packet::Deserialize (Buffer buffer)
 void 
 Packet::AddByteTag (const Tag &tag) const
 {
-  NS_LOG_FUNCTION (this << &tag);
+  NS_LOG_FUNCTION (this << tag.GetInstanceTypeId ().GetName () << tag.GetSerializedSize ());
   ByteTagList *list = const_cast<ByteTagList *> (&m_byteTagList);
   TagBuffer buffer = list->Add (tag.GetInstanceTypeId (), tag.GetSerializedSize (), 
                                 m_buffer.GetCurrentStartOffset (),
@@ -612,11 +619,13 @@ Packet::FindFirstMatchingByteTag (Tag &tag) const
 void 
 Packet::AddPacketTag (const Tag &tag) const
 {
+  NS_LOG_FUNCTION (this << tag.GetInstanceTypeId ().GetName () << tag.GetSerializedSize ());
   m_packetTagList.Add (tag);
 }
 bool 
 Packet::RemovePacketTag (Tag &tag)
 {
+  NS_LOG_FUNCTION (this << tag.GetInstanceTypeId ().GetName () << tag.GetSerializedSize ());
   bool found = m_packetTagList.Remove (tag);
   return found;
 }
@@ -629,6 +638,7 @@ Packet::PeekPacketTag (Tag &tag) const
 void 
 Packet::RemoveAllPacketTags (void)
 {
+  NS_LOG_FUNCTION (this);
   m_packetTagList.RemoveAll ();
 }
 
@@ -1071,6 +1081,19 @@ PacketTest::RunTests (void)
     NS_TEST_ASSERT (copy.PeekPacketTag (c));
     p.RemoveAllPacketTags ();
     NS_TEST_ASSERT (!p.PeekPacketTag (b));
+  }
+
+  {
+    // bug 572                                                                  
+    Ptr<Packet> tmp = Create<Packet> (1000);
+    tmp->AddByteTag (ATestTag<20> ());
+    CHECK (tmp, 1, E (20, 0, 1000));
+    tmp->AddHeader (ATestHeader<2> ());
+    CHECK (tmp, 1, E (20, 2, 1002));
+    tmp->RemoveAtStart (1);
+    CHECK (tmp, 1, E (20, 1, 1001));
+    tmp->PeekData ();
+    CHECK (tmp, 1, E (20, 1, 1001));
   }
 
   return result;

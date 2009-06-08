@@ -207,6 +207,8 @@ and some type of global default value.
 In the ns-3 attribute system, these value definitions and accessor
 functions are moved into the TypeId class; e.g.:  
 @verbatim
+NS_OBJECT_ENSURE_REGISTERED (DropTailQueue);
+
 TypeId DropTailQueue::GetTypeId (void) 
 {
   static TypeId tid = TypeId ("ns3::DropTailQueue")
@@ -238,6 +240,11 @@ value are accessible in the attribute namespace, which is based on
 strings such as "MaxPackets" and TypeId strings.  In the next
 section, we will provide an example script that shows how users
 may manipulate these values.
+
+Note that initialization of the attribute relies on the macro
+NS_OBJECT_ENSURE_REGISTERED (DropTailQueue) being called; if you leave
+this out of your new class implementation, your attributes will not be 
+initialized corretly.
 
 @subsection Basic usage
 

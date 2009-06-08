@@ -45,7 +45,7 @@ public:
    * ("/Names") in the path.
    *
    * As well as specifying a name at the root of the "/Names" namespace, the 
-   * the <name> parameter can contain a path that fully qualifies the name to 
+   * name parameter can contain a path that fully qualifies the name to 
    * be added.  For example, if you previously have named an object "client"
    * in the root namespace as above, you could name an object "under" that
    * name by making a call like Names::Add ("/Names/client/eth0", obj).  This 
@@ -63,9 +63,9 @@ public:
    *
    * \param name The name of the object you want to associate; which may be 
    *             prepended with a path to that object.
-   * \param obj A smart pointer to the object itself.
+   * \param object A smart pointer to the object itself.
    */
-  static void Add (std::string name, Ptr<Object> obj);
+  static void Add (std::string name, Ptr<Object> object);
 
   /**
    * \brief An intermediate form of Names::Add allowing you to provide a path to
@@ -94,7 +94,7 @@ public:
    * \param path A path name describing a previously named object under which 
    *             you want this new name to be defined.
    * \param name The name of the object you want to associate.
-   * \param obj A smart pointer to the object itself.
+   * \param object A smart pointer to the object itself.
    *
    * \see Names::Add (Ptr<Object> context, std::string name, Ptr<Object> object);
    */
@@ -145,7 +145,7 @@ public:
    * \param context A smart pointer to an object that is used in place of the path
    *                under which you want this new name to be defined.
    * \param name The name of the object you want to associate.
-   * \param obj A smart pointer to the object itself.
+   * \param object A smart pointer to the object itself.
    */
   static void Add (Ptr<Object> context, std::string name, Ptr<Object> object);
 
@@ -162,7 +162,7 @@ public:
    * level ("/Names") in the path.
    *
    * As well as specifying a name at the root of the "/Names" namespace, the 
-   * the <name> parameter can contain a path that fully qualifies the name to 
+   * name parameter can contain a path that fully qualifies the name to 
    * be changed.  For example, if you previously have (re)named an object 
    * "server" in the root namespace as above, you could then rename an object 
    * "under" that name by making a call like Names::Rename ("/Names/server/csma", "eth0").

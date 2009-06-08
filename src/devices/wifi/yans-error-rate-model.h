@@ -100,11 +100,11 @@ private:
 #ifdef ENABLE_GSL
   double SymbolErrorProb16Cck (double e2) const; /// equation (18) in Pursley's paper
   double SymbolErrorProb256Cck (double e1) const; /// equation (17) in Pursley's paper
-#endif
-
+#else
 private:
-  static const double WLAN_SIR_PERFECT = 10.0; 
-  static const double WLAN_SIR_IMPOSSIBLE = 0.1; 
+  static const double WLAN_SIR_PERFECT;
+  static const double WLAN_SIR_IMPOSSIBLE;
+#endif
 };
 
 

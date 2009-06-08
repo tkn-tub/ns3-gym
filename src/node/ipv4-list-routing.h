@@ -24,10 +24,8 @@
 namespace ns3 {
 
 /**
- * \ingroup ipv4 
- */
-
-/**
+ * \ingroup ipv4-routing 
+ *
  * This class is a specialization of Ipv4RoutingProtocol that allows 
  * other instances of Ipv4RoutingProtocol to be inserted in a 
  * prioritized list.  Routing protocols in the list are consulted one
@@ -50,9 +48,16 @@ public:
    * Values may range between -32768 and +32767.  
    */
   virtual void AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol, int16_t priority) = 0;
-
+  /**
+   * \return number of routing protocols in the list
+   */
   virtual uint32_t GetNRoutingProtocols (void) const = 0;
-
+  /**
+   * \return pointer to routing protocol indexed by 
+   * \param index index of protocol to return
+   * \param priority output parameter, set to the priority of the protocol
+            being returned
+   */
   virtual Ptr<Ipv4RoutingProtocol> GetRoutingProtocol (uint32_t index, int16_t& priority) const = 0;
 };
 

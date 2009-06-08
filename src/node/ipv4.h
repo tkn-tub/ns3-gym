@@ -37,9 +37,7 @@ class Packet;
 /**
  * \ingroup node
  * \defgroup ipv4 Ipv4
- */
-
-/**
+ * 
  * \brief Access to the Ipv4 forwarding table, interfaces, and configuration
  *
  * This class defines the API to manipulate the following aspects of
@@ -84,7 +82,7 @@ public:
    * registered.  If you want to add multiple routing protocols, you must
    * add them to a Ipv4ListRoutingProtocol directly.
    * 
-   * \param routing smart pointer to Ipv4RoutingProtocol object
+   * \param routingProtocol smart pointer to Ipv4RoutingProtocol object
    */
   virtual void SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol) = 0;
 
@@ -132,7 +130,8 @@ public:
    *  has an Ipv4 address within the prefix specified by the input
    *  address and mask parameters
    *
-   * \param addr The IP address assigned to the interface of interest.
+   * \param address The IP address assigned to the interface of interest.
+   * \param mask The IP prefix to use in the mask
    * \returns The interface number of the Ipv4 interface with the given 
    *          address or -1 if not found.
    *
@@ -206,7 +205,7 @@ public:
   virtual bool IsUp (uint32_t interface) const = 0;
 
   /**
-   * \param i interface Interface number of Ipv4 interface
+   * \param interface Interface number of Ipv4 interface
    * 
    * Set the interface into the "up" state. In this state, it is
    * considered valid during Ipv4 forwarding.

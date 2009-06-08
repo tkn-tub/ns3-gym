@@ -164,7 +164,7 @@ main (int argc, char *argv[])
   Simulator::Stop (Seconds (10.0));
 
   PointToPointHelper::EnablePcapAll ("third");
-  YansWifiPhyHelper::EnablePcap ("third", apDevices.Get (0));
+  phy.EnablePcap ("third", apDevices.Get (0));
   CsmaHelper::EnablePcap ("third", csmaDevices.Get (0), true);
 
   Simulator::Run ();

@@ -31,10 +31,20 @@
 
 namespace ns3 {
 
-static void PcapSnifferEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
+static void PcapSniffTxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet, uint16_t channelFreqMhz,  
+                              uint32_t rate, bool isShortPreamble)
 {
-  writer->WritePacket (packet);
+  const double unusedValue = 0;
+  writer->WriteWifiMonitorPacket(packet, channelFreqMhz, rate, isShortPreamble, true, unusedValue, unusedValue); 
 }
+
+
+static void PcapSniffRxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet, uint16_t channelFreqMhz,  
+                              uint32_t rate, bool isShortPreamble, double signalDbm, double noiseDbm)
+{
+  writer->WriteWifiMonitorPacket(packet, channelFreqMhz, rate, isShortPreamble, false, signalDbm, noiseDbm); 
+}
+
 
 static void AsciiPhyTxEvent (std::ostream *os, std::string context, 
                              Ptr<const Packet> packet,
@@ -137,7 +147,9 @@ YansWifiChannelHelper::Create (void) const
 
 
 YansWifiPhyHelper::YansWifiPhyHelper ()
-  : m_channel (0)
+  : m_channel (0),
+    m_pcapFormat(PCAP_FORMAT_80211)
+    
 {
   m_phy.SetTypeId ("ns3::YansWifiPhy");
 }
@@ -202,6 +214,14 @@ YansWifiPhyHelper::Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const
   return phy;
 }
 
+
+void 
+YansWifiPhyHelper::SetPcapFormat (enum PcapFormat format)
+{
+  m_pcapFormat = format;
+}
+
+
 void 
 YansWifiPhyHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid)
 {
@@ -218,11 +238,28 @@ YansWifiPhyHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t d
   // with the locally-defined WifiPhyHelper::Create method.
   Ptr<PcapWriter> pcap = ::ns3::Create<PcapWriter> ();
   pcap->Open (oss.str ());
-  pcap->WriteWifiHeader ();
+
+  switch (m_pcapFormat) {
+  case PCAP_FORMAT_80211:
+    pcap->WriteWifiHeader ();  
+    break;
+  case PCAP_FORMAT_80211_RADIOTAP:
+    pcap->WriteWifiRadiotapHeader ();  
+    break;
+  case PCAP_FORMAT_80211_PRISM:
+    pcap->WriteWifiPrismHeader ();  
+    break;
+  }
+  
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid;
-  oss << "/$ns3::WifiNetDevice/Phy/PromiscSniffer";
-  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapSnifferEvent, pcap));
+  oss << "/$ns3::WifiNetDevice/Phy/PromiscSnifferTx";
+  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapSniffTxEvent, pcap));
+
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid;
+  oss << "/$ns3::WifiNetDevice/Phy/PromiscSnifferRx";
+  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapSniffRxEvent, pcap));  
 }
 
 void 

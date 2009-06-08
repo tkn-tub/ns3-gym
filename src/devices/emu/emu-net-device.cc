@@ -173,7 +173,9 @@ EmuNetDevice::EmuNetDevice ()
   m_sock (-1),
   m_readThread (0),
   m_ifIndex (std::numeric_limits<uint32_t>::max ()),  // absurdly large value
-  m_sll_ifindex (-1)
+  m_sll_ifindex (-1),
+  m_isBroadcast (true),
+  m_isMulticast (false)
 {
   NS_LOG_FUNCTION (this);
   Start (m_tStart);
@@ -293,7 +295,19 @@ EmuNetDevice::StartDevice (void)
     {
       NS_FATAL_ERROR ("EmuNetDevice::StartDevice(): " << m_deviceName << " is not in promiscuous mode");
     }
-
+  if ((ifr.ifr_flags & IFF_BROADCAST) != IFF_BROADCAST)
+    {
+      // We default m_isBroadcast to true but turn it off here if not
+      // supported, because in the common case, overlying IP code will 
+      // assert during configuration time if this is false, before this
+      // method has a chance to set it during runtime
+      m_isBroadcast = false;
+    }
+  if ((ifr.ifr_flags & IFF_MULTICAST) == IFF_MULTICAST)
+    {
+      // This one is OK to enable at runtime
+      m_isMulticast = true;
+    }
   //
   // Now spin up a read thread to read packets.
   //
@@ -918,7 +932,7 @@ EmuNetDevice::SetLinkChangeCallback (Callback<void> callback)
 bool 
 EmuNetDevice::IsBroadcast (void) const
 {
-  return true;
+  return m_isBroadcast;
 }
 
 Address
@@ -930,7 +944,7 @@ EmuNetDevice::GetBroadcast (void) const
 bool 
 EmuNetDevice::IsMulticast (void) const
 {
-  return false;
+  return m_isMulticast;
 }
 
   Address 

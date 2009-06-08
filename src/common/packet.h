@@ -166,8 +166,10 @@ private:
  * - The metadata describes the type of the headers and trailers which
  * were serialized in the byte buffer. The maintenance of metadata is
  * optional and disabled by default. To enable it, you must call
- * Packet::EnableMetadata and this will allow you to get non-empty
- * output from Packet::Print and Packet::Print.
+ * Packet::EnablePrinting and this will allow you to get non-empty
+ * output from Packet::Print and Packet::Print. If you wish to only enable
+ * checking of metadata, and do not need any printing capability, you can
+ * call Packet::EnableChecking: its runtime cost is lower than Packet::EnablePrinting.
  *
  * - The set of tags contain simulation-specific information which cannot
  * be stored in the packet byte buffer because the protocol headers or trailers
@@ -176,9 +178,14 @@ private:
  * while 'packet' tags are used to tag the packet itself. The main difference
  * between these two kinds of tags is what happens when packets are copied,
  * fragmented, and reassembled: 'byte' tags follow bytes while 'packet' tags
- * follow packets. A classic example of a 'byte' tag is a FlowIdTag 
- * which contains a flow id: the set of bytes tagged by this tag implicitely 
- * belong to the attached flow id.
+ * follow packets. Another important difference between these two kinds of tags
+ * is that byte tags cannot be removed and are expected to be written once,
+ * and read many times, while packet tags are expected to be written once,
+ * read many times, and removed exactly once. An example of a 'byte' 
+ * tag is a FlowIdTag which contains a flow id and is set by the application
+ * generating traffic. An example of a 'packet' tag is a cross-layer 
+ * qos class id set by an application and processed by a lower-level MAC 
+ * layer.
  *
  * Implementing a new type of Header or Trailer for a new protocol is 
  * pretty easy and is a matter of creating a subclass of the ns3::Header 
@@ -471,8 +478,6 @@ public:
    * Note that this method is const, that is, it does not
    * modify the state of this packet, which is fairly
    * un-intuitive.
-   *
-   * \sa AddTag
    */
   void AddPacketTag (const Tag &tag) const;
   /**
@@ -546,11 +551,12 @@ std::ostream& operator<< (std::ostream& os, const Packet &packet);
  *   - ns3::Packet::RemovePacketTag
  *
  * Non-dirty operations:
- *   - ns3::Packet::AddTag
- *   - ns3::Packet::RemoveAllTags
- *   - ns3::Packet::PeekTag
- *   - ns3::Packet::RemoveAllPacketTags
+ *   - ns3::Packet::AddPacketTag
  *   - ns3::Packet::PeekPacketTag
+ *   - ns3::Packet::RemoveAllPacketTags
+ *   - ns3::Packet::AddByteTag
+ *   - ns3::Packet::FindFirstMatchingByteTag
+ *   - ns3::Packet::RemoveAllByteTags
  *   - ns3::Packet::RemoveHeader
  *   - ns3::Packet::RemoveTrailer
  *   - ns3::Packet::CreateFragment

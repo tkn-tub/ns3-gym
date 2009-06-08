@@ -160,6 +160,7 @@ private:
   double   m_txPowerBaseDbm;
   double   m_txPowerEndDbm;
   uint32_t m_nTxPower;
+  uint16_t m_channelFreqMhz;
 
   Ptr<YansWifiChannel> m_channel;
   uint16_t m_channelId;

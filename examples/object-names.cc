@@ -151,7 +151,7 @@ main (int argc, char *argv[])
   // prefix is always required since the _Config_ system always expects to 
   // see a fully qualified path name 
   //
-  Config::Connect ("/Names/client/eth0/Rx", MakeCallback (&RxEvent));
+  Config::Connect ("/Names/client/eth0/MacRx", MakeCallback (&RxEvent));
 
   Simulator::Run ();
   Simulator::Destroy ();
