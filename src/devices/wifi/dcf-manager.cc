@@ -375,7 +375,7 @@ DcfManager::DoGrantAccess (void)
     {
       DcfState *state = *i;
       if (state->IsAccessRequested () && 
-          GetBackoffEndFor (state).GetTimeStep() <= Simulator::Now ().GetTimeStep ())
+          GetBackoffEndFor (state) <= Simulator::Now () )
         {
           /**
            * This is the first dcf we find with an expired backoff and which
@@ -452,12 +452,14 @@ DcfManager::GetAccessGrantStart (void) const
   Time busyAccessStart = m_lastBusyStart + m_lastBusyDuration + m_sifs;
   Time txAccessStart = m_lastTxStart + m_lastTxDuration + m_sifs;
   Time navAccessStart = m_lastNavStart + m_lastNavDuration + m_sifs;
+  Time ackTimeoutAccessStart = m_lastAckTimeoutEnd + m_sifs;
+  Time ctsTimeoutAccessStart = m_lastCtsTimeoutEnd + m_sifs;
   Time accessGrantedStart = MostRecent (rxAccessStart, 
                                         busyAccessStart,
                                         txAccessStart, 
                                         navAccessStart,
-                                        m_lastAckTimeoutEnd,
-                                        m_lastCtsTimeoutEnd
+                                        ackTimeoutAccessStart,
+                                        ctsTimeoutAccessStart
                                         );
   NS_LOG_INFO ("access grant start=" << accessGrantedStart <<
                ", rx access start=" << rxAccessStart <<
@@ -617,6 +619,7 @@ DcfManager::NotifyNavStartNow (Time duration)
 void
 DcfManager::NotifyAckTimeoutStartNow (Time duration)
 {
+  NS_ASSERT(m_lastAckTimeoutEnd < Simulator::Now ());
   m_lastAckTimeoutEnd = Simulator::Now () + duration;
 }
 void

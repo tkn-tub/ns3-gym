@@ -63,7 +63,7 @@ WifiMac::GetDefaultCtsAckTimeout (void)
   */
   Time ctsTimeout = GetDefaultSifs ();
   ctsTimeout += GetDefaultCtsAckDelay ();
-  ctsTimeout += GetDefaultMaxPropagationDelay () * Scalar (2);
+  ctsTimeout += MicroSeconds (GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2);
   ctsTimeout += GetDefaultSlot ();
   return ctsTimeout;
 }
