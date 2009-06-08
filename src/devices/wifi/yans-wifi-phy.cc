@@ -116,6 +116,11 @@ YansWifiPhy::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&YansWifiPhy::m_state),
                    MakePointerChecker<WifiPhyStateHelper> ())
+    .AddAttribute ("ChannelSwitchDelay",
+                   "Delay between two short frames transmitted on different frequencies",
+                   TimeValue (MicroSeconds (250)),
+                   MakeTimeAccessor (&YansWifiPhy::m_channelSwitchDelay), 
+                   MakeTimeChecker ())
     ;
   return tid;
 }
