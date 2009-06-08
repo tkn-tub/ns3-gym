@@ -292,7 +292,19 @@ Simulator::GetMaximumSimulationTime (void)
 void
 Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
 {
-  NS_FATAL_ERROR ("TODO");
+  if (PeekImpl () != 0)
+    {
+      NS_FATAL_ERROR ("It is not possible to set the implementation after calling any Simulator:: function. Call Simulator::SetImplementation earlier or after Simulator::Destroy.");
+    }
+  *PeekImpl () = impl;
+//
+// Note: we call LogSetTimePrinter _after_ creating the implementation
+// object because the act of creation can trigger calls to the logging 
+// framework which would call the TimePrinter function which would call 
+// Simulator::Now which would call Simulator::GetImpl, and, thus, get us 
+// in an infinite recursion until the stack explodes.
+//
+  LogSetTimePrinter (&TimePrinter);
 }
 Ptr<SimulatorImpl>
 Simulator::GetImplementation (void)
