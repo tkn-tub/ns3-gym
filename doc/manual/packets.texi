@@ -15,11 +15,14 @@ and, concatenation which are important, especially in wireless systems.
 emulated applications
 @end itemize
 
-@emph{ns} Packet objects contain a buffer of bytes: protocol headers and
-trailers are serialized in this buffer of bytes using user-provided
-serialization and deserialization routines. The content of this byte
-buffer is expected to match bit-for-bit the content of a real packet on
-a real network implementing the protocol of interest.
+Each network packet contains a byte buffer, a set of byte tags, a set of
+packet tags, and metadata.
+
+The byte buffer stores the serialized content of the headers and trailers 
+added to a packet. The serialized representation of these headers is expected
+to match that of real network packets bit for bit (although nothing
+forces you to do this) which means that the content of a packet buffer
+is expected to be that of a real packet.
 
 Fragmentation and defragmentation are quite natural to implement within
 this context: since we have a buffer of real bytes, we can split it in
@@ -29,19 +32,37 @@ Linux-style skb or BSD-style mbuf to integrate real-world kernel code in
 the simulator. We also expect that performing a real-time plug of the
 simulator to a real-world network will be easy.
 
-Because we understand that simulation developers often wish to store in
-packet objects data which is not found in the real packets (such as
-timestamps or any kind of similar in-band data), the @emph{ns} Packet class
-can also store extra per-packet "Tags" which are 16 bytes blobs of data.
-Any Packet can store any number of unique Tags, each of which is
-uniquely identified by its C++ type. These tags make it easy to attach
-per-model data to a packet without having to patch the main Packet
-class or Packet facilities.
+One problem  that this design choice raises is that it is difficult to
+pretty-print the packet headers without context.  The packet metadata 
+describes the type of the headers and trailers which
+were serialized in the byte buffer. The maintenance of metadata is
+optional and disabled by default. To enable it, you must call
+Packet::EnableMetadata() and this will allow you to get non-empty
+output from Packet::Print and Packet::Print.
 
+Also, developers often want to store data in packet objects that is not found
+in the real packets (such as timestamps or flow-ids).  The Packet class
+deals with this requirement by storing a set of tags (class Tag).  
+We have found two classes of use cases for these tags, which leads to
+two different types of tags.  So-called
+'byte' tags are used to tag a subset of the bytes in the packet byte buffer
+while 'packet' tags are used to tag the packet itself. The main difference
+between these two kinds of tags is what happens when packets are copied,
+fragmented, and reassembled: 'byte' tags follow bytes while 'packet' tags
+follow packets. Another important difference between these two kinds of tags
+is that byte tags cannot be removed and are expected to be written once,
+and read many times, while packet tags are expected to be written once,
+read many times, and removed exactly once. An example of a 'byte' 
+tag is a FlowIdTag which contains a flow id and is set by the application
+generating traffic. An example of a 'packet' tag is a cross-layer 
+QoS class id set by an application and processed by a lower-level MAC 
+layer.
+ 
 Memory management of Packet objects is entirely automatic and extremely
 efficient: memory for the application-level payload can be modelized by
 a virtual buffer of zero-filled bytes for which memory is never allocated
-unless explicitely requested by the user or unless the packet is fragmented.
+unless explicitly requested by the user or unless the packet is fragmented
+or serialized out to a real network device.
 Furthermore, copying, adding, and, removing headers or trailers to a packet
 has been optimized to be virtually free through a technique known as
 Copy On Write.
@@ -54,32 +75,12 @@ among the different approaches.  In particular, there is a
 tension between ease-of-use, performance, and safe interface
 design. 
 
-There are a few requirements on this object design:
-@itemize @bullet 
-@item Creation, management, and deletion of this object
-should be as simple as possible, while avoiding the
-chance for memory leaks and/or heap corruption; 
-@item Packets should support serialization and deserialization
-so that network emulation is supported;
-@item Packets should support fragmentation and concatenation
-(multiple packets in a data link frame), especially for wireless
-support;
-@item It should be natural for packets to carry actual application
-data, or if there is only an emulated application and there is
-no need to carry dummy bytes, smaller packets could be used with
-just the headers and a record of the payload size, but not actual
-application bytes, conveyed in the simulated packet.
-@item Packets should facilitate BSD-like operations on mbufs, for
-support of ported operating system stacks.
-@item Additional side-information should be supported, such as
-a tag for cross-layer information.
-@end itemize
-
 @section Packet design overview
 
 Unlike @emph{ns-2}, in which Packet objects contain a buffer of C++
 structures corresponding to protocol headers, each network packet in
-@emph{ns-3} contains a byte Buffer and a list of Tags:
+@emph{ns-3} contains a byte Buffer, a list of byte Tags, a list of
+packet Tags, and a PacketMetadata object:
 @itemize @bullet
 @item The byte buffer stores the serialized content of the chunks 
 added to a packet. The serialized representation of these chunks is 
@@ -88,16 +89,12 @@ expected to match that of real network packets bit for bit
 of a packet buffer is expected to be that of a real packet.
 Packets can also be created with an arbitrary zero-filled payload
 for which no real memory is allocated.
-@item The list of tags stores an arbitrarily large set of arbitrary 
+@item Each list of tags stores an arbitrarily large set of arbitrary 
 user-provided data structures in the packet.  Each Tag is uniquely
 identified by its type; only one instance of each 
 type of data structure is allowed in a list of tags. These tags typically 
 contain per-packet cross-layer information or flow identifiers (i.e.,
-things that you wouldn't find in the bits on the wire). Each tag 
-stored in the tag list can be at most 16 bytes.
-Trying to attach bigger data structures will trigger 
-crashes at runtime.  The 16 byte limit is a modifiable compilation
-constant.
+things that you wouldn't find in the bits on the wire). 
 @end itemize
 
 @float Figure,fig:packets
@@ -110,17 +107,29 @@ implementation; more detail on the byte Buffer implementation
 is provided later in Figure @ref{fig:buffer}.
 In \nsthree, the Packet byte buffer is analogous to a Linux skbuff
 or BSD mbuf; it is a serialized representation of the actual
-data in the packet.  The tag list is a container for extra
+data in the packet.  The tag lists are containers for extra
 items useful for simulation convenience; if a Packet is converted
 to an emulated packet and put over an actual network, the tags
 are stripped off and the byte buffer is copied directly
 into a real packet.
 
-The Packet class has value semantics:  it can be freely copied around,
-allocated on the stack, and passed to functions as arguments.  Whenever
-an instance is copied, the full underlying data is not copied; it
-has ``copy-on-write'' (COW) semantics.  Packet instances can be passed
-by value to function arguments without any performance hit.
+Packets are reference counted objects.  They are handled with smart
+pointer (Ptr) objects like many of the objects in the ns-3 system.
+One small difference you will see is that class Packet does not
+inherit from class Object or class RefCountBase, and implements the
+Ref() and Unref() methods directly.  This was designed to avoid the overhead
+of a vtable in class Packet.
+
+The Packet class is designed to be copied cheaply; the overall design
+is based on Copy on Write (COW).  When there are multiple references
+to a packet object, and there is an operation on one of them, only 
+so-called "dirty" operations will trigger a deep copy of the packet:
+@itemize @bullet
+@item @code{ns3::Packet::AddHeader()}
+@item @code{ns3::Packet::AddTrailer()}
+@item @code{both versions of ns3::Packet::AddAtEnd()}
+@item @code{Packet::RemovePacketTag()}
+@end itemize
 
 The fundamental classes for adding to and removing from the byte
 buffer are @code{class Header} and @code{class Trailer}.  
@@ -149,78 +158,203 @@ to define how the Header object prints itself onto an output stream.
 
 Similarly, user-defined Tags can be appended to the packet. 
 Unlike Headers, Tags are not serialized into a contiguous buffer
-but are stored in an array.  By default, Tags are limited to 16 bytes in
-size.  Tags can be flexibly defined to be any type, but there
+but are stored in lists.  Tags can be flexibly defined to be any 
+type, but there
 can only be one instance of any particular object type in
 the Tags buffer at any time.  
 
-@section Packet interface
+@section Using the packet interface
 
-The public member functions of a Packet object are as follows:
+This section describes how to create and use the @code{ns3::Packet} object.
 
-@subsection Constructors
+@subsection Creating a new packet
+
+The following command will create a new packet with a new unique
+Id.
+
 @verbatim
-    /**
-     * Create an empty packet with a new uid (as returned
-     * by getUid).
-     */
-    Packet ();
-    /**
-     * Create a packet with a zero-filled payload.
-     * The memory necessary for the payload is not allocated:
-     * it will be allocated at any later point if you attempt
-     * to fragment this packet or to access the zero-filled
-     * bytes. The packet is allocated with a new uid (as
-     * returned by getUid).
-     *
-     * \param size the size of the zero-filled payload
-     */
-    Packet (uint32_t size);
+  Ptr<Packet> pkt = Create<Packet> ();
 @end verbatim
 
-@subsection Adding and removing Buffer data
-The below code is reproduced for Header class only; similar functions
-exist for Trailers.
+What is the Uid (unique Id)?  It is an internal id that the
+system uses to identify packets.  It can be fetched via the following
+method:
 @verbatim
-    /**
-     * Add header to this packet. This method invokes the
-     * ns3::Header::serializeTo method to request the header to serialize
-     * itself in the packet buffer.
-     *
-     * \param header a reference to the header to add to this packet.
-     */
-    void Add (Header const &header);
-    /**
-     * Deserialize header from this packet. This method invokes the
-     * ns3::Header::deserializeFrom method to request the header to deserialize
-     * itself from the packet buffer. This method does not remove
-     * the data from the buffer. It merely reads it.
-     *
-     * \param header a reference to the header to deserialize from the buffer
-     */
-    void Peek (Header &header);
-    /**
-     * Remove a deserialized header from the internal buffer.
-     * This method removes the bytes read by Packet::peek from
-     * the packet buffer.
-     *
-     * \param header a reference to the header to remove from the internal buffer.
-     */
-    void Remove (Header const &header);
-    /**
-     * Add trailer to this packet. This method invokes the
-     * ns3::Trailer::serializeTo method to request the trailer to serialize
-     * itself in the packet buffer.
-     *
-     * \param trailer a reference to the trailer to add to this packet.
-     */
+  uint32_t uid = pkt->GetUid ();
+@end verbatim
+
+But please note the following.  This uid is an internal uid and cannot 
+be counted on to provide an accurate counter of how many 
+"simulated packets" of a particular protocol are in the system. 
+It is not trivial to make this uid into such a counter, because of 
+questions such as what should the uid be when the packet is 
+sent over broadcast media, or when fragmentation occurs. If a user 
+wants to trace actual packet counts, he or she should look at 
+e.g. the IP ID field or transport sequence numbers, or other packet 
+or frame counters at other protocol layers.
+
+We mentioned above that it is possible to create packets with zero-filled
+payloads that do not actually require a memory allocation (i.e.,
+the packet may behave, when delays such as serialization or transmission
+delays are computed, to have a certain number of payload bytes, but
+the bytes will only be allocated on-demand when needed).  The command to do 
+this is, when the packet
+is created:
+@verbatim
+  Ptr<Packet> pkt = Create<Packet> (N);
+@end verbatim
+where N is a positive integer.  
+
+The packet now has a size of N bytes, which can be verified by the GetSize()
+method:
+@verbatim
+  /**
+   * \returns the size in bytes of the packet (including the zero-filled
+   *          initial payload)
+   */
+  uint32_t GetSize (void) const;
+@end verbatim
+
+You can also initialize a packet with a character buffer.  The input
+data is copied and the input buffer is untouched.  The constructor
+applied is:
+@verbatim
+  Packet (uint8_t const *buffer, uint32_t size);
+@end verbatim
+Here is an example:
+@verbatim
+  Ptr<Packet> pkt1 = Create<Packet> (reinterpret_cast<const uint8_t*> ("hello"), 5);
+@end verbatim
+
+Packets are freed when there are no more references to them, as with
+all ns-3 objects referenced by the Ptr class.
+
+@subsection Adding and removing Buffer data
+
+After the initial packet creation (which may possibly create some 
+fake initial bytes of payload), all subsequent buffer data is added by adding
+objects of class Header or class Trailer.  Note that, even if you are 
+in the application layer, handling packets, and want to write application
+data, you write it as an ns3::Header or ns3::Trailer.  If you add a Header,
+it is prepended to the packet, and if you add a Trailer, it is added to
+the end of the packet.  If you have no data in the packet, then it
+makes no difference whether you add a Header or Trailer.  Since the
+APIs and classes for header and trailer are pretty much identical, we'll
+just look at class Header here.
+
+The first step is to create a new header class.  All new Header classes
+must inherit from class Header, and implement the following methods:
+@itemize @bullet
+@item @code{Serialize ()}
+@item @code{Deserialize ()}
+@item @code{GetSerializedSize ()}
+@item @code{Print ()}
+@end itemize 
+
+To see a simple example of how these are done, look at the UdpHeader
+class headers src/internet-stack/udp-header.cc.  There are many other
+examples within the source code. 
+
+Once you have a header (or you have a preexisting header), the following
+Packet API can be used to add or remove such headers.
+
+@verbatim
+  /**
+   * Add header to this packet. This method invokes the
+   * Header::GetSerializedSize and Header::Serialize
+   * methods to reserve space in the buffer and request the 
+   * header to serialize itself in the packet buffer.
+   *
+   * \param header a reference to the header to add to this packet.
+   */
+  void AddHeader (const Header & header);
+  /**
+   * Deserialize and remove the header from the internal buffer.
+   * This method invokes Header::Deserialize.
+   *
+   * \param header a reference to the header to remove from the internal buffer.
+   * \returns the number of bytes removed from the packet.
+   */
+  uint32_t RemoveHeader (Header &header);
+  /**
+   * Deserialize but does _not_ remove the header from the internal buffer.
+   * This method invokes Header::Deserialize.
+   *
+   * \param header a reference to the header to read from the internal buffer.
+   * \returns the number of bytes read from the packet.
+   */
+  uint32_t PeekHeader (Header &header) const;
+@end verbatim
+
+For instance, here are the typical operations to add and remove a UDP header.
+
+@verbatim
+ // add header
+ Ptr<Packet> packet = Create<Packet> ();
+ UdpHeader udpHeader;
+ // Fill out udpHeader fields appropriately
+ packet->AddHeader (udpHeader);
+ ...
+ // remove header
+ UdpHeader udpHeader;
+ packet->RemoveHeader (udpHeader); 
+ // Read udpHeader fields as needed
 @end verbatim
 
 @subsection Adding and removing Tags
 
-@strong{Note:  This part of ns-3 will change for ns-3.5; see this mail message:
-http://mailman.isi.edu/pipermail/ns-developers/2009-March/005557.html}
+There is a single base class of Tag that all packet tags must derive from.
+They are used in two different tag lists in the packet; the lists have
+different semantics and different expected use cases.
 
+As the names imply, ByteTags follow bytes and PacketTags follow packets.
+What this means is that when operations are done on packets, such as
+fragmentation, concatenation, and appending or removing headers, the
+byte tags keep track of which packet bytes they cover.  For instance,
+if a user creates a TCP segment, and applies a ByteTag to the segment,
+each byte of the TCP segment will be tagged.  However, if the next
+layer down inserts an IPv4 header, this ByteTag will not cover those
+bytes.  The converse is true for the PacketTag; it covers a packet
+despite the operations on it.
+
+PacketTags are limited in size to 20 bytes.  This is a modifiable 
+compile-time constant in @code{src/common/packet-tag-list.h}.  ByteTags
+have no such restriction.
+
+Each tag type must subclass @code{ns3::Tag}, and only one instance of
+each Tag type may be in each tag list.  Here are a few differences 
+in the behavior of packet tags and byte tags.
+@itemize @bullet
+@item @strong{Fragmentation:}  As mentioned above, when a packet is fragmented,
+each packet fragment (which is a new packet) will get a copy of all packet
+tags, and byte tags will follow the new packet boundaries (i.e. if the
+fragmented packets fragment across a buffer region covered by the byte
+tag, both packet fragments will still have the appropriate buffer regions
+byte tagged).
+@item @strong{Concatenation:}  When packets are combined, two different
+buffer regions will become one.  For byte tags, the byte tags simply
+follow the respective buffer regions.  For packet tags, only the
+tags on the first packet survive the merge.
+@item @strong{Finding and Printing:}  Both classes allow you to iterate
+over all of the tags and print them.
+@item @strong{Removal:}  Users can add and remove the same packet tag
+multiple times on a single packet (AddPacketTag () and RemovePacketTag ()).  
+The packet However, once a byte tag is added,
+it can only be removed by stripping all byte tags from the packet.  
+Removing one of possibly multiple byte tags is not supported by the 
+current API.  
+@end itemize  
+
+As of ns-3.5, Tags are not serialized and deserialized to a buffer when
+@code{Packet::Serialize ()} and @code{Packet::Deserialize ()} are called; 
+this is an open bug.
+
+If a user wants to take an existing packet object and reuse it as a new
+packet, he or she should remove all byte tags and packet tags before doing so.
+An example is the UdpEchoServer class, which takes the received packet
+and "turns it around" to send back to the echo client. 
+
+The Packet API for byte tags is given below.
 @verbatim
   /**
    * \param tag the new tag to add to this packet
@@ -228,7 +362,7 @@ http://mailman.isi.edu/pipermail/ns-developers/2009-March/005557.html}
    * Tag each byte included in this packet with the
    * new tag.
    *
-   * Note that adding a tag is a const operation which is pretty
+   * Note that adding a tag is a const operation which is pretty 
    * un-intuitive. The rationale is that the content and behavior of
    * a packet is _not_ changed when a tag is added to a packet: any
    * code which was not aware of the new tag is going to work just
@@ -239,216 +373,159 @@ http://mailman.isi.edu/pipermail/ns-developers/2009-March/005557.html}
    * totally evil to allow a trace sink to modify the content of a
    * packet).
    */
-  void AddTag (const Tag &tag) const;
+  void AddByteTag (const Tag &tag) const;
   /**
-   * \returns an iterator over the set of tags included in this packet.
+   * \returns an iterator over the set of byte tags included in this packet.
    */
-  TagIterator GetTagIterator (void) const;
+  ByteTagIterator GetByteTagIterator (void) const;
   /**
    * \param tag the tag to search in this packet
    * \returns true if the requested tag type was found, false otherwise.
    *
-   * If the requested tag type is found, it is copied in the user's
+   * If the requested tag type is found, it is copied in the user's 
    * provided tag instance.
    */
-  bool FindFirstMatchingTag (Tag &tag) const;
-
+  bool FindFirstMatchingByteTag (Tag &tag) const;
+  
   /**
    * Remove all the tags stored in this packet.
    */
-  void RemoveAllTags (void);
+  void RemoveAllByteTags (void);
+
+  /**
+   * \param os output stream in which the data should be printed.
+   *
+   * Iterate over the tags present in this packet, and
+   * invoke the Print method of each tag stored in the packet.
+   */
+  void PrintByteTags (std::ostream &os) const;
 @end verbatim
 
-@subsection Fragmentation
+The Packet API for packet tags is given below.
 @verbatim
-    /**
-     * Create a new packet which contains a fragment of the original
-     * packet. The returned packet shares the same uid as this packet.
-     *
-     * \param start offset from start of packet to start of fragment to create
-     * \param length length of fragment to create
-     * \returns a fragment of the original packet
-     */
-    Packet CreateFragment (uint32_t start, uint32_t length) const;
-
-        /**
-         * Concatenate the input packet at the end of the current
-         * packet. This does not alter the uid of either packet.
-         * 
-         * \param packet packet to concatenate
-         */
-    void addAtEnd (Packet packet);
-
-        /oncatenate the input packet at the end of the current
-     * packet. This does not alter the uid of either packet.
-     *
-     * \param packet packet to concatenate
-     */
-    void AddAtEnd (Packet packet);
-    /**
-     * Concatenate the fragment of the input packet identified
-     * by the offset and size parameters at the end of the current
-     * packet. This does not alter the uid of either packet.
-     *
-     * \param packet to concatenate
-     * \param offset offset of fragment to copy from the start of the input packet
-     * \param size size of fragment of input packet to copy.
-     */
-    void AddAtEnd (Packet packet, uint32_t offset, uint32_t size);
-    /**
-     * Remove size bytes from the end of the current packet
-     * It is safe to remove more bytes that what is present in
-     * the packet.
-     *
-     * \param size number of bytes from remove
-     */
-    void RemoveAtEnd (uint32_t size);
-    /**
-     * Remove size bytes from the start of the current packet.
-     * It is safe to remove more bytes that what is present in
-     * the packet.
-     *
-     * \param size number of bytes from remove
-     */
-    void RemoveAtStart (uint32_t size);
+  /**
+   * \param tag the tag to store in this packet
+   *
+   * Add a tag to this packet. This method calls the
+   * Tag::GetSerializedSize and, then, Tag::Serialize.
+   *
+   * Note that this method is const, that is, it does not
+   * modify the state of this packet, which is fairly
+   * un-intuitive.
+   */
+  void AddPacketTag (const Tag &tag) const;
+  /**
+   * \param tag the tag to remove from this packet
+   * \returns true if the requested tag is found, false
+   *          otherwise.
+   *
+   * Remove a tag from this packet. This method calls
+   * Tag::Deserialize if the tag is found.
+   */
+  bool RemovePacketTag (Tag &tag);
+  /**
+   * \param tag the tag to search in this packet
+   * \returns true if the requested tag is found, false
+   *          otherwise.
+   *
+   * Search a matching tag and call Tag::Deserialize if it is found.
+   */
+  bool PeekPacketTag (Tag &tag) const;
+  /**
+   * Remove all packet tags.
+   */
+  void RemoveAllPacketTags (void);
+  
+  /**
+   * \param os the stream in which we want to print data.
+   *
+   * Print the list of 'packet' tags.
+   *
+   * \sa Packet::AddPacketTag, Packet::RemovePacketTag, Packet::PeekPacketTag,
+   *  Packet::RemoveAllPacketTags
+   */
+  void PrintPacketTags (std::ostream &os) const;
+  
+  /**
+   * \returns an object which can be used to iterate over the list of
+   *  packet tags.
+   */
+  PacketTagIterator GetPacketTagIterator (void) const;
 @end verbatim
 
-@subsection Miscellaneous
+Here is a simple example illustrating the use of tags from the
+code in @code{src/internet-stack/udp-socket-impl.cc}:
 @verbatim
-    /**
-     * \returns the size in bytes of the packet (including the zero-filled
-     *          initial payload)
-     */
-    uint32_t GetSize (void) const;
-    /**
-     * If you try to change the content of the buffer
-     * returned by this method, you will die.
-     *
-     * \returns a pointer to the internal buffer of the packet.
-     */
-    uint8_t const *PeekData (void) const;
-    /**
-     * A packet is allocated a new uid when it is created
-     * empty or with zero-filled payload.
-     *
-     * \returns an integer identifier which uniquely
-     *          identifies this packet.
-     */
-    uint32_t GetUid (void) const;
+  Ptr<Packet> p;  // pointer to a pre-existing packet
+  SocketIpTtlTag tag
+  tag.SetTtl (m_ipMulticastTtl); // Convey the TTL from Udp layer to IP layer
+  p->AddPacketTag (tag);
 @end verbatim
 
-@section Using Headers
-@emph{walk through an example of adding a UDP header}
-
-@section Using Tags
-@emph{walk through an example of adding a flow ID}
-
-@section Using Fragmentation
-@emph{walk through an example of link-layer fragmentation/reassembly}
-
-@section Sample program
-The below sample program (from @code{ns3/samples/main-packet.cc}) illustrates
-some use of the Packet, Header, and Tag classes.
-
+This tag is read at the IP layer, then stripped (@code{src/internet-stack/ipv4-l3-protocol.cc}:
 @verbatim
-/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:nil -*- */
-#include "ns3/packet.h"
-#include "ns3/header.h"
-#include <iostream>
-
-using namespace ns3;
-
-/* A sample Header implementation
- */
-class MyHeader : public Header {
-public:
-    MyHeader ();
-    virtual ~MyHeader ();
-
-    void SetData (uint16_t data);
-    uint16_t GetData (void) const;
-private:
-    virtual void PrintTo (std::ostream &os) const;
-    virtual void SerializeTo (Buffer::Iterator start) const;
-    virtual void DeserializeFrom (Buffer::Iterator start);
-    virtual uint32_t GetSerializedSize (void) const;
-
-    uint16_t m_data;
-};
-
-MyHeader::MyHeader ()
-{}
-MyHeader::~MyHeader ()
-{}
-void 
-MyHeader::PrintTo (std::ostream &os) const
-{
-    os << "MyHeader data=" << m_data << std::endl;
-}
-uint32_t
-MyHeader::GetSerializedSize (void) const
-{
-    return 2;
-}
-void 
-MyHeader::SerializeTo (Buffer::Iterator start) const
-{
-    // serialize in head of buffer
-    start.WriteHtonU16 (m_data);
-}
-void 
-MyHeader::DeserializeFrom (Buffer::Iterator start)
-{
-    // deserialize from head of buffer
-    m_data = start.ReadNtohU16 ();
-}
-
-void 
-MyHeader::SetData (uint16_t data)
-{
-    m_data = data;
-}
-uint16_t 
-MyHeader::GetData (void) const
-{
-    return m_data;
-}
-
-/* A sample Tag implementation
- */
-struct MyTag {
-    uint16_t m_streamId;
-};
-
-static TagRegistration<struct MyTag> g_MyTagRegistration ("ns3::MyTag", 0);
-
-
-static void
-Receive (Packet p)
-{
-    MyHeader my;
-    p.Peek (my);
-    p.Remove (my);
-    std::cout << "received data=" << my.GetData () << std::endl;
-    struct MyTag myTag;
-    p.PeekTag (myTag);
-}
-
-
-int main (int argc, char *argv[])
-{
-    Packet p;
-    MyHeader my;
-    my.SetData (2);
-    std::cout << "send data=2" << std::endl;
-    p.Add (my);
-    struct MyTag myTag;
-    myTag.m_streamId = 5;
-    p.AddTag (myTag);
-    Receive (p);
-    return 0;
-}
+  uint8_t ttl = m_defaultTtl;
+  SocketIpTtlTag tag;
+  bool found = packet->RemovePacketTag (tag);
+  if (found)
+    {
+      ttl = tag.GetTtl ();
+    }
 @end verbatim
+
+@subsection Fragmentation and concatenation
+
+Packets may be fragmented or merged together.  For example, to 
+fragment a packet @code{p} of 90 bytes into two packets, one containing
+the first 10 bytes and the other containing the remaining 80, one may call the
+following code:
+@verbatim
+  Ptr<Packet> frag0 = p->CreateFragment (0, 10);
+  Ptr<Packet> frag1 = p->CreateFragment (10, 90);
+@end verbatim
+
+As discussed above, the packet tags from @code{p} will follow to both
+packet fragments, and the byte tags will follow the byte ranges as needed.
+
+Now, to put them back together:
+@verbatim
+  frag0->AddAtEnd (frag1);
+@end verbatim
+Now frag0 should be equivalent to the original packet @code{p}.  If,
+however, there were operations on the fragments before being reassembled
+(such as tag operations or header operations), the new packet will not
+be the same.
+
+@subsection Enabling metadata
+
+We mentioned above that packets, being on-the-wire representations of
+byte buffers, present a problem to print out in a structured way
+unless the printing function has access to the context of the header.
+For instance, consider a tcpdump-like printer that wants to pretty-print
+the contents of a packet.
+
+To enable this usage, packets may have metadata enabled (disabled by
+default for performance reasons).  This class is used by the Packet
+class to record every operation performed on the packet's buffer, and
+provides an implementation of @code{Packet::Print ()} method that uses
+the metadata to analyze the content of the packet's buffer.
+
+The metadata is also used to perform extensive sanity checks at runtime 
+when performing operations on a Packet. For example, this metadata is 
+used to verify that when you remove a header from a packet, this 
+same header was actually present at the front of the packet. These
+errors will be detected and will abort the program.
+
+To enable this operation, users will typically insert one or both
+of these statements at the beginning of their programs:
+@verbatim
+  Packet::EnablePrinting ();
+  Packet::EnableChecking ();
+@end verbatim
+
+@section Sample programs
+
+See @code{samples/main-packet.cc} and @code{samples/main-packet-tag.cc}.
 
 @section Implementation details
 
@@ -457,13 +534,19 @@ int main (int argc, char *argv[])
 A Packet object's interface provides access to some private
 data:
 @verbatim
-    Buffer m_buffer;
-    Tags m_tags;
-    uint32_t m_uid; 
-    static uint32_t m_global_uid;
+  Buffer m_buffer;
+  ByteTagList m_byteTagList;
+  PacketTagList m_packetTagList;
+  PacketMetadata m_metadata;
+  mutable uint32_t m_refCount;
+  static uint32_t m_globalUid;
 @end verbatim
-Each Packet has a Buffer and a Tags object, and a 32-bit unique ID (m\_uid).
-A static member variable keeps track of the UIDs allocated.  Note
+Each Packet has a Buffer and two Tags lists, a PacketMetadata object,
+and a ref count.
+A static member variable keeps track of the UIDs allocated.  
+The actual uid of the packet is stored in the PacketMetadata.
+
+Note
 that real network packets do not have a UID; the UID is therefore an
 instance of data that normally would be stored as a Tag in the packet.
 However, it was felt that a UID is a special case that is so often
@@ -525,6 +608,9 @@ reference count is not one, they first create a copy of the BufferData and
 then complete their state-changing operation.
 
 @subsection Tags implementation
+
+(XXX revise me)
+
 Tags are implemented by a single pointer which points to the start of a 
 linked list ofTagData data structures. Each TagData structure points 
 to the next TagData in the list (its next pointer contains zero to 
@@ -562,11 +648,7 @@ struct MyTag {
 };
 @end verbatim
 
-@emph{add description of TagRegistration for printing}
-
 @subsection Memory management
-
-@emph{Describe free list.}
 
 @emph{Describe dataless vs. data-full packets.}
 
@@ -590,21 +672,26 @@ a true copy.
 
 Dirty operations:
 @itemize @bullet
-@item Packet::RemoveTag()
-@item Packet::Add()
-@item both versions of ns3::Packet::AddAtEnd()
+@item ns3::Packet::AddHeader
+@item ns3::Packet::AddTrailer
+@item both versions of ns3::Packet::AddAtEnd
+@item  ns3::Packet::RemovePacketTag
 @end itemize
 
 Non-dirty operations:
 @itemize @bullet
-@item Packet::AddTag()
-@item Packet::RemoveAllTags()
-@item Packet::PeekTag()
-@item Packet::Peek()
-@item Packet::Remove()
-@item Packet::CreateFragment()
-@item Packet::RemoveAtStart()
-@item Packet::RemoveAtEnd()
+@item ns3::Packet::AddPacketTag
+@item ns3::Packet::PeekPacketTag
+@item ns3::Packet::RemoveAllPacketTags
+@item ns3::Packet::AddByteTag
+@item ns3::Packet::FindFirstMatchingByteTag
+@item ns3::Packet::RemoveAllByteTags
+@item ns3::Packet::RemoveHeader
+@item ns3::Packet::RemoveTrailer
+@item ns3::Packet::CreateFragment
+@item ns3::Packet::RemoveAtStart
+@item ns3::Packet::RemoveAtEnd
+@item ns3::Packet::CopyData
 @end itemize
 
 Dirty operations will always be slower than non-dirty operations,
