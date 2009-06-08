@@ -804,7 +804,7 @@ MacLow::DoNavResetNow (Time duration)
       (*i)->NavReset (duration);
     }
   m_lastNavStart = Simulator::Now ();
-  m_lastNavDuration = duration;
+  m_lastNavStart = duration;
 }
 bool
 MacLow::DoNavStartNow (Time duration)
