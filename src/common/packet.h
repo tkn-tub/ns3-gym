@@ -166,8 +166,10 @@ private:
  * - The metadata describes the type of the headers and trailers which
  * were serialized in the byte buffer. The maintenance of metadata is
  * optional and disabled by default. To enable it, you must call
- * Packet::EnableMetadata and this will allow you to get non-empty
- * output from Packet::Print and Packet::Print.
+ * Packet::EnablePrinting and this will allow you to get non-empty
+ * output from Packet::Print and Packet::Print. If you wish to only enable
+ * checking of metadata, and do not need any printing capability, you can
+ * call Packet::EnableChecking: its runtime cost is lower than Packet::EnablePrinting.
  *
  * - The set of tags contain simulation-specific information which cannot
  * be stored in the packet byte buffer because the protocol headers or trailers
