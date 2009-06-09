@@ -56,11 +56,11 @@
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
 #include "ns3/global-route-manager.h"
-#include "ns3/tap-net-device.h"
+#include "ns3/virtual-net-device.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("TapNetDeviceExample");
+NS_LOG_COMPONENT_DEFINE ("VirtualNetDeviceExample");
 
 class Tunnel
 {
@@ -71,9 +71,9 @@ class Tunnel
   Ipv4Address m_n0Address;
   Ipv4Address m_n1Address;
   UniformVariable m_rng;
-  Ptr<TapNetDevice> m_n0Tap;
-  Ptr<TapNetDevice> m_n1Tap;
-  Ptr<TapNetDevice> m_n3Tap;
+  Ptr<VirtualNetDevice> m_n0Tap;
+  Ptr<VirtualNetDevice> m_n1Tap;
+  Ptr<VirtualNetDevice> m_n3Tap;
   
   
   bool
@@ -135,7 +135,7 @@ public:
     m_n1Socket->SetRecvCallback (MakeCallback (&Tunnel::N1SocketRecv, this));
     
     // n0 tap device
-    m_n0Tap = CreateObject<TapNetDevice> ();
+    m_n0Tap = CreateObject<VirtualNetDevice> ();
     m_n0Tap->SetSendFromCallback (MakeCallback (&Tunnel::N0N1VirtualSend, this));
     n0->AddDevice (m_n0Tap);
     Ptr<Ipv4> ipv4 = n0->GetObject<Ipv4> ();
@@ -144,7 +144,7 @@ public:
     ipv4->SetUp (i);
     
     // n1 tap device
-    m_n1Tap = CreateObject<TapNetDevice> ();
+    m_n1Tap = CreateObject<VirtualNetDevice> ();
     m_n1Tap->SetSendFromCallback (MakeCallback (&Tunnel::N0N1VirtualSend, this));
     n1->AddDevice (m_n1Tap);
     ipv4 = n1->GetObject<Ipv4> ();
@@ -153,7 +153,7 @@ public:
     ipv4->SetUp (i);
 
     // n3 tap device
-    m_n3Tap = CreateObject<TapNetDevice> ();
+    m_n3Tap = CreateObject<VirtualNetDevice> ();
     m_n3Tap->SetSendFromCallback (MakeCallback (&Tunnel::N3VirtualSend, this));
     n3->AddDevice (m_n3Tap);
     ipv4 = n3->GetObject<Ipv4> ();

@@ -18,8 +18,8 @@
  * Author: Gustavo J. A. M. Carneiro  <gjc@inescporto.pt>
  */
 
-#ifndef TAP_NET_DEVICE_H
-#define TAP_NET_DEVICE_H
+#ifndef VIRTUAL_NET_DEVICE_H
+#define VIRTUAL_NET_DEVICE_H
 
 #include "ns3/address.h"
 #include "ns3/node.h"
@@ -33,34 +33,34 @@ namespace ns3 {
 
 
 /**
- * \class TapNetDevice
+ * \class VirtualNetDevice
  * \brief A virtual device, similar to Linux TAP interfaces.
  *
- * A TapNetDevice is a "virtual" NetDevice implementation which
+ * A VirtualNetDevice is a "virtual" NetDevice implementation which
  * delegates to a user callback (see method SetSendFromCallback()) the
  * task of actually transmitting a packet.  It also allows the user
  * code to inject the packet as if it had been received by the
- * TapNetDevice.  Together, these features allow one to build tunnels.
+ * VirtualNetDevice.  Together, these features allow one to build tunnels.
  * For instance, by transmitting packets into a UDP socket we end up
  * building an IP-over-UDP-over-IP tunnel.
  *
  * The same thing could be accomplished by subclassing NetDevice
- * directly.  However, TapNetDevice is usually much simpler to program
+ * directly.  However, VirtualNetDevice is usually much simpler to program
  * than a NetDevice subclass.
  */
-class TapNetDevice : public NetDevice
+class VirtualNetDevice : public NetDevice
 {
 public:
   /**
-   * Callback the be invoked when the TapNetDevice is asked to queue/transmit a packet.
+   * Callback the be invoked when the VirtualNetDevice is asked to queue/transmit a packet.
    * For more information, consult the documentation of NetDevice::SendFrom().
    */
   typedef Callback<bool, Ptr<Packet>, const Address&, const Address&, uint16_t> SendFromCallback;
 
   static TypeId GetTypeId (void);
-  TapNetDevice ();
+  VirtualNetDevice ();
 
-  virtual ~TapNetDevice ();
+  virtual ~VirtualNetDevice ();
 
   /**
    * \brief Set the user callback to be called when a L2 packet is to be transmitted

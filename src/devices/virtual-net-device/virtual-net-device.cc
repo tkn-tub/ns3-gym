@@ -24,32 +24,32 @@
 #include "ns3/mac48-address.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/error-model.h"
-#include "tap-net-device.h"
+#include "virtual-net-device.h"
 #include "ns3/channel.h"
 #include "ns3/trace-source-accessor.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("TapNetDevice");
+NS_LOG_COMPONENT_DEFINE ("VirtualNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (TapNetDevice);
+NS_OBJECT_ENSURE_REGISTERED (VirtualNetDevice);
 
 TypeId
-TapNetDevice::GetTypeId (void)
+VirtualNetDevice::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::TapNetDevice")
+  static TypeId tid = TypeId ("ns3::VirtualNetDevice")
     .SetParent<NetDevice> ()
-    .AddConstructor<TapNetDevice> ()
+    .AddConstructor<VirtualNetDevice> ()
     .AddTraceSource ("Rx", "Received payload from the MAC layer.",
-                     MakeTraceSourceAccessor (&TapNetDevice::m_rxTrace))
+                     MakeTraceSourceAccessor (&VirtualNetDevice::m_rxTrace))
     .AddTraceSource ("Tx", "Send payload to the MAC layer.",
-                     MakeTraceSourceAccessor (&TapNetDevice::m_txTrace))
+                     MakeTraceSourceAccessor (&VirtualNetDevice::m_txTrace))
     ;
   return tid;
 }
 
-TapNetDevice::TapNetDevice ()
+VirtualNetDevice::VirtualNetDevice ()
 {
   m_needsArp = false;
   m_supportsSendFrom = true;
@@ -58,45 +58,45 @@ TapNetDevice::TapNetDevice ()
 
 
 void
-TapNetDevice::SetSendFromCallback (SendFromCallback sendCb)
+VirtualNetDevice::SetSendFromCallback (SendFromCallback sendCb)
 {
   m_sendCb = sendCb;
 }
 
 void
-TapNetDevice::SetNeedsArp (bool needsArp)
+VirtualNetDevice::SetNeedsArp (bool needsArp)
 {
   m_needsArp = needsArp;
 }
 
 void
-TapNetDevice::SetSupportsSendFrom (bool supportsSendFrom)
+VirtualNetDevice::SetSupportsSendFrom (bool supportsSendFrom)
 {
   m_supportsSendFrom = supportsSendFrom;
 }
 
 bool
-TapNetDevice::SetMtu (const uint16_t mtu)
+VirtualNetDevice::SetMtu (const uint16_t mtu)
 {
   m_mtu = mtu;
   return true;
 }
 
 
-TapNetDevice::~TapNetDevice()
+VirtualNetDevice::~VirtualNetDevice()
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
 
 
-void TapNetDevice::DoDispose()
+void VirtualNetDevice::DoDispose()
 {
   NS_LOG_FUNCTION_NOARGS ();
   NetDevice::DoDispose ();
 }
 
 bool
-TapNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol, const Address &address)
+VirtualNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol, const Address &address)
 {
   if (m_rxCallback (this, packet, protocol, address))
     {
@@ -107,7 +107,7 @@ TapNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol, const Address &add
 }
 
 bool
-TapNetDevice::PromiscReceive (Ptr<Packet> packet, uint16_t protocol,
+VirtualNetDevice::PromiscReceive (Ptr<Packet> packet, uint16_t protocol,
                               const Address &source, const Address &destination,
                               PacketType packetType)
 {
@@ -121,89 +121,89 @@ TapNetDevice::PromiscReceive (Ptr<Packet> packet, uint16_t protocol,
 
 
 void
-TapNetDevice::SetIfIndex (const uint32_t index)
+VirtualNetDevice::SetIfIndex (const uint32_t index)
 {
   m_index = index;
 }
 
 uint32_t
-TapNetDevice::GetIfIndex (void) const
+VirtualNetDevice::GetIfIndex (void) const
 {
   return m_index;
 }
 
 Ptr<Channel>
-TapNetDevice::GetChannel (void) const
+VirtualNetDevice::GetChannel (void) const
 {
   return Ptr<Channel> ();
 }
 
 Address
-TapNetDevice::GetAddress (void) const
+VirtualNetDevice::GetAddress (void) const
 {
   return Mac48Address ();
 }
 
 uint16_t
-TapNetDevice::GetMtu (void) const
+VirtualNetDevice::GetMtu (void) const
 {
   return m_mtu;
 }
 
 bool
-TapNetDevice::IsLinkUp (void) const
+VirtualNetDevice::IsLinkUp (void) const
 {
   return true;
 }
 
 void
-TapNetDevice::SetLinkChangeCallback (Callback<void> callback)
+VirtualNetDevice::SetLinkChangeCallback (Callback<void> callback)
 {
 }
 
 bool
-TapNetDevice::IsBroadcast (void) const
+VirtualNetDevice::IsBroadcast (void) const
 {
   return true;
 }
 
 Address
-TapNetDevice::GetBroadcast (void) const
+VirtualNetDevice::GetBroadcast (void) const
 {
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 
 bool
-TapNetDevice::IsMulticast (void) const
+VirtualNetDevice::IsMulticast (void) const
 {
   return false;
 }
 
-Address TapNetDevice::GetMulticast (Ipv4Address multicastGroup) const
+Address VirtualNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 
-Address TapNetDevice::GetMulticast (Ipv6Address addr) const
+Address VirtualNetDevice::GetMulticast (Ipv6Address addr) const
 {
   return Mac48Address ("ff:ff:ff:ff:ff:ff");  
 }
 
 
 bool
-TapNetDevice::IsPointToPoint (void) const
+VirtualNetDevice::IsPointToPoint (void) const
 {
   return true;
 }
 
 bool
-TapNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
+VirtualNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
   return SendFrom (packet, GetAddress (), dest, protocolNumber);
 }
 
 bool
-TapNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
+VirtualNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
 {
   if (m_sendCb (packet, source, dest, protocolNumber))
     {
@@ -214,42 +214,42 @@ TapNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address
 }
 
 Ptr<Node>
-TapNetDevice::GetNode (void) const
+VirtualNetDevice::GetNode (void) const
 {
   return m_node;
 }
 
 void
-TapNetDevice::SetNode (Ptr<Node> node)
+VirtualNetDevice::SetNode (Ptr<Node> node)
 {
   m_node = node;
 }
 
 bool
-TapNetDevice::NeedsArp (void) const
+VirtualNetDevice::NeedsArp (void) const
 {
   return m_needsArp;
 }
 
 void
-TapNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
+VirtualNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
   m_rxCallback = cb;
 }
 
 void
-TapNetDevice::SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb)
+VirtualNetDevice::SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb)
 {
   m_promiscRxCallback = cb;
 }
 
 bool
-TapNetDevice::SupportsSendFrom () const
+VirtualNetDevice::SupportsSendFrom () const
 {
   return m_supportsSendFrom;
 }
 
-bool TapNetDevice::IsBridge (void) const
+bool VirtualNetDevice::IsBridge (void) const
 {
   return false;
 }
