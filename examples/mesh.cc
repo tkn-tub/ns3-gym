@@ -124,8 +124,8 @@ MeshTest::CreateNodes ()
   MeshWifiHelper mesh;
   mesh.SetSpreadInterfaceChannels (chan);
   std::vector<uint32_t> roots;
-  roots.push_back(xSize-1);
-  roots.push_back(xSize*ySize-xSize);
+  //roots.push_back(xSize-1);
+  //roots.push_back(xSize*ySize-xSize);
   MeshInterfaceHelper interface = MeshInterfaceHelper::Default ();
   interface.SetType ("RandomStart", TimeValue (Seconds(randomStart)));
 

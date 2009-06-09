@@ -25,10 +25,7 @@
 
 #include "ns3/wifi-helper.h"
 #include "ns3/nstime.h"
-#include "ns3/peer-management-protocol.h"
-#include "ns3/hwmp-protocol.h"
-#include "ie-dot11s-id.h"
-#include "ns3/dot11s-interface-helper.h"
+#include "ns3/mesh-interface-helper.h"
 
 namespace ns3 {
 namespace dot11s {

@@ -19,7 +19,7 @@
  */
 
 
-#include "dot11s-interface-helper.h"
+#include "mesh-interface-helper.h"
 #include "ns3/wifi-mac.h"
 #include "ns3/pointer.h"
 #include "ns3/dca-txop.h"
