@@ -28,6 +28,7 @@
 #include "ns3/peer-management-protocol.h"
 #include "ns3/hwmp-protocol.h"
 #include "ie-dot11s-id.h"
+#include "ns3/dot11s-interface-helper.h"
 
 namespace ns3 {
 namespace dot11s {
@@ -43,8 +44,6 @@ class MeshWifiHelper
 {
 public:
   MeshWifiHelper (); 
-  /// Set maximum random start delay
-  void SetRandomStartDelay (Time delay);
   /** 
    *  \brief Spread/not spread frequency channels of MP interfaces. 
    * 
@@ -63,7 +62,7 @@ public:
    * 
    * \return list of created mesh point devices, see MeshPointDevice
    */
-  NetDeviceContainer Install (const WifiPhyHelper &phyHelper, NodeContainer c, std::vector<uint32_t> roots = std::vector<uint32_t> (), uint32_t nInterfaces = 1) const;
+  NetDeviceContainer Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &interfaceHelper, NodeContainer c, std::vector<uint32_t> roots = std::vector<uint32_t> (), uint32_t nInterfaces = 1) const;
   /** 
    * \brief Install 802.11s mesh device & protocols on given node
    * 
@@ -74,16 +73,11 @@ public:
    * 
    * \return list of created mesh point devices, see MeshPointDevice
    */ 
-  NetDeviceContainer Install (const WifiPhyHelper &phy, Ptr<Node> node,  std::vector<uint32_t> roots = std::vector<uint32_t> (), uint32_t nInterfaces = 1) const;
+  NetDeviceContainer Install (const WifiPhyHelper &phy, const MeshInterfaceHelper &interfaceHelper, Ptr<Node> node,  std::vector<uint32_t> roots = std::vector<uint32_t> (), uint32_t nInterfaces = 1) const;
   static void Report (const ns3::Ptr<ns3::NetDevice>&, std::ostream&);
   static void ResetStats (const ns3::Ptr<ns3::NetDevice>&);
 private:
-  Time m_randomStartDelay;
   bool m_spreadInterfaceChannels;
-  
-  /// Create single mesh interface NIC
-  Ptr<WifiNetDevice> CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node) const;
-  
 };
 } // namespace dot11s
 } //namespace ns3

@@ -31,6 +31,7 @@
 #include "ns3/mesh-point-device.h"
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/random-variable.h"
+#include "airtime-metric.h"
 #include "ie-dot11s-preq.h"
 #include "ie-dot11s-prep.h"
 #include "ie-dot11s-perr.h"
@@ -613,6 +614,9 @@ HwmpProtocol::Install (Ptr<MeshPointDevice> mp)
       Ptr<HwmpMacPlugin> hwmpMac = Create<HwmpMacPlugin> (wifiNetDev->GetIfIndex (), this);
       m_interfaces[wifiNetDev->GetIfIndex ()] = hwmpMac;
       mac->InstallPlugin (hwmpMac);
+      //Installing airtime link metric:
+      Ptr<AirtimeLinkMetricCalculator> metric = CreateObject <AirtimeLinkMetricCalculator> ();
+      mac->SetLinkMetricCallback (MakeCallback(&AirtimeLinkMetricCalculator::CalculateMetric, metric));
     }
   mp->SetRoutingProtocol (this);
   // Mesh point aggregates all installed protocols

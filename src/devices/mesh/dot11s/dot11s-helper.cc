@@ -18,66 +18,24 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  *         Pavel Boyko <boyko@iitp.ru>
  */
-
-
 #include "dot11s-helper.h"
 #include "ns3/simulator.h"
 #include "ns3/mesh-point-device.h"
 #include "ns3/wifi-net-device.h"
-#include "ns3/wifi-phy.h"
-#include "ns3/wifi-channel.h"
-#include "ns3/wifi-remote-station-manager.h"
-#include "ns3/mesh-wifi-interface-mac.h"
-#include "ns3/aarf-wifi-manager.h"
-#include "airtime-metric.h"
 namespace ns3 {
 namespace dot11s {
 
 MeshWifiHelper::MeshWifiHelper () : 
-    m_randomStartDelay (Seconds (0)),
     m_spreadInterfaceChannels (false)
 {
 }
-void 
-MeshWifiHelper::SetRandomStartDelay (Time t)
-{
-  m_randomStartDelay = t;
-}
-
 void 
 MeshWifiHelper::SetSpreadInterfaceChannels (bool s)
 {
   m_spreadInterfaceChannels = s;
 }
-
-
-Ptr<WifiNetDevice> 
-MeshWifiHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node) const
-{
-  Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
-  
-  // Creating MAC for this interface
-  Ptr<MeshWifiInterfaceMac> mac = CreateObject<MeshWifiInterfaceMac> ();
-  mac->SetSsid (Ssid ());
-  if (m_randomStartDelay > Seconds (0))
-    mac->SetRandomStartDelay (m_randomStartDelay);
-  Ptr<WifiRemoteStationManager> manager = CreateObject<AarfWifiManager> ();
-  Ptr<WifiPhy> phy = phyHelper.Create (node, device);
-  mac->SetAddress (Mac48Address::Allocate ());
-  device->SetMac (mac);
-  device->SetPhy (phy);
-  device->SetRemoteStationManager (manager);
-  Ptr<AirtimeLinkMetricCalculator> metric = CreateObject <AirtimeLinkMetricCalculator> ();
-  mac->SetLinkMetricCallback (MakeCallback(&AirtimeLinkMetricCalculator::CalculateMetric, metric));
-  /*
-  if (channel > 0)
-    mac->SwitchFrequencyChannel (channel);
-  */
-  return device;
-}
-  
 NetDeviceContainer
-MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c,  std::vector<uint32_t> roots, uint32_t nInterfaces) const
+MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &interfaceHelper, NodeContainer c,  std::vector<uint32_t> roots, uint32_t nInterfaces) const
 {
   NetDeviceContainer devices;
   uint32_t node_index = 0;
@@ -92,29 +50,10 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c,  std::
     // Create wifi interfaces (single interface by default)
     for (uint32_t i = 0; i < nInterfaces; ++i)
       {
-        Ptr<WifiNetDevice> iface = CreateInterface (phyHelper, node);
-        
-        node->AddDevice (iface);
+        uint32_t channel = i * 5;
+        Ptr<WifiNetDevice> iface = interfaceHelper.CreateInterface (phyHelper,node, (m_spreadInterfaceChannels ? channel : 0));
         mp->AddInterface (iface);
       }
-    
-    // Set different channels on different ifaces
-    if (m_spreadInterfaceChannels)
-      {
-        std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
-        for (size_t i = 0; i < ifaces.size(); ++i)
-          {
-            uint32_t channel = i * 5;
-            
-            Ptr<WifiNetDevice> iface = ifaces[i]->GetObject<WifiNetDevice> ();
-            NS_ASSERT (iface);
-            Ptr<MeshWifiInterfaceMac> mac = iface->GetMac ()->GetObject<MeshWifiInterfaceMac> ();
-            NS_ASSERT (mac);
-            
-            mac->SwitchFrequencyChannel (channel);
-          }
-      }
-    
     // Install 802.11s protocols
     Ptr<PeerManagementProtocol> pmp = CreateObject<PeerManagementProtocol> ();
     pmp->SetMeshId("mesh");
@@ -139,9 +78,9 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c,  std::
 }
 
 NetDeviceContainer
-MeshWifiHelper::Install (const WifiPhyHelper &phy, Ptr<Node> node,  std::vector<uint32_t> roots, uint32_t nInterfaces) const
+MeshWifiHelper::Install (const WifiPhyHelper &phy, const MeshInterfaceHelper &interfaceHelper, Ptr<Node> node,  std::vector<uint32_t> roots, uint32_t nInterfaces) const
 {
-  return Install (phy, NodeContainer (node), roots, nInterfaces);
+  return Install (phy, interfaceHelper, NodeContainer (node), roots, nInterfaces);
 }
 void
 MeshWifiHelper::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os)
@@ -154,9 +93,7 @@ MeshWifiHelper::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os
   {
     Ptr<WifiNetDevice> device = (*i)->GetObject<WifiNetDevice> ();
     NS_ASSERT (device != 0);
-    Ptr<MeshWifiInterfaceMac> mac = device->GetMac()->GetObject<MeshWifiInterfaceMac> ();
-    NS_ASSERT (mac != 0);
-    mac->Report(os);
+    MeshInterfaceHelper::Report(device, os);
   }
   Ptr <HwmpProtocol> hwmp = mp->GetObject<HwmpProtocol> ();
   NS_ASSERT(hwmp != 0);
@@ -177,9 +114,7 @@ MeshWifiHelper::ResetStats (const ns3::Ptr<ns3::NetDevice>& device)
   {
     Ptr<WifiNetDevice> device = (*i)->GetObject<WifiNetDevice> ();
     NS_ASSERT (device != 0);
-    Ptr<MeshWifiInterfaceMac> mac = device->GetMac()->GetObject<MeshWifiInterfaceMac> ();
-    NS_ASSERT (mac != 0);
-    mac->ResetStats ();
+    MeshInterfaceHelper::ResetStats (device);
   }
   Ptr <HwmpProtocol> hwmp = mp->GetObject<HwmpProtocol> ();
   NS_ASSERT(hwmp != 0);

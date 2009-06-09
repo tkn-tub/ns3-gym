@@ -28,6 +28,7 @@
 #include "ns3/mesh-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/dot11s-helper.h"
+#include "ns3/dot11s-interface-helper.h"
 
 #include <iostream>
 #include <sstream>
@@ -123,9 +124,12 @@ MeshTest::CreateNodes ()
   MeshWifiHelper mesh;
   mesh.SetSpreadInterfaceChannels (chan);
   std::vector<uint32_t> roots;
-  //roots.push_back(xSize-1);
-  //roots.push_back(xSize*ySize-xSize);
-  meshDevices = mesh.Install (wifiPhy, nodes, roots, nIfaces);
+  roots.push_back(xSize-1);
+  roots.push_back(xSize*ySize-xSize);
+  MeshInterfaceHelper interface = MeshInterfaceHelper::Default ();
+  interface.SetType ("RandomStart", TimeValue (Seconds(randomStart)));
+
+  meshDevices = mesh.Install (wifiPhy, interface, nodes, roots, nIfaces);
   // Setup mobility
   MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",

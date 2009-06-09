@@ -159,6 +159,10 @@ public:
   void Report (std::ostream &) const;
   void ResetStats ();
 private:
+  Ptr<DcaTxop> GetBE(void) const;
+  void SetBE (Ptr<DcaTxop> dcaTxop);
+  Ptr<DcaTxop> GetVO(void) const;
+  void SetVO (Ptr<DcaTxop> dcaTxop);
   /// Frame receive handler
   void  Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
   /// Forward frame to mesh point

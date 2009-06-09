@@ -30,6 +30,8 @@
 #include "ns3/random-variable.h"
 #include "ns3/simulator.h"
 #include "ns3/yans-wifi-phy.h"
+#include "ns3/pointer.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("MeshWifiInterfaceMac");
 
@@ -60,7 +62,18 @@ MeshWifiInterfaceMac::GetTypeId ()
           &MeshWifiInterfaceMac::GetBeaconGeneration
           ),
         MakeBooleanChecker ()
-        );
+        )
+        
+    .AddAttribute ("BE", "The DcaTxop object",
+                   PointerValue (),
+                   MakePointerAccessor (&MeshWifiInterfaceMac::GetBE,
+                                        &MeshWifiInterfaceMac::SetBE),
+                   MakePointerChecker<DcaTxop> ())
+    .AddAttribute ("VO", "The DcaTxop object",
+                   PointerValue (),
+                   MakePointerAccessor (&MeshWifiInterfaceMac::GetVO,
+                                        &MeshWifiInterfaceMac::SetVO),
+                   MakePointerChecker<DcaTxop> ());
   return tid;
 }
 
@@ -83,7 +96,7 @@ MeshWifiInterfaceMac::MeshWifiInterfaceMac ()
   m_beaconDca->SetMaxCw (0);
   m_beaconDca->SetAifsn (1);
   m_beaconDca->SetManager (m_dcfManager);
-
+# if 0
   m_VO = CreateObject<DcaTxop> ();
   m_VO->SetLow (m_low);
   m_VO->SetMinCw (3);
@@ -93,6 +106,7 @@ MeshWifiInterfaceMac::MeshWifiInterfaceMac ()
   m_BE = CreateObject<DcaTxop> ();
   m_BE->SetLow (m_low);
   m_BE->SetManager (m_dcfManager);
+#endif
 }
 
 MeshWifiInterfaceMac::~MeshWifiInterfaceMac ()
@@ -198,7 +212,9 @@ MeshWifiInterfaceMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager>
 {
   NS_LOG_FUNCTION (this << stationManager);
   m_stationManager = stationManager;
+  NS_ASSERT(m_BE != 0);
   m_BE->SetWifiRemoteStationManager (stationManager);
+  NS_ASSERT(m_VO != 0);
   m_VO->SetWifiRemoteStationManager (stationManager);
   m_beaconDca->SetWifiRemoteStationManager (stationManager);
   m_low->SetWifiRemoteStationManager (stationManager);
@@ -665,6 +681,30 @@ void
 MeshWifiInterfaceMac::ResetStats ()
 {
   m_stats = Statistics::Statistics ();
+}
+void
+MeshWifiInterfaceMac::SetBE (Ptr<DcaTxop> dcaTxop)
+{
+  m_BE = dcaTxop;
+  m_BE->SetLow (m_low);
+  m_BE->SetManager (m_dcfManager);
+}
+void
+MeshWifiInterfaceMac::SetVO (Ptr<DcaTxop> dcaTxop)
+{
+  m_VO = dcaTxop;
+  m_VO->SetLow (m_low);
+  m_VO->SetManager (m_dcfManager);
+}
+Ptr<DcaTxop>
+MeshWifiInterfaceMac::GetBE () const
+{
+  return m_BE;
+}
+Ptr<DcaTxop>
+MeshWifiInterfaceMac::GetVO () const
+{
+  return m_VO;
 }
 } // namespace ns3
 
