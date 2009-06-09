@@ -24,8 +24,7 @@
 #include "ns3/mesh-point-device.h"
 #include "ns3/wifi-net-device.h"
 namespace ns3 {
-namespace dot11s {
-
+using namespace dot11s ;
 MeshWifiHelper::MeshWifiHelper () : 
     m_spreadInterfaceChannels (false)
 {
@@ -83,6 +82,5 @@ MeshWifiHelper::ResetStats (const ns3::Ptr<ns3::NetDevice>& device)
 {
   Dot11sStackInstallator::ResetStats (device);
 }
-} // namespace dot11s
 } //namespace ns3
 

@@ -28,7 +28,6 @@
 #include "ns3/mesh-interface-helper.h"
 
 namespace ns3 {
-namespace dot11s {
 
 class WifiChannel;
 
@@ -76,7 +75,6 @@ public:
 private:
   bool m_spreadInterfaceChannels;
 };
-} // namespace dot11s
 } //namespace ns3
 
 #endif /* _MESHWIFIHELPER_H */
