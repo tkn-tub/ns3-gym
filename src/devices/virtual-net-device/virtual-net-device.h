@@ -34,7 +34,7 @@ namespace ns3 {
 
 /**
  * \class VirtualNetDevice
- * \brief A virtual device, similar to Linux TAP interfaces.
+ * \brief A virtual device, similar to Linux TUN/TAP interfaces.
  *
  * A VirtualNetDevice is a "virtual" NetDevice implementation which
  * delegates to a user callback (see method SetSendFromCallback()) the
@@ -42,7 +42,7 @@ namespace ns3 {
  * code to inject the packet as if it had been received by the
  * VirtualNetDevice.  Together, these features allow one to build tunnels.
  * For instance, by transmitting packets into a UDP socket we end up
- * building an IP-over-UDP-over-IP tunnel.
+ * building an IP-over-UDP-over-IP tunnel, or IP-over-IP tunnels.
  *
  * The same thing could be accomplished by subclassing NetDevice
  * directly.  However, VirtualNetDevice is usually much simpler to program
@@ -76,6 +76,14 @@ public:
    * return this value.
    */
   void SetNeedsArp (bool needsArp);
+
+  /**
+   * \brief Configure whether the virtual device is point-to-point
+   *
+   * \param isPointToPoint the value that should be returned by the
+   * IsPointToPoint method for this instance.
+   */
+  void SetIsPointToPoint (bool isPointToPoint);
 
   /**
    * \brief Configure whether the virtual device supports SendFrom
@@ -160,6 +168,7 @@ private:
   uint16_t m_mtu;
   bool m_needsArp;
   bool m_supportsSendFrom;
+  bool m_isPointToPoint;
 };
 
 }; // namespace ns3

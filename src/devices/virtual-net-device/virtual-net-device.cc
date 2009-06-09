@@ -54,6 +54,7 @@ VirtualNetDevice::VirtualNetDevice ()
   m_needsArp = false;
   m_supportsSendFrom = true;
   m_mtu = 65535;
+  m_isPointToPoint = true;
 }
 
 
@@ -73,6 +74,12 @@ void
 VirtualNetDevice::SetSupportsSendFrom (bool supportsSendFrom)
 {
   m_supportsSendFrom = supportsSendFrom;
+}
+
+void
+VirtualNetDevice::SetIsPointToPoint (bool isPointToPoint)
+{
+  m_isPointToPoint = isPointToPoint;
 }
 
 bool
@@ -193,7 +200,7 @@ Address VirtualNetDevice::GetMulticast (Ipv6Address addr) const
 bool
 VirtualNetDevice::IsPointToPoint (void) const
 {
-  return true;
+  return m_isPointToPoint;
 }
 
 bool
