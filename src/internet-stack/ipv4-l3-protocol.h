@@ -67,7 +67,8 @@ public:
   void SetNode (Ptr<Node> node);
 
   // functions defined in base class Ipv4
-  void SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routing);
+
+  void SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol);
   Ptr<Ipv4RoutingProtocol> GetRoutingProtocol (void) const;
 
   Ptr<Socket> CreateRawSocket (void);

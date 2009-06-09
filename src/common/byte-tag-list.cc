@@ -17,12 +17,12 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "tag-list.h"
+#include "byte-tag-list.h"
 #include "ns3/log.h"
 #include <vector>
 #include <string.h>
 
-NS_LOG_COMPONENT_DEFINE ("TagList");
+NS_LOG_COMPONENT_DEFINE ("ByteTagList");
 
 #define USE_FREE_LIST 1
 #define FREE_LIST_SIZE 1000
@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("TagList");
 
 namespace ns3 {
 
-struct TagListData {
+struct ByteTagListData {
   uint32_t size;
   uint32_t count;
   uint32_t dirty;
@@ -38,16 +38,16 @@ struct TagListData {
 };
 
 #ifdef USE_FREE_LIST
-static class TagListDataFreeList : public std::vector<struct TagListData *>
+static class ByteTagListDataFreeList : public std::vector<struct ByteTagListData *>
 {
 public:
-  ~TagListDataFreeList ();
+  ~ByteTagListDataFreeList ();
 } g_freeList;
 static uint32_t g_maxSize = 0;
 
-TagListDataFreeList::~TagListDataFreeList ()
+ByteTagListDataFreeList::~ByteTagListDataFreeList ()
 {
-  for (TagListDataFreeList::iterator i = begin ();
+  for (ByteTagListDataFreeList::iterator i = begin ();
        i != end (); i++)
     {
       uint8_t *buffer = (uint8_t *)(*i);
@@ -56,17 +56,17 @@ TagListDataFreeList::~TagListDataFreeList ()
 }
 #endif /* USE_FREE_LIST */
 
-TagList::Iterator::Item::Item (TagBuffer buf_)
+ByteTagList::Iterator::Item::Item (TagBuffer buf_)
     : buf (buf_)
 {}
 
 bool 
-TagList::Iterator::HasNext (void) const
+ByteTagList::Iterator::HasNext (void) const
 {
   return m_current < m_end;
 }
-struct TagList::Iterator::Item 
-TagList::Iterator::Next (void)
+struct ByteTagList::Iterator::Item 
+ByteTagList::Iterator::Next (void)
 {
   NS_ASSERT (HasNext ());
   struct Item item = Item (TagBuffer (m_current+16, m_end));
@@ -80,7 +80,7 @@ TagList::Iterator::Next (void)
   return item;
 }
 void
-TagList::Iterator::PrepareForNext (void)
+ByteTagList::Iterator::PrepareForNext (void)
 {
   while (m_current < m_end)
     {
@@ -99,7 +99,7 @@ TagList::Iterator::PrepareForNext (void)
 	}
     }
 }
-TagList::Iterator::Iterator (uint8_t *start, uint8_t *end, int32_t offsetStart, int32_t offsetEnd)
+ByteTagList::Iterator::Iterator (uint8_t *start, uint8_t *end, int32_t offsetStart, int32_t offsetEnd)
   : m_current (start),
     m_end (end),
     m_offsetStart (offsetStart),
@@ -109,19 +109,19 @@ TagList::Iterator::Iterator (uint8_t *start, uint8_t *end, int32_t offsetStart, 
 }
 
 uint32_t 
-TagList::Iterator::GetOffsetStart (void) const
+ByteTagList::Iterator::GetOffsetStart (void) const
 {
   return m_offsetStart;
 }
 
 
-TagList::TagList ()
+ByteTagList::ByteTagList ()
   : m_used (0),
     m_data (0)
 {
   NS_LOG_FUNCTION (this);
 }
-TagList::TagList (const TagList &o)
+ByteTagList::ByteTagList (const ByteTagList &o)
   : m_used (o.m_used),
     m_data (o.m_data)
 {
@@ -131,8 +131,8 @@ TagList::TagList (const TagList &o)
       m_data->count++;
     }
 }
-TagList &
-TagList::operator = (const TagList &o)
+ByteTagList &
+ByteTagList::operator = (const ByteTagList &o)
 {
   NS_LOG_FUNCTION (this << &o);
   if (this == &o)
@@ -149,7 +149,7 @@ TagList::operator = (const TagList &o)
     }
   return *this;
 }
-TagList::~TagList ()
+ByteTagList::~ByteTagList ()
 {
   NS_LOG_FUNCTION (this);
   Deallocate (m_data);
@@ -158,7 +158,7 @@ TagList::~TagList ()
 }
 
 TagBuffer
-TagList::Add (TypeId tid, uint32_t bufferSize, int32_t start, int32_t end)
+ByteTagList::Add (TypeId tid, uint32_t bufferSize, int32_t start, int32_t end)
 {
   NS_LOG_FUNCTION (this << tid << bufferSize << start << end);
   uint32_t spaceNeeded = m_used + bufferSize + 4 + 4 + 4 + 4;
@@ -171,7 +171,7 @@ TagList::Add (TypeId tid, uint32_t bufferSize, int32_t start, int32_t end)
   else if (m_data->size < spaceNeeded ||
 	   (m_data->count != 1 && m_data->dirty != m_used))
     {
-      struct TagListData *newData = Allocate (spaceNeeded);
+      struct ByteTagListData *newData = Allocate (spaceNeeded);
       memcpy (&newData->data, &m_data->data, m_used);
       Deallocate (m_data);
       m_data = newData;
@@ -188,20 +188,20 @@ TagList::Add (TypeId tid, uint32_t bufferSize, int32_t start, int32_t end)
 }
 
 void 
-TagList::Add (const TagList &o)
+ByteTagList::Add (const ByteTagList &o)
 {
   NS_LOG_FUNCTION (this << &o);
-  TagList::Iterator i = o.BeginAll ();
+  ByteTagList::Iterator i = o.BeginAll ();
   while (i.HasNext ())
     {
-      TagList::Iterator::Item item = i.Next ();
+      ByteTagList::Iterator::Item item = i.Next ();
       TagBuffer buf = Add (item.tid, item.size, item.start, item.end);
       buf.CopyFrom (item.buf);
     }
 }
 
 void 
-TagList::RemoveAll (void)
+ByteTagList::RemoveAll (void)
 {
   NS_LOG_FUNCTION (this);
   Deallocate (m_data);
@@ -209,8 +209,8 @@ TagList::RemoveAll (void)
   m_used = 0;
 }
 
-TagList::Iterator 
-TagList::BeginAll (void) const
+ByteTagList::Iterator 
+ByteTagList::BeginAll (void) const
 {
   NS_LOG_FUNCTION (this);
   // I am not totally sure but I might need to use 
@@ -218,8 +218,8 @@ TagList::BeginAll (void) const
   return Begin (0, OFFSET_MAX);
 }
 
-TagList::Iterator 
-TagList::Begin (int32_t offsetStart, int32_t offsetEnd) const
+ByteTagList::Iterator 
+ByteTagList::Begin (int32_t offsetStart, int32_t offsetEnd) const
 {
   NS_LOG_FUNCTION (this << offsetStart << offsetEnd);
   if (m_data == 0)
@@ -233,13 +233,13 @@ TagList::Begin (int32_t offsetStart, int32_t offsetEnd) const
 }
 
 bool 
-TagList::IsDirtyAtEnd (int32_t appendOffset)
+ByteTagList::IsDirtyAtEnd (int32_t appendOffset)
 {
   NS_LOG_FUNCTION (this << appendOffset);
-  TagList::Iterator i = BeginAll ();
+  ByteTagList::Iterator i = BeginAll ();
   while (i.HasNext ())
     {
-      TagList::Iterator::Item item = i.Next ();
+      ByteTagList::Iterator::Item item = i.Next ();
       if (item.end > appendOffset)
 	{
 	  return true;
@@ -249,13 +249,13 @@ TagList::IsDirtyAtEnd (int32_t appendOffset)
 }
 
 bool 
-TagList::IsDirtyAtStart (int32_t prependOffset)
+ByteTagList::IsDirtyAtStart (int32_t prependOffset)
 {
   NS_LOG_FUNCTION (this << prependOffset);
-  TagList::Iterator i = BeginAll ();
+  ByteTagList::Iterator i = BeginAll ();
   while (i.HasNext ())
     {
-      TagList::Iterator::Item item = i.Next ();
+      ByteTagList::Iterator::Item item = i.Next ();
       if (item.start < prependOffset)
 	{
 	  return true;
@@ -265,18 +265,18 @@ TagList::IsDirtyAtStart (int32_t prependOffset)
 }
 
 void 
-TagList::AddAtEnd (int32_t adjustment, int32_t appendOffset)
+ByteTagList::AddAtEnd (int32_t adjustment, int32_t appendOffset)
 {
   NS_LOG_FUNCTION (this << adjustment << appendOffset);
   if (adjustment == 0 && !IsDirtyAtEnd (appendOffset))
     {
       return;
     }
-  TagList list;
-  TagList::Iterator i = BeginAll ();
+  ByteTagList list;
+  ByteTagList::Iterator i = BeginAll ();
   while (i.HasNext ())
     {
-      TagList::Iterator::Item item = i.Next ();
+      ByteTagList::Iterator::Item item = i.Next ();
       item.start += adjustment;
       item.end += adjustment;
 
@@ -299,18 +299,18 @@ TagList::AddAtEnd (int32_t adjustment, int32_t appendOffset)
 }
 
 void 
-TagList::AddAtStart (int32_t adjustment, int32_t prependOffset)
+ByteTagList::AddAtStart (int32_t adjustment, int32_t prependOffset)
 {
   NS_LOG_FUNCTION (this << adjustment << prependOffset);
   if (adjustment == 0 && !IsDirtyAtStart (prependOffset))
     {
       return;
     }
-  TagList list;
-  TagList::Iterator i = BeginAll ();
+  ByteTagList list;
+  ByteTagList::Iterator i = BeginAll ();
   while (i.HasNext ())
     {
-      TagList::Iterator::Item item = i.Next ();
+      ByteTagList::Iterator::Item item = i.Next ();
       item.start += adjustment;
       item.end += adjustment;
 
@@ -334,13 +334,13 @@ TagList::AddAtStart (int32_t adjustment, int32_t prependOffset)
 
 #ifdef USE_FREE_LIST
 
-struct TagListData *
-TagList::Allocate (uint32_t size)
+struct ByteTagListData *
+ByteTagList::Allocate (uint32_t size)
 {
   NS_LOG_FUNCTION (this << size);
   while (!g_freeList.empty ())
     {
-      struct TagListData *data = g_freeList.back ();
+      struct ByteTagListData *data = g_freeList.back ();
       g_freeList.pop_back ();
       NS_ASSERT (data != 0);
       if (data->size >= size)
@@ -352,8 +352,8 @@ TagList::Allocate (uint32_t size)
       uint8_t *buffer = (uint8_t *)data;
       delete [] buffer;
     }
-  uint8_t *buffer = new uint8_t [std::max (size, g_maxSize) + sizeof (struct TagListData) - 4];
-  struct TagListData *data = (struct TagListData *)buffer;
+  uint8_t *buffer = new uint8_t [std::max (size, g_maxSize) + sizeof (struct ByteTagListData) - 4];
+  struct ByteTagListData *data = (struct ByteTagListData *)buffer;
   data->count = 1;
   data->size = size;
   data->dirty = 0;
@@ -361,7 +361,7 @@ TagList::Allocate (uint32_t size)
 }
 
 void 
-TagList::Deallocate (struct TagListData *data)
+ByteTagList::Deallocate (struct ByteTagListData *data)
 {
   NS_LOG_FUNCTION (this << data);
   if (data == 0)
@@ -387,12 +387,12 @@ TagList::Deallocate (struct TagListData *data)
 
 #else /* USE_FREE_LIST */
 
-struct TagListData *
-TagList::Allocate (uint32_t size)
+struct ByteTagListData *
+ByteTagList::Allocate (uint32_t size)
 {
   NS_LOG_FUNCTION (this << size);
-  uint8_t *buffer = new uint8_t [size + sizeof (struct TagListData) - 4];
-  struct TagListData *data = (struct TagListData *)buffer;
+  uint8_t *buffer = new uint8_t [size + sizeof (struct ByteTagListData) - 4];
+  struct ByteTagListData *data = (struct ByteTagListData *)buffer;
   data->count = 1;
   data->size = size;
   data->dirty = 0;
@@ -400,7 +400,7 @@ TagList::Allocate (uint32_t size)
 }
 
 void 
-TagList::Deallocate (struct TagListData *data)
+ByteTagList::Deallocate (struct ByteTagListData *data)
 {
   NS_LOG_FUNCTION (this << data);
   if (data == 0)

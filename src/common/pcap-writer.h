@@ -76,6 +76,24 @@ public:
 
   /**
    * Write a pcap header in the output file which specifies
+   * that the content of the file will be 802.11 Packets preceded by a
+   * radiotap header providing PHY layer info. This method should be
+   * invoked before ns3::PcapWriter::WritePacket and after
+   * ns3::PcapWriter::Open. 
+   */
+  void WriteWifiRadiotapHeader (void);
+
+  /**
+   * Write a pcap header in the output file which specifies
+   * that the content of the file will be 802.11 Packets preceded by a
+   * prism header providing PHY layer info. This method should be
+   * invoked before ns3::PcapWriter::WritePacket and after
+   * ns3::PcapWriter::Open. 
+   */
+  void WriteWifiPrismHeader (void);
+
+  /**
+   * Write a pcap header in the output file which specifies
    * that the content of the file will be ppp Packets. This 
    * method should be invoked before ns3::PcapWriter::WritePacket 
    * and after ns3::PcapWriter::Open.
@@ -87,12 +105,42 @@ public:
    */
   void WritePacket (Ptr<const Packet> packet);
 
+  /** 
+   * Write a Packet, possibly adding wifi PHY layer information to it
+   *
+   * @param packet the packet being received
+   * @param channelFreqMhz the frequency in MHz at which the packet is
+   * received. Note that in real devices this is normally the
+   * frequency to which  the receiver is tuned, and this can be
+   * different than the frequency at which the packet was originally
+   * transmitted. This is because it is possible to have the receiver
+   * tuned on a given channel and still to be able to receive packets
+   * on a nearby channel.
+   * @param rate the PHY data rate in units of 500kbps (i.e., the same
+   * units used both for the radiotap and for the prism header) 
+   * @param isPreambleShort true if short preamble is used, false otherwise
+   * @param isTx true if packet is being transmitted, false when
+   * packet is being received
+   * @param signalDbm signal power in dBm
+   * @param noiseDbm  noise power in dBm
+   */
+  void WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t channelFreqMhz, 
+                              uint32_t rate, bool isShortPreamble, bool isTx, 
+                              double signalDbm, double noiseDbm);
+
+
+
+
 private:
   void WriteData (uint8_t const*buffer, uint32_t size);
+  void Write64 (uint64_t data);
   void Write32 (uint32_t data);
   void Write16 (uint16_t data);
+  void Write8 (uint8_t data);
   void WriteHeader (uint32_t network);
+  int8_t RoundToInt8 (double value);
   std::ofstream *m_writer;
+  uint32_t m_pcapMode;
 };
 
 } // namespace ns3

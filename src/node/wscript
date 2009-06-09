@@ -52,7 +52,6 @@ def build(bld):
         'mac48-address.h',
         'mac64-address.h',
         'inet-socket-address.h',
-        'ipv4-interface-address.h',
         'packet-socket-address.h',
         'node.h',
         'ipv4-address.h',

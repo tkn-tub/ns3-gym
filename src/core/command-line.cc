@@ -100,7 +100,6 @@ CommandLine::PrintHelp (void) const
 	  std::cout << "    --" << (*i)->m_name << ": " << (*i)->m_help << std::endl;
 	}
     }
-  exit (0);
 }
 
 void
@@ -115,7 +114,6 @@ CommandLine::PrintGlobals (void) const
       std::cout << v.Get () << "]:  "
 		<< (*i)->GetHelp () << std::endl;      
     }
-  exit (0);
 }
 
 void
@@ -134,7 +132,6 @@ CommandLine::PrintAttributes (std::string type) const
       std::cout << initial->SerializeToString (checker) << "]:  "
 		<< tid.GetAttributeHelp (i) << std::endl;
     }
-  exit (0);
 }
 
 
@@ -149,7 +146,6 @@ CommandLine::PrintGroup (std::string group) const
 	  std::cout << "    --PrintAttributes=" <<tid.GetName ()<<std::endl;
 	}
     }
-  exit (0);
 }
 
 void
@@ -160,7 +156,6 @@ CommandLine::PrintTypeIds (void) const
       TypeId tid = TypeId::GetRegistered (i);
       std::cout << "    --PrintAttributes=" <<tid.GetName ()<<std::endl;
     }
-  exit (0);
 }
 
 void
@@ -193,7 +188,6 @@ CommandLine::PrintGroups (void) const
     {
       std::cout << "    --PrintGroup="<<*k<<std::endl;
     }
-  exit (0);
 }
 
 void
@@ -204,52 +198,62 @@ CommandLine::HandleArgument (std::string name, std::string value) const
     {
       // method below never returns.
       PrintHelp ();
-    }
-  if (name == "PrintGroups")
+      exit (0);
+    } 
+  else if (name == "PrintGroups")
     {
       // method below never returns.
       PrintGroups ();
+      exit (0);
     }
-  if (name == "PrintTypeIds")
+  else if (name == "PrintTypeIds")
     {
       // method below never returns.
       PrintTypeIds ();
+      exit (0);
     }
-  if (name == "PrintGlobals")
+  else if (name == "PrintGlobals")
     {
       // method below never returns.
       PrintGlobals ();
+      exit (0);
     }
-  if (name == "PrintGroup")
+  else if (name == "PrintGroup")
     {
       // method below never returns.
       PrintGroup (value);
+      exit (0);
     }
-  if (name == "PrintAttributes")
+  else if (name == "PrintAttributes")
     {
       // method below never returns.
       PrintAttributes (value);
+      exit (0);
     }
-  for (Items::const_iterator i = m_items.begin (); i != m_items.end (); ++i)
+  else
     {
-      if ((*i)->m_name == name)
-	{
-	  if (!(*i)->Parse (value))
-	    {
-	      std::cerr << "Invalid argument value: "<<name<<"="<<value << std::endl;
-	      return;
-	    }
-	  else
-	    {
-	      return;
-	    }
-	}
+      for (Items::const_iterator i = m_items.begin (); i != m_items.end (); ++i)
+        {
+          if ((*i)->m_name == name)
+            {
+              if (!(*i)->Parse (value))
+                {
+                  std::cerr << "Invalid argument value: "<<name<<"="<<value << std::endl;
+                  exit (1);
+                }
+              else
+                {
+                  return;
+                }
+            }
+        }
     }
   if (!Config::SetGlobalFailSafe (name, StringValue (value))
       && !Config::SetDefaultFailSafe (name, StringValue (value)))
     {
       std::cerr << "Invalid command-line arguments: --"<<name<<"="<<value<<std::endl;
       PrintHelp ();
+      exit (1);
     }
 }
 

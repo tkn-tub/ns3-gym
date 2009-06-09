@@ -164,10 +164,10 @@ Ipv4L3Protocol::NotifyNewAggregate ()
 }
 
 void 
-Ipv4L3Protocol::SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routing)
+Ipv4L3Protocol::SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol)
 {
   NS_LOG_FUNCTION (this);
-  m_routingProtocol = routing;
+  m_routingProtocol = routingProtocol;
   // XXX should check all interfaces to see if any were set to Up state
   // prior to a routing protocol being added
   if (GetStaticRouting () != 0)
@@ -482,7 +482,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   bool mayFragment = true;
   uint8_t ttl = m_defaultTtl;
   SocketIpTtlTag tag;
-  bool found = packet->FindFirstMatchingTag (tag);
+  bool found = packet->RemovePacketTag (tag);
   if (found)
     {
       ttl = tag.GetTtl ();

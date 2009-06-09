@@ -87,10 +87,11 @@ V4Ping::Receive (Ptr<Socket> socket)
 	  if (echo.GetSequenceNumber () == (m_seq - 1) &&
 	      echo.GetIdentifier () == 0)
 	    {
-	      Ptr<const Packet> data = echo.GetData ();
-	      if (data->GetSize () == 16)
+	      uint8_t data[16];
+	      uint32_t dataSize = echo.GetData (data);
+	      if (dataSize == 16)
 		{
-		  uint32_t *buf = (uint32_t *)data->PeekData ();
+		  uint32_t *buf = (uint32_t *)data;
 		  if (buf[0] == GetNode ()->GetId () &&
 		      buf[1] == GetApplicationId ())
 		    {

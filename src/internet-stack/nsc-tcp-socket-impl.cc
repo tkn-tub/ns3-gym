@@ -263,7 +263,7 @@ int
 NscTcpSocketImpl::ShutdownRecv (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_shutdownRecv = false;
+  m_shutdownRecv = true;
   return 0;
 }
 
@@ -448,7 +448,7 @@ NscTcpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
     {
       SocketAddressTag tag;
       bool found;
-      found = packet->FindFirstMatchingTag (tag);
+      found = packet->PeekPacketTag (tag);
       NS_ASSERT (found);
       fromAddress = tag.GetAddress ();
     }
@@ -600,7 +600,7 @@ bool NscTcpSocketImpl::ReadPendingData (void)
   SocketAddressTag tag;
 
   tag.SetAddress (m_peerAddress);
-  p->AddTag (tag);
+  p->AddPacketTag (tag);
   m_deliveryQueue.push (p);
   m_rxAvailable += p->GetSize ();
 

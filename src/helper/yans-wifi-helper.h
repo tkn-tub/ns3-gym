@@ -198,18 +198,45 @@ public:
                           std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 
   /**
+   * PCAP formats 
+   * 
+   */
+  enum PcapFormat {   
+    PCAP_FORMAT_80211          = 1,
+    PCAP_FORMAT_80211_PRISM    = 2,
+    PCAP_FORMAT_80211_RADIOTAP = 3,
+  };
+  
+  /** 
+   * Set the format of PCAP traces to be used. This function has to be
+   * called before EnablePcap(), so that the header of the pcap file
+   * can be written correctly.
+   *
+   * In madwifi, this corresponds to setting
+   * /proc/sys/net/ath0/dev_type to a particular value. See
+   * http://madwifi-project.org/wiki/UserDocs/MonitorModeInterface for
+   * more information.
+   * 
+   * @param format the PcapFormat to be used
+   */
+  void SetPcapFormat (enum PcapFormat format);
+
+  /**
    * \param filename filename prefix to use for pcap files.
    * \param nodeid the id of the node to generate pcap output for.
    * \param deviceid the id of the device to generate pcap output for.
    *
    * Generate a pcap file which contains the link-level data observed
    * by the specified deviceid within the specified nodeid. The pcap
-   * data is stored in the file prefix-nodeid-deviceid.pcap.
+   * data is stored in the file prefix-nodeid-deviceid.pcap. By
+   * default, no PHY layer information is provided. An optional header
+   * with PHY layer information, such as the radiotap or the prism
+   * header, can be used by invoking SetPcapFormat().
    *
    * This method should be invoked after the network topology has 
    * been fully constructed.
    */
-  static void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
+  void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
 
   /**
    * \param filename filename prefix to use for pcap files.
@@ -218,7 +245,7 @@ public:
    * Enable pcap output on each input device which is of the
    * ns3::WifiNetDevice type.
    */
-  static void EnablePcap (std::string filename, Ptr<NetDevice> nd);
+   void EnablePcap (std::string filename, Ptr<NetDevice> nd);
 
   /**
    * \param filename filename prefix to use for pcap files.
@@ -227,7 +254,7 @@ public:
    * Enable pcap output on each input device which is of the
    * ns3::WifiNetDevice type.
    */
-  static void EnablePcap (std::string filename, std::string ndName);
+   void EnablePcap (std::string filename, std::string ndName);
 
   /**
    * \param filename filename prefix to use for pcap files.
@@ -236,7 +263,7 @@ public:
    * Enable pcap output on each input device which is of the
    * ns3::WifiNetDevice type.
    */
-  static void EnablePcap (std::string filename, NetDeviceContainer d);
+   void EnablePcap (std::string filename, NetDeviceContainer d);
 
   /**
    * \param filename filename prefix to use for pcap files.
@@ -246,7 +273,7 @@ public:
    * ns3::WifiNetDevice type and which is located in one of the 
    * input nodes.
    */
-  static void EnablePcap (std::string filename, NodeContainer n);
+   void EnablePcap (std::string filename, NodeContainer n);
 
   /**
    * \param filename filename prefix to use for pcap files.
@@ -254,7 +281,7 @@ public:
    * Enable pcap output on each device which is of the
    * ns3::WifiNetDevice type
    */
-  static void EnablePcapAll (std::string filename);
+   void EnablePcapAll (std::string filename);
 
   /**
    * \param os output stream
@@ -311,6 +338,7 @@ private:
   ObjectFactory m_phy;
   ObjectFactory m_errorRateModel;
   Ptr<YansWifiChannel> m_channel;
+  enum PcapFormat m_pcapFormat;
 };
 
 } // namespace ns3

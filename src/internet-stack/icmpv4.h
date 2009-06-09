@@ -50,7 +50,7 @@ public:
   void SetData (Ptr<const Packet> data);
   uint16_t GetIdentifier (void) const;
   uint16_t GetSequenceNumber (void) const;
-  Ptr<const Packet> GetData (void) const;
+  uint32_t GetData (uint8_t payload[16]) const;
 
 
   static TypeId GetTypeId (void);
@@ -64,7 +64,8 @@ public:
 private:
   uint16_t m_identifier;
   uint16_t m_sequence;
-  Ptr<Packet> m_data;
+  uint8_t m_data[16];
+  uint32_t m_dataSize;
 };
 
 class Icmpv4DestinationUnreachable : public Header

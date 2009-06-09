@@ -392,9 +392,9 @@ main (int argc, char *argv[])
       // Let's do a pcap trace on the application source and sink, ifIndex 0
       // Csma captures in non-promiscuous mode
       CsmaHelper::EnablePcap ("mixed-wireless", appSource->GetId (), 0, false);
-      YansWifiPhyHelper::EnablePcap ("mixed-wireless", appSink->GetId (), 0);
-      YansWifiPhyHelper::EnablePcap ("mixed-wireless", 9, 2);
-      YansWifiPhyHelper::EnablePcap ("mixed-wireless", 9, 0);
+      wifiPhy.EnablePcap ("mixed-wireless", appSink->GetId (), 0);
+      wifiPhy.EnablePcap ("mixed-wireless", 9, 2);
+      wifiPhy.EnablePcap ("mixed-wireless", 9, 0);
     }
 
   if (useCourseChangeCallback == true)

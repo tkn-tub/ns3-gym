@@ -83,7 +83,7 @@ public:
   NamesPriv ();
   ~NamesPriv ();
 
-  bool Add (std::string name, Ptr<Object> obj);
+  bool Add (std::string name, Ptr<Object> object);
   bool Add (std::string path, std::string name, Ptr<Object> object);
   bool Add (Ptr<Object> context, std::string name, Ptr<Object> object);
 

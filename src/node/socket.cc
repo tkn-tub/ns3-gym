@@ -148,7 +148,7 @@ Socket::Recv (uint8_t* buf, uint32_t size, uint32_t flags)
     {
       return 0;
     }
-  memcpy (buf, p->PeekData (), p->GetSize());
+  p->CopyData (buf, p->GetSize ());
   return p->GetSize ();
 }
 
@@ -169,7 +169,7 @@ Socket::RecvFrom (uint8_t* buf, uint32_t size, uint32_t flags,
     {
       return 0;
     }
-  memcpy (buf, p->PeekData (), p->GetSize());
+  p->CopyData (buf, p->GetSize ());
   return p->GetSize ();
 }
 

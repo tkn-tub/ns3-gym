@@ -31,7 +31,9 @@ class Ipv4Route;
 class NetDevice;
 
 /**
- * \ingroup ipv4 
+ * \ingroup node 
+ * \defgroup ipv4Routing Ipv4 Routing
+ *
  * Abstract base class for Ipv4 routing protocols.  Defines two
  * virtual functions for packet routing and forwarding.  The first, 
  * RouteOutput(), is used for locally originated packets, and the second,

@@ -4,6 +4,8 @@
 #include "ns3/object-vector.h"
 #include "ns3/config.h"
 #include "ns3/log.h"
+#include "ns3/global-value.h"
+#include "ns3/string.h"
 #include "ns3/helper-module.h"
 
 using namespace ns3;
@@ -363,6 +365,20 @@ int main (int argc, char *argv[])
     }
   std::cout << "*/" << std::endl;
 
+
+
+  std::cout << "/*!" << std::endl
+	    << "\\ingroup core" << std::endl
+	    << "\\defgroup GlobalValueList The list of all global values." << std::endl
+	    << "<ul>" << std::endl;
+  for (GlobalValue::Iterator i = GlobalValue::Begin (); i != GlobalValue::End (); ++i)
+    {
+      StringValue val;
+      (*i)->GetValue (val);
+      std::cout << "  <li><b>" << (*i)->GetName () << "</b>: " << (*i)->GetHelp () << "(" << val.Get () << ")</li>" << std::endl;
+    }
+  std::cout << "</ul>" << std::endl
+	    << "*/" << std::endl;
 
 
   return 0;

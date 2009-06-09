@@ -1443,10 +1443,10 @@ def register_Ns3Ipv4MulticastRoute_methods(root_module, cls):
                    'ns3::Ipv4Address', 
                    [], 
                    is_const=True)
-    ## ipv4-route.h: void ns3::Ipv4MulticastRoute::SetOrigin(ns3::Ipv4Address const group) [member function]
+    ## ipv4-route.h: void ns3::Ipv4MulticastRoute::SetOrigin(ns3::Ipv4Address const origin) [member function]
     cls.add_method('SetOrigin', 
                    'void', 
-                   [param('ns3::Ipv4Address const', 'group')])
+                   [param('ns3::Ipv4Address const', 'origin')])
     ## ipv4-route.h: ns3::Ipv4Address ns3::Ipv4MulticastRoute::GetOrigin() const [member function]
     cls.add_method('GetOrigin', 
                    'ns3::Ipv4Address', 

@@ -44,6 +44,8 @@ class Ipv4RoutingTableEntry;
 class Ipv4MulticastRoutingTableEntry;
 
 /**
+ * \ingroup ipv4Routing
+ * 
  * \brief Static routing protocol for IP version 4 stacks.
  *
  * In ns-3 we have the concept of a pluggable routing protocol.  Routing

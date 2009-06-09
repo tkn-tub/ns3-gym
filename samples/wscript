@@ -10,6 +10,9 @@ def build(bld):
     obj = bld.create_ns3_program('main-simulator')
     obj.source = 'main-simulator.cc'
 
+    obj = bld.create_ns3_program('main-ptr')
+    obj.source = 'main-ptr.cc'
+
     obj = bld.create_ns3_program('main-random-variable')
     obj.source = 'main-random-variable.cc'
 

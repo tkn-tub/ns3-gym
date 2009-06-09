@@ -125,7 +125,7 @@ public:
    * The input item should be a node instance to which a mobility model
    * has already been aggregated (usually by a call to Install).
    *
-   * If this this stack is not empty when MobilityHelper::Install
+   * If this stack is not empty when MobilityHelper::Install
    * is called, the model from the top of the stack is used
    * to create a ns3::HierarchicalMobilityModel to make the
    * newly-created models define their positions relative to that
@@ -138,13 +138,13 @@ public:
    */
   void PushReferenceMobilityModel (Ptr<Object> reference);
   /**
-   * \param reference item to push.
+   * \param referenceName named item to push.
    *
    * Push an item on the top of the stack of "reference mobility models".
    * The input item should be a node instance to which a mobility model
    * has already been aggregated (usually by a call to Install).
    *
-   * If this this stack is not empty when MobilityHelper::Install
+   * If this stack is not empty when MobilityHelper::Install
    * is called, the model from the top of the stack is used
    * to create a ns3::HierarchicalMobilityModel to make the
    * newly-created models define their positions relative to that

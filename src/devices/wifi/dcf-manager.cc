@@ -160,16 +160,28 @@ DcfState::NotifyInternalCollision (void)
  *         Listener for Nav events. Forwards to DcfManager
  ***************************************************************/
 
-class LowNavListener : public ns3::MacLowNavListener {
+class LowDcfListener : public ns3::MacLowDcfListener {
 public:
-  LowNavListener (ns3::DcfManager *dcf)
+  LowDcfListener (ns3::DcfManager *dcf)
     : m_dcf (dcf) {}
-  virtual ~LowNavListener () {}
+  virtual ~LowDcfListener () {}
   virtual void NavStart (Time duration) {
     m_dcf->NotifyNavStartNow (duration);
   }
   virtual void NavReset (Time duration) {
     m_dcf->NotifyNavResetNow (duration);
+  }
+  virtual void AckTimeoutStart (Time duration) {
+    m_dcf->NotifyAckTimeoutStartNow (duration);
+  }
+  virtual void AckTimeoutReset () {
+    m_dcf->NotifyAckTimeoutResetNow ();
+  }
+  virtual void CtsTimeoutStart (Time duration) {
+    m_dcf->NotifyCtsTimeoutStartNow (duration);
+  }
+  virtual void CtsTimeoutReset () {
+    m_dcf->NotifyCtsTimeoutResetNow ();
   }
 private:
   ns3::DcfManager *m_dcf;
@@ -208,7 +220,9 @@ private:
  ****************************************************************/
 
 DcfManager::DcfManager ()
-  : m_lastNavStart (MicroSeconds (0)),
+  : m_lastAckTimeoutEnd (MicroSeconds (0)),
+    m_lastCtsTimeoutEnd (MicroSeconds (0)),
+    m_lastNavStart (MicroSeconds (0)),
     m_lastNavDuration (MicroSeconds (0)),
     m_lastRxStart (MicroSeconds (0)),
     m_lastRxDuration (MicroSeconds (0)),
@@ -242,8 +256,8 @@ DcfManager::SetupPhyListener (Ptr<WifiPhy> phy)
 void 
 DcfManager::SetupLowListener (Ptr<MacLow> low)
 {
-  m_lowListener = new LowNavListener (this);
-  low->RegisterNavListener (m_lowListener);
+  m_lowListener = new LowDcfListener (this);
+  low->RegisterDcfListener (m_lowListener);
 }
 
 void 
@@ -292,6 +306,16 @@ DcfManager::MostRecent (Time a, Time b, Time c, Time d) const
   Time e = Max (a, b);
   Time f = Max (c, d);
   Time retval = Max (e, f);
+  return retval;
+}
+Time
+DcfManager::MostRecent (Time a, Time b, Time c, Time d, Time e, Time f) const
+{
+  Time g = Max (a, b);
+  Time h = Max (c, d);
+  Time i = Max (e, f);
+  Time k = Max (g, h);
+  Time retval = Max (k, i);
   return retval;
 }
 
@@ -351,7 +375,7 @@ DcfManager::DoGrantAccess (void)
     {
       DcfState *state = *i;
       if (state->IsAccessRequested () && 
-          GetBackoffEndFor (state) <= Simulator::Now ())
+          GetBackoffEndFor (state) <= Simulator::Now () )
         {
           /**
            * This is the first dcf we find with an expired backoff and which
@@ -428,10 +452,15 @@ DcfManager::GetAccessGrantStart (void) const
   Time busyAccessStart = m_lastBusyStart + m_lastBusyDuration + m_sifs;
   Time txAccessStart = m_lastTxStart + m_lastTxDuration + m_sifs;
   Time navAccessStart = m_lastNavStart + m_lastNavDuration + m_sifs;
+  Time ackTimeoutAccessStart = m_lastAckTimeoutEnd + m_sifs;
+  Time ctsTimeoutAccessStart = m_lastCtsTimeoutEnd + m_sifs;
   Time accessGrantedStart = MostRecent (rxAccessStart, 
                                         busyAccessStart,
                                         txAccessStart, 
-                                        navAccessStart);
+                                        navAccessStart,
+                                        ackTimeoutAccessStart,
+                                        ctsTimeoutAccessStart
+                                        );
   NS_LOG_INFO ("access grant start=" << accessGrantedStart <<
                ", rx access start=" << rxAccessStart <<
                ", busy access start=" << busyAccessStart <<
@@ -586,5 +615,27 @@ DcfManager::NotifyNavStartNow (Time duration)
       m_lastNavDuration = duration;
     }
 }
-
+void
+DcfManager::NotifyAckTimeoutStartNow (Time duration)
+{
+  NS_ASSERT(m_lastAckTimeoutEnd < Simulator::Now ());
+  m_lastAckTimeoutEnd = Simulator::Now () + duration;
+}
+void
+DcfManager::NotifyAckTimeoutResetNow ()
+{
+  m_lastAckTimeoutEnd = Simulator::Now ();
+  DoRestartAccessTimeoutIfNeeded ();
+}
+void
+DcfManager::NotifyCtsTimeoutStartNow (Time duration)
+{
+  m_lastCtsTimeoutEnd = Simulator::Now () + duration;
+}
+void
+DcfManager::NotifyCtsTimeoutResetNow ()
+{
+  m_lastCtsTimeoutEnd = Simulator::Now ();
+  DoRestartAccessTimeoutIfNeeded ();
+}
 } // namespace ns3
