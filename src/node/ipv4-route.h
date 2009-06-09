@@ -31,7 +31,7 @@ namespace ns3 {
 class NetDevice;
 
 /**
- * \ingroup ipv4-routing
+ * \ingroup ipv4Routing
  *
  *\brief Ipv4 route cache entry (similar to Linux struct rtable)
  *
@@ -99,7 +99,7 @@ private:
 std::ostream& operator<< (std::ostream& os, Ipv4Route const& route);
 
 /**
- * \ingroup ipv4-routing
+ * \ingroup ipv4Routing
  * 
  * \brief Ipv4 multicast route cache entry (similar to Linux struct mfc_cache)
  */

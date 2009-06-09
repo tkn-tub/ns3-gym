@@ -44,7 +44,7 @@ class Ipv4RoutingTableEntry;
 class Ipv4MulticastRoutingTableEntry;
 
 /**
- * \ingroup ipv4-routing
+ * \ingroup ipv4Routing
  * 
  * \brief Static routing protocol for IP version 4 stacks.
  *
