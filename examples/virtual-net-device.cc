@@ -18,8 +18,6 @@
  * Originally authored by Steve McCanne, 12/19/1996
  */
 
-// Port of ns-2/tcl/ex/simple.tcl to ns-3
-//
 // Network topology
 //
 //  n0
@@ -36,7 +34,7 @@
 // - UDP packet size of 210 bytes, with per-packet interval 0.00375 sec.
 //   (i.e., DataRate of 448,000 bps)
 // - DropTail queues 
-// - Tracing of queues and packet receptions to file "simple-global-routing.tr"
+// - Tracing of queues and packet receptions to file "virtual-net-device.tr"
 
 // Tunneling changes (relative to the simple-global-routing example):
 // n0 will receive an extra virtual interface with address 11.0.0.1
@@ -45,6 +43,10 @@
 // The flows will be between 11.0.0.x (tunnel) addresses instead of 10.1.x.y ones
 // n3 will decide, on a per-packet basis, via random number, whether to
 // send the packet to n0 or to n1.
+//
+// Note: here we create a tunnel where IP packets are tunneled over
+// UDP/IP, but tunneling directly IP-over-IP would also be possible;
+// see src/node/ipv4-raw-socket-factory.h.
 
 #include <iostream>
 #include <fstream>
@@ -174,7 +176,7 @@ main (int argc, char *argv[])
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
 #if 0 
-  LogComponentEnable ("SimpleGlobalRoutingExample", LOG_LEVEL_INFO);
+  LogComponentEnable ("VirtualNetDeviceExample", LOG_LEVEL_INFO);
 #endif
 
   // Set up some default values for the simulation.  Use the 
@@ -265,8 +267,8 @@ main (int argc, char *argv[])
   apps.Stop (Seconds (10.0));
 
   std::ofstream ascii;
-  ascii.open ("tap-net-device.tr");
-  PointToPointHelper::EnablePcapAll ("tap-net-device");
+  ascii.open ("virtual-net-device.tr");
+  PointToPointHelper::EnablePcapAll ("virtual-net-device");
   PointToPointHelper::EnableAsciiAll (ascii);
 
   NS_LOG_INFO ("Run Simulation.");
