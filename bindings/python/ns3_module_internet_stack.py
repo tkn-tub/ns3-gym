@@ -181,10 +181,10 @@ def register_Ns3Icmpv4Echo_methods(root_module, cls):
                    'uint16_t', 
                    [], 
                    is_const=True)
-    ## icmpv4.h: ns3::Ptr<ns3::Packet const> ns3::Icmpv4Echo::GetData() const [member function]
+    ## icmpv4.h: uint32_t ns3::Icmpv4Echo::GetData(uint8_t * payload) const [member function]
     cls.add_method('GetData', 
-                   'ns3::Ptr< ns3::Packet const >', 
-                   [], 
+                   'uint32_t', 
+                   [param('uint8_t *', 'payload')], 
                    is_const=True)
     ## icmpv4.h: static ns3::TypeId ns3::Icmpv4Echo::GetTypeId() [member function]
     cls.add_method('GetTypeId', 

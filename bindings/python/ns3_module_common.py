@@ -203,6 +203,11 @@ def register_Ns3Buffer_methods(root_module, cls):
                    'int32_t', 
                    [], 
                    is_const=True)
+    ## buffer.h: void ns3::Buffer::CopyData(std::ostream * os, uint32_t size) const [member function]
+    cls.add_method('CopyData', 
+                   'void', 
+                   [param('std::ostream *', 'os'), param('uint32_t', 'size')], 
+                   is_const=True)
     ## buffer.h: ns3::Buffer::Buffer(ns3::Buffer const & o) [copy constructor]
     cls.add_constructor([param('ns3::Buffer const &', 'o')])
     ## buffer.h: ns3::Buffer::Buffer() [constructor]
@@ -543,6 +548,11 @@ def register_Ns3Packet_methods(root_module, cls):
     cls.add_method('CopyData', 
                    'uint32_t', 
                    [param('uint8_t *', 'buffer'), param('uint32_t', 'size')], 
+                   is_const=True)
+    ## packet.h: void ns3::Packet::CopyData(std::ostream * os, uint32_t size) const [member function]
+    cls.add_method('CopyData', 
+                   'void', 
+                   [param('std::ostream *', 'os'), param('uint32_t', 'size')], 
                    is_const=True)
     ## packet.h: ns3::Ptr<ns3::Packet> ns3::Packet::CreateFragment(uint32_t start, uint32_t length) const [member function]
     cls.add_method('CreateFragment', 
