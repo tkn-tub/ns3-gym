@@ -36,8 +36,6 @@ class IeRann : public WifiInformationElement
 public:
   IeRann ();
   virtual ~IeRann ();
-  static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
   void SetFlags (uint8_t flags);
   void SetHopcount (uint8_t hopcount);
   void SetTTL (uint8_t ttl);

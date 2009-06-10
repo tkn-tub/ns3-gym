@@ -100,9 +100,6 @@ public:
 class IeConfiguration : public WifiInformationElement
 {
 public:
-  static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const;
-
   IeConfiguration ();
   void SetRouting (dot11sPathSelectionProtocol routingId);
   void SetMetric (dot11sPathSelectionMetric metricId);

@@ -35,12 +35,10 @@ dot11sMeshCapability::dot11sMeshCapability ():
     TBTTAdjustment (true),
     powerSaveLevel (false)
 {}
-
 uint8_t dot11sMeshCapability::GetSerializedSize () const
 {
   return 2;
 }
-
 Buffer::Iterator dot11sMeshCapability::Serialize (Buffer::Iterator i) const
 {
   uint16_t result = 0;
@@ -61,7 +59,6 @@ Buffer::Iterator dot11sMeshCapability::Serialize (Buffer::Iterator i) const
   i.WriteHtolsbU16 (result);
   return i;
 }
-
 Buffer::Iterator dot11sMeshCapability::Deserialize (Buffer::Iterator i)
 {
   uint16_t  cap = i.ReadLsbtohU16 ();
@@ -74,13 +71,11 @@ Buffer::Iterator dot11sMeshCapability::Deserialize (Buffer::Iterator i)
   powerSaveLevel     = Is (cap, 6);
   return i;
 }
-
 bool dot11sMeshCapability::Is (uint16_t cap, uint8_t n) const
 {
   uint16_t mask = 1<<n;
   return (cap & mask) == mask;
 }
-
 IeConfiguration::IeConfiguration ():
     m_APSId (PROTOCOL_HWMP),
     m_APSMId (METRIC_AIRTIME),
@@ -89,20 +84,6 @@ IeConfiguration::IeConfiguration ():
     m_APId (AUTH_NULL),
     m_neighbors (0)
 {}
-
-TypeId
-IeConfiguration::GetTypeId ()
-{
-  static TypeId tid = TypeId ("ns3::dot11s::IeConfiguration")
-    .SetParent<WifiInformationElement> ();
-  return tid;
-}
-
-TypeId
-IeConfiguration::GetInstanceTypeId () const
-{
-  return GetTypeId ();
-}
 uint8_t
 IeConfiguration::GetInformationSize () const
 {
@@ -115,7 +96,6 @@ IeConfiguration::GetInformationSize () const
     + 1 // Mesh formation info (see 7.3.2.86.6 of 802.11s draft 3.0)
     + m_meshCap.GetSerializedSize ();
 }
-
 void
 IeConfiguration::SerializeInformation (Buffer::Iterator i) const
 {
@@ -133,7 +113,6 @@ IeConfiguration::SerializeInformation (Buffer::Iterator i) const
   i.WriteU8 (m_neighbors << 1);
   m_meshCap.Serialize (i);
 }
-
 uint8_t
 IeConfiguration::DeserializeInformation (Buffer::Iterator i, uint8_t length)
 {
@@ -162,19 +141,16 @@ IeConfiguration::SetRouting (dot11sPathSelectionProtocol routingId)
 {
   m_APSId  =  routingId;
 }
-
 void
 IeConfiguration::SetMetric (dot11sPathSelectionMetric metricId)
 {
   m_APSMId =  metricId;
 }
-
 bool
 IeConfiguration::IsHWMP ()
 {
   return (m_APSId == PROTOCOL_HWMP);
 }
-
 bool
 IeConfiguration::IsAirtime ()
 {

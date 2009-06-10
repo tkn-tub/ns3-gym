@@ -29,9 +29,6 @@ namespace dot11s {
 class IePeeringProtocol : public WifiInformationElement
 {
 public:
-  static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const;
-
   IePeeringProtocol ();
 private:
   WifiElementId ElementId () const

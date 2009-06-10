@@ -91,20 +91,6 @@ DestinationAddressUnit::GetDestinationAddress () const
 IePreq::~IePreq ()
 {
 }
-
-TypeId
-IePreq::GetTypeId ()
-{
-  static TypeId tid = TypeId ("ns3::dot11s::IePreq")
-                      .SetParent<Object> ();
-  return tid;
-}
-TypeId
-IePreq::GetInstanceTypeId () const
-{
-  return GetTypeId ();
-}
-
 IePreq::IePreq ():
     m_maxSize (32),
     m_flags (0),

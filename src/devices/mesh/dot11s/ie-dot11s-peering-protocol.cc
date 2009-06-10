@@ -22,19 +22,6 @@
 #include "ie-dot11s-peering-protocol.h"
 namespace ns3 {
 namespace dot11s {
-TypeId
-IePeeringProtocol::GetTypeId ()
-{
-  static TypeId tid = TypeId ("ns3::dot11s::IePeeringProtocol")
-    .SetParent<WifiInformationElement> ();
-  return tid;
-}
-
-TypeId
-IePeeringProtocol::GetInstanceTypeId () const
-{
-  return GetTypeId ();
-}
 uint8_t
 IePeeringProtocol::GetInformationSize () const
 {

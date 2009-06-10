@@ -33,19 +33,6 @@ namespace dot11s {
 IePrep::~IePrep ()
 {
 }
-
-TypeId
-IePrep::GetTypeId ()
-{
-  static TypeId tid = TypeId ("ns3::dot11s::IePrep")
-                      .SetParent<Object> ();
-  return tid;
-}
-TypeId
-IePrep::GetInstanceTypeId () const
-{
-  return GetTypeId ();
-}
 IePrep::IePrep ():
     m_flags (0),
     m_hopcount (0),

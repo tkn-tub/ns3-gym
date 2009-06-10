@@ -32,17 +32,6 @@ namespace dot11s {
 IeRann::~IeRann ()
 {
 }
-TypeId
-IeRann::GetTypeId ()
-{
-  static TypeId tid = TypeId ("ns3::dot11s::IeRann").SetParent<Object> ();
-  return tid;
-}
-TypeId
-IeRann::GetInstanceTypeId () const
-{
-  return GetTypeId ();
-}
 IeRann::IeRann ():
     m_flags (0),
     m_hopcount (0),

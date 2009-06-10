@@ -29,23 +29,10 @@ namespace dot11s {
 IePerr::~IePerr ()
 {
 }
-
-TypeId
-IePerr::GetTypeId ()
-{
-  static TypeId tid = TypeId ("ns3::dot11s::IePerr")
-                      .SetParent<Object> ();
-  return tid;
-}
 void
 IePerr::PrintInformation (std::ostream &os) const
 {
-    // FILL
-}
-TypeId
-IePerr::GetInstanceTypeId () const
-{
-    return GetTypeId ();
+    // TODO:FILL
 }
 IePerr::IePerr ():
     m_numOfDest (0)

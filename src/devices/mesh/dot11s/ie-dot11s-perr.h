@@ -36,8 +36,6 @@ class IePerr : public WifiInformationElement
 public:
   IePerr ();
   ~IePerr ();
-  static  TypeId   GetTypeId ();
-  virtual TypeId   GetInstanceTypeId () const;
   struct FailedDestination
   {
     Mac48Address destination;

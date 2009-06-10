@@ -37,8 +37,6 @@ class IePrep : public WifiInformationElement
 public:
   IePrep ();
   ~IePrep ();
-  static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
   void SetFlags (uint8_t flags);
   void SetHopcount (uint8_t hopcount);
   void SetTtl (uint8_t ttl);

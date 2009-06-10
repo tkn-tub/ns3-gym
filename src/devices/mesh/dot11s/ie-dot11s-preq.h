@@ -64,8 +64,6 @@ class IePreq : public WifiInformationElement
 public:
   IePreq ();
   ~IePreq ();
-  static TypeId GetTypeId ();
-  virtual TypeId GetInstanceTypeId () const;
   void AddDestinationAddressElement (
     bool doFlag,
     bool rfFlag,
