@@ -18,14 +18,14 @@
  * Authors: Kirill Andreev <andreev@iitp.ru>
  */
 #include "ns3/mesh-interface-helper.h"
-#include "dot11s-installator.h"
+#include "dot11s-installer.h"
 #include "peer-management-protocol.h"
 #include "hwmp-protocol.h"
 
 namespace ns3 {
 namespace dot11s {
 bool
-Dot11sStackInstallator::InstallDot11sStack (Ptr<MeshPointDevice> mp, bool root)
+Dot11sStackInstaller::InstallDot11sStack (Ptr<MeshPointDevice> mp, bool root)
 {
   //Install Peer management protocol:
   Ptr<PeerManagementProtocol> pmp = CreateObject<PeerManagementProtocol> ();
@@ -46,7 +46,7 @@ Dot11sStackInstallator::InstallDot11sStack (Ptr<MeshPointDevice> mp, bool root)
   return true;
 }
 void
-Dot11sStackInstallator::Report (const Ptr<MeshPointDevice> mp, std::ostream& os)
+Dot11sStackInstaller::Report (const Ptr<MeshPointDevice> mp, std::ostream& os)
 {
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
   for (std::vector<Ptr<NetDevice> >::const_iterator i = ifaces.begin(); i != ifaces.end(); ++i)
@@ -64,7 +64,7 @@ Dot11sStackInstallator::Report (const Ptr<MeshPointDevice> mp, std::ostream& os)
   pmp->Report (os);
 }
 void
-Dot11sStackInstallator::ResetStats (const Ptr<MeshPointDevice> mp)
+Dot11sStackInstaller::ResetStats (const Ptr<MeshPointDevice> mp)
 {
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
   for (std::vector<Ptr<NetDevice> >::const_iterator i = ifaces.begin(); i != ifaces.end(); ++i)

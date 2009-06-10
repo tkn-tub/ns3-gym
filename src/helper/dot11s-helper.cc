@@ -19,7 +19,7 @@
  *         Pavel Boyko <boyko@iitp.ru>
  */
 #include "dot11s-helper.h"
-#include "ns3/dot11s-installator.h"
+#include "ns3/dot11s-installer.h"
 #include "ns3/simulator.h"
 #include "ns3/mesh-point-device.h"
 #include "ns3/wifi-net-device.h"
@@ -58,7 +58,7 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelp
     for (unsigned int j = 0; j < roots.size (); j ++)
       if(node_counter == roots[j])
         root = true;
-    if(!Dot11sStackInstallator::InstallDot11sStack (mp, root))
+    if(!Dot11sStackInstaller::InstallDot11sStack (mp, root))
     {
       NS_ASSERT(false);
     }
@@ -80,7 +80,7 @@ MeshWifiHelper::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os
   NS_ASSERT (mp != 0);
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
   os << "<MeshPointDevice ReportTime=\"" << Simulator::Now().GetSeconds() << "s\" MpAddress=\"" << mp->GetAddress () << "\">\n";
-  Dot11sStackInstallator::Report (mp, os);
+  Dot11sStackInstaller::Report (mp, os);
   os << "</MeshPointDevice>\n";
 }
 void
@@ -88,7 +88,7 @@ MeshWifiHelper::ResetStats (const ns3::Ptr<ns3::NetDevice>& device)
 {
   Ptr <MeshPointDevice> mp = device->GetObject<MeshPointDevice> ();
   NS_ASSERT (mp != 0);
-  Dot11sStackInstallator::ResetStats (mp);
+  Dot11sStackInstaller::ResetStats (mp);
 }
 } //namespace ns3
 

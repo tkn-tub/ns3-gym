@@ -23,10 +23,10 @@ def build(bld):
         'hwmp-mac-plugin.cc',
         'hwmp-protocol.cc',
         'airtime-metric.cc',
-        'dot11s-installator.cc',
+        'dot11s-installer.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'dot11s'
     headers.source = [
-        'dot11s-installator.h',
+        'dot11s-installer.h',
         ]

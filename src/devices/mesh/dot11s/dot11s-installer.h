@@ -24,7 +24,7 @@
 #include "ns3/mesh-point-device.h"
 namespace ns3 {
 namespace dot11s {
-class Dot11sStackInstallator
+class Dot11sStackInstaller
 {
   public:
     ///\brief Installs 802.11s stack. needed by helper only
