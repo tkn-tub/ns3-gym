@@ -25,7 +25,7 @@
 #include "ns3/mesh-wifi-interface-mac.h"
 namespace ns3 {
 
-class MeshInterfaceHelper
+class MeshInterfaceHelper : public WifiMacHelper
 {
 public:
   MeshInterfaceHelper ();
@@ -101,7 +101,7 @@ private:
    *
    * This method implements the pure virtual method defined in \ref ns3::WifiMacHelper.
    */
-  Ptr<MeshWifiInterfaceMac> Create (void) const;
+  Ptr<WifiMac> Create (void) const;
 
   ObjectFactory m_mac;
   ObjectFactory m_Be;

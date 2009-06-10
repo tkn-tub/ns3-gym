@@ -121,7 +121,8 @@ MeshInterfaceHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> 
 {
   Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
   
-  Ptr<MeshWifiInterfaceMac> mac = Create ();
+  Ptr<MeshWifiInterfaceMac> mac = DynamicCast <MeshWifiInterfaceMac> (Create ());
+  NS_ASSERT (mac != 0);
   mac->SetSsid (Ssid ());
   Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
   Ptr<WifiPhy> phy = phyHelper.Create (node, device);
@@ -133,10 +134,10 @@ MeshInterfaceHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> 
   mac->SwitchFrequencyChannel (channelId);
   return device;
 }
-Ptr<MeshWifiInterfaceMac>
+Ptr<WifiMac>
 MeshInterfaceHelper::Create (void) const
 {
-  Ptr<MeshWifiInterfaceMac> mac = m_mac.Create<MeshWifiInterfaceMac> ();
+  Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
   Ptr<DcaTxop> be = m_Be.Create<DcaTxop> ();
   Ptr<DcaTxop> vo = m_Vo.Create<DcaTxop> ();
   mac->SetAttribute ("BE", PointerValue (be));

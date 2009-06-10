@@ -38,6 +38,7 @@ NetDeviceContainer
 MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &interfaceHelper, NodeContainer c,  std::vector<uint32_t> roots, uint32_t nInterfaces) const
 {
   NetDeviceContainer devices;
+  uint16_t node_counter = 0;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
   {
     Ptr<Node> node = *i;
@@ -53,11 +54,16 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelp
         Ptr<WifiNetDevice> iface = interfaceHelper.CreateInterface (phyHelper,node, (m_spreadInterfaceChannels ? channel : 0));
         mp->AddInterface (iface);
       }
-    if(!Dot11sStackInstallator::InstallDot11sStack (mp, false))
+    bool root = false;
+    for (unsigned int j = 0; j < roots.size (); j ++)
+      if(node_counter == roots[j])
+        root = true;
+    if(!Dot11sStackInstallator::InstallDot11sStack (mp, root))
     {
       NS_ASSERT(false);
     }
     devices.Add (mp);
+    node_counter ++;
   }
   return devices;
 }

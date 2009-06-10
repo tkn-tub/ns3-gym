@@ -268,7 +268,7 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
   HwmpTag tag;
   tag.SetAddress (result.retransmitter);
   tag.SetTtl (ttl);
-    //seqno and metric is not used;
+  //seqno and metric is not used;
   packet->AddPacketTag(tag);
   if(result.retransmitter != Mac48Address::GetBroadcast ())
   {
@@ -794,7 +794,10 @@ HwmpProtocol::ProactivePathResolved ()
       return;
     //set RA tag for retransmitter:
     HwmpTag tag;
-    NS_ASSERT (packet.pkt->PeekPacketTag(tag));
+    if(!packet.pkt->RemovePacketTag (tag))
+    {
+      NS_ASSERT (false);
+    }
     tag.SetAddress (result.retransmitter);
     packet.pkt->AddPacketTag (tag);
     m_stats.txUnicast ++;

@@ -87,7 +87,7 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
   NS_LOG_DEBUG ("SRC="<<src48<<", DST = "<<dst48<<", I am: "<<m_address);
   if (!m_promiscRxCallback.IsNull ())
     m_promiscRxCallback (this, packet, protocol, src, dst, packetType);
-  if(dst48.IsBroadcast () || dst48.IsGroup ())
+  if(dst48.IsGroup ())
   {
     m_rxCallback (this, packet, protocol, src);
     Forward (incomingPort, packet->Copy (), protocol, src48, dst48);
