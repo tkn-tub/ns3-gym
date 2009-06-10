@@ -25,8 +25,6 @@ def register_types(module):
     module.add_class('UdpHeader', parent=root_module['ns3::Header'])
     ## ipv4-static-routing-impl.h: ns3::Ipv4StaticRoutingImpl [class]
     module.add_class('Ipv4StaticRoutingImpl', parent=root_module['ns3::Ipv4StaticRouting'])
-    ## ipv4-global-routing.h: ns3::Ipv4GlobalRouting [class]
-    module.add_class('Ipv4GlobalRouting', parent=root_module['ns3::Ipv4RoutingProtocol'])
     ## ipv4-list-routing-impl.h: ns3::Ipv4ListRoutingImpl [class]
     module.add_class('Ipv4ListRoutingImpl', parent=root_module['ns3::Ipv4ListRouting'])
     
@@ -88,7 +86,6 @@ def register_methods(root_module):
     register_Ns3TcpHeader_methods(root_module, root_module['ns3::TcpHeader'])
     register_Ns3UdpHeader_methods(root_module, root_module['ns3::UdpHeader'])
     register_Ns3Ipv4StaticRoutingImpl_methods(root_module, root_module['ns3::Ipv4StaticRoutingImpl'])
-    register_Ns3Ipv4GlobalRouting_methods(root_module, root_module['ns3::Ipv4GlobalRouting'])
     register_Ns3Ipv4ListRoutingImpl_methods(root_module, root_module['ns3::Ipv4ListRoutingImpl'])
     return
 
@@ -630,70 +627,6 @@ def register_Ns3Ipv4StaticRoutingImpl_methods(root_module, cls):
                    [], 
                    is_const=True, is_virtual=True)
     ## ipv4-static-routing-impl.h: void ns3::Ipv4StaticRoutingImpl::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    return
-
-def register_Ns3Ipv4GlobalRouting_methods(root_module, cls):
-    ## ipv4-global-routing.h: ns3::Ipv4GlobalRouting::Ipv4GlobalRouting(ns3::Ipv4GlobalRouting const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4GlobalRouting const &', 'arg0')])
-    ## ipv4-global-routing.h: static ns3::TypeId ns3::Ipv4GlobalRouting::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## ipv4-global-routing.h: ns3::Ipv4GlobalRouting::Ipv4GlobalRouting() [constructor]
-    cls.add_constructor([])
-    ## ipv4-global-routing.h: ns3::Ptr<ns3::Ipv4Route> ns3::Ipv4GlobalRouting::RouteOutput(ns3::Ipv4Header const & header, uint32_t oif, ns3::Socket::SocketErrno & sockerr) [member function]
-    cls.add_method('RouteOutput', 
-                   'ns3::Ptr< ns3::Ipv4Route >', 
-                   [param('ns3::Ipv4Header const &', 'header'), param('uint32_t', 'oif'), param('ns3::Socket::SocketErrno &', 'sockerr')], 
-                   is_virtual=True)
-    ## ipv4-global-routing.h: bool ns3::Ipv4GlobalRouting::RouteInput(ns3::Ptr<ns3::Packet const> p, ns3::Ipv4Header const & header, ns3::Ptr<const ns3::NetDevice> idev, ns3::Callback<void,ns3::Ptr<ns3::Ipv4Route>,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> ucb, ns3::Callback<void,ns3::Ptr<ns3::Ipv4MulticastRoute>,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> mcb, ns3::Callback<void,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,unsigned int,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> lcb, ns3::Callback<void,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> ecb) [member function]
-    cls.add_method('RouteInput', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'p'), param('ns3::Ipv4Header const &', 'header'), param('ns3::Ptr< ns3::NetDevice const >', 'idev'), param('ns3::Callback< void, ns3::Ptr< ns3::Ipv4Route >, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ucb'), param('ns3::Callback< void, ns3::Ptr< ns3::Ipv4MulticastRoute >, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'mcb'), param('ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'lcb'), param('ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ecb')], 
-                   is_virtual=True)
-    ## ipv4-global-routing.h: void ns3::Ipv4GlobalRouting::AddHostRouteTo(ns3::Ipv4Address dest, ns3::Ipv4Address nextHop, uint32_t interface) [member function]
-    cls.add_method('AddHostRouteTo', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'dest'), param('ns3::Ipv4Address', 'nextHop'), param('uint32_t', 'interface')])
-    ## ipv4-global-routing.h: void ns3::Ipv4GlobalRouting::AddHostRouteTo(ns3::Ipv4Address dest, uint32_t interface) [member function]
-    cls.add_method('AddHostRouteTo', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'dest'), param('uint32_t', 'interface')])
-    ## ipv4-global-routing.h: void ns3::Ipv4GlobalRouting::AddNetworkRouteTo(ns3::Ipv4Address network, ns3::Ipv4Mask networkMask, ns3::Ipv4Address nextHop, uint32_t interface) [member function]
-    cls.add_method('AddNetworkRouteTo', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'network'), param('ns3::Ipv4Mask', 'networkMask'), param('ns3::Ipv4Address', 'nextHop'), param('uint32_t', 'interface')])
-    ## ipv4-global-routing.h: void ns3::Ipv4GlobalRouting::AddNetworkRouteTo(ns3::Ipv4Address network, ns3::Ipv4Mask networkMask, uint32_t interface) [member function]
-    cls.add_method('AddNetworkRouteTo', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'network'), param('ns3::Ipv4Mask', 'networkMask'), param('uint32_t', 'interface')])
-    ## ipv4-global-routing.h: uint32_t ns3::Ipv4GlobalRouting::GetNRoutes() [member function]
-    cls.add_method('GetNRoutes', 
-                   'uint32_t', 
-                   [])
-    ## ipv4-global-routing.h: ns3::Ipv4RoutingTableEntry * ns3::Ipv4GlobalRouting::GetRoute(uint32_t i) [member function]
-    cls.add_method('GetRoute', 
-                   'ns3::Ipv4RoutingTableEntry *', 
-                   [param('uint32_t', 'i')])
-    ## ipv4-global-routing.h: void ns3::Ipv4GlobalRouting::RemoveRoute(uint32_t i) [member function]
-    cls.add_method('RemoveRoute', 
-                   'void', 
-                   [param('uint32_t', 'i')])
-    ## ipv4-global-routing.h: void ns3::Ipv4GlobalRouting::SetNode(ns3::Ptr<ns3::Node> node) [member function]
-    cls.add_method('SetNode', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')])
-    ## ipv4-global-routing.h: ns3::Ptr<ns3::Node> ns3::Ipv4GlobalRouting::GetNode() const [member function]
-    cls.add_method('GetNode', 
-                   'ns3::Ptr< ns3::Node >', 
-                   [], 
-                   is_const=True)
-    ## ipv4-global-routing.h: void ns3::Ipv4GlobalRouting::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
                    [], 

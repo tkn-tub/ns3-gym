@@ -7,6 +7,7 @@ def build(bld):
         'global-route-manager.cc',
         'global-route-manager-impl.cc',
         'candidate-queue.cc',
+        'ipv4-global-routing.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'global-routing'
