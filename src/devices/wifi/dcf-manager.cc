@@ -520,9 +520,8 @@ DcfManager::DoRestartAccessTimeoutIfNeeded (void)
       if (state->IsAccessRequested ())
         {
           Time tmp = GetBackoffEndFor (state);
-          if (tmp.GetTimeStep () > Simulator::Now ().GetTimeStep ())
+          if (tmp > Simulator::Now ())
             {
-              //NS_LOG_UNCOND("Now:"<<Simulator::Now ().GetTimeStep ());
               accessTimeoutNeeded = true;
               expectedBackoffEnd = std::min (expectedBackoffEnd, tmp);
             }
