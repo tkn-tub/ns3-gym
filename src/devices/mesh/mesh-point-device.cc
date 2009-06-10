@@ -89,8 +89,10 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
     m_promiscRxCallback (this, packet, protocol, src, dst, packetType);
   if(dst48.IsGroup ())
   {
-    m_rxCallback (this, packet, protocol, src);
-    Forward (incomingPort, packet->Copy (), protocol, src48, dst48);
+    Ptr<Packet> packet_copy = packet->Copy ();
+    Forward (incomingPort, packet_copy, protocol, src48, dst48);
+    packet_copy->RemoveAllPacketTags ();
+    m_rxCallback (this, packet_copy, protocol, src);
     return;
   }
   if(dst48 == m_address)
