@@ -46,11 +46,9 @@ Dot11sStackInstallator::InstallDot11sStack (Ptr<MeshPointDevice> mp, bool root)
   return true;
 }
 void
-Dot11sStackInstallator::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os)
+Dot11sStackInstallator::Report (const Ptr<MeshPointDevice> mp, std::ostream& os)
 {
-  Ptr <MeshPointDevice> mp = device->GetObject<MeshPointDevice> ();
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
-  NS_ASSERT (mp != 0);
   for (std::vector<Ptr<NetDevice> >::const_iterator i = ifaces.begin(); i != ifaces.end(); ++i)
   {
     Ptr<WifiNetDevice> device = (*i)->GetObject<WifiNetDevice> ();
@@ -66,10 +64,8 @@ Dot11sStackInstallator::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ost
   pmp->Report (os);
 }
 void
-Dot11sStackInstallator::ResetStats (const ns3::Ptr<ns3::NetDevice>& device)
+Dot11sStackInstallator::ResetStats (const Ptr<MeshPointDevice> mp)
 {
-  Ptr <MeshPointDevice> mp = device->GetObject<MeshPointDevice> ();
-  NS_ASSERT (mp != 0);
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
   for (std::vector<Ptr<NetDevice> >::const_iterator i = ifaces.begin(); i != ifaces.end(); ++i)
   {

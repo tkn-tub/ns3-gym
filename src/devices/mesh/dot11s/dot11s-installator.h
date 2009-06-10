@@ -29,8 +29,8 @@ class Dot11sStackInstallator
   public:
     ///\brief Installs 802.11s stack. needed by helper only
     static bool InstallDot11sStack (Ptr<MeshPointDevice> mp, bool root);
-    static void Report (const ns3::Ptr<ns3::NetDevice>&, std::ostream&);
-    static void ResetStats (const ns3::Ptr<ns3::NetDevice>&);
+    static void Report (const Ptr<MeshPointDevice> mp, std::ostream&);
+    static void ResetStats (const Ptr<MeshPointDevice> mp);
 };
 
 }
