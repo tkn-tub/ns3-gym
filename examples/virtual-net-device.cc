@@ -103,19 +103,19 @@ class Tunnel
   void N3SocketRecv (Ptr<Socket> socket)
   {
     Ptr<Packet> packet = socket->Recv (65535, 0);
-    m_n3Tap->Receive (packet, 0x0800, Address ());
+    m_n3Tap->Receive (packet, 0x0800, m_n3Tap->GetAddress (), m_n3Tap->GetAddress (), NetDevice::PACKET_HOST);
   }
 
   void N0SocketRecv (Ptr<Socket> socket)
   {
     Ptr<Packet> packet = socket->Recv (65535, 0);
-    m_n0Tap->Receive (packet, 0x0800, Address ());
+    m_n0Tap->Receive (packet, 0x0800, m_n0Tap->GetAddress (), m_n0Tap->GetAddress (), NetDevice::PACKET_HOST);
   }
 
   void N1SocketRecv (Ptr<Socket> socket)
   {
     Ptr<Packet> packet = socket->Recv (65535, 0);
-    m_n0Tap->Receive (packet, 0x0800, Address ());
+    m_n1Tap->Receive (packet, 0x0800, m_n1Tap->GetAddress (), m_n1Tap->GetAddress (), NetDevice::PACKET_HOST);
   }
 
 public:
@@ -138,7 +138,8 @@ public:
     
     // n0 tap device
     m_n0Tap = CreateObject<VirtualNetDevice> ();
-    m_n0Tap->SetSendFromCallback (MakeCallback (&Tunnel::N0N1VirtualSend, this));
+    m_n0Tap->SetAddress (Mac48Address ("11:00:01:02:03:01"));
+    m_n0Tap->SetSendCallback (MakeCallback (&Tunnel::N0N1VirtualSend, this));
     n0->AddDevice (m_n0Tap);
     Ptr<Ipv4> ipv4 = n0->GetObject<Ipv4> ();
     uint32_t i = ipv4->AddInterface (m_n0Tap);
@@ -147,7 +148,8 @@ public:
     
     // n1 tap device
     m_n1Tap = CreateObject<VirtualNetDevice> ();
-    m_n1Tap->SetSendFromCallback (MakeCallback (&Tunnel::N0N1VirtualSend, this));
+    m_n1Tap->SetAddress (Mac48Address ("11:00:01:02:03:02"));
+    m_n1Tap->SetSendCallback (MakeCallback (&Tunnel::N0N1VirtualSend, this));
     n1->AddDevice (m_n1Tap);
     ipv4 = n1->GetObject<Ipv4> ();
     i = ipv4->AddInterface (m_n1Tap);
@@ -156,7 +158,8 @@ public:
 
     // n3 tap device
     m_n3Tap = CreateObject<VirtualNetDevice> ();
-    m_n3Tap->SetSendFromCallback (MakeCallback (&Tunnel::N3VirtualSend, this));
+    m_n3Tap->SetAddress (Mac48Address ("11:00:01:02:03:04"));
+    m_n3Tap->SetSendCallback (MakeCallback (&Tunnel::N3VirtualSend, this));
     n3->AddDevice (m_n3Tap);
     ipv4 = n3->GetObject<Ipv4> ();
     i = ipv4->AddInterface (m_n3Tap);

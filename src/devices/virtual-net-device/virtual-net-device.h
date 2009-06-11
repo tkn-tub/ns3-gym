@@ -37,7 +37,7 @@ namespace ns3 {
  * \brief A virtual device, similar to Linux TUN/TAP interfaces.
  *
  * A VirtualNetDevice is a "virtual" NetDevice implementation which
- * delegates to a user callback (see method SetSendFromCallback()) the
+ * delegates to a user callback (see method SetSendCallback()) the
  * task of actually transmitting a packet.  It also allows the user
  * code to inject the packet as if it had been received by the
  * VirtualNetDevice.  Together, these features allow one to build tunnels.
@@ -55,7 +55,7 @@ public:
    * Callback the be invoked when the VirtualNetDevice is asked to queue/transmit a packet.
    * For more information, consult the documentation of NetDevice::SendFrom().
    */
-  typedef Callback<bool, Ptr<Packet>, const Address&, const Address&, uint16_t> SendFromCallback;
+  typedef Callback<bool, Ptr<Packet>, const Address&, const Address&, uint16_t> SendCallback;
 
   static TypeId GetTypeId (void);
   VirtualNetDevice ();
@@ -66,7 +66,7 @@ public:
    * \brief Set the user callback to be called when a L2 packet is to be transmitted
    * \param transmitCb the new transmit callback
    */
-  void SetSendFromCallback (SendFromCallback transmitCb);
+  void SetSendCallback (SendCallback transmitCb);
 
   /**
    * \brief Configure whether the virtual device needs ARP
@@ -102,30 +102,24 @@ public:
    * \param packet packet sent from below up to Network Device
    * \param protocol Protocol type
    * \param source the address of the sender of this packet.
-   * \returns true if the packet was forwarded successfully,
-   *          false otherwise.
-   *
-   * Forward a "virtually received" packet up the node's protocol
-   * stack.
-   */
-  bool Receive (Ptr<Packet> packet, uint16_t protocol, const Address &source);
-
-
-  /**
-   * \param packet packet sent from below up to Network Device
-   * \param protocol Protocol type
-   * \param source the address of the sender of this packet.
    * \param destination the address of the receiver of this packet.
    * \param packetType type of packet received (broadcast/multicast/unicast/otherhost)
    * \returns true if the packet was forwarded successfully, false otherwise.
    *
-   * Forward a "virtually received (in promiscuous mode)" packet up
+   * Forward a "virtually received" packet up
    * the node's protocol stack.
    */
-  bool PromiscReceive (Ptr<Packet> packet, uint16_t protocol,
-                       const Address &source, const Address &destination,
-                       PacketType packetType);
+  bool Receive (Ptr<Packet> packet, uint16_t protocol,
+                const Address &source, const Address &destination,
+                PacketType packetType);
 
+
+  /**
+   * Set the MAC address of the the network device.
+   *
+   * \param addr The Address to use as the address of the device.
+   */
+  void SetAddress (Address addr);
 
   // inherited from NetDevice base class.
   virtual void SetIfIndex(const uint32_t index);
@@ -157,9 +151,13 @@ protected:
 
 private:
 
-  SendFromCallback m_sendCb;
-  TracedCallback<Ptr<const Packet> > m_rxTrace;
-  TracedCallback<Ptr<const Packet> > m_txTrace;
+  Address m_myAddress;
+  SendCallback m_sendCb;
+  TracedCallback<Ptr<const Packet> > m_macRxTrace;
+  TracedCallback<Ptr<const Packet> > m_macTxTrace;
+  TracedCallback<Ptr<const Packet> > m_macPromiscRxTrace;
+  TracedCallback<Ptr<const Packet> > m_snifferTrace;
+  TracedCallback<Ptr<const Packet> > m_promiscSnifferTrace;
   Ptr<Node> m_node;
   ReceiveCallback m_rxCallback;
   PromiscReceiveCallback m_promiscRxCallback;

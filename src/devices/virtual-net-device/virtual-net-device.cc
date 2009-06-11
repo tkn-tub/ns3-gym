@@ -41,10 +41,26 @@ VirtualNetDevice::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::VirtualNetDevice")
     .SetParent<NetDevice> ()
     .AddConstructor<VirtualNetDevice> ()
-    .AddTraceSource ("Rx", "Received payload from the MAC layer.",
-                     MakeTraceSourceAccessor (&VirtualNetDevice::m_rxTrace))
-    .AddTraceSource ("Tx", "Send payload to the MAC layer.",
-                     MakeTraceSourceAccessor (&VirtualNetDevice::m_txTrace))
+    .AddTraceSource ("MacTx", 
+                     "Trace source indicating a packet has arrived for transmission by this device",
+                     MakeTraceSourceAccessor (&VirtualNetDevice::m_macTxTrace))
+    .AddTraceSource ("MacPromiscRx", 
+                     "A packet has been received by this device, has been passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.  This is a promiscuous trace,",
+                     MakeTraceSourceAccessor (&VirtualNetDevice::m_macPromiscRxTrace))
+    .AddTraceSource ("MacRx", 
+                     "A packet has been received by this device, has been passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.  This is a non-promiscuous trace,",
+                     MakeTraceSourceAccessor (&VirtualNetDevice::m_macRxTrace))
+    //
+    // Trace sources designed to simulate a packet sniffer facility (tcpdump). 
+    //
+    .AddTraceSource ("Sniffer", 
+                     "Trace source simulating a non-promiscuous packet sniffer attached to the device",
+                     MakeTraceSourceAccessor (&VirtualNetDevice::m_snifferTrace))
+    .AddTraceSource ("PromiscSniffer", 
+                     "Trace source simulating a promiscuous packet sniffer attached to the device",
+                     MakeTraceSourceAccessor (&VirtualNetDevice::m_promiscSnifferTrace))
     ;
   return tid;
 }
@@ -59,7 +75,7 @@ VirtualNetDevice::VirtualNetDevice ()
 
 
 void
-VirtualNetDevice::SetSendFromCallback (SendFromCallback sendCb)
+VirtualNetDevice::SetSendCallback (SendCallback sendCb)
 {
   m_sendCb = sendCb;
 }
@@ -103,27 +119,34 @@ void VirtualNetDevice::DoDispose()
 }
 
 bool
-VirtualNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol, const Address &address)
+VirtualNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
+                           const Address &source, const Address &destination,
+                           PacketType packetType)
 {
-  if (m_rxCallback (this, packet, protocol, address))
+  // 
+  // For all kinds of packetType we receive, we hit the promiscuous sniffer
+  // hook and pass a copy up to the promiscuous callback.  Pass a copy to 
+  // make sure that nobody messes with our packet.
+  //
+  m_promiscSnifferTrace (packet);
+  if (!m_promiscRxCallback.IsNull ())
     {
-      m_rxTrace (packet);
-      return true;
+      m_macPromiscRxTrace (packet);
+      m_promiscRxCallback (this, packet, protocol, source, destination, packetType);
     }
-  return false;
-}
 
-bool
-VirtualNetDevice::PromiscReceive (Ptr<Packet> packet, uint16_t protocol,
-                              const Address &source, const Address &destination,
-                              PacketType packetType)
-{
-  if (m_promiscRxCallback (this, packet, protocol, source, destination, packetType))
+  //
+  // If this packet is not destined for some other host, it must be for us
+  // as either a broadcast, multicast or unicast.  We need to hit the mac
+  // packet received trace hook and forward the packet up the stack.
+  //
+  if (packetType != PACKET_OTHERHOST)
     {
-      m_rxTrace (packet);
-      return true;
+      m_snifferTrace (packet);
+      m_macRxTrace (packet);
+      return m_rxCallback (this, packet, protocol, source);
     }
-  return false;
+  return true;
 }
 
 
@@ -148,7 +171,13 @@ VirtualNetDevice::GetChannel (void) const
 Address
 VirtualNetDevice::GetAddress (void) const
 {
-  return Mac48Address ();
+  return m_myAddress;
+}
+
+void
+VirtualNetDevice::SetAddress (Address addr)
+{
+  m_myAddress = addr;
 }
 
 uint16_t
@@ -206,15 +235,21 @@ VirtualNetDevice::IsPointToPoint (void) const
 bool
 VirtualNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
-  return SendFrom (packet, GetAddress (), dest, protocolNumber);
+  m_macTxTrace (packet);
+  if (m_sendCb (packet, GetAddress (), dest, protocolNumber))
+    {
+      return true;
+    }
+  return false;
 }
 
 bool
 VirtualNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
 {
+  NS_ASSERT (m_supportsSendFrom);
+  m_macTxTrace (packet);
   if (m_sendCb (packet, source, dest, protocolNumber))
     {
-      m_txTrace (packet);
       return true;
     }
   return false;
