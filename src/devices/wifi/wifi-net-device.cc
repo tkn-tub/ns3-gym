@@ -38,6 +38,7 @@ WifiNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiNetDevice")
     .SetParent<NetDevice> ()
+    .AddConstructor<WifiNetDevice> ()
     .AddAttribute ("Channel", "The channel attached to this device",
                    PointerValue (),
                    MakePointerAccessor (&WifiNetDevice::DoGetChannel),

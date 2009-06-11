@@ -31,6 +31,7 @@ public:
   virtual ~NqosWifiMacHelper ();
   /**
    * Create a mac helper in a default working state.
+   * i.e., this is an adhoc mac by default.
    */
   static NqosWifiMacHelper Default (void);
   /**
