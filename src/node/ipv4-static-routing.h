@@ -357,10 +357,6 @@ public:
  * \see Ipv4StaticRouting::AddRoute
  */
   virtual void RemoveMulticastRoute (uint32_t index) = 0;
-
-  virtual void SetNode (Ptr<Node> node) = 0;
-  virtual Ptr<Node> GetNode (void) const = 0;
-
 };
 
 } // Namespace ns3

@@ -85,6 +85,11 @@ public:
   virtual bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
                              UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                              LocalDeliverCallback lcb, ErrorCallback ecb);
+  virtual void NotifyInterfaceUp (uint32_t interface);
+  virtual void NotifyInterfaceDown (uint32_t interface);
+  virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
+  virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
+  virtual void SetIpv4 (Ptr<Ipv4> ipv4);
 
 /**
  * \brief Add a host route to the global routing table.
@@ -189,9 +194,6 @@ public:
  */
   void RemoveRoute (uint32_t i);
 
-  void SetNode (Ptr<Node> node);
-  Ptr<Node> GetNode (void) const;
-
 protected:
   void DoDispose (void);
 
@@ -208,7 +210,7 @@ private:
   HostRoutes m_hostRoutes;
   NetworkRoutes m_networkRoutes;
 
-  Ptr<Node> m_node;
+  Ptr<Ipv4> m_ipv4;
 };
 
 } // Namespace ns3

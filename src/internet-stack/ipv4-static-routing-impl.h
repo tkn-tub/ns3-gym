@@ -56,6 +56,13 @@ public:
                              UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                              LocalDeliverCallback lcb, ErrorCallback ecb);
 
+  virtual void NotifyInterfaceUp (uint32_t interface);
+  virtual void NotifyInterfaceDown (uint32_t interface);
+  virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
+  virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
+  virtual void SetIpv4 (Ptr<Ipv4> ipv4);
+
+
 /**
  * \brief Add a host route to the static routing table.
  *
@@ -332,11 +339,8 @@ public:
  */
   void RemoveMulticastRoute (uint32_t index);
 
-  void SetNode (Ptr<Node> node);
-  Ptr<Node> GetNode (void) const;
-
 protected:
-  void DoDispose (void);
+  virtual void DoDispose (void);
 
 private:
   typedef std::list<Ipv4RoutingTableEntry *> HostRoutes;
@@ -359,7 +363,7 @@ private:
   Ipv4RoutingTableEntry *m_defaultRoute;
   MulticastRoutes m_multicastRoutes;
 
-  Ptr<Node> m_node;
+  Ptr<Ipv4> m_ipv4;
 };
 
 } // Namespace ns3

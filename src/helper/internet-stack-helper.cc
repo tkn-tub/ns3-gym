@@ -244,10 +244,8 @@ InternetStackHelper::Install (Ptr<Node> node) const
   // XXX cut this over to use of TypeIds and factories
   Ptr<Ipv4ListRoutingImpl> ipv4RoutingImpl = CreateObject<Ipv4ListRoutingImpl> ();
   Ptr<Ipv4StaticRoutingImpl> ipv4staticRoutingImpl = CreateObject<Ipv4StaticRoutingImpl> ();
-  ipv4staticRoutingImpl->SetNode (node);
   ipv4RoutingImpl->AddRoutingProtocol (ipv4staticRoutingImpl, 0);
   ipv4->SetRoutingProtocol (ipv4RoutingImpl);
-  ipv4RoutingImpl->SetNode (node);
 }
 
 void

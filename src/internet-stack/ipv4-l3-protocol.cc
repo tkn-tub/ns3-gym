@@ -163,12 +163,7 @@ Ipv4L3Protocol::SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol)
 {
   NS_LOG_FUNCTION (this);
   m_routingProtocol = routingProtocol;
-  // XXX should check all interfaces to see if any were set to Up state
-  // prior to a routing protocol being added
-  if (GetStaticRouting () != 0)
-    {
-      GetStaticRouting ()->AddHostRouteTo (Ipv4Address::GetLoopback (), 0);
-    }
+  m_routingProtocol->SetIpv4 (this);
 }
 
 
@@ -230,11 +225,11 @@ Ipv4L3Protocol::SetupLoopback (void)
   Ptr<Node> node = GetObject<Node> ();
   node->RegisterProtocolHandler (MakeCallback (&Ipv4L3Protocol::Receive, this), 
                                  Ipv4L3Protocol::PROT_NUMBER, device);
-  if (GetStaticRouting () != 0)
-    {
-      GetStaticRouting ()->AddHostRouteTo (Ipv4Address::GetLoopback (), index);
-    }
   interface->SetUp ();
+  if (m_routingProtocol != 0)
+    {
+      m_routingProtocol->NotifyInterfaceUp (index);
+    }
 }
 
 void 
@@ -244,26 +239,6 @@ Ipv4L3Protocol::SetDefaultTtl (uint8_t ttl)
   m_defaultTtl = ttl;
 }
     
-// XXX need to remove dependencies on Ipv4StaticRouting from this class
-Ptr<Ipv4StaticRouting>
-Ipv4L3Protocol::GetStaticRouting (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  Ptr<Ipv4StaticRouting> staticRouting;
-  if (m_routingProtocol != 0)
-    {
-      Ptr<Ipv4StaticRoutingImpl> sr = DynamicCast<Ipv4StaticRoutingImpl> (m_routingProtocol);
-      if (sr != 0)
-        {
-          return sr;
-        }
-      Ptr<Ipv4ListRoutingImpl> lr = DynamicCast<Ipv4ListRoutingImpl> (m_routingProtocol);
-      NS_ASSERT (lr);
-      staticRouting = lr->GetStaticRouting ();
-    }
-  return staticRouting;
-}
-
 uint32_t 
 Ipv4L3Protocol::AddInterface (Ptr<NetDevice> device)
 {
@@ -761,7 +736,12 @@ Ipv4L3Protocol::AddAddress (uint32_t i, Ipv4InterfaceAddress address)
 {
   NS_LOG_FUNCTION (this << i << address);
   Ptr<Ipv4Interface> interface = GetInterface (i);
-  return interface->AddAddress (address);
+  uint32_t index = interface->AddAddress (address);
+  if (m_routingProtocol != 0)
+    {
+      m_routingProtocol->NotifyAddAddress (i, address);
+    }
+  return index;
 }
 
 Ipv4InterfaceAddress 
@@ -819,18 +799,9 @@ Ipv4L3Protocol::SetUp (uint32_t i)
   Ptr<Ipv4Interface> interface = GetInterface (i);
   interface->SetUp ();
 
-  // If interface address and network mask have been set, add a route
-  // to the network of the interface (like e.g. ifconfig does on a
-  // Linux box)
-  for (uint32_t j = 0; j < interface->GetNAddresses (); j++)
+  if (m_routingProtocol != 0)
     {
-      if (((interface->GetAddress (j).GetLocal ()) != (Ipv4Address ()))
-          && (interface->GetAddress (j).GetMask ()) != (Ipv4Mask ()))
-        {
-          NS_ASSERT_MSG (GetStaticRouting(), "SetUp:: No static routing");
-          GetStaticRouting ()->AddNetworkRouteTo (interface->GetAddress (j).GetLocal ().CombineMask (interface->GetAddress (j).GetMask ()),
-            interface->GetAddress (j).GetMask (), i);
-        }
+      m_routingProtocol->NotifyInterfaceUp (i);
     }
 }
 
@@ -841,21 +812,9 @@ Ipv4L3Protocol::SetDown (uint32_t ifaceIndex)
   Ptr<Ipv4Interface> interface = GetInterface (ifaceIndex);
   interface->SetDown ();
 
-  // Remove all static routes that are going through this interface
-  bool modified = true;
-  while (modified)
+  if (m_routingProtocol != 0)
     {
-      modified = false;
-      for (uint32_t i = 0; i < GetStaticRouting ()->GetNRoutes (); i++)
-        {
-          Ipv4RoutingTableEntry route = GetStaticRouting ()->GetRoute (i);
-          if (route.GetInterface () == ifaceIndex)
-            {
-              GetStaticRouting ()->RemoveRoute (i);
-              modified = true;
-              break;
-            }
-        }
+      m_routingProtocol->NotifyInterfaceDown (ifaceIndex);
     }
 }
 

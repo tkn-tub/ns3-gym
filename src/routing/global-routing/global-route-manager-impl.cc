@@ -416,7 +416,6 @@ GlobalRouteManagerImpl::SelectRouterNodes ()
 
       NS_LOG_LOGIC ("Adding GlobalRouting Protocol to node " << node->GetId ());
       Ptr<Ipv4GlobalRouting> globalRouting = CreateObject<Ipv4GlobalRouting> ();
-      globalRouting->SetNode (node);
       // Here, we check whether there is an existing Ipv4RoutingProtocol object
       // to add this protocol to.
       Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();

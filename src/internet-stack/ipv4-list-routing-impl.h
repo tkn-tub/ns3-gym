@@ -39,6 +39,11 @@ public:
   virtual bool RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev, 
                            UnicastForwardCallback ucb, MulticastForwardCallback mcb, 
                            LocalDeliverCallback lcb, ErrorCallback ecb);
+  virtual void NotifyInterfaceUp (uint32_t interface);
+  virtual void NotifyInterfaceDown (uint32_t interface);
+  virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
+  virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
+  virtual void SetIpv4 (Ptr<Ipv4> ipv4);
 
   virtual void AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol, int16_t priority);
 
@@ -47,16 +52,12 @@ public:
   virtual Ptr<Ipv4RoutingProtocol> GetRoutingProtocol (uint32_t index, int16_t& priority) const;
   virtual Ptr<Ipv4StaticRouting> GetStaticRouting (void) const;
 
-
-  void SetNode (Ptr<Node> node);
-  Ptr<Node> GetNode (void) const;
-
 protected:
   void DoDispose (void);
 private:
-  typedef std::list< std::pair< int, Ptr<Ipv4RoutingProtocol> > > Ipv4RoutingProtocolList;
+  typedef std::list< std::pair< int16_t, Ptr<Ipv4RoutingProtocol> > > Ipv4RoutingProtocolList;
   Ipv4RoutingProtocolList m_routingProtocols;
-  Ptr<Node> m_node;
+  Ptr<Ipv4> m_ipv4;
 
 };
 

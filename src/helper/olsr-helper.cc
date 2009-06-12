@@ -76,7 +76,6 @@ OlsrHelper::Install (Ptr<Node> node)
   Ptr<Ipv4ListRouting> ipv4Routing = DynamicCast<Ipv4ListRouting> (ipv4->GetRoutingProtocol ());
   NS_ASSERT (ipv4Routing);
   ipv4Routing->AddRoutingProtocol (agent, 10);
-  agent->SetNode (node);
   agent->Start ();
 }
 void 

@@ -42,7 +42,7 @@ Ipv4StaticRoutingImpl::GetTypeId (void)
 }
 
 Ipv4StaticRoutingImpl::Ipv4StaticRoutingImpl () 
-: m_defaultRoute (0), m_node (0)
+: m_defaultRoute (0), m_ipv4 (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -222,15 +222,14 @@ Ipv4StaticRoutingImpl::LookupStatic (Ipv4Address dest)
       if ((*i)->GetDest ().IsEqual (dest)) 
         {
           NS_LOG_LOGIC ("Found global host route" << *i);
-          Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
           Ipv4RoutingTableEntry* route = (*i);
           rtentry = Create<Ipv4Route> ();
           rtentry->SetDestination (route->GetDest ());
           // XXX handle multi-address case
-          rtentry->SetSource (ipv4->GetAddress (route->GetInterface(), 0).GetLocal ());
+          rtentry->SetSource (m_ipv4->GetAddress (route->GetInterface(), 0).GetLocal ());
           rtentry->SetGateway (route->GetGateway ());
           uint32_t interfaceIdx = route->GetInterface ();
-          rtentry->SetOutputDevice (ipv4->GetNetDevice (interfaceIdx));
+          rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIdx));
           return rtentry;
         }
     }
@@ -244,15 +243,14 @@ Ipv4StaticRoutingImpl::LookupStatic (Ipv4Address dest)
       if (mask.IsMatch (dest, entry)) 
         {
           NS_LOG_LOGIC ("Found global network route" << *j);
-          Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
           Ipv4RoutingTableEntry* route = (*j);
           rtentry = Create<Ipv4Route> ();
           rtentry->SetDestination (route->GetDest ());
           // XXX handle multi-address case
-          rtentry->SetSource (ipv4->GetAddress (route->GetInterface(), 0).GetLocal ());
+          rtentry->SetSource (m_ipv4->GetAddress (route->GetInterface(), 0).GetLocal ());
           rtentry->SetGateway (route->GetGateway ());
           uint32_t interfaceIdx = route->GetInterface ();
-          rtentry->SetOutputDevice (ipv4->GetNetDevice (interfaceIdx));
+          rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIdx));
           return rtentry;
         }
     }
@@ -260,15 +258,14 @@ Ipv4StaticRoutingImpl::LookupStatic (Ipv4Address dest)
     {
       NS_ASSERT (m_defaultRoute->IsDefault ());
       NS_LOG_LOGIC ("Found global network route" << m_defaultRoute);
-      Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
       Ipv4RoutingTableEntry* route = m_defaultRoute;
       rtentry = Create<Ipv4Route> ();
       rtentry->SetDestination (route->GetDest ());
       // XXX handle multi-address case
-      rtentry->SetSource (ipv4->GetAddress (route->GetInterface(), 0).GetLocal ());
+      rtentry->SetSource (m_ipv4->GetAddress (route->GetInterface(), 0).GetLocal ());
       rtentry->SetGateway (route->GetGateway ());
       uint32_t interfaceIdx = route->GetInterface ();
-      rtentry->SetOutputDevice (ipv4->GetNetDevice (interfaceIdx));
+      rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIdx));
       return rtentry;
     }
   return 0;
@@ -307,7 +304,6 @@ Ipv4StaticRoutingImpl::LookupStatic (
               interface == route->GetInputInterface ())
             {
               NS_LOG_LOGIC ("Found multicast route" << *i);
-              Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
               mrtentry = Create<Ipv4MulticastRoute> ();
               mrtentry->SetGroup (route->GetGroup ());
               mrtentry->SetOrigin (route->GetOrigin ());
@@ -480,13 +476,12 @@ Ipv4StaticRoutingImpl::RouteInput  (Ptr<const Packet> p, const Ipv4Header &ipHea
                              LocalDeliverCallback lcb, ErrorCallback ecb)
 {
   NS_LOG_FUNCTION (this << p << ipHeader << ipHeader.GetSource () << ipHeader.GetDestination () << idev);
-  Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
 
   if (ipHeader.GetDestination ().IsMulticast ())
     {
       NS_LOG_LOGIC ("Multicast destination");
       Ptr<Ipv4MulticastRoute> mrtentry =  LookupStatic(ipHeader.GetSource (),
-        ipHeader.GetDestination (), ipv4->GetInterfaceForDevice (idev));
+        ipHeader.GetDestination (), m_ipv4->GetInterfaceForDevice (idev));
 
       if (mrtentry)
         {
@@ -550,22 +545,100 @@ Ipv4StaticRoutingImpl::DoDispose (void)
     {
       delete (*i);
     }
+  m_ipv4 = 0;
   Ipv4RoutingProtocol::DoDispose ();
 }
 
-void
-Ipv4StaticRoutingImpl::SetNode (Ptr<Node> node)
+void 
+Ipv4StaticRoutingImpl::NotifyInterfaceUp (uint32_t i)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  m_node = node;
+  // If interface address and network mask have been set, add a route
+  // to the network of the interface (like e.g. ifconfig does on a
+  // Linux box)
+  for (uint32_t j = 0; j < m_ipv4->GetNAddresses (i); j++)
+    {
+      if (m_ipv4->GetAddress (i,j).GetLocal () != Ipv4Address () &&
+          m_ipv4->GetAddress (i,j).GetMask () != Ipv4Mask ())
+        {
+          AddNetworkRouteTo (m_ipv4->GetAddress (i,j).GetLocal ().CombineMask (m_ipv4->GetAddress (i,j).GetMask ()),
+                             m_ipv4->GetAddress (i,j).GetMask (), i);
+        }
+    }
 }
 
-Ptr<Node>
-Ipv4StaticRoutingImpl::GetNode (void) const
+void 
+Ipv4StaticRoutingImpl::NotifyInterfaceDown (uint32_t i)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_node; 
-} 
+  // Remove all static routes that are going through this interface
+  for (uint32_t j = 0; j < GetNRoutes (); j++)
+    {
+      Ipv4RoutingTableEntry route = GetRoute (j);
+      if (route.GetInterface () == i)
+        {
+          RemoveRoute (j);
+        }
+    }
+}
 
+void 
+Ipv4StaticRoutingImpl::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
+{
+  NS_LOG_FUNCTION (this << interface);
+  if (!m_ipv4->IsUp (interface))
+    {
+      return;
+    }
+
+  Ipv4Address networkAddress = address.GetLocal ().CombineMask (address.GetMask ());
+  Ipv4Mask networkMask = address.GetMask ();
+  if (address.GetLocal () != Ipv4Address () &&
+      address.GetMask () != Ipv4Mask ())
+    {
+      AddNetworkRouteTo (networkAddress,
+                         networkMask, interface);
+    }
+}
+void 
+Ipv4StaticRoutingImpl::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
+{
+  if (!m_ipv4->IsUp (interface))
+    {
+      return;
+    }
+  Ipv4Address networkAddress = address.GetLocal ().CombineMask (address.GetMask ());
+  Ipv4Mask networkMask = address.GetMask ();
+  // Remove all static routes that are going through this interface
+  // which reference this network
+  for (uint32_t j = 0; j < GetNRoutes (); j++)
+    {
+      Ipv4RoutingTableEntry route = GetRoute (j);
+      if (route.GetInterface () == interface &&
+          route.IsNetwork () && 
+          route.GetDestNetwork () == networkAddress &&
+          route.GetDestNetworkMask () == networkMask)
+        {
+          RemoveRoute (j);
+        }
+    }
+}
+
+void 
+Ipv4StaticRoutingImpl::SetIpv4 (Ptr<Ipv4> ipv4)
+{
+  NS_LOG_FUNCTION (this << ipv4);
+  NS_ASSERT (m_ipv4 == 0 && ipv4 != 0);
+  m_ipv4 = ipv4;
+  for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
+    {
+      if (m_ipv4->IsUp (i))
+        {
+          NotifyInterfaceUp (i);
+        }
+      else
+        {
+          NotifyInterfaceDown (i);
+        }
+    }
+}
 
 }//namespace ns3

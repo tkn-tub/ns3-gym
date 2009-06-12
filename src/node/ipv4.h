@@ -24,7 +24,6 @@
 #include "ns3/object.h"
 #include "ns3/socket.h"
 #include "ns3/callback.h"
-#include "ipv4-routing-protocol.h"
 #include "ipv4-address.h"
 #include "ipv4-interface-address.h"
 
@@ -33,6 +32,7 @@ namespace ns3 {
 class Node;
 class NetDevice;
 class Packet;
+class Ipv4RoutingProtocol;
 
 /**
  * \ingroup node

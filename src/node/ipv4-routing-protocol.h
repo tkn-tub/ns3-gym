@@ -23,6 +23,8 @@
 #include "ns3/object.h"
 #include "ns3/socket.h"
 #include "ipv4-header.h"
+#include "ipv4-interface-address.h"
+#include "ipv4.h"
 
 namespace ns3 {
 
@@ -91,6 +93,48 @@ public:
   virtual bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev, 
                              UnicastForwardCallback ucb, MulticastForwardCallback mcb, 
                              LocalDeliverCallback lcb, ErrorCallback ecb) = 0;
+
+  /**
+   * \param interface the index of the interface we are being notified about
+   *
+   * Protocols are expected to implement this method to be notified of the state change of
+   * an interface in a node.
+   */
+  virtual void NotifyInterfaceUp (uint32_t interface) = 0;
+  /**
+   * \param interface the index of the interface we are being notified about
+   *
+   * Protocols are expected to implement this method to be notified of the state change of
+   * an interface in a node.
+   */
+  virtual void NotifyInterfaceDown (uint32_t interface) = 0;
+
+  /**
+   * \param interface the index of the interface we are being notified about
+   * \param address a new address being added to an interface
+   *
+   * Protocols are expected to implement this method to be notified whenever
+   * a new address is added to an interface. Typically used to add a 'network route' on an
+   * interface. Can be invoked on an up or down interface.
+   */
+  virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address) = 0;
+
+  /**
+   * \param interface the index of the interface we are being notified about
+   * \param address a new address being added to an interface
+   *
+   * Protocols are expected to implement this method to be notified whenever
+   * a new address is removed from an interface. Typically used to remove the 'network route' of an
+   * interface. Can be invoked on an up or down interface.
+   */
+  virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address) = 0;
+
+  /**
+   * \param ipv4 the ipv4 object this routing protocol is being associated with
+   * 
+   * Typically, invoked directly or indirectly from ns3::Ipv4::SetRoutingProtocol
+   */
+  virtual void SetIpv4 (Ptr<Ipv4> ipv4) = 0;
 };
 
 } //namespace ns3

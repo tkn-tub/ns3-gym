@@ -218,7 +218,6 @@ private:
   TracedCallback<Ptr<const Packet> > m_dropTrace;
 
   Ptr<Ipv4RoutingProtocol> m_routingProtocol;
-  Ptr<Ipv4StaticRouting> GetStaticRouting (void) const;
 
   SocketList m_sockets;
 };

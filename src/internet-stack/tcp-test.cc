@@ -59,9 +59,7 @@ AddInternetStack (Ptr<Node> node)
   //Routing for Ipv4
   Ptr<Ipv4ListRoutingImpl> ipv4RoutingImpl = CreateObject<Ipv4ListRoutingImpl> ();
   ipv4->SetRoutingProtocol (ipv4RoutingImpl);
-  ipv4RoutingImpl->SetNode (node);
   Ptr<Ipv4StaticRoutingImpl> ipv4staticRoutingImpl = CreateObject<Ipv4StaticRoutingImpl> ();
-  ipv4staticRoutingImpl->SetNode (node);
   ipv4RoutingImpl->AddRoutingProtocol (ipv4staticRoutingImpl, 0);
   node->AggregateObject(ipv4);
   //ICMP

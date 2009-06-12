@@ -42,7 +42,7 @@ Ipv4ListRoutingImpl::GetTypeId (void)
 
 
 Ipv4ListRoutingImpl::Ipv4ListRoutingImpl () 
- : m_node (0)
+ : m_ipv4 (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -65,7 +65,7 @@ Ipv4ListRoutingImpl::DoDispose (void)
       (*rprotoIter).second = 0;
     }
   m_routingProtocols.clear ();
-  m_node = 0;
+  m_ipv4 = 0;
 }
 
 Ptr<Ipv4Route>
@@ -102,18 +102,17 @@ Ipv4ListRoutingImpl::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, 
 {
   bool retVal = false;
   NS_LOG_FUNCTION (p << header << idev);
-  NS_LOG_LOGIC ("RouteInput logic for node: " << m_node->GetId ());
+  NS_LOG_LOGIC ("RouteInput logic for node: " << m_ipv4->GetObject<Node> ()->GetId ());
 
-  Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
-  NS_ASSERT (ipv4);
-  uint32_t iif = ipv4->GetInterfaceForDevice (idev); 
+  NS_ASSERT (m_ipv4 != 0);
+  uint32_t iif = m_ipv4->GetInterfaceForDevice (idev); 
 
   // Multicast recognition; handle local delivery here
   //
   if (header.GetDestination().IsMulticast ())
     {
 #ifdef NOTYET
-      if (ipv4->MulticastCheckGroup (iif, header.GetDestination ()))
+      if (m_ipv4->MulticastCheckGroup (iif, header.GetDestination ()))
 #endif
       if (true)
         {
@@ -152,11 +151,11 @@ Ipv4ListRoutingImpl::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, 
  // destination unicast address does not match one of the iif addresses,
  // but we check our other interfaces.  This could be an option
  // (to remove the outer loop immediately below and just check iif).
-  for (uint32_t j = 0; j < ipv4->GetNInterfaces (); j++)
+  for (uint32_t j = 0; j < m_ipv4->GetNInterfaces (); j++)
     {
-      for (uint32_t i = 0; i < ipv4->GetNAddresses (j); i++)
+      for (uint32_t i = 0; i < m_ipv4->GetNAddresses (j); i++)
         {
-          Ipv4InterfaceAddress iaddr = ipv4->GetAddress (j, i);
+          Ipv4InterfaceAddress iaddr = m_ipv4->GetAddress (j, i);
           Ipv4Address addr = iaddr.GetLocal ();
           if (addr.IsEqual (header.GetDestination ()))
             {
@@ -195,13 +194,79 @@ Ipv4ListRoutingImpl::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, 
   return retVal;
 }
 
+void 
+Ipv4ListRoutingImpl::NotifyInterfaceUp (uint32_t interface)
+{
+  NS_LOG_FUNCTION (this << interface);
+  for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
+         m_routingProtocols.begin ();
+       rprotoIter != m_routingProtocols.end ();
+       rprotoIter++)
+    {
+      (*rprotoIter).second->NotifyInterfaceUp (interface);
+    }  
+}
+void 
+Ipv4ListRoutingImpl::NotifyInterfaceDown (uint32_t interface)
+{
+  NS_LOG_FUNCTION (this << interface);
+  for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
+         m_routingProtocols.begin ();
+       rprotoIter != m_routingProtocols.end ();
+       rprotoIter++)
+    {
+      (*rprotoIter).second->NotifyInterfaceDown (interface);
+    }  
+}
+void 
+Ipv4ListRoutingImpl::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
+{
+  NS_LOG_FUNCTION(this << interface << address);
+  for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
+         m_routingProtocols.begin ();
+       rprotoIter != m_routingProtocols.end ();
+       rprotoIter++)
+    {
+      (*rprotoIter).second->NotifyAddAddress (interface, address);
+    }  
+}
+void 
+Ipv4ListRoutingImpl::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
+{
+  NS_LOG_FUNCTION(this << interface << address);
+  for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
+         m_routingProtocols.begin ();
+       rprotoIter != m_routingProtocols.end ();
+       rprotoIter++)
+    {
+      (*rprotoIter).second->NotifyRemoveAddress (interface, address);
+    }  
+}
+void 
+Ipv4ListRoutingImpl::SetIpv4 (Ptr<Ipv4> ipv4)
+{
+  NS_LOG_FUNCTION(this << ipv4);
+  NS_ASSERT (m_ipv4 == 0);
+  for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
+         m_routingProtocols.begin ();
+       rprotoIter != m_routingProtocols.end ();
+       rprotoIter++)
+    {
+      (*rprotoIter).second->SetIpv4 (ipv4);
+    }  
+  m_ipv4 = ipv4;
+}
+
 void
 Ipv4ListRoutingImpl::AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol, int16_t priority)
 {
   NS_LOG_FUNCTION (this << routingProtocol->GetInstanceTypeId () << priority);
-  m_routingProtocols.push_back
-    (std::pair<int, Ptr<Ipv4RoutingProtocol> > (-priority, routingProtocol));
+  m_routingProtocols.push_back (std::make_pair (-priority, routingProtocol));
   m_routingProtocols.sort ();
+  if (m_ipv4 != 0)
+    {
+      routingProtocol->SetIpv4 (m_ipv4);
+    }
 }
 
 uint32_t 
@@ -252,20 +317,5 @@ Ipv4ListRoutingImpl::GetStaticRouting (void) const
   return 0;
 
 }
-
-void
-Ipv4ListRoutingImpl::SetNode (Ptr<Node> node)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_node = node;
-}
-
-Ptr<Node> 
-Ipv4ListRoutingImpl::GetNode (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_node;
-}
-
 
 }//namespace ns3
