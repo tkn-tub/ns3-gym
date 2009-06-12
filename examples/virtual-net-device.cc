@@ -103,21 +103,24 @@ class Tunnel
   void N3SocketRecv (Ptr<Socket> socket)
   {
     Ptr<Packet> packet = socket->Recv (65535, 0);
-    packet->RemoveAllPacketTags ();
+    SocketAddressTag socketAddressTag;
+    packet->RemovePacketTag (socketAddressTag);
     m_n3Tap->Receive (packet, 0x0800, m_n3Tap->GetAddress (), m_n3Tap->GetAddress (), NetDevice::PACKET_HOST);
   }
 
   void N0SocketRecv (Ptr<Socket> socket)
   {
     Ptr<Packet> packet = socket->Recv (65535, 0);
-    packet->RemoveAllPacketTags ();
+    SocketAddressTag socketAddressTag;
+    packet->RemovePacketTag (socketAddressTag);
     m_n0Tap->Receive (packet, 0x0800, m_n0Tap->GetAddress (), m_n0Tap->GetAddress (), NetDevice::PACKET_HOST);
   }
 
   void N1SocketRecv (Ptr<Socket> socket)
   {
     Ptr<Packet> packet = socket->Recv (65535, 0);
-    packet->RemoveAllPacketTags ();
+    SocketAddressTag socketAddressTag;
+    packet->RemovePacketTag (socketAddressTag);
     m_n1Tap->Receive (packet, 0x0800, m_n1Tap->GetAddress (), m_n1Tap->GetAddress (), NetDevice::PACKET_HOST);
   }
 
