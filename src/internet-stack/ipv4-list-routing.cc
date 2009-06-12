@@ -22,38 +22,38 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/node.h"
 #include "ns3/ipv4-static-routing.h"
-#include "ipv4-list-routing-impl.h"
+#include "ipv4-list-routing.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4ListRoutingImpl");
+NS_LOG_COMPONENT_DEFINE ("Ipv4ListRouting");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4ListRoutingImpl);
+NS_OBJECT_ENSURE_REGISTERED (Ipv4ListRouting);
 
 TypeId
-Ipv4ListRoutingImpl::GetTypeId (void)
+Ipv4ListRouting::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::Ipv4ListRoutingImpl")
-    .SetParent<Ipv4ListRouting> ()
-    .AddConstructor<Ipv4ListRoutingImpl> ()
+  static TypeId tid = TypeId ("ns3::Ipv4ListRouting")
+    .SetParent<Ipv4RoutingProtocol> ()
+    .AddConstructor<Ipv4ListRouting> ()
     ;
   return tid;
 }
 
 
-Ipv4ListRoutingImpl::Ipv4ListRoutingImpl () 
+Ipv4ListRouting::Ipv4ListRouting () 
  : m_ipv4 (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-Ipv4ListRoutingImpl::~Ipv4ListRoutingImpl () 
+Ipv4ListRouting::~Ipv4ListRouting () 
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
 
 void
-Ipv4ListRoutingImpl::DoDispose (void)
+Ipv4ListRouting::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   for (Ipv4RoutingProtocolList::iterator rprotoIter = m_routingProtocols.begin ();
@@ -69,7 +69,7 @@ Ipv4ListRoutingImpl::DoDispose (void)
 }
 
 Ptr<Ipv4Route>
-Ipv4ListRoutingImpl::RouteOutput (const Ipv4Header &header, uint32_t oif, enum Socket::SocketErrno &sockerr)
+Ipv4ListRouting::RouteOutput (const Ipv4Header &header, uint32_t oif, enum Socket::SocketErrno &sockerr)
 {
   NS_LOG_FUNCTION (this << header.GetDestination () << " " << header.GetSource () << " " << oif);
   Ptr<Ipv4Route> route;
@@ -96,7 +96,7 @@ Ipv4ListRoutingImpl::RouteOutput (const Ipv4Header &header, uint32_t oif, enum S
 
 // Patterned after Linux ip_route_input and ip_route_input_slow
 bool 
-Ipv4ListRoutingImpl::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev, 
+Ipv4ListRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev, 
                              UnicastForwardCallback ucb, MulticastForwardCallback mcb, 
                              LocalDeliverCallback lcb, ErrorCallback ecb)
 {
@@ -195,7 +195,7 @@ Ipv4ListRoutingImpl::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, 
 }
 
 void 
-Ipv4ListRoutingImpl::NotifyInterfaceUp (uint32_t interface)
+Ipv4ListRouting::NotifyInterfaceUp (uint32_t interface)
 {
   NS_LOG_FUNCTION (this << interface);
   for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
@@ -207,7 +207,7 @@ Ipv4ListRoutingImpl::NotifyInterfaceUp (uint32_t interface)
     }  
 }
 void 
-Ipv4ListRoutingImpl::NotifyInterfaceDown (uint32_t interface)
+Ipv4ListRouting::NotifyInterfaceDown (uint32_t interface)
 {
   NS_LOG_FUNCTION (this << interface);
   for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
@@ -219,7 +219,7 @@ Ipv4ListRoutingImpl::NotifyInterfaceDown (uint32_t interface)
     }  
 }
 void 
-Ipv4ListRoutingImpl::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
+Ipv4ListRouting::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
   NS_LOG_FUNCTION(this << interface << address);
   for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
@@ -231,7 +231,7 @@ Ipv4ListRoutingImpl::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress 
     }  
 }
 void 
-Ipv4ListRoutingImpl::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
+Ipv4ListRouting::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
   NS_LOG_FUNCTION(this << interface << address);
   for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
@@ -243,7 +243,7 @@ Ipv4ListRoutingImpl::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddre
     }  
 }
 void 
-Ipv4ListRoutingImpl::SetIpv4 (Ptr<Ipv4> ipv4)
+Ipv4ListRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 {
   NS_LOG_FUNCTION(this << ipv4);
   NS_ASSERT (m_ipv4 == 0);
@@ -258,7 +258,7 @@ Ipv4ListRoutingImpl::SetIpv4 (Ptr<Ipv4> ipv4)
 }
 
 void
-Ipv4ListRoutingImpl::AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol, int16_t priority)
+Ipv4ListRouting::AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol, int16_t priority)
 {
   NS_LOG_FUNCTION (this << routingProtocol->GetInstanceTypeId () << priority);
   m_routingProtocols.push_back (std::make_pair (-priority, routingProtocol));
@@ -270,19 +270,19 @@ Ipv4ListRoutingImpl::AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtoco
 }
 
 uint32_t 
-Ipv4ListRoutingImpl::GetNRoutingProtocols (void) const
+Ipv4ListRouting::GetNRoutingProtocols (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_routingProtocols.size (); 
 }
 
 Ptr<Ipv4RoutingProtocol> 
-Ipv4ListRoutingImpl::GetRoutingProtocol (uint32_t index, int16_t& priority) const
+Ipv4ListRouting::GetRoutingProtocol (uint32_t index, int16_t& priority) const
 {
   NS_LOG_FUNCTION (index);
   if (index > m_routingProtocols.size ())
     {
-      NS_FATAL_ERROR ("Ipv4ListRoutingImpl::GetRoutingProtocol():  index " << index << " out of range");
+      NS_FATAL_ERROR ("Ipv4ListRouting::GetRoutingProtocol():  index " << index << " out of range");
     }
   uint32_t i = 0;
   for (Ipv4RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin ();
@@ -298,7 +298,7 @@ Ipv4ListRoutingImpl::GetRoutingProtocol (uint32_t index, int16_t& priority) cons
 }
 
 Ptr<Ipv4StaticRouting>
-Ipv4ListRoutingImpl::GetStaticRouting (void) const
+Ipv4ListRouting::GetStaticRouting (void) const
 {
   NS_LOG_FUNCTION (this);
   Ipv4StaticRouting* srp;

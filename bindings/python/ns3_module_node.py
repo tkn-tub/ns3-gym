@@ -143,8 +143,6 @@ def register_types(module):
     module.add_class('SimpleChannel', parent=root_module['ns3::Channel'])
     ## simple-net-device.h: ns3::SimpleNetDevice [class]
     module.add_class('SimpleNetDevice', parent=root_module['ns3::NetDevice'])
-    ## ipv4-list-routing.h: ns3::Ipv4ListRouting [class]
-    module.add_class('Ipv4ListRouting', parent=root_module['ns3::Ipv4RoutingProtocol'])
     module.add_container('ns3::olsr::MprSet', 'ns3::Ipv4Address', container_type='set')
     module.add_container('std::vector< ns3::Ipv4Address >', 'ns3::Ipv4Address', container_type='vector')
     
@@ -255,7 +253,6 @@ def register_methods(root_module):
     register_Ns3PacketSocketFactory_methods(root_module, root_module['ns3::PacketSocketFactory'])
     register_Ns3SimpleChannel_methods(root_module, root_module['ns3::SimpleChannel'])
     register_Ns3SimpleNetDevice_methods(root_module, root_module['ns3::SimpleNetDevice'])
-    register_Ns3Ipv4ListRouting_methods(root_module, root_module['ns3::Ipv4ListRouting'])
     return
 
 def register_Ns3Address_methods(root_module, cls):
@@ -3355,33 +3352,6 @@ def register_Ns3SimpleNetDevice_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    return
-
-def register_Ns3Ipv4ListRouting_methods(root_module, cls):
-    ## ipv4-list-routing.h: ns3::Ipv4ListRouting::Ipv4ListRouting(ns3::Ipv4ListRouting const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4ListRouting const &', 'arg0')])
-    ## ipv4-list-routing.h: ns3::Ipv4ListRouting::Ipv4ListRouting() [constructor]
-    cls.add_constructor([])
-    ## ipv4-list-routing.h: static ns3::TypeId ns3::Ipv4ListRouting::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## ipv4-list-routing.h: void ns3::Ipv4ListRouting::AddRoutingProtocol(ns3::Ptr<ns3::Ipv4RoutingProtocol> routingProtocol, int16_t priority) [member function]
-    cls.add_method('AddRoutingProtocol', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Ipv4RoutingProtocol >', 'routingProtocol'), param('int16_t', 'priority')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## ipv4-list-routing.h: uint32_t ns3::Ipv4ListRouting::GetNRoutingProtocols() const [member function]
-    cls.add_method('GetNRoutingProtocols', 
-                   'uint32_t', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## ipv4-list-routing.h: ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::Ipv4ListRouting::GetRoutingProtocol(uint32_t index, int16_t & priority) const [member function]
-    cls.add_method('GetRoutingProtocol', 
-                   'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
-                   [param('uint32_t', 'index'), param('int16_t &', 'priority')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
 def register_functions(root_module):

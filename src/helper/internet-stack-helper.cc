@@ -162,7 +162,7 @@
 #include "ns3/callback.h"
 #include "ns3/node.h"
 #include "ns3/core-config.h"
-#include "ns3/ipv4-list-routing-impl.h"
+#include "ns3/ipv4-list-routing.h"
 #include "ns3/ipv4-static-routing-impl.h"
 #include <limits>
 
@@ -242,10 +242,10 @@ InternetStackHelper::Install (Ptr<Node> node) const
   // Set routing
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   // XXX cut this over to use of TypeIds and factories
-  Ptr<Ipv4ListRoutingImpl> ipv4RoutingImpl = CreateObject<Ipv4ListRoutingImpl> ();
+  Ptr<Ipv4ListRouting> ipv4Routing = CreateObject<Ipv4ListRouting> ();
   Ptr<Ipv4StaticRoutingImpl> ipv4staticRoutingImpl = CreateObject<Ipv4StaticRoutingImpl> ();
-  ipv4RoutingImpl->AddRoutingProtocol (ipv4staticRoutingImpl, 0);
-  ipv4->SetRoutingProtocol (ipv4RoutingImpl);
+  ipv4Routing->AddRoutingProtocol (ipv4staticRoutingImpl, 0);
+  ipv4->SetRoutingProtocol (ipv4Routing);
 }
 
 void
