@@ -25,13 +25,42 @@
 
 int main (int argc, char *argv[])
 {
+  if (argc > 1)
+    {
+      if (std::string (argv[1]) == "--ListTests")
+        {
 #ifdef RUN_SELF_TESTS
-  ns3::PacketMetadata::Enable ();
-  ns3::TestManager::EnableVerbose ();
-  bool success = ns3::TestManager::RunTests ();
-  if (!success)
-    return 1;
+          ns3::TestManager::PrintTestNames (std::cout);
+#endif
+        }
+      else
+        {
+          // run the test named by argv[1]
+#ifdef RUN_SELF_TESTS
+          bool success = ns3::TestManager::RunTest (argv[1]);
+          if (!success)
+            {
+              return 1;
+            }
+#else
+          std::cerr << "Unit tests not enabled" << std::endl;
+          return 1;
+#endif
+        }      
+    }
+  else
+    {
+      // run all tests
+#ifdef RUN_SELF_TESTS
+      ns3::PacketMetadata::Enable ();
+      ns3::TestManager::EnableVerbose ();
+      bool success = ns3::TestManager::RunTests ();
+      if (!success)
+        {
+          return 1;
+        }
 #endif /* RUN_SELF_TESTS */
-
+    }
   return 0;
 }
+

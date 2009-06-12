@@ -16,7 +16,7 @@ def configure(conf):
                                  "library 'libxml-2.0 >= 2.7' not found")
     conf.sub_config('stats')
 
-    conf.write_config_header('ns3/contrib-config.h', project_root_relative=True)
+    conf.write_config_header('ns3/contrib-config.h', top=True)
 
 def build(bld):
     module = bld.create_ns3_module('contrib', ['simulator', 'common'])
