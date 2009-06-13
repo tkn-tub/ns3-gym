@@ -142,9 +142,10 @@ public:
   int32_t GetInterfaceForPrefix (Ipv4Address addr, Ipv4Mask mask) const;
   int32_t GetInterfaceForDevice (Ptr<const NetDevice> device) const;
 
-  uint32_t AddAddress (uint32_t i, Ipv4InterfaceAddress address);
+  bool AddAddress (uint32_t i, Ipv4InterfaceAddress address);
   Ipv4InterfaceAddress GetAddress (uint32_t interfaceIndex, uint32_t addressIndex) const;
   uint32_t GetNAddresses (uint32_t interface) const;
+  bool RemoveAddress (uint32_t interfaceIndex, uint32_t addressIndex);
 
   void SetMetric (uint32_t i, uint16_t metric);
   uint16_t GetMetric (uint32_t i) const;

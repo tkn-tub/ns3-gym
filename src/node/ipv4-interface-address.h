@@ -77,9 +77,24 @@ private:
 
   InterfaceAddressScope_e m_scope;   
   bool m_secondary;        // For use in multihoming
+
+  friend bool operator == (Ipv4InterfaceAddress const &a, Ipv4InterfaceAddress const &b);
+  friend bool operator != (Ipv4InterfaceAddress const &a, Ipv4InterfaceAddress const &b);
 };
 
 std::ostream& operator<< (std::ostream& os, const Ipv4InterfaceAddress &addr);
+
+inline bool operator == (const Ipv4InterfaceAddress &a, const Ipv4InterfaceAddress &b)
+{
+  return (a.m_local == b.m_local && a.m_mask == b.m_mask &&
+    a.m_broadcast == b.m_broadcast && a.m_scope == b.m_scope && a.m_secondary == b.m_secondary);
+}
+inline bool operator != (const Ipv4InterfaceAddress &a, const Ipv4InterfaceAddress &b)
+{
+  return (a.m_local != b.m_local || a.m_mask != b.m_mask ||
+    a.m_broadcast != b.m_broadcast || a.m_scope != b.m_scope || a.m_secondary != b.m_secondary);
+}
+
 
 } // namespace ns3
 

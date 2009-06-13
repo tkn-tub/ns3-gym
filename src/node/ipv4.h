@@ -159,9 +159,9 @@ public:
   /**
    * \param interface Interface number of an Ipv4 interface
    * \param address Ipv4InterfaceAddress address to associate with the underlying Ipv4 interface
-   * \returns The address index of the newly-added address
+   * \returns true if the operation succeeded
    */
-  virtual uint32_t AddAddress (uint32_t interface, Ipv4InterfaceAddress address) = 0;
+  virtual bool AddAddress (uint32_t interface, Ipv4InterfaceAddress address) = 0;
 
   /**
    * \param interface Interface number of an Ipv4 interface
@@ -170,11 +170,26 @@ public:
   virtual uint32_t GetNAddresses (uint32_t interface) const = 0;
 
   /**
+   * Because addresses can be removed, the addressIndex is not guaranteed
+   * to be static across calls to this method.
+   * 
    * \param interface Interface number of an Ipv4 interface
    * \param addressIndex index of Ipv4InterfaceAddress 
    * \returns the Ipv4InterfaceAddress associated to the interface and addresIndex
    */
   virtual Ipv4InterfaceAddress GetAddress (uint32_t interface, uint32_t addressIndex) const = 0;
+
+  /**
+   * Remove the address at addressIndex on named interface.  The addressIndex
+   * for all higher indices will decrement by one after this method is called;
+   * so, for example, to remove 5 addresses from an interface i, one could
+   * call RemoveAddress (i, 0); 5 times.  
+   * 
+   * \param interface Interface number of an Ipv4 interface
+   * \param addressIndex index of Ipv4InterfaceAddress to remove 
+   * \returns true if the operation succeeded
+   */
+  virtual bool RemoveAddress (uint32_t interface, uint32_t addressIndex) = 0;
 
   /**
    * \param interface The interface number of an Ipv4 interface

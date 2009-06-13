@@ -731,17 +731,17 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
     }
 }
 
-uint32_t 
+bool
 Ipv4L3Protocol::AddAddress (uint32_t i, Ipv4InterfaceAddress address)
 {
   NS_LOG_FUNCTION (this << i << address);
   Ptr<Ipv4Interface> interface = GetInterface (i);
-  uint32_t index = interface->AddAddress (address);
+  bool retVal = interface->AddAddress (address);
   if (m_routingProtocol != 0)
     {
       m_routingProtocol->NotifyAddAddress (i, address);
     }
-  return index;
+  return retVal;
 }
 
 Ipv4InterfaceAddress 
@@ -758,6 +758,23 @@ Ipv4L3Protocol::GetNAddresses (uint32_t interface) const
   NS_LOG_FUNCTION (this << interface);
   Ptr<Ipv4Interface> iface = GetInterface (interface);
   return iface->GetNAddresses ();
+}
+
+bool
+Ipv4L3Protocol::RemoveAddress (uint32_t i, uint32_t addressIndex)
+{
+  NS_LOG_FUNCTION (this << i << addressIndex);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
+  Ipv4InterfaceAddress address = interface->RemoveAddress (addressIndex);
+  if (address != Ipv4InterfaceAddress ())
+    {
+      if (m_routingProtocol != 0)
+        {
+          m_routingProtocol->NotifyRemoveAddress (i, address);
+        }
+      return true;
+    }
+  return false;
 }
 
 void 

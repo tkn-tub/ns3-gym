@@ -125,9 +125,9 @@ public:
 
   /**
    * \param address The Ipv4InterfaceAddress to add to the interface
-   * \returns The index of the newly-added Ipv4InterfaceAddress
+   * \returns true if succeeded
    */
-  uint32_t AddAddress (Ipv4InterfaceAddress address);
+  bool AddAddress (Ipv4InterfaceAddress address);
 
   /**
    * \param index Index of Ipv4InterfaceAddress to return
@@ -141,9 +141,10 @@ public:
   uint32_t GetNAddresses (void) const;
 
   /**
-   * \param index index of Ipv4InterfaceAddress to remove from address list.
+   * \param index Index of Ipv4InterfaceAddress to remove
+   * \returns The Ipv4InterfaceAddress address whose index is index 
    */
-  void RemoveAddress (uint32_t index);
+  Ipv4InterfaceAddress RemoveAddress (uint32_t index);
 
 protected:
   virtual void DoDispose (void);
