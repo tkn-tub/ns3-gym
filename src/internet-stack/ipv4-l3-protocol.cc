@@ -456,7 +456,6 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   if (found)
     {
       ttl = tag.GetTtl ();
-      // XXX remove tag here?  
     }
 
   // Handle a few cases:
@@ -683,12 +682,12 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
   Ipv4Header ipHeader = header;
   Ptr<Packet> packet = p->Copy ();
   ipHeader.SetTtl (ipHeader.GetTtl () - 1);
-  // XXX handle multi-interfaces
   if (ipHeader.GetTtl () == 0)
     {
       Ptr<NetDevice> outDev = rtentry->GetOutputDevice ();
       int32_t interface = GetInterfaceForDevice (outDev);
       NS_ASSERT (interface >= 0);
+      // XXX No check here for possibly multiple addresses on this interface
       if (IsUnicast (ipHeader.GetDestination (), GetInterface (interface)->GetAddress (0).GetMask ()))
         {
           Ptr<Icmpv4L4Protocol> icmp = GetIcmp ();
@@ -721,7 +720,7 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
       case Ipv4L4Protocol::RX_CSUM_FAILED:
         break;
       case Ipv4L4Protocol::RX_ENDPOINT_UNREACH:
-        // XXX handle multi-interfaces
+        // XXX handle possibly multiple IP addresses on the interface
         if (IsUnicast (ip.GetDestination (), GetInterface (iif)->GetAddress (0).GetMask ()))
           {
             GetIcmp ()->SendDestUnreachPort (ip, copy);
