@@ -110,7 +110,6 @@ PeerManagementProtocol::Install(Ptr<MeshPointDevice> mp)
     }
   // Mesh point aggregates all installed protocols
   m_address = Mac48Address::ConvertFrom(mp->GetAddress ());
-  NS_LOG_UNCOND("MP address:"<<m_address);
   mp->AggregateObject(this);
   return true;
 }
