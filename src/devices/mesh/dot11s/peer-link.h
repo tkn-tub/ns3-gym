@@ -83,8 +83,6 @@ public:
    */
   /// MLME-CancelPeerLink.request
   void MLMECancelPeerLink (PmpReasonCode reason);
-  /// MLME-PassivePeerLinkOpen.request
-  void MLMEPassivePeerLinkOpen ();
   /// MLME-ActivePeerLinkOpen.request
   void MLMEActivePeerLinkOpen ();
   /// MLME-PeeringRequestReject
@@ -151,9 +149,8 @@ private:
   /// Peer link events, see 802.11s draft 11B.3.3.2
   enum  PeerEvent
   {
-    CNCL,       ///< MLME-CancelPeerLink
-    PASOPN,     ///< MLME-PassivePeerLinkOpen
-    ACTOPN,     ///< MLME-ActivePeerLinkOpen
+    CNCL,       ///< Cancel peer link
+    ACTOPN,     ///< Active peer link open
     CLS_ACPT,   ///< PeerLinkClose_Accept
     OPN_ACPT,   ///< PeerLinkOpen_Accept
     OPN_RJCT,   ///< PeerLinkOpen_Reject

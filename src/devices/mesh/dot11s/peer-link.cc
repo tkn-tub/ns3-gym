@@ -171,11 +171,6 @@ PeerLink::MLMECancelPeerLink (PmpReasonCode reason)
   StateMachine (CNCL,reason);
 }
 void
-PeerLink::MLMEPassivePeerLinkOpen ()
-{
-  StateMachine (PASOPN);
-}
-void
 PeerLink::MLMEActivePeerLinkOpen ()
 {
   StateMachine (ACTOPN);
