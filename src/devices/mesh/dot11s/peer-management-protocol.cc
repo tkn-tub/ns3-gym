@@ -229,10 +229,7 @@ PeerManagementProtocol::ReceivePeerLinkFrame (
       if (peerLink == 0)
         peerLink = InitiateLink (interface, peerAddress, peerMeshPointAddress, Simulator::Now (), Seconds(1.0));
       if(!reject)
-        {
-          peerLink->MLMEPassivePeerLinkOpen ();
-          peerLink->OpenAccept (peerManagementElement.GetLocalLinkId(), meshConfig, peerMeshPointAddress);
-        }
+        peerLink->OpenAccept (peerManagementElement.GetLocalLinkId(), meshConfig, peerMeshPointAddress);
       else
         peerLink->OpenReject (peerManagementElement.GetLocalLinkId(), meshConfig, peerMeshPointAddress, reasonCode);
     }
