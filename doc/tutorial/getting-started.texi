@@ -456,10 +456,10 @@ but now you know how to change the configuration and build optimized code.
 
 @cindex unit tests
 You can run the unit tests of the @command{ns-3} distribution by running the 
-``check'' command,
+``--check'' option,
 
 @verbatim
-  ./waf check
+  ./waf --check
 @end verbatim
 
 You should see a report from each unit test that executes indicating that the
