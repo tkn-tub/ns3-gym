@@ -277,11 +277,22 @@ public:
   virtual bool RunTests(); 
   
 private:
-  void Test1 ();
-  void Test2 ();
-  void Test3 ();
-  void Test4 ();
-
+  /// Test Add apth and lookup path;
+  void TestLookup ();
+  /**
+   * \name Test add path and try to lookup after entry has expired
+   * \{
+   */
+  void TestAddPath ();
+  void TestExpire ();
+  ///\}
+  /**
+   * \name Test add precursors and find precursor list in rtable
+   * \{
+   */
+  void TestPrecursorAdd ();
+  void TestPrecursorFind ();
+  ///\}
 private:
   bool result;
   
@@ -292,6 +303,7 @@ private:
   uint32_t seqnum;
   Time expire;
   Ptr<HwmpRtable> table;
+  std::vector<Mac48Address> precursors;
 };
 
 /// Test instance
@@ -306,9 +318,12 @@ HwmpRtableTest::HwmpRtableTest ()  : Test ("Mesh/802.11s/HwmpRtable"),
   seqnum (1),
   expire (Seconds (10)) 
 {
+  precursors.push_back (Mac48Address ("00:10:20:30:40:50"));
+  precursors.push_back (Mac48Address ("00:11:22:33:44:55"));
+  precursors.push_back (Mac48Address ("00:01:02:03:04:05"));
 }
 
-void HwmpRtableTest::Test1 ()
+void HwmpRtableTest::TestLookup ()
 {
   HwmpRtable::LookupResult correct (hop, iface, metric, seqnum);
   
@@ -325,13 +340,13 @@ void HwmpRtableTest::Test1 ()
   NS_TEST_ASSERT (! table->LookupProactive ().IsValid ());
 }
 
-void HwmpRtableTest::Test2 ()
+void HwmpRtableTest::TestAddPath ()
 {
   table->AddReactivePath (dst, hop, iface, metric, expire, seqnum);
   table->AddProactivePath (metric, dst, hop, iface, expire, seqnum);
 }
 
-void HwmpRtableTest::Test3 ()
+void HwmpRtableTest::TestExpire ()
 {
   // this is assumed to be called when path records are already expired
   HwmpRtable::LookupResult correct (hop, iface, metric, seqnum);
@@ -342,19 +357,35 @@ void HwmpRtableTest::Test3 ()
   NS_TEST_ASSERT (! table->LookupProactive ().IsValid ());
 }
 
-void HwmpRtableTest::Test4 ()
+void HwmpRtableTest::TestPrecursorAdd ()
 {
-  // TODO: test AddPrecursor and GetPrecursors
+  for (std::vector<Mac48Address>::const_iterator i = precursors.begin (); i != precursors.end (); i ++)
+  {
+    table->AddPrecursor (dst, iface, *i);
+    // Check that duplicates are filtered
+    table->AddPrecursor (dst, iface, *i);
+  }
 }
 
+void HwmpRtableTest::TestPrecursorFind ()
+{
+  HwmpRtable::PrecursorList precursorList = table->GetPrecursors (dst);
+  NS_TEST_ASSERT(precursors.size () == precursorList.size ());
+  for(unsigned int i = 0; i < precursors.size (); i ++)
+  {
+    NS_TEST_ASSERT(precursorList[i].first == iface);
+    NS_TEST_ASSERT(precursorList[i].second == precursors[i]);
+  }
+}
 bool HwmpRtableTest::RunTests ()
 {
   table = CreateObject<HwmpRtable> ();
   
-  Simulator::Schedule (Seconds (0), & HwmpRtableTest::Test1, this);
-  Simulator::Schedule (Seconds (1), & HwmpRtableTest::Test2, this);
-  Simulator::Schedule (expire + Seconds (2), & HwmpRtableTest::Test3, this);
-  Simulator::Schedule (expire + Seconds (3), & HwmpRtableTest::Test4, this);
+  Simulator::Schedule (Seconds (0), & HwmpRtableTest::TestLookup, this);
+  Simulator::Schedule (Seconds (1), & HwmpRtableTest::TestAddPath, this);
+  Simulator::Schedule (Seconds (2), & HwmpRtableTest::TestPrecursorAdd, this);
+  Simulator::Schedule (expire + Seconds (2), & HwmpRtableTest::TestExpire, this);
+  Simulator::Schedule (expire + Seconds (3), & HwmpRtableTest::TestPrecursorFind, this);
   
   Simulator::Run ();
   Simulator::Destroy ();

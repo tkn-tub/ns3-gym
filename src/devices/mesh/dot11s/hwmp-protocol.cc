@@ -748,7 +748,7 @@ HwmpProtocol::QueuedPacket
 HwmpProtocol::DequeueFirstPacket ()
 {
   QueuedPacket retval;
-  retval.pkt = NULL;
+  retval.pkt = 0;
   if(m_rqueue.size () != 0)
   {
     retval = m_rqueue[0];

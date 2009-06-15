@@ -229,7 +229,7 @@ WifiMeshActionHeader::GetCategory ()
     case MESH_PROXY_FORWARDING:
       return MESH_PROXY_FORWARDING;
     default:
-      NS_ASSERT (false);
+      NS_FATAL_ERROR ("Unknown action value");
       return MESH_PEERING_MGT;
     }
 }
