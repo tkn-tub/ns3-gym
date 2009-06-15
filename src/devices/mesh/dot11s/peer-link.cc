@@ -307,7 +307,9 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           SetRetryTimer ();
           break;
         default:
-          NS_FATAL_ERROR ("Invalid action in IDLE state");
+          //11B.5.3.4 of 802.11s Draft D3.0 
+          //All other events shall be ignored in this state
+          break;
         }
       break;
     case OPN_SNT:
@@ -353,7 +355,9 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           SetHoldingTimer ();
           break;
         default:
-          NS_FATAL_ERROR ("Invalid action in OPN_SNT state");
+          //11B.5.3.5 of 802.11s Draft D3.0 
+          //All other events shall be ignored in this state
+          break;
         }
       break;
     case CNF_RCVD:
@@ -394,7 +398,9 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           SetHoldingTimer ();
           break;
         default:
-          NS_FATAL_ERROR ("Invalid action in CNF_RCVD state");
+          //11B.5.3.6 of 802.11s Draft D3.0 
+          //All other events shall be ignored in this state
+          break;
         }
       break;
     case OPN_RCVD:
@@ -438,7 +444,9 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           SetHoldingTimer ();
           break;
         default:
-          NS_FATAL_ERROR ("Invalid action in OPN_RCVD state");
+          //11B.5.3.7 of 802.11s Draft D3.0 
+          //All other events shall be ignored in this state
+          break;
         }
       break;
     case ESTAB:
@@ -468,7 +476,9 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, false);
           break;
         default:
-          NS_FATAL_ERROR ("Invalid action in ESTAB state");
+          //11B.5.3.8 of 802.11s Draft D3.0 
+          //All other events shall be ignored in this state
+          break;
         }
       break;
     case HOLDING:
@@ -492,7 +502,9 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           SendPeerLinkClose (reasoncode);
           break;
         default:
-          NS_FATAL_ERROR ("Invalid action in HOLDING state");
+          //11B.5.3.9 of 802.11s Draft D3.0 
+          //All other events shall be ignored in this state
+          break;
         }
       break;
     }
