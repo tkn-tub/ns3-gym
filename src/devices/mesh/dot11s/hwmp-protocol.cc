@@ -195,18 +195,19 @@ HwmpProtocol::RequestRoute (
   uint32_t sourceIface,
   const Mac48Address source,
   const Mac48Address destination,
-  Ptr<Packet> packet,
+  Ptr<const Packet> constPacket,
   uint16_t protocolType, //ethrnet 'Protocol' field
   MeshL2RoutingProtocol::RouteReplyCallback routeReply
 )
 {
+  Ptr <Packet> packet = constPacket->Copy ();
   HwmpTag tag;
   if (sourceIface == GetMeshPoint ()->GetIfIndex())
     // packet from level 3
   {
     if(packet->PeekPacketTag(tag))
     {
-      NS_FATAL_ERROR ("HWMP tag is not supposed to be here at this point.");
+      NS_FATAL_ERROR ("HWMP tag has come with a packet from upper layer. This must not occur...");
     }
     //Filling TAG:
     if(destination == Mac48Address::GetBroadcast ())

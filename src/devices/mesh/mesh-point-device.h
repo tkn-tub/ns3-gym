@@ -123,7 +123,7 @@ private:
   void ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                           Address const &source, Address const &destination, PacketType packetType);
   /// Forward packet down to interfaces 
-  void Forward (Ptr<NetDevice> incomingPort, Ptr<Packet> packet,
+  void Forward (Ptr<NetDevice> incomingPort, Ptr<const Packet> packet,
                 uint16_t protocol, const Mac48Address src, const Mac48Address dst);
   /**
    * Response callback for L2 routing protocol. This will be executed when routing information is ready.
@@ -162,7 +162,7 @@ private:
            uint32_t,
            Mac48Address,
            Mac48Address,
-           Ptr<Packet>,
+           Ptr<const Packet>,
            uint16_t,
            MeshL2RoutingProtocol::RouteReplyCallback>  m_requestRoute;
   

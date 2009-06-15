@@ -95,7 +95,7 @@ public:
    *                      to really send packet using routing information.
    */
   virtual bool RequestRoute (uint32_t sourceIface, const Mac48Address source, const Mac48Address destination, 
-      Ptr<Packet> packet, uint16_t  protocolType, RouteReplyCallback routeReply ) = 0;
+      Ptr<const Packet> packet, uint16_t  protocolType, RouteReplyCallback routeReply ) = 0;
   /// Set host mesh point, analog of SetNode (...) methods for upper layer protocols.
   void SetMeshPoint (Ptr<MeshPointDevice> mp);
   /// Each mesh protocol must be installed on the mesh point to work.
