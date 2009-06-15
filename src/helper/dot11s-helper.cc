@@ -60,7 +60,7 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelp
         root = true;
     if(!Dot11sStackInstaller::InstallDot11sStack (mp, root))
     {
-      NS_ASSERT(false);
+      NS_FATAL_ERROR ("802.11s stack is not installed!");
     }
     devices.Add (mp);
     node_counter ++;

@@ -81,6 +81,7 @@ public:
   uint8_t  GetSerializedSize () const;
   Buffer::Iterator Serialize (Buffer::Iterator i) const;
   Buffer::Iterator Deserialize (Buffer::Iterator i);
+  uint16_t GetUint16 () const;
   bool acceptPeerLinks;
   bool MCCASupported;
   bool MCCAEnabled;
@@ -120,7 +121,7 @@ private:
   void PrintInformation (std::ostream& os) const;
 private:
   /** Active Path Selection Protocol ID */
-  dot11sPathSelectionProtocol m_APSId;
+  dot11sPathSelectionProtocol m_APSPId;
   /** Active Path Metric ID */
   dot11sPathSelectionMetric   m_APSMId;
   /** Congestion Control Mode ID */

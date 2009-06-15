@@ -39,7 +39,7 @@ uint8_t dot11sMeshCapability::GetSerializedSize () const
 {
   return 2;
 }
-Buffer::Iterator dot11sMeshCapability::Serialize (Buffer::Iterator i) const
+uint16_t dot11sMeshCapability::GetUint16 () const
 {
   uint16_t result = 0;
   if (acceptPeerLinks)
@@ -56,7 +56,11 @@ Buffer::Iterator dot11sMeshCapability::Serialize (Buffer::Iterator i) const
     result |= 1 << 5;
   if (powerSaveLevel)
     result |= 1 << 6;
-  i.WriteHtolsbU16 (result);
+  return result;
+}
+Buffer::Iterator dot11sMeshCapability::Serialize (Buffer::Iterator i) const
+{
+  i.WriteHtolsbU16 (GetUint16 ());
   return i;
 }
 Buffer::Iterator dot11sMeshCapability::Deserialize (Buffer::Iterator i)
@@ -77,7 +81,7 @@ bool dot11sMeshCapability::Is (uint16_t cap, uint8_t n) const
   return (cap & mask) == mask;
 }
 IeConfiguration::IeConfiguration ():
-    m_APSId (PROTOCOL_HWMP),
+    m_APSPId (PROTOCOL_HWMP),
     m_APSMId (METRIC_AIRTIME),
     m_CCMId (CONGESTION_NULL),
     m_SPId (SYNC_NEIGHBOUR_OFFSET),
@@ -101,7 +105,7 @@ IeConfiguration::SerializeInformation (Buffer::Iterator i) const
 {
   i.WriteU8 (1); //Version
   // Active Path Selection Protocol ID:
-  i.WriteHtolsbU32 (m_APSId);
+  i.WriteHtolsbU32 (m_APSPId);
   // Active Path Metric ID:
   i.WriteHtolsbU32 (m_APSMId);
   // Congestion Control Mode ID:
@@ -120,7 +124,7 @@ IeConfiguration::DeserializeInformation (Buffer::Iterator i, uint8_t length)
   uint8_t version;
   version  = i.ReadU8 ();
   // Active Path Selection Protocol ID:
-  m_APSId  = (dot11sPathSelectionProtocol)i.ReadLsbtohU32 ();
+  m_APSPId  = (dot11sPathSelectionProtocol)i.ReadLsbtohU32 ();
   // Active Path Metric ID:
   m_APSMId = (dot11sPathSelectionMetric)i.ReadLsbtohU32 ();
   // Congestion Control Mode ID:
@@ -134,11 +138,18 @@ IeConfiguration::DeserializeInformation (Buffer::Iterator i, uint8_t length)
 void
 IeConfiguration::PrintInformation (std::ostream& os) const
 {
+  os<<"Number of neighbors:               = " << (uint16_t)m_neighbors <<
+    "\nActive Path Selection Protocol ID: = " << (uint32_t)m_APSPId <<
+    "\nActive Path Selection Metric ID:   = " << (uint32_t)m_APSMId <<
+    "\nCongestion Control Mode ID:        = " << (uint32_t)m_CCMId <<
+    "\nSynchronize protocol ID:           = " << (uint32_t)m_SPId <<
+    "\nAuthentication protocol ID:        = " << (uint32_t)m_APId <<
+    "\nCapabilities:                      = " << m_meshCap.GetUint16 () << "\n";
 }
 void
 IeConfiguration::SetRouting (dot11sPathSelectionProtocol routingId)
 {
-  m_APSId  =  routingId;
+  m_APSPId  =  routingId;
 }
 void
 IeConfiguration::SetMetric (dot11sPathSelectionMetric metricId)
@@ -148,7 +159,7 @@ IeConfiguration::SetMetric (dot11sPathSelectionMetric metricId)
 bool
 IeConfiguration::IsHWMP ()
 {
-  return (m_APSId == PROTOCOL_HWMP);
+  return (m_APSPId == PROTOCOL_HWMP);
 }
 bool
 IeConfiguration::IsAirtime ()
@@ -184,7 +195,7 @@ bool operator== (const dot11sMeshCapability & a, const dot11sMeshCapability & b)
 bool operator== (const IeConfiguration & a, const IeConfiguration & b)
 {
   return (
-      (a.m_APSId == b.m_APSId) &&
+      (a.m_APSPId == b.m_APSPId) &&
       (a.m_APSMId == b.m_APSMId) &&
       (a.m_CCMId == b.m_CCMId) &&
       (a.m_SPId == b.m_SPId) &&

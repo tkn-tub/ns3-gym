@@ -32,7 +32,15 @@ IePerr::~IePerr ()
 void
 IePerr::PrintInformation (std::ostream &os) const
 {
-  // TODO
+  os << "Number of failed destinations: = " << m_numOfDest;
+  NS_ASSERT (m_numOfDest == m_addressUnits.size ());
+  for (unsigned int j = 0; j < m_numOfDest; j++)
+    {
+      os << "Failed destination address: = "<< m_addressUnits[j].destination <<
+        ", sequence number = " << m_addressUnits[j].seqnum;
+    }
+  os << "\n";
+
 }
 IePerr::IePerr ():
     m_numOfDest (0)
