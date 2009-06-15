@@ -89,9 +89,12 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
     m_promiscRxCallback (this, packet, protocol, src, dst, packetType);
   if(dst48.IsGroup ())
   {
+    // forward broadcast further ...
+    Forward (incomingPort, packet->Copy (), protocol, src48, dst48);
+    
+    // ... and deliver to upper layer
     Ptr<Packet> packet_copy = packet->Copy ();
-    Forward (incomingPort, packet_copy, protocol, src48, dst48);
-    packet_copy->RemoveAllPacketTags ();
+    packet_copy->RemoveAllPacketTags (); // XXX remove all L2 routing tags
     m_rxCallback (this, packet_copy, protocol, src);
     return;
   }
