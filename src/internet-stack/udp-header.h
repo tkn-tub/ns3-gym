@@ -48,7 +48,7 @@ public:
   ~UdpHeader ();
 
   /**
-   * \brief Enable checksum calculation for UDP (XXX currently has no effect)
+   * \brief Enable checksum calculation for UDP 
    */
   void EnableChecksums (void);
   /**
