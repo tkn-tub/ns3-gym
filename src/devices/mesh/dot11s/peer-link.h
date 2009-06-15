@@ -103,8 +103,6 @@ private:
    * \attention In all this methods {local/peer}LinkID correspond to _peer_ station, as written in
    * received frame, e.g. I am peerLinkID and peer link is localLinkID .
    * 
-   * TODO is that clear?
-   * 
    * \{
    */
   /// Close link
@@ -221,7 +219,7 @@ private:
   /// Assoc Id assigned to me by peer
   uint16_t m_peerAssocId;
     
-  /// When last beacon was sent (TODO or received?)
+  /// When last beacon was received
   Time  m_lastBeacon;
   /// Current beacon interval on corresponding interface
   Time  m_beaconInterval;
@@ -252,7 +250,7 @@ private:
   uint16_t  m_maxBeaconLoss;
   //\}
   
-  /// ?
+  /// Several successive beacons were lost, close link
   void BeaconLoss ();
    
   /// How to report my status change

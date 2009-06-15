@@ -109,8 +109,7 @@ MeshHeader::GetMeshTtl () const
 void
 MeshHeader::SetAddressExt (uint8_t num_of_addresses)
 {
-  if (num_of_addresses > 3)
-    return;
+  NS_ASSERT (num_of_addresses <= 3);
   m_meshFlags |= 0x03 & num_of_addresses;
 }
 uint8_t
@@ -253,7 +252,7 @@ WifiMeshActionHeader::GetAction ()
           retval.peerLink = PEER_LINK_CLOSE;
           return retval;
         default:
-          NS_ASSERT (false);
+          NS_FATAL_ERROR ("Unknown mesh peering management action code");
           return retval;
         }
     case MESH_PATH_SELECTION:
@@ -272,17 +271,17 @@ WifiMeshActionHeader::GetAction ()
           retval.pathSelection = ROOT_ANNOUNCEMENT;
           return retval;
         default:
-          NS_ASSERT (false);
+          NS_FATAL_ERROR ("Unknown mesh path selection action code");
           return retval;
         }
     case MESH_LINK_METRIC:
-      // ???
+      // not yet supported 
     case MESH_INTERWORKING:
-      // ???
+      // not yet supported
     case MESH_RESOURCE_COORDINATION:
-      // ???
+      // not yet supported
     default:
-      NS_ASSERT (false);
+      NS_FATAL_ERROR ("Unsupported mesh action");
       return retval;
     }
 }

@@ -304,7 +304,8 @@ MeshPointDevice::GetInterface (uint32_t n) const
   for(std::vector< Ptr<NetDevice> >::const_iterator i = m_ifaces.begin (); i != m_ifaces.end (); i ++)
     if((*i)->GetIfIndex() == n)
       return (*i);
-  NS_ASSERT(false);
+  
+  NS_FATAL_ERROR ("Mesh point interface is not found by index");
   return 0;
 }
 std::vector<Ptr<NetDevice> >
@@ -363,8 +364,6 @@ MeshPointDevice::SetRoutingProtocol (Ptr<MeshL2RoutingProtocol> protocol)
   m_routingProtocol = protocol;
   m_requestRoute = MakeCallback (&MeshL2RoutingProtocol::RequestRoute, protocol);
   m_myResponse = MakeCallback (&MeshPointDevice::DoSend, this);
-  
-  return;
 }
 
 Ptr<MeshL2RoutingProtocol>

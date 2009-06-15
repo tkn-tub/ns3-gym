@@ -49,7 +49,7 @@ public:
   void SetSpreadInterfaceChannels (bool); 
   
   /** 
-   * \brief Install 802.11s mesh device & protocols on given node
+   * \brief Install 802.11s mesh device & protocols on given node list
    * 
    * \param phy                 Wifi PHY helper
    * \param nodes               List of nodes to install

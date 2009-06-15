@@ -81,18 +81,18 @@ public:
   /**
    * Request routing information, all packets must go through this request.
    * 
-   * Note that route discobery works async. -- RequestRoute returns immediately, while
-   * reply callback will be called when routing information will be avaliable.
+   * Note that route discovery works async. -- RequestRoute returns immediately, while
+   * reply callback will be called when routing information will be available.
    * \return true if valid route is already known
    * \param sourceIface the incoming interface of the packet
    * \param source        source address
    * \param destination   destination address
    * \param packet        the packet to be resolved (needed the whole packet, because
    *                      routing information is added as tags or headers). The packet
-   *                      will be retutned to reply callback. 
+   *                      will be returned to reply callback. 
    * \param protocolType  protocol ID, needed to form a proper MAC-layer header
    * \param routeReply    callback to be invoked after route discovery procedure, supposed 
-   *                      to really send packetusing routing information.
+   *                      to really send packet using routing information.
    */
   virtual bool RequestRoute (uint32_t sourceIface, const Mac48Address source, const Mac48Address destination, 
       Ptr<Packet> packet, uint16_t  protocolType, RouteReplyCallback routeReply ) = 0;

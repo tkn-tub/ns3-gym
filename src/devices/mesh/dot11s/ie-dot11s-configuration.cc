@@ -134,7 +134,6 @@ IeConfiguration::DeserializeInformation (Buffer::Iterator i, uint8_t length)
 void
 IeConfiguration::PrintInformation (std::ostream& os) const
 {
-  //TODO: print
 }
 void
 IeConfiguration::SetRouting (dot11sPathSelectionProtocol routingId)

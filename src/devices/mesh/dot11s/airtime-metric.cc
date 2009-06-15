@@ -56,19 +56,34 @@ AirtimeLinkMetricCalculator::GetTypeId ()
         );
   return tid;
 } 
+
 uint32_t
 AirtimeLinkMetricCalculator::CalculateMetric(Mac48Address peerAddress, Ptr<MeshWifiInterfaceMac> mac)
 {
+  /* Airtime link metric is defined in 11B.10 of 802.11s Draft D3.0 as:
+   * 
+   * airtime = (O + Bt/r)* (1 + average retry counter), where 
+   * o  -- the PHY dependent channel access which includes frame headers, training sequences, 
+   *       access protocol frames, etc. 
+   * bt -- the test packet length in bits (8192 by default), 
+   * r  -- the current bitrate of the packet,
+   *  
+   * Final result is expressed in units of 0.01 Time Unit = 10.24 us (as required by 802.11s draft)
+   */
+  
+  const double sec2ns = 1e9;   // seconds -> nanoseconds conversion factor
+  const double ns2tu  = 10240; // nanoseconds -> 0.01 TU conversion factor
+  
   WifiRemoteStation * station = mac->GetStationManager ()->Lookup(peerAddress);
   NS_ASSERT(station != 0);
   Ptr<Packet> test_frame = Create<Packet> (m_testLength+ m_headerLength+ m_meshHeaderLength);
   uint32_t rate = station->GetDataMode(test_frame, m_testLength + m_headerLength + m_meshHeaderLength).GetDataRate ();
-  uint32_t payload_nanosec = (uint32_t) ((double) ((m_testLength + m_meshHeaderLength) * 8) * 1e9 / ((double)rate));
+  uint32_t payload_nanosec = (uint32_t) ((double) ((m_testLength + m_meshHeaderLength) * 8 /*octets -> bits*/) * sec2ns / ((double)rate));
   uint32_t header_nanosec = (uint32_t)(
-      (double) (m_headerLength * 8 * 1e9) / ((double) mac->GetStationManager () -> GetBasicMode (0).GetDataRate ())
+      (double) (m_headerLength * 8 /*octets -> bits*/ * sec2ns) / ((double) mac->GetStationManager () -> GetBasicMode (0).GetDataRate ())
       );
   uint32_t metric = (uint32_t) (
-      ((double) (payload_nanosec + header_nanosec + m_overheadNanosec)) / 10240 * (station->GetAvgSlrc () + 1)
+      ((double) (payload_nanosec + header_nanosec + m_overheadNanosec)) / ns2tu * (station->GetAvgSlrc () + 1)
       );
   return metric;
 }

@@ -203,8 +203,6 @@ MeshWifiInterfaceMac::SetWifiPhy (Ptr<WifiPhy> phy)
   m_phy = phy;
   m_dcfManager->SetupPhyListener (phy);
   m_low->SetPhy (phy);
-
-  NS_LOG_DEBUG("SetWifiPhy: Can switch channel now: " << CanSwitchChannel() ); // TMP
 }
 
 void
@@ -590,7 +588,7 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
                    " microseconds");
 
       // update supported rates
-      if (beacon_hdr.GetSsid ().IsEqual(GetSsid()))
+      if (beacon_hdr.GetSsid ().IsEqual (GetSsid()))
         {
           SupportedRates rates = beacon_hdr.GetSupportedRates ();
           WifiRemoteStation * peerSta = m_stationManager->Lookup (hdr->GetAddr2 ());

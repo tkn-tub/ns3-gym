@@ -53,7 +53,12 @@ public:
   /// Add information element
   void AddInformationElement (Ptr<WifiInformationElement> ie);
   
-  /// Create wifi header for beacon frame. \param address is sender address \param mpAddress is mesh point address
+  /** 
+   * Create wifi header for beacon frame. 
+   * 
+   * \param address is sender address 
+   * \param mpAddress is mesh point address
+   */
   WifiMacHeader CreateHeader (Mac48Address address, Mac48Address mpAddress);
   /// Create frame = { beacon header + all information elements sorted by ElementId () }
   Ptr<Packet> CreatePacket ();

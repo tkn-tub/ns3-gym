@@ -23,6 +23,9 @@
 #include "ns3/log.h"
 #include "ns3/test.h"
 #include "ns3/packet.h"
+
+NS_LOG_COMPONENT_DEFINE ("IeBeaconTiming");
+
 namespace ns3 {
 namespace dot11s {
 /*******************************************
@@ -92,15 +95,21 @@ IeBeaconTiming::AddNeighboursTimingElementUnit (
 )
 {
   if (m_numOfUnits == 50)
-    return;
-  //First we lookup if this element already exists
+    {
+      NS_LOG_WARN ("Neighbor timing element is ignored, since more than 50 neighbors can not be supported in single information element.");
+      return;
+    }
+  //First we lookup if this element already exists 
   for (NeighboursTimingUnitsList::const_iterator i = m_neighbours.begin (); i != m_neighbours.end(); i++)
     if (
       ((*i)->GetAid () == AidToU8(aid))
       && ((*i)->GetLastBeacon () == TimestampToU16(last_beacon))
       && ((*i)->GetBeaconInterval () == BeaconIntervalToU16(beacon_interval))
     )
-      return;
+      {
+        NS_LOG_WARN ("Duplicated neighbor timing element is ignored.");
+        return;
+      }
   Ptr<IeBeaconTimingUnit>new_element = Create<IeBeaconTimingUnit> ();
   new_element->SetAid (AidToU8(aid));
   new_element->SetLastBeacon (TimestampToU16(last_beacon));
@@ -187,15 +196,15 @@ IeBeaconTiming::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 };
 
 uint16_t
-IeBeaconTiming::TimestampToU16 (Time x)
+IeBeaconTiming::TimestampToU16 (Time t)
 {
-  return ((uint16_t) ((x.GetMicroSeconds() >> 8)&0xffff));
+  return ((uint16_t) ((t.GetMicroSeconds() >> 8)&0xffff));
 };
 
 uint16_t 
-IeBeaconTiming::BeaconIntervalToU16 (Time x)
+IeBeaconTiming::BeaconIntervalToU16 (Time t)
 {
-  return ((uint16_t) (x.GetMicroSeconds() >>10)&0xffff);
+  return ((uint16_t) (t.GetMicroSeconds() >>10)&0xffff);
 };
 
 uint8_t

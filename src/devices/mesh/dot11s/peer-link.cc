@@ -307,7 +307,7 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           SetRetryTimer ();
           break;
         default:
-        {}
+          NS_FATAL_ERROR ("Invalid action in IDLE state");
         }
       break;
     case OPN_SNT:
@@ -353,7 +353,7 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           SetHoldingTimer ();
           break;
         default:
-        {}
+          NS_FATAL_ERROR ("Invalid action in OPN_SNT state");
         }
       break;
     case CNF_RCVD:
@@ -394,7 +394,7 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           SetHoldingTimer ();
           break;
         default:
-        {}
+          NS_FATAL_ERROR ("Invalid action in CNF_RCVD state");
         }
       break;
     case OPN_RCVD:
@@ -438,7 +438,7 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           SetHoldingTimer ();
           break;
         default:
-        {}
+          NS_FATAL_ERROR ("Invalid action in OPN_RCVD state");
         }
       break;
     case ESTAB:
@@ -468,7 +468,7 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, false);
           break;
         default:
-        {}
+          NS_FATAL_ERROR ("Invalid action in ESTAB state");
         }
       break;
     case HOLDING:
@@ -492,7 +492,7 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           SendPeerLinkClose (reasoncode);
           break;
         default:
-        {}
+          NS_FATAL_ERROR ("Invalid action in HOLDING state");
         }
       break;
     }

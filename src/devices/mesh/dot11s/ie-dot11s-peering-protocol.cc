@@ -47,7 +47,7 @@ IePeeringProtocol::DeserializeInformation (Buffer::Iterator i, uint8_t length)
 void
 IePeeringProtocol::PrintInformation (std::ostream& os) const
 {
-  //TODO: print
+  os << "peering protocol = " << m_protocol;
 }
 } // namespace dot11s
 } //namespace ns3

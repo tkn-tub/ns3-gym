@@ -128,7 +128,7 @@ PeerLinkFrameStart::Serialize (Buffer::Iterator start) const
   m_protocol.Serialize (i);
   i.Next (m_protocol.GetSerializedSize ());
   if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
-    i.WriteHtolsbU16(m_capability);
+    i.WriteHtolsbU16 (m_capability);
   if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CONFIRM) == m_subtype)
     i.WriteHtolsbU16 (m_aid);
   if ((uint8_t)(WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)

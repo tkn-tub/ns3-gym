@@ -47,89 +47,106 @@ HwmpMacPlugin::SetParent (Ptr<MeshWifiInterfaceMac> parent)
 {
   m_parent = parent;
 }
+
+bool
+HwmpMacPlugin::ReceiveData (Ptr<Packet> packet, const WifiMacHeader & header)
+{
+  NS_ASSERT (header.IsData());
+
+  MeshHeader meshHdr;
+  HwmpTag tag;
+  if(packet->PeekPacketTag (tag))
+  {
+    NS_FATAL_ERROR ("HWMP tag is not supposed to be received by network");
+  }
+  
+  packet->RemoveHeader(meshHdr);
+  m_stats.rxData ++;
+  m_stats.rxDataBytes += packet->GetSize ();
+  
+  //TODO: address extension
+  Mac48Address destination;
+  Mac48Address source;
+  switch (meshHdr.GetAddressExt ())
+  {
+    case 0:
+      source = header.GetAddr4 ();
+      destination = header.GetAddr3 ();
+      break;
+    default:
+      NS_FATAL_ERROR ("6-address scheme is not yet supported and 4-address extension is not supposed to be used for data frames.");
+  };
+  tag.SetSeqno (meshHdr.GetMeshSeqno ());
+  tag.SetTtl (meshHdr.GetMeshTtl ());
+  if(m_protocol->GetAddress() != destination)
+    packet->AddPacketTag(tag);
+  
+  if (destination == Mac48Address::GetBroadcast ())
+    if(m_protocol->DropDataFrame (meshHdr.GetMeshSeqno (), source))
+      return false;
+  
+  return true;
+}
+
+bool
+HwmpMacPlugin::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header)
+{
+  m_stats.rxMgt ++;
+  m_stats.rxMgtBytes += packet->GetSize ();
+  WifiMeshActionHeader actionHdr;
+  packet->RemoveHeader (actionHdr);
+  WifiMeshActionHeader::ActionValue actionValue = actionHdr.GetAction ();
+  if(actionHdr.GetCategory () != WifiMeshActionHeader::MESH_PATH_SELECTION)
+    return true;
+  switch (actionValue.pathSelection)
+  {
+    case WifiMeshActionHeader::PATH_REQUEST:
+      {
+        IePreq preq;
+        m_stats.rxPreq ++;
+        packet->RemoveHeader (preq);
+        if(preq.GetOriginatorAddress () == m_protocol->GetAddress ())
+          return false;
+        if (preq.GetTtl () == 0)
+          return false;
+        preq.DecrementTtl ();
+        m_protocol->ReceivePreq (preq, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (), m_parent->GetLinkMetric(header.GetAddr2 ()));
+        return false;
+      }
+    case WifiMeshActionHeader::PATH_REPLY:
+      {
+        IePrep prep;
+        m_stats.rxPrep ++;
+        packet->RemoveHeader (prep);
+        if(prep.GetTtl () == 0)
+          return false;
+        prep.DecrementTtl ();
+        m_protocol->ReceivePrep (prep, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (), m_parent->GetLinkMetric(header.GetAddr2 ()));
+        return false;
+      }
+    case WifiMeshActionHeader::PATH_ERROR:
+      {
+        IePerr perr;
+        m_stats.rxPerr ++;
+        packet->RemoveHeader (perr);
+        m_protocol->ReceivePerr (perr, header.GetAddr2 (), m_ifIndex, header.GetAddr3 ());
+        return false;
+      }
+    case WifiMeshActionHeader::ROOT_ANNOUNCEMENT:
+      return false;
+  }
+  return true;
+}
+
 bool
 HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
 {
-  //TODO: here we fix only mesh header
-  if(header.IsData())
-  {
-    MeshHeader meshHdr;
-    HwmpTag tag;
-    if(packet->PeekPacketTag (tag))
-    {
-      NS_ASSERT (false);
-    }
-    packet->RemoveHeader(meshHdr);
-    m_stats.rxData ++;
-    m_stats.rxDataBytes += packet->GetSize ();
-    //TODO: address extension
-    Mac48Address destination;
-    Mac48Address source;
-    switch (meshHdr.GetAddressExt ())
-    {
-      case 0:
-        source = header.GetAddr4 ();
-        destination = header.GetAddr3 ();
-        break;
-      default:
-        NS_ASSERT(false);
-    };
-    tag.SetSeqno (meshHdr.GetMeshSeqno ());
-    tag.SetTtl (meshHdr.GetMeshTtl ());
-    if(m_protocol->GetAddress() != destination)
-      packet->AddPacketTag(tag);
-    if (destination == Mac48Address::GetBroadcast ())
-      if(m_protocol->DropDataFrame (meshHdr.GetMeshSeqno (), source))
-        return false;
-  }
-  if(header.IsAction())
-  {
-    m_stats.rxMgt ++;
-    m_stats.rxMgtBytes += packet->GetSize ();
-    WifiMeshActionHeader actionHdr;
-    packet->RemoveHeader (actionHdr);
-    WifiMeshActionHeader::ActionValue actionValue = actionHdr.GetAction ();
-    if(actionHdr.GetCategory () != WifiMeshActionHeader::MESH_PATH_SELECTION)
-      return true;
-    switch (actionValue.pathSelection)
-    {
-      case WifiMeshActionHeader::PATH_REQUEST:
-        {
-          IePreq preq;
-          m_stats.rxPreq ++;
-          packet->RemoveHeader (preq);
-          if(preq.GetOriginatorAddress () == m_protocol->GetAddress ())
-            return false;
-          if (preq.GetTtl () == 0)
-            return false;
-          preq.DecrementTtl ();
-          m_protocol->ReceivePreq (preq, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (), m_parent->GetLinkMetric(header.GetAddr2 ()));
-          return false;
-        }
-      case WifiMeshActionHeader::PATH_REPLY:
-        {
-          IePrep prep;
-          m_stats.rxPrep ++;
-          packet->RemoveHeader (prep);
-          if(prep.GetTtl () == 0)
-            return false;
-          prep.DecrementTtl ();
-          m_protocol->ReceivePrep (prep, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (), m_parent->GetLinkMetric(header.GetAddr2 ()));
-          return false;
-        }
-      case WifiMeshActionHeader::PATH_ERROR:
-        {
-          IePerr perr;
-          m_stats.rxPerr ++;
-          packet->RemoveHeader (perr);
-          m_protocol->ReceivePerr (perr, header.GetAddr2 (), m_ifIndex, header.GetAddr3 ());
-          return false;
-        }
-      case WifiMeshActionHeader::ROOT_ANNOUNCEMENT:
-        return false;
-    }
-  }
-  return true;
+  if (header.IsData ())
+    return ReceiveData (packet, header);
+  else if (header.IsAction ())
+    return ReceiveAction (packet, header);
+  else
+    return true; // don't care
 }
 bool
 HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to)
@@ -140,8 +157,7 @@ HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header,
   bool tagExists = packet->RemovePacketTag(tag);
   if (!tagExists)
   {
-     //do it this way to silence compiler
-     NS_ASSERT (false);
+    NS_FATAL_ERROR ("HWMP tag must exist at this point");
   }
   m_stats.txData ++;
   m_stats.txDataBytes += packet->GetSize ();

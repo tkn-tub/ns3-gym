@@ -227,7 +227,7 @@ HwmpRtable::GetUnreachableDestinations (Mac48Address peerAddress)
 HwmpRtable::PrecursorList
 HwmpRtable::GetPrecursors (Mac48Address destination)
 {
-  //We suppose that no dublicates here can be
+  //We suppose that no duplicates here can be
   PrecursorList retval;
   std::map<Mac48Address, ReactiveRoute>::iterator route = m_routes.find (destination);
   if (route != m_routes.end ())

@@ -111,7 +111,7 @@ IeMeshId::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 void 
 IeMeshId::PrintInformation (std::ostream& os) const
 {
-  //TODO
+  os << "meshId =  " << PeekString (); 
 }
 bool operator== (const IeMeshId & a, const IeMeshId & b)
 {

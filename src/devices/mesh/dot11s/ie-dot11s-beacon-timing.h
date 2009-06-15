@@ -43,18 +43,13 @@ public:
   uint8_t GetAid () const;
   uint16_t GetLastBeacon () const;
   uint16_t GetBeaconInterval () const;
-  /**
-   * \brief Least significant octet of AID:
-   */
+  
+private:
+  /// Least significant octet of AID:
   uint8_t m_aid;
-  /**
-   * \brief Last time we received a beacon in accordance with a
-   * local TSF measured in 256 microseconds unit:
-   */
+  /// Last time we received a beacon in accordance with a local TSF measured in 256 microseconds unit
   uint16_t m_lastBeacon;
-  /**
-   * \brief Beacon interval of remote mesh point:
-   */
+  /// Beacon interval of remote mesh point
   uint16_t m_beaconInterval;
   friend bool operator== (const IeBeaconTimingUnit & a, const IeBeaconTimingUnit & b);
 };

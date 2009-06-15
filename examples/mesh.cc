@@ -67,7 +67,7 @@ class MeshTest
     //InternetStackHelper stack;
     //Ipv4AddressHelper address;
   private:
-    /// Create nodes and setup theis mobility
+    /// Create nodes and setup their mobility
     void CreateNodes ();
     /// Install internet stack on nodes
     void InstallInternetStack ();

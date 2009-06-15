@@ -206,7 +206,7 @@ HwmpProtocol::RequestRoute (
   {
     if(packet->PeekPacketTag(tag))
     {
-      NS_ASSERT (false);
+      NS_FATAL_ERROR ("HWMP tag is not supposed to be here at this point.");
     }
     //Filling TAG:
     if(destination == Mac48Address::GetBroadcast ())
@@ -217,8 +217,7 @@ HwmpProtocol::RequestRoute (
   {
     if(!packet->RemovePacketTag(tag))
     {
-      NS_ASSERT(false);
-      return false;
+      NS_FATAL_ERROR ("HWMP tag is supposed to be here at this point.");
     }
     tag.DecrementTtl ();
     if (tag.GetTtl () == 0)
@@ -237,7 +236,7 @@ HwmpProtocol::RequestRoute (
     {
       bool should_send = true;
       for(std::vector<uint16_t>::const_iterator chan = channels.begin(); chan != channels.end(); chan ++)
-        if(*chan == plugin->second->GetChannelId ())
+        if( (*chan) == plugin->second->GetChannelId ())
           should_send = false;
       if(!should_send)
         continue;
@@ -470,7 +469,7 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
             }
         }
     }
-  //chack if must retransmit:
+  //check if must retransmit:
   if (preq.GetDestCount () == 0)
     return;
   //Forward PREQ to all interfaces:
@@ -734,7 +733,7 @@ HwmpProtocol::QueuedPacket
 HwmpProtocol::DequeueFirstPacketByDst (Mac48Address dst)
 {
   QueuedPacket retval;
-  retval.pkt = NULL;
+  retval.pkt = 0;
   for(std::vector<QueuedPacket>::iterator i = m_rqueue.begin (); i != m_rqueue.end (); i++)
     if((*i).dst == dst)
     {
@@ -764,12 +763,9 @@ HwmpProtocol::ReactivePathResolved (Mac48Address dst)
   HwmpRtable::LookupResult result = m_rtable->LookupReactive (dst);
   NS_ASSERT(result.retransmitter != Mac48Address::GetBroadcast ());
   //Send all packets stored for this destination    
-  QueuedPacket packet;
-  while (1)
+  QueuedPacket packet = DequeueFirstPacketByDst (dst);
+  while (packet.pkt != 0)
   {
-    packet = DequeueFirstPacketByDst (dst);
-    if (packet.pkt == NULL)
-      return;
     //set RA tag for retransmitter:
     HwmpTag tag;
     packet.pkt->RemovePacketTag(tag);
@@ -778,6 +774,8 @@ HwmpProtocol::ReactivePathResolved (Mac48Address dst)
     m_stats.txUnicast ++;
     m_stats.txBytes += packet.pkt->GetSize ();
     packet.reply (true, packet.pkt, packet.src, packet.dst, packet.protocol, result.ifIndex);
+    
+    packet = DequeueFirstPacketByDst (dst);
   }
 }
 void
@@ -786,23 +784,22 @@ HwmpProtocol::ProactivePathResolved ()
   //send all packets to root
   HwmpRtable::LookupResult result = m_rtable->LookupProactive ();
   NS_ASSERT(result.retransmitter != Mac48Address::GetBroadcast ());
-  QueuedPacket packet;
-  while (1)
+  QueuedPacket packet = DequeueFirstPacket ();
+  while (packet.pkt != 0)
   {
-    packet = DequeueFirstPacket ();
-    if (packet.pkt == NULL)
-      return;
     //set RA tag for retransmitter:
     HwmpTag tag;
     if(!packet.pkt->RemovePacketTag (tag))
     {
-      NS_ASSERT (false);
+      NS_FATAL_ERROR ("HWMP tag must be present at this point");
     }
     tag.SetAddress (result.retransmitter);
     packet.pkt->AddPacketTag (tag);
     m_stats.txUnicast ++;
     m_stats.txBytes += packet.pkt->GetSize ();
     packet.reply (true, packet.pkt, packet.src, packet.dst, packet.protocol, result.ifIndex);
+    
+    packet = DequeueFirstPacket ();
   }
 }
 
@@ -835,15 +832,13 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
   numOfRetry++;
   if (numOfRetry > m_dot11MeshHWMPmaxPREQretries)
     {
-      QueuedPacket packet;
+      QueuedPacket packet = DequeueFirstPacketByDst (dst);
       //purge queue and delete entry from retryDatabase
-      while (1)
+      while (packet.pkt != 0)
         {
-          packet = DequeueFirstPacketByDst (dst);
-          if (packet.pkt == NULL)
-            break;
           m_stats.totalDropped ++;
           packet.reply (false, packet.pkt, packet.src, packet.dst, packet.protocol, HwmpRtable::MAX_METRIC);
+          packet = DequeueFirstPacketByDst (dst);
         }
       std::map<Mac48Address, EventId>::iterator i = m_preqTimeouts.find (dst);
       NS_ASSERT (i !=  m_preqTimeouts.end());
