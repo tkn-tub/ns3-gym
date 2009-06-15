@@ -96,17 +96,6 @@ MeshWifiInterfaceMac::MeshWifiInterfaceMac ()
   m_beaconDca->SetMaxCw (0);
   m_beaconDca->SetAifsn (1);
   m_beaconDca->SetManager (m_dcfManager);
-# if 0
-  m_VO = CreateObject<DcaTxop> ();
-  m_VO->SetLow (m_low);
-  m_VO->SetMinCw (3);
-  m_VO->SetMaxCw (7);
-  m_VO->SetManager (m_dcfManager);
-
-  m_BE = CreateObject<DcaTxop> ();
-  m_BE->SetLow (m_low);
-  m_BE->SetManager (m_dcfManager);
-#endif
 }
 
 MeshWifiInterfaceMac::~MeshWifiInterfaceMac ()
