@@ -226,7 +226,7 @@ only have to understand a tiny and intuitively obvious subset of Python in
 order to extend the system in most cases.
 
 For those interested in the gory details of Waf, the main web site can be 
-found at @uref{http://freehackers.org/~tnagy/waf.html}.
+found at @uref{http://code.google.com/p/waf/}.
 
 @node Development Environment
 @section Development Environment
@@ -275,7 +275,7 @@ problems.
 @cindex MinGW
 If you do use Cygwin or MinGW; and use Logitech products, we will save you
 quite a bit of heartburn right off the bat and encourage you to take a look
-at the @uref{http://www.mingw.org/MinGWiki/index.php/FAQ,,MinGW FAQ}.
+at the @uref{http://oldwiki.mingw.org/index.php/FAQ,,MinGW FAQ}.
 
 @cindex Logitech
 Search for ``Logitech'' and read the FAQ entry, ``why does make often 
@@ -295,7 +295,7 @@ such as VMware server and install a Linux virtual machine.
 We will assume a basic facility with the Berkeley Sockets API in the examples
 used in this tutorial.  If you are new to sockets, we recommend reviewing the
 API and some common usage cases.  For a good overview of programming TCP/IP
-sockets we recommend @uref{http://www.elsevier.com/wps/product/cws_home/680765,,Practical TCP/IP Sockets in C, Donahoo and Calvert}.
+sockets we recommend @uref{http://www.elsevier.com/wps/find/bookdescription.cws_home/717656/description#description,,TCP/IP Sockets in C, Donahoo and Calvert}.
 
 There is an associated web site that includes source for the examples in the
 book, which you can find at:
@@ -305,6 +305,6 @@ If you understand the first four chapters of the book (or for those who do
 not have access to a copy of the book, the echo clients and servers shown in 
 the website above) you will be in good shape to understand the tutorial.
 There is a similar book on Multicast Sockets,
-@uref{http://www.elsevier.com/wps/product/cws_home/700736,,Multicast Sockets, Makofske and Almeroth}.
+@uref{http://www.elsevier.com/wps/find/bookdescription.cws_home/700736/description#description,,Multicast Sockets, Makofske and Almeroth}.
 that covers material you may need to understand if you look at the multicast 
 examples in the distribution.

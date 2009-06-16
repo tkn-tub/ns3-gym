@@ -46,12 +46,12 @@ MeshWifiInterfaceMac::GetTypeId ()
     .SetParent<WifiMac> ()
     .AddConstructor<MeshWifiInterfaceMac> ()
     .AddAttribute ("BeaconInterval", "Beacon Interval",
-        TimeValue (Seconds (1.0)),
+        TimeValue (Seconds (0.5)),
         MakeTimeAccessor (&MeshWifiInterfaceMac::m_beaconInterval),
         MakeTimeChecker ()
         )
     .AddAttribute ("RandomStart", "Window when beacon generating starts (uniform random) in seconds",
-        TimeValue (Seconds (0.1)),
+        TimeValue (Seconds (0.5)),
         MakeTimeAccessor (&MeshWifiInterfaceMac::m_randomStart),
         MakeTimeChecker ()
         )

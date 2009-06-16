@@ -189,7 +189,7 @@ TcpSocketImplTest::Test1_HandleRecv (Ptr<Socket> sock)
   {
     rxBytes1 += sz;
     rxPayload = new uint8_t[sz];
-    memcpy (rxPayload, p->PeekData(), sz);
+    p->CopyData (rxPayload, sz);
   }
   else
   {

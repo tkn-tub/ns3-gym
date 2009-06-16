@@ -30,12 +30,12 @@
 #include "ns3/log.h"
 #include "ns3/node-list.h"
 #include "ns3/ipv4.h"
-#include "ns3/ipv4-global-routing.h"
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv4-list-routing.h"
 #include "global-router-interface.h"
 #include "global-route-manager-impl.h"
 #include "candidate-queue.h"
+#include "ipv4-global-routing.h"
 
 NS_LOG_COMPONENT_DEFINE ("GlobalRouteManager");
 

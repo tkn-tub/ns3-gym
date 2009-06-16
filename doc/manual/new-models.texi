@@ -205,7 +205,7 @@ add this to @code{src/common/wscript}.  It is really just a matter
 of adding the .cc file to the rest of the source files, and the .h
 file to the list of the header files. 
 
-Now, pop up to the top level directory and type "./waf check".  You
+Now, pop up to the top level directory and type "./waf --check".  You
 shouldn't have broken anything by this operation.
 @subsection include guards
 Next, let's add some 

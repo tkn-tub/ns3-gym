@@ -562,7 +562,7 @@ The build system is now configured and you can build the debug versions of
 the ns-3 programs by simply typing,
 
 @verbatim
-  ./waf check
+  ./waf --check
 @end verbatim
 
 You will see many Waf status messages displayed as the system compiles.  The
