@@ -190,7 +190,9 @@ PeerManagementProtocol::UpdatePeerBeaconTiming(
   //BCA:
   PeerManagerPluginMap::iterator plugin = m_plugins.find (interface);
   NS_ASSERT(plugin != m_plugins.end ());
-  plugin->second->SetBeaconShift(GetNextBeaconShift(interface));
+  Time shift = GetNextBeaconShift(interface);
+  if(TimeToTu (shift) != 0)
+    plugin->second->SetBeaconShift(shift);
   //PM STATE Machine
   //Check that a given beacon is not from our interface
   for(PeerManagerPluginMap::const_iterator i = m_plugins.begin (); i != m_plugins.end (); i ++)
@@ -368,11 +370,16 @@ PeerManagementProtocol::GetNextBeaconShift (uint32_t interface)
   //REMINDER:: in timing element  1) last beacon reception time is measured in units of 256 microseconds
   //                              2) beacon interval is mesured in units of 1024 microseconds
   //                              3) hereafter TU = 1024 microseconds
+  //So, the shift is a random integer variable uniformly distributed in [-15;-1] U [1;15]
+  static int maxShift = 15;
+  static int minShift = 1;
   PeerLinksMap::iterator iface = m_peerLinks.find (interface);
   NS_ASSERT (iface != m_peerLinks.end());
   PeerManagerPluginMap::iterator plugin = m_plugins.find (interface);
   NS_ASSERT (plugin != m_plugins.end());
   std::pair<Time, Time> myBeacon = plugin->second->GetBeaconInfo ();
+  if(Simulator::Now () + TuToTime (maxShift) > myBeacon.first + myBeacon.second)
+    return MicroSeconds (0);
   for (PeerLinksOnInterface::iterator i = iface->second.begin (); i != iface->second.end (); i++)
     {
       IeBeaconTiming::NeighboursTimingUnitsList neighbours;
@@ -388,9 +395,8 @@ PeerManagementProtocol::GetNextBeaconShift (uint32_t interface)
               if ((TimeToTu (myBeacon.first) - ((*j)->GetLastBeacon ()/4)) % ((*j)->GetBeaconInterval ()) == 0)
               {
                 UniformVariable randomSign (-1, 1);
-                UniformVariable randomShift (1, 15);
-                //So, the shift is a random integer variable uniformly distributed in [-15;-1] U [1;15]
-                int beaconShift = randomShift.GetInteger (1,15) * ((randomSign.GetValue () >= 0) ? 1 : -1);
+                UniformVariable randomShift (minShift, maxShift);
+                int beaconShift = randomShift.GetInteger (minShift,maxShift) * ((randomSign.GetValue () >= 0) ? 1 : -1);
                 NS_LOG_DEBUG ("Apply MBCA: Shift value = " << beaconShift << " beacon TUs");
                 //Do not shift to the past!
                 return (TuToTime (beaconShift) + Simulator::Now() < myBeacon.first) ? TuToTime (beaconShift) : TuToTime (0);
