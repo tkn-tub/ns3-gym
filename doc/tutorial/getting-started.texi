@@ -44,7 +44,7 @@ the Getting Started section of the  @command{ns-3} web site:
 
 @cindex tarball
 The @command{ns-3} code is available in Mercurial repositories on the server
-code.nsnam.org.  You can also download a tarball release at
+@uref{http://code.nsnam.org}.  You can also download a tarball release at
 @uref{http://www.nsnam.org/releases/}, or you can work with repositories
 using Mercurial.  We recommend using Mercurial unless there's a good reason
 not to.  See the end of this section for instructions on how to get a tarball
@@ -53,7 +53,7 @@ release.
 @cindex repository
 The simplest way to get started using Mercurial repositories is to use the
 @code{ns-3-allinone} environment.  This is a set of scripts that manages the 
-downloading and building of various subystems of @command{ns-3} for you.  We 
+downloading and building of various subsystems of @command{ns-3} for you.  We 
 recommend that you begin your @command{ns-3} adventures in this environment
 as it can really simplify your life at this point.
 
@@ -128,12 +128,13 @@ Since the release numbers are going to be changing, I will stick with
 the more constant ns-3-dev here in the tutorial, but you can replace the 
 string ``ns-3-dev'' with your choice of release (e.g., ns-3.4 and 
 ns-3.4-ref-traces) in the text below.  You can find the latest version  of the
-code either by inspection of the repository list or by going to the ``Getting 
-Started'' web page and looking for the latest release identifier.
+code either by inspection of the repository list or by going to the 
+@uref{http://www.nsnam.org/getting_started.html,,``Getting Started''} 
+web page and looking for the latest release identifier.
 
 Go ahead and change into the @code{ns-3-allinone} directory you created when
 you cloned that repository.  We are now going to use the @code{download.py} 
-script to pull down the various pieces of @command{ns-3} you will be using/
+script to pull down the various pieces of @command{ns-3} you will be using.
 
 Go ahead and type the following into your shell (remember you can substitute
 the name of your chosen release number instead of @code{ns-3-dev} -- like
@@ -257,15 +258,15 @@ get a copy of a release by typing the following into your Linux shell
   mkdir tarballs
   cd tarballs
   wget http://www.nsnam.org/releases/ns-allinone-3.4.tar.bz2
-  tar xjf ns-3.4.tar.bz2
+  tar xjf ns-allinone-3.4.tar.bz2
 @end verbatim 
 
 If you change into the directory @code{ns-allinone-3.4} you should see a
 number of files:
 
 @verbatim
-build.py*     ns-3.4-RC2/             nsc-0.5.0/             util.py
-constants.py  ns-3.4-RC2-ref-traces/  pybindgen-0.10.0.630/
+build.py*     ns-3.4/             nsc-0.5.0/             README
+constants.py  ns-3.4-ref-traces/  pybindgen-0.10.0.630/  util.py
 @end verbatim 
 
 You are now ready to build the @command{ns-3} distribution.
@@ -404,7 +405,7 @@ Configuration finished successfully (00:00:02); project is now ready to build.
 @end verbatim
 
 Note the last part of the above output.  Some ns-3 options are not enabled by
-default or require support from the underlying system to work properly
+default or require support from the underlying system to work properly.
 For instance, to enable XmlTo, the library libxml-2.0 must be found on the
 system.  in the example above, this library was not found and the corresponding
 feature was not enabled.  There is a feature to use sudo to set the suid bit of
@@ -438,7 +439,7 @@ programs to run as root.  There are many other configure- and build-time options
 available in waf.  To explore these options, type:
 
 @verbatim
-  ./waf -- help
+  ./waf --help
 @end verbatim
 
 We'll use some of the testing-related commands in the next section.
@@ -455,10 +456,10 @@ but now you know how to change the configuration and build optimized code.
 
 @cindex unit tests
 You can run the unit tests of the @command{ns-3} distribution by running the 
-``check'' command,
+``--check'' option,
 
 @verbatim
-  ./waf check
+  ./waf --check
 @end verbatim
 
 You should see a report from each unit test that executes indicating that the
@@ -488,7 +489,7 @@ This command is typically run by @code{users} to quickly verify that an
 
 @cindex regression tests
 You can also run our regression test suite to ensure that your distribution and
-tool chain have produced binaries that generate output that is identical to
+toolchain have produced binaries that generate output that is identical to
 known-good reference output files.  You downloaded these reference traces to 
 your machine during the download process above.  (Warning:  The @code{ns-3.2} 
 and @code{ns-3.3} releases do not use the @code{ns-3-allinone} environment
@@ -505,7 +506,7 @@ along with a suggestion on diff parameters and options in order to see what
 has gone awry.  If the error was discovered in a pcap file, it will be useful
 to convert the pcap files to text using tcpdump prior to comparison.
 
-Some regression tests wmay be SKIPped if the required support
+Some regression tests may be SKIPped if the required support
 is not present.
 
 To run the regression tests, you provide Waf with the regression flag.
@@ -568,7 +569,7 @@ ubiquitous hello world program by typing the following:
 @end verbatim
 
 Waf first checks to make sure that the program is built correctly and 
-executes a build if required.  Waf then then executes the program, which 
+executes a build if required.  Waf then executes the program, which 
 produces the following output.
 
 @verbatim

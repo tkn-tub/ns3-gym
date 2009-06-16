@@ -142,8 +142,7 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
         {
           InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
           NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
-            address.GetIpv4() << " [" << address << "]---'" << 
-            packet->PeekData() << "'");
+            address.GetIpv4() << " [" << address << "]");
         }    
       m_rxTrace (packet, from);
     }

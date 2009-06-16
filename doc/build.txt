@@ -36,7 +36,7 @@ The resulting binaries are placed in build/<debuglevel>/srcpath.
 
 Other waf usages include:
 
- 1. ./waf check
+ 1. ./waf --check
     Runs the unit tests
 
  2. ./waf --doxygen

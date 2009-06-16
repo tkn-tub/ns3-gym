@@ -248,7 +248,7 @@ from network number 10.1.2.0 in this case, as seen below.
 Now we have a topology built, but we need applications.  This section is
 going to be fundamentally similar to the applications section of 
 @code{first.cc} but we are going to instantiate the server on one of the 
-nodes that has a CSMA node and the client on the node having only a 
+nodes that has a CSMA device and the client on the node having only a 
 point-to-point device.
 
 First, we set up the echo server.  We create a @code{UdpEchoServerHelper} and
@@ -296,7 +296,7 @@ leftmost point-to-point node seen in the topology illustration.
 Since we have actually built an internetwork here, we need some form of 
 internetwork routing.  @command{ns-3} provides what we call a global route 
 manager to set up the routing tables on nodes.  This route manager has a 
-global function that runs though the nodes created for the simulation and does
+global function that runs through the nodes created for the simulation and does
 the hard work of setting up routing for you.  
 
 Basically, what happens is that each node behaves as if it were an OSPF router
@@ -317,7 +317,7 @@ you haven't encountered yet.
 
 @verbatim
   PointToPointHelper::EnablePcapAll ("second");
-  CsmaHelper::EnablePcap ("second", csmaDevices.Get (0), true);
+  CsmaHelper::EnablePcap ("second", csmaDevices.Get (1), true);
 @end verbatim
 
 The CSMA network is a multi-point-to-point network.  This means that there 
@@ -336,8 +336,8 @@ In this example, we are going to select one of the devices on the CSMA
 network and ask it to perform a promiscuous sniff of the network, thereby
 emulating what @code{tcpdump} would do.  If you were on a Linux machine
 you might do something like @code{tcpdump -i eth0} to get the trace.  
-In this case, we specify the device using @code{csmaDevices.Get(0)}, 
-which selects the zeroth device in the container.  Setting the final
+In this case, we specify the device using @code{csmaDevices.Get(1)}, 
+which selects the first device in the container.  Setting the final
 parameter to true enables promiscuous captures.
 
 The last section of code just runs and cleans up the simulation just like
@@ -374,7 +374,7 @@ run the program.
 @verbatim
   export NS_LOG=
   ./waf --run scratch/mysecond
-#end verbatim
+@end verbatim
 
 Since we have set up the UDP echo applications to log just as we did in 
 @code{first.cc}, you will see similar output when you run the script.
@@ -395,7 +395,7 @@ the echo packet.  The final message, @code{Received 1024 bytes from 10.1.2.4}
 is from the echo client, indicating that it has received its echo back from
 the server.
 
-If you now go and look in the top level directory, you will find two trace 
+If you now go and look in the top level directory, you will find three trace 
 files:
 
 @verbatim
@@ -648,7 +648,7 @@ was in non-promiscuous mode.
 
 To illustrate the difference between promiscuous and non-promiscuous traces, we
 also requested a non-promiscuous trace for the next-to-last node.  Go ahead and
-take a look at the @code{tcpdump} for @code{second-10-0.pcap}.
+take a look at the @code{tcpdump} for @code{second-100-0.pcap}.
 
 @verbatim
   tcpdump -nn -tt -r second-100-0.pcap
@@ -845,11 +845,11 @@ helpers:
 
 For simplicity, this code uses the default PHY layer configuration and
 channel models which are documented in the API doxygen documentation for
-the @code{YansWifiChannelHelper::Default} and @code{YAnsWifiPhyHelper::Default}
+the @code{YansWifiChannelHelper::Default} and @code{YansWifiPhyHelper::Default}
 methods. Once these objects are created, we create a channel object
 and associate it to our PHY layer object manager to make sure
-that all the PHY objects created layer by the @code{YansWifiPhyHelper}
-all share the same underlying channel, that is, they share the same
+that all the PHY layer objects created by the @code{YansWifiPhyHelper}
+share the same underlying channel, that is, they share the same
 wireless medium and can communication and interfere:
 
 @verbatim
@@ -1111,9 +1111,9 @@ third-0-0.pcap  third-0-1.pcap  third-1-0.pcap  third-1-1.pcap
 @end verbatim
 
 The file ``third-0-0.pcap'' corresponds to the point-to-point device on node
-zero -- the left side of the ``backbone.''  The file ``third-1-0.pcap'' 
+zero -- the left side of the ``backbone''.  The file ``third-1-0.pcap'' 
 corresponds to the point-to-point device on node one -- the right side of the
-``backbone.''  The file ``third-0-1.pcap'' will be the promiscuous (monitor
+``backbone''.  The file ``third-0-1.pcap'' will be the promiscuous (monitor
 mode) trace from the Wifi network and the file ``third-1-1.pcap'' will be the
 promiscuous trace from the CSMA network.  Can you verify this by inspecting
 the code?
@@ -1329,9 +1329,9 @@ If you are feeling brave, there is a list of all trace sources in the
 @uref{http://www.nsnam.org/doxygen-release/index.html,,ns-3 Doxygen}
 which you can find in the ``Modules'' tab.
 Under the ``core'' section, you will find a link to ``The list of all trace 
-sources.''  You may find it interesting to try and hook some of these 
+sources.''.  You may find it interesting to try and hook some of these 
 traces yourself.  Additionally in the ``Modules'' documentation, there is
-a link to ``The list of all attributes.''  You can set the default value of 
+a link to ``The list of all attributes.''.  You can set the default value of 
 any of these @code{Attributes} via the command line as we have previously 
 discussed.
 

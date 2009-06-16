@@ -29,7 +29,9 @@ TypeId
 BridgeChannel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BridgeChannel")
-    .SetParent<Channel> ();
+    .SetParent<Channel> ()
+    .AddConstructor<BridgeChannel> ()
+    ;
   return tid;
 }
 

@@ -108,7 +108,9 @@ Icmpv4Echo::SetSequenceNumber (uint16_t seq)
 void 
 Icmpv4Echo::SetData (Ptr<const Packet> data)
 {
-  m_data = data->Copy ();
+  uint32_t size = (data->GetSize ()>16)?16:data->GetSize();
+  data->CopyData (m_data, size);
+  m_dataSize = size;
 }
 uint16_t 
 Icmpv4Echo::GetIdentifier (void) const
@@ -120,10 +122,11 @@ Icmpv4Echo::GetSequenceNumber (void) const
 {
   return m_sequence;
 }
-Ptr<const Packet> 
-Icmpv4Echo::GetData (void) const
+uint32_t
+Icmpv4Echo::GetData (uint8_t data[16]) const
 {
-  return m_data->Copy ();
+  memcpy (data, m_data, m_dataSize);
+  return m_dataSize;
 }
 
 
@@ -139,8 +142,14 @@ Icmpv4Echo::GetTypeId (void)
 Icmpv4Echo::Icmpv4Echo ()
   : m_identifier (0),
     m_sequence (0),
-    m_data (0)
-{}
+    m_dataSize (0)
+{
+  // make sure that thing is initialized to get initialized bytes
+  for (uint8_t j = 0; j < 16; j++)
+    {
+      m_data[j] = 0;
+    }
+}
 Icmpv4Echo::~Icmpv4Echo ()
 {}
 TypeId 
@@ -151,14 +160,14 @@ Icmpv4Echo::GetInstanceTypeId (void) const
 uint32_t 
 Icmpv4Echo::GetSerializedSize (void) const
 {
-  return 4 + m_data->GetSize ();
+  return 4 + m_dataSize;
 }
 void 
 Icmpv4Echo::Serialize (Buffer::Iterator start) const
 {
   start.WriteHtonU16 (m_identifier);
   start.WriteHtonU16 (m_sequence);
-  start.Write (m_data->PeekData (), m_data->GetSize ());
+  start.Write (m_data, m_dataSize);
 }
 uint32_t 
 Icmpv4Echo::Deserialize (Buffer::Iterator start)
@@ -166,11 +175,8 @@ Icmpv4Echo::Deserialize (Buffer::Iterator start)
   m_identifier = start.ReadNtohU16 ();
   m_sequence = start.ReadNtohU16 ();
   NS_ASSERT (start.GetSize () >= 4);
-  uint32_t size = start.GetSize () - 4;
-  uint8_t *buffer = new uint8_t[size] ();
-  start.Read (buffer, size);
-  m_data = Create<Packet> (buffer, size);
-  delete[] buffer;
+  m_dataSize = start.GetSize () - 4;
+  start.Read (m_data, m_dataSize);
   return start.GetSize ();
 }
 void 

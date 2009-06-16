@@ -24,7 +24,7 @@
 namespace ns3 {
 
 /**
- * \ingroup ipv4-routing 
+ * \ingroup ipv4Routing 
  *
  * This class is a specialization of Ipv4RoutingProtocol that allows 
  * other instances of Ipv4RoutingProtocol to be inserted in a 

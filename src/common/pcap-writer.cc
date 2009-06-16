@@ -164,7 +164,7 @@ PcapWriter::WritePacket (Ptr<const Packet> packet)
       Write32 (us & 0xffffffff);
       Write32 (packet->GetSize ());
       Write32 (packet->GetSize ());
-      WriteData (packet->PeekData (), packet->GetSize ());
+      packet->CopyData (m_writer, packet->GetSize ());
     }
 }
 
@@ -412,7 +412,7 @@ void PcapWriter::WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t chann
     }    
 
   // finally, write rest of packet
-  WriteData (packet->PeekData (), packet->GetSize ());
+  packet->CopyData (m_writer, packet->GetSize ());
 }
     
   

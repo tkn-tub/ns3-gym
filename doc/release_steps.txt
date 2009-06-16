@@ -6,12 +6,12 @@ Steps in doing an ns-3 release
    - revise and check in RELEASE_NOTES
    - DO NOT change VERSION at this time
    - confirm that Doxygen builds cleanly and without warnings
-     (./waf check; ./waf --doxygen), and check in any necessary changes 
+     (./waf --check; ./waf --doxygen), and check in any necessary changes 
    - ensure no regressions (./waf --regression)
 3. ./waf configure; ./waf dist
    - this will create an ns-3-dev.tar.bz2 tarball
    - this will also create a ns-3-dev-ref-traces.tar.bz2 tarball
-4. test dev tarball on release platforms (waf check and maybe some other 
+4. test dev tarball on release platforms (waf --check and maybe some other 
    scripts)
 5. once you are happy with the tarball, tag ns-3-dev and ns-3-dev-ref-traces
    - hg tag "ns-3.x"

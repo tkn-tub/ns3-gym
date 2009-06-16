@@ -344,6 +344,8 @@ public:
    */
   uint32_t CopyData (uint8_t *buffer, uint32_t size) const;
 
+  void CopyData(std::ostream *os, uint32_t size) const;
+
   /**
    * A packet is allocated a new uid when it is created
    * empty or with zero-filled payload.

@@ -36,6 +36,7 @@ Ipv4StaticRoutingImpl::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4StaticRoutingImpl")
     .SetParent<Ipv4StaticRouting> ()
+    .AddConstructor<Ipv4StaticRoutingImpl> ()
     ;
   return tid;
 }

@@ -31,7 +31,7 @@ def configure(conf):
 
     conf.check(header_name='sys/inttypes.h', define_name='HAVE_SYS_INT_TYPES_H')
 
-    conf.write_config_header('ns3/simulator-config.h', project_root_relative=True)
+    conf.write_config_header('ns3/simulator-config.h', top=True)
 
     if not conf.check(lib='rt', uselib='RT', define_name='HAVE_RT'):
         conf.report_optional_feature("RealTime", "Real Time Simulator",
