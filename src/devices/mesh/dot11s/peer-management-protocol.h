@@ -192,6 +192,13 @@ private:
   void PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, Mac48Address peerMeshPointAddres, bool status);
   ///\brief BCA
   Time GetNextBeaconShift (uint32_t interface);
+  /**
+   * \name Time<-->TU converters:
+   * \{
+   */
+  Time TuToTime (uint32_t x);
+  uint32_t TimeToTu (Time x);
+  ///\}
 private:
   PeerManagerPluginMap m_plugins;
   Mac48Address m_address;

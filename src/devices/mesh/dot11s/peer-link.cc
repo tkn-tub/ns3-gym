@@ -285,7 +285,7 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
         case CNCL:
         case CLS_ACPT:
           m_state = IDLE;
-          // TODO Callback MLME-SignalPeerLinkStatus
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, false);
           break;
         case REQ_RJCT:
           SendPeerLinkClose (reasoncode);
@@ -366,7 +366,6 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           SendPeerLinkConfirm ();
           NS_ASSERT(m_peerMeshPointAddress != Mac48Address::GetBroadcast ());
           m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, true);
-          // TODO Callback MLME-SignalPeerLinkStatus
           break;
         case CLS_ACPT:
           m_state = HOLDING;
@@ -411,7 +410,6 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           ClearRetryTimer ();
           NS_ASSERT(m_peerMeshPointAddress != Mac48Address::GetBroadcast ());
           m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, true);
-          // TODO Callback MLME-SignalPeerLinkStatus
           break;
         case CLS_ACPT:
           m_state = HOLDING;
@@ -454,7 +452,6 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           m_state = HOLDING;
           SendPeerLinkClose (REASON11S_MESH_CLOSE_RCVD);
           SetHoldingTimer ();
-          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, false);
           break;
         case OPN_RJCT:
         case CNF_RJCT:
@@ -462,13 +459,11 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           ClearRetryTimer ();
           SendPeerLinkClose (reasoncode);
           SetHoldingTimer ();
-          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, false);
           break;
         case CNCL:
           m_state = HOLDING;
           SendPeerLinkClose (REASON11S_PEERING_CANCELLED);
           SetHoldingTimer ();
-          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, false);
           break;
         default:
           //11B.5.3.8 of 802.11s Draft D3.0 
@@ -483,7 +478,7 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           ClearHoldingTimer ();
         case TOH:
           m_state = IDLE;
-          // TODO Callback MLME-SignalPeerLinkStatus
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, false);
           break;
         case OPN_ACPT:
         case CNF_ACPT:

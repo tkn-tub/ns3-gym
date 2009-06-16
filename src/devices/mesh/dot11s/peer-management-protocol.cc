@@ -203,12 +203,12 @@ PeerManagementProtocol::UpdatePeerBeaconTiming(
       peerLink->SetBeaconInformation (receivingTime, beaconInterval);
     }
   else
-    {
-      peerLink = InitiateLink (interface, peerAddress, Mac48Address::GetBroadcast (), receivingTime, beaconInterval);
-      peerLink->SetBeaconTimingElement (timingElement);
       if (ShouldSendOpen (interface, peerAddress))
+      {
+        peerLink = InitiateLink (interface, peerAddress, Mac48Address::GetBroadcast (), receivingTime, beaconInterval);
+        peerLink->SetBeaconTimingElement (timingElement);
         peerLink->MLMEActivePeerLinkOpen ();
-    }
+      }
 }
 
 void
@@ -281,7 +281,7 @@ PeerManagementProtocol::InitiateLink (
   //find a peer link  - it must not exist
   if(FindPeerLink(interface, peerAddress) != 0)
     {
-      NS_FATAL_ERROR ("Peer link must not to exist.");
+      NS_FATAL_ERROR ("Peer link must not exist.");
     }
   // Plugin must exist
   PeerManagerPluginMap::iterator plugin = m_plugins.find (interface);
@@ -368,75 +368,46 @@ PeerManagementProtocol::GetNextBeaconShift (uint32_t interface)
   //REMINDER:: in timing element  1) last beacon reception time is measured in units of 256 microseconds
   //                              2) beacon interval is mesured in units of 1024 microseconds
   //                              3) hereafter TU = 1024 microseconds
-  //Im my MAC everything is stored in MicroSeconds
-
-  uint32_t myNextTbttInTimeUnits = Simulator::Now().GetMicroSeconds();
-  uint32_t futureBeaconInTimeUnits = 0;
-  //Going through all my timing elements and detecting future beacon collisions
   PeerLinksMap::iterator iface = m_peerLinks.find (interface);
   NS_ASSERT (iface != m_peerLinks.end());
   PeerManagerPluginMap::iterator plugin = m_plugins.find (interface);
-  NS_ASSERT(plugin != m_plugins.end());
+  NS_ASSERT (plugin != m_plugins.end());
   std::pair<Time, Time> myBeacon = plugin->second->GetBeaconInfo ();
   for (PeerLinksOnInterface::iterator i = iface->second.begin (); i != iface->second.end (); i++)
     {
       IeBeaconTiming::NeighboursTimingUnitsList neighbours;
+      if((*i)->LinkIsIdle ())
+        continue;
       neighbours = (*i)->GetBeaconTimingElement ().GetNeighboursTimingElementsList();
-      //first let's form the list of all kown Tbtts
+      //Going through all my timing elements and detecting future beacon collisions
       for (IeBeaconTiming::NeighboursTimingUnitsList::const_iterator j = neighbours.begin (); j != neighbours.end(); j++)
-        {
-          uint16_t beaconIntervalTimeUnits;
-          beaconIntervalTimeUnits = (*j)->GetBeaconInterval ();
-          //The last beacon time in timing elememt in Time Units
-          uint32_t lastBeaconInTimeUnits;
-          lastBeaconInTimeUnits = (*j)->GetLastBeacon ()/4;
-          //The time of my next beacon sending in Time Units
-          myNextTbttInTimeUnits = myBeacon.first.GetMicroSeconds ()/1024;
-          //My beacon interval in Time Units
-          uint32_t myBeaconIntervalInTimeUnits;
-          myBeaconIntervalInTimeUnits = myBeacon.second.GetMicroSeconds ()/1024;
-          //The time the beacon of other station will be sent
-          //we need the time just after my next Tbtt (or equal to my Tbtt)
-          futureBeaconInTimeUnits = lastBeaconInTimeUnits + beaconIntervalTimeUnits;
           //We apply MBAC only if beacon Intervals are equal
-          if (beaconIntervalTimeUnits == myBeaconIntervalInTimeUnits)
+          if ((*j)->GetBeaconInterval () == TimeToTu (myBeacon.second))
             {
-              //We know when the neighbor STA transmitted it's beacon
-              //Now we need to know when it's going to send it's beacon in the future
-              //So let's use the valuse of it's beacon interval
-              while (myNextTbttInTimeUnits >= futureBeaconInTimeUnits)
-                futureBeaconInTimeUnits = futureBeaconInTimeUnits + beaconIntervalTimeUnits;
-              //If we found that my Tbtt coincide with another STA's Tbtt
-              //break all cylce and return time shift for my next Tbtt
-              if (myNextTbttInTimeUnits == futureBeaconInTimeUnits)
-                break;
+              //Apply MBCA if future beacons may coinside
+              if ((TimeToTu (myBeacon.first) - ((*j)->GetLastBeacon ()/4)) % ((*j)->GetBeaconInterval ()) == 0)
+              {
+                UniformVariable randomSign (-1, 1);
+                UniformVariable randomShift (1, 15);
+                //So, the shift is a random integer variable uniformly distributed in [-15;-1] U [1;15]
+                int beaconShift = randomShift.GetInteger (1,15) * ((randomSign.GetValue () >= 0) ? 1 : -1);
+                NS_LOG_DEBUG ("Apply MBCA: Shift value = " << beaconShift << " beacon TUs");
+                //Do not shift to the past!
+                return (TuToTime (beaconShift) + Simulator::Now() < myBeacon.first) ? TuToTime (beaconShift) : TuToTime (0);
+              }
             }
-        }
-      if (myNextTbttInTimeUnits == futureBeaconInTimeUnits)
-        break;
     }
-  //Tbtts coincide, so let's calculate the shift
-  if (myNextTbttInTimeUnits == futureBeaconInTimeUnits)
-    {
-      NS_LOG_DEBUG ("MBCA: Future beacon collision is detected, applying avoidance mechanism");
-      UniformVariable randomSign (-1, 1);
-      int coefficientSign = -1;
-      if (randomSign.GetValue () >= 0)
-        coefficientSign = 1;
-      UniformVariable randomShift (1, 15);
-      //So, the shift is a random integer variable uniformly distributed in [-15;-1] U [1;15]
-      int beaconShift = randomShift.GetInteger (1,15) * coefficientSign;
-      NS_LOG_DEBUG ("Shift value = " << beaconShift << " beacon TUs");
-      //We need the result not in Time Units, but in microseconds
-      //Do not shift to the past
-      if(MicroSeconds(beaconShift * 1024) + Simulator::Now() < myBeacon.first)
-        return MicroSeconds (beaconShift * 1024);
-      else
-        return MicroSeconds (0);
-    }
-  //No collision detected, hence no shift is needed
-  else
     return MicroSeconds (0);
+}
+Time
+PeerManagementProtocol::TuToTime (uint32_t x)
+{
+  return MicroSeconds (x * 1024);
+}
+uint32_t
+PeerManagementProtocol::TimeToTu (Time x)
+{
+  return (uint32_t) (x.GetMicroSeconds ()/1024);
 }
 void
 PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, Mac48Address peerMeshPointAddress, bool status)
@@ -459,6 +430,8 @@ PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAdd
     {
       m_stats.linksClosed ++;
       m_numberOfActivePeers --;
+      Ptr <PeerLink> link = FindPeerLink (interface, peerAddress);
+      NS_ASSERT (link == 0);
     }
   if(!m_peerStatusCallback.IsNull ())
     m_peerStatusCallback (peerMeshPointAddress, peerAddress, interface, status);
