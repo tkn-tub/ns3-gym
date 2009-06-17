@@ -22,8 +22,36 @@
 #define FLAME_PROTOCOL_H
 
 #include "ns3/mesh-l2-routing-protocol.h"
+#include "ns3/tag.h"
 namespace ns3 {
 namespace flame {
+/**
+ * \brief Seqno and TTL tag
+ */
+
+class FlameTag : public Tag
+{
+public:
+  /// Sequence number
+  uint16_t      seqno;
+  /// Cost:
+  uint8_t       cost;
+  /// Retransmitter:
+  Mac48Address  address;
+  
+  FlameTag (uint16_t s = 0, uint8_t c = 0, Mac48Address a = Mac48Address ()) : Tag(), seqno(s), cost(c) , address (a){}
+  
+  ///\name Inherited from Tag
+  //\{
+  static  TypeId  GetTypeId ();
+  TypeId  GetInstanceTypeId () const;
+  uint32_t GetSerializedSize () const;
+  void  Serialize (TagBuffer i) const;
+  void  Deserialize (TagBuffer i);
+  void  Print (std::ostream &os) const;
+  //\}
+};
+
 /**
  * \ingroup flame
  * 

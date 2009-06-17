@@ -19,7 +19,68 @@
  */
 
 #include "flame-protocol-mac.h"
+#include "flame-protocol.h"
+#include "flame-header.h"
+#include "ns3/log.h"
 namespace ns3 {
 namespace flame {
+NS_LOG_COMPONENT_DEFINE ("FlameMacPlugin");
+FlameMacPlugin::FlameMacPlugin (uint32_t ifIndex, Ptr<FlameProtocol> protocol):
+  m_protocol (protocol),
+  m_ifIndex (ifIndex)
+{
+}
+FlameMacPlugin::~FlameMacPlugin ()
+{
+}
+void
+FlameMacPlugin::SetParent (Ptr<MeshWifiInterfaceMac> parent)
+{
+  m_parent = parent;
+}
+
+bool
+FlameMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
+{
+  if (!header.IsData ())
+    return true;
+  FlameHeader flameHdr;
+  FlameTag tag;
+  if(packet->PeekPacketTag (tag))
+  {
+    NS_FATAL_ERROR ("HWMP tag is not supposed to be received by network");
+  }
+  packet->RemoveHeader(flameHdr);
+  tag.seqno = flameHdr.GetSeqno ();
+  tag.cost = flameHdr.GetCost ();
+  return true;
+}
+bool
+FlameMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to)
+{
+  if(!header.IsData ())
+    return true;
+  return true;
+}
+uint8_t
+FlameMacPlugin::GetCost(Mac48Address peerAddress) const
+{
+  uint32_t metric = m_parent->GetLinkMetric(peerAddress);
+  return (metric > 255 ? 255 : (uint8_t)(metric & 0xff));
+}
+uint16_t
+FlameMacPlugin::GetChannelId () const
+{
+  return m_parent->GetFrequencyChannel ();
+}
+void
+FlameMacPlugin::Report (std::ostream & os) const
+{
+}
+void
+FlameMacPlugin::ResetStats ()
+{
+}
+
 } //namespace flame
 } //namespace ns3

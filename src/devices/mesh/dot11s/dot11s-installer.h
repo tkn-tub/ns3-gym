@@ -19,8 +19,8 @@
  */
 
 
-#ifndef MESH_INSTALLATOR_H
-#define MESH_INSTALLATOR_H
+#ifndef MESH_INSTALLER_H
+#define MESH_INSTALLER_H
 #include "ns3/mesh-point-device.h"
 namespace ns3 {
 namespace dot11s {
