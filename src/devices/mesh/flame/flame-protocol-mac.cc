@@ -44,15 +44,13 @@ FlameMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
 {
   if (!header.IsData ())
     return true;
-  FlameHeader flameHdr;
+  if (m_protocol->GetAddress () == header.GetAddr2 ())
+    return false;
   FlameTag tag;
   if(packet->PeekPacketTag (tag))
   {
-    NS_FATAL_ERROR ("HWMP tag is not supposed to be received by network");
+    NS_FATAL_ERROR ("FLAME tag is not supposed to be received by network");
   }
-  packet->RemoveHeader(flameHdr);
-  tag.seqno = flameHdr.GetSeqno ();
-  tag.cost = flameHdr.GetCost ();
   return true;
 }
 bool
@@ -60,6 +58,12 @@ FlameMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header
 {
   if(!header.IsData ())
     return true;
+  FlameTag tag;
+  if(!packet->RemovePacketTag (tag))
+  {
+    NS_FATAL_ERROR ("FLAME tag must exist here");
+  }
+  header.SetAddr1 (tag.address);
   return true;
 }
 uint8_t

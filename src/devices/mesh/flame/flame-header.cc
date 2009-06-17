@@ -76,7 +76,7 @@ FlameHeader::Serialize (Buffer::Iterator start) const
   i.WriteHtonU16 (m_seqno); //Seqno
   WriteTo (i, m_origDst);
   WriteTo (i, m_origSrc);
-  i.WriteHtonU16 (FlamePort);
+  i.WriteHtonU16 (m_protocol);
 }
 uint32_t
 FlameHeader::Deserialize (Buffer::Iterator start)
@@ -87,8 +87,7 @@ FlameHeader::Deserialize (Buffer::Iterator start)
   m_seqno = i.ReadNtohU16 ();
   ReadFrom (i, m_origDst);
   ReadFrom (i, m_origSrc);
-  uint16_t port = i.ReadNtohU16 ();
-  NS_ASSERT(port == FlamePort);
+  m_protocol = i.ReadNtohU16 ();
   return i.GetDistanceFrom (start);
 }
 void
@@ -131,13 +130,24 @@ FlameHeader::GetOrigSrc ()
 {
   return m_origSrc;
 }
+void
+FlameHeader::SetProtocol (uint16_t protocol)
+{
+  m_protocol = protocol;
+}
+uint16_t
+FlameHeader::GetProtocol ()
+{
+  return m_protocol;
+}
 bool operator== (const FlameHeader & a, const FlameHeader & b)
 {
   return (
       (a.m_cost == b.m_cost) &&
       (a.m_seqno == b.m_seqno) &&
       (a.m_origDst == b.m_origDst) &&
-      (a.m_origSrc == b.m_origSrc)
+      (a.m_origSrc == b.m_origSrc) &&
+      (a.m_protocol == b.m_protocol)
       );
 }
 
@@ -161,6 +171,7 @@ bool FlameHeaderBist::RunTests ()
     a.SetSeqno (456);
     a.SetOrigDst (Mac48Address ("11:22:33:44:55:66"));
     a.SetOrigSrc (Mac48Address ("00:11:22:33:44:55"));
+    a.SetProtocol (0x806);
     Ptr<Packet> packet = Create<Packet> ();
     packet->AddHeader (a);
     FlameHeader b;

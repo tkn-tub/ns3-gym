@@ -21,8 +21,11 @@
 #ifndef FLAME_PROTOCOL_H
 #define FLAME_PROTOCOL_H
 
+#include "flame-protocol-mac.h"
+
 #include "ns3/mesh-l2-routing-protocol.h"
 #include "ns3/tag.h"
+#include <map>
 namespace ns3 {
 namespace flame {
 /**
@@ -32,14 +35,11 @@ namespace flame {
 class FlameTag : public Tag
 {
 public:
-  /// Sequence number
-  uint16_t      seqno;
-  /// Cost:
-  uint8_t       cost;
   /// Retransmitter:
   Mac48Address  address;
   
-  FlameTag (uint16_t s = 0, uint8_t c = 0, Mac48Address a = Mac48Address ()) : Tag(), seqno(s), cost(c) , address (a){}
+  FlameTag (Mac48Address a = Mac48Address ()) :
+    address (a){}
   
   ///\name Inherited from Tag
   //\{
@@ -78,10 +78,30 @@ public:
    * via MeshPointDevice::GetObject<dot11s::FlameProtocol>();
    */
   bool Install (Ptr<MeshPointDevice>);
+  Mac48Address GetAddress ();
   ///\brief Statistics:
   void Report (std::ostream &) const;
   void ResetStats ();
 private:
+  static const uint16_t FLAME_PORT = 0x4040;
+  /**
+   * \name Information about MeshPointDeviceaddress , plugins
+   * \{
+   */
+  typedef std::map<uint32_t, Ptr<FlameMacPlugin> > FlamePluginMap;
+  FlamePluginMap m_interfaces;
+  Mac48Address m_address;
+  ///\}
+  /**
+   * \name Broadcast timers:
+   * \{
+   */
+  Time m_broadcastInterval;
+  Time m_lastBroadcast;
+  ///\}
+  /// Sequence number:
+  uint16_t m_myLastSeqno;
+
 };
 } //namespace flame
 } //namespace ns3

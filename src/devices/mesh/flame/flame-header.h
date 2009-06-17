@@ -64,13 +64,15 @@ public:
   Mac48Address GetOrigDst ();
   void SetOrigSrc (Mac48Address OrigSrc);
   Mac48Address GetOrigSrc ();
-  static const uint16_t FlamePort = 0xffff;
+  void SetProtocol (uint16_t protocol);
+  uint16_t GetProtocol ();
   ///\}
 private:
   uint8_t m_cost;
   uint16_t m_seqno;
   Mac48Address m_origDst;
   Mac48Address m_origSrc;
+  uint16_t m_protocol;
   friend bool operator== (const FlameHeader & a, const FlameHeader & b);
 };
 bool operator== (const FlameHeader & a, const FlameHeader & b);
