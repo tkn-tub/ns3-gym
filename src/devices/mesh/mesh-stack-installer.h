@@ -19,24 +19,24 @@
  */
 
 
-#ifndef DOT11S_STACK_INSTALLER_H
-#define DOT11S_STACK_INSTALLER_H
-#include "ns3/mesh-stack-installer.h"
+#ifndef MESH_STACK_INSTALLER_H
+#define MESH_STACK_INSTALLER_H
+#include "ns3/mesh-point-device.h"
 namespace ns3 {
-class Dot11sStack : public MeshStack
+/**
+ * \ingroup mesh
+ *
+ * \brief Prototype for class, which helps to install mesh stack of
+ * protocols
+ */
+class MeshStack : public Object
 {
   public:
-    static TypeId GetTypeId ();
-    Dot11sStack ();
-    ~Dot11sStack ();
-    void DoDispose ();
-
-    ///\brief Installs 802.11s stack. needed by helper only
-    bool InstallStack (Ptr<MeshPointDevice> mp);
-    void SetRoot (Ptr<MeshPointDevice> mp);
-    void Report (const Ptr<MeshPointDevice> mp, std::ostream&);
-    void ResetStats (const Ptr<MeshPointDevice> mp);
+    ///\brief Installs mesh stack. needed by helper only
+    virtual bool InstallStack (Ptr<MeshPointDevice> mp) = 0;
+    virtual void Report (const Ptr<MeshPointDevice> mp, std::ostream&) = 0;
+    virtual void ResetStats (const Ptr<MeshPointDevice> mp) = 0;
 };
-} //namespace ns3
+}
 #endif
 

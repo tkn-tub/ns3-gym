@@ -24,6 +24,7 @@
 #define _MESHWIFIHELPER_H
 
 #include "ns3/wifi-helper.h"
+#include "ns3/mesh-stack-installer.h"
 #include "ns3/nstime.h"
 #include "ns3/mesh-interface-helper.h"
 
@@ -58,7 +59,7 @@ public:
    * 
    * \return list of created mesh point devices, see MeshPointDevice
    */
-  NetDeviceContainer Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &interfaceHelper, NodeContainer c, std::vector<uint32_t> roots = std::vector<uint32_t> (), uint32_t nInterfaces = 1) const;
+  NetDeviceContainer Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &interfaceHelper, NodeContainer c, uint32_t nInterfaces = 1) const;
   /** 
    * \brief Install 802.11s mesh device & protocols on given node
    * 
@@ -69,11 +70,20 @@ public:
    * 
    * \return list of created mesh point devices, see MeshPointDevice
    */ 
-  NetDeviceContainer Install (const WifiPhyHelper &phy, const MeshInterfaceHelper &interfaceHelper, Ptr<Node> node,  std::vector<uint32_t> roots = std::vector<uint32_t> (), uint32_t nInterfaces = 1) const;
-  static void Report (const ns3::Ptr<ns3::NetDevice>&, std::ostream&);
-  static void ResetStats (const ns3::Ptr<ns3::NetDevice>&);
+  NetDeviceContainer Install (const WifiPhyHelper &phy, const MeshInterfaceHelper &interfaceHelper, Ptr<Node> node, uint32_t nInterfaces = 1) const;
+  /**
+   * \param type the type of ns3::MeshStack.
+   *
+   * All the attributes specified in this method should exist
+   * in the requested station manager.
+   */
+  void SetStackInstaller (std::string type);
+  void Report (const ns3::Ptr<ns3::NetDevice>&, std::ostream&);
+  void ResetStats (const ns3::Ptr<ns3::NetDevice>&);
 private:
   bool m_spreadInterfaceChannels;
+  Ptr<MeshStack> m_stack;
+  ObjectFactory m_stackFactory;
 };
 } //namespace ns3
 

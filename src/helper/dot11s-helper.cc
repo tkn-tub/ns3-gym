@@ -19,14 +19,15 @@
  *         Pavel Boyko <boyko@iitp.ru>
  */
 #include "dot11s-helper.h"
-#include "ns3/dot11s-installer.h"
 #include "ns3/simulator.h"
 #include "ns3/mesh-point-device.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/log.h"
+NS_LOG_COMPONENT_DEFINE ("MeshWifiHelper");
 namespace ns3 {
-using namespace dot11s ;
 MeshWifiHelper::MeshWifiHelper () : 
-    m_spreadInterfaceChannels (false)
+    m_spreadInterfaceChannels (false),
+    m_stack (0)
 {
 }
 void 
@@ -34,10 +35,22 @@ MeshWifiHelper::SetSpreadInterfaceChannels (bool s)
 {
   m_spreadInterfaceChannels = s;
 }
+void 
+MeshWifiHelper::SetStackInstaller (std::string type)
+{
+  NS_LOG_FUNCTION (this << type);
+  m_stackFactory = ObjectFactory ();
+  m_stackFactory.SetTypeId (type);
+  m_stack = m_stackFactory.Create<MeshStack> ();
+  if (m_stack == 0)
+    NS_FATAL_ERROR ("Stack has not been created: "<<type);
+}
+
 NetDeviceContainer
-MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &interfaceHelper, NodeContainer c,  std::vector<uint32_t> roots, uint32_t nInterfaces) const
+MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &interfaceHelper, NodeContainer c, uint32_t nInterfaces) const
 {
   NetDeviceContainer devices;
+  NS_ASSERT (m_stack != 0);
   uint16_t node_counter = 0;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
   {
@@ -54,13 +67,9 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelp
         Ptr<WifiNetDevice> iface = interfaceHelper.CreateInterface (phyHelper,node, (m_spreadInterfaceChannels ? channel : 0));
         mp->AddInterface (iface);
       }
-    bool root = false;
-    for (unsigned int j = 0; j < roots.size (); j ++)
-      if(node_counter == roots[j])
-        root = true;
-    if(!Dot11sStackInstaller::InstallDot11sStack (mp, root))
+    if(!m_stack->InstallStack (mp))
     {
-      NS_FATAL_ERROR ("802.11s stack is not installed!");
+      NS_FATAL_ERROR ("Stack is not installed!");
     }
     devices.Add (mp);
     node_counter ++;
@@ -69,26 +78,28 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelp
 }
 
 NetDeviceContainer
-MeshWifiHelper::Install (const WifiPhyHelper &phy, const MeshInterfaceHelper &interfaceHelper, Ptr<Node> node,  std::vector<uint32_t> roots, uint32_t nInterfaces) const
+MeshWifiHelper::Install (const WifiPhyHelper &phy, const MeshInterfaceHelper &interfaceHelper, Ptr<Node> node, uint32_t nInterfaces) const
 {
-  return Install (phy, interfaceHelper, NodeContainer (node), roots, nInterfaces);
+  return Install (phy, interfaceHelper, NodeContainer (node), nInterfaces);
 }
 void
 MeshWifiHelper::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os)
 {
+  NS_ASSERT (m_stack != 0);
   Ptr <MeshPointDevice> mp = device->GetObject<MeshPointDevice> ();
   NS_ASSERT (mp != 0);
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
   os << "<MeshPointDevice ReportTime=\"" << Simulator::Now().GetSeconds() << "s\" MpAddress=\"" << mp->GetAddress () << "\">\n";
-  Dot11sStackInstaller::Report (mp, os);
+  m_stack->Report (mp, os);
   os << "</MeshPointDevice>\n";
 }
 void
 MeshWifiHelper::ResetStats (const ns3::Ptr<ns3::NetDevice>& device)
 {
+  NS_ASSERT (m_stack != 0);
   Ptr <MeshPointDevice> mp = device->GetObject<MeshPointDevice> ();
   NS_ASSERT (mp != 0);
-  Dot11sStackInstaller::ResetStats (mp);
+  m_stack->ResetStats (mp);
 }
 } //namespace ns3
 

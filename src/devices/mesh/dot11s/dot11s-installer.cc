@@ -23,9 +23,34 @@
 #include "hwmp-protocol.h"
 
 namespace ns3 {
-namespace dot11s {
+using namespace dot11s;
+NS_OBJECT_ENSURE_REGISTERED (Dot11sStack);
+TypeId
+Dot11sStack::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::Dot11sStack")
+    .SetParent<Object> ()
+    .AddConstructor<Dot11sStack> ()
+    ;
+  return tid;
+}
+Dot11sStack::Dot11sStack ()
+{}
+Dot11sStack::~Dot11sStack ()
+{}
+void
+Dot11sStack::DoDispose ()
+{
+}
+void
+Dot11sStack::SetRoot (Ptr<MeshPointDevice> mp)
+{
+   Ptr <HwmpProtocol> hwmp = mp->GetObject<HwmpProtocol> ();
+   NS_ASSERT(hwmp != 0);
+   hwmp->SetRoot ();
+}
 bool
-Dot11sStackInstaller::InstallDot11sStack (Ptr<MeshPointDevice> mp, bool root)
+Dot11sStack::InstallStack (Ptr<MeshPointDevice> mp)
 {
   //Install Peer management protocol:
   Ptr<PeerManagementProtocol> pmp = CreateObject<PeerManagementProtocol> ();
@@ -38,15 +63,13 @@ Dot11sStackInstaller::InstallDot11sStack (Ptr<MeshPointDevice> mp, bool root)
   install_ok = hwmp->Install (mp);
   if(!install_ok)
     return false;
-  if(root)
-    hwmp->SetRoot ();
   //Install interaction between HWMP and Peer management protocol:
   pmp->SetPeerLinkStatusCallback(MakeCallback(&HwmpProtocol::PeerLinkStatus, hwmp));
   hwmp->SetNeighboursCallback(MakeCallback(&PeerManagementProtocol::GetActiveLinks, pmp));
   return true;
 }
 void
-Dot11sStackInstaller::Report (const Ptr<MeshPointDevice> mp, std::ostream& os)
+Dot11sStack::Report (const Ptr<MeshPointDevice> mp, std::ostream& os)
 {
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
   for (std::vector<Ptr<NetDevice> >::const_iterator i = ifaces.begin(); i != ifaces.end(); ++i)
@@ -64,7 +87,7 @@ Dot11sStackInstaller::Report (const Ptr<MeshPointDevice> mp, std::ostream& os)
   pmp->Report (os);
 }
 void
-Dot11sStackInstaller::ResetStats (const Ptr<MeshPointDevice> mp)
+Dot11sStack::ResetStats (const Ptr<MeshPointDevice> mp)
 {
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
   for (std::vector<Ptr<NetDevice> >::const_iterator i = ifaces.begin(); i != ifaces.end(); ++i)
@@ -81,6 +104,4 @@ Dot11sStackInstaller::ResetStats (const Ptr<MeshPointDevice> mp)
   NS_ASSERT(pmp != 0);
   pmp->ResetStats ();
 }
-
-}
-}
+} //namespace ns3

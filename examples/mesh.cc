@@ -58,14 +58,15 @@ class MeshTest
     bool      chan;
     bool      pcap;
     uint64_t  seed;
+    std::string stack;
     /// List of network nodes
     NodeContainer nodes;
     /// List of all mesh point devices
     NetDeviceContainer meshDevices;
     //Addresses of interfaces:
     Ipv4InterfaceContainer interfaces;
-    //InternetStackHelper stack;
-    //Ipv4AddressHelper address;
+    // MeshWifiHelper. Report is not static methods
+    MeshWifiHelper mesh;
   private:
     /// Create nodes and setup their mobility
     void CreateNodes ();
@@ -87,7 +88,8 @@ MeshTest::MeshTest () :
   nIfaces (1),
   chan (true),
   pcap (false),
-  seed (1)
+  seed (1),
+  stack ("ns3::Dot11sStack")
 {
 }
 void
@@ -105,6 +107,7 @@ MeshTest::Configure (int argc, char *argv[])
   cmd.AddValue ("channels",   "Use different frequency channels for different interfaces. [0]", chan);
   cmd.AddValue ("pcap",   "Enable PCAP traces on interfaces. [0]", pcap);
   cmd.AddValue ("seed",   "Seed value", seed);
+  cmd.AddValue ("stack",  "Type of protocol stack. ns3::Dot11sStack by default", stack);
   
   cmd.Parse (argc, argv);
   NS_LOG_DEBUG ("Grid:" << xSize << "*" << ySize);
@@ -120,15 +123,12 @@ MeshTest::CreateNodes ()
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
   // Install mesh point devices & protocols
-  MeshWifiHelper mesh;
+  mesh.SetStackInstaller (stack);
   mesh.SetSpreadInterfaceChannels (chan);
-  std::vector<uint32_t> roots;
-  //roots.push_back(xSize-1);
-  //roots.push_back(xSize*ySize-xSize);
   MeshInterfaceHelper interface = MeshInterfaceHelper::Default ();
   interface.SetType ("RandomStart", TimeValue (Seconds(randomStart)));
 
-  meshDevices = mesh.Install (wifiPhy, interface, nodes, roots, nIfaces);
+  meshDevices = mesh.Install (wifiPhy, interface, nodes, nIfaces);
   // Setup mobility
   MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
@@ -196,7 +196,7 @@ MeshTest::Report ()
       std::cerr << "Error: Can't open file " << os.str() << "\n";
       return;
     }
-    MeshWifiHelper::Report (*i, of);
+    mesh.Report (*i, of);
     of.close ();
   }
 }
