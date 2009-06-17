@@ -42,23 +42,18 @@ HwmpRtable::GetTypeId ()
     .AddConstructor<HwmpRtable> ();
   return tid;
 }
-
 HwmpRtable::HwmpRtable ()
 {
   DeleteProactivePath ();
 }
-
 HwmpRtable::~HwmpRtable ()
 {
-  DoDispose ();
 }
-
 void
 HwmpRtable::DoDispose ()
 {
   m_routes.clear ();
 }
-
 void
 HwmpRtable::AddReactivePath (
   Mac48Address destination,
@@ -83,7 +78,6 @@ HwmpRtable::AddReactivePath (
   i->second.whenExpire = Simulator::Now() + lifetime;
   i->second.seqnum = seqnum;
 }
-
 void
 HwmpRtable::AddProactivePath (
   uint32_t metric,
@@ -101,7 +95,6 @@ HwmpRtable::AddProactivePath (
   m_root.seqnum = seqnum;
   m_root.interface = interface;
 }
-
 void
 HwmpRtable::AddPrecursor (Mac48Address destination, uint32_t precursorInterface, Mac48Address precursorAddress)
 {
@@ -129,7 +122,6 @@ HwmpRtable::AddPrecursor (Mac48Address destination, uint32_t precursorInterface,
         return;
   m_root.precursors.push_back(precursor);
 }
-
 void
 HwmpRtable::DeleteProactivePath ()
 {
@@ -140,14 +132,12 @@ HwmpRtable::DeleteProactivePath ()
   m_root.seqnum = 0;
   m_root.whenExpire = Simulator::Now ();
 }
-
 void
 HwmpRtable::DeleteProactivePath (Mac48Address root)
 {
   if(m_root.root == root)
     DeleteProactivePath ();
 }
-
 void
 HwmpRtable::DeleteReactivePath (Mac48Address destination)
 {
@@ -155,7 +145,6 @@ HwmpRtable::DeleteReactivePath (Mac48Address destination)
   if (i != m_routes.end ())
     m_routes.erase (i);
 }
-
 HwmpRtable::LookupResult
 HwmpRtable::LookupReactive (Mac48Address destination)
 {
@@ -169,7 +158,6 @@ HwmpRtable::LookupReactive (Mac48Address destination)
     }
   return LookupReactiveExpired (destination);
 }
-
 HwmpRtable::LookupResult
 HwmpRtable::LookupReactiveExpired (Mac48Address destination)
 {
@@ -183,7 +171,6 @@ HwmpRtable::LookupReactiveExpired (Mac48Address destination)
       i->second.whenExpire - Simulator::Now ()
       );
 }
-
 HwmpRtable::LookupResult
 HwmpRtable::LookupProactive ()
 {
@@ -194,13 +181,11 @@ HwmpRtable::LookupProactive ()
     }
   return LookupProactiveExpired ();
 }
-
 HwmpRtable::LookupResult
 HwmpRtable::LookupProactiveExpired ()
 {
   return LookupResult(m_root.retransmitter, m_root.interface, m_root.metric, m_root.seqnum, m_root.whenExpire - Simulator::Now ());
 }
-
 std::vector<IePerr::FailedDestination>
 HwmpRtable::GetUnreachableDestinations (Mac48Address peerAddress)
 {
@@ -223,7 +208,6 @@ HwmpRtable::GetUnreachableDestinations (Mac48Address peerAddress)
     }
   return retval;
 }
-
 HwmpRtable::PrecursorList
 HwmpRtable::GetPrecursors (Mac48Address destination)
 {
@@ -248,7 +232,6 @@ HwmpRtable::GetPrecursors (Mac48Address destination)
     }
   return retval;
 }
-
 bool HwmpRtable::LookupResult::operator==(const HwmpRtable::LookupResult & o) const
 {
   return (retransmitter == o.retransmitter
@@ -257,7 +240,6 @@ bool HwmpRtable::LookupResult::operator==(const HwmpRtable::LookupResult & o) co
       && seqnum  == o.seqnum
     );
 }
-
 bool HwmpRtable::LookupResult::IsValid() const
 {
   return !( retransmitter == Mac48Address::GetBroadcast ()
@@ -266,9 +248,7 @@ bool HwmpRtable::LookupResult::IsValid() const
         &&  seqnum == 0
       );
 }
-
 #ifdef RUN_SELF_TESTS
-
 /// Unit test for HwmpRtable
 class HwmpRtableTest : public Test 
 {
@@ -305,7 +285,6 @@ private:
   Ptr<HwmpRtable> table;
   std::vector<Mac48Address> precursors;
 };
-
 /// Test instance
 static HwmpRtableTest g_HwmpRtableTest;
 
@@ -322,7 +301,6 @@ HwmpRtableTest::HwmpRtableTest ()  : Test ("Mesh/802.11s/HwmpRtable"),
   precursors.push_back (Mac48Address ("00:11:22:33:44:55"));
   precursors.push_back (Mac48Address ("00:01:02:03:04:05"));
 }
-
 void HwmpRtableTest::TestLookup ()
 {
   HwmpRtable::LookupResult correct (hop, iface, metric, seqnum);
@@ -339,13 +317,11 @@ void HwmpRtableTest::TestLookup ()
   table->DeleteProactivePath (dst);
   NS_TEST_ASSERT (! table->LookupProactive ().IsValid ());
 }
-
 void HwmpRtableTest::TestAddPath ()
 {
   table->AddReactivePath (dst, hop, iface, metric, expire, seqnum);
   table->AddProactivePath (metric, dst, hop, iface, expire, seqnum);
 }
-
 void HwmpRtableTest::TestExpire ()
 {
   // this is assumed to be called when path records are already expired
@@ -356,7 +332,6 @@ void HwmpRtableTest::TestExpire ()
   NS_TEST_ASSERT (! table->LookupReactive (dst).IsValid ());
   NS_TEST_ASSERT (! table->LookupProactive ().IsValid ());
 }
-
 void HwmpRtableTest::TestPrecursorAdd ()
 {
   for (std::vector<Mac48Address>::const_iterator i = precursors.begin (); i != precursors.end (); i ++)
@@ -366,7 +341,6 @@ void HwmpRtableTest::TestPrecursorAdd ()
     table->AddPrecursor (dst, iface, *i);
   }
 }
-
 void HwmpRtableTest::TestPrecursorFind ()
 {
   HwmpRtable::PrecursorList precursorList = table->GetPrecursors (dst);
@@ -392,8 +366,6 @@ bool HwmpRtableTest::RunTests ()
   
   return result;
 }
-
 #endif // RUN_SELF_TESTS
-
 } //namespace dot11s
 } //namespace ns3

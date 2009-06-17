@@ -4,6 +4,9 @@ def build(bld):
     obj = bld.create_ns3_module('flame', ['mesh'])
     obj.source = [
         'flame-header.cc',
+        'flame-rtable.cc',
+        'flame-protocol-mac.cc',
+        'flame-protocol.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'flame'
