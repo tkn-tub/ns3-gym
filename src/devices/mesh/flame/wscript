@@ -1,0 +1,12 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    obj = bld.create_ns3_module('flame', ['mesh'])
+    obj.source = [
+        'flame-header.cc',
+        ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'flame'
+    headers.source = [
+        'flame-protocol.h',
+        ]

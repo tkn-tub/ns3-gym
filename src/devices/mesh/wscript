@@ -2,6 +2,7 @@
 
 def build(bld):
     obj = bld.create_ns3_module('mesh', ['wifi', 'dot11s'])
+
     obj.source = [
         'wifi-information-element.cc',
         'mesh-point-device.cc',
