@@ -146,6 +146,9 @@ def set_options(opt):
     opt.add_option('--regression',
                    help=("Enable regression testing; only used for the 'check' target"),
                    default=False, dest='regression', action="store_true")
+    opt.add_option('--check',
+                   help=("Enable unit testing"),
+                   default=False, dest='check', action="store_true")
     opt.add_option('--regression-generate',
                    help=("Generate new regression test traces."),
                    default=False, dest='regression_generate', action="store_true")
@@ -495,6 +498,8 @@ def build(bld):
         lib.target = 'ns3'
         if lib.env['CXX_NAME'] == 'gcc' and env['WL_SONAME_SUPPORTED']:
             lib.env.append_value('LINKFLAGS', '-Wl,--soname=%s' % ccroot.get_target_name(lib))
+        if sys.platform == 'cygwin':
+            lib.features.append('implib') # workaround for WAF bug #472
 
     if env['NS3_ENABLED_MODULES']:
         lib.add_objects = list(modules)
@@ -523,6 +528,8 @@ def build(bld):
                                  " (--with-regression-traces configure option)")
         regression.run_regression(bld, regression_traces)
 
+    if Options.options.check:
+        _run_check(bld)
 
 
 def shutdown(ctx):
@@ -561,35 +568,163 @@ def shutdown(ctx):
 
 check_context = Build.BuildContext
 def check(bld):
-    "run the NS-3 unit tests"
-    Scripting.build(bld)
-    ## generate the trace sources list docs
-    env = wutils.bld.env
-    proc_env = wutils.get_proc_env()
-    try:
-        program_obj = wutils.find_program('print-introspected-doxygen', env)
-    except ValueError: # could happen if print-introspected-doxygen is
-                       # not built because of waf configure
-                       # --enable-modules=xxx
-        pass
-    else:
-        prog = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj)).abspath(env)
-        out = open(os.path.join('doc', 'introspected-doxygen.h'), 'w')
-        if subprocess.Popen([prog], stdout=out, env=proc_env).wait():
-            raise SystemExit(1)
-        out.close()
-
-    print "-- Running NS-3 C++ core unit tests..."
-    wutils.run_program('run-tests', env, wutils.get_command_template(env))
-
-    if env['ENABLE_PYTHON_BINDINGS']:
-        print "-- Running NS-3 Python bindings unit tests..."
-        wutils.run_argv([env['PYTHON'], os.path.join("utils", "python-unit-tests.py")],
-                        env, proc_env, force_no_valgrind=True)
-    else:
-        print "-- Skipping NS-3 Python bindings unit tests: Python bindings not enabled."
+    """run the NS-3 unit tests (deprecated in favour of --check option)"""
+    raise Utils.WafError("Please run `./waf --check' instead.")
 
 
+class print_introspected_doxygen_task(Task.TaskBase):
+    after = 'cc cxx cc_link cxx_link'
+    color = 'BLUE'
+
+    def __init__(self, bld):
+        self.bld = bld
+        super(print_introspected_doxygen_task, self).__init__(generator=self)
+        
+    def __str__(self):
+        return 'print-introspected-doxygen\n'
+
+    def runnable_status(self):
+        return Task.RUN_ME
+
+    def run(self):
+        ## generate the trace sources list docs
+        env = wutils.bld.env
+        proc_env = wutils.get_proc_env()
+        try:
+            program_obj = wutils.find_program('print-introspected-doxygen', env)
+        except ValueError: # could happen if print-introspected-doxygen is
+                           # not built because of waf configure
+                           # --enable-modules=xxx
+            pass
+        else:
+            prog = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj)).abspath(env)
+            out = open(os.path.join('..', 'doc', 'introspected-doxygen.h'), 'w')
+            if subprocess.Popen([prog], stdout=out, env=proc_env).wait():
+                raise SystemExit(1)
+            out.close()
+
+class run_python_unit_tests_task(Task.TaskBase):
+    after = 'cc cxx cc_link cxx_link'
+    color = 'BLUE'
+
+    def __init__(self, bld):
+        self.bld = bld
+        super(run_python_unit_tests_task, self).__init__(generator=self)
+        
+    def __str__(self):
+        return 'run-python-unit-tests\n'
+
+    def runnable_status(self):
+        return Task.RUN_ME
+
+    def run(self):
+        proc_env = wutils.get_proc_env()
+        wutils.run_argv([self.bld.env['PYTHON'], os.path.join("..", "utils", "python-unit-tests.py")],
+                        self.bld.env, proc_env, force_no_valgrind=True)
+
+
+class run_a_unit_test_task(Task.TaskBase):
+    after = 'cc cxx cc_link cxx_link'
+    color = 'BLUE'
+
+    def __init__(self, bld, name_of_test):
+        self.bld = bld
+        super(run_a_unit_test_task, self).__init__(generator=self)
+        self.name_of_test = name_of_test
+        try:
+            program_obj = wutils.find_program("run-tests", self.bld.env)
+        except ValueError, ex:
+            raise Utils.WafError(str(ex))
+        program_node = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj))
+        self.program_path = program_node.abspath(self.bld.env)
+
+    def __str__(self):
+        return 'run-unit-test(%s)\n' % self.name_of_test
+
+    def runnable_status(self):
+        return Task.RUN_ME
+
+    def run(self):
+        #print repr([self.program_path, self.name_of_test])
+        try:
+            self.retval = wutils.run_argv([self.program_path, self.name_of_test], self.bld.env)
+        except Utils.WafError:
+            self.retval = 1
+        #print "running test %s: exit with %i" % (self.name_of_test, retval)
+        return 0
+
+class get_list_of_unit_tests_task(Task.TaskBase):
+    after = 'cc cxx cc_link cxx_link'
+    color = 'BLUE'
+
+    def __init__(self, bld):
+        self.bld = bld
+        super(get_list_of_unit_tests_task, self).__init__(generator=self)
+        self.tests = []
+
+    def __str__(self):
+        return 'get-unit-tests-list\n'
+
+    def runnable_status(self):
+        return Task.RUN_ME
+
+    def run(self):
+        try:
+            program_obj = wutils.find_program("run-tests", self.bld.env)
+        except ValueError, ex:
+            raise Utils.WafError(str(ex))
+        program_node = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj))
+        program_path = program_node.abspath(self.bld.env)
+        proc = subprocess.Popen([program_path, "--ListTests"], stdout=subprocess.PIPE,
+                                env=wutils.get_proc_env())
+        self.tests = [l.rstrip() for l in proc.stdout.readlines()]
+        retval = proc.wait()
+        if retval:
+            return retval
+        test_tasks = []
+        for name_of_test in self.tests:
+            test_tasks.append(run_a_unit_test_task(self.bld, name_of_test))
+        collector = collect_unit_test_results_task(self.bld, list(test_tasks))
+        collector.run_after = list(test_tasks)
+        self.more_tasks = [collector] + test_tasks
+        
+
+class collect_unit_test_results_task(Task.TaskBase):
+    after = 'run_a_unit_test_task'
+    color = 'BLUE'
+
+    def __init__(self, bld, test_tasks):
+        self.bld = bld
+        super(collect_unit_test_results_task, self).__init__(generator=self)
+        self.test_tasks = test_tasks
+
+    def __str__(self):
+        return 'collect-unit-tests-results\n'
+
+    def runnable_status(self):
+        for t in self.run_after:
+            if not t.hasrun:
+                return Task.ASK_LATER
+        return Task.RUN_ME
+
+    def run(self):
+        failed = 0
+        for task in self.test_tasks:
+            if task.retval:
+                failed += 1
+        if failed:
+            print "C++ UNIT TESTS: %i tests passed, %i failed." % (len(self.test_tasks) - failed, failed)
+            return 1
+        else:
+            print "C++ UNIT TESTS: all %i tests passed." % (len(self.test_tasks),)
+            return 0
+
+
+def _run_check(bld):
+    task = get_list_of_unit_tests_task(bld)
+    print_introspected_doxygen_task(bld)
+    if bld.env['ENABLE_PYTHON_BINDINGS']:
+        run_python_unit_tests_task(bld)
 
 
 def check_shell(bld):

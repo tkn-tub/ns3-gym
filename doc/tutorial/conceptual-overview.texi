@@ -276,7 +276,7 @@ done a
 @end verbatim
 
 to build the project.  So now if you look in the directory 
-@code{build/debug/ns-3} you will find the four module include files shown 
+@code{build/debug/ns3} you will find the four module include files shown 
 above.  You can take a look at the contents of these files and find that they
 do include all of the public include files in their respective modules.
 
@@ -308,8 +308,8 @@ The next line of the script is the following,
 
 We will use this statement as a convenient place to talk about our Doxygen
 documentation system.  If you look at the project web site, 
-@uref{http://www.nsnam.org,,ns-3 project}, you will find a link to ``APIs
-(Doxygen)'' in the navigation bar.  If you select this link, you will be
+@uref{http://www.nsnam.org,,ns-3 project}, you will find a link to ``Doxygen 
+(ns-3-dev)'' in the navigation bar.  If you select this link, you will be
 taken to our documentation page.
 
 Along the left side, you will find a graphical representation of the structure
@@ -601,7 +601,7 @@ since we passed a @code{NodeContainer} containing one node) created by the
 helper.
 
 Applications require a time to ``start'' generating traffic and may take an
-optional time to ``stop.''  We provide both.  These times are set using  the
+optional time to ``stop''.  We provide both.  These times are set using  the
 @code{ApplicationContainer} methods @code{Start} and @code{Stop}.  These 
 methods take @code{Time} parameters.  In this case, we use an explicit C++
 conversion sequence to take the C++ double 1.0 and convert it to an 
@@ -815,12 +815,12 @@ drwxr-xr-x   utils                                    files
 The source code is mainly in the @code{src} directory.  You can view source
 code either by clicking on the directory name or by clicking on the @code{files}
 link to the right of the directory name.  If you click on the @code{src}
-directory you be taken to the lising of the @code{src} subdirectories.  If you 
+directory, you will be taken to the listing of the @code{src} subdirectories.  If you 
 click on @code{core} subdirectory, you will find a list of files.  The first file
 you will find (as of this writing) is @code{abort.h}.  If you 
 click on @code{abort.h} link, you will be sent to the source file for @code{abort.h}.
 
 Our example scripts are in the @code{examples} directory.  The source code for
 the helpers we have used in this chapter can be found in the 
-@code{src/helpers} directory.  Feel free to poke around in the directory tree to
+@code{src/helper} directory.  Feel free to poke around in the directory tree to
 get a feel for what is there and the style of @command{ns-3} programs.

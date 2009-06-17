@@ -89,12 +89,17 @@ public:
    */
   static bool RunTests (void);
 
+  static bool RunTest (std::string name);
+
+  static void PrintTestNames (std::ostream &os);
+
 private:
   friend class Test;
   static void Add (Test *test, char const *name);
   static std::ostream &Failure (void);
   static TestManager *Get (void);
   bool RealRunTests (void);
+  bool RealRunTest (std::string name);
 
   TestManager ();
   ~TestManager ();

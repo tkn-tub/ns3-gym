@@ -112,7 +112,7 @@ actually logging messages from the @code{UdpEchoClientApplication} and
 example, to print more information by setting its logging level via the 
 NS_LOG environment variable.  
 
-I am going to assume from here on that are using an sh-like shell that uses 
+I am going to assume from here on that you are using an sh-like shell that uses 
 the``VARIABLE=value'' syntax.  If you are using a csh-like shell, then you 
 will have to convert my examples to the ``setenv VARIABLE value'' syntax 
 required by those shells.
@@ -353,7 +353,7 @@ Recall that we have defined a logging component in that script:
 
 You now know that you can enable all of the logging for this component by
 setting the @code{NS_LOG} environment variable to the various levels.  Let's
-go ahead add some logging to the script.  The macro used to add an 
+go ahead and add some logging to the script.  The macro used to add an 
 informational level log message is @code{NS_LOG_INFO}.  Go ahead and add one 
 (just before we start creating the nodes) that tells you that the script is 
 ``Creating Topology.''  This is done as in this code snippet,
@@ -439,7 +439,7 @@ in the following code,
 
 This simple two line snippet is actually very useful by itself.  It opens the
 door to the @command{ns-3} global variable and @code{Attribute} systems.  Go 
-ahead and add that two lines of code to the @code{scratch/first.cc} script at
+ahead and add that two lines of code to the @code{scratch/myfirst.cc} script at
 the start of @code{main}.  Go ahead and build the script and run it, but ask 
 the script for help in the following way,
 
@@ -497,7 +497,7 @@ is created in the system.  We overrode this default with the @code{Attribute}
 setting in the @code{PointToPointHelper} above.  Let's use the default values 
 for the point-to-point devices and channels by deleting the 
 @code{SetDeviceAttribute} call and the @code{SetChannelAttribute} call from 
-the @code{first.cc} we have in the scratch directory.
+the @code{myfirst.cc} we have in the scratch directory.
 
 Your script should now just declare the @code{PointToPointHelper} and not do 
 any @code{set} operations as in the following example,
@@ -801,8 +801,8 @@ the script just after the GNU GPL comment:
   #include <fstream>
 @end verbatim
 
-Then, right before the before the call to @code{Simulator::Run ()}, add the
-following lines of code.
+Then, right before the call to @code{Simulator::Run ()}, add the
+following lines of code:
 
 @verbatim
   std::ofstream ascii;
@@ -811,7 +811,7 @@ following lines of code.
 @end verbatim
 
 The first two lines are just vanilla C++ code to open a stream that will be
-written to a file named ``myfirst.tr.''  See your favorite C++ tutorial if you
+written to a file named ``myfirst.tr''.  See your favorite C++ tutorial if you
 are unfamiliar with this code.  The last line of code in the snippet above
 tells @command{ns-3} that you want to enable ASCII tracing on all 
 point-to-point devices in your simulation; and you want the (provided) trace
@@ -900,7 +900,7 @@ managed in the @command{ns-3} core code that contains all of the nodes that are
 created in a script.  Just as a filesystem may have directories under the 
 root, we may have node numbers in the @code{NodeList}.  The string 
 @code{/NodeList/0} therefore refers to the zeroth node in the @code{NodeList}
-which we typically think of as ``node 0.''  In each node there is a list of 
+which we typically think of as ``node 0''.  In each node there is a list of 
 devices that have been installed.  This list appears next in the namespace.
 You can see that this trace event comes from @code{DeviceList/0} which is the 
 zeroth device installed in the node. 
@@ -928,14 +928,12 @@ device on the node with the echo server. I have reproduced that event below.
   00 r 
   01 2.25732 
   02 /NodeList/1/DeviceList/0/$ns3::PointToPointNetDevice/MacRx 
-  03 ns3::PppHeader (
-  04   Point-to-Point Protocol: IP (0x0021)) 
-  05   ns3::Ipv4Header (
-  06     tos 0x0 ttl 64 id 0 offset 0 flags [none] 
-  07     length: 1052 10.1.1.1 > 10.1.1.2)
-  08     ns3::UdpHeader (
-  09       length: 1032 49153 > 9) 
-  10       Payload (size=1024)
+  03   ns3::Ipv4Header (
+  04     tos 0x0 ttl 64 id 0 protocol 17 offset 0 flags [none]
+  05     length: 1052 10.1.1.1 > 10.1.1.2)
+  06     ns3::UdpHeader (
+  07       length: 1032 49153 > 9) 
+  08       Payload (size=1024)
 @end verbatim
 
 Notice that the trace operation is now @code{r} and the simulation time has
@@ -978,7 +976,7 @@ file names will be built using the prefix, the node number, the device number
  and a ``.pcap'' suffix.
 
 In our example script, we will eventually see files named ``myfirst-0-0.pcap'' 
-and ``myfirst.1-0.pcap'' which are the pcap traces for node 0-device 0 and 
+and ``myfirst-1-0.pcap'' which are the pcap traces for node 0-device 0 and 
 node 1-device 0, respectively.
 
 Once you have added the line of code to enable pcap tracing, you can run the
@@ -1010,9 +1008,9 @@ at the @code{pcap} files.
   2.257324 IP 10.1.1.2.9 > 10.1.1.1.49153: UDP, length 1024
 @end verbatim
 
-You can see in the dump of @code{myfirst-0.0.pcap} (the client device) that the 
+You can see in the dump of @code{myfirst-0-0.pcap} (the client device) that the 
 echo packet is sent at 2 seconds into the simulation.  If you look at the
-second dump (@code{first-1-0.pcap}) you can see that packet being received
+second dump (@code{myfirst-1-0.pcap}) you can see that packet being received
 at 2.257324 seconds.  You see the packet being echoed back at 2.257324 seconds
 in the second dump, and finally, you see the packet being received back at 
 the client in the first dump at 2.514648 seconds.

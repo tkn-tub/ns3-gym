@@ -55,6 +55,18 @@ TestManager::EnableVerbose (void)
 {
   Get ()->m_verbose = true;
 }
+
+void
+TestManager::PrintTestNames (std::ostream &os)
+{
+  for (TestsCI i = Get ()->m_tests.begin (); i != Get ()->m_tests.end (); i++) 
+    {
+      std::string *testName = (*i).second;
+      os << *testName << std::endl;
+    }
+}
+
+
 std::ostream &
 TestManager::Failure (void)
 {
@@ -93,6 +105,47 @@ TestManager::RealRunTests (void)
       std::cerr << "FAIL" << std::endl;
     }
   return isSuccess;
+}
+
+bool 
+TestManager::RunTest (std::string name)
+{
+  return Get ()->RealRunTest (name);
+}
+bool 
+TestManager::RealRunTest (std::string name)
+{
+  TestsCI i;
+  
+  for (i = m_tests.begin (); i != m_tests.end (); i++) 
+    {
+      std::string *testName = (*i).second;
+      if (*testName == name) 
+        {
+          break;
+        }
+    }
+  if (i == m_tests.end ())
+    {
+      std::cerr << "Test with name " << name << " not found." << std::endl;
+    }
+  
+  if (!(*i).first->RunTests ()) 
+    {
+      if (m_verbose) 
+        {
+          std::cerr << "FAIL " << name << std::endl;
+        }
+      return false;
+    } 
+  else 
+    {
+      if (m_verbose) 
+        {
+          std::cerr << "PASS "<< name << std::endl;
+        }
+      return true;
+    }
 }
 
 Test::Test (char const *name)
