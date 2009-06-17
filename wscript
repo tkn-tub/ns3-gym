@@ -273,7 +273,6 @@ def configure(conf):
                 env['WL_SONAME_SUPPORTED'] = True
 
     conf.sub_config('src')
-    conf.sub_config('utils')
     conf.sub_config('bindings/python')
 
     if Options.options.enable_modules:
