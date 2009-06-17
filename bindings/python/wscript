@@ -439,6 +439,8 @@ def build(bld):
         bindgen.name = "pybindgen-command"
 
         pymod = bld.new_task_gen('cxx', 'shlib', 'pyext')
+        if sys.platform == 'cygwin':
+            pymod.features.append('implib') # workaround for WAF bug #472
         pymod.source = ['ns3module.cc', 'ns3module_helpers.cc']
         pymod.includes = '.'
         for module in scanned_modules:
