@@ -105,6 +105,7 @@ FlameProtocol::GetTypeId ()
   return tid;
 }
 FlameProtocol::FlameProtocol () :
+  m_address (Mac48Address ()),
   m_broadcastInterval (Seconds (5)),
   m_lastBroadcast (Simulator::Now ()),
   m_maxCost (32),
@@ -249,8 +250,6 @@ FlameProtocol::HandleDataFrame (uint16_t seqno, Mac48Address source, const Flame
 {
   if(source == GetAddress ())
     return true;
-  if (flameHdr.GetCost () > m_maxCost)
-    return true;
   FlameRtable::LookupResult result = m_rtable->Lookup (source);
   if (result.retransmitter == Mac48Address::GetBroadcast ())
   {
@@ -258,6 +257,8 @@ FlameProtocol::HandleDataFrame (uint16_t seqno, Mac48Address source, const Flame
     return false;
   }
   if(result.seqnum >= seqno)
+    return true;
+  if (flameHdr.GetCost () > m_maxCost)
     return true;
   m_rtable->AddPath (source, receiver, fromInterface, flameHdr.GetCost (), flameHdr.GetSeqno ());
   return false;
