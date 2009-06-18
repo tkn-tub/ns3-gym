@@ -416,7 +416,7 @@ PeerManagementProtocol::TimeToTu (Time x)
   return (uint32_t) (x.GetMicroSeconds ()/1024);
 }
 void
-PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, Mac48Address peerMeshPointAddress, bool status)
+PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, Mac48Address peerMeshPointAddress, PeerLink::PeerState ostate, PeerLink::PeerState nstate)
 {
   PeerManagerPluginMap::iterator plugin = m_plugins.find (interface);
   NS_ASSERT(plugin != m_plugins.end());
@@ -426,21 +426,26 @@ PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAdd
       " and peer mesh point:" << peerMeshPointAddress <<
       " and its interface:" << peerAddress <<
       ", at my interface ID:" << interface <<
-      ". Status:" << status);
-  if(status)
+      ". State movement:" << ostate << " -> " << nstate);
+  if((nstate == PeerLink::ESTAB) && (ostate != PeerLink::ESTAB))
     {
       m_stats.linksOpened ++;
       m_numberOfActivePeers ++;
+      if(!m_peerStatusCallback.IsNull ())
+        m_peerStatusCallback (peerMeshPointAddress, peerAddress, interface, true);
     }
-  else
+  if((ostate == PeerLink::ESTAB) && (nstate != PeerLink::ESTAB))
     {
       m_stats.linksClosed ++;
       m_numberOfActivePeers --;
+      if(!m_peerStatusCallback.IsNull ())
+        m_peerStatusCallback (peerMeshPointAddress, peerAddress, interface, false);
+    }
+  if (nstate == PeerLink::IDLE)
+    {
       Ptr <PeerLink> link = FindPeerLink (interface, peerAddress);
       NS_ASSERT (link == 0);
     }
-  if(!m_peerStatusCallback.IsNull ())
-    m_peerStatusCallback (peerMeshPointAddress, peerAddress, interface, status);
 }
 uint8_t
 PeerManagementProtocol::GetNumberOfLinks ()

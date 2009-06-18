@@ -87,8 +87,16 @@ public:
   void MLMEActivePeerLinkOpen ();
   /// MLME-PeeringRequestReject
   void MLMEPeeringRequestReject ();
+  enum  PeerState {
+    IDLE,       
+    OPN_SNT,
+    CNF_RCVD,
+    OPN_RCVD,
+    ESTAB,
+    HOLDING,
+  };
   /// Callback type for MLME-SignalPeerLinkStatus event
-  typedef Callback<void, uint32_t, Mac48Address, Mac48Address, bool> SignalStatusCallback; 
+  typedef Callback<void, uint32_t, Mac48Address, Mac48Address, PeerLink::PeerState, PeerLink::PeerState> SignalStatusCallback; 
   /// Set callback
   void MLMESetSignalStatusCallback (SignalStatusCallback);
   //\}
@@ -136,16 +144,8 @@ private:
    * link management frames
    */
   void SetMacPlugin(Ptr<PeerManagerMacPlugin> plugin);
-private:
   /// Peer link states, see 802.11s draft 11B.3.3.1
-  enum  PeerState {
-    IDLE,       
-    OPN_SNT,
-    CNF_RCVD,
-    OPN_RCVD,
-    ESTAB,
-    HOLDING,
-  };
+private:
   /// Peer link events, see 802.11s draft 11B.3.3.2
   enum  PeerEvent
   {

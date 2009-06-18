@@ -30,6 +30,7 @@
 #include "ie-dot11s-beacon-timing.h"
 #include "ie-dot11s-peer-management.h"
 #include "ie-dot11s-id.h"
+#include "peer-link.h"
 
 #include <map>
 namespace ns3 {
@@ -189,7 +190,7 @@ private:
    * \}
    * \brief Indicates changes in peer links
    */
-  void PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, Mac48Address peerMeshPointAddres, bool status);
+  void PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, Mac48Address peerMeshPointAddres, PeerLink::PeerState ostate, PeerLink::PeerState nstate);
   ///\brief BCA
   Time GetNextBeaconShift (uint32_t interface);
   /**
