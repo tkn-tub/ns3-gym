@@ -395,7 +395,7 @@ MeshPointDevice::DoSend (bool success, Ptr<Packet> packet, Mac48Address src, Mac
     GetInterface (outIface)->SendFrom(packet, src, dst, protocol);
   else
     for (std::vector<Ptr<NetDevice> >::iterator i = m_ifaces.begin (); i != m_ifaces.end(); i++)
-      (*i) -> SendFrom (packet, src, dst, protocol);
+      (*i) -> SendFrom (packet->Copy (), src, dst, protocol);
 }
 
 } // namespace ns3
