@@ -44,13 +44,13 @@ FlameMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
 {
   if (!header.IsData ())
     return true;
-  if (m_protocol->GetAddress () == header.GetAddr2 ())
-    return false;
   FlameTag tag;
   if(packet->PeekPacketTag (tag))
   {
     NS_FATAL_ERROR ("FLAME tag is not supposed to be received by network");
   }
+  tag.address = header.GetAddr2 ();
+  packet->AddPacketTag (tag);
   return true;
 }
 bool

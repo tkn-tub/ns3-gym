@@ -22,6 +22,7 @@
 #define FLAME_PROTOCOL_H
 
 #include "flame-protocol-mac.h"
+#include "flame-rtable.h"
 
 #include "ns3/mesh-l2-routing-protocol.h"
 #include "ns3/tag.h"
@@ -111,7 +112,8 @@ private:
   ///\}
   /// Sequence number:
   uint16_t m_myLastSeqno;
-
+  /// Routng table:
+  Ptr<FlameRtable> m_rtable;
 };
 } //namespace flame
 } //namespace ns3

@@ -99,7 +99,7 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
     return;
   }
   if(dst48 == m_address)
-  {  
+  {
     Ptr<Packet> packet_copy = packet->Copy ();
     if(m_removeRoutingStuff (incomingPort->GetIfIndex (), src48, dst48, packet_copy, realProtocol))
     {

@@ -19,7 +19,6 @@
  */
 
 #include "flame-protocol.h"
-#include "flame-rtable.h"
 #include "flame-header.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/log.h"
@@ -37,6 +36,7 @@ namespace flame {
 // FlameTag
 //-----------------------------------------------------------------------------
 NS_OBJECT_ENSURE_REGISTERED (FlameTag);
+NS_LOG_COMPONENT_DEFINE ("FlameProtocol");
 
 TypeId
 FlameTag::GetTypeId ()
@@ -102,7 +102,8 @@ FlameProtocol::GetTypeId ()
 FlameProtocol::FlameProtocol () :
   m_broadcastInterval (Seconds (5)),
   m_lastBroadcast (Simulator::Now ()),
-  m_myLastSeqno (0)
+  m_myLastSeqno (0),
+  m_rtable (CreateObject<FlameRtable> ())
 {
 }
 FlameProtocol::~FlameProtocol ()
@@ -120,34 +121,36 @@ FlameProtocol::RequestRoute (uint32_t  sourceIface, const Mac48Address source, c
   if (source == m_address)
   {
     //Packet from upper layer!
-    if(destination == Mac48Address::GetBroadcast ())
+    FlameTag tag;
+    if(packet->PeekPacketTag (tag))
     {
-      //Broadcast always is forwarded as broadcast!
-      FlameHeader flameHdr;
-      FlameTag tag (Mac48Address::GetBroadcast ());
-      flameHdr.AddCost (0);
-      flameHdr.SetSeqno (m_myLastSeqno ++);
-      flameHdr.SetProtocol (protocolType);
-      flameHdr.SetOrigDst (destination);
-      flameHdr.SetOrigSrc (source);
-      packet->AddHeader (flameHdr);
-      packet->AddPacketTag (tag);
-      routeReply (true, packet, source, destination, FLAME_PORT, FlameRtable::INTERFACE_ANY);
+      NS_FATAL_ERROR ("FLAME tag is not supposed to be received from upper layers");
     }
-    else
-      NS_FATAL_ERROR ("unicast not done yet!");
+    FlameHeader flameHdr;
+    //TODO: check when last broadcast was sent
+    tag.address =  m_rtable->Lookup(destination).retransmitter;
+    flameHdr.AddCost (0);
+    flameHdr.SetSeqno (m_myLastSeqno ++);
+    flameHdr.SetProtocol (protocolType);
+    flameHdr.SetOrigDst (destination);
+    flameHdr.SetOrigSrc (source);
+    packet->AddHeader (flameHdr);
+    packet->AddPacketTag (tag);
+    routeReply (true, packet, source, destination, FLAME_PORT, FlameRtable::INTERFACE_ANY);
   }
   else
   {
     FlameHeader flameHdr;
     packet->RemoveHeader (flameHdr); 
-    //if(DropDataFrame(flameHdr.GetSeqno (), source))
-    //  return false;
+    FlameTag tag;
+    if(!packet->RemovePacketTag (tag))
+    {
+      NS_FATAL_ERROR ("FLAME tag is not supposed to be received by network");
+    }
     if(destination == Mac48Address::GetBroadcast ())
     {
       //Broadcast always is forwarded as broadcast!
-      //Broadcast was filtered in RemoveRoutingStuff, because mesh
-      //point device first calss it
+      NS_ASSERT (DropDataFrame(flameHdr.GetSeqno (), source));
       FlameTag tag (Mac48Address::GetBroadcast ());
       flameHdr.AddCost (1);
       packet->AddHeader (flameHdr);
@@ -159,7 +162,19 @@ FlameProtocol::RequestRoute (uint32_t  sourceIface, const Mac48Address source, c
     {
       if(DropDataFrame(flameHdr.GetSeqno (), source))
         return false;
-      NS_FATAL_ERROR ("not done yet!");
+      m_rtable->AddPath (source, tag.address, sourceIface, flameHdr.GetCost (), flameHdr.GetSeqno ());
+      FlameRtable::LookupResult result = m_rtable->Lookup(destination);
+      if(tag.address != Mac48Address::GetBroadcast ())
+      {
+        if(result.retransmitter == Mac48Address::GetBroadcast ())
+          return false;
+      }
+      tag.address = result.retransmitter;
+      flameHdr.AddCost (1);
+      packet->AddHeader (flameHdr);
+      packet->AddPacketTag (tag);
+      routeReply (true, packet, source, destination, FLAME_PORT, result.ifIndex);
+      return true;
     }
     return true;
   }
@@ -170,12 +185,23 @@ FlameProtocol::RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source
       const Mac48Address destination, Ptr<Packet>  packet, uint16_t&  protocolType)
 {
   //Filter seqno:
+  if(source == GetAddress ())
+  {
+    NS_LOG_DEBUG("Dropped my own frame!");
+    return false;
+  }
+  FlameTag tag;
+  if(!packet->RemovePacketTag (tag))
+  {
+    NS_FATAL_ERROR ("FLAME tag is not supposed to be received by network");
+  }
   FlameHeader flameHdr;
   packet->RemoveHeader (flameHdr);
   NS_ASSERT(protocolType == FLAME_PORT);
   protocolType = flameHdr.GetProtocol ();
   if(DropDataFrame(flameHdr.GetSeqno (), source))
     return false;
+  m_rtable->AddPath (source, tag.address, fromIface, flameHdr.GetCost (), flameHdr.GetSeqno ());
   return true;
 }
 bool
@@ -213,15 +239,11 @@ FlameProtocol::DropDataFrame(uint16_t seqno, Mac48Address source)
 {
   if(source == GetAddress ())
     return true;
-  std::map<Mac48Address, uint16_t,std::less<Mac48Address> >::const_iterator i = m_lastSeqno.find (source);
-  if (i == m_lastSeqno.end ())
-    m_lastSeqno[source] = seqno;
-  else
-  {
-    if (i->second >= seqno)
-      return true;
-    m_lastSeqno[source] = seqno;
-  }
+  FlameRtable::LookupResult result = m_rtable->Lookup (source);
+  if (result.retransmitter == Mac48Address::GetBroadcast ())
+    return false;
+  if(result.seqnum >= seqno)
+    return true;
   return false;
 }
 
