@@ -99,7 +99,7 @@ private:
    * \name Information about MeshPointDeviceaddress , plugins
    * \{
    */
-  typedef std::map<uint32_t, Ptr<FlameMacPlugin> > FlamePluginMap;
+  typedef std::map<uint32_t, Ptr<FlameProtocolMac> > FlamePluginMap;
   FlamePluginMap m_interfaces;
   Mac48Address m_address;
   ///\}

@@ -18,25 +18,25 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  *         Pavel Boyko <boyko@iitp.ru>
  */
-#include "dot11s-helper.h"
+#include "mesh-helper.h"
 #include "ns3/simulator.h"
 #include "ns3/mesh-point-device.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/log.h"
-NS_LOG_COMPONENT_DEFINE ("MeshWifiHelper");
+NS_LOG_COMPONENT_DEFINE ("MeshHelper");
 namespace ns3 {
-MeshWifiHelper::MeshWifiHelper () : 
+MeshHelper::MeshHelper () : 
     m_spreadInterfaceChannels (false),
     m_stack (0)
 {
 }
 void 
-MeshWifiHelper::SetSpreadInterfaceChannels (bool s)
+MeshHelper::SetSpreadInterfaceChannels (bool s)
 {
   m_spreadInterfaceChannels = s;
 }
 void 
-MeshWifiHelper::SetStackInstaller (std::string type)
+MeshHelper::SetStackInstaller (std::string type)
 {
   NS_LOG_FUNCTION (this << type);
   m_stackFactory = ObjectFactory ();
@@ -47,7 +47,7 @@ MeshWifiHelper::SetStackInstaller (std::string type)
 }
 
 NetDeviceContainer
-MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &interfaceHelper, NodeContainer c, uint32_t nInterfaces) const
+MeshHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &interfaceHelper, NodeContainer c, uint32_t nInterfaces) const
 {
   NetDeviceContainer devices;
   NS_ASSERT (m_stack != 0);
@@ -78,12 +78,12 @@ MeshWifiHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelp
 }
 
 NetDeviceContainer
-MeshWifiHelper::Install (const WifiPhyHelper &phy, const MeshInterfaceHelper &interfaceHelper, Ptr<Node> node, uint32_t nInterfaces) const
+MeshHelper::Install (const WifiPhyHelper &phy, const MeshInterfaceHelper &interfaceHelper, Ptr<Node> node, uint32_t nInterfaces) const
 {
   return Install (phy, interfaceHelper, NodeContainer (node), nInterfaces);
 }
 void
-MeshWifiHelper::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os)
+MeshHelper::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os)
 {
   NS_ASSERT (m_stack != 0);
   Ptr <MeshPointDevice> mp = device->GetObject<MeshPointDevice> ();
@@ -94,7 +94,7 @@ MeshWifiHelper::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os
   os << "</MeshPointDevice>\n";
 }
 void
-MeshWifiHelper::ResetStats (const ns3::Ptr<ns3::NetDevice>& device)
+MeshHelper::ResetStats (const ns3::Ptr<ns3::NetDevice>& device)
 {
   NS_ASSERT (m_stack != 0);
   Ptr <MeshPointDevice> mp = device->GetObject<MeshPointDevice> ();

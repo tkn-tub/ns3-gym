@@ -37,10 +37,10 @@ class WifiChannel;
  * 
  * \brief Helper to create IEEE 802.11s mesh networks
  */
-class MeshWifiHelper
+class MeshHelper
 {
 public:
-  MeshWifiHelper (); 
+  MeshHelper (); 
   /** 
    *  \brief Spread/not spread frequency channels of MP interfaces. 
    * 

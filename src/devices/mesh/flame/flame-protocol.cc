@@ -219,7 +219,7 @@ FlameProtocol::Install (Ptr<MeshPointDevice> mp)
       if (mac == 0)
         return false;
       // Installing plugins:
-      Ptr<FlameMacPlugin> flameMac = Create<FlameMacPlugin> (wifiNetDev->GetIfIndex (), this);
+      Ptr<FlameProtocolMac> flameMac = Create<FlameProtocolMac> (wifiNetDev->GetIfIndex (), this);
       m_interfaces[wifiNetDev->GetIfIndex ()] = flameMac;
       mac->InstallPlugin (flameMac);
     }

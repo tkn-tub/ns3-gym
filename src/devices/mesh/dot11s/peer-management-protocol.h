@@ -36,7 +36,7 @@
 namespace ns3 {
 class MeshPointDevice;
 namespace dot11s {
-class PeerManagerMacPlugin;
+class PeerManagementProtocolMac;
 class PeerLink;
 class IePeerManagement;
 class IeConfiguration;
@@ -166,7 +166,7 @@ private:
   ///\brief This map keeps beacon information on all intefaces
   typedef std::map<uint32_t, BeaconsOnInterface> BeaconInfoMap;
   ///\brief this vector keeps pointers to MAC-plugins
-  typedef std::map<uint32_t, Ptr<PeerManagerMacPlugin> > PeerManagerPluginMap;
+  typedef std::map<uint32_t, Ptr<PeerManagementProtocolMac> > PeerManagerPluginMap;
   ///\}
 private:
   /**

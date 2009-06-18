@@ -41,11 +41,11 @@ class IePerr;
  * 
  * \brief Interface MAC plugin for HWMP -- 802.11s routing protocol
  */
-class HwmpMacPlugin : public MeshWifiInterfaceMacPlugin
+class HwmpProtocolMac : public MeshWifiInterfaceMacPlugin
 {
 public:
-  HwmpMacPlugin (uint32_t, Ptr<HwmpProtocol>);
-  ~HwmpMacPlugin ();
+  HwmpProtocolMac (uint32_t, Ptr<HwmpProtocol>);
+  ~HwmpProtocolMac ();
   ///\name Inherited from MAC plugin
   //\{
   void SetParent (Ptr<MeshWifiInterfaceMac> parent);

@@ -29,7 +29,7 @@
 #include "ie-dot11s-beacon-timing.h"
 #include "ie-dot11s-peer-management.h"
 #include "ie-dot11s-configuration.h"
-#include "peer-management-plugin.h"
+#include "peer-management-protocol-mac.h"
 namespace ns3 {
 namespace dot11s {
 /**
@@ -143,7 +143,7 @@ private:
    * Set pointer to MAC-plugin, which is responsible for sending peer
    * link management frames
    */
-  void SetMacPlugin(Ptr<PeerManagerMacPlugin> plugin);
+  void SetMacPlugin(Ptr<PeerManagementProtocolMac> plugin);
   /// Peer link states, see 802.11s draft 11B.3.3.1
 private:
   /// Peer link events, see 802.11s draft 11B.3.3.2
@@ -201,7 +201,7 @@ private:
   ///The number of interface I am associated with
   uint32_t m_interface;
   /// pointer to mac plugin, which is responsible for peer management
-  Ptr<PeerManagerMacPlugin> m_macPlugin;
+  Ptr<PeerManagementProtocolMac> m_macPlugin;
   /// Peer address
   Mac48Address m_peerAddress;
   /// Mesh point address, equal to peer address in case of single

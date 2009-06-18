@@ -26,7 +26,7 @@ def build(bld):
         'nqos-wifi-mac-helper.cc',
         'qos-wifi-mac-helper.cc',
         'mesh-interface-helper.cc',
-        'dot11s-helper.cc',
+        'mesh-helper.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -55,7 +55,7 @@ def build(bld):
         'nqos-wifi-mac-helper.h',
         'qos-wifi-mac-helper.h',
         'mesh-interface-helper.h',
-        'dot11s-helper.h',
+        'mesh-helper.h',
         ]
 
     env = bld.env_of_name('default')

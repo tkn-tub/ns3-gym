@@ -65,8 +65,8 @@ class MeshTest
     NetDeviceContainer meshDevices;
     //Addresses of interfaces:
     Ipv4InterfaceContainer interfaces;
-    // MeshWifiHelper. Report is not static methods
-    MeshWifiHelper mesh;
+    // MeshHelper. Report is not static methods
+    MeshHelper mesh;
   private:
     /// Create nodes and setup their mobility
     void CreateNodes ();

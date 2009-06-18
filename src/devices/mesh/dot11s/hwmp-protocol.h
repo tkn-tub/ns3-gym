@@ -34,7 +34,7 @@ class MeshPointDevice;
 class Packet;
 class Mac48Address;
 namespace dot11s {
-class HwmpMacPlugin;
+class HwmpProtocolMac;
 class HwmpRtable;
 class IePreq;
 class IePrep;
@@ -80,7 +80,7 @@ public:
   void Report (std::ostream &) const;
   void ResetStats ();
 private:
-  friend class HwmpMacPlugin;
+  friend class HwmpProtocolMac;
   
   /// Like RequestRoute, but for unicast packets
   bool ForwardUnicast (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
@@ -181,7 +181,7 @@ private:
   ///\return address of MeshPointDevice
   Mac48Address GetAddress (); 
 private:
-  typedef std::map<uint32_t, Ptr<HwmpMacPlugin> > HwmpPluginMap;
+  typedef std::map<uint32_t, Ptr<HwmpProtocolMac> > HwmpPluginMap;
   HwmpPluginMap m_interfaces;
   Mac48Address m_address;
   uint32_t m_dataSeqno;

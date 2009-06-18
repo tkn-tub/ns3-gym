@@ -24,23 +24,23 @@
 #include "ns3/log.h"
 namespace ns3 {
 namespace flame {
-NS_LOG_COMPONENT_DEFINE ("FlameMacPlugin");
-FlameMacPlugin::FlameMacPlugin (uint32_t ifIndex, Ptr<FlameProtocol> protocol):
+NS_LOG_COMPONENT_DEFINE ("FlameProtocolMac");
+FlameProtocolMac::FlameProtocolMac (uint32_t ifIndex, Ptr<FlameProtocol> protocol):
   m_protocol (protocol),
   m_ifIndex (ifIndex)
 {
 }
-FlameMacPlugin::~FlameMacPlugin ()
+FlameProtocolMac::~FlameProtocolMac ()
 {
 }
 void
-FlameMacPlugin::SetParent (Ptr<MeshWifiInterfaceMac> parent)
+FlameProtocolMac::SetParent (Ptr<MeshWifiInterfaceMac> parent)
 {
   m_parent = parent;
 }
 
 bool
-FlameMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
+FlameProtocolMac::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
 {
   if (!header.IsData ())
     return true;
@@ -54,7 +54,7 @@ FlameMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
   return true;
 }
 bool
-FlameMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to)
+FlameProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to)
 {
   if(!header.IsData ())
     return true;
@@ -67,22 +67,22 @@ FlameMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header
   return true;
 }
 uint8_t
-FlameMacPlugin::GetCost(Mac48Address peerAddress) const
+FlameProtocolMac::GetCost(Mac48Address peerAddress) const
 {
   uint32_t metric = m_parent->GetLinkMetric(peerAddress);
   return (metric > 255 ? 255 : (uint8_t)(metric & 0xff));
 }
 uint16_t
-FlameMacPlugin::GetChannelId () const
+FlameProtocolMac::GetChannelId () const
 {
   return m_parent->GetFrequencyChannel ();
 }
 void
-FlameMacPlugin::Report (std::ostream & os) const
+FlameProtocolMac::Report (std::ostream & os) const
 {
 }
 void
-FlameMacPlugin::ResetStats ()
+FlameProtocolMac::ResetStats ()
 {
 }
 

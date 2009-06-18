@@ -23,9 +23,9 @@
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
 #include "ns3/log.h"
-#include "hwmp-mac-plugin.h"
 #include "dot11s-mac-header.h"
 #include "hwmp-protocol.h"
+#include "hwmp-protocol-mac.h"
 #include "hwmp-tag.h"
 #include "ie-dot11s-preq.h"
 #include "ie-dot11s-prep.h"
@@ -33,23 +33,23 @@
 namespace ns3 {
 namespace dot11s {
 
-NS_LOG_COMPONENT_DEFINE ("HwmpMacPlugin");
-HwmpMacPlugin::HwmpMacPlugin (uint32_t ifIndex, Ptr<HwmpProtocol> protocol):
+NS_LOG_COMPONENT_DEFINE ("HwmpProtocolMac");
+HwmpProtocolMac::HwmpProtocolMac (uint32_t ifIndex, Ptr<HwmpProtocol> protocol):
   m_ifIndex (ifIndex),
   m_protocol (protocol)
 {
 }
-HwmpMacPlugin::~HwmpMacPlugin ()
+HwmpProtocolMac::~HwmpProtocolMac ()
 {
 }
 void
-HwmpMacPlugin::SetParent (Ptr<MeshWifiInterfaceMac> parent)
+HwmpProtocolMac::SetParent (Ptr<MeshWifiInterfaceMac> parent)
 {
   m_parent = parent;
 }
 
 bool
-HwmpMacPlugin::ReceiveData (Ptr<Packet> packet, const WifiMacHeader & header)
+HwmpProtocolMac::ReceiveData (Ptr<Packet> packet, const WifiMacHeader & header)
 {
   NS_ASSERT (header.IsData());
 
@@ -88,7 +88,7 @@ HwmpMacPlugin::ReceiveData (Ptr<Packet> packet, const WifiMacHeader & header)
 }
 
 bool
-HwmpMacPlugin::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header)
+HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header)
 {
   m_stats.rxMgt ++;
   m_stats.rxMgtBytes += packet->GetSize ();
@@ -138,7 +138,7 @@ HwmpMacPlugin::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header)
 }
 
 bool
-HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
+HwmpProtocolMac::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
 {
   if (header.IsData ())
     return ReceiveData (packet, header);
@@ -148,7 +148,7 @@ HwmpMacPlugin::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
     return true; // don't care
 }
 bool
-HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to)
+HwmpProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to)
 {
   if(!header.IsData ())
     return true;
@@ -168,13 +168,13 @@ HwmpMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header,
   return true;
 }
 void
-HwmpMacPlugin::SendPreq(IePreq preq)
+HwmpProtocolMac::SendPreq(IePreq preq)
 {
   m_preqQueue.push_back (preq);
   SendOnePreq ();
 }
 void
-HwmpMacPlugin::RequestDestination (Mac48Address dst, uint32_t originator_seqno, uint32_t dst_seqno)
+HwmpProtocolMac::RequestDestination (Mac48Address dst, uint32_t originator_seqno, uint32_t dst_seqno)
 {
   for(std::vector<IePreq>::iterator i = m_preqQueue.begin (); i != m_preqQueue.end (); i ++)
     if(i->MayAddAddress(m_protocol->GetAddress ()))
@@ -196,7 +196,7 @@ HwmpMacPlugin::RequestDestination (Mac48Address dst, uint32_t originator_seqno, 
   SendOnePreq ();
 }
 void
-HwmpMacPlugin::SendOnePreq ()
+HwmpProtocolMac::SendOnePreq ()
 {
   if(m_preqTimer.IsRunning ())
     return;
@@ -204,7 +204,7 @@ HwmpMacPlugin::SendOnePreq ()
     return;
   //reschedule sending PREQ
   NS_ASSERT (!m_preqTimer.IsRunning());
-  m_preqTimer = Simulator::Schedule (m_protocol->GetPreqMinInterval (), &HwmpMacPlugin::SendOnePreq, this);
+  m_preqTimer = Simulator::Schedule (m_protocol->GetPreqMinInterval (), &HwmpProtocolMac::SendOnePreq, this);
   Ptr<Packet> packet  = Create<Packet> ();
   packet->AddHeader(m_preqQueue[0]);
   //Action header:
@@ -234,7 +234,7 @@ HwmpMacPlugin::SendOnePreq ()
   m_preqQueue.erase (m_preqQueue.begin());
 }
 void
-HwmpMacPlugin::SendOnePerr()
+HwmpProtocolMac::SendOnePerr()
 {
   if(m_perrTimer.IsRunning ())
     return;
@@ -243,7 +243,7 @@ HwmpMacPlugin::SendOnePerr()
     m_myPerr.receivers.clear ();
     m_myPerr.receivers.push_back (Mac48Address::GetBroadcast ());
   }
-  m_perrTimer = Simulator::Schedule (m_protocol->GetPerrMinInterval (), &HwmpMacPlugin::SendOnePerr, this);
+  m_perrTimer = Simulator::Schedule (m_protocol->GetPerrMinInterval (), &HwmpProtocolMac::SendOnePerr, this);
 //Create packet
   Ptr<Packet> packet  = Create<Packet> ();
   packet->AddHeader(m_myPerr.perr);
@@ -273,7 +273,7 @@ HwmpMacPlugin::SendOnePerr()
   m_myPerr.receivers.clear ();
 }
 void
-HwmpMacPlugin::SendPrep (IePrep prep, Mac48Address receiver)
+HwmpProtocolMac::SendPrep (IePrep prep, Mac48Address receiver)
 {
   //Create packet
   Ptr<Packet> packet  = Create<Packet> ();
@@ -299,7 +299,7 @@ HwmpMacPlugin::SendPrep (IePrep prep, Mac48Address receiver)
   m_parent->SendManagementFrame(packet, hdr);
 }
 void
-HwmpMacPlugin::SendPerr(IePerr perr, std::vector<Mac48Address> receivers)
+HwmpProtocolMac::SendPerr(IePerr perr, std::vector<Mac48Address> receivers)
 {
   m_myPerr.perr.Merge(perr);
   for(unsigned int i = 0; i < receivers.size (); i ++)
@@ -314,17 +314,17 @@ HwmpMacPlugin::SendPerr(IePerr perr, std::vector<Mac48Address> receivers)
   SendOnePerr ();
 }
 uint32_t
-HwmpMacPlugin::GetLinkMetric(Mac48Address peerAddress) const
+HwmpProtocolMac::GetLinkMetric(Mac48Address peerAddress) const
 {
   return m_parent->GetLinkMetric(peerAddress);
 }
 uint16_t
-HwmpMacPlugin::GetChannelId () const
+HwmpProtocolMac::GetChannelId () const
 {
   return m_parent->GetFrequencyChannel ();
 }
 void
-HwmpMacPlugin::Statistics::Print (std::ostream & os) const
+HwmpProtocolMac::Statistics::Print (std::ostream & os) const
 {
   os << "<Statistics "
     "txPreq= \"" << txPreq << "\"\n"
@@ -343,15 +343,15 @@ HwmpMacPlugin::Statistics::Print (std::ostream & os) const
     "rxDataBytes=\"" << (double)rxDataBytes / 1024.0 << "K\"/>\n";
 }
 void
-HwmpMacPlugin::Report (std::ostream & os) const
+HwmpProtocolMac::Report (std::ostream & os) const
 {
-  os << "<HwmpMacPlugin\n"
+  os << "<HwmpProtocolMac\n"
     "address =\""<< m_parent->GetAddress () <<"\">\n";
   m_stats.Print(os);
-  os << "</HwmpMacPlugin>\n";
+  os << "</HwmpProtocolMac>\n";
 }
 void
-HwmpMacPlugin::ResetStats ()
+HwmpProtocolMac::ResetStats ()
 {
   m_stats = Statistics::Statistics ();
 }

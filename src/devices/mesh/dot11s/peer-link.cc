@@ -267,7 +267,7 @@ PeerLink::LinkIsIdle () const
   return (m_state == IDLE);
 }
 void
-PeerLink::SetMacPlugin(Ptr<PeerManagerMacPlugin> plugin)
+PeerLink::SetMacPlugin(Ptr<PeerManagementProtocolMac> plugin)
 {
   m_macPlugin = plugin;
 }

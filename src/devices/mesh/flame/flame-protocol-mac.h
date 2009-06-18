@@ -31,11 +31,11 @@ class FlameProtocol;
  * 
  * \brief Interface MAC plugin FLAME routing protocol
  */
-class FlameMacPlugin : public MeshWifiInterfaceMacPlugin
+class FlameProtocolMac : public MeshWifiInterfaceMacPlugin
 {
 public:
-  FlameMacPlugin (uint32_t, Ptr<FlameProtocol>);
-  ~FlameMacPlugin ();
+  FlameProtocolMac (uint32_t, Ptr<FlameProtocol>);
+  ~FlameProtocolMac ();
   ///\name Inherited from MAC plugin
   //\{
   void SetParent (Ptr<MeshWifiInterfaceMac> parent);

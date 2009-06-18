@@ -39,11 +39,11 @@ class PeerManagementProtocol;
  * element and mesh configuration element and passes it to main part
  * of protocol
  */
-class PeerManagerMacPlugin : public MeshWifiInterfaceMacPlugin
+class PeerManagementProtocolMac : public MeshWifiInterfaceMacPlugin
 {
 public:
-  PeerManagerMacPlugin (uint32_t interface, Ptr<PeerManagementProtocol> protocol);
-  ~PeerManagerMacPlugin ();
+  PeerManagementProtocolMac (uint32_t interface, Ptr<PeerManagementProtocol> protocol);
+  ~PeerManagementProtocolMac ();
   ///\name Inherited from plugin abstract class
   ///\{
   void SetParent (Ptr<MeshWifiInterfaceMac> parent);

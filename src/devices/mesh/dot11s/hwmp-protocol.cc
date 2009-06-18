@@ -20,7 +20,7 @@
 
 
 #include "hwmp-protocol.h"
-#include "hwmp-mac-plugin.h"
+#include "hwmp-protocol-mac.h"
 #include "hwmp-tag.h"
 #include "hwmp-rtable.h"
 #include "ns3/log.h"
@@ -622,7 +622,7 @@ HwmpProtocol::Install (Ptr<MeshPointDevice> mp)
       if (mac == 0)
         return false;
       // Installing plugins:
-      Ptr<HwmpMacPlugin> hwmpMac = Create<HwmpMacPlugin> (wifiNetDev->GetIfIndex (), this);
+      Ptr<HwmpProtocolMac> hwmpMac = Create<HwmpProtocolMac> (wifiNetDev->GetIfIndex (), this);
       m_interfaces[wifiNetDev->GetIfIndex ()] = hwmpMac;
       mac->InstallPlugin (hwmpMac);
       //Installing airtime link metric:

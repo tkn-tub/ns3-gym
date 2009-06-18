@@ -21,7 +21,7 @@
 #include "ie-dot11s-configuration.h"
 #include "ie-dot11s-peer-management.h"
 #include "dot11s-mac-header.h"
-#include "peer-management-plugin.h"
+#include "peer-management-protocol-mac.h"
 #include "peer-management-protocol.h"
 #include "peer-link-frame.h"
 #include "ns3/mesh-wifi-interface-mac.h"
@@ -29,24 +29,24 @@
 #include "ns3/wifi-mac-header.h"
 namespace ns3 {
 namespace dot11s {
-PeerManagerMacPlugin::PeerManagerMacPlugin (uint32_t interface, Ptr<PeerManagementProtocol> protocol)
+PeerManagementProtocolMac::PeerManagementProtocolMac (uint32_t interface, Ptr<PeerManagementProtocol> protocol)
 {
   m_ifIndex = interface;
   m_protocol = protocol;
 }
 
-PeerManagerMacPlugin::~PeerManagerMacPlugin ()
+PeerManagementProtocolMac::~PeerManagementProtocolMac ()
 {
 }
 
 void
-PeerManagerMacPlugin::SetParent (Ptr<MeshWifiInterfaceMac> parent)
+PeerManagementProtocolMac::SetParent (Ptr<MeshWifiInterfaceMac> parent)
 {
   m_parent = parent;
 }
 
 bool
-PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & header)
+PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeader & header)
 {
   // First of all we copy a packet, because we need to remove some
   //headers
@@ -142,7 +142,7 @@ PeerManagerMacPlugin::Receive (Ptr<Packet> const_packet, const WifiMacHeader & h
   return m_protocol->IsActiveLink(m_ifIndex,header.GetAddr2());
 }
 bool
-PeerManagerMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to)
+PeerManagementProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to)
 {
   if(header.IsAction ())
   {
@@ -166,7 +166,7 @@ PeerManagerMacPlugin::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & 
   }
 }
 void
-PeerManagerMacPlugin::UpdateBeacon (MeshWifiBeacon & beacon) const
+PeerManagementProtocolMac::UpdateBeacon (MeshWifiBeacon & beacon) const
 {
   Ptr<IeBeaconTiming>  beaconTiming = m_protocol->GetBeaconTimingElement(m_ifIndex);
   beacon.AddInformationElement(beaconTiming);
@@ -174,7 +174,7 @@ PeerManagerMacPlugin::UpdateBeacon (MeshWifiBeacon & beacon) const
 }
 
 void
-PeerManagerMacPlugin::SendPeerLinkManagementFrame(
+PeerManagementProtocolMac::SendPeerLinkManagementFrame(
       Mac48Address peerAddress,
       Mac48Address peerMpAddress,
       uint16_t aid,
@@ -239,14 +239,14 @@ PeerManagerMacPlugin::SendPeerLinkManagementFrame(
 }
 
 Mac48Address
-PeerManagerMacPlugin::GetAddress () const
+PeerManagementProtocolMac::GetAddress () const
 {
   if(m_parent !=  0)
     return m_parent->GetAddress ();
   else return Mac48Address::Mac48Address();
 }
 std::pair<Time, Time> 
-PeerManagerMacPlugin::GetBeaconInfo() const
+PeerManagementProtocolMac::GetBeaconInfo() const
 {
   std::pair<Time,Time> retval;
   retval.first = m_parent->GetTbtt ();
@@ -254,13 +254,13 @@ PeerManagerMacPlugin::GetBeaconInfo() const
   return retval;
 }
 void
-PeerManagerMacPlugin::SetBeaconShift(Time shift)
+PeerManagementProtocolMac::SetBeaconShift(Time shift)
 {
   if(shift != Seconds (0))
     m_stats.beaconShift ++;
   m_parent->ShiftTbtt (shift);
 }
-PeerManagerMacPlugin::Statistics::Statistics () :
+PeerManagementProtocolMac::Statistics::Statistics () :
   txOpen (0),
   txConfirm (0),
   txClose (0),
@@ -277,7 +277,7 @@ PeerManagerMacPlugin::Statistics::Statistics () :
 {
 }
 void
-PeerManagerMacPlugin::Statistics::Print (std::ostream & os) const
+PeerManagementProtocolMac::Statistics::Print (std::ostream & os) const
 {
   os << "<Statistics "
     "txOpen=\"" << txOpen << "\"\n"
@@ -295,7 +295,7 @@ PeerManagerMacPlugin::Statistics::Print (std::ostream & os) const
     "beaconShift=\"" << beaconShift << "\"/>\n";
 }
 void
-PeerManagerMacPlugin::Report (std::ostream & os) const
+PeerManagementProtocolMac::Report (std::ostream & os) const
 {
   os << "<PeerManagerPlugin "
     "address=\"" << m_parent->GetAddress () << "\">\n";
@@ -303,12 +303,12 @@ PeerManagerMacPlugin::Report (std::ostream & os) const
   os << "</PeerManagerPlugin>\n";
 }
 void
-PeerManagerMacPlugin::ResetStats ()
+PeerManagementProtocolMac::ResetStats ()
 {
   m_stats = Statistics::Statistics ();
 }
 uint32_t
-PeerManagerMacPlugin::GetLinkMetric (Mac48Address peerAddress)
+PeerManagementProtocolMac::GetLinkMetric (Mac48Address peerAddress)
 {
   return m_parent->GetLinkMetric (peerAddress);
 }

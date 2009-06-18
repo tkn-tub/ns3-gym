@@ -34,8 +34,6 @@
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 #include "ns3/wifi-net-device.h"
 #include "peer-link.h"
-#include "peer-management-plugin.h"
-
 
 NS_LOG_COMPONENT_DEFINE ("PeerManagementProtocol");
 namespace ns3 {
@@ -102,7 +100,7 @@ PeerManagementProtocol::Install(Ptr<MeshPointDevice> mp)
       Ptr<MeshWifiInterfaceMac>  mac = wifiNetDev->GetMac ()->GetObject<MeshWifiInterfaceMac> ();
       if (mac == 0)
         return false;
-      Ptr<PeerManagerMacPlugin> peerPlugin = Create<PeerManagerMacPlugin> ((*i)->GetIfIndex(), this);
+      Ptr<PeerManagementProtocolMac> peerPlugin = Create<PeerManagementProtocolMac> ((*i)->GetIfIndex(), this);
       mac->InstallPlugin(peerPlugin);
       m_plugins[(*i)->GetIfIndex()] = peerPlugin;
       PeerLinksOnInterface newmap;
