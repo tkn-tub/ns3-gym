@@ -133,19 +133,23 @@ FlameProtocol::RequestRoute (uint32_t  sourceIface, const Mac48Address source, c
       NS_FATAL_ERROR ("FLAME tag is not supposed to be received from upper layers");
     }
     FlameHeader flameHdr;
-    tag.address =  m_rtable->Lookup(destination).retransmitter;
+    FlameRtable::LookupResult result = m_rtable->Lookup(destination);
     if(tag.address == Mac48Address::GetBroadcast ())
       m_lastBroadcast = Simulator::Now ();
     if(m_lastBroadcast + m_broadcastInterval < Simulator::Now ())
-      tag.address = Mac48Address::GetBroadcast ();
+    {
+      result.retransmitter = Mac48Address::GetBroadcast ();
+      result.ifIndex = FlameRtable::INTERFACE_ANY;
+    }
     flameHdr.AddCost (0);
     flameHdr.SetSeqno (m_myLastSeqno ++);
     flameHdr.SetProtocol (protocolType);
     flameHdr.SetOrigDst (destination);
     flameHdr.SetOrigSrc (source);
     packet->AddHeader (flameHdr);
+    tag.address = result.retransmitter;
     packet->AddPacketTag (tag);
-    routeReply (true, packet, source, destination, FLAME_PORT, FlameRtable::INTERFACE_ANY);
+    routeReply (true, packet, source, destination, FLAME_PORT, result.ifIndex);
   }
   else
   {
