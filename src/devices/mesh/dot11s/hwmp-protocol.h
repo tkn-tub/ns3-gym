@@ -181,8 +181,8 @@ private:
   ///\return address of MeshPointDevice
   Mac48Address GetAddress (); 
 private:
-  typedef std::map<uint32_t, Ptr<HwmpProtocolMac> > HwmpPluginMap;
-  HwmpPluginMap m_interfaces;
+  typedef std::map<uint32_t, Ptr<HwmpProtocolMac> > HwmpProtocolMacMap;
+  HwmpProtocolMacMap m_interfaces;
   Mac48Address m_address;
   uint32_t m_dataSeqno;
   uint32_t m_hwmpSeqno;

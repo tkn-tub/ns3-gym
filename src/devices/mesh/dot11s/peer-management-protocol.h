@@ -166,7 +166,7 @@ private:
   ///\brief This map keeps beacon information on all intefaces
   typedef std::map<uint32_t, BeaconsOnInterface> BeaconInfoMap;
   ///\brief this vector keeps pointers to MAC-plugins
-  typedef std::map<uint32_t, Ptr<PeerManagementProtocolMac> > PeerManagerPluginMap;
+  typedef std::map<uint32_t, Ptr<PeerManagementProtocolMac> > PeerManagementProtocolMacMap;
   ///\}
 private:
   /**
@@ -201,7 +201,7 @@ private:
   uint32_t TimeToTu (Time x);
   ///\}
 private:
-  PeerManagerPluginMap m_plugins;
+  PeerManagementProtocolMacMap m_plugins;
   Mac48Address m_address;
   Ptr<IeMeshId> m_meshId;
   /**

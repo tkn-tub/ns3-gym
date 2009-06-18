@@ -27,7 +27,7 @@
 #include "ns3/wifi-module.h"
 #include "ns3/mesh-module.h"
 #include "ns3/mobility-module.h"
-#include "ns3/dot11s-helper.h"
+#include "ns3/mesh-helper.h"
 #include "ns3/mesh-interface-helper.h"
 
 #include <iostream>

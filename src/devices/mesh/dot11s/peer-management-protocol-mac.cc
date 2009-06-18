@@ -297,10 +297,10 @@ PeerManagementProtocolMac::Statistics::Print (std::ostream & os) const
 void
 PeerManagementProtocolMac::Report (std::ostream & os) const
 {
-  os << "<PeerManagerPlugin "
+  os << "<PeerManagementProtocolMac "
     "address=\"" << m_parent->GetAddress () << "\">\n";
   m_stats.Print (os);
-  os << "</PeerManagerPlugin>\n";
+  os << "</PeerManagementProtocolMac>\n";
 }
 void
 PeerManagementProtocolMac::ResetStats ()

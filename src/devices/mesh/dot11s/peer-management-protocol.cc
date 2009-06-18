@@ -100,9 +100,9 @@ PeerManagementProtocol::Install(Ptr<MeshPointDevice> mp)
       Ptr<MeshWifiInterfaceMac>  mac = wifiNetDev->GetMac ()->GetObject<MeshWifiInterfaceMac> ();
       if (mac == 0)
         return false;
-      Ptr<PeerManagementProtocolMac> peerPlugin = Create<PeerManagementProtocolMac> ((*i)->GetIfIndex(), this);
-      mac->InstallPlugin(peerPlugin);
-      m_plugins[(*i)->GetIfIndex()] = peerPlugin;
+      Ptr<PeerManagementProtocolMac> plugin = Create<PeerManagementProtocolMac> ((*i)->GetIfIndex(), this);
+      mac->InstallPlugin(plugin);
+      m_plugins[(*i)->GetIfIndex()] = plugin;
       PeerLinksOnInterface newmap;
       m_peerLinks[(*i)->GetIfIndex()] = newmap;
     }
@@ -186,14 +186,14 @@ PeerManagementProtocol::UpdatePeerBeaconTiming(
   if(!meshBeacon)
     return;
   //BCA:
-  PeerManagerPluginMap::iterator plugin = m_plugins.find (interface);
+  PeerManagementProtocolMacMap::iterator plugin = m_plugins.find (interface);
   NS_ASSERT(plugin != m_plugins.end ());
   Time shift = GetNextBeaconShift(interface);
   if(TimeToTu (shift) != 0)
     plugin->second->SetBeaconShift(shift);
   //PM STATE Machine
   //Check that a given beacon is not from our interface
-  for(PeerManagerPluginMap::const_iterator i = m_plugins.begin (); i != m_plugins.end (); i ++)
+  for(PeerManagementProtocolMacMap::const_iterator i = m_plugins.begin (); i != m_plugins.end (); i ++)
     if(i->second->GetAddress () == peerAddress)
       return;
   Ptr<PeerLink> peerLink = FindPeerLink(interface, peerAddress);
@@ -284,7 +284,7 @@ PeerManagementProtocol::InitiateLink (
       NS_FATAL_ERROR ("Peer link must not exist.");
     }
   // Plugin must exist
-  PeerManagerPluginMap::iterator plugin = m_plugins.find (interface);
+  PeerManagementProtocolMacMap::iterator plugin = m_plugins.find (interface);
   NS_ASSERT(plugin != m_plugins.end ());
   PeerLinksMap::iterator iface = m_peerLinks.find (interface);
   NS_ASSERT (iface != m_peerLinks.end());
@@ -373,7 +373,7 @@ PeerManagementProtocol::GetNextBeaconShift (uint32_t interface)
   static int minShift = 1;
   PeerLinksMap::iterator iface = m_peerLinks.find (interface);
   NS_ASSERT (iface != m_peerLinks.end());
-  PeerManagerPluginMap::iterator plugin = m_plugins.find (interface);
+  PeerManagementProtocolMacMap::iterator plugin = m_plugins.find (interface);
   NS_ASSERT (plugin != m_plugins.end());
   std::pair<Time, Time> myBeacon = plugin->second->GetBeaconInfo ();
   if(Simulator::Now () + TuToTime (maxShift) > myBeacon.first + myBeacon.second)
@@ -416,7 +416,7 @@ PeerManagementProtocol::TimeToTu (Time x)
 void
 PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, Mac48Address peerMeshPointAddress, PeerLink::PeerState ostate, PeerLink::PeerState nstate)
 {
-  PeerManagerPluginMap::iterator plugin = m_plugins.find (interface);
+  PeerManagementProtocolMacMap::iterator plugin = m_plugins.find (interface);
   NS_ASSERT(plugin != m_plugins.end());
   NS_LOG_DEBUG(
       "Link between me:" << m_address <<
@@ -478,7 +478,7 @@ PeerManagementProtocol::Report (std::ostream & os) const
 {
   os << "<PeerManagementProtocol>\n";
   m_stats.Print (os);
-  for(PeerManagerPluginMap::const_iterator plugins = m_plugins.begin (); plugins != m_plugins.end (); plugins ++)
+  for(PeerManagementProtocolMacMap::const_iterator plugins = m_plugins.begin (); plugins != m_plugins.end (); plugins ++)
     {
       //Take statistics from plugin:
       plugins->second->Report (os);
@@ -494,7 +494,7 @@ void
 PeerManagementProtocol::ResetStats ()
 {
   m_stats = Statistics::Statistics ();
-  for(PeerManagerPluginMap::const_iterator plugins = m_plugins.begin (); plugins != m_plugins.end (); plugins ++)
+  for(PeerManagementProtocolMacMap::const_iterator plugins = m_plugins.begin (); plugins != m_plugins.end (); plugins ++)
     plugins->second->ResetStats ();
 }
 
