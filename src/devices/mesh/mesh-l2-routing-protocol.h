@@ -96,6 +96,22 @@ public:
    */
   virtual bool RequestRoute (uint32_t sourceIface, const Mac48Address source, const Mac48Address destination, 
       Ptr<const Packet> packet, uint16_t  protocolType, RouteReplyCallback routeReply ) = 0;
+  /**
+   * \brief When packet is ready to go to upper layer, protocol must
+   * remove all its information: tags, header, etc. So,
+   * MeshPointDevice must call this method when passing a packet to
+   * upper layer.
+   * \returns true if packet shall not be dropeed, false otherwise.
+   * \param sourceIface the incoming interface of the packet
+   * \param source        source address
+   * \param destination   destination address
+   * \param packet        the packet to be handled
+   * \param protocolType  protocol ID, needed to form a proper MAC-layer header
+   * \attention protocol type is passed by reference, because may be
+   * changed
+   */
+  virtual bool RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source,
+      const Mac48Address destination, Ptr<Packet>  packet, uint16_t &  protocolType) = 0;
   /// Set host mesh point, analog of SetNode (...) methods for upper layer protocols.
   void SetMeshPoint (Ptr<MeshPointDevice> mp);
   /// Each mesh protocol must be installed on the mesh point to work.

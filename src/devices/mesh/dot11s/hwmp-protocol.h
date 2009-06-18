@@ -54,6 +54,9 @@ public:
   /// Route request, inherited from MeshL2RoutingProtocol
   bool RequestRoute (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
       Ptr<const Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply);
+  /// Cleanup packet from all tags
+  bool RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source,
+      const Mac48Address destination, Ptr<Packet>  packet, uint16_t&  protocolType);
   /** 
    * \brief Install HWMP on given mesh point. 
    * 

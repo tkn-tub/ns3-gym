@@ -257,6 +257,17 @@ HwmpProtocol::RequestRoute (
   return true;
 }
 bool
+HwmpProtocol::RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source,
+      const Mac48Address destination, Ptr<Packet>  packet, uint16_t&  protocolType)
+{
+  HwmpTag tag;
+  if(!packet->RemovePacketTag (tag))
+  {
+    NS_FATAL_ERROR ("HWMP tag must exist when packet received from the network");
+  }
+  return true;
+}
+bool
 HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
     Ptr<Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply, uint32_t ttl)
 {

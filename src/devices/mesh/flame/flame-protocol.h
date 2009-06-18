@@ -69,6 +69,9 @@ public:
   /// Route request, inherited from MeshL2RoutingProtocol
   bool RequestRoute (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
       Ptr<const Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply);
+  /// Cleanup flame headers!
+  bool RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source,
+      const Mac48Address destination, Ptr<Packet>  packet, uint16_t&  protocolType);
   /** 
    * \brief Install FLAME on given mesh point. 
    * 
@@ -83,6 +86,13 @@ public:
   void Report (std::ostream &) const;
   void ResetStats ();
 private:
+  /**
+   * \name Seqno filter:
+   * \{
+   */
+  bool DropDataFrame (uint16_t seqno, Mac48Address source);
+  std::map<Mac48Address, uint16_t> m_lastSeqno;
+  ///\}
   static const uint16_t FLAME_PORT = 0x4040;
   /**
    * \name Information about MeshPointDeviceaddress , plugins

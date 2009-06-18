@@ -78,9 +78,8 @@ HwmpMacPlugin::ReceiveData (Ptr<Packet> packet, const WifiMacHeader & header)
   };
   tag.SetSeqno (meshHdr.GetMeshSeqno ());
   tag.SetTtl (meshHdr.GetMeshTtl ());
-  if(m_protocol->GetAddress() != destination)
-    packet->AddPacketTag(tag);
-  
+  packet->AddPacketTag(tag);
+ 
   if (destination == Mac48Address::GetBroadcast ())
     if(m_protocol->DropDataFrame (meshHdr.GetMeshSeqno (), source))
       return false;

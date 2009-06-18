@@ -21,6 +21,7 @@
 #include "flame-protocol.h"
 #include "flame-rtable.h"
 #include "flame-header.h"
+#include "ns3/llc-snap-header.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
@@ -116,7 +117,6 @@ FlameProtocol::RequestRoute (uint32_t  sourceIface, const Mac48Address source, c
       Ptr<const Packet> const_packet, uint16_t  protocolType, RouteReplyCallback  routeReply)
 {
   Ptr<Packet> packet = const_packet->Copy ();
-  NS_LOG_UNCOND("Forwarding packet from "<<source <<", to "<<destination<<"protocol = "<<protocolType);
   if (source == m_address)
   {
     //Packet from upper layer!
@@ -135,12 +135,47 @@ FlameProtocol::RequestRoute (uint32_t  sourceIface, const Mac48Address source, c
       routeReply (true, packet, source, destination, FLAME_PORT, FlameRtable::INTERFACE_ANY);
     }
     else
-      NS_FATAL_ERROR ("not done yet!");
+      NS_FATAL_ERROR ("unicast not done yet!");
   }
   else
   {
-    NS_FATAL_ERROR ("not done yet!");
+    FlameHeader flameHdr;
+    packet->RemoveHeader (flameHdr); 
+    //if(DropDataFrame(flameHdr.GetSeqno (), source))
+    //  return false;
+    if(destination == Mac48Address::GetBroadcast ())
+    {
+      //Broadcast always is forwarded as broadcast!
+      //Broadcast was filtered in RemoveRoutingStuff, because mesh
+      //point device first calss it
+      FlameTag tag (Mac48Address::GetBroadcast ());
+      flameHdr.AddCost (1);
+      packet->AddHeader (flameHdr);
+      packet->AddPacketTag (tag);
+      routeReply (true, packet, source, destination, FLAME_PORT, FlameRtable::INTERFACE_ANY);
+      return true;
+    }
+    else
+    {
+      if(DropDataFrame(flameHdr.GetSeqno (), source))
+        return false;
+      NS_FATAL_ERROR ("not done yet!");
+    }
+    return true;
   }
+  return false;
+}
+bool
+FlameProtocol::RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source,
+      const Mac48Address destination, Ptr<Packet>  packet, uint16_t&  protocolType)
+{
+  //Filter seqno:
+  FlameHeader flameHdr;
+  packet->RemoveHeader (flameHdr);
+  NS_ASSERT(protocolType == FLAME_PORT);
+  protocolType = flameHdr.GetProtocol ();
+  if(DropDataFrame(flameHdr.GetSeqno (), source))
+    return false;
   return true;
 }
 bool
@@ -173,5 +208,22 @@ FlameProtocol::GetAddress ()
 {
   return m_address;
 }
+bool
+FlameProtocol::DropDataFrame(uint16_t seqno, Mac48Address source)
+{
+  if(source == GetAddress ())
+    return true;
+  std::map<Mac48Address, uint16_t,std::less<Mac48Address> >::const_iterator i = m_lastSeqno.find (source);
+  if (i == m_lastSeqno.end ())
+    m_lastSeqno[source] = seqno;
+  else
+  {
+    if (i->second >= seqno)
+      return true;
+    m_lastSeqno[source] = seqno;
+  }
+  return false;
+}
+
 } //namespace flame
 } //namespace ns3
