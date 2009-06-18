@@ -42,8 +42,8 @@ TypeId
 FlameTag::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::flame::FlameTag")
-     .SetParent<Tag> ()
-     .AddConstructor<FlameTag> ();
+    .SetParent<Tag> ()
+    .AddConstructor<FlameTag> ();
    return tid;
 }
 
@@ -96,12 +96,18 @@ FlameProtocol::GetTypeId ()
         TimeValue (Seconds (5)),
         MakeTimeAccessor (&FlameProtocol::m_broadcastInterval),
         MakeTimeChecker ()
+        )
+    .AddAttribute ("MaxCost", "Cost threshold after which packet will be dropeed",
+        UintegerValue (32),
+        MakeUintegerAccessor (&FlameProtocol::m_maxCost),
+        MakeUintegerChecker<uint8_t> (3)
         );
   return tid;
 }
 FlameProtocol::FlameProtocol () :
   m_broadcastInterval (Seconds (5)),
   m_lastBroadcast (Simulator::Now ()),
+  m_maxCost (32),
   m_myLastSeqno (0),
   m_rtable (CreateObject<FlameRtable> ())
 {
@@ -127,8 +133,11 @@ FlameProtocol::RequestRoute (uint32_t  sourceIface, const Mac48Address source, c
       NS_FATAL_ERROR ("FLAME tag is not supposed to be received from upper layers");
     }
     FlameHeader flameHdr;
-    //TODO: check when last broadcast was sent
     tag.address =  m_rtable->Lookup(destination).retransmitter;
+    if(tag.address == Mac48Address::GetBroadcast ())
+      m_lastBroadcast = Simulator::Now ();
+    if(m_lastBroadcast + m_broadcastInterval < Simulator::Now ())
+      tag.address = Mac48Address::GetBroadcast ();
     flameHdr.AddCost (0);
     flameHdr.SetSeqno (m_myLastSeqno ++);
     flameHdr.SetProtocol (protocolType);
@@ -150,7 +159,7 @@ FlameProtocol::RequestRoute (uint32_t  sourceIface, const Mac48Address source, c
     if(destination == Mac48Address::GetBroadcast ())
     {
       //Broadcast always is forwarded as broadcast!
-      NS_ASSERT (DropDataFrame(flameHdr.GetSeqno (), source));
+      NS_ASSERT (HandleDataFrame(flameHdr.GetSeqno (), source, flameHdr, tag.address, sourceIface));
       FlameTag tag (Mac48Address::GetBroadcast ());
       flameHdr.AddCost (1);
       packet->AddHeader (flameHdr);
@@ -160,9 +169,8 @@ FlameProtocol::RequestRoute (uint32_t  sourceIface, const Mac48Address source, c
     }
     else
     {
-      if(DropDataFrame(flameHdr.GetSeqno (), source))
+      if(HandleDataFrame(flameHdr.GetSeqno (), source, flameHdr, tag.address, sourceIface))
         return false;
-      m_rtable->AddPath (source, tag.address, sourceIface, flameHdr.GetCost (), flameHdr.GetSeqno ());
       FlameRtable::LookupResult result = m_rtable->Lookup(destination);
       if(tag.address != Mac48Address::GetBroadcast ())
       {
@@ -193,16 +201,14 @@ FlameProtocol::RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source
   FlameTag tag;
   if(!packet->RemovePacketTag (tag))
   {
-    NS_FATAL_ERROR ("FLAME tag is not supposed to be received by network");
+    NS_FATAL_ERROR ("FLAME tag must exist when packet is coming to protocol");
   }
+  //TODO: send path update
   FlameHeader flameHdr;
   packet->RemoveHeader (flameHdr);
   NS_ASSERT(protocolType == FLAME_PORT);
   protocolType = flameHdr.GetProtocol ();
-  if(DropDataFrame(flameHdr.GetSeqno (), source))
-    return false;
-  m_rtable->AddPath (source, tag.address, fromIface, flameHdr.GetCost (), flameHdr.GetSeqno ());
-  return true;
+  return (!HandleDataFrame(flameHdr.GetSeqno (), source, flameHdr, tag.address, fromIface));
 }
 bool
 FlameProtocol::Install (Ptr<MeshPointDevice> mp)
@@ -235,15 +241,21 @@ FlameProtocol::GetAddress ()
   return m_address;
 }
 bool
-FlameProtocol::DropDataFrame(uint16_t seqno, Mac48Address source)
+FlameProtocol::HandleDataFrame (uint16_t seqno, Mac48Address source, const FlameHeader flameHdr, Mac48Address receiver, uint32_t fromInterface)
 {
   if(source == GetAddress ())
     return true;
+  if (flameHdr.GetCost () > m_maxCost)
+    return true;
   FlameRtable::LookupResult result = m_rtable->Lookup (source);
   if (result.retransmitter == Mac48Address::GetBroadcast ())
+  {
+    m_rtable->AddPath (source, receiver, fromInterface, flameHdr.GetCost (), flameHdr.GetSeqno ());
     return false;
+  }
   if(result.seqnum >= seqno)
     return true;
+  m_rtable->AddPath (source, receiver, fromInterface, flameHdr.GetCost (), flameHdr.GetSeqno ());
   return false;
 }
 

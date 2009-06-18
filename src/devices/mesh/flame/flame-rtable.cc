@@ -60,11 +60,11 @@ FlameRtable::DoDispose ()
 
 void
 FlameRtable::AddPath (
-  Mac48Address destination,
-  Mac48Address retransmitter,
-  uint32_t interface,
-  uint8_t cost,
-  uint16_t seqnum
+  const Mac48Address destination,
+  const Mac48Address retransmitter,
+  const uint32_t interface,
+  const uint8_t cost,
+  const uint16_t seqnum
 )
 {
   std::map<Mac48Address, Route>::iterator i = m_routes.find (destination);
@@ -79,6 +79,7 @@ FlameRtable::AddPath (
       m_routes[destination] = newroute;
       return;
     }
+  i->second.seqnum = seqnum;
   NS_ASSERT (i != m_routes.end());
   if (i->second.cost < cost)
     return;
@@ -86,7 +87,6 @@ FlameRtable::AddPath (
   i->second.interface = interface;
   i->second.cost = cost;
   i->second.whenExpire = Simulator::Now() + m_lifetime;
-  i->second.seqnum = seqnum;
 }
 FlameRtable::LookupResult
 FlameRtable::Lookup (Mac48Address destination)

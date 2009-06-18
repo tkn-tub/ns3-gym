@@ -72,11 +72,11 @@ public:
   ///\name Add/delete paths
   //\{ 
   void AddPath (
-    Mac48Address destination,
-    Mac48Address retransmitter,
-    uint32_t interface,
-    uint8_t cost,
-    uint16_t seqnum
+    const Mac48Address destination,
+    const Mac48Address retransmitter,
+    const uint32_t interface,
+    const uint8_t cost,
+    const uint16_t seqnum
   );
   /**
    * Lookup path to destination

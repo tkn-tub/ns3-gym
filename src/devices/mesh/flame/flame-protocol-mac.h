@@ -44,8 +44,6 @@ public:
   /// Update beacon is empty, because HWMP does not know anything about beacons
   void UpdateBeacon (MeshWifiBeacon & beacon) const {};
   //\}
-  /// Returns metric of the link:
-  uint8_t GetCost (Mac48Address peerAddress) const;
   uint16_t GetChannelId () const;
   /// Report statistics
   void Report (std::ostream &) const;

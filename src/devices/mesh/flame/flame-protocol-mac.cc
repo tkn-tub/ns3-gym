@@ -66,12 +66,6 @@ FlameProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & head
   header.SetAddr1 (tag.address);
   return true;
 }
-uint8_t
-FlameProtocolMac::GetCost(Mac48Address peerAddress) const
-{
-  uint32_t metric = m_parent->GetLinkMetric(peerAddress);
-  return (metric > 255 ? 255 : (uint8_t)(metric & 0xff));
-}
 uint16_t
 FlameProtocolMac::GetChannelId () const
 {

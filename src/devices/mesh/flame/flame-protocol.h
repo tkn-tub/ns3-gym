@@ -22,6 +22,7 @@
 #define FLAME_PROTOCOL_H
 
 #include "flame-protocol-mac.h"
+#include "flame-header.h"
 #include "flame-rtable.h"
 
 #include "ns3/mesh-l2-routing-protocol.h"
@@ -88,12 +89,11 @@ public:
   void ResetStats ();
 private:
   /**
-   * \name Seqno filter:
-   * \{
+   * \brif Handles a packet: adds a routing information and drops
+   * packets by TTL or Seqno
+   * \returns true if packet shall be dropeed
    */
-  bool DropDataFrame (uint16_t seqno, Mac48Address source);
-  std::map<Mac48Address, uint16_t> m_lastSeqno;
-  ///\}
+  bool HandleDataFrame (uint16_t seqno, Mac48Address source, const FlameHeader flameHdr, Mac48Address receiver, uint32_t fromIface);
   static const uint16_t FLAME_PORT = 0x4040;
   /**
    * \name Information about MeshPointDeviceaddress , plugins
@@ -110,6 +110,8 @@ private:
   Time m_broadcastInterval;
   Time m_lastBroadcast;
   ///\}
+  /// Max Cost value (or TTL, because cost is actually hopcount)
+  uint8_t m_maxCost;
   /// Sequence number:
   uint16_t m_myLastSeqno;
   /// Routng table:

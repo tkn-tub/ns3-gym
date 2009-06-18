@@ -96,7 +96,7 @@ FlameHeader::AddCost (uint8_t cost)
   m_cost = (((uint16_t)cost+ (uint16_t)m_cost ) > 255) ? 255 : cost + m_cost;
 }
 uint8_t
-FlameHeader::GetCost ()
+FlameHeader::GetCost () const
 {
   return m_cost;
 }
@@ -106,7 +106,7 @@ FlameHeader::SetSeqno (uint16_t seqno)
   m_seqno = seqno;
 }
 uint16_t
-FlameHeader::GetSeqno ()
+FlameHeader::GetSeqno () const
 {
   return m_seqno;
 }
@@ -116,7 +116,7 @@ FlameHeader::SetOrigDst (Mac48Address dst)
   m_origDst = dst;
 }
 Mac48Address
-FlameHeader::GetOrigDst ()
+FlameHeader::GetOrigDst () const
 {
   return m_origDst;
 }
@@ -126,7 +126,7 @@ FlameHeader::SetOrigSrc (Mac48Address src)
   m_origSrc = src;
 }
 Mac48Address
-FlameHeader::GetOrigSrc ()
+FlameHeader::GetOrigSrc () const
 {
   return m_origSrc;
 }
@@ -136,7 +136,7 @@ FlameHeader::SetProtocol (uint16_t protocol)
   m_protocol = protocol;
 }
 uint16_t
-FlameHeader::GetProtocol ()
+FlameHeader::GetProtocol () const
 {
   return m_protocol;
 }
