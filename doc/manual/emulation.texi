@@ -131,6 +131,14 @@ merged.
 
 @section Usage
 
+Any mixing of ns-3 objects with real objects will typically require that
+ns-3 compute checksums in its protocols.  By default, checksums are not
+computed by ns-3.  To enable checksums (e.g. UDP, TCP, IP), users must set
+the attribute @code{ChecksumEnabled} to true, such as follows:
+@verbatim
+GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
+@end verbatim
+
 @subsection Emu Net Device
 
 The usage of the @code{Emu} net device is straightforward once the network of

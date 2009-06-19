@@ -79,6 +79,23 @@ fragmentation and reassembly.
 <h2>Changes to existing API:</h2>
 <ul>
 
+<li><b>CalcChecksum attribute changes</b>
+  <p>Four IPv4 CalcChecksum attributes (which enable the computation of 
+checksums that are disabled by default) have been collapsed into one global 
+value in class Node.  These four calls: 
+<pre>
+Config::SetDefault ("ns3::Ipv4L3Protocol::CalcChecksum", BooleanValue (true)); 
+Config::SetDefault ("ns3::Icmpv4L4Protocol::CalcChecksum", BooleanValue (true));
+Config::SetDefault ("ns3::TcpL4Protocol::CalcChecksum", BooleanValue (true));
+Config::SetDefault ("ns3::UdpL4Protocol::CalcChecksum", BooleanValue (true));
+</pre>
+are replaced by one call to:
+<pre>
+GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
+</pre>
+  </p>
+</li>
+
 <li><b>CreateObject changes</b>
   <p>CreateObject is now able to construct objects with a non-default constructor.
    If you used to pass attribute lists to CreateObject, you must now use CreateObjectWithAttributes.

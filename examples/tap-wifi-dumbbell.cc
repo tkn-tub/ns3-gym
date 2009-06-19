@@ -132,11 +132,7 @@ main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
-
-  Config::SetDefault ("ns3::Ipv4L3Protocol::CalcChecksum", BooleanValue (true)); 
-  Config::SetDefault ("ns3::Icmpv4L4Protocol::CalcChecksum", BooleanValue (true)); 
-  Config::SetDefault ("ns3::TcpL4Protocol::CalcChecksum", BooleanValue (true)); 
-  Config::SetDefault ("ns3::UdpL4Protocol::CalcChecksum", BooleanValue (true)); 
+  GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
 
   //
   // The topology has a Wifi network of four nodes on the left side.  We'll make
