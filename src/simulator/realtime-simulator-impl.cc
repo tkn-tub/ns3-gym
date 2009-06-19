@@ -141,13 +141,6 @@ RealtimeSimulatorImpl::SetScheduler (Ptr<Scheduler> scheduler)
   }
 }
 
-Ptr<Scheduler>
-RealtimeSimulatorImpl::GetScheduler (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_events;
-}
-
 void
 RealtimeSimulatorImpl::ProcessOneEvent (void)
 {

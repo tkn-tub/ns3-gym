@@ -50,7 +50,6 @@ public:
   virtual Time GetDelayLeft (const EventId &id) const = 0;
   virtual Time GetMaximumSimulationTime (void) const = 0;
   virtual void SetScheduler (Ptr<Scheduler> scheduler) = 0;
-  virtual Ptr<Scheduler> GetScheduler (void) const = 0;
 };
 
 } // namespace ns3
