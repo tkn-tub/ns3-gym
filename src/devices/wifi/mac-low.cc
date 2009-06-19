@@ -868,13 +868,6 @@ MacLow::ForwardDown (Ptr<const Packet> packet, WifiMacHeader const* hdr,
             ", duration=" << hdr->GetDuration () <<
             ", seq=0x"<< std::hex << m_currentHdr.GetSequenceControl () << std::dec);
   m_phy->SendPacket (packet, txMode, WIFI_PREAMBLE_LONG, 0);
-  /* 
-   * We have to notify the NAV of transmitted packets because of the 802.11e
-   * requirement from section 9.9.1.4 that each EDCAF update its NAV from the
-   * transmission of any other EDCAF within the same QSTA.
-   */
-  Time txDuration = m_phy->CalculateTxDuration (packet->GetSize (), txMode, WIFI_PREAMBLE_LONG);
-  Simulator::Schedule (txDuration, &MacLow::NotifyNav, this, *hdr, txMode, WIFI_PREAMBLE_LONG);
 }
 
 void
