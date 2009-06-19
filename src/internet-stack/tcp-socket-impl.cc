@@ -350,11 +350,11 @@ TcpSocketImpl::Connect (const Address & address)
     {
       Ipv4Header header;
       header.SetDestination (m_remoteAddress);
-      Socket::SocketErrno errno;
+      Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
       uint32_t oif = 0; //specify non-zero if bound to a source address
       // XXX here, cache the route in the endpoint?
-      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno);
+      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno_);
       if (route != 0)
         {
           NS_LOG_LOGIC ("Route exists");
@@ -363,8 +363,8 @@ TcpSocketImpl::Connect (const Address & address)
       else
         {
           NS_LOG_LOGIC ("TcpSocketImpl::Connect():  Route to " << m_remoteAddress << " does not exist");
-          NS_LOG_ERROR (errno);
-          m_errno = errno;
+          NS_LOG_ERROR (errno_);
+          m_errno = errno_;
           return -1;
         }
     }
@@ -851,11 +851,11 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
         if (ipv4->GetRoutingProtocol () != 0)
           {
             Ipv4Header header;
-            Socket::SocketErrno errno;
+            Socket::SocketErrno errno_;
             Ptr<Ipv4Route> route;
             uint32_t oif = 0; //specify non-zero if bound to a source address
             header.SetDestination (m_remoteAddress);
-            route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno);
+            route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno_);
             if (route != 0)
               {
                 NS_LOG_LOGIC ("Route exists");
@@ -863,8 +863,8 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
               }
             else
               {
-                NS_LOG_ERROR (errno);
-                m_errno = errno;
+                NS_LOG_ERROR (errno_);
+                m_errno = errno_;
                 return -1;
               }
           }

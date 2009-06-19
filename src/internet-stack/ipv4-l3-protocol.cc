@@ -531,10 +531,10 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
     }
   // 5) packet is not broadcast, and route is NULL (e.g., a raw socket call)
   NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 4:  passed in with no route " << destination);
-  Socket::SocketErrno errno; 
+  Socket::SocketErrno errno_; 
   uint32_t oif = 0; // unused for now
   ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment);
-  Ptr<Ipv4Route> newRoute = m_routingProtocol->RouteOutput (ipHeader, oif, errno);
+  Ptr<Ipv4Route> newRoute = m_routingProtocol->RouteOutput (ipHeader, oif, errno_);
   if (newRoute)
     {
       SendRealOut (newRoute, packet, ipHeader);

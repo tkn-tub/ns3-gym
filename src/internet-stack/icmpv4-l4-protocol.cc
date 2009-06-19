@@ -83,10 +83,10 @@ Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address dest, uint8_t typ
   NS_ASSERT (ipv4 != 0 && ipv4->GetRoutingProtocol () != 0);
   Ipv4Header header;
   header.SetDestination (dest);
-  Socket::SocketErrno errno;
+  Socket::SocketErrno errno_;
   Ptr<Ipv4Route> route;
   uint32_t oif = 0; //specify non-zero if bound to a source address
-  route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno);
+  route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno_);
   if (route != 0)
     {
       NS_LOG_LOGIC ("Route exists");

@@ -174,11 +174,11 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
     {
       Ipv4Header header;
       header.SetDestination (dst);
-      SocketErrno errno = ERROR_NOTERROR;;
+      SocketErrno errno_ = ERROR_NOTERROR;//do not use errno as it is the standard C last error number 
       Ptr<Ipv4Route> route;
       uint32_t oif = 0; //specify non-zero if bound to a source address
       // TBD-- we could cache the route and just check its validity
-      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno);
+      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno_);
       if (route != 0)
         {
           NS_LOG_LOGIC ("Route exists");

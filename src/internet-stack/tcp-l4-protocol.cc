@@ -544,10 +544,10 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
       // should be cached.
       Ipv4Header header;
       header.SetDestination (daddr);
-      Socket::SocketErrno errno;
+      Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
       uint32_t oif = 0; //specify non-zero if bound to a source address
-      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno);
+      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno_);
       ipv4->Send (packet, saddr, daddr, PROT_NUMBER, route);
     }
 }
@@ -582,10 +582,10 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, TcpHeader outgoingHeader,
       // should be cached.
       Ipv4Header header;
       header.SetDestination (daddr);
-      Socket::SocketErrno errno;
+      Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
       uint32_t oif = 0; //specify non-zero if bound to a source address
-      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno);
+      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno_);
       ipv4->Send (packet, saddr, daddr, PROT_NUMBER, route);
     }
   else

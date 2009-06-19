@@ -396,11 +396,11 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
     {
       Ipv4Header header;
       header.SetDestination (dest);
-      Socket::SocketErrno errno;
+      Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
       uint32_t oif = 0; //specify non-zero if bound to a source address
       // TBD-- we could cache the route and just check its validity
-      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno); 
+      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno_); 
       if (route != 0)
         {
           NS_LOG_LOGIC ("Route exists");
@@ -413,8 +413,8 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
       else 
         {
           NS_LOG_LOGIC ("No route to destination");
-          NS_LOG_ERROR (errno);
-          m_errno = errno;
+          NS_LOG_ERROR (errno_);
+          m_errno = errno_;
           return -1;
         }
     }
