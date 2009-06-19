@@ -200,7 +200,7 @@ protected:
 private:
 
   template <typename T>
-  friend Ptr<T> CreateObject (const AttributeList &attributes);
+  friend Ptr<T> CreateObjectWithAttributes (const AttributeList &attributes);
   template <typename T>
   friend Ptr<T> CopyObject (Ptr<T> object);
   template <typename T>
@@ -209,6 +209,8 @@ private:
   // by our python bindings to call the protected ObjectBase::Construct
   // method.
   friend void PythonCompleteConstruct (Ptr<Object> object, TypeId typeId, const AttributeList &attributes);
+  template <typename T>
+  friend Ptr<T> CompleteConstruct (T *object);
 
   friend class ObjectFactory;
   friend class AggregateIterator;
@@ -290,7 +292,7 @@ Ptr<T> CopyObject (Ptr<T> object);
  * it with a set of attributes.
  */
 template <typename T>
-Ptr<T> CreateObject (const AttributeList &attributes);
+Ptr<T> CreateObjectWithAttributes (const AttributeList &attributes);
 
 /**
  * \param n1 name of attribute
@@ -318,7 +320,7 @@ Ptr<T> CreateObject (const AttributeList &attributes);
  */
 template <typename T>
 Ptr<T> 
-CreateObject (std::string n1 = "", const AttributeValue & v1 = EmptyAttributeValue (),
+CreateObjectWithAttributes (std::string n1 = "", const AttributeValue & v1 = EmptyAttributeValue (),
               std::string n2 = "", const AttributeValue & v2 = EmptyAttributeValue (),
               std::string n3 = "", const AttributeValue & v3 = EmptyAttributeValue (),
               std::string n4 = "", const AttributeValue & v4 = EmptyAttributeValue (),
@@ -398,9 +400,15 @@ Ptr<T> CopyObject (Ptr<const T> object)
   return p;
 }
 
-
 template <typename T>
-Ptr<T> CreateObject (const AttributeList &attributes)
+Ptr<T> CompleteConstruct (T *p)
+{
+  p->SetTypeId (T::GetTypeId ());
+  p->Object::Construct (AttributeList());
+  return Ptr<T> (p, false);
+}
+template <typename T>
+Ptr<T> CreateObjectWithAttributes (const AttributeList &attributes)
 {
   Ptr<T> p = Ptr<T> (new T (), false);
   p->SetTypeId (T::GetTypeId ());
@@ -410,7 +418,7 @@ Ptr<T> CreateObject (const AttributeList &attributes)
 
 template <typename T>
 Ptr<T> 
-CreateObject (std::string n1 , const AttributeValue & v1,
+CreateObjectWithAttributes (std::string n1 , const AttributeValue & v1,
               std::string n2 , const AttributeValue & v2,
               std::string n3 , const AttributeValue & v3,
               std::string n4 , const AttributeValue & v4,
@@ -467,8 +475,57 @@ CreateObject (std::string n1 , const AttributeValue & v1,
     }
   attributes.SetWithTid (T::GetTypeId (), n9, v9);
  end:
-  return CreateObject<T> (attributes);
+  return CreateObjectWithAttributes<T> (attributes);
 }
+
+template <typename T>
+Ptr<T> CreateObject (void)
+{
+  return CompleteConstruct (new T ());
+}
+
+template <typename T, typename T1>
+Ptr<T> CreateObject (T1 a1)
+{
+  return CompleteConstruct (new T (a1));
+}
+
+template <typename T, typename T1, typename T2>
+Ptr<T> CreateObject (T1 a1, T2 a2)
+{
+  return CompleteConstruct (new T (a1,a2));
+}
+
+template <typename T, typename T1, typename T2, typename T3>
+Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3)
+{
+  return CompleteConstruct (new T (a1,a2,a3));
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4>
+Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4)
+{
+  return CompleteConstruct (new T (a1,a2,a3,a4));
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+{
+  return CompleteConstruct (new T (a1,a2,a3,a4,a5));
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
+{
+  return CompleteConstruct (new T (a1,a2,a3,a4,a5,a6));
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
+Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7)
+{
+  return CompleteConstruct (new T (a1,a2,a3,a4,a5,a6,a7));
+}
+
 
 } // namespace ns3
 

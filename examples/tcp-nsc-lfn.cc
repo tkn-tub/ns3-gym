@@ -109,9 +109,9 @@ int main (int argc, char *argv[])
   DoubleValue rate(errRate);
   RandomVariableValue u01(UniformVariable (0.0, 1.0));
   Ptr<RateErrorModel> em1 = 
-      CreateObject<RateErrorModel> ("RanVar", u01, "ErrorRate", rate);
+      CreateObjectWithAttributes<RateErrorModel> ("RanVar", u01, "ErrorRate", rate);
   Ptr<RateErrorModel> em2 = 
-      CreateObject<RateErrorModel> ("RanVar", u01, "ErrorRate", rate);
+      CreateObjectWithAttributes<RateErrorModel> ("RanVar", u01, "ErrorRate", rate);
 
   // This enables the specified errRate on both link endpoints.
   p2pInterfaces.Get(0)->SetAttribute("ReceiveErrorModel", PointerValue (em1));
