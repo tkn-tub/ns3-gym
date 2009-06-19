@@ -89,9 +89,12 @@ public:
 protected:
   void DoDispose (void);
 private:
-  typedef std::list< std::pair< int16_t, Ptr<Ipv4RoutingProtocol> > > Ipv4RoutingProtocolList;
+  typedef std::pair<int16_t, Ptr<Ipv4RoutingProtocol> > Ipv4RoutingProtocolEntry;
+  typedef std::list<Ipv4RoutingProtocolEntry> Ipv4RoutingProtocolList;
   Ipv4RoutingProtocolList m_routingProtocols;
+  static bool Compare (const Ipv4RoutingProtocolEntry& a, const Ipv4RoutingProtocolEntry& b);
   Ptr<Ipv4> m_ipv4;
+
 };
 
 } //namespace ns3

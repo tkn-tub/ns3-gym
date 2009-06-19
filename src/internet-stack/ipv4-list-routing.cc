@@ -74,10 +74,8 @@ Ipv4ListRouting::RouteOutput (const Ipv4Header &header, uint32_t oif, enum Socke
   NS_LOG_FUNCTION (this << header.GetDestination () << " " << header.GetSource () << " " << oif);
   Ptr<Ipv4Route> route;
 
-  // Sorted lists are stored in lowest to highest order, so since we
-  // want to iterate from highest to lowest, use a reverse iterator
-  for (Ipv4RoutingProtocolList::const_reverse_iterator i = m_routingProtocols.rbegin ();
-       i != m_routingProtocols.rend (); i++)
+  for (Ipv4RoutingProtocolList::const_iterator i = m_routingProtocols.begin ();
+       i != m_routingProtocols.end (); i++)
     {
       NS_LOG_LOGIC ("Checking protocol " << (*i).second->GetInstanceTypeId () << " with priority " << (*i).first);
       NS_LOG_LOGIC ("Requesting source address for destination " << header.GetDestination ());
@@ -125,11 +123,8 @@ Ipv4ListRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
           // Fall through-- we may also need to forward this
           retVal = true;
         }
-      // Sorted lists are stored in lowest to highest order, so since we
-      // want to iterate from highest to lowest, use a reverse iterator
-      for (Ipv4RoutingProtocolList::const_reverse_iterator rprotoIter =
-         m_routingProtocols.rbegin ();
-           rprotoIter != m_routingProtocols.rend ();
+      for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
+         m_routingProtocols.begin (); rprotoIter != m_routingProtocols.end ();
            rprotoIter++)
         {
           NS_LOG_LOGIC ("Multicast packet for me-- trying to forward");
@@ -183,11 +178,9 @@ Ipv4ListRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
         }
     }
   // Next, try to find a route
-  // Sorted lists are stored in lowest to highest order, so since we
-  // want to iterate from highest to lowest, use a reverse iterator
-  for (Ipv4RoutingProtocolList::const_reverse_iterator rprotoIter =
-         m_routingProtocols.rbegin ();
-       rprotoIter != m_routingProtocols.rend ();
+  for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
+         m_routingProtocols.begin ();
+       rprotoIter != m_routingProtocols.end ();
        rprotoIter++)
     {
       if ((*rprotoIter).second->RouteInput (p, header, idev, ucb, mcb, lcb, ecb))
@@ -267,7 +260,7 @@ Ipv4ListRouting::AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol, i
 {
   NS_LOG_FUNCTION (this << routingProtocol->GetInstanceTypeId () << priority);
   m_routingProtocols.push_back (std::make_pair (priority, routingProtocol));
-  m_routingProtocols.sort ();
+  m_routingProtocols.sort ( Compare );
   if (m_ipv4 != 0)
     {
       routingProtocol->SetIpv4 (m_ipv4);
@@ -290,10 +283,8 @@ Ipv4ListRouting::GetRoutingProtocol (uint32_t index, int16_t& priority) const
       NS_FATAL_ERROR ("Ipv4ListRouting::GetRoutingProtocol():  index " << index << " out of range");
     }
   uint32_t i = 0;
-  // Sorted lists are stored in lowest to highest order, so since we
-  // want to iterate from highest to lowest, use a reverse iterator
-  for (Ipv4RoutingProtocolList::const_reverse_iterator rprotoIter = m_routingProtocols.rbegin ();
-       rprotoIter != m_routingProtocols.rend (); rprotoIter++, i++)
+  for (Ipv4RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin ();
+       rprotoIter != m_routingProtocols.end (); rprotoIter++, i++)
     {
       if (i == index)
         {
@@ -324,6 +315,13 @@ Ipv4ListRouting::GetStaticRouting (void) const
   return 0;
 
 }
+
+bool 
+Ipv4ListRouting::Compare (const Ipv4RoutingProtocolEntry& a, const Ipv4RoutingProtocolEntry& b)
+{
+  return a.first > b.first;
+}
+
 
 } // namespace ns3
 
