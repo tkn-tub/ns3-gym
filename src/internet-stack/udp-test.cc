@@ -251,8 +251,8 @@ InetSocketAddress (Ipv4Address("255.255.255.255"), 1234)), 123);
   NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
   NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 123);
 
-  m_receivedPacket->RemoveAllByteTags ();
-  m_receivedPacket2->RemoveAllByteTags ();
+  m_receivedPacket = 0;
+  m_receivedPacket2 = 0;
 
   Simulator::Destroy ();
 

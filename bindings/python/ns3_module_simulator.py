@@ -836,11 +836,6 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Scheduler >', 'scheduler')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## simulator-impl.h: ns3::Ptr<ns3::Scheduler> ns3::SimulatorImpl::GetScheduler() const [member function]
-    cls.add_method('GetScheduler', 
-                   'ns3::Ptr< ns3::Scheduler >', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
 def register_Ns3Synchronizer_methods(root_module, cls):
@@ -1205,11 +1200,6 @@ def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Scheduler >', 'scheduler')], 
                    is_virtual=True)
-    ## default-simulator-impl.h: ns3::Ptr<ns3::Scheduler> ns3::DefaultSimulatorImpl::GetScheduler() const [member function]
-    cls.add_method('GetScheduler', 
-                   'ns3::Ptr< ns3::Scheduler >', 
-                   [], 
-                   is_const=True, is_virtual=True)
     return
 
 def register_Ns3HeapScheduler_methods(root_module, cls):
@@ -1450,11 +1440,6 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Scheduler >', 'scheduler')], 
                    is_virtual=True)
-    ## realtime-simulator-impl.h: ns3::Ptr<ns3::Scheduler> ns3::RealtimeSimulatorImpl::GetScheduler() const [member function]
-    cls.add_method('GetScheduler', 
-                   'ns3::Ptr< ns3::Scheduler >', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::ScheduleRealtime(ns3::Time const & time, ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleRealtime', 
                    'void', 

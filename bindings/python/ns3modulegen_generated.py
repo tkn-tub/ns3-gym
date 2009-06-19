@@ -16,19 +16,20 @@ import ns3_module_core
 import ns3_module_simulator
 import ns3_module_mobility
 import ns3_module_common
-import ns3_module_node
 import ns3_module_contrib
-import ns3_module_point_to_point
-import ns3_module_stats
+import ns3_module_node
 import ns3_module_tap_bridge
-import ns3_module_internet_stack
-import ns3_module_wifi
-import ns3_module_csma
-import ns3_module_emu
-import ns3_module_bridge
-import ns3_module_onoff
-import ns3_module_packet_sink
 import ns3_module_v4ping
+import ns3_module_packet_sink
+import ns3_module_stats
+import ns3_module_virtual_net_device
+import ns3_module_onoff
+import ns3_module_internet_stack
+import ns3_module_point_to_point
+import ns3_module_csma
+import ns3_module_bridge
+import ns3_module_wifi
+import ns3_module_emu
 import ns3_module_global_routing
 import ns3_module_udp_echo
 import ns3_module_olsr
@@ -85,17 +86,6 @@ def register_types(module):
         ns3_module_common__local.register_types(module)
     
     root_module.end_section('ns3_module_common')
-    root_module.begin_section('ns3_module_node')
-    ns3_module_node.register_types(module)
-    
-    try:
-        import ns3_module_node__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_node__local.register_types(module)
-    
-    root_module.end_section('ns3_module_node')
     root_module.begin_section('ns3_module_contrib')
     ns3_module_contrib.register_types(module)
     
@@ -107,28 +97,17 @@ def register_types(module):
         ns3_module_contrib__local.register_types(module)
     
     root_module.end_section('ns3_module_contrib')
-    root_module.begin_section('ns3_module_point_to_point')
-    ns3_module_point_to_point.register_types(module)
+    root_module.begin_section('ns3_module_node')
+    ns3_module_node.register_types(module)
     
     try:
-        import ns3_module_point_to_point__local
+        import ns3_module_node__local
     except ImportError:
         pass
     else:
-        ns3_module_point_to_point__local.register_types(module)
+        ns3_module_node__local.register_types(module)
     
-    root_module.end_section('ns3_module_point_to_point')
-    root_module.begin_section('ns3_module_stats')
-    ns3_module_stats.register_types(module)
-    
-    try:
-        import ns3_module_stats__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_stats__local.register_types(module)
-    
-    root_module.end_section('ns3_module_stats')
+    root_module.end_section('ns3_module_node')
     root_module.begin_section('ns3_module_tap_bridge')
     ns3_module_tap_bridge.register_types(module)
     
@@ -140,83 +119,6 @@ def register_types(module):
         ns3_module_tap_bridge__local.register_types(module)
     
     root_module.end_section('ns3_module_tap_bridge')
-    root_module.begin_section('ns3_module_internet_stack')
-    ns3_module_internet_stack.register_types(module)
-    
-    try:
-        import ns3_module_internet_stack__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_internet_stack__local.register_types(module)
-    
-    root_module.end_section('ns3_module_internet_stack')
-    root_module.begin_section('ns3_module_wifi')
-    ns3_module_wifi.register_types(module)
-    
-    try:
-        import ns3_module_wifi__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_wifi__local.register_types(module)
-    
-    root_module.end_section('ns3_module_wifi')
-    root_module.begin_section('ns3_module_csma')
-    ns3_module_csma.register_types(module)
-    
-    try:
-        import ns3_module_csma__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_csma__local.register_types(module)
-    
-    root_module.end_section('ns3_module_csma')
-    root_module.begin_section('ns3_module_emu')
-    ns3_module_emu.register_types(module)
-    
-    try:
-        import ns3_module_emu__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_emu__local.register_types(module)
-    
-    root_module.end_section('ns3_module_emu')
-    root_module.begin_section('ns3_module_bridge')
-    ns3_module_bridge.register_types(module)
-    
-    try:
-        import ns3_module_bridge__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_bridge__local.register_types(module)
-    
-    root_module.end_section('ns3_module_bridge')
-    root_module.begin_section('ns3_module_onoff')
-    ns3_module_onoff.register_types(module)
-    
-    try:
-        import ns3_module_onoff__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_onoff__local.register_types(module)
-    
-    root_module.end_section('ns3_module_onoff')
-    root_module.begin_section('ns3_module_packet_sink')
-    ns3_module_packet_sink.register_types(module)
-    
-    try:
-        import ns3_module_packet_sink__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_packet_sink__local.register_types(module)
-    
-    root_module.end_section('ns3_module_packet_sink')
     root_module.begin_section('ns3_module_v4ping')
     ns3_module_v4ping.register_types(module)
     
@@ -228,6 +130,116 @@ def register_types(module):
         ns3_module_v4ping__local.register_types(module)
     
     root_module.end_section('ns3_module_v4ping')
+    root_module.begin_section('ns3_module_packet_sink')
+    ns3_module_packet_sink.register_types(module)
+    
+    try:
+        import ns3_module_packet_sink__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_packet_sink__local.register_types(module)
+    
+    root_module.end_section('ns3_module_packet_sink')
+    root_module.begin_section('ns3_module_stats')
+    ns3_module_stats.register_types(module)
+    
+    try:
+        import ns3_module_stats__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_stats__local.register_types(module)
+    
+    root_module.end_section('ns3_module_stats')
+    root_module.begin_section('ns3_module_virtual_net_device')
+    ns3_module_virtual_net_device.register_types(module)
+    
+    try:
+        import ns3_module_virtual_net_device__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_virtual_net_device__local.register_types(module)
+    
+    root_module.end_section('ns3_module_virtual_net_device')
+    root_module.begin_section('ns3_module_onoff')
+    ns3_module_onoff.register_types(module)
+    
+    try:
+        import ns3_module_onoff__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_onoff__local.register_types(module)
+    
+    root_module.end_section('ns3_module_onoff')
+    root_module.begin_section('ns3_module_internet_stack')
+    ns3_module_internet_stack.register_types(module)
+    
+    try:
+        import ns3_module_internet_stack__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_internet_stack__local.register_types(module)
+    
+    root_module.end_section('ns3_module_internet_stack')
+    root_module.begin_section('ns3_module_point_to_point')
+    ns3_module_point_to_point.register_types(module)
+    
+    try:
+        import ns3_module_point_to_point__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_point_to_point__local.register_types(module)
+    
+    root_module.end_section('ns3_module_point_to_point')
+    root_module.begin_section('ns3_module_csma')
+    ns3_module_csma.register_types(module)
+    
+    try:
+        import ns3_module_csma__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_csma__local.register_types(module)
+    
+    root_module.end_section('ns3_module_csma')
+    root_module.begin_section('ns3_module_bridge')
+    ns3_module_bridge.register_types(module)
+    
+    try:
+        import ns3_module_bridge__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_bridge__local.register_types(module)
+    
+    root_module.end_section('ns3_module_bridge')
+    root_module.begin_section('ns3_module_wifi')
+    ns3_module_wifi.register_types(module)
+    
+    try:
+        import ns3_module_wifi__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_wifi__local.register_types(module)
+    
+    root_module.end_section('ns3_module_wifi')
+    root_module.begin_section('ns3_module_emu')
+    ns3_module_emu.register_types(module)
+    
+    try:
+        import ns3_module_emu__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_emu__local.register_types(module)
+    
+    root_module.end_section('ns3_module_emu')
     root_module.begin_section('ns3_module_global_routing')
     ns3_module_global_routing.register_types(module)
     
@@ -372,17 +384,6 @@ def register_methods(root_module):
         ns3_module_common__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_common')
-    root_module.begin_section('ns3_module_node')
-    ns3_module_node.register_methods(root_module)
-    
-    try:
-        import ns3_module_node__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_node__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_node')
     root_module.begin_section('ns3_module_contrib')
     ns3_module_contrib.register_methods(root_module)
     
@@ -394,28 +395,17 @@ def register_methods(root_module):
         ns3_module_contrib__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_contrib')
-    root_module.begin_section('ns3_module_point_to_point')
-    ns3_module_point_to_point.register_methods(root_module)
+    root_module.begin_section('ns3_module_node')
+    ns3_module_node.register_methods(root_module)
     
     try:
-        import ns3_module_point_to_point__local
+        import ns3_module_node__local
     except ImportError:
         pass
     else:
-        ns3_module_point_to_point__local.register_methods(root_module)
+        ns3_module_node__local.register_methods(root_module)
     
-    root_module.end_section('ns3_module_point_to_point')
-    root_module.begin_section('ns3_module_stats')
-    ns3_module_stats.register_methods(root_module)
-    
-    try:
-        import ns3_module_stats__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_stats__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_stats')
+    root_module.end_section('ns3_module_node')
     root_module.begin_section('ns3_module_tap_bridge')
     ns3_module_tap_bridge.register_methods(root_module)
     
@@ -427,83 +417,6 @@ def register_methods(root_module):
         ns3_module_tap_bridge__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_tap_bridge')
-    root_module.begin_section('ns3_module_internet_stack')
-    ns3_module_internet_stack.register_methods(root_module)
-    
-    try:
-        import ns3_module_internet_stack__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_internet_stack__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_internet_stack')
-    root_module.begin_section('ns3_module_wifi')
-    ns3_module_wifi.register_methods(root_module)
-    
-    try:
-        import ns3_module_wifi__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_wifi__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_wifi')
-    root_module.begin_section('ns3_module_csma')
-    ns3_module_csma.register_methods(root_module)
-    
-    try:
-        import ns3_module_csma__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_csma__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_csma')
-    root_module.begin_section('ns3_module_emu')
-    ns3_module_emu.register_methods(root_module)
-    
-    try:
-        import ns3_module_emu__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_emu__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_emu')
-    root_module.begin_section('ns3_module_bridge')
-    ns3_module_bridge.register_methods(root_module)
-    
-    try:
-        import ns3_module_bridge__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_bridge__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_bridge')
-    root_module.begin_section('ns3_module_onoff')
-    ns3_module_onoff.register_methods(root_module)
-    
-    try:
-        import ns3_module_onoff__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_onoff__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_onoff')
-    root_module.begin_section('ns3_module_packet_sink')
-    ns3_module_packet_sink.register_methods(root_module)
-    
-    try:
-        import ns3_module_packet_sink__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_packet_sink__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_packet_sink')
     root_module.begin_section('ns3_module_v4ping')
     ns3_module_v4ping.register_methods(root_module)
     
@@ -515,6 +428,116 @@ def register_methods(root_module):
         ns3_module_v4ping__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_v4ping')
+    root_module.begin_section('ns3_module_packet_sink')
+    ns3_module_packet_sink.register_methods(root_module)
+    
+    try:
+        import ns3_module_packet_sink__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_packet_sink__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_packet_sink')
+    root_module.begin_section('ns3_module_stats')
+    ns3_module_stats.register_methods(root_module)
+    
+    try:
+        import ns3_module_stats__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_stats__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_stats')
+    root_module.begin_section('ns3_module_virtual_net_device')
+    ns3_module_virtual_net_device.register_methods(root_module)
+    
+    try:
+        import ns3_module_virtual_net_device__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_virtual_net_device__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_virtual_net_device')
+    root_module.begin_section('ns3_module_onoff')
+    ns3_module_onoff.register_methods(root_module)
+    
+    try:
+        import ns3_module_onoff__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_onoff__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_onoff')
+    root_module.begin_section('ns3_module_internet_stack')
+    ns3_module_internet_stack.register_methods(root_module)
+    
+    try:
+        import ns3_module_internet_stack__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_internet_stack__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_internet_stack')
+    root_module.begin_section('ns3_module_point_to_point')
+    ns3_module_point_to_point.register_methods(root_module)
+    
+    try:
+        import ns3_module_point_to_point__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_point_to_point__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_point_to_point')
+    root_module.begin_section('ns3_module_csma')
+    ns3_module_csma.register_methods(root_module)
+    
+    try:
+        import ns3_module_csma__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_csma__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_csma')
+    root_module.begin_section('ns3_module_bridge')
+    ns3_module_bridge.register_methods(root_module)
+    
+    try:
+        import ns3_module_bridge__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_bridge__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_bridge')
+    root_module.begin_section('ns3_module_wifi')
+    ns3_module_wifi.register_methods(root_module)
+    
+    try:
+        import ns3_module_wifi__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_wifi__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_wifi')
+    root_module.begin_section('ns3_module_emu')
+    ns3_module_emu.register_methods(root_module)
+    
+    try:
+        import ns3_module_emu__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_emu__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_emu')
     root_module.begin_section('ns3_module_global_routing')
     ns3_module_global_routing.register_methods(root_module)
     
@@ -607,17 +630,6 @@ def register_functions(root_module):
         ns3_module_common__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_common')
-    root_module.begin_section('ns3_module_node')
-    ns3_module_node.register_functions(root_module)
-    
-    try:
-        import ns3_module_node__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_node__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_node')
     root_module.begin_section('ns3_module_contrib')
     ns3_module_contrib.register_functions(root_module)
     
@@ -629,28 +641,17 @@ def register_functions(root_module):
         ns3_module_contrib__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_contrib')
-    root_module.begin_section('ns3_module_point_to_point')
-    ns3_module_point_to_point.register_functions(root_module)
+    root_module.begin_section('ns3_module_node')
+    ns3_module_node.register_functions(root_module)
     
     try:
-        import ns3_module_point_to_point__local
+        import ns3_module_node__local
     except ImportError:
         pass
     else:
-        ns3_module_point_to_point__local.register_functions(root_module)
+        ns3_module_node__local.register_functions(root_module)
     
-    root_module.end_section('ns3_module_point_to_point')
-    root_module.begin_section('ns3_module_stats')
-    ns3_module_stats.register_functions(root_module)
-    
-    try:
-        import ns3_module_stats__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_stats__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_stats')
+    root_module.end_section('ns3_module_node')
     root_module.begin_section('ns3_module_tap_bridge')
     ns3_module_tap_bridge.register_functions(root_module)
     
@@ -662,83 +663,6 @@ def register_functions(root_module):
         ns3_module_tap_bridge__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_tap_bridge')
-    root_module.begin_section('ns3_module_internet_stack')
-    ns3_module_internet_stack.register_functions(root_module)
-    
-    try:
-        import ns3_module_internet_stack__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_internet_stack__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_internet_stack')
-    root_module.begin_section('ns3_module_wifi')
-    ns3_module_wifi.register_functions(root_module)
-    
-    try:
-        import ns3_module_wifi__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_wifi__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_wifi')
-    root_module.begin_section('ns3_module_csma')
-    ns3_module_csma.register_functions(root_module)
-    
-    try:
-        import ns3_module_csma__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_csma__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_csma')
-    root_module.begin_section('ns3_module_emu')
-    ns3_module_emu.register_functions(root_module)
-    
-    try:
-        import ns3_module_emu__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_emu__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_emu')
-    root_module.begin_section('ns3_module_bridge')
-    ns3_module_bridge.register_functions(root_module)
-    
-    try:
-        import ns3_module_bridge__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_bridge__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_bridge')
-    root_module.begin_section('ns3_module_onoff')
-    ns3_module_onoff.register_functions(root_module)
-    
-    try:
-        import ns3_module_onoff__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_onoff__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_onoff')
-    root_module.begin_section('ns3_module_packet_sink')
-    ns3_module_packet_sink.register_functions(root_module)
-    
-    try:
-        import ns3_module_packet_sink__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_packet_sink__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_packet_sink')
     root_module.begin_section('ns3_module_v4ping')
     ns3_module_v4ping.register_functions(root_module)
     
@@ -750,6 +674,116 @@ def register_functions(root_module):
         ns3_module_v4ping__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_v4ping')
+    root_module.begin_section('ns3_module_packet_sink')
+    ns3_module_packet_sink.register_functions(root_module)
+    
+    try:
+        import ns3_module_packet_sink__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_packet_sink__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_packet_sink')
+    root_module.begin_section('ns3_module_stats')
+    ns3_module_stats.register_functions(root_module)
+    
+    try:
+        import ns3_module_stats__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_stats__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_stats')
+    root_module.begin_section('ns3_module_virtual_net_device')
+    ns3_module_virtual_net_device.register_functions(root_module)
+    
+    try:
+        import ns3_module_virtual_net_device__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_virtual_net_device__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_virtual_net_device')
+    root_module.begin_section('ns3_module_onoff')
+    ns3_module_onoff.register_functions(root_module)
+    
+    try:
+        import ns3_module_onoff__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_onoff__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_onoff')
+    root_module.begin_section('ns3_module_internet_stack')
+    ns3_module_internet_stack.register_functions(root_module)
+    
+    try:
+        import ns3_module_internet_stack__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_internet_stack__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_internet_stack')
+    root_module.begin_section('ns3_module_point_to_point')
+    ns3_module_point_to_point.register_functions(root_module)
+    
+    try:
+        import ns3_module_point_to_point__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_point_to_point__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_point_to_point')
+    root_module.begin_section('ns3_module_csma')
+    ns3_module_csma.register_functions(root_module)
+    
+    try:
+        import ns3_module_csma__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_csma__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_csma')
+    root_module.begin_section('ns3_module_bridge')
+    ns3_module_bridge.register_functions(root_module)
+    
+    try:
+        import ns3_module_bridge__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_bridge__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_bridge')
+    root_module.begin_section('ns3_module_wifi')
+    ns3_module_wifi.register_functions(root_module)
+    
+    try:
+        import ns3_module_wifi__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_wifi__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_wifi')
+    root_module.begin_section('ns3_module_emu')
+    ns3_module_emu.register_functions(root_module)
+    
+    try:
+        import ns3_module_emu__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_emu__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_emu')
     root_module.begin_section('ns3_module_global_routing')
     ns3_module_global_routing.register_functions(root_module)
     

@@ -1,11 +1,6 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 import os.path
 
-def configure(conf):
-    conf.env['ENABLE_MOBILITY_VISUALIZER'] = conf.pkg_check_modules(
-        'MOBILITY_VISUALIZER', 'goocanvas gthread-2.0', mandatory=False)
-    
-
 def build(bld):
     env = bld.env
 
@@ -24,14 +19,4 @@ def build(bld):
     obj = bld.create_ns3_program('print-introspected-doxygen',
                                  ['internet-stack', 'csma-cd', 'point-to-point'])
     obj.source = 'print-introspected-doxygen.cc'
-
-# XXX: disable mobility visualizer code temporarily.
-    env['ENABLE_MOBILITY_VISUALIZER'] = ''
-    if env['ENABLE_MOBILITY_VISUALIZER']:
-        obj = bld.create_ns3_program('mobility-visualizer',
-                                     ['internet-stack', 'mobility'])
-        obj.source = ['mobility-visualizer-model.cc', 'mobility-visualizer-view.cc']
-        obj.uselib = 'MOBILITY_VISUALIZER'
-        if os.path.basename(obj.env['CXX']).startswith("g++"):
-            obj.env.append_value('CXXFLAGS', '-fno-strict-aliasing')
 

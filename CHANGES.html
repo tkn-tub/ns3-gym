@@ -79,6 +79,12 @@ fragmentation and reassembly.
 <h2>Changes to existing API:</h2>
 <ul>
 
+<li><b>CreateObject changes</b>
+  <p>CreateObject is now able to construct objects with a non-default constructor.
+   If you used to pass attribute lists to CreateObject, you must now use CreateObjectWithAttributes.
+  </p>
+</li>
+
 <li> <b>packet byte tags renaming</b>
   <ul>
   <li>Packet::AddTag to Packet::AddByteTag</li>

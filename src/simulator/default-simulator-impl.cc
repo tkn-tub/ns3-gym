@@ -99,13 +99,6 @@ DefaultSimulatorImpl::SetScheduler (Ptr<Scheduler> scheduler)
   m_events = scheduler;
 }
 
-Ptr<Scheduler>
-DefaultSimulatorImpl::GetScheduler (void) const
-{
-  return m_events;
-}
-
-
 void
 DefaultSimulatorImpl::ProcessOneEvent (void)
 {

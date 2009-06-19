@@ -279,7 +279,7 @@ AttributeTest::RunTests (void)
   AttributeList params;
   Ptr<AttributeObjectTest> p;
   NS_TEST_ASSERT (params.SetFailSafe ("ns3::AttributeObjectTest::TestBoolName", StringValue ("false")));
-  p = CreateObject<AttributeObjectTest> (params);
+  p = CreateObjectWithAttributes<AttributeObjectTest> (params);
   CHECK_GET_STR (p, "TestBoolName", "false");
   CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, false);
 
@@ -291,11 +291,11 @@ AttributeTest::RunTests (void)
   CHECK_GET_STR (p, "TestBoolName", "false");
   CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, false);
 
-  p = CreateObject<AttributeObjectTest> ("TestBoolName", StringValue ("true"));
+  p = CreateObjectWithAttributes<AttributeObjectTest> ("TestBoolName", StringValue ("true"));
   CHECK_GET_STR (p, "TestBoolName", "true");
   CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, true);
 
-  p = CreateObject<AttributeObjectTest> ("TestBoolName", BooleanValue (true));
+  p = CreateObjectWithAttributes<AttributeObjectTest> ("TestBoolName", BooleanValue (true));
   CHECK_GET_STR (p, "TestBoolName", "true");
   CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, true);
 
@@ -502,7 +502,7 @@ AttributeTest::RunTests (void)
   Ptr<AttributeObjectTest> x = ptr.Get<AttributeObjectTest> ();
   NS_TEST_ASSERT (x == 0);
 
-  p = CreateObject<AttributeObjectTest> ("Pointer", PointerValue (Create<Derived> ()));
+  p = CreateObjectWithAttributes<AttributeObjectTest> ("Pointer", PointerValue (Create<Derived> ()));
   NS_TEST_ASSERT (p != 0);
   derived = 0;
   p->GetAttribute ("Pointer", ptr);

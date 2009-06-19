@@ -325,7 +325,7 @@ static ns3::TypeId GetTypeId (void)
             "NS_OBJECT_ENSURE_REGISTERED (%s);" % helper_class.name)
     Object.add_helper_class_hook(helper_class_hook)
 
-    ## Replace all class constructors with a generic constructor based on CreateObject<T> (AttributeList)
+    ## Replace all class constructors with a generic constructor based on CreateObjectWithAttributes<T> (AttributeList)
     module.header.writeln('''
 namespace ns3 {
 
@@ -357,7 +357,7 @@ Ptr<T> CreateObjectPython (PyObject *pyobj, const AttributeList &attributes)
 
         if construct_name and not cls.helper_class:
             construct_code = '''
-    ns3::Ptr< %(CONSTRUCT_NAME)s > obj = ns3::CreateObject< %(CONSTRUCT_NAME)s > (attrList);
+    ns3::Ptr< %(CONSTRUCT_NAME)s > obj = ns3::CreateObjectWithAttributes< %(CONSTRUCT_NAME)s > (attrList);
     obj->Ref ();
     self->obj = ns3::PeekPointer (obj);
 ''' % dict (CONSTRUCT_NAME=construct_name)
@@ -393,7 +393,7 @@ Ptr<T> CreateObjectPython (PyObject *pyobj, const AttributeList &attributes)
         obj->Ref ();
         self->obj = ns3::PeekPointer (obj);
     } else {
-        ns3::Ptr< %(CONSTRUCT_NAME)s > obj = ns3::CreateObject< %(CONSTRUCT_NAME)s > (attrList);
+        ns3::Ptr< %(CONSTRUCT_NAME)s > obj = ns3::CreateObjectWithAttributes< %(CONSTRUCT_NAME)s > (attrList);
         obj->Ref ();
         self->obj = ns3::PeekPointer (obj);
     }

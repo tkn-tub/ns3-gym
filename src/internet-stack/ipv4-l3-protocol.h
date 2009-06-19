@@ -211,7 +211,6 @@ private:
   Ipv4InterfaceList m_interfaces;
   uint32_t m_nInterfaces;
   uint8_t m_defaultTtl;
-  bool m_calcChecksum;
   uint16_t m_identification;
   Ptr<Node> m_node;
   TracedCallback<Ptr<const Packet>, uint32_t> m_txTrace;

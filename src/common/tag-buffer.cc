@@ -99,7 +99,7 @@ TagBuffer::WriteU64 (uint64_t data)
   WriteU8 ((data >> 32) & 0xff);
   WriteU8 ((data >> 40) & 0xff);
   WriteU8 ((data >> 48) & 0xff);
-  WriteU8 ((data >> 54) & 0xff);
+  WriteU8 ((data >> 56) & 0xff);
 }
 void
 TagBuffer::WriteDouble (double v)

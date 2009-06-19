@@ -60,7 +60,6 @@ private:
   virtual void DoDispose (void);
 
   Ptr<Node> m_node;
-  bool m_calcChecksum;
 };
 
 } // namespace ns3

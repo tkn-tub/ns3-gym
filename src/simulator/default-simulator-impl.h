@@ -57,7 +57,6 @@ public:
   virtual Time GetDelayLeft (const EventId &id) const;
   virtual Time GetMaximumSimulationTime (void) const;
   virtual void SetScheduler (Ptr<Scheduler> scheduler);
-  virtual Ptr<Scheduler> GetScheduler (void) const;
 
 private:
   void ProcessOneEvent (void);

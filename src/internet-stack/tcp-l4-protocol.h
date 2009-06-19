@@ -124,8 +124,6 @@ private:
                   Ipv4Address, Ipv4Address);
   static ObjectFactory GetDefaultRttEstimatorFactory (void);
 
-  bool m_goodChecksum;
-  bool m_calcChecksum;
   std::vector<Ptr<TcpSocketImpl> > m_sockets;
 };
 
