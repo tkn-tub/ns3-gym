@@ -172,6 +172,12 @@ public:
    */
   void UnregisterProtocolHandler (ProtocolHandler handler);
 
+  
+  /**
+   * \returns true if checksums are enabled, false otherwise.
+   */
+  static bool ChecksumEnabled (void);
+
 
 protected:
   /**

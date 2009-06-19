@@ -28,12 +28,19 @@
 #include "ns3/uinteger.h"
 #include "ns3/log.h"
 #include "ns3/assert.h"
+#include "ns3/global-value.h"
+#include "ns3/boolean.h"
 
 NS_LOG_COMPONENT_DEFINE ("Node");
 
 namespace ns3{
 
 NS_OBJECT_ENSURE_REGISTERED (Node);
+
+GlobalValue g_checksumEnabled  = GlobalValue ("ChecksumEnabled",
+                                              "A global switch to enable all checksums for all protocols",
+                                              BooleanValue (false),
+                                              MakeBooleanChecker ());
 
 TypeId 
 Node::GetTypeId (void)
@@ -220,6 +227,14 @@ Node::UnregisterProtocolHandler (ProtocolHandler handler)
           break;
         }
     }
+}
+
+bool
+Node::ChecksumEnabled (void)
+{
+  BooleanValue val;
+  g_checksumEnabled.GetValue (val);
+  return val.Get ();
 }
 
 bool

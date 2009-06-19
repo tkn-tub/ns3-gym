@@ -61,11 +61,6 @@ Ipv4L3Protocol::GetTypeId (void)
                    UintegerValue (64),
                    MakeUintegerAccessor (&Ipv4L3Protocol::m_defaultTtl),
                    MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("CalcChecksum", "If true, we calculate the checksum of outgoing packets"
-                   " and verify the checksum of incoming packets.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&Ipv4L3Protocol::m_calcChecksum),
-                   MakeBooleanChecker ())
     .AddTraceSource ("Tx", "Send ipv4 packet to outgoing interface.",
                    MakeTraceSourceAccessor (&Ipv4L3Protocol::m_txTrace))
     .AddTraceSource ("Rx", "Receive ipv4 packet from incoming interface.",
@@ -422,7 +417,7 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
     }
 
   Ipv4Header ipHeader;
-  if (m_calcChecksum)
+  if (Node::ChecksumEnabled ())
     {
       ipHeader.EnableChecksum ();
     }
@@ -609,7 +604,7 @@ Ipv4L3Protocol::BuildHeader (
       ipHeader.SetIdentification (m_identification);
       m_identification ++;
     }
-  if (m_calcChecksum)
+  if (Node::ChecksumEnabled ())
     {
       ipHeader.EnableChecksum ();
     }

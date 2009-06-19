@@ -26,11 +26,6 @@ Icmpv4L4Protocol::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Icmpv4L4Protocol")
     .SetParent<Ipv4L4Protocol> ()
     .AddConstructor<Icmpv4L4Protocol> ()
-    .AddAttribute ("CalcChecksum", 
-		   "Control whether the icmp header checksum is calculated and stored in outgoing icmpv4 headers",
-		   BooleanValue (false),
-		   MakeBooleanAccessor (&Icmpv4L4Protocol::m_calcChecksum),
-		   MakeBooleanChecker ())
     ;
   return tid;
 }
@@ -111,7 +106,7 @@ Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address source, Ipv4Addre
   Icmpv4Header icmp;
   icmp.SetType (type);
   icmp.SetCode (code);
-  if (m_calcChecksum)
+  if (Node::ChecksumEnabled ())
     {
       icmp.EnableChecksum ();
     }

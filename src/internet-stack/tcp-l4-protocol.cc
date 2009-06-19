@@ -332,11 +332,6 @@ TcpL4Protocol::GetTypeId (void)
                    ObjectFactoryValue (GetDefaultRttEstimatorFactory ()),
                    MakeObjectFactoryAccessor (&TcpL4Protocol::m_rttFactory),
                    MakeObjectFactoryChecker ())
-    .AddAttribute ("CalcChecksum", "If true, we calculate the checksum of outgoing packets"
-                   " and verify the checksum of incoming packets.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&TcpL4Protocol::m_calcChecksum),
-                   MakeBooleanChecker ())
     .AddAttribute ("SocketList", "The list of sockets associated to this protocol.",
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&TcpL4Protocol::m_sockets),
@@ -477,7 +472,7 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
   NS_LOG_FUNCTION (this << packet << source << destination << incomingInterface);
 
   TcpHeader tcpHeader;
-  if(m_calcChecksum)
+  if(Node::ChecksumEnabled ())
   {
     tcpHeader.EnableChecksums();
     tcpHeader.InitializeChecksum (source, destination, PROT_NUMBER);
@@ -529,7 +524,7 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
   TcpHeader tcpHeader;
   tcpHeader.SetDestinationPort (dport);
   tcpHeader.SetSourcePort (sport);
-  if(m_calcChecksum)
+  if(Node::ChecksumEnabled ())
   {
     tcpHeader.EnableChecksums();
   }
@@ -571,7 +566,7 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, TcpHeader outgoingHeader,
 
   outgoingHeader.SetLength (5); //header length in units of 32bit words
   /* outgoingHeader.SetUrgentPointer (0); //XXX */
-  if(m_calcChecksum)
+  if(Node::ChecksumEnabled ())
   {
     outgoingHeader.EnableChecksums();
   }

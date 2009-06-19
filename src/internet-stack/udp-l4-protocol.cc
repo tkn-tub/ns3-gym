@@ -48,11 +48,6 @@ UdpL4Protocol::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::UdpL4Protocol")
     .SetParent<Ipv4L4Protocol> ()
     .AddConstructor<UdpL4Protocol> ()
-    .AddAttribute ("CalcChecksum", "If true, we calculate the checksum of outgoing packets"
-                   " and verify the checksum of incoming packets.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&UdpL4Protocol::m_calcChecksum),
-                   MakeBooleanChecker ())
     ;
   return tid;
 }
@@ -204,7 +199,7 @@ UdpL4Protocol::Receive(Ptr<Packet> packet,
 {
   NS_LOG_FUNCTION (this << packet << source << destination);
   UdpHeader udpHeader;
-  if(m_calcChecksum)
+  if(Node::ChecksumEnabled ())
   {
     udpHeader.EnableChecksums();
   }
@@ -243,7 +238,7 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
   NS_LOG_FUNCTION (this << packet << saddr << daddr << sport << dport);
 
   UdpHeader udpHeader;
-  if(m_calcChecksum)
+  if(Node::ChecksumEnabled ())
   {
     udpHeader.EnableChecksums();
     udpHeader.InitializeChecksum (saddr,
@@ -272,7 +267,7 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
   NS_LOG_FUNCTION (this << packet << saddr << daddr << sport << dport);
 
   UdpHeader udpHeader;
-  if(m_calcChecksum)
+  if(Node::ChecksumEnabled ())
   {
     udpHeader.EnableChecksums();
     udpHeader.InitializeChecksum (saddr,
