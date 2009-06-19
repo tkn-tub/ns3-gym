@@ -49,7 +49,8 @@ FlameProtocolMac::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
   {
     NS_FATAL_ERROR ("FLAME tag is not supposed to be received by network");
   }
-  tag.address = header.GetAddr2 ();
+  tag.receiver = header.GetAddr1 ();
+  tag.transmitter = header.GetAddr2 ();
   packet->AddPacketTag (tag);
   return true;
 }
@@ -63,7 +64,7 @@ FlameProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & head
   {
     NS_FATAL_ERROR ("FLAME tag must exist here");
   }
-  header.SetAddr1 (tag.address);
+  header.SetAddr1 (tag.receiver);
   return true;
 }
 uint16_t

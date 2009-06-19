@@ -37,11 +37,13 @@ namespace flame {
 class FlameTag : public Tag
 {
 public:
-  /// Retransmitter:
-  Mac48Address  address;
+  //transmitter for incoming:
+  Mac48Address  transmitter;
+  // Receiver of the packet:
+  Mac48Address  receiver;
   
   FlameTag (Mac48Address a = Mac48Address ()) :
-    address (a){}
+    receiver (a){}
   
   ///\name Inherited from Tag
   //\{

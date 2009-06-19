@@ -158,6 +158,8 @@ public:
   ///\brief Statistics:
   void Report (std::ostream &) const;
   void ResetStats ();
+  /// Enable/disable beacons
+  void SetBeaconGeneration (bool enable);
 private:
   Ptr<DcaTxop> GetBE(void) const;
   void SetBE (Ptr<DcaTxop> dcaTxop);
@@ -173,8 +175,6 @@ private:
   void SendBeacon ();
   /// Schedule next beacon
   void ScheduleNextBeacon ();
-  /// Enable/disable beacons
-  void SetBeaconGeneration (bool enable);
   /// Get current beaconing status
   bool GetBeaconGeneration () const;
   /// Real d-tor
