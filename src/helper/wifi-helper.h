@@ -155,6 +155,11 @@ public:
   NetDeviceContainer Install (const WifiPhyHelper &phy,
                               const WifiMacHelper &mac, std::string nodeName) const;
 
+  /**
+   * Helper to enable all WifiNetDevice log components with one statement 
+   */
+  void WifiLogComponentEnable (void) const;
+
 private:
   ObjectFactory m_stationManager;
 };
