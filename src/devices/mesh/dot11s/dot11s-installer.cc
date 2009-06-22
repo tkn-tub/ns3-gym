@@ -71,6 +71,8 @@ Dot11sStack::InstallStack (Ptr<MeshPointDevice> mp)
 void
 Dot11sStack::Report (const Ptr<MeshPointDevice> mp, std::ostream& os)
 {
+  mp->Report (os);
+  
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
   for (std::vector<Ptr<NetDevice> >::const_iterator i = ifaces.begin(); i != ifaces.end(); ++i)
   {
@@ -89,6 +91,8 @@ Dot11sStack::Report (const Ptr<MeshPointDevice> mp, std::ostream& os)
 void
 Dot11sStack::ResetStats (const Ptr<MeshPointDevice> mp)
 {
+  mp->ResetStats ();
+  
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
   for (std::vector<Ptr<NetDevice> >::const_iterator i = ifaces.begin(); i != ifaces.end(); ++i)
   {

@@ -118,6 +118,14 @@ public:
   virtual void DoDispose ();
   //\}
   
+  ///\name Statistics
+  //\{
+  /// Print statistics counters
+  void Report (std::ostream & os) const;
+  /// Reset statistics counters
+  void ResetStats ();
+  //\}
+  
 private:
   /// Receive packet from interface
   void ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
@@ -170,6 +178,24 @@ private:
   MeshL2RoutingProtocol::RouteReplyCallback  m_myResponse;
   /// Current routing protocol, used mainly by GetRoutingProtocol
   Ptr<MeshL2RoutingProtocol> m_routingProtocol;
+  
+  /// Device statistics counters
+  struct Statistics 
+  {
+    uint32_t unicastData;
+    uint32_t unicastDataBytes;
+    uint32_t broadcastData;
+    uint32_t broadcastDataBytes;
+    
+    Statistics () : unicastData (0),
+      unicastDataBytes (0),
+      broadcastData (0),
+      broadcastDataBytes (0)
+    {
+    }
+  };
+  /// Counters
+  Statistics m_rxStats, m_txStats, m_fwdStats;
 };
 } //namespace ns3
 #endif

@@ -95,6 +95,9 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
     {
       m_rxCallback (this, packet_copy, realProtocol, src);
       Forward (incomingPort, packet, protocol, src48, dst48);
+      
+      m_rxStats.broadcastData ++;
+      m_rxStats.broadcastDataBytes += packet->GetSize ();
     }
     return;
   }
@@ -104,6 +107,9 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
     if(m_removeRoutingStuff (incomingPort->GetIfIndex (), src48, dst48, packet_copy, realProtocol))
     {
       m_rxCallback (this, packet_copy, realProtocol, src);
+      
+      m_rxStats.unicastData ++;
+      m_rxStats.unicastDataBytes += packet->GetSize ();
     }
     return;
   }
@@ -390,12 +396,54 @@ MeshPointDevice::DoSend (bool success, Ptr<Packet> packet, Mac48Address src, Mac
       NS_LOG_DEBUG ("Resolve failed");
       return;
     }
-  // Ok, now I know the route, just SendFrom
+  
+  // Count statistics
+  Statistics * stats = ((src == m_address) ? & m_txStats : & m_fwdStats);
+  
+  if (dst.IsBroadcast ())
+    {
+      stats->broadcastData ++;
+      stats->broadcastDataBytes += packet->GetSize ();
+    }
+  else
+    {
+      stats->unicastData ++;
+      stats->unicastDataBytes += packet->GetSize ();
+    }
+  
+  // Send
   if (outIface != 0xffffffff)
     GetInterface (outIface)->SendFrom(packet, src, dst, protocol);
   else
     for (std::vector<Ptr<NetDevice> >::iterator i = m_ifaces.begin (); i != m_ifaces.end(); i++)
       (*i) -> SendFrom (packet->Copy (), src, dst, protocol);
+}
+
+void
+MeshPointDevice::Report (std::ostream & os) const
+{
+  os << "<Statistics \n"
+      "txUnicastData=\"" << m_txStats.unicastData  << "\"\n"
+      "txUnicastDataBytes=\"" << (double)m_txStats.unicastDataBytes / 1024 << "K\"\n"
+      "txBroadcastData=\"" << m_txStats.broadcastData  << "\"\n"
+      "txBroadcastDataBytes=\"" << (double)m_txStats.broadcastDataBytes / 1024  << "K\"\n"
+      "rxUnicastData=\"" << m_rxStats.unicastData  << "\"\n"
+      "rxUnicastDataBytes=\"" << (double)m_rxStats.unicastDataBytes / 1024 << "K\"\n"
+      "rxBroadcastData=\"" << m_rxStats.broadcastData  << "\"\n"
+      "rxBroadcastDataBytes=\"" << (double)m_rxStats.broadcastDataBytes / 1024  << "K\"\n"
+      "fwdUnicastData=\"" << m_fwdStats.unicastData  << "\"\n"
+      "fwdUnicastDataBytes=\"" << (double)m_fwdStats.unicastDataBytes / 1024 << "K\"\n"
+      "fwdBroadcastData=\"" << m_fwdStats.broadcastData  << "\"\n"
+      "fwdBroadcastDataBytes=\"" << (double)m_fwdStats.broadcastDataBytes / 1024  << "K\"\n"
+      "/>\n";
+}
+
+void
+MeshPointDevice::ResetStats ()
+{
+  m_rxStats = Statistics ();
+  m_txStats = Statistics ();
+  m_fwdStats = Statistics ();
 }
 
 } // namespace ns3
