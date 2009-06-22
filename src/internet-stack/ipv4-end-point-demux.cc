@@ -219,11 +219,19 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
                         << " does not match packet dport " << dport);
           continue;
         }
-      // XXX handle multi-address case
-      bool isBroadcast = (daddr.IsBroadcast () ||
-         daddr.IsSubnetDirectedBroadcast (
-             incomingInterface->GetAddress (0).GetMask ()));
-      Ipv4Address incomingInterfaceAddr = incomingInterface->GetAddress (0).GetLocal ();
+      bool subnetDirected = false;
+      Ipv4Address incomingInterfaceAddr = daddr;  // may be a broadcast
+      for (uint32_t i = 0; i < incomingInterface->GetNAddresses (); i++)
+        {
+          Ipv4InterfaceAddress addr = incomingInterface->GetAddress (i);
+          if (addr.GetLocal ().CombineMask (addr.GetMask ()) == daddr.CombineMask (addr.GetMask ()) &&
+            daddr.IsSubnetDirectedBroadcast (addr.GetMask ()))
+            {
+              subnetDirected = true;
+              incomingInterfaceAddr = addr.GetLocal ();
+            }
+        }
+      bool isBroadcast = (daddr.IsBroadcast () || subnetDirected == true);
       NS_LOG_DEBUG ("dest addr " << daddr << " broadcast? " << isBroadcast);
       bool localAddressMatchesWildCard = 
         endP->GetLocalAddress() == Ipv4Address::GetAny();

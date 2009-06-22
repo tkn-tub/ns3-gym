@@ -224,11 +224,10 @@ Ipv4StaticRoutingImpl::LookupStatic (Ipv4Address dest)
           NS_LOG_LOGIC ("Found global host route" << *i);
           Ipv4RoutingTableEntry* route = (*i);
           rtentry = Create<Ipv4Route> ();
-          rtentry->SetDestination (route->GetDest ());
-          // XXX handle multi-address case
-          rtentry->SetSource (m_ipv4->GetAddress (route->GetInterface(), 0).GetLocal ());
-          rtentry->SetGateway (route->GetGateway ());
           uint32_t interfaceIdx = route->GetInterface ();
+          rtentry->SetDestination (route->GetDest ());
+          rtentry->SetSource (SourceAddressSelection (interfaceIdx, route->GetDest ()));
+          rtentry->SetGateway (route->GetGateway ());
           rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIdx));
           return rtentry;
         }
@@ -245,11 +244,10 @@ Ipv4StaticRoutingImpl::LookupStatic (Ipv4Address dest)
           NS_LOG_LOGIC ("Found global network route" << *j);
           Ipv4RoutingTableEntry* route = (*j);
           rtentry = Create<Ipv4Route> ();
-          rtentry->SetDestination (route->GetDest ());
-          // XXX handle multi-address case
-          rtentry->SetSource (m_ipv4->GetAddress (route->GetInterface(), 0).GetLocal ());
-          rtentry->SetGateway (route->GetGateway ());
           uint32_t interfaceIdx = route->GetInterface ();
+          rtentry->SetDestination (route->GetDest ());
+          rtentry->SetSource (SourceAddressSelection (interfaceIdx, route->GetDest ()));
+          rtentry->SetGateway (route->GetGateway ());
           rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIdx));
           return rtentry;
         }
@@ -260,11 +258,10 @@ Ipv4StaticRoutingImpl::LookupStatic (Ipv4Address dest)
       NS_LOG_LOGIC ("Found global network route" << m_defaultRoute);
       Ipv4RoutingTableEntry* route = m_defaultRoute;
       rtentry = Create<Ipv4Route> ();
-      rtentry->SetDestination (route->GetDest ());
-      // XXX handle multi-address case
-      rtentry->SetSource (m_ipv4->GetAddress (route->GetInterface(), 0).GetLocal ());
-      rtentry->SetGateway (route->GetGateway ());
       uint32_t interfaceIdx = route->GetInterface ();
+      rtentry->SetDestination (route->GetDest ());
+      rtentry->SetSource (SourceAddressSelection (interfaceIdx, route->GetDest ()));
+      rtentry->SetGateway (route->GetGateway ());
       rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIdx));
       return rtentry;
     }
@@ -469,7 +466,8 @@ Ipv4StaticRoutingImpl::RouteOutput (const Ipv4Header &header, uint32_t oif, Sock
   return rtentry;
 }
 
-// XXX this method not robust enough to work independent of ListRouting
+// XXX this method not robust enough to work outside of ListRouting context
+// because it will not perform local delivery
 bool 
 Ipv4StaticRoutingImpl::RouteInput  (Ptr<const Packet> p, const Ipv4Header &ipHeader, Ptr<const NetDevice> idev,
                              UnicastForwardCallback ucb, MulticastForwardCallback mcb,
@@ -639,6 +637,32 @@ Ipv4StaticRoutingImpl::SetIpv4 (Ptr<Ipv4> ipv4)
           NotifyInterfaceDown (i);
         }
     }
+}
+
+Ipv4Address
+Ipv4StaticRoutingImpl::SourceAddressSelection (uint32_t interfaceIdx, Ipv4Address dest)
+{
+  if (m_ipv4->GetNAddresses (interfaceIdx) == 1)  // common case
+    {
+      return m_ipv4->GetAddress (interfaceIdx, 0).GetLocal ();
+    }
+  // no way to determine the scope of the destination, so adopt the
+  // following rule:  pick the first available address (index 0) unless
+  // a subsequent address is on link (in which case, pick the primary
+  // address if there are multiple)
+  Ipv4Address candidate = m_ipv4->GetAddress (interfaceIdx, 0).GetLocal ();
+  for (uint32_t i = 0; i < m_ipv4->GetNAddresses (interfaceIdx); i++)
+    {
+      Ipv4InterfaceAddress test = m_ipv4->GetAddress (interfaceIdx, i);
+      if (test.GetLocal ().CombineMask (test.GetMask ()) == dest.CombineMask (test.GetMask ()))
+        {
+          if (test.IsSecondary () == false) 
+            {
+              return test.GetLocal ();
+            }
+        }
+    }
+  return candidate;
 }
 
 }//namespace ns3

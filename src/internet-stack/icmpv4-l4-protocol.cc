@@ -16,9 +16,7 @@ NS_LOG_COMPONENT_DEFINE ("Icmpv4L4Protocol");
 NS_OBJECT_ENSURE_REGISTERED (Icmpv4L4Protocol);
 
   // see rfc 792
-enum {
- ICMP_PROTOCOL = 1
-};
+const uint8_t Icmpv4L4Protocol::PROT_NUMBER = 1;
 
 TypeId 
 Icmpv4L4Protocol::GetTypeId (void)
@@ -68,13 +66,13 @@ Icmpv4L4Protocol::NotifyNewAggregate ()
 uint16_t 
 Icmpv4L4Protocol::GetStaticProtocolNumber (void)
 {
-  return ICMP_PROTOCOL;
+  return PROT_NUMBER;
 }
 
 int 
 Icmpv4L4Protocol::GetProtocolNumber (void) const
 {
-  return ICMP_PROTOCOL;
+  return PROT_NUMBER;
 }
 void
 Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address dest, uint8_t type, uint8_t code)
@@ -111,7 +109,7 @@ Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address source, Ipv4Addre
       icmp.EnableChecksum ();
     }
   packet->AddHeader (icmp);
-  ipv4->Send (packet, source, dest, ICMP_PROTOCOL, route);
+  ipv4->Send (packet, source, dest, PROT_NUMBER, route);
 }
 void 
 Icmpv4L4Protocol::SendDestUnreachFragNeeded (Ipv4Header header, 

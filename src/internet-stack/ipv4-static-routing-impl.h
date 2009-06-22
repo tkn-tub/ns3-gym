@@ -358,6 +358,8 @@ private:
   Ptr<Ipv4MulticastRoute> LookupStatic (Ipv4Address origin, Ipv4Address group,
                                     uint32_t interface);
 
+  Ipv4Address SourceAddressSelection (uint32_t interface, Ipv4Address dest);
+
   HostRoutes m_hostRoutes;
   NetworkRoutes m_networkRoutes;
   Ipv4RoutingTableEntry *m_defaultRoute;

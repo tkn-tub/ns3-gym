@@ -23,6 +23,7 @@
 #include "ns3/net-device.h"
 #include "ns3/object-vector.h"
 #include "ns3/trace-source-accessor.h"
+#include "ns3/ipv4-route.h"
 
 #include "ipv4-l3-protocol.h"
 #include "arp-l3-protocol.h"
@@ -160,73 +161,82 @@ ArpL3Protocol::Receive(Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
       NS_LOG_LOGIC ("ARP: Cannot remove ARP header");
       return;
     }
-  // XXX multi-address case  
   NS_LOG_LOGIC ("ARP: received "<< (arp.IsRequest ()? "request" : "reply") <<
             " node="<<m_node->GetId ()<<", got request from " <<
             arp.GetSourceIpv4Address () << " for address " <<
-            arp.GetDestinationIpv4Address () << "; we have address " <<
-            cache->GetInterface ()->GetAddress (0).GetLocal ());
+            arp.GetDestinationIpv4Address () << "; we have addresses: ");
+  for (uint32_t i = 0; i < cache->GetInterface ()->GetNAddresses (); i++)
+    {
+      NS_LOG_LOGIC (cache->GetInterface ()->GetAddress (i).GetLocal () << ", ");
+    }
 
   /**
    * Note: we do not update the ARP cache when we receive an ARP request
    * from an unknown node. See bug #107
    */
-  // XXX multi-address case
-  if (arp.IsRequest () && 
-      arp.GetDestinationIpv4Address () == cache->GetInterface ()->GetAddress (0).GetLocal ()) 
+  bool found = false;
+  for (uint32_t i = 0; i < cache->GetInterface ()->GetNAddresses (); i++)
     {
-      NS_LOG_LOGIC ("node="<<m_node->GetId () <<", got request from " << 
-                arp.GetSourceIpv4Address () << " -- send reply");
-      SendArpReply (cache, arp.GetSourceIpv4Address (),
-                    arp.GetSourceHardwareAddress ());
-    } 
-  // XXX multi-address case
-  else if (arp.IsReply () &&
-           arp.GetDestinationIpv4Address ().IsEqual (cache->GetInterface ()->GetAddress (0).GetLocal ()) &&
-           arp.GetDestinationHardwareAddress () == device->GetAddress ()) 
-    {
-      Ipv4Address from = arp.GetSourceIpv4Address ();
-      ArpCache::Entry *entry = cache->Lookup (from);
-      if (entry != 0)
+      if (arp.IsRequest () && arp.GetDestinationIpv4Address () == 
+        cache->GetInterface ()->GetAddress (i).GetLocal ()) 
         {
-          if (entry->IsWaitReply ()) 
+          found = true;
+          NS_LOG_LOGIC ("node="<<m_node->GetId () <<", got request from " << 
+                arp.GetSourceIpv4Address () << " -- send reply");
+          SendArpReply (cache, arp.GetSourceIpv4Address (),
+                    arp.GetSourceHardwareAddress ());
+          break;
+        } 
+      else if (arp.IsReply () && 
+        arp.GetDestinationIpv4Address ().IsEqual (cache->GetInterface ()->GetAddress (i).GetLocal ()) &&
+        arp.GetDestinationHardwareAddress () == device->GetAddress ()) 
+        {
+          found = true;
+          Ipv4Address from = arp.GetSourceIpv4Address ();
+          ArpCache::Entry *entry = cache->Lookup (from);
+          if (entry != 0)
             {
-              NS_LOG_LOGIC ("node="<<m_node->GetId ()<<", got reply from " << 
-                        arp.GetSourceIpv4Address ()
-                     << " for waiting entry -- flush");
-              Address from_mac = arp.GetSourceHardwareAddress ();
-              entry->MarkAlive (from_mac);
-              Ptr<Packet> pending = entry->DequeuePending();
-              while (pending != 0)
+              if (entry->IsWaitReply ()) 
                 {
-                  cache->GetInterface ()->Send (pending,
+                  NS_LOG_LOGIC ("node="<< m_node->GetId () << 
+                    ", got reply from " << arp.GetSourceIpv4Address ()
+                     << " for waiting entry -- flush");
+                  Address from_mac = arp.GetSourceHardwareAddress ();
+                  entry->MarkAlive (from_mac);
+                  Ptr<Packet> pending = entry->DequeuePending();
+                  while (pending != 0)
+                    {
+                      cache->GetInterface ()->Send (pending,
                                                 arp.GetSourceIpv4Address ());
-                  pending = entry->DequeuePending();
+                      pending = entry->DequeuePending();
+                    }
+                } 
+              else 
+                {
+                  // ignore this reply which might well be an attempt 
+                  // at poisening my arp cache.
+                  NS_LOG_LOGIC("node="<<m_node->GetId ()<<", got reply from " << 
+                        arp.GetSourceIpv4Address () << 
+                        " for non-waiting entry -- drop");
+                  m_dropTrace (packet);
                 }
             } 
           else 
             {
-              // ignore this reply which might well be an attempt 
-              // at poisening my arp cache.
-              NS_LOG_LOGIC("node="<<m_node->GetId ()<<", got reply from " << 
-                        arp.GetSourceIpv4Address () << 
-                        " for non-waiting entry -- drop");
+              NS_LOG_LOGIC ("node="<<m_node->GetId ()<<", got reply for unknown entry -- drop");
               m_dropTrace (packet);
             }
-        } 
-      else 
-        {
-          NS_LOG_LOGIC ("node="<<m_node->GetId ()<<", got reply for unknown entry -- drop");
-          m_dropTrace (packet);
+          break;
         }
     }
-  else
+  if (found == false)
     {
       NS_LOG_LOGIC ("node="<<m_node->GetId ()<<", got request from " <<
                 arp.GetSourceIpv4Address () << " for unknown address " <<
                 arp.GetDestinationIpv4Address () << " -- drop");
     }
 }
+
 bool 
 ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination, 
                        Ptr<NetDevice> device,
@@ -301,14 +311,22 @@ ArpL3Protocol::SendArpRequest (Ptr<const ArpCache> cache, Ipv4Address to)
 {
   NS_LOG_FUNCTION (this << cache << to);
   ArpHeader arp;
+  // need to pick a source address; use routing implementation to select
+  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
+  int32_t interface = ipv4->GetInterfaceForDevice (cache->GetDevice ());
+  NS_ASSERT (interface >= 0);
+  Ipv4Header header;
+  header.SetDestination (to);
+  Socket::SocketErrno errno_;
+  Ptr<Ipv4Route> route = ipv4->GetRoutingProtocol ()->RouteOutput (header, interface, errno_);
+  NS_ASSERT (route != 0);
   NS_LOG_LOGIC ("ARP: sending request from node "<<m_node->GetId ()<<
             " || src: " << cache->GetDevice ()->GetAddress () <<
-            " / " << cache->GetInterface ()->GetAddress (0).GetLocal () <<
+            " / " << route->GetSource () <<
             " || dst: " << cache->GetDevice ()->GetBroadcast () <<
             " / " << to);
-  // XXX multi-address case
   arp.SetRequest (cache->GetDevice ()->GetAddress (),
-		  cache->GetInterface ()->GetAddress (0).GetLocal (), 
+		  route->GetSource (),
                   cache->GetDevice ()->GetBroadcast (),
                   to);
   Ptr<Packet> packet = Create<Packet> ();
@@ -321,14 +339,21 @@ ArpL3Protocol::SendArpReply (Ptr<const ArpCache> cache, Ipv4Address toIp, Addres
 {
   NS_LOG_FUNCTION (this << cache << toIp << toMac);
   ArpHeader arp;
+  // need to pick a source address; use routing implementation to select
+  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
+  int32_t interface = ipv4->GetInterfaceForDevice (cache->GetDevice ());
+  NS_ASSERT (interface >= 0);
+  Ipv4Header header;
+  header.SetDestination (toIp);
+  Socket::SocketErrno errno_;
+  Ptr<Ipv4Route> route = ipv4->GetRoutingProtocol ()->RouteOutput (header, interface, errno_);
+  NS_ASSERT (route != 0);
   NS_LOG_LOGIC ("ARP: sending reply from node "<<m_node->GetId ()<<
             "|| src: " << cache->GetDevice ()->GetAddress () << 
-            " / " << cache->GetInterface ()->GetAddress (0).GetLocal () <<
+            " / " << route->GetSource () <<
             " || dst: " << toMac << " / " << toIp);
-  // XXX multi-address case
   arp.SetReply (cache->GetDevice ()->GetAddress (),
-                cache->GetInterface ()->GetAddress (0).GetLocal (),
-                toMac, toIp);
+                route->GetSource (), toMac, toIp);
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (arp);
   cache->GetDevice ()->Send (packet, toMac, PROT_NUMBER);

@@ -74,6 +74,7 @@ def build(bld):
     obj.source = [
         'tcp-test.cc',
         'udp-test.cc',
+        'ipv4-test.cc',
         'ipv4-l4-protocol.cc',
         'udp-header.cc',
         'tcp-header.cc',

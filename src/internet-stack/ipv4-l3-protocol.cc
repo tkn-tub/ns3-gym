@@ -526,8 +526,8 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
       // This could arise because the synchronous RouteOutput() call
       // returned to the transport protocol with a source address but
       // there was no next hop available yet (since a route may need
-      // to be queried).  So, call asynchronous version of RouteOutput?
-      NS_FATAL_ERROR("XXX This case not yet implemented");
+      // to be queried).  
+      NS_FATAL_ERROR ("This case not yet implemented");
     }
   // 5) packet is not broadcast, and route is NULL (e.g., a raw socket call)
   NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 4:  passed in with no route " << destination);
@@ -684,11 +684,10 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
   ipHeader.SetTtl (ipHeader.GetTtl () - 1);
   if (ipHeader.GetTtl () == 0)
     {
-      Ptr<NetDevice> outDev = rtentry->GetOutputDevice ();
-      int32_t interface = GetInterfaceForDevice (outDev);
-      NS_ASSERT (interface >= 0);
-      // XXX No check here for possibly multiple addresses on this interface
-      if (IsUnicast (ipHeader.GetDestination (), GetInterface (interface)->GetAddress (0).GetMask ()))
+      // Do not reply to ICMP or to multicast/broadcast IP address 
+      if (ipHeader.GetProtocol () != Icmpv4L4Protocol::PROT_NUMBER && 
+        ipHeader.GetDestination ().IsBroadcast () == false && 
+        ipHeader.GetDestination ().IsMulticast () == false)
         {
           Ptr<Icmpv4L4Protocol> icmp = GetIcmp ();
           icmp->SendTimeExceededTtl (ipHeader, packet);
@@ -720,12 +719,26 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
       case Ipv4L4Protocol::RX_CSUM_FAILED:
         break;
       case Ipv4L4Protocol::RX_ENDPOINT_UNREACH:
-        // XXX handle possibly multiple IP addresses on the interface
-        if (IsUnicast (ip.GetDestination (), GetInterface (iif)->GetAddress (0).GetMask ()))
+        if (ip.GetDestination ().IsBroadcast () == true || 
+          ip.GetDestination ().IsMulticast () == true)
+          {
+            break;  // Do not reply to broadcast or multicast
+          }
+        // Another case to suppress ICMP is a subnet-directed broadcast
+        bool subnetDirected = false;
+        for (uint32_t i = 0; i < GetNAddresses (iif); i++)
+          {
+            Ipv4InterfaceAddress addr = GetAddress (iif, i);
+            if (addr.GetLocal ().CombineMask (addr.GetMask ()) == ip.GetDestination().CombineMask (addr.GetMask ()) &&
+              ip.GetDestination ().IsSubnetDirectedBroadcast (addr.GetMask ()))
+              {
+                subnetDirected = true;
+              }
+          }
+        if (subnetDirected == false)
           {
             GetIcmp ()->SendDestUnreachPort (ip, copy);
           }
-        break;
       }
     }
 }
