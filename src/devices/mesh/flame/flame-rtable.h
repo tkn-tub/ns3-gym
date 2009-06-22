@@ -69,8 +69,7 @@ public:
   ~FlameRtable ();
   void DoDispose ();
   
-  ///\name Add/delete paths
-  //\{ 
+  /// Add path
   void AddPath (
     const Mac48Address destination,
     const Mac48Address retransmitter,
@@ -79,8 +78,8 @@ public:
     const uint16_t seqnum
   );
   /**
-   * Lookup path to destination
-   * \returns Broadcast if not found
+   * \brief Lookup path to destination
+   * \return Broadcast if not found
    */
   LookupResult Lookup (Mac48Address destination);
 private:
@@ -93,7 +92,7 @@ private:
     Time whenExpire;
     uint32_t seqnum;
   };
-  /// Lifetime parameter:
+  /// Lifetime parameter
   Time m_lifetime;
   /// List of routes
   std::map<Mac48Address, Route>  m_routes;

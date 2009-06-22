@@ -23,6 +23,11 @@
 #define FLAME_STACK_INSTALLER_H
 #include "ns3/mesh-stack-installer.h"
 namespace ns3 {
+/**
+ * \ingroup flame
+ * 
+ * \brief FLAME mesh stack (actually single protocol in this stack)
+ */
 class FlameStack : public MeshStack
 {
   public:
@@ -31,7 +36,7 @@ class FlameStack : public MeshStack
     ~FlameStack ();
     void DoDispose ();
 
-    ///\brief Installs 802.11s stack. needed by helper only
+    /// Installs flame stack on given mesh point device.
     bool InstallStack (Ptr<MeshPointDevice> mp);
     void Report (const Ptr<MeshPointDevice> mp, std::ostream&);
     void ResetStats (const Ptr<MeshPointDevice> mp);

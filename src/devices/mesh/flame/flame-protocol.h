@@ -28,18 +28,27 @@
 #include "ns3/mesh-l2-routing-protocol.h"
 #include "ns3/tag.h"
 #include <map>
+
+/**
+ * \ingroup mesh
+ * \defgroup flame FLAME 
+ * 
+ * \brief Forwarding LAyer for Meshing protocol
+ * 
+ * TODO add relevant references
+ */
 namespace ns3 {
 namespace flame {
 /**
- * \brief Seqno and TTL tag
+ * \ingroup flame
+ * \brief Transmitter and receiver addresses
  */
-
 class FlameTag : public Tag
 {
 public:
-  //transmitter for incoming:
+  /// transmitter for incoming:
   Mac48Address  transmitter;
-  // Receiver of the packet:
+  /// Receiver of the packet:
   Mac48Address  receiver;
   
   FlameTag (Mac48Address a = Mac48Address ()) :
@@ -58,10 +67,8 @@ public:
 
 /**
  * \ingroup flame
- * 
- * \brief FLAME = Forwarding Layer for Meshing
+ * \brief FLAME routing protocol
  */
-
 class FlameProtocol : public MeshL2RoutingProtocol
 {
 public:
@@ -82,41 +89,42 @@ public:
    * Installing protocol cause installing its interface MAC plugins.
    *  
    * Also MP aggregates all installed protocols, FLAME protocol can be accessed 
-   * via MeshPointDevice::GetObject<dot11s::FlameProtocol>();
+   * via MeshPointDevice::GetObject<flame::FlameProtocol>();
    */
   bool Install (Ptr<MeshPointDevice>);
   Mac48Address GetAddress ();
-  ///\brief Statistics:
+  /// Statistics
   void Report (std::ostream &) const;
   void ResetStats ();
 private:
+  /// LLC protocol number reserved by flame
+  static const uint16_t FLAME_PROTOCOL = 0x4040;
   /**
-   * \brif Handles a packet: adds a routing information and drops
-   * packets by TTL or Seqno
-   * \returns true if packet shall be dropeed
+   * \brief Handles a packet: adds a routing information and drops packets by TTL or Seqno
+   * 
+   * \return true if packet shall be dropped
    */
   bool HandleDataFrame (uint16_t seqno, Mac48Address source, const FlameHeader flameHdr, Mac48Address receiver, uint32_t fromIface);
-  static const uint16_t FLAME_PORT = 0x4040;
   /**
-   * \name Information about MeshPointDeviceaddress , plugins
+   * \name Information about MeshPointDeviceaddress, plugins
    * \{
    */
   typedef std::map<uint32_t, Ptr<FlameProtocolMac> > FlamePluginMap;
   FlamePluginMap m_interfaces;
   Mac48Address m_address;
-  ///\}
+  //\}
   /**
    * \name Broadcast timers:
    * \{
    */
   Time m_broadcastInterval;
   Time m_lastBroadcast;
-  ///\}
+  //\}
   /// Max Cost value (or TTL, because cost is actually hopcount)
   uint8_t m_maxCost;
   /// Sequence number:
   uint16_t m_myLastSeqno;
-  /// Routng table:
+  /// Routing table:
   Ptr<FlameRtable> m_rtable;
 };
 } //namespace flame

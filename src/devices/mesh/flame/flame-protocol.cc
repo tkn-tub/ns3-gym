@@ -30,13 +30,14 @@
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/random-variable.h"
 
+NS_LOG_COMPONENT_DEFINE ("FlameProtocol");
+
 namespace ns3 {
 namespace flame {
 //-----------------------------------------------------------------------------
 // FlameTag
 //-----------------------------------------------------------------------------
 NS_OBJECT_ENSURE_REGISTERED (FlameTag);
-NS_LOG_COMPONENT_DEFINE ("FlameProtocol");
 
 TypeId
 FlameTag::GetTypeId ()
@@ -92,7 +93,7 @@ FlameTag::Print (std::ostream &os) const
 }
 
 //-----------------------------------------------------------------------------
-// FlameTag
+// FlameProtocol
 //-----------------------------------------------------------------------------
 TypeId
 FlameProtocol::GetTypeId ()
@@ -160,7 +161,7 @@ FlameProtocol::RequestRoute (uint32_t  sourceIface, const Mac48Address source, c
     tag.receiver = result.retransmitter;
     NS_LOG_DEBUG("Source: send packet with RA = " << tag.receiver);
     packet->AddPacketTag (tag);
-    routeReply (true, packet, source, destination, FLAME_PORT, result.ifIndex);
+    routeReply (true, packet, source, destination, FLAME_PROTOCOL, result.ifIndex);
   }
   else
   {
@@ -188,7 +189,7 @@ FlameProtocol::RequestRoute (uint32_t  sourceIface, const Mac48Address source, c
       flameHdr.AddCost (1);
       packet->AddHeader (flameHdr);
       packet->AddPacketTag (tag);
-      routeReply (true, packet, source, destination, FLAME_PORT, FlameRtable::INTERFACE_ANY);
+      routeReply (true, packet, source, destination, FLAME_PROTOCOL, FlameRtable::INTERFACE_ANY);
       return true;
     }
     else
@@ -210,7 +211,7 @@ FlameProtocol::RequestRoute (uint32_t  sourceIface, const Mac48Address source, c
       flameHdr.AddCost (1);
       packet->AddHeader (flameHdr);
       packet->AddPacketTag (tag);
-      routeReply (true, packet, source, destination, FLAME_PORT, result.ifIndex);
+      routeReply (true, packet, source, destination, FLAME_PROTOCOL, result.ifIndex);
       return true;
     }
     return true;
@@ -235,7 +236,7 @@ FlameProtocol::RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source
   //TODO: send path update
   FlameHeader flameHdr;
   packet->RemoveHeader (flameHdr);
-  NS_ASSERT(protocolType == FLAME_PORT);
+  NS_ASSERT(protocolType == FLAME_PROTOCOL);
   protocolType = flameHdr.GetProtocol ();
   return (!HandleDataFrame(flameHdr.GetSeqno (), source, flameHdr, tag.transmitter, fromIface));
 }
