@@ -41,8 +41,8 @@
 #include "icmpv4-l4-protocol.h"
 #include "udp-l4-protocol.h"
 #include "tcp-l4-protocol.h"
-#include "ipv4-list-routing.h"
-#include "ipv4-static-routing-impl.h"
+#include "ns3/ipv4-list-routing.h"
+#include "ns3/ipv4-static-routing.h"
 
 #include <string>
 #include <limits>
@@ -59,8 +59,8 @@ AddInternetStack (Ptr<Node> node)
   //Routing for Ipv4
   Ptr<Ipv4ListRouting> ipv4Routing = CreateObject<Ipv4ListRouting> ();
   ipv4->SetRoutingProtocol (ipv4Routing);
-  Ptr<Ipv4StaticRoutingImpl> ipv4staticRoutingImpl = CreateObject<Ipv4StaticRoutingImpl> ();
-  ipv4Routing->AddRoutingProtocol (ipv4staticRoutingImpl, 0);
+  Ptr<Ipv4StaticRouting> ipv4staticRouting = CreateObject<Ipv4StaticRouting> ();
+  ipv4Routing->AddRoutingProtocol (ipv4staticRouting, 0);
   node->AggregateObject(ipv4);
   //ICMP
   Ptr<Icmpv4L4Protocol> icmp = CreateObject<Icmpv4L4Protocol> ();

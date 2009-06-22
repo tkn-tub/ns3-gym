@@ -163,7 +163,7 @@
 #include "ns3/node.h"
 #include "ns3/core-config.h"
 #include "ns3/ipv4-list-routing.h"
-#include "ns3/ipv4-static-routing-impl.h"
+#include "ns3/ipv4-static-routing.h"
 #include <limits>
 
 namespace ns3 {
@@ -243,8 +243,8 @@ InternetStackHelper::Install (Ptr<Node> node) const
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   // XXX cut this over to use of TypeIds and factories
   Ptr<Ipv4ListRouting> ipv4Routing = CreateObject<Ipv4ListRouting> ();
-  Ptr<Ipv4StaticRoutingImpl> ipv4staticRoutingImpl = CreateObject<Ipv4StaticRoutingImpl> ();
-  ipv4Routing->AddRoutingProtocol (ipv4staticRoutingImpl, 0);
+  Ptr<Ipv4StaticRouting> ipv4staticRouting = CreateObject<Ipv4StaticRouting> ();
+  ipv4Routing->AddRoutingProtocol (ipv4staticRouting, 0);
   ipv4->SetRoutingProtocol (ipv4Routing);
 }
 

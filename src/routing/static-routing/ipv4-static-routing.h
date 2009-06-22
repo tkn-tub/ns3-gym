@@ -38,51 +38,49 @@ class NetDevice;
 class Ipv4Interface;
 class Ipv4Address;
 class Ipv4Header;
-class Node;
-
 class Ipv4RoutingTableEntry;
 class Ipv4MulticastRoutingTableEntry;
+class Node;
 
 /**
  * \ingroup ipv4Routing
  * 
  * \brief Static routing protocol for IP version 4 stacks.
  *
- * In ns-3 we have the concept of a pluggable routing protocol.  Routing
- * protocols are added to a list maintained by the Ipv4L3Protocol.  Every 
- * stack gets one routing protocol for free -- the Ipv4StaticRouting routing
- * protocol is added in the constructor of the Ipv4L3Protocol (this is the 
- * piece of code that implements the functionality of the IP layer).
- *
+ * This class provides a basic set of methods for inserting static
+ * unicast and multicast routes into the Ipv4 routing system.  
+ * This particular protocol is designed to be inserted into an 
+ * Ipv4ListRouting protocol and at present cannot be inserted as the
+ * only routing protocol into Ipv4 (i.e. it must be added to an 
+ * Ipv4ListRouting).
+ * 
  * The Ipv4StaticRouting class inherits from the abstract base class 
  * Ipv4RoutingProtocol that defines the interface methods that a routing 
  * protocol must support.
  *
- * When a packet arrives in the Ipv4L3Protocol for transmission, it comes
- * either from a local source via Ipv4L3Protocol::Send or from a remote 
- * source via Ipv4L3Protocol::Forwarding.  In both cases, a function is called
- * (Ipv4L3Protocol::Lookup) to look up the routing information for the packet.
- *
- * The lookup function iterates through the list of routing protocols asking
- * each to see if it can find a route and send the packet.  A callback is 
- * provided during each of these calls that should be considered a pre-
- * packaged send call.  This is done to allow asynchronous calls into 
- * routing subsystems in order to support on-demand routing, for example.  The
- * method for requesting this operation is Ipv4StaticRouting::RequestRoute for
- * the static routing protocol.
- *
- * Each routing protocol is also free to implement its own methods for managing
- * routes which you will find below.  This class manages a set of "static" or
- * manually configured routes for host, network and multicast routes.
- *
  * \see Ipv4RoutingProtocol
- * \see Ipv4L3Protocol::AddRoutingProtocol
- * \see Ipv4L3Protocol::Ipv4L3Protocol
+ * \see Ipv4ListRouting
+ * \see Ipv4ListRouting::AddRoutingProtocol
  */
 class Ipv4StaticRouting : public Ipv4RoutingProtocol
 {
 public:
   static TypeId GetTypeId (void);
+
+  Ipv4StaticRouting ();
+  virtual ~Ipv4StaticRouting ();
+
+  virtual Ptr<Ipv4Route> RouteOutput (const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr);
+
+  virtual bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
+                             UnicastForwardCallback ucb, MulticastForwardCallback mcb,
+                             LocalDeliverCallback lcb, ErrorCallback ecb);
+
+  virtual void NotifyInterfaceUp (uint32_t interface);
+  virtual void NotifyInterfaceDown (uint32_t interface);
+  virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
+  virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
+  virtual void SetIpv4 (Ptr<Ipv4> ipv4);
 
 /**
  * \brief Add a host route to the static routing table.
@@ -94,9 +92,9 @@ public:
  *
  * \see Ipv4Address
  */
-  virtual void AddHostRouteTo (Ipv4Address dest, 
+  void AddHostRouteTo (Ipv4Address dest, 
                        Ipv4Address nextHop, 
-                       uint32_t interface) = 0;
+                       uint32_t interface);
 /**
  * \brief Add a host route to the static routing table.
  *
@@ -106,7 +104,8 @@ public:
  *
  * \see Ipv4Address
  */
-  virtual void AddHostRouteTo (Ipv4Address dest, uint32_t interface) = 0;
+  void AddHostRouteTo (Ipv4Address dest, 
+                       uint32_t interface);
 
 /**
  * \brief Add a network route to the static routing table.
@@ -119,10 +118,10 @@ public:
  *
  * \see Ipv4Address
  */
-  virtual void AddNetworkRouteTo (Ipv4Address network, 
+  void AddNetworkRouteTo (Ipv4Address network, 
                           Ipv4Mask networkMask, 
                           Ipv4Address nextHop, 
-                          uint32_t interface) = 0;
+                          uint32_t interface);
 
 /**
  * \brief Add a network route to the static routing table.
@@ -134,9 +133,9 @@ public:
  *
  * \see Ipv4Address
  */
-  virtual void AddNetworkRouteTo (Ipv4Address network, 
+  void AddNetworkRouteTo (Ipv4Address network, 
                           Ipv4Mask networkMask, 
-                          uint32_t interface) = 0;
+                          uint32_t interface);
 
 /**
  * \brief Add a default route to the static routing table.
@@ -156,7 +155,8 @@ public:
  * \see Ipv4Address
  * \see Ipv4StaticRouting::Lookup
  */
-  virtual void SetDefaultRoute (Ipv4Address nextHop, uint32_t interface) = 0;
+  void SetDefaultRoute (Ipv4Address nextHop, 
+                        uint32_t interface);
 
 /**
  * \brief Get the number of individual unicast routes that have been added
@@ -164,7 +164,7 @@ public:
  *
  * \warning The default route counts as one of the routes.
  */
-  virtual uint32_t GetNRoutes (void) = 0;
+  uint32_t GetNRoutes (void);
 
 /**
  * \brief Get the default route from the static routing table.
@@ -174,7 +174,7 @@ public:
  *
  * \see Ipv4RoutingTableEntry
  */
-  virtual Ipv4RoutingTableEntry GetDefaultRoute (void) = 0;
+  Ipv4RoutingTableEntry GetDefaultRoute (void);
 
 /**
  * \brief Get a route from the static unicast routing table.
@@ -184,7 +184,7 @@ public:
  * it will appear as the zeroth entry in the table.  This means that if you
  * add only a default route, the table will have one entry that can be accessed
  * either by explicity calling GetDefaultRoute () or by calling GetRoute (0).
- *
+ * 
  * Similarly, if the default route has been set, calling RemoveRoute (0) will
  * remove the default route.
  *
@@ -196,7 +196,7 @@ public:
  * \see Ipv4RoutingTableEntry
  * \see Ipv4StaticRouting::RemoveRoute
  */
-  virtual Ipv4RoutingTableEntry GetRoute (uint32_t i) = 0;
+  Ipv4RoutingTableEntry GetRoute (uint32_t i);
 
 /**
  * \brief Remove a route from the static unicast routing table.
@@ -214,7 +214,7 @@ public:
  * \see Ipv4StaticRouting::GetRoute
  * \see Ipv4StaticRouting::AddRoute
  */
-  virtual void RemoveRoute (uint32_t i) = 0;
+  void RemoveRoute (uint32_t i);
 
 /**
  * \brief Add a multicast route to the static routing table.
@@ -259,10 +259,10 @@ public:
  *
  * \see Ipv4Address
  */
-  virtual void AddMulticastRoute (Ipv4Address origin,
+  void AddMulticastRoute (Ipv4Address origin,
                           Ipv4Address group,
                           uint32_t inputInterface,
-                          std::vector<uint32_t> outputInterfaces) = 0;
+                          std::vector<uint32_t> outputInterfaces);
 
 /**
  * \brief Add a default multicast route to the static routing table.
@@ -288,7 +288,7 @@ public:
  *
  * \see Ipv4Address
  */
-  virtual void SetDefaultMulticastRoute (uint32_t outputInterface) = 0;
+  void SetDefaultMulticastRoute (uint32_t outputInterface);
 
 /**
  * \brief Get the number of individual multicast routes that have been added
@@ -296,7 +296,7 @@ public:
  *
  * \warning The default multicast route counts as one of the routes.
  */
-  virtual uint32_t GetNMulticastRoutes (void) const = 0;
+  uint32_t GetNMulticastRoutes (void) const;
 
 /**
  * \brief Get a route from the static multicast routing table.
@@ -312,7 +312,7 @@ public:
  * \see Ipv4MulticastRoutingTableEntry
  * \see Ipv4StaticRouting::RemoveRoute
  */
-  virtual Ipv4MulticastRoutingTableEntry GetMulticastRoute (uint32_t i) const = 0;
+  Ipv4MulticastRoutingTableEntry GetMulticastRoute (uint32_t i) const;
 
 /**
  * \brief Remove a route from the static multicast routing table.
@@ -339,9 +339,9 @@ public:
  * \see Ipv4MulticastRoutingTableEntry
  * \see Ipv4StaticRouting::AddMulticastRoute
  */
-  virtual bool RemoveMulticastRoute (Ipv4Address origin,
+  bool RemoveMulticastRoute (Ipv4Address origin,
                              Ipv4Address group,
-                             uint32_t inputInterface) = 0;
+                             uint32_t inputInterface);
 
 /**
  * \brief Remove a route from the static multicast routing table.
@@ -356,7 +356,35 @@ public:
  * \see Ipv4StaticRouting::GetRoute
  * \see Ipv4StaticRouting::AddRoute
  */
-  virtual void RemoveMulticastRoute (uint32_t index) = 0;
+  void RemoveMulticastRoute (uint32_t index);
+
+protected:
+  virtual void DoDispose (void);
+
+private:
+  typedef std::list<Ipv4RoutingTableEntry *> HostRoutes;
+  typedef std::list<Ipv4RoutingTableEntry *>::const_iterator HostRoutesCI;
+  typedef std::list<Ipv4RoutingTableEntry *>::iterator HostRoutesI;
+  typedef std::list<Ipv4RoutingTableEntry *> NetworkRoutes;
+  typedef std::list<Ipv4RoutingTableEntry *>::const_iterator NetworkRoutesCI;
+  typedef std::list<Ipv4RoutingTableEntry *>::iterator NetworkRoutesI;
+
+  typedef std::list<Ipv4MulticastRoutingTableEntry *> MulticastRoutes;
+  typedef std::list<Ipv4MulticastRoutingTableEntry *>::const_iterator MulticastRoutesCI;
+  typedef std::list<Ipv4MulticastRoutingTableEntry *>::iterator MulticastRoutesI;
+  
+  Ptr<Ipv4Route> LookupStatic (Ipv4Address dest);
+  Ptr<Ipv4MulticastRoute> LookupStatic (Ipv4Address origin, Ipv4Address group,
+                                    uint32_t interface);
+
+  Ipv4Address SourceAddressSelection (uint32_t interface, Ipv4Address dest);
+
+  HostRoutes m_hostRoutes;
+  NetworkRoutes m_networkRoutes;
+  Ipv4RoutingTableEntry *m_defaultRoute;
+  MulticastRoutes m_multicastRoutes;
+
+  Ptr<Ipv4> m_ipv4;
 };
 
 } // Namespace ns3

@@ -30,7 +30,6 @@
 #include "ns3/traced-callback.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4-routing-protocol.h"
-#include "ipv4-static-routing-impl.h"
 
 namespace ns3 {
 

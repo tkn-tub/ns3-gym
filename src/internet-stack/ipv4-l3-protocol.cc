@@ -32,13 +32,11 @@
 #include "ns3/ipv4-header.h"
 #include "ns3/boolean.h"
 #include "ns3/ipv4-routing-table-entry.h"
-#include "ns3/ipv4-static-routing.h"
 
 #include "loopback-net-device.h"
 #include "arp-l3-protocol.h"
 #include "ipv4-l3-protocol.h"
 #include "ipv4-l4-protocol.h"
-#include "ipv4-list-routing.h"
 #include "icmpv4-l4-protocol.h"
 #include "ipv4-interface.h"
 #include "ipv4-raw-socket-impl.h"

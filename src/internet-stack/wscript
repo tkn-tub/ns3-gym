@@ -81,8 +81,6 @@ def build(bld):
         'ipv4-checksum.cc',
         'ipv4-interface.cc',
         'ipv4-l3-protocol.cc',
-        'ipv4-static-routing-impl.cc',
-        'ipv4-list-routing.cc',
         'ipv4-end-point.cc',
         'udp-l4-protocol.cc',
         'tcp-l4-protocol.cc',
@@ -110,8 +108,6 @@ def build(bld):
         'udp-header.h',
         'tcp-header.h',
         'sequence-number.h',
-        'ipv4-list-routing.h',
-        'ipv4-static-routing-impl.h',
         'icmpv4.h',
         ]
 
