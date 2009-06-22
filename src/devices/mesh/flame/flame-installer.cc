@@ -50,9 +50,13 @@ FlameStack::InstallStack (Ptr<MeshPointDevice> mp)
 void
 FlameStack::Report (const Ptr<MeshPointDevice> mp, std::ostream& os)
 {
+  mp->Report (os);
+  // TODO report flame counters
 }
 void
 FlameStack::ResetStats (const Ptr<MeshPointDevice> mp)
 {
+  mp->ResetStats ();
+  // TODO reset flame counters
 }
 } //namespace ns3
