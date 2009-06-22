@@ -29,10 +29,6 @@ def register_types(module):
     module.add_enum('InterfaceAddressScope_e', ['HOST', 'LINK', 'GLOBAL'], outer_class=root_module['ns3::Ipv4InterfaceAddress'])
     ## ipv4-address.h: ns3::Ipv4Mask [class]
     module.add_class('Ipv4Mask')
-    ## ipv4-routing-table-entry.h: ns3::Ipv4MulticastRoutingTableEntry [class]
-    module.add_class('Ipv4MulticastRoutingTableEntry')
-    ## ipv4-routing-table-entry.h: ns3::Ipv4RoutingTableEntry [class]
-    module.add_class('Ipv4RoutingTableEntry')
     ## ipv6-address.h: ns3::Ipv6Address [class]
     module.add_class('Ipv6Address')
     ## ipv6-address.h: ns3::Ipv6Address [class]
@@ -129,8 +125,6 @@ def register_types(module):
     module.add_class('Ipv4RawSocketFactory', parent=root_module['ns3::SocketFactory'])
     ## ipv4-routing-protocol.h: ns3::Ipv4RoutingProtocol [class]
     module.add_class('Ipv4RoutingProtocol', parent=root_module['ns3::Object'])
-    ## ipv4-static-routing.h: ns3::Ipv4StaticRouting [class]
-    module.add_class('Ipv4StaticRouting', parent=root_module['ns3::Ipv4RoutingProtocol'])
     ## net-device.h: ns3::NetDevice [class]
     module.add_class('NetDevice', parent=root_module['ns3::Object'])
     ## net-device.h: ns3::NetDevice::PacketType [enumeration]
@@ -204,8 +198,6 @@ def register_methods(root_module):
     register_Ns3Ipv4AddressGenerator_methods(root_module, root_module['ns3::Ipv4AddressGenerator'])
     register_Ns3Ipv4InterfaceAddress_methods(root_module, root_module['ns3::Ipv4InterfaceAddress'])
     register_Ns3Ipv4Mask_methods(root_module, root_module['ns3::Ipv4Mask'])
-    register_Ns3Ipv4MulticastRoutingTableEntry_methods(root_module, root_module['ns3::Ipv4MulticastRoutingTableEntry'])
-    register_Ns3Ipv4RoutingTableEntry_methods(root_module, root_module['ns3::Ipv4RoutingTableEntry'])
     register_Ns3Ipv6Address_methods(root_module, root_module['ns3::Ipv6Address'])
     register_Ns3Ipv6Prefix_methods(root_module, root_module['ns3::Ipv6Prefix'])
     register_Ns3Mac48Address_methods(root_module, root_module['ns3::Mac48Address'])
@@ -247,7 +239,6 @@ def register_methods(root_module):
     register_Ns3Ipv4_methods(root_module, root_module['ns3::Ipv4'])
     register_Ns3Ipv4RawSocketFactory_methods(root_module, root_module['ns3::Ipv4RawSocketFactory'])
     register_Ns3Ipv4RoutingProtocol_methods(root_module, root_module['ns3::Ipv4RoutingProtocol'])
-    register_Ns3Ipv4StaticRouting_methods(root_module, root_module['ns3::Ipv4StaticRouting'])
     register_Ns3NetDevice_methods(root_module, root_module['ns3::NetDevice'])
     register_Ns3Node_methods(root_module, root_module['ns3::Node'])
     register_Ns3PacketSocketFactory_methods(root_module, root_module['ns3::PacketSocketFactory'])
@@ -683,131 +674,6 @@ def register_Ns3Ipv4Mask_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('uint32_t', 'mask')])
-    return
-
-def register_Ns3Ipv4MulticastRoutingTableEntry_methods(root_module, cls):
-    cls.add_output_stream_operator()
-    ## ipv4-routing-table-entry.h: ns3::Ipv4MulticastRoutingTableEntry::Ipv4MulticastRoutingTableEntry() [constructor]
-    cls.add_constructor([])
-    ## ipv4-routing-table-entry.h: ns3::Ipv4MulticastRoutingTableEntry::Ipv4MulticastRoutingTableEntry(ns3::Ipv4MulticastRoutingTableEntry const & route) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4MulticastRoutingTableEntry const &', 'route')])
-    ## ipv4-routing-table-entry.h: ns3::Ipv4MulticastRoutingTableEntry::Ipv4MulticastRoutingTableEntry(ns3::Ipv4MulticastRoutingTableEntry const * route) [constructor]
-    cls.add_constructor([param('ns3::Ipv4MulticastRoutingTableEntry const *', 'route')])
-    ## ipv4-routing-table-entry.h: static ns3::Ipv4MulticastRoutingTableEntry ns3::Ipv4MulticastRoutingTableEntry::CreateMulticastRoute(ns3::Ipv4Address origin, ns3::Ipv4Address group, uint32_t inputInterface, std::vector<unsigned int, std::allocator<unsigned int> > outputInterfaces) [member function]
-    cls.add_method('CreateMulticastRoute', 
-                   'ns3::Ipv4MulticastRoutingTableEntry', 
-                   [param('ns3::Ipv4Address', 'origin'), param('ns3::Ipv4Address', 'group'), param('uint32_t', 'inputInterface'), param('std::vector< unsigned int >', 'outputInterfaces')], 
-                   is_static=True)
-    ## ipv4-routing-table-entry.h: ns3::Ipv4Address ns3::Ipv4MulticastRoutingTableEntry::GetGroup() const [member function]
-    cls.add_method('GetGroup', 
-                   'ns3::Ipv4Address', 
-                   [], 
-                   is_const=True)
-    ## ipv4-routing-table-entry.h: uint32_t ns3::Ipv4MulticastRoutingTableEntry::GetInputInterface() const [member function]
-    cls.add_method('GetInputInterface', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## ipv4-routing-table-entry.h: uint32_t ns3::Ipv4MulticastRoutingTableEntry::GetNOutputInterfaces() const [member function]
-    cls.add_method('GetNOutputInterfaces', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## ipv4-routing-table-entry.h: ns3::Ipv4Address ns3::Ipv4MulticastRoutingTableEntry::GetOrigin() const [member function]
-    cls.add_method('GetOrigin', 
-                   'ns3::Ipv4Address', 
-                   [], 
-                   is_const=True)
-    ## ipv4-routing-table-entry.h: uint32_t ns3::Ipv4MulticastRoutingTableEntry::GetOutputInterface(uint32_t n) const [member function]
-    cls.add_method('GetOutputInterface', 
-                   'uint32_t', 
-                   [param('uint32_t', 'n')], 
-                   is_const=True)
-    ## ipv4-routing-table-entry.h: std::vector<unsigned int, std::allocator<unsigned int> > ns3::Ipv4MulticastRoutingTableEntry::GetOutputInterfaces() const [member function]
-    cls.add_method('GetOutputInterfaces', 
-                   'std::vector< unsigned int >', 
-                   [], 
-                   is_const=True)
-    return
-
-def register_Ns3Ipv4RoutingTableEntry_methods(root_module, cls):
-    cls.add_output_stream_operator()
-    ## ipv4-routing-table-entry.h: ns3::Ipv4RoutingTableEntry::Ipv4RoutingTableEntry() [constructor]
-    cls.add_constructor([])
-    ## ipv4-routing-table-entry.h: ns3::Ipv4RoutingTableEntry::Ipv4RoutingTableEntry(ns3::Ipv4RoutingTableEntry const & route) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4RoutingTableEntry const &', 'route')])
-    ## ipv4-routing-table-entry.h: ns3::Ipv4RoutingTableEntry::Ipv4RoutingTableEntry(ns3::Ipv4RoutingTableEntry const * route) [constructor]
-    cls.add_constructor([param('ns3::Ipv4RoutingTableEntry const *', 'route')])
-    ## ipv4-routing-table-entry.h: static ns3::Ipv4RoutingTableEntry ns3::Ipv4RoutingTableEntry::CreateDefaultRoute(ns3::Ipv4Address nextHop, uint32_t interface) [member function]
-    cls.add_method('CreateDefaultRoute', 
-                   'ns3::Ipv4RoutingTableEntry', 
-                   [param('ns3::Ipv4Address', 'nextHop'), param('uint32_t', 'interface')], 
-                   is_static=True)
-    ## ipv4-routing-table-entry.h: static ns3::Ipv4RoutingTableEntry ns3::Ipv4RoutingTableEntry::CreateHostRouteTo(ns3::Ipv4Address dest, ns3::Ipv4Address nextHop, uint32_t interface) [member function]
-    cls.add_method('CreateHostRouteTo', 
-                   'ns3::Ipv4RoutingTableEntry', 
-                   [param('ns3::Ipv4Address', 'dest'), param('ns3::Ipv4Address', 'nextHop'), param('uint32_t', 'interface')], 
-                   is_static=True)
-    ## ipv4-routing-table-entry.h: static ns3::Ipv4RoutingTableEntry ns3::Ipv4RoutingTableEntry::CreateHostRouteTo(ns3::Ipv4Address dest, uint32_t interface) [member function]
-    cls.add_method('CreateHostRouteTo', 
-                   'ns3::Ipv4RoutingTableEntry', 
-                   [param('ns3::Ipv4Address', 'dest'), param('uint32_t', 'interface')], 
-                   is_static=True)
-    ## ipv4-routing-table-entry.h: static ns3::Ipv4RoutingTableEntry ns3::Ipv4RoutingTableEntry::CreateNetworkRouteTo(ns3::Ipv4Address network, ns3::Ipv4Mask networkMask, ns3::Ipv4Address nextHop, uint32_t interface) [member function]
-    cls.add_method('CreateNetworkRouteTo', 
-                   'ns3::Ipv4RoutingTableEntry', 
-                   [param('ns3::Ipv4Address', 'network'), param('ns3::Ipv4Mask', 'networkMask'), param('ns3::Ipv4Address', 'nextHop'), param('uint32_t', 'interface')], 
-                   is_static=True)
-    ## ipv4-routing-table-entry.h: static ns3::Ipv4RoutingTableEntry ns3::Ipv4RoutingTableEntry::CreateNetworkRouteTo(ns3::Ipv4Address network, ns3::Ipv4Mask networkMask, uint32_t interface) [member function]
-    cls.add_method('CreateNetworkRouteTo', 
-                   'ns3::Ipv4RoutingTableEntry', 
-                   [param('ns3::Ipv4Address', 'network'), param('ns3::Ipv4Mask', 'networkMask'), param('uint32_t', 'interface')], 
-                   is_static=True)
-    ## ipv4-routing-table-entry.h: ns3::Ipv4Address ns3::Ipv4RoutingTableEntry::GetDest() const [member function]
-    cls.add_method('GetDest', 
-                   'ns3::Ipv4Address', 
-                   [], 
-                   is_const=True)
-    ## ipv4-routing-table-entry.h: ns3::Ipv4Address ns3::Ipv4RoutingTableEntry::GetDestNetwork() const [member function]
-    cls.add_method('GetDestNetwork', 
-                   'ns3::Ipv4Address', 
-                   [], 
-                   is_const=True)
-    ## ipv4-routing-table-entry.h: ns3::Ipv4Mask ns3::Ipv4RoutingTableEntry::GetDestNetworkMask() const [member function]
-    cls.add_method('GetDestNetworkMask', 
-                   'ns3::Ipv4Mask', 
-                   [], 
-                   is_const=True)
-    ## ipv4-routing-table-entry.h: ns3::Ipv4Address ns3::Ipv4RoutingTableEntry::GetGateway() const [member function]
-    cls.add_method('GetGateway', 
-                   'ns3::Ipv4Address', 
-                   [], 
-                   is_const=True)
-    ## ipv4-routing-table-entry.h: uint32_t ns3::Ipv4RoutingTableEntry::GetInterface() const [member function]
-    cls.add_method('GetInterface', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## ipv4-routing-table-entry.h: bool ns3::Ipv4RoutingTableEntry::IsDefault() const [member function]
-    cls.add_method('IsDefault', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ipv4-routing-table-entry.h: bool ns3::Ipv4RoutingTableEntry::IsGateway() const [member function]
-    cls.add_method('IsGateway', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ipv4-routing-table-entry.h: bool ns3::Ipv4RoutingTableEntry::IsHost() const [member function]
-    cls.add_method('IsHost', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ipv4-routing-table-entry.h: bool ns3::Ipv4RoutingTableEntry::IsNetwork() const [member function]
-    cls.add_method('IsNetwork', 
-                   'bool', 
-                   [], 
-                   is_const=True)
     return
 
 def register_Ns3Ipv6Address_methods(root_module, cls):
@@ -2883,93 +2749,6 @@ def register_Ns3Ipv4RoutingProtocol_methods(root_module, cls):
     cls.add_method('SetIpv4', 
                    'void', 
                    [param('ns3::Ptr< ns3::Ipv4 >', 'ipv4')], 
-                   is_pure_virtual=True, is_virtual=True)
-    return
-
-def register_Ns3Ipv4StaticRouting_methods(root_module, cls):
-    ## ipv4-static-routing.h: ns3::Ipv4StaticRouting::Ipv4StaticRouting(ns3::Ipv4StaticRouting const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4StaticRouting const &', 'arg0')])
-    ## ipv4-static-routing.h: ns3::Ipv4StaticRouting::Ipv4StaticRouting() [constructor]
-    cls.add_constructor([])
-    ## ipv4-static-routing.h: static ns3::TypeId ns3::Ipv4StaticRouting::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## ipv4-static-routing.h: void ns3::Ipv4StaticRouting::AddHostRouteTo(ns3::Ipv4Address dest, ns3::Ipv4Address nextHop, uint32_t interface) [member function]
-    cls.add_method('AddHostRouteTo', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'dest'), param('ns3::Ipv4Address', 'nextHop'), param('uint32_t', 'interface')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## ipv4-static-routing.h: void ns3::Ipv4StaticRouting::AddHostRouteTo(ns3::Ipv4Address dest, uint32_t interface) [member function]
-    cls.add_method('AddHostRouteTo', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'dest'), param('uint32_t', 'interface')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## ipv4-static-routing.h: void ns3::Ipv4StaticRouting::AddNetworkRouteTo(ns3::Ipv4Address network, ns3::Ipv4Mask networkMask, ns3::Ipv4Address nextHop, uint32_t interface) [member function]
-    cls.add_method('AddNetworkRouteTo', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'network'), param('ns3::Ipv4Mask', 'networkMask'), param('ns3::Ipv4Address', 'nextHop'), param('uint32_t', 'interface')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## ipv4-static-routing.h: void ns3::Ipv4StaticRouting::AddNetworkRouteTo(ns3::Ipv4Address network, ns3::Ipv4Mask networkMask, uint32_t interface) [member function]
-    cls.add_method('AddNetworkRouteTo', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'network'), param('ns3::Ipv4Mask', 'networkMask'), param('uint32_t', 'interface')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## ipv4-static-routing.h: void ns3::Ipv4StaticRouting::SetDefaultRoute(ns3::Ipv4Address nextHop, uint32_t interface) [member function]
-    cls.add_method('SetDefaultRoute', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'nextHop'), param('uint32_t', 'interface')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## ipv4-static-routing.h: uint32_t ns3::Ipv4StaticRouting::GetNRoutes() [member function]
-    cls.add_method('GetNRoutes', 
-                   'uint32_t', 
-                   [], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## ipv4-static-routing.h: ns3::Ipv4RoutingTableEntry ns3::Ipv4StaticRouting::GetDefaultRoute() [member function]
-    cls.add_method('GetDefaultRoute', 
-                   'ns3::Ipv4RoutingTableEntry', 
-                   [], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## ipv4-static-routing.h: ns3::Ipv4RoutingTableEntry ns3::Ipv4StaticRouting::GetRoute(uint32_t i) [member function]
-    cls.add_method('GetRoute', 
-                   'ns3::Ipv4RoutingTableEntry', 
-                   [param('uint32_t', 'i')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## ipv4-static-routing.h: void ns3::Ipv4StaticRouting::RemoveRoute(uint32_t i) [member function]
-    cls.add_method('RemoveRoute', 
-                   'void', 
-                   [param('uint32_t', 'i')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## ipv4-static-routing.h: void ns3::Ipv4StaticRouting::AddMulticastRoute(ns3::Ipv4Address origin, ns3::Ipv4Address group, uint32_t inputInterface, std::vector<unsigned int, std::allocator<unsigned int> > outputInterfaces) [member function]
-    cls.add_method('AddMulticastRoute', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'origin'), param('ns3::Ipv4Address', 'group'), param('uint32_t', 'inputInterface'), param('std::vector< unsigned int >', 'outputInterfaces')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## ipv4-static-routing.h: void ns3::Ipv4StaticRouting::SetDefaultMulticastRoute(uint32_t outputInterface) [member function]
-    cls.add_method('SetDefaultMulticastRoute', 
-                   'void', 
-                   [param('uint32_t', 'outputInterface')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## ipv4-static-routing.h: uint32_t ns3::Ipv4StaticRouting::GetNMulticastRoutes() const [member function]
-    cls.add_method('GetNMulticastRoutes', 
-                   'uint32_t', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## ipv4-static-routing.h: ns3::Ipv4MulticastRoutingTableEntry ns3::Ipv4StaticRouting::GetMulticastRoute(uint32_t i) const [member function]
-    cls.add_method('GetMulticastRoute', 
-                   'ns3::Ipv4MulticastRoutingTableEntry', 
-                   [param('uint32_t', 'i')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## ipv4-static-routing.h: bool ns3::Ipv4StaticRouting::RemoveMulticastRoute(ns3::Ipv4Address origin, ns3::Ipv4Address group, uint32_t inputInterface) [member function]
-    cls.add_method('RemoveMulticastRoute', 
-                   'bool', 
-                   [param('ns3::Ipv4Address', 'origin'), param('ns3::Ipv4Address', 'group'), param('uint32_t', 'inputInterface')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## ipv4-static-routing.h: void ns3::Ipv4StaticRouting::RemoveMulticastRoute(uint32_t index) [member function]
-    cls.add_method('RemoveMulticastRoute', 
-                   'void', 
-                   [param('uint32_t', 'index')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
