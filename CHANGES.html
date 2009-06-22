@@ -79,6 +79,12 @@ fragmentation and reassembly.
 <h2>Changes to existing API:</h2>
 <ul>
 
+<li><b>Ipv4Interface::GetMtu () deleted</b>
+  <p>The Ipv4Interface API is private to internet-stack module; this method
+was just a pass-through to GetDevice ()->GetMtu ().
+  </p>
+</li>
+
 <li><b>CalcChecksum attribute changes</b>
   <p>Four IPv4 CalcChecksum attributes (which enable the computation of 
 checksums that are disabled by default) have been collapsed into one global 

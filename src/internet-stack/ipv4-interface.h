@@ -81,15 +81,6 @@ public:
   uint16_t GetMetric (void) const;
 
   /**
-   * This function a pass-through to NetDevice GetMtu, modulo
-   * the  LLC/SNAP header i.e., ipv4MTU = NetDeviceMtu - LLCSNAPSIZE
-   * \returns the Maximum Transmission Unit associated to this interface.
-   *
-   * XXX deprecated?  This is duplicate API to GetDevice ()->GetMtu ()
-   */
-  uint16_t GetMtu (void) const;
-
-  /**
    * These are IP interface states and may be distinct from 
    * NetDevice states, such as found in real implementations
    * (where the device may be down but IP interface state is still up).

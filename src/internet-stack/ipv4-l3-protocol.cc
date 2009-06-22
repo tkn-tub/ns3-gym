@@ -478,7 +478,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
           Ptr<Ipv4Interface> outInterface = *ifaceIter;
           Ptr<Packet> packetCopy = packet->Copy ();
 
-          NS_ASSERT (packetCopy->GetSize () <= outInterface->GetMtu ());
+          NS_ASSERT (packetCopy->GetSize () <= outInterface->GetDevice()->GetMtu ());
           packetCopy->AddHeader (ipHeader);
           m_txTrace (packetCopy, ifaceIndex);
           outInterface->Send (packetCopy, destination);
@@ -608,7 +608,7 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
   Ptr<Ipv4Interface> outInterface = GetInterface (interface);
   NS_LOG_LOGIC ("Send via NetDevice ifIndex " << outDev->GetIfIndex () << " ipv4InterfaceIndex " << interface);
 
-  NS_ASSERT (packet->GetSize () <= outInterface->GetMtu ());
+  NS_ASSERT (packet->GetSize () <= outInterface->GetDevice ()->GetMtu ());
   if (!route->GetGateway ().IsEqual (Ipv4Address ("0.0.0.0"))) 
     {
       if (outInterface->IsUp ())
@@ -810,7 +810,7 @@ Ipv4L3Protocol::GetMtu (uint32_t i) const
 {
   NS_LOG_FUNCTION (this << i);
   Ptr<Ipv4Interface> interface = GetInterface (i);
-  return interface->GetMtu ();
+  return interface->GetDevice ()->GetMtu ();
 }
 
 bool 

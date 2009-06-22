@@ -127,13 +127,6 @@ Ipv4Interface::GetMetric (void) const
   return m_metric;
 }
 
-uint16_t 
-Ipv4Interface::GetMtu (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_device->GetMtu ();
-}
-
 /**
  * These are IP interface states and may be distinct from 
  * NetDevice states, such as found in real implementations
