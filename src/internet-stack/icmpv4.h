@@ -50,7 +50,8 @@ public:
   void SetData (Ptr<const Packet> data);
   uint16_t GetIdentifier (void) const;
   uint16_t GetSequenceNumber (void) const;
-  uint32_t GetData (uint8_t payload[16]) const;
+  uint32_t GetDataSize (void) const;
+  uint32_t GetData (uint8_t payload[]) const;
 
 
   static TypeId GetTypeId (void);
@@ -64,7 +65,7 @@ public:
 private:
   uint16_t m_identifier;
   uint16_t m_sequence;
-  uint8_t m_data[16];
+  uint8_t *m_data;
   uint32_t m_dataSize;
 };
 
