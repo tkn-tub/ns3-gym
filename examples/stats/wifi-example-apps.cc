@@ -250,11 +250,14 @@ Receiver::Receive(Ptr<Socket> socket)
     }
 
     TimestampTag timestamp;
-    packet->FindFirstMatchingByteTag(timestamp);
-    Time tx = timestamp.GetTimestamp();
+    // Should never not be found since the sender is adding it, but
+    // you never know.
+    if (packet->FindFirstMatchingByteTag(timestamp)) {
+      Time tx = timestamp.GetTimestamp();
 
-    if (m_delay != 0) {
-      m_delay->Update(Simulator::Now() - tx);
+      if (m_delay != 0) {
+        m_delay->Update(Simulator::Now() - tx);
+      }
     }
 
     if (m_calc != 0) {
