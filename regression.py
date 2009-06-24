@@ -40,6 +40,26 @@ def diff(dir1, dir2, verbose):
     import filecmp
     comp = filecmp.dircmp(dir1, dir2)
     differ = (comp.left_only or comp.right_only or comp.diff_files)
+
+    if differ:
+        # ok, stupid binary comparison reports differences, but maybe
+        # only text files differ, in which case we should compare
+        # again while ignoring newline differences between
+        # windows/mac/unix.
+        if not comp.left_only and not comp.right_only:
+            for diff_fname in comp.diff_files:
+                if not (diff_fname.endswith(".tr") or diff_fname.endswith(".mob")):
+                    # doesn't look like a text file; it has to differ
+                    break
+                diff_file1 = open(os.path.join(dir1, diff_fname), "rtU").readlines()
+                diff_file2 = open(os.path.join(dir2, diff_fname), "rtU").readlines()
+                if diff_file1 != diff_file2:
+                    break
+                #else:
+                #    print ">>>>>>>> %s file does not really differ!" % (diff_fname)
+            else:
+                differ = False
+
     if differ:
         if verbose:
             comp.report()
