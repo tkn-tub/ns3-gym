@@ -37,8 +37,13 @@ namespace ns3 {
 
     virtual void Output(DataCollector &dc) = 0;
 
+    void SetFilePrefix(const std::string prefix);
+    std::string GetFilePrefix() const;
+
   protected:
     virtual void DoDispose();
+
+    std::string m_filePrefix;
 
     // end class DataOutputInterface
   };

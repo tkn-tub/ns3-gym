@@ -35,9 +35,9 @@ NS_LOG_COMPONENT_DEFINE("SqliteDataOutput");
 
 //--------------------------------------------------------------
 //----------------------------------------------
-SqliteDataOutput::SqliteDataOutput() :
-  m_dbFile("data.db")
+SqliteDataOutput::SqliteDataOutput()
 {
+  m_filePrefix = "data";
   NS_LOG_FUNCTION_NOARGS();
 }
 SqliteDataOutput::~SqliteDataOutput()
@@ -51,17 +51,6 @@ SqliteDataOutput::DoDispose()
 
   DataOutputInterface::DoDispose();
   // end SqliteDataOutput::DoDispose
-}
-
-void
-SqliteDataOutput::SetDBFile(const std::string file)
-{
-  m_dbFile = file;
-}
-std::string
-SqliteDataOutput::GetDBFile() const
-{
-  return m_dbFile;
 }
 
 int
@@ -111,6 +100,7 @@ SqliteDataOutput::Exec(std::string exe) {
 void
 SqliteDataOutput::Output(DataCollector &dc)
 {
+  std::string m_dbFile = m_filePrefix + ".db";
 
   if (sqlite3_open(m_dbFile.c_str(), &m_db)) {
     NS_LOG_ERROR("Could not open sqlite3 database \"" << m_dbFile << "\"");

@@ -37,9 +37,6 @@ namespace ns3 {
 
     virtual void Output(DataCollector &dc);
 
-    void SetFilePrefix(const std::string prefix);
-    std::string GetFilePrefix() const;
-
   protected:
     virtual void DoDispose();
 
@@ -73,7 +70,6 @@ namespace ns3 {
       // end class OmnetOutputCallback
     };
 
-    std::string m_filePrefix;
     // end class OmnetDataOutput
   };
 
