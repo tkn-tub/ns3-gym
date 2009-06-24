@@ -88,6 +88,24 @@ UdpEchoClientHelper::SetAttribute (
   m_factory.Set (name, value);
 }
 
+void
+UdpEchoClientHelper::SetFill (Ptr<Application> app, std::string fill)
+{
+  app->GetObject<UdpEchoClient>()->SetFill (fill);
+}
+
+void
+UdpEchoClientHelper::SetFill (Ptr<Application> app, uint8_t fill, uint32_t dataLength)
+{
+  app->GetObject<UdpEchoClient>()->SetFill (fill, dataLength);
+}
+
+void
+UdpEchoClientHelper::SetFill (Ptr<Application> app, uint8_t *fill, uint32_t fillLength, uint32_t dataLength)
+{
+  app->GetObject<UdpEchoClient>()->SetFill (fill, fillLength, dataLength);
+}
+
 ApplicationContainer
 UdpEchoClientHelper::Install (Ptr<Node> node) const
 {

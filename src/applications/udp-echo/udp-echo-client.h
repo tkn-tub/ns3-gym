@@ -46,6 +46,75 @@ public:
 
   void SetRemote (Ipv4Address ip, uint16_t port);
 
+  /**
+   * Set the data size of the packet (the number of bytes that are sent as data
+   * to the server).  The contents of the data are set to unspecified (don't
+   * care) by this call.
+   *
+   * \warn If you have set the fill data for the echo client using one of the
+   * SetFill calls, this will undo those effects.
+   *
+   * \param dataSize The size of the echo data you want to sent.
+   */
+  void SetDataSize (uint32_t dataSize);
+
+  /**
+   * Get the number of data bytes that will be sent to the server.
+   *
+   * \warn The number of bytes may be modified by calling any one of the 
+   * SetFill methods.  If you have called SetFill, then the number of 
+   * data bytes will correspond to the size of an initialized data buffer.
+   * If you have not called a SetFill method, the number of data bytes will
+   * correspond to the number of don't care bytes that will be sent.
+   *
+   * \returns The number of data bytes.
+   */
+  uint32_t GetDataSize (void) const;
+
+  /**
+   * Set the data fill of the packet (what is sent as data to the server) to 
+   * the zero-terminated contents of the fill string string.
+   *
+   * \warn The size of resulting echo packets will be automatically adjusted
+   * to reflect the size of the fill string -- this means that the PacketSize
+   * attribute may be changed as a result of this call.
+   *
+   * \param fill The string to use as the actual echo data bytes.
+   */
+  void SetFill (std::string fill);
+
+  /**
+   * Set the data fill of the packet (what is sent as data to the server) to 
+   * the repeated contents of the fill byte.  i.e., the fill byte will be 
+   * used to initialize the contents of the data packet.
+   * 
+   * \warn The size of resulting echo packets will be automatically adjusted
+   * to reflect the dataSize parameter -- this means that the PacketSize
+   * attribute may be changed as a result of this call.
+   *
+   * \param fill The byte to be repeated in constructing the packet data..
+   * \param dataSize The desired size of the resulting echo packet data.
+   */
+  void SetFill (uint8_t fill, uint32_t dataSize);
+
+  /**
+   * Set the data fill of the packet (what is sent as data to the server) to
+   * the contents of the fill buffer, repeated as many times as is required.
+   *
+   * Initializing the packet to the contents of a provided single buffer is 
+   * accomplished by setting the fillSize set to your desired dataSize
+   * (and providing an appropriate buffer).
+   *
+   * \warn The size of resulting echo packets will be automatically adjusted
+   * to reflect the dataSize parameter -- this means that the PacketSize
+   * attribute of the Application may be changed as a result of this call.
+   *
+   * \param fill The fill pattern to use when constructing packets.
+   * \param fillSize The number of bytes in the provided fill pattern.
+   * \param dataSize The desired size of the final echo data.
+   */
+  void SetFill (uint8_t *fill, uint32_t fillSize, uint32_t dataSize);
+
 protected:
   virtual void DoDispose (void);
 
@@ -62,6 +131,9 @@ private:
   uint32_t m_count;
   Time m_interval;
   uint32_t m_size;
+
+  uint32_t m_dataSize;
+  uint8_t *m_data;
 
   uint32_t m_sent;
   Ptr<Socket> m_socket;

@@ -43,30 +43,10 @@ main (int argc, char *argv[])
 //
 #if 0
   LogComponentEnable ("UdpEchoExample", LOG_LEVEL_INFO);
-
-  LogComponentEnable("Object", LOG_LEVEL_ALL);
-  LogComponentEnable("Queue", LOG_LEVEL_ALL);
-  LogComponentEnable("DropTailQueue", LOG_LEVEL_ALL);
-  LogComponentEnable("Channel", LOG_LEVEL_ALL);
-  LogComponentEnable("CsmaChannel", LOG_LEVEL_ALL);
-  LogComponentEnable("NetDevice", LOG_LEVEL_ALL);
-  LogComponentEnable("CsmaNetDevice", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("PacketSocket", LOG_LEVEL_ALL);
-  LogComponentEnable("Socket", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpSocket", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpL4Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4StaticRouting", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4Interface", LOG_LEVEL_ALL);
-  LogComponentEnable("ArpIpv4Interface", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4LoopbackInterface", LOG_LEVEL_ALL);
-  LogComponentEnable("OnOffApplication", LOG_LEVEL_ALL);
-  LogComponentEnable("PacketSinkApplication", LOG_LEVEL_ALL);
   LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_ALL);
   LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_ALL);
 #endif
-
+//
 // Allow the user to override any of the defaults and the above Bind() at
 // run-time, via command-line arguments
 //
@@ -124,6 +104,19 @@ main (int argc, char *argv[])
   apps = client.Install (n.Get (0));
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (10.0));
+
+#if 0
+//
+// Users may find it convenient to initialize echo packets with actual data;
+// the below lines suggest how to do this
+//
+  client.SetFill(apps.Get (0), "Hello World");
+
+  client.SetFill(apps.Get (0), 0xa5, 1024);
+
+  uint8_t fill[] = {0, 1, 2, 3, 4, 5, 6};
+  client.SetFill(apps.Get (0), fill, sizeof(fill), 1024);
+#endif
 
   std::ofstream ascii;
   ascii.open ("udp-echo.tr");

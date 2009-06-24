@@ -57,9 +57,10 @@ UdpEchoClient::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&UdpEchoClient::m_peerPort),
                    MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("PacketSize", "Size of packets generated",
+    .AddAttribute ("PacketSize", "Size of echo data in outbound packets",
                    UintegerValue (100),
-                   MakeUintegerAccessor (&UdpEchoClient::m_size),
+                   MakeUintegerAccessor (&UdpEchoClient::SetDataSize,
+                                         &UdpEchoClient::GetDataSize),
                    MakeUintegerChecker<uint32_t> ())
     ;
   return tid;
@@ -71,12 +72,18 @@ UdpEchoClient::UdpEchoClient ()
   m_sent = 0;
   m_socket = 0;
   m_sendEvent = EventId ();
+  m_data = 0;
+  m_dataSize = 0;
 }
 
 UdpEchoClient::~UdpEchoClient()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_socket = 0;
+
+  delete [] m_data;
+  m_data = 0;
+  m_dataSize = 0;
 }
 
 void 
@@ -126,6 +133,106 @@ UdpEchoClient::StopApplication ()
 }
 
 void 
+UdpEchoClient::SetDataSize (uint32_t dataSize)
+{
+  NS_LOG_FUNCTION (dataSize);
+
+  //
+  // If the client is setting the echo packet data size this way, we infer
+  // that she doesn't care about the contents of the packet at all, so 
+  // neither will we.
+  //
+  delete [] m_data;
+  m_data = 0;
+  m_dataSize = 0;
+  m_size = dataSize;
+}
+
+uint32_t 
+UdpEchoClient::GetDataSize (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_size;
+}
+
+void 
+UdpEchoClient::SetFill (std::string fill)
+{
+  NS_LOG_FUNCTION (fill);
+
+  uint32_t dataSize = fill.size () + 1;
+
+  if (dataSize != m_dataSize)
+    {
+      delete [] m_data;
+      m_data = new uint8_t [dataSize];
+      m_dataSize = dataSize;
+    }
+
+  memcpy (m_data, fill.c_str (), dataSize);
+
+  //
+  // Overwrite packet size attribute.
+  //
+  m_size = dataSize;
+}
+
+void 
+UdpEchoClient::SetFill (uint8_t fill, uint32_t dataSize)
+{
+  if (dataSize != m_dataSize)
+    {
+      delete [] m_data;
+      m_data = new uint8_t [dataSize];
+      m_dataSize = dataSize;
+    }
+
+  memset (m_data, fill, dataSize);
+
+  //
+  // Overwrite packet size attribute.
+  //
+  m_size = dataSize;
+}
+
+void 
+UdpEchoClient::SetFill (uint8_t *fill, uint32_t fillSize, uint32_t dataSize)
+{
+  if (dataSize != m_dataSize)
+    {
+      delete [] m_data;
+      m_data = new uint8_t [dataSize];
+      m_dataSize = dataSize;
+    }
+
+  if (fillSize >= dataSize)
+    {
+      memcpy (m_data, fill, dataSize);
+      return;
+    }
+
+  //
+  // Do all but the final fill.
+  //
+  uint32_t filled = 0;
+  while (filled + fillSize < dataSize)
+    {
+      memcpy (&m_data[filled], fill, fillSize);
+      filled += fillSize;
+    }
+
+  //
+  // Last fill may be partial
+  //
+  memcpy(&m_data[filled], fill, dataSize - filled);
+
+  //
+  // Overwrite packet size attribute.
+  //
+  m_size = dataSize;
+}
+
+void 
 UdpEchoClient::ScheduleTransmit (Time dt)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -139,8 +246,32 @@ UdpEchoClient::Send (void)
 
   NS_ASSERT (m_sendEvent.IsExpired ());
 
-  Ptr<Packet> p = Create<Packet> (m_size);
-  m_socket->Send (p);
+  if (m_dataSize)
+    {
+      //
+      // If m_dataSize is non-zero, we have a data buffer of the same size that we
+      // are expected to copy and send.  This state of affairs is created if one of
+      // the Fill functions is called.  In this case, m_size must have been set
+      // to agree with m_dataSize
+      //
+      NS_ASSERT_MSG (m_dataSize == m_size, "UdpEchoClient::Send(): m_size and m_dataSize inconsistent");
+      NS_ASSERT_MSG (m_data, "UdpEchoClient::Send(): m_dataSize but no m_data");
+      Ptr<Packet> p = Create<Packet> (m_data, m_dataSize);
+      m_socket->Send (p);
+    }
+  else
+    {
+      //
+      // If m_dataSize is zero, the client has indicated that she doesn't care 
+      // about the data itself either by specifying the data size by setting
+      // the corresponding atribute or by not calling a SetFill function.  In 
+      // this case, we don't worry about it either.  But we do allow m_size
+      // to have a value different from the (zero) m_dataSize.
+      //
+      Ptr<Packet> p = Create<Packet> (m_size);
+      m_socket->Send (p);
+    }
+
   ++m_sent;
 
   NS_LOG_INFO ("Sent " << m_size << " bytes to " << m_peerAddress);
