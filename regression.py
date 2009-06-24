@@ -142,6 +142,8 @@ class regression_test_task(Task.TaskBase):
                     raise
             os.makedirs(trace_output_path)
             # run it
+            #print "self.run_reference_test:(%r, %r, %r, %r, %r)" \
+            #    % (reference_traces_path, trace_output_path, program, arguments, is_pyscript)
             result = self.run_reference_test(reference_traces_path, trace_output_path, program, arguments, is_pyscript)
             if result == 0:
                 print "PASS " + self.test_name
