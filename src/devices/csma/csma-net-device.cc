@@ -321,13 +321,6 @@ CsmaNetDevice::GetFrameSize (void) const
   return m_frameSize;
 }
 
-  void 
-CsmaNetDevice::SetAddress (Mac48Address self)
-{
-  NS_LOG_FUNCTION (self);
-  m_address = self;
-}
-
   void
 CsmaNetDevice::SetSendEnable (bool sendEnable)
 {
@@ -873,6 +866,13 @@ CsmaNetDevice::GetChannel (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_channel;
+}
+
+  void
+CsmaNetDevice::SetAddress (Address address)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_address = Mac48Address::ConvertFrom (address);
 }
 
   Address 

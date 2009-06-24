@@ -45,6 +45,7 @@ public:
   virtual void SetIfIndex(const uint32_t index);
   virtual uint32_t GetIfIndex(void) const;
   virtual Ptr<Channel> GetChannel (void) const;
+  virtual void SetAddress (Address address);
   virtual Address GetAddress (void) const;
   virtual bool SetMtu (const uint16_t mtu);
   virtual uint16_t GetMtu (void) const;

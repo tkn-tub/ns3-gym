@@ -43,12 +43,12 @@ public:
 
   void Receive (Ptr<Packet> packet, uint16_t protocol, Mac48Address to, Mac48Address from);
   void SetChannel (Ptr<SimpleChannel> channel);
-  void SetAddress (Mac48Address address);
 
   // inherited from NetDevice base class.
   virtual void SetIfIndex(const uint32_t index);
   virtual uint32_t GetIfIndex(void) const;
   virtual Ptr<Channel> GetChannel (void) const;
+  virtual void SetAddress (Address address);
   virtual Address GetAddress (void) const;
   virtual bool SetMtu (const uint16_t mtu);
   virtual uint16_t GetMtu (void) const;

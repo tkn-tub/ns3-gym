@@ -93,6 +93,12 @@ LoopbackNetDevice::GetChannel (void) const
   return 0;
 }
 
+void 
+LoopbackNetDevice::SetAddress (Address address)
+{
+  m_address = Mac48Address::ConvertFrom (address);
+}
+
 Address 
 LoopbackNetDevice::GetAddress (void) const
 {

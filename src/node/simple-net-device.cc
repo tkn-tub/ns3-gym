@@ -77,12 +77,6 @@ SimpleNetDevice::SetChannel (Ptr<SimpleChannel> channel)
 }
 
 void 
-SimpleNetDevice::SetAddress (Mac48Address address)
-{
-  m_address = address;
-}
-
-void 
 SimpleNetDevice::SetIfIndex(const uint32_t index)
 {
   m_ifIndex = index;
@@ -97,9 +91,17 @@ SimpleNetDevice::GetChannel (void) const
 {
   return m_channel;
 }
+void
+SimpleNetDevice::SetAddress (Address address)
+{
+  m_address = Mac48Address::ConvertFrom(address);
+}
 Address 
 SimpleNetDevice::GetAddress (void) const
 {
+  //
+  // Implicit conversion from Mac48Address to Address
+  //
   return m_address;
 }
 bool 

@@ -395,10 +395,11 @@ PointToPointNetDevice::GetChannel (void) const
 // information.  However, the base class NetDevice wants us to define the
 // methods to get and set the address.  Rather than be rude and assert, we let
 // clients get and set the address, but simply ignore them.
+
   void 
-PointToPointNetDevice::SetAddress (Mac48Address addr)
+PointToPointNetDevice::SetAddress (Address address)
 {
-  m_address = addr;
+  m_address = Mac48Address::ConvertFrom (address);
 }
 
   Address 

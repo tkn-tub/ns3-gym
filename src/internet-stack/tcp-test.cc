@@ -300,7 +300,7 @@ Ptr<SimpleNetDevice>
 TcpSocketImplTest::AddSimpleNetDevice (Ptr<Node> node, const char* ipaddr, const char* netmask)
 {
   Ptr<SimpleNetDevice> dev = CreateObject<SimpleNetDevice> ();
-  dev->SetAddress (Mac48Address::Allocate ());
+  dev->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
   node->AddDevice (dev);
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   uint32_t ndid = ipv4->AddInterface (dev);

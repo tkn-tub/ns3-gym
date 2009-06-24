@@ -192,23 +192,12 @@ Node::RegisterProtocolHandler (ProtocolHandler handler,
                i != m_devices.end (); i++)
             {
               Ptr<NetDevice> dev = *i;
-              if (dev->SupportsSendFrom ())
-                {
-                  dev->SetPromiscReceiveCallback (MakeCallback (&Node::PromiscReceiveFromDevice, this));
-                }
+              dev->SetPromiscReceiveCallback (MakeCallback (&Node::PromiscReceiveFromDevice, this));
             }
         }
       else
         {
-          if (device->SupportsSendFrom ())
-            {
-              device->SetPromiscReceiveCallback (MakeCallback (&Node::PromiscReceiveFromDevice, this));
-            }
-          else
-            {
-              NS_LOG_WARN ("Protocol handler request promiscuous mode for a specific netdevice,"
-                           " but netdevice does not support promiscuous mode.");
-            }
+          device->SetPromiscReceiveCallback (MakeCallback (&Node::PromiscReceiveFromDevice, this));
         }
     }
 

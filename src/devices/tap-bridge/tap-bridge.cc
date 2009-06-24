@@ -131,7 +131,7 @@ TapBridge::TapBridge ()
   m_startEvent (),
   m_stopEvent (),
   m_readThread (0),
-  m_learnedMac (Mac48Address ("ff:ff:ff:ff:ff:ff"))
+  m_ns3AddressRewritten (false)
 {
   NS_LOG_FUNCTION_NOARGS ();
   Start (m_tStart);
@@ -641,7 +641,7 @@ TapBridge::ReadThread (void)
           return;
         }
 
-      NS_LOG_INFO ("TapBridge::ReadThread(): Received packet");
+      NS_LOG_INFO ("TapBridge::ReadThread(): Received packet on node " << m_node->GetId ());
       NS_LOG_INFO ("TapBridge::ReadThread(): Scheduling handler");
       DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ())->ScheduleRealtimeNow (
         MakeEvent (&TapBridge::ForwardToBridgedDevice, this, buf, len));
@@ -713,21 +713,21 @@ TapBridge::ForwardToBridgedDevice (uint8_t *buf, uint32_t len)
       //
       NS_ASSERT_MSG (Mac48Address::ConvertFrom (src) != Mac48Address ("ff:ff:ff:ff:ff:ff"), 
                      "TapBridge::ForwardToBridgedDevice:  Source addr is broadcast");
-      //
-      // Remember the Mac address since we are going to spoof it when we go
-      // the other way.
-      //
-      m_learnedMac = Mac48Address::ConvertFrom (src);
-      NS_LOG_LOGIC ("Learned MacAddr is " << m_learnedMac);
-
+      if (m_ns3AddressRewritten == false)
+        {
+          //
+          // Set the ns-3 device's mac address to the overlying container's
+          // mac address
+          //
+          Mac48Address learnedMac = Mac48Address::ConvertFrom (src);
+          NS_LOG_LOGIC ("Learned MacAddr is " << learnedMac << ": setting ns-3 device to use this address");
+          m_bridgedDevice->SetAddress (Mac48Address::ConvertFrom (learnedMac));
+          m_ns3AddressRewritten = true;
+        }
       // 
       // If we are operating in USE_LOCAL mode, we may be attached to an ns-3
       // device that does not support bridging (SupportsSendFrom returns false).
-      // The whole point of this mode is really to support this case.  We allow
-      // only packets from one source MAC to flow across the TapBridge in this 
-      // mode and will spoof that address when packets flow the other way.  
-      // Since we will be doing this spoofing, we can relax the normal bridged
-      // device requirement to support SendFrom and use Send.
+      // But, since the mac addresses are now aligned, we can call Send()
       //
       NS_LOG_LOGIC ("Forwarding packet to ns-3 device via Send()");
       m_bridgedDevice->Send (packet, dst, type);
@@ -864,20 +864,34 @@ TapBridge::SetBridgedNetDevice (Ptr<NetDevice> bridgedDevice)
     }
 
   //
-  // Tell the bridged device to forward its received packets here.  We use the 
-  // promiscuous mode hook to get both the source and destination addresses.
+  // We need to disconnect the bridged device from the internet stack on our
+  // node to ensure that only one stack responds to packets inbound over the
+  // bridged device.  That one stack lives outside ns-3 so we just blatantly
+  // steal the device callbacks.
   //
-  m_node->RegisterProtocolHandler (MakeCallback (&TapBridge::ReceiveFromBridgedDevice, this), 0, bridgedDevice, true);
+  // N.B This can be undone if someone does a RegisterProtocolHandler later 
+  // on this node.
+  //
+  bridgedDevice->SetReceiveCallback (MakeCallback (&TapBridge::DiscardFromBridgedDevice, this));
+  bridgedDevice->SetPromiscReceiveCallback (MakeCallback (&TapBridge::ReceiveFromBridgedDevice, this));
   m_bridgedDevice = bridgedDevice;
 }
 
-void
+bool
+TapBridge::DiscardFromBridgedDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol, const Address &src)
+{
+  NS_LOG_FUNCTION (device << packet << protocol << src);
+  NS_LOG_LOGIC ("Discarding packet stolen from bridged device " << device);
+  return true;
+}
+
+bool
 TapBridge::ReceiveFromBridgedDevice (
   Ptr<NetDevice> device, 
   Ptr<const Packet> packet, 
   uint16_t protocol,
-  Address const &src, 
-  Address const &dst, 
+  const Address &src, 
+  const Address &dst, 
   PacketType packetType)
 {
   NS_LOG_FUNCTION (device << packet << protocol << src << dst << packetType);
@@ -913,35 +927,11 @@ TapBridge::ReceiveFromBridgedDevice (
       // we want to act like a bridge and forward these PACKET_OTHERHOST 
       // packets.
       //
-      return;
+      return true;
     }
 
-  //
-  // We have received a packet from the ns-3 net device that has been associated
-  // with this bridge.  We want to take these bits and send them off to the tap
-  // device on the Linux host.  The only question we have to answer is, what 
-  // should the destination address be?
-  //
-  // If we are in CONFIGURE_LOCAL mode, then the destination address is just
-  // left alone since it can only be the shared single MAC address, broadcast
-  // or multicast.
-  //
-  // If we are in USE_LOCAL mode, then we need to spoof the destination 
-  // address with the one we saved.
-  //
-  // If we are in USE_BRIDGE mode, then we need to do the equvalent of a 
-  // SendFrom and leave the source and destination alone.
-  //
   Mac48Address from = Mac48Address::ConvertFrom (src);
-  Mac48Address to;
-  if (m_mode == USE_LOCAL)
-    {
-      to = Mac48Address::ConvertFrom (m_learnedMac);
-    }
-  else 
-    {
-      to = Mac48Address::ConvertFrom (dst);
-    }
+  Mac48Address to = Mac48Address::ConvertFrom (dst);
 
   Ptr<Packet> p = packet->Copy ();
   EthernetHeader header = EthernetHeader (false);
@@ -956,9 +946,11 @@ TapBridge::ReceiveFromBridgedDevice (
   NS_LOG_LOGIC ("Pkt destination is " << header.GetDestination ());
   NS_LOG_LOGIC ("Pkt LengthType is " << header.GetLengthType ());
   NS_LOG_LOGIC ("Pkt size is " << p->GetSize ());
+  NS_LOG_LOGIC ("End of receive packet handling on node " << m_node->GetId ());
 
   uint32_t bytesWritten = write (m_sock, p->PeekData (), p->GetSize ());
   NS_ABORT_MSG_IF (bytesWritten != p->GetSize (), "TapBridge::ReceiveFromBridgedDevice(): Write error.");
+  return true;
 }
 
 void 
@@ -980,6 +972,13 @@ TapBridge::GetChannel (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return 0;
+}
+
+void
+TapBridge::SetAddress (Address address)
+{
+  NS_LOG_FUNCTION (address);
+  m_address = Mac48Address::ConvertFrom (address);
 }
 
 Address 

@@ -876,10 +876,10 @@ EmuNetDevice::GetChannel (void) const
 }
 
 void 
-EmuNetDevice::SetAddress (Mac48Address addr)
+EmuNetDevice::SetAddress (Address address)
 {
-  NS_LOG_FUNCTION (addr);
-  m_address = addr;
+  NS_LOG_FUNCTION (address);
+  m_address = Mac48Address::ConvertFrom (address);
 }
 
 Address 
