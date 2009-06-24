@@ -695,6 +695,25 @@ public:
 };
 
 /**
+ * \brief Zipf Distributed random var (between 1 and n included)
+ * \ingroup randomvariable
+ *
+ */
+class ZipfVariable : public RandomVariable 
+{
+public:
+  /**
+   * \param n the number of possible items
+   * \param alpha the alpha parameter
+   */
+  ZipfVariable (long n, double alpha);
+  /**
+   * A zipf variable with N=1 and alpha=0
+   */
+  ZipfVariable ();
+};
+
+/**
  * \brief Triangularly Distributed random var
  * \ingroup randomvariable
  * 

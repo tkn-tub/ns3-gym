@@ -1152,7 +1152,7 @@ private:
 
 RandomVariableBase* LogNormalVariableImpl::Copy () const
 {
-  return new LogNormalVariableImpl (m_mu, m_sigma);
+  return new LogNormalVariableImpl (*this);
 }
 
 LogNormalVariableImpl::LogNormalVariableImpl (double mu, double sigma)
@@ -1513,6 +1513,87 @@ TriangularVariable::TriangularVariable()
 {}
 TriangularVariable::TriangularVariable(double s, double l, double mean)
   : RandomVariable (TriangularVariableImpl (s,l,mean))
+{}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// ZipfVariableImpl
+class ZipfVariableImpl : public RandomVariableBase { 
+public:
+  /**
+   * \param n the number of possible items
+   * \param alpha the alpha parameter
+   */
+  ZipfVariableImpl (long n, double alpha);
+
+  /**
+   * \A zipf variable with N=1 and alpha=0
+   */
+  ZipfVariableImpl ();
+
+  /**
+   * \return A random value from this distribution
+   */
+  virtual double GetValue ();
+  virtual RandomVariableBase* Copy(void) const;
+
+private:
+  long m_n;
+  double m_alpha;
+  double m_c; //the normalization constant
+};
+
+
+RandomVariableBase* ZipfVariableImpl::Copy () const
+{
+  return new ZipfVariableImpl (m_n, m_alpha);
+}
+
+ZipfVariableImpl::ZipfVariableImpl ()
+    :m_n(1), m_alpha(0), m_c(1)
+{
+}
+
+
+ZipfVariableImpl::ZipfVariableImpl (long n, double alpha)
+    :m_n(n), m_alpha(alpha), m_c(0)
+{
+  //calculate the normalization constant c
+  for(int i=1;i<=n;i++)
+    {
+      m_c+=(1.0/pow((double)i,alpha));
+    }
+  m_c=1.0/m_c;
+}
+
+double
+ZipfVariableImpl::GetValue ()
+{
+  if(!m_generator)
+    {
+      m_generator = new RngStream();
+    }
+
+  double u = m_generator->RandU01();
+  double sum_prob=0,zipf_value=0;
+  for(int i=1;i<=m_n;i++)
+    {
+      sum_prob+=m_c/pow((double)i,m_alpha);
+      if(sum_prob>u)
+        {
+          zipf_value=i;
+          break;
+        }
+    }
+  return zipf_value;
+}
+
+ZipfVariable::ZipfVariable ()
+  : RandomVariable (ZipfVariableImpl ())
+{}
+
+ZipfVariable::ZipfVariable (long n, double alpha)
+  : RandomVariable (ZipfVariableImpl (n, alpha))
 {}
 
 
