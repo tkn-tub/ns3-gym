@@ -95,10 +95,6 @@ def register_Ns3VirtualNetDevice_methods(root_module, cls):
     cls.add_method('Receive', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('uint16_t', 'protocol'), param('ns3::Address const &', 'source'), param('ns3::Address const &', 'destination'), param('ns3::NetDevice::PacketType', 'packetType')])
-    ## virtual-net-device.h: void ns3::VirtualNetDevice::SetAddress(ns3::Address addr) [member function]
-    cls.add_method('SetAddress', 
-                   'void', 
-                   [param('ns3::Address', 'addr')])
     ## virtual-net-device.h: void ns3::VirtualNetDevice::SetIfIndex(uint32_t const index) [member function]
     cls.add_method('SetIfIndex', 
                    'void', 
@@ -114,6 +110,11 @@ def register_Ns3VirtualNetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::Channel >', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## virtual-net-device.h: void ns3::VirtualNetDevice::SetAddress(ns3::Address address) [member function]
+    cls.add_method('SetAddress', 
+                   'void', 
+                   [param('ns3::Address', 'address')], 
+                   is_virtual=True)
     ## virtual-net-device.h: ns3::Address ns3::VirtualNetDevice::GetAddress() const [member function]
     cls.add_method('GetAddress', 
                    'ns3::Address', 

@@ -987,6 +987,18 @@ def register_Ns3UdpEchoClientHelper_methods(root_module, cls):
     cls.add_method('SetAttribute', 
                    'void', 
                    [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    ## udp-echo-helper.h: void ns3::UdpEchoClientHelper::SetFill(ns3::Ptr<ns3::Application> app, std::string fill) [member function]
+    cls.add_method('SetFill', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Application >', 'app'), param('std::string', 'fill')])
+    ## udp-echo-helper.h: void ns3::UdpEchoClientHelper::SetFill(ns3::Ptr<ns3::Application> app, uint8_t fill, uint32_t dataLength) [member function]
+    cls.add_method('SetFill', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Application >', 'app'), param('uint8_t', 'fill'), param('uint32_t', 'dataLength')])
+    ## udp-echo-helper.h: void ns3::UdpEchoClientHelper::SetFill(ns3::Ptr<ns3::Application> app, uint8_t * fill, uint32_t fillLength, uint32_t dataLength) [member function]
+    cls.add_method('SetFill', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Application >', 'app'), param('uint8_t *', 'fill'), param('uint32_t', 'fillLength'), param('uint32_t', 'dataLength')])
     ## udp-echo-helper.h: ns3::ApplicationContainer ns3::UdpEchoClientHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
@@ -1084,6 +1096,11 @@ def register_Ns3WifiHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
                    [param('ns3::WifiPhyHelper const &', 'phy'), param('ns3::WifiMacHelper const &', 'mac'), param('std::string', 'nodeName')], 
+                   is_const=True)
+    ## wifi-helper.h: void ns3::WifiHelper::WifiLogComponentEnable() const [member function]
+    cls.add_method('WifiLogComponentEnable', 
+                   'void', 
+                   [], 
                    is_const=True)
     return
 

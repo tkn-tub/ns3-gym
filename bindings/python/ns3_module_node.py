@@ -2777,6 +2777,11 @@ def register_Ns3NetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::Channel >', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## net-device.h: void ns3::NetDevice::SetAddress(ns3::Address address) [member function]
+    cls.add_method('SetAddress', 
+                   'void', 
+                   [param('ns3::Address', 'address')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## net-device.h: ns3::Address ns3::NetDevice::GetAddress() const [member function]
     cls.add_method('GetAddress', 
                    'ns3::Address', 
@@ -3019,10 +3024,6 @@ def register_Ns3SimpleNetDevice_methods(root_module, cls):
     cls.add_method('SetChannel', 
                    'void', 
                    [param('ns3::Ptr< ns3::SimpleChannel >', 'channel')])
-    ## simple-net-device.h: void ns3::SimpleNetDevice::SetAddress(ns3::Mac48Address address) [member function]
-    cls.add_method('SetAddress', 
-                   'void', 
-                   [param('ns3::Mac48Address', 'address')])
     ## simple-net-device.h: void ns3::SimpleNetDevice::SetIfIndex(uint32_t const index) [member function]
     cls.add_method('SetIfIndex', 
                    'void', 
@@ -3038,6 +3039,11 @@ def register_Ns3SimpleNetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::Channel >', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## simple-net-device.h: void ns3::SimpleNetDevice::SetAddress(ns3::Address address) [member function]
+    cls.add_method('SetAddress', 
+                   'void', 
+                   [param('ns3::Address', 'address')], 
+                   is_virtual=True)
     ## simple-net-device.h: ns3::Address ns3::SimpleNetDevice::GetAddress() const [member function]
     cls.add_method('GetAddress', 
                    'ns3::Address', 

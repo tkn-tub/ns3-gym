@@ -262,10 +262,6 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
     cls.add_method('SetReceiveEnable', 
                    'void', 
                    [param('bool', 'enable')])
-    ## csma-net-device.h: void ns3::CsmaNetDevice::SetAddress(ns3::Mac48Address addr) [member function]
-    cls.add_method('SetAddress', 
-                   'void', 
-                   [param('ns3::Mac48Address', 'addr')])
     ## csma-net-device.h: void ns3::CsmaNetDevice::SetFrameSize(uint16_t frameSize) [member function]
     cls.add_method('SetFrameSize', 
                    'void', 
@@ -308,6 +304,11 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
                    'uint16_t', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## csma-net-device.h: void ns3::CsmaNetDevice::SetAddress(ns3::Address address) [member function]
+    cls.add_method('SetAddress', 
+                   'void', 
+                   [param('ns3::Address', 'address')], 
+                   is_virtual=True)
     ## csma-net-device.h: ns3::Address ns3::CsmaNetDevice::GetAddress() const [member function]
     cls.add_method('GetAddress', 
                    'ns3::Address', 

@@ -77,6 +77,27 @@ def register_Ns3UdpEchoClient_methods(root_module, cls):
     cls.add_method('SetRemote', 
                    'void', 
                    [param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-echo-client.h: void ns3::UdpEchoClient::SetDataSize(uint32_t dataSize) [member function]
+    cls.add_method('SetDataSize', 
+                   'void', 
+                   [param('uint32_t', 'dataSize')])
+    ## udp-echo-client.h: uint32_t ns3::UdpEchoClient::GetDataSize() const [member function]
+    cls.add_method('GetDataSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## udp-echo-client.h: void ns3::UdpEchoClient::SetFill(std::string fill) [member function]
+    cls.add_method('SetFill', 
+                   'void', 
+                   [param('std::string', 'fill')])
+    ## udp-echo-client.h: void ns3::UdpEchoClient::SetFill(uint8_t fill, uint32_t dataSize) [member function]
+    cls.add_method('SetFill', 
+                   'void', 
+                   [param('uint8_t', 'fill'), param('uint32_t', 'dataSize')])
+    ## udp-echo-client.h: void ns3::UdpEchoClient::SetFill(uint8_t * fill, uint32_t fillSize, uint32_t dataSize) [member function]
+    cls.add_method('SetFill', 
+                   'void', 
+                   [param('uint8_t *', 'fill'), param('uint32_t', 'fillSize'), param('uint32_t', 'dataSize')])
     ## udp-echo-client.h: void ns3::UdpEchoClient::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 

@@ -172,6 +172,11 @@ def register_Ns3Icmpv4Echo_methods(root_module, cls):
                    'uint16_t', 
                    [], 
                    is_const=True)
+    ## icmpv4.h: uint32_t ns3::Icmpv4Echo::GetDataSize() const [member function]
+    cls.add_method('GetDataSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     ## icmpv4.h: uint32_t ns3::Icmpv4Echo::GetData(uint8_t * payload) const [member function]
     cls.add_method('GetData', 
                    'uint32_t', 
