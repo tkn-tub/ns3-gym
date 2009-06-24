@@ -19,15 +19,26 @@ adding WifiNetDevice objects to ns-3 nodes, one can create models of
 @node Overview of the model
 @section Overview of the model
 
-@strong{Note:}  This overview is taken largely from the Doxygen for the
-WifiNetDevice module.
+The WifiNetDevice models a wireless network interface controller based
+on the IEEE 802.11 standard.  We will go into more detail below but in brief,
+ns-3 provides models for these aspects of 802.11:
+@itemize @bullet
+@item basic 802.11 DCF with @strong{infrastructure} and @strong{adhoc} modes
+@item @strong{802.11a} and @strong{802.11b} physical layers
+@item QoS-based EDCA and queueing extensions of @strong{802.11e}
+@item various propagation loss models including @strong{Nakagami, Rayleigh, Friis, LogDistance, FixedRss, Random} 
+@item two propagation delay models, a distance-based and random model
+@item various rate control algorithms including @strong{Aarf, Arf, Cara, Onoe, Rraa, and ConstantRate} 
+@item @emph{(under development)} 802.11s (mesh)
+@item @emph{(under development)} Minstrel rate control
+@end itemize
 
 The set of 802.11 models provided in ns-3 attempts to provide
 an accurate MAC-level implementation of the 802.11 specification
 and to provide a not-so-slow PHY-level model of the 802.11a
 specification.
 
-The current implementation provides roughly four levels of models:
+The implementation is modular and provides roughly four levels of models:
 @itemize @bullet
 @item the @strong{PHY layer models}
 @item the so-called @strong{MAC low models}: they implement DCF and EDCAF
@@ -94,7 +105,8 @@ There are also several @strong{rate control algorithms} that can be used by the 
 The PHY layer implements a single model in the 
 @code{ns3::WifiPhy class}: the
 physical layer model implemented there is described fully in a paper 
-entitled @uref{http://cutebugs.net/files/wns2-yans.pdf,,"Yet Another Network Simulator"}. 
+entitled @uref{http://cutebugs.net/files/wns2-yans.pdf,,"Yet Another Network Simulator"}.  Validation results for 802.11b are available in this
+@uref{http://www.nsnam.org/~pei/80211b.pdf,,technical report}. 
 
 In ns-3, nodes can have multiple WifiNetDevices on separate channels,
 and the WifiNetDevice can coexist with other device types; this removes
@@ -111,6 +123,12 @@ The source code for the Wifi NetDevice lives in the directory
 
 @node Using the WifiNetDevice
 @section Using the WifiNetDevice
+
+The modularity provided by the implementation makes low-level 
+configuration of the WifiNetDevice powerful but complex.  For this reason,
+we provide some helper classes to perform common operations in a simple
+matter, and leverage the ns-3 attribute system to allow users to control
+the parameterization of the underlying models.
 
 Users who use the low-level ns-3 API and who wish to add a WifiNetDevice
 to their node must create an instance of a WifiNetDevice, plus 
