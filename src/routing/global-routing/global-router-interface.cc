@@ -628,7 +628,7 @@ GlobalRouter::DiscoverLSAs (void)
       // the segment.  We add the appropriate link record to the LSA.
       //
       // If the device is a point to point link, we treat it separately.  In
-      // that case, there may be one or two link records added.
+      // that case, there may be zero, one, or two link records added.
       //
       if (ndLocal->IsBroadcast () && !ndLocal->IsPointToPoint () )
         {
@@ -1009,9 +1009,11 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   // interface aggregated.
   //
   Ptr<GlobalRouter> rtrRemote = nodeRemote->GetObject<GlobalRouter> ();
-  NS_ABORT_MSG_UNLESS(rtrRemote, 
-                      "GlobalRouter::ProcessPointToPointLinks(): GetObject for remote <GlobalRouter> failed");
-
+  if (rtrRemote == 0)
+    {
+      // This case is possible if the remote does not participate in global routing
+      return;
+    }
   //
   // We're going to need the remote router ID, so we might as well get it now.
   //
