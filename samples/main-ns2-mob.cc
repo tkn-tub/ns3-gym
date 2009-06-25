@@ -34,5 +34,7 @@ int main (int argc, char *argv[])
   Simulator::Stop (Seconds (10.0));
   Simulator::Run ();
   Simulator::Destroy ();
+
+  os.close ();
   return 0;
 }
