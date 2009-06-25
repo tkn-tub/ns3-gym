@@ -33,3 +33,4 @@ massif.*
 \.patch$
 \.diff$
 \.tr$
+\#[^\#/]+\#$
