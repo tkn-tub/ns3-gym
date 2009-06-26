@@ -46,8 +46,14 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpLargeTransfer");
 
+
 // The number of bytes to send in this simulation.
-static uint32_t txBytes = 2000000;
+static const uint32_t totalTxBytes = 2000000;
+static uint32_t currentTxBytes = 0;
+// Perform series of 1040 byte writes (this is a multiple of 26 since
+// we want to detect data splicing in the output stream)
+static const uint32_t writeSize = 1040;
+uint8_t data[writeSize];
 
 // These are for starting the writing process, and handling the sending 
 // socket's notification upcalls (events).  These two together more or less
@@ -74,6 +80,13 @@ int main (int argc, char *argv[])
 
   CommandLine cmd;
   cmd.Parse (argc, argv);
+
+  // initialize the tx buffer.
+  for(uint32_t i = 0; i < writeSize; ++i)
+    {
+      char m = toascii (97 + i % 26);
+      data[i] = m;
+    }
 
   // Here, we will explicitly create three nodes.  The first container contains
   // nodes 0 and 1 from the diagram above, and the second one contains nodes
@@ -184,38 +197,25 @@ void StartFlow(Ptr<Socket> localSocket,
   // tell the tcp implementation to call WriteUntilBufferFull again
   // if we blocked and new tx buffer space becomes available
   localSocket->SetSendCallback (MakeCallback (&WriteUntilBufferFull));
-  WriteUntilBufferFull (localSocket, txBytes);
+  WriteUntilBufferFull (localSocket, localSocket->GetTxAvailable ());
 }
 
 void WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txSpace)
 {
-  // Perform series of 1040 byte writes (this is a multiple of 26 since
-  // we want to detect data splicing in the output stream)
-  uint32_t writeSize = 1040;
-  uint8_t data[writeSize];
-
-  while (txBytes > 0) {
-    uint32_t curSize= txBytes > writeSize ? writeSize : txBytes;
-    if (curSize > txSpace)
-      curSize = txSpace;
-    for(uint32_t i = 0; i < curSize; ++i)
+  while (currentTxBytes < totalTxBytes && localSocket->GetTxAvailable () > 0) 
     {
-      char m = toascii (97 + i % 26);
-      data[i] = m;
+      uint32_t left = totalTxBytes - currentTxBytes;
+      uint32_t dataOffset = currentTxBytes % writeSize;
+      uint32_t toWrite = writeSize - dataOffset;
+      toWrite = std::min (toWrite, left);
+      toWrite = std::min (toWrite, localSocket->GetTxAvailable ());
+      int amountSent = localSocket->Send (&data[dataOffset], toWrite, 0);
+      if(amountSent < 0)
+        {
+          // we will be called again when new tx space becomes available.
+          return;
+        }
+      currentTxBytes += amountSent;
     }
-    int amountSent = localSocket->Send (data, curSize, 0);
-    if(amountSent < 0)
-      {
-        // we will be called again when new tx space becomes available.
-        std::cout << "Socket blocking, " << txBytes << " left to write, returning" << std::endl;
-        return;
-      }
-    txBytes -= curSize;
-    if (amountSent != (int)curSize)
-      {
-        std::cout << "Short Write, returning" << std::endl;
-        return;
-      }
-  }
   localSocket->Close ();
 }
