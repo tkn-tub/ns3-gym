@@ -43,7 +43,7 @@ Ipv4Interface::GetTypeId (void)
                    "The arp cache for this ipv4 interface",
                    PointerValue (0),
                    MakePointerAccessor (&Ipv4Interface::m_cache),
-                   MakePointerChecker<Ipv4Interface> ())
+                   MakePointerChecker<ArpCache> ())
     ;
     ;
   return tid;
