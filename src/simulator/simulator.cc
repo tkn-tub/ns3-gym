@@ -292,7 +292,7 @@ Simulator::GetMaximumSimulationTime (void)
 void
 Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
 {
-  if (PeekImpl () != 0)
+  if (*PeekImpl () != 0)
     {
       NS_FATAL_ERROR ("It is not possible to set the implementation after calling any Simulator:: function. Call Simulator::SetImplementation earlier or after Simulator::Destroy.");
     }
