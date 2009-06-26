@@ -26,7 +26,7 @@
 #include "ns3/node.h"
 #include "ns3/ipv4.h"
 #include "ns3/bridge-net-device.h"
-#include "ns3/net-device-container.h"
+#include "ipv4-global-routing.h"
 #include "global-router-interface.h"
 #include <vector>
 
@@ -497,10 +497,22 @@ GlobalRouter::~GlobalRouter ()
   ClearLSAs();
 }
 
+void 
+GlobalRouter::SetRoutingProtocol (Ptr<Ipv4GlobalRouting> routing)
+{
+  m_routingProtocol = routing;
+}
+Ptr<Ipv4GlobalRouting> 
+GlobalRouter::GetRoutingProtocol (void)
+{
+  return m_routingProtocol;
+}
+
 void
 GlobalRouter::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_routingProtocol = 0;
   Object::DoDispose ();
 }
 

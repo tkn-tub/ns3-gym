@@ -74,7 +74,6 @@
 #include "ns3/core-module.h"
 #include "ns3/helper-module.h"
 #include "ns3/bridge-module.h"
-#include "ns3/global-route-manager.h"
 
 using namespace ns3;
 
@@ -142,9 +141,10 @@ main (int argc, char *argv[])
   BridgeHelper bridge;
   bridge.Install (bridge1, topBridgeDevices);
 
-  // Add internet stack to the topLan nodes
+  // Add internet stack to the router nodes
+  NodeContainer routerNodes (n0, n1, n2, n3, n4);
   InternetStackHelper internet;
-  internet.Install (topLan);
+  internet.Install (routerNodes);
 
   // Repeat for bottom bridged LAN
   NetDeviceContainer bottomLanDevices;
@@ -157,9 +157,6 @@ main (int argc, char *argv[])
       bottomBridgeDevices.Add (link.Get (1));
     }
   bridge.Install (bridge2, bottomBridgeDevices);
-
-  // Add internet stack to the bottomLan nodes
-  internet.Install (NodeContainer (n3, n4));
 
   // We've got the "hardware" in place.  Now we need to add IP addresses.
   NS_LOG_INFO ("Assign IP Addresses.");
@@ -174,8 +171,7 @@ main (int argc, char *argv[])
   // tables in the nodes.  We excuse the bridge nodes from having to serve as
   // routers, since they don't even have internet stacks on them.
   //
-  NodeContainer routerNodes (n0, n1, n2, n3, n4);
-  GlobalRouteManager::PopulateRoutingTables (routerNodes);
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   //
   // Create an OnOff application to send UDP datagrams from node zero to node 1.

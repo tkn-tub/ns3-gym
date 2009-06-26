@@ -22,7 +22,7 @@
 #ifndef GLOBAL_ROUTE_MANAGER_H
 #define GLOBAL_ROUTE_MANAGER_H
 
-#include "ns3/node-container.h"
+#include "ns3/deprecated.h"
 
 namespace ns3 {
 
@@ -45,30 +45,13 @@ public:
  * the nodes in the simulation.  Makes all nodes in the simulation into
  * routers.
  *
- * All this function does is call the three functions
- * SelectRouterNodes (), BuildGlobalRoutingDatabase (), and
- * InitializeRoutes ().
+ * All this function does is call the functions
+ * BuildGlobalRoutingDatabase () and  InitializeRoutes ().
  *
- * @see SelectRouterNodes ();
  * @see BuildGlobalRoutingDatabase ();
  * @see InitializeRoutes ();
  */
-  static void PopulateRoutingTables ();
-
-/**
- * @brief Build a routing database and initialize the routing tables of
- * the nodes in the simulation.  Makes the nodes in the provided container
- * into routers.
- *
- * All this function does is call the three functions
- * SelectRouterNodes (), BuildGlobalRoutingDatabase (), and
- * InitializeRoutes ().
- *
- * @see SelectRouterNodes (Node Container c);
- * @see BuildGlobalRoutingDatabase ();
- * @see InitializeRoutes ();
- */
-  static void PopulateRoutingTables (NodeContainer c);
+  static void PopulateRoutingTables () NS_DEPRECATED;
 
  /**
   *@brief Remove all routes that were previously installed in a prior call
@@ -85,7 +68,13 @@ public:
  * @see BuildGlobalRoutingDatabase ();
  * @see InitializeRoutes ();
  */
- static void RecomputeRoutingTables ();
+ static void RecomputeRoutingTables () NS_DEPRECATED;
+
+public:
+/**
+ * @brief Allocate a 32-bit router ID from monotonically increasing counter.
+ */
+  static uint32_t AllocateRouterId ();
 
 /**
  * @brief Delete all static routes on all nodes that have a 
@@ -93,29 +82,6 @@ public:
  *
  */
   static void DeleteGlobalRoutes ();
-
-/**
- * @brief Select which nodes in the system are to be router nodes and 
- * aggregate the appropriate interfaces onto those nodes.
- * @internal
- *
- */
-  static void SelectRouterNodes ();
-
-/**
- * @brief Select which nodes in the system are to be router nodes and 
- * aggregate the appropriate interfaces onto those nodes.
- * @internal
- *
- */
-  static void SelectRouterNodes (NodeContainer c);
-
-/**
- * @brief Allocate a 32-bit router ID from monotonically increasing counter.
- */
-  static uint32_t AllocateRouterId ();
-
-private:
 
 /**
  * @brief Build the routing database by gathering Link State Advertisements
@@ -132,6 +98,7 @@ private:
  */
   static void InitializeRoutes ();
 
+private:
 /**
  * @brief Global Route Manager copy construction is disallowed.  There's no 
  * need for it and a compiler provided shallow copy would be wrong.

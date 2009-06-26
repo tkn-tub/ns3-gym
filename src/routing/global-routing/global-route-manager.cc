@@ -21,7 +21,6 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/simulation-singleton.h"
-#include "ns3/node-container.h"
 #include "global-route-manager.h"
 #include "global-route-manager-impl.h"
 
@@ -36,15 +35,6 @@ namespace ns3 {
   void
 GlobalRouteManager::PopulateRoutingTables (void) 
 {
-  SelectRouterNodes ();
-  BuildGlobalRoutingDatabase ();
-  InitializeRoutes ();
-}
-
-  void
-GlobalRouteManager::PopulateRoutingTables (NodeContainer c) 
-{
-  SelectRouterNodes (c);
   BuildGlobalRoutingDatabase ();
   InitializeRoutes ();
 }
@@ -62,20 +52,6 @@ GlobalRouteManager::DeleteGlobalRoutes ()
 {
   SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
     DeleteGlobalRoutes ();
-}
-
-  void
-GlobalRouteManager::SelectRouterNodes (void) 
-{
-  SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
-    SelectRouterNodes ();
-}
-
-  void
-GlobalRouteManager::SelectRouterNodes (NodeContainer c) 
-{
-  SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
-    SelectRouterNodes (c);
 }
 
   void

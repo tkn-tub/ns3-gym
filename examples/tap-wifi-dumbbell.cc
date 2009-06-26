@@ -114,7 +114,6 @@
 #include "ns3/core-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/global-routing-module.h"
 
 using namespace ns3;
 
@@ -228,7 +227,7 @@ main (int argc, char *argv[])
   apps.Start (Seconds (1.0));
 
   CsmaHelper::EnablePcapAll ("tap-wifi-dumbbell", false);
-  GlobalRouteManager::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   Simulator::Stop (Seconds (60.));
   Simulator::Run ();

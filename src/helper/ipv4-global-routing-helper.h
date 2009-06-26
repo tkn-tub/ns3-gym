@@ -17,24 +17,21 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef OLSR_HELPER_H
-#define OLSR_HELPER_H
+#ifndef IPV4_GLOBAL_ROUTING_HELPER_H
+#define IPV4_GLOBAL_ROUTING_HELPER_H
 
-#include "ns3/object-factory.h"
-#include "ns3/node.h"
 #include "node-container.h"
 #include "ipv4-routing-helper.h"
 
 namespace ns3 {
 
 /**
- * \brief Helper class that adds OLSR routing to nodes.
+ * \brief Helper class that adds ns3::Ipv4GlobalRouting objects
  */
-class OlsrHelper : public Ipv4RoutingHelper
+class Ipv4GlobalRoutingHelper  : public Ipv4RoutingHelper
 {
 public:
-  OlsrHelper ();
-
+  Ipv4GlobalRoutingHelper ();
   /**
    * \param node the node on which the routing protocol will run
    * \returns a newly-created routing protocol
@@ -44,16 +41,30 @@ public:
   virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const;
 
   /**
-   * \param name the name of the attribute to set
-   * \param value the value of the attribute to set.
+   * @brief Build a routing database and initialize the routing tables of
+   * the nodes in the simulation.  Makes all nodes in the simulation into
+   * routers.
    *
-   * This method controls the attributes of ns3::olsr::RoutingProtocol
+   * All this function does is call the functions
+   * BuildGlobalRoutingDatabase () and  InitializeRoutes ().
+   *
    */
-  void Set (std::string name, const AttributeValue &value);
-private:
-  ObjectFactory m_agentFactory;
+  static void PopulateRoutingTables (void);
+  /**
+   *@brief Remove all routes that were previously installed in a prior call
+   * to either PopulateRoutingTables() or RecomputeRoutingTables(), and 
+   * add a new set of routes.  
+   * 
+   * This method does not change the set of nodes
+   * over which GlobalRouting is being used, but it will dynamically update
+   * its representation of the global topology before recomputing routes.
+   * Users must first call PopulateRoutingTables() and then may subsequently
+   * call RecomputeRoutingTables() at any later time in the simulation.
+   *
+   */
+  static void RecomputeRoutingTables (void);
 };
 
 } // namespace ns3
 
-#endif /* OLSR_HELPER_H */
+#endif /* IPV4_GLOBAL_ROUTING_HELPER_H */

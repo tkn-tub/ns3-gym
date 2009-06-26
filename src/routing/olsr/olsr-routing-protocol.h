@@ -68,7 +68,6 @@ public:
   RoutingProtocol ();
   virtual ~RoutingProtocol ();
 
-  void Start ();
   void SetMainInterface (uint32_t interface);
 
 private:
@@ -101,7 +100,7 @@ private:
   Ptr<Ipv4> m_ipv4;
 	
 private:
-
+  void Start ();
   void Clear ();
   uint32_t GetSize () const { return m_table.size (); }
   std::vector<RoutingTableEntry> GetEntries () const;

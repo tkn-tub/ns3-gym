@@ -36,6 +36,7 @@
 namespace ns3 {
 
 class GlobalRouter;
+class Ipv4GlobalRouting;
 
 /**
  * @brief A single link record for a link state advertisement.
@@ -572,6 +573,10 @@ public:
  */
   GlobalRouter ();
 
+
+  void SetRoutingProtocol (Ptr<Ipv4GlobalRouting> routing);
+  Ptr<Ipv4GlobalRouting> GetRoutingProtocol (void);
+
 /**
  * @brief Get the Router ID associated with this Global Router.
  *
@@ -660,6 +665,7 @@ private:
   ListOfLSAs_t m_LSAs;
 
   Ipv4Address m_routerId;
+  Ptr<Ipv4GlobalRouting> m_routingProtocol;
 
   // inherited from Object
   virtual void DoDispose (void);

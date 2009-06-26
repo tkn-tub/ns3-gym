@@ -19,7 +19,7 @@
 #include "ns3/log.h"
 #include "ns3/object.h"
 #include "ns3/packet.h"
-#include "ns3/node.h"
+#include "ns3/net-device.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/ipv4-routing-table-entry.h"
 #include "ipv4-global-routing.h"

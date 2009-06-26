@@ -36,7 +36,6 @@
 #include "ns3/common-module.h"
 #include "ns3/helper-module.h"
 #include "ns3/node-module.h"
-#include "ns3/global-route-manager.h"
 #include "ns3/simulator-module.h"
 
 using namespace ns3;
@@ -117,7 +116,7 @@ int main (int argc, char *argv[])
   p2pInterfaces.Get(0)->SetAttribute("ReceiveErrorModel", PointerValue (em1));
   p2pInterfaces.Get(1)->SetAttribute("ReceiveErrorModel", PointerValue (em2));
 
-  GlobalRouteManager::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   uint16_t servPort = 8080;
   PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), servPort));

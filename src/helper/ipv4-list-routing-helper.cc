@@ -17,43 +17,30 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef OLSR_HELPER_H
-#define OLSR_HELPER_H
-
-#include "ns3/object-factory.h"
+#include "ipv4-list-routing-helper.h"
+#include "ns3/ipv4-list-routing.h"
 #include "ns3/node.h"
-#include "node-container.h"
-#include "ipv4-routing-helper.h"
 
 namespace ns3 {
 
-/**
- * \brief Helper class that adds OLSR routing to nodes.
- */
-class OlsrHelper : public Ipv4RoutingHelper
+Ipv4ListRoutingHelper::Ipv4ListRoutingHelper()
+{}
+void 
+Ipv4ListRoutingHelper::Add (const Ipv4RoutingHelper &routing, int16_t priority)
 {
-public:
-  OlsrHelper ();
-
-  /**
-   * \param node the node on which the routing protocol will run
-   * \returns a newly-created routing protocol
-   *
-   * This method will be called by ns3::InternetStackHelper::Install
-   */
-  virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const;
-
-  /**
-   * \param name the name of the attribute to set
-   * \param value the value of the attribute to set.
-   *
-   * This method controls the attributes of ns3::olsr::RoutingProtocol
-   */
-  void Set (std::string name, const AttributeValue &value);
-private:
-  ObjectFactory m_agentFactory;
-};
+  m_list.push_back (std::make_pair(&routing,priority));
+}
+Ptr<Ipv4RoutingProtocol> 
+Ipv4ListRoutingHelper::Create (Ptr<Node> node) const
+{
+  Ptr<Ipv4ListRouting> list = CreateObject<Ipv4ListRouting> ();
+  for (std::list<std::pair<const Ipv4RoutingHelper *,int16_t> >::const_iterator i = m_list.begin ();
+       i != m_list.end (); ++i)
+    {
+      Ptr<Ipv4RoutingProtocol> prot = i->first->Create (node);
+      list->AddRoutingProtocol (prot,i->second);
+    }
+  return list;
+}
 
 } // namespace ns3
-
-#endif /* OLSR_HELPER_H */

@@ -37,7 +37,6 @@
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/global-route-manager.h"
 
 using namespace ns3;
 
@@ -85,7 +84,7 @@ main (int argc, char *argv[])
   Ipv4InterfaceContainer addresses = ip.Assign (devs);
 
   // setup global router
-  GlobalRouteManager::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
   NS_LOG_INFO ("Create Source");
   Config::SetDefault ("ns3::Ipv4RawSocketImpl::Protocol", StringValue ("2"));
   InetSocketAddress dst = InetSocketAddress (addresses.GetAddress (3));

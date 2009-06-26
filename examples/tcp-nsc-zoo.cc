@@ -33,7 +33,6 @@
 #include "ns3/core-module.h"
 #include "ns3/helper-module.h"
 #include "ns3/node-module.h"
-#include "ns3/global-route-manager.h"
 #include "ns3/simulator-module.h"
 
 using namespace ns3;
@@ -68,7 +67,6 @@ int main(int argc, char *argv[])
   NetDeviceContainer ethInterfaces = csma.Install (n);
 
   InternetStackHelper internetStack;
-
   internetStack.SetTcp ("ns3::NscTcpL4Protocol","Library",StringValue("liblinux2.6.26.so"));
   // this switches nodes 0 and 1 to NSCs Linux 2.6.26 stack.
   internetStack.Install (n.Get(0));
@@ -106,7 +104,7 @@ int main(int argc, char *argv[])
   ipv4.SetBase ("10.0.0.0", "255.255.255.0");
   Ipv4InterfaceContainer ipv4Interfaces = ipv4.Assign (ethInterfaces);
 
-  GlobalRouteManager::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   uint16_t servPort = 8080;
   PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), servPort));

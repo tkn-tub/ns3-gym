@@ -33,6 +33,15 @@ NS_LOG_COMPONENT_DEFINE("Ipv4StaticRoutingHelper");
 
 namespace ns3 {
 
+Ipv4StaticRoutingHelper::Ipv4StaticRoutingHelper()
+{}
+Ptr<Ipv4RoutingProtocol> 
+Ipv4StaticRoutingHelper::Create (Ptr<Node> node) const
+{
+  return CreateObject<Ipv4StaticRouting> ();
+}
+
+
 Ptr<Ipv4StaticRouting>
 Ipv4StaticRoutingHelper::GetStaticRouting (Ptr<Ipv4> ipv4) const
 {

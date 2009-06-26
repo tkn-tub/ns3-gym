@@ -304,27 +304,6 @@ Ipv4ListRouting::GetRoutingProtocol (uint32_t index, int16_t& priority) const
   return 0;
 }
 
-Ptr<Ipv4StaticRouting>
-Ipv4ListRouting::GetStaticRouting (void) const
-{
-  NS_LOG_FUNCTION (this);
-  Ipv4StaticRouting* srp;
-  for (Ipv4RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin ();
-       rprotoIter != m_routingProtocols.end (); rprotoIter++)
-    {
-      NS_LOG_LOGIC ("Searching for static routing");
-      srp = dynamic_cast<Ipv4StaticRouting*> (PeekPointer((*rprotoIter).second));
-      if (srp)
-        {
-          NS_LOG_LOGIC ("Found static routing");
-          return Ptr<Ipv4StaticRouting> (srp);
-        }
-    }
-  NS_LOG_LOGIC ("Static routing not found");
-  return 0;
-
-}
-
 bool 
 Ipv4ListRouting::Compare (const Ipv4RoutingProtocolEntry& a, const Ipv4RoutingProtocolEntry& b)
 {

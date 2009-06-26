@@ -30,64 +30,18 @@ OlsrHelper::OlsrHelper ()
   m_agentFactory.SetTypeId ("ns3::olsr::RoutingProtocol");
 }
 
-void 
-OlsrHelper::SetAgent (std::string tid,
-                      std::string n0, const AttributeValue &v0,
-                      std::string n1, const AttributeValue &v1,
-                      std::string n2, const AttributeValue &v2,
-                      std::string n3, const AttributeValue &v3,
-                      std::string n4, const AttributeValue &v4,
-                      std::string n5, const AttributeValue &v5,
-                      std::string n6, const AttributeValue &v6,
-                      std::string n7, const AttributeValue &v7)
+Ptr<Ipv4RoutingProtocol> 
+OlsrHelper::Create (Ptr<Node> node) const
 {
-  m_agentFactory.SetTypeId (tid);
-  m_agentFactory.Set (n0, v0);
-  m_agentFactory.Set (n1, v1);
-  m_agentFactory.Set (n2, v2);
-  m_agentFactory.Set (n3, v3);
-  m_agentFactory.Set (n4, v4);
-  m_agentFactory.Set (n5, v5);
-  m_agentFactory.Set (n6, v6);
-  m_agentFactory.Set (n7, v7);
+  Ptr<olsr::RoutingProtocol> agent = m_agentFactory.Create<olsr::RoutingProtocol> ();
+  node->AggregateObject (agent);
+  return agent;
 }
 
 void 
-OlsrHelper::Install (NodeContainer container)
+OlsrHelper::Set (std::string name, const AttributeValue &value)
 {
-  for (NodeContainer::Iterator i = container.Begin (); i != container.End (); ++i)
-    {
-      Ptr<Node> node = *i;
-      Install (node);
-    }
-}
-void 
-OlsrHelper::Install (Ptr<Node> node)
-{
-  if (node->GetObject<olsr::RoutingProtocol> () != 0)
-    {
-      NS_FATAL_ERROR ("OlsrHelper::Install(): Aggregating "
-         "an Olsr Agent to a node with an existing Olsr RoutingProtocol");
-      return;
-    }
-  Ptr<olsr::RoutingProtocol> agent = m_agentFactory.Create<olsr::RoutingProtocol> ();
-  node->AggregateObject (agent);
-  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-  Ptr<Ipv4ListRouting> ipv4Routing = DynamicCast<Ipv4ListRouting> (ipv4->GetRoutingProtocol ());
-  NS_ASSERT (ipv4Routing);
-  ipv4Routing->AddRoutingProtocol (agent, 10);
-  agent->Start ();
-}
-void 
-OlsrHelper::Install (std::string nodeName)
-{
-  Ptr<Node> node = Names::Find<Node> (nodeName);
-  Install (node);
-}
-void 
-OlsrHelper::InstallAll (void)
-{
-  Install (NodeContainer::GetGlobal ());
+  m_agentFactory.Set (name, value);
 }
 
 } // namespace ns3

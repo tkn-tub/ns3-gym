@@ -82,7 +82,18 @@ main (int argc, char *argv[])
   NodeContainer n32 = NodeContainer (c.Get(3), c.Get (2));
   NodeContainer n34 = NodeContainer (c.Get (3), c.Get (4));
 
+  // Enable OLSR
+  NS_LOG_INFO ("Enabling OLSR Routing.");
+  OlsrHelper olsr;
+
+  Ipv4StaticRoutingHelper staticRouting;
+
+  Ipv4ListRoutingHelper list;
+  list.Add (staticRouting, 0);
+  list.Add (olsr, 10);
+
   InternetStackHelper internet;
+  internet.SetRoutingHelper (list);
   internet.Install (c);
 
   // We create the channels first without any IP addressing information
@@ -111,11 +122,6 @@ main (int argc, char *argv[])
 
   ipv4.SetBase ("10.1.4.0", "255.255.255.0");
   Ipv4InterfaceContainer i34 = ipv4.Assign (nd34);
-
-  // Enable OLSR
-  NS_LOG_INFO ("Enabling OLSR Routing.");
-  OlsrHelper olsr;
-  olsr.InstallAll ();
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s

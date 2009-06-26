@@ -24,8 +24,6 @@
 
 namespace ns3 {
 
-class Ipv4StaticRouting;
-
 /**
  * \ingroup ipv4Routing 
  *
@@ -83,8 +81,6 @@ public:
   virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
-
-  virtual Ptr<Ipv4StaticRouting> GetStaticRouting (void) const;
 
 protected:
   void DoDispose (void);

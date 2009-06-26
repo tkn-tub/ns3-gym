@@ -187,11 +187,7 @@ Ipv4L3Protocol::DoDispose (void)
     }
   m_interfaces.clear ();
   m_node = 0;
-  if (m_routingProtocol)
-    {
-      m_routingProtocol->Dispose ();
-      m_routingProtocol = 0;
-    }
+  m_routingProtocol = 0;
   Object::DoDispose ();
 }
 

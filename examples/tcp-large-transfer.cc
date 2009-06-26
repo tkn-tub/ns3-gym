@@ -39,7 +39,6 @@
 #include "ns3/core-module.h"
 #include "ns3/helper-module.h"
 #include "ns3/node-module.h"
-#include "ns3/global-route-manager.h"
 #include "ns3/simulator-module.h"
 
 using namespace ns3;
@@ -111,9 +110,8 @@ int main (int argc, char *argv[])
   NetDeviceContainer dev1 = p2p.Install (n1n2);
 
   // Now add ip/tcp stack to all nodes.
-  NodeContainer allNodes = NodeContainer (n0n1, n1n2.Get (1));
   InternetStackHelper internet;
-  internet.Install (allNodes);
+  internet.InstallAll ();
 
   // Later, we add IP addresses.
   Ipv4AddressHelper ipv4;
@@ -123,7 +121,7 @@ int main (int argc, char *argv[])
   Ipv4InterfaceContainer ipInterfs = ipv4.Assign (dev1);
 
   // and setup ip routing tables to get total ip-level connectivity.
-  GlobalRouteManager::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   ///////////////////////////////////////////////////////////////////////////
   // Simulation 1

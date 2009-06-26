@@ -31,6 +31,7 @@
 namespace ns3 {
 
 class Node;
+class Ipv4RoutingHelper;
 
 /**
  * \brief aggregate IP/TCP/UDP functionality to existing Nodes.
@@ -38,7 +39,27 @@ class Node;
 class InternetStackHelper
 {
 public:
+  /**
+   * Create a new InternetStackHelper which uses a mix of static routing
+   * and global routing by default. The static routing protocol 
+   * (ns3::Ipv4StaticRouting) and the global routing protocol are
+   * stored in an ns3::Ipv4ListRouting protocol with priorities 0, and -10
+   * by default. If you wish to use different priorites and different
+   * routing protocols, you need to use an adhoc ns3::Ipv4RoutingHelper, 
+   * such as ns3::OlsrHelper
+   */
   InternetStackHelper(void);
+
+  /**
+   * \param routing a new routing helper
+   *
+   * Set the routing helper to use during Install. The routing
+   * helper is really an object factory which is used to create 
+   * an object of type ns3::Ipv4RoutingProtocol per node. This routing
+   * object is then associated to a single ns3::Ipv4 object through its 
+   * ns3::Ipv4::SetRoutingProtocol.
+   */
+  void SetRoutingHelper (const Ipv4RoutingHelper &routing);
 
   /**
    * Aggregate implementations of the ns3::Ipv4, ns3::Udp, and ns3::Tcp classes
@@ -68,6 +89,11 @@ public:
    * new stacks.
    */
   void Install (NodeContainer c) const;
+
+  /**
+   * Aggregate ip, udp, and tcp stacks to all nodes in the simulation
+   */
+  void InstallAll (void) const;
 
  /**
    * \brief set the Tcp stack which will not need any other parameter.  
@@ -132,6 +158,8 @@ public:
 
 private:
   ObjectFactory m_tcpFactory;
+  const Ipv4RoutingHelper *m_routing;
+  static void CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId);
   static void Cleanup (void);
   static void LogRxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);
   static void LogTxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);

@@ -18,7 +18,6 @@
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/global-routing-module.h"
 
 // Default Network Topology
 //
@@ -102,7 +101,7 @@ main (int argc, char *argv[])
   clientApps.Start (Seconds (2.0));
   clientApps.Stop (Seconds (10.0));
 
-  GlobalRouteManager::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   PointToPointHelper::EnablePcapAll ("second");
   CsmaHelper::EnablePcap ("second", csmaDevices.Get (1), true);

@@ -120,11 +120,6 @@ def register_Ns3Ipv4ListRouting_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Ipv4 >', 'ipv4')], 
                    is_virtual=True)
-    ## ipv4-list-routing.h: ns3::Ptr<ns3::Ipv4StaticRouting> ns3::Ipv4ListRouting::GetStaticRouting() const [member function]
-    cls.add_method('GetStaticRouting', 
-                   'ns3::Ptr< ns3::Ipv4StaticRouting >', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## ipv4-list-routing.h: void ns3::Ipv4ListRouting::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 

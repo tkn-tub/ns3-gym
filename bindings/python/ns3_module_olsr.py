@@ -747,10 +747,6 @@ def register_Ns3OlsrRoutingProtocol_methods(root_module, cls):
                    is_static=True)
     ## olsr-routing-protocol.h: ns3::olsr::RoutingProtocol::RoutingProtocol() [constructor]
     cls.add_constructor([])
-    ## olsr-routing-protocol.h: void ns3::olsr::RoutingProtocol::Start() [member function]
-    cls.add_method('Start', 
-                   'void', 
-                   [])
     ## olsr-routing-protocol.h: void ns3::olsr::RoutingProtocol::SetMainInterface(uint32_t interface) [member function]
     cls.add_method('SetMainInterface', 
                    'void', 

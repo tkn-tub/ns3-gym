@@ -157,9 +157,6 @@ public:
 
   Ptr<NetDevice> GetNetDevice (uint32_t i);
 
-  void AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
-                           int16_t priority);
-
 protected:
 
   virtual void DoDispose (void);
