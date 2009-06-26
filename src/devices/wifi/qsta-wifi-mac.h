@@ -101,7 +101,8 @@ private:
   void SendAssociationRequest (void);
   void SendProbeRequest (void);
   void TryToEnsureAssociated (void);
-  bool IsAssociated (void);
+  bool IsAssociated (void) const;
+  bool IsWaitAssocResp (void) const;
   virtual void DoDispose (void);
 
  /**

@@ -130,7 +130,8 @@ private:
   void TryToEnsureAssociated (void);
   void AssocRequestTimeout (void);
   void ProbeRequestTimeout (void);
-  bool IsAssociated (void);
+  bool IsAssociated (void) const;
+  bool IsWaitAssocResp (void) const;
   void MissedBeacons (void);
   void RestartBeaconWatchdog (Time delay);
   SupportedRates GetSupportedRates (void) const;
