@@ -118,7 +118,7 @@ WifiHelper::Install (const WifiPhyHelper &phy,
 }
 
 void
-WifiHelper::WifiLogComponentEnable (void) const
+WifiHelper::EnableLogComponents (void)
 {
   LogComponentEnable ("Aarfcd", LOG_LEVEL_ALL);
   LogComponentEnable ("AdhocWifiMac", LOG_LEVEL_ALL);

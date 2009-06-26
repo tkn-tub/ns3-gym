@@ -158,7 +158,7 @@ public:
   /**
    * Helper to enable all WifiNetDevice log components with one statement 
    */
-  void WifiLogComponentEnable (void) const;
+  static void EnableLogComponents (void);
 
 private:
   ObjectFactory m_stationManager;

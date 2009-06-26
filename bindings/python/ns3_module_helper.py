@@ -1097,11 +1097,11 @@ def register_Ns3WifiHelper_methods(root_module, cls):
                    'ns3::NetDeviceContainer', 
                    [param('ns3::WifiPhyHelper const &', 'phy'), param('ns3::WifiMacHelper const &', 'mac'), param('std::string', 'nodeName')], 
                    is_const=True)
-    ## wifi-helper.h: void ns3::WifiHelper::WifiLogComponentEnable() const [member function]
-    cls.add_method('WifiLogComponentEnable', 
+    ## wifi-helper.h: static void ns3::WifiHelper::EnableLogComponents() [member function]
+    cls.add_method('EnableLogComponents', 
                    'void', 
                    [], 
-                   is_const=True)
+                   is_static=True)
     return
 
 def register_Ns3WifiMacHelper_methods(root_module, cls):
