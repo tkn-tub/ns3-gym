@@ -58,13 +58,13 @@ UdpSocket::GetTypeId (void)
     .AddAttribute ("IpMulticastIf",
                    "interface index for outgoing multicast on this socket; -1 indicates to use default interface",
                    IntegerValue (-1),
-                   MakeUintegerAccessor (&UdpSocket::GetIpMulticastTtl,
-                                         &UdpSocket::SetIpMulticastTtl),
+                   MakeIntegerAccessor (&UdpSocket::GetIpMulticastIf,
+                                         &UdpSocket::SetIpMulticastIf),
                    MakeIntegerChecker<int32_t> ())
     .AddAttribute ("IpMulticastLoop",
                    "whether outgoing multicast sent also to loopback interface",
                    BooleanValue (false),
-                   MakeUintegerAccessor (&UdpSocket::GetIpMulticastLoop,
+                   MakeBooleanAccessor (&UdpSocket::GetIpMulticastLoop,
                                          &UdpSocket::SetIpMulticastLoop),
                    MakeBooleanChecker ())
     .AddAttribute ("MtuDiscover", "If enabled, every outgoing ip packet will have the DF flag set.",
