@@ -547,7 +547,7 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
       Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
       uint32_t oif = 0; //specify non-zero if bound to a source address
-      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno_);
+      route = ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, oif, errno_);
       ipv4->Send (packet, saddr, daddr, PROT_NUMBER, route);
     }
 }
@@ -585,7 +585,7 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, TcpHeader outgoingHeader,
       Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
       uint32_t oif = 0; //specify non-zero if bound to a source address
-      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno_);
+      route = ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, oif, errno_);
       ipv4->Send (packet, saddr, daddr, PROT_NUMBER, route);
     }
   else

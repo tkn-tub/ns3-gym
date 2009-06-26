@@ -354,7 +354,7 @@ TcpSocketImpl::Connect (const Address & address)
       Ptr<Ipv4Route> route;
       uint32_t oif = 0; //specify non-zero if bound to a source address
       // XXX here, cache the route in the endpoint?
-      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno_);
+      route = ipv4->GetRoutingProtocol ()->RouteOutput (Ptr<Packet> (), header, oif, errno_);
       if (route != 0)
         {
           NS_LOG_LOGIC ("Route exists");
@@ -855,7 +855,7 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
             Ptr<Ipv4Route> route;
             uint32_t oif = 0; //specify non-zero if bound to a source address
             header.SetDestination (m_remoteAddress);
-            route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno_);
+            route = ipv4->GetRoutingProtocol ()->RouteOutput (Ptr<Packet> (), header, oif, errno_);
             if (route != 0)
               {
                 NS_LOG_LOGIC ("Route exists");

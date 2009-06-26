@@ -532,7 +532,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   Socket::SocketErrno errno_; 
   uint32_t oif = 0; // unused for now
   ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment);
-  Ptr<Ipv4Route> newRoute = m_routingProtocol->RouteOutput (ipHeader, oif, errno_);
+  Ptr<Ipv4Route> newRoute = m_routingProtocol->RouteOutput (packet, ipHeader, oif, errno_);
   if (newRoute)
     {
       SendRealOut (newRoute, packet, ipHeader);

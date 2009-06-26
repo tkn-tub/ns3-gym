@@ -318,7 +318,8 @@ ArpL3Protocol::SendArpRequest (Ptr<const ArpCache> cache, Ipv4Address to)
   Ipv4Header header;
   header.SetDestination (to);
   Socket::SocketErrno errno_;
-  Ptr<Ipv4Route> route = ipv4->GetRoutingProtocol ()->RouteOutput (header, interface, errno_);
+  Ptr<Packet> packet = Create<Packet> ();
+  Ptr<Ipv4Route> route = ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, interface, errno_);
   NS_ASSERT (route != 0);
   NS_LOG_LOGIC ("ARP: sending request from node "<<m_node->GetId ()<<
             " || src: " << cache->GetDevice ()->GetAddress () <<
@@ -329,7 +330,6 @@ ArpL3Protocol::SendArpRequest (Ptr<const ArpCache> cache, Ipv4Address to)
 		  route->GetSource (),
                   cache->GetDevice ()->GetBroadcast (),
                   to);
-  Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (arp);
   cache->GetDevice ()->Send (packet, cache->GetDevice ()->GetBroadcast (), PROT_NUMBER);
 }
@@ -346,7 +346,8 @@ ArpL3Protocol::SendArpReply (Ptr<const ArpCache> cache, Ipv4Address toIp, Addres
   Ipv4Header header;
   header.SetDestination (toIp);
   Socket::SocketErrno errno_;
-  Ptr<Ipv4Route> route = ipv4->GetRoutingProtocol ()->RouteOutput (header, interface, errno_);
+  Ptr<Packet> packet = Create<Packet> ();
+  Ptr<Ipv4Route> route = ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, interface, errno_);
   NS_ASSERT (route != 0);
   NS_LOG_LOGIC ("ARP: sending reply from node "<<m_node->GetId ()<<
             "|| src: " << cache->GetDevice ()->GetAddress () << 
@@ -354,7 +355,6 @@ ArpL3Protocol::SendArpReply (Ptr<const ArpCache> cache, Ipv4Address toIp, Addres
             " || dst: " << toMac << " / " << toIp);
   arp.SetReply (cache->GetDevice ()->GetAddress (),
                 route->GetSource (), toMac, toIp);
-  Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (arp);
   cache->GetDevice ()->Send (packet, toMac, PROT_NUMBER);
 }

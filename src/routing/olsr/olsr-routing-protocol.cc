@@ -2551,7 +2551,7 @@ RoutingProtocol::FindSendEntry (RoutingTableEntry const &entry,
 }
 
 Ptr<Ipv4Route>
-RoutingProtocol::RouteOutput (const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr)
+RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr)
 {  
   NS_LOG_FUNCTION (this << " " << m_ipv4->GetObject<Node> ()->GetId() << " " << header.GetDestination () << " " << oif);
   // TBD:  oif is unused; can be used to restrict the outgoing interface
