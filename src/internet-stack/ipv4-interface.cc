@@ -56,6 +56,7 @@ Ipv4Interface::GetTypeId (void)
  */
 Ipv4Interface::Ipv4Interface () 
   : m_ifup (false),
+    m_forwarding (true),
     m_metric (1),
     m_node (0), 
     m_device (0),
@@ -158,6 +159,20 @@ Ipv4Interface::SetDown (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_ifup = false;
+}
+
+bool 
+Ipv4Interface::IsForwarding (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_forwarding;
+}
+
+void 
+Ipv4Interface::SetForwarding (bool val)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_forwarding = val;
 }
 
 void

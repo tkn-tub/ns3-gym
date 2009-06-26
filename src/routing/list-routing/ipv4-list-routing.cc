@@ -104,6 +104,8 @@ Ipv4ListRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
   NS_LOG_LOGIC ("RouteInput logic for node: " << m_ipv4->GetObject<Node> ()->GetId ());
 
   NS_ASSERT (m_ipv4 != 0);
+  // Check if input device supports IP 
+  NS_ASSERT (m_ipv4->GetInterfaceForDevice (idev) >= 0);
   uint32_t iif = m_ipv4->GetInterfaceForDevice (idev); 
 
   // Multicast recognition; handle local delivery here
@@ -176,6 +178,13 @@ Ipv4ListRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
             }
           NS_LOG_LOGIC ("Address "<< addr << " not a match");
         }
+    }
+  // Check if input device supports IP forwarding
+  if (m_ipv4->IsForwarding (iif) == false)
+    {
+      NS_LOG_LOGIC ("Forwarding disabled for this interface");
+      ecb (p, header, Socket::ERROR_NOROUTETOHOST);
+      return false;
     }
   // Next, try to find a route
   for (Ipv4RoutingProtocolList::const_iterator rprotoIter =

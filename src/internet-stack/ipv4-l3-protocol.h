@@ -152,6 +152,8 @@ public:
   bool IsUp (uint32_t i) const;
   void SetUp (uint32_t i);
   void SetDown (uint32_t i);
+  bool IsForwarding (uint32_t i) const;
+  void SetForwarding (uint32_t i, bool val);
 
   Ptr<NetDevice> GetNetDevice (uint32_t i);
 
@@ -198,6 +200,8 @@ private:
                       const Ipv4Header &header);
 
   void LocalDeliver (Ptr<const Packet> p, Ipv4Header const&ip, uint32_t iif);
+  void RouteInputError (Ptr<const Packet> p, const Ipv4Header & ipHeader, Socket::SocketErrno sockErrno);
+
   uint32_t AddIpv4Interface (Ptr<Ipv4Interface> interface);
   void SetupLoopback (void);
   Ptr<Icmpv4L4Protocol> GetIcmp (void) const;

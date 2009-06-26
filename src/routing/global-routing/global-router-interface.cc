@@ -605,19 +605,20 @@ GlobalRouter::DiscoverLSAs (void)
       // associated with a bridge.  We are only going to involve devices with 
       // IP addresses in routing.
       //
-      bool isIp = false;
+      bool isForwarding = false;
       for (uint32_t j = 0; j < ipv4Local->GetNInterfaces (); ++j )
         {
-          if (ipv4Local->GetNetDevice (j) == ndLocal && ipv4Local->IsUp (j)) 
+          if (ipv4Local->GetNetDevice (j) == ndLocal && ipv4Local->IsUp (j) &&
+              ipv4Local->IsForwarding (j)) 
             {
-              isIp = true;
+              isForwarding = true;
               break;
             }
         }
 
-      if (!isIp)
+      if (!isForwarding)
         {
-          NS_LOG_LOGIC ("Net device " << ndLocal << "has no IP interface, skipping");
+          NS_LOG_LOGIC ("Net device " << ndLocal << "has no IP interface or is not enabled for forwarding, skipping");
           continue;
         }
 
@@ -630,6 +631,7 @@ GlobalRouter::DiscoverLSAs (void)
       // If the device is a point to point link, we treat it separately.  In
       // that case, there may be zero, one, or two link records added.
       //
+
       if (ndLocal->IsBroadcast () && !ndLocal->IsPointToPoint () )
         {
           NS_LOG_LOGIC ("Broadcast link");

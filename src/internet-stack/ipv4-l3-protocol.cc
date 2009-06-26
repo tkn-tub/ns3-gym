@@ -251,6 +251,7 @@ Ipv4L3Protocol::AddInterface (Ptr<NetDevice> device)
   Ptr<Ipv4Interface> interface = CreateObject<Ipv4Interface> ();
   interface->SetNode (m_node);
   interface->SetDevice (device);
+  interface->SetForwarding (m_ipForward);
   return AddIpv4Interface (interface);
 }
 
@@ -412,7 +413,7 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
     MakeCallback (&Ipv4L3Protocol::IpForward, this),
     MakeCallback (&Ipv4L3Protocol::IpMulticastForward, this),
     MakeCallback (&Ipv4L3Protocol::LocalDeliver, this),
-    MakeNullCallback <void, Ptr<const Packet>, const Ipv4Header &> ()
+    MakeCallback (&Ipv4L3Protocol::RouteInputError, this)
   );
 
 }
@@ -845,22 +846,53 @@ Ipv4L3Protocol::SetDown (uint32_t ifaceIndex)
     }
 }
 
+bool 
+Ipv4L3Protocol::IsForwarding (uint32_t i) const
+{
+  NS_LOG_FUNCTION (this << i);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
+  NS_LOG_LOGIC ("Forwarding state: " << interface->IsForwarding ());
+  return interface->IsForwarding ();
+}
+
+void 
+Ipv4L3Protocol::SetForwarding (uint32_t i, bool val)
+{
+  NS_LOG_FUNCTION (this << i);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
+  interface->SetForwarding (val);
+}
+
 Ptr<NetDevice>
 Ipv4L3Protocol::GetNetDevice (uint32_t i)
 {
+  NS_LOG_FUNCTION (this << i);
   return GetInterface (i)-> GetDevice ();
 }
 
 void 
 Ipv4L3Protocol::SetIpForward (bool forward) 
 {
+  NS_LOG_FUNCTION (this << forward);
   m_ipForward = forward;
+  for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
+    {
+      (*i)->SetForwarding (forward);
+    }
 }
 
 bool 
 Ipv4L3Protocol::GetIpForward (void) const
 {
   return m_ipForward;
+}
+
+void
+Ipv4L3Protocol::RouteInputError (Ptr<const Packet> p, const Ipv4Header & ipHeader, Socket::SocketErrno sockErrno)
+{
+  NS_LOG_FUNCTION (this << p << ipHeader << sockErrno);
+  NS_LOG_LOGIC ("Route input failure-- dropping packet to " << ipHeader << " with errno " << sockErrno); 
+  m_dropTrace (p);
 }
 
 

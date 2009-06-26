@@ -106,6 +106,16 @@ public:
   void SetDown (void);
 
   /**
+   * \returns true if this interface is enabled for IP forwarding of input datagrams
+   */
+  bool IsForwarding (void) const;
+  
+  /**
+   * \param val Whether to enable or disable IP forwarding for input datagrams
+   */
+  void SetForwarding (bool val);
+
+  /**
    * \param p packet to send
    * \param dest next hop address of packet.
    *
@@ -146,6 +156,7 @@ private:
   typedef std::list<Ipv4InterfaceAddress>::iterator Ipv4InterfaceAddressListI;
 
   bool m_ifup;
+  bool m_forwarding;  // IN_DEV_FORWARD
   uint16_t m_metric;
   Ipv4InterfaceAddressList m_ifaddrs;
   Ptr<Node> m_node;

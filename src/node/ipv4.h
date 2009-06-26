@@ -235,6 +235,20 @@ public:
    */
   virtual void SetDown (uint32_t interface) = 0;
 
+  /**
+   * \param interface Interface number of Ipv4 interface
+   * \returns true if IP forwarding enabled for input datagrams on this device
+   */
+  virtual bool IsForwarding (uint32_t interface) const = 0;
+
+  /**
+   * \param interface Interface number of Ipv4 interface
+   * \param val Value to set the forwarding flag
+   * 
+   * If set to true, IP forwarding is enabled for input datagrams on this device
+   */
+  virtual void SetForwarding (uint32_t interface, bool val) = 0;
+
   static const uint32_t IF_ANY = 0xffffffff;
 
 private:

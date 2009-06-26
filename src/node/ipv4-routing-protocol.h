@@ -51,7 +51,7 @@ public:
   typedef Callback<void, Ptr<Ipv4Route>, Ptr<const Packet>, const Ipv4Header &> UnicastForwardCallback;
   typedef Callback<void, Ptr<Ipv4MulticastRoute>, Ptr<const Packet>, const Ipv4Header &> MulticastForwardCallback;
   typedef Callback<void, Ptr<const Packet>, const Ipv4Header &, uint32_t > LocalDeliverCallback;
-  typedef Callback<void, Ptr<const Packet>, const Ipv4Header &> ErrorCallback;
+  typedef Callback<void, Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno > ErrorCallback;
   
   /**
    * \brief Query routing cache for an existing route, for an outbound packet
