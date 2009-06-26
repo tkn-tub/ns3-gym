@@ -577,7 +577,7 @@ DcfManager::NotifyTxStartNow (Time duration)
     //this may be caused only if PHY has started to receive a packet
     //inside SIFS, so, we check that lastRxStart was maximum a SIFS
     //ago
-    NS_ASSERT(Simulator::Now () - m_lastRxStart < m_sifs);
+    NS_ASSERT(Simulator::Now () - m_lastRxStart <= m_sifs);
     m_lastRxEnd = Simulator::Now ();
     m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
     m_lastRxReceivedOk = true;
