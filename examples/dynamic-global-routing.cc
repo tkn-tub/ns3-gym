@@ -63,9 +63,11 @@
 //    will start to be dropped 
 //  At time 13s, call RecomputeRoutingTables() and traffic will
 //    start flowing again on the alternate path
-//  At time 14s, re-enable the n1/n6 interface to up.  Will not change routing
-//  At time 15s, call RecomputeRoutingTables() and traffic will start flowing 
-//    again on the original path
+//  At time 14s, re-enable the n1/n6 interface to up.  This will change 
+//    routing back to n1-n6 since the interface up notification will cause
+//    a new local interface route, at higher priority than global routing
+//  At time 15s, call RecomputeRoutingTables(), but there is no effect
+//    since global routing is lower in priority than static routing
 //  At time 16s, stop the second flow.  
 
 // - Tracing of queues and packet receptions to file "dynamic-global-routing.tr"
