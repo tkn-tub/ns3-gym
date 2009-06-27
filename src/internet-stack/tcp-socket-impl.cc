@@ -666,6 +666,7 @@ Actions_t TcpSocketImpl::ProcessEvent (Events_t e)
   // simulation singleton is a way to get a single global static instance of a
   // class intended to be a singleton; see simulation-singleton.h
   SA stateAction = SimulationSingleton<TcpStateMachine>::Get ()->Lookup (m_state,e);
+  NS_LOG_LOGIC ("TcpSocketImpl::ProcessEvent stateAction " << stateAction.action);
   // debug
   if (stateAction.action == RST_TX)
     {
@@ -690,6 +691,11 @@ Actions_t TcpSocketImpl::ProcessEvent (Events_t e)
       m_connected = true;
       m_endPoint->SetPeer (m_remoteAddress, m_remotePort);
       NS_LOG_LOGIC ("TcpSocketImpl " << this << " Connected!");
+    }
+  if (saveState < CLOSING && (m_state == CLOSING || m_state == TIMED_WAIT) )
+    {
+      NS_LOG_LOGIC ("TcpSocketImpl peer closing, send EOF to application");
+      NotifyDataRecv ();
     }
 
   if (needCloseNotify && !m_closeNotified)
@@ -851,6 +857,7 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
   switch (a)
   {
     case ACK_TX:
+      NS_LOG_LOGIC ("TcpSocketImpl " << this <<" Action ACK_TX");
       if(tcpHeader.GetFlags() & TcpHeader::FIN)
       {
         ++m_nextRxSequence; //bump this to account for the FIN
@@ -1183,11 +1190,6 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
                 << " seq " << tcpHeader.GetSequenceNumber()
                 << " ack " << tcpHeader.GetAckNumber()
                 << " p.size is " << p->GetSize () );
-  NS_LOG_DEBUG ("TcpSocketImpl " << this <<
-                " NewRx," <<
-                " seq " << tcpHeader.GetSequenceNumber() <<
-                " ack " << tcpHeader.GetAckNumber() <<
-                " p.size is " << p->GetSize());
   States_t origState = m_state;
   if (RxBufferFreeSpace() < p->GetSize()) 
     { //if not enough room, fragment
