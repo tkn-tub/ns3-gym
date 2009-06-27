@@ -334,7 +334,6 @@ TcpSocketImpl::Close (void)
 
   Actions_t action  = ProcessEvent (APP_CLOSE);
   ProcessAction (action);
-  ShutdownSend ();
   return 0;
 }
 
