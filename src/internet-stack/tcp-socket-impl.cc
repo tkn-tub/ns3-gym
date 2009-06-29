@@ -172,13 +172,18 @@ TcpSocketImpl::~TcpSocketImpl ()
   if (m_endPoint != 0)
     {
       NS_ASSERT (m_tcp != 0);
-      /**
-       * Note that this piece of code is a bit tricky:
-       * when DeAllocate is called, it will call into
-       * Ipv4EndPointDemux::Deallocate which triggers
-       * a delete of the associated endPoint which triggers
-       * in turn a call to the method ::Destroy below
-       * will will zero the m_endPoint field.
+      /*
+       * Note that this piece of code is seriously convoluted: When we do a 
+       * Bind we allocate an Ipv4Endpoint.  Immediately thereafter we always do
+       * a FinishBind which sets the DestroyCallback of that endpoint to be
+       * TcpSocketImpl::Destroy, below.  When m_tcp->DeAllocate is called, it 
+       * will in turn call into Ipv4EndpointDemux::DeAllocate with the endpoint
+       * (m_endPoint).  The demux will look up the endpoint and destroy it (the
+       * corollary is that we don't own the object pointed to by m_endpoint, we
+       * just borrowed it).  The destructor for the endpoint will call the 
+       * DestroyCallback which will then invoke TcpSocketImpl::Destroy below. 
+       * Destroy will zero m_node, m_tcp and m_endpoint.  Yes, we zeroed m_node
+       * above and will zero m_tcp below as well; but that's what it does.
        */
       NS_ASSERT (m_endPoint != 0);
       m_tcp->DeAllocate (m_endPoint);
@@ -694,6 +699,24 @@ Actions_t TcpSocketImpl::ProcessEvent (Events_t e)
           << m_state << " event " << e
           << " set CloseNotif ");
     }
+
+  if (m_state == CLOSED && saveState != CLOSED && m_endPoint != 0)
+    {
+      NS_ASSERT (m_tcp != 0);
+      /*
+       * We want to deallocate the endpoint now.  We can't just naively call
+       * Deallocate (see the comment in TcpSocketImpl::~TcpSocketImpl), we 
+       * have to turn off the DestroyCallback to keep it from calling back 
+       * into TcpSocketImpl::Destroy and closing pretty much everything down.
+       * Once we have the callback disconnected, we can DeAllocate the
+       * endpoint which actually deals with destroying the actual endpoint,
+       * and then zero our member varible on general principles.
+       */
+      m_endPoint->SetDestroyCallback(MakeNullCallback<void>());
+      m_tcp->DeAllocate (m_endPoint);
+      m_endPoint = 0;
+    }
+    
   return stateAction.action;
 }
 
