@@ -85,7 +85,9 @@ TcpSocketImpl::GetTypeId ()
     m_rxAvailable (0),
     m_rxBufSize (0),
     m_pendingData (0),
+    m_segmentSize (0),          // For attribute initialization consistency (quiet valgrind)
     m_rxWindowSize (0),
+    m_initialCWnd (0),          // For attribute initialization consistency (quiet valgrind)
     m_persistTime (Seconds(6)), //XXX hook this into attributes?
     m_rtt (0),
     m_lastMeasuredRtt (Seconds(0.0))
@@ -183,8 +185,9 @@ TcpSocketImpl::~TcpSocketImpl ()
        * corollary is that we don't own the object pointed to by m_endpoint, we
        * just borrowed it).  The destructor for the endpoint will call the 
        * DestroyCallback which will then invoke TcpSocketImpl::Destroy below. 
-       * Destroy will zero m_node, m_tcp and m_endpoint.  Yes, we zeroed m_node
-       * above and will zero m_tcp below as well; but that's what it does.
+       * Destroy will zero m_node, m_tcp and m_endpoint.  The zero of m_node and
+       * m_tcp need to be here also in case the endpoint is deallocated before 
+       * shutdown.
        */
       NS_ASSERT (m_endPoint != 0);
       m_tcp->DeAllocate (m_endPoint);
