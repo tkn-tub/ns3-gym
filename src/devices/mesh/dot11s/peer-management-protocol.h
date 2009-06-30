@@ -212,7 +212,6 @@ private:
   ///\}
   uint16_t m_lastAssocId;
   uint16_t m_lastLocalLinkId;
-  uint8_t m_numberOfActivePeers; //number of established peer links
   uint8_t m_maxNumberOfPeerLinks;
   /**
    * Peer Links
@@ -232,10 +231,11 @@ private:
   ///\}
   //Keeps statistics
   struct Statistics {
+    uint16_t linksTotal;
     uint16_t linksOpened;
     uint16_t linksClosed;
 
-    Statistics () : linksOpened (0), linksClosed (0) {};
+    Statistics (uint16_t t = 0) : linksTotal(t), linksOpened (0), linksClosed (0) {};
     void Print (std::ostream & os) const;
   };
   struct Statistics m_stats;

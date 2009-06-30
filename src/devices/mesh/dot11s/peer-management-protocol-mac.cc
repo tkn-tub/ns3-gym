@@ -289,9 +289,9 @@ PeerManagementProtocolMac::Statistics::Print (std::ostream & os) const
     "dropped=\"" << dropped << "\"\n"
     "brokenMgt=\"" << brokenMgt << "\"\n"
     "txMgt=\"" << txMgt << "\"\n"
-    "txMgtBytes=\"" << (double)txMgtBytes /1024.0 << "\"\n"
+    "txMgtBytes=\"" << txMgtBytes << "\"\n"
     "rxMgt=\"" << rxMgt << "\"\n"
-    "rxMgtBytes=\"" << (double)rxMgtBytes / 1024.0 << "K\"\n"
+    "rxMgtBytes=\"" << rxMgtBytes << "\"\n"
     "beaconShift=\"" << beaconShift << "\"/>\n";
 }
 void

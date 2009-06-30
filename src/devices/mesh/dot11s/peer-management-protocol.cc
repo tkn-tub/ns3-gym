@@ -61,8 +61,7 @@ PeerManagementProtocol::GetTypeId (void)
 }
 PeerManagementProtocol::PeerManagementProtocol ():
   m_lastAssocId (0),
-  m_lastLocalLinkId (1),
-  m_numberOfActivePeers (0)
+  m_lastLocalLinkId (1)
   {
   }
 PeerManagementProtocol::~PeerManagementProtocol ()
@@ -345,9 +344,7 @@ PeerManagementProtocol::IsActiveLink (uint32_t interface, Mac48Address peerAddre
 bool
 PeerManagementProtocol::ShouldSendOpen (uint32_t interface, Mac48Address peerAddress)
 {
-  if (m_numberOfActivePeers > m_maxNumberOfPeerLinks)
-    return false;
-  return true;
+  return (m_stats.linksTotal <= m_maxNumberOfPeerLinks);
 }
 bool
 PeerManagementProtocol::ShouldAcceptOpen (
@@ -355,7 +352,7 @@ PeerManagementProtocol::ShouldAcceptOpen (
     Mac48Address peerAddress,
     PmpReasonCode & reasonCode)
 {
-  if (m_numberOfActivePeers > m_maxNumberOfPeerLinks)
+  if (m_stats.linksTotal > m_maxNumberOfPeerLinks)
     {
       reasonCode = REASON11S_MESH_MAX_PEERS;
       return false;
@@ -428,14 +425,14 @@ PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAdd
   if((nstate == PeerLink::ESTAB) && (ostate != PeerLink::ESTAB))
     {
       m_stats.linksOpened ++;
-      m_numberOfActivePeers ++;
+      m_stats.linksTotal++;
       if(!m_peerStatusCallback.IsNull ())
         m_peerStatusCallback (peerMeshPointAddress, peerAddress, interface, true);
     }
   if((ostate == PeerLink::ESTAB) && (nstate != PeerLink::ESTAB))
     {
       m_stats.linksClosed ++;
-      m_numberOfActivePeers --;
+      m_stats.linksTotal--;
       if(!m_peerStatusCallback.IsNull ())
         m_peerStatusCallback (peerMeshPointAddress, peerAddress, interface, false);
     }
@@ -448,7 +445,7 @@ PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAdd
 uint8_t
 PeerManagementProtocol::GetNumberOfLinks ()
 {
-  return m_numberOfActivePeers;
+  return m_stats.linksTotal;
 }
 Ptr<IeMeshId>
 PeerManagementProtocol::GetMeshId () const
@@ -470,6 +467,7 @@ void
 PeerManagementProtocol::Statistics::Print (std::ostream & os) const
 {
   os << "<Statistics "
+  "linksTotal=\""  << linksTotal <<  "\" " 
   "linksOpened=\"" << linksOpened << "\" "
   "linksClosed=\"" << linksClosed << "\"/>\n";
 }
@@ -493,7 +491,7 @@ PeerManagementProtocol::Report (std::ostream & os) const
 void
 PeerManagementProtocol::ResetStats ()
 {
-  m_stats = Statistics::Statistics ();
+  m_stats = Statistics::Statistics (m_stats.linksTotal); // don't reset number of links
   for(PeerManagementProtocolMacMap::const_iterator plugins = m_plugins.begin (); plugins != m_plugins.end (); plugins ++)
     plugins->second->ResetStats ();
 }

@@ -648,17 +648,18 @@ void
 MeshWifiInterfaceMac::Statistics::Print (std::ostream & os) const
 {
   os << "<Statistics "
+    // TODO txBeacons
     "rxBeacons=\"" << recvBeacons << "\" "
     "txFrames=\"" << sentFrames << "\" "
-    "txBytes=\"" << (double)sentBytes / 1024.0 << "K\" "
+    "txBytes=\"" << sentBytes << "\" "
     "rxFrames=\"" << recvFrames << "\" "
-    "rxBytes=\"" << (double)recvBytes / 1024.0 << "K\"/>\n";
+    "rxBytes=\"" << recvBytes << "\"/>\n";
 }
 void
 MeshWifiInterfaceMac::Report (std::ostream & os) const
 {
   os << "<Interface "
-    "BeaconInterval=\"" << GetBeaconInterval ().GetSeconds() << "s\" "
+    "BeaconInterval=\"" << GetBeaconInterval ().GetSeconds() << "\" "
     "Channel=\"" << GetFrequencyChannel () << "\" "
     "Address = \"" << GetAddress () << "\">\n";
   m_stats.Print (os);

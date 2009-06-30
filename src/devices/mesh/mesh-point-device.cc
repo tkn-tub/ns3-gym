@@ -424,17 +424,17 @@ MeshPointDevice::Report (std::ostream & os) const
 {
   os << "<Statistics \n"
       "txUnicastData=\"" << m_txStats.unicastData  << "\"\n"
-      "txUnicastDataBytes=\"" << (double)m_txStats.unicastDataBytes / 1024 << "K\"\n"
+      "txUnicastDataBytes=\"" << m_txStats.unicastDataBytes << "\"\n"
       "txBroadcastData=\"" << m_txStats.broadcastData  << "\"\n"
-      "txBroadcastDataBytes=\"" << (double)m_txStats.broadcastDataBytes / 1024  << "K\"\n"
+      "txBroadcastDataBytes=\"" << m_txStats.broadcastDataBytes << "\"\n"
       "rxUnicastData=\"" << m_rxStats.unicastData  << "\"\n"
-      "rxUnicastDataBytes=\"" << (double)m_rxStats.unicastDataBytes / 1024 << "K\"\n"
+      "rxUnicastDataBytes=\"" << m_rxStats.unicastDataBytes << "\"\n"
       "rxBroadcastData=\"" << m_rxStats.broadcastData  << "\"\n"
-      "rxBroadcastDataBytes=\"" << (double)m_rxStats.broadcastDataBytes / 1024  << "K\"\n"
+      "rxBroadcastDataBytes=\"" << m_rxStats.broadcastDataBytes << "\"\n"
       "fwdUnicastData=\"" << m_fwdStats.unicastData  << "\"\n"
-      "fwdUnicastDataBytes=\"" << (double)m_fwdStats.unicastDataBytes / 1024 << "K\"\n"
+      "fwdUnicastDataBytes=\"" << m_fwdStats.unicastDataBytes << "\"\n"
       "fwdBroadcastData=\"" << m_fwdStats.broadcastData  << "\"\n"
-      "fwdBroadcastDataBytes=\"" << (double)m_fwdStats.broadcastDataBytes / 1024  << "K\"\n"
+      "fwdBroadcastDataBytes=\"" << m_fwdStats.broadcastDataBytes << "\"\n"
       "/>\n";
 }
 

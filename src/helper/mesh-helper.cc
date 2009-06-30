@@ -89,7 +89,7 @@ MeshHelper::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os)
   Ptr <MeshPointDevice> mp = device->GetObject<MeshPointDevice> ();
   NS_ASSERT (mp != 0);
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
-  os << "<MeshPointDevice ReportTime=\"" << Simulator::Now().GetSeconds() << "s\" MpAddress=\"" << mp->GetAddress () << "\">\n";
+  os << "<MeshPointDevice time=\"" << Simulator::Now().GetSeconds() << "\" address=\"" << Mac48Address::ConvertFrom(mp->GetAddress ()) << "\">\n";
   m_stack->Report (mp, os);
   os << "</MeshPointDevice>\n";
 }

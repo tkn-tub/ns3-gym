@@ -334,13 +334,13 @@ HwmpProtocolMac::Statistics::Print (std::ostream & os) const
     "rxPrep=\"" << rxPrep << "\"\n"
     "rxPerr=\"" << rxPerr << "\"\n"
     "txMgt=\"" << txMgt << "\"\n"
-    "txMgtBytes=\"" << (double)txMgtBytes  / 1024.0 << "K\"\n"
+    "txMgtBytes=\"" << txMgtBytes  << "\"\n"
     "rxMgt=\"" << rxMgt << "\"\n"
-    "rxMgtBytes=\"" << (double)rxMgtBytes / 1204.0 << "K\"\n"
+    "rxMgtBytes=\"" << rxMgtBytes << "\"\n"
     "txData=\"" << txData << "\"\n"
-    "txDataBytes=\"" << (double)txDataBytes / 1024.0 << "K\"\n"
+    "txDataBytes=\"" << txDataBytes << "\"\n"
     "rxData=\"" << rxData << "\"\n"
-    "rxDataBytes=\"" << (double)rxDataBytes / 1024.0 << "K\"/>\n";
+    "rxDataBytes=\"" << rxDataBytes << "\"/>\n";
 }
 void
 HwmpProtocolMac::Report (std::ostream & os) const
