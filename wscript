@@ -732,12 +732,14 @@ class collect_unit_test_results_task(Task.TaskBase):
         return Task.RUN_ME
 
     def run(self):
-        failed = 0
+        failed_tasks = []
         for task in self.test_tasks:
             if task.retval:
-                failed += 1
-        if failed:
-            print "C++ UNIT TESTS: %i tests passed, %i failed." % (len(self.test_tasks) - failed, failed)
+                failed_tasks.append(task)
+        if failed_tasks:
+            print "C++ UNIT TESTS: %i tests passed, %i failed (%s)." % \
+                (len(self.test_tasks) - len(failed_tasks), len(failed_tasks),
+                 ', '.join(t.name_of_test for t in failed_tasks))
             return 1
         else:
             print "C++ UNIT TESTS: all %i tests passed." % (len(self.test_tasks),)
