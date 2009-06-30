@@ -19,6 +19,7 @@
  */
 
 
+#include "ns3/abort.h"
 #include "ns3/node.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/log.h"
@@ -193,7 +194,13 @@ void
 TcpSocketImpl::SetNode (Ptr<Node> node)
 {
   m_node = node;
-  // Initialize some variables 
+  /*
+   * Set the congestion window to IW.  This method is called from the L4 
+   * Protocol after it creates the socket.  The Attribute system takes
+   * care of setting m_initialCWnd and m_segmentSize to their default
+   * values.  m_cWnd depends on m_initialCwnd and m_segmentSize so it
+   * also needs to be updated in SetInitialCwnd and SetSegSize.
+   */
   m_cWnd = m_initialCWnd * m_segmentSize;
 }
 
@@ -1626,6 +1633,13 @@ void
 TcpSocketImpl::SetSegSize (uint32_t size)
 {
   m_segmentSize = size;
+  /*
+   * Make sure that the congestion window is initialized for IW properly.  We
+   * can't do this after the connection starts up or would would most likely 
+   * change m_cWnd out from under the protocol.  That would be Bad (TM).
+   */
+  NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpSocketImpl::SetSegSize(): Cannot change segment size dynamically.");
+  m_cWnd = m_initialCWnd * m_segmentSize;
 }
 
 uint32_t
@@ -1650,6 +1664,13 @@ void
 TcpSocketImpl::SetInitialCwnd (uint32_t cwnd)
 {
   m_initialCWnd = cwnd;
+  /*
+   * Make sure that the congestion window is initialized for IW properly.  We
+   * can't do this after the connection starts up or would would most likely 
+   * change m_cWnd out from under the protocol.  That would be Bad (TM).
+   */
+  NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpSocketImpl::SetInitialCwnd(): Cannot change initial cwnd dynamically.");
+  m_cWnd = m_initialCWnd * m_segmentSize;
 }
 
 uint32_t
