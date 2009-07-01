@@ -77,8 +77,8 @@ Buffer::Iterator dot11sMeshCapability::Deserialize (Buffer::Iterator i)
 }
 bool dot11sMeshCapability::Is (uint16_t cap, uint8_t n) const
 {
-  uint16_t mask = 1<<n;
-  return (cap & mask) == mask;
+  uint16_t mask = 1 << n;
+  return (cap & mask);
 }
 IeConfiguration::IeConfiguration ():
     m_APSPId (PROTOCOL_HWMP),

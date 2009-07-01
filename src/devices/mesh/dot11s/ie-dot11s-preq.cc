@@ -239,11 +239,11 @@ IePreq::SerializeInformation (Buffer::Iterator i) const
     {
       uint8_t flags = 0;
       if ((*j)->IsDo ())
-        flags += 128;
+        flags |= 1 << 0;
       if ((*j)->IsRf ())
-        flags += 64;
+        flags |= 1 << 1;
       if((*j)->IsUsn ())
-        flags += 32;
+        flags |= 1 << 2;
       i.WriteU8 (flags);
       WriteTo (i, (*j)->GetDestinationAddress());
       i.WriteHtolsbU32 ((*j)->GetDestSeqNumber ());
@@ -272,17 +272,11 @@ IePreq::DeserializeInformation (Buffer::Iterator start, uint8_t length)
       bool rfFlag = false;
       bool usnFlag = false;
       uint8_t flags = i.ReadU8 ();
-      if (flags >= 128)
-        {
+      if (flags & (1 << 0))
           doFlag = true;
-          flags -=128;
-        }
-      if (flags >=64)
-      {
+      if (flags & (1 << 1))
         rfFlag = true;
-        flags -= 64;
-      }
-      if (flags >= 32)
+      if (flags & (1 << 2))
         usnFlag = true;
       new_element->SetFlags (doFlag, rfFlag, usnFlag);
       Mac48Address addr;
