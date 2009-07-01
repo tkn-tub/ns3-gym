@@ -24,6 +24,7 @@
 #include "ns3/channel.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
+#include "ns3/node-list.h"
 #include "ns3/ipv4.h"
 #include "ns3/bridge-net-device.h"
 #include "ipv4-global-routing.h"
@@ -140,7 +141,8 @@ GlobalRoutingLSA::GlobalRoutingLSA()
   m_linkRecords(),
   m_networkLSANetworkMask("0.0.0.0"),
   m_attachedRouters(),
-  m_status(GlobalRoutingLSA::LSA_SPF_NOT_EXPLORED)
+  m_status(GlobalRoutingLSA::LSA_SPF_NOT_EXPLORED),
+  m_node_id(0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -156,7 +158,8 @@ GlobalRoutingLSA::GlobalRoutingLSA (
   m_linkRecords(),
   m_networkLSANetworkMask("0.0.0.0"),
   m_attachedRouters(),
-  m_status(status)
+  m_status(status),
+  m_node_id(0)
 {
   NS_LOG_FUNCTION (this << status << linkStateId << advertisingRtr);
 }
@@ -165,7 +168,8 @@ GlobalRoutingLSA::GlobalRoutingLSA (GlobalRoutingLSA& lsa)
   : m_lsType(lsa.m_lsType), m_linkStateId(lsa.m_linkStateId), 
     m_advertisingRtr(lsa.m_advertisingRtr), 
     m_networkLSANetworkMask(lsa.m_networkLSANetworkMask), 
-    m_status(lsa.m_status)
+    m_status(lsa.m_status),
+    m_node_id(lsa.m_node_id)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT_MSG(IsEmpty(), 
@@ -182,6 +186,7 @@ GlobalRoutingLSA::operator= (const GlobalRoutingLSA& lsa)
   m_advertisingRtr = lsa.m_advertisingRtr;
   m_networkLSANetworkMask = lsa.m_networkLSANetworkMask, 
   m_status = lsa.m_status;
+  m_node_id = lsa.m_node_id;
 
   ClearLinkRecords ();
   CopyLinkRecords (lsa);
@@ -378,6 +383,20 @@ GlobalRoutingLSA::SetStatus (GlobalRoutingLSA::SPFStatus status)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_status = status;
+}
+
+  Ptr<Node>
+GlobalRoutingLSA::GetNode (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return NodeList::GetNode (m_node_id);
+}
+
+  void
+GlobalRoutingLSA::SetNode (Ptr<Node> node)
+{
+  NS_LOG_FUNCTION (node);
+  m_node_id = node->GetId ();
 }
 
   void 
@@ -582,6 +601,7 @@ GlobalRouter::DiscoverLSAs (void)
   pLSA->SetLinkStateId (m_routerId);
   pLSA->SetAdvertisingRouter (m_routerId);
   pLSA->SetStatus (GlobalRoutingLSA::LSA_SPF_NOT_EXPLORED);
+  pLSA->SetNode (node);
 
   //
   // Ask the node for the number of net devices attached. This isn't necessarily 
@@ -1123,6 +1143,7 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
       pLSA->SetAdvertisingRouter (m_routerId);
       pLSA->SetNetworkLSANetworkMask (maskLocal);
       pLSA->SetStatus (GlobalRoutingLSA::LSA_SPF_NOT_EXPLORED);
+      pLSA->SetNode (node);
 
       //
       // Build a list of AttachedRouters by walking the devices in the channel

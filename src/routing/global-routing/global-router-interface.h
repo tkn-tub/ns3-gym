@@ -477,6 +477,18 @@ public:
  */
   void SetStatus (SPFStatus status);
 
+/**
+ * @brief Get the Node pointer of the node that originated this LSA
+ * @returns Node pointer
+ */
+  Ptr<Node> GetNode (void) const;
+
+/**
+ * @brief Set the Node pointer of the node that originated this LSA
+ * @param node Node pointer
+ */
+  void SetNode (Ptr<Node> node);
+
 private:
 /**
  * The type of the LSA.  Each LSA type has a separate advertisement
@@ -545,6 +557,7 @@ private:
  * proper position in the tree.
  */
   SPFStatus m_status;
+  uint32_t m_node_id;
 };
 
 std::ostream& operator<< (std::ostream& os, GlobalRoutingLSA& lsa);

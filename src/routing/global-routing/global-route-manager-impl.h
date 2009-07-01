@@ -772,6 +772,7 @@ private:
 
   SPFVertex* m_spfroot;
   GlobalRouteManagerLSDB* m_lsdb;
+  bool CheckForStubNode (Ipv4Address root);
   void SPFCalculate (Ipv4Address root);
   void SPFProcessStubs (SPFVertex* v);
   void SPFNext (SPFVertex*, CandidateQueue&);

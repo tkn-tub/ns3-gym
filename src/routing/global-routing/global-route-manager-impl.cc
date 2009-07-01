@@ -1000,6 +1000,93 @@ GlobalRouteManagerImpl::DebugSPFCalculate (Ipv4Address root)
   SPFCalculate (root);
 }
 
+//
+// Used to test if a node is a stub, from an OSPF sense.
+// If there is only one link of type 1 or 2, then a default route
+// can safely be added to the next-hop router and SPF does not need
+// to be run
+//
+bool
+GlobalRouteManagerImpl::CheckForStubNode (Ipv4Address root)
+{
+  NS_LOG_FUNCTION (root);
+  GlobalRoutingLSA *rlsa = m_lsdb->GetLSA (root);
+  Ipv4Address myRouterId = rlsa->GetLinkStateId ();
+  int transits = 0;
+  GlobalRoutingLinkRecord *transitLink;
+  for (uint32_t i = 0; i < rlsa->GetNLinkRecords (); i++)
+    {
+      GlobalRoutingLinkRecord *l = rlsa->GetLinkRecord (i);
+      if (l->GetLinkType () == GlobalRoutingLinkRecord::TransitNetwork)
+        {
+          transits++;
+          transitLink = l;
+        }
+      else if (l->GetLinkType () == GlobalRoutingLinkRecord::PointToPoint)
+        {
+          transits++;
+          transitLink = l;
+        }
+    }
+  if (transits == 0)
+    {
+      // This router is not connected to any router.  Probably, global
+      // routing should not be called for this node, but we can just raise
+      // a warning here and return true.
+      NS_LOG_WARN ("all nodes should have at least one transit link:" << root );
+      return true;
+    }
+  if (transits == 1)
+    {
+      if (transitLink->GetLinkType () == GlobalRoutingLinkRecord::TransitNetwork)
+        {
+          // Install default route to next hop router
+          // What is the next hop?  We need to check all neighbors on the link.
+          // If there is a single router that has two transit links, then
+          // that is the default next hop.  If there are more than one
+          // routers on link with multiple transit links, return false.
+          // Not yet implemented, so simply return false
+          NS_LOG_LOGIC ("TBD: Would have inserted default for transit");
+          return false;
+        }
+      else if (transitLink->GetLinkType () == GlobalRoutingLinkRecord::PointToPoint)
+        {
+          // Install default route to next hop
+          // The link record LinkID is the router ID of the peer.
+          // The Link Data is the local IP interface address
+          GlobalRoutingLSA *w_lsa = m_lsdb->GetLSA (transitLink->GetLinkId ());
+          uint32_t nLinkRecords = w_lsa->GetNLinkRecords ();
+          for (uint32_t j = 0; j < nLinkRecords; ++j)
+            {
+              //
+              // We are only concerned about point-to-point links
+              //
+              GlobalRoutingLinkRecord *lr = w_lsa->GetLinkRecord (j);
+              if (lr->GetLinkType () != GlobalRoutingLinkRecord::PointToPoint)
+                {
+                  continue;
+                }
+              // Find the link record that corresponds to our routerId
+              if (lr->GetLinkId () == myRouterId)
+                {
+                  // Next hop is stored in the LinkID field of lr
+                  Ptr<GlobalRouter> router = rlsa->GetNode ()->GetObject<GlobalRouter> ();
+                  NS_ASSERT (router);
+                  Ptr<Ipv4GlobalRouting> gr = router->GetRoutingProtocol ();
+                  NS_ASSERT (gr);
+                  gr->AddNetworkRouteTo (Ipv4Address ("0.0.0.0"), Ipv4Mask ("0.0.0.0"), lr->GetLinkData (), 
+                                         FindOutgoingInterfaceId (transitLink->GetLinkData ()));
+                  NS_LOG_LOGIC ("Inserting default route for node " << myRouterId << " to next hop " << 
+                                lr->GetLinkData () << " via interface " << 
+                                FindOutgoingInterfaceId(transitLink->GetLinkData()));
+                  return true;
+                }
+            }
+        }
+    }
+  return false;
+}
+
 // quagga ospf_spf_calculate
   void
 GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
@@ -1032,6 +1119,20 @@ GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
   v->SetDistanceFromRoot (0);
   v->GetLSA ()->SetStatus (GlobalRoutingLSA::LSA_SPF_IN_SPFTREE);
   NS_LOG_LOGIC ("Starting SPFCalculate for node " << root);
+
+//
+// Optimize SPF calculation, for ns-3.
+// We do not need to calculate SPF for every node in the network if this
+// node has only one interface through which another router can be 
+// reached.  Instead, short-circuit this computation and just install
+// a default route in the CheckForStubNode() method.
+//
+  if (NodeList::GetNNodes () > 0 && CheckForStubNode (root))
+    {
+      NS_LOG_LOGIC ("SPFCalculate truncated for stub node " << root);
+      delete m_spfroot;
+      return;
+    }
 
   for (;;)
     {
