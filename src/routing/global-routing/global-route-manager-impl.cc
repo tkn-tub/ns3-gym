@@ -1013,7 +1013,7 @@ GlobalRouteManagerImpl::CheckForStubNode (Ipv4Address root)
   GlobalRoutingLSA *rlsa = m_lsdb->GetLSA (root);
   Ipv4Address myRouterId = rlsa->GetLinkStateId ();
   int transits = 0;
-  GlobalRoutingLinkRecord *transitLink;
+  GlobalRoutingLinkRecord *transitLink = 0;
   for (uint32_t i = 0; i < rlsa->GetNLinkRecords (); i++)
     {
       GlobalRoutingLinkRecord *l = rlsa->GetLinkRecord (i);
