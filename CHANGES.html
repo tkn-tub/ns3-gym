@@ -187,7 +187,7 @@ for forwarded packets) is still the same.
 +  typedef Callback&lt;void, Ptr&lt;const Packet&gt;, const Ipv4Header &, uint32_t &gt; LocalDeliverCallback;
 +  typedef Callback&lt;void, Ptr&lt;const Packet&gt;, const Ipv4Header &&gt; ErrorCallback;
 -  virtual bool RequestInterface (Ipv4Address destination, uint32_t& interface) = 0;
-+  virtual Ptr&lt;Ipv4Route&gt; RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &errno) = 0;
++  virtual Ptr&lt;Ipv4Route&gt; RouteOutput (Ptr&lt;Packet&gt; p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &errno) = 0;
 -  virtual bool RequestRoute (uint32_t interface,
 -                            const Ipv4Header &ipHeader,
 -                            Ptr&lt;Packet&gt; packet,
