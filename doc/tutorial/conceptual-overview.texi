@@ -110,7 +110,7 @@ It used to be the case that if you wanted to connect a computers to a network,
 you had to buy a specific kind of network cable and a hardware device called
 (in PC terminology) a @emph{peripheral card} that needed to be installed in
 your computer.  If the peripheral card implemented some networking function,
-theys were called Network Interface Cards, or @emph{NICs}.  Today most 
+they were called Network Interface Cards, or @emph{NICs}.  Today most 
 computers come with the network interface hardware built in and users don't 
 see these building blocks.
 
@@ -174,9 +174,10 @@ directory.  Change into that release directory, and you should find a
 directory structure something like the following:
 
 @verbatim
-  AUTHORS  examples/  README         samples/  utils/   waf.bat*
-  build/   LICENSE    regression/    scratch/  VERSION  wscript
-  doc/     ns3/       RELEASE_NOTES  src/      waf*
+  AUTHORS       doc/       README          RELEASE_NOTES  utils/    wscript
+  bindings/     examples/  regression/     samples/       VERSION   wutils.py
+  build/        LICENSE    regression.py   scratch/       waf*      wutils.pyc
+  CHANGES.html  ns3/       regression.pyc  src/           waf.bat*
 @end verbatim
 
 @cindex first.cc
@@ -276,7 +277,7 @@ done a
 @end verbatim
 
 to build the project.  So now if you look in the directory 
-@code{build/debug/ns3} you will find the four module include files shown 
+@code{../build/debug/ns3} you will find the four module include files shown 
 above.  You can take a look at the contents of these files and find that they
 do include all of the public include files in their respective modules.
 
@@ -310,16 +311,18 @@ We will use this statement as a convenient place to talk about our Doxygen
 documentation system.  If you look at the project web site, 
 @uref{http://www.nsnam.org,,ns-3 project}, you will find a link to ``Doxygen 
 (ns-3-dev)'' in the navigation bar.  If you select this link, you will be
-taken to our documentation page.
+taken to our documentation page for the current development release.  There 
+is also a link to ``Doxygen (stable)'' that will take you to the documentation
+for the latest stable release of @code{ns-3}.
 
 Along the left side, you will find a graphical representation of the structure
 of the documentation.  A good place to start is the @code{NS-3 Modules} 
-``book.''  If you expand @code{Modules} you will see a list of @command{ns-3}
-module documentation.  The concept of module here ties directly into the 
-module include files discussed above.  It turns out that the @command{ns-3}
-logging subsystem is part of the @code{core} module, so go ahead and expand 
-that documentation node.  Now, expand the @code{Debugging} book and then 
-select the @code{Logging} page.
+``book'' in the @code{ns-3} navigation tree.  If you expand @code{Modules} 
+you will see a list of @command{ns-3} module documentation.  The concept of 
+module here ties directly into the module include files discussed above.  It 
+turns out that the @command{ns-3} logging subsystem is part of the @code{core} 
+module, so go ahead and expand that documentation node.  Now, expand the 
+@code{Debugging} book and then select the @code{Logging} page.
 
 You should now be looking at the Doxygen documentation for the Logging module.
 In the list of @code{#define}s at the top of the page you will see the entry
@@ -437,7 +440,7 @@ high-level perspective the next line,
     pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
 @end verbatim
 
-tells the @code{PointToPointHelper} object to use the value ``5mbps''
+tells the @code{PointToPointHelper} object to use the value ``5Mbps''
 (five megabits per second) as the ``DataRate'' when it creates a 
 @code{PointToPointNetDevice} object.
 
@@ -492,7 +495,7 @@ helper are used to initialize the corresponding @code{Attributes} in the
 created objects.
 
 After executing the @code{pointToPoint.Install (nodes)} call we will have
-two nodes, each with an installed point-to-point net device and a 
+two nodes, each with an installed point-to-point net device and a single
 point-to-point channel between them.  Both devices will be configured to 
 transmit data at five megabits per second over the channel which has a two 
 millisecond transmission delay.
@@ -576,13 +579,13 @@ created.
 The first line of code in the above snippet declares the 
 @code{UdpEchoServerHelper}.  As usual, this isn't the application itself, it
 is an object used to help us create the actual applications.  One of our 
-conventions is to place required @code{Attributes} in the helper constructor.
+conventions is to place @emph{required} @code{Attributes} in the helper constructor.
 In this case, the helper can't do anything useful unless it is provided with
 a port number that the client also knows about.  Rather than just picking one 
 and hoping it all works out, we require the port number as a parameter to the 
 constructor.  The constructor, in turn, simply does a @code{SetAttribute}
-with the passed value.  You can, if desired, set the ``Port'' @code{Attribute}
-to another value later.
+with the passed value.  If you want, you can set the ``Port'' @code{Attribute}
+to another value later using @code{SetAttribute}.
 
 Similar to many other helper objects, the @code{UdpEchoServerHelper} object 
 has an @code{Install} method.  It is the execution of this method that actually
@@ -591,7 +594,11 @@ to a node.  Interestingly, the @code{Install} method takes a
 @code{NodeContainter} as a parameter just as the other @code{Install} methods
 we have seen.  This is actually what is passed to the method even though it 
 doesn't look so in this case.  There is a C++ @emph{implicit conversion} at
-work here.
+work here that takes the result of @code{nodes.Get (1)} (which returns a smart
+pointer to a node object --- @code{Ptr<Node>}) and uses that in a constructor
+for an unnamed @code{NodeContainer} that is then passed to @code{Install}.
+If you are ever at a loss to find a particular method signature in C++ code
+that compiles and runs just fine, look for these kinds of implicit conversions.  
 
 We now see that @code{echoServer.Install} is going to install a
 @code{UdpEchoServerApplication} on the node found at index number one of the
@@ -603,9 +610,12 @@ helper.
 Applications require a time to ``start'' generating traffic and may take an
 optional time to ``stop''.  We provide both.  These times are set using  the
 @code{ApplicationContainer} methods @code{Start} and @code{Stop}.  These 
-methods take @code{Time} parameters.  In this case, we use an explicit C++
-conversion sequence to take the C++ double 1.0 and convert it to an 
-@command{ns-3} @code{Time} object using a @code{Seconds} cast.  The two lines,
+methods take @code{Time} parameters.  In this case, we use an @emph{explicit}
+C++ conversion sequence to take the C++ double 1.0 and convert it to an 
+@command{ns-3} @code{Time} object using a @code{Seconds} cast.  Be aware that
+the conversion rules may be controlled by the model author, and C++ has its
+own rules, so you can't always just assume that parameters will be happily 
+converted for you.  The two lines,
 
 @verbatim
     serverApps.Start (Seconds (1.0));
@@ -614,9 +624,9 @@ conversion sequence to take the C++ double 1.0 and convert it to an
 
 will cause the echo server application to @code{Start} (enable itself) at one
 second into the simulation and to @code{Stop} (disable itself) at ten seconds
-into the simulation.  By virtue of the fact that we have implicilty declared
-a simulation event (the application stop event) to be executed at ten seconds,
-the simulation will last at least ten seconds.
+into the simulation.  By virtue of the fact that we have declared a simulation
+event (the application stop event) to be executed at ten seconds, the simulation
+will last @emph{at least} ten seconds.
 
 @subsubsection UdpEchoClientHelper
 
@@ -682,25 +692,27 @@ When we previously called the methods,
 @end verbatim
 
 we actually scheduled events in the simulator at 1.0 seconds, 2.0 seconds and
-10.0 seconds.  When @code{Simulator::Run} is called, the system will begin 
-looking through the list of scheduled events and executing them.  First it 
-will run the event at 1.0 seconds, which will enable the echo server 
-application.  Then it will run the event scheduled for t=2.0 seconds which 
-will start the echo client application.  The start event implementation in 
-the echo client application will begin the data transfer phase of the 
-simulation by sending a packet to the server.
+two events at 10.0 seconds.  When @code{Simulator::Run} is called, the system 
+will begin looking through the list of scheduled events and executing them.  
+First it will run the event at 1.0 seconds, which will enable the echo server 
+application (this event may, in turn, schedule many other events).  Then it 
+will run the event scheduled for t=2.0 seconds which will start the echo client
+application.  Again, this event may schedule many more events.  The start event
+implementation in the echo client application will begin the data transfer phase
+of the simulation by sending a packet to the server.
 
 The act of sending the packet to the server will trigger a chain of events
 that will be automatically scheduled behind the scenes and which will perform 
 the mechanics of the packet echo according to the various timing parameters 
 that we have set in the script.
 
-Eventually, since we only send one packet, the chain of events triggered by 
+Eventually, since we only send one packet (recall the @code{MaxPackets} 
+@code{Attribute} was set to one), the chain of events triggered by 
 that single client echo request will taper off and the simulation will go 
 idle.  Once this happens, the remaining events will be the @code{Stop} events
 for the server and the client.  When these events are executed, there are
 no further events to process and @code{Simulator::Run} returns.  The simulation
-is complete.
+is then complete.
 
 All that remains is to clean up.  This is done by calling the global function 
 @code{Simulator::Destroy}.  As the helper functions (or low level 
@@ -721,10 +733,11 @@ took care of the hard part for you.  The remaining lines of our first
 We have made it trivial to build your simple scripts.  All you have to do is 
 to drop your script into the scratch directory and it will automatically be 
 built if you run Waf.  Let's try it.  Copy @code{examples/first.cc} into 
-the @code{scratch} directory.
+the @code{scratch} directory after changing back into the top level directory.
 
 @verbatim
-  ~/repos/ns-3-dev > cp examples/first.cc scratch/myfirst.cc
+  cd ..
+  cp examples/first.cc scratch/myfirst.cc
 @end verbatim
 
 Now build your first example script using waf:
@@ -737,10 +750,11 @@ You should see messages reporting that your @code{myfirst} example was built
 successfully.
 
 @verbatim
-  Entering directory `repos/ns-3-allinone-dev/ns-3-dev/build'
-  [563/648] cxx: scratch/myfirst.cc -> build/debug/scratch/myfirst_3.o
-  [646/648] cxx_link: build/debug/scratch/myfirst_3.o -> build/debug/scratch/myfirst
-  Build finished successfully (00:00:02)
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  [614/708] cxx: scratch/myfirst.cc -> build/debug/scratch/myfirst_3.o
+  [706/708] cxx_link: build/debug/scratch/myfirst_3.o -> build/debug/scratch/myfirst
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (2.357s)
 @end verbatim
 
 You can now run the example (note that if you build your program in the scratch
@@ -753,8 +767,9 @@ directory you must run it out of the scratch directory):
 You should see some output:
 
 @verbatim
-  Entering directory `repos/ns-3-allinone-dev/ns-3-dev/build'
-  Build finished successfully (00:00:00)
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (0.418s)
   Sent 1024 bytes to 10.1.1.2
   Received 1024 bytes from 10.1.1.1
   Received 1024 bytes from 10.1.1.2
@@ -778,49 +793,57 @@ packet back from the server.
 Now that you have used some of the @command{ns-3} helpers you may want to 
 have a look at some of the source code that implements that functionality.
 The most recent code can be browsed on our web server at the following link:
-@uref{http://code.nsnam.org/?sort=lastchange}.  If you click on the bold
-repository names on the left of the page, you will see @emph{changelogs} for
-these repositories, and links to the @emph{manifest}.  From the manifest
-links, one can browse the source tree.
+@uref{http://code.nsnam.org/ns-3-dev}.  There, you will see the Mercurial
+summary page for our @command{ns-3} development tree.
 
-The top-level directory for one of our @emph{repositories} will look 
-something like:
+At the top of the page, you will see a number of links,
 
 @verbatim
-drwxr-xr-x   [up]   
-drwxr-xr-x   bindings python                          files 
-drwxr-xr-x   doc                                      files 
-drwxr-xr-x   examples                                 files 
-drwxr-xr-x   ns3                                      files 
-drwxr-xr-x   regression                               files 
-drwxr-xr-x   samples                                  files 
-drwxr-xr-x   scratch                                  files 
-drwxr-xr-x   src                                      files 
-drwxr-xr-x   utils                                    files 
--rw-r--r-- 2009-03-24 00:51 -0700 505   .hgignore     file | revisions | annotate 
--rw-r--r-- 2009-03-24 00:51 -0700 1682  .hgtags       file | revisions | annotate 
--rw-r--r-- 2009-03-24 00:51 -0700 686   AUTHORS       file | revisions | annotate 
--rw-r--r-- 2009-03-24 00:51 -0700 14893 CHANGES.html  file | revisions | annotate 
--rw-r--r-- 2009-03-24 00:51 -0700 17987 LICENSE       file | revisions | annotate 
--rw-r--r-- 2009-03-24 00:51 -0700 3742  README        file | revisions | annotate 
--rw-r--r-- 2009-03-24 00:51 -0700 13505 RELEASE_NOTES file | revisions | annotate 
--rw-r--r-- 2009-03-24 00:51 -0700 6     VERSION       file | revisions | annotate 
--rw-r--r-- 2009-03-24 00:51 -0700 9257  regression.py file | revisions | annotate 
--rwxr-xr-x 2009-03-24 00:51 -0700 81285 waf           file | revisions | annotate 
--rwxr-xr-x 2009-03-24 00:51 -0700 28    waf.bat       file | revisions | annotate 
--rw-r--r-- 2009-03-24 00:51 -0700 26270 wscript       file | revisions | annotate 
--rw-r--r-- 2009-03-24 00:51 -0700 6636  wutils.py     file | revisions | annotate 
+  summary | shortlog | changelog | graph | tags | files 
 @end verbatim
+
+Go ahead and select the @code{files} link.  This is what the top-level of
+most of our @emph{repositories} will look:
+
+@verbatim
+drwxr-xr-x                               [up]     
+drwxr-xr-x                               bindings python  files
+drwxr-xr-x                               doc              files
+drwxr-xr-x                               examples         files
+drwxr-xr-x                               ns3              files
+drwxr-xr-x                               regression       files
+drwxr-xr-x                               samples          files
+drwxr-xr-x                               scratch          files
+drwxr-xr-x                               src              files
+drwxr-xr-x                               utils            files
+-rw-r--r-- 2009-07-01 12:47 +0200 560    .hgignore        file | revisions | annotate
+-rw-r--r-- 2009-07-01 12:47 +0200 1886   .hgtags          file | revisions | annotate
+-rw-r--r-- 2009-07-01 12:47 +0200 1276   AUTHORS          file | revisions | annotate
+-rw-r--r-- 2009-07-01 12:47 +0200 30961  CHANGES.html     file | revisions | annotate
+-rw-r--r-- 2009-07-01 12:47 +0200 17987  LICENSE          file | revisions | annotate
+-rw-r--r-- 2009-07-01 12:47 +0200 3742   README           file | revisions | annotate
+-rw-r--r-- 2009-07-01 12:47 +0200 16171  RELEASE_NOTES    file | revisions | annotate
+-rw-r--r-- 2009-07-01 12:47 +0200 6      VERSION          file | revisions | annotate
+-rw-r--r-- 2009-07-01 12:47 +0200 10946  regression.py    file | revisions | annotate
+-rwxr-xr-x 2009-07-01 12:47 +0200 88110  waf              file | revisions | annotate
+-rwxr-xr-x 2009-07-01 12:47 +0200 28     waf.bat          file | revisions | annotate
+-rw-r--r-- 2009-07-01 12:47 +0200 35395  wscript          file | revisions | annotate
+-rw-r--r-- 2009-07-01 12:47 +0200 7673   wutils.py        file | revisions | annotate
+@end verbatim
+
+Our example scripts are in the @code{examples} directory.  If you click on @code{examples}
+you will see a list of files.  One of the files in that directory is @code{first.cc}.  If
+you click on @code{first.cc} you will find the code you just walked through.
 
 The source code is mainly in the @code{src} directory.  You can view source
 code either by clicking on the directory name or by clicking on the @code{files}
 link to the right of the directory name.  If you click on the @code{src}
 directory, you will be taken to the listing of the @code{src} subdirectories.  If you 
-click on @code{core} subdirectory, you will find a list of files.  The first file
-you will find (as of this writing) is @code{abort.h}.  If you 
-click on @code{abort.h} link, you will be sent to the source file for @code{abort.h}.
+then click on @code{core} subdirectory, you will find a list of files.  The first file
+you will find (as of this writing) is @code{abort.h}.  If you click on the 
+@code{abort.h} link, you will be sent to the source file for @code{abort.h} which 
+contains useful macros for exiting scripts if abnormal conditions are detected.
 
-Our example scripts are in the @code{examples} directory.  The source code for
-the helpers we have used in this chapter can be found in the 
+The source code for the helpers we have used in this chapter can be found in the 
 @code{src/helper} directory.  Feel free to poke around in the directory tree to
 get a feel for what is there and the style of @command{ns-3} programs.

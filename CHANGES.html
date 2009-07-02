@@ -85,6 +85,23 @@ was just a pass-through to GetDevice ()-&gt;GetMtu ().
   </p>
 </li>
 
+<li><b>GlobalRouteManager::PopulateRoutingTables () and RecomputeRoutingTables () are deprecated </b>
+  <p>This API has been moved to the helper API and the above functions will
+be removed in ns-3.6.  The new API is:
+<pre>
+Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+Ipv4GlobalRoutingHelper::RecomputeRoutingTables ();
+</pre>
+Additionally, these low-level functions in GlobalRouteManager are now public,
+allowing more API flexibility at the low level ns-3 API:
+<pre>
+GlobalRouteManager::DeleteGlobalRoutes ();
+GlobalRouteManager::BuildGlobalRoutingDatabase ();
+GlobalRouteManager::InitializeRoutes ();
+</pre>
+  </p>
+</li>
+
 <li><b>CalcChecksum attribute changes</b>
   <p>Four IPv4 CalcChecksum attributes (which enable the computation of 
 checksums that are disabled by default) have been collapsed into one global 
