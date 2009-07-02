@@ -35,6 +35,14 @@ namespace ns3 {
  *
  * Instances of this class are expected to be allocated as static 
  * global variables and should be used to store configurable global state.
+ * GlobalValues can be set directly by calling ns3::GlobalValue::SetValue
+ * but they can also be set through the NS_GLOBAL_VALUE environment variable.
+ * For example, NS_GLOBAL_VALUE='Name=Value;OtherName=OtherValue;' would set
+ * global values Name and OtherName to Value and OtherValue respectively. 
+ *
+ * Users of the ns3::CommandLine class also get the ability to set global 
+ * values through commandline arguments to their program: --Name=Value will
+ * set global value Name to Value.
  */
 class GlobalValue
 {
