@@ -35,8 +35,9 @@ namespace aodv {
 
 #define INFINITY2        0xff
 
-/*
-   AODV Neighbor Cache Entry
+/**
+ * \ingroup aodv
+ * \brief AODV Neighbor Cache Entry
  */
 class AODV_Neighbor 
 {
@@ -51,8 +52,10 @@ protected:
   Time nb_expire;
 };
 
-/*
-   AODV Precursor list data structure
+/**
+ * \ingroup aodv
+ * 
+ * \brief AODV Precursor list data structure
  */
 class AODV_Precursor 
 {
@@ -69,10 +72,10 @@ protected:
   Ipv4Address pc_addr;	// precursor address
 };
 
-/*
-  Route Table Entry
+/**
+ * \ingroup aodv
+ * \brief Route Table Entry
  */
-
 class aodv_rt_entry 
 {
   friend class aodv_rtable;
@@ -83,15 +86,15 @@ public:
   aodv_rt_entry(); 
   ~aodv_rt_entry();
 
-  void            nb_insert(Ipv4Address id);
+  void nb_insert(Ipv4Address id);
   /// Lookup neighbor by address, return true on success
   bool nb_lookup(Ipv4Address id, AODV_Neighbor & n);
-  void            pc_insert(Ipv4Address id);
+  void pc_insert(Ipv4Address id);
   /// Lookup precursor by address, return true on success
   bool pc_lookup(Ipv4Address id, AODV_Precursor & p);
-  void 		pc_delete(Ipv4Address id);
-  void 		pc_delete();
-  bool 		pc_empty() const;
+  void pc_delete(Ipv4Address id);
+  void pc_delete();
+  bool pc_empty() const;
   
   /// Compare destination address
   bool operator==(Ipv4Address id) const
@@ -99,53 +102,45 @@ public:
     return rt_dst == id;
   }
 
-  double          rt_req_timeout;         // when I can send another req
-  u_int8_t        rt_req_cnt;             // number of route requests
+  /// when I can send another req
+  double rt_req_timeout;         
+  /// number of route requests
+  u_int8_t rt_req_cnt;             
 
 protected:
-  Ipv4Address     rt_dst;
-  u_int32_t       rt_seqno;
+  Ipv4Address rt_dst;
+  u_int32_t rt_seqno;
   /* u_int8_t 	rt_interface; */
-  u_int16_t       rt_hops;       		// hop count
-  int 		  rt_last_hop_count;	// last valid hop count
-  Ipv4Address     rt_nexthop;    		// next hop IP address
-  /* list of precursors */ 
+  /// hop count
+  u_int16_t rt_hops;
+  /// last valid hop count
+  int rt_last_hop_count;
+  /// next hop IP address
+  Ipv4Address rt_nexthop;    		
+  /// list of precursors 
   std::vector<AODV_Precursor> rt_pclist;
-  double          rt_expire;     		// when entry expires
-  u_int8_t        rt_flags;
+  /// when entry expires
+  double rt_expire;
+  u_int8_t rt_flags;
 
-#define RTF_DOWN 0
-#define RTF_UP 1
-#define RTF_IN_REPAIR 2
+#define RTF_DOWN        0
+#define RTF_UP          1
+#define RTF_IN_REPAIR   2
+#define MAX_HISTORY     3
 
-  /*
-   *  Must receive 4 errors within 3 seconds in order to mark
-   *  the route down.
-        u_int8_t        rt_errors;      // error count
-        double          rt_error_time;
-#define MAX_RT_ERROR            4       // errors
-#define MAX_RT_ERROR_TIME       3       // seconds
-   */
-
-#define MAX_HISTORY	3
-  double 		rt_disc_latency[MAX_HISTORY];
-  char 		hist_indx;
-  int 		rt_req_last_ttl;        // last ttl value used
-  // last few route discovery latencies
-  // double 		rt_length [MAX_HISTORY];
-  // last few route lengths
-
-  /*
-   * a list of neighbors that are using this route.
-   */
+  double rt_disc_latency[MAX_HISTORY];
+  char hist_indx;
+  /// last ttl value used
+  int rt_req_last_ttl;
+  /// a list of neighbors that are using this route.
   std::vector<AODV_Neighbor> rt_nblist;
 };
 
 
-/*
-  The Routing Table
+/**
+ * \ingroup aodv
+ * The Routing Table
  */
-
 class aodv_rtable 
 {
 public:
