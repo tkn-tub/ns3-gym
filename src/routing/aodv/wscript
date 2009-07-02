@@ -4,11 +4,12 @@ def build(bld):
     module = bld.create_ns3_module('aodv', ['internet-stack', 'contrib'])
     module.includes = '.'
     module.source = [
+        'aodv-rtable.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
     headers.module = 'aodv'
     headers.source = [
-        'aodv.h',
+        'aodv-rtable.h',
         ]
 
