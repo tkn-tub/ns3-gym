@@ -118,7 +118,7 @@ public:
    * on a nearby channel.
    * @param rate the PHY data rate in units of 500kbps (i.e., the same
    * units used both for the radiotap and for the prism header) 
-   * @param isPreambleShort true if short preamble is used, false otherwise
+   * @param isShortPreamble true if short preamble is used, false otherwise
    * @param isTx true if packet is being transmitted, false when
    * packet is being received
    * @param signalDbm signal power in dBm
