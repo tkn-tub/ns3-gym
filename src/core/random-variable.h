@@ -115,9 +115,8 @@ public:
  * NS-3 has a rich set of  random number generators.
  * Class RandomVariable defines the base class functionalty
  * required for all random number generators.  By default, the underlying
- * generator is seeded with the time of day, and then deterministically
- * creates a sequence of seeds for each subsequent generator that is created.
- * The rest of the documentation outlines how to change this behavior.
+ * generator is seeded all the time with the same seed value and run number
+ * coming from the ns3::GlobalValue \ref GlobalValueRngSeed "RngSeed" and \ref GlobalValueRngRun "RngRun".
  */
 class RandomVariable
 { 
