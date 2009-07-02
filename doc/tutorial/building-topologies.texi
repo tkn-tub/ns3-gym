@@ -61,7 +61,6 @@ The actual code begins by loading module include files just as was done in the
   #include "ns3/simulator-module.h"
   #include "ns3/node-module.h"
   #include "ns3/helper-module.h"
-  #include "ns3/global-routing-module.h"
 @end verbatim
 
 One thing that can be surprisingly useful is a small bit of ASCII art that
@@ -294,10 +293,11 @@ leftmost point-to-point node seen in the topology illustration.
 @end verbatim
 
 Since we have actually built an internetwork here, we need some form of 
-internetwork routing.  @command{ns-3} provides what we call a global route 
-manager to set up the routing tables on nodes.  This route manager has a 
-global function that runs through the nodes created for the simulation and does
-the hard work of setting up routing for you.  
+internetwork routing.  @command{ns-3} provides what we call global routing to
+help you out.  Global routing takes advantage of the fact that the entire 
+internetwork is accessible in the simulation and runs through the all of the
+nodes created for the simulation --- it does the hard work of setting up routing 
+for you without having to configure routers.
 
 Basically, what happens is that each node behaves as if it were an OSPF router
 that communicates instantly and magically with all other routers behind the
@@ -307,7 +307,7 @@ construct the routing tables for each node.  Setting up this form of routing
 is a one-liner:
 
 @verbatim
-  GlobalRouteManager::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 @end verbatim
 
 Next we enable pcap tracing.  The first line of code to enable pcap tracing 
@@ -329,8 +329,8 @@ that are emitted or consumed by that net device.  Another way is to pick
 one of the devices and place it in promiscuous mode.  That single device
 then ``sniffs'' the network for all packets and stores them in a single
 pcap file.  This is how @code{tcpdump}, for example, works.  That final 
-parameter tells the CSMA helper whether or not to capture packets in 
-promiscuous mode.  
+parameter tells the CSMA helper whether or not to arrange to capture 
+packets in promiscuous mode.  
 
 In this example, we are going to select one of the devices on the CSMA
 network and ask it to perform a promiscuous sniff of the network, thereby
@@ -350,10 +350,10 @@ the @code{first.cc} example.
   }
 @end verbatim
 
-In order to run this example, you have to copy the @code{second.cc} example
-script into the scratch directory and use waf to build just as you did with
+In order to run this example, copy the @code{second.cc} example script into 
+the scratch directory and use waf to build just as you did with
 the @code{first.cc} example.  If you are in the top-level directory of the
-repository you would type,
+repository you just type,
 
 @verbatim
   cp examples/second.cc scratch/mysecond.cc
@@ -380,18 +380,19 @@ Since we have set up the UDP echo applications to log just as we did in
 @code{first.cc}, you will see similar output when you run the script.
 
 @verbatim
-  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
-  Build finished successfully (00:00:00)
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (0.415s)
   Sent 1024 bytes to 10.1.2.4
   Received 1024 bytes from 10.1.1.1
   Received 1024 bytes from 10.1.2.4
 @end verbatim
 
-Recall that the first message, @code{Sent 1024 bytes to 10.1.2.4} is the 
+Recall that the first message, ``@code{Sent 1024 bytes to 10.1.2.4},'' is the 
 UDP echo client sending a packet to the server.  In this case, the server
-is on a different network (10.1.2.0).  The second message, @code{Received 1024 
-bytes from 10.1.1.1}, is from the UDP echo server, generated when it receives
-the echo packet.  The final message, @code{Received 1024 bytes from 10.1.2.4}
+is on a different network (10.1.2.0).  The second message, ``@code{Received 1024 
+bytes from 10.1.1.1},'' is from the UDP echo server, generated when it receives
+the echo packet.  The final message, ``@code{Received 1024 bytes from 10.1.2.4},''
 is from the echo client, indicating that it has received its echo back from
 the server.
 
@@ -483,8 +484,8 @@ Node one knows it needs to send the packet to IP address 10.1.2.4, but it
 doesn't know the MAC address of the corresponding node.  It broadcasts on the
 CSMA network (ff:ff:ff:ff:ff:ff) asking for the device that has IP address
 10.1.2.4.  In this case, the rightmost node replies saying it is at MAC address
-00:00:00:00:00:06.  (Note that node two is not directly involved in this 
-exchange, but is sniffing the network and reporting all of the traffic it sees.)
+00:00:00:00:00:06.  Note that node two is not directly involved in this 
+exchange, but is sniffing the network and reporting all of the traffic it sees.
 
 This exchange is seen in the following lines,
 
@@ -559,8 +560,9 @@ devices set to four:
 You should now see,
 
 @verbatim
-  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
-  Build finished successfully (00:00:00)
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (0.405s)
   Sent 1024 bytes to 10.1.2.5
   Received 1024 bytes from 10.1.1.1
   Received 1024 bytes from 10.1.2.5
@@ -572,7 +574,7 @@ nodes, which is 10.1.2.5 instead of the default case, 10.1.2.4.
 It is possible that you may not be satisfied with a trace file generated by
 a bystander in the CSMA network.  You may really want to get a trace from
 a single device and you may not be interested in any other traffic on the 
-network.  You can do this,
+network.  You can do this fairly easily/
 
 Let's take a look at @code{scratch/mysecond.cc} and add that code enabling us
 to be more specific.  @code{ns-3} helpers provide methods that take a node
@@ -615,6 +617,14 @@ to the documentation for the @code{Node} class.  If you now scroll down to the
 documentation for the method.  Using the @code{GetId} method can make 
 determining node numbers much easier in complex topologies.
 
+Let's clear the old trace files out of the top-level directory to avoid confusion
+about what is going on,
+
+@verbatim
+  rm *.pcap
+  rm *.tr
+@end verbatim
+
 If you build the new script and run the simulation setting @code{nCsma} to 100,
 
 @verbatim
@@ -624,8 +634,9 @@ If you build the new script and run the simulation setting @code{nCsma} to 100,
 you will see the following output:
 
 @verbatim
-  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
-  Build finished successfully (00:00:00)
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (0.407s)
   Sent 1024 bytes to 10.1.2.101
   Received 1024 bytes from 10.1.1.1
   Received 1024 bytes from 10.1.2.101
@@ -659,9 +670,27 @@ only packets that it receives are the ARP requests which are broadcast to the
 entire CSMA network.
 
 @verbatim
-reading from file second-100-0.pcap, link-type EN10MB (Ethernet)
-2.003696 arp who-has 10.1.2.101 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1
-2.003811 arp who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.101
+  reading from file second-100-0.pcap, link-type EN10MB (Ethernet)
+  2.003696 arp who-has 10.1.2.101 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1
+  2.003811 arp who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.101
+@end verbatim
+
+Now take a look at the @code{tcpdump} for @code{second-101-0.pcap}.
+
+@verbatim
+  tcpdump -nn -tt -r second-101-0.pcap
+@end verbatim
+
+You can now see that node 101 is really the participant in the echo exchange.
+
+@verbatim
+  reading from file second-101-0.pcap, link-type EN10MB (Ethernet)
+  2.003696 arp who-has 10.1.2.101 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1
+  2.003696 arp reply 10.1.2.101 is-at 00:00:00:00:00:67
+  2.003801 IP 10.1.1.1.49153 > 10.1.2.101.9: UDP, length 1024
+  2.003801 arp who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.101
+  2.003822 arp reply 10.1.2.1 is-at 00:00:00:00:00:03
+  2.003822 IP 10.1.2.101.9 > 10.1.1.1.49153: UDP, length 1024
 @end verbatim
 
 @c ========================================================================
@@ -714,7 +743,6 @@ to the Wifi module and the mobility module which we will discuss below.
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/global-routing-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/mobility-module.h"
 @end verbatim
@@ -1035,14 +1063,15 @@ Since we have built an internetwork here, we need to enable internetwork routing
 just as we did in the @code{second.cc} example script.
 
 @verbatim
-  GlobalRouteManager::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 @end verbatim
 
 One thing that can surprise some users is the fact that the simulation we just
 created will never ``naturally'' stop.  This is because we asked the wireless
-access point to generate beacons.  It will generate beacons forever, so we must
-tell the simulator to stop even though it may have beacon generation events 
-scheduled.  The following line of code tells the simulator to stop so that 
+access point to generate beacons.  It will generate beacons forever, and this
+will result in simulator events being scheduled into the future indefinitely,
+so we must tell the simulator to stop even though it may have beacon generation
+events scheduled.  The following line of code tells the simulator to stop so that 
 we don't simulate beacons forever and enter what is essentially an endless
 loop.
 
@@ -1054,7 +1083,7 @@ We create just enough tracing to cover all three networks:
 
 @verbatim
   PointToPointHelper::EnablePcapAll ("third");
-  YansWifiPhyHelper::EnablePcap ("third", apDevices.Get (0));
+  phy.EnablePcap ("third", apDevices.Get (0));
   CsmaHelper::EnablePcap ("third", csmaDevices.Get (0), true);
 @end verbatim
 
@@ -1084,27 +1113,28 @@ repository you would type,
   ./waf --run scratch/mythird
 @end verbatim
 
-Since we have set up the UDP echo applications just as we did in the 
+Again, since we have set up the UDP echo applications just as we did in the 
 @code{second.cc} script, you will see similar output.
 
 @verbatim
-  Entering directory `repos/ns-3-allinone-dev/ns-3-dev/build'
-  Build finished successfully (00:00:00)
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (0.407s)
   Sent 1024 bytes to 10.1.2.4
   Received 1024 bytes from 10.1.3.3
   Received 1024 bytes from 10.1.2.4
 @end verbatim
 
-Recall that the first message, @code{Sent 1024 bytes to 10.1.2.4} is the 
+Recall that the first message, ``@code{Sent 1024 bytes to 10.1.2.4},'' is the 
 UDP echo client sending a packet to the server.  In this case, the client
 is on the wireless network (10.1.3.0).  The second message, 
-@code{Received 1024 bytes from 10.1.3.3}, is from the UDP echo server, 
+``@code{Received 1024 bytes from 10.1.3.3},'' is from the UDP echo server, 
 generated when it receives the echo packet.  The final message, 
-@code{Received 1024 bytes from 10.1.2.4} is from the echo client, indicating
+``@code{Received 1024 bytes from 10.1.2.4},'' is from the echo client, indicating
 that it has received its echo back from the server.
 
 If you now go and look in the top level directory, you will find four trace 
-files, two from node zero and two from node one:
+files from this simulation, two from node zero and two from node one:
 
 @verbatim
 third-0-0.pcap  third-0-1.pcap  third-1-0.pcap  third-1-1.pcap
@@ -1223,8 +1253,8 @@ the discussion in @code{second.cc}.  This is the same sequence.
 
 Now, we spent a lot of time setting up mobility models for the wireless network
 and so it would be a shame to finish up without even showing that the STA
-nodes are actually moving around.  Let's do this by hooking into the 
-@code{MobilityModel} course change trace source.  This is usually considered
+nodes are actually moving around during the simulation.  Let's do this by hooking
+into the @code{MobilityModel} course change trace source.  This is usually considered
 a fairly advanced topic, but let's just go for it.
 
 As mentioned in the ``Tweaking ns-3'' section, the @command{ns-3} tracing system 
@@ -1273,8 +1303,8 @@ like,
   /NodeList/7/$ns3::MobilityModel/CourseChange
 @end verbatim
 
-Based on the discussion in the tracing section, you can easily infer that 
-this trace path references the seventh node in the NodeList.  It specifies
+Based on the discussion in the tracing section, you may infer that this trace 
+path references the seventh node in the global NodeList.  It specifies
 what is called an aggregated object of type @code{ns3::MobilityModel}.  The 
 dollar sign prefix implies that the MobilityModel is aggregated to node seven.
 The last component of the path means that we are hooking into the 
@@ -1336,6 +1366,6 @@ any of these @code{Attributes} via the command line as we have previously
 discussed.
 
 We have just scratched the surface of @command{ns-3} in this tutorial, but we 
-hope we have covered enough to get you started doing useful work.
+hope we have hopefully covered enough to get you started doing useful work.
 
 -- The @command{ns-3} development team.

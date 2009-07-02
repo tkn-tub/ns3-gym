@@ -80,7 +80,7 @@ following displayed,
   adding changesets
   adding manifests
   adding file changes
-  added 26 changesets with 40 changes to 7 files
+  added 31 changesets with 45 changes to 7 files
   7 files updated, 0 files merged, 0 files removed, 0 files unresolved
 @end verbatim
 
@@ -126,8 +126,8 @@ introduced features.
 
 Since the release numbers are going to be changing, I will stick with 
 the more constant ns-3-dev here in the tutorial, but you can replace the 
-string ``ns-3-dev'' with your choice of release (e.g., ns-3.4 and 
-ns-3.4-ref-traces) in the text below.  You can find the latest version  of the
+string ``ns-3-dev'' with your choice of release (e.g., ns-3.5 and 
+ns-3.5-ref-traces) in the text below.  You can find the latest version  of the
 code either by inspection of the repository list or by going to the 
 @uref{http://www.nsnam.org/getting_started.html,,``Getting Started''} 
 web page and looking for the latest release identifier.
@@ -138,11 +138,21 @@ script to pull down the various pieces of @command{ns-3} you will be using.
 
 Go ahead and type the following into your shell (remember you can substitute
 the name of your chosen release number instead of @code{ns-3-dev} -- like
-@code{"ns-3.4"} and @code{"ns-3.4-ref-traces"} if you want to work with a 
+@code{"ns-3.5"} and @code{"ns-3.5-ref-traces"} if you want to work with a 
 stable release).
 
 @verbatim
   ./download.py -n ns-3-dev -r ns-3-dev-ref-traces
+@end verbatim
+
+Note that the default for the @code{-n} option is @code{ns-3-dev} and the 
+default for the @code{-r} option is @code{ns-3-dev-ref-traces} and so the
+above is actually redundant.  We provide this example to illustrate how to
+specify alternate repositories.  In order to download @code{ns-3-dev} you 
+can actually use the defaults and simply type,
+
+@verbatim
+  ./download.py
 @end verbatim
 
 As the hg (Mercurial) command executes, you should see something like the 
@@ -152,15 +162,15 @@ following,
       #
       # Get NS-3
       #
-
+  
   Cloning ns-3 branch
    =>  hg clone http://code.nsnam.org/ns-3-dev ns-3-dev
   requesting all changes
   adding changesets
   adding manifests
   adding file changes
-  added 4292 changesets with 15368 changes to 1671 files
-  823 files updated, 0 files merged, 0 files removed, 0 files unresolved
+  added 4634 changesets with 16500 changes to 1762 files
+  870 files updated, 0 files merged, 0 files removed, 0 files unresolved
 @end verbatim
 
 This is output by the download script as it fetches the actual @code{ns-3}
@@ -177,8 +187,8 @@ code from the repository.  Next, you should see something like,
   adding changesets
   adding manifests
   adding file changes
-  added 79 changesets with 1102 changes to 222 files
-  206 files updated, 0 files merged, 0 files removed, 0 files unresolved
+  added 86 changesets with 1178 changes to 259 files
+  208 files updated, 0 files merged, 0 files removed, 0 files unresolved
 @end verbatim
 
 This is the download script fetching the reference trace files for you.
@@ -191,10 +201,10 @@ continue with something like,
       #
       # Get PyBindGen
       #
-  
-  Required pybindgen version:  0.10.0.630
+
+  Required pybindgen version:  0.10.0.640
   Trying to fetch pybindgen; this will fail if no network connection is available.  Hit Ctrl-C to skip.
-   =>  bzr checkout -rrevno:630 https://launchpad.net/pybindgen pybindgen
+   =>  bzr checkout -rrevno:640 https://launchpad.net/pybindgen pybindgen
   Fetch was successful.
 @end verbatim
 
@@ -205,7 +215,7 @@ Next you should see (modulo platform variations) something along the lines of,
       #
       # Get NSC
       #
-  
+
   Required NSC version:  nsc-0.5.0
   Retrieving nsc from https://secure.wand.net.nz/mercurial/nsc
    =>  hg clone https://secure.wand.net.nz/mercurial/nsc nsc
@@ -213,8 +223,8 @@ Next you should see (modulo platform variations) something along the lines of,
   adding changesets
   adding manifests
   adding file changes
-  added 270 changesets with 17375 changes to 14991 files
-  10614 files updated, 0 files merged, 0 files removed, 0 files unresolved 
+  added 273 changesets with 17565 changes to 15175 files
+  10622 files updated, 0 files merged, 0 files removed, 0 files unresolved
 @end verbatim
 
 This part of the process is the script downloading the Network Simulation
@@ -257,16 +267,16 @@ get a copy of a release by typing the following into your Linux shell
   cd
   mkdir tarballs
   cd tarballs
-  wget http://www.nsnam.org/releases/ns-allinone-3.4.tar.bz2
-  tar xjf ns-allinone-3.4.tar.bz2
+  wget http://www.nsnam.org/releases/ns-allinone-3.5.tar.bz2
+  tar xjf ns-allinone-3.5.tar.bz2
 @end verbatim 
 
-If you change into the directory @code{ns-allinone-3.4} you should see a
+If you change into the directory @code{ns-allinone-3.5} you should see a
 number of files:
 
 @verbatim
-build.py*     ns-3.4/             nsc-0.5.0/             README
-constants.py  ns-3.4-ref-traces/  pybindgen-0.10.0.630/  util.py
+build.py*     ns-3.5/             nsc-0.5.0/             README
+constants.py  ns-3.5-ref-traces/  pybindgen-0.10.0.640/  util.py
 @end verbatim 
 
 You are now ready to build the @command{ns-3} distribution.
@@ -288,7 +298,7 @@ Change into the directory you created in the download section above.  If you
 downloaded using Mercurial you should have a directory called 
 @code{ns-3-allinone} under your @code{~/repos} directory.  If you downloaded
 using a tarball you should have a directory called something like 
-@code{ns-3-allinone-3.4} under your @code{~/tarballs} directory.  Take a deep
+@code{ns-allinone-3.5} under your @code{~/tarballs} directory.  Take a deep
 breath and type the following:
 
 @verbatim
@@ -300,13 +310,13 @@ script builds the various pieces you downloaded.  Eventually you should see the
 following magic words:
 
 @verbatim
-  Build finished successfully (00:02:37)
-  Leaving directory `./ns-3-dev'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (2m30.586s)
 @end verbatim
 
 Once the project has built you can say goodbye to your old friends, the 
 @code{ns-3-allinone} scripts.  You got what you needed from them and will now 
-interact directly with Waf and we do it in the @code{ns-3-dev} directory and
+interact directly with Waf and we do it in the @code{ns-3-dev} directory,
 not in the @code{ns-3-allinone} directory.  Go ahead and change into the 
 @code{ns-3-dev} directory (or the directory for the appropriate release you
 downloaded.
@@ -340,76 +350,72 @@ for you).  As the build system checks for various dependencies you should see
 output that looks similar to the following,
 
 @verbatim
-Checking for program g++                 : ok /usr/bin/g++
-Checking for program cpp                 : ok /usr/bin/cpp
-Checking for program ar                  : ok /usr/bin/ar
-Checking for program ranlib              : ok /usr/bin/ranlib
-Checking for g++                         : ok
-Checking for program pkg-config          : ok /usr/bin/pkg-config
-Checking for regression reference traces  : ok ../ns-3-dev-ref-traces (guessed)
-Checking for -Wno-error=deprecated-declarations support : yes
-Checking for header stdlib.h                            : ok
-Checking for header signal.h                            : ok
-Checking for header pthread.h                           : ok
-Checking for high precision time implementation         : 128-bit integer
-Checking for header stdint.h                            : ok
-Checking for header inttypes.h                          : ok
-Checking for header sys/inttypes.h                      : not found
-Checking for library rt                                 : ok
-Checking for header netpacket/packet.h                  : ok
-Checking for header linux/if_tun.h                      : ok
-Checking for pkg-config flags for GTK_CONFIG_STORE      : ok
-Package libxml-2.0 was not found in the pkg-config search path.
-Perhaps you should add the directory containing `libxml-2.0.pc'
-to the PKG_CONFIG_PATH environment variable
-No package 'libxml-2.0' found
-Checking for pkg-config flags for LIBXML2               : not found
-Checking for library sqlite3                            : ok
-Checking for NSC location                               : ok ../nsc (guessed)
-Checking for library dl                                 : ok
-Checking for NSC supported architecture x86_64          : ok
-Package goocanvas was not found in the pkg-config search path.
-Perhaps you should add the directory containing `goocanvas.pc'
-to the PKG_CONFIG_PATH environment variable
-No package 'goocanvas' found
-Checking for pkg-config flags for MOBILITY_VISUALIZER   : not found
-Checking for program python                             : ok /usr/bin/python
-Checking for Python version >= 2.3                      : ok 2.5.2
-Checking for library python2.5                          : ok
-Checking for program python2.5-config                   : ok /usr/bin/python2.5-config
-Checking for header Python.h                            : ok
-Checking for -fvisibility=hidden support                : yes
-Checking for pybindgen location                         : ok ../pybindgen (guessed)
-Checking for Python module pybindgen                    : ok
-Checking for pybindgen version                          : ok 0.10.0.630
-Checking for Python module pygccxml                     : ok
-Checking for pygccxml version                           : ok 0.9.5
-Checking for program gccxml                             : ok /usr/local/bin/gccxml
-Checking for gccxml version                             : ok 0.9.0
-Checking for program sudo                               : ok /usr/bin/sudo
-Checking for program hg                                 : ok /usr/bin/hg
-Checking for program valgrind                           : ok /usr/bin/valgrind
----- Summary of optional NS-3 features:
-Threading Primitives          : enabled
-Real Time Simulator           : enabled
-Emulated Net Device           : enabled
-Tap Bridge                    : enabled
-GtkConfigStore                : enabled
-XmlIo                         : not enabled (library 'libxml-2.0 >= 2.7' not found)
-SQlite stats data output      : enabled
-Network Simulation Cradle     : enabled
-Python Bindings               : enabled
-Python API Scanning Support   : enabled
-Use sudo to set suid bit      : not enabled (option --enable-sudo not selected)
-Configuration finished successfully (00:00:02); project is now ready to build.
+  Checking for program g++                 : ok /usr/bin/g++
+  Checking for program cpp                 : ok /usr/bin/cpp
+  Checking for program ar                  : ok /usr/bin/ar
+  Checking for program ranlib              : ok /usr/bin/ranlib
+  Checking for g++                         : ok
+  Checking for program pkg-config          : ok /usr/bin/pkg-config
+  Checking for regression reference traces  : ok ../ns-3-dev-ref-traces (guessed)
+  Checking for -Wno-error=deprecated-declarations support : yes
+  Checking for -Wl,--soname=foo support                   : yes
+  Checking for header stdlib.h                            : ok
+  Checking for header signal.h                            : ok
+  Checking for header pthread.h                           : ok
+  Checking for high precision time implementation         : 128-bit integer
+  Checking for header stdint.h                            : ok
+  Checking for header inttypes.h                          : ok
+  Checking for header sys/inttypes.h                      : not found
+  Checking for library rt                                 : ok
+  Checking for header netpacket/packet.h                  : ok
+  Checking for pkg-config flags for GSL                   : ok
+  Checking for header linux/if_tun.h                      : ok
+  Checking for pkg-config flags for GTK_CONFIG_STORE      : ok
+  Checking for pkg-config flags for LIBXML2               : ok
+  Checking for library sqlite3                            : ok
+  Checking for NSC location                               : ok ../nsc (guessed)
+  Checking for library dl                                 : ok
+  Checking for NSC supported architecture x86_64          : ok
+  Checking for program python                             : ok /usr/bin/python
+  Checking for Python version >= 2.3                      : ok 2.5.2
+  Checking for library python2.5                          : ok
+  Checking for program python2.5-config                   : ok /usr/bin/python2.5-config
+  Checking for header Python.h                            : ok
+  Checking for -fvisibility=hidden support                : yes
+  Checking for pybindgen location                         : ok ../pybindgen (guessed)
+  Checking for Python module pybindgen                    : ok
+  Checking for pybindgen version                          : ok 0.10.0.640
+  Checking for Python module pygccxml                     : ok
+  Checking for pygccxml version                           : ok 0.9.5
+  Checking for program gccxml                             : ok /usr/local/bin/gccxml
+  Checking for gccxml version                             : ok 0.9.0
+  Checking for program sudo                               : ok /usr/bin/sudo
+  Checking for program hg                                 : ok /usr/bin/hg
+  Checking for program valgrind                           : ok /usr/bin/valgrind
+  ---- Summary of optional NS-3 features:
+  Threading Primitives          : enabled
+  Real Time Simulator           : enabled
+  Emulated Net Device           : enabled
+  GNU Scientific Library (GSL)  : enabled
+  Tap Bridge                    : enabled
+  GtkConfigStore                : enabled
+  XmlIo                         : enabled
+  SQlite stats data output      : enabled
+  Network Simulation Cradle     : enabled
+  Python Bindings               : enabled
+  Python API Scanning Support   : enabled
+  Use sudo to set suid bit      : not enabled (option --enable-sudo not selected)
+  Static build                  : not enabled (option --enable-static not selected)
+  'configure' finished successfully (2.870s)
 @end verbatim
 
 Note the last part of the above output.  Some ns-3 options are not enabled by
 default or require support from the underlying system to work properly.
 For instance, to enable XmlTo, the library libxml-2.0 must be found on the
-system.  in the example above, this library was not found and the corresponding
-feature was not enabled.  There is a feature to use sudo to set the suid bit of
-certain programs.  This was not enabled by default.
+system.  If this library were not found, the corresponding @command{ns-3} feature 
+would not be enabled and a message would be displayed.  Note further that there is 
+a feature to use the progarm @code{sudo} to set the suid bit of certain programs.
+This is not enabled by default and so this feature is reported as ``not enabled.''
 
 Now go ahead and switch back to the debug build.
 
@@ -427,15 +433,15 @@ the @command{ns-3} programs by simply typing,
 Some waf commands are meaningful during the build phase and some commands are valid
 in the configuration phase.  For example, if you wanted to use the emulation 
 features of @command{ns-3} you might want to enable setting the suid bit using
-sudo.  This is a configuration command, and so you could have run the following
-command
+sudo as described above.  This turns out to be a configuration-time command, and so 
+you could reconfigure using the following command
 
 @verbatim
   ./waf -d debug --enable-sudo configure
 @end verbatim
 
-If you had done this, waf would have run sudo to change the socket creator 
-programs to run as root.  There are many other configure- and build-time options
+If you do this, waf will have run sudo to change the socket creator programs of the
+emulation code to run as root.  There are many other configure- and build-time options
 available in waf.  To explore these options, type:
 
 @verbatim
@@ -462,26 +468,45 @@ You can run the unit tests of the @command{ns-3} distribution by running the
   ./waf --check
 @end verbatim
 
-You should see a report from each unit test that executes indicating that the
-test has passed.
+These tests are run in parallel by waf, so the summary, ``Ran n tests'' will 
+appear as soon as all of the tasks are launched, but you should eventually
+see a report saying that,
 
 @verbatim
-  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
-  Build finished successfully (00:00:00)
-  -- Running NS-3 C++ core unit tests...
-  PASS AddressHelper
-  PASS Wifi
-  PASS DcfManager
-  ...
-  PASS Object
-  PASS Ptr
-  PASS Callback
-  -- Running NS-3 Python bindings unit tests...
+  C++ UNIT TESTS: all 33 tests passed.
+@end verbatim
+
+This is the important message.
+
+You will also see output from the test runner and waf task sequence numbers
+the output will actually look something like,
+
+@verbatim
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  [707/709] get-unit-tests-list
+  [708/709] run-python-unit-tests
+  [709/709] print-introspected-doxygen
+  [710/743] run-unit-test(AddressHelper)
+  [711/743] run-unit-test(Wifi)
   ...........
   ----------------------------------------------------------------------
   Ran 11 tests in 0.003s
-
+  
   OK
+  [712/743] run-unit-test(DcfManager)
+  [713/743] run-unit-test(MacRxMiddle)
+  [714/743] run-unit-test(Ipv4ListRouting)
+
+  ...
+
+  [739/743] run-unit-test(RandomVariable)
+  [740/743] run-unit-test(Object)
+  [741/743] run-unit-test(Ptr)
+  [742/743] run-unit-test(Callback)
+  [743/743] collect-unit-tests-results
+  C++ UNIT TESTS: all 33 tests passed.
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (1.799s)
 @end verbatim
 
 This command is typically run by @code{users} to quickly verify that an 
@@ -491,10 +516,10 @@ This command is typically run by @code{users} to quickly verify that an
 You can also run our regression test suite to ensure that your distribution and
 toolchain have produced binaries that generate output that is identical to
 known-good reference output files.  You downloaded these reference traces to 
-your machine during the download process above.  (Warning:  The @code{ns-3.2} 
-and @code{ns-3.3} releases do not use the @code{ns-3-allinone} environment
-and require you to be online when you run regression tests because they
-dynamically synchronize the reference traces directory with an online
+your machine during the @code{./download.py} process above.  (Warning:  The 
+@code{ns-3.2} and @code{ns-3.3} releases do not use the @code{ns-3-allinone} 
+environment and require you to be online when you run regression tests because 
+hey dynamically synchronize the reference traces directory with an online
 repository immediately prior to the run).
 
 During regression testing Waf will run a number of tests that generate what we
@@ -508,6 +533,9 @@ to convert the pcap files to text using tcpdump prior to comparison.
 
 Some regression tests may be SKIPped if the required support
 is not present.
+
+Note that the regression tests are also run in parallel and so the messages
+may be interleaved.
 
 To run the regression tests, you provide Waf with the regression flag.
 
@@ -530,7 +558,8 @@ passing.
   ...
   Regression testing summary:
   PASS: 22 of 22 tests passed
-  Build finished successfully (00:00:23)
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (25.826s)
 @end verbatim
 
 If you want to take a look at an example of what might be checked during

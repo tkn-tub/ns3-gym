@@ -75,7 +75,7 @@ or in Python.  The results of some simulations can be visualized by
 generates pcap packet trace files, other utilities can be used to
 analyze traces as well.
 In this tutorial, we will first concentrate on scripting 
-directly in C++ and interpreting results via ascii trace files.  
+directly in C++ and interpreting results via trace files.  
 
 But there are similarities as well (both, for example, are based on C++ 
 objects, and some code from ns-2 has already been ported to @command{ns-3}).
@@ -256,8 +256,8 @@ for development.  A
 software toolchain is the set of programming tools available in the given 
 environment. For a quick review of what is included in the GNU toolchain see,
 @uref{http://en.wikipedia.org/wiki/GNU_toolchain}.  @command{ns-3} uses gcc, 
-GNU binutils, and gdb.  However, we do not use the GNU build system,
-either make or autotools, using Waf instead.
+GNU binutils, and gdb.  However, we do not use the GNU build system tools, 
+neither make nor autotools.  We use Waf for these functions.
 
 @cindex Linux
 Typically an @command{ns-3} author will work in Linux or a Linux-like
@@ -265,11 +265,11 @@ environment.  For those running under Windows, there do exist environments
 which simulate the Linux environment to various degrees.  The @command{ns-3} 
 project supports development in the Cygwin environment for 
 these users.  See @uref{http://www.cygwin.com/} 
-for details on downloading (MinGW is presently not supported).
-Cygwin provides many of the popular Linux system commands.
-It can, however, sometimes be problematic due to the way it actually does its 
-emulation, and sometimes interactions with other Windows software can cause 
-problems.
+for details on downloading (MinGW is presently not officially supported,
+although some of the project maintainers to work with it). Cygwin provides 
+many of the popular Linux system commands.  It can, however, sometimes be 
+problematic due to the way it actually does its emulation, and sometimes
+interactions with other Windows software can cause problems.
 
 @cindex Cygwin
 @cindex MinGW
