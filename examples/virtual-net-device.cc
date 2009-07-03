@@ -78,23 +78,29 @@ class Tunnel
   
   
   bool
-  N0N1VirtualSend (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
+  N0VirtualSend (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
   {
-    m_n3Socket->SendTo (packet, 0, InetSocketAddress (m_n3Address, 667));
+    m_n0Socket->SendTo (packet, 0, InetSocketAddress (m_n3Address, 667));
+    return true;
+  }
+
+  bool
+  N1VirtualSend (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
+  {
+    m_n1Socket->SendTo (packet, 0, InetSocketAddress (m_n3Address, 667));
     return true;
   }
 
   bool
   N3VirtualSend (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
   {
-    
     if (m_rng.GetValue () < 0.25)
       {
-        m_n0Socket->SendTo (packet, 0, InetSocketAddress (m_n0Address, 667));
+        m_n3Socket->SendTo (packet, 0, InetSocketAddress (m_n0Address, 667));
       }
     else 
       {
-        m_n1Socket->SendTo (packet, 0, InetSocketAddress (m_n1Address, 667));
+        m_n3Socket->SendTo (packet, 0, InetSocketAddress (m_n1Address, 667));
       }
     return true;
   }
@@ -144,7 +150,7 @@ public:
     // n0 tap device
     m_n0Tap = CreateObject<VirtualNetDevice> ();
     m_n0Tap->SetAddress (Mac48Address ("11:00:01:02:03:01"));
-    m_n0Tap->SetSendCallback (MakeCallback (&Tunnel::N0N1VirtualSend, this));
+    m_n0Tap->SetSendCallback (MakeCallback (&Tunnel::N0VirtualSend, this));
     n0->AddDevice (m_n0Tap);
     Ptr<Ipv4> ipv4 = n0->GetObject<Ipv4> ();
     uint32_t i = ipv4->AddInterface (m_n0Tap);
@@ -154,7 +160,7 @@ public:
     // n1 tap device
     m_n1Tap = CreateObject<VirtualNetDevice> ();
     m_n1Tap->SetAddress (Mac48Address ("11:00:01:02:03:02"));
-    m_n1Tap->SetSendCallback (MakeCallback (&Tunnel::N0N1VirtualSend, this));
+    m_n1Tap->SetSendCallback (MakeCallback (&Tunnel::N1VirtualSend, this));
     n1->AddDevice (m_n1Tap);
     ipv4 = n1->GetObject<Ipv4> ();
     i = ipv4->AddInterface (m_n1Tap);
