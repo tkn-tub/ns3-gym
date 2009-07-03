@@ -178,7 +178,7 @@ Ipv4Interface::SetForwarding (bool val)
 void
 Ipv4Interface::Send (Ptr<Packet> p, Ipv4Address dest)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (dest << *p);
   if (!IsUp()) 
     {
       return;
