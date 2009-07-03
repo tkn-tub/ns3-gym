@@ -126,10 +126,9 @@ YansWifiPhy::GetTypeId (void)
 }
 
 YansWifiPhy::YansWifiPhy ()
-  :  m_channelFreqMhz(2437),
-     m_endSyncEvent (),
+  :  m_endSyncEvent (),
      m_random (0.0, 1.0),
-     m_channelStartingFrequency(0.0)
+     m_channelStartingFrequency (0)
 {
   NS_LOG_FUNCTION (this);
   m_state = CreateObject<WifiPhyStateHelper> ();
@@ -305,7 +304,7 @@ YansWifiPhy::SetChannel (Ptr<YansWifiChannel> channel)
 {
   m_channel = channel;
   m_channel->Add (this);
-  m_channelId = 0;      // always start on channel starting frequency
+  m_channelId = 1;      // always start on channel starting frequency (channel 1)
 }
 
 void 
@@ -328,9 +327,9 @@ YansWifiPhy::GetFrequencyChannel() const
 }
 
 double
-YansWifiPhy::GetChannelCenterFrequency() const
+YansWifiPhy::GetCenterFrequencyMhz() const
 {
-  return m_channelStartingFrequency + 5e6 * GetFrequencyChannel();
+  return m_channelStartingFrequency + 5 * (GetFrequencyChannel() - 1);
 }
 
 void 
@@ -444,7 +443,7 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble
   NotifyTxBegin (packet);
   uint32_t dataRate500KbpsUnits = txMode.GetDataRate () / 500000;   
   bool isShortPreamble = (WIFI_PREAMBLE_SHORT == preamble);
-  NotifyPromiscSniffTx (packet, m_channelFreqMhz, dataRate500KbpsUnits, isShortPreamble);
+  NotifyPromiscSniffTx (packet, (uint16_t)GetCenterFrequencyMhz(), dataRate500KbpsUnits, isShortPreamble);
   m_state->SwitchToTx (txDuration, packet, txMode, preamble, txPower);
   m_channel->Send (this, packet, GetPowerDbm (txPower) + m_txGainDb, txMode, preamble);
 }
@@ -470,7 +469,7 @@ YansWifiPhy::Configure80211a (void)
 {
   NS_LOG_FUNCTION (this);
   m_interference.Configure80211aParameters ();
-  m_channelStartingFrequency = 5e9; // 5 GHz 
+  m_channelStartingFrequency = 5e3; // 5.000 GHz 
   m_modes.push_back (WifiPhy::Get6mba ());
   m_modes.push_back (WifiPhy::Get9mba ());
   m_modes.push_back (WifiPhy::Get12mba ());
@@ -487,6 +486,7 @@ YansWifiPhy::Configure80211b (void)
 {
   NS_LOG_FUNCTION (this);
   m_interference.Configure80211bParameters ();
+  m_channelStartingFrequency = 2412; // 2.412 GHz 
   m_modes.push_back (WifiPhy::Get1mbb ());
   m_modes.push_back (WifiPhy::Get2mbb ());
   m_modes.push_back (WifiPhy::Get5_5mbb ());
@@ -498,6 +498,7 @@ YansWifiPhy::ConfigureHolland (void)
 {
   NS_LOG_FUNCTION (this);
   m_interference.Configure80211aParameters ();
+  m_channelStartingFrequency = 5e3; // 5.000 GHz 
   m_modes.push_back (WifiPhy::Get6mba ());
   m_modes.push_back (WifiPhy::Get12mba ());
   m_modes.push_back (WifiPhy::Get18mba ());
@@ -621,7 +622,7 @@ YansWifiPhy::EndSync (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event)
       bool isShortPreamble = (WIFI_PREAMBLE_SHORT == event->GetPreambleType ());  
       double signalDbm = RatioToDb (event->GetRxPowerW ()) + 30;
       double noiseDbm = RatioToDb(event->GetRxPowerW() / snrPer.snr) - GetRxNoiseFigure() + 30 ;
-      NotifyPromiscSniffRx (packet, m_channelFreqMhz, dataRate500KbpsUnits, isShortPreamble, signalDbm, noiseDbm);
+      NotifyPromiscSniffRx (packet, (uint16_t)GetCenterFrequencyMhz(), dataRate500KbpsUnits, isShortPreamble, signalDbm, noiseDbm);
       m_state->SwitchFromSyncEndOk (packet, snrPer.snr, event->GetPayloadMode (), event->GetPreambleType ());
     } 
   else 

@@ -11,7 +11,6 @@
 ^doc/introspected-doxygen\.h$
 .*\.py[co]$
 \.pcap$
-\.xml$
 \.mob$
 ^doc/manual/manual/
 doc/manual/manual.aux

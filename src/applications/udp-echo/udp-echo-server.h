@@ -60,7 +60,6 @@ private:
   uint16_t m_port;
   Ptr<Socket> m_socket;
   Address m_local;
-  uint32_t m_received;
 };
 
 } // namespace ns3

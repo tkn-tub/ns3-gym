@@ -128,21 +128,18 @@ WifiMacHeader::SetTypeData (void)
   m_ctrlType = TYPE_DATA;
   m_ctrlSubtype = 0;
 }
-
 void
 WifiMacHeader::SetAction (void)
 {
  m_ctrlType = TYPE_MGT;
  m_ctrlSubtype = 0x0D;
 }
-
 void
 WifiMacHeader::SetMultihopAction (void)
 {
  m_ctrlType = TYPE_MGT;
  m_ctrlSubtype = 0x0F;
 }
-
 void 
 WifiMacHeader::SetType (enum WifiMacType type)
 {

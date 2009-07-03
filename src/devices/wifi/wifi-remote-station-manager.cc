@@ -435,7 +435,7 @@ WifiRemoteStation::WifiRemoteStation ()
     m_ssrc (0),
     m_slrc (0),
     m_avgSlrcCoefficient(0.9),
-    m_avgSlrc (0.0)
+    m_avgSlrc (0)
 {}
 WifiRemoteStation::~WifiRemoteStation ()
 {}
@@ -560,7 +560,7 @@ WifiRemoteStation::GetAckMode (WifiMode dataMode)
   return GetControlAnswerMode (dataMode);
 }
 double
-WifiRemoteStation::GetAvgSlrc ()
+WifiRemoteStation::GetAvgSlrc () const
 {
   return m_avgSlrc;
 }

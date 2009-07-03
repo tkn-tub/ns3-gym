@@ -73,7 +73,7 @@ public:
   /** 
    * \brief Set channel number. 
    * 
-   * Channel center frequency = Channel starting frequency + 5 × nch (MHz)
+   * Channel center frequency = Channel starting frequency + 5 MHz * (nch - 1)
    *
    * where Starting channel frequency is standard-dependent, see SetStandard()
    * as defined in IEEE 802.11-2007 17.3.8.3.2.
@@ -81,8 +81,8 @@ public:
   void SetFrequencyChannel (uint16_t id);
   /// Return current channel ID, see SetChannelId()
   uint16_t GetFrequencyChannel () const;
-  /// Return current center channel frequency in Hz, see SetChannelId()
-  double GetChannelCenterFrequency() const;
+  /// Return current center channel frequency in MHz, see SetFrequencyChannel()
+  double GetCenterFrequencyMhz() const;
   
   void StartReceivePacket (Ptr<Packet> packet,
                            double rxPowerDbm,
@@ -160,7 +160,6 @@ private:
   double   m_txPowerBaseDbm;
   double   m_txPowerEndDbm;
   uint32_t m_nTxPower;
-  uint16_t m_channelFreqMhz;
 
   Ptr<YansWifiChannel> m_channel;
   uint16_t m_channelId;
@@ -170,7 +169,7 @@ private:
   EventId m_endSyncEvent;
   UniformVariable m_random;
   WifiPhyStandard m_standard;
-  /// Standard-dependent center frequency of 0-th channel 
+  /// Standard-dependent center frequency of 0-th channel, MHz 
   double m_channelStartingFrequency;
   Ptr<WifiPhyStateHelper> m_state;
   InterferenceHelper m_interference;

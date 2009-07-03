@@ -21,7 +21,6 @@
 #define MGT_HEADERS_H
 
 #include <stdint.h>
-//#include <vector>
 
 #include "ns3/header.h"
 #include "status-code.h"
@@ -117,9 +116,7 @@ public:
   void SetSsid (Ssid ssid);
   void SetBeaconIntervalUs (uint64_t us);
   void SetSupportedRates (SupportedRates rates);
-
   uint64_t GetTimestamp();
-
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;

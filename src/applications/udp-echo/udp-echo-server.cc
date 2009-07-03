@@ -52,13 +52,11 @@ UdpEchoServer::GetTypeId (void)
 UdpEchoServer::UdpEchoServer ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_received = 0;
 }
 
 UdpEchoServer::~UdpEchoServer()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_LOG_UNCOND("Total received:"<<m_received);
   m_socket = 0;
 }
 
@@ -120,12 +118,11 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
       if (InetSocketAddress::IsMatchingType (from))
         {
           InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-          m_received ++;
           NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
             address.GetIpv4());
 
           packet->RemoveAllPacketTags ();
-	  packet->RemoveAllByteTags ();
+          packet->RemoveAllByteTags ();
 
           NS_LOG_LOGIC ("Echoing packet");
           socket->SendTo (packet, 0, from);
