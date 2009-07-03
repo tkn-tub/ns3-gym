@@ -167,6 +167,13 @@ MeshPointDevice::GetAddress () const
   return m_address;
 }
 
+void
+MeshPointDevice::SetAddress (Address a) 
+{
+  NS_LOG_WARN ("Manual changing mesh point address can cause routing errors.");
+  m_address = Mac48Address::ConvertFrom(a);
+}
+
 bool
 MeshPointDevice::SetMtu (const uint16_t mtu)
 {

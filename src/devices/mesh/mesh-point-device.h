@@ -96,6 +96,7 @@ public:
   virtual uint32_t GetIfIndex () const;
   virtual Ptr<Channel> GetChannel () const;
   virtual Address GetAddress () const;
+  virtual void SetAddress (Address a);
   virtual bool SetMtu (const uint16_t mtu);
   virtual uint16_t GetMtu () const;
   virtual bool IsLinkUp () const;
