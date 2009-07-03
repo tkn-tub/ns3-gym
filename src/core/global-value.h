@@ -114,6 +114,30 @@ public:
    * \returns an iterator which represents a pointer to the last GlobalValue registered.
    */
   static Iterator End (void);
+
+
+  /** 
+   * finds the GlobalValue with the given name and returns its value
+   * 
+   * @param name the name of the GlobalValue to be found
+   * @param value where to store the value of the found GlobalValue
+   * 
+   * @return true if the GlobalValue was found, false otherwise
+   */
+  static bool GetValueByNameFailSafe (std::string name, AttributeValue &value);
+
+  /** 
+   * finds the GlobalValue with the given name and returns its
+   * value. This method cannot fail, i.e., it will trigger a
+   * NS_FATAL_ERROR if the requested GlobalValue is not found.
+   * 
+   * @param name the name of the GlobalValue to be found
+   * @param value where to store the value of the found GlobalValue
+   * 
+   */
+  static void GetValueByName (std::string name, AttributeValue &value);
+  
+
 private:
   friend class GlobalValueTests;
   static Vector *GetVector (void);
