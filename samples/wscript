@@ -1,56 +1,57 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_program('main-attribute-value')
-    obj.source = 'main-attribute-value.cc'
-
-    obj = bld.create_ns3_program('main-callback')
-    obj.source = 'main-callback.cc'
-
-    obj = bld.create_ns3_program('main-simulator')
-    obj.source = 'main-simulator.cc'
-
-    obj = bld.create_ns3_program('main-ptr')
-    obj.source = 'main-ptr.cc'
-
-    obj = bld.create_ns3_program('main-random-variable')
-    obj.source = 'main-random-variable.cc'
-
-    obj = bld.create_ns3_program('main-packet-header', ['common', 'simulator'])
-    obj.source = 'main-packet-header.cc'
-
-    obj = bld.create_ns3_program('main-packet-tag', ['common', 'simulator'])
-    obj.source = 'main-packet-tag.cc'
-
-    obj = bld.create_ns3_program('main-test')
-    obj.source = 'main-test.cc'
-
-    if bld.env['ENABLE_THREADING'] and bld.env["ENABLE_REAL_TIME"]:
-        obj = bld.create_ns3_program('main-test-sync')
-        obj.source = 'main-test-sync.cc'
-
-    obj = bld.create_ns3_program('main-simple',
-                                 ['node', 'internet-stack', 'onoff'])
-    obj.source = 'main-simple.cc'
-
-    obj = bld.create_ns3_program('main-grid-topology',
-                                 ['core', 'simulator', 'mobility', 'internet-stack'])
-    obj.source = 'main-grid-topology.cc'
-
-    obj = bld.create_ns3_program('main-random-topology',
-                                 ['core', 'simulator', 'mobility'])
-    obj.source = 'main-random-topology.cc'
-    
-    obj = bld.create_ns3_program('main-random-walk',
-                                 ['core', 'simulator', 'mobility'])
-    obj.source = 'main-random-walk.cc'
-
-    obj = bld.create_ns3_program('main-propagation-loss',
-                                 ['core', 'simulator', 'mobility', 'wifi'])
-    obj.source = 'main-propagation-loss.cc'
-
-    obj = bld.create_ns3_program('main-ns2-mob',
-                                 ['core', 'simulator', 'mobility', 'wifi'])
-    obj.source = 'main-ns2-mob.cc'
+     print "Don't want to build samples"
+#    obj = bld.create_ns3_program('main-attribute-value')
+#    obj.source = 'main-attribute-value.cc'
+#
+#    obj = bld.create_ns3_program('main-callback')
+#    obj.source = 'main-callback.cc'
+#
+#    obj = bld.create_ns3_program('main-simulator')
+#    obj.source = 'main-simulator.cc'
+#
+#    obj = bld.create_ns3_program('main-ptr')
+#    obj.source = 'main-ptr.cc'
+#
+#    obj = bld.create_ns3_program('main-random-variable')
+#    obj.source = 'main-random-variable.cc'
+#
+#    obj = bld.create_ns3_program('main-packet-header', ['common', 'simulator'])
+#    obj.source = 'main-packet-header.cc'
+#
+#    obj = bld.create_ns3_program('main-packet-tag', ['common', 'simulator'])
+#    obj.source = 'main-packet-tag.cc'
+#
+#    obj = bld.create_ns3_program('main-test')
+#    obj.source = 'main-test.cc'
+#
+#    if bld.env['ENABLE_THREADING'] and bld.env["ENABLE_REAL_TIME"]:
+#        obj = bld.create_ns3_program('main-test-sync')
+#        obj.source = 'main-test-sync.cc'
+#
+#    obj = bld.create_ns3_program('main-simple',
+#                                 ['node', 'internet-stack', 'onoff'])
+#    obj.source = 'main-simple.cc'
+#
+#    obj = bld.create_ns3_program('main-grid-topology',
+#                                 ['core', 'simulator', 'mobility', 'internet-stack'])
+#    obj.source = 'main-grid-topology.cc'
+#
+#    obj = bld.create_ns3_program('main-random-topology',
+#                                 ['core', 'simulator', 'mobility'])
+#    obj.source = 'main-random-topology.cc'
+#    
+#    obj = bld.create_ns3_program('main-random-walk',
+#                                 ['core', 'simulator', 'mobility'])
+#    obj.source = 'main-random-walk.cc'
+#
+#    obj = bld.create_ns3_program('main-propagation-loss',
+#                                 ['core', 'simulator', 'mobility', 'wifi'])
+#    obj.source = 'main-propagation-loss.cc'
+#
+#    obj = bld.create_ns3_program('main-ns2-mob',
+#                                 ['core', 'simulator', 'mobility', 'wifi'])
+#    obj.source = 'main-ns2-mob.cc'
 
 

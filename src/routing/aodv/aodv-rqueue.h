@@ -33,15 +33,22 @@ namespace ns3 {
 namespace aodv {
 
 /// The maximum number of packets that we allow a routing protocol to buffer.
-#define AODV_RTQ_MAX_LEN   64
+#define AODV_RTQ_MAX_LEN 64
 /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
-#define AODV_RTQ_TIMEOUT   30
+#define AODV_RTQ_TIMEOUT 30
 
 struct QueueEntry
 {
   Ptr<Packet> p;
   Ipv4Header header;
   Time enExpire;
+  
+  QueueEntry(Ptr<Packet> pa, Ipv4Header const & h, Time exp = Seconds(0)) : p(pa), header(h), enExpire(exp) {}
+  
+  bool operator==(QueueEntry const & o) const
+  {
+    return ((p == o.p)/*&& header == o.header*/ && (enExpire == o.enExpire));
+  }
 };
 
 class aodv_rqueue 
@@ -50,18 +57,21 @@ public:
   /// default c-tor
   aodv_rqueue();
   /// Push element in queue.
-  void enque(QueueEntry entry);
+  void enque(QueueEntry & entry);
   /// Returns a element from the head of the queue.
   QueueEntry deque();
   /// Return first found (the earliest) entry for given destination 
   bool deque(Ipv4Address dst, QueueEntry & entry);
   /// Finds whether a packet with destination dst exists in the queue
   bool find(Ipv4Address dst);
+  /// Number of entries
+  uint32_t size();
 
 private:
   std::vector<QueueEntry> queue;
   /// Remove and return first entry from queue
   QueueEntry remove_head();
+  /// Remove all expired entries
   void purge();
   /// Find packet with destination address dst, return true on success
   bool findPacketWithDst(Ipv4Address dst, QueueEntry & entry);
