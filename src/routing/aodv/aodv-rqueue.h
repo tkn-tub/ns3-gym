@@ -21,16 +21,9 @@
  *
  * Ported to ns-3 by Elena Borovkova <borovkovaes@iitp.ru>
  */
-
-
-
-
-
-
 #ifndef __aodv_rqueue_h__
 #define __aodv_rqueue_h_
 
-//#include <packet.h>
 #include "ns3/ipv4-header.h"
 #include "ns3/nstime.h"
 #include "ns3/packet.h"
@@ -39,13 +32,10 @@
 namespace ns3 {
 namespace aodv {
 
-
- /// The maximum number of packets that we allow a routing protocol to buffer.
-#define AODV_RTQ_MAX_LEN     64
-
-
- /// The maximum period of time that a routing protocol is allowed to buffer a packet for.
-#define AODV_RTQ_TIMEOUT   30	// seconds
+/// The maximum number of packets that we allow a routing protocol to buffer.
+#define AODV_RTQ_MAX_LEN   64
+/// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
+#define AODV_RTQ_TIMEOUT   30
 
 struct QueueEntry
 {
@@ -54,29 +44,32 @@ struct QueueEntry
   Time enExpire;
 };
 
-inline void drop() {}
-class aodv_rqueue {
+class aodv_rqueue 
+{
 public:
   /// default c-tor
   aodv_rqueue();
   /// Push element in queue.
-  void  enque(QueueEntry entry);
+  void enque(QueueEntry entry);
   /// Returns a element from the head of the queue.
-  QueueEntry * deque();
-
+  QueueEntry deque();
+  /// Return first found (the earliest) entry for given destination 
   bool deque(Ipv4Address dst, QueueEntry & entry);
   /// Finds whether a packet with destination dst exists in the queue
   bool find(Ipv4Address dst);
 
 private:
   std::vector<QueueEntry> queue;
-  QueueEntry * remove_head();
+  /// Remove and return first entry from queue
+  QueueEntry remove_head();
   void purge();
-//  void findPacketWithDst(Ipv4Address dst, Packet*& p, Packet*& prev);
-  /// Find packet with destination address dst, return true
+  /// Find packet with destination address dst, return true on success
   bool findPacketWithDst(Ipv4Address dst, QueueEntry & entry);
-  unsigned int             limit_;
-  Time         timeout_;
+  /// Notify that packet is dropped from queue by timeout
+  void drop (QueueEntry e);
+  
+  uint32_t limit_;
+  Time timeout_;
 };
 }}
 

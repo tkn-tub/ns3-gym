@@ -136,7 +136,6 @@ protected:
   std::vector<AODV_Neighbor> rt_nblist;
 };
 
-
 /**
  * \ingroup aodv
  * The Routing Table

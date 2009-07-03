@@ -22,125 +22,87 @@
  * Ported to ns-3 by Elena Borovkova <borovkovaes@iitp.ru>
  */
 
-#include <assert.h>
 #include "aodv-rqueue.h"
 #include "ns3/simulator.h"
-#include <vector>
-
+#include <algorithm>
 
 namespace ns3 {
-  namespace aodv {
+namespace aodv {
 
-#define CURRENT_TIME    Simulator::Now()
-    /*
-  Packet Queue used by AODV.
-     */
+aodv_rqueue::aodv_rqueue() : limit_(AODV_RTQ_MAX_LEN), timeout_(AODV_RTQ_TIMEOUT)
+{
+}
 
-    aodv_rqueue::aodv_rqueue() : limit_(AODV_RTQ_MAX_LEN), timeout_(AODV_RTQ_TIMEOUT)
-    {
-    }
+void
+aodv_rqueue::enque(QueueEntry entry) 
+{
+  // Purge any packets that have timed out.
+  purge();
+  entry.enExpire = Simulator::Now() + timeout_;
 
-    void
-    aodv_rqueue::enque(QueueEntry  entry) {
-      /*
-       * Purge any packets that have timed out.
-       */
-      purge();
-      entry.enExpire = CURRENT_TIME + timeout_;
+  if (queue.size() == limit_) drop(remove_head()); // drop the most aged packet
+  queue.push_back(entry);
+}
 
-      if (queue.size() == limit_) {
-        // decrements lenght of queue
-        QueueEntry *p0 = remove_head();
-        NS_ASSERT(p0);
-        if(p0->enExpire > CURRENT_TIME)
-          {
-            //    drop(p0, DROP_RTR_QFULL);
-            drop();
-          }
-        else {
- //         drop(p0, DROP_RTR_QTIMEOUT);
-            drop();
-        }
+QueueEntry
+aodv_rqueue::deque() 
+{
+  purge();
+  return remove_head();
+}
+
+bool
+aodv_rqueue::deque(Ipv4Address dst, QueueEntry & entry)
+{
+  purge();
+  for(std::vector<QueueEntry>::iterator i = queue.begin(); i != queue.end(); ++i)
+    if(i->header.GetDestination() == dst)
+      {
+        entry = *i;
+        queue.erase(i);
+        return true;
       }
-      queue.push_back(entry);
+  return false;
+}
 
-    }
+bool
+aodv_rqueue::find(Ipv4Address dst)
+{
+  for( std::vector<QueueEntry>::const_iterator i = queue.begin(); i != queue.end(); ++i)
+    if(i->header.GetDestination() == dst)
+      return true;
+  return false;
+}
 
+QueueEntry
+aodv_rqueue::remove_head() 
+{
+  QueueEntry entry = queue.front();
+  queue.erase(queue.begin());
+  return entry;
+}
 
-    QueueEntry*
-    aodv_rqueue::deque() {
-      QueueEntry * entry;
-      /*
-       * Purge any packets that have timed out.
-       */
-      purge();
-      entry = remove_head();
-      return entry;
+struct IsExpired
+{
+  bool operator() (QueueEntry const & e) const
+  {
+    return (e.enExpire > Simulator::Now());
+  }
+};
 
-    }
+void
+aodv_rqueue::purge()
+{
+  std::vector<QueueEntry>::iterator i = std::remove_if(queue.begin(), queue.end(), IsExpired());
+  for (std::vector<QueueEntry>::iterator j = i ; j < queue.end(); ++j)
+    drop (*j); 
+  queue.erase(i, queue.end());
+}
 
+void 
+aodv_rqueue::drop(QueueEntry)
+{
+  // TODO do nothing now.
+}
 
-    bool
-    aodv_rqueue::deque(Ipv4Address dst, QueueEntry & entry)
-    {
-      /*
-       * Purge any packets that have timed out.
-       */
-      purge();
-      for( std::vector<QueueEntry>::iterator i = queue.begin(); i != queue.end(); ++i)
-        if(i->header.GetDestination() == dst)
-          {
-            entry = *i;
-            queue.erase(i);
-            return true;
-          }
-      return false;
-    }
-
-    bool
-    aodv_rqueue::find(Ipv4Address dst)
-    {
-      for( std::vector<QueueEntry>::const_iterator i = queue.begin(); i != queue.end(); ++i)
-        if(i->header.GetDestination() == dst)
-          return true;
-      return false;
-    }
-
-
-
-
-    /*
-  Private Routines
-     */
-
-    QueueEntry*
-    aodv_rqueue::remove_head() {
-      QueueEntry * entry = &queue.front();
-      queue.erase(queue.begin());
-      return entry;
-    }
-
-
-
-
-
-
-
-
-    void
-    aodv_rqueue::purge()
-    {
-      QueueEntry * entry;
-      for( std::vector<QueueEntry>::iterator i = queue.begin(); i != queue.end(); ++i)
-        if(i->enExpire > CURRENT_TIME)
-          {
-            entry = &(*i);
-            queue.erase(i);
-    //      drop(entry, DROP_RTR_QTIMEOUT);
-            drop();
-          }
-    }
-
-
-
-  }}
+}}
