@@ -33,7 +33,7 @@ class Node;
  * For each new routing protocol created as a subclass of 
  * ns3::Ipv4RoutingProtocol, you need to create a subclass of 
  * ns3::Ipv4RoutingHelper which can be used by 
- * ns3::InternetStackHelper::SetRoutingProtocol and 
+ * ns3::InternetStackHelper::SetRoutingHelper and 
  * ns3::InternetStackHelper::Install.
  */
 class Ipv4RoutingHelper

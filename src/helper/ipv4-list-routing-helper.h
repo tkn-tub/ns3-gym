@@ -28,6 +28,9 @@ namespace ns3 {
 
 /**
  * \brief Helper class that adds ns3::Ipv4ListRouting objects
+ *
+ * This class is expected to be used in conjunction with 
+ * ns3::InternetStackHelper::SetRoutingHelper
  */
 class Ipv4ListRoutingHelper : public Ipv4RoutingHelper
 {
