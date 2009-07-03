@@ -29,7 +29,6 @@
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/node-container.h"
 #include "global-router-interface.h"
 
 namespace ns3 {
@@ -729,21 +728,6 @@ public:
  *
  */
   virtual void DeleteGlobalRoutes ();
-/**
- * @brief Select which nodes in the system are to be router nodes and 
- * aggregate the appropriate interfaces onto those nodes.
- * @internal
- *
- */
-  virtual void SelectRouterNodes ();
-
-/**
- * @brief Select which nodes in the system are to be router nodes and 
- * aggregate the appropriate interfaces onto those nodes.
- * @internal
- *
- */
-  virtual void SelectRouterNodes (NodeContainer c);
 
 /**
  * @brief Build the routing database by gathering Link State Advertisements
@@ -788,6 +772,7 @@ private:
 
   SPFVertex* m_spfroot;
   GlobalRouteManagerLSDB* m_lsdb;
+  bool CheckForStubNode (Ipv4Address root);
   void SPFCalculate (Ipv4Address root);
   void SPFProcessStubs (SPFVertex* v);
   void SPFNext (SPFVertex*, CandidateQueue&);
@@ -801,12 +786,6 @@ private:
   void SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* v);
   int32_t FindOutgoingInterfaceId (Ipv4Address a, 
     Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
-
-  // Local cache of the Ipv4GlobalRouting objects, indexed by nodeId
-  typedef std::list< std::pair< uint32_t, Ptr<Ipv4GlobalRouting> > > Ipv4GlobalRoutingList;
-  void AddGlobalRoutingProtocol (uint32_t nodeId, Ptr<Ipv4GlobalRouting> proto);
-  Ptr<Ipv4GlobalRouting> GetGlobalRoutingProtocol (uint32_t nodeId);
-  Ipv4GlobalRoutingList m_routingProtocols;
 };
 
 } // namespace ns3

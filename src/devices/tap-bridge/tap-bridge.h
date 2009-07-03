@@ -176,6 +176,7 @@ public:
   virtual void SetIfIndex(const uint32_t index);
   virtual uint32_t GetIfIndex(void) const;
   virtual Ptr<Channel> GetChannel (void) const;
+  virtual void SetAddress (Address address);
   virtual Address GetAddress (void) const;
   virtual bool SetMtu (const uint16_t mtu);
   virtual uint16_t GetMtu (void) const;
@@ -208,8 +209,11 @@ protected:
    */
   virtual void DoDispose (void);
 
-  void ReceiveFromBridgedDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
+  bool ReceiveFromBridgedDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                                  Address const &src, Address const &dst, PacketType packetType);
+
+  bool DiscardFromBridgedDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol, Address const &src);
+
 private:
 
   /**
@@ -443,13 +447,10 @@ private:
   /**
    * \internal
    *
-   * The MAC address of the local tap device is stored in this variable.
-   * When in UseLocal mode, this address is added back to the destination 
-   * Mac address for frames destined to the tap device.  It is learned from
-   * the first frame sent from the host to the TapBridge device.  In the
-   * other modes of this device, this value is unused.  
+   * Whether the MAC address of the underlying ns-3 device has already been
+   * rewritten is stored in this variable (for UseLocal mode only).
    */
-  Mac48Address m_learnedMac;
+  bool m_ns3AddressRewritten;
 
 };
 

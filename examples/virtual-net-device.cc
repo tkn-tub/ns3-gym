@@ -57,7 +57,6 @@
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/global-route-manager.h"
 #include "ns3/virtual-net-device.h"
 
 using namespace ns3;
@@ -238,7 +237,7 @@ main (int argc, char *argv[])
 
   // Create router nodes, initialize routing database and set up the routing
   // tables in the nodes.
-  GlobalRouteManager::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   // Add the tunnels
   Tunnel tunnel (c.Get (3), c.Get (0), c.Get (1),

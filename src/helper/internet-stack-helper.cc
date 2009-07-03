@@ -153,7 +153,6 @@
 #include "ns3/object.h"
 #include "ns3/names.h"
 #include "ns3/ipv4.h"
-#include "internet-stack-helper.h"
 #include "ns3/packet-socket-factory.h"
 #include "ns3/config.h"
 #include "ns3/simulator.h"
@@ -162,8 +161,10 @@
 #include "ns3/callback.h"
 #include "ns3/node.h"
 #include "ns3/core-config.h"
-#include "ns3/ipv4-list-routing-impl.h"
-#include "ns3/ipv4-static-routing-impl.h"
+#include "internet-stack-helper.h"
+#include "ipv4-list-routing-helper.h"
+#include "ipv4-static-routing-helper.h"
+#include "ipv4-global-routing-helper.h"
 #include <limits>
 
 namespace ns3 {
@@ -174,6 +175,18 @@ std::string InternetStackHelper::m_pcapBaseFilename;
 InternetStackHelper::InternetStackHelper ()
 {
   SetTcp ("ns3::TcpL4Protocol");
+  static Ipv4StaticRoutingHelper staticRouting;
+  static Ipv4GlobalRoutingHelper globalRouting;
+  static Ipv4ListRoutingHelper listRouting;
+  listRouting.Add (staticRouting, 0);
+  listRouting.Add (globalRouting, -10);
+  SetRoutingHelper (listRouting);
+}
+
+void 
+InternetStackHelper::SetRoutingHelper (const Ipv4RoutingHelper &routing)
+{
+  m_routing = &routing;
 }
 
 void
@@ -213,8 +226,14 @@ InternetStackHelper::Install (NodeContainer c) const
     }
 }
 
-static void
-CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId)
+void 
+InternetStackHelper::InstallAll (void) const
+{
+  Install (NodeContainer::GetGlobal ());
+}
+
+void
+InternetStackHelper::CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId)
 {
   ObjectFactory factory;
   factory.SetTypeId(typeId);
@@ -241,13 +260,8 @@ InternetStackHelper::Install (Ptr<Node> node) const
   node->AggregateObject (factory);
   // Set routing
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-  // XXX cut this over to use of TypeIds and factories
-  Ptr<Ipv4ListRoutingImpl> ipv4RoutingImpl = CreateObject<Ipv4ListRoutingImpl> ();
-  Ptr<Ipv4StaticRoutingImpl> ipv4staticRoutingImpl = CreateObject<Ipv4StaticRoutingImpl> ();
-  ipv4staticRoutingImpl->SetNode (node);
-  ipv4RoutingImpl->AddRoutingProtocol (ipv4staticRoutingImpl, 0);
-  ipv4->SetRoutingProtocol (ipv4RoutingImpl);
-  ipv4RoutingImpl->SetNode (node);
+  Ptr<Ipv4RoutingProtocol> ipv4Routing = m_routing->Create (node);
+  ipv4->SetRoutingProtocol (ipv4Routing);
 }
 
 void

@@ -128,24 +128,22 @@ MacRxMiddle::SetForwardCallback (ForwardUpCallback callback)
 }
 
 bool
-MacRxMiddle::SequenceControlSmaller (int seqca, int seqcb)
+MacRxMiddle::SequenceControlSmaller (uint16_t seqca, uint16_t seqcb)
 {
   NS_LOG_FUNCTION (seqca << seqcb);
-  int seqa = seqca >> 4;
-  int seqb = seqcb >> 4;
-  int delta = seqb - seqa;
+  int16_t seqa = seqca >> 4;
+  int16_t seqb = seqcb >> 4;
+  int16_t delta = seqb - seqa;
+  bool sign = seqa <= seqb;
+  uint16_t absDelta = (delta < 0)?-delta:delta;
   NS_LOG_DEBUG ("seqb="<<seqb<<", seqa="<<seqa<<", delta="<<delta);
-  if (delta <= 0 && delta < -2048) 
+  if (absDelta < 2048)
     {
-      return true;
-    } 
-  else if (delta >= 0 && delta < 2048) 
+      return sign;
+    }
+  else
     {
-      return true;
-    } 
-  else 
-    {
-      return false;
+      return !sign;
     }
 }
 
@@ -301,3 +299,54 @@ MacRxMiddle::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 }
 
 } // namespace ns3
+
+#ifdef RUN_SELF_TESTS
+
+#include "ns3/test.h"
+
+namespace ns3 {
+
+class MacRxMiddleTest : public Test
+{
+public:
+  MacRxMiddleTest () : Test ("MacRxMiddle") {}
+  virtual bool RunTests (void) 
+  {
+    bool result = true;
+    MacRxMiddle middle;
+    // 0 < 1
+    NS_TEST_ASSERT (middle.SequenceControlSmaller (0 << 4, 1 << 4));
+    // 0 < 2047
+    NS_TEST_ASSERT (middle.SequenceControlSmaller (0 << 4, 2047 << 4));
+    // 0 > 2048
+    NS_TEST_ASSERT (!middle.SequenceControlSmaller (0 << 4, 2048 << 4));
+    // 0 > 2049
+    NS_TEST_ASSERT (!middle.SequenceControlSmaller (0 << 4, 2049 << 4));
+    // 0 > 4095
+    NS_TEST_ASSERT (!middle.SequenceControlSmaller (0 << 4, 4095 << 4));
+
+    // 1 > 0
+    NS_TEST_ASSERT (!middle.SequenceControlSmaller (1 << 4, 0 << 4));
+    // 2047 > 0
+    NS_TEST_ASSERT (!middle.SequenceControlSmaller (2047 << 4, 0 << 4));
+    // 2048 < 0
+    NS_TEST_ASSERT (middle.SequenceControlSmaller (2048 << 4, 0 << 4));
+    // 2049 < 0
+    NS_TEST_ASSERT (middle.SequenceControlSmaller (2049 << 4, 0 << 4));
+    // 4095 < 0 
+    NS_TEST_ASSERT (middle.SequenceControlSmaller (4095 << 4, 0 << 4));
+
+    // 2048 < 2049
+    NS_TEST_ASSERT (middle.SequenceControlSmaller (2048 << 4, 2049 << 4));
+    // 2048 < 4095
+    NS_TEST_ASSERT (middle.SequenceControlSmaller (2048 << 4, 4095 << 4));
+    // 2047 > 4095
+    NS_TEST_ASSERT (!middle.SequenceControlSmaller (2047 << 4, 4095 << 4));
+
+    return result;
+  }
+} g_macRxMiddleTest;
+
+} // namespace ns3
+
+#endif /* RUN_SELF_TESTS */

@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2009 University of Washington
+ * Copyright (c) 2008 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -14,21 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-
-#include "ipv4-static-routing.h"
+#include "ipv4-routing-helper.h"
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4StaticRouting);
-
-TypeId 
-Ipv4StaticRouting::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::Ipv4StaticRouting")
-    .SetParent<Ipv4RoutingProtocol> ()
-    ;
-  return tid;
-}
+Ipv4RoutingHelper::~Ipv4RoutingHelper ()
+{}
 
 } // namespace ns3

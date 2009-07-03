@@ -256,6 +256,15 @@ def register_Ns3DataOutputInterface_methods(root_module, cls):
                    'void', 
                    [param('ns3::DataCollector &', 'dc')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## data-output-interface.h: void ns3::DataOutputInterface::SetFilePrefix(std::string const prefix) [member function]
+    cls.add_method('SetFilePrefix', 
+                   'void', 
+                   [param('std::string const', 'prefix')])
+    ## data-output-interface.h: std::string ns3::DataOutputInterface::GetFilePrefix() const [member function]
+    cls.add_method('GetFilePrefix', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
     ## data-output-interface.h: void ns3::DataOutputInterface::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -294,15 +303,6 @@ def register_Ns3OmnetDataOutput_methods(root_module, cls):
                    'void', 
                    [param('ns3::DataCollector &', 'dc')], 
                    is_virtual=True)
-    ## omnet-data-output.h: void ns3::OmnetDataOutput::SetFilePrefix(std::string const prefix) [member function]
-    cls.add_method('SetFilePrefix', 
-                   'void', 
-                   [param('std::string const', 'prefix')])
-    ## omnet-data-output.h: std::string ns3::OmnetDataOutput::GetFilePrefix() const [member function]
-    cls.add_method('GetFilePrefix', 
-                   'std::string', 
-                   [], 
-                   is_const=True)
     ## omnet-data-output.h: void ns3::OmnetDataOutput::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -340,15 +340,6 @@ def register_Ns3SqliteDataOutput_methods(root_module, cls):
                    'void', 
                    [param('ns3::DataCollector &', 'dc')], 
                    is_virtual=True)
-    ## sqlite-data-output.h: void ns3::SqliteDataOutput::SetDBFile(std::string const file) [member function]
-    cls.add_method('SetDBFile', 
-                   'void', 
-                   [param('std::string const', 'file')])
-    ## sqlite-data-output.h: std::string ns3::SqliteDataOutput::GetDBFile() const [member function]
-    cls.add_method('GetDBFile', 
-                   'std::string', 
-                   [], 
-                   is_const=True)
     ## sqlite-data-output.h: void ns3::SqliteDataOutput::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 

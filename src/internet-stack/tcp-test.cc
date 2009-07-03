@@ -37,8 +37,8 @@
 #include "icmpv4-l4-protocol.h"
 #include "udp-l4-protocol.h"
 #include "tcp-l4-protocol.h"
-#include "ipv4-static-routing-impl.h"
-#include "ipv4-list-routing-impl.h"
+#include "ns3/ipv4-static-routing.h"
+#include "ns3/ipv4-list-routing.h"
 
 #include "ns3/node.h"
 #include "ns3/inet-socket-address.h"
@@ -56,13 +56,10 @@ AddInternetStack (Ptr<Node> node)
   //IPV4
   Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
   //Routing for Ipv4
-  //Routing for Ipv4
-  Ptr<Ipv4ListRoutingImpl> ipv4RoutingImpl = CreateObject<Ipv4ListRoutingImpl> ();
-  ipv4->SetRoutingProtocol (ipv4RoutingImpl);
-  ipv4RoutingImpl->SetNode (node);
-  Ptr<Ipv4StaticRoutingImpl> ipv4staticRoutingImpl = CreateObject<Ipv4StaticRoutingImpl> ();
-  ipv4staticRoutingImpl->SetNode (node);
-  ipv4RoutingImpl->AddRoutingProtocol (ipv4staticRoutingImpl, 0);
+  Ptr<Ipv4ListRouting> ipv4Routing = CreateObject<Ipv4ListRouting> ();
+  ipv4->SetRoutingProtocol (ipv4Routing);
+  Ptr<Ipv4StaticRouting> ipv4staticRouting = CreateObject<Ipv4StaticRouting> ();
+  ipv4Routing->AddRoutingProtocol (ipv4staticRouting, 0);
   node->AggregateObject(ipv4);
   //ICMP
   Ptr<Icmpv4L4Protocol> icmp = CreateObject<Icmpv4L4Protocol> ();
@@ -303,7 +300,7 @@ Ptr<SimpleNetDevice>
 TcpSocketImplTest::AddSimpleNetDevice (Ptr<Node> node, const char* ipaddr, const char* netmask)
 {
   Ptr<SimpleNetDevice> dev = CreateObject<SimpleNetDevice> ();
-  dev->SetAddress (Mac48Address::Allocate ());
+  dev->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
   node->AddDevice (dev);
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   uint32_t ndid = ipv4->AddInterface (dev);

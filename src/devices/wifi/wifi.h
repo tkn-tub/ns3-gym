@@ -94,17 +94,20 @@
  *     used by Qos high MACs and performs also QoS operations like 802.11n MSDU
  *     aggregation.
  *
- * The PHY layer implements a single model in the ns3::WifiPhy class: the
+ * The PHY layer implements a single 802.11a model in the ns3::WifiPhy class: the
  * physical layer model implemented there is described fully in a paper titled
- * "Yet Another Network Simulator", available at: http://cutebugs.net/files/wns2-yans.pdf and recently extended to cover 802.11b physical layer.
+ * "Yet Another Network Simulator", available at: http://cutebugs.net/files/wns2-yans.pdf 
+ * and recently extended to cover 802.11b physical layer.
  * 
  * The Wifi Model also provides a set of Rate control algorithms:
- *   - ns3::ArfMacStations 
- *   - ns3::AArfMacStations
- *   - ns3::IdealMacStations
- *   - ns3::CrMacStations
- *   - ns3::OnoeMacStations
- *   - ns3::AmrrMacStations
+ *   - ns3::ArfWifiManager
+ *   - ns3::AarfWifiManager
+ *   - ns3::IdealWifiManager
+ *   - ns3::CrWifiManager
+ *   - ns3::OnoeWifiManager
+ *   - ns3::AmrrWifiManager
+ *   - ns3::CaraWifiManager
+ *   - ns3::AarfcdWifiManager
  *
  * \section WifiTracingModel Wifi Tracing Model
  *

@@ -81,15 +81,6 @@ public:
   uint16_t GetMetric (void) const;
 
   /**
-   * This function a pass-through to NetDevice GetMtu, modulo
-   * the  LLC/SNAP header i.e., ipv4MTU = NetDeviceMtu - LLCSNAPSIZE
-   * \returns the Maximum Transmission Unit associated to this interface.
-   *
-   * XXX deprecated?  This is duplicate API to GetDevice ()->GetMtu ()
-   */
-  uint16_t GetMtu (void) const;
-
-  /**
    * These are IP interface states and may be distinct from 
    * NetDevice states, such as found in real implementations
    * (where the device may be down but IP interface state is still up).
@@ -115,6 +106,16 @@ public:
   void SetDown (void);
 
   /**
+   * \returns true if this interface is enabled for IP forwarding of input datagrams
+   */
+  bool IsForwarding (void) const;
+  
+  /**
+   * \param val Whether to enable or disable IP forwarding for input datagrams
+   */
+  void SetForwarding (bool val);
+
+  /**
    * \param p packet to send
    * \param dest next hop address of packet.
    *
@@ -125,9 +126,9 @@ public:
 
   /**
    * \param address The Ipv4InterfaceAddress to add to the interface
-   * \returns The index of the newly-added Ipv4InterfaceAddress
+   * \returns true if succeeded
    */
-  uint32_t AddAddress (Ipv4InterfaceAddress address);
+  bool AddAddress (Ipv4InterfaceAddress address);
 
   /**
    * \param index Index of Ipv4InterfaceAddress to return
@@ -141,9 +142,10 @@ public:
   uint32_t GetNAddresses (void) const;
 
   /**
-   * \param index index of Ipv4InterfaceAddress to remove from address list.
+   * \param index Index of Ipv4InterfaceAddress to remove
+   * \returns The Ipv4InterfaceAddress address whose index is index 
    */
-  void RemoveAddress (uint32_t index);
+  Ipv4InterfaceAddress RemoveAddress (uint32_t index);
 
 protected:
   virtual void DoDispose (void);
@@ -154,6 +156,7 @@ private:
   typedef std::list<Ipv4InterfaceAddress>::iterator Ipv4InterfaceAddressListI;
 
   bool m_ifup;
+  bool m_forwarding;  // IN_DEV_FORWARD
   uint16_t m_metric;
   Ipv4InterfaceAddressList m_ifaddrs;
   Ptr<Node> m_node;

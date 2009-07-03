@@ -15,6 +15,8 @@ class Icmpv4L4Protocol : public Ipv4L4Protocol
 {
 public:
   static TypeId GetTypeId (void);
+  static const uint8_t PROT_NUMBER;
+
   Icmpv4L4Protocol ();
   virtual ~Icmpv4L4Protocol ();
 

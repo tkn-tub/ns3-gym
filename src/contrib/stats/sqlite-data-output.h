@@ -40,9 +40,6 @@ namespace ns3 {
 
     virtual void Output(DataCollector &dc);
 
-    void SetDBFile(const std::string file);
-    std::string GetDBFile() const;
-
   protected:
     virtual void DoDispose();
 
@@ -82,7 +79,6 @@ namespace ns3 {
     sqlite3 *m_db;
     int Exec(std::string exe);
 
-    std::string m_dbFile;
     // end class SqliteDataOutput
   };
 

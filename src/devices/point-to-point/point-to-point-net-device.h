@@ -132,14 +132,6 @@ public:
   void Receive (Ptr<Packet> p);
 
   /**
-   * Assign a MAC address to this device.
-   *
-   * @see Mac48Address
-   * @param addr The new address.
-   */
-  void SetAddress (Mac48Address addr);
-
-  /**
    * Set The max frame size of packets sent over this device.
    *
    * Okay, that was easy to say, but the details are a bit thorny.  We have a MAC-level MTU that is the payload that higher 
@@ -230,6 +222,8 @@ public:
   virtual uint32_t GetIfIndex(void) const;
 
   virtual Ptr<Channel> GetChannel (void) const;
+
+  virtual void SetAddress (Address address);
   virtual Address GetAddress (void) const;
 
   virtual bool SetMtu (const uint16_t mtu);

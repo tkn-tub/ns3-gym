@@ -67,7 +67,6 @@
 #include "ns3/mobility-module.h"
 #include "ns3/contrib-module.h"
 #include "ns3/wifi-module.h"
-#include "ns3/global-route-manager.h"
 
 using namespace ns3;
 
@@ -152,11 +151,21 @@ main (int argc, char *argv[])
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
   NetDeviceContainer backboneDevices = wifi.Install (wifiPhy, mac, backbone);
+
+  // We enable OLSR (which will be consulted at a higher priority than
+  // the global routing) on the backbone ad hoc nodes
+  NS_LOG_INFO ("Enabling OLSR routing on all backbone nodes");
+  OlsrHelper olsr;
   //
   // Add the IPv4 protocol stack to the nodes in our container
   //
   InternetStackHelper internet;
+  internet.SetRoutingHelper (olsr);
   internet.Install (backbone);
+
+  // re-initialize for non-olsr routing.
+  internet = InternetStackHelper ();
+
   //
   // Assign IPv4 addresses to the device drivers (actually to the associated
   // IPv4 interfaces) we just created.
@@ -322,13 +331,7 @@ main (int argc, char *argv[])
   // However, it is useful for setting default routes for all of the nodes
   // such as the LAN nodes.  
   NS_LOG_INFO ("Enabling global routing on all nodes");
-  GlobalRouteManager::PopulateRoutingTables ();
-
-  // We enable OLSR (which will be consulted at a higher priority than
-  // the global routing above) on the backbone ad hoc nodes
-  NS_LOG_INFO ("Enabling OLSR routing on all backbone nodes");
-  OlsrHelper olsr;
-  olsr.Install (backbone);
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   /////////////////////////////////////////////////////////////////////////// 
   //                                                                       //

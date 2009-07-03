@@ -1,3 +1,18 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 #include "v4ping.h"
 #include "ns3/icmpv4.h"
 #include "ns3/assert.h"
@@ -87,11 +102,12 @@ V4Ping::Receive (Ptr<Socket> socket)
 	  if (echo.GetSequenceNumber () == (m_seq - 1) &&
 	      echo.GetIdentifier () == 0)
 	    {
-	      uint8_t data[16];
-	      uint32_t dataSize = echo.GetData (data);
-	      if (dataSize == 16)
+              uint32_t buf[4];
+	      uint32_t dataSize = echo.GetDataSize ();
+	      if (dataSize == sizeof(buf))
 		{
-		  uint32_t *buf = (uint32_t *)data;
+                  echo.GetData ((uint8_t *)buf);
+
 		  if (buf[0] == GetNode ()->GetId () &&
 		      buf[1] == GetApplicationId ())
 		    {

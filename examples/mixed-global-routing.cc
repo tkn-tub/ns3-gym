@@ -40,7 +40,6 @@
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/global-route-manager.h"
 
 using namespace ns3;
 
@@ -104,7 +103,7 @@ main (int argc, char *argv[])
 
   // Create router nodes, initialize routing database and set up the routing
   // tables in the nodes.
-  GlobalRouteManager::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s

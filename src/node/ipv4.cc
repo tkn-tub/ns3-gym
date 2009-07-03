@@ -32,7 +32,7 @@ Ipv4::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4")
     .SetParent<Object> ()
-    .AddAttribute ("IpForward", "If enabled, node can act as unicast router.",
+    .AddAttribute ("IpForward", "Globally enable or disable IP forwarding for all current and future Ipv4 devices.",
                    BooleanValue (true),
                    MakeBooleanAccessor (&Ipv4::SetIpForward,
                                         &Ipv4::GetIpForward),

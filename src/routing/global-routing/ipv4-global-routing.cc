@@ -19,7 +19,7 @@
 #include "ns3/log.h"
 #include "ns3/object.h"
 #include "ns3/packet.h"
-#include "ns3/node.h"
+#include "ns3/net-device.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/ipv4-routing-table-entry.h"
 #include "ipv4-global-routing.h"
@@ -125,7 +125,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest)
            j != m_networkRoutes.end (); 
            j++) 
         {
-          NS_ASSERT ((*j)->IsNetwork ());
+          NS_ASSERT ((*j)->IsNetwork () || (*j)->IsDefault ());
           Ipv4Mask mask = (*j)->GetDestNetworkMask ();
           Ipv4Address entry = (*j)->GetDestNetwork ();
           if (mask.IsMatch (dest, entry)) 
@@ -139,14 +139,13 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest)
     }
   if (found == true)
     {
-      Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
       rtentry = Create<Ipv4Route> ();
       rtentry->SetDestination (route->GetDest ());
       // XXX handle multi-address case
-      rtentry->SetSource (ipv4->GetAddress (route->GetInterface(), 0).GetLocal ());
+      rtentry->SetSource (m_ipv4->GetAddress (route->GetInterface(), 0).GetLocal ());
       rtentry->SetGateway (route->GetGateway ());
       uint32_t interfaceIdx = route->GetInterface ();
-      rtentry->SetOutputDevice (ipv4->GetNetDevice (interfaceIdx));
+      rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIdx));
       return rtentry;
     }
   else 
@@ -260,7 +259,7 @@ Ipv4GlobalRouting::DoDispose (void)
 }
 
 Ptr<Ipv4Route>
-Ipv4GlobalRouting::RouteOutput (const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr)
+Ipv4GlobalRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr)
 {      
 
 //
@@ -318,21 +317,25 @@ Ipv4GlobalRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &ipHeader,
                     // route request.
     }
 }
-
-void
-Ipv4GlobalRouting::SetNode (Ptr<Node> node)
+void 
+Ipv4GlobalRouting::NotifyInterfaceUp (uint32_t i)
+{}
+void 
+Ipv4GlobalRouting::NotifyInterfaceDown (uint32_t i)
+{}
+void 
+Ipv4GlobalRouting::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
+{}
+void 
+Ipv4GlobalRouting::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
+{}
+void 
+Ipv4GlobalRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  m_node = node;
+  NS_LOG_FUNCTION(this << ipv4);
+  NS_ASSERT (m_ipv4 == 0 && ipv4 != 0);
+  m_ipv4 = ipv4;
 }
-
-Ptr<Node>
-Ipv4GlobalRouting::GetNode (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_node;
-}
-
 
 
 }//namespace ns3

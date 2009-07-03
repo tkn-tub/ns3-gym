@@ -453,9 +453,15 @@ NqstaWifiMac::RestartBeaconWatchdog (Time delay)
     }
 }
 bool
-NqstaWifiMac::IsAssociated (void)
+NqstaWifiMac::IsAssociated (void) const
 {
-  return (m_state == ASSOCIATED)?true:false;
+  return m_state == ASSOCIATED;
+}
+
+bool 
+NqstaWifiMac::IsWaitAssocResp (void) const
+{
+  return m_state == WAIT_ASSOC_RESP;
 }
 
 void 
@@ -553,7 +559,7 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
         {
           goodBeacon = true;
         }
-      if (IsAssociated () && hdr->GetAddr3 () != GetBssid ())
+      if ((IsWaitAssocResp () || IsAssociated ()) && hdr->GetAddr3 () != GetBssid ())
         {
           goodBeacon = false;
         }

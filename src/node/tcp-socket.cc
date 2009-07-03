@@ -39,7 +39,7 @@ TcpSocket::GetTypeId (void)
     .SetParent<Socket> ()
     .AddAttribute ("SndBufSize",
                    "TcpSocket maximum transmit buffer size (bytes)",
-                   UintegerValue (0xffffffffl),
+                   UintegerValue (131072), // 128k
                    MakeUintegerAccessor (&TcpSocket::GetSndBufSize,
                                          &TcpSocket::SetSndBufSize),
                    MakeUintegerChecker<uint32_t> ())

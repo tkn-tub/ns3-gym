@@ -102,8 +102,10 @@ main (int argc, char *argv[])
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
     Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
-  sink.Install (c0.Get (1));
-  sink.Install (c1.Get (1));
+  app = sink.Install (c0.Get (1));
+  app.Add (sink.Install (c1.Get (1)));
+  app.Start (Seconds (1.0));
+  app.Stop (Seconds (10.0));
 
   // Also configure some tcpdump traces; each interface will be traced
   // The output files will be named 

@@ -1,0 +1,15 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('static-routing', ['node'])
+    module.source = [
+        'ipv4-static-routing.cc',
+        'ipv4-routing-table-entry.cc',
+        ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'static-routing'
+    headers.source = [
+        'ipv4-static-routing.h',
+        'ipv4-routing-table-entry.h',
+        ]
+

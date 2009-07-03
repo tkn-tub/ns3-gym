@@ -1,3 +1,23 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2008 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
+
 #include "icmpv4.h"
 #include "ns3/packet.h"
 
@@ -94,7 +114,6 @@ Icmpv4Header::GetCode (void) const
 /********************************************************
  *        Icmpv4Echo
  ********************************************************/
-
 void 
 Icmpv4Echo::SetIdentifier (uint16_t id)
 {
@@ -108,9 +127,21 @@ Icmpv4Echo::SetSequenceNumber (uint16_t seq)
 void 
 Icmpv4Echo::SetData (Ptr<const Packet> data)
 {
-  uint32_t size = (data->GetSize ()>16)?16:data->GetSize();
+  uint32_t size = data->GetSize ();
+  //
+  // All kinds of optimizations are possible, but let's not get carried away
+  // since this is probably a very uncommon thing in the big picture.
+  //
+  // N.B. Zero is a legal size for the alloc below even though a hardcoded zero
+  // would result in  warning.
+  //
+  if (size != m_dataSize)
+    {
+      delete [] m_data;
+      m_data = new uint8_t[size];
+      m_dataSize = size;
+    }
   data->CopyData (m_data, size);
-  m_dataSize = size;
 }
 uint16_t 
 Icmpv4Echo::GetIdentifier (void) const
@@ -123,13 +154,16 @@ Icmpv4Echo::GetSequenceNumber (void) const
   return m_sequence;
 }
 uint32_t
-Icmpv4Echo::GetData (uint8_t data[16]) const
+Icmpv4Echo::GetDataSize (void) const
 {
-  memcpy (data, m_data, m_dataSize);
   return m_dataSize;
 }
-
-
+uint32_t
+Icmpv4Echo::GetData (uint8_t payload[]) const
+{
+  memcpy (payload, m_data, m_dataSize);
+  return m_dataSize;
+}
 TypeId 
 Icmpv4Echo::GetTypeId (void)
 {
@@ -144,14 +178,18 @@ Icmpv4Echo::Icmpv4Echo ()
     m_sequence (0),
     m_dataSize (0)
 {
-  // make sure that thing is initialized to get initialized bytes
-  for (uint8_t j = 0; j < 16; j++)
-    {
-      m_data[j] = 0;
-    }
+  //
+  // After construction, m_data is always valid until destruction.  This is true
+  // even if m_dataSize is zero.
+  //
+  m_data = new uint8_t[m_dataSize];
 }
 Icmpv4Echo::~Icmpv4Echo ()
-{}
+{
+  delete [] m_data;
+  m_data = 0;
+  m_dataSize = 0;
+}
 TypeId 
 Icmpv4Echo::GetInstanceTypeId (void) const
 {
@@ -175,9 +213,15 @@ Icmpv4Echo::Deserialize (Buffer::Iterator start)
   m_identifier = start.ReadNtohU16 ();
   m_sequence = start.ReadNtohU16 ();
   NS_ASSERT (start.GetSize () >= 4);
-  m_dataSize = start.GetSize () - 4;
+  uint32_t size = start.GetSize () - 4;
+  if (size != m_dataSize)
+    {
+      delete [] m_data;
+      m_data = new uint8_t[size];
+      m_dataSize = size;
+    }
   start.Read (m_data, m_dataSize);
-  return start.GetSize ();
+  return m_dataSize;
 }
 void 
 Icmpv4Echo::Print (std::ostream &os) const

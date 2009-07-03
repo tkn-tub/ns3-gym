@@ -36,6 +36,7 @@
 #include "ns3/timer.h"
 #include "ns3/traced-callback.h"
 #include "ns3/ipv4.h"
+#include "ns3/ipv4-routing-protocol.h"
 
 #include <vector>
 #include <map>
@@ -67,9 +68,6 @@ public:
   RoutingProtocol ();
   virtual ~RoutingProtocol ();
 
-  void SetNode (Ptr<Node> node);
-
-  void Start ();
   void SetMainInterface (uint32_t interface);
 
 private:
@@ -102,7 +100,7 @@ private:
   Ptr<Ipv4> m_ipv4;
 	
 private:
-
+  void Start ();
   void Clear ();
   uint32_t GetSize () const { return m_table.size (); }
   std::vector<RoutingTableEntry> GetEntries () const;
@@ -121,10 +119,16 @@ private:
                       RoutingTableEntry &outEntry) const;
 
   // From Ipv4RoutingProtocol
-  virtual Ptr<Ipv4Route> RouteOutput (const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr);
+  virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr);
    virtual bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
                              UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                              LocalDeliverCallback lcb, ErrorCallback ecb);  
+  virtual void NotifyInterfaceUp (uint32_t interface);
+  virtual void NotifyInterfaceDown (uint32_t interface);
+  virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
+  virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
+  virtual void SetIpv4 (Ptr<Ipv4> ipv4);
+
 
   void DoDispose ();
 

@@ -157,6 +157,11 @@ WifiNetDevice::DoGetChannel (void) const
 {
   return m_phy->GetChannel ();
 }
+void 
+WifiNetDevice::SetAddress (Address address)
+{
+  m_mac->SetAddress (Mac48Address::ConvertFrom (address));
+}
 Address 
 WifiNetDevice::GetAddress (void) const
 {

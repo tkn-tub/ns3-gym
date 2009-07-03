@@ -63,9 +63,11 @@
 //    will start to be dropped 
 //  At time 13s, call RecomputeRoutingTables() and traffic will
 //    start flowing again on the alternate path
-//  At time 14s, re-enable the n1/n6 interface to up.  Will not change routing
-//  At time 15s, call RecomputeRoutingTables() and traffic will start flowing 
-//    again on the original path
+//  At time 14s, re-enable the n1/n6 interface to up.  This will change 
+//    routing back to n1-n6 since the interface up notification will cause
+//    a new local interface route, at higher priority than global routing
+//  At time 15s, call RecomputeRoutingTables(), but there is no effect
+//    since global routing is lower in priority than static routing
 //  At time 16s, stop the second flow.  
 
 // - Tracing of queues and packet receptions to file "dynamic-global-routing.tr"
@@ -79,7 +81,6 @@
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/global-route-manager.h"
 
 using namespace ns3;
 
@@ -145,7 +146,7 @@ main (int argc, char *argv[])
 
   // Create router nodes, initialize routing database and set up the routing
   // tables in the nodes.
-  GlobalRouteManager::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
@@ -204,9 +205,9 @@ main (int argc, char *argv[])
   uint32_t ipv4ifIndex1 = 2;
 
   Simulator::Schedule (Seconds (2),&Ipv4::SetDown,ipv41, ipv4ifIndex1);
-  Simulator::Schedule (Seconds (3),&GlobalRouteManager::RecomputeRoutingTables);
+  Simulator::Schedule (Seconds (3),&Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
   Simulator::Schedule (Seconds (4),&Ipv4::SetUp,ipv41, ipv4ifIndex1);
-  Simulator::Schedule (Seconds (5),&GlobalRouteManager::RecomputeRoutingTables);
+  Simulator::Schedule (Seconds (5),&Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
 
   Ptr<Node> n6 = c.Get (6);
   Ptr<Ipv4> ipv46 = n6->GetObject<Ipv4> ();
@@ -214,14 +215,14 @@ main (int argc, char *argv[])
   // then the next p2p is numbered 2
   uint32_t ipv4ifIndex6 = 2;
   Simulator::Schedule (Seconds (6),&Ipv4::SetDown,ipv46, ipv4ifIndex6);
-  Simulator::Schedule (Seconds (7),&GlobalRouteManager::RecomputeRoutingTables);
+  Simulator::Schedule (Seconds (7),&Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
   Simulator::Schedule (Seconds (8),&Ipv4::SetUp,ipv46, ipv4ifIndex6);
-  Simulator::Schedule (Seconds (9),&GlobalRouteManager::RecomputeRoutingTables);
+  Simulator::Schedule (Seconds (9),&Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
 
   Simulator::Schedule (Seconds (12),&Ipv4::SetDown,ipv41, ipv4ifIndex1);
-  Simulator::Schedule (Seconds (13),&GlobalRouteManager::RecomputeRoutingTables);
+  Simulator::Schedule (Seconds (13),&Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
   Simulator::Schedule (Seconds (14),&Ipv4::SetUp,ipv41, ipv4ifIndex1);
-  Simulator::Schedule (Seconds (15),&GlobalRouteManager::RecomputeRoutingTables);
+  Simulator::Schedule (Seconds (15),&Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

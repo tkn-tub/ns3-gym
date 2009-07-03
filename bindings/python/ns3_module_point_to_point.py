@@ -172,10 +172,6 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
     cls.add_method('Receive', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')])
-    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetAddress(ns3::Mac48Address addr) [member function]
-    cls.add_method('SetAddress', 
-                   'void', 
-                   [param('ns3::Mac48Address', 'addr')])
     ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetFrameSize(uint16_t frameSize) [member function]
     cls.add_method('SetFrameSize', 
                    'void', 
@@ -200,6 +196,11 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::Channel >', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetAddress(ns3::Address address) [member function]
+    cls.add_method('SetAddress', 
+                   'void', 
+                   [param('ns3::Address', 'address')], 
+                   is_virtual=True)
     ## point-to-point-net-device.h: ns3::Address ns3::PointToPointNetDevice::GetAddress() const [member function]
     cls.add_method('GetAddress', 
                    'ns3::Address', 

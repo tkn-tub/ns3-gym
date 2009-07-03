@@ -1,0 +1,13 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('list-routing', ['node'])
+    module.source = [
+        'ipv4-list-routing.cc',
+        ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'list-routing'
+    headers.source = [
+        'ipv4-list-routing.h',
+        ]
+

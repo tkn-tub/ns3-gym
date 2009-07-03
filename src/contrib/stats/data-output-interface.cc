@@ -45,3 +45,15 @@ DataOutputInterface::DoDispose()
   Object::DoDispose();
   // end DataOutputInterface::DoDispose
 }
+
+void
+DataOutputInterface::SetFilePrefix(const std::string prefix)
+{
+  m_filePrefix = prefix;
+}
+
+std::string
+DataOutputInterface::GetFilePrefix() const
+{
+  return m_filePrefix;
+}

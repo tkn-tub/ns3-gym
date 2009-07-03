@@ -41,8 +41,8 @@
 #include "icmpv4-l4-protocol.h"
 #include "udp-l4-protocol.h"
 #include "tcp-l4-protocol.h"
-#include "ipv4-list-routing-impl.h"
-#include "ipv4-static-routing-impl.h"
+#include "ns3/ipv4-list-routing.h"
+#include "ns3/ipv4-static-routing.h"
 
 #include <string>
 #include <limits>
@@ -57,12 +57,10 @@ AddInternetStack (Ptr<Node> node)
   //IPV4
   Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
   //Routing for Ipv4
-  Ptr<Ipv4ListRoutingImpl> ipv4RoutingImpl = CreateObject<Ipv4ListRoutingImpl> ();
-  ipv4->SetRoutingProtocol (ipv4RoutingImpl);
-  ipv4RoutingImpl->SetNode (node);
-  Ptr<Ipv4StaticRoutingImpl> ipv4staticRoutingImpl = CreateObject<Ipv4StaticRoutingImpl> ();
-  ipv4staticRoutingImpl->SetNode (node);
-  ipv4RoutingImpl->AddRoutingProtocol (ipv4staticRoutingImpl, 0);
+  Ptr<Ipv4ListRouting> ipv4Routing = CreateObject<Ipv4ListRouting> ();
+  ipv4->SetRoutingProtocol (ipv4Routing);
+  Ptr<Ipv4StaticRouting> ipv4staticRouting = CreateObject<Ipv4StaticRouting> ();
+  ipv4Routing->AddRoutingProtocol (ipv4staticRouting, 0);
   node->AggregateObject(ipv4);
   //ICMP
   Ptr<Icmpv4L4Protocol> icmp = CreateObject<Icmpv4L4Protocol> ();
@@ -136,7 +134,7 @@ UdpSocketImplTest::RunTests (void)
   Ptr<SimpleNetDevice> rxDev1, rxDev2;
   { // first interface
     rxDev1 = CreateObject<SimpleNetDevice> ();
-    rxDev1->SetAddress (Mac48Address::Allocate ());
+    rxDev1->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
     rxNode->AddDevice (rxDev1);
     Ptr<Ipv4> ipv4 = rxNode->GetObject<Ipv4> ();
     uint32_t netdev_idx = ipv4->AddInterface (rxDev1);
@@ -147,7 +145,7 @@ UdpSocketImplTest::RunTests (void)
 
   { // second interface
     rxDev2 = CreateObject<SimpleNetDevice> ();
-    rxDev2->SetAddress (Mac48Address::Allocate ());
+    rxDev2->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
     rxNode->AddDevice (rxDev2);
     Ptr<Ipv4> ipv4 = rxNode->GetObject<Ipv4> ();
     uint32_t netdev_idx = ipv4->AddInterface (rxDev2);
@@ -162,7 +160,7 @@ UdpSocketImplTest::RunTests (void)
   Ptr<SimpleNetDevice> txDev1;
   {
     txDev1 = CreateObject<SimpleNetDevice> ();
-    txDev1->SetAddress (Mac48Address::Allocate ());
+    txDev1->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
     txNode->AddDevice (txDev1);
     Ptr<Ipv4> ipv4 = txNode->GetObject<Ipv4> ();
     uint32_t netdev_idx = ipv4->AddInterface (txDev1);
@@ -173,7 +171,7 @@ UdpSocketImplTest::RunTests (void)
   Ptr<SimpleNetDevice> txDev2;
   {
     txDev2 = CreateObject<SimpleNetDevice> ();
-    txDev2->SetAddress (Mac48Address::Allocate ());
+    txDev2->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
     txNode->AddDevice (txDev2);
     Ptr<Ipv4> ipv4 = txNode->GetObject<Ipv4> ();
     uint32_t netdev_idx = ipv4->AddInterface (txDev2);

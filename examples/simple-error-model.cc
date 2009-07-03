@@ -44,7 +44,6 @@
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/global-route-manager.h"
 
 using namespace ns3;
 
@@ -111,7 +110,7 @@ main (int argc, char *argv[])
   Ipv4InterfaceContainer i3i2 = ipv4.Assign (d3d2);
 
   NS_LOG_INFO ("Use global routing.");
-  GlobalRouteManager::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s

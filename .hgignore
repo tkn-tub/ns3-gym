@@ -29,3 +29,9 @@ doc/manual/manual.vr
 ^doc/manual/figures/.*pdf
 ^doc/manual/figures/.*png
 ^bindings/python/pybindgen/
+ms_print.*
+massif.*
+\.patch$
+\.diff$
+\.tr$
+\#[^\#/]+\#$

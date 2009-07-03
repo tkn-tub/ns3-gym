@@ -79,6 +79,46 @@ fragmentation and reassembly.
 <h2>Changes to existing API:</h2>
 <ul>
 
+<li><b>Ipv4Interface::GetMtu () deleted</b>
+  <p>The Ipv4Interface API is private to internet-stack module; this method
+was just a pass-through to GetDevice ()-&gt;GetMtu ().
+  </p>
+</li>
+
+<li><b>GlobalRouteManager::PopulateRoutingTables () and RecomputeRoutingTables () are deprecated </b>
+  <p>This API has been moved to the helper API and the above functions will
+be removed in ns-3.6.  The new API is:
+<pre>
+Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+Ipv4GlobalRoutingHelper::RecomputeRoutingTables ();
+</pre>
+Additionally, these low-level functions in GlobalRouteManager are now public,
+allowing more API flexibility at the low level ns-3 API:
+<pre>
+GlobalRouteManager::DeleteGlobalRoutes ();
+GlobalRouteManager::BuildGlobalRoutingDatabase ();
+GlobalRouteManager::InitializeRoutes ();
+</pre>
+  </p>
+</li>
+
+<li><b>CalcChecksum attribute changes</b>
+  <p>Four IPv4 CalcChecksum attributes (which enable the computation of 
+checksums that are disabled by default) have been collapsed into one global 
+value in class Node.  These four calls: 
+<pre>
+Config::SetDefault ("ns3::Ipv4L3Protocol::CalcChecksum", BooleanValue (true)); 
+Config::SetDefault ("ns3::Icmpv4L4Protocol::CalcChecksum", BooleanValue (true));
+Config::SetDefault ("ns3::TcpL4Protocol::CalcChecksum", BooleanValue (true));
+Config::SetDefault ("ns3::UdpL4Protocol::CalcChecksum", BooleanValue (true));
+</pre>
+are replaced by one call to:
+<pre>
+GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
+</pre>
+  </p>
+</li>
+
 <li><b>CreateObject changes</b>
   <p>CreateObject is now able to construct objects with a non-default constructor.
    If you used to pass attribute lists to CreateObject, you must now use CreateObjectWithAttributes.
@@ -118,16 +158,16 @@ fragmentation and reassembly.
 <p> 
 To accommodate support for the radiotap and prism headers in PCAP traces, the interface for promiscuos mode sniff in the wifi device was changed. The new implementation was heavily inspired by the way the madwifi driver handles monitor mode. A distinction between TX and RX events is introduced, to account for the fact that different information is to be put in the radiotap/prism header (e.g., RSSI and noise make sense only for RX packets). The following are the relevant modifications to the WifiPhy class:
 <pre>
--  void NotifyPromiscSniff (Ptr<const Packet> packet);
-+  void NotifyPromiscSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble, double signalDbm, double noiseDbm);
-+  void NotifyPromiscSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble);
--  TracedCallback<Ptr<const Packet> > m_phyPromiscSnifferTrace;
-+  TracedCallback<Ptr<const Packet>, uint16_t, uint32_t, bool, double, double> m_phyPromiscSniffRxTrace;
-+  TracedCallback<Ptr<const Packet>, uint16_t, uint32_t, bool> m_phyPromiscSniffTxTrace;
+-  void NotifyPromiscSniff (Ptr&lt;const Packet&gt; packet);
++  void NotifyPromiscSniffRx (Ptr&lt;const Packet&gt; packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble, double signalDbm, double noiseDbm);
++  void NotifyPromiscSniffTx (Ptr&lt;const Packet&gt; packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble);
+-  TracedCallback&lt;Ptr&lt;const Packet&gt; &gt; m_phyPromiscSnifferTrace;
++  TracedCallback&lt;Ptr&lt;const Packet&gt;, uint16_t, uint32_t, bool, double, double&gt; m_phyPromiscSniffRxTrace;
++  TracedCallback&lt;Ptr&lt;const Packet&gt;, uint16_t, uint32_t, bool&gt; m_phyPromiscSniffTxTrace;
 </pre>
 The above mentioned callbacks are expected to be used to call the following method to write Wifi PCAP traces in promiscuous mode:
 <pre>
-+  void WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble, bool isTx, double signalDbm, double noiseDbm);
++  void WriteWifiMonitorPacket(Ptr&lt;const Packet&gt; packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble, bool isTx, double signalDbm, double noiseDbm);
 </pre>
 In the above method, the isTx parameter is to be used to differentiate between TX and RX packets. For an example of how to implement these callbacks, see the implementation of PcapSniffTxEvent and PcapSniffRxEvent in src/helper/yans-wifi-helper.cc
 </p>
@@ -158,18 +198,18 @@ the general nature of these calls (synchronous routing lookup for
 locally originated packets, and an asynchronous, callback-based lookup
 for forwarded packets) is still the same.
 <pre>
--  typedef Callback&lt;void, bool, const Ipv4Route&, Ptr&lt;Packet&gt;, const Ipv4Header&&gt; RouteReplyCallback;
-+  typedef Callback&lt;void, Ptr&lt;Ipv4Route&gt;, Ptr&lt;const Packet&gt;, const Ipv4Header &&gt; UnicastForwardCallback;
-+  typedef Callback&lt;void, Ptr&lt;Ipv4MulticastRoute&gt;, Ptr&lt;const Packet&gt;, const Ipv4Header &&gt; MulticastForwardCallback;
-+  typedef Callback&lt;void, Ptr&lt;const Packet&gt;, const Ipv4Header &, uint32_t &gt; LocalDeliverCallback;
-+  typedef Callback&lt;void, Ptr&lt;const Packet&gt;, const Ipv4Header &&gt; ErrorCallback;
--  virtual bool RequestInterface (Ipv4Address destination, uint32_t& interface) = 0;
-+  virtual Ptr&lt;Ipv4Route&gt; RouteOutput (const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &errno) = 0;
+-  typedef Callback&lt;void, bool, const Ipv4Route&amp;, Ptr&lt;Packet&gt;, const Ipv4Header&amp;&gt; RouteReplyCallback;
++  typedef Callback&lt;void, Ptr&lt;Ipv4Route&gt;, Ptr&lt;const Packet&gt;, const Ipv4Header &amp;&gt; UnicastForwardCallback;
++  typedef Callback&lt;void, Ptr&lt;Ipv4MulticastRoute&gt;, Ptr&lt;const Packet&gt;, const Ipv4Header &amp;&gt; MulticastForwardCallback;
++  typedef Callback&lt;void, Ptr&lt;const Packet&gt;, const Ipv4Header &amp;, uint32_t &gt; LocalDeliverCallback;
++  typedef Callback&lt;void, Ptr&lt;const Packet&gt;, const Ipv4Header &amp;&gt; ErrorCallback;
+-  virtual bool RequestInterface (Ipv4Address destination, uint32_t&amp; interface) = 0;
++  virtual Ptr&lt;Ipv4Route&gt; RouteOutput (Ptr&lt;Packet&gt; p, const Ipv4Header &amp;header, uint32_t oif, Socket::SocketErrno &amp;errno) = 0;
 -  virtual bool RequestRoute (uint32_t interface,
--                            const Ipv4Header &ipHeader,
+-                            const Ipv4Header &amp;ipHeader,
 -                            Ptr&lt;Packet&gt; packet,
 -                            RouteReplyCallback routeReply) = 0;
-+  virtual bool RouteInput  (Ptr&lt;const Packet&gt; p, const Ipv4Header &header, Ptr&lt;const NetDevice&gt; idev,
++  virtual bool RouteInput  (Ptr&lt;const Packet&gt; p, const Ipv4Header &amp;header, Ptr&lt;const NetDevice&gt; idev,
 +                             UnicastForwardCallback ucb, MulticastForwardCallback mcb,
 +                             LocalDeliverCallback lcb, ErrorCallback ecb) = 0;
 </pre>
@@ -219,16 +259,16 @@ to an Ipv4 interface are instead named "interface".
 - static const uint32_t Ipv4RoutingProtocol::IF_INDEX_ANY = 0xffffffff;
 + static const uint32_t Ipv4RoutingProtocol::INTERFACE_ANY = 0xffffffff;
 
-- bool Ipv4RoutingProtocol::RequestIfIndex (Ipv4Address destination, uint32_t& ifIndex);
-+ bool Ipv4RoutingProtocol::RequestInterface (Ipv4Address destination, uint32_t& interface);
+- bool Ipv4RoutingProtocol::RequestIfIndex (Ipv4Address destination, uint32_t&amp; ifIndex);
++ bool Ipv4RoutingProtocol::RequestInterface (Ipv4Address destination, uint32_t&amp; interface);
 (N.B. this particular function is planned to be renamed to RouteOutput() in the
 proposed IPv4 routing refactoring)
 
 - uint32_t Ipv4::GetIfIndexByAddress (Ipv4Address addr, Ipv4Mask mask);
 + int_32t Ipv4::GetInterfaceForAddress (Ipv4Address address, Ipv4Mask mask) const;
 
-- bool Ipv4::GetIfIndexForDestination (Ipv4Address dest, uint32_t &ifIndex) const;
-+ bool Ipv4::GetInterfaceForDestination (Ipv4Address dest, uint32_t &interface) const;
+- bool Ipv4::GetIfIndexForDestination (Ipv4Address dest, uint32_t &amp;ifIndex) const;
++ bool Ipv4::GetInterfaceForDestination (Ipv4Address dest, uint32_t &amp;interface) const;
 (N.B. this function is not needed in the proposed Ipv4 routing refactoring)
 </pre>
 
@@ -246,13 +286,13 @@ proposed IPv4 routing refactoring)
   <li>Regarding legacy API usage, typically where you once did the following,
   using the public Ipv4 class interface (e.g.):
   <pre>
-  ipv4A->SetAddress (ifIndexA, Ipv4Address ("172.16.1.1"));
-  ipv4A->SetNetworkMask (ifIndexA, Ipv4Mask ("255.255.255.255"));
+  ipv4A-&gt;SetAddress (ifIndexA, Ipv4Address ("172.16.1.1"));
+  ipv4A-&gt;SetNetworkMask (ifIndexA, Ipv4Mask ("255.255.255.255"));
   </pre>
   you now do:
   <pre>
   Ipv4InterfaceAddress ipv4IfAddrA = Ipv4InterfaceAddress (Ipv4Address ("172.16.1.1"), Ipv4Mask ("255.255.255.255"));
-  ipv4A->AddAddress (ifIndexA, ipv4IfAddrA);
+  ipv4A-&gt;AddAddress (ifIndexA, ipv4IfAddrA);
   </pre>
   <li> At the helper API level, one often gets an address from an interface
   container.  We preserve the legacy GetAddress (uint32_t i) but it
@@ -270,16 +310,16 @@ Ipv4Address Ipv4InterfaceContainer::GetAddress (uint32_t i)
 <li><b>New WifiMacHelper objects</b>
 <p>The type of wifi MAC is now set by two new specific helpers, NqosWifiMacHelper for non QoS MACs and QosWifiMacHelper for Qos MACs. They are passed as argument to WifiHelper::Install methods.</li>
   <pre>
-- void WifiHelper::SetMac (std::string type, std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),...)
+- void WifiHelper::SetMac (std::string type, std::string n0 = "", const AttributeValue &amp;v0 = EmptyAttributeValue (),...)
 
-- NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
-+ NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &phyHelper, const WifiMacHelper &macHelper, NodeContainer c) const
+- NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &amp;phyHelper, NodeContainer c) const
++ NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &amp;phyHelper, const WifiMacHelper &amp;macHelper, NodeContainer c) const
 
-- NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &phy, Ptr&lt;Node&gt; node) const
-+ NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &phy, const WifiMacHelper &mac, Ptr&lt;Node&gt; node) const
+- NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &amp;phy, Ptr&lt;Node&gt; node) const
++ NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &amp;phy, const WifiMacHelper &amp;mac, Ptr&lt;Node&gt; node) const
 
-- NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &phy, std::string nodeName) const
-+ NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &phy, const WifiMacHelper &mac, std::string nodeName) const
+- NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &amp;phy, std::string nodeName) const
++ NetDeviceContainer WifiHelper::Install (const WifiPhyHelper &amp;phy, const WifiMacHelper &amp;mac, std::string nodeName) const
   </pre>
   See src/helper/nqos-wifi-mac-helper.h and src/helper/qos-wifi-mac-helper.h for more details.
   </p>
@@ -311,7 +351,7 @@ the regression tests.</li>
 
 <h2>New API:</h2>
 <ul>
-<li>XML support has been added to the ConfigStore in /src/contrib/config-store.cc</li>
+<li>XML support has been added to the ConfigStore in src/contrib/config-store.cc</li>
 
 <li>The ns-2 calendar queue scheduler option has been ported to src/simulator</li>
 
@@ -548,15 +588,15 @@ bug 273: constify packet pointers.<br>
 The normal and the promiscuous receive callbacks of the NetDevice API
 have been changed from:
 <pre>
-Callback<bool,Ptr<NetDevice>,Ptr<Packet>,uint16_t,const Address &>
-Callback<bool,Ptr<NetDevice>, Ptr<Packet>, uint16_t,
-         const Address &, const Address &, enum PacketType >
+Callback&lt;bool,Ptr&lt;NetDevice&gt;,Ptr&lt;Packet&gt;,uint16_t,const Address &amp;&gt;
+Callback&lt;bool,Ptr&lt;NetDevice&gt;, Ptr&lt;Packet&gt;, uint16_t,
+         const Address &amp;, const Address &amp;, enum PacketType &gt;
 </pre>
 to:
 <pre>
-Callback<bool,Ptr<NetDevice>,Ptr<const Packet>,uint16_t,const Address &>
-Callback<bool,Ptr<NetDevice>, Ptr<const Packet>, uint16_t,
-         const Address &, const Address &, enum PacketType >
+Callback&lt;bool,Ptr&lt;NetDevice&gt;,Ptr&lt;const Packet&gt;,uint16_t,const Address &amp;&gt;
+Callback&lt;bool,Ptr&lt;NetDevice&gt;, Ptr&lt;const Packet&gt;, uint16_t,
+         const Address &amp;, const Address &amp;, enum PacketType &gt;
 </pre>
 to avoid the kind of bugs reported in 
 <a href="http://www.nsnam.org/bugzilla/show_bug.cgi?id=273">bug 273</a>.
@@ -625,7 +665,7 @@ public:
 - void SetPort (uint16_t port); 
 + UdpEchoServerHelper (uint16_t port);
 + 
-+ void SetAttribute (std::string name, const AttributeValue &value);
++ void SetAttribute (std::string name, const AttributeValue &amp;value);
 ApplicationContainer Install (NodeContainer c);
 
 class UdpEchoClientHelper
@@ -634,8 +674,8 @@ public:
 - UdpEchoClientHelper ();
 + UdpEchoClientHelper (Ipv4Address ip, uint16_t port);
 - void SetRemote (Ipv4Address ip, uint16_t port);
-- void SetAppAttribute (std::string name, const AttributeValue &value);
-+ void SetAttribute (std::string name, const AttributeValue &value);
+- void SetAppAttribute (std::string name, const AttributeValue &amp;value);
++ void SetAttribute (std::string name, const AttributeValue &amp;value);
 ApplicationContainer Install (NodeContainer c);
 </pre>
 </li>

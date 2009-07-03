@@ -43,7 +43,7 @@ Ipv4Interface::GetTypeId (void)
                    "The arp cache for this ipv4 interface",
                    PointerValue (0),
                    MakePointerAccessor (&Ipv4Interface::m_cache),
-                   MakePointerChecker<Ipv4Interface> ())
+                   MakePointerChecker<ArpCache> ())
     ;
     ;
   return tid;
@@ -56,6 +56,7 @@ Ipv4Interface::GetTypeId (void)
  */
 Ipv4Interface::Ipv4Interface () 
   : m_ifup (false),
+    m_forwarding (true),
     m_metric (1),
     m_node (0), 
     m_device (0),
@@ -127,13 +128,6 @@ Ipv4Interface::GetMetric (void) const
   return m_metric;
 }
 
-uint16_t 
-Ipv4Interface::GetMtu (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_device->GetMtu ();
-}
-
 /**
  * These are IP interface states and may be distinct from 
  * NetDevice states, such as found in real implementations
@@ -165,6 +159,20 @@ Ipv4Interface::SetDown (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_ifup = false;
+}
+
+bool 
+Ipv4Interface::IsForwarding (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_forwarding;
+}
+
+void 
+Ipv4Interface::SetForwarding (bool val)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_forwarding = val;
 }
 
 void
@@ -262,13 +270,12 @@ Ipv4Interface::GetNAddresses (void) const
   return m_ifaddrs.size();
 }
 
-uint32_t
+bool
 Ipv4Interface::AddAddress (Ipv4InterfaceAddress addr)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  uint32_t index = m_ifaddrs.size ();
   m_ifaddrs.push_back (addr);
-  return index;
+  return true;
 }
 
 Ipv4InterfaceAddress
@@ -292,7 +299,7 @@ Ipv4Interface::GetAddress (uint32_t index) const
   return (addr);  // quiet compiler
 }
 
-void
+Ipv4InterfaceAddress
 Ipv4Interface::RemoveAddress (uint32_t index)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -306,12 +313,15 @@ Ipv4Interface::RemoveAddress (uint32_t index)
     {
       if (tmp  == index)
         {
+          Ipv4InterfaceAddress addr = *i;
           m_ifaddrs.erase (i);
-          return;
+          return addr;
         }
        ++tmp;
     }
   NS_ASSERT_MSG (false, "Address " << index << " not found");
+  Ipv4InterfaceAddress addr;
+  return (addr);  // quiet compiler
 }
 
 }; // namespace ns3

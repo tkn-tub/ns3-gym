@@ -85,6 +85,8 @@ def register_types(module):
     module.add_class('UnsafeAttributeList')
     ## random-variable.h: ns3::WeibullVariable [class]
     module.add_class('WeibullVariable', parent=root_module['ns3::RandomVariable'])
+    ## random-variable.h: ns3::ZipfVariable [class]
+    module.add_class('ZipfVariable', parent=root_module['ns3::RandomVariable'])
     ## empty.h: ns3::empty [class]
     module.add_class('empty')
     ## attribute.h: ns3::AttributeAccessor [class]
@@ -260,6 +262,7 @@ def register_methods(root_module):
     register_Ns3UniformVariable_methods(root_module, root_module['ns3::UniformVariable'])
     register_Ns3UnsafeAttributeList_methods(root_module, root_module['ns3::UnsafeAttributeList'])
     register_Ns3WeibullVariable_methods(root_module, root_module['ns3::WeibullVariable'])
+    register_Ns3ZipfVariable_methods(root_module, root_module['ns3::ZipfVariable'])
     register_Ns3Empty_methods(root_module, root_module['ns3::empty'])
     register_Ns3AttributeAccessor_methods(root_module, root_module['ns3::AttributeAccessor'])
     register_Ns3AttributeChecker_methods(root_module, root_module['ns3::AttributeChecker'])
@@ -1178,6 +1181,15 @@ def register_Ns3WeibullVariable_methods(root_module, cls):
     cls.add_constructor([param('double', 'm'), param('double', 's')])
     ## random-variable.h: ns3::WeibullVariable::WeibullVariable(double m, double s, double b) [constructor]
     cls.add_constructor([param('double', 'm'), param('double', 's'), param('double', 'b')])
+    return
+
+def register_Ns3ZipfVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::ZipfVariable::ZipfVariable(ns3::ZipfVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ZipfVariable const &', 'arg0')])
+    ## random-variable.h: ns3::ZipfVariable::ZipfVariable(long int n, double alpha) [constructor]
+    cls.add_constructor([param('long int', 'n'), param('double', 'alpha')])
+    ## random-variable.h: ns3::ZipfVariable::ZipfVariable() [constructor]
+    cls.add_constructor([])
     return
 
 def register_Ns3Empty_methods(root_module, cls):

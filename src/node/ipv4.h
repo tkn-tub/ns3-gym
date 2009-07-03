@@ -24,7 +24,6 @@
 #include "ns3/object.h"
 #include "ns3/socket.h"
 #include "ns3/callback.h"
-#include "ipv4-routing-protocol.h"
 #include "ipv4-address.h"
 #include "ipv4-interface-address.h"
 
@@ -33,6 +32,7 @@ namespace ns3 {
 class Node;
 class NetDevice;
 class Packet;
+class Ipv4RoutingProtocol;
 
 /**
  * \ingroup node
@@ -159,9 +159,9 @@ public:
   /**
    * \param interface Interface number of an Ipv4 interface
    * \param address Ipv4InterfaceAddress address to associate with the underlying Ipv4 interface
-   * \returns The address index of the newly-added address
+   * \returns true if the operation succeeded
    */
-  virtual uint32_t AddAddress (uint32_t interface, Ipv4InterfaceAddress address) = 0;
+  virtual bool AddAddress (uint32_t interface, Ipv4InterfaceAddress address) = 0;
 
   /**
    * \param interface Interface number of an Ipv4 interface
@@ -170,11 +170,26 @@ public:
   virtual uint32_t GetNAddresses (uint32_t interface) const = 0;
 
   /**
+   * Because addresses can be removed, the addressIndex is not guaranteed
+   * to be static across calls to this method.
+   * 
    * \param interface Interface number of an Ipv4 interface
    * \param addressIndex index of Ipv4InterfaceAddress 
    * \returns the Ipv4InterfaceAddress associated to the interface and addresIndex
    */
   virtual Ipv4InterfaceAddress GetAddress (uint32_t interface, uint32_t addressIndex) const = 0;
+
+  /**
+   * Remove the address at addressIndex on named interface.  The addressIndex
+   * for all higher indices will decrement by one after this method is called;
+   * so, for example, to remove 5 addresses from an interface i, one could
+   * call RemoveAddress (i, 0); 5 times.  
+   * 
+   * \param interface Interface number of an Ipv4 interface
+   * \param addressIndex index of Ipv4InterfaceAddress to remove 
+   * \returns true if the operation succeeded
+   */
+  virtual bool RemoveAddress (uint32_t interface, uint32_t addressIndex) = 0;
 
   /**
    * \param interface The interface number of an Ipv4 interface
@@ -219,6 +234,20 @@ public:
    * ignored during Ipv4 forwarding.
    */
   virtual void SetDown (uint32_t interface) = 0;
+
+  /**
+   * \param interface Interface number of Ipv4 interface
+   * \returns true if IP forwarding enabled for input datagrams on this device
+   */
+  virtual bool IsForwarding (uint32_t interface) const = 0;
+
+  /**
+   * \param interface Interface number of Ipv4 interface
+   * \param val Value to set the forwarding flag
+   * 
+   * If set to true, IP forwarding is enabled for input datagrams on this device
+   */
+  virtual void SetForwarding (uint32_t interface, bool val) = 0;
 
   static const uint32_t IF_ANY = 0xffffffff;
 

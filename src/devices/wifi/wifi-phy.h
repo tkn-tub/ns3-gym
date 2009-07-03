@@ -309,7 +309,7 @@ public:
    * on a nearby channel.
    * @param rate the PHY data rate in units of 500kbps (i.e., the same
    * units used both for the radiotap and for the prism header) 
-   * @param isPreambleShort true if short preamble is used, false otherwise
+   * @param isShortPreamble true if short preamble is used, false otherwise
    * @param signalDbm signal power in dBm
    * @param noiseDbm  noise power in dBm
    */
@@ -331,7 +331,7 @@ public:
    * on a nearby channel.
    * @param rate the PHY data rate in units of 500kbps (i.e., the same
    * units used both for the radiotap and for the prism header) 
-   * @param isPreambleShort true if short preamble is used, false otherwise
+   * @param isShortPreamble true if short preamble is used, false otherwise
    */
   void NotifyPromiscSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble);
   

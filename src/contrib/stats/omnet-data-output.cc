@@ -34,9 +34,10 @@ NS_LOG_COMPONENT_DEFINE("OmnetDataOutput");
 
 //--------------------------------------------------------------
 //----------------------------------------------
-OmnetDataOutput::OmnetDataOutput() :
-  m_filePrefix("data")
+OmnetDataOutput::OmnetDataOutput()
 {
+  m_filePrefix = "data";
+
   NS_LOG_FUNCTION_NOARGS();
 }
 OmnetDataOutput::~OmnetDataOutput()
@@ -50,17 +51,6 @@ OmnetDataOutput::DoDispose()
 
   DataOutputInterface::DoDispose();
   // end OmnetDataOutput::DoDispose
-}
-
-void
-OmnetDataOutput::SetFilePrefix(const std::string prefix)
-{
-  m_filePrefix = prefix;
-}
-std::string
-OmnetDataOutput::GetFilePrefix() const
-{
-  return m_filePrefix;
 }
 
 //----------------------------------------------

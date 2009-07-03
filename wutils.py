@@ -136,7 +136,15 @@ def run_argv(argv, env, os_env=None, cwd=None, force_no_valgrind=False):
         if retval == 0 and error:
             retval = 1
     else:
-        retval = subprocess.Popen(argv, env=proc_env, cwd=cwd).wait()
+        try:
+            WindowsError
+        except NameError:
+            retval = subprocess.Popen(argv, env=proc_env, cwd=cwd).wait()
+        else:
+            try:
+                retval = subprocess.Popen(argv, env=proc_env, cwd=cwd).wait()
+            except WindowsError, ex:
+                raise Utils.WafError("Command %s raised exception %s" % (argv, ex))
     if retval:
         raise Utils.WafError("Command %s exited with code %i" % (argv, retval))
     return retval
@@ -151,6 +159,7 @@ def get_run_program(program_string, command_template=None):
 
     if command_template in (None, '%s'):
         argv = shlex.split(program_string)
+        #print "%r ==shlex.split==> %r" % (program_string, argv)
         program_name = argv[0]
 
         try:
@@ -180,7 +189,9 @@ def get_run_program(program_string, command_template=None):
         #except AttributeError:
         #    raise Utils.WafError("%s does not appear to be a program" % (program_name,))
 
-        execvec = shlex.split(command_template % (program_node.abspath(env),))
+        tmpl = command_template % (program_node.abspath(env),)
+        execvec = shlex.split(tmpl.replace('\\', '\\\\'))
+        #print "%r ==shlex.split==> %r" % (command_template % (program_node.abspath(env),), execvec)
     return program_name, execvec
 
 def run_program(program_string, env, command_template=None, cwd=None):

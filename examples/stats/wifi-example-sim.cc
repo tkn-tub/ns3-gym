@@ -54,9 +54,8 @@ NS_LOG_COMPONENT_DEFINE ("WiFiDistanceExperiment");
 
 
 void TxCallback(Ptr<CounterCalculator<uint32_t> > datac,
-                std::string path, Ptr<const Packet> packet,
-                Mac48Address realto) {
-  NS_LOG_INFO("Sent frame to " << realto << "; counted in " <<
+                std::string path, Ptr<const Packet> packet) {
+  NS_LOG_INFO("Sent frame counted in " <<
               datac->GetKey());
   datac->Update();
   // end TxCallback
@@ -201,7 +200,7 @@ int main(int argc, char *argv[]) {
   Ptr<CounterCalculator<uint32_t> > totalTx =
     CreateObject<CounterCalculator<uint32_t> >();
   totalTx->SetKey("wifi-tx-frames");
-  Config::Connect("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/Tx",
+  Config::Connect("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/Mac/MacTx",
                   MakeBoundCallback(&TxCallback, totalTx));
   data.AddDataCalculator(totalTx);
 
@@ -212,9 +211,9 @@ int main(int argc, char *argv[]) {
   Ptr<PacketCounterCalculator> totalRx =
     CreateObject<PacketCounterCalculator>();
   totalRx->SetKey("wifi-rx-frames");
-  Config::Connect("/NodeList/1/DeviceList/*/$ns3::WifiNetDevice/Rx",
-                  MakeCallback(&PacketCounterCalculator::FrameUpdate,
-                                    totalRx));
+  Config::Connect("/NodeList/1/DeviceList/*/$ns3::WifiNetDevice/Mac/MacRx",
+                  MakeCallback(&PacketCounterCalculator::PacketUpdate,
+                               totalRx));
   data.AddDataCalculator(totalRx);
 
 

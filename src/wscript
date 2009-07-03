@@ -29,6 +29,8 @@ all_modules = (
     'applications/udp-echo',
     'routing/olsr',
     'routing/global-routing',
+    'routing/static-routing',
+    'routing/list-routing',
     'mobility',
     'devices/wifi',
     'helper',

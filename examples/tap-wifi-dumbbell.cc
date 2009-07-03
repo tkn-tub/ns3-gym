@@ -114,7 +114,6 @@
 #include "ns3/core-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/global-routing-module.h"
 
 using namespace ns3;
 
@@ -132,11 +131,7 @@ main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
-
-  Config::SetDefault ("ns3::Ipv4L3Protocol::CalcChecksum", BooleanValue (true)); 
-  Config::SetDefault ("ns3::Icmpv4L4Protocol::CalcChecksum", BooleanValue (true)); 
-  Config::SetDefault ("ns3::TcpL4Protocol::CalcChecksum", BooleanValue (true)); 
-  Config::SetDefault ("ns3::UdpL4Protocol::CalcChecksum", BooleanValue (true)); 
+  GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
 
   //
   // The topology has a Wifi network of four nodes on the left side.  We'll make
@@ -231,8 +226,8 @@ main (int argc, char *argv[])
   apps = sink.Install (nodesRight.Get (0));
   apps.Start (Seconds (1.0));
 
-  CsmaHelper::EnablePcapAll ("tap-dumbbell", false);
-  GlobalRouteManager::PopulateRoutingTables ();
+  CsmaHelper::EnablePcapAll ("tap-wifi-dumbbell", false);
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   Simulator::Stop (Seconds (60.));
   Simulator::Run ();

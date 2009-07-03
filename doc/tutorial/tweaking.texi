@@ -89,7 +89,8 @@ that knowledge to get some interesting information out of the
 @subsection Enabling Logging
 @cindex NS_LOG
 Let's use the NS_LOG environment variable to turn on some more logging, but
-to get our bearings, go ahead and run the script just as you did previously,
+first, just to get our bearings, go ahead and run the last script just as you 
+did previously,
 
 @verbatim
   ./waf --run scratch/myfirst
@@ -99,8 +100,9 @@ You should see the now familiar output of the first @command{ns-3} example
 program
 
 @verbatim
-  Entering directory `repos/ns-3-dev/build'
-  Compilation finished successfully
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (0.413s)
   Sent 1024 bytes to 10.1.1.2
   Received 1024 bytes from 10.1.1.1
   Received 1024 bytes from 10.1.1.2
@@ -148,15 +150,17 @@ you run the script with NS_LOG set this way, the @command{ns-3} logging
 system will pick up the change and you should see the following output:
 
 @verbatim
-  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
-  Build finished successfully (00:00:00)
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (0.404s)
   UdpEchoClientApplication:UdpEchoClient()
+  UdpEchoClientApplication:SetDataSize(1024)
   UdpEchoClientApplication:StartApplication()
   UdpEchoClientApplication:ScheduleTransmit()
   UdpEchoClientApplication:Send()
   Sent 1024 bytes to 10.1.1.2
   Received 1024 bytes from 10.1.1.1
-  UdpEchoClientApplication:HandleRead(0x638180, 0x6389b0)
+  UdpEchoClientApplication:HandleRead(0x6241e0, 0x624a20)
   Received 1024 bytes from 10.1.1.2
   UdpEchoClientApplication:StopApplication()
   UdpEchoClientApplication:DoDispose()
@@ -186,7 +190,7 @@ logging component name from the class name.
 It turns out that in some cases, it can be hard to determine which method
 actually generates a log message.  If you look in the text above, you may
 wonder where the string ``@code{Received 1024 bytes from 10.1.1.2}'' comes
-from.  You can resolve this by ORing the @code{prefix_func} level into the
+from.  You can resolve this by OR'ing the @code{prefix_func} level into the
 @code{NS_LOG} environment variable.  Try doing the following,
 
 @verbatim
@@ -201,15 +205,17 @@ that every message from the given log component is prefixed with the component
 name.
 
 @verbatim
-  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
-  Build finished successfully (00:00:00)
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (0.417s)
   UdpEchoClientApplication:UdpEchoClient()
+  UdpEchoClientApplication:SetDataSize(1024)
   UdpEchoClientApplication:StartApplication()
   UdpEchoClientApplication:ScheduleTransmit()
   UdpEchoClientApplication:Send()
   UdpEchoClientApplication:Send(): Sent 1024 bytes to 10.1.1.2
   Received 1024 bytes from 10.1.1.1
-  UdpEchoClientApplication:HandleRead(0x638180, 0x6389b0)
+  UdpEchoClientApplication:HandleRead(0x6241e0, 0x624a20)
   UdpEchoClientApplication:HandleRead(): Received 1024 bytes from 10.1.1.2
   UdpEchoClientApplication:StopApplication()
   UdpEchoClientApplication:DoDispose()
@@ -236,10 +242,12 @@ echo client and server applications.  You may see that this can be very useful
 in debugging problems.
 
 @verbatim
-  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
-  Build finished successfully (00:00:00)
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (0.406s)
   UdpEchoServerApplication:UdpEchoServer()
   UdpEchoClientApplication:UdpEchoClient()
+  UdpEchoClientApplication:SetDataSize(1024)
   UdpEchoServerApplication:StartApplication()
   UdpEchoClientApplication:StartApplication()
   UdpEchoClientApplication:ScheduleTransmit()
@@ -247,7 +255,7 @@ in debugging problems.
   UdpEchoClientApplication:Send(): Sent 1024 bytes to 10.1.1.2
   UdpEchoServerApplication:HandleRead(): Received 1024 bytes from 10.1.1.1
   UdpEchoServerApplication:HandleRead(): Echoing packet
-  UdpEchoClientApplication:HandleRead(0x638320, 0x638b50)
+  UdpEchoClientApplication:HandleRead(0x624920, 0x625160)
   UdpEchoClientApplication:HandleRead(): Received 1024 bytes from 10.1.1.2
   UdpEchoServerApplication:StopApplication()
   UdpEchoClientApplication:StopApplication()
@@ -269,10 +277,12 @@ Again, you will have to remove the newline above.  If you run the script now,
 you should see the following output:
 
 @verbatim
-  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
-  Build finished successfully (00:00:00)
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (0.418s)
   0s UdpEchoServerApplication:UdpEchoServer()
   0s UdpEchoClientApplication:UdpEchoClient()
+  0s UdpEchoClientApplication:SetDataSize(1024)
   1s UdpEchoServerApplication:StartApplication()
   2s UdpEchoClientApplication:StartApplication()
   2s UdpEchoClientApplication:ScheduleTransmit()
@@ -280,7 +290,7 @@ you should see the following output:
   2s UdpEchoClientApplication:Send(): Sent 1024 bytes to 10.1.1.2
   2.00369s UdpEchoServerApplication:HandleRead(): Received 1024 bytes from 10.1.1.1
   2.00369s UdpEchoServerApplication:HandleRead(): Echoing packet
-  2.00737s UdpEchoClientApplication:HandleRead(0x638490, 0x638cc0)
+  2.00737s UdpEchoClientApplication:HandleRead(0x624290, 0x624ad0)
   2.00737s UdpEchoClientApplication:HandleRead(): Received 1024 bytes from 10.1.1.2
   10s UdpEchoServerApplication:StopApplication()
   10s UdpEchoClientApplication:StopApplication()
@@ -292,22 +302,22 @@ you should see the following output:
 
 You can see that the constructor for the UdpEchoServer was called at a 
 simulation time of 0 seconds.  This is actually happening before the 
-simulation starts.  The same for the UdpEchoClient constructor.
+simulation starts, but the time is displayed as zero seconds.  The same is true
+for the UdpEchoClient constructor message.
 
 Recall that the @code{scratch/first.cc} script started the echo server 
 application at one second into the simulation.  You can now see that the 
-@code{StartApplication} method of the server is, in fact, called at one second
-(or one billion nanoseconds).  You can also see that the echo client 
-application is started at a simulation time of two seconds as we requested in
-the script.
+@code{StartApplication} method of the server is, in fact, called at one second.
+You can also see that the echo client application is started at a simulation 
+time of two seconds as we requested in the script.
 
 You can now follow the progress of the simulation from the 
 @code{ScheduleTransmit} call in the client that calls @code{Send} to the 
 @code{HandleRead} callback in the echo server application.  Note that the 
-elapsed time as the packet is sent across the point-to-point link is 3.6864
+elapsed time for the packet to be sent across the point-to-point link is 3.69
 milliseconds.  You see the echo server logging a message telling you that it
-has echoed the packet and then, after a delay, you see the echo client receive
-the echoed packet in its @code{HandleRead} method.
+has echoed the packet and then, after another channel delay, you see the echo
+client receive the echoed packet in its @code{HandleRead} method.
 
 There is a lot that is happening under the covers in this simulation that you
 are not seeing as well.  You can very easily follow the entire process by
@@ -320,7 +330,7 @@ turning on all of the logging components in the system.  Try setting the
 
 The asterisk above is the logging component wildcard.  This will turn on all 
 of the logging in all of the components used in the simulation.  I won't 
-reproduce the output here (as of this writing it produces 974 lines of output
+reproduce the output here (as of this writing it produces 1265 lines of output
 for the single packet echo) but you can redirect this information into a file 
 and look through it with your favorite editor if you like,
 
@@ -328,15 +338,16 @@ and look through it with your favorite editor if you like,
   ./waf --run scratch/myfirst > log.out 2>&1
 @end verbatim
 
-I personally use this volume of logging quite a bit when I am presented with 
-a problem and I have no idea where things are going wrong.  I can follow the 
+I personally use this extremely verbose version of logging when I am presented 
+with a problem and I have no idea where things are going wrong.  I can follow the 
 progress of the code quite easily without having to set breakpoints and step 
-through code in a debugger.  When I have a general idea about what is going 
-wrong, I transition into a debugger for fine-grained examination of the 
-problem.  This kind of output can be especially useful when your script does 
-something completely unexpected.  If you are stepping using a debugger you
-may miss an unexpected excursion completely.  Logging the excursion makes it
-quickly visible.
+through code in a debugger.  I can just edit up the output in my favorite editor
+and search around for things I expect, and see things happening that I don't 
+expect.  When I have a general idea about what is going wrong, I transition into
+a debugger for a fine-grained examination of the problem.  This kind of output 
+can be especially useful when your script does something completely unexpected.
+If you are stepping using a debugger you may miss an unexpected excursion 
+completely.  Logging the excursion makes it quickly visible.
 
 @node Adding Logging to your Code
 @subsection Adding Logging to your Code
@@ -399,8 +410,9 @@ If you now run the script you will see your new ``Creating Topology'' log
 message,
 
 @verbatim
-  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
-  Build finished successfully (00:00:00)
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (0.404s)
   Creating Topology
   Sent 1024 bytes to 10.1.1.2
   Received 1024 bytes from 10.1.1.1
@@ -453,8 +465,11 @@ sort out which program gets which argument.  The command line parser will
 now see the @code{--PrintHelp} argument and respond with,
 
 @verbatim
-  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
-  Build finished successfully (00:00:00)
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (0.413s)
+  TcpL4Protocol:TcpStateMachine()
+  CommandLine:HandleArgument(): Handle arg name=PrintHelp value=
   --PrintHelp: Print this help message.
   --PrintGroups: Print the list of groups.
   --PrintTypeIds: Print all TypeIds.
@@ -527,7 +542,9 @@ time prefix.
 If you run the script, you should now see the following output,
 
 @verbatim
-  Build finished successfully (00:00:00)
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (0.405s)
   0s UdpEchoServerApplication:UdpEchoServer()
   1s UdpEchoServerApplication:StartApplication()
   Sent 1024 bytes to 10.1.1.2
@@ -589,8 +606,9 @@ in which case we recover the timing we had when we explicitly set the
 @code{DataRate} and @code{Delay} in the script:
 
 @verbatim
-  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
-  Build finished successfully (00:00:00)
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/bu
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/bui
+  'build' finished successfully (0.417s)
   0s UdpEchoServerApplication:UdpEchoServer()
   1s UdpEchoServerApplication:StartApplication()
   Sent 1024 bytes to 10.1.1.2
@@ -608,13 +626,13 @@ In particular we could set the @code{UdpEchoClient Attribute MaxPackets}
 to some other value than one.
 
 How would you go about that?  Give it a try.  Remember you have to comment 
-out the place we override the default @code{Attribute} in the script.  Then you 
-have to rebuild the script using the default.  You will also have to find the
-syntax for actually setting the new default atribute value using the command
-line help facility.  Once you have this figured out you should be able to
-control the number of packets echoed from the command line.  Since we're nice
-folks, we'll tell you that your command line should end up looking something
-like,
+out the place we override the default @code{Attribute} and explicitly set 
+@code{MaxPackets} in the script.  Then you have to rebuild the script.  You 
+will also have to find the syntax for actually setting the new default atribute
+value using the command line help facility.  Once you have this figured out 
+you should be able to control the number of packets echoed from the command 
+line.  Since we're nice folks, we'll tell you that your command line should 
+end up looking something like,
 
 @verbatim
   ./waf --run "scratch/myfirst 
@@ -666,8 +684,9 @@ Try,
 @end verbatim
 
 @verbatim
-  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
-  Build finished successfully (00:00:00)
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (0.403s)
   --PrintHelp: Print this help message.
   --PrintGroups: Print the list of groups.
   --PrintTypeIds: Print all TypeIds.
@@ -688,8 +707,9 @@ setting the @code{--nPackets} argument in the command line,
 You should now see
 
 @verbatim
-  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
-  Build finished successfully (00:00:00)
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  'build' finished successfully (0.404s)
   0s UdpEchoServerApplication:UdpEchoServer()
   1s UdpEchoServerApplication:StartApplication()
   Sent 1024 bytes to 10.1.1.2
@@ -705,7 +725,7 @@ You should now see
   UdpEchoServerApplication:~UdpEchoServer()
 @end verbatim
 
-You have now echoed two packets.
+You have now echoed two packets.  Pretty easy, isn't it?
 
 You can see that if you are an @command{ns-3} user, you can use the command 
 line argument system to control global values and @code{Attributes}.  If you are
@@ -827,7 +847,7 @@ You can now build the script and run it from the command line:
 
 @cindex myfirst.tr
 Just as you have seen many times before, you will see some messages from Waf and then
-the ``Build finished successfully'' with some number of messages from 
+``'build' finished successfully'' with some number of messages from 
 the running program.  
 
 When it ran, the program will have created a file named @code{myfirst.tr}.  

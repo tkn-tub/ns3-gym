@@ -114,17 +114,11 @@ public:
                 PacketType packetType);
 
 
-  /**
-   * Set the MAC address of the the network device.
-   *
-   * \param addr The Address to use as the address of the device.
-   */
-  void SetAddress (Address addr);
-
   // inherited from NetDevice base class.
   virtual void SetIfIndex(const uint32_t index);
   virtual uint32_t GetIfIndex(void) const;
   virtual Ptr<Channel> GetChannel (void) const;
+  virtual void SetAddress (Address address);
   virtual Address GetAddress (void) const;
   virtual uint16_t GetMtu (void) const;
   virtual bool IsLinkUp (void) const;

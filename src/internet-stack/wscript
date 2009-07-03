@@ -74,14 +74,13 @@ def build(bld):
     obj.source = [
         'tcp-test.cc',
         'udp-test.cc',
+        'ipv4-test.cc',
         'ipv4-l4-protocol.cc',
         'udp-header.cc',
         'tcp-header.cc',
         'ipv4-checksum.cc',
         'ipv4-interface.cc',
         'ipv4-l3-protocol.cc',
-        'ipv4-static-routing-impl.cc',
-        'ipv4-list-routing-impl.cc',
         'ipv4-end-point.cc',
         'udp-l4-protocol.cc',
         'tcp-l4-protocol.cc',
@@ -109,8 +108,6 @@ def build(bld):
         'udp-header.h',
         'tcp-header.h',
         'sequence-number.h',
-        'ipv4-list-routing-impl.h',
-        'ipv4-static-routing-impl.h',
         'icmpv4.h',
         ]
 

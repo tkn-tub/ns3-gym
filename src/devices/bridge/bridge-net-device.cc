@@ -278,6 +278,13 @@ BridgeNetDevice::GetChannel (void) const
   return m_channel;
 }
 
+void
+BridgeNetDevice::SetAddress (Address address)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_address = Mac48Address::ConvertFrom (address);
+}
+
 Address 
 BridgeNetDevice::GetAddress (void) const
 {

@@ -36,6 +36,7 @@
 namespace ns3 {
 
 class GlobalRouter;
+class Ipv4GlobalRouting;
 
 /**
  * @brief A single link record for a link state advertisement.
@@ -476,6 +477,18 @@ public:
  */
   void SetStatus (SPFStatus status);
 
+/**
+ * @brief Get the Node pointer of the node that originated this LSA
+ * @returns Node pointer
+ */
+  Ptr<Node> GetNode (void) const;
+
+/**
+ * @brief Set the Node pointer of the node that originated this LSA
+ * @param node Node pointer
+ */
+  void SetNode (Ptr<Node> node);
+
 private:
 /**
  * The type of the LSA.  Each LSA type has a separate advertisement
@@ -544,6 +557,7 @@ private:
  * proper position in the tree.
  */
   SPFStatus m_status;
+  uint32_t m_node_id;
 };
 
 std::ostream& operator<< (std::ostream& os, GlobalRoutingLSA& lsa);
@@ -571,6 +585,10 @@ public:
  * @brief Create a Global Router class 
  */
   GlobalRouter ();
+
+
+  void SetRoutingProtocol (Ptr<Ipv4GlobalRouting> routing);
+  Ptr<Ipv4GlobalRouting> GetRoutingProtocol (void);
 
 /**
  * @brief Get the Router ID associated with this Global Router.
@@ -660,6 +678,7 @@ private:
   ListOfLSAs_t m_LSAs;
 
   Ipv4Address m_routerId;
+  Ptr<Ipv4GlobalRouting> m_routingProtocol;
 
   // inherited from Object
   virtual void DoDispose (void);

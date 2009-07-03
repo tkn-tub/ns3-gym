@@ -60,6 +60,30 @@ REGRESSION_SUFFIX = "-ref-traces"
 srcdir = '.'
 blddir = 'build'
 
+def load_env():
+    bld_cls = getattr(Utils.g_module, 'build_context', Utils.Context)
+    bld_ctx = bld_cls()
+    bld_ctx.load_dirs(os.path.abspath(os.path.join (srcdir,'..')),
+                      os.path.abspath(os.path.join (srcdir,'..', blddir)))
+    bld_ctx.load_envs()
+    env = bld_ctx.get_env()
+    return env
+
+def get_files(base_dir):
+    retval = []
+    reference=os.path.dirname(base_dir)
+    for root, dirs, files in os.walk(base_dir):
+        if root.find('.hg') != -1:
+            continue
+        for file in files:
+            if file.find('.hg') != -1:
+                continue
+            fullname = os.path.join(root,file)
+            # we can't use os.path.relpath because it's new in python 2.6
+            relname = fullname.replace(reference + '/','')
+            retval.append([fullname,relname])
+    return retval
+
 
 def dist_hook():
     import tarfile
@@ -69,18 +93,19 @@ def dist_hook():
 
     ## build the name of the traces subdirectory.  Will be something like
     ## ns-3-dev-ref-traces
-    traces_name = APPNAME + '-' + VERSION + regression.REGRESSION_SUFFIX
+    traces_name = APPNAME + '-' + VERSION + REGRESSION_SUFFIX
     ## Create a tar.bz2 file with the traces
-    traces_dir = os.path.join(regression.REGRESSION_DIR, traces_name)
-    if not os.path.isdir(traces_dir):
-        Logs.warn("Not creating traces archive: the %s directory does not exist" % traces_dir)
+    env = load_env()
+    regression_dir = env['REGRESSION_TRACES']
+    if not os.path.isdir(regression_dir):
+        Logs.warn("Not creating traces archive: the %s directory does not exist" % regression_dir)
     else:
         traceball = traces_name + wutils.TRACEBALL_SUFFIX
         tar = tarfile.open(os.path.join("..", traceball), 'w:bz2')
-        tar.add(traces_dir)
+        files = get_files(regression_dir)
+        for fullfilename,relfilename in files:
+            tar.add(fullfilename,arcname=relfilename)
         tar.close()
-        ## Now remove it; we do not ship the traces with the main tarball...
-        shutil.rmtree(traces_dir, True)
 
 def set_options(opt):
     # options provided by the modules
@@ -209,23 +234,23 @@ def configure(conf):
         pass
     conf.check_tool('command')
 
-    # create the second environment, set the variant and set its name
-    variant_env = conf.env.copy()
-    variant_name = Options.options.build_profile
-
     # Check for the location of regression reference traces
     if Options.options.regression_traces is not None:
         if os.path.isdir(Options.options.regression_traces):
             conf.check_message("regression traces location", '', True, ("%s (given)" % Options.options.regression_traces))
-            variant_env['REGRESSION_TRACES'] = os.path.abspath(Options.options.regression_traces)
+            conf.env['REGRESSION_TRACES'] = os.path.abspath(Options.options.regression_traces)
     else:
         traces = os.path.join('..', "%s-%s%s" % (APPNAME, VERSION, REGRESSION_SUFFIX))
         if os.path.isdir(traces):
             conf.check_message("regression reference traces", '', True, ("%s (guessed)" % traces))
-            variant_env['REGRESSION_TRACES'] = os.path.abspath(traces)
+            conf.env['REGRESSION_TRACES'] = os.path.abspath(traces)
         del traces
-    if not variant_env['REGRESSION_TRACES']:
+    if not conf.env['REGRESSION_TRACES']:
         conf.check_message("regression reference traces", '', False)
+
+    # create the second environment, set the variant and set its name
+    variant_env = conf.env.copy()
+    variant_name = Options.options.build_profile
 
     if Options.options.enable_gcov:
         variant_name += '-gcov'
@@ -707,12 +732,14 @@ class collect_unit_test_results_task(Task.TaskBase):
         return Task.RUN_ME
 
     def run(self):
-        failed = 0
+        failed_tasks = []
         for task in self.test_tasks:
             if task.retval:
-                failed += 1
-        if failed:
-            print "C++ UNIT TESTS: %i tests passed, %i failed." % (len(self.test_tasks) - failed, failed)
+                failed_tasks.append(task)
+        if failed_tasks:
+            print "C++ UNIT TESTS: %i tests passed, %i failed (%s)." % \
+                (len(self.test_tasks) - len(failed_tasks), len(failed_tasks),
+                 ', '.join(t.name_of_test for t in failed_tasks))
             return 1
         else:
             print "C++ UNIT TESTS: all %i tests passed." % (len(self.test_tasks),)

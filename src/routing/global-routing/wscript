@@ -14,5 +14,6 @@ def build(bld):
     headers.source = [
         'global-router-interface.h',
         'global-route-manager.h',
+        'ipv4-global-routing.h',
         ]
 

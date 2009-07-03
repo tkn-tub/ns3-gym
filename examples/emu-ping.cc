@@ -102,10 +102,7 @@ main (int argc, char *argv[])
   // Since we are going to be talking to real-world machines, we need to enable
   // calculation of checksums in our protocols.
   //
-  Config::SetDefault ("ns3::Ipv4L3Protocol::CalcChecksum", BooleanValue (true)); 
-  Config::SetDefault ("ns3::Icmpv4L4Protocol::CalcChecksum", BooleanValue (true)); 
-  Config::SetDefault ("ns3::TcpL4Protocol::CalcChecksum", BooleanValue (true)); 
-  Config::SetDefault ("ns3::UdpL4Protocol::CalcChecksum", BooleanValue (true)); 
+  GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
 
   //
   // In such a simple topology, the use of the helper API can be a hindrance

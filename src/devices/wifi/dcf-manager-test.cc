@@ -75,6 +75,8 @@ private:
   void ExpectCollision (uint64_t time, uint32_t from, uint32_t nSlots);
   void AddRxOkEvt (uint64_t at, uint64_t duration);
   void AddRxErrorEvt (uint64_t at, uint64_t duration);
+  void AddRxInsideSifsEvt (uint64_t at, uint64_t duration);
+  void AddTxEvt (uint64_t at, uint64_t duration);
   void AddNavReset (uint64_t at, uint64_t duration);
   void AddNavStart (uint64_t at, uint64_t duration);
   void AddAckTimeoutReset (uint64_t at);
@@ -142,6 +144,13 @@ DcfManagerTest::NotifyAccessGranted (uint32_t i)
     {
       m_result = result;
     }
+}
+void
+DcfManagerTest::AddTxEvt (uint64_t at, uint64_t duration)
+{
+  Simulator::Schedule (MicroSeconds (at) - Now (), 
+                       &DcfManager::NotifyTxStartNow, m_dcfManager, 
+                       MicroSeconds (duration));
 }
 void 
 DcfManagerTest::NotifyInternalCollision (uint32_t i)
@@ -244,6 +253,13 @@ DcfManagerTest::AddRxOkEvt (uint64_t at, uint64_t duration)
   Simulator::Schedule (MicroSeconds (at+duration) - Now (), 
                        &DcfManager::NotifyRxEndOkNow, m_dcfManager);
 }
+void
+DcfManagerTest::AddRxInsideSifsEvt (uint64_t at, uint64_t duration)
+{
+  Simulator::Schedule (MicroSeconds (at) - Now (), 
+                       &DcfManager::NotifyRxStartNow, m_dcfManager, 
+                       MicroSeconds (duration));
+}
 void 
 DcfManagerTest::AddRxErrorEvt (uint64_t at, uint64_t duration)
 {
@@ -321,6 +337,18 @@ DcfManagerTest::RunTests (void)
   AddAccessRequest (1, 1, 4, 0);
   AddAccessRequest (10, 2, 10, 0);
   EndTest ();
+  // Check that receiving inside SIFS shall be cancelled properly:
+  //  0      3       4    5      8     9     12       13 14
+  //  | sifs | aifsn | tx | sifs | ack | sifs | aifsn |  |tx | 
+  //
+  StartTest (1, 3, 10);
+  AddDcfState (1);
+  AddAccessRequest (1, 1, 4, 0);
+  AddRxInsideSifsEvt (6, 10);
+  AddTxEvt(8, 1);
+  AddAccessRequest (14, 2, 14, 0);
+  EndTest ();
+
 
   // The test below mainly intends to test the case where the medium
   // becomes busy in the middle of a backoff slot: the backoff counter

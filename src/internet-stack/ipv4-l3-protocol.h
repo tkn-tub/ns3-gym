@@ -30,7 +30,6 @@
 #include "ns3/traced-callback.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4-routing-protocol.h"
-#include "ipv4-static-routing-impl.h"
 
 namespace ns3 {
 
@@ -142,9 +141,10 @@ public:
   int32_t GetInterfaceForPrefix (Ipv4Address addr, Ipv4Mask mask) const;
   int32_t GetInterfaceForDevice (Ptr<const NetDevice> device) const;
 
-  uint32_t AddAddress (uint32_t i, Ipv4InterfaceAddress address);
+  bool AddAddress (uint32_t i, Ipv4InterfaceAddress address);
   Ipv4InterfaceAddress GetAddress (uint32_t interfaceIndex, uint32_t addressIndex) const;
   uint32_t GetNAddresses (uint32_t interface) const;
+  bool RemoveAddress (uint32_t interfaceIndex, uint32_t addressIndex);
 
   void SetMetric (uint32_t i, uint16_t metric);
   uint16_t GetMetric (uint32_t i) const;
@@ -152,11 +152,10 @@ public:
   bool IsUp (uint32_t i) const;
   void SetUp (uint32_t i);
   void SetDown (uint32_t i);
+  bool IsForwarding (uint32_t i) const;
+  void SetForwarding (uint32_t i, bool val);
 
   Ptr<NetDevice> GetNetDevice (uint32_t i);
-
-  void AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
-                           int16_t priority);
 
 protected:
 
@@ -167,6 +166,7 @@ protected:
    */
   virtual void NotifyNewAggregate ();
 private:
+  friend class Ipv4L3ProtocolTest;
   Ipv4L3Protocol(const Ipv4L3Protocol &);
   Ipv4L3Protocol &operator = (const Ipv4L3Protocol &);
 
@@ -197,6 +197,8 @@ private:
                       const Ipv4Header &header);
 
   void LocalDeliver (Ptr<const Packet> p, Ipv4Header const&ip, uint32_t iif);
+  void RouteInputError (Ptr<const Packet> p, const Ipv4Header & ipHeader, Socket::SocketErrno sockErrno);
+
   uint32_t AddIpv4Interface (Ptr<Ipv4Interface> interface);
   void SetupLoopback (void);
   Ptr<Icmpv4L4Protocol> GetIcmp (void) const;
@@ -218,7 +220,6 @@ private:
   TracedCallback<Ptr<const Packet> > m_dropTrace;
 
   Ptr<Ipv4RoutingProtocol> m_routingProtocol;
-  Ptr<Ipv4StaticRouting> GetStaticRouting (void) const;
 
   SocketList m_sockets;
 };

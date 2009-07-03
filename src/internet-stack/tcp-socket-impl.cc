@@ -19,21 +19,23 @@
  */
 
 
+#include "ns3/abort.h"
 #include "ns3/node.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/log.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv4-interface-address.h"
 #include "ns3/ipv4-route.h"
-#include "tcp-socket-impl.h"
-#include "tcp-l4-protocol.h"
-#include "ipv4-end-point.h"
+#include "ns3/ipv4-routing-protocol.h"
 #include "ns3/simulation-singleton.h"
-#include "tcp-typedefs.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
 #include "ns3/trace-source-accessor.h"
+#include "tcp-typedefs.h"
+#include "tcp-socket-impl.h"
+#include "tcp-l4-protocol.h"
+#include "ipv4-end-point.h"
 
 #include <algorithm>
 
@@ -83,7 +85,9 @@ TcpSocketImpl::GetTypeId ()
     m_rxAvailable (0),
     m_rxBufSize (0),
     m_pendingData (0),
+    m_segmentSize (0),          // For attribute initialization consistency (quiet valgrind)
     m_rxWindowSize (0),
+    m_initialCWnd (0),          // For attribute initialization consistency (quiet valgrind)
     m_persistTime (Seconds(6)), //XXX hook this into attributes?
     m_rtt (0),
     m_lastMeasuredRtt (Seconds(0.0))
@@ -171,13 +175,19 @@ TcpSocketImpl::~TcpSocketImpl ()
   if (m_endPoint != 0)
     {
       NS_ASSERT (m_tcp != 0);
-      /**
-       * Note that this piece of code is a bit tricky:
-       * when DeAllocate is called, it will call into
-       * Ipv4EndPointDemux::Deallocate which triggers
-       * a delete of the associated endPoint which triggers
-       * in turn a call to the method ::Destroy below
-       * will will zero the m_endPoint field.
+      /*
+       * Note that this piece of code is seriously convoluted: When we do a 
+       * Bind we allocate an Ipv4Endpoint.  Immediately thereafter we always do
+       * a FinishBind which sets the DestroyCallback of that endpoint to be
+       * TcpSocketImpl::Destroy, below.  When m_tcp->DeAllocate is called, it 
+       * will in turn call into Ipv4EndpointDemux::DeAllocate with the endpoint
+       * (m_endPoint).  The demux will look up the endpoint and destroy it (the
+       * corollary is that we don't own the object pointed to by m_endpoint, we
+       * just borrowed it).  The destructor for the endpoint will call the 
+       * DestroyCallback which will then invoke TcpSocketImpl::Destroy below. 
+       * Destroy will zero m_node, m_tcp and m_endpoint.  The zero of m_node and
+       * m_tcp need to be here also in case the endpoint is deallocated before 
+       * shutdown.
        */
       NS_ASSERT (m_endPoint != 0);
       m_tcp->DeAllocate (m_endPoint);
@@ -192,7 +202,13 @@ void
 TcpSocketImpl::SetNode (Ptr<Node> node)
 {
   m_node = node;
-  // Initialize some variables 
+  /*
+   * Set the congestion window to IW.  This method is called from the L4 
+   * Protocol after it creates the socket.  The Attribute system takes
+   * care of setting m_initialCWnd and m_segmentSize to their default
+   * values.  m_cWnd depends on m_initialCwnd and m_segmentSize so it
+   * also needs to be updated in SetInitialCwnd and SetSegSize.
+   */
   m_cWnd = m_initialCWnd * m_segmentSize;
 }
 
@@ -321,7 +337,6 @@ TcpSocketImpl::Close (void)
 
   Actions_t action  = ProcessEvent (APP_CLOSE);
   ProcessAction (action);
-  ShutdownSend ();
   return 0;
 }
 
@@ -349,11 +364,11 @@ TcpSocketImpl::Connect (const Address & address)
     {
       Ipv4Header header;
       header.SetDestination (m_remoteAddress);
-      Socket::SocketErrno errno;
+      Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
       uint32_t oif = 0; //specify non-zero if bound to a source address
       // XXX here, cache the route in the endpoint?
-      route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno);
+      route = ipv4->GetRoutingProtocol ()->RouteOutput (Ptr<Packet> (), header, oif, errno_);
       if (route != 0)
         {
           NS_LOG_LOGIC ("Route exists");
@@ -362,8 +377,8 @@ TcpSocketImpl::Connect (const Address & address)
       else
         {
           NS_LOG_LOGIC ("TcpSocketImpl::Connect():  Route to " << m_remoteAddress << " does not exist");
-          NS_LOG_ERROR (errno);
-          m_errno = errno;
+          NS_LOG_ERROR (errno_);
+          m_errno = errno_;
           return -1;
         }
     }
@@ -654,6 +669,7 @@ Actions_t TcpSocketImpl::ProcessEvent (Events_t e)
   // simulation singleton is a way to get a single global static instance of a
   // class intended to be a singleton; see simulation-singleton.h
   SA stateAction = SimulationSingleton<TcpStateMachine>::Get ()->Lookup (m_state,e);
+  NS_LOG_LOGIC ("TcpSocketImpl::ProcessEvent stateAction " << stateAction.action);
   // debug
   if (stateAction.action == RST_TX)
     {
@@ -679,6 +695,11 @@ Actions_t TcpSocketImpl::ProcessEvent (Events_t e)
       m_endPoint->SetPeer (m_remoteAddress, m_remotePort);
       NS_LOG_LOGIC ("TcpSocketImpl " << this << " Connected!");
     }
+  if (saveState < CLOSING && (m_state == CLOSING || m_state == TIMED_WAIT) )
+    {
+      NS_LOG_LOGIC ("TcpSocketImpl peer closing, send EOF to application");
+      NotifyDataRecv ();
+    }
 
   if (needCloseNotify && !m_closeNotified)
     {
@@ -693,6 +714,24 @@ Actions_t TcpSocketImpl::ProcessEvent (Events_t e)
           << m_state << " event " << e
           << " set CloseNotif ");
     }
+
+  if (m_state == CLOSED && saveState != CLOSED && m_endPoint != 0)
+    {
+      NS_ASSERT (m_tcp != 0);
+      /*
+       * We want to deallocate the endpoint now.  We can't just naively call
+       * Deallocate (see the comment in TcpSocketImpl::~TcpSocketImpl), we 
+       * have to turn off the DestroyCallback to keep it from calling back 
+       * into TcpSocketImpl::Destroy and closing pretty much everything down.
+       * Once we have the callback disconnected, we can DeAllocate the
+       * endpoint which actually deals with destroying the actual endpoint,
+       * and then zero our member varible on general principles.
+       */
+      m_endPoint->SetDestroyCallback(MakeNullCallback<void>());
+      m_tcp->DeAllocate (m_endPoint);
+      m_endPoint = 0;
+    }
+    
   return stateAction.action;
 }
 
@@ -821,6 +860,7 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
   switch (a)
   {
     case ACK_TX:
+      NS_LOG_LOGIC ("TcpSocketImpl " << this <<" Action ACK_TX");
       if(tcpHeader.GetFlags() & TcpHeader::FIN)
       {
         ++m_nextRxSequence; //bump this to account for the FIN
@@ -850,11 +890,11 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
         if (ipv4->GetRoutingProtocol () != 0)
           {
             Ipv4Header header;
-            Socket::SocketErrno errno;
+            Socket::SocketErrno errno_;
             Ptr<Ipv4Route> route;
             uint32_t oif = 0; //specify non-zero if bound to a source address
             header.SetDestination (m_remoteAddress);
-            route = ipv4->GetRoutingProtocol ()->RouteOutput (header, oif, errno);
+            route = ipv4->GetRoutingProtocol ()->RouteOutput (Ptr<Packet> (), header, oif, errno_);
             if (route != 0)
               {
                 NS_LOG_LOGIC ("Route exists");
@@ -862,8 +902,8 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
               }
             else
               {
-                NS_LOG_ERROR (errno);
-                m_errno = errno;
+                NS_LOG_ERROR (errno_);
+                m_errno = errno_;
                 return -1;
               }
           }
@@ -1153,11 +1193,6 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
                 << " seq " << tcpHeader.GetSequenceNumber()
                 << " ack " << tcpHeader.GetAckNumber()
                 << " p.size is " << p->GetSize () );
-  NS_LOG_DEBUG ("TcpSocketImpl " << this <<
-                " NewRx," <<
-                " seq " << tcpHeader.GetSequenceNumber() <<
-                " ack " << tcpHeader.GetAckNumber() <<
-                " p.size is " << p->GetSize());
   States_t origState = m_state;
   if (RxBufferFreeSpace() < p->GetSize()) 
     { //if not enough room, fragment
@@ -1625,6 +1660,13 @@ void
 TcpSocketImpl::SetSegSize (uint32_t size)
 {
   m_segmentSize = size;
+  /*
+   * Make sure that the congestion window is initialized for IW properly.  We
+   * can't do this after the connection starts up or would would most likely 
+   * change m_cWnd out from under the protocol.  That would be Bad (TM).
+   */
+  NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpSocketImpl::SetSegSize(): Cannot change segment size dynamically.");
+  m_cWnd = m_initialCWnd * m_segmentSize;
 }
 
 uint32_t
@@ -1649,6 +1691,13 @@ void
 TcpSocketImpl::SetInitialCwnd (uint32_t cwnd)
 {
   m_initialCWnd = cwnd;
+  /*
+   * Make sure that the congestion window is initialized for IW properly.  We
+   * can't do this after the connection starts up or would would most likely 
+   * change m_cWnd out from under the protocol.  That would be Bad (TM).
+   */
+  NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpSocketImpl::SetInitialCwnd(): Cannot change initial cwnd dynamically.");
+  m_cWnd = m_initialCWnd * m_segmentSize;
 }
 
 uint32_t

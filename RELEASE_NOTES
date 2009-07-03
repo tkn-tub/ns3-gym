@@ -13,7 +13,21 @@ Release 3.5
 
 Availability
 ------------
-This release is scheduled for June/July 2009
+This release is immediately available from:
+http://www.nsnam.org/releases/ns-allinone-3.5.tar.bz2
+
+Supported platforms
+-------------------
+ns-3.5 has been tested on the following platforms:
+  - linux x86 gcc 4.2, 4.1, and, 3.4.6.
+  - linux x86_64 gcc 4.4.0, 4.3.2, 4.2.3, 4.2.1, 4.1.3, 3.4.6
+  - MacOS X ppc and x86 (gcc 4.0.x and 4.2.x)
+  - cygwin gcc 3.4.4 (debug only), gcc 4.3.2 (debug and optimized)
+  - mingw gcc 3.4.5 (debug only)
+
+Not all ns-3 options are available on all platforms; consult the
+wiki for more information:
+http://www.nsnam.org/wiki/index.php/Installation
 
 New user-visible features
 -------------------------
@@ -26,7 +40,12 @@ New user-visible features
      - 802.11b PHY support (Gary Pei)
      - Nakagami propagation loss model (Timo Bingmann)
      - radiotap and prism headers for PCAP output (Nicola Baldo)
-  c) GammaVariable and ErlangVariable (Timo Bingmann)
+  c) RandomVariable:
+     - GammaVariable and ErlangVariable (Timo Bingmann)
+     - ZipfVariable (Francesco Malandrino)
+  d) UdpEcho: allows setting the payload of echo packets
+  e) Ipv4/Ipv4RoutingProtocol: allow fine-grained control over
+     routing policy and arbitrary composition of routing protocols
  
 API changes from ns-3.4
 -----------------------
@@ -34,13 +53,27 @@ API changes for this release are documented in the file CHANGES.html.  The
 internal API and composition of the IPv4 stack underwent significant
 refactoring in this release cycle.
 
+Known issues
+------------
+ns-3 build is known to fail on the following platforms:
+  - gcc 3.3 and earlier
+  - optimized builds on gcc 3.4.4 and 3.4.5
+  - optimized builds on linux x86 gcc 4.0.x
+
+Future releases
+---------------
+Our next release, which is expected to happen in 2 to 4 months from now, will
+feature the merging of some of our projects currently in development including
+fuller IPv6 support, and some smaller features such as a new Global ARP package 
+and possibly a new Testing and Validation suite.
+
 Release 3.4
 ===========
 
 Availability
 ------------
 This release is immediately available from:
-http://www.nsnam.org/releases/ns-3.4.tar.bz2
+http://www.nsnam.org/releases/ns-allinone-3.4.tar.bz2
 
 Supported platforms
 -------------------

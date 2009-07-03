@@ -98,9 +98,15 @@ public:
   virtual Ptr<Channel> GetChannel (void) const = 0;
 
   /**
+   * Set the address of this interface
+   */
+  virtual void SetAddress (Address address) = 0;
+
+  /**
    * \return the current Address of this interface.
    */
   virtual Address GetAddress (void) const = 0;
+
   /**
    * \param mtu MTU value, in bytes, to set for the device
    * \return whether the MTU value was within legal bounds

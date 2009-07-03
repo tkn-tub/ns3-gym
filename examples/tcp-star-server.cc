@@ -52,7 +52,6 @@
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/global-route-manager.h"
 
 using namespace ns3;
 
@@ -123,7 +122,7 @@ main (int argc, char *argv[])
   }
 
   //Turn on global static routing
-  GlobalRouteManager::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   // Create a packet sink on the star "hub" to receive these packets
   uint16_t port = 50000;

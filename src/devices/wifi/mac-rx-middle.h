@@ -44,11 +44,12 @@ public:
 
   void Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
 private:
+  friend class MacRxMiddleTest;
   OriginatorRxStatus *Lookup (WifiMacHeader const*hdr);
   bool IsDuplicate (WifiMacHeader const *hdr, OriginatorRxStatus *originator) const;
   Ptr<Packet> HandleFragments (Ptr<Packet> packet, WifiMacHeader const*hdr,
                                OriginatorRxStatus *originator);
-  bool SequenceControlSmaller (int seqa, int seqb);
+  bool SequenceControlSmaller (uint16_t seqa, uint16_t seqb);
 
   typedef std::map <Mac48Address, OriginatorRxStatus *, std::less<Mac48Address> > Originators;
   typedef std::map <std::pair<Mac48Address, uint8_t>, OriginatorRxStatus *, std::less<std::pair<Mac48Address,uint8_t> > > QosOriginators;

@@ -83,6 +83,7 @@ private:
   void DoGather (TypeId tid);
   void RecordOutput (TypeId tid);
   bool HasAlreadyBeenProcessed (TypeId tid) const;
+  void find_and_replace (std::string &source, const std::string find, std::string replace );
   std::vector<std::pair<TypeId,std::string> > m_output;
   std::vector<std::string> m_currentPath;
   std::vector<TypeId> m_alreadyProcessed;
@@ -174,62 +175,88 @@ StaticInformation::DoGather (TypeId tid)
       Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (i);
       const PointerChecker *ptrChecker = dynamic_cast<const PointerChecker *> (PeekPointer (checker));
       if (ptrChecker != 0)
-	{
-	  TypeId pointee = ptrChecker->GetPointeeTypeId ();
-	  m_currentPath.push_back (tid.GetAttributeName (i));
-	  m_alreadyProcessed.push_back (tid);
-	  DoGather (pointee);
-	  m_alreadyProcessed.pop_back ();
-	  m_currentPath.pop_back ();
-	  continue;
-	}
+        {
+          TypeId pointee = ptrChecker->GetPointeeTypeId ();
+          m_currentPath.push_back (tid.GetAttributeName (i));
+          m_alreadyProcessed.push_back (tid);
+          DoGather (pointee);
+          m_alreadyProcessed.pop_back ();
+          m_currentPath.pop_back ();
+          continue;
+        }
       // attempt to cast to an object vector.
       const ObjectVectorChecker *vectorChecker = dynamic_cast<const ObjectVectorChecker *> (PeekPointer (checker));
       if (vectorChecker != 0)
-	{
-	  TypeId item = vectorChecker->GetItemTypeId ();
-	  m_currentPath.push_back (tid.GetAttributeName (i) + "/[i]");
-	  m_alreadyProcessed.push_back (tid);
-	  DoGather (item);
-	  m_alreadyProcessed.pop_back ();
-	  m_currentPath.pop_back ();
-	  continue;
-	}
+        {
+          TypeId item = vectorChecker->GetItemTypeId ();
+          m_currentPath.push_back (tid.GetAttributeName (i) + "/[i]");
+          m_alreadyProcessed.push_back (tid);
+          DoGather (item);
+          m_alreadyProcessed.pop_back ();
+          m_currentPath.pop_back ();
+          continue;
+        }
     }
   for (uint32_t j = 0; j < TypeId::GetRegisteredN (); j++)
     {
       TypeId child = TypeId::GetRegistered (j);
       if (child.IsChildOf (tid))
-	{
-	  m_currentPath.push_back ("$%" + child.GetName ());
-	  m_alreadyProcessed.push_back (tid);
-	  DoGather (child);
-	  m_alreadyProcessed.pop_back ();
-	  m_currentPath.pop_back ();
-	}
+        {
+          //please take a look at the following note for an explanation 
+          std::string childName = "$%" + child.GetName ();
+          find_and_replace(childName,"::","::%");
+          m_currentPath.push_back (childName);
+          m_alreadyProcessed.push_back (tid);
+          DoGather (child);
+          m_alreadyProcessed.pop_back ();
+          m_currentPath.pop_back ();
+        }
     }
   for (uint32_t k = 0; k < m_aggregates.size (); ++k)
     {
       std::pair<TypeId,TypeId> tmp = m_aggregates[k];
       if (tmp.first == tid || tmp.second == tid)
-	{
-	  TypeId other;
-	  if (tmp.first == tid)
-	    {
-	      other = tmp.second;
-	    }
-	  if (tmp.second == tid)
-	    {
-	      other = tmp.first;
-	    }
-	  // Note: we insert a % in the path below to ensure that doxygen does not
-	  // attempt to resolve the typeid names included in the string.
-	  m_currentPath.push_back ("$%" + other.GetName ());
-	  m_alreadyProcessed.push_back (tid);
-	  DoGather (other);
-	  m_alreadyProcessed.pop_back ();
-	  m_currentPath.pop_back ();	  
-	}
+        {
+          TypeId other;
+          if (tmp.first == tid)
+            {
+              other = tmp.second;
+            }
+          if (tmp.second == tid)
+            {
+              other = tmp.first;
+            }
+          /**
+           * Note: we insert a % in the path below to ensure that doxygen does not
+           * attempt to resolve the typeid names included in the string.
+           * if the name contains ::, using the % sign will remove that sign
+           * resulting for instance in $ns3MobilityModel instead of $ns3::MobilityModel
+           * hence the output must be in the form $%ns3::%MobilityModel in order to
+           * show correctly $ns3::MobilityModel
+           * We add at the beginning of the name $% and we replace all the :: in the
+           * string by ::%.
+           */  
+          std::string name = "$%" + other.GetName ();
+          //finding and replacing :: by ::%
+          find_and_replace(name,"::","::%");
+          m_currentPath.push_back (name);
+          m_alreadyProcessed.push_back (tid);
+          DoGather (other);
+          m_alreadyProcessed.pop_back ();
+          m_currentPath.pop_back ();	  
+        }
+    }
+}
+
+void 
+StaticInformation::find_and_replace( std::string &source, const std::string find, std::string replace )
+{
+  size_t j; 
+  j = source.find (find);
+  while (j != std::string::npos ) 
+    {
+      source.replace (j, find.length (),replace);
+      j = source.find (find,j+1);
     }
 }
 
@@ -375,7 +402,7 @@ int main (int argc, char *argv[])
     {
       StringValue val;
       (*i)->GetValue (val);
-      std::cout << "  <li><b>" << (*i)->GetName () << "</b>: " << (*i)->GetHelp () << "(" << val.Get () << ")</li>" << std::endl;
+      std::cout << "  <li><b>\\anchor GlobalValue" << (*i)->GetName () << " " << (*i)->GetName () << "</b>: " << (*i)->GetHelp () << "(" << val.Get () << ")</li>" << std::endl;
     }
   std::cout << "</ul>" << std::endl
 	    << "*/" << std::endl;

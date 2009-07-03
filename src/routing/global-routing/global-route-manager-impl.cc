@@ -374,7 +374,12 @@ GlobalRouteManagerImpl::DeleteGlobalRoutes ()
   for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
     {
       Ptr<Node> node = *i;
-      Ptr<Ipv4GlobalRouting> gr = GetGlobalRoutingProtocol (node->GetId ());
+      Ptr<GlobalRouter> router = node->GetObject<GlobalRouter> ();
+      if (router == 0)
+        {
+          continue;
+        }
+      Ptr<Ipv4GlobalRouting> gr = router->GetRoutingProtocol ();
       uint32_t j = 0;
       uint32_t nRoutes = gr->GetNRoutes ();
       NS_LOG_LOGIC ("Deleting " << gr->GetNRoutes ()<< " routes from node " << node->GetId ());
@@ -393,80 +398,6 @@ GlobalRouteManagerImpl::DeleteGlobalRoutes ()
       NS_LOG_LOGIC ("Deleting LSDB, creating new one");
       delete m_lsdb;
       m_lsdb = new GlobalRouteManagerLSDB ();
-    }
-}
-
-//
-// In order to build the routing database, we need at least one of the nodes
-// to participate as a router.  This is a convenience function that makes
-// all nodes routers.  We do this by walking the list of nodes in the system
-// and aggregating a Global Router Interface to each of the nodes.
-//
-  void
-GlobalRouteManagerImpl::SelectRouterNodes () 
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
-    {
-      Ptr<Node> node = *i;
-      NS_LOG_LOGIC ("Adding GlobalRouter interface to node " << node->GetId ());
-
-      Ptr<GlobalRouter> globalRouter = CreateObject<GlobalRouter> ();
-      node->AggregateObject (globalRouter);
-
-      NS_LOG_LOGIC ("Adding GlobalRouting Protocol to node " << node->GetId ());
-      Ptr<Ipv4GlobalRouting> globalRouting = CreateObject<Ipv4GlobalRouting> ();
-      globalRouting->SetNode (node);
-      // Here, we check whether there is an existing Ipv4RoutingProtocol object
-      // to add this protocol to.
-      Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-      NS_ASSERT_MSG (ipv4, "GlobalRouteManagerImpl::SelectRouterNodes (): GetObject for <Ipv4> interface failed");
-      // Now, we add this to an Ipv4ListRouting object.  
-      // XXX in the future, we may want to allow this to be added to Ipv4
-      // directly
-      Ptr<Ipv4ListRouting> ipv4ListRouting = DynamicCast<Ipv4ListRouting> (ipv4->GetRoutingProtocol ());
-      NS_ASSERT_MSG (ipv4ListRouting, "GlobalRouteManagerImpl::SelectRouterNodes (): Ipv4ListRouting not found"); 
-      // This is the object that will keep the global routes.  We insert it
-      // at slightly higher priority than static routing (which is at zero).
-      // This means that global routes (e.g. host routes) will be consulted
-      // before static routes
-      // XXX make the below  priority value an attribute
-      ipv4ListRouting->AddRoutingProtocol (globalRouting, 3);  
-      // Locally cache the globalRouting pointer; we'll need it later
-      // when we add routes
-      AddGlobalRoutingProtocol (node->GetId (), globalRouting);
-    }
-}
-
-  void
-GlobalRouteManagerImpl::SelectRouterNodes (NodeContainer c) 
-{
-  NS_LOG_FUNCTION (&c);
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); i++)
-    {
-      Ptr<Node> node = *i;
-      NS_LOG_LOGIC ("Adding GlobalRouter interface to node " << 
-        node->GetId ());
-
-      Ptr<GlobalRouter> globalRouter = CreateObject<GlobalRouter> ();
-      node->AggregateObject (globalRouter);
-
-      NS_LOG_LOGIC ("Adding GlobalRouting Protocol to node " << node->GetId ());
-      Ptr<Ipv4GlobalRouting> globalRouting = CreateObject<Ipv4GlobalRouting> ();
-      // This is the object that will keep the global routes.  We insert it
-      // at slightly higher priority than static routing (which is at zero).
-      // This means that global routes (e.g. host routes) will be consulted
-      // before static routes
-      Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-      NS_ASSERT_MSG (ipv4, "GlobalRouteManagerImpl::SelectRouterNodes (): "
-        "GetObject for <Ipv4> interface failed");
-      Ptr<Ipv4ListRouting> ipv4ListRouting = DynamicCast<Ipv4ListRouting> (ipv4->GetRoutingProtocol ());
-      NS_ASSERT_MSG (ipv4ListRouting, "GlobalRouteManagerImpl::SelectRouterNodes (): Ipv4ListRouting not found"); 
-      // XXX make the below  priority value an attribute
-      ipv4ListRouting->AddRoutingProtocol (globalRouting, 3);  
-      // Locally cache the globalRouting pointer; we'll need it later
-      // when we add routes
-      AddGlobalRoutingProtocol (node->GetId (), globalRouting);
     }
 }
 
@@ -1069,6 +1000,93 @@ GlobalRouteManagerImpl::DebugSPFCalculate (Ipv4Address root)
   SPFCalculate (root);
 }
 
+//
+// Used to test if a node is a stub, from an OSPF sense.
+// If there is only one link of type 1 or 2, then a default route
+// can safely be added to the next-hop router and SPF does not need
+// to be run
+//
+bool
+GlobalRouteManagerImpl::CheckForStubNode (Ipv4Address root)
+{
+  NS_LOG_FUNCTION (root);
+  GlobalRoutingLSA *rlsa = m_lsdb->GetLSA (root);
+  Ipv4Address myRouterId = rlsa->GetLinkStateId ();
+  int transits = 0;
+  GlobalRoutingLinkRecord *transitLink = 0;
+  for (uint32_t i = 0; i < rlsa->GetNLinkRecords (); i++)
+    {
+      GlobalRoutingLinkRecord *l = rlsa->GetLinkRecord (i);
+      if (l->GetLinkType () == GlobalRoutingLinkRecord::TransitNetwork)
+        {
+          transits++;
+          transitLink = l;
+        }
+      else if (l->GetLinkType () == GlobalRoutingLinkRecord::PointToPoint)
+        {
+          transits++;
+          transitLink = l;
+        }
+    }
+  if (transits == 0)
+    {
+      // This router is not connected to any router.  Probably, global
+      // routing should not be called for this node, but we can just raise
+      // a warning here and return true.
+      NS_LOG_WARN ("all nodes should have at least one transit link:" << root );
+      return true;
+    }
+  if (transits == 1)
+    {
+      if (transitLink->GetLinkType () == GlobalRoutingLinkRecord::TransitNetwork)
+        {
+          // Install default route to next hop router
+          // What is the next hop?  We need to check all neighbors on the link.
+          // If there is a single router that has two transit links, then
+          // that is the default next hop.  If there are more than one
+          // routers on link with multiple transit links, return false.
+          // Not yet implemented, so simply return false
+          NS_LOG_LOGIC ("TBD: Would have inserted default for transit");
+          return false;
+        }
+      else if (transitLink->GetLinkType () == GlobalRoutingLinkRecord::PointToPoint)
+        {
+          // Install default route to next hop
+          // The link record LinkID is the router ID of the peer.
+          // The Link Data is the local IP interface address
+          GlobalRoutingLSA *w_lsa = m_lsdb->GetLSA (transitLink->GetLinkId ());
+          uint32_t nLinkRecords = w_lsa->GetNLinkRecords ();
+          for (uint32_t j = 0; j < nLinkRecords; ++j)
+            {
+              //
+              // We are only concerned about point-to-point links
+              //
+              GlobalRoutingLinkRecord *lr = w_lsa->GetLinkRecord (j);
+              if (lr->GetLinkType () != GlobalRoutingLinkRecord::PointToPoint)
+                {
+                  continue;
+                }
+              // Find the link record that corresponds to our routerId
+              if (lr->GetLinkId () == myRouterId)
+                {
+                  // Next hop is stored in the LinkID field of lr
+                  Ptr<GlobalRouter> router = rlsa->GetNode ()->GetObject<GlobalRouter> ();
+                  NS_ASSERT (router);
+                  Ptr<Ipv4GlobalRouting> gr = router->GetRoutingProtocol ();
+                  NS_ASSERT (gr);
+                  gr->AddNetworkRouteTo (Ipv4Address ("0.0.0.0"), Ipv4Mask ("0.0.0.0"), lr->GetLinkData (), 
+                                         FindOutgoingInterfaceId (transitLink->GetLinkData ()));
+                  NS_LOG_LOGIC ("Inserting default route for node " << myRouterId << " to next hop " << 
+                                lr->GetLinkData () << " via interface " << 
+                                FindOutgoingInterfaceId(transitLink->GetLinkData()));
+                  return true;
+                }
+            }
+        }
+    }
+  return false;
+}
+
 // quagga ospf_spf_calculate
   void
 GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
@@ -1101,6 +1119,20 @@ GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
   v->SetDistanceFromRoot (0);
   v->GetLSA ()->SetStatus (GlobalRoutingLSA::LSA_SPF_IN_SPFTREE);
   NS_LOG_LOGIC ("Starting SPFCalculate for node " << root);
+
+//
+// Optimize SPF calculation, for ns-3.
+// We do not need to calculate SPF for every node in the network if this
+// node has only one interface through which another router can be 
+// reached.  Instead, short-circuit this computation and just install
+// a default route in the CheckForStubNode() method.
+//
+  if (NodeList::GetNNodes () > 0 && CheckForStubNode (root))
+    {
+      NS_LOG_LOGIC ("SPFCalculate truncated for stub node " << root);
+      delete m_spfroot;
+      return;
+    }
 
   for (;;)
     {
@@ -1353,7 +1385,13 @@ GlobalRouteManagerImpl::SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* 
 // Similarly, the vertex <v> has an m_rootOif (outbound interface index) to
 // which the packets should be send for forwarding.
 //
-          Ptr<Ipv4GlobalRouting> gr = GetGlobalRoutingProtocol (node->GetId ());
+          
+          Ptr<GlobalRouter> router = node->GetObject<GlobalRouter> ();
+          if (router == 0)
+            {
+              continue;
+            }
+          Ptr<Ipv4GlobalRouting> gr = router->GetRoutingProtocol ();
           NS_ASSERT (gr);
           if (v->GetOutgoingInterfaceId () >= 0)
             {
@@ -1577,7 +1615,12 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 // Similarly, the vertex <v> has an m_rootOif (outbound interface index) to
 // which the packets should be send for forwarding.
 //
-              Ptr<Ipv4GlobalRouting> gr = GetGlobalRoutingProtocol (node->GetId ());
+              Ptr<GlobalRouter> router = node->GetObject<GlobalRouter> ();
+              if (router == 0)
+                {
+                  continue;
+                }
+              Ptr<Ipv4GlobalRouting> gr = router->GetRoutingProtocol ();
               NS_ASSERT (gr);
               if (v->GetOutgoingInterfaceId () >= 0)
                 {
@@ -1675,7 +1718,12 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
           Ipv4Mask tempmask = lsa->GetNetworkLSANetworkMask ();
           Ipv4Address tempip = lsa->GetLinkStateId ();
           tempip = tempip.CombineMask (tempmask);
-          Ptr<Ipv4GlobalRouting> gr = GetGlobalRoutingProtocol (node->GetId ());
+          Ptr<GlobalRouter> router = node->GetObject<GlobalRouter> ();
+          if (router == 0)
+            {
+              continue;
+            }
+          Ptr<Ipv4GlobalRouting> gr = router->GetRoutingProtocol ();
           NS_ASSERT (gr);
           if (v->GetOutgoingInterfaceId () >= 0)
             {
@@ -1714,29 +1762,6 @@ GlobalRouteManagerImpl::SPFVertexAddParent (SPFVertex* v)
   NS_LOG_FUNCTION (v);
   v->GetParent ()->AddChild (v);
 }
-
-  void 
-GlobalRouteManagerImpl::AddGlobalRoutingProtocol (uint32_t nodeId, Ptr<Ipv4GlobalRouting> proto)
-{
-  NS_LOG_FUNCTION (nodeId);
-  m_routingProtocols.push_back
-    (std::pair<uint32_t, Ptr<Ipv4GlobalRouting> > (nodeId, proto));
-  m_routingProtocols.sort ();
-}
-
-  Ptr<Ipv4GlobalRouting>
-GlobalRouteManagerImpl::GetGlobalRoutingProtocol (uint32_t nodeId)
-{
-  for (Ipv4GlobalRoutingList::const_iterator rprotoIter = m_routingProtocols.begin (); rprotoIter != m_routingProtocols.end (); rprotoIter++)
-    {
-      if ((*rprotoIter).first == nodeId)
-        {
-          return (*rprotoIter).second;
-        }
-    }
-  return 0;
-}
-
 
 } // namespace ns3
 

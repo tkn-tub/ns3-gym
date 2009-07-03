@@ -23,6 +23,8 @@
 #include "ns3/object.h"
 #include "ns3/socket.h"
 #include "ipv4-header.h"
+#include "ipv4-interface-address.h"
+#include "ipv4.h"
 
 namespace ns3 {
 
@@ -49,7 +51,7 @@ public:
   typedef Callback<void, Ptr<Ipv4Route>, Ptr<const Packet>, const Ipv4Header &> UnicastForwardCallback;
   typedef Callback<void, Ptr<Ipv4MulticastRoute>, Ptr<const Packet>, const Ipv4Header &> MulticastForwardCallback;
   typedef Callback<void, Ptr<const Packet>, const Ipv4Header &, uint32_t > LocalDeliverCallback;
-  typedef Callback<void, Ptr<const Packet>, const Ipv4Header &> ErrorCallback;
+  typedef Callback<void, Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno > ErrorCallback;
   
   /**
    * \brief Query routing cache for an existing route, for an outbound packet
@@ -58,6 +60,8 @@ public:
    * packet to be forwarded, and is synchronous.  Can be used for
    * multicast or unicast.  The Linux equivalent is ip_route_output()
    *
+   * \param p packet to be routed.  Note that this method may modify the packet.
+   *          Callers may also pass in a null pointer. 
    * \param header input parameter (used to form key to search for the route)
    * \param oif Output interface index.  May be zero, or may be bound via
    *            socket options to a particular output interface.
@@ -65,7 +69,7 @@ public:
    *
    * \returns a code that indicates what happened in the lookup
    */
-  virtual Ptr<Ipv4Route> RouteOutput (const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr) = 0;
+  virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr) = 0;
   
   /**
    * \brief Route an input packet (to be forwarded or locally delivered)
@@ -91,6 +95,48 @@ public:
   virtual bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev, 
                              UnicastForwardCallback ucb, MulticastForwardCallback mcb, 
                              LocalDeliverCallback lcb, ErrorCallback ecb) = 0;
+
+  /**
+   * \param interface the index of the interface we are being notified about
+   *
+   * Protocols are expected to implement this method to be notified of the state change of
+   * an interface in a node.
+   */
+  virtual void NotifyInterfaceUp (uint32_t interface) = 0;
+  /**
+   * \param interface the index of the interface we are being notified about
+   *
+   * Protocols are expected to implement this method to be notified of the state change of
+   * an interface in a node.
+   */
+  virtual void NotifyInterfaceDown (uint32_t interface) = 0;
+
+  /**
+   * \param interface the index of the interface we are being notified about
+   * \param address a new address being added to an interface
+   *
+   * Protocols are expected to implement this method to be notified whenever
+   * a new address is added to an interface. Typically used to add a 'network route' on an
+   * interface. Can be invoked on an up or down interface.
+   */
+  virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address) = 0;
+
+  /**
+   * \param interface the index of the interface we are being notified about
+   * \param address a new address being added to an interface
+   *
+   * Protocols are expected to implement this method to be notified whenever
+   * a new address is removed from an interface. Typically used to remove the 'network route' of an
+   * interface. Can be invoked on an up or down interface.
+   */
+  virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address) = 0;
+
+  /**
+   * \param ipv4 the ipv4 object this routing protocol is being associated with
+   * 
+   * Typically, invoked directly or indirectly from ns3::Ipv4::SetRoutingProtocol
+   */
+  virtual void SetIpv4 (Ptr<Ipv4> ipv4) = 0;
 };
 
 } //namespace ns3

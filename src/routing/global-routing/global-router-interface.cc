@@ -24,9 +24,10 @@
 #include "ns3/channel.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
+#include "ns3/node-list.h"
 #include "ns3/ipv4.h"
 #include "ns3/bridge-net-device.h"
-#include "ns3/net-device-container.h"
+#include "ipv4-global-routing.h"
 #include "global-router-interface.h"
 #include <vector>
 
@@ -140,7 +141,8 @@ GlobalRoutingLSA::GlobalRoutingLSA()
   m_linkRecords(),
   m_networkLSANetworkMask("0.0.0.0"),
   m_attachedRouters(),
-  m_status(GlobalRoutingLSA::LSA_SPF_NOT_EXPLORED)
+  m_status(GlobalRoutingLSA::LSA_SPF_NOT_EXPLORED),
+  m_node_id(0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -156,7 +158,8 @@ GlobalRoutingLSA::GlobalRoutingLSA (
   m_linkRecords(),
   m_networkLSANetworkMask("0.0.0.0"),
   m_attachedRouters(),
-  m_status(status)
+  m_status(status),
+  m_node_id(0)
 {
   NS_LOG_FUNCTION (this << status << linkStateId << advertisingRtr);
 }
@@ -165,7 +168,8 @@ GlobalRoutingLSA::GlobalRoutingLSA (GlobalRoutingLSA& lsa)
   : m_lsType(lsa.m_lsType), m_linkStateId(lsa.m_linkStateId), 
     m_advertisingRtr(lsa.m_advertisingRtr), 
     m_networkLSANetworkMask(lsa.m_networkLSANetworkMask), 
-    m_status(lsa.m_status)
+    m_status(lsa.m_status),
+    m_node_id(lsa.m_node_id)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT_MSG(IsEmpty(), 
@@ -182,6 +186,7 @@ GlobalRoutingLSA::operator= (const GlobalRoutingLSA& lsa)
   m_advertisingRtr = lsa.m_advertisingRtr;
   m_networkLSANetworkMask = lsa.m_networkLSANetworkMask, 
   m_status = lsa.m_status;
+  m_node_id = lsa.m_node_id;
 
   ClearLinkRecords ();
   CopyLinkRecords (lsa);
@@ -380,6 +385,20 @@ GlobalRoutingLSA::SetStatus (GlobalRoutingLSA::SPFStatus status)
   m_status = status;
 }
 
+  Ptr<Node>
+GlobalRoutingLSA::GetNode (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return NodeList::GetNode (m_node_id);
+}
+
+  void
+GlobalRoutingLSA::SetNode (Ptr<Node> node)
+{
+  NS_LOG_FUNCTION (node);
+  m_node_id = node->GetId ();
+}
+
   void 
 GlobalRoutingLSA::Print (std::ostream &os) const
 {
@@ -497,10 +516,22 @@ GlobalRouter::~GlobalRouter ()
   ClearLSAs();
 }
 
+void 
+GlobalRouter::SetRoutingProtocol (Ptr<Ipv4GlobalRouting> routing)
+{
+  m_routingProtocol = routing;
+}
+Ptr<Ipv4GlobalRouting> 
+GlobalRouter::GetRoutingProtocol (void)
+{
+  return m_routingProtocol;
+}
+
 void
 GlobalRouter::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_routingProtocol = 0;
   Object::DoDispose ();
 }
 
@@ -570,6 +601,7 @@ GlobalRouter::DiscoverLSAs (void)
   pLSA->SetLinkStateId (m_routerId);
   pLSA->SetAdvertisingRouter (m_routerId);
   pLSA->SetStatus (GlobalRoutingLSA::LSA_SPF_NOT_EXPLORED);
+  pLSA->SetNode (node);
 
   //
   // Ask the node for the number of net devices attached. This isn't necessarily 
@@ -605,19 +637,20 @@ GlobalRouter::DiscoverLSAs (void)
       // associated with a bridge.  We are only going to involve devices with 
       // IP addresses in routing.
       //
-      bool isIp = false;
+      bool isForwarding = false;
       for (uint32_t j = 0; j < ipv4Local->GetNInterfaces (); ++j )
         {
-          if (ipv4Local->GetNetDevice (j) == ndLocal && ipv4Local->IsUp (j)) 
+          if (ipv4Local->GetNetDevice (j) == ndLocal && ipv4Local->IsUp (j) &&
+              ipv4Local->IsForwarding (j)) 
             {
-              isIp = true;
+              isForwarding = true;
               break;
             }
         }
 
-      if (!isIp)
+      if (!isForwarding)
         {
-          NS_LOG_LOGIC ("Net device " << ndLocal << "has no IP interface, skipping");
+          NS_LOG_LOGIC ("Net device " << ndLocal << "has no IP interface or is not enabled for forwarding, skipping");
           continue;
         }
 
@@ -628,8 +661,9 @@ GlobalRouter::DiscoverLSAs (void)
       // the segment.  We add the appropriate link record to the LSA.
       //
       // If the device is a point to point link, we treat it separately.  In
-      // that case, there may be one or two link records added.
+      // that case, there may be zero, one, or two link records added.
       //
+
       if (ndLocal->IsBroadcast () && !ndLocal->IsPointToPoint () )
         {
           NS_LOG_LOGIC ("Broadcast link");
@@ -1009,9 +1043,11 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   // interface aggregated.
   //
   Ptr<GlobalRouter> rtrRemote = nodeRemote->GetObject<GlobalRouter> ();
-  NS_ABORT_MSG_UNLESS(rtrRemote, 
-                      "GlobalRouter::ProcessPointToPointLinks(): GetObject for remote <GlobalRouter> failed");
-
+  if (rtrRemote == 0)
+    {
+      // This case is possible if the remote does not participate in global routing
+      return;
+    }
   //
   // We're going to need the remote router ID, so we might as well get it now.
   //
@@ -1107,6 +1143,7 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
       pLSA->SetAdvertisingRouter (m_routerId);
       pLSA->SetNetworkLSANetworkMask (maskLocal);
       pLSA->SetStatus (GlobalRoutingLSA::LSA_SPF_NOT_EXPLORED);
+      pLSA->SetNode (node);
 
       //
       // Build a list of AttachedRouters by walking the devices in the channel

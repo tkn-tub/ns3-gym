@@ -20,7 +20,6 @@
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
 #include "ns3/csma-module.h"
-#include "ns3/global-route-manager.h"
 
 // Network topology (default)
 //
@@ -196,7 +195,7 @@ main (int argc, char *argv[])
   //
   // Turn on global static routing so we can actually be routed across the star.
   //
-  GlobalRouteManager::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   NS_LOG_INFO ("Enable pcap tracing.");
   //

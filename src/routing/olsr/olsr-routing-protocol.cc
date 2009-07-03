@@ -185,19 +185,21 @@ RoutingProtocol::GetTypeId (void)
 
 
 RoutingProtocol::RoutingProtocol ()
-  :
-  m_helloTimer (Timer::CANCEL_ON_DESTROY),
-  m_tcTimer (Timer::CANCEL_ON_DESTROY),
-  m_midTimer (Timer::CANCEL_ON_DESTROY),
-  m_queuedMessagesTimer (Timer::CANCEL_ON_DESTROY)
+  : m_ipv4 (0),
+    m_helloTimer (Timer::CANCEL_ON_DESTROY),
+    m_tcTimer (Timer::CANCEL_ON_DESTROY),
+    m_midTimer (Timer::CANCEL_ON_DESTROY),
+    m_queuedMessagesTimer (Timer::CANCEL_ON_DESTROY)
 {}
 
 RoutingProtocol::~RoutingProtocol ()
 {}
 
 void
-RoutingProtocol::SetNode (Ptr<Node> node)
+RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
 {
+  NS_ASSERT (ipv4 != 0);
+  NS_ASSERT (m_ipv4 == 0);
   NS_LOG_DEBUG ("Created olsr::RoutingProtocol");
   m_helloTimer.SetFunction (&RoutingProtocol::HelloTimerExpire, this);
   m_tcTimer.SetFunction (&RoutingProtocol::TcTimerExpire, this);
@@ -210,8 +212,9 @@ RoutingProtocol::SetNode (Ptr<Node> node)
 
   m_linkTupleTimerFirstTime = true;
 
-  m_ipv4 = node->GetObject<Ipv4> ();
-  NS_ASSERT (m_ipv4);
+  m_ipv4 = ipv4;
+
+  Simulator::ScheduleNow (&RoutingProtocol::Start, this);
 }
 
 void RoutingProtocol::DoDispose ()
@@ -2550,7 +2553,7 @@ RoutingProtocol::FindSendEntry (RoutingTableEntry const &entry,
 }
 
 Ptr<Ipv4Route>
-RoutingProtocol::RouteOutput (const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr)
+RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr)
 {  
   NS_LOG_FUNCTION (this << " " << m_ipv4->GetObject<Node> ()->GetId() << " " << header.GetDestination () << " " << oif);
   // TBD:  oif is unused; can be used to restrict the outgoing interface
@@ -2651,6 +2654,18 @@ bool RoutingProtocol::RouteInput  (Ptr<const Packet> p,
       return false;
     }
 }
+void 
+RoutingProtocol::NotifyInterfaceUp (uint32_t i)
+{}
+void 
+RoutingProtocol::NotifyInterfaceDown (uint32_t i)
+{}
+void 
+RoutingProtocol::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
+{}
+void 
+RoutingProtocol::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
+{}
 
 
 ///

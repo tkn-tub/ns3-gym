@@ -237,7 +237,7 @@ AttributeList::DeserializeFromString (std::string str)
               else
                 {
                   value = str.substr (equal+1, next - (equal+1));
-                  cur++;
+                  cur = next + 1;
                 }
               Ptr<AttributeValue> val = info.checker->Create ();
               bool ok = val->DeserializeFromString (value, info.checker);
