@@ -80,6 +80,7 @@ class Tunnel
   bool
   N0VirtualSend (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
   {
+    NS_LOG_DEBUG ("Send to " << m_n3Address << ": " << *packet);
     m_n0Socket->SendTo (packet, 0, InetSocketAddress (m_n3Address, 667));
     return true;
   }
@@ -87,6 +88,7 @@ class Tunnel
   bool
   N1VirtualSend (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
   {
+    NS_LOG_DEBUG ("Send to " << m_n3Address << ": " << *packet);
     m_n1Socket->SendTo (packet, 0, InetSocketAddress (m_n3Address, 667));
     return true;
   }
@@ -96,10 +98,12 @@ class Tunnel
   {
     if (m_rng.GetValue () < 0.25)
       {
+        NS_LOG_DEBUG ("Send to " << m_n0Address << ": " << *packet);
         m_n3Socket->SendTo (packet, 0, InetSocketAddress (m_n0Address, 667));
       }
     else 
       {
+        NS_LOG_DEBUG ("Send to " << m_n1Address << ": " << *packet);
         m_n3Socket->SendTo (packet, 0, InetSocketAddress (m_n1Address, 667));
       }
     return true;
@@ -108,6 +112,7 @@ class Tunnel
   void N3SocketRecv (Ptr<Socket> socket)
   {
     Ptr<Packet> packet = socket->Recv (65535, 0);
+    NS_LOG_DEBUG ("N3SocketRecv: " << *packet);
     SocketAddressTag socketAddressTag;
     packet->RemovePacketTag (socketAddressTag);
     m_n3Tap->Receive (packet, 0x0800, m_n3Tap->GetAddress (), m_n3Tap->GetAddress (), NetDevice::PACKET_HOST);
@@ -116,6 +121,7 @@ class Tunnel
   void N0SocketRecv (Ptr<Socket> socket)
   {
     Ptr<Packet> packet = socket->Recv (65535, 0);
+    NS_LOG_DEBUG ("N0SocketRecv: " << *packet);
     SocketAddressTag socketAddressTag;
     packet->RemovePacketTag (socketAddressTag);
     m_n0Tap->Receive (packet, 0x0800, m_n0Tap->GetAddress (), m_n0Tap->GetAddress (), NetDevice::PACKET_HOST);
@@ -124,6 +130,7 @@ class Tunnel
   void N1SocketRecv (Ptr<Socket> socket)
   {
     Ptr<Packet> packet = socket->Recv (65535, 0);
+    NS_LOG_DEBUG ("N1SocketRecv: " << *packet);
     SocketAddressTag socketAddressTag;
     packet->RemovePacketTag (socketAddressTag);
     m_n1Tap->Receive (packet, 0x0800, m_n1Tap->GetAddress (), m_n1Tap->GetAddress (), NetDevice::PACKET_HOST);
@@ -192,6 +199,8 @@ main (int argc, char *argv[])
 #if 0 
   LogComponentEnable ("VirtualNetDeviceExample", LOG_LEVEL_INFO);
 #endif
+  Packet::EnablePrinting ();
+  
 
   // Set up some default values for the simulation.  Use the 
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
@@ -266,11 +275,11 @@ main (int argc, char *argv[])
     Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   apps = sink.Install (c.Get (3));
   apps.Start (Seconds (1.0));
-  apps.Stop (Seconds (10.0));
+  //apps.Stop (Seconds (10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
   onoff.SetAttribute ("Remote", 
-                      AddressValue (InetSocketAddress (Ipv4Address ("11.0.0.2"), port)));
+                      AddressValue (InetSocketAddress (Ipv4Address ("11.0.0.1"), port)));
   apps = onoff.Install (c.Get (3));
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));
@@ -278,7 +287,7 @@ main (int argc, char *argv[])
   // Create a packet sink to receive these packets
   apps = sink.Install (c.Get (1));
   apps.Start (Seconds (1.1));
-  apps.Stop (Seconds (10.0));
+  //apps.Stop (Seconds (10.0));
 
   std::ofstream ascii;
   ascii.open ("virtual-net-device.tr");
