@@ -114,6 +114,7 @@ example:  @code{class ns3::Node}.
 
 The public header file node.h has a declaration that includes
 a static GetTypeId function call:
+
 @verbatim
 class Node : public Object
 {
@@ -123,20 +124,71 @@ public:
 @end verbatim
 
 This is defined in the node.cc file as follows:
+
 @verbatim
 TypeId 
 Node::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Node")
     .SetParent<Object> ()
+    .AddConstructor<Node> ()
+    .AddAttribute ("DeviceList", "The list of devices associated to this Node.",
+                   ObjectVectorValue (),
+                   MakeObjectVectorAccessor (&Node::m_devices),
+                   MakeObjectVectorChecker<NetDevice> ())
+    .AddAttribute ("ApplicationList", "The list of applications associated to this Node.",
+                   ObjectVectorValue (),
+                   MakeObjectVectorAccessor (&Node::m_applications),
+                   MakeObjectVectorChecker<Application> ())
+    .AddAttribute ("Id", "The id (unique integer) of this Node.",
+                   TypeId::ATTR_GET, // allow only getting it.
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&Node::m_id),
+                   MakeUintegerChecker<uint32_t> ())
     ;
   return tid;
 }
 @end verbatim
-Finally, when users want to create Nodes, they call:
+
+Look at the TypeId of an ns-3 @code{Object} class as an extended form of run 
+time type information (RTTI).  The C++ language includes simple kind of RTTI
+in order to support @code{dynamic_cast} and @code{typeid} operators.
+
+The ``@code{.SetParent<Object> ()}'' call in the declaration above is used in 
+conjunction with our object aggregation mechanisms to allow safe up- and
+down-casing in inheritance trees during @code{GetObject}.
+
+The ``@code{.AddConstructor<Node> ()}'' call is used in conjunction with our
+abstract object factory mechanisms to allow us to construct C++ objects without
+forcing a user to know the concrete class of the object she is building.
+
+The three calls to ``@code{.AddAttribute}'' associate a given string with a 
+strongly typed value in the class.  Notice that you must provide a help string
+which may be displayed, for example, via command line processors.  Each 
+@code{Attribute} is associated with mechanisms for accessing the underlying
+member variable in the object (for example, @code{MakeUintegerAccessor} tells
+the generic @code{Attribute} code how to get to the node ID above).  There are
+also ``Checker'' methods which are used to validate values.
+
+When users want to create Nodes, they will usually call some form of 
+@code{CreateObject},
+
 @verbatim
   Ptr<Node> n = CreateObject<Node> ();
 @end verbatim
+
+or more abstractly, using an object factory, you can create a @code{Node} object
+without even knowing the concrete C++ type
+
+@verbatim
+  ObjectFactory factory;
+  const std::string typeId = "ns3::Node'';
+  factory.SetTypeId(typeId);
+  Ptr<Object> node = factory.Create <Object> ();
+@end verbatim
+
+Both of these methods result in fully initialized attributes being available 
+in the resulting @code{Object} instances.
 
 We next discuss how attributes (values associated with member variables
 or functions of the class) are plumbed into the above TypeId.
@@ -206,6 +258,7 @@ and some type of global default value.
 
 In the ns-3 attribute system, these value definitions and accessor
 functions are moved into the TypeId class; e.g.:  
+
 @verbatim
 NS_OBJECT_ENSURE_REGISTERED (DropTailQueue);
 
@@ -358,11 +411,11 @@ Now, let's set it to another value (60 packets)
 
 @subsubsection Namespace-based access
 
-An alternative way to get at the attribute is to use the configuration
-namespace.  Here, this attribute resides on a known path in this
-namespace; this approach is useful if one doesn't have access to
-the underlying pointers and would like to configure a specific
-attribute with a single statement.  
+An alternative way to get at the attribute is to use the configuration namespace.
+Here, this attribute resides on a known path in this namespace; this approach
+is useful if one doesn't have access to the underlying pointers and would like
+to configure a specific attribute with a single statement.  
+
 @verbatim
   Config::Set ("/NodeList/0/DeviceList/0/TxQueue/MaxPackets", UintegerValue (25));
   txQueue->GetAttribute ("MaxPackets", limit); 
@@ -370,14 +423,29 @@ attribute with a single statement.
     limit.Get () << " packets");
 @end verbatim
 
-We could have also used wildcards to set this value for all nodes
-and all net devices (which in this simple example has the same
-effect as the previous Set())
+We could have also used wildcards to set this value for all nodes and all net 
+devices (which in this simple example has the same effect as the previous Set())
 @verbatim
   Config::Set ("/NodeList/*/DeviceList/*/TxQueue/MaxPackets", UintegerValue (15));
   txQueue->GetAttribute ("MaxPackets", limit); 
   NS_LOG_INFO ("5.  txQueue limit changed through wildcarded namespace: " << 
     limit.Get () << " packets");
+@end verbatim
+
+@subsubsection Object Name Service-based access
+
+Another way to get at the attribute is to use the object name service facility.
+Here, this attribute is found using a name string.  This approach is useful if 
+one doesn't have access to the underlying pointers and it is difficult to 
+determine the required concrete configuration namespaced path.
+
+@verbatim
+  Names::Add ("server", serverNode);
+  Names::Add ("server/eth0", serverDevice);
+
+  ...
+
+  Config::Set ("/Names/server/eth0/TxQueue/MaxPackets", UintegerValue (25));
 @end verbatim
 
 @subsection Setting through constructors helper classes
@@ -438,13 +506,13 @@ Consider this variable in class TcpSocket:
 Suppose that someone working with Tcp wanted to get or set the 
 value of that variable using the metadata system.  If it were not
 already provided by ns-3, the user could declare the following addition 
-in the metadata system (to the TypeId declaration for TcpSocket):
+in the runtime metadata system (to the TypeId declaration for TcpSocket):
 @verbatim
-    .AddParameter ("Congestion window", 
+    .AddAttribute ("Congestion window", 
                    "Tcp congestion window (bytes)",
-                   Uinteger (1),
+                   UintegerValue (1),
                    MakeUintegerAccessor (&TcpSocket::m_cWnd),
-                   MakeUintegerChecker<uint16_t> ());
+                   MakeUintegerChecker<uint16_t> ())
 
 @end verbatim
 
@@ -511,21 +579,26 @@ wants to hook it in to the attribute system, there is mainly the matter
 of writing 
 the conversions to/from strings and attribute values.  Most of this can be
 copy/pasted with macro-ized code.  For instance, consider class
-Rectangle in the @code{src/mobility/} directory:
+delcaration for Rectangle in the @code{src/mobility/} directory:
 
-One line is added to the class declaration:
 @verbatim
 /**
  * \brief a 2d rectangle
  */
 class Rectangle
 {
-...
+  ...
 
+  double xMin;
+  double xMax;
+  double yMin;
+  double yMax;
 };
 @end verbatim
  
-One macro call and two operators, are added below the class declaration:
+One macro call and two operators, must be added below the class declaration
+in order to turn a Rectangle into a value usable by the @code{Attribute}
+system:
 
 @verbatim
 std::ostream &operator << (std::ostream &os, const Rectangle &rectangle);
@@ -534,7 +607,7 @@ std::istream &operator >> (std::istream &is, Rectangle &rectangle);
 ATTRIBUTE_HELPER_HEADER (Rectangle);
 @end verbatim
 
-In the class definition, the code looks like this:
+In the class definition (@code{.cc} file), the code looks like this:
 
 @verbatim
 ATTRIBUTE_HELPER_CPP (Rectangle);
@@ -568,9 +641,9 @@ of an instance of the new class.
 @node ConfigStore
 @section ConfigStore
 
-@strong{Feedback requested:}  This is an experimental feature of ns-3.
-It is not in the main tree.  If you like this feature and would like
-to provide feedback on it, please email us.
+@strong{Feedback requested:}  This is an experimental feature of ns-3.  It is 
+found in @code{src/contrib} and not in the main tree.  If you like this feature
+and would like to provide feedback on it, please email us.
 
 Values for ns-3 attributes can be stored in an ascii text file and
 loaded into a future simulation.  This feature is known as the

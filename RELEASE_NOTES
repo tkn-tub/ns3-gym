@@ -4,9 +4,7 @@
 This file contains ns-3 release notes (most recent releases first).
 
 All of the ns-3 documentation is accessible from the ns-3 website: 
-http://www.nsnam.org
-including tutorials:
-http://www.nsnam.org/tutorials.html
+http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 
 Release 3.5
 ===========
@@ -64,8 +62,8 @@ Future releases
 ---------------
 Our next release, which is expected to happen in 2 to 4 months from now, will
 feature the merging of some of our projects currently in development including
-fuller IPv6 support, and some smaller features such as a new Global ARP package 
-and possibly a new Testing and Validation suite.
+fuller IPv6 support, some smaller features such as a new Global ARP 
+package, and possibly a new Testing and Validation suite.
 
 Release 3.4
 ===========

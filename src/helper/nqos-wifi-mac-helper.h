@@ -24,6 +24,10 @@
 
 namespace ns3 {
 
+/**
+ * \brief create non-qos MAC layers for a ns3::WifiNetDevice. 
+ * This class can create MACs of type ns3::NqapWifiMac, ns3::NqstaWifiMac, and, ns3::AdhocWifiMac
+ */
 class NqosWifiMacHelper : public WifiMacHelper
 {
 public:
