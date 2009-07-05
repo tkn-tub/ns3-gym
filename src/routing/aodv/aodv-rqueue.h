@@ -36,7 +36,10 @@ namespace aodv {
 #define AODV_RTQ_MAX_LEN 64
 /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
 #define AODV_RTQ_TIMEOUT 30
-
+/**
+ * \ingroup aodv
+ * \brief AODV Queue Entry
+ */
 struct QueueEntry
 {
   Ptr<Packet> p;
@@ -50,7 +53,10 @@ struct QueueEntry
     return ((p == o.p)/*&& header == o.header*/ && (enExpire == o.enExpire));
   }
 };
-
+/**
+ * \ingroup aodv
+ * \brief AODV Queue
+ */
 class aodv_rqueue 
 {
 public:

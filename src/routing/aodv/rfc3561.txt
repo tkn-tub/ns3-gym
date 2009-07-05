@@ -1518,7 +1518,7 @@ RFC 3561                      AODV Routing                     July 2003
 
    It can be shown [4] that by the time the rebooted node comes out of
    the waiting phase and becomes an active router again, none of its
-   neighbors will be using it as an active next hop any more.  Its own
+   iftrs will be using it as an active next hop any more.  Its own
    sequence number gets updated once it receives a RREQ from any other
    node, as the RREQ always carries the maximum destination sequence
    number seen en route.  If no such RREQ arrives, the node MUST
