@@ -91,10 +91,6 @@ public:
   aodv_rt_entry(Ipv4Address dst, bool vSeqNo, u_int32_t seqNo,
   		u_int16_t  hops,Ipv4Address nextHop, Time lifetime);
   ~aodv_rt_entry();
-
-//  void nb_insert(Ipv4Address id);
-//  /// Lookup neighbor by address, return true on success
-//  bool nb_lookup(Ipv4Address id, AODV_Neighbor & n);
   /**
    * Insert precursor in precursor list if it doesn't yet exist in the list
    * \param id precursor address
@@ -169,8 +165,6 @@ protected:
   char hist_indx;
   /// Last ttl value used
   int rt_req_last_ttl;
-//  /// a list of neighbors that are using this route.
-//  std::vector<AODV_Neighbor> rt_nblist;
 };
 
 /**

@@ -44,10 +44,14 @@ struct QueueEntry
 {
   Ptr<Packet> p;
   Ipv4Header header;
+  /// Expire time for queue entry
   Time enExpire;
-  
+  /// c-tor
   QueueEntry(Ptr<Packet> pa, Ipv4Header const & h, Time exp = Seconds(0)) : p(pa), header(h), enExpire(exp) {}
-  
+  /**
+   * Compare queue entries
+   * \return true if equal
+   */
   bool operator==(QueueEntry const & o) const
   {
     return ((p == o.p)/*&& header == o.header*/ && (enExpire == o.enExpire));
@@ -60,13 +64,13 @@ struct QueueEntry
 class aodv_rqueue 
 {
 public:
-  /// default c-tor
+  /// Default c-tor
   aodv_rqueue();
-  /// Push element in queue.
+  /// Push entry in queue.
   void enque(QueueEntry & entry);
-  /// Returns a element from the head of the queue.
+  /// Returns a entry from the head of the queue.
   QueueEntry deque();
-  /// Return first found (the earliest) entry for given destination 
+  /// Return first found (the earliest) entry for given destination
   bool deque(Ipv4Address dst, QueueEntry & entry);
   /// Finds whether a packet with destination dst exists in the queue
   bool find(Ipv4Address dst);
@@ -83,8 +87,9 @@ private:
   bool findPacketWithDst(Ipv4Address dst, QueueEntry & entry);
   /// Notify that packet is dropped from queue by timeout
   void drop (QueueEntry e);
-  
+  /// Maximum number of entries in queue
   uint32_t limit_;
+  /// Life time of queue entry in queue
   Time timeout_;
 };
 }}
