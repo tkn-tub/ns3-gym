@@ -141,7 +141,7 @@ protected:
   /// Hop Count (number of hops needed to reach destination)
   u_int16_t rt_hops;
   /// Last valid hop count
-  int rt_last_hop_count;
+  u_int16_t rt_last_hop_count;
   /// Next hop IP address
   Ipv4Address rt_nexthop;
   /// List of precursors
@@ -149,7 +149,7 @@ protected:
   /**
   * \brief Expiration or deletion time of the route
   *	Lifetime field in the routing table plays dual role --
-  *	for an active route it is the expiry time, and for an invalid route
+  *	for an active route it is the expiration time, and for an invalid route
   *	it is the deletion time.
   */
   Time rt_lifetime;
@@ -164,7 +164,7 @@ protected:
   double rt_disc_latency[MAX_HISTORY];
   char hist_indx;
   /// Last ttl value used
-  int rt_req_last_ttl;
+  uint16_t rt_req_last_ttl;
 };
 
 /**

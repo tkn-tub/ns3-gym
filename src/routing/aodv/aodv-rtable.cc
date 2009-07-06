@@ -56,13 +56,12 @@ aodv_rt_entry::aodv_rt_entry()
 aodv_rt_entry::aodv_rt_entry(Ipv4Address dst, bool vSeqNo, u_int32_t seqNo,
 		u_int16_t  hops,Ipv4Address nextHop, Time lifetime)
 {
-	rt_dst = dst;
-	validSeqNo = vSeqNo;
-	if(validSeqNo == true)
-		rt_seqno = seqNo;
-	rt_hops = hops;
-	rt_nexthop = nextHop;
-	rt_lifetime = lifetime;
+  rt_dst = dst;
+  validSeqNo = vSeqNo;
+  if (validSeqNo) rt_seqno = seqNo;
+  rt_hops = hops;
+  rt_nexthop = nextHop;
+  rt_lifetime = lifetime;
 }
 
 aodv_rt_entry::~aodv_rt_entry()
@@ -75,10 +74,10 @@ aodv_rt_entry::pc_insert(Ipv4Address id)
   AODV_Precursor p (id);
 
   if (! pc_lookup(id, p))
-  {
-  	rt_pclist.push_back(p);
-  	return true;
-  }
+    {
+      rt_pclist.push_back(p);
+      return true;
+    }
   else return false;
 }
 
@@ -100,9 +99,9 @@ aodv_rt_entry::pc_delete(Ipv4Address id)
   AODV_Precursor p(id);
   std::vector<AODV_Precursor>::iterator i = std::remove(rt_pclist.begin(), rt_pclist.end(), p);
   if(i == rt_pclist.end())
-  	return false;
+    return false;
   else
-  	rt_pclist.erase (i, rt_pclist.end());
+    rt_pclist.erase (i, rt_pclist.end());
   return true;
 }
 
@@ -134,9 +133,8 @@ aodv_rtable::rt_lookup(Ipv4Address id, aodv_rt_entry & rt) const
 bool
 aodv_rtable::rt_delete(Ipv4Address dst)
 {
-	std::vector<aodv_rt_entry>::iterator i = std::remove(rthead.begin(), rthead.end(), dst);
-	if(i == rthead.end())
-		return false;
+  std::vector<aodv_rt_entry>::iterator i = std::remove(rthead.begin(), rthead.end(), dst);
+  if (i == rthead.end()) return false;
   rthead.erase (i, rthead.end());
   return true;
 }
@@ -152,67 +150,62 @@ aodv_rtable::rt_add(aodv_rt_entry const & rt)
 }
 
 #ifdef RUN_SELF_TESTS
-    /// Unit test for aodv_rqueue
-    struct AodvRtableTest : public Test
-    {
-      AodvRtableTest () : Test ("AODV/Rtable"), result(true) {}
-      virtual bool RunTests();
-      bool result;
-    };
+/// Unit test for aodv_rqueue
+struct AodvRtableTest : public Test
+{
+  AodvRtableTest () : Test ("AODV/Rtable"), result(true) {}
+  virtual bool RunTests();
+  bool result;
+};
 
-    /// Test instance
-    static AodvRtableTest g_AodvRtableTest;
+/// Test instance
+static AodvRtableTest g_AodvRtableTest;
 
-    bool
-    AodvRtableTest::RunTests ()
-    {
-    	AODV_Neighbor nb1(Ipv4Address("1.2.3.4"));
-    	AODV_Neighbor nb2(Ipv4Address("4.3.2.1"));
-    	NS_TEST_ASSERT(!(nb1==nb2));
-
-    	AODV_Neighbor nb3(Ipv4Address("3.3.3.3"));
-    	AODV_Neighbor nb4(Ipv4Address("3.3.3.3"), Seconds(1));
-    	NS_TEST_ASSERT(!(nb1==nb2));
-
-    	AODV_Precursor pc1(Ipv4Address("1.1.1.1"));
-    	AODV_Precursor pc2(Ipv4Address("2.2.2.2"));
-    	NS_TEST_ASSERT(!(pc1==pc2));
-
-    	aodv_rt_entry entry1;
-    	Ipv4Address dst1("3.3.3.3");
-    	Ipv4Address dst2("1.2.3.4");
-    	aodv_rt_entry entry2 = aodv_rt_entry(dst2, true, 34, 1, Ipv4Address("5.5.5.5"),  Seconds(5));
-    	NS_TEST_ASSERT( !(entry1 == dst1) );
-    	NS_TEST_ASSERT(entry2 == dst2);
-
-    	entry2.pc_insert(dst1);
-    	AODV_Precursor pc3(dst1);
-    	NS_TEST_ASSERT(entry2.pc_lookup(dst1, pc2));
-    	NS_TEST_ASSERT(pc3==pc2);
-    	NS_TEST_ASSERT(!entry2.pc_delete(dst2));
-    	NS_TEST_ASSERT(entry2.pc_delete(dst1));
-    	NS_TEST_ASSERT(entry2.pc_empty());
-    	entry2.pc_insert(dst2);
-    	NS_TEST_ASSERT(entry2.pc_insert(dst1));
-    	NS_TEST_ASSERT(!entry2.pc_insert(dst2));
-    	entry2.pc_delete();
-    	NS_TEST_ASSERT(entry2.pc_empty());
-
-    	aodv_rtable rtable;
-    	rtable.rt_add(entry2);
-    	NS_TEST_ASSERT(rtable.rt_lookup(dst2, entry1));
-    	NS_TEST_ASSERT(entry1 == dst2);
-    	NS_TEST_ASSERT(!rtable.rt_lookup(dst1, entry1));
-    	NS_TEST_ASSERT(rtable.rt_delete(dst2));
-    	NS_TEST_ASSERT(!rtable.rt_lookup(dst2, entry1));
-
-
-
-
-      return result;
-    }
-
-
+bool
+AodvRtableTest::RunTests ()
+{
+  AODV_Neighbor nb1(Ipv4Address("1.2.3.4"));
+  AODV_Neighbor nb2(Ipv4Address("4.3.2.1"));
+  NS_TEST_ASSERT(!(nb1==nb2));
+  
+  AODV_Neighbor nb3(Ipv4Address("3.3.3.3"));
+  AODV_Neighbor nb4(Ipv4Address("3.3.3.3"), Seconds(1));
+  NS_TEST_ASSERT(!(nb1==nb2));
+  
+  AODV_Precursor pc1(Ipv4Address("1.1.1.1"));
+  AODV_Precursor pc2(Ipv4Address("2.2.2.2"));
+  NS_TEST_ASSERT(!(pc1==pc2));
+  
+  aodv_rt_entry entry1;
+  Ipv4Address dst1("3.3.3.3");
+  Ipv4Address dst2("1.2.3.4");
+  aodv_rt_entry entry2 = aodv_rt_entry(dst2, true, 34, 1, Ipv4Address("5.5.5.5"),  Seconds(5));
+  NS_TEST_ASSERT( !(entry1 == dst1) );
+  NS_TEST_ASSERT(entry2 == dst2);
+  
+  entry2.pc_insert(dst1);
+  AODV_Precursor pc3(dst1);
+  NS_TEST_ASSERT(entry2.pc_lookup(dst1, pc2));
+  NS_TEST_ASSERT(pc3==pc2);
+  NS_TEST_ASSERT(!entry2.pc_delete(dst2));
+  NS_TEST_ASSERT(entry2.pc_delete(dst1));
+  NS_TEST_ASSERT(entry2.pc_empty());
+  entry2.pc_insert(dst2);
+  NS_TEST_ASSERT(entry2.pc_insert(dst1));
+  NS_TEST_ASSERT(!entry2.pc_insert(dst2));
+  entry2.pc_delete();
+  NS_TEST_ASSERT(entry2.pc_empty());
+  
+  aodv_rtable rtable;
+  rtable.rt_add(entry2);
+  NS_TEST_ASSERT(rtable.rt_lookup(dst2, entry1));
+  NS_TEST_ASSERT(entry1 == dst2);
+  NS_TEST_ASSERT(!rtable.rt_lookup(dst1, entry1));
+  NS_TEST_ASSERT(rtable.rt_delete(dst2));
+  NS_TEST_ASSERT(!rtable.rt_lookup(dst2, entry1));
+  
+  return result;
+}
 #endif
 
 }}

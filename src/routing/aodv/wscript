@@ -6,6 +6,7 @@ def build(bld):
     module.source = [
         'aodv-rtable.cc',
         'aodv-rqueue.cc',
+        'aodv-packet.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -13,5 +14,6 @@ def build(bld):
     headers.source = [
         'aodv-rtable.h',
         'aodv-rqueue.h',
+        'aodv-packet.h',
         ]
 
