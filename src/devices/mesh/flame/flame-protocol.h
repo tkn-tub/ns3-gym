@@ -33,9 +33,16 @@
  * \ingroup mesh
  * \defgroup flame FLAME 
  * 
- * \brief Forwarding LAyer for Meshing protocol
+ * \brief Forwarding LAyer for MEshing protocol
  * 
- * TODO add relevant references
+ * Simple L2.5 mesh routing protocol developed by 
+ * Herman Elfrink <herman.elfrink@ti-wmc.nl> and presented in
+ * "Easy Wireless: broadband ad-hoc networking for emergency services"
+ * by Maurits de Graaf et. al. at The Sixth Annual Mediterranean Ad Hoc 
+ * Networking WorkShop, Corfu, Greece, June 12-15, 2007
+ *
+ * see also Linux kernel mailing list discussion at 
+ * http://lkml.org/lkml/2006/5/23/82
  */
 namespace ns3 {
 namespace flame {
@@ -126,6 +133,21 @@ private:
   uint16_t m_myLastSeqno;
   /// Routing table:
   Ptr<FlameRtable> m_rtable;
+  ///\name Statistics:
+  ///\{
+  struct Statistics
+  {
+    uint16_t txUnicast;
+    uint16_t txBroadcast;
+    uint32_t txBytes;
+    uint16_t droppedTtl;
+    uint16_t totalDropped;
+    void Print (std::ostream & os) const;
+    Statistics () : txUnicast (0), txBroadcast (0), txBytes (0), droppedTtl (0), totalDropped (0) {}
+  };
+  Statistics m_stats;
+  ///\}
+
 };
 } //namespace flame
 } //namespace ns3
