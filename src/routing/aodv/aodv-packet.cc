@@ -405,4 +405,119 @@ bool RrepAckHeaderTest::RunTests ()
 }
 #endif
 
+//-----------------------------------------------------------------------------
+// RERR
+//-----------------------------------------------------------------------------
+RerrHeader::RerrHeader() : er_flag(0), reserved(0)
+{
+	destCount = unreachable_dst.size();
+}
+
+TypeId
+RerrHeader::GetInstanceTypeId() const
+{
+	return TypeId();
+}
+
+uint32_t
+RerrHeader::GetSerializedSize () const
+{
+	return ( 4 + 8*destCount);
+}
+
+void
+RerrHeader::Serialize (Buffer::Iterator i) const
+{
+	i.WriteU8(type());
+	i.WriteU8(er_flag);
+	i.WriteU8(reserved);
+	i.WriteU8(destCount);
+	std::map<Ipv4Address, uint32_t>::const_iterator j;
+	for(j = unreachable_dst.begin(); j != unreachable_dst.end(); ++j)
+	{
+	  WriteTo (i, (*j).first);
+	  i.WriteHtonU32 ((*j).second);
+	}
+}
+
+uint32_t
+RerrHeader::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+  uint8_t t = i.ReadU8 ();
+  NS_ASSERT (t == type());
+
+  er_flag = i.ReadU8 ();
+  reserved = i.ReadU8 ();
+  destCount = i.ReadU8 ();
+  unreachable_dst.clear();
+  Ipv4Address address;
+  uint32_t seqNo;
+	for(uint8_t k = 0; k < destCount; ++k)
+	{
+		ReadFrom (i, address);
+		seqNo = i.ReadNtohU32 ();
+		unreachable_dst[address] = seqNo;
+	}
+
+  uint32_t dist = i.GetDistanceFrom (start);
+  NS_ASSERT (dist == GetSerializedSize ());
+  return dist;
+}
+
+void
+RerrHeader::Print (std::ostream &os) const
+{
+	// TODO
+}
+
+void
+RerrHeader::SetNoDelete(bool f)
+{
+	 if (f) er_flag |= (1 << 0);
+	 else   er_flag &= ~(1 << 0);
+}
+
+bool
+RerrHeader::GetNoDelete()
+{
+	return (er_flag & (1 << 0));
+}
+
+bool
+RerrHeader::AddUnDestination(Ipv4Address dst, uint32_t seqNo)
+{
+	if(unreachable_dst.find(dst) != unreachable_dst.end())
+		return false;
+	unreachable_dst[dst] = seqNo;
+	return true;
+}
+
+bool
+RerrHeader::operator==(RerrHeader const & o) const
+{
+	bool result = ( er_flag == o.er_flag && reserved == o.reserved &&
+			destCount == o.destCount );
+	if(!result)
+		return false;
+	std::map<Ipv4Address, uint32_t>::const_iterator j = unreachable_dst.begin();
+	std::map<Ipv4Address, uint32_t>::const_iterator k = o.unreachable_dst.begin();
+	for(uint8_t i = 0; i < destCount; ++i)
+	{
+		result = result && ( (*j).first == (*k).first ) && ( (*j).second == (*k).second );
+		if(!result)
+				return false;
+		j++;
+		k++;
+	}
+	return result;
+}
+
+std::ostream & operator<<(std::ostream & os, RerrHeader const & h)
+{
+	h.Print(os);
+	return os;
+}
+
+
 }}

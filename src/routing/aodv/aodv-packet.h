@@ -218,6 +218,60 @@ private:
 std::ostream & operator<<(std::ostream & os, RrepAckHader const &);
 
 
+/**
+ * \ingroup aodv
+ * \brief Route Error (RERR) Message Format
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |     Type      |N|          Reserved           |   DestCount   |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |            Unreachable Destination IP Address (1)             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |         Unreachable Destination Sequence Number (1)           |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|
+   |  Additional Unreachable Destination IP Addresses (if needed)  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |Additional Unreachable Destination Sequence Numbers (if needed)|
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *
+ */
+class RerrHeader : public Header
+{
+public:
+	RerrHeader ();
+
+  ///\name Header serialization/deserialization
+  //\{
+  TypeId GetInstanceTypeId() const;
+  uint32_t GetSerializedSize () const;
+  void Serialize (Buffer::Iterator i) const;
+  uint32_t Deserialize (Buffer::Iterator start);
+  void Print (std::ostream &os) const;
+  //\}
+
+  ///\name No delete flag
+  //\{
+	void SetNoDelete(bool f);
+	bool GetNoDelete();
+  //\}
+	bool AddUnDestination(Ipv4Address dst, uint32_t seqNo);
+	uint8_t GetDestCount() const { return destCount; }
+  bool operator==(RerrHeader const & o) const;
+private:
+   static MessageType type() { return AODVTYPE_RERR; }
+   uint8_t	er_flag;							///< No delete flag
+   uint8_t reserved;							///< Not used
+   uint8_t destCount;            ///< DestCount
+   /// List of Unreachable destination IP addresses and sequence numbers
+   std::map<Ipv4Address, uint32_t> unreachable_dst;
+
+};
+std::ostream & operator<<(std::ostream & os, RerrHeader const &);
+
+
+
 
 }
 }
