@@ -379,5 +379,30 @@ std::ostream & operator<<(std::ostream & os, RrepAckHader const & h)
 	return os;
 }
 
+#ifdef RUN_SELF_TESTS
+/// Unit test for RREP-ACK
+struct RrepAckHeaderTest : public Test
+{
+	RrepAckHeaderTest () : Test ("AODV/RREP-ACK") {}
+  virtual bool RunTests();
+};
+
+/// Test instance
+static RrepAckHeaderTest g_RrepAckHeaderTest;
+
+bool RrepAckHeaderTest::RunTests ()
+{
+  bool result(true);
+
+  RrepAckHader h;
+  Ptr<Packet> p = Create<Packet> ();
+  p->AddHeader (h);
+  RrepAckHader h2;
+  uint32_t bytes = p->RemoveHeader(h2);
+  NS_TEST_ASSERT_EQUAL (bytes, 2);
+  NS_TEST_ASSERT_EQUAL (h, h2);
+  return result;
+}
+#endif
 
 }}
