@@ -188,6 +188,36 @@ private:
 
 std::ostream & operator<<(std::ostream & os, RrepHeader const &);
 
+/**
+ * \ingroup aodv
+ * \brief Route Reply Acknowledgment (RREP-ACK) Message Format
+ *  0                   1
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |     Type      |   Reserved    |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ */
+class RrepAckHader : public Header
+{
+public:
+	RrepAckHader ();
+
+  ///\name Header serialization/deserialization
+  //\{
+  TypeId GetInstanceTypeId() const;
+  uint32_t GetSerializedSize () const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
+  void Print (std::ostream &os) const;
+  //\}
+  bool operator==(RrepAckHader const & o) const;
+private:
+   static MessageType type() { return AODVTYPE_RREP_ACK; }
+   uint8_t	reserved;
+};
+std::ostream & operator<<(std::ostream & os, RrepAckHader const &);
+
+
 
 }
 }

@@ -322,5 +322,62 @@ bool RrepHeaderTest::RunTests ()
 }
 #endif
 
+//-----------------------------------------------------------------------------
+// RREP-ACK
+//-----------------------------------------------------------------------------
+
+RrepAckHader::RrepAckHader () : reserved(0)
+{
+}
+
+TypeId
+RrepAckHader::GetInstanceTypeId() const
+{
+	return TypeId();
+}
+
+uint32_t
+RrepAckHader::GetSerializedSize () const
+{
+	return 2;
+}
+
+void
+RrepAckHader::Serialize (Buffer::Iterator i) const
+{
+	i.WriteU8(type());
+	i.WriteU8(reserved);
+}
+
+uint32_t
+RrepAckHader::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+  uint8_t t = i.ReadU8 ();
+  NS_ASSERT (t == type());
+  reserved = i.ReadU8 ();
+  uint32_t dist = i.GetDistanceFrom (start);
+  NS_ASSERT (dist == GetSerializedSize ());
+  return dist;
+}
+
+void
+RrepAckHader::Print (std::ostream &os) const
+{
+	// TODO
+}
+
+bool
+RrepAckHader::operator==(RrepAckHader const & o) const
+{
+	return reserved == o.reserved;
+}
+
+std::ostream & operator<<(std::ostream & os, RrepAckHader const & h)
+{
+	h.Print(os);
+	return os;
+}
+
 
 }}
