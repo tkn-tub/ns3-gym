@@ -148,10 +148,10 @@ RreqHeader::operator==(RreqHeader const & o) const
 
 #ifdef RUN_SELF_TESTS
 /// Unit test for RREQ
-struct RreqHeaderTest : public Test 
+struct RreqHeaderTest : public Test
 {
   RreqHeaderTest () : Test ("AODV/RREQ") {}
-  virtual bool RunTests(); 
+  virtual bool RunTests();
 };
 
 /// Test instance
@@ -160,7 +160,7 @@ static RreqHeaderTest g_RreqHeaderTest;
 bool RreqHeaderTest::RunTests ()
 {
   bool result(true);
-  
+
   RreqHeader h;
   h.SetDst (Ipv4Address("1.2.3.4"));
   h.SetDstSeqno (123);
@@ -173,7 +173,7 @@ bool RreqHeaderTest::RunTests ()
   NS_TEST_ASSERT(h.GetDestinationOnly ());
   h.SetUnknownSeqno (true);
   NS_TEST_ASSERT(h.GetUnknownSeqno ());
-  
+
   Ptr<Packet> p = Create<Packet> ();
   p->AddHeader (h);
   RreqHeader h2;
@@ -182,6 +182,107 @@ bool RreqHeaderTest::RunTests ()
   NS_TEST_ASSERT_EQUAL (h, h2);
   return result;
 }
-#endif 
+#endif
+
+//-----------------------------------------------------------------------------
+// RREP
+//-----------------------------------------------------------------------------
+
+RrepHeader::RrepHeader() :rp_flags(0), prefixSize(0),  rp_hop_count(0), rp_dst_seqno(0)
+{
+	SetAckRequired(false);
+}
+
+TypeId
+RrepHeader::GetInstanceTypeId() const
+{
+	return TypeId();
+}
+
+uint32_t
+RrepHeader::GetSerializedSize () const
+{
+	return 20;
+}
+
+void
+RrepHeader::Serialize (Buffer::Iterator i) const
+{
+	i.WriteU8(type());
+	i.WriteU8(rp_flags);
+	i.WriteU8(prefixSize);
+  i.WriteU8 (rp_hop_count);
+  WriteTo (i, rp_dst);
+  i.WriteHtonU32 (rp_dst_seqno);
+  WriteTo (i, rp_src);
+  i.WriteHtonU32 (rp_lifetime);
+}
+
+uint32_t
+RrepHeader::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+  uint8_t t = i.ReadU8 ();
+  NS_ASSERT (t == type());
+
+  rp_flags = i.ReadU8 ();
+  prefixSize = i.ReadU8 ();
+  rp_hop_count = i.ReadU8 ();
+  ReadFrom (i, rp_dst);
+  rp_dst_seqno = i.ReadNtohU32 ();
+  ReadFrom (i, rp_src);
+  rp_lifetime = i.ReadNtohU32 ();
+
+  uint32_t dist = i.GetDistanceFrom (start);
+  NS_ASSERT (dist == GetSerializedSize ());
+  return dist;
+}
+
+void
+RrepHeader::Print (std::ostream &os) const
+{
+	// TODO
+}
+
+void
+RrepHeader::SetAckRequired (bool f)
+{
+	 if (f) rp_flags |= (1 << 1);
+	 else   rp_flags &= ~(1 << 1);
+}
+
+bool
+RrepHeader::GetAckRequired () const
+{
+	return (rp_flags & (1 << 1));
+}
+
+void
+RrepHeader::SetPrefixSize(uint8_t sz)
+{
+	prefixSize = sz;
+}
+
+uint8_t
+RrepHeader::GetPrefixSize() const
+{
+	return prefixSize;
+}
+
+bool
+RrepHeader::operator==(RrepHeader const & o) const
+{
+	return (rp_flags == o.rp_flags && prefixSize == o.prefixSize &&
+			rp_hop_count == o.rp_hop_count && rp_dst == o.rp_dst &&
+			rp_dst_seqno == o.rp_dst_seqno && rp_src == o.rp_src &&
+			rp_lifetime == o.rp_lifetime);
+}
+
+std::ostream & operator<<(std::ostream & os, RrepHeader const & h)
+{
+  h.Print (os);
+  return os;
+}
+
 
 }}

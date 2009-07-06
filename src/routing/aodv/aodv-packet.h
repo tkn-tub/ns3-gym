@@ -28,6 +28,7 @@
 #include <iostream>
 #include "ns3/header.h"
 #include "ns3/ipv4-address.h"
+#include <map>
 
 namespace ns3 {
 namespace aodv {
@@ -41,7 +42,6 @@ enum MessageType
   AODVTYPE_RERR  = 0x08,
   AODVTYPE_RREP_ACK = 0x10
 };
-
 
 /**
  * \ingroup aodv
@@ -118,6 +118,76 @@ private:
 };
 
 std::ostream & operator<<(std::ostream & os, RreqHeader const &);
+
+/**
+ * \ingroup aodv
+ *  \brief Route Reply (RREP) Message Format
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |     Type      |R|A|    Reserved     |Prefix Sz|   Hop Count   |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                     Destination IP address                    |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                  Destination Sequence Number                  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                    Originator IP address                      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                           Lifetime                            |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *
+ */
+class RrepHeader : public Header
+{
+public:
+	RrepHeader();
+	///\name Header serialization/deserialization
+	//\{
+	TypeId GetInstanceTypeId() const;
+	uint32_t GetSerializedSize () const;
+	void Serialize (Buffer::Iterator start) const;
+	uint32_t Deserialize (Buffer::Iterator start);
+	void Print (std::ostream &os) const;
+	//\}
+
+  ///\name Fields
+  //\{
+  void SetHopCount (uint8_t count) { rp_hop_count = count; }
+  uint8_t GetHopCount () const { return rp_hop_count; }
+  void SetDst (Ipv4Address a) { rp_dst = a; }
+  Ipv4Address GetDst () const { return rp_dst; }
+  void SetDstSeqno (uint32_t s) { rp_dst_seqno = s; }
+  uint32_t GetDstSeqno () const { return rp_dst_seqno; }
+  void SetSrc (Ipv4Address a) { rp_src = a; }
+  Ipv4Address GetSrc () const { return rp_src; }
+  void SetLifeTime (uint32_t t) { rp_lifetime = t; }
+  uint32_t GetLifeTime () const { return rp_lifetime; }
+  //\}
+
+  ///\name Flags
+  //\{
+  void SetAckRequired (bool f);
+  bool GetAckRequired () const;
+  void SetPrefixSize(uint8_t sz);
+  uint8_t GetPrefixSize() const;
+
+  //\}
+
+  bool operator==(RrepHeader const & o) const;
+private:
+  static MessageType type() { return AODVTYPE_RREP; }
+  uint8_t	rp_flags;								///< A - acknowledgment required flag
+  uint8_t	prefixSize;							///< Prefix Size
+  uint8_t	rp_hop_count;           ///< Hop Count
+  Ipv4Address	rp_dst;             ///< Destination IP Address
+  uint32_t	rp_dst_seqno;           ///< Destination Sequence Number
+  Ipv4Address	rp_src;             ///< Source IP Address
+  uint32_t	rp_lifetime;             ///< Lifetime
+};
+
+std::ostream & operator<<(std::ostream & os, RrepHeader const &);
+
 
 }
 }
