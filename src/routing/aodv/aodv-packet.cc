@@ -284,5 +284,43 @@ std::ostream & operator<<(std::ostream & os, RrepHeader const & h)
   return os;
 }
 
+#ifdef RUN_SELF_TESTS
+/// Unit test for RREP
+struct RrepHeaderTest : public Test
+{
+  RrepHeaderTest () : Test ("AODV/RREP") {}
+  virtual bool RunTests();
+};
+
+/// Test instance
+static RrepHeaderTest g_RrepHeaderTest;
+
+bool RrepHeaderTest::RunTests ()
+{
+  bool result(true);
+
+  RrepHeader h;
+  h.SetDst (Ipv4Address("1.2.3.4"));
+  h.SetDstSeqno (123);
+  h.SetSrc (Ipv4Address("4.3.2.1"));
+  h.SetLifeTime(12);
+  h.SetAckRequired(true);
+  NS_TEST_ASSERT(h.GetAckRequired ());
+  h.SetAckRequired(false);
+  NS_TEST_ASSERT(!h.GetAckRequired ());
+  h.SetPrefixSize(2);
+  uint8_t sz = h.GetPrefixSize();
+  NS_TEST_ASSERT_EQUAL(2, sz);
+
+  Ptr<Packet> p = Create<Packet> ();
+  p->AddHeader (h);
+  RrepHeader h2;
+  uint32_t bytes = p->RemoveHeader(h2);
+  NS_TEST_ASSERT_EQUAL (bytes, 20);
+  NS_TEST_ASSERT_EQUAL (h, h2);
+  return result;
+}
+#endif
+
 
 }}
