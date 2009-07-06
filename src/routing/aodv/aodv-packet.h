@@ -70,8 +70,9 @@ public:
   
   ///\name Header serialization/deserialization
   //\{
-  uint32_t GetSerializedSize ();
-  void Serialize (Buffer::Iterator start);
+  TypeId GetInstanceTypeId() const;
+  uint32_t GetSerializedSize () const;
+  void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
   void Print (std::ostream &os) const;
   //\}

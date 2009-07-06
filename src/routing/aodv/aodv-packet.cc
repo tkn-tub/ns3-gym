@@ -21,8 +21,10 @@
  *
  * Ported to ns-3 by Elena Borovkova <borovkovaes@iitp.ru>
  */
+#include "ns3/test.h"
 #include "aodv-packet.h"
 #include "ns3/address-utils.h"
+#include "ns3/packet.h"
 
 namespace ns3 {
 namespace aodv {
@@ -38,14 +40,19 @@ RreqHeader::RreqHeader () : rq_flags(0), reserved(0), rq_hop_count(0), rq_bcast_
   SetUnknownSeqno (false);
 }
 
+TypeId RreqHeader::GetInstanceTypeId() const
+{
+  return TypeId();
+}
+
 uint32_t 
-RreqHeader::GetSerializedSize ()
+RreqHeader::GetSerializedSize () const
 {
   return 24;
 }
 
 void 
-RreqHeader::Serialize (Buffer::Iterator i)
+RreqHeader::Serialize (Buffer::Iterator i) const
 {
   i.WriteU8 (type());
   i.WriteU8 (rq_flags);
@@ -138,5 +145,43 @@ RreqHeader::operator==(RreqHeader const & o) const
       rq_dst == o.rq_dst && rq_dst_seqno == o.rq_dst_seqno && 
       rq_src == o.rq_src && rq_src_seqno == o.rq_src_seqno);
 }
+
+#ifdef RUN_SELF_TESTS
+/// Unit test for RREQ
+struct RreqHeaderTest : public Test 
+{
+  RreqHeaderTest () : Test ("AODV/RREQ") {}
+  virtual bool RunTests(); 
+};
+
+/// Test instance
+static RreqHeaderTest g_RreqHeaderTest;
+
+bool RreqHeaderTest::RunTests ()
+{
+  bool result(true);
+  
+  RreqHeader h;
+  h.SetDst (Ipv4Address("1.2.3.4"));
+  h.SetDstSeqno (123);
+  h.SetSrc (Ipv4Address("4.3.2.1"));
+  h.SetSrcSeqno (321);
+  h.SetId (1);
+  h.SetGratiousRrep (true);
+  NS_TEST_ASSERT(h.GetGratiousRrep ());
+  h.SetDestinationOnly (true);
+  NS_TEST_ASSERT(h.GetDestinationOnly ());
+  h.SetUnknownSeqno (true);
+  NS_TEST_ASSERT(h.GetUnknownSeqno ());
+  
+  Ptr<Packet> p = Create<Packet> ();
+  p->AddHeader (h);
+  RreqHeader h2;
+  uint32_t bytes = p->RemoveHeader(h2);
+  NS_TEST_ASSERT_EQUAL (bytes, 24);
+  NS_TEST_ASSERT_EQUAL (h, h2);
+  return result;
+}
+#endif 
 
 }}
