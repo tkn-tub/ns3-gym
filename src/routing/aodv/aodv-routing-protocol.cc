@@ -211,27 +211,80 @@ RoutingProtocol::RecvError (Ptr<Packet> p)
 void 
 RoutingProtocol::BroadcastTimerExpire ()
 {
+  // id_purge();
+  btimer.Schedule (BCAST_ID_SAVE);
 }
 
 void 
 RoutingProtocol::HelloTimerExpire ()
 {
+  SendHello ();
+  // TODO select random time for the next hello
+  htimer.Schedule (HELLO_INTERVAL);
 }
 
 void 
 RoutingProtocol::NeighborTimerExpire ()
-{  
+{
+  // nb_purge();
+  ntimer.Schedule (HELLO_INTERVAL);
 }
 
 void 
 RoutingProtocol::RouteCacheTimerExpire ()
 {
+  // rt_purge();
+  rtimer.Schedule (FREQUENCY);
 }
 
 void 
 RoutingProtocol::LocalRepairTimerExpire ()
 {
+  // TODO start local repair procedure
 }
 
+void
+RoutingProtocol::SendHello ()
+{
+  // TODO send hello packet from interfaces
+}
 
+void 
+RoutingProtocol::SendRequest (Ipv4Address dst)
+{
+  // TODO
+}
+
+void 
+RoutingProtocol::SendReply (Ipv4Address ipdst, uint32_t hop_count, Ipv4Address rpdst, uint32_t rpseq, Time lifetime)
+{
+  // TODO
+}
+
+void 
+RoutingProtocol::SendError (Ipv4Address failed)
+{
+  // TODO
+}
+
+void 
+RoutingProtocol::LocalRouteRepair (Ipv4Address dst, Ptr<Packet> p)
+{
+  // TODO local_rt_repair
+}
+
+void 
+RoutingProtocol::HandleLinkFailure (Ipv4Address id)
+{
+  // TODO
+}
+
+void
+RoutingProtocol::RtPurge ()
+{
+  // TODO AODV::rt_purge()
+}
+//-----------------------------------------------------------------------------
+// TODO: NeighborList, BroadcastIdCache
+//-----------------------------------------------------------------------------
 }}

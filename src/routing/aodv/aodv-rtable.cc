@@ -117,6 +117,18 @@ aodv_rt_entry::pc_empty() const
   return rt_pclist.empty();
 }
 
+void
+aodv_rt_entry::Down ()
+{
+  if(rt_flags == RTF_DOWN) return;
+
+  rt_last_hop_count = rt_hops;
+  rt_hops = INFINITY2;
+  rt_flags = RTF_DOWN;
+  rt_nexthop = 0;
+  rt_lifetime = Seconds (DELETE_PERIOD);
+}
+
 /*
   The Routing Table
  */
@@ -147,6 +159,13 @@ aodv_rtable::rt_add(aodv_rt_entry const & rt)
   	return false;
   rthead.push_back(rt);
   return true;
+}
+
+void
+aodv_rtable::SetEntryState (Ipv4Address id, uint8_t state)
+{
+  std::vector<aodv_rt_entry>::iterator i = std::find (rthead.begin(), rthead.end(), id);
+  if (i != rthead.end()) i->rt_flags = state;
 }
 
 #ifdef RUN_SELF_TESTS

@@ -34,7 +34,8 @@
 namespace ns3 {
 namespace aodv {
 
-#define INFINITY2        0xff
+#define INFINITY2       0xff
+#define DELETE_PERIOD   10 // seconds. TODO: remove defines
 
 /**
  * \ingroup aodv
@@ -62,14 +63,14 @@ protected:
  */
 class aodv_rt_entry
 {
-  friend class aodv_rtable;
-  friend class AODV;
-  friend class LocalRepairTimer;
 public:
   aodv_rt_entry();
   aodv_rt_entry(Ipv4Address dst, bool vSeqNo, u_int32_t seqNo,
   		u_int16_t  hops,Ipv4Address nextHop, Time lifetime);
   ~aodv_rt_entry();
+  
+  ///\name Precursors management
+  //\{
   /**
    * Insert precursor in precursor list if it doesn't yet exist in the list
    * \param id precursor address
@@ -95,6 +96,11 @@ public:
    * \return true if precursor list empty
    */
   bool pc_empty() const;
+  //\}
+  
+  /// Mark entry as "down" (i.e. disable it)
+  void Down ();
+  
   /**
    * \brief Compare destination address
    * \return true if equal
@@ -109,7 +115,10 @@ public:
   /// Number of route requests
   uint8_t rt_req_cnt;
 
-protected:
+private:
+  friend class aodv_rtable;
+  friend class RoutingProtocol;
+
   /// Destination address
   Ipv4Address rt_dst;
   /// Valid Destination Sequence Number flag
@@ -134,13 +143,14 @@ protected:
   */
   Time rt_lifetime;
   /// Routing flags: down, up or in repair
-  uint8_t rt_flags;
+  uint8_t rt_flags; /*TODO use enum*/
 
 #define RTF_DOWN        0
 #define RTF_UP          1
 #define RTF_IN_REPAIR   2
 #define MAX_HISTORY     3
 
+  // TODO review and delete
   double rt_disc_latency[MAX_HISTORY];
   char hist_indx;
   /// Last ttl value used
@@ -176,6 +186,8 @@ public:
    * \return true on success
    */
   bool rt_lookup(Ipv4Address dst, aodv_rt_entry & rt) const;
+  /// Set routing table entry flags
+  void SetEntryState (Ipv4Address dst, uint8_t state /*TODO use enum*/);
 
 private:
   std::vector<aodv_rt_entry> rthead;

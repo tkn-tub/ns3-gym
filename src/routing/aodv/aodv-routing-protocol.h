@@ -41,42 +41,42 @@ namespace ns3
 {
 namespace aodv
 {
-/**
- * \ingroup aodv
- * \brief AODV Neighbor Cache Entry
- * TODO move inside RoutingProtocol
- */
-class AODV_Neighbor
+/// List of neighbors TODO document & move inside protocol
+class NeighborList
 {
-  friend class AODV;
-  friend class aodv_rt_entry;
-
 public:
-  AODV_Neighbor(Ipv4Address const & a, Time exp = Seconds(0)) : nb_addr(a), nb_expire(exp) {}
-  bool operator==(AODV_Neighbor const & n) const
+  /// The neighbor
+  struct Neighbor
   {
-    return (nb_addr == n.nb_addr)&&(nb_expire == n.nb_expire);
-  }
+    Ipv4Address nb_addr;
+    Time nb_expire;
+  };
+  
+  void Insert(Ipv4Address id);
+  bool Lookup (Ipv4Address id, Neighbor & n);
+  void Delete (Ipv4Address id); 
+  void Purge ();
 
-protected:
-  Ipv4Address nb_addr;
-  Time nb_expire;
+private:
+  std::vector<Neighbor> nb;
 };
 
-/**
- * \ingroup aodv
- * 
- * Broadcast ID Cache entry
- * TODO move inside RoutingProtocol
- */
-struct BroadcastID 
+/// Known broadcast ID cache. TODO document & move inside protocol
+class BroadcastIdCache 
 {
-  Ipv4Address src;
-  uint32_t    id;
-  /// now + BCAST_ID_SAVE s
-  Time        expire;         
-
-  BroadcastID (Ipv4Address i, uint32_t b, Time t) : src(i), id(b), expire(t) {}
+public:
+  void Insert (Ipv4Address id, u_int32_t bid);
+  bool Lookup (Ipv4Address id, u_int32_t bid);
+  void Purge ();
+private:
+  struct BroadcastId 
+  {
+    Ipv4Address src;
+    uint32_t    id;
+    Time        expire;
+  };
+  
+  std::vector<BroadcastId> bi;
 };
 
 /**
@@ -126,19 +126,26 @@ private:
   /// A "drop-front" queue used by the routing layer to buffer packets to which it does not have a route.
   aodv_rqueue rqueue;
   /// List of neighbors (aka neighbors cache). TODO: separate list for each interface??? 
-  std::vector<AODV_Neighbor> nbhead;
+  NeighborList nbhead;
   /// Broadcast sequence numbers cache
-  std::vector<BroadcastID> bihead;
+  BroadcastIdCache bihead;
   /// Preq broadcast ID
   uint32_t bid;
   /// Sequence Number (???)
   uint32_t seqno;
 
-
 private:
   /// Start protocol operation
   void Start ();
+  /// Start local route repair procedure
+  void LocalRouteRepair (Ipv4Address dst, Ptr<Packet> p);
+  /// Process broken link
+  void HandleLinkFailure (Ipv4Address id);
+  /// Purge all expired records from rtable
+  void RtPurge ();
   
+  ///\name Recv
+  //\{
   /// Receive and process control packet
   void RecvAodv (Ptr<Socket> s);
   /// Receive RREQ
@@ -147,12 +154,26 @@ private:
   void RecvReply (Ptr<Packet> p);
   /// Receive RERR
   void RecvError (Ptr<Packet> p);
+  //\}
+  
+  ///\name Send
+  //\{
+  /// Send hello. TODO send independent hello per interface
+  void SendHello ();
+  /// Send RREQ
+  void SendRequest (Ipv4Address dst);
+  /// Send RREP
+  void SendReply (Ipv4Address ipdst, uint32_t hop_count,
+                  Ipv4Address rpdst, uint32_t rpseq, Time lifetime);
+  /// Send RERR
+  void SendError (Ipv4Address failed);
+  //\}
   
   ///\name Timers. TODO comment each one
   //\{
   Timer  btimer;
   void BroadcastTimerExpire ();
-  Timer htimer;
+  Timer htimer; // TODO independent hello timers for all interfaces
   void HelloTimerExpire ();
   Timer ntimer;
   void NeighborTimerExpire ();
