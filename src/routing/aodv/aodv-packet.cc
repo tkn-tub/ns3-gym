@@ -255,7 +255,7 @@ RrepHeader::Print (std::ostream &os) const
   if(prefixSize != 0)
     os << "prefix size " << prefixSize << "\n";
   else os << "\n";
-  os << "source ipv4 " << rp_src
+  os << "source ipv4 " << rp_src << "\n"
   << "life time " << rp_lifetime << "\n"
   << "acknowledgment required flag " << (*this).GetAckRequired() << "\n";
 }
@@ -404,9 +404,8 @@ RrepAckHeader::Deserialize (Buffer::Iterator start)
 void
 RrepAckHeader::Print (std::ostream &os) const
 {
-  // TODO
+  os << "RREP-ACK\n";
 }
-
 
 bool
 RrepAckHeader::operator==(RrepAckHeader const & o) const
@@ -509,7 +508,13 @@ RerrHeader::Deserialize (Buffer::Iterator start)
 void
 RerrHeader::Print (std::ostream &os) const
 {
-  // TODO
+  os << "REER\n"
+     << "Unreachable destination (ipv4 address, seq. number):\n";
+  std::map<Ipv4Address, uint32_t>::const_iterator j;
+  for(j = unreachable_dst.begin(); j != unreachable_dst.end(); ++j)
+  {
+    os << (*j).first << ", " << (*j).second << "\n";
+  }
 }
 
 void

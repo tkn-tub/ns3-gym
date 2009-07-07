@@ -185,13 +185,13 @@ public:
   bool operator==(RrepHeader const & o) const;
 private:
   static MessageType type() { return AODVTYPE_RREP; }
-  uint8_t				rp_flags;						///< A - acknowledgment required flag
-  uint8_t				prefixSize;					///< Prefix Size
-  uint8_t				rp_hop_count;       ///< Hop Count
-  Ipv4Address		rp_dst;             ///< Destination IP Address
-  uint32_t			rp_dst_seqno;       ///< Destination Sequence Number
-  Ipv4Address		rp_src;             ///< Source IP Address
-  uint32_t			rp_lifetime;        ///< Lifetime
+  uint8_t      rp_flags;           ///< A - acknowledgment required flag
+  uint8_t      prefixSize;         ///< Prefix Size
+  uint8_t      rp_hop_count;       ///< Hop Count
+  Ipv4Address  rp_dst;             ///< Destination IP Address
+  uint32_t     rp_dst_seqno;       ///< Destination Sequence Number
+  Ipv4Address  rp_src;             ///< Source IP Address
+  uint32_t     rp_lifetime;        ///< Lifetime
 };
 
 std::ostream & operator<<(std::ostream & os, RrepHeader const &);
@@ -271,9 +271,9 @@ public:
   bool operator==(RerrHeader const & o) const;
 private:
   static MessageType type() { return AODVTYPE_RERR; }
-  uint8_t		er_flag;							///< No delete flag
-  uint8_t		reserved;							///< Not used
-  uint8_t		destCount;            ///< DestCount
+  uint8_t  er_flag;              ///< No delete flag
+  uint8_t  reserved;             ///< Not used
+  uint8_t  destCount;            ///< DestCount
   /// List of Unreachable destination IP addresses and sequence numbers
   std::map<Ipv4Address, uint32_t> unreachable_dst;
 
