@@ -36,12 +36,14 @@ namespace aodv {
 /// AODV message types
 enum MessageType 
 {
-  AODVTYPE_HELLO = 0x01,
   AODVTYPE_RREQ  = 0x02,
   AODVTYPE_RREP  = 0x04,
   AODVTYPE_RERR  = 0x08,
   AODVTYPE_RREP_ACK = 0x10
 };
+
+#define HELLO_INTERVAL          1               // 1000 ms
+#define ALLOWED_HELLO_LOSS      3               // packets
 
 /**
  * \ingroup aodv
@@ -172,7 +174,12 @@ public:
   bool GetAckRequired () const;
   void SetPrefixSize(uint8_t sz);
   uint8_t GetPrefixSize() const;
+  //\}
 
+  ///\name Hello massage
+  //\{
+  void SetHello(Ipv4Address src, uint32_t srcSeqNo);
+  bool IsHello(Ipv4Address src, uint32_t srcSeqNo);
   //\}
 
   bool operator==(RrepHeader const & o) const;
@@ -198,10 +205,10 @@ std::ostream & operator<<(std::ostream & os, RrepHeader const &);
    |     Type      |   Reserved    |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
-class RrepAckHader : public Header
+class RrepAckHeader : public Header
 {
 public:
-	RrepAckHader ();
+	RrepAckHeader ();
 
   ///\name Header serialization/deserialization
   //\{
@@ -211,12 +218,12 @@ public:
   uint32_t Deserialize (Buffer::Iterator start);
   void Print (std::ostream &os) const;
   //\}
-  bool operator==(RrepAckHader const & o) const;
+  bool operator==(RrepAckHeader const & o) const;
 private:
    static MessageType type() { return AODVTYPE_RREP_ACK; }
    uint8_t	reserved;
 };
-std::ostream & operator<<(std::ostream & os, RrepAckHader const &);
+std::ostream & operator<<(std::ostream & os, RrepAckHeader const &);
 
 
 /**

@@ -278,6 +278,27 @@ RrepHeader::operator==(RrepHeader const & o) const
 			rp_lifetime == o.rp_lifetime);
 }
 
+
+void
+RrepHeader::SetHello(Ipv4Address src, uint32_t srcSeqNo)
+{
+	rp_flags = 0;
+	prefixSize = 0;
+	rp_hop_count = 0;
+	rp_dst = src;
+	rp_dst_seqno = srcSeqNo;
+	rp_src = src;
+	rp_lifetime = HELLO_INTERVAL * ALLOWED_HELLO_LOSS;
+}
+
+bool
+RrepHeader::IsHello(Ipv4Address src, uint32_t srcSeqNo)
+{
+	return (rp_flags == 0 && prefixSize == 0 && rp_hop_count == 0 &&
+			rp_dst == src && rp_dst_seqno == srcSeqNo && rp_src == src &&
+			rp_lifetime ==  (HELLO_INTERVAL * ALLOWED_HELLO_LOSS));
+}
+
 std::ostream & operator<<(std::ostream & os, RrepHeader const & h)
 {
   h.Print (os);
@@ -311,6 +332,9 @@ bool RrepHeaderTest::RunTests ()
   h.SetPrefixSize(2);
   uint8_t sz = h.GetPrefixSize();
   NS_TEST_ASSERT_EQUAL(2, sz);
+  NS_TEST_ASSERT(!h.IsHello(Ipv4Address("1.2.3.4"),10));
+  h.SetHello(Ipv4Address("1.2.3.4"),12);
+  NS_TEST_ASSERT(h.IsHello(Ipv4Address("1.2.3.4"),12));
 
   Ptr<Packet> p = Create<Packet> ();
   p->AddHeader (h);
@@ -326,31 +350,31 @@ bool RrepHeaderTest::RunTests ()
 // RREP-ACK
 //-----------------------------------------------------------------------------
 
-RrepAckHader::RrepAckHader () : reserved(0)
+RrepAckHeader::RrepAckHeader () : reserved(0)
 {
 }
 
 TypeId
-RrepAckHader::GetInstanceTypeId() const
+RrepAckHeader::GetInstanceTypeId() const
 {
 	return TypeId();
 }
 
 uint32_t
-RrepAckHader::GetSerializedSize () const
+RrepAckHeader::GetSerializedSize () const
 {
 	return 2;
 }
 
 void
-RrepAckHader::Serialize (Buffer::Iterator i) const
+RrepAckHeader::Serialize (Buffer::Iterator i) const
 {
 	i.WriteU8(type());
 	i.WriteU8(reserved);
 }
 
 uint32_t
-RrepAckHader::Deserialize (Buffer::Iterator start)
+RrepAckHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   uint8_t t = i.ReadU8 ();
@@ -362,18 +386,19 @@ RrepAckHader::Deserialize (Buffer::Iterator start)
 }
 
 void
-RrepAckHader::Print (std::ostream &os) const
+RrepAckHeader::Print (std::ostream &os) const
 {
 	// TODO
 }
 
+
 bool
-RrepAckHader::operator==(RrepAckHader const & o) const
+RrepAckHeader::operator==(RrepAckHeader const & o) const
 {
 	return reserved == o.reserved;
 }
 
-std::ostream & operator<<(std::ostream & os, RrepAckHader const & h)
+std::ostream & operator<<(std::ostream & os, RrepAckHeader const & h)
 {
 	h.Print(os);
 	return os;
@@ -394,10 +419,10 @@ bool RrepAckHeaderTest::RunTests ()
 {
   bool result(true);
 
-  RrepAckHader h;
+  RrepAckHeader h;
   Ptr<Packet> p = Create<Packet> ();
   p->AddHeader (h);
-  RrepAckHader h2;
+  RrepAckHeader h2;
   uint32_t bytes = p->RemoveHeader(h2);
   NS_TEST_ASSERT_EQUAL (bytes, 2);
   NS_TEST_ASSERT_EQUAL (h, h2);
