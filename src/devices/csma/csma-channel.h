@@ -259,14 +259,14 @@ public:
    * \return Returns the DataRate to be used by device transmitters.
    * with deviceId i.
    */
-  virtual DataRate GetDataRate (void);
+  DataRate GetDataRate (void);
 
   /**
    * Get the assigned speed-of-light delay of the channel
    *
    * \return Returns the delay used by the channel.
    */
-  virtual Time GetDelay (void);
+  Time GetDelay (void);
 
 private:
 
