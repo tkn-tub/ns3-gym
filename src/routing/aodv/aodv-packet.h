@@ -29,10 +29,7 @@
 #include "ns3/header.h"
 #include "ns3/ipv4-address.h"
 #include <map>
-
-// TODO avoid defines, use protocol attributes
-#define HELLO_INTERVAL          1               // 1000 ms
-#define ALLOWED_HELLO_LOSS      3               // packets
+#include "ns3/nstime.h"
 
 namespace ns3 {
 namespace aodv {
@@ -167,8 +164,8 @@ public:
   uint32_t GetDstSeqno () const { return rp_dst_seqno; }
   void SetSrc (Ipv4Address a) { rp_src = a; }
   Ipv4Address GetSrc () const { return rp_src; }
-  void SetLifeTime (uint32_t t) { rp_lifetime = t; }
-  uint32_t GetLifeTime () const { return rp_lifetime; }
+  void SetLifeTime (uint32_t t) { rp_lifetime = t; } // TODO use Time 
+  uint32_t GetLifeTime () const { return rp_lifetime; } // TODO use Time
   //\}
 
   ///\name Flags
@@ -180,7 +177,7 @@ public:
   //\}
 
   /// Configure RREP to be a Hello message
-  void SetHello(Ipv4Address src, uint32_t srcSeqNo);
+  void SetHello(Ipv4Address src, uint32_t srcSeqNo, Time lifetime);
   
   bool operator==(RrepHeader const & o) const;
 private:

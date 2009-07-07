@@ -294,7 +294,7 @@ RrepHeader::operator==(RrepHeader const & o) const
 
 
 void
-RrepHeader::SetHello(Ipv4Address src, uint32_t srcSeqNo)
+RrepHeader::SetHello(Ipv4Address src, uint32_t srcSeqNo, Time lifetime)
 {
   rp_flags = 0;
   prefixSize = 0;
@@ -302,7 +302,7 @@ RrepHeader::SetHello(Ipv4Address src, uint32_t srcSeqNo)
   rp_dst = src;
   rp_dst_seqno = srcSeqNo;
   rp_src = src;
-  rp_lifetime = HELLO_INTERVAL * ALLOWED_HELLO_LOSS;
+  rp_lifetime = lifetime.GetMilliSeconds ();
 }
 
 std::ostream & operator<<(std::ostream & os, RrepHeader const & h)

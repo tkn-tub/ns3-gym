@@ -22,6 +22,7 @@
  * Ported to ns-3 by Elena Borovkova <borovkovaes@iitp.ru>
  */
 #include "aodv-routing-protocol.h"
+
 #include "ns3/socket-factory.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/simulator.h"
@@ -47,8 +48,21 @@ namespace aodv
 {
 NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 
-RoutingProtocol::RoutingProtocol()
+RoutingProtocol::RoutingProtocol() : 
+  BCAST_ID_SAVE (Seconds (6)),
+  HELLO_INTERVAL (Seconds (1)),
+  ALLOWED_HELLO_LOSS (2),
+  BAD_LINK_LIFETIME (Seconds (3)),
+  FREQUENCY (Seconds (0.5)),
+  bid(1), seqno(2/*??*/), 
+  btimer(Timer::REMOVE_ON_DESTROY),
+  htimer(Timer::REMOVE_ON_DESTROY),
+  ntimer(Timer::REMOVE_ON_DESTROY),
+  rtimer(Timer::REMOVE_ON_DESTROY),
+  lrtimer(Timer::REMOVE_ON_DESTROY)
 {
+  MaxHelloInterval = Scalar(1.25) * HELLO_INTERVAL;
+  MinHelloInterval = Scalar(0.75) * HELLO_INTERVAL;
 }
 
 TypeId 
@@ -101,10 +115,13 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
 {
   NS_ASSERT (ipv4 != 0);
   NS_ASSERT (m_ipv4 == 0);
-  /*
-  m_helloTimer.SetFunction (&RoutingProtocol::HelloTimerExpire, this);
-  */
-
+  
+  btimer.SetFunction (& RoutingProtocol::BroadcastTimerExpire, this);
+  ntimer.SetFunction (& RoutingProtocol::NeighborTimerExpire, this);
+  rtimer.SetFunction (& RoutingProtocol::RouteCacheTimerExpire, this);
+  lrtimer.SetFunction (& RoutingProtocol::LocalRepairTimerExpire, this);
+  htimer.SetFunction (& RoutingProtocol::HelloTimerExpire, this);
+  
   m_ipv4 = ipv4;
   Simulator::ScheduleNow (&RoutingProtocol::Start, this);
 }
@@ -190,5 +207,31 @@ RoutingProtocol::RecvError (Ptr<Packet> p)
 {
   // TODO
 }
+
+void 
+RoutingProtocol::BroadcastTimerExpire ()
+{
+}
+
+void 
+RoutingProtocol::HelloTimerExpire ()
+{
+}
+
+void 
+RoutingProtocol::NeighborTimerExpire ()
+{  
+}
+
+void 
+RoutingProtocol::RouteCacheTimerExpire ()
+{
+}
+
+void 
+RoutingProtocol::LocalRepairTimerExpire ()
+{
+}
+
 
 }}

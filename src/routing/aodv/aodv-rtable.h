@@ -38,27 +38,6 @@ namespace aodv {
 
 /**
  * \ingroup aodv
- * \brief AODV Neighbor Cache Entry
- */
-class AODV_Neighbor
-{
-  friend class AODV;
-  friend class aodv_rt_entry;
-
-public:
-  AODV_Neighbor(Ipv4Address const & a, Time exp = Seconds(0)) : nb_addr(a), nb_expire(exp) {}
-  bool operator==(AODV_Neighbor const & n) const
-  {
-    return (nb_addr == n.nb_addr)&&(nb_expire == n.nb_expire);
-  }
-
-protected:
-  Ipv4Address nb_addr;
-  Time nb_expire;
-};
-
-/**
- * \ingroup aodv
  *
  * \brief AODV Precursor list data structure
  */
@@ -128,7 +107,7 @@ public:
   /// When I can send another request
   Time rt_req_timeout;
   /// Number of route requests
-  u_int8_t rt_req_cnt;
+  uint8_t rt_req_cnt;
 
 protected:
   /// Destination address
@@ -136,12 +115,13 @@ protected:
   /// Valid Destination Sequence Number flag
   bool validSeqNo;
   /// Destination Sequence Number, if validSeqNo = true
-  u_int32_t rt_seqno;
-  /* u_int8_t 	rt_interface; */
+  uint32_t rt_seqno;
+  /// Interface index
+  uint32_t rt_interface;
   /// Hop Count (number of hops needed to reach destination)
-  u_int16_t rt_hops;
+  uint16_t rt_hops;
   /// Last valid hop count
-  u_int16_t rt_last_hop_count;
+  uint16_t rt_last_hop_count;
   /// Next hop IP address
   Ipv4Address rt_nexthop;
   /// List of precursors
@@ -154,7 +134,7 @@ protected:
   */
   Time rt_lifetime;
   /// Routing flags: down, up or in repair
-  u_int8_t rt_flags;
+  uint8_t rt_flags;
 
 #define RTF_DOWN        0
 #define RTF_UP          1

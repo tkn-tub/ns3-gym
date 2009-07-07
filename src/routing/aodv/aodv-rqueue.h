@@ -22,7 +22,7 @@
  * Ported to ns-3 by Elena Borovkova <borovkovaes@iitp.ru>
  */
 #ifndef __aodv_rqueue_h__
-#define __aodv_rqueue_h_
+#define __aodv_rqueue_h__
 
 #include "ns3/ipv4-header.h"
 #include "ns3/nstime.h"

@@ -164,14 +164,6 @@ static AodvRtableTest g_AodvRtableTest;
 bool
 AodvRtableTest::RunTests ()
 {
-  AODV_Neighbor nb1(Ipv4Address("1.2.3.4"));
-  AODV_Neighbor nb2(Ipv4Address("4.3.2.1"));
-  NS_TEST_ASSERT(!(nb1==nb2));
-  
-  AODV_Neighbor nb3(Ipv4Address("3.3.3.3"));
-  AODV_Neighbor nb4(Ipv4Address("3.3.3.3"), Seconds(1));
-  NS_TEST_ASSERT(!(nb1==nb2));
-  
   AODV_Precursor pc1(Ipv4Address("1.1.1.1"));
   AODV_Precursor pc2(Ipv4Address("2.2.2.2"));
   NS_TEST_ASSERT(!(pc1==pc2));

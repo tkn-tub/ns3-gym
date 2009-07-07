@@ -23,6 +23,11 @@
  */
 #ifndef AODVROUTINGPROTOCOL_H_
 #define AODVROUTINGPROTOCOL_H_
+
+#include "aodv-rtable.h"
+#include "aodv-rqueue.h"
+#include "aodv-packet.h"
+
 #include "ns3/object.h"
 #include "ns3/packet.h"
 #include "ns3/node.h"
@@ -36,6 +41,43 @@ namespace ns3
 {
 namespace aodv
 {
+/**
+ * \ingroup aodv
+ * \brief AODV Neighbor Cache Entry
+ * TODO move inside RoutingProtocol
+ */
+class AODV_Neighbor
+{
+  friend class AODV;
+  friend class aodv_rt_entry;
+
+public:
+  AODV_Neighbor(Ipv4Address const & a, Time exp = Seconds(0)) : nb_addr(a), nb_expire(exp) {}
+  bool operator==(AODV_Neighbor const & n) const
+  {
+    return (nb_addr == n.nb_addr)&&(nb_expire == n.nb_expire);
+  }
+
+protected:
+  Ipv4Address nb_addr;
+  Time nb_expire;
+};
+
+/**
+ * \ingroup aodv
+ * 
+ * Broadcast ID Cache entry
+ * TODO move inside RoutingProtocol
+ */
+struct BroadcastID 
+{
+  Ipv4Address src;
+  uint32_t    id;
+  /// now + BCAST_ID_SAVE s
+  Time        expire;         
+
+  BroadcastID (Ipv4Address i, uint32_t b, Time t) : src(i), id(b), expire(t) {}
+};
 
 /**
  * \ingroup aodv
@@ -64,10 +106,34 @@ public:
   //\}
   
 private:
+  ///\name Protocol parameters. TODO document
+  //\{
+  Time BCAST_ID_SAVE;
+  Time HELLO_INTERVAL;
+  uint32_t ALLOWED_HELLO_LOSS;
+  Time BAD_LINK_LIFETIME;
+  Time MaxHelloInterval; //        (1.25 * HELLO_INTERVAL)
+  Time MinHelloInterval; //        (0.75 * HELLO_INTERVAL)
+  Time FREQUENCY;
+  //\}
+  
   /// IP protocol
   Ptr<Ipv4> m_ipv4;
   /// UDP socket per each IP interface, map socket -> iface
   std::map< Ptr<Socket>, Ipv4Address > m_socketAddresses;
+  /// Routing table
+  aodv_rtable rtable;
+  /// A "drop-front" queue used by the routing layer to buffer packets to which it does not have a route.
+  aodv_rqueue rqueue;
+  /// List of neighbors (aka neighbors cache). TODO: separate list for each interface??? 
+  std::vector<AODV_Neighbor> nbhead;
+  /// Broadcast sequence numbers cache
+  std::vector<BroadcastID> bihead;
+  /// Preq broadcast ID
+  uint32_t bid;
+  /// Sequence Number (???)
+  uint32_t seqno;
+
 
 private:
   /// Start protocol operation
@@ -81,6 +147,20 @@ private:
   void RecvReply (Ptr<Packet> p);
   /// Receive RERR
   void RecvError (Ptr<Packet> p);
+  
+  ///\name Timers. TODO comment each one
+  //\{
+  Timer  btimer;
+  void BroadcastTimerExpire ();
+  Timer htimer;
+  void HelloTimerExpire ();
+  Timer ntimer;
+  void NeighborTimerExpire ();
+  Timer rtimer;
+  void RouteCacheTimerExpire ();
+  Timer lrtimer;
+  void LocalRepairTimerExpire ();
+  //\}
 };
 
 }
