@@ -78,7 +78,6 @@ def build(bld):
         'ipv4-l4-protocol.cc',
         'udp-header.cc',
         'tcp-header.cc',
-        'ipv4-checksum.cc',
         'ipv4-interface.cc',
         'ipv4-l3-protocol.cc',
         'ipv4-end-point.cc',
