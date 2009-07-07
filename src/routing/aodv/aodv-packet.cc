@@ -89,8 +89,7 @@ RreqHeader::Deserialize (Buffer::Iterator start)
 void 
 RreqHeader::Print (std::ostream &os) const
 {
-
-  os << "RREO ID " << rq_bcast_id << "\n"
+  os << "RREQ ID " << rq_bcast_id << "\n"
   << "destination: ipv4 " << rq_dst << " "
   << "sequence number " << rq_dst_seqno << "\n"
   << "source: ipv4 " << rq_src << " "
@@ -307,14 +306,6 @@ RrepHeader::SetHello(Ipv4Address src, uint32_t srcSeqNo)
   rp_lifetime = HELLO_INTERVAL * ALLOWED_HELLO_LOSS;
 }
 
-bool
-RrepHeader::IsHello(Ipv4Address src, uint32_t srcSeqNo)
-{
-  return (rp_flags == 0 && prefixSize == 0 && rp_hop_count == 0 &&
-      rp_dst == src && rp_dst_seqno == srcSeqNo && rp_src == src &&
-      rp_lifetime ==  (HELLO_INTERVAL * ALLOWED_HELLO_LOSS));
-}
-
 std::ostream & operator<<(std::ostream & os, RrepHeader const & h)
 {
   h.Print (os);
@@ -348,9 +339,6 @@ bool RrepHeaderTest::RunTests ()
   h.SetPrefixSize(2);
   uint8_t sz = h.GetPrefixSize();
   NS_TEST_ASSERT_EQUAL(2, sz);
-  NS_TEST_ASSERT(!h.IsHello(Ipv4Address("1.2.3.4"),10));
-  h.SetHello(Ipv4Address("1.2.3.4"),12);
-  NS_TEST_ASSERT(h.IsHello(Ipv4Address("1.2.3.4"),12));
 
   Ptr<Packet> p = Create<Packet> ();
   p->AddHeader (h);
@@ -451,7 +439,6 @@ bool RrepAckHeaderTest::RunTests ()
 //-----------------------------------------------------------------------------
 RerrHeader::RerrHeader() : er_flag(0), reserved(0)
 {
-  destCount = unreachable_dst.size();
 }
 
 TypeId
@@ -463,7 +450,7 @@ RerrHeader::GetInstanceTypeId() const
 uint32_t
 RerrHeader::GetSerializedSize () const
 {
-  return ( 4 + 8*destCount);
+  return ( 4 + 8*GetDestCount());
 }
 
 void
@@ -472,7 +459,7 @@ RerrHeader::Serialize (Buffer::Iterator i) const
   i.WriteU8(type());
   i.WriteU8(er_flag);
   i.WriteU8(reserved);
-  i.WriteU8(destCount);
+  i.WriteU8(GetDestCount());
   std::map<Ipv4Address, uint32_t>::const_iterator j;
   for(j = unreachable_dst.begin(); j != unreachable_dst.end(); ++j)
   {
@@ -490,15 +477,15 @@ RerrHeader::Deserialize (Buffer::Iterator start)
 
   er_flag = i.ReadU8 ();
   reserved = i.ReadU8 ();
-  destCount = i.ReadU8 ();
+  uint8_t dest = i.ReadU8 ();
   unreachable_dst.clear();
   Ipv4Address address;
   uint32_t seqNo;
-  for(uint8_t k = 0; k < destCount; ++k)
+  for(uint8_t k = 0; k < dest; ++k)
   {
     ReadFrom (i, address);
     seqNo = i.ReadNtohU32 ();
-    unreachable_dst[address] = seqNo;
+    unreachable_dst.insert(std::make_pair(address, seqNo));
   }
 
   uint32_t dist = i.GetDistanceFrom (start);
@@ -520,7 +507,7 @@ RerrHeader::SetNoDelete(bool f)
 }
 
 bool
-RerrHeader::GetNoDelete()
+RerrHeader::GetNoDelete() const
 {
   return (er_flag & (1 << 0));
 }
@@ -530,29 +517,29 @@ RerrHeader::AddUnDestination(Ipv4Address dst, uint32_t seqNo)
 {
   if(unreachable_dst.find(dst) != unreachable_dst.end())
     return false;
-  unreachable_dst[dst] = seqNo;
-  destCount = unreachable_dst.size();
+  
+  NS_ASSERT (GetDestCount() < 255); // can't support more than 255 destinations in single RERR
+  unreachable_dst.insert(std::make_pair(dst, seqNo));
   return true;
 }
 
 bool
 RerrHeader::operator==(RerrHeader const & o) const
 {
-  bool result = ( er_flag == o.er_flag && reserved == o.reserved &&
-      destCount == o.destCount );
-  if(!result)
+  if (er_flag != o.er_flag || reserved != o.reserved || GetDestCount() != o.GetDestCount())
     return false;
+  
   std::map<Ipv4Address, uint32_t>::const_iterator j = unreachable_dst.begin();
   std::map<Ipv4Address, uint32_t>::const_iterator k = o.unreachable_dst.begin();
-  for(uint8_t i = 0; i < destCount; ++i)
+  for(uint8_t i = 0; i < GetDestCount(); ++i)
   {
-    result = result && ( (*j).first == (*k).first ) && ( (*j).second == (*k).second );
-    if(!result)
+    if ((j->first != k->first ) || (j->second != k->second))
       return false;
+    
     j++;
     k++;
   }
-  return result;
+  return true;
 }
 
 std::ostream & operator<<(std::ostream & os, RerrHeader const & h)

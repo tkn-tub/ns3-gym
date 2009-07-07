@@ -30,41 +30,44 @@
 #include "ns3/ipv4-address.h"
 #include <map>
 
-namespace ns3 {
-namespace aodv {
-
-/// AODV message types
-enum MessageType 
-{
-  AODVTYPE_RREQ  = 0x02,
-      AODVTYPE_RREP  = 0x04,
-      AODVTYPE_RERR  = 0x08,
-      AODVTYPE_RREP_ACK = 0x10
-};
-
+// TODO avoid defines, use protocol attributes
 #define HELLO_INTERVAL          1               // 1000 ms
 #define ALLOWED_HELLO_LOSS      3               // packets
+
+namespace ns3 {
+namespace aodv {
+/** 
+ * \ingroup aodv
+ * \brief AODV control types
+ */
+enum MessageType 
+{
+  AODVTYPE_RREQ  = 0x02,  //!< AODVTYPE_RREQ
+  AODVTYPE_RREP  = 0x04,  //!< AODVTYPE_RREP
+  AODVTYPE_RERR  = 0x08,  //!< AODVTYPE_RERR
+  AODVTYPE_RREP_ACK = 0x10//!< AODVTYPE_RREP_ACK
+};
 
 /**
 * \ingroup aodv
 * \brief   Route Request (RREQ) Message Format
-\verbatim
-0                   1                   2                   3
-0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|     Type      |J|R|G|D|U|   Reserved          |   Hop Count   |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                            RREQ ID                            |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                    Destination IP Address                     |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                  Destination Sequence Number                  |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                    Originator IP Address                      |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                  Originator Sequence Number                   |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-\endverbatim
+  \verbatim
+  0                   1                   2                   3
+  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |     Type      |J|R|G|D|U|   Reserved          |   Hop Count   |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                            RREQ ID                            |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                    Destination IP Address                     |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                  Destination Sequence Number                  |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                    Originator IP Address                      |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                  Originator Sequence Number                   |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  \endverbatim
 */
 class RreqHeader : public Header 
 {
@@ -124,22 +127,22 @@ std::ostream & operator<<(std::ostream & os, RreqHeader const &);
 
 /**
 * \ingroup aodv
-*  \brief Route Reply (RREP) Message Format
-
-0                   1                   2                   3
-0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|     Type      |R|A|    Reserved     |Prefix Sz|   Hop Count   |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                     Destination IP address                    |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                  Destination Sequence Number                  |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                    Originator IP address                      |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                           Lifetime                            |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*
+* \brief Route Reply (RREP) Message Format
+  \verbatim
+  0                   1                   2                   3
+  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |     Type      |R|A|    Reserved     |Prefix Sz|   Hop Count   |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                     Destination IP address                    |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                  Destination Sequence Number                  |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                    Originator IP address                      |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                           Lifetime                            |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  \endverbatim
 */
 class RrepHeader : public Header
 {
@@ -176,22 +179,19 @@ public:
   uint8_t GetPrefixSize() const;
   //\}
 
-  ///\name Hello massage
-  //\{
+  /// Configure RREP to be a Hello message
   void SetHello(Ipv4Address src, uint32_t srcSeqNo);
-  bool IsHello(Ipv4Address src, uint32_t srcSeqNo);
-  //\}
-
+  
   bool operator==(RrepHeader const & o) const;
 private:
   static MessageType type() { return AODVTYPE_RREP; }
-  uint8_t				rp_flags;						///< A - acknowledgment required flag
-  uint8_t				prefixSize;					///< Prefix Size
-  uint8_t				rp_hop_count;       ///< Hop Count
-  Ipv4Address		rp_dst;             ///< Destination IP Address
-  uint32_t			rp_dst_seqno;       ///< Destination Sequence Number
-  Ipv4Address		rp_src;             ///< Source IP Address
-  uint32_t			rp_lifetime;        ///< Lifetime
+  uint8_t       rp_flags;	    ///< A - acknowledgment required flag
+  uint8_t       prefixSize;	    ///< Prefix Size
+  uint8_t	rp_hop_count;       ///< Hop Count
+  Ipv4Address   rp_dst;             ///< Destination IP Address
+  uint32_t      rp_dst_seqno;       ///< Destination Sequence Number
+  Ipv4Address	rp_src;             ///< Source IP Address
+  uint32_t      rp_lifetime;        ///< Lifetime
 };
 
 std::ostream & operator<<(std::ostream & os, RrepHeader const &);
@@ -199,11 +199,13 @@ std::ostream & operator<<(std::ostream & os, RrepHeader const &);
 /**
 * \ingroup aodv
 * \brief Route Reply Acknowledgment (RREP-ACK) Message Format
-*  0                   1
-0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|     Type      |   Reserved    |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  \verbatim  
+  0                   1
+  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |     Type      |   Reserved    |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  \endverbatim
 */
 class RrepAckHeader : public Header
 {
@@ -222,7 +224,7 @@ public:
   bool operator==(RrepAckHeader const & o) const;
 private:
   static MessageType type() { return AODVTYPE_RREP_ACK; }
-  uint8_t	reserved;
+  uint8_t       reserved;
 };
 std::ostream & operator<<(std::ostream & os, RrepAckHeader const &);
 
@@ -230,21 +232,21 @@ std::ostream & operator<<(std::ostream & os, RrepAckHeader const &);
 /**
 * \ingroup aodv
 * \brief Route Error (RERR) Message Format
-
-0                   1                   2                   3
-0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|     Type      |N|          Reserved           |   DestCount   |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|            Unreachable Destination IP Address (1)             |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|         Unreachable Destination Sequence Number (1)           |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|
-|  Additional Unreachable Destination IP Addresses (if needed)  |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|Additional Unreachable Destination Sequence Numbers (if needed)|
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*
+  \verbatim
+  0                   1                   2                   3
+  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |     Type      |N|          Reserved           |   DestCount   |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |            Unreachable Destination IP Address (1)             |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |         Unreachable Destination Sequence Number (1)           |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|
+  |  Additional Unreachable Destination IP Addresses (if needed)  |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |Additional Unreachable Destination Sequence Numbers (if needed)|
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  \endverbatim
 */
 class RerrHeader : public Header
 {
@@ -263,26 +265,23 @@ public:
   ///\name No delete flag
   //\{
   void SetNoDelete(bool f);
-  bool GetNoDelete();
+  bool GetNoDelete() const;
   //\}
 
   bool AddUnDestination(Ipv4Address dst, uint32_t seqNo);
-  uint8_t GetDestCount() const { return destCount; }
+  uint8_t GetDestCount() const { return (uint8_t)unreachable_dst.size(); }
   bool operator==(RerrHeader const & o) const;
 private:
   static MessageType type() { return AODVTYPE_RERR; }
-  uint8_t		er_flag;							///< No delete flag
-  uint8_t		reserved;							///< Not used
-  uint8_t		destCount;            ///< DestCount
+  
+  uint8_t er_flag;        ///< No delete flag
+  uint8_t reserved;       ///< Not used
+  
   /// List of Unreachable destination IP addresses and sequence numbers
   std::map<Ipv4Address, uint32_t> unreachable_dst;
-
 };
+
 std::ostream & operator<<(std::ostream & os, RerrHeader const &);
-
-
-
-
 }
 }
 #endif /* AODVPACKET_H_ */
