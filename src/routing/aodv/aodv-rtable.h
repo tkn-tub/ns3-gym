@@ -37,25 +37,7 @@ namespace aodv {
 #define INFINITY2       0xff
 #define DELETE_PERIOD   10 // seconds. TODO: remove defines
 
-/**
- * \ingroup aodv
- *
- * \brief AODV Precursor list data structure
- */
-class AODV_Precursor
-{
-  friend class AODV;
-  friend class aodv_rt_entry;
-public:
-  AODV_Precursor(Ipv4Address const & a) : pc_addr(a) {}
-  bool operator==(AODV_Precursor const & o) const
-  {
-    return (pc_addr == o.pc_addr);
-  }
-protected:
-  /// Precursor address
-  Ipv4Address pc_addr;
-};
+
 
 /**
  * \ingroup aodv
@@ -80,10 +62,9 @@ public:
   /**
    * Lookup precursor by address
    * \param id precursor address
-   * \param p precursor with address id if exists
    * \return true on success
    */
-  bool pc_lookup(Ipv4Address id, AODV_Precursor & p);
+  bool pc_lookup(Ipv4Address id);
   /**
    * \brief Delete precursor
    * \param id precursor address
@@ -134,7 +115,7 @@ private:
   /// Next hop IP address
   Ipv4Address rt_nexthop;
   /// List of precursors
-  std::vector<AODV_Precursor> rt_pclist;
+  std::vector<Ipv4Address> rt_pclist;
   /**
   * \brief Expiration or deletion time of the route
   *	Lifetime field in the routing table plays dual role --

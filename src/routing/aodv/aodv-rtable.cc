@@ -71,33 +71,26 @@ aodv_rt_entry::~aodv_rt_entry()
 bool
 aodv_rt_entry::pc_insert(Ipv4Address id)
 {
-  AODV_Precursor p (id);
-
-  if (! pc_lookup(id, p))
+  if (! pc_lookup(id))
     {
-      rt_pclist.push_back(p);
+      rt_pclist.push_back(id);
       return true;
     }
   else return false;
 }
 
 bool
-aodv_rt_entry::pc_lookup(Ipv4Address id, AODV_Precursor & p)
+aodv_rt_entry::pc_lookup(Ipv4Address id)
 {
-  for(std::vector<AODV_Precursor>::const_iterator i = rt_pclist.begin(); i != rt_pclist.end(); ++i)
-    if (i->pc_addr == id)
-      {
-        p = *i;
-        return true;
-      }
+  for(std::vector<Ipv4Address>::const_iterator i = rt_pclist.begin(); i != rt_pclist.end(); ++i)
+    if (*i == id) return true;
   return false;
 }
 
 bool
 aodv_rt_entry::pc_delete(Ipv4Address id)
 {
-  AODV_Precursor p(id);
-  std::vector<AODV_Precursor>::iterator i = std::remove(rt_pclist.begin(), rt_pclist.end(), p);
+  std::vector<Ipv4Address>::iterator i = std::remove(rt_pclist.begin(), rt_pclist.end(), id);
   if(i == rt_pclist.end())
     return false;
   else
@@ -181,10 +174,6 @@ static AodvRtableTest g_AodvRtableTest;
 bool
 AodvRtableTest::RunTests ()
 {
-  AODV_Precursor pc1(Ipv4Address("1.1.1.1"));
-  AODV_Precursor pc2(Ipv4Address("2.2.2.2"));
-  NS_TEST_ASSERT(!(pc1==pc2));
-  
   aodv_rt_entry entry1;
   Ipv4Address dst1("3.3.3.3");
   Ipv4Address dst2("1.2.3.4");
@@ -193,9 +182,7 @@ AodvRtableTest::RunTests ()
   NS_TEST_ASSERT(entry2 == dst2);
   
   entry2.pc_insert(dst1);
-  AODV_Precursor pc3(dst1);
-  NS_TEST_ASSERT(entry2.pc_lookup(dst1, pc2));
-  NS_TEST_ASSERT(pc3==pc2);
+  NS_TEST_ASSERT(entry2.pc_lookup(dst1));
   NS_TEST_ASSERT(!entry2.pc_delete(dst2));
   NS_TEST_ASSERT(entry2.pc_delete(dst1));
   NS_TEST_ASSERT(entry2.pc_empty());
