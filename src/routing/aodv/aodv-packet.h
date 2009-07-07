@@ -37,40 +37,40 @@ namespace aodv {
 enum MessageType 
 {
   AODVTYPE_RREQ  = 0x02,
-  AODVTYPE_RREP  = 0x04,
-  AODVTYPE_RERR  = 0x08,
-  AODVTYPE_RREP_ACK = 0x10
+      AODVTYPE_RREP  = 0x04,
+      AODVTYPE_RERR  = 0x08,
+      AODVTYPE_RREP_ACK = 0x10
 };
 
 #define HELLO_INTERVAL          1               // 1000 ms
 #define ALLOWED_HELLO_LOSS      3               // packets
 
 /**
- * \ingroup aodv
- * \brief   Route Request (RREQ) Message Format
-   \verbatim
-    0                   1                   2                   3
-    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |     Type      |J|R|G|D|U|   Reserved          |   Hop Count   |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                            RREQ ID                            |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                    Destination IP Address                     |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                  Destination Sequence Number                  |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                    Originator IP Address                      |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                  Originator Sequence Number                   |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   \endverbatim
- */
+* \ingroup aodv
+* \brief   Route Request (RREQ) Message Format
+\verbatim
+0                   1                   2                   3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     Type      |J|R|G|D|U|   Reserved          |   Hop Count   |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                            RREQ ID                            |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Destination IP Address                     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                  Destination Sequence Number                  |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Originator IP Address                      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                  Originator Sequence Number                   |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+\endverbatim
+*/
 class RreqHeader : public Header 
 {
 public:
   RreqHeader ();
-  
+
   ///\name Header serialization/deserialization
   //\{
   TypeId GetInstanceTypeId() const;
@@ -79,7 +79,7 @@ public:
   uint32_t Deserialize (Buffer::Iterator start);
   void Print (std::ostream &os) const;
   //\}
-  
+
   ///\name Fields
   //\{
   void SetHopCount (uint8_t count) { rq_hop_count = count; }
@@ -95,7 +95,7 @@ public:
   void SetSrcSeqno (uint32_t s) { rq_src_seqno = s; }
   uint32_t GetSrcSeqno () const { return rq_src_seqno; }
   //\}
-  
+
   ///\name Flags
   //\{
   void SetGratiousRrep (bool f);
@@ -105,54 +105,54 @@ public:
   void SetUnknownSeqno (bool f);
   bool GetUnknownSeqno () const;
   //\}
-  
+
   bool operator==(RreqHeader const & o) const;
 private:
-   static MessageType type() { return AODVTYPE_RREQ; }
-   
-   uint8_t        rq_flags;       ///< |J|R|G|D|U| bit flags, see RFC
-   uint8_t        reserved;       ///< Not used
-   uint8_t        rq_hop_count;   ///< Hop Count
-   uint32_t       rq_bcast_id;    ///< RREQ ID
-   Ipv4Address    rq_dst;         ///< Destination IP Address
-   uint32_t       rq_dst_seqno;   ///< Destination Sequence Number
-   Ipv4Address    rq_src;         ///< Source IP Address
-   uint32_t       rq_src_seqno;   ///< Source Sequence Number
+  static MessageType type() { return AODVTYPE_RREQ; }
+
+  uint8_t        rq_flags;       ///< |J|R|G|D|U| bit flags, see RFC
+  uint8_t        reserved;       ///< Not used
+  uint8_t        rq_hop_count;   ///< Hop Count
+  uint32_t       rq_bcast_id;    ///< RREQ ID
+  Ipv4Address    rq_dst;         ///< Destination IP Address
+  uint32_t       rq_dst_seqno;   ///< Destination Sequence Number
+  Ipv4Address    rq_src;         ///< Source IP Address
+  uint32_t       rq_src_seqno;   ///< Source Sequence Number
 };
 
 std::ostream & operator<<(std::ostream & os, RreqHeader const &);
 
 /**
- * \ingroup aodv
- *  \brief Route Reply (RREP) Message Format
+* \ingroup aodv
+*  \brief Route Reply (RREP) Message Format
 
-    0                   1                   2                   3
-    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |     Type      |R|A|    Reserved     |Prefix Sz|   Hop Count   |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                     Destination IP address                    |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                  Destination Sequence Number                  |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                    Originator IP address                      |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                           Lifetime                            |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *
- */
+0                   1                   2                   3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     Type      |R|A|    Reserved     |Prefix Sz|   Hop Count   |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                     Destination IP address                    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                  Destination Sequence Number                  |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Originator IP address                      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                           Lifetime                            |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+*
+*/
 class RrepHeader : public Header
 {
 public:
-	RrepHeader();
-	///\name Header serialization/deserialization
-	//\{
-	TypeId GetInstanceTypeId() const;
-	uint32_t GetSerializedSize () const;
-	void Serialize (Buffer::Iterator start) const;
-	uint32_t Deserialize (Buffer::Iterator start);
-	void Print (std::ostream &os) const;
-	//\}
+  RrepHeader();
+  ///\name Header serialization/deserialization
+  //\{
+  TypeId GetInstanceTypeId() const;
+  uint32_t GetSerializedSize () const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
+  void Print (std::ostream &os) const;
+  //\}
 
   ///\name Fields
   //\{
@@ -197,18 +197,18 @@ private:
 std::ostream & operator<<(std::ostream & os, RrepHeader const &);
 
 /**
- * \ingroup aodv
- * \brief Route Reply Acknowledgment (RREP-ACK) Message Format
- *  0                   1
-    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |     Type      |   Reserved    |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- */
+* \ingroup aodv
+* \brief Route Reply Acknowledgment (RREP-ACK) Message Format
+*  0                   1
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     Type      |   Reserved    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+*/
 class RrepAckHeader : public Header
 {
 public:
-	RrepAckHeader ();
+  RrepAckHeader ();
 
   ///\name Header serialization/deserialization
   //\{
@@ -221,35 +221,35 @@ public:
 
   bool operator==(RrepAckHeader const & o) const;
 private:
-   static MessageType type() { return AODVTYPE_RREP_ACK; }
-   uint8_t	reserved;
+  static MessageType type() { return AODVTYPE_RREP_ACK; }
+  uint8_t	reserved;
 };
 std::ostream & operator<<(std::ostream & os, RrepAckHeader const &);
 
 
 /**
- * \ingroup aodv
- * \brief Route Error (RERR) Message Format
+* \ingroup aodv
+* \brief Route Error (RERR) Message Format
 
-    0                   1                   2                   3
-    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |     Type      |N|          Reserved           |   DestCount   |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |            Unreachable Destination IP Address (1)             |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |         Unreachable Destination Sequence Number (1)           |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|
-   |  Additional Unreachable Destination IP Addresses (if needed)  |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |Additional Unreachable Destination Sequence Numbers (if needed)|
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *
- */
+0                   1                   2                   3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     Type      |N|          Reserved           |   DestCount   |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|            Unreachable Destination IP Address (1)             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|         Unreachable Destination Sequence Number (1)           |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|
+|  Additional Unreachable Destination IP Addresses (if needed)  |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|Additional Unreachable Destination Sequence Numbers (if needed)|
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+*
+*/
 class RerrHeader : public Header
 {
 public:
-	RerrHeader ();
+  RerrHeader ();
 
   ///\name Header serialization/deserialization
   //\{
@@ -262,20 +262,20 @@ public:
 
   ///\name No delete flag
   //\{
-	void SetNoDelete(bool f);
-	bool GetNoDelete();
+  void SetNoDelete(bool f);
+  bool GetNoDelete();
   //\}
 
-	bool AddUnDestination(Ipv4Address dst, uint32_t seqNo);
-	uint8_t GetDestCount() const { return destCount; }
+  bool AddUnDestination(Ipv4Address dst, uint32_t seqNo);
+  uint8_t GetDestCount() const { return destCount; }
   bool operator==(RerrHeader const & o) const;
 private:
-   static MessageType type() { return AODVTYPE_RERR; }
-   uint8_t		er_flag;							///< No delete flag
-   uint8_t		reserved;							///< Not used
-   uint8_t		destCount;            ///< DestCount
-   /// List of Unreachable destination IP addresses and sequence numbers
-   std::map<Ipv4Address, uint32_t> unreachable_dst;
+  static MessageType type() { return AODVTYPE_RERR; }
+  uint8_t		er_flag;							///< No delete flag
+  uint8_t		reserved;							///< Not used
+  uint8_t		destCount;            ///< DestCount
+  /// List of Unreachable destination IP addresses and sequence numbers
+  std::map<Ipv4Address, uint32_t> unreachable_dst;
 
 };
 std::ostream & operator<<(std::ostream & os, RerrHeader const &);

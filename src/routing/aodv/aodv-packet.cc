@@ -71,7 +71,7 @@ RreqHeader::Deserialize (Buffer::Iterator start)
   Buffer::Iterator i = start;
   uint8_t t = i.ReadU8 ();
   NS_ASSERT (t == type());
-  
+
   rq_flags = i.ReadU8 ();
   reserved = i.ReadU8 ();
   rq_hop_count = i.ReadU8 ();
@@ -80,7 +80,7 @@ RreqHeader::Deserialize (Buffer::Iterator start)
   rq_dst_seqno = i.ReadNtohU32 ();
   ReadFrom (i, rq_src);
   rq_src_seqno = i.ReadNtohU32 ();
-  
+
   uint32_t dist = i.GetDistanceFrom (start);
   NS_ASSERT (dist == GetSerializedSize ());
   return dist;
@@ -89,7 +89,16 @@ RreqHeader::Deserialize (Buffer::Iterator start)
 void 
 RreqHeader::Print (std::ostream &os) const
 {
-  // TODO
+
+  os << "RREO ID " << rq_bcast_id << "\n"
+  << "destination: ipv4 " << rq_dst << " "
+  << "sequence number " << rq_dst_seqno << "\n"
+  << "source: ipv4 " << rq_src << " "
+  << "sequence number " << rq_src_seqno << "\n"
+  << "flags:\n"
+  << "Gratuitous RREP " << (*this).GetGratiousRrep() << "\n"
+  << "Destination only " << (*this).GetDestinationOnly() << "\n"
+  << "Unknown sequence number " << (*this).GetUnknownSeqno() << "\n";
 }
 
 std::ostream & operator<<(std::ostream & os, RreqHeader const & h)
@@ -173,7 +182,6 @@ bool RreqHeaderTest::RunTests ()
   NS_TEST_ASSERT(h.GetDestinationOnly ());
   h.SetUnknownSeqno (true);
   NS_TEST_ASSERT(h.GetUnknownSeqno ());
-
   Ptr<Packet> p = Create<Packet> ();
   p->AddHeader (h);
   RreqHeader h2;
@@ -190,27 +198,27 @@ bool RreqHeaderTest::RunTests ()
 
 RrepHeader::RrepHeader() :rp_flags(0), prefixSize(0),  rp_hop_count(0), rp_dst_seqno(0)
 {
-	SetAckRequired(false);
+  SetAckRequired(false);
 }
 
 TypeId
 RrepHeader::GetInstanceTypeId() const
 {
-	return TypeId();
+  return TypeId();
 }
 
 uint32_t
 RrepHeader::GetSerializedSize () const
 {
-	return 20;
+  return 20;
 }
 
 void
 RrepHeader::Serialize (Buffer::Iterator i) const
 {
-	i.WriteU8(type());
-	i.WriteU8(rp_flags);
-	i.WriteU8(prefixSize);
+  i.WriteU8(type());
+  i.WriteU8(rp_flags);
+  i.WriteU8(prefixSize);
   i.WriteU8 (rp_hop_count);
   WriteTo (i, rp_dst);
   i.WriteHtonU32 (rp_dst_seqno);
@@ -241,62 +249,70 @@ RrepHeader::Deserialize (Buffer::Iterator start)
 void
 RrepHeader::Print (std::ostream &os) const
 {
-	// TODO
+  os << "RREP\n"
+  << "destination: ipv4 " << rp_dst
+  << "sequence number " <<  rp_dst_seqno;
+  if(prefixSize != 0)
+    os << "prefix size " << prefixSize << "\n";
+  else os << "\n";
+  os << "source ipv4 " << rp_src
+  << "life time " << rp_lifetime << "\n"
+  << "acknowledgment required flag " << (*this).GetAckRequired() << "\n";
 }
 
 void
 RrepHeader::SetAckRequired (bool f)
 {
-	 if (f) rp_flags |= (1 << 1);
-	 else   rp_flags &= ~(1 << 1);
+  if (f) rp_flags |= (1 << 1);
+  else   rp_flags &= ~(1 << 1);
 }
 
 bool
 RrepHeader::GetAckRequired () const
 {
-	return (rp_flags & (1 << 1));
+  return (rp_flags & (1 << 1));
 }
 
 void
 RrepHeader::SetPrefixSize(uint8_t sz)
 {
-	prefixSize = sz;
+  prefixSize = sz;
 }
 
 uint8_t
 RrepHeader::GetPrefixSize() const
 {
-	return prefixSize;
+  return prefixSize;
 }
 
 bool
 RrepHeader::operator==(RrepHeader const & o) const
 {
-	return (rp_flags == o.rp_flags && prefixSize == o.prefixSize &&
-			rp_hop_count == o.rp_hop_count && rp_dst == o.rp_dst &&
-			rp_dst_seqno == o.rp_dst_seqno && rp_src == o.rp_src &&
-			rp_lifetime == o.rp_lifetime);
+  return (rp_flags == o.rp_flags && prefixSize == o.prefixSize &&
+      rp_hop_count == o.rp_hop_count && rp_dst == o.rp_dst &&
+      rp_dst_seqno == o.rp_dst_seqno && rp_src == o.rp_src &&
+      rp_lifetime == o.rp_lifetime);
 }
 
 
 void
 RrepHeader::SetHello(Ipv4Address src, uint32_t srcSeqNo)
 {
-	rp_flags = 0;
-	prefixSize = 0;
-	rp_hop_count = 0;
-	rp_dst = src;
-	rp_dst_seqno = srcSeqNo;
-	rp_src = src;
-	rp_lifetime = HELLO_INTERVAL * ALLOWED_HELLO_LOSS;
+  rp_flags = 0;
+  prefixSize = 0;
+  rp_hop_count = 0;
+  rp_dst = src;
+  rp_dst_seqno = srcSeqNo;
+  rp_src = src;
+  rp_lifetime = HELLO_INTERVAL * ALLOWED_HELLO_LOSS;
 }
 
 bool
 RrepHeader::IsHello(Ipv4Address src, uint32_t srcSeqNo)
 {
-	return (rp_flags == 0 && prefixSize == 0 && rp_hop_count == 0 &&
-			rp_dst == src && rp_dst_seqno == srcSeqNo && rp_src == src &&
-			rp_lifetime ==  (HELLO_INTERVAL * ALLOWED_HELLO_LOSS));
+  return (rp_flags == 0 && prefixSize == 0 && rp_hop_count == 0 &&
+      rp_dst == src && rp_dst_seqno == srcSeqNo && rp_src == src &&
+      rp_lifetime ==  (HELLO_INTERVAL * ALLOWED_HELLO_LOSS));
 }
 
 std::ostream & operator<<(std::ostream & os, RrepHeader const & h)
@@ -357,20 +373,20 @@ RrepAckHeader::RrepAckHeader () : reserved(0)
 TypeId
 RrepAckHeader::GetInstanceTypeId() const
 {
-	return TypeId();
+  return TypeId();
 }
 
 uint32_t
 RrepAckHeader::GetSerializedSize () const
 {
-	return 2;
+  return 2;
 }
 
 void
 RrepAckHeader::Serialize (Buffer::Iterator i) const
 {
-	i.WriteU8(type());
-	i.WriteU8(reserved);
+  i.WriteU8(type());
+  i.WriteU8(reserved);
 }
 
 uint32_t
@@ -388,27 +404,27 @@ RrepAckHeader::Deserialize (Buffer::Iterator start)
 void
 RrepAckHeader::Print (std::ostream &os) const
 {
-	// TODO
+  // TODO
 }
 
 
 bool
 RrepAckHeader::operator==(RrepAckHeader const & o) const
 {
-	return reserved == o.reserved;
+  return reserved == o.reserved;
 }
 
 std::ostream & operator<<(std::ostream & os, RrepAckHeader const & h)
 {
-	h.Print(os);
-	return os;
+  h.Print(os);
+  return os;
 }
 
 #ifdef RUN_SELF_TESTS
 /// Unit test for RREP-ACK
 struct RrepAckHeaderTest : public Test
 {
-	RrepAckHeaderTest () : Test ("AODV/RREP-ACK") {}
+  RrepAckHeaderTest () : Test ("AODV/RREP-ACK") {}
   virtual bool RunTests();
 };
 
@@ -435,34 +451,34 @@ bool RrepAckHeaderTest::RunTests ()
 //-----------------------------------------------------------------------------
 RerrHeader::RerrHeader() : er_flag(0), reserved(0)
 {
-	destCount = unreachable_dst.size();
+  destCount = unreachable_dst.size();
 }
 
 TypeId
 RerrHeader::GetInstanceTypeId() const
 {
-	return TypeId();
+  return TypeId();
 }
 
 uint32_t
 RerrHeader::GetSerializedSize () const
 {
-	return ( 4 + 8*destCount);
+  return ( 4 + 8*destCount);
 }
 
 void
 RerrHeader::Serialize (Buffer::Iterator i) const
 {
-	i.WriteU8(type());
-	i.WriteU8(er_flag);
-	i.WriteU8(reserved);
-	i.WriteU8(destCount);
-	std::map<Ipv4Address, uint32_t>::const_iterator j;
-	for(j = unreachable_dst.begin(); j != unreachable_dst.end(); ++j)
-	{
-	  WriteTo (i, (*j).first);
-	  i.WriteHtonU32 ((*j).second);
-	}
+  i.WriteU8(type());
+  i.WriteU8(er_flag);
+  i.WriteU8(reserved);
+  i.WriteU8(destCount);
+  std::map<Ipv4Address, uint32_t>::const_iterator j;
+  for(j = unreachable_dst.begin(); j != unreachable_dst.end(); ++j)
+  {
+    WriteTo (i, (*j).first);
+    i.WriteHtonU32 ((*j).second);
+  }
 }
 
 uint32_t
@@ -478,12 +494,12 @@ RerrHeader::Deserialize (Buffer::Iterator start)
   unreachable_dst.clear();
   Ipv4Address address;
   uint32_t seqNo;
-	for(uint8_t k = 0; k < destCount; ++k)
-	{
-		ReadFrom (i, address);
-		seqNo = i.ReadNtohU32 ();
-		unreachable_dst[address] = seqNo;
-	}
+  for(uint8_t k = 0; k < destCount; ++k)
+  {
+    ReadFrom (i, address);
+    seqNo = i.ReadNtohU32 ();
+    unreachable_dst[address] = seqNo;
+  }
 
   uint32_t dist = i.GetDistanceFrom (start);
   NS_ASSERT (dist == GetSerializedSize ());
@@ -493,56 +509,56 @@ RerrHeader::Deserialize (Buffer::Iterator start)
 void
 RerrHeader::Print (std::ostream &os) const
 {
-	// TODO
+  // TODO
 }
 
 void
 RerrHeader::SetNoDelete(bool f)
 {
-	 if (f) er_flag |= (1 << 0);
-	 else   er_flag &= ~(1 << 0);
+  if (f) er_flag |= (1 << 0);
+  else   er_flag &= ~(1 << 0);
 }
 
 bool
 RerrHeader::GetNoDelete()
 {
-	return (er_flag & (1 << 0));
+  return (er_flag & (1 << 0));
 }
 
 bool
 RerrHeader::AddUnDestination(Ipv4Address dst, uint32_t seqNo)
 {
-	if(unreachable_dst.find(dst) != unreachable_dst.end())
-		return false;
-	unreachable_dst[dst] = seqNo;
-	destCount = unreachable_dst.size();
-	return true;
+  if(unreachable_dst.find(dst) != unreachable_dst.end())
+    return false;
+  unreachable_dst[dst] = seqNo;
+  destCount = unreachable_dst.size();
+  return true;
 }
 
 bool
 RerrHeader::operator==(RerrHeader const & o) const
 {
-	bool result = ( er_flag == o.er_flag && reserved == o.reserved &&
-			destCount == o.destCount );
-	if(!result)
-		return false;
-	std::map<Ipv4Address, uint32_t>::const_iterator j = unreachable_dst.begin();
-	std::map<Ipv4Address, uint32_t>::const_iterator k = o.unreachable_dst.begin();
-	for(uint8_t i = 0; i < destCount; ++i)
-	{
-		result = result && ( (*j).first == (*k).first ) && ( (*j).second == (*k).second );
-		if(!result)
-				return false;
-		j++;
-		k++;
-	}
-	return result;
+  bool result = ( er_flag == o.er_flag && reserved == o.reserved &&
+      destCount == o.destCount );
+  if(!result)
+    return false;
+  std::map<Ipv4Address, uint32_t>::const_iterator j = unreachable_dst.begin();
+  std::map<Ipv4Address, uint32_t>::const_iterator k = o.unreachable_dst.begin();
+  for(uint8_t i = 0; i < destCount; ++i)
+  {
+    result = result && ( (*j).first == (*k).first ) && ( (*j).second == (*k).second );
+    if(!result)
+      return false;
+    j++;
+    k++;
+  }
+  return result;
 }
 
 std::ostream & operator<<(std::ostream & os, RerrHeader const & h)
 {
-	h.Print(os);
-	return os;
+  h.Print(os);
+  return os;
 }
 
 #ifdef RUN_SELF_TESTS
