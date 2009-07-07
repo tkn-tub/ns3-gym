@@ -46,7 +46,7 @@ enum MessageType
 /**
  * \ingroup aodv
  * \brief   Route Request (RREQ) Message Format
-
+   \verbatim
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -62,6 +62,7 @@ enum MessageType
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                  Originator Sequence Number                   |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   \endverbatim
  */
 class RreqHeader : public Header 
 {
@@ -107,13 +108,13 @@ public:
 private:
    static MessageType type() { return AODVTYPE_RREQ; }
    
-   uint8_t         rq_flags;       ///< |J|R|G|D|U| bit flags, see RFC
+   uint8_t        rq_flags;       ///< |J|R|G|D|U| bit flags, see RFC
    uint8_t        reserved;       ///< Not used
    uint8_t        rq_hop_count;   ///< Hop Count
    uint32_t       rq_bcast_id;    ///< RREQ ID
-   Ipv4Address     rq_dst;         ///< Destination IP Address
+   Ipv4Address    rq_dst;         ///< Destination IP Address
    uint32_t       rq_dst_seqno;   ///< Destination Sequence Number
-   Ipv4Address     rq_src;         ///< Source IP Address
+   Ipv4Address    rq_src;         ///< Source IP Address
    uint32_t       rq_src_seqno;   ///< Source Sequence Number
 };
 
