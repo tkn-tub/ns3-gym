@@ -7,13 +7,12 @@ def build(bld):
         'aodv-rtable.cc',
         'aodv-rqueue.cc',
         'aodv-packet.cc',
+        'aodv-routing-protocol.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
     headers.module = 'aodv'
     headers.source = [
-        'aodv-rtable.h',
-        'aodv-rqueue.h',
-        'aodv-packet.h',
+        'aodv-routing-protocol.h',
         ]
 
