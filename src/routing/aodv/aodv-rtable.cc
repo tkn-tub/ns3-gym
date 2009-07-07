@@ -136,19 +136,17 @@ aodv_rt_entry::Down ()
 bool
 aodv_rtable::rt_lookup(Ipv4Address id, aodv_rt_entry & rt) const
 {
-  std::vector<aodv_rt_entry>::const_iterator i = std::find (rthead.begin(), rthead.end(), id);
+  std::map<Ipv4Address, aodv_rt_entry>::const_iterator i = rthead.find(id);
   if (i == rthead.end()) return false;
-  rt = *i;
+  rt = (*i).second;
   return true;
 }
 
 bool
 aodv_rtable::rt_delete(Ipv4Address dst)
 {
-  std::vector<aodv_rt_entry>::iterator i = std::remove(rthead.begin(), rthead.end(), dst);
-  if (i == rthead.end()) return false;
-  rthead.erase (i, rthead.end());
-  return true;
+  if(rthead.erase (dst) != 0) return true;
+  return false;
 }
 
 bool
@@ -157,15 +155,15 @@ aodv_rtable::rt_add(aodv_rt_entry const & rt)
   aodv_rt_entry dummy;
   if(rt_lookup(rt.rt_dst, dummy))
   	return false;
-  rthead.push_back(rt);
+  rthead.insert(std::make_pair(rt.rt_dst, rt));
   return true;
 }
 
 void
 aodv_rtable::SetEntryState (Ipv4Address id, uint8_t state)
 {
-  std::vector<aodv_rt_entry>::iterator i = std::find (rthead.begin(), rthead.end(), id);
-  if (i != rthead.end()) i->rt_flags = state;
+  std::map<Ipv4Address, aodv_rt_entry>::iterator i = rthead.find(id);
+  if (i != rthead.end()) (*i).second.rt_flags = state;
 }
 
 #ifdef RUN_SELF_TESTS
@@ -213,6 +211,7 @@ AodvRtableTest::RunTests ()
   NS_TEST_ASSERT(entry1 == dst2);
   NS_TEST_ASSERT(!rtable.rt_lookup(dst1, entry1));
   NS_TEST_ASSERT(rtable.rt_delete(dst2));
+  NS_TEST_ASSERT(!rtable.rt_delete(dst2));
   NS_TEST_ASSERT(!rtable.rt_lookup(dst2, entry1));
   
   return result;

@@ -25,7 +25,7 @@
 #define __aodv_rtable_h__
 
 #include <cassert>
-#include <vector>
+#include <map>
 #include <sys/types.h>
 #include "ns3/ipv4.h"
 #include "ns3/nstime.h"
@@ -190,7 +190,7 @@ public:
   void SetEntryState (Ipv4Address dst, uint8_t state /*TODO use enum*/);
 
 private:
-  std::vector<aodv_rt_entry> rthead;
+  std::map<Ipv4Address, aodv_rt_entry> rthead;
 };
 
 }}

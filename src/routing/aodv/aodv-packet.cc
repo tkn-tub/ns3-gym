@@ -501,6 +501,7 @@ RerrHeader::Print (std::ostream &os) const
   {
     os << (*j).first << ", " << (*j).second << "\n";
   }
+  os << "No delete flag " << (*this).GetNoDelete() << "\n";
 }
 
 void
