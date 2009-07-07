@@ -50,15 +50,20 @@ Icmpv4L4Protocol::SetNode (Ptr<Node> node)
 void
 Icmpv4L4Protocol::NotifyNewAggregate ()
 {
-  bool is_not_initialized = (m_node == 0);
-  Ptr<Node>node = this->GetObject<Node> ();
-  Ptr<Ipv4L3Protocol> ipv4 = this->GetObject<Ipv4L3Protocol> ();
-  if (is_not_initialized && node!= 0 && ipv4 != 0)
+  if (m_node == 0)
     {
-      this->SetNode (node);
-      ipv4->Insert (this);
-      Ptr<Ipv4RawSocketFactoryImpl> rawFactory = CreateObject<Ipv4RawSocketFactoryImpl> ();
-      ipv4->AggregateObject (rawFactory);
+      Ptr<Node> node = this->GetObject<Node> ();
+      if (node != 0)
+	{
+	  Ptr<Ipv4L3Protocol> ipv4 = this->GetObject<Ipv4L3Protocol> ();
+	  if (ipv4 != 0)
+	    {
+	      this->SetNode (node);
+	      ipv4->Insert (this);
+	      Ptr<Ipv4RawSocketFactoryImpl> rawFactory = CreateObject<Ipv4RawSocketFactoryImpl> ();
+	      ipv4->AggregateObject (rawFactory);
+	    }
+	}
     }
   Object::NotifyNewAggregate ();
 }

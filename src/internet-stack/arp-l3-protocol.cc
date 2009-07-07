@@ -81,12 +81,15 @@ ArpL3Protocol::SetNode (Ptr<Node> node)
 void
 ArpL3Protocol::NotifyNewAggregate ()
 {
-  Ptr<Node>node = this->GetObject<Node> ();
-  //verify that it's a valid node and that
-  //the node was not set before
-  if (node!= 0 && m_node == 0)
+  if (m_node == 0)
     {
-      this->SetNode (node);
+      Ptr<Node>node = this->GetObject<Node> ();
+      //verify that it's a valid node and that
+      //the node was not set before
+      if (node != 0)
+        {
+          this->SetNode (node);
+        }
     }
   Object::NotifyNewAggregate ();
 }
