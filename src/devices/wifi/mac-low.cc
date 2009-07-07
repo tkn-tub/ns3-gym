@@ -587,7 +587,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
       if (m_txParams.HasNextPacket ()) 
         {
           m_waitSifsEvent = Simulator::Schedule (GetSifs (), 
-                                               &MacLow::WaitSifsAfterEndTx, this);
+                                                 &MacLow::WaitSifsAfterEndTx, this);
         }
     } 
   else if (hdr.IsCtl ()) 
