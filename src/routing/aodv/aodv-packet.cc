@@ -490,6 +490,7 @@ RerrHeader::AddUnDestination(Ipv4Address dst, uint32_t seqNo)
 	if(unreachable_dst.find(dst) != unreachable_dst.end())
 		return false;
 	unreachable_dst[dst] = seqNo;
+	destCount = unreachable_dst.size();
 	return true;
 }
 
@@ -519,5 +520,39 @@ std::ostream & operator<<(std::ostream & os, RerrHeader const & h)
 	return os;
 }
 
+#ifdef RUN_SELF_TESTS
+/// Unit test for RERR
+struct RerrHeaderTest : public Test
+{
+  RerrHeaderTest () : Test ("AODV/RERR") {}
+  virtual bool RunTests();
+};
 
+/// Test instance
+static RerrHeaderTest g_RerrHeaderTest;
+
+bool RerrHeaderTest::RunTests ()
+{
+  bool result(true);
+
+  RerrHeader h;
+  h.SetNoDelete(true);
+  NS_TEST_ASSERT(h.GetNoDelete());
+  Ipv4Address dst = Ipv4Address("1.2.3.4");
+  NS_TEST_ASSERT(h.AddUnDestination(dst, 12));
+  NS_TEST_ASSERT_EQUAL(h.GetDestCount(),1);
+  NS_TEST_ASSERT(!h.AddUnDestination(dst, 13));
+  Ipv4Address dst2 = Ipv4Address("4.3.2.1");
+  NS_TEST_ASSERT(h.AddUnDestination(dst2, 12));
+  NS_TEST_ASSERT_EQUAL(h.GetDestCount(), 2);
+
+  Ptr<Packet> p = Create<Packet> ();
+  p->AddHeader (h);
+  RerrHeader h2;
+  uint32_t bytes = p->RemoveHeader(h2);
+  NS_TEST_ASSERT_EQUAL (bytes, h.GetSerializedSize());
+  NS_TEST_ASSERT_EQUAL (h, h2);
+  return result;
+}
+#endif
 }}
