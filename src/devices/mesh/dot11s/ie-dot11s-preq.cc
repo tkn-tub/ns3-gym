@@ -355,7 +355,7 @@ IePreq::DelDestinationAddressElement (Mac48Address dest_address)
       }
 }
 void
-IePreq::ClearDestinationAddressElement ()
+IePreq::ClearDestinationAddressElements ()
 {
   int i;
   for (std::vector<Ptr<DestinationAddressUnit> >::iterator j = m_destinations.begin (); j != m_destinations.end(); j++)
@@ -363,6 +363,7 @@ IePreq::ClearDestinationAddressElement ()
   for (i = 0; i < m_destCount; i ++)
     m_destinations.pop_back ();
   m_destinations.clear ();
+  m_destCount = 0;
 }
 bool operator== (const DestinationAddressUnit & a, const DestinationAddressUnit & b)
 {

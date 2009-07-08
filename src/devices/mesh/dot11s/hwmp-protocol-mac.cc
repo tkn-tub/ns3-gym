@@ -170,43 +170,9 @@ HwmpProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & heade
 void
 HwmpProtocolMac::SendPreq(IePreq preq)
 {
-  m_preqQueue.push_back (preq);
-  SendOnePreq ();
-}
-void
-HwmpProtocolMac::RequestDestination (Mac48Address dst, uint32_t originator_seqno, uint32_t dst_seqno)
-{
-  for(std::vector<IePreq>::iterator i = m_preqQueue.begin (); i != m_preqQueue.end (); i ++)
-    if(i->MayAddAddress(m_protocol->GetAddress ()))
-    {
-      i->AddDestinationAddressElement (m_protocol->GetDoFlag(), m_protocol->GetRfFlag(), dst, dst_seqno);
-      return;
-    }
-  IePreq preq;
-  //fill PREQ:
-  preq.SetHopcount (0);
-  preq.SetTTL (m_protocol->GetMaxTtl ());
-  preq.SetPreqID (m_protocol->GetNextPreqId ());
-  preq.SetOriginatorAddress (m_protocol->GetAddress ());
-  preq.SetOriginatorSeqNumber (originator_seqno);
-  preq.SetLifetime (m_protocol->GetActivePathLifetime ());
-  preq.AddDestinationAddressElement (m_protocol->GetDoFlag (), m_protocol->GetRfFlag (), dst, dst_seqno);
-  m_preqQueue.push_back (preq);
-  //set iterator position to my preq:
-  SendOnePreq ();
-}
-void
-HwmpProtocolMac::SendOnePreq ()
-{
-  if(m_preqTimer.IsRunning ())
-    return;
-  if (m_preqQueue.size () == 0)
-    return;
-  //reschedule sending PREQ
-  NS_ASSERT (!m_preqTimer.IsRunning());
-  m_preqTimer = Simulator::Schedule (m_protocol->GetPreqMinInterval (), &HwmpProtocolMac::SendOnePreq, this);
-  Ptr<Packet> packet  = Create<Packet> ();
-  packet->AddHeader(m_preqQueue[0]);
+  NS_LOG_FUNCTION_NOARGS ();
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader(preq);
   //Action header:
   WifiMeshActionHeader actionHdr;
   WifiMeshActionHeader::ActionValue action;
@@ -230,12 +196,41 @@ HwmpProtocolMac::SendOnePreq ()
     m_stats.txMgtBytes += packet->GetSize ();
     m_parent->SendManagementFrame(packet, hdr);
   }
-  //erase queue
-  m_preqQueue.erase (m_preqQueue.begin());
+}
+void
+HwmpProtocolMac::RequestDestination (Mac48Address dst, uint32_t originator_seqno, uint32_t dst_seqno)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  if(m_myPreq.GetDestCount () == 0)
+  {
+    m_myPreq.SetHopcount (0);
+    m_myPreq.SetTTL (m_protocol->GetMaxTtl ());
+    m_myPreq.SetPreqID (m_protocol->GetNextPreqId ());
+    m_myPreq.SetOriginatorAddress (m_protocol->GetAddress ());
+    m_myPreq.SetOriginatorSeqNumber (originator_seqno);
+    m_myPreq.SetLifetime (m_protocol->GetActivePathLifetime ());
+  }
+  m_myPreq.AddDestinationAddressElement (m_protocol->GetDoFlag(), m_protocol->GetRfFlag(), dst, dst_seqno);
+  SendMyPreq ();
+}
+void
+HwmpProtocolMac::SendMyPreq ()
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  if(m_preqTimer.IsRunning ())
+    return;
+  if(m_myPreq.GetDestCount () == 0)
+    return;
+  //reschedule sending PREQ
+  NS_ASSERT (!m_preqTimer.IsRunning());
+  m_preqTimer = Simulator::Schedule (m_protocol->GetPreqMinInterval (), &HwmpProtocolMac::SendMyPreq, this);
+  SendPreq (m_myPreq);
+  m_myPreq.ClearDestinationAddressElements ();
 }
 void
 HwmpProtocolMac::SendOnePerr()
 {
+  NS_LOG_FUNCTION_NOARGS ();
   if(m_perrTimer.IsRunning ())
     return;
   if(m_myPerr.receivers.size () >= m_protocol->GetUnicastPerrThreshold ())
@@ -275,6 +270,7 @@ HwmpProtocolMac::SendOnePerr()
 void
 HwmpProtocolMac::SendPrep (IePrep prep, Mac48Address receiver)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   //Create packet
   Ptr<Packet> packet  = Create<Packet> ();
   packet->AddHeader(prep);
@@ -301,6 +297,7 @@ HwmpProtocolMac::SendPrep (IePrep prep, Mac48Address receiver)
 void
 HwmpProtocolMac::SendPerr(IePerr perr, std::vector<Mac48Address> receivers)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_myPerr.perr.Merge(perr);
   for(unsigned int i = 0; i < receivers.size (); i ++)
   {

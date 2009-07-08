@@ -23,6 +23,7 @@
 #define HWMP_STATE_H
 
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
+#include "ie-dot11s-preq.h"
 #include "ie-dot11s-perr.h"
 
 namespace ns3 {
@@ -73,7 +74,7 @@ private:
   //\}
   
   /// Sends one PREQ when PreqMinInterval after last PREQ expires (if any PREQ exists in rhe queue)
-  void SendOnePreq ();
+  void SendMyPreq ();
   void SendOnePerr ();
   /// \return metric to HWMP protocol, needed only by metrics to add
   //peer as routing entry
@@ -87,10 +88,10 @@ private:
   uint32_t m_ifIndex;
   Ptr<HwmpProtocol> m_protocol;
   
-  ///\name PREQ queue and PREQ timer:
+  ///\name my PREQ and PREQ timer:
   //\{
-  EventId  m_preqTimer;
-  std::vector<IePreq>  m_preqQueue;
+  EventId m_preqTimer;
+  IePreq  m_myPreq;
   //\}
   ///\name PERR timer and stored path error
   //\{
