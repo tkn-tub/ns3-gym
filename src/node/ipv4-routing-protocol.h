@@ -36,7 +36,7 @@ class NetDevice;
  * \ingroup node 
  * \defgroup ipv4Routing Ipv4RoutingProtocol 
  */
-/*
+/**
  * \ingroup ipv4Routing
  * \brief Abstract base class for IPv4 routing protocols. 
  * 
