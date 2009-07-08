@@ -49,13 +49,13 @@
  *    - an ARP module
  *    - a UDP and a TCP implementation
  *    
+ * @defgroup routing Routing
+ *
  * @defgroup helper Helpers
  * 
  * @defgroup applications Applications
  *
  * @defgroup mobility Mobility
- *
- * @defgroup routing Routing
  *
  * @defgroup constants Constants
  * @brief Constants you can change

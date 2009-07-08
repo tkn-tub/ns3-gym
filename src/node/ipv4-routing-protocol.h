@@ -34,10 +34,13 @@ class NetDevice;
 
 /**
  * \ingroup node 
- * \defgroup ipv4Routing Ipv4 Routing
- *
- * Abstract base class for Ipv4 routing protocols.  Defines two
- * virtual functions for packet routing and forwarding.  The first, 
+ * \defgroup ipv4Routing Ipv4RoutingProtocol 
+ */
+/*
+ * \ingroup ipv4Routing
+ * \brief Abstract base class for IPv4 routing protocols. 
+ * 
+ * Defines two virtual functions for packet routing and forwarding.  The first, 
  * RouteOutput(), is used for locally originated packets, and the second,
  * RouteInput(), is used for forwarding and/or delivering received packets. 
  * Also defines the signatures of four callbacks used in RouteInput().
