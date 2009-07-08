@@ -303,7 +303,7 @@ HwmpProtocolMac::SendPerr(IePerr perr, std::vector<Mac48Address> receivers)
   {
     bool should_add = true;
     for (unsigned int j = 0; j < m_myPerr.receivers.size (); j ++)
-      if(receivers[j] == m_myPerr.receivers[i])
+      if(receivers[i] == m_myPerr.receivers[j])
         should_add = false;
     if(should_add)
       m_myPerr.receivers.push_back(receivers[i]);
