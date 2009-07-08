@@ -317,6 +317,7 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
     uint32_t dst_seqno = 0;
     if(result.retransmitter != Mac48Address::GetBroadcast ())
       dst_seqno = result.seqnum;
+    m_stats.initiatedPreq ++;
     for(HwmpProtocolMacMap::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
       i->second->RequestDestination(destination, originator_seqno, dst_seqno);
   }
@@ -604,8 +605,7 @@ HwmpProtocol::SendPrep (
   HwmpProtocolMacMap::const_iterator prep_sender = m_interfaces.find (interface);
   NS_ASSERT(prep_sender != m_interfaces.end ());
   prep_sender->second->SendPrep (prep, retransmitter);
-  //m_prepCallback (prep, retransmitter);
-
+  m_stats.initiatedPrep ++;
 }
 bool
 HwmpProtocol::Install (Ptr<MeshPointDevice> mp)
@@ -672,6 +672,7 @@ HwmpProtocol::MakePathError (std::vector<IePerr::FailedDestination> destinations
   if(receivers.size () == 0)
     return;
   IePerr perr;
+  m_stats.initiatedPerr ++;
   for(unsigned int i = 0; i < destinations.size (); i ++)
   {
     perr.AddAddressUnit(destinations[i]);
@@ -964,7 +965,10 @@ void HwmpProtocol::Statistics::Print (std::ostream & os) const
     "txBytes=\"" << txBytes << "\" "
     "droppedTtl=\"" << droppedTtl << "\" "
     "totalQueued=\"" << totalQueued << "\" "
-    "totalDropped=\"" << totalDropped << "\"/>\n";
+    "totalDropped=\"" << totalDropped << "\" "
+    "initiatedPreq=\"" << initiatedPreq << "\" "
+    "initiatedPrep=\"" << initiatedPrep << "\" "
+    "initiatedPerr=\"" << initiatedPerr << "\"\n";
 }
 void
 HwmpProtocol::Report (std::ostream & os) const
