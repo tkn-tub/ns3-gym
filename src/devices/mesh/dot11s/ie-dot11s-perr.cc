@@ -32,9 +32,8 @@ IePerr::~IePerr ()
 void
 IePerr::PrintInformation (std::ostream &os) const
 {
-  os << "Number of failed destinations: = " << m_numOfDest;
-  NS_ASSERT (m_numOfDest == m_addressUnits.size ());
-  for (unsigned int j = 0; j < m_numOfDest; j++)
+  os << "Number of failed destinations: = " << m_addressUnits.size ();
+  for (unsigned int j = 0; j < m_addressUnits.size (); j++)
     {
       os << "Failed destination address: = "<< m_addressUnits[j].destination <<
         ", sequence number = " << m_addressUnits[j].seqnum;
@@ -42,22 +41,20 @@ IePerr::PrintInformation (std::ostream &os) const
   os << "\n";
 
 }
-IePerr::IePerr ():
-    m_numOfDest (0)
+IePerr::IePerr ()
 {
 }
 uint8_t
 IePerr::GetNumOfDest ()
 {
-  return m_numOfDest;
+  return m_addressUnits.size ();
 }
 void
 IePerr::SerializeInformation (Buffer::Iterator i) const
 {
   i.WriteU8 (0);
-  i.WriteU8 (m_numOfDest);
-  NS_ASSERT (m_numOfDest == m_addressUnits.size ());
-  for (unsigned int j = 0; j < m_numOfDest; j++)
+  i.WriteU8 (m_addressUnits.size ());
+  for (unsigned int j = 0; j < m_addressUnits.size (); j++)
     {
       WriteTo (i, m_addressUnits[j].destination);
       i.WriteHtolsbU32 (m_addressUnits[j].seqnum);
@@ -68,10 +65,10 @@ IePerr::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   i.Next (1); //Mode flags is not used now
-  m_numOfDest = i.ReadU8 ();
-  NS_ASSERT ((2+10*m_numOfDest) == length);
+  uint8_t numOfDest = i.ReadU8 ();
+  NS_ASSERT ((2+10*numOfDest) == length);
   length = 0; //to avoid compiler warning in optimized builds
-  for (unsigned int j = 0; j < m_numOfDest; j++)
+  for (unsigned int j = 0; j < numOfDest; j++)
     {
       FailedDestination unit;
       ReadFrom (i,unit.destination);
@@ -87,8 +84,7 @@ IePerr::GetInformationSize () const
   uint8_t retval =
      1 //ModeFlags
     +1 //NumOfDests
-    +6*m_numOfDest
-    +4*m_numOfDest;
+    +(6+4) * m_addressUnits.size ();
   return retval;
 }
 
@@ -98,10 +94,15 @@ IePerr::AddAddressUnit (FailedDestination unit)
   for (unsigned int i = 0; i < m_addressUnits.size (); i ++)
     if (m_addressUnits[i].destination == unit.destination)
       return;
+  if((m_addressUnits.size () + 1) * 10 + 2 > 255)
+    return;
   m_addressUnits.push_back (unit);
-  m_numOfDest++;
 }
-
+bool
+IePerr::IsFull () const
+{
+  return (GetSerializedSize () + 10 > 255);
+}
 std::vector<IePerr::FailedDestination>
 IePerr::GetAddressUnitVector () const
 {
@@ -113,7 +114,6 @@ IePerr::DeleteAddressUnit (Mac48Address address)
   for (std::vector<FailedDestination>::iterator i = m_addressUnits.begin (); i != m_addressUnits.end(); i ++)
     if (i->destination == address)
       {
-        m_numOfDest --;
         m_addressUnits.erase (i);
         break;
       }
@@ -135,12 +135,11 @@ IePerr::Merge(const IePerr perr)
 void
 IePerr::ResetPerr ()
 {
-  m_numOfDest = 0;
   m_addressUnits.clear ();
 }
 bool operator== (const IePerr & a, const IePerr & b)
 {
-  if(a.m_numOfDest != b.m_numOfDest)
+  if(a.m_addressUnits.size () != b.m_addressUnits.size ())
     return false;
   for(unsigned int i = 0; i < a.m_addressUnits.size(); i ++)
   {

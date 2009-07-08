@@ -44,6 +44,7 @@ public:
   uint8_t   GetNumOfDest ();
 
   void AddAddressUnit (struct FailedDestination unit);
+  bool IsFull () const;
   std::vector<FailedDestination> GetAddressUnitVector () const;
   void DeleteAddressUnit (Mac48Address address);
   void Merge(const IePerr perr);
@@ -57,7 +58,6 @@ private:
   void PrintInformation (std::ostream& os) const;
   uint8_t  GetInformationSize () const;
 private:
-  uint8_t   m_numOfDest;
   std::vector<FailedDestination> m_addressUnits;
   friend bool operator== (const IePerr & a, const IePerr & b);
 };

@@ -336,6 +336,7 @@ IePreq::AddDestinationAddressElement (
   for (std::vector<Ptr<DestinationAddressUnit> >::const_iterator i = m_destinations.begin (); i != m_destinations.end(); i++ )
     if ((*i)->GetDestinationAddress () == dest_address)
       return;
+  //TODO: check overflow
   Ptr<DestinationAddressUnit>new_element = Create<DestinationAddressUnit> ();
   new_element->SetFlags (doFlag, rfFlag, false);
   new_element->SetDestinationAddress (dest_address);
@@ -408,6 +409,8 @@ IePreq::MayAddAddress (Mac48Address originator)
   if (m_originatorAddress != originator)
     return false;
   if(m_destinations[0]->GetDestinationAddress () == Mac48Address::GetBroadcast ())
+    return false;
+  if(GetInformationSize () + 11 > 255)
     return false;
   return true;
 }
