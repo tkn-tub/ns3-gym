@@ -228,46 +228,6 @@ HwmpProtocolMac::SendMyPreq ()
   m_myPreq.ClearDestinationAddressElements ();
 }
 void
-HwmpProtocolMac::SendOnePerr()
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  if(m_perrTimer.IsRunning ())
-    return;
-  if(m_myPerr.receivers.size () >= m_protocol->GetUnicastPerrThreshold ())
-  {
-    m_myPerr.receivers.clear ();
-    m_myPerr.receivers.push_back (Mac48Address::GetBroadcast ());
-  }
-  m_perrTimer = Simulator::Schedule (m_protocol->GetPerrMinInterval (), &HwmpProtocolMac::SendOnePerr, this);
-//Create packet
-  Ptr<Packet> packet  = Create<Packet> ();
-  packet->AddHeader(m_myPerr.perr);
-  //Action header:
-  WifiMeshActionHeader actionHdr;
-  WifiMeshActionHeader::ActionValue action;
-  action.pathSelection = WifiMeshActionHeader::PATH_ERROR;
-  actionHdr.SetAction (WifiMeshActionHeader::MESH_PATH_SELECTION, action);
-  packet->AddHeader (actionHdr);
-  //create 802.11 header:
-  WifiMacHeader hdr;
-  hdr.SetAction ();
-  hdr.SetDsNotFrom ();
-  hdr.SetDsNotTo ();
-  hdr.SetAddr2 (m_parent->GetAddress ());
-  hdr.SetAddr3 (m_protocol->GetAddress ());
-  //Send Management frame
-  for(std::vector<Mac48Address>::const_iterator i = m_myPerr.receivers.begin (); i != m_myPerr.receivers.end (); i ++)
-  {
-    hdr.SetAddr1 (*i);
-    m_stats.txPerr ++;
-    m_stats.txMgt ++;
-    m_stats.txMgtBytes += packet->GetSize ();
-    m_parent->SendManagementFrame(packet, hdr);
-  }
-  m_myPerr.perr.ResetPerr ();
-  m_myPerr.receivers.clear ();
-}
-void
 HwmpProtocolMac::SendPrep (IePrep prep, Mac48Address receiver)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -295,9 +255,42 @@ HwmpProtocolMac::SendPrep (IePrep prep, Mac48Address receiver)
   m_parent->SendManagementFrame(packet, hdr);
 }
 void
-HwmpProtocolMac::SendPerr(IePerr perr, std::vector<Mac48Address> receivers)
+HwmpProtocolMac::ForwardPerr(IePerr perr, std::vector<Mac48Address> receivers)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  Ptr<Packet> packet  = Create<Packet> ();
+  packet->AddHeader(perr);
+  //Action header:
+  WifiMeshActionHeader actionHdr;
+  WifiMeshActionHeader::ActionValue action;
+  action.pathSelection = WifiMeshActionHeader::PATH_ERROR;
+  actionHdr.SetAction (WifiMeshActionHeader::MESH_PATH_SELECTION, action);
+  packet->AddHeader (actionHdr);
+  //create 802.11 header:
+  WifiMacHeader hdr;
+  hdr.SetAction ();
+  hdr.SetDsNotFrom ();
+  hdr.SetDsNotTo ();
+  hdr.SetAddr2 (m_parent->GetAddress ());
+  hdr.SetAddr3 (m_protocol->GetAddress ());
+  if(receivers.size () >= m_protocol->GetUnicastPerrThreshold ())
+  {
+    receivers.clear ();
+    receivers.push_back (Mac48Address::GetBroadcast ());
+  }
+  //Send Management frame
+  for(std::vector<Mac48Address>::const_iterator i = m_myPerr.receivers.begin (); i != m_myPerr.receivers.end (); i ++)
+  {
+    hdr.SetAddr1 (*i);
+    m_stats.txPerr ++;
+    m_stats.txMgt ++;
+    m_stats.txMgtBytes += packet->GetSize ();
+    m_parent->SendManagementFrame(packet, hdr);
+  }
+}
+void
+HwmpProtocolMac::InitiatePerr (IePerr perr, std::vector<Mac48Address> receivers)
+{
   m_myPerr.perr.Merge(perr);
   for(unsigned int i = 0; i < receivers.size (); i ++)
   {
@@ -308,7 +301,18 @@ HwmpProtocolMac::SendPerr(IePerr perr, std::vector<Mac48Address> receivers)
     if(should_add)
       m_myPerr.receivers.push_back(receivers[i]);
   }
-  SendOnePerr ();
+  SendMyPerr ();
+}
+void
+HwmpProtocolMac::SendMyPerr()
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  if(m_perrTimer.IsRunning ())
+    return;
+  m_perrTimer = Simulator::Schedule (m_protocol->GetPerrMinInterval (), &HwmpProtocolMac::SendMyPerr, this);
+  ForwardPerr (m_myPerr.perr, m_myPerr.receivers);
+  m_myPerr.perr.ResetPerr ();
+  m_myPerr.receivers.clear ();
 }
 uint32_t
 HwmpProtocolMac::GetLinkMetric(Mac48Address peerAddress) const

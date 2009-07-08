@@ -100,9 +100,25 @@ private:
       uint32_t destinationSN,
       uint32_t lifetime,
       uint32_t interface);
-  
-  ///\brief forms a path error information element when list of destination fails on a given interface
-  void MakePathError (std::vector<IePerr::FailedDestination> destinations);
+  /**
+   * \brief Structure of path error: IePerr and list of receivers:
+   * interfaces and MAC address
+   */
+  struct PathError
+  {
+    IePerr perr;
+    /// interface-address
+    std::vector<std::pair<uint32_t, Mac48Address> > receivers;
+  };
+  /**
+   * \brief forms a path error information element when list of destination fails on a given interface
+   * \attention removes all entries from routing table!
+   */
+  PathError MakePathError (std::vector<IePerr::FailedDestination> destinations);
+  ///\brief Forwards a received path error
+  void ForwardPathError (PathError perr);
+  ///\brief Pasess a selg-generated PERR to interface-plugin
+  void InitiatePathError (PathError perr);
   /// \return list of addresses where a PERR should be sent to
   std::vector<std::pair<uint32_t, Mac48Address> > GetPerrReceivers (std::vector<IePerr::FailedDestination> failedDest);
   
