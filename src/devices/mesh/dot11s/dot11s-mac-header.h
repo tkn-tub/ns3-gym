@@ -111,10 +111,7 @@ public:
   /* Compatible with open80211s implementation */
   enum PathSelectionActionValue
   {
-    PATH_REQUEST                = 0,
-    PATH_REPLY                  = 1,
-    PATH_ERROR                  = 2,
-    ROOT_ANNOUNCEMENT           = 3,
+    PATH_SELECTION = 0,
   };
   enum InterworkActionValue
   {

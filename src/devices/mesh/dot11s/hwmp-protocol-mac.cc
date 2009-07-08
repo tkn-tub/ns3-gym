@@ -29,6 +29,7 @@
 #include "hwmp-tag.h"
 #include "ie-dot11s-preq.h"
 #include "ie-dot11s-prep.h"
+#include "ie-dot11s-rann.h"
 
 namespace ns3 {
 namespace dot11s {
@@ -97,44 +98,38 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
   WifiMeshActionHeader::ActionValue actionValue = actionHdr.GetAction ();
   if(actionHdr.GetCategory () != WifiMeshActionHeader::MESH_PATH_SELECTION)
     return true;
-  switch (actionValue.pathSelection)
+  IeRann rann;
+  IePreq preq;
+  IePrep prep;
+  IePerr perr;
+  while (packet->RemoveHeader(rann))
   {
-    case WifiMeshActionHeader::PATH_REQUEST:
-      {
-        IePreq preq;
-        m_stats.rxPreq ++;
-        packet->RemoveHeader (preq);
-        if(preq.GetOriginatorAddress () == m_protocol->GetAddress ())
-          return false;
-        if (preq.GetTtl () == 0)
-          return false;
-        preq.DecrementTtl ();
-        m_protocol->ReceivePreq (preq, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (), m_parent->GetLinkMetric(header.GetAddr2 ()));
-        return false;
-      }
-    case WifiMeshActionHeader::PATH_REPLY:
-      {
-        IePrep prep;
-        m_stats.rxPrep ++;
-        packet->RemoveHeader (prep);
-        if(prep.GetTtl () == 0)
-          return false;
-        prep.DecrementTtl ();
-        m_protocol->ReceivePrep (prep, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (), m_parent->GetLinkMetric(header.GetAddr2 ()));
-        return false;
-      }
-    case WifiMeshActionHeader::PATH_ERROR:
-      {
-        IePerr perr;
-        m_stats.rxPerr ++;
-        packet->RemoveHeader (perr);
-        m_protocol->ReceivePerr (perr, header.GetAddr2 (), m_ifIndex, header.GetAddr3 ());
-        return false;
-      }
-    case WifiMeshActionHeader::ROOT_ANNOUNCEMENT:
-      return false;
+    NS_LOG_WARN("RANN is not supported!");
   }
-  return true;
+  while (packet->RemoveHeader(preq))
+  {
+    m_stats.rxPreq ++;
+    if (preq.GetOriginatorAddress () == m_protocol->GetAddress ())
+      continue;
+    if (preq.GetTtl () == 0)
+      continue;
+    preq.DecrementTtl ();
+    m_protocol->ReceivePreq (preq, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (), m_parent->GetLinkMetric(header.GetAddr2 ()));
+  }
+  while (packet->RemoveHeader(prep))
+  {
+    m_stats.rxPrep ++;
+    if (prep.GetTtl () == 0)
+      continue;
+    prep.DecrementTtl ();
+    m_protocol->ReceivePrep (prep, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (), m_parent->GetLinkMetric(header.GetAddr2 ()));
+  }
+  while(packet->RemoveHeader(perr))
+  {
+    m_stats.rxPerr ++;
+    m_protocol->ReceivePerr (perr, header.GetAddr2 (), m_ifIndex, header.GetAddr3 ());
+  }
+  return false;
 }
 
 bool
@@ -167,18 +162,22 @@ HwmpProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & heade
   header.SetAddr1(tag.GetAddress());
   return true;
 }
+WifiMeshActionHeader
+HwmpProtocolMac::GetWifiMeshActionHeader ()
+{
+  WifiMeshActionHeader actionHdr;
+  WifiMeshActionHeader::ActionValue action;
+  action.pathSelection = WifiMeshActionHeader::PATH_SELECTION;
+  actionHdr.SetAction (WifiMeshActionHeader::MESH_PATH_SELECTION, action);
+  return actionHdr;
+}
 void
 HwmpProtocolMac::SendPreq(IePreq preq)
 {
   NS_LOG_FUNCTION_NOARGS ();
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader(preq);
-  //Action header:
-  WifiMeshActionHeader actionHdr;
-  WifiMeshActionHeader::ActionValue action;
-  action.pathSelection = WifiMeshActionHeader::PATH_REQUEST;
-  actionHdr.SetAction (WifiMeshActionHeader::MESH_PATH_SELECTION, action);
-  packet->AddHeader (actionHdr);
+  packet->AddHeader (GetWifiMeshActionHeader ());
   //create 802.11 header:
   WifiMacHeader hdr;
   hdr.SetAction ();
@@ -234,12 +233,7 @@ HwmpProtocolMac::SendPrep (IePrep prep, Mac48Address receiver)
   //Create packet
   Ptr<Packet> packet  = Create<Packet> ();
   packet->AddHeader(prep);
-  //Action header:
-  WifiMeshActionHeader actionHdr;
-  WifiMeshActionHeader::ActionValue action;
-  action.pathSelection = WifiMeshActionHeader::PATH_REPLY;
-  actionHdr.SetAction (WifiMeshActionHeader::MESH_PATH_SELECTION, action);
-  packet->AddHeader (actionHdr);
+  packet->AddHeader (GetWifiMeshActionHeader ());
   //create 802.11 header:
   WifiMacHeader hdr;
   hdr.SetAction ();
@@ -260,12 +254,7 @@ HwmpProtocolMac::ForwardPerr(IePerr perr, std::vector<Mac48Address> receivers)
   NS_LOG_FUNCTION_NOARGS ();
   Ptr<Packet> packet  = Create<Packet> ();
   packet->AddHeader(perr);
-  //Action header:
-  WifiMeshActionHeader actionHdr;
-  WifiMeshActionHeader::ActionValue action;
-  action.pathSelection = WifiMeshActionHeader::PATH_ERROR;
-  actionHdr.SetAction (WifiMeshActionHeader::MESH_PATH_SELECTION, action);
-  packet->AddHeader (actionHdr);
+  packet->AddHeader (GetWifiMeshActionHeader ());
   //create 802.11 header:
   WifiMacHeader hdr;
   hdr.SetAction ();

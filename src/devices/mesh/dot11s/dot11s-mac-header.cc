@@ -258,17 +258,8 @@ WifiMeshActionHeader::GetAction ()
     case MESH_PATH_SELECTION:
       switch (m_actionValue)
         {
-        case PATH_REQUEST:
-          retval.pathSelection = PATH_REQUEST;
-          return retval;
-        case PATH_REPLY:
-          retval.pathSelection = PATH_REPLY;
-          return retval;
-        case PATH_ERROR:
-          retval.pathSelection = PATH_ERROR;
-          return retval;
-        case ROOT_ANNOUNCEMENT:
-          retval.pathSelection = ROOT_ANNOUNCEMENT;
+        case PATH_SELECTION:
+          retval.pathSelection = PATH_SELECTION;
           return retval;
         default:
           NS_FATAL_ERROR ("Unknown mesh path selection action code");

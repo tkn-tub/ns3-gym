@@ -33,6 +33,7 @@ class MeshWifiInterfaceMac;
 namespace dot11s {
 
 class HwmpProtocol;
+class WifiMeshActionHeader;
 class IePreq;
 class IePrep;
 class IePerr;
@@ -58,7 +59,8 @@ public:
   
 private:
   friend class HwmpProtocol;
-  
+  ///\returns a path selection action header
+  static WifiMeshActionHeader GetWifiMeshActionHeader ();
   ///\name Intercation with HWMP:
   //\{
   void SendPreq(IePreq preq);
