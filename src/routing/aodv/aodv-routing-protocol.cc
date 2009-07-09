@@ -227,8 +227,27 @@ RoutingProtocol::RecvAodv (Ptr<Socket> socket)
 void 
 RoutingProtocol::RecvRequest (Ptr<Packet> p)
 {
-  Ipv4Header ipv4Header;
-  p->RemoveHeader(ipv4Header);
+  RreqHeader h;
+  p->RemoveHeader(h);
+  uint32_t id = h.GetId();
+  Ipv4Address src = h.GetSrc();
+  // Node checks to determine whether it has received a RREQ
+  // with the same Originator IP Address and RREQ ID.
+  // If such a RREQ has been received, the node
+  // silently discards the newly received RREQ.
+  if(LookupBroadcastId(src, id))
+  {
+    //drop();
+    return;
+  }
+
+  uint8_t hop = h.GetHopCount();
+  hop++;
+  h.SetHopCount(hop);
+  aodv_rt_entry toSrc;
+  if(!rtable.rt_lookup(src, toSrc));
+
+
 }
 
 void 
