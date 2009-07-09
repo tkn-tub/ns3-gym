@@ -95,6 +95,7 @@ RoutingProtocol::DoDispose ()
 Ptr<Ipv4Route> 
 RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr)
 {
+  NS_LOG_FUNCTION (this << header.GetDestination());
   Ptr<Ipv4Route> rtentry;
   sockerr = Socket::ERROR_NOROUTETOHOST;
   // TODO resolve route
@@ -106,6 +107,7 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
                            UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                            LocalDeliverCallback lcb, ErrorCallback ecb)
 {
+  NS_LOG_FUNCTION (this << header.GetDestination() << idev->GetAddress());
   // TODO
   return false;
 }
@@ -129,6 +131,7 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
 void
 RoutingProtocol::Start ()
 {
+  NS_LOG_FUNCTION (this);
   // Open UDP sockets for control traffic on each IP interface
   const Ipv4Address loopback ("127.0.0.1");
   for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
@@ -147,18 +150,22 @@ RoutingProtocol::Start ()
         }
       socket->Connect (InetSocketAddress (Ipv4Address (0xffffffff), AODV_PORT));
       m_socketAddresses.insert(std::make_pair(socket, addr));
+      
+      NS_LOG_INFO ("Interface " << addr << " used by AODV");
     }
 }
 
 void 
-RoutingProtocol::NotifyInterfaceUp (uint32_t interface)
+RoutingProtocol::NotifyInterfaceUp (uint32_t i)
 {
+  NS_LOG_FUNCTION (this << m_ipv4->GetAddress (i, 0).GetLocal ());
   // TODO
 }
 
 void 
-RoutingProtocol::NotifyInterfaceDown (uint32_t interface)
+RoutingProtocol::NotifyInterfaceDown (uint32_t i)
 { 
+  NS_LOG_FUNCTION (this << m_ipv4->GetAddress (i, 0).GetLocal ());
   // TODO
 }
 

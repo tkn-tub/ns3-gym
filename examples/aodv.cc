@@ -104,6 +104,9 @@ AodvExample::AodvExample () :
 bool
 AodvExample::Configure (int argc, char **argv)
 {
+  // Enable AODV logs by default. Comment this if too noisy
+  LogComponentEnable("AodvRoutingProtocol", LOG_LEVEL_ALL);
+  
   SeedManager::SetSeed(12345);
   CommandLine cmd;
   
@@ -175,7 +178,7 @@ AodvExample::CreateDevices ()
   
   if (pcap)
     {
-      wifiPhy.EnablePcapAll (std::string ("aodv-"));
+      wifiPhy.EnablePcapAll (std::string ("aodv"));
     }
 }
 
