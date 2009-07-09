@@ -227,7 +227,8 @@ RoutingProtocol::RecvAodv (Ptr<Socket> socket)
 void 
 RoutingProtocol::RecvRequest (Ptr<Packet> p)
 {
-  // TODO
+  Ipv4Header ipv4Header;
+  p->RemoveHeader(ipv4Header);
 }
 
 void 
