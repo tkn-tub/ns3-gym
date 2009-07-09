@@ -31,7 +31,7 @@ namespace ns3
  * \ingroup aodv
  * \brief Helper class that adds AODV routing to nodes.
  */
-class AodvHelper
+class AodvHelper : public Ipv4RoutingHelper
 {
 public:
   AodvHelper();
@@ -50,7 +50,7 @@ public:
    * \param name the name of the attribute to set
    * \param value the value of the attribute to set.
    *
-   * This method controls the attributes of ns3::olsr::RoutingProtocol
+   * This method controls the attributes of ns3::aodv::RoutingProtocol
    */
   void Set (std::string name, const AttributeValue &value);
   
