@@ -48,9 +48,33 @@ namespace aodv
 {
 NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 
+void
+RoutingProtocol::InsertBroadcastId (Ipv4Address id, uint32_t bid)
+{
+  if(LookupBroadcastId(id, bid) )
+    return;
+  struct BroadcastId broadcastId = {id, bid,BCAST_ID_SAVE + Simulator::Now()};
+  bi.push_back(broadcastId);
+}
+bool
+RoutingProtocol::LookupBroadcastId (Ipv4Address id, uint32_t bid)
+{
+  std::vector<BroadcastId>::const_iterator i;
+  for(i = bi.begin(); i != bi.end(); ++i)
+    if(i->src == id && i->id == bid)
+      return true;
+  return false;
+}
+
+
+void
+RoutingProtocol::PurgeBroadcastId ()
+{
+  std::vector<BroadcastId>::iterator i = remove_if(bi.begin(), bi.end(), IsExpired());
+  bi.erase(i, bi.end());
+}
+
 RoutingProtocol::RoutingProtocol() : 
-  BCAST_ID_SAVE (Seconds (6)),
-  HELLO_INTERVAL (Seconds (1)),
   ALLOWED_HELLO_LOSS (2),
   BAD_LINK_LIFETIME (Seconds (3)),
   FREQUENCY (Seconds (0.5)),
@@ -60,6 +84,7 @@ RoutingProtocol::RoutingProtocol() :
   ntimer(Timer::REMOVE_ON_DESTROY),
   rtimer(Timer::REMOVE_ON_DESTROY),
   lrtimer(Timer::REMOVE_ON_DESTROY)
+
 {
   MaxHelloInterval = Scalar(1.25) * HELLO_INTERVAL;
   MinHelloInterval = Scalar(0.75) * HELLO_INTERVAL;
@@ -69,9 +94,18 @@ TypeId
 RoutingProtocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::aodv::RoutingProtocol")
-    .SetParent<Ipv4RoutingProtocol> ()
-    .AddConstructor<RoutingProtocol> ()
-    ;
+      .SetParent<Ipv4RoutingProtocol> ()
+      .AddConstructor<RoutingProtocol> ()
+      .AddAttribute ("HelloInterval", "HELLO messages emission interval.",
+          TimeValue (Seconds (1)),
+          MakeTimeAccessor (&RoutingProtocol::HELLO_INTERVAL),
+          MakeTimeChecker ())
+      .AddAttribute ("Broadcast id save", "Broadcast id save interval.",
+          TimeValue (Seconds (6)),
+          MakeTimeAccessor (&RoutingProtocol::BCAST_ID_SAVE),
+          MakeTimeChecker ())
+
+            ;
   return tid;
 }
 
@@ -120,8 +154,8 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
   ntimer.SetFunction (& RoutingProtocol::NeighborTimerExpire, this);
   rtimer.SetFunction (& RoutingProtocol::RouteCacheTimerExpire, this);
   lrtimer.SetFunction (& RoutingProtocol::LocalRepairTimerExpire, this);
-  htimer.SetFunction (& RoutingProtocol::HelloTimerExpire, this);
-  
+  htimer.SetFunction (& RoutingProtocol::LocalRepairTimerExpire, this);
+
   m_ipv4 = ipv4;
   Simulator::ScheduleNow (&RoutingProtocol::Start, this);
 }
@@ -249,10 +283,71 @@ RoutingProtocol::SendHello ()
   // TODO send hello packet from interfaces
 }
 
+// TODO add use an expanding ring search technique
 void 
-RoutingProtocol::SendRequest (Ipv4Address dst)
+RoutingProtocol::SendRequest (Ipv4Address dst, bool G, bool D)
 {
-  // TODO
+  TypeHeader tHeader(AODVTYPE_RREQ);
+
+  Ipv4Header ipv4Header;
+  ipv4Header.SetTtl(NETWORK_DIAMETER);
+  ipv4Header.SetDestination(dst);
+//ipv4Header.SetProtocol( ? );
+
+  RreqHeader h;
+  h.SetDst(dst);
+  aodv_rt_entry rt;
+  if(rtable.rt_lookup(dst, rt))
+    h.SetHopCount(rt.GetLastValidHopCount());
+  else
+    h.SetUnknownSeqno(true);
+  if(G)
+    h.SetGratiousRrep(true);
+  if(D)
+    h.SetDestinationOnly(true);
+  seqno++;
+  h.SetSrcSeqno(seqno);
+  bid++;
+  h.SetId(bid);
+  h.SetHopCount(0);
+  Ipv4Address loopback ("127.0.0.1");
+  std::map<Ipv4Address, Timer>::const_iterator i;
+  for (uint32_t k = 0; k < m_ipv4->GetNInterfaces (); k++)
+  {
+    Ipv4Address addr = m_ipv4->GetAddress (k, 0).GetLocal ();
+    if (addr != loopback)
+    {
+      ipv4Header.SetSource(addr);
+      h.SetSrc(addr);
+      InsertBroadcastId(addr, bid);
+      Ptr<Packet> packet = Create<Packet> ();
+      packet->AddHeader(ipv4Header);
+      packet->AddHeader(tHeader);
+      packet->AddHeader(h);
+
+//      i = htimer.find(addr);
+//      if(i == htimer.end())
+//      {
+//        Timer t;
+//        t.SetDelay(HELLO_INTERVAL);
+//        t.Schedule();
+//        htimer.insert(std::make_pair(addr, t));
+//      }
+//      else
+//      {
+//        i->second.SetDelay(HELLO_INTERVAL);
+//        t.Schedule();
+//      }
+
+      std::map< Ipv4Address, Ptr<Socket> >::const_iterator j = m_addressSocket.find(addr);
+      j->second->Send(packet);
+
+    }
+  }
+  btimer.SetDelay(BCAST_ID_SAVE);
+  btimer.Schedule();
+  htimer.SetDelay(HELLO_INTERVAL);
+  htimer.Schedule();
 }
 
 void 

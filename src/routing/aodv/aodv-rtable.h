@@ -78,7 +78,8 @@ public:
    */
   bool pc_empty() const;
   //\}
-  
+  /// Return last valid hop count
+  uint16_t GetLastValidHopCount() { return rt_last_hop_count; }
   /// Mark entry as "down" (i.e. disable it)
   void Down ();
   
@@ -98,7 +99,6 @@ public:
 
 private:
   friend class aodv_rtable;
-  friend class RoutingProtocol;
 
   /// Destination address
   Ipv4Address rt_dst;

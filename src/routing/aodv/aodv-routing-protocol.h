@@ -41,6 +41,15 @@ namespace ns3
 {
 namespace aodv
 {
+
+/// Various constants used for the expanding ring search
+//\{
+#define TTL_START        5             /// (?) in RFC 1
+#define TTL_THRESHOLD    7
+#define TTL_INCREMENT    2
+#define NETWORK_DIAMETER 30       /// Should be set by the user
+//\}
+
 /// List of neighbors TODO document & move inside protocol
 class NeighborList
 {
@@ -61,23 +70,7 @@ private:
   std::vector<Neighbor> nb;
 };
 
-/// Known broadcast ID cache. TODO document & move inside protocol
-class BroadcastIdCache 
-{
-public:
-  void Insert (Ipv4Address id, u_int32_t bid);
-  bool Lookup (Ipv4Address id, u_int32_t bid);
-  void Purge ();
-private:
-  struct BroadcastId 
-  {
-    Ipv4Address src;
-    uint32_t    id;
-    Time        expire;
-  };
-  
-  std::vector<BroadcastId> bi;
-};
+
 
 /**
  * \ingroup aodv
@@ -106,6 +99,7 @@ public:
   //\}
   
 private:
+
   ///\name Protocol parameters. TODO document
   //\{
   Time BCAST_ID_SAVE;
@@ -116,25 +110,47 @@ private:
   Time MinHelloInterval; //        (0.75 * HELLO_INTERVAL)
   Time FREQUENCY;
   //\}
-  
+
+  /// \name Handle Broadcast sequence number cache
+  //\{
+  void InsertBroadcastId (Ipv4Address id, uint32_t bid);
+  bool LookupBroadcastId (Ipv4Address id, uint32_t bid);
+  void PurgeBroadcastId ();
+  struct BroadcastId
+  {
+    Ipv4Address src;
+    uint32_t    id;
+    Time        expire;
+  };
+  struct IsExpired
+  {
+    bool operator()(const struct BroadcastId & b) const
+    {
+      return (b.expire < Simulator::Now());
+    }
+  };
+  std::vector<BroadcastId> bi;
+  //\}
+
   /// IP protocol
   Ptr<Ipv4> m_ipv4;
   /// UDP socket per each IP interface, map socket -> iface
   std::map< Ptr<Socket>, Ipv4Address > m_socketAddresses;
+  std::map< Ipv4Address, Ptr<Socket> > m_addressSocket;
+
   /// Routing table
   aodv_rtable rtable;
   /// A "drop-front" queue used by the routing layer to buffer packets to which it does not have a route.
   aodv_rqueue rqueue;
   /// List of neighbors (aka neighbors cache). TODO: separate list for each interface??? 
   NeighborList nbhead;
-  /// Broadcast sequence numbers cache
-  BroadcastIdCache bihead;
-  /// Preq broadcast ID
+  /// Rreq broadcast ID
   uint32_t bid;
   /// Sequence Number (???)
   uint32_t seqno;
 
 private:
+
   /// Start protocol operation
   void Start ();
   /// Start local route repair procedure
@@ -161,7 +177,7 @@ private:
   /// Send hello. TODO send independent hello per interface
   void SendHello ();
   /// Send RREQ
-  void SendRequest (Ipv4Address dst);
+  void SendRequest (Ipv4Address dst, bool G, bool D);
   /// Send RREP
   void SendReply (Ipv4Address ipdst, uint32_t hop_count,
                   Ipv4Address rpdst, uint32_t rpseq, Time lifetime);

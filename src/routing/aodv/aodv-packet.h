@@ -49,15 +49,6 @@ enum MessageType
 class TypeHeader : public Header
 {
 public:
-
-  enum MessageType
-  {
-    AODVTYPE_RREQ  = 0x02,  //!< AODVTYPE_RREQ
-    AODVTYPE_RREP  = 0x04,  //!< AODVTYPE_RREP
-    AODVTYPE_RERR  = 0x08,  //!< AODVTYPE_RERR
-    AODVTYPE_RREP_ACK = 0x10//!< AODVTYPE_RREP_ACK
-  };
-
   TypeHeader(uint8_t t);
 
   ///\name Header serialization/deserialization
