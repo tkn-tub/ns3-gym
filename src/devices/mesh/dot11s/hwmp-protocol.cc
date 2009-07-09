@@ -34,7 +34,6 @@
 #include "airtime-metric.h"
 #include "ie-dot11s-preq.h"
 #include "ie-dot11s-prep.h"
-#include "ie-dot11s-perr.h"
 
 NS_LOG_COMPONENT_DEFINE ("HwmpProtocol");
 
@@ -559,28 +558,25 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, M
   prep_sender->second->SendPrep (prep, result.retransmitter);
 }
 void
-HwmpProtocol::ReceivePerr (IePerr perr, Mac48Address from, uint32_t interface, Mac48Address fromMp)
+HwmpProtocol::ReceivePerr (std::vector<IePerr::FailedDestination> destinations, Mac48Address from, uint32_t interface, Mac48Address fromMp)
 {
   //Acceptance cretirea:
   NS_LOG_DEBUG("I am "<<GetAddress ()<<", received PERR from "<<from);
-  std::vector<IePerr::FailedDestination> destinations = perr.GetAddressUnitVector ();
+  std::vector<IePerr::FailedDestination> retval;
   HwmpRtable::LookupResult result;
   for(unsigned int i = 0; i < destinations.size (); i ++)
   {
     result = m_rtable->LookupReactive (destinations[i].destination);
-    if (
+    if (!(
         (result.retransmitter != from) ||
         (result.ifIndex != interface) ||
         (result.seqnum > destinations[i].seqnum)
-        )
-    {
-      perr.DeleteAddressUnit(destinations[i].destination);
-      continue;
-    }
+        ))
+      retval.push_back(destinations[i]);
   }
-  if(perr.GetNumOfDest () == 0)
+  if(retval.size() == 0)
     return;
-  ForwardPathError (MakePathError (destinations));
+  ForwardPathError (MakePathError (retval));
 }
 void
 HwmpProtocol::SendPrep (
@@ -675,7 +671,7 @@ HwmpProtocol::MakePathError (std::vector<IePerr::FailedDestination> destinations
   m_stats.initiatedPerr ++;
   for(unsigned int i = 0; i < destinations.size (); i ++)
   {
-    retval.perr.AddAddressUnit(destinations[i]);
+    retval.destinations.push_back(destinations[i]);
     m_rtable->DeleteReactivePath(destinations[i].destination);
   }
   return retval;
@@ -689,7 +685,7 @@ HwmpProtocol::InitiatePathError(PathError perr)
     for(unsigned int j = 0; j < perr.receivers.size(); j ++)
       if(i->first == perr.receivers[j].first)
         receivers_for_interface.push_back(perr.receivers[j].second);
-    i->second->InitiatePerr (perr.perr, receivers_for_interface);
+    i->second->InitiatePerr (perr.destinations, receivers_for_interface);
   }
 }
 void
@@ -701,7 +697,7 @@ HwmpProtocol::ForwardPathError(PathError perr)
     for(unsigned int j = 0; j < perr.receivers.size(); j ++)
       if(i->first == perr.receivers[j].first)
         receivers_for_interface.push_back(perr.receivers[j].second);
-    i->second->ForwardPerr (perr.perr, receivers_for_interface);
+    i->second->ForwardPerr (perr.destinations, receivers_for_interface);
   }
 }
 

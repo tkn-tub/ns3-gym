@@ -90,7 +90,7 @@ private:
   //\{
   void ReceivePreq(IePreq preq, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
   void ReceivePrep(IePrep prep, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
-  void ReceivePerr(IePerr perr, Mac48Address from, uint32_t interface, Mac48Address fromMp);
+  void ReceivePerr(std::vector<IePerr::FailedDestination>, Mac48Address from, uint32_t interface, Mac48Address fromMp);
   void SendPrep (
       Mac48Address src,
       Mac48Address dst,
@@ -106,7 +106,7 @@ private:
    */
   struct PathError
   {
-    IePerr perr;
+    std::vector<IePerr::FailedDestination> destinations;
     /// interface-address
     std::vector<std::pair<uint32_t, Mac48Address> > receivers;
   };

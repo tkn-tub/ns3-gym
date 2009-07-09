@@ -119,20 +119,6 @@ IePerr::DeleteAddressUnit (Mac48Address address)
       }
 }
 void
-IePerr::Merge(const IePerr perr)
-{
-  std::vector<FailedDestination> to_merge = perr.GetAddressUnitVector ();
-  for (std::vector<FailedDestination>::iterator i = to_merge.begin (); i != to_merge.end(); i ++)
-  {
-    bool should_add = true;
-    for (std::vector<FailedDestination>::iterator j = m_addressUnits.begin (); j != m_addressUnits.end(); j ++)
-      if ((i->destination == j->destination) && (i->seqnum <= j->seqnum))
-        should_add = false;
-    if(should_add)
-      AddAddressUnit (*i);
-  }
-}
-void
 IePerr::ResetPerr ()
 {
   m_addressUnits.clear ();
@@ -177,10 +163,6 @@ bool IePerrBist::RunTests ()
   dest.destination = Mac48Address("01:02:03:04:05:06");
   dest.seqnum = 3;
   a.AddAddressUnit(dest);
-  
-  IePerr b = a;
-  b.Merge(a);
-  NS_TEST_ASSERT_EQUAL (a, b);
   
   result = result && TestRoundtripSerialization (a);
   return result;

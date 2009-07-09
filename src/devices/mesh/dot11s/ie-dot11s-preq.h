@@ -118,7 +118,7 @@ public:
    * this preq is not proactive
    */
   bool MayAddAddress(Mac48Address originator);
-
+  bool IsFull () const;
 private:
   WifiElementId ElementId () const{
     return IE11S_PREQ;

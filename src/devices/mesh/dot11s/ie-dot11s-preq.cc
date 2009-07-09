@@ -410,9 +410,14 @@ IePreq::MayAddAddress (Mac48Address originator)
     return false;
   if(m_destinations[0]->GetDestinationAddress () == Mac48Address::GetBroadcast ())
     return false;
-  if(GetInformationSize () + 11 > 255)
+  if((GetInformationSize () + 11) > 255)
     return false;
   return true;
+}
+bool
+IePreq::IsFull () const
+{
+  return ((GetInformationSize () + 11) > 255);
 }
 #ifdef RUN_SELF_TESTS
 

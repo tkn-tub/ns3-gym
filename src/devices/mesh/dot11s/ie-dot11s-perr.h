@@ -47,7 +47,6 @@ public:
   bool IsFull () const;
   std::vector<FailedDestination> GetAddressUnitVector () const;
   void DeleteAddressUnit (Mac48Address address);
-  void Merge(const IePerr perr);
   void ResetPerr ();
 private:
   WifiElementId ElementId () const{

@@ -188,8 +188,7 @@ IePrep::GetInformationSize () const
     +4 //Lifetime
     +4 //metric
     +6 //Originator address
-    +4 //Originator seqno
-    +1; //destination count
+    +4; //Originator seqno
   return retval;
 };
 void

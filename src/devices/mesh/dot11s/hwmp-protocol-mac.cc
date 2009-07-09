@@ -102,11 +102,11 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
   IePreq preq;
   IePrep prep;
   IePerr perr;
-  while (packet->RemoveHeader(rann))
+  while (packet->RemoveHeader (rann))
   {
     NS_LOG_WARN("RANN is not supported!");
   }
-  while (packet->RemoveHeader(preq))
+  while (packet->RemoveHeader (preq))
   {
     m_stats.rxPreq ++;
     if (preq.GetOriginatorAddress () == m_protocol->GetAddress ())
@@ -116,7 +116,7 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
     preq.DecrementTtl ();
     m_protocol->ReceivePreq (preq, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (), m_parent->GetLinkMetric(header.GetAddr2 ()));
   }
-  while (packet->RemoveHeader(prep))
+  while (packet->RemoveHeader (prep))
   {
     m_stats.rxPrep ++;
     if (prep.GetTtl () == 0)
@@ -124,11 +124,17 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
     prep.DecrementTtl ();
     m_protocol->ReceivePrep (prep, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (), m_parent->GetLinkMetric(header.GetAddr2 ()));
   }
-  while(packet->RemoveHeader(perr))
+  std::vector<IePerr::FailedDestination> failedDestinations;
+  while (packet->RemoveHeader (perr))
   {
     m_stats.rxPerr ++;
-    m_protocol->ReceivePerr (perr, header.GetAddr2 (), m_ifIndex, header.GetAddr3 ());
+    std::vector<IePerr::FailedDestination> destinations = perr.GetAddressUnitVector ();
+    for(std::vector<IePerr::FailedDestination>::const_iterator i = destinations.begin (); i != destinations.end (); i ++)
+      failedDestinations.push_back (*i);
   }
+  if (failedDestinations.size () > 0)
+    m_protocol->ReceivePerr (failedDestinations, header.GetAddr2 (), m_ifIndex, header.GetAddr3 ());
+  NS_ASSERT(packet->GetSize () == 0);
   return false;
 }
 
@@ -156,10 +162,10 @@ HwmpProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & heade
   m_stats.txData ++;
   m_stats.txDataBytes += packet->GetSize ();
   MeshHeader meshHdr;
-  meshHdr.SetMeshSeqno(tag.GetSeqno());
-  meshHdr.SetMeshTtl(tag.GetTtl());
-  packet->AddHeader(meshHdr);
-  header.SetAddr1(tag.GetAddress());
+  meshHdr.SetMeshSeqno (tag.GetSeqno());
+  meshHdr.SetMeshTtl (tag.GetTtl());
+  packet->AddHeader (meshHdr);
+  header.SetAddr1 (tag.GetAddress());
   return true;
 }
 WifiMeshActionHeader
@@ -175,8 +181,18 @@ void
 HwmpProtocolMac::SendPreq(IePreq preq)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  std::vector<IePreq> preq_vector;
+  preq_vector.push_back(preq);
+  SendPreq(preq_vector);
+}
+void
+HwmpProtocolMac::SendPreq(std::vector<IePreq> preq)
+{
   Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader(preq);
+  for(std::vector<IePreq>::const_iterator i = preq.begin (); i != preq.end (); i ++)
+  {
+    packet->AddHeader (*i);
+  }
   packet->AddHeader (GetWifiMeshActionHeader ());
   //create 802.11 header:
   WifiMacHeader hdr;
@@ -200,16 +216,22 @@ void
 HwmpProtocolMac::RequestDestination (Mac48Address dst, uint32_t originator_seqno, uint32_t dst_seqno)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if(m_myPreq.GetDestCount () == 0)
+  for(std::vector<IePreq>::iterator i = m_myPreq.begin (); i != m_myPreq.end(); i ++)
   {
-    m_myPreq.SetHopcount (0);
-    m_myPreq.SetTTL (m_protocol->GetMaxTtl ());
-    m_myPreq.SetPreqID (m_protocol->GetNextPreqId ());
-    m_myPreq.SetOriginatorAddress (m_protocol->GetAddress ());
-    m_myPreq.SetOriginatorSeqNumber (originator_seqno);
-    m_myPreq.SetLifetime (m_protocol->GetActivePathLifetime ());
+    if(i->IsFull ())
+      continue;
+    NS_ASSERT (i->GetDestCount () > 0);
+    i->AddDestinationAddressElement (m_protocol->GetDoFlag(), m_protocol->GetRfFlag(), dst, dst_seqno);
   }
-  m_myPreq.AddDestinationAddressElement (m_protocol->GetDoFlag(), m_protocol->GetRfFlag(), dst, dst_seqno);
+  IePreq preq;
+  preq.SetHopcount (0);
+  preq.SetTTL (m_protocol->GetMaxTtl ());
+  preq.SetPreqID (m_protocol->GetNextPreqId ());
+  preq.SetOriginatorAddress (m_protocol->GetAddress ());
+  preq.SetOriginatorSeqNumber (originator_seqno);
+  preq.SetLifetime (m_protocol->GetActivePathLifetime ());
+  preq.AddDestinationAddressElement (m_protocol->GetDoFlag(), m_protocol->GetRfFlag(), dst, dst_seqno);
+  m_myPreq.push_back(preq);
   SendMyPreq ();
 }
 void
@@ -218,13 +240,13 @@ HwmpProtocolMac::SendMyPreq ()
   NS_LOG_FUNCTION_NOARGS ();
   if(m_preqTimer.IsRunning ())
     return;
-  if(m_myPreq.GetDestCount () == 0)
+  if(m_myPreq.size () == 0)
     return;
   //reschedule sending PREQ
   NS_ASSERT (!m_preqTimer.IsRunning());
   m_preqTimer = Simulator::Schedule (m_protocol->GetPreqMinInterval (), &HwmpProtocolMac::SendMyPreq, this);
   SendPreq (m_myPreq);
-  m_myPreq.ClearDestinationAddressElements ();
+  m_myPreq.clear ();
 }
 void
 HwmpProtocolMac::SendPrep (IePrep prep, Mac48Address receiver)
@@ -232,7 +254,7 @@ HwmpProtocolMac::SendPrep (IePrep prep, Mac48Address receiver)
   NS_LOG_FUNCTION_NOARGS ();
   //Create packet
   Ptr<Packet> packet  = Create<Packet> ();
-  packet->AddHeader(prep);
+  packet->AddHeader (prep);
   packet->AddHeader (GetWifiMeshActionHeader ());
   //create 802.11 header:
   WifiMacHeader hdr;
@@ -249,11 +271,23 @@ HwmpProtocolMac::SendPrep (IePrep prep, Mac48Address receiver)
   m_parent->SendManagementFrame(packet, hdr);
 }
 void
-HwmpProtocolMac::ForwardPerr(IePerr perr, std::vector<Mac48Address> receivers)
+HwmpProtocolMac::ForwardPerr(std::vector<IePerr::FailedDestination> failedDestinations, std::vector<Mac48Address> receivers)
 {
   NS_LOG_FUNCTION_NOARGS ();
   Ptr<Packet> packet  = Create<Packet> ();
-  packet->AddHeader(perr);
+  IePerr perr;
+  for(std::vector<IePerr::FailedDestination>::const_iterator i = failedDestinations.begin (); i != failedDestinations.end (); i ++)
+  {
+    if(!perr.IsFull ())
+      perr.AddAddressUnit (*i);
+    else
+    {
+      packet->AddHeader (perr);
+      perr.ResetPerr ();
+    }
+  }
+  if(perr.GetNumOfDest () > 0)
+    packet->AddHeader (perr);
   packet->AddHeader (GetWifiMeshActionHeader ());
   //create 802.11 header:
   WifiMacHeader hdr;
@@ -278,17 +312,37 @@ HwmpProtocolMac::ForwardPerr(IePerr perr, std::vector<Mac48Address> receivers)
   }
 }
 void
-HwmpProtocolMac::InitiatePerr (IePerr perr, std::vector<Mac48Address> receivers)
+HwmpProtocolMac::InitiatePerr (std::vector<IePerr::FailedDestination> failedDestinations, std::vector<Mac48Address> receivers)
 {
-  m_myPerr.perr.Merge(perr);
-  for(unsigned int i = 0; i < receivers.size (); i ++)
+  //All duplicates in PERR are checked here, and there is no reason to
+  //check it at any athoer place
   {
-    bool should_add = true;
-    for (unsigned int j = 0; j < m_myPerr.receivers.size (); j ++)
-      if(receivers[i] == m_myPerr.receivers[j])
-        should_add = false;
-    if(should_add)
-      m_myPerr.receivers.push_back(receivers[i]);
+    std::vector<Mac48Address>::const_iterator end = receivers.end();
+    for(std::vector<Mac48Address>::const_iterator i = receivers.begin (); i != end; i ++)
+    {
+      bool should_add = true;
+      for (std::vector<Mac48Address>::const_iterator j = m_myPerr.receivers.begin (); j != m_myPerr.receivers.end (); j ++)
+        if ((*i) == (*j))
+          should_add = false;
+      if (should_add)
+        m_myPerr.receivers.push_back(*i);
+    }
+  }
+  {
+    std::vector<IePerr::FailedDestination>::const_iterator end =  failedDestinations.end ();
+    for(std::vector<IePerr::FailedDestination>::const_iterator i = failedDestinations.begin (); i != end; i ++)
+    {
+      bool should_add = true;
+      for
+        (
+         std::vector<IePerr::FailedDestination>::const_iterator j = m_myPerr.destinations.begin ();
+         j != m_myPerr.destinations.end ();
+         j ++)
+        if ( ((*i).destination == (*j).destination) && ((*j).seqnum > (*i).seqnum) )
+          should_add = false;
+      if (should_add)
+        m_myPerr.destinations.push_back(*i);
+    }
   }
   SendMyPerr ();
 }
@@ -299,8 +353,8 @@ HwmpProtocolMac::SendMyPerr()
   if(m_perrTimer.IsRunning ())
     return;
   m_perrTimer = Simulator::Schedule (m_protocol->GetPerrMinInterval (), &HwmpProtocolMac::SendMyPerr, this);
-  ForwardPerr (m_myPerr.perr, m_myPerr.receivers);
-  m_myPerr.perr.ResetPerr ();
+  ForwardPerr (m_myPerr.destinations, m_myPerr.receivers);
+  m_myPerr.destinations.clear ();
   m_myPerr.receivers.clear ();
 }
 uint32_t
