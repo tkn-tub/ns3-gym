@@ -82,7 +82,28 @@ public:
   uint16_t GetLastValidHopCount() { return rt_last_hop_count; }
   /// Mark entry as "down" (i.e. disable it)
   void Down ();
-  
+  ///\name Fields
+  //\{
+  void SetDest(Ipv4Address dst) { rt_dst = dst; }
+  Ipv4Address GetDest() const { return rt_dst; }
+  void SetValidSeqNo(bool s) { validSeqNo = s; }
+  bool GetValidSeqNo() const { return validSeqNo; }
+  void SetInterface(uint32_t in) { rt_interface = in; }
+  uint32_t GetInterface() const { return rt_interface; }
+  void SetHop(uint16_t hop) { rt_hops = hop; }
+  uint16_t GetHop() const {return rt_hops; }
+  void SetNextHop(Ipv4Address next) { rt_nexthop = next; }
+  Ipv4Address GetNextHop() const { return rt_nexthop; }
+  void SetLifeTime(Time lt) { rt_lifetime = lt; }
+  Time GetLifeTime() const { return rt_lifetime; }
+  void SetFlag(uint8_t flag) { rt_flags = flag; }
+  uint8_t GetFlag() const { return rt_flags; }
+  void SetRreqCnt(uint8_t n) { rt_req_cnt = n; }
+  uint8_t GetRreqCnt() const { return rt_req_cnt; }
+  void SetRreqTimeout(Time t) {rt_req_timeout = t; }
+  Time GetRreqTimeout() const { return rt_req_timeout; }
+  //\}
+
   /**
    * \brief Compare destination address
    * \return true if equal
@@ -91,11 +112,6 @@ public:
   {
     return rt_dst == dst;
   }
-
-  /// When I can send another request
-  Time rt_req_timeout;
-  /// Number of route requests
-  uint8_t rt_req_cnt;
 
 private:
   friend class aodv_rtable;
@@ -130,6 +146,11 @@ private:
 #define RTF_UP          1
 #define RTF_IN_REPAIR   2
 #define MAX_HISTORY     3
+
+  /// When I can send another request
+  Time rt_req_timeout;
+  /// Number of route requests
+  uint8_t rt_req_cnt;
 
   // TODO review and delete
   double rt_disc_latency[MAX_HISTORY];

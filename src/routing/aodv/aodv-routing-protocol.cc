@@ -246,6 +246,9 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p)
   h.SetHopCount(hop);
   aodv_rt_entry toSrc;
   if(!rtable.rt_lookup(src, toSrc));
+  {
+    //toSrc.
+  }
 
 
 }
