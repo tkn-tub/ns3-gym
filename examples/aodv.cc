@@ -28,6 +28,7 @@
 #include "ns3/mobility-module.h"
 #include "ns3/contrib-module.h"
 #include "ns3/wifi-module.h" 
+#include "ns3/v4ping-helper.h"
 #include <iostream>
 #include <cmath>
 
@@ -36,7 +37,11 @@ using namespace ns3;
 /**
  * \brief Test script.
  * 
- * This script creates 1-dimensional grid topology and runs UDP echo from one end to the other one.
+ * This script creates 1-dimensional grid topology and then ping last node from the first one:
+ * 
+ * [10.0.0.1] <-- step --> [10.0.0.2] <-- step --> [10.0.0.3] <-- step --> [10.0.04]
+ * 
+ * ping 10.0.0.4
  */
 class AodvExample 
 {
@@ -129,12 +134,12 @@ AodvExample::Run ()
 void
 AodvExample::Report (std::ostream &)
 { 
-  std::cout << "Done.\n";
 }
 
 void
 AodvExample::CreateNodes ()
 {
+  std::cout << "Creating " << (unsigned)size << " nodes " << step << " m apart.\n";
   nodes.Create (size);
   // Name nodes
   for (uint32_t i = 0; i < size; ++i)
@@ -190,21 +195,11 @@ AodvExample::InstallInternetStack ()
 void
 AodvExample::InstallApplications ()
 {
-  LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
-  LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
+  V4PingHelper ping (interfaces.GetAddress(size - 1));
+  ping.SetAttribute ("Verbose", BooleanValue (true));
   
-  UdpEchoServerHelper echoServer (9);
-  ApplicationContainer serverApps = echoServer.Install (nodes.Get (0));
-  serverApps.Start (Seconds (0));
-  serverApps.Stop (Seconds (totalTime));
-  UdpEchoClientHelper echoClient (interfaces.GetAddress (0), 9);
-  Time packetInterval (Seconds (0.1));
-  uint32_t packetSize (1024);
-  echoClient.SetAttribute ("MaxPackets", UintegerValue ((uint32_t)std::floor(totalTime / packetInterval.GetSeconds())));
-  echoClient.SetAttribute ("Interval", TimeValue (packetInterval));
-  echoClient.SetAttribute ("PacketSize", UintegerValue (packetSize));
-  ApplicationContainer clientApps = echoClient.Install (nodes.Get (size - 1));
-  clientApps.Start (Seconds (0));
-  clientApps.Stop (Seconds (totalTime));
+  ApplicationContainer p = ping.Install (nodes.Get (0));
+  p.Start (Seconds (0));
+  p.Stop (Seconds (totalTime));  
 }
 

@@ -142,9 +142,9 @@ def build(bld):
 #        ['csma', 'internet-stack'])
 #    obj.source = 'csma-raw-ip-socket.cc'
 #
-#    obj = bld.create_ns3_program('csma-ping',
-#        ['csma', 'internet-stack', 'v4ping'])
-#    obj.source = 'csma-ping.cc'
+    obj = bld.create_ns3_program('csma-ping',
+        ['csma', 'internet-stack', 'v4ping'])
+    obj.source = 'csma-ping.cc'
 #
 #    obj = bld.create_ns3_program('test-ipv6',
 #      ['point-to-point', 'internet-stack'])
