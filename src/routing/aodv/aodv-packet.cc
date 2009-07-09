@@ -29,17 +29,146 @@
 namespace ns3 {
 namespace aodv {
 
+TypeHeader::TypeHeader(uint8_t t) : type(t), valid(true)
+{
+  switch (type)
+  {
+  case AODVTYPE_RREQ:
+  case AODVTYPE_RREP:
+  case AODVTYPE_RERR:
+  case AODVTYPE_RREP_ACK:
+    break;
+  default:
+    valid = false;
+  }
+}
+
+TypeId
+TypeHeader::GetInstanceTypeId() const
+{
+  return TypeId();
+}
+
+uint32_t
+TypeHeader::GetSerializedSize () const
+{
+  return 1;
+}
+
+void
+TypeHeader::Serialize (Buffer::Iterator i) const
+{
+  i.WriteU8(type);
+}
+
+uint32_t
+TypeHeader::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+  type = i.ReadU8 ();
+  valid = true;
+  switch (type)
+  {
+  case AODVTYPE_RREQ:
+  case AODVTYPE_RREP:
+  case AODVTYPE_RERR:
+  case AODVTYPE_RREP_ACK:
+    break;
+  default:
+    valid = false;
+  }
+  uint32_t dist = i.GetDistanceFrom (start);
+  NS_ASSERT (dist == GetSerializedSize ());
+  return dist;
+}
+
+void
+TypeHeader::Print (std::ostream &os) const
+{
+  switch(type)
+  {
+  case AODVTYPE_RREQ:
+  {
+    os << "RREQ" << "\n";
+    break;
+  }
+  case AODVTYPE_RREP:
+  {
+    os << "RREP" << "\n";
+    break;
+  }
+  case AODVTYPE_RERR:
+  {
+    os << "RERR" << "\n";
+    break;
+  }
+  case AODVTYPE_RREP_ACK:
+  {
+    os << "RREP_ACK" << "\n";
+    break;
+  }
+  default:
+    os << "";
+  }
+}
+
+bool
+TypeHeader::operator==(TypeHeader const & o) const
+{
+  return ( type == o.type && valid == o.valid );
+}
+
+std::ostream & operator<<(std::ostream & os, TypeHeader const & h)
+{
+  h.Print(os);
+  return os;
+}
+
+
+#ifdef RUN_SELF_TESTS
+/// Unit test for TypeHeader
+struct TypeHeaderTest : public Test
+{
+  TypeHeaderTest () : Test ("AODV/TypeHeader") {}
+  virtual bool RunTests();
+};
+
+/// Test instance
+static TypeHeaderTest g_TypeHeaderTest;
+
+bool TypeHeaderTest::RunTests ()
+{
+  bool result(true);
+
+  TypeHeader h(AODVTYPE_RREQ);
+  NS_TEST_ASSERT(h.IsValid());
+  TypeHeader h1(13);
+  NS_TEST_ASSERT(!h1.IsValid());
+
+  Ptr<Packet> p = Create<Packet> ();
+  p->AddHeader (h);
+  TypeHeader h2(AODVTYPE_RREP);
+  uint32_t bytes = p->RemoveHeader(h2);
+  NS_TEST_ASSERT_EQUAL (bytes, 1);
+  NS_TEST_ASSERT_EQUAL (h, h2);
+  return result;
+}
+#endif
+
+
 //-----------------------------------------------------------------------------
 // RREQ
 //-----------------------------------------------------------------------------
-RreqHeader::RreqHeader () : rq_flags(0), reserved(0), rq_hop_count(0), rq_bcast_id(0), rq_dst_seqno(0), rq_src_seqno(0)
+RreqHeader::RreqHeader () : rq_flags(0), reserved(0), rq_hop_count(0), rq_bcast_id(0),
+rq_dst_seqno(0), rq_src_seqno(0)
 {
   SetGratiousRrep (false);
   SetDestinationOnly (false);
   SetUnknownSeqno (false);
 }
 
-TypeId RreqHeader::GetInstanceTypeId() const
+TypeId
+RreqHeader::GetInstanceTypeId() const
 {
   return TypeId();
 }
@@ -47,13 +176,12 @@ TypeId RreqHeader::GetInstanceTypeId() const
 uint32_t 
 RreqHeader::GetSerializedSize () const
 {
-  return 24;
+  return 23;
 }
 
 void 
 RreqHeader::Serialize (Buffer::Iterator i) const
 {
-  i.WriteU8 (type());
   i.WriteU8 (rq_flags);
   i.WriteU8 (reserved);
   i.WriteU8 (rq_hop_count);
@@ -68,9 +196,6 @@ uint32_t
 RreqHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  uint8_t t = i.ReadU8 ();
-  NS_ASSERT (t == type());
-
   rq_flags = i.ReadU8 ();
   reserved = i.ReadU8 ();
   rq_hop_count = i.ReadU8 ();
@@ -184,7 +309,7 @@ bool RreqHeaderTest::RunTests ()
   p->AddHeader (h);
   RreqHeader h2;
   uint32_t bytes = p->RemoveHeader(h2);
-  NS_TEST_ASSERT_EQUAL (bytes, 24);
+  NS_TEST_ASSERT_EQUAL (bytes, 23);
   NS_TEST_ASSERT_EQUAL (h, h2);
   return result;
 }
@@ -208,13 +333,12 @@ RrepHeader::GetInstanceTypeId() const
 uint32_t
 RrepHeader::GetSerializedSize () const
 {
-  return 20;
+  return 19;
 }
 
 void
 RrepHeader::Serialize (Buffer::Iterator i) const
 {
-  i.WriteU8(type());
   i.WriteU8(rp_flags);
   i.WriteU8(prefixSize);
   i.WriteU8 (rp_hop_count);
@@ -228,8 +352,6 @@ uint32_t
 RrepHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  uint8_t t = i.ReadU8 ();
-  NS_ASSERT (t == type());
 
   rp_flags = i.ReadU8 ();
   prefixSize = i.ReadU8 ();
@@ -247,8 +369,7 @@ RrepHeader::Deserialize (Buffer::Iterator start)
 void
 RrepHeader::Print (std::ostream &os) const
 {
-  os << "RREP\n"
-  << "destination: ipv4 " << rp_dst
+  os << "destination: ipv4 " << rp_dst
   << "sequence number " <<  rp_dst_seqno;
   if(prefixSize != 0)
     os << "prefix size " << prefixSize << "\n";
@@ -343,7 +464,7 @@ bool RrepHeaderTest::RunTests ()
   p->AddHeader (h);
   RrepHeader h2;
   uint32_t bytes = p->RemoveHeader(h2);
-  NS_TEST_ASSERT_EQUAL (bytes, 20);
+  NS_TEST_ASSERT_EQUAL (bytes, 19);
   NS_TEST_ASSERT_EQUAL (h, h2);
   return result;
 }
@@ -366,13 +487,12 @@ RrepAckHeader::GetInstanceTypeId() const
 uint32_t
 RrepAckHeader::GetSerializedSize () const
 {
-  return 2;
+  return 1;
 }
 
 void
 RrepAckHeader::Serialize (Buffer::Iterator i) const
 {
-  i.WriteU8(type());
   i.WriteU8(reserved);
 }
 
@@ -380,8 +500,6 @@ uint32_t
 RrepAckHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  uint8_t t = i.ReadU8 ();
-  NS_ASSERT (t == type());
   reserved = i.ReadU8 ();
   uint32_t dist = i.GetDistanceFrom (start);
   NS_ASSERT (dist == GetSerializedSize ());
@@ -391,7 +509,6 @@ RrepAckHeader::Deserialize (Buffer::Iterator start)
 void
 RrepAckHeader::Print (std::ostream &os) const
 {
-  os << "RREP-ACK\n";
 }
 
 bool
@@ -426,7 +543,7 @@ bool RrepAckHeaderTest::RunTests ()
   p->AddHeader (h);
   RrepAckHeader h2;
   uint32_t bytes = p->RemoveHeader(h2);
-  NS_TEST_ASSERT_EQUAL (bytes, 2);
+  NS_TEST_ASSERT_EQUAL (bytes, 1);
   NS_TEST_ASSERT_EQUAL (h, h2);
   return result;
 }
@@ -448,13 +565,12 @@ RerrHeader::GetInstanceTypeId() const
 uint32_t
 RerrHeader::GetSerializedSize () const
 {
-  return ( 4 + 8*GetDestCount());
+  return ( 3 + 8*GetDestCount());
 }
 
 void
 RerrHeader::Serialize (Buffer::Iterator i) const
 {
-  i.WriteU8(type());
   i.WriteU8(er_flag);
   i.WriteU8(reserved);
   i.WriteU8(GetDestCount());
@@ -470,9 +586,6 @@ uint32_t
 RerrHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  uint8_t t = i.ReadU8 ();
-  NS_ASSERT (t == type());
-
   er_flag = i.ReadU8 ();
   reserved = i.ReadU8 ();
   uint8_t dest = i.ReadU8 ();
@@ -494,8 +607,7 @@ RerrHeader::Deserialize (Buffer::Iterator start)
 void
 RerrHeader::Print (std::ostream &os) const
 {
-  os << "REER\n"
-     << "Unreachable destination (ipv4 address, seq. number):\n";
+  os << "Unreachable destination (ipv4 address, seq. number):\n";
   std::map<Ipv4Address, uint32_t>::const_iterator j;
   for(j = unreachable_dst.begin(); j != unreachable_dst.end(); ++j)
   {
@@ -522,7 +634,7 @@ RerrHeader::AddUnDestination(Ipv4Address dst, uint32_t seqNo)
 {
   if(unreachable_dst.find(dst) != unreachable_dst.end())
     return false;
-  
+
   NS_ASSERT (GetDestCount() < 255); // can't support more than 255 destinations in single RERR
   unreachable_dst.insert(std::make_pair(dst, seqNo));
   return true;
@@ -533,14 +645,14 @@ RerrHeader::operator==(RerrHeader const & o) const
 {
   if (er_flag != o.er_flag || reserved != o.reserved || GetDestCount() != o.GetDestCount())
     return false;
-  
+
   std::map<Ipv4Address, uint32_t>::const_iterator j = unreachable_dst.begin();
   std::map<Ipv4Address, uint32_t>::const_iterator k = o.unreachable_dst.begin();
   for(uint8_t i = 0; i < GetDestCount(); ++i)
   {
     if ((j->first != k->first ) || (j->second != k->second))
       return false;
-    
+
     j++;
     k++;
   }

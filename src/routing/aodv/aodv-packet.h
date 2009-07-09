@@ -33,17 +33,51 @@
 
 namespace ns3 {
 namespace aodv {
-/** 
- * \ingroup aodv
- * \brief AODV control types
- */
-enum MessageType 
+
+enum MessageType
 {
   AODVTYPE_RREQ  = 0x02,  //!< AODVTYPE_RREQ
   AODVTYPE_RREP  = 0x04,  //!< AODVTYPE_RREP
   AODVTYPE_RERR  = 0x08,  //!< AODVTYPE_RERR
   AODVTYPE_RREP_ACK = 0x10//!< AODVTYPE_RREP_ACK
 };
+
+/**
+* \ingroup aodv
+* \brief AODV types
+*/
+class TypeHeader : public Header
+{
+public:
+
+  enum MessageType
+  {
+    AODVTYPE_RREQ  = 0x02,  //!< AODVTYPE_RREQ
+    AODVTYPE_RREP  = 0x04,  //!< AODVTYPE_RREP
+    AODVTYPE_RERR  = 0x08,  //!< AODVTYPE_RERR
+    AODVTYPE_RREP_ACK = 0x10//!< AODVTYPE_RREP_ACK
+  };
+
+  TypeHeader(uint8_t t);
+
+  ///\name Header serialization/deserialization
+  //\{
+  TypeId GetInstanceTypeId() const;
+  uint32_t GetSerializedSize () const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
+  void Print (std::ostream &os) const;
+  //\}
+
+  uint8_t Get() const { return type; }
+  bool IsValid() const { return valid; }
+  bool operator==(TypeHeader const & o) const;
+private:
+  uint8_t type;
+  bool valid;
+};
+
+std::ostream & operator<<(std::ostream & os, TypeHeader const & h);
 
 /**
 * \ingroup aodv
@@ -108,8 +142,6 @@ public:
 
   bool operator==(RreqHeader const & o) const;
 private:
-  static MessageType type() { return AODVTYPE_RREQ; }
-
   uint8_t        rq_flags;       ///< |J|R|G|D|U| bit flags, see RFC
   uint8_t        reserved;       ///< Not used
   uint8_t        rq_hop_count;   ///< Hop Count
@@ -164,7 +196,7 @@ public:
   uint32_t GetDstSeqno () const { return rp_dst_seqno; }
   void SetSrc (Ipv4Address a) { rp_src = a; }
   Ipv4Address GetSrc () const { return rp_src; }
-  void SetLifeTime (uint32_t t) { rp_lifetime = t; } // TODO use Time 
+  void SetLifeTime (uint32_t t) { rp_lifetime = t; } // TODO use Time
   uint32_t GetLifeTime () const { return rp_lifetime; } // TODO use Time
   //\}
 
@@ -178,10 +210,9 @@ public:
 
   /// Configure RREP to be a Hello message
   void SetHello(Ipv4Address src, uint32_t srcSeqNo, Time lifetime);
-  
+
   bool operator==(RrepHeader const & o) const;
 private:
-  static MessageType type() { return AODVTYPE_RREP; }
   uint8_t       rp_flags;	    ///< A - acknowledgment required flag
   uint8_t       prefixSize;	    ///< Prefix Size
   uint8_t	rp_hop_count;       ///< Hop Count
@@ -196,7 +227,7 @@ std::ostream & operator<<(std::ostream & os, RrepHeader const &);
 /**
 * \ingroup aodv
 * \brief Route Reply Acknowledgment (RREP-ACK) Message Format
-  \verbatim  
+  \verbatim
   0                   1
   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -220,7 +251,6 @@ public:
 
   bool operator==(RrepAckHeader const & o) const;
 private:
-  static MessageType type() { return AODVTYPE_RREP_ACK; }
   uint8_t       reserved;
 };
 std::ostream & operator<<(std::ostream & os, RrepAckHeader const &);
@@ -269,11 +299,9 @@ public:
   uint8_t GetDestCount() const { return (uint8_t)unreachable_dst.size(); }
   bool operator==(RerrHeader const & o) const;
 private:
-  static MessageType type() { return AODVTYPE_RERR; }
-  
   uint8_t er_flag;        ///< No delete flag
   uint8_t reserved;       ///< Not used
-  
+
   /// List of Unreachable destination IP addresses and sequence numbers
   std::map<Ipv4Address, uint32_t> unreachable_dst;
 };
