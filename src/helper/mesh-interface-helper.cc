@@ -28,8 +28,15 @@ namespace ns3 {
 
 MeshInterfaceHelper::MeshInterfaceHelper ()
 {
-  m_Be.SetTypeId ("ns3::DcaTxop");
-  m_Vo.SetTypeId ("ns3::DcaTxop");
+  m_queues.insert (std::make_pair (AC_VO, ObjectFactory ()));
+  m_queues.insert (std::make_pair (AC_VI, ObjectFactory ()));
+  m_queues.insert (std::make_pair (AC_BE, ObjectFactory ()));
+  m_queues.insert (std::make_pair (AC_BK, ObjectFactory ()));
+
+  m_queues[AC_VO].SetTypeId ("ns3::DcaTxop");
+  m_queues[AC_VI].SetTypeId ("ns3::DcaTxop");
+  m_queues[AC_BE].SetTypeId ("ns3::DcaTxop");
+  m_queues[AC_BK].SetTypeId ("ns3::DcaTxop");
 }
 
 MeshInterfaceHelper::~MeshInterfaceHelper ()
@@ -40,14 +47,6 @@ MeshInterfaceHelper::Default (void)
 {
   MeshInterfaceHelper helper;
   helper.SetType ();
-  helper.SetBeParameters (
-      "MinCw", UintegerValue (15),
-      "MaxCw", UintegerValue (255),
-      "Aifsn", UintegerValue (2));
-  helper.SetVoParameters (
-      "MinCw", UintegerValue (3),
-      "MaxCw", UintegerValue (7),
-      "Aifsn", UintegerValue (2));
   helper.SetRemoteStationManager ("ns3::ArfWifiManager");
   return helper;
 }
@@ -73,26 +72,24 @@ MeshInterfaceHelper::SetType (std::string n0, const AttributeValue &v0,
   m_mac.Set (n7, v7);
 }
 void
-MeshInterfaceHelper::SetBeParameters (std::string n0, const AttributeValue &v0,
-                                     std::string n1, const AttributeValue &v1,
-                                     std::string n2, const AttributeValue &v2,
-                                     std::string n3, const AttributeValue &v3)
+MeshInterfaceHelper::SetQueueParameters ( AccessClass ac,
+    std::string n0, const AttributeValue &v0,
+    std::string n1, const AttributeValue &v1,
+    std::string n2, const AttributeValue &v2,
+    std::string n3, const AttributeValue &v3)
 {
-  m_Be.Set (n0, v0);
-  m_Be.Set (n1, v1);
-  m_Be.Set (n2, v2);
-  m_Be.Set (n3, v3);
-}
-void
-MeshInterfaceHelper::SetVoParameters (std::string n0, const AttributeValue &v0,
-                                     std::string n1, const AttributeValue &v1,
-                                     std::string n2, const AttributeValue &v2,
-                                     std::string n3, const AttributeValue &v3)
-{
-  m_Vo.Set (n0, v0);
-  m_Vo.Set (n1, v1);
-  m_Vo.Set (n2, v2);
-  m_Vo.Set (n3, v3);
+  std::map<AccessClass, ObjectFactory>::iterator queue = m_queues.find (ac);
+  if (queue != m_queues.end ())
+    {
+      queue->second.Set (n0, v0);
+      queue->second.Set (n1, v1);
+      queue->second.Set (n2, v2);
+      queue->second.Set (n3, v3);
+    }
+  else
+  {
+    NS_FATAL_ERROR ("Queue is not set!");
+  }
 }
 void 
 MeshInterfaceHelper::SetRemoteStationManager (std::string type,
@@ -137,11 +134,12 @@ MeshInterfaceHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> 
 Ptr<WifiMac>
 MeshInterfaceHelper::Create (void) const
 {
-  Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
-  Ptr<DcaTxop> be = m_Be.Create<DcaTxop> ();
-  Ptr<DcaTxop> vo = m_Vo.Create<DcaTxop> ();
-  mac->SetAttribute ("BE", PointerValue (be));
-  mac->SetAttribute ("VO", PointerValue (vo));
+  Ptr<MeshWifiInterfaceMac> mac = m_mac.Create<MeshWifiInterfaceMac> ();
+  for (std::map<AccessClass, ObjectFactory>::const_iterator i = m_queues.begin (); i != m_queues.end (); i ++)
+  {
+    //Ptr<DcaTxop> dca = i->second->Create ();
+    mac->SetQueue(i->second.Create<DcaTxop> (), i->first);
+  }
   return mac;
 }
 void

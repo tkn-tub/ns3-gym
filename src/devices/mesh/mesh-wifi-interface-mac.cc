@@ -62,18 +62,7 @@ MeshWifiInterfaceMac::GetTypeId ()
           &MeshWifiInterfaceMac::GetBeaconGeneration
           ),
         MakeBooleanChecker ()
-        )
-        
-    .AddAttribute ("BE", "The DcaTxop object",
-                   PointerValue (),
-                   MakePointerAccessor (&MeshWifiInterfaceMac::GetBE,
-                                        &MeshWifiInterfaceMac::SetBE),
-                   MakePointerChecker<DcaTxop> ())
-    .AddAttribute ("VO", "The DcaTxop object",
-                   PointerValue (),
-                   MakePointerAccessor (&MeshWifiInterfaceMac::GetVO,
-                                        &MeshWifiInterfaceMac::SetVO),
-                   MakePointerChecker<DcaTxop> ());
+        );
   return tid;
 }
 
@@ -199,10 +188,8 @@ MeshWifiInterfaceMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager>
 {
   NS_LOG_FUNCTION (this << stationManager);
   m_stationManager = stationManager;
-  NS_ASSERT(m_BE != 0);
-  m_BE->SetWifiRemoteStationManager (stationManager);
-  NS_ASSERT(m_VO != 0);
-  m_VO->SetWifiRemoteStationManager (stationManager);
+  for (Queues::const_iterator i = m_queues.begin (); i != m_queues.end (); i ++)
+    i->second->SetWifiRemoteStationManager (stationManager);
   m_beaconDca->SetWifiRemoteStationManager (stationManager);
   m_low->SetWifiRemoteStationManager (stationManager);
 }
@@ -293,8 +280,7 @@ MeshWifiInterfaceMac::DoDispose ()
   m_low = 0;
   m_dcfManager = 0;
   m_phy = 0;
-  m_BE = 0;
-  m_VO = 0;
+  m_queues.clear ();
   m_beaconSendEvent.Cancel ();
   m_beaconDca = 0;
 
@@ -416,7 +402,7 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
     }
   m_stats.sentFrames ++;
   m_stats.sentBytes += packet->GetSize ();
-  m_BE->Queue (packet, hdr);
+  m_queues[AC_BK]->Queue (packet, hdr);
 }
 
 void
@@ -431,7 +417,12 @@ MeshWifiInterfaceMac::SendManagementFrame (Ptr<Packet> packet, const WifiMacHead
     }
   m_stats.sentFrames ++;
   m_stats.sentBytes += packet->GetSize ();
-  m_VO->Queue (packet, header);
+  Queues::iterator i = m_queues.find (AC_VO);
+  if (i == m_queues.end ())
+  {
+    NS_FATAL_ERROR("Voice queue is not set up!");
+  }
+  m_queues[AC_VO]->Queue (packet, header);
 }
 
 SupportedRates
@@ -671,28 +662,28 @@ MeshWifiInterfaceMac::ResetStats ()
   m_stats = Statistics::Statistics ();
 }
 void
-MeshWifiInterfaceMac::SetBE (Ptr<DcaTxop> dcaTxop)
+MeshWifiInterfaceMac::SetQueue (Ptr<DcaTxop> queue, AccessClass ac)
 {
-  m_BE = dcaTxop;
-  m_BE->SetLow (m_low);
-  m_BE->SetManager (m_dcfManager);
-}
-void
-MeshWifiInterfaceMac::SetVO (Ptr<DcaTxop> dcaTxop)
-{
-  m_VO = dcaTxop;
-  m_VO->SetLow (m_low);
-  m_VO->SetManager (m_dcfManager);
-}
-Ptr<DcaTxop>
-MeshWifiInterfaceMac::GetBE () const
-{
-  return m_BE;
+  Queues::iterator i = m_queues.find(ac);
+  if(i != m_queues.end ())
+  {
+    NS_LOG_WARN("Queue is already set!");
+    return;
+  }
+  m_queues.insert (std::make_pair(ac, queue));
+  m_queues[ac]->SetLow (m_low);
+  m_queues[ac]->SetManager (m_dcfManager);
 }
 Ptr<DcaTxop>
-MeshWifiInterfaceMac::GetVO () const
+MeshWifiInterfaceMac::GetQueue (AccessClass ac)
 {
-  return m_VO;
+  Queues::iterator i = m_queues.find(ac);
+  if(i != m_queues.end ())
+  {
+    NS_LOG_WARN("Queue is not found! Check access class!");
+    return 0;
+  }
+  return i->second;
 }
 } // namespace ns3
 
