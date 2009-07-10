@@ -99,8 +99,6 @@ private:
 
   ObjectFactory m_mac;
   std::map<AccessClass, ObjectFactory> m_queues;
-  //ObjectFactory m_Be;
-  //ObjectFactory m_Vo;
   ObjectFactory m_stationManager;
 };
 
