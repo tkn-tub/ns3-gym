@@ -367,7 +367,6 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
 {
   // copy packet to allow modifications
   Ptr<Packet> packet = const_packet->Copy ();
-  packet->AddPacketTag (QosTag(6));
   WifiMacHeader hdr;
   hdr.SetTypeData ();
   hdr.SetAddr2 (GetAddress ());
