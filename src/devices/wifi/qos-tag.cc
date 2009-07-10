@@ -43,7 +43,11 @@ QosTag::GetInstanceTypeId (void) const
   return GetTypeId ();
 }
 
-QosTag::QosTag()
+QosTag::QosTag ():
+  m_tid (0)
+{}
+QosTag::QosTag (uint8_t tid):
+  m_tid (tid)
 {}
 
 uint32_t 

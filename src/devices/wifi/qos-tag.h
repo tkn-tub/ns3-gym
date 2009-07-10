@@ -33,6 +33,7 @@ public:
   virtual TypeId GetInstanceTypeId (void) const;
   
   QosTag ();
+  QosTag (uint8_t tid);
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
   virtual uint32_t GetSerializedSize () const;

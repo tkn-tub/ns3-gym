@@ -31,6 +31,7 @@
 #include "ns3/simulator.h"
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/pointer.h"
+#include "ns3/qos-tag.h"
 
 
 NS_LOG_COMPONENT_DEFINE ("MeshWifiInterfaceMac");
@@ -366,6 +367,7 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
 {
   // copy packet to allow modifications
   Ptr<Packet> packet = const_packet->Copy ();
+  packet->AddPacketTag (QosTag(6));
   WifiMacHeader hdr;
   hdr.SetTypeData ();
   hdr.SetAddr2 (GetAddress ());
@@ -373,6 +375,11 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
   hdr.SetAddr4 (from);
   hdr.SetDsFrom ();
   hdr.SetDsTo ();
+  // Fill QoS fields:
+  hdr.SetQosAckPolicy (WifiMacHeader::NORMAL_ACK);
+  hdr.SetQosNoEosp ();
+  hdr.SetQosNoAmsdu ();
+  hdr.SetQosTxopLimit (0);
 
   // Address 1 is unknwon here. Routing plugin is responsible to correctly set it.
   hdr.SetAddr1 (Mac48Address ());
@@ -400,9 +407,16 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
         }
       destination->RecordDisassociated ();
     }
+  //Classify: application sets a tag, which is removed here
+  // Get Qos tag:
+  AccessClass ac = AC_BE;
+  QosTag tag;
+  if(packet->RemovePacketTag (tag))
+    ac = QosUtilsMapTidToAc (tag.Get ());
   m_stats.sentFrames ++;
   m_stats.sentBytes += packet->GetSize ();
-  m_queues[AC_BK]->Queue (packet, hdr);
+  NS_ASSERT(m_queues.find(ac) != m_queues.end ());
+  m_queues[ac]->Queue (packet, hdr);
 }
 
 void
@@ -597,6 +611,9 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
       if (drop) return; // plugin drops frame
     }
 
+  // Check if QoS tag exists and add it:
+  if (hdr->IsQosData ())
+    packet->AddPacketTag (QosTag (hdr->GetQosTid ()));
   // Forward data up
   if (hdr->IsData ())
       ForwardUp (packet, hdr->GetAddr4(), hdr->GetAddr3());
