@@ -810,10 +810,6 @@ EmuNetDevice::SendFrom (Ptr<Packet> packet, const Address &src, const Address &d
   header.SetLengthType (packet->GetSize ());
   packet->AddHeader (header);
 
-  EthernetTrailer trailer;
-  trailer.CalcFcs (packet);
-  packet->AddTrailer (trailer);
-
   //
   // there's not much meaning associated with the different layers in this
   // device, so don't be surprised when they're all stacked together in 
