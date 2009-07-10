@@ -612,6 +612,19 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
   Ptr<Packet> originalPacket = packet->Copy ();
 
   EthernetHeader header (false);
+
+  //
+  // This device could be running in an environment where completely unexpected
+  // kinds of packets are flying around, so we need to harden things a bit and
+  // filter out packets we think are completely bogus, so we always check to see
+  // that the packet is long enough to contain the header we want to remove.
+  //
+  if (packet->GetSize() < header.GetSerializedSize())
+    {
+      m_phyRxDropTrace (originalPacket);
+      return;
+    }
+
   packet->RemoveHeader (header);
 
   NS_LOG_LOGIC ("Pkt source is " << header.GetSource ());
@@ -628,6 +641,16 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
   if (header.GetLengthType () <= 1500)
     {
       LlcSnapHeader llc;
+      //
+      // Check to see that the packet is long enough to possibly contain the
+      // header we want to remove before just naively calling.
+      //
+      if (packet->GetSize() < llc.GetSerializedSize())
+        {
+          m_phyRxDropTrace (originalPacket);
+          return;
+        }
+
       packet->RemoveHeader (llc);
       protocol = llc.GetType ();
     }
