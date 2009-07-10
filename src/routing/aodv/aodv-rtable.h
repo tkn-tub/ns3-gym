@@ -88,6 +88,8 @@ public:
   Ipv4Address GetDest() const { return rt_dst; }
   void SetValidSeqNo(bool s) { validSeqNo = s; }
   bool GetValidSeqNo() const { return validSeqNo; }
+  void SetSeqNo(uint32_t sn) { rt_seqno = sn; }
+  uint32_t GetSeqNo() const { return rt_seqno; }
   void SetInterface(uint32_t in) { rt_interface = in; }
   uint32_t GetInterface() const { return rt_interface; }
   void SetHop(uint16_t hop) { rt_hops = hop; }

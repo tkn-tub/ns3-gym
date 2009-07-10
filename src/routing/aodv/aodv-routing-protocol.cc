@@ -36,6 +36,7 @@
 #include "ns3/enum.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/ipv4-header.h"
+#include "ns3/nstime.h"
 
 /// UDP Port for AODV control traffic
 #define AODV_PORT  654
@@ -74,7 +75,9 @@ RoutingProtocol::PurgeBroadcastId ()
   bi.erase(i, bi.end());
 }
 
-RoutingProtocol::RoutingProtocol() : 
+RoutingProtocol::RoutingProtocol() :
+  NET_DIAMETER(35),
+  NODE_TRAVERSAL_TIME(MilliSeconds(40)),
   ALLOWED_HELLO_LOSS (2),
   BAD_LINK_LIFETIME (Seconds (3)),
   FREQUENCY (Seconds (0.5)),
@@ -86,6 +89,7 @@ RoutingProtocol::RoutingProtocol() :
   lrtimer(Timer::REMOVE_ON_DESTROY)
 
 {
+  NET_TRAVERSAL_TIME = Scalar(2 * NET_DIAMETER) * NODE_TRAVERSAL_TIME;
   MaxHelloInterval = Scalar(1.25) * HELLO_INTERVAL;
   MinHelloInterval = Scalar(0.75) * HELLO_INTERVAL;
 }
@@ -227,27 +231,138 @@ RoutingProtocol::RecvAodv (Ptr<Socket> socket)
 void 
 RoutingProtocol::RecvRequest (Ptr<Packet> p)
 {
-  RreqHeader h;
-  p->RemoveHeader(h);
-  uint32_t id = h.GetId();
-  Ipv4Address src = h.GetSrc();
+  Ipv4Header ipv4Header;
+  p->RemoveHeader(ipv4Header);
+  Ipv4Address src = ipv4Header.GetSource();
+  uint8_t ttl = ipv4Header.GetTtl();
+
+  TypeHeader tHeader(AODVTYPE_RREQ);
+  p->RemoveHeader(tHeader);
+
+  RreqHeader rreqHeader;
+  p->RemoveHeader(rreqHeader);
+  uint32_t id = rreqHeader.GetId();
+  Ipv4Address origin = rreqHeader.GetSrc();
+
   // Node checks to determine whether it has received a RREQ
   // with the same Originator IP Address and RREQ ID.
   // If such a RREQ has been received, the node
   // silently discards the newly received RREQ.
-  if(LookupBroadcastId(src, id))
+  if(LookupBroadcastId(origin, id))
   {
     //drop();
     return;
   }
 
-  uint8_t hop = h.GetHopCount();
+  uint8_t hop = rreqHeader.GetHopCount();
   hop++;
-  h.SetHopCount(hop);
-  aodv_rt_entry toSrc;
-  if(!rtable.rt_lookup(src, toSrc));
+  rreqHeader.SetHopCount(hop);
+
+  // Reverse route to the Originator IP Address is created, or updating
+  aodv_rt_entry toOrigin;
+  if(!rtable.rt_lookup(origin, toOrigin))
   {
-    //toSrc.
+    toOrigin.SetDest(origin);
+    toOrigin.SetValidSeqNo(true);
+    toOrigin.SetSeqNo(rreqHeader.GetSrcSeqno());
+    toOrigin.SetNextHop(src);
+    toOrigin.SetFlag(RTF_UP);
+    toOrigin.SetHop(hop);
+//    toOrigin.SetInterface().     ?
+    toOrigin.SetLifeTime(Simulator::Now() + Scalar(2)*NET_TRAVERSAL_TIME - Scalar(2*hop)*NODE_TRAVERSAL_TIME);
+  }
+  else
+  {
+    if(toOrigin.GetSeqNo() < rreqHeader.GetSrcSeqno())
+      toOrigin.SetSeqNo(rreqHeader.GetSrcSeqno());
+    toOrigin.SetValidSeqNo(true);
+    toOrigin.SetNextHop(src);
+    toOrigin.SetHop(hop);
+    Time existingLifetime = toOrigin.GetLifeTime();
+    Time minimalLifetime = Simulator::Now() + Scalar(2)*NET_TRAVERSAL_TIME - Scalar(2*hop)*NODE_TRAVERSAL_TIME;
+    if(existingLifetime < minimalLifetime)
+      toOrigin.SetLifeTime(minimalLifetime);
+  }
+
+  //  A node generates a RREP if either:
+  //
+  //  (i)  it is itself the destination, or
+  //
+  //  (ii) it has an active route to the destination, the destination
+  //       sequence number in the node's existing route table entry
+  //       for the destination is valid and greater than or equal to
+  //       the Destination Sequence Number of the RREQ ,
+  //       and the "destination only" ('D') flag is NOT set.
+
+  Ipv4Address loopback ("127.0.0.1");
+  for (uint32_t k = 0; k < m_ipv4->GetNInterfaces (); k++)
+  {
+    Ipv4Address addr = m_ipv4->GetAddress (k, 0).GetLocal ();
+    if (addr != loopback)
+    {
+      if(addr == rreqHeader.GetDst())
+        SendReply(origin, toOrigin);
+
+    }
+  }
+
+  aodv_rt_entry toDst;
+  Ipv4Address dst = rreqHeader.GetDst();
+  if(rtable.rt_lookup(dst, toDst))
+  {
+    // The Destination Sequence number for the requested destination is set
+    // to the maximum of the corresponding value received in the RREQ message,
+    // and the destination sequence value currently maintained by the node for
+    // the requested destination. However, the forwarding node MUST NOT modify
+    // its maintained value for the destination sequence number, even if the value
+    // received in the incoming RREQ is larger than the value currently maintained
+    // by the forwarding node.
+    uint32_t dstSeqNo =  toDst.GetSeqNo();
+    if(rreqHeader.GetUnknownSeqno() || (!rreqHeader.GetUnknownSeqno() && (rreqHeader.GetDstSeqno() < dstSeqNo)) )
+    {
+      if(!rreqHeader.GetDestinationOnly() && toDst.GetValidSeqNo())
+      {
+        SendReplyByIntermediateNode(dst, toDst, rreqHeader.GetGratiousRrep(), toOrigin);
+        return;
+      }
+      rreqHeader.SetSrcSeqno(dstSeqNo);
+      rreqHeader.SetUnknownSeqno(false);
+    }
+  }
+
+
+  // If a node does not generate a RREP the incoming IP header has
+  // TTL larger than 1, the node updates and broadcasts the RREQ
+  // to address 255.255.255.255 on each of its configured interfaces.
+  if(ttl > 1)
+  {
+    ipv4Header.SetDestination(Ipv4Address("255.255.255.255"));
+    ttl--;
+    ipv4Header.SetTtl(ttl);
+    p->AddHeader(rreqHeader);
+    p->AddHeader(tHeader);
+
+    for (uint32_t k = 0; k < m_ipv4->GetNInterfaces (); k++)
+    {
+      Ipv4Address addr = m_ipv4->GetAddress (k, 0).GetLocal ();
+      if (addr != loopback)
+      {
+        ipv4Header.SetSource(addr);
+        p->AddHeader(ipv4Header);
+        std::map< Ipv4Address, Ptr<Socket> >::const_iterator j = m_addressSocket.find(addr);
+        j->second->Send(p);
+        p->RemoveHeader(ipv4Header);
+      }
+    }
+    btimer.SetDelay(BCAST_ID_SAVE);
+    btimer.Schedule();
+    htimer.SetDelay(HELLO_INTERVAL);
+    htimer.Schedule();
+  }
+  else
+  {
+    //drop();
+    return;
   }
 
 
@@ -313,55 +428,39 @@ RoutingProtocol::SendRequest (Ipv4Address dst, bool G, bool D)
   TypeHeader tHeader(AODVTYPE_RREQ);
 
   Ipv4Header ipv4Header;
-  ipv4Header.SetTtl(NETWORK_DIAMETER);
+  ipv4Header.SetTtl(NET_DIAMETER);
   ipv4Header.SetDestination(dst);
 //ipv4Header.SetProtocol( ? );
 
-  RreqHeader h;
-  h.SetDst(dst);
+  RreqHeader rreqHeader;
+  rreqHeader.SetDst(dst);
   aodv_rt_entry rt;
   if(rtable.rt_lookup(dst, rt))
-    h.SetHopCount(rt.GetLastValidHopCount());
+    rreqHeader.SetHopCount(rt.GetLastValidHopCount());
   else
-    h.SetUnknownSeqno(true);
+    rreqHeader.SetUnknownSeqno(true);
   if(G)
-    h.SetGratiousRrep(true);
+    rreqHeader.SetGratiousRrep(true);
   if(D)
-    h.SetDestinationOnly(true);
+    rreqHeader.SetDestinationOnly(true);
   seqno++;
-  h.SetSrcSeqno(seqno);
+  rreqHeader.SetSrcSeqno(seqno);
   bid++;
-  h.SetId(bid);
-  h.SetHopCount(0);
+  rreqHeader.SetId(bid);
+  rreqHeader.SetHopCount(0);
   Ipv4Address loopback ("127.0.0.1");
-  std::map<Ipv4Address, Timer>::const_iterator i;
   for (uint32_t k = 0; k < m_ipv4->GetNInterfaces (); k++)
   {
     Ipv4Address addr = m_ipv4->GetAddress (k, 0).GetLocal ();
     if (addr != loopback)
     {
       ipv4Header.SetSource(addr);
-      h.SetSrc(addr);
+      rreqHeader.SetSrc(addr);
       InsertBroadcastId(addr, bid);
       Ptr<Packet> packet = Create<Packet> ();
-      packet->AddHeader(ipv4Header);
+      packet->AddHeader(rreqHeader);
       packet->AddHeader(tHeader);
-      packet->AddHeader(h);
-
-//      i = htimer.find(addr);
-//      if(i == htimer.end())
-//      {
-//        Timer t;
-//        t.SetDelay(HELLO_INTERVAL);
-//        t.Schedule();
-//        htimer.insert(std::make_pair(addr, t));
-//      }
-//      else
-//      {
-//        i->second.SetDelay(HELLO_INTERVAL);
-//        t.Schedule();
-//      }
-
+      packet->AddHeader(ipv4Header);
       std::map< Ipv4Address, Ptr<Socket> >::const_iterator j = m_addressSocket.find(addr);
       j->second->Send(packet);
 
@@ -374,7 +473,13 @@ RoutingProtocol::SendRequest (Ipv4Address dst, bool G, bool D)
 }
 
 void 
-RoutingProtocol::SendReply (Ipv4Address ipdst, uint32_t hop_count, Ipv4Address rpdst, uint32_t rpseq, Time lifetime)
+RoutingProtocol::SendReply (Ipv4Address origin, aodv_rt_entry & toOrigin)
+{
+  // TODO
+}
+
+void
+RoutingProtocol::SendReplyByIntermediateNode(Ipv4Address dst, aodv_rt_entry & toDst, bool gratRep, aodv_rt_entry & toOrigin)
 {
   // TODO
 }

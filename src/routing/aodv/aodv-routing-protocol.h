@@ -42,12 +42,12 @@ namespace ns3
 namespace aodv
 {
 
+
 /// Various constants used for the expanding ring search
 //\{
 #define TTL_START        5             /// (?) in RFC 1
 #define TTL_THRESHOLD    7
 #define TTL_INCREMENT    2
-#define NETWORK_DIAMETER 30       /// Should be set by the user
 //\}
 
 /// List of neighbors TODO document & move inside protocol
@@ -102,6 +102,8 @@ private:
 
   ///\name Protocol parameters. TODO document
   //\{
+  uint16_t NET_DIAMETER;
+  Time NODE_TRAVERSAL_TIME;         //  40 milliseconds
   Time BCAST_ID_SAVE;
   Time HELLO_INTERVAL;
   uint32_t ALLOWED_HELLO_LOSS;
@@ -109,6 +111,7 @@ private:
   Time MaxHelloInterval; //        (1.25 * HELLO_INTERVAL)
   Time MinHelloInterval; //        (0.75 * HELLO_INTERVAL)
   Time FREQUENCY;
+  Time NET_TRAVERSAL_TIME;          // 2 * NODE_TRAVERSAL_TIME * NET_DIAMETER
   //\}
 
   /// \name Handle Broadcast sequence number cache
@@ -179,8 +182,8 @@ private:
   /// Send RREQ
   void SendRequest (Ipv4Address dst, bool G, bool D);
   /// Send RREP
-  void SendReply (Ipv4Address ipdst, uint32_t hop_count,
-                  Ipv4Address rpdst, uint32_t rpseq, Time lifetime);
+  void SendReply (Ipv4Address origin, aodv_rt_entry & toOrigin);
+  void SendReplyByIntermediateNode(Ipv4Address dst, aodv_rt_entry & toDst, bool gratRep, aodv_rt_entry & toOrigin);
   /// Send RERR
   void SendError (Ipv4Address failed);
   //\}
