@@ -296,8 +296,8 @@ bool RreqHeaderTest::RunTests ()
   RreqHeader h;
   h.SetDst (Ipv4Address("1.2.3.4"));
   h.SetDstSeqno (123);
-  h.SetSrc (Ipv4Address("4.3.2.1"));
-  h.SetSrcSeqno (321);
+  h.SetOrigin (Ipv4Address("4.3.2.1"));
+  h.SetOriginSeqno (321);
   h.SetId (1);
   h.SetGratiousRrep (true);
   NS_TEST_ASSERT(h.GetGratiousRrep ());
@@ -380,6 +380,18 @@ RrepHeader::Print (std::ostream &os) const
 }
 
 void
+RrepHeader::SetLifeTime (Time t)
+{
+  rp_lifetime = t.GetMilliSeconds();
+}
+Time
+RrepHeader::GetLifeTime () const
+{
+  Time t(MilliSeconds(rp_lifetime));
+  return t;
+}
+
+void
 RrepHeader::SetAckRequired (bool f)
 {
   if (f) rp_flags |= (1 << 1);
@@ -450,8 +462,8 @@ bool RrepHeaderTest::RunTests ()
   RrepHeader h;
   h.SetDst (Ipv4Address("1.2.3.4"));
   h.SetDstSeqno (123);
-  h.SetSrc (Ipv4Address("4.3.2.1"));
-  h.SetLifeTime(12);
+  h.SetOrigin (Ipv4Address("4.3.2.1"));
+  h.SetLifeTime(MilliSeconds(1200));
   h.SetAckRequired(true);
   NS_TEST_ASSERT(h.GetAckRequired ());
   h.SetAckRequired(false);

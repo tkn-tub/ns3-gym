@@ -115,10 +115,10 @@ public:
   Ipv4Address GetDst () const { return rq_dst; }
   void SetDstSeqno (uint32_t s) { rq_dst_seqno = s; }
   uint32_t GetDstSeqno () const { return rq_dst_seqno; }
-  void SetSrc (Ipv4Address a) { rq_src = a; }
-  Ipv4Address GetSrc () const { return rq_src; }  
-  void SetSrcSeqno (uint32_t s) { rq_src_seqno = s; }
-  uint32_t GetSrcSeqno () const { return rq_src_seqno; }
+  void SetOrigin (Ipv4Address a) { rq_src = a; }
+  Ipv4Address GetOrigin () const { return rq_src; }
+  void SetOriginSeqno (uint32_t s) { rq_src_seqno = s; }
+  uint32_t GetOriginSeqno () const { return rq_src_seqno; }
   //\}
 
   ///\name Flags
@@ -185,10 +185,10 @@ public:
   Ipv4Address GetDst () const { return rp_dst; }
   void SetDstSeqno (uint32_t s) { rp_dst_seqno = s; }
   uint32_t GetDstSeqno () const { return rp_dst_seqno; }
-  void SetSrc (Ipv4Address a) { rp_src = a; }
-  Ipv4Address GetSrc () const { return rp_src; }
-  void SetLifeTime (uint32_t t) { rp_lifetime = t; } // TODO use Time
-  uint32_t GetLifeTime () const { return rp_lifetime; } // TODO use Time
+  void SetOrigin (Ipv4Address a) { rp_src = a; }
+  Ipv4Address GetOrigin () const { return rp_src; }
+  void SetLifeTime (Time t);
+  Time GetLifeTime () const;
   //\}
 
   ///\name Flags

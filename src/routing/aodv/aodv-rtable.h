@@ -90,8 +90,8 @@ public:
   bool GetValidSeqNo() const { return validSeqNo; }
   void SetSeqNo(uint32_t sn) { rt_seqno = sn; }
   uint32_t GetSeqNo() const { return rt_seqno; }
-  void SetInterface(uint32_t in) { rt_interface = in; }
-  uint32_t GetInterface() const { return rt_interface; }
+  void SetInterface(Ipv4Address in) { rt_interface = in; }
+  Ipv4Address GetInterface() const { return rt_interface; }
   void SetHop(uint16_t hop) { rt_hops = hop; }
   uint16_t GetHop() const {return rt_hops; }
   void SetNextHop(Ipv4Address next) { rt_nexthop = next; }
@@ -124,8 +124,8 @@ private:
   bool validSeqNo;
   /// Destination Sequence Number, if validSeqNo = true
   uint32_t rt_seqno;
-  /// Interface index
-  uint32_t rt_interface;
+  /// Interface address
+  Ipv4Address rt_interface;
   /// Hop Count (number of hops needed to reach destination)
   uint16_t rt_hops;
   /// Last valid hop count

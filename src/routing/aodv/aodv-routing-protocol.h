@@ -102,6 +102,8 @@ private:
 
   ///\name Protocol parameters. TODO document
   //\{
+  Time ACTIVE_ROUTE_TIMEOUT;    // 3 seconds
+  Time MY_ROUTE_TIMEOUT;       // 2 * ACTIVE_ROUTE_TIMEOUT
   uint16_t NET_DIAMETER;
   Time NODE_TRAVERSAL_TIME;         //  40 milliseconds
   Time BCAST_ID_SAVE;
@@ -170,7 +172,7 @@ private:
   /// Receive RREQ
   void RecvRequest (Ptr<Packet> p);
   /// Receive RREP
-  void RecvReply (Ptr<Packet> p);
+  void RecvReply (Ptr<Packet> p, Ipv4Address myAddress);
   /// Receive RERR
   void RecvError (Ptr<Packet> p);
   //\}
@@ -182,8 +184,8 @@ private:
   /// Send RREQ
   void SendRequest (Ipv4Address dst, bool G, bool D);
   /// Send RREP
-  void SendReply (Ipv4Address origin, aodv_rt_entry & toOrigin);
-  void SendReplyByIntermediateNode(Ipv4Address dst, aodv_rt_entry & toDst, bool gratRep, aodv_rt_entry & toOrigin);
+  void SendReply (RreqHeader & rreqHeader, aodv_rt_entry & toOrigin);
+  void SendReplyByIntermediateNode(aodv_rt_entry & toDst, aodv_rt_entry & toOrigin, bool gratRep = false);
   /// Send RERR
   void SendError (Ipv4Address failed);
   //\}
