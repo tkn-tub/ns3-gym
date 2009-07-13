@@ -117,6 +117,14 @@ WifiMac::GetTypeId (void)
 		   MakeSsidAccessor (&WifiMac::GetSsid,
 				     &WifiMac::SetSsid),
 		   MakeSsidChecker ())
+    .AddAttribute ("Standard", "The standard chosen configures some MAC-specific constants",
+                   EnumValue (WIFI_PHY_STANDARD_80211a),
+                   MakeEnumAccessor (&WifiMac::SetStandard),
+                   MakeEnumChecker (WIFI_PHY_STANDARD_80211a, "802.11a",
+                                    WIFI_PHY_STANDARD_80211b, "802.11b",
+                                    WIFI_PHY_STANDARD_80211_10Mhz,"802.11_10Mhz",
+                                    WIFI_PHY_STANDARD_80211_5Mhz,"802-11_5Mhz",
+                                    WIFI_PHY_STANDARD_holland, "holland"))
     .AddTraceSource ("MacTx", 
                      "A packet has been received from higher layers and is being processed in preparation for "
                      "queueing for transmission.",
@@ -198,6 +206,76 @@ void
 WifiMac::NotifyRxDrop (Ptr<const Packet> packet) 
 {
   m_macRxDropTrace (packet);
+}
+
+void
+WifiMac::SetStandard (enum WifiPhyStandard standard)
+{
+  m_standard = standard;
+  switch (standard) {
+  case WIFI_PHY_STANDARD_80211a:
+    Configure80211a ();
+    break;
+  case WIFI_PHY_STANDARD_80211b:
+    Configure80211b ();
+    break;
+  case WIFI_PHY_STANDARD_80211_10Mhz: 
+    Configure80211_10Mhz ();
+    break;
+  case WIFI_PHY_STANDARD_80211_5Mhz:
+    Configure80211_5Mhz ();
+    break;
+  case WIFI_PHY_STANDARD_holland:
+    Configure80211a ();
+    break;
+  default:
+    NS_ASSERT (false);
+    break;
+  }
+}
+
+void
+WifiMac::Configure80211a (void)
+{
+  SetSifs(MicroSeconds(16));
+  SetSlot(MicroSeconds(9)); 
+  SetEifsNoDifs(MicroSeconds(16+44));
+  SetPifs(MicroSeconds(16+9));
+  SetCtsTimeout(MicroSeconds(16+44+9+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
+  SetAckTimeout(MicroSeconds(16+44+9+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2)); 
+}
+
+void
+WifiMac::Configure80211b (void)
+{
+  SetSifs(MicroSeconds(10));
+  SetSlot(MicroSeconds(20));
+  SetEifsNoDifs(MicroSeconds(10+304));
+  SetPifs(MicroSeconds(10+20));
+  SetCtsTimeout(MicroSeconds(10+304+20+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
+  SetAckTimeout(MicroSeconds(10+304+20+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2)); 
+}
+
+void
+WifiMac::Configure80211_10Mhz (void)
+{
+  SetSifs(MicroSeconds(32));
+  SetSlot(MicroSeconds(13)); 
+  SetEifsNoDifs(MicroSeconds(32+88));
+  SetPifs(MicroSeconds(32+13));
+  SetCtsTimeout(MicroSeconds(32+88+13+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
+  SetAckTimeout(MicroSeconds(32+88+13+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2)); 
+}
+
+void
+WifiMac::Configure80211_5Mhz (void)
+{
+  SetSifs(MicroSeconds(64));
+  SetSlot(MicroSeconds(21));
+  SetEifsNoDifs(MicroSeconds(64+176));
+  SetPifs(MicroSeconds(64+21));
+  SetCtsTimeout(MicroSeconds(64+176+21+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
+  SetAckTimeout(MicroSeconds(64+176+21+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2)); 
 }
 
 } // namespace ns3

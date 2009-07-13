@@ -244,6 +244,150 @@ WifiPhy::Get11mbb (void)
   return mode;
 }
 
+WifiMode 
+WifiPhy::Get3mb10Mhz (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-3mbs-10Mhz",
+                                                      true,
+                                                      10000000, 3000000, 6000000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get4_5mb10Mhz (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-4.5mbs-10Mhz",
+                                                      false,
+                                                      10000000, 4500000, 6000000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get6mb10Mhz (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-6mbs-10Mhz",
+                                                      true,
+                                                      10000000, 6000000, 12000000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get9mb10Mhz (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-9mbs-10Mhz",
+                                                      false,
+                                                      10000000, 9000000, 12000000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get12mb10Mhz (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-12mbs-10Mhz",
+                                                      true,
+                                                      10000000, 12000000, 24000000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get18mb10Mhz (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-18mbs-10Mhz",
+                                                      false,
+                                                      10000000, 18000000, 24000000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get24mb10Mhz (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-24mbs-10Mhz",
+                                                      false,
+                                                      10000000, 24000000, 36000000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get27mb10Mhz (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-27mbs-10Mhz",
+                                                      false,
+                                                      10000000, 27000000, 36000000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get1_5mb5Mhz (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-1_5mbs-5Mhz",
+                                                      true,
+                                                      5000000, 1500000, 3000000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get2_25mb5Mhz (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-2.25mbs-5Mhz",
+                                                      false,
+                                                      5000000, 2250000, 3000000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get3mb5Mhz (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-3mbs-5Mhz",
+                                                      true,
+                                                      5000000, 3000000, 6000000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get4_5mb5Mhz (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-4.5mbs-5Mhz",
+                                                      false,
+                                                      5000000, 4500000, 6000000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get6mb5Mhz (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-6mbs-5Mhz",
+                                                      true,
+                                                      5000000, 6000000, 12000000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get9mb5Mhz (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-9mbs-5Mhz",
+                                                      false,
+                                                      10000000, 9000000, 12000000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get12mb5Mhz (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-12mbs-5Mhz",
+                                                      false,
+                                                      10000000, 12000000, 18000000);
+  return mode;
+}
+
+WifiMode 
+WifiPhy::Get13_5mb5Mhz (void)
+{
+  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-13.5mbs-5Mhz",
+                                                      false,
+                                                      10000000, 13500000, 18000000);
+  return mode;
+}
+
 
 } // namespace ns3
 
@@ -265,6 +409,22 @@ public:
     ns3::WifiPhy::Get2mbb ();
     ns3::WifiPhy::Get5_5mbb ();
     ns3::WifiPhy::Get11mbb ();
+    ns3::WifiPhy::Get3mb10Mhz ();
+    ns3::WifiPhy::Get4_5mb10Mhz ();
+    ns3::WifiPhy::Get6mb10Mhz ();
+    ns3::WifiPhy::Get9mb10Mhz ();
+    ns3::WifiPhy::Get12mb10Mhz ();
+    ns3::WifiPhy::Get18mb10Mhz ();
+    ns3::WifiPhy::Get24mb10Mhz ();
+    ns3::WifiPhy::Get27mb10Mhz ();
+    ns3::WifiPhy::Get1_5mb5Mhz ();
+    ns3::WifiPhy::Get2_25mb5Mhz ();
+    ns3::WifiPhy::Get3mb5Mhz ();
+    ns3::WifiPhy::Get4_5mb5Mhz ();
+    ns3::WifiPhy::Get6mb5Mhz ();
+    ns3::WifiPhy::Get9mb5Mhz ();
+    ns3::WifiPhy::Get12mb5Mhz ();
+    ns3::WifiPhy::Get13_5mb5Mhz ();
   }
 } g_constructor;
 }

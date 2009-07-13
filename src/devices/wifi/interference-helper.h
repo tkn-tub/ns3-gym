@@ -71,6 +71,8 @@ public:
 
   void Configure80211aParameters (void);
   void Configure80211bParameters (void);
+  void Configure80211_10MhzParameters (void);
+  void Configure80211_5MhzParameters (void);
   void SetNoiseFigure (double value);
   void SetErrorRateModel (Ptr<ErrorRateModel> rate);
 

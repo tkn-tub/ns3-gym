@@ -241,6 +241,18 @@ InterferenceHelper::CalculateTxDuration (uint32_t size, WifiMode payloadMode, Wi
       delay += m_plcpLongPreambleDelayUs;
       delay += lrint (ceil ((size * 8.0 + 48.0) / payloadMode.GetDataRate () / 4e-6) * 4);
       break;
+    case WIFI_PHY_STANDARD_80211_10Mhz: 
+      delay += m_plcpLongPreambleDelayUs;
+      // symbol duration is 8us
+      delay += 8;
+      delay += lrint (ceil ((size * 8.0 + 16.0 + 6.0) / payloadMode.GetDataRate () / 8e-6) * 8);
+      break;
+    case WIFI_PHY_STANDARD_80211_5Mhz: 
+      delay += m_plcpLongPreambleDelayUs;
+      // symbol duration is 16us
+      delay += 16;
+      delay += lrint (ceil ((size * 8.0 + 16.0 + 6.0) / payloadMode.GetDataRate () / 1.6e-5) * 16);
+      break;
     default:
      NS_ASSERT (false);
      break;
@@ -275,6 +287,34 @@ InterferenceHelper::Configure80211bParameters (void)
   // PLCP Header: signal 8, service 8, length 16, CRC 16 bits
   m_plcpHeaderLength = 8 + 8 + 16 + 16;
   m_maxPacketDuration = CalculateTxDuration (4095, WifiPhy::Get1mbb (), WIFI_PREAMBLE_LONG);
+}
+
+void
+InterferenceHelper::Configure80211_10MhzParameters (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_80211_standard = WIFI_PHY_STANDARD_80211_10Mhz;
+  m_plcpLongPreambleDelayUs = 32;
+  m_plcpShortPreambleDelayUs = 32;
+  m_longPlcpHeaderMode = WifiPhy::Get3mb10Mhz ();
+  m_shortPlcpHeaderMode = WifiPhy::Get3mb10Mhz ();
+  m_plcpHeaderLength = 4 + 1 + 12 + 1 + 6;
+  /* 4095 bytes at a 3Mb/s rate with a 1/2 coding rate. */
+  m_maxPacketDuration = CalculateTxDuration (4095, WifiPhy::Get3mb10Mhz (), WIFI_PREAMBLE_LONG);
+}
+
+void
+InterferenceHelper::Configure80211_5MhzParameters (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_80211_standard = WIFI_PHY_STANDARD_80211_5Mhz;
+  m_plcpLongPreambleDelayUs = 64;
+  m_plcpShortPreambleDelayUs = 64;
+  m_longPlcpHeaderMode = WifiPhy::Get1_5mb5Mhz ();
+  m_shortPlcpHeaderMode = WifiPhy::Get1_5mb5Mhz ();
+  m_plcpHeaderLength = 4 + 1 + 12 + 1 + 6;
+  /* 4095 bytes at a 1.5Mb/s rate with a 1/2 coding rate. */
+  m_maxPacketDuration = CalculateTxDuration (4095, WifiPhy::Get1_5mb5Mhz (), WIFI_PREAMBLE_LONG);
 }
 
 void 

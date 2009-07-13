@@ -206,6 +206,10 @@ public:
    * purposes.
    */
   void NotifyRxDrop (Ptr<const Packet> packet);
+  /**
+   * \param standard the wifi standard to be configured
+   */
+  void SetStandard (enum WifiPhyStandard standard);
 
 private:
   static Time GetDefaultMaxPropagationDelay (void);
@@ -217,6 +221,12 @@ private:
 
   Time m_maxPropagationDelay;
   uint32_t m_maxMsduSize;
+  WifiPhyStandard m_standard;
+
+  void Configure80211a (void);
+  void Configure80211b (void);
+  void Configure80211_10Mhz (void);
+  void Configure80211_5Mhz ();
 
   /**
    * The trace source fired when packets come into the "top" of the device
