@@ -41,6 +41,7 @@ def build(bld):
         'file-config.h',
         'config-store.h',
         'flow-id-tag.h',
+        'average.h',
         ]
 
     if bld.env['ENABLE_GTK_CONFIG_STORE']:
