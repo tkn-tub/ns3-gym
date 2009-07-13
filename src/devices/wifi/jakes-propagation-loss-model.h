@@ -96,6 +96,9 @@ public:
    */
   void SetNOscillators (uint8_t nOscillators);
 
+  uint8_t GetNRays (void) const;
+  uint8_t GetNOscillators (void) const;
+
 private:
   JakesPropagationLossModel (const JakesPropagationLossModel &o);
   JakesPropagationLossModel & operator = (const JakesPropagationLossModel &o);
