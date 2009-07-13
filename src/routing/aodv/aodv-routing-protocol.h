@@ -168,11 +168,11 @@ private:
   ///\name Recv
   //\{
   /// Receive and process control packet
-  void RecvAodv (Ptr<Socket> s);
+  void RecvAodv (Ptr<Socket> socket);
   /// Receive RREQ
-  void RecvRequest (Ptr<Packet> p);
+  void RecvRequest (Ptr<Packet> p, Ipv4Header & header);
   /// Receive RREP
-  void RecvReply (Ptr<Packet> p, Ipv4Address myAddress);
+  void RecvReply (Ptr<Packet> p, Ipv4Header & ipv4Header, Ipv4Address myAddress);
   /// Receive RERR
   void RecvError (Ptr<Packet> p);
   //\}
