@@ -160,13 +160,15 @@ private:
   void HandleLinkFailure (Ipv4Address id);
   /// Purge all expired records from rtable
   void RtPurge ();
+  /// Update neighbor record. \param receiver is supposed to be my interface
+  void UpdateNeighbor (Ipv4Address sender, Ipv4Address receiver);
   
   ///\name Recv
   //\{
   /// Receive and process control packet
   void RecvAodv (Ptr<Socket> socket);
   /// Receive RREQ
-  void RecvRequest (Ptr<Packet> p, Ipv4Header & ipv4Header);
+  void RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address src, Ptr<Socket> socket);
   /// Receive RREP
   void RecvReply (Ptr<Packet> p, Ipv4Address my ,Ipv4Address src);
   /// Receive RERR
@@ -180,7 +182,8 @@ private:
   /// Send RREQ
   void SendRequest (Ipv4Address dst, bool G, bool D);
   /// Send RREP
-  void SendReply (RreqHeader & rreqHeader, aodv_rt_entry & toOrigin);
+  void SendReply (RreqHeader const & rreqHeader, aodv_rt_entry const & toOrigin, Ptr<Socket> socket);
+  /// TODO
   void SendReplyByIntermediateNode(aodv_rt_entry & toDst, aodv_rt_entry & toOrigin, bool gratRep = false);
   /// Send RERR
   void SendError (Ipv4Address failed);

@@ -85,8 +85,8 @@ public:
   void Down ();
   ///\name Fields
   //\{
-  void SetDest(Ipv4Address dst) { rt_dst = dst; }
-  Ipv4Address GetDest() const { return rt_dst; }
+  void SetDst(Ipv4Address dst) { rt_dst = dst; }
+  Ipv4Address GetDst() const { return rt_dst; }
   void SetValidSeqNo(bool s) { validSeqNo = s; }
   bool GetValidSeqNo() const { return validSeqNo; }
   void SetSeqNo(uint32_t sn) { rt_seqno = sn; }
