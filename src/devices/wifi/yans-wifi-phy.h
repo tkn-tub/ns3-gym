@@ -78,11 +78,11 @@ public:
    * where Starting channel frequency is standard-dependent, see SetStandard()
    * as defined in IEEE 802.11-2007 17.3.8.3.2.
    */ 
-  void SetFrequencyChannel (uint16_t id);
-  /// Return current channel ID, see SetChannelId()
-  uint16_t GetFrequencyChannel () const;
-  /// Return current center channel frequency in MHz, see SetFrequencyChannel()
-  double GetCenterFrequencyMhz() const;
+  void SetChannelNumber (uint16_t id);
+  /// Return current channel number, see SetChannelNumber()
+  uint16_t GetChannelNumber () const;
+  /// Return current center channel frequency in MHz, see SetСhannelNumber()
+  double GetChannelFrequencyMhz() const;
   
   void StartReceivePacket (Ptr<Packet> packet,
                            double rxPowerDbm,
@@ -150,7 +150,7 @@ private:
   double RatioToDb (double ratio) const;
   double GetPowerDbm (uint8_t power) const;
   void EndSync (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event);
-  void DoSetChannelId(uint16_t id);
+  void DoSetChannelNumber(uint16_t id);
 
 private:
   double   m_edThresholdW;

@@ -337,7 +337,7 @@ uint16_t MeshWifiInterfaceMac::GetFrequencyChannel () const
 
   Ptr<YansWifiPhy> phy = m_phy->GetObject<YansWifiPhy> ();
   if (phy != 0)
-    return phy->GetFrequencyChannel ();
+    return phy->GetChannelNumber ();
   else
     return 0;
 }
@@ -360,7 +360,7 @@ void MeshWifiInterfaceMac::SwitchFrequencyChannel (uint16_t new_id)
   NS_ASSERT(CanSwitchChannel());
 
   Ptr<YansWifiPhy> phy = m_phy->GetObject<YansWifiPhy> ();
-  phy->SetFrequencyChannel (new_id);
+  phy->SetChannelNumber (new_id);
   // Don't know NAV on new channel
   m_dcfManager->NotifyNavResetNow (Seconds (0));
 }

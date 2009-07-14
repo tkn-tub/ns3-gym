@@ -241,7 +241,19 @@ public:
    *          the requested ber for the specified transmission mode. (W/W)
    */
   virtual double CalculateSnr (WifiMode txMode, double ber) const = 0;
-
+  
+  /** 
+   * \brief Set channel number. 
+   * 
+   * Channel center frequency = Channel starting frequency + 5 MHz * (nch - 1)
+   *
+   * where Starting channel frequency is standard-dependent, see SetStandard()
+   * as defined in IEEE 802.11-2007 17.3.8.3.2.
+   */ 
+  virtual void SetChannelNumber (uint16_t id) = 0;
+  /// Return current channel number, see SetChannelNumber()
+  virtual uint16_t GetChannelNumber () const = 0;
+  
   virtual Ptr<WifiChannel> GetChannel (void) const = 0;
 
   static WifiMode Get6mba (void);

@@ -82,7 +82,7 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
       if (sender != (*i))
         {
           // For now don't account for inter channel interference
-          if ((*i)->GetFrequencyChannel() != sender->GetFrequencyChannel())
+          if ((*i)->GetChannelNumber() != sender->GetChannelNumber())
               continue;
           
           Ptr<MobilityModel> receiverMobility = (*i)->GetMobility ()->GetObject<MobilityModel> ();
