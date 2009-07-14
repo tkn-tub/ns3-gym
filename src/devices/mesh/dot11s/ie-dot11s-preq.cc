@@ -336,6 +336,7 @@ IePreq::AddDestinationAddressElement (
   for (std::vector<Ptr<DestinationAddressUnit> >::const_iterator i = m_destinations.begin (); i != m_destinations.end(); i++ )
     if ((*i)->GetDestinationAddress () == dest_address)
       return;
+  //TODO: check overflow
   Ptr<DestinationAddressUnit>new_element = Create<DestinationAddressUnit> ();
   new_element->SetFlags (doFlag, rfFlag, false);
   new_element->SetDestinationAddress (dest_address);
@@ -355,7 +356,7 @@ IePreq::DelDestinationAddressElement (Mac48Address dest_address)
       }
 }
 void
-IePreq::ClearDestinationAddressElement ()
+IePreq::ClearDestinationAddressElements ()
 {
   int i;
   for (std::vector<Ptr<DestinationAddressUnit> >::iterator j = m_destinations.begin (); j != m_destinations.end(); j++)
@@ -363,6 +364,7 @@ IePreq::ClearDestinationAddressElement ()
   for (i = 0; i < m_destCount; i ++)
     m_destinations.pop_back ();
   m_destinations.clear ();
+  m_destCount = 0;
 }
 bool operator== (const DestinationAddressUnit & a, const DestinationAddressUnit & b)
 {
@@ -408,7 +410,14 @@ IePreq::MayAddAddress (Mac48Address originator)
     return false;
   if(m_destinations[0]->GetDestinationAddress () == Mac48Address::GetBroadcast ())
     return false;
+  if((GetInformationSize () + 11) > 255)
+    return false;
   return true;
+}
+bool
+IePreq::IsFull () const
+{
+  return ((GetInformationSize () + 11) > 255);
 }
 #ifdef RUN_SELF_TESTS
 

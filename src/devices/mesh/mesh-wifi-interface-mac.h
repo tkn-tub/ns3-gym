@@ -33,7 +33,7 @@
 #include "ns3/wifi-mac.h"
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 #include "ns3/event-id.h"
-
+#include "qos-utils.h"
 namespace ns3 {
 
 class WifiMacHeader;
@@ -160,11 +160,9 @@ public:
   void ResetStats ();
   /// Enable/disable beacons
   void SetBeaconGeneration (bool enable);
+  void SetQueue (Ptr<DcaTxop> queue, AccessClass ac);
 private:
-  Ptr<DcaTxop> GetBE(void) const;
-  void SetBE (Ptr<DcaTxop> dcaTxop);
-  Ptr<DcaTxop> GetVO(void) const;
-  void SetVO (Ptr<DcaTxop> dcaTxop);
+  Ptr<DcaTxop> GetQueue (AccessClass ac);
   /// Frame receive handler
   void  Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
   /// Forward frame to mesh point
@@ -183,10 +181,8 @@ private:
 private:
   ///\name Wifi MAC internals
   //\{
-  Ptr<DcaTxop>   m_BE;
-  Ptr<DcaTxop>   m_BK;
-  Ptr<DcaTxop>   m_VI;
-  Ptr<DcaTxop>   m_VO;
+  typedef std::map<AccessClass, Ptr<DcaTxop> > Queues;
+  Queues m_queues;
   Ptr<DcaTxop>   m_beaconDca;
   Ptr<WifiRemoteStationManager> m_stationManager;
   Ptr<WifiPhy>   m_phy;

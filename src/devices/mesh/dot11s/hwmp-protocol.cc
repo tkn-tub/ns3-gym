@@ -34,7 +34,6 @@
 #include "airtime-metric.h"
 #include "ie-dot11s-preq.h"
 #include "ie-dot11s-prep.h"
-#include "ie-dot11s-perr.h"
 
 NS_LOG_COMPONENT_DEFINE ("HwmpProtocol");
 
@@ -304,7 +303,7 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
     if(result.retransmitter != Mac48Address::GetBroadcast ())
     {
       std::vector<IePerr::FailedDestination> destinations = m_rtable->GetUnreachableDestinations (result.retransmitter);
-      MakePathError (destinations);
+      InitiatePathError (MakePathError (destinations));
     }
     m_stats.totalDropped ++;
     return false;
@@ -317,6 +316,7 @@ HwmpProtocol::ForwardUnicast(uint32_t  sourceIface, const Mac48Address source, c
     uint32_t dst_seqno = 0;
     if(result.retransmitter != Mac48Address::GetBroadcast ())
       dst_seqno = result.seqnum;
+    m_stats.initiatedPreq ++;
     for(HwmpProtocolMacMap::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
       i->second->RequestDestination(destination, originator_seqno, dst_seqno);
   }
@@ -558,28 +558,25 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, M
   prep_sender->second->SendPrep (prep, result.retransmitter);
 }
 void
-HwmpProtocol::ReceivePerr (IePerr perr, Mac48Address from, uint32_t interface, Mac48Address fromMp)
+HwmpProtocol::ReceivePerr (std::vector<IePerr::FailedDestination> destinations, Mac48Address from, uint32_t interface, Mac48Address fromMp)
 {
   //Acceptance cretirea:
   NS_LOG_DEBUG("I am "<<GetAddress ()<<", received PERR from "<<from);
-  std::vector<IePerr::FailedDestination> destinations = perr.GetAddressUnitVector ();
+  std::vector<IePerr::FailedDestination> retval;
   HwmpRtable::LookupResult result;
   for(unsigned int i = 0; i < destinations.size (); i ++)
   {
     result = m_rtable->LookupReactive (destinations[i].destination);
-    if (
+    if (!(
         (result.retransmitter != from) ||
         (result.ifIndex != interface) ||
         (result.seqnum > destinations[i].seqnum)
-        )
-    {
-      perr.DeleteAddressUnit(destinations[i].destination);
-      continue;
-    }
+        ))
+      retval.push_back(destinations[i]);
   }
-  if(perr.GetNumOfDest () == 0)
+  if(retval.size() == 0)
     return;
-  MakePathError (destinations);
+  ForwardPathError (MakePathError (retval));
 }
 void
 HwmpProtocol::SendPrep (
@@ -604,8 +601,7 @@ HwmpProtocol::SendPrep (
   HwmpProtocolMacMap::const_iterator prep_sender = m_interfaces.find (interface);
   NS_ASSERT(prep_sender != m_interfaces.end ());
   prep_sender->second->SendPrep (prep, retransmitter);
-  //m_prepCallback (prep, retransmitter);
-
+  m_stats.initiatedPrep ++;
 }
 bool
 HwmpProtocol::Install (Ptr<MeshPointDevice> mp)
@@ -641,7 +637,7 @@ HwmpProtocol::PeerLinkStatus(Mac48Address meshPointAddress, Mac48Address peerAdd
   if(status)
     return;
   std::vector<IePerr::FailedDestination> destinations = m_rtable->GetUnreachableDestinations (peerAddress);
-  MakePathError (destinations);
+  InitiatePathError (MakePathError (destinations));
 }
 void
 HwmpProtocol::SetNeighboursCallback(Callback<std::vector<Mac48Address>, uint32_t> cb)
@@ -664,28 +660,47 @@ HwmpProtocol::DropDataFrame(uint32_t seqno, Mac48Address source)
   }
   return false;
 }
-void
+HwmpProtocol::PathError
 HwmpProtocol::MakePathError (std::vector<IePerr::FailedDestination> destinations)
 {
+  PathError retval;
   //HwmpRtable increments a sequence number as written in 11B.9.7.2
-  std::vector<std::pair<uint32_t, Mac48Address> > receivers = GetPerrReceivers (destinations);
-  if(receivers.size () == 0)
-    return;
-  IePerr perr;
+  retval.receivers = GetPerrReceivers (destinations);
+  if(retval.receivers.size () == 0)
+    return retval;
+  m_stats.initiatedPerr ++;
   for(unsigned int i = 0; i < destinations.size (); i ++)
   {
-    perr.AddAddressUnit(destinations[i]);
+    retval.destinations.push_back(destinations[i]);
     m_rtable->DeleteReactivePath(destinations[i].destination);
   }
+  return retval;
+}
+void
+HwmpProtocol::InitiatePathError(PathError perr)
+{
   for(HwmpProtocolMacMap::const_iterator i =  m_interfaces.begin (); i != m_interfaces.end (); i ++)
   {
     std::vector<Mac48Address> receivers_for_interface;
-    for(unsigned int j = 0; j < receivers.size(); j ++)
-      if(i->first == receivers[j].first)
-        receivers_for_interface.push_back(receivers[j].second);
-    i->second->SendPerr (perr, receivers_for_interface);
+    for(unsigned int j = 0; j < perr.receivers.size(); j ++)
+      if(i->first == perr.receivers[j].first)
+        receivers_for_interface.push_back(perr.receivers[j].second);
+    i->second->InitiatePerr (perr.destinations, receivers_for_interface);
   }
 }
+void
+HwmpProtocol::ForwardPathError(PathError perr)
+{
+  for(HwmpProtocolMacMap::const_iterator i =  m_interfaces.begin (); i != m_interfaces.end (); i ++)
+  {
+    std::vector<Mac48Address> receivers_for_interface;
+    for(unsigned int j = 0; j < perr.receivers.size(); j ++)
+      if(i->first == perr.receivers[j].first)
+        receivers_for_interface.push_back(perr.receivers[j].second);
+    i->second->ForwardPerr (perr.destinations, receivers_for_interface);
+  }
+}
+
 std::vector<std::pair<uint32_t, Mac48Address> >
 HwmpProtocol::GetPerrReceivers (std::vector<IePerr::FailedDestination> failedDest)
 {
@@ -964,7 +979,10 @@ void HwmpProtocol::Statistics::Print (std::ostream & os) const
     "txBytes=\"" << txBytes << "\" "
     "droppedTtl=\"" << droppedTtl << "\" "
     "totalQueued=\"" << totalQueued << "\" "
-    "totalDropped=\"" << totalDropped << "\"/>\n";
+    "totalDropped=\"" << totalDropped << "\" "
+    "initiatedPreq=\"" << initiatedPreq << "\" "
+    "initiatedPrep=\"" << initiatedPrep << "\" "
+    "initiatedPerr=\"" << initiatedPerr << "\"\n";
 }
 void
 HwmpProtocol::Report (std::ostream & os) const

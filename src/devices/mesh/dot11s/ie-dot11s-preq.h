@@ -64,20 +64,30 @@ class IePreq : public WifiInformationElement
 public:
   IePreq ();
   ~IePreq ();
+  /**
+   * Add a destination address unit: flags, destination and sequence
+   * number
+   */
   void AddDestinationAddressElement (
     bool doFlag,
     bool rfFlag,
     Mac48Address dest_address,
     uint32_t dest_seq_number
   );
+  /// Delete a destination address unit by destination
   void DelDestinationAddressElement (Mac48Address dest_address);
-  void ClearDestinationAddressElement ();
+  /// Clear PREQ: remove all destinations
+  void ClearDestinationAddressElements ();
+  /// Get all destinations, which are stored in PREQ:
   std::vector<Ptr<DestinationAddressUnit> > GetDestinationList ();
+  /// SetProper flags which indicate that PREQ is unicast
   void SetUnicastPreq ();
   /*
    * \brief In proactive case: need we send PREP
    */
   void SetNeedNotPrep ();
+  ///\name Setters for fields:
+  ///\{
   void SetHopcount (uint8_t hopcount);
   void SetTTL (uint8_t ttl);
   void SetPreqID (uint32_t id);
@@ -86,7 +96,9 @@ public:
   void SetLifetime (uint32_t lifetime);
   void SetMetric (uint32_t metric);
   void SetDestCount (uint8_t dest_count);
-
+  ///\}
+  ///\name Getters for fields:
+  ///\{
   bool  IsUnicastPreq () const;
   bool  IsNeedNotPrep () const;
   uint8_t  GetHopCount () const;
@@ -97,6 +109,8 @@ public:
   uint32_t GetLifetime () const;
   uint32_t GetMetric () const;
   uint8_t  GetDestCount () const;
+  ///\}
+  /// Handle TTL and Metric:
   void  DecrementTtl ();
   void  IncrementMetric (uint32_t metric);
   /*
@@ -104,7 +118,7 @@ public:
    * this preq is not proactive
    */
   bool MayAddAddress(Mac48Address originator);
-
+  bool IsFull () const;
 private:
   WifiElementId ElementId () const{
     return IE11S_PREQ;

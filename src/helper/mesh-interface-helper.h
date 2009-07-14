@@ -23,6 +23,7 @@
 #include "ns3/wifi-helper.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/mesh-wifi-interface-mac.h"
+#include "ns3/qos-utils.h"
 namespace ns3 {
 
 class MeshInterfaceHelper : public WifiMacHelper
@@ -51,23 +52,16 @@ public:
                 std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
                 std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
   /**
+   * \param ac is access class of the queue to be adjusted
    * \param type the type of ns3::WifiMac to create.
    * \param n%d the name of the attribute to set
    * \param v%d the value of the attribute to set
    */
-  void SetBeParameters ( std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                         std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                         std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                         std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue ());
-  /**
-   * \param type the type of ns3::WifiMac to create.
-   * \param n%d the name of the attribute to set
-   * \param v%d the value of the attribute to set
-   */
-  void SetVoParameters ( std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                         std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                         std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                         std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue ());
+  void SetQueueParameters (AccessClass ac,
+      std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+      std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+      std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+      std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue ());
   /**
    * \param type the type of ns3::WifiRemoteStationManager to create.
    * \param n%d the name of the attribute to set
@@ -104,8 +98,7 @@ private:
   Ptr<WifiMac> Create (void) const;
 
   ObjectFactory m_mac;
-  ObjectFactory m_Be;
-  ObjectFactory m_Vo;
+  std::map<AccessClass, ObjectFactory> m_queues;
   ObjectFactory m_stationManager;
 };
 

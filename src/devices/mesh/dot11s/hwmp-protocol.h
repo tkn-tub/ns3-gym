@@ -90,7 +90,7 @@ private:
   //\{
   void ReceivePreq(IePreq preq, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
   void ReceivePrep(IePrep prep, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
-  void ReceivePerr(IePerr perr, Mac48Address from, uint32_t interface, Mac48Address fromMp);
+  void ReceivePerr(std::vector<IePerr::FailedDestination>, Mac48Address from, uint32_t interface, Mac48Address fromMp);
   void SendPrep (
       Mac48Address src,
       Mac48Address dst,
@@ -100,9 +100,25 @@ private:
       uint32_t destinationSN,
       uint32_t lifetime,
       uint32_t interface);
-  
-  ///\brief forms a path error information element when list of destination fails on a given interface
-  void MakePathError (std::vector<IePerr::FailedDestination> destinations);
+  /**
+   * \brief Structure of path error: IePerr and list of receivers:
+   * interfaces and MAC address
+   */
+  struct PathError
+  {
+    std::vector<IePerr::FailedDestination> destinations;
+    /// interface-address
+    std::vector<std::pair<uint32_t, Mac48Address> > receivers;
+  };
+  /**
+   * \brief forms a path error information element when list of destination fails on a given interface
+   * \attention removes all entries from routing table!
+   */
+  PathError MakePathError (std::vector<IePerr::FailedDestination> destinations);
+  ///\brief Forwards a received path error
+  void ForwardPathError (PathError perr);
+  ///\brief Pasess a selg-generated PERR to interface-plugin
+  void InitiatePathError (PathError perr);
   /// \return list of addresses where a PERR should be sent to
   std::vector<std::pair<uint32_t, Mac48Address> > GetPerrReceivers (std::vector<IePerr::FailedDestination> failedDest);
   
@@ -151,9 +167,12 @@ private:
     uint16_t droppedTtl;
     uint16_t totalQueued;
     uint16_t totalDropped;
+    uint16_t initiatedPreq;
+    uint16_t initiatedPrep;
+    uint16_t initiatedPerr;
 
     void Print (std::ostream & os) const;
-    Statistics () : txUnicast (0), txBroadcast (0), txBytes (0), droppedTtl (0), totalQueued (0), totalDropped (0) {}
+    Statistics () : txUnicast (0), txBroadcast (0), txBytes (0), droppedTtl (0), totalQueued (0), totalDropped (0), initiatedPreq (0), initiatedPrep (0), initiatedPerr (0) {}
   };
   Statistics m_stats;
   ///\}

@@ -51,6 +51,11 @@ FlameProtocolMac::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
   }
   tag.receiver = header.GetAddr1 ();
   tag.transmitter = header.GetAddr2 ();
+  if(tag.receiver == Mac48Address::GetBroadcast ())
+    m_stats.rxBroadcast ++;
+  else
+    m_stats.rxUnicast ++;
+  m_stats.rxBytes += packet->GetSize ();
   packet->AddPacketTag (tag);
   return true;
 }
@@ -65,6 +70,11 @@ FlameProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & head
     NS_FATAL_ERROR ("FLAME tag must exist here");
   }
   header.SetAddr1 (tag.receiver);
+  if(tag.receiver == Mac48Address::GetBroadcast ())
+    m_stats.txBroadcast ++;
+  else
+    m_stats.txUnicast ++;
+  m_stats.txBytes += packet->GetSize ();
   return true;
 }
 uint16_t
@@ -73,12 +83,29 @@ FlameProtocolMac::GetChannelId () const
   return m_parent->GetFrequencyChannel ();
 }
 void
+FlameProtocolMac::Statistics::Print (std::ostream &os) const
+{
+  os << "<Statistics "
+    "txUnicast=\"" << txUnicast << "\" "
+    "txBroadcast=\"" << txBroadcast << "\" "
+    "txBytes=\"" << txBytes << "\" "
+    "rxUnicast=\"" << rxUnicast << "\" "
+    "rxBroadcast=\"" << rxBroadcast << "\" "
+    "rxBytes=\"" << rxBytes << "\"/>\n";
+}
+void
 FlameProtocolMac::Report (std::ostream & os) const
 {
+  os << "<FlameProtocolMac\n"
+    "address =\""<< m_parent->GetAddress () <<"\">\n";
+  m_stats.Print(os);
+  os << "</FlameProtocolMac>\n";
+
 }
 void
 FlameProtocolMac::ResetStats ()
 {
+  m_stats = Statistics ();
 }
 
 } //namespace flame

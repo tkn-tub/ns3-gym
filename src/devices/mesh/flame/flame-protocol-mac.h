@@ -57,6 +57,23 @@ private:
   uint32_t m_ifIndex;
   Ptr<MeshWifiInterfaceMac> m_parent;
   ///\}
+  ///\name Statistics:
+  ///\{
+  struct Statistics
+  {
+    uint16_t txUnicast;
+    uint16_t txBroadcast;
+    uint32_t txBytes;
+    uint16_t rxUnicast;
+    uint16_t rxBroadcast;
+    uint32_t rxBytes;
+
+    void Print (std::ostream & os) const;
+    Statistics () : txUnicast (0), txBroadcast (0), txBytes (0), rxUnicast (0), rxBroadcast (0), rxBytes (0) {}
+  };
+  Statistics m_stats;
+  ///\}
+
 };
 } //namespace flame
 } //namespace ns3
