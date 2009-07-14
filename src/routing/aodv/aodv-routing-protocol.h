@@ -28,6 +28,8 @@
 #include "aodv-rqueue.h"
 #include "aodv-packet.h"
 
+#include "src/internet-stack/ipv4-l3-protocol.h"
+
 #include "ns3/object.h"
 #include "ns3/packet.h"
 #include "ns3/node.h"
@@ -139,9 +141,11 @@ private:
 
   /// IP protocol
   Ptr<Ipv4> m_ipv4;
+  Ptr<Ipv4L3Protocol> m_ipv4L3;
   /// UDP socket per each IP interface, map socket -> iface
   std::map< Ptr<Socket>, Ipv4Address > m_socketAddresses;
   std::map< Ipv4Address, Ptr<Socket> > m_addressSocket;
+  std::vector<Ipv4InterfaceAddress> m_myAddresses;
 
   /// Routing table
   aodv_rtable rtable;
@@ -153,6 +157,7 @@ private:
   uint32_t bid;
   /// Sequence Number (???)
   uint32_t seqno;
+
 
 private:
 
@@ -170,9 +175,9 @@ private:
   /// Receive and process control packet
   void RecvAodv (Ptr<Socket> socket);
   /// Receive RREQ
-  void RecvRequest (Ptr<Packet> p, Ipv4Header & header);
+  void RecvRequest (Ptr<Packet> p, Ipv4Header & ipv4Header);
   /// Receive RREP
-  void RecvReply (Ptr<Packet> p, Ipv4Header & ipv4Header, Ipv4Address myAddress);
+  void RecvReply (Ptr<Packet> p, Ipv4Address my ,Ipv4Address src);
   /// Receive RERR
   void RecvError (Ptr<Packet> p);
   //\}
