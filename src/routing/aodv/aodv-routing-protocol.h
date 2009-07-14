@@ -43,8 +43,6 @@ namespace ns3
 {
 namespace aodv
 {
-
-
 /// Various constants used for the expanding ring search
 //\{
 #define TTL_START        5             /// (?) in RFC 1
@@ -71,8 +69,6 @@ public:
 private:
   std::vector<Neighbor> nb;
 };
-
-
 
 /**
  * \ingroup aodv
@@ -141,11 +137,8 @@ private:
 
   /// IP protocol
   Ptr<Ipv4> m_ipv4;
-  Ptr<Ipv4L3Protocol> m_ipv4L3;
-  /// UDP socket per each IP interface, map socket -> iface
-  std::map< Ptr<Socket>, Ipv4Address > m_socketAddresses;
-  std::map< Ipv4Address, Ptr<Socket> > m_addressSocket;
-  std::vector<Ipv4InterfaceAddress> m_myAddresses;
+  /// Raw socket per each IP interface, map socket -> iface address (IP + mask)
+  std::map< Ptr<Socket>, Ipv4InterfaceAddress > m_socketAddresses;
 
   /// Routing table
   aodv_rtable rtable;
@@ -153,14 +146,12 @@ private:
   aodv_rqueue rqueue;
   /// List of neighbors (aka neighbors cache). TODO: separate list for each interface??? 
   NeighborList nbhead;
-  /// Rreq broadcast ID
+  /// Broadcast ID
   uint32_t bid;
-  /// Sequence Number (???)
+  /// Request sequence number
   uint32_t seqno;
 
-
 private:
-
   /// Start protocol operation
   void Start ();
   /// Start local route repair procedure
