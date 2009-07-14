@@ -28,7 +28,7 @@
 #include <map>
 #include <sys/types.h>
 #include "ns3/ipv4.h"
-#include "ns3/nstime.h"
+#include "ns3/ipv4-address.h"
 #include "ns3/nstime.h"
 
 namespace ns3 {
@@ -47,8 +47,9 @@ class aodv_rt_entry
 {
 public:
   aodv_rt_entry();
-  aodv_rt_entry(Ipv4Address dst, bool vSeqNo, u_int32_t seqNo,
-  		u_int16_t  hops,Ipv4Address nextHop, Time lifetime);
+  // TODO add all members to c-tor
+  aodv_rt_entry(Ipv4Address dst, bool vSeqNo, u_int32_t seqNo, Ipv4Address iface, 
+  		u_int16_t  hops, Ipv4Address nextHop, Time lifetime);
   ~aodv_rt_entry();
   
   ///\name Precursors management

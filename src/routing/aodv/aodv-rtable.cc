@@ -54,12 +54,13 @@ aodv_rt_entry::aodv_rt_entry()
 }
 
 aodv_rt_entry::aodv_rt_entry(Ipv4Address dst, bool vSeqNo, u_int32_t seqNo,
-		u_int16_t  hops,Ipv4Address nextHop, Time lifetime)
+                             Ipv4Address iface, u_int16_t  hops, Ipv4Address nextHop, Time lifetime)
 {
   rt_dst = dst;
   validSeqNo = vSeqNo;
   if (validSeqNo) rt_seqno = seqNo;
   rt_hops = hops;
+  interface = iface;
   rt_nexthop = nextHop;
   rt_lifetime = lifetime;
 }
@@ -177,7 +178,7 @@ AodvRtableTest::RunTests ()
   aodv_rt_entry entry1;
   Ipv4Address dst1("3.3.3.3");
   Ipv4Address dst2("1.2.3.4");
-  aodv_rt_entry entry2 = aodv_rt_entry(dst2, true, 34, 1, Ipv4Address("5.5.5.5"),  Seconds(5));
+  aodv_rt_entry entry2 = aodv_rt_entry(dst2, true, 34, Ipv4Address("2.3.4.5"), 1, Ipv4Address("5.5.5.5"),  Seconds(5));
   NS_TEST_ASSERT( !(entry1 == dst1) );
   NS_TEST_ASSERT(entry2 == dst2);
   

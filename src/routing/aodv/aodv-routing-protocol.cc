@@ -247,8 +247,12 @@ RoutingProtocol::Start ()
       NS_LOG_INFO ("Interface " << iface << " used by AODV");
       
       // Add local broadcast record to the routing table
-      aodv_rt_entry rt(/*dst=*/iface.GetBroadcast (), /*know seqno=*/true, /*seqno=*/0, 
-                      /*hops=*/1, /*next hop=*/iface.GetBroadcast (), /*lifetime=*/Seconds(1e9)); // TODO use infty
+      aodv_rt_entry rt(/*dst=*/iface.GetBroadcast (), 
+                       /*know seqno=*/true, /*seqno=*/0,
+                       /*iface=*/iface.GetLocal (),
+                       /*hops=*/1, 
+                       /*next hop=*/iface.GetBroadcast (), 
+                       /*lifetime=*/Seconds(1e9)); // TODO use infty
       rtable.rt_add (rt);
     }
 }
@@ -656,6 +660,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst, bool G, bool D)
   udpHeader.SetSourcePort (AODV_PORT);
   udpHeader.SetDestinationPort (AODV_PORT);
   
+  
   // Create RREQ header
   TypeHeader tHeader (AODVTYPE_RREQ);
   RreqHeader rreqHeader;
@@ -701,6 +706,9 @@ RoutingProtocol::SendRequest (Ipv4Address dst, bool G, bool D)
       packet->AddHeader (tHeader);
       packet->AddHeader (udpHeader);
       packet->AddHeader (ipv4Header);
+      
+      udpHeader.Print (std::cout);
+      std::cout << "\n";
       
       socket->Send (packet);
     }
