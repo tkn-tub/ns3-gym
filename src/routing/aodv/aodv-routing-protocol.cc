@@ -133,6 +133,40 @@ RoutingProtocol::DoDispose ()
   Ipv4RoutingProtocol::DoDispose ();
 }
 
+void
+RoutingProtocol::Start ()
+{
+  NS_LOG_FUNCTION (this);
+  // Open UDP sockets for control traffic on each IP interface
+  const Ipv4Address loopback ("127.0.0.1");
+  for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
+    {
+      Ipv4InterfaceAddress iface = m_ipv4->GetAddress (i, 0);
+      if (iface.GetLocal() == loopback) continue;
+      
+      // Create a socket to listen only on this interface
+      Ptr<Socket> socket = Socket::CreateSocket( GetObject<Node> (), TypeId::LookupByName ("ns3::UdpSocketFactory"));
+      NS_ASSERT (socket != 0);
+      int status = socket->Bind (InetSocketAddress (iface.GetLocal(), AODV_PORT));
+      NS_ASSERT (status != -1);
+      socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv,  this));
+      status = socket->Connect (InetSocketAddress (iface.GetBroadcast(), AODV_PORT));
+      NS_ASSERT (status != -1);
+      
+      m_socketAddresses.insert(std::make_pair(socket, iface));
+      NS_LOG_INFO ("Interface " << iface << " used by AODV");
+      
+      // Add local broadcast record to the routing table
+      aodv_rt_entry rt(/*dst=*/iface.GetBroadcast (), 
+                       /*know seqno=*/true, /*seqno=*/0,
+                       /*iface=*/iface.GetLocal (),
+                       /*hops=*/1, 
+                       /*next hop=*/iface.GetBroadcast (), 
+                       /*lifetime=*/Seconds(1e9)); // TODO use infty
+      rtable.rt_add (rt);
+    }
+}
+
 Ptr<Ipv4Route> 
 RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr)
 {
@@ -161,48 +195,52 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
                            LocalDeliverCallback lcb, ErrorCallback ecb)
 {
   NS_LOG_FUNCTION (this << p->GetUid() <<  header.GetDestination() << idev->GetAddress());
-  return false;
-#if 0
+
   NS_ASSERT (m_ipv4 != 0);
   // Check if input device supports IP
   NS_ASSERT (m_ipv4->GetInterfaceForDevice (idev) >= 0);
   uint32_t iif = m_ipv4->GetInterfaceForDevice (idev);
-  Ipv4Address  dst = header.GetDestination();
+  
+  Ipv4Address dst = header.GetDestination ();
 
-  for(std::vector<Ipv4InterfaceAddress>::const_iterator j = m_myAddresses.begin(); j != m_myAddresses.end(); ++j)
-  {
-    if (j->GetLocal() == dst)
+  // Local delivery to AODV interfaces
+  for(std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin(); j != m_socketAddresses.end(); ++j)
     {
-      NS_LOG_LOGIC ("Local delivery of unicast");
-      lcb(p,header, iif);
+      Ipv4InterfaceAddress iface = j->second;
+      
+      if (dst == iface.GetLocal ())
+        {
+          NS_LOG_LOGIC ("Unicast local delivery to " << iface.GetLocal ());
+          lcb(p, header, iif);
+          return true;
+        }
+      if (dst == iface.GetBroadcast ())
+        {
+          NS_LOG_LOGIC ("Broadcast local delivery to " << iface.GetLocal ());
+          // TODO not duplicate
+          lcb(p, header, iif);
+          // TODO has TTL, forward
+          return true;
+        }
+    }
+  
+  // TODO: local delivery to non-AODV interfaces
+  
+  // Forwarding
+  aodv_rt_entry rt;
+  if (rtable.rt_lookup(dst, rt))
+    {
+      Ptr<Ipv4Route> rtentry;
+      rtentry->SetDestination (dst);
+      rtentry->SetGateway (rt.GetNextHop());
+      rtentry->SetSource (rt.GetInterface());
+      // TODO store interface index, not address?
+      rtentry->SetOutputDevice (m_ipv4->GetNetDevice(m_ipv4->GetInterfaceForAddress (rt.GetInterface())));
+      
+      ucb (rtentry, p, header);
       return true;
     }
-    if (j->GetBroadcast() == dst)
-    {
-      NS_LOG_LOGIC ("Local delivery of broadcast");
-      // TODO not duplicate
-      lcb(p,header, iif);
-      // TODO forward
-      return true;
-    }
-  }
   return false;
-
-  Ptr<Ipv4Route> rtentry;
-  aodv_rt_entry toDst;
-  if(rtable.rt_lookup(dst, toDst))
-  {
-    rtentry->SetDestination(dst);
-    rtentry->SetGateway(toDst.GetNextHop());
-    rtentry->SetSource(toDst.GetInterface());
-
-    uint32_t interfaceIdx = 0;
-    rtentry->SetOutputDevice(m_ipv4->GetNetDevice (interfaceIdx));
-    ucb (rtentry, p, header);
-    return true;
-  }
-  return false;
-#endif
 }
 
 void 
@@ -220,41 +258,6 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
 
   m_ipv4 = ipv4;
   Simulator::ScheduleNow (&RoutingProtocol::Start, this);
-}
-
-void
-RoutingProtocol::Start ()
-{
-  NS_LOG_FUNCTION (this);
-  // Open UDP sockets for control traffic on each IP interface
-  const Ipv4Address loopback ("127.0.0.1");
-  for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
-    {
-      Ipv4InterfaceAddress iface = m_ipv4->GetAddress (i, 0);
-      if (iface.GetLocal() == loopback) continue;
-      
-      // Create a socket to listen only on this interface
-      Ptr<Socket> socket = Socket::CreateSocket( GetObject<Node> (), TypeId::LookupByName ("ns3::Ipv4RawSocketFactory"));
-      NS_ASSERT (socket != 0);
-      socket->SetAttribute ("Protocol", UintegerValue (17)); // UDP
-      int status = socket->Bind (InetSocketAddress (iface.GetLocal(), AODV_PORT));
-      NS_ASSERT (status != -1);
-      socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv,  this));
-      status = socket->Connect (InetSocketAddress (iface.GetBroadcast(), AODV_PORT));
-      NS_ASSERT (status != -1);
-      
-      m_socketAddresses.insert(std::make_pair(socket, iface));
-      NS_LOG_INFO ("Interface " << iface << " used by AODV");
-      
-      // Add local broadcast record to the routing table
-      aodv_rt_entry rt(/*dst=*/iface.GetBroadcast (), 
-                       /*know seqno=*/true, /*seqno=*/0,
-                       /*iface=*/iface.GetLocal (),
-                       /*hops=*/1, 
-                       /*next hop=*/iface.GetBroadcast (), 
-                       /*lifetime=*/Seconds(1e9)); // TODO use infty
-      rtable.rt_add (rt);
-    }
 }
 
 void 
@@ -279,6 +282,56 @@ RoutingProtocol::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress addr
 void 
 RoutingProtocol::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
+}
+
+// TODO add use an expanding ring search technique
+void 
+RoutingProtocol::SendRequest (Ipv4Address dst, bool G, bool D)
+{
+  NS_LOG_FUNCTION (this << dst);
+  
+  // Create RREQ header
+  TypeHeader tHeader (AODVTYPE_RREQ);
+  RreqHeader rreqHeader;
+  rreqHeader.SetDst (dst);
+  aodv_rt_entry rt;
+  
+  if(rtable.rt_lookup (dst, rt))
+    {
+      rreqHeader.SetHopCount (rt.GetLastValidHopCount());
+      rreqHeader.SetDstSeqno (rt.GetSeqNo());
+    }
+  else
+    {
+      rreqHeader.SetUnknownSeqno(true);
+    }
+  
+  if (G) rreqHeader.SetGratiousRrep(true);
+  if (D) rreqHeader.SetDestinationOnly(true);
+  
+  seqno++;
+  rreqHeader.SetOriginSeqno(seqno);
+  bid++;
+  rreqHeader.SetId(bid);
+  rreqHeader.SetHopCount(0);
+  
+  // Send RREQ as subnet directed broadcast from each (own) interface
+  Ipv4Header ipv4Header;
+  Ptr<Packet> packet = Create<Packet> ();
+  for(std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin(); j != m_socketAddresses.end(); ++j)
+    {
+      Ptr<Socket> socket = j->first;
+      Ipv4InterfaceAddress iface = j->second;
+
+      rreqHeader.SetOrigin (iface.GetLocal());
+      InsertBroadcastId (iface.GetLocal(), bid);
+      
+      packet->AddHeader (rreqHeader);
+      packet->AddHeader (tHeader);
+      socket->Send (packet);
+    }
+//  htimer.SetDelay(HELLO_INTERVAL);
+//  htimer.Schedule();
 }
 
 void 
@@ -649,72 +702,6 @@ RoutingProtocol::SendHello ()
   // TODO send hello packet from interfaces
 }
 
-// TODO add use an expanding ring search technique
-void 
-RoutingProtocol::SendRequest (Ipv4Address dst, bool G, bool D)
-{
-  NS_LOG_FUNCTION (this << dst);
-  
-  // Create dummy UDP header
-  UdpHeader udpHeader;
-  udpHeader.SetSourcePort (AODV_PORT);
-  udpHeader.SetDestinationPort (AODV_PORT);
-  
-  
-  // Create RREQ header
-  TypeHeader tHeader (AODVTYPE_RREQ);
-  RreqHeader rreqHeader;
-  rreqHeader.SetDst (dst);
-  aodv_rt_entry rt;
-  
-  if(rtable.rt_lookup (dst, rt))
-    {
-      rreqHeader.SetHopCount (rt.GetLastValidHopCount());
-      rreqHeader.SetDstSeqno (rt.GetSeqNo());
-    }
-  else
-    {
-      rreqHeader.SetUnknownSeqno(true);
-    }
-  
-  if (G) rreqHeader.SetGratiousRrep(true);
-  if (D) rreqHeader.SetDestinationOnly(true);
-  
-  seqno++;
-  rreqHeader.SetOriginSeqno(seqno);
-  bid++;
-  rreqHeader.SetId(bid);
-  rreqHeader.SetHopCount(0);
-  
-  // Send RREQ as subnet directed broadcast from each (own) interface
-  Ipv4Header ipv4Header;
-  Ptr<Packet> packet = Create<Packet> ();
-  for(std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin(); j != m_socketAddresses.end(); ++j)
-    {
-      Ptr<Socket> socket = j->first;
-      Ipv4InterfaceAddress iface = j->second;
-  
-      ipv4Header.SetDestination (iface.GetBroadcast());
-      ipv4Header.SetSource (iface.GetLocal ());
-      ipv4Header.SetTtl (NET_DIAMETER);
-      NS_LOG_LOGIC ("Sending RREQ from " << iface.GetLocal() << " to " << iface.GetBroadcast() << " with TTL " << (int)ipv4Header.GetTtl());
-      
-      rreqHeader.SetOrigin (iface.GetLocal());
-      InsertBroadcastId (iface.GetLocal(), bid);
-      
-      packet->AddHeader (rreqHeader);
-      packet->AddHeader (tHeader);
-      packet->AddHeader (udpHeader);
-      packet->AddHeader (ipv4Header);
-      
-      udpHeader.Print (std::cout);
-      std::cout << "\n";
-      
-      socket->Send (packet);
-    }
-//  htimer.SetDelay(HELLO_INTERVAL);
-//  htimer.Schedule();
-}
 
 void 
 RoutingProtocol::SendReply (RreqHeader & rreqHeader, aodv_rt_entry & toOrigin)
