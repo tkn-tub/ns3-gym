@@ -69,10 +69,6 @@ public:
   InterferenceHelper ();
   ~InterferenceHelper ();
 
-  void Configure80211aParameters (void);
-  void Configure80211bParameters (void);
-  void Configure80211_10MhzParameters (void);
-  void Configure80211_5MhzParameters (void);
   void SetNoiseFigure (double value);
   void SetErrorRateModel (Ptr<ErrorRateModel> rate);
 
@@ -87,7 +83,13 @@ public:
    *          the requested threshold.
    */
   Time GetEnergyDuration (double energyW);
-  Time CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble) const;
+
+  
+  static WifiMode GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble);
+  static uint32_t GetPlcpHeaderDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble);
+  static uint32_t GetPlcpPreambleDurationMicroSeconds (WifiMode mode, WifiPreamble preamble);
+  static uint32_t GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payloadMode);
+  static Time CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble);
   Ptr<InterferenceHelper::Event> Add (uint32_t size, WifiMode payloadMode, 
 				      enum WifiPreamble preamble,
 				      Time duration, double rxPower);
@@ -116,15 +118,9 @@ private:
   double CalculatePer (Ptr<const Event> event, NiChanges *ni) const;
   Time GetMaxPacketDuration (void) const;
 
-  uint64_t m_plcpLongPreambleDelayUs;
-  uint64_t m_plcpShortPreambleDelayUs;
-  WifiMode m_longPlcpHeaderMode;
-  WifiMode m_shortPlcpHeaderMode;
-  uint32_t m_plcpHeaderLength;
   Time m_maxPacketDuration;
   double m_noiseFigure; /**< noise figure (linear) */
   Events m_events;
-  enum WifiPhyStandard m_80211_standard;
   Ptr<ErrorRateModel> m_errorRateModel;
 };
 
