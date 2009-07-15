@@ -33,6 +33,7 @@ bool g_debug = false;
 class Bench 
 {
 public:
+  Bench ();
   void ReadDistribution (std::istream &istream);
   void SetTotal (uint32_t total);
   void RunBench (void);
@@ -43,6 +44,11 @@ private:
   uint32_t m_n;
   uint32_t m_total;
 };
+
+Bench::Bench ()
+  : m_n (0),
+    m_total (0)
+{}
 
 void 
 Bench::SetTotal (uint32_t total)
