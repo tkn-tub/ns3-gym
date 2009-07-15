@@ -330,6 +330,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst, bool G, bool D)
       rreqHeader.SetOrigin (iface.GetLocal());
       InsertBroadcastId (iface.GetLocal(), bid);
       
+
       packet->AddHeader (rreqHeader);
       packet->AddHeader (tHeader);
       socket->Send (packet);
@@ -532,6 +533,7 @@ RoutingProtocol::SendReply (RreqHeader const & rreqHeader, aodv_rt_entry const &
   rrepHeader.SetDstSeqno(seqno);
   rrepHeader.SetDst(rreqHeader.GetDst());
   rrepHeader.SetLifeTime(MY_ROUTE_TIMEOUT);
+
 
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader(rrepHeader);
