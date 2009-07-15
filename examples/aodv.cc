@@ -58,7 +58,7 @@ private:
   ///\name parameters
   //\{
   /// Number of nodes
-  uint8_t size; 
+  uint32_t size; 
   /// Distance between nodes, meters
   double step;
   /// Simulation time, seconds
