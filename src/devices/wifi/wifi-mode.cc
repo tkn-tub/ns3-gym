@@ -107,6 +107,12 @@ WifiMode::GetUid (void) const
 {
   return m_uid;
 }
+enum WifiPhyStandard 
+WifiMode::GetStandard () const
+{
+  struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
+  return item->standard;
+}
 WifiMode::WifiMode ()
   : m_uid (0)
 {}
@@ -131,7 +137,8 @@ WifiModeFactory::CreateBpsk (std::string uniqueName,
 			     bool isMandatory,
 			     uint32_t bandwidth,
 			     uint32_t dataRate,
-			     uint32_t phyRate)
+			     uint32_t phyRate,
+                             enum WifiPhyStandard standard)
 {
   WifiModeFactory *factory = GetFactory ();
   uint32_t uid = factory->AllocateUid (uniqueName);
@@ -143,6 +150,7 @@ WifiModeFactory::CreateBpsk (std::string uniqueName,
   item->modulation = WifiMode::BPSK;
   item->constellationSize = 2;
   item->isMandatory = isMandatory;
+  item->standard = standard;
   return WifiMode (uid);
 }
 WifiMode 
@@ -151,7 +159,8 @@ WifiModeFactory::CreateQam (std::string uniqueName,
 			    uint32_t bandwidth,
 			    uint32_t dataRate,
 			    uint32_t phyRate,
-			    uint8_t constellationSize)
+			    uint8_t constellationSize,
+                            enum WifiPhyStandard standard)
 {
   WifiModeFactory *factory = GetFactory ();
   uint32_t uid = factory->AllocateUid (uniqueName);
@@ -163,6 +172,7 @@ WifiModeFactory::CreateQam (std::string uniqueName,
   item->modulation = WifiMode::QAM;
   item->constellationSize = constellationSize;
   item->isMandatory = isMandatory;
+  item->standard = standard;
   return WifiMode (uid);
 }
 WifiMode 
@@ -170,7 +180,8 @@ WifiModeFactory::CreateDbpsk (std::string uniqueName,
 			     bool isMandatory,
 			     uint32_t bandwidth,
 			     uint32_t dataRate,
-			     uint32_t phyRate)
+			     uint32_t phyRate,
+                             enum WifiPhyStandard standard)
 {
   WifiModeFactory *factory = GetFactory ();
   uint32_t uid = factory->AllocateUid (uniqueName);
@@ -182,6 +193,7 @@ WifiModeFactory::CreateDbpsk (std::string uniqueName,
   item->modulation = WifiMode::DBPSK;
   item->constellationSize = 2;
   item->isMandatory = isMandatory;
+  item->standard = standard;
   return WifiMode (uid);
 }
 WifiMode 
@@ -189,7 +201,8 @@ WifiModeFactory::CreateDqpsk (std::string uniqueName,
 			     bool isMandatory,
 			     uint32_t bandwidth,
 			     uint32_t dataRate,
-			     uint32_t phyRate)
+			     uint32_t phyRate,
+                             enum WifiPhyStandard standard)
 {
   WifiModeFactory *factory = GetFactory ();
   uint32_t uid = factory->AllocateUid (uniqueName);
@@ -201,6 +214,7 @@ WifiModeFactory::CreateDqpsk (std::string uniqueName,
   item->modulation = WifiMode::DQPSK;
   item->constellationSize = 4;
   item->isMandatory = isMandatory;
+  item->standard = standard;
   return WifiMode (uid);
 }
 bool 

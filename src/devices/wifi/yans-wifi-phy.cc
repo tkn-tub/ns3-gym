@@ -445,7 +445,6 @@ void
 YansWifiPhy::Configure80211a (void)
 {
   NS_LOG_FUNCTION (this);
-  m_interference.Configure80211aParameters ();
   m_modes.push_back (WifiPhy::Get6mba ());
   m_modes.push_back (WifiPhy::Get9mba ());
   m_modes.push_back (WifiPhy::Get12mba ());
@@ -461,7 +460,6 @@ void
 YansWifiPhy::Configure80211b (void)
 {
   NS_LOG_FUNCTION (this);
-  m_interference.Configure80211bParameters ();
   m_modes.push_back (WifiPhy::Get1mbb ());
   m_modes.push_back (WifiPhy::Get2mbb ());
   m_modes.push_back (WifiPhy::Get5_5mbb ());
@@ -472,7 +470,6 @@ void
 YansWifiPhy::Configure80211_10Mhz (void)
 {
   NS_LOG_FUNCTION (this);
-  m_interference.Configure80211_10MhzParameters ();
   m_modes.push_back (WifiPhy::Get3mb10Mhz ());
   m_modes.push_back (WifiPhy::Get4_5mb10Mhz ());
   m_modes.push_back (WifiPhy::Get6mb10Mhz ());
@@ -486,8 +483,7 @@ YansWifiPhy::Configure80211_10Mhz (void)
 void
 YansWifiPhy::Configure80211_5Mhz (void)
 {
-  NS_LOG_FUNCTION (this);
-  m_interference.Configure80211_5MhzParameters ();
+  NS_LOG_FUNCTION (this); 
   m_modes.push_back (WifiPhy::Get1_5mb5Mhz ());
   m_modes.push_back (WifiPhy::Get2_25mb5Mhz ());
   m_modes.push_back (WifiPhy::Get3mb5Mhz ());
@@ -502,7 +498,6 @@ void
 YansWifiPhy::ConfigureHolland (void)
 {
   NS_LOG_FUNCTION (this);
-  m_interference.Configure80211aParameters ();
   m_modes.push_back (WifiPhy::Get6mba ());
   m_modes.push_back (WifiPhy::Get12mba ());
   m_modes.push_back (WifiPhy::Get18mba ());
