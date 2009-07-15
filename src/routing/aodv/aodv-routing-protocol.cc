@@ -235,6 +235,7 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
   aodv_rt_entry rt;
   if (rtable.rt_lookup(dst, rt))
     {
+      NS_LOG_LOGIC("Forwarding to " << dst);
       Ptr<Ipv4Route> rtentry;
       rtentry->SetDestination (dst);
       rtentry->SetGateway (rt.GetNextHop());
@@ -355,7 +356,7 @@ RoutingProtocol::RecvAodv (Ptr<Socket> socket)
   
   NS_LOG_DEBUG ("AODV node " << this << " received a AODV packet from " << senderIfaceAddr << " to " << receiverIfaceAddr);
   
-  UpdateNeighbor (receiverIfaceAddr, senderIfaceAddr);
+  UpdateNeighbor (senderIfaceAddr, receiverIfaceAddr);
   
   TypeHeader tHeader(AODVTYPE_RREQ);
   
@@ -391,6 +392,7 @@ RoutingProtocol::RecvAodv (Ptr<Socket> socket)
 void
 RoutingProtocol::UpdateNeighbor(Ipv4Address sender, Ipv4Address receiver)
 {
+  NS_LOG_FUNCTION (this << "sender " << sender << " receiver " << receiver );
   aodv_rt_entry toNeighbor;
   if(!rtable.rt_lookup(sender, toNeighbor))
   {
@@ -402,6 +404,7 @@ RoutingProtocol::UpdateNeighbor(Ipv4Address sender, Ipv4Address receiver)
     toNeighbor.SetLifeTime(Simulator::Now() + ACTIVE_ROUTE_TIMEOUT);
     toNeighbor.SetNextHop(sender);
     toNeighbor.SetValidSeqNo(false);
+    rtable.rt_add(toNeighbor);
   }
   else
   {
@@ -409,6 +412,7 @@ RoutingProtocol::UpdateNeighbor(Ipv4Address sender, Ipv4Address receiver)
     Time t = toNeighbor.GetLifeTime();
     if (t < Simulator::Now() + ACTIVE_ROUTE_TIMEOUT)
       toNeighbor.SetLifeTime(Simulator::Now() + ACTIVE_ROUTE_TIMEOUT);
+    rtable.Update(sender, toNeighbor);
   }
 }
 
@@ -428,7 +432,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
   // silently discards the newly received RREQ.
   if (LookupBroadcastId (origin, id))
     {
-    NS_LOG_DEBUG ("RREQ duplicate from " << origin << " dropped by id " << id);
+    NS_LOG_DEBUG ("My interface" << receiver <<" RREQ duplicate from " << origin << " dropped by id " << id);
     return;
     }
   // Increment RREQ hop count
@@ -503,13 +507,20 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
   // If a node does not generate a RREP the incoming IP header has
   // TTL larger than 1, the node updates and broadcasts the RREQ
   // to address 255.255.255.255 on each of its configured interfaces.
-  p->AddHeader(rreqHeader);
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader(rreqHeader);
   TypeHeader tHeader(AODVTYPE_RREQ);
-  p->AddHeader(tHeader);
+  packet->AddHeader(tHeader);
 
   for(std::map<Ptr<Socket>, Ipv4InterfaceAddress >::const_iterator j = m_socketAddresses.begin(); j != m_socketAddresses.end(); ++j)
   {
-    j->first->Send(p);
+    Ptr<Socket> socket = j->first;
+    Ipv4InterfaceAddress iface = j->second;
+
+    rreqHeader.SetOrigin (iface.GetLocal());
+    InsertBroadcastId (iface.GetLocal(), bid);
+
+    socket->Send(packet);
   }
 
   // Shift hello timer
