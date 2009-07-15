@@ -144,13 +144,25 @@ aodv_rtable::Update(Ipv4Address dst, aodv_rt_entry & rt)
   return true;
 }
 
-
 void
 aodv_rtable::SetEntryState (Ipv4Address id, uint8_t state)
 {
   std::map<Ipv4Address, aodv_rt_entry>::iterator i = rthead.find(id);
   if (i != rthead.end()) (*i).second.rt_flags = state;
 }
+
+void
+aodv_rtable::Print(std::ostream &os) const
+{
+  os << "AODV Routing table\n"
+     << "Destination\tGateway\tInterface\tExpire\n";
+  for (std::map<Ipv4Address, aodv_rt_entry>::const_iterator i = rthead.begin(); i != rthead.end(); ++i)
+    {
+      os << i->first << "\t\t" << i->second.GetNextHop() << "\t\t" << i->second.GetInterface() << "\t\t" << i->second.GetLifeTime() << "\n";
+    }
+
+}
+
 
 #ifdef RUN_SELF_TESTS
 /// Unit test for aodv_rqueue
@@ -187,6 +199,7 @@ AodvRtableTest::RunTests ()
   
   aodv_rtable rtable;
   rtable.rt_add(entry2);
+  rtable.Print(std::cout);
   entry2.SetLifeTime(Seconds(10));
   NS_TEST_ASSERT(rtable.Update(entry2.GetDst(), entry2));
   NS_TEST_ASSERT(rtable.rt_lookup(dst2, entry1));

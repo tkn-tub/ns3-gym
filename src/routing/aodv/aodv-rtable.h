@@ -194,6 +194,8 @@ public:
   bool Update(Ipv4Address dst, aodv_rt_entry & rt);
   /// Set routing table entry flags
   void SetEntryState (Ipv4Address dst, uint8_t state /*TODO use enum*/);
+  /// Print routing table
+  void Print(std::ostream &os) const;
 
 private:
   std::map<Ipv4Address, aodv_rt_entry> rthead;

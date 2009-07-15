@@ -542,16 +542,12 @@ RoutingProtocol::SendReply (RreqHeader const & rreqHeader, aodv_rt_entry const &
 }
 
 void 
-RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address my ,Ipv4Address src)
+RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiverIfaceAddr ,Ipv4Address senderIfaceAddr)
 {
-#if 0
-  TypeHeader tHeader(AODVTYPE_RREP);
-  p->RemoveHeader(tHeader);
   RrepHeader rrepHeader;
   p->RemoveHeader(rrepHeader);
 
-  uint8_t hop = rrepHeader.GetHopCount();
-  hop++;
+  uint8_t hop = rrepHeader.GetHopCount() + 1;
   rrepHeader.SetHopCount(hop);
   aodv_rt_entry toDst;
 
@@ -571,14 +567,9 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address my ,Ipv4Address src)
   // The forward route for this destination is created if it does not already exist.
   if(!rtable.rt_lookup(rrepHeader.GetDst(), toDst))
   {
-    toDst.SetDst(rrepHeader.GetDst());
-    toDst.SetFlag(RTF_UP);
-    toDst.SetHop(hop);
-    toDst.SetInterface(my);
-    toDst.SetLifeTime(Simulator::Now() + rrepHeader.GetLifeTime());
-    toDst.SetNextHop(src);
-    toDst.SetSeqNo(rrepHeader.GetDstSeqno());
-    toDst.SetValidSeqNo(true);
+    aodv_rt_entry newEntry(/*dst=*/rrepHeader.GetDst(), /*validSeqNo=*/true, /*seqno=*/rrepHeader.GetDstSeqno(), /*iface=*/receiverIfaceAddr,
+                           /*hop=*/hop, /*nextHop=*/senderIfaceAddr, /*lifeTime=*/Simulator::Now() + rrepHeader.GetLifeTime());
+    rtable.rt_add(newEntry);
   }
 //  The existing entry is updated only in the following circumstances:
   else
@@ -590,9 +581,10 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address my ,Ipv4Address src)
       toDst.SetSeqNo(rrepHeader.GetDstSeqno());
       toDst.SetValidSeqNo(true);
       toDst.SetFlag(RTF_UP);
-      toDst.SetNextHop(src);
+      toDst.SetNextHop(senderIfaceAddr);
       toDst.SetLifeTime(Simulator::Now() + rrepHeader.GetLifeTime());
       toDst.SetHop(hop);
+      rtable.Update(rrepHeader.GetDst(), toDst);
     }
     //  (ii)  the Destination Sequence Number in the RREP is greater than
     //        the node's copy of the destination sequence number and the
@@ -601,9 +593,10 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address my ,Ipv4Address src)
     {
       toDst.SetSeqNo(rrepHeader.GetDstSeqno());
       toDst.SetFlag(RTF_UP);
-      toDst.SetNextHop(src);
+      toDst.SetNextHop(senderIfaceAddr);
       toDst.SetLifeTime(Simulator::Now() + rrepHeader.GetLifeTime());
       toDst.SetHop(hop);
+      rtable.Update(rrepHeader.GetDst(), toDst);
     }
     else
     {
@@ -611,55 +604,67 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address my ,Ipv4Address src)
       if( (rrepHeader.GetDstSeqno() == toDst.GetSeqNo()) && (toDst.GetFlag() != RTF_UP) )
       {
         toDst.SetFlag(RTF_UP);
-        toDst.SetNextHop(src);
+        toDst.SetNextHop(senderIfaceAddr);
         toDst.SetLifeTime(Simulator::Now() + rrepHeader.GetLifeTime());
         toDst.SetHop(hop);
+        rtable.Update(rrepHeader.GetDst(), toDst);
       }
       //  (iv)   the sequence numbers are the same, and the New Hop Count is
       //         smaller than the hop count in route table entry.
       else if( (rrepHeader.GetDstSeqno() == toDst.GetSeqNo()) && (hop < toDst.GetHop()) )
       {
         toDst.SetFlag(RTF_UP);
-        toDst.SetNextHop(src);
+        toDst.SetNextHop(senderIfaceAddr);
         toDst.SetLifeTime(Simulator::Now() + rrepHeader.GetLifeTime());
         toDst.SetHop(hop);
+        rtable.Update(rrepHeader.GetDst(), toDst);
       }
     }
 
-    if(my == rrepHeader.GetOrigin())
-    {
+    if(receiverIfaceAddr == rrepHeader.GetOrigin())
+      {
       //TODO  may be send messeges from queue
       return;
-    }
+      }
     else
-    {
+      {
       aodv_rt_entry toOrigin;
       if(!rtable.rt_lookup(rrepHeader.GetOrigin(), toOrigin))
-      {
-//        imposible!
-//        drop();
+        {
+        //        imposible!
+        //        drop();
         return;
-      }
+        }
 
+      rtable.rt_lookup(rrepHeader.GetDst(), toDst);
       toDst.pc_insert(toOrigin.GetNextHop());
-      if( toOrigin.GetLifeTime() < (Simulator::Now() + ACTIVE_ROUTE_TIMEOUT) )
-        toOrigin.SetLifeTime(Simulator::Now() + ACTIVE_ROUTE_TIMEOUT);
+      rtable.Update(rrepHeader.GetDst(), toDst);
+
+      if ( toOrigin.GetLifeTime() < (Simulator::Now() + ACTIVE_ROUTE_TIMEOUT) )
+        {
+          toOrigin.SetLifeTime(Simulator::Now() + ACTIVE_ROUTE_TIMEOUT);
+          rtable.Update(toOrigin.GetDst(), toOrigin);
+        }
       aodv_rt_entry toNextHopToDst;
-      aodv_rt_entry toNextHopToOrigin;
       rtable.rt_lookup(toDst.GetNextHop(), toNextHopToDst);
       toNextHopToDst.pc_insert(toOrigin.GetNextHop());
+      rtable.Update(toDst.GetNextHop(), toNextHopToDst);
 
       // TODO add operation over unidirctinal links
       p->AddHeader(rrepHeader);
+      TypeHeader tHeader(AODVTYPE_RREP);
       p->AddHeader(tHeader);
-      std::map< Ipv4Address, Ptr<Socket> >::const_iterator j = m_addressSocket.find(toOrigin.GetInterface());
-      j->second->Send(p);
-    }
+      for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin(); j != m_socketAddresses.end(); ++j)
+        {
+          if(j->second.GetLocal() == toOrigin.GetInterface())
+            j->first->Send(p);
+        }
+      }
 
 
 
   }
-#endif
+
 }
 
 void 
