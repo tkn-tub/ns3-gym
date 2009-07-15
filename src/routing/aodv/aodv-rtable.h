@@ -37,7 +37,12 @@ namespace aodv {
 #define INFINITY2       0xff
 #define DELETE_PERIOD   10 // seconds. TODO: remove defines
 
-
+enum RouteFlags
+{
+  RTF_DOWN = 0,
+  RTF_UP = 1,
+  RTF_IN_REPAIR = 2
+};
 
 /**
  * \ingroup aodv
@@ -46,10 +51,9 @@ namespace aodv {
 class aodv_rt_entry
 {
 public:
-  aodv_rt_entry();
-  // TODO add all members to c-tor
-  aodv_rt_entry(Ipv4Address dst, bool vSeqNo, u_int32_t seqNo, Ipv4Address iface, 
-  		u_int16_t  hops, Ipv4Address nextHop, Time lifetime);
+  aodv_rt_entry(Ipv4Address dst = Ipv4Address(), bool vSeqNo = false, u_int32_t seqNo = 0, Ipv4Address iface = Ipv4Address(), u_int16_t  hops = 0,
+                                Ipv4Address nextHop = Ipv4Address(), Time lifetime = Seconds(0));
+
   ~aodv_rt_entry();
   
   ///\name Precursors management
@@ -132,8 +136,7 @@ private:
   uint16_t rt_last_hop_count;
   /// Next hop IP address
   Ipv4Address rt_nexthop;
-  /// List of precursors
-  std::vector<Ipv4Address> rt_pclist;
+
   /**
   * \brief Expiration or deletion time of the route
   *	Lifetime field in the routing table plays dual role --
@@ -144,11 +147,10 @@ private:
   /// Routing flags: down, up or in repair
   uint8_t rt_flags; /*TODO use enum*/
 
-#define RTF_DOWN        0
-#define RTF_UP          1
-#define RTF_IN_REPAIR   2
 #define MAX_HISTORY     3
 
+  /// List of precursors
+  std::vector<Ipv4Address> rt_pclist;
   /// When I can send another request
   Time rt_req_timeout;
   /// Number of route requests
@@ -157,8 +159,6 @@ private:
   // TODO review and delete
   double rt_disc_latency[MAX_HISTORY];
   char hist_indx;
-  /// Last ttl value used
-  uint16_t rt_req_last_ttl;
 };
 
 /**
@@ -190,6 +190,8 @@ public:
    * \return true on success
    */
   bool rt_lookup(Ipv4Address dst, aodv_rt_entry & rt) const;
+  /// Update routing table
+  bool Update(Ipv4Address dst, aodv_rt_entry & rt);
   /// Set routing table entry flags
   void SetEntryState (Ipv4Address dst, uint8_t state /*TODO use enum*/);
 

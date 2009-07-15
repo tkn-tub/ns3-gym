@@ -33,36 +33,18 @@ namespace aodv {
   The Routing Table
  */
 
-aodv_rt_entry::aodv_rt_entry()
-{
-  rt_req_timeout = MilliSeconds(0.0);
-  rt_req_cnt = 0;
-  rt_dst = Ipv4Address("127.0.0.1");
-  validSeqNo = false;
-  rt_seqno = 0;
-  rt_hops = rt_last_hop_count = INFINITY2;
-  rt_nexthop = Ipv4Address("127.0.0.1");
-  rt_lifetime = MilliSeconds(0.0);
-  rt_flags = RTF_DOWN;
 
-  for (int i=0; i < MAX_HISTORY; i++)
+aodv_rt_entry::aodv_rt_entry(Ipv4Address dst, bool vSeqNo, u_int32_t seqNo, Ipv4Address iface, u_int16_t  hops,
+                              Ipv4Address nextHop, Time lifetime)
+                            : rt_dst(dst), validSeqNo(vSeqNo), rt_seqno(seqNo), interface(iface), rt_hops(hops), rt_last_hop_count(hops),
+                              rt_nexthop(nextHop), rt_lifetime(lifetime), rt_req_cnt(0)
+{
+  rt_flags = RTF_UP;
+  for(uint8_t i = 0; i < MAX_HISTORY; ++i)
     {
-      rt_disc_latency[i] = 0.0;
+     rt_disc_latency[i] = 0;
     }
   hist_indx = 0;
-  rt_req_last_ttl = 0;
-}
-
-aodv_rt_entry::aodv_rt_entry(Ipv4Address dst, bool vSeqNo, u_int32_t seqNo,
-                             Ipv4Address iface, u_int16_t  hops, Ipv4Address nextHop, Time lifetime)
-{
-  rt_dst = dst;
-  validSeqNo = vSeqNo;
-  if (validSeqNo) rt_seqno = seqNo;
-  rt_hops = hops;
-  interface = iface;
-  rt_nexthop = nextHop;
-  rt_lifetime = lifetime;
 }
 
 aodv_rt_entry::~aodv_rt_entry()
@@ -153,6 +135,16 @@ aodv_rtable::rt_add(aodv_rt_entry const & rt)
   return true;
 }
 
+bool
+aodv_rtable::Update(Ipv4Address dst, aodv_rt_entry & rt)
+{
+  std::map<Ipv4Address, aodv_rt_entry>::iterator i = rthead.find(dst);
+  if (i == rthead.end()) return false;
+  i->second = rt;
+  return true;
+}
+
+
 void
 aodv_rtable::SetEntryState (Ipv4Address id, uint8_t state)
 {
@@ -195,7 +187,10 @@ AodvRtableTest::RunTests ()
   
   aodv_rtable rtable;
   rtable.rt_add(entry2);
+  entry2.SetLifeTime(Seconds(10));
+  NS_TEST_ASSERT(rtable.Update(entry2.GetDst(), entry2));
   NS_TEST_ASSERT(rtable.rt_lookup(dst2, entry1));
+  NS_TEST_ASSERT(entry1.GetLifeTime() == entry2.GetLifeTime());
   NS_TEST_ASSERT(entry1 == dst2);
   NS_TEST_ASSERT(!rtable.rt_lookup(dst1, entry1));
   NS_TEST_ASSERT(rtable.rt_delete(dst2));

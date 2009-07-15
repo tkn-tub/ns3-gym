@@ -38,7 +38,6 @@
 #include "ns3/ipv4-header.h"
 #include "ns3/udp-header.h"
 #include "ns3/nstime.h"
-#include "src/internet-stack/ipv4-raw-socket-impl.h"
 
 
 /// UDP Port for AODV control traffic
@@ -178,6 +177,7 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
   {
     SendRequest(dst, false, false);
     sockerr = Socket::ERROR_NOROUTETOHOST;
+    return rtentry;
   }
   else
   {
@@ -187,8 +187,11 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
     rtentry->SetGateway (rt.GetNextHop());
     // TODO store interface index, not address?
     rtentry->SetOutputDevice (m_ipv4->GetNetDevice(m_ipv4->GetInterfaceForAddress (rt.GetInterface())));
+    NS_ASSERT (rtentry != 0);
+    NS_LOG_LOGIC("exist route to " << rtentry->GetDestination());
+    return rtentry;
   }
-  return rtentry;
+
 }
 
 bool
@@ -318,7 +321,6 @@ RoutingProtocol::SendRequest (Ipv4Address dst, bool G, bool D)
   rreqHeader.SetHopCount(0);
   
   // Send RREQ as subnet directed broadcast from each (own) interface
-  Ipv4Header ipv4Header;
   Ptr<Packet> packet = Create<Packet> ();
   for(std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin(); j != m_socketAddresses.end(); ++j)
     {
@@ -425,38 +427,32 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
   // silently discards the newly received RREQ.
   if (LookupBroadcastId (origin, id))
     {
-      NS_LOG_DEBUG ("RREQ duplicate from " << origin << " dropped by id " << id);
-      return;
+    NS_LOG_DEBUG ("RREQ duplicate from " << origin << " dropped by id " << id);
+    return;
     }
   // Increment RREQ hop count
   uint8_t hop = rreqHeader.GetHopCount() + 1;
   rreqHeader.SetHopCount (hop);
-  
+
   // Reverse route to the Originator IP Address is created, or updating
   aodv_rt_entry toOrigin;
   if(! rtable.rt_lookup(origin, toOrigin))
     { 
-      // TODO c-tor
-      toOrigin.SetDst (origin);
-      toOrigin.SetValidSeqNo (true);
-      toOrigin.SetSeqNo (rreqHeader.GetOriginSeqno());
-      toOrigin.SetNextHop (src);
-      toOrigin.SetFlag (RTF_UP);
-      toOrigin.SetHop (hop);
-      toOrigin.SetInterface (receiver);
-      toOrigin.SetLifeTime(Simulator::Now() + Scalar(2)*NET_TRAVERSAL_TIME - Scalar(2*hop)*NODE_TRAVERSAL_TIME);
-      rtable.rt_add (toOrigin);
+    aodv_rt_entry newEntry(/*dst=*/origin, /*validSeno=*/true, /*seqNo=*/rreqHeader.GetOriginSeqno(),
+        /*iface=*/receiver, /*hops=*/hop, /*nextHop*/src,
+        /*timeLife=*/Simulator::Now() + Scalar(2)*NET_TRAVERSAL_TIME - Scalar(2*hop)*NODE_TRAVERSAL_TIME  );
+    rtable.rt_add (newEntry);
     }
-  else if (toOrigin.GetSeqNo() < rreqHeader.GetOriginSeqno()) // TODO check logic
+  else  // TODO check logic
     {
-      toOrigin.SetSeqNo (rreqHeader.GetOriginSeqno());
-      toOrigin.SetValidSeqNo(true);
-      toOrigin.SetNextHop(src);
-      toOrigin.SetHop(hop);
-      Time minimalLifetime = Simulator::Now() + Scalar(2)*NET_TRAVERSAL_TIME - Scalar(2*hop)*NODE_TRAVERSAL_TIME;
-      if (toOrigin.GetLifeTime() < minimalLifetime)
-        toOrigin.SetLifeTime(minimalLifetime);
-      // TODO rtable.Update(origin, toOrigin) !!!
+    if (toOrigin.GetSeqNo() < rreqHeader.GetOriginSeqno()) toOrigin.SetSeqNo (rreqHeader.GetOriginSeqno());
+    toOrigin.SetValidSeqNo(true);
+    toOrigin.SetNextHop(src);
+    toOrigin.SetHop(hop);
+    Time minimalLifetime = Simulator::Now() + Scalar(2)*NET_TRAVERSAL_TIME - Scalar(2*hop)*NODE_TRAVERSAL_TIME;
+    if (toOrigin.GetLifeTime() < minimalLifetime)
+      toOrigin.SetLifeTime(minimalLifetime);
+    rtable.Update(origin, toOrigin);
     }
 
   //  A node generates a RREP if either:
@@ -467,6 +463,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
     Ipv4Address addr = m_ipv4->GetAddress (k, 0).GetLocal ();
     if (addr == rreqHeader.GetDst()) 
       {
+        rtable.rt_lookup(origin, toOrigin);
         SendReply (rreqHeader, toOrigin, socket);
         return;
       }
@@ -653,8 +650,6 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address my ,Ipv4Address src)
       toNextHopToDst.pc_insert(toOrigin.GetNextHop());
 
       // TODO add operation over unidirctinal links
-//      ipv4Header.SetSource(toOrigin.GetInterface());
-//      ipv4Header.SetDestination(toOrigin.GetNextHop());
       p->AddHeader(rrepHeader);
       p->AddHeader(tHeader);
       std::map< Ipv4Address, Ptr<Socket> >::const_iterator j = m_addressSocket.find(toOrigin.GetInterface());
@@ -731,15 +726,10 @@ RoutingProtocol::SendReplyByIntermediateNode(aodv_rt_entry & toDst, aodv_rt_entr
   toDst.pc_insert(toOrigin.GetNextHop());
   toOrigin.pc_insert(toDst.GetNextHop());
 
-  Ipv4Header ipv4Header;
-
-  ipv4Header.SetSource(toOrigin.GetInterface());
-  ipv4Header.SetDestination(toOrigin.GetNextHop());
 
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader(rrepHeader);
   packet->AddHeader(tHeader);
-  packet->AddHeader(ipv4Header);
   std::map< Ipv4Address, Ptr<Socket> >::const_iterator j = m_addressSocket.find(toOrigin.GetInterface());
   j->second->Send(packet);
 
@@ -751,14 +741,9 @@ RoutingProtocol::SendReplyByIntermediateNode(aodv_rt_entry & toDst, aodv_rt_entr
     rrepHeader.SetOrigin(toDst.GetDst());
     rrepHeader.SetLifeTime(toOrigin.GetLifeTime() - Simulator::Now());
 
-
-    ipv4Header.SetSource(toDst.GetInterface());
-    ipv4Header.SetDestination(toDst.GetNextHop());
-
     Ptr<Packet> packetToDst = Create<Packet> ();
     packetToDst->AddHeader(rrepHeader);
     packetToDst->AddHeader(tHeader);
-    packetToDst->AddHeader(ipv4Header);
     j = m_addressSocket.find(toDst.GetInterface());
     j->second->Send(packet);
   }

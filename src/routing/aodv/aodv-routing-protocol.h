@@ -43,13 +43,6 @@ namespace ns3
 {
 namespace aodv
 {
-/// Various constants used for the expanding ring search
-//\{
-#define TTL_START        5             /// (?) in RFC 1
-#define TTL_THRESHOLD    7
-#define TTL_INCREMENT    2
-//\}
-
 /// List of neighbors TODO document & move inside protocol
 class NeighborList
 {
