@@ -183,7 +183,7 @@ ArpL3Protocol::Receive(Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
           found = true;
           NS_LOG_LOGIC ("node="<<m_node->GetId () <<", got request from " << 
                 arp.GetSourceIpv4Address () << " -- send reply");
-          SendArpReply (cache, arp.GetSourceIpv4Address (),
+          SendArpReply (cache, arp.GetDestinationIpv4Address (), arp.GetSourceIpv4Address (),
                     arp.GetSourceHardwareAddress ());
           break;
         } 
@@ -335,26 +335,16 @@ ArpL3Protocol::SendArpRequest (Ptr<const ArpCache> cache, Ipv4Address to)
 }
 
 void
-ArpL3Protocol::SendArpReply (Ptr<const ArpCache> cache, Ipv4Address toIp, Address toMac)
+ArpL3Protocol::SendArpReply (Ptr<const ArpCache> cache, Ipv4Address myIp, Ipv4Address toIp, Address toMac)
 {
   NS_LOG_FUNCTION (this << cache << toIp << toMac);
   ArpHeader arp;
-  // need to pick a source address; use routing implementation to select
-  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
-  int32_t interface = ipv4->GetInterfaceForDevice (cache->GetDevice ());
-  NS_ASSERT (interface >= 0);
-  Ipv4Header header;
-  header.SetDestination (toIp);
-  Socket::SocketErrno errno_;
-  Ptr<Packet> packet = Create<Packet> ();
-  Ptr<Ipv4Route> route = ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, interface, errno_);
-  NS_ASSERT (route != 0);
   NS_LOG_LOGIC ("ARP: sending reply from node "<<m_node->GetId ()<<
             "|| src: " << cache->GetDevice ()->GetAddress () << 
-            " / " << route->GetSource () <<
+            " / " << myIp <<
             " || dst: " << toMac << " / " << toIp);
-  arp.SetReply (cache->GetDevice ()->GetAddress (),
-                route->GetSource (), toMac, toIp);
+  arp.SetReply (cache->GetDevice ()->GetAddress (), myIp, toMac, toIp);
+  Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (arp);
   cache->GetDevice ()->Send (packet, toMac, PROT_NUMBER);
 }
