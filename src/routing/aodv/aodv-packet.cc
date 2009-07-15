@@ -233,40 +233,40 @@ std::ostream & operator<<(std::ostream & os, RreqHeader const & h)
 void 
 RreqHeader::SetGratiousRrep (bool f)
 {
-  if (f) rq_flags |= (1 << 2);
-  else   rq_flags &= ~(1 << 2);
+  if (f) rq_flags |= (1 << 5);
+  else   rq_flags &= ~(1 << 5);
 }
 
 bool 
 RreqHeader::GetGratiousRrep () const
 {
-  return (rq_flags & (1 << 2));
+  return (rq_flags & (1 << 5));
 }
 
 void 
 RreqHeader::SetDestinationOnly (bool f)
-{
-  if (f) rq_flags |= (1 << 3);
-  else   rq_flags &= ~(1 << 3);
-}
-
-bool 
-RreqHeader::GetDestinationOnly () const
-{
-  return (rq_flags & (1 << 3));
-}
-
-void 
-RreqHeader::SetUnknownSeqno (bool f)
 {
   if (f) rq_flags |= (1 << 4);
   else   rq_flags &= ~(1 << 4);
 }
 
 bool 
-RreqHeader::GetUnknownSeqno () const
+RreqHeader::GetDestinationOnly () const
 {
   return (rq_flags & (1 << 4));
+}
+
+void 
+RreqHeader::SetUnknownSeqno (bool f)
+{
+  if (f) rq_flags |= (1 << 3);
+  else   rq_flags &= ~(1 << 3);
+}
+
+bool 
+RreqHeader::GetUnknownSeqno () const
+{
+  return (rq_flags & (1 << 3));
 }
 
 bool
@@ -394,14 +394,14 @@ RrepHeader::GetLifeTime () const
 void
 RrepHeader::SetAckRequired (bool f)
 {
-  if (f) rp_flags |= (1 << 1);
-  else   rp_flags &= ~(1 << 1);
+  if (f) rp_flags |= (1 << 6);
+  else   rp_flags &= ~(1 << 6);
 }
 
 bool
 RrepHeader::GetAckRequired () const
 {
-  return (rp_flags & (1 << 1));
+  return (rp_flags & (1 << 6));
 }
 
 void
