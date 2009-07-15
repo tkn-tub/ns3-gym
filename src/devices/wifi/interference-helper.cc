@@ -369,6 +369,9 @@ InterferenceHelper::GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payl
           case WIFI_PHY_STANDARD_80211_5Mhz: 
             symbolDurationUs = 16;
             break;
+          case WIFI_PHY_STANDARD_80211b:
+            NS_FATAL_ERROR("can't happen here");
+            symbolDurationUs = 0; // quiet compiler
           default:
             NS_FATAL_ERROR("unknown standard");
           }
