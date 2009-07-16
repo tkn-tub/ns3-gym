@@ -77,10 +77,14 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
   Ptr<MobilityModel> senderMobility = sender->GetMobility ()->GetObject<MobilityModel> ();
   NS_ASSERT (senderMobility != 0);
   uint32_t j = 0;
-  for (PhyList::const_iterator i = m_phyList.begin (); i != m_phyList.end (); i++)
-    {
+  for (PhyList::const_iterator i = m_phyList.begin (); i != m_phyList.end (); i++, j++)
+    { 
       if (sender != (*i))
         {
+          // For now don't account for inter channel interference
+          if ((*i)->GetChannelNumber() != sender->GetChannelNumber())
+              continue;
+          
           Ptr<MobilityModel> receiverMobility = (*i)->GetMobility ()->GetObject<MobilityModel> ();
           Time delay = m_delay->GetDelay (senderMobility, receiverMobility);
           double rxPowerDbm = m_loss->CalcRxPower (txPowerDbm, senderMobility, receiverMobility);
@@ -90,7 +94,6 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
           Simulator::Schedule (delay, &YansWifiChannel::Receive, this, 
                                j, copy, rxPowerDbm, wifiMode, preamble);
         }
-      j++;
     }
 }
 
