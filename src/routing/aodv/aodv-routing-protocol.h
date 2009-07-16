@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 1997, 1998 Carnegie Mellon University.
+ * Copyright (c) 2009 IITP RAS
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,11 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: The AODV code developed by the CMU/MONARCH group was optimized and
- * tuned by Samir Das and Mahesh Marina, University of Cincinnati.
- * The work was partially done in Sun Microsystems.
+ * Based on 
+ *      NS-2 AODV model developed by the CMU/MONARCH group and optimized and
+ *      tuned by Samir Das and Mahesh Marina, University of Cincinnati;
+ * 
+ *      AODV-UU implementation by Erik Nordström of Uppsala University
+ *      http://core.it.uu.se/core/index.php/AODV-UU
  *
- * Ported to ns-3 by Elena Borovkova <borovkovaes@iitp.ru>
+ * Authors: Elena Borovkova <borovkovaes@iitp.ru>
+ *          Pavel Boyko <boyko@iitp.ru>
  */
 #ifndef AODVROUTINGPROTOCOL_H_
 #define AODVROUTINGPROTOCOL_H_
