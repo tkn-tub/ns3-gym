@@ -381,7 +381,7 @@ InterferenceHelper::GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payl
         double numDataBitsPerSymbol = payloadMode.GetDataRate ()  * symbolDurationUs / 1e6;
 
         // IEEE Std 802.11-2007, section 17.3.5.3, equation (17-11)
-        uint32_t numSymbols = ceil ((16 + size * 8.0 + 6.0)/numDataBitsPerSymbol);
+        uint32_t numSymbols = lrint (ceil ((16 + size * 8.0 + 6.0)/numDataBitsPerSymbol));
       
         return numSymbols*symbolDurationUs;
       }
@@ -390,7 +390,7 @@ InterferenceHelper::GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payl
       NS_LOG_LOGIC(" size=" << size
                    << " mode=" << payloadMode 
                    << " rate=" << payloadMode.GetDataRate () );
-      return ceil ((size * 8.0) / (payloadMode.GetDataRate () / 1.0e6));
+      return lrint(ceil ((size * 8.0) / (payloadMode.GetDataRate () / 1.0e6)));
 
     default:
       NS_FATAL_ERROR("unknown standard");
