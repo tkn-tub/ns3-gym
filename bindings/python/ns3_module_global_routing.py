@@ -83,15 +83,30 @@ def register_Ns3GlobalRouteManager_methods(root_module, cls):
     cls.add_method('PopulateRoutingTables', 
                    'void', 
                    [], 
-                   is_static=True)
+                   is_static=True, deprecated=True)
     ## global-route-manager.h: static void ns3::GlobalRouteManager::RecomputeRoutingTables() [member function]
     cls.add_method('RecomputeRoutingTables', 
                    'void', 
                    [], 
-                   is_static=True)
+                   is_static=True, deprecated=True)
     ## global-route-manager.h: static uint32_t ns3::GlobalRouteManager::AllocateRouterId() [member function]
     cls.add_method('AllocateRouterId', 
                    'uint32_t', 
+                   [], 
+                   is_static=True)
+    ## global-route-manager.h: static void ns3::GlobalRouteManager::DeleteGlobalRoutes() [member function]
+    cls.add_method('DeleteGlobalRoutes', 
+                   'void', 
+                   [], 
+                   is_static=True)
+    ## global-route-manager.h: static void ns3::GlobalRouteManager::BuildGlobalRoutingDatabase() [member function]
+    cls.add_method('BuildGlobalRoutingDatabase', 
+                   'void', 
+                   [], 
+                   is_static=True)
+    ## global-route-manager.h: static void ns3::GlobalRouteManager::InitializeRoutes() [member function]
+    cls.add_method('InitializeRoutes', 
+                   'void', 
                    [], 
                    is_static=True)
     return
@@ -160,6 +175,11 @@ def register_Ns3GlobalRoutingLSA_methods(root_module, cls):
                    'ns3::Ipv4Mask', 
                    [], 
                    is_const=True)
+    ## global-router-interface.h: ns3::Ptr<ns3::Node> ns3::GlobalRoutingLSA::GetNode() const [member function]
+    cls.add_method('GetNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_const=True)
     ## global-router-interface.h: ns3::GlobalRoutingLSA::SPFStatus ns3::GlobalRoutingLSA::GetStatus() const [member function]
     cls.add_method('GetStatus', 
                    'ns3::GlobalRoutingLSA::SPFStatus', 
@@ -191,6 +211,10 @@ def register_Ns3GlobalRoutingLSA_methods(root_module, cls):
     cls.add_method('SetNetworkLSANetworkMask', 
                    'void', 
                    [param('ns3::Ipv4Mask', 'mask')])
+    ## global-router-interface.h: void ns3::GlobalRoutingLSA::SetNode(ns3::Ptr<ns3::Node> node) [member function]
+    cls.add_method('SetNode', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')])
     ## global-router-interface.h: void ns3::GlobalRoutingLSA::SetStatus(ns3::GlobalRoutingLSA::SPFStatus status) [member function]
     cls.add_method('SetStatus', 
                    'void', 
