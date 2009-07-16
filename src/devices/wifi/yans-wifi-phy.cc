@@ -316,28 +316,28 @@ YansWifiPhy::SetChannel (Ptr<YansWifiChannel> channel)
 }
 
 void 
-YansWifiPhy::SetFrequencyChannel (uint16_t nch)
+YansWifiPhy::SetChannelNumber (uint16_t nch)
 {
-  Simulator::Schedule (m_channelSwitchDelay, &YansWifiPhy::DoSetChannelId, this, nch);
+  Simulator::Schedule (m_channelSwitchDelay, &YansWifiPhy::DoSetChannelNumber, this, nch);
 }
 
 void
-YansWifiPhy::DoSetChannelId (uint16_t nch)
+YansWifiPhy::DoSetChannelNumber (uint16_t nch)
 {
   NS_LOG_DEBUG("switching channel " << m_channelId << " -> " << nch);
   m_channelId = nch;
 }
 
 uint16_t 
-YansWifiPhy::GetFrequencyChannel() const
+YansWifiPhy::GetChannelNumber() const
 {
   return m_channelId;
 }
 
 double
-YansWifiPhy::GetCenterFrequencyMhz() const
+YansWifiPhy::GetChannelFrequencyMhz() const
 {
-  return m_channelStartingFrequency + 5 * (GetFrequencyChannel() - 1);
+  return m_channelStartingFrequency + 5 * (GetChannelNumber() - 1);
 }
 
 void 
@@ -451,7 +451,7 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble
   NotifyTxBegin (packet);
   uint32_t dataRate500KbpsUnits = txMode.GetDataRate () / 500000;   
   bool isShortPreamble = (WIFI_PREAMBLE_SHORT == preamble);
-  NotifyPromiscSniffTx (packet, (uint16_t)GetCenterFrequencyMhz(), dataRate500KbpsUnits, isShortPreamble);
+  NotifyPromiscSniffTx (packet, (uint16_t)GetChannelFrequencyMhz(), dataRate500KbpsUnits, isShortPreamble);
   m_state->SwitchToTx (txDuration, packet, txMode, preamble, txPower);
   m_channel->Send (this, packet, GetPowerDbm (txPower) + m_txGainDb, txMode, preamble);
 }
@@ -652,7 +652,7 @@ YansWifiPhy::EndSync (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event)
       bool isShortPreamble = (WIFI_PREAMBLE_SHORT == event->GetPreambleType ());  
       double signalDbm = RatioToDb (event->GetRxPowerW ()) + 30;
       double noiseDbm = RatioToDb(event->GetRxPowerW() / snrPer.snr) - GetRxNoiseFigure() + 30 ;
-      NotifyPromiscSniffRx (packet, (uint16_t)GetCenterFrequencyMhz(), dataRate500KbpsUnits, isShortPreamble, signalDbm, noiseDbm);
+      NotifyPromiscSniffRx (packet, (uint16_t)GetChannelFrequencyMhz(), dataRate500KbpsUnits, isShortPreamble, signalDbm, noiseDbm);
       m_state->SwitchFromSyncEndOk (packet, snrPer.snr, event->GetPayloadMode (), event->GetPreambleType ());
     } 
   else 

@@ -939,11 +939,15 @@ WifiMacHeader::Print (std::ostream &os) const
          << ", SeqNumber=" << m_seqSeq;
       break;
     case WIFI_MAC_MGT_ACTION:
-      // TODO
     case WIFI_MAC_MGT_ACTION_NO_ACK:
-      // TODO
+      PrintFrameControl (os);
+      os << " Duration/ID=" << m_duration << "us"
+         << "DA=" << m_addr1 << ", SA=" << m_addr2 << ", BSSID=" << m_addr3
+         << ", FragNumber=" << m_seqFrag << ", SeqNumber=" << m_seqSeq;
     case WIFI_MAC_MGT_MULTIHOP_ACTION:
-      // TODO
+      os << " Duration/ID=" << m_duration << "us"
+         << "RA=" << m_addr1 << ", TA=" << m_addr2 << ", DA=" << m_addr3
+         << ", FragNumber=" << m_seqFrag << ", SeqNumber=" << m_seqSeq;
     case WIFI_MAC_DATA:
       PrintFrameControl (os);
       os << " Duration/ID=" << m_duration << "us";
@@ -965,7 +969,7 @@ WifiMacHeader::Print (std::ostream &os) const
         }
       else
         {
-          NS_ASSERT (false);
+          NS_FATAL_ERROR ("Impossible ToDs and FromDs flags combination");
         }
       os << ", FragNumber=" << m_seqFrag
          << ", SeqNumber=" << m_seqSeq;
