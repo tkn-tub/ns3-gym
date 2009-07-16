@@ -135,8 +135,6 @@ public:
    * Number of channels to use must be limited elsewhere. 
    */
   //\{
-  /// Return true if PHY layer can switch channels
-  bool CanSwitchChannel () const;
   /// Current channel Id
   uint16_t GetFrequencyChannel () const;
   /// Switch channel

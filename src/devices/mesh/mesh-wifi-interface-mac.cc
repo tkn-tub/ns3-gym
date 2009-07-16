@@ -303,20 +303,6 @@ MeshWifiInterfaceMac::InstallPlugin ( Ptr<MeshWifiInterfaceMacPlugin> plugin)
 //-----------------------------------------------------------------------------
 // Switch channels
 //-----------------------------------------------------------------------------
-bool MeshWifiInterfaceMac::CanSwitchChannel () const
-{
-  NS_LOG_FUNCTION (this);
-
-  // now only YansWifiPhy can switch channels runtime
-  if (m_phy != 0)
-    {
-      Ptr<YansWifiPhy> phy = m_phy->GetObject<YansWifiPhy> ();
-      return (phy != 0);
-    }
-  else
-    return false;
-}
-
 uint16_t MeshWifiInterfaceMac::GetFrequencyChannel () const
 {
   NS_LOG_FUNCTION (this);
@@ -344,8 +330,6 @@ void MeshWifiInterfaceMac::SwitchFrequencyChannel (uint16_t new_id)
    *
    * Now we use dirty channel switch -- just change frequency
    */
-  NS_ASSERT(CanSwitchChannel());
-
   Ptr<YansWifiPhy> phy = m_phy->GetObject<YansWifiPhy> ();
   phy->SetChannelNumber (new_id);
   // Don't know NAV on new channel

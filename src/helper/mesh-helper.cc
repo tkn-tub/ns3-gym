@@ -39,7 +39,6 @@ void
 MeshHelper::SetStackInstaller (std::string type)
 {
   NS_LOG_FUNCTION (this << type);
-  m_stackFactory = ObjectFactory ();
   m_stackFactory.SetTypeId (type);
   m_stack = m_stackFactory.Create<MeshStack> ();
   if (m_stack == 0)
