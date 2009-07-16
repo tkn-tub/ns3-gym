@@ -58,7 +58,7 @@ private:
   ///\name parameters
   //\{
   /// Number of nodes
-  uint32_t size; 
+  uint32_t size;
   /// Distance between nodes, meters
   double step;
   /// Simulation time, seconds
@@ -94,7 +94,7 @@ int main (int argc, char **argv)
 
 //-----------------------------------------------------------------------------
 AodvExample::AodvExample () :
-  size (3),
+  size (4),
   step (150),
   totalTime (10),
   pcap (true)

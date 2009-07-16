@@ -34,11 +34,15 @@ namespace aodv {
  */
 
 
-aodv_rt_entry::aodv_rt_entry(Ipv4Address dst, bool vSeqNo, u_int32_t seqNo, Ipv4Address iface, u_int16_t  hops,
+aodv_rt_entry::aodv_rt_entry(Ptr<NetDevice> dev, Ipv4Address dst, bool vSeqNo, u_int32_t seqNo, Ipv4Address iface, u_int16_t  hops,
                               Ipv4Address nextHop, Time lifetime)
-                            : rt_dst(dst), validSeqNo(vSeqNo), rt_seqno(seqNo), interface(iface), rt_hops(hops), rt_last_hop_count(hops),
-                              rt_nexthop(nextHop), rt_lifetime(lifetime), rt_req_cnt(0)
+                            : validSeqNo(vSeqNo), rt_seqno(seqNo), rt_hops(hops), rt_last_hop_count(hops), rt_lifetime(lifetime), rt_req_cnt(0)
 {
+  m_ipv4Route = Create<Ipv4Route> ();
+  m_ipv4Route->SetDestination(dst);
+  m_ipv4Route->SetGateway(nextHop);
+  m_ipv4Route->SetSource(iface);
+  m_ipv4Route->SetOutputDevice(dev);
   rt_flags = RTF_UP;
   for(uint8_t i = 0; i < MAX_HISTORY; ++i)
     {
@@ -101,8 +105,14 @@ aodv_rt_entry::Down ()
   rt_last_hop_count = rt_hops;
   rt_hops = INFINITY2;
   rt_flags = RTF_DOWN;
-  rt_nexthop = 0;
   rt_lifetime = Seconds (DELETE_PERIOD);
+}
+
+void
+aodv_rt_entry::Print(std::ostream & os) const
+{
+  os << m_ipv4Route->GetDestination() << "\t" << m_ipv4Route->GetGateway() << "\t"
+     << m_ipv4Route->GetSource() << "\t" << rt_lifetime << "\n";
 }
 
 /*
@@ -128,10 +138,11 @@ aodv_rtable::rt_delete(Ipv4Address dst)
 bool
 aodv_rtable::rt_add(aodv_rt_entry const & rt)
 {
-  aodv_rt_entry dummy;
-  if(rt_lookup(rt.rt_dst, dummy))
+  Ptr<NetDevice> dev;
+  aodv_rt_entry dummy(dev);
+  if(rt_lookup(rt.GetDestination(), dummy))
   	return false;
-  rthead.insert(std::make_pair(rt.rt_dst, rt));
+  rthead.insert(std::make_pair(rt.GetDestination(), rt));
   return true;
 }
 
@@ -154,15 +165,17 @@ aodv_rtable::SetEntryState (Ipv4Address id, uint8_t state)
 void
 aodv_rtable::Print(std::ostream &os) const
 {
-  os << "AODV Routing table\n"
-     << "Destination\tGateway\tInterface\tExpire\n";
+  os << "\nAODV Routing table\n"
+     << "Destination\tGateway\t\tInterface\tExpire\n";
   for (std::map<Ipv4Address, aodv_rt_entry>::const_iterator i = rthead.begin(); i != rthead.end(); ++i)
     {
-      os << i->first << "\t\t" << i->second.GetNextHop() << "\t\t" << i->second.GetInterface() << "\t\t" << i->second.GetLifeTime() << "\n";
+      i->second.Print(os);
     }
+  os << "\n";
 
 }
 
+#if 0
 
 #ifdef RUN_SELF_TESTS
 /// Unit test for aodv_rqueue
@@ -212,6 +225,8 @@ AodvRtableTest::RunTests ()
   
   return result;
 }
+#endif
+
 #endif
 
 }}

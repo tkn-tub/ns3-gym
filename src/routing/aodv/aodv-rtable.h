@@ -28,8 +28,11 @@
 #include <map>
 #include <sys/types.h>
 #include "ns3/ipv4.h"
+#include "ns3/ipv4-route.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/nstime.h"
+#include "ns3/net-device.h"
+
 
 namespace ns3 {
 namespace aodv {
@@ -51,8 +54,8 @@ enum RouteFlags
 class aodv_rt_entry
 {
 public:
-  aodv_rt_entry(Ipv4Address dst = Ipv4Address(), bool vSeqNo = false, u_int32_t seqNo = 0, Ipv4Address iface = Ipv4Address(), u_int16_t  hops = 0,
-                                Ipv4Address nextHop = Ipv4Address(), Time lifetime = Seconds(0));
+  aodv_rt_entry(Ptr<NetDevice> dev,Ipv4Address dst = Ipv4Address(), bool vSeqNo = false, u_int32_t seqNo = 0, Ipv4Address iface = Ipv4Address(), u_int16_t  hops = 0,
+      Ipv4Address nextHop = Ipv4Address(), Time lifetime = Seconds(0));
 
   ~aodv_rt_entry();
   
@@ -89,18 +92,19 @@ public:
   void Down ();
   ///\name Fields
   //\{
-  void SetDst(Ipv4Address dst) { rt_dst = dst; }
-  Ipv4Address GetDst() const { return rt_dst; }
+  Ipv4Address GetDestination() const { return m_ipv4Route->GetDestination(); }
+  Ptr<Ipv4Route> GetRoute() const { return  m_ipv4Route; }
+  void SetRoute(Ptr<Ipv4Route> r) { m_ipv4Route = r; }
+  void SetNextHop (Ipv4Address nextHop) { m_ipv4Route->SetGateway(nextHop); }
+  Ipv4Address GetNextHop () const { return m_ipv4Route->GetGateway(); }
+  void SetOutputDevice(Ptr<NetDevice> dev) { m_ipv4Route->SetOutputDevice(dev); }
+  Ptr<NetDevice> GetOutputDevice() const { return m_ipv4Route->GetOutputDevice(); }
   void SetValidSeqNo(bool s) { validSeqNo = s; }
   bool GetValidSeqNo() const { return validSeqNo; }
   void SetSeqNo(uint32_t sn) { rt_seqno = sn; }
   uint32_t GetSeqNo() const { return rt_seqno; }
-  void SetInterface(Ipv4Address in) { interface = in; }
-  Ipv4Address GetInterface() const { return interface; }
   void SetHop(uint16_t hop) { rt_hops = hop; }
   uint16_t GetHop() const {return rt_hops; }
-  void SetNextHop(Ipv4Address next) { rt_nexthop = next; }
-  Ipv4Address GetNextHop() const { return rt_nexthop; }
   void SetLifeTime(Time lt) { rt_lifetime = lt; }
   Time GetLifeTime() const { return rt_lifetime; }
   void SetFlag(uint8_t flag) { rt_flags = flag; }
@@ -117,25 +121,19 @@ public:
    */
   bool operator==(Ipv4Address const  dst) const
   {
-    return rt_dst == dst;
+    return (m_ipv4Route->GetDestination() == dst);
   }
-
+  void Print(std::ostream & os) const;
 private:
   friend class aodv_rtable;
-
-  /// Destination address
-  Ipv4Address rt_dst;
   /// Valid Destination Sequence Number flag
   bool validSeqNo;
   /// Destination Sequence Number, if validSeqNo = true
   uint32_t rt_seqno;
-  Ipv4Address interface; ///< Interface index
   /// Hop Count (number of hops needed to reach destination)
   uint16_t rt_hops;
   /// Last valid hop count
   uint16_t rt_last_hop_count;
-  /// Next hop IP address
-  Ipv4Address rt_nexthop;
 
   /**
   * \brief Expiration or deletion time of the route
@@ -144,6 +142,15 @@ private:
   *	it is the deletion time.
   */
   Time rt_lifetime;
+
+  /** Ip route, include
+  *   - destination address
+  *   - source address
+  *   - next hop address (gateway)
+  *   - output device
+  */
+  Ptr<Ipv4Route> m_ipv4Route;
+
   /// Routing flags: down, up or in repair
   uint8_t rt_flags; /*TODO use enum*/
 
