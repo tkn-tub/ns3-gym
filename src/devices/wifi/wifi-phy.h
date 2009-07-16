@@ -256,6 +256,22 @@ public:
   static WifiMode Get2mbb (void);
   static WifiMode Get5_5mbb (void);
   static WifiMode Get11mbb (void);
+  static WifiMode Get3mb10Mhz (void);
+  static WifiMode Get4_5mb10Mhz (void);
+  static WifiMode Get6mb10Mhz (void);
+  static WifiMode Get9mb10Mhz (void);
+  static WifiMode Get12mb10Mhz (void);
+  static WifiMode Get18mb10Mhz (void);
+  static WifiMode Get24mb10Mhz (void);
+  static WifiMode Get27mb10Mhz (void);
+  static WifiMode Get1_5mb5Mhz (void);
+  static WifiMode Get2_25mb5Mhz (void);
+  static WifiMode Get3mb5Mhz (void);
+  static WifiMode Get4_5mb5Mhz (void);
+  static WifiMode Get6mb5Mhz (void);
+  static WifiMode Get9mb5Mhz (void);
+  static WifiMode Get12mb5Mhz (void);
+  static WifiMode Get13_5mb5Mhz (void);
 
 
   /**
@@ -309,7 +325,7 @@ public:
    * on a nearby channel.
    * @param rate the PHY data rate in units of 500kbps (i.e., the same
    * units used both for the radiotap and for the prism header) 
-   * @param isPreambleShort true if short preamble is used, false otherwise
+   * @param isShortPreamble true if short preamble is used, false otherwise
    * @param signalDbm signal power in dBm
    * @param noiseDbm  noise power in dBm
    */
@@ -331,7 +347,7 @@ public:
    * on a nearby channel.
    * @param rate the PHY data rate in units of 500kbps (i.e., the same
    * units used both for the radiotap and for the prism header) 
-   * @param isPreambleShort true if short preamble is used, false otherwise
+   * @param isShortPreamble true if short preamble is used, false otherwise
    */
   void NotifyPromiscSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble);
   

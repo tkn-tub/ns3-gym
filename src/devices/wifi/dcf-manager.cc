@@ -433,7 +433,7 @@ Time
 DcfManager::GetAccessGrantStart (void) const
 {
   Time rxAccessStart;
-  if (m_lastRxEnd >= m_lastRxStart) 
+  if (!m_rxing) 
     {
       rxAccessStart = m_lastRxEnd;
       if (!m_lastRxReceivedOk)

@@ -402,7 +402,7 @@ int main (int argc, char *argv[])
     {
       StringValue val;
       (*i)->GetValue (val);
-      std::cout << "  <li><b>" << (*i)->GetName () << "</b>: " << (*i)->GetHelp () << "(" << val.Get () << ")</li>" << std::endl;
+      std::cout << "  <li><b>\\anchor GlobalValue" << (*i)->GetName () << " " << (*i)->GetName () << "</b>: " << (*i)->GetHelp () << "(" << val.Get () << ")</li>" << std::endl;
     }
   std::cout << "</ul>" << std::endl
 	    << "*/" << std::endl;

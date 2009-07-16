@@ -379,6 +379,21 @@ DcfManagerTest::RunTests (void)
   AddAccessRequest (30, 2, 70, 0);
   ExpectCollision (30, 0, 0); // backoff: 0 slots
   EndTest ();
+  // Test shows when two frames are received without interval between
+  // them:
+  //  20          60         100   106     110  112
+  //   |    rx     |    rx     |sifs | aifsn | tx | 
+  //        |
+  //       30 request access. backoff slots: 0
+
+  StartTest (4, 6 , 10);
+  AddDcfState (1);
+  AddRxOkEvt (20, 40);
+  AddRxOkEvt (60, 40);
+  AddAccessRequest (30, 2, 110, 0);
+  ExpectCollision (30, 0, 0); // backoff: 0 slots
+  EndTest ();
+
 
   // The test below is subject to some discussion because I am 
   // not sure I understand the intent of the spec here.

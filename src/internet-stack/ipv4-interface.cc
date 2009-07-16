@@ -178,7 +178,7 @@ Ipv4Interface::SetForwarding (bool val)
 void
 Ipv4Interface::Send (Ptr<Packet> p, Ipv4Address dest)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (dest << *p);
   if (!IsUp()) 
     {
       return;
@@ -199,7 +199,7 @@ Ipv4Interface::Send (Ptr<Packet> p, Ipv4Address dest)
         {
           Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
         
-          ipv4->Receive (0, p, Ipv4L3Protocol::PROT_NUMBER, 
+          ipv4->Receive (m_device, p, Ipv4L3Protocol::PROT_NUMBER, 
                          m_device->GetBroadcast (),
                          m_device->GetBroadcast (),
                          NetDevice::PACKET_HOST // note: linux uses PACKET_LOOPBACK here

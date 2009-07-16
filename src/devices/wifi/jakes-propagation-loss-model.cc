@@ -138,13 +138,15 @@ JakesPropagationLossModel::GetTypeId (void)
     .AddAttribute ("NumberOfRaysPerPath",
                    "The number of rays to use by default for compute the fading coeficent for a given path (default is 1)",
                    UintegerValue (1),
-		   MakeUintegerAccessor (&JakesPropagationLossModel::m_nRays),
+		   MakeUintegerAccessor (&JakesPropagationLossModel::SetNRays,
+                                         &JakesPropagationLossModel::GetNRays),
 		   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("NumberOfOscillatorsPerRay",
                    "The number of oscillators to use by default for compute the coeficent for a given ray of a given "
                    "path (default is 4)",
                    UintegerValue (4),
-		   MakeUintegerAccessor (&JakesPropagationLossModel::m_nOscillators),
+		   MakeUintegerAccessor (&JakesPropagationLossModel::SetNOscillators,
+                                         &JakesPropagationLossModel::GetNOscillators),
 		   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("DopplerFreq",
                    "The doppler frequency in Hz (f_d = v / lambda = v * f / c), the default is 0)",
@@ -161,9 +163,10 @@ JakesPropagationLossModel::GetTypeId (void)
 }
 
 JakesPropagationLossModel::JakesPropagationLossModel ()
-{
-  DoConstruct ();
-}
+  : m_amp (0),
+    m_nRays (0),
+    m_nOscillators (0)
+{}
 
 JakesPropagationLossModel::~JakesPropagationLossModel ()
 {
@@ -181,8 +184,16 @@ JakesPropagationLossModel::~JakesPropagationLossModel ()
 }
 
 void
-JakesPropagationLossModel::DoConstruct ()
+JakesPropagationLossModel::SetNRays (uint8_t nRays)
 {
+  m_nRays = nRays;
+}
+
+void
+JakesPropagationLossModel::SetNOscillators (uint8_t nOscillators)
+{
+  m_nOscillators = nOscillators;
+  delete [] m_amp;
   uint16_t N = 4 * m_nOscillators + 2;
   m_amp = new ComplexNumber[m_nOscillators + 1];
   m_amp[0].real = 2.0 * sqrt(2.0 / N) * cos (PI / 4.0);
@@ -195,17 +206,17 @@ JakesPropagationLossModel::DoConstruct ()
     }
 }
 
-void
-JakesPropagationLossModel::SetNRays (uint8_t nRays)
+uint8_t 
+JakesPropagationLossModel::GetNRays (void) const
 {
-  m_nRays = nRays;
+  return m_nRays;
+}
+uint8_t 
+JakesPropagationLossModel::GetNOscillators (void) const
+{
+  return m_nOscillators;
 }
 
-void
-JakesPropagationLossModel::SetNOscillators (uint8_t nOscillators)
-{
-  m_nOscillators = nOscillators;
-}
 
 double 
 JakesPropagationLossModel::DoCalcRxPower (double txPowerDbm,

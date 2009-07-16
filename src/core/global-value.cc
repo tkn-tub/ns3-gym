@@ -174,6 +174,30 @@ GlobalValue::End (void)
 {
   return GetVector ()->end ();
 }
+
+bool
+GlobalValue::GetValueByNameFailSafe (std::string name, AttributeValue &value)
+{
+  for (GlobalValue::Iterator gvit = GlobalValue::Begin (); gvit != GlobalValue::End (); ++gvit)
+    {
+      if ((*gvit)->GetName () == name)
+         {
+           (*gvit)->GetValue (value);  
+           return true;
+         }
+    } 
+  return false; // not found
+}
+
+void
+GlobalValue::GetValueByName (std::string name, AttributeValue &value)
+{
+  if (! GetValueByNameFailSafe (name, value))
+    {
+      NS_FATAL_ERROR ("Could not find GlobalValue named \"" << name << "\"");
+    }
+}
+
 GlobalValue::Vector *
 GlobalValue::GetVector (void)
 {

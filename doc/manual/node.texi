@@ -121,86 +121,74 @@ ARP, UDP, TCP, and other related protocols.
 Internet Nodes are not subclasses of class Node; they are simply Nodes 
 that have had a bunch of IPv4-related
 objects aggregated to them.  They can be put together by hand, or
-via a helper function @code{AddInternetStack ()} which does the 
-following:
+via a helper function @code{InternetStackHelper::Install ()} which does the 
+following to all nodes passed in as arguments:
 @verbatim
-void AddInternetStack (Ptr<Node> node)
+void
+InternetStackHelper::Install (Ptr<Node> node) const
 {
-  // Create layer-3 protocols 
-  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
-  Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> ();
-  ipv4->SetNode (node);
-  arp->SetNode (node);
+  if (node->GetObject<Ipv4> () != 0)
+    {
+      NS_FATAL_ERROR ("InternetStackHelper::Install(): Aggregating "
+                      "an InternetStack to a node with an existing Ipv4 object");
+      return;
+    }
 
-  // Create an L4 demux 
-  Ptr<Ipv4L4Demux> ipv4L4Demux = CreateObject<Ipv4L4Demux> ();
+  CreateAndAggregateObjectFromTypeId (node, "ns3::ArpL3Protocol");
+  CreateAndAggregateObjectFromTypeId (node, "ns3::Ipv4L3Protocol");
+  CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv4L4Protocol");
+  CreateAndAggregateObjectFromTypeId (node, "ns3::UdpL4Protocol");
+  node->AggregateObject (m_tcpFactory.Create<Object> ());
+  Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
+  node->AggregateObject (factory);
+  // Set routing
+  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+  Ptr<Ipv4RoutingProtocol> ipv4Routing = m_routing->Create (node);
+  ipv4->SetRoutingProtocol (ipv4Routing);
+}
+@end verbatim
 
-  // Create transport protocols and insert them into the demux
-  Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
-  Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> ();
-  
-  ipv4L4Demux->SetNode (node);
-  udp->SetNode (node);
-  tcp->SetNode (node);
-  
-  ipv4L4Demux->Insert (udp);
-  ipv4L4Demux->Insert (tcp);
-  
-  // Add factories for instantiating transport protocol sockets
-  Ptr<UdpSocketFactoryImpl> udpFactory = CreateObject<UdpSocketFactoryImpl> ();
-  Ptr<TcpSocketFactoryImpl> tcpFactory = CreateObject<TcpSocketFactoryImpl> ();
-  Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> ();
-  
-  udpFactory->SetUdp (udp);
-  tcpFactory->SetTcp (tcp);
-  ipv4Impl->SetIpv4 (ipv4);
-  
-  // Aggregate all of these new objects to the node
-  node->AggregateObject (ipv4);
-  node->AggregateObject (arp);
-  node->AggregateObject (ipv4Impl);
-  node->AggregateObject (udpFactory);
-  node->AggregateObject (tcpFactory);
-  node->AggregateObject (ipv4L4Demux);
+Note that the Ipv4 routing protocol is configured and set outside this
+function.  By default, the following protocols are added to Ipv4:
+@verbatim
+InternetStackHelper::InternetStackHelper ()
+{
+  SetTcp ("ns3::TcpL4Protocol");
+  static Ipv4StaticRoutingHelper staticRouting;
+  static Ipv4GlobalRoutingHelper globalRouting;
+  static Ipv4ListRoutingHelper listRouting;
+  listRouting.Add (staticRouting, 0);
+  listRouting.Add (globalRouting, -10);
+  SetRoutingHelper (listRouting);
 }
 @end verbatim
 
 @subsection Internet Node structure
 
-The Internet Node (an ns-3 Node augmented by aggregation to have one or more
+An IPv4-capable Node (an ns-3 Node augmented by aggregation to have one or more
 IP stacks) has the following internal structure.
 
 @subsubsection Layer-3 protocols
 At the lowest layer, sitting above the NetDevices, are the "layer 3" 
-protocols, including IPv4, IPv6, and ARP.  These protocols provide 
-the following key methods and data members:
+protocols, including IPv4, IPv6 (in the future), and ARP.  The 
+@code{class Ipv4L3Protocol} is an 
+implementation class whose public interface is 
+typically @code{class Ipv4} (found in src/node directory), but the 
+Ipv4L3Protocol public API is also used internally in the 
+src/internet-stack directory at present.
 
+In class Ipv4L3Protocol, one method described below is @code{Receive ()}:
 @verbatim
-class Ipv4L3Protocol : public Object
-{
-public: 
-  // Add an Ipv4 interface corresponding to the provided NetDevice
-  uint32_t AddInterface (Ptr<NetDevice> device);
-
-  // Receive function that can be bound to a callback, for receiving
-  // packets up the stack
-  void Receive( Ptr<NetDevice> device, Ptr<Packet> p, uint16_t protocol, 
-    const Address &from);
-
-  // Higher-level layers call this method to send a packet
-  // down the stack to the MAC and PHY layers
-  // 
-  void Send (Ptr<Packet> packet, Ipv4Address source,
-             Ipv4Address destination, uint8_t protocol);
-
-private:
-  Ipv4InterfaceList m_interfaces;
-
-  // Protocol handlers
-}
+ /**
+   * Lower layer calls this method after calling L3Demux::Lookup
+   * The ARP subclass needs to know from which NetDevice this
+   * packet is coming to:
+   *    - implement a per-NetDevice ARP cache
+   *    - send back arp replies on the right device
+   */
+  void Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
+                const Address &to, NetDevice::PacketType packetType);
 @end verbatim
-There are many more functions (such as @code{Forward ()}) but we will
-focus on the above four items from an architectural perspective.
 
 First, note that the @code{Receive ()} function has a matching signature
 to the ReceiveCallback in the @code{class Node}.  This function pointer
@@ -228,24 +216,15 @@ to send down to the Ipv4L3Protocol object can call
 This class nicely demonstrates two techniques we exploit in
 ns-3 to bind objects together:  callbacks, and object aggregation.
 
-Once IPv4 has determined that a packet is for the local node, it 
+Once IPv4 routing has determined that a packet is for the local node, it 
 forwards it up the stack.  This is done with the following function:
 
 @verbatim
 void
-Ipv4L3Protocol::ForwardUp (Ptr<Packet> p, Ipv4Header const&ip,
-                           Ptr<Ipv4Interface> incomingInterface)
-{
-  NS_LOG_FUNCTION (this << p << &ip);
-
-  Ptr<Ipv4L4Demux> demux = m_node->GetObject<Ipv4L4Demux> ();
-  Ptr<Ipv4L4Protocol> protocol = demux->GetProtocol (ip.GetProtocol ());
-  protocol->Receive (p, ip.GetSource (), ip.GetDestination (), incomingInterface);
-}
+Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uint32_t iif)
 @end verbatim
 
-The first step is to find the aggregated Ipv4L4Demux object.  Then, this
-object is consulted to look up the right Ipv4L4Protocol, based on IP protocol
+The first step is to find the right Ipv4L4Protocol object , based on IP protocol
 number.  For instance, TCP is registered in the demux as protocol number 6.
 Finally, the @code{Receive()} function on the Ipv4L4Protocol (such as
 @code{TcpL4Protocol::Receive} is called.
@@ -321,10 +300,10 @@ addressing tuple (local port, local address, destination port, destination
 address) associated with the socket, and a receive callback for the socket.
 @end itemize
 
-@subsection Internet Node interfaces
+@subsection Ipv4-capable node interfaces
 
 Many of the implementation details, or internal objects themselves, 
-of Internet Node objects are not exposed at the simulator public
+of Ipv4-capable Node objects are not exposed at the simulator public
 API.  This allows for different implementations; for instance, 
 replacing the native ns-3 models with ported TCP/IP stack code. 
  

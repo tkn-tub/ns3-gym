@@ -29,6 +29,9 @@ namespace ns3 {
 
 /**
  * \brief Helper class that adds OLSR routing to nodes.
+ *
+ * This class is expected to be used in conjunction with 
+ * ns3::InternetStackHelper::SetRoutingHelper
  */
 class OlsrHelper : public Ipv4RoutingHelper
 {

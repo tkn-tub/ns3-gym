@@ -77,16 +77,21 @@ UdpL4Protocol::SetNode (Ptr<Node> node)
 void
 UdpL4Protocol::NotifyNewAggregate ()
 {  
-  bool is_not_initialized = (m_node == 0);
-  Ptr<Node>node = this->GetObject<Node> ();
-  Ptr<Ipv4L3Protocol> ipv4 = this->GetObject<Ipv4L3Protocol> ();
-  if (is_not_initialized && node!= 0 && ipv4 != 0)
+  if (m_node == 0)
     {
-      this->SetNode (node);
-      ipv4->Insert (this);
-      Ptr<UdpSocketFactoryImpl> udpFactory = CreateObject<UdpSocketFactoryImpl> ();
-      udpFactory->SetUdp (this);
-      node->AggregateObject (udpFactory);
+      Ptr<Node> node = this->GetObject<Node> ();
+      if (node != 0)
+        {
+          Ptr<Ipv4L3Protocol> ipv4 = this->GetObject<Ipv4L3Protocol> ();
+          if (ipv4 != 0)
+            {
+              this->SetNode (node);
+              ipv4->Insert (this);
+              Ptr<UdpSocketFactoryImpl> udpFactory = CreateObject<UdpSocketFactoryImpl> ();
+              udpFactory->SetUdp (this);
+              node->AggregateObject (udpFactory);
+            }
+        }
     }
   Object::NotifyNewAggregate ();
 }

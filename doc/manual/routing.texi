@@ -106,18 +106,26 @@ reduce computations and runtime performance.
 Presently, global centralized IPv4 unicast routing over both 
 point-to-point and shared (CSMA) links is supported.
 
+By default, when using the ns-3 helper API and the default InternetStackHelper,
+global routing capability will be added  to the node, and global routing
+will be inserted as a routing protocol with lower priority than the
+static routes (i.e., users can insert routes via Ipv4StaticRouting API
+and they will take precedence over routes found by global routing).
+
 @subsection Global Unicast Routing API
 
 The public API is very minimal.  User scripts include the following:
 @verbatim
-#include "ns3/global-route-manager.h"
+#include "ns3/helper-module.h"
 @end verbatim
 
+If the default InternetStackHelper is used, then an instance of
+global routing will be aggregated to each node.
 After IP addresses are configured, the following function call will
 cause all of the nodes that have an Ipv4 interface to receive
 forwarding tables entered automatically by the GlobalRouteManager:
 @verbatim
-  GlobalRouteManager::PopulateRoutingTables ();
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 @end verbatim
 
 @emph{Note:} A reminder that the wifi NetDevice will work but does not
@@ -127,7 +135,7 @@ OLSR dynamic routing described below.
 It is possible to call this function again in the midst of a simulation
 using the following additional public function:
 @verbatim
-  GlobalRouteManager::RecomputeRoutingTables ();
+  Ipv4GlobalRoutingHelper::RecomputeRoutingTables ();
 @end verbatim
 which flushes the old tables, queries the nodes for new interface information,
 and rebuilds the routes.
@@ -135,7 +143,7 @@ and rebuilds the routes.
 For instance, this scheduling call will cause the tables to be rebuilt
 at time 5 seconds:
 @verbatim
-  Simulator::Schedule (Seconds (5),&GlobalRouteManager::RecomputeRoutingTables);
+  Simulator::Schedule (Seconds (5),&Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
 @end verbatim
 
 @subsection Global Routing Implementation

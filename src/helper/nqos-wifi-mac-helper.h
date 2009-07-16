@@ -24,6 +24,10 @@
 
 namespace ns3 {
 
+/**
+ * \brief create non-qos MAC layers for a ns3::WifiNetDevice. 
+ * This class can create MACs of type ns3::NqapWifiMac, ns3::NqstaWifiMac, and, ns3::AdhocWifiMac
+ */
 class NqosWifiMacHelper : public WifiMacHelper
 {
 public:
@@ -66,7 +70,6 @@ public:
                 std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
                 std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
   /**
-   * \param type the type of ns3::WifiMac to create.
    * \param n0 the name of the attribute to set
    * \param v0 the value of the attribute to set
    * \param n1 the name of the attribute to set
@@ -74,6 +77,7 @@ public:
    * \param n2 the name of the attribute to set
    * \param v2 the value of the attribute to set
    * \param n3 the name of the attribute to set
+   * \param v3 the value of the attribute to set
    */
   void SetDcaParameters (std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
                          std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),

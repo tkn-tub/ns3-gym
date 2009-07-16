@@ -27,6 +27,10 @@
 
 namespace ns3 {
 
+/**
+ * \brief create qos MAC layers for a ns3::WifiNetDevice. 
+ * This class can create MACs of type ns3::QapWifiMac, ns3::QstaWifiMac, and, ns3::QadhocWifiMac
+ */
 class QosWifiMacHelper : public WifiMacHelper
 {
 public:
@@ -70,7 +74,7 @@ public:
   /**
    * \param accessClass access class for which we are setting aggregator. Possibilities
    *  are: AC_BK, AC_BE, AC_VI, AC_VO.
-   * \param aggregatorType type of aggregator.
+   * \param type the type of ns3::WifiMac to create.
    * \param n0 the name of the attribute to set
    * \param v0 the value of the attribute to set
    * \param n1 the name of the attribute to set

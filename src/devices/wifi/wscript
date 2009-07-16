@@ -21,6 +21,7 @@ def build(bld):
         'error-rate-model.cc',
         'yans-error-rate-model.cc',
         'interference-helper.cc',
+        'interference-helper-tx-duration-test.cc',
         'yans-wifi-phy.cc',
         'yans-wifi-channel.cc',
         'wifi-mac-header.cc',

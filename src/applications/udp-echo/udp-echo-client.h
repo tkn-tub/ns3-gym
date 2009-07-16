@@ -51,7 +51,7 @@ public:
    * to the server).  The contents of the data are set to unspecified (don't
    * care) by this call.
    *
-   * \warn If you have set the fill data for the echo client using one of the
+   * \warning If you have set the fill data for the echo client using one of the
    * SetFill calls, this will undo those effects.
    *
    * \param dataSize The size of the echo data you want to sent.
@@ -61,7 +61,7 @@ public:
   /**
    * Get the number of data bytes that will be sent to the server.
    *
-   * \warn The number of bytes may be modified by calling any one of the 
+   * \warning The number of bytes may be modified by calling any one of the 
    * SetFill methods.  If you have called SetFill, then the number of 
    * data bytes will correspond to the size of an initialized data buffer.
    * If you have not called a SetFill method, the number of data bytes will
@@ -75,7 +75,7 @@ public:
    * Set the data fill of the packet (what is sent as data to the server) to 
    * the zero-terminated contents of the fill string string.
    *
-   * \warn The size of resulting echo packets will be automatically adjusted
+   * \warning The size of resulting echo packets will be automatically adjusted
    * to reflect the size of the fill string -- this means that the PacketSize
    * attribute may be changed as a result of this call.
    *
@@ -88,7 +88,7 @@ public:
    * the repeated contents of the fill byte.  i.e., the fill byte will be 
    * used to initialize the contents of the data packet.
    * 
-   * \warn The size of resulting echo packets will be automatically adjusted
+   * \warning The size of resulting echo packets will be automatically adjusted
    * to reflect the dataSize parameter -- this means that the PacketSize
    * attribute may be changed as a result of this call.
    *
@@ -105,7 +105,7 @@ public:
    * accomplished by setting the fillSize set to your desired dataSize
    * (and providing an appropriate buffer).
    *
-   * \warn The size of resulting echo packets will be automatically adjusted
+   * \warning The size of resulting echo packets will be automatically adjusted
    * to reflect the dataSize parameter -- this means that the PacketSize
    * attribute of the Application may be changed as a result of this call.
    *

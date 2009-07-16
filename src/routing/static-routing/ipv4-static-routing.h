@@ -43,7 +43,11 @@ class Ipv4MulticastRoutingTableEntry;
 class Node;
 
 /**
- * \ingroup ipv4Routing
+ * \ingroup routing
+ * \defgroup ipv4StaticRouting Ipv4StaticRouting
+ */
+/**
+ * \ingroup ipv4StaticRouting
  * 
  * \brief Static routing protocol for IP version 4 stacks.
  *

@@ -35,6 +35,14 @@ namespace ns3 {
  *
  * Instances of this class are expected to be allocated as static 
  * global variables and should be used to store configurable global state.
+ * GlobalValues can be set directly by calling ns3::GlobalValue::SetValue
+ * but they can also be set through the NS_GLOBAL_VALUE environment variable.
+ * For example, NS_GLOBAL_VALUE='Name=Value;OtherName=OtherValue;' would set
+ * global values Name and OtherName to Value and OtherValue respectively. 
+ *
+ * Users of the ns3::CommandLine class also get the ability to set global 
+ * values through commandline arguments to their program: --Name=Value will
+ * set global value Name to Value.
  */
 class GlobalValue
 {
@@ -106,6 +114,30 @@ public:
    * \returns an iterator which represents a pointer to the last GlobalValue registered.
    */
   static Iterator End (void);
+
+
+  /** 
+   * finds the GlobalValue with the given name and returns its value
+   * 
+   * @param name the name of the GlobalValue to be found
+   * @param value where to store the value of the found GlobalValue
+   * 
+   * @return true if the GlobalValue was found, false otherwise
+   */
+  static bool GetValueByNameFailSafe (std::string name, AttributeValue &value);
+
+  /** 
+   * finds the GlobalValue with the given name and returns its
+   * value. This method cannot fail, i.e., it will trigger a
+   * NS_FATAL_ERROR if the requested GlobalValue is not found.
+   * 
+   * @param name the name of the GlobalValue to be found
+   * @param value where to store the value of the found GlobalValue
+   * 
+   */
+  static void GetValueByName (std::string name, AttributeValue &value);
+  
+
 private:
   friend class GlobalValueTests;
   static Vector *GetVector (void);
