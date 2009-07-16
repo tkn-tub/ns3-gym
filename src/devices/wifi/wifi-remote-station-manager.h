@@ -260,7 +260,10 @@ public:
    *          handshake.
    */
   WifiMode GetAckMode (WifiMode dataMode);
-
+  /**
+   * \return exponentially weighted average SLRC, this is used by Airtime link metric of 802.11s
+   */
+  double GetAvgSlrc () const;
 private:
   virtual Ptr<WifiRemoteStationManager> GetManager (void) const = 0;
   virtual WifiMode DoGetDataMode (uint32_t size) = 0;
@@ -289,6 +292,8 @@ private:
   SupportedModes m_modes;
   TracedValue<uint32_t> m_ssrc;
   TracedValue<uint32_t> m_slrc;
+  double m_avgSlrcCoefficient;
+  double m_avgSlrc;
 };
 
 } // namespace ns3 

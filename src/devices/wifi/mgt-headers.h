@@ -116,7 +116,7 @@ public:
   void SetSsid (Ssid ssid);
   void SetBeaconIntervalUs (uint64_t us);
   void SetSupportedRates (SupportedRates rates);
-
+  uint64_t GetTimestamp();
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -125,6 +125,7 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
 private:
+  uint64_t m_timestamp;
   Ssid m_ssid;
   uint64_t m_beaconInterval;
   SupportedRates m_rates;
