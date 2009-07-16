@@ -119,10 +119,11 @@ void
 QapWifiMac::DoDispose ()
 {
   delete m_rxMiddle;
-  m_rxMiddle = 0;
   delete m_txMiddle;
-  m_txMiddle = 0;
   delete m_dcfManager;
+  m_low->Dispose ();
+  m_rxMiddle = 0;
+  m_txMiddle = 0;
   m_dcfManager = 0;
   m_low = 0;
   m_phy = 0;
