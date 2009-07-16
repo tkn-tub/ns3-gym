@@ -585,11 +585,11 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
         {
           m_listener->GotAck (rxSnr, txMode);
         }
-    if (m_txParams.HasNextPacket ()) 
-      {
-        m_waitSifsEvent = Simulator::Schedule (GetSifs (), 
-                                               &MacLow::WaitSifsAfterEndTx, this);
-      }
+      if (m_txParams.HasNextPacket ()) 
+        {
+          m_waitSifsEvent = Simulator::Schedule (GetSifs (), 
+                                                 &MacLow::WaitSifsAfterEndTx, this);
+        }
     } 
   else if (hdr.IsCtl ()) 
     {

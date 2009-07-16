@@ -111,6 +111,8 @@ YansWifiPhy::GetTypeId (void)
                    MakeEnumAccessor (&YansWifiPhy::SetStandard),
                    MakeEnumChecker (WIFI_PHY_STANDARD_80211a, "802.11a",
                                     WIFI_PHY_STANDARD_80211b, "802.11b",
+                                    WIFI_PHY_STANDARD_80211_10Mhz,"802.11_10Mhz",
+                                    WIFI_PHY_STANDARD_80211_5Mhz,"802-11_5Mhz",
                                     WIFI_PHY_STANDARD_holland, "holland"))
     .AddAttribute ("State", "The state of the PHY layer",
                    PointerValue (),
@@ -159,6 +161,12 @@ YansWifiPhy::SetStandard (enum WifiPhyStandard standard)
     break;
   case WIFI_PHY_STANDARD_80211b:
     Configure80211b ();
+    break;
+  case WIFI_PHY_STANDARD_80211_10Mhz: 
+    Configure80211_10Mhz ();
+    break;
+  case WIFI_PHY_STANDARD_80211_5Mhz:
+    Configure80211_5Mhz ();
     break;
   case WIFI_PHY_STANDARD_holland:
     ConfigureHolland ();
@@ -468,8 +476,6 @@ void
 YansWifiPhy::Configure80211a (void)
 {
   NS_LOG_FUNCTION (this);
-  m_interference.Configure80211aParameters ();
-  m_channelStartingFrequency = 5e3; // 5.000 GHz 
   m_modes.push_back (WifiPhy::Get6mba ());
   m_modes.push_back (WifiPhy::Get9mba ());
   m_modes.push_back (WifiPhy::Get12mba ());
@@ -485,8 +491,6 @@ void
 YansWifiPhy::Configure80211b (void)
 {
   NS_LOG_FUNCTION (this);
-  m_interference.Configure80211bParameters ();
-  m_channelStartingFrequency = 2412; // 2.412 GHz 
   m_modes.push_back (WifiPhy::Get1mbb ());
   m_modes.push_back (WifiPhy::Get2mbb ());
   m_modes.push_back (WifiPhy::Get5_5mbb ());
@@ -494,11 +498,37 @@ YansWifiPhy::Configure80211b (void)
 }
 
 void
+YansWifiPhy::Configure80211_10Mhz (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_modes.push_back (WifiPhy::Get3mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get4_5mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get6mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get9mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get12mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get18mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get24mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get27mb10Mhz  ());
+}
+
+void
+YansWifiPhy::Configure80211_5Mhz (void)
+{
+  NS_LOG_FUNCTION (this); 
+  m_modes.push_back (WifiPhy::Get1_5mb5Mhz ());
+  m_modes.push_back (WifiPhy::Get2_25mb5Mhz ());
+  m_modes.push_back (WifiPhy::Get3mb5Mhz ());
+  m_modes.push_back (WifiPhy::Get4_5mb5Mhz ());
+  m_modes.push_back (WifiPhy::Get6mb5Mhz ());
+  m_modes.push_back (WifiPhy::Get9mb5Mhz ());
+  m_modes.push_back (WifiPhy::Get12mb5Mhz ());
+  m_modes.push_back (WifiPhy::Get13_5mb5Mhz  ());
+}
+
+void
 YansWifiPhy::ConfigureHolland (void)
 {
   NS_LOG_FUNCTION (this);
-  m_interference.Configure80211aParameters ();
-  m_channelStartingFrequency = 5e3; // 5.000 GHz 
   m_modes.push_back (WifiPhy::Get6mba ());
   m_modes.push_back (WifiPhy::Get12mba ());
   m_modes.push_back (WifiPhy::Get18mba ());

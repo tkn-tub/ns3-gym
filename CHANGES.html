@@ -44,6 +44,39 @@ to this file based on your experience, please contribute a patch or drop
 us a note on ns-developers mailing list.  </p>
 
 <hr>
+<h1>Changes from ns-3.5 to ns-3.6</h1>
+
+<h2>Changes to build system:</h2>
+<ul>
+</ul>
+
+<h2>New API:</h2>
+<ul>
+</ul>
+
+<h2>Changes to existing API:</h2>
+<ul>
+<li><b>InterferenceHelper</b>
+<p>The method InterferenceHelper::CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble) has been made static, so that the frame duration depends only on the characteristics of the frame (i.e., the function parameters) and not on the particular standard which is used by the receiving PHY. This makes it now possible to correctly calculate the duration of incoming frames in scenarios in which devices using different PHY configurations coexist in the same channel (e.g., a BSS using short preamble and another BSS using long preamble). </p>
+<p> The following member methods have been added to InterferenceHelper:</p>
+<pre>
+  static WifiMode GetPlcpHeaderMode (WifiMode, WifiPreamble);
+  static uint32_t GetPlcpHeaderDurationMicroSeconds (WifiMode, WifiPreamble);
+  static uint32_t GetPlcpPreambleDurationMicroSeconds (WifiMode, WifiPreamble);
+  static uint32_t GetPayloadDurationMicroSeconds (size, WifiMode); </pre>
+<p> The following member methods have been removed from InterferenceHelper:</p>
+<pre>
+  void Configure80211aParameters (void);
+  void Configure80211bParameters (void);
+  void Configure80211_10MhzParameters (void);
+  void Configure80211_5MhzParameters (void);</pre>
+</li>
+<li><b>WifiMode</b>
+<p>WifiMode now has a WifiPhyStandard attribute which identifies the standard the WifiMode belongs to. To properly set this attribute when creating a new WifiMode, it is now required to explicitly pass a WifiPhyStandard parameter to all WifiModeFactory::CreateXXXX() methods. The WifiPhyStandard value of an existing WifiMode can be retrieved using the new method WifiMode::GetStandard().</p>
+</li>
+</ul>
+
+<hr>
 <h1>Changes from ns-3.4 to ns-3.5</h1>
 
 <h2>Changes to build system:</h2>

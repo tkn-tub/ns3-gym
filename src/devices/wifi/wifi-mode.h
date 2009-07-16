@@ -25,6 +25,7 @@
 #include <vector>
 #include <ostream>
 #include "ns3/attribute-helper.h"
+#include "ns3/wifi-phy-standard.h"
 
 namespace ns3 {
 
@@ -101,6 +102,12 @@ class WifiMode
    */
   uint32_t GetUid (void) const;
 
+  /** 
+   * 
+   * @return the WifiPhyStandard to which the WifiMode belongs
+   */
+  enum WifiPhyStandard GetStandard () const;
+
   /**
    * Create an invalid WifiMode. Calling any method on the
    * instance created will trigger an assert. This is useful
@@ -151,7 +158,8 @@ public:
 			      bool isMandatory,
 			      uint32_t bandwidth,
 			      uint32_t dataRate,
-			      uint32_t phyRate);
+			      uint32_t phyRate,
+                              enum WifiPhyStandard standard);
   /**
    * \param uniqueName the name of the associated WifiMode. This name
    *        must be unique accross _all_ instances.
@@ -170,7 +178,8 @@ public:
 			     uint32_t bandwidth,
 			     uint32_t dataRate,
 			     uint32_t phyRate,
-			     uint8_t constellationSize);
+			     uint8_t constellationSize,
+                             enum WifiPhyStandard standard);
 
   /**
    * \param uniqueName the name of the associated WifiMode. This name
@@ -188,7 +197,8 @@ public:
 			      bool isMandatory,
 			      uint32_t bandwidth,
 			      uint32_t dataRate,
-			      uint32_t phyRate);
+			      uint32_t phyRate,
+                              enum WifiPhyStandard standard);
   /**
    * \param uniqueName the name of the associated WifiMode. This name
    *        must be unique accross _all_ instances.
@@ -205,7 +215,8 @@ public:
 			      bool isMandatory,
 			      uint32_t bandwidth,
 			      uint32_t dataRate,
-			      uint32_t phyRate);
+                              uint32_t phyRate,
+                              enum WifiPhyStandard standard);
 private:
   friend class WifiMode;  
   friend std::istream & operator >> (std::istream &is, WifiMode &mode);
@@ -225,6 +236,7 @@ private:
     enum WifiMode::ModulationType modulation;
     uint8_t constellationSize;
     bool isMandatory;
+    enum WifiPhyStandard standard;
   };
 
   bool Search (std::string name, WifiMode *mode);

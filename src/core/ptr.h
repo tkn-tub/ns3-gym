@@ -373,6 +373,13 @@ DynamicCast (Ptr<T2> const&p)
   return Ptr<T1> (dynamic_cast<T1 *> (PeekPointer (p)));
 }
 
+template <typename T1, typename T2>
+Ptr<T1>
+StaticCast (Ptr<T2> const&p)
+{
+  return Ptr<T1> (static_cast<T1 *> (PeekPointer (p)));
+}
+
 
 /****************************************************
  *      Member method implementations.

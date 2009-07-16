@@ -146,12 +146,15 @@ Ipv4L3Protocol::DeleteRawSocket (Ptr<Socket> socket)
 void
 Ipv4L3Protocol::NotifyNewAggregate ()
 {
-  Ptr<Node>node = this->GetObject<Node>();
-  // verify that it's a valid node and that
-  // the node has not been set before
-  if (node!= 0 && m_node == 0)
+  if (m_node == 0)
     {
-      this->SetNode (node);
+      Ptr<Node>node = this->GetObject<Node>();
+      // verify that it's a valid node and that
+      // the node has not been set before
+      if (node != 0)
+        {
+          this->SetNode (node);
+        }
     }
   Object::NotifyNewAggregate ();
 }

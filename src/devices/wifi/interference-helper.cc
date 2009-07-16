@@ -123,8 +123,8 @@ InterferenceHelper::NiChange::operator < (InterferenceHelper::NiChange const &o)
  ****************************************************************/
 
 InterferenceHelper::InterferenceHelper ()
-  : m_80211_standard (WIFI_PHY_STANDARD_80211a),
-    m_errorRateModel (0)
+  : m_maxPacketDuration (Seconds(0)),
+    m_errorRateModel (0)  
 {}
 InterferenceHelper::~InterferenceHelper ()
 {
@@ -145,6 +145,7 @@ InterferenceHelper::Add (uint32_t size, WifiMode payloadMode,
      duration,
      rxPowerW);
 
+  m_maxPacketDuration = std::max(duration, m_maxPacketDuration);
   AppendEvent (event);
   return event;
 }
@@ -224,57 +225,186 @@ InterferenceHelper::GetEnergyDuration (double energyW)
   return end - now;
 }
 
-Time
-InterferenceHelper::CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble) const
+WifiMode 
+InterferenceHelper::GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble)
 {
-  uint64_t delay = 0;
-  switch (m_80211_standard) 
-  {
+  switch (payloadMode.GetStandard ())
+    {
+    case WIFI_PHY_STANDARD_holland:
+    case WIFI_PHY_STANDARD_80211a:
+      // IEEE Std 802.11-2007, 17.3.2
+      // actually this is only the first part of the PlcpHeader,
+      // because the last 16 bits of the PlcpHeader are using the
+      // same mode of the payload
+      return WifiPhy::Get6mba ();      
+      
+    case WIFI_PHY_STANDARD_80211b:
+      if (preamble == WIFI_PREAMBLE_LONG)
+        {
+          // IEEE Std 802.11-2007, sections 15.2.3 and 18.2.2.1 
+          return WifiPhy::Get1mbb ();
+        }
+      else //  WIFI_PREAMBLE_SHORT
+        {
+          // IEEE Std 802.11-2007, section 18.2.2.2
+          return WifiPhy::Get2mbb ();
+        }
+      
+    case WIFI_PHY_STANDARD_80211_10Mhz:
+      return WifiPhy::Get3mb10Mhz ();
+      
+    case WIFI_PHY_STANDARD_80211_5Mhz:
+      return WifiPhy::Get1_5mb5Mhz ();
+    
+    default:
+      NS_FATAL_ERROR("unknown standard");
+      return WifiMode ();
+    }
+}
+
+uint32_t
+InterferenceHelper::GetPlcpHeaderDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble)
+{
+    switch (payloadMode.GetStandard ())
+    {
+    case WIFI_PHY_STANDARD_holland:
+    case WIFI_PHY_STANDARD_80211a:
+      // IEEE Std 802.11-2007, section 17.3.3 and figure 17-4
+      // also section 17.3.2.3, table 17-4
+      // We return the duration of the SIGNAL field only, since the
+      // SERVICE field (which strictly speaking belongs to the PLCP
+      // header, see section 17.3.2 and figure 17-1) is sent using the
+      // payload mode.  
+      return 4; 
+      
+    case WIFI_PHY_STANDARD_80211_10Mhz:
+      // IEEE Std 802.11-2007, section 17.3.2.3, table 17-4
+      return 8;
+      
+    case WIFI_PHY_STANDARD_80211_5Mhz:
+      // IEEE Std 802.11-2007, section 17.3.2.3, table 17-4
+      return 16;
+
+    case WIFI_PHY_STANDARD_80211b:
+        if (preamble == WIFI_PREAMBLE_SHORT)
+        {
+          // IEEE Std 802.11-2007, section 18.2.2.2 and figure 18-2
+          return 24;
+        }
+      else // WIFI_PREAMBLE_LONG
+        {
+          // IEEE Std 802.11-2007, sections 18.2.2.1 and figure 18-1
+          return 48;
+        }      
+      
+    default:
+      NS_FATAL_ERROR("unknown standard");
+      return 0;
+    }
+  
+}
+
+uint32_t 
+InterferenceHelper::GetPlcpPreambleDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble)
+{
+  switch (payloadMode.GetStandard ())
+    {
+    case WIFI_PHY_STANDARD_holland:
+    case WIFI_PHY_STANDARD_80211a:
+      // IEEE Std 802.11-2007, section 17.3.3,  figure 17-4
+      // also section 17.3.2.3, table 17-4
+      return 16; 
+      
+    case WIFI_PHY_STANDARD_80211_10Mhz:
+      // IEEE Std 802.11-2007, section 17.3.3, table 17-4 
+      // also section 17.3.2.3, table 17-4
+      return 32;
+      
+    case WIFI_PHY_STANDARD_80211_5Mhz:
+      // IEEE Std 802.11-2007, section 17.3.3
+      // also section 17.3.2.3, table 17-4
+      return 64;
+
+    case WIFI_PHY_STANDARD_80211b:
+      if (preamble == WIFI_PREAMBLE_SHORT)
+        {
+          // IEEE Std 802.11-2007, section 18.2.2.2 and figure 18-2
+          return 72;
+        }
+      else // WIFI_PREAMBLE_LONG
+        {
+          // IEEE Std 802.11-2007, sections 18.2.2.1 and figure 18-1
+          return 144;
+        }
+      
+    default:
+      NS_FATAL_ERROR("unknown standard");
+      return 0;
+    }
+}
+
+uint32_t 
+InterferenceHelper::GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payloadMode)
+{
+  NS_LOG_FUNCTION(size << payloadMode);
+  switch (payloadMode.GetStandard ())
+    {
     case WIFI_PHY_STANDARD_80211a:
     case WIFI_PHY_STANDARD_holland:
-      delay += m_plcpLongPreambleDelayUs;
-      // symbol duration is 4us
-      delay += 4;
-      delay += lrint (ceil ((size * 8.0 + 16.0 + 6.0) / payloadMode.GetDataRate () / 4e-6) * 4);
-      break;
+    case WIFI_PHY_STANDARD_80211_10Mhz: 
+    case WIFI_PHY_STANDARD_80211_5Mhz: 
+      {
+        // IEEE Std 802.11-2007, section 17.3.2.3, table 17-4
+        // corresponds to T_{SYM} in the table
+        uint32_t symbolDurationUs; 
+        switch (payloadMode.GetStandard ())
+          {       
+          case WIFI_PHY_STANDARD_holland:   
+          case WIFI_PHY_STANDARD_80211a:
+            symbolDurationUs = 4;
+            break;
+          case WIFI_PHY_STANDARD_80211_10Mhz: 
+            symbolDurationUs = 8;
+            break;
+          case WIFI_PHY_STANDARD_80211_5Mhz: 
+            symbolDurationUs = 16;
+            break;
+          case WIFI_PHY_STANDARD_80211b:
+            NS_FATAL_ERROR("can't happen here");
+            symbolDurationUs = 0; // quiet compiler
+          default:
+            NS_FATAL_ERROR("unknown standard");
+          }
+      
+        // IEEE Std 802.11-2007, section 17.3.2.2, table 17-3
+        // corresponds to N_{DBPS} in the table
+        double numDataBitsPerSymbol = payloadMode.GetDataRate ()  * symbolDurationUs / 1e6;
+
+        // IEEE Std 802.11-2007, section 17.3.5.3, equation (17-11)
+        uint32_t numSymbols = ceil ((16 + size * 8.0 + 6.0)/numDataBitsPerSymbol);
+      
+        return numSymbols*symbolDurationUs;
+      }
     case WIFI_PHY_STANDARD_80211b:
-      delay += m_plcpLongPreambleDelayUs;
-      delay += lrint (ceil ((size * 8.0 + 48.0) / payloadMode.GetDataRate () / 4e-6) * 4);
-      break;
+      // IEEE Std 802.11-2007, section 18.2.3.5
+      NS_LOG_LOGIC(" size=" << size
+                   << " mode=" << payloadMode 
+                   << " rate=" << payloadMode.GetDataRate () );
+      return ceil ((size * 8.0) / (payloadMode.GetDataRate () / 1.0e6));
+
     default:
-     NS_ASSERT (false);
-     break;
-  }
-
-  return MicroSeconds (delay);
+      NS_FATAL_ERROR("unknown standard");
+      return 0;
+    }
 }
 
-void
-InterferenceHelper::Configure80211aParameters (void)
+Time
+InterferenceHelper::CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble) 
 {
-  NS_LOG_FUNCTION (this);
-  m_80211_standard = WIFI_PHY_STANDARD_80211a;
-  m_plcpLongPreambleDelayUs = 16;
-  m_plcpShortPreambleDelayUs = 16;
-  m_longPlcpHeaderMode = WifiPhy::Get6mba ();
-  m_shortPlcpHeaderMode = WifiPhy::Get6mba ();
-  m_plcpHeaderLength = 4 + 1 + 12 + 1 + 6;
-  /* 4095 bytes at a 6Mb/s rate with a 1/2 coding rate. */
-  m_maxPacketDuration = CalculateTxDuration (4095, WifiPhy::Get6mba (), WIFI_PREAMBLE_LONG);
-}
-
-void
-InterferenceHelper::Configure80211bParameters (void)
-{ 
-  NS_LOG_FUNCTION (this);
-  m_80211_standard = WIFI_PHY_STANDARD_80211b;
-  m_plcpLongPreambleDelayUs = 144;
-  m_plcpShortPreambleDelayUs = 144; // fixed preamable for 802.11b
-  m_longPlcpHeaderMode = WifiPhy::Get1mbb ();
-  m_shortPlcpHeaderMode = WifiPhy::Get1mbb ();
-  // PLCP Header: signal 8, service 8, length 16, CRC 16 bits
-  m_plcpHeaderLength = 8 + 8 + 16 + 16;
-  m_maxPacketDuration = CalculateTxDuration (4095, WifiPhy::Get1mbb (), WIFI_PREAMBLE_LONG);
+  uint32_t duration = GetPlcpPreambleDurationMicroSeconds (payloadMode, preamble)     
+                      + GetPlcpHeaderDurationMicroSeconds (payloadMode, preamble)  
+                      + GetPayloadDurationMicroSeconds (size, payloadMode);
+  return MicroSeconds (duration);
 }
 
 void 
@@ -367,29 +497,12 @@ InterferenceHelper::CalculatePer (Ptr<const InterferenceHelper::Event> event, Ni
 {  
   double psr = 1.0; /* Packet Success Rate */
   NiChanges::iterator j = ni->begin ();
-  Time previous = (*j).GetTime ();
-  uint64_t plcpPreambleDelayUs;
+  Time previous = (*j).GetTime (); 
   WifiMode payloadMode = event->GetPayloadMode ();
-  WifiMode headerMode;
-  switch (event->GetPreambleType ()) {
-  case WIFI_PREAMBLE_LONG:
-    plcpPreambleDelayUs = m_plcpLongPreambleDelayUs;
-    headerMode = m_longPlcpHeaderMode;
-    break;
-  case WIFI_PREAMBLE_SHORT:
-    plcpPreambleDelayUs = m_plcpShortPreambleDelayUs;
-    headerMode = m_shortPlcpHeaderMode;
-    break;
-  default:
-    NS_ASSERT (false);
-    // only to quiet compiler. Really stupid.
-    plcpPreambleDelayUs = 0;
-    headerMode = m_shortPlcpHeaderMode;
-    break;
-  }
-  Time plcpHeaderStart = (*j).GetTime () + MicroSeconds (plcpPreambleDelayUs);
-  Time plcpPayloadStart = plcpHeaderStart + 
-    Seconds ((m_plcpHeaderLength + 0.0) / headerMode.GetDataRate ());
+  WifiPreamble preamble = event->GetPreambleType ();
+  WifiMode headerMode = GetPlcpHeaderMode (payloadMode, preamble);
+  Time plcpHeaderStart = (*j).GetTime () + MicroSeconds (GetPlcpPreambleDurationMicroSeconds (payloadMode, preamble));
+  Time plcpPayloadStart = plcpHeaderStart + MicroSeconds (GetPlcpHeaderDurationMicroSeconds (payloadMode, preamble));
   double noiseInterferenceW = (*j).GetDelta ();
   double powerW = event->GetRxPowerW ();
 

@@ -142,6 +142,8 @@ private:
   virtual void DoDispose (void);
   void Configure80211a (void);
   void Configure80211b (void);
+  void Configure80211_10Mhz (void);
+  void Configure80211_5Mhz ();
   void ConfigureHolland (void);
   double GetEdThresholdW (void) const;
   double DbmToW (double dbm) const;
