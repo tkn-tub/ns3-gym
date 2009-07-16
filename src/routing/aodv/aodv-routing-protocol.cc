@@ -234,16 +234,13 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
   // TODO: local delivery to non-AODV interfaces
 
   // Locally deliver all AODV control traffic
-  if (header.GetProtocol() == 17 /*UDP*/)
+  if (LooksLikeAodvControl (p, header))
   {
-    UdpHeader uh;
-    if (p->PeekHeader(uh) && uh.GetDestinationPort() == AODV_PORT && uh.GetSourcePort() == AODV_PORT)
-    {
-      NS_LOG_LOGIC("Locally deliver AODV control traffic to " << m_ipv4->GetAddress(iif, 0).GetLocal() << " packet " << p->GetUid());
-      Ipv4Header h = header;
-      h.SetDestination(m_ipv4->GetAddress(iif, 0).GetLocal()); // really want to receive it
-      lcb(p, h, iif);
-    }
+    NS_LOG_LOGIC("Locally deliver AODV control traffic to " << m_ipv4->GetAddress(iif, 0).GetLocal() << " packet " << p->GetUid());
+    Ipv4Header h = header;
+    h.SetDestination(m_ipv4->GetAddress(iif, 0).GetLocal()); // really want to receive it
+    lcb(p, h, iif);
+    return true;
   }
 
   // Forwarding
@@ -300,6 +297,17 @@ RoutingProtocol::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress addr
 void 
 RoutingProtocol::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
+}
+
+bool 
+RoutingProtocol::LooksLikeAodvControl (Ptr<const Packet> p, Ipv4Header const & header) const
+{
+  if (header.GetProtocol() == 17 /*UDP*/)
+    {
+      UdpHeader uh;
+      return (p->PeekHeader(uh) && uh.GetDestinationPort() == AODV_PORT && uh.GetSourcePort() == AODV_PORT);
+    }
+  return false;
 }
 
 // TODO add use an expanding ring search technique
@@ -444,9 +452,11 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
   // silently discards the newly received RREQ.
   if (LookupBroadcastId (origin, id))
   {
-    NS_LOG_DEBUG ("My interface" << receiver <<" RREQ duplicate from " << origin << " dropped by id " << id);
+    NS_LOG_DEBUG ("My interface " << receiver <<" RREQ duplicate from " << origin << " dropped by id " << id);
     return;
   }
+  InsertBroadcastId (origin, id);
+ 
   // Increment RREQ hop count
   uint8_t hop = rreqHeader.GetHopCount() + 1;
   rreqHeader.SetHopCount (hop);
@@ -531,10 +541,6 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
   {
     Ptr<Socket> socket = j->first;
     Ipv4InterfaceAddress iface = j->second;
-
-    rreqHeader.SetOrigin (iface.GetLocal());
-    InsertBroadcastId (iface.GetLocal(), bid);
-
     socket->Send(packet);
   }
 
@@ -639,7 +645,6 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiverIfaceAddr ,Ipv4Ad
       }
     }
   }
-  rtable.Print(std::cout);
 
   if(receiverIfaceAddr == rrepHeader.GetOrigin())
   {
