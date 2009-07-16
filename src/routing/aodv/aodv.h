@@ -15,7 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: Pavel Boyko <boyko@iitp.ru>
+ * Based on 
+ *      NS-2 AODV model developed by the CMU/MONARCH group and optimized and
+ *      tuned by Samir Das and Mahesh Marina, University of Cincinnati;
+ * 
+ *      AODV-UU implementation by Erik Nordström of Uppsala University
+ *      http://core.it.uu.se/core/index.php/AODV-UU
+ *
+ * Authors: Elena Borovkova <borovkovaes@iitp.ru>
+ *          Pavel Boyko <boyko@iitp.ru>
  */
 
 #ifndef AODV_H_
@@ -25,7 +33,7 @@
  * \ingroup routing
  * \defgroup aodv AODV
  * 
- * \brief RFC-conformant AODV model ported from ns-2
+ * \brief RFC concerted AODV manet routing model
  * 
  * TODO more docs 
  */
