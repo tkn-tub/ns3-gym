@@ -33,9 +33,9 @@
 namespace ns3 {
 namespace aodv {
 
-TypeHeader::TypeHeader(uint8_t t) : type(t), valid(true)
+TypeHeader::TypeHeader(uint8_t t) : m_type(t), m_valid(true)
 {
-  switch (type)
+  switch (m_type)
   {
   case AODVTYPE_RREQ:
   case AODVTYPE_RREP:
@@ -43,7 +43,7 @@ TypeHeader::TypeHeader(uint8_t t) : type(t), valid(true)
   case AODVTYPE_RREP_ACK:
     break;
   default:
-    valid = false;
+    m_valid = false;
   }
 }
 
@@ -62,16 +62,16 @@ TypeHeader::GetSerializedSize () const
 void
 TypeHeader::Serialize (Buffer::Iterator i) const
 {
-  i.WriteU8(type);
+  i.WriteU8(m_type);
 }
 
 uint32_t
 TypeHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  type = i.ReadU8 ();
-  valid = true;
-  switch (type)
+  m_type = i.ReadU8 ();
+  m_valid = true;
+  switch (m_type)
   {
   case AODVTYPE_RREQ:
   case AODVTYPE_RREP:
@@ -79,7 +79,7 @@ TypeHeader::Deserialize (Buffer::Iterator start)
   case AODVTYPE_RREP_ACK:
     break;
   default:
-    valid = false;
+    m_valid = false;
   }
   uint32_t dist = i.GetDistanceFrom (start);
   NS_ASSERT (dist == GetSerializedSize ());
@@ -89,7 +89,7 @@ TypeHeader::Deserialize (Buffer::Iterator start)
 void
 TypeHeader::Print (std::ostream &os) const
 {
-  switch(type)
+  switch(m_type)
   {
   case AODVTYPE_RREQ:
   {
@@ -119,7 +119,7 @@ TypeHeader::Print (std::ostream &os) const
 bool
 TypeHeader::operator==(TypeHeader const & o) const
 {
-  return ( type == o.type && valid == o.valid );
+  return ( m_type == o.m_type && m_valid == o.m_valid );
 }
 
 std::ostream & operator<<(std::ostream & os, TypeHeader const & h)
@@ -163,8 +163,8 @@ bool TypeHeaderTest::RunTests ()
 //-----------------------------------------------------------------------------
 // RREQ
 //-----------------------------------------------------------------------------
-RreqHeader::RreqHeader () : rq_flags(0), reserved(0), rq_hop_count(0), rq_bcast_id(0),
-rq_dst_seqno(0), rq_src_seqno(0)
+RreqHeader::RreqHeader () : m_flags(0), m_reserved(0), m_hopCount(0), m_broadcastID(0),
+m_dstSeqNo(0), m_srcSeqNo(0)
 {
   SetGratiousRrep (false);
   SetDestinationOnly (false);
@@ -186,28 +186,28 @@ RreqHeader::GetSerializedSize () const
 void 
 RreqHeader::Serialize (Buffer::Iterator i) const
 {
-  i.WriteU8 (rq_flags);
-  i.WriteU8 (reserved);
-  i.WriteU8 (rq_hop_count);
-  i.WriteHtonU32 (rq_bcast_id);
-  WriteTo (i, rq_dst);
-  i.WriteHtonU32 (rq_dst_seqno);
-  WriteTo (i, rq_src);
-  i.WriteHtonU32 (rq_src_seqno);
+  i.WriteU8 (m_flags);
+  i.WriteU8 (m_reserved);
+  i.WriteU8 (m_hopCount);
+  i.WriteHtonU32 (m_broadcastID);
+  WriteTo (i, m_dst);
+  i.WriteHtonU32 (m_dstSeqNo);
+  WriteTo (i, m_src);
+  i.WriteHtonU32 (m_srcSeqNo);
 }
 
 uint32_t 
 RreqHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  rq_flags = i.ReadU8 ();
-  reserved = i.ReadU8 ();
-  rq_hop_count = i.ReadU8 ();
-  rq_bcast_id = i.ReadNtohU32 ();
-  ReadFrom (i, rq_dst);
-  rq_dst_seqno = i.ReadNtohU32 ();
-  ReadFrom (i, rq_src);
-  rq_src_seqno = i.ReadNtohU32 ();
+  m_flags = i.ReadU8 ();
+  m_reserved = i.ReadU8 ();
+  m_hopCount = i.ReadU8 ();
+  m_broadcastID = i.ReadNtohU32 ();
+  ReadFrom (i, m_dst);
+  m_dstSeqNo = i.ReadNtohU32 ();
+  ReadFrom (i, m_src);
+  m_srcSeqNo = i.ReadNtohU32 ();
 
   uint32_t dist = i.GetDistanceFrom (start);
   NS_ASSERT (dist == GetSerializedSize ());
@@ -217,11 +217,11 @@ RreqHeader::Deserialize (Buffer::Iterator start)
 void 
 RreqHeader::Print (std::ostream &os) const
 {
-  os << "RREQ ID " << rq_bcast_id << "\n"
-  << "destination: ipv4 " << rq_dst << " "
-  << "sequence number " << rq_dst_seqno << "\n"
-  << "source: ipv4 " << rq_src << " "
-  << "sequence number " << rq_src_seqno << "\n"
+  os << "RREQ ID " << m_broadcastID << "\n"
+  << "destination: ipv4 " << m_dst << " "
+  << "sequence number " << m_dstSeqNo << "\n"
+  << "source: ipv4 " << m_src << " "
+  << "sequence number " << m_srcSeqNo << "\n"
   << "flags:\n"
   << "Gratuitous RREP " << (*this).GetGratiousRrep() << "\n"
   << "Destination only " << (*this).GetDestinationOnly() << "\n"
@@ -237,49 +237,49 @@ std::ostream & operator<<(std::ostream & os, RreqHeader const & h)
 void 
 RreqHeader::SetGratiousRrep (bool f)
 {
-  if (f) rq_flags |= (1 << 5);
-  else   rq_flags &= ~(1 << 5);
+  if (f) m_flags |= (1 << 5);
+  else   m_flags &= ~(1 << 5);
 }
 
 bool 
 RreqHeader::GetGratiousRrep () const
 {
-  return (rq_flags & (1 << 5));
+  return (m_flags & (1 << 5));
 }
 
 void 
 RreqHeader::SetDestinationOnly (bool f)
 {
-  if (f) rq_flags |= (1 << 4);
-  else   rq_flags &= ~(1 << 4);
+  if (f) m_flags |= (1 << 4);
+  else   m_flags &= ~(1 << 4);
 }
 
 bool 
 RreqHeader::GetDestinationOnly () const
 {
-  return (rq_flags & (1 << 4));
+  return (m_flags & (1 << 4));
 }
 
 void 
 RreqHeader::SetUnknownSeqno (bool f)
 {
-  if (f) rq_flags |= (1 << 3);
-  else   rq_flags &= ~(1 << 3);
+  if (f) m_flags |= (1 << 3);
+  else   m_flags &= ~(1 << 3);
 }
 
 bool 
 RreqHeader::GetUnknownSeqno () const
 {
-  return (rq_flags & (1 << 3));
+  return (m_flags & (1 << 3));
 }
 
 bool
 RreqHeader::operator==(RreqHeader const & o) const
 {
-  return (rq_flags == o.rq_flags && reserved == o.reserved &&
-      rq_hop_count == o.rq_hop_count && rq_bcast_id == o.rq_bcast_id &&
-      rq_dst == o.rq_dst && rq_dst_seqno == o.rq_dst_seqno && 
-      rq_src == o.rq_src && rq_src_seqno == o.rq_src_seqno);
+  return (m_flags == o.m_flags && m_reserved == o.m_reserved &&
+      m_hopCount == o.m_hopCount && m_broadcastID == o.m_broadcastID &&
+      m_dst == o.m_dst && m_dstSeqNo == o.m_dstSeqNo &&
+      m_src == o.m_src && m_srcSeqNo == o.m_srcSeqNo);
 }
 
 #ifdef RUN_SELF_TESTS
@@ -323,7 +323,7 @@ bool RreqHeaderTest::RunTests ()
 // RREP
 //-----------------------------------------------------------------------------
 
-RrepHeader::RrepHeader() :rp_flags(0), prefixSize(0),  rp_hop_count(0), rp_dst_seqno(0)
+RrepHeader::RrepHeader() :m_flags(0), m_prefixSize(0),  m_hopCount(0), m_dstSeqNo(0)
 {
   SetAckRequired(false);
 }
@@ -343,13 +343,13 @@ RrepHeader::GetSerializedSize () const
 void
 RrepHeader::Serialize (Buffer::Iterator i) const
 {
-  i.WriteU8(rp_flags);
-  i.WriteU8(prefixSize);
-  i.WriteU8 (rp_hop_count);
-  WriteTo (i, rp_dst);
-  i.WriteHtonU32 (rp_dst_seqno);
-  WriteTo (i, rp_src);
-  i.WriteHtonU32 (rp_lifetime);
+  i.WriteU8(m_flags);
+  i.WriteU8(m_prefixSize);
+  i.WriteU8 (m_hopCount);
+  WriteTo (i, m_dst);
+  i.WriteHtonU32 (m_dstSeqNo);
+  WriteTo (i, m_src);
+  i.WriteHtonU32 (m_lifeTime);
 }
 
 uint32_t
@@ -357,13 +357,13 @@ RrepHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 
-  rp_flags = i.ReadU8 ();
-  prefixSize = i.ReadU8 ();
-  rp_hop_count = i.ReadU8 ();
-  ReadFrom (i, rp_dst);
-  rp_dst_seqno = i.ReadNtohU32 ();
-  ReadFrom (i, rp_src);
-  rp_lifetime = i.ReadNtohU32 ();
+  m_flags = i.ReadU8 ();
+  m_prefixSize = i.ReadU8 ();
+  m_hopCount = i.ReadU8 ();
+  ReadFrom (i, m_dst);
+  m_dstSeqNo = i.ReadNtohU32 ();
+  ReadFrom (i, m_src);
+  m_lifeTime = i.ReadNtohU32 ();
 
   uint32_t dist = i.GetDistanceFrom (start);
   NS_ASSERT (dist == GetSerializedSize ());
@@ -373,73 +373,73 @@ RrepHeader::Deserialize (Buffer::Iterator start)
 void
 RrepHeader::Print (std::ostream &os) const
 {
-  os << "destination: ipv4 " << rp_dst
-  << "sequence number " <<  rp_dst_seqno;
-  if(prefixSize != 0)
-    os << "prefix size " << prefixSize << "\n";
+  os << "destination: ipv4 " << m_dst
+  << "sequence number " <<  m_dstSeqNo;
+  if(m_prefixSize != 0)
+    os << "prefix size " << m_prefixSize << "\n";
   else os << "\n";
-  os << "source ipv4 " << rp_src << "\n"
-  << "life time " << rp_lifetime << "\n"
+  os << "source ipv4 " << m_src << "\n"
+  << "life time " << m_lifeTime << "\n"
   << "acknowledgment required flag " << (*this).GetAckRequired() << "\n";
 }
 
 void
 RrepHeader::SetLifeTime (Time t)
 {
-  rp_lifetime = t.GetMilliSeconds();
+  m_lifeTime = t.GetMilliSeconds();
 }
 Time
 RrepHeader::GetLifeTime () const
 {
-  Time t(MilliSeconds(rp_lifetime));
+  Time t(MilliSeconds(m_lifeTime));
   return t;
 }
 
 void
 RrepHeader::SetAckRequired (bool f)
 {
-  if (f) rp_flags |= (1 << 6);
-  else   rp_flags &= ~(1 << 6);
+  if (f) m_flags |= (1 << 6);
+  else   m_flags &= ~(1 << 6);
 }
 
 bool
 RrepHeader::GetAckRequired () const
 {
-  return (rp_flags & (1 << 6));
+  return (m_flags & (1 << 6));
 }
 
 void
 RrepHeader::SetPrefixSize(uint8_t sz)
 {
-  prefixSize = sz;
+  m_prefixSize = sz;
 }
 
 uint8_t
 RrepHeader::GetPrefixSize() const
 {
-  return prefixSize;
+  return m_prefixSize;
 }
 
 bool
 RrepHeader::operator==(RrepHeader const & o) const
 {
-  return (rp_flags == o.rp_flags && prefixSize == o.prefixSize &&
-      rp_hop_count == o.rp_hop_count && rp_dst == o.rp_dst &&
-      rp_dst_seqno == o.rp_dst_seqno && rp_src == o.rp_src &&
-      rp_lifetime == o.rp_lifetime);
+  return (m_flags == o.m_flags && m_prefixSize == o.m_prefixSize &&
+      m_hopCount == o.m_hopCount && m_dst == o.m_dst &&
+      m_dstSeqNo == o.m_dstSeqNo && m_src == o.m_src &&
+      m_lifeTime == o.m_lifeTime);
 }
 
 
 void
 RrepHeader::SetHello(Ipv4Address src, uint32_t srcSeqNo, Time lifetime)
 {
-  rp_flags = 0;
-  prefixSize = 0;
-  rp_hop_count = 0;
-  rp_dst = src;
-  rp_dst_seqno = srcSeqNo;
-  rp_src = src;
-  rp_lifetime = lifetime.GetMilliSeconds ();
+  m_flags = 0;
+  m_prefixSize = 0;
+  m_hopCount = 0;
+  m_dst = src;
+  m_dstSeqNo = srcSeqNo;
+  m_src = src;
+  m_lifeTime = lifetime.GetMilliSeconds ();
 }
 
 std::ostream & operator<<(std::ostream & os, RrepHeader const & h)
@@ -490,7 +490,7 @@ bool RrepHeaderTest::RunTests ()
 // RREP-ACK
 //-----------------------------------------------------------------------------
 
-RrepAckHeader::RrepAckHeader () : reserved(0)
+RrepAckHeader::RrepAckHeader () : m_reserved(0)
 {
 }
 
@@ -509,14 +509,14 @@ RrepAckHeader::GetSerializedSize () const
 void
 RrepAckHeader::Serialize (Buffer::Iterator i) const
 {
-  i.WriteU8(reserved);
+  i.WriteU8(m_reserved);
 }
 
 uint32_t
 RrepAckHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  reserved = i.ReadU8 ();
+  m_reserved = i.ReadU8 ();
   uint32_t dist = i.GetDistanceFrom (start);
   NS_ASSERT (dist == GetSerializedSize ());
   return dist;
@@ -530,7 +530,7 @@ RrepAckHeader::Print (std::ostream &os) const
 bool
 RrepAckHeader::operator==(RrepAckHeader const & o) const
 {
-  return reserved == o.reserved;
+  return m_reserved == o.m_reserved;
 }
 
 std::ostream & operator<<(std::ostream & os, RrepAckHeader const & h)
@@ -568,7 +568,7 @@ bool RrepAckHeaderTest::RunTests ()
 //-----------------------------------------------------------------------------
 // RERR
 //-----------------------------------------------------------------------------
-RerrHeader::RerrHeader() : er_flag(0), reserved(0)
+RerrHeader::RerrHeader() : m_flag(0), m_reserved(0)
 {
 }
 
@@ -587,11 +587,11 @@ RerrHeader::GetSerializedSize () const
 void
 RerrHeader::Serialize (Buffer::Iterator i) const
 {
-  i.WriteU8(er_flag);
-  i.WriteU8(reserved);
+  i.WriteU8(m_flag);
+  i.WriteU8(m_reserved);
   i.WriteU8(GetDestCount());
   std::map<Ipv4Address, uint32_t>::const_iterator j;
-  for(j = unreachable_dst.begin(); j != unreachable_dst.end(); ++j)
+  for(j = m_unreacheableDstSeqNo.begin(); j != m_unreacheableDstSeqNo.end(); ++j)
   {
     WriteTo (i, (*j).first);
     i.WriteHtonU32 ((*j).second);
@@ -602,17 +602,17 @@ uint32_t
 RerrHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  er_flag = i.ReadU8 ();
-  reserved = i.ReadU8 ();
+  m_flag = i.ReadU8 ();
+  m_reserved = i.ReadU8 ();
   uint8_t dest = i.ReadU8 ();
-  unreachable_dst.clear();
+  m_unreacheableDstSeqNo.clear();
   Ipv4Address address;
   uint32_t seqNo;
   for(uint8_t k = 0; k < dest; ++k)
   {
     ReadFrom (i, address);
     seqNo = i.ReadNtohU32 ();
-    unreachable_dst.insert(std::make_pair(address, seqNo));
+    m_unreacheableDstSeqNo.insert(std::make_pair(address, seqNo));
   }
 
   uint32_t dist = i.GetDistanceFrom (start);
@@ -625,7 +625,7 @@ RerrHeader::Print (std::ostream &os) const
 {
   os << "Unreachable destination (ipv4 address, seq. number):\n";
   std::map<Ipv4Address, uint32_t>::const_iterator j;
-  for(j = unreachable_dst.begin(); j != unreachable_dst.end(); ++j)
+  for(j = m_unreacheableDstSeqNo.begin(); j != m_unreacheableDstSeqNo.end(); ++j)
   {
     os << (*j).first << ", " << (*j).second << "\n";
   }
@@ -635,35 +635,35 @@ RerrHeader::Print (std::ostream &os) const
 void
 RerrHeader::SetNoDelete(bool f)
 {
-  if (f) er_flag |= (1 << 0);
-  else   er_flag &= ~(1 << 0);
+  if (f) m_flag |= (1 << 0);
+  else   m_flag &= ~(1 << 0);
 }
 
 bool
 RerrHeader::GetNoDelete() const
 {
-  return (er_flag & (1 << 0));
+  return (m_flag & (1 << 0));
 }
 
 bool
 RerrHeader::AddUnDestination(Ipv4Address dst, uint32_t seqNo)
 {
-  if(unreachable_dst.find(dst) != unreachable_dst.end())
+  if(m_unreacheableDstSeqNo.find(dst) != m_unreacheableDstSeqNo.end())
     return false;
 
   NS_ASSERT (GetDestCount() < 255); // can't support more than 255 destinations in single RERR
-  unreachable_dst.insert(std::make_pair(dst, seqNo));
+  m_unreacheableDstSeqNo.insert(std::make_pair(dst, seqNo));
   return true;
 }
 
 bool
 RerrHeader::operator==(RerrHeader const & o) const
 {
-  if (er_flag != o.er_flag || reserved != o.reserved || GetDestCount() != o.GetDestCount())
+  if (m_flag != o.m_flag || m_reserved != o.m_reserved || GetDestCount() != o.GetDestCount())
     return false;
 
-  std::map<Ipv4Address, uint32_t>::const_iterator j = unreachable_dst.begin();
-  std::map<Ipv4Address, uint32_t>::const_iterator k = o.unreachable_dst.begin();
+  std::map<Ipv4Address, uint32_t>::const_iterator j = m_unreacheableDstSeqNo.begin();
+  std::map<Ipv4Address, uint32_t>::const_iterator k = o.m_unreacheableDstSeqNo.begin();
   for(uint8_t i = 0; i < GetDestCount(); ++i)
   {
     if ((j->first != k->first ) || (j->second != k->second))

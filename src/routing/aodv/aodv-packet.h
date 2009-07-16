@@ -64,12 +64,12 @@ public:
   void Print (std::ostream &os) const;
   //\}
 
-  uint8_t Get() const { return type; }
-  bool IsValid() const { return valid; }
+  uint8_t Get() const { return m_type; }
+  bool IsValid() const { return m_valid; }
   bool operator==(TypeHeader const & o) const;
 private:
-  uint8_t type;
-  bool valid;
+  uint8_t m_type;
+  bool m_valid;
 };
 
 std::ostream & operator<<(std::ostream & os, TypeHeader const & h);
@@ -111,18 +111,18 @@ public:
 
   ///\name Fields
   //\{
-  void SetHopCount (uint8_t count) { rq_hop_count = count; }
-  uint8_t GetHopCount () const { return rq_hop_count; }
-  void SetId (uint32_t id) { rq_bcast_id = id; }
-  uint8_t GetId () const { return rq_bcast_id; }  
-  void SetDst (Ipv4Address a) { rq_dst = a; }
-  Ipv4Address GetDst () const { return rq_dst; }
-  void SetDstSeqno (uint32_t s) { rq_dst_seqno = s; }
-  uint32_t GetDstSeqno () const { return rq_dst_seqno; }
-  void SetOrigin (Ipv4Address a) { rq_src = a; }
-  Ipv4Address GetOrigin () const { return rq_src; }
-  void SetOriginSeqno (uint32_t s) { rq_src_seqno = s; }
-  uint32_t GetOriginSeqno () const { return rq_src_seqno; }
+  void SetHopCount (uint8_t count) { m_hopCount = count; }
+  uint8_t GetHopCount () const { return m_hopCount; }
+  void SetId (uint32_t id) { m_broadcastID = id; }
+  uint8_t GetId () const { return m_broadcastID; }
+  void SetDst (Ipv4Address a) { m_dst = a; }
+  Ipv4Address GetDst () const { return m_dst; }
+  void SetDstSeqno (uint32_t s) { m_dstSeqNo = s; }
+  uint32_t GetDstSeqno () const { return m_dstSeqNo; }
+  void SetOrigin (Ipv4Address a) { m_src = a; }
+  Ipv4Address GetOrigin () const { return m_src; }
+  void SetOriginSeqno (uint32_t s) { m_srcSeqNo = s; }
+  uint32_t GetOriginSeqno () const { return m_srcSeqNo; }
   //\}
 
   ///\name Flags
@@ -137,14 +137,14 @@ public:
 
   bool operator==(RreqHeader const & o) const;
 private:
-  uint8_t        rq_flags;       ///< |J|R|G|D|U| bit flags, see RFC
-  uint8_t        reserved;       ///< Not used
-  uint8_t        rq_hop_count;   ///< Hop Count
-  uint32_t       rq_bcast_id;    ///< RREQ ID
-  Ipv4Address    rq_dst;         ///< Destination IP Address
-  uint32_t       rq_dst_seqno;   ///< Destination Sequence Number
-  Ipv4Address    rq_src;         ///< Source IP Address
-  uint32_t       rq_src_seqno;   ///< Source Sequence Number
+  uint8_t        m_flags;          ///< |J|R|G|D|U| bit flags, see RFC
+  uint8_t        m_reserved;       ///< Not used
+  uint8_t        m_hopCount;       ///< Hop Count
+  uint32_t       m_broadcastID;    ///< RREQ ID
+  Ipv4Address    m_dst;            ///< Destination IP Address
+  uint32_t       m_dstSeqNo;       ///< Destination Sequence Number
+  Ipv4Address    m_src;            ///< Source IP Address
+  uint32_t       m_srcSeqNo;       ///< Source Sequence Number
 };
 
 std::ostream & operator<<(std::ostream & os, RreqHeader const &);
@@ -183,14 +183,14 @@ public:
 
   ///\name Fields
   //\{
-  void SetHopCount (uint8_t count) { rp_hop_count = count; }
-  uint8_t GetHopCount () const { return rp_hop_count; }
-  void SetDst (Ipv4Address a) { rp_dst = a; }
-  Ipv4Address GetDst () const { return rp_dst; }
-  void SetDstSeqno (uint32_t s) { rp_dst_seqno = s; }
-  uint32_t GetDstSeqno () const { return rp_dst_seqno; }
-  void SetOrigin (Ipv4Address a) { rp_src = a; }
-  Ipv4Address GetOrigin () const { return rp_src; }
+  void SetHopCount (uint8_t count) { m_hopCount = count; }
+  uint8_t GetHopCount () const { return m_hopCount; }
+  void SetDst (Ipv4Address a) { m_dst = a; }
+  Ipv4Address GetDst () const { return m_dst; }
+  void SetDstSeqno (uint32_t s) { m_dstSeqNo = s; }
+  uint32_t GetDstSeqno () const { return m_dstSeqNo; }
+  void SetOrigin (Ipv4Address a) { m_src = a; }
+  Ipv4Address GetOrigin () const { return m_src; }
   void SetLifeTime (Time t);
   Time GetLifeTime () const;
   //\}
@@ -208,13 +208,13 @@ public:
 
   bool operator==(RrepHeader const & o) const;
 private:
-  uint8_t       rp_flags;	    ///< A - acknowledgment required flag
-  uint8_t       prefixSize;	    ///< Prefix Size
-  uint8_t	rp_hop_count;       ///< Hop Count
-  Ipv4Address   rp_dst;             ///< Destination IP Address
-  uint32_t      rp_dst_seqno;       ///< Destination Sequence Number
-  Ipv4Address	rp_src;             ///< Source IP Address
-  uint32_t      rp_lifetime;        ///< Lifetime
+  uint8_t       m_flags;	        ///< A - acknowledgment required flag
+  uint8_t       m_prefixSize;	    ///< Prefix Size
+  uint8_t	    m_hopCount;         ///< Hop Count
+  Ipv4Address   m_dst;              ///< Destination IP Address
+  uint32_t      m_dstSeqNo;         ///< Destination Sequence Number
+  Ipv4Address	m_src;              ///< Source IP Address
+  uint32_t      m_lifeTime;         ///< Lifetime
 };
 
 std::ostream & operator<<(std::ostream & os, RrepHeader const &);
@@ -246,7 +246,7 @@ public:
 
   bool operator==(RrepAckHeader const & o) const;
 private:
-  uint8_t       reserved;
+  uint8_t       m_reserved;
 };
 std::ostream & operator<<(std::ostream & os, RrepAckHeader const &);
 
@@ -291,14 +291,14 @@ public:
   //\}
 
   bool AddUnDestination(Ipv4Address dst, uint32_t seqNo);
-  uint8_t GetDestCount() const { return (uint8_t)unreachable_dst.size(); }
+  uint8_t GetDestCount() const { return (uint8_t)m_unreacheableDstSeqNo.size(); }
   bool operator==(RerrHeader const & o) const;
 private:
-  uint8_t er_flag;        ///< No delete flag
-  uint8_t reserved;       ///< Not used
+  uint8_t m_flag;            ///< No delete flag
+  uint8_t m_reserved;        ///< Not used
 
   /// List of Unreachable destination IP addresses and sequence numbers
-  std::map<Ipv4Address, uint32_t> unreachable_dst;
+  std::map<Ipv4Address, uint32_t> m_unreacheableDstSeqNo;
 };
 
 std::ostream & operator<<(std::ostream & os, RerrHeader const &);

@@ -33,63 +33,63 @@
 namespace ns3 {
 namespace aodv {
 
-aodv_rqueue::aodv_rqueue() : limit_(AODV_RTQ_MAX_LEN), timeout_(Seconds(AODV_RTQ_TIMEOUT))
+AodvQueue::AodvQueue() : m_maxSize(AODV_RTQ_MAX_LEN), m_timeout(Seconds(AODV_RTQ_TIMEOUT))
 {
 }
 
 uint32_t
-aodv_rqueue::size ()
+AodvQueue::GetSize ()
 {
-  purge();
-  return queue.size();
+  Purge();
+  return m_queue.size();
 }
 
 void
-aodv_rqueue::enque(QueueEntry & entry)
+AodvQueue::Enqueue(QueueEntry & entry)
 {
   // Purge any packets that have timed out.
-  purge();
-  entry.enExpire = Simulator::Now() + timeout_;
+  Purge();
+  entry.m_expire = Simulator::Now() + m_timeout;
 
-  if (queue.size() == limit_) drop(remove_head()); // drop the most aged packet
-  queue.push_back(entry);
+  if (m_queue.size() == m_maxSize) Drop(RemoveHead()); // Drop the most aged packet
+  m_queue.push_back(entry);
 }
 
 QueueEntry
-aodv_rqueue::deque()
+AodvQueue::Dequeue()
 {
-  purge();
-  return remove_head();
+  Purge();
+  return RemoveHead();
 }
 
 bool
-aodv_rqueue::deque(Ipv4Address dst, QueueEntry & entry)
+AodvQueue::Dequeue(Ipv4Address dst, QueueEntry & entry)
 {
-  purge();
-  for(std::vector<QueueEntry>::iterator i = queue.begin(); i != queue.end(); ++i)
-    if(i->header.GetDestination() == dst)
+  Purge();
+  for(std::vector<QueueEntry>::iterator i = m_queue.begin(); i != m_queue.end(); ++i)
+    if(i->m_header.GetDestination() == dst)
       {
         entry = *i;
-        queue.erase(i);
+        m_queue.erase(i);
         return true;
       }
   return false;
 }
 
 bool
-aodv_rqueue::find(Ipv4Address dst)
+AodvQueue::Find(Ipv4Address dst)
 {
-  for( std::vector<QueueEntry>::const_iterator i = queue.begin(); i != queue.end(); ++i)
-    if(i->header.GetDestination() == dst)
+  for( std::vector<QueueEntry>::const_iterator i = m_queue.begin(); i != m_queue.end(); ++i)
+    if(i->m_header.GetDestination() == dst)
       return true;
   return false;
 }
 
 QueueEntry
-aodv_rqueue::remove_head()
+AodvQueue::RemoveHead()
 {
-  QueueEntry entry = queue.front();
-  queue.erase(queue.begin());
+  QueueEntry entry = m_queue.front();
+  m_queue.erase(m_queue.begin());
   return entry;
 }
 
@@ -97,27 +97,27 @@ struct IsExpired
 {
   bool operator() (QueueEntry const & e) const
   {
-    return (e.enExpire < Simulator::Now());
+    return (e.m_expire < Simulator::Now());
   }
 };
 
 void
-aodv_rqueue::purge()
+AodvQueue::Purge()
 {
-  std::vector<QueueEntry>::iterator i = std::remove_if(queue.begin(), queue.end(), IsExpired());
-  for (std::vector<QueueEntry>::iterator j = i ; j < queue.end(); ++j)
-    drop (*j);
-  queue.erase(i, queue.end());
+  std::vector<QueueEntry>::iterator i = std::remove_if(m_queue.begin(), m_queue.end(), IsExpired());
+  for (std::vector<QueueEntry>::iterator j = i ; j < m_queue.end(); ++j)
+    Drop (*j);
+  m_queue.erase(i, m_queue.end());
 }
 
 void
-aodv_rqueue::drop(QueueEntry)
+AodvQueue::Drop(QueueEntry)
 {
   // TODO do nothing now.
 }
 
 #ifdef RUN_SELF_TESTS
-/// Unit test for aodv_rqueue
+/// Unit test for AodvQueue
 struct AodvRqueueTest : public Test
 {
   AodvRqueueTest () : Test ("AODV/Rqueue"), result(true) {}
@@ -126,7 +126,7 @@ struct AodvRqueueTest : public Test
   void CheckSizeLimit ();
   void CheckTimeout ();
 
-  aodv_rqueue q;
+  AodvQueue q;
   bool result;
 };
 
@@ -139,21 +139,21 @@ AodvRqueueTest::RunTests ()
   Ptr<Packet> packet = Create<Packet>();
   Ipv4Header header;
   QueueEntry e1 (packet, header);
-  q.enque (e1);
-  QueueEntry e2 = q.deque ();
+  q.Enqueue (e1);
+  QueueEntry e2 = q.Dequeue ();
   NS_TEST_ASSERT (e1 == e2);
 
   Ipv4Address dst("1.2.3.4");
   header.SetDestination (dst);
   e1 = QueueEntry (packet, header);
-  q.enque (e1);
+  q.Enqueue (e1);
 
-  bool ok = q.deque (dst, e2);
+  bool ok = q.Dequeue (dst, e2);
   NS_TEST_ASSERT (ok);
   NS_TEST_ASSERT (e1 == e2);
-  NS_TEST_ASSERT (! q.find(dst));
-  q.enque (e1);
-  NS_TEST_ASSERT (q.find(dst));
+  NS_TEST_ASSERT (! q.Find(dst));
+  q.Enqueue (e1);
+  NS_TEST_ASSERT (q.Find(dst));
 
   CheckSizeLimit ();
 
@@ -177,18 +177,18 @@ AodvRqueueTest::CheckSizeLimit ()
   QueueEntry e1 (packet, header);
 
   for (uint32_t i = 0; i < AODV_RTQ_MAX_LEN; ++i)
-    q.enque (e1);
-  NS_TEST_ASSERT (q.size() == AODV_RTQ_MAX_LEN);
+    q.Enqueue (e1);
+  NS_TEST_ASSERT (q.GetSize() == AODV_RTQ_MAX_LEN);
 
   for (uint32_t i = 0; i < AODV_RTQ_MAX_LEN; ++i)
-    q.enque (e1);
-  NS_TEST_ASSERT (q.size() == AODV_RTQ_MAX_LEN);
+    q.Enqueue (e1);
+  NS_TEST_ASSERT (q.GetSize() == AODV_RTQ_MAX_LEN);
 }
 
 void
 AodvRqueueTest::CheckTimeout ()
 {
-  NS_TEST_ASSERT (q.size() == 0);
+  NS_TEST_ASSERT (q.GetSize() == 0);
 }
 #endif
 }}

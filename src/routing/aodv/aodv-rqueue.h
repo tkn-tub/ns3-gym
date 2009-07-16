@@ -46,55 +46,53 @@ namespace aodv {
  */
 struct QueueEntry
 {
-  Ptr<Packet> p;
-  Ipv4Header header;
+  Ptr<Packet> m_packet;
+  Ipv4Header m_header;
   /// Expire time for queue entry
-  Time enExpire;
+  Time m_expire;
   /// c-tor
-  QueueEntry(Ptr<Packet> pa, Ipv4Header const & h, Time exp = Seconds(0)) : p(pa), header(h), enExpire(exp) {}
+  QueueEntry(Ptr<Packet> pa, Ipv4Header const & h, Time exp = Seconds(0)) : m_packet(pa), m_header(h), m_expire(exp) {}
   /**
    * Compare queue entries
    * \return true if equal
    */
   bool operator==(QueueEntry const & o) const
   {
-    return ((p == o.p)/*&& header == o.header*/ && (enExpire == o.enExpire));
+    return ((m_packet == o.m_packet)/*&& header == o.header*/ && (m_expire == o.m_expire));
   }
 };
 /**
  * \ingroup aodv
  * \brief AODV Queue
  */
-class aodv_rqueue 
+class AodvQueue
 {
 public:
   /// Default c-tor
-  aodv_rqueue();
+  AodvQueue ();
   /// Push entry in queue.
-  void enque(QueueEntry & entry);
+  void Enqueue (QueueEntry & entry);
   /// Returns a entry from the head of the queue.
-  QueueEntry deque();
+  QueueEntry Dequeue ();
   /// Return first found (the earliest) entry for given destination
-  bool deque(Ipv4Address dst, QueueEntry & entry);
+  bool Dequeue (Ipv4Address dst, QueueEntry & entry);
   /// Finds whether a packet with destination dst exists in the queue
-  bool find(Ipv4Address dst);
+  bool Find (Ipv4Address dst);
   /// Number of entries
-  uint32_t size();
+  uint32_t GetSize ();
 
 private:
-  std::vector<QueueEntry> queue;
+  std::vector<QueueEntry> m_queue;
   /// Remove and return first entry from queue
-  QueueEntry remove_head();
+  QueueEntry RemoveHead();
   /// Remove all expired entries
-  void purge();
-  /// Find packet with destination address dst, return true on success
-  bool findPacketWithDst(Ipv4Address dst, QueueEntry & entry);
+  void Purge();
   /// Notify that packet is dropped from queue by timeout
-  void drop (QueueEntry e);
+  void Drop (QueueEntry e);
   /// Maximum number of entries in queue
-  uint32_t limit_;
+  uint32_t m_maxSize;
   /// Life time of queue entry in queue
-  Time timeout_;
+  Time m_timeout;
 };
 }}
 

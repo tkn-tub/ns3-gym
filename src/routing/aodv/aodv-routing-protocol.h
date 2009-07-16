@@ -47,25 +47,6 @@ namespace ns3
 {
 namespace aodv
 {
-/// List of neighbors TODO document & move inside protocol
-class NeighborList
-{
-public:
-  /// The neighbor
-  struct Neighbor
-  {
-    Ipv4Address nb_addr;
-    Time nb_expire;
-  };
-  
-  void Insert(Ipv4Address id);
-  bool Lookup (Ipv4Address id, Neighbor & n);
-  void Delete (Ipv4Address id); 
-  void Purge ();
-
-private:
-  std::vector<Neighbor> nb;
-};
 
 /**
  * \ingroup aodv
@@ -129,7 +110,7 @@ private:
       return (b.expire < Simulator::Now());
     }
   };
-  std::vector<BroadcastId> bi;
+  std::vector<BroadcastId> m_broadcastIdCache;
   //\}
 
   /// IP protocol
@@ -138,15 +119,13 @@ private:
   std::map< Ptr<Socket>, Ipv4InterfaceAddress > m_socketAddresses;
 
   /// Routing table
-  aodv_rtable rtable;
+  RoutingTable m_routingTable;
   /// A "drop-front" queue used by the routing layer to buffer packets to which it does not have a route.
-  aodv_rqueue rqueue;
-  /// List of neighbors (aka neighbors cache). TODO: separate list for each interface??? 
-  NeighborList nbhead;
+  AodvQueue m_queue;
   /// Broadcast ID
-  uint32_t bid;
+  uint32_t m_broadcastID;
   /// Request sequence number
-  uint32_t seqno;
+  uint32_t m_seqNo;
 
 private:
   /// Start protocol operation
@@ -155,7 +134,7 @@ private:
   void LocalRouteRepair (Ipv4Address dst, Ptr<Packet> p);
   /// Process broken link
   void HandleLinkFailure (Ipv4Address id);
-  /// Purge all expired records from rtable
+  /// Purge all expired records from m_routingTable
   void RtPurge ();
   /// Update neighbor record. \param receiver is supposed to be my interface
   void UpdateNeighbor (Ipv4Address sender, Ipv4Address receiver);
@@ -181,9 +160,9 @@ private:
   /// Send RREQ
   void SendRequest (Ipv4Address dst, bool G, bool D);
   /// Send RREP
-  void SendReply (RreqHeader const & rreqHeader, aodv_rt_entry const & toOrigin, Ptr<Socket> socket);
+  void SendReply (RreqHeader const & rreqHeader, RoutingTableEntry const & toOrigin, Ptr<Socket> socket);
   /// TODO
-  void SendReplyByIntermediateNode(aodv_rt_entry & toDst, aodv_rt_entry & toOrigin, bool gratRep = false);
+  void SendReplyByIntermediateNode(RoutingTableEntry & toDst, RoutingTableEntry & toOrigin, bool gratRep = false);
   /// Send RERR
   void SendError (Ipv4Address failed);
   //\}

@@ -55,13 +55,13 @@ enum RouteFlags
  * \ingroup aodv
  * \brief Route Table Entry
  */
-class aodv_rt_entry
+class RoutingTableEntry
 {
 public:
-  aodv_rt_entry(Ptr<NetDevice> dev,Ipv4Address dst = Ipv4Address(), bool vSeqNo = false, u_int32_t seqNo = 0, Ipv4Address iface = Ipv4Address(), u_int16_t  hops = 0,
+  RoutingTableEntry(Ptr<NetDevice> dev,Ipv4Address dst = Ipv4Address(), bool vSeqNo = false, u_int32_t m_seqNo = 0, Ipv4Address iface = Ipv4Address(), u_int16_t  hops = 0,
       Ipv4Address nextHop = Ipv4Address(), Time lifetime = Seconds(0));
 
-  ~aodv_rt_entry();
+  ~RoutingTableEntry();
   
   ///\name Precursors management
   //\{
@@ -70,28 +70,28 @@ public:
    * \param id precursor address
    * \return true on success
    */
-  bool pc_insert(Ipv4Address id);
+  bool InsertPrecursor(Ipv4Address id);
   /**
    * Lookup precursor by address
    * \param id precursor address
    * \return true on success
    */
-  bool pc_lookup(Ipv4Address id);
+  bool LookupPrecursor(Ipv4Address id);
   /**
    * \brief Delete precursor
    * \param id precursor address
    * \return true on success
    */
-  bool pc_delete(Ipv4Address id);
+  bool DeletePrecursor(Ipv4Address id);
   /// Delete all precursors
-  void pc_delete();
+  void DeleteAllPrecursors();
   /**
    * \return true if precursor list empty
    */
-  bool pc_empty() const;
+  bool IsPrecursorListEmpty() const;
   //\}
   /// Return last valid hop count
-  uint16_t GetLastValidHopCount() { return rt_last_hop_count; }
+  uint16_t GetLastValidHopCount() { return m_lastHopCount; }
   /// Mark entry as "down" (i.e. disable it)
   void Down ();
   ///\name Fields
@@ -103,20 +103,20 @@ public:
   Ipv4Address GetNextHop () const { return m_ipv4Route->GetGateway(); }
   void SetOutputDevice(Ptr<NetDevice> dev) { m_ipv4Route->SetOutputDevice(dev); }
   Ptr<NetDevice> GetOutputDevice() const { return m_ipv4Route->GetOutputDevice(); }
-  void SetValidSeqNo(bool s) { validSeqNo = s; }
-  bool GetValidSeqNo() const { return validSeqNo; }
-  void SetSeqNo(uint32_t sn) { rt_seqno = sn; }
-  uint32_t GetSeqNo() const { return rt_seqno; }
-  void SetHop(uint16_t hop) { rt_hops = hop; }
-  uint16_t GetHop() const {return rt_hops; }
-  void SetLifeTime(Time lt) { rt_lifetime = lt; }
-  Time GetLifeTime() const { return rt_lifetime; }
-  void SetFlag(uint8_t flag) { rt_flags = flag; }
-  uint8_t GetFlag() const { return rt_flags; }
-  void SetRreqCnt(uint8_t n) { rt_req_cnt = n; }
-  uint8_t GetRreqCnt() const { return rt_req_cnt; }
-  void SetRreqTimeout(Time t) {rt_req_timeout = t; }
-  Time GetRreqTimeout() const { return rt_req_timeout; }
+  void SetValidSeqNo(bool s) { m_validSeqNo = s; }
+  bool GetValidSeqNo() const { return m_validSeqNo; }
+  void SetSeqNo(uint32_t sn) { m_seqNo = sn; }
+  uint32_t GetSeqNo() const { return m_seqNo; }
+  void SetHop(uint16_t hop) { m_hops = hop; }
+  uint16_t GetHop() const {return m_hops; }
+  void SetLifeTime(Time lt) { m_lifeTime = lt; }
+  Time GetLifeTime() const { return m_lifeTime; }
+  void SetFlag(uint8_t flag) { m_flag = flag; }
+  uint8_t GetFlag() const { return m_flag; }
+  void SetRreqCnt(uint8_t n) { m_reqCount = n; }
+  uint8_t GetRreqCnt() const { return m_reqCount; }
+  void SetRreqTimeout(Time t) {m_reqTimeout = t; }
+  Time GetRreqTimeout() const { return m_reqTimeout; }
   //\}
 
   /**
@@ -129,24 +129,21 @@ public:
   }
   void Print(std::ostream & os) const;
 private:
-  friend class aodv_rtable;
   /// Valid Destination Sequence Number flag
-  bool validSeqNo;
-  /// Destination Sequence Number, if validSeqNo = true
-  uint32_t rt_seqno;
+  bool m_validSeqNo;
+  /// Destination Sequence Number, if m_validSeqNo = true
+  uint32_t m_seqNo;
   /// Hop Count (number of hops needed to reach destination)
-  uint16_t rt_hops;
+  uint16_t m_hops;
   /// Last valid hop count
-  uint16_t rt_last_hop_count;
-
+  uint16_t m_lastHopCount;
   /**
   * \brief Expiration or deletion time of the route
   *	Lifetime field in the routing table plays dual role --
   *	for an active route it is the expiration time, and for an invalid route
   *	it is the deletion time.
   */
-  Time rt_lifetime;
-
+  Time m_lifeTime;
   /** Ip route, include
   *   - destination address
   *   - source address
@@ -154,20 +151,18 @@ private:
   *   - output device
   */
   Ptr<Ipv4Route> m_ipv4Route;
-
   /// Routing flags: down, up or in repair
-  uint8_t rt_flags; /*TODO use enum*/
-
-#define MAX_HISTORY     3
+  uint8_t m_flag;
 
   /// List of precursors
-  std::vector<Ipv4Address> rt_pclist;
+  std::vector<Ipv4Address> m_precursorList;
   /// When I can send another request
-  Time rt_req_timeout;
+  Time m_reqTimeout;
   /// Number of route requests
-  uint8_t rt_req_cnt;
+  uint8_t m_reqCount;
 
   // TODO review and delete
+#define MAX_HISTORY     3
   double rt_disc_latency[MAX_HISTORY];
   char hist_indx;
 };
@@ -176,40 +171,39 @@ private:
  * \ingroup aodv
  * The Routing Table
  */
-class aodv_rtable
+class RoutingTable
 {
 public:
-  aodv_rtable() {}
+  RoutingTable() {}
 
-  // aodv_rt_entry * head() {TODO}
   /**
    * Add routing table entry if it doesn't yet exist in routing table
    * \param r routing table entry
    * \return true in success
    */
-  bool rt_add(aodv_rt_entry const & r);
+  bool AddRoute(RoutingTableEntry const & r);
   /**
    * Delete routing table entry
    * \param dst destination address
    * \return true on success
    */
-  bool rt_delete(Ipv4Address dst);
+  bool DeleteRoute(Ipv4Address dst);
   /**
    * Lookup routing table entry
    * \param dst destination address
    * \param rt entry with destination address dst, if exists
    * \return true on success
    */
-  bool rt_lookup(Ipv4Address dst, aodv_rt_entry & rt) const;
+  bool LookupRoute(Ipv4Address dst, RoutingTableEntry & rt) const;
   /// Update routing table
-  bool Update(Ipv4Address dst, aodv_rt_entry & rt);
+  bool Update(Ipv4Address dst, RoutingTableEntry & rt);
   /// Set routing table entry flags
   void SetEntryState (Ipv4Address dst, uint8_t state /*TODO use enum*/);
   /// Print routing table
   void Print(std::ostream &os) const;
 
 private:
-  std::map<Ipv4Address, aodv_rt_entry> rthead;
+  std::map<Ipv4Address, RoutingTableEntry> m_ipv4AddressEntry;
 };
 
 }}
