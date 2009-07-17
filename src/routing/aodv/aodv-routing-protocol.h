@@ -140,6 +140,8 @@ private:
   void UpdateNeighbor (Ipv4Address sender, Ipv4Address receiver);
   /// Check that packet is an AODV control message
   bool LooksLikeAodvControl (Ptr<const Packet> p, Ipv4Header const & header) const;
+  /// Process hello message
+  void ProcessHello(RrepHeader const & rrepHeader, Ipv4Address receiverIfaceAddr);
   
   ///\name Recv
   //\{

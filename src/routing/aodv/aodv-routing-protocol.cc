@@ -584,6 +584,14 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiverIfaceAddr ,Ipv4Ad
 
   uint8_t hop = rrepHeader.GetHopCount() + 1;
   rrepHeader.SetHopCount(hop);
+
+  // If RREP is Hello message
+  if(rrepHeader.GetDst() == rrepHeader.GetOrigin())
+  {
+    ProcessHello(rrepHeader, receiverIfaceAddr);
+    return;
+  }
+
   Ptr<NetDevice> dev;
   RoutingTableEntry toDst (dev);
 
@@ -657,7 +665,7 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiverIfaceAddr ,Ipv4Ad
   if(!m_routingTable.LookupRoute(rrepHeader.GetOrigin(), toOrigin))
   {
     //        imposible!
-    //        drop();
+    // Drop();
     return;
   }
 
@@ -686,7 +694,35 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiverIfaceAddr ,Ipv4Ad
     if(dev->GetAddress() == toOrigin.GetOutputDevice()->GetAddress())
       j->first->SendTo(packet,0, InetSocketAddress(toOrigin.GetNextHop(), AODV_PORT));
   }
+}
 
+// TODO may be used for determining connectivity
+void
+RoutingProtocol::ProcessHello(RrepHeader const & rrepHeader, Ipv4Address receiverIfaceAddr)
+{
+ /*
+  *  Whenever a node receives a Hello message from a neighbor, the node
+  * SHOULD make sure that it has an active route to the neighbor, and
+  * create one if necessary.
+  */
+  Ptr<NetDevice> dev;
+  RoutingTableEntry toNeighbor (dev);
+  if(!m_routingTable.LookupRoute(rrepHeader.GetDst(), toNeighbor))
+   {
+     dev = m_ipv4->GetNetDevice(m_ipv4->GetInterfaceForAddress (receiverIfaceAddr));
+     RoutingTableEntry newEntry(/*device=*/dev, /*dst=*/rrepHeader.GetDst(), /*validSeqNo=*/true, /*seqno=*/rrepHeader.GetDstSeqno(), /*iface=*/receiverIfaceAddr,
+         /*hop=*/rrepHeader.GetHopCount(), /*nextHop=*/rrepHeader.GetDst(), /*lifeTime=*/Simulator::Now() + rrepHeader.GetLifeTime());
+     m_routingTable.AddRoute(newEntry);
+   }
+  else
+  {
+    if(toNeighbor.GetLifeTime() < Simulator::Now() + Scalar(ALLOWED_HELLO_LOSS)*HELLO_INTERVAL)
+      toNeighbor.SetLifeTime(Simulator::Now() + Scalar(ALLOWED_HELLO_LOSS)*HELLO_INTERVAL);
+    toNeighbor.SetSeqNo(rrepHeader.GetDstSeqno());
+    toNeighbor.SetValidSeqNo(true);
+    toNeighbor.SetFlag(RTF_UP);
+    m_routingTable.Update(rrepHeader.GetDst(), toNeighbor);
+  }
 }
 
 void 
@@ -733,7 +769,27 @@ RoutingProtocol::LocalRepairTimerExpire ()
 void
 RoutingProtocol::SendHello ()
 {
-  // TODO send hello packet from interfaces
+  /* Broadcast a RREP with TTL = 1 with the RREP message fields set as follows:
+   *   Destination IP Address         The node's IP address.
+   *   Destination Sequence Number    The node's latest sequence number.
+   *   Hop Count                      0
+   *   Lifetime                       ALLOWED_HELLO_LOSS * HELLO_INTERVAL
+   */
+  for(std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin(); j != m_socketAddresses.end(); ++j)
+    {
+      Ptr<Socket> socket = j->first;
+      Ipv4InterfaceAddress iface = j->second;
+      RrepHeader helloHeader (/*flags=*/0, /*prefix size=*/0, /*hops=*/0, /*dst=*/iface.GetLocal(), /*dst seqno=*/m_seqNo,
+          /*origin=*/iface.GetLocal(), /*lifetime=*/Scalar(ALLOWED_HELLO_LOSS)*HELLO_INTERVAL );
+      Ptr<Packet> packet = Create<Packet> ();
+      packet->AddHeader (helloHeader);
+      TypeHeader tHeader(AODVTYPE_RREP);
+      packet->AddHeader (tHeader);
+      socket->Send (packet);
+    }
+
+  // Shift hello timer
+  // htimer.Schedule();
 }
 
 
