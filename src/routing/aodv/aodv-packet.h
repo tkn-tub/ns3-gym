@@ -119,8 +119,8 @@ public:
   Ipv4Address GetDst () const { return m_dst; }
   void SetDstSeqno (uint32_t s) { m_dstSeqNo = s; }
   uint32_t GetDstSeqno () const { return m_dstSeqNo; }
-  void SetOrigin (Ipv4Address a) { m_src = a; }
-  Ipv4Address GetOrigin () const { return m_src; }
+  void SetOrigin (Ipv4Address a) { m_origin = a; }
+  Ipv4Address GetOrigin () const { return m_origin; }
   void SetOriginSeqno (uint32_t s) { m_srcSeqNo = s; }
   uint32_t GetOriginSeqno () const { return m_srcSeqNo; }
   //\}
@@ -143,7 +143,7 @@ private:
   uint32_t       m_broadcastID;    ///< RREQ ID
   Ipv4Address    m_dst;            ///< Destination IP Address
   uint32_t       m_dstSeqNo;       ///< Destination Sequence Number
-  Ipv4Address    m_src;            ///< Source IP Address
+  Ipv4Address    m_origin;         ///< Originator IP Address
   uint32_t       m_srcSeqNo;       ///< Source Sequence Number
 };
 
@@ -171,7 +171,8 @@ std::ostream & operator<<(std::ostream & os, RreqHeader const &);
 class RrepHeader : public Header
 {
 public:
-  RrepHeader();
+  RrepHeader(uint8_t flags = 0, uint8_t prefixSize = 0, uint8_t hopCount = 0, Ipv4Address dst = Ipv4Address(),
+            uint32_t dstSeqNo = 0, Ipv4Address origin = Ipv4Address(), Time lifetime = MilliSeconds(0));
   ///\name Header serialization/deserialization
   //\{
   TypeId GetInstanceTypeId() const;
@@ -189,8 +190,8 @@ public:
   Ipv4Address GetDst () const { return m_dst; }
   void SetDstSeqno (uint32_t s) { m_dstSeqNo = s; }
   uint32_t GetDstSeqno () const { return m_dstSeqNo; }
-  void SetOrigin (Ipv4Address a) { m_src = a; }
-  Ipv4Address GetOrigin () const { return m_src; }
+  void SetOrigin (Ipv4Address a) { m_origin = a; }
+  Ipv4Address GetOrigin () const { return m_origin; }
   void SetLifeTime (Time t);
   Time GetLifeTime () const;
   //\}
@@ -213,8 +214,8 @@ private:
   uint8_t	    m_hopCount;         ///< Hop Count
   Ipv4Address   m_dst;              ///< Destination IP Address
   uint32_t      m_dstSeqNo;         ///< Destination Sequence Number
-  Ipv4Address	m_src;              ///< Source IP Address
-  uint32_t      m_lifeTime;         ///< Lifetime
+  Ipv4Address	m_origin;              ///< Source IP Address
+  uint32_t      m_lifeTime;         ///< Lifetime (in milliseconds)
 };
 
 std::ostream & operator<<(std::ostream & os, RrepHeader const &);

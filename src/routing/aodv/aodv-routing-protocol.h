@@ -161,8 +161,12 @@ private:
   void SendRequest (Ipv4Address dst, bool G, bool D);
   /// Send RREP
   void SendReply (RreqHeader const & rreqHeader, RoutingTableEntry const & toOrigin, Ptr<Socket> socket);
-  /// TODO
-  void SendReplyByIntermediateNode(RoutingTableEntry & toDst, RoutingTableEntry & toOrigin, bool gratRep = false);
+  /** Send RREP by intermediate node
+   * \param toDst routing table entry to destination
+   * \param toOrigin routing table entry to originator
+   * \param gratRep indicates whether a gratuitous RREP should be unicast to destination
+   */
+  void SendReplyByIntermediateNode (RoutingTableEntry & toDst, RoutingTableEntry & toOrigin, bool gratRep,  Ptr<Socket> socket);
   /// Send RERR
   void SendError (Ipv4Address failed);
   //\}

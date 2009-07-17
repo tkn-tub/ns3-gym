@@ -472,7 +472,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
         /*timeLife=*/Simulator::Now() + Scalar(2)*NET_TRAVERSAL_TIME - Scalar(2*hop)*NODE_TRAVERSAL_TIME  );
     m_routingTable.AddRoute (newEntry);
   }
-  else  // TODO check logic
+  else
   {
     if (int32_t(rreqHeader.GetOriginSeqno()) - int32_t(toOrigin.GetSeqNo()) > 0 )  toOrigin.SetSeqNo (rreqHeader.GetOriginSeqno());
     toOrigin.SetValidSeqNo(true);
@@ -517,11 +517,11 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
     // received in the incoming RREQ is larger than the value currently maintained
     // by the forwarding node.
     uint32_t dstSeqNo =  toDst.GetSeqNo();
-    if (rreqHeader.GetUnknownSeqno() || (rreqHeader.GetDstSeqno() < dstSeqNo))
+    if (rreqHeader.GetUnknownSeqno() ||  (int32_t(toDst.GetSeqNo()) - int32_t(rreqHeader.GetDstSeqno()) > 0))
     {
       if(!rreqHeader.GetDestinationOnly() && toDst.GetValidSeqNo() && (toDst.GetFlag() == RTF_UP))
       {
-        SendReplyByIntermediateNode(toDst, toOrigin, rreqHeader.GetGratiousRrep());
+        SendReplyByIntermediateNode(toDst, toOrigin, rreqHeader.GetGratiousRrep(), socket);
         return;
       }
       rreqHeader.SetOriginSeqno(dstSeqNo);
@@ -738,43 +738,33 @@ RoutingProtocol::SendHello ()
 
 
 void
-RoutingProtocol::SendReplyByIntermediateNode(RoutingTableEntry & toDst, RoutingTableEntry & toOrigin, bool gratRep)
+RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, RoutingTableEntry & toOrigin, bool gratRep,  Ptr<Socket> socket)
 {
-#if 0
-  RrepHeader rrepHeader;
-  TypeHeader tHeader(AODVTYPE_RREP);
 
-  rrepHeader.SetDst(toDst.GetDst());
-  rrepHeader.SetOrigin(toOrigin.GetDst());
-  rrepHeader.SetDstSeqno(toDst.GetSeqNo());
-  rrepHeader.SetHopCount(toDst.GetHop());
-  rrepHeader.SetLifeTime(toDst.GetLifeTime() - Simulator::Now());
+  RrepHeader rrepHeader (/*flags=*/0, /*prefix size=*/0, /*hops=*/toDst.GetHop(), /*dst=*/toDst.GetDestination(), /*dst seqno=*/toDst.GetSeqNo(),
+                        /*origin=*/toOrigin.GetDestination(), /*lifetime=*/toDst.GetLifeTime() - Simulator::Now() );
 
   toDst.InsertPrecursor(toOrigin.GetNextHop());
   toOrigin.InsertPrecursor(toDst.GetNextHop());
-
+  m_routingTable.Update (toDst.GetDestination(),toDst);
+  m_routingTable.Update (toOrigin.GetDestination(), toOrigin);
 
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader(rrepHeader);
+  TypeHeader tHeader (AODVTYPE_RREP);
   packet->AddHeader(tHeader);
-  std::map< Ipv4Address, Ptr<Socket> >::const_iterator j = m_addressSocket.find(toOrigin.GetInterface());
-  j->second->Send(packet);
+
+  socket->SendTo (packet, 0, InetSocketAddress(toOrigin.GetDestination (), AODV_PORT));
 
   if(gratRep)
   {
-    rrepHeader.SetHopCount(toOrigin.GetHop());
-    rrepHeader.SetDst(toOrigin.GetDst());
-    rrepHeader.SetDstSeqno(toOrigin.GetSeqNo());
-    rrepHeader.SetOrigin(toDst.GetDst());
-    rrepHeader.SetLifeTime(toOrigin.GetLifeTime() - Simulator::Now());
-
+    RrepHeader gratRepHeader (/*flags=*/0, /*prefix size=*/0, /*hops=*/toOrigin.GetHop(), /*dst=*/toOrigin.GetDestination(), /*dst seqno=*/toOrigin.GetSeqNo(),
+                              /*origin=*/toDst.GetDestination(), /*lifetime=*/toOrigin.GetLifeTime() - Simulator::Now());
     Ptr<Packet> packetToDst = Create<Packet> ();
     packetToDst->AddHeader(rrepHeader);
     packetToDst->AddHeader(tHeader);
-    j = m_addressSocket.find(toDst.GetInterface());
-    j->second->Send(packet);
+    socket->SendTo (packetToDst, 0, InetSocketAddress(toDst.GetDestination (), AODV_PORT));
   }
-#endif
 }
 
 
