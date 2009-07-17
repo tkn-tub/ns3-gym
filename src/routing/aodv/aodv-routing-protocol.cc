@@ -474,7 +474,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
   }
   else  // TODO check logic
   {
-    if (toOrigin.GetSeqNo() < rreqHeader.GetOriginSeqno())  toOrigin.SetSeqNo (rreqHeader.GetOriginSeqno());
+    if (int32_t(rreqHeader.GetOriginSeqno()) - int32_t(toOrigin.GetSeqNo()) > 0 )  toOrigin.SetSeqNo (rreqHeader.GetOriginSeqno());
     toOrigin.SetValidSeqNo(true);
     toOrigin.SetNextHop(src);
     toOrigin.SetOutputDevice(m_ipv4->GetNetDevice(m_ipv4->GetInterfaceForAddress (receiver)));
@@ -625,7 +625,7 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiverIfaceAddr ,Ipv4Ad
     //  (ii)  the Destination Sequence Number in the RREP is greater than
     //        the node's copy of the destination sequence number and the
     //        known value is valid,
-    else if(rrepHeader.GetDstSeqno() > toDst.GetSeqNo())
+    else if( (int32_t(rrepHeader.GetDstSeqno()) - int32_t(toDst.GetSeqNo())) > 0)
     {
       toDst.SetSeqNo(rrepHeader.GetDstSeqno());
       m_routingTable.Update(rrepHeader.GetDst(), toDst);
