@@ -32,6 +32,8 @@
 #include "ns3/nstime.h"
 #include "ns3/packet.h"
 #include <vector>
+#include "ns3/ipv4-routing-protocol.h"
+
 
 namespace ns3 {
 namespace aodv {
@@ -46,12 +48,18 @@ namespace aodv {
  */
 struct QueueEntry
 {
-  Ptr<Packet> m_packet;
+  typedef Callback<void, Ptr<Ipv4Route>, Ptr<const Packet>, const Ipv4Header &> UnicastForwardCallback;
+  typedef Callback<void, Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno > ErrorCallback;
+
+  Ptr<const Packet> m_packet;
   Ipv4Header m_header;
+  UnicastForwardCallback m_ucb;
+  ErrorCallback m_ecb;
   /// Expire time for queue entry
   Time m_expire;
   /// c-tor
-  QueueEntry(Ptr<Packet> pa, Ipv4Header const & h, Time exp = Seconds(0)) : m_packet(pa), m_header(h), m_expire(exp) {}
+  QueueEntry(Ptr<const Packet> pa, Ipv4Header const & h, UnicastForwardCallback ucb, ErrorCallback ecb, Time exp = Seconds(0)) : m_packet(pa),
+                        m_header(h), m_ucb(ucb), m_ecb(ecb), m_expire(exp) {}
   /**
    * Compare queue entries
    * \return true if equal

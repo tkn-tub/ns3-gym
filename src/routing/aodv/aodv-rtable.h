@@ -48,7 +48,8 @@ enum RouteFlags
 {
   RTF_DOWN = 0,
   RTF_UP = 1,
-  RTF_IN_REPAIR = 2
+  RTF_IN_REPAIR = 2,
+  RTF_IN_SEARCH = 3
 };
 
 /**
@@ -115,6 +116,7 @@ public:
   uint8_t GetFlag() const { return m_flag; }
   void SetRreqCnt(uint8_t n) { m_reqCount = n; }
   uint8_t GetRreqCnt() const { return m_reqCount; }
+  void IncrementRreqCnt() { m_reqCount++; }
   void SetRreqTimeout(Time t) {m_reqTimeout = t; }
   Time GetRreqTimeout() const { return m_reqTimeout; }
   //\}

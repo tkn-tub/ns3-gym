@@ -116,6 +116,7 @@ AodvQueue::Drop(QueueEntry)
   // TODO do nothing now.
 }
 
+#if 0
 #ifdef RUN_SELF_TESTS
 /// Unit test for AodvQueue
 struct AodvRqueueTest : public Test
@@ -190,5 +191,6 @@ AodvRqueueTest::CheckTimeout ()
 {
   NS_TEST_ASSERT (q.GetSize() == 0);
 }
+#endif
 #endif
 }}

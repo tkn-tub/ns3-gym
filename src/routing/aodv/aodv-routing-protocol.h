@@ -78,6 +78,9 @@ private:
 
   ///\name Protocol parameters. TODO document
   //\{
+ // Time AODV_RTQ_TIMEOUT;
+  Time RTQ_TIMEOUT;
+  uint32_t RREQ_RETRIES;        // 2
   Time ACTIVE_ROUTE_TIMEOUT;    // 3 seconds
   Time MY_ROUTE_TIMEOUT;       // 2 * ACTIVE_ROUTE_TIMEOUT
   uint16_t NET_DIAMETER;
@@ -117,6 +120,7 @@ private:
   Ptr<Ipv4> m_ipv4;
   /// Raw socket per each IP interface, map socket -> iface address (IP + mask)
   std::map< Ptr<Socket>, Ipv4InterfaceAddress > m_socketAddresses;
+  Ptr<Socket> m_loopbackSocket;
 
   /// Routing table
   RoutingTable m_routingTable;
