@@ -205,6 +205,7 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
     m_routingTable.Print(std::cout);
     rtentry = rt.GetRoute();
     NS_ASSERT (rtentry != 0);
+    m_ipv4->Send(p,header, 17, rtentry);
     sockerr = Socket::ERROR_NOTERROR;
     NS_LOG_LOGIC("exist route to " << rtentry->GetDestination());
     return rtentry;
