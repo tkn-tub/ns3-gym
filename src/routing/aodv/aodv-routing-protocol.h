@@ -120,7 +120,6 @@ private:
   Ptr<Ipv4> m_ipv4;
   /// Raw socket per each IP interface, map socket -> iface address (IP + mask)
   std::map< Ptr<Socket>, Ipv4InterfaceAddress > m_socketAddresses;
-  Ptr<Socket> m_loopbackSocket;
 
   /// Routing table
   RoutingTable m_routingTable;
@@ -130,6 +129,9 @@ private:
   uint32_t m_broadcastID;
   /// Request sequence number
   uint32_t m_seqNo;
+
+  UnicastForwardCallback m_scb;
+  ErrorCallback m_ecb;
 
 private:
   /// Start protocol operation
@@ -161,6 +163,8 @@ private:
   
   ///\name Send
   //\{
+  void SendPacketFromQueue(Ipv4Address dst, Ptr<Ipv4Route> route);
+  void Send(Ptr<Ipv4Route>, Ptr<const Packet>, const Ipv4Header &);
   /// Send hello. TODO send independent hello per interface
   void SendHello ();
   /// Send RREQ
@@ -177,6 +181,8 @@ private:
   void SendError (Ipv4Address failed);
   //\}
   
+  void Drop(Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno) {}
+
   ///\name Timers. TODO comment each one
   //\{
   Timer  btimer;

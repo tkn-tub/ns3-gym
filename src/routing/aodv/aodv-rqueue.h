@@ -58,7 +58,7 @@ struct QueueEntry
   /// Expire time for queue entry
   Time m_expire;
   /// c-tor
-  QueueEntry(Ptr<const Packet> pa, Ipv4Header const & h, UnicastForwardCallback ucb, ErrorCallback ecb, Time exp = Seconds(0)) : m_packet(pa),
+  QueueEntry(Ptr<const Packet> pa = 0, Ipv4Header const & h = Ipv4Header(), UnicastForwardCallback ucb = 0, ErrorCallback ecb = 0, Time exp = Seconds(0)) : m_packet(pa),
                         m_header(h), m_ucb(ucb), m_ecb(ecb), m_expire(exp) {}
   /**
    * Compare queue entries
@@ -68,6 +68,13 @@ struct QueueEntry
   {
     return ((m_packet == o.m_packet)/*&& header == o.header*/ && (m_expire == o.m_expire));
   }
+
+  UnicastForwardCallback GetUnicastForwardCallback() const { return m_ucb; }
+  void SetUnicastForwardCallback(UnicastForwardCallback ucb) { m_ucb = ucb; }
+  Ptr<const Packet> GetPacket() const { return m_packet; }
+  void SetPacket(Ptr<const Packet> p) { m_packet = p; }
+  Ipv4Header GetIpv4Header() const { return m_header; }
+  void SetIpv4Header(Ipv4Header h) { m_header = h; }
 };
 /**
  * \ingroup aodv

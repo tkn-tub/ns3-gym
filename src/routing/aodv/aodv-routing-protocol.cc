@@ -188,6 +188,8 @@ RoutingProtocol::Start ()
     m_routingTable.AddRoute (rt);
   }
 
+  m_scb = MakeCallback(&RoutingProtocol::Send, this);
+  m_ecb = MakeCallback(&RoutingProtocol::Drop, this);
   btimer.Schedule();
 }
 
@@ -205,17 +207,19 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
     m_routingTable.Print(std::cout);
     rtentry = rt.GetRoute();
     NS_ASSERT (rtentry != 0);
-    m_ipv4->Send(p,header, 17, rtentry);
     sockerr = Socket::ERROR_NOTERROR;
     NS_LOG_LOGIC("exist route to " << rtentry->GetDestination());
     return rtentry;
   }
   else
   {
+    QueueEntry newEntry(p, header, m_scb, m_ecb);
+    m_queue.Enqueue(newEntry);
     sockerr = Socket::ERROR_NOROUTETOHOST;
     SendRequest(dst, false, false);
     return rtentry;
   }
+
 }
 
 bool
@@ -628,37 +632,38 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiverIfaceAddr ,Ipv4Ad
 
   Ptr<NetDevice> dev;
   RoutingTableEntry toDst (dev);
-
-  //  If the route table entry to the destination is created or updated,
-  //    then the following actions occur:
-  //    -  the route is marked as active,
-  //    -  the destination sequence number is marked as valid,
-  //    -  the next hop in the route entry is assigned to be the node from
-  //       which the RREP is received, which is indicated by the source IP
-  //       address field in the IP header,
-  //    -  the hop count is set to the value of the New Hop Count,
-  //    -  the expiry time is set to the current time plus the value of the
-  //       Lifetime in the RREP message,
-  //    -  and the destination sequence number is the Destination Sequence
-  //       Number in the RREP message.
-
+/*
+    If the route table entry to the destination is created or updated,
+      then the following actions occur:
+      -  the route is marked as active,
+      -  the destination sequence number is marked as valid,
+      -  the next hop in the route entry is assigned to be the node from
+         which the RREP is received, which is indicated by the source IP
+         address field in the IP header,
+      -  the hop count is set to the value of the New Hop Count,
+      -  the expiry time is set to the current time plus the value of the
+         Lifetime in the RREP message,
+      -  and the destination sequence number is the Destination Sequence
+         Number in the RREP message.
+*/
   dev = m_ipv4->GetNetDevice(m_ipv4->GetInterfaceForAddress (receiverIfaceAddr));
   RoutingTableEntry newEntry(/*device=*/dev, /*dst=*/rrepHeader.GetDst(), /*validSeqNo=*/true, /*seqno=*/rrepHeader.GetDstSeqno(), /*iface=*/receiverIfaceAddr,
       /*hop=*/hop, /*nextHop=*/senderIfaceAddr, /*lifeTime=*/Simulator::Now() + rrepHeader.GetLifeTime());
 
   if(m_routingTable.LookupRoute(rrepHeader.GetDst(), toDst))
   {
-    //  The existing entry is updated only in the following circumstances:
-    //  (i)   the sequence number in the routing table is marked as
-    //        invalid in route table entry.
+ /*     The existing entry is updated only in the following circumstances:
+      (i)   the sequence number in the routing table is marked as
+           invalid in route table entry.
+ */
     if(!toDst.GetValidSeqNo())
     {
-      NS_LOG_LOGIC("Invalid seqni => update");
       m_routingTable.Update(rrepHeader.GetDst(), newEntry);
     }
-    //  (ii)  the Destination Sequence Number in the RREP is greater than
-    //        the node's copy of the destination sequence number and the
-    //        known value is valid,
+ /*     (ii)  the Destination Sequence Number in the RREP is greater than
+            the node's copy of the destination sequence number and the
+            known value is valid,
+*/
     else if( (int32_t(rrepHeader.GetDstSeqno()) - int32_t(toDst.GetSeqNo())) > 0)
     {
       toDst.SetSeqNo(rrepHeader.GetDstSeqno());
@@ -686,37 +691,25 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiverIfaceAddr ,Ipv4Ad
     m_routingTable.AddRoute(newEntry);
   }
 
-
-
-  if(receiverIfaceAddr == rrepHeader.GetOrigin())
+  if (receiverIfaceAddr == rrepHeader.GetOrigin())
   {
-    if(toDst.GetFlag() == RTF_IN_SEARCH)
-    {
-      NS_LOG_LOGIC("originator!");
-      m_routingTable.Update(rrepHeader.GetDst(), newEntry);
-    }
-    //TODO  may be send messeges from queue
+    if (toDst.GetFlag() == RTF_IN_SEARCH) m_routingTable.Update(rrepHeader.GetDst(), newEntry);
+    SendPacketFromQueue (rrepHeader.GetDst(), newEntry.GetRoute());
     return;
   }
 
-
-  RoutingTableEntry toOrigin(dev);
-  if(!m_routingTable.LookupRoute(rrepHeader.GetOrigin(), toOrigin))
-  {
-    // imposible!
-    // Drop();
-    return;
-  }
-
-  m_routingTable.LookupRoute(rrepHeader.GetDst(), toDst);
-  toDst.InsertPrecursor(toOrigin.GetNextHop());
-  m_routingTable.Update(rrepHeader.GetDst(), toDst);
-
+  RoutingTableEntry toOrigin (dev);
+  if(!m_routingTable.LookupRoute(rrepHeader.GetOrigin(), toOrigin)) return;     // Impossible! drop.
   if ( toOrigin.GetLifeTime() < (Simulator::Now() + ACTIVE_ROUTE_TIMEOUT) )
   {
     toOrigin.SetLifeTime(Simulator::Now() + ACTIVE_ROUTE_TIMEOUT);
     m_routingTable.Update(toOrigin.GetDestination (), toOrigin);
   }
+
+  // Update information about precursors
+  m_routingTable.LookupRoute(rrepHeader.GetDst(), toDst);
+  toDst.InsertPrecursor(toOrigin.GetNextHop());
+  m_routingTable.Update(rrepHeader.GetDst(), toDst);
   RoutingTableEntry toNextHopToDst(dev);
   m_routingTable.LookupRoute(toDst.GetNextHop(), toNextHopToDst);
   toNextHopToDst.InsertPrecursor(toOrigin.GetNextHop());
@@ -862,11 +855,40 @@ RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, Routing
   }
 }
 
+void
+RoutingProtocol::SendPacketFromQueue(Ipv4Address dst, Ptr<Ipv4Route> route)
+{
+  QueueEntry queueEntry;
+  while(m_queue.Dequeue(dst, queueEntry))
+  {
+    UnicastForwardCallback ucb = queueEntry.GetUnicastForwardCallback();
+    ucb(route, queueEntry.GetPacket(), queueEntry.GetIpv4Header());
+  }
+}
+
+void
+RoutingProtocol::Send(Ptr<Ipv4Route> route, Ptr<const Packet> packet, const Ipv4Header & header)
+{
+  NS_LOG_FUNCTION(this << packet->GetUid());
+  Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject <Ipv4L3Protocol> ();
+  NS_ASSERT(l3 != 0);
+  Ptr<Packet> p = Create<Packet>();
+  *p = *packet;
+  // TODO know protocol number
+  l3->Send(p, route->GetSource(), header.GetDestination(),1 , route);
+
+}
 
 void 
 RoutingProtocol::SendError (Ipv4Address failed)
 {
-  // TODO
+  //TODO
+//  Ptr<NetDevice> dev;
+//  RoutingTableEntry rt(dev);
+//  if(m_routingTable.LookupRoute(failed, rt))
+//  {
+//    RerrHeader rerrHeader.
+//  }
 }
 
 void 
