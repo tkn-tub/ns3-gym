@@ -43,19 +43,33 @@ uint16_t dot11sMeshCapability::GetUint16 () const
 {
   uint16_t result = 0;
   if (acceptPeerLinks)
-    result |= 1 << 0;
+    {
+      result |= 1 << 0;
+    }
   if (MCCASupported)
-    result |= 1 << 1;
+    {
+      result |= 1 << 1;
+    }
   if (MCCAEnabled)
-    result |= 1 << 2;
+    {
+      result |= 1 << 2;
+    }
   if (forwarding)
-    result |= 1 << 3;
+    {
+      result |= 1 << 3;
+    }
   if (beaconTimingReport)
-    result |= 1 << 4;
+    {
+      result |= 1 << 4;
+    }
   if (TBTTAdjustment)
-    result |= 1 << 5;
+    {
+      result |= 1 << 5;
+    }
   if (powerSaveLevel)
-    result |= 1 << 6;
+    {
+      result |= 1 << 6;
+    }
   return result;
 }
 Buffer::Iterator dot11sMeshCapability::Serialize (Buffer::Iterator i) const
@@ -80,6 +94,12 @@ bool dot11sMeshCapability::Is (uint16_t cap, uint8_t n) const
   uint16_t mask = 1 << n;
   return (cap & mask);
 }
+WifiElementId
+IeConfiguration::ElementId () const
+{    
+  return IE11S_MESH_CONFIGURATION;
+}
+
 IeConfiguration::IeConfiguration ():
     m_APSPId (PROTOCOL_HWMP),
     m_APSMId (METRIC_AIRTIME),

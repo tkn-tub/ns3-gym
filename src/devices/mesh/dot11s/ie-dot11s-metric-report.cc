@@ -31,6 +31,11 @@ IeLinkMetricReport::IeLinkMetricReport (uint32_t metric)
 {
   m_metric = metric;
 }
+WifiElementId
+IeLinkMetricReport::ElementId () const
+{
+  return IE11S_LINK_METRIC_REPORT; 
+}
 uint8_t 
 IeLinkMetricReport::GetInformationSize (void) const
 {

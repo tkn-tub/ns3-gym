@@ -120,9 +120,7 @@ public:
   bool MayAddAddress(Mac48Address originator);
   bool IsFull () const;
 private:
-  WifiElementId ElementId () const{
-    return IE11S_PREQ;
-  }
+  WifiElementId ElementId () const;
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
   uint8_t GetInformationSize () const;

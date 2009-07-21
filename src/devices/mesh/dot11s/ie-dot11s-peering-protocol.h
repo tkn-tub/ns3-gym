@@ -31,10 +31,7 @@ class IePeeringProtocol : public WifiInformationElement
 public:
   IePeeringProtocol ();
 private:
-  WifiElementId ElementId () const
-  {
-    return IE11S_MESH_PEERING_PROTOCOL_VERSION;
-  }
+  WifiElementId ElementId () const;
   uint8_t  GetInformationSize () const;
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);

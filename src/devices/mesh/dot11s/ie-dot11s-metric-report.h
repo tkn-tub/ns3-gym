@@ -39,9 +39,7 @@ public:
   void SetMetric (uint32_t metric);
   uint32_t GetMetric ();
 private:
-  WifiElementId ElementId () const{
-    return IE11S_LINK_METRIC_REPORT;
-  };
+  WifiElementId ElementId () const;
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
   void PrintInformation (std::ostream& os) const;

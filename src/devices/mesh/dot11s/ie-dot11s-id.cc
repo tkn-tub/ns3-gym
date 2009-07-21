@@ -48,6 +48,11 @@ IeMeshId::IeMeshId (std::string s)
       len++;
     }
 }
+WifiElementId
+IeMeshId::ElementId () const
+{
+  return IE11S_MESH_ID; 
+}
 bool 
 IeMeshId::IsEqual (IeMeshId const &o) const
 {
@@ -83,9 +88,9 @@ IeMeshId::GetInformationSize (void) const
 {
   uint8_t size = 0;
   while (m_meshId[size] != 0 && size < 32)
-  {
-    size++;
-  }
+    {
+      size++;
+    }
   NS_ASSERT (size <= 32);
   return size;
 }
@@ -94,10 +99,10 @@ IeMeshId::SerializeInformation (Buffer::Iterator i) const
 {
   uint8_t size = 0;
   while (m_meshId[size] != 0 && size < 32)
-  {
-    i.WriteU8 (m_meshId [size]);
-    size ++;
-  }
+    {
+      i.WriteU8 (m_meshId [size]);
+      size ++;
+    }
 }
 uint8_t
 IeMeshId::DeserializeInformation (Buffer::Iterator start, uint8_t length)

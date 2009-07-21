@@ -56,16 +56,20 @@ Dot11sStack::InstallStack (Ptr<MeshPointDevice> mp)
   Ptr<PeerManagementProtocol> pmp = CreateObject<PeerManagementProtocol> ();
   pmp->SetMeshId("mesh");
   bool install_ok = pmp->Install (mp);
-  if(!install_ok)
-    return false;
+  if (!install_ok)
+    {
+      return false;
+    }
   //Install HWMP:
   Ptr<HwmpProtocol> hwmp = CreateObject<HwmpProtocol> ();
   install_ok = hwmp->Install (mp);
-  if(!install_ok)
-    return false;
+  if (!install_ok)
+    {
+      return false;
+    }
   //Install interaction between HWMP and Peer management protocol:
-  pmp->SetPeerLinkStatusCallback(MakeCallback(&HwmpProtocol::PeerLinkStatus, hwmp));
-  hwmp->SetNeighboursCallback(MakeCallback(&PeerManagementProtocol::GetActiveLinks, pmp));
+  pmp->SetPeerLinkStatusCallback (MakeCallback(&HwmpProtocol::PeerLinkStatus, hwmp));
+  hwmp->SetNeighboursCallback (MakeCallback(&PeerManagementProtocol::GetActiveLinks, pmp));
   return true;
 }
 void
@@ -74,18 +78,18 @@ Dot11sStack::Report (const Ptr<MeshPointDevice> mp, std::ostream& os)
   mp->Report (os);
   
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
-  for (std::vector<Ptr<NetDevice> >::const_iterator i = ifaces.begin(); i != ifaces.end(); ++i)
+  for (std::vector<Ptr<NetDevice> >::const_iterator i = ifaces.begin (); i != ifaces.end (); ++i)
   {
     Ptr<WifiNetDevice> device = (*i)->GetObject<WifiNetDevice> ();
     NS_ASSERT (device != 0);
-    MeshInterfaceHelper::Report(device, os);
+    MeshInterfaceHelper::Report (device, os);
   }
   Ptr <HwmpProtocol> hwmp = mp->GetObject<HwmpProtocol> ();
-  NS_ASSERT(hwmp != 0);
+  NS_ASSERT (hwmp != 0);
   hwmp->Report (os);
 
   Ptr <PeerManagementProtocol> pmp = mp->GetObject<PeerManagementProtocol> ();
-  NS_ASSERT(pmp != 0);
+  NS_ASSERT (pmp != 0);
   pmp->Report (os);
 }
 void
@@ -94,7 +98,7 @@ Dot11sStack::ResetStats (const Ptr<MeshPointDevice> mp)
   mp->ResetStats ();
   
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
-  for (std::vector<Ptr<NetDevice> >::const_iterator i = ifaces.begin(); i != ifaces.end(); ++i)
+  for (std::vector<Ptr<NetDevice> >::const_iterator i = ifaces.begin (); i != ifaces.end (); ++i)
   {
     Ptr<WifiNetDevice> device = (*i)->GetObject<WifiNetDevice> ();
     NS_ASSERT (device != 0);

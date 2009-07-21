@@ -132,11 +132,17 @@ MeshHeader::Serialize (Buffer::Iterator start) const
   uint8_t addresses_to_add = GetAddressExt ();
   //Writing Address extensions:
   if ((addresses_to_add == 1) || (addresses_to_add == 3))
-    WriteTo (i, m_addr4);
+    {
+      WriteTo (i, m_addr4);
+    }
   if (addresses_to_add > 1)
-    WriteTo (i, m_addr5);
+    {
+      WriteTo (i, m_addr5);
+    }
   if (addresses_to_add > 1)
-    WriteTo (i, m_addr6);
+    {
+      WriteTo (i, m_addr6);
+    }
 }
 uint32_t
 MeshHeader::Deserialize (Buffer::Iterator start)
@@ -148,11 +154,17 @@ MeshHeader::Deserialize (Buffer::Iterator start)
   m_meshSeqno = i.ReadLsbtohU32 ();
   addresses_to_read = m_meshFlags & 0x03;
   if ((addresses_to_read == 1) || (addresses_to_read == 3))
-    ReadFrom (i, m_addr4);
+    {
+      ReadFrom (i, m_addr4);
+    }
   if (addresses_to_read > 1)
-    ReadFrom (i, m_addr5);
+    {
+      ReadFrom (i, m_addr5);
+    }
   if (addresses_to_read > 1)
-    ReadFrom (i, m_addr6);
+    {
+      ReadFrom (i, m_addr6);
+    }
   return i.GetDistanceFrom (start);
 }
 void
@@ -319,7 +331,7 @@ WifiMeshActionHeader::Deserialize (Buffer::Iterator start)
 struct Dot11sMacHeaderBist : public Test 
 {
   Dot11sMacHeaderBist () : Test ("Mesh/802.11s/MeshHeader") {}
-  virtual bool RunTests(); 
+  virtual bool RunTests (); 
 };
 
 /// Test instance
@@ -330,10 +342,10 @@ bool Dot11sMacHeaderBist::RunTests ()
   bool result (true);
   {
     MeshHeader a;
-    a.SetAddressExt(3);
-    a.SetAddr4(Mac48Address ("11:22:33:44:55:66"));
-    a.SetAddr5(Mac48Address ("11:00:33:00:55:00"));
-    a.SetAddr6(Mac48Address ("00:22:00:44:00:66"));
+    a.SetAddressExt (3);
+    a.SetAddr4 (Mac48Address ("11:22:33:44:55:66"));
+    a.SetAddr5 (Mac48Address ("11:00:33:00:55:00"));
+    a.SetAddr6 (Mac48Address ("00:22:00:44:00:66"));
     a.SetMeshTtl (122);
     a.SetMeshSeqno (321);
     Ptr<Packet> packet = Create<Packet> ();
@@ -344,9 +356,9 @@ bool Dot11sMacHeaderBist::RunTests ()
   } 
   {
     MeshHeader a;
-    a.SetAddressExt(2);
-    a.SetAddr5(Mac48Address ("11:00:33:00:55:00"));
-    a.SetAddr6(Mac48Address ("00:22:00:44:00:66"));
+    a.SetAddressExt (2);
+    a.SetAddr5 (Mac48Address ("11:00:33:00:55:00"));
+    a.SetAddr6 (Mac48Address ("00:22:00:44:00:66"));
     a.SetMeshTtl (122);
     a.SetMeshSeqno (321);
     Ptr<Packet> packet = Create<Packet> ();
@@ -357,8 +369,8 @@ bool Dot11sMacHeaderBist::RunTests ()
   }
   {
     MeshHeader a;
-    a.SetAddressExt(1);
-    a.SetAddr4(Mac48Address ("11:22:33:44:55:66"));
+    a.SetAddressExt (1);
+    a.SetAddr4 (Mac48Address ("11:22:33:44:55:66"));
     a.SetMeshTtl (122);
     a.SetMeshSeqno (321);
     Ptr<Packet> packet = Create<Packet> ();

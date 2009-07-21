@@ -85,9 +85,7 @@ public:
   );
   void   ClearTimingElement ();
 private:
-  WifiElementId ElementId () const {
-    return IE11S_BEACON_TIMING;
-  }
+  WifiElementId ElementId () const;
   uint8_t  GetInformationSize () const;
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);

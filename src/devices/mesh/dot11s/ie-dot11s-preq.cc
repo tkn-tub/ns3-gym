@@ -104,6 +104,11 @@ IePreq::IePreq ():
     m_destCount (0)
 {
 }
+WifiElementId 
+IePreq::ElementId () const
+{
+  return IE11S_PREQ;
+}
 void
 IePreq::SetUnicastPreq ()
 {
@@ -239,17 +244,25 @@ IePreq::SerializeInformation (Buffer::Iterator i) const
     {
       uint8_t flags = 0;
       if ((*j)->IsDo ())
-        flags |= 1 << 0;
+        {
+          flags |= 1 << 0;
+        }
       if ((*j)->IsRf ())
-        flags |= 1 << 1;
+        {
+          flags |= 1 << 1;
+        }
       if((*j)->IsUsn ())
-        flags |= 1 << 2;
+        {
+          flags |= 1 << 2;
+        }
       i.WriteU8 (flags);
       WriteTo (i, (*j)->GetDestinationAddress());
       i.WriteHtolsbU32 ((*j)->GetDestSeqNumber ());
       written++;
       if (written > m_maxSize)
-        break;
+        {
+          break;
+        }
     }
 }
 uint8_t
@@ -273,11 +286,17 @@ IePreq::DeserializeInformation (Buffer::Iterator start, uint8_t length)
       bool usnFlag = false;
       uint8_t flags = i.ReadU8 ();
       if (flags & (1 << 0))
+        {
           doFlag = true;
+        }
       if (flags & (1 << 1))
-        rfFlag = true;
+        {
+          rfFlag = true;
+        }
       if (flags & (1 << 2))
-        usnFlag = true;
+        {
+          usnFlag = true;
+        }
       new_element->SetFlags (doFlag, rfFlag, usnFlag);
       Mac48Address addr;
       ReadFrom (i,addr);
@@ -302,9 +321,13 @@ IePreq::GetInformationSize () const
     +4 //metric
     +1; //destination count
   if (m_destCount > m_maxSize)
-     retval += (m_maxSize*11);
+    {
+      retval += (m_maxSize*11);
+    }
   else
-     retval += (m_destCount*11);
+    {
+      retval += (m_destCount*11);
+    }
   return retval;
 }
 void
@@ -334,8 +357,12 @@ IePreq::AddDestinationAddressElement (
 )
 {
   for (std::vector<Ptr<DestinationAddressUnit> >::const_iterator i = m_destinations.begin (); i != m_destinations.end(); i++ )
-    if ((*i)->GetDestinationAddress () == dest_address)
-      return;
+    {
+      if ((*i)->GetDestinationAddress () == dest_address)
+        {
+          return;
+        }
+    }
   //TODO: check overflow
   Ptr<DestinationAddressUnit>new_element = Create<DestinationAddressUnit> ();
   new_element->SetFlags (doFlag, rfFlag, false);
@@ -348,21 +375,27 @@ void
 IePreq::DelDestinationAddressElement (Mac48Address dest_address)
 {
   for (std::vector<Ptr<DestinationAddressUnit> >::iterator i = m_destinations.begin (); i != m_destinations.end(); i++)
-    if ((*i)->GetDestinationAddress () == dest_address)
-      {
-        m_destinations.erase (i);
-        m_destCount--;
-        break;
-      }
+    {
+      if ((*i)->GetDestinationAddress () == dest_address)
+        {
+          m_destinations.erase (i);
+          m_destCount--;
+          break;
+        }
+    }
 }
 void
 IePreq::ClearDestinationAddressElements ()
 {
   int i;
   for (std::vector<Ptr<DestinationAddressUnit> >::iterator j = m_destinations.begin (); j != m_destinations.end(); j++)
-    (*j) = 0;
+    {
+      (*j) = 0;
+    }
   for (i = 0; i < m_destCount; i ++)
-    m_destinations.pop_back ();
+    {
+      m_destinations.pop_back ();
+    }
   m_destinations.clear ();
   m_destCount = 0;
 }
@@ -388,30 +421,38 @@ bool operator== (const IePreq & a, const IePreq & b)
     && a.m_destCount == b.m_destCount
   );
   
-  if (! ok) 
-    return false;
-  
-  if (a.m_destinations.size() != b.m_destinations.size())
-    return false;
-  
-  for (size_t i = 0; i < a.m_destinations.size(); ++i)
-    if (!( *(PeekPointer (a.m_destinations[i])) == 
-           *(PeekPointer (b.m_destinations[i]))
-         )
-       )
+  if (! ok)
+    {
       return false;
-  
+    }
+  if (a.m_destinations.size() != b.m_destinations.size())
+    {
+      return false;
+    }
+  for (size_t i = 0; i < a.m_destinations.size(); ++i)
+    {
+      if (!( *(PeekPointer (a.m_destinations[i])) == *(PeekPointer (b.m_destinations[i]))))
+      {
+        return false;
+      }
+    }
   return true;
 }
 bool
 IePreq::MayAddAddress (Mac48Address originator)
 {
   if (m_originatorAddress != originator)
-    return false;
+    {
+      return false;
+    }
   if(m_destinations[0]->GetDestinationAddress () == Mac48Address::GetBroadcast ())
-    return false;
+    {
+      return false;
+    }
   if((GetInformationSize () + 11) > 255)
-    return false;
+    {
+      return false;
+    }
   return true;
 }
 bool

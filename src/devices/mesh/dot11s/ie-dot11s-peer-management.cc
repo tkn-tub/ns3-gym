@@ -35,8 +35,11 @@ IePeerManagement::IePeerManagement ():
     m_peerLinkId (0),
     m_reasonCode (REASON11S_RESERVED)
 {}
-
-
+WifiElementId
+IePeerManagement::ElementId () const
+{
+  return IE11S_PEERING_MANAGEMENT;  
+}
 void
 IePeerManagement::SetPeerOpen (uint16_t localLinkId)
 {
@@ -109,9 +112,13 @@ IePeerManagement::SerializeInformation (Buffer::Iterator i) const
   i.WriteU8 (m_subtype);
   i.WriteHtolsbU16 (m_localLinkId);
   if (m_length > 3)
-    i.WriteHtolsbU16 (m_peerLinkId);
+    {
+      i.WriteHtolsbU16 (m_peerLinkId);
+    }
   if (m_length > 5)
-    i.WriteHtolsbU16 (m_reasonCode);
+    {
+      i.WriteHtolsbU16 (m_reasonCode);
+    }
 }
 uint8_t
 IePeerManagement::DeserializeInformation (Buffer::Iterator start, uint8_t length)
@@ -120,22 +127,26 @@ IePeerManagement::DeserializeInformation (Buffer::Iterator start, uint8_t length
   m_subtype  = i.ReadU8 ();
   m_length = length;
   if (m_subtype == PEER_OPEN)
-  {
-    NS_ASSERT (length == 3);
-  }
+    {
+      NS_ASSERT (length == 3);
+    }
   if (m_subtype == PEER_CONFIRM)
-  {
-    NS_ASSERT (length == 5);
-  }
+    {
+      NS_ASSERT (length == 5);
+    }
   if (m_subtype == PEER_CLOSE)
-  {
-    NS_ASSERT (length == 7);
-  }
+    {
+      NS_ASSERT (length == 7);
+    }
   m_localLinkId  = i.ReadLsbtohU16 ();
   if (m_length > 3)
-    m_peerLinkId = i.ReadLsbtohU16 ();
+    {
+      m_peerLinkId = i.ReadLsbtohU16 ();
+    }
   if (m_length > 5)
-    m_reasonCode = (PmpReasonCode)i.ReadLsbtohU16 ();
+    {
+      m_reasonCode = (PmpReasonCode)i.ReadLsbtohU16 ();
+    }
   return i.GetDistanceFrom (start);
 }
 void

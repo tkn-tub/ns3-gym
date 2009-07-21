@@ -45,6 +45,11 @@ IePrep::IePrep ():
     m_originatorSeqNumber (0)
 {
 }
+WifiElementId
+IePrep::ElementId () const
+{
+  return IE11S_PREP;
+}
 void
 IePrep::SetFlags (uint8_t flags)
 {

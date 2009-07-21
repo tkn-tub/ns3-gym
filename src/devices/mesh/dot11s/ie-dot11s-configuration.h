@@ -111,10 +111,7 @@ public:
 
   dot11sMeshCapability const& MeshCapability ();
 private:
-  WifiElementId ElementId () const
-  {
-    return IE11S_MESH_CONFIGURATION;
-  }
+  WifiElementId ElementId () const;
   uint8_t  GetInformationSize () const;
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);

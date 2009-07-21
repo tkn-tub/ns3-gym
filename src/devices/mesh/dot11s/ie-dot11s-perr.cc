@@ -26,8 +26,16 @@
 #include "ns3/test.h"
 namespace ns3 {
 namespace dot11s {
+IePerr::IePerr ()
+{
+}
 IePerr::~IePerr ()
 {
+}
+WifiElementId
+IePerr::ElementId () const
+{
+  return IE11S_PERR;
 }
 void
 IePerr::PrintInformation (std::ostream &os) const
@@ -39,10 +47,6 @@ IePerr::PrintInformation (std::ostream &os) const
         ", sequence number = " << m_addressUnits[j].seqnum;
     }
   os << "\n";
-
-}
-IePerr::IePerr ()
-{
 }
 uint8_t
 IePerr::GetNumOfDest ()
@@ -92,10 +96,16 @@ void
 IePerr::AddAddressUnit (FailedDestination unit)
 {
   for (unsigned int i = 0; i < m_addressUnits.size (); i ++)
-    if (m_addressUnits[i].destination == unit.destination)
+    {
+      if (m_addressUnits[i].destination == unit.destination)
+        {
+        return;
+        }
+    }
+  if ((m_addressUnits.size () + 1) * 10 + 2 > 255)
+    {
       return;
-  if((m_addressUnits.size () + 1) * 10 + 2 > 255)
-    return;
+    }
   m_addressUnits.push_back (unit);
 }
 bool
@@ -112,11 +122,13 @@ void
 IePerr::DeleteAddressUnit (Mac48Address address)
 {
   for (std::vector<FailedDestination>::iterator i = m_addressUnits.begin (); i != m_addressUnits.end(); i ++)
-    if (i->destination == address)
-      {
-        m_addressUnits.erase (i);
-        break;
-      }
+    {
+      if (i->destination == address)
+        {
+          m_addressUnits.erase (i);
+          break;
+        }
+    }
 }
 void
 IePerr::ResetPerr ()
@@ -125,14 +137,20 @@ IePerr::ResetPerr ()
 }
 bool operator== (const IePerr & a, const IePerr & b)
 {
-  if(a.m_addressUnits.size () != b.m_addressUnits.size ())
-    return false;
-  for(unsigned int i = 0; i < a.m_addressUnits.size(); i ++)
+  if (a.m_addressUnits.size () != b.m_addressUnits.size ())
+    {
+      return false;
+    }
+  for (unsigned int i = 0; i < a.m_addressUnits.size(); i ++)
   {
-    if(a.m_addressUnits[i].destination != b.m_addressUnits[i].destination)
-      return false;
-    if(a.m_addressUnits[i].seqnum != b.m_addressUnits[i].seqnum)
-      return false;
+    if (a.m_addressUnits[i].destination != b.m_addressUnits[i].destination)
+      {
+        return false;
+      }
+    if (a.m_addressUnits[i].seqnum != b.m_addressUnits[i].seqnum)
+      {
+        return false;
+      }
   }
   return true;
 }

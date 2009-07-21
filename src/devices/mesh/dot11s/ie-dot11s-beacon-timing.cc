@@ -37,37 +37,31 @@ IeBeaconTimingUnit::IeBeaconTimingUnit ():
   m_beaconInterval (0)
 {
 }
-
 void
 IeBeaconTimingUnit::SetAid (uint8_t aid)
 {
   m_aid = aid;
 }
-
 void
 IeBeaconTimingUnit::SetLastBeacon (uint16_t lastBeacon)
 {
   m_lastBeacon = lastBeacon;
 }
-
 void
 IeBeaconTimingUnit::SetBeaconInterval (uint16_t beaconInterval)
 {
   m_beaconInterval = beaconInterval;
 }
-
 uint8_t
 IeBeaconTimingUnit::GetAid () const
 {
   return m_aid;
 }
-
 uint16_t
 IeBeaconTimingUnit::GetLastBeacon () const
 {
   return m_lastBeacon;
 }
-
 uint16_t
 IeBeaconTimingUnit::GetBeaconInterval () const
 {
@@ -76,17 +70,20 @@ IeBeaconTimingUnit::GetBeaconInterval () const
 /*******************************************
  * IeBeaconTiming
  *******************************************/
+WifiElementId 
+IeBeaconTiming::ElementId () const
+{
+    return IE11S_BEACON_TIMING;
+}
 IeBeaconTiming::IeBeaconTiming ():
   m_numOfUnits (0)
 {
 }
-
 IeBeaconTiming::NeighboursTimingUnitsList
 IeBeaconTiming::GetNeighboursTimingElementsList ()
 {
   return m_neighbours;
 }
-
 void
 IeBeaconTiming::AddNeighboursTimingElementUnit (
   uint16_t aid,
@@ -101,15 +98,17 @@ IeBeaconTiming::AddNeighboursTimingElementUnit (
     }
   //First we lookup if this element already exists 
   for (NeighboursTimingUnitsList::const_iterator i = m_neighbours.begin (); i != m_neighbours.end(); i++)
-    if (
-      ((*i)->GetAid () == AidToU8(aid))
-      && ((*i)->GetLastBeacon () == TimestampToU16(last_beacon))
-      && ((*i)->GetBeaconInterval () == BeaconIntervalToU16(beacon_interval))
-    )
-      {
-        NS_LOG_WARN ("Duplicated neighbor timing element is ignored.");
-        return;
-      }
+    {
+      if (
+        ((*i)->GetAid () == AidToU8(aid))
+        && ((*i)->GetLastBeacon () == TimestampToU16(last_beacon))
+        && ((*i)->GetBeaconInterval () == BeaconIntervalToU16(beacon_interval))
+      )
+        {
+          NS_LOG_WARN ("Duplicated neighbor timing element is ignored.");
+          return;
+        }
+    }
   Ptr<IeBeaconTimingUnit>new_element = Create<IeBeaconTimingUnit> ();
   new_element->SetAid (AidToU8(aid));
   new_element->SetLastBeacon (TimestampToU16(last_beacon));
@@ -117,7 +116,6 @@ IeBeaconTiming::AddNeighboursTimingElementUnit (
   m_neighbours.push_back (new_element);
   m_numOfUnits++;
 }
-
 void
 IeBeaconTiming::DelNeighboursTimingElementUnit (
   uint16_t aid,
@@ -126,18 +124,19 @@ IeBeaconTiming::DelNeighboursTimingElementUnit (
 )
 {
   for (NeighboursTimingUnitsList::iterator i = m_neighbours.begin (); i != m_neighbours.end(); i++)
-    if (
-      ((*i)->GetAid () == AidToU8(aid))
-      && ((*i)->GetLastBeacon () == TimestampToU16(last_beacon))
-      && ((*i)->GetBeaconInterval () == BeaconIntervalToU16(beacon_interval))
-    )
-      {
-        m_neighbours.erase (i);
-        m_numOfUnits--;
-        break;
-      }
+    {
+      if (
+        ((*i)->GetAid () == AidToU8(aid))
+        && ((*i)->GetLastBeacon () == TimestampToU16(last_beacon))
+        && ((*i)->GetBeaconInterval () == BeaconIntervalToU16(beacon_interval))
+      )
+        {
+          m_neighbours.erase (i);
+          m_numOfUnits--;
+          break;
+        }
+    }
 }
-
 void
 IeBeaconTiming::ClearTimingElement ()
 {
@@ -149,35 +148,36 @@ IeBeaconTiming::ClearTimingElement ()
       (*j) = 0;
     }
   for (i = 0; i < to_delete; i ++)
-    m_neighbours.pop_back ();
+    {
+      m_neighbours.pop_back ();
+    }
   m_neighbours.clear ();
 
 }
-
 uint8_t
 IeBeaconTiming::GetInformationSize () const
 {
   return (5*m_numOfUnits);
 }
-
 void
 IeBeaconTiming::PrintInformation (std::ostream& os) const
 {
   os <<"Number of units: " << (uint16_t)m_numOfUnits << "\n";
   for (NeighboursTimingUnitsList::const_iterator j = m_neighbours.begin (); j != m_neighbours.end(); j++)
-    os<< "AID=" << (uint16_t)(*j)->GetAid () << ", Last beacon was at "
-      << (*j)->GetLastBeacon ()<<", with beacon interval " << (*j)->GetBeaconInterval () << "\n";
+    {
+      os<< "AID=" << (uint16_t)(*j)->GetAid () << ", Last beacon was at "
+        << (*j)->GetLastBeacon ()<<", with beacon interval " << (*j)->GetBeaconInterval () << "\n";
+    }
 }
-
 void
 IeBeaconTiming::SerializeInformation (Buffer::Iterator i) const
 {
   for (NeighboursTimingUnitsList::const_iterator j = m_neighbours.begin (); j != m_neighbours.end(); j++)
-  {
-    i.WriteU8 ((*j)->GetAid ());
-    i.WriteHtolsbU16 ((*j)->GetLastBeacon ());
-    i.WriteHtolsbU16 ((*j)->GetBeaconInterval ());
-  }
+    {
+      i.WriteU8 ((*j)->GetAid ());
+      i.WriteHtolsbU16 ((*j)->GetLastBeacon ());
+      i.WriteHtolsbU16 ((*j)->GetBeaconInterval ());
+    }
 }
 uint8_t 
 IeBeaconTiming::DeserializeInformation (Buffer::Iterator start, uint8_t length)
@@ -194,7 +194,6 @@ IeBeaconTiming::DeserializeInformation (Buffer::Iterator start, uint8_t length)
     }
   return i.GetDistanceFrom (start);
 };
-
 uint16_t
 IeBeaconTiming::TimestampToU16 (Time t)
 {
@@ -205,8 +204,7 @@ uint16_t
 IeBeaconTiming::BeaconIntervalToU16 (Time t)
 {
   return ((uint16_t) (t.GetMicroSeconds() >>10)&0xffff);
-};
-
+}
 uint8_t
 IeBeaconTiming::AidToU8 (uint16_t x)
 {
@@ -224,10 +222,16 @@ bool operator== (const IeBeaconTimingUnit & a, const IeBeaconTimingUnit & b)
 bool operator== (const IeBeaconTiming & a, const IeBeaconTiming& b)
 {
   if(a.m_numOfUnits != b.m_numOfUnits)
-    return false;
-  for(unsigned int i = 0; i < a.m_neighbours.size (); i ++)
-    if(!(*PeekPointer(a.m_neighbours[i]) == *PeekPointer(b.m_neighbours[i])))
+    {
       return false;
+    }
+  for(unsigned int i = 0; i < a.m_neighbours.size (); i ++)
+    {
+      if(!(*PeekPointer(a.m_neighbours[i]) == *PeekPointer(b.m_neighbours[i])))
+        {
+          return false;
+        }
+    }
   return true;
 }
 

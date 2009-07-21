@@ -70,9 +70,7 @@ public:
   bool   SubtypeIsConfirm () const ;
   uint8_t GetSubtype() const { return m_subtype;};
 private:
-  WifiElementId ElementId () const{
-    return IE11S_PEERING_MANAGEMENT;
-  }
+  WifiElementId ElementId () const;
   uint8_t  GetInformationSize (void) const;
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);

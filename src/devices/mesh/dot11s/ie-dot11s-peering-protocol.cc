@@ -31,6 +31,11 @@ IePeeringProtocol::IePeeringProtocol ():
   m_protocol(0)
 {
 }
+WifiElementId
+IePeeringProtocol::ElementId () const
+{
+  return IE11S_MESH_PEERING_PROTOCOL_VERSION;
+}
 void
 IePeeringProtocol::SerializeInformation (Buffer::Iterator i) const
 {
