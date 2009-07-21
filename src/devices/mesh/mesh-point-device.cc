@@ -362,12 +362,12 @@ MeshPointDevice::AddInterface (Ptr<NetDevice> iface)
   {
     m_address = Mac48Address::ConvertFrom (iface->GetAddress ());
   }
-  const WifiNetDevice * wifiNetDev = dynamic_cast<const WifiNetDevice *> (PeekPointer (iface));
+  Ptr<WifiNetDevice>  wifiNetDev = iface->GetObject<WifiNetDevice> ();
   if (wifiNetDev == 0)
   {
     NS_FATAL_ERROR ("Device is not a WiFi NIC: cannot be used as a mesh point interface.");
-  }   
-  MeshWifiInterfaceMac * ifaceMac = dynamic_cast<MeshWifiInterfaceMac *> (PeekPointer (wifiNetDev->GetMac ()));
+  }
+  Ptr<MeshWifiInterfaceMac>  ifaceMac = wifiNetDev->GetMac ()->GetObject<MeshWifiInterfaceMac> ();
   if (ifaceMac == 0)
   {
     NS_FATAL_ERROR ("WiFi device doesn't have correct MAC installed: cannot be used as a mesh point interface.");
@@ -375,9 +375,7 @@ MeshPointDevice::AddInterface (Ptr<NetDevice> iface)
   ifaceMac->SetMeshPointAddress (m_address);
   
   // Receive frames from this interface
-  m_node->RegisterProtocolHandler (MakeCallback (&MeshPointDevice::ReceiveFromDevice, this),
-                                   0, iface, /*promiscuous = */true);
-  
+  m_node->RegisterProtocolHandler (MakeCallback (&MeshPointDevice::ReceiveFromDevice, this), 0, iface, /*promiscuous = */true);
   m_ifaces.push_back (iface);
   m_channel->AddChannel (iface->GetChannel ());
 }
