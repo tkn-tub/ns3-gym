@@ -41,6 +41,12 @@ IeRann::IeRann ():
     m_metric (0)
 {
 }
+WifiElementId
+IeRann::ElementId () const
+{
+  return IE11S_RANN;
+}
+
 void
 IeRann::SetFlags (uint8_t flags)
 {

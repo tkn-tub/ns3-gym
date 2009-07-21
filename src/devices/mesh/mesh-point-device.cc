@@ -38,14 +38,14 @@ TypeId
 MeshPointDevice::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MeshPointDevice")
-                      .SetParent<NetDevice> ()
-                      .AddConstructor<MeshPointDevice> ()
-                      .AddAttribute ("RoutingProtocol", "The mesh routing protocol used by this mesh point.",
-                          PointerValue (),
-                          MakePointerAccessor (&MeshPointDevice::GetRoutingProtocol,
-                                               &MeshPointDevice::SetRoutingProtocol),
-                          MakePointerChecker<MeshL2RoutingProtocol> ())
-                      ;
+    .SetParent<NetDevice> ()
+    .AddConstructor<MeshPointDevice> ()
+    .AddAttribute ("RoutingProtocol", "The mesh routing protocol used by this mesh point.",
+        PointerValue (),
+        MakePointerAccessor (&MeshPointDevice::GetRoutingProtocol,
+          &MeshPointDevice::SetRoutingProtocol),
+        MakePointerChecker<MeshL2RoutingProtocol> ())
+    ;
   return tid;
 }
 
@@ -65,7 +65,9 @@ MeshPointDevice::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   for (std::vector< Ptr<NetDevice> >::iterator iter = m_ifaces.begin (); iter != m_ifaces.end (); iter++)
-    *iter = 0;
+    {
+      *iter = 0;
+    }
   m_ifaces.clear ();
   m_node = 0;
   NetDevice::DoDispose ();
@@ -87,7 +89,9 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
   uint16_t& realProtocol = protocol;
   NS_LOG_DEBUG ("SRC="<<src48<<", DST = "<<dst48<<", I am: "<<m_address);
   if (!m_promiscRxCallback.IsNull ())
+  {
     m_promiscRxCallback (this, packet, protocol, src, dst, packetType);
+  }
   if(dst48.IsGroup ())
   {
     Ptr<Packet> packet_copy = packet->Copy ();
@@ -323,10 +327,13 @@ MeshPointDevice::GetNInterfaces () const
 Ptr<NetDevice>
 MeshPointDevice::GetInterface (uint32_t n) const
 {
-  for(std::vector< Ptr<NetDevice> >::const_iterator i = m_ifaces.begin (); i != m_ifaces.end (); i ++)
-    if((*i)->GetIfIndex() == n)
+  for (std::vector< Ptr<NetDevice> >::const_iterator i = m_ifaces.begin (); i != m_ifaces.end (); i ++)
+  {
+    if ((*i)->GetIfIndex() == n)
+    {
       return (*i);
-  
+    }
+  }
   NS_FATAL_ERROR ("Mesh point interface is not found by index");
   return 0;
 }
@@ -351,17 +358,20 @@ MeshPointDevice::AddInterface (Ptr<NetDevice> iface)
   }
   
   // Mesh point has MAC address of it's first interface
-  if (m_ifaces.empty()) 
+  if (m_ifaces.empty ())
+  {
     m_address = Mac48Address::ConvertFrom (iface->GetAddress ());
-  
+  }
   const WifiNetDevice * wifiNetDev = dynamic_cast<const WifiNetDevice *> (PeekPointer (iface));
   if (wifiNetDev == 0)
+  {
     NS_FATAL_ERROR ("Device is not a WiFi NIC: cannot be used as a mesh point interface.");
-      
+  }   
   MeshWifiInterfaceMac * ifaceMac = dynamic_cast<MeshWifiInterfaceMac *> (PeekPointer (wifiNetDev->GetMac ()));
   if (ifaceMac == 0)
+  {
     NS_FATAL_ERROR ("WiFi device doesn't have correct MAC installed: cannot be used as a mesh point interface.");
-
+  }
   ifaceMac->SetMeshPointAddress (m_address);
   
   // Receive frames from this interface
@@ -420,10 +430,16 @@ MeshPointDevice::DoSend (bool success, Ptr<Packet> packet, Mac48Address src, Mac
   
   // Send
   if (outIface != 0xffffffff)
+  {
     GetInterface (outIface)->SendFrom(packet, src, dst, protocol);
+  }
   else
+  {
     for (std::vector<Ptr<NetDevice> >::iterator i = m_ifaces.begin (); i != m_ifaces.end(); i++)
+    {
       (*i) -> SendFrom (packet->Copy (), src, dst, protocol);
+    }
+  }
 }
 
 void

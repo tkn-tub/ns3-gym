@@ -184,53 +184,79 @@ void
 PeerLink::Close (uint16_t localLinkId, uint16_t peerLinkId, PmpReasonCode reason)
 {
   if (peerLinkId != 0 && m_localLinkId != peerLinkId)
-    return;
+    {
+      return;
+    }
   if (m_peerLinkId == 0)
-    m_peerLinkId = localLinkId;
-  else if (m_peerLinkId != localLinkId)
-    return;
+    {
+      m_peerLinkId = localLinkId;
+    }
+  else 
+    {
+      if (m_peerLinkId != localLinkId)
+        {
+          return;
+        }
+    }
   StateMachine (CLS_ACPT, reason);
 }
 void
 PeerLink::OpenAccept (uint16_t localLinkId, IeConfiguration  conf, Mac48Address peerMp)
 {
   if (m_peerLinkId == 0)
-    m_peerLinkId = localLinkId;
+    {
+      m_peerLinkId = localLinkId;
+    }
   m_configuration = conf;
-  if(m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
-  {
-    NS_ASSERT(m_peerMeshPointAddress == peerMp);
-  }
+  if (m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
+    {
+      NS_ASSERT(m_peerMeshPointAddress == peerMp);
+    }
   else
-    m_peerMeshPointAddress = peerMp;
+    {
+      m_peerMeshPointAddress = peerMp;
+    }
   StateMachine (OPN_ACPT);
 }
 void
 PeerLink::OpenReject (uint16_t localLinkId, IeConfiguration  conf, Mac48Address peerMp, PmpReasonCode reason)
 {
   if ( m_peerLinkId == 0)
-    m_peerLinkId = localLinkId;
+    {
+      m_peerLinkId = localLinkId;
+    }
   m_configuration = conf;
-  if(m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
-  {
-    NS_ASSERT(m_peerMeshPointAddress == peerMp);
-  }
+  if (m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
+    {
+      NS_ASSERT(m_peerMeshPointAddress == peerMp);
+    }
   else
-    m_peerMeshPointAddress = peerMp;
+    {
+      m_peerMeshPointAddress = peerMp;
+    }
   StateMachine (OPN_RJCT, reason);
 }
 void
 PeerLink::ConfirmAccept (uint16_t localLinkId, uint16_t peerLinkId, uint16_t peerAid, IeConfiguration conf, Mac48Address peerMp)
 {
   if ( m_localLinkId != peerLinkId)
-    return;
+    {
+      return;
+    }
   if ( m_peerLinkId == 0)
-    m_peerLinkId = localLinkId;
-  else if ( m_peerLinkId != localLinkId )
-    return;
+    {
+      m_peerLinkId = localLinkId;
+    }
+  else
+    {
+      if ( m_peerLinkId != localLinkId )
+        {
+          return;
+        }
+    }
   m_configuration = conf;
   m_peerAssocId = peerAid;
-  if(m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
+  if (m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
   {
     NS_ASSERT(m_peerMeshPointAddress == peerMp);
   }
@@ -243,13 +269,22 @@ PeerLink::ConfirmReject (uint16_t localLinkId, uint16_t peerLinkId,
     IeConfiguration  conf, Mac48Address peerMp, PmpReasonCode reason)
 {
   if (m_localLinkId != peerLinkId)
-    return;
+    {
+      return;
+    }
   if (m_peerLinkId == 0)
-    m_peerLinkId = localLinkId;
-  else if (m_peerLinkId != localLinkId)
-    return;
+    {
+      m_peerLinkId = localLinkId;
+    }
+  else
+    {
+      if (m_peerLinkId != localLinkId)
+        {
+          return;
+        }
+    }
   m_configuration = conf;
-  if(m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
+  if (m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
   {
     NS_ASSERT(m_peerMeshPointAddress == peerMp);
   }
@@ -421,7 +456,7 @@ PeerLink::StateMachine (PeerEvent event,PmpReasonCode reasoncode)
           m_state = ESTAB;
           m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_RCVD, ESTAB);
           ClearRetryTimer ();
-          NS_ASSERT(m_peerMeshPointAddress != Mac48Address::GetBroadcast ());
+          NS_ASSERT (m_peerMeshPointAddress != Mac48Address::GetBroadcast ());
           break;
         case CLS_ACPT:
           m_state = HOLDING;
@@ -578,14 +613,18 @@ void
 PeerLink::RetryTimeout ()
 {
   if ( m_retryCounter < m_dot11MeshMaxRetries)
-    StateMachine (TOR1);
+    {
+      StateMachine (TOR1);
+    }
   else
-    StateMachine (TOR2);
+    {
+      StateMachine (TOR2);
+    }
 }
 void
 PeerLink::SetConfirmTimer ()
 {
-  NS_ASSERT(m_dot11MeshConfirmTimeout.GetMicroSeconds() !=0);
+  NS_ASSERT (m_dot11MeshConfirmTimeout.GetMicroSeconds() !=0);
   m_confirmTimer = Simulator::Schedule (m_dot11MeshConfirmTimeout, &PeerLink::ConfirmTimeout, this);
 }
 void
@@ -596,8 +635,10 @@ PeerLink::ConfirmTimeout ()
 void
 PeerLink::Report (std::ostream & os) const
 {
-  if(m_state != ESTAB)
+  if (m_state != ESTAB)
+    {
     return;
+    }
   os << "<PeerLink\n"
     "localAddress=\"" << m_macPlugin->GetAddress () << "\"\n"
     "peerInterfaceAddress=\"" << m_peerAddress << "\"\n"

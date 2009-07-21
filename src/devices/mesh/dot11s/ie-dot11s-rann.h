@@ -52,9 +52,7 @@ public:
   void IncrementMetric (uint32_t metric);
     
 private:
-  WifiElementId ElementId () const{
-    return IE11S_RANN;
-  }
+  WifiElementId ElementId () const;
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
   uint8_t GetInformationSize () const;

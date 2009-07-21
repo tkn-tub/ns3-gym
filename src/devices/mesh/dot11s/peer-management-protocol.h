@@ -213,6 +213,7 @@ private:
   uint16_t m_lastAssocId;
   uint16_t m_lastLocalLinkId;
   uint8_t m_maxNumberOfPeerLinks;
+  uint8_t m_maxBeaconLostForBeaconTiming;
   /**
    * Peer Links
    * \{

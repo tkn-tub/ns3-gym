@@ -64,8 +64,10 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
         (beaconTiming.FindFirst(myBeacon)) &&
         (m_protocol->GetMeshId ()->IsEqual(meshId))
         )
-      meshBeacon = true;
-    m_protocol->UpdatePeerBeaconTiming(
+      {
+        meshBeacon = true;
+      }
+    m_protocol->UpdatePeerBeaconTiming (
         m_ifIndex,
         meshBeacon,
         beaconTiming,
@@ -76,7 +78,7 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
     // Beacon shall not be dropeed. May be needed to another plugins
     return true;
   }
-  if(header.IsAction())
+  if (header.IsAction ())
   {
     WifiMeshActionHeader actionHdr;
     packet->RemoveHeader (actionHdr);
@@ -91,14 +93,14 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
     PeerLinkFrameStart::PlinkFrameStartFields fields;
     {
       PeerLinkFrameStart peerFrame;
-      peerFrame.SetPlinkFrameSubtype((uint8_t)actionValue.peerLink);
+      peerFrame.SetPlinkFrameSubtype ((uint8_t) actionValue.peerLink);
       packet->RemoveHeader (peerFrame);
-      fields = peerFrame.GetFields();
-      NS_ASSERT(fields.subtype == actionValue.peerLink);
+      fields = peerFrame.GetFields ();
+      NS_ASSERT (fields.subtype == actionValue.peerLink);
     }
     if (
         (actionValue.peerLink != WifiMeshActionHeader::PEER_LINK_CLOSE) &&
-        !(m_parent->CheckSupportedRates(fields.rates))
+        !(m_parent->CheckSupportedRates (fields.rates))
         )
       {
         m_protocol->ConfigurationMismatch (m_ifIndex, peerAddress);
@@ -108,7 +110,7 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
       }
     if (
         (actionValue.peerLink != WifiMeshActionHeader::PEER_LINK_CONFIRM) &&
-        !fields.meshId.IsEqual(*(m_protocol->GetMeshId()))
+        !fields.meshId.IsEqual (*(m_protocol->GetMeshId ()))
         )
       {
         m_protocol->ConfigurationMismatch (m_ifIndex, peerAddress);
@@ -117,34 +119,34 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
         return false;
       }
     IePeerManagement peerElement;
-    packet->RemoveHeader(peerElement);
+    packet->RemoveHeader (peerElement);
     //Check taht frame subtype corresponds peer link subtype
-    if(peerElement.SubtypeIsOpen ())
+    if (peerElement.SubtypeIsOpen ())
     {
       m_stats.rxOpen ++;
-      NS_ASSERT(actionValue.peerLink == WifiMeshActionHeader::PEER_LINK_OPEN);
+      NS_ASSERT (actionValue.peerLink == WifiMeshActionHeader::PEER_LINK_OPEN);
     }
-    if(peerElement.SubtypeIsConfirm ())
+    if (peerElement.SubtypeIsConfirm ())
     {
       m_stats.rxConfirm ++;
-      NS_ASSERT(actionValue.peerLink == WifiMeshActionHeader::PEER_LINK_CONFIRM);
+      NS_ASSERT (actionValue.peerLink == WifiMeshActionHeader::PEER_LINK_CONFIRM);
     }
-    if(peerElement.SubtypeIsClose ())
+    if (peerElement.SubtypeIsClose ())
     {
       m_stats.rxClose ++;
-      NS_ASSERT(actionValue.peerLink == WifiMeshActionHeader::PEER_LINK_CLOSE);
+      NS_ASSERT (actionValue.peerLink == WifiMeshActionHeader::PEER_LINK_CLOSE);
     }
     //Deliver Peer link management frame to protocol:
-    m_protocol->ReceivePeerLinkFrame(m_ifIndex, peerAddress, peerMpAddress, fields.aid, peerElement, fields.config);
+    m_protocol->ReceivePeerLinkFrame (m_ifIndex, peerAddress, peerMpAddress, fields.aid, peerElement, fields.config);
     // if we can handle a frame - drop it
     return false;
   }
-  return m_protocol->IsActiveLink(m_ifIndex,header.GetAddr2());
+  return m_protocol->IsActiveLink (m_ifIndex,header.GetAddr2());
 }
 bool
 PeerManagementProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to)
 {
-  if(header.IsAction ())
+  if (header.IsAction ())
   {
     WifiMeshActionHeader actionHdr;
     packet->PeekHeader (actionHdr);
@@ -152,12 +154,16 @@ PeerManagementProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHead
     if(actionHdr.GetCategory () == WifiMeshActionHeader::MESH_PEERING_MGT)
       return true;
   }
-  if(header.GetAddr1 ().IsGroup ())
+  if (header.GetAddr1 ().IsGroup ())
+  {
     return true;
+  }
   else
   {
-    if(m_protocol->IsActiveLink(m_ifIndex,header.GetAddr1()))
+    if (m_protocol->IsActiveLink (m_ifIndex,header.GetAddr1()))
+    {
       return true;
+    }
     else
     {
       m_stats.dropped ++;
@@ -168,13 +174,13 @@ PeerManagementProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHead
 void
 PeerManagementProtocolMac::UpdateBeacon (MeshWifiBeacon & beacon) const
 {
-  Ptr<IeBeaconTiming>  beaconTiming = m_protocol->GetBeaconTimingElement(m_ifIndex);
-  beacon.AddInformationElement(beaconTiming);
-  beacon.AddInformationElement(m_protocol->GetMeshId ());
+  Ptr<IeBeaconTiming>  beaconTiming = m_protocol->GetBeaconTimingElement (m_ifIndex);
+  beacon.AddInformationElement (beaconTiming);
+  beacon.AddInformationElement (m_protocol->GetMeshId ());
 }
 
 void
-PeerManagementProtocolMac::SendPeerLinkManagementFrame(
+PeerManagementProtocolMac::SendPeerLinkManagementFrame (
       Mac48Address peerAddress,
       Mac48Address peerMpAddress,
       uint16_t aid,
@@ -221,7 +227,7 @@ PeerManagementProtocolMac::SendPeerLinkManagementFrame(
       fields.reasonCode = peerElement.GetReasonCode ();
       actionHdr.SetAction (WifiMeshActionHeader::MESH_PEERING_MGT, action);
     }
-  plinkFrame.SetPlinkFrameStart(fields);
+  plinkFrame.SetPlinkFrameStart (fields);
   packet->AddHeader (plinkFrame);
   packet->AddHeader (actionHdr);
   m_stats.txMgt ++;
@@ -235,15 +241,20 @@ PeerManagementProtocolMac::SendPeerLinkManagementFrame(
   hdr.SetAddr3 (m_protocol->GetAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
-  m_parent->SendManagementFrame(packet, hdr);
+  m_parent->SendManagementFrame (packet, hdr);
 }
 
 Mac48Address
 PeerManagementProtocolMac::GetAddress () const
 {
-  if(m_parent !=  0)
-    return m_parent->GetAddress ();
-  else return Mac48Address::Mac48Address();
+  if (m_parent !=  0)
+    {
+      return m_parent->GetAddress ();
+    }
+  else
+    {
+      return Mac48Address::Mac48Address ();
+    }
 }
 std::pair<Time, Time> 
 PeerManagementProtocolMac::GetBeaconInfo() const
@@ -256,8 +267,10 @@ PeerManagementProtocolMac::GetBeaconInfo() const
 void
 PeerManagementProtocolMac::SetBeaconShift(Time shift)
 {
-  if(shift != Seconds (0))
-    m_stats.beaconShift ++;
+  if (shift != Seconds (0))
+    {
+      m_stats.beaconShift ++;
+    }
   m_parent->ShiftTbtt (shift);
 }
 PeerManagementProtocolMac::Statistics::Statistics () :

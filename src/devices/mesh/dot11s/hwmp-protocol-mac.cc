@@ -56,12 +56,12 @@ HwmpProtocolMac::ReceiveData (Ptr<Packet> packet, const WifiMacHeader & header)
 
   MeshHeader meshHdr;
   HwmpTag tag;
-  if(packet->PeekPacketTag (tag))
+  if (packet->PeekPacketTag (tag))
   {
     NS_FATAL_ERROR ("HWMP tag is not supposed to be received by network");
   }
   
-  packet->RemoveHeader(meshHdr);
+  packet->RemoveHeader (meshHdr);
   m_stats.rxData ++;
   m_stats.rxDataBytes += packet->GetSize ();
   
@@ -79,12 +79,12 @@ HwmpProtocolMac::ReceiveData (Ptr<Packet> packet, const WifiMacHeader & header)
   };
   tag.SetSeqno (meshHdr.GetMeshSeqno ());
   tag.SetTtl (meshHdr.GetMeshTtl ());
-  packet->AddPacketTag(tag);
+  packet->AddPacketTag (tag);
  
-  if (destination == Mac48Address::GetBroadcast ())
-    if(m_protocol->DropDataFrame (meshHdr.GetMeshSeqno (), source))
+  if ((destination == Mac48Address::GetBroadcast ()) && (m_protocol->DropDataFrame (meshHdr.GetMeshSeqno (), source)))
+    {
       return false;
-  
+    } 
   return true;
 }
 
@@ -96,8 +96,10 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
   WifiMeshActionHeader actionHdr;
   packet->RemoveHeader (actionHdr);
   WifiMeshActionHeader::ActionValue actionValue = actionHdr.GetAction ();
-  if(actionHdr.GetCategory () != WifiMeshActionHeader::MESH_PATH_SELECTION)
-    return true;
+  if (actionHdr.GetCategory () != WifiMeshActionHeader::MESH_PATH_SELECTION)
+    {
+      return true;
+    }
   IeRann rann;
   IePreq preq;
   IePrep prep;
@@ -110,9 +112,13 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
   {
     m_stats.rxPreq ++;
     if (preq.GetOriginatorAddress () == m_protocol->GetAddress ())
-      continue;
+      {
+        continue;
+      }
     if (preq.GetTtl () == 0)
-      continue;
+      {
+        continue;
+      }
     preq.DecrementTtl ();
     m_protocol->ReceivePreq (preq, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (), m_parent->GetLinkMetric(header.GetAddr2 ()));
   }
@@ -120,7 +126,9 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
   {
     m_stats.rxPrep ++;
     if (prep.GetTtl () == 0)
-      continue;
+      {
+        continue;
+      }
     prep.DecrementTtl ();
     m_protocol->ReceivePrep (prep, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (), m_parent->GetLinkMetric(header.GetAddr2 ()));
   }
@@ -133,7 +141,9 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
       failedDestinations.push_back (*i);
   }
   if (failedDestinations.size () > 0)
-    m_protocol->ReceivePerr (failedDestinations, header.GetAddr2 (), m_ifIndex, header.GetAddr3 ());
+    {
+      m_protocol->ReceivePerr (failedDestinations, header.GetAddr2 (), m_ifIndex, header.GetAddr3 ());
+    }
   NS_ASSERT(packet->GetSize () == 0);
   return false;
 }
@@ -142,17 +152,28 @@ bool
 HwmpProtocolMac::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
 {
   if (header.IsData ())
-    return ReceiveData (packet, header);
-  else if (header.IsAction ())
-    return ReceiveAction (packet, header);
-  else
-    return true; // don't care
+    {
+      return ReceiveData (packet, header);
+    }
+  else 
+    {
+      if (header.IsAction ())
+        {
+          return ReceiveAction (packet, header);
+        }
+      else
+        {
+          return true; // don't care
+        }
+    }
 }
 bool
 HwmpProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to)
 {
-  if(!header.IsData ())
-    return true;
+  if (!header.IsData ())
+    {
+      return true;
+    }
   HwmpTag tag;
   bool tagExists = packet->RemovePacketTag(tag);
   if (!tagExists)
@@ -162,7 +183,7 @@ HwmpProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & heade
   m_stats.txData ++;
   m_stats.txDataBytes += packet->GetSize ();
   MeshHeader meshHdr;
-  meshHdr.SetMeshSeqno (tag.GetSeqno());
+  meshHdr.SetMeshSeqno (tag.GetSeqno ());
   meshHdr.SetMeshTtl (tag.GetTtl());
   packet->AddHeader (meshHdr);
   header.SetAddr1 (tag.GetAddress());
@@ -178,7 +199,7 @@ HwmpProtocolMac::GetWifiMeshActionHeader ()
   return actionHdr;
 }
 void
-HwmpProtocolMac::SendPreq(IePreq preq)
+HwmpProtocolMac::SendPreq (IePreq preq)
 {
   NS_LOG_FUNCTION_NOARGS ();
   std::vector<IePreq> preq_vector;
@@ -203,23 +224,25 @@ HwmpProtocolMac::SendPreq(std::vector<IePreq> preq)
   hdr.SetAddr3 (m_protocol->GetAddress ());
   //Send Management frame
   std::vector <Mac48Address> receivers = m_protocol->GetPreqReceivers (m_ifIndex);
-  for(std::vector<Mac48Address>::const_iterator i = receivers.begin (); i != receivers.end (); i ++)
+  for (std::vector<Mac48Address>::const_iterator i = receivers.begin (); i != receivers.end (); i ++)
   {
     hdr.SetAddr1 (*i);
     m_stats.txPreq ++;
     m_stats.txMgt ++;
     m_stats.txMgtBytes += packet->GetSize ();
-    m_parent->SendManagementFrame(packet, hdr);
+    m_parent->SendManagementFrame (packet, hdr);
   }
 }
 void
 HwmpProtocolMac::RequestDestination (Mac48Address dst, uint32_t originator_seqno, uint32_t dst_seqno)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  for(std::vector<IePreq>::iterator i = m_myPreq.begin (); i != m_myPreq.end(); i ++)
+  for (std::vector<IePreq>::iterator i = m_myPreq.begin (); i != m_myPreq.end(); i ++)
   {
-    if(i->IsFull ())
-      continue;
+    if (i->IsFull ())
+      {
+        continue;
+      }
     NS_ASSERT (i->GetDestCount () > 0);
     i->AddDestinationAddressElement (m_protocol->GetDoFlag(), m_protocol->GetRfFlag(), dst, dst_seqno);
   }
@@ -238,10 +261,14 @@ void
 HwmpProtocolMac::SendMyPreq ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if(m_preqTimer.IsRunning ())
-    return;
-  if(m_myPreq.size () == 0)
-    return;
+  if (m_preqTimer.IsRunning ())
+    {
+      return;
+    }
+  if (m_myPreq.size () == 0)
+    {
+      return;
+    }
   //reschedule sending PREQ
   NS_ASSERT (!m_preqTimer.IsRunning());
   m_preqTimer = Simulator::Schedule (m_protocol->GetPreqMinInterval (), &HwmpProtocolMac::SendMyPreq, this);
@@ -276,18 +303,22 @@ HwmpProtocolMac::ForwardPerr(std::vector<IePerr::FailedDestination> failedDestin
   NS_LOG_FUNCTION_NOARGS ();
   Ptr<Packet> packet  = Create<Packet> ();
   IePerr perr;
-  for(std::vector<IePerr::FailedDestination>::const_iterator i = failedDestinations.begin (); i != failedDestinations.end (); i ++)
+  for (std::vector<IePerr::FailedDestination>::const_iterator i = failedDestinations.begin (); i != failedDestinations.end (); i ++)
   {
-    if(!perr.IsFull ())
-      perr.AddAddressUnit (*i);
+    if (!perr.IsFull ())
+      {
+        perr.AddAddressUnit (*i);
+      }
     else
+      {
+        packet->AddHeader (perr);
+        perr.ResetPerr ();
+      }
+  }
+  if (perr.GetNumOfDest () > 0)
     {
       packet->AddHeader (perr);
-      perr.ResetPerr ();
     }
-  }
-  if(perr.GetNumOfDest () > 0)
-    packet->AddHeader (perr);
   packet->AddHeader (GetWifiMeshActionHeader ());
   //create 802.11 header:
   WifiMacHeader hdr;
@@ -302,7 +333,7 @@ HwmpProtocolMac::ForwardPerr(std::vector<IePerr::FailedDestination> failedDestin
     receivers.push_back (Mac48Address::GetBroadcast ());
   }
   //Send Management frame
-  for(std::vector<Mac48Address>::const_iterator i = m_myPerr.receivers.begin (); i != m_myPerr.receivers.end (); i ++)
+  for (std::vector<Mac48Address>::const_iterator i = m_myPerr.receivers.begin (); i != m_myPerr.receivers.end (); i ++)
   {
     hdr.SetAddr1 (*i);
     m_stats.txPerr ++;
@@ -316,42 +347,52 @@ HwmpProtocolMac::InitiatePerr (std::vector<IePerr::FailedDestination> failedDest
 {
   //All duplicates in PERR are checked here, and there is no reason to
   //check it at any athoer place
-  {
-    std::vector<Mac48Address>::const_iterator end = receivers.end();
-    for(std::vector<Mac48Address>::const_iterator i = receivers.begin (); i != end; i ++)
+{
+  std::vector<Mac48Address>::const_iterator end = receivers.end();
+  for(std::vector<Mac48Address>::const_iterator i = receivers.begin (); i != end; i ++)
     {
       bool should_add = true;
       for (std::vector<Mac48Address>::const_iterator j = m_myPerr.receivers.begin (); j != m_myPerr.receivers.end (); j ++)
+      {
         if ((*i) == (*j))
+        {
           should_add = false;
+        }
+      }
       if (should_add)
+      {
         m_myPerr.receivers.push_back(*i);
+      }
     }
-  }
-  {
-    std::vector<IePerr::FailedDestination>::const_iterator end =  failedDestinations.end ();
-    for(std::vector<IePerr::FailedDestination>::const_iterator i = failedDestinations.begin (); i != end; i ++)
+}
+{
+  std::vector<IePerr::FailedDestination>::const_iterator end =  failedDestinations.end ();
+  for(std::vector<IePerr::FailedDestination>::const_iterator i = failedDestinations.begin (); i != end; i ++)
     {
       bool should_add = true;
-      for
-        (
-         std::vector<IePerr::FailedDestination>::const_iterator j = m_myPerr.destinations.begin ();
-         j != m_myPerr.destinations.end ();
-         j ++)
-        if ( ((*i).destination == (*j).destination) && ((*j).seqnum > (*i).seqnum) )
-          should_add = false;
+      for (std::vector<IePerr::FailedDestination>::const_iterator j = m_myPerr.destinations.begin (); j != m_myPerr.destinations.end (); j ++)
+        {
+          if ( ((*i).destination == (*j).destination) && ((*j).seqnum > (*i).seqnum) )
+            {
+              should_add = false;
+            }
+        }
       if (should_add)
-        m_myPerr.destinations.push_back(*i);
+        {
+          m_myPerr.destinations.push_back(*i);
+        }
     }
-  }
+}
   SendMyPerr ();
 }
 void
 HwmpProtocolMac::SendMyPerr()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if(m_perrTimer.IsRunning ())
-    return;
+  if (m_perrTimer.IsRunning ())
+    {
+      return;
+    }
   m_perrTimer = Simulator::Schedule (m_protocol->GetPerrMinInterval (), &HwmpProtocolMac::SendMyPerr, this);
   ForwardPerr (m_myPerr.destinations, m_myPerr.receivers);
   m_myPerr.destinations.clear ();
@@ -360,7 +401,7 @@ HwmpProtocolMac::SendMyPerr()
 uint32_t
 HwmpProtocolMac::GetLinkMetric(Mac48Address peerAddress) const
 {
-  return m_parent->GetLinkMetric(peerAddress);
+  return m_parent->GetLinkMetric (peerAddress);
 }
 uint16_t
 HwmpProtocolMac::GetChannelId () const

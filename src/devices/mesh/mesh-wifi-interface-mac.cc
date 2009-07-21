@@ -190,7 +190,9 @@ MeshWifiInterfaceMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager>
   NS_LOG_FUNCTION (this << stationManager);
   m_stationManager = stationManager;
   for (Queues::const_iterator i = m_queues.begin (); i != m_queues.end (); i ++)
+  {
     i->second->SetWifiRemoteStationManager (stationManager);
+  }
   m_beaconDca->SetWifiRemoteStationManager (stationManager);
   m_low->SetWifiRemoteStationManager (stationManager);
 }
@@ -310,9 +312,13 @@ uint16_t MeshWifiInterfaceMac::GetFrequencyChannel () const
 
   Ptr<YansWifiPhy> phy = m_phy->GetObject<YansWifiPhy> ();
   if (phy != 0)
-    return phy->GetChannelNumber ();
+    {
+      return phy->GetChannelNumber ();
+    }
   else
-    return 0;
+    {
+      return 0;
+    }
 }
 
 void MeshWifiInterfaceMac::SwitchFrequencyChannel (uint16_t new_id)
@@ -371,7 +377,10 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
   for (PluginList::const_iterator i = m_plugins.end()-1; i != m_plugins.begin()-1; i--)
     {
       bool drop = ! ((*i)->UpdateOutcomingFrame(packet, hdr, from, to));
-      if (drop) return; // plugin drops frame
+      if (drop)
+        {
+          return; // plugin drops frame
+        }
     }
 
   // Assert that address1 is set. Assert will fail e.g. if there is no installed routing plugin.
@@ -394,8 +403,10 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
   // Get Qos tag:
   AccessClass ac = AC_BE;
   QosTag tag;
-  if(packet->RemovePacketTag (tag))
-    ac = QosUtilsMapTidToAc (tag.Get ());
+  if (packet->RemovePacketTag (tag))
+    {
+      ac = QosUtilsMapTidToAc (tag.Get ());
+    }
   m_stats.sentFrames ++;
   m_stats.sentBytes += packet->GetSize ();
   NS_ASSERT(m_queues.find(ac) != m_queues.end ());
@@ -410,7 +421,10 @@ MeshWifiInterfaceMac::SendManagementFrame (Ptr<Packet> packet, const WifiMacHead
   for (PluginList::const_iterator i = m_plugins.end()-1; i != m_plugins.begin()-1; i--)
     {
       bool drop = ! ((*i)->UpdateOutcomingFrame(packet, header, Mac48Address (), Mac48Address ()));
-      if (drop) return; // plugin drops frame
+      if (drop)
+        {
+          return; // plugin drops frame
+        }
     }
   m_stats.sentFrames ++;
   m_stats.sentBytes += packet->GetSize ();
@@ -448,7 +462,9 @@ MeshWifiInterfaceMac::CheckSupportedRates(SupportedRates rates) const
   {
     WifiMode mode = m_stationManager->GetBasicMode (i);
     if (!rates.IsSupportedRate (mode.GetDataRate ()))
-      return false;
+      {
+        return false;
+      }
   }
   return true;
 }
@@ -490,8 +506,10 @@ MeshWifiInterfaceMac::SetBeaconGeneration (bool enable)
       m_tbtt = Simulator::Now() + randomStart;
     }
   else
-    // stop sending beacons
-    m_beaconSendEvent.Cancel ();
+    {
+      // stop sending beacons
+      m_beaconSendEvent.Cancel ();
+    }
 }
 
 bool
@@ -538,8 +556,9 @@ MeshWifiInterfaceMac::SendBeacon ()
 
   // Ask all plugins to add their specific information elements to beacon
   for (PluginList::const_iterator i = m_plugins.begin(); i != m_plugins.end(); ++i)
-    (*i)->UpdateBeacon (beacon);
-
+    {
+      (*i)->UpdateBeacon (beacon);
+    }
   m_beaconDca->Queue (beacon.CreatePacket(), beacon.CreateHeader(GetAddress (), GetMeshPointAddress ()));
 
   ScheduleNextBeacon ();
@@ -549,8 +568,10 @@ void
 MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
   // Process beacon
-  if((hdr->GetAddr1() != GetAddress()) && (hdr->GetAddr1() != Mac48Address::GetBroadcast()))
-    return;
+  if ((hdr->GetAddr1() != GetAddress()) && (hdr->GetAddr1() != Mac48Address::GetBroadcast()))
+    {
+      return;
+    }
   if (hdr->IsBeacon ())
     {
       m_stats.recvBeacons ++;
@@ -577,7 +598,9 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
               {
                 peerSta->AddSupportedMode (mode);
                 if (rates.IsBasicRate (mode.GetDataRate ()))
-                  m_stationManager->AddBasicMode (mode);
+                  {
+                    m_stationManager->AddBasicMode (mode);
+                  }
               }
           }
         }
@@ -591,23 +614,32 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
   for (PluginList::iterator i = m_plugins.begin (); i != m_plugins.end(); ++i)
     {
       bool drop = ! ((*i)->Receive(packet, *hdr));
-      if (drop) return; // plugin drops frame
+      if (drop)
+        {
+          return; // plugin drops frame
+        }
     }
 
   // Check if QoS tag exists and add it:
   if (hdr->IsQosData ())
-    packet->AddPacketTag (QosTag (hdr->GetQosTid ()));
+    {
+      packet->AddPacketTag (QosTag (hdr->GetQosTid ()));
+    }
   // Forward data up
   if (hdr->IsData ())
+    {
       ForwardUp (packet, hdr->GetAddr4(), hdr->GetAddr3());
+    }
 }
 
 uint32_t
 MeshWifiInterfaceMac::GetLinkMetric (Mac48Address peerAddress)
 {
   uint32_t metric = 1;
-  if(!m_linkMetricCallback.IsNull ())
-    metric = m_linkMetricCallback(peerAddress, this);
+  if (!m_linkMetricCallback.IsNull ())
+    {
+      metric = m_linkMetricCallback(peerAddress, this);
+    }
   return metric;
 }
 
@@ -665,7 +697,7 @@ void
 MeshWifiInterfaceMac::SetQueue (Ptr<DcaTxop> queue, AccessClass ac)
 {
   Queues::iterator i = m_queues.find(ac);
-  if(i != m_queues.end ())
+  if (i != m_queues.end ())
   {
     NS_LOG_WARN("Queue is already set!");
     return;
@@ -677,7 +709,7 @@ MeshWifiInterfaceMac::SetQueue (Ptr<DcaTxop> queue, AccessClass ac)
 Ptr<DcaTxop>
 MeshWifiInterfaceMac::GetQueue (AccessClass ac)
 {
-  Queues::iterator i = m_queues.find(ac);
+  Queues::iterator i = m_queues.find (ac);
   if(i != m_queues.end ())
   {
     NS_LOG_WARN("Queue is not found! Check access class!");
