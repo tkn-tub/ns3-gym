@@ -3,6 +3,9 @@
 def build(bld):
     obj = bld.create_ns3_program('aodv')
     obj.source = 'aodv.cc'
+ 
+    obj = bld.create_ns3_program('aodv2')
+    obj.source = 'aodv2.cc'   
     
 #    obj = bld.create_ns3_program('hello-simulator')
 #    obj.source = 'hello-simulator.cc'

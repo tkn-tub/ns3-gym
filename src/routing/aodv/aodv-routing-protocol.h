@@ -116,6 +116,27 @@ private:
   std::vector<BroadcastId> m_broadcastIdCache;
   //\}
 
+  ///\name Handle duplicated packets
+  //\{
+  void InsertPacketUid (Ipv4Address src, uint32_t uid);
+  bool LookupPacketUid (Ipv4Address src, uint32_t uid);
+  void PurgePacketUid ();
+  struct PacketUid
+   {
+     Ipv4Address m_src;
+     uint32_t    m_uid;
+     Time        m_expire;
+   };
+  struct IsExpiredForPacket
+   {
+     bool operator()(const struct PacketUid & p) const
+     {
+       return (p.m_expire < Simulator::Now());
+     }
+   };
+  std::vector<PacketUid> m_packetUidCache;
+  //\}
+
   /// IP protocol
   Ptr<Ipv4> m_ipv4;
   /// Raw socket per each IP interface, map socket -> iface address (IP + mask)
@@ -146,6 +167,8 @@ private:
   void UpdateNeighbor (Ipv4Address sender, Ipv4Address receiver);
   /// Check that packet is an AODV control message
   bool LooksLikeAodvControl (Ptr<const Packet> p, Ipv4Header const & header) const;
+  /// Check that packet is send from own interface
+  bool IsMyOwnPacket(Ipv4Address src);
   /// Find socket with local interface address iface
   Ptr<Socket> FindSocketWithInterfaceAddress(Ipv4Address iface) const;
   /// Process hello message
