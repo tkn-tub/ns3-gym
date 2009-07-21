@@ -237,13 +237,7 @@ private:
     uint32_t recvFrames;
     uint32_t recvBytes;
     void Print (std::ostream & os) const;
-    Statistics () :
-      recvBeacons (0),
-      sentFrames (0),
-      sentBytes (0),
-      recvFrames (0),
-      recvBytes (0)
-      {}
+    Statistics ();
   };
   Statistics m_stats;
   ///\}

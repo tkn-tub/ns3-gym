@@ -82,6 +82,14 @@ FlameProtocolMac::GetChannelId () const
 {
   return m_parent->GetFrequencyChannel ();
 }
+FlameProtocolMac::Statistics::Statistics () :
+  txUnicast (0),
+  txBroadcast (0),
+  txBytes (0),
+  rxUnicast (0),
+  rxBroadcast (0),
+  rxBytes (0)
+{}
 void
 FlameProtocolMac::Statistics::Print (std::ostream &os) const
 {

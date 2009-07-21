@@ -172,7 +172,7 @@ private:
     uint16_t initiatedPerr;
 
     void Print (std::ostream & os) const;
-    Statistics () : txUnicast (0), txBroadcast (0), txBytes (0), droppedTtl (0), totalQueued (0), totalDropped (0), initiatedPreq (0), initiatedPrep (0), initiatedPerr (0) {}
+    Statistics ();
   };
   Statistics m_stats;
   ///\}

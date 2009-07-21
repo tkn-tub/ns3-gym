@@ -236,7 +236,7 @@ private:
     uint16_t linksOpened;
     uint16_t linksClosed;
 
-    Statistics (uint16_t t = 0) : linksTotal(t), linksOpened (0), linksClosed (0) {};
+    Statistics (uint16_t t = 0);
     void Print (std::ostream & os) const;
   };
   struct Statistics m_stats;

@@ -1063,6 +1063,17 @@ HwmpProtocol::GetAddress ()
   return m_address;
 }
 //Statistics:
+HwmpProtocol::Statistics::Statistics () :
+  txUnicast (0),
+  txBroadcast (0),
+  txBytes (0),
+  droppedTtl (0),
+  totalQueued (0),
+  totalDropped (0),
+  initiatedPreq (0),
+  initiatedPrep (0),
+  initiatedPerr (0)
+{}
 void HwmpProtocol::Statistics::Print (std::ostream & os) const
 {
   os << "<Statistics "

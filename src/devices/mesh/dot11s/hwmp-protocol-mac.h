@@ -126,22 +126,7 @@ private:
     uint16_t rxData;
     uint32_t rxDataBytes;
     void Print (std::ostream & os) const;
-    Statistics () : 
-      txPreq (0), 
-      rxPreq (0),
-      txPrep (0),
-      rxPrep (0),
-      txPerr (0),
-      rxPerr (0),
-      txMgt (0),
-      txMgtBytes (0),
-      rxMgt (0),
-      rxMgtBytes (0),
-      txData (0),
-      txDataBytes (0),
-      rxData (0),
-      rxDataBytes (0)
-      {}
+    Statistics ();
   };
   Statistics m_stats;
   //\}

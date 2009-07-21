@@ -307,6 +307,13 @@ FlameProtocol::HandleDataFrame (uint16_t seqno, Mac48Address source, const Flame
   return false;
 }
 //Statistics:
+FlameProtocol::Statistics::Statistics () :
+  txUnicast (0),
+  txBroadcast (0),
+  txBytes (0),
+  droppedTtl (0),
+  totalDropped (0)
+{}
 void FlameProtocol::Statistics::Print (std::ostream & os) const
 {
   os << "<Statistics "

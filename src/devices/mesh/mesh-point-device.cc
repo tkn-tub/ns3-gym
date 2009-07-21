@@ -441,6 +441,12 @@ MeshPointDevice::DoSend (bool success, Ptr<Packet> packet, Mac48Address src, Mac
     }
   }
 }
+MeshPointDevice::Statistics::Statistics () :
+  unicastData (0),
+  unicastDataBytes (0),
+  broadcastData (0),
+  broadcastDataBytes (0)
+{}
 
 void
 MeshPointDevice::Report (std::ostream & os) const

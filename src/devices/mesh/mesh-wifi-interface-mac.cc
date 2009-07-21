@@ -667,6 +667,13 @@ MeshWifiInterfaceMac::GetMeshPointAddress () const
   return m_mpAddress;
 }
 //Statistics:
+MeshWifiInterfaceMac::Statistics::Statistics () :
+  recvBeacons (0),
+  sentFrames (0),
+  sentBytes (0),
+  recvFrames (0),
+  recvBytes (0)
+{}
 void
 MeshWifiInterfaceMac::Statistics::Print (std::ostream & os) const
 {

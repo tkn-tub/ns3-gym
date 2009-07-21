@@ -188,12 +188,7 @@ private:
     uint32_t broadcastData;
     uint32_t broadcastDataBytes;
     
-    Statistics () : unicastData (0),
-      unicastDataBytes (0),
-      broadcastData (0),
-      broadcastDataBytes (0)
-    {
-    }
+    Statistics ();
   };
   /// Counters
   Statistics m_rxStats, m_txStats, m_fwdStats;

@@ -408,6 +408,22 @@ HwmpProtocolMac::GetChannelId () const
 {
   return m_parent->GetFrequencyChannel ();
 }
+HwmpProtocolMac::Statistics::Statistics () :
+  txPreq (0), 
+  rxPreq (0),
+  txPrep (0),
+  rxPrep (0),
+  txPerr (0),
+  rxPerr (0),
+  txMgt (0),
+  txMgtBytes (0),
+  rxMgt (0),
+  rxMgtBytes (0),
+  txData (0),
+  txDataBytes (0),
+  rxData (0),
+  rxDataBytes (0)
+{}
 void
 HwmpProtocolMac::Statistics::Print (std::ostream & os) const
 {

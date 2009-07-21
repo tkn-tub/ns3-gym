@@ -69,7 +69,7 @@ private:
     uint32_t rxBytes;
 
     void Print (std::ostream & os) const;
-    Statistics () : txUnicast (0), txBroadcast (0), txBytes (0), rxUnicast (0), rxBroadcast (0), rxBytes (0) {}
+    Statistics ();
   };
   Statistics m_stats;
   ///\}

@@ -143,7 +143,7 @@ private:
     uint16_t droppedTtl;
     uint16_t totalDropped;
     void Print (std::ostream & os) const;
-    Statistics () : txUnicast (0), txBroadcast (0), txBytes (0), droppedTtl (0), totalDropped (0) {}
+    Statistics ();
   };
   Statistics m_stats;
   ///\}

@@ -522,6 +522,11 @@ PeerManagementProtocol::GetAddress ()
 {
   return m_address;
 }
+PeerManagementProtocol::Statistics::Statistics (uint16_t t) :
+  linksTotal(t),
+  linksOpened (0),
+  linksClosed (0)
+{}
 void
 PeerManagementProtocol::Statistics::Print (std::ostream & os) const
 {
