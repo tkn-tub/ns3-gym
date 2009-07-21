@@ -27,6 +27,7 @@
  */
 #include "aodv-rtable.h"
 #include <algorithm>
+#include "ns3/simulator.h"
 #include "ns3/test.h"
 
 namespace ns3 {
@@ -101,6 +102,19 @@ RoutingTableEntry::IsPrecursorListEmpty() const
 }
 
 void
+RoutingTableEntry::GetPrecursors(std::vector<Ipv4Address> prec) const
+{
+  if (IsPrecursorListEmpty()) return;
+  for(std::vector<Ipv4Address>::const_iterator i = m_precursorList.begin(); i != m_precursorList.end(); ++i)
+  {
+    bool result = true;
+    for(std::vector<Ipv4Address>::const_iterator j = prec.begin(); j != prec.end(); ++j)
+      if (*j == *i) result = false;
+    if(result) prec.push_back(*i);
+  }
+}
+
+void
 RoutingTableEntry::Down ()
 {
   if(m_flag == RTF_DOWN) return;
@@ -164,6 +178,24 @@ RoutingTable::SetEntryState (Ipv4Address id, uint8_t state)
   std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_ipv4AddressEntry.find(id);
   if (i != m_ipv4AddressEntry.end()) (*i).second.SetFlag(state);
 }
+
+void
+RoutingTable::GetListOfDestinationWithNextHop(Ipv4Address nextHop, std::map<Ipv4Address, RoutingTableEntry> unreachable)
+{
+  unreachable.clear();
+  for(std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_ipv4AddressEntry.begin(); i != m_ipv4AddressEntry.end(); ++i)
+  {
+    if ( (i->second.GetNextHop() == nextHop) && (i->second.GetFlag() == RTF_UP)  && (!i->second.IsPrecursorListEmpty()) )
+    {
+      unreachable.insert(std::make_pair(i->first, i->second));
+      if(i->second.GetValidSeqNo())
+        i->second.SetSeqNo(i->second.GetSeqNo());
+      i->second.SetFlag(RTF_DOWN);
+      i->second.SetLifeTime(Simulator::Now() + Seconds(DELETE_PERIOD));
+    }
+  }
+}
+
 
 void
 RoutingTable::Print(std::ostream &os) const

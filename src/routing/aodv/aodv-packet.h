@@ -292,6 +292,8 @@ public:
   //\}
 
   bool AddUnDestination(Ipv4Address dst, uint32_t seqNo);
+  /// Clear header
+  void Clear();
   uint8_t GetDestCount() const { return (uint8_t)m_unreacheableDstSeqNo.size(); }
   bool operator==(RerrHeader const & o) const;
 private:

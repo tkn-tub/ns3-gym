@@ -656,6 +656,15 @@ RerrHeader::AddUnDestination(Ipv4Address dst, uint32_t seqNo)
   return true;
 }
 
+void
+RerrHeader::Clear()
+{
+  m_unreacheableDstSeqNo.clear();
+  m_flag = 0;
+  m_reserved = 0;
+}
+
+
 bool
 RerrHeader::operator==(RerrHeader const & o) const
 {

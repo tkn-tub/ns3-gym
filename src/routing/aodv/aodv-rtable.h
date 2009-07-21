@@ -90,9 +90,13 @@ public:
    * \return true if precursor list empty
    */
   bool IsPrecursorListEmpty() const;
+  /**
+   * Inserts precursors in vector prec if they does not yet exist in vector
+   */
+  void GetPrecursors(std::vector<Ipv4Address> prec) const;
   //\}
-  /// Return last valid hop count
-  uint16_t GetLastValidHopCount() { return m_lastHopCount; }
+
+
   /// Mark entry as "down" (i.e. disable it)
   void Down ();
   ///\name Fields
@@ -104,6 +108,7 @@ public:
   Ipv4Address GetNextHop () const { return m_ipv4Route->GetGateway(); }
   void SetOutputDevice(Ptr<NetDevice> dev) { m_ipv4Route->SetOutputDevice(dev); }
   Ptr<NetDevice> GetOutputDevice() const { return m_ipv4Route->GetOutputDevice(); }
+  Ipv4Address GetInterface() const { return m_ipv4Route->GetSource ();}
   void SetValidSeqNo(bool s) { m_validSeqNo = s; }
   bool GetValidSeqNo() const { return m_validSeqNo; }
   void SetSeqNo(uint32_t sn) { m_seqNo = sn; }
@@ -119,6 +124,8 @@ public:
   void IncrementRreqCnt() { m_reqCount++; }
   void SetRreqTimeout(Time t) {m_reqTimeout = t; }
   Time GetRreqTimeout() const { return m_reqTimeout; }
+  /// Return last valid hop count
+  uint16_t GetLastValidHopCount() { return m_lastHopCount; }
   //\}
 
   /**
@@ -201,6 +208,15 @@ public:
   bool Update(Ipv4Address dst, RoutingTableEntry & rt);
   /// Set routing table entry flags
   void SetEntryState (Ipv4Address dst, uint8_t state /*TODO use enum*/);
+  /**
+   * Lookup valid routing entries with next hop Address dst and not empty list of precursors.
+   * Update found routing entries as follows:
+   *  1. The destination sequence number of this routing entry, if it
+   *     exists and is valid, is incremented.
+   *  2. The entry is invalidated by marking the route entry as invalid
+   *  3. The Lifetime field is updated to current time plus DELETE_PERIOD.
+   */
+  void GetListOfDestinationWithNextHop(Ipv4Address nextHop, std::map<Ipv4Address, RoutingTableEntry> unreachable);
   /// Print routing table
   void Print(std::ostream &os) const;
 

@@ -146,6 +146,8 @@ private:
   void UpdateNeighbor (Ipv4Address sender, Ipv4Address receiver);
   /// Check that packet is an AODV control message
   bool LooksLikeAodvControl (Ptr<const Packet> p, Ipv4Header const & header) const;
+  /// Find socket with local interface address iface
+  Ptr<Socket> FindSocketWithInterfaceAddress(Ipv4Address iface) const;
   /// Process hello message
   void ProcessHello(RrepHeader const & rrepHeader, Ipv4Address receiverIfaceAddr);
   
@@ -177,8 +179,11 @@ private:
    * \param gratRep indicates whether a gratuitous RREP should be unicast to destination
    */
   void SendReplyByIntermediateNode (RoutingTableEntry & toDst, RoutingTableEntry & toOrigin, bool gratRep,  Ptr<Socket> socket);
-  /// Send RERR
-  void SendError (Ipv4Address failed);
+  ///\name Send RERR
+  //\{
+  void SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop);
+  void SendRerrMessage(Ptr<Packet> packet,  std::vector<Ipv4Address> precursors);
+  //\}
   //\}
   
   void Drop(Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno) {}
