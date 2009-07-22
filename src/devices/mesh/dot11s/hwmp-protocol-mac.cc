@@ -144,7 +144,9 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
       std::vector<IePerr::FailedDestination> destinations = perr.GetAddressUnitVector ();
       for (std::vector<IePerr::FailedDestination>::const_iterator i = destinations.begin (); i
           != destinations.end (); i++)
-        failedDestinations.push_back (*i);
+        {
+          failedDestinations.push_back (*i);
+        }
     }
   if (failedDestinations.size () > 0)
     {

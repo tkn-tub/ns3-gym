@@ -68,7 +68,7 @@ private:
   void SendPreq (std::vector<IePreq> preq);
   void SendPrep (IePrep prep, Mac48Address receiver);
   //Forward a peth error
-  void ForwardPerr(std::vector<IePerr::FailedDestination> destinations, std::vector<Mac48Address> receivers);
+  void ForwardPerr (std::vector<IePerr::FailedDestination> destinations, std::vector<Mac48Address> receivers);
   // initiate my own path error
   void InitiatePerr (std::vector<IePerr::FailedDestination> destinations, std::vector<Mac48Address> receivers);
   /** \brief Request a destination. If can not send preq immediately -

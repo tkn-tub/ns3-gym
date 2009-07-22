@@ -45,7 +45,7 @@ class AirtimeLinkMetricCalculator : public Object
 {
   public:
     static TypeId GetTypeId ();
-    uint32_t CalculateMetric(Mac48Address peerAddress, Ptr<MeshWifiInterfaceMac> mac);
+    uint32_t CalculateMetric (Mac48Address peerAddress, Ptr<MeshWifiInterfaceMac> mac);
   private:
   //\brief Overhead expressed in nanoseconds:DIFS+ 2* SIFS + 2*PREAMBLE + 2* ACK
   uint32_t m_overheadNanosec;

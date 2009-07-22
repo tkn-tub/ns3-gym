@@ -118,7 +118,7 @@ public:
    * \brief Checks that preq's originator address equals to originator, and
    * this preq is not proactive
    */
-  bool MayAddAddress(Mac48Address originator);
+  bool MayAddAddress (Mac48Address originator);
   bool IsFull () const;
 private:
   WifiElementId ElementId () const;

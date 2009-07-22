@@ -50,7 +50,7 @@ public:
     uint32_t ifIndex;
     uint8_t  cost;
     uint16_t seqnum;
-    LookupResult(Mac48Address r = Mac48Address::GetBroadcast (),
+    LookupResult (Mac48Address r = Mac48Address::GetBroadcast (),
                  uint32_t i = INTERFACE_ANY,
                  uint8_t  c = MAX_COST,
                  uint16_t s = 0)
@@ -61,7 +61,7 @@ public:
     {
     }
     /// True for valid route
-    bool IsValid() const;
+    bool IsValid () const;
     /// Compare route lookup results, used by tests
     bool operator==(const LookupResult & o) const;
   };

@@ -68,11 +68,11 @@ private:
   ///functionallity
   ///\param first in retval is TBTT
   ///\param second in retval is beacon interval
-  std::pair<Time, Time> GetBeaconInfo() const;
-  void SetBeaconShift(Time shift);
+  std::pair<Time, Time> GetBeaconInfo () const;
+  void SetBeaconShift (Time shift);
   ///\}
-  void SetPeerManagerProtcol(Ptr<PeerManagementProtocol> protocol);
-  void SendPeerLinkManagementFrame(
+  void SetPeerManagerProtcol (Ptr<PeerManagementProtocol> protocol);
+  void SendPeerLinkManagementFrame (
       Mac48Address peerAddress,
       Mac48Address peerMpAddress,
       uint16_t aid,
@@ -90,9 +90,9 @@ private:
    ///\}
    ///\name Create peer link management frames:
    ///\{
-  Ptr<Packet> CreatePeerLinkOpenFrame();
-  Ptr<Packet> CreatePeerLinkConfirmFrame();
-  Ptr<Packet> CreatePeerLinkCloseFrame();
+  Ptr<Packet> CreatePeerLinkOpenFrame ();
+  Ptr<Packet> CreatePeerLinkConfirmFrame ();
+  Ptr<Packet> CreatePeerLinkCloseFrame ();
   ///This structure keeps all fields in peer link management frame,
   ///which are not subclasses of WifiInformationElement
   struct PlinkFrameStart {
@@ -103,7 +103,7 @@ private:
   };
   /// \name Parses the start of the frame, where there are no
   /// WifiInformationElements exist
-  PlinkFrameStart ParsePlinkFrame(Ptr<const Packet> packet);
+  PlinkFrameStart ParsePlinkFrame (Ptr<const Packet> packet);
   ///\}
   //Keeps statistics
   struct Statistics {

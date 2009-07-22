@@ -49,7 +49,9 @@ DestinationAddressUnit::SetDestSeqNumber (uint32_t dest_seq_number)
 {
   m_destSeqNumber = dest_seq_number;
   if (m_destSeqNumber != 0)
-    m_usn = true;
+    {
+      m_usn = true;
+    }
 }
 void
 DestinationAddressUnit::SetDestinationAddress (Mac48Address dest_address)
@@ -332,7 +334,9 @@ IePreq::PrintInformation (std::ostream &os) const
   os << " preq ID             = " << m_preqId << "\n";
   os << " Destinations are:\n";
   for (int j = 0; j < m_destCount; j++)
-    os << "    " << m_destinations[j]->GetDestinationAddress () << "\n";
+    {
+      os << "    " << m_destinations[j]->GetDestinationAddress () << "\n";
+    }
 }
 std::vector<Ptr<DestinationAddressUnit> >
 IePreq::GetDestinationList ()

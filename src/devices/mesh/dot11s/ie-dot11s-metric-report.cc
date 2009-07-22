@@ -41,7 +41,7 @@ IeLinkMetricReport::ElementId () const
 uint8_t
 IeLinkMetricReport::GetInformationSize (void) const
 {
-  return sizeof(uint32_t);
+  return sizeof (uint32_t);
 }
 uint32_t
 IeLinkMetricReport::GetMetric ()

@@ -147,7 +147,7 @@ IeBeaconTiming::ClearTimingElement ()
 uint8_t
 IeBeaconTiming::GetInformationSize () const
 {
-  return (5* m_numOfUnits );
+  return (5 * m_numOfUnits );
 }
 void
 IeBeaconTiming::PrintInformation (std::ostream& os) const

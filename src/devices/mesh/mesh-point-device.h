@@ -85,7 +85,7 @@ public:
   /// Register routing protocol to be used. Protocol must be alredy installed on this mesh point.
   void SetRoutingProtocol (Ptr<MeshL2RoutingProtocol> protocol);
   /// Access current routing protocol
-  Ptr<MeshL2RoutingProtocol> GetRoutingProtocol() const;
+  Ptr<MeshL2RoutingProtocol> GetRoutingProtocol () const;
   //\}
 
   ///\name NetDevice interface for upper layers

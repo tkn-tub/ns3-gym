@@ -60,8 +60,8 @@ public:
   };
   ///\attention: must be set before deserialize, before only multihop
   //action header knows about subtype
-  void SetPlinkFrameSubtype(uint8_t subtype);
-  void SetPlinkFrameStart(PlinkFrameStartFields);
+  void SetPlinkFrameSubtype (uint8_t subtype);
+  void SetPlinkFrameStart (PlinkFrameStartFields);
   PlinkFrameStartFields GetFields ();
   /** \name Inherited from header:
    * \{

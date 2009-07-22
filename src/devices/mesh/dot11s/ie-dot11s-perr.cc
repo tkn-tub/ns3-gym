@@ -71,7 +71,7 @@ IePerr::DeserializeInformation (Buffer::Iterator start, uint8_t length)
   Buffer::Iterator i = start;
   i.Next (1); //Mode flags is not used now
   uint8_t numOfDest = i.ReadU8 ();
-  NS_ASSERT ((2 + 10* numOfDest ) == length);
+  NS_ASSERT ((2 + 10 * numOfDest ) == length);
   length = 0; //to avoid compiler warning in optimized builds
   for (unsigned int j = 0; j < numOfDest; j++)
     {

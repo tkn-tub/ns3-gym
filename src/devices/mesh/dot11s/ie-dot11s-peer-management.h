@@ -71,7 +71,7 @@ public:
   bool   SubtypeIsOpen () const;
   bool   SubtypeIsClose () const;
   bool   SubtypeIsConfirm () const ;
-  uint8_t GetSubtype() const { return m_subtype;};
+  uint8_t GetSubtype () const { return m_subtype;};
 private:
   WifiElementId ElementId () const;
   uint8_t  GetInformationSize (void) const;

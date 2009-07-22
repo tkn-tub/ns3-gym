@@ -143,15 +143,15 @@ public:
   //\}
 
   /// To be used by plugins sending management frames.
-  void SendManagementFrame(Ptr<Packet> frame, const WifiMacHeader& hdr);
+  void SendManagementFrame (Ptr<Packet> frame, const WifiMacHeader& hdr);
   /// \return true if rates are supported
-  bool CheckSupportedRates(SupportedRates rates) const;
+  bool CheckSupportedRates (SupportedRates rates) const;
   /// \return list of supported bitrates
   SupportedRates GetSupportedRates () const;
   ///\ name Metric Calculation routines:
   ///\{
-  void SetLinkMetricCallback(Callback<uint32_t, Mac48Address, Ptr<MeshWifiInterfaceMac> > cb);
-  uint32_t GetLinkMetric(Mac48Address peerAddress);
+  void SetLinkMetricCallback (Callback<uint32_t, Mac48Address, Ptr<MeshWifiInterfaceMac> > cb);
+  uint32_t GetLinkMetric (Mac48Address peerAddress);
   Ptr<WifiRemoteStationManager> GetStationManager ();
   ///\}
   ///\brief Statistics:

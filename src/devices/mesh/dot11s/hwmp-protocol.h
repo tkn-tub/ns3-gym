@@ -67,11 +67,11 @@ public:
    * via MeshPointDevice::GetObject<dot11s::HwmpProtocol>();
    */
   bool Install (Ptr<MeshPointDevice>);
-  void PeerLinkStatus(Mac48Address meshPontAddress, Mac48Address peerAddress, uint32_t interface,bool status);
+  void PeerLinkStatus (Mac48Address meshPontAddress, Mac48Address peerAddress, uint32_t interface,bool status);
   ///\brief This callback is used to obtain active neighbours on a
   //given interface
   ///\param interface is the interface ID
-  void SetNeighboursCallback(Callback<std::vector<Mac48Address>, uint32_t> cb);
+  void SetNeighboursCallback (Callback<std::vector<Mac48Address>, uint32_t> cb);
   ///\name Proactive PREQ mechanism:
   ///\{
   void SetRoot ();
@@ -89,9 +89,9 @@ private:
 
   ///\name Interaction with HWMP MAC plugin
   //\{
-  void ReceivePreq(IePreq preq, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
-  void ReceivePrep(IePrep prep, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
-  void ReceivePerr(std::vector<IePerr::FailedDestination>, Mac48Address from, uint32_t interface, Mac48Address fromMp);
+  void ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
+  void ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
+  void ReceivePerr (std::vector<IePerr::FailedDestination>, Mac48Address from, uint32_t interface, Mac48Address fromMp);
   void SendPrep (
       Mac48Address src,
       Mac48Address dst,
@@ -135,7 +135,7 @@ private:
    * \param uint32_t is the seqno
    * \param Mac48Address is the mesh source addrress of the frame
    */
-  bool DropDataFrame(uint32_t, Mac48Address);
+  bool DropDataFrame (uint32_t, Mac48Address);
   //\}
 private:
   /// Packet waiting its routing information
@@ -147,7 +147,7 @@ private:
     uint32_t inInterface; ///< incoming device interface ID. (if packet has come from upper layers, this is Mesh point ID)
     RouteReplyCallback reply; ///< how to reply
 
-    QueuedPacket () : pkt(0), protocol(0), inInterface(0) {}
+    QueuedPacket () : pkt (0), protocol (0), inInterface (0) {}
   };
 
   ///\name Methods related to Queue/Dequeue procedures

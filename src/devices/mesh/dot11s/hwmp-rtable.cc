@@ -96,13 +96,15 @@ HwmpRtable::AddPrecursor (Mac48Address destination, uint32_t precursorInterface,
     {
       bool should_add = true;
       for (unsigned int j = 0; j < i->second.precursors.size (); j++)
-        //NB: Only one active route may exist, so do not check
-        //interface ID, just address
-        if (i->second.precursors[j].second == precursorAddress)
-          {
-            should_add = false;
-            break;
-          }
+        {
+          //NB: Only one active route may exist, so do not check
+          //interface ID, just address
+          if (i->second.precursors[j].second == precursorAddress)
+            {
+              should_add = false;
+              break;
+            }
+        }
       if (should_add)
         {
           i->second.precursors.push_back (precursor);
@@ -134,7 +136,9 @@ void
 HwmpRtable::DeleteProactivePath (Mac48Address root)
 {
   if (m_root.root == root)
-    DeleteProactivePath ();
+    {
+      DeleteProactivePath ();
+    }
 }
 void
 HwmpRtable::DeleteReactivePath (Mac48Address destination)
@@ -193,13 +197,15 @@ HwmpRtable::GetUnreachableDestinations (Mac48Address peerAddress)
   IePerr::FailedDestination dst;
   std::vector<IePerr::FailedDestination> retval;
   for (std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.begin (); i != m_routes.end (); i++)
-    if (i->second.retransmitter == peerAddress)
-      {
-        dst.destination = i->first;
-        i->second.seqnum++;
-        dst.seqnum = i->second.seqnum;
-        retval.push_back (dst);
-      }
+  {
+      if (i->second.retransmitter == peerAddress)
+        {
+          dst.destination = i->first;
+          i->second.seqnum++;
+          dst.seqnum = i->second.seqnum;
+          retval.push_back (dst);
+        }
+  }
   //Lookup a path to root
   if (m_root.retransmitter == peerAddress)
     {
@@ -228,13 +234,17 @@ HwmpRtable::GetPrecursors (Mac48Address destination)
         {
           bool should_add = true;
           for (unsigned int j = 0; j < retval.size (); j++)
-            if (retval[j].second == m_root.precursors[i].second)
-              {
-                should_add = false;
-                break;
-              }
+            {
+              if (retval[j].second == m_root.precursors[i].second)
+                {
+                  should_add = false;
+                  break;
+                }
+            }
           if (should_add)
-            retval.push_back (m_root.precursors[i]);
+            {
+              retval.push_back (m_root.precursors[i]);
+            }
         }
     }
   return retval;

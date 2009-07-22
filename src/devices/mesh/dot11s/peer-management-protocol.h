@@ -61,7 +61,7 @@ public:
    * Also MP aggregates all installed protocols, PMP protocol can be accessed
    * via MeshPointDevice::GetObject<PeerManagementProtocol>();
    */
-  bool Install(Ptr<MeshPointDevice>);
+  bool Install (Ptr<MeshPointDevice>);
   /**
    * \brief Methods that handle beacon sending/receiving procedure.
    *
@@ -75,7 +75,7 @@ public:
    * should be present in beacon
    * \param interface is a interface sending a beacon
    */
-  Ptr<IeBeaconTiming> GetBeaconTimingElement(uint32_t interface);
+  Ptr<IeBeaconTiming> GetBeaconTimingElement (uint32_t interface);
   /**
    * \brief When we receive a beacon from peer-station, we remember
    * its beacon timing element (needed for peer choosing mechanism),
@@ -84,7 +84,7 @@ public:
    * \param interface is a interface on which beacon was received
    * \param timingElement is a timing element of remote beacon
    */
-  void UpdatePeerBeaconTiming(
+  void UpdatePeerBeaconTiming (
       uint32_t interface,
       bool meshBeacon,
       IeBeaconTiming timingElement,
@@ -113,7 +113,7 @@ public:
    * taken from the peer management frame
    * \param IePeerManagement is peer link management element
    */
-  void ReceivePeerLinkFrame(
+  void ReceivePeerLinkFrame (
       uint32_t interface,
       Mac48Address peerAddress,
       Mac48Address peerMeshPointAddress,
@@ -132,15 +132,15 @@ public:
   bool IsActiveLink (uint32_t interface, Mac48Address peerAddress);
   //\}
   ///\brief Needed by external module to do MLME
-  Ptr<PeerLink> FindPeerLink(uint32_t interface, Mac48Address peerAddress);
+  Ptr<PeerLink> FindPeerLink (uint32_t interface, Mac48Address peerAddress);
   void SetPeerLinkStatusCallback (Callback<void, Mac48Address, Mac48Address, uint32_t, bool> cb);
-  std::vector<Mac48Address> GetActiveLinks(uint32_t interface);
+  std::vector<Mac48Address> GetActiveLinks (uint32_t interface);
   ///\brief needed by plugins to set global source address
   Mac48Address GetAddress ();
   ///\Needed to fill mesh configuration
   uint8_t GetNumberOfLinks ();
   void SetMeshId (std::string s);
-  Ptr<IeMeshId> GetMeshId() const;
+  Ptr<IeMeshId> GetMeshId () const;
   ///\brief: Report statistics
   void Report (std::ostream &) const;
   void ResetStats ();
@@ -173,7 +173,7 @@ private:
   /**
    * Return a position in beacon-storage for a given remote station
    */
-  void FillBeaconInfo(uint32_t interface, Mac48Address peerAddress, Time receivingTime, Time beaconInterval);
+  void FillBeaconInfo (uint32_t interface, Mac48Address peerAddress, Time receivingTime, Time beaconInterval);
   Ptr<PeerLink> InitiateLink (
       uint32_t interface,
       Mac48Address peerAddress,

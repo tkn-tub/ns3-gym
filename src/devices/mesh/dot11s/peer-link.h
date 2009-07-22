@@ -44,7 +44,7 @@ class PeerLink : public Object
 public:
   friend class PeerManagementProtocol;
   /// Support object system
-  static TypeId GetTypeId();
+  static TypeId GetTypeId ();
   /// C-tor create empty link
   PeerLink ();
   ~PeerLink ();
@@ -145,7 +145,7 @@ private:
    * Set pointer to MAC-plugin, which is responsible for sending peer
    * link management frames
    */
-  void SetMacPlugin(Ptr<PeerManagementProtocolMac> plugin);
+  void SetMacPlugin (Ptr<PeerManagementProtocolMac> plugin);
   /// Peer link states, see 802.11s draft 11B.3.3.1
 private:
   /// Peer link events, see 802.11s draft 11B.3.3.2

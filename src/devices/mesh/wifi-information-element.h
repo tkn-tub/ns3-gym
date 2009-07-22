@@ -142,7 +142,7 @@ public:
    * This method takes a packet which must be a list of information
    * elements and looks for an information element of MINE Element ID
    */
-  bool FindFirst(Ptr<Packet> packet);
+  bool FindFirst (Ptr<Packet> packet);
   //\}
     
 protected:
@@ -189,7 +189,7 @@ IeTest::TestRoundtripSerialization (IE a)
   NS_TEST_ASSERT_EQUAL (a, b);
   packet->AddHeader (a);
   IE c;
-  bool ok = c.FindFirst(packet);
+  bool ok = c.FindFirst (packet);
   NS_TEST_ASSERT (ok);
   NS_TEST_ASSERT_EQUAL (a, c);
   
