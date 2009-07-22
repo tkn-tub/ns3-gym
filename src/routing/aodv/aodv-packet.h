@@ -291,17 +291,22 @@ public:
   bool GetNoDelete() const;
   //\}
 
+  /// Add unreachable node address and its sequence number in RERR header
   bool AddUnDestination(Ipv4Address dst, uint32_t seqNo);
+  /** Delete pair (address + sequence number) from REER header, if the number of unreachable destinations > 0
+   * \return true on success
+   */
+  bool RemoveUnDestination(std::pair<Ipv4Address, uint32_t> & un);
   /// Clear header
   void Clear();
-  uint8_t GetDestCount() const { return (uint8_t)m_unreacheableDstSeqNo.size(); }
+  uint8_t GetDestCount() const { return (uint8_t)m_unreachableDstSeqNo.size(); }
   bool operator==(RerrHeader const & o) const;
 private:
   uint8_t m_flag;            ///< No delete flag
   uint8_t m_reserved;        ///< Not used
 
   /// List of Unreachable destination IP addresses and sequence numbers
-  std::map<Ipv4Address, uint32_t> m_unreacheableDstSeqNo;
+  std::map<Ipv4Address, uint32_t> m_unreachableDstSeqNo;
 };
 
 std::ostream & operator<<(std::ostream & os, RerrHeader const &);

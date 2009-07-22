@@ -88,7 +88,7 @@ private:
   Time BCAST_ID_SAVE;
   Time HELLO_INTERVAL;
   uint32_t ALLOWED_HELLO_LOSS;
-  Time BAD_LINK_LIFETIME;
+  Time DELETE_PERIOD;
   Time MaxHelloInterval; //        (1.25 * HELLO_INTERVAL)
   Time MinHelloInterval; //        (0.75 * HELLO_INTERVAL)
   Time FREQUENCY;
@@ -187,8 +187,14 @@ private:
   void HandleLinkFailure (Ipv4Address id);
   /// Purge all expired records from m_routingTable
   void RtPurge ();
+  /**
+   * Update route lifetime.
+   * \param addr - destination address
+   * \return true if route to destination address addr exist
+   */
+  bool UpdateRouteLifeTime(Ipv4Address addr, Time lifetime);
   /// Update neighbor record. \param receiver is supposed to be my interface
-  void UpdateNeighbor (Ipv4Address sender, Ipv4Address receiver);
+  void UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver);
   /// Check that packet is an AODV control message
   bool LooksLikeAodvControl (Ptr<const Packet> p, Ipv4Header const & header) const;
   /// Check that packet is send from own interface

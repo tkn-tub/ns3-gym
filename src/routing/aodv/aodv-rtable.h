@@ -42,7 +42,7 @@ namespace ns3 {
 namespace aodv {
 
 #define INFINITY2       0xff
-#define DELETE_PERIOD   10 // seconds. TODO: remove defines
+// #define DELETE_PERIOD   10 // seconds. TODO: remove defines
 
 enum RouteFlags
 {
@@ -93,12 +93,12 @@ public:
   /**
    * Inserts precursors in vector prec if they does not yet exist in vector
    */
-  void GetPrecursors(std::vector<Ipv4Address> prec) const;
+  void GetPrecursors(std::vector<Ipv4Address> & prec) const;
   //\}
 
 
   /// Mark entry as "down" (i.e. disable it)
-  void Down ();
+  void Down (Time badLinkLifetime);
   ///\name Fields
   //\{
   Ipv4Address GetDestination() const { return m_ipv4Route->GetDestination(); }
@@ -216,7 +216,9 @@ public:
    *  2. The entry is invalidated by marking the route entry as invalid
    *  3. The Lifetime field is updated to current time plus DELETE_PERIOD.
    */
-  void GetListOfDestinationWithNextHop(Ipv4Address nextHop, std::map<Ipv4Address, RoutingTableEntry> unreachable);
+  void GetListOfDestinationWithNextHop(Ipv4Address nextHop, std::map<Ipv4Address, RoutingTableEntry> unreachable, Time badLinkLifetime);
+  /// Delete all outdated entries
+  void Purge();
   /// Print routing table
   void Print(std::ostream &os) const;
 

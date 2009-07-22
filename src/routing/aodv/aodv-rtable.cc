@@ -102,7 +102,7 @@ RoutingTableEntry::IsPrecursorListEmpty() const
 }
 
 void
-RoutingTableEntry::GetPrecursors(std::vector<Ipv4Address> prec) const
+RoutingTableEntry::GetPrecursors(std::vector<Ipv4Address> & prec) const
 {
   if (IsPrecursorListEmpty()) return;
   for(std::vector<Ipv4Address>::const_iterator i = m_precursorList.begin(); i != m_precursorList.end(); ++i)
@@ -115,21 +115,45 @@ RoutingTableEntry::GetPrecursors(std::vector<Ipv4Address> prec) const
 }
 
 void
-RoutingTableEntry::Down ()
+RoutingTableEntry::Down (Time badLinkLifetime)
 {
   if(m_flag == RTF_DOWN) return;
 
   m_lastHopCount = m_hops;
   m_hops = INFINITY2;
   m_flag = RTF_DOWN;
-  m_lifeTime = Seconds (DELETE_PERIOD);
+  m_lifeTime = badLinkLifetime;
 }
 
 void
 RoutingTableEntry::Print(std::ostream & os) const
 {
   os << m_ipv4Route->GetDestination() << "\t" << m_ipv4Route->GetGateway() << "\t"
-     << m_ipv4Route->GetSource() << "\t" << m_lifeTime << "\n";
+     << m_ipv4Route->GetSource() << "\t";
+  switch (m_flag)
+  {
+    case RTF_UP:
+    {
+      os << "UP";
+      break;
+    }
+    case RTF_DOWN:
+    {
+      os << "DOWN";
+      break;
+    }
+    case RTF_IN_REPAIR:
+    {
+      os << "IN_REPAIR";
+      break;
+    }
+    case RTF_IN_SEARCH:
+    {
+      os << "IN_SEARCH";
+      break;
+    }
+  }
+  os << "\t" << (m_lifeTime - Simulator::Now()).GetSeconds() << "\n";
 }
 
 /*
@@ -180,7 +204,7 @@ RoutingTable::SetEntryState (Ipv4Address id, uint8_t state)
 }
 
 void
-RoutingTable::GetListOfDestinationWithNextHop(Ipv4Address nextHop, std::map<Ipv4Address, RoutingTableEntry> unreachable)
+RoutingTable::GetListOfDestinationWithNextHop(Ipv4Address nextHop, std::map<Ipv4Address, RoutingTableEntry> unreachable, Time badLinkLifetime)
 {
   unreachable.clear();
   for(std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_ipv4AddressEntry.begin(); i != m_ipv4AddressEntry.end(); ++i)
@@ -191,17 +215,26 @@ RoutingTable::GetListOfDestinationWithNextHop(Ipv4Address nextHop, std::map<Ipv4
       if(i->second.GetValidSeqNo())
         i->second.SetSeqNo(i->second.GetSeqNo());
       i->second.SetFlag(RTF_DOWN);
-      i->second.SetLifeTime(Simulator::Now() + Seconds(DELETE_PERIOD));
+      i->second.SetLifeTime(Simulator::Now() + badLinkLifetime);
     }
   }
 }
 
+void
+RoutingTable::Purge()
+{
+  for(std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_ipv4AddressEntry.begin(); i != m_ipv4AddressEntry.end();)
+  {
+    if(i->second.GetLifeTime() < Simulator::Now()) m_ipv4AddressEntry.erase(i++);
+    else ++i;
+  }
+}
 
 void
 RoutingTable::Print(std::ostream &os) const
 {
   os << "\nAODV Routing table\n"
-     << "Destination\tGateway\t\tInterface\tExpire\n";
+     << "Destination\tGateway\t\tInterface\tFlag\tExpire\n";
   for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator i = m_ipv4AddressEntry.begin(); i != m_ipv4AddressEntry.end(); ++i)
     {
       i->second.Print(os);
