@@ -24,60 +24,65 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/log.h"
 NS_LOG_COMPONENT_DEFINE ("MeshHelper");
-namespace ns3 {
-MeshHelper::MeshHelper () : 
-    m_spreadInterfaceChannels (false),
-    m_stack (0)
+namespace ns3
+{
+MeshHelper::MeshHelper () :
+  m_spreadInterfaceChannels (false), m_stack (0)
 {
 }
-void 
+void
 MeshHelper::SetSpreadInterfaceChannels (bool s)
 {
   m_spreadInterfaceChannels = s;
 }
-void 
+void
 MeshHelper::SetStackInstaller (std::string type)
 {
   NS_LOG_FUNCTION (this << type);
   m_stackFactory.SetTypeId (type);
   m_stack = m_stackFactory.Create<MeshStack> ();
   if (m_stack == 0)
-    NS_FATAL_ERROR ("Stack has not been created: "<<type);
+    {
+      NS_FATAL_ERROR ("Stack has not been created: " << type);
+    }
 }
 
 NetDeviceContainer
-MeshHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &interfaceHelper, NodeContainer c, uint32_t nInterfaces) const
+MeshHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &interfaceHelper,
+    NodeContainer c, uint32_t nInterfaces) const
 {
   NetDeviceContainer devices;
   NS_ASSERT (m_stack != 0);
   uint16_t node_counter = 0;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
-  {
-    Ptr<Node> node = *i;
-    
-    // Create a mesh point device
-    Ptr<MeshPointDevice> mp = CreateObject<MeshPointDevice> ();
-    node->AddDevice (mp);
-    
-    // Create wifi interfaces (single interface by default)
-    for (uint32_t i = 0; i < nInterfaces; ++i)
-      {
-        uint32_t channel = i * 5;
-        Ptr<WifiNetDevice> iface = interfaceHelper.CreateInterface (phyHelper,node, (m_spreadInterfaceChannels ? channel : 0));
-        mp->AddInterface (iface);
-      }
-    if(!m_stack->InstallStack (mp))
     {
-      NS_FATAL_ERROR ("Stack is not installed!");
+      Ptr<Node> node = *i;
+
+      // Create a mesh point device
+      Ptr<MeshPointDevice> mp = CreateObject<MeshPointDevice> ();
+      node->AddDevice (mp);
+
+      // Create wifi interfaces (single interface by default)
+      for (uint32_t i = 0; i < nInterfaces; ++i)
+        {
+          uint32_t channel = i * 5;
+          Ptr<WifiNetDevice> iface = interfaceHelper.CreateInterface (phyHelper, node,
+              (m_spreadInterfaceChannels ? channel : 0));
+          mp->AddInterface (iface);
+        }
+      if (!m_stack->InstallStack (mp))
+        {
+          NS_FATAL_ERROR ("Stack is not installed!");
+        }
+      devices.Add (mp);
+      node_counter++;
     }
-    devices.Add (mp);
-    node_counter ++;
-  }
   return devices;
 }
 
 NetDeviceContainer
-MeshHelper::Install (const WifiPhyHelper &phy, const MeshInterfaceHelper &interfaceHelper, Ptr<Node> node, uint32_t nInterfaces) const
+MeshHelper::Install (const WifiPhyHelper &phy, const MeshInterfaceHelper &interfaceHelper, Ptr<Node> node,
+    uint32_t nInterfaces) const
 {
   return Install (phy, interfaceHelper, NodeContainer (node), nInterfaces);
 }
@@ -85,10 +90,11 @@ void
 MeshHelper::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os)
 {
   NS_ASSERT (m_stack != 0);
-  Ptr <MeshPointDevice> mp = device->GetObject<MeshPointDevice> ();
+  Ptr<MeshPointDevice> mp = device->GetObject<MeshPointDevice> ();
   NS_ASSERT (mp != 0);
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
-  os << "<MeshPointDevice time=\"" << Simulator::Now().GetSeconds() << "\" address=\"" << Mac48Address::ConvertFrom(mp->GetAddress ()) << "\">\n";
+  os << "<MeshPointDevice time=\"" << Simulator::Now ().GetSeconds () << "\" address=\""
+      << Mac48Address::ConvertFrom (mp->GetAddress ()) << "\">\n";
   m_stack->Report (mp, os);
   os << "</MeshPointDevice>\n";
 }
@@ -96,7 +102,7 @@ void
 MeshHelper::ResetStats (const ns3::Ptr<ns3::NetDevice>& device)
 {
   NS_ASSERT (m_stack != 0);
-  Ptr <MeshPointDevice> mp = device->GetObject<MeshPointDevice> ();
+  Ptr<MeshPointDevice> mp = device->GetObject<MeshPointDevice> ();
   NS_ASSERT (mp != 0);
   m_stack->ResetStats (mp);
 }

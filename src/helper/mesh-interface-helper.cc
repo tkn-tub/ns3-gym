@@ -24,7 +24,8 @@
 #include "ns3/pointer.h"
 #include "ns3/dca-txop.h"
 #include "ns3/wifi-remote-station-manager.h"
-namespace ns3 {
+namespace ns3
+{
 
 MeshInterfaceHelper::MeshInterfaceHelper ()
 {
@@ -91,7 +92,7 @@ MeshInterfaceHelper::SetQueueParameters ( AccessClass ac,
     NS_FATAL_ERROR ("Queue is not set!");
   }
 }
-void 
+void
 MeshInterfaceHelper::SetRemoteStationManager (std::string type,
                                      std::string n0, const AttributeValue &v0,
                                      std::string n1, const AttributeValue &v1,
@@ -117,8 +118,8 @@ Ptr<WifiNetDevice>
 MeshInterfaceHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uint16_t channelId) const
 {
   Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
-  
-  Ptr<MeshWifiInterfaceMac> mac = DynamicCast <MeshWifiInterfaceMac> (Create ());
+
+  Ptr<MeshWifiInterfaceMac> mac = DynamicCast<MeshWifiInterfaceMac> (Create ());
   NS_ASSERT (mac != 0);
   mac->SetSsid (Ssid ());
   Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
@@ -135,24 +136,23 @@ Ptr<WifiMac>
 MeshInterfaceHelper::Create (void) const
 {
   Ptr<MeshWifiInterfaceMac> mac = m_mac.Create<MeshWifiInterfaceMac> ();
-  for (std::map<AccessClass, ObjectFactory>::const_iterator i = m_queues.begin (); i != m_queues.end (); i ++)
-  {
-    //Ptr<DcaTxop> dca = i->second->Create ();
-    mac->SetQueue(i->second.Create<DcaTxop> (), i->first);
-  }
+  for (std::map<AccessClass, ObjectFactory>::const_iterator i = m_queues.begin (); i != m_queues.end (); i++)
+    {
+      mac->SetQueue (i->second.Create<DcaTxop> (), i->first);
+    }
   return mac;
 }
 void
 MeshInterfaceHelper::Report (const Ptr<WifiNetDevice>& device, std::ostream& os)
 {
-  Ptr<MeshWifiInterfaceMac> mac = device->GetMac()->GetObject<MeshWifiInterfaceMac> ();
+  Ptr<MeshWifiInterfaceMac> mac = device->GetMac ()->GetObject<MeshWifiInterfaceMac> ();
   NS_ASSERT (mac != 0);
-  mac->Report(os);
+  mac->Report (os);
 }
 void
 MeshInterfaceHelper::ResetStats (const Ptr<WifiNetDevice>& device)
 {
-  Ptr<MeshWifiInterfaceMac> mac = device->GetMac()->GetObject<MeshWifiInterfaceMac> ();
+  Ptr<MeshWifiInterfaceMac> mac = device->GetMac ()->GetObject<MeshWifiInterfaceMac> ();
   NS_ASSERT (mac != 0);
   mac->ResetStats ();
 }
